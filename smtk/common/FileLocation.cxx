@@ -26,7 +26,6 @@ using namespace boost::filesystem;
 namespace smtk {
   namespace common {
 
-//----------------------------------------------------------------------------
 FileLocation::FileLocation(
   const std::string& filePath,
   const std::string& refPath) :
@@ -41,7 +40,6 @@ FileLocation::FileLocation(const FileLocation& other)
   this->m_referencePath = other.m_referencePath;
 }
 
-//----------------------------------------------------------------------------
 bool FileLocation::operator == (const FileLocation &from) const
 {
   // just doing a simple string comparison, should we also verify the file
@@ -49,7 +47,6 @@ bool FileLocation::operator == (const FileLocation &from) const
          ( m_referencePath == from.m_referencePath );
 }
 
-//----------------------------------------------------------------------------
 std::string FileLocation::absolutePath() const
 {
   path absPath(this->m_filePath);
@@ -66,7 +63,6 @@ std::string FileLocation::absolutePath() const
   return absPath.is_absolute() ? absPath.string() : std::string();
 }
 
-//----------------------------------------------------------------------------
 std::string FileLocation::relativePath() const
 {
   path url(this->m_filePath);
@@ -83,7 +79,6 @@ std::string FileLocation::relativePath() const
   return url.is_absolute() ? url.relative_path().string() : url.string();
 }
 
-//----------------------------------------------------------------------------
 std::string FileLocation::referencePath() const
 {
   return this->m_referencePath;

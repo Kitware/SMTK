@@ -15,17 +15,14 @@
 
 vtkStandardNewMacro(vtkSMTKOperator);
 
-//----------------------------------------------------------------------------
 vtkSMTKOperator::vtkSMTKOperator()
 {
 }
 
-//----------------------------------------------------------------------------
 vtkSMTKOperator::~vtkSMTKOperator()
 {
 }
 
-//----------------------------------------------------------------------------
 void vtkSMTKOperator::SetSMTKOperator(smtk::model::OperatorPtr op)
 {
   if(this->m_smtkOp.lock() != op)
@@ -35,26 +32,22 @@ void vtkSMTKOperator::SetSMTKOperator(smtk::model::OperatorPtr op)
     }
 }
 
-//----------------------------------------------------------------------------
 smtk::model::OperatorPtr vtkSMTKOperator::GetSMTKOperator()
 {
   return this->m_smtkOp.lock();
 }
 
-//----------------------------------------------------------------------------
 bool vtkSMTKOperator::AbleToOperate()
 {
   return this->m_smtkOp.lock() ? this->m_smtkOp.lock()->ableToOperate() : false;
 }
 
-//----------------------------------------------------------------------------
 smtk::model::OperatorResult vtkSMTKOperator::Operate()
 {
   return this->m_smtkOp.lock() ? this->m_smtkOp.lock()->operate() :
          smtk::model::OperatorResult();
 }
 
-//----------------------------------------------------------------------------
 void vtkSMTKOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
   os << indent << "smtk op: " 

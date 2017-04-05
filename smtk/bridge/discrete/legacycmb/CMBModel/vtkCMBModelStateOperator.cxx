@@ -24,18 +24,15 @@
 
 vtkStandardNewMacro(vtkCMBModelStateOperator);
 
-//-----------------------------------------------------------------------------
 vtkCMBModelStateOperator::vtkCMBModelStateOperator()
 {
   this->OperatorMode = 0;
 }
 
-//-----------------------------------------------------------------------------
 vtkCMBModelStateOperator::~vtkCMBModelStateOperator()
 {
 }
 
-//-----------------------------------------------------------------------------
 bool vtkCMBModelStateOperator::AbleToOperate(vtkDiscreteModelWrapper* ModelWrapper)
 {
   if(!ModelWrapper)
@@ -46,7 +43,6 @@ bool vtkCMBModelStateOperator::AbleToOperate(vtkDiscreteModelWrapper* ModelWrapp
   return this->Superclass::AbleToOperate(ModelWrapper->GetModel());
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBModelStateOperator::Operate(vtkDiscreteModelWrapper *modelWrapper)
 {
   if(!this->AbleToOperate(modelWrapper))
@@ -65,7 +61,6 @@ void vtkCMBModelStateOperator::Operate(vtkDiscreteModelWrapper *modelWrapper)
     }
 }
 
-//-----------------------------------------------------------------------------
 int vtkCMBModelStateOperator::SaveState(vtkDiscreteModelWrapper *modelWrapper)
 {
   vtkStringArray* serialModel = modelWrapper->SerializeModel();
@@ -149,7 +144,6 @@ int vtkCMBModelStateOperator::SaveState(vtkDiscreteModelWrapper *modelWrapper)
   return 0;
 }
 
-//-----------------------------------------------------------------------------
 int vtkCMBModelStateOperator::LoadSavedState(vtkDiscreteModelWrapper *modelWrapper)
 {
   if(modelWrapper && this->SerializedModelString->GetNumberOfTuples()>0)
@@ -162,7 +156,6 @@ int vtkCMBModelStateOperator::LoadSavedState(vtkDiscreteModelWrapper *modelWrapp
   return 0;
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBModelStateOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

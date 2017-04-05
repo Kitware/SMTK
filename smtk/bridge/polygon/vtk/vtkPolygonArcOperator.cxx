@@ -24,19 +24,16 @@
 
 vtkStandardNewMacro(vtkPolygonArcOperator);
 
-//----------------------------------------------------------------------------
 vtkPolygonArcOperator::vtkPolygonArcOperator()
 {
   this->ArcRepresentation = NULL;
 }
 
-//----------------------------------------------------------------------------
 vtkPolygonArcOperator::~vtkPolygonArcOperator()
 {
   this->SetArcRepresentation(NULL);
 }
 
-//----------------------------------------------------------------------------
 bool vtkPolygonArcOperator::AbleToOperate()
 {
   bool able2Op = this->m_smtkOp.lock()
@@ -80,7 +77,6 @@ bool vtkPolygonArcOperator::AbleToOperate()
   return able2Op;
 }
 
-//----------------------------------------------------------------------------
 smtk::model::OperatorResult vtkPolygonArcOperator::Operate()
 {
   // ONLY for create-edge-with-widget and edit-edge operations,
@@ -143,7 +139,6 @@ smtk::model::OperatorResult vtkPolygonArcOperator::Operate()
   return edgeResult;
 }
 
-//----------------------------------------------------------------------------
 void vtkPolygonArcOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
   if(this->ArcRepresentation)

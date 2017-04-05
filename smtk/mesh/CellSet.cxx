@@ -18,7 +18,6 @@ namespace smtk {
 namespace mesh {
 
 
-//----------------------------------------------------------------------------
 CellSet::CellSet(const smtk::mesh::CollectionPtr& parent,
                  const smtk::mesh::HandleRange& range):
   m_parent(parent),
@@ -27,7 +26,6 @@ CellSet::CellSet(const smtk::mesh::CollectionPtr& parent,
 
 }
 
-//----------------------------------------------------------------------------
 CellSet::CellSet(const smtk::mesh::ConstCollectionPtr& parent,
                  const smtk::mesh::HandleRange& range):
   m_parent(std::const_pointer_cast<smtk::mesh::Collection>(parent)),
@@ -36,7 +34,6 @@ CellSet::CellSet(const smtk::mesh::ConstCollectionPtr& parent,
 
 }
 
-//----------------------------------------------------------------------------
 CellSet::CellSet(const smtk::mesh::CollectionPtr& parent,
                  const std::vector<smtk::mesh::Handle>& cellIds):
   m_parent(parent),
@@ -46,7 +43,6 @@ CellSet::CellSet(const smtk::mesh::CollectionPtr& parent,
             HandleRangeInserter(this->m_range));
 }
 
-//----------------------------------------------------------------------------
 CellSet::CellSet(const smtk::mesh::CollectionPtr& parent,
                  const std::set<smtk::mesh::Handle>& cellIds):
   m_parent(parent),
@@ -56,7 +52,6 @@ CellSet::CellSet(const smtk::mesh::CollectionPtr& parent,
             HandleRangeInserter(this->m_range));
 }
 
-//----------------------------------------------------------------------------
 CellSet::CellSet(const smtk::mesh::CellSet& other):
   m_parent(other.m_parent),
   m_range(other.m_range)
@@ -64,13 +59,11 @@ CellSet::CellSet(const smtk::mesh::CellSet& other):
 
 }
 
-//----------------------------------------------------------------------------
 CellSet::~CellSet()
 {
 
 }
 
-//----------------------------------------------------------------------------
 CellSet& CellSet::operator=(const CellSet& other)
 {
   this->m_parent = other.m_parent;
@@ -78,7 +71,6 @@ CellSet& CellSet::operator=(const CellSet& other)
   return *this;
 }
 
-//----------------------------------------------------------------------------
 bool CellSet::operator==(const CellSet& other) const
 {
   return this->m_parent == other.m_parent &&
@@ -87,13 +79,11 @@ bool CellSet::operator==(const CellSet& other) const
          this->m_range == other.m_range;
 }
 
-//----------------------------------------------------------------------------
 bool CellSet::operator!=(const CellSet& other) const
 {
   return !(*this == other);
 }
 
-//----------------------------------------------------------------------------
 bool CellSet::append( const CellSet& other)
 {
   const bool can_append = this->m_parent == other.m_parent;
@@ -104,19 +94,16 @@ bool CellSet::append( const CellSet& other)
   return can_append;
 }
 
-//----------------------------------------------------------------------------
 bool CellSet::is_empty( ) const
 {
   return this->m_range.empty();
 }
 
-//----------------------------------------------------------------------------
 std::size_t CellSet::size( ) const
 {
   return this->m_range.size();
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::TypeSet CellSet::types() const
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
@@ -124,7 +111,6 @@ smtk::mesh::TypeSet CellSet::types() const
 }
 
 
-//----------------------------------------------------------------------------
 smtk::mesh::PointSet CellSet::points( ) const
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
@@ -132,7 +118,6 @@ smtk::mesh::PointSet CellSet::points( ) const
   return smtk::mesh::PointSet(this->m_parent, range );
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::PointSet CellSet::points( std::size_t position ) const
 {
   smtk::mesh::HandleRange singleIndex;
@@ -143,13 +128,11 @@ smtk::mesh::PointSet CellSet::points( std::size_t position ) const
   return smtk::mesh::PointSet(this->m_parent, range );
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::PointConnectivity CellSet::pointConnectivity( ) const
 {
   return smtk::mesh::PointConnectivity(this->m_parent, this->m_range);
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::PointConnectivity CellSet::pointConnectivity( std::size_t position ) const
 {
   smtk::mesh::HandleRange singleIndex;
@@ -157,7 +140,6 @@ smtk::mesh::PointConnectivity CellSet::pointConnectivity( std::size_t position )
   return smtk::mesh::PointConnectivity(this->m_parent, singleIndex);
 }
 
-//----------------------------------------------------------------------------
 /**\brief Get the parent collection that this meshset belongs to.
   *
   */
@@ -166,7 +148,6 @@ const smtk::mesh::CollectionPtr& CellSet::collection() const
   return this->m_parent;
 }
 
-//----------------------------------------------------------------------------
 //intersect two mesh sets, placing the results in the return mesh set
 CellSet set_intersect( const CellSet& a, const CellSet& b)
 {
@@ -180,7 +161,6 @@ CellSet set_intersect( const CellSet& a, const CellSet& b)
   return smtk::mesh::CellSet(a.m_parent, result);
 }
 
-//----------------------------------------------------------------------------
 //subtract mesh b from a, placing the results in the return mesh set
 CellSet set_difference( const CellSet& a, const CellSet& b)
 {
@@ -195,7 +175,6 @@ CellSet set_difference( const CellSet& a, const CellSet& b)
   return smtk::mesh::CellSet(a.m_parent, result);
 }
 
-//----------------------------------------------------------------------------
 //union two mesh sets, placing the results in the return mesh set
 CellSet set_union( const CellSet& a, const CellSet& b )
 {
@@ -210,7 +189,6 @@ CellSet set_union( const CellSet& a, const CellSet& b )
   return smtk::mesh::CellSet(a.m_parent, result);
 }
 
-//----------------------------------------------------------------------------
 //intersect two cell sets at the point id level, all cells from b which
 //share points with cells in a are placed in the resulting CellSet.
 CellSet point_intersect( const CellSet& a, const CellSet& b, ContainmentType t)
@@ -238,7 +216,6 @@ CellSet point_intersect( const CellSet& a, const CellSet& b, ContainmentType t)
   return smtk::mesh::CellSet(a.m_parent, result);
 }
 
-//----------------------------------------------------------------------------
 //subtract two cell sets at the point id level, all cells from b whose
 //points are not used by cells from a are placed in the resulting CellSet.
 CellSet point_difference( const CellSet& a, const CellSet& b, ContainmentType t)
@@ -267,7 +244,6 @@ CellSet point_difference( const CellSet& a, const CellSet& b, ContainmentType t)
   return smtk::mesh::CellSet(a.m_parent, result);
 }
 
-//----------------------------------------------------------------------------
 SMTKCORE_EXPORT void for_each(const CellSet& a, CellForEach &filter)
 {
   smtk::mesh::PointConnectivity pc(a.m_parent, a.m_range);

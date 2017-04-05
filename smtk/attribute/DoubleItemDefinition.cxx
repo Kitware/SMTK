@@ -13,22 +13,20 @@
 #include "smtk/attribute/DoubleItem.h"
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 DoubleItemDefinition::DoubleItemDefinition(const std::string &myName):
   ValueItemDefinitionTemplate<double>(myName)
 {
 }
 
-//----------------------------------------------------------------------------
 DoubleItemDefinition::~DoubleItemDefinition()
 {
 }
-//----------------------------------------------------------------------------
+
 Item::Type DoubleItemDefinition::type() const
 {
   return Item::DOUBLE;
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemPtr
 DoubleItemDefinition::buildItem(Attribute *owningAttribute,
                                 int itemPosition) const
@@ -36,7 +34,7 @@ DoubleItemDefinition::buildItem(Attribute *owningAttribute,
   return smtk::attribute::ItemPtr(new DoubleItem(owningAttribute,
                                                 itemPosition));
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemPtr
 DoubleItemDefinition::buildItem(Item *owningItem,
                                 int itemPosition,
@@ -46,7 +44,7 @@ DoubleItemDefinition::buildItem(Item *owningItem,
                                                 itemPosition,
                                                 subGroupPosition));
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemDefinitionPtr
 smtk::attribute::DoubleItemDefinition::
 createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
@@ -57,4 +55,3 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
   ValueItemDefinitionTemplate<double>::copyTo(newDef, info);
   return newDef;
 }
-//----------------------------------------------------------------------------

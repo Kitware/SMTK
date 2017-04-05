@@ -47,7 +47,6 @@ namespace
     return (!!t && t->isValid());
   }
 
-  //--------------------------------------------------------------------------
   bool moab_load( const smtk::mesh::moab::InterfacePtr& interface,
                   const std::string& path,
                   const char* subset_name_to_load)
@@ -114,7 +113,6 @@ namespace
   return err == ::moab::MB_SUCCESS;
   }
 
-  //--------------------------------------------------------------------------
   //requires that interface is not a null shared ptr
   smtk::mesh::moab::InterfacePtr load_file( smtk::mesh::moab::InterfacePtr interface,
                                             const std::string& path,
@@ -130,7 +128,6 @@ namespace
   return interface;
   }
 
-  //--------------------------------------------------------------------------
   //requires that interface is not a null shared ptr
   bool append_file( const smtk::mesh::moab::InterfacePtr& interface,
                     const std::string& path,

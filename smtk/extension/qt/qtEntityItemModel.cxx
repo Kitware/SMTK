@@ -34,7 +34,6 @@
 #include <map>
 #include <sstream>
 
-// -----------------------------------------------------------------------------
 // The following is used to ensure that the QRC file
 // containing the entity-type icons is registered.
 // This is required when building SMTK with static libraries.
@@ -59,7 +58,6 @@ inline void cleanupIconResource()
     Q_CLEANUP_RESOURCE(qtEntityItemModelIcons);
     }
 }
-// -----------------------------------------------------------------------------
 
 using namespace smtk::model;
 
@@ -110,7 +108,6 @@ static int entityModified(ManagerEventType, const smtk::model::EntityRef& ent, c
   return qmodel->foreach_phrase(UpdateSubphrases, ent) ? -1 : 0;
 }
 
-// -----------------------------------------------------------------------------
 QEntityItemModel::QEntityItemModel(QObject* owner)
   : QAbstractItemModel(owner)
 {
@@ -125,7 +122,6 @@ QEntityItemModel::~QEntityItemModel()
   delete this->P;
 }
 
-//-----------------------------------------------------------------------------
 void QEntityItemModel::clear()
 {
   if(this->m_root && !this->m_root->subphrases().empty())

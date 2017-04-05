@@ -22,18 +22,16 @@
 #include "vtkSelectionRepresentation.h"
 
 vtkStandardNewMacro(vtkSIModelRepresentationProxy);
-//----------------------------------------------------------------------------
+
 vtkSIModelRepresentationProxy::vtkSIModelRepresentationProxy()
 {
   //this->Representation = SURFACE;
 }
 
-//----------------------------------------------------------------------------
 vtkSIModelRepresentationProxy::~vtkSIModelRepresentationProxy()
 {
 }
 
-//----------------------------------------------------------------------------
 void vtkSIModelRepresentationProxy::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);

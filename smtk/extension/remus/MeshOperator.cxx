@@ -74,7 +74,6 @@ std::string extractModelUUIDSAsJSON(smtk::model::Models const& models)
 namespace smtk {
   namespace model {
 
-//-----------------------------------------------------------------------------
 MeshOperator::MeshOperator()
 {
 }
@@ -87,7 +86,6 @@ bool MeshOperator::ableToOperate()
   // TODO: Add tests to verify that model dimension matches job requirements.
 }
 
-//-----------------------------------------------------------------------------
 OperatorResult MeshOperator::operateInternal()
 {
   smtk::attribute::ModelEntityItemPtr mspec =

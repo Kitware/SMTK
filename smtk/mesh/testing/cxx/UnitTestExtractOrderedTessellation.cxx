@@ -38,7 +38,6 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-//----------------------------------------------------------------------------
 void create_simple_mesh_model( smtk::model::ManagerPtr mgr )
 {
   std::string file_path(data_root);
@@ -57,7 +56,6 @@ void create_simple_mesh_model( smtk::model::ManagerPtr mgr )
   file.close();
 }
 
-//------------------------------------------------------------------------------
 void create_discrete_mesh_model( smtk::model::ManagerPtr mgr )
 {
   std::string file_path(data_root);
@@ -84,7 +82,6 @@ void create_discrete_mesh_model( smtk::model::ManagerPtr mgr )
     }
 }
 
-//----------------------------------------------------------------------------
 void removeOnesWithoutTess(smtk::model::EntityRefs& ents)
 {
   smtk::model::EntityIterator it;
@@ -107,7 +104,6 @@ void removeOnesWithoutTess(smtk::model::EntityRefs& ents)
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestExtractOrderedTessellation(int, char** const)
 {
   // Somehow grab an EntityRef with an associated tessellation

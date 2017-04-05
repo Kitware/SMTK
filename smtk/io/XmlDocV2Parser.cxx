@@ -40,17 +40,15 @@ using namespace smtk::io;
 using namespace smtk;
 
 
-//----------------------------------------------------------------------------
 XmlDocV2Parser::XmlDocV2Parser(smtk::attribute::System &mySystem):
   XmlDocV1Parser(mySystem)
 {
 }
 
-//----------------------------------------------------------------------------
 XmlDocV2Parser::~XmlDocV2Parser()
 {
 }
-//----------------------------------------------------------------------------
+
 bool XmlDocV2Parser::canParse(xml_document &doc)
 {
   // Get the attribute system node
@@ -75,7 +73,6 @@ bool XmlDocV2Parser::canParse(xml_document &doc)
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool XmlDocV2Parser::canParse(xml_node &node)
 {
   // Check the name of the node
@@ -100,14 +97,12 @@ bool XmlDocV2Parser::canParse(xml_node &node)
   return true;
 }
 
-//----------------------------------------------------------------------------
 xml_node XmlDocV2Parser::getRootNode(xml_document &doc)
 {
   xml_node amnode = doc.child("SMTK_AttributeSystem");
   return amnode;
 }
 
-//----------------------------------------------------------------------------
 void XmlDocV2Parser::process(xml_document &doc)
 {
   // Get the attribute system node
@@ -124,7 +119,6 @@ void XmlDocV2Parser::process(xml_document &doc)
 }
 
 
-//----------------------------------------------------------------------------
   void XmlDocV2Parser::processDefinition(xml_node &defNode,
                                          smtk::attribute::DefinitionPtr def)
 {
@@ -137,7 +131,7 @@ void XmlDocV2Parser::process(xml_document &doc)
     def->setRootName(xatt.value());
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV2Parser::processDirectoryDef(pugi::xml_node &node,
                                          attribute::DirectoryItemDefinitionPtr idef)
 {
@@ -162,7 +156,7 @@ void XmlDocV2Parser::processDirectoryDef(pugi::xml_node &node,
     idef->setDefaultValue(defaultNode.text().get());
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV2Parser::processFileDef(pugi::xml_node &node,
                                        attribute::FileItemDefinitionPtr idef)
 {
@@ -187,7 +181,6 @@ void XmlDocV2Parser::processFileDef(pugi::xml_node &node,
     }
   }
 
-//----------------------------------------------------------------------------
 void XmlDocV2Parser::processStringDef(xml_node &node,
                                     smtk::attribute::StringItemDefinitionPtr idef)
 {
@@ -201,7 +194,6 @@ void XmlDocV2Parser::processStringDef(xml_node &node,
     }
 }
 
-//----------------------------------------------------------------------------
 smtk::common::UUID XmlDocV2Parser::getAttributeID(xml_node &attNode)
 {
   xml_attribute xatt;
@@ -220,7 +212,6 @@ smtk::common::UUID XmlDocV2Parser::getAttributeID(xml_node &attNode)
   return id;
 }
 
-//----------------------------------------------------------------------------
 void XmlDocV2Parser::processFileItem(pugi::xml_node &node,
                                         attribute::FileItemPtr item)
 {
@@ -297,7 +288,6 @@ void XmlDocV2Parser::processFileItem(pugi::xml_node &node,
     }
 }
 
-//----------------------------------------------------------------------------
 void XmlDocV2Parser::processDirectoryItem(pugi::xml_node &node,
                                           attribute::DirectoryItemPtr item)
 {
@@ -358,7 +348,6 @@ void XmlDocV2Parser::processDirectoryItem(pugi::xml_node &node,
     }
 }
 
-//----------------------------------------------------------------------------
 void XmlDocV2Parser::processModelEntityItem(pugi::xml_node &node,
                                           attribute::ModelEntityItemPtr item)
 {
@@ -429,14 +418,12 @@ void XmlDocV2Parser::processModelEntityItem(pugi::xml_node &node,
     }
 }
 
-//----------------------------------------------------------------------------
 void XmlDocV2Parser::processModelInfo(xml_node &)
 {
   /** This seems to be outdated with ModelEntityItem already being processed
    **/
 }
 
-//----------------------------------------------------------------------------
 void XmlDocV2Parser::processMeshSelectionItem(pugi::xml_node &node,
   attribute::MeshSelectionItemPtr item)
 {
@@ -469,7 +456,7 @@ void XmlDocV2Parser::processMeshSelectionItem(pugi::xml_node &node,
       }
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node &node,
   attribute::MeshItemPtr item)
 {
@@ -550,7 +537,6 @@ void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node &node,
     }
 }
 
-//----------------------------------------------------------------------------
 void XmlDocV2Parser::processMeshSelectionDef(pugi::xml_node &node,
                                          attribute::MeshSelectionItemDefinitionPtr idef)
 {
@@ -580,7 +566,7 @@ void XmlDocV2Parser::processMeshSelectionDef(pugi::xml_node &node,
     }
 
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV2Parser::processMeshEntityDef(pugi::xml_node &node,
                                          attribute::MeshItemDefinitionPtr idef)
 {
@@ -613,7 +599,6 @@ void XmlDocV2Parser::processMeshEntityDef(pugi::xml_node &node,
     }
 }
 
-//----------------------------------------------------------------------------
 void XmlDocV2Parser::processViews(xml_node &root)
 {
   xml_node views = root.child("Views");
@@ -664,7 +649,6 @@ void XmlDocV2Parser::processViews(xml_node &root)
     }
 }
 
-//----------------------------------------------------------------------------
 void XmlDocV2Parser::processViewComponent(smtk::common::View::Component &comp,
                                           xml_node &node, bool isTopComp)
 {

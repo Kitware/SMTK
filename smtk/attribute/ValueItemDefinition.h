@@ -198,8 +198,6 @@ namespace smtk
   }
 }
 
-//----------------------------------------------------------------------------
-
 // returns true if valueName has a child item definition of itemName
 inline bool smtk::attribute::ValueItemDefinition::
 hasChildItemDefinition(const std::string &valueName,

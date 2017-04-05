@@ -53,7 +53,6 @@ inline void locationsToSearchForWorkers(
 
 vtkStandardNewMacro(vtkCMBMeshServerLauncher);
 
-//-----------------------------------------------------------------------------
 vtkCMBMeshServerLauncher::vtkCMBMeshServerLauncher()
 {
   //we aren't alive till somebody calls launch
@@ -83,7 +82,6 @@ vtkCMBMeshServerLauncher::vtkCMBMeshServerLauncher()
   this->PortNumber = pinfo.client().port();
 }
 
-//-----------------------------------------------------------------------------
 vtkCMBMeshServerLauncher::~vtkCMBMeshServerLauncher()
 {
   this->Terminate();
@@ -91,7 +89,6 @@ vtkCMBMeshServerLauncher::~vtkCMBMeshServerLauncher()
   this->Implementation = NULL;
 }
 
-//-----------------------------------------------------------------------------
 int vtkCMBMeshServerLauncher::Launch()
 {
   //remus can handle being asked to start brokering even when it is
@@ -101,13 +98,11 @@ int vtkCMBMeshServerLauncher::Launch()
   return 1;
 }
 
-//-----------------------------------------------------------------------------
 int vtkCMBMeshServerLauncher::IsAlive()
 {
   return !!this->Alive;
 }
 
-//-----------------------------------------------------------------------------
 int vtkCMBMeshServerLauncher::Terminate()
 {
   if(this->Alive)
@@ -118,7 +113,6 @@ int vtkCMBMeshServerLauncher::Terminate()
   return 1;
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBMeshServerLauncher::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

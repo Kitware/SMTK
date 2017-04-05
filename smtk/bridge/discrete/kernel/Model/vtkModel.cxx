@@ -25,8 +25,6 @@
 #include "vtkSerializer.h"
 #include "vtkSmartPointer.h"
 
-
-//----------------------------------------------------------------------------
 vtkModel::vtkModel()
 {
   this->LargestUsedUniqueId = -1;
@@ -37,7 +35,6 @@ vtkModel::~vtkModel()
 {
 }
 
-//----------------------------------------------------------------------------
 int vtkModel::GetNumberOfGeometricEntities()
 {
   int numVtx = this->GetNumberOfAssociations(vtkModelVertexType);
@@ -46,13 +43,11 @@ int vtkModel::GetNumberOfGeometricEntities()
   return numVtx+numEdge+numFace;
 }
 
-//----------------------------------------------------------------------------
 int vtkModel::GetNumberOfModelEntities(int itemType)
 {
   return this->GetNumberOfAssociations(itemType);
 }
 
-//----------------------------------------------------------------------------
 vtkModelEntity* vtkModel::GetModelEntity(vtkIdType uniquePersistentId)
 {
   vtkSmartPointer<vtkIdList> types = vtkSmartPointer<vtkIdList>::New();
@@ -85,7 +80,6 @@ vtkModelEntity* vtkModel::GetModelEntity(vtkIdType uniquePersistentId)
   return 0;
 }
 
-//----------------------------------------------------------------------------
 vtkModelEntity* vtkModel::GetModelEntity(int itemType, vtkIdType uniquePersistentId)
 {
   vtkModelItemIterator* iter=this->NewIterator(itemType);
@@ -107,7 +101,6 @@ vtkModelEntity* vtkModel::GetModelEntity(int itemType, vtkIdType uniquePersisten
   return 0;
 }
 
-//----------------------------------------------------------------------------
 bool vtkModel::DestroyModelGeometricEntity(vtkModelGeometricEntity* entity)
 {
   if(!entity || !entity->IsDestroyable())
@@ -124,14 +117,12 @@ bool vtkModel::DestroyModelGeometricEntity(vtkModelGeometricEntity* entity)
   return 1;
 }
 
-//----------------------------------------------------------------------------
 vtkIdType vtkModel::GetNextUniquePersistentId()
 {
   this->Modified(); // we may be able to ignore this modification
   return ++this->LargestUsedUniqueId;
 }
 
-//----------------------------------------------------------------------------
 int vtkModel::GetModelDimension()
 {
   if(this->GetNumberOfAssociations(vtkModelRegionType))
@@ -153,13 +144,11 @@ int vtkModel::GetModelDimension()
   return -1;
 }
 
-//----------------------------------------------------------------------------
 int vtkModel::GetType()
 {
   return vtkModelType;
 }
 
-//----------------------------------------------------------------------------
 void vtkModel::Reset()
 {
   int types[4] = {vtkModelRegionType, vtkModelFaceType,
@@ -188,14 +177,12 @@ void vtkModel::Reset()
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 void vtkModel::Serialize(vtkSerializer* ser)
 {
   this->Superclass::Serialize(ser);
   ser->Serialize("LargestUsedUniqueId", this->LargestUsedUniqueId);
 }
 
-//----------------------------------------------------------------------------
 void vtkModel::InvokeModelGeometricEntityEvent(unsigned long theEvent,
                                                void *callData)
 {
@@ -205,7 +192,6 @@ void vtkModel::InvokeModelGeometricEntityEvent(unsigned long theEvent,
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkModel::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

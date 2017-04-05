@@ -17,12 +17,10 @@
 
 vtkStandardNewMacro(vtkRenderingSerializationHelper);
 
-//-----------------------------------------------------------------------------
 vtkRenderingSerializationHelper::vtkRenderingSerializationHelper()
 {
 }
 
-//-----------------------------------------------------------------------------
 int vtkRenderingSerializationHelper::Serialize(vtkObject *object,
                                                   vtkSerializer *serializer)
 {
@@ -35,7 +33,6 @@ int vtkRenderingSerializationHelper::Serialize(vtkObject *object,
   return 0;
 }
 
-//-----------------------------------------------------------------------------
 void vtkRenderingSerializationHelper::RegisterWithHelperMap()
 {
   vtkSerializationHelperMap::RegisterHelperForClass("vtkCamera", this);
@@ -43,7 +40,6 @@ void vtkRenderingSerializationHelper::RegisterWithHelperMap()
   vtkSerializationHelperMap::RegisterHelperForClass("vtkMesaCamera", this);
 }
 
-//-----------------------------------------------------------------------------
 void vtkRenderingSerializationHelper::UnRegisterWithHelperMap()
 {
   vtkSerializationHelperMap::UnRegisterHelperForClass("vtkCamera", this);
@@ -51,7 +47,6 @@ void vtkRenderingSerializationHelper::UnRegisterWithHelperMap()
   vtkSerializationHelperMap::UnRegisterHelperForClass("vtkMesaCamera", this);
 }
 
-//-----------------------------------------------------------------------------
 void vtkRenderingSerializationHelper::SerializeCamera(vtkCamera *camera,
                                                          vtkSerializer *serializer)
 {
@@ -143,7 +138,6 @@ void vtkRenderingSerializationHelper::SerializeCamera(vtkCamera *camera,
 }
 
 
-//-----------------------------------------------------------------------------
 const char *vtkRenderingSerializationHelper::GetSerializationType(vtkObject *object)
 {
   if (vtkCamera::SafeDownCast(object))
@@ -153,7 +147,6 @@ const char *vtkRenderingSerializationHelper::GetSerializationType(vtkObject *obj
   return 0;
 }
 
-//-----------------------------------------------------------------------------
 void vtkRenderingSerializationHelper::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

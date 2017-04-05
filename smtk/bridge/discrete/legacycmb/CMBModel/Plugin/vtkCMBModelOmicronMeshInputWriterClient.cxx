@@ -22,7 +22,6 @@
 
 vtkStandardNewMacro(vtkCMBModelOmicronMeshInputWriterClient);
 
-//----------------------------------------------------------------------------
 vtkCMBModelOmicronMeshInputWriterClient::vtkCMBModelOmicronMeshInputWriterClient()
 {
   this->FileName = 0;
@@ -31,7 +30,6 @@ vtkCMBModelOmicronMeshInputWriterClient::vtkCMBModelOmicronMeshInputWriterClient
   this->VolumeConstraint = 0.001;
 }
 
-//----------------------------------------------------------------------------
 vtkCMBModelOmicronMeshInputWriterClient:: ~vtkCMBModelOmicronMeshInputWriterClient()
 {
   this->SetFileName(0);
@@ -39,7 +37,6 @@ vtkCMBModelOmicronMeshInputWriterClient:: ~vtkCMBModelOmicronMeshInputWriterClie
   this->SetTetGenOptions(0);
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBModelOmicronMeshInputWriterClient::Operate(vtkDiscreteModel* model,
                                                       vtkSMProxy* serverModelProxy)
 {
@@ -108,7 +105,6 @@ bool vtkCMBModelOmicronMeshInputWriterClient::Operate(vtkDiscreteModel* model,
   return 1;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelOmicronMeshInputWriterClient::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

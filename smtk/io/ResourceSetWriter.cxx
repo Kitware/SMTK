@@ -27,8 +27,6 @@ using namespace smtk::common;
 namespace smtk {
   namespace io {
 
-
-//----------------------------------------------------------------------------
 bool
 ResourceSetWriter::
 writeFile(std::string filename,
@@ -50,7 +48,6 @@ writeFile(std::string filename,
   return logger.hasErrors();
 }
 
-//----------------------------------------------------------------------------
 bool
 ResourceSetWriter::
 writeString(std::string& content,
@@ -156,6 +153,5 @@ writeString(std::string& content,
   return logger.hasErrors();
 }
 
-//----------------------------------------------------------------------------
   } // namespace io
 } // namespace smtk

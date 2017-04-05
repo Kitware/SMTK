@@ -22,7 +22,6 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-//----------------------------------------------------------------------------
 void verify_load_bad_mesh()
 {
   std::string file_path(data_root);
@@ -37,7 +36,6 @@ void verify_load_bad_mesh()
   test( (c->writeLocation() == file_path), "read location of collection shouldnt be empty");
 }
 
-//----------------------------------------------------------------------------
 void verify_load_valid_mesh()
 {
   std::string file_path(data_root);
@@ -54,7 +52,6 @@ void verify_load_valid_mesh()
   test( numMeshes == 53, "dataset once loaded should have 53 meshes");
 }
 
-//----------------------------------------------------------------------------
 void verify_load_writeLocation()
 {
   std::string file_path(data_root);
@@ -69,7 +66,6 @@ void verify_load_writeLocation()
   test( c->writeLocation() == file_path, "collection default writeLocation is wrong");
 }
 
-//----------------------------------------------------------------------------
 void verify_load_multiple_meshes()
 {
   std::string first_file_path(data_root), second_file_path(data_root);
@@ -105,7 +101,6 @@ void verify_load_multiple_meshes()
   test(manager->numberOfCollections() == 2);
 }
 
-//----------------------------------------------------------------------------
 void verify_load_same_mesh_multiple_times()
 {
   std::string file_path(data_root);
@@ -123,7 +118,6 @@ void verify_load_same_mesh_multiple_times()
   test(manager->numberOfCollections() == 2);
 }
 
-//----------------------------------------------------------------------------
 void verify_load_onlyNeumann()
 {
   std::string file_path(data_root);
@@ -141,7 +135,6 @@ void verify_load_onlyNeumann()
 
 }
 
-//----------------------------------------------------------------------------
 void verify_load_onlyDirichlet()
 {
   std::string file_path(data_root);
@@ -158,7 +151,6 @@ void verify_load_onlyDirichlet()
   test( numMeshes == 221, "dataset once loaded should have 221 meshes");
 }
 
-//----------------------------------------------------------------------------
 void verify_load_bad_onlyDomain()
 {
   std::cout << "verify_load_bad_onlyDomain" << std::endl;
@@ -174,7 +166,6 @@ void verify_load_bad_onlyDomain()
 
 }
 
-//----------------------------------------------------------------------------
 void verify_load_bad_onlyNeumann()
 {
   std::cout << "verify_load_bad_onlyNeumann" << std::endl;
@@ -192,7 +183,6 @@ void verify_load_bad_onlyNeumann()
 
 }
 
-//----------------------------------------------------------------------------
 void verify_load_bad_onlyDirichlet()
 {
   std::cout << "verify_load_bad_onlyNeumann" << std::endl;
@@ -211,7 +201,6 @@ void verify_load_bad_onlyDirichlet()
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestLoadMesh(int, char** const)
 {
   verify_load_bad_mesh();

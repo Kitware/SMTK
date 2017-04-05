@@ -39,7 +39,6 @@ namespace
 std::string data_root = SMTK_DATA_DIR;
 std::string write_root = SMTK_SCRATCH_DIR;
 
-//----------------------------------------------------------------------------
 void create_simple_2d_model( smtk::model::ManagerPtr mgr )
 {
   std::string file_path(data_root);
@@ -58,7 +57,6 @@ void create_simple_2d_model( smtk::model::ManagerPtr mgr )
   file.close();
 }
 
-//----------------------------------------------------------------------------
 void add_model_edge_and_vert(smtk::model::ManagerPtr modelManager,
                              smtk::model::Edge& oe,
                              smtk::model::Edge& ne,
@@ -146,7 +144,6 @@ struct xyz_view
   { return this->m_ptr[0] != r.m_ptr[0] ? (this->m_ptr[0] < r.m_ptr[0]) : (this->m_ptr[1] < r.m_ptr[1]); }
 };
 
-//----------------------------------------------------------------------------
 void all_points_are_valid(smtk::mesh::CollectionPtr collection)
 {
   //no two points should be identical, that is our litmus test
@@ -165,7 +162,6 @@ void all_points_are_valid(smtk::mesh::CollectionPtr collection)
   test( (ps.size() == unique_xyz.size()), "sizes should match");
 }
 
-//----------------------------------------------------------------------------
 void verify_split()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
@@ -201,7 +197,6 @@ void verify_split()
   test( c->cells(smtk::mesh::Dims1).size() == 32, "should have 32 edge cells");
 }
 
-//----------------------------------------------------------------------------
 void verify_merge()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
@@ -238,7 +233,6 @@ void verify_merge()
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestReclassifyEdges(int, char** const)
 {
   verify_split();

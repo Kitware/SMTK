@@ -38,7 +38,6 @@
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
-//----------------------------------------------------------------------------
 class qtModelEntityItemInternals
 {
 public:
@@ -53,7 +52,6 @@ public:
 
 };
 
-//----------------------------------------------------------------------------
 qtModelEntityItem::qtModelEntityItem(
   smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview,
    Qt::Orientation enVectorItemOrient)
@@ -69,25 +67,21 @@ qtModelEntityItem::qtModelEntityItem(
     }
 }
 
-//----------------------------------------------------------------------------
 qtModelEntityItem::~qtModelEntityItem()
 {
   delete this->Internals;
 }
 
-//----------------------------------------------------------------------------
 smtk::attribute::ModelEntityItemPtr qtModelEntityItem::modelEntityItem()
 {
   return dynamic_pointer_cast<ModelEntityItem>(this->getObject());
 }
 
-//----------------------------------------------------------------------------
 void qtModelEntityItem::setLabelVisible(bool visible)
 {
   this->Internals->theLabel->setVisible(visible);
 }
 
-//----------------------------------------------------------------------------
 void qtModelEntityItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();
@@ -101,7 +95,6 @@ void qtModelEntityItem::createWidget()
   this->updateItemData();
 }
 
-//----------------------------------------------------------------------------
 bool qtModelEntityItem::add(const smtk::model::EntityRef& val)
 {
   if (this->modelEntityItem()->appendValue(val))
@@ -112,7 +105,6 @@ bool qtModelEntityItem::add(const smtk::model::EntityRef& val)
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool qtModelEntityItem::remove(const smtk::model::EntityRef& val)
 {
   auto item = this->modelEntityItem();
@@ -134,14 +126,12 @@ bool qtModelEntityItem::remove(const smtk::model::EntityRef& val)
   return true;
 }
 
-//----------------------------------------------------------------------------
 void qtModelEntityItem::updateItemData()
 {
   this->updateUI();
   this->qtItem::updateItemData();
 }
 
-//----------------------------------------------------------------------------
 void qtModelEntityItem::addEntityAssociationWidget()
 {
   smtk::attribute::ModelEntityItemPtr item =
@@ -214,7 +204,6 @@ void qtModelEntityItem::addEntityAssociationWidget()
   this->Internals->EntityItemCombo = editBox;
 }
 
-//----------------------------------------------------------------------------
 void qtModelEntityItem::loadAssociatedEntities()
 {
   smtk::attribute::ModelEntityItemPtr item =
@@ -226,7 +215,6 @@ void qtModelEntityItem::loadAssociatedEntities()
   this->addEntityAssociationWidget();
 }
 
-//----------------------------------------------------------------------------
 void qtModelEntityItem::updateUI()
 {
   //smtk::attribute::ItemPtr dataObj = this->getObject();
@@ -324,7 +312,6 @@ void qtModelEntityItem::updateUI()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtModelEntityItem::setOutputOptional(int state)
 {
   smtk::attribute::ModelEntityItemPtr item =
@@ -354,7 +341,6 @@ void qtModelEntityItem::setOutputOptional(int state)
     }
 }
 
-//----------------------------------------------------------------------------
 void qtModelEntityItem::associateEntities(
   const smtk::model::EntityRefs& selEntityRefs, bool resetExisting)
 {
@@ -396,7 +382,6 @@ void qtModelEntityItem::associateEntities(
     }
 }
 
-//----------------------------------------------------------------------------
 void qtModelEntityItem::clearEntityAssociations()
 {
   smtk::attribute::ModelEntityItemPtr modEntityItem = this->modelEntityItem();
@@ -413,7 +398,6 @@ void qtModelEntityItem::clearEntityAssociations()
   emit this->modified();
 }
 
-//----------------------------------------------------------------------------
 void qtModelEntityItem::onRequestEntityAssociation()
 {
   smtk::attribute::ModelEntityItemPtr modEntityItem = this->modelEntityItem();
@@ -426,7 +410,6 @@ void qtModelEntityItem::onRequestEntityAssociation()
   emit this->modified();
 }
 
-//----------------------------------------------------------------------------
 void qtModelEntityItem::popupViewItemSelected()
 {
   QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(

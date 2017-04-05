@@ -38,12 +38,10 @@ struct vtkSerializationHelperMapInternals
 vtkSerializationHelperMapInternals vtkSerializationHelperMapClassMap;
 }
 
-//-----------------------------------------------------------------------------
 vtkSerializationHelperMap::vtkSerializationHelperMap()
 {
 }
 
-//-----------------------------------------------------------------------------
 vtkSerializationHelperMap::~vtkSerializationHelperMap()
 {
 }
@@ -64,14 +62,12 @@ void vtkSerializationHelperMap::InstantiateDefaultHelpers()
     }
 }
 
-//-----------------------------------------------------------------------------
 void vtkSerializationHelperMap::RegisterHelperForClass(const char *classType,
                                                           vtkSerializationHelper* helper)
 {
   vtkSerializationHelperMapClassMap.ClassMap[classType] = helper;
 }
 
-//-----------------------------------------------------------------------------
 void vtkSerializationHelperMap::UnRegisterHelperForClass(const char *classType,
                                                             vtkSerializationHelper* helper)
 {
@@ -84,14 +80,12 @@ void vtkSerializationHelperMap::UnRegisterHelperForClass(const char *classType,
     }
 }
 
-//-----------------------------------------------------------------------------
 void vtkSerializationHelperMap::RemoveAllHelpers()
 {
   vtkSerializationHelperMapClassMap.ClassMap.clear();
 }
 
 
-//-----------------------------------------------------------------------------
 bool vtkSerializationHelperMap::IsSerializable(vtkObject *obj)
 {
   ClassHelperMapType::iterator iter =
@@ -104,7 +98,6 @@ bool vtkSerializationHelperMap::IsSerializable(vtkObject *obj)
   return false;
 }
 
-//-----------------------------------------------------------------------------
 int vtkSerializationHelperMap::Serialize(vtkObject *object,
                                             vtkSerializer *serializer)
 {
@@ -121,7 +114,6 @@ int vtkSerializationHelperMap::Serialize(vtkObject *object,
   return 1;
 }
 
-//-----------------------------------------------------------------------------
 const char *vtkSerializationHelperMap::GetSerializationType(vtkObject *object)
 {
   ClassHelperMapType::iterator iter =
@@ -135,7 +127,6 @@ const char *vtkSerializationHelperMap::GetSerializationType(vtkObject *object)
   return iter->second->GetSerializationType(object);
 }
 
-//-----------------------------------------------------------------------------
 vtkSerializationHelper* vtkSerializationHelperMap::GetHelper(const char *classType)
 {
   ClassHelperMapType::iterator iter =
@@ -148,7 +139,6 @@ vtkSerializationHelper* vtkSerializationHelperMap::GetHelper(const char *classTy
   return iter->second;
 }
 
-//-----------------------------------------------------------------------------
 void vtkSerializationHelperMap::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

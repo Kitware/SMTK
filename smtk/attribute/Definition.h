@@ -281,7 +281,7 @@ namespace smtk
       double m_defaultColor[4];
 
     };
-//----------------------------------------------------------------------------
+
     inline void Definition::resetItemOffset()
     {
       if (this->m_baseDefinition)
@@ -289,7 +289,7 @@ namespace smtk
         this->m_baseItemOffset = this->m_baseDefinition->numberOfItemDefinitions();
         }
     }
-//----------------------------------------------------------------------------
+
     inline const double * Definition::notApplicableColor() const
     {
       if (this->m_isNotApplicableColorSet)
@@ -302,7 +302,7 @@ namespace smtk
         }
       return s_notApplicableBaseColor;
     }
-//----------------------------------------------------------------------------
+
     inline void Definition::setNotApplicableColor(
       double r, double g, double b, double a)
     {
@@ -312,7 +312,7 @@ namespace smtk
       this->m_notApplicableColor[2]= b;
       this->m_notApplicableColor[3]= a;
     }
-//----------------------------------------------------------------------------
+
     inline const double * Definition::defaultColor() const
     {
       if (this->m_isDefaultColorSet)
@@ -325,7 +325,7 @@ namespace smtk
         }
       return s_defaultBaseColor;
     }
-//----------------------------------------------------------------------------
+
     inline void Definition::setDefaultColor(
       double r, double g, double b, double a)
     {

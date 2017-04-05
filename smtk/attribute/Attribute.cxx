@@ -44,7 +44,6 @@ SMTK_THIRDPARTY_POST_INCLUDE
 using namespace smtk::attribute;
 using namespace smtk::common;
 
-//----------------------------------------------------------------------------
 Attribute::Attribute(const std::string &myName,
                      smtk::attribute::DefinitionPtr myDefinition,
                      const smtk::common::UUID &myId):
@@ -55,7 +54,6 @@ Attribute::Attribute(const std::string &myName,
   this->m_definition->buildAttribute(this);
 }
 
-//----------------------------------------------------------------------------
 Attribute::Attribute(const std::string &myName,
                      smtk::attribute::DefinitionPtr myDefinition):
   m_name(myName), m_definition(myDefinition),
@@ -67,7 +65,6 @@ Attribute::Attribute(const std::string &myName,
   this->m_definition->buildAttribute(this);
 }
 
-//----------------------------------------------------------------------------
 Attribute::~Attribute()
 {
   this->m_aboutToBeDeleted = true;
@@ -83,7 +80,7 @@ Attribute::~Attribute()
     }
   this->removeAllItems();
  }
-//----------------------------------------------------------------------------
+
 void Attribute::removeAllItems()
 {
   // we need to detatch all items owned bu this attribute
@@ -94,7 +91,7 @@ void Attribute::removeAllItems()
     }
   this->m_items.clear();
 }
-//----------------------------------------------------------------------------
+
 void Attribute::references(std::vector<smtk::attribute::ItemPtr> &list) const
 {
   list.clear();
@@ -107,7 +104,7 @@ void Attribute::references(std::vector<smtk::attribute::ItemPtr> &list) const
       }
     }
 }
-//----------------------------------------------------------------------------
+
 const double *Attribute::color() const
 {
   if (this->m_isColorSet)
@@ -116,12 +113,12 @@ const double *Attribute::color() const
     }
   return this->m_definition->defaultColor();
 }
-//----------------------------------------------------------------------------
+
 const std::string &Attribute::type() const
 {
   return this->m_definition->type();
 }
-//----------------------------------------------------------------------------
+
 std::vector<std::string> Attribute::types() const
 {
   std::vector<std::string> tvec;
@@ -133,17 +130,17 @@ std::vector<std::string> Attribute::types() const
     }
   return tvec;
 }
-//----------------------------------------------------------------------------
+
 bool Attribute::isA(smtk::attribute::DefinitionPtr def) const
 {
   return this->m_definition->isA(def);
 }
-///----------------------------------------------------------------------------
+
 bool Attribute::isMemberOf(const std::string &category) const
 {
   return this->m_definition->isMemberOf(category);
 }
-//----------------------------------------------------------------------------
+
 bool Attribute::isMemberOf(const std::vector<std::string> &categories) const
 {
   return this->m_definition->isMemberOf(categories);
@@ -258,12 +255,11 @@ bool Attribute::isValid() const
   return true;
 }
 
-//----------------------------------------------------------------------------
 System *Attribute::system() const
 {
   return this->m_definition->system();
 }
-//----------------------------------------------------------------------------
+
 /**\brief Return the model Manager instance whose entities may have attributes.
   *
   * This returns a shared pointer to smtk::model::Manager, which may be
@@ -280,7 +276,7 @@ smtk::model::ManagerPtr Attribute::modelManager() const
     }
   return result;
 }
-//----------------------------------------------------------------------------
+
 /**\brief Remove all associations of this attribute with model entities.
   *
   * Note that this actually resets the associations.
@@ -426,7 +422,7 @@ void Attribute::disassociateEntity(const smtk::common::UUID& entity, bool revers
       }
     }
 }
-//----------------------------------------------------------------------------
+
 /**\brief Disassociate a new-style model entity (a EntityRef) from this attribute.
   *
   */
@@ -481,7 +477,6 @@ smtk::attribute::ItemPtr Attribute::find(
     this->m_items[static_cast<std::size_t>(i)];
 }
 
-//----------------------------------------------------------------------------
 smtk::attribute::ConstItemPtr Attribute::find(
   const std::string& inName,
   SearchStyle style
@@ -508,7 +503,6 @@ smtk::attribute::ConstItemPtr Attribute::find(
     smtk::const_pointer_cast<const Item>(this->m_items[static_cast<std::size_t>(i)]);
 }
 
-//-----------------------------------------------------------------------------
 smtk::attribute::IntItemPtr Attribute::findInt(const std::string &nameStr)
 { return smtk::dynamic_pointer_cast<IntItem>(this->find(nameStr)); }
 smtk::attribute::ConstIntItemPtr Attribute::findInt(const std::string &nameStr) const

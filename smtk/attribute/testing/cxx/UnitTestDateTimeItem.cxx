@@ -32,7 +32,6 @@ namespace sa = smtk::attribute;
 namespace sc = smtk::common;
 namespace {
 
-//----------------------------------------------------------------------------
 void verifyDefault()
 {
   // Instantiate item definition
@@ -86,7 +85,6 @@ void verifyDefault()
   test(match, "Failed to read back components");
 }
 
-//----------------------------------------------------------------------------
 void verifySerialize()
 {
   // Instantiate writer
@@ -267,7 +265,6 @@ void verifySerialize()
 
 }  // end namespace
 
-//----------------------------------------------------------------------------
 int UnitTestDateTimeItem(int, char** const)
 {
   verifyDefault();

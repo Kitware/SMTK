@@ -55,7 +55,6 @@
 
 vtkStandardNewMacro(vtkCMBGeometryReader);
 
-//-----------------------------------------------------------------------------
 vtkCMBGeometryReader::vtkCMBGeometryReader()
 {
   this->FileName = NULL;
@@ -66,13 +65,11 @@ vtkCMBGeometryReader::vtkCMBGeometryReader()
   this->EnablePostProcessMesh = true;
 }
 
-//-----------------------------------------------------------------------------
 vtkCMBGeometryReader::~vtkCMBGeometryReader()
 {
   this->SetFileName(0);
 }
 
-//-----------------------------------------------------------------------------
 int vtkCMBGeometryReader::RequestData(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **vtkNotUsed(inputVector),
@@ -384,7 +381,6 @@ int vtkCMBGeometryReader::RequestData(
   return 1;
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBGeometryReader::PostProcessMesh(vtkDataSet *dataset,
                                             bool is3DVolumeMesh,
                                             bool passThroughPointIds,
@@ -451,7 +447,6 @@ void vtkCMBGeometryReader::PostProcessMesh(vtkDataSet *dataset,
     }
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBGeometryReader::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
@@ -460,8 +455,6 @@ void vtkCMBGeometryReader::PrintSelf(ostream& os, vtkIndent indent)
      << (this->FileName ? this->FileName : "(none)") << "\n";
 }
 
-
-//----------------------------------------------------------------------------
 int vtkCMBGeometryReader::RequestInformation(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **vtkNotUsed(inputVector),

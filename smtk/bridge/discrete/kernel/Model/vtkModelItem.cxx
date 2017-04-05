@@ -149,7 +149,6 @@ vtkModelItemIterator* vtkModelItem::NewIterator(int itemType)
   return iter;
 }
 
-//---------------------------------------------------------------------------
 void vtkModelItem::GetItemTypesList(vtkIdList * itemTypes)
 {
   itemTypes->Reset();

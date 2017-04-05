@@ -154,18 +154,15 @@ private:
 
 }
 
-//-----------------------------------------------------------------------------
 vtkCMBModelBuilder::vtkCMBModelBuilder()
 {
   this->OperateSucceeded = 0;
 }
 
-//-----------------------------------------------------------------------------
 vtkCMBModelBuilder:: ~vtkCMBModelBuilder()
 {
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBModelBuilder::Operate(
   vtkDiscreteModelWrapper* modelWrapper, vtkAlgorithm* inputPoly)
 {
@@ -498,7 +495,6 @@ void vtkCMBModelBuilder::Operate(
   return;
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBModelBuilder::ProcessAs2DMesh(vtkDiscreteModelWrapper* modelWrapper,
                                          vtkPolyData *modelPolyData)
 {
@@ -698,7 +694,6 @@ void vtkCMBModelBuilder::ProcessAs2DMesh(vtkDiscreteModelWrapper* modelWrapper,
   modelWrapper->InitializeWithModelGeometry();
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBModelBuilder::ComputePointInsideForRegion(vtkDiscreteModelRegion *region,
                                                      vtkCellLocator *locator)
 {
@@ -791,7 +786,6 @@ void vtkCMBModelBuilder::ComputePointInsideForRegion(vtkDiscreteModelRegion *reg
   faces->Delete();
 }
 
-//-----------------------------------------------------------------------------
 bool vtkCMBModelBuilder::IsPolygonConcave(vtkPoints *points,
                                                         vtkIdType npts,
                                                         vtkIdType *pts)
@@ -829,7 +823,6 @@ bool vtkCMBModelBuilder::IsPolygonConcave(vtkPoints *points,
   return false;
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBModelBuilder::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

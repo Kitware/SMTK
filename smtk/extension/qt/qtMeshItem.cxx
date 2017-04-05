@@ -34,7 +34,6 @@
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
-//----------------------------------------------------------------------------
 class qtMeshItemInternals
 {
 public:
@@ -45,7 +44,6 @@ public:
   Qt::Orientation VectorItemOrient;
 };
 
-//----------------------------------------------------------------------------
 qtMeshItem::qtMeshItem(
   smtk::attribute::ItemPtr dataObj, QWidget* p,  qtBaseView* view,
   Qt::Orientation enVectorItemOrient ) :
@@ -57,19 +55,16 @@ qtMeshItem::qtMeshItem(
   this->createWidget();
 }
 
-//----------------------------------------------------------------------------
 qtMeshItem::~qtMeshItem()
 {
   delete this->Internals;
 }
 
-//----------------------------------------------------------------------------
 smtk::attribute::MeshItemPtr qtMeshItem::meshItem()
 {
   return dynamic_pointer_cast<MeshItem>(this->getObject());
 }
 
-//----------------------------------------------------------------------------
 bool qtMeshItem::add(const smtk::mesh::MeshSet& val)
 {
   if (this->meshItem()->appendValue(val))
@@ -80,7 +75,6 @@ bool qtMeshItem::add(const smtk::mesh::MeshSet& val)
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool qtMeshItem::remove(const smtk::mesh::MeshSet& val)
 {
   auto item = this->meshItem();
@@ -101,7 +95,7 @@ bool qtMeshItem::remove(const smtk::mesh::MeshSet& val)
   emit this->modified();
   return true;
 }
-//----------------------------------------------------------------------------
+
 void qtMeshItem::setLabelVisible(bool visible)
 {
   if (this->Internals->theLabel)
@@ -118,7 +112,6 @@ void qtMeshItem::setLabelVisible(bool visible)
     }
 }
 
-//----------------------------------------------------------------------------
 void qtMeshItem::createWidget()
 {
   if(!this->getObject())
@@ -129,7 +122,6 @@ void qtMeshItem::createWidget()
    this->updateItemData();
 }
 
-//----------------------------------------------------------------------------
 void qtMeshItem::updateItemData()
 {
   smtk::attribute::MeshItemPtr item =
@@ -215,7 +207,6 @@ void qtMeshItem::updateItemData()
   this->qtItem::updateItemData();
 }
 
-//----------------------------------------------------------------------------
 void qtMeshItem::setOutputOptional(int state)
 {
   smtk::attribute::MeshItemPtr item =
@@ -240,7 +231,6 @@ void qtMeshItem::setOutputOptional(int state)
     }
 }
 
-//----------------------------------------------------------------------------
 void qtMeshItem::loadAssociatedEntities()
 {
   smtk::attribute::MeshItemPtr item =

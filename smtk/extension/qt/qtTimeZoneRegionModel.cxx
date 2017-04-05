@@ -32,7 +32,6 @@
 
 using namespace smtk::extension;
 
-//----------------------------------------------------------------------------
 namespace {
   struct TimeZoneEntry
   {
@@ -47,7 +46,6 @@ namespace {
   };
 }  // namespace
 
-//----------------------------------------------------------------------------
 class qtTimeZoneRegionModel::TimeZoneRegionModelInternal
 {
  public:
@@ -56,20 +54,17 @@ class qtTimeZoneRegionModel::TimeZoneRegionModelInternal
   QMap<int, TimeZoneEntry> ZoneMap;
 };
 
-//----------------------------------------------------------------------------
 qtTimeZoneRegionModel::qtTimeZoneRegionModel(QObject *parent)
   : QAbstractItemModel(parent)
 {
   this->Internal = new qtTimeZoneRegionModel::TimeZoneRegionModelInternal;
 }
 
-//----------------------------------------------------------------------------
 qtTimeZoneRegionModel::~qtTimeZoneRegionModel()
 {
   delete this->Internal;
 }
 
-//----------------------------------------------------------------------------
 void qtTimeZoneRegionModel::initialize()
 {
   if (!this->Internal->ZoneMap.isEmpty())
@@ -135,7 +130,6 @@ void qtTimeZoneRegionModel::initialize()
 
 }
 
-//----------------------------------------------------------------------------
 QModelIndex
 qtTimeZoneRegionModel::index(int row, int column, const QModelIndex& parent) const
 {
@@ -157,7 +151,6 @@ qtTimeZoneRegionModel::index(int row, int column, const QModelIndex& parent) con
   return this->createIndex(row, column, internalId);
 }
 
-//----------------------------------------------------------------------------
 QModelIndex qtTimeZoneRegionModel::parent(const QModelIndex& index) const
 {
   if (!index.isValid())
@@ -180,7 +173,6 @@ QModelIndex qtTimeZoneRegionModel::parent(const QModelIndex& index) const
   return this->createIndex(parentRow, 0, parentId);
 }
 
-//----------------------------------------------------------------------------
 int qtTimeZoneRegionModel::rowCount(const QModelIndex& parent) const
 {
   if (!parent.isValid())
@@ -202,7 +194,6 @@ int qtTimeZoneRegionModel::rowCount(const QModelIndex& parent) const
   return 0;
 }
 
-//----------------------------------------------------------------------------
 int qtTimeZoneRegionModel::columnCount(const QModelIndex& parent) const
 {
   if (!parent.isValid())
@@ -224,7 +215,6 @@ int qtTimeZoneRegionModel::columnCount(const QModelIndex& parent) const
   return 0;
 }
 
-//----------------------------------------------------------------------------
 QVariant qtTimeZoneRegionModel::data(const QModelIndex& index, int role) const
 {
   if (!index.isValid())
@@ -300,7 +290,6 @@ QVariant qtTimeZoneRegionModel::data(const QModelIndex& index, int role) const
   return result;
 }
 
-//----------------------------------------------------------------------------
 QVariant qtTimeZoneRegionModel::headerData(
   int section, Qt::Orientation orientation, int role) const
 {
@@ -313,7 +302,6 @@ QVariant qtTimeZoneRegionModel::headerData(
   return QAbstractItemModel::headerData(section, orientation, role);
 }
 
-//----------------------------------------------------------------------------
 QString qtTimeZoneRegionModel::regionId(const QModelIndex& index) const
 {
   if (!index.isValid())
@@ -326,7 +314,6 @@ QString qtTimeZoneRegionModel::regionId(const QModelIndex& index) const
   return entry.ID;
 }
 
-//----------------------------------------------------------------------------
 QModelIndex qtTimeZoneRegionModel::findModelIndex(const QString& regionId) const
 {
   if (regionId.isEmpty())

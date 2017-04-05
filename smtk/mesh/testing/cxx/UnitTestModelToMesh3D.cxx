@@ -27,7 +27,6 @@ namespace
 {
 
 
-//----------------------------------------------------------------------------
 class CountCells : public smtk::mesh::CellForEach
 {
   //keep the range of points we have seen so we can verify that we
@@ -42,7 +41,6 @@ class CountCells : public smtk::mesh::CellForEach
   //array for this cellset
   int numPointsSeen;
 public:
-  //--------------------------------------------------------------------------
   CountCells( ):
     smtk::mesh::CellForEach(),
     pointsSeen( ),
@@ -51,7 +49,6 @@ public:
     {
     }
 
-  //--------------------------------------------------------------------------
   void forCell(const smtk::mesh::Handle& cellId,
                smtk::mesh::CellType cellType,
                int numPts)
@@ -72,7 +69,6 @@ public:
 
 std::size_t numTetsInModel = 4;
 
-//----------------------------------------------------------------------------
 void create_simple_model( smtk::model::ManagerPtr mgr )
 {
   using namespace smtk::model::testing;
@@ -90,7 +86,6 @@ void create_simple_model( smtk::model::ManagerPtr mgr )
 
 }
 
-//----------------------------------------------------------------------------
 void verify_null_managers()
 {
   smtk::mesh::ManagerPtr null_meshManager;
@@ -117,7 +112,6 @@ void verify_null_managers()
   }
 }
 
-//----------------------------------------------------------------------------
 void verify_empty_model()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
@@ -128,7 +122,6 @@ void verify_empty_model()
   test( !c, "collection should be invalid for an empty model");
 }
 
-//----------------------------------------------------------------------------
 void verify_model_association()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
@@ -155,7 +148,6 @@ void verify_model_association()
 }
 
 
-//----------------------------------------------------------------------------
 template<int Dim>
 void testFindAssociations(smtk::mesh::CollectionPtr c, smtk::model::EntityIterator& it, std::size_t correct)
 {
@@ -214,7 +206,6 @@ void testFindAssociations<-1>(smtk::mesh::CollectionPtr c, smtk::model::EntityIt
   test(numNonEmpty == correct, "Expected a non-empty meshset per test tetrahedron.");
 }
 
-//----------------------------------------------------------------------------
 template<int Dim>
 void testFindAssociationsByRef(smtk::mesh::CollectionPtr c, smtk::model::EntityIterator& it, std::size_t correct)
 {
@@ -247,7 +238,6 @@ void testFindAssociationsByRef<-1>(smtk::mesh::CollectionPtr c, smtk::model::Ent
   test(entMesh.size() == correct, "Expected a non-empty meshset for all tetrahedra.");
 }
 
-//----------------------------------------------------------------------------
 void verify_cell_conversion()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
@@ -352,7 +342,6 @@ void verify_cell_conversion()
     }
 }
 
-//----------------------------------------------------------------------------
 void verify_vertex_conversion()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
@@ -369,7 +358,6 @@ void verify_vertex_conversion()
   test( points.size() == 7, "After merging of identical points we should have 7");
 }
 
-//----------------------------------------------------------------------------
 void verify_cell_have_points()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
@@ -398,7 +386,6 @@ void verify_cell_have_points()
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestModelToMesh3D(int, char** const)
 {
   verify_null_managers();

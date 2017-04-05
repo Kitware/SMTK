@@ -22,13 +22,11 @@
 
 vtkStandardNewMacro(vtkCMBModelStateOperatorClient);
 
-//-----------------------------------------------------------------------------
 vtkCMBModelStateOperatorClient::vtkCMBModelStateOperatorClient()
 {
   this->OperatorProxy = NULL;
 }
 
-//-----------------------------------------------------------------------------
 vtkCMBModelStateOperatorClient::~vtkCMBModelStateOperatorClient()
 {
   if(this->OperatorProxy)
@@ -38,7 +36,6 @@ vtkCMBModelStateOperatorClient::~vtkCMBModelStateOperatorClient()
     }
 }
 
-//-----------------------------------------------------------------------------
 int vtkCMBModelStateOperatorClient::SaveModelState(
   vtkDiscreteModel* Model, vtkSMProxy* ServerModelProxy)
 {
@@ -85,7 +82,6 @@ int vtkCMBModelStateOperatorClient::SaveModelState(
   return 1;
 }
 
-//-----------------------------------------------------------------------------
 int vtkCMBModelStateOperatorClient::LoadModelState(
   vtkDiscreteModel* Model, vtkSMProxy* ServerModelProxy)
 {
@@ -117,7 +113,6 @@ int vtkCMBModelStateOperatorClient::LoadModelState(
   return vtkCMBModelBuilderClient::UpdateClientModel(Model, ServerModelProxy);
 }
 
-//-----------------------------------------------------------------------------
 vtkStringArray* vtkCMBModelStateOperatorClient::GetSerializedModelString()
 {
   // update the copy of serialized model on client
@@ -139,7 +134,6 @@ vtkStringArray* vtkCMBModelStateOperatorClient::GetSerializedModelString()
   return this->SerializedModelString;
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBModelStateOperatorClient::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

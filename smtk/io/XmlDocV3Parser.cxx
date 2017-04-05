@@ -21,17 +21,15 @@ using namespace smtk::io;
 using namespace smtk;
 
 
-//----------------------------------------------------------------------------
 XmlDocV3Parser::XmlDocV3Parser(smtk::attribute::System &mySystem):
   XmlDocV2Parser(mySystem)
 {
 }
 
-//----------------------------------------------------------------------------
 XmlDocV3Parser::~XmlDocV3Parser()
 {
 }
-//----------------------------------------------------------------------------
+
 bool XmlDocV3Parser::canParse(xml_document &doc)
 {
   // Get the attribute system node
@@ -56,7 +54,6 @@ bool XmlDocV3Parser::canParse(xml_document &doc)
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool XmlDocV3Parser::canParse(xml_node &node)
 {
   // Check the name of the node
@@ -81,14 +78,12 @@ bool XmlDocV3Parser::canParse(xml_node &node)
   return true;
 }
 
-//----------------------------------------------------------------------------
 xml_node XmlDocV3Parser::getRootNode(xml_document &doc)
 {
   xml_node amnode = doc.child("SMTK_AttributeSystem");
   return amnode;
 }
 
-//----------------------------------------------------------------------------
 void XmlDocV3Parser::process(xml_document &doc)
 {
   // Get the attribute system node
@@ -104,7 +99,6 @@ void XmlDocV3Parser::process(xml_document &doc)
   this->process(amnode);
 }
 
-//----------------------------------------------------------------------------
 void XmlDocV3Parser::processDateTimeDef(
   pugi::xml_node &node,
   attribute::DateTimeItemDefinitionPtr idef)
@@ -149,7 +143,6 @@ void XmlDocV3Parser::processDateTimeDef(
     }
 }
 
-//----------------------------------------------------------------------------
 void XmlDocV3Parser::processDateTimeItem(
   pugi::xml_node &node, attribute::DateTimeItemPtr item)
 {

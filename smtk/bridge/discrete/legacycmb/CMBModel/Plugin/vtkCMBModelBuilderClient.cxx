@@ -83,7 +83,6 @@ bool vtkCMBModelBuilderClient::AbleToOperate(vtkDiscreteModel* Model)
   return 1;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBModelBuilderClient::UpdateClientModel(vtkDiscreteModel* ClientModel,
                                                 vtkSMProxy* ServerModelProxy)
 {

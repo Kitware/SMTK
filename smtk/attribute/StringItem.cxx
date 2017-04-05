@@ -14,36 +14,34 @@
 
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 StringItem::StringItem(Attribute *owningAttribute,
                        int itemPosition):
   ValueItemTemplate<std::string>(owningAttribute, itemPosition)
 {
 }
 
-//----------------------------------------------------------------------------
 StringItem::StringItem(Item *inOwningItem,
                        int itemPosition,
                        int mySubGroupPosition):
   ValueItemTemplate<std::string>(inOwningItem, itemPosition, mySubGroupPosition)
 {
 }
-//----------------------------------------------------------------------------
+
 StringItem::~StringItem()
 {
 }
-//----------------------------------------------------------------------------
+
 Item::Type StringItem::type() const
 {
   return STRING;
 }
-//----------------------------------------------------------------------------
+
 bool StringItem::assign(ConstItemPtr &sourceItem, unsigned int options)
 {
   // Assigns my contents to be same as sourceItem
   return ValueItemTemplate<std::string>::assign(sourceItem, options);
 }
-//----------------------------------------------------------------------------
+
 bool StringItem::isSecure() const
 {
   const StringItemDefinition *sdef = static_cast<const StringItemDefinition *>
@@ -54,4 +52,3 @@ bool StringItem::isSecure() const
     }
   return sdef->isSecure();
 }
-//----------------------------------------------------------------------------

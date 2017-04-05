@@ -28,12 +28,9 @@
 #include "ui_qtModelPanel.h"
 namespace Ui { class qtModelPanel; }
 
-// -----------------------------------------------------------------------------
 namespace smtk {
   namespace extension {
 
-
-//-----------------------------------------------------------------------------
 class qtModelPanel::qInternal : public Ui::qtModelPanel
 {
 public:
@@ -44,7 +41,6 @@ public:
     }
 };
 
-//-----------------------------------------------------------------------------
 qtModelPanel::qtModelPanel(QWidget* p)
   : QWidget(p)
 {
@@ -61,26 +57,22 @@ qtModelPanel::qtModelPanel(QWidget* p)
     SIGNAL(currentIndexChanged(int)), this, SLOT(onViewTypeChanged()));
 }
 
-//-----------------------------------------------------------------------------
 qtModelPanel::~qtModelPanel()
 {
   delete this->Internal->ModelView;
   delete this->Internal;
 }
 
-//-----------------------------------------------------------------------------
 smtk::extension::qtModelView* qtModelPanel::getModelView()
 {
   return this->Internal->ModelView;
 }
 
-//-----------------------------------------------------------------------------
 void qtModelPanel::onClearSelection()
 {
   this->getModelView()->clearSelection();
 }
 
-//-----------------------------------------------------------------------------
 void qtModelPanel::onViewTypeChanged()
 {
   int type = this->Internal->comboBoxViewBy->currentIndex();
@@ -92,7 +84,6 @@ void qtModelPanel::onViewTypeChanged()
   this->resetView(enType, qmodel->manager());
 }
 
-//-----------------------------------------------------------------------------
 void qtModelPanel::resetView(qtModelPanel::enumTreeView enType,
                              smtk::model::ManagerPtr modelMgr)
 {

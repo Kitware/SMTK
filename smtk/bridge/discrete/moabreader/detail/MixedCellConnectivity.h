@@ -64,7 +64,6 @@ public:
       }
     }
 
-  //----------------------------------------------------------------------------
   void compactIds(vtkIdType& numCells, vtkIdType& connectivityLength)
     {
     //converts all the ids to be ordered starting at zero, and also
@@ -95,7 +94,6 @@ public:
     this->UniquePoints.resize(newSize);
     }
 
-  //----------------------------------------------------------------------------
   void moabPoints(smoab::Range& range) const
     {
     //from the documentation a reverse iterator is the fastest way
@@ -105,7 +103,6 @@ public:
               moab::range_inserter(range));
     }
 
-  //----------------------------------------------------------------------------
   //copy the connectivity from the moab held arrays to the user input vector
   void copyConnectivity(std::vector<EntityHandle>& output) const
     {

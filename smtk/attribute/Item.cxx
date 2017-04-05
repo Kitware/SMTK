@@ -19,7 +19,6 @@
 using namespace smtk::attribute;
 using namespace smtk;
 
-//----------------------------------------------------------------------------
 Item::Item(Attribute *owningAttribute, int itemPosition):
   m_attribute(owningAttribute), m_owningItem(NULL),
   m_position(itemPosition), m_isEnabled(true), m_definition()
@@ -29,7 +28,6 @@ Item::Item(Attribute *owningAttribute, int itemPosition):
   this->m_advanceLevel[0] = this->m_advanceLevel[1] = 0;
 }
 
-//----------------------------------------------------------------------------
 Item::Item(Item *inOwningItem, int itemPosition, int inSubGroupPosition):
   m_attribute(NULL), m_owningItem(inOwningItem),
   m_position(itemPosition), m_subGroupPosition(inSubGroupPosition),
@@ -40,11 +38,10 @@ Item::Item(Item *inOwningItem, int itemPosition, int inSubGroupPosition):
   this->m_advanceLevel[0] = this->m_advanceLevel[1] = 0;
 }
 
-//----------------------------------------------------------------------------
 Item::~Item()
 {
 }
-//----------------------------------------------------------------------------
+
 AttributePtr Item::attribute() const
 {
   if (this->m_attribute)
@@ -57,12 +54,12 @@ AttributePtr Item::attribute() const
     }
   return AttributePtr();
 }
-//----------------------------------------------------------------------------
+
 bool Item::isValid() const
 {
   return true;
 }
-//----------------------------------------------------------------------------
+
 std::string Item::name() const
 {
   if (!this->m_definition)
@@ -71,7 +68,7 @@ std::string Item::name() const
     }
   return this->m_definition->name();
 }
-//----------------------------------------------------------------------------
+
 std::string Item::label() const
 {
   if (!this->m_definition)
@@ -80,7 +77,7 @@ std::string Item::label() const
     }
   return this->m_definition->label();
 }
-//----------------------------------------------------------------------------
+
 bool Item::setDefinition(smtk::attribute::ConstItemDefinitionPtr def)
 {
   if (this->m_definition)
@@ -94,7 +91,7 @@ bool Item::setDefinition(smtk::attribute::ConstItemDefinitionPtr def)
     }
   return true;
 }
-//----------------------------------------------------------------------------
+
 bool Item::isOptional() const
 {
   if (!this->m_definition)
@@ -103,7 +100,7 @@ bool Item::isOptional() const
     }
   return this->m_definition->isOptional();
 }
-//----------------------------------------------------------------------------=
+
 bool Item::isEnabled() const
 {
   // determine if the item is locally enabled - meaning that
@@ -125,17 +122,17 @@ bool Item::isEnabled() const
   // Else delegate this to the owning item 
   return this->m_owningItem->isEnabled();
 }
-//----------------------------------------------------------------------------
+
 bool Item::isMemberOf(const std::string &category) const
 {
   return this->definition()->isMemberOf(category);
 }
-//----------------------------------------------------------------------------
+
 bool Item::isMemberOf(const std::vector<std::string> &categories) const
 {
   return this->definition()->isMemberOf(categories);
 }
-//----------------------------------------------------------------------------
+
 void Item::reset()
 {
   if (this->m_definition && this->m_definition->isOptional())
@@ -143,7 +140,7 @@ void Item::reset()
     this->m_isEnabled = this->m_definition->isEnabledByDefault();
     }
 }
-//----------------------------------------------------------------------------
+
 void Item::setAdvanceLevel(int mode, int level)
 {
   if ((mode < 0) || (mode > 1))
@@ -153,7 +150,7 @@ void Item::setAdvanceLevel(int mode, int level)
   this->m_usingDefAdvanceLevelInfo[mode] = false;
   this->m_advanceLevel[mode] = level;
 }
-//----------------------------------------------------------------------------
+
 void Item::unsetAdvanceLevel(int mode)
 {
   if ((mode < 0) || (mode > 1))
@@ -162,7 +159,7 @@ void Item::unsetAdvanceLevel(int mode)
     }
   this->m_usingDefAdvanceLevelInfo[mode] = true;
 }
-//----------------------------------------------------------------------------
+
 int Item::advanceLevel(int mode) const
 {
   // Any invalid mode returns mode = 0
@@ -176,7 +173,7 @@ int Item::advanceLevel(int mode) const
     }
   return this->m_advanceLevel[mode];
 }
-//----------------------------------------------------------------------------
+
 bool Item::assign(ConstItemPtr &sourceItem, unsigned int)
 {
   // Assigns my contents to be same as sourceItem
@@ -190,7 +187,7 @@ bool Item::assign(ConstItemPtr &sourceItem, unsigned int)
     }  // for
   return true;
 }
-//----------------------------------------------------------------------------
+
 std::string Item::type2String(Item::Type t)
 {
   switch (t)
@@ -226,7 +223,7 @@ std::string Item::type2String(Item::Type t)
     }
   return "Error!";
 }
-//----------------------------------------------------------------------------
+
 Item::Type Item::string2Type(const std::string &s)
 {
   if (s == "AttributeRef")
@@ -283,4 +280,3 @@ Item::Type Item::string2Type(const std::string &s)
     }
   return NUMBER_OF_TYPES;
 }
-//----------------------------------------------------------------------------

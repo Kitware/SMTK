@@ -29,7 +29,6 @@
 
 vtkStandardNewMacro(vtkPVCMBModelInformation);
 
-//----------------------------------------------------------------------------
 vtkPVCMBModelInformation::vtkPVCMBModelInformation()
 {
   this->Transform = vtkTransform::New();
@@ -43,14 +42,12 @@ vtkPVCMBModelInformation::vtkPVCMBModelInformation()
   this->CellIdMapArray = NULL;
 }
 
-//----------------------------------------------------------------------------
 vtkPVCMBModelInformation::~vtkPVCMBModelInformation()
 {
   this->Transform->Delete();
   this->EnityIdsMap.clear();
 }
 
-//----------------------------------------------------------------------------
 void vtkPVCMBModelInformation::PrintSelf(ostream &os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
@@ -65,7 +62,6 @@ void vtkPVCMBModelInformation::PrintSelf(ostream &os, vtkIndent indent)
   os << indent << "NumberOfPoints: " << this->NumberOfPoints << endl;
 }
 
-//----------------------------------------------------------------------------
 void vtkPVCMBModelInformation::CopyFromObject(vtkObject* obj)
 {
   this->EnityIdsMap.clear();
@@ -140,7 +136,7 @@ void vtkPVCMBModelInformation::CopyFromObject(vtkObject* obj)
     vtkDataSet::SafeDownCast(dataObject)->GetCellData()->GetArray(
       vtkMultiBlockWrapper::GetReverseClassificationTagName()));
 }
-//----------------------------------------------------------------------------
+
 vtkIdType vtkPVCMBModelInformation::GetModelEntityId(
   unsigned int flatidx)
 {
@@ -151,7 +147,6 @@ vtkIdType vtkPVCMBModelInformation::GetModelEntityId(
   return -1;
 }
 
-//----------------------------------------------------------------------------
 int vtkPVCMBModelInformation::GetModelFaceId()
 {
   if(this->ModelFaceInfoArray &&
@@ -166,7 +161,6 @@ int vtkPVCMBModelInformation::GetModelFaceId()
     }
 }
 
-//----------------------------------------------------------------------------
 int vtkPVCMBModelInformation::GetMaterialId()
 {
   if(this->ModelFaceInfoArray &&
@@ -180,7 +174,6 @@ int vtkPVCMBModelInformation::GetMaterialId()
     }
 }
 
-//----------------------------------------------------------------------------
 int vtkPVCMBModelInformation::GetMasterCellId(int idx)
 {
   if(this->CellIdMapArray &&
@@ -194,7 +187,6 @@ int vtkPVCMBModelInformation::GetMasterCellId(int idx)
     }
 }
 
-//----------------------------------------------------------------------------
 int vtkPVCMBModelInformation::GetInfoArrayBCStartIndex()
 {
   if(this->ModelFaceInfoArray &&
@@ -208,7 +200,6 @@ int vtkPVCMBModelInformation::GetInfoArrayBCStartIndex()
     }
 }
 
-//----------------------------------------------------------------------------
 int vtkPVCMBModelInformation::GetShellId()
 {
   if(this->ModelFaceInfoArray &&
@@ -222,7 +213,6 @@ int vtkPVCMBModelInformation::GetShellId()
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkPVCMBModelInformation::AddInformation(vtkPVInformation* info)
 {
   vtkPVCMBModelInformation *modelFaceInfo =
@@ -241,7 +231,6 @@ void vtkPVCMBModelInformation::AddInformation(vtkPVInformation* info)
     }
 }
 
-//----------------------------------------------------------------------------
 void
 vtkPVCMBModelInformation::CopyToStream(vtkClientServerStream* css)
 {
@@ -258,7 +247,6 @@ vtkPVCMBModelInformation::CopyToStream(vtkClientServerStream* css)
     vtkClientServerStream::End;
 }
 
-//----------------------------------------------------------------------------
 void
 vtkPVCMBModelInformation::CopyFromStream(const vtkClientServerStream* css)
 {

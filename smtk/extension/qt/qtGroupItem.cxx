@@ -31,7 +31,6 @@
 
 using namespace smtk::extension;
 
-//----------------------------------------------------------------------------
 class qtGroupItemInternals
 {
 public:
@@ -43,7 +42,6 @@ public:
   QPointer<QTableWidget> ItemsTable;
 };
 
-//----------------------------------------------------------------------------
 qtGroupItem::qtGroupItem(
   smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview,
   Qt::Orientation enVectorItemOrient) :
@@ -55,13 +53,11 @@ qtGroupItem::qtGroupItem(
   this->createWidget();
 }
 
-//----------------------------------------------------------------------------
 qtGroupItem::~qtGroupItem()
 {
   delete this->Internals;
 }
 
-//----------------------------------------------------------------------------
 void qtGroupItem::setLabelVisible(bool visible)
 {
   if(!this->getObject())
@@ -79,7 +75,6 @@ void qtGroupItem::setLabelVisible(bool visible)
     item->label().c_str() : "");
 }
 
-//----------------------------------------------------------------------------
 void qtGroupItem::createWidget()
 {
   if(!this->getObject())
@@ -125,7 +120,6 @@ void qtGroupItem::createWidget()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtGroupItem::setEnabledState(bool checked)
 {
   this->Internals->ChildrensFrame->setVisible(checked);
@@ -142,7 +136,6 @@ void qtGroupItem::setEnabledState(bool checked)
     }
 }
 
-//----------------------------------------------------------------------------
 void qtGroupItem::updateItemData()
 {
   smtk::attribute::GroupItemPtr item =dynamic_pointer_cast<attribute::GroupItem>(this->getObject());
@@ -211,7 +204,6 @@ void qtGroupItem::updateItemData()
   this->qtItem::updateItemData();
 }
 
-//----------------------------------------------------------------------------
 void qtGroupItem::onAddSubGroup()
 {
   smtk::attribute::GroupItemPtr item =
@@ -236,7 +228,6 @@ void qtGroupItem::onAddSubGroup()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtGroupItem::addSubGroup(int i)
 {
   smtk::attribute::GroupItemPtr item =
@@ -284,7 +275,7 @@ void qtGroupItem::addSubGroup(int i)
   frameLayout->addLayout(subGrouplayout);
   this->onChildWidgetSizeChanged();
 }
-//----------------------------------------------------------------------------
+
 void qtGroupItem::onRemoveSubGroup()
 {
   QToolButton* const minusButton = qobject_cast<QToolButton*>(
@@ -333,7 +324,6 @@ void qtGroupItem::onRemoveSubGroup()
   emit this->modified();
 }
 
-//----------------------------------------------------------------------------
 void qtGroupItem::updateExtensibleState()
 {
   smtk::attribute::GroupItemPtr item =
@@ -354,7 +344,6 @@ void qtGroupItem::updateExtensibleState()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtGroupItem::addItemsToTable(int i)
 {
   smtk::attribute::GroupItemPtr item =
@@ -441,7 +430,6 @@ void qtGroupItem::addItemsToTable(int i)
   this->onChildWidgetSizeChanged();
 }
 
-//----------------------------------------------------------------------------
 void qtGroupItem::onChildWidgetSizeChanged()
 {
   if(this->Internals->ItemsTable)

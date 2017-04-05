@@ -47,7 +47,6 @@
 
 namespace Ui
 {
-//-----------------------------------------------------------------------------
 ArcPicker::ArcPicker(QObject * parent):
   QAction(parent),
   Info(NULL),
@@ -59,7 +58,6 @@ ArcPicker::ArcPicker(QObject * parent):
   this->setCheckable(true);
 }
 
-//-----------------------------------------------------------------------------
 ArcPicker::~ArcPicker()
 {
   if(this->Selecter)
@@ -69,7 +67,6 @@ ArcPicker::~ArcPicker()
     }
 }
 
-//-----------------------------------------------------------------------------
 void ArcPicker::doPick(pqRenderView *view, pqPolygonArc *arc, PickInfo& arcinfo)
 {
   if(this->Selecter)
@@ -106,7 +103,6 @@ void ArcPicker::doPick(pqRenderView *view, pqPolygonArc *arc, PickInfo& arcinfo)
     }
 }
 
-//-----------------------------------------------------------------------------
 vtkSelectionNode* ArcPicker::gatherSelectionNode(
     pqPipelineSource* source,
     vtkPVSelectionInformation* selInfo)
@@ -124,7 +120,6 @@ vtkSelectionNode* ArcPicker::gatherSelectionNode(
   return NULL;
 }
 
-//-----------------------------------------------------------------------------
 void ArcPicker::selectedInfo(pqOutputPort* port)
 {
   // ignore selections triggered from elsewhere
@@ -187,7 +182,6 @@ void ArcPicker::selectedInfo(pqOutputPort* port)
     }
 }
 
-//-----------------------------------------------------------------------------
 void ArcPicker::onPickingFinished()
 {
   //we want the connection to happen once the view goes away so
@@ -216,7 +210,6 @@ class pqArcWidgetPanel::pqInternals : public Ui::qtArcWidgetPanel
     // QPointer<pqPipelineSource> ArcSource;
   };
 
-//-----------------------------------------------------------------------------
 pqArcWidgetPanel::pqArcWidgetPanel(QWidget *parent) :
   QWidget(parent),
   Internals(new pqArcWidgetPanel::pqInternals),
@@ -243,15 +236,12 @@ pqArcWidgetPanel::pqArcWidgetPanel(QWidget *parent) :
 
 }
 
-//-----------------------------------------------------------------------------
-
 pqArcWidgetPanel::~pqArcWidgetPanel()
 {
   delete this->ArcWidget;
   delete Internals;
 }
 
-//-----------------------------------------------------------------------------
 void pqArcWidgetPanel::setArc(pqPolygonArc* arc)
 {
   if(this->Arc != arc)
@@ -264,7 +254,6 @@ void pqArcWidgetPanel::setArc(pqPolygonArc* arc)
     }
 }
 
-//-----------------------------------------------------------------------------
 void pqArcWidgetPanel::showEditWidget()
 {
   //hide the pointWidget from the layout to reclaim the space
@@ -285,7 +274,6 @@ void pqArcWidgetPanel::showEditWidget()
   emit this->startArcEditing();
 }
 
-//-----------------------------------------------------------------------------
 void pqArcWidgetPanel::showPickWidget()
 {
   //shows the pick widget and hides the edit widget
@@ -297,7 +285,6 @@ void pqArcWidgetPanel::showPickWidget()
 
 }
 
-//-----------------------------------------------------------------------------
 void pqArcWidgetPanel::pickWholeArc()
 {
   if(this->Internals->SelectArcButton->isChecked())
@@ -344,7 +331,6 @@ void pqArcWidgetPanel::arcPicked()
   this->resetWidget();
 }
 
-//-----------------------------------------------------------------------------
 void pqArcWidgetPanel::hideArcWidget()
 {
   if(this->ArcWidget)
@@ -356,7 +342,6 @@ void pqArcWidgetPanel::hideArcWidget()
     }
 }
 
-//-----------------------------------------------------------------------------
 void pqArcWidgetPanel::modifyArc()
 {
   if (!this->ArcManager)
@@ -423,7 +408,6 @@ void pqArcWidgetPanel::modifyArc()
   this->View->forceRender();
 }
 
-//-----------------------------------------------------------------------------
 void pqArcWidgetPanel::resetWidget()
 {
   //resets the widget to what it would be like if it was just created
@@ -434,7 +418,6 @@ void pqArcWidgetPanel::resetWidget()
   this->showPickWidget();
 }
 
-//-----------------------------------------------------------------------------
 void pqArcWidgetPanel::updateWidgetRepresentation()
 {
   if ( !this->Arc || !this->Arc->getSource() )
@@ -470,7 +453,6 @@ void pqArcWidgetPanel::updateWidgetRepresentation()
   smArcSource->FastDelete();
 }
 
-//-----------------------------------------------------------------------------
 void pqArcWidgetPanel::arcEditingFinished()
 {
   this->saveEdit();
@@ -480,7 +462,6 @@ void pqArcWidgetPanel::arcEditingFinished()
   emit this->arcModificationfinished();
 }
 
-//-----------------------------------------------------------------------------
 void pqArcWidgetPanel::cancelEdit()
 {
   //marks that that we don't want to save the modifications
@@ -492,7 +473,6 @@ void pqArcWidgetPanel::cancelEdit()
   emit this->arcModificationCacelled();
 }
 
-//-----------------------------------------------------------------------------
 void pqArcWidgetPanel::saveEdit()
 {
   // modify/replace the edge with the arc from the arc widget

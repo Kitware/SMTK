@@ -31,7 +31,6 @@ namespace smtk {
 namespace mesh {
 namespace moab {
 
-//----------------------------------------------------------------------------
 class SMTKCORE_EXPORT BufferedCellAllocator :
     public smtk::mesh::BufferedCellAllocator,
     protected smtk::mesh::moab::Allocator
@@ -78,7 +77,6 @@ private:
 
 };
 
-//----------------------------------------------------------------------------
 template <typename IntegerType>
 bool BufferedCellAllocator::addCell(smtk::mesh::CellType ctype,
                                     IntegerType* pointIds,

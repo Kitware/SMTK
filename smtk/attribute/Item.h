@@ -160,7 +160,7 @@ namespace smtk
      bool m_usingDefAdvanceLevelInfo[2];
      int m_advanceLevel[2];
     };
-//----------------------------------------------------------------------------
+
     inline smtk::simulation::UserDataPtr Item::userData(const std::string &key) const
     {
       std::map<std::string, smtk::simulation::UserDataPtr >::const_iterator it =

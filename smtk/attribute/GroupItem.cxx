@@ -15,14 +15,12 @@
 
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 GroupItem::GroupItem(Attribute *owningAttribute,
                      int itemPosition):
   Item(owningAttribute, itemPosition)
 {
 }
 
-//----------------------------------------------------------------------------
 GroupItem::GroupItem(Item *inOwningItem,
                      int itemPosition,
                      int mySubGroupPosition):
@@ -30,14 +28,13 @@ GroupItem::GroupItem(Item *inOwningItem,
 {
 }
 
-//----------------------------------------------------------------------------
 GroupItem::~GroupItem()
 {
   // This group is going away so make sure any items that are
   // being held externally no longer think they are owned by it
   this->detachAllItems();
  }
-//----------------------------------------------------------------------------
+
 void GroupItem::detachAllItems()
 {
   // Detatch all top level items contained in this group
@@ -53,12 +50,12 @@ void GroupItem::detachAllItems()
       }
     }
 }
-//----------------------------------------------------------------------------
+
 Item::Type GroupItem::type() const
 {
   return GROUP;
 }
-//----------------------------------------------------------------------------
+
 bool GroupItem::isValid() const
 {
   // If the item is not enabled or if all of its values are set then it is valid
@@ -80,7 +77,6 @@ bool GroupItem::isValid() const
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool
 GroupItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr gdef)
 {
@@ -106,7 +102,7 @@ GroupItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr gdef)
     }
   return true;
 }
-//----------------------------------------------------------------------------
+
 void GroupItem::reset()
 {
   const GroupItemDefinition *def =
@@ -151,7 +147,6 @@ GroupItem::const_iterator GroupItem::end() const
   return this->m_items.end();
 }
 
-//----------------------------------------------------------------------------
 bool GroupItem::isExtensible() const
 {
   const GroupItemDefinition *def =
@@ -162,21 +157,21 @@ bool GroupItem::isExtensible() const
     }
   return def->isExtensible();
 }
-//----------------------------------------------------------------------------
+
 std::size_t GroupItem::numberOfItemsPerGroup() const
 {
   const GroupItemDefinition *def =
     static_cast<const GroupItemDefinition *>(this->definition().get());
   return def->numberOfItemDefinitions();
 }
-//----------------------------------------------------------------------------
+
 std::size_t GroupItem::numberOfRequiredGroups() const
 {
   const GroupItemDefinition *def =
     static_cast<const GroupItemDefinition *>(this->definition().get());
   return def->numberOfRequiredGroups();
 }
-//----------------------------------------------------------------------------
+
 std::size_t GroupItem::maxNumberOfGroups() const
 {
   const GroupItemDefinition *def =
@@ -187,7 +182,7 @@ std::size_t GroupItem::maxNumberOfGroups() const
     }
   return def->maxNumberOfGroups();
 }
-//----------------------------------------------------------------------------
+
 bool GroupItem::appendGroup()
 {
   if (!this->isExtensible())
@@ -207,7 +202,7 @@ bool GroupItem::appendGroup()
   def->buildGroup(this, static_cast<int>(n));
   return true;
 }
-//----------------------------------------------------------------------------
+
 bool GroupItem::removeGroup(std::size_t element)
 {
   if (!this->isExtensible())
@@ -229,7 +224,7 @@ bool GroupItem::removeGroup(std::size_t element)
   this->m_items.erase(this->m_items.begin() + element);
   return true;
 }
-//----------------------------------------------------------------------------
+
 bool GroupItem::setNumberOfGroups(std::size_t newSize)
 {
   // If the current size is the same just return
@@ -283,7 +278,7 @@ bool GroupItem::setNumberOfGroups(std::size_t newSize)
     }
   return true;
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemPtr GroupItem::find(std::size_t element, const std::string &inName)
 {
   const GroupItemDefinition *def =
@@ -293,7 +288,7 @@ smtk::attribute::ItemPtr GroupItem::find(std::size_t element, const std::string 
   assert(this->m_items[element].size() > static_cast<std::size_t>(i));
   return (i < 0) ? smtk::attribute::ItemPtr() : this->m_items[element][static_cast<std::size_t>(i)];
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ConstItemPtr GroupItem::find(std::size_t element, const std::string &inName) const
 {
   const GroupItemDefinition *def =
@@ -307,7 +302,7 @@ smtk::attribute::ConstItemPtr GroupItem::find(std::size_t element, const std::st
   assert(this->m_items[element].size() > static_cast<std::size_t>(i));
   return this->m_items[element][static_cast<std::size_t>(i)];
 }
-//----------------------------------------------------------------------------
+
 bool GroupItem::assign(ConstItemPtr &sourceItem, unsigned int options)
 {
   // Assigns my contents to be same as sourceItem
@@ -338,4 +333,3 @@ bool GroupItem::assign(ConstItemPtr &sourceItem, unsigned int options)
   return Item::assign(sourceItem, options);
 
 }
-//----------------------------------------------------------------------------

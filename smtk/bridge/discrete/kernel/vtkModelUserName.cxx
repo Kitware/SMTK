@@ -18,19 +18,16 @@
 vtkStandardNewMacro(vtkModelUserName);
 vtkInformationKeyMacro(vtkModelUserName, USERNAME, String);
 
-//----------------------------------------------------------------------------
 void vtkModelUserName::SetUserName(vtkModelEntity* entity, const char* userName)
 {
   entity->GetAttributes()->Set(vtkModelUserName::USERNAME(), userName);
 }
 
-//----------------------------------------------------------------------------
 const char* vtkModelUserName::GetUserName(vtkModelEntity* entity)
 {
   return entity->GetAttributes()->Get(vtkModelUserName::USERNAME());
 }
 
-//----------------------------------------------------------------------------
 void vtkModelUserName::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

@@ -22,7 +22,6 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-//----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
 {
   std::string file_path(data_root);
@@ -34,7 +33,6 @@ smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
   return c;
 }
 
-//----------------------------------------------------------------------------
 void verify_empty_locator(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::PointSet emptyPoints = c->meshes( "bad_name" ).points();
@@ -48,7 +46,6 @@ void verify_empty_locator(const smtk::mesh::CollectionPtr& c)
   smtk::mesh::PointLocator locator2(c, xyzs, numPoints);
 }
 
-//----------------------------------------------------------------------------
 void verify_raw_ptr_constructors(const smtk::mesh::CollectionPtr& c)
 {
   const std::size_t initialNumPoints = c->points().size();
@@ -70,15 +67,12 @@ void verify_raw_ptr_constructors(const smtk::mesh::CollectionPtr& c)
 
 }
 
-//----------------------------------------------------------------------------
 class FindsSelf : public smtk::mesh::PointForEach
 {
   smtk::mesh::PointLocator m_locator;
 public:
-  //--------------------------------------------------------------------------
   FindsSelf(const smtk::mesh::PointLocator& pl): m_locator(pl) {}
 
-  //--------------------------------------------------------------------------
   void forPoints(const smtk::mesh::HandleRange& pointIds,
                  std::vector<double>& xyz,
                  bool& coordinatesModified)
@@ -112,7 +106,6 @@ public:
 
 };
 
-//----------------------------------------------------------------------------
 void verify_points_find_themselves(const smtk::mesh::CollectionPtr& c)
 {
   //construct a point locator for all points in the mesh
@@ -126,7 +119,6 @@ void verify_points_find_themselves(const smtk::mesh::CollectionPtr& c)
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestPointLocator(int, char** const)
 {
   smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();

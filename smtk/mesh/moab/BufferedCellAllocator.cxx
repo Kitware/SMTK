@@ -27,7 +27,6 @@ namespace smtk {
 namespace mesh {
 namespace moab {
 
-//----------------------------------------------------------------------------
 BufferedCellAllocator::BufferedCellAllocator( ::moab::Interface* interface ):
   smtk::mesh::BufferedCellAllocator(), Allocator(interface),
   m_firstCoordinate(0), m_nCoordinates(0), m_coordinateMemory(),
@@ -36,13 +35,11 @@ BufferedCellAllocator::BufferedCellAllocator( ::moab::Interface* interface ):
 {
 }
 
-//----------------------------------------------------------------------------
 BufferedCellAllocator::~BufferedCellAllocator( )
 {
   this->flush();
 }
 
-//----------------------------------------------------------------------------
 bool BufferedCellAllocator::reserveNumberOfCoordinates(std::size_t nCoordinates)
 {
   // Can only reserve coordinates once
@@ -60,7 +57,6 @@ bool BufferedCellAllocator::reserveNumberOfCoordinates(std::size_t nCoordinates)
   return this->m_validState;
 }
 
-//----------------------------------------------------------------------------
 bool BufferedCellAllocator::setCoordinate(std::size_t coord, double* xyz)
 {
   if (!this->m_validState) { return false; }
@@ -73,7 +69,6 @@ bool BufferedCellAllocator::setCoordinate(std::size_t coord, double* xyz)
   return this->m_validState;
 }
 
-//----------------------------------------------------------------------------
 bool BufferedCellAllocator::flush()
 {
   if (!this->m_validState) { return false; }

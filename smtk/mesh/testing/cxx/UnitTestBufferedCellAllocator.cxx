@@ -36,7 +36,6 @@ namespace
   double** cellPoints[9]   = {vertex, line, triangle, quad, polygon,
                               tetrahedron, pyramid, wedge, hexahedron};
 
-//----------------------------------------------------------------------------
 void verify_moab_buffered_cell_allocator_creation()
 {
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
@@ -56,7 +55,6 @@ void verify_moab_buffered_cell_allocator_creation()
   test( collection->isModified(), "collection should be modified once the buffered cell allocator is accessed");
 }
 
-//----------------------------------------------------------------------------
 void verify_json_buffered_cell_allocator_creation()
 {
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
@@ -77,7 +75,6 @@ void verify_json_buffered_cell_allocator_creation()
 
 }
 
-//----------------------------------------------------------------------------
 void verify_moab_buffered_cell_allocator_cell(smtk::mesh::CellType cellType)
 {
   // Allocate a cell of type <cellType>.
@@ -125,7 +122,6 @@ void verify_moab_buffered_cell_allocator_cell(smtk::mesh::CellType cellType)
   test(mesh.points().size() == nVerticesPerCell);
 }
 
-//----------------------------------------------------------------------------
 void verify_moab_buffered_cell_allocator_validity(smtk::mesh::CellType cellType)
 {
   // Allocate a cell of type <cellType>, ensuring that the allocator returns the
@@ -201,7 +197,6 @@ void verify_moab_buffered_cell_allocator_validity(smtk::mesh::CellType cellType)
   test(mesh.points().size() == nVerticesPerCell);
 }
 
-//----------------------------------------------------------------------------
 void verify_moab_buffered_cell_allocator_cells()
 {
   // Allocate one of each type of cell.
@@ -275,7 +270,6 @@ void verify_moab_buffered_cell_allocator_cells()
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestBufferedCellAllocator(int, char** const)
 {
   verify_moab_buffered_cell_allocator_creation();

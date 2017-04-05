@@ -25,22 +25,20 @@
 # include "vtkOpenGL.h"
 #endif
 vtkStandardNewMacro(vtkCMBModelSelectionPainter);
-//----------------------------------------------------------------------------
 vtkCMBModelSelectionPainter::vtkCMBModelSelectionPainter()
 {
   this->OutputData = 0;
 }
 
-//----------------------------------------------------------------------------
 vtkCMBModelSelectionPainter::~vtkCMBModelSelectionPainter()
 {
 }
-//----------------------------------------------------------------------------
+
 vtkDataObject* vtkCMBModelSelectionPainter::GetOutput()
 {
   return this->OutputData? this->OutputData : this->GetInput();
 }
-//-----------------------------------------------------------------------------
+
 void vtkCMBModelSelectionPainter::ReportReferences(vtkGarbageCollector *collector)
 {
   this->Superclass::ReportReferences(collector);
@@ -48,7 +46,6 @@ void vtkCMBModelSelectionPainter::ReportReferences(vtkGarbageCollector *collecto
   vtkGarbageCollectorReport(collector, this->OutputData, "Output");
 }
 
-//----------------------------------------------------------------------------
 void inline RenderEntities(std::map<unsigned int, vtkDataObject*>& entList,
   vtkHardwareSelector* selector, vtkInformation* thisInformation,
    vtkPainter* delegatePainter, vtkDataObject* outputData, vtkRenderer* renderer,
@@ -81,7 +78,6 @@ void inline RenderEntities(std::map<unsigned int, vtkDataObject*>& entList,
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelSelectionPainter::RenderInternal(vtkRenderer* renderer,
                                          vtkActor* actor,
                                          unsigned long typeflags,
@@ -143,7 +139,6 @@ void vtkCMBModelSelectionPainter::RenderInternal(vtkRenderer* renderer,
     this->OutputData, renderer, actor, typeflags, forceCompileOnly);
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelSelectionPainter::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);

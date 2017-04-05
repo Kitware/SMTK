@@ -68,19 +68,16 @@
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
-//-----------------------------------------------------------------------------
 qtTextEdit::qtTextEdit(QWidget * inParent)
 :QTextEdit(inParent)
 {
 }
 
-//-----------------------------------------------------------------------------
 QSize qtTextEdit::sizeHint() const
 {
   return QSize(200, 70);
 }
 
-//----------------------------------------------------------------------------
 qtUIManager::qtUIManager(smtk::attribute::System &system) :
   m_parentWidget(NULL),
   m_AttSystem(system),
@@ -111,7 +108,6 @@ qtUIManager::qtUIManager(smtk::attribute::System &system) :
   qtSMTKUtilities::updateViewConstructors(this);
 }
 
-//----------------------------------------------------------------------------
 qtUIManager::~qtUIManager()
 {
   if(this->m_topView)
@@ -119,7 +115,7 @@ qtUIManager::~qtUIManager()
     delete this->m_topView;
     }
 }
-//----------------------------------------------------------------------------
+
 void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
 {
   m_useInternalFileBrowser = useInternalFileBrowser;
@@ -144,7 +140,6 @@ void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
     }
 }
 
-//----------------------------------------------------------------------------
 void qtUIManager::initializeUI(const smtk::extension::ViewInfo &viewInfo,
 			       bool useInternalFileBrowser)
 {
@@ -169,7 +164,6 @@ void qtUIManager::initializeUI(const smtk::extension::ViewInfo &viewInfo,
     }
 }
 
-//----------------------------------------------------------------------------
 qtBaseView *qtUIManager::setSMTKView(const smtk::extension::ViewInfo &viewInfo,
                                      bool useInternalFileBrowser)
 {
@@ -183,7 +177,6 @@ qtBaseView *qtUIManager::setSMTKView(const smtk::extension::ViewInfo &viewInfo,
   return this->m_topView;
 }
 
-//----------------------------------------------------------------------------
 qtBaseView *qtUIManager::setSMTKView(smtk::common::ViewPtr v)
 {
   if (this->m_smtkView != v)
@@ -194,7 +187,6 @@ qtBaseView *qtUIManager::setSMTKView(smtk::common::ViewPtr v)
   return this->m_topView;
 }
 
-//----------------------------------------------------------------------------
 qtBaseView *qtUIManager::setSMTKView(smtk::common::ViewPtr v, QWidget* pWidget,
                                      bool useInternalFileBrowser)
 {
@@ -207,7 +199,6 @@ qtBaseView *qtUIManager::setSMTKView(smtk::common::ViewPtr v, QWidget* pWidget,
   return this->m_topView;
 }
 
-//----------------------------------------------------------------------------
 void qtUIManager::setSelectionManager(smtk::extension::qtSelectionManager* SM)
 {
   if (SM)
@@ -216,7 +207,6 @@ void qtUIManager::setSelectionManager(smtk::extension::qtSelectionManager* SM)
   }
 }
 
-//----------------------------------------------------------------------------
 void qtUIManager::setActiveModelView(smtk::extension::qtModelView* mv)
 {
   if (this->m_activeModelView != mv)
@@ -224,13 +214,12 @@ void qtUIManager::setActiveModelView(smtk::extension::qtModelView* mv)
     this->m_activeModelView = mv;
     }
 }
-//----------------------------------------------------------------------------
+
 smtk::extension::qtModelView *qtUIManager::activeModelView()
 {
   return this->m_activeModelView;
 }
 
-//----------------------------------------------------------------------------
 void qtUIManager::internalInitialize()
 {
   this->findDefinitionsLongLabels();
@@ -252,7 +241,6 @@ void qtUIManager::internalInitialize()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtUIManager::setAdvanceLevel(int b)
 {
   if(this->m_currentAdvLevel == b)
@@ -266,7 +254,7 @@ void qtUIManager::setAdvanceLevel(int b)
     this->m_topView->showAdvanceLevel(b);
     }
 }
-//----------------------------------------------------------------------------
+
 void qtUIManager::initAdvanceLevels(QComboBox* combo)
 {
   combo->blockSignals(true);
@@ -296,7 +284,6 @@ void qtUIManager::initAdvanceLevels(QComboBox* combo)
 }
 
 
-//----------------------------------------------------------------------------
 void qtUIManager::updateModelViews()
 {
   if(!this->m_topView)
@@ -306,55 +293,50 @@ void qtUIManager::updateModelViews()
   m_topView->updateModelAssociation();
 }
 
-//----------------------------------------------------------------------------
 std::string qtUIManager::currentCategory()
 {
   return this->m_topView ? this->m_topView->currentCategory() : "";
 }
-//----------------------------------------------------------------------------
+
 bool qtUIManager::categoryEnabled()
 {
   return this->m_topView ? this->m_topView->categoryEnabled() : false;
 }
-//----------------------------------------------------------------------------
+
 bool qtUIManager::passAdvancedCheck(int level)
 {
   return (level <= this->advanceLevel());
 }
-//----------------------------------------------------------------------------
+
 bool qtUIManager::passAttributeCategoryCheck(
   smtk::attribute::ConstDefinitionPtr AttDef)
 {
   return this->passCategoryCheck(AttDef->categories());
 }
-//----------------------------------------------------------------------------
+
 bool qtUIManager::passItemCategoryCheck(
   smtk::attribute::ConstItemDefinitionPtr ItemDef)
 {
   return this->passCategoryCheck(ItemDef->categories());
 }
 
-//----------------------------------------------------------------------------
 bool qtUIManager::passCategoryCheck(const std::set<std::string> & categories)
 {
   return !this->categoryEnabled() ||
     categories.find(this->currentCategory()) != categories.end();
 }
 
-//----------------------------------------------------------------------------
 QString qtUIManager::clipBoardText()
 {
   const QMimeData* const clipboard = QApplication::clipboard()->mimeData();
   return clipboard->text();
 }
 
-//----------------------------------------------------------------------------
 void qtUIManager::setClipBoardText(QString& text)
 {
   QApplication::clipboard()->setText(text);
 }
 
-//----------------------------------------------------------------------------
 void qtUIManager::clearRoot()
 {
   if(this->m_topView)
@@ -364,42 +346,36 @@ void qtUIManager::clearRoot()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtUIManager::setAdvanceFontStyleBold(bool val)
 {
   this->advFont.setBold(val);
 }
 
-//----------------------------------------------------------------------------
 bool qtUIManager::advanceFontStyleBold() const
 {
   return this->advFont.bold();
 }
 
-//----------------------------------------------------------------------------
 void qtUIManager::setAdvanceFontStyleItalic(bool val)
 {
   this->advFont.setItalic(val);
 }
 
-//----------------------------------------------------------------------------
 bool qtUIManager::advanceFontStyleItalic() const
 {
   return this->advFont.italic();
 }
 
-//----------------------------------------------------------------------------
 void qtUIManager::setDefaultValueColor(const QColor &color)
 {
   this->DefaultValueColor = color;
 }
-//----------------------------------------------------------------------------
+
 void qtUIManager::setInvalidValueColor(const QColor &color)
 {
   this->InvalidValueColor = color;
 }
 
-//----------------------------------------------------------------------------
 void qtUIManager::setWidgetColorToInvalid(QWidget *widget)
 {
   QPalette pal = widget->palette();
@@ -407,7 +383,6 @@ void qtUIManager::setWidgetColorToInvalid(QWidget *widget)
   widget->setPalette(pal);
 }
 
-//----------------------------------------------------------------------------
 void qtUIManager::setWidgetColorToDefault(QWidget *widget)
 {
   QPalette pal = widget->palette();
@@ -415,7 +390,6 @@ void qtUIManager::setWidgetColorToDefault(QWidget *widget)
   widget->setPalette(pal);
 }
 
-//----------------------------------------------------------------------------
 void qtUIManager::setWidgetColorToNormal(QWidget *widget)
 {
   QPalette pal = widget->palette();
@@ -423,7 +397,6 @@ void qtUIManager::setWidgetColorToNormal(QWidget *widget)
   widget->setPalette(pal);
 }
 
-//----------------------------------------------------------------------------
 void qtUIManager::updateArrayTableWidget(
   smtk::attribute::GroupItemPtr dataItem, QTableWidget* widget)
 {
@@ -462,7 +435,6 @@ void qtUIManager::updateArrayTableWidget(
     }
 }
 
-//----------------------------------------------------------------------------
 void qtUIManager::updateTableColRows(smtk::attribute::ItemPtr dataItem,
     int col, QTableWidget* widget)
 {
@@ -481,7 +453,6 @@ void qtUIManager::updateTableColRows(smtk::attribute::ItemPtr dataItem,
     }
 }
 
-//----------------------------------------------------------------------------
 void qtUIManager::updateArrayDataValue(
   smtk::attribute::GroupItemPtr dataItem, QTableWidgetItem* item)
 {
@@ -503,7 +474,6 @@ void qtUIManager::updateArrayDataValue(
     }
 }
 
-//----------------------------------------------------------------------------
 bool qtUIManager::getExpressionArrayString(
   smtk::attribute::GroupItemPtr dataItem, QString& strValues)
 {
@@ -535,7 +505,6 @@ bool qtUIManager::getExpressionArrayString(
   return true;
 }
 
-//----------------------------------------------------------------------------
 void qtUIManager::removeSelectedTableValues(
   smtk::attribute::GroupItemPtr dataItem, QTableWidget* table)
 {
@@ -567,7 +536,6 @@ void qtUIManager::removeSelectedTableValues(
     }
 }
 
-//----------------------------------------------------------------------------
 void qtUIManager::addNewTableValues(smtk::attribute::GroupItemPtr dataItem,
   QTableWidget* table, double* vals, int numVals)
 {
@@ -595,7 +563,7 @@ void qtUIManager::addNewTableValues(smtk::attribute::GroupItemPtr dataItem,
     table->setItem(totalRow-1, i, new QTableWidgetItem(strValue));
     }
 }
-//----------------------------------------------------------------------------
+
 void qtUIManager::onFileItemCreated(qtFileItem* fileItem)
 {
   if (m_useInternalFileBrowser)
@@ -607,20 +575,19 @@ void qtUIManager::onFileItemCreated(qtFileItem* fileItem)
     emit this->fileItemCreated(fileItem);
     }
 }
-//----------------------------------------------------------------------------
+
 void qtUIManager::onModelEntityItemCreated(
   smtk::extension::qtModelEntityItem* entItem)
 {
   emit this->modelEntityItemCreated(entItem);
 }
-//----------------------------------------------------------------------------
+
 void qtUIManager::onMeshSelectionItemCreated(
   smtk::extension::qtMeshSelectionItem* entItem)
 {
   emit this->meshSelectionItemCreated(entItem);
 }
 
-//----------------------------------------------------------------------------
 bool qtUIManager::updateTableItemCheckState(
   QTableWidgetItem* labelitem, smtk::attribute::ItemPtr attItem)
 {
@@ -639,13 +606,12 @@ bool qtUIManager::updateTableItemCheckState(
   return bEnabled;
 }
 
-//----------------------------------------------------------------------------
 void qtUIManager::registerViewConstructor(const std::string &vtype,
                                           widgetConstructor f)
 {
   this->m_constructors[vtype] = f;
 }
-//----------------------------------------------------------------------------
+
 qtBaseView *qtUIManager::createView(const ViewInfo &info)
 {
   if (info.m_UIManager != this)
@@ -666,14 +632,12 @@ qtBaseView *qtUIManager::createView(const ViewInfo &info)
   return qtView;
 }
 
-//----------------------------------------------------------------------------
 void qtUIManager::onViewUIModified(smtk::extension::qtBaseView* bview,
                                    smtk::attribute::ItemPtr item)
 {
   emit this->viewUIChanged(bview, item);
 }
 
-//----------------------------------------------------------------------------
 int qtUIManager::getWidthOfAttributeMaxLabel(smtk::attribute::DefinitionPtr def,
                                      const QFont &font)
 {
@@ -692,7 +656,6 @@ int qtUIManager::getWidthOfAttributeMaxLabel(smtk::attribute::DefinitionPtr def,
   return fontsize.width(text.c_str());
 }
 
-//----------------------------------------------------------------------------
 void qtUIManager::findDefinitionLongLabel(
   smtk::attribute::DefinitionPtr def, std::string &labelText)
 {
@@ -706,7 +669,6 @@ void qtUIManager::findDefinitionLongLabel(
   this->getItemsLongLabel(itemDefs, labelText);
 }
 
-//----------------------------------------------------------------------------
 void qtUIManager::getItemsLongLabel(
   const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs,
   std::string &labelText)
@@ -734,7 +696,6 @@ void qtUIManager::getItemsLongLabel(
   labelText += (hasOptionalItem ? "     " : " ");
 }
 
-//----------------------------------------------------------------------------
 int qtUIManager::getWidthOfItemsMaxLabel(
       const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs,
       const QFont &font)
@@ -745,7 +706,6 @@ int qtUIManager::getWidthOfItemsMaxLabel(
   return fontsize.width(text.c_str());
 }
 
-//----------------------------------------------------------------------------
 void qtUIManager::findDefinitionsLongLabels()
 {
   this->Def2LongLabel.clear();

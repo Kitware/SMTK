@@ -82,7 +82,6 @@ protected:
   vtkSmartPointer<vtkIncrementalOctreePointLocator> Locator;
   };
 
-//-----------------------------------------------------------------------------
 vtkCMBApplyBathymetryFilter::vtkCmbInternalTerrainInfo::vtkCmbInternalTerrainInfo(
   vtkInformation* inInfo, const double &radius, double &invalid,
   bool useHighLimit, double eleHigh, bool useLowLimit, double eleLow)
@@ -223,7 +222,6 @@ vtkCMBApplyBathymetryFilter::vtkCmbInternalTerrainInfo::vtkCmbInternalTerrainInf
   pointSet->Delete();
 }
 
-//-----------------------------------------------------------------------------
 template<class T>
 T vtkCMBApplyBathymetryFilter::vtkCmbInternalTerrainInfo::getElevation(
   T *point)
@@ -250,7 +248,6 @@ T vtkCMBApplyBathymetryFilter::vtkCmbInternalTerrainInfo::getElevation(
   return elev;
 }
 
-//-----------------------------------------------------------------------------
 vtkCMBApplyBathymetryFilter::vtkCMBApplyBathymetryFilter()
 {
   this->TerrainInfo = NULL;
@@ -265,7 +262,6 @@ vtkCMBApplyBathymetryFilter::vtkCMBApplyBathymetryFilter()
   this->InvalidValue = 0.0;
 }
 
-//-----------------------------------------------------------------------------
 vtkCMBApplyBathymetryFilter::~vtkCMBApplyBathymetryFilter()
 {
   if(this->TerrainInfo)
@@ -274,7 +270,6 @@ vtkCMBApplyBathymetryFilter::~vtkCMBApplyBathymetryFilter()
     }
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBApplyBathymetryFilter::FillInputPortInformation(int port,
                                                           vtkInformation *info)
 {
@@ -287,19 +282,16 @@ int vtkCMBApplyBathymetryFilter::FillInputPortInformation(int port,
   return 1;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBApplyBathymetryFilter::RemoveInputConnections()
 {
   this->SetInputConnection(0, NULL);
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBApplyBathymetryFilter::RemoveSourceConnections()
 {
   this->SetInputConnection(1, NULL);
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBApplyBathymetryFilter::RequestData(vtkInformation* /*request*/,
                                              vtkInformationVector** inputVector,
                                              vtkInformationVector* outputVector)
@@ -357,7 +349,6 @@ int vtkCMBApplyBathymetryFilter::RequestData(vtkInformation* /*request*/,
   return validMesh;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBApplyBathymetryFilter::FlattenMesh(vtkPoints *points)
 {
   bool valid = true;
@@ -382,7 +373,6 @@ bool vtkCMBApplyBathymetryFilter::FlattenMesh(vtkPoints *points)
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBApplyBathymetryFilter::ApplyBathymetry(vtkPoints *points)
 {
   //get the point data void pointer
@@ -416,7 +406,6 @@ bool vtkCMBApplyBathymetryFilter::ApplyBathymetry(vtkPoints *points)
   return true;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBApplyBathymetryFilter::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

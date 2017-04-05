@@ -49,7 +49,6 @@ void cleanup( const std::string& file_path )
     }
 }
 
-//----------------------------------------------------------------------------
 void create_simple_mesh_model( smtk::model::ManagerPtr mgr )
 {
   std::string file_path(data_root);
@@ -68,7 +67,6 @@ void create_simple_mesh_model( smtk::model::ManagerPtr mgr )
   file.close();
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::MeshSet make_MeshPoint(smtk::mesh::CollectionPtr collection,
                                    double x, double y, double z)
 {
@@ -93,7 +91,6 @@ smtk::mesh::MeshSet make_MeshPoint(smtk::mesh::CollectionPtr collection,
 }
 
 
-//----------------------------------------------------------------------------
 void verify_simple_merge()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
@@ -122,7 +119,6 @@ void verify_simple_merge()
   test( vert_cells.size() == 7 );
 }
 
-//----------------------------------------------------------------------------
 void verify_complex_merge()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
@@ -167,7 +163,6 @@ void verify_complex_merge()
   test(p[0] == 0.0); test(p[1] == 2.0); test(p[2] == 0.0);
 }
 
-//----------------------------------------------------------------------------
 void verify_write_valid_collection_hdf5_after_merge()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
@@ -248,7 +243,6 @@ void verify_write_valid_collection_hdf5_after_merge()
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestMergeContactPoints(int, char** const)
 {
   verify_simple_merge();

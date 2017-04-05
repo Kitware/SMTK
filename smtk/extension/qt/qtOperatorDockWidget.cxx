@@ -10,11 +10,9 @@
 #include "smtk/extension/qt/qtOperatorDockWidget.h"
 #include <QCloseEvent>
 
-// -----------------------------------------------------------------------------
 namespace smtk {
   namespace extension {
 
-//-----------------------------------------------------------------------------
 qtOperatorDockWidget::qtOperatorDockWidget(QWidget* p)
   : QDockWidget(p)
 {
@@ -23,12 +21,10 @@ qtOperatorDockWidget::qtOperatorDockWidget(QWidget* p)
   this->setFloating(true);
 }
 
-//-----------------------------------------------------------------------------
 qtOperatorDockWidget::~qtOperatorDockWidget()
 {
 }
 
-//-----------------------------------------------------------------------------
 void qtOperatorDockWidget::closeEvent(QCloseEvent* clevent)
 {
   emit this->closing();

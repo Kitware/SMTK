@@ -45,7 +45,6 @@
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
-//----------------------------------------------------------------------------
 class qtFileItemInternals
 {
 public:
@@ -71,7 +70,6 @@ public:
   QPointer<QToolButton> AddItemButton;
 };
 
-//----------------------------------------------------------------------------
 qtFileItem::qtFileItem(
   smtk::attribute::FileSystemItemPtr dataObj, QWidget* p, qtBaseView* bview,
    Qt::Orientation enVectorItemOrient) : qtItem(dataObj, p, bview)
@@ -89,24 +87,21 @@ qtFileItem::qtFileItem(
     }
 }
 
-//----------------------------------------------------------------------------
 qtFileItem::~qtFileItem()
 {
   delete this->Internals;
 }
-//----------------------------------------------------------------------------
+
 void qtFileItem::setLabelVisible(bool visible)
 {
   this->Internals->theLabel->setVisible(visible);
 }
 
-//----------------------------------------------------------------------------
 bool qtFileItem::isDirectory()
 {
   return this->Internals->IsDirectory;
 }
 
-//----------------------------------------------------------------------------
 // Although you *can* disable this feature, it is not recommended.
 // Behavior is not defined if this method is called after
 // the ancestor qtUIManager::initializeUI() method is called.
@@ -126,7 +121,6 @@ void qtFileItem::enableFileBrowser(bool state)
     }
 }
 
-//----------------------------------------------------------------------------
 QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
 {
   smtk::attribute::FileSystemItemPtr item =
@@ -244,7 +238,6 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
   return frame;
 }
 
-//----------------------------------------------------------------------------
 void qtFileItem::onInputValueChanged()
 {
   QLineEdit* editBox = NULL;
@@ -290,7 +283,6 @@ void qtFileItem::onInputValueChanged()
 }
 
 
-//----------------------------------------------------------------------------
 void qtFileItem::onEditingFinished()
 {
   // For files, check if the extension in the input is valid. If it is not,
@@ -333,7 +325,6 @@ void qtFileItem::onEditingFinished()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtFileItem::onLaunchFileBrowser()
 {
   // If we are not using local file browser, just emit signal and return
@@ -385,7 +376,6 @@ void qtFileItem::onLaunchFileBrowser()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtFileItem::updateFileComboList(const QString& newFile)
 {
   if (this->Internals->fileCombo)
@@ -407,7 +397,6 @@ void qtFileItem::updateFileComboList(const QString& newFile)
     }
 }
 
-//----------------------------------------------------------------------------
 void qtFileItem::setInputValue(const QString& val)
 {
   QLineEdit* lineEdit =  NULL;
@@ -430,7 +419,6 @@ void qtFileItem::setInputValue(const QString& val)
   this->onInputValueChanged();
 }
 
-//----------------------------------------------------------------------------
 void qtFileItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();
@@ -445,14 +433,12 @@ void qtFileItem::createWidget()
   this->updateItemData();
 }
 
-//----------------------------------------------------------------------------
 void qtFileItem::updateItemData()
 {
   this->updateUI();
   this->qtItem::updateItemData();
 }
 
-//----------------------------------------------------------------------------
 void qtFileItem::addInputEditor(int i)
 {
   smtk::attribute::FileSystemItemPtr item =
@@ -541,7 +527,6 @@ void qtFileItem::addInputEditor(int i)
   this->updateExtensibleState();
 }
 
-//----------------------------------------------------------------------------
 void qtFileItem::loadInputValues()
 {
   smtk::attribute::FileSystemItemPtr item =
@@ -582,7 +567,6 @@ void qtFileItem::loadInputValues()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtFileItem::updateUI()
 {
   //smtk::attribute::ItemPtr dataObj = this->getObject();
@@ -678,7 +662,6 @@ void qtFileItem::updateUI()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtFileItem::setOutputOptional(int state)
 {
   smtk::attribute::FileSystemItemPtr item =
@@ -723,7 +706,6 @@ void qtFileItem::setOutputOptional(int state)
     }
 }
 
-//----------------------------------------------------------------------------
 void qtFileItem::onAddNewValue()
 {
   smtk::attribute::FileSystemItemPtr item =
@@ -742,7 +724,6 @@ void qtFileItem::onAddNewValue()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtFileItem::onRemoveValue()
 {
   QToolButton* const minusButton = qobject_cast<QToolButton*>(
@@ -783,7 +764,6 @@ void qtFileItem::onRemoveValue()
   this->updateExtensibleState();
 }
 
-//----------------------------------------------------------------------------
 void qtFileItem::setActiveField(QWidget* activeField)
 {
   QVariant vdata;
@@ -791,7 +771,6 @@ void qtFileItem::setActiveField(QWidget* activeField)
   this->setProperty("DataItem", vdata);
 }
 
-//----------------------------------------------------------------------------
 void qtFileItem::updateExtensibleState()
 {
   smtk::attribute::FileSystemItemPtr item =
@@ -812,7 +791,6 @@ void qtFileItem::updateExtensibleState()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtFileItem::clearChildWidgets()
 {
   smtk::attribute::FileSystemItemPtr item =

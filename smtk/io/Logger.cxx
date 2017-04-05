@@ -15,13 +15,11 @@
 namespace smtk {
   namespace io {
 
-//----------------------------------------------------------------------------
 Logger::~Logger()
 {
   this->setFlushToStream(NULL, false, false);
 }
 
-//----------------------------------------------------------------------------
 void Logger::addRecord(Severity s, const std::string &m,
                        const std::string &fname,
                        unsigned int line)
@@ -34,7 +32,7 @@ void Logger::addRecord(Severity s, const std::string &m,
   std::size_t nr = this->numberOfRecords();
   this->flushRecordsToStream(nr - 1, nr);
 }
-//----------------------------------------------------------------------------
+
 void Logger::append(const Logger &l)
 {
   this->m_records.insert(this->m_records.end(), l.m_records.begin(),
@@ -46,13 +44,13 @@ void Logger::append(const Logger &l)
   std::size_t nr = this->numberOfRecords();
   this->flushRecordsToStream(nr - l.numberOfRecords(), nr);
 }
-//----------------------------------------------------------------------------
+
 void Logger::reset()
 {
   this->m_hasErrors = false;
   this->m_records.empty();
 }
-//----------------------------------------------------------------------------
+
 std::string Logger::severityAsString(Severity s)
 {
   switch (s)
@@ -134,13 +132,11 @@ std::string Logger::toHTML(std::size_t i, std::size_t j, bool includeSourceLoc) 
   return ss.str();
 }
 
-//----------------------------------------------------------------------------
 std::string Logger::convertToString(bool includeSourceLoc) const
 {
   return this->toString(0, this->m_records.size(), includeSourceLoc);
 }
 
-//----------------------------------------------------------------------------
 std::string Logger::convertToHTML(bool includeSourceLog) const
 {
   return this->toHTML(0, this->m_records.size(), includeSourceLog);

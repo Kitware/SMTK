@@ -33,14 +33,12 @@ namespace smtk {
 namespace mesh {
 namespace moab {
 
-//----------------------------------------------------------------------------
 IncrementalAllocator::IncrementalAllocator( ::moab::Interface* interface ):
   smtk::mesh::IncrementalAllocator(), BufferedCellAllocator(interface),
   m_index(0)
 {
 }
 
-//----------------------------------------------------------------------------
 void IncrementalAllocator::initialize()
 {
   if (this->m_nCoordinates == 0)
@@ -49,7 +47,6 @@ void IncrementalAllocator::initialize()
     }
 }
 
-//----------------------------------------------------------------------------
 bool IncrementalAllocator::allocateCoordinates(std::size_t nCoordinates)
 {
   this->m_validState =
@@ -67,7 +64,6 @@ bool IncrementalAllocator::allocateCoordinates(std::size_t nCoordinates)
   return this->m_validState;
 }
 
-//----------------------------------------------------------------------------
 std::size_t IncrementalAllocator::addCoordinate(double* xyz)
 {
   if (!this->m_validState) { return false; }
@@ -84,7 +80,6 @@ std::size_t IncrementalAllocator::addCoordinate(double* xyz)
   return this->m_index++;
 }
 
-//----------------------------------------------------------------------------
 bool IncrementalAllocator::setCoordinate(std::size_t coord, double* xyz)
 {
   if (!this->m_validState) { return false; }

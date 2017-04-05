@@ -24,7 +24,6 @@ struct ModelVertexClassification::Internals
   vtkDiscreteModel* Model;
 };
 
-//=============================================================================
 ModelVertexClassification::ModelVertexClassification(vtkDiscreteModel* model)
 {
   this->Internal = new Internals();
@@ -46,13 +45,11 @@ ModelVertexClassification::ModelVertexClassification(vtkDiscreteModel* model)
     }
 }
 
-//=============================================================================
 ModelVertexClassification::~ModelVertexClassification()
 {
   delete this->Internal;
 }
 
-//=============================================================================
 vtkDiscreteModelVertex* ModelVertexClassification::GetModelVertex(
                                                       vtkIdType pointId )
 {
@@ -67,7 +64,6 @@ vtkDiscreteModelVertex* ModelVertexClassification::GetModelVertex(
   return info;
 }
 
-//=============================================================================
 vtkIdType ModelVertexClassification::GetModelId( vtkIdType pointId )
 {
   typedef std::map<vtkIdType,Internals::ModelVertexInfo>::const_iterator iterator;
@@ -81,13 +77,11 @@ vtkIdType ModelVertexClassification::GetModelId( vtkIdType pointId )
   return info;
 }
 
-  //=============================================================================
 bool ModelVertexClassification::HasModelVertex( vtkIdType pointId ) const
 {
   return this->Internal->ModelVertInfo.count(pointId) == 1;
 }
 
-//=============================================================================
 vtkDiscreteModelVertex*
   ModelVertexClassification::AddModelVertex( vtkIdType pointId,
   bool bCreateGeometry)
@@ -96,7 +90,6 @@ vtkDiscreteModelVertex*
   return this->AddModelVertex(pointId, bCreateGeometry, modelId);
 }
 
-//=============================================================================
 vtkDiscreteModelVertex*
   ModelVertexClassification::AddModelVertex( vtkIdType pointId,
   bool bCreateGeometry, vtkIdType& modelId )

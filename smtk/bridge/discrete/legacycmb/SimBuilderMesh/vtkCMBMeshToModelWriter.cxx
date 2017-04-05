@@ -63,7 +63,6 @@ namespace {
 vtkStandardNewMacro(vtkCMBMeshToModelWriter);
 vtkCxxSetObjectMacro(vtkCMBMeshToModelWriter, ModelWrapper, vtkDiscreteModelWrapper);
 
-//----------------------------------------------------------------------------
 vtkCMBMeshToModelWriter::vtkCMBMeshToModelWriter()
 {
   this->SetNumberOfInputPorts(0);
@@ -72,31 +71,26 @@ vtkCMBMeshToModelWriter::vtkCMBMeshToModelWriter()
   this->ModelWrapper = 0;
 }
 
-//----------------------------------------------------------------------------
 vtkCMBMeshToModelWriter::~vtkCMBMeshToModelWriter()
 {
   this->SetModelWrapper(0);
 }
 
-//----------------------------------------------------------------------------
 const char* vtkCMBMeshToModelWriter::GetDefaultFileExtension()
 {
   return "m2m";
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBMeshToModelWriter::GetDataSetMajorVersion()
 {
   return 1;
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBMeshToModelWriter::GetDataSetMinorVersion()
 {
   return 0;
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBMeshToModelWriter::WriteData()
 {
   int result = 0;
@@ -135,7 +129,6 @@ int vtkCMBMeshToModelWriter::WriteData()
   return result;
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBMeshToModelWriter::WriteHeader(vtkIndent* parentIndent)
 {
   vtkDiscreteModel* Model = this->ModelWrapper->GetModel();
@@ -182,7 +175,6 @@ int vtkCMBMeshToModelWriter::WriteHeader(vtkIndent* parentIndent)
   return 1;
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBMeshToModelWriter::WriteFooter(vtkIndent* parentIndent)
 {
   vtkIndent indent = parentIndent->GetNextIndent();
@@ -199,7 +191,6 @@ int vtkCMBMeshToModelWriter::WriteFooter(vtkIndent* parentIndent)
   return 1;
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBMeshToModelWriter::Write3DModelMeshInfo(vtkIndent* parentindent)
 {
   vtkDiscreteModel* Model = this->ModelWrapper->GetModel();
@@ -290,7 +281,6 @@ int vtkCMBMeshToModelWriter::Write3DModelMeshInfo(vtkIndent* parentindent)
   return 1;
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBMeshToModelWriter::Write2DModelMeshInfo(vtkIndent* parentindent)
 {
   vtkDiscreteModel* Model = this->ModelWrapper->GetModel();
@@ -375,13 +365,11 @@ int vtkCMBMeshToModelWriter::Write2DModelMeshInfo(vtkIndent* parentindent)
   return 1;
 }
 
-//-----------------------------------------------------------------------------
 const char* vtkCMBMeshToModelWriter::GetDataSetName()
 {
   return "PolyData";
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBMeshToModelWriter::PrintSelf(ostream& os, vtkIndent indent)
   {
   this->Superclass::PrintSelf(os,indent);

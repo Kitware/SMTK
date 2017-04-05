@@ -17,17 +17,14 @@
 namespace smtk {
   namespace common {
 
-//----------------------------------------------------------------------------
 Resource::Resource()
 {
 }
 
-//----------------------------------------------------------------------------
 Resource::~Resource()
 {
 }
 
-//----------------------------------------------------------------------------
 std::string Resource::type2String(Resource::Type t)
 {
   switch (t)
@@ -44,7 +41,6 @@ std::string Resource::type2String(Resource::Type t)
   return "Error!";
 }
 
-//----------------------------------------------------------------------------
 Resource::Type Resource::string2Type(const std::string &s)
 {
   if (s == "attribute")

@@ -23,7 +23,6 @@ namespace smtk {
 namespace mesh {
 namespace moab {
 
-//----------------------------------------------------------------------------
 Allocator::Allocator( ::moab::Interface* interface ):
   m_rface(NULL)
 {
@@ -33,7 +32,6 @@ if(interface)
   }
 }
 
-//----------------------------------------------------------------------------
 Allocator::~Allocator( )
 {
   //don't de-allocate the Interface that created us, really manages this
@@ -41,7 +39,6 @@ Allocator::~Allocator( )
   this->m_rface = NULL;
 }
 
-//----------------------------------------------------------------------------
 bool Allocator::allocatePoints( std::size_t numPointsToAlloc,
                                 smtk::mesh::Handle& firstVertexHandle,
                                 std::vector<double* >& coordinateMemory)
@@ -56,7 +53,6 @@ bool Allocator::allocatePoints( std::size_t numPointsToAlloc,
   return err == ::moab::MB_SUCCESS;
 }
 
-//----------------------------------------------------------------------------
 bool Allocator::allocateCells(smtk::mesh::CellType cellType,
                                std::size_t numCellsToAlloc,
                                int numVertsPerCell,
@@ -82,7 +78,6 @@ bool Allocator::allocateCells(smtk::mesh::CellType cellType,
 
 }
 
-//----------------------------------------------------------------------------
 bool Allocator::connectivityModified( const smtk::mesh::HandleRange& cellsToUpdate,
                                       int numVertsPerCell,
                                       const smtk::mesh::Handle* connectivityArray)

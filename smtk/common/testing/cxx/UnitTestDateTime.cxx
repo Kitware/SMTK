@@ -15,7 +15,6 @@
 
 namespace {
 
-//----------------------------------------------------------------------------
 void verifyTimeZones()
 {
   smtk::common::TimeZone tz;
@@ -24,14 +23,12 @@ void verifyTimeZones()
   test(!tz.setRegion("Invalid"), "Failed to recognize invalid TimeZone region");
 }
 
-//----------------------------------------------------------------------------
 void verifyConstructors()
 {
   smtk::common::DateTime dtEmpty;
   test(!dtEmpty.isSet(), "Failed to recognize invalid state");
 }
 
-//----------------------------------------------------------------------------
 void verifyParsers()
 {
   // Using DateTime::deserialize():
@@ -70,7 +67,6 @@ void verifyParsers()
   test(!dt.isSet(), "Failed to show that parsing date only dont work");
 }
 
-//----------------------------------------------------------------------------
 void verifySetGets()
 {
   // Initialize
@@ -134,7 +130,6 @@ void verifySetGets()
 
 }  // end namespace
 
-//----------------------------------------------------------------------------
 int UnitTestDateTime(int, char** const)
 {
   verifyTimeZones();

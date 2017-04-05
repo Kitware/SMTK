@@ -235,7 +235,6 @@ void SmartMapAppend(std::list<vtkPolyData*> inputs, vtkPolyData* output,
 
 vtkStandardNewMacro(vtkCMBTriangleMesher);
 
-//--------------------------------------------------------------------
 vtkCMBTriangleMesher::vtkCMBTriangleMesher()
 {
   MinAngle              = 20.0f;
@@ -249,12 +248,12 @@ vtkCMBTriangleMesher::vtkCMBTriangleMesher()
   VerboseOutput         = false;
   Launcher              = NULL;
 }
-//--------------------------------------------------------------------
+
 vtkCMBTriangleMesher::~vtkCMBTriangleMesher()
 {
   this->SetLauncher(NULL);
 }
-//--------------------------------------------------------------------
+
 void vtkCMBTriangleMesher::PrintSelf(ostream& os, vtkIndent indent)
 {
   const char* areaModeType[4] =
@@ -281,7 +280,6 @@ void vtkCMBTriangleMesher::PrintSelf(ostream& os, vtkIndent indent)
 using namespace CmbFaceMesherClasses;
 using namespace vtksys;
 
-//--------------------------------------------------------------------
 int vtkCMBTriangleMesher::RequestData(vtkInformation * /*request*/,
     vtkInformationVector **inputVector,
     vtkInformationVector *outputVector)

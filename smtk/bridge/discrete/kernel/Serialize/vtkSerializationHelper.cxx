@@ -12,7 +12,6 @@
 #include <vtkObjectFactory.h>
 
 
-//-----------------------------------------------------------------------------
 void vtkSerializationHelper::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

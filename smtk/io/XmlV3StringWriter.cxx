@@ -26,30 +26,25 @@ using namespace smtk::attribute;
 namespace smtk {
   namespace io {
 
-//----------------------------------------------------------------------------
 XmlV3StringWriter::XmlV3StringWriter(const attribute::System &mySystem)
   : XmlV2StringWriter(mySystem)
   {
 }
 
-//----------------------------------------------------------------------------
 XmlV3StringWriter::~XmlV3StringWriter()
 {
 }
 
-//----------------------------------------------------------------------------
 std::string XmlV3StringWriter::className() const
 {
   return std::string("XmlV3StringWriter");
 }
 
-//----------------------------------------------------------------------------
 unsigned int XmlV3StringWriter::fileVersion() const
 {
   return 3;
 }
 
-//----------------------------------------------------------------------------
 void XmlV3StringWriter::processItemDefinitionType(
   xml_node &node, smtk::attribute::ItemDefinitionPtr idef)
 {
@@ -66,7 +61,6 @@ void XmlV3StringWriter::processItemDefinitionType(
     }
 }
 
-//----------------------------------------------------------------------------
 void XmlV3StringWriter::processDateTimeDef(
   pugi::xml_node &node, smtk::attribute::DateTimeItemDefinitionPtr idef)
 {
@@ -110,7 +104,6 @@ void XmlV3StringWriter::processDateTimeDef(
   //   }
 }
 
-//----------------------------------------------------------------------------
 void XmlV3StringWriter::processItemType(
   xml_node &node, smtk::attribute::ItemPtr item)
 {
@@ -127,7 +120,6 @@ void XmlV3StringWriter::processItemType(
     }
 }
 
-//----------------------------------------------------------------------------
 void XmlV3StringWriter::processDateTimeItem(
   pugi::xml_node &node,
   attribute::DateTimeItemPtr item)
@@ -172,8 +164,6 @@ void XmlV3StringWriter::processDateTimeItem(
       }
     }
 }
-
-//----------------------------------------------------------------------------
 
   } // namespace io
 } // namespace smtk

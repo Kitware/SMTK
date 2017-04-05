@@ -18,14 +18,12 @@
 
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 FileItem::FileItem(Attribute *owningAttribute,
                    int itemPosition):
   FileSystemItem(owningAttribute, itemPosition)
 {
 }
 
-//----------------------------------------------------------------------------
 FileItem::FileItem(Item *inOwningItem,
                    int itemPosition,
                    int inSubGroupPosition):
@@ -33,7 +31,6 @@ FileItem::FileItem(Item *inOwningItem,
 {
 }
 
-//----------------------------------------------------------------------------
 bool FileItem::
 setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 {
@@ -47,23 +44,18 @@ setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
   return isSet;
 }
 
-//----------------------------------------------------------------------------
 FileItem::~FileItem()
 {
 }
 
-//----------------------------------------------------------------------------
 Item::Type FileItem::type() const
 {
   return FILE;
 }
 
-//----------------------------------------------------------------------------
 void FileItem::addRecentValue(const std::string& val)
 {
   if(std::find(this->m_recentValues.begin(), this->m_recentValues.end(), val)
      == this->m_recentValues.end())
     this->m_recentValues.push_back(val);
 }
-
-//----------------------------------------------------------------------------

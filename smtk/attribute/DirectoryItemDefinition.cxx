@@ -15,24 +15,20 @@
 
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 DirectoryItemDefinition::
 DirectoryItemDefinition(const std::string &myName) :
   FileSystemItemDefinition(myName)
 {
 }
 
-//----------------------------------------------------------------------------
 DirectoryItemDefinition::~DirectoryItemDefinition()
 {
 }
-//----------------------------------------------------------------------------
 Item::Type DirectoryItemDefinition::type() const
 {
   return Item::DIRECTORY;
 }
 
-//----------------------------------------------------------------------------
 smtk::attribute::ItemPtr
 DirectoryItemDefinition::buildItem(Attribute *owningAttribute,
                                    int itemPosition) const
@@ -40,7 +36,7 @@ DirectoryItemDefinition::buildItem(Attribute *owningAttribute,
   return smtk::attribute::ItemPtr(new DirectoryItem(owningAttribute,
                                                     itemPosition));
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemPtr
 DirectoryItemDefinition::buildItem(Item *owningItem,
                                    int itemPosition,
@@ -49,7 +45,7 @@ DirectoryItemDefinition::buildItem(Item *owningItem,
   return smtk::attribute::ItemPtr(new DirectoryItem(owningItem, itemPosition,
                                                     subGroupPosition));
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemDefinitionPtr
 smtk::attribute::DirectoryItemDefinition::
 createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
@@ -85,4 +81,3 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
     }
  return instance;
 }
-//----------------------------------------------------------------------------

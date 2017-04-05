@@ -18,7 +18,6 @@
 namespace sc = smtk::common;
 namespace {
 
-//----------------------------------------------------------------------------
 void   verifyNotSet()
 {
   std::cout << "verifyNotSet()" << std::endl;
@@ -37,7 +36,6 @@ void   verifyNotSet()
   test(!tzIn1.isSet(), "Failed to show timezone as not set");
 }
 
-//----------------------------------------------------------------------------
 void   verifyNoTimeZone()
 {
   std::cout << "verifyNoTimeZone()" << std::endl;
@@ -66,7 +64,6 @@ void   verifyNoTimeZone()
   test(!tzIn1.isSet(), "Failed to show timezone as unSet()");
 }
 
-//----------------------------------------------------------------------------
 void   verifyTimeZoneOnly()
 {
   std::cout << "verifyTimeZoneOnly()" << std::endl;
@@ -90,7 +87,6 @@ void   verifyTimeZoneOnly()
   test(!!tzIn1.isSet(), "Failed to show timezone/TimeZoneOnly as set");
 }
 
-//----------------------------------------------------------------------------
 void   verifyUTC()
 {
   std::cout << "verifyUTC()" << std::endl;
@@ -124,7 +120,6 @@ void   verifyUTC()
   test(!!tzIn1.isUTC(), "Failed to return true for isUTC()");
 }
 
-//----------------------------------------------------------------------------
 void   verifyRegionTimeZone()
 {
   std::cout << "verifyRegionTimeZone()" << std::endl;
@@ -161,7 +156,6 @@ void   verifyRegionTimeZone()
     "Failed to return correct time zone region");
 }
 
-//----------------------------------------------------------------------------
 void   verifyPosixTimeZone()
 {
   std::cout << "verifyPosixTimeZone()" << std::endl;
@@ -203,7 +197,6 @@ void   verifyPosixTimeZone()
 
 }  // end namespace
 
-//----------------------------------------------------------------------------
 int UnitTestDateTimeZonePair(int, char** const)
 {
   verifyNotSet();

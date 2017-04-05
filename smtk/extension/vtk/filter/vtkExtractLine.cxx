@@ -18,13 +18,11 @@
 
 vtkStandardNewMacro(vtkExtractLine);
 
-//----------------------------------------------------------------------------
 vtkExtractLine::vtkExtractLine()
 {
   this->LineId = -1;
 }
 
-//----------------------------------------------------------------------------
 int vtkExtractLine::RequestData(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **inputVector,
@@ -73,7 +71,6 @@ int vtkExtractLine::RequestData(
   return 1;
 }
 
-//----------------------------------------------------------------------------
 void vtkExtractLine::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

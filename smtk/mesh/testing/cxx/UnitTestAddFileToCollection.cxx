@@ -21,7 +21,6 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-//----------------------------------------------------------------------------
 std::string first_mesh_path()
 {
   std::string file_path(data_root);
@@ -29,7 +28,6 @@ std::string first_mesh_path()
   return file_path;
 }
 
-//----------------------------------------------------------------------------
 std::string second_mesh_path()
 {
   std::string file_path(data_root);
@@ -37,7 +35,6 @@ std::string second_mesh_path()
   return file_path;
 }
 
-//----------------------------------------------------------------------------
 void verify_cant_append_to_bad_collection()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
@@ -53,14 +50,13 @@ void verify_cant_append_to_bad_collection()
   test( !c->isValid(), "collection should still be invalid");
 }
 
-//----------------------------------------------------------------------------
 void verify_cant_append_to_null_collection()
 {
   smtk::mesh::CollectionPtr null_collection_ptr;
   bool result = smtk::io::readMesh(first_mesh_path(), null_collection_ptr);
   test( !result, "read into a null collection should fail");
 }
-//----------------------------------------------------------------------------
+
 void verify_append_to_valid_empty_collection()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
@@ -74,7 +70,6 @@ void verify_append_to_valid_empty_collection()
   test( numMeshes != 0 );
 }
 
-//----------------------------------------------------------------------------
 void verify_append_self_to_self()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
@@ -95,7 +90,6 @@ void verify_append_self_to_self()
   test( newNumMeshes == 2 * origNumMeshes );
 }
 
-//----------------------------------------------------------------------------
 void verify_append_subsection_of_self()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
@@ -123,7 +117,6 @@ void verify_append_subsection_of_self()
   test( newNumMeshes == firstNumMesh + secondNumMesh );
 }
 
-//----------------------------------------------------------------------------
 void verify_cant_append_mismatched_data()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
@@ -138,7 +131,6 @@ void verify_cant_append_mismatched_data()
   test( !result, "read of a second mesh that has different vertices should fail");
 }
 
-//----------------------------------------------------------------------------
 void verify_append_dirichlet_to_neumann()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
@@ -169,7 +161,6 @@ void verify_append_dirichlet_to_neumann()
   test( newNumMeshes == firstNumMesh + secondNumMesh );
 }
 
-//----------------------------------------------------------------------------
 void verify_append_neumann_to_dirichlet()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
@@ -200,7 +191,6 @@ void verify_append_neumann_to_dirichlet()
   test( newNumMeshes == firstNumMesh + secondNumMesh );
 }
 
-//----------------------------------------------------------------------------
 void verify_append_domain_to_dirichlet()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
@@ -235,7 +225,6 @@ void verify_append_domain_to_dirichlet()
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestAddFileToCollection(int, char** const)
 {
   //append into a collection that had failed to load previously

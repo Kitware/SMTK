@@ -62,14 +62,12 @@
 #include <iomanip>
 
 using namespace smtk::model;
-// -----------------------------------------------------------------------------
 
 namespace smtk {
   namespace extension {
 
 static const std::string pEntityGroupOpName("entity group");
 
-//-----------------------------------------------------------------------------
 qtModelView::qtModelView(QWidget* p)
   : QTreeView(p)
 {
@@ -125,7 +123,6 @@ qtModelView::qtModelView(QWidget* p)
 
 }
 
-//-----------------------------------------------------------------------------
 qtModelView::~qtModelView()
 {
   if(this->m_ContextMenu)
@@ -138,13 +135,11 @@ qtModelView::~qtModelView()
     delete this->m_OperatorsDock;
 }
 
-//-----------------------------------------------------------------------------
 smtk::extension::QEntityItemModel* qtModelView::getModel() const
 {
   return qobject_cast<QEntityItemModel*>(this->model());
 }
 
-//-----------------------------------------------------------------------------
 void qtModelView::keyPressEvent(QKeyEvent* keyEvent)
 {
   this->QTreeView::keyPressEvent(keyEvent);
@@ -235,7 +230,6 @@ void qtModelView::keyPressEvent(QKeyEvent* keyEvent)
     }
 }
 
-//-----------------------------------------------------------------------------
 void qtModelView::mouseReleaseEvent( QMouseEvent * mouseEvent)
 {
   QPoint evtpos = mouseEvent->pos();
@@ -247,7 +241,6 @@ void qtModelView::mouseReleaseEvent( QMouseEvent * mouseEvent)
   QTreeView::mouseReleaseEvent( mouseEvent );
 }
 
-//-----------------------------------------------------------------------------
 void qtModelView::dropEvent(QDropEvent* dEvent)
 {
   // The related session has to have a "entity group" operator to process the
@@ -349,27 +342,23 @@ void qtModelView::dropEvent(QDropEvent* dEvent)
     }
 }
 
-//-----------------------------------------------------------------------------
 Qt::DropActions qtModelView::supportedDropActions () const
 {
   // returns what actions are supported when dropping
   return Qt::CopyAction;
 }
 
-//-----------------------------------------------------------------------------
 void qtModelView::startDrag ( Qt::DropActions supportedActions )
 {
 //  emit this->dragStarted(this);
   this->QTreeView::startDrag(supportedActions);
 }
 
-//-----------------------------------------------------------------------------
 void qtModelView::dragEnterEvent ( QDragEnterEvent * eevent )
 {
   this->QTreeView::dragEnterEvent(eevent);
 }
 
-//-----------------------------------------------------------------------------
 void qtModelView::dragMoveEvent( QDragMoveEvent * mevent )
 {
   if ( mevent->proposedAction() & this->supportedDropActions() )
@@ -378,7 +367,6 @@ void qtModelView::dragMoveEvent( QDragMoveEvent * mevent )
     }
 }
 
-//-----------------------------------------------------------------------------
 void qtModelView::selectionChanged (
     const QItemSelection & selected, const QItemSelection & deselected )
 {
@@ -395,7 +383,6 @@ void qtModelView::selectionChanged (
   emit this->selectionChanged(selentityrefs, selmeshes, selproperties);
 }
 
-//-----------------------------------------------------------------------------
 // when the dataChanged is emitted from the model, we want to scroll to
 // that index so that the changes are visible in the tree view.
 void qtModelView::newIndexAdded(const QModelIndex & newidx)
@@ -403,7 +390,6 @@ void qtModelView::newIndexAdded(const QModelIndex & newidx)
   this->scrollTo(newidx);
 }
 
-//----------------------------------------------------------------------------
 void qtModelView::recursiveSelect (const smtk::model::DescriptivePhrasePtr& dPhrase,
     smtk::model::EntityRefs& selentityrefs, BitFlags entityFlags,
     smtk::model::DescriptivePhrases& selproperties, bool exactMatch,
@@ -445,7 +431,6 @@ void qtModelView::recursiveSelect (const smtk::model::DescriptivePhrasePtr& dPhr
     }
 }
 
-//----------------------------------------------------------------------------
 void qtModelView::selectMeshes( const DescriptivePhrasePtr& dp,
                                smtk::mesh::MeshSets* selmeshes)
 {
@@ -466,7 +451,6 @@ void qtModelView::selectMeshes( const DescriptivePhrasePtr& dp,
     }
 }
 
-//----------------------------------------------------------------------------
 void qtModelView::owningEntitiesByMask (
     smtk::model::DescriptivePhrasePtr inDp,
     smtk::model::EntityRefs& selentityrefs, BitFlags entityFlags)
@@ -497,7 +481,6 @@ void qtModelView::owningEntitiesByMask (
     }
 }
 
-//----------------------------------------------------------------------------
 void qtModelView::currentSelectionByMask (
     smtk::model::EntityRefs& selentityrefs, const BitFlags& entityFlags,
     smtk::model::DescriptivePhrases& selproperties,
@@ -519,7 +502,6 @@ void qtModelView::currentSelectionByMask (
     }
 }
 
-//----------------------------------------------------------------------------
 bool qtModelView::removeSession(const smtk::model::SessionRef& sref)
 {
   smtk::extension::QEntityItemModel* qmodel =
@@ -540,7 +522,6 @@ bool qtModelView::removeSession(const smtk::model::SessionRef& sref)
   return false;
 }
 
-//----------------------------------------------------------------------------
 void qtModelView::selectItems(
   const smtk::common::UUIDs& selEntities,
   const smtk::mesh::MeshSets& selMeshes,
@@ -567,21 +548,18 @@ void qtModelView::selectItems(
   this->blockSignals(false);
 }
 
-//----------------------------------------------------------------------------
 void qtModelView::selectEntityItems(const smtk::common::UUIDs& selEntities,
                                  bool blocksignal)
 {
   this->selectItems(selEntities, smtk::mesh::MeshSets(), blocksignal);
 }
 
-//----------------------------------------------------------------------------
 void qtModelView::selectMeshItems(const smtk::mesh::MeshSets& selMeshes,
     bool blocksignal)
 {
     this->selectItems(smtk::common::UUIDs(), selMeshes, blocksignal);
 }
 
-//----------------------------------------------------------------------------
 void qtModelView::expandToRoot(QEntityItemModel* qmodel, const QModelIndex& idx)
 {
   if(0)
@@ -600,7 +578,6 @@ void qtModelView::expandToRoot(QEntityItemModel* qmodel, const QModelIndex& idx)
     }
 }
 
-//----------------------------------------------------------------------------
 void qtModelView::selectionHelper(
   QEntityItemModel* qmodel,
   const QModelIndex& parentIdx,
@@ -775,7 +752,6 @@ smtk::model::Group qtModelView::groupParent(const DescriptivePhrasePtr& phrase)
   return group;
 }
 
-//-----------------------------------------------------------------------------
 void qtModelView::showContextMenu(const QModelIndex &idx, const QPoint& p)
 {
   // Set up Context Menu Structure
@@ -833,14 +809,12 @@ void qtModelView::showContextMenu(const QModelIndex &idx, const QPoint& p)
   this->m_ContextMenu->popup(this->mapToGlobal(popP));
 }
 
-//-----------------------------------------------------------------------------
 void qtModelView::showContextMenu(const QPoint &p)
 {
   QModelIndex idx = this->indexAt(p);
   this->showContextMenu(idx, p);
 }
 
-//-----------------------------------------------------------------------------
 template<typename T>
 T qtModelView::owningEntityAs(const QModelIndex &idx) const
 {
@@ -854,7 +828,6 @@ T qtModelView::owningEntityAs(const QModelIndex &idx) const
   * We must test for this 1 level of indirection as well as for direct
   * children.
   */
-//-----------------------------------------------------------------------------
 template<typename T>
 T qtModelView::owningEntityAs(const DescriptivePhrasePtr &inDp) const
 {
@@ -880,7 +853,6 @@ T qtModelView::owningEntityAs(const DescriptivePhrasePtr &inDp) const
   return entRef;
 }
 
-//-----------------------------------------------------------------------------
 void qtModelView::operatorInvoked()
 {
   QAction* const action = qobject_cast<QAction*>(
@@ -917,7 +889,6 @@ void qtModelView::operatorInvoked()
 //  emit this->operationFinished(result);
 }
 
-//----------------------------------------------------------------------------
 qtOperatorDockWidget* qtModelView::operatorsDock()
 {
   if(this->m_OperatorsDock && this->m_OperatorsWidget)
@@ -974,7 +945,6 @@ qtOperatorDockWidget* qtModelView::operatorsDock()
   return dw;
 }
 
-//----------------------------------------------------------------------------
 qtModelOperationWidget* qtModelView::operatorsWidget()
 {
   if(!this->m_OperatorsWidget)
@@ -984,7 +954,6 @@ qtModelOperationWidget* qtModelView::operatorsWidget()
   return this->m_OperatorsWidget;
 }
 
-//----------------------------------------------------------------------------
 void qtModelView::initOperatorsDock(
   const std::string& opName, smtk::model::SessionPtr session)
 {
@@ -1006,7 +975,6 @@ void qtModelView::initOperatorsDock(
 
 }
 
-//-----------------------------------------------------------------------------
 bool qtModelView::requestOperation(
   const smtk::model::OperatorPtr& brOp, bool launchUI)
 {
@@ -1049,7 +1017,6 @@ bool qtModelView::requestOperation(
 //  emit this->operationFinished(result);
 }
 
-//-----------------------------------------------------------------------------
 bool qtModelView::requestOperation(
     const std::string& opName, const smtk::common::UUID& sessionId, bool launchOp)
 {
@@ -1064,7 +1031,6 @@ bool qtModelView::requestOperation(
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool qtModelView::hasSessionOp(const QModelIndex& idx,
   const std::string& opname)
 {
@@ -1073,7 +1039,6 @@ bool qtModelView::hasSessionOp(const QModelIndex& idx,
   return this->hasSessionOp(sref, opname);
 }
 
-//----------------------------------------------------------------------------
 bool qtModelView::hasSessionOp(const smtk::model::SessionRef& brSession,
   const std::string& opname)
 {
@@ -1085,7 +1050,6 @@ bool qtModelView::hasSessionOp(const smtk::model::SessionRef& brSession,
   return false;
 }
 
-//----------------------------------------------------------------------------
 OperatorPtr qtModelView::getOp(const QModelIndex& idx,
   const std::string& opname)
 {
@@ -1111,7 +1075,6 @@ OperatorPtr qtModelView::getOp(const QModelIndex& idx,
   return this->getOp(session, opname);
 }
 
-//----------------------------------------------------------------------------
 OperatorPtr qtModelView::getOp(const smtk::model::SessionPtr& brSession,
   const std::string& opname)
 {
@@ -1138,7 +1101,6 @@ OperatorPtr qtModelView::getOp(const smtk::model::SessionPtr& brSession,
   return brOp;
 }
 
-//----------------------------------------------------------------------------
 void qtModelView::toggleEntityVisibility( const QModelIndex& idx)
 {
   OperatorPtr brOp = this->getOp(idx, "set property");
@@ -1226,7 +1188,6 @@ void qtModelView::toggleEntityVisibility( const QModelIndex& idx)
   this->update();
 }
 
-//----------------------------------------------------------------------------
 bool qtModelView::setEntityVisibility(
   const smtk::model::EntityRefs& selentityrefs,
   const smtk::mesh::MeshSets& selmeshes,
@@ -1286,7 +1247,6 @@ QColor internal_convertColor(const FloatList& rgba)
     QColor::fromRgbF(rgba[0], rgba[1], rgba[2], alpha) : QColor();
 }
 
-//----------------------------------------------------------------------------
 void qtModelView::changeEntityColor( const QModelIndex& idx)
 {
   OperatorPtr brOp = this->getOp(idx, "set property");
@@ -1345,7 +1305,6 @@ void qtModelView::changeEntityColor( const QModelIndex& idx)
     }
 }
 
-//----------------------------------------------------------------------------
 bool qtModelView::setEntityColor(
   const smtk::model::EntityRefs& selentityrefs,
   const smtk::mesh::MeshSets& selmeshes,
@@ -1426,7 +1385,7 @@ bool qtModelView::setEntityColor(
 
   return false;
 }
-//----------------------------------------------------------------------------
+
 /*
 void qtModelView::findIndexes(
   QEntityItemModel* qmodel,
@@ -1448,7 +1407,7 @@ void qtModelView::findIndexes(
     }
 }
 */
-//----------------------------------------------------------------------------
+
 void qtModelView::syncEntityVisibility(
                                       const smtk::model::SessionPtr& session,
                                       const smtk::common::UUIDs& entuids,
@@ -1476,7 +1435,6 @@ void qtModelView::syncEntityVisibility(
     }
 }
 
-//----------------------------------------------------------------------------
 void qtModelView::syncEntityColor(
                                   const smtk::model::SessionPtr& session,
                                   const smtk::common::UUIDs& entuids,
@@ -1504,7 +1462,6 @@ void qtModelView::syncEntityColor(
     }
 }
 
-//----------------------------------------------------------------------------
 void qtModelView::changeEntityName( const QModelIndex& idx)
 {
   OperatorPtr brOp = this->getOp(idx, "set property");
@@ -1555,7 +1512,7 @@ void qtModelView::changeEntityName( const QModelIndex& idx)
     emit this->operationRequested(brOp);
     }
 }
-//-----------------------------------------------------------------------------
+
 void qtModelView::updateWithOperatorResult(
     const smtk::model::SessionRef& sref, const OperatorResult& result)
 {
@@ -1620,7 +1577,6 @@ void qtModelView::updateWithOperatorResult(
     }
 }
 
-//-----------------------------------------------------------------------------
 void qtModelView::onEntitiesExpunged(
   const smtk::model::EntityRefs& expungedEnts)
 {
@@ -1629,7 +1585,6 @@ void qtModelView::onEntitiesExpunged(
   this->m_OperatorsWidget->expungeEntities(expungedEnts);
 }
 
-//-----------------------------------------------------------------------------
 std::string qtModelView::determineAction (const QPoint& evtpos) const
 {
   QModelIndex idx = this->indexAt(evtpos);
@@ -1644,7 +1599,6 @@ std::string qtModelView::determineAction (const QPoint& evtpos) const
   return "";
 }
 
-//-----------------------------------------------------------------------------
 void qtModelView::onOperationPanelClosing()
 {
   // If the operation panel is closing, cancel current operation
@@ -1654,7 +1608,6 @@ void qtModelView::onOperationPanelClosing()
     }
 }
 
-//-----------------------------------------------------------------------------
 void qtModelView::syncEntityVisibility(
     const smtk::common::UUID& sessid,
     const smtk::common::UUIDs& entids,
@@ -1668,7 +1621,6 @@ void qtModelView::syncEntityVisibility(
   this->syncEntityVisibility(session, entids, meshes, vis);
 }
 
-//-----------------------------------------------------------------------------
 void qtModelView::syncEntityColor(
     const smtk::common::UUID& sessid,
     const smtk::common::UUIDs& entids,
@@ -1682,7 +1634,6 @@ void qtModelView::syncEntityColor(
   this->syncEntityColor(session, entids, meshes, clr);
 }
 
-//-----------------------------------------------------------------------------
 void qtModelView::expandAllModels()
 {
   smtk::extension::QEntityItemModel* qmodel = this->getModel();

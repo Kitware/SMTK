@@ -27,17 +27,14 @@
 
 vtkStandardNewMacro(vtkCMBModelOmicronMeshInputWriter);
 
-//----------------------------------------------------------------------------
 vtkCMBModelOmicronMeshInputWriter::vtkCMBModelOmicronMeshInputWriter()
 {
 }
 
-//----------------------------------------------------------------------------
 vtkCMBModelOmicronMeshInputWriter:: ~vtkCMBModelOmicronMeshInputWriter()
 {
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBModelOmicronMeshInputWriter::Write(
   vtkDiscreteModel* model, vtkCMBModelOmicronMeshInputWriterBase* base)
 {
@@ -54,7 +51,6 @@ bool vtkCMBModelOmicronMeshInputWriter::Write(
   return retcode;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBModelOmicronMeshInputWriter::Write(
   vtkDiscreteModel* model, std::ostream& buffer)
 {
@@ -94,7 +90,6 @@ bool vtkCMBModelOmicronMeshInputWriter::Write(
   return 1;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelOmicronMeshInputWriter::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

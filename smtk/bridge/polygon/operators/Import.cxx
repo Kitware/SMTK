@@ -59,7 +59,6 @@ namespace smtk {
 
   namespace polygon {
 
-//----------------------------------------------------------------------------
 int polyLines2modelEdges(vtkPolyData *mesh,
                          smtk::model::Operator::Ptr edgeOp,
                          smtk::model::EntityRefArray& createdEds,
@@ -89,7 +88,6 @@ int polyLines2modelEdges(vtkPolyData *mesh,
   return static_cast<int>(newEdges->numberOfValues());
 }
 
-//----------------------------------------------------------------------------
 int Import::taggedPolyData2PolygonModelEntities(vtkIdTypeArray *tagInfo,
 						vtkPolyData *pdata,
 						smtk::model::Model& model)
@@ -195,7 +193,7 @@ int Import::taggedPolyData2PolygonModelEntities(vtkIdTypeArray *tagInfo,
 
   return numEnts;
 }
-//----------------------------------------------------------------------------
+
 int Import::basicPolyData2PolygonModelEntities(vtkPolyData *polyLines,
 					       smtk::model::Model& model)
 {
@@ -241,7 +239,7 @@ int Import::basicPolyData2PolygonModelEntities(vtkPolyData *polyLines,
     }
   return numEnts;
 }
-//----------------------------------------------------------------------------
+
 int polyLines2modelEdgesAndFaces(vtkPolyData *mesh,
                           smtk::model::Model& model,
                           smtk::bridge::polygon::Session* sess,

@@ -22,7 +22,6 @@ vtkStandardNewMacro(vtkCMBPrepareForTriangleMesher);
 
 using namespace CmbFaceMesherClasses;
 
-//-----------------------------------------------------------------------------
 //Internal point structure to store unique points in a map
 struct InternalPt
   {
@@ -33,7 +32,7 @@ struct InternalPt
     }
   InternalPt(double _x, double _y, double _z):x(_x),y(_y),z(_z){};
   };
-//-----------------------------------------------------------------------------
+
 vtkCMBPrepareForTriangleMesher::vtkCMBPrepareForTriangleMesher()
   {
   arcArraySize = -1;
@@ -55,8 +54,7 @@ vtkCMBPrepareForTriangleMesher::vtkCMBPrepareForTriangleMesher()
 
   cellElementIds = 0;
   }
-//-----------------------------------------------------------------------------
-//
+
 void vtkCMBPrepareForTriangleMesher::InitializeNewMapInfo()
   {
   numLoopsAdded = 0;
@@ -112,7 +110,7 @@ void vtkCMBPrepareForTriangleMesher::InitializeNewMapInfo()
     }
   mapInfoInitialized = true;
   }
-//-----------------------------------------------------------------------------
+
 void vtkCMBPrepareForTriangleMesher::SetNumberOfArcs(const vtkIdType& num)
 {
   if(mapInfoInitialized)
@@ -122,7 +120,7 @@ void vtkCMBPrepareForTriangleMesher::SetNumberOfArcs(const vtkIdType& num)
     }
   arcArraySize=num;
 }
-//-----------------------------------------------------------------------------
+
 void vtkCMBPrepareForTriangleMesher::SetNumberOfLoops(const vtkIdType& num)
 {
   if(mapInfoInitialized)
@@ -132,7 +130,7 @@ void vtkCMBPrepareForTriangleMesher::SetNumberOfLoops(const vtkIdType& num)
     }
   loopArraySize=num;
 }
-//-----------------------------------------------------------------------------
+
 void vtkCMBPrepareForTriangleMesher::SetNumberOfCells(const vtkIdType& num)
   {
   if(mapInfoInitialized)
@@ -142,13 +140,13 @@ void vtkCMBPrepareForTriangleMesher::SetNumberOfCells(const vtkIdType& num)
     }
   this->numCells = num;
   }
-//-----------------------------------------------------------------------------
+
 //Sets polydata to query for information or set up new field data
 void vtkCMBPrepareForTriangleMesher::SetPolyData(vtkPolyData*  pd)
 {
   this->PolyData = pd;
 }
-//-----------------------------------------------------------------------------
+
 vtkCMBPrepareForTriangleMesher::~vtkCMBPrepareForTriangleMesher()
 {
   if(fieldCellArrayOffset)
@@ -188,7 +186,7 @@ vtkCMBPrepareForTriangleMesher::~vtkCMBPrepareForTriangleMesher()
     cellElementIds->Delete();
     }
 }
-//-----------------------------------------------------------------------------
+
 //Adds a node id to a vtkvertex
 //the order in which you created the vtkvertex must be the same in which you
 //add the nodes
@@ -204,7 +202,7 @@ vtkIdType vtkCMBPrepareForTriangleMesher::AddNode(const vtkIdType& nodeId)
     }
   return numNodesAdded++;
   }
-//-----------------------------------------------------------------------------
+
 //Creates the necessary field data for an arc
 vtkIdType vtkCMBPrepareForTriangleMesher::AddArc(const vtkIdType& CellArrayOffset,
                                 const vtkIdType& CellArraySize,
@@ -255,7 +253,7 @@ vtkIdType vtkCMBPrepareForTriangleMesher::AddArc(const vtkIdType& CellArrayOffse
   //Return the arc index
   return numArcsAdded++;
 }
-//-----------------------------------------------------------------------------
+
 vtkIdType vtkCMBPrepareForTriangleMesher::AddLoopWithArcs(const vtkIdType& PolyId,
                                               const bool& isOuter,
                                               const std::vector<vtkIdType>& arcIndexes)
@@ -321,7 +319,7 @@ vtkIdType vtkCMBPrepareForTriangleMesher::AddLoopWithArcs(const vtkIdType& PolyI
     }
   return loopIndex;
   }
-//-----------------------------------------------------------------------------
+
 vtkIdType vtkCMBPrepareForTriangleMesher::AddLoop(const vtkIdType& OuterPolyId,
                                       const vtkIdType& InnerPolyId )
 {
@@ -337,7 +335,7 @@ vtkIdType vtkCMBPrepareForTriangleMesher::AddLoop(const vtkIdType& OuterPolyId,
   //Return the loopId
   return numLoopsAdded-1;
 }
-//-----------------------------------------------------------------------------
+
 void vtkCMBPrepareForTriangleMesher::FinalizeNewMapInfo()
 {
   //If one exists then they all should exist
@@ -379,7 +377,7 @@ void vtkCMBPrepareForTriangleMesher::FinalizeNewMapInfo()
     vtkWarningMacro("No field data to finalize");
     }
 }
-//-----------------------------------------------------------------------------
+
 // Returns an arc contour as polydata
 // toReturn must be an initialized vtkPolyData will be returned as the
 // requested contour
@@ -466,7 +464,6 @@ void vtkCMBPrepareForTriangleMesher::GetArc(vtkIdType requestedArcId, vtkPolyDat
   linesToAdd->FastDelete();
 }
 
-//-----------------------------------------------------------------------------
 bool vtkCMBPrepareForTriangleMesher::IsValidForReading()
 {
   vtkFieldData* fieldData;
@@ -485,7 +482,6 @@ bool vtkCMBPrepareForTriangleMesher::IsValidForReading()
   }
   return hasValidFields;
 }
-//-----------------------------------------------------------------------------
 
 bool vtkCMBPrepareForTriangleMesher::GetPolyId2ModelFaceRepMap(
     std::map<vtkIdType, ModelFaceRep* >& pid2Face)
@@ -498,7 +494,7 @@ bool vtkCMBPrepareForTriangleMesher::GetPolyId2ModelFaceRepMap(
   valid = valid && this->BuildPolygonId2ModelFaceMap(loopId2ArcIndex, pid2Face);
   return valid;
 }
-//-----------------------------------------------------------------------------
+
 //Create a mapping from loop ids to a vector of arc indices.
 //loop ids are simply the index of the loop in the LoopInfo
 //field data array. The field data arrays loop1 and loop2
@@ -557,7 +553,7 @@ bool vtkCMBPrepareForTriangleMesher::BuildLoopId2ArcIndexMap(
 
   return true;
   }
-//--------------------------------------------------------------------
+
 bool vtkCMBPrepareForTriangleMesher::BuildPolygonId2ModelFaceMap(
     const std::map<vtkIdType, std::vector<vtkIdType> >& loopId2ArcIndex,
     std::map<vtkIdType, ModelFaceRep* >& pid2Face)
@@ -674,7 +670,7 @@ bool vtkCMBPrepareForTriangleMesher::BuildPolygonId2ModelFaceMap(
 
   return true;
 }
-//-----------------------------------------------------------------------------
+
 void vtkCMBPrepareForTriangleMesher::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

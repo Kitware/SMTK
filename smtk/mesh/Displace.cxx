@@ -18,7 +18,6 @@
 
 namespace
 {
-  //----------------------------------------------------------------------------
   template<typename T>
   void copy_z_values( const T* const pointcloud,
                       std::size_t numPoints,
@@ -31,7 +30,6 @@ namespace
     }
   }
 
-  //----------------------------------------------------------------------------
   template<bool ClampMin, bool ClampMax, typename T>
   struct clamper
   {
@@ -76,7 +74,6 @@ namespace
     }
   };
 
-  //----------------------------------------------------------------------------
   template<bool ClampMin, bool ClampMax, typename T>
   void clamp_z_values(std::vector<T>& z_values, double c_min, double c_max)
   {
@@ -88,7 +85,6 @@ namespace
       }
   }
 
-  //----------------------------------------------------------------------------
   template<typename T>
   class ElevatePoint : public smtk::mesh::PointForEach
   {
@@ -147,7 +143,6 @@ namespace
     }
   };
 
-  //----------------------------------------------------------------------------
   template<typename T>
   bool do_elevate( const T* const pointcloud,
                    std::size_t numPoints,
@@ -191,7 +186,6 @@ namespace
   }
 }
 
-//----------------------------------------------------------------------------
 template<bool ClampMin, bool ClampMax>
 class ElevatePointForStructuredInput : public smtk::mesh::PointForEach
 {
@@ -375,7 +369,6 @@ public:
 namespace smtk {
 namespace mesh {
 
-//----------------------------------------------------------------------------
 bool elevate( const std::vector<double>& pointcloud,
               const smtk::mesh::MeshSet& ms,
               double radius,
@@ -384,7 +377,6 @@ bool elevate( const std::vector<double>& pointcloud,
   return do_elevate(&pointcloud[0], pointcloud.size(), ms.points(), radius, controls);
 }
 
-//----------------------------------------------------------------------------
 bool elevate( const std::vector<double>& pointcloud,
               const smtk::mesh::PointSet& ps,
               double radius,
@@ -394,7 +386,6 @@ bool elevate( const std::vector<double>& pointcloud,
 }
 
 
-//----------------------------------------------------------------------------
 bool elevate( const double* const pointcloud,
               std::size_t numPoints,
               const smtk::mesh::MeshSet& ms,
@@ -404,7 +395,6 @@ bool elevate( const double* const pointcloud,
   return do_elevate(pointcloud, numPoints, ms.points(), radius, controls);
 }
 
-//----------------------------------------------------------------------------
 bool elevate( const float* const pointcloud,
               std::size_t numPoints,
               const smtk::mesh::MeshSet& ms,
@@ -414,7 +404,6 @@ bool elevate( const float* const pointcloud,
   return do_elevate(pointcloud, numPoints, ms.points(), radius, controls);
 }
 
-//----------------------------------------------------------------------------
 bool elevate( const double* const pointcloud,
               std::size_t numPoints,
               const smtk::mesh::PointSet& ps,
@@ -424,7 +413,6 @@ bool elevate( const double* const pointcloud,
   return do_elevate(pointcloud, numPoints, ps, radius, controls);
 }
 
-//----------------------------------------------------------------------------
 bool elevate( const float* const pointcloud,
               std::size_t numPoints,
               const smtk::mesh::PointSet& ps,
@@ -434,7 +422,6 @@ bool elevate( const float* const pointcloud,
   return do_elevate(pointcloud, numPoints, ps, radius, controls);
 }
 
-//----------------------------------------------------------------------------
 bool elevate( const smtk::mesh::ElevationStructuredData& data,
               const smtk::mesh::PointSet& ps,
               double radius,
@@ -464,7 +451,6 @@ bool elevate( const smtk::mesh::ElevationStructuredData& data,
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool elevate( const smtk::mesh::ElevationStructuredData& data,
               const smtk::mesh::MeshSet& ms,
               double radius,
@@ -475,7 +461,6 @@ bool elevate( const smtk::mesh::ElevationStructuredData& data,
 
 namespace
 {
-  //----------------------------------------------------------------------------
   class DisplacePoint : public smtk::mesh::PointForEach
   {
     smtk::mesh::PointLocator& m_locator;
@@ -521,7 +506,6 @@ namespace
   };
 }
 
-//----------------------------------------------------------------------------
 bool displace( const smtk::mesh::PointSet& pointcloud,
                const smtk::mesh::MeshSet& ms,
                double radius)
@@ -533,7 +517,6 @@ bool displace( const smtk::mesh::PointSet& pointcloud,
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool displace( const smtk::mesh::PointSet& pointcloud,
                const smtk::mesh::PointSet& ps,
                double radius)

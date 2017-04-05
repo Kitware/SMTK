@@ -331,23 +331,22 @@ class WalkableLoop
   };
 
 }
-//--------------------------------------------------------------------
+
 vtkCMBMapToCMBModel::vtkCMBMapToCMBModel()
 {
   this->OperateSucceeded = 0;
 }
-//--------------------------------------------------------------------
+
 vtkCMBMapToCMBModel::~vtkCMBMapToCMBModel()
 {
 }
-//--------------------------------------------------------------------
+
 void vtkCMBMapToCMBModel::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
   os << indent << "OperateSucceeded: " << this->OperateSucceeded << endl;
 }
 
-//--------------------------------------------------------------------
 void vtkCMBMapToCMBModel::Operate(
     vtkDiscreteModelWrapper* ModelWrapper, vtkAlgorithm* inputPolyAlg)
 {

@@ -176,28 +176,28 @@ namespace smtk
 
     private:
     };
-//----------------------------------------------------------------------------
+
     inline smtk::common::ViewPtr System::findView(const std::string &name) const
     {
       std::map<std::string, smtk::common::ViewPtr>::const_iterator it;
       it = this->m_views.find(name);
       return (it == this->m_views.end()) ? smtk::common::ViewPtr() : it->second;
     }
-//----------------------------------------------------------------------------
+
     inline smtk::attribute::AttributePtr System::findAttribute(const std::string &name) const
     {
       std::map<std::string, AttributePtr>::const_iterator it;
       it = this->m_attributes.find(name);
       return (it == this->m_attributes.end()) ? smtk::attribute::AttributePtr() : it->second;
     }
-//----------------------------------------------------------------------------
+
     inline smtk::attribute::AttributePtr System::findAttribute(const smtk::common::UUID &attId) const
     {
       std::map<smtk::common::UUID, AttributePtr>::const_iterator it;
       it = this->m_attributeIdMap.find(attId);
       return (it == this->m_attributeIdMap.end()) ? smtk::attribute::AttributePtr() : it->second;
     }
-//----------------------------------------------------------------------------
+
     inline smtk::attribute::DefinitionPtr
     System::findDefinition(const std::string &typeName) const
     {
@@ -205,7 +205,7 @@ namespace smtk
       it = this->m_definitions.find(typeName);
       return (it == this->m_definitions.end()) ? smtk::attribute::DefinitionPtr() : it->second;
     }
-//----------------------------------------------------------------------------
+
     inline void
     System::findDefinitionAttributes(const std::string &typeName,
                                       std::vector<smtk::attribute::AttributePtr> &result) const
@@ -218,7 +218,7 @@ namespace smtk
         result.insert(result.end(), it->second.begin(), it->second.end());
         }
     }
-//----------------------------------------------------------------------------
+
     inline void System::
     findAttributes(const std::string &type,
                    std::vector<smtk::attribute::AttributePtr> &result) const
@@ -230,7 +230,7 @@ namespace smtk
         this->internalFindAttributes(def, result);
         }
     }
-//----------------------------------------------------------------------------
+
     inline std::vector<smtk::attribute::AttributePtr>
     System::findAttributes(const std::string &type) const
     {
@@ -238,7 +238,7 @@ namespace smtk
       this->findAttributes(type, result);
       return result;
     }
-//----------------------------------------------------------------------------
+
   inline std::set<std::string> System::
   analysisCategories(const std::string &analysisType) const
   {
@@ -250,7 +250,7 @@ namespace smtk
         }
       return std::set<std::string>();
   }
-//----------------------------------------------------------------------------
+
     inline bool System::defineAnalysis(const std::string &analysisName,
                                         const std::set<std::string> &categoriesIn)
     {

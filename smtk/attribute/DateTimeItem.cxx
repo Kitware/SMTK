@@ -17,31 +17,26 @@ namespace smtk {
   namespace attribute {
 
 
-//----------------------------------------------------------------------------
 DateTimeItem::DateTimeItem(Attribute *owningAttribute, int itemPosition):
   Item(owningAttribute, itemPosition)
 {
 }
 
-//----------------------------------------------------------------------------
 DateTimeItem::DateTimeItem(
   Item *inOwningAttribute, int itemPosition, int mySubGroupPosition):
   Item(inOwningAttribute, itemPosition, mySubGroupPosition)
 {
 }
 
-//----------------------------------------------------------------------------
 DateTimeItem::~DateTimeItem()
 {
 }
 
-//----------------------------------------------------------------------------
 Item::Type DateTimeItem::type() const
 {
   return Item::DATE_TIME;
 }
 
-//----------------------------------------------------------------------------
 bool DateTimeItem::isValid() const
 {
   // If the item is not enabled or if all of its values are set then it is valid
@@ -60,7 +55,6 @@ bool DateTimeItem::isValid() const
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool DateTimeItem::setNumberOfValues(std::size_t newSize)
 {
   if (newSize != this->numberOfRequiredValues())
@@ -82,7 +76,6 @@ bool DateTimeItem::setNumberOfValues(std::size_t newSize)
   return true;
 }
 
-//----------------------------------------------------------------------------
 std::size_t DateTimeItem::numberOfRequiredValues() const
 {
   ConstDateTimeItemDefinitionPtr def = this->itemDefinition();
@@ -93,7 +86,6 @@ std::size_t DateTimeItem::numberOfRequiredValues() const
   return def->numberOfRequiredValues();
 }
 
-//----------------------------------------------------------------------------
 bool DateTimeItem::setValue(
   size_t element, const ::smtk::common::DateTimeZonePair& value)
 {
@@ -109,7 +101,6 @@ bool DateTimeItem::setValue(
   return false;
 }
 
-//----------------------------------------------------------------------------
 void DateTimeItem::reset()
 {
   this->m_isSet.clear();
@@ -129,7 +120,6 @@ void DateTimeItem::reset()
     }
 }
 
-//----------------------------------------------------------------------------
 bool DateTimeItem::setToDefault(std::size_t element)
 {
   ConstDateTimeItemDefinitionPtr def = this->itemDefinition();
@@ -143,7 +133,6 @@ bool DateTimeItem::setToDefault(std::size_t element)
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool DateTimeItem::isUsingDefault(std::size_t element) const
 {
   assert(this->m_isSet.size() > element);
@@ -157,7 +146,6 @@ bool DateTimeItem::isUsingDefault(std::size_t element) const
   return this->m_values[element] == defaultVal;
 }
 
-//----------------------------------------------------------------------------
 bool DateTimeItem::isUsingDefault() const
 {
   ConstDateTimeItemDefinitionPtr def = itemDefinition();
@@ -179,7 +167,6 @@ bool DateTimeItem::isUsingDefault() const
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool DateTimeItem::assign(ConstItemPtr &sourceItem, unsigned int options)
 {
   // Assigns my contents to be same as sourceItem
@@ -206,7 +193,6 @@ bool DateTimeItem::assign(ConstItemPtr &sourceItem, unsigned int options)
   return Item::assign(sourceItem, options);
 }
 
-//----------------------------------------------------------------------------
 bool DateTimeItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr def)
 {
   if (!def || (!Item::setDefinition(def)))
@@ -235,15 +221,12 @@ bool DateTimeItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr def)
   return true;
 }
 
-//----------------------------------------------------------------------------
 ConstDateTimeItemDefinitionPtr DateTimeItem::itemDefinition() const
 {
   ConstDateTimeItemDefinitionPtr def =
     smtk::dynamic_pointer_cast<const DateTimeItemDefinition>(this->definition());
   return def;
 }
-
-//----------------------------------------------------------------------------
 
   }  // namespace attribute
 }  // namespace smtk

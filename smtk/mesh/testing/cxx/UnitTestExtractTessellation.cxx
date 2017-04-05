@@ -19,7 +19,6 @@
 namespace
 {
 
-//----------------------------------------------------------------------------
 class VerifyCells : public smtk::mesh::CellForEach
 {
   smtk::mesh::HandleRange m_cells;
@@ -33,7 +32,6 @@ class VerifyCells : public smtk::mesh::CellForEach
 
   bool m_is_vtk;
 public:
-//--------------------------------------------------------------------------
 VerifyCells( const smtk::mesh::CellSet& cells,
              const std::vector<std::int64_t>& conn,
              const std::vector<std::int64_t>& locations,
@@ -51,7 +49,6 @@ VerifyCells( const smtk::mesh::CellSet& cells,
   {
   }
 
-//--------------------------------------------------------------------------
 void forCell(const smtk::mesh::Handle& cellId,
              smtk::mesh::CellType cellType,
              int numPts)
@@ -84,7 +81,6 @@ void forCell(const smtk::mesh::Handle& cellId,
   this->m_currentLocation += numPts;
 }
 
-//--------------------------------------------------------------------------
 smtk::mesh::CellSet cells(smtk::mesh::CollectionPtr c) const
 {
   return smtk::mesh::CellSet(c,m_cells);
@@ -92,7 +88,6 @@ smtk::mesh::CellSet cells(smtk::mesh::CollectionPtr c) const
 
 };
 
-//----------------------------------------------------------------------------
 template<typename T>
 class VerifyPoints : public smtk::mesh::PointForEach
 {
@@ -105,7 +100,7 @@ VerifyPoints( const std::vector<T>& points ):
   m_currentIndex(0)
 {
 }
-//--------------------------------------------------------------------------
+
 void forPoints(const smtk::mesh::HandleRange& pointIds,
                std::vector<double>& xyz,
                bool& coordinatesModified)
@@ -130,8 +125,6 @@ void forPoints(const smtk::mesh::HandleRange& pointIds,
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-
-//----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
 {
   std::string file_path(data_root);
@@ -143,7 +136,6 @@ smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
   return c;
 }
 
-//----------------------------------------------------------------------------
 void verify_constructors(const smtk::mesh::CollectionPtr& c)
 {
 
@@ -256,7 +248,6 @@ void verify_constructors(const smtk::mesh::CollectionPtr& c)
   }
 }
 
-//----------------------------------------------------------------------------
 void verify_alloc_lengths_meshset(const smtk::mesh::CollectionPtr& c)
 {
 
@@ -311,7 +302,6 @@ void verify_alloc_lengths_meshset(const smtk::mesh::CollectionPtr& c)
 
 }
 
-//----------------------------------------------------------------------------
 void verify_alloc_lengths_cellset(const smtk::mesh::CollectionPtr& c)
 {
 
@@ -367,8 +357,6 @@ void verify_alloc_lengths_cellset(const smtk::mesh::CollectionPtr& c)
 
 }
 
-
-//----------------------------------------------------------------------------
 void verify_extract_packed_single_type(const smtk::mesh::CollectionPtr& c)
 {
 
@@ -399,7 +387,6 @@ void verify_extract_packed_single_type(const smtk::mesh::CollectionPtr& c)
   smtk::mesh::for_each(quads.points(), vp);
 }
 
-//----------------------------------------------------------------------------
 void verify_extract_only_connectivity_and_types(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::CellSet cells3d = c->cells( smtk::mesh::Dims3 );
@@ -431,7 +418,6 @@ void verify_extract_only_connectivity_and_types(const smtk::mesh::CollectionPtr&
   test( vc.cells(c) == cells3d);
 }
 
-//----------------------------------------------------------------------------
 void verify_extract_all_to_vtk(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::CellSet cells3d = c->cells( smtk::mesh::Dims3 );
@@ -469,7 +455,6 @@ void verify_extract_all_to_vtk(const smtk::mesh::CollectionPtr& c)
   smtk::mesh::for_each(cells3d.points(), vp);
 }
 
-//----------------------------------------------------------------------------
 void verify_extract_only_connectivity_to_vtk(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::CellSet cells2d = c->cells( smtk::mesh::Dims2 );
@@ -501,7 +486,6 @@ void verify_extract_only_connectivity_to_vtk(const smtk::mesh::CollectionPtr& c)
   test( vc.cells(c) == cells2d);
 }
 
-//----------------------------------------------------------------------------
 void verify_extract_volume_meshes_by_global_points_to_vtk(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::CellSet cells = c->cells( smtk::mesh::Dims1 );
@@ -537,7 +521,6 @@ void verify_extract_volume_meshes_by_global_points_to_vtk(const smtk::mesh::Coll
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestExtractTessellation(int, char** const)
 {
   smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();

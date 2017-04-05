@@ -16,11 +16,9 @@
 namespace smtk {
 namespace mesh {
 
-//------------------------------------------------------------------------------
 template<int dimension>
 struct CellTopologicalDimensionsTag { };
 
-//------------------------------------------------------------------------------
 //these need to be comparable. so we use an integer type
 struct CellFixedPointNumberTag { const static int Type = 1; }; //e.g line,triangle,hex
 struct CellVariablePointNumberTag { const static int Type = 2; }; //e.g. polygon
@@ -43,7 +41,6 @@ struct CellVariablePointNumberTag { const static int Type = 2; }; //e.g. polygon
 template<class CellTag>
 struct CellTraits;
 
-//------------------------------------------------------------------------------
 template<> struct CellTraits<smtk::mesh::CellHexahedron>
 {
   const static int NUM_VERTICES = 8;
@@ -63,7 +60,6 @@ template<> struct CellTraits<smtk::mesh::CellHexahedron>
     { return TOPOLOGICAL_DIMENSIONS; }
 };
 
-//------------------------------------------------------------------------------
 template<> struct CellTraits<smtk::mesh::CellLine>
 {
   const static int NUM_VERTICES = 2;
@@ -83,7 +79,6 @@ template<> struct CellTraits<smtk::mesh::CellLine>
     { return TOPOLOGICAL_DIMENSIONS; }
 };
 
-//------------------------------------------------------------------------------
 template<> struct CellTraits<smtk::mesh::CellPolygon>
 {
   const static int NUM_VERTICES = -1;
@@ -103,7 +98,6 @@ template<> struct CellTraits<smtk::mesh::CellPolygon>
     { return TOPOLOGICAL_DIMENSIONS; }
 };
 
-//------------------------------------------------------------------------------
 template<> struct CellTraits<smtk::mesh::CellPyramid>
 {
   const static int NUM_VERTICES = 5;
@@ -123,7 +117,6 @@ template<> struct CellTraits<smtk::mesh::CellPyramid>
     { return TOPOLOGICAL_DIMENSIONS; }
 };
 
-//------------------------------------------------------------------------------
 template<> struct CellTraits<smtk::mesh::CellQuad>
 {
   const static int NUM_VERTICES = 4;
@@ -143,7 +136,6 @@ template<> struct CellTraits<smtk::mesh::CellQuad>
     { return TOPOLOGICAL_DIMENSIONS; }
 };
 
-//------------------------------------------------------------------------------
 template<> struct CellTraits<smtk::mesh::CellTetrahedron>
 {
   const static int NUM_VERTICES = 4;
@@ -163,7 +155,6 @@ template<> struct CellTraits<smtk::mesh::CellTetrahedron>
     { return TOPOLOGICAL_DIMENSIONS; }
 };
 
-//------------------------------------------------------------------------------
 template<> struct CellTraits<smtk::mesh::CellTriangle>
 {
   const static int NUM_VERTICES = 3;
@@ -183,7 +174,6 @@ template<> struct CellTraits<smtk::mesh::CellTriangle>
     { return TOPOLOGICAL_DIMENSIONS; }
 };
 
-//------------------------------------------------------------------------------
 template<> struct CellTraits<smtk::mesh::CellVertex>
 {
   const static int NUM_VERTICES = 1;
@@ -203,7 +193,6 @@ template<> struct CellTraits<smtk::mesh::CellVertex>
     { return TOPOLOGICAL_DIMENSIONS; }
 };
 
-//------------------------------------------------------------------------------
 template<> struct CellTraits<smtk::mesh::CellWedge>
 {
   const static int NUM_VERTICES = 6;
@@ -223,67 +212,57 @@ template<> struct CellTraits<smtk::mesh::CellWedge>
     { return TOPOLOGICAL_DIMENSIONS; }
 };
 
-//------------------------------------------------------------------------------
 template<int CellEnum>
 struct CellEnumToType;
 
-//------------------------------------------------------------------------------
 template<> struct CellEnumToType<smtk::mesh::Hexahedron>
 {
   typedef smtk::mesh::CellHexahedron CellType;
   typedef CellTraits< CellType > Traits;
 };
 
-//------------------------------------------------------------------------------
 template<> struct CellEnumToType<smtk::mesh::Line>
 {
   typedef smtk::mesh::CellLine CellType;
   typedef CellTraits< CellType > Traits;
 };
 
-//------------------------------------------------------------------------------
 template<> struct CellEnumToType<smtk::mesh::Polygon>
 {
   typedef smtk::mesh::CellPolygon CellType;
   typedef CellTraits< CellType > Traits;
 };
 
-//------------------------------------------------------------------------------
 template<> struct CellEnumToType<smtk::mesh::Pyramid>
 {
   typedef smtk::mesh::CellPyramid CellType;
   typedef CellTraits< CellType > Traits;
 };
 
-//------------------------------------------------------------------------------
 template<> struct CellEnumToType<smtk::mesh::Quad>
 {
   typedef smtk::mesh::CellQuad CellType;
   typedef CellTraits< CellType > Traits;
 };
 
-//------------------------------------------------------------------------------
 template<> struct CellEnumToType<smtk::mesh::Tetrahedron>
 {
   typedef smtk::mesh::CellTetrahedron CellType;
   typedef CellTraits< CellType > Traits;
 };
 
-//------------------------------------------------------------------------------
 template<> struct CellEnumToType<smtk::mesh::Triangle>
 {
   typedef smtk::mesh::CellTriangle CellType;
   typedef CellTraits< CellType > Traits;
 };
 
-//------------------------------------------------------------------------------
 template<> struct CellEnumToType<smtk::mesh::Vertex>
 {
   typedef smtk::mesh::CellVertex CellType;
   typedef CellTraits< CellType > Traits;
 };
 
-//------------------------------------------------------------------------------
 template<> struct CellEnumToType<smtk::mesh::Wedge>
 {
   typedef smtk::mesh::CellWedge CellType;

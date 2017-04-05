@@ -19,7 +19,6 @@ SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <algorithm>
 
-//----------------------------------------------------------------------------
 namespace {
 template<typename T>
 smtk::mesh::Handle create_point_mesh(::moab::Interface* iface,
@@ -77,7 +76,6 @@ namespace smtk {
 namespace mesh {
 namespace moab {
 
-//----------------------------------------------------------------------------
 PointLocatorImpl::PointLocatorImpl(::moab::Interface* interface,
                                    const smtk::mesh::HandleRange& points):
 m_interface( interface ),
@@ -88,7 +86,6 @@ m_tree(interface, points)
 
 }
 
-//----------------------------------------------------------------------------
 PointLocatorImpl::PointLocatorImpl(::moab::Interface* interface,
                                    const double* const xyzs,
                                    std::size_t numPoints,
@@ -107,7 +104,6 @@ m_tree(interface)
   m_tree.build_tree(points,NULL,&treeOptions);
 }
 
-//----------------------------------------------------------------------------
 PointLocatorImpl::PointLocatorImpl(::moab::Interface* interface,
                                    const float* const xyzs,
                                    std::size_t numPoints,
@@ -124,7 +120,6 @@ m_tree(interface)
   m_tree.build_tree(points,NULL,&treeOptions);
 }
 
-//----------------------------------------------------------------------------
 PointLocatorImpl::~PointLocatorImpl()
 {
   m_tree.reset_tree();
@@ -136,7 +131,6 @@ PointLocatorImpl::~PointLocatorImpl()
     }
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::HandleRange PointLocatorImpl::range() const
 {
    smtk::mesh::HandleRange entities;
@@ -144,7 +138,6 @@ smtk::mesh::HandleRange PointLocatorImpl::range() const
    return entities;
 }
 
-//----------------------------------------------------------------------------
 namespace {
 
 template< bool>
@@ -208,7 +201,6 @@ void find_valid_points(const double x, const double y, const double z,
 
 }
 
-//----------------------------------------------------------------------------
 void PointLocatorImpl::locatePointsWithinRadius(double x, double y, double z,
                                                 double radius,
                                                 Results& results)

@@ -35,8 +35,6 @@ namespace smtk
         QColor m_overlayColor;
     };
 
-
- //----------------------------------------------------------------------------
     class SMTKQTEXT_EXPORT  qtOverlayFilter : public QObject
     {
       Q_OBJECT

@@ -19,14 +19,13 @@
 namespace smtk {
   namespace common {
 
-//----------------------------------------------------------------------------
     View::Component &
     View::Component::setContents(const std::string &c)
         {
           this->m_contents = c;
           return *this;
         }
-//----------------------------------------------------------------------------
+
     bool View::Component::attributeAsBool(const std::string &attname, bool &val) const
     {
       std::string s;
@@ -49,7 +48,7 @@ namespace smtk {
         }
       return false;
     }
-//----------------------------------------------------------------------------
+
     bool View::Component::attributeAsBool(const std::string &attname) const
     {
       bool v;
@@ -59,7 +58,7 @@ namespace smtk {
         }
       return false;
     }
-//----------------------------------------------------------------------------
+
     bool View::Component::contentsAsInt(int &val) const
     {
       std::istringstream iss(this->m_contents);
@@ -71,7 +70,6 @@ namespace smtk {
       return true;
     }
 
-//----------------------------------------------------------------------------
     bool View::Component::contentsAsVector(std::vector<double> &vec) const
     {
       std::istringstream iss(this->m_contents);
@@ -96,8 +94,6 @@ namespace smtk {
       return (vec.size() > 0);
     }
 
-
-//----------------------------------------------------------------------------
     bool View::Component::attribute(const std::string &attname, std::string &value) const
     {
       std::map<std::string, std::string>::const_iterator it;
@@ -110,27 +106,26 @@ namespace smtk {
       return true;
     }
 
-//----------------------------------------------------------------------------
     View::Component &
     View::Component::setAttribute(const std::string &attname, const std::string &value)
         {
           this->m_attributes[attname] = value;
           return *this;
         }
-//----------------------------------------------------------------------------
+
     View::Component &
     View::Component::unsetAttribute(const std::string &attname)
         {
           this->m_attributes.erase(attname);
           return *this;
         }
-//----------------------------------------------------------------------------
+
     View::Component &View::Component::addChild(const std::string &childName)
     {
       this->m_children.push_back(Component(childName));
       return this->m_children.back();
     }
-//----------------------------------------------------------------------------
+
     int View::Component::findChild(const std::string &compName) const
     {
       int i, n = static_cast<int>(this->m_children.size());
@@ -144,7 +139,6 @@ namespace smtk {
       return -1;
     }
 
-//----------------------------------------------------------------------------
     void View::Component::copyContents(const Component &comp)
     {
       this->m_name = comp.m_name;
@@ -156,24 +150,20 @@ namespace smtk {
 	myChild.copyContents(child);
 	}
     }
-//----------------------------------------------------------------------------
+
     View::View(const std::string &myType, const std::string &myTitle):
       m_title(myTitle), m_type(myType), m_details("Details")
     {
     }
 
-//----------------------------------------------------------------------------
     View::~View()
     {
     }
 
-//----------------------------------------------------------------------------
     void View::copyContents(const View &view)
     {
       this->m_iconName = view.m_iconName;
       this->m_details.copyContents(view.m_details);
     }
-
-//----------------------------------------------------------------------------
   } // namespace common
 } // namespace smtk

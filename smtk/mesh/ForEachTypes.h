@@ -24,7 +24,6 @@ namespace mesh {
 class CellSet;
 class MeshSet;
 
-//----------------------------------------------------------------------------
 class SMTKCORE_EXPORT MeshForEach
 {
 public:
@@ -35,7 +34,6 @@ public:
   smtk::mesh::CollectionPtr m_collection;
 };
 
-//----------------------------------------------------------------------------
 class SMTKCORE_EXPORT CellForEach
 {
 public:
@@ -86,7 +84,6 @@ private:
   bool m_wantsCoordinates;
 };
 
-//----------------------------------------------------------------------------
 class SMTKCORE_EXPORT PointForEach
 {
 public:

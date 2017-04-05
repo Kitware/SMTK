@@ -21,7 +21,6 @@
 
 vtkStandardNewMacro(vtkCMBModelOmicronMeshInputWriterBase);
 
-//----------------------------------------------------------------------------
 vtkCMBModelOmicronMeshInputWriterBase::vtkCMBModelOmicronMeshInputWriterBase()
 {
   this->OperateSucceeded = 0;
@@ -31,7 +30,6 @@ vtkCMBModelOmicronMeshInputWriterBase::vtkCMBModelOmicronMeshInputWriterBase()
   this->VolumeConstraint = 0.001;
 }
 
-//----------------------------------------------------------------------------
 vtkCMBModelOmicronMeshInputWriterBase::~vtkCMBModelOmicronMeshInputWriterBase()
 {
   this->SetFileName(0);
@@ -39,7 +37,6 @@ vtkCMBModelOmicronMeshInputWriterBase::~vtkCMBModelOmicronMeshInputWriterBase()
   this->SetTetGenOptions(0);
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelOmicronMeshInputWriterBase::Operate(vtkDiscreteModelWrapper* modelWrapper)
 {
   vtkDebugMacro("Writing a CMB file.");
@@ -72,7 +69,6 @@ void vtkCMBModelOmicronMeshInputWriterBase::Operate(vtkDiscreteModelWrapper* mod
   this->OperateSucceeded = writer->Write(modelWrapper->GetModel(), this);
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelOmicronMeshInputWriterBase::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

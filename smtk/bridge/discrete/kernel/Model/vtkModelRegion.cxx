@@ -19,8 +19,6 @@
 #include "vtkObjectFactory.h"
 #include <set>
 
-
-//-----------------------------------------------------------------------------
 vtkModelRegion::vtkModelRegion()
 {
   // We don't build a model shell use yet because we don't know
@@ -28,24 +26,20 @@ vtkModelRegion::vtkModelRegion()
   // it is comprised of/associated with
 }
 
-//-----------------------------------------------------------------------------
 vtkModelRegion::~vtkModelRegion()
 {
 }
 
-//-----------------------------------------------------------------------------
 int vtkModelRegion::GetType()
 {
   return vtkModelRegionType;
 }
 
-//-----------------------------------------------------------------------------
 bool vtkModelRegion::IsDestroyable()
 {
   return 1;
 }
 
-//-----------------------------------------------------------------------------
 bool vtkModelRegion::Destroy()
 {
   this->GetModel()->InvokeModelGeometricEntityEvent(
@@ -64,13 +58,11 @@ bool vtkModelRegion::Destroy()
   return 1;
 }
 
-//-----------------------------------------------------------------------------
 void vtkModelRegion::Initialize(vtkIdType modelRegionId)
 {
   this->Superclass::Initialize(modelRegionId);
 }
 
-//-----------------------------------------------------------------------------
 void vtkModelRegion::Initialize(int numModelFaces, vtkModelFace** faces, int* faceSides,
                                 vtkIdType modelRegionId)
 {
@@ -78,13 +70,11 @@ void vtkModelRegion::Initialize(int numModelFaces, vtkModelFace** faces, int* fa
   this->BuildModelShellUse(numModelFaces, faces, faceSides);
 }
 
-//-----------------------------------------------------------------------------
 vtkModelItemIterator* vtkModelRegion::NewModelShellUseIterator()
 {
   return this->NewIterator(vtkModelShellUseType);
 }
 
-//-----------------------------------------------------------------------------
 vtkModelShellUse* vtkModelRegion::BuildModelShellUse(
   int numModelFaces, vtkModelFace** modelFaces, int* faceSides)
 {
@@ -98,7 +88,6 @@ vtkModelShellUse* vtkModelRegion::BuildModelShellUse(
   return shellUse;
 }
 
-//-----------------------------------------------------------------------------
 bool vtkModelRegion::DestroyModelShellUse(vtkModelShellUse* shellUse)
 {
   if(!shellUse->Destroy())
@@ -110,19 +99,16 @@ bool vtkModelRegion::DestroyModelShellUse(vtkModelShellUse* shellUse)
   return true;
 }
 
-//-----------------------------------------------------------------------------
 void vtkModelRegion::Serialize(vtkSerializer* ser)
 {
   this->Superclass::Serialize(ser);
 }
 
-//-----------------------------------------------------------------------------
 void vtkModelRegion::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }
 
-//-----------------------------------------------------------------------------
 vtkModelItemIterator* vtkModelRegion::NewAdjacentModelFaceIterator()
 {
   vtkModelItemGenericIterator* faces = vtkModelItemGenericIterator::New();
@@ -145,7 +131,6 @@ vtkModelItemIterator* vtkModelRegion::NewAdjacentModelFaceIterator()
   return faces;
 }
 
-//-----------------------------------------------------------------------------
 void  vtkModelRegion::AddShell(int , vtkModelFace** , int* )
 {
   this->GetModel()->InvokeModelGeometricEntityEvent(
@@ -153,7 +138,6 @@ void  vtkModelRegion::AddShell(int , vtkModelFace** , int* )
   vtkErrorMacro("Not implemented.");
 }
 
-//-----------------------------------------------------------------------------
 int vtkModelRegion::GetNumberOfFaces()
 {
   std::set<vtkIdType> faceIds;
@@ -176,7 +160,6 @@ int vtkModelRegion::GetNumberOfFaces()
   shells->Delete();
   return static_cast<int>(faceIds.size());
 }
-//-----------------------------------------------------------------------------
 
 int vtkModelRegion::GetNumberOfShells()
 {

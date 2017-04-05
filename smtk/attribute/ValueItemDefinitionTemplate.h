@@ -78,7 +78,6 @@ namespace smtk
 
     };
 
-//----------------------------------------------------------------------------
     template<typename DataT>
     ValueItemDefinitionTemplate<DataT>::
     ValueItemDefinitionTemplate(const std::string &myname):
@@ -90,7 +89,7 @@ namespace smtk
       this->m_maxRangeInclusive = false;
       this->m_dummy = DataT();
     }
-//----------------------------------------------------------------------------
+
     /**\brief Set the default value for an attribute.
       *
       */
@@ -101,14 +100,14 @@ namespace smtk
       std::vector<DataT> defaultTuple(1, dvalue);
       return this->setDefaultValue(defaultTuple);
     }
-//----------------------------------------------------------------------------
+
     template<typename DataT>
     void ValueItemDefinitionTemplate<DataT>::updateDiscreteValue()
     {
       assert(static_cast<int>(this->m_discreteValues.size()) > this->m_defaultDiscreteIndex);
       this->setDefaultValue(this->m_discreteValues[this->m_defaultDiscreteIndex]);
     }
-//----------------------------------------------------------------------------
+
     /**\brief Set the default value for an attribute.
       *
       * This variant takes an array of values so that
@@ -146,7 +145,7 @@ namespace smtk
       this->m_hasDefault = true;
       return true;
     }
-//----------------------------------------------------------------------------
+
     template<typename DataT>
     void ValueItemDefinitionTemplate<DataT>::
     addDiscreteValue(const DataT &dvalue)
@@ -156,7 +155,7 @@ namespace smtk
       oss << dvalue;
       this->addDiscreteValue(dvalue, oss.str());
     }
-//----------------------------------------------------------------------------
+
     template<typename DataT>
     void ValueItemDefinitionTemplate<DataT>::
     addDiscreteValue(const DataT &dvalue, const std::string &dlabel)
@@ -164,7 +163,7 @@ namespace smtk
       this->m_discreteValues.push_back(dvalue);
       this->m_discreteValueEnums.push_back(dlabel);
     }
-//----------------------------------------------------------------------------
+
     template<typename DataT>
     bool ValueItemDefinitionTemplate<DataT>::
     setMinRange(const DataT &minVal, bool isInclusive)
@@ -190,7 +189,7 @@ namespace smtk
         }
       return false;
     }
-//----------------------------------------------------------------------------
+
     template<typename DataT>
     bool ValueItemDefinitionTemplate<DataT>::
     setMaxRange(const DataT &maxVal, bool isInclusive)
@@ -216,7 +215,7 @@ namespace smtk
         }
       return false;
     }
-//----------------------------------------------------------------------------
+
     template<typename DataT>
     void ValueItemDefinitionTemplate<DataT>::
     clearRange()
@@ -224,7 +223,7 @@ namespace smtk
       this->m_minRangeSet = false;
       this->m_maxRangeSet = false;
     }
-//----------------------------------------------------------------------------
+
     template<typename DataT>
     int ValueItemDefinitionTemplate<DataT>::
     findDiscreteIndex(const DataT &val) const
@@ -244,7 +243,7 @@ namespace smtk
         }
       return -1;
     }
-//----------------------------------------------------------------------------
+
     template<typename DataT>
     bool ValueItemDefinitionTemplate<DataT>::
     isValueValid(const DataT &val) const
@@ -293,7 +292,6 @@ namespace smtk
       return this->m_defaultValue;
     }
 
-//----------------------------------------------------------------------------
 // Copies my contents to input definition
 // Input argument is ValueItemDefinition shared pointer, which must be
 // cast to (raw) ValueItemTemplateDefinition pointer.

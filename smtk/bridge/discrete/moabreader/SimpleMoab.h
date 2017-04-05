@@ -109,7 +109,6 @@ public:
       }
     }
 
-  //----------------------------------------------------------------------------
   moab::Tag getMoabTag(const smoab::Tag& simpleTag) const
     {
     moab::Tag tag;
@@ -120,7 +119,6 @@ public:
     return tag;
     }
 
-  //----------------------------------------------------------------------------
   template<typename T>
   T getDefaultTagVaue(moab::Tag tag) const
     {
@@ -129,14 +127,12 @@ public:
     return defaultValue;
     }
 
-  //----------------------------------------------------------------------------
   template<typename T>
   T getDefaultTagVaue(smoab::Tag tag) const
     {
     return this->getDefaultTagVaue<T>(getMoabTag(tag));
     }
 
-  //----------------------------------------------------------------------------
   template<typename T>
   T getTagData(moab::Tag tag, const smoab::EntityHandle& entity, T value) const
     {
@@ -144,14 +140,12 @@ public:
     return value;
     }
 
-  //----------------------------------------------------------------------------
   template<typename T>
   T getTagData(smoab::Tag tag, const smoab::EntityHandle& entity, T value = T()) const
     {
     return this->getTagData(getMoabTag(tag),entity,value);
     }
 
-  //----------------------------------------------------------------------------
   //returns the moab name for the given entity handle if it has a sparse Name tag
   std::string name(const smoab::EntityHandle& entity) const
     {
@@ -169,24 +163,20 @@ public:
     return std::string(tag_name);
     }
 
-  //----------------------------------------------------------------------------
   //returns the geometeric dimension of an entity.
   int entityDimension(const smoab::EntityHandle& entity) const
     {
     return this->Moab->dimension_from_handle(entity);
     }
 
-  //----------------------------------------------------------------------------
   //returns the geometeric dimension of an entity.
   smoab::EntityType entityType(const smoab::EntityHandle& entity) const
     {
     return this->Moab->type_from_handle(entity);
     }
 
-  //----------------------------------------------------------------------------
   smoab::EntityHandle getRoot() const { return this->Moab->get_root_set(); }
 
-  //----------------------------------------------------------------------------
   smoab::Range findEntities(const smoab::EntityHandle root, moab::EntityType type) const
     {
     smoab::Range result;
@@ -195,7 +185,6 @@ public:
     return result;
     }
 
-  //----------------------------------------------------------------------------
   //given a single entity handle find all items in that mesh set that aren't
   //them selves entitysets. If recurse is true we also recurse sub entitysets
   smoab::Range findAllMeshEntities(smoab::EntityHandle const& entity,
@@ -206,7 +195,6 @@ public:
     return result;
     }
 
-  //----------------------------------------------------------------------------
   //Find all entities with a given tag. We don't use geom as a tag as that
   //isn't a fast operation. Yes finding the intersection of geom entities and
   //a material / boundary tag will be more work, but it is rarely done currently
@@ -250,7 +238,6 @@ public:
       }
     }
 
-  //----------------------------------------------------------------------------
   //Find all entities from a given root of a given dimensionality
   smoab::Range findEntitiesWithDimension(const smoab::EntityHandle root,
                                          const int dimension,
@@ -273,8 +260,6 @@ public:
     return result;
     }
 
-
-  //----------------------------------------------------------------------------
   smoab::Range findHighestDimensionEntities(const smoab::EntityHandle& entity,
                                             bool recurse=false) const
     {
@@ -298,7 +283,6 @@ public:
     return smoab::Range();
     }
 
-  //----------------------------------------------------------------------------
   //Find all elements in the database that have children and zero parents.
   //this doesn't find
   smoab::Range findEntityRootParents(const smoab::EntityHandle& root) const
@@ -325,7 +309,6 @@ public:
     return parents;
     }
 
-  //----------------------------------------------------------------------------
   //finds entities that have zero children and zero parents
   smoab::Range findDetachedEntities(const moab::EntityHandle& root) const
     {
@@ -351,7 +334,6 @@ public:
     return detached;
     }
 
-  //----------------------------------------------------------------------------
   //find all children of the entity passed
   smoab::Range findChildrenEntities(const smoab::EntityHandle& parent) const
     {
@@ -360,7 +342,6 @@ public:
     return children;
     }
 
-  //----------------------------------------------------------------------------
   //find all children of the entity passed
   smoab::Range findParentEntities(const smoab::EntityHandle& child) const
     {
@@ -369,8 +350,6 @@ public:
     return parents;
     }
 
-
-  //----------------------------------------------------------------------------
   //sees if an entity is a child entity
   bool isParentEntity(const smoab::EntityHandle& child,
                       const smoab::EntityHandle& possibleParent) const
@@ -380,7 +359,6 @@ public:
     return parents.find(possibleParent) != parents.end();
     }
 
-  //----------------------------------------------------------------------------
   //find all entities that are adjacent to a single entity
   smoab::Range findAdjacencies(const smoab::EntityHandle& entity,
                                int dimension) const
@@ -397,7 +375,6 @@ public:
     return result;
     }
 
-  //----------------------------------------------------------------------------
   smoab::Range findAdjacencies(const smoab::Range& range,
                                     int dimension,
                                     const smoab::adjacency_type type = smoab::UNION) const
@@ -414,7 +391,6 @@ public:
     return result;
     }
 
-  //----------------------------------------------------------------------------
   //create adjacencies, only works when the dimension requested is lower than
   //dimension of the range of entities
   smoab::Range createAdjacencies(const smoab::Range& range,
@@ -433,7 +409,6 @@ public:
     return result;
     }
 
-  //----------------------------------------------------------------------------
   int numChildMeshSets(const smoab::EntityHandle& root) const
     {
     int numChildren;
@@ -441,7 +416,6 @@ public:
     return numChildren;
     }
 
-  //----------------------------------------------------------------------------
   smoab::Range getChildSets(const smoab::EntityHandle& root) const
     {
     smoab::Range children;
@@ -449,14 +423,12 @@ public:
     return children;
     }
 
-  //----------------------------------------------------------------------------
   //remove a collection of entities from the database
   void remove(smoab::Range const& toDelete) const
     {
     this->Moab->delete_entities(toDelete);
     }
 
-  //----------------------------------------------------------------------------
   //a entityHandle with value zero means no side element was found
   smoab::EntityHandle sideElement(smoab::EntityHandle const& cell,
                                   int dim, int side) const
@@ -466,7 +438,6 @@ public:
     return result;
     }
 
-  //----------------------------------------------------------------------------
   //returns all the existing side elements of a cell, elements that
   //are zero mean that side element doesn't exist
   std::vector<smoab::EntityHandle> sideElements(
@@ -486,7 +457,6 @@ public:
     return result;
     }
 
-  //----------------------------------------------------------------------------
   //prints all elements in a range objects
   void printRange(const smoab::Range& range) const
     {
@@ -504,7 +474,6 @@ private:
   moab::Interface* Moab;
 };
 
-//----------------------------------------------------------------------------
 void RangeToVector(const smoab::Range &range,
                    std::vector<smoab::EntityHandle>& vector )
 {

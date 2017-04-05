@@ -70,19 +70,16 @@ namespace {
     return node.text().as_int();
   }
 
-//----------------------------------------------------------------------------
   double getValueFromXMLElement(xml_node &node, double)
   {
     return node.text().as_double();
   }
 
-//----------------------------------------------------------------------------
   const char *getValueFromXMLElement(xml_node &node, std::string)
   {
     return node.text().get();
   }
 
-//----------------------------------------------------------------------------
   std::vector<int> getValueFromXMLElement(xml_node &node, const std::string& sep, std::vector<int>)
   {
     std::vector<int> result;
@@ -101,7 +98,6 @@ namespace {
     return result;
   }
 
-//----------------------------------------------------------------------------
   std::vector<double> getValueFromXMLElement(xml_node &node, const std::string& sep, std::vector<double>)
   {
     std::vector<double> result;
@@ -120,7 +116,6 @@ namespace {
     return result;
   }
 
-//----------------------------------------------------------------------------
   std::vector<std::string> getValueFromXMLElement(xml_node &node, const std::string& sep, std::vector<std::string>)
   {
     std::vector<std::string> vals;
@@ -128,7 +123,6 @@ namespace {
     return vals;
   }
 
-//----------------------------------------------------------------------------
   template<typename ItemDefType, typename BasicType>
   void processDerivedValueDef(pugi::xml_node &node,
                               ItemDefType idef, Logger &logger)
@@ -255,7 +249,7 @@ namespace {
         }
       }
   }
-//----------------------------------------------------------------------------
+
   template<typename ItemType, typename BasicType>
   void processDerivedValue(pugi::xml_node &node,
                            ItemType item, attribute::System &asys,
@@ -379,24 +373,22 @@ namespace {
       }
   }
 };
-//----------------------------------------------------------------------------
+
 XmlDocV1Parser::XmlDocV1Parser(smtk::attribute::System &mySystem):
   m_reportAsError(true), m_system(mySystem)
 {
 }
 
-//----------------------------------------------------------------------------
 XmlDocV1Parser::~XmlDocV1Parser()
 {
 }
-//----------------------------------------------------------------------------
+
 xml_node XmlDocV1Parser::getRootNode(xml_document &doc)
 {
   xml_node amnode = doc.child("SMTK_AttributeManager");
   return amnode;
 }
 
-//----------------------------------------------------------------------------
 bool XmlDocV1Parser::canParse(xml_document &doc)
 {
   // Get the attribute system node
@@ -421,7 +413,6 @@ bool XmlDocV1Parser::canParse(xml_document &doc)
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool XmlDocV1Parser::canParse(xml_node &node)
 {
   // Check the name of the node
@@ -445,7 +436,7 @@ bool XmlDocV1Parser::canParse(xml_node &node)
 
   return true;
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::process(xml_document &doc)
 {
   // Get the attribute system node
@@ -460,7 +451,7 @@ void XmlDocV1Parser::process(xml_document &doc)
 
   this->process(amnode);
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::process(xml_node &amnode)
 {
   // Reset the message log
@@ -567,7 +558,7 @@ void XmlDocV1Parser::process(xml_node &amnode)
       }
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::processAttributeInformation(xml_node &root)
 {
   // Process definitions first
@@ -667,7 +658,7 @@ void XmlDocV1Parser::processAttributeInformation(xml_node &root)
     }
 
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::createDefinition(xml_node &defNode)
 {
   attribute::DefinitionPtr def, baseDef;
@@ -717,7 +708,6 @@ void XmlDocV1Parser::createDefinition(xml_node &defNode)
   this->processDefinition(defNode, def);
 }
 
-//----------------------------------------------------------------------------
   void XmlDocV1Parser::processDefinition(xml_node &defNode,
                                          smtk::attribute::DefinitionPtr def)
 {
@@ -879,7 +869,7 @@ void XmlDocV1Parser::createDefinition(xml_node &defNode)
       }
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::processItemDef(xml_node &node,
                                     smtk::attribute::ItemDefinitionPtr idef)
 {
@@ -949,7 +939,7 @@ void XmlDocV1Parser::processItemDef(xml_node &node,
     idef->addCategory(this->m_defaultCategory.c_str());
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::processDoubleDef(pugi::xml_node &node,
                                          attribute::DoubleItemDefinitionPtr idef)
 {
@@ -958,7 +948,7 @@ void XmlDocV1Parser::processDoubleDef(pugi::xml_node &node,
   processDerivedValueDef<attribute::DoubleItemDefinitionPtr, double>
     (node, idef, this->m_logger);
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::processIntDef(pugi::xml_node &node,
                                       attribute::IntItemDefinitionPtr idef)
 {
@@ -967,7 +957,7 @@ void XmlDocV1Parser::processIntDef(pugi::xml_node &node,
   processDerivedValueDef<attribute::IntItemDefinitionPtr, int>
     (node, idef, this->m_logger);
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::processStringDef(pugi::xml_node &node,
                                          attribute::StringItemDefinitionPtr idef)
 {
@@ -981,7 +971,7 @@ void XmlDocV1Parser::processStringDef(pugi::xml_node &node,
   processDerivedValueDef<attribute::StringItemDefinitionPtr, std::string>
     (node, idef, this->m_logger);
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::processModelEntityDef(pugi::xml_node &node,
                                          attribute::ModelEntityItemDefinitionPtr idef)
 {
@@ -1045,7 +1035,7 @@ void XmlDocV1Parser::processModelEntityDef(pugi::xml_node &node,
       }
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::processMeshSelectionDef(pugi::xml_node &node,
                                          attribute::MeshSelectionItemDefinitionPtr idef)
 {
@@ -1054,7 +1044,7 @@ void XmlDocV1Parser::processMeshSelectionDef(pugi::xml_node &node,
                  "The Mesh Selection defs should only be availabe starting Attribute Version 2 Format"
                  << idef->name());
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::processMeshEntityDef(pugi::xml_node &node,
                                          attribute::MeshItemDefinitionPtr idef)
 {
@@ -1063,7 +1053,7 @@ void XmlDocV1Parser::processMeshEntityDef(pugi::xml_node &node,
                  "The Mesh Entity defs should only be availabe starting Attribute Version 2 Format"
                  << idef->name());
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::processDateTimeDef(
   pugi::xml_node &node,
   attribute::DateTimeItemDefinitionPtr idef)
@@ -1074,7 +1064,6 @@ void XmlDocV1Parser::processDateTimeDef(
                  << idef->name());
 }
 
-//----------------------------------------------------------------------------
 void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
                                         attribute::ValueItemDefinitionPtr idef)
 {
@@ -1310,7 +1299,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
       }
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::processRefDef(pugi::xml_node &node,
                                    attribute::RefItemDefinitionPtr idef)
 {
@@ -1374,7 +1363,7 @@ void XmlDocV1Parser::processRefDef(pugi::xml_node &node,
       }
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::processDirectoryDef(pugi::xml_node &node,
                                             attribute::DirectoryItemDefinitionPtr idef)
 {
@@ -1426,7 +1415,7 @@ void XmlDocV1Parser::processDirectoryDef(pugi::xml_node &node,
       }
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::processFileDef(pugi::xml_node &node,
                                        attribute::FileItemDefinitionPtr idef)
 {
@@ -1498,7 +1487,7 @@ void XmlDocV1Parser::processFileDef(pugi::xml_node &node,
     idef->setDefaultValue(defaultNode.text().get());
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
                                         attribute::GroupItemDefinitionPtr def)
 {
@@ -1701,7 +1690,6 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
     }
 }
 
-//----------------------------------------------------------------------------
 smtk::common::UUID XmlDocV1Parser::getAttributeID(xml_node &attNode)
 {
   // In Version 1 Format we didn't use UIDs so we need to give
@@ -1721,7 +1709,6 @@ smtk::common::UUID XmlDocV1Parser::getAttributeID(xml_node &attNode)
   return smtk::common::UUID::null();
 }
 
-//----------------------------------------------------------------------------
 void XmlDocV1Parser::processAttribute(xml_node &attNode)
 {
   xml_node itemsNode, assocsNode, iNode, node;
@@ -1879,7 +1866,6 @@ void XmlDocV1Parser::processAttribute(xml_node &attNode)
     }
 }
 
-//----------------------------------------------------------------------------
 void XmlDocV1Parser::processItem(xml_node &node,
                                  smtk::attribute::ItemPtr item)
 {
@@ -1959,7 +1945,7 @@ void XmlDocV1Parser::processItem(xml_node &node,
                      << smtk::attribute::Item::type2String(item->type()));
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::processValueItem(pugi::xml_node &node,
                                          attribute::ValueItemPtr item)
 {
@@ -2091,7 +2077,7 @@ void XmlDocV1Parser::processValueItem(pugi::xml_node &node,
     }
   smtkErrorMacro(this->m_logger, "Missing Discrete Values for Item: " << item->name());
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::processRefItem(pugi::xml_node &node,
                                                attribute::RefItemPtr item)
 {
@@ -2178,7 +2164,7 @@ void XmlDocV1Parser::processRefItem(pugi::xml_node &node,
     smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::processDirectoryItem(pugi::xml_node &node,
                                              attribute::DirectoryItemPtr item)
 {
@@ -2239,7 +2225,6 @@ void XmlDocV1Parser::processDirectoryItem(pugi::xml_node &node,
     }
 }
 
-//----------------------------------------------------------------------------
 void XmlDocV1Parser::processDoubleItem(pugi::xml_node &node,
                                           attribute::DoubleItemPtr item)
 {
@@ -2248,7 +2233,7 @@ void XmlDocV1Parser::processDoubleItem(pugi::xml_node &node,
   processDerivedValue<attribute::DoubleItemPtr, double>
     (node, item, this->m_system, this->m_itemExpressionInfo, this->m_logger);
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::processIntItem(pugi::xml_node &node,
                                        attribute::IntItemPtr item)
 {
@@ -2257,7 +2242,7 @@ void XmlDocV1Parser::processIntItem(pugi::xml_node &node,
   processDerivedValue<attribute::IntItemPtr, int>
     (node, item, this->m_system, this->m_itemExpressionInfo, this->m_logger);
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::processStringItem(pugi::xml_node &node,
                                           attribute::StringItemPtr item)
 {
@@ -2266,7 +2251,7 @@ void XmlDocV1Parser::processStringItem(pugi::xml_node &node,
   processDerivedValue<attribute::StringItemPtr, std::string>
     (node, item, this->m_system, this->m_itemExpressionInfo, this->m_logger);
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::processModelEntityItem(pugi::xml_node &node,
                                           attribute::ModelEntityItemPtr item)
 {
@@ -2276,7 +2261,7 @@ void XmlDocV1Parser::processModelEntityItem(pugi::xml_node &node,
                  << item->name());
   return;
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::processMeshSelectionItem(pugi::xml_node &node,
   attribute::MeshSelectionItemPtr item)
 {
@@ -2285,7 +2270,7 @@ void XmlDocV1Parser::processMeshSelectionItem(pugi::xml_node &node,
                  "All Mesh Selection Items will be ignored for Attribute Version 1 Format"
                  << item->name());
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::processMeshEntityItem(pugi::xml_node &node,
   attribute::MeshItemPtr item)
 {
@@ -2294,7 +2279,7 @@ void XmlDocV1Parser::processMeshEntityItem(pugi::xml_node &node,
                  "All Mesh Entity Items will be ignored for Attribute Version 1 Format"
                  << item->name());
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::processDateTimeItem(
   pugi::xml_node &node, attribute::DateTimeItemPtr item)
 {
@@ -2304,7 +2289,6 @@ void XmlDocV1Parser::processDateTimeItem(
                  << item->name());
 }
 
-//----------------------------------------------------------------------------
 void XmlDocV1Parser::processFileItem(pugi::xml_node &node,
                                         attribute::FileItemPtr item)
 {
@@ -2364,7 +2348,7 @@ void XmlDocV1Parser::processFileItem(pugi::xml_node &node,
     smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::processGroupItem(pugi::xml_node &node,
                                          attribute::GroupItemPtr item)
 {
@@ -2456,7 +2440,7 @@ void XmlDocV1Parser::processGroupItem(pugi::xml_node &node,
     smtkErrorMacro(this->m_logger,"XML Node GroupClusters is missing for Item: " << item->name());
     }
 }
-//----------------------------------------------------------------------------
+
 bool XmlDocV1Parser::getColor(xml_node &node, double color[4],
                                  const std::string &colorName)
 {
@@ -2478,7 +2462,6 @@ bool XmlDocV1Parser::getColor(xml_node &node, double color[4],
   return true;
 }
 
-//----------------------------------------------------------------------------
 void XmlDocV1Parser::processViews(xml_node &root)
 {
   xml_node views = root.child("RootView");
@@ -2535,7 +2518,7 @@ void XmlDocV1Parser::processViews(xml_node &root)
   this->processGroupView(views,rootView);
 
 }
-//----------------------------------------------------------------------------
+
 void XmlDocV1Parser::processAttributeView(xml_node &node,
                                           smtk::common::ViewPtr view)
 {
@@ -2567,7 +2550,6 @@ void XmlDocV1Parser::processAttributeView(xml_node &node,
     }
 }
 
-//----------------------------------------------------------------------------
 void XmlDocV1Parser::processInstancedView(xml_node &node,
                                           smtk::common::ViewPtr view)
 {
@@ -2596,7 +2578,6 @@ void XmlDocV1Parser::processInstancedView(xml_node &node,
     }
 }
 
-//----------------------------------------------------------------------------
 void XmlDocV1Parser::processModelEntityView(xml_node &node,
                                             smtk::common::ViewPtr view)
 {
@@ -2613,7 +2594,6 @@ void XmlDocV1Parser::processModelEntityView(xml_node &node,
     }    
 }
 
-//----------------------------------------------------------------------------
 void XmlDocV1Parser::processSimpleExpressionView(xml_node &node,
                                                  smtk::common::ViewPtr view)
 {
@@ -2624,7 +2604,6 @@ void XmlDocV1Parser::processSimpleExpressionView(xml_node &node,
     }
 }
 
-//----------------------------------------------------------------------------
 void XmlDocV1Parser::processGroupView(xml_node &node,
                                       smtk::common::ViewPtr group)
 {
@@ -2701,7 +2680,6 @@ void XmlDocV1Parser::processGroupView(xml_node &node,
     }
 }
 
-//----------------------------------------------------------------------------
 smtk::common::ViewPtr  XmlDocV1Parser::createView(xml_node &node,
                                                   const std::string &viewType)
 {
@@ -2727,7 +2705,6 @@ smtk::common::ViewPtr  XmlDocV1Parser::createView(xml_node &node,
   return view;
 }
 
-//----------------------------------------------------------------------------
 void XmlDocV1Parser::processModelInfo(xml_node &root)
 {
   xml_node modelInfo = root.child("ModelInfo");
@@ -2737,7 +2714,6 @@ void XmlDocV1Parser::processModelInfo(xml_node &root)
     }
 }
 
-//----------------------------------------------------------------------------
 int XmlDocV1Parser::decodeColorInfo(const std::string &s, double *color)
 {
   // Assume that the string is seperated by spaces and or commas
@@ -2757,7 +2733,7 @@ int XmlDocV1Parser::decodeColorInfo(const std::string &s, double *color)
     }
   return 4 - i; // If we processed all the components this would be 0
 }
-//----------------------------------------------------------------------------
+
 smtk::model::BitFlags
 XmlDocV1Parser::decodeModelEntityMask(const std::string &s)
 {
@@ -2770,4 +2746,3 @@ XmlDocV1Parser::decodeModelEntityMask(const std::string &s)
     }
   return flags;
 }
-//----------------------------------------------------------------------------

@@ -26,12 +26,10 @@
 
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 System::System()
 {
 }
 
-//----------------------------------------------------------------------------
 System::~System()
 {
   std::map<std::string,  smtk::attribute::DefinitionPtr>::const_iterator it;
@@ -42,14 +40,12 @@ System::~System()
     }
  }
 
-//----------------------------------------------------------------------------
 smtk::common::Resource::Type
 System::resourceType() const
 {
   return smtk::common::Resource::ATTRIBUTE;
 }
 
-//----------------------------------------------------------------------------
 smtk::attribute::DefinitionPtr
 System::createDefinition(const std::string &typeName,
                           const std::string &baseTypeName)
@@ -80,7 +76,6 @@ System::createDefinition(const std::string &typeName,
   return newDef;
 }
 
-//----------------------------------------------------------------------------
 smtk::attribute::DefinitionPtr
 System::createDefinition(const std::string &typeName,
                           smtk::attribute::DefinitionPtr baseDef)
@@ -103,7 +98,6 @@ System::createDefinition(const std::string &typeName,
   return newDef;
 }
 
-//----------------------------------------------------------------------------
 smtk::attribute::AttributePtr System::createAttribute(const std::string &name,
                                              smtk::attribute::DefinitionPtr def)
 {
@@ -126,7 +120,6 @@ smtk::attribute::AttributePtr System::createAttribute(const std::string &name,
   return a;
 }
 
-//----------------------------------------------------------------------------
 smtk::attribute::AttributePtr
 System::createAttribute(smtk::attribute::DefinitionPtr def)
 {
@@ -135,7 +128,6 @@ System::createAttribute(smtk::attribute::DefinitionPtr def)
   return att;
 }
 
-//----------------------------------------------------------------------------
 smtk::attribute::AttributePtr System::createAttribute(const std::string &typeName)
 {
   smtk::attribute::DefinitionPtr def = this->findDefinition(typeName);
@@ -149,7 +141,6 @@ smtk::attribute::AttributePtr System::createAttribute(const std::string &typeNam
   return att;
 }
 
-//----------------------------------------------------------------------------
 smtk::attribute::AttributePtr System::createAttribute(const std::string &name,
                                              const std::string &typeName)
 {
@@ -162,7 +153,6 @@ smtk::attribute::AttributePtr System::createAttribute(const std::string &name,
   return att;
 }
 
-//----------------------------------------------------------------------------
 void System::definitions(std::vector<smtk::attribute::DefinitionPtr> &result) const
 {
   std::map<std::string, DefinitionPtr>::const_iterator it;
@@ -173,7 +163,7 @@ void System::definitions(std::vector<smtk::attribute::DefinitionPtr> &result) co
     result[i] = it->second;
     }
 }
-//----------------------------------------------------------------------------
+
 void System::attributes(std::vector<smtk::attribute::AttributePtr> &result) const
 {
   std::map<std::string, AttributePtr>::const_iterator it;
@@ -184,9 +174,8 @@ void System::attributes(std::vector<smtk::attribute::AttributePtr> &result) cons
     result[i] = it->second;
     }
 }
-//----------------------------------------------------------------------------
+
 // For Reader classes
-//----------------------------------------------------------------------------
 smtk::attribute::AttributePtr
 System::createAttribute(const std::string &name,
                         smtk::attribute::DefinitionPtr def,
@@ -205,7 +194,7 @@ System::createAttribute(const std::string &name,
   this->m_attributeIdMap[id] = a;
   return a;
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::AttributePtr
 System::createAttribute(const std::string &name,
                         const std::string &typeName,
@@ -231,7 +220,7 @@ System::createAttribute(const std::string &name,
   this->m_attributeIdMap[id] = a;
   return a;
 }
-//----------------------------------------------------------------------------
+
 bool System::removeAttribute(smtk::attribute::AttributePtr att)
 {
   // Make sure that this system is managing this attribute
@@ -245,7 +234,6 @@ bool System::removeAttribute(smtk::attribute::AttributePtr att)
   return true;
 }
 
-//----------------------------------------------------------------------------
 /**\brief Find the attribute definitions that can be associated with \a mask.
   *
   */
@@ -266,7 +254,6 @@ void System::findDefinitions(unsigned long mask, std::vector<smtk::attribute::De
     }
 }
 
-//----------------------------------------------------------------------------
 void System::
 findAttributes(smtk::attribute::DefinitionPtr def,
                std::vector<smtk::attribute::AttributePtr> &result) const
@@ -277,7 +264,7 @@ findAttributes(smtk::attribute::DefinitionPtr def,
     this->internalFindAttributes(def, result);
     }
 }
-//----------------------------------------------------------------------------
+
 void System::
 internalFindAttributes(smtk::attribute::DefinitionPtr def,
                        std::vector<smtk::attribute::AttributePtr> &result) const
@@ -305,7 +292,6 @@ internalFindAttributes(smtk::attribute::DefinitionPtr def,
     }
 }
 
-//----------------------------------------------------------------------------
 void System::
 findAllDerivedDefinitions(smtk::attribute::DefinitionPtr def,
                           bool onlyConcrete,
@@ -317,7 +303,7 @@ findAllDerivedDefinitions(smtk::attribute::DefinitionPtr def,
     this->internalFindAllDerivedDefinitions(def, onlyConcrete, result);
     }
 }
-//----------------------------------------------------------------------------
+
 void System::
 internalFindAllDerivedDefinitions(smtk::attribute::DefinitionPtr def,
                                   bool onlyConcrete,
@@ -341,7 +327,6 @@ internalFindAllDerivedDefinitions(smtk::attribute::DefinitionPtr def,
     }
 }
 
-//----------------------------------------------------------------------------
 bool System::rename(smtk::attribute::AttributePtr att, const std::string &newName)
 {
   // Make sure that this system is managing this attribute
@@ -360,7 +345,7 @@ bool System::rename(smtk::attribute::AttributePtr att, const std::string &newNam
   this->m_attributes[newName] = att;
   return true;
 }
-//----------------------------------------------------------------------------
+
 std::string System::createUniqueName(const std::string &type) const
 {
   int i = 0;
@@ -380,7 +365,7 @@ std::string System::createUniqueName(const std::string &type) const
     }
   return "";
 }
-//----------------------------------------------------------------------------
+
 void System::
 findBaseDefinitions(std::vector<smtk::attribute::DefinitionPtr> &result) const
 {
@@ -395,7 +380,7 @@ findBaseDefinitions(std::vector<smtk::attribute::DefinitionPtr> &result) const
       }
     }
 }
-//----------------------------------------------------------------------------
+
 void System::updateCategories()
 {
   std::queue<attribute::DefinitionPtr> toBeProcessed;
@@ -439,7 +424,7 @@ void System::updateCategories()
                               it->second->categories().end());
     }
 }
-//----------------------------------------------------------------------------
+
 void System::
 derivedDefinitions(smtk::attribute::DefinitionPtr def,
                    std::vector<smtk::attribute::DefinitionPtr> &result) const
@@ -460,7 +445,7 @@ derivedDefinitions(smtk::attribute::DefinitionPtr def,
     result[i] = dit->lock();
     }
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ConstDefinitionPtr System::findIsUniqueBaseClass(
   smtk::attribute::DefinitionPtr attDef) const
 {
@@ -480,12 +465,12 @@ smtk::attribute::ConstDefinitionPtr System::findIsUniqueBaseClass(
     }
   return smtk::attribute::ConstDefinitionPtr();
 }
-//----------------------------------------------------------------------------
+
 void System::setRefModelManager(smtk::model::ManagerPtr refModelMgr)
 {
   this->m_refModelMgr = refModelMgr;
 }
-//----------------------------------------------------------------------------
+
 void
 System::updateDerivedDefinitionIndexOffsets(smtk::attribute::DefinitionPtr def)
 {
@@ -503,14 +488,14 @@ System::updateDerivedDefinitionIndexOffsets(smtk::attribute::DefinitionPtr def)
     this->updateDerivedDefinitionIndexOffsets(d);
     }
 }
-//----------------------------------------------------------------------------
+
 void System::addAdvanceLevel(
   int level, std::string label, const double *l_color)
 {
   this->m_advLevels[level] = label;
   this->setAdvanceLevelColor(level, l_color);
 }
-//----------------------------------------------------------------------------
+
 const double* System::advanceLevelColor(int level) const
 {
   std::map<int, std::vector<double> >::const_iterator it =
@@ -522,7 +507,7 @@ const double* System::advanceLevelColor(int level) const
     }
   return NULL;
 }
-//----------------------------------------------------------------------------
+
 void System::setAdvanceLevelColor(int level, const double *l_color)
 {
   if(l_color && this->m_advLevels.find(level) != this->m_advLevels.end())
@@ -531,7 +516,7 @@ void System::setAdvanceLevelColor(int level, const double *l_color)
     this->m_advLevelColors[level] = acolor;
     }
 }
-//----------------------------------------------------------------------------
+
 // Copies attribute defintion into this system
 // Returns smart pointer (will be empty if operation unsuccessful)
 // If definition contains RefItemDefinition instances, might have to
@@ -639,7 +624,7 @@ System::copyDefinition(const smtk::attribute::DefinitionPtr sourceDef,
 
   return newDef;
 }
-//----------------------------------------------------------------------------
+
 // Copies attribute definition into this system, returning true if successful
 bool System::copyDefinitionImpl(smtk::attribute::DefinitionPtr sourceDef,
                                  smtk::attribute::ItemDefinition::CopyInfo& info)
@@ -725,7 +710,7 @@ bool System::copyDefinitionImpl(smtk::attribute::DefinitionPtr sourceDef,
 
   return true;
 }
-//----------------------------------------------------------------------------
+
 // Copies attribute into this system
 // Returns smart pointer (will be empty if operation unsuccessful)
 // If definition contains RefItem or ExpressionType instances, might also
@@ -812,12 +797,12 @@ System::copyAttribute(const smtk::attribute::AttributePtr sourceAtt,
   // TODO what about m_userData?
   return newAtt;
 }
-//----------------------------------------------------------------------------
+
 void System::addView(smtk::common::ViewPtr v)
 {
   this->m_views[v->title()] = v;
 }
-//----------------------------------------------------------------------------
+
 smtk::common::ViewPtr System::findViewByType(const std::string &vtype) const
 {
   std::map<std::string, smtk::common::ViewPtr>::const_iterator it;
@@ -830,7 +815,7 @@ smtk::common::ViewPtr System::findViewByType(const std::string &vtype) const
     }
   return smtk::common::ViewPtr();
 }
-//----------------------------------------------------------------------------
+
 smtk::common::ViewPtr System::findTopLevelView() const
 {
   std::map<std::string, smtk::common::ViewPtr>::const_iterator it;
@@ -844,7 +829,7 @@ smtk::common::ViewPtr System::findTopLevelView() const
     }
   return smtk::common::ViewPtr();
 }
-//----------------------------------------------------------------------------
+
 std::vector<smtk::common::ViewPtr> System::findTopLevelViews() const
 {
   std::map<std::string, smtk::common::ViewPtr>::const_iterator it;
@@ -859,4 +844,3 @@ std::vector<smtk::common::ViewPtr> System::findTopLevelViews() const
     }
   return topViews;
 }
-//----------------------------------------------------------------------------

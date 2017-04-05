@@ -51,7 +51,6 @@ public:
   void readProperties(bool readProps) { this->ReadProperties = readProps; }
   bool readProperties() const { return this->ReadProperties; }
 
-  //----------------------------------------------------------------------------
   //given a range of entity handles merge them all into a single unstructured
   //grid. Currently doesn't support reading properties.
   //Will read in material ids,  if no material id is assigned to an entity,
@@ -119,7 +118,6 @@ public:
     return true;
     }
 
-  //----------------------------------------------------------------------------
   //given a single entity handle create a unstructured grid from it.
   //optional third parameter is the material id to use if readMaterialIds
   //is on, and no material sparse tag is found for this entity
@@ -187,7 +185,6 @@ public:
     }
 
 private:
-  //----------------------------------------------------------------------------
   void readProperties(smoab::Range const& entities,
                            vtkFieldData* field) const
     {
@@ -202,7 +199,6 @@ private:
     this->readDenseTags(tags,entities,field);
     }
 
-  //----------------------------------------------------------------------------
   void readDenseTags(std::vector<moab::Tag> &tags,
                      smoab::Range const& entities,
                      vtkFieldData* field) const

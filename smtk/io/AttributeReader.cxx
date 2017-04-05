@@ -73,7 +73,7 @@ std::string Internal_getDirectory(const std::string &fname,
     }
   return fname;
 }
-//----------------------------------------------------------------------------
+
 bool Internal_scanIncludes(pugi::xml_node& root,
                            std::vector<std::string> &includeStack,
                            const std::set<std::string> &activeIncludes,
@@ -142,7 +142,7 @@ bool Internal_scanIncludes(pugi::xml_node& root,
     }
   return false; // everything is ok!
 }
-//----------------------------------------------------------------------------
+
 void Internal_parseXml(smtk::attribute::System &system,
                        pugi::xml_node& root, bool reportAsError,
                        Logger &logger)
@@ -181,7 +181,6 @@ void Internal_parseXml(smtk::attribute::System &system,
     }
 }
 
-//----------------------------------------------------------------------------
 void Internal_readAttributes(smtk::attribute::System &system,
                              const std::string &initialFileName,
                              pugi::xml_node& root,
@@ -237,8 +236,6 @@ void Internal_readAttributes(smtk::attribute::System &system,
 }
 }  // namespace
 
-
-//----------------------------------------------------------------------------
 bool AttributeReader::read(smtk::attribute::System &system,
                            const std::string &filename, bool includePath,
                            Logger &logger)
@@ -281,7 +278,6 @@ bool AttributeReader::read(smtk::attribute::System &system,
   return logger.hasErrors();
 }
 
-//----------------------------------------------------------------------------
 bool AttributeReader::readContents(smtk::attribute::System &system,
                                    const std::string &filecontents,
                                    Logger &logger)
@@ -290,8 +286,6 @@ bool AttributeReader::readContents(smtk::attribute::System &system,
                             filecontents.size(), logger);
 }
 
-
-//----------------------------------------------------------------------------
 bool AttributeReader::readContents(smtk::attribute::System &system,
                                    const char *content,
                                    std::size_t length,
@@ -312,7 +306,6 @@ bool AttributeReader::readContents(smtk::attribute::System &system,
   return this->readContents(system, root, logger);
 }
 
-//----------------------------------------------------------------------------
 bool AttributeReader::readContents(smtk::attribute::System &system,
                                    pugi::xml_node& root,
                                    Logger &logger)
@@ -329,5 +322,3 @@ bool AttributeReader::readContents(smtk::attribute::System &system,
     }
   return logger.hasErrors();
 }
-
-//----------------------------------------------------------------------------

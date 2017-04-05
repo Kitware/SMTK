@@ -82,7 +82,6 @@ void vtkCMBIncorporateMeshOperator::Operate(vtkDiscreteModelWrapper* modelWrappe
   return;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBIncorporateMeshOperator::AddSolidMesh(
   vtkIdType meshRegionId,vtkPolyData* solidRegionSurface)
 {
@@ -100,7 +99,7 @@ void vtkCMBIncorporateMeshOperator::AddSolidMesh(
       }
     }
 }
-//-----------------------------------------------------------------------------
+
 void vtkCMBIncorporateMeshOperator::AddSolidMesh(
   vtkIdType meshRegionId,vtkAlgorithm *algOut)
 {
@@ -114,13 +113,12 @@ void vtkCMBIncorporateMeshOperator::AddSolidMesh(
       }
     }
 }
-//----------------------------------------------------------------------------
+
 void vtkCMBIncorporateMeshOperator::ClearSolidMeshes()
 {
   this->SolidMeshes.clear();
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBIncorporateMeshOperator::IncorporateSolidMesh(
   vtkDiscreteModel* meshModel, const vtkIdType& meshRegionId,
   vtkPolyData* solidRegionSurface)
@@ -179,7 +177,7 @@ bool vtkCMBIncorporateMeshOperator::IncorporateSolidMesh(
   // incorporate solidModel with current mesh model
   return this->SplitMeshRegion(meshRegion, solidModel, solidFile);
 }
-//----------------------------------------------------------------------------
+
 bool vtkCMBIncorporateMeshOperator::SplitMeshRegion(
   vtkDiscreteModelRegion* meshRegion,
   vtkDiscreteModel* solidModel,
@@ -313,7 +311,6 @@ bool vtkCMBIncorporateMeshOperator::SplitMeshRegion(
     UsedSolidFaces);
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBIncorporateMeshOperator::CreateNewMeshRegions(
   vtkDiscreteModel* solidModel, vtkDiscreteModelRegion* meshRegion,
   std::map<vtkDiscreteModelRegion*, std::set<vtkDiscreteModelFace*> >
@@ -430,7 +427,7 @@ bool vtkCMBIncorporateMeshOperator::CreateNewMeshRegions(
   meshModel->DestroyMaterial(meshRegMaterial);
   return true;
 }
-//----------------------------------------------------------------------------
+
 void vtkCMBIncorporateMeshOperator::AddSolidFaceCells(
   vtkDiscreteModel* meshModel, vtkDiscreteModelFace* faceEntity,
   vtkIdList* newCellIds, std::map<vtkIdType, vtkIdType> &SolidToMeshPointMap)
@@ -471,7 +468,6 @@ void vtkCMBIncorporateMeshOperator::AddSolidFaceCells(
   meshModel->UpdateMesh();
 }
 
-//----------------------------------------------------------------------------
 vtkIdType vtkCMBIncorporateMeshOperator::FindPointsCell(
   const DiscreteMesh* targetMesh, vtkIdType ptId,
   vtkPolyData* soucePoly, vtkIdList* points,
@@ -506,7 +502,7 @@ vtkIdType vtkCMBIncorporateMeshOperator::FindPointsCell(
     }
   return cellId;
 }
-//----------------------------------------------------------------------------
+
 bool vtkCMBIncorporateMeshOperator::IsSameCellPoints(
   const DiscreteMesh *targetMesh, vtkIdList *tpts,
   vtkPolyData* soucePoly, vtkIdList* spts,
@@ -548,7 +544,6 @@ bool vtkCMBIncorporateMeshOperator::IsSameCellPoints(
   return numFound==snpts;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBIncorporateMeshOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

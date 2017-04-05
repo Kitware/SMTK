@@ -29,21 +29,18 @@
 
 vtkStandardNewMacro(vtkPVModelGeometryInformation);
 
-//----------------------------------------------------------------------------
 vtkPVModelGeometryInformation::vtkPVModelGeometryInformation()
 {
   this->NumberOfPoints = 0;
   this->NumberOfCells = 0;
 }
 
-//----------------------------------------------------------------------------
 vtkPVModelGeometryInformation::~vtkPVModelGeometryInformation()
 {
   this->CellIdsMap.clear();
   this->EnityIdsMap.clear();
 }
 
-//----------------------------------------------------------------------------
 void vtkPVModelGeometryInformation::CopyFromObject(vtkObject* obj)
 {
   this->CellIdsMap.clear();
@@ -126,7 +123,6 @@ void vtkPVModelGeometryInformation::CopyFromObject(vtkObject* obj)
     }
 }
 
-//----------------------------------------------------------------------------
 // Return a pointer to the geometry bounding box in the form
 // (xmin,xmax, ymin,ymax, zmin,zmax).
 double *vtkPVModelGeometryInformation::GetBounds()
@@ -134,7 +130,6 @@ double *vtkPVModelGeometryInformation::GetBounds()
   return this->Bounds;
 }
 
-//----------------------------------------------------------------------------
 void vtkPVModelGeometryInformation::GetBounds(double bounds[6])
 {
   for (int i=0; i<6; i++)
@@ -142,7 +137,7 @@ void vtkPVModelGeometryInformation::GetBounds(double bounds[6])
     bounds[i] = this->Bounds[i];
     }
 }
-//----------------------------------------------------------------------------
+
 int vtkPVModelGeometryInformation::GetMasterCellId(
   unsigned int flatidx,int idx)
 {
@@ -156,7 +151,7 @@ int vtkPVModelGeometryInformation::GetMasterCellId(
     }
   return -1;
 }
-//----------------------------------------------------------------------------
+
 vtkIdType vtkPVModelGeometryInformation::GetModelEntityId(
   unsigned int flatidx)
 {
@@ -167,14 +162,13 @@ vtkIdType vtkPVModelGeometryInformation::GetModelEntityId(
   return -1;
 }
 
-//----------------------------------------------------------------------------
 void vtkPVModelGeometryInformation::PrintSelf(ostream &os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   os << indent << "NumberOfPoints: " << this->NumberOfPoints << endl;
   os << indent << "NumberOfCells: " << this->NumberOfCells << endl;
 }
-//----------------------------------------------------------------------------
+
 void
 vtkPVModelGeometryInformation::CopyToStream(vtkClientServerStream* css)
 {
@@ -184,7 +178,6 @@ vtkPVModelGeometryInformation::CopyToStream(vtkClientServerStream* css)
     vtkClientServerStream::End;
 }
 
-//----------------------------------------------------------------------------
 void
 vtkPVModelGeometryInformation::CopyFromStream(const vtkClientServerStream* css)
 {

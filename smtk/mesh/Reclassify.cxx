@@ -145,7 +145,6 @@ smtk::mesh::MeshSet make_MeshPoint(smtk::mesh::CollectionPtr collection,
 namespace smtk {
   namespace mesh {
 
-//----------------------------------------------------------------------------
 bool split(smtk::mesh::CollectionPtr collection,
            smtk::model::Edge orignalEdge,
            smtk::model::Edge newEdge,
@@ -206,7 +205,6 @@ bool split(smtk::mesh::CollectionPtr collection,
 }
 
 
-//----------------------------------------------------------------------------
 bool make_disjoint(smtk::mesh::CollectionPtr collection,
                    const smtk::mesh::MeshSet& toBeRemoved,
                    smtk::mesh::MeshSet& removeFrom,
@@ -236,7 +234,6 @@ bool make_disjoint(smtk::mesh::CollectionPtr collection,
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool merge(smtk::mesh::CollectionPtr collection,
            smtk::model::Vertex toRemoveVert,
            smtk::model::Edge toRemoveEdge,
@@ -265,7 +262,6 @@ bool merge(smtk::mesh::CollectionPtr collection,
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool fuse(smtk::mesh::CollectionPtr collection,
           smtk::mesh::MeshSet& toRemove,
           smtk::mesh::MeshSet& toAddTo,

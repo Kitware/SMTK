@@ -40,7 +40,6 @@
 vtkStandardNewMacro(vtkCMBModelMapper);
 vtkCxxSetObjectMacro(vtkCMBModelMapper, CMBModel, vtkDiscreteModelWrapper);
 
-//----------------------------------------------------------------------------
 vtkCMBModelMapper::vtkCMBModelMapper()
 {
   // Insert the vtkCMBModelSelectionPainter in the selection pipeline, so that the
@@ -61,7 +60,6 @@ vtkCMBModelMapper::vtkCMBModelMapper()
   this->ModelDisplayListId = 0;
 }
 
-//----------------------------------------------------------------------------
 vtkCMBModelMapper::~vtkCMBModelMapper()
 {
 if (this->LastWindow)
@@ -72,7 +70,6 @@ if (this->LastWindow)
   this->SetSelectionPainter(0);
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBModelMapper::FillInputPortInformation(
   int port, vtkInformation* info)
 {
@@ -86,7 +83,6 @@ int vtkCMBModelMapper::FillInputPortInformation(
   return 0;
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBModelMapper::FillOutputPortInformation(
   int vtkNotUsed(port), vtkInformation* info)
 {
@@ -96,7 +92,6 @@ int vtkCMBModelMapper::FillOutputPortInformation(
 
 // Release the graphics resources used by this mapper.  In this case, release
 // the display list if any.
-//-----------------------------------------------------------------------------
 void vtkCMBModelMapper::ReleaseGraphicsResources(vtkWindow *win)
 {
   if (this->ModelDisplayListId && win && win->GetMapped())
@@ -108,7 +103,6 @@ void vtkCMBModelMapper::ReleaseGraphicsResources(vtkWindow *win)
   this->Superclass::ReleaseGraphicsResources(win);
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBModelMapper::RenderPiece(vtkRenderer* ren, vtkActor* act)
 {
   vtkDataObject *input= this->GetInputDataObject(0, 0);
@@ -187,7 +181,6 @@ void vtkCMBModelMapper::RenderPiece(vtkRenderer* ren, vtkActor* act)
   this->UpdateProgress(1.0);
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelMapper::RenderInternal( vtkDataObject* inputObj,
   vtkRenderer* renderer, vtkActor* actor,
   unsigned long typeflags, bool forceCompileOnly)
@@ -310,7 +303,6 @@ void vtkCMBModelMapper::RenderInternal( vtkDataObject* inputObj,
   this->Timer->StopTimer();
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBModelMapper::ComputeBounds()
 {
   if(this->BuildTime < this->BoundsMTime &&
@@ -358,7 +350,6 @@ void vtkCMBModelMapper::ComputeBounds()
   this->BoundsMTime.Modified();
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelMapper::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);

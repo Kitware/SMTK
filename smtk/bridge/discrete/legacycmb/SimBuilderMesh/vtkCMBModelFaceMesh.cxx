@@ -20,7 +20,6 @@
 #include <vtkSmartPointer.h>
 
 
-//----------------------------------------------------------------------------
 vtkCMBModelFaceMesh::vtkCMBModelFaceMesh()
 {
   this->ModelFace = NULL;
@@ -28,18 +27,15 @@ vtkCMBModelFaceMesh::vtkCMBModelFaceMesh()
   this->MeshedMinimumAngle = 0.;
 }
 
-//----------------------------------------------------------------------------
 vtkCMBModelFaceMesh::~vtkCMBModelFaceMesh()
 {
 }
 
-//----------------------------------------------------------------------------
 vtkModelGeometricEntity* vtkCMBModelFaceMesh::GetModelGeometricEntity()
 {
   return this->ModelFace;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelFaceMesh::Initialize(vtkCMBMesh* masterMesh, vtkModelFace* face)
 {
   if(masterMesh == NULL || face == NULL)
@@ -59,7 +55,6 @@ void vtkCMBModelFaceMesh::Initialize(vtkCMBMesh* masterMesh, vtkModelFace* face)
     }
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBModelFaceMesh::BuildModelEntityMesh(
   bool meshHigherDimensionalEntities)
 {
@@ -135,7 +130,6 @@ bool vtkCMBModelFaceMesh::BuildModelEntityMesh(
   return this->BuildMesh(meshHigherDimensionalEntities);
 }
 
-//----------------------------------------------------------------------------
 double vtkCMBModelFaceMesh::GetActualLength()
 {
   double actualLength =
@@ -144,7 +138,6 @@ double vtkCMBModelFaceMesh::GetActualLength()
   return actualLength;
 }
 
-//----------------------------------------------------------------------------
 double vtkCMBModelFaceMesh::GetActualMinimumAngle()
 {
   double actualMinAngle =
@@ -154,7 +147,6 @@ double vtkCMBModelFaceMesh::GetActualMinimumAngle()
   return actualMinAngle;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelFaceMesh::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

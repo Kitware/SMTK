@@ -34,7 +34,6 @@ struct vtkCompleteShellsInternals
 
 vtkStandardNewMacro(vtkCompleteShells);
 
-//----------------------------------------------------------------------------
 vtkCompleteShells::vtkCompleteShells()
 {
   this->ModelFaceArrayName = 0;
@@ -44,7 +43,6 @@ vtkCompleteShells::vtkCompleteShells()
   this->Internals = new vtkCompleteShellsInternals;
 }
 
-//----------------------------------------------------------------------------
 vtkCompleteShells::~vtkCompleteShells()
 {
   this->SetModelFaceArrayName(0);
@@ -52,14 +50,12 @@ vtkCompleteShells::~vtkCompleteShells()
   delete this->Internals;
 }
 
-//----------------------------------------------------------------------------
 int vtkCompleteShells::FillInputPortInformation(int, vtkInformation *info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPolyData");
   return 1;
 }
 
-//----------------------------------------------------------------------------
 int vtkCompleteShells::RequestData(
   vtkInformation * /*request*/,
   vtkInformationVector **inputVector,
@@ -257,8 +253,6 @@ int vtkCompleteShells::RequestData(
   return 1;
 }
 
-
-//----------------------------------------------------------------------------
 void vtkCompleteShells::FindRegionEdge(vtkPolyData *input,
                                        vtkDataArray *cellNormals,
                                        vtkIntArray *regionArray,
@@ -379,8 +373,6 @@ void vtkCompleteShells::FindRegionEdge(vtkPolyData *input,
     }
 }
 
-
-//----------------------------------------------------------------------------
 vtkIdType vtkCompleteShells::FindHoleFillingModelFace(vtkPolyData *input,
                                                       vtkDataArray *cellNormals,
                                                       vtkIdType currentCellId,
@@ -483,7 +475,6 @@ vtkIdType vtkCompleteShells::FindHoleFillingModelFace(vtkPolyData *input,
   return cellIdToFixHole;
 }
 
-//-----------------------------------------------------------------------------
 void vtkCompleteShells::FindClosestEnclosingRegion(int regionId,
                                                    vtkIdType modelFaceId,
                                                    vtkPolyData *input,
@@ -668,7 +659,6 @@ void vtkCompleteShells::FindClosestEnclosingRegion(int regionId,
   this->Internals->FaceToRegionsMap[ modelFaceId ].second = resultRegion;
 }
 
-//----------------------------------------------------------------------------
 void vtkCompleteShells::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);

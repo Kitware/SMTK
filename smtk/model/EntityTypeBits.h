@@ -94,6 +94,7 @@ typedef unsigned int BitFlags;
   * exist or should be considered ill-posed.
   */
 
+// clang-format off
 #ifndef SHIBOKEN_SKIP
 enum EntityTypeBits : BitFlags
 #else
@@ -167,6 +168,7 @@ enum EntityTypeBits
   HALF_CLOSED          = 0x00c00000, //!< A bit indicating that the entity should be regarded as half-open (or half-closed)
   INVALID              = 0xffffffff  //!< The entity is invalid
 };
+// clang-format on
 
 inline bool isCellEntity(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == CELL_ENTITY; }
 inline bool isVertex(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == CELL_0D; }

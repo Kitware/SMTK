@@ -57,7 +57,6 @@ ExportVTKData::ExportVTKData()
 
 }
 
-//----------------------------------------------------------------------------
 bool ExportVTKData::operator()(const std::string& filename,
                                smtk::mesh::CollectionPtr collection,
                                std::string domainPropertyName) const
@@ -91,7 +90,6 @@ bool ExportVTKData::operator()(const std::string& filename,
   return false;
 }
 
-//----------------------------------------------------------------------------
 namespace
 {
 
@@ -128,7 +126,6 @@ void deleteOldArrayIfNecessary(T*& in, vtkIdType*&)
 
 }
 
-//----------------------------------------------------------------------------
 void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
                                vtkPolyData* pd,
                                std::string domainPropertyName) const
@@ -267,7 +264,6 @@ void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
     }
 }
 
-//----------------------------------------------------------------------------
 void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
                                vtkUnstructuredGrid* ug,
                                std::string domainPropertyName) const

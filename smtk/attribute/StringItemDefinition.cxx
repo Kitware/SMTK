@@ -13,23 +13,21 @@
 #include "smtk/attribute/StringItem.h"
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 StringItemDefinition::StringItemDefinition(const std::string &myName):
   ValueItemDefinitionTemplate<std::string>(myName), m_multiline(false),
   m_secure(false)
 {
 }
 
-//----------------------------------------------------------------------------
 StringItemDefinition::~StringItemDefinition()
 {
 }
-//----------------------------------------------------------------------------
+
 Item::Type StringItemDefinition::type() const
 {
   return Item::STRING;
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemPtr
 StringItemDefinition::buildItem(Attribute *owningAttribute,
                                 int itemPosition) const
@@ -37,7 +35,7 @@ StringItemDefinition::buildItem(Attribute *owningAttribute,
   return smtk::attribute::ItemPtr(new StringItem(owningAttribute,
                                                 itemPosition));
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemPtr
 StringItemDefinition::buildItem(Item *owningItem,
                                 int itemPosition,
@@ -47,7 +45,7 @@ StringItemDefinition::buildItem(Item *owningItem,
                                                 itemPosition,
                                                 subGroupPosition));
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemDefinitionPtr
 smtk::attribute::StringItemDefinition::
 createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
@@ -58,4 +56,3 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
   ValueItemDefinitionTemplate<std::string>::copyTo(newDef, info);
   return newDef;
 }
-//----------------------------------------------------------------------------

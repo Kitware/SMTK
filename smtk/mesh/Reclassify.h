@@ -42,7 +42,6 @@ namespace smtk {
 
 
 
-  //----------------------------------------------------------------------------
   //Lower level routines that merge/split/etc are based on but could be
   //useful for other people to use
 

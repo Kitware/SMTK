@@ -25,7 +25,6 @@
 
 vtkStandardNewMacro(vtkPolygonContourOperator);
 
-//----------------------------------------------------------------------------
 vtkPolygonContourOperator::vtkPolygonContourOperator()
 {
   this->ContourInput = NULL;
@@ -33,13 +32,11 @@ vtkPolygonContourOperator::vtkPolygonContourOperator()
   this->ImageBounds[1] = this->ImageBounds[3] = this->ImageBounds[5] = -1.0;
 }
 
-//----------------------------------------------------------------------------
 vtkPolygonContourOperator::~vtkPolygonContourOperator()
 {
   this->SetContourInput(NULL);
 }
 
-//----------------------------------------------------------------------------
 bool vtkPolygonContourOperator::AbleToOperate()
 {
   bool able2Op = this->m_smtkOp.lock()
@@ -60,7 +57,6 @@ bool vtkPolygonContourOperator::AbleToOperate()
   return able2Op;
 }
 
-//----------------------------------------------------------------------------
 smtk::model::OperatorResult vtkPolygonContourOperator::Operate()
 {
   // ONLY for create-edge-with-widget and edit-edge operations,
@@ -118,7 +114,6 @@ smtk::model::OperatorResult vtkPolygonContourOperator::Operate()
   return edgeResult;
 }
 
-//----------------------------------------------------------------------------
 void vtkPolygonContourOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
   if(this->ContourInput)

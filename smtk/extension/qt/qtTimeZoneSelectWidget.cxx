@@ -21,7 +21,6 @@
 namespace {
 // Use internal proxy model to enable sorting and override header text
 // for region view
-// -----------------------------------------------------------------------------
   class TimeZoneRegionProxyModel : public QSortFilterProxyModel
   {
   public:
@@ -51,7 +50,6 @@ namespace {
 namespace smtk {
   namespace extension {
 
-//-----------------------------------------------------------------------------
 class qtTimeZoneSelectWidget::qtTimeZoneSelectWidgetInternal
 {
  public:
@@ -59,7 +57,6 @@ class qtTimeZoneSelectWidget::qtTimeZoneSelectWidgetInternal
   TimeZoneRegionProxyModel *RegionProxyModel;
 };
 
-//-----------------------------------------------------------------------------
 qtTimeZoneSelectWidget::qtTimeZoneSelectWidget(QWidget* parent)
   : QWidget(parent)
 {
@@ -93,13 +90,11 @@ qtTimeZoneSelectWidget::qtTimeZoneSelectWidget(QWidget* parent)
 
 }
 
-//-----------------------------------------------------------------------------
 qtTimeZoneSelectWidget::~qtTimeZoneSelectWidget()
 {
   delete this->Internal;
 }
 
-//-----------------------------------------------------------------------------
 void qtTimeZoneSelectWidget::setRegion(const QString& region)
 {
   if (region.isEmpty())
@@ -134,7 +129,6 @@ void qtTimeZoneSelectWidget::setRegion(const QString& region)
   this->UI->RegionView->scrollTo(proxyIndexLeft, QAbstractItemView::PositionAtCenter);
 }
 
-// -----------------------------------------------------------------------------
 QString qtTimeZoneSelectWidget::selectedRegion() const
 {
   QString selected;
@@ -152,7 +146,6 @@ QString qtTimeZoneSelectWidget::selectedRegion() const
   return selected;
 }
 
-// -----------------------------------------------------------------------------
 void qtTimeZoneSelectWidget::onContinentChanged(
   const QItemSelection& selected, const QItemSelection& deselected)
 {
@@ -182,7 +175,6 @@ void qtTimeZoneSelectWidget::onContinentChanged(
   this->setContinent(index);
 }
 
-// -----------------------------------------------------------------------------
 void qtTimeZoneSelectWidget::onRegionChanged(
   const QItemSelection& selected, const QItemSelection& deselected)
 {
@@ -199,7 +191,6 @@ void qtTimeZoneSelectWidget::onRegionChanged(
   emit this->regionSelected(index.data().toString());
 }
 
-// -----------------------------------------------------------------------------
 void qtTimeZoneSelectWidget::setContinent(const QModelIndex index)
 {
   qDebug() << "setContinent";
@@ -227,8 +218,6 @@ void qtTimeZoneSelectWidget::setContinent(const QModelIndex index)
     row, 0, proxyRootIndex);
   this->UI->RegionView->setRootIndex(regionRootIndex);
 }
-
-// -----------------------------------------------------------------------------
 
   }  // namespace extension
 }  // namespace smtk

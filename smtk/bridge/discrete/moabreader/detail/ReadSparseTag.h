@@ -59,7 +59,6 @@ private:
   const smoab::Range& Cells;
 };
 
-//----------------------------------------------------------------------------
 void ReadSparseTag::fill(vtkIntArray* array, const Tag* cellTag) const
 {
   const std::size_t length = this->Cells.size();
@@ -68,7 +67,6 @@ void ReadSparseTag::fill(vtkIntArray* array, const Tag* cellTag) const
   this->fillRawArray(raw,length,cellTag);
 }
 
-//----------------------------------------------------------------------------
 void ReadSparseTag::fill(vtkIdTypeArray* array, const Tag* cellTag) const
 {
   const std::size_t length = this->Cells.size();
@@ -77,7 +75,6 @@ void ReadSparseTag::fill(vtkIdTypeArray* array, const Tag* cellTag) const
   this->fillRawArray(raw,length,cellTag);
 }
 
-//----------------------------------------------------------------------------
 template<typename T>
 void ReadSparseTag::fillRawArray(T *sparseTagArray,
                                  std::size_t length,
@@ -111,7 +108,6 @@ void ReadSparseTag::fillRawArray(T *sparseTagArray,
     }
 }
 
-//----------------------------------------------------------------------------
 template<typename T>
 void ReadSparseTag::singleSetRead(T *sparseTagArray,
                                   const std::vector<int>& values,
@@ -124,7 +120,6 @@ void ReadSparseTag::singleSetRead(T *sparseTagArray,
   std::fill(sparseTagArray,sparseTagArray+length,value);
   }
 
-//----------------------------------------------------------------------------
 template<typename T>
 void ReadSparseTag::multiSetRead(T *sparseTagArray,
                                  const std::vector<int>& sparseTagValues) const

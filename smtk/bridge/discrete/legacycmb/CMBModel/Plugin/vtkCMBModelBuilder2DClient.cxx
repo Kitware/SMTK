@@ -26,17 +26,14 @@
 
 vtkStandardNewMacro(vtkCMBModelBuilder2DClient);
 
-//----------------------------------------------------------------------------
 vtkCMBModelBuilder2DClient::vtkCMBModelBuilder2DClient()
 {
 }
 
-//----------------------------------------------------------------------------
 vtkCMBModelBuilder2DClient::~vtkCMBModelBuilder2DClient()
 {
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBModelBuilder2DClient::Operate(vtkDiscreteModel* Model,
   vtkSMProxy* ModelWrapper, vtkSMProxy* PolySourceProxy, int cleanVerts)
 {
@@ -83,7 +80,6 @@ bool vtkCMBModelBuilder2DClient::Operate(vtkDiscreteModel* Model,
   return vtkCMBModelBuilder2DClient::UpdateClientModel(Model, ModelWrapper);
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBModelBuilder2DClient::AbleToOperate(vtkDiscreteModel* Model)
 {
   if(!Model)
@@ -94,7 +90,6 @@ bool vtkCMBModelBuilder2DClient::AbleToOperate(vtkDiscreteModel* Model)
   return 1;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBModelBuilder2DClient::UpdateClientModel(vtkDiscreteModel* ClientModel,
                                                 vtkSMProxy* ServerModelProxy)
 {
@@ -125,7 +120,6 @@ bool vtkCMBModelBuilder2DClient::UpdateClientModel(vtkDiscreteModel* ClientModel
   return 1;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelBuilder2DClient::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

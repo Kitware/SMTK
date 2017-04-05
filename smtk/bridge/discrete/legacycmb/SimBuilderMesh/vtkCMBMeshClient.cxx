@@ -51,7 +51,6 @@ public:
   std::map<vtkModelFace*, vtkSmartPointer<vtkCMBModelFaceMeshClient> > ModelFaces;
 };
 
-//----------------------------------------------------------------------------
 vtkCMBMeshClient::vtkCMBMeshClient()
 {
   this->ServerModelProxy = NULL;
@@ -59,7 +58,6 @@ vtkCMBMeshClient::vtkCMBMeshClient()
   this->Internal = new vtkCMBMeshClientInternals;
 }
 
-//----------------------------------------------------------------------------
 vtkCMBMeshClient::~vtkCMBMeshClient()
 {
   if(this->CallbackCommand)
@@ -83,7 +81,6 @@ vtkCMBMeshClient::~vtkCMBMeshClient()
   this->SetServerModelProxy(NULL);
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshClient::Initialize(vtkModel* model, vtkSMProxy* smModelProxy)
 {
   if(model == NULL)
@@ -168,7 +165,6 @@ void vtkCMBMeshClient::Initialize(vtkModel* model, vtkSMProxy* smModelProxy)
   this->ServerMeshProxy->UpdateVTKObjects();
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBMeshClient::SetGlobalLength(double globalLength)
 {
   if(this->GlobalLength == globalLength || !this->ServerMeshProxy)
@@ -185,7 +181,6 @@ bool vtkCMBMeshClient::SetGlobalLength(double globalLength)
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBMeshClient::SetGlobalMinimumAngle(double minAngle)
 {
   if(this->GlobalMinimumAngle == minAngle)
@@ -212,7 +207,6 @@ bool vtkCMBMeshClient::SetGlobalMinimumAngle(double minAngle)
   return true;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshClient::Reset()
 {
   this->Internal->ModelEdges.clear();
@@ -234,7 +228,6 @@ void vtkCMBMeshClient::Reset()
   this->Superclass::Reset();
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBMeshClient::BuildModelEntityMeshes()
 {
   vtkSmartPointer<vtkModelItemIterator> edges;
@@ -265,7 +258,6 @@ bool vtkCMBMeshClient::BuildModelEntityMeshes()
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBMeshClient::BuildModelMeshRepresentation(
   const char* fileName, const bool &isAnalysisMesh,
   vtkSMProxy* meshRepresentionInput)
@@ -291,7 +283,6 @@ bool vtkCMBMeshClient::BuildModelMeshRepresentation(
     }
 }
 
-//----------------------------------------------------------------------------
 vtkCMBModelEntityMesh* vtkCMBMeshClient::GetModelEntityMesh(
   vtkModelGeometricEntity* entity)
 {
@@ -320,7 +311,6 @@ vtkCMBModelEntityMesh* vtkCMBMeshClient::GetModelEntityMesh(
   return NULL;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshClient::ModelEdgeSplit(vtkSplitEventData* splitEventData)
 {
   vtkModelEdge* sourceEdge = vtkModelEdge::SafeDownCast(
@@ -354,7 +344,6 @@ void vtkCMBMeshClient::ModelEdgeSplit(vtkSplitEventData* splitEventData)
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshClient::ModelEdgeMerge(vtkMergeEventData* mergeEventData)
 {
   vtkModelEdge* sourceEdge = vtkModelEdge::SafeDownCast(
@@ -381,12 +370,11 @@ void vtkCMBMeshClient::ModelEdgeMerge(vtkMergeEventData* mergeEventData)
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshClient::ModelEntityBoundaryModified(vtkModelGeometricEntity* /*entity*/)
 {
   // no op on the client
 }
-//----------------------------------------------------------------------------
+
 void vtkCMBMeshClient::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
@@ -407,4 +395,3 @@ void vtkCMBMeshClient::PrintSelf(ostream& os, vtkIndent indent)
     os << "ServerMeshProxy: (NULL)\n";
     }
 }
-//----------------------------------------------------------------------------

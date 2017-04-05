@@ -19,29 +19,23 @@
 
 // ParaView Includes.
 
-//----------------------------------------------------------------------------
 // ClientServer wrapper initialization functions.
 extern "C" void vtkCmbDiscreteModelCS_Initialize(vtkClientServerInterpreter*);
-//----------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
 pqCMBModelPluginStarter::pqCMBModelPluginStarter(QObject* p/*=0*/)
   : QObject(p)
 {
 }
 
-//-----------------------------------------------------------------------------
 pqCMBModelPluginStarter::~pqCMBModelPluginStarter()
 {
 }
 
-//-----------------------------------------------------------------------------
 void pqCMBModelPluginStarter::onStartup()
 {
     // FIXME SEB Don't need that anymore // vtkCmbDiscreteModelCS_Initialize(vtkClientServerInterpreterInitializer::GetInitializer());
 }
 
-//-----------------------------------------------------------------------------
 void pqCMBModelPluginStarter::onShutdown()
 {
   //qWarning() << "Message from pqCMBPluginStarter: Application Shutting down";

@@ -27,7 +27,6 @@ public:
   vtkNew<vtkEventQtSlotConnect> ClosedLoopConnect;
 };
 
-//-----------------------------------------------------------------------------
 qtArcWidget::qtArcWidget(QWidget *parentWdg)
     : Superclass(qtInteractionWidget::createWidget(
                      "representations", "smtkArcWidgetRepresentation"),
@@ -67,15 +66,12 @@ qtArcWidget::qtArcWidget(QWidget *parentWdg)
       SLOT(checkContourLoopClosed()));
 }
 
-//-----------------------------------------------------------------------------
 qtArcWidget::~qtArcWidget() {}
 
-//-----------------------------------------------------------------------------
 void qtArcWidget::enableApplyButton(bool state) {
   this->Internals->Finished->setEnabled(state);
 }
 
-//-----------------------------------------------------------------------------
 void qtArcWidget::deleteAllNodes() {
   QMessageBox msgBox;
   msgBox.setText("Delete all contour nodes.");
@@ -86,7 +82,7 @@ void qtArcWidget::deleteAllNodes() {
     this->removeAllNodes();
   }
 }
-//-----------------------------------------------------------------------------
+
 void qtArcWidget::removeAllNodes() {
   vtkSMNewWidgetRepresentationProxy *widget = this->widgetProxy();
   if (widget) {
@@ -95,7 +91,6 @@ void qtArcWidget::removeAllNodes() {
   }
 }
 
-//-----------------------------------------------------------------------------
 void qtArcWidget::checkContourLoopClosed() {
   vtkSMProxy *repProxy = this->widgetProxy()->GetRepresentationProxy();
 
@@ -111,7 +106,6 @@ void qtArcWidget::checkContourLoopClosed() {
   }
 }
 
-//-----------------------------------------------------------------------------
 void qtArcWidget::closeLoop(bool val) {
   vtkSMNewWidgetRepresentationProxy *widget = this->widgetProxy();
   if (widget) {
@@ -127,12 +121,10 @@ void qtArcWidget::closeLoop(bool val) {
   }
 }
 
-//-----------------------------------------------------------------------------
 void qtArcWidget::ModifyMode() {
   this->Internals->ModifyMode->setChecked(true);
 }
 
-//-----------------------------------------------------------------------------
 void qtArcWidget::checkCanBeEdited() {
   vtkSMNewWidgetRepresentationProxy *widget = this->widgetProxy();
   if (widget) {
@@ -148,7 +140,6 @@ void qtArcWidget::checkCanBeEdited() {
   }
 }
 
-//-----------------------------------------------------------------------------
 void qtArcWidget::updateMode() {
   // the text should always be updated to this.
   vtkSMNewWidgetRepresentationProxy *widget = this->widgetProxy();
@@ -162,19 +153,16 @@ void qtArcWidget::updateMode() {
   }
 }
 
-//-----------------------------------------------------------------------------
 void qtArcWidget::finishContour() {
   vtkSMNewWidgetRepresentationProxy *widget = this->widgetProxy();
   widget->GetWidget()->InvokeEvent(vtkCommand::EndInteractionEvent, NULL);
   emit this->contourDone();
 }
 
-//-----------------------------------------------------------------------------
 vtkSMProxy *qtArcWidget::pointPlacer() const {
   return vtkSMPropertyHelper(this->widgetProxy(), "PointPlacer").GetAsProxy();
 }
 
-//-----------------------------------------------------------------------------
 void qtArcWidget::reset() {
   // update our mode
   this->Internals->EditMode->setDisabled(false);
@@ -187,7 +175,6 @@ void qtArcWidget::reset() {
   this->Internals->Closed->blockSignals(false);
 }
 
-//-----------------------------------------------------------------------------
 void qtArcWidget::setLineColor(const QColor &color) {
   vtkSMProxy *widget = this->widgetProxy();
   vtkSMPropertyHelper(widget, "LineColor").Set(0, color.redF());
@@ -196,7 +183,6 @@ void qtArcWidget::setLineColor(const QColor &color) {
   widget->UpdateVTKObjects();
 }
 
-//-----------------------------------------------------------------------------
 void qtArcWidget::useArcEditingUI(bool isWholeArc) {
   this->Internals->Delete->setVisible(false);
   this->Internals->Closed->setEnabled(isWholeArc);

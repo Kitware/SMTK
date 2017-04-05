@@ -75,7 +75,6 @@ public:
   smtk::mesh::HandleRange validPoints;
 };
 
-//-------------------------------------------------------------------------
 class CoolingPlateFilter : public Filter
 {
   double yvalue;
@@ -124,7 +123,6 @@ public:
   }
 };
 
-//-------------------------------------------------------------------------
 class OuterEdgeFilter : public Filter
 {
   double origin[3];
@@ -163,7 +161,6 @@ public:
   }
 };
 
-//-------------------------------------------------------------------------
 bool labelIntersection(const smtk::mesh::CollectionPtr& collection,
                        const smtk::mesh::MeshSet& shell,
                        Filter& filter,
@@ -218,7 +215,6 @@ bool labelIntersection(const smtk::mesh::CollectionPtr& collection,
 
 }
 
-//-------------------------------------------------------------------------
 namespace smtk {
   namespace bridge {
     namespace multiscale {

@@ -17,24 +17,20 @@
 
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 FileItemDefinition::
 FileItemDefinition(const std::string &myName): FileSystemItemDefinition(myName)
 {
 }
 
-//----------------------------------------------------------------------------
 FileItemDefinition::~FileItemDefinition()
 {
 }
 
-//----------------------------------------------------------------------------
 Item::Type FileItemDefinition::type() const
 {
   return Item::FILE;
 }
 
-//----------------------------------------------------------------------------
 bool FileItemDefinition::isValueValid(const std::string &val) const
 {
   // If the base class method's validity conditions are not satisfied, then the
@@ -97,14 +93,13 @@ bool FileItemDefinition::isValueValid(const std::string &val) const
   return false;
 }
 
-//----------------------------------------------------------------------------
 smtk::attribute::ItemPtr
 FileItemDefinition::buildItem(Attribute *owningAttribute,
                                    int itemPosition) const
 {
   return smtk::attribute::ItemPtr(new FileItem(owningAttribute, itemPosition));
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemPtr
 FileItemDefinition::buildItem(Item *owningItem,
                               int itemPosition,
@@ -113,7 +108,7 @@ FileItemDefinition::buildItem(Item *owningItem,
   return smtk::attribute::ItemPtr(new FileItem(owningItem, itemPosition,
                                                subGroupPosition));
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemDefinitionPtr
 smtk::attribute::FileItemDefinition::
 createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
@@ -154,4 +149,3 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
 
   return instance;
 }
-//----------------------------------------------------------------------------

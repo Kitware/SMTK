@@ -28,14 +28,12 @@
 
 vtkStandardNewMacro(vtkCleanPolylines);
 
-//----------------------------------------------------------------------------
 vtkCleanPolylines::vtkCleanPolylines()
 {
   this->MinimumLineLength = 5;
   this->UseRelativeLineLength = true;
 }
 
-//----------------------------------------------------------------------------
 int vtkCleanPolylines::RequestData(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **inputVector,
@@ -145,7 +143,6 @@ int vtkCleanPolylines::RequestData(
   return 1;
 }
 
-//----------------------------------------------------------------------------
 void vtkCleanPolylines::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
@@ -153,7 +150,7 @@ void vtkCleanPolylines::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "Minimum Line Length: " << this->MinimumLineLength << "\n";
   os << indent << "Use Relative Line Length: " << (this->UseRelativeLineLength ? "On" : "Off") << endl;
 }
-//----------------------------------------------------------------------------
+
 void vtkCleanPolylines::StripLines(vtkPolyData *input, vtkPolyData *result,
                                    vtkDoubleArray *lengths)
 {
@@ -226,7 +223,7 @@ void vtkCleanPolylines::StripLines(vtkPolyData *input, vtkPolyData *result,
     }
   delete[] marks;
 }
-//----------------------------------------------------------------------------
+
 void vtkCleanPolylines::TraverseLine(vtkIdType startPid, vtkIdType startCellId,
                                      vtkPolyData *input, unsigned char *marks,
                                      vtkIdList *ids, double *length,
@@ -291,7 +288,7 @@ void vtkCleanPolylines::TraverseLine(vtkIdType startPid, vtkIdType startCellId,
     p0[2] = p1[2];
     }
 }
-//----------------------------------------------------------------------------
+
 void vtkCleanPolylines::RemoveNonManifoldFeatures(vtkPolyData *input, vtkDoubleArray *lengths,
                                                   vtkPolyData *result,
                                                   vtkDoubleArray *newLengths)
@@ -446,7 +443,7 @@ void vtkCleanPolylines::RemoveNonManifoldFeatures(vtkPolyData *input, vtkDoubleA
     }
   delete[] marks;
 }
-//----------------------------------------------------------------------------
+
 void vtkCleanPolylines::TraversePolyLine(vtkIdType startPid, vtkIdType startCellId,
                                          vtkPolyData *input, vtkDoubleArray *lengths,
                                          unsigned char *marks,
@@ -513,5 +510,3 @@ void vtkCleanPolylines::TraversePolyLine(vtkIdType startPid, vtkIdType startCell
     lastPid = pid;
     }
 }
-//----------------------------------------------------------------------------
-

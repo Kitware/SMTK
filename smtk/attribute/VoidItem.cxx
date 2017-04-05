@@ -16,14 +16,12 @@
 
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 VoidItem::VoidItem(Attribute *owningAttribute,
                    int itemPosition):
   Item(owningAttribute, itemPosition)
 {
 }
 
-//----------------------------------------------------------------------------
 VoidItem::VoidItem(Item *inOwningItem,
                    int itemPosition,
                    int mySubGroupPosition):
@@ -31,7 +29,6 @@ VoidItem::VoidItem(Item *inOwningItem,
 {
 }
 
-//----------------------------------------------------------------------------
 bool VoidItem::
 setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 {
@@ -49,20 +46,16 @@ setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
   return true;
 }
 
-//----------------------------------------------------------------------------
 VoidItem::~VoidItem()
 {
 }
-//----------------------------------------------------------------------------
+
 Item::Type VoidItem::type() const
 {
   return VOID;
 }
 
-//----------------------------------------------------------------------------
 bool VoidItem::isValid() const
 {
   return true;
 }
-
-//----------------------------------------------------------------------------

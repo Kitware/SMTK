@@ -94,7 +94,6 @@ namespace detail
   }
 }
 
-//----------------------------------------------------------------------------
 //convert a handle range to a json formatted node
 cJSON* to_json(const smtk::mesh::HandleRange& range)
 {
@@ -125,7 +124,6 @@ cJSON* to_json(const smtk::mesh::HandleRange& range)
   return json_dict;
 }
 
-//----------------------------------------------------------------------------
 //convert json formatted string to a handle range
 smtk::mesh::HandleRange from_json(cJSON* json)
 {

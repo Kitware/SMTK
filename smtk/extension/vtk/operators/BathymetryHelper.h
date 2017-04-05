@@ -78,7 +78,6 @@ private:
   const std::vector<double> m_dummy;
 };
 
-//----------------------------------------------------------------------------
 class ZValueHelper : public smtk::mesh::PointForEach
 {
   std::vector<double>& m_originalZs;

@@ -18,7 +18,6 @@ namespace smtk {
 namespace mesh {
 namespace json {
 
-//----------------------------------------------------------------------------
 MeshInfo::MeshInfo():
   m_mesh(),
   m_cells(),
@@ -32,7 +31,6 @@ MeshInfo::MeshInfo():
 
 }
 
-//----------------------------------------------------------------------------
 MeshInfo::MeshInfo( smtk::mesh::Handle meshId,
                     const smtk::mesh::HandleRange& cells,
                     const smtk::mesh::HandleRange& points,
@@ -49,13 +47,11 @@ MeshInfo::MeshInfo( smtk::mesh::Handle meshId,
 
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::HandleRange MeshInfo::cells() const
 {
   return this->m_cells;
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::HandleRange MeshInfo::cells(smtk::mesh::CellType cellType) const
 {
   const int moabCellType = smtk::mesh::moab::smtkToMOABCell(cellType);
@@ -63,7 +59,6 @@ smtk::mesh::HandleRange MeshInfo::cells(smtk::mesh::CellType cellType) const
               static_cast< ::moab::EntityType >(moabCellType) );
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::HandleRange MeshInfo::cells(const smtk::mesh::CellTypes& cellTypes) const
 {
   smtk::mesh::HandleRange entitiesCells;
@@ -81,13 +76,11 @@ smtk::mesh::HandleRange MeshInfo::cells(const smtk::mesh::CellTypes& cellTypes) 
   return entitiesCells;
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::HandleRange MeshInfo::cells(smtk::mesh::DimensionType dim) const
 {
   return this->m_cells.subset_by_dimension( static_cast<int>(dim) );
 }
 
-//----------------------------------------------------------------------------
 bool MeshInfo::has(const smtk::mesh::Domain &d) const
 {
   return std::find(this->m_domains.begin(),
@@ -95,7 +88,6 @@ bool MeshInfo::has(const smtk::mesh::Domain &d) const
                    d) != this->m_domains.end();
 }
 
-//----------------------------------------------------------------------------
 bool MeshInfo::has(const smtk::mesh::Dirichlet &bc) const
 {
   return std::find(this->m_dirichlets.begin(),
@@ -103,7 +95,6 @@ bool MeshInfo::has(const smtk::mesh::Dirichlet &bc) const
                    bc) != this->m_dirichlets.end();
 }
 
-//----------------------------------------------------------------------------
 bool MeshInfo::has(const smtk::mesh::Neumann &bc) const
 {
   return std::find(this->m_neumanns.begin(),

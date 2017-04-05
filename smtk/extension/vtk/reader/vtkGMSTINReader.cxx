@@ -45,7 +45,6 @@ struct vtkGMSTINReaderInternals
     }
 };
 
-//----------------------------------------------------------------------------
 vtkGMSTINReader::vtkGMSTINReader()
 {
   this->FileName  = NULL;
@@ -53,14 +52,12 @@ vtkGMSTINReader::vtkGMSTINReader()
   this->Internals = new vtkGMSTINReaderInternals;
 }
 
-//----------------------------------------------------------------------------
 vtkGMSTINReader::~vtkGMSTINReader()
 {
   delete[] this->FileName;
   delete this->Internals;
 }
 
-//----------------------------------------------------------------------------
 int vtkGMSTINReader::RequestData(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **vtkNotUsed(inputVector),
@@ -118,7 +115,6 @@ int vtkGMSTINReader::RequestData(
   return 1;
 }
 
-//----------------------------------------------------------------------------
 int vtkGMSTINReader::ReadTIN(unsigned int block,
                                  vtkMultiBlockDataSet* output)
 {
@@ -332,7 +328,6 @@ int vtkGMSTINReader::ReadTIN(unsigned int block,
   return 1;
 }
 
-//----------------------------------------------------------------------------
 void vtkGMSTINReader::ReadTriangles(vtkCellArray* ca)
 {
   vtkIdType numTris,  pts[3];
@@ -351,7 +346,6 @@ void vtkGMSTINReader::ReadTriangles(vtkCellArray* ca)
   cellInfo->Delete();
 }
 
-//----------------------------------------------------------------------------
 void vtkGMSTINReader::ReadVerts(vtkPolyData *tin)
 {
   vtkIdType numVerts;
@@ -379,7 +373,6 @@ void vtkGMSTINReader::ReadVerts(vtkPolyData *tin)
   lockInfo->Delete();
 }
 
-//----------------------------------------------------------------------------
 void vtkGMSTINReader::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
@@ -387,7 +380,6 @@ void vtkGMSTINReader::PrintSelf(ostream& os, vtkIndent indent)
      << (this->FileName ? this->FileName : "(none)") << endl;
 }
 
-//----------------------------------------------------------------------------
 int vtkGMSTINReader::RequestInformation(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **vtkNotUsed(inputVector),

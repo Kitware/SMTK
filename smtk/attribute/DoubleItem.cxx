@@ -14,14 +14,12 @@
 
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 DoubleItem::DoubleItem(Attribute *owningAttribute,
                        int itemPosition):
   ValueItemTemplate<double>(owningAttribute, itemPosition)
 {
 }
 
-//----------------------------------------------------------------------------
 DoubleItem::DoubleItem(Item *inOwningItem,
                        int itemPosition,
                        int mySubGroupPosition):
@@ -29,19 +27,17 @@ DoubleItem::DoubleItem(Item *inOwningItem,
 {
 }
 
-//----------------------------------------------------------------------------
 DoubleItem::~DoubleItem()
 {
 }
-//----------------------------------------------------------------------------
+
 Item::Type DoubleItem::type() const
 {
   return DOUBLE;
 }
-//----------------------------------------------------------------------------
+
 bool DoubleItem::assign(ConstItemPtr &sourceItem, unsigned int options)
 {
   // Assigns my contents to be same as sourceItem
   return ValueItemTemplate<double>::assign(sourceItem, options);
 }
-//----------------------------------------------------------------------------

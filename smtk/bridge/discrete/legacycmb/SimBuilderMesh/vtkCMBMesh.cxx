@@ -32,8 +32,6 @@
 #include <vtkSplitEventData.h>
 #include <vtkWeakPointer.h>
 
-
-//----------------------------------------------------------------------------
 vtkCMBMesh::vtkCMBMesh()
 {
   this->Visible = true;
@@ -42,12 +40,10 @@ vtkCMBMesh::vtkCMBMesh()
   this->Model = NULL;
 }
 
-//----------------------------------------------------------------------------
 vtkCMBMesh::~vtkCMBMesh()
 {
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMesh::Reset()
 {
   this->GlobalLength = 0;
@@ -56,13 +52,11 @@ void vtkCMBMesh::Reset()
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 vtkModel* vtkCMBMesh::GetModel()
 {
   return this->Model;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMesh::ModelGeometricEntityChanged(
   vtkObject * /*caller*/, unsigned long event, void *cData, void *callData)
 {
@@ -97,7 +91,7 @@ void vtkCMBMesh::ModelGeometricEntityChanged(
     cmbMesh->ModelEntityBoundaryModified(static_cast<vtkModelGeometricEntity*>(callData));
     }
 }
-//----------------------------------------------------------------------------
+
 bool vtkCMBMesh::SetLocalMeshLength(
   vtkCollection* selectedMeshEntities, double localLen)
 {
@@ -119,7 +113,6 @@ bool vtkCMBMesh::SetLocalMeshLength(
   return res;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBMesh::SetLocalMeshMinimumAngle(
   vtkCollection* selectedMeshEntities, double localMinAngle)
 {
@@ -141,8 +134,6 @@ bool vtkCMBMesh::SetLocalMeshMinimumAngle(
   return res;
 }
 
-
-//----------------------------------------------------------------------------
 void vtkCMBMesh::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
@@ -159,5 +150,3 @@ void vtkCMBMesh::PrintSelf(ostream& os, vtkIndent indent)
     os << indent << "Model: (NULL)\n";
     }
 }
-//----------------------------------------------------------------------------
-

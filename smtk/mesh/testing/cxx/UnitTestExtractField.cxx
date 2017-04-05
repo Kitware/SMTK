@@ -24,7 +24,6 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-//----------------------------------------------------------------------------
 std::string mesh_path()
 {
   std::string file_path(data_root);
@@ -32,7 +31,6 @@ std::string mesh_path()
   return file_path;
 }
 
-//----------------------------------------------------------------------------
 class SubdivideMesh : public smtk::mesh::MeshForEach
 {
 public:
@@ -55,7 +53,6 @@ public:
   std::size_t m_index;
 };
 
-//----------------------------------------------------------------------------
 class ValidateCells : public smtk::mesh::CellForEach
 {
 public:
@@ -98,7 +95,6 @@ public:
   std::size_t m_index;
 };
 
-//----------------------------------------------------------------------------
 class ValidatePoints : public smtk::mesh::PointForEach
 {
 public:
@@ -143,7 +139,6 @@ public:
   std::size_t m_index;
 };
 
-//----------------------------------------------------------------------------
 void verify_extract_domain()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
@@ -198,7 +193,6 @@ void verify_extract_domain()
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestExtractField(int, char** const)
 {
   verify_extract_domain();

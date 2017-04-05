@@ -53,7 +53,6 @@ namespace
 
 std::size_t numTetsInModel = 4;
 
-//----------------------------------------------------------------------------
 void create_simple_model( smtk::model::ManagerPtr mgr )
 {
   using namespace smtk::model::testing;

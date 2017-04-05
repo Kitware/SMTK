@@ -43,7 +43,6 @@ using namespace ReaderHelperFunctions;
 
 vtkStandardNewMacro(vtkCMBMapReader);
 
-//-----------------------------------------------------------------------------
 vtkCMBMapReader::vtkCMBMapReader()
 {
   this->FileName = NULL;
@@ -52,7 +51,6 @@ vtkCMBMapReader::vtkCMBMapReader()
   this->ArcIds = vtkIntArray::New();
 }
 
-//-----------------------------------------------------------------------------
 vtkCMBMapReader::~vtkCMBMapReader()
 {
   this->SetFileName(0);
@@ -62,7 +60,7 @@ vtkCMBMapReader::~vtkCMBMapReader()
     this->ArcIds = NULL;
     }
 }
-//-----------------------------------------------------------------------------
+//
 //This is a reader for the SMS Map file for help on the format of the file go to
 //http://www.ems-i.com/smshelp/SMS-Help.htm#File_Formats/SMS_Project_Files.htm
   int vtkCMBMapReader::RequestData(
@@ -563,8 +561,6 @@ vtkCMBMapReader::~vtkCMBMapReader()
   return 1;
 }
 
-
-//-----------------------------------------------------------------------------
 void vtkCMBMapReader::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
@@ -582,8 +578,6 @@ void vtkCMBMapReader::PrintSelf(ostream& os, vtkIndent indent)
     }
 }
 
-
-//----------------------------------------------------------------------------
   int vtkCMBMapReader::RequestInformation(
       vtkInformation *vtkNotUsed(request),
       vtkInformationVector **vtkNotUsed(inputVector),

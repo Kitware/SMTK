@@ -606,7 +606,6 @@ struct RegionTracker
 
 } // namespace
 
-// -----------------------------------------------------------------------------
 vtkStandardNewMacro(vtkDiscoverRegions);
 
 vtkDiscoverRegions::vtkDiscoverRegions()

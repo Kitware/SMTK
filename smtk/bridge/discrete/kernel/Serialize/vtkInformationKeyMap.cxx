@@ -29,24 +29,20 @@ struct vtkInformationKeyMapInternals
 vtkInformationKeyMapInternals vtkInformationKeyMapKeys;
 }
 
-//----------------------------------------------------------------------------
 vtkInformationKeyMap::vtkInformationKeyMap()
 {
 }
 
-//----------------------------------------------------------------------------
 vtkInformationKeyMap::~vtkInformationKeyMap()
 {
 }
 
-//----------------------------------------------------------------------------
 void vtkInformationKeyMap::RegisterKey(vtkInformationKey* key)
 {
   std::string name = std::string(key->GetLocation()) + "." + key->GetName();
   vtkInformationKeyMapKeys.Keys[name] = key;
 }
 
-//----------------------------------------------------------------------------
 vtkInformationKey* vtkInformationKeyMap::FindKey(const char* name)
 {
   KeyMapType::iterator iter = vtkInformationKeyMapKeys.Keys.find(name);
@@ -57,20 +53,16 @@ vtkInformationKey* vtkInformationKeyMap::FindKey(const char* name)
   return 0;
 }
 
-//----------------------------------------------------------------------------
 std::string vtkInformationKeyMap::GetFullName(vtkInformationKey* key)
 {
   return std::string(key->GetLocation()) + "." + key->GetName();
 }
 
-
-//----------------------------------------------------------------------------
 void vtkInformationKeyMap::RemoveAllKeys()
 {
   vtkInformationKeyMapKeys.Keys.clear();
 }
 
-//----------------------------------------------------------------------------
 void vtkInformationKeyMap::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

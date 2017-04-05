@@ -18,7 +18,6 @@
 
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 MeshSelectionItem::MeshSelectionItem(Attribute* owningAttribute,
                    int itemPosition):
   Item(owningAttribute, itemPosition)
@@ -27,7 +26,6 @@ MeshSelectionItem::MeshSelectionItem(Attribute* owningAttribute,
   m_isCtrlKeyDown = false;
 }
 
-//----------------------------------------------------------------------------
 MeshSelectionItem::MeshSelectionItem(Item* inOwningItem,
                    int itemPosition,
                    int inSubGroupPosition):
@@ -35,7 +33,6 @@ MeshSelectionItem::MeshSelectionItem(Item* inOwningItem,
 {
 }
 
-//----------------------------------------------------------------------------
 bool MeshSelectionItem::
 setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 {
@@ -54,11 +51,10 @@ setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
   return true;
 }
 
-//----------------------------------------------------------------------------
 MeshSelectionItem::~MeshSelectionItem()
 {
 }
-//----------------------------------------------------------------------------
+
 Item::Type MeshSelectionItem::type() const
 {
   const MeshSelectionItemDefinition* def =
@@ -69,12 +65,12 @@ Item::Type MeshSelectionItem::type() const
     }
   return Item::MESH_SELECTION;
 }
-//----------------------------------------------------------------------------
+
 bool MeshSelectionItem::isValid() const
 {
   return true;
 }
-//----------------------------------------------------------------------------
+
 std::size_t MeshSelectionItem::numberOfValues() const
 {
   std::size_t total = 0;
@@ -84,21 +80,18 @@ std::size_t MeshSelectionItem::numberOfValues() const
   return total;
 }
 
-//----------------------------------------------------------------------------
 void MeshSelectionItem::setValues(const smtk::common::UUID& uuid,
                                   const std::set<int>& vals)
 {
   this->m_selectionValues[uuid] = vals;
 }
 
-//----------------------------------------------------------------------------
 void MeshSelectionItem::unionValues(const smtk::common::UUID& uuid,
                                      const std::set<int>& vals)
 {
   this->m_selectionValues[uuid].insert(vals.begin(), vals.end());
 }
 
-//----------------------------------------------------------------------------
 void MeshSelectionItem::removeValues(const smtk::common::UUID& uuid,
                                      const std::set<int>& vals)
 {
@@ -110,7 +103,6 @@ void MeshSelectionItem::removeValues(const smtk::common::UUID& uuid,
   this->m_selectionValues[uuid] = diffSet;
 }
 
-//----------------------------------------------------------------------------
 const std::set<int>& MeshSelectionItem::values(
   const smtk::common::UUID& uuid)
 {
@@ -118,12 +110,11 @@ const std::set<int>& MeshSelectionItem::values(
   return this->m_selectionValues[uuid];
 }
 
-//----------------------------------------------------------------------------
 void MeshSelectionItem::reset()
 {
   this->m_selectionValues.clear();
 }
-//----------------------------------------------------------------------------
+
 bool MeshSelectionItem::assign(ConstItemPtr &sourceItem, unsigned int options)
 {
   smtk::shared_ptr<const MeshSelectionItem > sourceMeshSelectionItem =
@@ -141,7 +132,7 @@ bool MeshSelectionItem::assign(ConstItemPtr &sourceItem, unsigned int options)
   // Assigns my contents to be same as sourceItem
   return Item::assign(sourceItem, options);
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::MeshSelectionItem::const_sel_map_it MeshSelectionItem::begin() const
 {
   return this->m_selectionValues.begin();
@@ -152,7 +143,6 @@ smtk::attribute::MeshSelectionItem::const_sel_map_it MeshSelectionItem::end() co
   return this->m_selectionValues.end();
 }
 
-//----------------------------------------------------------------------------
 std::string MeshSelectionItem::modifyMode2String(MeshModifyMode m)
 {
   switch (m)
@@ -173,7 +163,6 @@ std::string MeshSelectionItem::modifyMode2String(MeshModifyMode m)
   return "Error!";
 }
 
-//----------------------------------------------------------------------------
 MeshModifyMode MeshSelectionItem::string2ModifyMode(const std::string &s)
 {
   if (s == "NONE")

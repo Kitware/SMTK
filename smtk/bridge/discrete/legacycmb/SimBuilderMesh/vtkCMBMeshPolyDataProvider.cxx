@@ -26,7 +26,6 @@
 vtkStandardNewMacro(vtkCMBMeshPolyDataProvider);
 vtkCxxSetObjectMacro(vtkCMBMeshPolyDataProvider, MeshWrapper, vtkCMBMeshWrapper);
 
-//----------------------------------------------------------------------------
 vtkCMBMeshPolyDataProvider::vtkCMBMeshPolyDataProvider()
 {
   // by default assume filters have one input and one output
@@ -41,20 +40,17 @@ vtkCMBMeshPolyDataProvider::vtkCMBMeshPolyDataProvider()
   this->CreateEdgePointVerts = false;
 }
 
-//----------------------------------------------------------------------------
 vtkCMBMeshPolyDataProvider::~vtkCMBMeshPolyDataProvider()
 {
   this->SetMeshWrapper(NULL);
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshPolyDataProvider::SetItemType(int itemType)
 {
   this->ItemType = itemType;
   this->ItemTypeIsSet = 1;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshPolyDataProvider::SetEntityId(vtkIdType Id)
 {
   this->EntityId = Id;
@@ -62,7 +58,6 @@ void vtkCMBMeshPolyDataProvider::SetEntityId(vtkIdType Id)
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshPolyDataProvider::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
@@ -74,7 +69,6 @@ void vtkCMBMeshPolyDataProvider::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "CreateEdgePointVerts: " << this->CreateEdgePointVerts << endl;
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBMeshPolyDataProvider::RequestUpdateExtent(
   vtkInformation *,
   vtkInformationVector **,
@@ -102,7 +96,6 @@ int vtkCMBMeshPolyDataProvider::RequestUpdateExtent(
   return 1;
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBMeshPolyDataProvider::RequestData(
   vtkInformation* /*request*/,
   vtkInformationVector** vtkNotUsed( inputVector ),
@@ -191,7 +184,6 @@ int vtkCMBMeshPolyDataProvider::RequestData(
   return 1;
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBMeshPolyDataProvider::FillOutputPortInformation(
   int, vtkInformation* info)
 {

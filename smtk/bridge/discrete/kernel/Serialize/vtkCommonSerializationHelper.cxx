@@ -21,12 +21,10 @@
 
 vtkStandardNewMacro(vtkCommonSerializationHelper);
 
-//-----------------------------------------------------------------------------
 vtkCommonSerializationHelper::vtkCommonSerializationHelper()
 {
 }
 
-//-----------------------------------------------------------------------------
 int vtkCommonSerializationHelper::Serialize(vtkObject *object,
                                                vtkSerializer *serializer)
 {
@@ -46,7 +44,6 @@ int vtkCommonSerializationHelper::Serialize(vtkObject *object,
   return 0;
 }
 
-//-----------------------------------------------------------------------------
 void vtkCommonSerializationHelper::RegisterWithHelperMap()
 {
   vtkSerializationHelperMap::RegisterHelperForClass("vtkTransform", this);
@@ -55,7 +52,6 @@ void vtkCommonSerializationHelper::RegisterWithHelperMap()
   vtkSerializationHelperMap::RegisterHelperForClass("vtkIntArray", this);
 }
 
-//-----------------------------------------------------------------------------
 void vtkCommonSerializationHelper::UnRegisterWithHelperMap()
 {
   vtkSerializationHelperMap::UnRegisterHelperForClass("vtkTransform", this);
@@ -64,7 +60,6 @@ void vtkCommonSerializationHelper::UnRegisterWithHelperMap()
   vtkSerializationHelperMap::UnRegisterHelperForClass("vtkIntArray", this);
 }
 
-//-----------------------------------------------------------------------------
 void vtkCommonSerializationHelper::SerializeTransform(vtkTransform *transform,
                                                          vtkSerializer *serializer)
 {
@@ -88,7 +83,6 @@ void vtkCommonSerializationHelper::SerializeTransform(vtkTransform *transform,
     }
 }
 
-//-----------------------------------------------------------------------------
 void vtkCommonSerializationHelper::SerializeDataArray(vtkDataArray *dataArray,
                                                          vtkSerializer *serializer)
 {
@@ -192,7 +186,6 @@ void vtkCommonSerializationHelper::SerializeDataArray(vtkDataArray *dataArray,
     }
 }
 
-//-----------------------------------------------------------------------------
 const char *vtkCommonSerializationHelper::GetSerializationType(vtkObject *object)
 {
   if (vtkTransform::SafeDownCast(object))
@@ -214,7 +207,6 @@ const char *vtkCommonSerializationHelper::GetSerializationType(vtkObject *object
   return 0;
 }
 
-//-----------------------------------------------------------------------------
 void vtkCommonSerializationHelper::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

@@ -36,7 +36,6 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-//----------------------------------------------------------------------------
 void create_simple_mesh_model( smtk::model::ManagerPtr mgr )
 {
   std::string file_path(data_root);
@@ -55,7 +54,6 @@ void create_simple_mesh_model( smtk::model::ManagerPtr mgr )
   file.close();
 }
 
-//----------------------------------------------------------------------------
 void verify_null_managers()
 {
   smtk::mesh::ManagerPtr null_meshManager;
@@ -82,7 +80,6 @@ void verify_null_managers()
   }
 }
 
-//----------------------------------------------------------------------------
 void verify_empty_model()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
@@ -93,7 +90,6 @@ void verify_empty_model()
   test( !c, "collection should be invalid for an empty model");
 }
 
-//----------------------------------------------------------------------------
 void verify_model_association()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
@@ -118,7 +114,6 @@ void verify_model_association()
     }
 }
 
-//----------------------------------------------------------------------------
 void verify_cell_conversion()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
@@ -143,7 +138,6 @@ void verify_cell_conversion()
 
 }
 
-//----------------------------------------------------------------------------
 void verify_vertex_conversion()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
@@ -168,7 +162,6 @@ void verify_vertex_conversion()
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestModelToMesh2D(int, char** const)
 {
   verify_null_managers();

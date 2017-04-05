@@ -32,17 +32,14 @@
 
 vtkStandardNewMacro(vtkModelBCGridRepresentation);
 
-//----------------------------------------------------------------------------
 vtkModelBCGridRepresentation::vtkModelBCGridRepresentation()
 {
 }
 
-//----------------------------------------------------------------------------
 vtkModelBCGridRepresentation::~vtkModelBCGridRepresentation()
 {
 }
 
-//----------------------------------------------------------------------------
 void inline AddPointIds(vtkIdType /*entId*/,vtkIdList* inPtsList,
   vtkIdList* outPtsList)
 {
@@ -58,7 +55,6 @@ void inline AddPointIds(vtkIdType /*entId*/,vtkIdList* inPtsList,
     }
 }
 
-//----------------------------------------------------------------------------
 bool vtkModelBCGridRepresentation::GetBCSNodalAnalysisGridPointIds(
   vtkDiscreteModel* model, vtkIdType bcsGroupId,
   int bcGroupType,vtkIdList* pointIds)
@@ -106,7 +102,6 @@ bool vtkModelBCGridRepresentation::GetBCSNodalAnalysisGridPointIds(
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool vtkModelBCGridRepresentation::GetFloatingEdgeAnalysisGridPointIds(
   vtkDiscreteModel* model, vtkIdType floatingEdgeId, vtkIdList* pointIds)
 {
@@ -140,7 +135,6 @@ bool vtkModelBCGridRepresentation::GetFloatingEdgeAnalysisGridPointIds(
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool vtkModelBCGridRepresentation::GetModelEdgeAnalysisPoints(
   vtkDiscreteModel* /*model*/, vtkIdType /*boundaryGroupId*/, vtkIdTypeArray* /*edgePoints*/)
 {
@@ -148,7 +142,6 @@ bool vtkModelBCGridRepresentation::GetModelEdgeAnalysisPoints(
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool vtkModelBCGridRepresentation::GetBoundaryGroupAnalysisFacets(
   vtkDiscreteModel* model, vtkIdType boundaryGroupId,
   vtkIdList* cellIds, vtkIdList* cellSides)
@@ -194,7 +187,6 @@ bool vtkModelBCGridRepresentation::GetBoundaryGroupAnalysisFacets(
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool vtkModelBCGridRepresentation::IsModelConsistent(vtkDiscreteModel* model)
 {
   // get the floating edges of the 3D model
@@ -250,7 +242,6 @@ bool vtkModelBCGridRepresentation::IsModelConsistent(vtkDiscreteModel* model)
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool vtkModelBCGridRepresentation::Initialize(
   const char* bcFileName, vtkDiscreteModel* model)
 {
@@ -374,7 +365,6 @@ bool vtkModelBCGridRepresentation::Initialize(
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool vtkModelBCGridRepresentation::AddFloatingEdge(
   vtkIdType floatingEdgeId, vtkIdList* pointIds, vtkDiscreteModel* model)
 {
@@ -400,7 +390,6 @@ bool vtkModelBCGridRepresentation::AddFloatingEdge(
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool vtkModelBCGridRepresentation::AddModelFace(
   vtkIdType modelFaceId, vtkIdList* cellIds,
   vtkIdList* cellSides, vtkDiscreteModel* model)
@@ -428,7 +417,6 @@ bool vtkModelBCGridRepresentation::AddModelFace(
   return true;
 }
 
-//----------------------------------------------------------------------------
 void vtkModelBCGridRepresentation::Reset()
 {
   this->Superclass::Reset();
@@ -436,7 +424,6 @@ void vtkModelBCGridRepresentation::Reset()
   this->MasterCellToMeshCellInfo.clear();
 }
 
-//----------------------------------------------------------------------------
 bool vtkModelBCGridRepresentation::IsFloatingEdgeConsistent(
   vtkDiscreteModel* model, vtkIdType floatingEdgeId)
 {
@@ -459,14 +446,12 @@ bool vtkModelBCGridRepresentation::IsFloatingEdgeConsistent(
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool vtkModelBCGridRepresentation::IsModelFaceConsistent(
   vtkDiscreteModel* /*model*/, vtkIdType /*modelFaceId*/)
 {
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool vtkModelBCGridRepresentation::GetModelFaceAnalysisFacets(
   vtkDiscreteModel* model, vtkIdType modelFaceId, vtkIdList* cellIds,
   vtkIdList* cellSides)
@@ -516,7 +501,6 @@ bool vtkModelBCGridRepresentation::GetModelFaceAnalysisFacets(
   return true;
 }
 
-//----------------------------------------------------------------------------
 void vtkModelBCGridRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

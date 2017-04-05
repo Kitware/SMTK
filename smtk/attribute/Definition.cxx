@@ -25,7 +25,6 @@ using namespace smtk::attribute;
 double Definition::s_notApplicableBaseColor[4] = {0.0, 0.0, 0.0, 0.0};
 double Definition::s_defaultBaseColor[4] = {1.0, 1.0, 1.0, 1.0};
 
-//----------------------------------------------------------------------------
 Definition::Definition(
   const std::string &myType,
   smtk::attribute::DefinitionPtr myBaseDef,
@@ -53,11 +52,11 @@ Definition::Definition(
     this->m_baseItemOffset = 0;
     }
 }
-//----------------------------------------------------------------------------
+
 Definition::~Definition()
 {
 }
-//----------------------------------------------------------------------------
+
 bool Definition::isA(smtk::attribute::ConstDefinitionPtr targetDef) const
 {
   // Walk up the inheritence tree until we either hit the root or
@@ -72,7 +71,7 @@ bool Definition::isA(smtk::attribute::ConstDefinitionPtr targetDef) const
     }
   return false;
 }
-//----------------------------------------------------------------------------
+
 bool Definition::conflicts(smtk::attribute::DefinitionPtr def) const
 {
   // 2 definitions conflict if their inheritance tree intersects and isUnique is
@@ -224,7 +223,7 @@ Definition::canBeAssociated(smtk::model::EntityRef /*entity*/,
   // definition.  All conflicting attributes gets added to the list.
   return false;
 }
-//----------------------------------------------------------------------------
+
 void Definition::buildAttribute(Attribute *att) const
 {
   // If there is a super definition have it prep the attribute and add its items
@@ -262,7 +261,7 @@ void Definition::buildAttribute(Attribute *att) const
     att->addItem(comp);
     }
 }
-//----------------------------------------------------------------------------
+
 bool Definition::isMemberOf(const std::vector<std::string> &inCategories) const
 {
   std::size_t i, n = inCategories.size();
@@ -273,7 +272,7 @@ bool Definition::isMemberOf(const std::vector<std::string> &inCategories) const
     }
   return false;
 }
-//----------------------------------------------------------------------------
+
 bool Definition::addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
 {
   // First see if there is a item by the same name
@@ -287,7 +286,7 @@ bool Definition::addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
   this->updateDerivedDefinitions();
   return true;
 }
-//----------------------------------------------------------------------------
+
 void Definition::updateDerivedDefinitions()
 {
   DefinitionPtr def = this->shared_from_this();
@@ -296,7 +295,7 @@ void Definition::updateDerivedDefinitions()
     this->m_system->updateDerivedDefinitionIndexOffsets(def);
     }
 }
-//----------------------------------------------------------------------------
+
 void Definition::setCategories()
 {
   if (this->m_baseDefinition)
@@ -315,7 +314,7 @@ void Definition::setCategories()
     this->m_categories.insert(itemCats.begin(), itemCats.end());
     }
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemDefinitionPtr Definition::itemDefinition(int ith) const
 {
   // Is the item in this defintion?
@@ -330,7 +329,7 @@ smtk::attribute::ItemDefinitionPtr Definition::itemDefinition(int ith) const
     }
   return smtk::attribute::ItemDefinitionPtr();
 }
- //----------------------------------------------------------------------------
+
 int Definition::findItemPosition(const std::string &name) const
 {
   std::map<std::string, int>::const_iterator it;
@@ -349,4 +348,3 @@ int Definition::findItemPosition(const std::string &name) const
     }
   return it->second + static_cast<int>(this->m_baseItemOffset);
 }
-//----------------------------------------------------------------------------

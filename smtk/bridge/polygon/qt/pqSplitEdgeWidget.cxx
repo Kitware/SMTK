@@ -121,7 +121,6 @@ class pqSplitEdgeWidget::pqInternals
     vtkSmartPointer<vtkCommand> InteractionModePropertyObserver;
 };
 
-//-----------------------------------------------------------------------------
 pqSplitEdgeWidget::pqSplitEdgeWidget(QWidget *prent) :
   QWidget(prent),
   Internals(new pqSplitEdgeWidget::pqInternals),
@@ -154,7 +153,6 @@ pqSplitEdgeWidget::pqSplitEdgeWidget(QWidget *prent) :
     this, SLOT(splitEdgeOperation(bool)));
 }
 
-//-----------------------------------------------------------------------------
 pqSplitEdgeWidget::~pqSplitEdgeWidget()
 {
   this->setView(NULL);
@@ -198,7 +196,6 @@ smtk::shared_ptr<smtk::model::Operator> pqSplitEdgeWidget::edgeOperator()
   return this->m_edgeOp.lock();
 }
 
-//-----------------------------------------------------------------------------
 void pqSplitEdgeWidget::splitEdgeOperation(bool start)
 {
   if(this->View && this->m_edgeOp.lock() && start)
@@ -296,7 +293,7 @@ void pqSplitEdgeWidget::arcPointPicked(pqOutputPort* port)
       }
     }
 }
-//-----------------------------------------------------------------------------
+
 void pqSplitEdgeWidget::onSelectionModeChanged()
 {
   if (!this->View || !this->isActive())
@@ -316,12 +313,11 @@ void pqSplitEdgeWidget::onSelectionModeChanged()
     }
 }
 
-//-----------------------------------------------------------------------------
 bool pqSplitEdgeWidget::isActive()
 {
   return this->m_edgePointPicker->m_isActive;
 }
-//-----------------------------------------------------------------------------
+
 void pqSplitEdgeWidget::resetWidget()
 {
   this->m_edgePointPicker->donePicking(this->View);

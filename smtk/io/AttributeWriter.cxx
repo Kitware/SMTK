@@ -23,14 +23,13 @@
 namespace smtk {
   namespace io {
 
-//----------------------------------------------------------------------------
 AttributeWriter::AttributeWriter():
   m_fileVersion(DEFAULT_FILE_VERSION),
   m_includeDefinitions(true), m_includeInstances(true),
   m_includeModelInformation(true), m_includeViews(true)
 {
 }
-//----------------------------------------------------------------------------
+
 bool AttributeWriter::setFileVersion(unsigned int version)
 {
   // Validate input
@@ -43,17 +42,17 @@ bool AttributeWriter::setFileVersion(unsigned int version)
   // (else)
   return false;
 }
-//----------------------------------------------------------------------------
+
 void AttributeWriter::setMaxFileVersion()
 {
   this->m_fileVersion = MAX_FILE_VERSION;
 }
-//----------------------------------------------------------------------------
+
 unsigned int AttributeWriter::fileVersion() const
 {
   return this->m_fileVersion;
 }
-//----------------------------------------------------------------------------
+
 bool AttributeWriter::write(const smtk::attribute::System &system,
                             const std::string &filename,
                             Logger &logger)
@@ -84,7 +83,6 @@ bool AttributeWriter::write(const smtk::attribute::System &system,
   return logger.hasErrors();
 }
 
-//----------------------------------------------------------------------------
 bool AttributeWriter::writeContents(const smtk::attribute::System &system,
                                     std::string &filecontents,
                                     Logger &logger,
@@ -101,7 +99,6 @@ bool AttributeWriter::writeContents(const smtk::attribute::System &system,
   return logger.hasErrors();
 }
 
-//----------------------------------------------------------------------------
 XmlStringWriter *AttributeWriter::newXmlStringWriter(
   const smtk::attribute::System& system) const
 {
@@ -122,8 +119,6 @@ XmlStringWriter *AttributeWriter::newXmlStringWriter(
     }
   return writer;
 }
-
-//----------------------------------------------------------------------------
 
   } // namespace io
 } // namespace smtk

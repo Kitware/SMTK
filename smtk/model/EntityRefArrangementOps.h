@@ -196,7 +196,6 @@ public:
     }
 };
 
-// -----------------------------------------------------------------------------
 // What follows are methods of EntityRef that require EntityRefArrangementOps.
 // This breaks an include-dependency cycle.
 

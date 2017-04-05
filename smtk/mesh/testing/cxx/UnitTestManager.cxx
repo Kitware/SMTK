@@ -26,7 +26,6 @@ namespace {
 const std::size_t num_volumes_in_model = 1;
 const std::size_t num_models = 1;
 
-//----------------------------------------------------------------------------
 void create_simple_model( smtk::model::ManagerPtr modelManager )
 {
   using namespace smtk::model::testing;
@@ -41,7 +40,6 @@ void create_simple_model( smtk::model::ManagerPtr modelManager )
 
 }
 
-//----------------------------------------------------------------------------
 void verify_constructors()
 {
   smtk::mesh::ManagerPtr mgrPtr;
@@ -58,7 +56,6 @@ void verify_constructors()
   test( !!mgrPtr3, "failed copy assignment of manager shared_ptr");
 }
 
-//----------------------------------------------------------------------------
 void verify_collection_queries()
 {
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
@@ -85,7 +82,6 @@ void verify_collection_queries()
   test( findRes2 && findRes2->isValid(), "Failed to return an valid Collection from a find call");
 }
 
-//----------------------------------------------------------------------------
 void verify_collection_iterators()
 {
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
@@ -108,7 +104,6 @@ void verify_collection_iterators()
   test( distance == 1, "Incorrect iterators given from a manager with items");
 }
 
-//----------------------------------------------------------------------------
 void verify_add_remove_collection()
 {
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
@@ -145,7 +140,6 @@ void verify_add_remove_collection()
 
 }
 
-//----------------------------------------------------------------------------
 void verify_name_generation()
 {
   //verify that we can generate 1024 collections with unique names
@@ -227,7 +221,6 @@ void verify_name_generation()
 
 }
 
-//----------------------------------------------------------------------------
 void verify_has_association()
 {
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
@@ -300,7 +293,6 @@ void verify_has_association()
     }
 }
 
-//----------------------------------------------------------------------------
 void verify_has_multiple_association()
 {
 
@@ -338,7 +330,6 @@ void verify_has_multiple_association()
     }
 }
 
-//----------------------------------------------------------------------------
 void verify_add_remove_association()
 {
   //first add a collection that is associated.
@@ -380,7 +371,6 @@ void verify_add_remove_association()
   test(assocCollections.size() == 0);
 }
 
-//----------------------------------------------------------------------------
 void verify_no_association()
 {
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
@@ -408,7 +398,6 @@ void verify_no_association()
 
 } // anonymous namespace
 
-//----------------------------------------------------------------------------
 int UnitTestManager(int, char** const)
 {
   verify_constructors();

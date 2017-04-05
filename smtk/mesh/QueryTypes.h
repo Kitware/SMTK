@@ -26,7 +26,6 @@
 namespace smtk {
 namespace mesh {
 
-//----------------------------------------------------------------------------
 class SMTKCORE_EXPORT IntegerTag
 {
 public:
@@ -49,28 +48,24 @@ private:
   int m_value;
 };
 
-//----------------------------------------------------------------------------
 class SMTKCORE_EXPORT Domain : public IntegerTag
 {
 public:
   explicit Domain(int value) : IntegerTag(value) {}
 };
 
-//----------------------------------------------------------------------------
 class SMTKCORE_EXPORT Dirichlet : public IntegerTag
 {
 public:
   explicit Dirichlet(int value) : IntegerTag(value) {}
 };
 
-//----------------------------------------------------------------------------
 class SMTKCORE_EXPORT Neumann : public IntegerTag
 {
 public:
   explicit Neumann(int value) : IntegerTag(value) {}
 };
 
-//----------------------------------------------------------------------------
 template<int S>
 class SMTKCORE_EXPORT OpaqueTag
 {
@@ -113,7 +108,6 @@ private:
   std::vector<unsigned char> m_value;
 };
 
-//----------------------------------------------------------------------------
 class SMTKCORE_EXPORT UUIDTag : public OpaqueTag<smtk::common::UUID::SIZE>
 {
 public:
@@ -129,14 +123,12 @@ public:
     }
 };
 
-//----------------------------------------------------------------------------
 class SMTKCORE_EXPORT Model : public UUIDTag
 {
 public:
   explicit Model(const smtk::common::UUID& value) : UUIDTag(value) {}
 };
 
-//----------------------------------------------------------------------------
 enum ContainmentType
 {
   PartiallyContained=1,

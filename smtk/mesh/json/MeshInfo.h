@@ -25,7 +25,6 @@ namespace smtk {
 namespace mesh {
 namespace json {
 
-//----------------------------------------------------------------------------
 class SMTKCORE_EXPORT MeshInfo
 {
 public:

@@ -41,7 +41,6 @@ MODEL_FILENAME = 'test2D.json'
 INPUT_FILENAME = 'copyAttributeTest.sbi'
 OUTPUT_FILENAME = 'copyAttributeOut.sbi'
 
-# ---------------------------------------------------------------------
 if __name__ == '__main__':
     # First (and) only argument is the path to the smtk data directory
     if len(sys.argv) < 2:

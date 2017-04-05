@@ -32,7 +32,6 @@
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
-//----------------------------------------------------------------------------
 class qtGroupViewInternals
 {
 public:
@@ -51,7 +50,6 @@ public:
   QTabWidget::TabPosition m_tabPosition;
 };
 
-//----------------------------------------------------------------------------
 qtBaseView *
 qtGroupView::createViewWidget(const ViewInfo &info)
 {
@@ -60,20 +58,18 @@ qtGroupView::createViewWidget(const ViewInfo &info)
   return view;
 }
 
-//----------------------------------------------------------------------------
 qtGroupView::
 qtGroupView(const ViewInfo &info) : qtBaseView(info)
 {
   this->Internals = new qtGroupViewInternals;
 }
 
-//----------------------------------------------------------------------------
 qtGroupView::~qtGroupView()
 {
   this->clearChildViews();
   delete this->Internals;
 }
-//----------------------------------------------------------------------------
+
 void qtGroupView::updateCurrentTab(int ithTab)
 {
   this->Internals->m_currentTabSelected = ithTab;
@@ -84,7 +80,6 @@ void qtGroupView::updateCurrentTab(int ithTab)
     }
 }
 
-//----------------------------------------------------------------------------
 void qtGroupView::createWidget( )
 {
   smtk::common::ViewPtr view = this->getObject();
@@ -203,7 +198,7 @@ void qtGroupView::createWidget( )
                      this, SLOT(updateCurrentTab(int)));
     }
 }
-//----------------------------------------------------------------------------
+
 void qtGroupView::getChildView(const std::string &viewType, QList<qtBaseView*>& views)
 {
   foreach(qtBaseView* childView, this->Internals->ChildViews)
@@ -219,7 +214,7 @@ void qtGroupView::getChildView(const std::string &viewType, QList<qtBaseView*>& 
       }
     }
 }
-//----------------------------------------------------------------------------
+
 qtBaseView* qtGroupView::getChildView(int pageIndex)
 {
   if(pageIndex >= 0 && pageIndex < this->Internals->ChildViews.count())
@@ -228,7 +223,7 @@ qtBaseView* qtGroupView::getChildView(int pageIndex)
     }
   return NULL;
 }
-//----------------------------------------------------------------------------
+
 void qtGroupView::addChildView(qtBaseView* child)
 {
   if(!this->Internals->ChildViews.contains(child))
@@ -248,12 +243,12 @@ void qtGroupView::addChildView(qtBaseView* child)
       }
     }
 }
-//----------------------------------------------------------------------------
+
 const QList<qtBaseView*>& qtGroupView::childViews() const
 {
   return this->Internals->ChildViews;
 }
-//----------------------------------------------------------------------------
+
 void qtGroupView::clearChildViews()
 {
   foreach(qtBaseView* childView, this->Internals->ChildViews)
@@ -263,7 +258,6 @@ void qtGroupView::clearChildViews()
   this->Internals->ChildViews.clear();
 }
 
-//----------------------------------------------------------------------------
 void qtGroupView::updateUI()
 {
   foreach(qtBaseView* childView, this->Internals->ChildViews)
@@ -272,7 +266,6 @@ void qtGroupView::updateUI()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtGroupView::onShowCategory()
 {
   foreach(qtBaseView* childView, this->Internals->ChildViews)
@@ -282,7 +275,6 @@ void qtGroupView::onShowCategory()
   this->qtBaseView::onShowCategory();
 }
 
-//----------------------------------------------------------------------------
 void qtGroupView::showAdvanceLevelOverlay(bool show)
 {
   foreach(qtBaseView* childView, this->Internals->ChildViews)
@@ -292,7 +284,6 @@ void qtGroupView::showAdvanceLevelOverlay(bool show)
   this->qtBaseView::showAdvanceLevelOverlay(show);
 }
 
-//----------------------------------------------------------------------------
 void qtGroupView::addTabEntry(qtBaseView* child)
 {
   QTabWidget* tabWidget = static_cast<QTabWidget*>(this->Widget);
@@ -353,7 +344,6 @@ void qtGroupView::addTabEntry(qtBaseView* child)
   vLayout->setAlignment(Qt::AlignTop);
 }
 
-//----------------------------------------------------------------------------
 void qtGroupView::addGroupBoxEntry(qtBaseView* child)
 {
   QFrame* frame = dynamic_cast<QFrame*>(this->Widget);
@@ -367,7 +357,7 @@ void qtGroupView::addGroupBoxEntry(qtBaseView* child)
   gw->contentsLayout()->addWidget(child->widget());
   gw->collapse();
 }
-//----------------------------------------------------------------------------
+
 void qtGroupView::addTileEntry(qtBaseView* child)
 {
   QFrame* frame = dynamic_cast<QFrame*>(this->Widget);
@@ -388,7 +378,7 @@ void qtGroupView::addTileEntry(qtBaseView* child)
   vLayout->addWidget(child->widget());
   vLayout->setAlignment(Qt::AlignTop);
 }
-//----------------------------------------------------------------------------
+
 void qtGroupView::updateModelAssociation()
 {
   foreach(qtBaseView* childView, this->Internals->ChildViews)

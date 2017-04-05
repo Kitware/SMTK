@@ -45,7 +45,6 @@ struct vtkGMSSolidReaderInternals
     }
 };
 
-//----------------------------------------------------------------------------
 vtkGMSSolidReader::vtkGMSSolidReader()
 {
   this->FileName  = NULL;
@@ -53,14 +52,12 @@ vtkGMSSolidReader::vtkGMSSolidReader()
   this->Internals = new vtkGMSSolidReaderInternals;
 }
 
-//----------------------------------------------------------------------------
 vtkGMSSolidReader::~vtkGMSSolidReader()
 {
   delete[] this->FileName;
   delete this->Internals;
 }
 
-//----------------------------------------------------------------------------
 int vtkGMSSolidReader::RequestData(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **vtkNotUsed(inputVector),
@@ -118,7 +115,6 @@ int vtkGMSSolidReader::RequestData(
   return 1;
 }
 
-//----------------------------------------------------------------------------
 int vtkGMSSolidReader::ReadSolid(unsigned int block,
                                  vtkMultiBlockDataSet* output)
 {
@@ -260,7 +256,6 @@ int vtkGMSSolidReader::ReadSolid(unsigned int block,
   return 1;
 }
 
-//----------------------------------------------------------------------------
 void vtkGMSSolidReader::ReadTriangles(vtkCellArray* ca,
                                       vtkUnsignedCharArray* visArray)
 {
@@ -277,7 +272,6 @@ void vtkGMSSolidReader::ReadTriangles(vtkCellArray* ca,
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkGMSSolidReader::ReadVerts(vtkDoubleArray* dpts)
 {
   vtkIdType numVerts;
@@ -290,7 +284,6 @@ void vtkGMSSolidReader::ReadVerts(vtkDoubleArray* dpts)
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkGMSSolidReader::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
@@ -298,7 +291,6 @@ void vtkGMSSolidReader::PrintSelf(ostream& os, vtkIndent indent)
      << (this->FileName ? this->FileName : "(none)") << endl;
 }
 
-//----------------------------------------------------------------------------
 int vtkGMSSolidReader::RequestInformation(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **vtkNotUsed(inputVector),

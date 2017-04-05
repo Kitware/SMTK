@@ -11,17 +11,14 @@
 #include "vtkModelGeneratedGridRepresentation.h"
 
 
-//----------------------------------------------------------------------------
 vtkModelGeneratedGridRepresentation::vtkModelGeneratedGridRepresentation()
 {
 }
 
-//----------------------------------------------------------------------------
 vtkModelGeneratedGridRepresentation::~vtkModelGeneratedGridRepresentation()
 {
 }
 
-//----------------------------------------------------------------------------
 void vtkModelGeneratedGridRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

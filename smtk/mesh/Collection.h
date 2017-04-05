@@ -129,9 +129,7 @@ public:
 
   std::size_t numberOfMeshes() const;
 
-  //----------------------------------------------------------------------------
   //Queries on the full Collection
-  //----------------------------------------------------------------------------
   smtk::mesh::TypeSet   types() const;
   smtk::mesh::MeshSet   meshes( ) const; //all meshes
   smtk::mesh::CellSet   cells( ) const; //all cells
@@ -161,9 +159,7 @@ public:
   smtk::mesh::CellSet   cells( smtk::mesh::CellTypes cellTypes ) const;
   smtk::mesh::CellSet   cells( smtk::mesh::DimensionType dim ) const;
 
-  //----------------------------------------------------------------------------
   // Queries by a model Cursor
-  //----------------------------------------------------------------------------
   smtk::mesh::TypeSet   findAssociatedTypes( const smtk::model::EntityRef& eref ) const;
   smtk::mesh::MeshSet   findAssociatedMeshes( const smtk::model::EntityRef& eref ) const;
   smtk::mesh::MeshSet   findAssociatedMeshes( const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim ) const;
@@ -202,9 +198,7 @@ public:
   // Return the uuid of the associated model
   smtk::common::UUID associatedModel() const;
 
-  //----------------------------------------------------------------------------
   // Construction of new meshes
-  //----------------------------------------------------------------------------
   //given a collection of existing cells make a new Mesh inside the underlying interface
   //Return that Mesh as a MeshSet with a size of 1. The CellSet could
   //be the result of appending/intersecting,difference of other CellSets.
@@ -214,18 +208,14 @@ public:
   //we will return an empty MeshSet.
   smtk::mesh::MeshSet createMesh( const smtk::mesh::CellSet& cells );
 
-  //----------------------------------------------------------------------------
   // Deletion of Items
-  //----------------------------------------------------------------------------
   //given a collection of meshes this will delete all meshes and any cell or vert
   //that is not referenced by any other mesh
   //This will invalidate any smtk::mesh::MeshSet that contains a reference to
   //one of the meshes that has been deleted.
   bool removeMeshes( smtk::mesh::MeshSet& meshesToDelete );
 
-  //----------------------------------------------------------------------------
   // Domain Queries
-  //----------------------------------------------------------------------------
   //get all the current domains
   std::vector< smtk::mesh::Domain > domains() const;
 
@@ -238,9 +228,7 @@ public:
   bool setDomainOnMeshes(const smtk::mesh::MeshSet& meshes,
                          const smtk::mesh::Domain& m);
 
-  //----------------------------------------------------------------------------
   // Dirichlet Queries
-  //----------------------------------------------------------------------------
   //get all the current dirichlet on the points of the mesh
   std::vector< smtk::mesh::Dirichlet > dirichlets() const;
 
@@ -255,9 +243,7 @@ public:
   bool setDirichletOnMeshes(const smtk::mesh::MeshSet& meshes,
                             const smtk::mesh::Dirichlet& d);
 
-  //----------------------------------------------------------------------------
   // Neumann Queries
-  //----------------------------------------------------------------------------
   //get all the current dirichlet on the points of the mesh
   std::vector< smtk::mesh::Neumann > neumanns() const;
 
@@ -277,9 +263,7 @@ public:
   smtk::model::ManagerPtr modelManager() const { return this->m_modelManager.lock(); }
 
 
-  //----------------------------------------------------------------------------
   // Float, String, Integer properties for a meshset given its handle range.
-  //----------------------------------------------------------------------------
   void setFloatProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName, smtk::model::Float propValue);
   void setFloatProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName, const smtk::model::FloatList& propValue);
   smtk::model::FloatList const& floatProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName) const;

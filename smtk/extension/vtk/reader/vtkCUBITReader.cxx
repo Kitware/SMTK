@@ -23,20 +23,17 @@
 
 vtkStandardNewMacro(vtkCUBITReader);
 
-//-----------------------------------------------------------------------------
 vtkCUBITReader::vtkCUBITReader()
 {
   this->FileName = NULL;
   this->SetNumberOfInputPorts(0);
 }
 
-//-----------------------------------------------------------------------------
 vtkCUBITReader::~vtkCUBITReader()
 {
   this->SetFileName(0);
 }
 
-//-----------------------------------------------------------------------------
 int vtkCUBITReader::RequestData(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **vtkNotUsed(inputVector),
@@ -131,7 +128,6 @@ int vtkCUBITReader::RequestData(
   return 1;
 }
 
-//-----------------------------------------------------------------------------
 int vtkCUBITReader::GetNextLineOfData(ifstream &fin,
                                          std::stringstream &lineStream)
 {
@@ -161,7 +157,6 @@ int vtkCUBITReader::GetNextLineOfData(ifstream &fin,
     }
 }
 
-//-----------------------------------------------------------------------------
 void vtkCUBITReader::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
@@ -171,7 +166,6 @@ void vtkCUBITReader::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 
-//----------------------------------------------------------------------------
 int vtkCUBITReader::RequestInformation(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **vtkNotUsed(inputVector),

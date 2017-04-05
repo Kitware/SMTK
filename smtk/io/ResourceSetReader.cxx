@@ -31,7 +31,6 @@ using namespace smtk::common;
 namespace smtk {
   namespace io {
 
-//----------------------------------------------------------------------------
 bool
 ResourceSetReader::
 readFile(std::string filename,
@@ -69,7 +68,6 @@ readFile(std::string filename,
   return this->readString(content, resources, logger, loadLinkedFiles);
 }
 
-//----------------------------------------------------------------------------
 bool
 ResourceSetReader::
 readString(const std::string& content,
@@ -217,7 +215,6 @@ readString(const std::string& content,
   return logger.hasErrors();
 }
 
-//----------------------------------------------------------------------------
 bool
 ResourceSetReader::
 readEmbeddedAttSystem(pugi::xml_node& element,
@@ -257,7 +254,6 @@ readEmbeddedAttSystem(pugi::xml_node& element,
 }
 
 
-//----------------------------------------------------------------------------
 bool
 ResourceSetReader::
 readIncludedManager(const pugi::xml_node& element,
@@ -304,8 +300,6 @@ readIncludedManager(const pugi::xml_node& element,
   return true;
 }
 
-
-//----------------------------------------------------------------------------
 std::string
 ResourceSetReader::
 buildIncludePath(const ResourceSet& resources,

@@ -34,7 +34,6 @@ inline smtk::mesh::Handle to_handle(::moab::EntityType type,
   return (((smtk::mesh::Handle)type) << id_width)|id;
 }
 
-//----------------------------------------------------------------------------
 void verify_empty_handle()
 {
   smtk::mesh::HandleRange range;
@@ -51,7 +50,6 @@ void verify_empty_handle()
   test( result == range, "empty handle didn't serialize properly");
 }
 
-//----------------------------------------------------------------------------
 void verify_meshset_handle()
 {
   smtk::mesh::Handle first = to_handle(::moab::MBENTITYSET, 1);
@@ -75,7 +73,6 @@ void verify_meshset_handle()
   test( result == range, "meshset handle didn't serialize properly");
 }
 
-//----------------------------------------------------------------------------
 void verify_single_cell_type_handle()
 {
   smtk::mesh::Handle first = to_handle(::moab::MBHEX, 1);
@@ -96,7 +93,6 @@ void verify_single_cell_type_handle()
   test( result == range, "single cell set handle didn't serialize properly");
 }
 
-//----------------------------------------------------------------------------
 void verify_mixed_handle()
 {
   smtk::mesh::Handle first = to_handle(::moab::MBENTITYSET, 1);
@@ -126,7 +122,6 @@ void verify_mixed_handle()
 }
 
 
-//----------------------------------------------------------------------------
 void verify_large_number_of_values_handle()
 {
   smtk::mesh::Handle first = to_handle(::moab::MBENTITYSET, 1);
@@ -158,7 +153,6 @@ void verify_large_number_of_values_handle()
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestReadWriteHandles(int, char** const)
 {
   verify_empty_handle();

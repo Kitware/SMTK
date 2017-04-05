@@ -29,12 +29,10 @@ struct ResourceWrapper
 };
 
 
-//----------------------------------------------------------------------------
 ResourceSet::ResourceSet()
 {
 }
 
-//----------------------------------------------------------------------------
 ResourceSet::~ResourceSet()
 {
   // Release elements in m_resourceMap
@@ -45,7 +43,6 @@ ResourceSet::~ResourceSet()
     }
 }
 
-//----------------------------------------------------------------------------
 bool
 ResourceSet::
 addResource(ResourcePtr resource,
@@ -84,7 +81,6 @@ addResource(ResourcePtr resource,
   return true;
 }
 
-//----------------------------------------------------------------------------
 // Add resource info but *not* the resource itself
 // For links and error-loading cases
 bool
@@ -123,7 +119,6 @@ addResourceInfo(const std::string id,
   return true;
 }
 
-//----------------------------------------------------------------------------
 std::size_t
 ResourceSet::
 numberOfResources() const
@@ -131,7 +126,6 @@ numberOfResources() const
   return m_resourceIds.size();
 }
 
-//----------------------------------------------------------------------------
 const std::vector<std::string>
 ResourceSet::
 resourceIds() const
@@ -139,7 +133,6 @@ resourceIds() const
   return m_resourceIds;
 }
 
-//----------------------------------------------------------------------------
 bool
 ResourceSet::
 resourceInfo(std::string id,
@@ -163,7 +156,6 @@ resourceInfo(std::string id,
     return true;
 }
 
-//----------------------------------------------------------------------------
 bool
 ResourceSet::
 get(std::string id, ResourcePtr& resource) const
@@ -180,7 +172,6 @@ get(std::string id, ResourcePtr& resource) const
     return true;
 }
 
-//----------------------------------------------------------------------------
 ResourceWrapper *
 ResourceSet::
 getWrapper(std::string id) const
@@ -196,7 +187,6 @@ getWrapper(std::string id) const
   return iter->second;
 }
 
-//----------------------------------------------------------------------------
 // Converts ResourceState to string
 std::string
 ResourceSet::
@@ -213,7 +203,6 @@ state2String(ResourceState state)
   return s;
 }
 
-//----------------------------------------------------------------------------
 // Converts ResourceRole to string
 std::string
 ResourceSet::
@@ -230,7 +219,6 @@ role2String(ResourceRole role)
   return s;
 }
 
-//----------------------------------------------------------------------------
 // Converts string to ResourceRole
 ResourceRole
 ResourceSet::
@@ -256,7 +244,6 @@ string2Role(const std::string s)
   return role;
 }
 
-//----------------------------------------------------------------------------
 // Set & Get methods for m_linkStartPath
 void
 ResourceSet::

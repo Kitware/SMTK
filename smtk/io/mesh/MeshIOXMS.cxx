@@ -36,7 +36,6 @@ namespace mesh {
 
 namespace {
 
-//----------------------------------------------------------------------------
 struct OpenFile
 {
   OpenFile(const std::string& path):
@@ -72,7 +71,6 @@ struct OpenFile
   bool m_deleteFile;
 };
 
-//----------------------------------------------------------------------------
 struct MeshByRegion
 {
   MeshByRegion(const smtk::mesh::MeshSet& ms,
@@ -104,7 +102,6 @@ struct MeshByRegion
   int m_regionId;
 };
 
-//----------------------------------------------------------------------------
 template<typename T, typename U>
 double find_sum(const U& conn, const T& points, std::size_t index, int nVerts)
 {
@@ -126,7 +123,6 @@ double find_sum(const U& conn, const T& points, std::size_t index, int nVerts)
 }
 
 
-//----------------------------------------------------------------------------
 std::string to_CardType(smtk::mesh::CellType type)
 {
 
@@ -161,7 +157,6 @@ std::string to_CardType(smtk::mesh::CellType type)
  return std::string("B4D");
 }
 
-//----------------------------------------------------------------------------
 class WriteCellsPerRegion
 {
   smtk::mesh::PointSet m_PointSet;
@@ -177,7 +172,6 @@ public:
   {
   }
 
-  //--------------------------------------------------------------------------
   void operator()(const MeshByRegion& mbr,
                   const smtk::mesh::CellType& type)
   {
@@ -204,7 +198,6 @@ public:
       }
   }
 
-  //--------------------------------------------------------------------------
   void write(const smtk::mesh::CellSet& cells,
              const std::string& cardType,
              int regionId,
@@ -233,7 +226,6 @@ public:
       }
   }
 
-  //--------------------------------------------------------------------------
   void writeCounterClockwise(const smtk::mesh::CellSet& cells,
              const std::string& cardType,
              int regionId,
@@ -283,7 +275,6 @@ public:
 
 };
 
-//----------------------------------------------------------------------------
 std::vector<MeshByRegion> subsetByRegion(smtk::mesh::CollectionPtr collection,
                                          smtk::mesh::DimensionType type)
 {
@@ -320,7 +311,6 @@ std::vector<MeshByRegion> subsetByRegion(smtk::mesh::CollectionPtr collection,
   return meshesByModelRef;
 }
 
-//----------------------------------------------------------------------------
 std::vector<MeshByRegion> subsetByModelProperty(smtk::mesh::CollectionPtr collection,
                                                 smtk::model::ManagerPtr manager,
                                                 const std::string& modelPropertyName,
@@ -355,7 +345,6 @@ std::vector<MeshByRegion> subsetByModelProperty(smtk::mesh::CollectionPtr collec
   return meshesByModelRef;
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::PointSet pointsUsed(const std::vector<MeshByRegion>& meshes)
 {
   //make a single mesh that represents all the cells of a given dimension
@@ -368,7 +357,6 @@ smtk::mesh::PointSet pointsUsed(const std::vector<MeshByRegion>& meshes)
   return cs.points();
 }
 
-//----------------------------------------------------------------------------
 bool write_dm(const std::vector<MeshByRegion>& meshes,
               std::ostream& stream,
               smtk::mesh::DimensionType type)
@@ -450,7 +438,6 @@ bool write_dm(const std::vector<MeshByRegion>& meshes,
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool write_dm(smtk::mesh::CollectionPtr collection,
               std::ostream& stream,
               smtk::mesh::DimensionType type)
@@ -470,7 +457,6 @@ bool write_dm(smtk::mesh::CollectionPtr collection,
 
 }
 
-//----------------------------------------------------------------------------
 bool write_dm(smtk::mesh::CollectionPtr collection,
               smtk::model::ManagerPtr manager,
               const std::string& modelPropertyName,
@@ -495,7 +481,6 @@ bool write_dm(smtk::mesh::CollectionPtr collection,
 }
 
 }
-//----------------------------------------------------------------------------
 MeshIOXMS::MeshIOXMS() : MeshIO()
 {
   this->Formats.push_back( Format( "xms 2d",
@@ -506,7 +491,6 @@ MeshIOXMS::MeshIOXMS() : MeshIO()
                                    Format::Export ) );
 }
 
-//----------------------------------------------------------------------------
 bool MeshIOXMS::exportMesh( std::ostream& stream,
                             smtk::mesh::CollectionPtr collection,
                             smtk::mesh::DimensionType dim ) const
@@ -514,7 +498,6 @@ bool MeshIOXMS::exportMesh( std::ostream& stream,
   return write_dm(collection, stream, dim);
 }
 
-//----------------------------------------------------------------------------
 bool MeshIOXMS::exportMesh( const std::string& filePath,
                             smtk::mesh::CollectionPtr collection,
                             smtk::mesh::DimensionType dim ) const
@@ -529,7 +512,6 @@ bool MeshIOXMS::exportMesh( const std::string& filePath,
   return result;
 }
 
-//----------------------------------------------------------------------------
 bool MeshIOXMS::exportMesh( const std::string& filePath,
                             smtk::mesh::CollectionPtr collection ) const
 {
@@ -547,7 +529,6 @@ bool MeshIOXMS::exportMesh( const std::string& filePath,
     }
 }
 
-//----------------------------------------------------------------------------
 bool MeshIOXMS::exportMesh( std::ostream& stream,
                             smtk::mesh::CollectionPtr collection,
                             smtk::model::ManagerPtr manager,
@@ -557,7 +538,6 @@ bool MeshIOXMS::exportMesh( std::ostream& stream,
   return write_dm(collection, manager, modelPropertyName, stream, dim);
 }
 
-//----------------------------------------------------------------------------
 bool MeshIOXMS::exportMesh( const std::string& filePath,
                             smtk::mesh::CollectionPtr collection,
                             smtk::model::ManagerPtr manager,
@@ -575,7 +555,6 @@ bool MeshIOXMS::exportMesh( const std::string& filePath,
   return result;
 }
 
-//----------------------------------------------------------------------------
 bool MeshIOXMS::exportMesh( const std::string& filePath,
                             smtk::mesh::CollectionPtr collection,
                             smtk::model::ManagerPtr manager,

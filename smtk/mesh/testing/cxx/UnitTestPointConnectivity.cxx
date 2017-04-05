@@ -22,7 +22,6 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-//----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
 {
   std::string file_path(data_root);
@@ -34,7 +33,6 @@ smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
   return c;
 }
 
-//----------------------------------------------------------------------------
 void verify_constructors(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::MeshSet all_meshes = c->meshes();
@@ -66,7 +64,6 @@ void verify_constructors(const smtk::mesh::CollectionPtr& c)
 
 }
 
-//----------------------------------------------------------------------------
 void verify_empty(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::MeshSet no_mesh = c->meshes( "bad name string" );
@@ -92,7 +89,6 @@ void verify_empty(const smtk::mesh::CollectionPtr& c)
   test( no_cells_d.numberOfCells() == 0 );
 }
 
-//----------------------------------------------------------------------------
 void verify_all_connecitivity(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::MeshSet all_meshes = c->meshes();
@@ -108,7 +104,6 @@ void verify_all_connecitivity(const smtk::mesh::CollectionPtr& c)
   test( all_cells_from_collec.size() == all_cells_from_ms.size());
 }
 
-//----------------------------------------------------------------------------
 void verify_simple_equiv(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::PointConnectivity twoDim =  c->cells( smtk::mesh::Dims2 ).pointConnectivity();
@@ -129,7 +124,6 @@ void verify_simple_equiv(const smtk::mesh::CollectionPtr& c)
   test(twoDim_a != oneDim_b);
 }
 
-//----------------------------------------------------------------------------
 void verify_complex_equiv(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::PointConnectivity twoDim =  c->cells( smtk::mesh::Dims2 ).pointConnectivity();
@@ -254,7 +248,6 @@ void verify_shared_iteration(const smtk::mesh::CollectionPtr& c)
 }
 
 
-//----------------------------------------------------------------------------
 int UnitTestPointConnectivity(int, char** const)
 {
   smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();

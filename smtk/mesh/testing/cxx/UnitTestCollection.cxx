@@ -19,7 +19,6 @@
 namespace
 {
 
-//----------------------------------------------------------------------------
 void verify_invalid_constructor()
 {
   smtk::mesh::CollectionPtr null_collec;
@@ -32,7 +31,6 @@ void verify_invalid_constructor()
   test( (uid==smtk::common::UUID::null()) , "collection uuid should be null");
 }
 
-//----------------------------------------------------------------------------
 void verify_valid_constructor()
 {
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
@@ -57,7 +55,6 @@ void verify_valid_constructor()
   test( (collection->writeLocation() == std::string()) );
 }
 
-//----------------------------------------------------------------------------
 void verify_removal_from_collection()
 {
   //add a collection to manager
@@ -75,7 +72,6 @@ void verify_removal_from_collection()
 
 }
 
-//----------------------------------------------------------------------------
 void verify_reparenting()
 {
   //add a collection to manager
@@ -94,7 +90,6 @@ void verify_reparenting()
   test( mgr2->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
 }
 
-//----------------------------------------------------------------------------
 void verify_reparenting_invalid_collection()
 {
   smtk::mesh::CollectionPtr invalid_collection = smtk::mesh::Collection::create();
@@ -106,7 +101,7 @@ void verify_reparenting_invalid_collection()
   test( invalid_collection->isValid() , "collection should be valid as it related to a manager");
   test( mgr->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
 }
-//----------------------------------------------------------------------------
+
 void verify_reparenting_twice()
 {
   smtk::mesh::CollectionPtr collection= smtk::mesh::Collection::create();
@@ -124,7 +119,7 @@ void verify_reparenting_twice()
   test( mgr->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
 
 }
-//----------------------------------------------------------------------------
+
 void verify_reparenting_after_manager_deletion()
 {
   //add a collection to manager
@@ -146,7 +141,6 @@ void verify_reparenting_after_manager_deletion()
   test( mgr2->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
 }
 
-//----------------------------------------------------------------------------
 void verify_collection_unique_name()
 {
   //very simple test for unique name assignment
@@ -165,7 +159,6 @@ void verify_collection_unique_name()
   test( c1->name() != std::string("a"), "assignUniqueNameIfNotAlready didn't generate an unique name" );
 }
 
-//----------------------------------------------------------------------------
 void verify_collection_info_moab()
 {
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
@@ -196,7 +189,6 @@ void verify_collection_info_moab()
   test( (collection->writeLocation() == std::string("foo")) );
 }
 
-//----------------------------------------------------------------------------
 void verify_collection_info_json()
 {
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
@@ -228,7 +220,6 @@ void verify_collection_info_json()
 }
 }
 
-//----------------------------------------------------------------------------
 int UnitTestCollection(int, char** const)
 {
   verify_invalid_constructor();

@@ -46,7 +46,6 @@
 #include "vtkClientServerStream.h"
 #include <QDebug>
 
-//-----------------------------------------------------------------------------
 pqPolygonArc::pqPolygonArc(QObject * prnt)
   : QObject(prnt)
 {
@@ -61,7 +60,6 @@ pqPolygonArc::pqPolygonArc(QObject * prnt)
   this->origColor[0]=this->origColor[1]=this->origColor[2]=this->origColor[3]= 1.0;
 }
 
-//-----------------------------------------------------------------------------
 pqPolygonArc::~pqPolygonArc()
 {
   if(this->ArcInfo)
@@ -101,7 +99,6 @@ inline vtkSMProxy* internal_createVTKEdgeOperator(
   return smPolyEdgeOp;
 }
 
-//-----------------------------------------------------------------------------
 vtkSMProxy* pqPolygonArc::prepareOperation(
   vtkSMNewWidgetRepresentationProxy *widgetProxy)
 {
@@ -123,7 +120,6 @@ vtkSMProxy* pqPolygonArc::prepareOperation(
   return smPolyEdgeOp;
 }
 
-//-----------------------------------------------------------------------------
 bool pqPolygonArc::createEdge(vtkSMNewWidgetRepresentationProxy *widgetProxy)
 {
   vtkSMProxy* smPolyEdgeOp = this->prepareOperation(widgetProxy);
@@ -134,7 +130,6 @@ bool pqPolygonArc::createEdge(vtkSMNewWidgetRepresentationProxy *widgetProxy)
   return true;
 }
 
-//-----------------------------------------------------------------------------
 bool pqPolygonArc::editEdge(vtkSMNewWidgetRepresentationProxy *widgetProxy,
                             const smtk::common::UUID& edgeId)
 {
@@ -161,7 +156,6 @@ bool pqPolygonArc::editEdge(vtkSMNewWidgetRepresentationProxy *widgetProxy,
   return true;
 }
 
-//-----------------------------------------------------------------------------
 bool pqPolygonArc::updateArc(vtkSMNewWidgetRepresentationProxy *widget,
                             vtkIdTypeArray *newlyCreatedArcIds)
 {
@@ -206,7 +200,6 @@ bool pqPolygonArc::updateArc(vtkSMNewWidgetRepresentationProxy *widget,
   return true;
 }
 
-//-----------------------------------------------------------------------------
 vtkIdType pqPolygonArc::autoConnect(const vtkIdType& secondArcId)
 {
   (void)secondArcId;
@@ -221,7 +214,6 @@ vtkIdType pqPolygonArc::autoConnect(const vtkIdType& secondArcId)
   return -1;
 }
 
-//-----------------------------------------------------------------------------
 vtkPolygonArcInfo* pqPolygonArc::getArcInfo(int blockIndex)
 {
   if(blockIndex < 0)
@@ -248,7 +240,6 @@ vtkPolygonArcInfo* pqPolygonArc::getArcInfo(int blockIndex)
   return this->ArcInfo;
 }
 
-//-----------------------------------------------------------------------------
 void pqPolygonArc::resetOperationSource()
 {
   // need to reset
@@ -297,19 +288,17 @@ void pqPolygonArc::resetOperationSource()
     }
 }
 
-//-----------------------------------------------------------------------------
 pqPipelineSource* pqPolygonArc::getSource()
 {
   return this->Source;
 }
-//-----------------------------------------------------------------------------
+
 void pqPolygonArc::setSource(pqPipelineSource* modelSource)
 {
   this->Source = modelSource;
   pqActiveObjects::instance().setActiveSource(modelSource);
 }
 
-//-----------------------------------------------------------------------------
 int pqPolygonArc::getAssignedEdgeBlock() const
 {
   if(this->m_edgeOp.lock() && this->m_edgeOp.lock()->specification())
@@ -338,7 +327,6 @@ int pqPolygonArc::getAssignedEdgeBlock() const
   return -1;
 }
 
-//-----------------------------------------------------------------------------
 bool pqPolygonArc::isClosedLoop()
 {
 /*
@@ -366,7 +354,7 @@ bool pqPolygonArc::isClosedLoop()
 */
   return false;
 }
-//-----------------------------------------------------------------------------
+
 int pqPolygonArc::getClosedLoop()
 {
   //we need to query the server for this information. The reason is
@@ -375,8 +363,6 @@ int pqPolygonArc::getClosedLoop()
   return this->isClosedLoop()? 1 : 0;
 }
 
-
-//-----------------------------------------------------------------------------
 void pqPolygonArc::inheritPolygonRelationships(pqPolygonArc *parent)
 {
   (void)parent;
@@ -393,7 +379,6 @@ void pqPolygonArc::inheritPolygonRelationships(pqPolygonArc *parent)
 */
 }
 
-//-----------------------------------------------------------------------------
 void pqPolygonArc::setSelectionInput(vtkSMSourceProxy *selectionInput)
 {
   if(!selectionInput)
@@ -407,20 +392,16 @@ void pqPolygonArc::setSelectionInput(vtkSMSourceProxy *selectionInput)
   //this->Superclass::setSelectionInput(selectionInput);
 }
 
-//-----------------------------------------------------------------------------
 void pqPolygonArc::select()
 {
   //this->Superclass::setColor(this->selColor);
 }
-
-//-----------------------------------------------------------------------------
 
 void pqPolygonArc::deselect()
 {
   //this->Superclass::setColor(this->origColor);
 }
 
-//-----------------------------------------------------------------------------
 void pqPolygonArc::getColor(double color[4]) const
 {
   for(int i=0; i<4; i++)
@@ -429,7 +410,6 @@ void pqPolygonArc::getColor(double color[4]) const
     }
 }
 
-//-----------------------------------------------------------------------------
 void pqPolygonArc::setColor(double color[4], bool updateRep)
 {
   (void)updateRep;
@@ -440,7 +420,6 @@ void pqPolygonArc::setColor(double color[4], bool updateRep)
   //this->Superclass::setColor(color, updateRep);
 }
 
-//-----------------------------------------------------------------------------
 void pqPolygonArc::setMarkedForDeletion()
 {
   if (!this->Source)
@@ -455,7 +434,6 @@ void pqPolygonArc::setMarkedForDeletion()
 */
 }
 
-//-----------------------------------------------------------------------------
 void pqPolygonArc::unsetMarkedForDeletion()
 {
   if (!this->Source)
@@ -470,7 +448,6 @@ void pqPolygonArc::unsetMarkedForDeletion()
 */
 }
 
-//-----------------------------------------------------------------------------
 void pqPolygonArc::arcIsModified()
 {
 /*
@@ -484,7 +461,6 @@ void pqPolygonArc::arcIsModified()
 */
 }
 
-//-----------------------------------------------------------------------------
 void pqPolygonArc::setRepresentation(pqDataRepresentation *rep)
 {
 /*
@@ -499,7 +475,6 @@ void pqPolygonArc::setRepresentation(pqDataRepresentation *rep)
   this->origColor[3] = vtkSMPropertyHelper(reprProxy, "Opacity").GetAsDouble();
 }
 
-//-----------------------------------------------------------------------------
 void pqPolygonArc::updatePlaneProjectionInfo(vtkSMNewWidgetRepresentationProxy *widget)
 {
   vtkSMProxy* repProxy = widget->GetRepresentationProxy();

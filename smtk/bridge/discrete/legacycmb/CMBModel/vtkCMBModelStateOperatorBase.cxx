@@ -16,20 +16,17 @@
 
 vtkStandardNewMacro(vtkCMBModelStateOperatorBase);
 
-//-----------------------------------------------------------------------------
 vtkCMBModelStateOperatorBase::vtkCMBModelStateOperatorBase()
 {
   this->SerializedModelString = vtkStringArray::New();
 }
 
-//-----------------------------------------------------------------------------
 vtkCMBModelStateOperatorBase::~vtkCMBModelStateOperatorBase()
 {
   this->SerializedModelString->Delete();
   this->SerializedModelString = NULL;
 }
 
-//-----------------------------------------------------------------------------
 bool vtkCMBModelStateOperatorBase::AbleToOperate(vtkDiscreteModel* Model)
 {
   if(!Model)
@@ -39,7 +36,6 @@ bool vtkCMBModelStateOperatorBase::AbleToOperate(vtkDiscreteModel* Model)
     }
   return 1;
 }
-//-----------------------------------------------------------------------------
 void vtkCMBModelStateOperatorBase::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

@@ -21,19 +21,16 @@
 #include "vtkRenderer.h"
 #include "vtkTexture.h"
 
-//-----------------------------------------------------------------------------
 vtkStandardNewMacro(vtkCMBModelActor);
 
-//----------------------------------------------------------------------------
 vtkCMBModelActor::vtkCMBModelActor()
 {
 }
 
-//----------------------------------------------------------------------------
 vtkCMBModelActor::~vtkCMBModelActor()
 {
 }
-//----------------------------------------------------------------------------
+
 void vtkCMBModelActor::Render(vtkRenderer *ren, vtkMapper *vtkNotUsed(m))
 {
   vtkMapper *mapper;
@@ -63,7 +60,7 @@ void vtkCMBModelActor::Render(vtkRenderer *ren, vtkMapper *vtkNotUsed(m))
   this->PostModelRender(ren);
   this->EstimatedRenderTime = mapper->GetTimeToDraw();
 }
-//----------------------------------------------------------------------------
+
 int vtkCMBModelActor::RenderOpaqueGeometry(vtkViewport *vp)
 {
   int          renderedSomething = 0;
@@ -85,7 +82,6 @@ int vtkCMBModelActor::RenderOpaqueGeometry(vtkViewport *vp)
   return renderedSomething;
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBModelActor::PreModelRender(vtkRenderer* ren)
 {
   vtkCMBModelMapper* mapper = vtkCMBModelMapper::SafeDownCast(this->Mapper);
@@ -154,8 +150,6 @@ void vtkCMBModelActor::PreModelRender(vtkRenderer* ren)
     }
 }
 
-
-//-----------------------------------------------------------------------------
 void vtkCMBModelActor::PostModelRender(vtkRenderer* ren)
 {
   vtkCMBModelMapper* mapper = vtkCMBModelMapper::SafeDownCast(this->Mapper);
@@ -181,7 +175,6 @@ void vtkCMBModelActor::PostModelRender(vtkRenderer* ren)
   this->Property->PostRender(this, ren);
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelActor::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

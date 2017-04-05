@@ -59,14 +59,13 @@ double nextafter(double x, double y)
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
-//-----------------------------------------------------------------------------
 qtDoubleValidator::qtDoubleValidator(qtInputsItem *item, int elementIndex,
                                      QLineEdit * lineEdit, QObject * inParent)
   :QDoubleValidator(inParent), m_item(item), m_elementIndex(elementIndex),
    m_lineWidget(lineEdit)
 {
 }
-//-----------------------------------------------------------------------------
+
 void qtDoubleValidator::fixup(QString &input) const
 {
   auto item = this->m_item->valueItem();
@@ -97,7 +96,6 @@ void qtDoubleValidator::fixup(QString &input) const
     }
 }
 
-//-----------------------------------------------------------------------------
 qtIntValidator::qtIntValidator(qtInputsItem *item, int elementIndex,
                                QLineEdit * lineEdit, QObject * inParent)
 :QIntValidator(inParent), m_item(item), m_elementIndex(elementIndex),
@@ -105,7 +103,6 @@ qtIntValidator::qtIntValidator(qtInputsItem *item, int elementIndex,
 {
 }
 
-//-----------------------------------------------------------------------------
 void qtIntValidator::fixup(QString &input) const
 {
   auto item = this->m_item->valueItem();
@@ -136,7 +133,6 @@ void qtIntValidator::fixup(QString &input) const
     }
  }
 
-//----------------------------------------------------------------------------
 class qtInputsItemInternals
 {
 public:
@@ -155,7 +151,6 @@ public:
   QPointer<QToolButton> AddItemButton;
 };
 
-//----------------------------------------------------------------------------
 qtInputsItem::qtInputsItem(
   smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview,
    Qt::Orientation enVectorItemOrient) : qtItem(dataObj, p, bview)
@@ -166,12 +161,11 @@ qtInputsItem::qtInputsItem(
   this->createWidget();
 }
 
-//----------------------------------------------------------------------------
 qtInputsItem::~qtInputsItem()
 {
   delete this->Internals;
 }
-//----------------------------------------------------------------------------
+
 void qtInputsItem::unsetValue(int elementIndex)
 {
   auto item = this->valueItem();
@@ -182,7 +176,7 @@ void qtInputsItem::unsetValue(int elementIndex)
     this->baseView()->valueChanged(item);
  }
 }
-//----------------------------------------------------------------------------
+
 bool qtInputsItem::setDiscreteValue(int elementIndex, int discreteValIndex)
 {
   auto item = this->valueItem();
@@ -194,19 +188,17 @@ bool qtInputsItem::setDiscreteValue(int elementIndex, int discreteValIndex)
   }
   return false;
 }
-//----------------------------------------------------------------------------
+
 void qtInputsItem::setLabelVisible(bool visible)
 {
   this->Internals->theLabel->setVisible(visible);
 }
 
-//----------------------------------------------------------------------------
 smtk::attribute::ValueItemPtr qtInputsItem::valueItem()
 {
   return dynamic_pointer_cast<ValueItem>(this->getObject());
 }
 
-//----------------------------------------------------------------------------
 void qtInputsItem::createWidget()
 {
   //pqApplicationCore* paraViewApp = pqApplicationCore::instance();
@@ -223,14 +215,12 @@ void qtInputsItem::createWidget()
   this->updateItemData();
 }
 
-//----------------------------------------------------------------------------
 void qtInputsItem::updateItemData()
 {
   this->updateUI();
   this->qtItem::updateItemData();
 }
 
-//----------------------------------------------------------------------------
 void qtInputsItem::addInputEditor(int i)
 {
   auto item = this->valueItem();
@@ -322,7 +312,6 @@ void qtInputsItem::addInputEditor(int i)
   this->updateExtensibleState();
 }
 
-//----------------------------------------------------------------------------
 void qtInputsItem::loadInputValues()
 {
   smtk::attribute::ValueItemPtr item = this->valueItem();
@@ -362,7 +351,6 @@ void qtInputsItem::loadInputValues()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtInputsItem::updateUI()
 {
   //smtk::attribute::ItemPtr dataObj = this->getObject();
@@ -463,7 +451,6 @@ void qtInputsItem::updateUI()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtInputsItem::setOutputOptional(int state)
 {
   smtk::attribute::ValueItemPtr item = this->valueItem();
@@ -507,7 +494,6 @@ void qtInputsItem::setOutputOptional(int state)
     }
 }
 
-//----------------------------------------------------------------------------
 void qtInputsItem::onAddNewValue()
 {
   smtk::attribute::ValueItemPtr item = this->valueItem();
@@ -524,7 +510,6 @@ void qtInputsItem::onAddNewValue()
   emit this->modified();
 }
 
-//----------------------------------------------------------------------------
 void qtInputsItem::onRemoveValue()
 {
   QToolButton* const minusButton = qobject_cast<QToolButton*>(
@@ -584,7 +569,6 @@ void qtInputsItem::onRemoveValue()
   emit this->modified();
 }
 
-//----------------------------------------------------------------------------
 void qtInputsItem::updateExtensibleState()
 {
   smtk::attribute::ValueItemPtr item = this->valueItem();
@@ -604,7 +588,6 @@ void qtInputsItem::updateExtensibleState()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtInputsItem::clearChildWidgets()
 {
   smtk::attribute::ValueItemPtr item = this->valueItem();
@@ -643,7 +626,7 @@ void qtInputsItem::clearChildWidgets()
     }
   this->Internals->ChildrenMap.clear();
 }
-//----------------------------------------------------------------------------
+
 QWidget* qtInputsItem::createInputWidget(int elementIdx, QLayout* childLayout)
 {
   smtk::attribute::ValueItemPtr item = this->valueItem();
@@ -658,7 +641,7 @@ QWidget* qtInputsItem::createInputWidget(int elementIdx, QLayout* childLayout)
      (new qtDiscreteValueEditor(this, elementIdx, childLayout)) :
      this->createEditBox(elementIdx,this->Widget)));
 }
-//----------------------------------------------------------------------------
+
 QWidget* qtInputsItem::createExpressionRefWidget(int elementIdx)
 {
   smtk::attribute::ValueItemPtr inputitem = this->valueItem();
@@ -721,7 +704,6 @@ QWidget* qtInputsItem::createExpressionRefWidget(int elementIdx)
   return checkFrame;
 }
 
-//----------------------------------------------------------------------------
 void qtInputsItem::displayExpressionWidget(bool checkstate)
 {
   QToolButton* const funCheck = qobject_cast<QToolButton*>(
@@ -833,7 +815,7 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
   funcEditor->setVisible(!checkstate);
   combo->setVisible(checkstate);
 }
-//----------------------------------------------------------------------------
+
 void qtInputsItem::onExpressionReferenceChanged()
 {
   QComboBox* const comboBox = qobject_cast<QComboBox*>(
@@ -889,7 +871,6 @@ void qtInputsItem::onExpressionReferenceChanged()
   emit this->modified();
 }
 
-//----------------------------------------------------------------------------
 QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
 {
   auto item = this->valueItem();
@@ -1098,13 +1079,11 @@ QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
   return inputWidget;
 }
 
-//----------------------------------------------------------------------------
 void qtInputsItem::onTextEditChanged()
 {
   this->onInputValueChanged(QObject::sender());
 }
 
-//----------------------------------------------------------------------------
 void qtInputsItem::onLineEditChanged()
 {
   // Here we only handle changes when this is invoked from setText()
@@ -1125,13 +1104,11 @@ void qtInputsItem::onLineEditChanged()
   this->onInputValueChanged(editBox);
 }
 
-//----------------------------------------------------------------------------
 void qtInputsItem::onLineEditFinished()
 {
   this->onInputValueChanged(QObject::sender());
 }
 
-//----------------------------------------------------------------------------
 void qtInputsItem::onInputValueChanged(QObject* obj)
 {
   QLineEdit* const editBox = qobject_cast<QLineEdit*>(obj);
@@ -1246,7 +1223,7 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
         uimanager->setWidgetColorToNormal(inputBox));
     }
 }
-//----------------------------------------------------------------------------
+
 void qtInputsItem::onChildItemModified()
 {
   emit this->modified();

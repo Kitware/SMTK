@@ -64,19 +64,16 @@ namespace {
     return v;
   }
 
-//----------------------------------------------------------------------------
   double getValueForXMLElement(double v)
   {
     return v;
   }
 
-//----------------------------------------------------------------------------
   const char *getValueForXMLElement(const std::string& v)
   {
     return v.c_str();
   }
 
-//----------------------------------------------------------------------------
   template<typename T>
   std::string getValueForXMLElement(const T& v, std::string& sep)
   {
@@ -146,7 +143,6 @@ namespace {
     return token.str();
   }
 
-//----------------------------------------------------------------------------
   template<typename ItemDefType>
   void processDerivedValueDef(pugi::xml_node &node,  ItemDefType idef)
   {
@@ -219,7 +215,7 @@ namespace {
         }
       }
   }
-//----------------------------------------------------------------------------
+
   template<typename ItemType>
   void processDerivedValue(pugi::xml_node &node,  ItemType item)
   {
@@ -288,28 +284,26 @@ struct XmlV2StringWriter::PugiPrivate
   PugiPrivate(xml_node& parent_node): root(parent_node) {}
 };
 
-//----------------------------------------------------------------------------
 XmlV2StringWriter::XmlV2StringWriter(const attribute::System &mySystem)
   : XmlStringWriter(mySystem)
 {
 }
 
-//----------------------------------------------------------------------------
 XmlV2StringWriter::~XmlV2StringWriter()
 {
   delete m_pugi;
 }
-//----------------------------------------------------------------------------
+
 std::string XmlV2StringWriter::className() const
 {
   return std::string("XmlV2StringWriter");
 }
-//----------------------------------------------------------------------------
+
 unsigned int XmlV2StringWriter::fileVersion() const
 {
   return 2;
 }
-//----------------------------------------------------------------------------
+
 std::string XmlV2StringWriter::convertToString(Logger &logger,
                                                bool no_declaration)
 {
@@ -336,7 +330,7 @@ std::string XmlV2StringWriter::convertToString(Logger &logger,
   std::string result = oss.str();
   return result;
 }
-//----------------------------------------------------------------------------
+
 void XmlV2StringWriter::generateXml(pugi::xml_node& parent_node,
                                     Logger& logger,
                                     bool createRoot)
@@ -426,7 +420,7 @@ void XmlV2StringWriter::generateXml(pugi::xml_node& parent_node,
     }
   logger = this->m_logger;
 }
-//----------------------------------------------------------------------------
+
 void XmlV2StringWriter::processAttributeInformation()
 {
   std::vector<smtk::attribute::DefinitionPtr> baseDefs;
@@ -449,7 +443,7 @@ void XmlV2StringWriter::processAttributeInformation()
     this->processDefinition(definitions, attributes, baseDefs[i]);
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlV2StringWriter::processDefinition(xml_node &definitions,
                                           xml_node &attributes,
                                           smtk::attribute::DefinitionPtr def)
@@ -564,7 +558,7 @@ void XmlV2StringWriter::processDefinition(xml_node &definitions,
     this->processDefinition(definitions, attributes, defs[i]);
     }
 }
-//----------------------------------------------------------------------------
+
 void
 XmlV2StringWriter::processItemDefinition(xml_node &node,
                                          smtk::attribute::ItemDefinitionPtr idef)
@@ -573,7 +567,6 @@ XmlV2StringWriter::processItemDefinition(xml_node &node,
   this->processItemDefinitionType(node, idef);
 }
 
-//----------------------------------------------------------------------------
 void XmlV2StringWriter::processItemDefinitionAttributes(
   xml_node &node, smtk::attribute::ItemDefinitionPtr idef)
 {
@@ -629,7 +622,6 @@ void XmlV2StringWriter::processItemDefinitionAttributes(
     }
 }
 
-//----------------------------------------------------------------------------
 void XmlV2StringWriter::processItemDefinitionType(
   xml_node &node, smtk::attribute::ItemDefinitionPtr idef)
 {
@@ -676,7 +668,6 @@ void XmlV2StringWriter::processItemDefinitionType(
     }
 }
 
-//----------------------------------------------------------------------------
 void XmlV2StringWriter::processDoubleDef(pugi::xml_node &node,
                                          attribute::DoubleItemDefinitionPtr idef)
 {
@@ -685,7 +676,7 @@ void XmlV2StringWriter::processDoubleDef(pugi::xml_node &node,
                         dynamic_pointer_cast<ValueItemDefinition>(idef));
   processDerivedValueDef<attribute::DoubleItemDefinitionPtr>(node, idef);
 }
-//----------------------------------------------------------------------------
+
 void XmlV2StringWriter::processIntDef(pugi::xml_node &node,
                                       attribute::IntItemDefinitionPtr idef)
 {
@@ -694,7 +685,7 @@ void XmlV2StringWriter::processIntDef(pugi::xml_node &node,
                         smtk::dynamic_pointer_cast<ValueItemDefinition>(idef));
   processDerivedValueDef<attribute::IntItemDefinitionPtr>(node, idef);
 }
-//----------------------------------------------------------------------------
+
 void XmlV2StringWriter::processStringDef(pugi::xml_node &node,
                                          attribute::StringItemDefinitionPtr idef)
 {
@@ -711,7 +702,7 @@ void XmlV2StringWriter::processStringDef(pugi::xml_node &node,
     }
   processDerivedValueDef<attribute::StringItemDefinitionPtr>(node, idef);
 }
-//----------------------------------------------------------------------------
+
 void XmlV2StringWriter::processModelEntityDef(pugi::xml_node& node,
                                          attribute::ModelEntityItemDefinitionPtr idef)
 {
@@ -754,7 +745,6 @@ void XmlV2StringWriter::processModelEntityDef(pugi::xml_node& node,
     }
 }
 
-//----------------------------------------------------------------------------
 void XmlV2StringWriter::processMeshSelectionItemDef(pugi::xml_node &node,
                       smtk::attribute::MeshSelectionItemDefinitionPtr idef)
 {
@@ -770,7 +760,6 @@ void XmlV2StringWriter::processMeshSelectionItemDef(pugi::xml_node &node,
 
 }
 
-//----------------------------------------------------------------------------
 void XmlV2StringWriter::processMeshEntityDef(pugi::xml_node& node,
                                          smtk::attribute::MeshItemDefinitionPtr idef)
 {
@@ -787,7 +776,6 @@ void XmlV2StringWriter::processMeshEntityDef(pugi::xml_node& node,
     }
 }
 
-//----------------------------------------------------------------------------
 void XmlV2StringWriter::processValueDef(pugi::xml_node &node,
                                         smtk::attribute::ValueItemDefinitionPtr idef)
 {
@@ -851,7 +839,7 @@ void XmlV2StringWriter::processValueDef(pugi::xml_node &node,
                                 iter->second);
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlV2StringWriter::processRefDef(pugi::xml_node &node,
                                       attribute::RefItemDefinitionPtr idef)
 {
@@ -885,14 +873,14 @@ void XmlV2StringWriter::processRefDef(pugi::xml_node &node,
       }
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlV2StringWriter::processDirectoryDef(
   pugi::xml_node &node,
   attribute::DirectoryItemDefinitionPtr idef)
 {
   this->processFileSystemDef(node, idef);
 }
-//----------------------------------------------------------------------------
+
 void XmlV2StringWriter::processFileDef(pugi::xml_node &node,
                                        attribute::FileItemDefinitionPtr idef)
 {
@@ -903,7 +891,7 @@ void XmlV2StringWriter::processFileDef(pugi::xml_node &node,
     node.append_attribute("FileFilters") = fileFilters.c_str();
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlV2StringWriter::processFileSystemDef(
   pugi::xml_node &node,
   attribute::FileSystemItemDefinitionPtr idef)
@@ -952,7 +940,7 @@ void XmlV2StringWriter::processFileSystemDef(
     defaultNode.text().set(idef->defaultValue().c_str());
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlV2StringWriter::processGroupDef(pugi::xml_node &node,
                                         attribute::GroupItemDefinitionPtr idef)
 {
@@ -1001,7 +989,7 @@ void XmlV2StringWriter::processGroupDef(pugi::xml_node &node,
       }
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlV2StringWriter::processAttribute(xml_node &attributes,
                                          attribute::AttributePtr att)
 {
@@ -1043,7 +1031,7 @@ void XmlV2StringWriter::processAttribute(xml_node &attributes,
       }
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlV2StringWriter::processItem(xml_node &node,
                                     smtk::attribute::ItemPtr item)
 {
@@ -1051,7 +1039,6 @@ void XmlV2StringWriter::processItem(xml_node &node,
   this->processItemType(node, item);
 }
 
-//----------------------------------------------------------------------------
 void XmlV2StringWriter::processItemAttributes(
   xml_node &node, smtk::attribute::ItemPtr item)
 {
@@ -1073,7 +1060,6 @@ void XmlV2StringWriter::processItemAttributes(
     }
 }
 
-//----------------------------------------------------------------------------
 void XmlV2StringWriter::processItemType(
   xml_node &node, smtk::attribute::ItemPtr item)
 {
@@ -1118,7 +1104,7 @@ void XmlV2StringWriter::processItemType(
                      << " for Item: " << item->name());
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlV2StringWriter::processValueItem(pugi::xml_node &node,
                                          attribute::ValueItemPtr item)
 {
@@ -1183,7 +1169,7 @@ void XmlV2StringWriter::processValueItem(pugi::xml_node &node,
       }
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlV2StringWriter::processDoubleItem(pugi::xml_node &node,
                                           attribute::DoubleItemPtr item)
 {
@@ -1191,7 +1177,7 @@ void XmlV2StringWriter::processDoubleItem(pugi::xml_node &node,
                          dynamic_pointer_cast<ValueItem>(item));
   processDerivedValue<attribute::DoubleItemPtr>(node, item);
 }
-//----------------------------------------------------------------------------
+
 void XmlV2StringWriter::processIntItem(pugi::xml_node &node,
                                        attribute::IntItemPtr item)
 {
@@ -1199,7 +1185,7 @@ void XmlV2StringWriter::processIntItem(pugi::xml_node &node,
                          dynamic_pointer_cast<ValueItem>(item));
   processDerivedValue<attribute::IntItemPtr>(node, item);
 }
-//----------------------------------------------------------------------------
+
 void XmlV2StringWriter::processStringItem(pugi::xml_node &node,
                                           attribute::StringItemPtr item)
 {
@@ -1207,7 +1193,7 @@ void XmlV2StringWriter::processStringItem(pugi::xml_node &node,
                          dynamic_pointer_cast<ValueItem>(item));
   processDerivedValue<attribute::StringItemPtr>(node, item);
 }
-//----------------------------------------------------------------------------
+
 void XmlV2StringWriter::processModelEntityItem(pugi::xml_node &node,
                                           attribute::ModelEntityItemPtr item)
 {
@@ -1248,7 +1234,6 @@ void XmlV2StringWriter::processModelEntityItem(pugi::xml_node &node,
     }
 }
 
-//----------------------------------------------------------------------------
 void XmlV2StringWriter::processMeshEntityItem(pugi::xml_node &node,
                                           attribute::MeshItemPtr item)
 {
@@ -1280,7 +1265,6 @@ void XmlV2StringWriter::processMeshEntityItem(pugi::xml_node &node,
     }
 }
 
-//----------------------------------------------------------------------------
 void XmlV2StringWriter::processMeshSelectionItem(pugi::xml_node &node,
                           smtk::attribute::MeshSelectionItemPtr item)
 {
@@ -1313,7 +1297,6 @@ void XmlV2StringWriter::processMeshSelectionItem(pugi::xml_node &node,
     }
 }
 
-//----------------------------------------------------------------------------
 void XmlV2StringWriter::processRefItem(pugi::xml_node &node,
                                        attribute::RefItemPtr item)
 {
@@ -1356,13 +1339,13 @@ void XmlV2StringWriter::processRefItem(pugi::xml_node &node,
       }
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlV2StringWriter::processDirectoryItem(pugi::xml_node &node,
                                              attribute::DirectoryItemPtr item)
 {
   this->processFileSystemItem(node, item);
 }
-//----------------------------------------------------------------------------
+
 void XmlV2StringWriter::processFileItem(pugi::xml_node &node,
                                         attribute::FileItemPtr item)
 {
@@ -1380,7 +1363,7 @@ void XmlV2StringWriter::processFileItem(pugi::xml_node &node,
 
   this->processFileSystemItem(node, item);
 }
-//----------------------------------------------------------------------------
+
 void XmlV2StringWriter::processFileSystemItem(
   pugi::xml_node &node,
   attribute::FileSystemItemPtr item)
@@ -1423,7 +1406,7 @@ void XmlV2StringWriter::processFileSystemItem(
       }
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlV2StringWriter::processGroupItem(pugi::xml_node &node,
                                          attribute::GroupItemPtr item)
 {
@@ -1468,7 +1451,7 @@ void XmlV2StringWriter::processGroupItem(pugi::xml_node &node,
       }
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlV2StringWriter::processViews()
 {
   this->m_pugi->root.append_child(node_comment).set_value("********** Workflow Views ***********");
@@ -1515,7 +1498,7 @@ void XmlV2StringWriter::processViews()
     this->processViewComponent(iter->second->details(), node);
     }
 }
-//----------------------------------------------------------------------------
+
 void XmlV2StringWriter::processViewComponent(smtk::common::View::Component &comp,
                                              xml_node &node)
 {
@@ -1544,14 +1527,12 @@ void XmlV2StringWriter::processViewComponent(smtk::common::View::Component &comp
     }
 }
 
-//----------------------------------------------------------------------------
 void XmlV2StringWriter::processModelInfo()
 {
   /** This seems to be outdated with ModelEntityItem already being processed
   **/
 }
 
-//----------------------------------------------------------------------------
 std::string XmlV2StringWriter::encodeColor(const double *c)
 {
   std::stringstream oss;
@@ -1559,12 +1540,11 @@ std::string XmlV2StringWriter::encodeColor(const double *c)
   std::string result = oss.str();
   return result;
 }
-//----------------------------------------------------------------------------
+
 std::string XmlV2StringWriter::encodeModelEntityMask(smtk::model::BitFlags f)
 {
   return smtk::model::Entity::flagToSpecifierString(f);
 }
-//----------------------------------------------------------------------------
 
   } // namespace io
 } // namespace smtk

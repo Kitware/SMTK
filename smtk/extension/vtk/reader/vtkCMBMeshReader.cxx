@@ -63,7 +63,6 @@ struct vtkCMBMeshReaderInternals
     }
 };
 
-//----------------------------------------------------------------------------
 vtkCMBMeshReader::vtkCMBMeshReader()
 {
   this->FileName = NULL;
@@ -76,14 +75,12 @@ vtkCMBMeshReader::vtkCMBMeshReader()
   this->Internals = new vtkCMBMeshReaderInternals;
 }
 
-//----------------------------------------------------------------------------
 vtkCMBMeshReader::~vtkCMBMeshReader()
 {
   delete[] this->FileName;
   delete this->Internals;
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBMeshReader::RequestData(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **vtkNotUsed(inputVector),
@@ -310,7 +307,6 @@ int vtkCMBMeshReader::RequestData(
   return 1;
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBMeshReader::CanReadFile(const char *fname)
 {
   struct stat fs;
@@ -332,7 +328,6 @@ int vtkCMBMeshReader::CanReadFile(const char *fname)
          card == "WMS1DM" || card == "WMS2DM" || card == "WMS3DM";
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBMeshReader::PreviewFile(vtkIdType& ncells, vtkIdType& npts)
 {
   std::string card = "";
@@ -379,7 +374,6 @@ int vtkCMBMeshReader::PreviewFile(vtkIdType& ncells, vtkIdType& npts)
   return 1;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshReader::ReadCell(
   int cellType,
   int numPts,
@@ -441,7 +435,6 @@ void vtkCMBMeshReader::ReadCell(
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshReader::ReadNode(vtkDoubleArray* dpts,
   vtkIdTypeArray* nodeIdArray)
 {
@@ -456,7 +449,6 @@ void vtkCMBMeshReader::ReadNode(vtkDoubleArray* dpts,
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshReader::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
@@ -473,7 +465,6 @@ void vtkCMBMeshReader::PrintSelf(ostream& os, vtkIndent indent)
     (this->RenameMaterialAsRegion ? "On" : "Off") << endl;
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBMeshReader::RequestInformation(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **vtkNotUsed(inputVector),

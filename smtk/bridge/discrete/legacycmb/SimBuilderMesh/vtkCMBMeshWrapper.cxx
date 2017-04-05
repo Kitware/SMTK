@@ -19,13 +19,11 @@
 
 vtkStandardNewMacro(vtkCMBMeshWrapper);
 
-//----------------------------------------------------------------------------
 vtkCMBMeshWrapper::vtkCMBMeshWrapper()
 {
   this->Mesh = NULL;
 }
 
-//----------------------------------------------------------------------------
 vtkCMBMeshWrapper::~vtkCMBMeshWrapper()
 {
   if(this->Mesh)
@@ -35,7 +33,6 @@ vtkCMBMeshWrapper::~vtkCMBMeshWrapper()
     }
 }
 
-//----------------------------------------------------------------------------
 vtkCMBMeshServer* vtkCMBMeshWrapper::GetMesh()
 {
   if(!this->Mesh)
@@ -45,7 +42,6 @@ vtkCMBMeshServer* vtkCMBMeshWrapper::GetMesh()
   return this->Mesh;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshWrapper::SetModelWrapper(vtkDiscreteModelWrapper* modelWrapper)
 {
   if(modelWrapper == NULL)
@@ -56,21 +52,18 @@ void vtkCMBMeshWrapper::SetModelWrapper(vtkDiscreteModelWrapper* modelWrapper)
   this->GetMesh()->Initialize(modelWrapper->GetModel());
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshWrapper::SetGlobalLength(double length)
 {
   this->GetMesh()->SetGlobalLength(length);
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshWrapper::SetGlobalMinimumAngle(double angle)
 {
   this->GetMesh()->SetGlobalMinimumAngle(angle);
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshWrapper::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);

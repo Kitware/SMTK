@@ -27,19 +27,16 @@
 
 vtkStandardNewMacro(vtkAppendSolids);
 
-//-----------------------------------------------------------------------------
 vtkAppendSolids::vtkAppendSolids()
 {
   this->RegionArrayName = 0;
 }
 
-//-----------------------------------------------------------------------------
 vtkAppendSolids::~vtkAppendSolids()
 {
   this->SetRegionArrayName(0);
 }
 
-//----------------------------------------------------------------------------
 void vtkAppendSolids::AddInputData(vtkPolyData *input)
 {
   if (input)
@@ -48,7 +45,6 @@ void vtkAppendSolids::AddInputData(vtkPolyData *input)
     }
 }
 
-//-----------------------------------------------------------------------------
 int vtkAppendSolids::RequestData(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector ** /*inputVector*/,
@@ -115,7 +111,6 @@ int vtkAppendSolids::RequestData(
   return 1;
 }
 
-//----------------------------------------------------------------------------
 int vtkAppendSolids::FillInputPortInformation(int port, vtkInformation *info)
 {
   if (!this->Superclass::FillInputPortInformation(port, info))
@@ -126,7 +121,6 @@ int vtkAppendSolids::FillInputPortInformation(int port, vtkInformation *info)
   return 1;
 }
 
-//-----------------------------------------------------------------------------
 void vtkAppendSolids::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

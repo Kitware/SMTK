@@ -30,7 +30,6 @@
 namespace smtk {
 namespace mesh {
 
-//----------------------------------------------------------------------------
 void PreAllocatedField::determineAllocationLengths(
   const smtk::mesh::MeshSet& ms,
   std::int64_t& numberOfCells,
@@ -43,7 +42,6 @@ void PreAllocatedField::determineAllocationLengths(
                                                        numberOfPoints);
 }
 
-//----------------------------------------------------------------------------
 PreAllocatedField::PreAllocatedField(std::int64_t* cellField,
                                      std::int64_t* pointField):
   m_cellField(cellField),
@@ -52,7 +50,6 @@ PreAllocatedField::PreAllocatedField(std::int64_t* cellField,
 
 }
 
-//----------------------------------------------------------------------------
 template <typename QueryTag>
 void Field::extract( const smtk::mesh::MeshSet& ms,
                      const smtk::mesh::PointSet& ps )
@@ -83,46 +80,39 @@ template void Field::extract<smtk::mesh::Neumann>(
 template void Field::extract<smtk::mesh::Domain>(
   const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps);
 
-//----------------------------------------------------------------------------
 void Field::extractDirichlet( const smtk::mesh::MeshSet& ms )
 {
   this->extract<smtk::mesh::Dirichlet>(ms, ms.points());
 }
 
-//----------------------------------------------------------------------------
 void Field::extractNeumann( const smtk::mesh::MeshSet& ms )
 {
   this->extract<smtk::mesh::Neumann>(ms, ms.points());
 }
 
-//----------------------------------------------------------------------------
 void Field::extractDomain( const smtk::mesh::MeshSet& ms )
 {
   this->extract<smtk::mesh::Domain>(ms, ms.points());
 }
 
-//----------------------------------------------------------------------------
 void Field::extractDirichlet( const smtk::mesh::MeshSet& ms,
                               const smtk::mesh::PointSet& ps )
 {
   this->extract<smtk::mesh::Dirichlet>(ms, ps);
 }
 
-//----------------------------------------------------------------------------
 void Field::extractNeumann( const smtk::mesh::MeshSet& ms,
                             const smtk::mesh::PointSet& ps )
 {
   this->extract<smtk::mesh::Neumann>(ms, ps);
 }
 
-//----------------------------------------------------------------------------
 void Field::extractDomain( const smtk::mesh::MeshSet& ms,
                            const smtk::mesh::PointSet& ps )
 {
   this->extract<smtk::mesh::Domain>(ms, ps);
 }
 
-//----------------------------------------------------------------------------
 namespace
 {
 void QueryTags(const smtk::mesh::MeshSet& ms,
@@ -161,7 +151,6 @@ struct TaggedRangeForQuery
 
 }
 
-//----------------------------------------------------------------------------
 template <typename QueryTag>
 void extractField( const smtk::mesh::MeshSet& ms,
                    const smtk::mesh::PointSet& ps,
@@ -310,28 +299,24 @@ template void extractField<smtk::mesh::Neumann>(
 template void extractField<smtk::mesh::Domain>(
   const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedField&);
 
-//----------------------------------------------------------------------------
 void extractDirichletField( const smtk::mesh::MeshSet& ms,
                             PreAllocatedField& field)
 {
   extractField<smtk::mesh::Dirichlet>(ms, ms.points(), field);
 }
 
-//----------------------------------------------------------------------------
 void extractNeumannField( const smtk::mesh::MeshSet& ms,
                           PreAllocatedField& field)
 {
   extractField<smtk::mesh::Neumann>(ms, ms.points(), field);
 }
 
-//----------------------------------------------------------------------------
 void extractDomainField( const smtk::mesh::MeshSet& ms,
                          PreAllocatedField& field)
 {
   extractField<smtk::mesh::Domain>(ms, ms.points(), field);
 }
 
-//----------------------------------------------------------------------------
 void extractDirichletField( const smtk::mesh::MeshSet& ms,
                             const smtk::mesh::PointSet& ps,
                             PreAllocatedField& field)
@@ -339,7 +324,6 @@ void extractDirichletField( const smtk::mesh::MeshSet& ms,
   extractField<smtk::mesh::Dirichlet>(ms, ps, field);
 }
 
-//----------------------------------------------------------------------------
 void extractNeumannField( const smtk::mesh::MeshSet& ms,
                           const smtk::mesh::PointSet& ps,
                           PreAllocatedField& field)
@@ -347,7 +331,6 @@ void extractNeumannField( const smtk::mesh::MeshSet& ms,
   extractField<smtk::mesh::Neumann>(ms, ps, field);
 }
 
-//----------------------------------------------------------------------------
 void extractDomainField( const smtk::mesh::MeshSet& ms,
                          const smtk::mesh::PointSet& ps,
                          PreAllocatedField& field)

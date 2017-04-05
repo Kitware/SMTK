@@ -70,7 +70,6 @@
 
 vtkStandardNewMacro(vtkUUID);
 
-//-----------------------------------------------------------------------------
 void vtkUUID::ConstructUUID(unsigned char uuid[16])
 {
   // set the random seed the 1st time
@@ -129,7 +128,6 @@ void vtkUUID::ConstructUUID(unsigned char uuid[16])
     }
 }
 
-//-----------------------------------------------------------------------------
 void vtkUUID::ConvertBinaryUUIDToString(unsigned char *uuid,
                                            std::string &uuidString)
 {
@@ -147,7 +145,6 @@ void vtkUUID::ConvertBinaryUUIDToString(unsigned char *uuid,
     }
 }
 
-//-----------------------------------------------------------------------------
 int vtkUUID::GenerateUUID(unsigned char uuid[16])
 {
 #ifdef HAVE_UUIDCREATE
@@ -167,13 +164,11 @@ int vtkUUID::GenerateUUID(unsigned char uuid[16])
   return 0;
 }
 
-//-----------------------------------------------------------------------------
 void vtkUUID::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }
 
-//-----------------------------------------------------------------------------
 int vtkUUID::GetMACAddress(unsigned char addr[6])
 {
   // This code is the result of a long internet search to find something
@@ -238,7 +233,6 @@ typedef BOOL(WINAPI * pSnmpExtensionInitEx) (
   OUT AsnObjectIdentifier * supportedView);
 #endif
 
-//-----------------------------------------------------------------------------
 int vtkUUID::GetMacAddrSys(unsigned char *addr)
 {
 #ifdef _WIN32

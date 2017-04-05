@@ -42,7 +42,6 @@
 vtkStandardNewMacro(vtkCMBXMLBCSWriter);
 vtkCxxSetObjectMacro(vtkCMBXMLBCSWriter, ModelWrapper, vtkDiscreteModelWrapper);
 
-//----------------------------------------------------------------------------
 vtkCMBXMLBCSWriter::vtkCMBXMLBCSWriter()
 {
   this->SetNumberOfInputPorts(0);
@@ -52,38 +51,32 @@ vtkCMBXMLBCSWriter::vtkCMBXMLBCSWriter()
   this->WritingToFile = true;
 }
 
-//----------------------------------------------------------------------------
 vtkCMBXMLBCSWriter::~vtkCMBXMLBCSWriter()
 {
   this->SetModelWrapper(0);
 }
 
-//----------------------------------------------------------------------------
 const char* vtkCMBXMLBCSWriter::GetDefaultFileExtension()
 {
   return "bcs";
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBXMLBCSWriter::GetDataSetMajorVersion()
 {
   return 2;
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBXMLBCSWriter::GetDataSetMinorVersion()
 {
   return 0;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBXMLBCSWriter::SetFileName(const char* fileName)
 {
   this->Superclass::SetFileName(fileName);
   this->WritingToFile = true;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBXMLBCSWriter::SetStream(std::ostream& stream)
 {
   //we have to pass a fake file name so that vtkXMLWriter thinks we have
@@ -95,19 +88,16 @@ void vtkCMBXMLBCSWriter::SetStream(std::ostream& stream)
   this->WritingToFile = false;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBXMLBCSWriter::IsWritingToStream() const
 {
   return !this->WritingToFile;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBXMLBCSWriter::IsWrittingToFile() const
 {
   return this->WritingToFile;
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBXMLBCSWriter::WriteData()
 {
   vtkDiscreteModel* Model = this->ModelWrapper->GetModel();
@@ -387,7 +377,6 @@ int vtkCMBXMLBCSWriter::WriteData()
   return 1;
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBXMLBCSWriter::AddHardPointsData(vtkXMLDataElement* ParentElement,
   vtkDiscreteModel* Model, vtkIndent indent4)
 {
@@ -467,13 +456,11 @@ void vtkCMBXMLBCSWriter::AddHardPointsData(vtkXMLDataElement* ParentElement,
   ParentElement->AddNestedElement(HardPointsSets);
 }
 
- //-----------------------------------------------------------------------------
 const char* vtkCMBXMLBCSWriter::GetDataSetName()
 {
   return NULL;
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBXMLBCSWriter::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

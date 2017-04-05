@@ -15,7 +15,6 @@ namespace smtk {
   namespace mesh {
     namespace moab {
 
-//----------------------------------------------------------------------------
 MergeMeshVertices::MergeMeshVertices(::moab::Interface* iface):
   mbImpl(iface),
   mbMergeTag(),
@@ -25,7 +24,6 @@ MergeMeshVertices::MergeMeshVertices(::moab::Interface* iface):
 {
 }
 
-//----------------------------------------------------------------------------
 MergeMeshVertices::~MergeMeshVertices()
 {
   if (mbMergeTag)
@@ -34,7 +32,6 @@ MergeMeshVertices::~MergeMeshVertices()
     }
 }
 
-//----------------------------------------------------------------------------
 ::moab::ErrorCode MergeMeshVertices::merge_entities(const smtk::mesh::HandleRange&  meshsets,
                                                     const double merge_tol)
 {
@@ -135,7 +132,6 @@ MergeMeshVertices::~MergeMeshVertices()
   return MB_SUCCESS;
 }
 
-//----------------------------------------------------------------------------
 ::moab::ErrorCode MergeMeshVertices::find_merged_to(::moab::EntityHandle &tree_root,
                                             ::moab::AdaptiveKDTree &tree,
                                             ::moab::Tag merged_to)
@@ -282,7 +278,6 @@ MergeMeshVertices::~MergeMeshVertices()
   return MB_SUCCESS;
 }
 
-//----------------------------------------------------------------------------
 ::moab::ErrorCode MergeMeshVertices::map_dead_to_alive(::moab::Tag merged_to)
 {
   using ::moab::EntityHandle;
@@ -324,7 +319,6 @@ MergeMeshVertices::~MergeMeshVertices()
   return MB_SUCCESS;
 }
 
-//----------------------------------------------------------------------------
 //now before we delete the entities,
 //we need to make sure that any mesh that is losing an explicit vertex
 //has it replaced with the merged vertex, this isn't handled by perform_merge
@@ -365,7 +359,6 @@ MergeMeshVertices::~MergeMeshVertices()
   return MB_SUCCESS;
 }
 
-//----------------------------------------------------------------------------
 //Update the connectivity of the cells that used one or more of the
 //soon to be dead points
 ::moab::ErrorCode MergeMeshVertices::update_connectivity()
@@ -432,7 +425,6 @@ MergeMeshVertices::~MergeMeshVertices()
 }
 
 
-//----------------------------------------------------------------------------
 //Determine which higher dimensional entities should be merged
 ::moab::ErrorCode MergeMeshVertices::merge_higher_dimensions(::moab::Range &elems)
 {

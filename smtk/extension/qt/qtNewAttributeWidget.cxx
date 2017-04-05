@@ -40,20 +40,17 @@ qtNewAttributeWidget::qtNewAttributeWidget(QWidget* parentW):
   this->setFocusPolicy(Qt::StrongFocus);
 }
 
-// -------------------------------------------------------------------------
 qtNewAttributeWidget::~qtNewAttributeWidget()
 {
   delete this->Private;
 }
 
-// -------------------------------------------------------------------------
 void qtNewAttributeWidget::setBaseWidget(QWidget* widget)
 {
   this->Private->BaseWidget = widget ?
     qobject_cast<QComboBox*>(widget) : NULL;;
 }
 
-// -------------------------------------------------------------------------
 int qtNewAttributeWidget::showWidget(const QString& name,
                                      const QList<QString>& attTypes)
 {
@@ -75,12 +72,11 @@ int qtNewAttributeWidget::showWidget(const QString& name,
   return this->exec();
 }
 
-// -------------------------------------------------------------------------
 QString qtNewAttributeWidget::attributeName() const
 {
   return this->Private->lineEditName->text();
 }
-// -------------------------------------------------------------------------
+
 QString qtNewAttributeWidget::attributeType() const
 {
   return this->Private->comboBoxType->currentText();

@@ -22,19 +22,16 @@ namespace smtk {
 boost::local_time::tz_database TimeZone::s_database;
 bool TimeZone::s_databaseLoaded = false;
 
-//----------------------------------------------------------------------------
 TimeZone::TimeZone()
   : m_boostTimeZone(0),  m_isUTC(false)
 {
 }
 
-//----------------------------------------------------------------------------
 bool TimeZone::isSet() const
 {
   return this->m_isUTC || (!!this->m_boostTimeZone);
 }
 
-//----------------------------------------------------------------------------
 void TimeZone::setUTC()
 {
   // Clear boost pointer and region string
@@ -44,13 +41,11 @@ void TimeZone::setUTC()
   this->m_isUTC = true;
 }
 
-//----------------------------------------------------------------------------
 bool TimeZone::isUTC() const
 {
   return this->m_isUTC;
 }
 
-//----------------------------------------------------------------------------
 bool TimeZone::setRegion(const std::string& region)
 {
   // Load database if needed
@@ -79,13 +74,11 @@ bool TimeZone::setRegion(const std::string& region)
   return true;
 }
 
-//----------------------------------------------------------------------------
 std::string TimeZone::region() const
 {
   return this->m_region;
 }
 
-//----------------------------------------------------------------------------
 bool TimeZone::setPosixString(const std::string& posixTimeZoneString)
 {
   try
@@ -111,7 +104,6 @@ bool TimeZone::setPosixString(const std::string& posixTimeZoneString)
   return this->isSet();
 }
 
-//----------------------------------------------------------------------------
 std::string TimeZone::posixString() const
 {
   if (this->m_isUTC)
@@ -121,7 +113,6 @@ std::string TimeZone::posixString() const
   return this->m_boostTimeZone->to_posix_string();
 }
 
-//----------------------------------------------------------------------------
 std::string TimeZone::stdZoneName() const
 {
   if (this->m_boostTimeZone)
@@ -133,7 +124,6 @@ std::string TimeZone::stdZoneName() const
 }
 
 
-//----------------------------------------------------------------------------
 std::string TimeZone::stdZoneAbbreviation() const
 {
   if (this->m_boostTimeZone)
@@ -144,7 +134,6 @@ std::string TimeZone::stdZoneAbbreviation() const
   return std::string();
 }
 
-//----------------------------------------------------------------------------
 std::string TimeZone::dstZoneName() const
 {
   if (this->m_boostTimeZone)
@@ -155,7 +144,6 @@ std::string TimeZone::dstZoneName() const
   return std::string();
 }
 
-//----------------------------------------------------------------------------
 std::string TimeZone::dstZoneAbbreviation() const
 {
   if (this->m_boostTimeZone)
@@ -166,7 +154,6 @@ std::string TimeZone::dstZoneAbbreviation() const
   return std::string();
 }
 
-//----------------------------------------------------------------------------
 bool TimeZone::hasDST() const
 {
   if (this->m_boostTimeZone)
@@ -177,7 +164,6 @@ bool TimeZone::hasDST() const
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool TimeZone::utcOffset(int& hours, int& minutes) const
 {
   if (this->m_boostTimeZone)
@@ -192,7 +178,6 @@ bool TimeZone::utcOffset(int& hours, int& minutes) const
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool TimeZone::dstShift(int& hours, int& minutes) const
 {
   if (this->m_boostTimeZone)
@@ -207,13 +192,10 @@ bool TimeZone::dstShift(int& hours, int& minutes) const
   return false;
 }
 
-//----------------------------------------------------------------------------
 const boost::local_time::time_zone_ptr TimeZone::boostPointer() const
 {
   return this->m_boostTimeZone;
 }
-
-//----------------------------------------------------------------------------
 
   } // namespace common
 } // namespace smtk

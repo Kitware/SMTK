@@ -74,7 +74,6 @@ ostream& operator << (ostream& os, const vtkTuple<T,Size>& vec)
 }
 */
 
-// -----------------------------------------------------------------------------
 vtkStandardNewMacro(vtkPolylineTriangulator);
 vtkCxxSetObjectMacro(vtkPolylineTriangulator,Launcher,vtkCMBMeshServerLauncher);
 
@@ -285,7 +284,6 @@ void GroupLoops(vtkPolyData* pdIn, FacetSourceType& facets, T& poly2facet)
     }
 }
 
-// -----------------------------------------------------------------------------
 #if 1
 /*
   The function below was based on an original version retrieved from
@@ -329,7 +327,6 @@ int IsPointInPolygon(const vec2d& P, const std::vector<vec2d>& V)
   return c;
 }
 #else
-// -----------------------------------------------------------------------------
 // The code below is adapted from http://geomalgorithms.com/a03-_inclusion.html
 // as retrieved on June 18, 2013. The next two functions below (and only those)
 // are copyright and licensed under the following terms:
@@ -393,7 +390,6 @@ int IsPointInPolygon(const vec2d& P, const std::vector<vec2d>& V)
   return wn;
 }
 #endif
-// -----------------------------------------------------------------------------
 
 template<typename T>
 T Add(const T& a, const T& b)

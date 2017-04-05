@@ -19,17 +19,15 @@
 #include "vtkSMStringVectorProperty.h"
 
 vtkStandardNewMacro(vtkSMOperatorProxy);
-//----------------------------------------------------------------------------
+
 vtkSMOperatorProxy::vtkSMOperatorProxy()
 {
 }
 
-//----------------------------------------------------------------------------
 vtkSMOperatorProxy::~vtkSMOperatorProxy()
 {
 }
 
-//----------------------------------------------------------------------------
 void vtkSMOperatorProxy::Operate(vtkDiscreteModel* /*ClientModel*/,
                                  vtkSMProxy* ModelProxy)
 {
@@ -50,7 +48,6 @@ void vtkSMOperatorProxy::Operate(vtkDiscreteModel* /*ClientModel*/,
   this->ExecuteStream(stream);
 }
 
-//----------------------------------------------------------------------------
 void vtkSMOperatorProxy::Operate(
   vtkDiscreteModel* /*ClientModel*/, vtkSMProxy* ModelProxy,
   vtkSMProxy* InputProxy)
@@ -74,7 +71,6 @@ void vtkSMOperatorProxy::Operate(
   this->ExecuteStream(stream);
 }
 
-//----------------------------------------------------------------------------
 vtkIdType vtkSMOperatorProxy::Build(vtkDiscreteModel* /*ClientModel*/,
                                     vtkSMProxy* ModelProxy)
 {
@@ -113,7 +109,6 @@ vtkIdType vtkSMOperatorProxy::Build(vtkDiscreteModel* /*ClientModel*/,
   return BuiltEntityId;
 }
 
-//----------------------------------------------------------------------------
 bool vtkSMOperatorProxy::Destroy(vtkDiscreteModel* /*ClientModel*/,
                                  vtkSMProxy* ModelProxy)
 {
@@ -154,7 +149,6 @@ bool vtkSMOperatorProxy::Destroy(vtkDiscreteModel* /*ClientModel*/,
   return false;
 }
 
-//----------------------------------------------------------------------------
 void vtkSMOperatorProxy::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);

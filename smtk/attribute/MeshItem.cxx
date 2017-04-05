@@ -17,14 +17,12 @@
 
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 MeshItem::MeshItem(Attribute* owningAttribute,
                    int itemPosition):
   Item(owningAttribute, itemPosition)
 {
 }
 
-//----------------------------------------------------------------------------
 MeshItem::MeshItem(Item* inOwningItem,
                    int itemPosition,
                    int inSubGroupPosition):
@@ -32,7 +30,6 @@ MeshItem::MeshItem(Item* inOwningItem,
 {
 }
 
-//----------------------------------------------------------------------------
 bool MeshItem::
 setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 {
@@ -55,11 +52,10 @@ setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
   return true;
 }
 
-//----------------------------------------------------------------------------
 MeshItem::~MeshItem()
 {
 }
-//----------------------------------------------------------------------------
+
 Item::Type MeshItem::type() const
 {
   const MeshItemDefinition* def =
@@ -70,13 +66,12 @@ Item::Type MeshItem::type() const
     }
   return Item::MESH_ENTITY;
 }
-//----------------------------------------------------------------------------
+
 std::size_t MeshItem::numberOfValues() const
 {
   return this->m_meshValues.size();
 }
 
-//----------------------------------------------------------------------------
 // Set the number of entities to be associated with this item (returns true if permitted).
 bool MeshItem::setNumberOfValues(std::size_t newSize)
 {
@@ -105,7 +100,6 @@ bool MeshItem::setNumberOfValues(std::size_t newSize)
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool MeshItem::isValid() const
 {
   // If the item is not enabled or if it contains atleast the number of 
@@ -130,7 +124,6 @@ bool MeshItem::isValid() const
   return true;
  }
 
-//----------------------------------------------------------------------------
 /// Return the number of values required by this item's definition (if it has one).
 std::size_t MeshItem::numberOfRequiredValues() const
 {
@@ -142,7 +135,7 @@ std::size_t MeshItem::numberOfRequiredValues() const
     }
   return def->numberOfRequiredValues();
 }
-//----------------------------------------------------------------------------
+
 // A convenience method returning whether the item's definition is extensible.
 bool MeshItem::isExtensible() const
 {
@@ -154,7 +147,6 @@ bool MeshItem::isExtensible() const
   return def->isExtensible();
 }
 
-//----------------------------------------------------------------------------
 /// Return the \a i-th meshset stored in this item.
 smtk::mesh::MeshSet MeshItem::value(std::size_t i) const
 {
@@ -163,13 +155,11 @@ smtk::mesh::MeshSet MeshItem::value(std::size_t i) const
   return this->m_meshValues[i];
 }
 
-//----------------------------------------------------------------------------
 bool MeshItem::setValue(const smtk::mesh::MeshSet& val)
 {
   return this->setValue(0, val);
 }
 
-//----------------------------------------------------------------------------
 bool MeshItem::isSet(std::size_t i) const
 {
   return i < this->m_meshValues.size() ?
@@ -177,7 +167,6 @@ bool MeshItem::isSet(std::size_t i) const
     false;
 }
 
-//----------------------------------------------------------------------------
 /// Force the \a i-th value of the item to be invalid.
 void MeshItem::unset(std::size_t i)
 {
@@ -187,7 +176,6 @@ void MeshItem::unset(std::size_t i)
     }
 }
 
-//----------------------------------------------------------------------------
 /// Set the \a i-th value to the given item. This method does no checking to see if \a i is valid.
 bool MeshItem::setValue(std::size_t i, const smtk::mesh::MeshSet& val)
 {
@@ -201,7 +189,6 @@ bool MeshItem::setValue(std::size_t i, const smtk::mesh::MeshSet& val)
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool MeshItem::appendValue(const smtk::mesh::MeshSet& val)
 {
   // First - are there unset values waiting to be set?
@@ -233,7 +220,6 @@ bool MeshItem::appendValue(const smtk::mesh::MeshSet& val)
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool MeshItem::appendValues(const smtk::mesh::MeshList& vals)
 {
   smtk::mesh::MeshSets meshes;
@@ -241,7 +227,6 @@ bool MeshItem::appendValues(const smtk::mesh::MeshList& vals)
   return this->appendValues(meshes);
 }
 
-//----------------------------------------------------------------------------
 bool MeshItem::appendValues(const smtk::mesh::MeshSets& vals)
 {
   bool valAppended = false;
@@ -257,7 +242,6 @@ bool MeshItem::appendValues(const smtk::mesh::MeshSets& vals)
   return valAppended;
 }
 
-//----------------------------------------------------------------------------
 bool MeshItem::removeValue(std::size_t i)
 {
   const MeshItemDefinition* def =
@@ -273,20 +257,17 @@ bool MeshItem::removeValue(std::size_t i)
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool MeshItem::hasValue(const smtk::mesh::MeshSet& val) const
 {
   return std::find(this->m_meshValues.begin(), this->m_meshValues.end(), val)
     != this->m_meshValues.end();
 }
 
-//----------------------------------------------------------------------------
 const smtk::mesh::MeshList& MeshItem::values() const
 {
   return this->m_meshValues;
 }
 
-//----------------------------------------------------------------------------
 void MeshItem::reset()
 {
   this->m_meshValues.clear();
@@ -295,7 +276,6 @@ void MeshItem::reset()
 }
 
 /// Assigns contents to be same as source item
-//----------------------------------------------------------------------------
 bool MeshItem::assign(ConstItemPtr &sourceItem, unsigned int options)
 {
   // Cast input pointer to ModelEntityItem
@@ -326,7 +306,6 @@ bool MeshItem::assign(ConstItemPtr &sourceItem, unsigned int options)
   return Item::assign(sourceItem, options);
 }
 
-//----------------------------------------------------------------------------
 std::ptrdiff_t MeshItem::find(const smtk::mesh::MeshSet& mesh) const
 {
   std::ptrdiff_t idx = 0;
@@ -341,7 +320,6 @@ std::ptrdiff_t MeshItem::find(const smtk::mesh::MeshSet& mesh) const
   return -1;
 }
 
-//----------------------------------------------------------------------------
 smtk::attribute::MeshItem::const_mesh_it MeshItem::begin() const
 {
   return this->m_meshValues.begin();

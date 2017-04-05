@@ -22,8 +22,6 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-
-//----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
 {
   std::string file_path(data_root);
@@ -35,7 +33,6 @@ smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
   return c;
 }
 
-//----------------------------------------------------------------------------
 void cleanup(const smtk::mesh::CollectionPtr& c,
              smtk::mesh::MeshSet meshset)
 {
@@ -49,7 +46,6 @@ void cleanup(const smtk::mesh::CollectionPtr& c,
     }
 }
 
-//----------------------------------------------------------------------------
 void verify_create_empty_mesh(const smtk::mesh::CollectionPtr& c)
 {
   const std::size_t numMeshesBeforeCreation = c->numberOfMeshes();
@@ -62,7 +58,6 @@ void verify_create_empty_mesh(const smtk::mesh::CollectionPtr& c)
        "the number of meshes shouldn't change when adding an empty mesh");
 }
 
-//----------------------------------------------------------------------------
 void verify_create_mesh_with_cells_from_other_collection(
     smtk::mesh::ManagerPtr mngr,
     const smtk::mesh::CollectionPtr& c)
@@ -82,7 +77,6 @@ void verify_create_mesh_with_cells_from_other_collection(
   mngr->removeCollection(otherc);
 }
 
-//----------------------------------------------------------------------------
 void verify_create_mesh_with_invalid_cell_ids(const smtk::mesh::CollectionPtr& c)
 {
   const std::size_t numMeshesBeforeCreation = c->numberOfMeshes();
@@ -96,7 +90,6 @@ void verify_create_mesh_with_invalid_cell_ids(const smtk::mesh::CollectionPtr& c
   test(numMeshesBeforeCreation == c->numberOfMeshes());
 }
 
-//----------------------------------------------------------------------------
 void verify_create_mesh(const smtk::mesh::CollectionPtr& c)
 {
   const std::size_t numMeshesBeforeCreation = c->numberOfMeshes();
@@ -114,7 +107,6 @@ void verify_create_mesh(const smtk::mesh::CollectionPtr& c)
   cleanup(c, result);
 }
 
-//----------------------------------------------------------------------------
 void verify_create_mesh_num_meshes(const smtk::mesh::CollectionPtr& c)
 {
   const std::size_t numMeshesBeforeCreation = c->numberOfMeshes();
@@ -135,7 +127,6 @@ void verify_create_mesh_num_meshes(const smtk::mesh::CollectionPtr& c)
     }
 }
 
-//----------------------------------------------------------------------------
 void verify_create_mesh_updated_mesh_queries(const smtk::mesh::CollectionPtr& c)
 {
   const std::size_t numMeshesBeforeCreation = c->numberOfMeshes();
@@ -160,7 +151,6 @@ void verify_create_mesh_updated_mesh_queries(const smtk::mesh::CollectionPtr& c)
   cleanup(c, result);
 }
 
-//----------------------------------------------------------------------------
 void verify_create_mesh_num_cells(const smtk::mesh::CollectionPtr& c)
 {
   const std::size_t numCellsBeforeCreation = c->cells().size();
@@ -175,7 +165,6 @@ void verify_create_mesh_num_cells(const smtk::mesh::CollectionPtr& c)
   cleanup(c, result);
 }
 
-//----------------------------------------------------------------------------
 void verify_create_mesh_marks_modified( )
 {
   //verify that a collection loaded from file is not marked as modified
@@ -194,7 +183,6 @@ void verify_create_mesh_marks_modified( )
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestCreateMesh(int, char** const)
 {
   smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();

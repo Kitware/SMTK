@@ -56,7 +56,6 @@ struct vtkXMLArchiveWriterInternals
   unsigned int CurrentID;
 };
 
-//----------------------------------------------------------------------------
 vtkXMLArchiveWriter::vtkXMLArchiveWriter()
 {
   this->Internal = new vtkXMLArchiveWriterInternals;
@@ -64,14 +63,12 @@ vtkXMLArchiveWriter::vtkXMLArchiveWriter()
   this->RootElement = 0;
 }
 
-//----------------------------------------------------------------------------
 vtkXMLArchiveWriter::~vtkXMLArchiveWriter()
 {
   delete this->Internal;
   this->SetRootElement(0);
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveWriter::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
@@ -98,7 +95,6 @@ vtkSmartPointer<vtkXMLElement> BaseSerialize(const char* name,
 }
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveWriter::Serialize(const char* name, vtkObject*& object,
                                        bool vtkNotUsed(weakPtr))
 {
@@ -119,7 +115,6 @@ void vtkXMLArchiveWriter::Serialize(const char* name, vtkObject*& object,
     }
 }
 
-//----------------------------------------------------------------------------
 unsigned int vtkXMLArchiveWriter::Serialize(vtkObject*& object)
 {
   if (!object)
@@ -270,13 +265,11 @@ void SerializeKeyVectorKey(vtkInformation* info,
 }
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveWriter::Serialize(const char* name, vtkInformation* info)
 {
   this->Serialize(BaseSerialize(name, this->Internal), info);
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveWriter::Serialize(vtkXMLElement* elem, vtkInformation* info)
 {
   if (!elem)
@@ -382,7 +375,6 @@ void vtkXMLArchiveWriter::Serialize(vtkXMLElement* elem, vtkInformation* info)
   iter->Delete();
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveWriter::Serialize(const char* name,
                                        std::vector<vtkSmartPointer<vtkObject> >& objs,
                                        bool weakPtr/*=false*/)
@@ -405,7 +397,6 @@ void vtkXMLArchiveWriter::Serialize(const char* name,
   this->Internal->Pop();
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveWriter::Serialize(const char* name,
                                        std::map<int, std::vector<vtkSmartPointer<vtkObject> > >& map)
 {
@@ -430,7 +421,6 @@ void vtkXMLArchiveWriter::Serialize(const char* name,
 
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveWriter::CreateDOM(const char* rootName,
                                        std::vector<vtkSmartPointer<vtkObject> >& objs)
 {
@@ -455,7 +445,6 @@ void vtkXMLArchiveWriter::CreateDOM(const char* rootName,
   //return this->RootElement;
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveWriter::Serialize(vtkXMLElement* elem,
                                        const char* rootName,
                                        vtkObject *obj)
@@ -465,7 +454,6 @@ void vtkXMLArchiveWriter::Serialize(vtkXMLElement* elem,
   this->Serialize(elem, rootName, objs);
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveWriter::Serialize(vtkXMLElement* elem, const char* rootName,
                                        std::vector<vtkSmartPointer<vtkObject> >& objs)
 {
@@ -486,7 +474,6 @@ void vtkXMLArchiveWriter::Serialize(vtkXMLElement* elem, const char* rootName,
   this->Internal = 0;
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveWriter::Serialize(ostream& ostr, const char* rootName,
                                        std::vector<vtkSmartPointer<vtkObject> >& objs)
 {
@@ -504,7 +491,6 @@ void vtkXMLArchiveWriter::Serialize(ostream& ostr, const char* rootName,
   this->Internal = 0;
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveWriter::Serialize(const char* name, int& val)
 {
   vtkSmartPointer<vtkXMLElement> elem = BaseSerialize(name, this->Internal);
@@ -516,7 +502,6 @@ void vtkXMLArchiveWriter::Serialize(const char* name, int& val)
   elem->AddAttribute("value", val);
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveWriter::Serialize(const char* name,
                                        int*& val,
                                        unsigned int& length)
@@ -537,7 +522,6 @@ void vtkXMLArchiveWriter::Serialize(const char* name,
   elem->AddAttribute("values", val, length);
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveWriter::Serialize(const char* name, unsigned long& val)
 {
   vtkSmartPointer<vtkXMLElement> elem = BaseSerialize(name, this->Internal);
@@ -549,7 +533,6 @@ void vtkXMLArchiveWriter::Serialize(const char* name, unsigned long& val)
   elem->AddAttribute("value", val);
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveWriter::Serialize(const char* name,
                                        unsigned long*& val,
                                        unsigned int& length)
@@ -570,7 +553,6 @@ void vtkXMLArchiveWriter::Serialize(const char* name,
   elem->AddAttribute("values", val, length);
 }
 
-//----------------------------------------------------------------------------
 #if defined(VTK_USE_64BIT_IDS)
 void vtkXMLArchiveWriter::Serialize(const char* name, vtkIdType& val)
 {
@@ -583,7 +565,6 @@ void vtkXMLArchiveWriter::Serialize(const char* name, vtkIdType& val)
   elem->AddAttribute("value", val);
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveWriter::Serialize(const char* name,
                                        vtkIdType*& val,
                                        unsigned int& length)
@@ -605,7 +586,6 @@ void vtkXMLArchiveWriter::Serialize(const char* name,
 }
 #endif // if defined(VTK_USE_64BIT_IDS)
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveWriter::Serialize(const char* name, double& val)
 {
   vtkSmartPointer<vtkXMLElement> elem = BaseSerialize(name, this->Internal);
@@ -617,7 +597,6 @@ void vtkXMLArchiveWriter::Serialize(const char* name, double& val)
   elem->AddAttribute("value", val);
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveWriter::Serialize(const char* name,
                                        double*& val,
                                        unsigned int& length)
@@ -638,7 +617,6 @@ void vtkXMLArchiveWriter::Serialize(const char* name,
   elem->AddAttribute("values", val, length);
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveWriter::Serialize(const char* name, char*& str)
 {
   vtkSmartPointer<vtkXMLElement> elem = BaseSerialize(name, this->Internal);
@@ -653,7 +631,6 @@ void vtkXMLArchiveWriter::Serialize(const char* name, char*& str)
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveWriter::Serialize(const char* name, std::string& str)
 {
   vtkSmartPointer<vtkXMLElement> elem = BaseSerialize(name, this->Internal);

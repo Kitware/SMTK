@@ -27,7 +27,6 @@
 
 vtkStandardNewMacro(vtkPolyDataStatsFilter);
 
-//-----------------------------------------------------------------------------
 vtkPolyDataStatsFilter::vtkPolyDataStatsFilter()
 {
   this->Translation[0] = this->Translation[1] = this->Translation[2] = 0.0;
@@ -43,13 +42,11 @@ vtkPolyDataStatsFilter::vtkPolyDataStatsFilter()
   this->NumberOfPolygons = this->NumberOfLines = this->NumberOfPoints = 0;
 }
 
-//-----------------------------------------------------------------------------
 vtkPolyDataStatsFilter::~vtkPolyDataStatsFilter()
 {
   this->Transform->Delete();
 }
 
-//-----------------------------------------------------------------------------
 int vtkPolyDataStatsFilter::RequestData(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **inputVector,
@@ -178,8 +175,6 @@ int vtkPolyDataStatsFilter::RequestData(
   return VTK_OK;
 }
 
-
-//-----------------------------------------------------------------------------
 void vtkPolyDataStatsFilter::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
@@ -204,6 +199,3 @@ void vtkPolyDataStatsFilter::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "Scale: (" << this->Scale[0] << ", "
      << this->Scale[1] << ", "  << this->Scale[2] << ")\n";
 }
-
-
-//----------------------------------------------------------------------------

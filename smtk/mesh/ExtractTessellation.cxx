@@ -107,7 +107,6 @@ std::size_t smtkToVTKConn(std::int64_t& conn, std::size_t index, int numPts)
 
 } //namespace detail
 
-//----------------------------------------------------------------------------
 void PreAllocatedTessellation::determineAllocationLengths(const smtk::mesh::MeshSet& ms,
                                                           std::int64_t& connectivityLength,
                                                           std::int64_t& numberOfCells,
@@ -120,7 +119,6 @@ void PreAllocatedTessellation::determineAllocationLengths(const smtk::mesh::Mesh
                              numberOfPoints);
 }
 
-//----------------------------------------------------------------------------
 void PreAllocatedTessellation::determineAllocationLengths(const smtk::mesh::CellSet& cs,
                                                           std::int64_t& connectivityLength,
                                                           std::int64_t& numberOfCells,
@@ -132,7 +130,6 @@ void PreAllocatedTessellation::determineAllocationLengths(const smtk::mesh::Cell
   numberOfPoints = cs.points().size();
 }
 
-//----------------------------------------------------------------------------
 void PreAllocatedTessellation::determineAllocationLengths(const smtk::model::EntityRef& eRef,
                                                           const smtk::mesh::CollectionPtr& c,
                                                           std::int64_t& connectivityLength,
@@ -146,7 +143,6 @@ void PreAllocatedTessellation::determineAllocationLengths(const smtk::model::Ent
                              numberOfPoints);
 }
 
-//----------------------------------------------------------------------------
 void PreAllocatedTessellation::determineAllocationLengths(const smtk::model::Loop& loop,
                                                           const smtk::mesh::CollectionPtr& c,
                                                           std::int64_t& connectivityLength,
@@ -173,7 +169,6 @@ void PreAllocatedTessellation::determineAllocationLengths(const smtk::model::Loo
                              numberOfPoints);
 }
 
-//----------------------------------------------------------------------------
 PreAllocatedTessellation::PreAllocatedTessellation( std::int64_t* connectivity ):
   m_connectivity(connectivity),
   m_cellLocations(NULL),
@@ -186,7 +181,6 @@ PreAllocatedTessellation::PreAllocatedTessellation( std::int64_t* connectivity )
 
 }
 
-//----------------------------------------------------------------------------
 PreAllocatedTessellation::PreAllocatedTessellation(std::int64_t* connectivity,
                                                    float* points):
   m_connectivity(connectivity),
@@ -200,7 +194,6 @@ PreAllocatedTessellation::PreAllocatedTessellation(std::int64_t* connectivity,
 
 }
 
-//----------------------------------------------------------------------------
 PreAllocatedTessellation::PreAllocatedTessellation(std::int64_t* connectivity,
                                                    double* points):
   m_connectivity(connectivity),
@@ -214,7 +207,6 @@ PreAllocatedTessellation::PreAllocatedTessellation(std::int64_t* connectivity,
 
 }
 
-//----------------------------------------------------------------------------
 PreAllocatedTessellation::PreAllocatedTessellation(std::int64_t* connectivity,
                                                    std::int64_t* cellLocations,
                                                    unsigned char* cellTypes):
@@ -229,7 +221,6 @@ PreAllocatedTessellation::PreAllocatedTessellation(std::int64_t* connectivity,
 
 }
 
-//----------------------------------------------------------------------------
 PreAllocatedTessellation::PreAllocatedTessellation(std::int64_t* connectivity,
                                                    std::int64_t* cellLocations,
                                                    unsigned char* cellTypes,
@@ -245,7 +236,6 @@ PreAllocatedTessellation::PreAllocatedTessellation(std::int64_t* connectivity,
 
 }
 
-//----------------------------------------------------------------------------
 PreAllocatedTessellation::PreAllocatedTessellation(std::int64_t* connectivity,
                                                    std::int64_t* cellLocations,
                                                    unsigned char* cellTypes,
@@ -261,7 +251,6 @@ PreAllocatedTessellation::PreAllocatedTessellation(std::int64_t* connectivity,
 
 }
 
-//----------------------------------------------------------------------------
 Tessellation::Tessellation( ):
   m_connectivity(),
   m_cellLocations(),
@@ -273,7 +262,6 @@ Tessellation::Tessellation( ):
 
 }
 
-//----------------------------------------------------------------------------
 Tessellation::Tessellation( bool useVTKConnectivity,
                             bool useVTKCellTypes):
   m_connectivity(),
@@ -286,26 +274,22 @@ Tessellation::Tessellation( bool useVTKConnectivity,
 
 }
 
-//----------------------------------------------------------------------------
 void Tessellation::extract( const smtk::mesh::MeshSet& ms )
 {
   this->extract(ms.cells(), ms.points());
 }
 
-//----------------------------------------------------------------------------
 void Tessellation::extract( const smtk::mesh::CellSet& cs )
 {
   this->extract(cs, cs.points());
 }
 
-//----------------------------------------------------------------------------
 void Tessellation::extract( const smtk::mesh::MeshSet& ms,
                             const smtk::mesh::PointSet& ps )
 {
   this->extract(ms.cells(), ps);
 }
 
-//----------------------------------------------------------------------------
 void Tessellation::extract( const smtk::mesh::CellSet& cs,
                             const smtk::mesh::PointSet& ps )
 {
@@ -346,22 +330,18 @@ void Tessellation::extract( const smtk::mesh::CellSet& cs,
   extractTessellation(cs,ps,tess);
 }
 
-
-//----------------------------------------------------------------------------
 void extractTessellation( const smtk::mesh::MeshSet& ms,
                           PreAllocatedTessellation& tess)
 {
   extractTessellation(ms.cells(),ms.points(),tess);
 }
 
-//----------------------------------------------------------------------------
 void extractTessellation( const smtk::mesh::CellSet& cs,
                           PreAllocatedTessellation& tess)
 {
   extractTessellation(cs,cs.points(),tess);
 }
 
-//----------------------------------------------------------------------------
 void extractTessellation( const smtk::model::EntityRef& eRef,
                           const smtk::mesh::CollectionPtr& c,
                           PreAllocatedTessellation& tess)
@@ -370,7 +350,6 @@ void extractTessellation( const smtk::model::EntityRef& eRef,
   extractTessellation(cs,cs.points(),tess);
 }
 
-//----------------------------------------------------------------------------
 void extractTessellation( const smtk::mesh::MeshSet& ms,
                           const smtk::mesh::PointSet& ps,
                           PreAllocatedTessellation& tess)
@@ -378,7 +357,6 @@ void extractTessellation( const smtk::mesh::MeshSet& ms,
   extractTessellation(ms.cells(),ps,tess);
 }
 
-//----------------------------------------------------------------------------
 void extractTessellation( const smtk::mesh::CellSet& cs,
                           const smtk::mesh::PointSet& ps,
                           PreAllocatedTessellation& tess)
@@ -387,7 +365,6 @@ void extractTessellation( const smtk::mesh::CellSet& cs,
   extractTessellation(pc,ps,tess);
 }
 
-//----------------------------------------------------------------------------
 template <class PointConnectivity>
 void extractTessellationInternal( PointConnectivity& pc,
                                   const smtk::mesh::PointSet& ps,
@@ -484,8 +461,6 @@ void extractTessellationInternal( PointConnectivity& pc,
     }
 }
 
-//----------------------------------------------------------------------------
-
 void extractTessellation( smtk::mesh::PointConnectivity& pc,
                           const smtk::mesh::PointSet& ps,
                           PreAllocatedTessellation& tess)
@@ -493,7 +468,6 @@ void extractTessellation( smtk::mesh::PointConnectivity& pc,
   extractTessellationInternal<smtk::mesh::PointConnectivity>(pc,ps,tess);
 }
 
-//----------------------------------------------------------------------------
 void extractTessellation( const smtk::model::EntityRef& eRef,
                           const smtk::mesh::CollectionPtr& c,
                           const smtk::mesh::PointSet& ps,
@@ -502,7 +476,6 @@ void extractTessellation( const smtk::model::EntityRef& eRef,
   extractTessellation(c->findAssociatedCells(eRef), ps, tess);
 }
 
-//----------------------------------------------------------------------------
 namespace
 {
   // A Link is simply a pair of vertex ids.
@@ -675,7 +648,6 @@ namespace
     Chain::const_iterator WhichLink;
   };
 
-//----------------------------------------------------------------------------
 template <class OneDimensionalEntities>
 void extractOrderedTessellation( const OneDimensionalEntities& oneDimEntities,
                                  const smtk::mesh::CollectionPtr& c,
@@ -725,7 +697,6 @@ void extractOrderedTessellation( const OneDimensionalEntities& oneDimEntities,
 }
 }
 
-//----------------------------------------------------------------------------
 void extractOrderedTessellation( const smtk::model::Edge& edge,
                                  const smtk::mesh::CollectionPtr& c,
                                  PreAllocatedTessellation& tess)
@@ -735,7 +706,6 @@ void extractOrderedTessellation( const smtk::model::Edge& edge,
   extractOrderedTessellation(edge,c,cells.points(),tess);
 }
 
-//----------------------------------------------------------------------------
 void extractOrderedTessellation( const smtk::model::Loop& loop,
                                  const smtk::mesh::CollectionPtr& c,
                                  PreAllocatedTessellation& tess)
@@ -756,7 +726,6 @@ void extractOrderedTessellation( const smtk::model::Loop& loop,
   extractOrderedTessellation(loop,c,cells.points(),tess);
 }
 
-//----------------------------------------------------------------------------
 void extractOrderedTessellation( const smtk::model::Edge& edge,
                                  const smtk::mesh::CollectionPtr& c,
                                  const smtk::mesh::PointSet& ps,
@@ -767,7 +736,6 @@ void extractOrderedTessellation( const smtk::model::Edge& edge,
   extractOrderedTessellation<smtk::model::Edges>(edges,c,ps,tess);
 }
 
-//----------------------------------------------------------------------------
 void extractOrderedTessellation( const smtk::model::Loop& loop,
                                  const smtk::mesh::CollectionPtr& c,
                                  const smtk::mesh::PointSet& ps,

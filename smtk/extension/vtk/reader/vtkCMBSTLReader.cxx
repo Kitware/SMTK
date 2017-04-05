@@ -100,7 +100,6 @@ int vtkCMBSTLReader::RequestData(
   return 1;
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBSTLReader::RequestInformation(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **vtkNotUsed(inputVector),

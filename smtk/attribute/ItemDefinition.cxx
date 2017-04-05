@@ -13,7 +13,6 @@
 #include <iostream>
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 ItemDefinition::ItemDefinition(const std::string &myName) : m_name(myName)
 {
   this->m_version = 0;
@@ -23,11 +22,10 @@ ItemDefinition::ItemDefinition(const std::string &myName) : m_name(myName)
   this->m_isEnabledByDefault = false;
 }
 
-//----------------------------------------------------------------------------
 ItemDefinition::~ItemDefinition()
 {
 }
-//----------------------------------------------------------------------------
+
 bool ItemDefinition::isMemberOf(const std::vector<std::string> &inCategories) const
 {
   std::size_t i, n = inCategories.size();
@@ -40,21 +38,21 @@ bool ItemDefinition::isMemberOf(const std::vector<std::string> &inCategories) co
     }
     return false;
 }
-//----------------------------------------------------------------------------
+
 void ItemDefinition::updateCategories()
 {
 }
-//----------------------------------------------------------------------------
+
 void ItemDefinition::addCategory(const std::string &category)
 {
   this->m_categories.insert(category);
 }
-//----------------------------------------------------------------------------
+
 void ItemDefinition::removeCategory(const std::string &category)
 {
   this->m_categories.erase(category);
 }
-//----------------------------------------------------------------------------
+
 void ItemDefinition::setAdvanceLevel(int mode, int level)
 {
   if ((mode < 0) || (mode > 1))
@@ -63,13 +61,13 @@ void ItemDefinition::setAdvanceLevel(int mode, int level)
     }
   this->m_advanceLevel[mode] = level;
 }
-//----------------------------------------------------------------------------
+
 void ItemDefinition::setAdvanceLevel(int level)
 {
   this->m_advanceLevel[0] = level;
   this->m_advanceLevel[1] = level;
 }
-//----------------------------------------------------------------------------
+
 void ItemDefinition::copyTo(ItemDefinitionPtr def) const
 {
   def->setLabel(m_label);
@@ -89,4 +87,3 @@ void ItemDefinition::copyTo(ItemDefinitionPtr def) const
   def->setDetailedDescription(m_detailedDescription);
   def->setBriefDescription(m_briefDescription);
 }
-//----------------------------------------------------------------------------

@@ -37,17 +37,14 @@
 
 vtkStandardNewMacro(vtkCMBModelEdgeMeshClient);
 
-//----------------------------------------------------------------------------
 vtkCMBModelEdgeMeshClient::vtkCMBModelEdgeMeshClient()
 {
 }
 
-//----------------------------------------------------------------------------
 vtkCMBModelEdgeMeshClient::~vtkCMBModelEdgeMeshClient()
 {
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBModelEdgeMeshClient::SetLocalLength(double length)
 {
   if(length == this->GetLength())
@@ -58,7 +55,6 @@ bool vtkCMBModelEdgeMeshClient::SetLocalLength(double length)
   return this->SendLengthToServer();
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBModelEdgeMeshClient::SendLengthToServer()
 {
   vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
@@ -102,7 +98,6 @@ bool vtkCMBModelEdgeMeshClient::SendLengthToServer()
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBModelEdgeMeshClient::BuildMesh(bool meshHigherDimensionalEntities)
 {
   vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
@@ -164,7 +159,6 @@ bool vtkCMBModelEdgeMeshClient::BuildMesh(bool meshHigherDimensionalEntities)
   return returnValue;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelEdgeMeshClient::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

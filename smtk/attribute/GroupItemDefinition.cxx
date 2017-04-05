@@ -15,23 +15,21 @@
 
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 GroupItemDefinition::GroupItemDefinition(const std::string &myName):
   ItemDefinition(myName), m_numberOfRequiredGroups(1), m_maxNumberOfGroups(0),
   m_isExtensible(false), m_useCommonLabel(false)
 {
 }
 
-//----------------------------------------------------------------------------
 GroupItemDefinition::~GroupItemDefinition()
 {
 }
-//----------------------------------------------------------------------------
+
 Item::Type GroupItemDefinition::type() const
 {
   return Item::GROUP;
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemPtr
 GroupItemDefinition::buildItem(Attribute *owningAttribute,
                                int itemPosition) const
@@ -39,7 +37,7 @@ GroupItemDefinition::buildItem(Attribute *owningAttribute,
   return smtk::attribute::ItemPtr(new GroupItem(owningAttribute,
                                                itemPosition));
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemPtr
 GroupItemDefinition::buildItem(Item *owningItem,
                                int itemPosition,
@@ -49,7 +47,7 @@ GroupItemDefinition::buildItem(Item *owningItem,
                                                itemPosition,
                                                subGroupPosition));
 }
-//----------------------------------------------------------------------------
+
 bool GroupItemDefinition::
 addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
 {
@@ -63,7 +61,7 @@ addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
   this->m_itemDefPositions[cdef->name()] = static_cast<int>(n);
   return true;
 }
-//----------------------------------------------------------------------------
+
 void GroupItemDefinition::
 buildGroup(GroupItem *groupItem, int subGroupPosition) const
 {
@@ -79,7 +77,7 @@ buildGroup(GroupItem *groupItem, int subGroupPosition) const
     items[i]->setDefinition(this->m_itemDefs[i]);
     }
 }
-//----------------------------------------------------------------------------
+
 void GroupItemDefinition::updateCategories()
 {
   this->m_categories.clear();
@@ -91,19 +89,19 @@ void GroupItemDefinition::updateCategories()
     this->m_categories.insert(itemCats.begin(), itemCats.end());
     }
 }
-//----------------------------------------------------------------------------
+
 void GroupItemDefinition::addCategory(const std::string &/*category*/)
 {
   std::cerr << "Cannot add categories to a group item definition. "
             << "The name is " << this->name() << std::endl;
 }
-//----------------------------------------------------------------------------
+
 void GroupItemDefinition::removeCategory(const std::string &/*category*/)
 {
   std::cerr << "Cannot remove categories to a group item definition. "
             << "The name is " << this->name() << std::endl;
 }
-//----------------------------------------------------------------------------
+
 void GroupItemDefinition::setSubGroupLabel(std::size_t element, const std::string &elabel)
 {
   if (this->m_isExtensible)
@@ -117,7 +115,7 @@ void GroupItemDefinition::setSubGroupLabel(std::size_t element, const std::strin
   this->m_useCommonLabel = false;
   this->m_labels[element] = elabel;
 }
-//----------------------------------------------------------------------------
+
 void GroupItemDefinition::setCommonSubGroupLabel(const std::string &elabel)
 {
   if (this->m_labels.size() != 1)
@@ -128,7 +126,6 @@ void GroupItemDefinition::setCommonSubGroupLabel(const std::string &elabel)
   this->m_labels[0] = elabel;
 }
 
-//----------------------------------------------------------------------------
 std::string GroupItemDefinition::subGroupLabel(std::size_t element) const
 {
   if (this->m_useCommonLabel)
@@ -141,7 +138,7 @@ std::string GroupItemDefinition::subGroupLabel(std::size_t element) const
     }
   return ""; // If we threw execeptions this method could return const string &
 }
-//----------------------------------------------------------------------------
+
 bool  GroupItemDefinition::setMaxNumberOfGroups(std::size_t esize)
 {
   if (esize && (esize < this->m_numberOfRequiredGroups))
@@ -151,7 +148,7 @@ bool  GroupItemDefinition::setMaxNumberOfGroups(std::size_t esize)
   this->m_maxNumberOfGroups = esize;
   return true;
 }
-//----------------------------------------------------------------------------
+
 bool GroupItemDefinition::setNumberOfRequiredGroups(std::size_t gsize)
 {
   if (gsize == this->m_numberOfRequiredGroups)
@@ -175,7 +172,7 @@ bool GroupItemDefinition::setNumberOfRequiredGroups(std::size_t gsize)
     }
   return true;
 }
-//----------------------------------------------------------------------------
+
 void GroupItemDefinition::setIsExtensible(bool mode)
 {
   this->m_isExtensible = mode;
@@ -186,7 +183,7 @@ void GroupItemDefinition::setIsExtensible(bool mode)
     this->setCommonSubGroupLabel("");
     }
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemDefinitionPtr
 smtk::attribute::GroupItemDefinition::
 createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
@@ -225,4 +222,3 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
 
   return instance;
 }
-//----------------------------------------------------------------------------

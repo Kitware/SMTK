@@ -1,6 +1,5 @@
 <ServerManagerConfiguration>
   <ProxyGroup name="sources">
-    <!-- ================================================================== -->
     <SourceProxy name="CmbMoabSolidReader" class="vtkCmbMoabReader" label="CmbMoabSolidReader">
       <Documentation
          long_help="Read a Moab file."

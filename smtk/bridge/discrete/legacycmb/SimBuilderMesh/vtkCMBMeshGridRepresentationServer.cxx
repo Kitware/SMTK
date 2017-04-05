@@ -50,7 +50,6 @@ using namespace discreteFaceMesherClasses;
 
 vtkStandardNewMacro(vtkCMBMeshGridRepresentationServer);
 
-//----------------------------------------------------------------------------
 vtkCMBMeshGridRepresentationServer::vtkCMBMeshGridRepresentationServer():
   RepresentationBuilt(false),
   Representation(NULL),
@@ -58,13 +57,11 @@ vtkCMBMeshGridRepresentationServer::vtkCMBMeshGridRepresentationServer():
 {
 }
 
-//----------------------------------------------------------------------------
 vtkCMBMeshGridRepresentationServer::~vtkCMBMeshGridRepresentationServer()
 {
   this->SetRepresentation(NULL);
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBMeshGridRepresentationServer::GetBCSNodalAnalysisGridPointIds(
   vtkDiscreteModel* model, vtkIdType bcsGroupId,
   int bcGroupType, vtkIdList* pointIds)
@@ -142,14 +139,12 @@ bool vtkCMBMeshGridRepresentationServer::GetBCSNodalAnalysisGridPointIds(
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBMeshGridRepresentationServer::GetFloatingEdgeAnalysisGridPointIds(
   vtkDiscreteModel* /* model */, vtkIdType /* floatingEdgeId */, vtkIdList* /* pointIds */)
 {
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBMeshGridRepresentationServer::GetModelEdgeAnalysisPoints(
   vtkDiscreteModel* model, vtkIdType edgeId, vtkIdTypeArray* edgePoints)
 {
@@ -218,7 +213,6 @@ bool vtkCMBMeshGridRepresentationServer::GetModelEdgeAnalysisPoints(
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBMeshGridRepresentationServer::GetBoundaryGroupAnalysisFacets(
   vtkDiscreteModel* model, vtkIdType boundaryGroupId,
   vtkIdList* cellIds, vtkIdList* cellSides)
@@ -271,7 +265,6 @@ bool vtkCMBMeshGridRepresentationServer::GetBoundaryGroupAnalysisFacets(
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBMeshGridRepresentationServer::IsModelConsistent(vtkDiscreteModel* model)
 {
   return (this->Model != NULL  &&
@@ -279,7 +272,6 @@ bool vtkCMBMeshGridRepresentationServer::IsModelConsistent(vtkDiscreteModel* mod
           this->RepresentationBuilt);
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshGridRepresentationServer::Reset()
 {
   this->Superclass::Reset();
@@ -291,7 +283,6 @@ void vtkCMBMeshGridRepresentationServer::Reset()
   this->RepresentationBuilt = false;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBMeshGridRepresentationServer::Initialize(
   vtkCMBMeshServer *meshServer)
 {
@@ -301,7 +292,7 @@ bool vtkCMBMeshGridRepresentationServer::Initialize(
   this->Reset();
   return this->BuildRepresentation(meshServer);
 }
-//----------------------------------------------------------------------------
+
 bool vtkCMBMeshGridRepresentationServer::Initialize(
 vtkPolyData* meshRepresentation, vtkDiscreteModel* model)
 {
@@ -310,7 +301,6 @@ vtkPolyData* meshRepresentation, vtkDiscreteModel* model)
   return this->RepresentationBuilt;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBMeshGridRepresentationServer::BuildRepresentation(
   vtkCMBMeshServer *meshServer)
 {
@@ -377,7 +367,6 @@ bool vtkCMBMeshGridRepresentationServer::BuildRepresentation(
   return true;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshGridRepresentationServer::WriteMeshToFile()
 {
   if (!this->RepresentationBuilt)
@@ -414,7 +403,7 @@ void vtkCMBMeshGridRepresentationServer::WriteMeshToFile()
 
   writer->Write();
 }
-//----------------------------------------------------------------------------
+
 void vtkCMBMeshGridRepresentationServer::SetRepresentation (vtkPolyData* mesh)
 {
   if(this->Representation == mesh)
@@ -436,7 +425,6 @@ void vtkCMBMeshGridRepresentationServer::SetRepresentation (vtkPolyData* mesh)
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 vtkIdTypeArray* vtkCMBMeshGridRepresentationServer::GetCellIdMapArray()
 {
   vtkIdTypeArray *maparray = vtkIdTypeArray::SafeDownCast(
@@ -450,7 +438,7 @@ vtkIdTypeArray* vtkCMBMeshGridRepresentationServer::GetCellIdMapArray()
     }
   return maparray;
 }
-//----------------------------------------------------------------------------
+
 vtkIntArray* vtkCMBMeshGridRepresentationServer::GetCellTypeMapArray()
 {
   vtkIntArray *maparray = vtkIntArray::SafeDownCast(
@@ -465,7 +453,7 @@ vtkIntArray* vtkCMBMeshGridRepresentationServer::GetCellTypeMapArray()
   return maparray;
 
 }
-//----------------------------------------------------------------------------
+
 vtkIdTypeArray* vtkCMBMeshGridRepresentationServer::GetPointIdMapArray()
 {
   vtkIdTypeArray *maparray = vtkIdTypeArray::SafeDownCast(
@@ -480,7 +468,7 @@ vtkIdTypeArray* vtkCMBMeshGridRepresentationServer::GetPointIdMapArray()
   return maparray;
 
 }
-//----------------------------------------------------------------------------
+
 vtkIntArray* vtkCMBMeshGridRepresentationServer::GetPointTypeMapArray()
 {
   vtkIntArray *maparray = vtkIntArray::SafeDownCast(
@@ -494,7 +482,7 @@ vtkIntArray* vtkCMBMeshGridRepresentationServer::GetPointTypeMapArray()
     }
   return maparray;
 }
-//----------------------------------------------------------------------------
+
 vtkIdTypeArray* vtkCMBMeshGridRepresentationServer::GetCellPointIdsArray()
 {
   vtkIdTypeArray *cellptsarray = vtkIdTypeArray::SafeDownCast(
@@ -503,7 +491,6 @@ vtkIdTypeArray* vtkCMBMeshGridRepresentationServer::GetCellPointIdsArray()
   return cellptsarray;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBMeshGridRepresentationServer::CanProcessModelGroup(
   vtkDiscreteModel* model, int groupId, std::set<vtkIdType>& faceIdList)
 {
@@ -559,7 +546,6 @@ bool vtkCMBMeshGridRepresentationServer::CanProcessModelGroup(
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBMeshGridRepresentationServer::GetGroupFacetIds(
   vtkDiscreteModel* model,int groupId, std::vector<int>& cellIds)
 {
@@ -587,7 +573,6 @@ bool vtkCMBMeshGridRepresentationServer::GetGroupFacetIds(
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBMeshGridRepresentationServer::GetGroupFacetsArea(
   vtkDiscreteModel* model,int groupId, double& area)
 {
@@ -617,7 +602,6 @@ bool vtkCMBMeshGridRepresentationServer::GetGroupFacetsArea(
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBMeshGridRepresentationServer::GetCellPointIds(
   int cellId, std::vector<int>& pointIds)
 {
@@ -638,7 +622,6 @@ bool vtkCMBMeshGridRepresentationServer::GetCellPointIds(
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBMeshGridRepresentationServer::GetPointLocation(
   int pointId, std::vector<double>& coords)
 {
@@ -654,7 +637,6 @@ bool vtkCMBMeshGridRepresentationServer::GetPointLocation(
   return true;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshGridRepresentationServer::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

@@ -27,24 +27,20 @@ vtkModelEdge::vtkModelEdge()
 {
 }
 
-//-----------------------------------------------------------------------------
 vtkModelEdge::~vtkModelEdge()
 {
 }
 
-//-----------------------------------------------------------------------------
 int vtkModelEdge::GetType()
 {
   return vtkModelEdgeType;
 }
 
-//-----------------------------------------------------------------------------
 int vtkModelEdge::GetNumberOfModelEdgeUses()
 {
   return this->GetNumberOfAssociations(vtkModelEdgeUseType);
 }
 
-//-----------------------------------------------------------------------------
 vtkModelEdgeUse* vtkModelEdge::GetModelEdgeUse(int which)
 { // 0 <= which < number of modeledgeuses
   if(which >= this->GetNumberOfAssociations(vtkModelEdgeUseType) || which < 0)
@@ -68,20 +64,17 @@ vtkModelEdgeUse* vtkModelEdge::GetModelEdgeUse(int which)
   return edgeUse;
 }
 
-//-----------------------------------------------------------------------------
 vtkModelItemIterator* vtkModelEdge::NewModelEdgeUseIterator()
 {
   return this->NewIterator(vtkModelEdgeUseType);
 }
 
-//-----------------------------------------------------------------------------
 int vtkModelEdge::GetNumberOfModelVertexUses()
 {
   vtkModelEdgeUse* edgeUse = this->GetModelEdgeUse(0);
   return edgeUse->GetNumberOfAssociations(vtkModelVertexUseType);
 }
 
-//-----------------------------------------------------------------------------
 vtkModelVertex* vtkModelEdge::GetAdjacentModelVertex(int which)
 {
   if(vtkModelVertexUse* vertexUse =
@@ -92,7 +85,6 @@ vtkModelVertex* vtkModelEdge::GetAdjacentModelVertex(int which)
   return 0;
 }
 
-//-----------------------------------------------------------------------------
 void vtkModelEdge::Initialize(vtkModelVertex* vertex0, vtkModelVertex* vertex1,
                               vtkIdType edgeId)
 {
@@ -107,7 +99,6 @@ void vtkModelEdge::Initialize(vtkModelVertex* vertex0, vtkModelVertex* vertex1,
   this->SetUniquePersistentId(edgeId);
 }
 
-//-----------------------------------------------------------------------------
 vtkModelEdgeUse* vtkModelEdge::BuildModelEdgeUsePair()
 {
   if(this->GetNumberOfModelEdgeUses() == 0)
@@ -141,14 +132,12 @@ vtkModelEdgeUse* vtkModelEdge::BuildModelEdgeUsePair()
   return edgeUse1;
 }
 
-//-----------------------------------------------------------------------------
 void vtkModelEdge::DestroyModelEdgeUse(vtkModelEdgeUse* edgeUse)
 {
   this->RemoveAssociation(edgeUse);
   this->Modified();
 }
 
-//-----------------------------------------------------------------------------
 void vtkModelEdge::SplitModelEdge(
   vtkModelVertex* newVertex, vtkModelEdge* newEdge)
 {
@@ -252,7 +241,6 @@ void vtkModelEdge::SplitModelEdge(
     }
 }
 
-//-----------------------------------------------------------------------------
 void vtkModelEdge::SplitModelEdgeUse(
   vtkModelEdgeUse* firstEdgeUse, vtkModelEdgeUse* secondEdgeUse,
   vtkModelVertexUse* vertexUse0, vtkModelVertexUse* vertexUse1,
@@ -262,7 +250,6 @@ void vtkModelEdge::SplitModelEdgeUse(
   secondEdgeUse->SetModelVertexUses(vertexUse1, vertexUse2);
 }
 
-//-----------------------------------------------------------------------------
 bool vtkModelEdge::SplitModelEdgeLoop(vtkModelVertex* vertex)
 {
   vtkModelItemIterator* edgeUses = this->NewIterator(vtkModelEdgeUseType);
@@ -279,7 +266,6 @@ bool vtkModelEdge::SplitModelEdgeLoop(vtkModelVertex* vertex)
   return 1;
 }
 
-//-----------------------------------------------------------------------------
 int vtkModelEdge::GetNumberOfAdjacentModelFaces()
 {
   std::set<vtkModelFace*> faces;
@@ -301,7 +287,6 @@ int vtkModelEdge::GetNumberOfAdjacentModelFaces()
   return static_cast<int>(faces.size());
 }
 
-//-----------------------------------------------------------------------------
 vtkModelItemIterator* vtkModelEdge::NewAdjacentModelFaceIterator()
 {
   vtkModelItemGenericIterator* faces = vtkModelItemGenericIterator::New();
@@ -324,13 +309,11 @@ vtkModelItemIterator* vtkModelEdge::NewAdjacentModelFaceIterator()
   return faces;
 }
 
-//-----------------------------------------------------------------------------
 void vtkModelEdge::Serialize(vtkSerializer* ser)
 {
   this->Superclass::Serialize(ser);
 }
 
-//-----------------------------------------------------------------------------
 void vtkModelEdge::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

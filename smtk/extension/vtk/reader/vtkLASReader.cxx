@@ -45,8 +45,6 @@ enum FileReadingStatus
 
 vtkStandardNewMacro(vtkLASReader);
 
-
-//-----------------------------------------------------------------------------
 vtkLASReader::vtkLASReader()
 {
   this->FileName = NULL;
@@ -74,7 +72,6 @@ vtkLASReader::vtkLASReader()
   this->OutputDataTypeIsDouble = true;
 }
 
-//-----------------------------------------------------------------------------
 vtkLASReader::~vtkLASReader()
 {
   this->SetFileName(0);
@@ -84,7 +81,6 @@ vtkLASReader::~vtkLASReader()
     }
 }
 
-//-----------------------------------------------------------------------------
 void vtkLASReader::SetConvertFromLatLongToXYZ(bool mode)
 {
   if (this->ConvertFromLatLongToXYZ == mode)
@@ -98,7 +94,6 @@ void vtkLASReader::SetConvertFromLatLongToXYZ(bool mode)
   this->Modified();
 }
 
-//-----------------------------------------------------------------------------
 // vtkSetStringMacro except we clear some variables if we update the value
 void vtkLASReader::SetFileName(const char *filename)
 {
@@ -138,7 +133,6 @@ void vtkLASReader::SetFileName(const char *filename)
   this->Modified();
 }
 
-//-----------------------------------------------------------------------------
 void vtkLASReader::AddRequestedClassificationForRead(int classification,
                                                      int onRatio)
 {
@@ -150,14 +144,12 @@ void vtkLASReader::AddRequestedClassificationForRead(int classification,
     }
 }
 
-//-----------------------------------------------------------------------------
 void vtkLASReader::RemoveAllRequestedReadClassifications()
 {
   this->RequestedReadClassifications.clear();
   this->Modified();
 }
 
-//-----------------------------------------------------------------------------
 void vtkLASReader::SetTransform(int index, double elements[16])
 {
   if (index >= 0 && index < NUMBER_OF_CLASSIFICATIONS)
@@ -169,13 +161,11 @@ void vtkLASReader::SetTransform(int index, double elements[16])
     }
 }
 
-//-----------------------------------------------------------------------------
 void vtkLASReader::SetTransform(double elements[17])
 {
   this->SetTransform(static_cast<int>(elements[0]), elements + 1);
 }
 
-//-----------------------------------------------------------------------------
 void vtkLASReader::SetTransform(int index, vtkTransform *transform)
 {
   if (index >= 0 && index < NUMBER_OF_CLASSIFICATIONS &&
@@ -195,14 +185,12 @@ void vtkLASReader::SetTransform(int index, vtkTransform *transform)
     }
 }
 
-//-----------------------------------------------------------------------------
 vtkTransform *vtkLASReader::GetTransform(int index)
 {
   return (index >= 0 && index < NUMBER_OF_CLASSIFICATIONS) ?
     this->Transform[index] : 0;
 }
 
-//-----------------------------------------------------------------------------
 int vtkLASReader::ReadHeaderBlock()
 {
   ifstream fin(this->FileName, ios::binary);
@@ -320,7 +308,6 @@ std::string vtkLASReader::GetHeaderInfo()
   return ss.str();
 }
 
-//-----------------------------------------------------------------------------
 int vtkLASReader::RequestData(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **vtkNotUsed(inputVector),
@@ -356,8 +343,6 @@ int vtkLASReader::RequestData(
 
 }
 
-
-//-----------------------------------------------------------------------------
 int vtkLASReader::ReadPoints(vtkMultiBlockDataSet *output)
 {
 
@@ -725,7 +710,6 @@ int vtkLASReader::ReadPoints(vtkMultiBlockDataSet *output)
   return READ_OK;
 }
 
-//-----------------------------------------------------------------------------
 void vtkLASReader::AddClassificationFieldData(unsigned char classification,
                                               vtkPolyData *pD)
 {
@@ -804,7 +788,6 @@ void vtkLASReader::AddClassificationFieldData(unsigned char classification,
   classificationNameFD->Delete();
 }
 
-//-----------------------------------------------------------------------------
 void vtkLASReader::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
@@ -815,8 +798,6 @@ void vtkLASReader::PrintSelf(ostream& os, vtkIndent indent)
     (this->ConvertFromLatLongToXYZ ? "On" : "Off");
 }
 
-
-//----------------------------------------------------------------------------
 int vtkLASReader::RequestInformation(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **vtkNotUsed(inputVector),

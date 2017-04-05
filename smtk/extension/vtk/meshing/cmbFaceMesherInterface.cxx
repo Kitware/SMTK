@@ -40,7 +40,6 @@ struct TriangleOutput
   std::vector<double> triangleAttribute;
   };
 
-//----------------------------------------------------------------------------
 template<typename T>
 bool AllocFromStream(std::stringstream& buffer, std::vector<T> &dest, int numElements)
 {
@@ -59,7 +58,6 @@ bool AllocFromStream(std::stringstream& buffer, std::vector<T> &dest, int numEle
   return buffer.gcount() == size;
 }
 
-//----------------------------------------------------------------------------
 template<typename T>
 bool WriteToStream(std::stringstream& buffer, std::vector<T>& src, int numElements)
 {
@@ -88,7 +86,6 @@ struct cmbFaceMesherInterface::TriangleInput
   };
 
 
-//----------------------------------------------------------------------------
 cmbFaceMesherInterface::cmbFaceMesherInterface(const int &numPoints,
   const int &numSegments, const int &numHoles, const int& numRegions, const bool &preserveEdgesAndNodes):
   OutputMesh(NULL),
@@ -109,14 +106,12 @@ cmbFaceMesherInterface::cmbFaceMesherInterface(const int &numPoints,
   this->InitDataStructures();
 }
 
-//----------------------------------------------------------------------------
 cmbFaceMesherInterface::~cmbFaceMesherInterface()
 {
   delete this->Ti;
   this->OutputMesh = NULL;
 }
 
-//----------------------------------------------------------------------------
 void cmbFaceMesherInterface::InitDataStructures()
 {
   this->Ti->points.resize(this->NumberOfPoints*2);
@@ -132,13 +127,11 @@ void cmbFaceMesherInterface::InitDataStructures()
     }
 }
 
-//----------------------------------------------------------------------------
 void cmbFaceMesherInterface::setOutputMesh(vtkPolyData *mesh)
 {
   this->OutputMesh = mesh;
 }
 
-//----------------------------------------------------------------------------
 bool cmbFaceMesherInterface::setPoint(const int index, const double &x, const double &y, const int& nodeId)
 {
   if (index >= 0 && index < this->NumberOfPoints)
@@ -158,7 +151,6 @@ bool cmbFaceMesherInterface::setPoint(const int index, const double &x, const do
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool cmbFaceMesherInterface::setSegment(const int index, const int &pId1, const int &pId2, const int &arcId)
 {
   if (index >= 0 && index < this->NumberOfSegments)
@@ -174,7 +166,6 @@ bool cmbFaceMesherInterface::setSegment(const int index, const int &pId1, const 
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool cmbFaceMesherInterface::setRegion(const int index, const double &x, const double &y, const double &attribute, const double& max_area)
 {
   if (index >= 0 && index < this->NumberOfRegions)
@@ -188,7 +179,6 @@ bool cmbFaceMesherInterface::setRegion(const int index, const double &x, const d
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool cmbFaceMesherInterface::setHole(const int index, const double &x, const double &y)
 {
   if (index >= 0 && index < this->NumberOfHoles)
@@ -200,7 +190,6 @@ bool cmbFaceMesherInterface::setHole(const int index, const double &x, const dou
   return false;
 }
 
-//----------------------------------------------------------------------------
 double cmbFaceMesherInterface::area() const
 {
   double tmpBounds[4];
@@ -208,7 +197,6 @@ double cmbFaceMesherInterface::area() const
   return (tmpBounds[2]-tmpBounds[0]) * (tmpBounds[3]-tmpBounds[1]);
 }
 
-//----------------------------------------------------------------------------
 void cmbFaceMesherInterface::bounds(double tmpBounds[4]) const
 {
   if ( this->NumberOfPoints == 0 )
@@ -235,8 +223,6 @@ void cmbFaceMesherInterface::bounds(double tmpBounds[4]) const
     }
 }
 
-
-//----------------------------------------------------------------------------
 bool cmbFaceMesherInterface::buildFaceMesh(const long &faceId,
                                            const double &zValue)
 {
@@ -246,7 +232,6 @@ bool cmbFaceMesherInterface::buildFaceMesh(const long &faceId,
                              zValue);
 }
 
-//----------------------------------------------------------------------------
 bool cmbFaceMesherInterface::buildFaceMesh(vtkCMBMeshServerLauncher* activeServer,
                                            const long &faceId,
                                            const double &zValue)
@@ -310,7 +295,6 @@ bool cmbFaceMesherInterface::buildFaceMesh(vtkCMBMeshServerLauncher* activeServe
   return valid;
 }
 
-//----------------------------------------------------------------------------
 bool cmbFaceMesherInterface::PackData(std::string& rawData)
 {
 
@@ -350,7 +334,6 @@ bool cmbFaceMesherInterface::PackData(std::string& rawData)
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool cmbFaceMesherInterface::unPackData(const char* rawData,
                                         std::size_t dataSize,
                                         const long &faceId,

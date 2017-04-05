@@ -14,14 +14,12 @@
 namespace smtk {
 namespace mesh {
 
-//----------------------------------------------------------------------------
 PointLocator::PointLocator(const smtk::mesh::PointSet& ps):
   m_locator(ps.collection()->interface()->pointLocator( ps.range() ) )
 {
 
 }
 
-//----------------------------------------------------------------------------
 PointLocator::PointLocator(const smtk::mesh::CollectionPtr collection,
                            const double* const xyzs,
                            std::size_t numPoints,
@@ -31,7 +29,6 @@ PointLocator::PointLocator(const smtk::mesh::CollectionPtr collection,
 
 }
 
-//----------------------------------------------------------------------------
 PointLocator::PointLocator(const smtk::mesh::CollectionPtr collection,
                            const float* const xyzs,
                            std::size_t numPoints,
@@ -41,13 +38,11 @@ PointLocator::PointLocator(const smtk::mesh::CollectionPtr collection,
 
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::HandleRange PointLocator::range( ) const
 {
   return this->m_locator->range();
 }
 
-//----------------------------------------------------------------------------
 void PointLocator::find(double x, double y, double z, double radius,
                         LocatorResults& results)
 {

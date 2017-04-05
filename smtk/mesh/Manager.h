@@ -72,7 +72,6 @@ public:
   //by the manager.
   bool removeCollection( const smtk::mesh::CollectionPtr& collection );
 
-  //----------------------------------------------------------------------------
   //Model Association commands
   std::vector<smtk::mesh::CollectionPtr> collectionsWithAssociations() const;
   bool isAssociatedToACollection( const smtk::model::EntityRef& eref ) const;
@@ -88,7 +87,6 @@ public:
                                        const smtk::model::EntityRef& c ) const;
 
 
-  //----------------------------------------------------------------------------
   // Collection name commands
 
   // Will generate a name that is not used by any other collection owned by this

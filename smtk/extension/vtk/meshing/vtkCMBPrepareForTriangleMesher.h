@@ -145,7 +145,6 @@ public:
 
   void SetPolyData(vtkPolyData* pd);//Set the polydata to work on
 
-  //-----------------------------------------------------------
   //Functions for describing what to mesh
   //
   // Functions are generally called in this order
@@ -208,7 +207,6 @@ public:
                             const bool& isOuter,
                             const std::vector<vtkIdType>& arcIndexes);
 
-  //-----------------------------------------------------------
   //Functions for querying a map file
   bool IsValidForReading();
 
