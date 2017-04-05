@@ -64,12 +64,6 @@ smtk::model::OperatorResult ExportMesh::operateInternal()
   std::string outputfile =
     this->specification()->findFile("filename")->value();
 
-  smtk::attribute::StringItemPtr modelPropertyNameItem =
-    this->specification()->findString("model property name");
-  std::string modelPropertyName =
-    (modelPropertyNameItem && modelPropertyNameItem->isValid() ?
-     modelPropertyNameItem->valueAsString() : "");
-
   // ableToOperate should have verified that mesh(s) are set
   smtk::attribute::MeshItem::Ptr meshItem =
     this->specification()->findMesh("mesh");
@@ -97,25 +91,7 @@ smtk::model::OperatorResult ExportMesh::operateInternal()
         }
 
       smtk::io::ExportMesh exportMesh;
-      if (modelPropertyName.empty())
-        {
-        fileExportSuccess = exportMesh(outputfile, collection);
-        }
-      else
-        {
-        Models entities = this->associatedEntitiesAs<Models>();
-        if (entities.empty())
-          {
-          fileExportSuccess = false;
-          }
-        else
-          {
-          fileExportSuccess = exportMesh(outputfile,
-                                         collection,
-                                         entities[0].manager(),
-                                         modelPropertyName);
-          }
-        }
+      fileExportSuccess = exportMesh(outputfile, collection);
 
       if(fileExportSuccess)
         {
