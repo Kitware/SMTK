@@ -56,6 +56,8 @@ protected slots:
   void onOpacityChanged(int opacity);
   void onMapScalars(int mapScalars2Colors);
 
+  void resetCamera();
+
 protected:
   void setupProgressBar(QWidget* progressWidget);
   void disableWhileProcessing();
