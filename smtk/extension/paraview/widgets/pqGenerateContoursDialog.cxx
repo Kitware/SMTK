@@ -29,6 +29,8 @@
 #include "vtkSMPVRepresentationProxy.h"
 #include "vtkSMPropertyHelper.h"
 #include "vtkSMProxyManager.h"
+#include "vtkPVRenderView.h"
+#include "vtkSMRenderViewProxy.h"
 #include "vtkSMRepresentationProxy.h"
 #include "vtkSMSourceProxy.h"
 #include "vtkSMTransferFunctionProxy.h"
@@ -158,6 +160,9 @@ pqGenerateContoursDialog::pqGenerateContoursDialog(
     this->RenderView = qobject_cast<pqRenderView*>(
       builder->createView(pqRenderView::renderViewType(),
       imagesource->getServer()));
+    vtkSMPropertyHelper(this->RenderView->getRenderViewProxy(),
+                        "InteractionMode").Set(
+                          vtkPVRenderView::INTERACTION_MODE_2D);
 
     QVBoxLayout* vboxlayout = new QVBoxLayout(this->InternalWidget->renderFrame);
     vboxlayout->setMargin(0);
@@ -176,6 +181,11 @@ pqGenerateContoursDialog::pqGenerateContoursDialog(
       this, SLOT(updateContourButtonStatus()));
     QObject::connect(this->InternalWidget->relativeLineLengthCheckbox, SIGNAL(stateChanged(int)),
       this, SLOT(updateContourButtonStatus()));
+
+    // Set up camera reset button
+    QObject::connect(
+      this->InternalWidget->resetCamera, SIGNAL(clicked()),
+      this, SLOT(resetCamera()));
 
     // setup Parallel projection and 2D manipulation
     pqSMAdaptor::setElementProperty(
@@ -213,7 +223,7 @@ pqGenerateContoursDialog::pqGenerateContoursDialog(
   this->RenderView->forceRender();
  // see pqProxyInformationWidget
   if(this->ImageMesh)
-    {  
+    {
     int extents[6];
     // The extents info will only be available from the original image source used for image representation
     imagesource->getOutputPort(0)->getDataInformation()->GetExtent(extents);
@@ -475,4 +485,10 @@ void pqGenerateContoursDialog::onMapScalars(int mapScalars2Colors)
     imagerep->renderViewEventually();
   }
 
+}
+
+//-----------------------------------------------------------------------------
+void pqGenerateContoursDialog::resetCamera()
+{
+  this->RenderView->resetViewDirection(0.,0.,-1.,0.,1.,0.);
 }
