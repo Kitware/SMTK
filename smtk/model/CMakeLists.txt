@@ -40,6 +40,7 @@ set(modelSrcs
   ShellEntity.cxx
   SimpleModelSubphrases.cxx
   Manager.cxx
+  StoredResource.cxx
   SubphraseGenerator.cxx
   Tessellation.cxx
   UseEntity.cxx
@@ -109,6 +110,7 @@ set(modelHeaders
   ShellEntity.h
   SimpleModelSubphrases.h
   Manager.h
+  StoredResource.h
   SubphraseGenerator.h
   StringData.h
   Tessellation.h

@@ -11,6 +11,7 @@
 #include "smtk/io/SaveJSON.txx"
 
 #include "smtk/common/Version.h"
+#include "smtk/common/ResourceSet.h"
 
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/Entity.h"
@@ -19,6 +20,7 @@
 #include "smtk/model/Operator.h"
 #include "smtk/model/SessionIOJSON.h"
 #include "smtk/model/SessionRegistrar.h"
+#include "smtk/model/StoredResource.h"
 #include "smtk/model/Tessellation.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -224,6 +226,68 @@ bool SaveJSON::fromModelManagerToFile(smtk::model::ManagerPtr modelMgr, const ch
   std::ofstream file(filename);
   file << SaveJSON::fromModelManager(modelMgr, JSON_DEFAULT);
   return true;
+}
+
+int SaveJSON::fromResourceSet(
+  cJSON* pnode, smtk::common::ResourceSetPtr& rset)
+{
+  if (!pnode || pnode->type != cJSON_Object || !rset)
+    {
+    return 0;
+    }
+
+  cJSON* jset = cJSON_CreateObject();
+  cJSON_AddItemToObject(pnode, "resource set", jset);
+  if (!rset->linkStartPath().empty())
+    {
+    cJSON_AddItemToObject(jset, "path prefix", cJSON_CreateString(rset->linkStartPath().c_str()));
+    }
+  std::vector<std::string> rids = rset->resourceIds();
+  for (auto rid : rids)
+    {
+    smtk::common::ResourcePtr rsrc;
+    smtk::model::StoredResourcePtr srsrc;
+    if (rset->get(rid, rsrc))
+      {
+      smtk::common::Resource::Type rsrcType;
+      smtk::common::ResourceSet::ResourceRole rsrcRole;
+      smtk::common::ResourceSet::ResourceState rsrcState;
+      std::string rsrcLink;
+
+      cJSON* jsrc = cJSON_CreateObject();
+      cJSON_AddItemToObject(jset, rid.c_str(), jsrc);
+      if (rset->resourceInfo(rid, rsrcType, rsrcRole, rsrcState, rsrcLink))
+        {
+        cJSON_AddItemToObject(jsrc, "type",
+          cJSON_CreateString(
+            smtk::common::Resource::type2String(rsrcType).c_str()));
+        cJSON_AddItemToObject(jsrc, "role",
+          cJSON_CreateString(
+            smtk::common::ResourceSet::role2String(rsrcRole).c_str()));
+        cJSON_AddItemToObject(jsrc, "state",
+          cJSON_CreateString(
+            smtk::common::ResourceSet::state2String(rsrcState).c_str()));
+
+        if ((srsrc = smtk::dynamic_pointer_cast<smtk::model::StoredResource>(rsrc)))
+          {
+          cJSON_AddItemToObject(jsrc, "url", cJSON_CreateString(srsrc->url().c_str()));
+          const smtk::model::EntityRefs& children(srsrc->entities());
+          if (!children.empty())
+            { // Append entities contained in the file to the resource description:
+            cJSON* jents = cJSON_CreateArray();
+            cJSON_AddItemToObject(jsrc, "entities", jents);
+            cJSON** jchild = &(jents->child);
+            for (auto child: children)
+              {
+              *jchild = cJSON_CreateString(child.entity().toString().c_str());
+              jchild = &((*jchild)->next);
+              }
+            }
+          }
+        }
+      }
+    }
+  return 1;
 }
 
 int SaveJSON::forManager(

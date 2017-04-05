@@ -24,6 +24,7 @@
     <AttDef Type="result(load smtk model)" BaseType="result">
       <ItemDefinitions>
         <ModelEntity Name="mesh_created" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>
+        <Void Name="cleanse entities" IsEnabledByDefault="true"></Void>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

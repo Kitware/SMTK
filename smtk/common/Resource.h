@@ -12,41 +12,39 @@
 //   An SMTK resource is one of: attribute manager, model, mesh
 // .SECTION See Also
 
-#ifndef __smtk_common_Resource_h
-#define __smtk_common_Resource_h
-
+#ifndef smtk_common_Resource_h
+#define smtk_common_Resource_h
 
 #include "smtk/CoreExports.h"
 #include <string>
 
+namespace smtk {
+  namespace common {
 
-namespace smtk
+class SMTKCORE_EXPORT Resource
 {
-  namespace common
-  {
-    class SMTKCORE_EXPORT Resource
+public:
+  virtual ~Resource();
+
+  /// Identifies resource type
+  enum Type
     {
-    public:
-      virtual ~Resource();
-
-      /// Identifies resource type
-      enum Type
-      {
-        ATTRIBUTE = 0,
-        MODEL,        // future
-        MESH,         // future
-        NUMBER_OF_TYPES
-      };
-
-      virtual Resource::Type resourceType() const = 0;
-
-      static std::string type2String(Resource::Type t);
-      static Resource::Type string2Type(const std::string &s);
-
-    protected:
-      Resource();
+    ATTRIBUTE = 0,
+    MODEL,
+    MESH,         // future
+    NUMBER_OF_TYPES
     };
+
+  virtual Resource::Type resourceType() const = 0;
+
+  static std::string type2String(Resource::Type t);
+  static Resource::Type string2Type(const std::string &s);
+
+protected:
+  Resource();
+};
+
   }
 }
 
-#endif  /* __smtk_common_Resource_h */
+#endif  // smtk_common_Resource_h
