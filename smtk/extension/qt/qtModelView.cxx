@@ -1260,49 +1260,116 @@ void qtModelView::changeEntityColor( const QModelIndex& idx)
   smtk::model::EntityRefs selentityrefs;
   smtk::mesh::MeshSets selmeshes;
   QColor currentColor = Qt::white;
-  if(dp->phraseType() == MESH_SUMMARY)
+  if (dp->phraseType() == ENTITY_LIST)
+  {
+    EntityListPhrasePtr elp = smtk::dynamic_pointer_cast
+        <EntityListPhrase>(dp);
+    std::string colorName;
+    // Currently only handle model's entity list
+    if (elp && elp->parent()->relatedEntity().isModel())
     {
-    MeshPhrasePtr mphrase = smtk::dynamic_pointer_cast<MeshPhrase>(dp);
-    smtk::mesh::CollectionPtr c;
-    smtk::mesh::MeshSet meshkey;
-    if(!mphrase->relatedMesh().is_empty())
+      colorName = Entity::flagSummary(elp->relatedBitFlags());
+      colorName += " color";
+      // get the color for the list
+      QColor newColor = QColorDialog::getColor(currentColor, this,
+        "Choose Entity Color",
+        QColorDialog::DontUseNativeDialog | QColorDialog::ShowAlphaChannel);
+
+      // store color property on the model
+      // use set property operator to store color
+      smtk::model::EntityRef model = elp->parent()->relatedEntity();
+      smtk::attribute::AttributePtr attrib = brOp->specification();
+      smtk::attribute::StringItemPtr nameItem =
+        attrib->findString("name");
+      smtk::attribute::DoubleItemPtr colorItem =
+        attrib->findDouble("float value");
+      if(!nameItem || !colorItem)
+        {
+        std::cerr
+          << "The set-property op is missing item(s): name or double value\n";
+        }
+      nameItem->setValue(colorName);
+      if(newColor.isValid())
+        {
+        colorItem->setNumberOfValues(4);
+        colorItem->setValue(0, newColor.redF());
+        colorItem->setValue(1, newColor.greenF());
+        colorItem->setValue(2, newColor.blueF());
+        colorItem->setValue(3, newColor.alphaF());
+        }
+      else
+        {
+        colorItem->setNumberOfValues(4);
+        std::vector<double> nullColor(4, -1.);
+        colorItem->setValues(nullColor.begin(), nullColor.end());
+        }
+      attrib->associateEntity(model);
+
+      emit this->operationRequested(brOp);
+
+      // invalid color of elp's children entities to be (0, 0, 0, -1)
+      OperatorPtr acOp = this->getOp(idx, "assign colors");
+      EntityRefArray relatedEntities = elp->relatedEntities();
+      for (auto & relatedEntity : relatedEntities)
       {
-      meshkey = mphrase->relatedMesh();
-      c = meshkey.collection();
-      }
-    else
-      {
-      c = mphrase->relatedMeshCollection();
-      meshkey = c->meshes();
+        acOp->associateEntity(relatedEntity);
       }
 
-    if(c && !meshkey.is_empty())
-      {
-      const FloatList& rgba(c->floatProperty(meshkey, "color"));
-      currentColor = internal_convertColor(rgba);
-      selmeshes.insert(meshkey);
-      }
-    }
-  else if(!dp->isPropertyValueType() && dp->relatedEntity().isValid())
-    {
-    selentityrefs.insert(dp->relatedEntity());
+      emit this->operationRequested(acOp);
 
-    smtk::model::FloatList rgba(4);
-    rgba = dp->relatedEntity().color();
-    currentColor = internal_convertColor(rgba);
-    }
-
-  if(selentityrefs.size() > 0 || selmeshes.size() > 0)
-    {
-    QColor newColor = QColorDialog::getColor(currentColor, this,
-      "Choose Entity Color",
-      QColorDialog::DontUseNativeDialog | QColorDialog::ShowAlphaChannel);
-    if(newColor.isValid() && newColor != currentColor)
+      if (newColor.isValid())
       {
-      if(this->setEntityColor(selentityrefs, selmeshes, newColor, brOp))
         this->dataChanged(idx, idx);
       }
+
     }
+  }
+  else
+  {
+    if(dp->phraseType() == MESH_SUMMARY)
+      {
+      MeshPhrasePtr mphrase = smtk::dynamic_pointer_cast<MeshPhrase>(dp);
+      smtk::mesh::CollectionPtr c;
+      smtk::mesh::MeshSet meshkey;
+      if(!mphrase->relatedMesh().is_empty())
+        {
+        meshkey = mphrase->relatedMesh();
+        c = meshkey.collection();
+        }
+      else
+        {
+        c = mphrase->relatedMeshCollection();
+        meshkey = c->meshes();
+        }
+
+      if(c && !meshkey.is_empty())
+        {
+        const FloatList& rgba(c->floatProperty(meshkey, "color"));
+        currentColor = internal_convertColor(rgba);
+        selmeshes.insert(meshkey);
+        }
+      }
+    else if(!dp->isPropertyValueType() && dp->relatedEntity().isValid())
+      {
+      selentityrefs.insert(dp->relatedEntity());
+
+      smtk::model::FloatList rgba(4);
+      rgba = dp->relatedEntity().color();
+      currentColor = internal_convertColor(rgba);
+      }
+
+    if(selentityrefs.size() > 0 || selmeshes.size() > 0)
+      {
+      QColor newColor = QColorDialog::getColor(currentColor, this,
+        "Choose Entity Color",
+        QColorDialog::DontUseNativeDialog | QColorDialog::ShowAlphaChannel);
+      if(newColor.isValid() && newColor != currentColor)
+        {
+        if(this->setEntityColor(selentityrefs, selmeshes, newColor, brOp))
+          this->dataChanged(idx, idx);
+        }
+      }
+  }
 }
 
 bool qtModelView::setEntityColor(

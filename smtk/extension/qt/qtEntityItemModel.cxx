@@ -355,7 +355,8 @@ QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
           return QVariant(QIcon(":/icons/display/eyeballx_16.png"));
         }
       else if (role == EntityColorRole &&
-        (item->phraseType() == MESH_SUMMARY || item->relatedEntity().isValid()))
+        (item->phraseType() == MESH_SUMMARY || item->relatedEntity().isValid()
+         || item->phraseType() == ENTITY_LIST )) // if needed, disable assign model color here
         {
         QColor color;
         FloatList rgba = item->relatedColor();

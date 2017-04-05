@@ -24,7 +24,7 @@ namespace smtk {
 
 EntityPhrase::EntityPhrase()
 {
-  this->m_mutability = 3; // both color and title are mutable.
+  this->m_mutability = 5; // both color(4) and title(1) are mutable.
 }
 
 /**\brief Prepare an EntityPhrase for display.
@@ -33,7 +33,7 @@ EntityPhrase::Ptr EntityPhrase::setup(const EntityRef& entity, DescriptivePhrase
 {
   this->DescriptivePhrase::setup(ENTITY_SUMMARY, parnt);
   this->m_entity = entity;
-  this->m_mutability = 3; // both color and title are mutable by default.
+  this->m_mutability = 5; // both color and title are mutable by default.
   return this->shared_from_this();
 }
 
@@ -83,7 +83,27 @@ EntityRef EntityPhrase::relatedEntity() const
 /// Return a color associated with the related entity.
 FloatList EntityPhrase::relatedColor() const
 {
-  return this->m_entity.color();
+  // return its own color or the color stored on model(set by ENTITY_LIST)
+  // if in the future user wants to differentiate the color set by entity or
+  // ENTITY_LIST, change the logic here
+  smtk::model::FloatList rgba = this->m_entity.color();
+  if ((rgba.size() == 4) && (rgba[3] < 0 || rgba[3] > 1))
+  {
+    // invalid color. Maybe the color is assigned by ENTITY_LIST, check model
+    if (this->m_entity.owningModel().isValid())
+    {
+      // if color is assigned by ENTITIY_LIST, check model
+      smtk::model::Model model = this->m_entity.owningModel();
+      std::string colorName;
+      colorName = smtk::model::Entity::flagSummary(this->m_entity.entityFlags());
+      colorName += " color";
+      if (model.hasFloatProperty(colorName))
+      {
+        rgba = model.floatProperty(colorName);
+      }
+    }
+  }
+  return rgba;
 }
 
 /// True when the entity is valid and marked as mutable (the default, setMutability(0x4)).

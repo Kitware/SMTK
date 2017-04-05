@@ -11,6 +11,8 @@
 #include "smtk/model/EntityPhrase.h"
 
 #include "smtk/model/PropertyListPhrase.h"
+#include "smtk/model/EntityTypeBits.h"
+#include "smtk/model/Entity.h"
 
 namespace smtk {
   namespace model {
@@ -18,6 +20,7 @@ namespace smtk {
 EntityListPhrase::EntityListPhrase()
   : m_commonFlags(INVALID), m_unionFlags(0)
 {
+  // only color is mutable
 }
 
 /// Show the entity name (or a default name) in the title
@@ -114,6 +117,45 @@ void EntityListPhrase::setFlags(BitFlags commonFlags, BitFlags unionFlags)
   this->m_commonFlags = commonFlags;
   this->m_unionFlags = unionFlags;
 }
+
+/**\brief return whether the related color is mutable or not
+  * Only when parent is model, related entities are of the same type
+  * and entity is cell then user could change related color
+  */
+bool EntityListPhrase::isRelatedColorMutable() const
+{
+  if (this->parent() && this->parent()->relatedEntity().isModel()
+      && this->m_commonFlags == this->m_unionFlags
+      && (this->m_commonFlags | smtk::model::CELL_ENTITY))
+  {
+    return true;
+  }
+  return false;
+
+}
+
+/** \brief return the color of the entityListPhrase which is stored
+  * in the model
+  */
+FloatList EntityListPhrase::relatedColor() const
+{
+  std::string colorName;
+  if (this->parent() && this->parent()->relatedEntity().isModel())
+  { // return parent model's default color for the cell type specified by
+    // commonflag
+    colorName = Entity::flagSummary(this->m_commonFlags);
+    colorName += " color";
+    smtk::model::Model model = this->parent()->relatedEntity().
+        as<smtk::model::Model>();
+    if (model.hasFloatProperty(colorName))
+    {
+      return model.floatProperty(colorName);
+    }
+  }
+  return FloatList(4,-1.);
+}
+
+
 
   } // model namespace
 } // smtk namespace
