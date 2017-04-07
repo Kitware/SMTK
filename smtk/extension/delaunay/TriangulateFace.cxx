@@ -207,6 +207,7 @@ OperatorResult TriangulateFace::operateInternal()
   // remove the original collection and replace it with a new one
   this->session()->meshManager()->removeCollection(collection);
   collection = this->session()->meshManager()->makeCollection();
+  collection->associateToModel(face.model().entity());
 
   // populate the new collection
   smtk::mesh::HandleRange cells = ImportDelaunayMesh(mesh, collection);
