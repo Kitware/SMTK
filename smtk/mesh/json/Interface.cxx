@@ -305,10 +305,28 @@ smtk::mesh::HandleRange Interface::getCells(const smtk::mesh::HandleRange& meshs
   return cells;
 }
 
-//get all cells held by this range handle of a given dimension
-smtk::mesh::HandleRange Interface::getPoints(const smtk::mesh::HandleRange&) const
+//get all points held by this range handle
+smtk::mesh::HandleRange Interface::getPoints(const smtk::mesh::HandleRange& cells) const
 {
-  return smtk::mesh::HandleRange();
+  // We don't support modifying operations via the JSON interface (like meshset
+  // construction, point merging, etc.); in keeping with this paradigm, the only
+  // point ranges that can be queried are unions of points associated with mesh
+  // sets that have already been computed using an alternate backend (e.g.
+  // Moab). Any queries involving cells that are not the union of cell sets
+  // contained within the meshInfo vector yield a null return value. This is
+  // sufficient for relaying server-side information about points to the client.
+
+  smtk::mesh::HandleRange points;
+  smtk::mesh::HandleRange cellsToVisit = cells;
+  for(const auto& m : this->m_meshInfo)
+    {
+    if (cellsToVisit.contains(m.cells()))
+      {
+      points.merge(m.points());
+      cellsToVisit = subtract(cellsToVisit, m.cells());
+      }
+    }
+  return cellsToVisit.empty() ? points : smtk::mesh::HandleRange();
 }
 
 bool Interface::getCoordinates(const smtk::mesh::HandleRange&,double*) const

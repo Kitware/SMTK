@@ -81,6 +81,11 @@ smtk::mesh::HandleRange MeshInfo::cells(smtk::mesh::DimensionType dim) const
   return this->m_cells.subset_by_dimension( static_cast<int>(dim) );
 }
 
+smtk::mesh::HandleRange MeshInfo::points() const
+{
+  return this->m_points;
+}
+
 bool MeshInfo::has(const smtk::mesh::Domain &d) const
 {
   return std::find(this->m_domains.begin(),
