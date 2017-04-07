@@ -16,13 +16,14 @@
 #include "jobtablewidget.h"
 
 #include <QMessageBox>
+#include <QSortFilterProxyModel>
 
 namespace cumulus
 {
 
 JobTableWidget::JobTableWidget(QWidget *parentObject):
   QWidget(parentObject),
-  ui(new Ui::JobTableWidget)
+  ui(new Ui::JobTableWidget), m_proxyModel(NULL)
 {
   ui->setupUi(this);
 
@@ -36,7 +37,9 @@ JobTableWidget::~JobTableWidget()
 
 void JobTableWidget::setModel(QAbstractItemModel *model)
 {
-  ui->table->setModel(model);
+  this->m_proxyModel = new QSortFilterProxyModel(this);
+  this->m_proxyModel->setSourceModel(model);
+  ui->table->setModel(this->m_proxyModel);
 
   ui->table->horizontalHeader()
       ->setResizeMode(QHeaderView::Stretch);

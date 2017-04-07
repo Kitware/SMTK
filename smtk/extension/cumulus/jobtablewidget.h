@@ -16,6 +16,7 @@
 
 #include <QWidget>
 class QAbstractItemModel;
+class QSortFilterProxyModel;
 
 namespace Ui {
 class JobTableWidget;
@@ -38,7 +39,7 @@ public:
   void setCumulusProxy(CumulusProxy *cumulusProxy);
 protected:
   Ui::JobTableWidget *ui;
-
+  QSortFilterProxyModel *m_proxyModel;
 };
 
 } // end namespace

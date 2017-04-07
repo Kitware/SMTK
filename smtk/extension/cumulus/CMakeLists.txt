@@ -77,3 +77,8 @@ target_link_libraries(cumulus
   smtkCumulusExt
   cJSON
 )
+
+if (SMTK_ENABLE_TESTING)
+  # Make header compilation tests link properly:
+  target_link_libraries(TestBuild_smtk_extension_cumulus LINK_PRIVATE smtkCumulusExt)
+endif()
