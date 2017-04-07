@@ -76,7 +76,7 @@ class TestModelPhrases(unittest.TestCase):
                          'Expected model name to be mutable.')
         self.assertEqual(s1[0].isSubtitleMutable(), False,
                          'Expected model subtitle to be immutable.')
-        self.assertEqual(s1[0].isRelatedColorMutable(), False,
+        self.assertEqual(s1[0].isRelatedColorMutable(), True,
                          'Expected model color to be immutable.')
         self.assertEqual(s1[0].relatedPropertyName(), '',
                          'Unexpected related property name "{p}".'.format(p=s1[0].relatedPropertyName()))

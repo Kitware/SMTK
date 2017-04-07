@@ -423,7 +423,7 @@ vtkSmartPointer<vtkPolyData> vtkModelMultiBlockSource::GenerateRepresentationFro
       vtkNew<vtkUnsignedCharArray> cellColor;
       cellColor->SetNumberOfComponents(4);
       cellColor->SetNumberOfTuples(pd->GetNumberOfCells());
-      cellColor->SetName("Entity Color");
+      cellColor->SetName("Entity");
       for (int i = 0; i < 4; ++i)
         {
         cellColor->FillComponent(i,
@@ -542,7 +542,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
       vtkNew<vtkUnsignedCharArray> cellColor;
       cellColor->SetNumberOfComponents(4);
       cellColor->SetNumberOfTuples(pd->GetNumberOfCells());
-      cellColor->SetName("Entity Color");
+      cellColor->SetName("Entity");
       for (int i = 0; i < 4; ++i)
         {
         cellColor->FillComponent(i,
