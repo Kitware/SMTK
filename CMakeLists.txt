@@ -197,8 +197,26 @@ set(Boost_NO_SYSTEM_PATHS ${SMTK_NO_SYSTEM_BOOST})
 # * Filesystem
 # * String algorithms
 # * UUID Generation
+set(required_boost_components
+  date_time filesystem system)
+
+# Some c++ compilers do not support regex, so we may need Boost's regex library.
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR
+    (CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND
+      (NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.9.0")) OR
+    (WIN32 AND MSVC))
+#we definitely do not need regex support
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND
+    CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.9.0")
+#we definitely need regex support
+  list(APPEND required_boost_components regex)
+else()
+#we may need regex support, but rather than try-compile let's just use boost
+  list(APPEND required_boost_components regex)
+endif()
+
 find_package(Boost 1.60.0
-             COMPONENTS   date_time filesystem system  REQUIRED)
+             COMPONENTS ${required_boost_components} REQUIRED)
 
 if(WIN32 AND MSVC)
   #setup windows exception handling so we can compile properly with boost

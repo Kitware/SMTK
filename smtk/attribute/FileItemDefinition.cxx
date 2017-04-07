@@ -9,11 +9,34 @@
 //=========================================================================
 
 
+#include "smtk/common/CompilerInformation.h"
+
 #include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 
+// We use either STL regex or Boost regex, depending on support. These flags
+// correspond to the equivalent logic used to determine the inclusion of Boost's
+// regex library.
+#if defined(SMTK_CLANG) ||                        \
+  (defined(SMTK_GCC) &&                           \
+   __GNUC__ > 4 ||                                \
+   (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)) ||     \
+  defined(SMTK_MSVC)
 #include <regex>
+using std::regex;
+using std::sregex_token_iterator;
+using std::regex_replace;
+using std::regex_search;
+using std::regex_match;
+#else
+#include <boost/regex.hpp>
+using boost::regex;
+using boost::sregex_token_iterator;
+using boost::regex_replace;
+using boost::regex_search;
+using boost::regex_match;
+#endif
 
 using namespace smtk::attribute;
 
@@ -48,10 +71,10 @@ bool FileItemDefinition::isValueValid(const std::string &val) const
     }
 
   // Compare it with the allowed suffixes
-  std::regex re(";;");
-  std::sregex_token_iterator it(getFileFilters().begin(),
-                                getFileFilters().end(),
-                                re, -1), last;
+  regex re(";;");
+  sregex_token_iterator it(getFileFilters().begin(),
+                           getFileFilters().end(),
+                           re, -1), last;
   for (; it != last; ++it)
     {
     std::size_t begin =
@@ -69,9 +92,9 @@ bool FileItemDefinition::isValueValid(const std::string &val) const
 
     // If there is only one suffix, we perform a regular expression match with
     // it.
-    if (!std::regex_search(suffixes, std::regex("\\s")))
+    if (!regex_search(suffixes, regex("\\s")))
       {
-        if (std::regex_match(val, std::regex("^.*\\." + suffixes)))
+        if (regex_match(val, regex("^.*\\." + suffixes)))
           {
           return true;
           }
@@ -81,9 +104,8 @@ bool FileItemDefinition::isValueValid(const std::string &val) const
       // There are multiple available suffixes, so we combine them into a single
       // regular expression.
       std::string condensedSuffixes =
-        std::regex_replace(suffixes, std::regex("\\s+\\*\\."), "|");
-      if (std::regex_match(val,
-                           std::regex("^.*\\.(" + condensedSuffixes + ")")))
+        regex_replace(suffixes, regex("\\s+\\*\\."), "|");
+      if (regex_match(val, regex("^.*\\.(" + condensedSuffixes + ")")))
         {
         return true;
         }
