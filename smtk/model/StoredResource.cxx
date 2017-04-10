@@ -74,7 +74,7 @@ void StoredResource::markModified(bool isDirty)
     }
 }
 
-/// Return the generation number of the resource (times 
+/// Return the generation number of the resource
 int StoredResource::generation() const
 {
   return this->m_generation;
@@ -88,7 +88,7 @@ bool StoredResource::exists(const std::string& prefix) const
 {
   if (!this->m_url.empty())
     {
-    std::ifstream tryToOpen = std::ifstream(this->m_url);
+    std::ifstream tryToOpen(this->m_url);
     if (tryToOpen.good())
       {
       return true;
@@ -96,8 +96,8 @@ bool StoredResource::exists(const std::string& prefix) const
 
     if (!prefix.empty())
       {
-      tryToOpen = std::ifstream(prefix + this->m_url);
-      if (tryToOpen.good())
+      std::ifstream tryToOpen2(prefix + this->m_url);
+      if (tryToOpen2.good())
         {
         return true;
         }
