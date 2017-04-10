@@ -35,6 +35,8 @@ public:
   EntityRefArray& relatedEntities();
   virtual void setFlags(BitFlags commonFlags, BitFlags unionFlags);
 
+  virtual bool isRelatedColorMutable() const;
+  virtual FloatList relatedColor() const;
 protected:
   EntityListPhrase();
 

@@ -18,6 +18,7 @@
 namespace smtk {
   namespace extension {
 
+  class QEntityItemModel;
 /**\brief Present the contents of an smtk::model::Manager instance via QEntityItemModel.
   *
   */
@@ -80,7 +81,8 @@ public:
   // return which icon the Point position is on
   // 'visible', 'color', or empty string;
   std::string determineAction(const QPoint& pPos, const QModelIndex& idx,
-                            const QStyleOptionViewItem & option) const;
+                            const QStyleOptionViewItem & option,
+                           const smtk::extension::QEntityItemModel* entityMod = nullptr) const;
 
 protected slots:
   virtual void commitAndCloseEditor();

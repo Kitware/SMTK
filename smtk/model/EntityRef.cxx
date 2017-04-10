@@ -313,7 +313,7 @@ void EntityRef::setVisible(bool vis)
 
 /** Return a user-assigned color for the entity.
   *
-  * If no color was assigned, (0,0,0,0) will be returned.
+  * If no color was assigned, (0,0,0,-1) will be returned.
   */
 FloatList EntityRef::color() const
 {

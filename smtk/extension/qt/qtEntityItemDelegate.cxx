@@ -135,7 +135,6 @@ void QEntityItemDelegate::paint(
 
   QIcon icon = qvariant_cast<QIcon>(idx.data(QEntityItemModel::EntityIconRole));
   QSize iconsize = icon.actualSize(option.decorationSize);
-  QColor swatchColor = qvariant_cast<QColor>(idx.data(QEntityItemModel::EntityColorRole));
   QFont titleFont = QApplication::font();
   QFont subtitleFont = QApplication::font();
   titleFont.setPixelSize(this->m_titleFontSize);
@@ -149,6 +148,7 @@ void QEntityItemDelegate::paint(
   QString titleText = qvariant_cast<QString>(idx.data(QEntityItemModel::TitleTextRole));
   QString subtitleText = qvariant_cast<QString>(idx.data(QEntityItemModel::SubtitleTextRole));
   //std::cout << "Paint " << idx.internalPointer() << " " << idx.row() << " " << titleText.toStdString().c_str() << "\n";
+  QColor swatchColor = qvariant_cast<QColor>(idx.data(QEntityItemModel::EntityColorRole));
 
   QRect titleRect = option.rect;
   QRect subtitleRect = option.rect;
@@ -269,7 +269,8 @@ bool QEntityItemDelegate::eventFilter(QObject* editor, QEvent* evt)
 
 std::string QEntityItemDelegate::determineAction (
   const QPoint& pPos, const QModelIndex& idx,
-  const QStyleOptionViewItem & option) const
+  const QStyleOptionViewItem & option,
+    const smtk::extension::QEntityItemModel* entityMod) const
 {
   std::string res;
   // with the help of styles, return where the pPos is on:
@@ -278,7 +279,6 @@ std::string QEntityItemDelegate::determineAction (
   QIcon visicon = qvariant_cast<QIcon>(
     idx.data(QEntityItemModel::EntityVisibilityRole));
   QSize visiconsize = visicon.actualSize(option.decorationSize);
-  QColor swatchColor = qvariant_cast<QColor>(idx.data(QEntityItemModel::EntityColorRole));
   int px = pPos.x();
   int py = pPos.y();
   bool bvis = false, bcolor = false;
@@ -289,7 +289,7 @@ std::string QEntityItemDelegate::determineAction (
       && py > option.rect.top()
       && py < (option.rect.top() + option.rect.height());
     }
-  if(!bvis && swatchColor.isValid())
+  if(!bvis && entityMod && entityMod->getItem(idx)->isRelatedColorMutable())
     {
     bcolor = px > (option.rect.left() + visiconsize.width() + 2)
       && px < (option.rect.left() + visiconsize.width() + 2 + this->m_swatchSize)
@@ -325,7 +325,11 @@ bool QEntityItemDelegate::editorEvent (
     return res;
     }
 
-  std::string whichIcon = this->determineAction(e->pos(), idx, option);
+  // pass in qEntityItemModel for mutability check
+  smtk::extension::QEntityItemModel* entityMod = dynamic_cast<
+      smtk::extension::QEntityItemModel*>(mod);
+  std::string whichIcon = this->determineAction(e->pos(), idx, option,
+                                                entityMod);
 
   if(whichIcon == "visible")
     {
