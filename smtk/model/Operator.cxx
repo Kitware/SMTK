@@ -86,6 +86,38 @@ bool Operator::ableToOperate()
   return this->specification()->isValid();
 }
 
+static void markResultModels(
+  smtk::attribute::ModelEntityItem::Ptr itm, std::set<smtk::model::Model>& visited, int clean)
+{
+  if (!itm)
+    {
+    return;
+    }
+  std::size_t nn = itm->numberOfValues();
+  smtk::model::Model mod;
+  for (std::size_t ii = 0; ii < nn; ++ii)
+    {
+    EntityRef ent = itm->value(ii);
+    mod = (ent.isValid() && !ent.isModel() ? mod = ent.owningModel() : ent.as<Model>());
+    if (mod.isValid() && visited.find(mod) == visited.end())
+      { // model we haven't seen before
+      mod.setIntegerProperty("clean", clean);
+      visited.insert(mod);
+      }
+    }
+}
+
+// Mark models owning any new/modified entities in the result as either
+// "clean" (newly loaded/saved) or "dirty" (modified from file or never written).
+static void markResultModels(OperatorResult result)
+{
+  int clean = result->findVoid("cleanse entities") ? 1 : 0;
+  std::set<smtk::model::Model> visited;
+  markResultModels(result->findModelEntity("created"), visited, clean);
+  markResultModels(result->findModelEntity("modified"), visited, clean);
+  markResultModels(result->findModelEntity("tess_changed"), visited, clean);
+}
+
 /**\brief Perform the solid modeling operation the subclass implements.
   *
   * This method first tests whether the operation is well-defined by
@@ -114,19 +146,23 @@ OperatorResult Operator::operate()
       result = this->createResult(OPERATION_CANCELED);
     // Assign names if requested:
     smtk::attribute::IntItem::Ptr assignNamesItem;
-    if (
-      result->findInt("outcome")->value() == OPERATION_SUCCEEDED &&
-      (assignNamesItem = this->specification()->findInt("assign names")) &&
-      assignNamesItem->isEnabled() &&
-      assignNamesItem->value() != 0)
+    int outcome = result->findInt("outcome")->value();
+    if (outcome == OPERATION_SUCCEEDED)
       {
-      ModelEntityItem::Ptr thingsToName = result->findModelEntity("created");
-      EntityRefArray::const_iterator it;
-      for (it = thingsToName->begin(); it != thingsToName->end(); ++it)
+      markResultModels(result);
+      if (
+        (assignNamesItem = this->specification()->findInt("assign names")) &&
+        assignNamesItem->isEnabled() &&
+        assignNamesItem->value() != 0)
         {
-        Model model(*it);
-        if (model.isValid())
-          model.assignDefaultNames();
+        ModelEntityItem::Ptr thingsToName = result->findModelEntity("created");
+        EntityRefArray::const_iterator it;
+        for (it = thingsToName->begin(); it != thingsToName->end(); ++it)
+          {
+          Model model(*it);
+          if (model.isValid())
+            model.assignDefaultNames();
+          }
         }
       }
     this->generateSummary(result);

@@ -28,12 +28,16 @@
 #include "smtk/model/SessionRef.h"
 #include "smtk/model/Shell.h"
 #include "smtk/model/ShellEntity.txx"
+#include "smtk/model/StoredResource.h"
 #include "smtk/model/Vertex.h"
 #include "smtk/model/VertexUse.h"
 #include "smtk/model/Volume.h"
 #include "smtk/model/VolumeUse.h"
 
 #include "smtk/mesh/Manager.h"
+
+#include "smtk/common/ResourceSet.h"
+
 #include <float.h>
 
 #include <algorithm>
@@ -69,6 +73,7 @@ Manager::Manager() :
   m_meshes( smtk::mesh::Manager::create() ),
   m_attributeAssignments(new UUIDsToAttributeAssignments),
   m_sessions(new UUIDsToSessions),
+  m_resources(new ResourceSet),
   m_globalCounters(2,1) // first entry is session counter, second is model counter
 {
   // TODO: throw() when topology == NULL?
@@ -94,6 +99,7 @@ Manager::Manager(
     m_meshes( meshes ),
     m_attributeAssignments(attribs),
     m_sessions(new UUIDsToSessions),
+    m_resources(new ResourceSet),
     m_globalCounters(2,1) // first entry is session counter, second is model counter
 {
   this->m_log.setFlushToStdout(false);
@@ -4034,6 +4040,108 @@ void Manager::trigger(OperatorEventType event, const smtk::model::Operator& src)
     (*it->second.first)(it->first, src, it->second.second);
 }
 //@}
+
+template<typename T>
+std::string uniqueResourceName(EntityRef ent, const T& preexisting, int& counter)
+{
+  std::string prefix = ent.isModel() ? "model" : "aux-geom";
+  std::string result;
+  do
+    {
+    std::ostringstream ns;
+    ns << prefix << (++counter);
+    result = ns.str();
+    }
+  while (preexisting.find(result) != preexisting.end());
+  return result;
+}
+
+/// An internal method that iterates over entities discovering resources.
+void Manager::computeResources()
+{
+  int counter = 0;
+  EntityRefArray subresources;
+  subresources = this->findEntitiesOfType(
+    MODEL_ENTITY | AUX_GEOM_ENTITY | SESSION,
+    /* exactMatch */ false);
+
+  std::vector<std::string> vpre = this->m_resources->resourceIds();
+  std::set<std::string> preexistingIds(vpre.begin(), vpre.end());
+  std::map<std::string,std::string> urlsToResourceNames;
+  ResourcePtr rsrc;
+  StoredResourcePtr srsrc;
+  for (auto preId : preexistingIds)
+    {
+    if (this->m_resources->get(preId, rsrc) && (srsrc = smtk::dynamic_pointer_cast<StoredResource>(rsrc)))
+      {
+      urlsToResourceNames[srsrc->url()] = preId;
+      }
+    }
+
+  std::set<std::string> usedResources;
+  std::map<std::string,std::string>::iterator lookup;
+  std::string url;
+  for (auto ent : subresources)
+    {
+    if (ent.hasStringProperty("url") && !(url = ent.stringProperty("url")[0]).empty())
+      {
+      if ((lookup = urlsToResourceNames.find(url)) == urlsToResourceNames.end())
+        { // Insert resource:
+        std::string newResourceName = uniqueResourceName(ent, preexistingIds, counter);
+        srsrc = StoredResource::create();
+        srsrc->setURL(url);
+        srsrc->markModified(srsrc->exists(this->m_resources->linkStartPath())); // FIXME: track modified prop of entity
+        this->m_resources->addResource(
+          srsrc,
+          newResourceName,
+          "",
+          ent.isAuxiliaryGeometry() ?
+            ResourceSet::AUX_GEOM_RESOURCE :
+            ResourceSet::MODEL_RESOURCE);
+        urlsToResourceNames[url] = newResourceName;
+        }
+      std::string rsrcName = urlsToResourceNames[url];
+      usedResources.insert(rsrcName);
+      if (this->m_resources->get(rsrcName, rsrc) && (srsrc = std::dynamic_pointer_cast<StoredResource>(rsrc)))
+        {
+        srsrc->addEntity(ent);
+        }
+      }
+    if (ent.hasStringProperty("smtk_url") && !(url = ent.stringProperty("smtk_url")[0]).empty())
+      {
+      if ((lookup = urlsToResourceNames.find(url)) == urlsToResourceNames.end())
+        { // Insert resource:
+        std::string newResourceName = uniqueResourceName(ent, preexistingIds, counter);
+        srsrc = StoredResource::create();
+        srsrc->setURL(url);
+        srsrc->markModified(srsrc->exists(this->m_resources->linkStartPath())); // FIXME: track modified prop of entity
+        this->m_resources->addResource(
+          srsrc, newResourceName, "", ResourceSet::MODEL_RESOURCE);
+        urlsToResourceNames[url] = newResourceName;
+        }
+      std::string rsrcName = urlsToResourceNames[url];
+      usedResources.insert(rsrcName);
+      if (this->m_resources->get(rsrcName, rsrc) && (srsrc = std::dynamic_pointer_cast<StoredResource>(rsrc)))
+        {
+        srsrc->addEntity(ent);
+        }
+      }
+    }
+
+  // Remove resources no longer present
+  for (auto used : usedResources)
+    {
+    preexistingIds.erase(used);
+    }
+  if (!preexistingIds.empty())
+    {
+    for (auto unused : preexistingIds)
+      {
+      smtkDebugMacro(this->log(), "Erasing unused resource \"" << unused << "\"");
+      this->m_resources->removeResource(unused);
+      }
+    }
+}
 
   } // namespace model
 } //namespace smtk

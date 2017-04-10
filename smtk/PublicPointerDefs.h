@@ -154,6 +154,7 @@ namespace smtk
     typedef std::vector<smtk::model::ShellEntity> ShellEntities;
     class Manager;
     class SimpleModelSubphrases;
+    class StoredResource;
     class SubphraseGenerator;
     class Tessellation;
     class UseEntity;
@@ -202,6 +203,9 @@ namespace smtk
   namespace common
   {
     typedef smtk::shared_ptr< smtk::common::Resource > ResourcePtr;
+    typedef smtk::shared_ptr< smtk::common::ResourceSet > ResourceSetPtr;
+    typedef smtk::shared_ptr< const smtk::common::Resource > ConstResourcePtr;
+    typedef smtk::shared_ptr< const smtk::common::ResourceSet > ConstResourceSetPtr;
     typedef smtk::shared_ptr< smtk::common::View > ViewPtr;
   }
 
@@ -262,6 +266,8 @@ namespace smtk
     typedef std::pair<std::string,OperatorConstructor>             StaticOperatorInfo;
     typedef std::map<std::string,StaticOperatorInfo>               OperatorConstructors;
 #endif
+    typedef smtk::shared_ptr< smtk::model::StoredResource >        StoredResourcePtr;
+    typedef smtk::shared_ptr< const smtk::model::StoredResource >  ConstStoredResourcePtr;
     typedef smtk::shared_ptr< smtk::model::Entity >                EntityPtr;
     typedef smtk::weak_ptr< smtk::model::Entity >                  WeakEntityPtr;
     typedef smtk::shared_ptr< smtk::model::Arrangement >           ArrangementPtr;

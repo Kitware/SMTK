@@ -16,15 +16,19 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
-#include "smtk/common/CompilerInformation.h"
+
 #include "smtk/io/SaveJSON.h"
 #include "smtk/io/SaveJSON.txx"
+
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Session.h"
+
+#include "smtk/common/CompilerInformation.h"
+#include "smtk/common/ResourceSet.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
@@ -145,6 +149,9 @@ OperatorResult SaveSMTKModel::operateInternal()
     this->session()->sessionId(),
     this->m_specification->associatedModelEntityIds(),
     top, this->manager(), true, smtkfilepath);
+
+  smtk::common::ResourceSetPtr rset = this->manager()->resources();
+  smtk::io::SaveJSON::fromResourceSet(top, rset);
 
   char* json = cJSON_Print(top);
   jsonFile << json;

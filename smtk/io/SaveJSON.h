@@ -62,6 +62,11 @@ public:
   static std::string fromModelManager(smtk::model::ManagerPtr modelMgr, JSONFlags sections = JSON_DEFAULT);
   static bool fromModelManagerToFile(smtk::model::ManagerPtr modelMgr, const char* filename);
 
+  // Serialize a ResourceSet (for now, only smtk::model::StoredModel entries are handled). For debug use only.
+  static int fromResourceSet(
+    cJSON* pnode,
+    smtk::common::ResourceSetPtr& rset);
+
   template<typename T>
   static int forEntities(
     cJSON* json,

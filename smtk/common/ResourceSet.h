@@ -46,38 +46,46 @@ class SMTKCORE_EXPORT ResourceSet
   /// Identifies resource role, used with attribute resources
   enum ResourceRole
   {
-    NOT_DEFINED = 0,  // for non-attribute resources
-    TEMPLATE,
-    SCENARIO,
-    INSTANCE
+    NOT_DEFINED = 0,  //!< for non-attribute, non-model resources
+    TEMPLATE, //!< resources storing attributes serving as templates
+    SCENARIO, //!< resources storing attributes serving as scenarios
+    INSTANCE, //!< resources storing attributes whose instances are created on demand by users
+    MODEL_RESOURCE, //!< resources storing model geometry
+    AUX_GEOM_RESOURCE, //!< resources storing auxiliary model geometry
   };
 
   ResourceSet();
   virtual ~ResourceSet();
 
-  bool addResource(ResourcePtr resource,
-                   std::string id,
-                   std::string link="",
-                   ResourceRole=NOT_DEFINED);
+  bool addResource(
+    ResourcePtr resource,
+    std::string id,
+    std::string link="",
+    ResourceRole=NOT_DEFINED);
 
-  bool addResourceInfo(const std::string id,
-                       Resource::Type type,
-                       ResourceRole role,
-                       ResourceState state,
-                       std::string link="");
+  bool addResourceInfo(
+    const std::string id,
+    Resource::Type type,
+    ResourceRole role,
+    ResourceState state,
+    std::string link="");
+
+  bool removeResource(const std::string& id);
 
   std::size_t numberOfResources() const;
 
   const std::vector<std::string> resourceIds() const;
 
-  bool resourceInfo(std::string id,
-                    Resource::Type& type,
-                    ResourceRole& role,
-                    ResourceState& state,
-                    std::string& link) const;
+  bool resourceInfo(
+    std::string id,
+    Resource::Type& type,
+    ResourceRole& role,
+    ResourceState& state,
+    std::string& link) const;
 
-  bool get(std::string id,
-           ResourcePtr& resource) const;
+  bool get(
+    std::string id,
+    ResourcePtr& resource) const;
 
   static std::string state2String(ResourceState state);
   static std::string role2String(ResourceRole role);
@@ -91,7 +99,7 @@ class SMTKCORE_EXPORT ResourceSet
   std::map<std::string, ResourceWrapper*> m_resourceMap;
   std::string m_linkStartPath;
 
-  ResourceWrapper *getWrapper(std::string id) const;
+  ResourceWrapper* getWrapper(std::string id) const;
 };
 
   }  // namespace common

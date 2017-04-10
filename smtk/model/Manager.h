@@ -130,6 +130,9 @@ public:
 
   smtk::mesh::ManagerPtr meshes() const;
 
+  smtk::common::ResourceSetPtr resources()
+    { this->computeResources(); return this->m_resources; }
+
   const UUIDsToAttributeAssignments& attributeAssignments() const;
 
   BitFlags type(const smtk::common::UUID& ofEntity) const;
@@ -438,6 +441,7 @@ protected:
   std::string assignDefaultName(const smtk::common::UUID& uid, BitFlags entityFlags);
   IntegerList& entityCounts(const smtk::common::UUID& modelId, BitFlags entityFlags);
   void prepareForEntity(std::pair<smtk::common::UUID,Entity>& entry);
+  void computeResources();
 
   // Below are all the different things that can be mapped to a UUID:
   smtk::shared_ptr<UUIDsToEntities> m_topology;
@@ -450,6 +454,7 @@ protected:
   smtk::shared_ptr<smtk::mesh::Manager> m_meshes;
   smtk::shared_ptr<UUIDsToAttributeAssignments> m_attributeAssignments;
   smtk::shared_ptr<UUIDsToSessions> m_sessions;
+  smtk::shared_ptr<common::ResourceSet> m_resources;
 
   smtk::shared_ptr<Session> m_defaultSession;
   smtk::common::UUIDGenerator m_uuidGenerator;

@@ -162,6 +162,7 @@
   <suppress-warning text="skipping function 'smtk::io::SaveJSON::forOperatorResult', unmatched parameter type 'smtk::model::OperatorResult const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::io::SaveJSON::fromUUIDs', unmatched return type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::SaveJSON::fromModelManager', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::SaveJSON::fromResourceSet', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::LoadJSON::sessionNameFromTagData', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::LoadJSON::sessionFileTypesFromTagData', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::SaveJSON::createIntegerArray', unmatched return type 'cJSON*'"/>
@@ -482,6 +483,9 @@
   <suppress-warning text="skipping function 'smtk::mesh::Collection::findAssociatedCells', unmatched parameter type 'smtk::model::EntityIterator&amp;'"/>
   <suppress-warning text="skipping function 'smtk::mesh::PointSet::PointSet', unmatched parameter type 'smtk::mesh::ConstCollectionPtr const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::mesh::CellSet::CellSet', unmatched parameter type 'smtk::mesh::ConstCollectionPtr const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::resources', unmatched return type 'smtk::common::ConstResourceSetPtr'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::resources', unmatched return type 'smtk::common::ResourceSetPtr'"/>
+  <suppress-warning text="skipping field 'Manager::m_resources' with unmatched type 'smtk::shared_ptr&lt;common::ResourceSet&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_conditionTriggers' with unmatched type 'std::set&lt;ConditionTrigger&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_oneToOneTriggers' with unmatched type 'std::set&lt;OneToOneTrigger&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_oneToManyTriggers' with unmatched type 'std::set&lt;OneToManyTrigger&gt;'"/>
