@@ -44,6 +44,8 @@ public:
   smtk::mesh::HandleRange cells(const smtk::mesh::CellTypes& cellTypes) const;
   smtk::mesh::HandleRange cells(smtk::mesh::DimensionType dim) const;
 
+  smtk::mesh::HandleRange points() const;
+
   bool has(const smtk::mesh::Domain &d) const;
   bool has(const smtk::mesh::Dirichlet &bc) const;
   bool has(const smtk::mesh::Neumann &bc) const;
