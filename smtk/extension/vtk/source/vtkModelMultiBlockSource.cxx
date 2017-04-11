@@ -29,6 +29,7 @@
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
 #include "vtkDataObjectTreeIterator.h"
+#include "vtkDoubleArray.h"
 #include "vtkGDALRasterReader.h"
 #include "vtkIdTypeArray.h"
 #include "vtkImageData.h"
@@ -41,6 +42,7 @@
 #include "vtkOBJReader.h"
 #include "vtkObjectFactory.h"
 #include "vtkPTSReader.h"
+#include "vtkPointData.h"
 #include "vtkPoints.h"
 #include "vtkPolyData.h"
 #include "vtkPolyData.h"
@@ -460,6 +462,12 @@ vtkSmartPointer<vtkPolyData> vtkModelMultiBlockSource::GenerateRepresentationFro
         pd->ShallowCopy(this->NormalGenerator->GetOutput());
       }
     }
+
+    // Point-coordinates attribute
+    vtkNew<vtkDoubleArray> pointCoords;
+    pointCoords->ShallowCopy(pd->GetPoints()->GetData());
+    pointCoords->SetName("PointCoordinates");
+    pd->GetPointData()->AddArray(pointCoords.GetPointer());
   }
   return pd;
 }
@@ -591,6 +599,12 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
         pd->ShallowCopy(this->NormalGenerator->GetOutput());
       }
     }
+
+    // Point-coordinates attribute
+    vtkNew<vtkDoubleArray> pointCoords;
+    pointCoords->ShallowCopy(pd->GetPoints()->GetData());
+    pointCoords->SetName("PointCoordinates");
+    pd->GetPointData()->AddArray(pointCoords.GetPointer());
   }
 }
 
