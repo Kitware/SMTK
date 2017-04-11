@@ -7,7 +7,7 @@
       <ItemDefinitions>
         <File Name="filename" Label="File Name" NumberOfRequiredValues="1"
           ShouldExist="true"
-          FileFilters="Legacy VTK files (*.vtk);;Solids (*.2dm *.3dm *.stl *.sol *.tin *.obj);;Map files (*.map);;Poly files (*.poly *.smesh);;Shape files (*.shp);;All files (*.*)">
+          FileFilters="Supported Discrete Formats (*.vtk *.2dm *.3dm *.stl *.sol *.tin *.obj *.map *.poly *.smesh *.shp);;Legacy VTK files (*.vtk);;Solids (*.2dm *.3dm *.stl *.sol *.tin *.obj);;Map files (*.map);;Poly files (*.poly *.smesh);;Shape files (*.shp);;All files (*.*)">
         </File>
 
         <String Name="ShapeBoundaryStyle" Label="Specify Shape File Boundary" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1" Optional="true">
