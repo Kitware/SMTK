@@ -100,6 +100,7 @@ bool qtModelEntityItem::add(const smtk::model::EntityRef& val)
   if (this->modelEntityItem()->appendValue(val))
     {
     emit this->modified();
+    emit this->updateSelectionManager(val.entity(),SelectionFlags::Add);
     return true;
     }
   return false;
@@ -123,6 +124,7 @@ bool qtModelEntityItem::remove(const smtk::model::EntityRef& val)
     item->unset(idx);
     }
   emit this->modified();
+  emit this->updateSelectionManager(val.entity(),SelectionFlags::Remove);
   return true;
 }
 
@@ -396,6 +398,7 @@ void qtModelEntityItem::clearEntityAssociations()
     this->Internals->EntityItemCombo->init();
     }
   emit this->modified();
+  emit this->updateSelectionManager(smtk::common::UUID(), SelectionFlags::Clear);
 }
 
 void qtModelEntityItem::onRequestEntityAssociation()
