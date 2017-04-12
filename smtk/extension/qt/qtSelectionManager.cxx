@@ -40,6 +40,7 @@ namespace smtk
     m_mask |= smtk::model::FACE;
     m_mask |= smtk::model::EDGE;
     m_mask |= smtk::model::VERTEX;
+    this->m_filterMeshes = true;
     this->m_modelMgr = nullptr;
     this->m_selectionModifier = SelectionModifier::SELECTION_DEFAULT;
   }
@@ -62,8 +63,10 @@ namespace smtk
       this->clearAllSelections();
       this->filterEntitySelectionsByMask(const_cast<smtk::common::UUIDs &>
                                          (selEntities), this->m_selEntities);
-      this->m_selMeshes.insert(selMeshes.begin(),selMeshes.end());
-
+      if (this->m_filterMeshes)
+        {
+        this->m_selMeshes.insert(selMeshes.begin(),selMeshes.end());
+        }
     }
     else if (this->m_selectionModifier == SelectionModifier::SELECTION_ADDITION)
     { // add to current selection
@@ -71,8 +74,10 @@ namespace smtk
       this->filterEntitySelectionsByMask(const_cast<smtk::common::UUIDs &>
                                          (selEntities), currentSelFiltered);
       this->m_selEntities.insert(currentSelFiltered.begin(), currentSelFiltered.end());
-      this->m_selMeshes.insert(selMeshes.begin(),selMeshes.end());
-
+      if (this->m_filterMeshes)
+        {
+        this->m_selMeshes.insert(selMeshes.begin(),selMeshes.end());
+        }
     }
     else
     { //subtract from current selection
@@ -84,10 +89,13 @@ namespace smtk
          this->m_selEntities.erase(selEnt);
       }
 
-      for (const auto& selMesh: selMeshes)
-      {
-         this->m_selMeshes.erase(selMesh);
-      }
+      if (this->m_filterMeshes)
+        {
+        for (const auto& selMesh: selMeshes)
+          {
+          this->m_selMeshes.erase(selMesh);
+          }
+        }
     }
 
     this->m_selectionModifier = SelectionModifier::SELECTION_DEFAULT; // reset
@@ -189,6 +197,11 @@ namespace smtk
                 : (m_mask & (~smtk::model::VERTEX | smtk::model::CELL_ENTITY));
   }
 
+  void qtSelectionManager::filterMeshes(bool checked)
+  {
+    this->m_filterMeshes = checked;
+  }
+
   void qtSelectionManager::clearAllSelections()
   {
     this->m_selEntities.clear();
@@ -275,4 +288,3 @@ namespace smtk
   }; // namespace extension
 
 }; // namespace smtk
-

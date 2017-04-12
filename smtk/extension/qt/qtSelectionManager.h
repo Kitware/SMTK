@@ -104,24 +104,28 @@ public:
                              SelectionFlags);
 
     // Description
-    // update mask for model
+    // update mask for models
     void filterModels(bool checked);
 
     // Description
-    // update mask for model
+    // update mask for volumes
     void filterVolumes(bool checked);
 
     // Description
-    // update mask for model
+    // update mask for faces
     void filterFaces(bool checked);
 
     // Description
-    // update mask for model
+    // update mask for edges
     void filterEdges(bool checked);
 
     // Description
-    // update mask for model
+    // update mask for vertices
     void filterVertices(bool checked);
+
+    // Description
+    // toggle filtering meshes
+    void filterMeshes(bool checked);
 
   protected:
     void clearAllSelections();
@@ -139,6 +143,7 @@ public:
     smtk::common::UUIDs m_selEntities;
     smtk::model::DescriptivePhrases m_desPhrases;
     smtk::model::BitFlags m_mask;
+    bool m_filterMeshes;
     smtk::model::ManagerPtr m_modelMgr;
     SelectionModifier m_selectionModifier;
 
