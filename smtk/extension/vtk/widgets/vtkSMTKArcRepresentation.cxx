@@ -519,7 +519,7 @@ void vtkSMTKArcRepresentation::Initialize(vtkPolyData* pd)
     node->WorldPosition[1] = pos[1];
     node->WorldPosition[2] = pos[2];
     node->Selected = 0;
-    node->PointId = vda->GetTuple1(i);
+    node->PointId = vda ? vda->GetTuple1(i) : i;
     pointId = std::max(pointId, static_cast<unsigned int>(node->PointId + 1));
 
     node->NormalizedDisplayPosition[0] = displayPos[0];
