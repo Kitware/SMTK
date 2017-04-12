@@ -18,7 +18,7 @@
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/model/EntityTypeBits.h" // for smtk::model::BitFlags
-#include "smtk/common/UUID.h"
+#include "smtk/extension/qt/qtSelectionManager.h"
 
 class qtModelEntityItemInternals;
 class QBoxLayout;
@@ -27,17 +27,12 @@ namespace smtk
 {
   namespace extension
   {
+    enum class SelectionModifier;
     class SMTKQTEXT_EXPORT qtModelEntityItem : public qtItem
     {
       Q_OBJECT
 
     public:
-    // Enumeration of SelectionManger flags
-    enum SelectionFlags {
-      Add,
-      Remove,
-      Clear
-    };
 
       qtModelEntityItem(smtk::attribute::ItemPtr, QWidget* p,
         qtBaseView* bview, Qt::Orientation enumOrient = Qt::Horizontal);
@@ -59,8 +54,13 @@ namespace smtk
       void requestEntityAssociation();
       void entityListHighlighted(
         const smtk::common::UUIDs& uuids);
-      void updateSelectionManager(const smtk::common::UUID uuid,
-                                  int SelectionFlag);
+      void sendSelectionFromModelEntityToSelectionManager(
+                            const smtk::model::EntityRefs &selEntities,
+                            const smtk::mesh::MeshSets &selMeshes,
+                            const smtk::model::DescriptivePhrases &DesPhrases,
+                            const smtk::extension::SelectionModifier modifierFlag,
+                            const smtk::model::StringList skipList
+                            );
 
     protected slots:
       virtual void updateItemData();

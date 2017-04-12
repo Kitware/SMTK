@@ -18,6 +18,7 @@
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtCheckItemComboBox.h"
 #include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/extension/qt/qtSelectionManager.h"
 
 #include <QAbstractItemView>
 #include <QCheckBox>
@@ -100,7 +101,12 @@ bool qtModelEntityItem::add(const smtk::model::EntityRef& val)
   if (this->modelEntityItem()->appendValue(val))
     {
     emit this->modified();
-    emit this->updateSelectionManager(val.entity(),SelectionFlags::Add);
+    smtk::model::EntityRefs addEntityRefs;
+    addEntityRefs.insert(val);
+    emit this->sendSelectionFromModelEntityToSelectionManager(addEntityRefs, smtk::mesh::MeshSets(),
+              smtk::model::DescriptivePhrases(), smtk::extension
+                      ::SelectionModifier::SELECTION_ADDITION_UNFILTERED,
+                                               smtk::model::StringList());
     return true;
     }
   return false;
@@ -124,7 +130,12 @@ bool qtModelEntityItem::remove(const smtk::model::EntityRef& val)
     item->unset(idx);
     }
   emit this->modified();
-  emit this->updateSelectionManager(val.entity(),SelectionFlags::Remove);
+  smtk::model::EntityRefs removeEntityRefs;
+  removeEntityRefs.insert(val);
+  emit this->sendSelectionFromModelEntityToSelectionManager(removeEntityRefs, smtk::mesh::MeshSets(),
+            smtk::model::DescriptivePhrases(), smtk::extension
+                    ::SelectionModifier::SELECTION_SUBTRACTION_UNFILTERED,
+                                               smtk::model::StringList());
   return true;
 }
 
@@ -398,7 +409,10 @@ void qtModelEntityItem::clearEntityAssociations()
     this->Internals->EntityItemCombo->init();
     }
   emit this->modified();
-  emit this->updateSelectionManager(smtk::common::UUID(), SelectionFlags::Clear);
+  emit this->sendSelectionFromModelEntityToSelectionManager(smtk::model::EntityRefs(), smtk::mesh::MeshSets(),
+            smtk::model::DescriptivePhrases(), smtk::extension
+                    ::SelectionModifier::SELECTION_REPLACE_UNFILTERED,
+                                               smtk::model::StringList());
 }
 
 void qtModelEntityItem::onRequestEntityAssociation()

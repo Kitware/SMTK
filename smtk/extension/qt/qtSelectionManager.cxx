@@ -42,12 +42,20 @@ namespace smtk
     m_mask |= smtk::model::VERTEX;
     this->m_filterMeshes = true;
     this->m_modelMgr = nullptr;
-    this->m_selectionModifier = SelectionModifier::SELECTION_DEFAULT;
+    this->m_selectionModifier = SelectionModifier::SELECTION_REPLACE_FILTERED;
+    this->m_skipList.push_back(std::string("rendering window"));
+    this->m_skipList.push_back(std::string("model tree"));
+    this->m_skipList.push_back(std::string("attribute panel"));
   }
 
   void qtSelectionManager::getSelectedEntities(smtk::common::UUIDs &selEntities)
   {
     selEntities = this->m_selEntities;
+  }
+
+  void qtSelectionManager::getSelectedEntitiesAsEntityRefs(smtk::model::EntityRefs &selEntities)
+  {
+    selEntities = this->m_selEntityRefs;
   }
 
   void qtSelectionManager::getSelectedMeshes(smtk::mesh::MeshSets &selMeshes)
@@ -56,111 +64,139 @@ namespace smtk
   }
 
   void qtSelectionManager::updateSelectedItems(
-  const smtk::common::UUIDs &selEntities, const smtk::mesh::MeshSets &selMeshes)
-  { // select from render view
-    if (this->m_selectionModifier == SelectionModifier::SELECTION_DEFAULT)
-    { // clear and select
-      this->clearAllSelections();
-      this->filterEntitySelectionsByMask(const_cast<smtk::common::UUIDs &>
-                                         (selEntities), this->m_selEntities);
-      if (this->m_filterMeshes)
-        {
-        this->m_selMeshes.insert(selMeshes.begin(),selMeshes.end());
-        }
-    }
-    else if (this->m_selectionModifier == SelectionModifier::SELECTION_ADDITION)
-    { // add to current selection
-      smtk::common::UUIDs currentSelFiltered;
-      this->filterEntitySelectionsByMask(const_cast<smtk::common::UUIDs &>
-                                         (selEntities), currentSelFiltered);
-      this->m_selEntities.insert(currentSelFiltered.begin(), currentSelFiltered.end());
-      if (this->m_filterMeshes)
-        {
-        this->m_selMeshes.insert(selMeshes.begin(),selMeshes.end());
-        }
-    }
-    else
-    { //subtract from current selection
-      smtk::common::UUIDs currentSelFiltered;
-      this->filterEntitySelectionsByMask(const_cast<smtk::common::UUIDs &>
-                                         (selEntities), currentSelFiltered);
-      for (const auto& selEnt: currentSelFiltered)
+                            const smtk::model::EntityRefs &selEntities,
+                            const smtk::mesh::MeshSets &selMeshes,
+                            const smtk::model::DescriptivePhrases &/*DesPhrases*/,
+                            const smtk::extension::SelectionModifier modifierFlag,
+                            const smtk::model::StringList skipList
+                            )
+  {
+    // \b selection from qtModelItem/operator dialog
+    if ( modifierFlag == smtk::extension::SelectionModifier::SELECTION_ADDITION_UNFILTERED)
+    {
+      this->m_selEntityRefs.insert(selEntities.begin(), selEntities.end());
+      this->m_selMeshes.insert(selMeshes.begin(),selMeshes.end());
+      // Deprecated start
+      for (auto selEntity: selEntities)
       {
-         this->m_selEntities.erase(selEnt);
+      this->m_selEntities.insert(selEntity.entity());
+      }
+      // Deprecated end
+    }
+    else if ( modifierFlag == smtk::extension::SelectionModifier::SELECTION_SUBTRACTION_UNFILTERED)
+    {
+      this->m_selEntityRefs.erase(selEntities.begin(), selEntities.end());
+      this->m_selMeshes.insert(selMeshes.begin(),selMeshes.end());
+      // Deprecated start
+      for (auto selEntity: selEntities)
+      {
+      this->m_selEntities.erase(selEntity.entity());
+      }
+      // Deprecated end
+    }
+    else if ( modifierFlag == smtk::extension::SelectionModifier::SELECTION_REPLACE_UNFILTERED)
+    {
+      // \b clear selection in qtModelItem/opeartor dialog
+      // \b selection from model tree
+      // \b selection from  attribue panel
+      this->clearAllSelections();
+      this->m_selEntityRefs.insert(selEntities.begin(), selEntities.end());
+      this->m_selMeshes.insert(selMeshes.begin(),selMeshes.end());
+      // Deprecated start
+      for (auto selEntity: selEntities)
+      {
+      this->m_selEntities.insert(selEntity.entity());
+      }
+      // Deprecated end
+    }
+
+    // \b selection from render window
+    else if (modifierFlag == smtk::extension::SelectionModifier::SELECTION_INQUIRY)
+    {
+      if (this->m_selectionModifier == SelectionModifier::SELECTION_REPLACE_FILTERED)
+      { // clear and select
+        this->clearAllSelections();
+        this->filterEntitySelectionsByMask(const_cast<smtk::model::EntityRefs &>
+                                           (selEntities), this->m_selEntityRefs);
+        if (this->m_filterMeshes)
+          {
+          this->m_selMeshes.insert(selMeshes.begin(),selMeshes.end());
+          }
+        // Deprecated start
+        for (auto selEntity: this->m_selEntityRefs)
+        {
+        this->m_selEntities.insert(selEntity.entity());
+        }
+        // Deprecated end
+      }
+      else if (this->m_selectionModifier == SelectionModifier::SELECTION_ADDITION_FILTERED)
+      { // add to current selection
+        smtk::model::EntityRefs currentSelFiltered;
+        this->filterEntitySelectionsByMask(const_cast<smtk::model::EntityRefs &>
+                                           (selEntities), currentSelFiltered);
+        this->m_selEntityRefs.insert(currentSelFiltered.begin(), currentSelFiltered.end());
+
+        if (this->m_filterMeshes)
+          {
+          this->m_selMeshes.insert(selMeshes.begin(),selMeshes.end());
+          }
+        // Deprecated start
+        for (auto selEntity: currentSelFiltered)
+        {
+        this->m_selEntities.insert(selEntity.entity());
+        }
+        // Deprecated end
+      }
+      else if (this->m_selectionModifier == SelectionModifier::SELECTION_SUBTRACTION_FILTERED)
+      { //subtract from current selection
+        smtk::model::EntityRefs currentSelFiltered;
+        this->filterEntitySelectionsByMask(const_cast<smtk::model::EntityRefs &>
+                                           (selEntities), currentSelFiltered);
+        for (const auto& selEnt: currentSelFiltered)
+        {
+           // Deprecatred start
+           this->m_selEntities.erase(selEnt.entity());
+           // Deprecatred end
+           this->m_selEntityRefs.erase(selEnt);
+        }
+
+        if (this->m_filterMeshes)
+          {
+          for (const auto& selMesh: selMeshes)
+            {
+            this->m_selMeshes.erase(selMesh);
+            }
+          }
       }
 
-      if (this->m_filterMeshes)
-        {
-        for (const auto& selMesh: selMeshes)
-          {
-          this->m_selMeshes.erase(selMesh);
-          }
-        }
+      this->m_selectionModifier = SelectionModifier::SELECTION_REPLACE_FILTERED; // reset
+
     }
 
-    this->m_selectionModifier = SelectionModifier::SELECTION_DEFAULT; // reset
+    // broadcast to rendering view, model tree and attribute panel if they are
+    // not in skipList
+    // TODO: Since we want to use surface representation for faces, we have to
+    // update render view again to use our settings of pqDataRepresentation
+    // *true* should be removed
+    if (true || std::find(skipList.begin(), skipList.end(), this->m_skipList[0])
+                                  == skipList.end())
+    {
+      emit broadcastToRenderView(this->m_selEntities, smtk::mesh::MeshSets(),
+                                 smtk::model::DescriptivePhrases());
+    }
 
-    emit  broadcastToModelTree(this->m_selEntities,this->m_selMeshes,
+    if (std::find(skipList.begin(), skipList.end(), this->m_skipList[1])
+                                  == skipList.end())
+    {
+      emit  broadcastToModelTree(this->m_selEntities,smtk::mesh::MeshSets(),
                                true);
-    emit broadcastToAttributeView(this->m_selEntities);
-    emit broadcastToRenderView(this->m_selEntities,this->m_selMeshes,smtk::model::DescriptivePhrases());
-  }
-
-  void qtSelectionManager::updateSelectedItems(const smtk::model::EntityRefs
-          &selEntities, const smtk::mesh::MeshSets &selMeshes,
-                   const smtk::model::DescriptivePhrases &DesPhrases)
-
-  { // select from model tree
-    this->clearAllSelections();
-    for (smtk::model::EntityRefs::iterator it = selEntities.begin();
-      it != selEntities.end(); ++it)
-    {
-      this->m_selEntities.insert(it->entity());
-    }
-    this->m_selMeshes.insert(selMeshes.begin(),selMeshes.end());
-    this->m_desPhrases = DesPhrases;
-
-    emit broadcastToRenderView(selEntities, selMeshes, DesPhrases);
-    emit broadcastToAttributeView(this->m_selEntities);
-
-  }
-
-  void qtSelectionManager::updateSelectedItems(const smtk::common::UUIDs
-                                               &selEntities)
-  { // select from attribute panel
-    this->clearAllSelections();
-    this->m_selEntities.insert(selEntities.begin(), selEntities.end());
-
-    // broadcast to model tree and render view
-    emit  broadcastToModelTree(this->m_selEntities,smtk::mesh::MeshSets(),
-                               true);
-    emit broadcastToRenderView(this->m_selEntities, smtk::mesh::MeshSets(),
-                               smtk::model::DescriptivePhrases());
-  }
-
-  void qtSelectionManager::updateSelectedItem(const smtk::common::UUID
-                                               &selEntity, int SelectionFlags)
-  {
-    // select from qtModelItem/operator dialog
-    if ( SelectionFlags == smtk::extension::qtModelEntityItem::SelectionFlags::Add)
-    {
-    this->m_selEntities.insert(selEntity);
-    }
-    else if( SelectionFlags == smtk::extension::qtModelEntityItem::SelectionFlags::Remove)
-    {
-      this->m_selEntities.erase(selEntity);
-    }
-    else if( SelectionFlags == smtk::extension::qtModelEntityItem::SelectionFlags::Clear)
-    {
-      this->clearAllSelections();
     }
 
-    // broadcast to model tree and render view
-    emit  broadcastToModelTree(this->m_selEntities,smtk::mesh::MeshSets(),
-                               true);
-    emit broadcastToRenderView(this->m_selEntities, smtk::mesh::MeshSets(),
-                               smtk::model::DescriptivePhrases());
-    emit broadcastToAttributeView(this->m_selEntities);
+    if (std::find(skipList.begin(), skipList.end(), this->m_skipList[2])
+                                  == skipList.end())
+    {
+      emit broadcastToAttributeView(this->m_selEntities);
+    }
   }
 
   void qtSelectionManager::filterModels(bool checked)
@@ -205,31 +241,32 @@ namespace smtk
   void qtSelectionManager::clearAllSelections()
   {
     this->m_selEntities.clear();
+    this->m_selEntityRefs.clear();
     this->m_selMeshes.clear();
     this->m_desPhrases.clear();
   }
 
   void qtSelectionManager::filterEntitySelectionsByMask(
-      smtk::common::UUIDs &currentSelEnt, smtk::common::UUIDs &filteredSelEnt)
+      smtk::model::EntityRefs &inputEnts, smtk::model::EntityRefs &filteredSelEnts)
   {
-    filteredSelEnt.clear();
-    // For now rubber band selection only support F/E/V
-    for(smtk::common::UUIDs::iterator uuid = currentSelEnt.begin(); uuid != currentSelEnt.end(); uuid++)
+    filteredSelEnts.clear();
+    // For now rubber band selection only support F/E/V and group
+    for(smtk::model::EntityRefs::iterator inputEnt = inputEnts.begin(); inputEnt != inputEnts.end(); inputEnt++)
     {
-      smtk::model::EntityRef ent = smtk::model::EntityRef(this->m_modelMgr, *uuid);
+      smtk::model::EntityRef ent = *inputEnt;
       if (this->m_mask & smtk::model::CELL_ENTITY)
       {
         // check Cell? dimension? match mask?
         if ((ent.entityFlags() & smtk::model::CELL_ENTITY) &&
              ((ent.entityFlags() & smtk::model::ANY_DIMENSION) & this->m_mask))
         {
-          filteredSelEnt.insert(*uuid);
+          filteredSelEnts.insert(ent);
         }
       }
 
       if (ent.entityFlags() & smtk::model::GROUP_CONSTRAINT_MASK)
       {
-        filteredSelEnt.insert(*uuid);
+        filteredSelEnts.insert(ent);
       }
 
       // Comment out for now since tessellation for volume and model is not added

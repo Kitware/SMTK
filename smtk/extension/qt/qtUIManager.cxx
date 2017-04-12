@@ -732,3 +732,20 @@ void qtUIManager::findDefinitionsLongLabels()
     this->Def2LongLabel[*defIter] = text;
     }
 }
+
+void qtUIManager::invokeEntitiesSelected(const smtk::model::EntityRefs& selEnts)
+  {
+    smtk::model::StringList skipList;
+    skipList.push_back(std::string("attribute panel"));
+    emit this->sendSelectionsFromAttributePanelToSelectionManager(
+        selEnts, smtk::mesh::MeshSets(), smtk::model::DescriptivePhrases(),
+        smtk::extension::SelectionModifier::SELECTION_REPLACE_UNFILTERED,
+        skipList);
+    // Derepcate this signal when qtSelectionManager has only one output signal
+    smtk::common::UUIDs uuids;
+    for (auto selEnt: selEnts)
+    {
+      uuids.insert(selEnt.entity());
+    }
+    emit entitiesSelected(uuids);
+  }

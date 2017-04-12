@@ -31,16 +31,35 @@ namespace smtk
   namespace extension
   {
 
+  enum class SelectionModifier
+  {
+    SELECTION_REPLACE_FILTERED = 0, /* !< Replace all the current selection
+                                    and filter it. Example user case: normal
+                                    selection from rendering window. */
+    SELECTION_REPLACE_UNFILTERED = 1, /* !< Replace all the current selection
+                              and do not filter it. Example user case: selection
+                                from model tree and attribute panel. */
+    SELECTION_ADDITION_FILTERED = 2, /* !< Filter the input selection and add it
+                              to the current selection. Example user case:
+                                addition from rendering window. */
+    SELECTION_ADDITION_UNFILTERED = 3, /* !< Do not filter the input selection
+                                    and add it to the current selection.
+                          Example user case: addition from operator dialog. */
+    SELECTION_SUBTRACTION_FILTERED = 4, /* !< Filter the input selection and
+                                      subtract it from the current selection.
+                      Example user case: substraction from rendering window. */
+    SELECTION_SUBTRACTION_UNFILTERED = 5, /* !< Do not filter the input
+                    selection and sbutract it from the current selection.
+                Example user case: subtraction from operator dialog. */
+    SELECTION_INQUIRY = 6 /* !< Use the SelectionModifer defined in
+                        qtSelectionManager. Use it when SelectionModifer is
+                          decided by user input(Ex. different keybindings).
+    Example user case: rendering window selection addition and subtraction. */
+  };
+
 class SMTKQTEXT_EXPORT qtSelectionManager : public QObject
 {
 public:
-  enum class SelectionModifier
-  {
-    SELECTION_DEFAULT = 0,
-    SELECTION_ADDITION = 1,
-    SELECTION_SUBTRACTION = 2
-
-  };
 
   Q_OBJECT
   public:
@@ -48,13 +67,15 @@ public:
     void setModelManager(smtk::model::ManagerPtr mgrPtr)
     {this->m_modelMgr = mgrPtr;}
     void getSelectedEntities(smtk::common::UUIDs &selEntities);
+    void getSelectedEntitiesAsEntityRefs(smtk::model::EntityRefs &selEntities);
     void getSelectedMeshes(smtk::mesh::MeshSets &selMeshes);
 
     void setSelectionModifierToAddition()
-      {this->m_selectionModifier = SelectionModifier::SELECTION_ADDITION;}
+      {this->m_selectionModifier = SelectionModifier::SELECTION_ADDITION_FILTERED;}
 
     void setSelectionModifierToSubtraction()
-      {this->m_selectionModifier = SelectionModifier::SELECTION_SUBTRACTION;}
+      {this->m_selectionModifier = SelectionModifier::
+          SELECTION_SUBTRACTION_FILTERED;}
 
   signals:
     // Description
@@ -80,28 +101,21 @@ public:
     // Broadcast selection to attrite panel
     void broadcastToAttributeView(const smtk::common::UUIDs &
    selEntities) const;
+
   public slots:
-
     // Description
-    // update selected items from rendering window
-    void updateSelectedItems(const smtk::common::UUIDs &
-                selEntities, const smtk::mesh::MeshSets &selMeshes);
-
-    // Description
-    // update selected items from model tree
-    void updateSelectedItems(const smtk::model::EntityRefs&
-                selEntities, const smtk::mesh::MeshSets &selMeshes,
-                   const smtk::model::DescriptivePhrases &DesPhrases);
-
-    // Description
-    // update selected items from attribute
-    void updateSelectedItems(const smtk::common::UUIDs & selEntities);
-
-
-    // Description
-    // update selected items from qtModelItem/operator dialog
-    void updateSelectedItem(const smtk::common::UUID & selEntity, int
-                             SelectionFlags);
+    // this SLOT is used to update selected items
+    // SelectionModifer is used to specify how to update selectionManager
+    // skipList is used to specify which receiver you want to skip. Ex you do
+    // not want the current selection to update render window since the update
+    // is coming from render window.
+    // skiplist: "rendering window", "model tree", "attribute panel"
+    void updateSelectedItems(const smtk::model::EntityRefs &selEntities,
+                            const smtk::mesh::MeshSets &selMeshes,
+                            const smtk::model::DescriptivePhrases &DesPhrases,
+                            const smtk::extension::SelectionModifier modifierFlag,
+                            const smtk::model::StringList skipList
+                            );
 
     // Description
     // update mask for models
@@ -131,21 +145,24 @@ public:
     void clearAllSelections();
 
     // Description
-    // filter select entitiesa from currentSelEnt and store the result in
+    // filter select entities from inputSelEnt and store the result in
     // filteredSelEnt
     void filterEntitySelectionsByMask(
-      smtk::common::UUIDs &currentSelEnt, smtk::common::UUIDs &filteredSelEnt);
+      smtk::model::EntityRefs &inputSelEnts, smtk::model::EntityRefs &filteredSelEnts);
     // Description
     // filter selection to handle mask other than F/E/V
     void filterRubberBandSelection(smtk::model::EntityRef ent);
 
     smtk::mesh::MeshSets m_selMeshes;
-    smtk::common::UUIDs m_selEntities;
+    smtk::common::UUIDs m_selEntities; // Deprecate it with m_selEntityRefs
+    smtk::model::EntityRefs m_selEntityRefs;
     smtk::model::DescriptivePhrases m_desPhrases;
     smtk::model::BitFlags m_mask;
+    smtk::model::StringList m_skipList;
     bool m_filterMeshes;
     smtk::model::ManagerPtr m_modelMgr;
     SelectionModifier m_selectionModifier;
+
 
 };
 

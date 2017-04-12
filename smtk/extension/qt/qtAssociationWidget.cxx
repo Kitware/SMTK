@@ -473,14 +473,14 @@ void qtAssociationWidget::onEntitySelected()
     return;
     }
 
-  smtk::common::UUIDs selents;
+  smtk::model::EntityRefs selents;
   QList<QListWidgetItem *> selItems = listW->selectedItems();
   foreach(QListWidgetItem* currentItem, selItems)
     {
     smtk::model::EntityRef entref = this->getModelEntityItem(currentItem);
     if(entref.isValid())
       {
-      selents.insert(entref.entity());
+      selents.insert(entref);
       }
     }
   if(selents.size() > 0)
