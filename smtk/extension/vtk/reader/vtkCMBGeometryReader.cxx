@@ -201,7 +201,8 @@ int vtkCMBGeometryReader::RequestData(
       }
     }
   else if (fileNameStr.find(".bin") != std::string::npos ||
-    fileNameStr.find(".pts") != std::string::npos)
+    fileNameStr.find(".pts") != std::string::npos ||
+    fileNameStr.find(".xyz") != std::string::npos)
     {
     // binary or ASCII automatically determined
     vtkNew<vtkLIDARReader> reader;
