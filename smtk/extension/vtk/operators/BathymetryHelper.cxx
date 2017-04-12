@@ -82,7 +82,7 @@ bool BathymetryHelper::loadBathymetryFile(const std::string& filename)
   vtkDataSet* dataOutput = NULL;
   std::string ext = vtksys::SystemTools::GetFilenameLastExtension(filename);
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-  if(ext == ".pts" || ext == ".bin"
+  if(ext == ".pts" || ext == ".xyz" || ext == ".bin"
      || ext == ".vtk"
      || ext == ".vtp"
      || ext == ".2dm" || ext == ".3dm"
