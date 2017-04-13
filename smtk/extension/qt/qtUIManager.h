@@ -19,6 +19,7 @@
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtBaseView.h" // Needed for ViewInfo definition
 #include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/qtSelectionManager.h"
 #include <QColor>
 #include <QFont>
 #include <QMap>
@@ -188,14 +189,21 @@ namespace smtk
       void modelEntityItemCreated(smtk::extension::qtModelEntityItem* entItem);
       void meshSelectionItemCreated(smtk::extension::qtMeshSelectionItem*);
       void viewUIChanged(smtk::extension::qtBaseView*, smtk::attribute::ItemPtr);
+      // Derepcate this signal when qtSelectionManager has only one output signal
       void entitiesSelected(const smtk::common::UUIDs&);
+      void sendSelectionsFromAttributePanelToSelectionManager(
+                        const smtk::model::EntityRefs &selEntities,
+                        const smtk::mesh::MeshSets &selMeshes,
+                        const smtk::model::DescriptivePhrases &DesPhrases,
+                        const smtk::extension::SelectionModifier modifierFlag,
+                        const smtk::model::StringList skipList
+                        );
 
     friend class qtRootView;
     friend class qtAssociationWidget;
 
     protected slots:
-      void invokeEntitiesSelected(const smtk::common::UUIDs& uuids)
-        { emit this->entitiesSelected(uuids); }
+      void invokeEntitiesSelected(const smtk::model::EntityRefs& selEnts);
 
     protected:
       virtual void internalInitialize();

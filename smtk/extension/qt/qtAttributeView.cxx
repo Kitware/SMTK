@@ -133,10 +133,13 @@ qtAttributeView::createViewWidget(const ViewInfo &info)
            broadcastToAttributeView(const smtk::common::UUIDs&)), view,
                SIGNAL(selectionChanged(const smtk::common::UUIDs&)));
   view->buildUI();
-  smtk::common::UUIDs selEntities;
-  selMgr->getSelectedEntities(selEntities);
+  smtk::model::EntityRefs selEntities;
+  selMgr->getSelectedEntitiesAsEntityRefs(selEntities);
   //qt 4 signals are private. Just use the slot for update
-  selMgr->updateSelectedItems(selEntities, smtk::mesh::MeshSets());
+  selMgr->updateSelectedItems(selEntities, smtk::mesh::MeshSets(),
+                              smtk::model::DescriptivePhrases(),
+                              smtk::extension::SelectionModifier::SELECTION_REPLACE_UNFILTERED,
+                              smtk::model::StringList());
   }
   else
   {
@@ -613,10 +616,13 @@ void qtAttributeView::updateSelectionOfEntities()
       selectionManager();
   if (selMgr)
     {
-    smtk::common::UUIDs selEntities;
-    selMgr->getSelectedEntities(selEntities);
+    smtk::model::EntityRefs selEntities;
+    selMgr->getSelectedEntitiesAsEntityRefs(selEntities);
     //qt 4 signals are private. Just use the slot for update
-    selMgr->updateSelectedItems(selEntities, smtk::mesh::MeshSets());
+    selMgr->updateSelectedItems(selEntities, smtk::mesh::MeshSets(),
+                                smtk::model::DescriptivePhrases(),
+                                smtk::extension::SelectionModifier::SELECTION_REPLACE_UNFILTERED,
+                                smtk::model::StringList());
     }
 }
 

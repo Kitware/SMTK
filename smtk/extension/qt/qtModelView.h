@@ -36,6 +36,7 @@ namespace smtk{
   class qtMeshSelectionItem;
   class qtModelOperationWidget;
   class qtOperatorDockWidget;
+  enum class SelectionModifier;
 
   class SMTKQTEXT_EXPORT qtModelView : public QTreeView
   {
@@ -105,9 +106,13 @@ namespace smtk{
     virtual void onOperationPanelClosing();
 
   signals:
-    void selectionChanged(const smtk::model::EntityRefs& selEntityRefs,
-                          const smtk::mesh::MeshSets& selmeshes,
-                          const smtk::model::DescriptivePhrases& selproperties);
+    void sendSelectionsFromModelViewToSelectionManager(
+                          const smtk::model::EntityRefs &selEntities,
+                          const smtk::mesh::MeshSets &selMeshes,
+                          const smtk::model::DescriptivePhrases &DesPhrases,
+                          const smtk::extension::SelectionModifier modifierFlag,
+                          const smtk::model::StringList skipList
+                          );
 
     void operationRequested(const smtk::model::OperatorPtr& brOp);
     void operationCancelled(const smtk::model::OperatorPtr& brOp);
