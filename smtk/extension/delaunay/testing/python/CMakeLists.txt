@@ -5,6 +5,7 @@ set(smtkDelaunayExtPythonDataTests)
 if (SMTK_ENABLE_POLYGON_SESSION AND SMTK_USE_PYBIND11)
   set(smtkDelaunayExtPythonDataTests
     ${smtkDelaunayExtPythonDataTests}
+    unitTestTessellateFace
     unitTestTriangulateFace
   )
 endif()

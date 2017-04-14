@@ -19,6 +19,7 @@ set(unit_tests_which_require_data
 if(SMTK_ENABLE_POLYGON_SESSION)
   list(APPEND unit_tests_which_require_data
        UnitTestTriangulateFace.cxx
+       UnitTestTessellateFace.cxx
        )
   list(APPEND extra_libs
        smtkPolygonSession

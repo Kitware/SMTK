@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_extension_delaunay_TriangulateFace_h
-#define __smtk_extension_delaunay_TriangulateFace_h
+#ifndef __smtk_extension_delaunay_TessellateFace_h
+#define __smtk_extension_delaunay_TessellateFace_h
 
 #include "smtk/extension/delaunay/Exports.h"
 #include "smtk/model/Operator.h"
@@ -18,31 +18,28 @@ namespace smtk {
 
 class Session;
 
-/**\brief Triangulate a model face into a mesh using Delaunay.
+/**\brief Tessellate a model face using Delaunay.
   *
-  * This operation creates an smtk::mesh::MeshSet associated with an
-  * smtk::mesh::Face using Delaunay. The MeshSet resides in the
-  * smtk::mesh::Collection with the same UUID as the Face's model. If this
-  * collection does not yet exist during the construction of the mesh, it is
-  * created and populated with the MeshSet.
+  * This operation updates the smtk::mesh::Tessellation associated with an
+  * smtk::mesh::Face using Delaunay.
   */
-class SMTKDELAUNAYEXT_EXPORT TriangulateFace : public Operator
+class SMTKDELAUNAYEXT_EXPORT TessellateFace : public Operator
 {
 public:
-  smtkTypeMacro(TriangulateFace);
+  smtkTypeMacro(TessellateFace);
   smtkSuperclassMacro(Operator);
-  smtkCreateMacro(TriangulateFace);
+  smtkCreateMacro(TessellateFace);
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
   virtual bool ableToOperate();
 
 protected:
-  TriangulateFace();
+  TessellateFace();
   virtual smtk::model::OperatorResult operateInternal();
 };
 
   } // namespace model
 } // namespace smtk
 
-#endif // __smtk_extension_delaunay_TriangulateFace_h
+#endif // __smtk_extension_delaunay_TessellateFace_h
