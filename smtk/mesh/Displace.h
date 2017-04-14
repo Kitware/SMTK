@@ -35,9 +35,9 @@ namespace smtk {
                 iy >= m_extent[2] && iy <= m_extent[3]);
       }
 
-
-    int m_extent[4]; // indices for xmin, xmax, ymin, ymax
-    double m_bounds[4]; // xmin, xmax, ymin, ymax
+    int m_extent[4]; // [istart, iend, jstart, jend]
+    double m_origin[2]; // location of pixel index (0,0)
+    double m_spacing[2]; // i, j pixel spacing
   };
 
   class ElevationControls

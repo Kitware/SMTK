@@ -55,8 +55,10 @@ public:
       for (int i=0; i<4; i++)
         {
         m_extent[i] = imageData->GetExtent()[i];
-        m_bounds[i] = imageData->GetBounds()[i];
         }
+      double tmp;
+      imageData->GetOrigin(m_origin[0], m_origin[1], tmp);
+      imageData->GetSpacing(m_spacing[0], m_spacing[1], tmp);
     }
 
   double operator()(int i, int j) const
