@@ -15,6 +15,7 @@
 #include "smtk/mesh/PointSet.h"
 
 #include <cmath>
+#include <utility>
 
 namespace
 {
@@ -195,7 +196,6 @@ class ElevatePointForStructuredInput : public smtk::mesh::PointForEach
   double m_invalid;
   double m_minElev;
   double m_maxElev;
-  double m_gridSpacing[2];
   int m_discreteRadius[2];
 
   typedef std::pair<int,int> Coord;
@@ -212,15 +212,10 @@ public:
     m_minElev(controls.m_minElev),
     m_maxElev(controls.m_maxElev)
   {
-    m_gridSpacing[0] = ((m_data.m_bounds[1] - m_data.m_bounds[0]) /
-                        (m_data.m_extent[1] - m_data.m_extent[0]));
-    m_gridSpacing[1] = ((m_data.m_bounds[3] - m_data.m_bounds[2]) /
-                        (m_data.m_extent[3] - m_data.m_extent[2]));
-
     m_discreteRadius[0] =
-      static_cast<int>(std::round(radius / m_gridSpacing[0]));
+      std::abs(static_cast<int>(std::round(radius / m_data.m_spacing[0])));
     m_discreteRadius[1] =
-      static_cast<int>(std::round(radius / m_gridSpacing[1]));
+      std::abs(static_cast<int>(std::round(radius / m_data.m_spacing[1])));
   }
 
   void find(double x, double y, std::vector<Coord>& results) const
@@ -228,14 +223,10 @@ public:
     // (ix,iy) represents the closest point in the grid to the query point
     int ix = static_cast<int>(
       std::round(m_data.m_extent[0] +
-                 ((x - m_data.m_bounds[0]) /
-                  (m_data.m_bounds[1] - m_data.m_bounds[0])) *
-                 (m_data.m_extent[1] - m_data.m_extent[0])));
+                 ((x - m_data.m_origin[0]) / m_data.m_spacing[0])));
     int iy = static_cast<int>(
       std::round(m_data.m_extent[2] +
-                 ((y - m_data.m_bounds[2]) /
-                  (m_data.m_bounds[3] - m_data.m_bounds[2])) *
-                 (m_data.m_extent[3] - m_data.m_extent[2])));
+                 ((y - m_data.m_origin[1]) / m_data.m_spacing[1])));
 
     if (m_discreteRadius[0] == 0 || m_discreteRadius[1] == 0)
       {
@@ -246,6 +237,21 @@ public:
       }
     else
       {
+      double xStart = m_data.m_origin[0];
+      double xEnd = m_data.m_origin[0] +
+        (m_data.m_extent[1] - m_data.m_extent[0])*m_data.m_spacing[0];
+      if (xStart > xEnd)
+        {
+        std::swap(xStart,xEnd);
+        }
+      double yStart = m_data.m_origin[1];
+      double yEnd = m_data.m_origin[1] +
+        (m_data.m_extent[3] - m_data.m_extent[2])*m_data.m_spacing[1];
+      if (yStart > yEnd)
+        {
+        std::swap(yStart,yEnd);
+        }
+
       for (int i = ix - m_discreteRadius[0]; i<ix + m_discreteRadius[0]; i++)
         {
         if (i < m_data.m_extent[0] || i > m_data.m_extent[1])
@@ -262,11 +268,10 @@ public:
           {
           if (!extremaFound[0])
             {
-            double x_ = m_data.m_bounds[0] + i*m_gridSpacing[0];
-            double y_ = m_data.m_bounds[2] + jmin*m_gridSpacing[1];
+            double x_ = m_data.m_origin[0] + i*m_data.m_spacing[0];
+            double y_ = m_data.m_origin[1] + jmin*m_data.m_spacing[1];
 
-            if (x_ >= m_data.m_bounds[0] && x_ <= m_data.m_bounds[1] &&
-                y_ >= m_data.m_bounds[2] && y_ <= m_data.m_bounds[3])
+            if (xStart <= x_ && x_ <= xEnd && yStart <= y_ && y_ <= yEnd)
               {
               double r2 = (x-x_)*(x-x_) + (y-y_)*(y-y_);
               if (r2 < m_radius2)
@@ -283,11 +288,10 @@ public:
 
           if (!extremaFound[1])
             {
-            double x_ = m_data.m_bounds[0] + i*m_gridSpacing[0];
-            double y_ = m_data.m_bounds[2] + jmax*m_gridSpacing[1];
+            double x_ = m_data.m_origin[0] + i*m_data.m_spacing[0];
+            double y_ = m_data.m_origin[1] + jmax*m_data.m_spacing[1];
 
-            if (x_ >= m_data.m_bounds[0] && x_ <= m_data.m_bounds[1] &&
-                y_ >= m_data.m_bounds[2] && y_ <= m_data.m_bounds[3])
+            if (xStart <= x_ && x_ <= xEnd && yStart <= y_ && y_ <= yEnd)
               {
               double r2 = (x-x_)*(x-x_) + (y-y_)*(y-y_);
               if (r2 < m_radius2)
@@ -321,14 +325,27 @@ public:
 
     std::vector<Coord> results;
 
+    double xStart = m_data.m_origin[0];
+    double xEnd = m_data.m_origin[0] +
+      (m_data.m_extent[1] - m_data.m_extent[0])*m_data.m_spacing[0];
+    if (xStart > xEnd)
+      {
+      std::swap(xStart,xEnd);
+      }
+    double yStart = m_data.m_origin[1];
+    double yEnd = m_data.m_origin[1] +
+      (m_data.m_extent[3] - m_data.m_extent[2])*m_data.m_spacing[1];
+    if (yStart > yEnd)
+      {
+      std::swap(yStart,yEnd);
+      }
+
     typedef smtk::mesh::HandleRange::const_iterator c_it;
     std::size_t offset = 0;
     for(c_it i = pointIds.begin(); i != pointIds.end(); ++i, offset+=3)
       {
-      if (xyz[offset] < m_data.m_bounds[0] ||
-          xyz[offset] > m_data.m_bounds[1] ||
-          xyz[offset+1] < m_data.m_bounds[2] ||
-          xyz[offset+1] > m_data.m_bounds[3])
+      if (xyz[offset] < xStart || xyz[offset] > xEnd ||
+          xyz[offset+1] < yStart || xyz[offset+1] > yEnd)
         {
         // this point is outside of our data range
         if (m_useInvalid)
