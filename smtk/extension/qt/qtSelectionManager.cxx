@@ -42,6 +42,8 @@ namespace smtk
     m_mask |= smtk::model::VERTEX;
     this->m_filterMeshes = true;
     this->m_modelMgr = nullptr;
+    this->m_selEntityRefs = smtk::model::EntityRefs();
+    this->m_selMeshes = smtk::mesh::MeshSets();
     this->m_selectionModifier = SelectionModifier::SELECTION_REPLACE_FILTERED;
     this->m_skipList.push_back(std::string("rendering window"));
     this->m_skipList.push_back(std::string("model tree"));
@@ -85,8 +87,15 @@ namespace smtk
     }
     else if ( modifierFlag == smtk::extension::SelectionModifier::SELECTION_SUBTRACTION_UNFILTERED)
     {
-      this->m_selEntityRefs.erase(selEntities.begin(), selEntities.end());
-      this->m_selMeshes.insert(selMeshes.begin(),selMeshes.end());
+      for (auto selEntity : selEntities)
+      {
+        if (this->m_selEntityRefs.find(selEntity) != this->m_selEntityRefs.end())
+        {
+          this->m_selEntityRefs.erase(selEntity);
+        }
+
+      }
+      this->m_selMeshes.erase(selMeshes.begin(),selMeshes.end());
       // Deprecated start
       for (auto selEntity: selEntities)
       {
