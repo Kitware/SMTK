@@ -9,7 +9,10 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //
 //=============================================================================
-#include "smtk/extension/delaunay/TessellateFace.h"
+#include "smtk/extension/delaunay/operators/TriangulateFace.h"
+
+#include "smtk/extension/delaunay/io/ImportDelaunayMesh.h"
+#include "smtk/extension/delaunay/io/ExportDelaunayMesh.h"
 
 #include "smtk/io/ModelToMesh.h"
 
@@ -31,92 +34,14 @@
 
 #include <algorithm>
 
-namespace {
-
-std::vector<Delaunay::Shape::Point> pointsInLoop(
-  const smtk::model::Loop& loop, smtk::mesh::CollectionPtr& collection)
-{
-  std::int64_t connectivityLength= -1;
-  std::int64_t numberOfCells = -1;
-  std::int64_t numberOfPoints = -1;
-
-  //query for all cells
-  smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(
-    loop, collection, connectivityLength, numberOfCells, numberOfPoints);
-
-  std::vector<std::int64_t> conn( connectivityLength );
-  std::vector<float> fpoints(numberOfPoints * 3);
-
-  smtk::mesh::PreAllocatedTessellation ftess(&conn[0], &fpoints[0]);
-
-  ftess.disableVTKStyleConnectivity(true);
-  ftess.disableVTKCellTypes(true);
-
-  smtk::mesh::extractOrderedTessellation(loop, collection, ftess);
-
-  std::vector<Delaunay::Shape::Point> points;
-
-  for (std::size_t i=0;i<fpoints.size(); i+=3)
-  {
-    points.push_back(Delaunay::Shape::Point(fpoints[i], fpoints[i+1]));
-  }
-  // loops sometimes have a redundant point at the end. We need to remove it.
-  if (points.front() == points.back())
-  {
-    points.pop_back();
-  }
-
-  return points;
-}
-
-template <typename Point, typename PointContainer>
-int IndexOf(Point& point, const PointContainer& points)
-{
-  return static_cast<int>(std::distance(points.begin(),
-                                        std::find(points.begin(),
-                                                  points.end(), point)));
-}
-
-void ImportDelaunayMesh(const Delaunay::Mesh::Mesh& mesh,
-                        smtk::model::Face& face)
-{
-  smtk::model::Tessellation* tess = face.resetTessellation();
-
-  tess->coords().resize(mesh.GetVertices().size()*3);
-  int index = 0;
-  double xyz[3];
-  for (auto& p : mesh.GetVertices())
-    {
-    index = IndexOf(p, mesh.GetVertices());
-    xyz[0] = p.x;
-    xyz[1] = p.y;
-    xyz[2] = 0.;
-    tess->setPoint(index, xyz);
-    }
-
-  index = 0;
-  for (auto& t : mesh.GetTriangles())
-    {
-    tess->addTriangle(IndexOf(t.AB().A(), mesh.GetVertices()),
-                      IndexOf(t.AB().B(), mesh.GetVertices()),
-                      IndexOf(t.AC().B(), mesh.GetVertices()));
-    }
-
-  auto bounds = Delaunay::Shape::Bounds(mesh.GetPerimeter());
-  const double bbox[6] = {bounds[0], bounds[1], bounds[2], bounds[3], 0., 0.};
-  face.setBoundingBox(bbox);
-}
-
-}
-
 namespace smtk {
   namespace model {
 
-TessellateFace::TessellateFace()
+TriangulateFace::TriangulateFace()
 {
 }
 
-bool TessellateFace::ableToOperate()
+bool TriangulateFace::ableToOperate()
 {
   smtk::model::EntityRef eRef =
     this->specification()->findModelEntity("face")->value();
@@ -128,7 +53,7 @@ bool TessellateFace::ableToOperate()
     eRef.owningModel().isValid();
 }
 
-OperatorResult TessellateFace::operateInternal()
+OperatorResult TriangulateFace::operateInternal()
 {
   smtk::model::Face face =
     this->specification()->findModelEntity("face")->
@@ -155,8 +80,9 @@ OperatorResult TessellateFace::operateInternal()
   smtk::model::Loop exteriorLoop = exteriorLoops[0];
 
   // make a polygon from the points in the loop
+  smtk::extension::delaunay::io::ExportDelaunayMesh exportToDelaunayMesh;
   std::vector<Delaunay::Shape::Point> points =
-    pointsInLoop(exteriorLoop, collection);
+    exportToDelaunayMesh(exteriorLoop, collection);
   Delaunay::Shape::Polygon p(points);
   // if the orientation is not ccw, flip the orientation
   if (Delaunay::Shape::Orientation(p) != 1)
@@ -174,7 +100,7 @@ OperatorResult TessellateFace::operateInternal()
   for (auto& loop : exteriorLoop.containedLoops())
   {
     std::vector<Delaunay::Shape::Point> points_sub =
-      pointsInLoop(loop, collection);
+      exportToDelaunayMesh(loop, collection);
     Delaunay::Shape::Polygon p_sub(points_sub);
     // if the orientation is not ccw, flip the orientation
     if (Delaunay::Shape::Orientation(p_sub) != 1)
@@ -184,15 +110,30 @@ OperatorResult TessellateFace::operateInternal()
     excise(p_sub, mesh);
   }
 
-  // remove the original collection
+  // remove the original collection and grab the collection with the same id as
+  // the model
   this->session()->meshManager()->removeCollection(collection);
+  collection = this->session()->meshManager()->collection(
+    face.model().entity());
+  if (!collection)
+    {
+      // If we can't find this collection, we can create it
+      collection = this->session()->meshManager()->makeCollection(
+        face.model().entity());
+      collection->associateToModel(face.model().entity());
+    }
 
-  // Use the delaunay mesh to retessellate the face
-  ImportDelaunayMesh(mesh, face);
+  // populate the new collection
+  smtk::extension::delaunay::io::ImportDelaunayMesh importFromDelaunayMesh;
+  smtk::mesh::MeshSet meshSet = importFromDelaunayMesh(mesh, collection);
+  if (!meshSet.is_empty())
+  {
+    collection->setAssociation(face, meshSet);
+  }
 
   OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
   this->addEntityToResult(result, face, MODIFIED);
-  result->findModelEntity("tess_changed")->setValue(face);
+  result->findModelEntity("mesh_created")->setValue(face);
   return result;
 }
 
@@ -200,12 +141,12 @@ OperatorResult TessellateFace::operateInternal()
 } // namespace smtk
 
 #include "smtk/extension/delaunay/Exports.h"
-#include "smtk/extension/delaunay/TessellateFace_xml.h"
+#include "smtk/extension/delaunay/TriangulateFace_xml.h"
 
 smtkImplementsModelOperator(
   SMTKDELAUNAYEXT_EXPORT,
-  smtk::model::TessellateFace,
-  delaunay_tessellate_face,
-  "tessellate face",
-  TessellateFace_xml,
+  smtk::model::TriangulateFace,
+  delaunay_triangulate_face,
+  "triangulate face",
+  TriangulateFace_xml,
   smtk::model::Session);

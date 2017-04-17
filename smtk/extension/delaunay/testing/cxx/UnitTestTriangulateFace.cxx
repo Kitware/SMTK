@@ -8,8 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/extension/delaunay/TriangulateFace.h"
-
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/ExtractTessellation.h"
 #include "smtk/mesh/Manager.h"
