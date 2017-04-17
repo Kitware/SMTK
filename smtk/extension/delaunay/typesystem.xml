@@ -5,6 +5,9 @@
 
   <suppress-warning text="Duplicate type entry: 'smtk'"/>
 
+  <suppress-warning text="skipping function 'smtk::model::TessellateFace::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::TessellateFace::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::TessellateFace::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::TessellateFace::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::TessellateFace::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::TessellateFace::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::TriangulateFace::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::TriangulateFace::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::TriangulateFace::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::TriangulateFace::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::TriangulateFace::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::TriangulateFace::SelfType&gt;'"/>
@@ -12,8 +15,11 @@
   <!-- Additional objects to be wrapped -->
   <namespace-type name="smtk" generate = "no">
     <namespace-type name="model" generate = "no">
+      <object-type name="TessellateFace">
+        <include file-name="smtk/extension/delaunay/operators/TessellateFace.h" location="local"/>
+      </object-type>
       <object-type name="TriangulateFace">
-        <include file-name="smtk/extension/delaunay/TriangulateFace.h" location="local"/>
+        <include file-name="smtk/extension/delaunay/operators/TriangulateFace.h" location="local"/>
       </object-type>
     </namespace-type>
   </namespace-type>

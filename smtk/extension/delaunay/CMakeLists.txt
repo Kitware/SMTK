@@ -1,11 +1,15 @@
 set(source
-  TessellateFace.cxx
-  TriangulateFace.cxx)
+  io/ImportDelaunayMesh.cxx
+  io/ExportDelaunayMesh.cxx
+  operators/TessellateFace.cxx
+  operators/TriangulateFace.cxx)
 set(headers
-  TessellateFace.h
-  TriangulateFace.h)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/TriangulateFace.sbt" delaunayOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/TessellateFace.sbt" delaunayOperatorXML)
+  io/ImportDelaunayMesh.h
+  io/ExportDelaunayMesh.h
+  operators/TessellateFace.h
+  operators/TriangulateFace.h)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/TriangulateFace.sbt" delaunayOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/TessellateFace.sbt" delaunayOperatorXML)
 
 add_library(smtkDelaunayExt ${source})
 target_link_libraries(smtkDelaunayExt

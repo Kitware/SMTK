@@ -13,7 +13,7 @@
 
 #include <pybind11/pybind11.h>
 
-#include "smtk/extension/delaunay/TriangulateFace.h"
+#include "smtk/extension/delaunay/operators/TriangulateFace.h"
 
 PySharedPtrClass< smtk::model::TriangulateFace, smtk::model::Operator > pybind11_init_smtk_extension_delaunay_TriangulateFace(py::module &m)
 {
