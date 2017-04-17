@@ -4,6 +4,7 @@
   @EXTRA_TYPESYSTEMS@
 
   <suppress-warning text="Duplicate type entry: 'smtk'"/>
+  <suppress-warning text="namespace 'Delaunay' does not have a type entry"/>
 
   <suppress-warning text="skipping function 'smtk::model::TessellateFace::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::TessellateFace::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::TessellateFace::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::TessellateFace::SelfType&gt;'"/>
