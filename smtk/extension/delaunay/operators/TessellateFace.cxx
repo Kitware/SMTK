@@ -14,13 +14,9 @@
 #include "smtk/extension/delaunay/io/ImportDelaunayMesh.h"
 #include "smtk/extension/delaunay/io/ExportDelaunayMesh.h"
 
-#include "smtk/io/ModelToMesh.h"
-
 #include "smtk/mesh/Collection.h"
-#include "smtk/mesh/ExtractTessellation.h"
 #include "smtk/mesh/Manager.h"
 
-#include "smtk/model/Edge.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Loop.h"
@@ -59,11 +55,6 @@ OperatorResult TessellateFace::operateInternal()
     this->specification()->findModelEntity("face")->
     value().as<smtk::model::Face>();
 
-  smtk::io::ModelToMesh convert;
-  convert.setIsMerging(false);
-  smtk::mesh::CollectionPtr collection = convert(this->session()->meshManager(),
-                                                 this->session()->manager());
-
   // get the face use for the face
   smtk::model::FaceUse fu = face.positiveUse();
 
@@ -82,7 +73,8 @@ OperatorResult TessellateFace::operateInternal()
   // make a polygon from the points in the loop
   smtk::extension::delaunay::io::ExportDelaunayMesh exportToDelaunayMesh;
   std::vector<Delaunay::Shape::Point> points =
-    exportToDelaunayMesh(exteriorLoop, collection);
+    exportToDelaunayMesh(exteriorLoop);
+
   Delaunay::Shape::Polygon p(points);
   // if the orientation is not ccw, flip the orientation
   if (Delaunay::Shape::Orientation(p) != 1)
@@ -100,7 +92,7 @@ OperatorResult TessellateFace::operateInternal()
   for (auto& loop : exteriorLoop.containedLoops())
   {
     std::vector<Delaunay::Shape::Point> points_sub =
-      exportToDelaunayMesh(loop, collection);
+      exportToDelaunayMesh(loop);
     Delaunay::Shape::Polygon p_sub(points_sub);
     // if the orientation is not ccw, flip the orientation
     if (Delaunay::Shape::Orientation(p_sub) != 1)
@@ -109,9 +101,6 @@ OperatorResult TessellateFace::operateInternal()
     }
     excise(p_sub, mesh);
   }
-
-  // remove the original collection
-  this->session()->meshManager()->removeCollection(collection);
 
   // Use the delaunay mesh to retessellate the face
   smtk::extension::delaunay::io::ImportDelaunayMesh importFromDelaunayMesh;

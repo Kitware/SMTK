@@ -43,9 +43,12 @@ public:
   ExportDelaunayMesh(const ExportDelaunayMesh&) = delete;
   ExportDelaunayMesh& operator=(const ExportDelaunayMesh&) = delete;
 
-  //Export a model loop with a mesh representation (likely constructed from
-  // smtk::io::modelToMesh) stored in the collection into a vector of Delaunay
-  // points.
+  //Export a model loop with a tessellation into a vector of Delaunay points.
+  std::vector<Delaunay::Shape::Point> operator()(
+    const smtk::model::Loop&) const;
+
+  //Export a model loop with a mesh representation stored in the given
+  // collection into a vector of Delaunay points.
   std::vector<Delaunay::Shape::Point> operator()(
     const smtk::model::Loop&, smtk::mesh::CollectionPtr&) const;
 
