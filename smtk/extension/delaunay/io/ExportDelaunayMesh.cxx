@@ -61,11 +61,17 @@ std::vector<Delaunay::Shape::Point> ExportDelaunayMesh::operator()(
     // the edge use's orientation.
     if (eu.orientation() == 1)
     {
-      points.insert(points.end(), pointsForEdge.begin(), pointsForEdge.end());
+      for (auto p = pointsForEdge.begin(); p != pointsForEdge.end(); ++p)
+      {
+        points.push_back(Delaunay::Shape::Point(p->x,p->y));
+      }
     }
     else
     {
-      points.insert(points.end(), pointsForEdge.rbegin(), pointsForEdge.rend());
+      for (auto p = pointsForEdge.rbegin(); p != pointsForEdge.rend(); ++p)
+      {
+        points.push_back(Delaunay::Shape::Point(p->x,p->y));
+      }
     }
     pointsForEdge.clear();
   }
