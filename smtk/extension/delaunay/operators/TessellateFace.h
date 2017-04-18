@@ -20,8 +20,8 @@ class Session;
 
 /**\brief Tessellate a model face using Delaunay.
   *
-  * This operation updates the smtk::mesh::Tessellation associated with an
-  * smtk::mesh::Face using Delaunay.
+  * This operation updates the smtk::model::Tessellation associated with an
+  * smtk::model::Face using Delaunay.
   */
 class SMTKDELAUNAYEXT_EXPORT TessellateFace : public Operator
 {
