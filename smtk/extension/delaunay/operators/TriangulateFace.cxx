@@ -102,17 +102,10 @@ OperatorResult TriangulateFace::operateInternal()
     excise(p_sub, mesh);
   }
 
-  // remove the original collection and grab the collection with the same id as
-  // the model
+  // construct a collection and associate it with the face's model
   smtk::mesh::CollectionPtr collection =
-    this->session()->meshManager()->collection(face.model().entity());
-  if (!collection)
-    {
-      // If we can't find this collection, we can create it
-      collection = this->session()->meshManager()->makeCollection(
-        face.model().entity());
-      collection->associateToModel(face.model().entity());
-    }
+    this->session()->meshManager()->makeCollection();
+  collection->associateToModel(face.model().entity());
 
   // populate the new collection
   smtk::extension::delaunay::io::ImportDelaunayMesh importFromDelaunayMesh;
