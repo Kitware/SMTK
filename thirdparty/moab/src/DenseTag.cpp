@@ -1,5 +1,5 @@
 /** \file   DenseTag.cpp
- *  \author Jason Kraftcheck 
+ *  \author Jason Kraftcheck
  *  \date   2010-12-14
  */
 
@@ -101,18 +101,6 @@ ErrorCode DenseTag::release_all_data(SequenceManager* seqman,
 ErrorCode DenseTag::get_array(const SequenceManager* seqman,
                               Error* /* error */,
                               EntityHandle h,
-                              const unsigned char* const& ptr,
-                              size_t& count) const
-{
-  //  cast away the const-ness; do we really want to do this?
-  // probably we are not calling this anywhere;
-  // clang compiler found this
-  return get_array(seqman, NULL, h, const_cast<unsigned char *> ( ptr ), count);
-}
-
-ErrorCode DenseTag::get_array(const SequenceManager* seqman,
-                              Error* /* error */,
-                              EntityHandle h,
                               const unsigned char*& ptr,
                               size_t& count) const
 {
@@ -141,14 +129,6 @@ ErrorCode DenseTag::get_array(const SequenceManager* seqman,
 }
 
 ErrorCode DenseTag::get_array(const EntitySequence* seq,
-                              const unsigned char* const & ptr) const
-{
-  // cast away the constness; otherwise it would be infinite recursion
-  // probably we are not calling this anywhere
-  return get_array(seq, const_cast<unsigned char *> ( ptr ));
-}
-
-ErrorCode DenseTag::get_array(const EntitySequence* seq,
                               const unsigned char* & ptr) const
 {
   ptr = reinterpret_cast<const unsigned char*>(seq->data()->get_tag_data(mySequenceArray));
@@ -169,7 +149,7 @@ ErrorCode DenseTag::get_array(SequenceManager* seqman,
   ErrorCode rval = seqman->find(h, seq);
   if (MB_SUCCESS != rval) {
     if (!h) { // Root set
-      if (!meshValue && allocate) 
+      if (!meshValue && allocate)
         meshValue = new unsigned char[get_size()];
       ptr = meshValue;
       count = 1;
@@ -460,7 +440,7 @@ ErrorCode DenseTag::clear_data(bool allocate,
   unsigned char* array = NULL;
   size_t avail = 0;
 
-  for (Range::const_pair_iterator p = entities.const_pair_begin(); 
+  for (Range::const_pair_iterator p = entities.const_pair_begin();
        p != entities.const_pair_end(); ++p) {
     EntityHandle start = p->first;
     while (start <= p->second) {
@@ -567,12 +547,12 @@ ErrorCode DenseTag::get_tagged_entities(const SequenceManager* seqman,
   TypeSequenceManager::const_iterator i;
   for (EntityType t = range.first; t != range.second; ++t) {
     const TypeSequenceManager& map = seqman->entity_map(t);
-    for (i = map.begin(); i != map.end(); ++i) 
+    for (i = map.begin(); i != map.end(); ++i)
       if ((*i)->data()->get_tag_data(mySequenceArray))
         hint = entities->insert(hint, (*i)->start_handle(), (*i)->end_handle());
   }
 
-  if (intersect_list) 
+  if (intersect_list)
     entities_in = intersect(*entities, *intersect_list);
 
   return MB_SUCCESS;
@@ -657,7 +637,7 @@ bool DenseTag::is_tagged(const SequenceManager* seqman, EntityHandle h) const
   const unsigned char* ptr = NULL; // Initialize to get rid of warning
   size_t count;
   return (MB_SUCCESS == get_array(seqman, 0, h, ptr, count)) && (NULL != ptr);
-} 
+}
 
 ErrorCode DenseTag::get_memory_use(const SequenceManager* seqman,
                                    unsigned long& total,
