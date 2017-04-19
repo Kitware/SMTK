@@ -664,6 +664,9 @@ void extractOrderedTessellation( const OneDimensionalEntities& oneDimEntities,
 
   for (auto ent=oneDimEntities.cbegin(); ent != oneDimEntities.cend(); ++ent)
     {
+    // Grab the orientation of the entity
+    int orientation = ent->orientation();
+
     // Collect the cells associated with the edge connected to the edge use
     CellSet cs = c->findAssociatedCells(*ent);
 
@@ -683,8 +686,16 @@ void extractOrderedTessellation( const OneDimensionalEntities& oneDimEntities,
     for (pc.initCellTraversal(); pc.fetchNextCell(numPts, pointIds);)
       {
       // ... we construct a link and add it to our ordered loop.
-      link.Handles[0]  = ps.find( pointIds[0] );
-      link.Handles[1] = ps.find( pointIds[1] );
+      if (orientation == 1)
+        {
+        link.Handles[0]  = ps.find( pointIds[0] );
+        link.Handles[1] = ps.find( pointIds[1] );
+        }
+      else
+        {
+        link.Handles[0]  = ps.find( pointIds[1] );
+        link.Handles[1] = ps.find( pointIds[0] );
+        }
       orderedEdge.insert_link(link);
       }
     orderedEdge.merge_chains();
@@ -697,13 +708,13 @@ void extractOrderedTessellation( const OneDimensionalEntities& oneDimEntities,
 }
 }
 
-void extractOrderedTessellation( const smtk::model::Edge& edge,
+void extractOrderedTessellation( const smtk::model::EdgeUse& edgeUse,
                                  const smtk::mesh::CollectionPtr& c,
                                  PreAllocatedTessellation& tess)
 {
   // Collect the cells associated with the edge
-  smtk::mesh::CellSet cells = c->findAssociatedCells(edge);
-  extractOrderedTessellation(edge,c,cells.points(),tess);
+  smtk::mesh::CellSet cells = c->findAssociatedCells(edgeUse.edge());
+  extractOrderedTessellation(edgeUse,c,cells.points(),tess);
 }
 
 void extractOrderedTessellation( const smtk::model::Loop& loop,
@@ -714,10 +725,10 @@ void extractOrderedTessellation( const smtk::model::Loop& loop,
   smtk::mesh::CellSet cells(c,cellRange);
 
   // Grab the edge uses from the loop.
-  smtk::model::EdgeUses euses = loop.edgeUses();
+  smtk::model::EdgeUses edgeUses = loop.edgeUses();
 
   // Loop over the edge uses
-  for (auto eu=euses.crbegin(); eu!=euses.crend(); ++eu)
+  for (auto eu=edgeUses.crbegin(); eu!=edgeUses.crend(); ++eu)
     {
     // Collect the cells associated with the edge connected to the edge use
     cells = set_union(cells, c->findAssociatedCells(eu->edge()));
@@ -726,14 +737,14 @@ void extractOrderedTessellation( const smtk::model::Loop& loop,
   extractOrderedTessellation(loop,c,cells.points(),tess);
 }
 
-void extractOrderedTessellation( const smtk::model::Edge& edge,
+void extractOrderedTessellation( const smtk::model::EdgeUse& edgeUse,
                                  const smtk::mesh::CollectionPtr& c,
                                  const smtk::mesh::PointSet& ps,
                                  PreAllocatedTessellation& tess)
 {
-  smtk::model::Edges edges;
-  edges.push_back(edge);
-  extractOrderedTessellation<smtk::model::Edges>(edges,c,ps,tess);
+  smtk::model::EdgeUses edgeUses;
+  edgeUses.push_back(edgeUse);
+  extractOrderedTessellation<smtk::model::EdgeUses>(edgeUses,c,ps,tess);
 }
 
 void extractOrderedTessellation( const smtk::model::Loop& loop,
@@ -742,13 +753,7 @@ void extractOrderedTessellation( const smtk::model::Loop& loop,
                                  PreAllocatedTessellation& tess)
 {
   smtk::model::EdgeUses euses = loop.edgeUses();
-  smtk::model::Edges edges;
-  for (auto eu=euses.cbegin(); eu!=euses.cend(); ++eu)
-    {
-    edges.push_back(eu->edge());
-    }
-
-  extractOrderedTessellation<smtk::model::Edges>(edges,c,ps,tess);
+  extractOrderedTessellation<smtk::model::EdgeUses>(euses,c,ps,tess);
 }
 
 }

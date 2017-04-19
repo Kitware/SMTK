@@ -167,7 +167,7 @@ SMTKCORE_EXPORT void extractTessellation( const smtk::model::EntityRef&,
                                           const smtk::mesh::CollectionPtr&,
                                           PreAllocatedTessellation& );
 SMTKCORE_EXPORT void extractOrderedTessellation(
-  const smtk::model::Edge&,
+  const smtk::model::EdgeUse&,
   const smtk::mesh::CollectionPtr&,
   PreAllocatedTessellation& );
 SMTKCORE_EXPORT void extractOrderedTessellation(
@@ -192,7 +192,7 @@ SMTKCORE_EXPORT void extractTessellation( const smtk::model::EntityRef&,
                                           const smtk::mesh::PointSet&,
                                           PreAllocatedTessellation& );
 SMTKCORE_EXPORT void extractOrderedTessellation(
-  const smtk::model::Edge&,
+  const smtk::model::EdgeUse&,
   const smtk::mesh::CollectionPtr&,
   const smtk::mesh::PointSet&,
   PreAllocatedTessellation& );
