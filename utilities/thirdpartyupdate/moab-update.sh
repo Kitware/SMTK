@@ -28,4 +28,4 @@ extract_source () {
     git_archive
 }
 
-. "${BASH_SOURCE%/*}/common-update.sh"
+. "${BASH_SOURCE%/*}/update-common.sh"
