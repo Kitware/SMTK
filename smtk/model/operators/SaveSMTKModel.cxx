@@ -127,7 +127,6 @@ OperatorResult SaveSMTKModel::operateInternal()
           }
         smtkDebugMacro(this->log(), "Renaming " << oldmodelname << " to " << newname.str());
         modit->setName(newname.str());
-        modified.push_back(*modit);
         }
       }
 
@@ -143,6 +142,8 @@ OperatorResult SaveSMTKModel::operateInternal()
       smtk::common::FileLocation wfLocation(write_path, smtkfilepath);
       (*cit)->writeLocation(wfLocation);
       }
+
+    modified.push_back(*modit); // All models saved should be marked clean.
     }
 
   smtk::io::SaveJSON::forManagerSessionPartial(
