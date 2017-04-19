@@ -123,9 +123,7 @@ int UnitTestTessellateFace(int, char** const)
       std::cerr << "No tessellate face operator\n";
       return 1;
     }
-    tessellateFace->specification()->associateEntity(model);
-    tessellateFace->specification()->findModelEntity("face")->
-      setValue(face);
+    tessellateFace->specification()->associateEntity(face);
 
     if (!tessellateFace->ableToOperate())
     {

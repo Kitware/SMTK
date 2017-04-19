@@ -11,6 +11,8 @@
 //=============================================================================
 #include "smtk/extension/delaunay/operators/TriangulateFace.h"
 
+#include "smtk/attribute/VoidItem.h"
+
 #include "smtk/extension/delaunay/io/ImportDelaunayMesh.h"
 #include "smtk/extension/delaunay/io/ExportDelaunayMesh.h"
 
@@ -27,6 +29,7 @@
 #include "Shape/Point.hh"
 #include "Shape/Polygon.hh"
 #include "Shape/PolygonUtilities.hh"
+#include "Validation/IsValidPolygon.hh"
 
 #include <algorithm>
 
@@ -40,7 +43,7 @@ TriangulateFace::TriangulateFace()
 bool TriangulateFace::ableToOperate()
 {
   smtk::model::EntityRef eRef =
-    this->specification()->findModelEntity("face")->value();
+    this->specification()->associations()->value();
 
   return
     this->Superclass::ableToOperate() &&
@@ -51,9 +54,10 @@ bool TriangulateFace::ableToOperate()
 
 OperatorResult TriangulateFace::operateInternal()
 {
-  smtk::model::Face face =
-    this->specification()->findModelEntity("face")->
+  smtk::model::Face face = this->specification()->associations()->
     value().as<smtk::model::Face>();
+
+  bool validatePolygons = this->findVoid("validate polygons")->isEnabled();
 
   // get the face use for the face
   smtk::model::FaceUse fu = face.positiveUse();
@@ -62,7 +66,7 @@ OperatorResult TriangulateFace::operateInternal()
   smtk::model::Loops exteriorLoops = fu.loops();
   if (exteriorLoops.size() == 0)
   {
-    // if we don't have loops we are bailing out!
+    // if we don't have loops, there is nothing to mesh
     smtkErrorMacro(this->log(), "No loops associated with this face.");
     return this->createResult(OPERATION_FAILED);
   }
@@ -75,11 +79,21 @@ OperatorResult TriangulateFace::operateInternal()
   std::vector<Delaunay::Shape::Point> points =
     exportToDelaunayMesh(exteriorLoop);
 
+  // make a polygon validator
+  Delaunay::Validation::IsValidPolygon isValidPolygon;
+
   Delaunay::Shape::Polygon p(points);
   // if the orientation is not ccw, flip the orientation
   if (Delaunay::Shape::Orientation(p) != 1)
   {
     p = Delaunay::Shape::Polygon(points.rbegin(), points.rend());
+  }
+
+  if (validatePolygons && !isValidPolygon(p))
+  {
+    // the polygon is invalid, so we exit with failure
+    smtkErrorMacro(this->log(), "Outer boundary polygon is invalid.");
+    return this->createResult(OPERATION_FAILED);
   }
 
   // discretize the polygon
@@ -99,6 +113,14 @@ OperatorResult TriangulateFace::operateInternal()
     {
       p_sub = Delaunay::Shape::Polygon(points_sub.rbegin(), points_sub.rend());
     }
+
+    if (validatePolygons && !isValidPolygon(p_sub))
+    {
+      // the polygon is invalid, so we exit with failure
+      smtkErrorMacro(this->log(), "Inner boundary polygon is invalid.");
+      return this->createResult(OPERATION_FAILED);
+    }
+
     excise(p_sub, mesh);
   }
 
