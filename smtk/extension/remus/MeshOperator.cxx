@@ -95,6 +95,22 @@ OperatorResult MeshOperator::operateInternal()
   smtk::attribute::StringItemPtr requirementsItem = this->findString("remusRequirements");
   smtk::attribute::StringItemPtr attributeItem = this->findString("meshingControlAttributes");
 
+  //warn if the models to mesh are empty
+  {
+  bool modelsAreEmpty = true;
+  for (auto& model : models)
+    {
+    if (!model.cells().empty())
+      {
+      modelsAreEmpty = false;
+      }
+    }
+  if (modelsAreEmpty)
+    {
+    smtkWarningMacro(this->log(), "Model contains no cells.");
+    }
+  }
+
   //convert the model and uuids to to mesh to a string representation
   std::string modelSerialized = smtk::io::SaveJSON::fromModelManager(this->manager());
   std::string modelUUIDSSerialized = extractModelUUIDSAsJSON(models);
