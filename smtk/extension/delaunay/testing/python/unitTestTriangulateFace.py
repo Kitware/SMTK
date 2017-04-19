@@ -39,8 +39,7 @@ class UnitTriangulateFace(smtk.testing.TestCase):
         else:
             face = self.mgr.findEntitiesOfType(smtk.model.FACE, True)[0]
         triangulateFace = self.sess.op('triangulate face')
-        triangulateFace.specification().associateEntity(self.model)
-        triangulateFace.specification().findModelEntity("face").setValue(face)
+        triangulateFace.specification().associateEntity(face)
         result = triangulateFace.operate()
         triangulatedFace = self.mgr.meshes().associatedCollections(face)[0]
         assert(triangulatedFace.points().size() == 8)

@@ -39,8 +39,7 @@ class UnitTessellateFace(smtk.testing.TestCase):
         else:
             face = self.mgr.findEntitiesOfType(smtk.model.FACE, True)[0]
         tessellateFace = self.sess.op('tessellate face')
-        tessellateFace.specification().associateEntity(self.model)
-        tessellateFace.specification().findModelEntity("face").setValue(face)
+        tessellateFace.specification().associateEntity(face)
         result = tessellateFace.operate()
         tessellatedFace = face.hasTessellation()
         assert(len(tessellatedFace.coords()) == 8*3)

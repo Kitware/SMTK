@@ -9,10 +9,19 @@
         Tessellate a model face using Delaunay.
 
         This operation updates the smtk::mesh::Tessellation associated with an
-        smtk::mesh::Face using Delaunay.
+        smtk::mesh::Face using Delaunay. The resulting tessellation is
+        composed only of the boundary points.
       </DetailedDescription>
+      <AssociationsDef Name="face" NumberOfRequiredValues="1">
+        <MembershipMask>face</MembershipMask>
+        <BriefDescription>The face to tessellate.</BriefDescription>
+      </AssociationsDef>
       <ItemDefinitions>
-        <ModelEntity Name="face" NumberOfRequiredValues="1"/>
+        <Void Name="validate polygons" Label="Validate Polygons prior to Tessellation"
+              Optional="true" AdvanceLevel="1">
+          <BriefDescription>Ensure the polygons describing the
+          boundaries are valid before tessellating the face.</BriefDescription>
+        </Void>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->

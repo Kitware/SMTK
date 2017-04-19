@@ -123,9 +123,7 @@ int UnitTestTriangulateFace(int, char** const)
       std::cerr << "No triangulate face operator\n";
       return 1;
     }
-    triangulateFace->specification()->associateEntity(model);
-    triangulateFace->specification()->findModelEntity("face")->
-      setValue(face);
+    triangulateFace->specification()->associateEntity(face);
 
     if (!triangulateFace->ableToOperate())
     {

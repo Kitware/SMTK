@@ -48,7 +48,7 @@ std::vector<Delaunay::Shape::Point> ExportDelaunayMesh::operator()(
          start_off = tess->nextCellOffset(start_off))
     {
       tess->vertexIdsOfCell(start_off, cell_conn);
-      for (std::size_t j = 0; j < cell_conn.size() - 1; j++)
+      for (std::size_t j = 0; j < cell_conn.size(); j++)
       {
         pointsForEdge.push_back(
           Delaunay::Shape::Point(tess->coords()[cell_conn[j]*3 + 0],
@@ -58,28 +58,23 @@ std::vector<Delaunay::Shape::Point> ExportDelaunayMesh::operator()(
     }
 
     // We transplant the edge's points into the global point vector according to
-    // the edge use's orientation.
+    // the edge use's orientation. We skip the first point, as it is always a
+    // duplicate of the last point in the global vector.
     if (eu.orientation() == 1)
     {
-      for (auto p = pointsForEdge.begin(); p != pointsForEdge.end(); ++p)
+      for (auto p = pointsForEdge.begin() + 1; p != pointsForEdge.end(); ++p)
       {
         points.push_back(Delaunay::Shape::Point(p->x,p->y));
       }
     }
     else
     {
-      for (auto p = pointsForEdge.rbegin(); p != pointsForEdge.rend(); ++p)
+      for (auto p = pointsForEdge.rbegin() + 1; p != pointsForEdge.rend(); ++p)
       {
         points.push_back(Delaunay::Shape::Point(p->x,p->y));
       }
     }
     pointsForEdge.clear();
-  }
-
-  // Delaunay polygons do not use a repeated point to denote a loop.
-  if (points.front() == points.back())
-  {
-    points.pop_back();
   }
 
   return points;

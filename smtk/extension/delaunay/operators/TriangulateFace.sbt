@@ -9,13 +9,20 @@
         Triangulate a model face into a mesh using Delaunay.
 
         This operation creates an smtk::mesh::MeshSet associated with an
-        smtk::mesh::Face using Delaunay. The MeshSet resides in the
-        smtk::mesh::Collection with the same UUID as the Face's model. If this
-        collection does not yet exist during the construction of the mesh, it is
-        created and populated with the MeshSet.
+        smtk::mesh::Face using Delaunay. The MeshSet resides in a new
+        smtk::mesh::Collection associated with the face's model. The
+        resulting triangulation is composed only of the boundary points.
       </DetailedDescription>
+      <AssociationsDef Name="face" NumberOfRequiredValues="1">
+        <MembershipMask>face</MembershipMask>
+        <BriefDescription>The face to triangulate.</BriefDescription>
+      </AssociationsDef>
       <ItemDefinitions>
-        <ModelEntity Name="face" NumberOfRequiredValues="1"/>
+        <Void Name="validate polygons" Label="Validate Polygons prior to Triangulation"
+              Optional="true" AdvanceLevel="1">
+          <BriefDescription>Ensure the polygons describing the
+          boundaries are valid before triangulating the face.</BriefDescription>
+        </Void>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
