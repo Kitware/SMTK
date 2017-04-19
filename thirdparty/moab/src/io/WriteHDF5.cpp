@@ -1,22 +1,22 @@
 /**
  * MOAB, a Mesh-Oriented datABase, is a software component for creating,
  * storing and accessing finite element mesh data.
- *
+ * 
  * Copyright 2004 Sandia Corporation.  Under the terms of Contract
  * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government
  * retains certain rights in this software.
- *
+ * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- *
+ * 
  */
 
 //-------------------------------------------------------------------------
 // Filename      : WriteHDF5.cpp
 //
-// Purpose       : TSTT HDF5 Writer
+// Purpose       : TSTT HDF5 Writer 
 //
 // Special Notes : WriteSLAC used as template for this
 //
@@ -73,7 +73,7 @@
 
 namespace moab {
 
-template <typename T> inline
+template <typename T> inline 
 void VALGRIND_MAKE_VEC_UNDEFINED(std::vector<T>& v) {
   (void)v;
   (void)VALGRIND_MAKE_MEM_UNDEFINED( (T*)&v[0], v.size() * sizeof(T));
@@ -488,7 +488,7 @@ ErrorCode WriteHDF5::write_file(const char* filename,
     dbgOut.set_verbosity(tmpval);
 
   //writeTagDense = (MB_SUCCESS == opts.get_null_option("DENSE_TAGS"));
-  writeTagDense = true;
+  writeTagDense = true; 
 
   // Enable some extra checks for reads.  Note: amongst other things this
   // will print errors if the entire file is not read, so if doing a
@@ -704,7 +704,7 @@ ErrorCode WriteHDF5::write_file_impl(const char* filename,
       return error(result);
   }
   times[TAG_TIME] = timer.time_elapsed();
-
+  
   times[TOTAL_TIME] = timer.time_since_birth();
 
   if (cputime) {
@@ -953,7 +953,7 @@ ErrorCode WriteHDF5::write_nodes()
   if (collectiveIO) {
     while (remaining_writes--) {
       assert(writeProp != H5P_DEFAULT);
-#ifdef BLOCKED_COORD_IO
+#ifdef BLOCKED_COORD_IO   
       for (int d = 0; d < dim; ++d) {
         dbgOut.printf(3, " writing (empty) %c node chunk %ld of %ld.\n",
                       (char)('X' + d), num_writes - remaining_writes, num_writes);
@@ -1148,7 +1148,7 @@ ErrorCode WriteHDF5::write_set_data(const WriteUtilIface::EntityListType which_d
   if (ranged) rhint = ranged->begin();
   if (null_stripped) nshint = null_stripped->begin();
   for (size_t w = 0; w < num_total_writes; ++w) {
-    if (i == setSet.range.end() && !remaining.empty() && !remaining_ptr) {
+    if (i == setSet.range.end() && !remaining.empty() && !remaining_ptr) { 
       // If here, then we've written everything but we need to
       // make more write calls because we're doing collective IO
       // in parallel
@@ -1504,7 +1504,7 @@ ErrorCode range_to_id_list_templ(HandleRangeIter begin,
       ri = idMap.lower_bound(ri, idMap.end(), h);
       if (ri == idMap.end() || ri->begin > h) {
         rval = MB_ENTITY_NOT_FOUND;
-        *i = 0;
+        *i = 0; 
         ++i;
         ++h;
         continue;
@@ -1675,7 +1675,7 @@ inline ErrorCode WriteHDF5::get_adjacencies(EntityHandle entity,
 
   size_t j = 0;
   adj.resize(num_adj);
-  for (int i = 0; i < num_adj; ++i)
+  for (int i = 0; i < num_adj; ++i) 
     if (wid_t id = idMap.find(adj_array[i]))
       adj[j++] = id;
   adj.resize(j);
@@ -2893,7 +2893,7 @@ ErrorCode WriteHDF5::get_tag_data_length(const TagDesc& tag_info,
   size_t step, remaining;
   step = bufferSize / (sizeof(int) + sizeof(void*));
   const void** ptr_buffer = reinterpret_cast<const void**>(dataBuffer);
-  int* size_buffer = reinterpret_cast<int*>(ptr_buffer + step);
+  int* size_buffer = reinterpret_cast<int*>(ptr_buffer + step); 
   Range subrange;
   Range::const_iterator iter = range.begin();
   for (remaining = range.size(); remaining >= step; remaining -= step) {
@@ -3142,7 +3142,7 @@ void WriteHDF5::print_id_map(std::ostream& s, const char* pfx) const
           << " -> " << i->value << "-" << i->value + i->count - 1 << std::endl;
       }
       else {
-        s << pfx << n1 << " " << id << "-"
+        s << pfx << n1 << " " << id << "-" 
           << n1 << " " << ID_FROM_HANDLE(i->begin + i->count - 1)
           << " -> " << i->value << "-" << i->value + i->count - 1 << std::endl;
       }
