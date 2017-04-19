@@ -15,7 +15,7 @@
 
 #include "smtk/mesh/ExtractTessellation.h"
 
-#include "smtk/model/Edge.h"
+#include "smtk/model/EdgeUse.h"
 #include "smtk/model/Loop.h"
 
 namespace py = pybind11;
@@ -73,7 +73,7 @@ PySharedPtrClass< smtk::mesh::Tessellation > pybind11_init_smtk_mesh_Tessellatio
 
 void pybind11_init__ZN4smtk4mesh26extractOrderedTessellationERKNS_5model4EdgeERKNSt3__110shared_ptrINS0_10CollectionEEERNS0_24PreAllocatedTessellationE(py::module &m)
 {
-  m.def("extractOrderedTessellation", (void (*)(::smtk::model::Edge const &, ::smtk::mesh::CollectionPtr const &, ::smtk::mesh::PreAllocatedTessellation &)) &smtk::mesh::extractOrderedTessellation, "", py::arg("arg0"), py::arg("arg1"), py::arg("arg2"));
+  m.def("extractOrderedTessellation", (void (*)(::smtk::model::EdgeUse const &, ::smtk::mesh::CollectionPtr const &, ::smtk::mesh::PreAllocatedTessellation &)) &smtk::mesh::extractOrderedTessellation, "", py::arg("arg0"), py::arg("arg1"), py::arg("arg2"));
 }
 
 void pybind11_init__ZN4smtk4mesh26extractOrderedTessellationERKNS_5model4LoopERKNSt3__110shared_ptrINS0_10CollectionEEERNS0_24PreAllocatedTessellationE(py::module &m)
@@ -83,7 +83,7 @@ void pybind11_init__ZN4smtk4mesh26extractOrderedTessellationERKNS_5model4LoopERK
 
 void pybind11_init__ZN4smtk4mesh26extractOrderedTessellationERKNS_5model4EdgeERKNSt3__110shared_ptrINS0_10CollectionEEERKNS0_8PointSetERNS0_24PreAllocatedTessellationE(py::module &m)
 {
-  m.def("extractOrderedTessellation", (void (*)(::smtk::model::Edge const &, ::smtk::mesh::CollectionPtr const &, ::smtk::mesh::PointSet const &, ::smtk::mesh::PreAllocatedTessellation &)) &smtk::mesh::extractOrderedTessellation, "", py::arg("arg0"), py::arg("arg1"), py::arg("arg2"), py::arg("arg3"));
+  m.def("extractOrderedTessellation", (void (*)(::smtk::model::EdgeUse const &, ::smtk::mesh::CollectionPtr const &, ::smtk::mesh::PointSet const &, ::smtk::mesh::PreAllocatedTessellation &)) &smtk::mesh::extractOrderedTessellation, "", py::arg("arg0"), py::arg("arg1"), py::arg("arg2"), py::arg("arg3"));
 }
 
 void pybind11_init__ZN4smtk4mesh26extractOrderedTessellationERKNS_5model4LoopERKNSt3__110shared_ptrINS0_10CollectionEEERKNS0_8PointSetERNS0_24PreAllocatedTessellationE(py::module &m)
