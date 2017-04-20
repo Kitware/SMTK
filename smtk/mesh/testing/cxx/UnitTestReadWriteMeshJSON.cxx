@@ -8,6 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#include "smtk/common/UUID.h"
+
 #include "smtk/io/SaveJSON.h"
 #include "smtk/io/LoadJSON.h"
 #include "smtk/io/ImportMesh.h"
@@ -68,7 +70,7 @@ void create_simple_model( smtk::model::ManagerPtr mgr )
 void verify_writing_and_loading_collection()
 {
   std::string write_path(write_root);
-  write_path += "/output.h5m";
+  write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
   smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
   smtk::mesh::ManagerPtr meshManager = modelManager->meshes();
@@ -126,8 +128,8 @@ void verify_writing_and_loading_multiple_collections()
   std::string write_path(write_root);
   std::string write_path2(write_root);
 
-  write_path += "/output1.h5m";
-  write_path2 += "/output2.h5m";
+  write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
+  write_path2 += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
   smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
   smtk::mesh::ManagerPtr meshManager = modelManager->meshes();
@@ -170,7 +172,7 @@ void verify_writing_and_loading_multiple_collections()
 void verify_writing_and_loading_collections_without_file_path()
 {
   std::string write_path(write_root);
-  write_path += "/output1.h5m";
+  write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
   smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
   smtk::mesh::ManagerPtr meshManager = modelManager->meshes();
@@ -251,7 +253,7 @@ void verify_writing_of_single_collection_to_disk()
   file_path += "/mesh/3d/twoassm_out.h5m";
 
   std::string write_path(write_root);
-  write_path += "/output.h5m";
+  write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ImportMesh import;
@@ -274,6 +276,8 @@ void verify_writing_of_single_collection_to_disk()
   const bool exportGood = smtk::io::SaveJSON::forSingleCollection(top, c) != 0;
 
   test(exportGood == 1, "Expected the Export of forSingleCollection to pass");
+
+  cleanup( write_path );
 }
 
 void verify_writing_of_single_collection_to_json()
@@ -331,7 +335,7 @@ void verify_reading_of_single_collection_from_json()
 
   // By default, the writeLocation is set to readLocation, and we don't want
   // this test to write to the input file, so set writeLocation to scratch space
-  write_path += "/twoassm_output.h5m";
+  write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
   c->writeLocation(write_path);
   const bool exportGood = smtk::io::SaveJSON::forSingleCollection(top, c) != 0;
 
@@ -376,7 +380,7 @@ void verify_reading_of_single_collection_from_json()
 void verify_loading_existing_collection_fails()
 {
   std::string write_path(write_root);
-  write_path += "/output.h5m";
+  write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
   smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
   smtk::mesh::ManagerPtr meshManager = modelManager->meshes();

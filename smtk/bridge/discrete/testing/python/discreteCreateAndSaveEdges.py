@@ -110,6 +110,7 @@ class TestDiscreteCreateAndSaveEdges(smtk.testing.TestCase):
             validator(mod)
 
         print '  Success'
+        os.remove(outfilename)
 
     def testCreateAndSaveEdges(self):
         "Read each file named in setUp and validate the reader worked."

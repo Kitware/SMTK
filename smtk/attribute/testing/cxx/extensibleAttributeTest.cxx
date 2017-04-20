@@ -32,6 +32,22 @@
 
 #include <iostream>
 
+//force to use filesystem version 3
+#define BOOST_FILESYSTEM_VERSION 3
+#include <boost/filesystem.hpp>
+using namespace boost::filesystem;
+
+void cleanup( const std::string& file_path )
+{
+  //first verify the file exists
+  ::boost::filesystem::path path( file_path );
+  if( ::boost::filesystem::is_regular_file( path ) )
+    {
+    //remove the file_path if it exists.
+    ::boost::filesystem::remove( path );
+    }
+}
+
 const char *d2items[] = {
   "IntItem1", "IntItem2", "DoubleItem1", "DoubleItem2", "StringItem1", "StringItem2", "StringItem3",
   "FileItem1", "FileItem2", "FileItem3","DirectoryItem1", "DirectoryItem2", "DirectoryItem3"
@@ -926,6 +942,7 @@ int main(int argc, char *argv[])
   if (status == 0)
     {
     std::cout << "All Test PASSED!\n";
+    cleanup(outputFilename);
     }
   else
     {

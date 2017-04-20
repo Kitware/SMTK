@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#include "smtk/common/UUID.h"
 #include "smtk/io/ExportMesh.h"
 #include "smtk/io/ImportMesh.h"
 #include "smtk/mesh/Collection.h"
@@ -42,7 +43,7 @@ void cleanup( const std::string& file_path )
 void verify_write_empty_collection()
 {
   std::string write_path(write_root);
-  write_path += "/output.2dm";
+  write_path += "/" + smtk::common::UUID::random().toString() + ".2dm";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = manager->makeCollection();
@@ -58,7 +59,7 @@ void verify_write_empty_collection()
 void verify_write_null_collection()
 {
   std::string write_path(write_root);
-  write_path += "/output.2dm";
+  write_path += "/" + smtk::common::UUID::random().toString() + ".2dm";
 
   //use a null collection ptr
   smtk::mesh::CollectionPtr c;
@@ -77,7 +78,7 @@ void verify_write_valid_collection()
   file_path += "/mesh/3d/twoassm_out.h5m";
 
   std::string write_path(write_root);
-  write_path += "/twoassm_output.2dm";
+  write_path += "/" + smtk::common::UUID::random().toString() + ".2dm";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c  = smtk::io::importMesh(file_path, manager);

@@ -31,6 +31,22 @@
 
 #include <iostream>
 
+//force to use filesystem version 3
+#define BOOST_FILESYSTEM_VERSION 3
+#include <boost/filesystem.hpp>
+using namespace boost::filesystem;
+
+void cleanup( const std::string& file_path )
+{
+  //first verify the file exists
+  ::boost::filesystem::path path( file_path );
+  if( ::boost::filesystem::is_regular_file( path ) )
+    {
+    //remove the file_path if it exists.
+    ::boost::filesystem::remove( path );
+    }
+}
+
 int main(int argc, char *argv[])
 {
   int status = 0;
@@ -206,6 +222,10 @@ int main(int argc, char *argv[])
     }
 
   std::cout << "System destroyed\n";
+
+  cleanup(argv[1]);
+  cleanup(argv[2]);
   }
+
   return status;
 }
