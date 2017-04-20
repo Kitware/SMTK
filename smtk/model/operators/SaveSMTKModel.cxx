@@ -100,10 +100,10 @@ OperatorResult SaveSMTKModel::operateInternal()
       std::string oldmodelname = modit->name();
       bool matchDefault = false;
       bool matchPrevious = false;
-      const std::string defaultprefix("model ");
+      const std::string defaultPrefix("Model ");
       if (
         renamePolicy == "all" ||
-        (matchDefault = std::equal(defaultprefix.begin(), defaultprefix.end(), oldmodelname.begin())) ||
+        (matchDefault = std::equal(defaultPrefix.begin(), defaultPrefix.end(), oldmodelname.begin())) ||
         (matchPrevious = std::equal(oldfilename.begin(), oldfilename.end(), oldmodelname.begin())))
         {
         std::ostringstream newname;
@@ -111,7 +111,7 @@ OperatorResult SaveSMTKModel::operateInternal()
         std::string suffix;
         if (matchDefault)
           {
-          suffix = oldmodelname.substr(defaultprefix.size() - 1); // include space after prefix
+          suffix = oldmodelname.substr(defaultPrefix.size() - 1); // include space after prefix
           }
         else if (matchPrevious)
           {
