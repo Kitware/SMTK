@@ -10,6 +10,8 @@
 
 #include "smtk/bridge/mesh/Session.h"
 
+#include "smtk/common/UUID.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
@@ -35,7 +37,6 @@ namespace
 std::string dataRoot = SMTK_DATA_DIR;
 std::string writeRoot = SMTK_SCRATCH_DIR;
 
-#if 0
 void cleanup( const std::string& file_path )
 {
   //first verify the file exists
@@ -46,7 +47,6 @@ void cleanup( const std::string& file_path )
     ::boost::filesystem::remove( path );
   }
 }
-#endif // 0
 
 }
 
@@ -114,7 +114,7 @@ int UnitTestMeshSessionReadWrite(int argc, char* argv[])
     }
 
     std::string writeFilePath(writeRoot);
-    writeFilePath += "/output.exo";
+    writeFilePath += "/" + smtk::common::UUID::random().toString() + ".exo";
 
     writeOp->specification()->findFile("filename")->setValue(writeFilePath);
     writeOp->specification()->associateEntity(model);
@@ -127,7 +127,7 @@ int UnitTestMeshSessionReadWrite(int argc, char* argv[])
       return 1;
     }
 
-    // cleanup(writeFilePath);
+    cleanup(writeFilePath);
   }
 
   return 0;

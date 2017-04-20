@@ -8,6 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#include "smtk/common/UUID.h"
+
 #include "smtk/io/LoadJSON.h"
 #include "smtk/io/ModelToMesh.h"
 #include "smtk/io/WriteMesh.h"
@@ -207,7 +209,7 @@ void verify_write_valid_collection_hdf5_after_merge()
 
   // write out the collection after mergeCoincidentContactPoints()
   std::string write_path(write_root);
-  write_path += "/test2D_json_output.h5m";
+  write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
   //write out the mesh.
   bool result = smtk::io::writeMesh(write_path, c);

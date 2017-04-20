@@ -10,7 +10,6 @@
 
 #include "smtk/io/LoadJSON.h"
 #include "smtk/io/ModelToMesh.h"
-#include "smtk/io/WriteMesh.h"
 
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
@@ -37,7 +36,6 @@ namespace
 
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
-std::string write_root = SMTK_SCRATCH_DIR;
 
 void create_simple_2d_model( smtk::model::ManagerPtr mgr )
 {

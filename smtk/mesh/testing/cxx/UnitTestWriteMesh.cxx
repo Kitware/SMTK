@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#include "smtk/common/UUID.h"
 #include "smtk/io/ReadMesh.h"
 #include "smtk/io/WriteMesh.h"
 #include "smtk/mesh/Collection.h"
@@ -45,7 +46,7 @@ void verify_write_empty_collection()
   file_path += "/mesh/output.h5m";
 
   std::string write_path(write_root);
-  write_path += "/output.h5m";
+  write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = manager->makeCollection();
@@ -62,7 +63,7 @@ void verify_write_empty_collection()
 void verify_write_null_collection()
 {
   std::string write_path(write_root);
-  write_path += "/output.h5m";
+  write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
   //use a null collection ptr
   smtk::mesh::CollectionPtr c;
@@ -82,7 +83,7 @@ void verify_write_valid_collection_hdf5()
   file_path += "/mesh/3d/twoassm_out.h5m";
 
   std::string write_path(write_root);
-  write_path += "/twoassm_output.h5m";
+  write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
@@ -120,7 +121,7 @@ void verify_write_valid_collection_exodus()
   file_path += "/mesh/3d/twoassm_out.h5m";
 
   std::string write_path(write_root);
-  write_path += "/twoassm_output.exo";
+  write_path += "/" + smtk::common::UUID::random().toString() + ".exo";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
@@ -157,7 +158,7 @@ void verify_write_valid_collection_using_write_path()
   file_path += "/mesh/3d/twoassm_out.h5m";
 
   std::string write_path(write_root);
-  write_path += "/twoassm_output.h5m";
+  write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
@@ -199,7 +200,7 @@ void verify_write_valid_collection_using_functions()
   file_path += "/mesh/3d/twoassm_out.h5m";
 
   std::string write_path(write_root);
-  write_path += "/twoassm_output.h5m";
+  write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = smtk::io::readMesh(file_path, manager);
@@ -239,7 +240,7 @@ void verify_write_onlyDomain()
   file_path += "/mesh/3d/64bricks_12ktet.h5m";
 
   std::string write_path(write_root);
-  write_path += "/64bricks_12ktet.h5m";
+  write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
@@ -280,7 +281,7 @@ void verify_write_onlyNeumann()
   file_path += "/mesh/3d/64bricks_12ktet.h5m";
 
   std::string write_path(write_root);
-  write_path += "/64bricks_12ktet.h5m";
+  write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
@@ -324,7 +325,7 @@ void verify_write_onlyDirichlet()
   file_path += "/mesh/3d/64bricks_12ktet.h5m";
 
   std::string write_path(write_root);
-  write_path += "/64bricks_12ktet.h5m";
+  write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
@@ -366,7 +367,7 @@ void verify_write_clears_modified_flag()
   file_path += "/mesh/3d/64bricks_12ktet.h5m";
 
   std::string write_path(write_root);
-  write_path += "/64bricks_12ktet.h5m";
+  write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
