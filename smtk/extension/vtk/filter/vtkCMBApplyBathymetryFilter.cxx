@@ -238,7 +238,7 @@ T vtkCMBApplyBathymetryFilter::vtkCmbInternalTerrainInfo::getElevation(
   for ( vtkIdType i=0; i < size; ++i)
     {
     //average the elevation
-    assert(ids->GetId(i)<this->IdToElevation.size());
+    assert(ids->GetId(i) < static_cast<vtkIdType>(this->IdToElevation.size()));
     sum += this->IdToElevation[ids->GetId(i)];
     }
   ids->Delete();
