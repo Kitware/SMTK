@@ -109,7 +109,9 @@ FloatList EntityPhrase::relatedColor() const
 /// True when the entity is valid and marked as mutable (the default, setMutability(0x4)).
 bool EntityPhrase::isRelatedColorMutable() const
 {
-  return (this->m_mutability & 0x4) && this->m_entity.isValid();
+  // Disable assign model color here since it's doing nothing
+  return (this->m_mutability & 0x4) && this->m_entity.isValid() &&
+      (!this->m_entity.isModel());
 }
 
 bool EntityPhrase::setRelatedColor(const FloatList& rgba)

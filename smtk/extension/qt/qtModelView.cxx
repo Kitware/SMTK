@@ -8,15 +8,19 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/extension/qt/qtModelView.h"
+#include "smtk/extension/qt/qtActiveObjects.h"
 
 #include "smtk/model/DescriptivePhrase.h"
 #include "smtk/model/Entity.h"
+#include "smtk/model/EntityIterator.h"
 #include "smtk/model/FloatData.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/IntegerData.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/StringData.h"
+#include "smtk/model/SubphraseGenerator.h"
+#include "smtk/model/SimpleModelSubphrases.h"
 
 #include "smtk/extension/qt/qtEntityItemDelegate.h"
 
@@ -38,6 +42,7 @@
 
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtModelEntityItem.h"
+#include "smtk/extension/qt/qtModelPanel.h"
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtOperatorDockWidget.h"
 #include "smtk/extension/qt/qtUIManager.h"
@@ -385,7 +390,7 @@ void qtModelView::selectionChanged (
   emit this->sendSelectionsFromModelViewToSelectionManager(selentityrefs,
                                 selmeshes, selproperties,
                                 smtk::extension::SelectionModifier::SELECTION_REPLACE_UNFILTERED,
-                                     smtk::model::StringList());
+                                     skipList);
 }
 
 // when the dataChanged is emitted from the model, we want to scroll to
@@ -393,6 +398,119 @@ void qtModelView::selectionChanged (
 void qtModelView::newIndexAdded(const QModelIndex & newidx)
 {
   this->scrollTo(newidx);
+}
+
+void qtModelView::filterSelectionByEntity (const smtk::model::DescriptivePhrasePtr& dPhrase,
+        smtk::model::EntityRefs& selentityrefs,
+        smtk::mesh::MeshSets* selmeshes)
+{
+  SubphraseGeneratorPtr gen = dPhrase->findDelegate();
+  SimpleModelSubphrasesPtr sGen = smtk::dynamic_pointer_cast<SimpleModelSubphrases>(gen);
+  qtModelPanel::enumTreeView enType = sGen ? qtModelPanel::VIEW_BY_TOPOLOGY
+                                           : qtModelPanel::VIEW_BY_ENTITY_LIST;
+  BitFlags defaultMask = CELL_ENTITY | GROUP_ENTITY | MODEL_ENTITY
+      | AUX_GEOM_ENTITY | INSTANCE_ENTITY | SESSION;
+  smtk::model::EntityRef relatedEnt = dPhrase->relatedEntity();
+
+  if(dPhrase)
+  {
+    if(dPhrase->phraseType() == MESH_SUMMARY ||
+      dPhrase->phraseType() == MESH_LIST)
+    {
+      this->selectMeshes(dPhrase, selmeshes);
+    }
+    else
+    {// single entity
+      BitFlags masked = dPhrase->relatedEntity().entityFlags() & defaultMask;
+      if (masked)
+      {
+          selentityrefs.insert(relatedEnt);
+      }
+    }
+
+    if (relatedEnt.entityFlags() == SESSION)
+    {// session condition
+      smtk::model::SessionRef sessionRef = relatedEnt.
+                                as<smtk::model::SessionRef>();
+      // loop through each model, its entities and meshes
+      Models models = sessionRef.models<Models>();
+      for (const auto& model : models)
+      {
+        smtk::model::EntityIterator eit;
+        eit.traverse(model, smtk::model::ITERATE_MODELS);
+        for (eit.begin(); !eit.isAtEnd(); eit.advance())
+        {
+          // needed? @David
+          if (eit->isCellEntity() || eit->isAuxiliaryGeometry() || eit->isModel())
+          {
+            selentityrefs.insert(*eit);
+          }
+        }
+        smtk::mesh::ManagerPtr meshMgr = model.manager()->meshes();
+        std::vector<smtk::mesh::CollectionPtr> meshCols = meshMgr->
+            associatedCollections(model);
+        for (const auto & meshCol : meshCols)
+        {
+          selmeshes->insert(meshCol->meshes());
+        }
+      }
+
+    }
+    else if (relatedEnt.isModel())
+    {// non-active model and active model
+      smtk::model::EntityIterator eit;
+      eit.traverse(relatedEnt, smtk::model::ITERATE_CHILDREN);
+      for (eit.begin(); !eit.isAtEnd(); eit.advance())
+      {
+        if (eit->isCellEntity() || eit->isAuxiliaryGeometry() || eit->isModel())
+        {
+          selentityrefs.insert(*eit);
+        }
+      }
+
+      smtk::mesh::ManagerPtr meshMgr = relatedEnt.manager()->meshes();
+      std::vector<smtk::mesh::CollectionPtr> meshCols = meshMgr->
+          associatedCollections(relatedEnt);
+      for (const auto & meshCol : meshCols)
+      {
+        selmeshes->insert(meshCol->meshes());
+      }
+
+    }
+    else if (dPhrase->phraseType() == ENTITY_LIST)
+    {// handle items in ENTITY_LIST
+      if (enType == qtModelPanel::VIEW_BY_ENTITY_LIST)
+      {
+        if(EntityListPhrasePtr elist = smtk::dynamic_pointer_cast<EntityListPhrase>
+            (dPhrase))
+        {
+          smtk::model::EntityRefArray entities = elist->relatedEntities();
+          for (const auto& item: entities)
+          {
+            selentityrefs.insert(item);
+          }
+        }
+      }
+    }
+    else if (dPhrase->phraseType() == ENTITY_SUMMARY)
+    {
+      if (enType == qtModelPanel::VIEW_BY_TOPOLOGY)
+      {//VIEW_BY_TOPOLOGY
+        if(EntityPhrasePtr entity = smtk::dynamic_pointer_cast<EntityPhrase>
+            (dPhrase))
+        {
+          smtk::model::EntityRef ent = entity->relatedEntity();
+          EntityRefs lowerEnts = ent.lowerDimensionalBoundaries(-1);
+          for (const auto& lowerEnt: lowerEnts)
+          {
+            selentityrefs.insert(lowerEnt);
+          }
+          // EntityIterator would fail here to give wrong boundary entities
+        }
+      }
+    }
+
+  }
 }
 
 void qtModelView::recursiveSelect (const smtk::model::DescriptivePhrasePtr& dPhrase,
@@ -505,6 +623,15 @@ void qtModelView::currentSelectionByMask (
       this->recursiveSelect(qmodel->getItem(sel),
         selentityrefs, entityFlags, selproperties, false, selmeshes);
     }
+}
+
+void qtModelView::updateActiveModelByModelIndex()
+{
+  // get the current model and compare with active model
+  smtk::model::Model currentModel = this->owningEntityAs<smtk::model::Model>(
+        this->m_contextMenuIndex);
+  qtActiveObjects::instance().setActiveModel(currentModel);
+
 }
 
 bool qtModelView::removeSession(const smtk::model::SessionRef& sref)
@@ -773,6 +900,9 @@ void qtModelView::showContextMenu(const QModelIndex &idx, const QPoint& p)
   smtk::model::SessionRef brSession =
     this->owningEntityAs<smtk::model::SessionRef>(idx);
 
+  // get the current model and compare with active model
+  smtk::model::Model currentModel = this->owningEntityAs<smtk::model::Model>(idx);
+
   if (!brSession.isValid())
     {
     // Nothing to do the session is not valid;
@@ -796,14 +926,32 @@ void qtModelView::showContextMenu(const QModelIndex &idx, const QPoint& p)
       std::pair<std::vector<std::string>, std::map<std::string, std::string> >(keyList, opLabelsMap);
     }
   auto sinfo = this->m_sessionInfo[sessionString];
-  for(StringList::const_iterator it = sinfo.first.begin();
-      it != sinfo.first.end(); ++it)
-    {
-    QAction* act = this->m_ContextMenu->addAction((*it).c_str());
+  // Compare the current model with active model. If true, show related
+  // operators. If not, only show `set as active model`.
+  smtk::model::Model currentActiveModel = qtActiveObjects::instance().activeModel();
+  if (currentModel.isValid() && (currentModel.entity() == currentActiveModel.entity()))
+  {
+    for(StringList::const_iterator it = sinfo.first.begin();
+        it != sinfo.first.end(); ++it)
+      {
+      QAction* act = this->m_ContextMenu->addAction((*it).c_str());
+      QVariant vdata( QString::fromStdString(sessionString) );
+      act->setData(vdata);
+      QObject::connect(act, SIGNAL(triggered()), this, SLOT(operatorInvoked()));
+      }
+  }
+  else if (currentModel.isValid()) // if invalid, then it's sessionRef
+  { // set active model
+    std::string setAsActiveModel("set as active model");
+    QAction* act = this->m_ContextMenu->addAction(setAsActiveModel.c_str());
     QVariant vdata( QString::fromStdString(sessionString) );
     act->setData(vdata);
-    QObject::connect(act, SIGNAL(triggered()), this, SLOT(operatorInvoked()));
-    }
+    QObject::connect(act, SIGNAL(triggered()), this, SLOT(updateActiveModelByModelIndex()));
+  }
+
+  // store current contextMenuIndex to set active model
+  this->m_contextMenuIndex = idx;
+
   QPoint popP = p;
   if(popP.isNull())
     {
@@ -1125,11 +1273,8 @@ void qtModelView::toggleEntityVisibility( const QModelIndex& idx)
 
   smtk::model::EntityRefs selentityrefs;
   smtk::mesh::MeshSets selmeshes;
-  smtk::model::DescriptivePhrases selproperties;
-  this->recursiveSelect(dp, selentityrefs,
-    CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY |
-    MODEL_ENTITY | AUX_GEOM_ENTITY | INSTANCE_ENTITY | SESSION,
-    selproperties, false, &selmeshes);
+  // filter selection by entity instead of DesriptivePhrase
+  this->filterSelectionByEntity(dp, selentityrefs,&selmeshes);
   bool visible = true;
   if(dp->phraseType() == MESH_LIST || dp->phraseType() == MESH_SUMMARY)
     {
@@ -1590,6 +1735,10 @@ void qtModelView::updateWithOperatorResult(
 {
   smtk::extension::QEntityItemModel* qmodel =
     dynamic_cast<smtk::extension::QEntityItemModel*>(this->model());
+  // udpate active model in subphraseGenerator. Get the m_root
+  qmodel->getItem(QModelIndex())->findDelegate()->
+      setActiveModel(qtActiveObjects::instance().activeModel());
+
   QModelIndex top = this->rootIndex();
   for (int row = 0; row < qmodel->rowCount(top); ++row)
     {

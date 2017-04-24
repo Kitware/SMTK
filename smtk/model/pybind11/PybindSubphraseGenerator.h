@@ -34,6 +34,8 @@ PySharedPtrClass< smtk::model::SubphraseGenerator > pybind11_init_smtk_model_Sub
     .def("skipAttributes", &smtk::model::SubphraseGenerator::skipAttributes)
     .def("skipProperties", &smtk::model::SubphraseGenerator::skipProperties)
     .def("subphrases", &smtk::model::SubphraseGenerator::subphrases, py::arg("src"))
+    .def("activeModel", &smtk::model::SubphraseGenerator::activeModel)
+    .def("setActiveModel", &smtk::model::SubphraseGenerator::setActiveModel, py::arg("activeModel"))
     ;
   return instance;
 }

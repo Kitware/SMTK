@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtSelectionManager.h"
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtItem.h"
@@ -35,7 +36,7 @@ namespace smtk
   {
   qtSelectionManager::qtSelectionManager()
   {
-    this->clearAllSelections();
+    this->clear();
     this->m_mask = 0;
     m_mask |= smtk::model::FACE;
     m_mask |= smtk::model::EDGE;
@@ -107,12 +108,25 @@ namespace smtk
     {
       // \b clear selection in qtModelItem/opeartor dialog
       // \b selection from model tree
-      // \b selection from  attribue panel
-      this->clearAllSelections();
-      this->m_selEntityRefs.insert(selEntities.begin(), selEntities.end());
+      // \b selection from attribute panel
+
+      // only store selection of the active model
+      smtk::model::EntityRefs filteredSelEnts;
+      for (const auto& selEnt : selEntities)
+      {
+        if ((selEnt.owningModel().entity() ==
+            qtActiveObjects::instance().activeModel().entity()) ||
+            (selEnt.entity() ==
+            qtActiveObjects::instance().activeModel().entity()))
+        {
+          filteredSelEnts.insert(selEnt);
+        }
+      }
+      this->clear();
+      this->m_selEntityRefs.insert(filteredSelEnts.begin(), filteredSelEnts.end());
       this->m_selMeshes.insert(selMeshes.begin(),selMeshes.end());
       // Deprecated start
-      for (auto selEntity: selEntities)
+      for (auto selEntity: filteredSelEnts)
       {
       this->m_selEntities.insert(selEntity.entity());
       }
@@ -124,8 +138,8 @@ namespace smtk
     {
       if (this->m_selectionModifier == SelectionModifier::SELECTION_REPLACE_FILTERED)
       { // clear and select
-        this->clearAllSelections();
-        this->filterEntitySelectionsByMask(const_cast<smtk::model::EntityRefs &>
+        this->clear();
+        this->filterEntitySelectionsByMaskAndActiveModel(const_cast<smtk::model::EntityRefs &>
                                            (selEntities), this->m_selEntityRefs);
         if (this->m_filterMeshes)
           {
@@ -141,7 +155,7 @@ namespace smtk
       else if (this->m_selectionModifier == SelectionModifier::SELECTION_ADDITION_FILTERED)
       { // add to current selection
         smtk::model::EntityRefs currentSelFiltered;
-        this->filterEntitySelectionsByMask(const_cast<smtk::model::EntityRefs &>
+        this->filterEntitySelectionsByMaskAndActiveModel(const_cast<smtk::model::EntityRefs &>
                                            (selEntities), currentSelFiltered);
         this->m_selEntityRefs.insert(currentSelFiltered.begin(), currentSelFiltered.end());
 
@@ -159,7 +173,7 @@ namespace smtk
       else if (this->m_selectionModifier == SelectionModifier::SELECTION_SUBTRACTION_FILTERED)
       { //subtract from current selection
         smtk::model::EntityRefs currentSelFiltered;
-        this->filterEntitySelectionsByMask(const_cast<smtk::model::EntityRefs &>
+        this->filterEntitySelectionsByMaskAndActiveModel(const_cast<smtk::model::EntityRefs &>
                                            (selEntities), currentSelFiltered);
         for (const auto& selEnt: currentSelFiltered)
         {
@@ -249,13 +263,23 @@ namespace smtk
 
   void qtSelectionManager::clearAllSelections()
   {
+    this->updateSelectedItems(smtk::model::EntityRefs(),
+                              smtk::mesh::MeshSets(),
+                              smtk::model::DescriptivePhrases(),
+               smtk::extension::SelectionModifier::SELECTION_REPLACE_UNFILTERED,
+                              smtk::model::StringList());
+
+  }
+
+  void qtSelectionManager::clear()
+  {
     this->m_selEntities.clear();
     this->m_selEntityRefs.clear();
     this->m_selMeshes.clear();
     this->m_desPhrases.clear();
   }
 
-  void qtSelectionManager::filterEntitySelectionsByMask(
+  void qtSelectionManager::filterEntitySelectionsByMaskAndActiveModel(
       smtk::model::EntityRefs &inputEnts, smtk::model::EntityRefs &filteredSelEnts)
   {
     filteredSelEnts.clear();
@@ -263,6 +287,14 @@ namespace smtk
     for(smtk::model::EntityRefs::iterator inputEnt = inputEnts.begin(); inputEnt != inputEnts.end(); inputEnt++)
     {
       smtk::model::EntityRef ent = *inputEnt;
+      // only filter active model's item
+      if ((ent.owningModel().entity() !=
+          qtActiveObjects::instance().activeModel().entity()) ||
+           (ent.entity() !=
+          qtActiveObjects::instance().activeModel().entity()))
+      {
+        continue;
+      }
       if (this->m_mask & smtk::model::CELL_ENTITY)
       {
         // check Cell? dimension? match mask?

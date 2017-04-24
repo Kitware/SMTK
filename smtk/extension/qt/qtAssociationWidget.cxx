@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtAssociationWidget.h"
 
 #include "smtk/extension/qt/qtAttribute.h"
@@ -344,14 +345,14 @@ void qtAssociationWidget::showEntityAssociation(
   typedef smtk::model::EntityRefs::const_iterator cit;
   for (cit i =modelEnts.begin(); i != modelEnts.end(); ++i)
     {
-    this->addModelAssociationListItem(this->Internals->CurrentList, *i, false);
+    this->addModelAssociationListItem(this->Internals->CurrentList, *i, false, true);
     }
   this->Internals->CurrentList->sortItems();
   // The returned usedModelEnts should include all of the input modelEnts AND, if attDef is unique,
   // entities that have been associated with the attributes with same definition.
   std::set<smtk::model::EntityRef> usedModelEnts = this->processAttUniqueness(attDef, modelEnts);
 
-  // Now that we have add all the used model entities, we need to move on to all model
+  // Now that we have added all the used model entities, we need to move on to all model
   // entities that are not associated with the attribute, but could be associated.
   // We use the "no-exact match required" flag to catch any entity that could possibly match
   // the association mask. This gets pruned below.
@@ -366,17 +367,22 @@ void qtAssociationWidget::showEntityAssociation(
     usedModelEnts.begin(), usedModelEnts.end(),
     std::inserter(avail, avail.end()));
 
-  // Add a subset of the remainder to the list of available entities.
+  // Add a subset of the remainder which also belongs to current active model
+  // to the list of available entities.
   // We create a temporary group and use Group::meetsMembershipConstraints()
   // to test whether the mask allows association.
+  smtk::model::Model activeModel = qtActiveObjects::instance().activeModel();
   smtk::model::Manager::Ptr tmpMgr = smtk::model::Manager::create();
   Group tmpGrp = tmpMgr->addGroup();
   tmpGrp.setMembershipMask(attDef->associationMask());
 
   for(EntityRefs::iterator i = avail.begin(); i != avail.end(); ++i)
     {
-    if (tmpGrp.meetsMembershipConstraints(*i))
+    if (tmpGrp.meetsMembershipConstraints(*i) &&
+        i->owningModel().entity() == activeModel.entity())
+    {
       this->addModelAssociationListItem(this->Internals->AvailableList, *i, false);
+    }
     }
   this->Internals->AvailableList->sortItems();
   this->Internals->CurrentList->blockSignals(false);
@@ -550,10 +556,13 @@ void qtAssociationWidget::removeItem(QListWidget* theList,
 }
 
 QListWidgetItem* qtAssociationWidget::addModelAssociationListItem(
-  QListWidget* theList, smtk::model::EntityRef modelItem, bool sort)
+  QListWidget* theList, smtk::model::EntityRef modelItem, bool sort, bool
+    appendModelName)
 {
+  std::string name = appendModelName ? (modelItem.name() +
+                      " - " + modelItem.owningModel().name()) : modelItem.name();
   QListWidgetItem* item = new QListWidgetItem(
-                            QString::fromStdString(modelItem.name()),
+                            QString::fromStdString(name),
                             theList,
                             smtk_USER_DATA_TYPE);
   //save the entity as a uuid string
@@ -648,8 +657,14 @@ void qtAssociationWidget::onRemoveAssigned()
         {
         this->Internals->CurrentAtt.lock()->disassociateEntity(currentItem);
         this->removeItem(theList, item);
-        selItem = this->addModelAssociationListItem(
-          this->Internals->AvailableList, currentItem);
+        // only add entityRef back to availableList when it belongs to
+        // the current active model
+        if (currentItem.owningModel().entity() ==
+            qtActiveObjects::instance().activeModel().entity())
+        {
+          selItem = this->addModelAssociationListItem(
+            this->Internals->AvailableList, currentItem);
+        }
         }
       }
     else if(!this->Internals->CurrentModelGroup.isNull())
@@ -695,7 +710,7 @@ void qtAssociationWidget::onAddAvailable()
           {
           this->removeItem(theList, item);
           selItem = this->addModelAssociationListItem(
-            this->Internals->CurrentList, currentItem);
+            this->Internals->CurrentList, currentItem, true, true);
           }
         else // faied to assoicate with new entity 
           {
@@ -773,11 +788,16 @@ void qtAssociationWidget::onExchange()
           {
           this->removeItem(this->Internals->CurrentList, selCurrentItems[i]);
           selCurrentItem = this->addModelAssociationListItem(
-            this->Internals->CurrentList, availableItem);
+            this->Internals->CurrentList, availableItem, true, true);
 
           this->removeItem(this->Internals->AvailableList, selAvailItems[i]);
-          selAvailItem = this->addModelAssociationListItem(
-            this->Internals->AvailableList, currentItem);
+          // only add it back to available list when it's part of active model
+          if (currentItem.owningModel().entity() ==
+              qtActiveObjects::instance().activeModel().entity())
+          {
+            selAvailItem = this->addModelAssociationListItem(
+              this->Internals->AvailableList, currentItem);
+          }
           }
         else // faied to exchange, add back association 
           {

@@ -54,6 +54,11 @@ public:
   virtual void setSkipAttributes(bool val);
   virtual bool skipAttributes() const;
 
+  virtual smtk::model::Model activeModel() const {return m_activeModel;}
+  virtual void setActiveModel(const smtk::model::Model activeModel)
+        {this->m_activeModel = activeModel;}
+
+
 protected:
   SubphraseGenerator();
 
@@ -107,6 +112,7 @@ protected:
   int m_directlimit;
   bool m_skipAttributes;
   bool m_skipProperties;
+  smtk::model::Model m_activeModel;
 };
 
 template<typename T>

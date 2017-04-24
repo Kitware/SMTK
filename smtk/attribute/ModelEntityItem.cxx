@@ -179,13 +179,13 @@ bool ModelEntityItem::appendValue(const smtk::model::EntityRef& val)
   for (std::size_t i = 0; i < n; ++i)
     {
       if (this->isSet(i) && (this->value(i).entity() == val.entity()))
-	{
-	  return true;
-	}
+      {
+        return true;
+      }
       if (!this->isSet(i))
       {
-	foundEmpty = true;
-	emptyIndex = i;
+        foundEmpty = true;
+        emptyIndex = i;
       }
     }
   // If not, was there a space available?

@@ -15,6 +15,7 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/System.h"
+#include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtMeshItem.h"
 #include "smtk/extension/qt/qtModelEntityItem.h"
 #include "smtk/mesh/Collection.h"
@@ -151,7 +152,10 @@ void qtModelEntityItemCombo::init()
         // if the mask is only groups, get all groups from manager
         ((onlyGroups && entref.isGroup()) ||
          // else, check the membership constraints
-         (!onlyGroups && tmpGrp.meetsMembershipConstraints(entref))))
+         (!onlyGroups && tmpGrp.meetsMembershipConstraints(entref))) &&
+         // only show entities in active model or its type is model
+           (entref.owningModel().entity() ==
+            qtActiveObjects::instance().activeModel().entity() || entref.isModel()))
         {
         QStandardItem* item = new QStandardItem;
         std::string entName = entref.name();

@@ -74,8 +74,10 @@ namespace smtk
 
       //returns the Item it has added to the widget
       //ownership of the item is handled by the widget so no need to delete
+      //for now we append model name to currentList
       virtual QListWidgetItem* addModelAssociationListItem(
-           QListWidget* theList, smtk::model::EntityRef modelItem, bool sort=true);
+           QListWidget* theList, smtk::model::EntityRef modelItem,
+          bool sort=true, bool appendModelName = false);
 
       //returns the Item it has added to the widget
       //ownership of the item is handled by the widget so no need to delete

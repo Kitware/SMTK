@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/extension/qt/qtEntityItemModel.h"
 
+#include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/FloatData.h"
@@ -356,7 +357,7 @@ QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
         }
       else if (role == EntityColorRole &&
         (item->phraseType() == MESH_SUMMARY || item->relatedEntity().isValid()
-         || item->phraseType() == ENTITY_LIST )) // if needed, disable assign model color here
+         || item->phraseType() == ENTITY_LIST ))
         {
         QColor color;
         FloatList rgba = item->relatedColor();
@@ -390,6 +391,14 @@ QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
           }
         return color;
         }
+      else if (role == Qt::FontRole)
+      {
+        // used to bold the active model's title
+        return (item->relatedEntity().entity() ==
+           qtActiveObjects::instance().activeModel().entity()) ? QVariant(true)
+                                                              : QVariant(false);
+
+      }
       }
     }
   return QVariant();
@@ -1454,6 +1463,10 @@ void QEntityItemModel::newSessionOperatorResult(
 
   smtk::model::DescriptivePhrases newSubs =
     this->m_root->findDelegate()->subphrases(this->m_root);
+
+  // udpate active model in subphraseGenerator
+  this->m_root->findDelegate()->setActiveModel(qtActiveObjects::instance().activeModel());
+
   std::vector< std::pair<DescriptivePhrasePtr, int> > newDphrs;
   int newIdx = 0;
   for (smtk::model::DescriptivePhrases::iterator it = newSubs.begin();

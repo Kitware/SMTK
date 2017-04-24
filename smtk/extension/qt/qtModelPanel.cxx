@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/extension/qt/qtModelPanel.h"
 
+#include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtEntityItemModel.h"
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/model/Entity.h"
@@ -112,6 +113,7 @@ void qtModelPanel::resetView(qtModelPanel::enumTreeView enType,
   spg->setDirectLimit(-1);
   spg->setSkipAttributes(true);
   spg->setSkipProperties(true);
+  spg->setActiveModel(qtActiveObjects::instance().activeModel());
 
   qtModelView* modelview = this->getModelView();
   QPointer<smtk::extension::QEntityItemModel> qmodel = modelview->getModel();

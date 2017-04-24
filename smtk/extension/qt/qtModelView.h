@@ -80,6 +80,7 @@ namespace smtk{
     void expandAllModels();
 
   public slots:
+    void updateActiveModelByModelIndex();
     bool removeSession(const smtk::model::SessionRef& sref);
     void selectItems(const smtk::common::UUIDs& selEntities,
 		     const smtk::mesh::MeshSets& selMeshes,
@@ -176,6 +177,16 @@ namespace smtk{
 				 const smtk::mesh::MeshSets& selMeshes,
 				 QItemSelection& selItems);
     void expandToRoot(QEntityItemModel* qmodel, const QModelIndex& idx);
+
+    // Description:
+    // filter selection based on entity info.
+    // Ex. model and it's related entities.
+    void filterSelectionByEntity (const smtk::model::DescriptivePhrasePtr& dPhrase,
+        smtk::model::EntityRefs& selentityrefs,
+        smtk::mesh::MeshSets* selmeshes);
+
+    // Description:
+    // do a recursive selection based on descriptive phrase.
     void recursiveSelect (const smtk::model::DescriptivePhrasePtr& dPhrase,
 			  smtk::model::EntityRefs& selentityrefs,
 			  smtk::model::BitFlags entityFlags,
@@ -210,6 +221,7 @@ namespace smtk{
     qtOperatorDockWidget* m_OperatorsDock;
     qtModelOperationWidget* m_OperatorsWidget;
     std::map<std::string, std::pair<std::vector<std::string>, std::map<std::string, std::string> > > m_sessionInfo;
+    QModelIndex m_contextMenuIndex;
   };
 
   } // namespace extension

@@ -141,13 +141,16 @@ public:
     // toggle filtering meshes
     void filterMeshes(bool checked);
 
-  protected:
+    // Description
+    // clear all selections by signal
     void clearAllSelections();
 
+  protected:
+    void clear();
     // Description
     // filter select entities from inputSelEnt and store the result in
     // filteredSelEnt
-    void filterEntitySelectionsByMask(
+    void filterEntitySelectionsByMaskAndActiveModel(
       smtk::model::EntityRefs &inputSelEnts, smtk::model::EntityRefs &filteredSelEnts);
     // Description
     // filter selection to handle mask other than F/E/V
@@ -155,9 +158,9 @@ public:
 
     smtk::mesh::MeshSets m_selMeshes;
     smtk::common::UUIDs m_selEntities; // Deprecate it with m_selEntityRefs
-    smtk::model::EntityRefs m_selEntityRefs;
-    smtk::model::DescriptivePhrases m_desPhrases;
     smtk::model::BitFlags m_mask;
+    smtk::model::DescriptivePhrases m_desPhrases;
+    smtk::model::EntityRefs m_selEntityRefs;
     smtk::model::StringList m_skipList;
     bool m_filterMeshes;
     smtk::model::ManagerPtr m_modelMgr;
