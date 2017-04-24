@@ -7,12 +7,12 @@
       <ItemDefinitions>
         <File Name="point-file" Label="Point File" NumberOfRequiredValues="1"
           ShouldExist="true"
-          FileFilters="DEFORM-2D V6.0+ Point Tracking Output Data (*.rst);;All files (*.*)">
+          FileFilters="DEFORM-2D V6.0+ Point Tracking Output Data (*.rst *.RST);;All files (*.*)">
           <BriefDescription>DEFORM point tracking file</BriefDescription>
         </File>
         <File Name="step-file" Label="Step File" NumberOfRequiredValues="1"
           ShouldExist="true"
-          FileFilters="DEFORM-2D V6.0+ Step File (*.dat);;All files (*.*)">
+          FileFilters="DEFORM-2D V6.0+ Step File (*.dat *.DAT);;All files (*.*)">
           <BriefDescription>DEFORM step file</BriefDescription>
         </File>
         <File Name="pipeline-executable" Label="Pipeline Executable" NumberOfRequiredValues="1" ShouldExist="true">
@@ -23,11 +23,11 @@
           <BriefDescription>stats generator data containers</BriefDescription>
 	</File>
         <File Name="output-file" NumberOfRequiredValues="1" ShouldExist="false"
-              FileFilters="DREAM3D data file (*.dream3d);;All files (*.*)">
+              FileFilters="DREAM3D data file (*.dream3d)">
           <BriefDescription>DREAM3D (xdmf) output file</BriefDescription>
 	</File>
 	<String Name="attribute">
-          <DiscreteInfo DefaultIndex="1">
+          <DiscreteInfo DefaultIndex="0">
             <Value Enum="EffectiveStrainRates">EffectiveStrainRates</Value>
             <Value Enum="EffectiveStrains">EffectiveStrains</Value>
             <Value Enum="EffectiveStresses">EffectiveStresses</Value>
