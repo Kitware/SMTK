@@ -328,7 +328,8 @@ void EntityTypeSubphrases::childrenOfEntity(
       {
       this->membersOfGroup(phr, gent, result);
       }
-    else if (ment.isValid())
+    // only expand active model
+    else if (ment.isValid() && (ment.entity() == this->activeModel().entity()))
       {
       this->freeSubmodelsOfModel(phr, ment, result);
       this->freeGroupsInModel(phr, ment, result);

@@ -138,7 +138,13 @@ void QEntityItemDelegate::paint(
   QFont titleFont = QApplication::font();
   QFont subtitleFont = QApplication::font();
   titleFont.setPixelSize(this->m_titleFontSize);
+  /// add a method to set/get title font
   titleFont.setBold(this->titleFontWeight() > 1 ? true : false);
+  // bold the active model title
+  if (idx.data(Qt::FontRole).toBool())
+  {
+    titleFont.setBold(true);
+  }
   subtitleFont.setPixelSize(this->m_subtitleFontSize);
   subtitleFont.setBold(this->subtitleFontWeight() > 1 ? true : false);
 

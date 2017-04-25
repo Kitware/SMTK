@@ -43,6 +43,7 @@ SubphraseGenerator::SubphraseGenerator()
   m_directlimit = 4;
   m_skipAttributes = false;
   m_skipProperties = false;
+  m_activeModel = smtk::model::Model();
 }
 
 /**\brief Return a list of descriptive phrases that elaborate upon \a src.

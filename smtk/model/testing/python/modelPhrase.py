@@ -76,7 +76,7 @@ class TestModelPhrases(unittest.TestCase):
                          'Expected model name to be mutable.')
         self.assertEqual(s1[0].isSubtitleMutable(), False,
                          'Expected model subtitle to be immutable.')
-        self.assertEqual(s1[0].isRelatedColorMutable(), True,
+        self.assertEqual(s1[0].isRelatedColorMutable(), False,
                          'Expected model color to be immutable.')
         self.assertEqual(s1[0].relatedPropertyName(), '',
                          'Unexpected related property name "{p}".'.format(p=s1[0].relatedPropertyName()))
@@ -88,7 +88,9 @@ class TestModelPhrases(unittest.TestCase):
         self.assertEqual(
             kname, 'invalid', 'Unexpected related arrangement kind {k}'.format(k=kname))
 
+        self.elist.findDelegate().setActiveModel(self.models[0])
         s2 = s1[0].subphrases()
+
         # Does not work yet:
         # self.assertEqual([s1[0].argFindChild(x) for x in s2], [0, 1],
         #    'Expected to find children where they were reported.')
@@ -119,7 +121,7 @@ class TestModelPhrases(unittest.TestCase):
             ['face 0', 'face 1', 'face 2', 'face 3', 'face 4', 'pedigree id'],
             'Expected 6 model-face phrases, got {s}.'.format(s=[x.title() for x in s3]))
 
-        print 'Done'
+    print 'Done'
 
 
 if __name__ == '__main__':

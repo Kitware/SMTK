@@ -4,6 +4,7 @@ smtk_find_package_qt(qt_targets REQUIRED
 
 # set up sources to build
 set(QAttrLibSrcs
+  qtActiveObjects.cxx
   qtUIManager.cxx
   qtSelectionManager.cxx
   qtAttribute.cxx
@@ -59,6 +60,7 @@ set(QAttrLibUIs
 
 
 set(QAttrLibMocHeaders
+  qtActiveObjects.h
   qtUIManager.h
   qtSelectionManager.h
   qtAttribute.h
