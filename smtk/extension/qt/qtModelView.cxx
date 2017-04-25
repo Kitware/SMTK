@@ -18,6 +18,7 @@
 #include "smtk/model/IntegerData.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/SessionRef.h"
 #include "smtk/model/StringData.h"
 #include "smtk/model/SubphraseGenerator.h"
 #include "smtk/model/SimpleModelSubphrases.h"
@@ -928,8 +929,14 @@ void qtModelView::showContextMenu(const QModelIndex &idx, const QPoint& p)
   auto sinfo = this->m_sessionInfo[sessionString];
   // Compare the current model with active model. If true, show related
   // operators. If not, only show `set as active model`.
+  // Currently active model's session would show operator
   smtk::model::Model currentActiveModel = qtActiveObjects::instance().activeModel();
-  if (currentModel.isValid() && (currentModel.entity() == currentActiveModel.entity()))
+  smtk::model::Models brSessionModels = brSession.models<smtk::model::Models>();
+  bool hasActiveModel = (std::find(brSessionModels.begin(),
+             brSessionModels.end(), currentActiveModel) != brSessionModels.end());
+
+  if ( (brSession.isValid() && !currentModel.isValid() && hasActiveModel)/* click on active session*/ ||
+      (currentModel.isValid() && (currentModel.entity() == currentActiveModel.entity())))
   {
     for(StringList::const_iterator it = sinfo.first.begin();
         it != sinfo.first.end(); ++it)
