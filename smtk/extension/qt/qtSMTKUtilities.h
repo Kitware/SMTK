@@ -14,6 +14,7 @@
 #include "smtk/extension/qt/qtViewInterface.h" // for qtSMTKViewConstructor definition
 
 #include <map>
+#include <QVariant>
 
 typedef std::map<std::string, qtSMTKViewConstructor> SMTKViewConstructorMap;
 /// qtSMTKUtilities is a collection of arbitrary utility functions that can be
@@ -29,6 +30,13 @@ public:
   static void registerViewConstructor(const std::string& viewname, qtSMTKViewConstructor viewc);
 
   static void updateViewConstructors(smtk::extension::qtUIManager* uiMan);
+
+  // convenient method for qvariant - UUID/EntityRef conversion
+  static QVariant UUIDToQVariant(const smtk::common::UUID& uuid);
+  static QVariant entityRefToQVariant(const smtk::model::EntityRef& ent);
+  static smtk::common::UUID QVariantToUUID(QVariant variant);
+  static smtk::model::EntityRef QVariantToEntityRef(QVariant variant,
+                                    smtk::model::ManagerPtr mgr);
 
 private:
   static SMTKViewConstructorMap m_viewConstructors;
