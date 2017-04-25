@@ -18,6 +18,7 @@
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
+#include <cmath>
 #include <fstream>
 #include <sstream>
 
@@ -85,7 +86,7 @@ void verify_empty_elevate()
 }
 
 template<typename T>
-void verify_elevate_self()
+void verify_elevate_pointcloud()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
   smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
@@ -131,6 +132,112 @@ void verify_elevate_self()
     }
 }
 
+//phony structured data with 300 x 300 data points, origin at (-15,15) and a
+//spacing of (.1,-.1). The actual values returned are the sum of the x and y
+//coordinates. For fun, we omit the data point at every 7th x coordinate and
+//every 13th y coordinate.
+class TestElevationStructuredData : public smtk::mesh::ElevationStructuredData
+{
+  public:
+  TestElevationStructuredData()
+    {
+    m_extent[0] = m_extent[2] = -150;
+    m_extent[1] = m_extent[3] = 150;
+    m_origin[0] = -15.;
+    m_origin[1] = 15.;
+    m_spacing[0] = .1;
+    m_spacing[1] = -.1;
+    }
+  std::pair<double,double> coords(int ix, int iy) const
+    {
+      return std::make_pair(m_origin[0] + ix*m_spacing[0],
+                            m_origin[1] + iy*m_spacing[1]);
+    }
+  double operator()(int ix, int iy) const
+    {
+      auto c = coords(ix, iy);
+      return c.first + c.second;
+    }
+  bool containsIndex(int ix, int iy) const
+    {
+      return (ix % 7 == 1 && iy % 13 == 1 ? false : true);
+    }
+};
+
+void verify_elevate_structuredgrid()
+{
+  smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
+  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
+
+  create_simple_mesh_model(modelManager);
+
+  smtk::io::ModelToMesh convert;
+  smtk::mesh::CollectionPtr collection = convert(meshManager,modelManager);
+  test( collection->isValid(), "collection should be valid");
+
+  smtk::mesh::MeshSet meshes = collection->meshes();
+  smtk::mesh::PointSet points = meshes.points();
+
+    {
+    TestElevationStructuredData testElevationStructuredData;
+    smtk::mesh::elevate(testElevationStructuredData, meshes, 2.0);
+
+    //verify that the elevate filter doesn't add any new points
+    //to the collection
+    test( collection->points().size() == points.size() );
+    } //verify the elevate can safely leave scope
+
+  //confirm all the points have the right z value
+
+  //point averaging over a grid does not yield a great resolution, so our
+  //epsilon is pretty high
+  static const double EPSILON = 1.e-2;
+
+  std::vector<double> pts;
+  points.get(pts);
+  for(std::size_t i=0; i < pts.size(); i+=3)
+    {
+    const double correct_z = pts[i] + pts[i+1];
+    test( std::abs(pts[i+2] - correct_z) < EPSILON );
+    }
+}
+
+void verify_elevate_functional()
+{
+  smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
+  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
+
+  create_simple_mesh_model(modelManager);
+
+  smtk::io::ModelToMesh convert;
+  smtk::mesh::CollectionPtr collection = convert(meshManager,modelManager);
+  test( collection->isValid(), "collection should be valid");
+
+  smtk::mesh::MeshSet meshes = collection->meshes();
+  smtk::mesh::PointSet points = meshes.points();
+
+    {
+    std::function<double(double x,double y)> f =
+      [](double x, double y){ return x - y; };
+    smtk::mesh::elevate(f, meshes);
+
+    //verify that the elevate filter doesn't add any new points
+    //to the collection
+    test( collection->points().size() == points.size() );
+    } //verify the elevate can safely leave scope
+
+  //confirm all the points have the right z value
+  static const double EPSILON = 1.e-10;
+
+  std::vector<double> pts;
+  points.get(pts);
+  for(std::size_t i=0; i < pts.size(); i+=3)
+    {
+    const double correct_z = pts[i] - pts[i+1];
+    test( std::abs(pts[i+2] - correct_z) < EPSILON );
+    }
+}
+
 }
 
 int UnitTestElevate(int, char** const)
@@ -139,8 +246,10 @@ int UnitTestElevate(int, char** const)
   std::cout << "UnitTestElevate" << std::endl;
   verify_empty_elevate( );
 
-  verify_elevate_self<double>( );
-  verify_elevate_self<float>( );
+  verify_elevate_pointcloud<double>( );
+  verify_elevate_pointcloud<float>( );
+  verify_elevate_structuredgrid( );
+  verify_elevate_functional( );
 
   return 0;
 }
