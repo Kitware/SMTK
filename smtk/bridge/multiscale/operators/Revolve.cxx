@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/bridge/multiscale/operators/RevolveOperator.h"
+#include "smtk/bridge/multiscale/operators/Revolve.h"
 
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
@@ -59,7 +59,7 @@ namespace smtk {
   namespace bridge {
     namespace multiscale {
 
-smtk::model::OperatorResult RevolveOperator::operateInternal()
+smtk::model::OperatorResult Revolve::operateInternal()
 {
   smtk::model::OperatorResult result;
 
@@ -218,12 +218,12 @@ smtk::model::OperatorResult RevolveOperator::operateInternal()
 } // namespace smtk
 
 #include "smtk/bridge/multiscale/Exports.h"
-#include "smtk/bridge/multiscale/RevolveOperator_xml.h"
+#include "smtk/bridge/multiscale/Revolve_xml.h"
 
 smtkImplementsModelOperator(
   SMTKMULTISCALESESSION_EXPORT,
-  smtk::bridge::multiscale::RevolveOperator,
+  smtk::bridge::multiscale::Revolve,
   multiscale_revolve,
   "revolve",
-  RevolveOperator_xml,
+  Revolve_xml,
   smtk::bridge::multiscale::Session);

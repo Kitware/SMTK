@@ -7,10 +7,10 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_session_multiscale_Dream3DPipelineOperator_h
-#define __smtk_session_multiscale_Dream3DPipelineOperator_h
+#ifndef __smtk_session_multiscale_Dream3DPipeline_h
+#define __smtk_session_multiscale_Dream3DPipeline_h
 
-#include "smtk/bridge/multiscale/operators/PythonScriptOperator.h"
+#include "smtk/bridge/multiscale/operators/PythonScript.h"
 #include "vtkObject.h"
 
 namespace smtk {
@@ -27,11 +27,11 @@ namespace smtk {
  * profiles for each zone.
  */
 
-class SMTKMULTISCALESESSION_EXPORT Dream3DPipelineOperator : public PythonScriptOperator
+class SMTKMULTISCALESESSION_EXPORT Dream3DPipeline : public PythonScript
 {
 public:
-  smtkTypeMacro(Dream3DPipelineOperator);
-  smtkCreateMacro(Dream3DPipelineOperator);
+  smtkTypeMacro(Dream3DPipeline);
+  smtkCreateMacro(Dream3DPipeline);
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
@@ -43,4 +43,4 @@ protected:
   } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_session_multiscale_Dream3DPipelineOperator_h
+#endif // __smtk_session_multiscale_Dream3DPipeline_h
