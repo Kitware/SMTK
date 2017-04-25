@@ -580,12 +580,6 @@ void XmlDocV2Parser::processMeshEntityDef(pugi::xml_node &node,
     {
     idef->setNumberOfRequiredValues(xatt.as_int());
     }
-  else
-    {
-    smtkErrorMacro(this->m_logger,
-                   "Missing XML Attribute NumberOfRequiredValues for Item Definition : "
-                   << idef->name());
-    }
 
   xatt = node.attribute("Extensible");
   if (xatt)

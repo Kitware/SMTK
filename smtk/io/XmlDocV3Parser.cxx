@@ -108,7 +108,7 @@ void XmlDocV3Parser::processDateTimeDef(
 
   xml_attribute xatt;
   xatt = node.attribute("NumberOfRequiredValues");
-  std::size_t numberOfComponents = 0;
+  std::size_t numberOfComponents = idef->numberOfRequiredValues();
   if (xatt)
     {
     numberOfComponents = xatt.as_uint();

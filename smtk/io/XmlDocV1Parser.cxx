@@ -992,12 +992,6 @@ void XmlDocV1Parser::processModelEntityDef(pugi::xml_node &node,
     {
     idef->setNumberOfRequiredValues(xatt.as_int());
     }
-  else
-    {
-    smtkErrorMacro(this->m_logger,
-                   "Missing XML Attribute NumberOfRequiredValues for Item Definition : "
-                   << idef->name());
-    }
 
   xatt = node.attribute("Extensible");
   if (xatt)
@@ -1073,7 +1067,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
   this->processItemDef(node, idef);
 
   xatt = node.attribute("NumberOfRequiredValues");
-  std::size_t numberOfComponents = 0;
+  std::size_t numberOfComponents = idef->numberOfRequiredValues();
   if (xatt)
     {
     numberOfComponents = xatt.as_uint();
@@ -1331,12 +1325,6 @@ void XmlDocV1Parser::processRefDef(pugi::xml_node &node,
     {
     idef->setNumberOfRequiredValues(xatt.as_int());
     }
-  else
-    {
-    smtkErrorMacro(this->m_logger,
-                   "Missing XML Attribute NumberOfRequiredValues for Item Definition : "
-                   << idef->name());
-    }
 
   // Lets see if there are labels
   if(node.child("Labels"))
@@ -1376,12 +1364,6 @@ void XmlDocV1Parser::processDirectoryDef(pugi::xml_node &node,
   if (xatt)
     {
     idef->setNumberOfRequiredValues(xatt.as_int());
-    }
-  else
-    {
-    smtkErrorMacro(this->m_logger,
-                   "Missing XML Attribute NumberOfRequiredValues for Item Definition : "
-                   << idef->name());
     }
 
   xatt = node.attribute("ShouldExist");
@@ -1428,12 +1410,6 @@ void XmlDocV1Parser::processFileDef(pugi::xml_node &node,
   if (xatt)
     {
     idef->setNumberOfRequiredValues(xatt.as_int());
-    }
-  else
-    {
-    smtkErrorMacro(this->m_logger,
-                   "Missing XML Attribute NumberOfRequiredValues for Item Definition : "
-                   << idef->name());
     }
 
   xatt = node.attribute("ShouldExist");
