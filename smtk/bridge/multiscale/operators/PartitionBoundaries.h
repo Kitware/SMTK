@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_session_multiscale_PartitionBoundariesOperator_h
-#define __smtk_session_multiscale_PartitionBoundariesOperator_h
+#ifndef __smtk_session_multiscale_PartitionBoundaries_h
+#define __smtk_session_multiscale_PartitionBoundaries_h
 
 #include "smtk/bridge/multiscale/Operator.h"
 #include "vtkObject.h"
@@ -23,11 +23,11 @@ namespace smtk {
  * cooling plate and ambient air Dirichlet boundaries.
 */
 
-class SMTKMULTISCALESESSION_EXPORT PartitionBoundariesOperator : public Operator
+class SMTKMULTISCALESESSION_EXPORT PartitionBoundaries : public Operator
 {
 public:
-  smtkTypeMacro(PartitionBoundariesOperator);
-  smtkCreateMacro(PartitionBoundariesOperator);
+  smtkTypeMacro(PartitionBoundaries);
+  smtkCreateMacro(PartitionBoundaries);
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
@@ -39,4 +39,4 @@ protected:
   } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_session_multiscale_PartitionBoundariesOperator_h
+#endif // __smtk_session_multiscale_PartitionBoundaries_h

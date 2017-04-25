@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/bridge/multiscale/operators/Dream3DPipelineOperator.h"
+#include "smtk/bridge/multiscale/operators/Dream3DPipeline.h"
 
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
@@ -43,7 +43,7 @@ namespace smtk {
   namespace bridge {
     namespace multiscale {
 
-smtk::model::OperatorResult Dream3DPipelineOperator::operateInternal()
+smtk::model::OperatorResult Dream3DPipeline::operateInternal()
 {
   smtk::model::OperatorResult result;
 
@@ -160,13 +160,13 @@ smtk::model::OperatorResult Dream3DPipelineOperator::operateInternal()
 #undef STRINGIFY
 #undef TOSTRING
 
-#include "smtk/bridge/multiscale/Dream3DPipelineOperator_xml.h"
+#include "smtk/bridge/multiscale/Dream3DPipeline_xml.h"
 #include "smtk/bridge/multiscale/Exports.h"
 
 smtkImplementsModelOperator(
   SMTKMULTISCALESESSION_EXPORT,
-  smtk::bridge::multiscale::Dream3DPipelineOperator,
+  smtk::bridge::multiscale::Dream3DPipeline,
   multiscale_dream3d,
   "dream3d",
-  Dream3DPipelineOperator_xml,
+  Dream3DPipeline_xml,
   smtk::bridge::multiscale::Session);

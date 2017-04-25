@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_session_multiscale_PythonScriptOperator_h
-#define __smtk_session_multiscale_PythonScriptOperator_h
+#ifndef __smtk_session_multiscale_PythonScript_h
+#define __smtk_session_multiscale_PythonScript_h
 
 #include "smtk/bridge/multiscale/Operator.h"
 
@@ -22,7 +22,7 @@ namespace smtk {
  * controlled using python's argparse module.
  */
 
-class SMTKMULTISCALESESSION_EXPORT PythonScriptOperator : public Operator
+class SMTKMULTISCALESESSION_EXPORT PythonScript : public Operator
 {
 protected:
   // Convert a vector of arguments into a formatted argument list
@@ -45,4 +45,4 @@ protected:
   } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_session_multiscale_PythonScriptOperator_h
+#endif // __smtk_session_multiscale_PythonScript_h

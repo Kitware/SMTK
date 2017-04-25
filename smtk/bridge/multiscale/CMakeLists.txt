@@ -7,19 +7,19 @@ list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 set(multiscaleSrcs
   Session.cxx
   Operator.cxx
-  operators/PartitionBoundariesOperator.cxx
-  operators/Dream3DPipelineOperator.cxx
-  operators/PythonScriptOperator.cxx
-  operators/RevolveOperator.cxx
+  operators/PartitionBoundaries.cxx
+  operators/Dream3DPipeline.cxx
+  operators/PythonScript.cxx
+  operators/Revolve.cxx
 )
 
 set(multiscaleHeaders
   Session.h
   Operator.h
-  operators/PartitionBoundariesOperator.h
-  operators/Dream3DPipelineOperator.h
-  operators/PythonScriptOperator.h
-  operators/RevolveOperator.h
+  operators/PartitionBoundaries.h
+  operators/Dream3DPipeline.h
+  operators/PythonScript.h
+  operators/Revolve.h
 )
 
 install(FILES PointerDefs.h DESTINATION include/smtk/${SMTK_VERSION}/smtk/bridge/multiscale)
@@ -59,9 +59,9 @@ smtk_install_library(smtkMultiscaleSession)
 # to multiscaleOperatorXML) since the operators themselves include
 # the header in their implementations.
 smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" multiscaleSessionJSON)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/PartitionBoundariesOperator.sbt" multiscaleOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Dream3DPipelineOperator.sbt" multiscaleOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/RevolveOperator.sbt" multiscaleOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/PartitionBoundaries.sbt" multiscaleOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Dream3DPipeline.sbt" multiscaleOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Revolve.sbt" multiscaleOperatorXML)
 
 # Install the headers
 smtk_public_headers(${multiscaleHeaders})

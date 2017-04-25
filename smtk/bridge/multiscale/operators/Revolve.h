@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_session_multiscale_RevolveOperator_h
-#define __smtk_session_multiscale_RevolveOperator_h
+#ifndef __smtk_session_multiscale_Revolve_h
+#define __smtk_session_multiscale_Revolve_h
 
 #include "smtk/bridge/multiscale/Operator.h"
 #include "vtkObject.h"
@@ -23,11 +23,11 @@ namespace smtk {
  * revolves it about an axis, generating a 3-dimensional mesh.
  */
 
-class SMTKMULTISCALESESSION_EXPORT RevolveOperator : public Operator
+class SMTKMULTISCALESESSION_EXPORT Revolve : public Operator
 {
 public:
-  smtkTypeMacro(RevolveOperator);
-  smtkCreateMacro(RevolveOperator);
+  smtkTypeMacro(Revolve);
+  smtkCreateMacro(Revolve);
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
@@ -39,4 +39,4 @@ protected:
   } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_session_multiscale_RevolveOperator_h
+#endif // __smtk_session_multiscale_Revolve_h

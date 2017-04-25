@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/bridge/multiscale/operators/PartitionBoundariesOperator.h"
+#include "smtk/bridge/multiscale/operators/PartitionBoundaries.h"
 
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
@@ -219,7 +219,7 @@ namespace smtk {
   namespace bridge {
     namespace multiscale {
 
-smtk::model::OperatorResult PartitionBoundariesOperator::operateInternal()
+smtk::model::OperatorResult PartitionBoundaries::operateInternal()
 {
   smtk::model::OperatorResult result;
 
@@ -314,12 +314,12 @@ smtk::model::OperatorResult PartitionBoundariesOperator::operateInternal()
 } // namespace smtk
 
 #include "smtk/bridge/multiscale/Exports.h"
-#include "smtk/bridge/multiscale/PartitionBoundariesOperator_xml.h"
+#include "smtk/bridge/multiscale/PartitionBoundaries_xml.h"
 
 smtkImplementsModelOperator(
   SMTKMULTISCALESESSION_EXPORT,
-  smtk::bridge::multiscale::PartitionBoundariesOperator,
+  smtk::bridge::multiscale::PartitionBoundaries,
   multiscale_partition_boundaries,
   "partition boundaries",
-  PartitionBoundariesOperator_xml,
+  PartitionBoundaries_xml,
   smtk::bridge::multiscale::Session);

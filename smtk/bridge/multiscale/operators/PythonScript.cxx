@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/bridge/multiscale/operators/PythonScriptOperator.h"
+#include "smtk/bridge/multiscale/operators/PythonScript.h"
 
 #include "smtk/bridge/multiscale/Session.h"
 
@@ -33,20 +33,20 @@ namespace smtk {
     namespace multiscale {
 
 std::string
-PythonScriptOperator::listToArgList(std::vector<std::string>& tokens)
+PythonScript::listToArgList(std::vector<std::string>& tokens)
 {
   return this->specToArgList(smtk::attribute::AttributePtr(),tokens);
 }
 
 std::string
-PythonScriptOperator::specToArgList(smtk::attribute::AttributePtr spec)
+PythonScript::specToArgList(smtk::attribute::AttributePtr spec)
 {
   std::vector<std::string> nullList;
   return this->specToArgList(spec,nullList);
 }
 
 std::string
-PythonScriptOperator::specToArgList(smtk::attribute::AttributePtr spec,
+PythonScript::specToArgList(smtk::attribute::AttributePtr spec,
                                     std::vector<std::string>& additionalTokens)
 {
   std::stringstream preamble;
@@ -126,7 +126,7 @@ PythonScriptOperator::specToArgList(smtk::attribute::AttributePtr spec,
 }
 
 smtk::model::OperatorResult
-PythonScriptOperator::executePythonScript(std::string preamble,
+PythonScript::executePythonScript(std::string preamble,
                                           std::string pythonScript)
 {
   if (vtkPythonInterpreter::IsInitialized())
