@@ -42,7 +42,6 @@ namespace smtk
 
     public slots:
       virtual void onInputValueChanged();
-      virtual void onEditingFinished();
       void setOutputOptional(int);
       virtual void onLaunchFileBrowser();
       virtual void updateFileComboList(const QString&);
