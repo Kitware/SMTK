@@ -91,7 +91,7 @@ namespace
   {
     smtk::mesh::PointLocator& m_locator;
     std::vector<T>& m_zValues;
-     //represents the value to convert pointId's into m_zValues offsets
+     //represents the value to convert pointIds into m_zValues offsets
     std::size_t m_pointIdOffset;
     double m_radius;
     bool m_useInvalid;
@@ -268,8 +268,10 @@ public:
           {
           if (!extremaFound[0])
             {
-            double x_ = m_data.m_origin[0] + i*m_data.m_spacing[0];
-            double y_ = m_data.m_origin[1] + jmin*m_data.m_spacing[1];
+            double x_ = m_data.m_origin[0] +
+              (i - m_data.m_extent[0])*m_data.m_spacing[0];
+            double y_ = m_data.m_origin[1] +
+              (jmin - m_data.m_extent[2])*m_data.m_spacing[1];
 
             if (xStart <= x_ && x_ <= xEnd && yStart <= y_ && y_ <= yEnd)
               {
@@ -288,8 +290,10 @@ public:
 
           if (!extremaFound[1])
             {
-            double x_ = m_data.m_origin[0] + i*m_data.m_spacing[0];
-            double y_ = m_data.m_origin[1] + jmax*m_data.m_spacing[1];
+            double x_ = m_data.m_origin[0] +
+              (i - m_data.m_extent[0])*m_data.m_spacing[0];
+            double y_ = m_data.m_origin[1] +
+              (jmin - m_data.m_extent[2])*m_data.m_spacing[1];
 
             if (xStart <= x_ && x_ <= xEnd && yStart <= y_ && y_ <= yEnd)
               {
@@ -378,6 +382,28 @@ public:
         }
       xyz[offset+2] = static_cast<double>( (sum/results.size()) );
       results.clear();
+      }
+    coordinatesModified = true; //mark we are going to modify the points
+  }
+};
+
+class ElevatePointForFunctionalInput : public smtk::mesh::PointForEach
+{
+  const std::function<double(double,double)> m_data;
+
+public:
+  ElevatePointForFunctionalInput(
+    const std::function<double(double,double)> data) : m_data(data) {}
+
+  void forPoints(const smtk::mesh::HandleRange& pointIds,
+                 std::vector<double>& xyz,
+                 bool& coordinatesModified)
+  {
+    typedef smtk::mesh::HandleRange::const_iterator c_it;
+    std::size_t offset = 0;
+    for(c_it i = pointIds.begin(); i != pointIds.end(); ++i, offset+=3)
+      {
+      xyz[offset+2] = m_data(xyz[offset], xyz[offset+1]);
       }
     coordinatesModified = true; //mark we are going to modify the points
   }
@@ -474,6 +500,47 @@ bool elevate( const smtk::mesh::ElevationStructuredData& data,
               ElevationControls controls )
 {
   return elevate(data, ms.points(), radius, controls);
+}
+
+bool elevate( const std::function<double(double,double)>& data,
+              const smtk::mesh::PointSet& ps,
+              ElevationControls controls )
+{
+  std::function<double(double,double)> clampedData;
+
+  if (controls.m_clampMin && controls.m_clampMax)
+    {
+    clamper<true,true,double> clamp;
+    clampedData = [=, &data](double x,double y)
+      { return clamp(data(x,y), controls.m_minElev, controls.m_maxElev); };
+    }
+  else if (controls.m_clampMin)
+    {
+    clamper<true,false,double> clamp;
+    clampedData = [=, &data](double x,double y)
+      { return clamp(data(x,y), controls.m_minElev, controls.m_maxElev); };
+    }
+  else if (controls.m_clampMax)
+    {
+    clamper<false,true,double> clamp;
+    clampedData = [=, &data](double x,double y)
+      { return clamp(data(x,y), controls.m_minElev, controls.m_maxElev); };
+    }
+  else
+    {
+    clampedData = data;
+    }
+  ElevatePointForFunctionalInput functor(clampedData);
+  smtk::mesh::for_each(ps, functor);
+
+  return true;
+}
+
+bool elevate( const std::function<double(double,double)>& data,
+              const smtk::mesh::MeshSet& ms,
+              ElevationControls controls )
+{
+  return elevate(data, ms.points(), controls);
 }
 
 namespace

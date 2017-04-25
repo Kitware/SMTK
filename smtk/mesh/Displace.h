@@ -16,6 +16,8 @@
 
 #include "smtk/mesh/MeshSet.h"
 
+#include <functional>
+
 namespace smtk {
   namespace mesh {
 
@@ -128,6 +130,16 @@ namespace smtk {
   bool elevate( const smtk::mesh::ElevationStructuredData& data,
                 const smtk::mesh::PointSet& ps,
                 double radius,
+                ElevationControls controls = ElevationControls() );
+
+  SMTKCORE_EXPORT
+  bool elevate( const std::function<double(double,double)>& data,
+                const smtk::mesh::MeshSet& ms,
+                ElevationControls controls = ElevationControls() );
+
+  SMTKCORE_EXPORT
+  bool elevate( const std::function<double(double,double)>& data,
+                const smtk::mesh::PointSet& ps,
                 ElevationControls controls = ElevationControls() );
 
 #endif
