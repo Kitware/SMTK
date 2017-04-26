@@ -11,6 +11,7 @@
 #define qtActiveObjects_h
 
 #include <QObject>
+#include "smtk/extension/qt/Exports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/Model.h" //for smtk::model::Model
 
@@ -30,7 +31,7 @@ class vtkSMViewProxy;
   This is similar to pqActiveObjects in ParaView, however it tracks objects
   relevant to SMTK and CMB.
 */
-class qtActiveObjects : public QObject
+class SMTKQTEXT_EXPORT qtActiveObjects : public QObject
 {
   Q_OBJECT
 
