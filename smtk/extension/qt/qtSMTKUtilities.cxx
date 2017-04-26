@@ -42,7 +42,7 @@ void qtSMTKUtilities::updateViewConstructors(smtk::extension::qtUIManager* uiMan
 QVariant qtSMTKUtilities::UUIDToQVariant(const smtk::common::UUID &uuid)
 {
   QVariant vdata(QByteArray(reinterpret_cast<const char*>(
-                            uuid.begin()), uuid.size()));
+                            uuid.begin()), static_cast<int>(uuid.size())));
   return vdata;
 }
 
