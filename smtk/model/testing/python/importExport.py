@@ -55,7 +55,7 @@ class TestExportImport(smtk.testing.TestCase):
             numModels, 0, 'Must read at least one model to test.')
 
         # Export and then import
-        ftmp = os.path.join(smtk.testing.TEMP_DIR, str(uuid.uuid4()) + '.json')
+        ftmp = os.path.join(smtk.testing.TEMP_DIR, str(uuid.uuid4()) + '.smtk')
         #   Export to ftmp
         exp = sess.op('save smtk model')
         if smtk.wrappingProtocol() == 'pybind11':
