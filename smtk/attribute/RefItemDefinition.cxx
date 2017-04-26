@@ -24,7 +24,7 @@ RefItemDefinition(const std::string &myName):
   ItemDefinition(myName), m_definition()
 {
   this->m_useCommonLabel = false;
-  this->m_numberOfRequiredValues = 0;
+  this->m_numberOfRequiredValues = 1;
 }
 
 RefItemDefinition::~RefItemDefinition()
