@@ -41,6 +41,12 @@ will use its operators. ::
 """
 import os
 import smtk
+if smtk.wrappingProtocol() == 'pybind11':
+    import smtk.common
+    import smtk.attribute
+    import smtk.mesh
+    import smtk.model
+    import smtk.io
 
 activeSession = None
 lastOperatorResult = None
