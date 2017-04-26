@@ -46,6 +46,7 @@
 #include "smtk/extension/qt/qtModelPanel.h"
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtOperatorDockWidget.h"
+#include "smtk/extension/qt/qtSMTKUtilities.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/mesh/Collection.h"
@@ -942,7 +943,7 @@ void qtModelView::showContextMenu(const QModelIndex &idx, const QPoint& p)
         it != sinfo.first.end(); ++it)
       {
       QAction* act = this->m_ContextMenu->addAction((*it).c_str());
-      QVariant vdata( QString::fromStdString(sessionString) );
+      QVariant vdata = qtSMTKUtilities::UUIDToQVariant(brSession.entity());
       act->setData(vdata);
       QObject::connect(act, SIGNAL(triggered()), this, SLOT(operatorInvoked()));
       }
@@ -951,7 +952,7 @@ void qtModelView::showContextMenu(const QModelIndex &idx, const QPoint& p)
   { // set active model
     std::string setAsActiveModel("set as active model");
     QAction* act = this->m_ContextMenu->addAction(setAsActiveModel.c_str());
-    QVariant vdata( QString::fromStdString(sessionString) );
+    QVariant vdata = qtSMTKUtilities::UUIDToQVariant(brSession.entity());
     act->setData(vdata);
     QObject::connect(act, SIGNAL(triggered()), this, SLOT(updateActiveModelByModelIndex()));
   }
@@ -1022,8 +1023,8 @@ void qtModelView::operatorInvoked()
     return;
     }
   QVariant var = action->data();
-  std::string sessionName = var.toString().toStdString();
-  smtk::common::UUID sessId(sessionName);
+  smtk::common::UUID sessId = qtSMTKUtilities::QVariantToUUID(var);
+  std::string sessionName = sessId.toString();
 
   smtk::extension::QEntityItemModel* qmodel = this->getModel();
   smtk::model::SessionPtr session =
