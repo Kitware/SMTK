@@ -577,6 +577,45 @@ bool pmodel::splitModelEdgeAtPoint(smtk::model::ManagerPtr mgr, const Id& edgeId
   return result;
 }
 
+/**\brief Split the model edge with the given \a edgeId at the given \a pointIndex.
+  *
+  * If the point is already a model vertex, this method returns false.
+  *
+  * New edge Ids and new vertex Id are added to the \a created array.
+  */
+bool pmodel::splitModelEdgeAtIndex(smtk::model::ManagerPtr mgr, const Id& edgeId, int pointIndex,
+  smtk::model::EntityRefArray& created, int debugLevel)
+{
+  edge::Ptr storage = this->m_session->findStorage<internal::edge>(edgeId);
+  if (!storage)
+  {
+    smtkErrorMacro(this->session()->log(), "Edge is not part of this model.");
+    return false;
+  }
+  if (pointIndex < 0 || pointIndex >= static_cast<int>(storage->pointsSize()))
+  {
+    smtkErrorMacro(this->session()->log(), "Point index "
+        << pointIndex << " is invalid (must be in [0, " << storage->pointsSize() << "[.");
+    return false;
+  }
+  auto pit = storage->pointsBegin();
+  for (int pp = 0; pp < pointIndex && pit != storage->pointsEnd(); ++pp)
+  {
+    ++pit;
+  }
+  Point pt = *pit;
+  if (this->pointId(pt))
+  {
+    smtkWarningMacro(this->session()->log(), "Point is already a model vertex.");
+    return false; // Point is already a model vertex.
+  }
+  // TODO: Find point on edge closest to pt? Need to find where to insert model vertex?
+  smtk::model::Vertex v = this->findOrAddModelVertex(mgr, pt, /*add as free cell?*/ false);
+  bool result = this->splitModelEdgeAtModelVertex(mgr, edgeId, v.entity(), created, debugLevel);
+  v.assignDefaultName(); // Assign the name after the vertex is added to the edge (and has a parent model).
+  return result;
+}
+
 /** Split the model edge at one of its points that has been promoted to a model vertex.
   *
   * Since model edges are not allowed to have model vertices along their interior,

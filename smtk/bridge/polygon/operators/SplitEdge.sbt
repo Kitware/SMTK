@@ -34,6 +34,13 @@
             The world coordinates of the point where the edge should be split.
           </DetailedDescription>
         </Double>
+        <Int Name="point id" NumberOfRequiredValues="1" AdvanceLevel="11">
+          <DefaultValue>-1</DefaultValue>
+          <BriefDescription>The ID of the point where the edge should be split.</BriefDescription>
+          <DetailedDescription>
+            The index of the point (in its tessellation) where the edge should be split.
+          </DetailedDescription>
+        </Int>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
