@@ -8,11 +8,15 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "cJSON.h"
+#include "jobtablemodel.h"
+
 #include "job.h"
-#include <jobtablemodel.h>
 
 #include <QtCore/QDebug>
+
+#include <cstddef> // defines size_t for cJSON.h
+
+#include "cJSON.h"
 
 namespace cumulus
 {

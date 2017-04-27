@@ -17,7 +17,6 @@
 #include <QtCore/QAbstractTableModel>
 #include <QtCore/QList>
 
-#include "cJSON.h"
 #include "job.h"
 
 namespace cumulus
