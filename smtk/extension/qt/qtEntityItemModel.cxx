@@ -320,7 +320,37 @@ QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
           {
             const IntegerList& prop(c->integerProperty(meshkey, "visible"));
             if (!prop.empty())
+            {
               visible = (prop[0] != 0);
+            }
+            // check children of MESH_SUMMARY (Ex. mesh faces)
+            int childrenVisibile = -1;
+            bool reachEnd = true;
+            if (!mphrase->relatedMesh().is_empty())
+            {
+              for (std::size_t i = 0; i < mphrase->relatedMesh().size(); ++i)
+              {
+                const IntegerList& propSub(
+                  c->integerProperty(mphrase->relatedMesh().subset(i), "visible"));
+                if (!propSub.empty())
+                {
+                  if (childrenVisibile == -1)
+                  { // store first child visibility
+                    childrenVisibile = propSub[0];
+                  }
+                  else if (childrenVisibile != propSub[0])
+                  { // inconsistant visibility. Do nothing.
+                    reachEnd = false;
+                    break;
+                  }
+                }
+              }
+            }
+            // update visibility if children's are consistant
+            if (reachEnd && childrenVisibile != -1)
+            {
+              visible = childrenVisibile;
+            }
           }
         }
         else if (item->phraseType() == ENTITY_LIST)
@@ -357,7 +387,7 @@ QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
       }
       else if (role == EntityColorRole &&
         (item->phraseType() == MESH_SUMMARY || item->relatedEntity().isValid() ||
-          item->phraseType() == ENTITY_LIST))
+                 item->phraseType() == ENTITY_LIST))
       {
         QColor color;
         FloatList rgba = item->relatedColor();
