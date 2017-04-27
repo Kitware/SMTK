@@ -30,5 +30,5 @@ const char* vtkModelUserName::GetUserName(vtkModelEntity* entity)
 
 void vtkModelUserName::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }

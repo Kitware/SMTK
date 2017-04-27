@@ -15,10 +15,12 @@
 
 #include <QStyledItemDelegate>
 
-namespace smtk {
-  namespace extension {
+namespace smtk
+{
+namespace extension
+{
 
-  class QEntityItemModel;
+class QEntityItemModel;
 /**\brief Present the contents of an smtk::model::Manager instance via QEntityItemModel.
   *
   */
@@ -57,41 +59,31 @@ signals:
   void requestColorChange(const QModelIndex&);
 
 public:
-
-  virtual QSize sizeHint(
-    const QStyleOptionViewItem& option,
-    const QModelIndex& index) const;
+  virtual QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const;
 
   virtual void paint(
-    QPainter* painter,
-    const QStyleOptionViewItem& option,
-    const QModelIndex& index) const;
+    QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
 
   virtual QWidget* createEditor(
-    QWidget* parent,
-    const QStyleOptionViewItem& option,
-    const QModelIndex &index) const;
+    QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
 
   virtual void setEditorData(QWidget* editor, const QModelIndex& index) const;
   virtual void setModelData(
-    QWidget* editor,
-    QAbstractItemModel* model,
-    const QModelIndex &index) const;
+    QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const;
 
   // return which icon the Point position is on
   // 'visible', 'color', or empty string;
   std::string determineAction(const QPoint& pPos, const QModelIndex& idx,
-                            const QStyleOptionViewItem & option,
-                           const smtk::extension::QEntityItemModel* entityMod = nullptr) const;
+    const QStyleOptionViewItem& option,
+    const smtk::extension::QEntityItemModel* entityMod = nullptr) const;
 
 protected slots:
   virtual void commitAndCloseEditor();
 
 protected:
-
   virtual bool eventFilter(QObject* editor, QEvent* event);
-  virtual bool editorEvent ( QEvent * event, QAbstractItemModel * model,
-    const QStyleOptionViewItem & option, const QModelIndex & index );
+  virtual bool editorEvent(QEvent* event, QAbstractItemModel* model,
+    const QStyleOptionViewItem& option, const QModelIndex& index);
 
   int m_swatchSize;
   int m_titleFontSize;
@@ -102,7 +94,7 @@ protected:
   bool m_drawSubtitle;
 };
 
-  } // namespace extension
+} // namespace extension
 } // namespace smtk
 
 #endif // __smtk_extension_QEntityItemDelegate_h

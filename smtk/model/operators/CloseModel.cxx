@@ -21,64 +21,55 @@
 
 using namespace smtk::model;
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 bool CloseModel::ableToOperate()
 {
-  if(!this->ensureSpecification())
+  if (!this->ensureSpecification())
     return false;
-  smtk::attribute::ModelEntityItem::Ptr modelItem =
-    this->specification()->findModelEntity("model");
+  smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->findModelEntity("model");
   return modelItem && modelItem->numberOfValues() > 0;
 }
 
 smtk::model::OperatorResult CloseModel::operateInternal()
 {
   // ableToOperate should have verified that model(s) are set
-  smtk::attribute::ModelEntityItem::Ptr modelItem =
-    this->specification()->findModelEntity("model");
+  smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->findModelEntity("model");
 
   smtk::model::OperatorPtr removeModel = this->session()->op("remove model");
-  if(removeModel)
-    {
-    for (EntityRefArray::const_iterator mit = modelItem->begin();
-      mit != modelItem->end(); ++mit)
+  if (removeModel)
+  {
+    for (EntityRefArray::const_iterator mit = modelItem->begin(); mit != modelItem->end(); ++mit)
       removeModel->specification()->associateEntity(*mit);
     return removeModel->operate();
-    }
+  }
 
   EntityRefArray expunged;
   bool success = true;
-  for (EntityRefArray::const_iterator mit = modelItem->begin();
-    mit != modelItem->end(); ++mit)
+  for (EntityRefArray::const_iterator mit = modelItem->begin(); mit != modelItem->end(); ++mit)
+  {
+    if (!this->manager()->eraseModel(*mit))
     {
-    if(!this->manager()->eraseModel(*mit))
-      {
       success = false;
       break;
-      }
-    expunged.push_back(*mit);
     }
+    expunged.push_back(*mit);
+  }
 
-  OperatorResult result =
-    this->createResult(
-      success ?  OPERATION_SUCCEEDED : OPERATION_FAILED);
+  OperatorResult result = this->createResult(success ? OPERATION_SUCCEEDED : OPERATION_FAILED);
 
   if (success)
     result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
   return result;
 }
 
-  } //namespace model
+} //namespace model
 } // namespace smtk
 
 #include "smtk/model/CloseModel_xml.h"
 
-smtkImplementsModelOperator(
-  SMTKCORE_EXPORT,
-  smtk::model::CloseModel,
-  close_model,
-  "close model",
-  CloseModel_xml,
-  smtk::model::Session);
+smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::model::CloseModel, close_model, "close model",
+  CloseModel_xml, smtk::model::Session);

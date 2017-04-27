@@ -12,8 +12,10 @@
 
 #include "smtk/model/DescriptivePhrase.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief Describe a list of meshes or collections for user presentation.
   *
@@ -24,12 +26,12 @@ public:
   smtkTypeMacro(MeshListPhrase);
   smtkSharedPtrCreateMacro(DescriptivePhrase);
   Ptr setup(const std::vector<smtk::mesh::MeshSet>&,
-            DescriptivePhrase::Ptr parent = DescriptivePhrasePtr());
+    DescriptivePhrase::Ptr parent = DescriptivePhrasePtr());
 #ifndef SHIBOKEN_SKIP
   Ptr setup(const std::vector<smtk::mesh::CollectionPtr>&,
-            DescriptivePhrase::Ptr parent = DescriptivePhrasePtr());
+    DescriptivePhrase::Ptr parent = DescriptivePhrasePtr());
 #endif
-  virtual ~MeshListPhrase() { }
+  virtual ~MeshListPhrase() {}
 
   virtual std::string title();
   virtual std::string subtitle();
@@ -43,7 +45,7 @@ protected:
   std::vector<smtk::mesh::CollectionPtr> m_collections;
 };
 
-  } // model namespace
+} // model namespace
 } // smtk namespace
 
 #endif // __smtk_model_MeshListPhrase_h

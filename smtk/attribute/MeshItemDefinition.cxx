@@ -14,9 +14,8 @@
 
 using namespace smtk::attribute;
 
-MeshItemDefinition::
-MeshItemDefinition(const std::string &myName):
-  ItemDefinition(myName)
+MeshItemDefinition::MeshItemDefinition(const std::string& myName)
+  : ItemDefinition(myName)
 {
   this->m_numberOfRequiredValues = 0;
   this->m_isExtensible = false;
@@ -41,9 +40,9 @@ std::size_t MeshItemDefinition::numberOfRequiredValues() const
 void MeshItemDefinition::setNumberOfRequiredValues(std::size_t esize)
 {
   if (esize == this->m_numberOfRequiredValues)
-    {
+  {
     return;
-    }
+  }
   this->m_numberOfRequiredValues = esize;
 }
 
@@ -53,29 +52,25 @@ void MeshItemDefinition::setMaxNumberOfValues(std::size_t maxNum)
   this->m_maxNumberOfValues = maxNum;
 }
 
-bool MeshItemDefinition::isValueValid(const smtk::mesh::MeshSet &val) const
+bool MeshItemDefinition::isValueValid(const smtk::mesh::MeshSet& val) const
 {
   return !val.is_empty(); // should we allow empty meshset?
 }
 
 smtk::attribute::ItemPtr MeshItemDefinition::buildItem(
-  Attribute *owningAttribute, int itemPosition) const
+  Attribute* owningAttribute, int itemPosition) const
 {
-  return smtk::attribute::ItemPtr(new MeshItem(owningAttribute,
-                                              itemPosition));
+  return smtk::attribute::ItemPtr(new MeshItem(owningAttribute, itemPosition));
 }
 
 smtk::attribute::ItemPtr MeshItemDefinition::buildItem(
-Item *owningItem, int itemPosition, int subGroupPosition) const
+  Item* owningItem, int itemPosition, int subGroupPosition) const
 {
-  return smtk::attribute::ItemPtr(new MeshItem(owningItem,
-                                              itemPosition,
-                                              subGroupPosition));
+  return smtk::attribute::ItemPtr(new MeshItem(owningItem, itemPosition, subGroupPosition));
 }
 
-smtk::attribute::ItemDefinitionPtr
-smtk::attribute::MeshItemDefinition::
-createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
+smtk::attribute::ItemDefinitionPtr smtk::attribute::MeshItemDefinition::createCopy(
+  smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
   (void)info;
 

@@ -12,16 +12,19 @@
 
 #include <fstream>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 StoredResourcePtr StoredResource::create()
 {
   return StoredResourcePtr(new StoredResource);
 }
 
-StoredResource::StoredResource() :
-  m_generation(0), m_urlGeneration(0)
+StoredResource::StoredResource()
+  : m_generation(0)
+  , m_urlGeneration(0)
 {
 }
 
@@ -42,14 +45,14 @@ std::string StoredResource::url() const
 bool StoredResource::setURL(const std::string& url, bool isModified)
 {
   if (url == this->m_url)
-    {
+  {
     if (isModified != this->isModified())
-      {
+    {
       this->markModified(isModified);
       return true;
-      }
-    return false;
     }
+    return false;
+  }
   this->markModified(isModified);
   this->m_url = url;
   return true;
@@ -65,13 +68,13 @@ bool StoredResource::isModified() const
 void StoredResource::markModified(bool isDirty)
 {
   if (isDirty)
-    {
+  {
     ++this->m_generation;
-    }
+  }
   else
-    {
+  {
     this->m_urlGeneration = this->m_generation;
-    }
+  }
 }
 
 /// Return the generation number of the resource
@@ -87,22 +90,22 @@ int StoredResource::generation() const
 bool StoredResource::exists(const std::string& prefix) const
 {
   if (!this->m_url.empty())
-    {
+  {
     std::ifstream tryToOpen(this->m_url);
     if (tryToOpen.good())
-      {
+    {
       return true;
-      }
+    }
 
     if (!prefix.empty())
-      {
+    {
       std::ifstream tryToOpen2(prefix + this->m_url);
       if (tryToOpen2.good())
-        {
+      {
         return true;
-        }
       }
     }
+  }
   return false;
 }
 
@@ -116,10 +119,10 @@ bool StoredResource::exists(const std::string& prefix) const
 bool StoredResource::addEntity(const EntityRef& ent)
 {
   if (this->m_entities.insert(ent).second)
-    {
+  {
     this->markModified(true);
     return true;
-    }
+  }
   return false;
 }
 
@@ -133,10 +136,10 @@ bool StoredResource::addEntity(const EntityRef& ent)
 bool StoredResource::removeEntity(const EntityRef& ent)
 {
   if (this->m_entities.erase(ent) > 0)
-    {
+  {
     this->markModified(true);
     return true;
-    }
+  }
   return false;
 }
 
@@ -146,5 +149,5 @@ void StoredResource::setGeneration(int gen)
   this->m_generation = gen;
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

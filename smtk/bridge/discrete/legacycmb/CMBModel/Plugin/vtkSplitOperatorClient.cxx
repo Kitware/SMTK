@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkSplitOperatorClient.h"
 
 #include "vtkDiscreteModel.h"
@@ -38,112 +37,102 @@ vtkSplitOperatorClient::~vtkSplitOperatorClient()
 {
 }
 
-bool vtkSplitOperatorClient::Operate(
-  vtkDiscreteModel* Model, vtkSMProxy* ServerModelProxy)
+bool vtkSplitOperatorClient::Operate(vtkDiscreteModel* Model, vtkSMProxy* ServerModelProxy)
 {
-  if(!this->AbleToOperate(Model))
-    {
+  if (!this->AbleToOperate(Model))
+  {
     return 0;
-    }
+  }
 
   vtkModelEntity* Entity = this->GetModelEntity(Model);
   vtkDiscreteModelFace* Face = vtkDiscreteModelFace::SafeDownCast(Entity);
 
   vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
   vtkSMOperatorProxy* OperatorProxy =
-    vtkSMOperatorProxy::SafeDownCast(
-      manager->NewProxy("CMBModelGroup", "SplitOperator"));
-  if(!OperatorProxy)
-    {
+    vtkSMOperatorProxy::SafeDownCast(manager->NewProxy("CMBModelGroup", "SplitOperator"));
+  if (!OperatorProxy)
+  {
     vtkErrorMacro("Unable to create operator proxy.");
     return 0;
-    }
+  }
   OperatorProxy->SetLocation(ServerModelProxy->GetLocation());
 
   vtkSMDoubleVectorProperty* angleproperty =
-    vtkSMDoubleVectorProperty::SafeDownCast(
-      OperatorProxy->GetProperty("FeatureAngle"));
+    vtkSMDoubleVectorProperty::SafeDownCast(OperatorProxy->GetProperty("FeatureAngle"));
   angleproperty->SetElement(0, this->GetFeatureAngle());
 
   vtkSMIdTypeVectorProperty* idproperty =
-    vtkSMIdTypeVectorProperty::SafeDownCast(
-      OperatorProxy->GetProperty("Id"));
+    vtkSMIdTypeVectorProperty::SafeDownCast(OperatorProxy->GetProperty("Id"));
   idproperty->SetElement(0, this->GetId());
 
   OperatorProxy->Operate(Model, ServerModelProxy);
 
   // check to see if the operation succeeded on the server
   vtkSMIntVectorProperty* OperateSucceeded =
-    vtkSMIntVectorProperty::SafeDownCast(
-      OperatorProxy->GetProperty("OperateSucceeded"));
+    vtkSMIntVectorProperty::SafeDownCast(OperatorProxy->GetProperty("OperateSucceeded"));
 
   OperatorProxy->UpdatePropertyInformation();
 
   int Succeeded = OperateSucceeded->GetElement(0);
-  if(!Succeeded)
-    {
+  if (!Succeeded)
+  {
     vtkErrorMacro("Server side operator failed.");
     OperatorProxy->Delete();
     return 0;
-    }
+  }
 
   // now update the information on the client
   vtkSMIdTypeVectorProperty* CreatedModelFaces =
-    vtkSMIdTypeVectorProperty::SafeDownCast(
-      OperatorProxy->GetProperty("CreatedModelFaceIDs"));
+    vtkSMIdTypeVectorProperty::SafeDownCast(OperatorProxy->GetProperty("CreatedModelFaceIDs"));
   OperatorProxy->UpdateVTKObjects();
   OperatorProxy->UpdatePropertyInformation();
 
   vtkSMIdTypeVectorProperty* CurrentNewFaceId =
-    vtkSMIdTypeVectorProperty::SafeDownCast(
-      OperatorProxy->GetProperty("CurrentNewFaceId"));
+    vtkSMIdTypeVectorProperty::SafeDownCast(OperatorProxy->GetProperty("CurrentNewFaceId"));
   vtkSMIdTypeVectorProperty* SplitEdgeVertIds =
-    vtkSMIdTypeVectorProperty::SafeDownCast(
-      OperatorProxy->GetProperty("SplitEdgeVertIds"));
+    vtkSMIdTypeVectorProperty::SafeDownCast(OperatorProxy->GetProperty("SplitEdgeVertIds"));
   vtkSMIdTypeVectorProperty* CreatedModelEdgeVertIDs =
-    vtkSMIdTypeVectorProperty::SafeDownCast(
-      OperatorProxy->GetProperty("CreatedModelEdgeVertIDs"));
+    vtkSMIdTypeVectorProperty::SafeDownCast(OperatorProxy->GetProperty("CreatedModelEdgeVertIDs"));
   vtkSMIdTypeVectorProperty* FaceEdgeLoopIDs =
-    vtkSMIdTypeVectorProperty::SafeDownCast(
-      OperatorProxy->GetProperty("FaceEdgeLoopIDs"));
+    vtkSMIdTypeVectorProperty::SafeDownCast(OperatorProxy->GetProperty("FaceEdgeLoopIDs"));
 
   // CreatedModelFaces should now have the actual ids of the
   // created model faces.
   unsigned int NumberOfElements = CreatedModelFaces->GetNumberOfElements();
   vtkModelShellUse* ShellUses[2];
-  for(int i=0;i<2;i++)
-    {
+  for (int i = 0; i < 2; i++)
+  {
     vtkModelFaceUse* FaceUse = Face->GetModelFaceUse(i);
     ShellUses[i] = FaceUse->GetModelShellUse();
-    }
+  }
 
   bool hasEdges = Face->GetNumberOfModelEdges() != 0;
   vtkIdTypeArray* NewModelFaces = this->GetCreatedModelFaceIDs();
   NewModelFaces->Reset();
   NewModelFaces->SetNumberOfComponents(1);
   NewModelFaces->SetNumberOfTuples(NumberOfElements);
-  for(unsigned int ui=0;ui<NumberOfElements;ui++)
-    {
+  for (unsigned int ui = 0; ui < NumberOfElements; ui++)
+  {
     NewModelFaces->SetValue(ui, CreatedModelFaces->GetElement(ui));
     vtkModelFace* newFace = Model->BuildModelFace(0, 0, 0);
     vtkIdType newFId = newFace->GetUniquePersistentId();
-    if( newFId != CreatedModelFaces->GetElement(ui))
-      {
+    if (newFId != CreatedModelFaces->GetElement(ui))
+    {
       vtkErrorMacro("Created model face ids do not match on server and client.");
-      }
-    for(int i=0;i<2;i++)
-      {
+    }
+    for (int i = 0; i < 2; i++)
+    {
       vtkModelFaceUse* FaceUse = newFace->GetModelFaceUse(i);
-      if(ShellUses[i])
-        {
+      if (ShellUses[i])
+      {
         ShellUses[i]->AddModelFaceUse(FaceUse);
-        }
       }
+    }
 
     // update Edges due to split of faces. We need to follow exactly what's
     // happenning on server side so that the Ids will match between server and client.
-    if(hasEdges)
-      {
+    if (hasEdges)
+    {
       CurrentNewFaceId->SetElement(0, newFId);
       OperatorProxy->UpdateVTKObjects();
       OperatorProxy->UpdatePropertyInformation();
@@ -152,10 +141,9 @@ bool vtkSplitOperatorClient::Operate(
         Model, SplitEdgeVertIds, this->SplitEdgeMap, this->SplitVertMap);
       vtkSelectionSplitOperatorClient::UpdateCreatedModelEdgeVertIDs(
         Model, CreatedModelEdgeVertIDs, this->NewEdges, this->NewVerts);
-      vtkSelectionSplitOperatorClient::UpdateFaceEdgeLoopIDs(
-        Model, FaceEdgeLoopIDs);
-      }
+      vtkSelectionSplitOperatorClient::UpdateFaceEdgeLoopIDs(Model, FaceEdgeLoopIDs);
     }
+  }
 
   OperatorProxy->Delete();
 
@@ -164,5 +152,5 @@ bool vtkSplitOperatorClient::Operate(
 
 void vtkSplitOperatorClient::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }

@@ -15,7 +15,7 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include <boost/uuid/uuid_generators.hpp>
 SMTK_THIRDPARTY_POST_INCLUDE
 
-#include <ctime> // for time()
+#include <ctime>    // for time()
 #include <stdlib.h> // for getenv()/_dupenv_s()
 
 namespace
@@ -32,11 +32,12 @@ static bool checkenv(const char* vname)
   return valid;
 #endif
 }
-
 }
 
-namespace smtk {
-  namespace common {
+namespace smtk
+{
+namespace common
+{
 
 class UUIDGenerator::Internal
 {
@@ -44,25 +45,19 @@ public:
   Internal()
   {
     if (checkenv("SMTK_IN_VALGRIND"))
-      {
+    {
       // This is a poor technique for seeding or
       // we would initialize this way all the time.
-      this->m_mtseed.seed(
-        static_cast<boost::mt19937::result_type>(
-          time(NULL)));
+      this->m_mtseed.seed(static_cast<boost::mt19937::result_type>(time(NULL)));
       this->m_randomGenerator =
         new boost::uuids::basic_random_generator<boost::mt19937>(&this->m_mtseed);
-      }
+    }
     else
-      {
-      this->m_randomGenerator =
-        new boost::uuids::basic_random_generator<boost::mt19937>;
-      }
+    {
+      this->m_randomGenerator = new boost::uuids::basic_random_generator<boost::mt19937>;
+    }
   }
-  ~Internal()
-  {
-    delete this->m_randomGenerator;
-  }
+  ~Internal() { delete this->m_randomGenerator; }
 
   boost::mt19937 m_mtseed;
   boost::uuids::basic_random_generator<boost::mt19937>* m_randomGenerator;
@@ -90,5 +85,5 @@ UUID UUIDGenerator::null()
   return UUID(this->P->m_nullGenerator());
 }
 
-  } // namespace common
+} // namespace common
 } // namespace smtk

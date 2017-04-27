@@ -78,21 +78,19 @@ int main(int argc, char* argv[])
   // read the data
   smtk::model::OperatorPtr readOp = session->op("load smtk model");
   if (!readOp)
-    {
+  {
     std::cerr << "No load smtk model operator\n";
     return 1;
-    }
+  }
 
   readOp->specification()->findFile("filename")->setValue(std::string(argv[1]));
   std::cout << "Importing " << argv[1] << "\n";
   smtk::model::OperatorResult ismopResult = readOp->operate();
-  if (
-    ismopResult->findInt("outcome")->value() !=
-    smtk::model::OPERATION_SUCCEEDED)
-    {
+  if (ismopResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  {
     std::cerr << "Read operator failed\n";
     return 1;
-    }
+  }
   // assign model value
   smtk::model::Model simpleSMTK = ismopResult->findModelEntity("created")->value();
   manager->assignDefaultNames(); // should force transcription of every entity, but doesn't yet.
@@ -106,13 +104,13 @@ int main(int argc, char* argv[])
   // get face and edge info
   EntityRefs faces = manager->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::FACE);
   std::cout << "Faces inside model are:\n";
-  for (auto face:faces)
+  for (auto face : faces)
   {
     std::cout << " " << face.name() << "\n";
   }
   EntityRefs edges = manager->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::EDGE);
   std::cout << "Edges inside model are:\n";
-  for (auto edge:edges)
+  for (auto edge : edges)
   {
     std::cout << " " << edge.name() << "\n";
   }
@@ -140,8 +138,7 @@ int main(int argc, char* argv[])
   deleteOp->specification()->findVoid("delete lower-dimensional neighbors")->setIsEnabled(true);
 
   smtk::model::OperatorResult deleteOpResult = deleteOp->operate();
-  if (deleteOpResult->findInt("outcome")->value()!=
-            smtk::model::OPERATION_SUCCEEDED)
+  if (deleteOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
   {
     std::cerr << "Delete operator failed!\n";
     return 1;
@@ -153,21 +150,22 @@ int main(int argc, char* argv[])
   vtkNew<vtkRenderer> ren;
   vtkNew<vtkRenderWindow> win;
   vtkNew<vtkCamera> camera;
-  camera->SetPosition(20,0,20);
-  camera->SetFocalPoint(10,10,-10);
+  camera->SetPosition(20, 0, 20);
+  camera->SetFocalPoint(10, 10, -10);
   src->SetModelManager(manager);
   win->SetMultiSamples(0);
   src->AllowNormalGenerationOn();
   map->SetInputConnection(src->GetOutputPort());
   act->SetMapper(map.GetPointer());
-  act->SetScale(1,1,100);
+  act->SetScale(1, 1, 100);
 
   win->AddRenderer(ren.GetPointer());
   ren->AddActor(act.GetPointer());
   ren->SetBackground(0.5, 0.5, 1);
   ren->SetActiveCamera(camera.GetPointer());
   vtkRenderWindowInteractor* iac = win->MakeRenderWindowInteractor();
-  vtkInteractorStyleSwitch::SafeDownCast(iac->GetInteractorStyle())->SetCurrentStyleToTrackballCamera();
+  vtkInteractorStyleSwitch::SafeDownCast(iac->GetInteractorStyle())
+    ->SetCurrentStyleToTrackballCamera();
   win->SetInteractor(iac);
 
   win->Render();

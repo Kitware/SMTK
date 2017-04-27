@@ -13,8 +13,10 @@
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Volume.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief Return the high-dimensional cell whose interior is bounded by this shell.
   *
@@ -48,5 +50,5 @@ Shells Shell::containedShells() const
   return this->ShellEntity::containedShellEntities<Shells>();
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

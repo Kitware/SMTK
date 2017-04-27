@@ -8,12 +8,10 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkModelItemIterator.h"
 
 #include "vtkModelItem.h"
 #include "vtkObjectFactory.h"
-
 
 vtkModelItemIterator::vtkModelItemIterator()
 {
@@ -25,6 +23,5 @@ vtkModelItemIterator::~vtkModelItemIterator()
 
 void vtkModelItemIterator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }
-

@@ -34,12 +34,16 @@
 #include <set>
 #include <string>
 
-namespace smtk {
-  namespace io {
-    class Logger;
-  }
-  namespace bridge {
-    namespace remote {
+namespace smtk
+{
+namespace io
+{
+class Logger;
+}
+namespace bridge
+{
+namespace remote
+{
 
 class Session;
 
@@ -73,8 +77,7 @@ public:
   void clearSearchDirs(bool clearDefaultsToo = false);
 #ifndef SHIBOKEN_SKIP
   bool connectToServer(
-    const std::string& hostname = "local",
-    int port = remus::server::CLIENT_PORT);
+    const std::string& hostname = "local", int port = remus::server::CLIENT_PORT);
 #else
   // Shiboken cannot parse the default port and does not
   // properly handle default arguments anyway, so provide
@@ -84,23 +87,17 @@ public:
 
   std::vector<std::string> sessionTypeNames();
 
-  int staticSetup(
-    const std::string& sessionName,
-    const std::string& optName,
+  int staticSetup(const std::string& sessionName, const std::string& optName,
     const smtk::model::StringList& optVal);
 
 #ifndef SHIBOKEN_SKIP
   smtk::common::UUID beginSession(const std::string& sessionName);
   bool endSession(const smtk::common::UUID& sessionId);
-  SessionPtr findSession(
-    const smtk::common::UUID& sessionId);
+  SessionPtr findSession(const smtk::common::UUID& sessionId);
 
-  smtk::model::StringData supportedFileTypes(
-    const std::string& sessionName = std::string());
-  smtk::model::OperatorResult readFile(
-    const std::string& fileName,
-    const std::string& fileType = std::string(),
-    const std::string& sessionName = std::string());
+  smtk::model::StringData supportedFileTypes(const std::string& sessionName = std::string());
+  smtk::model::OperatorResult readFile(const std::string& fileName,
+    const std::string& fileType = std::string(), const std::string& sessionName = std::string());
 
   std::vector<std::string> operatorNames(const std::string& sessionName);
   std::vector<std::string> operatorNames(const smtk::common::UUID& sessionId);
@@ -137,13 +134,13 @@ protected:
   smtk::shared_ptr<remus::client::Client> m_client;
   smtk::shared_ptr<remus::Server> m_localServer;
   smtk::model::ManagerPtr m_modelMgr;
-  std::map<std::string,std::string> m_remoteSessionNameToType;
-  std::map<smtk::common::UUID,std::string> m_remoteSessionRefIds;
+  std::map<std::string, std::string> m_remoteSessionNameToType;
+  std::map<smtk::common::UUID, std::string> m_remoteSessionRefIds;
 #endif // SHIBOKEN_SKIP
 };
 
-    } // namespace remote
-  } // namespace bridge
+} // namespace remote
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_remote_RemusConnection_h

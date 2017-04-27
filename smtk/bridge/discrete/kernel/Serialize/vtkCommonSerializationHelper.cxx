@@ -25,21 +25,19 @@ vtkCommonSerializationHelper::vtkCommonSerializationHelper()
 {
 }
 
-int vtkCommonSerializationHelper::Serialize(vtkObject *object,
-                                               vtkSerializer *serializer)
+int vtkCommonSerializationHelper::Serialize(vtkObject* object, vtkSerializer* serializer)
 {
   if (vtkTransform::SafeDownCast(object))
-    {
+  {
     this->SerializeTransform(vtkTransform::SafeDownCast(object), serializer);
     return 1;
-    }
+  }
   // make sure object is a type of vtkDataArray that is supported
-  else if (vtkDataArray::SafeDownCast(object) &&
-    this->GetSerializationType(object))
-    {
+  else if (vtkDataArray::SafeDownCast(object) && this->GetSerializationType(object))
+  {
     this->SerializeDataArray(vtkDataArray::SafeDownCast(object), serializer);
     return 1;
-    }
+  }
 
   return 0;
 }
@@ -60,38 +58,38 @@ void vtkCommonSerializationHelper::UnRegisterWithHelperMap()
   vtkSerializationHelperMap::UnRegisterHelperForClass("vtkIntArray", this);
 }
 
-void vtkCommonSerializationHelper::SerializeTransform(vtkTransform *transform,
-                                                         vtkSerializer *serializer)
+void vtkCommonSerializationHelper::SerializeTransform(
+  vtkTransform* transform, vtkSerializer* serializer)
 {
   if (serializer->IsWriting())
-    {
+  {
     unsigned int length = 16;
-    double *elementsPtr = *transform->GetMatrix()->Element;
+    double* elementsPtr = *transform->GetMatrix()->Element;
     // just the matrix for now... plan to add better support for serializing transforms
     serializer->Serialize("Matrix", elementsPtr, length);
-    }
+  }
   else
-    {
+  {
     unsigned int length = 0;
-    double *elements = 0;
+    double* elements = 0;
     serializer->Serialize("Matrix", elements, length);
     if (length > 0)
-      {
+    {
       transform->Concatenate(elements);
-      delete [] elements;
-      }
+      delete[] elements;
     }
+  }
 }
 
-void vtkCommonSerializationHelper::SerializeDataArray(vtkDataArray *dataArray,
-                                                         vtkSerializer *serializer)
+void vtkCommonSerializationHelper::SerializeDataArray(
+  vtkDataArray* dataArray, vtkSerializer* serializer)
 {
   if (serializer->IsWriting())
-    {
+  {
     if (dataArray->HasInformation())
-      {
+    {
       serializer->Serialize("ArrayInformation", dataArray->GetInformation());
-      }
+    }
 
     int numberOfComponents = dataArray->GetNumberOfComponents();
     serializer->Serialize("NumberOfComponents", numberOfComponents);
@@ -102,40 +100,38 @@ void vtkCommonSerializationHelper::SerializeDataArray(vtkDataArray *dataArray,
     // serialization is NOT intended for storing LARGE data).  Therefore, for the
     // time being, we write out at most what can be represented by an int.
     unsigned long numberOfValuesLong = dataArray->GetDataSize();
-    unsigned int numberOfValues = static_cast<unsigned int>(
-      static_cast<int>(numberOfValuesLong) );
+    unsigned int numberOfValues = static_cast<unsigned int>(static_cast<int>(numberOfValuesLong));
     if (numberOfValues < numberOfValuesLong)
-      {
+    {
       vtkErrorMacro("Unable to Serialize the entire array; too large!");
-      }
+    }
 
     // now handle the type specfic
     if (vtkIdTypeArray::SafeDownCast(dataArray))
-      {
-      vtkIdType *arrayPtr = vtkIdTypeArray::SafeDownCast(dataArray)->GetPointer(0);
-      serializer->Serialize("Array", arrayPtr, numberOfValues);
-      }
-    else if (vtkDoubleArray::SafeDownCast(dataArray))
-      {
-      double *arrayPtr = vtkDoubleArray::SafeDownCast(dataArray)->GetPointer(0);
-      serializer->Serialize("Array", arrayPtr, numberOfValues);
-      }
-    else if (vtkIntArray::SafeDownCast(dataArray))
-      {
-      int *arrayPtr = vtkIntArray::SafeDownCast(dataArray)->GetPointer(0);
-      serializer->Serialize("Array", arrayPtr, numberOfValues);
-      }
-    }
-  else
     {
+      vtkIdType* arrayPtr = vtkIdTypeArray::SafeDownCast(dataArray)->GetPointer(0);
+      serializer->Serialize("Array", arrayPtr, numberOfValues);
+    }
+    else if (vtkDoubleArray::SafeDownCast(dataArray))
+    {
+      double* arrayPtr = vtkDoubleArray::SafeDownCast(dataArray)->GetPointer(0);
+      serializer->Serialize("Array", arrayPtr, numberOfValues);
+    }
+    else if (vtkIntArray::SafeDownCast(dataArray))
+    {
+      int* arrayPtr = vtkIntArray::SafeDownCast(dataArray)->GetPointer(0);
+      serializer->Serialize("Array", arrayPtr, numberOfValues);
+    }
+  }
+  else
+  {
     // handle vtkInformation, if present
-    vtkSmartPointer<vtkInformation> infoObject =
-      vtkSmartPointer<vtkInformation>::New();
+    vtkSmartPointer<vtkInformation> infoObject = vtkSmartPointer<vtkInformation>::New();
     serializer->Serialize("ArrayInformation", infoObject);
     if (infoObject->GetNumberOfKeys() > 0)
-      {
+    {
       dataArray->GetInformation()->Copy(infoObject, 1);
-      }
+    }
 
     // how many components
     int numberOfComponents;
@@ -145,71 +141,68 @@ void vtkCommonSerializationHelper::SerializeDataArray(vtkDataArray *dataArray,
     // now
     unsigned int numberOfValues = 0;
     if (vtkIdTypeArray::SafeDownCast(dataArray))
-      {
-      vtkIdType *arrayPtr = 0;
+    {
+      vtkIdType* arrayPtr = 0;
       serializer->Serialize("Array", arrayPtr, numberOfValues);
       if (numberOfValues > 0)
-        {
+      {
         // the dataArray assumes reposibility for the array allocated
         // in Serialize(), indicated by the final arguement of "0"
-        vtkIdTypeArray::SafeDownCast(dataArray)->SetArray(
-          arrayPtr, static_cast<vtkIdType>(numberOfValues), 0,
-          vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
-        }
+        vtkIdTypeArray::SafeDownCast(dataArray)->SetArray(arrayPtr,
+          static_cast<vtkIdType>(numberOfValues), 0, vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
       }
+    }
     else if (vtkDoubleArray::SafeDownCast(dataArray))
-      {
-      double *arrayPtr = 0;
+    {
+      double* arrayPtr = 0;
       serializer->Serialize("Array", arrayPtr, numberOfValues);
       if (numberOfValues > 0)
-        {
+      {
         // the dataArray assumes reposibility for the array allocated
         // in Serialize(), indicated by the final arguement of "0"
-        vtkDoubleArray::SafeDownCast(dataArray)->SetArray(
-          arrayPtr, static_cast<vtkIdType>(numberOfValues), 0,
-          vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
-        }
+        vtkDoubleArray::SafeDownCast(dataArray)->SetArray(arrayPtr,
+          static_cast<vtkIdType>(numberOfValues), 0, vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
       }
+    }
     else if (vtkIntArray::SafeDownCast(dataArray))
-      {
-      int *arrayPtr = 0;
+    {
+      int* arrayPtr = 0;
       serializer->Serialize("Array", arrayPtr, numberOfValues);
       if (numberOfValues > 0)
-        {
+      {
         // the dataArray assumes reposibility for the array allocated
         // in Serialize(), indicated by the final arguement of "0"
         vtkIntArray::SafeDownCast(dataArray)->SetArray(
-          arrayPtr, static_cast<vtkIdType>(numberOfValues), 0,
-          vtkIntArray::VTK_DATA_ARRAY_DELETE);
-        }
+          arrayPtr, static_cast<vtkIdType>(numberOfValues), 0, vtkIntArray::VTK_DATA_ARRAY_DELETE);
       }
     }
+  }
 }
 
-const char *vtkCommonSerializationHelper::GetSerializationType(vtkObject *object)
+const char* vtkCommonSerializationHelper::GetSerializationType(vtkObject* object)
 {
   if (vtkTransform::SafeDownCast(object))
-    {
+  {
     return "vtkTransform";
-    }
+  }
   if (vtkIdTypeArray::SafeDownCast(object))
-    {
+  {
     return "vtkIdTypeArray";
-    }
+  }
   if (vtkDoubleArray::SafeDownCast(object))
-    {
+  {
     return "vtkDoubleArray";
-    }
+  }
   if (vtkIntArray::SafeDownCast(object))
-    {
+  {
     return "vtkIntArray";
-    }
+  }
   return 0;
 }
 
 void vtkCommonSerializationHelper::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 
   os << indent << "Supported ClassTypes:\n";
   os << indent.GetNextIndent() << "vtkTransform\n";

@@ -31,7 +31,7 @@ class VTKSMTKSOURCEEXT_EXPORT vtkModelRepresentation : public vtkRenderedReprese
 public:
   static vtkModelRepresentation* New();
   virtual void PrintSelf(ostream& os, vtkIndent indent);
-  vtkTypeMacro(vtkModelRepresentation,vtkRenderedRepresentation);
+  vtkTypeMacro(vtkModelRepresentation, vtkRenderedRepresentation);
 
   /**\brief Get/set the selection mask.
     *
@@ -42,29 +42,28 @@ public:
     * This can be used to force only edges, faces, or vertices to be selected.
     */
   //@{
-  vtkGetMacro(SelectionMask,int);
-  vtkSetMacro(SelectionMask,int);
+  vtkGetMacro(SelectionMask, int);
+  vtkSetMacro(SelectionMask, int);
   //@}
 
   /// Set/get the model (used for selection masking). This is really a hack.
   //@{
   virtual void SetModel(smtk::model::ManagerPtr model)
-    {
+  {
     if (this->Model == model)
       return;
     this->Model = model;
     this->Modified();
-    }
-  smtk::model::ManagerPtr GetModel()
-    { return this->Model; }
+  }
+  smtk::model::ManagerPtr GetModel() { return this->Model; }
   //@}
 
   virtual void ApplyViewTheme(vtkViewTheme* theme);
 
-  vtkGetObjectMacro(Transform,vtkTransformFilter);
-  vtkGetObjectMacro(ApplyColors,vtkApplyColors);
-  vtkGetObjectMacro(Mapper,vtkPolyDataMapper);
-  vtkGetObjectMacro(Actor,vtkActor);
+  vtkGetObjectMacro(Transform, vtkTransformFilter);
+  vtkGetObjectMacro(ApplyColors, vtkApplyColors);
+  vtkGetObjectMacro(Mapper, vtkPolyDataMapper);
+  vtkGetObjectMacro(Actor, vtkActor);
 
 protected:
   vtkModelRepresentation();
@@ -74,9 +73,7 @@ protected:
   //virtual int FillOutputPortInformation(int port, vtkInformation* request);
 
   virtual int RequestData(
-    vtkInformation* request,
-    vtkInformationVector** inInfo,
-    vtkInformationVector* outInfo);
+    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo);
 
   virtual void PrepareForRendering(vtkRenderView* view);
   virtual bool AddToView(vtkView* view);
@@ -98,7 +95,7 @@ protected:
 
 private:
   vtkModelRepresentation(const vtkModelRepresentation&); // Not implemented.
-  void operator = (const vtkModelRepresentation&); // Not implemented.
+  void operator=(const vtkModelRepresentation&);         // Not implemented.
 };
 
 #endif // __smtk_vtk_ModelRepresentation_h

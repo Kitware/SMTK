@@ -33,9 +33,7 @@ protected:
 
 private:
   vtkCMBSMModelProxy(const vtkCMBSMModelProxy&); // Not implemented
-  void operator=(const vtkCMBSMModelProxy&); // Not implemented
-
+  void operator=(const vtkCMBSMModelProxy&);     // Not implemented
 };
 
 #endif
-

@@ -11,31 +11,40 @@
 #define __smtk_session_remote_Session_h
 
 #ifndef SHIBOKEN_SKIP
-#  include "smtk/bridge/remote/RemusStaticSessionInfo.h"
-#  include "smtk/model/SessionRegistrar.h"
-#endif // SHIBOKEN_SKIP
-#include "smtk/SharedPtr.h" // for export macro
+#include "smtk/bridge/remote/RemusStaticSessionInfo.h"
+#include "smtk/model/SessionRegistrar.h"
+#endif                                  // SHIBOKEN_SKIP
+#include "smtk/SharedPtr.h"             // for export macro
 #include "smtk/bridge/remote/Exports.h" // for export macro
 #include "smtk/model/DefaultSession.h"
 #include "smtk/model/StringData.h"
 
 #ifndef SHIBOKEN_SKIP
 #ifndef _MSC_VER
-  #pragma GCC diagnostic push
-  #pragma GCC diagnostic ignored "-Wdelete-non-virtual-dtor"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdelete-non-virtual-dtor"
 #endif
-#include "remus/client/Client.h" // for m_remusClient
+#include "remus/client/Client.h"           // for m_remusClient
 #include "remus/worker/ServerConnection.h" // for m_remusConn
 #ifndef _MSC_VER
-  #pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
 #endif
 #endif // SHIBOKEN_SKIP
 
-namespace smtk {
-  namespace io { class LoadJSON; }
-  namespace model { class RemoteOperator; }
-  namespace bridge {
-    namespace remote {
+namespace smtk
+{
+namespace io
+{
+class LoadJSON;
+}
+namespace model
+{
+class RemoteOperator;
+}
+namespace bridge
+{
+namespace remote
+{
 
 class RemusConnection; // A Remus client-server connection specifically for smtk::models.
 
@@ -80,15 +89,11 @@ protected:
     const smtk::model::EntityRef& entity, smtk::model::SessionInfoBits flags, int depth = -1);
 
   virtual bool ableToOperateDelegate(smtk::model::RemoteOperatorPtr op);
-  virtual smtk::model::OperatorResult operateDelegate(
-    smtk::model::RemoteOperatorPtr op);
+  virtual smtk::model::OperatorResult operateDelegate(smtk::model::RemoteOperatorPtr op);
 
-  static RemusStaticSessionInfo createFunctor(
-    RemusConnectionPtr remusConn,
-    const remus::proto::JobRequirements& jobReq,
-    const std::string& meshType);
-  static bool registerSessionOperator(
-    const std::string& sessionName, const std::string& opName,
+  static RemusStaticSessionInfo createFunctor(RemusConnectionPtr remusConn,
+    const remus::proto::JobRequirements& jobReq, const std::string& meshType);
+  static bool registerSessionOperator(const std::string& sessionName, const std::string& opName,
     const char* opDescrXML, smtk::model::OperatorConstructor opCtor);
 
   RemusConnection* m_remusConn;
@@ -96,14 +101,14 @@ protected:
   std::string m_remusWorkerName;
   remus::proto::JobRequirements m_remusWorkerReqs;
 
-  static std::map<std::string,RemusStaticSessionInfo>* s_remotes;
+  static std::map<std::string, RemusStaticSessionInfo>* s_remotes;
 
   static void cleanupSessionTypes();
 #endif // SHIBOKEN_SKIP
 };
 
-    } // namespace remote
-  } // namespace bridge
+} // namespace remote
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_remote_Session_h

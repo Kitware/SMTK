@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkModelItemListIterator.h"
 
 #include "vtkModelItem.h"
@@ -24,8 +23,7 @@ void vtkModelItemListIterator::SetRoot(vtkModelItem* item)
 
 struct vtkModelItemListIteratorInternals
 {
-  std::list<vtkSmartPointer<vtkModelItem> >::iterator
-    ConceptualModelItemListIterator;
+  std::list<vtkSmartPointer<vtkModelItem> >::iterator ConceptualModelItemListIterator;
   int ItemType;
 };
 
@@ -42,7 +40,7 @@ vtkModelItemListIterator::~vtkModelItemListIterator()
 
 void vtkModelItemListIterator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }
 
 void vtkModelItemListIterator::SetItemType(int itemType)
@@ -58,15 +56,15 @@ int vtkModelItemListIterator::GetItemType()
 void vtkModelItemListIterator::Begin()
 {
   if (!this->Root)
-    {
+  {
     vtkErrorMacro("Root is not set. Can not perform operation: Begin()");
     return;
-    }
+  }
   if (this->Internal->ItemType == -1)
-    {
+  {
     vtkErrorMacro("Type is not set. Can not perform operation: Begin()");
     return;
-    }
+  }
 
   this->Internal->ConceptualModelItemListIterator =
     this->Root->Internal->Associations[this->Internal->ItemType].begin();
@@ -75,47 +73,47 @@ void vtkModelItemListIterator::Begin()
 int vtkModelItemListIterator::IsAtEnd()
 {
   if (!this->Root)
-    {
+  {
     vtkErrorMacro("Root is not set. Can not perform operation: IsAtEnd()");
     return 1;
-    }
-  if ( this->Root->Internal->Associations.find(this->Internal->ItemType) ==
-     this->Root->Internal->Associations.end() ||
-       this->Internal->ConceptualModelItemListIterator ==
-         this->Root->Internal->Associations[this->Internal->ItemType].end() )
-    {
+  }
+  if (this->Root->Internal->Associations.find(this->Internal->ItemType) ==
+      this->Root->Internal->Associations.end() ||
+    this->Internal->ConceptualModelItemListIterator ==
+      this->Root->Internal->Associations[this->Internal->ItemType].end())
+  {
     return 1;
-    }
+  }
   return 0;
 }
 
 void vtkModelItemListIterator::Next()
 {
   if (!this->Root)
-    {
+  {
     vtkErrorMacro("Root is not set. Can not perform operation: Next()");
     return;
-    }
+  }
 
   if (!this->IsAtEnd())
-    {
+  {
     this->Internal->ConceptualModelItemListIterator++;
     return;
-    }
+  }
 }
 
 vtkModelItem* vtkModelItemListIterator::GetCurrentItem()
 {
   if (!this->Root)
-    {
+  {
     vtkErrorMacro("Root is not set. Can not perform operation: GetRoot()");
     return 0;
-    }
+  }
 
   if (!this->IsAtEnd())
-    {
+  {
     return this->Internal->ConceptualModelItemListIterator->GetPointer();
-    }
+  }
 
   return 0;
 }
@@ -123,12 +121,9 @@ vtkModelItem* vtkModelItemListIterator::GetCurrentItem()
 int vtkModelItemListIterator::Size()
 {
   if (!this->Root)
-    {
+  {
     vtkErrorMacro("Root is not set. Can not perform operation: Size()");
     return 0;
-    }
-  return static_cast<int>
-    (this->Root->Internal->Associations[this->Internal->ItemType].size());
+  }
+  return static_cast<int>(this->Root->Internal->Associations[this->Internal->ItemType].size());
 }
-
-

@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkModelEntityGroupOperator.h"
 
 #include "vtkDiscreteModel.h"
@@ -34,35 +33,34 @@ vtkModelEntityGroupOperator::~vtkModelEntityGroupOperator()
 
 bool vtkModelEntityGroupOperator::AbleToOperate(vtkDiscreteModelWrapper* ModelWrapper)
 {
-  if(!ModelWrapper)
-    {
+  if (!ModelWrapper)
+  {
     vtkErrorMacro("Passed in a null model wrapper.");
     return 0;
-    }
+  }
   return this->Superclass::AbleToOperate(ModelWrapper->GetModel());
 }
 
 void vtkModelEntityGroupOperator::Operate(vtkDiscreteModelWrapper* ModelWrapper)
 {
-  if(!this->AbleToOperate(ModelWrapper))
-    {
+  if (!this->AbleToOperate(ModelWrapper))
+  {
     this->OperateSucceeded = 0;
     return;
-    }
+  }
 
   this->OperateSucceeded = this->Superclass::Operate(ModelWrapper->GetModel());
-  if(this->OperateSucceeded)
-    {
+  if (this->OperateSucceeded)
+  {
     ModelWrapper->Modified();
-    }
+  }
 
   return;
 }
 
 void vtkModelEntityGroupOperator::Build(vtkDiscreteModelWrapper* ModelWrapper)
 {
-  this->BuiltModelEntityGroupId =
-    this->Superclass::Build(ModelWrapper->GetModel());
+  this->BuiltModelEntityGroupId = this->Superclass::Build(ModelWrapper->GetModel());
 }
 
 void vtkModelEntityGroupOperator::Destroy(vtkDiscreteModelWrapper* ModelWrapper)
@@ -72,9 +70,8 @@ void vtkModelEntityGroupOperator::Destroy(vtkDiscreteModelWrapper* ModelWrapper)
 
 void vtkModelEntityGroupOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
   os << indent << "OperateSucceeded: " << this->OperateSucceeded << endl;
-  os << indent << "BuiltModelEntityGroupId: " <<
-    this->BuiltModelEntityGroupId << endl;
+  os << indent << "BuiltModelEntityGroupId: " << this->BuiltModelEntityGroupId << endl;
   os << indent << "DestroySucceeded: " << this->DestroySucceeded << endl;
 }

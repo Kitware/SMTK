@@ -17,14 +17,16 @@
 
 #ifdef SMTK_MSVC
 // Ignore symbol exposure warnings for STL classes.
-#pragma warning (disable : 4251)
+#pragma warning(disable : 4251)
 #endif
 
 #include <string>
 #include <vector>
 
-namespace smtk {
-  namespace common {
+namespace smtk
+{
+namespace common
+{
 
 /**\brief Obtain filesystem paths relevant to SMTK.
   *
@@ -44,8 +46,7 @@ public:
 
   static std::string currentDirectory();
   static bool directoryExists(const std::string& path);
-  static std::vector<std::string> pruneInvalidDirectories(
-    const std::vector<std::string>& src);
+  static std::vector<std::string> pruneInvalidDirectories(const std::vector<std::string>& src);
 
   std::string executableDirectory();
   std::string toplevelDirectory();
@@ -63,7 +64,7 @@ protected:
 
   bool update();
 
-  static std::string s_executable; // path to self (argv[0])
+  static std::string s_executable;     // path to self (argv[0])
   static std::string s_toplevelDirCfg; // configure-time install prefix
 
   // timestamps for marking cache:
@@ -77,7 +78,7 @@ protected:
   static std::vector<std::string> s_workerSearchPaths;
 };
 
-  } // namespace common
+} // namespace common
 } // namespace smtk
 
 #endif // __smtk_common_Paths_h

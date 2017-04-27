@@ -38,7 +38,7 @@ SMTK_THIRDPARTY_POST_INCLUDE
 using namespace smtk::model;
 
 vtkStandardNewMacro(vtkModelAuxiliaryGeometry);
-vtkCxxSetObjectMacro(vtkModelAuxiliaryGeometry,CachedOutput,vtkMultiBlockDataSet);
+vtkCxxSetObjectMacro(vtkModelAuxiliaryGeometry, CachedOutput, vtkMultiBlockDataSet);
 
 vtkModelAuxiliaryGeometry::vtkModelAuxiliaryGeometry()
 {
@@ -65,9 +65,9 @@ void vtkModelAuxiliaryGeometry::PrintSelf(ostream& os, vtkIndent indent)
 void vtkModelAuxiliaryGeometry::SetModelManager(smtk::model::ManagerPtr model)
 {
   if (this->ModelMgr == model)
-    {
+  {
     return;
-    }
+  }
   this->ModelMgr = model;
   this->Modified();
 }
@@ -89,18 +89,17 @@ void vtkModelAuxiliaryGeometry::Dirty()
 
 /// Generate a data object representing the entity. It may be polydata, image data, or a multiblock dataset.
 vtkSmartPointer<vtkDataObject> vtkModelAuxiliaryGeometry::GenerateRepresentationFromModel(
-  const smtk::model::AuxiliaryGeometry& aux,
-  bool genNormals)
+  const smtk::model::AuxiliaryGeometry& aux, bool genNormals)
 {
   std::string url;
   if (aux.isValid() && !(url = aux.url()).empty())
-    {
+  {
     return vtkModelMultiBlockSource::GenerateRepresentationFromURL(aux, genNormals);
-    }
+  }
   return vtkSmartPointer<vtkDataObject>();
 }
 
-template<typename T, typename U>
+template <typename T, typename U>
 vtkSmartPointer<T> ReadData(const smtk::model::AuxiliaryGeometry& auxGeom)
 {
   vtkNew<U> rdr;
@@ -112,10 +111,8 @@ vtkSmartPointer<T> ReadData(const smtk::model::AuxiliaryGeometry& auxGeom)
 }
 
 // Fill in the WholeExtent and spacing information from the image block
-int vtkModelAuxiliaryGeometry::RequestInformation (
-  vtkInformation * vtkNotUsed(request),
-  vtkInformationVector **vtkNotUsed(inputVector),
-  vtkInformationVector *outputVector)
+int vtkModelAuxiliaryGeometry::RequestInformation(vtkInformation* vtkNotUsed(request),
+  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
 {
   if (!this->ModelMgr || !this->AuxiliaryEntityID || !this->AuxiliaryEntityID[0])
   {
@@ -125,16 +122,14 @@ int vtkModelAuxiliaryGeometry::RequestInformation (
 
   smtk::common::UUID uid(this->AuxiliaryEntityID);
   smtk::model::AuxiliaryGeometry auxGeoEntity(this->ModelMgr, uid);
-  if(auxGeoEntity.isValid() && auxGeoEntity.hasUrl())
+  if (auxGeoEntity.isValid() && auxGeoEntity.hasUrl())
   {
-    std::string fileType = vtkModelMultiBlockSource::GetAuxiliaryFileType(
-                           auxGeoEntity);
-    if (fileType == "vti" || fileType == "dem"
-        || fileType == "tif" || fileType == "tiff")
+    std::string fileType = vtkModelMultiBlockSource::GetAuxiliaryFileType(auxGeoEntity);
+    if (fileType == "vti" || fileType == "dem" || fileType == "tif" || fileType == "tiff")
     {
       // add some temp parameters so that downstream filters could use them.
-      int tmpext[6] = {0, -1, 0, -1, 0, -1};
-      vtkInformation *outInfo = outputVector->GetInformationObject(0);
+      int tmpext[6] = { 0, -1, 0, -1, 0, -1 };
+      vtkInformation* outInfo = outputVector->GetInformationObject(0);
       outInfo->Set(vtkStreamingDemandDrivenPipeline::UPDATE_EXTENT(), tmpext, 6);
     }
   }
@@ -143,12 +138,10 @@ int vtkModelAuxiliaryGeometry::RequestInformation (
 }
 
 /// Generate polydata from an smtk::model with tessellation information.
-int vtkModelAuxiliaryGeometry::RequestData(
-  vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inInfo),
-  vtkInformationVector* outputVector)
+int vtkModelAuxiliaryGeometry::RequestData(vtkInformation* vtkNotUsed(request),
+  vtkInformationVector** vtkNotUsed(inInfo), vtkInformationVector* outputVector)
 {
-  vtkInformation *outInfo = outputVector->GetInformationObject(0);
+  vtkInformation* outInfo = outputVector->GetInformationObject(0);
   vtkMultiBlockDataSet* output = vtkMultiBlockDataSet::GetData(outputVector, 0);
   if (!output)
   {
@@ -164,15 +157,15 @@ int vtkModelAuxiliaryGeometry::RequestData(
   if (!this->AuxiliaryEntityID || !this->AuxiliaryEntityID[0])
   {
     vtkErrorMacro("No input AuxiliaryEntityID");
-    return 0;    
+    return 0;
   }
 
   smtk::common::UUID uid(this->AuxiliaryEntityID);
   smtk::model::AuxiliaryGeometry auxGeoEntity(this->ModelMgr, uid);
-  if(!auxGeoEntity.isValid() || !auxGeoEntity.hasUrl())
+  if (!auxGeoEntity.isValid() || !auxGeoEntity.hasUrl())
   {
     vtkErrorMacro("No valid AuxiliaryEntity");
-    return 0;        
+    return 0;
   }
 
   // Destroy the cache if the parameters have changed since it was generated.
@@ -182,11 +175,11 @@ int vtkModelAuxiliaryGeometry::RequestData(
   }
 
   if (!this->CachedOutput)
-  { 
+  {
     // See if the model has any instructions about
     // whether to generate surface normals.
     bool modelRequiresNormals = false;
-    if ( auxGeoEntity.owningModel().hasIntegerProperty("generate normals"))
+    if (auxGeoEntity.owningModel().hasIntegerProperty("generate normals"))
     {
       const IntegerList& prop(auxGeoEntity.owningModel().integerProperty("generate normals"));
       if (!prop.empty() && prop[0])
@@ -200,17 +193,17 @@ int vtkModelAuxiliaryGeometry::RequestData(
       this->GenerateRepresentationFromModel(auxGeoEntity, modelRequiresNormals);
     if (auxRep.GetPointer())
     {
-    vtkImageData* imgOut = vtkImageData::SafeDownCast(auxRep);
-    // If this is an image data, make the output info include its extent and spacing.
-    // This is important for downstream image filters to properly process the multiblock
-    if(imgOut)
+      vtkImageData* imgOut = vtkImageData::SafeDownCast(auxRep);
+      // If this is an image data, make the output info include its extent and spacing.
+      // This is important for downstream image filters to properly process the multiblock
+      if (imgOut)
       {
-      int ext[6];
-      double spacing[3];
-      imgOut->GetExtent(ext);
-      imgOut->GetSpacing(spacing);
-      outInfo->Set(vtkStreamingDemandDrivenPipeline::UPDATE_EXTENT(), ext, 6);
-      outInfo->Set(vtkDataObject::SPACING(), spacing, 3);
+        int ext[6];
+        double spacing[3];
+        imgOut->GetExtent(ext);
+        imgOut->GetSpacing(spacing);
+        outInfo->Set(vtkStreamingDemandDrivenPipeline::UPDATE_EXTENT(), ext, 6);
+        outInfo->Set(vtkDataObject::SPACING(), spacing, 3);
       }
 
       vtkNew<vtkMultiBlockDataSet> result;

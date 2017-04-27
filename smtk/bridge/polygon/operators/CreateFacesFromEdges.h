@@ -12,9 +12,12 @@
 
 #include "smtk/bridge/polygon/operators/CreateFaces.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
 class ActiveFragmentTree;
 class Neighborhood;
@@ -32,12 +35,11 @@ public:
   smtkDeclareModelOperator();
 
 protected:
-
   virtual bool populateEdgeMap();
 };
 
-    } // namespace polygon
-  } //namespace bridge
+} // namespace polygon
+} //namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_polygon_CreateFacesFromEdges_h

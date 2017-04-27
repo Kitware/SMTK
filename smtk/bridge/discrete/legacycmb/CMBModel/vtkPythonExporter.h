@@ -21,7 +21,7 @@
 #include "vtkCmbDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 #include <utility> // for pair in callback method for SMTK model
-#include <vector> // for callback method for SMTK Model
+#include <vector>  // for callback method for SMTK Model
 
 class vtkDiscreteModelWrapper;
 class vtkDiscreteModel;
@@ -29,23 +29,20 @@ class vtkDiscreteModel;
 class VTKCMBDISCRETEMODEL_EXPORT vtkPythonExporter : public vtkObject
 {
 public:
-  static vtkPythonExporter * New();
-  vtkTypeMacro(vtkPythonExporter,vtkObject);
+  static vtkPythonExporter* New();
+  vtkTypeMacro(vtkPythonExporter, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // This method is for standard paraview client-server apps
-  virtual void Operate(vtkDiscreteModelWrapper* modelWrapper,
-                       const char* smtkContents);
+  virtual void Operate(vtkDiscreteModelWrapper* modelWrapper, const char* smtkContents);
 
   // This method is for *legacy* paraview client-server apps
-  virtual void Operate(vtkDiscreteModelWrapper* modelWrapper,
-                       const char* smtkContents,
-                       const char* exportContents);
+  virtual void Operate(
+    vtkDiscreteModelWrapper* modelWrapper, const char* smtkContents, const char* exportContents);
 
   // This method is for standalone & test apps
-  virtual void Operate(vtkDiscreteModel* model,
-                       smtk::attribute::Manager& simulationAttributes,
-                       smtk::attribute::Manager& exportAttributes);
+  virtual void Operate(vtkDiscreteModel* model, smtk::attribute::Manager& simulationAttributes,
+    smtk::attribute::Manager& exportAttributes);
 
   // Description:
   // Returns success (1) or failue (0) for Operation.
@@ -73,13 +70,13 @@ protected:
   // Check to see if everything is properly set for the operator.
   virtual bool AbleToOperate(vtkDiscreteModelWrapper* modelWrapper);
 
-  char *Script;
-  char *PythonPath;
-  char *PythonExecutable;
+  char* Script;
+  char* PythonPath;
+  char* PythonExecutable;
 
 private:
-  vtkPythonExporter(const vtkPythonExporter&);  // Not implemented.
-  void operator=(const vtkPythonExporter&);  // Not implemented.
+  vtkPythonExporter(const vtkPythonExporter&); // Not implemented.
+  void operator=(const vtkPythonExporter&);    // Not implemented.
 
   // Description:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).

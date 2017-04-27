@@ -22,25 +22,27 @@
 
 #include <algorithm>
 
-#include <ctype.h> // for isdigit
+#include <ctype.h>  // for isdigit
 #include <stdlib.h> // for atof
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 static bool SpecialEntityNameSort(const DescriptivePhrasePtr& a, const DescriptivePhrasePtr& b)
 {
   static const int sortOrder[] = {
-     1, // ENTITY_LIST
-     0, // ENTITY_SUMMARY
-     2, // ARRANGEMENT_LIST
-     3, // ATTRIBUTE_LIST
-     4, // MODEL_INCLUDES_ENTITY
-     5, // MODEL_EMBEDDED_IN_MODEL
-     6, // CELL_INCLUDES_CELL
-     7, // CELL_EMBEDDED_IN_CELL
-     8, // CELL_HAS_SHELL
-     9, // CELL_HAS_USE
+    1,  // ENTITY_LIST
+    0,  // ENTITY_SUMMARY
+    2,  // ARRANGEMENT_LIST
+    3,  // ATTRIBUTE_LIST
+    4,  // MODEL_INCLUDES_ENTITY
+    5,  // MODEL_EMBEDDED_IN_MODEL
+    6,  // CELL_INCLUDES_CELL
+    7,  // CELL_EMBEDDED_IN_CELL
+    8,  // CELL_HAS_SHELL
+    9,  // CELL_HAS_USE
     10, // SHELL_HAS_CELL
     11, // SHELL_HAS_USE
     12, // USE_HAS_CELL
@@ -63,34 +65,34 @@ static bool SpecialEntityNameSort(const DescriptivePhrasePtr& a, const Descripti
   DescriptivePhraseType pta = a->phraseType();
   DescriptivePhraseType ptb = b->phraseType();
   if (pta != ptb)
-    {
-      return sortOrder[pta] < sortOrder[ptb];
-    }
+  {
+    return sortOrder[pta] < sortOrder[ptb];
+  }
 
   // II. Sort by entity type/dimension
   // II.a. Entity type
   BitFlags eta = a->relatedEntity().entityFlags() & ENTITY_MASK;
   BitFlags etb = b->relatedEntity().entityFlags() & ENTITY_MASK;
   if (eta != etb)
-    {
+  {
     switch (eta)
-      {
-    case CELL_ENTITY:       // 0x0100
-      return etb == MODEL_ENTITY ? false : true;
-    case USE_ENTITY:        // 0x0200
-      return etb == MODEL_ENTITY || etb < USE_ENTITY ? false : true;
-    case SHELL_ENTITY:      // 0x0400
-      return etb == MODEL_ENTITY || etb < SHELL_ENTITY ? false : true;
-    case GROUP_ENTITY:      // 0x0800
-      return etb == MODEL_ENTITY || etb < SHELL_ENTITY ? false : true;
-    case MODEL_ENTITY:      // 0x1000
-      return true;
-    case INSTANCE_ENTITY:   // 0x2000
-      return false;
-    default:
-      return eta < etb ? true : false;
-      }
+    {
+      case CELL_ENTITY: // 0x0100
+        return etb == MODEL_ENTITY ? false : true;
+      case USE_ENTITY: // 0x0200
+        return etb == MODEL_ENTITY || etb < USE_ENTITY ? false : true;
+      case SHELL_ENTITY: // 0x0400
+        return etb == MODEL_ENTITY || etb < SHELL_ENTITY ? false : true;
+      case GROUP_ENTITY: // 0x0800
+        return etb == MODEL_ENTITY || etb < SHELL_ENTITY ? false : true;
+      case MODEL_ENTITY: // 0x1000
+        return true;
+      case INSTANCE_ENTITY: // 0x2000
+        return false;
+      default:
+        return eta < etb ? true : false;
     }
+  }
 
   // II.b. Dimension
   eta = a->relatedEntity().entityFlags() & ANY_DIMENSION;
@@ -118,9 +120,12 @@ static bool SpecialEntityNameSort(const DescriptivePhrasePtr& a, const Descripti
   // Both ta & tb have some character present and different.
   bool da = isdigit(ta[i]) ? true : false;
   bool db = isdigit(tb[i]) ? true : false;
-  if ( da && !db) return true; // digits come before other things
-  if (!da &&  db) return false; // non-digits come after digits
-  if (!da && !db) return ta[i] < tb[i];
+  if (da && !db)
+    return true; // digits come before other things
+  if (!da && db)
+    return false; // non-digits come after digits
+  if (!da && !db)
+    return ta[i] < tb[i];
   // Now, both ta and tb differ with some numeric value.
   // Convert to a number and compare the numbers.
   double na = atof(ta.substr(i).c_str());
@@ -133,44 +138,38 @@ EntityTypeSubphrases::EntityTypeSubphrases()
   m_directlimit = 100;
 }
 
-DescriptivePhrases EntityTypeSubphrases::subphrases(
-  DescriptivePhrase::Ptr src)
+DescriptivePhrases EntityTypeSubphrases::subphrases(DescriptivePhrase::Ptr src)
 {
   DescriptivePhrases result;
   bool shouldSort(true);
   switch (src->phraseType())
-    {
-  case ENTITY_SUMMARY:
-    this->childrenOfEntity(
-      dynamic_pointer_cast<EntityPhrase>(src), result);
-    shouldSort = false; // use the order when calling internal_createEntityList()
-    break;
-  case ENTITY_LIST:
-    this->childrenOfEntityList(
-      dynamic_pointer_cast<EntityListPhrase>(src), result);
-    break;
-  case FLOAT_PROPERTY_LIST:
-  case STRING_PROPERTY_LIST:
-  case INTEGER_PROPERTY_LIST:
-    this->childrenOfPropertyList(
-      dynamic_pointer_cast<PropertyListPhrase>(src), result);
-  case MESH_SUMMARY:
-    this->childrenOfMesh(
-      dynamic_pointer_cast<MeshPhrase>(src), result);
-    break;
-  case MESH_LIST:
-    this->childrenOfMeshList(
-      dynamic_pointer_cast<MeshListPhrase>(src), result);
-    break;
-  default:
-    break;
-    }
+  {
+    case ENTITY_SUMMARY:
+      this->childrenOfEntity(dynamic_pointer_cast<EntityPhrase>(src), result);
+      shouldSort = false; // use the order when calling internal_createEntityList()
+      break;
+    case ENTITY_LIST:
+      this->childrenOfEntityList(dynamic_pointer_cast<EntityListPhrase>(src), result);
+      break;
+    case FLOAT_PROPERTY_LIST:
+    case STRING_PROPERTY_LIST:
+    case INTEGER_PROPERTY_LIST:
+      this->childrenOfPropertyList(dynamic_pointer_cast<PropertyListPhrase>(src), result);
+    case MESH_SUMMARY:
+      this->childrenOfMesh(dynamic_pointer_cast<MeshPhrase>(src), result);
+      break;
+    case MESH_LIST:
+      this->childrenOfMeshList(dynamic_pointer_cast<MeshListPhrase>(src), result);
+      break;
+    default:
+      break;
+  }
 
   // Now sort the list
   if (shouldSort)
-    {
-      std::sort(result.begin(), result.end(), SpecialEntityNameSort);
-    }
+  {
+    std::sort(result.begin(), result.end(), SpecialEntityNameSort);
+  }
 
   return result;
 }
@@ -179,19 +178,19 @@ bool EntityTypeSubphrases::shouldOmitProperty(
   DescriptivePhrase::Ptr parent, PropertyType ptype, const std::string& pname) const
 {
   if (ptype == STRING_PROPERTY)
-    {
+  {
     if (pname == "name")
       return true;
-    }
+  }
 
   if (ptype == FLOAT_PROPERTY)
-    {
+  {
     if (pname == "color")
       return true;
-    }
+  }
 
   if (ptype == INTEGER_PROPERTY)
-    {
+  {
     if (pname == "visible")
       return true;
     else if (pname == "block_index")
@@ -207,41 +206,35 @@ bool EntityTypeSubphrases::shouldOmitProperty(
     else if (pname == SMTK_MESH_GEN_PROP)
       return true;
     else if (parent)
-      {
+    {
       if (parent->relatedEntity().isModel())
-        {
+      {
         if (pname.find("_counters") != std::string::npos)
           return true;
         else if (pname.find(SMTK_GEOM_STYLE_PROP) != std::string::npos)
           return true;
-        }
+      }
       else if (parent->relatedEntity().isCellEntity())
-        {
+      {
         if (pname.find(SMTK_TESS_GEN_PROP) != std::string::npos)
           return true;
-        }
       }
     }
+  }
   return false;
 }
 
 /// Recursively find all the cell entities
-inline void internal_findEntities(
-  const EntityRef& root,
-  EntityRefs& vols, EntityRefs& faces, EntityRefs& edges,
-  EntityRefs& verts, EntityRefs& aux,
-  std::set<smtk::model::EntityRef>& touched)
+inline void internal_findEntities(const EntityRef& root, EntityRefs& vols, EntityRefs& faces,
+  EntityRefs& edges, EntityRefs& verts, EntityRefs& aux, std::set<smtk::model::EntityRef>& touched)
 {
-  EntityRefArray children =
-    (root.isModel() ?
-     root.as<Model>().cellsAs<EntityRefArray>() :
-     (root.isCellEntity() ?
-      root.as<CellEntity>().boundingCellsAs<EntityRefArray>() :
-      (root.isGroup() ?
-       root.as<Group>().members<EntityRefArray>() :
-       EntityRefArray())));
+  EntityRefArray children = (root.isModel()
+      ? root.as<Model>().cellsAs<EntityRefArray>()
+      : (root.isCellEntity()
+            ? root.as<CellEntity>().boundingCellsAs<EntityRefArray>()
+            : (root.isGroup() ? root.as<Group>().members<EntityRefArray>() : EntityRefArray())));
   if (root.isModel())
-    {
+  {
     // Make sure groups are handled last to avoid unexpected "parents" in entityrefMap.
     EntityRefArray tmp;
     tmp = root.as<Model>().submodelsAs<EntityRefArray>();
@@ -250,64 +243,61 @@ inline void internal_findEntities(
     children.insert(children.end(), tmp.begin(), tmp.end());
     AuxiliaryGeometries freeAuxGeom = root.as<Model>().auxiliaryGeometry();
     children.insert(children.end(), freeAuxGeom.begin(), freeAuxGeom.end());
-    }
+  }
   for (EntityRefArray::const_iterator it = children.begin(); it != children.end(); ++it)
-    {
+  {
     if (touched.find(*it) == touched.end())
-      {
+    {
       touched.insert(*it);
       if (it->isVolume())
-        {
+      {
         vols.insert(*it);
-        }
-      else if(it->isFace())
-        {
+      }
+      else if (it->isFace())
+      {
         faces.insert(*it);
-        }
-      else if(it->isEdge())
-        {
+      }
+      else if (it->isEdge())
+      {
         edges.insert(*it);
-        }
-      else if(it->isVertex())
-        {
+      }
+      else if (it->isVertex())
+      {
         verts.insert(*it);
-        }
+      }
       else if (it->isAuxiliaryGeometry())
-        {
+      {
         aux.insert(*it);
-        }
+      }
 
       internal_findEntities(*it, vols, faces, edges, verts, aux, touched);
-      }
     }
+  }
 }
 
 inline void internal_createEntityList(
-  const EntityRefs& ents, EntityPhrase::Ptr phr,
-  DescriptivePhrases& result)
+  const EntityRefs& ents, EntityPhrase::Ptr phr, DescriptivePhrases& result)
 {
-  if(ents.size() > 0)
-    result.push_back(
-      EntityListPhrase::create()->setup(ents, phr));
+  if (ents.size() > 0)
+    result.push_back(EntityListPhrase::create()->setup(ents, phr));
 }
 
-void EntityTypeSubphrases::childrenOfEntity(
-  EntityPhrase::Ptr phr, DescriptivePhrases& result)
+void EntityTypeSubphrases::childrenOfEntity(EntityPhrase::Ptr phr, DescriptivePhrases& result)
 {
   // II. Add arrangement information
   // This is dependent on both the entity type and the ArrangementKind
   // so we cast to different entityref types and use their accessors to
   // obtain lists of related entities.
   EntityRef ent(phr->relatedEntity());
-    {
-//    UseEntity uent = ent.as<UseEntity>();
-//    CellEntity cent = ent.as<CellEntity>();
-//    ShellEntity sent = ent.as<ShellEntity>();
+  {
+    //    UseEntity uent = ent.as<UseEntity>();
+    //    CellEntity cent = ent.as<CellEntity>();
+    //    ShellEntity sent = ent.as<ShellEntity>();
     Group gent = ent.as<Group>();
     Model ment = ent.as<Model>();
     Instance ient = ent.as<Instance>();
     SessionRef sess = ent.as<SessionRef>();
-/*
+    /*
     if (uent.isValid())
       {
       this->cellOfUse(phr, uent, result);
@@ -325,12 +315,12 @@ void EntityTypeSubphrases::childrenOfEntity(
       }
 */
     if (gent.isValid())
-      {
+    {
       this->membersOfGroup(phr, gent, result);
-      }
+    }
     // only expand active model
     else if (ment.isValid() && (ment.entity() == this->activeModel().entity()))
-      {
+    {
       this->freeSubmodelsOfModel(phr, ment, result);
       this->freeGroupsInModel(phr, ment, result);
 
@@ -344,16 +334,16 @@ void EntityTypeSubphrases::childrenOfEntity(
       internal_createEntityList(aux, phr, result);
 
       this->meshesOfModel(phr, ment, result);
-      }
-    else if (ient.isValid())
-      {
-      this->prototypeOfInstance(phr, ient, result);
-      }
-    else if (sess.isValid())
-      {
-      this->modelsOfSession(phr, sess, result);
-      }
     }
+    else if (ient.isValid())
+    {
+      this->prototypeOfInstance(phr, ient, result);
+    }
+    else if (sess.isValid())
+    {
+      this->modelsOfSession(phr, sess, result);
+    }
+  }
   // Things common to all entities
   this->instancesOfEntity(phr, ent, result);
   // III. Add attribute information
@@ -374,8 +364,7 @@ void EntityTypeSubphrases::childrenOfPropertyList(
   this->propertiesOfPropertyList(plist, plist->relatedPropertyType(), result);
 }
 
-void EntityTypeSubphrases::childrenOfMesh(
-  MeshPhrase::Ptr meshphr, DescriptivePhrases& result)
+void EntityTypeSubphrases::childrenOfMesh(MeshPhrase::Ptr meshphr, DescriptivePhrases& result)
 {
   this->meshsetsOfMesh(meshphr, result);
 }
@@ -386,5 +375,5 @@ void EntityTypeSubphrases::childrenOfMeshList(
   this->meshesOfMeshList(meshlist, result);
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

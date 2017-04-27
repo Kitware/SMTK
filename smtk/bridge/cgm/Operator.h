@@ -25,9 +25,12 @@
 class RefEntity;
 class ToolDataUser;
 
-namespace smtk {
-  namespace bridge {
-    namespace cgm {
+namespace smtk
+{
+namespace bridge
+{
+namespace cgm
+{
 
 class Session;
 
@@ -44,19 +47,20 @@ protected:
   ToolDataUser* cgmData(const smtk::model::EntityRef& smtkEntity);
   RefEntity* cgmEntity(const smtk::model::EntityRef& smtkEntity);
 
-  template<typename T>
+  template <typename T>
   T cgmEntityAs(const smtk::model::EntityRef& smtkEntity);
 
-  template<typename T, typename U>
-  bool cgmEntities(
-    const T& smtkContainer, DLIList<U>& cgmContainer, int keepInputs, smtk::model::EntityRefArray& expunged);
+  template <typename T, typename U>
+  bool cgmEntities(const T& smtkContainer, DLIList<U>& cgmContainer, int keepInputs,
+    smtk::model::EntityRefArray& expunged);
 
-  template<typename T>
-  void addEntitiesToResult(DLIList<T>& cgmContainer, smtk::model::OperatorResult result, ResultEntityOrigin origin = UNKNOWN);
+  template <typename T>
+  void addEntitiesToResult(DLIList<T>& cgmContainer, smtk::model::OperatorResult result,
+    ResultEntityOrigin origin = UNKNOWN);
 };
 
 /// A convenience method for returning the CGM counterpart of an SMTK entity already cast to a subtype.
-template<typename T>
+template <typename T>
 T Operator::cgmEntityAs(const smtk::model::EntityRef& smtkEntity)
 {
   return dynamic_cast<T>(this->cgmEntity(smtkEntity));
@@ -73,38 +77,39 @@ T Operator::cgmEntityAs(const smtk::model::EntityRef& smtkEntity)
   * If \a keepInputs is negative, then all but the first entry are removed and
   * added to \a expunged.
   */
-template<typename T, typename U>
-bool Operator::cgmEntities(const T& smtkContainer, DLIList<U>& cgmContainer, int keepInputs, smtk::model::EntityRefArray& expunged)
+template <typename T, typename U>
+bool Operator::cgmEntities(const T& smtkContainer, DLIList<U>& cgmContainer, int keepInputs,
+  smtk::model::EntityRefArray& expunged)
 {
   bool ok = true;
   typename T::const_iterator it;
   U cgmEntity;
   for (it = smtkContainer.begin(); it != smtkContainer.end(); ++it)
-    {
+  {
     cgmEntity = this->cgmEntityAs<U>(*it);
     if (cgmEntity)
-      {
+    {
       cgmContainer.append(cgmEntity);
-      }
+    }
     else
-      {
+    {
       ok = false;
-      smtkInfoMacro(log(),
-        "Could not find CGM counterpart for SMTK entity \""
-        << it->name() << "\" (" << it->flagSummary() << ").");
-      }
+      smtkInfoMacro(log(), "Could not find CGM counterpart for SMTK entity \""
+          << it->name() << "\" (" << it->flagSummary() << ").");
+    }
 
     if (!keepInputs || (keepInputs < 0 && it != smtkContainer.begin()))
-      {
+    {
       this->manager()->eraseModel(*it);
       expunged.push_back(*it);
-      }
     }
+  }
   return ok;
 }
 
-template<typename T>
-void Operator::addEntitiesToResult(DLIList<T>& cgmContainer, smtk::model::OperatorResult result, ResultEntityOrigin origin)
+template <typename T>
+void Operator::addEntitiesToResult(
+  DLIList<T>& cgmContainer, smtk::model::OperatorResult result, ResultEntityOrigin origin)
 {
   Session* session = this->cgmSession();
   int numBodiesOut = cgmContainer.size();
@@ -113,37 +118,35 @@ void Operator::addEntitiesToResult(DLIList<T>& cgmContainer, smtk::model::Operat
   smtk::model::EntityRefArray modArr;
 
   for (int i = 0; i < numBodiesOut; ++i)
-    {
+  {
     T cgmEnt = cgmContainer.get_and_step();
     if (!cgmEnt)
       continue;
 
     smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(cgmEnt, true);
     smtk::common::UUID entId = refId->entityId();
-    bool isNew =
-      (origin == CREATED ? true :
-       (origin == MODIFIED ? false :
-        (this->manager()->findEntity(entId, false) ? false : true)));
+    bool isNew = (origin == CREATED
+        ? true
+        : (origin == MODIFIED ? false
+                              : (this->manager()->findEntity(entId, false) ? false : true)));
     smtk::model::EntityRef smtkEntry(this->manager(), entId);
     if (session->transcribe(smtkEntry, smtk::model::SESSION_EVERYTHING, false))
-      {
+    {
       if (isNew)
         creArr.push_back(smtkEntry);
       else
         modArr.push_back(smtkEntry);
-      }
     }
-  smtk::attribute::ModelEntityItem::Ptr entCreOut =
-    result->findModelEntity("created");
-  smtk::attribute::ModelEntityItem::Ptr entModOut =
-    result->findModelEntity("modified");
+  }
+  smtk::attribute::ModelEntityItem::Ptr entCreOut = result->findModelEntity("created");
+  smtk::attribute::ModelEntityItem::Ptr entModOut = result->findModelEntity("modified");
 
   entModOut->setValues(modArr.begin(), modArr.end());
   entCreOut->setValues(creArr.begin(), creArr.end());
 }
 
-    } // namespace cgm
-  } // namespace bridge
+} // namespace cgm
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_cgm_Operator_h

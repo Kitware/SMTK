@@ -37,10 +37,10 @@
 using namespace smtk::model;
 
 vtkStandardNewMacro(vtkModelRepresentation);
-vtkCxxSetObjectMacro(vtkModelRepresentation,Actor,vtkActor);
-vtkCxxSetObjectMacro(vtkModelRepresentation,ApplyColors,vtkApplyColors);
-vtkCxxSetObjectMacro(vtkModelRepresentation,Mapper,vtkPolyDataMapper);
-vtkCxxSetObjectMacro(vtkModelRepresentation,Transform,vtkTransformFilter);
+vtkCxxSetObjectMacro(vtkModelRepresentation, Actor, vtkActor);
+vtkCxxSetObjectMacro(vtkModelRepresentation, ApplyColors, vtkApplyColors);
+vtkCxxSetObjectMacro(vtkModelRepresentation, Mapper, vtkPolyDataMapper);
+vtkCxxSetObjectMacro(vtkModelRepresentation, Transform, vtkTransformFilter);
 
 vtkModelRepresentation::vtkModelRepresentation()
 {
@@ -124,10 +124,8 @@ void vtkModelRepresentation::ApplyViewTheme(vtkViewTheme* theme)
 }
 
 /// Generate polydata from an smtk::model with tessellation information.
-int vtkModelRepresentation::RequestData(
-  vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inInfo),
-  vtkInformationVector* vtkNotUsed(outInfo))
+int vtkModelRepresentation::RequestData(vtkInformation* vtkNotUsed(request),
+  vtkInformationVector** vtkNotUsed(inInfo), vtkInformationVector* vtkNotUsed(outInfo))
 {
   this->Transform->SetInputConnection(0, this->GetInternalOutputPort());
   this->ApplyColors->SetInputConnection(1, this->GetInternalAnnotationOutputPort());
@@ -145,10 +143,11 @@ bool vtkModelRepresentation::AddToView(vtkView* view)
 {
   vtkRenderView* rview = vtkRenderView::SafeDownCast(view);
   if (!rview)
-    {
-    vtkErrorMacro(<< "Cannot add to \"" << view->GetClassName() << "\"; must add to vtkRenderView.");
+  {
+    vtkErrorMacro(<< "Cannot add to \"" << view->GetClassName()
+                  << "\"; must add to vtkRenderView.");
     return false;
-    }
+  }
   rview->GetRenderer()->AddActor(this->Actor);
   return true;
 }
@@ -157,10 +156,11 @@ bool vtkModelRepresentation::RemoveFromView(vtkView* view)
 {
   vtkRenderView* rview = vtkRenderView::SafeDownCast(view);
   if (!rview)
-    {
-    vtkErrorMacro(<< "Cannot remove from \"" << view->GetClassName() << "\"; must remove from vtkRenderView.");
+  {
+    vtkErrorMacro(<< "Cannot remove from \"" << view->GetClassName()
+                  << "\"; must remove from vtkRenderView.");
     return false;
-    }
+  }
   rview->GetRenderer()->RemoveActor(this->Actor);
   return true;
 }
@@ -175,90 +175,85 @@ vtkSelection* vtkModelRepresentation::ConvertSelection(vtkView* view, vtkSelecti
   return selection;
   */
 
-  vtkSmartPointer<vtkSelection> propSelection =
-    vtkSmartPointer<vtkSelection>::New();
+  vtkSmartPointer<vtkSelection> propSelection = vtkSmartPointer<vtkSelection>::New();
 
   // Extract the selection for the right prop
   if (selection->GetNumberOfNodes() > 1)
-    {
+  {
     for (unsigned int i = 0; i < selection->GetNumberOfNodes(); i++)
-      {
+    {
       vtkSelectionNode* node = selection->GetNode(i);
-      vtkProp* prop = vtkProp::SafeDownCast(
-        node->GetProperties()->Get(vtkSelectionNode::PROP()));
+      vtkProp* prop = vtkProp::SafeDownCast(node->GetProperties()->Get(vtkSelectionNode::PROP()));
       if (prop == this->Actor)
-        {
-        vtkSmartPointer<vtkSelectionNode> nodeCopy =
-          vtkSmartPointer<vtkSelectionNode>::New();
+      {
+        vtkSmartPointer<vtkSelectionNode> nodeCopy = vtkSmartPointer<vtkSelectionNode>::New();
         nodeCopy->ShallowCopy(node);
         nodeCopy->GetProperties()->Remove(vtkSelectionNode::PROP());
         propSelection->AddNode(nodeCopy);
-        }
       }
     }
+  }
   else
-    {
+  {
     propSelection->ShallowCopy(selection);
-    }
+  }
 
   // Start with an empty selection
   vtkSelection* converted = vtkSelection::New();
   vtkSmartPointer<vtkSelectionNode> node = vtkSmartPointer<vtkSelectionNode>::New();
   node->SetContentType(this->SelectionType);
   node->SetFieldType(vtkSelectionNode::CELL);
-  vtkSmartPointer<vtkIdTypeArray> empty =
-    vtkSmartPointer<vtkIdTypeArray>::New();
+  vtkSmartPointer<vtkIdTypeArray> empty = vtkSmartPointer<vtkIdTypeArray>::New();
   node->SetSelectionList(empty);
   // Convert to the correct type of selection
   if (this->GetInput())
-    {
+  {
     vtkDataObject* obj = this->GetInput();
     if (obj)
-      {
+    {
       vtkSelection* index = vtkConvertSelection::ToSelectionType(
-        propSelection, obj, this->SelectionType,
-        this->SelectionArrayNames);
+        propSelection, obj, this->SelectionType, this->SelectionArrayNames);
 
       // If we have a model and pedigree Ids (UUIDs), then
       // subset the selected UUIDs using our SelectionMask:
       bool emptyResult = false;
       vtkSelectionNode* snode = index->GetNode(0);
       if (this->Model && snode && snode->GetContentType() == vtkSelectionNode::PEDIGREEIDS)
-        {
-        vtkStringArray* uuids = vtkStringArray::SafeDownCast(
-          snode->GetSelectionData()->GetAbstractArray(0));
+      {
+        vtkStringArray* uuids =
+          vtkStringArray::SafeDownCast(snode->GetSelectionData()->GetAbstractArray(0));
         if (uuids)
-          {
+        {
           vtkIdType jj = 0;
           for (vtkIdType ii = 0; ii < uuids->GetNumberOfValues(); ++ii)
-            {
+          {
             smtk::common::UUID uid(uuids->GetValue(ii));
             smtk::model::Entity* entity = this->Model->findEntity(uid);
             bool keepId = true;
             if (entity && (entity->entityFlags() & this->SelectionMask) == 0)
-              {
+            {
               keepId = false;
-              }
+            }
             if (keepId && jj < ii)
-              {
+            {
               uuids->SetValue(jj, uid.toString());
               ++jj;
-              }
             }
+          }
           uuids->SetNumberOfValues(jj);
           emptyResult = (jj == 0);
-          }
         }
+      }
 
       // If anything ends up being selected, update our output:
       if (!emptyResult)
-        {
+      {
         converted->AddNode(node);
         converted->ShallowCopy(index);
         index->Delete();
-        }
       }
     }
+  }
 
   return converted;
 }

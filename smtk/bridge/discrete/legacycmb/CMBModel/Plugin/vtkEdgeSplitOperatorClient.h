@@ -29,8 +29,8 @@ class vtkSMProxy;
 class VTK_EXPORT vtkEdgeSplitOperatorClient : public vtkEdgeSplitOperatorBase
 {
 public:
-  static vtkEdgeSplitOperatorClient * New();
-  vtkTypeMacro(vtkEdgeSplitOperatorClient,vtkEdgeSplitOperatorBase);
+  static vtkEdgeSplitOperatorClient* New();
+  vtkTypeMacro(vtkEdgeSplitOperatorClient, vtkEdgeSplitOperatorBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -43,8 +43,8 @@ protected:
   virtual ~vtkEdgeSplitOperatorClient();
 
 private:
-  vtkEdgeSplitOperatorClient(const vtkEdgeSplitOperatorClient&);  // Not implemented.
-  void operator=(const vtkEdgeSplitOperatorClient&);  // Not implemented.
+  vtkEdgeSplitOperatorClient(const vtkEdgeSplitOperatorClient&); // Not implemented.
+  void operator=(const vtkEdgeSplitOperatorClient&);             // Not implemented.
 };
 
 #endif

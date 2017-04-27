@@ -17,7 +17,7 @@
 #ifndef __vtkCMBMeshServerJobSubmitter_h
 #define __vtkCMBMeshServerJobSubmitter_h
 
-#include "cmbSystemConfig.h" //needed for warning suppression
+#include "cmbSystemConfig.h"           //needed for warning suppression
 #include "vtkCmbDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 #include <string> //needed for member variables
@@ -29,9 +29,9 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkCMBMeshServerJobSubmitter : public vtkObject
 public:
   //construction of this class will spawn
   //the CMBMeshServer
-  vtkTypeMacro(vtkCMBMeshServerJobSubmitter,vtkObject);
+  vtkTypeMacro(vtkCMBMeshServerJobSubmitter, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
-  static vtkCMBMeshServerJobSubmitter *New();
+  static vtkCMBMeshServerJobSubmitter* New();
 
   // Description:
   //Submits a job to the remus server, using the model we are operating
@@ -64,14 +64,13 @@ public:
   void SetSubmission(const char* submission);
   const char* GetSubmission() const { return this->Submission.c_str(); }
 
-
 protected:
   vtkCMBMeshServerJobSubmitter();
   ~vtkCMBMeshServerJobSubmitter();
 
 private:
-  vtkCMBMeshServerJobSubmitter(const vtkCMBMeshServerJobSubmitter&);  // Not implemented.
-  void operator=(const vtkCMBMeshServerJobSubmitter&);  // Not implemented.
+  vtkCMBMeshServerJobSubmitter(const vtkCMBMeshServerJobSubmitter&); // Not implemented.
+  void operator=(const vtkCMBMeshServerJobSubmitter&);               // Not implemented.
 
   std::string Endpoint;
   std::string Submission;

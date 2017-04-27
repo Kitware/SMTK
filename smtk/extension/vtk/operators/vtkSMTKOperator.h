@@ -24,8 +24,8 @@
 class VTKSMTKOPERATORSEXT_EXPORT vtkSMTKOperator : public vtkObject
 {
 public:
-  static vtkSMTKOperator * New();
-  vtkTypeMacro(vtkSMTKOperator,vtkObject);
+  static vtkSMTKOperator* New();
+  vtkTypeMacro(vtkSMTKOperator, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   //Description:
@@ -45,9 +45,10 @@ protected:
   vtkSMTKOperator();
   virtual ~vtkSMTKOperator();
 
-  smtk::model::WeakOperatorPtr  m_smtkOp;
+  smtk::model::WeakOperatorPtr m_smtkOp;
+
 private:
-  vtkSMTKOperator(const vtkSMTKOperator&);  // Not implemented.
+  vtkSMTKOperator(const vtkSMTKOperator&); // Not implemented.
   void operator=(const vtkSMTKOperator&);  // Not implemented.
 };
 

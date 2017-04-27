@@ -7,10 +7,10 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/io/SaveJSON.h"
-#include "smtk/io/SaveJSON.txx"
 #include "smtk/io/LoadJSON.h"
 #include "smtk/io/Logger.h"
+#include "smtk/io/SaveJSON.h"
+#include "smtk/io/SaveJSON.txx"
 
 #include "smtk/model/Manager.h"
 
@@ -37,16 +37,12 @@ void testLoggerSerialization1()
   smtk::io::Logger log2;
 
   cJSON* array = cJSON_CreateArray();
-  test(
-    smtk::io::SaveJSON::forLog(array, log) == 0,
-    "Exporting an empty log should return 0");
-  test(
-    smtk::io::LoadJSON::ofLog(array, log2) == 0,
-    "Importing an empty log should return 0");
+  test(smtk::io::SaveJSON::forLog(array, log) == 0, "Exporting an empty log should return 0");
+  test(smtk::io::LoadJSON::ofLog(array, log2) == 0, "Importing an empty log should return 0");
   cJSON_Delete(array);
 
-  test(log2.numberOfRecords() == log.numberOfRecords(),
-    "Log did not survive JSON round trip intact.");
+  test(
+    log2.numberOfRecords() == log.numberOfRecords(), "Log did not survive JSON round trip intact.");
 }
 
 void testLoggerSerialization2()
@@ -60,23 +56,19 @@ void testLoggerSerialization2()
 
   std::cout << "Log1 is\n" << log.convertToString() << "\n";
   cJSON* array = cJSON_CreateArray();
-  test(
-    smtk::io::SaveJSON::forLog(array, log, 0, log.numberOfRecords() + 100) ==
-    static_cast<int>(log.numberOfRecords()),
+  test(smtk::io::SaveJSON::forLog(array, log, 0, log.numberOfRecords() + 100) ==
+      static_cast<int>(log.numberOfRecords()),
     "Exporting too many records should export those we have.");
-  test(
-    smtk::io::LoadJSON::ofLog(array, log2) ==
-    static_cast<int>(log.numberOfRecords()),
+  test(smtk::io::LoadJSON::ofLog(array, log2) == static_cast<int>(log.numberOfRecords()),
     "Importing what we exported produced the wrong number of records.");
   std::cout << "Log2 is\n" << log2.convertToString() << "\n";
   cJSON_Delete(array);
 
-  test(log2.numberOfRecords() == log.numberOfRecords(),
-    "Log did not survive JSON round trip intact.");
+  test(
+    log2.numberOfRecords() == log.numberOfRecords(), "Log did not survive JSON round trip intact.");
 }
 
-void testExportEntityRef(
-  const EntityRefs& entities, IteratorStyle relations, int correctCount)
+void testExportEntityRef(const EntityRefs& entities, IteratorStyle relations, int correctCount)
 {
   cJSON* json = cJSON_CreateObject();
   SaveJSON::forEntities(json, entities, relations, JSON_ENTITIES);
@@ -84,17 +76,13 @@ void testExportEntityRef(
   for (cJSON* child = json->child; child; child = child->next)
     ++numRecords;
   if (numRecords != correctCount)
-    { // For debugging, print out (names of) what we exported:
+  { // For debugging, print out (names of) what we exported:
     if (!entities.empty())
       entities.begin()->manager()->assignDefaultNames();
-    std::cout
-      << SaveJSON::forEntities(entities, relations, JSON_PROPERTIES)
-      << "\n\n"
-      << "Exported " << numRecords << ","
-      << " expecting " << correctCount
-      << " for related record enum " << relations
-      << "\n";
-    }
+    std::cout << SaveJSON::forEntities(entities, relations, JSON_PROPERTIES) << "\n\n"
+              << "Exported " << numRecords << ","
+              << " expecting " << correctCount << " for related record enum " << relations << "\n";
+  }
   cJSON_Delete(json);
   test(numRecords == correctCount, "Exported wrong number of records.");
 }
@@ -126,9 +114,7 @@ int main(int argc, char* argv[])
 
   int debug = argc > 2 ? 1 : 0;
   std::ifstream file(argc > 1 ? argv[1] : "testOut");
-  std::string data(
-    (std::istreambuf_iterator<char>(file)),
-    (std::istreambuf_iterator<char>()));
+  std::string data((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
   cJSON* json = cJSON_CreateObject();
 
   ManagerPtr sm = Manager::create();
@@ -151,14 +137,14 @@ int main(int argc, char* argv[])
   char* exported2 = cJSON_Print(json);
 
   if (debug || strcmp(exported, exported2))
-    {
+  {
     std::cout << "====== snip =======\n";
     std::cout << exported << "\n";
     std::cout << "====== snip =======\n";
     std::cout << exported2 << "\n";
     std::cout << "====== snip =======\n";
     test(strcmp(exported, exported2) == 0, "double import/export pass not exact");
-    }
+  }
   cJSON_Delete(json);
   free(exported);
   free(exported2);

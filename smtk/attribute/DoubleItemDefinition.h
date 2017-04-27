@@ -18,33 +18,32 @@
 
 namespace smtk
 {
-  namespace attribute
+namespace attribute
+{
+class SMTKCORE_EXPORT DoubleItemDefinition : public ValueItemDefinitionTemplate<double>
+{
+public:
+  smtkTypeMacro(DoubleItemDefinition);
+  static smtk::attribute::DoubleItemDefinitionPtr New(const std::string& myName)
   {
-    class SMTKCORE_EXPORT DoubleItemDefinition :
-      public ValueItemDefinitionTemplate<double>
-    {
-    public:
-      smtkTypeMacro(DoubleItemDefinition);
-      static smtk::attribute::DoubleItemDefinitionPtr New(const std::string &myName)
-      { return smtk::attribute::DoubleItemDefinitionPtr(new DoubleItemDefinition(myName));}
-
-      virtual ~DoubleItemDefinition();
-      virtual Item::Type type() const;
-      virtual smtk::attribute::ItemPtr buildItem(Attribute *owningAttribute,
-                                                int itemPosition) const;
-      virtual smtk::attribute::ItemPtr buildItem(Item *owningItem,
-                                                int position,
-                                                int subGroupPosition) const;
-
-      virtual smtk::attribute::ItemDefinitionPtr
-        createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const;
-    protected:
-      DoubleItemDefinition(const std::string &myName);
-
-    private:
-
-    };
+    return smtk::attribute::DoubleItemDefinitionPtr(new DoubleItemDefinition(myName));
   }
+
+  virtual ~DoubleItemDefinition();
+  virtual Item::Type type() const;
+  virtual smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const;
+  virtual smtk::attribute::ItemPtr buildItem(
+    Item* owningItem, int position, int subGroupPosition) const;
+
+  virtual smtk::attribute::ItemDefinitionPtr createCopy(
+    smtk::attribute::ItemDefinition::CopyInfo& info) const;
+
+protected:
+  DoubleItemDefinition(const std::string& myName);
+
+private:
+};
+}
 }
 
 #endif /* __smtk_attribute_DoubleItemDefinition_h */

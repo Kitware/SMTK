@@ -17,7 +17,8 @@
 
 using namespace smtk::extension;
 
-qtOverlay::qtOverlay(QWidget * parentW ) : QWidget(parentW)
+qtOverlay::qtOverlay(QWidget* parentW)
+  : QWidget(parentW)
 {
   setAttribute(Qt::WA_NoSystemBackground);
   //setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -27,29 +28,30 @@ qtOverlay::qtOverlay(QWidget * parentW ) : QWidget(parentW)
   this->m_overlayColor = QColor(80, 80, 255, 128);
 }
 
-void qtOverlay::addOverlayWidget(QWidget*w)
+void qtOverlay::addOverlayWidget(QWidget* w)
 {
-  if(w)
-    {
+  if (w)
+  {
     w->setAttribute(Qt::WA_NoSystemBackground);
     w->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     QString strStyle(" QWidget { background-color: rgba(");
     strStyle.append(QString::number(this->m_overlayColor.red()) + ", ")
-            .append(QString::number(this->m_overlayColor.green()) + ", ")
-            .append(QString::number(this->m_overlayColor.blue()) + ", ")
-            .append(QString::number(this->m_overlayColor.alpha()) + ") } ");
+      .append(QString::number(this->m_overlayColor.green()) + ", ")
+      .append(QString::number(this->m_overlayColor.blue()) + ", ")
+      .append(QString::number(this->m_overlayColor.alpha()) + ") } ");
     w->setStyleSheet(w->styleSheet() + strStyle);
     this->layout()->addWidget(w);
-    }
+  }
 }
 
-void qtOverlay::paintEvent(QPaintEvent *)
+void qtOverlay::paintEvent(QPaintEvent*)
 {
   QPainter p(this);
   p.fillRect(rect(), this->m_overlayColor);
 }
 
-qtOverlayFilter::qtOverlayFilter(QWidget* onWidget, QObject * parentO) : QObject(parentO)
+qtOverlayFilter::qtOverlayFilter(QWidget* onWidget, QObject* parentO)
+  : QObject(parentO)
 {
   m_Active = true;
   m_overlay = new qtOverlay(onWidget->parentWidget());
@@ -66,55 +68,55 @@ qtOverlayFilter::~qtOverlayFilter()
 void qtOverlayFilter::setActive(bool val)
 {
   if (m_overlay && m_overlayOn)
-    {
+  {
     m_overlay->setGeometry(m_overlayOn->geometry());
-    }
+  }
 
   this->m_overlay->setVisible(val);
   this->m_Active = val;
 }
 
-void qtOverlayFilter::addOverlayWidget(QWidget*w)
+void qtOverlayFilter::addOverlayWidget(QWidget* w)
 {
-    m_overlay->addOverlayWidget(w);
+  m_overlay->addOverlayWidget(w);
 }
 
-bool qtOverlayFilter::eventFilter(QObject * obj, QEvent * ev)
+bool qtOverlayFilter::eventFilter(QObject* obj, QEvent* ev)
 {
   if (!obj->isWidgetType())
-    {
+  {
     return false;
-    }
-  if(this->m_overlay)
-    {
+  }
+  if (this->m_overlay)
+  {
     this->m_overlay->setVisible(this->m_Active);
-    }
-  if(!this->m_Active)
-    {
+  }
+  if (!this->m_Active)
+  {
     return false;
-    }
-  QWidget * w = static_cast<QWidget*>(obj);
+  }
+  QWidget* w = static_cast<QWidget*>(obj);
   if (ev->type() == QEvent::Paint || ev->type() == QEvent::Show)
-    {
+  {
     if (!m_overlay)
-      {
+    {
       m_overlay = new qtOverlay(w->parentWidget());
       m_overlay->setGeometry(w->geometry());
       m_overlayOn = w;
-      }
+    }
     if (m_overlay && m_overlayOn == w)
-      {
+    {
       m_overlay->setGeometry(w->geometry());
       m_overlay->show();
-//      m_overlay->repaint();
-      }
+      //      m_overlay->repaint();
     }
+  }
   else if (ev->type() == QEvent::Resize)
-    {
+  {
     if (m_overlay && m_overlayOn == w)
-      {
+    {
       m_overlay->setGeometry(w->geometry());
-      }
     }
+  }
   return false;
 }

@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkModelEntityOperator.h"
 
 #include "vtkDiscreteModel.h"
@@ -29,43 +28,42 @@ vtkModelEntityOperator::~vtkModelEntityOperator()
 {
 }
 
-vtkModelEntity* vtkModelEntityOperator::GetModelEntity(
-  vtkDiscreteModelWrapper* ModelWrapper)
+vtkModelEntity* vtkModelEntityOperator::GetModelEntity(vtkDiscreteModelWrapper* ModelWrapper)
 {
-  if(!ModelWrapper)
-    {
+  if (!ModelWrapper)
+  {
     return 0;
-    }
+  }
   return this->Superclass::GetModelEntity(ModelWrapper->GetModel());
 }
 
 bool vtkModelEntityOperator::AbleToOperate(vtkDiscreteModelWrapper* ModelWrapper)
 {
-  if(!ModelWrapper)
-    {
+  if (!ModelWrapper)
+  {
     vtkErrorMacro("Passed in a null model wrapper.");
     return 0;
-    }
+  }
   return this->Superclass::AbleToOperate(ModelWrapper->GetModel());
 }
 
 void vtkModelEntityOperator::Operate(vtkDiscreteModelWrapper* ModelWrapper)
 {
-  if(!this->AbleToOperate(ModelWrapper))
-    {
+  if (!this->AbleToOperate(ModelWrapper))
+  {
     this->OperateSucceeded = 0;
     return;
-    }
+  }
 
-  this->OperateSucceeded  = this->Superclass::Operate(ModelWrapper->GetModel());
-  if(this->OperateSucceeded)
-    {
+  this->OperateSucceeded = this->Superclass::Operate(ModelWrapper->GetModel());
+  if (this->OperateSucceeded)
+  {
     ModelWrapper->Modified();
-    }
+  }
 }
 
 void vtkModelEntityOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
   os << indent << "OperateSucceeded: " << this->OperateSucceeded << endl;
 }

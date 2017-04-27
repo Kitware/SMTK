@@ -20,12 +20,14 @@
 #include "smtk/common/UUID.h"
 #include "smtk/common/UUIDGenerator.h"
 
-namespace smtk {
-namespace mesh {
+namespace smtk
+{
+namespace mesh
+{
 
 class SMTKCORE_EXPORT Manager : public smtk::enable_shared_from_this<Manager>
 {
-  typedef std::map< smtk::common::UUID, smtk::mesh::CollectionPtr > ContainerType;
+  typedef std::map<smtk::common::UUID, smtk::mesh::CollectionPtr> ContainerType;
 
 public:
   smtkTypeMacro(Manager);
@@ -50,31 +52,31 @@ public:
   //Construct a collection using the users provided UUID and Interface.
   //Note: Caller must verify the UUID is valid, and not already in use by
   //this manager
-  smtk::mesh::CollectionPtr makeCollection(const smtk::common::UUID& collectionID,
-                                           smtk::mesh::InterfacePtr interface);
+  smtk::mesh::CollectionPtr makeCollection(
+    const smtk::common::UUID& collectionID, smtk::mesh::InterfacePtr interface);
 #endif
 
   std::size_t numberOfCollections() const;
-  bool hasCollection( const smtk::mesh::CollectionPtr& collection ) const;
+  bool hasCollection(const smtk::mesh::CollectionPtr& collection) const;
 
   typedef ContainerType::const_iterator const_iterator;
   typedef ContainerType::iterator iterator;
   const_iterator collectionBegin() const;
   const_iterator collectionEnd() const;
-  const_iterator findCollection( const smtk::common::UUID& collectionID ) const;
+  const_iterator findCollection(const smtk::common::UUID& collectionID) const;
 
   //returns the mesh collection that relates to the given uuid.
   //If no association exists this will return an invalid pointer
-  smtk::mesh::CollectionPtr collection( const smtk::common::UUID& collectionID ) const;
+  smtk::mesh::CollectionPtr collection(const smtk::common::UUID& collectionID) const;
 
   //Removes a collection from a given Manager. This doesn't explicitly release
   //the memory of the collection, it only stops the tracking of the collection
   //by the manager.
-  bool removeCollection( const smtk::mesh::CollectionPtr& collection );
+  bool removeCollection(const smtk::mesh::CollectionPtr& collection);
 
   //Model Association commands
   std::vector<smtk::mesh::CollectionPtr> collectionsWithAssociations() const;
-  bool isAssociatedToACollection( const smtk::model::EntityRef& eref ) const;
+  bool isAssociatedToACollection(const smtk::model::EntityRef& eref) const;
 
   //For a given model cursor return the associated Mesh Collection(s)
   //from that mesh collection you will be able to query what subset of
@@ -82,10 +84,8 @@ public:
   //this will return an invalid Collection that is not associated with any
   //Manager.
   std::vector<smtk::mesh::CollectionPtr> associatedCollections(
-                                       const smtk::model::EntityRef& c ) const;
-  smtk::common::UUIDs associatedCollectionIds(
-                                       const smtk::model::EntityRef& c ) const;
-
+    const smtk::model::EntityRef& c) const;
+  smtk::common::UUIDs associatedCollectionIds(const smtk::model::EntityRef& c) const;
 
   // Collection name commands
 
@@ -98,7 +98,7 @@ public:
   //
   // Will return false and not assign a name if the collection is not owned
   // by the manager being called.
-  bool assignUniqueName( smtk::mesh::CollectionPtr collection );
+  bool assignUniqueName(smtk::mesh::CollectionPtr collection);
 
 private:
   //needs to be created using shared_ptr
@@ -117,14 +117,13 @@ private:
   bool addCollection(const smtk::mesh::CollectionPtr& collection);
 
   class InternalStorageImpl;
-  smtk::shared_ptr< InternalStorageImpl > m_collector;
+  smtk::shared_ptr<InternalStorageImpl> m_collector;
 
   class InternalNameGeneratorImpl;
-  smtk::shared_ptr< InternalNameGeneratorImpl > m_nameGenerator;
+  smtk::shared_ptr<InternalNameGeneratorImpl> m_nameGenerator;
 
   smtk::common::UUIDGenerator m_uuidGenerator;
 };
-
 }
 }
 

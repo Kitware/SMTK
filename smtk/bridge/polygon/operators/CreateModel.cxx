@@ -25,9 +25,12 @@
 
 #include "smtk/bridge/polygon/CreateModel_xml.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
 smtk::model::OperatorResult CreateModel::operateInternal()
 {
@@ -46,54 +49,54 @@ smtk::model::OperatorResult CreateModel::operateInternal()
   bool ok = true;
   // These case values match CreateModel.sbt indices (and enum values):
   switch (method)
+  {
+    case 0: // origin, 2 axes, and feature size
     {
-  case 0: // origin, 2 axes, and feature size
-      {
       std::vector<double> origin(originItem->begin(), originItem->end());
       std::vector<double> x_axis(xAxisItem->begin(), xAxisItem->end());
       std::vector<double> y_axis(yAxisItem->begin(), yAxisItem->end());
       ok = storage->computeModelScaleAndNormal(
         origin, x_axis, y_axis, featureSizeItem->value(0), this->log());
-      }
+    }
     break;
-  case 1: // origin, normal, x axis, and feature size
-      {
+    case 1: // origin, normal, x axis, and feature size
+    {
       std::vector<double> origin(originItem->begin(), originItem->end());
       std::vector<double> x_axis(xAxisItem->begin(), xAxisItem->end());
       std::vector<double> z_axis(zAxisItem->begin(), zAxisItem->end());
       ok = storage->computeModelScaleAndYAxis(
         origin, x_axis, z_axis, featureSizeItem->value(0), this->log());
-      }
+    }
     break;
-  case 2: // origin, 2 axes, and model scale
-      {
+    case 2: // origin, 2 axes, and model scale
+    {
       std::vector<double> origin(originItem->begin(), originItem->end());
       std::vector<double> x_axis(xAxisItem->begin(), xAxisItem->end());
       std::vector<double> y_axis(yAxisItem->begin(), yAxisItem->end());
       ok = storage->computeFeatureSizeAndNormal(
         origin, x_axis, y_axis, modelScaleItem->value(0), this->log());
-      }
-    break;
-  default:
-    ok = false;
-    smtkInfoMacro(log(), "Unhandled construction method " << method << ".");
-    break;
     }
+    break;
+    default:
+      ok = false;
+      smtkInfoMacro(log(), "Unhandled construction method " << method << ".");
+      break;
+  }
 
   smtk::model::OperatorResult result;
   if (ok)
-    {
+  {
     smtk::bridge::polygon::Session* sess = this->polygonSession();
     smtk::model::Manager::Ptr mgr;
     if (sess)
-      {
+    {
       // If a name was specified, use it. Or make one up.
       smtk::attribute::StringItem::Ptr nameItem = this->findString("name");
       std::string modelName;
       if (nameItem && nameItem->isEnabled())
-        {
+      {
         modelName = nameItem->value(0);
-        }
+      }
 
       mgr = sess->manager();
       smtk::model::Model model = mgr->addModel(/* par. dim. */ 2, /* emb. dim. */ 3, modelName);
@@ -102,43 +105,42 @@ smtk::model::OperatorResult CreateModel::operateInternal()
       this->addStorage(model.entity(), storage);
       model.setSession(smtk::model::SessionRef(mgr, sess->sessionId()));
       if (modelName.empty())
-        {
+      {
         model.assignDefaultName();
-        }
+      }
 
       result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
       this->addEntityToResult(result, model, CREATED);
-      model.setFloatProperty("x axis", smtk::model::FloatList(storage->xAxis(), storage->xAxis() + 3));
-      model.setFloatProperty("y axis", smtk::model::FloatList(storage->yAxis(), storage->yAxis() + 3));
-      model.setFloatProperty("normal", smtk::model::FloatList(storage->zAxis(), storage->zAxis() + 3));
-      model.setFloatProperty("origin", smtk::model::FloatList(storage->origin(), storage->origin() + 3));
+      model.setFloatProperty(
+        "x axis", smtk::model::FloatList(storage->xAxis(), storage->xAxis() + 3));
+      model.setFloatProperty(
+        "y axis", smtk::model::FloatList(storage->yAxis(), storage->yAxis() + 3));
+      model.setFloatProperty(
+        "normal", smtk::model::FloatList(storage->zAxis(), storage->zAxis() + 3));
+      model.setFloatProperty(
+        "origin", smtk::model::FloatList(storage->origin(), storage->origin() + 3));
       model.setFloatProperty("feature size", storage->featureSize());
       model.setFloatProperty("model scale", storage->modelScale());
       model.setIntegerProperty(SMTK_GEOM_STYLE_PROP, smtk::model::DISCRETE);
 
       if (result)
-        {
+      {
         sess->manager()->meshes()->makeCollection(model.entity());
-        }
       }
     }
+  }
 
   if (!result)
-    {
+  {
     result = this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
   return result;
 }
 
-    } // namespace polygon
-  } //namespace bridge
+} // namespace polygon
+} //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(
-  SMTKPOLYGONSESSION_EXPORT,
-  smtk::bridge::polygon::CreateModel,
-  polygon_create_model,
-  "create model",
-  CreateModel_xml,
-  smtk::bridge::polygon::Session);
+smtkImplementsModelOperator(SMTKPOLYGONSESSION_EXPORT, smtk::bridge::polygon::CreateModel,
+  polygon_create_model, "create model", CreateModel_xml, smtk::bridge::polygon::Session);

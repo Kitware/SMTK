@@ -13,15 +13,25 @@
 
 #include "smtk/mesh/CellTypes.h"
 
-namespace smtk {
-namespace mesh {
+namespace smtk
+{
+namespace mesh
+{
 
-template<int dimension>
-struct CellTopologicalDimensionsTag { };
+template <int dimension>
+struct CellTopologicalDimensionsTag
+{
+};
 
 //these need to be comparable. so we use an integer type
-struct CellFixedPointNumberTag { const static int Type = 1; }; //e.g line,triangle,hex
-struct CellVariablePointNumberTag { const static int Type = 2; }; //e.g. polygon
+struct CellFixedPointNumberTag
+{
+  const static int Type = 1;
+}; //e.g line,triangle,hex
+struct CellVariablePointNumberTag
+{
+  const static int Type = 2;
+}; //e.g. polygon
 
 /// The templated CellTraits struct provides the basic high level information
 /// about cells such as:
@@ -38,10 +48,11 @@ struct CellVariablePointNumberTag { const static int Type = 2; }; //e.g. polygon
 // Use int dimension() const to return the dimensionality of this cell type
 // at runtime
 //
-template<class CellTag>
+template <class CellTag>
 struct CellTraits;
 
-template<> struct CellTraits<smtk::mesh::CellHexahedron>
+template <>
+struct CellTraits<smtk::mesh::CellHexahedron>
 {
   const static int NUM_VERTICES = 8;
   const static int TOPOLOGICAL_DIMENSIONS = 3;
@@ -50,17 +61,15 @@ template<> struct CellTraits<smtk::mesh::CellHexahedron>
   typedef smtk::mesh::CellFixedPointNumberTag PointNumberTag;
   typedef smtk::mesh::CellTopologicalDimensionsTag<3> TopologicalDimensionsTag;
 
-
   //return if this cell type has a compile time fixed number of cells
-  bool fixedPointSize() const
-    { return true; }
+  bool fixedPointSize() const { return true; }
 
   //return the dimensionality of this cell type
-  int dimension() const
-    { return TOPOLOGICAL_DIMENSIONS; }
+  int dimension() const { return TOPOLOGICAL_DIMENSIONS; }
 };
 
-template<> struct CellTraits<smtk::mesh::CellLine>
+template <>
+struct CellTraits<smtk::mesh::CellLine>
 {
   const static int NUM_VERTICES = 2;
   const static int TOPOLOGICAL_DIMENSIONS = 1;
@@ -69,17 +78,15 @@ template<> struct CellTraits<smtk::mesh::CellLine>
   typedef smtk::mesh::CellFixedPointNumberTag PointNumberTag;
   typedef smtk::mesh::CellTopologicalDimensionsTag<1> TopologicalDimensionsTag;
 
-
   //return if this cell type has a compile time fixed number of cells
-  bool fixedPointSize() const
-    { return true; }
+  bool fixedPointSize() const { return true; }
 
   //return the dimensionality of this cell type
-  int dimension() const
-    { return TOPOLOGICAL_DIMENSIONS; }
+  int dimension() const { return TOPOLOGICAL_DIMENSIONS; }
 };
 
-template<> struct CellTraits<smtk::mesh::CellPolygon>
+template <>
+struct CellTraits<smtk::mesh::CellPolygon>
 {
   const static int NUM_VERTICES = -1;
   const static int TOPOLOGICAL_DIMENSIONS = 2;
@@ -88,17 +95,15 @@ template<> struct CellTraits<smtk::mesh::CellPolygon>
   typedef smtk::mesh::CellVariablePointNumberTag PointNumberTag;
   typedef smtk::mesh::CellTopologicalDimensionsTag<2> TopologicalDimensionsTag;
 
-
   //return if this cell type has a compile time fixed number of cells
-  bool fixedPointSize() const
-    { return false; }
+  bool fixedPointSize() const { return false; }
 
   //return the dimensionality of this cell type
-  int dimension() const
-    { return TOPOLOGICAL_DIMENSIONS; }
+  int dimension() const { return TOPOLOGICAL_DIMENSIONS; }
 };
 
-template<> struct CellTraits<smtk::mesh::CellPyramid>
+template <>
+struct CellTraits<smtk::mesh::CellPyramid>
 {
   const static int NUM_VERTICES = 5;
   const static int TOPOLOGICAL_DIMENSIONS = 3;
@@ -107,17 +112,15 @@ template<> struct CellTraits<smtk::mesh::CellPyramid>
   typedef smtk::mesh::CellFixedPointNumberTag PointNumberTag;
   typedef smtk::mesh::CellTopologicalDimensionsTag<4> TopologicalDimensionsTag;
 
-
   //return if this cell type has a compile time fixed number of cells
-  bool fixedPointSize() const
-    { return true; }
+  bool fixedPointSize() const { return true; }
 
   //return the dimensionality of this cell type
-  int dimension() const
-    { return TOPOLOGICAL_DIMENSIONS; }
+  int dimension() const { return TOPOLOGICAL_DIMENSIONS; }
 };
 
-template<> struct CellTraits<smtk::mesh::CellQuad>
+template <>
+struct CellTraits<smtk::mesh::CellQuad>
 {
   const static int NUM_VERTICES = 4;
   const static int TOPOLOGICAL_DIMENSIONS = 2;
@@ -126,17 +129,15 @@ template<> struct CellTraits<smtk::mesh::CellQuad>
   typedef smtk::mesh::CellFixedPointNumberTag PointNumberTag;
   typedef smtk::mesh::CellTopologicalDimensionsTag<2> TopologicalDimensionsTag;
 
-
   //return if this cell type has a compile time fixed number of cells
-  bool fixedPointSize() const
-    { return true; }
+  bool fixedPointSize() const { return true; }
 
   //return the dimensionality of this cell type
-  int dimension() const
-    { return TOPOLOGICAL_DIMENSIONS; }
+  int dimension() const { return TOPOLOGICAL_DIMENSIONS; }
 };
 
-template<> struct CellTraits<smtk::mesh::CellTetrahedron>
+template <>
+struct CellTraits<smtk::mesh::CellTetrahedron>
 {
   const static int NUM_VERTICES = 4;
   const static int TOPOLOGICAL_DIMENSIONS = 3;
@@ -145,17 +146,15 @@ template<> struct CellTraits<smtk::mesh::CellTetrahedron>
   typedef smtk::mesh::CellFixedPointNumberTag PointNumberTag;
   typedef smtk::mesh::CellTopologicalDimensionsTag<3> TopologicalDimensionsTag;
 
-
   //return if this cell type has a compile time fixed number of cells
-  bool fixedPointSize() const
-    { return true; }
+  bool fixedPointSize() const { return true; }
 
   //return the dimensionality of this cell type
-  int dimension() const
-    { return TOPOLOGICAL_DIMENSIONS; }
+  int dimension() const { return TOPOLOGICAL_DIMENSIONS; }
 };
 
-template<> struct CellTraits<smtk::mesh::CellTriangle>
+template <>
+struct CellTraits<smtk::mesh::CellTriangle>
 {
   const static int NUM_VERTICES = 3;
   const static int TOPOLOGICAL_DIMENSIONS = 2;
@@ -164,17 +163,15 @@ template<> struct CellTraits<smtk::mesh::CellTriangle>
   typedef smtk::mesh::CellFixedPointNumberTag PointNumberTag;
   typedef smtk::mesh::CellTopologicalDimensionsTag<2> TopologicalDimensionsTag;
 
-
   //return if this cell type has a compile time fixed number of cells
-  bool fixedPointSize() const
-    { return true; }
+  bool fixedPointSize() const { return true; }
 
   //return the dimensionality of this cell type
-  int dimension() const
-    { return TOPOLOGICAL_DIMENSIONS; }
+  int dimension() const { return TOPOLOGICAL_DIMENSIONS; }
 };
 
-template<> struct CellTraits<smtk::mesh::CellVertex>
+template <>
+struct CellTraits<smtk::mesh::CellVertex>
 {
   const static int NUM_VERTICES = 1;
   const static int TOPOLOGICAL_DIMENSIONS = 0;
@@ -183,17 +180,15 @@ template<> struct CellTraits<smtk::mesh::CellVertex>
   typedef smtk::mesh::CellFixedPointNumberTag PointNumberTag;
   typedef smtk::mesh::CellTopologicalDimensionsTag<0> TopologicalDimensionsTag;
 
-
   //return if this cell type has a compile time fixed number of cells
-  bool fixedPointSize() const
-    { return true; }
+  bool fixedPointSize() const { return true; }
 
   //return the dimensionality of this cell type
-  int dimension() const
-    { return TOPOLOGICAL_DIMENSIONS; }
+  int dimension() const { return TOPOLOGICAL_DIMENSIONS; }
 };
 
-template<> struct CellTraits<smtk::mesh::CellWedge>
+template <>
+struct CellTraits<smtk::mesh::CellWedge>
 {
   const static int NUM_VERTICES = 6;
   const static int TOPOLOGICAL_DIMENSIONS = 3;
@@ -202,93 +197,98 @@ template<> struct CellTraits<smtk::mesh::CellWedge>
   typedef smtk::mesh::CellFixedPointNumberTag PointNumberTag;
   typedef smtk::mesh::CellTopologicalDimensionsTag<3> TopologicalDimensionsTag;
 
-
   //return if this cell type has a compile time fixed number of cells
-  bool fixedPointSize() const
-    { return true; }
+  bool fixedPointSize() const { return true; }
 
   //return the dimensionality of this cell type
-  int dimension() const
-    { return TOPOLOGICAL_DIMENSIONS; }
+  int dimension() const { return TOPOLOGICAL_DIMENSIONS; }
 };
 
-template<int CellEnum>
+template <int CellEnum>
 struct CellEnumToType;
 
-template<> struct CellEnumToType<smtk::mesh::Hexahedron>
+template <>
+struct CellEnumToType<smtk::mesh::Hexahedron>
 {
   typedef smtk::mesh::CellHexahedron CellType;
-  typedef CellTraits< CellType > Traits;
+  typedef CellTraits<CellType> Traits;
 };
 
-template<> struct CellEnumToType<smtk::mesh::Line>
+template <>
+struct CellEnumToType<smtk::mesh::Line>
 {
   typedef smtk::mesh::CellLine CellType;
-  typedef CellTraits< CellType > Traits;
+  typedef CellTraits<CellType> Traits;
 };
 
-template<> struct CellEnumToType<smtk::mesh::Polygon>
+template <>
+struct CellEnumToType<smtk::mesh::Polygon>
 {
   typedef smtk::mesh::CellPolygon CellType;
-  typedef CellTraits< CellType > Traits;
+  typedef CellTraits<CellType> Traits;
 };
 
-template<> struct CellEnumToType<smtk::mesh::Pyramid>
+template <>
+struct CellEnumToType<smtk::mesh::Pyramid>
 {
   typedef smtk::mesh::CellPyramid CellType;
-  typedef CellTraits< CellType > Traits;
+  typedef CellTraits<CellType> Traits;
 };
 
-template<> struct CellEnumToType<smtk::mesh::Quad>
+template <>
+struct CellEnumToType<smtk::mesh::Quad>
 {
   typedef smtk::mesh::CellQuad CellType;
-  typedef CellTraits< CellType > Traits;
+  typedef CellTraits<CellType> Traits;
 };
 
-template<> struct CellEnumToType<smtk::mesh::Tetrahedron>
+template <>
+struct CellEnumToType<smtk::mesh::Tetrahedron>
 {
   typedef smtk::mesh::CellTetrahedron CellType;
-  typedef CellTraits< CellType > Traits;
+  typedef CellTraits<CellType> Traits;
 };
 
-template<> struct CellEnumToType<smtk::mesh::Triangle>
+template <>
+struct CellEnumToType<smtk::mesh::Triangle>
 {
   typedef smtk::mesh::CellTriangle CellType;
-  typedef CellTraits< CellType > Traits;
+  typedef CellTraits<CellType> Traits;
 };
 
-template<> struct CellEnumToType<smtk::mesh::Vertex>
+template <>
+struct CellEnumToType<smtk::mesh::Vertex>
 {
   typedef smtk::mesh::CellVertex CellType;
-  typedef CellTraits< CellType > Traits;
+  typedef CellTraits<CellType> Traits;
 };
 
-template<> struct CellEnumToType<smtk::mesh::Wedge>
+template <>
+struct CellEnumToType<smtk::mesh::Wedge>
 {
   typedef smtk::mesh::CellWedge CellType;
-  typedef CellTraits< CellType > Traits;
+  typedef CellTraits<CellType> Traits;
 };
 
+#define smtkMeshCellEnumToTypeMacroCase(cellEnum, call)                                            \
+  case cellEnum:                                                                                   \
+  {                                                                                                \
+    static const int CellEnumValue = cellEnum;                                                     \
+    typedef smtk::mesh::CellEnumToType<CellEnumValue>::Traits CellTraits;                          \
+    call;                                                                                          \
+  }                                                                                                \
+  break;
 
-#define smtkMeshCellEnumToTypeMacroCase(cellEnum, call)    \
-  case cellEnum: {                                         \
-                  static const int CellEnumValue=cellEnum; \
-                  typedef smtk::mesh::CellEnumToType<CellEnumValue>::Traits CellTraits; \
-                  call;                                    \
-                 }                                         \
-                 break;
-
-#define smtkMeshCellEnumToTypeMacro(call) \
-  smtkMeshCellEnumToTypeMacroCase(smtk::mesh::Vertex , call );      \
-  smtkMeshCellEnumToTypeMacroCase(smtk::mesh::Line , call );        \
-  smtkMeshCellEnumToTypeMacroCase(smtk::mesh::Triangle , call );    \
-  smtkMeshCellEnumToTypeMacroCase(smtk::mesh::Quad, call );         \
-  smtkMeshCellEnumToTypeMacroCase(smtk::mesh::Polygon, call );      \
-  smtkMeshCellEnumToTypeMacroCase(smtk::mesh::Tetrahedron, call );  \
-  smtkMeshCellEnumToTypeMacroCase(smtk::mesh::Pyramid, call );      \
-  smtkMeshCellEnumToTypeMacroCase(smtk::mesh::Wedge, call );        \
-  smtkMeshCellEnumToTypeMacroCase(smtk::mesh::Hexahedron, call );
-
+#define smtkMeshCellEnumToTypeMacro(call)                                                          \
+  smtkMeshCellEnumToTypeMacroCase(smtk::mesh::Vertex, call);                                       \
+  smtkMeshCellEnumToTypeMacroCase(smtk::mesh::Line, call);                                         \
+  smtkMeshCellEnumToTypeMacroCase(smtk::mesh::Triangle, call);                                     \
+  smtkMeshCellEnumToTypeMacroCase(smtk::mesh::Quad, call);                                         \
+  smtkMeshCellEnumToTypeMacroCase(smtk::mesh::Polygon, call);                                      \
+  smtkMeshCellEnumToTypeMacroCase(smtk::mesh::Tetrahedron, call);                                  \
+  smtkMeshCellEnumToTypeMacroCase(smtk::mesh::Pyramid, call);                                      \
+  smtkMeshCellEnumToTypeMacroCase(smtk::mesh::Wedge, call);                                        \
+  smtkMeshCellEnumToTypeMacroCase(smtk::mesh::Hexahedron, call);
 }
 }
 

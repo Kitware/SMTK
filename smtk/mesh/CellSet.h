@@ -23,8 +23,10 @@
 
 #include <vector>
 
-namespace smtk {
-namespace mesh {
+namespace smtk
+{
+namespace mesh
+{
 
 //Represents a collection of cells that have been constructed by a Collection
 //We represent the collection of cells by range of cell id entities. CellSets
@@ -37,34 +39,31 @@ namespace mesh {
 //a new MeshSet using Collection::createMesh.
 class SMTKCORE_EXPORT CellSet
 {
-  friend SMTKCORE_EXPORT CellSet set_intersect( const CellSet& a, const CellSet& b);
-  friend SMTKCORE_EXPORT CellSet set_difference( const CellSet& a, const CellSet& b);
-  friend SMTKCORE_EXPORT CellSet set_union( const CellSet& a, const CellSet& b );
-  friend SMTKCORE_EXPORT CellSet point_intersect( const CellSet& a, const CellSet& b, ContainmentType t);
-  friend SMTKCORE_EXPORT CellSet point_difference( const CellSet& a, const CellSet& b, ContainmentType t);
-  friend SMTKCORE_EXPORT void for_each( const CellSet& a, CellForEach& filter);
+  friend SMTKCORE_EXPORT CellSet set_intersect(const CellSet& a, const CellSet& b);
+  friend SMTKCORE_EXPORT CellSet set_difference(const CellSet& a, const CellSet& b);
+  friend SMTKCORE_EXPORT CellSet set_union(const CellSet& a, const CellSet& b);
+  friend SMTKCORE_EXPORT CellSet point_intersect(
+    const CellSet& a, const CellSet& b, ContainmentType t);
+  friend SMTKCORE_EXPORT CellSet point_difference(
+    const CellSet& a, const CellSet& b, ContainmentType t);
+  friend SMTKCORE_EXPORT void for_each(const CellSet& a, CellForEach& filter);
   friend class Collection; //required for creation of new meshes
 public:
-
   //construct a CellSet that represents an arbitrary unknown subset of cells that
   //are children of the handle.
-  CellSet(const smtk::mesh::CollectionPtr& parent,
-          const smtk::mesh::HandleRange& range);
-  CellSet(const smtk::mesh::ConstCollectionPtr& parent,
-          const smtk::mesh::HandleRange& range);
+  CellSet(const smtk::mesh::CollectionPtr& parent, const smtk::mesh::HandleRange& range);
+  CellSet(const smtk::mesh::ConstCollectionPtr& parent, const smtk::mesh::HandleRange& range);
 
   //construct a CellSet that represents an arbitrary unknown subset of cells that
   //are children of the handle via an explicit vector of cell ids. While this
   //method is inefficient, it is useful for the python bindings where <cellIds>
   //is converted to a list.
-  CellSet(const smtk::mesh::CollectionPtr& parent,
-          const std::vector<smtk::mesh::Handle>& cellIds);
+  CellSet(const smtk::mesh::CollectionPtr& parent, const std::vector<smtk::mesh::Handle>& cellIds);
 
   //construct a CellSet that represents an arbitrary unknown subset of cells that
   //are children of the handle via an explicit set of cell ids. This constructor
   //is preferred over the variant that takes a std::vector.
-  CellSet(const smtk::mesh::CollectionPtr& parent,
-          const std::set<smtk::mesh::Handle>& cellIds);
+  CellSet(const smtk::mesh::CollectionPtr& parent, const std::set<smtk::mesh::Handle>& cellIds);
 
   //Copy Constructor required for rule of 3
   CellSet(const CellSet& other);
@@ -73,31 +72,32 @@ public:
   ~CellSet();
 
   //Copy assignment operator required for rule of 3
-  CellSet& operator= (const CellSet& other);
-  bool operator==( const CellSet& other ) const;
-  bool operator!=( const CellSet& other ) const;
+  CellSet& operator=(const CellSet& other);
+  bool operator==(const CellSet& other) const;
+  bool operator!=(const CellSet& other) const;
 
   //append another CellSet to this CellSet, if the collection
   //pointers don't match the append will return false
-  bool append( const CellSet& other);
+  bool append(const CellSet& other);
 
   bool is_empty() const;
   std::size_t size() const;
 
   smtk::mesh::TypeSet types() const;
-  smtk::mesh::PointSet points() const; //all points of the cellset
-  smtk::mesh::PointConnectivity pointConnectivity( ) const; //all connectivity info for all cells
+  smtk::mesh::PointSet points() const;                     //all points of the cellset
+  smtk::mesh::PointConnectivity pointConnectivity() const; //all connectivity info for all cells
 
   //get the points for a single cell
-  smtk::mesh::PointSet points( std::size_t ) const;
+  smtk::mesh::PointSet points(std::size_t) const;
   //get the connectivity for a single cell
-  smtk::mesh::PointConnectivity pointConnectivity( std::size_t ) const;
+  smtk::mesh::PointConnectivity pointConnectivity(std::size_t) const;
 
   //get the underlying HandleRange that this CellSet represents
   const smtk::mesh::HandleRange& range() const { return this->m_range; }
 
   //get the underlying collection that this CellSet belongs to
   const smtk::mesh::CollectionPtr& collection() const;
+
 private:
   smtk::mesh::CollectionPtr m_parent;
   smtk::mesh::HandleRange m_range; //range of moab cell ids
@@ -105,26 +105,24 @@ private:
 
 //Function that provide set operations on CellSets
 
-
 //intersect two cell sets, placing the results in the return cell set.
 //This does cell Id level intersection, if you want to intersect
 //based on shared points you want to use point_intersect
 //Note: If the cellsets come from different collections the result will
 //always be empty
-SMTKCORE_EXPORT CellSet set_intersect( const CellSet& a, const CellSet& b);
+SMTKCORE_EXPORT CellSet set_intersect(const CellSet& a, const CellSet& b);
 
 //subtract cell b from a, placing the results in the return cell set.
 //This does cell Id level difference, if you want to subtract
 //based on shared points you want to use point_difference
 //Note: If the cellsets come from different collections the result will
 //always be empty
-SMTKCORE_EXPORT CellSet set_difference( const CellSet& a, const CellSet& b);
+SMTKCORE_EXPORT CellSet set_difference(const CellSet& a, const CellSet& b);
 
 //union two cell sets, placing the results in the return cell set
 //Note: If the cellsets come from different collections the result will
 //always be empty
-SMTKCORE_EXPORT CellSet set_union( const CellSet& a, const CellSet& b );
-
+SMTKCORE_EXPORT CellSet set_union(const CellSet& a, const CellSet& b);
 
 //intersect two cell sets at the point id level, all cells from b which
 //share points with cells in a are placed in the resulting CellSet.
@@ -134,8 +132,7 @@ SMTKCORE_EXPORT CellSet set_union( const CellSet& a, const CellSet& b );
 //per cell.
 //Note: If the cellsets come from different collections the result will
 //always be empty
-SMTKCORE_EXPORT CellSet point_intersect( const CellSet& a, const CellSet& b,
-                                         ContainmentType t);
+SMTKCORE_EXPORT CellSet point_intersect(const CellSet& a, const CellSet& b, ContainmentType t);
 
 //subtract two cell sets at the point id level, all cells from b whose
 //points are not used by cells from a are placed in the resulting CellSet.
@@ -144,12 +141,10 @@ SMTKCORE_EXPORT CellSet point_intersect( const CellSet& a, const CellSet& b,
 //while the latter requires all points per cell.
 //Note: If the cellsets come from different collections the result will
 //always be empty
-SMTKCORE_EXPORT CellSet point_difference( const CellSet& a, const CellSet& b,
-                                          ContainmentType t);
+SMTKCORE_EXPORT CellSet point_difference(const CellSet& a, const CellSet& b, ContainmentType t);
 
 //apply a for_each cell operator on all cells of a given set.
-SMTKCORE_EXPORT void for_each( const CellSet& a, CellForEach& filter);
-
+SMTKCORE_EXPORT void for_each(const CellSet& a, CellForEach& filter);
 }
 }
 

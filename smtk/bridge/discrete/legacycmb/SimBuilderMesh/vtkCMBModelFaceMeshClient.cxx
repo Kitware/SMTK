@@ -35,17 +35,17 @@ bool vtkCMBModelFaceMeshClient::SendLengthAndAngleToServer()
   vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
   vtkSMOperatorProxy* operatorProxy = vtkSMOperatorProxy::SafeDownCast(
     manager->NewProxy("CMBSimBuilderMeshGroup", "ModelFaceMeshOperator"));
-  if(!operatorProxy)
-    {
+  if (!operatorProxy)
+  {
     vtkErrorMacro("Unable to create operator proxy.");
     return false;
-    }
+  }
   vtkSMProxy* serverModelProxy =
     vtkCMBMeshClient::SafeDownCast(this->GetMasterMesh())->GetServerModelProxy();
   operatorProxy->SetLocation(serverModelProxy->GetLocation());
 
-  vtkSMPropertyHelper(operatorProxy, "Id").Set(
-    this->GetModelGeometricEntity()->GetUniquePersistentId());
+  vtkSMPropertyHelper(operatorProxy, "Id")
+    .Set(this->GetModelGeometricEntity()->GetUniquePersistentId());
   vtkSMPropertyHelper(operatorProxy, "Length").Set(this->GetLength());
   vtkSMPropertyHelper(operatorProxy, "MinimumAngle").Set(this->GetMinimumAngle());
   vtkSMPropertyHelper(operatorProxy, "BuildModelEntityMesh").Set(false);
@@ -53,24 +53,23 @@ bool vtkCMBModelFaceMeshClient::SendLengthAndAngleToServer()
 
   vtkDiscreteModel* model =
     vtkDiscreteModel::SafeDownCast(this->GetModelGeometricEntity()->GetModel());
-  operatorProxy->Operate(model, vtkCMBMeshClient::SafeDownCast(
-                           this->GetMasterMesh())->GetServerMeshProxy());
+  operatorProxy->Operate(
+    model, vtkCMBMeshClient::SafeDownCast(this->GetMasterMesh())->GetServerMeshProxy());
 
   // check to see if the operation succeeded on the server
   vtkSMIntVectorProperty* operateSucceeded =
-    vtkSMIntVectorProperty::SafeDownCast(
-      operatorProxy->GetProperty("OperateSucceeded"));
+    vtkSMIntVectorProperty::SafeDownCast(operatorProxy->GetProperty("OperateSucceeded"));
 
   operatorProxy->UpdatePropertyInformation();
 
   int succeeded = operateSucceeded->GetElement(0);
   operatorProxy->Delete();
   operatorProxy = NULL;
-  if(!succeeded)
-    {
+  if (!succeeded)
+  {
     vtkErrorMacro("Server side operator failed.");
     return false;
-    }
+  }
   return true;
 }
 
@@ -81,17 +80,17 @@ bool vtkCMBModelFaceMeshClient::BuildMesh(bool /*meshHigherDimensionalEntities*/
   vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
   vtkSMOperatorProxy* operatorProxy = vtkSMOperatorProxy::SafeDownCast(
     manager->NewProxy("CMBSimBuilderMeshGroup", "ModelFaceMeshOperator"));
-  if(!operatorProxy)
-    {
+  if (!operatorProxy)
+  {
     vtkErrorMacro("Unable to create operator proxy.");
     return false;
-    }
+  }
   vtkSMProxy* serverModelProxy =
     vtkCMBMeshClient::SafeDownCast(this->GetMasterMesh())->GetServerModelProxy();
   operatorProxy->SetLocation(serverModelProxy->GetLocation());
 
-  vtkSMPropertyHelper(operatorProxy, "Id").Set(
-    this->GetModelGeometricEntity()->GetUniquePersistentId());
+  vtkSMPropertyHelper(operatorProxy, "Id")
+    .Set(this->GetModelGeometricEntity()->GetUniquePersistentId());
   vtkSMPropertyHelper(operatorProxy, "Length").Set(this->GetLength());
   vtkSMPropertyHelper(operatorProxy, "MinimumAngle").Set(this->GetMinimumAngle());
   vtkSMPropertyHelper(operatorProxy, "BuildModelEntityMesh").Set(true);
@@ -99,18 +98,16 @@ bool vtkCMBModelFaceMeshClient::BuildMesh(bool /*meshHigherDimensionalEntities*/
 
   vtkDiscreteModel* model =
     vtkDiscreteModel::SafeDownCast(this->GetModelGeometricEntity()->GetModel());
-  operatorProxy->Operate(model, vtkCMBMeshClient::SafeDownCast(
-                           this->GetMasterMesh())->GetServerMeshProxy());
+  operatorProxy->Operate(
+    model, vtkCMBMeshClient::SafeDownCast(this->GetMasterMesh())->GetServerMeshProxy());
 
   // check to see if the operation succeeded on the server
   vtkSMIntVectorProperty* operateSucceeded =
-    vtkSMIntVectorProperty::SafeDownCast(
-      operatorProxy->GetProperty("OperateSucceeded"));
+    vtkSMIntVectorProperty::SafeDownCast(operatorProxy->GetProperty("OperateSucceeded"));
 
   //check and see if the problem was caused by a mesher not existing
   vtkSMIntVectorProperty* noFaceMesherError =
-    vtkSMIntVectorProperty::SafeDownCast(
-      operatorProxy->GetProperty("FaceMesherFailed"));
+    vtkSMIntVectorProperty::SafeDownCast(operatorProxy->GetProperty("FaceMesherFailed"));
 
   operatorProxy->UpdatePropertyInformation();
 
@@ -119,18 +116,19 @@ bool vtkCMBModelFaceMeshClient::BuildMesh(bool /*meshHigherDimensionalEntities*/
 
   operatorProxy->Delete();
   operatorProxy = NULL;
-  if(!succeeded)
+  if (!succeeded)
+  {
+    if (faceMesherFailed)
     {
-    if(faceMesherFailed)
-      {
-      vtkErrorMacro("No suitable face meshing worker was found or the face meshing worker crashed.");
-      }
-    else
-      {
-      vtkErrorMacro("Unable to construct a valid face.");
-      }
-    return false;
+      vtkErrorMacro(
+        "No suitable face meshing worker was found or the face meshing worker crashed.");
     }
+    else
+    {
+      vtkErrorMacro("Unable to construct a valid face.");
+    }
+    return false;
+  }
   this->SetMeshedLength(this->GetActualLength());
   this->SetMeshedMinimumAngle(this->GetActualMinimumAngle());
 
@@ -142,25 +140,25 @@ bool vtkCMBModelFaceMeshClient::BuildMesh(bool /*meshHigherDimensionalEntities*/
 
 bool vtkCMBModelFaceMeshClient::SetLocalLength(double length)
 {
-  if(length == this->GetLength())
-    {
+  if (length == this->GetLength())
+  {
     return true;
-    }
+  }
   this->SetLength(length);
   return this->SendLengthAndAngleToServer();
 }
 
 bool vtkCMBModelFaceMeshClient::SetLocalMinimumAngle(double minAngle)
 {
-  if(minAngle == this->GetMinimumAngle())
-    {
+  if (minAngle == this->GetMinimumAngle())
+  {
     return true;
-    }
+  }
   this->SetMinimumAngle(minAngle);
   return this->SendLengthAndAngleToServer();
 }
 
 void vtkCMBModelFaceMeshClient::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }

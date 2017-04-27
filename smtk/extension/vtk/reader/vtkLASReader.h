@@ -40,13 +40,13 @@ class vtkGeoSphereTransform;
 class VTKSMTKREADEREXT_EXPORT vtkLASReader : public vtkMultiBlockDataSetAlgorithm
 {
 public:
-  static vtkLASReader *New();
-  vtkTypeMacro(vtkLASReader,vtkMultiBlockDataSetAlgorithm);
+  static vtkLASReader* New();
+  vtkTypeMacro(vtkLASReader, vtkMultiBlockDataSetAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // Name of the file to be read.
-  void SetFileName(const char *filename);
+  void SetFileName(const char* filename);
   vtkGetStringMacro(FileName);
 
   // Description:
@@ -85,15 +85,15 @@ public:
   // ignored if neither LimitReadToBounds nor TransformOutputData is true.
   void SetTransform(int index, double elements[16]);
   void SetTransform(double elements[17]); // 1st element is index
-  void SetTransform(int index, vtkTransform *transform);
-  vtkTransform *GetTransform(int index);
+  void SetTransform(int index, vtkTransform* transform);
+  vtkTransform* GetTransform(int index);
   void ClearTransforms()
-    {
+  {
     for (int i = 0; i < NUMBER_OF_CLASSIFICATIONS; i++)
-      {
+    {
       this->SetTransform(i, static_cast<vtkTransform*>(0));
-      }
     }
+  }
 
   // Description:
   // Whether or not to transform the data by this->Transform for the output
@@ -126,20 +126,18 @@ protected:
   vtkLASReader();
   ~vtkLASReader();
 
-  int RequestInformation(vtkInformation *,
-                         vtkInformationVector **,
-                         vtkInformationVector *);
-  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
 
   int ReadHeaderBlock();
 
-  int ReadPoints(vtkMultiBlockDataSet *output);
+  int ReadPoints(vtkMultiBlockDataSet* output);
 
-  void AddClassificationFieldData(unsigned char classification, vtkPolyData *pD);
+  void AddClassificationFieldData(unsigned char classification, vtkPolyData* pD);
 
 private:
-  vtkLASReader(const vtkLASReader&);  // Not implemented.
-  void operator=(const vtkLASReader&);  // Not implemented.
+  vtkLASReader(const vtkLASReader&);   // Not implemented.
+  void operator=(const vtkLASReader&); // Not implemented.
 
   struct Header
   {
@@ -164,7 +162,7 @@ private:
     double Offset[3];
   } Header;
 
-  char *FileName;
+  char* FileName;
 
   bool LimitReadToBounds;
   double ReadBounds[6];
@@ -174,7 +172,7 @@ private:
   // < classification, onRatio>
   std::map<unsigned char, int> RequestedReadClassifications;
 #ifndef __WRAP__
-  vtkTransform *(Transform[NUMBER_OF_CLASSIFICATIONS]);
+  vtkTransform*(Transform[NUMBER_OF_CLASSIFICATIONS]);
 #endif
   unsigned long PointRecordsPerClassification[NUMBER_OF_CLASSIFICATIONS];
 
@@ -188,7 +186,6 @@ private:
   bool OutputDataTypeIsDouble;
 
   double Origin[3];
-
 };
 
 #endif

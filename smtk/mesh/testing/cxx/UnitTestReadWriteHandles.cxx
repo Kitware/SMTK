@@ -19,19 +19,17 @@
 #include <boost/filesystem.hpp>
 using namespace boost::filesystem;
 
-
 namespace
 {
 
-inline smtk::mesh::Handle to_handle(::moab::EntityType type,
-                                    ::moab::EntityID id)
+inline smtk::mesh::Handle to_handle(::moab::EntityType type, ::moab::EntityID id)
 {
-  const std::size_t id_width = (8*sizeof(smtk::mesh::Handle)-4);
+  const std::size_t id_width = (8 * sizeof(smtk::mesh::Handle) - 4);
   if (type > ::moab::MBMAXTYPE)
-    {
+  {
     return smtk::mesh::Handle();
-    }
-  return (((smtk::mesh::Handle)type) << id_width)|id;
+  }
+  return (((smtk::mesh::Handle)type) << id_width) | id;
 }
 
 void verify_empty_handle()
@@ -42,12 +40,12 @@ void verify_empty_handle()
   cJSON* json = smtk::mesh::to_json(range);
 
   //verify that the json has no children, since the range is empty
-  test( (json->child == NULL), "empty handle range json form should be empty" );
+  test((json->child == NULL), "empty handle range json form should be empty");
 
   //convert back to a handle
   smtk::mesh::HandleRange result = smtk::mesh::from_json(json);
 
-  test( result == range, "empty handle didn't serialize properly");
+  test(result == range, "empty handle didn't serialize properly");
 }
 
 void verify_meshset_handle()
@@ -57,20 +55,20 @@ void verify_meshset_handle()
 
   //make range have 1024 meshes
   smtk::mesh::HandleRange range;
-  range.insert(first,second);
+  range.insert(first, second);
 
-  test( range.size() == 1024, "verify range has proper length");
-  test( range.all_of_type( ::moab::MBENTITYSET) == true, "verify range is all mesh sets");
+  test(range.size() == 1024, "verify range has proper length");
+  test(range.all_of_type(::moab::MBENTITYSET) == true, "verify range is all mesh sets");
 
   //now verify that it converts to json properly
   cJSON* json = smtk::mesh::to_json(range);
 
   //verify that the json has no children, since the range is empty
-  test( (json->child != NULL), "meshset handle json form should have a child node" );
+  test((json->child != NULL), "meshset handle json form should have a child node");
 
   //convert back to a handle
   smtk::mesh::HandleRange result = smtk::mesh::from_json(json);
-  test( result == range, "meshset handle didn't serialize properly");
+  test(result == range, "meshset handle didn't serialize properly");
 }
 
 void verify_single_cell_type_handle()
@@ -80,17 +78,17 @@ void verify_single_cell_type_handle()
 
   //make range have 1024 meshes
   smtk::mesh::HandleRange range;
-  range.insert(first,second);
+  range.insert(first, second);
 
   //now verify that it converts to json properly
   cJSON* json = smtk::mesh::to_json(range);
 
   //verify that the json has no children, since the range is empty
-  test( (json->child != NULL), "meshset handle json form should have a child node" );
+  test((json->child != NULL), "meshset handle json form should have a child node");
 
   //convert back to a handle
   smtk::mesh::HandleRange result = smtk::mesh::from_json(json);
-  test( result == range, "single cell set handle didn't serialize properly");
+  test(result == range, "single cell set handle didn't serialize properly");
 }
 
 void verify_mixed_handle()
@@ -106,21 +104,20 @@ void verify_mixed_handle()
 
   //make range have 1024 meshes
   smtk::mesh::HandleRange range;
-  range.insert(first,second);
-  range.insert(third,fourth);
-  range.insert(fifth,sixth);
+  range.insert(first, second);
+  range.insert(third, fourth);
+  range.insert(fifth, sixth);
 
   //now verify that it converts to json properly
   cJSON* json = smtk::mesh::to_json(range);
 
   //verify that the json has no children, since the range is empty
-  test( (json->child != NULL), "meshset handle json form should have a child node" );
+  test((json->child != NULL), "meshset handle json form should have a child node");
 
   //convert back to a handle
   smtk::mesh::HandleRange result = smtk::mesh::from_json(json);
-  test( result == range, "mixed cell set handle didn't serialize properly");
+  test(result == range, "mixed cell set handle didn't serialize properly");
 }
-
 
 void verify_large_number_of_values_handle()
 {
@@ -135,22 +132,20 @@ void verify_large_number_of_values_handle()
 
   //make range have 1024 meshes
   smtk::mesh::HandleRange range;
-  range.insert(first,second);
-  range.insert(third,fourth);
-  range.insert(fifth,sixth);
+  range.insert(first, second);
+  range.insert(third, fourth);
+  range.insert(fifth, sixth);
 
   //now verify that it converts to json properly
   cJSON* json = smtk::mesh::to_json(range);
 
   //verify that the json has no children, since the range is empty
-  test( (json->child != NULL), "meshset handle json form should have a child node" );
+  test((json->child != NULL), "meshset handle json form should have a child node");
 
   //convert back to a handle
   smtk::mesh::HandleRange result = smtk::mesh::from_json(json);
-  test( result == range, "mixed cell set handle didn't serialize properly");
+  test(result == range, "mixed cell set handle didn't serialize properly");
 }
-
-
 }
 
 int UnitTestReadWriteHandles(int, char** const)

@@ -12,9 +12,12 @@
 
 #include "smtk/bridge/polygon/internal/Neighborhood.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
 /**\brief Traverse the face loops enumerated by sweeping all neighborhoods.
   *
@@ -22,15 +25,15 @@ namespace smtk {
   * that accepts an array of oriented fragments, a region ID, and a set
   * of "border" region IDs.
   */
-template<typename T>
+template <typename T>
 void Neighborhood::getLoops(T evaluator)
 {
   FragmentArray::iterator fit;
   fit = this->m_fragments->begin();
   if (fit == this->m_fragments->end())
-    {
+  {
     return;
-    }
+  }
 
   // Traverse every fragment. For each unprocessed coedge,
   // if the region it bounds is not marked as "exterior", then queue the loop
@@ -44,29 +47,29 @@ void Neighborhood::getLoops(T evaluator)
   FragmentId fid = 0;
   RegionId outside = this->m_regionIds.find(this->m_outside);
   for (fit = this->m_fragments->begin(); fit != this->m_fragments->end(); ++fit, ++fid)
-    {
+  {
     if (!fit->marked(false) && this->m_regionIds.find(fit->ccwRegion(false)) != outside)
-      {
+    {
       RegionId contained = this->traverseLoop(loopEdges, neighborRegions, fid, false);
       evaluator->evaluateLoop(this->m_regionIds.find(contained), loopEdges, neighborRegions);
-      }
+    }
     if (!fit->marked(true) && this->m_regionIds.find(fit->ccwRegion(true)) != outside)
-      {
+    {
       RegionId contained = this->traverseLoop(loopEdges, neighborRegions, fid, true);
       evaluator->evaluateLoop(this->m_regionIds.find(contained), loopEdges, neighborRegions);
-      }
     }
+  }
 
   // Now erase the "visited" marks so we can re-traverse if needed:
   for (fit = this->m_fragments->begin(); fit != this->m_fragments->end(); ++fit)
-    {
+  {
     fit->mark(false, 0);
     fit->mark(true, 0);
-    }
+  }
 }
 
-    } // namespace polygon
-  } //namespace bridge
+} // namespace polygon
+} //namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_polygon_internal_Neighborhood_txx

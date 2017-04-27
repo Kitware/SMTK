@@ -24,8 +24,8 @@
 class VTKSMTKREADEREXT_EXPORT vtkExtractRegionEdges : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkExtractRegionEdges *New();
-  vtkTypeMacro(vtkExtractRegionEdges,vtkPolyDataAlgorithm);
+  static vtkExtractRegionEdges* New();
+  vtkTypeMacro(vtkExtractRegionEdges, vtkPolyDataAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   vtkSetStringMacro(RegionArrayName);
@@ -37,28 +37,26 @@ protected:
   vtkExtractRegionEdges();
   ~vtkExtractRegionEdges();
 
-  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
-  virtual int FillInputPortInformation(int port, vtkInformation *info);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  virtual int FillInputPortInformation(int port, vtkInformation* info);
 
-  void ConvertInputToPolyData(vtkPointSet *input, vtkPolyData *polyData);
-  void ExtractRegionEdgeSegments(vtkPolyData *polyData, vtkCellArray *lines,
-    vtkPolyData *linePolyData);
-  void BuildRegionLoops(vtkPolyData *polyData);
+  void ConvertInputToPolyData(vtkPointSet* input, vtkPolyData* polyData);
+  void ExtractRegionEdgeSegments(
+    vtkPolyData* polyData, vtkCellArray* lines, vtkPolyData* linePolyData);
+  void BuildRegionLoops(vtkPolyData* polyData);
 
-  void UpdateRegionIdentifiersIfNecessary(vtkPolyData *outputPD);
-  void SetupOutputFieldData(vtkPolyData *output);
-
+  void UpdateRegionIdentifiersIfNecessary(vtkPolyData* outputPD);
+  void SetupOutputFieldData(vtkPolyData* output);
 
 private:
-  vtkExtractRegionEdges(const vtkExtractRegionEdges&);  // Not implemented.
-  void operator=(const vtkExtractRegionEdges&);  // Not implemented.
+  vtkExtractRegionEdges(const vtkExtractRegionEdges&); // Not implemented.
+  void operator=(const vtkExtractRegionEdges&);        // Not implemented.
 
-  char *RegionArrayName;
+  char* RegionArrayName;
   bool RegionIdentifiersModified;
 
   class vtkInternal;
   vtkInternal* Internal;
-
 };
 
 #endif

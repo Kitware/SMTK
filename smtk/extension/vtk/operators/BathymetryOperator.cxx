@@ -45,163 +45,151 @@ using namespace smtk::model;
 
 namespace
 {
-class ElevationStructuredDataForVTKImageData :
-    public smtk::mesh::ElevationStructuredData
+class ElevationStructuredDataForVTKImageData : public smtk::mesh::ElevationStructuredData
 {
 public:
-  ElevationStructuredDataForVTKImageData(vtkImageData* imageData) :
-    m_imageData(imageData)
+  ElevationStructuredDataForVTKImageData(vtkImageData* imageData)
+    : m_imageData(imageData)
+  {
+    for (int i = 0; i < 4; i++)
     {
-      for (int i=0; i<4; i++)
-        {
-        m_extent[i] = imageData->GetExtent()[i];
-        }
-      double tmp;
-      imageData->GetOrigin(m_origin[0], m_origin[1], tmp);
-      imageData->GetSpacing(m_spacing[0], m_spacing[1], tmp);
+      m_extent[i] = imageData->GetExtent()[i];
     }
+    double tmp;
+    imageData->GetOrigin(m_origin[0], m_origin[1], tmp);
+    imageData->GetSpacing(m_spacing[0], m_spacing[1], tmp);
+  }
 
   double operator()(int i, int j) const
-    {
-      return m_imageData->GetScalarComponentAsDouble(i,j,0,0);
-    }
+  {
+    return m_imageData->GetScalarComponentAsDouble(i, j, 0, 0);
+  }
 
   vtkImageData* m_imageData;
 };
 
-class ElevationStructuredDataForVTKUniformGrid :
-    public ElevationStructuredDataForVTKImageData
+class ElevationStructuredDataForVTKUniformGrid : public ElevationStructuredDataForVTKImageData
 {
 public:
-  ElevationStructuredDataForVTKUniformGrid(
-    vtkUniformGrid* uniformGrid) :
-    ElevationStructuredDataForVTKImageData(uniformGrid) { }
+  ElevationStructuredDataForVTKUniformGrid(vtkUniformGrid* uniformGrid)
+    : ElevationStructuredDataForVTKImageData(uniformGrid)
+  {
+  }
 
   bool containsIndex(int i, int j) const
-    {
-      int pos[3] = {i,j,0};
-      return smtk::mesh::ElevationStructuredData::containsIndex(i,j) &&
-        static_cast<vtkUniformGrid*>(m_imageData)->IsPointVisible(
-          vtkStructuredData::ComputePointIdForExtent(m_imageData->GetExtent(),
-                                                     pos)) != 0;
-    }
+  {
+    int pos[3] = { i, j, 0 };
+    return smtk::mesh::ElevationStructuredData::containsIndex(i, j) &&
+      static_cast<vtkUniformGrid*>(m_imageData)
+        ->IsPointVisible(
+          vtkStructuredData::ComputePointIdForExtent(m_imageData->GetExtent(), pos)) != 0;
+  }
 };
 }
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
-bool internal_bathyToAssociatedMeshes(
-  BathymetryHelper* bathyHelper, vtkDataSet* bathyData,
-  const Model& srcModel, const bool &removing,
-  const double &radius, const bool &useHighLimit,
-  const double &eleHigh, const bool &useLowLimit, const double &eleLow,
+bool internal_bathyToAssociatedMeshes(BathymetryHelper* bathyHelper, vtkDataSet* bathyData,
+  const Model& srcModel, const bool& removing, const double& radius, const bool& useHighLimit,
+  const double& eleHigh, const bool& useLowLimit, const double& eleLow,
   smtk::mesh::ManagerPtr meshMgr, smtk::mesh::MeshSets& modifiedMeshes,
-    smtk::attribute::MeshItem::Ptr meshItem)
+  smtk::attribute::MeshItem::Ptr meshItem)
 {
   bool ok = true;
   std::vector<smtk::mesh::CollectionPtr> meshCollections;
-  if(!bathyHelper || !meshMgr )
-    {
+  if (!bathyHelper || !meshMgr)
+  {
     return ok;
-    }
+  }
   // decide we work on selected mesh or all meshes
-  if (meshItem ==nullptr)
-    {
-    meshCollections =
-    meshMgr->associatedCollections(srcModel);
-    }
+  if (meshItem == nullptr)
+  {
+    meshCollections = meshMgr->associatedCollections(srcModel);
+  }
   else
-    {
+  {
     // convert meshItem into meshCollections
-    for (attribute::MeshItem::const_mesh_it mit = meshItem->begin();
-         mit != meshItem->end(); ++mit)
-      {
+    for (attribute::MeshItem::const_mesh_it mit = meshItem->begin(); mit != meshItem->end(); ++mit)
+    {
       meshCollections.push_back(mit->collection());
-      }
     }
-  if(meshCollections.size() == 0)
-    {
+  }
+  if (meshCollections.size() == 0)
+  {
     return ok;
-    }
+  }
   if (!removing && !bathyData)
-    {
+  {
     std::cerr << "No bathymetry dataset to use for meshes!\n";
     return false;
-    }
+  }
 
   std::vector<smtk::mesh::CollectionPtr>::iterator it;
-  for(it = meshCollections.begin(); it != meshCollections.end(); ++it)
-    {
+  for (it = meshCollections.begin(); it != meshCollections.end(); ++it)
+  {
     smtk::mesh::MeshSet meshes = (*it)->meshes();
-    if(removing)
-      {
+    if (removing)
+    {
       // set back the cached Z values
       ok &= bathyHelper->resetMeshPointsZ(*it);
-      }
+    }
     else
-      {
+    {
       // cache the original mesh points Z values first
-      if(!bathyHelper->storeMeshPointsZ(*it))
-        {
+      if (!bathyHelper->storeMeshPointsZ(*it))
+      {
         return false;
-        }
+      }
 
       if (vtkImageData* imageInput = vtkImageData::SafeDownCast(bathyData))
-        {
+      {
         ElevationStructuredDataForVTKImageData data(imageInput);
-        smtk::mesh::ElevationControls clamp(useHighLimit, eleHigh,
-                                            useLowLimit, eleLow);
+        smtk::mesh::ElevationControls clamp(useHighLimit, eleHigh, useLowLimit, eleLow);
 
         ok &= smtk::mesh::elevate(data, meshes.points(), radius, clamp);
-        }
-      else if (vtkUniformGrid* gridInput =
-               vtkUniformGrid::SafeDownCast(bathyData))
-        {
+      }
+      else if (vtkUniformGrid* gridInput = vtkUniformGrid::SafeDownCast(bathyData))
+      {
         ElevationStructuredDataForVTKUniformGrid data(gridInput);
-        smtk::mesh::ElevationControls clamp(useHighLimit, eleHigh,
-                                            useLowLimit, eleLow);
+        smtk::mesh::ElevationControls clamp(useHighLimit, eleHigh, useLowLimit, eleLow);
 
         ok &= smtk::mesh::elevate(data, meshes.points(), radius, clamp);
-        }
+      }
       else
-        {
+      {
         vtkNew<vtkPoints> bathyPoints;
-        if(!bathyHelper->computeBathymetryPoints(bathyData, bathyPoints.GetPointer()) ||
-           bathyPoints->GetNumberOfPoints() == 0)
-          {
+        if (!bathyHelper->computeBathymetryPoints(bathyData, bathyPoints.GetPointer()) ||
+          bathyPoints->GetNumberOfPoints() == 0)
+        {
           std::cerr << "Failed to compuate bathymetry points to use for meshes!\n";
           return false;
-          }
+        }
 
         smtk::mesh::ElevationControls clamp(useHighLimit, eleHigh, useLowLimit, eleLow);
         vtkDataArray* pointCoords = bathyPoints->GetData();
         if (pointCoords->GetDataType() == VTK_FLOAT)
-          {
-          vtkFloatArray *floatArray = static_cast<vtkFloatArray *>(pointCoords);
-          ok &= smtk::mesh::elevate( floatArray->GetPointer(0),
-                               bathyPoints->GetNumberOfPoints(),
-                               meshes.points(),
-                               radius,
-                               clamp);
-          }
+        {
+          vtkFloatArray* floatArray = static_cast<vtkFloatArray*>(pointCoords);
+          ok &= smtk::mesh::elevate(floatArray->GetPointer(0), bathyPoints->GetNumberOfPoints(),
+            meshes.points(), radius, clamp);
+        }
         else if (pointCoords->GetDataType() == VTK_DOUBLE)
-          {
-          vtkDoubleArray *doubleArray = static_cast<vtkDoubleArray *>(pointCoords);
-          ok &= smtk::mesh::elevate( doubleArray->GetPointer(0),
-                                 bathyPoints->GetNumberOfPoints(),
-                                 meshes.points(),
-                                 radius,
-                                 clamp);
-          }
+        {
+          vtkDoubleArray* doubleArray = static_cast<vtkDoubleArray*>(pointCoords);
+          ok &= smtk::mesh::elevate(doubleArray->GetPointer(0), bathyPoints->GetNumberOfPoints(),
+            meshes.points(), radius, clamp);
         }
       }
-
-    if(ok)
-      {
-      modifiedMeshes.insert(meshes);
-      }
     }
+
+    if (ok)
+    {
+      modifiedMeshes.insert(meshes);
+    }
+  }
 
   return ok;
 }
@@ -219,16 +207,16 @@ BathymetryOperator::~BathymetryOperator()
 bool BathymetryOperator::ableToOperate()
 {
 
-  smtk::attribute::StringItem::Ptr optypeItem =
-    this->specification()->findString("operation");
+  smtk::attribute::StringItem::Ptr optypeItem = this->specification()->findString("operation");
   std::string optype = optypeItem->value();
   // The auxiliary geometry and corresponding model must be valid
   if (optype != "Remove Bathymetry")
   {
-    smtk::model::AuxiliaryGeometry auxGeo = this->specification()->findModelEntity("auxiliary geometry")->value();
+    smtk::model::AuxiliaryGeometry auxGeo =
+      this->specification()->findModelEntity("auxiliary geometry")->value();
 
     Model model = auxGeo.owningModel();
-    bool isModelValid = model.isValid(),isAuxValid;
+    bool isModelValid = model.isValid(), isAuxValid;
     if (!isModelValid)
     {
       smtkErrorMacro(this->log(), "No model specified!");
@@ -240,7 +228,7 @@ bool BathymetryOperator::ableToOperate()
   // valid model for remove bathymetry
   else
   {
-    Model model  = this->specification()->findModelEntity("model")->value().as<Model>();
+    Model model = this->specification()->findModelEntity("model")->value().as<Model>();
     if (!model.isValid())
     {
       smtkErrorMacro(this->log(), "No model specified to remove!");
@@ -253,8 +241,7 @@ bool BathymetryOperator::ableToOperate()
 OperatorResult BathymetryOperator::operateInternal()
 {
   // Set up the common info for model and mesh
-  smtk::attribute::StringItem::Ptr optypeItem =
-    this->specification()->findString("operation");
+  smtk::attribute::StringItem::Ptr optypeItem = this->specification()->findString("operation");
   std::string optype = optypeItem->value();
   std::string opsessionName = this->session()->name();
 
@@ -265,7 +252,7 @@ OperatorResult BathymetryOperator::operateInternal()
     ApplyToModel = (opsessionName == "discrete" ? 1 : 0);
     ApplyToMesh = 1;
   }
-  else if (optype =="Apply Bathymetry (Model&Mesh)")
+  else if (optype == "Apply Bathymetry (Model&Mesh)")
   {
     ApplyToModel = 1;
     ApplyToMesh = 1;
@@ -300,8 +287,7 @@ OperatorResult BathymetryOperator::operateInternal()
   // Apply BO to model
   if (optype != "Remove Bathymetry")
   {
-    auxGeo = this->specification()->
-      findModelEntity("auxiliary geometry")->value();
+    auxGeo = this->specification()->findModelEntity("auxiliary geometry")->value();
     inModel = auxGeo.owningModel();
   }
   else
@@ -326,25 +312,26 @@ OperatorResult BathymetryOperator::operateInternal()
   // create an entityrefMap to get all the entities with tessellation
   std::map<smtk::model::EntityRef, smtk::model::EntityRef> entityrefMap;
   if (1)
-    {
+  {
     std::set<smtk::model::EntityRef> touched; // make this go out of scope soon.
-    inModel.findEntitiesWithTessellation(entityrefMap,touched);
-    }
+    inModel.findEntitiesWithTessellation(entityrefMap, touched);
+  }
 
   // loop through each entity and get all points
   std::map<smtk::model::EntityRef, smtk::model::EntityRef>::iterator cit;
   for (cit = entityrefMap.begin(); cit != entityrefMap.end(); ++cit)
-    {
-    vtkIdType npts = this->bathyHelper->GenerateRepresentationFromModel(masterModelPts.GetPointer(), cit->first);
+  {
+    vtkIdType npts =
+      this->bathyHelper->GenerateRepresentationFromModel(masterModelPts.GetPointer(), cit->first);
     entityLenthList.push_back(npts);
-    }
+  }
 
   // get points' z value as a vector from masterModelPts
   bathyHelper->GetZValuesFromMasterModelPts(masterModelPts.GetPointer(), zValues);
 
-  if(optype == "Remove Bathymetry")
+  if (optype == "Remove Bathymetry")
   {
-    if(!inModel.hasFloatProperty(BO_elevation))
+    if (!inModel.hasFloatProperty(BO_elevation))
     {
       ok = true;
     }
@@ -355,8 +342,7 @@ OperatorResult BathymetryOperator::operateInternal()
       zPtr = &inModel.floatProperty(BO_elevation);
 
       // update the z value in masterModelPoly then do a shallow copy
-      ok = this->bathyHelper->SetZValuesIntoMasterModelPts(masterModelPts.GetPointer(),
-                                                      zPtr);
+      ok = this->bathyHelper->SetZValuesIntoMasterModelPts(masterModelPts.GetPointer(), zPtr);
       newModelPoints->ShallowCopy(masterModelPoly.GetPointer());
       // Sending the point back to Tessellation
       vtkIdType startingIndex(0);
@@ -371,12 +357,12 @@ OperatorResult BathymetryOperator::operateInternal()
       }
     }
   }
-  else if(ApplyToModel) // check if we want to apply to model
+  else if (ApplyToModel) // check if we want to apply to model
   {
     ok = true;
     filename = auxGeo.url();
-    if(!filename.empty() && this->bathyHelper->loadBathymetryFile(filename) &&
-       (bathyPoints = this->bathyHelper->bathymetryData(filename)))
+    if (!filename.empty() && this->bathyHelper->loadBathymetryFile(filename) &&
+      (bathyPoints = this->bathyHelper->bathymetryData(filename)))
     {
       vtkNew<vtkCMBApplyBathymetryFilter> filter;
 
@@ -387,7 +373,7 @@ OperatorResult BathymetryOperator::operateInternal()
       filter->SetUseLowestZValue(lowZItem->isEnabled());
 
       filter->SetInputData(0, masterModelPoly.GetPointer());
-      filter->SetInputData(1, bathyPoints );
+      filter->SetInputData(1, bathyPoints);
       filter->SetNoOP(false);
       filter->Update();
       newModelPoints->ShallowCopy(filter->GetOutputDataObject(0));
@@ -408,26 +394,23 @@ OperatorResult BathymetryOperator::operateInternal()
   }
 
   // update the value of ok for model.
-  if ( (ApplyToMesh && !ApplyToModel) || optype == "Remove Bathymetry")
-    ok = true;// only to mesh case
-  OperatorResult result =
-    this->createResult(
-      ok ?  OPERATION_SUCCEEDED : OPERATION_FAILED);
+  if ((ApplyToMesh && !ApplyToModel) || optype == "Remove Bathymetry")
+    ok = true; // only to mesh case
+  OperatorResult result = this->createResult(ok ? OPERATION_SUCCEEDED : OPERATION_FAILED);
   result->findModelEntity("tess_changed")->setValue(inModel);
-  if(ok)
+  if (ok)
   {
-    if(optype == "Remove Bathymetry")
+    if (optype == "Remove Bathymetry")
     {
       inModel.removeFloatProperty(BO_elevation);
     }
-    else if(ApplyToModel)
+    else if (ApplyToModel)
     {
       // check existance, so we only add it once.
       if (!inModel.hasFloatProperty(BO_elevation))
       {
         inModel.setFloatProperty(BO_elevation, zValues);
       }
-
     }
   }
 
@@ -437,48 +420,38 @@ OperatorResult BathymetryOperator::operateInternal()
     if (bathyPoints == NULL && ApplyToMesh) // get bathy points if we only apply to mesh
     {
       filename = auxGeo.url();
-      if(!(!filename.empty() && this->bathyHelper->loadBathymetryFile(filename) && (bathyPoints = this->bathyHelper->bathymetryData(filename))))
+      if (!(!filename.empty() && this->bathyHelper->loadBathymetryFile(filename) &&
+            (bathyPoints = this->bathyHelper->bathymetryData(filename))))
       {
         return this->createResult(OPERATION_FAILED);
       }
     }
     smtk::mesh::MeshSets modifiedMeshes;
     // update associated meshes
-    if(!internal_bathyToAssociatedMeshes(
-       this->bathyHelper, bathyPoints,
-       inModel.as<Model>(),
-       optype == "Remove Bathymetry",
-       aveEleRadius, highZItem ? highZItem->isEnabled() : false, highElevation,
-       lowZItem ? lowZItem->isEnabled() : false, lowElevation,
-       this->manager()->meshes(), modifiedMeshes, meshItem))
-      {
+    if (!internal_bathyToAssociatedMeshes(this->bathyHelper, bathyPoints, inModel.as<Model>(),
+          optype == "Remove Bathymetry", aveEleRadius, highZItem ? highZItem->isEnabled() : false,
+          highElevation, lowZItem ? lowZItem->isEnabled() : false, lowElevation,
+          this->manager()->meshes(), modifiedMeshes, meshItem))
+    {
       std::cerr << "ERROR: Failed to apply bathymetry to associated meshes." << std::endl;
-      }
+    }
 
     this->addEntityToResult(result, inModel, MODIFIED);
     result->findModelEntity("tess_changed")->setValue(inModel);
 
     if (modifiedMeshes.size() > 0)
-      {
-      smtk::attribute::MeshItemPtr resultMeshes =
-        result->findMesh("mesh_modified");
-      if(resultMeshes)
+    {
+      smtk::attribute::MeshItemPtr resultMeshes = result->findMesh("mesh_modified");
+      if (resultMeshes)
         resultMeshes->appendValues(modifiedMeshes);
-      }
+    }
   }
-
 
   return result;
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
-
-smtkImplementsModelOperator(
-  VTKSMTKOPERATORSEXT_EXPORT,
-  smtk::model::BathymetryOperator,
-  apply_bathymetry,
-  "apply bathymetry",
-  BathymetryOperator_xml,
-  smtk::model::Session);
+smtkImplementsModelOperator(VTKSMTKOPERATORSEXT_EXPORT, smtk::model::BathymetryOperator,
+  apply_bathymetry, "apply bathymetry", BathymetryOperator_xml, smtk::model::Session);

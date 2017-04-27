@@ -23,56 +23,58 @@ class QScrollArea;
 
 namespace smtk
 {
-  namespace extension
+namespace extension
+{
+class SMTKQTEXT_EXPORT OperatorViewInfo : public ViewInfo
+{
+public:
+  OperatorViewInfo(smtk::common::ViewPtr view, smtk::model::OperatorPtr targetOperator,
+    QWidget* parent, qtUIManager* uiman)
+    : ViewInfo(view, parent, uiman)
+    , m_operator(targetOperator)
   {
-    class SMTKQTEXT_EXPORT OperatorViewInfo : public ViewInfo
-    {
-    public:
-    OperatorViewInfo(smtk::common::ViewPtr view, smtk::model::OperatorPtr targetOperator,
-		     QWidget* parent, qtUIManager* uiman):
-      ViewInfo(view, parent, uiman), m_operator(targetOperator) {}
+  }
 
-      OperatorViewInfo(smtk::common::ViewPtr view, smtk::model::OperatorPtr targetOperator,
-		       QWidget* parent, qtUIManager* uiman,
-		       const std::map<std::string, QLayout *> &layoutDict):
-      ViewInfo(view, parent, uiman, layoutDict), m_operator(targetOperator) {}
+  OperatorViewInfo(smtk::common::ViewPtr view, smtk::model::OperatorPtr targetOperator,
+    QWidget* parent, qtUIManager* uiman, const std::map<std::string, QLayout*>& layoutDict)
+    : ViewInfo(view, parent, uiman, layoutDict)
+    , m_operator(targetOperator)
+  {
+  }
 
-      OperatorViewInfo() {}
-      smtk::model::OperatorPtr m_operator;
-    };
+  OperatorViewInfo() {}
+  smtk::model::OperatorPtr m_operator;
+};
 
-    class SMTKQTEXT_EXPORT qtOperatorView : public qtBaseView
-    {
-      Q_OBJECT
+class SMTKQTEXT_EXPORT qtOperatorView : public qtBaseView
+{
+  Q_OBJECT
 
-    public:
-      static qtBaseView *createViewWidget(const ViewInfo &info);
+public:
+  static qtBaseView* createViewWidget(const ViewInfo& info);
 
-      qtOperatorView(const OperatorViewInfo &info);
-      virtual ~qtOperatorView();
+  qtOperatorView(const OperatorViewInfo& info);
+  virtual ~qtOperatorView();
 
-    public slots:
-      virtual void showAdvanceLevelOverlay(bool show);
-      virtual void requestModelEntityAssociation();
-      virtual void onShowCategory()
-       { this->updateAttributeData(); }
-      virtual void onModifiedParameters();
-      void onOperate();
+public slots:
+  virtual void showAdvanceLevelOverlay(bool show);
+  virtual void requestModelEntityAssociation();
+  virtual void onShowCategory() { this->updateAttributeData(); }
+  virtual void onModifiedParameters();
+  void onOperate();
 
-    signals:
-      void operationRequested(const smtk::model::OperatorPtr& brOp);
+signals:
+  void operationRequested(const smtk::model::OperatorPtr& brOp);
 
-    protected:
-      virtual void createWidget( );
-      bool m_applied; // indicates if the current settings have been applied
+protected:
+  virtual void createWidget();
+  bool m_applied; // indicates if the current settings have been applied
 
-    private:
+private:
+  qtOperatorViewInternals* Internals;
 
-      qtOperatorViewInternals *Internals;
-
-    }; // class
-  }; // namespace attribute
+}; // class
+}; // namespace attribute
 }; // namespace smtk
-
 
 #endif

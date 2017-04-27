@@ -39,9 +39,12 @@ using namespace smtk::model;
 using namespace smtk::common;
 using namespace boost::filesystem;
 
-namespace smtk {
-  namespace bridge {
-    namespace multiscale {
+namespace smtk
+{
+namespace bridge
+{
+namespace multiscale
+{
 
 smtk::model::OperatorResult Dream3DPipeline::operateInternal()
 {
@@ -53,8 +56,7 @@ smtk::model::OperatorResult Dream3DPipeline::operateInternal()
   preamble << this->specToArgList(this->specification());
 
   std::stringstream script;
-  script << STRINGIFY(AFRL_DIR)
-         << "/CMBPreprocessingScripts/Dream3DPipeline.py";
+  script << STRINGIFY(AFRL_DIR) << "/CMBPreprocessingScripts/Dream3DPipeline.py";
 
   result = this->executePythonScript(preamble.str(), script.str());
 
@@ -63,9 +65,8 @@ smtk::model::OperatorResult Dream3DPipeline::operateInternal()
     return result;
   }
 
-  std::string inputfile =
-    this->specification()->findFile("output-file")->value();
-  inputfile = inputfile.substr(0,inputfile.find_last_of(".")) + ".xdmf";
+  std::string inputfile = this->specification()->findFile("output-file")->value();
+  inputfile = inputfile.substr(0, inputfile.find_last_of(".")) + ".xdmf";
 
   vtkNew<vtkXdmfReader> xdmfReader;
   xdmfReader->SetFileName(inputfile.c_str());
@@ -78,8 +79,8 @@ smtk::model::OperatorResult Dream3DPipeline::operateInternal()
   vtkCompositeDataIterator* it = multiBlockDataSet->NewIterator();
   for (it->InitTraversal(); !it->IsDoneWithTraversal(); it->GoToNextItem())
   {
-    if (strcmp(it->GetCurrentMetaData()->Get(vtkCompositeDataSet::NAME()),
-               "VolumeDataContainer") == 0)
+    if (strcmp(it->GetCurrentMetaData()->Get(vtkCompositeDataSet::NAME()), "VolumeDataContainer") ==
+      0)
     {
       valid = true;
       break;
@@ -103,47 +104,41 @@ smtk::model::OperatorResult Dream3DPipeline::operateInternal()
 
   smtk::extension::vtk::io::ImportVTKData importVTKData;
   smtk::mesh::ManagerPtr meshManager = this->activeSession()->meshManager();
-  smtk::mesh::CollectionPtr collection =
-    importVTKData(volumeDataContainer, meshManager, "ZoneIds");
+  smtk::mesh::CollectionPtr collection = importVTKData(volumeDataContainer, meshManager, "ZoneIds");
 
   if (!collection || !collection->isValid())
-    {
+  {
     // The file was not correctly read.
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
   // Assign its model manager to the one associated with this session
   collection->setModelManager(this->activeSession()->manager());
   collection->name("result(dream3d)");
 
   // Construct the topology
-  this->activeSession()->addTopology(
-    std::move(smtk::bridge::mesh::Topology(collection)));
+  this->activeSession()->addTopology(std::move(smtk::bridge::mesh::Topology(collection)));
 
   // Our collections will already have a UUID, so here we create a model given
   // the model manager and uuid
   smtk::model::Model model =
-    smtk::model::EntityRef(this->activeSession()->manager(),
-                           collection->entity());
+    smtk::model::EntityRef(this->activeSession()->manager(), collection->entity());
 
   collection->associateToModel(model.entity());
 
   // Set the model's session to point to the current session
-  model.setSession(smtk::model::SessionRef(this->activeSession()->manager(),
-                                           this->activeSession()->sessionId()));
+  model.setSession(
+    smtk::model::SessionRef(this->activeSession()->manager(), this->activeSession()->sessionId()));
 
   // If we don't call "transcribe" ourselves, it never gets called.
-  this->activeSession()->transcribe(
-    model, smtk::model::SESSION_EVERYTHING, false);
+  this->activeSession()->transcribe(model, smtk::model::SESSION_EVERYTHING, false);
 
   result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
 
-  smtk::attribute::ModelEntityItem::Ptr resultModels =
-    result->findModelEntity("model");
+  smtk::attribute::ModelEntityItem::Ptr resultModels = result->findModelEntity("model");
   resultModels->setValue(model);
 
-  smtk::attribute::ModelEntityItem::Ptr created =
-    result->findModelEntity("created");
+  smtk::attribute::ModelEntityItem::Ptr created = result->findModelEntity("created");
   created->setNumberOfValues(1);
   created->setValue(model);
   created->setIsEnabled(true);
@@ -153,8 +148,8 @@ smtk::model::OperatorResult Dream3DPipeline::operateInternal()
   return result;
 }
 
-    } // namespace multiscale
-  } //namespace bridge
+} // namespace multiscale
+} //namespace bridge
 } // namespace smtk
 
 #undef STRINGIFY
@@ -163,10 +158,5 @@ smtk::model::OperatorResult Dream3DPipeline::operateInternal()
 #include "smtk/bridge/multiscale/Dream3DPipeline_xml.h"
 #include "smtk/bridge/multiscale/Exports.h"
 
-smtkImplementsModelOperator(
-  SMTKMULTISCALESESSION_EXPORT,
-  smtk::bridge::multiscale::Dream3DPipeline,
-  multiscale_dream3d,
-  "dream3d",
-  Dream3DPipeline_xml,
-  smtk::bridge::multiscale::Session);
+smtkImplementsModelOperator(SMTKMULTISCALESESSION_EXPORT, smtk::bridge::multiscale::Dream3DPipeline,
+  multiscale_dream3d, "dream3d", Dream3DPipeline_xml, smtk::bridge::multiscale::Session);

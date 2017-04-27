@@ -27,9 +27,12 @@
 
 using smtk::common::UUID;
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
 typedef std::vector<std::pair<size_t, internal::Segment> > SegmentSplitsT;
 
@@ -74,134 +77,127 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
   //    as method == 0 (points) because widget representation points will be set to "points", etc.
   smtk::model::Model parentModel(modelItem->value(0));
   if (!parentModel.isValid())
-    {
+  {
     parentModel = modelItem->value(0).owningModel();
     if (!parentModel.isValid() || (method == 1 && modelItem->numberOfValues() < 2))
-      {
+    {
       smtkErrorMacro(this->log(),
         "A model (or vertices with a valid parent model) must be associated with the operator.");
       return this->createResult(smtk::model::OPERATION_FAILED);
-      }
     }
+  }
   if (method == 1 && (!modelItem->value(0).isVertex() || modelItem->numberOfValues() < 2))
-    {
-    smtkErrorMacro(this->log(),
-      "When constructing an edge from vertices,"
-      " all associated model entities must be vertices"
-      " and there must be at least 2 vertices");
+  {
+    smtkErrorMacro(this->log(), "When constructing an edge from vertices,"
+                                " all associated model entities must be vertices"
+                                " and there must be at least 2 vertices");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
-  internal::pmodel::Ptr storage =
-    this->findStorage<internal::pmodel>(
-      parentModel.entity());
+  internal::pmodel::Ptr storage = this->findStorage<internal::pmodel>(parentModel.entity());
   bool ok = true;
   int numEdges = static_cast<int>(offsetsItem->numberOfValues());
   int numCoordsPerPt = coordinatesItem->value(0);
   if ((method == 0 || method == 2) && numCoordsPerPt == 0)
-    {
-    smtkErrorMacro(this->log(),
-      "When constructing an edge from points or interactive widget,"
-      "the number of coordinates per point must be specified!");
+  {
+    smtkErrorMacro(this->log(), "When constructing an edge from points or interactive widget,"
+                                "the number of coordinates per point must be specified!");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
   // numPts is the number of points total (across all edges)
-  long long numPts =
-    ((method == 0 || method == 2) ?
-     pointsItem->numberOfValues() / numCoordsPerPt : // == #pts / #coordsPerPt
-     modelItem->numberOfValues());
+  long long numPts = ((method == 0 || method == 2) ? pointsItem->numberOfValues() / numCoordsPerPt
+                                                   : // == #pts / #coordsPerPt
+      modelItem->numberOfValues());
   int ei;
   smtk::model::Edges created;
   // Process each edge individually:
   for (ei = 0; ei < numEdges; ++ei)
-    {
+  {
     long long edgeOffset = offsetsItem->value(ei);
     long long edgeEnd = (ei < numEdges - 1 ? offsetsItem->value(ei + 1) : numPts);
     long long numSegments = edgeEnd - edgeOffset - 1;
     if (numSegments < 1 || edgeEnd > numPts)
-      {
-      smtkWarningMacro(this->log(),
-        "Ignoring input " << ei << " (offset " << edgeOffset << " to " << edgeEnd << ")" <<
-        " with not enough points or offset past end of points.");
+    {
+      smtkWarningMacro(this->log(), "Ignoring input "
+          << ei << " (offset " << edgeOffset << " to " << edgeEnd << ")"
+          << " with not enough points or offset past end of points.");
       continue; // skip "edges" with only 0 or 1 vertices for their entire path.
-      }
+    }
 
     // Fill in a list of segments for the edge so we can
     // check for self-intersections.
     std::list<internal::Segment> edgeSegs;
     bool edgeIsPeriodic = true;
     switch (method)
+    {
+      case 0: // points, coordinates, offsets
+      case 2: // interactive widget, representation points will be set to points, coords, offsets
       {
-    case 0: // points, coordinates, offsets
-    case 2: // interactive widget, representation points will be set to points, coords, offsets
-        {
         std::vector<double> pt(numCoordsPerPt, 0.);
         internal::Point curr;
         internal::Point prev;
         internal::Point orig;
         bool first = true;
         for (; edgeOffset < edgeEnd; ++edgeOffset, prev = curr)
-          {
+        {
           for (int i = 0; i < numCoordsPerPt; ++i)
             pt[i] = pointsItem->value(edgeOffset * numCoordsPerPt + i);
           curr = storage->projectPoint(pt.begin(), pt.end());
           if (!first && curr != prev)
-            {
+          {
             edgeSegs.push_back(internal::Segment(prev, curr));
-            }
+          }
           else
-            {
+          {
             first = false;
             orig = curr;
-            }
           }
+        }
         if (!first && orig != curr)
-          { // non-periodic edge forces endpts to be model vertices
+        { // non-periodic edge forces endpts to be model vertices
           smtk::model::Vertex vs = storage->findOrAddModelVertex(mgr, orig);
           smtk::model::Vertex ve = storage->findOrAddModelVertex(mgr, curr);
           edgeIsPeriodic = false;
-          }
         }
+      }
       break;
-    case 1: // vertices, offsets
-        {
+      case 1: // vertices, offsets
+      {
         internal::Point curr;
         internal::Point prev;
         bool first = true;
         edgeIsPeriodic = (modelItem->value(edgeOffset) == modelItem->value(edgeEnd));
         for (; edgeOffset < edgeEnd; ++edgeOffset, prev = curr)
-          {
+        {
           internal::vertex::Ptr vert =
             this->findStorage<internal::vertex>(modelItem->value(edgeOffset).entity());
           if (!vert)
-            {
+          {
             ok = false;
-            smtkErrorMacro(
-              sess->log(),
-              "vertices item " << edgeOffset << " not a valid vertex.");
-            }
+            smtkErrorMacro(sess->log(), "vertices item " << edgeOffset << " not a valid vertex.");
+          }
           curr = vert->point();
           if (!first)
-            {
+          {
             edgeSegs.push_back(internal::Segment(prev, curr));
-            }
+          }
           else
-            {
+          {
             first = false;
-            }
           }
         }
-      break;
-    default:
-      ok = false;
-      smtkInfoMacro(log(), "Unhandled construction method " << method << ".");
-      break;
       }
+      break;
+      default:
+        ok = false;
+        smtkInfoMacro(log(), "Unhandled construction method " << method << ".");
+        break;
+    }
 
     std::list<internal::Segment>::const_iterator edgeIt;
     if (ok)
-      { // Inside here, we know we got a list of segments for this edge.
+    { // Inside here, we know we got a list of segments for this edge.
 
       // Intersect the segments with each other.
       // Intersection points become model vertices and cause the edge
@@ -216,10 +212,10 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
         << " segments:\n";
         */
       if (result.empty())
-        {
+      {
         smtkErrorMacro(this->log(), "Self-intersection of edge segments was empty set.");
         return this->createResult(smtk::model::OPERATION_FAILED);
-        }
+      }
 
       // I. Pre-process the intersected segments
       //
@@ -252,7 +248,9 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
       // obtain result =
       // {0:{a,b}, 1:{b,f}, 1:{f,c}, 2:{c,d}, 3:{d,g}, 3:{g,e}}.
 
-      edgeIt = edgeSegs.begin(); // Keep an iterator pointing to the source segment of the intersected results.
+      edgeIt =
+        edgeSegs
+          .begin(); // Keep an iterator pointing to the source segment of the intersected results.
       SegmentSplitsT::iterator segStart = result.begin();
       //printSegment(storage, "seg start", segStart->second); // DBG
       SegmentSplitsT::iterator segEnd;
@@ -260,72 +258,75 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
       bool haveFirstModelVertex = false;
       // Loop over all intersection-output segments by their input segment (edgeIt):
       for (SegmentSplitsT::iterator sit = result.begin(); sit != result.end(); ++edgeIt)
-        {
+      {
         std::size_t numSegsPerSrc = 0; // Number of result segs per input edge in edgeSegs
         // Determine whether segments are reversed from the input edge:
         //printSegment(storage, "Seg ", sit->second);
         internal::HighPrecisionPoint deltaSrc =
-          internal::HighPrecisionPoint(
-            static_cast<internal::HighPrecisionPoint::coordinate_type>(edgeIt->high().x() - edgeIt->low().x()),
-            static_cast<internal::HighPrecisionPoint::coordinate_type>(edgeIt->high().y() - edgeIt->low().y()));
+          internal::HighPrecisionPoint(static_cast<internal::HighPrecisionPoint::coordinate_type>(
+                                         edgeIt->high().x() - edgeIt->low().x()),
+            static_cast<internal::HighPrecisionPoint::coordinate_type>(
+              edgeIt->high().y() - edgeIt->low().y()));
         internal::HighPrecisionPoint deltaDst =
-          internal::HighPrecisionPoint(
-            static_cast<internal::HighPrecisionPoint::coordinate_type>(sit->second.high().x() - sit->second.low().x()),
-            static_cast<internal::HighPrecisionPoint::coordinate_type>(sit->second.high().y() - sit->second.low().y()));
+          internal::HighPrecisionPoint(static_cast<internal::HighPrecisionPoint::coordinate_type>(
+                                         sit->second.high().x() - sit->second.low().x()),
+            static_cast<internal::HighPrecisionPoint::coordinate_type>(
+              sit->second.high().y() - sit->second.low().y()));
         // Whether the segments are reversed or not, determine which
         // output segments correspond to a single input segment:
         if (deltaDst.x() * deltaSrc.x() < 0 || deltaDst.y() * deltaSrc.y() < 0)
-          {
+        {
           segStart = sit;
           for (segEnd = sit; segEnd != result.end() && segEnd->first == segStart->first; ++segEnd)
-            {
+          {
             internal::Segment flipped(segEnd->second.high(), segEnd->second.low());
             segEnd->second = flipped;
             ++numSegsPerSrc;
-            }
+          }
           // NB: after reverse(), segStart still points to beginning...
           // its contents are swapped with (segEnd-1):
           std::reverse(segStart, segEnd);
-          }
+        }
         else
-          { // Advance sit to end of entries for the input segment.
+        { // Advance sit to end of entries for the input segment.
           segStart = sit;
           segEnd = sit;
-          for (segEnd = segStart; segEnd != result.end() && segEnd->first == segStart->first; ++segEnd)
+          for (segEnd = segStart; segEnd != result.end() && segEnd->first == segStart->first;
+               ++segEnd)
             ++numSegsPerSrc;
-          }
+        }
         // Process all the output segments (i.e., [segStart,segEnd)) for the current input segment:
         sit = segStart;
         // If the first point in the first ouput segment for any input-segment is
         // a model vertex, make a note of it for periodic edges:
         if (edgeIsPeriodic && storage->pointId(sit->second.low()) && !haveFirstModelVertex)
-          {
+        {
           haveFirstModelVertex = true;
           firstModelVertex = sit;
-          }
+        }
         // If numSegsPerSrc > 1, we have interior model vertices where intersections occur.
         // Promote each of those points to model vertices.
         for (std::size_t i = 1; i < numSegsPerSrc; ++i)
-          {
+        {
           smtk::model::Vertex vs = storage->findOrAddModelVertex(mgr, sit->second.high());
           ++sit;
           if (edgeIsPeriodic && !haveFirstModelVertex)
-            {
+          {
             haveFirstModelVertex = true;
             firstModelVertex = sit;
-            }
           }
-        sit = segEnd;
         }
+        sit = segEnd;
+      }
       // Move any non-model-vertex points on periodic edges that contain at least
       // one model vertex to the end of the edge list.
       if (edgeIsPeriodic && haveFirstModelVertex)
-        {
+      {
         //result.splice(result, result.end(), result.begin(), firstModelVertex);
         SegmentSplitsT tmp(result.begin(), firstModelVertex);
         result.erase(result.begin(), firstModelVertex);
         result.insert(result.end(), tmp.begin(), tmp.end());
-        }
+      }
 
       // II. Generate edge(s) as required.
       //
@@ -337,31 +338,31 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
 
       smtk::model::VertexSet newVerts;
       segStart = result.begin();
-      for (SegmentSplitsT::iterator sit = result.begin(); sit != result.end(); )
-        {
+      for (SegmentSplitsT::iterator sit = result.begin(); sit != result.end();)
+      {
         bool generateEdge = (storage->pointId(sit->second.high()) ? true : false);
         ++sit;
         // Does the current segment end with a model vertex?
         if (generateEdge)
-          { 
+        {
           // Generate an edge. segStart->second.low() is guaranteed to be a model vertex.
           smtk::model::Edge edge = storage->createModelEdgeFromSegments(
-            mgr, segStart, sit, true, std::pair<UUID,UUID>(), false, newVerts);
+            mgr, segStart, sit, true, std::pair<UUID, UUID>(), false, newVerts);
           if (edge.isValid())
             created.push_back(edge);
           segStart = sit;
-          }
         }
+      }
       // Handle the case when there are no model vertices:
       if (segStart != result.end())
-        {
+      {
         smtk::model::Edge edge = storage->createModelEdgeFromSegments(
-          mgr, segStart, result.end(), true, std::pair<UUID,UUID>(), false, newVerts);
+          mgr, segStart, result.end(), true, std::pair<UUID, UUID>(), false, newVerts);
         created.push_back(edge);
-        }
-      created.insert(created.end(), newVerts.begin(), newVerts.end());
       }
+      created.insert(created.end(), newVerts.begin(), newVerts.end());
     }
+  }
 
   // Remove all non-free vertices from the model and mark the model as modified
   // if any were removed.
@@ -369,46 +370,41 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
   smtk::model::Edges::iterator crit;
   smtk::model::Vertices dead;
   for (crit = created.begin(); crit != created.end(); ++crit)
-    {
+  {
     smtk::model::Vertices endpts = crit->vertices();
     for (smtk::model::Vertices::iterator evit = endpts.begin(); evit != endpts.end(); ++evit)
-      {
+    {
       if (freeVerts.find(*evit) != freeVerts.end())
-        {
+      {
         dead.push_back(*evit);
-        }
       }
     }
+  }
   smtk::model::EntityRefArray modified;
   if (!freeVerts.empty())
-    {
+  {
     parentModel.removeCells(dead);
     modified.push_back(parentModel);
-    }
+  }
 
   smtk::model::OperatorResult opResult;
   if (ok)
-    {
+  {
     opResult = this->createResult(smtk::model::OPERATION_SUCCEEDED);
     this->addEntitiesToResult(opResult, created, CREATED);
     this->addEntitiesToResult(opResult, modified, MODIFIED);
-    }
+  }
   else
-    {
+  {
     opResult = this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
   return opResult;
 }
 
-    } // namespace polygon
-  } //namespace bridge
+} // namespace polygon
+} //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(
-  SMTKPOLYGONSESSION_EXPORT,
-  smtk::bridge::polygon::CreateEdge,
-  polygon_create_edge,
-  "create edge",
-  CreateEdge_xml,
-  smtk::bridge::polygon::Session);
+smtkImplementsModelOperator(SMTKPOLYGONSESSION_EXPORT, smtk::bridge::polygon::CreateEdge,
+  polygon_create_edge, "create edge", CreateEdge_xml, smtk::bridge::polygon::Session);

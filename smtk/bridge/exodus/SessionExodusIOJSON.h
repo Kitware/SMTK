@@ -18,9 +18,12 @@ struct cJSON;
 
 class vtkDataObject;
 
-namespace smtk {
-  namespace bridge {
-    namespace exodus {
+namespace smtk
+{
+namespace bridge
+{
+namespace exodus
+{
 
 class Session;
 
@@ -36,29 +39,27 @@ public:
   smtkTypeMacro(SessionIOJSON);
   smtkCreateMacro(SessionIOJSON);
   SessionIOJSON();
-  virtual ~SessionIOJSON() { }
+  virtual ~SessionIOJSON() {}
 
   virtual int importJSON(model::ManagerPtr modelMgr, const model::SessionPtr& session,
-                         cJSON* sessionRec, bool loadNativeModels = false);
+    cJSON* sessionRec, bool loadNativeModels = false);
   virtual int exportJSON(model::ManagerPtr modelMgr, const model::SessionPtr& sessPtr,
-                         cJSON* sessionRec, bool writeNativeModels = false);
+    cJSON* sessionRec, bool writeNativeModels = false);
   virtual int exportJSON(model::ManagerPtr modelMgr, const model::SessionPtr& session,
-                         const common::UUIDs &modelIds, cJSON* sessionRec,
-                         bool writeNativeModels = false);
+    const common::UUIDs& modelIds, cJSON* sessionRec, bool writeNativeModels = false);
 
 protected:
   void addModelUUIDs(const model::EntityRef& parent, common::UUIDArray& uuids);
-  void addUUIDsRecursive(smtk::shared_ptr<Session> s, vtkDataObject* node, common::UUIDArray& uuids);
+  void addUUIDsRecursive(
+    smtk::shared_ptr<Session> s, vtkDataObject* node, common::UUIDArray& uuids);
 
   int loadExodusFileWithUUIDs(
-    const model::SessionRef& sref,
-    const std::string& url,
-    const common::UUIDArray& preservedUUIDs);
+    const model::SessionRef& sref, const std::string& url, const common::UUIDArray& preservedUUIDs);
 };
 // -- 1 --
 
-    } // namespace exodus
-  } // namespace bridge
+} // namespace exodus
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_model_SessionExodusIOJSON_h

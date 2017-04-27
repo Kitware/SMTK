@@ -13,7 +13,8 @@
 
 #include "smtk/common/testing/cxx/helpers.h"
 
-namespace {
+namespace
+{
 
 void verifyTimeZones()
 {
@@ -38,21 +39,17 @@ void verifyParsers()
   test(!dtInvalid.deserialize("20160231"), "failed to detect invalid date");
 
   smtk::common::DateTime dtValid;
-  const char *validCases[] = {
-    "20161026T141559", "Failed to parse iso string",
-    "20161026T141559.123456+0200", "Failed to parse iso string with tz offset",
-    "20161026T141559Z",  "Failed to parse iso string with Z suffix"
-  };
-  for (std::size_t i = 0; i < sizeof(validCases)/sizeof(const char *); i += 2)
-    {
-    test(!!dtValid.deserialize(validCases[i]), validCases[i+1]);
+  const char* validCases[] = { "20161026T141559", "Failed to parse iso string",
+    "20161026T141559.123456+0200", "Failed to parse iso string with tz offset", "20161026T141559Z",
+    "Failed to parse iso string with Z suffix" };
+  for (std::size_t i = 0; i < sizeof(validCases) / sizeof(const char*); i += 2)
+  {
+    test(!!dtValid.deserialize(validCases[i]), validCases[i + 1]);
     test(!!dtValid.isSet(), "Failed to return true for isSet()");
-    }
+  }
 
   smtk::common::DateTime dtNotSet;
-  test(
-    dtNotSet.deserialize("not-a-date-time"),
-    "Failed to parse not-a-date-time");
+  test(dtNotSet.deserialize("not-a-date-time"), "Failed to parse not-a-date-time");
   test(!dtNotSet.isSet(), "Failed to return isSet() false");
 
   // Using DateTime::parseBoostFormat():
@@ -76,16 +73,14 @@ void verifySetGets()
   int yr, month, day, hr, minute, sec, msec;
 
   // Read back
-  test(
-    dt.components(yr, month, day, hr, minute, sec, msec),
-    "Failed to get components");
-  test(yr     == 2016, "Failed to get year component");
-  test(month  == 10, "Failed to get month component");
-  test(day    == 28, "Failed to get day component");
-  test(hr     == 14, "Failed to get hour component");
+  test(dt.components(yr, month, day, hr, minute, sec, msec), "Failed to get components");
+  test(yr == 2016, "Failed to get year component");
+  test(month == 10, "Failed to get month component");
+  test(day == 28, "Failed to get day component");
+  test(hr == 14, "Failed to get hour component");
   test(minute == 54, "Failed to get minute component");
-  test(sec    == 0, "Failed to get second component");
-  test(msec   == 123, "Failed to get millisecond component");
+  test(sec == 0, "Failed to get second component");
+  test(msec == 123, "Failed to get millisecond component");
 
   // Set new datetime and read back
   int yr2 = 2017;
@@ -95,11 +90,9 @@ void verifySetGets()
   int minute2 = 15;
   int sec2 = 0;
   int msec2 = 456;
-  test(
-    dt.setComponents(yr2, month2, day2, hr2, minute2, sec2, msec2),
-    "Failed to set components");
+  test(dt.setComponents(yr2, month2, day2, hr2, minute2, sec2, msec2), "Failed to set components");
   dt.components(yr, month, day, hr, minute, sec, msec),
-  test(yr == yr2, "Failed to get year component");
+    test(yr == yr2, "Failed to get year component");
   test(month == month2, "Failed to get month component");
   test(day == day2, "Failed to get day component");
   test(hr == hr2, "Failed to get hour component");
@@ -110,25 +103,23 @@ void verifySetGets()
   // Set with time zone
   smtk::common::TimeZone tzCST;
   tzCST.setPosixString("CST-6");
-  test(
-    dt.setComponents(tzCST, yr2, month2, day2, hr2, minute2, sec2, msec2),
+  test(dt.setComponents(tzCST, yr2, month2, day2, hr2, minute2, sec2, msec2),
     "Failed to setComponents() with time zone");
   dt.components(yr, month, day, hr, minute, sec, msec),
-  // Returned hour should be ahead by 6
-  test(hr == hr2 + 6, "Failed to get hour component for tzCST (set)");
+    // Returned hour should be ahead by 6
+    test(hr == hr2 + 6, "Failed to get hour component for tzCST (set)");
 
   // Get with time zone
   smtk::common::TimeZone tzPST;
   tzPST.setPosixString("PST-8");
-  test(
-    dt.components(tzPST, yr, month, day, hr, minute, sec, msec),
+  test(dt.components(tzPST, yr, month, day, hr, minute, sec, msec),
     "Failed components() with time zone");
   std::cout << "hr: " << hr << ",  hr2: " << hr2 << std::endl;
   // Returned hour should be behind by 2 (plus 6 minus 8)
   test(hr == hr2 - 8 + 6, "Failed to get hour component for tzPST (get)");
 }
 
-}  // end namespace
+} // end namespace
 
 int UnitTestDateTime(int, char** const)
 {

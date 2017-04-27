@@ -22,34 +22,33 @@
 
 namespace smtk
 {
-  namespace attribute
-  {
-    class FileItemDefinition;
-    class SMTKCORE_EXPORT FileItem : public FileSystemItem
-    {
-    friend class FileItemDefinition;
-    public:
-      smtkTypeMacro(FileItem);
-      virtual ~FileItem();
+namespace attribute
+{
+class FileItemDefinition;
+class SMTKCORE_EXPORT FileItem : public FileSystemItem
+{
+  friend class FileItemDefinition;
 
-      Item::Type type() const;
+public:
+  smtkTypeMacro(FileItem);
+  virtual ~FileItem();
 
-      const std::vector<std::string>& recentValues() const
-      { return this->m_recentValues; }
-      void addRecentValue(const std::string& val);
+  Item::Type type() const;
 
-    protected:
-      FileItem(Attribute *owningAttribute, int itemPosition);
-      FileItem(Item *owningItem, int position, int subGroupPosition);
-      virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef);
+  const std::vector<std::string>& recentValues() const { return this->m_recentValues; }
+  void addRecentValue(const std::string& val);
 
-      std::vector<std::string> m_recentValues;
+protected:
+  FileItem(Attribute* owningAttribute, int itemPosition);
+  FileItem(Item* owningItem, int position, int subGroupPosition);
+  virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef);
 
-    private:
-    };
+  std::vector<std::string> m_recentValues;
 
-  } // namespace attribute
+private:
+};
+
+} // namespace attribute
 } // namespace smtk
-
 
 #endif /* __smtk_attribute_FileItem_h */

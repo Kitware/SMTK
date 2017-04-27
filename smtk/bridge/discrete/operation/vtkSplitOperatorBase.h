@@ -19,7 +19,6 @@
 #include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkObject.h"
 
-
 class vtkDiscreteModel;
 class vtkIdTypeArray;
 class vtkModelEntity;
@@ -27,8 +26,8 @@ class vtkModelEntity;
 class SMTKDISCRETESESSION_EXPORT vtkSplitOperatorBase : public vtkObject
 {
 public:
-  static vtkSplitOperatorBase * New();
-  vtkTypeMacro(vtkSplitOperatorBase,vtkObject);
+  static vtkSplitOperatorBase* New();
+  vtkTypeMacro(vtkSplitOperatorBase, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -62,17 +61,29 @@ public:
   // Get FaceSplitInfo arrays AFTER a split operation, based on
   // CurrentNewFaceId
   virtual vtkIdTypeArray* GetSplitEdgeVertIds()
-  { return this->GetSplitEdgeVertIds(this->CurrentNewFaceId);}
+  {
+    return this->GetSplitEdgeVertIds(this->CurrentNewFaceId);
+  }
   virtual vtkIdTypeArray* GetCreatedModelEdgeVertIDs()
-  { return this->GetCreatedModelEdgeVertIDs(this->CurrentNewFaceId);}
+  {
+    return this->GetCreatedModelEdgeVertIDs(this->CurrentNewFaceId);
+  }
   virtual vtkIdTypeArray* GetFaceEdgeLoopIDs()
-  { return this->GetFaceEdgeLoopIDs(this->CurrentNewFaceId);}
+  {
+    return this->GetFaceEdgeLoopIDs(this->CurrentNewFaceId);
+  }
   virtual vtkIdTypeArray* GetSplitEdgeVertIds(vtkIdType newfaceid)
-  { return this->FaceSplitInfo[newfaceid].SplitEdgeVertIds;}
+  {
+    return this->FaceSplitInfo[newfaceid].SplitEdgeVertIds;
+  }
   virtual vtkIdTypeArray* GetCreatedModelEdgeVertIDs(vtkIdType newfaceid)
-  { return this->FaceSplitInfo[newfaceid].CreatedModelEdgeVertIDs;}
+  {
+    return this->FaceSplitInfo[newfaceid].CreatedModelEdgeVertIDs;
+  }
   virtual vtkIdTypeArray* GetFaceEdgeLoopIDs(vtkIdType newfaceid)
-  { return this->FaceSplitInfo[newfaceid].FaceEdgeLoopIDs;}
+  {
+    return this->FaceSplitInfo[newfaceid].FaceEdgeLoopIDs;
+  }
 
 protected:
   vtkSplitOperatorBase();
@@ -108,8 +119,8 @@ private:
   double FeatureAngle;
   int IsFeatureAngleSet;
 
-  vtkSplitOperatorBase(const vtkSplitOperatorBase&);  // Not implemented.
-  void operator=(const vtkSplitOperatorBase&);  // Not implemented.
+  vtkSplitOperatorBase(const vtkSplitOperatorBase&); // Not implemented.
+  void operator=(const vtkSplitOperatorBase&);       // Not implemented.
 };
 
 #endif

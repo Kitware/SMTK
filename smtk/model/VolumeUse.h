@@ -14,8 +14,10 @@
 
 #include <vector>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 class Shell;
 class VolumeUse;
@@ -29,13 +31,13 @@ typedef std::vector<VolumeUse> VolumeUses;
 class SMTKCORE_EXPORT VolumeUse : public UseEntity
 {
 public:
-  SMTK_ENTITYREF_CLASS(VolumeUse,UseEntity,isVolumeUse);
+  SMTK_ENTITYREF_CLASS(VolumeUse, UseEntity, isVolumeUse);
 
   Volume volume() const; // The volume bounded by this face use (if any)
   Shells shells() const; // The toplevel boundary loops for this face (hole-loops not included)
 };
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_model_VolumeUse_h

@@ -13,23 +13,24 @@
 #include "smtk/common/UUID.h"
 
 #ifdef SMTK_HASH_STORAGE
-#  if defined(_MSC_VER) // Visual studio
-#    pragma warning (push)
-#    pragma warning (disable : 4996)  // Overeager "unsafe" parameter check
-#  endif
-#  include "sparsehash/sparse_hash_map"
-#  if defined(_MSC_VER) // Visual studio
-#    pragma warning (pop)
-#  endif
+#if defined(_MSC_VER) // Visual studio
+#pragma warning(push)
+#pragma warning(disable : 4996) // Overeager "unsafe" parameter check
+#endif
+#include "sparsehash/sparse_hash_map"
+#if defined(_MSC_VER) // Visual studio
+#pragma warning(pop)
+#endif
 #else // SMTK_HASH_STORAGE
-#  include <map>
+#include <map>
 #endif // SMTK_HASH_STORAGE
-
 
 #include <vector>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief Cell type information bit-vector constants.
   *
@@ -45,27 +46,39 @@ namespace smtk {
   */
 enum TessellationCellType
 {
-  TESS_VERTEX             = 0x0200, //!< Cell is a single vertex.
-  TESS_TRIANGLE           = 0x0000, //!< Cell is a triangle (3 vertices, part of Three.JS).
-  TESS_QUAD               = 0x0001, //!< Cell is a quadrilateral (4 vertices, part of Three.JS).
-  TESS_POLYVERTEX         = 0x0400, //!< Cell is a polyvertex, with the number of vertices in the following connectivity entry.
-  TESS_POLYLINE           = 0x0800, //!< Cell is a polyline, with the number of vertices in the following connectivity entry.
-  TESS_POLYGON            = 0x1000, //!< Cell is a polygon, with the number of vertices in the following connectivity entry.
-  TESS_TRIANGLE_STRIP     = 0x2000, //!< Cell is a triangle strip, with the number of vertices in the following connectivity entry.
-  TESS_INVALID_CELL       = 0x4000, //!< Something went wrong; an invalid cell.
+  TESS_VERTEX = 0x0200,   //!< Cell is a single vertex.
+  TESS_TRIANGLE = 0x0000, //!< Cell is a triangle (3 vertices, part of Three.JS).
+  TESS_QUAD = 0x0001,     //!< Cell is a quadrilateral (4 vertices, part of Three.JS).
+  TESS_POLYVERTEX =
+    0x0400, //!< Cell is a polyvertex, with the number of vertices in the following connectivity entry.
+  TESS_POLYLINE =
+    0x0800, //!< Cell is a polyline, with the number of vertices in the following connectivity entry.
+  TESS_POLYGON =
+    0x1000, //!< Cell is a polygon, with the number of vertices in the following connectivity entry.
+  TESS_TRIANGLE_STRIP =
+    0x2000, //!< Cell is a triangle strip, with the number of vertices in the following connectivity entry.
+  TESS_INVALID_CELL = 0x4000, //!< Something went wrong; an invalid cell.
 
-  TESS_VARYING_VERT_CELL  = 0x3c00, //!< All cell types that have a varying number of vertices (and store it after cell type).
-  TESS_CELLTYPE_MASK      = 0x7e01, //!< The union of all cell type bits.
+  TESS_VARYING_VERT_CELL =
+    0x3c00, //!< All cell types that have a varying number of vertices (and store it after cell type).
+  TESS_CELLTYPE_MASK = 0x7e01, //!< The union of all cell type bits.
 
-  TESS_FACE_MATERIAL      = 0x0002, //!< Cell has a material ID immediately following the list of vertices (part of Three.js).
-  TESS_FACE_UV            = 0x0004, //!< Cell has an offset into the UV coordinate storage following material ID (part of Three.js).
-  TESS_FACE_VERTEX_UV     = 0x0008, //!< Cell has N offsets into the UV coordinate storage following face UV (part of Three.js).
-  TESS_FACE_NORMAL        = 0x0010, //!< Cell has an offset into the normal-vector storage following vertex UVs (part of Three.js).
-  TESS_FACE_VERTEX_NORMAL = 0x0020, //!< Cell has N offsets into the normal-vector storage following face normal (part of Three.js).
-  TESS_FACE_COLOR         = 0x0040, //!< Cell has an offset into the color storage following vertex normals (part of Three.js).
-  TESS_FACE_VERTEX_COLOR  = 0x0080, //!< Cell has N offsets into the color storage following face color (part of Three.js).
+  TESS_FACE_MATERIAL =
+    0x0002, //!< Cell has a material ID immediately following the list of vertices (part of Three.js).
+  TESS_FACE_UV =
+    0x0004, //!< Cell has an offset into the UV coordinate storage following material ID (part of Three.js).
+  TESS_FACE_VERTEX_UV =
+    0x0008, //!< Cell has N offsets into the UV coordinate storage following face UV (part of Three.js).
+  TESS_FACE_NORMAL =
+    0x0010, //!< Cell has an offset into the normal-vector storage following vertex UVs (part of Three.js).
+  TESS_FACE_VERTEX_NORMAL =
+    0x0020, //!< Cell has N offsets into the normal-vector storage following face normal (part of Three.js).
+  TESS_FACE_COLOR =
+    0x0040, //!< Cell has an offset into the color storage following vertex normals (part of Three.js).
+  TESS_FACE_VERTEX_COLOR =
+    0x0080, //!< Cell has N offsets into the color storage following face color (part of Three.js).
 
-  TESS_PROPERTY_MASK      = 0x00fe  //!< All properties that can be stored with a cell.
+  TESS_PROPERTY_MASK = 0x00fe //!< All properties that can be stored with a cell.
 };
 
 /**\brief Store geometric information related to model entities.
@@ -95,18 +108,14 @@ public:
   Tessellation();
 
   /// Direct access to the underlying point-coordinate storage
-  std::vector<double>& coords()
-    { return this->m_coords; }
+  std::vector<double>& coords() { return this->m_coords; }
   /// Direct access to the underlying point-coordinate storage
-  std::vector<double> const& coords() const
-    { return this->m_coords; }
+  std::vector<double> const& coords() const { return this->m_coords; }
 
   /// Direct access to the underlying connectivity storage
-  std::vector<int>& conn()
-    { return this->m_conn; }
+  std::vector<int>& conn() { return this->m_conn; }
   /// Direct access to the underlying connectivity storage
-  std::vector<int> const& conn() const
-    { return this->m_conn; }
+  std::vector<int> const& conn() const { return this->m_conn; }
 
   int addCoords(double* a);
   Tessellation& addCoords(double x, double y, double z);
@@ -165,14 +174,14 @@ protected:
 };
 
 #ifdef SMTK_HASH_STORAGE
-typedef google::sparse_hash_map<smtk::common::UUID,Tessellation> UUIDsToTessellations;
-typedef google::sparse_hash_map<smtk::common::UUID,Tessellation>::iterator UUIDWithTessellation;
-#else // SMTK_HASH_STORAGE
-typedef std::map<smtk::common::UUID,Tessellation> UUIDsToTessellations;
-typedef std::map<smtk::common::UUID,Tessellation>::iterator UUIDWithTessellation;
+typedef google::sparse_hash_map<smtk::common::UUID, Tessellation> UUIDsToTessellations;
+typedef google::sparse_hash_map<smtk::common::UUID, Tessellation>::iterator UUIDWithTessellation;
+#else  // SMTK_HASH_STORAGE
+typedef std::map<smtk::common::UUID, Tessellation> UUIDsToTessellations;
+typedef std::map<smtk::common::UUID, Tessellation>::iterator UUIDWithTessellation;
 #endif // SMTK_HASH_STORAGE
 
-  } // model namespace
+} // model namespace
 } // smtk namespace
 
 #endif // __smtk_model_Tessellation_h

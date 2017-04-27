@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkCMBImportBCFileOperator.h"
 
 #include "vtkDiscreteModel.h"
@@ -24,7 +23,7 @@ vtkCMBImportBCFileOperator::vtkCMBImportBCFileOperator()
   this->OperateSucceeded = 0;
 }
 
-vtkCMBImportBCFileOperator:: ~vtkCMBImportBCFileOperator()
+vtkCMBImportBCFileOperator::~vtkCMBImportBCFileOperator()
 {
   this->SetFileName(0);
 }
@@ -33,34 +32,33 @@ void vtkCMBImportBCFileOperator::Operate(vtkDiscreteModelWrapper* modelWrapper)
 {
   vtkDebugMacro("Reading a CMB file into a CMB model.");
   this->OperateSucceeded = 0;
-  if(!this->GetFileName())
-    {
+  if (!this->GetFileName())
+  {
     vtkWarningMacro("Must set file name.");
     return;
-    }
+  }
 
-  if(!modelWrapper)
-    {
+  if (!modelWrapper)
+  {
     vtkErrorMacro("Passed in a null model.");
     return;
-    }
+  }
   vtkDiscreteModel* model = modelWrapper->GetModel();
 
   vtkSmartPointer<vtkModelBCGridRepresentation> gridRepresentation =
     vtkSmartPointer<vtkModelBCGridRepresentation>::New();
 
-  this->OperateSucceeded =
-       gridRepresentation->Initialize(this->GetFileName(), model);
-  if( this->OperateSucceeded )
-    {
+  this->OperateSucceeded = gridRepresentation->Initialize(this->GetFileName(), model);
+  if (this->OperateSucceeded)
+  {
     model->SetAnalysisGridInfo(gridRepresentation);
-    }
+  }
 
   return;
 }
 
 void vtkCMBImportBCFileOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
   os << indent << "FileName: " << this->FileName << endl;
 }

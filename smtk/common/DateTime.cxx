@@ -15,8 +15,10 @@
 
 #include <exception>
 
-namespace smtk {
-  namespace common {
+namespace smtk
+{
+namespace common
+{
 
 /// Default constructor creates invalid ptime
 DateTime::DateTime()
@@ -25,55 +27,46 @@ DateTime::DateTime()
 }
 
 bool DateTime::setComponents(
-  int yr, int month, int day,
-  int hr, int min, int sec, int msec,
-  TimeZone *timeZone)
+  int yr, int month, int day, int hr, int min, int sec, int msec, TimeZone* timeZone)
 {
   // Construct date & time_duration components
   boost::gregorian::date ptimeDate(yr, month, day);
   // Cannot use main time_duration constructor because fractional_seconds
   // argument is ambiguous. Use milliseconds constructor instead.
-  int msecTotal = 1000*(hr*3600 + min*60 + sec) + msec;
-  boost::posix_time::time_duration ptimeTime =
-    boost::posix_time::milliseconds(msecTotal);
+  int msecTotal = 1000 * (hr * 3600 + min * 60 + sec) + msec;
+  boost::posix_time::time_duration ptimeTime = boost::posix_time::milliseconds(msecTotal);
 
   // Convert depending on timeZone input
   if (timeZone)
-    {
+  {
     // If time zone specified, convert to UTC
-    boost::local_time::local_date_time local(
-      ptimeDate,
-      ptimeTime,
-      timeZone->boostPointer(),
+    boost::local_time::local_date_time local(ptimeDate, ptimeTime, timeZone->boostPointer(),
       boost::local_time::local_date_time::NOT_DATE_TIME_ON_ERROR);
     this->m_ptime = local.utc_time();
     // std::cout << "local: " << local
     //           << "\nm_ptime: " << this->m_ptime << std::endl;
-    }
+  }
   else
-    {
+  {
     // If no tz, use as is
     this->m_ptime = boost::posix_time::ptime(ptimeDate, ptimeTime);
-    }
+  }
 
   return this->isSet();
 }
 
 bool DateTime::components(
-  int& yr, int& month, int& day,
-  int& hr, int& min, int& sec, int& msec,
-  TimeZone *timeZone) const
+  int& yr, int& month, int& day, int& hr, int& min, int& sec, int& msec, TimeZone* timeZone) const
 {
   if (!this->isSet())
-    {
+  {
     return false;
-    }
+  }
 
   if (timeZone && timeZone->isSet() && !timeZone->isUTC())
-    {
+  {
     // Convert to local time
-    boost::local_time::local_date_time local(
-      this->m_ptime, timeZone->boostPointer());
+    boost::local_time::local_date_time local(this->m_ptime, timeZone->boostPointer());
 
     // Convert date
     boost::gregorian::date localDate = local.date();
@@ -89,11 +82,10 @@ bool DateTime::components(
     hr = workingTime.hours();
     min = workingTime.minutes();
     sec = static_cast<int>(workingTime.seconds());
-    msec = static_cast<int>(workingTime.total_milliseconds() -
-                            1000*workingTime.total_seconds());
+    msec = static_cast<int>(workingTime.total_milliseconds() - 1000 * workingTime.total_seconds());
 
     return true;
-    }
+  }
 
   // else use ptime
   boost::gregorian::date ptimeDate = this->m_ptime.date();
@@ -107,8 +99,7 @@ bool DateTime::components(
   hr = ptimeTime.hours();
   min = ptimeTime.minutes();
   sec = static_cast<int>(ptimeTime.seconds());
-  msec = static_cast<int>(ptimeTime.total_milliseconds() -
-                          1000*ptimeTime.total_seconds());
+  msec = static_cast<int>(ptimeTime.total_milliseconds() - 1000 * ptimeTime.total_seconds());
 
   return true;
 }
@@ -123,26 +114,26 @@ bool DateTime::deserialize(const std::string& ts)
 {
   // Special case for uninitialized
   if (ts == "not-a-date-time")
-    {
-      this->m_ptime = boost::posix_time::ptime(
-	boost::posix_time::not_a_date_time);
-      return true;
-    }
+  {
+    this->m_ptime = boost::posix_time::ptime(boost::posix_time::not_a_date_time);
+    return true;
+  }
 
   try
-    {
+  {
     this->m_ptime = boost::posix_time::from_iso_string(ts);
-    }
+  }
   catch (std::exception& e)
-    {
+  {
 #ifndef NDEBUG
     std::cerr << "exception: " << e.what() << std::endl;
 #else
-    (void)e;;
+    (void)e;
+    ;
 #endif
     this->m_ptime = boost::posix_time::not_a_date_time;
     return false;
-    }
+  }
 
   return this->isSet();
 }
@@ -157,19 +148,20 @@ std::string DateTime::serialize() const
 bool DateTime::parseBoostFormat(const std::string& ts)
 {
   try
-    {
+  {
     this->m_ptime = boost::posix_time::time_from_string(ts);
-    }
+  }
   catch (std::exception& e)
-    {
+  {
 #ifndef NDEBUG
     std::cerr << "exception: " << e.what() << std::endl;
 #else
-    (void)e;;
+    (void)e;
+    ;
 #endif
     this->m_ptime = boost::posix_time::not_a_date_time;
     return false;
-    }
+  }
 
   return this->isSet();
 }
@@ -189,5 +181,5 @@ bool DateTime::operator>(const DateTime& dt) const
   return this->m_ptime > dt.m_ptime;
 }
 
-  }  // namespace common
-}  // namespace smtk
+} // namespace common
+} // namespace smtk

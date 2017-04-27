@@ -15,8 +15,10 @@
 
 #include <string>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 class RemoteOperator;
 typedef smtk::shared_ptr<RemoteOperator> RemoteOperatorPtr;
@@ -62,7 +64,7 @@ protected:
   std::string m_name;
 };
 
-  } // model namespace
+} // model namespace
 } // smtk namespace
 
 #endif // __smtk_model_Operator_h

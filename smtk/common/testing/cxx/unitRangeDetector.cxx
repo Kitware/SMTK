@@ -18,22 +18,18 @@
 
 using namespace smtk::common;
 
-template<typename T, typename U>
+template <typename T, typename U>
 void checkRanges(T rd, U expected)
 {
-  std::map<int,int>::const_iterator rdit;
+  std::map<int, int>::const_iterator rdit;
   int ei = 0;
   for (rdit = rd.ranges().begin(); rdit != rd.ranges().end(); ++rdit, ++ei)
-    {
+  {
     std::ostringstream msg;
-    msg
-      << "Expected range " << ei << " to be " << expected[ei][0] << ", " << expected[ei][1]
-      << " but it was " << rdit->first << ", " << rdit->second << " instead.";
-    test(
-      rdit->first == expected[ei][0] &&
-      rdit->second == expected[ei][1],
-      msg.str());
-    }
+    msg << "Expected range " << ei << " to be " << expected[ei][0] << ", " << expected[ei][1]
+        << " but it was " << rdit->first << ", " << rdit->second << " instead.";
+    test(rdit->first == expected[ei][0] && rdit->second == expected[ei][1], msg.str());
+  }
 }
 
 int main()
@@ -52,50 +48,35 @@ int main()
   rd.dump();
   test(rd.ranges().size() == 3, "Expected 3 ranges [1,3], [5,7], [11,11].");
   test(rd.size() == 7, "Expected 7 entries.");
-  int expected1[3][2] = {
-      {  1,  3 },
-      {  5,  7 },
-      { 11, 11 }
-  };
+  int expected1[3][2] = { { 1, 3 }, { 5, 7 }, { 11, 11 } };
   checkRanges(rd, expected1);
 
   std::cout << "Inserting 4\n";
   rd.insert(4);
   rd.dump();
   test(rd.ranges().size() == 2, "Expected 2 ranges [1,7], [11,11].");
-  int expected2[2][2] = {
-      {  1,  7 },
-      { 11, 11 }
-  };
+  int expected2[2][2] = { { 1, 7 }, { 11, 11 } };
   checkRanges(rd, expected2);
 
   std::cout << "Inserting 10\n";
   rd.insert(10);
   rd.dump();
   test(rd.ranges().size() == 2, "Expected 2 ranges [1,7], [10,11].");
-  int expected3[2][2] = {
-      {  1,  7 },
-      { 10, 11 }
-  };
+  int expected3[2][2] = { { 1, 7 }, { 10, 11 } };
   checkRanges(rd, expected3);
 
   std::cout << "Inserting 8\n";
   rd.insert(8);
   rd.dump();
   test(rd.ranges().size() == 2, "Expected 2 ranges [1,8], [10,11].");
-  int expected4[2][2] = {
-      {  1,  8 },
-      { 10, 11 }
-  };
+  int expected4[2][2] = { { 1, 8 }, { 10, 11 } };
   checkRanges(rd, expected4);
 
   std::cout << "Inserting 9\n";
   rd.insert(9);
   rd.dump();
   test(rd.ranges().size() == 1, "Expected 1 range  [1,11].");
-  int expected5[1][2] = {
-      {  1, 11 }
-  };
+  int expected5[1][2] = { { 1, 11 } };
   checkRanges(rd, expected5);
 
   rd.clear();

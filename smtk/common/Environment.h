@@ -16,8 +16,10 @@
 
 #include <string>
 
-namespace smtk {
-  namespace common {
+namespace smtk
+{
+namespace common
+{
 
 /**\brief Cross-platform access to process environment variables.
   *
@@ -30,7 +32,7 @@ public:
   static void setVariable(const std::string& varName, const std::string& value);
 };
 
-  } // namespace common
+} // namespace common
 } // namespace smtk
 
 #endif // __smtk_common_Environment_h

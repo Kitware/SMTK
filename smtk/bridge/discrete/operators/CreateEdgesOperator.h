@@ -16,9 +16,12 @@
 #include "vtkCreateModelEdgesOperator.h"
 #include "vtkNew.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace discrete {
+namespace smtk
+{
+namespace bridge
+{
+namespace discrete
+{
 
 class Session;
 
@@ -40,8 +43,8 @@ protected:
   vtkNew<vtkCreateModelEdgesOperator> m_op;
 };
 
-    } // namespace discrete
-  } // namespace bridge
+} // namespace discrete
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_discrete_CreateEdgesOperator_h

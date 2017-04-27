@@ -28,50 +28,49 @@
 namespace
 {
 
-vtkSmartPointer< vtkPolyData > make_EmptyPolyData()
+vtkSmartPointer<vtkPolyData> make_EmptyPolyData()
 {
-  return vtkSmartPointer< vtkPolyData >::New();
+  return vtkSmartPointer<vtkPolyData>::New();
 }
 
-vtkSmartPointer< vtkPolyData > make_TrianglePolyData()
+vtkSmartPointer<vtkPolyData> make_TrianglePolyData()
 {
   //use a vtk parametric source to construct polydata on the fly
   vtkNew<vtkParametricBoy> PB;
   vtkNew<vtkParametricFunctionSource> PFS;
   PFS->SetParametricFunction(PB.Get());
 
-  PFS->SetUResolution( 400 );
-  PFS->SetVResolution( 500 );
+  PFS->SetUResolution(400);
+  PFS->SetVResolution(500);
   PFS->Update();
 
-  vtkSmartPointer< vtkPolyData > result = vtkSmartPointer< vtkPolyData >::New();
+  vtkSmartPointer<vtkPolyData> result = vtkSmartPointer<vtkPolyData>::New();
 
-  result->ShallowCopy( PFS->GetOutput() );
+  result->ShallowCopy(PFS->GetOutput());
   return result;
 }
 
-vtkSmartPointer< vtkUnstructuredGrid > make_TriangleUGrid()
+vtkSmartPointer<vtkUnstructuredGrid> make_TriangleUGrid()
 {
   //use a vtk parametric source to construct polydata on the fly
   vtkNew<vtkParametricBoy> PB;
   vtkNew<vtkParametricFunctionSource> PFS;
   PFS->SetParametricFunction(PB.Get());
 
-  PFS->SetUResolution( 400 );
-  PFS->SetVResolution( 500 );
+  PFS->SetUResolution(400);
+  PFS->SetVResolution(500);
   PFS->Update();
 
   vtkNew<vtkAppendFilter> appendFilter;
   appendFilter->AddInputData(PFS->GetOutput());
   appendFilter->Update();
 
-  vtkSmartPointer<vtkUnstructuredGrid> result =
-     vtkSmartPointer<vtkUnstructuredGrid>::New();
+  vtkSmartPointer<vtkUnstructuredGrid> result = vtkSmartPointer<vtkUnstructuredGrid>::New();
   result->ShallowCopy(appendFilter->GetOutput());
   return result;
 }
 
-vtkSmartPointer< vtkUnstructuredGrid > make_MixedVolUGrid()
+vtkSmartPointer<vtkUnstructuredGrid> make_MixedVolUGrid()
 {
   //manually create a mixed wedge and tet volume
   vtkNew<vtkPoints> points;
@@ -100,9 +99,8 @@ vtkSmartPointer< vtkUnstructuredGrid > make_MixedVolUGrid()
   aTetra->GetPointIds()->SetId(2, 6);
   aTetra->GetPointIds()->SetId(3, 3);
 
-  vtkSmartPointer<vtkUnstructuredGrid> result =
-     vtkSmartPointer<vtkUnstructuredGrid>::New();
-  result->SetPoints( points.GetPointer() );
+  vtkSmartPointer<vtkUnstructuredGrid> result = vtkSmartPointer<vtkUnstructuredGrid>::New();
+  result->SetPoints(points.GetPointer());
   result->Allocate(2);
   result->InsertNextCell(aTetra->GetCellType(), aTetra->GetPointIds());
   result->InsertNextCell(aWedge->GetCellType(), aWedge->GetPointIds());
@@ -117,28 +115,28 @@ void test_same_datasets(vtkDataSet* ds, vtkDataSet* ds2)
   test(ds->GetNumberOfPoints() == ds2->GetNumberOfPoints());
   test(ds->GetNumberOfCells() == ds2->GetNumberOfCells());
 
-  vtkCellIterator *it = ds->NewCellIterator();
-  vtkCellIterator *it2 = ds2->NewCellIterator();
+  vtkCellIterator* it = ds->NewCellIterator();
+  vtkCellIterator* it2 = ds2->NewCellIterator();
   it->InitTraversal();
   it2->InitTraversal();
   for (; !it->IsDoneWithTraversal() && !it2->IsDoneWithTraversal();
        it->GoToNextCell(), it2->GoToNextCell())
-    {
+  {
     test(it->GetCellType() == it2->GetCellType());
     test(it->GetNumberOfPoints() == it2->GetNumberOfPoints());
-    vtkPoints *points = it->GetPoints();
-    vtkPoints *points2 = it2->GetPoints();
+    vtkPoints* points = it->GetPoints();
+    vtkPoints* points2 = it2->GetPoints();
     double xyz[3], xyz2[3];
-    for (vtkIdType i=0;i<points->GetNumberOfPoints();i++)
+    for (vtkIdType i = 0; i < points->GetNumberOfPoints(); i++)
+    {
+      points->GetPoint(i, xyz);
+      points2->GetPoint(i, xyz2);
+      for (vtkIdType j = 0; j < 3; j++)
       {
-      points->GetPoint(i,xyz);
-      points2->GetPoint(i,xyz2);
-      for (vtkIdType j=0;j<3;j++)
-        {
-        test(fabs(xyz[j]-xyz2[j]) < EPSILON);
-        }
+        test(fabs(xyz[j] - xyz2[j]) < EPSILON);
       }
     }
+  }
   it->Delete();
   it2->Delete();
 }
@@ -150,7 +148,7 @@ void verify_null_polydata()
 
   vtkPolyData* pd = NULL;
   smtk::mesh::CollectionPtr c = imprt(pd, manager);
-  test( !c, "collection should be invalid for a NULL poly data");
+  test(!c, "collection should be invalid for a NULL poly data");
 }
 
 void verify_empty_polydata()
@@ -158,8 +156,8 @@ void verify_empty_polydata()
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::extension::vtk::io::ImportVTKData imprt;
 
-  smtk::mesh::CollectionPtr c = imprt( make_EmptyPolyData(), manager );
-  test( !c, "collection should invalid for empty poly data");
+  smtk::mesh::CollectionPtr c = imprt(make_EmptyPolyData(), manager);
+  test(!c, "collection should invalid for empty poly data");
 }
 
 void verify_tri_polydata()
@@ -167,22 +165,22 @@ void verify_tri_polydata()
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::extension::vtk::io::ImportVTKData imprt;
 
-  vtkSmartPointer< vtkPolyData > pd = make_TrianglePolyData();
-  smtk::mesh::CollectionPtr c = imprt( pd, manager );
-  test( c && c->isValid(), "collection should be valid");
-  test( c->numberOfMeshes() == 1, "collection should only have a single mesh");
-  test( c->cells().size() == static_cast<std::size_t>(pd->GetNumberOfCells()));
+  vtkSmartPointer<vtkPolyData> pd = make_TrianglePolyData();
+  smtk::mesh::CollectionPtr c = imprt(pd, manager);
+  test(c && c->isValid(), "collection should be valid");
+  test(c->numberOfMeshes() == 1, "collection should only have a single mesh");
+  test(c->cells().size() == static_cast<std::size_t>(pd->GetNumberOfCells()));
 
   //this is a triangle pd so it is 2d only
-  smtk::mesh::MeshSet meshes = c->meshes( smtk::mesh::Dims2 );
-  test( meshes.size() == 1);
-  test( meshes.cells() == c->cells());
+  smtk::mesh::MeshSet meshes = c->meshes(smtk::mesh::Dims2);
+  test(meshes.size() == 1);
+  test(meshes.cells() == c->cells());
 
-  smtk::mesh::MeshSet meshes1d = c->meshes( smtk::mesh::Dims1 );
-  test( meshes1d.size() == 0);
+  smtk::mesh::MeshSet meshes1d = c->meshes(smtk::mesh::Dims1);
+  test(meshes1d.size() == 0);
 
   smtk::extension::vtk::io::ExportVTKData exprt;
-  vtkSmartPointer< vtkPolyData > pd2 = vtkSmartPointer< vtkPolyData >::New();
+  vtkSmartPointer<vtkPolyData> pd2 = vtkSmartPointer<vtkPolyData>::New();
   exprt(meshes, pd2);
   test_same_datasets(pd, pd2);
 }
@@ -192,23 +190,22 @@ void verify_tri_ugrid()
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::extension::vtk::io::ImportVTKData imprt;
 
-  vtkSmartPointer< vtkUnstructuredGrid > ug = make_TriangleUGrid();
-  smtk::mesh::CollectionPtr c = imprt( ug, manager );
-  test( c && c->isValid(), "collection should be valid");
-  test( c->numberOfMeshes() == 1, "collection should only have a single mesh");
-  test( c->cells().size() == static_cast<std::size_t>(ug->GetNumberOfCells()));
+  vtkSmartPointer<vtkUnstructuredGrid> ug = make_TriangleUGrid();
+  smtk::mesh::CollectionPtr c = imprt(ug, manager);
+  test(c && c->isValid(), "collection should be valid");
+  test(c->numberOfMeshes() == 1, "collection should only have a single mesh");
+  test(c->cells().size() == static_cast<std::size_t>(ug->GetNumberOfCells()));
 
   //this is a triangle grid so it is 2d only
-  smtk::mesh::MeshSet meshes = c->meshes( smtk::mesh::Dims2 );
-  test( meshes.size() == 1);
-  test( meshes.cells() == c->cells());
+  smtk::mesh::MeshSet meshes = c->meshes(smtk::mesh::Dims2);
+  test(meshes.size() == 1);
+  test(meshes.cells() == c->cells());
 
-  smtk::mesh::MeshSet meshes1d = c->meshes( smtk::mesh::Dims1 );
-  test( meshes1d.size() == 0);
+  smtk::mesh::MeshSet meshes1d = c->meshes(smtk::mesh::Dims1);
+  test(meshes1d.size() == 0);
 
   smtk::extension::vtk::io::ExportVTKData exprt;
-  vtkSmartPointer< vtkUnstructuredGrid > ug2 =
-    vtkSmartPointer< vtkUnstructuredGrid >::New();
+  vtkSmartPointer<vtkUnstructuredGrid> ug2 = vtkSmartPointer<vtkUnstructuredGrid>::New();
   exprt(meshes, ug2);
   test_same_datasets(ug, ug2);
 }
@@ -218,29 +215,27 @@ void verify_mixed_cell_ugrid()
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::extension::vtk::io::ImportVTKData imprt;
 
-  vtkSmartPointer< vtkUnstructuredGrid > ug = make_MixedVolUGrid();
-  smtk::mesh::CollectionPtr c = imprt( ug, manager );
+  vtkSmartPointer<vtkUnstructuredGrid> ug = make_MixedVolUGrid();
+  smtk::mesh::CollectionPtr c = imprt(ug, manager);
 
   std::cout << "number of cells: " << c->cells().size() << std::endl;
-  std::cout << "number of cells ug: " <<ug->GetNumberOfCells() << std::endl;
+  std::cout << "number of cells ug: " << ug->GetNumberOfCells() << std::endl;
 
-  test( c && c->isValid(), "collection should be valid");
-  test( c->numberOfMeshes() == 1, "collection should only have a single mesh");
-  test( c->cells().size() == static_cast<std::size_t>(ug->GetNumberOfCells()),
-        "number of cells in mesh don't match");
+  test(c && c->isValid(), "collection should be valid");
+  test(c->numberOfMeshes() == 1, "collection should only have a single mesh");
+  test(c->cells().size() == static_cast<std::size_t>(ug->GetNumberOfCells()),
+    "number of cells in mesh don't match");
 
   //this is a volume only grid
-  smtk::mesh::MeshSet meshes = c->meshes( smtk::mesh::Dims3 );
-  test( meshes.size() == 1);
-  test( meshes.cells() == c->cells());
+  smtk::mesh::MeshSet meshes = c->meshes(smtk::mesh::Dims3);
+  test(meshes.size() == 1);
+  test(meshes.cells() == c->cells());
 
   smtk::extension::vtk::io::ExportVTKData exprt;
-  vtkSmartPointer< vtkUnstructuredGrid > ug2 =
-    vtkSmartPointer< vtkUnstructuredGrid >::New();
+  vtkSmartPointer<vtkUnstructuredGrid> ug2 = vtkSmartPointer<vtkUnstructuredGrid>::New();
   exprt(c->meshes(), ug2);
   test_same_datasets(ug, ug2);
 }
-
 }
 
 int UnitTestImportExportVTKData(int argc, char* argv[])

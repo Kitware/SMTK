@@ -12,8 +12,10 @@
 
 #include "smtk/model/DescriptivePhrase.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief Describe an entity for user presentation.
   */
@@ -23,7 +25,7 @@ public:
   smtkTypeMacro(EntityPhrase);
   smtkSharedPtrCreateMacro(DescriptivePhrase);
   Ptr setup(const EntityRef& entity, DescriptivePhrase::Ptr parent = DescriptivePhrasePtr());
-  virtual ~EntityPhrase() { }
+  virtual ~EntityPhrase() {}
 
   virtual std::string title();
   virtual bool isTitleMutable() const;
@@ -46,7 +48,7 @@ protected:
   int m_mutability;
 };
 
-  } // model namespace
+} // model namespace
 } // smtk namespace
 
 #endif // __smtk_model_EntityPhrase_h

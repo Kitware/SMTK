@@ -25,7 +25,6 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelGridRepresentation.h"
 
-
 class vtkIdTypeArray;
 class vtkCharArray;
 
@@ -33,28 +32,28 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModel3dmGridRepresentation : public vtkMode
 {
 public:
   static vtkModel3dmGridRepresentation* New();
-  vtkTypeMacro(vtkModel3dmGridRepresentation,vtkModelGridRepresentation);
+  vtkTypeMacro(vtkModel3dmGridRepresentation, vtkModelGridRepresentation);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetBCSNodalAnalysisGridPointIds(vtkDiscreteModel* model,
-    vtkIdType bcsGroupId, int bcGroupType, vtkIdList* pointIds);
+  virtual bool GetBCSNodalAnalysisGridPointIds(
+    vtkDiscreteModel* model, vtkIdType bcsGroupId, int bcGroupType, vtkIdList* pointIds);
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetFloatingEdgeAnalysisGridPointIds(vtkDiscreteModel* model, vtkIdType modelEdgeId,
-                                                   vtkIdList* pointIds);
+  virtual bool GetFloatingEdgeAnalysisGridPointIds(
+    vtkDiscreteModel* model, vtkIdType modelEdgeId, vtkIdList* pointIds);
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetModelEdgeAnalysisPoints(vtkDiscreteModel* model, vtkIdType edgeId,
-                                          vtkIdTypeArray* edgePoints);
+  virtual bool GetModelEdgeAnalysisPoints(
+    vtkDiscreteModel* model, vtkIdType edgeId, vtkIdTypeArray* edgePoints);
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetBoundaryGroupAnalysisFacets(vtkDiscreteModel* model, vtkIdType boundaryGroupId,
-                                              vtkIdList* cellIds, vtkIdList* cellSides);
+  virtual bool GetBoundaryGroupAnalysisFacets(
+    vtkDiscreteModel* model, vtkIdType boundaryGroupId, vtkIdList* cellIds, vtkIdList* cellSides);
 
   // Description:
   // Do some type of validation of the mapping information in model.
@@ -63,9 +62,9 @@ public:
 
   // Description:
   // Initialize the information from a given 3dm file. Returns true for success.
-  bool Initialize(
-    const char* fileName, vtkDiscreteModel* model, vtkIdTypeArray* modelPointToAnalysisPoint,
-    vtkIdTypeArray* modelCellToAnalysisCells, vtkCharArray* modelCellToAnalysisCellSides);
+  bool Initialize(const char* fileName, vtkDiscreteModel* model,
+    vtkIdTypeArray* modelPointToAnalysisPoint, vtkIdTypeArray* modelCellToAnalysisCells,
+    vtkCharArray* modelCellToAnalysisCellSides);
 
   // Description:
   // Set GridFileName to NULL and clear the analysis grid info.
@@ -82,12 +81,11 @@ protected:
   vtkGetMacro(ModelCellToAnalysisCellSides, vtkCharArray*);
 
 private:
-  vtkModel3dmGridRepresentation(const vtkModel3dmGridRepresentation&);  // Not implemented.
-  void operator=(const vtkModel3dmGridRepresentation&);  // Not implemented.
+  vtkModel3dmGridRepresentation(const vtkModel3dmGridRepresentation&); // Not implemented.
+  void operator=(const vtkModel3dmGridRepresentation&);                // Not implemented.
 
   vtkIdTypeArray* ModelPointToAnalysisPoint;
   vtkIdTypeArray* ModelCellToAnalysisCells;
   vtkCharArray* ModelCellToAnalysisCellSides;
 };
 #endif
-

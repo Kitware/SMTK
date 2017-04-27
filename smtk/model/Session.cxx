@@ -39,14 +39,16 @@ using smtk::attribute::IntItemDefinition;
 using smtk::attribute::ModelEntityItemDefinition;
 using smtk::attribute::StringItemDefinition;
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /// Default constructor. This assigns a random session ID to each Session instance.
 Session::Session()
-  : m_sessionId(smtk::common::UUID::random()),
-    m_operatorSys(NULL),
-    m_manager(NULL)
+  : m_sessionId(smtk::common::UUID::random())
+  , m_operatorSys(NULL)
+  , m_manager(NULL)
 {
   this->initializeOperatorSystem(Session::s_operators);
 }
@@ -101,13 +103,13 @@ int Session::transcribe(
 {
   int retval = 0;
   if (requested)
-    {
+  {
     // Check that the entity ID is dangling or we are forced to continue.
     DanglingEntities::iterator it = this->m_dangling.find(entity);
     if (onlyDangling && it == this->m_dangling.end())
-      { // The session has not been told that this UUID exists.
+    { // The session has not been told that this UUID exists.
       return retval;
-      }
+    }
     // Ask the subclass to transcribe information.
     SessionInfoBits actual = this->transcribeInternal(entity, requested, depth);
     // Decide which bits of the request can possibly be honored...
@@ -117,11 +119,10 @@ int Session::transcribe(
     // If transcription is complete, then remove the UUID from the dangling
     // entity set. Note that we must refresh the iterator since transcribeInternal
     // may have modified m_dangling.
-    if (
-      ((actual & this->allSupportedInformation()) == this->allSupportedInformation()) &&
+    if (((actual & this->allSupportedInformation()) == this->allSupportedInformation()) &&
       ((it = this->m_dangling.find(entity)) != this->m_dangling.end()))
-        this->m_dangling.erase(it);
-    }
+      this->m_dangling.erase(it);
+  }
   return retval;
 }
 
@@ -139,18 +140,17 @@ SessionInfoBits Session::allSupportedInformation() const
 StringList Session::operatorNames(bool includeAdvanced) const
 {
   std::vector<smtk::attribute::DefinitionPtr> ops;
-  this->m_operatorSys->derivedDefinitions(
-    this->m_operatorSys->findDefinition("operator"), ops);
+  this->m_operatorSys->derivedDefinitions(this->m_operatorSys->findDefinition("operator"), ops);
 
   StringList nameList;
   std::vector<smtk::attribute::DefinitionPtr>::iterator it;
   for (it = ops.begin(); it != ops.end(); ++it)
-    {
+  {
     // only show operators that are not advanced
     if (!includeAdvanced && (*it)->advanceLevel() > 0)
       continue;
     nameList.push_back((*it)->type());
-    }
+  }
   return nameList;
 }
 
@@ -160,20 +160,19 @@ std::map<std::string, std::string> Session::operatorLabelsMap(bool includeAdvanc
 {
   std::vector<smtk::attribute::DefinitionPtr> ops;
   std::map<std::string, std::string> result;
-  this->m_operatorSys->derivedDefinitions(
-    this->m_operatorSys->findDefinition("operator"), ops);
+  this->m_operatorSys->derivedDefinitions(this->m_operatorSys->findDefinition("operator"), ops);
   //std::cerr << "Getting Map from system " << this->m_operatorSys << ": \n";
   std::vector<smtk::attribute::DefinitionPtr>::iterator it;
   for (it = ops.begin(); it != ops.end(); ++it)
-    {
+  {
     // only show operators that are not advanced
     if (!includeAdvanced && (*it)->advanceLevel() > 0)
-      {
+    {
       continue;
-      }
+    }
     result[(*it)->label()] = (*it)->type();
     //std::cerr << "\tType: " << (*it)->type() << " Label: " << (*it)->label() << "\n";
-    }
+  }
   return result;
 }
 
@@ -267,22 +266,20 @@ int Session::setup(const std::string& optName, const StringList& optVal)
 /// Return a reference to the manager that owns this Session.
 Manager::Ptr Session::manager() const
 {
-  return this->m_manager ?
-    this->m_manager->shared_from_this() :
-    Manager::Ptr();
+  return this->m_manager ? this->m_manager->shared_from_this() : Manager::Ptr();
 }
 
 /// Return a reference to the mesh manager for this Session.
 smtk::mesh::ManagerPtr Session::meshManager() const
 {
-  if(this->m_manager)
-    {
+  if (this->m_manager)
+  {
     return this->m_manager->meshes();
-    }
+  }
   else
-    {
+  {
     return smtk::mesh::Manager::Ptr();
-    }
+  }
 }
 
 /// Return the log (obtained from the model manager).
@@ -306,7 +303,8 @@ smtk::io::Logger& Session::log()
   * Subclasses may override this method.
   * If they do not, they should implement the virtual relationship helper methods.
   */
-SessionInfoBits Session::transcribeInternal(const EntityRef& entRef, SessionInfoBits flags, int depth)
+SessionInfoBits Session::transcribeInternal(
+  const EntityRef& entRef, SessionInfoBits flags, int depth)
 {
   (void)depth;
   SessionInfoBits actual = SESSION_NOTHING;
@@ -355,8 +353,7 @@ void Session::setSessionId(const smtk::common::UUID& sessId)
 void Session::setManager(Manager* mgr)
 {
   this->m_manager = mgr;
-  this->m_operatorSys->setRefModelManager(
-    mgr->shared_from_this());
+  this->m_operatorSys->setRefModelManager(mgr->shared_from_this());
 }
 
 /**\brief This is used by the manager when erasing a model entity.
@@ -396,47 +393,43 @@ bool Session::removeGeneratedProperties(const EntityRef& ent, SessionInfoBits pr
   */
 bool Session::splitProperties(const EntityRef& from, const EntityRefs& to) const
 {
-  const char* intPropertyNamesToBroadcast[] = {
-    "pedigree id"
-  };
+  const char* intPropertyNamesToBroadcast[] = { "pedigree id" };
   unsigned npc = sizeof(intPropertyNamesToBroadcast) / sizeof(intPropertyNamesToBroadcast[0]);
 
-  const char* stringPropertyNamesToBroadcast[] = {
-    "name"
-  };
+  const char* stringPropertyNamesToBroadcast[] = { "name" };
   unsigned nps = sizeof(stringPropertyNamesToBroadcast) / sizeof(stringPropertyNamesToBroadcast[0]);
 
   // TODO: It should be possible to use different rules on a case-by-case basis:
   // Split rule for integers: broadcast value to all.
   const IntegerData& idata(from.integerProperties());
   for (unsigned i = 0; i < npc; ++i)
-    {
+  {
     IntegerData::const_iterator ipit;
     if ((ipit = idata.find(intPropertyNamesToBroadcast[i])) != idata.end())
-      {
+    {
       for (EntityRefs::iterator oit = to.begin(); oit != to.end(); ++oit)
-        {
+      {
         EntityRef mutableEnt(*oit);
         mutableEnt.setIntegerProperty(intPropertyNamesToBroadcast[i], ipit->second);
-        }
       }
     }
+  }
 
   // TODO: It should be possible to use different rules on a case-by-case basis:
   // Split rule for strings: broadcast value to one (the first by UUID).
   for (unsigned int ii = 0; ii < nps; ++ii)
-    {
+  {
     const StringData& sdata(from.stringProperties());
     StringData::const_iterator spit;
     if (!to.empty())
-      { // Copy name only to the first entity.
+    { // Copy name only to the first entity.
       EntityRef mutableEnt(*to.begin());
       if ((spit = sdata.find(stringPropertyNamesToBroadcast[ii])) != sdata.end())
-        {
+      {
         mutableEnt.setStringProperty(stringPropertyNamesToBroadcast[ii], spit->second);
-        }
       }
     }
+  }
   return true;
 }
 
@@ -452,71 +445,69 @@ bool Session::splitProperties(const EntityRef& from, const EntityRefs& to) const
   */
 bool Session::mergeProperties(const EntityRefs& from, EntityRef& to) const
 {
-  const char* intPropertyNamesToReduce[] = {
-    "pedigree id"
-  };
+  const char* intPropertyNamesToReduce[] = { "pedigree id" };
   unsigned npc = sizeof(intPropertyNamesToReduce) / sizeof(intPropertyNamesToReduce[0]);
 
-  const char* stringPropertyNamesToReduce[] = {
-    "name"
-  };
+  const char* stringPropertyNamesToReduce[] = { "name" };
   unsigned nps = sizeof(stringPropertyNamesToReduce) / sizeof(stringPropertyNamesToReduce[0]);
 
   // TODO: It should be possible to use different rules on a case-by-case basis:
   // Merge rule for integers: union all values.
   std::set<int> imerged;
   for (unsigned i = 0; i < npc; ++i)
-    {
+  {
     EntityRefs::const_iterator eit;
     for (eit = from.begin(); eit != from.end(); ++eit)
-      {
+    {
       const IntegerData& values(eit->integerProperties());
       IntegerData::const_iterator valueIt = values.find(intPropertyNamesToReduce[i]);
       if (valueIt != values.end())
-        {
+      {
         imerged.insert(valueIt->second.begin(), valueIt->second.end());
-        }
       }
+    }
     // Add values already present on the target:
     const IntegerData& toVals(to.integerProperties());
     IntegerData::const_iterator toValIt = toVals.find(intPropertyNamesToReduce[i]);
     if (toValIt != toVals.end())
-      {
+    {
       imerged.insert(toValIt->second.begin(), toValIt->second.end());
-      }
-    if (!imerged.empty())
-      {
-      to.setIntegerProperty(intPropertyNamesToReduce[i], IntegerList(imerged.begin(), imerged.end()));
-      }
     }
+    if (!imerged.empty())
+    {
+      to.setIntegerProperty(
+        intPropertyNamesToReduce[i], IntegerList(imerged.begin(), imerged.end()));
+    }
+  }
 
   // TODO: It should be possible to use different rules on a case-by-case basis:
   // Merge rule for strings: choose the first one, and only if not already present:
   StringList svalue;
   for (unsigned int ii = 0; ii < nps; ++ii)
-    {
+  {
     bool haveString = false;
     EntityRefs::const_iterator eit;
     const StringData& toVals(to.stringProperties());
     if (toVals.find(stringPropertyNamesToReduce[ii]) == toVals.end())
-      {
+    {
       for (eit = from.begin(); eit != from.end(); ++eit)
-        {
+      {
         const StringData& values(eit->stringProperties());
         StringData::const_iterator valueIt = values.find(stringPropertyNamesToReduce[ii]);
         if (valueIt != values.end())
-          {
+        {
           haveString = true;
           svalue.insert(svalue.end(), valueIt->second.begin(), valueIt->second.end());
           break;
-          }
-        }
-      if (haveString)
-        {
-        to.setStringProperty(stringPropertyNamesToReduce[ii], StringList(svalue.begin(), svalue.end()));
         }
       }
+      if (haveString)
+      {
+        to.setStringProperty(
+          stringPropertyNamesToReduce[ii], StringList(svalue.begin(), svalue.end()));
+      }
     }
+  }
   return true;
 }
 
@@ -539,7 +530,8 @@ ArrangementHelper* Session::createArrangementHelper()
 /**\brief Recursively called by transcribeInternal until no new entities are encountered.
   *
   */
-int Session::findOrAddRelatedEntities(const EntityRef& entRef, SessionInfoBits flags, ArrangementHelper* helper)
+int Session::findOrAddRelatedEntities(
+  const EntityRef& entRef, SessionInfoBits flags, ArrangementHelper* helper)
 {
   if (helper->isMarked(entRef))
     return 0;
@@ -552,57 +544,60 @@ int Session::findOrAddRelatedEntities(const EntityRef& entRef, SessionInfoBits f
 
   int numAdded = 0;
   switch (entType)
-    {
-  case CELL_ENTITY:
-    numAdded += this->findOrAddCellAdjacencies(entRef.as<CellEntity>(), flags, helper);
-    numAdded += this->findOrAddCellUses(entRef.as<CellEntity>(), flags, helper);
-    numAdded += this->findOrAddRelatedGroups(entRef, flags, helper);
-    numAdded += this->findOrAddRelatedInstances(entRef, flags, helper);
-    break;
-  case USE_ENTITY:
-    numAdded += this->findOrAddOwningCell(entRef.as<UseEntity>(), flags, helper);
-    numAdded += this->findOrAddShellAdjacencies(entRef.as<UseEntity>(), flags, helper);
-    numAdded += this->findOrAddRelatedGroups(entRef, flags, helper);
-    numAdded += this->findOrAddRelatedInstances(entRef, flags, helper);
-    break;
-  case SHELL_ENTITY:
-    numAdded += this->findOrAddUseAdjacencies(entRef.as<ShellEntity>(), flags, helper);
-    numAdded += this->findOrAddRelatedGroups(entRef, flags, helper);
-    numAdded += this->findOrAddRelatedInstances(entRef, flags, helper);
-    break;
-  case GROUP_ENTITY:
-    numAdded += this->findOrAddGroupOwner(entRef.as<Group>(), flags, helper);
-    numAdded += this->findOrAddRelatedGroups(entRef, flags, helper);
-    numAdded += this->findOrAddRelatedInstances(entRef, flags, helper);
-    break;
-  case MODEL_ENTITY:
-    numAdded += this->findOrAddFreeCells(entRef.as<Model>(), flags, helper);
-    numAdded += this->findOrAddRelatedModels(entRef.as<Model>(), flags, helper);
-    numAdded += this->findOrAddRelatedGroups(entRef, flags, helper);
-    numAdded += this->findOrAddRelatedInstances(entRef, flags, helper);
-    break;
-  case INSTANCE_ENTITY:
-    numAdded += this->findOrAddPrototype(entRef.as<Instance>(), flags, helper);
-    numAdded += this->findOrAddRelatedGroups(entRef, flags, helper);
-    break;
-  case SESSION:
-    numAdded += this->findOrAddRelatedModels(entRef.as<SessionRef>(), flags, helper);
-    numAdded += this->findOrAddRelatedGroups(entRef, flags, helper);
-    numAdded += this->findOrAddRelatedInstances(entRef, flags, helper);
-    break;
-  default:
-    smtkInfoMacro(this->log(), "Unknown entity type " << entRef.entityFlags() << " being transcribed.");
-    break;
-    }
+  {
+    case CELL_ENTITY:
+      numAdded += this->findOrAddCellAdjacencies(entRef.as<CellEntity>(), flags, helper);
+      numAdded += this->findOrAddCellUses(entRef.as<CellEntity>(), flags, helper);
+      numAdded += this->findOrAddRelatedGroups(entRef, flags, helper);
+      numAdded += this->findOrAddRelatedInstances(entRef, flags, helper);
+      break;
+    case USE_ENTITY:
+      numAdded += this->findOrAddOwningCell(entRef.as<UseEntity>(), flags, helper);
+      numAdded += this->findOrAddShellAdjacencies(entRef.as<UseEntity>(), flags, helper);
+      numAdded += this->findOrAddRelatedGroups(entRef, flags, helper);
+      numAdded += this->findOrAddRelatedInstances(entRef, flags, helper);
+      break;
+    case SHELL_ENTITY:
+      numAdded += this->findOrAddUseAdjacencies(entRef.as<ShellEntity>(), flags, helper);
+      numAdded += this->findOrAddRelatedGroups(entRef, flags, helper);
+      numAdded += this->findOrAddRelatedInstances(entRef, flags, helper);
+      break;
+    case GROUP_ENTITY:
+      numAdded += this->findOrAddGroupOwner(entRef.as<Group>(), flags, helper);
+      numAdded += this->findOrAddRelatedGroups(entRef, flags, helper);
+      numAdded += this->findOrAddRelatedInstances(entRef, flags, helper);
+      break;
+    case MODEL_ENTITY:
+      numAdded += this->findOrAddFreeCells(entRef.as<Model>(), flags, helper);
+      numAdded += this->findOrAddRelatedModels(entRef.as<Model>(), flags, helper);
+      numAdded += this->findOrAddRelatedGroups(entRef, flags, helper);
+      numAdded += this->findOrAddRelatedInstances(entRef, flags, helper);
+      break;
+    case INSTANCE_ENTITY:
+      numAdded += this->findOrAddPrototype(entRef.as<Instance>(), flags, helper);
+      numAdded += this->findOrAddRelatedGroups(entRef, flags, helper);
+      break;
+    case SESSION:
+      numAdded += this->findOrAddRelatedModels(entRef.as<SessionRef>(), flags, helper);
+      numAdded += this->findOrAddRelatedGroups(entRef, flags, helper);
+      numAdded += this->findOrAddRelatedInstances(entRef, flags, helper);
+      break;
+    default:
+      smtkInfoMacro(
+        this->log(), "Unknown entity type " << entRef.entityFlags() << " being transcribed.");
+      break;
+  }
 
-  helper->reset(entRef); // Remove all *generated* (not user-specified) arrangements, properties, etc.
+  helper->reset(
+    entRef); // Remove all *generated* (not user-specified) arrangements, properties, etc.
   return numAdded;
 }
 
 /**\brief Subclasses implement this; it should add boundary, bounding, embedded, and embeddor cells of the current cell.
   *
   */
-int Session::findOrAddCellAdjacencies(const CellEntity& entRef, SessionInfoBits request, ArrangementHelper* helper)
+int Session::findOrAddCellAdjacencies(
+  const CellEntity& entRef, SessionInfoBits request, ArrangementHelper* helper)
 {
   (void)entRef;
   (void)request;
@@ -613,7 +608,8 @@ int Session::findOrAddCellAdjacencies(const CellEntity& entRef, SessionInfoBits 
 /**\brief Subclasses implement this; it should add use records of the current cell.
   *
   */
-int Session::findOrAddCellUses(const CellEntity& entRef, SessionInfoBits request, ArrangementHelper* helper)
+int Session::findOrAddCellUses(
+  const CellEntity& entRef, SessionInfoBits request, ArrangementHelper* helper)
 {
   (void)entRef;
   (void)request;
@@ -624,7 +620,8 @@ int Session::findOrAddCellUses(const CellEntity& entRef, SessionInfoBits request
 /**\brief Subclasses implement this; it should add the current use's owning cell.
   *
   */
-int Session::findOrAddOwningCell(const UseEntity& entRef, SessionInfoBits request, ArrangementHelper* helper)
+int Session::findOrAddOwningCell(
+  const UseEntity& entRef, SessionInfoBits request, ArrangementHelper* helper)
 {
   (void)entRef;
   (void)request;
@@ -635,7 +632,8 @@ int Session::findOrAddOwningCell(const UseEntity& entRef, SessionInfoBits reques
 /**\brief Subclasses implement this; it should add shells bounded by or bounding the given use.
   *
   */
-int Session::findOrAddShellAdjacencies(const UseEntity& entRef, SessionInfoBits request, ArrangementHelper* helper)
+int Session::findOrAddShellAdjacencies(
+  const UseEntity& entRef, SessionInfoBits request, ArrangementHelper* helper)
 {
   (void)entRef;
   (void)request;
@@ -646,7 +644,8 @@ int Session::findOrAddShellAdjacencies(const UseEntity& entRef, SessionInfoBits 
 /**\brief
   *
   */
-int Session::findOrAddUseAdjacencies(const ShellEntity& entRef, SessionInfoBits request, ArrangementHelper* helper)
+int Session::findOrAddUseAdjacencies(
+  const ShellEntity& entRef, SessionInfoBits request, ArrangementHelper* helper)
 {
   (void)entRef;
   (void)request;
@@ -657,7 +656,8 @@ int Session::findOrAddUseAdjacencies(const ShellEntity& entRef, SessionInfoBits 
 /**\brief
   *
   */
-int Session::findOrAddGroupOwner(const Group& entRef, SessionInfoBits request, ArrangementHelper* helper)
+int Session::findOrAddGroupOwner(
+  const Group& entRef, SessionInfoBits request, ArrangementHelper* helper)
 {
   (void)entRef;
   (void)request;
@@ -668,7 +668,8 @@ int Session::findOrAddGroupOwner(const Group& entRef, SessionInfoBits request, A
 /**\brief
   *
   */
-int Session::findOrAddFreeCells(const Model& entRef, SessionInfoBits request, ArrangementHelper* helper)
+int Session::findOrAddFreeCells(
+  const Model& entRef, SessionInfoBits request, ArrangementHelper* helper)
 {
   (void)entRef;
   (void)request;
@@ -679,7 +680,8 @@ int Session::findOrAddFreeCells(const Model& entRef, SessionInfoBits request, Ar
 /**\brief
   *
   */
-int Session::findOrAddRelatedModels(const Model& entRef, SessionInfoBits request, ArrangementHelper* helper)
+int Session::findOrAddRelatedModels(
+  const Model& entRef, SessionInfoBits request, ArrangementHelper* helper)
 {
   (void)entRef;
   (void)request;
@@ -690,7 +692,8 @@ int Session::findOrAddRelatedModels(const Model& entRef, SessionInfoBits request
 /**\brief
   *
   */
-int Session::findOrAddPrototype(const Instance& entRef, SessionInfoBits request, ArrangementHelper* helper)
+int Session::findOrAddPrototype(
+  const Instance& entRef, SessionInfoBits request, ArrangementHelper* helper)
 {
   (void)entRef;
   (void)request;
@@ -701,7 +704,8 @@ int Session::findOrAddPrototype(const Instance& entRef, SessionInfoBits request,
 /**\brief
   *
   */
-int Session::findOrAddRelatedModels(const SessionRef& entRef, SessionInfoBits request, ArrangementHelper* helper)
+int Session::findOrAddRelatedModels(
+  const SessionRef& entRef, SessionInfoBits request, ArrangementHelper* helper)
 {
   (void)entRef;
   (void)request;
@@ -712,7 +716,8 @@ int Session::findOrAddRelatedModels(const SessionRef& entRef, SessionInfoBits re
 /**\brief
   *
   */
-int Session::findOrAddRelatedGroups(const EntityRef& entRef, SessionInfoBits request, ArrangementHelper* helper)
+int Session::findOrAddRelatedGroups(
+  const EntityRef& entRef, SessionInfoBits request, ArrangementHelper* helper)
 {
   (void)entRef;
   (void)request;
@@ -723,7 +728,8 @@ int Session::findOrAddRelatedGroups(const EntityRef& entRef, SessionInfoBits req
 /**\brief
   *
   */
-int Session::findOrAddRelatedInstances(const EntityRef& entRef, SessionInfoBits request, ArrangementHelper* helper)
+int Session::findOrAddRelatedInstances(
+  const EntityRef& entRef, SessionInfoBits request, ArrangementHelper* helper)
 {
   (void)entRef;
   (void)request;
@@ -734,7 +740,8 @@ int Session::findOrAddRelatedInstances(const EntityRef& entRef, SessionInfoBits 
 /**\brief Subclasses implement this to finalize arrangement information for \a entRef using the \a helper.
   *
   */
-SessionInfoBits Session::findOrAddArrangements(const EntityRef& entRef, Entity* entRec, SessionInfoBits flags, ArrangementHelper* helper)
+SessionInfoBits Session::findOrAddArrangements(
+  const EntityRef& entRef, Entity* entRec, SessionInfoBits flags, ArrangementHelper* helper)
 {
   (void)entRef;
   (void)entRec;
@@ -746,7 +753,8 @@ SessionInfoBits Session::findOrAddArrangements(const EntityRef& entRef, Entity* 
 /**\brief Subclasses implement this to update transcribed (not user-specified) properties of \a entRef.
   *
   */
-SessionInfoBits Session::updateProperties(const EntityRef& entRef, Entity* entRec, SessionInfoBits flags, ArrangementHelper* helper)
+SessionInfoBits Session::updateProperties(
+  const EntityRef& entRef, Entity* entRec, SessionInfoBits flags, ArrangementHelper* helper)
 {
   (void)entRef;
   (void)entRec;
@@ -759,7 +767,8 @@ SessionInfoBits Session::updateProperties(const EntityRef& entRef, Entity* entRe
   *
   * This method will only be called when transcribe() is asked to include the tessellation.
   */
-SessionInfoBits Session::updateTessellation(const EntityRef& entRef, SessionInfoBits flags, ArrangementHelper* helper)
+SessionInfoBits Session::updateTessellation(
+  const EntityRef& entRef, SessionInfoBits flags, ArrangementHelper* helper)
 {
   (void)entRef;
   (void)flags;
@@ -834,41 +843,36 @@ void Session::initializeOperatorSystem(const OperatorConstructors* opList)
   resultdefn->addItemDefinition(logDefn);
 
   if (!opList && this->inheritsOperators())
-    {
+  {
     delete this->m_operatorSys;
     this->m_operatorSys = other;
     return;
-    }
+  }
 
   if (opList)
-    {
+  {
     smtk::io::Logger tmpLog;
     smtk::io::AttributeReader rdr;
     OperatorConstructors::const_iterator it;
     bool ok = true;
     for (it = opList->begin(); it != opList->end(); ++it)
-      {
+    {
       if (it->second.first.empty())
         continue;
 
       ok &= !rdr.readContents(
-        *this->m_operatorSys,
-        it->second.first.c_str(), it->second.first.size(),
-        tmpLog);
-      }
-    if (!ok)
-      {
-      std::cerr
-        << "Error. Log follows:\n---\n"
-        << tmpLog.convertToString()
-        << "\n---\n";
-      }
+        *this->m_operatorSys, it->second.first.c_str(), it->second.first.size(), tmpLog);
     }
+    if (!ok)
+    {
+      std::cerr << "Error. Log follows:\n---\n" << tmpLog.convertToString() << "\n---\n";
+    }
+  }
 
   if (other)
-    {
+  {
     if (this->inheritsOperators())
-      {
+    {
       // Copy definitions that do not already exist.
       std::vector<smtk::attribute::DefinitionPtr> tmp;
       std::vector<smtk::attribute::DefinitionPtr>::iterator it;
@@ -876,37 +880,37 @@ void Session::initializeOperatorSystem(const OperatorConstructors* opList)
       DefinitionPtr otherOperator = other->findDefinition("operator");
       other->derivedDefinitions(otherOperator, tmp);
       for (it = tmp.begin(); it != tmp.end(); ++it)
-        {
+      {
         if (!this->m_operatorSys->findDefinition((*it)->type()))
-          {
+        {
           this->m_operatorSys->copyDefinition(*it);
-          }
         }
+      }
 
       DefinitionPtr otherResult = other->findDefinition("result");
       other->derivedDefinitions(otherResult, tmp);
       for (it = tmp.begin(); it != tmp.end(); ++it)
-        {
+      {
         if (!this->m_operatorSys->findDefinition((*it)->type()))
-          {
+        {
           this->m_operatorSys->copyDefinition(*it);
-          }
         }
+      }
 
       // Copy views that do not already exist
       const std::map<std::string, smtk::common::ViewPtr>& otherViews(other->views());
       std::map<std::string, smtk::common::ViewPtr>::const_iterator vit;
       for (vit = otherViews.begin(); vit != otherViews.end(); ++vit)
-        {
+      {
         if (!this->m_operatorSys->findView(vit->first))
-          {
+        {
           this->m_operatorSys->addView(vit->second);
-          }
         }
       }
+    }
 
     delete other;
-    }
+  }
 }
 
 /**\brief Import XML describing an operator into this session's operator system.
@@ -919,41 +923,33 @@ void Session::initializeOperatorSystem(const OperatorConstructors* opList)
 void Session::importOperatorXML(const std::string& opXML)
 {
   if (this->m_operatorSys && !opXML.empty())
-    {
+  {
     smtk::io::AttributeReader rdr;
     bool ok = true;
-    ok &= !rdr.readContents(
-      *this->m_operatorSys,
-      opXML.c_str(), opXML.size(),
-      this->log());
+    ok &= !rdr.readContents(*this->m_operatorSys, opXML.c_str(), opXML.size(), this->log());
 
     if (!ok)
-      {
-      std::cerr
-        << "Error. Log follows:\n---\n"
-        << this->log().convertToString()
-        << "\n---\n";
-      }
+    {
+      std::cerr << "Error. Log follows:\n---\n" << this->log().convertToString() << "\n---\n";
     }
+  }
 }
 
 /**\brief A convenience method used by subclass findOperatorXML methods.
   */
 std::string Session::findOperatorXMLInternal(
-  const std::string& opName,
-  const OperatorConstructors* opList) const
+  const std::string& opName, const OperatorConstructors* opList) const
 {
   std::string xml;
   if (!opList)
-    { // No operators registered.
+  { // No operators registered.
     return xml;
-    }
-  smtk::model::OperatorConstructors::const_iterator it =
-    opList->find(opName);
+  }
+  smtk::model::OperatorConstructors::const_iterator it = opList->find(opName);
   if (it == opList->end())
-    { // No matching operator.
+  { // No matching operator.
     return xml;
-    }
+  }
   return it->second.first;
 }
 
@@ -961,19 +957,17 @@ std::string Session::findOperatorXMLInternal(
 /**\brief A convenience method used by subclass findOperatorConstructor methods.
   */
 OperatorConstructor Session::findOperatorConstructorInternal(
-  const std::string& opName,
-  const OperatorConstructors* opList) const
+  const std::string& opName, const OperatorConstructors* opList) const
 {
   if (!opList)
-    { // No operators registered.
+  { // No operators registered.
     return smtk::model::OperatorConstructor();
-    }
-  smtk::model::OperatorConstructors::const_iterator it =
-    opList->find(opName);
+  }
+  smtk::model::OperatorConstructors::const_iterator it = opList->find(opName);
   if (it == opList->end())
-    { // No matching operator.
+  { // No matching operator.
     return smtk::model::OperatorConstructor();
-    }
+  }
   return it->second.second;
 }
 #endif // SHIBOKEN_SKIP
@@ -993,17 +987,15 @@ OperatorConstructor Session::findOperatorConstructorInternal(
 SessionIOPtr Session::createIODelegate(const std::string& format)
 {
   if (format == "json")
-    {
+  {
     return SessionIOJSON::create();
-    }
+  }
 
   return SessionIOPtr();
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
-smtkImplementsOperatorRegistration(
-  smtk::model::Session,
-  /* Do not inherit operators. */ false
-);
+smtkImplementsOperatorRegistration(smtk::model::Session,
+  /* Do not inherit operators. */ false);

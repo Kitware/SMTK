@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkCreateModelEdgesOperatorBase.h"
 
 #include "vtkDiscreteModel.h"
@@ -29,15 +28,15 @@ vtkCreateModelEdgesOperatorBase::~vtkCreateModelEdgesOperatorBase()
 
 bool vtkCreateModelEdgesOperatorBase::AbleToOperate(vtkDiscreteModel* Model)
 {
-  if(!Model)
-    {
+  if (!Model)
+  {
     vtkErrorMacro("Passed in a null model.");
     return 0;
-    }
+  }
   return 1;
 }
 
 void vtkCreateModelEdgesOperatorBase::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }

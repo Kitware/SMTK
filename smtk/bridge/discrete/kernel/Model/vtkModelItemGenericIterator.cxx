@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkModelItemGenericIterator.h"
 
 #include "vtkModelItem.h"
@@ -23,7 +22,6 @@ struct vtkModelItemGenericIteratorInternals
   typedef Container::iterator ContainerIterator;
   Container Objects;
   ContainerIterator Iterator;
-
 };
 
 vtkModelItemGenericIterator::vtkModelItemGenericIterator()
@@ -39,7 +37,7 @@ vtkModelItemGenericIterator::~vtkModelItemGenericIterator()
 
 void vtkModelItemGenericIterator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }
 
 void vtkModelItemGenericIterator::Begin()
@@ -49,28 +47,28 @@ void vtkModelItemGenericIterator::Begin()
 
 int vtkModelItemGenericIterator::IsAtEnd()
 {
-  if ( this->Internal->Iterator == this->Internal->Objects.end() )
-    {
+  if (this->Internal->Iterator == this->Internal->Objects.end())
+  {
     return 1;
-    }
+  }
   return 0;
 }
 
 void vtkModelItemGenericIterator::Next()
 {
   if (!this->IsAtEnd())
-    {
+  {
     this->Internal->Iterator++;
     return;
-    }
+  }
 }
 
 vtkModelItem* vtkModelItemGenericIterator::GetCurrentItem()
 {
   if (!this->IsAtEnd())
-    {
+  {
     return this->Internal->Iterator->GetPointer();
-    }
+  }
 
   return 0;
 }
@@ -82,15 +80,14 @@ void vtkModelItemGenericIterator::AddModelItem(vtkModelItem* modelItem)
 
 void vtkModelItemGenericIterator::AddUniqueModelItem(vtkModelItem* modelItem)
 {
-  for(vtkModelItemGenericIteratorInternals::ContainerIterator it=
-        this->Internal->Objects.begin();
-      it!=this->Internal->Objects.end();it++)
+  for (vtkModelItemGenericIteratorInternals::ContainerIterator it = this->Internal->Objects.begin();
+       it != this->Internal->Objects.end(); it++)
+  {
+    if (*it == modelItem)
     {
-    if(*it == modelItem)
-      {
       return;
-      }
     }
+  }
   this->Internal->Objects.push_back(modelItem);
 }
 

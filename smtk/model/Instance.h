@@ -12,8 +12,10 @@
 
 #include "smtk/model/EntityRef.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief A entityref subclass that provides methods specific to entity use records.
   *
@@ -21,7 +23,7 @@ namespace smtk {
 class SMTKCORE_EXPORT Instance : public EntityRef
 {
 public:
-  SMTK_ENTITYREF_CLASS(Instance,EntityRef,isInstance);
+  SMTK_ENTITYREF_CLASS(Instance, EntityRef, isInstance);
 
   EntityRef prototype() const;
 
@@ -31,7 +33,7 @@ public:
 
 typedef std::vector<Instance> InstanceEntities;
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_model_Instance_h

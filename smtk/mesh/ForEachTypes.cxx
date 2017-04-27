@@ -9,33 +9,29 @@
 //=========================================================================
 #include "smtk/mesh/ForEachTypes.h"
 
-namespace smtk {
-  namespace mesh {
-
-
+namespace smtk
+{
+namespace mesh
+{
 
 MeshForEach::~MeshForEach()
 {
-
 }
 
-CellForEach::CellForEach(bool wantCoordinates):
-  m_pointIds(NULL),
-  m_coords(NULL),
-  m_wantsCoordinates(wantCoordinates)
+CellForEach::CellForEach(bool wantCoordinates)
+  : m_pointIds(NULL)
+  , m_coords(NULL)
+  , m_wantsCoordinates(wantCoordinates)
 {
-
 }
 
 CellForEach::~CellForEach()
 {
-
 }
 
 PointForEach::~PointForEach()
 {
-
 }
 
-  } // namespace mesh
+} // namespace mesh
 } // namespace smtk

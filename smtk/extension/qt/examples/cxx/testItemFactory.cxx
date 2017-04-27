@@ -54,17 +54,14 @@ static int numDeleted = 0;
 class testItemWidgetFactory : public qtAttributeItemWidgetFactory
 {
 public:
-  virtual ~testItemWidgetFactory()
-    {
-    ++numDeleted;
-    }
+  virtual ~testItemWidgetFactory() { ++numDeleted; }
 
-  virtual qtItem* createValueItemWidget(ValueItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient)
-    {
+  virtual qtItem* createValueItemWidget(
+    ValueItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient)
+  {
     // TODO: Need to create an attribute view and see that this gets called.
     return new qtInputsItem(smtk::dynamic_pointer_cast<ValueItem>(item), p, bview, orient);
-    }
-
+  }
 };
 
 AttributePtr createAttribForTest(System& system)
@@ -74,7 +71,7 @@ AttributePtr createAttribForTest(System& system)
     def->addItemDefinition<StringItemDefinitionPtr>("test string");
 
   AttributePtr att = system.createAttribute("testAtt", "test def");
-  double color[] = {3,24,12,6};
+  double color[] = { 3, 24, 12, 6 };
   att->setColor(color);
   att->setAppliesToBoundaryNodes(true);
   att->setAppliesToInteriorNodes(true);
@@ -83,11 +80,9 @@ AttributePtr createAttribForTest(System& system)
 
 int testLifecycle()
 {
-  qtAttribute::setItemWidgetFactory(
-    new testItemWidgetFactory());
+  qtAttribute::setItemWidgetFactory(new testItemWidgetFactory());
   test(numDeleted == 0, "Bad initial value for numDeleted.");
-  qtAttribute::setItemWidgetFactory(
-    new testItemWidgetFactory());
+  qtAttribute::setItemWidgetFactory(new testItemWidgetFactory());
   test(numDeleted == 1, "Expected to delete the old test factory.");
   qtAttribute::setItemWidgetFactory(NULL);
   test(numDeleted == 2, "Expected to delete the new test factory.");
@@ -98,8 +93,7 @@ int testLifecycle()
   AttributePtr att = createAttribForTest(system);
   qtUIManager* mgr = new qtUIManager(system);
   QWidget* w = new QWidget;
-  smtk::extension::ViewInfo vinfo(smtk::common::View::New("base", "test view"),
-                                  w, mgr);
+  smtk::extension::ViewInfo vinfo(smtk::common::View::New("base", "test view"), w, mgr);
   qtBaseView* v = new qtBaseView(vinfo);
   qtAttribute* qatt = new qtAttribute(att, w, v);
 

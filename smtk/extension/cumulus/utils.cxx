@@ -17,21 +17,24 @@
 namespace cumulus
 {
 
-QString handleGirderError(QNetworkReply *reply,
-    const QByteArray &bytes)
+QString handleGirderError(QNetworkReply* reply, const QByteArray& bytes)
 {
-  cJSON *jsonReply = cJSON_Parse(bytes.constData());
+  cJSON* jsonReply = cJSON_Parse(bytes.constData());
   QString errorMessage;
 
-  if (!jsonReply) {
-    errorMessage =  reply->errorString();
+  if (!jsonReply)
+  {
+    errorMessage = reply->errorString();
   }
-  else {
-    cJSON *msgItem = cJSON_GetObjectItem(jsonReply, "message");
-    if (msgItem) {
+  else
+  {
+    cJSON* msgItem = cJSON_GetObjectItem(jsonReply, "message");
+    if (msgItem)
+    {
       errorMessage = QString("Girder error: %1").arg(QString(msgItem->valuestring));
     }
-    else {
+    else
+    {
       errorMessage = QString(bytes);
     }
   }

@@ -14,8 +14,10 @@
 
 #include <vector>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 class Chain;
 class Edge;
@@ -35,7 +37,7 @@ typedef std::vector<VertexUse> VertexUses;
 class SMTKCORE_EXPORT EdgeUse : public UseEntity
 {
 public:
-  SMTK_ENTITYREF_CLASS(EdgeUse,UseEntity,isEdgeUse);
+  SMTK_ENTITYREF_CLASS(EdgeUse, UseEntity, isEdgeUse);
 
   FaceUse faceUse() const;
   Loop loop() const;
@@ -48,7 +50,7 @@ public:
   EdgeUse cwUse() const;
 };
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_model_EdgeUse_h

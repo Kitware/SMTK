@@ -8,20 +8,21 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "qtCollapsibleGroupWidget.h"
 #include "ui_qtCollapsibleGroupWidgetInternals.h"
 #include <QCheckBox>
 #include <QFrame>
 using namespace smtk::extension;
 
-class smtk::extension::qtCollapsibleGroupWidgetInternals : public Ui::qtCollapsibleGroupWidgetInternals
+class smtk::extension::qtCollapsibleGroupWidgetInternals
+  : public Ui::qtCollapsibleGroupWidgetInternals
 {
 public:
   qtCollapsibleGroupWidgetInternals() {}
 };
 
-qtCollapsibleGroupWidget::qtCollapsibleGroupWidget(QWidget* p): QWidget(p)
+qtCollapsibleGroupWidget::qtCollapsibleGroupWidget(QWidget* p)
+  : QWidget(p)
 {
   this->m_internals = new qtCollapsibleGroupWidgetInternals;
   this->m_internals->setupUi(this);
@@ -32,22 +33,22 @@ qtCollapsibleGroupWidget::~qtCollapsibleGroupWidget()
   delete this->m_internals;
 }
 
-QFrame *qtCollapsibleGroupWidget::contents() const
+QFrame* qtCollapsibleGroupWidget::contents() const
 {
   return this->m_internals->BodyFrame;
 }
 
-QLayout *qtCollapsibleGroupWidget::contentsLayout() const
+QLayout* qtCollapsibleGroupWidget::contentsLayout() const
 {
   return this->m_internals->BodyFrame->layout();
 }
 
-void qtCollapsibleGroupWidget::setContentsLayout(QLayout *newLayout)
+void qtCollapsibleGroupWidget::setContentsLayout(QLayout* newLayout)
 {
   this->m_internals->BodyFrame->setLayout(newLayout);
 }
 
-void qtCollapsibleGroupWidget::setName(const QString &newName)
+void qtCollapsibleGroupWidget::setName(const QString& newName)
 {
   return this->m_internals->VisibilityControl->setText(newName);
 }

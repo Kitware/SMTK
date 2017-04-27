@@ -139,11 +139,11 @@ class vtkIdTypeArray;
 class VTKSMTKMESHINGEXT_EXPORT vtkCMBPrepareForTriangleMesher : public vtkObject
 {
 public:
-  static vtkCMBPrepareForTriangleMesher *New();
-  vtkTypeMacro(vtkCMBPrepareForTriangleMesher,vtkObject);
+  static vtkCMBPrepareForTriangleMesher* New();
+  vtkTypeMacro(vtkCMBPrepareForTriangleMesher, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  void SetPolyData(vtkPolyData* pd);//Set the polydata to work on
+  void SetPolyData(vtkPolyData* pd); //Set the polydata to work on
 
   //Functions for describing what to mesh
   //
@@ -165,12 +165,12 @@ public:
   // Add the arrays to your polydata:
   //   mapInterface->FinalizeNewMapInfo();
 
-  void SetNumberOfArcs(const vtkIdType& num);//For preallocating arrays
-  void SetNumberOfLoops(const vtkIdType& num);//For preallocating arrays
-  void SetNumberOfCells(const vtkIdType& num);//#nodes+#lines, Used for cellElementIds
+  void SetNumberOfArcs(const vtkIdType& num);  //For preallocating arrays
+  void SetNumberOfLoops(const vtkIdType& num); //For preallocating arrays
+  void SetNumberOfCells(const vtkIdType& num); //#nodes+#lines, Used for cellElementIds
 
-  void InitializeNewMapInfo();//make the polydata a map formated polydata
-  void FinalizeNewMapInfo();//Add the new field data to the polydata
+  void InitializeNewMapInfo(); //make the polydata a map formated polydata
+  void FinalizeNewMapInfo();   //Add the new field data to the polydata
 
   //Description:
   //Input: id of a model vertex/node
@@ -183,19 +183,14 @@ public:
   //Input: See https://www.kitware.com/CMB/index.php/Storing_Map_information_in_vtkPolyData
   //       If a datapoint is currently unknown use a -1 as a placeholder
   //Output: the arc index / the number of arcs currently added - 1
-  vtkIdType AddArc(const vtkIdType& CellArrayOffset,
-                   const vtkIdType& CellArraySize,
-                   const vtkIdType& ArcId,
-                   const vtkIdType& Loop1,
-                   const vtkIdType& Loop2,
-                   const vtkIdType& Endpoint1,
-                   const vtkIdType& Endpoint2);
+  vtkIdType AddArc(const vtkIdType& CellArrayOffset, const vtkIdType& CellArraySize,
+    const vtkIdType& ArcId, const vtkIdType& Loop1, const vtkIdType& Loop2,
+    const vtkIdType& Endpoint1, const vtkIdType& Endpoint2);
 
   //Description:
   //Input: the outer and inner polygon id that this loop describes
   //Output: the loop index/id
-  vtkIdType AddLoop(const vtkIdType& OuterPolyId,
-                    const vtkIdType& InnerPolyId );
+  vtkIdType AddLoop(const vtkIdType& OuterPolyId, const vtkIdType& InnerPolyId);
 
   //Description:
   //Input: The polygon id that this loop is a part of
@@ -203,21 +198,23 @@ public:
   //       the arc indexes that make up this polygon
   //Output: the loop index/id
 
-  vtkIdType AddLoopWithArcs(const vtkIdType& PolyId,
-                            const bool& isOuter,
-                            const std::vector<vtkIdType>& arcIndexes);
+  vtkIdType AddLoopWithArcs(
+    const vtkIdType& PolyId, const bool& isOuter, const std::vector<vtkIdType>& arcIndexes);
 
   //Functions for querying a map file
   bool IsValidForReading();
 
   //returns true if the map is valid and has the face rep
-  bool GetPolyId2ModelFaceRepMap(std::map<vtkIdType, CmbFaceMesherClasses::ModelFaceRep* >& pid2Face);
+  bool GetPolyId2ModelFaceRepMap(
+    std::map<vtkIdType, CmbFaceMesherClasses::ModelFaceRep*>& pid2Face);
 
   void GetArc(vtkIdType arcId, vtkPolyData* toReturn);
-protected:
 
+protected:
   bool BuildLoopId2ArcIndexMap(std::map<vtkIdType, std::vector<vtkIdType> >& loopId2ArcIndex);
-  bool BuildPolygonId2ModelFaceMap(const std::map<vtkIdType, std::vector<vtkIdType> >& loopId2ArcIndex, std::map<vtkIdType, CmbFaceMesherClasses::ModelFaceRep* >& pid2Face);
+  bool BuildPolygonId2ModelFaceMap(
+    const std::map<vtkIdType, std::vector<vtkIdType> >& loopId2ArcIndex,
+    std::map<vtkIdType, CmbFaceMesherClasses::ModelFaceRep*>& pid2Face);
 
 protected:
   vtkCMBPrepareForTriangleMesher();
@@ -252,11 +249,11 @@ protected:
 
   // maps a vector of arcids that make up a loop to an index
   // This is only used when using AddLoopWithArcs
-  std::map< std::vector<vtkIdType>, vtkIdType > loop2loopIndex;
+  std::map<std::vector<vtkIdType>, vtkIdType> loop2loopIndex;
 
 private:
-  vtkCMBPrepareForTriangleMesher(const vtkCMBPrepareForTriangleMesher&);  // Not implemented.
-  void operator=(const vtkCMBPrepareForTriangleMesher&);  // Not implemented.
+  vtkCMBPrepareForTriangleMesher(const vtkCMBPrepareForTriangleMesher&); // Not implemented.
+  void operator=(const vtkCMBPrepareForTriangleMesher&);                 // Not implemented.
 };
 
 #endif

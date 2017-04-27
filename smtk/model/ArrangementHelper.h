@@ -15,8 +15,10 @@
 #include "smtk/SharedFromThis.h" // for smtkTypeMacro
 #include "smtk/model/Session.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief Superclass for session-specific updates to arrangments of entities.
   *
@@ -46,10 +48,10 @@ protected:
 
 private:
   ArrangementHelper(const ArrangementHelper& other); // Not implemented.
-  void operator = (const ArrangementHelper& other); // Not implemented.
+  void operator=(const ArrangementHelper& other);    // Not implemented.
 };
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_model_ArrangementHelper_h

@@ -42,17 +42,16 @@ bool vtkModelRegion::IsDestroyable()
 
 bool vtkModelRegion::Destroy()
 {
-  this->GetModel()->InvokeModelGeometricEntityEvent(
-    ModelGeometricEntityAboutToDestroy, this);
+  this->GetModel()->InvokeModelGeometricEntityEvent(ModelGeometricEntityAboutToDestroy, this);
   vtkModelItemIterator* shellUseIter = this->NewModelShellUseIterator();
-  for(shellUseIter->Begin();!shellUseIter->IsAtEnd();shellUseIter->Next())
+  for (shellUseIter->Begin(); !shellUseIter->IsAtEnd(); shellUseIter->Next())
+  {
+    if (!vtkModelShellUse::SafeDownCast(shellUseIter->GetCurrentItem())->Destroy())
     {
-    if(!vtkModelShellUse::SafeDownCast(shellUseIter->GetCurrentItem())->Destroy())
-      {
       shellUseIter->Delete();
       return 0;
-      }
     }
+  }
   shellUseIter->Delete();
   this->RemoveAllAssociations(vtkModelShellUseType);
   return 1;
@@ -63,8 +62,8 @@ void vtkModelRegion::Initialize(vtkIdType modelRegionId)
   this->Superclass::Initialize(modelRegionId);
 }
 
-void vtkModelRegion::Initialize(int numModelFaces, vtkModelFace** faces, int* faceSides,
-                                vtkIdType modelRegionId)
+void vtkModelRegion::Initialize(
+  int numModelFaces, vtkModelFace** faces, int* faceSides, vtkIdType modelRegionId)
 {
   this->Superclass::Initialize(modelRegionId);
   this->BuildModelShellUse(numModelFaces, faces, faceSides);
@@ -79,10 +78,10 @@ vtkModelShellUse* vtkModelRegion::BuildModelShellUse(
   int numModelFaces, vtkModelFace** modelFaces, int* faceSides)
 {
   vtkModelShellUse* shellUse = vtkModelShellUse::New();
-  for(int i=0;i<numModelFaces;i++)
-    {
+  for (int i = 0; i < numModelFaces; i++)
+  {
     shellUse->AddModelFaceUse(modelFaces[i]->GetModelFaceUse(faceSides[i]));
-    }
+  }
   this->AddAssociation(shellUse);
   shellUse->FastDelete();
   return shellUse;
@@ -90,11 +89,11 @@ vtkModelShellUse* vtkModelRegion::BuildModelShellUse(
 
 bool vtkModelRegion::DestroyModelShellUse(vtkModelShellUse* shellUse)
 {
-  if(!shellUse->Destroy())
-    {
+  if (!shellUse->Destroy())
+  {
     vtkErrorMacro("Error destroying model shell use.");
     return false;
-    }
+  }
   this->RemoveAssociation(shellUse);
   return true;
 }
@@ -106,35 +105,31 @@ void vtkModelRegion::Serialize(vtkSerializer* ser)
 
 void vtkModelRegion::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }
 
 vtkModelItemIterator* vtkModelRegion::NewAdjacentModelFaceIterator()
 {
   vtkModelItemGenericIterator* faces = vtkModelItemGenericIterator::New();
-  vtkModelItemIterator* shells =
-    this->NewIterator(vtkModelShellUseType);
-  for(shells->Begin();!shells->IsAtEnd();shells->Next())
+  vtkModelItemIterator* shells = this->NewIterator(vtkModelShellUseType);
+  for (shells->Begin(); !shells->IsAtEnd(); shells->Next())
+  {
+    vtkModelItemIterator* faceUses = shells->GetCurrentItem()->NewIterator(vtkModelFaceUseType);
+    for (faceUses->Begin(); !faceUses->IsAtEnd(); faceUses->Next())
     {
-    vtkModelItemIterator* faceUses =
-      shells->GetCurrentItem()->NewIterator(vtkModelFaceUseType);
-    for(faceUses->Begin();!faceUses->IsAtEnd();faceUses->Next())
-      {
       faces->AddUniqueModelItem(
-        vtkModelFaceUse::SafeDownCast(faceUses->GetCurrentItem())->
-        GetModelFace());
-      }
-    faceUses->Delete();
+        vtkModelFaceUse::SafeDownCast(faceUses->GetCurrentItem())->GetModelFace());
     }
+    faceUses->Delete();
+  }
   shells->Delete();
 
   return faces;
 }
 
-void  vtkModelRegion::AddShell(int , vtkModelFace** , int* )
+void vtkModelRegion::AddShell(int, vtkModelFace**, int*)
 {
-  this->GetModel()->InvokeModelGeometricEntityEvent(
-    ModelGeometricEntityBoundaryModified, this);
+  this->GetModel()->InvokeModelGeometricEntityEvent(ModelGeometricEntityBoundaryModified, this);
   vtkErrorMacro("Not implemented.");
 }
 
@@ -142,27 +137,24 @@ int vtkModelRegion::GetNumberOfFaces()
 {
   std::set<vtkIdType> faceIds;
   vtkIdType fid;
-  vtkModelItemIterator* shells =
-    this->NewIterator(vtkModelShellUseType);
-  for(shells->Begin();!shells->IsAtEnd();shells->Next())
+  vtkModelItemIterator* shells = this->NewIterator(vtkModelShellUseType);
+  for (shells->Begin(); !shells->IsAtEnd(); shells->Next())
+  {
+    vtkModelItemIterator* faceUses = shells->GetCurrentItem()->NewIterator(vtkModelFaceUseType);
+    for (faceUses->Begin(); !faceUses->IsAtEnd(); faceUses->Next())
     {
-    vtkModelItemIterator* faceUses =
-      shells->GetCurrentItem()->NewIterator(vtkModelFaceUseType);
-    for(faceUses->Begin();!faceUses->IsAtEnd();faceUses->Next())
-      {
-      fid =
-        vtkModelFaceUse::SafeDownCast(faceUses->GetCurrentItem())->
-        GetModelFace()->GetUniquePersistentId();
+      fid = vtkModelFaceUse::SafeDownCast(faceUses->GetCurrentItem())
+              ->GetModelFace()
+              ->GetUniquePersistentId();
       faceIds.insert(fid);
-      }
-    faceUses->Delete();
     }
+    faceUses->Delete();
+  }
   shells->Delete();
   return static_cast<int>(faceIds.size());
 }
 
 int vtkModelRegion::GetNumberOfShells()
 {
-  return this->
-    GetNumberOfAssociations(vtkModelShellUseType);
+  return this->GetNumberOfAssociations(vtkModelShellUseType);
 }

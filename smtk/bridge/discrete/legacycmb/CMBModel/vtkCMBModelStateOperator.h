@@ -31,13 +31,13 @@ class vtkProperty;
 class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelStateOperator : public vtkCMBModelStateOperatorBase
 {
 public:
-  static vtkCMBModelStateOperator *New();
-  vtkTypeMacro(vtkCMBModelStateOperator,vtkCMBModelStateOperatorBase);
+  static vtkCMBModelStateOperator* New();
+  vtkTypeMacro(vtkCMBModelStateOperator, vtkCMBModelStateOperatorBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // Common API of model operator classes.
-  virtual void Operate(vtkDiscreteModelWrapper *cmbModelWrapper);
+  virtual void Operate(vtkDiscreteModelWrapper* cmbModelWrapper);
 
   // Description:
   // Macro to set/get OperatorMode
@@ -62,8 +62,8 @@ protected:
 
   // Description:
   // Save or reload the state for the model
-  int SaveState(vtkDiscreteModelWrapper *modelWrapper);
-  int LoadSavedState(vtkDiscreteModelWrapper *modelWrapper);
+  int SaveState(vtkDiscreteModelWrapper* modelWrapper);
+  int LoadSavedState(vtkDiscreteModelWrapper* modelWrapper);
 
   // Description:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).
@@ -74,16 +74,15 @@ protected:
   std::map<vtkIdType, vtkSmartPointer<vtkIdList> > FaceToIds;
   std::map<vtkIdType, vtkSmartPointer<vtkIdList> > EdgeToIds;
   // The Vertex for 2D
-  std::map<vtkIdType, vtkIdType > VertexToIds;
+  std::map<vtkIdType, vtkIdType> VertexToIds;
   // The Display property, because it is not a serializable object
   std::map<vtkIdType, vtkSmartPointer<vtkProperty> > EntityToProperties;
 
   int OperatorMode; // 0, saveMode; 1; reload state
 
 private:
-  vtkCMBModelStateOperator(const vtkCMBModelStateOperator&);  // Not implemented.
-  void operator=(const vtkCMBModelStateOperator&);  // Not implemented.
-
+  vtkCMBModelStateOperator(const vtkCMBModelStateOperator&); // Not implemented.
+  void operator=(const vtkCMBModelStateOperator&);           // Not implemented.
 };
 
 #endif

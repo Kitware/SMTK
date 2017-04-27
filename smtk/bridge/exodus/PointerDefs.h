@@ -18,15 +18,15 @@
 #include "smtk/SystemConfig.h"
 
 namespace smtk
-{  //session relates pointer classes
-  namespace bridge
-  {
-    namespace exodus
-      {
-      class Session;
-      typedef smtk::shared_ptr< smtk::bridge::exodus::Session > SessionPtr;
-      struct EntityHandle;
-      }
-  }
+{ //session relates pointer classes
+namespace bridge
+{
+namespace exodus
+{
+class Session;
+typedef smtk::shared_ptr<smtk::bridge::exodus::Session> SessionPtr;
+struct EntityHandle;
+}
+}
 }
 #endif

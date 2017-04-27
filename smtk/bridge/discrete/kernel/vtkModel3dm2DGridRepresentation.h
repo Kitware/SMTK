@@ -24,49 +24,45 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelGridRepresentation.h"
 
-
 class vtkIdTypeArray;
 class vtkCharArray;
 
-class VTKSMTKDISCRETEMODEL_EXPORT vtkModel3dm2DGridRepresentation : public vtkModelGridRepresentation
+class VTKSMTKDISCRETEMODEL_EXPORT vtkModel3dm2DGridRepresentation
+  : public vtkModelGridRepresentation
 {
 public:
   static vtkModel3dm2DGridRepresentation* New();
-  vtkTypeMacro(vtkModel3dm2DGridRepresentation,vtkModelGridRepresentation);
+  vtkTypeMacro(vtkModel3dm2DGridRepresentation, vtkModelGridRepresentation);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetBCSNodalAnalysisGridPointIds(vtkDiscreteModel* model,
-    vtkIdType bcsGroupId, int bcGroupType,  vtkIdList* pointIds);
+  virtual bool GetBCSNodalAnalysisGridPointIds(
+    vtkDiscreteModel* model, vtkIdType bcsGroupId, int bcGroupType, vtkIdList* pointIds);
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetFloatingEdgeAnalysisGridPointIds(vtkDiscreteModel* model, vtkIdType modelEdgeId,
-                                                   vtkIdList* pointIds);
+  virtual bool GetFloatingEdgeAnalysisGridPointIds(
+    vtkDiscreteModel* model, vtkIdType modelEdgeId, vtkIdList* pointIds);
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetModelEdgeAnalysisPoints(vtkDiscreteModel* model, vtkIdType edgeId,
-                                          vtkIdTypeArray* edgePoints);
+  virtual bool GetModelEdgeAnalysisPoints(
+    vtkDiscreteModel* model, vtkIdType edgeId, vtkIdTypeArray* edgePoints);
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetBoundaryGroupAnalysisFacets(vtkDiscreteModel* model, vtkIdType boundaryGroupId,
-                                              vtkIdList* cellIds, vtkIdList* cellSides);
+  virtual bool GetBoundaryGroupAnalysisFacets(
+    vtkDiscreteModel* model, vtkIdType boundaryGroupId, vtkIdList* cellIds, vtkIdList* cellSides);
 
-  virtual bool IsModelConsistent(vtkDiscreteModel*)
-  {
-    return true;
-  }
+  virtual bool IsModelConsistent(vtkDiscreteModel*) { return true; }
 
 protected:
   vtkModel3dm2DGridRepresentation();
   virtual ~vtkModel3dm2DGridRepresentation();
 
 private:
-  vtkModel3dm2DGridRepresentation(const vtkModel3dm2DGridRepresentation&);  // Not implemented.
-  void operator=(const vtkModel3dm2DGridRepresentation&);  // Not implemented.
+  vtkModel3dm2DGridRepresentation(const vtkModel3dm2DGridRepresentation&); // Not implemented.
+  void operator=(const vtkModel3dm2DGridRepresentation&);                  // Not implemented.
 };
 #endif
-

@@ -26,7 +26,8 @@ class vtkIdTypeArray;
 class vtkDiscreteModelWrapper;
 class vtkImageTextureCrop;
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelRepresentation : public vtkGeometryRepresentationWithFaces
+class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelRepresentation
+  : public vtkGeometryRepresentationWithFaces
 {
 public:
   static vtkCMBModelRepresentation* New();
@@ -38,8 +39,8 @@ public:
   // typically called by the vtkView to request meta-data from the
   // representations or ask them to perform certain tasks e.g.
   // PrepareForRendering.
-  virtual int ProcessViewRequest(vtkInformationRequestKey* request_type,
-    vtkInformation* inInfo, vtkInformation* outInfo);
+  virtual int ProcessViewRequest(
+    vtkInformationRequestKey* request_type, vtkInformation* inInfo, vtkInformation* outInfo);
 
   // Description:
   // Remove the texture input to the model.
@@ -108,8 +109,7 @@ protected:
 
   // Description:
   // Overriding to connect in the vtkImageTextureCrop filter
-  virtual int RequestData(vtkInformation*,
-    vtkInformationVector**, vtkInformationVector*);
+  virtual int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
 
   // Description:
   // Adds the representation to the view.  This is called from
@@ -125,8 +125,7 @@ protected:
 
   // Description:
   // Used in ConvertSelection to locate the prop used for actual rendering.
-  virtual vtkPVLODActor* GetRenderedProp()
-    { return this->ModelActor; }
+  virtual vtkPVLODActor* GetRenderedProp() { return this->ModelActor; }
 
   // Description:
   // Passes on parameters to vtkProperty and vtkMapper
@@ -139,18 +138,17 @@ protected:
   bool ModelVisibility;
   vtkIdTypeArray* LastSelectedEntityIds;
 
-  vtkImageTextureCrop *LODTextureCrop;
-  vtkImageTextureCrop *TextureCrop;
-  vtkTexture *LargeTexture;
+  vtkImageTextureCrop* LODTextureCrop;
+  vtkImageTextureCrop* TextureCrop;
+  vtkTexture* LargeTexture;
 
 private:
   vtkCMBModelRepresentation(const vtkCMBModelRepresentation&); // Not implemented
-  void operator=(const vtkCMBModelRepresentation&); // Not implemented
+  void operator=(const vtkCMBModelRepresentation&);            // Not implemented
 
   class vtkInternal;
   vtkInternal* Internal;
   void RemoveAllSelectedEntityIdsInternal();
-
 };
 
 #endif

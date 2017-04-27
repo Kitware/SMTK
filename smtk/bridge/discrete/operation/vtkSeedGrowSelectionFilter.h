@@ -24,8 +24,7 @@ class vtkIdTypeArray;
 class vtkIntArray;
 class vtkPolyData;
 
-class SMTKDISCRETESESSION_EXPORT vtkSeedGrowSelectionFilter :
-public vtkSelectionAlgorithm
+class SMTKDISCRETESESSION_EXPORT vtkSeedGrowSelectionFilter : public vtkSelectionAlgorithm
 {
 public:
   static vtkSeedGrowSelectionFilter* New();
@@ -40,17 +39,14 @@ public:
 
   // Description:
   // Removes all inputs from input port 0.
-  void RemoveAllSelectionsInputs()
-    {
-      this->SetInputConnection(0, 0);
-    }
+  void RemoveAllSelectionsInputs() { this->SetInputConnection(0, 0); }
 
   // Description:
   // Specify the angle that defines a sharp edge. If the difference in
   // angle across neighboring polygons is greater than this value, the
   // shared edge is considered "sharp".
-  vtkSetClampMacro(FeatureAngle,double,0.0,180.0);
-  vtkGetMacro(FeatureAngle,double);
+  vtkSetClampMacro(FeatureAngle, double, 0.0, 180.0);
+  vtkGetMacro(FeatureAngle, double);
 
   // Description:
   // Macro to set/get CellId and FaceId.  The faceId is the UniqueConsistentId.
@@ -70,7 +66,7 @@ public:
 
   // Description:
   // Set/clear the model face Ids array that will be grown upon.
-  void SetGrowFaceIds(vtkIdType* );
+  void SetGrowFaceIds(vtkIdType*);
   void RemoveAllGrowFaceIds();
   void SetGrowFaceIds(const std::set<vtkIdType>& ModelFaceIds);
 
@@ -111,11 +107,10 @@ protected:
   // Iterative algorithm to grow from a passed in cell id in a vtkPolyData.
   // The marked array is used to store whether or not the cell is in the
   // list of "grown" cells.
-  void GrowFromCell(const DiscreteMesh* mesh, vtkIntArray* marked, vtkIdType cellId,
-                    vtkIdTypeArray* selectionList);
+  void GrowFromCell(
+    const DiscreteMesh* mesh, vtkIntArray* marked, vtkIdType cellId, vtkIdTypeArray* selectionList);
 
-  void GrowAndRemoveFromSelection(
-    const DiscreteMesh* mesh, vtkIntArray* marked, vtkIdType cellId,
+  void GrowAndRemoveFromSelection(const DiscreteMesh* mesh, vtkIntArray* marked, vtkIdType cellId,
     vtkIdTypeArray* outSelectionList, vtkSelection* inSelection);
 
   // Description:
@@ -133,33 +128,26 @@ protected:
   // point (canonicall ordered).  NeighborCellIds are the point ids
   // of the neighboring cell (also canonically ordered).  Returns
   // true if they are consistent.
-  bool AreCellNormalsConsistent(vtkIdType PointId1, vtkIdType PointId2,
-                                vtkIdList * NeighborCellIds);
+  bool AreCellNormalsConsistent(vtkIdType PointId1, vtkIdType PointId2, vtkIdList* NeighborCellIds);
 
   // Description:
   // Recursive algorithm to merge which cells have been selected.
-  void MergeGrowSelection(vtkSelection*, vtkIntArray*,
-                          vtkIdTypeArray* outSelectionList);
+  void MergeGrowSelection(vtkSelection*, vtkIntArray*, vtkIdTypeArray* outSelectionList);
 
   // Description:
   // This is called within ProcessRequest when a request asks the algorithm
   // to do its work. This is the method you should override to do whatever the
   // algorithm is designed to do. This happens during the fourth pass in the
   // pipeline execution process.
-  virtual int RequestData(vtkInformation*,
-                          vtkInformationVector**,
-                          vtkInformationVector*);
-  virtual int FillInputPortInformation(int port, vtkInformation *info);
+  virtual int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  virtual int FillInputPortInformation(int port, vtkInformation* info);
 
 private:
   vtkSeedGrowSelectionFilter(const vtkSeedGrowSelectionFilter&); // Not implemented.
-  void operator=(const vtkSeedGrowSelectionFilter&); // Not implemented.
+  void operator=(const vtkSeedGrowSelectionFilter&);             // Not implemented.
 
   class vtkInternal;
   vtkInternal* Internal;
-
 };
 
 #endif
-
-

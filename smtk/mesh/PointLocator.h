@@ -17,8 +17,10 @@
 #include "smtk/mesh/Interface.h"
 #include "smtk/mesh/PointSet.h"
 
-namespace smtk {
-namespace mesh {
+namespace smtk
+{
+namespace mesh
+{
 
 //PointLocator facilitates searching for points in 3D.
 //Currently the class has a fairly narrow API as we are still iterating
@@ -40,20 +42,16 @@ public:
   //duration of the PointLocator
   //Set ignoreZValues to true if you want all the points to be located
   //on a plane at Z == 0.0
-  PointLocator(const smtk::mesh::CollectionPtr collection,
-               const double* const xyzs,
-               std::size_t numPoints,
-               bool ignoreZValues=false);
+  PointLocator(const smtk::mesh::CollectionPtr collection, const double* const xyzs,
+    std::size_t numPoints, bool ignoreZValues = false);
 
   //Construct a point locator given a set of raw points.
   //Based on the backend these points maybe be added to the collection for
   //duration of the PointLocator
   //Set ignoreZValues to true if you want all the points to be located
   //on a plane at Z == 0.0
-  PointLocator(const smtk::mesh::CollectionPtr collection,
-               const float* const xyzs,
-               std::size_t numPoints,
-               bool ignoreZValues=false);
+  PointLocator(const smtk::mesh::CollectionPtr collection, const float* const xyzs,
+    std::size_t numPoints, bool ignoreZValues = false);
 
   //returns all the point ids that are inside the locator
   smtk::mesh::HandleRange range() const;
@@ -78,7 +76,6 @@ public:
 private:
   smtk::mesh::PointLocatorImplPtr m_locator;
 };
-
 }
 }
 

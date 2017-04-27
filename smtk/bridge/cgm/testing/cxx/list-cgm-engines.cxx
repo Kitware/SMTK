@@ -24,11 +24,11 @@ int main(int argc, char* argv[])
   bool passed = true;
   bool testSetDefault = false;
   for (int i = 1; i < argc; ++i)
-    {
+  {
     std::string arg(argv[i]);
     if (arg == "-test-set-default")
       testSetDefault = true;
-    }
+  }
   StringArray engines = Engines::listEngines();
   std::cout << "### Modeling kernels built into this CGM library ###\n\n";
   for (StringArray::iterator it = engines.begin(); it != engines.end(); ++it)
@@ -36,9 +36,9 @@ int main(int argc, char* argv[])
   std::cout << "\n";
 
   if (testSetDefault)
-    {
+  {
     for (StringArray::iterator it = engines.begin(); it != engines.end(); ++it)
-      {
+    {
       std::string engine(*it);
       std::transform(engine.begin(), engine.end(), engine.begin(),
         std::bind2nd(std::ptr_fun(&std::tolower<char>), std::locale("")));
@@ -48,12 +48,12 @@ int main(int argc, char* argv[])
         continue;
 
       if (!Engines::setDefault(*it))
-        {
+      {
         std::cout << "Could not make \"" << *it << "\" engine the default.\n";
         passed = false;
-        }
       }
     }
+  }
 
   // Uncomment when CGM no longer dies trying to shut down.
   // This happens on OS X 10.9, x86_64, OCC.

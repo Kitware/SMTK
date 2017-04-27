@@ -13,8 +13,10 @@
 
 #include <stdlib.h>
 
-namespace smtk {
-  namespace common {
+namespace smtk
+{
+namespace common
+{
 
 /// Return true if the environment variable exists, false otherwise.
 bool Environment::hasVariable(const std::string& varName)
@@ -63,5 +65,5 @@ void Environment::setVariable(const std::string& varName, const std::string& val
 #endif
 }
 
-  } // namespace common
+} // namespace common
 } // namespace smtk

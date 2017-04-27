@@ -16,14 +16,13 @@
 #include "vtkModelVertex.h"
 #include "vtkObjectFactory.h"
 
-
 vtkModelVertexUse* vtkModelVertexUse::New()
 {
   vtkObject* ret = vtkObjectFactory::CreateInstance("vtkModelVertexUse");
-  if(ret)
-    {
+  if (ret)
+  {
     return static_cast<vtkModelVertexUse*>(ret);
-    }
+  }
   return new vtkModelVertexUse;
 }
 
@@ -50,11 +49,9 @@ int vtkModelVertexUse::GetType()
 
 vtkModelVertex* vtkModelVertexUse::GetModelVertex()
 {
-  vtkModelItemIterator* iter =
-    this->NewIterator(vtkModelVertexType);
+  vtkModelItemIterator* iter = this->NewIterator(vtkModelVertexType);
   iter->Begin();
-  vtkModelVertex* vertex =
-    vtkModelVertex::SafeDownCast(iter->GetCurrentItem());
+  vtkModelVertex* vertex = vtkModelVertex::SafeDownCast(iter->GetCurrentItem());
   iter->Delete();
   return vertex;
 }
@@ -91,5 +88,5 @@ void vtkModelVertexUse::Serialize(vtkSerializer* ser)
 
 void vtkModelVertexUse::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }

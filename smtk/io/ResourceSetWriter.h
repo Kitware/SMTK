@@ -24,12 +24,14 @@
 
 #include <string>
 
-namespace smtk {
-  namespace io {
+namespace smtk
+{
+namespace io
+{
 
 class SMTKCORE_EXPORT ResourceSetWriter
 {
- public:
+public:
   enum LinkedFilesOption
   {
     SKIP_LINKED_FILES = 0,
@@ -37,17 +39,15 @@ class SMTKCORE_EXPORT ResourceSetWriter
     WRITE_LINKED_FILES
   };
 
-  bool writeFile(
-    std::string filename, const smtk::common::ResourceSet& resources,
+  bool writeFile(std::string filename, const smtk::common::ResourceSet& resources,
     smtk::io::Logger& logger, LinkedFilesOption option = WRITE_LINKED_FILES);
-  bool writeString(
-    std::string& content, const smtk::common::ResourceSet& resources,
+  bool writeString(std::string& content, const smtk::common::ResourceSet& resources,
     smtk::io::Logger& logger, LinkedFilesOption option = WRITE_LINKED_FILES);
 
- protected:
+protected:
 };
 
-  }  // namespace io
-}  // namespace smtk
+} // namespace io
+} // namespace smtk
 
 #endif // __smtk_io_ResourceSetWriter_h

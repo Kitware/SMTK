@@ -17,65 +17,50 @@
 #include "smtk/mesh/moab/Readers.h"
 #include "smtk/mesh/moab/Writers.h"
 
-namespace smtk {
-  namespace io {
-namespace mesh {
-
-MeshIOMoab::MeshIOMoab() : MeshIO()
+namespace smtk
 {
+namespace io
+{
+namespace mesh
+{
+
+MeshIOMoab::MeshIOMoab()
+  : MeshIO()
+{
+  this->Formats.push_back(Format("moab", std::vector<std::string>({ ".h5m", ".mhdf" }),
+    Format::Import | Format::Export | Format::Read | Format::Write));
   this->Formats.push_back(
-    Format("moab",
-           std::vector<std::string>({ ".h5m", ".mhdf" }),
-           Format::Import|Format::Export|Format::Read|Format::Write));
+    Format("exodus", std::vector<std::string>({ ".exo", ".exoII", ".exo2", ".g", ".gen" }),
+      Format::Import | Format::Export | Format::Read | Format::Write));
   this->Formats.push_back(
-    Format("exodus",
-           std::vector<std::string>({ ".exo", ".exoII", ".exo2", ".g", ".gen"}),
-           Format::Import|Format::Export|Format::Read|Format::Write));
+    Format("vtk", std::vector<std::string>({ ".vtk" }), Format::Import | Format::Export));
   this->Formats.push_back(
-    Format("vtk",
-           std::vector<std::string>({ ".vtk" }),
-           Format::Import|Format::Export));
+    Format("slac", std::vector<std::string>({ ".slac" }), Format::Import | Format::Export));
+  this->Formats.push_back(Format(
+    "general mesh viewer", std::vector<std::string>({ ".gmv" }), Format::Import | Format::Export));
   this->Formats.push_back(
-    Format("slac",
-           std::vector<std::string>({ ".slac" }),
-           Format::Import|Format::Export));
+    Format("ansys", std::vector<std::string>({ ".ans" }), Format::Import | Format::Export));
   this->Formats.push_back(
-    Format("general mesh viewer",
-           std::vector<std::string>({ ".gmv" }),
-           Format::Import|Format::Export));
+    Format("gmsh", std::vector<std::string>({ ".msh", ".gmsh" }), Format::Import | Format::Export));
   this->Formats.push_back(
-    Format("ansys",
-           std::vector<std::string>({ ".ans" }),
-           Format::Import|Format::Export));
-  this->Formats.push_back(
-    Format("gmsh",
-           std::vector<std::string>({ ".msh", ".gmsh" }),
-           Format::Import|Format::Export));
-  this->Formats.push_back(
-    Format("stl",
-           std::vector<std::string>({ ".stl" }),
-           Format::Import|Format::Export));
+    Format("stl", std::vector<std::string>({ ".stl" }), Format::Import | Format::Export));
 }
 
-smtk::mesh::CollectionPtr
-MeshIOMoab::importMesh( const std::string& filePath,
-                        smtk::mesh::ManagerPtr& manager,
-                        const std::string& ) const
+smtk::mesh::CollectionPtr MeshIOMoab::importMesh(
+  const std::string& filePath, smtk::mesh::ManagerPtr& manager, const std::string&) const
 {
-  return this->read( filePath, manager, Subset::EntireCollection );
+  return this->read(filePath, manager, Subset::EntireCollection);
 }
 
-bool MeshIOMoab::importMesh( const std::string& filePath,
-                             smtk::mesh::CollectionPtr collection,
-                             const std::string& ) const
+bool MeshIOMoab::importMesh(
+  const std::string& filePath, smtk::mesh::CollectionPtr collection, const std::string&) const
 {
-  return this->read( filePath, collection, Subset::EntireCollection );
+  return this->read(filePath, collection, Subset::EntireCollection);
 }
 
-bool MeshIOMoab::exportMesh( const std::string& filePath,
-                             smtk::mesh::CollectionPtr collection) const
+bool MeshIOMoab::exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection) const
 {
-  return this->write( filePath, collection, Subset::EntireCollection );
+  return this->write(filePath, collection, Subset::EntireCollection);
 }
 
 //TODO:
@@ -87,14 +72,13 @@ bool MeshIOMoab::exportMesh( const std::string& filePath,
 
 // }
 
-smtk::mesh::CollectionPtr MeshIOMoab::read( const std::string& filePath,
-                                            smtk::mesh::ManagerPtr& manager,
-                                            Subset subset ) const
+smtk::mesh::CollectionPtr MeshIOMoab::read(
+  const std::string& filePath, smtk::mesh::ManagerPtr& manager, Subset subset) const
 {
   smtk::mesh::CollectionPtr collection;
 
-  switch ( subset )
-    {
+  switch (subset)
+  {
     case Subset::EntireCollection:
       collection = smtk::mesh::moab::read(filePath, manager);
       break;
@@ -109,18 +93,17 @@ smtk::mesh::CollectionPtr MeshIOMoab::read( const std::string& filePath,
       break;
     default:
       collection = smtk::mesh::Collection::create();
-    }
+  }
   return collection;
 }
 
-bool MeshIOMoab::read( const std::string& filePath,
-                       smtk::mesh::CollectionPtr collection,
-                       Subset subset ) const
+bool MeshIOMoab::read(
+  const std::string& filePath, smtk::mesh::CollectionPtr collection, Subset subset) const
 {
   bool result;
 
-  switch ( subset )
-    {
+  switch (subset)
+  {
     case Subset::EntireCollection:
       result = smtk::mesh::moab::import(filePath, collection);
       break;
@@ -135,16 +118,15 @@ bool MeshIOMoab::read( const std::string& filePath,
       break;
     default:
       result = false;
-    }
+  }
   return result;
 }
 
-bool MeshIOMoab::write( const std::string& filePath,
-                        smtk::mesh::CollectionPtr collection,
-                        Subset subset ) const
+bool MeshIOMoab::write(
+  const std::string& filePath, smtk::mesh::CollectionPtr collection, Subset subset) const
 {
-  switch ( subset )
-    {
+  switch (subset)
+  {
     case Subset::EntireCollection:
       return smtk::mesh::moab::write(filePath, collection);
     case Subset::OnlyDomain:
@@ -155,21 +137,18 @@ bool MeshIOMoab::write( const std::string& filePath,
       return smtk::mesh::moab::write_neumann(filePath, collection);
     default:
       return false;
-    }
+  }
 }
 
-bool MeshIOMoab::write( smtk::mesh::CollectionPtr collection,
-                        Subset subset ) const
+bool MeshIOMoab::write(smtk::mesh::CollectionPtr collection, Subset subset) const
 {
-  if( collection->writeLocation().empty() )
+  if (collection->writeLocation().empty())
   { //require a file location
     return false;
   }
 
-  return this->write( collection->writeLocation().absolutePath(),
-                       collection, subset );
+  return this->write(collection->writeLocation().absolutePath(), collection, subset);
 }
-
 }
 }
 }

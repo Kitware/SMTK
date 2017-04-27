@@ -13,8 +13,8 @@
 
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/extension/delaunay/io/ImportDelaunayMesh.h"
 #include "smtk/extension/delaunay/io/ExportDelaunayMesh.h"
+#include "smtk/extension/delaunay/io/ImportDelaunayMesh.h"
 
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
@@ -33,8 +33,10 @@
 
 #include <algorithm>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 TriangulateFace::TriangulateFace()
 {
@@ -42,20 +44,15 @@ TriangulateFace::TriangulateFace()
 
 bool TriangulateFace::ableToOperate()
 {
-  smtk::model::EntityRef eRef =
-    this->specification()->associations()->value();
+  smtk::model::EntityRef eRef = this->specification()->associations()->value();
 
-  return
-    this->Superclass::ableToOperate() &&
-    eRef.isValid() &&
-    eRef.isFace() &&
+  return this->Superclass::ableToOperate() && eRef.isValid() && eRef.isFace() &&
     eRef.owningModel().isValid();
 }
 
 OperatorResult TriangulateFace::operateInternal()
 {
-  smtk::model::Face face = this->specification()->associations()->
-    value().as<smtk::model::Face>();
+  smtk::model::Face face = this->specification()->associations()->value().as<smtk::model::Face>();
 
   bool validatePolygons = this->findVoid("validate polygons")->isEnabled();
 
@@ -76,8 +73,7 @@ OperatorResult TriangulateFace::operateInternal()
 
   // make a polygon from the points in the loop
   smtk::extension::delaunay::io::ExportDelaunayMesh exportToDelaunayMesh;
-  std::vector<Delaunay::Shape::Point> points =
-    exportToDelaunayMesh(exteriorLoop);
+  std::vector<Delaunay::Shape::Point> points = exportToDelaunayMesh(exteriorLoop);
 
   // make a polygon validator
   Delaunay::Validation::IsValidPolygon isValidPolygon;
@@ -105,8 +101,7 @@ OperatorResult TriangulateFace::operateInternal()
   Delaunay::Discretization::ExcisePolygon excise;
   for (auto& loop : exteriorLoop.containedLoops())
   {
-    std::vector<Delaunay::Shape::Point> points_sub =
-      exportToDelaunayMesh(loop);
+    std::vector<Delaunay::Shape::Point> points_sub = exportToDelaunayMesh(loop);
     Delaunay::Shape::Polygon p_sub(points_sub);
     // if the orientation is not ccw, flip the orientation
     if (Delaunay::Shape::Orientation(p_sub) != 1)
@@ -125,8 +120,7 @@ OperatorResult TriangulateFace::operateInternal()
   }
 
   // construct a collection and associate it with the face's model
-  smtk::mesh::CollectionPtr collection =
-    this->session()->meshManager()->makeCollection();
+  smtk::mesh::CollectionPtr collection = this->session()->meshManager()->makeCollection();
   collection->associateToModel(face.model().entity());
 
   // populate the new collection
@@ -143,16 +137,11 @@ OperatorResult TriangulateFace::operateInternal()
   return result;
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #include "smtk/extension/delaunay/Exports.h"
 #include "smtk/extension/delaunay/TriangulateFace_xml.h"
 
-smtkImplementsModelOperator(
-  SMTKDELAUNAYEXT_EXPORT,
-  smtk::model::TriangulateFace,
-  delaunay_triangulate_face,
-  "triangulate face",
-  TriangulateFace_xml,
-  smtk::model::Session);
+smtkImplementsModelOperator(SMTKDELAUNAYEXT_EXPORT, smtk::model::TriangulateFace,
+  delaunay_triangulate_face, "triangulate face", TriangulateFace_xml, smtk::model::Session);

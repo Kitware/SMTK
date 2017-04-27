@@ -24,7 +24,6 @@
 // We may eventually need to add in the ability to set a
 // warehouseid of a material here as well.
 
-
 #ifndef __vtkMaterialOperatorClient_h
 #define __vtkMaterialOperatorClient_h
 
@@ -41,8 +40,8 @@ class vtkSMProxy;
 class VTK_EXPORT vtkMaterialOperatorClient : public vtkMaterialOperatorBase
 {
 public:
-  static vtkMaterialOperatorClient * New();
-  vtkTypeMacro(vtkMaterialOperatorClient,vtkMaterialOperatorBase);
+  static vtkMaterialOperatorClient* New();
+  vtkTypeMacro(vtkMaterialOperatorClient, vtkMaterialOperatorBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Prevent warnings about hidden base-class virtuals:
@@ -69,8 +68,8 @@ protected:
   virtual ~vtkMaterialOperatorClient();
 
 private:
-  vtkMaterialOperatorClient(const vtkMaterialOperatorClient&);  // Not implemented.
-  void operator=(const vtkMaterialOperatorClient&);  // Not implemented.
+  vtkMaterialOperatorClient(const vtkMaterialOperatorClient&); // Not implemented.
+  void operator=(const vtkMaterialOperatorClient&);            // Not implemented.
 };
 
 #endif

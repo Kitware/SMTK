@@ -12,9 +12,12 @@
 
 #include "smtk/bridge/cgm/Operator.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace cgm {
+namespace smtk
+{
+namespace bridge
+{
+namespace cgm
+{
 
 /// Make a copy of a CGM entity.
 class SMTKCGMSESSION_EXPORT Copy : public Operator
@@ -29,8 +32,8 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
 };
 
-    } // namespace cgm
-  } //namespace bridge
+} // namespace cgm
+} //namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_cgm_Copy_h

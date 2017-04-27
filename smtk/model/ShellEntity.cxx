@@ -16,8 +16,10 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/UseEntity.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief Return the high-dimensional cell whose interior is bounded by this shell.
   *
@@ -37,9 +39,9 @@ UseEntity ShellEntity::boundingUseEntity() const
 {
   EntityRef result = EntityRefArrangementOps::firstRelation<EntityRef>(*this, EMBEDDED_IN);
   while (result.isValid() && result.isShellEntity())
-    {
+  {
     result = result.as<ShellEntity>().containingShellEntity();
-    }
+  }
   // Is the top-level shell contained directly in a cell?
   // (This is the case for volume cells but not faces or edges.)
   // FIXME: Should this be removed? It doesn't match the pattern
@@ -84,5 +86,5 @@ ShellEntity& ShellEntity::addUse(const UseEntity& use)
   return *this;
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

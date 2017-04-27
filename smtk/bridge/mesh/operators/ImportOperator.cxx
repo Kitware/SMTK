@@ -28,19 +28,20 @@
 using namespace smtk::model;
 using namespace smtk::common;
 
-namespace smtk {
-namespace bridge {
-namespace mesh {
+namespace smtk
+{
+namespace bridge
+{
+namespace mesh
+{
 
 smtk::model::OperatorResult ImportOperator::operateInternal()
 {
   // Get the read file name
-  smtk::attribute::FileItem::Ptr filePathItem =
-    this->specification()->findFile("filename");
+  smtk::attribute::FileItem::Ptr filePathItem = this->specification()->findFile("filename");
   std::string filePath = filePathItem->value();
 
-  smtk::attribute::StringItem::Ptr labelItem =
-    this->specification()->findString("label");
+  smtk::attribute::StringItem::Ptr labelItem = this->specification()->findString("label");
   std::string label = labelItem->value();
 
   // Get the collection from the file
@@ -48,10 +49,10 @@ smtk::model::OperatorResult ImportOperator::operateInternal()
     smtk::io::importMesh(filePath, this->activeSession()->meshManager(), label);
 
   if (!collection || !collection->isValid())
-    {
+  {
     // The file was not correctly read.
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
   // Assign its model manager to the one associated with this session
   collection->setModelManager(this->activeSession()->manager());
@@ -62,28 +63,23 @@ smtk::model::OperatorResult ImportOperator::operateInternal()
   // Our collections will already have a UUID, so here we create a model given
   // the model manager and uuid
   smtk::model::Model model =
-    smtk::model::EntityRef(this->activeSession()->manager(),
-                           collection->entity());
+    smtk::model::EntityRef(this->activeSession()->manager(), collection->entity());
 
   collection->associateToModel(model.entity());
 
   // Set the model's session to point to the current session
-  model.setSession(smtk::model::SessionRef(this->activeSession()->manager(),
-                                           this->activeSession()->sessionId()));
+  model.setSession(
+    smtk::model::SessionRef(this->activeSession()->manager(), this->activeSession()->sessionId()));
 
   // If we don't call "transcribe" ourselves, it never gets called.
-  this->activeSession()->transcribe(
-    model, smtk::model::SESSION_EVERYTHING, false);
+  this->activeSession()->transcribe(model, smtk::model::SESSION_EVERYTHING, false);
 
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
 
-  smtk::attribute::ModelEntityItem::Ptr resultModels =
-    result->findModelEntity("model");
+  smtk::attribute::ModelEntityItem::Ptr resultModels = result->findModelEntity("model");
   resultModels->setValue(model);
 
-  smtk::attribute::ModelEntityItem::Ptr created =
-    result->findModelEntity("created");
+  smtk::attribute::ModelEntityItem::Ptr created = result->findModelEntity("created");
   created->setNumberOfValues(1);
   created->setValue(model);
   created->setIsEnabled(true);
@@ -100,10 +96,5 @@ smtk::model::OperatorResult ImportOperator::operateInternal()
 #include "smtk/bridge/mesh/Exports.h"
 #include "smtk/bridge/mesh/ImportOperator_xml.h"
 
-smtkImplementsModelOperator(
-  SMTKMESHSESSION_EXPORT,
-  smtk::bridge::mesh::ImportOperator,
-  mesh_import,
-  "import",
-  ImportOperator_xml,
-  smtk::bridge::mesh::Session);
+smtkImplementsModelOperator(SMTKMESHSESSION_EXPORT, smtk::bridge::mesh::ImportOperator, mesh_import,
+  "import", ImportOperator_xml, smtk::bridge::mesh::Session);

@@ -14,8 +14,10 @@
 #include "smtk/model/ShellEntity.h"
 #include "smtk/model/UseEntity.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 void EntityIterator::traverse(const EntityRef& x)
 {
@@ -27,32 +29,33 @@ void EntityIterator::traverse(const EntityRef& x, IteratorStyle style)
   this->m_related = style;
   this->m_visited.clear();
   if (this->m_related == ITERATE_MODELS)
-    {
+  {
     Model parent;
     if ((parent = x.owningModel()).isValid())
-      {
+    {
       this->m_visited.insert(parent);
       SessionRef sref = parent.session();
       if (sref.isValid())
         this->m_visited.insert(sref);
-      }
+    }
     else if (x.isModel())
-      {
+    {
       Model model(x);
       SessionRef sref = model.session();
       this->m_visited.insert(model);
       if (sref.isValid())
         this->m_visited.insert(sref);
-      }
+    }
     else
-      {
-      this->m_visited.insert(x); // Well, if it doesn't have a parent, at least make sure it's included.
-      }
-    }
-  else
     {
-    this->m_visited.insert(x);
+      this->m_visited.insert(
+        x); // Well, if it doesn't have a parent, at least make sure it's included.
     }
+  }
+  else
+  {
+    this->m_visited.insert(x);
+  }
 }
 
 void EntityIterator::begin()
@@ -78,7 +81,7 @@ bool EntityIterator::isAtEnd() const
   *
   * This advances the iterator and returns the newly-updated current item.
   */
-EntityRef EntityIterator::operator ++ ()
+EntityRef EntityIterator::operator++()
 {
   if (this->isAtEnd())
     return EntityRef();
@@ -88,9 +91,7 @@ EntityRef EntityIterator::operator ++ ()
   // Always call after inserting argument into m_visited to prevent stupidity:
   this->updateQueue(*it);
   this->m_queue.erase(it);
-  return this->isAtEnd() ?
-    EntityRef() :
-    *this->m_queue.begin();
+  return this->isAtEnd() ? EntityRef() : *this->m_queue.begin();
 }
 
 /**\brief Postfix increment operator.
@@ -98,7 +99,7 @@ EntityRef EntityIterator::operator ++ ()
   * This advances the iterator but returns the item that
   * was current before advancing the iterator.
   */
-EntityRef EntityIterator::operator ++ (int)
+EntityRef EntityIterator::operator++(int)
 {
   if (this->isAtEnd())
     return EntityRef();
@@ -112,13 +113,13 @@ EntityRef EntityIterator::operator ++ (int)
 }
 
 /// A convenience that returns this->current().
-EntityRef EntityIterator::operator * () const
+EntityRef EntityIterator::operator*() const
 {
   return this->current();
 }
 
 /// A convenience that returns this->current().
-const EntityRef* EntityIterator::operator -> () const
+const EntityRef* EntityIterator::operator->() const
 {
   return &this->current();
 }
@@ -127,9 +128,7 @@ const EntityRef* EntityIterator::operator -> () const
 const EntityRef& EntityIterator::current() const
 {
   static EntityRef dummy;
-  return this->isAtEnd() ?
-    dummy :
-    *this->m_queue.begin();
+  return this->isAtEnd() ? dummy : *this->m_queue.begin();
 }
 
 /**\brief Add entities related to \a ent to the queue as required by the style.
@@ -140,40 +139,40 @@ const EntityRef& EntityIterator::current() const
 void EntityIterator::updateQueue(const EntityRef& ent)
 {
   switch (this->m_related)
+  {
+    case ITERATE_CHILDREN:
+    case ITERATE_MODELS:
     {
-  case ITERATE_CHILDREN:
-  case ITERATE_MODELS:
-      {
       EntityRefs children;
       if (ent.isCellEntity())
-        {
+      {
         children = ent.boundaryEntities();
-        }
+      }
       else if (ent.isUseEntity())
-        {
+      {
         children = ent.as<UseEntity>().shellEntities<EntityRefs>();
-        }
+      }
       else if (ent.isShellEntity())
-        {
+      {
         children = ent.as<ShellEntity>().uses<EntityRefs>();
         // Add the cells corresponding to lower-dimensional use records here since
         // we can't add them when we traverse the use record -- that would result
         // in an infinite loop.
         EntityRefs referencedCells;
         for (EntityRefs::const_iterator cit = children.begin(); cit != children.end(); ++cit)
-          {
+        {
           referencedCells.insert(cit->as<UseEntity>().cell());
-          }
+        }
         children.insert(referencedCells.begin(), referencedCells.end());
         EntityRefs subshells = ent.as<ShellEntity>().containedShellEntities<EntityRefs>();
         children.insert(subshells.begin(), subshells.end());
-        }
+      }
       else if (ent.isGroup())
-        {
+      {
         children = ent.as<Group>().members<EntityRefs>();
-        }
+      }
       else if (ent.isModel())
-        { // Grrr.... too much cruft.
+      { // Grrr.... too much cruft.
         CellEntities mcells = ent.as<smtk::model::Model>().cells();
         children.insert(mcells.begin(), mcells.end());
 
@@ -185,19 +184,19 @@ void EntityIterator::updateQueue(const EntityRef& ent)
 
         AuxiliaryGeometries maux = ent.as<smtk::model::Model>().auxiliaryGeometry();
         children.insert(maux.begin(), maux.end());
-        }
+      }
       for (EntityRefs::const_iterator cit = children.begin(); cit != children.end(); ++cit)
         if (this->m_visited.find(*cit) == this->m_visited.end())
           this->m_queue.insert(*cit);
-      }
-    break;
-  default:
-    // Do nothing.
-    break;
     }
+    break;
+    default:
+      // Do nothing.
+      break;
+  }
   if (this->m_queue.empty() && this->m_related != ITERATE_BARE)
     this->m_related = ITERATE_BARE; // No need to recompute things to visit next time around.
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

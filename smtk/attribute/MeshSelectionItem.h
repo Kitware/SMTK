@@ -17,19 +17,22 @@
 #include <set>
 #include <string>
 
-namespace smtk {
-  namespace attribute {
+namespace smtk
+{
+namespace attribute
+{
 
 class MeshSelectionItemDefinition;
 
 /// Enumeration of mesh values modification type.
-enum MeshModifyMode {
-  NONE,               //!< Cancel current operation mode
-  RESET,              //!< Reset the existing list)
-  MERGE,              //!< Append to the existing list
-  SUBTRACT,           //!< Subtract from existing list
-  ACCEPT,             //!< Accept the existing list)
-  NUM_OF_MODIFYMODES  //!< The number of mesh modify modes.
+enum MeshModifyMode
+{
+  NONE,              //!< Cancel current operation mode
+  RESET,             //!< Reset the existing list)
+  MERGE,             //!< Append to the existing list
+  SUBTRACT,          //!< Subtract from existing list
+  ACCEPT,            //!< Accept the existing list)
+  NUM_OF_MODIFYMODES //!< The number of mesh modify modes.
 };
 
 /**\brief Provide a way for an attribute to refer to mesh entities.
@@ -48,42 +51,36 @@ public:
   void setValues(const smtk::common::UUID&, const std::set<int>&);
   void unionValues(const smtk::common::UUID&, const std::set<int>&);
   void removeValues(const smtk::common::UUID&, const std::set<int>&);
-  void setModifyMode(MeshModifyMode mode)
-    { this->m_modifyMode = mode; }
-  MeshModifyMode modifyMode() const
-    {return this->m_modifyMode;}
-  void setCtrlKeyDown(bool val)
-    { this->m_isCtrlKeyDown = val; }
-  bool isCtrlKeyDown() const
-    {return this->m_isCtrlKeyDown;}
+  void setModifyMode(MeshModifyMode mode) { this->m_modifyMode = mode; }
+  MeshModifyMode modifyMode() const { return this->m_modifyMode; }
+  void setCtrlKeyDown(bool val) { this->m_isCtrlKeyDown = val; }
+  bool isCtrlKeyDown() const { return this->m_isCtrlKeyDown; }
 
   std::size_t numberOfValues() const;
   const std::set<int>& values(const smtk::common::UUID&);
   virtual void reset();
   // Assigns this item to be equivalent to another.  Options are currently not used.
   // Returns true if success and false if a problem occured
-  virtual bool assign(smtk::attribute::ConstItemPtr &sourceItem, unsigned int options = 0);
+  virtual bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0);
 
   const_sel_map_it begin() const;
   const_sel_map_it end() const;
 
-  static std::string modifyMode2String(
-    MeshModifyMode m);
-  static MeshModifyMode string2ModifyMode(
-    const std::string &s);
+  static std::string modifyMode2String(MeshModifyMode m);
+  static MeshModifyMode string2ModifyMode(const std::string& s);
 
 protected:
   friend class MeshSelectionItemDefinition;
 
-  MeshSelectionItem(Attribute *owningAttribute, int itemPosition);
-  MeshSelectionItem(Item *owningItem, int position, int subGroupPosition);
+  MeshSelectionItem(Attribute* owningAttribute, int itemPosition);
+  MeshSelectionItem(Item* owningItem, int position, int subGroupPosition);
   virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef);
-  std::map<smtk::common::UUID, std::set<int> >m_selectionValues;
+  std::map<smtk::common::UUID, std::set<int> > m_selectionValues;
   MeshModifyMode m_modifyMode;
   bool m_isCtrlKeyDown;
 };
 
-  } // namespace attribute
+} // namespace attribute
 } // namespace smtk
 
 #endif // __smtk_attribute_MeshSelectionItem_h

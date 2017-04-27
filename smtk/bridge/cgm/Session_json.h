@@ -17,35 +17,35 @@
  * is known at compile time.
  */
 static const char Session_json[] =
-"{"
-"  \"kernel\": \"cgm\","
-"  \"engines\": ["
+  "{"
+  "  \"kernel\": \"cgm\","
+  "  \"engines\": ["
 #if defined(HAVE_OCC)
-"    {"
-"      \"name\": \"OpenCascade\","
-"      \"filetypes\": ["
-"        \".brep (OpenCascade Boundary Representation)\""
-"        ,\".occ (OpenCascade Boundary Representation)\""
-#  if defined(HAVE_OCC_IGES)
-"        ,\".iges (Initial Graphics Exchange Specification)\""
-"        ,\".igs (Initial Graphics Exchange Specification)\""
-#  endif
-#  if defined(HAVE_OCC_STEP)
-"        ,\".step (Standard for the Exchange of Product model data)\""
-"        ,\".stp (Standard for the Exchange of Product model data)\""
-#  endif
-#  if defined(HAVE_OCC_STL)
-"        ,\".stl (STereoLithography file)\""
-#  endif
-"      ]"
-"    },"
+  "    {"
+  "      \"name\": \"OpenCascade\","
+  "      \"filetypes\": ["
+  "        \".brep (OpenCascade Boundary Representation)\""
+  "        ,\".occ (OpenCascade Boundary Representation)\""
+#if defined(HAVE_OCC_IGES)
+  "        ,\".iges (Initial Graphics Exchange Specification)\""
+  "        ,\".igs (Initial Graphics Exchange Specification)\""
 #endif
-"    {"
-"      \"name\": \"Cholla\","
-"      \"filetypes\": ["
-"        \".off (Object File Format)\","
-"        \".cholla (Cholla facet file)\""
-"      ]"
-"    }"
-"  ]"
-"}";
+#if defined(HAVE_OCC_STEP)
+  "        ,\".step (Standard for the Exchange of Product model data)\""
+  "        ,\".stp (Standard for the Exchange of Product model data)\""
+#endif
+#if defined(HAVE_OCC_STL)
+  "        ,\".stl (STereoLithography file)\""
+#endif
+  "      ]"
+  "    },"
+#endif
+  "    {"
+  "      \"name\": \"Cholla\","
+  "      \"filetypes\": ["
+  "        \".off (Object File Format)\","
+  "        \".cholla (Cholla facet file)\""
+  "      ]"
+  "    }"
+  "  ]"
+  "}";

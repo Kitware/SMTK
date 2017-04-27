@@ -10,7 +10,6 @@
 
 #include "vtkModelGridRepresentation.h"
 
-
 vtkModelGridRepresentation::vtkModelGridRepresentation()
 {
   this->GridFileName = NULL;
@@ -30,19 +29,17 @@ void vtkModelGridRepresentation::Reset()
 }
 bool vtkModelGridRepresentation::IsSameModelInfoFile(const char* filename)
 {
-  if((this->ModelInfoFileName == NULL && filename == NULL) ||
-    (this->ModelInfoFileName && filename &&
-     !strcmp(this->ModelInfoFileName, filename)) )
-    {
+  if ((this->ModelInfoFileName == NULL && filename == NULL) ||
+    (this->ModelInfoFileName && filename && !strcmp(this->ModelInfoFileName, filename)))
+  {
     return true;
-    }
+  }
   return false;
 }
 
 void vtkModelGridRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
   os << indent << "GridFileName: " << this->GridFileName << "\n";
   os << indent << "ModelInfoFileName: " << this->ModelInfoFileName << "\n";
 }
-

@@ -21,26 +21,27 @@
 
 namespace smtk
 {
-  namespace attribute
-  {
-    class VoidItemDefinition;
-    class SMTKCORE_EXPORT VoidItem : public Item
-    {
-    friend class VoidItemDefinition;
-    public:
-      smtkTypeMacro(VoidItem);
-      virtual ~VoidItem();
-      virtual Item::Type type() const;
-      virtual bool isValid() const;
+namespace attribute
+{
+class VoidItemDefinition;
+class SMTKCORE_EXPORT VoidItem : public Item
+{
+  friend class VoidItemDefinition;
 
-    protected:
-      VoidItem(Attribute *owningAttribute, int itemPosition);
-      VoidItem(Item *owningItem, int myPosition, int mySubGroupPosition);
-      virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
-    private:
-    };
-  }
+public:
+  smtkTypeMacro(VoidItem);
+  virtual ~VoidItem();
+  virtual Item::Type type() const;
+  virtual bool isValid() const;
+
+protected:
+  VoidItem(Attribute* owningAttribute, int itemPosition);
+  VoidItem(Item* owningItem, int myPosition, int mySubGroupPosition);
+  virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
+
+private:
+};
 }
-
+}
 
 #endif /* __smtk_attribute_VoidItem_h */

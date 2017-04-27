@@ -24,17 +24,20 @@ using namespace CmbFaceMesherClasses;
 
 //Internal point structure to store unique points in a map
 struct InternalPt
+{
+  double x, y, z;
+  friend bool operator<(const InternalPt& l, const InternalPt& r)
   {
-  double x,y,z;
-  friend bool operator < (const InternalPt& l,const InternalPt& r)
-    {
     return l.x != r.x ? (l.x < r.x) : l.y != r.y ? (l.y < r.y) : l.z < r.z;
-    }
-  InternalPt(double _x, double _y, double _z):x(_x),y(_y),z(_z){};
-  };
+  }
+  InternalPt(double _x, double _y, double _z)
+    : x(_x)
+    , y(_y)
+    , z(_z){};
+};
 
 vtkCMBPrepareForTriangleMesher::vtkCMBPrepareForTriangleMesher()
-  {
+{
   arcArraySize = -1;
   loopArraySize = -1;
   numCells = -1;
@@ -53,10 +56,10 @@ vtkCMBPrepareForTriangleMesher::vtkCMBPrepareForTriangleMesher()
   fieldLoopInfo = 0;
 
   cellElementIds = 0;
-  }
+}
 
 void vtkCMBPrepareForTriangleMesher::InitializeNewMapInfo()
-  {
+{
   numLoopsAdded = 0;
   numArcsAdded = 0;
 
@@ -90,8 +93,8 @@ void vtkCMBPrepareForTriangleMesher::InitializeNewMapInfo()
   cellElementIds->SetName("ElementIds");
   cellElementIds->SetNumberOfComponents(1);
   //If we know the array size set the number of tuples
-  if(this->arcArraySize != -1)
-    {
+  if (this->arcArraySize != -1)
+  {
     fieldCellArrayOffset->SetNumberOfTuples(arcArraySize);
     fieldCellArraySize->SetNumberOfTuples(arcArraySize);
     fieldArcId->SetNumberOfTuples(arcArraySize);
@@ -99,121 +102,117 @@ void vtkCMBPrepareForTriangleMesher::InitializeNewMapInfo()
     fieldLoop2->SetNumberOfTuples(arcArraySize);
     fieldEndpoint1->SetNumberOfTuples(arcArraySize);
     fieldEndpoint2->SetNumberOfTuples(arcArraySize);
-    }
-  if(this->loopArraySize != -1)
-    {
-    fieldLoopInfo->SetNumberOfTuples(loopArraySize);
-    }
-  if(this->numCells != -1)
-    {
-    cellElementIds->SetNumberOfTuples(numCells);
-    }
-  mapInfoInitialized = true;
   }
+  if (this->loopArraySize != -1)
+  {
+    fieldLoopInfo->SetNumberOfTuples(loopArraySize);
+  }
+  if (this->numCells != -1)
+  {
+    cellElementIds->SetNumberOfTuples(numCells);
+  }
+  mapInfoInitialized = true;
+}
 
 void vtkCMBPrepareForTriangleMesher::SetNumberOfArcs(const vtkIdType& num)
 {
-  if(mapInfoInitialized)
-    {
+  if (mapInfoInitialized)
+  {
     vtkErrorMacro("Field data has already been created.\
         Set the number of arcs before initializing new map field data");
-    }
-  arcArraySize=num;
+  }
+  arcArraySize = num;
 }
 
 void vtkCMBPrepareForTriangleMesher::SetNumberOfLoops(const vtkIdType& num)
 {
-  if(mapInfoInitialized)
-    {
+  if (mapInfoInitialized)
+  {
     vtkErrorMacro("MapInfohas already been created.\
         Set the number of loops before initializing new map field/cell data");
-    }
-  loopArraySize=num;
+  }
+  loopArraySize = num;
 }
 
 void vtkCMBPrepareForTriangleMesher::SetNumberOfCells(const vtkIdType& num)
+{
+  if (mapInfoInitialized)
   {
-  if(mapInfoInitialized)
-    {
     vtkErrorMacro("MapInfo data has already been created.\
         Set the number of loops before initializing new map field/cell data");
-    }
-  this->numCells = num;
   }
+  this->numCells = num;
+}
 
 //Sets polydata to query for information or set up new field data
-void vtkCMBPrepareForTriangleMesher::SetPolyData(vtkPolyData*  pd)
+void vtkCMBPrepareForTriangleMesher::SetPolyData(vtkPolyData* pd)
 {
   this->PolyData = pd;
 }
 
 vtkCMBPrepareForTriangleMesher::~vtkCMBPrepareForTriangleMesher()
 {
-  if(fieldCellArrayOffset)
-    {
+  if (fieldCellArrayOffset)
+  {
     fieldCellArrayOffset->Delete();
-    }
-  if(fieldCellArraySize)
-    {
+  }
+  if (fieldCellArraySize)
+  {
     fieldCellArraySize->Delete();
-    }
-  if(fieldArcId)
-    {
+  }
+  if (fieldArcId)
+  {
     fieldArcId->Delete();
-    }
-  if(fieldEndpoint1)
-    {
+  }
+  if (fieldEndpoint1)
+  {
     fieldEndpoint1->Delete();
-    }
-  if(fieldEndpoint2)
-    {
+  }
+  if (fieldEndpoint2)
+  {
     fieldEndpoint2->Delete();
-    }
-  if(fieldLoop1)
-    {
+  }
+  if (fieldLoop1)
+  {
     fieldLoop1->Delete();
-    }
-  if(fieldLoop2)
-    {
+  }
+  if (fieldLoop2)
+  {
     fieldLoop2->Delete();
-    }
-  if(fieldLoopInfo)
-    {
+  }
+  if (fieldLoopInfo)
+  {
     fieldLoopInfo->Delete();
-    }
-  if(cellElementIds)
-    {
+  }
+  if (cellElementIds)
+  {
     cellElementIds->Delete();
-    }
+  }
 }
 
 //Adds a node id to a vtkvertex
 //the order in which you created the vtkvertex must be the same in which you
 //add the nodes
 vtkIdType vtkCMBPrepareForTriangleMesher::AddNode(const vtkIdType& nodeId)
+{
+  if (this->numCells == -1)
   {
-  if(this->numCells == -1)
-    {
-    this->cellElementIds->InsertTuple1(numNodesAdded,nodeId);
-    }
-  else
-    {
-    this->cellElementIds->SetTuple1(numNodesAdded,nodeId);
-    }
-  return numNodesAdded++;
+    this->cellElementIds->InsertTuple1(numNodesAdded, nodeId);
   }
+  else
+  {
+    this->cellElementIds->SetTuple1(numNodesAdded, nodeId);
+  }
+  return numNodesAdded++;
+}
 
 //Creates the necessary field data for an arc
 vtkIdType vtkCMBPrepareForTriangleMesher::AddArc(const vtkIdType& CellArrayOffset,
-                                const vtkIdType& CellArraySize,
-                                const vtkIdType& ArcId,
-                                const vtkIdType& Loop1,
-                                const vtkIdType& Loop2,
-                                const vtkIdType& Endpoint1,
-                                const vtkIdType& Endpoint2)
+  const vtkIdType& CellArraySize, const vtkIdType& ArcId, const vtkIdType& Loop1,
+  const vtkIdType& Loop2, const vtkIdType& Endpoint1, const vtkIdType& Endpoint2)
 {
-  if(this->arcArraySize == -1)
-    {
+  if (this->arcArraySize == -1)
+  {
     this->fieldCellArrayOffset->InsertTuple1(numArcsAdded, CellArrayOffset);
     this->fieldCellArraySize->InsertTuple1(numArcsAdded, CellArraySize);
     this->fieldArcId->InsertTuple1(numArcsAdded, ArcId);
@@ -221,9 +220,9 @@ vtkIdType vtkCMBPrepareForTriangleMesher::AddArc(const vtkIdType& CellArrayOffse
     this->fieldLoop2->InsertTuple1(numArcsAdded, Loop2);
     this->fieldEndpoint1->InsertTuple1(numArcsAdded, Endpoint1);
     this->fieldEndpoint2->InsertTuple1(numArcsAdded, Endpoint2);
-    }
+  }
   else
-    {
+  {
     this->fieldCellArrayOffset->SetTuple1(numArcsAdded, CellArrayOffset);
     this->fieldCellArraySize->SetTuple1(numArcsAdded, CellArraySize);
     this->fieldArcId->SetTuple1(numArcsAdded, ArcId);
@@ -231,116 +230,117 @@ vtkIdType vtkCMBPrepareForTriangleMesher::AddArc(const vtkIdType& CellArrayOffse
     this->fieldLoop2->SetTuple1(numArcsAdded, Loop2);
     this->fieldEndpoint1->SetTuple1(numArcsAdded, Endpoint1);
     this->fieldEndpoint2->SetTuple1(numArcsAdded, Endpoint2);
-    }
+  }
 
   //Add element ids as cell data
   //Only will work with VTK_LINES
-  vtkIdType startCell = CellArrayOffset/3;
-  vtkIdType numCellsInArc = CellArraySize/3;
-  for(vtkIdType i = 0; i < numCellsInArc; i++)
-    {
+  vtkIdType startCell = CellArrayOffset / 3;
+  vtkIdType numCellsInArc = CellArraySize / 3;
+  for (vtkIdType i = 0; i < numCellsInArc; i++)
+  {
     //Insert the cell data after verts
-    if(this->numCells == -1)
-      {
-      this->cellElementIds->InsertTuple1(numNodesAdded+startCell+i,ArcId);
-      }
-    else
-      {
-      this->cellElementIds->SetTuple1(numNodesAdded+startCell+i,ArcId);
-      }
+    if (this->numCells == -1)
+    {
+      this->cellElementIds->InsertTuple1(numNodesAdded + startCell + i, ArcId);
     }
+    else
+    {
+      this->cellElementIds->SetTuple1(numNodesAdded + startCell + i, ArcId);
+    }
+  }
 
   //Return the arc index
   return numArcsAdded++;
 }
 
-vtkIdType vtkCMBPrepareForTriangleMesher::AddLoopWithArcs(const vtkIdType& PolyId,
-                                              const bool& isOuter,
-                                              const std::vector<vtkIdType>& arcIndexes)
-  {
+vtkIdType vtkCMBPrepareForTriangleMesher::AddLoopWithArcs(
+  const vtkIdType& PolyId, const bool& isOuter, const std::vector<vtkIdType>& arcIndexes)
+{
 
   //Adds a loop and then finds the arcs that this loop belongs to and
   //updates their fieldLoop1 and fieldLoop2 field data arrays
 
   //if this is a new polygon that hasn't been seen before
   vtkIdType loopIndex = -2;
-  if(this->loop2loopIndex.find(arcIndexes) == this->loop2loopIndex.end())
-    {
+  if (this->loop2loopIndex.find(arcIndexes) == this->loop2loopIndex.end())
+  {
     //we only know either the outer or inner loop use at this time
     //put -1 in as a placeholder for now
-    loopIndex = isOuter ? this->AddLoop(PolyId,-1) : this->AddLoop(-1,PolyId);
+    loopIndex = isOuter ? this->AddLoop(PolyId, -1) : this->AddLoop(-1, PolyId);
     this->loop2loopIndex[arcIndexes] = loopIndex;
-    }
+  }
   else
-    {
+  {
     //we have seen this loop before grab the id so we can update it
     loopIndex = this->loop2loopIndex[arcIndexes];
-    double *tup = this->fieldLoopInfo->GetTuple2(loopIndex);
+    double* tup = this->fieldLoopInfo->GetTuple2(loopIndex);
     //Check to make sure there is a place to put the data
-    if( !((tup[0] == -1) ^ (tup[1] == -1))) //xor
-      {
-      vtkErrorMacro("ERROR: loop "<< loopIndex << " seen before but ids are not set correctly. Would be poly " << PolyId);
-      }
+    if (!((tup[0] == -1) ^ (tup[1] == -1))) //xor
+    {
+      vtkErrorMacro("ERROR: loop "
+        << loopIndex << " seen before but ids are not set correctly. Would be poly " << PolyId);
+    }
     else
-      {
+    {
       //set tup[0] for outer and tup[1] for inner
       tup[!isOuter] = PolyId;
-      fieldLoopInfo->SetTuple2(loopIndex,tup[0],tup[1]);
-      }
+      fieldLoopInfo->SetTuple2(loopIndex, tup[0], tup[1]);
     }
+  }
 
   //Relate the loop back to the arcs
   std::vector<vtkIdType>::const_iterator arcIndexIter = arcIndexes.begin();
-  for(;arcIndexIter != arcIndexes.end(); arcIndexIter++)
-    {
+  for (; arcIndexIter != arcIndexes.end(); arcIndexIter++)
+  {
     vtkIdType arcIndex = (*arcIndexIter);
     //Make sure the arcIndex is valid
-    if(arcIndex >= numArcsAdded)
-      {
-      vtkErrorMacro("Error cannot create a polygon using arc index " << arcIndex << " because there that arc has not been added yet");
-      }
+    if (arcIndex >= numArcsAdded)
+    {
+      vtkErrorMacro("Error cannot create a polygon using arc index "
+        << arcIndex << " because there that arc has not been added yet");
+    }
     //Get loops the arc is already associated with
     double loop1 = this->fieldLoop1->GetTuple1(arcIndex);
     double loop2 = this->fieldLoop2->GetTuple1(arcIndex);
     //Figure out which field to place the loopIndex
     //only place in the first slot if it is an outer loop
-    if ( loop1 == -1 && isOuter)
-      {
-      this->fieldLoop1->SetTuple1(arcIndex,loopIndex);
-      }
-    else if( loop2 == -1 )
-      {
-      this->fieldLoop2->SetTuple1(arcIndex,loopIndex);
-      }
+    if (loop1 == -1 && isOuter)
+    {
+      this->fieldLoop1->SetTuple1(arcIndex, loopIndex);
+    }
+    else if (loop2 == -1)
+    {
+      this->fieldLoop2->SetTuple1(arcIndex, loopIndex);
+    }
     else
-      {
+    {
       vtkErrorMacro("ERROR: arcIndexes is an invalid loop list");
-      }
     }
-  return loopIndex;
   }
+  return loopIndex;
+}
 
-vtkIdType vtkCMBPrepareForTriangleMesher::AddLoop(const vtkIdType& OuterPolyId,
-                                      const vtkIdType& InnerPolyId )
+vtkIdType vtkCMBPrepareForTriangleMesher::AddLoop(
+  const vtkIdType& OuterPolyId, const vtkIdType& InnerPolyId)
 {
-  if(this->loopArraySize == -1)
-    {
-    this->fieldLoopInfo->InsertTuple2(numLoopsAdded,OuterPolyId,InnerPolyId);
-    }
+  if (this->loopArraySize == -1)
+  {
+    this->fieldLoopInfo->InsertTuple2(numLoopsAdded, OuterPolyId, InnerPolyId);
+  }
   else
-    {
-    this->fieldLoopInfo->SetTuple2(numLoopsAdded, OuterPolyId,InnerPolyId);
-    }
+  {
+    this->fieldLoopInfo->SetTuple2(numLoopsAdded, OuterPolyId, InnerPolyId);
+  }
   numLoopsAdded++;
   //Return the loopId
-  return numLoopsAdded-1;
+  return numLoopsAdded - 1;
 }
 
 void vtkCMBPrepareForTriangleMesher::FinalizeNewMapInfo()
 {
   //If one exists then they all should exist
-  if(fieldCellArrayOffset)
-    {
+  if (fieldCellArrayOffset)
+  {
     this->PolyData->GetFieldData()->AddArray(fieldCellArrayOffset);
     this->PolyData->GetFieldData()->AddArray(fieldCellArraySize);
     this->PolyData->GetFieldData()->AddArray(fieldArcId);
@@ -371,11 +371,11 @@ void vtkCMBPrepareForTriangleMesher::FinalizeNewMapInfo()
     fieldLoop2 = NULL;
     fieldLoopInfo = NULL;
     cellElementIds = NULL;
-    }
+  }
   else
-    {
+  {
     vtkWarningMacro("No field data to finalize");
-    }
+  }
 }
 
 // Returns an arc contour as polydata
@@ -390,18 +390,18 @@ void vtkCMBPrepareForTriangleMesher::GetArc(vtkIdType requestedArcId, vtkPolyDat
 
   //Find the correct index into the field data arrays
   bool foundId = false;
-  for(; arcIndex < arcIds->GetNumberOfTuples(); arcIndex++)
+  for (; arcIndex < arcIds->GetNumberOfTuples(); arcIndex++)
+  {
+    if (arcIds->GetTuple1(arcIndex) == requestedArcId)
     {
-    if ( arcIds->GetTuple1(arcIndex) == requestedArcId )
-      {
-      foundId=true;
+      foundId = true;
       break;
-      }
     }
-  if(!foundId)
-    {
+  }
+  if (!foundId)
+  {
     vtkWarningMacro("A valid arc id was not selected");
-    }
+  }
 
   //Use index to get arc properties
   vtkIdType cellStart = fieldData->GetArray("CellArrayOffset")->GetTuple1(arcIndex);
@@ -414,44 +414,45 @@ void vtkCMBPrepareForTriangleMesher::GetArc(vtkIdType requestedArcId, vtkPolyDat
   vtkPoints* pointsToAdd = vtkPoints::New();
   //Allocate an exepcted number of lines and points
   linesToAdd->Allocate(cellArraySize);
-  pointsToAdd->SetNumberOfPoints((2*(cellArraySize))/3);
+  pointsToAdd->SetNumberOfPoints((2 * (cellArraySize)) / 3);
 
   double p[3]; //temporary point
-  vtkIdType lineToInsert[2] = {-1, -1};
-  std::map<InternalPt,vtkIdType> pt2ptId; //map to make sure no duplicate inserts
+  vtkIdType lineToInsert[2] = { -1, -1 };
+  std::map<InternalPt, vtkIdType> pt2ptId; //map to make sure no duplicate inserts
   vtkIdType insertAt = 0;
 
   //Traverse all cells in arc and add them to output
   if (lines)
-    {
-    vtkIdType *pts,npts;
+  {
+    vtkIdType *pts, npts;
     lines->SetTraversalLocation(cellStart);
-    while(lines->GetTraversalLocation() < (cellArraySize + cellStart) && /*Check The lines are within bounds*/
-          lines->GetNextCell(npts,pts)/*Check There are lines*/ )
+    while (lines->GetTraversalLocation() <
+        (cellArraySize + cellStart) && /*Check The lines are within bounds*/
+      lines->GetNextCell(npts, pts) /*Check There are lines*/)
+    {
+      for (vtkIdType j = 0; j < npts; j++)
       {
-      for(vtkIdType j = 0; j < npts; j++)
-        {
         //Grab the points this edge uses
-        this->PolyData->GetPoint(pts[j],p);
-        InternalPt edgePoint(p[0],p[1],p[2]);
+        this->PolyData->GetPoint(pts[j], p);
+        InternalPt edgePoint(p[0], p[1], p[2]);
         //Check and see if point has already been seen
-        std::map<InternalPt,vtkIdType>::iterator foundPt = pt2ptId.find(edgePoint);
-        if(foundPt == pt2ptId.end())
-          {
+        std::map<InternalPt, vtkIdType>::iterator foundPt = pt2ptId.find(edgePoint);
+        if (foundPt == pt2ptId.end())
+        {
           //Point has not been seen
-          pointsToAdd->SetPoint(insertAt,p);
-          foundPt = pt2ptId.insert(std::pair<InternalPt,vtkIdType>(edgePoint,insertAt++)).first;
-          }
-        std::swap(lineToInsert[0],lineToInsert[1]);
+          pointsToAdd->SetPoint(insertAt, p);
+          foundPt = pt2ptId.insert(std::pair<InternalPt, vtkIdType>(edgePoint, insertAt++)).first;
+        }
+        std::swap(lineToInsert[0], lineToInsert[1]);
         lineToInsert[1] = foundPt->second;
-        if(j > 0)
-          {
+        if (j > 0)
+        {
           //Insert the previous two points as a line
-          linesToAdd->InsertNextCell(2,lineToInsert);
-          }
+          linesToAdd->InsertNextCell(2, lineToInsert);
         }
       }
     }
+  }
   //Remove any extra allocated space
   pointsToAdd->SetNumberOfPoints(insertAt);
   pointsToAdd->Squeeze();
@@ -467,24 +468,24 @@ void vtkCMBPrepareForTriangleMesher::GetArc(vtkIdType requestedArcId, vtkPolyDat
 bool vtkCMBPrepareForTriangleMesher::IsValidForReading()
 {
   vtkFieldData* fieldData;
-  bool hasValidFields =false;
-  if( this->PolyData && (fieldData=this->PolyData->GetFieldData()) )
+  bool hasValidFields = false;
+  if (this->PolyData && (fieldData = this->PolyData->GetFieldData()))
   {
-  hasValidFields = fieldData->HasArray("Loop1") != 0;
-  hasValidFields = hasValidFields && (fieldData->HasArray("Loop2") != 0);
-  hasValidFields = hasValidFields && (fieldData->HasArray("LoopInfo") != 0);
-  hasValidFields = hasValidFields && (fieldData->HasArray("ArcEndpoint1") != 0);
-  hasValidFields = hasValidFields && (fieldData->HasArray("ArcEndpoint2") != 0);
-  hasValidFields = hasValidFields && (fieldData->HasArray("ArcId") != 0);
-  hasValidFields = hasValidFields && (fieldData->HasArray("CellArrayOffset") != 0);
-  hasValidFields = hasValidFields && (fieldData->HasArray("CellArraySize") != 0);
-  hasValidFields = hasValidFields && (fieldData->HasArray("Loop1") != 0);
+    hasValidFields = fieldData->HasArray("Loop1") != 0;
+    hasValidFields = hasValidFields && (fieldData->HasArray("Loop2") != 0);
+    hasValidFields = hasValidFields && (fieldData->HasArray("LoopInfo") != 0);
+    hasValidFields = hasValidFields && (fieldData->HasArray("ArcEndpoint1") != 0);
+    hasValidFields = hasValidFields && (fieldData->HasArray("ArcEndpoint2") != 0);
+    hasValidFields = hasValidFields && (fieldData->HasArray("ArcId") != 0);
+    hasValidFields = hasValidFields && (fieldData->HasArray("CellArrayOffset") != 0);
+    hasValidFields = hasValidFields && (fieldData->HasArray("CellArraySize") != 0);
+    hasValidFields = hasValidFields && (fieldData->HasArray("Loop1") != 0);
   }
   return hasValidFields;
 }
 
 bool vtkCMBPrepareForTriangleMesher::GetPolyId2ModelFaceRepMap(
-    std::map<vtkIdType, ModelFaceRep* >& pid2Face)
+  std::map<vtkIdType, ModelFaceRep*>& pid2Face)
 {
   // loop index to index into arc field data
   std::map<vtkIdType, std::vector<vtkIdType> > loopId2ArcIndex;
@@ -501,7 +502,7 @@ bool vtkCMBPrepareForTriangleMesher::GetPolyId2ModelFaceRepMap(
 //store the ids that are used to index into the LoopInfo
 //array
 bool vtkCMBPrepareForTriangleMesher::BuildLoopId2ArcIndexMap(
-    std::map<vtkIdType, std::vector<vtkIdType> >& loopId2ArcIndex)
+  std::map<vtkIdType, std::vector<vtkIdType> >& loopId2ArcIndex)
 {
   vtkFieldData* fData = this->PolyData->GetFieldData();
   vtkIdTypeArray* fLoop1 = vtkIdTypeArray::SafeDownCast(fData->GetArray("Loop1"));
@@ -509,135 +510,129 @@ bool vtkCMBPrepareForTriangleMesher::BuildLoopId2ArcIndexMap(
 
   typedef std::map<vtkIdType, std::vector<vtkIdType> >::iterator LoopIterator;
 
-  for(int i = 0; i < fLoop1->GetNumberOfTuples(); i++)
-    {
+  for (int i = 0; i < fLoop1->GetNumberOfTuples(); i++)
+  {
     vtkIdType loop1 = fLoop1->GetTuple1(i);
     vtkIdType loop2 = fLoop2->GetTuple1(i);
     //If there is a loop this arc is a part of
-    if(loop1 != -1)
-      {
+    if (loop1 != -1)
+    {
       LoopIterator it = loopId2ArcIndex.find(loop1);
-      if(it == loopId2ArcIndex.end())
-        {
-        //New loop seen create a vector to store the arcs associate with this loop
-        std::pair<std::map<vtkIdType, std::vector<vtkIdType> >::iterator,bool> pr = loopId2ArcIndex.insert(
-          std::pair<vtkIdType, std::vector<vtkIdType> >(loop1,std::vector<vtkIdType>()));
-        it = pr.first;
-        (*it).second.reserve(fLoop1->GetNumberOfTuples());
-        }
-      //Add an arc to this loop that has already been seen
-      (*it).second.push_back(i);
-      }
-    //If there is a second loop this arc is a part of
-    if(loop1 != loop2 && loop2 != -1)
+      if (it == loopId2ArcIndex.end())
       {
-      std::map<vtkIdType, std::vector<vtkIdType> >::iterator it = loopId2ArcIndex.find(loop2);
-      if(it == loopId2ArcIndex.end())
-        {
         //New loop seen create a vector to store the arcs associate with this loop
-        std::pair<std::map<vtkIdType, std::vector<vtkIdType> >::iterator,bool> pr = loopId2ArcIndex.insert(
-          std::pair<vtkIdType, std::vector<vtkIdType> >(loop2,std::vector<vtkIdType>()));
+        std::pair<std::map<vtkIdType, std::vector<vtkIdType> >::iterator, bool> pr =
+          loopId2ArcIndex.insert(
+            std::pair<vtkIdType, std::vector<vtkIdType> >(loop1, std::vector<vtkIdType>()));
         it = pr.first;
         (*it).second.reserve(fLoop1->GetNumberOfTuples());
-        }
+      }
       //Add an arc to this loop that has already been seen
       (*it).second.push_back(i);
-      }
     }
+    //If there is a second loop this arc is a part of
+    if (loop1 != loop2 && loop2 != -1)
+    {
+      std::map<vtkIdType, std::vector<vtkIdType> >::iterator it = loopId2ArcIndex.find(loop2);
+      if (it == loopId2ArcIndex.end())
+      {
+        //New loop seen create a vector to store the arcs associate with this loop
+        std::pair<std::map<vtkIdType, std::vector<vtkIdType> >::iterator, bool> pr =
+          loopId2ArcIndex.insert(
+            std::pair<vtkIdType, std::vector<vtkIdType> >(loop2, std::vector<vtkIdType>()));
+        it = pr.first;
+        (*it).second.reserve(fLoop1->GetNumberOfTuples());
+      }
+      //Add an arc to this loop that has already been seen
+      (*it).second.push_back(i);
+    }
+  }
   //Resize vectors of arcs to be the actual size
   std::map<vtkIdType, std::vector<vtkIdType> >::iterator it = loopId2ArcIndex.begin();
   for (; it != loopId2ArcIndex.end(); it++)
-    {
+  {
     (*it).second.resize((*it).second.size());
-    }
-
-  return true;
   }
 
+  return true;
+}
+
 bool vtkCMBPrepareForTriangleMesher::BuildPolygonId2ModelFaceMap(
-    const std::map<vtkIdType, std::vector<vtkIdType> >& loopId2ArcIndex,
-    std::map<vtkIdType, ModelFaceRep* >& pid2Face)
+  const std::map<vtkIdType, std::vector<vtkIdType> >& loopId2ArcIndex,
+  std::map<vtkIdType, ModelFaceRep*>& pid2Face)
 {
   //TODO: meshEdgeReps can be created more than once, its not a huge problem
   // because the data just gets copied multiple times from them anyway
   //But it may be a slight improvement to save edges once you create them for later use
 
   //Check to see if there is node information
-  std::map<vtkIdType, std::pair<double,double> > nodeId2point;
-  if(this->PolyData->GetCellData()->HasArray("ElementIds"))
-    {
-    vtkIdTypeArray* elementIds = vtkIdTypeArray::SafeDownCast(
-                        this->PolyData->GetCellData()->GetArray("ElementIds"));
+  std::map<vtkIdType, std::pair<double, double> > nodeId2point;
+  if (this->PolyData->GetCellData()->HasArray("ElementIds"))
+  {
+    vtkIdTypeArray* elementIds =
+      vtkIdTypeArray::SafeDownCast(this->PolyData->GetCellData()->GetArray("ElementIds"));
     const vtkIdType size = this->PolyData->GetNumberOfCells();
-    for(int i = 0; i < size; i++)
-      {
+    for (int i = 0; i < size; i++)
+    {
       vtkCell* cell = this->PolyData->GetCell(i);
-      if(cell->GetCellType() == VTK_VERTEX)
-        {
+      if (cell->GetCellType() == VTK_VERTEX)
+      {
         double pt[3];
-        cell->GetPoints()->GetPoint(0,pt);
+        cell->GetPoints()->GetPoint(0, pt);
         vtkIdType nodeId = elementIds->GetTuple1(i);
-        nodeId2point[nodeId] = std::make_pair(pt[0],pt[1]);
-        }
+        nodeId2point[nodeId] = std::make_pair(pt[0], pt[1]);
+      }
       else
-        {
+      {
         break; // no more vertex data is available
-        }
       }
     }
+  }
 
   vtkFieldData* fieldData = this->PolyData->GetFieldData();
-  vtkIdTypeArray* fLoopInfo  = vtkIdTypeArray::SafeDownCast(
-                                        fieldData->GetArray("LoopInfo"));
-  vtkIdTypeArray* fEndpoint1 = vtkIdTypeArray::SafeDownCast(
-                                        fieldData->GetArray("ArcEndpoint1"));
-  vtkIdTypeArray* fEndpoint2 = vtkIdTypeArray::SafeDownCast(
-                                        fieldData->GetArray("ArcEndpoint2"));
-  vtkIdTypeArray* fArcId     = vtkIdTypeArray::SafeDownCast(
-                                        fieldData->GetArray("ArcId"));
-  vtkIdTypeArray* fCellOffset= vtkIdTypeArray::SafeDownCast(
-                                        fieldData->GetArray("CellArrayOffset"));
-  vtkIdTypeArray* fArraySize = vtkIdTypeArray::SafeDownCast(
-                                        fieldData->GetArray("CellArraySize"));
+  vtkIdTypeArray* fLoopInfo = vtkIdTypeArray::SafeDownCast(fieldData->GetArray("LoopInfo"));
+  vtkIdTypeArray* fEndpoint1 = vtkIdTypeArray::SafeDownCast(fieldData->GetArray("ArcEndpoint1"));
+  vtkIdTypeArray* fEndpoint2 = vtkIdTypeArray::SafeDownCast(fieldData->GetArray("ArcEndpoint2"));
+  vtkIdTypeArray* fArcId = vtkIdTypeArray::SafeDownCast(fieldData->GetArray("ArcId"));
+  vtkIdTypeArray* fCellOffset =
+    vtkIdTypeArray::SafeDownCast(fieldData->GetArray("CellArrayOffset"));
+  vtkIdTypeArray* fArraySize = vtkIdTypeArray::SafeDownCast(fieldData->GetArray("CellArraySize"));
 
-  if(!fEndpoint1 || !fEndpoint2 || !fArcId || !fCellOffset ||
-     !fArraySize || !fLoopInfo)
-    {
+  if (!fEndpoint1 || !fEndpoint2 || !fArcId || !fCellOffset || !fArraySize || !fLoopInfo)
+  {
     //no point going any fargher no loop info
     return false;
-    }
+  }
 
   //Populate the ModelFaceRep's in pid2Face
-  for(int loopId = 0; loopId < fLoopInfo->GetNumberOfTuples(); loopId++)
-    {
-    double *polyId = fLoopInfo->GetTuple2(loopId);
+  for (int loopId = 0; loopId < fLoopInfo->GetNumberOfTuples(); loopId++)
+  {
+    double* polyId = fLoopInfo->GetTuple2(loopId);
     //iterate twice: loopType = 0 is the outer loop
     //               loopType = 1 is the inner loop
-    for(int loopType = 0; loopType < 2; loopType++)
-      {
+    for (int loopType = 0; loopType < 2; loopType++)
+    {
       // -1 and 0 are invalid ids, skip them
-      if(polyId[loopType] < 1) continue;
+      if (polyId[loopType] < 1)
+        continue;
 
-      std::map<vtkIdType, ModelFaceRep* >::iterator currFace =
-          pid2Face.find(polyId[loopType]);
-      if(currFace == pid2Face.end())
-        {
+      std::map<vtkIdType, ModelFaceRep*>::iterator currFace = pid2Face.find(polyId[loopType]);
+      if (currFace == pid2Face.end())
+      {
         //Create a new face for a polygon id we haven't seen
-        std::pair< std::map<vtkIdType, ModelFaceRep* >::iterator, bool> pr =
-          pid2Face.insert( std::pair<vtkIdType, ModelFaceRep*>(
-                             polyId[loopType], new ModelFaceRep()));
+        std::pair<std::map<vtkIdType, ModelFaceRep*>::iterator, bool> pr = pid2Face.insert(
+          std::pair<vtkIdType, ModelFaceRep*>(polyId[loopType], new ModelFaceRep()));
         currFace = pr.first;
-        }
+      }
 
-      ModelLoopRep loop(loopId,loopType==1);
+      ModelLoopRep loop(loopId, loopType == 1);
       //iterate over each arc index in the loop
       std::map<vtkIdType, std::vector<vtkIdType> >::const_iterator loopVector =
-          loopId2ArcIndex.find(loopId);
-      std::vector<vtkIdType>::const_iterator loopIter =
-          loopVector->second.begin();
+        loopId2ArcIndex.find(loopId);
+      std::vector<vtkIdType>::const_iterator loopIter = loopVector->second.begin();
 
-      for(;loopIter != loopVector->second.end(); loopIter++)
-        {
+      for (; loopIter != loopVector->second.end(); loopIter++)
+      {
         vtkIdType arcIndex = (*loopIter);
 
         vtkIdType arcId = fArcId->GetTuple1(arcIndex);
@@ -646,34 +641,34 @@ bool vtkCMBPrepareForTriangleMesher::BuildPolygonId2ModelFaceMap(
         //cell data where this arc exists
         vtkIdType cellOffset = fCellOffset->GetTuple1(arcIndex);
         vtkIdType cellSize = fArraySize->GetTuple1(arcIndex);
-        edge.setMeshPoints(this->PolyData,cellOffset,cellSize);
+        edge.setMeshPoints(this->PolyData, cellOffset, cellSize);
 
         //If there is node information add it
-        if(nodeId2point.size() > 0)
-          {
+        if (nodeId2point.size() > 0)
+        {
           vtkIdType nodeId1 = fEndpoint1->GetTuple1(arcIndex);
           vtkIdType nodeId2 = fEndpoint2->GetTuple1(arcIndex);
-          std::pair<double,double> nodePt1_pair = nodeId2point[nodeId1];
-          std::pair<double,double> nodePt2_pair = nodeId2point[nodeId2];
-          double nodePt1[2] = {nodePt1_pair.first, nodePt1_pair.second};
-          double nodePt2[2] = {nodePt2_pair.first, nodePt2_pair.second};
-          edge.addModelVert(nodeId1,nodePt1);
-          edge.addModelVert(nodeId2,nodePt2);
-          }
+          std::pair<double, double> nodePt1_pair = nodeId2point[nodeId1];
+          std::pair<double, double> nodePt2_pair = nodeId2point[nodeId2];
+          double nodePt1[2] = { nodePt1_pair.first, nodePt1_pair.second };
+          double nodePt2[2] = { nodePt2_pair.first, nodePt2_pair.second };
+          edge.addModelVert(nodeId1, nodePt1);
+          edge.addModelVert(nodeId2, nodePt2);
+        }
         //add the newly created edge to the loop
         loop.addEdge(edge);
-        }
+      }
       //add the newly created loop to the face
       currFace->second->addLoop(loop);
-      }
     }
+  }
 
   return true;
 }
 
 void vtkCMBPrepareForTriangleMesher::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
   //TODO: add more to this
   os << "vtkCMBPrepareForTriangleMesher\n";
 }

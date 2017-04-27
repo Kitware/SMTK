@@ -17,13 +17,11 @@
 // vtkDiscreteModelEdge, vtkDiscreteModelVertex, and vtkDiscreteModelRegion objects.  A cell data
 // array is used to get the corresponding cell id for the master grid.
 
-
 #ifndef __smtkdiscrete_vtkDiscreteModelGeometricEntity_h
 #define __smtkdiscrete_vtkDiscreteModelGeometricEntity_h
 
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkDiscreteModelEntity.h"
-
 
 #include "vtkType.h"
 #include <vector>
@@ -37,17 +35,15 @@ class vtkModelGeometricEntity;
 class VTKSMTKDISCRETEMODEL_EXPORT vtkDiscreteModelGeometricEntity : public vtkDiscreteModelEntity
 {
 public:
-
   // Description:
   // Merge the source model entity into this model entity.  lowerDimensionalIds
   // is the entity ids of model entities that are only on the boundary of
   // the source and target.  They will get destroyed during the merge operation.
-  virtual bool Merge(vtkDiscreteModelGeometricEntity* source,
-                     vtkIdTypeArray* lowerDimensionalIds);
+  virtual bool Merge(vtkDiscreteModelGeometricEntity* source, vtkIdTypeArray* lowerDimensionalIds);
 
   // Description:
   // Get a pointer to this object that is a vtkModelEntity.
-  virtual vtkModelEntity* GetThisModelEntity()=0;
+  virtual vtkModelEntity* GetThisModelEntity() = 0;
 
   // Description:
   // Returns the material.  Should return zero values for objects that
@@ -112,8 +108,8 @@ protected:
   friend class vtkModelMaterial;
 
 private:
-  vtkDiscreteModelGeometricEntity(const vtkDiscreteModelGeometricEntity&);  // Not implemented.
-  void operator=(const vtkDiscreteModelGeometricEntity&);  // Not implemented.
+  vtkDiscreteModelGeometricEntity(const vtkDiscreteModelGeometricEntity&); // Not implemented.
+  void operator=(const vtkDiscreteModelGeometricEntity&);                  // Not implemented.
 
   // Description:
   // Remove a list of cells from the geometric object.  The cell
@@ -124,4 +120,3 @@ private:
 };
 
 #endif
-

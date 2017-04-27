@@ -37,17 +37,16 @@ namespace
 std::string dataRoot = SMTK_DATA_DIR;
 std::string writeRoot = SMTK_SCRATCH_DIR;
 
-void cleanup( const std::string& file_path )
+void cleanup(const std::string& file_path)
 {
   //first verify the file exists
-  ::boost::filesystem::path path( file_path );
-  if( ::boost::filesystem::is_regular_file( path ) )
+  ::boost::filesystem::path path(file_path);
+  if (::boost::filesystem::is_regular_file(path))
   {
     //remove the file_path if it exists.
-    ::boost::filesystem::remove( path );
+    ::boost::filesystem::remove(path);
   }
 }
-
 }
 
 int UnitTestMeshSessionReadWrite(int argc, char* argv[])
@@ -92,13 +91,12 @@ int UnitTestMeshSessionReadWrite(int argc, char* argv[])
     smtk::model::OperatorResult readOpResult = readOp->operate();
 
     end = std::chrono::system_clock::now();
-    std::chrono::duration<double> elapsed_seconds = end-start;
+    std::chrono::duration<double> elapsed_seconds = end - start;
     std::cout << "elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
 
     model = readOpResult->findModelEntity("model")->value();
 
-    if (readOpResult->findInt("outcome")->value() !=
-        smtk::model::OPERATION_SUCCEEDED)
+    if (readOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
     {
       std::cerr << "Read operator failed\n";
       return 1;
@@ -120,8 +118,7 @@ int UnitTestMeshSessionReadWrite(int argc, char* argv[])
     writeOp->specification()->associateEntity(model);
 
     smtk::model::OperatorResult writeOpResult = writeOp->operate();
-    if (writeOpResult->findInt("outcome")->value() !=
-        smtk::model::OPERATION_SUCCEEDED)
+    if (writeOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
     {
       std::cerr << "Write operator failed\n";
       return 1;

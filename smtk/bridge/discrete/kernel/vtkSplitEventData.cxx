@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkSplitEventData.h"
 
 #include "vtkIdList.h"
@@ -31,26 +30,25 @@ vtkSplitEventData::~vtkSplitEventData()
   this->SetCreatedModelEntityIds(0);
 }
 
-
 void vtkSplitEventData::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
   os << indent << "SourceEntity: ";
-  if(this->SourceEntity)
-    {
+  if (this->SourceEntity)
+  {
     os << this->SourceEntity << endl;
-    }
+  }
   else
-    {
+  {
     os << "(NULL)\n";
-    }
+  }
   os << indent << "CreatedModelEntityIds: ";
-  if(this->CreatedModelEntityIds)
-    {
+  if (this->CreatedModelEntityIds)
+  {
     os << this->CreatedModelEntityIds << endl;
-    }
+  }
   else
-    {
+  {
     os << "(NULL)\n";
-    }
+  }
 }

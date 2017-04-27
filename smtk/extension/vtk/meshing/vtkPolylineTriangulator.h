@@ -21,7 +21,7 @@ class VTKSMTKMESHINGEXT_EXPORT vtkPolylineTriangulator : public vtkPolyDataAlgor
 {
 public:
   static vtkPolylineTriangulator* New();
-  vtkTypeMacro(vtkPolylineTriangulator,vtkPolyDataAlgorithm);
+  vtkTypeMacro(vtkPolylineTriangulator, vtkPolyDataAlgorithm);
   virtual void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -44,26 +44,23 @@ public:
   // However, if you are instantiating multiple vtkPolylineTriangulator
   // instances, performance will improve if they share a launcher.
   virtual void SetLauncher(vtkCMBMeshServerLauncher* launcher);
-  vtkGetObjectMacro(Launcher,vtkCMBMeshServerLauncher);
+  vtkGetObjectMacro(Launcher, vtkCMBMeshServerLauncher);
 
 protected:
   vtkPolylineTriangulator();
   virtual ~vtkPolylineTriangulator();
 
-  virtual int FillInputPortInformation(
-    int port, vtkInformation* info);
+  virtual int FillInputPortInformation(int port, vtkInformation* info);
 
   virtual int RequestData(
-    vtkInformation* req,
-    vtkInformationVector** inInfo,
-    vtkInformationVector* outInfo);
+    vtkInformation* req, vtkInformationVector** inInfo, vtkInformationVector* outInfo);
 
   char* ModelFaceArrayName;
   vtkCMBMeshServerLauncher* Launcher;
 
 private:
   vtkPolylineTriangulator(const vtkPolylineTriangulator&); // Not implemented.
-  void operator = (const vtkPolylineTriangulator&); // Not implemented.
+  void operator=(const vtkPolylineTriangulator&);          // Not implemented.
 };
 
 #endif // __vtkPolylineTriangulator_h

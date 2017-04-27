@@ -22,26 +22,26 @@
 
 namespace smtk
 {
-  namespace attribute
-  {
-    class DirectoryItemDefinition;
-    class SMTKCORE_EXPORT DirectoryItem : public FileSystemItem
-    {
-    friend class DirectoryItemDefinition;
-    public:
-      smtkTypeMacro(DirectoryItem);
-      virtual ~DirectoryItem();
-      virtual Item::Type type() const;
+namespace attribute
+{
+class DirectoryItemDefinition;
+class SMTKCORE_EXPORT DirectoryItem : public FileSystemItem
+{
+  friend class DirectoryItemDefinition;
 
-    protected:
-      DirectoryItem(Attribute *owningAttribute, int itemPosition);
-      DirectoryItem(Item *owningItem, int position, int subGroupPosition);
+public:
+  smtkTypeMacro(DirectoryItem);
+  virtual ~DirectoryItem();
+  virtual Item::Type type() const;
 
-    private:
-    };
+protected:
+  DirectoryItem(Attribute* owningAttribute, int itemPosition);
+  DirectoryItem(Item* owningItem, int position, int subGroupPosition);
 
-  } // namespace attribute
+private:
+};
+
+} // namespace attribute
 } // namespace smtk
-
 
 #endif /* __smtk_attribute_DirectoryItem_h */

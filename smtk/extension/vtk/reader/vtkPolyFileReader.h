@@ -14,7 +14,6 @@
 #include "smtk/extension/vtk/reader/Exports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
-
 #include <string>
 
 /**\brief The name of the array storing boundary marker values on points.
@@ -90,7 +89,7 @@ class VTKSMTKREADEREXT_EXPORT vtkPolyFileReader : public vtkPolyDataAlgorithm
 {
 public:
   static vtkPolyFileReader* New();
-  vtkTypeMacro(vtkPolyFileReader,vtkPolyDataAlgorithm);
+  vtkTypeMacro(vtkPolyFileReader, vtkPolyDataAlgorithm);
   virtual void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -120,9 +119,9 @@ public:
   // When set to -1, the filename will be used to infer file type.
   // When set to any other non-zero value, the simple mesh format
   // will be expected.
-  vtkGetMacro(SimpleMeshFormat,int);
-  vtkSetMacro(SimpleMeshFormat,int);
-  vtkBooleanMacro(SimpleMeshFormat,int);
+  vtkGetMacro(SimpleMeshFormat, int);
+  vtkSetMacro(SimpleMeshFormat, int);
+  vtkBooleanMacro(SimpleMeshFormat, int);
 
   // Description:
   // Should boundary markers on facets be output as cell data or
@@ -130,44 +129,38 @@ public:
   // accessible by most filters processing cells.
   //
   // The default is 0 (boundary markers will be output as field data).
-  vtkGetMacro(FacetMarksAsCellData,int);
-  vtkSetMacro(FacetMarksAsCellData,int);
-  vtkBooleanMacro(FacetMarksAsCellData,int);
+  vtkGetMacro(FacetMarksAsCellData, int);
+  vtkSetMacro(FacetMarksAsCellData, int);
+  vtkBooleanMacro(FacetMarksAsCellData, int);
 
 protected:
   vtkPolyFileReader();
   virtual ~vtkPolyFileReader();
 
   virtual int RequestData(
-    vtkInformation* request,
-    vtkInformationVector** inVec,
-    vtkInformationVector* outVec);
+    vtkInformation* request, vtkInformationVector** inVec, vtkInformationVector* outVec);
 
-  template<typename T>
-    void ReadFile(std::istream& in, int isSimpleMesh, T& errorReporter,
-      const std::string& nodeFileName = std::string());
+  template <typename T>
+  void ReadFile(std::istream& in, int isSimpleMesh, T& errorReporter,
+    const std::string& nodeFileName = std::string());
 
-  template<typename T>
-  bool ReadNodes(
-    std::istream& in, vtkIdType numPts, const std::string& nodeSpec,
-    int& dimension, int& numAttribs, T& errorReporter);
+  template <typename T>
+  bool ReadNodes(std::istream& in, vtkIdType numPts, const std::string& nodeSpec, int& dimension,
+    int& numAttribs, T& errorReporter);
 
-  template<typename T>
-  bool ReadSegments(
-    std::istream& in, int& bdyMarkers, T& errorReporter);
+  template <typename T>
+  bool ReadSegments(std::istream& in, int& bdyMarkers, T& errorReporter);
 
-  template<typename T>
-  bool ReadFacets(
-    std::istream& in, int dimension, int& bdyMarkers, T& errorReporter);
+  template <typename T>
+  bool ReadFacets(std::istream& in, int dimension, int& bdyMarkers, T& errorReporter);
 
-  template<typename T>
-  bool ReadSimpleFacets(
-    std::istream& in, int dimension, int& bdyMarkers, T& errorReporter);
+  template <typename T>
+  bool ReadSimpleFacets(std::istream& in, int dimension, int& bdyMarkers, T& errorReporter);
 
-  template<typename T>
+  template <typename T>
   bool ReadHoles(std::istream& in, int dimension, T& err);
 
-  template<typename T>
+  template <typename T>
   bool ReadRegionAttributes(std::istream& in, int dimension, T& err);
 
   class Private;
@@ -181,7 +174,7 @@ protected:
 
 private:
   vtkPolyFileReader(const vtkPolyFileReader&); // Not implemented.
-  void operator = (const vtkPolyFileReader&); // Not implemented.
+  void operator=(const vtkPolyFileReader&);    // Not implemented.
 };
 
 #endif // __vtkPolyFileReader_h

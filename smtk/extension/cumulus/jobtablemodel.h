@@ -28,30 +28,29 @@ class JobTableModel : public QAbstractTableModel
   Q_OBJECT
 
 public:
-
-  enum ColumnNames {
+  enum ColumnNames
+  {
     JOB_ID = 0,
     MACHINE,
-    JOB_NAME ,
+    JOB_NAME,
     JOB_STATUS,
     COLUMN_COUNT
   };
 
-  explicit JobTableModel(QObject *parentObject = 0);
+  explicit JobTableModel(QObject* parentObject = 0);
 
-  QModelIndex parent(const QModelIndex &) const {return QModelIndex();}
+  QModelIndex parent(const QModelIndex&) const { return QModelIndex(); }
 
-  int rowCount(const QModelIndex & theModelIndex = QModelIndex()) const;
-  int columnCount(const QModelIndex & modelIndex = QModelIndex()) const;
+  int rowCount(const QModelIndex& theModelIndex = QModelIndex()) const;
+  int columnCount(const QModelIndex& modelIndex = QModelIndex()) const;
 
-  QVariant headerData(int section, Qt::Orientation orientation,
-                      int role = Qt::DisplayRole) const;
+  QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
-  QVariant data(const QModelIndex & modelIndex, int role = Qt::DisplayRole) const;
+  QVariant data(const QModelIndex& modelIndex, int role = Qt::DisplayRole) const;
 
-  bool removeRows(int row, int count, const QModelIndex &);
+  bool removeRows(int row, int count, const QModelIndex&);
 
-  bool insertRows(int row, int count, const QModelIndex &);
+  bool insertRows(int row, int count, const QModelIndex&);
 
 signals:
   void rowCountChanged();

@@ -17,18 +17,21 @@
 #include "smtk/SharedPtr.h"
 #include "smtk/SystemConfig.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace cgm {
+namespace smtk
+{
+namespace bridge
+{
+namespace cgm
+{
 
 class Session;
-typedef smtk::shared_ptr< smtk::bridge::cgm::Session > SessionPtr;
+typedef smtk::shared_ptr<smtk::bridge::cgm::Session> SessionPtr;
 class ImportSolid;
 class Engines;
 class ExportSolid;
 
-    } // namespace cgm
-  } // namespace bridge
+} // namespace cgm
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_cgm_PointerDefs_h

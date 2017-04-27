@@ -10,15 +10,18 @@
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/EntityPhrase.h"
 
-#include "smtk/model/PropertyListPhrase.h"
-#include "smtk/model/EntityTypeBits.h"
 #include "smtk/model/Entity.h"
+#include "smtk/model/EntityTypeBits.h"
+#include "smtk/model/PropertyListPhrase.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 EntityListPhrase::EntityListPhrase()
-  : m_commonFlags(INVALID), m_unionFlags(0)
+  : m_commonFlags(INVALID)
+  , m_unionFlags(0)
 {
   // only color is mutable
 }
@@ -34,8 +37,7 @@ std::string EntityListPhrase::title()
   // Check if you have a string property.
   String typeInfo("");
   EntityRefArray entityArray = this->relatedEntities();
-  for (EntityRefArray::iterator it = entityArray.begin();
-       it != entityArray.end(); ++it)
+  for (EntityRefArray::iterator it = entityArray.begin(); it != entityArray.end(); ++it)
   {
     if (it->hasStringProperty("_type"))
     {
@@ -44,10 +46,12 @@ std::string EntityListPhrase::title()
     }
   }
   if (sz != 1)
-    {typeInfo += "s";}
+  {
+    typeInfo += "s";
+  }
   // Now determine whether all the entityrefs share a common type or dimension.
   if (this->m_commonFlags == this->m_unionFlags)
-    { // All the entityrefs have exactly the same flags set.
+  { // All the entityrefs have exactly the same flags set.
     if (typeInfo.size() > 1)
     {
       message << typeInfo;
@@ -56,34 +60,26 @@ std::string EntityListPhrase::title()
     {
       message << Entity::flagSummary(this->m_commonFlags, sz == 1 ? 0 : 1);
     }
-    }
+  }
   else
-    {
+  {
     // Do the common flags specify a particular entity type?
     BitFlags etype = this->m_commonFlags & ENTITY_MASK;
     BitFlags edims = this->m_commonFlags & ANY_DIMENSION;
     bool pluralDims;
     std::string dimPhrase =
-      Entity::flagDimensionList( edims ?
-        edims :
-        this->m_unionFlags & ANY_DIMENSION, pluralDims);
+      Entity::flagDimensionList(edims ? edims : this->m_unionFlags & ANY_DIMENSION, pluralDims);
     std::string name;
-    if  (etype)
+    if (etype)
     {
-      name = (typeInfo.size() > 1) ? typeInfo :
-                Entity::flagSummary(etype, sz == 1 ? 0 : 1);
+      name = (typeInfo.size() > 1) ? typeInfo : Entity::flagSummary(etype, sz == 1 ? 0 : 1);
     }
     else
     {
       name = "entities";
     }
-    message
-      << name
-      << " of "
-      << (pluralDims ? "dimensions" : "dimension")
-      << " "
-      << dimPhrase;
-    }
+    message << name << " of " << (pluralDims ? "dimensions" : "dimension") << " " << dimPhrase;
+  }
   return message.str();
 }
 
@@ -124,14 +120,12 @@ void EntityListPhrase::setFlags(BitFlags commonFlags, BitFlags unionFlags)
   */
 bool EntityListPhrase::isRelatedColorMutable() const
 {
-  if (this->parent() && this->parent()->relatedEntity().isModel()
-      && this->m_commonFlags == this->m_unionFlags
-      && (this->m_commonFlags | smtk::model::CELL_ENTITY))
+  if (this->parent() && this->parent()->relatedEntity().isModel() &&
+    this->m_commonFlags == this->m_unionFlags && (this->m_commonFlags | smtk::model::CELL_ENTITY))
   {
     return true;
   }
   return false;
-
 }
 
 /** \brief return the color of the entityListPhrase which is stored
@@ -145,17 +139,14 @@ FloatList EntityListPhrase::relatedColor() const
     // commonflag
     colorName = Entity::flagSummary(this->m_commonFlags);
     colorName += " color";
-    smtk::model::Model model = this->parent()->relatedEntity().
-        as<smtk::model::Model>();
+    smtk::model::Model model = this->parent()->relatedEntity().as<smtk::model::Model>();
     if (model.hasFloatProperty(colorName))
     {
       return model.floatProperty(colorName);
     }
   }
-  return FloatList(4,-1.);
+  return FloatList(4, -1.);
 }
 
-
-
-  } // model namespace
+} // model namespace
 } // smtk namespace

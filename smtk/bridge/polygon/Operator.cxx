@@ -12,9 +12,12 @@
 
 #include "smtk/model/EntityRef.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
 /// Return a shared pointer to the session backing a polygon operator.
 Session* Operator::polygonSession()
@@ -27,7 +30,8 @@ const Session* Operator::polygonSession() const
   return dynamic_cast<const smtk::bridge::polygon::Session*>(this->session());
 }
 
-void Operator::addStorage(const smtk::common::UUID& uid, smtk::bridge::polygon::internal::entity::Ptr storage)
+void Operator::addStorage(
+  const smtk::common::UUID& uid, smtk::bridge::polygon::internal::entity::Ptr storage)
 {
   this->polygonSession()->addStorage(uid, storage);
 }
@@ -47,6 +51,6 @@ internal::Entity* Operator::polygonEntity(const smtk::model::EntityRef& smtkEnti
 }
 */
 
-    } // namespace polygon
-  } //namespace bridge
+} // namespace polygon
+} //namespace bridge
 } // namespace smtk

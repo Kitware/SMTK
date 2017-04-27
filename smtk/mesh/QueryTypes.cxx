@@ -10,10 +10,11 @@
 
 #include "smtk/mesh/QueryTypes.h"
 
-namespace smtk {
-namespace mesh {
+namespace smtk
+{
+namespace mesh
+{
 
 template class OpaqueTag<16>;
-
 }
 }

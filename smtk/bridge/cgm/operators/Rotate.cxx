@@ -43,9 +43,12 @@
 
 using namespace smtk::model;
 
-namespace smtk {
-  namespace bridge {
-    namespace cgm {
+namespace smtk
+{
+namespace bridge
+{
+namespace cgm
+{
 
 smtk::model::OperatorResult Rotate::operateInternal()
 {
@@ -60,41 +63,38 @@ smtk::model::OperatorResult Rotate::operateInternal()
   DLIList<RefEntity*> cgmEntitiesOut;
   RefEntity* refEntity;
   for (it = bodiesIn.begin(); it != bodiesIn.end(); ++it)
-    {
+  {
     refEntity = this->cgmEntity(*it);
     if (refEntity)
-      {
+    {
       cgmEntitiesIn.append(refEntity);
-      this->manager()->erase(*it); // We will re-transcribe momentarily. TODO: This could be more efficient.
-      }
+      this->manager()->erase(
+        *it); // We will re-transcribe momentarily. TODO: This could be more efficient.
     }
+  }
 
   int nb = cgmEntitiesIn.size();
 
   CubitVector center(centerItem->value(0), centerItem->value(1), centerItem->value(2));
   CubitVector axis(axisItem->value(0), axisItem->value(1), axisItem->value(2));
   if (axis.normalize() == 0)
-    {
-    smtkInfoMacro(log(),
-      "Ill-defined rotation: given axis of rotation is a zero-length vector.");
+  {
+    smtkInfoMacro(log(), "Ill-defined rotation: given axis of rotation is a zero-length vector.");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
   double angle = angleItem->value(0);
-  GeometryQueryTool::instance()->rotate(
-    cgmEntitiesIn,
-    center, axis, angle,
+  GeometryQueryTool::instance()->rotate(cgmEntitiesIn, center, axis, angle,
     true, // (check before transforming)
     cgmEntitiesOut);
   if (cgmEntitiesOut.size() != nb)
-    {
+  {
     smtkInfoMacro(log(), "Failed to rotate bodies or wrong number"
-      << " (" << cgmEntitiesOut.size() << " != " << nb << ")"
-      << " of resulting bodies.");
+        << " (" << cgmEntitiesOut.size() << " != " << nb << ")"
+        << " of resulting bodies.");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
-  smtk::model::OperatorResult result = this->createResult(
-    smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmEntitiesOut, result, MODIFIED);
   // Nothing expunged.
@@ -102,14 +102,9 @@ smtk::model::OperatorResult Rotate::operateInternal()
   return result;
 }
 
-    } // namespace cgm
-  } //namespace bridge
+} // namespace cgm
+} //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(
-  SMTKCGMSESSION_EXPORT,
-  smtk::bridge::cgm::Rotate,
-  cgm_rotate,
-  "rotate",
-  Rotate_xml,
-  smtk::bridge::cgm::Session);
+smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::Rotate, cgm_rotate, "rotate",
+  Rotate_xml, smtk::bridge::cgm::Session);

@@ -16,21 +16,23 @@
 #include "smtk/common/UUID.h"
 
 #ifdef SMTK_HASH_STORAGE
-#  if defined(_MSC_VER) // Visual studio
-#    pragma warning (push)
-#    pragma warning (disable : 4996)  // Overeager "unsafe" parameter check
-#  endif
-#  include "sparsehash/sparse_hash_map"
-#  if defined(_MSC_VER) // Visual studio
-#    pragma warning (pop)
-#  endif
+#if defined(_MSC_VER) // Visual studio
+#pragma warning(push)
+#pragma warning(disable : 4996) // Overeager "unsafe" parameter check
+#endif
+#include "sparsehash/sparse_hash_map"
+#if defined(_MSC_VER) // Visual studio
+#pragma warning(pop)
+#endif
 #else
-#  include <map>
+#include <map>
 #endif
 #include <set>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /// A set of attribute identifiers.
 typedef std::set<smtk::common::UUID> AttributeSet;
@@ -41,9 +43,9 @@ typedef std::set<smtk::common::UUID> AttributeSet;
 class SMTKCORE_EXPORT AttributeAssignments
 {
 public:
-  bool associateAttribute(const smtk::common::UUID &attribId);
-  bool disassociateAttribute(const smtk::common::UUID &attribId);
-  bool isAssociated(const smtk::common::UUID &attribId) const;
+  bool associateAttribute(const smtk::common::UUID& attribId);
+  bool disassociateAttribute(const smtk::common::UUID& attribId);
+  bool isAssociated(const smtk::common::UUID& attribId) const;
 
   AttributeSet& attributes() { return this->m_attributes; }
   const AttributeSet& attributes() const { return this->m_attributes; }
@@ -54,17 +56,19 @@ protected:
 
 #ifdef SMTK_HASH_STORAGE
 /// Each Manager entity's UUID is mapped to a set of assigned attribute IDs.
-typedef google::sparse_hash_map<smtk::common::UUID,AttributeAssignments> UUIDsToAttributeAssignments;
+typedef google::sparse_hash_map<smtk::common::UUID, AttributeAssignments>
+  UUIDsToAttributeAssignments;
 /// An iterator referencing a (UUID,AttributeAssignments)-tuple.
-typedef google::sparse_hash_map<smtk::common::UUID,AttributeAssignments>::iterator UUIDWithAttributeAssignments;
+typedef google::sparse_hash_map<smtk::common::UUID, AttributeAssignments>::iterator
+  UUIDWithAttributeAssignments;
 #else
 /// Each Manager entity's UUID is mapped to a set of assigned attribute IDs.
-typedef std::map<smtk::common::UUID,AttributeAssignments> UUIDsToAttributeAssignments;
+typedef std::map<smtk::common::UUID, AttributeAssignments> UUIDsToAttributeAssignments;
 /// An iterator referencing a (UUID,AttributeAssignments)-tuple.
-typedef std::map<smtk::common::UUID,AttributeAssignments>::iterator UUIDWithAttributeAssignments;
+typedef std::map<smtk::common::UUID, AttributeAssignments>::iterator UUIDWithAttributeAssignments;
 #endif
 
-  } // model namespace
+} // model namespace
 } // smtk namespace
 
 #endif // __smtk_model_AttributeAssignments_h

@@ -16,8 +16,10 @@
 
 #include <string>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief A base class for delegating session I/O.
   *
@@ -49,7 +51,7 @@ class SMTKCORE_EXPORT SessionIO
 {
 public:
   smtkTypeMacro(SessionIO);
-  virtual ~SessionIO() { } // virtual method needed so dynamic_cast will work
+  virtual ~SessionIO() {} // virtual method needed so dynamic_cast will work
 
   /**\brief Return a reference directory to use during import/export.
     *
@@ -67,7 +69,7 @@ protected:
   std::string m_referencePath;
 };
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_model_SessionIO_h

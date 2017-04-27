@@ -36,19 +36,17 @@ int main(int argc, char* argv[])
   SessionRef sess = sm->createSession("native");
 
   // Block to ensure timely destruction of JSON data.
-    {
+  {
     std::string fname(argc > 1 ? argv[1] : "smtkModel.json");
     std::ifstream file(fname.c_str());
-    std::string data(
-      (std::istreambuf_iterator<char>(file)),
-      (std::istreambuf_iterator<char>()));
+    std::string data((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
 
     if (data.empty() || !LoadJSON::intoModelManager(data.c_str(), sm))
-      {
+    {
       std::cerr << "Error importing model from file \"" << fname << "\"\n";
       return 1;
-      }
     }
+  }
   sm->assignDefaultNames();
 
   SessionRefs ents = sm->sessions();
@@ -56,31 +54,28 @@ int main(int argc, char* argv[])
   test(ents.size() == 1, "Expected a single session.");
 
   // Assign all the models to the default, native session.
-  Models models =
-    sm->entitiesMatchingFlagsAs<Models>(
-      MODEL_ENTITY, false);
+  Models models = sm->entitiesMatchingFlagsAs<Models>(MODEL_ENTITY, false);
   for (Models::iterator mit = models.begin(); mit != models.end(); ++mit)
     mit->setSession(ents[0]);
 
   EntityRefArray faces;
-  EntityRef::EntityRefsFromUUIDs(
-    faces, sm, sm->entitiesMatchingFlags(CELL_2D, true));
+  EntityRef::EntityRefsFromUUIDs(faces, sm, sm->entitiesMatchingFlags(CELL_2D, true));
   for (EntityRefArray::iterator it = faces.begin(); it != faces.end(); ++it)
-    {
+  {
     it->setColor(0.5, 0.5, 0.5, 1.); // Make every face grey.
-    }
+  }
 
   if (!ents.empty())
-    {
+  {
     DescriptivePhrase::Ptr dit;
     EntityListPhrase::Ptr elist = EntityListPhrase::create()->setup(ents, dit);
     SimpleModelSubphrases::Ptr spg = SimpleModelSubphrases::create();
     elist->setDelegate(spg);
     printPhrase(std::cout, 0, elist);
-    }
+  }
   else
-    {
+  {
     std::cerr << "No model entities in the model manager.\n";
-    }
+  }
   return 0;
 }

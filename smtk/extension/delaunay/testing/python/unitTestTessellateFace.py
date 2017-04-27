@@ -42,8 +42,8 @@ class UnitTessellateFace(smtk.testing.TestCase):
         tessellateFace.specification().associateEntity(face)
         result = tessellateFace.operate()
         tessellatedFace = face.hasTessellation()
-        assert(len(tessellatedFace.coords()) == 8*3)
-        assert(len(tessellatedFace.conn()) == 8*4)
+        assert(len(tessellatedFace.coords()) == 8 * 3)
+        assert(len(tessellatedFace.conn()) == 8 * 4)
 
         if self.interactive() and self.haveVTK() and self.haveVTKExtension():
             self.startRenderTest()

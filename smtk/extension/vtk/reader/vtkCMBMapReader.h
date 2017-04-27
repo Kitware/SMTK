@@ -23,37 +23,32 @@ class vtkIntArray;
 
 class VTKSMTKREADEREXT_EXPORT vtkCMBMapReader : public vtkPolyDataAlgorithm
 {
-  public:
-    static vtkCMBMapReader *New();
-    vtkTypeMacro(vtkCMBMapReader,vtkPolyDataAlgorithm);
-    void PrintSelf(ostream& os, vtkIndent indent);
+public:
+  static vtkCMBMapReader* New();
+  vtkTypeMacro(vtkCMBMapReader, vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-    // Description:
-    // Name of the file to be read.
-    vtkSetStringMacro(FileName);
-    vtkGetStringMacro(FileName);
-    vtkGetMacro(NumArcs,int);
-    vtkIntArray* GetArcIds()
-    {
-      return ArcIds;
-    }
+  // Description:
+  // Name of the file to be read.
+  vtkSetStringMacro(FileName);
+  vtkGetStringMacro(FileName);
+  vtkGetMacro(NumArcs, int);
+  vtkIntArray* GetArcIds() { return ArcIds; }
 
-  protected:
-    vtkCMBMapReader();
-    ~vtkCMBMapReader();
+protected:
+  vtkCMBMapReader();
+  ~vtkCMBMapReader();
 
-    int RequestInformation(vtkInformation *,
-        vtkInformationVector **,
-        vtkInformationVector *);
-    int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
-    char *FileName;
+  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  char* FileName;
 
-    int NumArcs;
-    vtkIntArray* ArcIds;
+  int NumArcs;
+  vtkIntArray* ArcIds;
 
-  private:
-    vtkCMBMapReader(const vtkCMBMapReader&);  // Not implemented.
-    void operator=(const vtkCMBMapReader&);  // Not implemented.
+private:
+  vtkCMBMapReader(const vtkCMBMapReader&); // Not implemented.
+  void operator=(const vtkCMBMapReader&);  // Not implemented.
 };
 
 #endif

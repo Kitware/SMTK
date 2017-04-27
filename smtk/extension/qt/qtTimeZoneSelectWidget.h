@@ -22,14 +22,16 @@
 
 class Ui_qtTimeZoneSelectWidget;
 
-namespace smtk {
-  namespace extension {
+namespace smtk
+{
+namespace extension
+{
 
 class SMTKQTEXT_EXPORT qtTimeZoneSelectWidget : public QWidget
 {
   Q_OBJECT
 
- public:
+public:
   qtTimeZoneSelectWidget(QWidget* parent = NULL);
   ~qtTimeZoneSelectWidget();
 
@@ -39,27 +41,26 @@ class SMTKQTEXT_EXPORT qtTimeZoneSelectWidget : public QWidget
   // Returns continent/region or empty string
   QString selectedRegion() const;
 
- public slots:
+public slots:
 
- signals:
+signals:
   void regionSelected(QString id);
 
- protected slots:
-  void onContinentChanged(
-    const QItemSelection& selected, const QItemSelection& deselected);
-  void onRegionChanged(
-    const QItemSelection& selected, const QItemSelection& deselected);
+protected slots:
+  void onContinentChanged(const QItemSelection& selected, const QItemSelection& deselected);
+  void onRegionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
- protected:
-  Ui_qtTimeZoneSelectWidget *UI;
+protected:
+  Ui_qtTimeZoneSelectWidget* UI;
 
   void setContinent(const QModelIndex index);
- private:
+
+private:
   class qtTimeZoneSelectWidgetInternal;
-  qtTimeZoneSelectWidgetInternal *Internal;
+  qtTimeZoneSelectWidgetInternal* Internal;
 };
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_extension_qtTimeZoneSelectWidget_h

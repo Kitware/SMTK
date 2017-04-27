@@ -20,83 +20,78 @@
 
 class QStandardItem;
 
-namespace smtk {
-  namespace extension {
+namespace smtk
+{
+namespace extension
+{
 
-  class qtModelEntityItem;
-  class qtMeshItem;
+class qtModelEntityItem;
+class qtMeshItem;
 //A sublcass of QTextEdit to give initial sizehint
 class SMTKQTEXT_EXPORT qtCheckableComboItemDelegate : public QStyledItemDelegate
-  {
+{
   Q_OBJECT
-  public:
-    qtCheckableComboItemDelegate(QWidget * owner);
-    virtual void paint(
-      QPainter* painter,
-      const QStyleOptionViewItem& option,
-      const QModelIndex& index) const;
-
-  };
+public:
+  qtCheckableComboItemDelegate(QWidget* owner);
+  virtual void paint(
+    QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+};
 
 //A sublcass of QComboBox to set text when hidePopup
 class SMTKQTEXT_EXPORT qtCheckItemComboBox : public QComboBox
-  {
+{
   Q_OBJECT
-  public:
-    qtCheckItemComboBox(QWidget * parentW, const QString& displayExt);
-    virtual void hidePopup();
-    virtual void showPopup();
-    virtual void init();
-    virtual void updateText();
+public:
+  qtCheckItemComboBox(QWidget* parentW, const QString& displayExt);
+  virtual void hidePopup();
+  virtual void showPopup();
+  virtual void init();
+  virtual void updateText();
 
-  private:
-    QStandardItem* m_displayItem;
-    QString m_displayTextExt;
-  };
+private:
+  QStandardItem* m_displayItem;
+  QString m_displayTextExt;
+};
 
-  //A sublcass of qtCheckItemComboBox to refresh the list on popup
-  class SMTKQTEXT_EXPORT qtModelEntityItemCombo : public qtCheckItemComboBox
-    {
-    Q_OBJECT
-    public:
-      qtModelEntityItemCombo(qtModelEntityItem *item,
-        QWidget * parent, const QString& displayExt);
-      virtual void showPopup();
-      virtual void init();
+//A sublcass of qtCheckItemComboBox to refresh the list on popup
+class SMTKQTEXT_EXPORT qtModelEntityItemCombo : public qtCheckItemComboBox
+{
+  Q_OBJECT
+public:
+  qtModelEntityItemCombo(qtModelEntityItem* item, QWidget* parent, const QString& displayExt);
+  virtual void showPopup();
+  virtual void init();
 
-    protected slots:
-      virtual void itemCheckChanged(
-        const QModelIndex& topLeft, const QModelIndex& bottomRight);
+protected slots:
+  virtual void itemCheckChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
 
-    protected:
-      virtual bool eventFilter(QObject* editor, QEvent* event);
+protected:
+  virtual bool eventFilter(QObject* editor, QEvent* event);
 
-    private:
-      qtModelEntityItem *m_ModelEntityItem;
-    };
+private:
+  qtModelEntityItem* m_ModelEntityItem;
+};
 
-  //A sublcass of qtCheckItemComboBox to refresh the list on popup
-  class SMTKQTEXT_EXPORT qtMeshItemCombo : public qtCheckItemComboBox
-    {
-    Q_OBJECT
-    public:
-      qtMeshItemCombo(qtMeshItem *item,
-        QWidget * parent, const QString& displayExt);
-      virtual void showPopup();
-      virtual void init();
+//A sublcass of qtCheckItemComboBox to refresh the list on popup
+class SMTKQTEXT_EXPORT qtMeshItemCombo : public qtCheckItemComboBox
+{
+  Q_OBJECT
+public:
+  qtMeshItemCombo(qtMeshItem* item, QWidget* parent, const QString& displayExt);
+  virtual void showPopup();
+  virtual void init();
 
-    protected slots:
-      virtual void itemCheckChanged(
-        const QModelIndex& topLeft, const QModelIndex& bottomRight);
+protected slots:
+  virtual void itemCheckChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
 
-    protected:
-      virtual bool eventFilter(QObject* editor, QEvent* event);
+protected:
+  virtual bool eventFilter(QObject* editor, QEvent* event);
 
-    private:
-      qtMeshItem *m_MeshItem;
-    };
+private:
+  qtMeshItem* m_MeshItem;
+};
 
-  } // namespace extension
+} // namespace extension
 } // namespace smtk
 
 #endif // __smtk_extension_qtCheckItemComboBox_h

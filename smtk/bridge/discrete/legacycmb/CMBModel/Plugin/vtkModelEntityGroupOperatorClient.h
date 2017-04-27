@@ -32,12 +32,11 @@ class vtkIdList;
 class vtkModelEntity;
 class vtkSMProxy;
 
-class VTK_EXPORT vtkModelEntityGroupOperatorClient :
-  public vtkModelEntityGroupOperatorBase
+class VTK_EXPORT vtkModelEntityGroupOperatorClient : public vtkModelEntityGroupOperatorBase
 {
 public:
-  static vtkModelEntityGroupOperatorClient * New();
-  vtkTypeMacro(vtkModelEntityGroupOperatorClient,vtkModelEntityGroupOperatorBase);
+  static vtkModelEntityGroupOperatorClient* New();
+  vtkTypeMacro(vtkModelEntityGroupOperatorClient, vtkModelEntityGroupOperatorBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Prevent warnings about hidden base-class virtuals:
@@ -64,8 +63,8 @@ protected:
   virtual ~vtkModelEntityGroupOperatorClient();
 
 private:
-  vtkModelEntityGroupOperatorClient(const vtkModelEntityGroupOperatorClient&);  // Not implemented.
-  void operator=(const vtkModelEntityGroupOperatorClient&);  // Not implemented.
+  vtkModelEntityGroupOperatorClient(const vtkModelEntityGroupOperatorClient&); // Not implemented.
+  void operator=(const vtkModelEntityGroupOperatorClient&);                    // Not implemented.
 };
 
 #endif

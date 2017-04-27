@@ -27,19 +27,22 @@
 #include <QPointer>
 
 #include "ui_qtModelPanel.h"
-namespace Ui { class qtModelPanel; }
+namespace Ui
+{
+class qtModelPanel;
+}
 
-namespace smtk {
-  namespace extension {
+namespace smtk
+{
+namespace extension
+{
 
 class qtModelPanel::qInternal : public Ui::qtModelPanel
 {
 public:
   QPointer<qtModelView> ModelView;
 
-  qInternal()
-    {
-    }
+  qInternal() {}
 };
 
 qtModelPanel::qtModelPanel(QWidget* p)
@@ -52,10 +55,10 @@ qtModelPanel::qtModelPanel(QWidget* p)
   this->Internal->treeviewLayout->addWidget(this->Internal->ModelView);
   // signals/slots
 
-  QObject::connect(this->Internal->ClearSelection,
-    SIGNAL(clicked()), this, SLOT(onClearSelection()));
-  QObject::connect(this->Internal->comboBoxViewBy,
-    SIGNAL(currentIndexChanged(int)), this, SLOT(onViewTypeChanged()));
+  QObject::connect(
+    this->Internal->ClearSelection, SIGNAL(clicked()), this, SLOT(onClearSelection()));
+  QObject::connect(this->Internal->comboBoxViewBy, SIGNAL(currentIndexChanged(int)), this,
+    SLOT(onViewTypeChanged()));
 }
 
 qtModelPanel::~qtModelPanel()
@@ -77,32 +80,31 @@ void qtModelPanel::onClearSelection()
 void qtModelPanel::onViewTypeChanged()
 {
   int type = this->Internal->comboBoxViewBy->currentIndex();
-  qtModelPanel::enumTreeView enType = (type == 0) ?
-    qtModelPanel::VIEW_BY_TOPOLOGY : qtModelPanel::VIEW_BY_ENTITY_LIST;
+  qtModelPanel::enumTreeView enType =
+    (type == 0) ? qtModelPanel::VIEW_BY_TOPOLOGY : qtModelPanel::VIEW_BY_ENTITY_LIST;
   QPointer<smtk::extension::QEntityItemModel> qmodel = this->getModelView()->getModel();
-  if(!qmodel->manager())
+  if (!qmodel->manager())
     return;
   this->resetView(enType, qmodel->manager());
 }
 
-void qtModelPanel::resetView(qtModelPanel::enumTreeView enType,
-                             smtk::model::ManagerPtr modelMgr)
+void qtModelPanel::resetView(qtModelPanel::enumTreeView enType, smtk::model::ManagerPtr modelMgr)
 {
   this->Internal->comboBoxViewBy->blockSignals(true);
   smtk::model::SubphraseGeneratorPtr spg;
-  if(enType == qtModelPanel::VIEW_BY_TOPOLOGY)
-    {
+  if (enType == qtModelPanel::VIEW_BY_TOPOLOGY)
+  {
     spg = smtk::model::SimpleModelSubphrases::create();
     this->Internal->comboBoxViewBy->setCurrentIndex(0);
-    }
-  else if(enType == qtModelPanel::VIEW_BY_ENTITY_LIST)
-    {
+  }
+  else if (enType == qtModelPanel::VIEW_BY_ENTITY_LIST)
+  {
     spg = smtk::model::EntityTypeSubphrases::create();
     this->Internal->comboBoxViewBy->setCurrentIndex(1);
-    }
+  }
   this->Internal->comboBoxViewBy->blockSignals(false);
 
-  if(!spg)
+  if (!spg)
     return;
 
   smtk::model::BitFlags mask = smtk::model::SESSION;
@@ -119,14 +121,11 @@ void qtModelPanel::resetView(qtModelPanel::enumTreeView enType,
   QPointer<smtk::extension::QEntityItemModel> qmodel = modelview->getModel();
   qmodel->clear();
 
-  qmodel->setRoot(
-    smtk::model::EntityListPhrase::create()
-      ->setup(cursors)
-      ->setDelegate(spg));// set the subphrase generator
+  qmodel->setRoot(smtk::model::EntityListPhrase::create()->setup(cursors)->setDelegate(
+    spg)); // set the subphrase generator
 
   modelview->expandAllModels();
-
 }
 
-  } // namespace extension
+} // namespace extension
 } // namespace smtk

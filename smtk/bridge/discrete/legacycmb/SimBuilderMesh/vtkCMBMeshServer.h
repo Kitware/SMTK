@@ -30,7 +30,7 @@ class VTK_EXPORT vtkCMBMeshServer : public vtkCMBMesh
 {
 public:
   static vtkCMBMeshServer* New();
-  vtkTypeMacro(vtkCMBMeshServer,vtkCMBMesh);
+  vtkTypeMacro(vtkCMBMeshServer, vtkCMBMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual void Initialize(vtkModel* model);
@@ -78,8 +78,8 @@ protected:
   void ModelEntityBoundaryModified(vtkModelGeometricEntity*);
 
 private:
-  vtkCMBMeshServer(const vtkCMBMeshServer&);  // Not implemented.
-  void operator=(const vtkCMBMeshServer&);  // Not implemented.
+  vtkCMBMeshServer(const vtkCMBMeshServer&); // Not implemented.
+  void operator=(const vtkCMBMeshServer&);   // Not implemented.
 
   vtkCMBMeshServerInternals* Internal;
   vtkSmartPointer<vtkCallbackCommand> CallbackCommand;

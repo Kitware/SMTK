@@ -21,13 +21,12 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"
 
-
 class vtkDiscreteModelEntity;
 
 class VTKSMTKDISCRETEMODEL_EXPORT vtkDiscreteModelEntityGroup : public vtkModelEntity
 {
 public:
-  vtkTypeMacro(vtkDiscreteModelEntityGroup,vtkModelEntity);
+  vtkTypeMacro(vtkDiscreteModelEntityGroup, vtkModelEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   void AddModelEntity(vtkDiscreteModelEntity*);
@@ -57,7 +56,7 @@ public:
 protected:
   vtkDiscreteModelEntityGroup();
   virtual ~vtkDiscreteModelEntityGroup();
-  static vtkDiscreteModelEntityGroup *New();
+  static vtkDiscreteModelEntityGroup* New();
 
   friend class vtkDiscreteModel;
 
@@ -67,9 +66,8 @@ protected:
   int EntityType;
 
 private:
-  vtkDiscreteModelEntityGroup(const vtkDiscreteModelEntityGroup&);  // Not implemented.
-  void operator=(const vtkDiscreteModelEntityGroup&);  // Not implemented.
+  vtkDiscreteModelEntityGroup(const vtkDiscreteModelEntityGroup&); // Not implemented.
+  void operator=(const vtkDiscreteModelEntityGroup&);              // Not implemented.
 };
 
 #endif
-

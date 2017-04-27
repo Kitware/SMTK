@@ -43,36 +43,34 @@ using namespace smtk::io;
 int main(int argc, char* argv[])
 {
   int debug = argc > 2 ? (argv[2][0] == '-' ? 0 : 1) : 0;
-  if (argc > 1 )
-    {
+  if (argc > 1)
+  {
     std::ifstream file;
     file.open(argv[1]);
-    if(!file.good())
+    if (!file.good())
     {
-    std::cout
-      << "Could not open file \"" << argv[1] << "\".\n\n";
+      std::cout << "Could not open file \"" << argv[1] << "\".\n\n";
       return 1;
     }
 
-    std::string data(
-      (std::istreambuf_iterator<char>(file)),
-      (std::istreambuf_iterator<char>()));
+    std::string data((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
 
     ManagerPtr sm = Manager::create();
 
     int status = LoadJSON::intoModelManager(data.c_str(), sm);
-    int numModels = static_cast<int>(sm->entitiesMatchingFlagsAs<Models>(smtk::model::MODEL_ENTITY).size());
+    int numModels =
+      static_cast<int>(sm->entitiesMatchingFlagsAs<Models>(smtk::model::MODEL_ENTITY).size());
     std::cout << "Imported models into manager: " << numModels << std::endl;
     if (numModels > 0)
-      {
+    {
       smtk::mesh::ManagerPtr meshmgr = sm->meshes();
       smtk::io::ModelToMesh convert;
       smtk::mesh::CollectionPtr c = convert(meshmgr, sm);
-      test( c->isValid(), "collection should be valid");
+      test(c->isValid(), "collection should be valid");
 
       std::size_t numMeshes = c->numberOfMeshes();
       std::cout << "number of meshes: " << numMeshes << std::endl;
-      test( numMeshes!=0, "dataset once loaded should have more than zero meshes");
+      test(numMeshes != 0, "dataset once loaded should have more than zero meshes");
 
       smtk::common::UUID collectionID = c->entity();
       vtkNew<vtkActor> act;
@@ -82,15 +80,15 @@ int main(int argc, char* argv[])
       vtkNew<vtkRenderWindow> win;
       src->SetMeshManager(meshmgr);
       src->SetMeshCollectionID(collectionID.toString().c_str());
-      if(debug)
-        {
+      if (debug)
+      {
         win->SetMultiSamples(16);
         src->AllowNormalGenerationOn();
-        }
+      }
       else
-	{
-	win->SetMultiSamples(0);
-	}
+      {
+        win->SetMultiSamples(0);
+      }
       map->SetInputConnection(src->GetOutputPort());
       /*
       map->SetColorModeToMapScalars();
@@ -116,9 +114,10 @@ int main(int argc, char* argv[])
       ren->AddActor(act.GetPointer());
 
       vtkRenderWindowInteractor* iac = win->MakeRenderWindowInteractor();
-      vtkInteractorStyleSwitch::SafeDownCast(iac->GetInteractorStyle())->SetCurrentStyleToTrackballCamera();
+      vtkInteractorStyleSwitch::SafeDownCast(iac->GetInteractorStyle())
+        ->SetCurrentStyleToTrackballCamera();
       win->SetInteractor(iac);
-    /*
+      /*
       if (debug && argc > 3)
         {
         vtkNew<vtkXMLMultiBlockDataWriter> wri;
@@ -130,15 +129,15 @@ int main(int argc, char* argv[])
       win->Render();
       ren->ResetCamera();
 
-      status = ! vtkRegressionTestImage(win.GetPointer());
+      status = !vtkRegressionTestImage(win.GetPointer());
       if (debug)
-        {
+      {
         iac->Start();
-        }
       }
+    }
 
     return status;
-    }
+  }
 
   return 0;
 }

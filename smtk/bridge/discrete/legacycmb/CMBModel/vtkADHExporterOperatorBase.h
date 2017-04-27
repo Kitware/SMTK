@@ -31,8 +31,8 @@ class vtkDiscreteModelEntityGroup;
 class VTKCMBDISCRETEMODEL_EXPORT vtkADHExporterOperatorBase : public vtkObject
 {
 public:
-  static vtkADHExporterOperatorBase * New();
-  vtkTypeMacro(vtkADHExporterOperatorBase,vtkObject);
+  static vtkADHExporterOperatorBase* New();
+  vtkTypeMacro(vtkADHExporterOperatorBase, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -47,15 +47,13 @@ public:
   // to a SimBuilder BC.
   void AddAppliedNodalBC(int bcIndex, vtkIdType bcsGroupId, int bcsNodalGroupType);
 
-  void AddAppliedNodalBC(int bcIndex, vtkDiscreteModelEntityGroup* bcsGroup,
-   int bcsNodalGroupType);
+  void AddAppliedNodalBC(int bcIndex, vtkDiscreteModelEntityGroup* bcsGroup, int bcsNodalGroupType);
 
   int GetNumberOfAppliedNodalBCs();
   // Description:
   // Get the bc index and unique persistent id of applied nodal bc i.
   // Returns true if successful.
-  bool GetAppliedNodalBC(int i, int & bcIndex, vtkIdType & bcsGroupId,
-    int & bcsNodalGroupType);
+  bool GetAppliedNodalBC(int i, int& bcIndex, vtkIdType& bcsGroupId, int& bcsNodalGroupType);
 
   // Description:
   // Remove all of the nodal groups.
@@ -74,7 +72,7 @@ public:
   // Description:
   // Get the bc index and unique persistent id of applied face bc i.
   // Returns true if successful.
-  bool GetAppliedElementBC(int i, int & bcIndex, vtkIdType & faceGroupId);
+  bool GetAppliedElementBC(int i, int& bcIndex, vtkIdType& faceGroupId);
 
   // Description:
   // Remove all of the nodal groups.
@@ -95,9 +93,8 @@ private:
   char* FileName;
   ADHExporterOperatorBaseInternals* Internal;
 
-  vtkADHExporterOperatorBase(const vtkADHExporterOperatorBase&);  // Not implemented.
-  void operator=(const vtkADHExporterOperatorBase&);  // Not implemented.
-
+  vtkADHExporterOperatorBase(const vtkADHExporterOperatorBase&); // Not implemented.
+  void operator=(const vtkADHExporterOperatorBase&);             // Not implemented.
 };
 
 #endif

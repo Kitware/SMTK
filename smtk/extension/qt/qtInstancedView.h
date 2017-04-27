@@ -23,41 +23,38 @@ class QScrollArea;
 
 namespace smtk
 {
-  namespace extension
-  {
-    class SMTKQTEXT_EXPORT qtInstancedView : public qtBaseView
-    {
-      Q_OBJECT
+namespace extension
+{
+class SMTKQTEXT_EXPORT qtInstancedView : public qtBaseView
+{
+  Q_OBJECT
 
-    public:
-      static qtBaseView *createViewWidget(const ViewInfo &info);
+public:
+  static qtBaseView* createViewWidget(const ViewInfo& info);
 
-      qtInstancedView(const ViewInfo &info);
-      virtual ~qtInstancedView();
-      // Returns true if all attributes in the view are valid
-      bool isValid() const;
+  qtInstancedView(const ViewInfo& info);
+  virtual ~qtInstancedView();
+  // Returns true if all attributes in the view are valid
+  bool isValid() const;
 
-    public slots:
-      virtual void showAdvanceLevelOverlay(bool show);
-      virtual void requestModelEntityAssociation();
-      virtual void onShowCategory()
-       { this->updateAttributeData(); }
+public slots:
+  virtual void showAdvanceLevelOverlay(bool show);
+  virtual void requestModelEntityAssociation();
+  virtual void onShowCategory() { this->updateAttributeData(); }
 
-    signals:
-      // emitted when an attribute is modified
-      void modified();
+signals:
+  // emitted when an attribute is modified
+  void modified();
 
-    protected:
-      virtual void updateAttributeData();
-      virtual void createWidget( );
+protected:
+  virtual void updateAttributeData();
+  virtual void createWidget();
 
-    private:
+private:
+  qtInstancedViewInternals* Internals;
 
-      qtInstancedViewInternals *Internals;
-
-    }; // class
-  }; // namespace attribute
+}; // class
+}; // namespace attribute
 }; // namespace smtk
-
 
 #endif

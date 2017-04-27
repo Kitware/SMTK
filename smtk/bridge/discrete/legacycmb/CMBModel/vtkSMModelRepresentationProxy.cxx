@@ -36,12 +36,12 @@ vtkSMModelRepresentationProxy::~vtkSMModelRepresentationProxy()
 void vtkSMModelRepresentationProxy::SetRepresentation(int repr)
 {
   if (this->Representation != repr)
-    {
+  {
     this->Representation = repr;
 
     vtkSMProxy* subProxy = this->GetSubProxy("ModelRepresentation");
     if (subProxy)
-      {
+    {
       //vtkSMProperty* repProperty =
       //  subProxy->GetProperty("Representation");
       //vtkSMEnumerationDomain* ed = vtkSMEnumerationDomain::SafeDownCast(
@@ -59,24 +59,24 @@ void vtkSMModelRepresentationProxy::SetRepresentation(int repr)
       //  }
       vtkSMPropertyHelper(subProxy, "Representation").Set(this->Representation);
       subProxy->UpdateVTKObjects();
-      }
-    this->Modified();
     }
+    this->Modified();
+  }
   this->InvalidateDataInformation();
 }
 
 void vtkSMModelRepresentationProxy::CreateVTKObjects()
 {
   if (this->ObjectsCreated)
-    {
+  {
     return;
-    }
+  }
   this->Superclass::CreateVTKObjects();
   if (!this->ObjectsCreated)
-    {
+  {
     return;
-    }
-/*
+  }
+  /*
   vtkClientServerStream stream;
   stream << vtkClientServerStream::Invoke
     << VTKOBJECT(this) << "SetCubeAxesRepresentation"

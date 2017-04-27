@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkSplitOperator.h"
 
 #include "vtkDiscreteModel.h"
@@ -29,24 +28,22 @@ vtkSplitOperator::~vtkSplitOperator()
 {
 }
 
-vtkModelEntity* vtkSplitOperator::GetModelEntity(
-  vtkDiscreteModelWrapper* ModelWrapper)
+vtkModelEntity* vtkSplitOperator::GetModelEntity(vtkDiscreteModelWrapper* ModelWrapper)
 {
-  if(!ModelWrapper || !this->GetIsIdSet())
-    {
+  if (!ModelWrapper || !this->GetIsIdSet())
+  {
     return 0;
-    }
+  }
   return this->Superclass::GetModelEntity(ModelWrapper->GetModel());
-
 }
 
 bool vtkSplitOperator::AbleToOperate(vtkDiscreteModelWrapper* ModelWrapper)
 {
-  if(!ModelWrapper)
-    {
+  if (!ModelWrapper)
+  {
     vtkErrorMacro("Passed in a null model.");
     return 0;
-    }
+  }
   return this->Superclass::AbleToOperate(ModelWrapper->GetModel());
 }
 
@@ -54,11 +51,11 @@ void vtkSplitOperator::Operate(vtkDiscreteModelWrapper* ModelWrapper)
 {
   vtkDebugMacro("Operating on a model.");
 
-  if(!this->AbleToOperate(ModelWrapper))
-    {
+  if (!this->AbleToOperate(ModelWrapper))
+  {
     this->OperateSucceeded = 0;
     return;
-    }
+  }
 
   vtkDiscreteModelFace* Face =
     vtkDiscreteModelFace::SafeDownCast(this->GetModelEntity(ModelWrapper));
@@ -69,33 +66,31 @@ void vtkSplitOperator::Operate(vtkDiscreteModelWrapper* ModelWrapper)
   newFaces->SetNumberOfTuples(0);
   this->FaceSplitInfo.clear();
 
-  this->OperateSucceeded =
-    Face->Split(this->GetFeatureAngle(), this->FaceSplitInfo);
-  if(this->OperateSucceeded)
-    {
+  this->OperateSucceeded = Face->Split(this->GetFeatureAngle(), this->FaceSplitInfo);
+  if (this->OperateSucceeded)
+  {
     newFaces->SetNumberOfTuples(this->FaceSplitInfo.size());
     std::set<vtkIdType> newEnts;
-    std::map<vtkIdType, FaceEdgeSplitInfo>::iterator
-      mit=this->FaceSplitInfo.begin();
-    for(vtkIdType i=0;mit!=this->FaceSplitInfo.end();++mit, ++i)
-      {
+    std::map<vtkIdType, FaceEdgeSplitInfo>::iterator mit = this->FaceSplitInfo.begin();
+    for (vtkIdType i = 0; mit != this->FaceSplitInfo.end(); ++mit, ++i)
+    {
       newEnts.insert(mit->first);
       newFaces->SetValue(i, mit->first);
       // Also add edges for new faces if they are available
-      if(Face->GetNumberOfModelEdges())
-        {
-        vtkModelFace* newFace = vtkModelFace::SafeDownCast(
-          ModelWrapper->GetModelEntity(vtkModelFaceType, mit->first));
+      if (Face->GetNumberOfModelEdges())
+      {
+        vtkModelFace* newFace =
+          vtkModelFace::SafeDownCast(ModelWrapper->GetModelEntity(vtkModelFaceType, mit->first));
         newFace->GetModelEdgeIds(newEnts);
         newFace->GetModelVertexIds(newEnts);
-        }
       }
-    if(Face->GetNumberOfModelEdges())
-      {
-      Face->GetModelEdgeIds(newEnts); // There could be new edges for original face
-      }
-    ModelWrapper->AddGeometricEntities(newEnts);
     }
+    if (Face->GetNumberOfModelEdges())
+    {
+      Face->GetModelEdgeIds(newEnts); // There could be new edges for original face
+    }
+    ModelWrapper->AddGeometricEntities(newEnts);
+  }
 
   vtkDebugMacro("Finished operating on a model.");
   return;
@@ -103,6 +98,6 @@ void vtkSplitOperator::Operate(vtkDiscreteModelWrapper* ModelWrapper)
 
 void vtkSplitOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
   os << indent << "OperateSucceeded: " << this->OperateSucceeded << endl;
 }

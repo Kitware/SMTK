@@ -12,18 +12,20 @@
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/Manager.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief Indicate whether the entity has a URL to external geometry.
   *
   */
 bool AuxiliaryGeometry::hasUrl() const
 {
-  if (!this-> hasStringProperties())
-    {
+  if (!this->hasStringProperties())
+  {
     return false;
-    }
+  }
   const StringData& sprops(this->stringProperties());
   return (sprops.find("url") != sprops.end());
 }
@@ -34,16 +36,16 @@ bool AuxiliaryGeometry::hasUrl() const
   */
 std::string AuxiliaryGeometry::url() const
 {
-  if (!this-> hasStringProperties())
-    {
+  if (!this->hasStringProperties())
+  {
     return std::string();
-    }
+  }
   const StringData& sprops(this->stringProperties());
   StringData::const_iterator url = sprops.find("url");
   if (url == sprops.end() || url->second.empty())
-    {
+  {
     return std::string();
-    }
+  }
   return url->second[0];
 }
 
@@ -55,5 +57,5 @@ void AuxiliaryGeometry::setUrl(const std::string& url)
   this->setStringProperty("url", url);
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

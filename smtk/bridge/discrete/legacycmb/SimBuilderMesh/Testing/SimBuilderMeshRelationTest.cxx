@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "cmbFaceMeshHelper.h"
 #include <vtkCMBMeshServer.h>
 #include <vtkCMBModelEdgeMesh.h>
@@ -40,18 +39,16 @@ int Check2DModel(const char* fileName)
 
   vtkDiscreteModel* model = modelWrapper->GetModel();
 
-  vtkSmartPointer<vtkCMBModelReadOperator> reader =
-    vtkSmartPointer<vtkCMBModelReadOperator>::New();
+  vtkSmartPointer<vtkCMBModelReadOperator> reader = vtkSmartPointer<vtkCMBModelReadOperator>::New();
   reader->SetFileName(fileName);
   reader->Operate(modelWrapper);
-  if(reader->GetOperateSucceeded() == false)
-    {
+  if (reader->GetOperateSucceeded() == false)
+  {
     vtkGenericWarningMacro("Could not load file " << fileName);
     return 1;
-    }
+  }
 
-  vtkSmartPointer<vtkCMBMeshServer> mesh =
-    vtkSmartPointer<vtkCMBMeshServer>::New();
+  vtkSmartPointer<vtkCMBMeshServer> mesh = vtkSmartPointer<vtkCMBMeshServer>::New();
   mesh->Initialize(model);
 
   vtkSmartPointer<vtkModelItemIterator> edges;
@@ -62,20 +59,20 @@ int Check2DModel(const char* fileName)
 
   mesh->SetGlobalLength(1);
   mesh->SetGlobalMinimumAngle(20);
-  for(edges->Begin();!edges->IsAtEnd();edges->Next())
-    {
+  for (edges->Begin(); !edges->IsAtEnd(); edges->Next())
+  {
     vtkModelEdge* edge = vtkModelEdge::SafeDownCast(edges->GetCurrentItem());
-    vtkCMBModelEdgeMesh* edgeMesh = vtkCMBModelEdgeMesh::SafeDownCast(
-      mesh->GetModelEntityMesh(edge));
+    vtkCMBModelEdgeMesh* edgeMesh =
+      vtkCMBModelEdgeMesh::SafeDownCast(mesh->GetModelEntityMesh(edge));
     edgeMesh->BuildModelEntityMesh(false);
-    }
-  for(faces->Begin();!faces->IsAtEnd();faces->Next())
-    {
+  }
+  for (faces->Begin(); !faces->IsAtEnd(); faces->Next())
+  {
     vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
-    vtkCMBModelFaceMesh* faceMesh = vtkCMBModelFaceMesh::SafeDownCast(
-      mesh->GetModelEntityMesh(face));
+    vtkCMBModelFaceMesh* faceMesh =
+      vtkCMBModelFaceMesh::SafeDownCast(mesh->GetModelEntityMesh(face));
     faceMesh->BuildModelEntityMesh(false);
-    }
+  }
 
   //lets now confirm each faces model mapping on the mesh
   //We are going to confirm the mapping by verifying the number of
@@ -89,44 +86,35 @@ int Check2DModel(const char* fileName)
   //face 27 == 5 verts, 9 edges, 7 face points
   //face 28 == 3 verts, 7 edges, 3 face points
   //face 29 == 4 verts, 14 edges, 8 face points
-  const vtkIdType correctPointIdSums[4][7]={
-    {0,2,0,12,0,0,10},
-    {0,5,0,9,0,0,7},
-    {0,3,0,7,0,0,3},
-    {0,4,0,14,0,0,8}
-    };
+  const vtkIdType correctPointIdSums[4][7] = { { 0, 2, 0, 12, 0, 0, 10 }, { 0, 5, 0, 9, 0, 0, 7 },
+    { 0, 3, 0, 7, 0, 0, 3 }, { 0, 4, 0, 14, 0, 0, 8 } };
 
-
-  vtkIdType foundPointIdSums[4][7] = {
-    {0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0}
-    };
+  vtkIdType foundPointIdSums[4][7] = { { 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0 } };
 
   //verify points
-  for(faces->Begin();!faces->IsAtEnd();faces->Next())
-    {
+  for (faces->Begin(); !faces->IsAtEnd(); faces->Next())
+  {
     vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
-    vtkCMBModelFaceMesh* faceMesh = vtkCMBModelFaceMesh::SafeDownCast(mesh->GetModelEntityMesh(face));
-    vtkPolyData *meshTmp = faceMesh->GetModelEntityMesh();
+    vtkCMBModelFaceMesh* faceMesh =
+      vtkCMBModelFaceMesh::SafeDownCast(mesh->GetModelEntityMesh(face));
+    vtkPolyData* meshTmp = faceMesh->GetModelEntityMesh();
 
     vtkIdType faceId = face->GetUniquePersistentId() - 26;
-    vtkIntArray *types = vtkIntArray::SafeDownCast(
-      meshTmp->GetPointData()->GetArray(
-      ModelFaceRep::Get2DAnalysisPointModelTypesString()));
-    for (vtkIdType i=0; i < types->GetNumberOfTuples(); ++i)
-      {
+    vtkIntArray* types = vtkIntArray::SafeDownCast(
+      meshTmp->GetPointData()->GetArray(ModelFaceRep::Get2DAnalysisPointModelTypesString()));
+    for (vtkIdType i = 0; i < types->GetNumberOfTuples(); ++i)
+    {
       foundPointIdSums[faceId][types->GetValue(i)]++;
-      }
+    }
 
     //verify this face is correct
     bool valid = false;
-    for (vtkIdType i=0; i < 7; ++i)
-      {
+    for (vtkIdType i = 0; i < 7; ++i)
+    {
       valid = foundPointIdSums[faceId][i] == correctPointIdSums[faceId][i];
-      if ( valid == false )
-        {
+      if (valid == false)
+      {
         cerr << "ERROR: Point Mapping failed on FaceId: " << 26 + faceId << endl;
         cerr << "i is :" << i << endl;
         cerr << "foundCellIdSums: " << foundPointIdSums[faceId][i] << endl;
@@ -134,9 +122,9 @@ int Check2DModel(const char* fileName)
         cerr << endl;
         numberOfErrors++;
         break;
-        }
       }
     }
+  }
 
   //now that the point mapping has been checked we are going to verify the cell
   //mapping. This is going to be done by looking at the edges. Each edge of the triangle
@@ -152,49 +140,46 @@ int Check2DModel(const char* fileName)
   //face 28 == 2 2 edge cell, 6 1 edge cells, 6 face cells
   //face 29 == 1 2 edge cell, 16 1 edge cells, 17 face cells
 
+  const int correctCellIdSums[4][19] = {
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 12, 0, 0, 19 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 10, 0, 0, 14 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 6, 0, 0, 6 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 16, 0, 0, 17 }
+  };
 
-  const int correctCellIdSums[4][19]={
-    {0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,12,0,0,19},
-    {0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,10,0,0,14},
-    {0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,6,0,0,6},
-    {0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,16,0,0,17}
-    };
-
-  int foundCellIdSums[4][19]={
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-    };
+  int foundCellIdSums[4][19] = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } };
 
   //verify cells
-  for(faces->Begin();!faces->IsAtEnd();faces->Next())
-    {
+  for (faces->Begin(); !faces->IsAtEnd(); faces->Next())
+  {
     vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
-    vtkCMBModelFaceMesh* faceMesh = vtkCMBModelFaceMesh::SafeDownCast(mesh->GetModelEntityMesh(face));
-    vtkPolyData *meshTmp = faceMesh->GetModelEntityMesh();
+    vtkCMBModelFaceMesh* faceMesh =
+      vtkCMBModelFaceMesh::SafeDownCast(mesh->GetModelEntityMesh(face));
+    vtkPolyData* meshTmp = faceMesh->GetModelEntityMesh();
 
     vtkIdType faceId = face->GetUniquePersistentId() - 26;
-    vtkIntArray *types = vtkIntArray::SafeDownCast(
-      meshTmp->GetCellData()->GetArray(
-      ModelFaceRep::Get2DAnalysisCellModelTypesString()));
-    for (vtkIdType i=0; i < types->GetNumberOfTuples(); ++i)
+    vtkIntArray* types = vtkIntArray::SafeDownCast(
+      meshTmp->GetCellData()->GetArray(ModelFaceRep::Get2DAnalysisCellModelTypesString()));
+    for (vtkIdType i = 0; i < types->GetNumberOfTuples(); ++i)
+    {
+      int sum = 0;
+      for (vtkIdType j = 0; j < types->GetNumberOfComponents(); ++j)
       {
-      int sum=0;
-      for(vtkIdType j=0; j < types->GetNumberOfComponents(); ++j)
-        {
-        sum += types->GetComponent(i,j);
-        }
-      foundCellIdSums[faceId][sum]++;
+        sum += types->GetComponent(i, j);
       }
+      foundCellIdSums[faceId][sum]++;
+    }
 
     //verify this face is correct
     bool valid = false;
-    for (vtkIdType i=0; i < 19; ++i)
-      {
+    for (vtkIdType i = 0; i < 19; ++i)
+    {
       valid = foundCellIdSums[faceId][i] == correctCellIdSums[faceId][i];
-      if ( valid == false )
-        {
+      if (valid == false)
+      {
         cerr << "ERROR: Cell Mapping failed on FaceId: " << 26 + faceId << endl;
         cerr << "i is :" << i << endl;
         cerr << "foundCellIdSums: " << foundCellIdSums[faceId][i] << endl;
@@ -202,9 +187,9 @@ int Check2DModel(const char* fileName)
         cerr << endl;
         numberOfErrors++;
         break;
-        }
       }
     }
+  }
 
   model->Reset();
   modelWrapper->Delete();
@@ -212,13 +197,13 @@ int Check2DModel(const char* fileName)
   return numberOfErrors;
 }
 
-int main(int argc, char ** argv)
+int main(int argc, char** argv)
 {
-  if(argc != 2)
-    {
+  if (argc != 2)
+  {
     vtkGenericWarningMacro("Not enough arguments -- need to specify a 2D CMB model file.");
     return 1;
-    }
+  }
   int errors = Check2DModel(argv[1]);
   //errors += Check3DModel(argv[2]);
   std::cout << "Finished with " << errors << " errors.\n";

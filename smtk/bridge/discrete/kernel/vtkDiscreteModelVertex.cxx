@@ -25,10 +25,10 @@ vtkInformationKeyMacro(vtkDiscreteModelVertex, POINTID, IdType);
 vtkDiscreteModelVertex* vtkDiscreteModelVertex::New()
 {
   vtkObject* ret = vtkObjectFactory::CreateInstance("vtkDiscreteModelVertex");
-  if(ret)
-    {
+  if (ret)
+  {
     return static_cast<vtkDiscreteModelVertex*>(ret);
-    }
+  }
   return new vtkDiscreteModelVertex;
 }
 
@@ -44,20 +44,20 @@ vtkDiscreteModelVertex::~vtkDiscreteModelVertex()
 bool vtkDiscreteModelVertex::GetPoint(double* xyz)
 {
   vtkDiscreteModel* model = vtkDiscreteModel::SafeDownCast(this->GetModel());
-  if(model && model->HasValidMesh())
-    {
+  if (model && model->HasValidMesh())
+  {
     const DiscreteMesh& mesh = model->GetMesh();
     vtkIdType pointId = this->GetPointId();
-    if(pointId >= 0 && pointId < mesh.GetNumberOfPoints())
-      {
+    if (pointId >= 0 && pointId < mesh.GetNumberOfPoints())
+    {
       mesh.GetPoint(pointId, xyz);
       return true;
-      }
-    else
-      {
-      return false;
-      }
     }
+    else
+    {
+      return false;
+    }
+  }
   return false;
 }
 
@@ -68,27 +68,27 @@ vtkIdType vtkDiscreteModelVertex::GetPointId()
 
 void vtkDiscreteModelVertex::SetPointId(vtkIdType pointId)
 {
-  if(pointId != this->GetPointId())
-    {
+  if (pointId != this->GetPointId())
+  {
     this->GetProperties()->Set(POINTID(), pointId);
     //this->CreateGeometry(pointId);
-    }
+  }
 }
 
 void vtkDiscreteModelVertex::CreateGeometry()
 {
   // if already has geometry, just return;
-  if(this->GetGeometry())
-    {
+  if (this->GetGeometry())
+  {
     return;
-    }
-  vtkDiscreteModel* model  = vtkDiscreteModel::SafeDownCast(this->GetModel());
-  if(model->HasValidMesh())
-    {
+  }
+  vtkDiscreteModel* model = vtkDiscreteModel::SafeDownCast(this->GetModel());
+  if (model->HasValidMesh())
+  {
     const DiscreteMesh& mesh = model->GetMesh();
     vtkIdType pointId = this->GetPointId();
-    if(pointId >= 0 && pointId < mesh.GetNumberOfPoints())
-      {
+    if (pointId >= 0 && pointId < mesh.GetNumberOfPoints())
+    {
       vtkPolyData* poly = vtkPolyData::New();
       poly->SetPoints(mesh.SharePointsPtr());
       poly->Allocate(1);
@@ -96,24 +96,24 @@ void vtkDiscreteModelVertex::CreateGeometry()
 
       this->SetGeometry(poly);
 
-      if(!this->GetDisplayProperty())
-        {
+      if (!this->GetDisplayProperty())
+      {
         this->InitDefaultDisplayProperty();
-        }
+      }
       vtkProperty* displayProp = this->GetDisplayProperty();
       displayProp->SetPointSize(8.0);
       displayProp->SetColor(0.0, 1.0, 0.0);
       this->SetColor(0.0, 1.0, 0.0, 1.0);
       poly->Delete();
-      }
-    else
-      {
-      vtkWarningMacro("Bad point Id for model vertex.");
-      }
     }
+    else
+    {
+      vtkWarningMacro("Bad point Id for model vertex.");
+    }
+  }
 }
 
 void vtkDiscreteModelVertex::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }

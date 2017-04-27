@@ -17,36 +17,35 @@
 #include "smtk/mesh/Handle.h"
 #include "smtk/mesh/QueryTypes.h"
 
-namespace smtk {
-namespace mesh {
+namespace smtk
+{
+namespace mesh
+{
 
 //forward declare
 class PointLocator;
 
 class SMTKCORE_EXPORT PointSet
 {
-  friend SMTKCORE_EXPORT PointSet set_intersect( const PointSet& a, const PointSet& b);
-  friend SMTKCORE_EXPORT PointSet set_difference( const PointSet& a, const PointSet& b);
-  friend SMTKCORE_EXPORT PointSet set_union( const PointSet& a, const PointSet& b );
-  friend SMTKCORE_EXPORT void for_each( const PointSet& a, PointForEach& filter);
+  friend SMTKCORE_EXPORT PointSet set_intersect(const PointSet& a, const PointSet& b);
+  friend SMTKCORE_EXPORT PointSet set_difference(const PointSet& a, const PointSet& b);
+  friend SMTKCORE_EXPORT PointSet set_union(const PointSet& a, const PointSet& b);
+  friend SMTKCORE_EXPORT void for_each(const PointSet& a, PointForEach& filter);
+
 public:
-  PointSet(const smtk::mesh::CollectionPtr& parent,
-           const smtk::mesh::HandleRange& points);
-  PointSet(const smtk::mesh::ConstCollectionPtr& parent,
-           const smtk::mesh::HandleRange& points);
+  PointSet(const smtk::mesh::CollectionPtr& parent, const smtk::mesh::HandleRange& points);
+  PointSet(const smtk::mesh::ConstCollectionPtr& parent, const smtk::mesh::HandleRange& points);
 
   //construct a PointSet that represents an arbitrary unknown subset of points
   //that are children of the handle via an explicit vector of point ids. While
   //this method is inefficient, it is useful for the python bindings where
   //<points> is converted to a list.
-  PointSet(const smtk::mesh::CollectionPtr& parent,
-           const std::vector<smtk::mesh::Handle>& points);
+  PointSet(const smtk::mesh::CollectionPtr& parent, const std::vector<smtk::mesh::Handle>& points);
 
   //construct a PointSet that represents an arbitrary unknown subset of points
   //that are children of the handle via an explicit set of point ids. This
   //constructor is preferred over the variant that takes a std::vector.
-  PointSet(const smtk::mesh::CollectionPtr& parent,
-           const std::set<smtk::mesh::Handle>& points);
+  PointSet(const smtk::mesh::CollectionPtr& parent, const std::set<smtk::mesh::Handle>& points);
 
   //Copy Constructor required for rule of 3
   PointSet(const PointSet& other);
@@ -55,9 +54,9 @@ public:
   ~PointSet();
 
   //Copy assignment operator required for rule of 3
-  PointSet& operator= (const PointSet& other);
-  bool operator==( const PointSet& other ) const;
-  bool operator!=( const PointSet& other ) const;
+  PointSet& operator=(const PointSet& other);
+  bool operator==(const PointSet& other) const;
+  bool operator!=(const PointSet& other) const;
 
   bool is_empty() const;
   std::size_t size() const;
@@ -66,16 +65,16 @@ public:
   std::size_t numberOfPoints() const;
 
   //returns true if the point set contains a given point id
-  bool contains( const smtk::mesh::Handle& pointId ) const;
+  bool contains(const smtk::mesh::Handle& pointId) const;
 
   //returns the index in this point set for the given point id
-  std::size_t find( const smtk::mesh::Handle& pointId ) const;
+  std::size_t find(const smtk::mesh::Handle& pointId) const;
 
   //Get all the point coordinates and store them in the passed in std::vector
-  bool get(std::vector<double>& xyz ) const;
+  bool get(std::vector<double>& xyz) const;
 
   //Set all the point coordinates to the values from the input std::vector
-  bool set(const std::vector<double>& xyz ) const;
+  bool set(const std::vector<double>& xyz) const;
 
 #ifndef SHIBOKEN_SKIP
   // Skipping the following:
@@ -126,25 +125,24 @@ private:
 //coordinates but different id's are considered to not intersect
 //Note: If the points come from different collections the result will
 //always be empty
-SMTKCORE_EXPORT PointSet set_intersect( const PointSet& a, const PointSet& b);
+SMTKCORE_EXPORT PointSet set_intersect(const PointSet& a, const PointSet& b);
 
 //subtract points b from a, placing the results in the return points object.
 //This uses a point id based comparison, so points that have duplicate
 //coordinates but different id's are considered to not intersect
 //Note: If the points come from different collections the result will
 //always be empty
-SMTKCORE_EXPORT PointSet set_difference( const PointSet& a, const PointSet& b);
+SMTKCORE_EXPORT PointSet set_difference(const PointSet& a, const PointSet& b);
 
 //union two set of points, placing the results in the return points object.
 //This uses a point id based comparison, so points that have duplicate
 //coordinates but different id's are considered to not intersect
 //Note: If the points come from different collections the result will
 //always be empty
-SMTKCORE_EXPORT PointSet set_union( const PointSet& a, const PointSet& b );
+SMTKCORE_EXPORT PointSet set_union(const PointSet& a, const PointSet& b);
 
 //apply a for_each point operator on each point in a container.
-SMTKCORE_EXPORT void for_each( const PointSet& a, PointForEach& filter);
-
+SMTKCORE_EXPORT void for_each(const PointSet& a, PointForEach& filter);
 }
 }
 

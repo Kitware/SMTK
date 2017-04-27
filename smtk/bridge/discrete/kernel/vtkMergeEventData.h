@@ -22,15 +22,14 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 
-
 class vtkIdTypeArray;
 class vtkDiscreteModelGeometricEntity;
 
 class VTKSMTKDISCRETEMODEL_EXPORT vtkMergeEventData : public vtkObject
 {
 public:
-  static vtkMergeEventData * New();
-  vtkTypeMacro(vtkMergeEventData,vtkObject);
+  static vtkMergeEventData* New();
+  vtkTypeMacro(vtkMergeEventData, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -57,8 +56,8 @@ private:
   vtkDiscreteModelGeometricEntity* TargetEntity;
   vtkIdTypeArray* LowerDimensionalIds;
 
-  vtkMergeEventData(const vtkMergeEventData&);  // Not implemented.
-  void operator=(const vtkMergeEventData&);  // Not implemented.
+  vtkMergeEventData(const vtkMergeEventData&); // Not implemented.
+  void operator=(const vtkMergeEventData&);    // Not implemented.
 };
 
 #endif

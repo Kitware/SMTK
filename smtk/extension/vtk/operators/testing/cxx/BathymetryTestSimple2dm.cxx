@@ -75,21 +75,19 @@ int main(int argc, char* argv[])
   // read the data
   smtk::model::OperatorPtr readOp = session->op("import");
   if (!readOp)
-    {
+  {
     std::cerr << "No import operator\n";
     return 1;
-    }
+  }
 
   readOp->specification()->findFile("filename")->setValue(std::string(argv[1]));
   std::cout << "Importing " << argv[1] << "\n";
   smtk::model::OperatorResult opresult = readOp->operate();
-  if (
-    opresult->findInt("outcome")->value() !=
-    smtk::model::OPERATION_SUCCEEDED)
-    {
+  if (opresult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  {
     std::cerr << "Read operator failed\n";
     return 1;
-    }
+  }
   // assign model value
   smtk::model::Model model2dm = opresult->findModelEntity("created")->value();
   manager->assignDefaultNames(); // should force transcription of every entity, but doesn't yet.
@@ -106,25 +104,23 @@ int main(int argc, char* argv[])
   aux_geOp->specification()->findFile("url")->setValue(std::string(argv[2]));
   aux_geOp->associateEntity(model2dm);
   smtk::model::OperatorResult aux_geOpresult = aux_geOp->operate();
-  if (
-    aux_geOpresult->findInt("outcome")->value() !=
-        smtk::model::OPERATION_SUCCEEDED)
+  if (aux_geOpresult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
   {
     std::cerr << "Add auxiliary geometry failed!\n";
     return 1;
   }
 
   smtk::model::AuxiliaryGeometry auxGo2dm = aux_geOpresult->findModelEntity("created")->value();
-  std::cout << "After aux_geo op, the url inside is: "<<auxGo2dm.url()<<std::endl;
+  std::cout << "After aux_geo op, the url inside is: " << auxGo2dm.url() << std::endl;
   if (!auxGo2dm.isValid())
   {
-    std::cerr<< "Auxiliary geometry is not valid!\n";
+    std::cerr << "Auxiliary geometry is not valid!\n";
     return 1;
   }
 
   // create the bathymetry operator
-  std::cout <<  "Creating apply bathymetry operator\n";
-  smtk::model::OperatorPtr bathyOperator =  session->op("apply bathymetry");
+  std::cout << "Creating apply bathymetry operator\n";
+  smtk::model::OperatorPtr bathyOperator = session->op("apply bathymetry");
   if (!bathyOperator)
   {
     std::cerr << "No apply bathymetry!\n";
@@ -132,29 +128,31 @@ int main(int argc, char* argv[])
   }
   // Check the optypeItem value
 
-  std::cout<<"optypeItem initial value is: "<< bathyOperator->specification()->findString("operation")->value() << std::endl;
+  std::cout << "optypeItem initial value is: "
+            << bathyOperator->specification()->findString("operation")->value() << std::endl;
 
   // set input values for bathymetry filter
   bathyOperator->specification()->findModelEntity("auxiliary geometry")->setValue(auxGo2dm);
   bathyOperator->specification()->findDouble("averaging elevation radius")->setValue(0.05);
 
   smtk::model::OperatorResult bathyResult = bathyOperator->operate();
-  if (bathyResult->findInt("outcome")->value() !=
-    smtk::model::OPERATION_SUCCEEDED)
+  if (bathyResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
   {
-    std::cerr <<"Apply bathymetry operator failed\n";
+    std::cerr << "Apply bathymetry operator failed\n";
     return 1;
   }
 
   // Remove the bathymetry operator test
   // enable them when we fix set dafault index for discrete  sessioni
   bathyOperator->specification()->findString("operation")->setValue("Remove Bathymetry");
-  bathyOperator->specification()->findModelEntity("model")->setValue(model2dm);  std::cout<<"optypeItem value in RB is: "<< bathyOperator->specification()->findString("operation")->value() << std::endl;
+  bathyOperator->specification()->findModelEntity("model")->setValue(model2dm);
+  std::cout << "optypeItem value in RB is: "
+            << bathyOperator->specification()->findString("operation")->value() << std::endl;
   smtk::model::OperatorResult RmBathyResult = bathyOperator->operate();
 
   if (RmBathyResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
   {
-    std::cerr<< "Remove Bathymetry operator failed\n";
+    std::cerr << "Remove Bathymetry operator failed\n";
     return 1;
   }
 
@@ -164,21 +162,22 @@ int main(int argc, char* argv[])
   vtkNew<vtkRenderer> ren;
   vtkNew<vtkRenderWindow> win;
   vtkNew<vtkCamera> camera;
-  camera->SetPosition(20,0,20);
-  camera->SetFocalPoint(10,10,-10);
+  camera->SetPosition(20, 0, 20);
+  camera->SetFocalPoint(10, 10, -10);
   src->SetModelManager(manager);
   win->SetMultiSamples(0);
   src->AllowNormalGenerationOn();
   map->SetInputConnection(src->GetOutputPort());
   act->SetMapper(map.GetPointer());
-  act->SetScale(100,100,1);
+  act->SetScale(100, 100, 1);
 
   win->AddRenderer(ren.GetPointer());
   ren->AddActor(act.GetPointer());
   ren->SetBackground(0.5, 0.5, 1);
   ren->SetActiveCamera(camera.GetPointer());
   vtkRenderWindowInteractor* iac = win->MakeRenderWindowInteractor();
-  vtkInteractorStyleSwitch::SafeDownCast(iac->GetInteractorStyle())->SetCurrentStyleToTrackballCamera();
+  vtkInteractorStyleSwitch::SafeDownCast(iac->GetInteractorStyle())
+    ->SetCurrentStyleToTrackballCamera();
   win->SetInteractor(iac);
 
   win->Render();

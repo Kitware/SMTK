@@ -15,18 +15,20 @@
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Volume.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 smtk::model::Edges Face::edges() const
 {
   Edges result;
   EntityRefs all = this->boundaryEntities(/*dim = */ 1);
   for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
-    {
+  {
     if (it->isEdge())
       result.push_back(*it);
-    }
+  }
   return result;
 }
 
@@ -35,10 +37,10 @@ smtk::model::Volumes Face::volumes() const
   Volumes result;
   EntityRefs all = this->bordantEntities(/*dim = */ 3);
   for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
-    {
+  {
     if (it->isVolume())
       result.push_back(*it);
-    }
+  }
   return result;
 }
 
@@ -49,11 +51,8 @@ smtk::model::Volumes Face::volumes() const
 FaceUse Face::negativeUse() const
 {
   ManagerPtr mgr = this->manager();
-  std::set<int> arr = mgr->findCellHasUsesWithOrientation(
-    this->m_entity, NEGATIVE);
-  return arr.empty() ?
-    FaceUse() :
-    relationFromArrangement(HAS_USE, *arr.begin(), 0).as<FaceUse>();
+  std::set<int> arr = mgr->findCellHasUsesWithOrientation(this->m_entity, NEGATIVE);
+  return arr.empty() ? FaceUse() : relationFromArrangement(HAS_USE, *arr.begin(), 0).as<FaceUse>();
 }
 
 /**\brief Return the face-use with its sense codirectional with the natural normal.
@@ -63,11 +62,8 @@ FaceUse Face::negativeUse() const
 FaceUse Face::positiveUse() const
 {
   ManagerPtr mgr = this->manager();
-  std::set<int> arr = mgr->findCellHasUsesWithOrientation(
-    this->m_entity, POSITIVE);
-  return arr.empty() ?
-    FaceUse() :
-    relationFromArrangement(HAS_USE, *arr.begin(), 0).as<FaceUse>();
+  std::set<int> arr = mgr->findCellHasUsesWithOrientation(this->m_entity, POSITIVE);
+  return arr.empty() ? FaceUse() : relationFromArrangement(HAS_USE, *arr.begin(), 0).as<FaceUse>();
 }
 
 /**\brief Add or replace any existing face use with the given use-record \a u.
@@ -77,10 +73,11 @@ void Face::setFaceUse(Orientation orientation, const FaceUse& u)
 {
   smtk::model::Manager::Ptr mgr = this->manager();
   if (this->isValid())
-    {
-    mgr->findCreateOrReplaceCellUseOfSenseAndOrientation(this->m_entity, 0, orientation, u.entity());
-    }
+  {
+    mgr->findCreateOrReplaceCellUseOfSenseAndOrientation(
+      this->m_entity, 0, orientation, u.entity());
+  }
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

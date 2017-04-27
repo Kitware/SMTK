@@ -18,14 +18,17 @@
 #include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkObject.h"
 #include "vtkSmartPointer.h" //needed for classification
-#include <map> //needed for classification
+#include <map>               //needed for classification
 
-namespace smtk {
-  namespace bridge {
-    namespace discrete {
-      class Session;
-    }
-  }
+namespace smtk
+{
+namespace bridge
+{
+namespace discrete
+{
+class Session;
+}
+}
 }
 
 class vtkCharArray;
@@ -41,7 +44,7 @@ class vtkPolyData;
 class SMTKDISCRETESESSION_EXPORT vtkCMBParserBase : public vtkObject
 {
 public:
-  vtkTypeMacro(vtkCMBParserBase,vtkObject);
+  vtkTypeMacro(vtkCMBParserBase, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -52,8 +55,8 @@ public:
   // different runs so that entity-attribute associations, which is recorded with UUIDs, will
   // be consistent, so is color-by entity UUIDs.
   // NOTE: Currently only vtkCMBParserV5 is using the discrete \a session
-  virtual bool Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
-                     smtk::bridge::discrete::Session* session) = 0;
+  virtual bool Parse(
+    vtkPolyData* MasterPoly, vtkDiscreteModel* Model, smtk::bridge::discrete::Session* session) = 0;
 
   // Description:
   // Function to set the geometry of the model so that every parser
@@ -63,8 +66,7 @@ public:
   // Description:
   // Function to set the cells of the model geometric entity so that
   // every parser does not need to be specified as a friend class of vtkDiscreteModel.
-  bool AddCellsToGeometry(vtkDiscreteModelGeometricEntity* Entity,
-                           vtkIdList* MasterCellIds);
+  bool AddCellsToGeometry(vtkDiscreteModelGeometricEntity* Entity, vtkIdList* MasterCellIds);
 
   // Description:
   // Function to set the unique persistent Id of an entity so that every parser
@@ -92,9 +94,8 @@ public:
   // have the full mapping information.  We are
   // unsure what type of array we are getting from the reader
   // so we will convert it internally to a vtkIdTypeArray.
-  void SetAnalysisGridInfo(
-    vtkDiscreteModel* model, vtkDataArray* pointMapArray, vtkDataArray* cellMapArray,
-    vtkCharArray* canonicalSideArray);
+  void SetAnalysisGridInfo(vtkDiscreteModel* model, vtkDataArray* pointMapArray,
+    vtkDataArray* cellMapArray, vtkCharArray* canonicalSideArray);
 
 protected:
   vtkCMBParserBase();
@@ -105,13 +106,12 @@ protected:
   // or faces, and return a mapping from model item id to cell or edge ids
   typedef std::map<vtkIdType, vtkSmartPointer<vtkIdList> > CellToModelType;
   typedef CellToModelType::iterator CellToModelIterator;
-  void SeparateCellClassification(vtkDiscreteModel* model,
-                                  vtkIdTypeArray* cellClassification,
-                                   vtkCMBParserBase::CellToModelType& cellToModelMap) const;
+  void SeparateCellClassification(vtkDiscreteModel* model, vtkIdTypeArray* cellClassification,
+    vtkCMBParserBase::CellToModelType& cellToModelMap) const;
 
 private:
-  vtkCMBParserBase(const vtkCMBParserBase&);  // Not implemented.
-  void operator=(const vtkCMBParserBase&);  // Not implemented.
+  vtkCMBParserBase(const vtkCMBParserBase&); // Not implemented.
+  void operator=(const vtkCMBParserBase&);   // Not implemented.
 };
 
 #endif

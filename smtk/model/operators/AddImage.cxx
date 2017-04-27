@@ -12,14 +12,15 @@
 
 #include "smtk/model/AddImage_xml.h"
 
-namespace smtk{
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 smtk::model::OperatorResult AddImage::operateInternal()
 {
   smtk::model::OperatorResult res = this->AddAuxiliaryGeometry::operateInternal();
-  smtk::attribute::ModelEntityItemPtr created =
-    res->findModelEntity("created");
+  smtk::attribute::ModelEntityItemPtr created = res->findModelEntity("created");
   for (size_t i = 0; i < created->numberOfValues(); ++i)
   {
     smtk::model::Entity* entRec;
@@ -31,14 +32,8 @@ smtk::model::OperatorResult AddImage::operateInternal()
   }
   return res;
 }
-
-  }
+}
 }
 
-smtkImplementsModelOperator(
-  SMTKCORE_EXPORT,
-  smtk::model::AddImage,
-  add_image,
-  "add image",
-  AddImage_xml,
-  smtk::model::Session);
+smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::model::AddImage, add_image, "add image",
+  AddImage_xml, smtk::model::Session);

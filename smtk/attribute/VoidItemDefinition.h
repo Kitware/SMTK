@@ -21,31 +21,31 @@
 
 namespace smtk
 {
-  namespace attribute
+namespace attribute
+{
+class SMTKCORE_EXPORT VoidItemDefinition : public ItemDefinition
+{
+public:
+  smtkTypeMacro(VoidItemDefinition);
+  static smtk::attribute::VoidItemDefinitionPtr New(const std::string& myName)
   {
-    class SMTKCORE_EXPORT VoidItemDefinition:
-      public ItemDefinition
-    {
-    public:
-      smtkTypeMacro(VoidItemDefinition);
-      static smtk::attribute::VoidItemDefinitionPtr New(const std::string &myName)
-      { return smtk::attribute::VoidItemDefinitionPtr(new VoidItemDefinition(myName));}
-
-      virtual ~VoidItemDefinition();
-      virtual Item::Type type() const;
-      virtual smtk::attribute::ItemPtr buildItem(Attribute *owningAttribute,
-                                                int itemPosition) const;
-      virtual smtk::attribute::ItemPtr buildItem(Item *owningItem,
-                                                int position,
-                                                int subGroupPosition) const;
-      virtual smtk::attribute::ItemDefinitionPtr
-        createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const;
-    protected:
-      VoidItemDefinition(const std::string &myName);
-    private:
-
-    };
+    return smtk::attribute::VoidItemDefinitionPtr(new VoidItemDefinition(myName));
   }
+
+  virtual ~VoidItemDefinition();
+  virtual Item::Type type() const;
+  virtual smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const;
+  virtual smtk::attribute::ItemPtr buildItem(
+    Item* owningItem, int position, int subGroupPosition) const;
+  virtual smtk::attribute::ItemDefinitionPtr createCopy(
+    smtk::attribute::ItemDefinition::CopyInfo& info) const;
+
+protected:
+  VoidItemDefinition(const std::string& myName);
+
+private:
+};
+}
 }
 
 #endif /* __smtk_attribute_VoidItemDefinition_h */

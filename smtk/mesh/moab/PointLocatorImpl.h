@@ -11,7 +11,6 @@
 #ifndef __smtk_mesh_moab_PointLocatorImpl_h
 #define __smtk_mesh_moab_PointLocatorImpl_h
 
-
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
@@ -23,35 +22,30 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include "moab/AdaptiveKDTree.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
 
-namespace smtk {
-namespace mesh {
-namespace moab {
+namespace smtk
+{
+namespace mesh
+{
+namespace moab
+{
 
 class SMTKCORE_EXPORT PointLocatorImpl : public smtk::mesh::PointLocatorImpl
 {
 public:
+  PointLocatorImpl(::moab::Interface* interface, const smtk::mesh::HandleRange& points);
 
-  PointLocatorImpl(::moab::Interface* interface,
-                   const smtk::mesh::HandleRange& points);
+  PointLocatorImpl(::moab::Interface* interface, const double* const xyzs, std::size_t numPoints,
+    bool ignoreZValues);
 
-  PointLocatorImpl(::moab::Interface* interface,
-                   const double* const xyzs,
-                   std::size_t numPoints,
-                   bool ignoreZValues);
-
-  PointLocatorImpl(::moab::Interface* interface,
-                   const float* const xyzs,
-                   std::size_t numPoints,
-                   bool ignoreZValues);
-
+  PointLocatorImpl(::moab::Interface* interface, const float* const xyzs, std::size_t numPoints,
+    bool ignoreZValues);
 
   ~PointLocatorImpl();
 
   smtk::mesh::HandleRange range() const;
 
   //returns the set of points that are within the radius of a single point
-  void locatePointsWithinRadius(double x, double y, double z, double radius,
-                                Results& results);
+  void locatePointsWithinRadius(double x, double y, double z, double radius, Results& results);
 
 private:
   ::moab::Interface* m_interface;
@@ -59,7 +53,6 @@ private:
   bool m_deletePoints;
   ::moab::AdaptiveKDTree m_tree;
 };
-
 }
 }
 }

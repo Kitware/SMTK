@@ -10,8 +10,10 @@
 #include "smtk/model/MeshListPhrase.h"
 #include "smtk/model/EntityPhrase.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 MeshListPhrase::MeshListPhrase()
 {
@@ -24,13 +26,11 @@ MeshListPhrase::Ptr MeshListPhrase::setup(
   const std::vector<smtk::mesh::MeshSet>& meshes, DescriptivePhrase::Ptr parnt)
 {
   this->DescriptivePhrase::setup(MESH_LIST, parnt);
-  for (
-    std::vector<smtk::mesh::MeshSet>::const_iterator it = meshes.begin();
-    it != meshes.end();
-    ++it)
-    {
+  for (std::vector<smtk::mesh::MeshSet>::const_iterator it = meshes.begin(); it != meshes.end();
+       ++it)
+  {
     this->m_meshes.push_back(*it);
-    }
+  }
   return shared_from_this();
 }
 
@@ -38,13 +38,11 @@ MeshListPhrase::Ptr MeshListPhrase::setup(
   const std::vector<smtk::mesh::CollectionPtr>& collections, DescriptivePhrase::Ptr parnt)
 {
   this->DescriptivePhrase::setup(MESH_LIST, parnt);
-  for (
-    std::vector<smtk::mesh::CollectionPtr>::const_iterator it = collections.begin();
-    it != collections.end();
-    ++it)
-    {
+  for (std::vector<smtk::mesh::CollectionPtr>::const_iterator it = collections.begin();
+       it != collections.end(); ++it)
+  {
     this->m_collections.push_back(*it);
-    }
+  }
   return shared_from_this();
 }
 
@@ -52,13 +50,12 @@ MeshListPhrase::Ptr MeshListPhrase::setup(
 std::string MeshListPhrase::title()
 {
   std::ostringstream message;
-  std::size_t sz = this->m_collections.size() > 0 ?
-    this->m_collections.size() : this->m_meshes.size();
+  std::size_t sz =
+    this->m_collections.size() > 0 ? this->m_collections.size() : this->m_meshes.size();
   message << sz << " ";
 
-  std::string strDesc = this->m_collections.size() > 0 ?
-    "collections" : "meshsets";
-  
+  std::string strDesc = this->m_collections.size() > 0 ? "collections" : "meshsets";
+
   this->buildSubphrases();
   return message.str();
 }
@@ -79,5 +76,5 @@ std::vector<smtk::mesh::CollectionPtr> MeshListPhrase::relatedCollections() cons
   return this->m_collections;
 }
 
-  } // model namespace
+} // model namespace
 } // smtk namespace

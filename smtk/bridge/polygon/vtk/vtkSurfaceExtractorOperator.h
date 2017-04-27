@@ -23,8 +23,8 @@ class vtkPolyData;
 class VTKPOLYGONOPERATORSEXT_EXPORT vtkSurfaceExtractorOperator : public vtkSMTKOperator
 {
 public:
-  static vtkSurfaceExtractorOperator * New();
-  vtkTypeMacro(vtkSurfaceExtractorOperator,vtkSMTKOperator);
+  static vtkSurfaceExtractorOperator* New();
+  vtkTypeMacro(vtkSurfaceExtractorOperator, vtkSMTKOperator);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   //Description:
@@ -37,8 +37,8 @@ protected:
   virtual ~vtkSurfaceExtractorOperator();
 
 private:
-  vtkSurfaceExtractorOperator(const vtkSurfaceExtractorOperator&);  // Not implemented.
-  void operator=(const vtkSurfaceExtractorOperator&);  // Not implemented.
+  vtkSurfaceExtractorOperator(const vtkSurfaceExtractorOperator&); // Not implemented.
+  void operator=(const vtkSurfaceExtractorOperator&);              // Not implemented.
 };
 
 #endif

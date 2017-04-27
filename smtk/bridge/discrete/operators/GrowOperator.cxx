@@ -43,10 +43,13 @@
 using namespace smtk::model;
 using namespace smtk::attribute;
 
-namespace smtk {
-  namespace bridge {
+namespace smtk
+{
+namespace bridge
+{
 
-  namespace discrete {
+namespace discrete
+{
 
 GrowOperator::GrowOperator()
 {
@@ -57,48 +60,45 @@ bool GrowOperator::ableToOperate()
   smtk::model::Model model;
   return
     // The SMTK model must be valid
-    (model = this->specification()->findModelEntity("model")->value().as<smtk::model::Model>()).isValid() &&
+    (model = this->specification()->findModelEntity("model")->value().as<smtk::model::Model>())
+      .isValid() &&
     // The CMB model must exist:
     this->discreteSession()->findModelEntity(model.entity()) &&
     // There must be a MeshEntity for input selection
-    this->specification()->findMeshSelection("selection")
-    ;
+    this->specification()->findMeshSelection("selection");
 }
 
 bool GrowOperator::writeSelectionResult(
-  const std::map<smtk::common::UUID, std::set<int> >& cachedSelection,
-  OperatorResult& result)
+  const std::map<smtk::common::UUID, std::set<int> >& cachedSelection, OperatorResult& result)
 {
-  smtk::attribute::MeshSelectionItem::Ptr outSelectionItem =
-    result->findMeshSelection("selection");
-  if(!outSelectionItem)
-    {
+  smtk::attribute::MeshSelectionItem::Ptr outSelectionItem = result->findMeshSelection("selection");
+  if (!outSelectionItem)
+  {
     std::cerr << "ERROR: no \"selection\" item to write to!" << std::endl;
     return false;
-    }
+  }
 
   smtk::attribute::MeshSelectionItem::const_sel_map_it mapIt;
-  for(mapIt = cachedSelection.begin(); mapIt != cachedSelection.end(); ++mapIt)
-    {
+  for (mapIt = cachedSelection.begin(); mapIt != cachedSelection.end(); ++mapIt)
+  {
     outSelectionItem->setValues(mapIt->first, mapIt->second);
-    }
+  }
   return true;
 }
 
 void GrowOperator::writeSplitResult(vtkSelectionSplitOperator* splitOp,
-  vtkDiscreteModelWrapper* modelWrapper,
-  Session* opsession, OperatorResult& result)
+  vtkDiscreteModelWrapper* modelWrapper, Session* opsession, OperatorResult& result)
 {
   // Two comoponents array [sourceFaceId, newFaceId],
   // One sourceFace could have been split into multiple new faces
   vtkIdTypeArray* splitPairArray = splitOp->GetModifiedPairIDs();
-  std::map<vtkIdType, std::set<vtkIdType> >splitFaces;
+  std::map<vtkIdType, std::set<vtkIdType> > splitFaces;
   smtk::common::UUID faceUUID;
-  for(vtkIdType i=0; i < splitPairArray->GetNumberOfTuples(); ++i)
-    {
-    vtkIdType origId = splitPairArray->GetValue(2*i);
-    splitFaces[origId].insert(splitPairArray->GetValue(2*i+1));
-    }
+  for (vtkIdType i = 0; i < splitPairArray->GetNumberOfTuples(); ++i)
+  {
+    vtkIdType origId = splitPairArray->GetValue(2 * i);
+    splitFaces[origId].insert(splitPairArray->GetValue(2 * i + 1));
+  }
 
   smtk::model::ManagerPtr store = this->manager();
   // Adding "created" to the "created" item, as a convenient method
@@ -108,12 +108,11 @@ void GrowOperator::writeSplitResult(vtkSelectionSplitOperator* splitOp,
   smtk::model::EntityRefArray newEnts;
 
   std::map<vtkIdType, std::set<vtkIdType> >::const_iterator it;
-  for(it = splitFaces.begin(); it != splitFaces.end(); ++it)
-    {
-    vtkModelFace* origFace = vtkModelFace::SafeDownCast(
-      modelWrapper->GetModelEntity(
-      vtkModelFaceType, it->first));
-    if(!origFace)
+  for (it = splitFaces.begin(); it != splitFaces.end(); ++it)
+  {
+    vtkModelFace* origFace =
+      vtkModelFace::SafeDownCast(modelWrapper->GetModelEntity(vtkModelFaceType, it->first));
+    if (!origFace)
       continue;
 
     faceUUID = opsession->findOrSetEntityUUID(origFace);
@@ -126,61 +125,56 @@ void GrowOperator::writeSplitResult(vtkSelectionSplitOperator* splitOp,
     faceUUID = opsession->findOrSetEntityUUID(origFace);
     modEnts.push_back(smtk::model::EntityRef(store, faceUUID)); // original face
 
-    for(std::set<vtkIdType>::const_iterator fit = it->second.begin();
-        fit != it->second.end(); ++fit)
-      {
-      vtkModelFace* face = dynamic_cast<vtkModelFace*>(
-        modelWrapper->GetModelEntity(vtkModelFaceType, *fit));
+    for (std::set<vtkIdType>::const_iterator fit = it->second.begin(); fit != it->second.end();
+         ++fit)
+    {
+      vtkModelFace* face =
+        dynamic_cast<vtkModelFace*>(modelWrapper->GetModelEntity(vtkModelFaceType, *fit));
       faceUUID = opsession->findOrSetEntityUUID(face);
       newEnts.push_back(smtk::model::EntityRef(store, faceUUID)); // new face
-      }
-
     }
+  }
 
   // Return the created and/or modified faces.
-  if(newEnts.size() > 0)
+  if (newEnts.size() > 0)
     this->addEntitiesToResult(result, newEnts, CREATED);
-  if(modEnts.size() > 0)
+  if (modEnts.size() > 0)
     this->addEntitiesToResult(result, modEnts, MODIFIED);
-
 }
 
 void GrowOperator::convertToGrowSelection(
-  const smtk::attribute::MeshSelectionItemPtr& inSelectionItem,
-  vtkSelection* outSelection, Session* opsession)
+  const smtk::attribute::MeshSelectionItemPtr& inSelectionItem, vtkSelection* outSelection,
+  Session* opsession)
 {
   outSelection->Initialize();
   vtkNew<vtkSelectionNode> selNode;
   vtkInformation* oProperties = selNode->GetProperties();
-  oProperties->Set(vtkSelectionNode::CONTENT_TYPE(),
-                   vtkSelectionNode::INDICES);
+  oProperties->Set(vtkSelectionNode::CONTENT_TYPE(), vtkSelectionNode::INDICES);
   oProperties->Set(vtkSelectionNode::FIELD_TYPE(), vtkSelectionNode::CELL);
   outSelection->AddNode(selNode.GetPointer());
 
   vtkNew<vtkIdTypeArray> outSelectionList;
   smtk::attribute::MeshSelectionItem::const_sel_map_it mapIt;
-  for(mapIt = inSelectionItem->begin(); mapIt != inSelectionItem->end(); ++mapIt)
+  for (mapIt = inSelectionItem->begin(); mapIt != inSelectionItem->end(); ++mapIt)
+  {
+    vtkDiscreteModelFace* face =
+      vtkDiscreteModelFace::SafeDownCast(opsession->entityForUUID(mapIt->first));
+    if (!face)
     {
-    vtkDiscreteModelFace* face = vtkDiscreteModelFace::SafeDownCast(
-      opsession->entityForUUID(mapIt->first));
-    if(!face)
-      {
       std::cout << "Could not get model face with Id: " << mapIt->first << std::endl;
       //vtkErrorMacro("Could not get model face with Id " << faceId);
       continue;
-      }
-    vtkPolyData* geometry = vtkPolyData::SafeDownCast(
-      face->GetGeometry());
-    vtkIdTypeArray* masterCellIds = vtkIdTypeArray::SafeDownCast(
-      geometry->GetCellData()->GetArray(
-      vtkDiscreteModelGeometricEntity::GetReverseClassificationArrayName()));
-    if(masterCellIds)
-      {
-      std::set<int>::const_iterator it;
-      for(it = mapIt->second.begin(); it != mapIt->second.end(); ++it)
-        outSelectionList->InsertNextValue(masterCellIds->GetValue(*it));
-      }
     }
+    vtkPolyData* geometry = vtkPolyData::SafeDownCast(face->GetGeometry());
+    vtkIdTypeArray* masterCellIds = vtkIdTypeArray::SafeDownCast(geometry->GetCellData()->GetArray(
+      vtkDiscreteModelGeometricEntity::GetReverseClassificationArrayName()));
+    if (masterCellIds)
+    {
+      std::set<int>::const_iterator it;
+      for (it = mapIt->second.begin(); it != mapIt->second.end(); ++it)
+        outSelectionList->InsertNextValue(masterCellIds->GetValue(*it));
+    }
+  }
   selNode->SetSelectionList(outSelectionList.GetPointer());
 }
 
@@ -188,114 +182,101 @@ void GrowOperator::convertToGrowSelection(
 // so we need to convert that to the format of
 // <FaceUUID, 'set' of cellIds on that face>
 bool GrowOperator::convertAndResetOutSelection(
-  vtkSelection* inSelection,
-  vtkDiscreteModelWrapper* modelWrapper,
-  Session* opsession)
+  vtkSelection* inSelection, vtkDiscreteModelWrapper* modelWrapper, Session* opsession)
 {
   this->m_outSelection.clear();
-  if(inSelection)
-    {
+  if (inSelection)
+  {
     // in the format of list of [composite_index, process_id, index] repeated
     vtkDiscreteModel* model = modelWrapper->GetModel();
-    vtkDiscreteModel::ClassificationType& classified =
-                              model->GetMeshClassification();
+    vtkDiscreteModel::ClassificationType& classified = model->GetMeshClassification();
     smtk::common::UUID faceUUID;
     vtkIdType masterId, faceCellId;
     // Gather up cells for each existing model face that are in the selection
     // the CellIds are with respect to the master grid.
     std::map<vtkModelEntity*, std::set<vtkIdType> > entityCellIds;
-    for(unsigned int ui=0; ui < inSelection->GetNumberOfNodes(); ui++)
-      {
+    for (unsigned int ui = 0; ui < inSelection->GetNumberOfNodes(); ui++)
+    {
       vtkSelectionNode* selectionNode = inSelection->GetNode(ui);
       vtkInformation* nodeProperties = selectionNode->GetProperties();
-      if(vtkSelectionNode::INDICES !=
-         nodeProperties->Get(vtkSelectionNode::CONTENT_TYPE()) ||
-         vtkSelectionNode::CELL !=
-         nodeProperties->Get(vtkSelectionNode::FIELD_TYPE()))
-        {
+      if (vtkSelectionNode::INDICES != nodeProperties->Get(vtkSelectionNode::CONTENT_TYPE()) ||
+        vtkSelectionNode::CELL != nodeProperties->Get(vtkSelectionNode::FIELD_TYPE()))
+      {
         std::cout << "Possible problem with selected entities.\n";
         continue;
-        }
-      vtkIdTypeArray* cellIds = vtkIdTypeArray::SafeDownCast(
-        selectionNode->GetSelectionList());
-      if(cellIds)
+      }
+      vtkIdTypeArray* cellIds = vtkIdTypeArray::SafeDownCast(selectionNode->GetSelectionList());
+      if (cellIds)
+      {
+        for (vtkIdType j = 0; j < cellIds->GetNumberOfTuples(); j++)
         {
-        for(vtkIdType j=0;j<cellIds->GetNumberOfTuples();j++)
-          {
           masterId = cellIds->GetValue(j);
-          vtkDiscreteModelGeometricEntity* cmbEntity =
-              classified.GetEntity(masterId);
+          vtkDiscreteModelGeometricEntity* cmbEntity = classified.GetEntity(masterId);
           faceCellId = classified.GetEntityIndex(masterId);
 
           vtkModelEntity* entity = cmbEntity->GetThisModelEntity();
           faceUUID = opsession->findOrSetEntityUUID(entity);
           this->m_outSelection[faceUUID].insert(faceCellId);
-          }
-        }
-      else
-        {
-        std::cout << "cellIds is null in vtkSelectionSplitOperator.cxx\n";
         }
       }
+      else
+      {
+        std::cout << "cellIds is null in vtkSelectionSplitOperator.cxx\n";
+      }
+    }
     // We should now have all of the selected cell Ids sorted out with the
     // proper model entity they are classified against. So now we can split.
-    }
+  }
 
   return true;
 }
 
-bool GrowOperator::copyToOutSelection(
-  const smtk::attribute::MeshSelectionItemPtr& inSelectionItem)
+bool GrowOperator::copyToOutSelection(const smtk::attribute::MeshSelectionItemPtr& inSelectionItem)
 {
   smtk::attribute::MeshSelectionItem::const_sel_map_it mapIt;
-  for(mapIt = inSelectionItem->begin(); mapIt != inSelectionItem->end(); ++mapIt)
+  for (mapIt = inSelectionItem->begin(); mapIt != inSelectionItem->end(); ++mapIt)
     m_outSelection[mapIt->first] = mapIt->second;
   return true;
 }
 
 /// Recursively find all the visible faces
 void GrowOperator::findVisibleModelFaces(
-  const CellEntity &cellent,
-  std::set<vtkIdType>& visibleFaces, Session* opsession)
+  const CellEntity& cellent, std::set<vtkIdType>& visibleFaces, Session* opsession)
 {
-  CellEntities cellents = cellent.isModel() ?
-    cellent.as<smtk::model::Model>().cells() : cellent.boundingCells();
+  CellEntities cellents =
+    cellent.isModel() ? cellent.as<smtk::model::Model>().cells() : cellent.boundingCells();
   for (CellEntities::const_iterator it = cellents.begin(); it != cellents.end(); ++it)
+  {
+    if (it->isFace() && ((it->hasVisibility() && it->visible()) || !it->hasVisibility()))
     {
-    if(it->isFace() &&
-      ((it->hasVisibility() && it->visible()) || !it->hasVisibility()))
-      {
-      vtkModelFace* origFace = vtkModelFace::SafeDownCast(
-        opsession->entityForUUID(it->entity()));
-      if(origFace)
+      vtkModelFace* origFace = vtkModelFace::SafeDownCast(opsession->entityForUUID(it->entity()));
+      if (origFace)
         visibleFaces.insert(origFace->GetUniquePersistentId());
-      }
-    if((*it).boundingCells().size() > 0)
-      {
-      this->findVisibleModelFaces(*it, visibleFaces, opsession);
-      }
     }
+    if ((*it).boundingCells().size() > 0)
+    {
+      this->findVisibleModelFaces(*it, visibleFaces, opsession);
+    }
+  }
 }
 
 smtk::model::OperatorResult GrowOperator::operateInternal()
 {
   Session* opsession = this->discreteSession();
-  smtk::model::Model model = this->specification()->findModelEntity(
-    "model")->value().as<smtk::model::Model>();
-  vtkDiscreteModelWrapper* modelWrapper =
-    opsession->findModelEntity(model.entity());
+  smtk::model::Model model =
+    this->specification()->findModelEntity("model")->value().as<smtk::model::Model>();
+  vtkDiscreteModelWrapper* modelWrapper = opsession->findModelEntity(model.entity());
   bool ok = false;
   smtk::attribute::MeshSelectionItem::Ptr inSelectionItem =
-     this->specification()->findMeshSelection("selection");
+    this->specification()->findMeshSelection("selection");
   MeshModifyMode opType = inSelectionItem->modifyMode();
   int numSelValues = static_cast<int>(inSelectionItem->numberOfValues());
 
-  switch(opType)
+  switch (opType)
   {
     case ACCEPT:
       // convert current outSelection to grow Selection
-      this->convertToGrowSelection(
-          inSelectionItem, m_growSelection.GetPointer(), opsession);
+      this->convertToGrowSelection(inSelectionItem, m_growSelection.GetPointer(), opsession);
       // Use current selection to split faces if necessary
       this->m_splitOp->Operate(modelWrapper, this->m_growSelection.GetPointer());
       ok = this->m_splitOp->GetOperateSucceeded() != 0;
@@ -306,13 +287,13 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
 
       // if the ctrl key is down or multiple cells are selected from rubber band,
       // only do modification of current grow selection using the input selection.
-      if(inSelectionItem->isCtrlKeyDown() || numSelValues > 1)
-        {
+      if (inSelectionItem->isCtrlKeyDown() || numSelValues > 1)
+      {
         ok = this->copyToOutSelection(inSelectionItem);
-        }
-      else if(numSelValues == 1 ) // one cell is clicked.
-      // do grow
-        {
+      }
+      else if (numSelValues == 1) // one cell is clicked.
+                                  // do grow
+      {
         std::set<vtkIdType> visModelFaceIds;
         this->findVisibleModelFaces(model, visModelFaceIds, opsession);
         this->m_growOp->SetModelWrapper(modelWrapper);
@@ -325,7 +306,7 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
         // then grow+/grow- has to be handled fromm applicaiton with the new grow result,
         // meaing the application has to cache the exiting selection, and based
         // on grow+/grow-, update selection properly
-/*
+        /*
         // convert current outSelection to grow Selection
         this->convertToGrowSelection(
           inSelectionItem, m_growSelection.GetPointer(), opsession);
@@ -342,17 +323,16 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
         this->m_growOp->SetInputSelection(this->m_growSelection.GetPointer());
         this->m_growOp->SetGrowFaceIds(visModelFaceIds);
 
-        vtkModelFace* face = vtkModelFace::SafeDownCast(
-          opsession->entityForUUID(inSelectionItem->begin()->first));
-        if(face)
-          {
-          this->m_growOp->SetFaceCellId(face->GetUniquePersistentId(),
-                                        *(inSelectionItem->begin()->second.begin()));
+        vtkModelFace* face =
+          vtkModelFace::SafeDownCast(opsession->entityForUUID(inSelectionItem->begin()->first));
+        if (face)
+        {
+          this->m_growOp->SetFaceCellId(
+            face->GetUniquePersistentId(), *(inSelectionItem->begin()->second.begin()));
           this->m_growOp->Update();
-          ok = this->convertAndResetOutSelection(
-            m_growOp->GetOutput(), modelWrapper, opsession);
-          }
+          ok = this->convertAndResetOutSelection(m_growOp->GetOutput(), modelWrapper, opsession);
         }
+      }
 
       break;
     case NONE:
@@ -364,31 +344,28 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
       break;
   }
 
-  OperatorResult result =
-    this->createResult(
-      ok ?  OPERATION_SUCCEEDED : OPERATION_FAILED);
+  OperatorResult result = this->createResult(ok ? OPERATION_SUCCEEDED : OPERATION_FAILED);
 
   if (ok)
+  {
+    switch (opType)
     {
-    switch(opType)
-      {
       case ACCEPT:
-        this->writeSplitResult(m_splitOp.GetPointer(),
-          modelWrapper, opsession, result);
+        this->writeSplitResult(m_splitOp.GetPointer(), modelWrapper, opsession, result);
         break;
       case RESET:
       case MERGE:
       case SUBTRACT:
-        {
+      {
         this->addEntityToResult(result, model, MODIFIED);
 
         this->writeSelectionResult(m_outSelection, result);
         break;
-        }
+      }
       default:
         break;
-      }
     }
+  }
 
   return result;
 }
@@ -398,15 +375,10 @@ Session* GrowOperator::discreteSession() const
   return dynamic_cast<Session*>(this->session());
 }
 
-    } // namespace discrete
-  } // namespace bridge
+} // namespace discrete
+} // namespace bridge
 
 } // namespace smtk
 
-smtkImplementsModelOperator(
-  SMTKDISCRETESESSION_EXPORT,
-  smtk::bridge::discrete::GrowOperator,
-  discrete_grow,
-  "grow",
-  GrowOperator_xml,
-  smtk::bridge::discrete::Session);
+smtkImplementsModelOperator(SMTKDISCRETESESSION_EXPORT, smtk::bridge::discrete::GrowOperator,
+  discrete_grow, "grow", GrowOperator_xml, smtk::bridge::discrete::Session);

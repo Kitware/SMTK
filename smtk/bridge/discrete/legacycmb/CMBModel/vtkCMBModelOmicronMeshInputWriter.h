@@ -28,11 +28,12 @@ class vtkCMBModelRegion;
 class vtkMultiBlockDataSet;
 class vtkPolyData;
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelOmicronMeshInputWriter : public vtkCMBModelOmicronMeshInputWriterBase
+class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelOmicronMeshInputWriter
+  : public vtkCMBModelOmicronMeshInputWriterBase
 {
 public:
-  static vtkCMBModelOmicronMeshInputWriter * New();
-  vtkTypeMacro(vtkCMBModelOmicronMeshInputWriter,vtkCMBModelOmicronMeshInputWriterBase);
+  static vtkCMBModelOmicronMeshInputWriter* New();
+  vtkTypeMacro(vtkCMBModelOmicronMeshInputWriter, vtkCMBModelOmicronMeshInputWriterBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -48,9 +49,8 @@ protected:
   virtual ~vtkCMBModelOmicronMeshInputWriter();
 
 private:
-
-  vtkCMBModelOmicronMeshInputWriter(const vtkCMBModelOmicronMeshInputWriter&);  // Not implemented.
-  void operator=(const vtkCMBModelOmicronMeshInputWriter&);  // Not implemented.
+  vtkCMBModelOmicronMeshInputWriter(const vtkCMBModelOmicronMeshInputWriter&); // Not implemented.
+  void operator=(const vtkCMBModelOmicronMeshInputWriter&);                    // Not implemented.
 };
 
 #endif

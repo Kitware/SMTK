@@ -23,8 +23,10 @@ SMTK_THIRDPARTY_POST_INCLUDE
 
 using namespace boost::filesystem;
 
-namespace smtk {
-  namespace io {
+namespace smtk
+{
+namespace io
+{
 
 ExportMesh::ExportMesh()
 {
@@ -38,15 +40,14 @@ std::vector<smtk::io::mesh::MeshIOPtr>& ExportMesh::SupportedIOTypes()
 {
   static std::vector<smtk::io::mesh::MeshIOPtr> supportedIOTypes;
   if (supportedIOTypes.empty())
-    {
-    supportedIOTypes.push_back( mesh::MeshIOPtr( new mesh::MeshIOXMS() ) );
-    supportedIOTypes.push_back( mesh::MeshIOPtr( new mesh::MeshIOMoab() ) );
-    }
+  {
+    supportedIOTypes.push_back(mesh::MeshIOPtr(new mesh::MeshIOXMS()));
+    supportedIOTypes.push_back(mesh::MeshIOPtr(new mesh::MeshIOMoab()));
+  }
   return supportedIOTypes;
 }
 
-bool ExportMesh::operator() (const std::string& filePath,
-                             smtk::mesh::CollectionPtr collection) const
+bool ExportMesh::operator()(const std::string& filePath, smtk::mesh::CollectionPtr collection) const
 {
   // Grab the file extension
   std::string ext = boost::filesystem::extension(filePath);
@@ -54,25 +55,23 @@ bool ExportMesh::operator() (const std::string& filePath,
 
   // Search for an appropriate exporter
   for (auto&& exporter : smtk::io::ExportMesh::SupportedIOTypes())
-    {
+  {
     for (auto&& format : exporter->FileFormats())
+    {
+      if (format.CanExport() &&
+        std::find(format.Extensions.begin(), format.Extensions.end(), ext) !=
+          format.Extensions.end())
       {
-      if ( format.CanExport() && std::find(format.Extensions.begin(),
-                                           format.Extensions.end(), ext) !=
-           format.Extensions.end() )
-        {
         // export the collection
         return exporter->exportMesh(filePath, collection);
-        }
       }
     }
+  }
   return false;
 }
 
-bool ExportMesh::operator() (const std::string& filePath,
-                             smtk::mesh::CollectionPtr collection,
-                             smtk::model::ManagerPtr manager,
-                             const std::string& modelPropertyName) const
+bool ExportMesh::operator()(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+  smtk::model::ManagerPtr manager, const std::string& modelPropertyName) const
 {
   // Grab the file extension
   std::string ext = boost::filesystem::extension(filePath);
@@ -80,37 +79,32 @@ bool ExportMesh::operator() (const std::string& filePath,
 
   // Search for an appropriate exporter
   for (auto&& exporter : smtk::io::ExportMesh::SupportedIOTypes())
-    {
+  {
     for (auto&& format : exporter->FileFormats())
+    {
+      if (format.CanExport() &&
+        std::find(format.Extensions.begin(), format.Extensions.end(), ext) !=
+          format.Extensions.end())
       {
-      if ( format.CanExport() && std::find(format.Extensions.begin(),
-                                           format.Extensions.end(), ext) !=
-           format.Extensions.end() )
-        {
         // export the collection
-        return exporter->exportMesh(filePath, collection, manager,
-                                   modelPropertyName);
-        }
+        return exporter->exportMesh(filePath, collection, manager, modelPropertyName);
       }
     }
+  }
   return false;
 }
 
-bool exportMesh( const std::string& filePath,
-                 smtk::mesh::CollectionPtr collection )
+bool exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection)
 {
   ExportMesh exportM;
-  return exportM( filePath, collection );
+  return exportM(filePath, collection);
 }
 
-bool exportMesh( const std::string& filePath,
-                 smtk::mesh::CollectionPtr collection,
-                 smtk::model::ManagerPtr manager,
-                 const std::string& modelPropertyName )
+bool exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+  smtk::model::ManagerPtr manager, const std::string& modelPropertyName)
 {
   ExportMesh exportM;
-  return exportM( filePath, collection, manager, modelPropertyName );
+  return exportM(filePath, collection, manager, modelPropertyName);
 }
-
 }
 }

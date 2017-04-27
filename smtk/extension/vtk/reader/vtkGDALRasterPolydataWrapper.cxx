@@ -51,7 +51,6 @@
 #undef LT_OBJDIR_TMP
 #endif
 
-
 // C/C++ includes
 #include <cassert>
 #include <iostream>
@@ -62,7 +61,7 @@ vtkStandardNewMacro(vtkGDALRasterPolydataWrapper);
 vtkCxxSetObjectMacro(vtkGDALRasterPolydataWrapper, Transform, vtkTransform);
 
 vtkGDALRasterPolydataWrapper::vtkGDALRasterPolydataWrapper()
-:RealNumberOfOutputPoints(-1)
+  : RealNumberOfOutputPoints(-1)
 {
   this->SetNumberOfInputPorts(0);
   this->OnRatio = 239;
@@ -100,8 +99,7 @@ const std::vector<std::string>& vtkGDALRasterPolydataWrapper::GetMetaData()
   return this->Reader->GetMetaData();
 }
 
-std::vector<std::string> vtkGDALRasterPolydataWrapper::GetDomainMetaData(
-                                                                const std::string& domain)
+std::vector<std::string> vtkGDALRasterPolydataWrapper::GetDomainMetaData(const std::string& domain)
 {
   return this->Reader->GetDomainMetaData(domain);
 }
@@ -138,105 +136,104 @@ std::string vtkGDALRasterPolydataWrapper::GetFileName()
 #endif
 
 int vtkGDALRasterPolydataWrapper::RequestData(vtkInformation* vtkNotUsed(request),
-                                     vtkInformationVector** vtkNotUsed(inputVector),
-                                     vtkInformationVector* outputVector)
+  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
 {
   this->Reader->Update();
-  vtkDataObject * vdo = this->Reader->GetOutputDataObject(0);
+  vtkDataObject* vdo = this->Reader->GetOutputDataObject(0);
 
-  vtkImageData * img = vtkImageData::SafeDownCast(vdo);
-  vtkUniformGrid * ugrid = NULL;
+  vtkImageData* img = vtkImageData::SafeDownCast(vdo);
+  vtkUniformGrid* ugrid = NULL;
   if (vdo->IsA("vtkUniformGrid"))
-    {
+  {
     ugrid = vtkUniformGrid::SafeDownCast(img);
-    }
+  }
   else
-    {
+  {
     return 0;
-    }
+  }
 
   if (this->LimitReadToBounds)
-    {
+  {
     this->ReadBBox.Reset();
-    this->ReadBBox.SetMinPoint(this->ReadBounds[0], this->ReadBounds[2],
-                               this->ReadBounds[4]);
-    this->ReadBBox.SetMaxPoint(this->ReadBounds[1], this->ReadBounds[3],
-                               this->ReadBounds[5]);
+    this->ReadBBox.SetMinPoint(this->ReadBounds[0], this->ReadBounds[2], this->ReadBounds[4]);
+    this->ReadBBox.SetMaxPoint(this->ReadBounds[1], this->ReadBounds[3], this->ReadBounds[5]);
     // the ReadBBox is guaranteed to be "valid", regardless of the whether
     // ReadBounds is valid.  If any of the MonPoint values are greater than
     // the corresponding MaxPoint, the MinPoint component will be set to be
     // the same as the MaxPoint during the SetMaxPoint fn call.
-    }
+  }
 
   int step = ceil(sqrt(static_cast<double>(this->OnRatio)));
-  if(this->LimitToMaxNumberOfPoints)
+  if (this->LimitToMaxNumberOfPoints)
+  {
+    if (this->MaxNumberOfPoints >= this->GetTotalNumberOfPoints())
     {
-    if(this->MaxNumberOfPoints >= this->GetTotalNumberOfPoints())
-      {
       step = 1;
-      }
+    }
     else
-      {
-      double tmp = sqrt(this->GetTotalNumberOfPoints() / static_cast<double>(this->MaxNumberOfPoints));
+    {
+      double tmp =
+        sqrt(this->GetTotalNumberOfPoints() / static_cast<double>(this->MaxNumberOfPoints));
       step = ceil(tmp);
-      }
     }
-  if(step <= 0) step = 1;
+  }
+  if (step <= 0)
+    step = 1;
 
-  vtkPoints *points = vtkPoints::New();
-  vtkCellArray *verts = vtkCellArray::New();
-  int xyz[3]; xyz[2] = 0;
-  double pt[] = {0,0,0};
-  double tranpt[] = {0,0,0};
-  double * cp = pt;
-  double * ap = pt;
+  vtkPoints* points = vtkPoints::New();
+  vtkCellArray* verts = vtkCellArray::New();
+  int xyz[3];
+  xyz[2] = 0;
+  double pt[] = { 0, 0, 0 };
+  double tranpt[] = { 0, 0, 0 };
+  double* cp = pt;
+  double* ap = pt;
   bool dotrans = this->Transform != NULL && (this->TransformOutputData || this->LimitReadToBounds);
-  if(dotrans)
-    {
+  if (dotrans)
+  {
     cp = tranpt;
-    }
-  if(this->Transform != NULL && this->TransformOutputData)
-    {
+  }
+  if (this->Transform != NULL && this->TransformOutputData)
+  {
     ap = tranpt;
-    }
-  int * extent = img->GetExtent();
+  }
+  int* extent = img->GetExtent();
   this->RealNumberOfOutputPoints = 0;
-  for(int x = extent[0]; x <= extent[1]; x+=step)
-    {
+  for (int x = extent[0]; x <= extent[1]; x += step)
+  {
     xyz[0] = x - Origin[0];
-    for(int y = extent[2]; y <= extent[3]; y+=step)
-      {
+    for (int y = extent[2]; y <= extent[3]; y += step)
+    {
       xyz[1] = y - Origin[1];
       vtkIdType id = img->ComputePointId(xyz);
-      if(ugrid == NULL || ugrid->IsPointVisible(id))
-        {
+      if (ugrid == NULL || ugrid->IsPointVisible(id))
+      {
         img->GetPoint(id, pt);
-        pt[2] = img->GetScalarComponentAsDouble(x,y,0,0) - Origin[2];
-        if(dotrans)
-          {
+        pt[2] = img->GetScalarComponentAsDouble(x, y, 0, 0) - Origin[2];
+        if (dotrans)
+        {
           this->Transform->TransformPoint(pt, tranpt);
-          }
-        if(!this->LimitReadToBounds || this->ReadBBox.ContainsPoint(cp[0], cp[1], cp[2]))
-          {
-          vtkIdType outputIdx = points->InsertNextPoint( ap );
+        }
+        if (!this->LimitReadToBounds || this->ReadBBox.ContainsPoint(cp[0], cp[1], cp[2]))
+        {
+          vtkIdType outputIdx = points->InsertNextPoint(ap);
           verts->InsertNextCell(1, &outputIdx);
           this->RealNumberOfOutputPoints++;
-          }
         }
       }
-
     }
+  }
 
   vtkInformation* outInfo = outputVector->GetInformationObject(0);
-  vtkPolyData *pdOutput = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkPolyData* pdOutput = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
-  pdOutput->SetPoints( points );
-  pdOutput->SetVerts( verts );
+  pdOutput->SetPoints(points);
+  pdOutput->SetVerts(verts);
   points->UnRegister(this);
   verts->UnRegister(this);
 
   vtkFieldData* fd = pdOutput->GetFieldData();
-  vtkStringArray * strA = vtkStringArray::New();
+  vtkStringArray* strA = vtkStringArray::New();
   strA->SetName("GeoInfoProj4");
   strA->InsertNextValue(this->Reader->GetProjectionString());
   fd->AddArray(strA);
@@ -246,11 +243,11 @@ int vtkGDALRasterPolydataWrapper::RequestData(vtkInformation* vtkNotUsed(request
   return 1;
 }
 
-int vtkGDALRasterPolydataWrapper::RequestInformation(vtkInformation * vtkNotUsed(request),
-                                            vtkInformationVector **vtkNotUsed(inputVector),
-                                            vtkInformationVector * vtkNotUsed(outputVector))
+int vtkGDALRasterPolydataWrapper::RequestInformation(vtkInformation* vtkNotUsed(request),
+  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* vtkNotUsed(outputVector))
 {
-  if(FileName.empty()) return 0;
+  if (FileName.empty())
+    return 0;
   this->Reader->UpdateInformation();
   return 1;
 }
@@ -258,15 +255,15 @@ int vtkGDALRasterPolydataWrapper::RequestInformation(vtkInformation * vtkNotUsed
 int vtkGDALRasterPolydataWrapper::FillOutputPortInformation(int port, vtkInformation* info)
 {
   if (port == 0)
-    {
+  {
     info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkPolyData");
     return 1;
-    }
+  }
   else
-    {
+  {
     vtkErrorMacro("Port: " << port << " is not a valid port");
     return 0;
-    }
+  }
 }
 
 double vtkGDALRasterPolydataWrapper::GetInvalidValue()
@@ -274,28 +271,26 @@ double vtkGDALRasterPolydataWrapper::GetInvalidValue()
   return this->Reader->GetInvalidValue();
 }
 
-int vtkGDALRasterPolydataWrapper
-::RequestDataObject(vtkInformation *,
-                    vtkInformationVector** vtkNotUsed(inputVector) ,
-                    vtkInformationVector* outputVector)
+int vtkGDALRasterPolydataWrapper::RequestDataObject(vtkInformation*,
+  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
 {
 
   vtkInformation* info = outputVector->GetInformationObject(0);
-  vtkDataSet *output = vtkDataSet::SafeDownCast(info->Get(vtkDataObject::DATA_OBJECT()));
+  vtkDataSet* output = vtkDataSet::SafeDownCast(info->Get(vtkDataObject::DATA_OBJECT()));
 
   if (!output)
-    {
+  {
     output = vtkPolyData::New();
     this->GetExecutive()->SetOutputData(0, output);
     output->Delete();
-    }
+  }
 
   return 1;
 }
 
 void vtkGDALRasterPolydataWrapper::SetTransform(double elements[16])
 {
-  vtkTransform *tmpTransform = vtkTransform::New();
+  vtkTransform* tmpTransform = vtkTransform::New();
   tmpTransform->SetMatrix(elements);
   this->SetTransform(tmpTransform);
   tmpTransform->Delete();

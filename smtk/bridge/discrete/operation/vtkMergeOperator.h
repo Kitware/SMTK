@@ -21,14 +21,13 @@
 #include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkMergeOperatorBase.h"
 
-
 class vtkDiscreteModelWrapper;
 
 class SMTKDISCRETESESSION_EXPORT vtkMergeOperator : public vtkMergeOperatorBase
 {
 public:
-  static vtkMergeOperator * New();
-  vtkTypeMacro(vtkMergeOperator,vtkMergeOperatorBase);
+  static vtkMergeOperator* New();
+  vtkTypeMacro(vtkMergeOperator, vtkMergeOperatorBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   using Superclass::Operate;
@@ -50,7 +49,9 @@ protected:
   virtual ~vtkMergeOperator();
 
   virtual bool AbleToOperate(vtkDiscreteModel* model)
-    { return this->Superclass::AbleToOperate(model); }
+  {
+    return this->Superclass::AbleToOperate(model);
+  }
 
   // Description:
   // Check to see if everything is properly set for the operator.
@@ -61,8 +62,8 @@ private:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).
   int OperateSucceeded;
 
-  vtkMergeOperator(const vtkMergeOperator&);  // Not implemented.
-  void operator=(const vtkMergeOperator&);  // Not implemented.
+  vtkMergeOperator(const vtkMergeOperator&); // Not implemented.
+  void operator=(const vtkMergeOperator&);   // Not implemented.
 };
 
 #endif

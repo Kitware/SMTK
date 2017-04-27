@@ -12,9 +12,12 @@
 
 #include "smtk/bridge/polygon/Operator.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
 /**\brief Create one or more edges given a set of point coordinates.
   *
@@ -33,8 +36,8 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
 };
 
-    } // namespace polygon
-  } //namespace bridge
+} // namespace polygon
+} //namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_polygon_CreateEdge_h

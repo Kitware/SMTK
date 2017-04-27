@@ -17,9 +17,12 @@
 #include "vtkModelEntityGroupOperator.h"
 #include "vtkNew.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace discrete {
+namespace smtk
+{
+namespace bridge
+{
+namespace discrete
+{
 
 class Session;
 
@@ -45,21 +48,19 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
   Session* discreteSession() const;
   vtkModelEntity* fetchCMBCell(const std::string& parameterName) const;
-  vtkModelEntity* fetchCMBCell(
-    const smtk::attribute::ModelEntityItemPtr&, int idx ) const;
+  vtkModelEntity* fetchCMBCell(const smtk::attribute::ModelEntityItemPtr&, int idx) const;
   int createBoundaryGroup(vtkDiscreteModelWrapper* modelWrapper);
   int createDomainSet(vtkDiscreteModelWrapper* modelWrapper);
 
-  bool modifyGroup(vtkDiscreteModelWrapper* modelWrapper,
-                   vtkModelEntity* cmbgroup, bool newGroup,
-                   smtk::model::EntityRefArray& modGrps);
+  bool modifyGroup(vtkDiscreteModelWrapper* modelWrapper, vtkModelEntity* cmbgroup, bool newGroup,
+    smtk::model::EntityRefArray& modGrps);
 
   vtkNew<vtkModelEntityGroupOperator> m_opBoundary;
   vtkNew<vtkMaterialOperator> m_opDomain;
 };
 
-    } // namespace discrete
-  } // namespace bridge
+} // namespace discrete
+} // namespace bridge
 
 } // namespace smtk
 

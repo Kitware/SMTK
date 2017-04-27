@@ -20,33 +20,34 @@
 class QFrame;
 namespace smtk
 {
-  namespace extension
-  {
-    class qtCollapsibleGroupWidgetInternals;
+namespace extension
+{
+class qtCollapsibleGroupWidgetInternals;
 
-    class SMTKQTEXT_EXPORT qtCollapsibleGroupWidget: public QWidget
-    {
-      Q_OBJECT
+class SMTKQTEXT_EXPORT qtCollapsibleGroupWidget : public QWidget
+{
+  Q_OBJECT
 
-    public:
-      qtCollapsibleGroupWidget(QWidget *parent);
-      virtual ~qtCollapsibleGroupWidget();
+public:
+  qtCollapsibleGroupWidget(QWidget* parent);
+  virtual ~qtCollapsibleGroupWidget();
 
-      QLayout *contentsLayout() const;
-      void setContentsLayout(QLayout *newLayout);
-      QFrame *contents() const;
-      void setName(const QString &newName);
-      QString name() const;
+  QLayout* contentsLayout() const;
+  void setContentsLayout(QLayout* newLayout);
+  QFrame* contents() const;
+  void setName(const QString& newName);
+  QString name() const;
 
-      public slots:
-	void open();
-	void collapse();
-    protected:
-	qtCollapsibleGroupWidgetInternals *m_internals;
+public slots:
+  void open();
+  void collapse();
 
-    private:
-    };
-  };
+protected:
+  qtCollapsibleGroupWidgetInternals* m_internals;
+
+private:
+};
+};
 };
 
 #endif /* __smtk_extension_qtCollapsibleGroupWidget_h */

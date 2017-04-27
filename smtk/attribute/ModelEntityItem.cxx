@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 
@@ -21,9 +20,8 @@ ModelEntityItem::ModelEntityItem(Attribute* owningAttribute, int itemPosition)
 }
 
 /// Construct an item given its owning item and position inside the item.
-ModelEntityItem::ModelEntityItem(
-  Item* inOwningItem, int itemPosition, int mySubGroupPosition):
-  Item(inOwningItem, itemPosition, mySubGroupPosition)
+ModelEntityItem::ModelEntityItem(Item* inOwningItem, int itemPosition, int mySubGroupPosition)
+  : Item(inOwningItem, itemPosition, mySubGroupPosition)
 {
 }
 
@@ -43,46 +41,43 @@ bool ModelEntityItem::isValid() const
   // If the item is not enabled or if all of its values are set then it is valid
   // else it is enabled and contains unset values making it invalid
   if (!this->isEnabled())
-    {
+  {
     return true;
-    }
+  }
   // Do we have atleats the number of required values present?
-  if(this->numberOfValues() < this->numberOfRequiredValues())
-    {
+  if (this->numberOfValues() < this->numberOfRequiredValues())
+  {
     return false;
-    }
+  }
   for (auto it = this->m_values.begin(); it != this->m_values.end(); ++it)
-    {
+  {
     // If the enitity is NULL then its unset
     if (!(*it).entity())
-      {
+    {
       return false;
-      }
     }
+  }
   return true;
-
 }
 
 /// Set the definition of this attribute.
-bool ModelEntityItem::setDefinition(
-  smtk::attribute::ConstItemDefinitionPtr adef)
+bool ModelEntityItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 {
   // Note that we do a dynamic cast here since we don't
   // know if the proper definition is being passed
-  const ModelEntityItemDefinition *def =
-    dynamic_cast<const ModelEntityItemDefinition *>(adef.get());
+  const ModelEntityItemDefinition* def = dynamic_cast<const ModelEntityItemDefinition*>(adef.get());
 
   // Call the parent's set definition - similar to constructor calls
   // we call from base to derived
   if ((def == NULL) || (!Item::setDefinition(adef)))
-    {
+  {
     return false;
-    }
+  }
   std::size_t n = def->numberOfRequiredValues();
   if (n != 0)
-    {
+  {
     this->m_values.resize(n);
-    }
+  }
   return true;
 }
 
@@ -95,12 +90,12 @@ std::size_t ModelEntityItem::numberOfValues() const
 /// Return the number of values required by this item's definition (if it has one).
 std::size_t ModelEntityItem::numberOfRequiredValues() const
 {
-  const ModelEntityItemDefinition *def =
+  const ModelEntityItemDefinition* def =
     static_cast<const ModelEntityItemDefinition*>(this->m_definition.get());
   if (def == NULL)
-    {
+  {
     return 0;
-    }
+  }
   return def->numberOfRequiredValues();
 }
 
@@ -109,13 +104,13 @@ bool ModelEntityItem::setNumberOfValues(std::size_t newSize)
 {
   // If the current size is the same just return
   if (this->numberOfValues() == newSize)
-    {
+  {
     return true;
-    }
+  }
 
   // Next - are we allowed to change the number of values?
   const ModelEntityItemDefinition* def =
-    static_cast<const ModelEntityItemDefinition *>(this->definition().get());
+    static_cast<const ModelEntityItemDefinition*>(this->definition().get());
   if (!def->isExtensible())
     return false; // You may not resize.
 
@@ -154,12 +149,12 @@ bool ModelEntityItem::setValue(const smtk::model::EntityRef& val)
 bool ModelEntityItem::setValue(std::size_t i, const smtk::model::EntityRef& val)
 {
   const ModelEntityItemDefinition* def =
-    static_cast<const ModelEntityItemDefinition *>(this->definition().get());
-  if (i<this->m_values.size() && def->isValueValid(val))
-    {
+    static_cast<const ModelEntityItemDefinition*>(this->definition().get());
+  if (i < this->m_values.size() && def->isValueValid(val))
+  {
     this->m_values[i] = val;
     return true;
-    }
+  }
   return false;
 }
 
@@ -167,40 +162,40 @@ bool ModelEntityItem::appendValue(const smtk::model::EntityRef& val)
 {
   // First - is this value valid?
   const ModelEntityItemDefinition* def =
-    static_cast<const ModelEntityItemDefinition *>(this->definition().get());
+    static_cast<const ModelEntityItemDefinition*>(this->definition().get());
   if (!def->isValueValid(val))
-    {
+  {
     return false;
-    }
+  }
 
   // Second - is the value already in the item?
   std::size_t emptyIndex, n = this->numberOfValues();
   bool foundEmpty = false;
   for (std::size_t i = 0; i < n; ++i)
+  {
+    if (this->isSet(i) && (this->value(i).entity() == val.entity()))
     {
-      if (this->isSet(i) && (this->value(i).entity() == val.entity()))
-      {
-        return true;
-      }
-      if (!this->isSet(i))
-      {
-        foundEmpty = true;
-        emptyIndex = i;
-      }
+      return true;
     }
+    if (!this->isSet(i))
+    {
+      foundEmpty = true;
+      emptyIndex = i;
+    }
+  }
   // If not, was there a space available?
   if (foundEmpty)
-    {
-      return this->setValue(emptyIndex, val);
-    }
+  {
+    return this->setValue(emptyIndex, val);
+  }
   // Finally - are we allowed to change the number of values?
-  if (
-    (def->isExtensible() && def->maxNumberOfValues() && this->m_values.size() >= def->maxNumberOfValues()) ||
+  if ((def->isExtensible() && def->maxNumberOfValues() &&
+        this->m_values.size() >= def->maxNumberOfValues()) ||
     (!def->isExtensible() && this->m_values.size() >= def->numberOfRequiredValues()))
-    {
+  {
     // The number of values is fixed or we reached the max number of items
     return false;
-    }
+  }
 
   this->m_values.push_back(val);
   return true;
@@ -209,14 +204,14 @@ bool ModelEntityItem::appendValue(const smtk::model::EntityRef& val)
 bool ModelEntityItem::removeValue(std::size_t i)
 {
   //First - are we allowed to change the number of values?
-  const ModelEntityItemDefinition *def =
-    static_cast<const ModelEntityItemDefinition *>(this->definition().get());
+  const ModelEntityItemDefinition* def =
+    static_cast<const ModelEntityItemDefinition*>(this->definition().get());
   if (!def->isExtensible())
-    {
+  {
     return this->setValue(i, smtk::model::EntityRef()); // The number of values is fixed
-    }
+  }
 
-  this->m_values.erase(this->m_values.begin()+i);
+  this->m_values.erase(this->m_values.begin() + i);
   return true;
 }
 
@@ -255,9 +250,7 @@ std::string ModelEntityItem::valueAsString(std::size_t i) const
   */
 bool ModelEntityItem::isSet(std::size_t i) const
 {
-  return i < this->m_values.size() ?
-    !!this->m_values[i].entity() :
-    false;
+  return i < this->m_values.size() ? !!this->m_values[i].entity() : false;
 }
 
 /// Force the \a i-th value of the item to be invalid.
@@ -267,37 +260,37 @@ void ModelEntityItem::unset(std::size_t i)
 }
 
 /// Assigns contents to be same as source item
-bool ModelEntityItem::assign(ConstItemPtr &sourceItem, unsigned int options)
+bool ModelEntityItem::assign(ConstItemPtr& sourceItem, unsigned int options)
 {
   // Cast input pointer to ModelEntityItem
-  smtk::shared_ptr<const ModelEntityItem > sourceModelEntityItem =
+  smtk::shared_ptr<const ModelEntityItem> sourceModelEntityItem =
     smtk::dynamic_pointer_cast<const ModelEntityItem>(sourceItem);
 
   if (!sourceModelEntityItem)
-    {
+  {
     return false; // Source is not a model entity item
-    }
+  }
   // Are we suppose to assign the model enity values?
   if (options & Item::IGNORE_MODEL_ENTITIES)
-    {
-      return Item::assign(sourceItem, options);
-    }
+  {
+    return Item::assign(sourceItem, options);
+  }
 
   // Update values
   // Only set values if both att systems are using the same model
   this->setNumberOfValues(sourceModelEntityItem->numberOfValues());
-  for (std::size_t i=0; i<sourceModelEntityItem->numberOfValues(); ++i)
-    {
+  for (std::size_t i = 0; i < sourceModelEntityItem->numberOfValues(); ++i)
+  {
     if (sourceModelEntityItem->isSet(i))
-      {
+    {
       smtk::model::EntityRef val = sourceModelEntityItem->value(i);
       this->setValue(i, val);
-      }
-    else
-      {
-      this->unset(i);
-      }
     }
+    else
+    {
+      this->unset(i);
+    }
+  }
   return Item::assign(sourceItem, options);
 }
 
@@ -305,8 +298,7 @@ bool ModelEntityItem::assign(ConstItemPtr &sourceItem, unsigned int options)
 bool ModelEntityItem::isExtensible() const
 {
   smtk::attribute::ConstModelEntityItemDefinitionPtr def =
-    smtk::dynamic_pointer_cast<const ModelEntityItemDefinition>(
-      this->definition());
+    smtk::dynamic_pointer_cast<const ModelEntityItemDefinition>(this->definition());
   if (!def)
     return false;
   return def->isExtensible();
@@ -352,12 +344,12 @@ std::ptrdiff_t ModelEntityItem::find(const smtk::common::UUID& entity) const
   std::ptrdiff_t idx = 0;
   smtk::model::EntityRefArray::const_iterator it;
   for (it = this->begin(); it != this->end(); ++it, ++idx)
-    {
+  {
     if (it->entity() == entity)
-      {
+    {
       return idx;
-      }
     }
+  }
   return -1;
 }
 
@@ -369,11 +361,11 @@ std::ptrdiff_t ModelEntityItem::find(const smtk::model::EntityRef& entity) const
   std::ptrdiff_t idx = 0;
   smtk::model::EntityRefArray::const_iterator it;
   for (it = this->begin(); it != this->end(); ++it, ++idx)
-    {
+  {
     if (*it == entity)
-      {
+    {
       return idx;
-      }
     }
+  }
   return -1;
 }

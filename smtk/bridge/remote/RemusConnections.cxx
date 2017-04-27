@@ -15,9 +15,12 @@
 
 #include <map>
 
-namespace smtk {
-  namespace bridge {
-    namespace remote {
+namespace smtk
+{
+namespace bridge
+{
+namespace remote
+{
 
 typedef smtk::shared_ptr<smtk::bridge::remote::RemusConnection> ClientConnectionType;
 
@@ -26,7 +29,7 @@ struct RemusServerDetails
   ClientConnectionType connection;
 };
 
-typedef std::map<std::string,RemusServerDetails> ConnectionMapType;
+typedef std::map<std::string, RemusServerDetails> ConnectionMapType;
 
 class RemusConnections::Internal
 {
@@ -55,13 +58,13 @@ RemusConnection::Ptr RemusConnections::connectToServer(const std::string& host, 
 {
   std::string url;
   if (!host.empty())
-    {
+  {
     std::ostringstream urlSS;
     urlSS << host;
     if (port > 0)
-     urlSS << ":" << port;
+      urlSS << ":" << port;
     url = urlSS.str();
-    }
+  }
 
   ConnectionMapType::iterator it = this->m_data->connections.find(url);
   if (it != this->m_data->connections.end())
@@ -78,7 +81,7 @@ RemusConnection::Ptr RemusConnections::connectToServer(const std::string& host, 
   return conn;
 }
 
-    } // namespace remote
-  } // namespace bridge
+} // namespace remote
+} // namespace bridge
 } // namespace smtk
 #endif // SHIBOKEN_SKIP

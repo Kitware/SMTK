@@ -27,7 +27,7 @@ class vtkCMBModelVertexMesh;
 class VTK_EXPORT vtkCMBModelEdgeMesh : public vtkCMBModelEntityMesh
 {
 public:
-  vtkTypeMacro(vtkCMBModelEdgeMesh,vtkCMBModelEntityMesh);
+  vtkTypeMacro(vtkCMBModelEdgeMesh, vtkCMBModelEntityMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual vtkModelGeometricEntity* GetModelGeometricEntity();
@@ -74,12 +74,10 @@ protected:
   virtual bool BuildMesh(bool meshHigherDimensionalEntities) = 0;
 
 private:
-  vtkCMBModelEdgeMesh(const vtkCMBModelEdgeMesh&);  // Not implemented.
-  void operator=(const vtkCMBModelEdgeMesh&);  // Not implemented.
+  vtkCMBModelEdgeMesh(const vtkCMBModelEdgeMesh&); // Not implemented.
+  void operator=(const vtkCMBModelEdgeMesh&);      // Not implemented.
 
   vtkModelEdge* ModelEdge;
-
 };
 
 #endif
-

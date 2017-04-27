@@ -39,14 +39,16 @@
 
 #include "smtk/bridge/cgm/CreatePrism_xml.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace cgm {
+namespace smtk
+{
+namespace bridge
+{
+namespace cgm
+{
 
 smtk::model::OperatorResult CreatePrism::operateInternal()
 {
-  smtk::attribute::DoubleItem::Ptr heightItem =
-    this->specification()->findDouble("height");
+  smtk::attribute::DoubleItem::Ptr heightItem = this->specification()->findDouble("height");
   smtk::attribute::DoubleItem::Ptr majorRadiusItem =
     this->specification()->findDouble("major radius");
   smtk::attribute::DoubleItem::Ptr minorRadiusItem =
@@ -65,16 +67,16 @@ smtk::model::OperatorResult CreatePrism::operateInternal()
   DLIList<RefEntity*> imported;
   //int prevAutoFlag = CGMApp::instance()->attrib_manager()->auto_flag();
   //CGMApp::instance()->attrib_manager()->auto_flag(CUBIT_TRUE);
-  Body* cgmBody = GeometryModifyTool::instance()->prism(height, numberOfSides, majorRadius, minorRadius);
+  Body* cgmBody =
+    GeometryModifyTool::instance()->prism(height, numberOfSides, majorRadius, minorRadius);
   //CGMApp::instance()->attrib_manager()->auto_flag(prevAutoFlag);
   if (!cgmBody)
-    {
+  {
     smtkInfoMacro(log(), "Failed to create body.");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
-  smtk::model::OperatorResult result = this->createResult(
-    smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
 
   DLIList<Body*> cgmEntitiesOut;
   cgmEntitiesOut.push(cgmBody);
@@ -84,14 +86,9 @@ smtk::model::OperatorResult CreatePrism::operateInternal()
   return result;
 }
 
-    } // namespace cgm
-  } //namespace bridge
+} // namespace cgm
+} //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(
-  SMTKCGMSESSION_EXPORT,
-  smtk::bridge::cgm::CreatePrism,
-  cgm_create_prism,
-  "create prism",
-  CreatePrism_xml,
-  smtk::bridge::cgm::Session);
+smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::CreatePrism, cgm_create_prism,
+  "create prism", CreatePrism_xml, smtk::bridge::cgm::Session);

@@ -53,9 +53,8 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkSerializer.h"
 
-
 #include "vtkSmartPointer.h" // Vector of smart pointers
-#include <vector> // Vector of smart pointers
+#include <vector>            // Vector of smart pointers
 
 struct vtkXMLArchiveWriterInternals;
 class vtkXMLElement;
@@ -63,14 +62,14 @@ class vtkXMLElement;
 class VTKSMTKDISCRETEMODEL_EXPORT vtkXMLArchiveWriter : public vtkSerializer
 {
 public:
-  static vtkXMLArchiveWriter *New();
-  vtkTypeMacro(vtkXMLArchiveWriter,vtkSerializer);
+  static vtkXMLArchiveWriter* New();
+  vtkTypeMacro(vtkXMLArchiveWriter, vtkSerializer);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // This method returns true if the serializer is an output
   // serializer (writer). Returns true.
-  virtual bool IsWriting() {return true;}
+  virtual bool IsWriting() { return true; }
 
   // Description:
   // This is the main entry point used to write a vector of
@@ -96,22 +95,21 @@ public:
   // objs.push_back(root);
   // writer->Serialize(ostr, "ObjectTree", objs);
   // \endcode
-  virtual void Serialize(ostream& ostr, const char* rootName,
-    std::vector<vtkSmartPointer<vtkObject> >& objs);
+  virtual void Serialize(
+    ostream& ostr, const char* rootName, std::vector<vtkSmartPointer<vtkObject> >& objs);
 
   // Description:
   // Additional entry point, used to write a vector of
   // objects to the XML archive, in the form of a vtkXMLElement which
   // is assumed to have been allocated by the caller.
-  virtual void Serialize(vtkXMLElement* elem, const char* rootName,
-    std::vector<vtkSmartPointer<vtkObject> >& objs);
+  virtual void Serialize(
+    vtkXMLElement* elem, const char* rootName, std::vector<vtkSmartPointer<vtkObject> >& objs);
 
   // Description:
   // Additional entry point, used to write a single (root) object
   // to the XML archive, in the form of a vtkXMLElement which
   // is assumed to have been allocated by the caller.
-  virtual void Serialize(vtkXMLElement* elem, const char* rootName,
-    vtkObject *objs);
+  virtual void Serialize(vtkXMLElement* elem, const char* rootName, vtkObject* objs);
 
   // Description:
   // Serializes a single integer.
@@ -123,20 +121,20 @@ public:
 
   // Description:
   // Serializes a single unsigned long.
-  virtual void Serialize(const char* name, unsigned long& val) ;
+  virtual void Serialize(const char* name, unsigned long& val);
 
- // Description:
+  // Description:
   // Serializes an array.
   virtual void Serialize(const char* name, unsigned long*& val, unsigned int& length);
 
-  // Description:
-  // Reads a single vtkIdType.
+// Description:
+// Reads a single vtkIdType.
 #if defined(VTK_USE_64BIT_IDS)
   virtual void Serialize(const char* name, vtkIdType& val);
 #endif
 
-  // Description:
-  // Reads an array.
+// Description:
+// Reads an array.
 #if defined(VTK_USE_64BIT_IDS)
   virtual void Serialize(const char* name, vtkIdType*& val, unsigned int& length);
 #endif
@@ -175,14 +173,13 @@ public:
   // is actually ignored (we don't write an attribute indicating it is weak,
   // if it is) because the reading code will have the same paremter specifying
   // the  pointer is weak.  Here for symmetry.
-  virtual void Serialize(const char* name,
-    std::vector<vtkSmartPointer<vtkObject> >& objs,
-    bool weakPtr = false);
+  virtual void Serialize(
+    const char* name, std::vector<vtkSmartPointer<vtkObject> >& objs, bool weakPtr = false);
 
   // Description:
   // Serializes a map from int to vector of vtkObjects.
-  virtual void Serialize(const char* name,
-    std::map<int, std::vector<vtkSmartPointer<vtkObject> > >& objs);
+  virtual void Serialize(
+    const char* name, std::map<int, std::vector<vtkSmartPointer<vtkObject> > >& objs);
 
 protected:
   vtkXMLArchiveWriter();
@@ -197,11 +194,10 @@ protected:
   virtual unsigned int Serialize(vtkObject*& obj);
 
 private:
-  vtkXMLArchiveWriter(const vtkXMLArchiveWriter&);  // Not implemented.
-  void operator=(const vtkXMLArchiveWriter&);  // Not implemented.
+  vtkXMLArchiveWriter(const vtkXMLArchiveWriter&); // Not implemented.
+  void operator=(const vtkXMLArchiveWriter&);      // Not implemented.
 
-  virtual void CreateDOM(const char* rootName,
-    std::vector<vtkSmartPointer<vtkObject> >& objs);
+  virtual void CreateDOM(const char* rootName, std::vector<vtkSmartPointer<vtkObject> >& objs);
 
   void SetRootElement(vtkXMLElement*);
 

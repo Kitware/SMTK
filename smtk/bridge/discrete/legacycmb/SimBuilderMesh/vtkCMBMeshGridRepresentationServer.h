@@ -44,28 +44,28 @@ class VTK_EXPORT vtkCMBMeshGridRepresentationServer : public vtkModelGeneratedGr
 {
 public:
   static vtkCMBMeshGridRepresentationServer* New();
-  vtkTypeMacro(vtkCMBMeshGridRepresentationServer,vtkModelGeneratedGridRepresentation);
+  vtkTypeMacro(vtkCMBMeshGridRepresentationServer, vtkModelGeneratedGridRepresentation);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetBCSNodalAnalysisGridPointIds(vtkDiscreteModel* model,vtkIdType bcsGroupId,
-    int bcGroupType, vtkIdList* pointIds);
+  virtual bool GetBCSNodalAnalysisGridPointIds(
+    vtkDiscreteModel* model, vtkIdType bcsGroupId, int bcGroupType, vtkIdList* pointIds);
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetFloatingEdgeAnalysisGridPointIds(vtkDiscreteModel* model, vtkIdType modelEdgeId,
-                                                   vtkIdList* pointIds);
+  virtual bool GetFloatingEdgeAnalysisGridPointIds(
+    vtkDiscreteModel* model, vtkIdType modelEdgeId, vtkIdList* pointIds);
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetModelEdgeAnalysisPoints(vtkDiscreteModel* model, vtkIdType edgeId,
-                                          vtkIdTypeArray* edgePoints);
+  virtual bool GetModelEdgeAnalysisPoints(
+    vtkDiscreteModel* model, vtkIdType edgeId, vtkIdTypeArray* edgePoints);
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetBoundaryGroupAnalysisFacets(vtkDiscreteModel* model, vtkIdType boundaryGroupId,
-                                              vtkIdList* cellIds, vtkIdList* cellSides);
+  virtual bool GetBoundaryGroupAnalysisFacets(
+    vtkDiscreteModel* model, vtkIdType boundaryGroupId, vtkIdList* cellIds, vtkIdList* cellSides);
 
   // Description:
   // Do some type of validation of the mapping information in model.
@@ -75,7 +75,7 @@ public:
   // Description:
   // Initialize the information from a sim mesh or mesh representation.
   // Returns true for success.
-  bool Initialize(vtkCMBMeshServer *mesh);
+  bool Initialize(vtkCMBMeshServer* mesh);
   bool Initialize(vtkPolyData* meshRepresentation, vtkDiscreteModel* model);
 
   // Description:
@@ -92,36 +92,35 @@ public:
   // Description:
   // Get cellIds or area given a group id of model entities.
   // Meant for 2D models with triangle meshes.
-  virtual bool GetGroupFacetIds(vtkDiscreteModel* model,int groupId,
-    std::vector<int>& cellIds);
-  virtual bool GetGroupFacetsArea(vtkDiscreteModel* model,int groupId, double& area);
+  virtual bool GetGroupFacetIds(vtkDiscreteModel* model, int groupId, std::vector<int>& cellIds);
+  virtual bool GetGroupFacetsArea(vtkDiscreteModel* model, int groupId, double& area);
 
   // Description:
   // Get cell and point information from the analysis grid.
   virtual bool GetCellPointIds(int cellId, std::vector<int>& pointIds);
   virtual bool GetPointLocation(int pointId, std::vector<double>& coords);
 
-  virtual void WriteMeshToFile( );
+  virtual void WriteMeshToFile();
+
 protected:
   vtkCMBMeshGridRepresentationServer();
   virtual ~vtkCMBMeshGridRepresentationServer();
 
   friend class vtkCMBMeshToModelWriter;
   bool RepresentationBuilt;
-  bool BuildRepresentation(vtkCMBMeshServer *meshServer);
+  bool BuildRepresentation(vtkCMBMeshServer* meshServer);
   vtkIdTypeArray* GetCellIdMapArray();
   vtkIntArray* GetCellTypeMapArray();
   vtkIdTypeArray* GetPointIdMapArray();
   vtkIntArray* GetPointTypeMapArray();
   vtkIdTypeArray* GetCellPointIdsArray();
-  bool CanProcessModelGroup(
-    vtkDiscreteModel* model, int groupId, std::set<vtkIdType>& faceIdList);
+  bool CanProcessModelGroup(vtkDiscreteModel* model, int groupId, std::set<vtkIdType>& faceIdList);
 
   vtkPolyData* Representation;
   vtkWeakPointer<vtkDiscreteModel> Model;
 
 private:
-  vtkCMBMeshGridRepresentationServer(const vtkCMBMeshGridRepresentationServer&);  // Not implemented.
-  void operator=(const vtkCMBMeshGridRepresentationServer&);  // Not implemented.
+  vtkCMBMeshGridRepresentationServer(const vtkCMBMeshGridRepresentationServer&); // Not implemented.
+  void operator=(const vtkCMBMeshGridRepresentationServer&);                     // Not implemented.
 };
 #endif

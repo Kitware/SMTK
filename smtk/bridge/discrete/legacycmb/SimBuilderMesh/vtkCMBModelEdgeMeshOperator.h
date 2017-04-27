@@ -24,8 +24,8 @@ class vtkCMBMeshWrapper;
 class VTK_EXPORT vtkCMBModelEdgeMeshOperator : public vtkObject
 {
 public:
-  static vtkCMBModelEdgeMeshOperator * New();
-  vtkTypeMacro(vtkCMBModelEdgeMeshOperator,vtkObject);
+  static vtkCMBModelEdgeMeshOperator* New();
+  vtkTypeMacro(vtkCMBModelEdgeMeshOperator, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -63,8 +63,8 @@ protected:
   virtual ~vtkCMBModelEdgeMeshOperator();
 
 private:
-  vtkCMBModelEdgeMeshOperator(const vtkCMBModelEdgeMeshOperator&);  // Not implemented.
-  void operator=(const vtkCMBModelEdgeMeshOperator&);  // Not implemented.
+  vtkCMBModelEdgeMeshOperator(const vtkCMBModelEdgeMeshOperator&); // Not implemented.
+  void operator=(const vtkCMBModelEdgeMeshOperator&);              // Not implemented.
 
   // Description:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).

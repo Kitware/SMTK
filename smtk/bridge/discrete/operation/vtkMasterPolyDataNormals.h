@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 // .NAME vtkMasterPolyDataNormals - compute normals pointing out for all shells
 // .SECTION Description
 // This filter expects vtkPolyData, ordering the point ids making up each cell
@@ -42,16 +41,11 @@ protected:
   // to do its work. This is the method you should override to do whatever the
   // algorithm is designed to do. This happens during the fourth pass in the
   // pipeline execution process.
-  virtual int RequestData(vtkInformation*,
-                          vtkInformationVector**,
-                          vtkInformationVector*);
+  virtual int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
 
 private:
   vtkMasterPolyDataNormals(const vtkMasterPolyDataNormals&); // Not implemented.
-  void operator=(const vtkMasterPolyDataNormals&); // Not implemented.
-
+  void operator=(const vtkMasterPolyDataNormals&);           // Not implemented.
 };
 
 #endif
-
-

@@ -27,8 +27,8 @@ class vtkPolyData;
 class VTK_EXPORT vtkCMBMeshPolyDataProvider : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkCMBMeshPolyDataProvider *New();
-  vtkTypeMacro(vtkCMBMeshPolyDataProvider,vtkPolyDataAlgorithm);
+  static vtkCMBMeshPolyDataProvider* New();
+  vtkTypeMacro(vtkCMBMeshPolyDataProvider, vtkPolyDataAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   void SetMeshWrapper(vtkCMBMeshWrapper*);
@@ -62,23 +62,20 @@ protected:
   // Description:
   // This is called by the superclass.
   // This is the method you should override.
-  virtual int RequestData(vtkInformation* request,
-                          vtkInformationVector** inputVector,
-                          vtkInformationVector* outputVector);
+  virtual int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
+    vtkInformationVector* outputVector);
 
   // Description:
   // This is called by the superclass.
   // This is the method you should override.
-  virtual int RequestUpdateExtent(vtkInformation*,
-                                  vtkInformationVector**,
-                                  vtkInformationVector*);
+  virtual int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
 
   // see algorithm for more info
   virtual int FillOutputPortInformation(int port, vtkInformation* info);
 
 private:
-  vtkCMBMeshPolyDataProvider(const vtkCMBMeshPolyDataProvider&);  // Not implemented.
-  void operator=(const vtkCMBMeshPolyDataProvider&);  // Not implemented.
+  vtkCMBMeshPolyDataProvider(const vtkCMBMeshPolyDataProvider&); // Not implemented.
+  void operator=(const vtkCMBMeshPolyDataProvider&);             // Not implemented.
 
   vtkCMBMeshWrapper* MeshWrapper;
   int ItemType;
@@ -86,7 +83,6 @@ private:
   vtkIdType EntityId;
   bool EntityIdIsSet;
   bool CreateEdgePointVerts;
-
 };
 
 #endif

@@ -13,13 +13,15 @@
 #include "smtk/model/EntityRefArrangementOps.h"
 #include "smtk/model/Manager.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 EntityRef Instance::prototype() const
 {
   return EntityRefArrangementOps::firstRelation<EntityRef>(*this, INSTANCE_OF);
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

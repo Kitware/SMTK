@@ -23,9 +23,12 @@ SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <map>
 
-namespace smtk {
-  namespace mesh {
-    namespace moab {
+namespace smtk
+{
+namespace mesh
+{
+namespace moab
+{
 
 class MergeMeshVertices
 {
@@ -34,14 +37,14 @@ public:
 
   ~MergeMeshVertices();
 
-  ::moab::ErrorCode merge_entities(const smtk::mesh::HandleRange&  meshsets,
-                                   const double merge_tol=1.0e-6);
+  ::moab::ErrorCode merge_entities(
+    const smtk::mesh::HandleRange& meshsets, const double merge_tol = 1.0e-6);
+
 private:
   //- given a kdtree, set tag on vertices in leaf nodes with vertices
   //- to which they should be merged
-  ::moab::ErrorCode find_merged_to(::moab::EntityHandle &tree_root,
-                                   ::moab::AdaptiveKDTree &tree,
-                                   ::moab::Tag merged_to);
+  ::moab::ErrorCode find_merged_to(
+    ::moab::EntityHandle& tree_root, ::moab::AdaptiveKDTree& tree, ::moab::Tag merged_to);
 
   //- fill mappingFromDeadToAlive
   ::moab::ErrorCode map_dead_to_alive(::moab::Tag merged_to);
@@ -51,16 +54,16 @@ private:
 
   //- correct any occurrences of vertices inside a mesh being deleted and
   // the replacement vertex not already being an entity of that mesh
-  ::moab::ErrorCode correct_vertex_merge(const smtk::mesh::HandleRange&  meshsets);
+  ::moab::ErrorCode correct_vertex_merge(const smtk::mesh::HandleRange& meshsets);
 
   //Update the connectivity of the cells that used one or more of the
   //soon to be dead points
   ::moab::ErrorCode update_connectivity();
 
   //Identify higher dimension to be merged
-  ::moab::ErrorCode merge_higher_dimensions(::moab::Range &elems);
+  ::moab::ErrorCode merge_higher_dimensions(::moab::Range& elems);
 
-  ::moab::Interface *mbImpl;
+  ::moab::Interface* mbImpl;
 
   //- the tag pointing to the entity to which an entity will be merged
   ::moab::Tag mbMergeTag;
@@ -75,11 +78,10 @@ private:
   std::map< ::moab::EntityHandle, ::moab::EntityHandle> mappingFromDeadToAlive;
 
   double mergeTol, mergeTolSq;
-
 };
 
-    } // namespace moab
-  } // namespace mesh
+} // namespace moab
+} // namespace mesh
 } // namespace smtk
 
 #endif

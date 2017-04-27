@@ -24,13 +24,12 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 
-
 class vtkSerializer;
 
 class VTKSMTKDISCRETEMODEL_EXPORT vtkSerializationHelper : public vtkObject
 {
 public:
-  vtkTypeMacro(vtkSerializationHelper,vtkObject);
+  vtkTypeMacro(vtkSerializationHelper, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -48,19 +47,19 @@ public:
 
   // Description:
   // Get the value for the "type" attribute of the specfied object type
-  virtual const char *GetSerializationType(vtkObject *object) = 0;
+  virtual const char* GetSerializationType(vtkObject* object) = 0;
 
   // Description:
   // Serialize the input object.  Returns 1 if successful.
-  virtual int Serialize(vtkObject *object, vtkSerializer *serializer) = 0;
+  virtual int Serialize(vtkObject* object, vtkSerializer* serializer) = 0;
 
 protected:
   vtkSerializationHelper() {}
   ~vtkSerializationHelper() {}
 
 private:
-  vtkSerializationHelper(const vtkSerializationHelper&);  // Not implemented.
-  void operator=(const vtkSerializationHelper&);  // Not implemented.
+  vtkSerializationHelper(const vtkSerializationHelper&); // Not implemented.
+  void operator=(const vtkSerializationHelper&);         // Not implemented.
 };
 
 #endif

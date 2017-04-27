@@ -30,21 +30,24 @@
 /**\brief The main namespace for the Simulation Modeling Tool Kit (SMTK).
   *
   */
-namespace smtk {
+namespace smtk
+{
 
-  /**\brief Classes used throughout the toolkit.
+/**\brief Classes used throughout the toolkit.
     *
     */
-  namespace common {
-  }
+namespace common
+{
+}
 
-  /**\brief Define attributes describing simulation inputs.
+/**\brief Define attributes describing simulation inputs.
     *
     */
-  namespace attribute {
-  }
+namespace attribute
+{
+}
 
-  /**\brief Represent geometric and topological models of simulation domains.
+/**\brief Represent geometric and topological models of simulation domains.
     *
     * The Manager class holds records defining one or more geometric-
     * and/or topological-domain decompositions;
@@ -79,47 +82,55 @@ namespace smtk {
     * QEntityItemEditor classes may be used to display model information
     * as exposed by a hierarchy of DescriptivePhrase instances.
     */
-  namespace model {
-  }
+namespace model
+{
+}
 
-  /**\brief Tools for exporting simulation input decks from attributes.
+/**\brief Tools for exporting simulation input decks from attributes.
     *
     */
-  namespace simulation {
-  }
+namespace simulation
+{
+}
 
-  /**\brief I/O utilities for the toolkit.
+/**\brief I/O utilities for the toolkit.
     *
     */
-  namespace io {
-  }
+namespace io
+{
+}
 
-  /**\brief Sessions to solid modeling kernels.
+/**\brief Sessions to solid modeling kernels.
     *
     */
-  namespace bridge {
-    /**\brief A session using the Common Geometry Module (Argonne).
+namespace bridge
+{
+/**\brief A session using the Common Geometry Module (Argonne).
       *
       */
-    namespace cgm {
-    }
-    /**\brief A session that imports Exodus meshes.
+namespace cgm
+{
+}
+/**\brief A session that imports Exodus meshes.
       *
       */
-    namespace exodus {
-    }
-    /**\brief A forwarding session that uses Remus.
+namespace exodus
+{
+}
+/**\brief A forwarding session that uses Remus.
       *
       */
-    namespace remote {
-    }
-  }
+namespace remote
+{
+}
+}
 
-  /**\brief Representations of SMTK components in user interfaces.
+/**\brief Representations of SMTK components in user interfaces.
     *
     */
-  namespace view {
-  }
+namespace view
+{
+}
 }
 
 #endif // __smtk_doc_h

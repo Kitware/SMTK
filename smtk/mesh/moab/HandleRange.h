@@ -10,7 +10,6 @@
 //
 //=============================================================================
 
-
 #ifndef __smtk_mesh_moab_Types_h
 #define __smtk_mesh_moab_Types_h
 
@@ -22,14 +21,16 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include "moab/Range.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
 
-namespace smtk {
-namespace mesh {
-namespace moab {
+namespace smtk
+{
+namespace mesh
+{
+namespace moab
+{
 
-typedef ::moab::EntityHandle   Handle;
-typedef ::moab::Range          HandleRange;
+typedef ::moab::EntityHandle Handle;
+typedef ::moab::Range HandleRange;
 typedef ::moab::range_inserter HandleRangeInserter;
-
 }
 }
 }

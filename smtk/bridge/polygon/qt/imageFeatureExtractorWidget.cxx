@@ -62,12 +62,9 @@
 class vtkDEMImageCanvasSource2D : public vtkImageCanvasSource2D
 {
 public:
-  static vtkDEMImageCanvasSource2D *New()
-  {
-    return new vtkDEMImageCanvasSource2D;
-  }
+  static vtkDEMImageCanvasSource2D* New() { return new vtkDEMImageCanvasSource2D; }
 
-  void SetOrigin(double * o)
+  void SetOrigin(double* o)
   {
     Origin[0] = o[0];
     Origin[1] = o[1];
@@ -76,7 +73,7 @@ public:
     this->ImageData->SetOrigin(o);
   }
 
-  void SetSpacing(double * s)
+  void SetSpacing(double* s)
   {
     Spacing[0] = s[0];
     Spacing[1] = s[1];
@@ -86,26 +83,25 @@ public:
   }
 
 protected:
-  int RequestInformation (vtkInformation *vtkNotUsed(request),
-                                  vtkInformationVector** vtkNotUsed(inputVector),
-                                  vtkInformationVector *outputVector) override
+  int RequestInformation(vtkInformation* vtkNotUsed(request),
+    vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector) override
   {
     vtkInformation* outInfo = outputVector->GetInformationObject(0);
 
-    outInfo->Set(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT(),
-                 this->WholeExtent,6);
+    outInfo->Set(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT(), this->WholeExtent, 6);
 
-    outInfo->Set(vtkDataObject::SPACING(), Spacing[0], Spacing[1], Spacing[2] );
+    outInfo->Set(vtkDataObject::SPACING(), Spacing[0], Spacing[1], Spacing[2]);
     outInfo->Set(vtkDataObject::ORIGIN(), Origin[0], Origin[1], Origin[2]);
 
-    vtkDataObject::SetPointDataActiveScalarInfo(outInfo, this->ImageData->GetScalarType(),
-                                                this->ImageData->GetNumberOfScalarComponents());
+    vtkDataObject::SetPointDataActiveScalarInfo(
+      outInfo, this->ImageData->GetScalarType(), this->ImageData->GetNumberOfScalarComponents());
     return 1;
   }
-  vtkDEMImageCanvasSource2D():vtkImageCanvasSource2D()
-  {}
-  ~vtkDEMImageCanvasSource2D() override
-  {}
+  vtkDEMImageCanvasSource2D()
+    : vtkImageCanvasSource2D()
+  {
+  }
+  ~vtkDEMImageCanvasSource2D() override {}
   double Origin[3];
   double Spacing[3];
 };
@@ -119,21 +115,21 @@ public:
     Alpha = 255;
     Radius = 3;
     UpdatePotAlpha = false;
-    Forground   = 255;
-    Background  =   0;
-    PotentialBG =  55;
+    Forground = 255;
+    Background = 0;
+    PotentialBG = 55;
     PotentialFG = 200;
     shiftButtonPressed = false;
     leftMousePressed = false;
     ForgroundLabled = false;
     drawForeground = false;
 
-    maskActor   = vtkSmartPointer<vtkImageActor>::New();
+    maskActor = vtkSmartPointer<vtkImageActor>::New();
     imageViewer = vtkSmartPointer<vtkImageViewer2>::New();
-    drawing     = vtkSmartPointer<vtkDEMImageCanvasSource2D>::New();
+    drawing = vtkSmartPointer<vtkDEMImageCanvasSource2D>::New();
     filterWaterShed = vtkSmartPointer<vtkWatershedFilter>::New();
-    filterGrabCuts  = vtkSmartPointer<vtkGrabCutFilter>::New();
-    filter          = filterGrabCuts;
+    filterGrabCuts = vtkSmartPointer<vtkGrabCutFilter>::New();
+    filter = filterGrabCuts;
 
     drawing->SetDrawColor(Forground, Forground, Forground, Alpha);
 
@@ -141,7 +137,7 @@ public:
 
     imageViewer->SetInputData(image);
     imageViewer->GetRenderer()->ResetCamera();
-    imageViewer->GetRenderer()->SetBackground(0,0,0);
+    imageViewer->GetRenderer()->SetBackground(0, 0, 0);
     vtkCamera* camera = imageViewer->GetRenderer()->GetActiveCamera();
 
     vtkSmartPointer<vtkRenderer> maskRender = vtkSmartPointer<vtkRenderer>::New();
@@ -191,7 +187,7 @@ public:
     imageClassFilter->SetBackgroundValue(Background);
 
     contFilter = vtkSmartPointer<vtkContourFilter>::New();
-    contFilter->SetValue(0,127.5);
+    contFilter->SetValue(0, 127.5);
     contFilter->ComputeGradientsOn();
     contFilter->ComputeScalarsOff();
 
@@ -209,7 +205,7 @@ public:
   bool ForgroundLabled;
   vtkSmartPointer<vtkImageActor> maskActor;
   vtkSmartPointer<vtkDEMImageCanvasSource2D> drawing;
-  vtkImageAlgorithm * filter;
+  vtkImageAlgorithm* filter;
   vtkSmartPointer<vtkWatershedFilter> filterWaterShed;
   vtkSmartPointer<vtkGrabCutFilter> filterGrabCuts;
   vtkSmartPointer<vtkPolyDataMapper> lineMapper;
@@ -220,7 +216,7 @@ public:
   vtkSmartPointer<vtkImageClassFilter> imageClassFilter;
   vtkSmartPointer<vtkCleanPolylines> cleanPolyLines;
 
-  QPushButton * Run;
+  QPushButton* Run;
 
   bool leftMousePressed;
   bool shiftButtonPressed;
@@ -233,7 +229,7 @@ public:
   {
     double currentColor[4];
     drawing->GetDrawColor(currentColor);
-    vtkImageData * image = drawing->GetOutput();
+    vtkImageData* image = drawing->GetOutput();
     int* dims = image->GetDimensions();
     for (int z = 0; z < dims[2]; z++)
     {
@@ -242,37 +238,36 @@ public:
         for (int x = 0; x < dims[0]; x++)
         {
           double pclass = image->GetScalarComponentAsDouble(x, y, z, 0);
-          if(pclass == this->Forground)
+          if (pclass == this->Forground)
           {
-            drawing->SetDrawColor(this->Forground, this->Forground,
-                                  this->Forground, this->Alpha);
+            drawing->SetDrawColor(this->Forground, this->Forground, this->Forground, this->Alpha);
           }
-          else if(pclass == this->Background)
+          else if (pclass == this->Background)
           {
-            drawing->SetDrawColor(this->Background, this->Background,
-                                  this->Background, this->Alpha);
+            drawing->SetDrawColor(
+              this->Background, this->Background, this->Background, this->Alpha);
           }
-          else if(pclass == this->PotentialFG)
+          else if (pclass == this->PotentialFG)
           {
-            drawing->SetDrawColor(this->PotentialFG, this->PotentialFG,
-                                  this->PotentialFG, this->PotAlpha);
+            drawing->SetDrawColor(
+              this->PotentialFG, this->PotentialFG, this->PotentialFG, this->PotAlpha);
           }
-          else if(pclass == this->PotentialBG)
+          else if (pclass == this->PotentialBG)
           {
-            drawing->SetDrawColor(this->PotentialBG, this->PotentialBG,
-                                  this->PotentialBG, this->PotAlpha);
+            drawing->SetDrawColor(
+              this->PotentialBG, this->PotentialBG, this->PotentialBG, this->PotAlpha);
           }
           else
           {
             std::cout << "Unknown class " << pclass << std::endl;
             continue;
           }
-          drawing->DrawPoint(x,y);
+          drawing->DrawPoint(x, y);
         }
       }
     }
     drawing->SetDrawColor(currentColor);
-    vtkRenderWindowInteractor *interactor = imageViewer->GetRenderWindow()->GetInteractor();
+    vtkRenderWindowInteractor* interactor = imageViewer->GetRenderWindow()->GetInteractor();
     interactor->Render();
   }
 };
@@ -281,30 +276,25 @@ public:
 class vtkGrabLeftMouseReleasedCallback : public vtkCommand
 {
 public:
-  static vtkGrabLeftMouseReleasedCallback *New()
-  {
-    return new vtkGrabLeftMouseReleasedCallback;
-  }
+  static vtkGrabLeftMouseReleasedCallback* New() { return new vtkGrabLeftMouseReleasedCallback; }
 
-  void SetData(imageFeatureExtractorWidget::Internal *i)
-  {
-    this->internal = i;
-  }
+  void SetData(imageFeatureExtractorWidget::Internal* i) { this->internal = i; }
 
-  void Execute(vtkObject *, unsigned long vtkNotUsed(event), void *) override
+  void Execute(vtkObject*, unsigned long vtkNotUsed(event), void*) override
   {
-    vtkRenderWindowInteractor *interactor = internal->imageViewer->GetRenderWindow()->GetInteractor();
+    vtkRenderWindowInteractor* interactor =
+      internal->imageViewer->GetRenderWindow()->GetInteractor();
     vtkRenderer* renderer = internal->imageViewer->GetRenderer();
     vtkImageData* image = internal->imageViewer->GetInput();
-    vtkInteractorStyle *style = vtkInteractorStyle::SafeDownCast(interactor->GetInteractorStyle());
+    vtkInteractorStyle* style = vtkInteractorStyle::SafeDownCast(interactor->GetInteractorStyle());
 
-    if(!internal->leftMousePressed)
+    if (!internal->leftMousePressed)
     {
       style->OnLeftButtonUp();
       return;
     }
 
-    if ( internal->shiftButtonPressed )
+    if (internal->shiftButtonPressed)
     {
       internal->leftMousePressed = false;
       internal->shiftButtonPressed = false;
@@ -313,9 +303,8 @@ public:
     }
 
     // Pick at the mouse location provided by the interactor
-    internal->propPicker->Pick(interactor->GetEventPosition()[0],
-                               interactor->GetEventPosition()[1],
-                               0.0, renderer);
+    internal->propPicker->Pick(
+      interactor->GetEventPosition()[0], interactor->GetEventPosition()[1], 0.0, renderer);
 
     // Get the world coordinates of the pick
     double pos[3];
@@ -330,12 +319,11 @@ public:
     image->GetDimensions(dim);
 
     int image_coordinate[] = { (int)(0.5 + (pos[0] - origin[0]) / spacing[0]),
-                               (int)(0.5 + (pos[1] - origin[1]) / spacing[1]),
-                               0 };
+      (int)(0.5 + (pos[1] - origin[1]) / spacing[1]), 0 };
 
-    internal->drawing->FillTube(internal->LastPt[0], internal->LastPt[1],
-                                image_coordinate[0], image_coordinate[1], internal->Radius);
-    if(internal->drawForeground)
+    internal->drawing->FillTube(internal->LastPt[0], internal->LastPt[1], image_coordinate[0],
+      image_coordinate[1], internal->Radius);
+    if (internal->drawForeground)
     {
       internal->Run->setEnabled(true);
     }
@@ -344,51 +332,39 @@ public:
   }
 
 private:
-  imageFeatureExtractorWidget::Internal *internal;
+  imageFeatureExtractorWidget::Internal* internal;
 };
 
 // The mouse motion callback, to pick the image and recover pixel values
 class vtkGrabMouseMoveCallback : public vtkCommand
 {
 public:
-  static vtkGrabMouseMoveCallback *New()
-  {
-    return new vtkGrabMouseMoveCallback;
-  }
+  static vtkGrabMouseMoveCallback* New() { return new vtkGrabMouseMoveCallback; }
 
-  vtkGrabMouseMoveCallback()
-  {
-    this->internal     = NULL;
-  }
+  vtkGrabMouseMoveCallback() { this->internal = NULL; }
 
-  ~vtkGrabMouseMoveCallback() override
-  {
-    this->internal     = NULL;
-  }
+  ~vtkGrabMouseMoveCallback() override { this->internal = NULL; }
 
-  void SetData(imageFeatureExtractorWidget::Internal *i)
-  {
-    this->internal = i;
-  }
+  void SetData(imageFeatureExtractorWidget::Internal* i) { this->internal = i; }
 
-  void Execute(vtkObject *, unsigned long vtkNotUsed(event), void *) override
+  void Execute(vtkObject*, unsigned long vtkNotUsed(event), void*) override
   {
-    vtkRenderWindowInteractor *interactor = internal->imageViewer->GetRenderWindow()->GetInteractor();
+    vtkRenderWindowInteractor* interactor =
+      internal->imageViewer->GetRenderWindow()->GetInteractor();
     vtkRenderer* renderer = internal->imageViewer->GetRenderer();
     vtkImageActor* actor = internal->imageViewer->GetImageActor();
     vtkImageData* image = internal->imageViewer->GetInput();
-    vtkInteractorStyle *style = vtkInteractorStyle::SafeDownCast(interactor->GetInteractorStyle());
+    vtkInteractorStyle* style = vtkInteractorStyle::SafeDownCast(interactor->GetInteractorStyle());
 
-    if(!internal->leftMousePressed || internal->shiftButtonPressed )
+    if (!internal->leftMousePressed || internal->shiftButtonPressed)
     {
       style->OnMouseMove();
       return;
     }
 
     // Pick at the mouse location provided by the interactor
-    internal->propPicker->Pick(interactor->GetEventPosition()[0],
-                               interactor->GetEventPosition()[1],
-                               0.0, renderer);
+    internal->propPicker->Pick(
+      interactor->GetEventPosition()[0], interactor->GetEventPosition()[1], 0.0, renderer);
 
     // There could be other props assigned to this picker, so
     // make sure we picked the image actor
@@ -399,7 +375,7 @@ public:
     {
       vtkCollectionSimpleIterator sit;
       path->InitTraversal(sit);
-      vtkAssemblyNode *node;
+      vtkAssemblyNode* node;
       for (int i = 0; i < path->GetNumberOfItems() && !validPick; ++i)
       {
         node = path->GetNextNode(sit);
@@ -428,8 +404,7 @@ public:
     image->GetDimensions(dim);
 
     int image_coordinate[] = { (int)(0.5 + (pos[0] - origin[0]) / spacing[0]),
-                               (int)(0.5 + (pos[1] - origin[1]) / spacing[1]),
-                               0 };
+      (int)(0.5 + (pos[1] - origin[1]) / spacing[1]), 0 };
     if (image_coordinate[0] < 0 || image_coordinate[1] < 0)
     {
       style->OnMouseMove();
@@ -437,62 +412,51 @@ public:
     }
 
     interactor->Render();
-    internal->drawing->FillTube(internal->LastPt[0], internal->LastPt[1],
-                                image_coordinate[0], image_coordinate[1], internal->Radius);
-    if(internal->drawForeground)
+    internal->drawing->FillTube(internal->LastPt[0], internal->LastPt[1], image_coordinate[0],
+      image_coordinate[1], internal->Radius);
+    if (internal->drawForeground)
     {
       internal->Run->setEnabled(true);
     }
     internal->LastPt[0] = image_coordinate[0];
     internal->LastPt[1] = image_coordinate[1];
   }
+
 private:
-  imageFeatureExtractorWidget::Internal *internal;
+  imageFeatureExtractorWidget::Internal* internal;
 };
 
 // The mouse motion callback, to pick the image and recover pixel values
 class vtkGrabLeftMousePressCallback : public vtkCommand
 {
 public:
-  static vtkGrabLeftMousePressCallback *New()
-  {
-    return new vtkGrabLeftMousePressCallback;
-  }
+  static vtkGrabLeftMousePressCallback* New() { return new vtkGrabLeftMousePressCallback; }
 
-  vtkGrabLeftMousePressCallback()
-  {
-    this->internal     = NULL;
-  }
+  vtkGrabLeftMousePressCallback() { this->internal = NULL; }
 
-  ~vtkGrabLeftMousePressCallback() override
-  {
-    this->internal     = NULL;
-  }
+  ~vtkGrabLeftMousePressCallback() override { this->internal = NULL; }
 
-  void SetData(imageFeatureExtractorWidget::Internal *i)
-  {
-    this->internal = i;
-  }
+  void SetData(imageFeatureExtractorWidget::Internal* i) { this->internal = i; }
 
-  void Execute(vtkObject *, unsigned long vtkNotUsed(event), void *) override
+  void Execute(vtkObject*, unsigned long vtkNotUsed(event), void*) override
   {
     internal->leftMousePressed = true;
-    vtkRenderWindowInteractor *interactor = internal->imageViewer->GetRenderWindow()->GetInteractor();
+    vtkRenderWindowInteractor* interactor =
+      internal->imageViewer->GetRenderWindow()->GetInteractor();
     vtkRenderer* renderer = internal->imageViewer->GetRenderer();
     vtkImageActor* actor = internal->imageViewer->GetImageActor();
     vtkImageData* image = internal->imageViewer->GetInput();
-    vtkInteractorStyle *style = vtkInteractorStyle::SafeDownCast(interactor->GetInteractorStyle());
+    vtkInteractorStyle* style = vtkInteractorStyle::SafeDownCast(interactor->GetInteractorStyle());
 
     bool shiftKey = interactor->GetShiftKey();
-    if(shiftKey && !internal->shiftButtonPressed)
+    if (shiftKey && !internal->shiftButtonPressed)
     {
       internal->shiftButtonPressed = true;
     }
 
     // Pick at the mouse location provided by the interactor
-    this->internal->propPicker->Pick(interactor->GetEventPosition()[0],
-                                     interactor->GetEventPosition()[1],
-                                     0.0, renderer);
+    this->internal->propPicker->Pick(
+      interactor->GetEventPosition()[0], interactor->GetEventPosition()[1], 0.0, renderer);
 
     // There could be other props assigned to this picker, so
     // make sure we picked the image actor
@@ -503,7 +467,7 @@ public:
     {
       vtkCollectionSimpleIterator sit;
       path->InitTraversal(sit);
-      vtkAssemblyNode *node;
+      vtkAssemblyNode* node;
       for (int i = 0; i < path->GetNumberOfItems() && !validPick; ++i)
       {
         node = path->GetNextNode(sit);
@@ -520,7 +484,7 @@ public:
       return;
     }
 
-    if( internal->shiftButtonPressed )
+    if (internal->shiftButtonPressed)
     {
       style->OnLeftButtonDown();
       return;
@@ -539,8 +503,7 @@ public:
     image->GetDimensions(dim);
 
     int image_coordinate[] = { (int)(0.5 + (pos[0] - origin[0]) / spacing[0]),
-                               (int)(0.5 + (pos[1] - origin[1]) / spacing[1]),
-                               0 };
+      (int)(0.5 + (pos[1] - origin[1]) / spacing[1]), 0 };
     if (image_coordinate[0] < 0 || image_coordinate[1] < 0)
     {
       // Pass the event further on
@@ -548,15 +511,14 @@ public:
       return;
     }
 
-    this->internal->drawing->FillBox(image_coordinate[0]-internal->Radius,
-                                     image_coordinate[0]+internal->Radius,
-                                     image_coordinate[1]-internal->Radius,
-                                     image_coordinate[1]+internal->Radius);
+    this->internal->drawing->FillBox(image_coordinate[0] - internal->Radius,
+      image_coordinate[0] + internal->Radius, image_coordinate[1] - internal->Radius,
+      image_coordinate[1] + internal->Radius);
     this->internal->leftMousePressed = true;
     this->internal->LastPt[0] = image_coordinate[0];
     this->internal->LastPt[1] = image_coordinate[1];
 
-    if(internal->drawForeground)
+    if (internal->drawForeground)
     {
       internal->Run->setEnabled(true);
     }
@@ -564,14 +526,13 @@ public:
     interactor->Render();
     style->OnLeftButtonDown();
   }
-  
+
 private:
-  imageFeatureExtractorWidget::Internal *internal;
+  imageFeatureExtractorWidget::Internal* internal;
 };
 
-
 imageFeatureExtractorWidget::imageFeatureExtractorWidget()
-:internal( new imageFeatureExtractorWidget::Internal() )
+  : internal(new imageFeatureExtractorWidget::Internal())
 {
   this->ui = new Ui_imageFeatureExtractor;
   this->ui->setupUi(this);
@@ -584,10 +545,10 @@ imageFeatureExtractorWidget::imageFeatureExtractorWidget()
   connect(this->ui->NumberOfIter, SIGNAL(valueChanged(int)), this, SLOT(numberOfIterations(int)));
   connect(this->ui->DrawSize, SIGNAL(valueChanged(int)), this, SLOT(pointSize(int)));
 
-  connect(this->ui->MinLandSize, SIGNAL(textChanged(const QString &)),
-          this,                  SLOT(setBGFilterSize(const QString &)));
-  connect(this->ui->MinWaterSize, SIGNAL(textChanged(const QString &)),
-          this,                   SLOT(setFGFilterSize(const QString &)));
+  connect(this->ui->MinLandSize, SIGNAL(textChanged(const QString&)), this,
+    SLOT(setBGFilterSize(const QString&)));
+  connect(this->ui->MinWaterSize, SIGNAL(textChanged(const QString&)), this,
+    SLOT(setFGFilterSize(const QString&)));
   this->ui->MinLandSize->setValidator(new QDoubleValidator(0, 1e50, 7, this->ui->MinLandSize));
   this->ui->MinWaterSize->setValidator(new QDoubleValidator(0, 1e50, 7, this->ui->MinWaterSize));
   this->ui->MinLandSize->setEnabled(false);
@@ -610,16 +571,16 @@ imageFeatureExtractorWidget::imageFeatureExtractorWidget()
 
   this->ui->qvtkWidget->SetRenderWindow(this->internal->imageViewer->GetRenderWindow());
   this->internal->imageViewer->SetupInteractor(
-                                          this->ui->qvtkWidget->GetRenderWindow()->GetInteractor());
+    this->ui->qvtkWidget->GetRenderWindow()->GetInteractor());
 
   vtkSmartPointer<vtkGrabLeftMousePressCallback> pressCallback =
-                                          vtkSmartPointer<vtkGrabLeftMousePressCallback>::New();
+    vtkSmartPointer<vtkGrabLeftMousePressCallback>::New();
   pressCallback->SetData(internal);
   vtkSmartPointer<vtkGrabMouseMoveCallback> moveCallback =
-                                                vtkSmartPointer<vtkGrabMouseMoveCallback>::New();
+    vtkSmartPointer<vtkGrabMouseMoveCallback>::New();
   moveCallback->SetData(internal);
   vtkSmartPointer<vtkGrabLeftMouseReleasedCallback> release =
-                                        vtkSmartPointer<vtkGrabLeftMouseReleasedCallback>::New();
+    vtkSmartPointer<vtkGrabLeftMouseReleasedCallback>::New();
   release->SetData(internal);
 
   vtkInteractorStyleImage* imageStyle = this->internal->imageViewer->GetInteractorStyle();
@@ -639,15 +600,13 @@ vtkSmartPointer<vtkPolyData> imageFeatureExtractorWidget::getPolydata()
   return internal->cleanPolyLines->GetOutput();
 }
 
-void imageFeatureExtractorWidget
-::setImage(std::string imagefile)
+void imageFeatureExtractorWidget::setImage(std::string imagefile)
 {
   vtkSmartPointer<vtkImageData> inputImage;
 
   QFileInfo finfo(imagefile.c_str());
-  if (finfo.completeSuffix().toLower() == "tif" ||
-      finfo.completeSuffix().toLower() == "tiff" ||
-      finfo.completeSuffix().toLower() == "dem")
+  if (finfo.completeSuffix().toLower() == "tif" || finfo.completeSuffix().toLower() == "tiff" ||
+    finfo.completeSuffix().toLower() == "dem")
   {
     vtkSmartPointer<vtkGDALRasterReader> source = vtkSmartPointer<vtkGDALRasterReader>::New();
     source->SetFileName(imagefile.c_str());
@@ -662,7 +621,7 @@ void imageFeatureExtractorWidget
     inputImage = source->GetOutput();
   }
 
-  if(!inputImage)
+  if (!inputImage)
   {
     return;
   }
@@ -682,24 +641,24 @@ void imageFeatureExtractorWidget
   internal->drawing->SetSpacing(inputImage->GetSpacing());
 
   {
-    double * s = inputImage->GetSpacing();
+    double* s = inputImage->GetSpacing();
     int dims[3];
     inputImage->GetDimensions(dims);
-    this->ui->extentX->setText(QString::number(std::abs(s[0]*dims[0])));
-    this->ui->extentY->setText(QString::number(std::abs(s[1]*dims[1])));
+    this->ui->extentX->setText(QString::number(std::abs(s[0] * dims[0])));
+    this->ui->extentY->setText(QString::number(std::abs(s[1] * dims[1])));
   }
 
   double currentColor[4];
   internal->drawing->GetDrawColor(currentColor);
-  internal->drawing->SetDrawColor(internal->PotentialBG, internal->PotentialBG,
-                                  internal->PotentialBG, this->internal->PotAlpha);
+  internal->drawing->SetDrawColor(
+    internal->PotentialBG, internal->PotentialBG, internal->PotentialBG, this->internal->PotAlpha);
   internal->drawing->FillBox(inputImage->GetExtent()[0], inputImage->GetExtent()[1],
-                             inputImage->GetExtent()[2], inputImage->GetExtent()[3]);
+    inputImage->GetExtent()[2], inputImage->GetExtent()[3]);
   internal->drawing->SetDrawColor(currentColor);
   internal->imageViewer->GetRenderer()->ResetCamera();
   internal->drawForeground = true;
 
-  vtkRenderWindowInteractor *interactor = internal->imageViewer->GetRenderWindow()->GetInteractor();
+  vtkRenderWindowInteractor* interactor = internal->imageViewer->GetRenderWindow()->GetInteractor();
   this->internal->contFilter->SetInputData(this->internal->imageClassFilter->GetOutput(0));
   this->internal->contFilter->Update();
   this->internal->cleanPolyLines->SetInputData(this->internal->contFilter->GetOutput());
@@ -709,17 +668,16 @@ void imageFeatureExtractorWidget
 
 void imageFeatureExtractorWidget::saveMask()
 {
-  QString fileName = QFileDialog::getSaveFileName(NULL, tr("Save Current binary mask"),
-                                                  "",
-                                                  tr("vti file (*.vti)"));
-  if(fileName.isEmpty())
+  QString fileName =
+    QFileDialog::getSaveFileName(NULL, tr("Save Current binary mask"), "", tr("vti file (*.vti)"));
+  if (fileName.isEmpty())
   {
     return;
   }
 
   vtkSmartPointer<vtkXMLImageDataWriter> writer = vtkSmartPointer<vtkXMLImageDataWriter>::New();
   writer->SetFileName(fileName.toStdString().c_str());
-  vtkImageData * tmp = internal->imageClassFilter->GetOutput();
+  vtkImageData* tmp = internal->imageClassFilter->GetOutput();
   writer->SetInputData(tmp);
   writer->Write();
 }
@@ -730,7 +688,7 @@ void imageFeatureExtractorWidget::run()
   this->ui->Run->setEnabled(false);
   QCoreApplication::processEvents();
   this->ui->Run->repaint();
-  if(internal->filter == internal->filterGrabCuts.GetPointer())
+  if (internal->filter == internal->filterGrabCuts.GetPointer())
   {
     internal->filterGrabCuts->DoGrabCut();
   }
@@ -755,19 +713,20 @@ void imageFeatureExtractorWidget::run()
     {
       for (int x = 0; x < dims[0]; x++)
       {
-        double tmpC[] = {updateMask->GetScalarComponentAsFloat(  x, y, z, 0),
-                         updateMask->GetScalarComponentAsFloat(  x, y, z, 0),
-                         updateMask->GetScalarComponentAsFloat(  x, y, z, 0),
-                         currentMask->GetScalarComponentAsFloat( x, y, z, 3) };
+        double tmpC[] = { updateMask->GetScalarComponentAsFloat(x, y, z, 0),
+          updateMask->GetScalarComponentAsFloat(x, y, z, 0),
+          updateMask->GetScalarComponentAsFloat(x, y, z, 0),
+          currentMask->GetScalarComponentAsFloat(x, y, z, 3) };
         internal->drawing->SetDrawColor(tmpC);
-        internal->drawing->DrawPoint(x,y);
+        internal->drawing->DrawPoint(x, y);
       }
     }
   }
   this->ui->MinLandSize->setEnabled(true);
   this->ui->MinWaterSize->setEnabled(true);
   internal->drawing->SetDrawColor(color);
-  vtkRenderWindowInteractor *interactor = this->internal->imageViewer->GetRenderWindow()->GetInteractor();
+  vtkRenderWindowInteractor* interactor =
+    this->internal->imageViewer->GetRenderWindow()->GetInteractor();
   interactor->Render();
   this->ui->Run->setText("Run");
   this->ui->Run->setEnabled(true);
@@ -775,7 +734,7 @@ void imageFeatureExtractorWidget::run()
 
 void imageFeatureExtractorWidget::clear()
 {
-  vtkImageData * image = this->internal->imageViewer->GetInput();
+  vtkImageData* image = this->internal->imageViewer->GetInput();
   internal->drawing->SetNumberOfScalarComponents(4);
   internal->drawing->SetScalarTypeToUnsignedChar();
   internal->drawing->SetExtent(image->GetExtent());
@@ -783,10 +742,10 @@ void imageFeatureExtractorWidget::clear()
   internal->drawing->SetSpacing(image->GetSpacing());
   double currentColor[4];
   internal->drawing->GetDrawColor(currentColor);
-  internal->drawing->SetDrawColor(internal->PotentialBG, internal->PotentialBG,
-                                  internal->PotentialBG, this->internal->PotAlpha);
-  internal->drawing->FillBox(image->GetExtent()[0], image->GetExtent()[1],
-                             image->GetExtent()[2], image->GetExtent()[3]);
+  internal->drawing->SetDrawColor(
+    internal->PotentialBG, internal->PotentialBG, internal->PotentialBG, this->internal->PotAlpha);
+  internal->drawing->FillBox(
+    image->GetExtent()[0], image->GetExtent()[1], image->GetExtent()[2], image->GetExtent()[3]);
   internal->drawing->SetDrawColor(currentColor);
 
   internal->lineMapper->SetInputData(NULL);
@@ -799,7 +758,7 @@ void imageFeatureExtractorWidget::clear()
   this->ui->Run->setEnabled(false);
   this->internal->Run = this->ui->Run;
 
-  vtkRenderWindowInteractor *interactor = internal->imageViewer->GetRenderWindow()->GetInteractor();
+  vtkRenderWindowInteractor* interactor = internal->imageViewer->GetRenderWindow()->GetInteractor();
   interactor->Render();
 }
 
@@ -816,7 +775,7 @@ void imageFeatureExtractorWidget::numberOfIterations(int j)
 void imageFeatureExtractorWidget::showPossibleLabel(bool b)
 {
   internal->UpdatePotAlpha = b;
-  if(internal->UpdatePotAlpha)
+  if (internal->UpdatePotAlpha)
   {
     internal->PotAlpha = internal->Alpha;
   }
@@ -826,7 +785,7 @@ void imageFeatureExtractorWidget::showPossibleLabel(bool b)
   }
   double currentColor[4];
   internal->drawing->GetDrawColor(currentColor);
-  if(currentColor[0] == internal->PotentialBG || currentColor[0] == internal->PotentialFG)
+  if (currentColor[0] == internal->PotentialBG || currentColor[0] == internal->PotentialFG)
   {
     currentColor[3] = internal->PotAlpha;
     internal->drawing->SetDrawColor(currentColor);
@@ -836,17 +795,17 @@ void imageFeatureExtractorWidget::showPossibleLabel(bool b)
 
 void imageFeatureExtractorWidget::setTransparency(int t)
 {
-  if(t != internal->Alpha)
+  if (t != internal->Alpha)
   {
     internal->Alpha = t;
     double currentColor[4];
     internal->drawing->GetDrawColor(currentColor);
-    if(internal->UpdatePotAlpha)
+    if (internal->UpdatePotAlpha)
     {
       internal->PotAlpha = internal->Alpha;
       currentColor[3] = internal->Alpha;
     }
-    else if(currentColor[0] == internal->Background || currentColor[0] == internal->Forground)
+    else if (currentColor[0] == internal->Background || currentColor[0] == internal->Forground)
     {
       currentColor[3] = internal->Alpha;
     }
@@ -864,7 +823,7 @@ void imageFeatureExtractorWidget::setFGFilterSize(QString const& f)
   internal->cleanPolyLines->SetInputData(this->internal->contFilter->GetOutput());
   internal->cleanPolyLines->Update();
   internal->lineMapper->SetInputData(internal->cleanPolyLines->GetOutput());
-  vtkRenderWindowInteractor *interactor = internal->imageViewer->GetRenderWindow()->GetInteractor();
+  vtkRenderWindowInteractor* interactor = internal->imageViewer->GetRenderWindow()->GetInteractor();
   interactor->Render();
 }
 
@@ -877,27 +836,27 @@ void imageFeatureExtractorWidget::setBGFilterSize(QString const& b)
   internal->cleanPolyLines->SetInputData(this->internal->contFilter->GetOutput());
   internal->cleanPolyLines->Update();
   internal->lineMapper->SetInputData(internal->cleanPolyLines->GetOutput());
-  vtkRenderWindowInteractor *interactor = internal->imageViewer->GetRenderWindow()->GetInteractor();
+  vtkRenderWindowInteractor* interactor = internal->imageViewer->GetRenderWindow()->GetInteractor();
   interactor->Render();
 }
 
 void imageFeatureExtractorWidget::setDrawMode(int m)
 {
-  switch( m )
+  switch (m)
   {
     case 1:
-      internal->drawing->SetDrawColor(internal->Background, internal->Background,
-                                      internal->Background, internal->Alpha);
+      internal->drawing->SetDrawColor(
+        internal->Background, internal->Background, internal->Background, internal->Alpha);
       internal->drawForeground = false;
       break;
     case 0:
-      internal->drawing->SetDrawColor(internal->Forground, internal->Forground,
-                                      internal->Forground, internal->Alpha);
+      internal->drawing->SetDrawColor(
+        internal->Forground, internal->Forground, internal->Forground, internal->Alpha);
       internal->drawForeground = true;
       break;
     case 2:
-      internal->drawing->SetDrawColor(internal->PotentialBG, internal->PotentialBG,
-                                      internal->PotentialBG, internal->PotAlpha);
+      internal->drawing->SetDrawColor(
+        internal->PotentialBG, internal->PotentialBG, internal->PotentialBG, internal->PotAlpha);
       internal->drawForeground = false;
       break;
   }
@@ -905,7 +864,7 @@ void imageFeatureExtractorWidget::setDrawMode(int m)
 
 void imageFeatureExtractorWidget::setAlgorithm(int a)
 {
-  switch(a)
+  switch (a)
   {
     case 0:
       internal->filter = internal->filterGrabCuts;
@@ -920,10 +879,9 @@ void imageFeatureExtractorWidget::setAlgorithm(int a)
 
 void imageFeatureExtractorWidget::saveLines()
 {
-  QString fileName = QFileDialog::getSaveFileName(NULL, tr("Save Current Lines"),
-                                                  "",
-                                                  tr("VTI File (*.vti)"));
-  if(fileName.isEmpty())
+  QString fileName =
+    QFileDialog::getSaveFileName(NULL, tr("Save Current Lines"), "", tr("VTI File (*.vti)"));
+  if (fileName.isEmpty())
   {
     return;
   }
@@ -936,10 +894,9 @@ void imageFeatureExtractorWidget::saveLines()
 
 void imageFeatureExtractorWidget::loadLines()
 {
-  QString fileName = QFileDialog::getOpenFileName(NULL, tr("Open VTI File"),
-                                                  "",
-                                                  tr("vti file (*.vti)"));
-  if(fileName.isEmpty())
+  QString fileName =
+    QFileDialog::getOpenFileName(NULL, tr("Open VTI File"), "", tr("vti file (*.vti)"));
+  if (fileName.isEmpty())
   {
     return;
   }
@@ -952,10 +909,10 @@ void imageFeatureExtractorWidget::loadLines()
 
   int* dims = updateMask->GetDimensions();
   int* cdims = current->GetDimensions();
-  if( dims[2] !=  cdims[2]|| dims[1] !=  cdims[1] || dims[0] != cdims[0])
+  if (dims[2] != cdims[2] || dims[1] != cdims[1] || dims[0] != cdims[0])
   {
-    QMessageBox::critical(this->parentWidget(), "Line file error",
-                          "Not the same size of the loaded image");
+    QMessageBox::critical(
+      this->parentWidget(), "Line file error", "Not the same size of the loaded image");
     return;
   }
   double color[4];
@@ -966,12 +923,11 @@ void imageFeatureExtractorWidget::loadLines()
     {
       for (int x = 0; x < dims[0]; x++)
       {
-        double tmpC[] = {updateMask->GetScalarComponentAsFloat( x, y, z, 0),
-                         updateMask->GetScalarComponentAsFloat( x, y, z, 0),
-                         updateMask->GetScalarComponentAsFloat( x, y, z, 0),
-                         0 };
+        double tmpC[] = { updateMask->GetScalarComponentAsFloat(x, y, z, 0),
+          updateMask->GetScalarComponentAsFloat(x, y, z, 0),
+          updateMask->GetScalarComponentAsFloat(x, y, z, 0), 0 };
         internal->drawing->SetDrawColor(tmpC);
-        internal->drawing->DrawPoint(x,y);
+        internal->drawing->DrawPoint(x, y);
       }
     }
   }

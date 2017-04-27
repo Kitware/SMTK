@@ -13,17 +13,16 @@
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtViewInterface.h" // for qtSMTKViewConstructor definition
 
-#include <map>
 #include <QVariant>
+#include <map>
 
 typedef std::map<std::string, qtSMTKViewConstructor> SMTKViewConstructorMap;
 /// qtSMTKUtilities is a collection of arbitrary utility functions that can be
 /// used by an smtk application.
-class SMTKQTEXT_EXPORT qtSMTKUtilities 
+class SMTKQTEXT_EXPORT qtSMTKUtilities
 {
 
 public:
-
   static const SMTKViewConstructorMap& viewConstructors();
 
   // this will overwrite the existing constructor if the viewname exists in the map
@@ -35,8 +34,7 @@ public:
   static QVariant UUIDToQVariant(const smtk::common::UUID& uuid);
   static QVariant entityRefToQVariant(const smtk::model::EntityRef& ent);
   static smtk::common::UUID QVariantToUUID(QVariant variant);
-  static smtk::model::EntityRef QVariantToEntityRef(QVariant variant,
-                                    smtk::model::ManagerPtr mgr);
+  static smtk::model::EntityRef QVariantToEntityRef(QVariant variant, smtk::model::ManagerPtr mgr);
 
 private:
   static SMTKViewConstructorMap m_viewConstructors;

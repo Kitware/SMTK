@@ -28,7 +28,7 @@
 class VTKSMTKREADEREXT_EXPORT vtkGDALRasterPolydataWrapper : public vtkDataSetAlgorithm
 {
 public:
-  static vtkGDALRasterPolydataWrapper *New();
+  static vtkGDALRasterPolydataWrapper* New();
   vtkTypeMacro(vtkGDALRasterPolydataWrapper, vtkDataSetAlgorithm);
 
   vtkGDALRasterPolydataWrapper();
@@ -42,7 +42,7 @@ public:
 
   // Description:
   // Return proj4 spatial reference.
-  const char*  GetProjectionString() const;
+  const char* GetProjectionString() const;
 
   // Description:
   // Return geo-referenced corner points (Upper left,
@@ -74,26 +74,22 @@ public:
 
   vtkGetVector6Macro(DataBounds, double);
 
-  vtkSetClampMacro(OnRatio,int,1,VTK_INT_MAX);
+  vtkSetClampMacro(OnRatio, int, 1, VTK_INT_MAX);
   vtkGetMacro(OnRatio, int);
 
-  vtkIdType GetRealNumberOfOutputPoints()
-  { return RealNumberOfOutputPoints; }
+  vtkIdType GetRealNumberOfOutputPoints() { return RealNumberOfOutputPoints; }
 
   vtkBooleanMacro(LimitToMaxNumberOfPoints, bool);
   vtkSetMacro(LimitToMaxNumberOfPoints, bool);
   vtkGetMacro(LimitToMaxNumberOfPoints, bool);
 
-  vtkSetClampMacro(MaxNumberOfPoints,vtkIdType,1,VTK_INT_MAX);
-  vtkGetMacro(MaxNumberOfPoints,vtkIdType);
+  vtkSetClampMacro(MaxNumberOfPoints, vtkIdType, 1, VTK_INT_MAX);
+  vtkGetMacro(MaxNumberOfPoints, vtkIdType);
 
-  void SetTransform(vtkTransform *transform);
+  void SetTransform(vtkTransform* transform);
   vtkGetObjectMacro(Transform, vtkTransform);
   void SetTransform(double elements[16]);
-  void ClearTransform()
-  {
-    this->SetTransform(static_cast<vtkTransform*>(0));
-  }
+  void ClearTransform() { this->SetTransform(static_cast<vtkTransform*>(0)); }
 
   vtkBooleanMacro(TransformOutputData, bool);
   vtkSetMacro(TransformOutputData, bool);
@@ -115,21 +111,16 @@ public:
   vtkGetMacro(IsNorth, bool);
 
 protected:
+  virtual int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
+    vtkInformationVector* outputVector);
 
-  virtual int RequestData(vtkInformation* request,
-                          vtkInformationVector** inputVector,
-                          vtkInformationVector* outputVector);
+  virtual int RequestInformation(vtkInformation* request, vtkInformationVector** inputVector,
+    vtkInformationVector* outputVector);
 
-  virtual int RequestInformation(vtkInformation* request,
-                                 vtkInformationVector** inputVector,
-                                 vtkInformationVector* outputVector);
+  virtual int RequestDataObject(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
 
-  virtual int RequestDataObject(vtkInformation *, vtkInformationVector **,
-                                vtkInformationVector *);
+  virtual int FillOutputPortInformation(int port, vtkInformation* info);
 
-  virtual int FillOutputPortInformation(int port,
-                                        vtkInformation* info);
-  
 protected:
   vtkSmartPointer<vtkGDALRasterReader> Reader;
   double DataBounds[6];
@@ -144,10 +135,10 @@ protected:
 
   bool LimitReadToBounds;
   double ReadBounds[6];
-  
+
   vtkBoundingBox ReadBBox;
 
-  vtkTransform *Transform;
+  vtkTransform* Transform;
   bool TransformOutputData;
 
   int Zone;
@@ -156,7 +147,7 @@ protected:
   double Origin[3];
 
 private:
-  vtkGDALRasterPolydataWrapper(const vtkGDALRasterPolydataWrapper&); // Not implemented.
+  vtkGDALRasterPolydataWrapper(const vtkGDALRasterPolydataWrapper&);            // Not implemented.
   vtkGDALRasterPolydataWrapper& operator=(const vtkGDALRasterPolydataWrapper&); // Not implemented.
 };
 

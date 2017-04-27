@@ -48,7 +48,6 @@
 #include "Serialize/vtkSerializer.h"
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 
-
 #include "vtkSmartPointer.h" // Vector of smart pointers
 #include <sstream>
 #include <vector> // Vector of smart pointers
@@ -60,14 +59,14 @@ class vtkSerializableObject;
 class VTKSMTKDISCRETEMODEL_EXPORT vtkXMLModelWriter : public vtkSerializer
 {
 public:
-  static vtkXMLModelWriter *New();
-  vtkTypeMacro(vtkXMLModelWriter,vtkSerializer);
+  static vtkXMLModelWriter* New();
+  vtkTypeMacro(vtkXMLModelWriter, vtkSerializer);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // This method returns true if the serializer is an output
   // serializer (writer). Returns true.
-  virtual bool IsWriting() {return true;}
+  virtual bool IsWriting() { return true; }
 
   // Description:
   // This is the main entry point used to write a vector of
@@ -93,8 +92,8 @@ public:
   // objs.push_back(shell);
   // writer->Serialize(ostr, "ConceptualModel", objs);
   // \endcode
-  virtual void Serialize(std::ostringstream& ostr, const char* rootName,
-    std::vector<vtkSmartPointer<vtkObject> >& objs);
+  virtual void Serialize(
+    std::ostringstream& ostr, const char* rootName, std::vector<vtkSmartPointer<vtkObject> >& objs);
 
   // Description:
   // Serializes a single integer.
@@ -106,20 +105,20 @@ public:
 
   // Description:
   // Serializes a single unsigned long.
-  virtual void Serialize(const char* name, unsigned long& val) ;
+  virtual void Serialize(const char* name, unsigned long& val);
 
- // Description:
+  // Description:
   // Serializes an array.
   virtual void Serialize(const char* name, unsigned long*& val, unsigned int& length);
 
-  // Description:
-  // Reads a single vtkIdType.
+// Description:
+// Reads a single vtkIdType.
 #if defined(VTK_USE_64BIT_IDS)
   virtual void Serialize(const char* name, vtkIdType& val);
 #endif
 
-  // Description:
-  // Reads an array.
+// Description:
+// Reads an array.
 #if defined(VTK_USE_64BIT_IDS)
   virtual void Serialize(const char* name, vtkIdType*& val, unsigned int& length);
 #endif
@@ -142,8 +141,7 @@ public:
 
   // Description:
   // Serializes a vtkSerializableObject.
-  virtual void Serialize(const char* name, vtkObject*& obj,
-    bool weakPtr = false);
+  virtual void Serialize(const char* name, vtkObject*& obj, bool weakPtr = false);
 
   // Description:
   // Serializes a vtkInformationObject.
@@ -151,14 +149,13 @@ public:
 
   // Description:
   // Serializes a vector of vtkSerializableObjects.
-  virtual void Serialize(const char* name,
-                         std::vector<vtkSmartPointer<vtkObject> >& objs,
-                         bool weakPtr = false);
+  virtual void Serialize(
+    const char* name, std::vector<vtkSmartPointer<vtkObject> >& objs, bool weakPtr = false);
 
   // Description:
   // Serializes a map from int to vector of vtkSerializableObject.
-  virtual void Serialize(const char* name,
-    std::map<int, std::vector<vtkSmartPointer<vtkObject> > >& objs);
+  virtual void Serialize(
+    const char* name, std::map<int, std::vector<vtkSmartPointer<vtkObject> > >& objs);
 
 protected:
   vtkXMLModelWriter();
@@ -168,11 +165,11 @@ protected:
   virtual vtkIdType Serialize(vtkSerializableObject*& obj);
 
 private:
-  vtkXMLModelWriter(const vtkXMLModelWriter&);  // Not implemented.
-  void operator=(const vtkXMLModelWriter&);  // Not implemented.
+  vtkXMLModelWriter(const vtkXMLModelWriter&); // Not implemented.
+  void operator=(const vtkXMLModelWriter&);    // Not implemented.
 
-  virtual vtkXMLElement* CreateDOM(const char* rootName,
-    std::vector<vtkSmartPointer<vtkObject> >& objs);
+  virtual vtkXMLElement* CreateDOM(
+    const char* rootName, std::vector<vtkSmartPointer<vtkObject> >& objs);
 
   void SetRootElement(vtkXMLElement*);
 

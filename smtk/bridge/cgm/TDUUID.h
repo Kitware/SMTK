@@ -20,28 +20,31 @@
 #include "smtk/common/UUIDGenerator.h"
 
 #ifdef SMTK_HASH_STORAGE
-#  if defined(_MSC_VER) // Visual studio
-#    pragma warning (push)
-#    pragma warning (disable : 4996)  // Overeager "unsafe" parameter check
-#  endif
-#  include "sparsehash/sparse_hash_map"
-#  if defined(_MSC_VER) // Visual studio
-#    pragma warning (pop)
-#  endif
+#if defined(_MSC_VER) // Visual studio
+#pragma warning(push)
+#pragma warning(disable : 4996) // Overeager "unsafe" parameter check
+#endif
+#include "sparsehash/sparse_hash_map"
+#if defined(_MSC_VER) // Visual studio
+#pragma warning(pop)
+#endif
 #else
-#  include <map>
+#include <map>
 #endif // SMTK_HASH_STORAGE
 
-namespace smtk {
-  namespace bridge {
-    namespace cgm {
+namespace smtk
+{
+namespace bridge
+{
+namespace cgm
+{
 
 #ifdef SMTK_HASH_STORAGE
 /// Map UUIDs to CGM entity pointers
-typedef google::sparse_hash_map<smtk::common::UUID,ToolDataUser*> UUIDToCGMRef;
+typedef google::sparse_hash_map<smtk::common::UUID, ToolDataUser*> UUIDToCGMRef;
 #else
 /// Map UUIDs to CGM entity pointers
-typedef std::map<smtk::common::UUID,ToolDataUser*> UUIDToCGMRef;
+typedef std::map<smtk::common::UUID, ToolDataUser*> UUIDToCGMRef;
 #endif // SMTK_HASH_STORAGE
 
 class SMTKCGMSESSION_EXPORT TDUUID : public ToolData
@@ -67,7 +70,7 @@ protected:
   static void checkForCollision(ToolDataUser* entity, const smtk::common::UUID& uid);
 };
 
-    } // namespace cgm
-  } //namespace bridge
+} // namespace cgm
+} //namespace bridge
 } // namespace smtk
 #endif // __smtk_session_cgm_TDUUID_h

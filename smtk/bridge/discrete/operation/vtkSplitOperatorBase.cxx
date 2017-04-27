@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkSplitOperatorBase.h"
 
 #include "vtkDiscreteModel.h"
@@ -33,73 +32,71 @@ vtkSplitOperatorBase::vtkSplitOperatorBase()
 
 vtkSplitOperatorBase::~vtkSplitOperatorBase()
 {
-  if(this->CreatedModelFaceIDs)
-    {
+  if (this->CreatedModelFaceIDs)
+  {
     CreatedModelFaceIDs->Delete();
-    }
+  }
 }
 
 void vtkSplitOperatorBase::SetId(vtkIdType id)
 {
   this->IsIdSet = 1;
-  if(id != this->Id)
-    {
+  if (id != this->Id)
+  {
     this->Modified();
     this->Id = id;
-    }
+  }
 }
 
 void vtkSplitOperatorBase::SetFeatureAngle(double featureAngle)
 {
   this->IsFeatureAngleSet = 1;
-  if(this->FeatureAngle != featureAngle)
-    {
+  if (this->FeatureAngle != featureAngle)
+  {
     this->Modified();
     this->FeatureAngle = featureAngle;
-    }
+  }
 }
 
-vtkModelEntity* vtkSplitOperatorBase::GetModelEntity(
-  vtkDiscreteModel* Model)
+vtkModelEntity* vtkSplitOperatorBase::GetModelEntity(vtkDiscreteModel* Model)
 {
-  if(!Model || !this->GetIsIdSet())
-    {
+  if (!Model || !this->GetIsIdSet())
+  {
     return 0;
-    }
+  }
   return Model->GetModelEntity(vtkModelFaceType, this->GetId());
 }
 
 bool vtkSplitOperatorBase::AbleToOperate(vtkDiscreteModel* Model)
 {
-  if(!Model)
-    {
+  if (!Model)
+  {
     vtkErrorMacro("Passed in a null model.");
     return 0;
-    }
-  if(this->GetIsIdSet() == 0)
-    {
+  }
+  if (this->GetIsIdSet() == 0)
+  {
     vtkErrorMacro("No entity id specified.");
     return 0;
-    }
-  if(this->IsFeatureAngleSet == 0)
-    {
+  }
+  if (this->IsFeatureAngleSet == 0)
+  {
     vtkErrorMacro("FeatureAngle is not set.");
-    }
+  }
 
   // make sure the object is really a model face
-  vtkDiscreteModelFace* ModelFace = vtkDiscreteModelFace::SafeDownCast(
-    this->GetModelEntity(Model));
-  if(!ModelFace)
-    {
-    vtkErrorMacro("No model face found with Id " << this->GetId() );
+  vtkDiscreteModelFace* ModelFace = vtkDiscreteModelFace::SafeDownCast(this->GetModelEntity(Model));
+  if (!ModelFace)
+  {
+    vtkErrorMacro("No model face found with Id " << this->GetId());
     return 0;
-    }
+  }
   return 1;
 }
 
 void vtkSplitOperatorBase::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
   os << indent << "CreatedModelFaceIDs: " << this->CreatedModelFaceIDs << endl;
   os << indent << "Id: " << this->Id << endl;
   os << indent << "IsIdSet: " << this->IsIdSet << endl;

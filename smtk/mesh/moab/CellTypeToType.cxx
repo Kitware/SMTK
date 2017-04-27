@@ -18,16 +18,19 @@ SMTK_THIRDPARTY_POST_INCLUDE
 
 #include "smtk/mesh/moab/CellTypeToType.h"
 
-namespace smtk {
-namespace mesh {
-namespace moab {
+namespace smtk
+{
+namespace mesh
+{
+namespace moab
+{
 
 smtk::mesh::CellType moabToSMTKCell(int t)
-  {
-  ::moab::EntityType et = static_cast< ::moab::EntityType >(t);
+{
+  ::moab::EntityType et = static_cast< ::moab::EntityType>(t);
   smtk::mesh::CellType ctype = smtk::mesh::CellType_MAX;
   switch (et)
-    {
+  {
     case ::moab::MBVERTEX:
       ctype = smtk::mesh::Vertex;
       break;
@@ -58,15 +61,15 @@ smtk::mesh::CellType moabToSMTKCell(int t)
     default:
       ctype = smtk::mesh::CellType_MAX;
       break;
-    }
-  return ctype;
   }
+  return ctype;
+}
 
 int smtkToMOABCell(smtk::mesh::CellType t)
-  {
+{
   ::moab::EntityType ctype = ::moab::MBMAXTYPE;
   switch (t)
-    {
+  {
     case smtk::mesh::Vertex:
       ctype = ::moab::MBVERTEX;
       break;
@@ -97,10 +100,9 @@ int smtkToMOABCell(smtk::mesh::CellType t)
     default:
       ctype = ::moab::MBMAXTYPE;
       break;
-    }
-  return ctype;
   }
-
+  return ctype;
+}
 }
 }
 } //namespace smtk::mesh::moab

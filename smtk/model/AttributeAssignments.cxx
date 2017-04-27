@@ -9,24 +9,25 @@
 //=========================================================================
 #include "smtk/model/AttributeAssignments.h"
 
-namespace smtk {
- namespace model {
+namespace smtk
+{
+namespace model
+{
 
-   bool AttributeAssignments::associateAttribute(const smtk::common::UUID &attribId)
+bool AttributeAssignments::associateAttribute(const smtk::common::UUID& attribId)
 {
   return this->m_attributes.insert(attribId).second;
 }
 
-bool AttributeAssignments::disassociateAttribute(const smtk::common::UUID &attribId)
+bool AttributeAssignments::disassociateAttribute(const smtk::common::UUID& attribId)
 {
   return this->m_attributes.erase(attribId) > 0;
 }
 
-bool AttributeAssignments::isAssociated(const smtk::common::UUID &attribId) const
+bool AttributeAssignments::isAssociated(const smtk::common::UUID& attribId) const
 {
-  return this->m_attributes.find(attribId) == this->m_attributes.end() ?
-    false : true;
+  return this->m_attributes.find(attribId) == this->m_attributes.end() ? false : true;
 }
 
-  } //namespace model
+} //namespace model
 } // namespace smtk

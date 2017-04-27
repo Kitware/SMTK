@@ -16,8 +16,10 @@
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Volume.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /// Return the volume use associated with this volume (or an invalid use).
 VolumeUse Volume::use() const
@@ -44,10 +46,10 @@ smtk::model::Faces Volume::faces() const
   Faces result;
   EntityRefs all = this->boundaryEntities(/*dim = */ 2);
   for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
-    {
+  {
     if (it->isFace())
       result.push_back(*it);
-    }
+  }
   return result;
 }
 
@@ -55,12 +57,12 @@ Volume& Volume::setVolumeUse(const VolumeUse& volUse)
 {
   ManagerPtr mgr = this->manager();
   if (volUse.isValid() && this->isValid())
-    {
+  {
     mgr->findCreateOrReplaceCellUseOfSenseAndOrientation(
       this->m_entity, 0, POSITIVE, volUse.entity());
-    }
+  }
   return *this;
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

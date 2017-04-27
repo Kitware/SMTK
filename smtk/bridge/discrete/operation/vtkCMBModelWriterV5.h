@@ -33,7 +33,6 @@
 #include "vtkCMBModelWriterV4.h"
 #include <vector>
 
-
 class vtkDiscreteModel;
 class vtkCMBModelWriterBase;
 class vtkModelEntity;
@@ -42,12 +41,11 @@ class vtkPolyData;
 class SMTKDISCRETESESSION_EXPORT vtkCMBModelWriterV5 : public vtkCMBModelWriterV4
 {
 public:
-  static vtkCMBModelWriterV5 * New();
-  vtkTypeMacro(vtkCMBModelWriterV5,vtkCMBModelWriterV4);
+  static vtkCMBModelWriterV5* New();
+  vtkTypeMacro(vtkCMBModelWriterV5, vtkCMBModelWriterV4);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  virtual int GetVersion()
-  {return 5;}
+  virtual int GetVersion() { return 5; }
 
 protected:
   vtkCMBModelWriterV5();
@@ -66,8 +64,8 @@ protected:
   virtual void SetAnalysisGridData(vtkDiscreteModel* model, vtkPolyData* poly);
 
 private:
-  vtkCMBModelWriterV5(const vtkCMBModelWriterV5&);  // Not implemented.
-  void operator=(const vtkCMBModelWriterV5&);  // Not implemented.
+  vtkCMBModelWriterV5(const vtkCMBModelWriterV5&); // Not implemented.
+  void operator=(const vtkCMBModelWriterV5&);      // Not implemented.
 };
 
 #endif

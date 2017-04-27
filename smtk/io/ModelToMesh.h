@@ -13,13 +13,15 @@
 #include "smtk/CoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/PublicPointerDefs.h"
 
-namespace smtk {
-  namespace model
-  {
-    class Model;
-  }
+namespace smtk
+{
+namespace model
+{
+class Model;
+}
 
-namespace io {
+namespace io
+{
 class SMTKCORE_EXPORT ModelToMesh
 {
 public:
@@ -36,8 +38,8 @@ public:
   void setMergeTolerance(double tol) { this->m_tolerance = tol; }
 
   //convert smtk::model to a collection
-  smtk::mesh::CollectionPtr operator()(const smtk::mesh::ManagerPtr& meshManager,
-                                       const smtk::model::ManagerPtr& modelManager) const;
+  smtk::mesh::CollectionPtr operator()(
+    const smtk::mesh::ManagerPtr& meshManager, const smtk::model::ManagerPtr& modelManager) const;
   //convert smtk::model to a collection
   smtk::mesh::CollectionPtr operator()(const smtk::model::Model& model) const;
 
@@ -45,7 +47,6 @@ private:
   bool m_mergeDuplicates;
   double m_tolerance;
 };
-
 }
 }
 

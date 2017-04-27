@@ -8,5 +8,7 @@ AlwaysBreakAfterDefinitionReturnType: None
 BreakBeforeBraces: Allman
 ColumnLimit: 100
 Standard: Cpp03
-FixNamespaceComments: true
+# This requires clang-format 4.0 (at least).
+#FixNamespaceComments: true
+ReflowComments: false
 ...

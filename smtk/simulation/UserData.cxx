@@ -9,14 +9,18 @@
 //=========================================================================
 #include "smtk/simulation/UserData.h"
 
-namespace smtk {
-  namespace simulation {
+namespace smtk
+{
+namespace simulation
+{
 
 UserData::UserData()
-{}
+{
+}
 
 UserData::~UserData()
-{}
+{
+}
 
-  } // namespace simulation
+} // namespace simulation
 } // namespace smtk

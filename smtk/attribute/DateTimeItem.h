@@ -21,55 +21,55 @@
 
 namespace smtk
 {
-  namespace attribute
+namespace attribute
+{
+class Attribute;
+class DateTimeItemDefinition;
+class SMTKCORE_EXPORT DateTimeItem : public Item
+{
+  friend class DateTimeItemDefinition;
+
+public:
+  smtkTypeMacro(DateTimeItem);
+  virtual ~DateTimeItem();
+  virtual Item::Type type() const;
+  virtual bool isValid() const;
+
+  std::size_t numberOfValues() const { return this->m_values.size(); }
+  bool setNumberOfValues(std::size_t newSize);
+  std::size_t numberOfRequiredValues() const;
+  ::smtk::common::DateTimeZonePair value(std::size_t element = 0) const
   {
-    class Attribute;
-    class DateTimeItemDefinition;
-    class SMTKCORE_EXPORT DateTimeItem : public Item
-    {
-      friend class DateTimeItemDefinition;
-    public:
-      smtkTypeMacro(DateTimeItem);
-      virtual ~DateTimeItem();
-      virtual Item::Type type() const;
-      virtual bool isValid() const;
-
-      std::size_t numberOfValues() const
-      {return this->m_values.size();}
-      bool  setNumberOfValues(std::size_t newSize);
-      std::size_t numberOfRequiredValues() const;
-      ::smtk::common::DateTimeZonePair value(std::size_t element=0) const
-      {return this->m_values[element];}
-      bool setValue(const ::smtk::common::DateTimeZonePair& val)
-      {return this->setValue(0, val);}
-      bool setValue(std::size_t element, const ::smtk::common::DateTimeZonePair& val);
-      virtual void reset();
-      virtual bool setToDefault(std::size_t elementIndex=0);
-      // Returns true if there is a default defined and the item is curently set to it
-      virtual bool isUsingDefault(std::size_t elementIndex) const;
-      // This method tests all of the values of the items w/r the default value
-      virtual bool isUsingDefault() const;
-      virtual bool isSet(std::size_t element=0) const
-      {return this->m_isSet[element];}
-      virtual void unset(std::size_t element=0)
-      {this->m_isSet[element] = false;}
-
-      // Assigns this item to be equivalent to another. Options are processed by derived item classes.
-      // The options are defined in Item.h. Returns true if success and false if a problem occured.
-      virtual bool assign(smtk::attribute::ConstItemPtr &sourceItem, unsigned int options = 0);
-    protected:
-      DateTimeItem(Attribute *owningAttribute, int itemPosition);
-      DateTimeItem(Item *owningItem, int myPosition, int mySubGroupPosition);
-#ifndef SHIBOKEN_SKIP
-      virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
-      ConstDateTimeItemDefinitionPtr itemDefinition() const;
-#endif
-      std::vector<::smtk::common::DateTimeZonePair> m_values;
-      std::vector<bool> m_isSet;
-
-    private:
-    };
+    return this->m_values[element];
   }
+  bool setValue(const ::smtk::common::DateTimeZonePair& val) { return this->setValue(0, val); }
+  bool setValue(std::size_t element, const ::smtk::common::DateTimeZonePair& val);
+  virtual void reset();
+  virtual bool setToDefault(std::size_t elementIndex = 0);
+  // Returns true if there is a default defined and the item is curently set to it
+  virtual bool isUsingDefault(std::size_t elementIndex) const;
+  // This method tests all of the values of the items w/r the default value
+  virtual bool isUsingDefault() const;
+  virtual bool isSet(std::size_t element = 0) const { return this->m_isSet[element]; }
+  virtual void unset(std::size_t element = 0) { this->m_isSet[element] = false; }
+
+  // Assigns this item to be equivalent to another. Options are processed by derived item classes.
+  // The options are defined in Item.h. Returns true if success and false if a problem occured.
+  virtual bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0);
+
+protected:
+  DateTimeItem(Attribute* owningAttribute, int itemPosition);
+  DateTimeItem(Item* owningItem, int myPosition, int mySubGroupPosition);
+#ifndef SHIBOKEN_SKIP
+  virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
+  ConstDateTimeItemDefinitionPtr itemDefinition() const;
+#endif
+  std::vector< ::smtk::common::DateTimeZonePair> m_values;
+  std::vector<bool> m_isSet;
+
+private:
+};
+}
 }
 
 #endif /* __smtk_attribute_DateTimeItem_h */

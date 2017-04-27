@@ -30,11 +30,15 @@ class RefGroup;
 class RefEntity;
 class SenseEntity;
 class GroupingEntity;
-template<class X> class DLIList;
+template <class X>
+class DLIList;
 
-namespace smtk {
-  namespace bridge {
-    namespace cgm {
+namespace smtk
+{
+namespace bridge
+{
+namespace cgm
+{
 
 /**\brief Methods that handle translation between CGM and SMTK instances.
   *
@@ -80,29 +84,41 @@ protected:
   virtual SessionInfoBits transcribeInternal(
     const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth = -1);
 
-  SessionInfoBits addCGMEntityToManager(const smtk::model::EntityRef& entity, RefEntity* refEnt, SessionInfoBits requestedInfo);
-  SessionInfoBits addCGMEntityToManager(const smtk::model::EntityRef& entity, GroupingEntity* refEnt, SessionInfoBits requestedInfo);
-  SessionInfoBits addCGMEntityToManager(const smtk::model::EntityRef& entity, SenseEntity* refEnt, SessionInfoBits requestedInfo);
+  SessionInfoBits addCGMEntityToManager(
+    const smtk::model::EntityRef& entity, RefEntity* refEnt, SessionInfoBits requestedInfo);
+  SessionInfoBits addCGMEntityToManager(
+    const smtk::model::EntityRef& entity, GroupingEntity* refEnt, SessionInfoBits requestedInfo);
+  SessionInfoBits addCGMEntityToManager(
+    const smtk::model::EntityRef& entity, SenseEntity* refEnt, SessionInfoBits requestedInfo);
 
   SessionInfoBits addBodyToManager(const smtk::model::Model&, Body*, SessionInfoBits requestedInfo);
-  SessionInfoBits addVolumeUseToManager(const smtk::model::VolumeUse&, CoVolume*, SessionInfoBits requestedInfo);
-  SessionInfoBits addFaceUseToManager(const smtk::model::FaceUse&, CoFace*, SessionInfoBits requestedInfo);
-  SessionInfoBits addEdgeUseToManager(const smtk::model::EdgeUse&, CoEdge*, SessionInfoBits requestedInfo);
-  SessionInfoBits addVertexUseToManager(const smtk::model::VertexUse&, CoVertex*, SessionInfoBits requestedInfo);
-  SessionInfoBits addShellToManager(const smtk::model::Shell&, ::Shell*, SessionInfoBits requestedInfo);
-  SessionInfoBits addLoopToManager(const smtk::model::Loop&, ::Loop*, SessionInfoBits requestedInfo);
-  SessionInfoBits addChainToManager(const smtk::model::Chain&, ::Chain*, SessionInfoBits requestedInfo);
-  SessionInfoBits addVolumeToManager(const smtk::model::Volume&, RefVolume*, SessionInfoBits requestedInfo);
-  SessionInfoBits addFaceToManager(const smtk::model::Face&, RefFace*, SessionInfoBits requestedInfo);
-  SessionInfoBits addEdgeToManager(const smtk::model::Edge&, RefEdge*, SessionInfoBits requestedInfo);
-  SessionInfoBits addVertexToManager(const smtk::model::Vertex&, RefVertex*, SessionInfoBits requestedInfo);
-  SessionInfoBits addGroupToManager(const smtk::model::Group&, RefGroup*, SessionInfoBits requestedInfo);
+  SessionInfoBits addVolumeUseToManager(
+    const smtk::model::VolumeUse&, CoVolume*, SessionInfoBits requestedInfo);
+  SessionInfoBits addFaceUseToManager(
+    const smtk::model::FaceUse&, CoFace*, SessionInfoBits requestedInfo);
+  SessionInfoBits addEdgeUseToManager(
+    const smtk::model::EdgeUse&, CoEdge*, SessionInfoBits requestedInfo);
+  SessionInfoBits addVertexUseToManager(
+    const smtk::model::VertexUse&, CoVertex*, SessionInfoBits requestedInfo);
+  SessionInfoBits addShellToManager(
+    const smtk::model::Shell&, ::Shell*, SessionInfoBits requestedInfo);
+  SessionInfoBits addLoopToManager(
+    const smtk::model::Loop&, ::Loop*, SessionInfoBits requestedInfo);
+  SessionInfoBits addChainToManager(
+    const smtk::model::Chain&, ::Chain*, SessionInfoBits requestedInfo);
+  SessionInfoBits addVolumeToManager(
+    const smtk::model::Volume&, RefVolume*, SessionInfoBits requestedInfo);
+  SessionInfoBits addFaceToManager(
+    const smtk::model::Face&, RefFace*, SessionInfoBits requestedInfo);
+  SessionInfoBits addEdgeToManager(
+    const smtk::model::Edge&, RefEdge*, SessionInfoBits requestedInfo);
+  SessionInfoBits addVertexToManager(
+    const smtk::model::Vertex&, RefVertex*, SessionInfoBits requestedInfo);
+  SessionInfoBits addGroupToManager(
+    const smtk::model::Group&, RefGroup*, SessionInfoBits requestedInfo);
 
-  void addRelations(
-    smtk::model::EntityRef& entityref,
-    DLIList<RefEntity*>& rels,
-    SessionInfoBits requestedInfo,
-    int depth);
+  void addRelations(smtk::model::EntityRef& entityref, DLIList<RefEntity*>& rels,
+    SessionInfoBits requestedInfo, int depth);
   bool addTessellation(const smtk::model::EntityRef&, RefFace*);
   bool addTessellation(const smtk::model::EntityRef&, RefEdge*);
   bool addTessellation(const smtk::model::EntityRef&, RefVertex*);
@@ -114,12 +130,12 @@ protected:
   double m_maxAngleErr;
 
 private:
-  Session(const Session&); // Not implemented.
-  void operator = (const Session&); // Not implemented.
+  Session(const Session&);        // Not implemented.
+  void operator=(const Session&); // Not implemented.
 };
 
-    } // namespace cgm
-  } //namespace bridge
+} // namespace cgm
+} //namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_cgm_Session_h

@@ -39,17 +39,17 @@
 int main(int argc, char* argv[])
 {
   int debug = argc > 2 ? (argv[2][0] == '-' ? 0 : 1) : 0;
-  if (argc > 1 )
-    {
+  if (argc > 1)
+  {
     std::string file_path = argv[1];
     smtk::mesh::ManagerPtr meshmgr = smtk::mesh::Manager::create();
     smtk::io::ImportMesh import;
     smtk::mesh::CollectionPtr c = import(file_path, meshmgr);
-    test( c->isValid(), "collection should be valid");
+    test(c->isValid(), "collection should be valid");
 
     std::size_t numMeshes = c->numberOfMeshes();
     std::cout << "number of meshes in twoassm_out is: " << numMeshes << std::endl;
-    test( numMeshes!=0, "dataset once loaded should have more than zero meshes");
+    test(numMeshes != 0, "dataset once loaded should have more than zero meshes");
 
     smtk::common::UUID collectionID = c->entity();
     vtkNew<vtkActor> act;
@@ -59,15 +59,15 @@ int main(int argc, char* argv[])
     vtkNew<vtkRenderWindow> win;
     src->SetMeshManager(meshmgr);
     src->SetMeshCollectionID(collectionID.toString().c_str());
-    if(debug)
-      {
+    if (debug)
+    {
       win->SetMultiSamples(16);
       src->AllowNormalGenerationOn();
-      }
+    }
     else
-      {
+    {
       win->SetMultiSamples(0);
-      }
+    }
     map->SetInputConnection(src->GetOutputPort());
     /*
     map->SetColorModeToMapScalars();
@@ -93,9 +93,10 @@ int main(int argc, char* argv[])
     ren->AddActor(act.GetPointer());
 
     vtkRenderWindowInteractor* iac = win->MakeRenderWindowInteractor();
-    vtkInteractorStyleSwitch::SafeDownCast(iac->GetInteractorStyle())->SetCurrentStyleToTrackballCamera();
+    vtkInteractorStyleSwitch::SafeDownCast(iac->GetInteractorStyle())
+      ->SetCurrentStyleToTrackballCamera();
     win->SetInteractor(iac);
-  /*
+    /*
     if (debug && argc > 3)
       {
       vtkNew<vtkXMLMultiBlockDataWriter> wri;
@@ -107,14 +108,14 @@ int main(int argc, char* argv[])
     win->Render();
     ren->ResetCamera();
 
-    int status = ! vtkRegressionTestImage(win.GetPointer());
+    int status = !vtkRegressionTestImage(win.GetPointer());
     if (debug)
-      {
+    {
       iac->Start();
-      }
+    }
 
     return status;
-    }
+  }
 
   return 0;
 }

@@ -45,9 +45,12 @@
 using namespace smtk::model;
 using smtk::attribute::ModelEntityItemPtr;
 
-namespace smtk {
-  namespace bridge {
-    namespace cgm {
+namespace smtk
+{
+namespace bridge
+{
+namespace cgm
+{
 
 /// Verify that at least two input bodies have been specified.
 bool BooleanIntersection::ableToOperate()
@@ -57,14 +60,11 @@ bool BooleanIntersection::ableToOperate()
   std::size_t numWorkpieces = this->associatedEntitiesAs<Models>().size();
   std::size_t numTools = this->findModelEntity("tool")->numberOfValues();
   if (numWorkpieces + numTools < 2)
-    {
+  {
     result = false;
-    smtkInfoMacro(
-      log(),
-      "Need multiple bodies to intersect, given "
-      << numWorkpieces << " workpieces and "
-      << numTools << " tools.");
-    }
+    smtkInfoMacro(log(), "Need multiple bodies to intersect, given "
+        << numWorkpieces << " workpieces and " << numTools << " tools.");
+  }
   return result;
 }
 
@@ -81,65 +81,56 @@ smtk::model::OperatorResult BooleanIntersection::operateInternal()
   EntityRefArray expunged;
 
   bool ok = true;
-  ok &= this->cgmEntities(
-    *this->specification()->associations().get(),
-    cgmBodiesIn,
-    /* keep_inputs */ 1,
-    expunged);
+  ok &= this->cgmEntities(*this->specification()->associations().get(), cgmBodiesIn,
+    /* keep_inputs */ 1, expunged);
 
   // Stop if any of the workpieces don't exist as CGM entities:
   if (!ok)
-    {
-    smtkInfoMacro(log(),
-      "One or more workpiece inputs had no matching CGM entity.");
+  {
+    smtkInfoMacro(log(), "One or more workpiece inputs had no matching CGM entity.");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
   if (toolIn->numberOfValues() > 0)
-    {
+  {
     DLIList<Body*> cgmToolBodies;
-    ok &= this->cgmEntities(
-      *this->findModelEntity("tool").get(),
-      cgmToolBodies, keepInputs, expunged);
+    ok &=
+      this->cgmEntities(*this->findModelEntity("tool").get(), cgmToolBodies, keepInputs, expunged);
     if (!ok)
-      {
-      smtkInfoMacro(
-        log(),
-        "Tool body specified as "
-        << toolIn->value().name() << " ("
-        << toolIn->value().flagSummary() << ")"
-        << " but no matching CGM entity exists.");
+    {
+      smtkInfoMacro(log(), "Tool body specified as " << toolIn->value().name() << " ("
+                                                     << toolIn->value().flagSummary() << ")"
+                                                     << " but no matching CGM entity exists.");
       return this->createResult(smtk::model::OPERATION_FAILED);
-      }
-    cgmToolBody = cgmToolBodies[0];
     }
+    cgmToolBody = cgmToolBodies[0];
+  }
   else if (!keepInputs)
-    { // All but the first input will be expunged.
+  { // All but the first input will be expunged.
     EntityRefArray::const_iterator wit;
-    smtk::attribute::ModelEntityItemPtr assoc =
-      this->specification()->associations();
+    smtk::attribute::ModelEntityItemPtr assoc = this->specification()->associations();
     wit = assoc->begin();
     for (++wit; wit != assoc->end(); ++wit)
-      {
+    {
       this->manager()->erase(*wit);
       expunged.push_back(*wit);
-      }
     }
+  }
 
   CubitStatus s;
   DLIList<RefEntity*> imported;
   if (cgmToolBody)
-    s = GeometryModifyTool::instance()->intersect(cgmToolBody, cgmBodiesIn, cgmBodiesOut, keepInputs);
+    s =
+      GeometryModifyTool::instance()->intersect(cgmToolBody, cgmBodiesIn, cgmBodiesOut, keepInputs);
   else
     s = GeometryModifyTool::instance()->intersect(cgmBodiesIn, cgmBodiesOut, keepInputs);
   if (s != CUBIT_SUCCESS)
-    {
+  {
     smtkInfoMacro(log(), "Failed to perform intersection (status " << s << ").");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
-  smtk::model::OperatorResult result = this->createResult(
-    smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmBodiesOut, result, MODIFIED);
   result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
@@ -147,14 +138,9 @@ smtk::model::OperatorResult BooleanIntersection::operateInternal()
   return result;
 }
 
-    } // namespace cgm
-  } //namespace bridge
+} // namespace cgm
+} //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(
-  SMTKCGMSESSION_EXPORT,
-  smtk::bridge::cgm::BooleanIntersection,
-  cgm_boolean_intersection,
-  "intersection",
-  BooleanIntersection_xml,
-  smtk::bridge::cgm::Session);
+smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::BooleanIntersection,
+  cgm_boolean_intersection, "intersection", BooleanIntersection_xml, smtk::bridge::cgm::Session);

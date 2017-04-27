@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkMergeOperator.h"
 
 #include "vtkDiscreteModel.h"
@@ -32,28 +31,28 @@ vtkMergeOperator::~vtkMergeOperator()
 
 void vtkMergeOperator::Operate(vtkDiscreteModelWrapper* ModelWrapper)
 {
-  if(!this->AbleToOperate(ModelWrapper))
-    {
+  if (!this->AbleToOperate(ModelWrapper))
+  {
     this->OperateSucceeded = 0;
     return;
-    }
+  }
 
   this->OperateSucceeded = this->Superclass::Operate(ModelWrapper->GetModel());
-  if(this->OperateSucceeded)
-    {
+  if (this->OperateSucceeded)
+  {
     ModelWrapper->Modified();
-    }
+  }
 
   return;
 }
 
 bool vtkMergeOperator::AbleToOperate(vtkDiscreteModelWrapper* ModelWrapper)
 {
-  if(!ModelWrapper)
-    {
+  if (!ModelWrapper)
+  {
     vtkErrorMacro("Passed in a null model wrapper.");
     return 0;
-    }
+  }
   return this->Superclass::AbleToOperate(ModelWrapper->GetModel());
 }
 
@@ -65,6 +64,6 @@ vtkDiscreteModelGeometricEntity* vtkMergeOperator::GetTargetModelEntity(
 
 void vtkMergeOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
   os << indent << "OperateSucceeded: " << this->OperateSucceeded << endl;
 }

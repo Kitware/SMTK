@@ -29,9 +29,7 @@ int main()
   // ----
   // I. First see how things work when System is not yet set.
   attribute::System sys;
-  test(
-    !sys.refModelManager(),
-    "System should not have model storage by default.");
+  test(!sys.refModelManager(), "System should not have model storage by default.");
 
   DefinitionPtr def = sys.createDefinition("testDef");
   def->associationRule()->setMembershipMask(smtk::model::VERTEX);
@@ -41,8 +39,7 @@ int main()
 
   UUID fakeEntityId = UUID::random();
   att->associateEntity(fakeEntityId);
-  test(
-    att->associatedModelEntityIds().count(fakeEntityId) == 1,
+  test(att->associatedModelEntityIds().count(fakeEntityId) == 1,
     "Could not associate a \"fake\" entity with this attribute.");
 
   // Attempt to disassociate an entity that was never associated.
@@ -50,8 +47,7 @@ int main()
   att->disassociateEntity(anotherFakeId);
 
   att->disassociateEntity(fakeEntityId);
-  test(
-    att->isEntityAssociated(fakeEntityId) == false,
+  test(att->isEntityAssociated(fakeEntityId) == false,
     "Could not disassociate a \"fake\" entity from this attribute.");
 
   // ----
@@ -59,57 +55,43 @@ int main()
   //     a valid model modelMgr pointer.
   model::Manager::Ptr modelMgr = model::Manager::create();
   sys.setRefModelManager(modelMgr);
-  test(
-    sys.refModelManager() == modelMgr,
-    "Could not set attribute system's model-manager.");
+  test(sys.refModelManager() == modelMgr, "Could not set attribute system's model-manager.");
 
-  test(
-    att->modelManager() == modelMgr,
-    "Attribute's idea of model manager incorrect.");
+  test(att->modelManager() == modelMgr, "Attribute's idea of model manager incorrect.");
 
   smtk::model::Vertex v0 = modelMgr->addVertex();
   smtk::model::Vertex v1 = modelMgr->addVertex();
   v0.associateAttribute(att->system(), att->id());
-  test(
-    att->associatedModelEntityIds().count(v0.entity()) == 1,
+  test(att->associatedModelEntityIds().count(v0.entity()) == 1,
     "Could not associate a vertex to an attribute.");
 
   att->disassociateEntity(v0.entity());
-  test(
-    !v0.hasAttributes(),
-    "Disassociating an attribute did not notify the entity.");
+  test(!v0.hasAttributes(), "Disassociating an attribute did not notify the entity.");
 
   att->disassociateEntity(v1.entity());
-  test(
-    !v1.hasAttributes(),
-    "Disassociating a non-existent attribute appears to associate it.");
+  test(!v1.hasAttributes(), "Disassociating a non-existent attribute appears to associate it.");
 
   v1.associateAttribute(att->system(), att->id());
   att->removeAllAssociations();
-  test(
-    att->associatedModelEntityIds().empty(),
+  test(att->associatedModelEntityIds().empty(),
     "Removing all attribute associations did not empty association list.");
 
   smtk::model::Vertex v2 = modelMgr->addVertex();
   v0.associateAttribute(att->system(), att->id());
   v1.associateAttribute(att->system(), att->id());
-  test(
-    v2.associateAttribute(att->system(), att->id()) == false,
+  test(v2.associateAttribute(att->system(), att->id()) == false,
     "Should not have been able to associate more than 2 entities.");
 
   att->removeAllAssociations();
   smtk::model::Edge e0 = modelMgr->addEdge();
-  test(
-    e0.associateAttribute(att->system(), att->id()) == false,
+  test(e0.associateAttribute(att->system(), att->id()) == false,
     "Should not have been able to associate entity of wrong type.");
 
   // ----
   // III. Test corner cases when switch model managers on the attribute system.
   model::Manager::Ptr auxModelManager = model::Manager::create();
   sys.setRefModelManager(auxModelManager);
-  test(
-    sys.refModelManager() == auxModelManager,
-    "Attribute system's modelMgr not changed.");
+  test(sys.refModelManager() == auxModelManager, "Attribute system's modelMgr not changed.");
 
   return 0;
 }

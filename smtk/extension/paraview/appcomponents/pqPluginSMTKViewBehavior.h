@@ -22,6 +22,7 @@ class SMTKPQCOMPONENTSEXT_EXPORT pqPluginSMTKViewBehavior : public QObject
 {
   Q_OBJECT
   typedef QObject Superclass;
+
 public:
   pqPluginSMTKViewBehavior(QObject* p);
 
@@ -30,7 +31,6 @@ public slots:
 
 private:
   Q_DISABLE_COPY(pqPluginSMTKViewBehavior)
-
 };
 
 #endif

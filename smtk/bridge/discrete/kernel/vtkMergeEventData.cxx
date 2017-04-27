@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkMergeEventData.h"
 
 #include "vtkIdTypeArray.h"
@@ -33,35 +32,34 @@ vtkMergeEventData::~vtkMergeEventData()
   this->SetLowerDimensionalIds(0);
 }
 
-
 void vtkMergeEventData::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
   os << indent << "SourceEntity: ";
-  if(this->SourceEntity)
-    {
+  if (this->SourceEntity)
+  {
     os << this->SourceEntity << endl;
-    }
+  }
   else
-    {
+  {
     os << "(NULL)\n";
-    }
+  }
   os << indent << "TargetEntity: ";
-  if(this->TargetEntity)
-    {
+  if (this->TargetEntity)
+  {
     os << this->TargetEntity << endl;
-    }
+  }
   else
-    {
+  {
     os << "(NULL)\n";
-    }
+  }
   os << indent << "LowerDimensionalIds: ";
-  if(this->LowerDimensionalIds)
-    {
+  if (this->LowerDimensionalIds)
+  {
     os << this->LowerDimensionalIds << endl;
-    }
+  }
   else
-    {
+  {
     os << "(NULL)\n";
-    }
+  }
 }

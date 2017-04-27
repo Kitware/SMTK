@@ -18,29 +18,29 @@
 
 namespace smtk
 {
-  //bring the correct shared_ptr implementation into our project namespace
-  using std::shared_ptr;
+//bring the correct shared_ptr implementation into our project namespace
+using std::shared_ptr;
 
-  //bring the correct make_shared implementation into our project namespace
-  using std::make_shared;
+//bring the correct make_shared implementation into our project namespace
+using std::make_shared;
 
-  //bring the correct weak_ptr implementation into our project namespace
-  using std::weak_ptr;
+//bring the correct weak_ptr implementation into our project namespace
+using std::weak_ptr;
 
-  //bring in the correct shared_ptr dynamic cast
-  using std::dynamic_pointer_cast;
+//bring in the correct shared_ptr dynamic cast
+using std::dynamic_pointer_cast;
 
-  //bring in the correct shared_ptr const_pointer_cast
-  using std::const_pointer_cast;
+//bring in the correct shared_ptr const_pointer_cast
+using std::const_pointer_cast;
 
-  //bring in the correct shared_ptr static_pointer_cast
-  using std::static_pointer_cast;
+//bring in the correct shared_ptr static_pointer_cast
+using std::static_pointer_cast;
 
-  //bring in the correct enable_shared_from_this
-  using std::enable_shared_from_this;
+//bring in the correct enable_shared_from_this
+using std::enable_shared_from_this;
 
-  //bring in the correct owner_less so that
-  //we store weak ptr in sets/maps even more safely
-  using std::owner_less;
+//bring in the correct owner_less so that
+//we store weak ptr in sets/maps even more safely
+using std::owner_less;
 }
 #endif /* __smtk_SharedPtr_h */

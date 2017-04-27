@@ -25,39 +25,41 @@ SMTK_THIRDPARTY_POST_INCLUDE
 
 namespace
 {
-  // must be a power of two
-  static const std::size_t StartingAllocation = 64; // (1<<6)
+// must be a power of two
+static const std::size_t StartingAllocation = 64; // (1<<6)
 }
 
-namespace smtk {
-namespace mesh {
-namespace moab {
+namespace smtk
+{
+namespace mesh
+{
+namespace moab
+{
 
-IncrementalAllocator::IncrementalAllocator( ::moab::Interface* interface ):
-  smtk::mesh::IncrementalAllocator(), BufferedCellAllocator(interface),
-  m_index(0)
+IncrementalAllocator::IncrementalAllocator(::moab::Interface* interface)
+  : smtk::mesh::IncrementalAllocator()
+  , BufferedCellAllocator(interface)
+  , m_index(0)
 {
 }
 
 void IncrementalAllocator::initialize()
 {
   if (this->m_nCoordinates == 0)
-    {
+  {
     this->IncrementalAllocator::allocateCoordinates(StartingAllocation);
-    }
+  }
 }
 
 bool IncrementalAllocator::allocateCoordinates(std::size_t nCoordinates)
 {
-  this->m_validState =
-    this->BufferedCellAllocator::allocatePoints(nCoordinates,
-                                                this->m_firstCoordinate,
-                                                this->m_coordinateMemory);
+  this->m_validState = this->BufferedCellAllocator::allocatePoints(
+    nCoordinates, this->m_firstCoordinate, this->m_coordinateMemory);
 
   if (this->m_validState)
-    {
+  {
     this->m_nCoordinates += nCoordinates;
-    }
+  }
 
   this->m_coordinateMemories.push_back(this->m_coordinateMemory);
 
@@ -66,28 +68,36 @@ bool IncrementalAllocator::allocateCoordinates(std::size_t nCoordinates)
 
 std::size_t IncrementalAllocator::addCoordinate(double* xyz)
 {
-  if (!this->m_validState) { return false; }
+  if (!this->m_validState)
+  {
+    return false;
+  }
 
   if (this->m_nCoordinates <= this->m_index)
-    {
+  {
     this->IncrementalAllocator::allocateCoordinates(this->m_nCoordinates);
-    if (!this->m_validState) { return this->m_index; }
+    if (!this->m_validState)
+    {
+      return this->m_index;
     }
+  }
 
-  this->m_validState =
-    this->IncrementalAllocator::setCoordinate(this->m_index, xyz);
+  this->m_validState = this->IncrementalAllocator::setCoordinate(this->m_index, xyz);
 
   return this->m_index++;
 }
 
 bool IncrementalAllocator::setCoordinate(std::size_t coord, double* xyz)
 {
-  if (!this->m_validState) { return false; }
+  if (!this->m_validState)
+  {
+    return false;
+  }
 
   if (coord >= this->m_nCoordinates)
-    {
-      return false;
-    }
+  {
+    return false;
+  }
 
   // Coordinates are allocated using a memory doubling scheme, and we need to
   // figure out
@@ -118,7 +128,6 @@ bool IncrementalAllocator::setCoordinate(std::size_t coord, double* xyz)
 
   return this->m_validState;
 }
-
 }
 }
 }

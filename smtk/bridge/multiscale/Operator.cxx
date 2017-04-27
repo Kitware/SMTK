@@ -10,9 +10,12 @@
 #include "smtk/bridge/multiscale/Operator.h"
 #include "smtk/bridge/multiscale/Session.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace multiscale {
+namespace smtk
+{
+namespace bridge
+{
+namespace multiscale
+{
 
 /// Return a shared pointer to the session backing a multiscale operator.
 Session* Operator::activeSession()
@@ -20,6 +23,6 @@ Session* Operator::activeSession()
   return dynamic_cast<smtk::bridge::multiscale::Session*>(this->session());
 }
 
-    } // namespace multiscale
-  } //namespace bridge
+} // namespace multiscale
+} //namespace bridge
 } // namespace smtk

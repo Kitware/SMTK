@@ -43,7 +43,7 @@ public:
   // Get the bounds for the model or a geometric model entity as
   // (Xmin,Xmax,Ymin,Ymax,Zmin,Zmax).
   void GetBounds(double bounds[6]);
-  double *GetBounds();
+  double* GetBounds();
 
   virtual int GetMasterCellId(unsigned int flatidx, int idx);
   virtual vtkIdType GetModelEntityId(unsigned int flatidx);
@@ -58,18 +58,16 @@ protected:
   ~vtkPVModelGeometryInformation();
 
   // Data information collected from remote processes.
-  int    NumberOfPoints;
-  int    NumberOfCells;
+  int NumberOfPoints;
+  int NumberOfCells;
   double Bounds[6];
 
   std::map<int, vtkIdTypeArray*> CellIdsMap;
   std::map<int, vtkIdType> EnityIdsMap;
 
 private:
-
   vtkPVModelGeometryInformation(const vtkPVModelGeometryInformation&); // Not implemented
-  void operator=(const vtkPVModelGeometryInformation&); // Not implemented
-
+  void operator=(const vtkPVModelGeometryInformation&);                // Not implemented
 };
 
 #endif

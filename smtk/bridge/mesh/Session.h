@@ -25,9 +25,12 @@ class vtkInformationDoubleKey;
 class vtkInformationIntegerKey;
 class vtkInformationStringKey;
 
-namespace smtk {
-namespace bridge {
-namespace mesh {
+namespace smtk
+{
+namespace bridge
+{
+namespace mesh
+{
 
 class SMTKMESHSESSION_EXPORT Session : public smtk::model::Session
 {
@@ -48,17 +51,13 @@ protected:
   Session();
 
   virtual SessionInfoBits transcribeInternal(
-    const smtk::model::EntityRef& entity,
-    SessionInfoBits requestedInfo,
-    int depth = -1);
+    const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth = -1);
 
   std::vector<Topology> m_topologies;
 };
 
-
 } // namespace mesh
 } // namespace bridge
 } // namespace smtk
-
 
 #endif // __smtk_session_mesh_Session_h

@@ -24,44 +24,47 @@
 
 namespace moab
 {
-  class ReadUtilIface;
+class ReadUtilIface;
 }
 
-namespace smtk {
-namespace mesh {
-namespace moab {
+namespace smtk
+{
+namespace mesh
+{
+namespace moab
+{
 
-class SMTKCORE_EXPORT BufferedCellAllocator :
-    public smtk::mesh::BufferedCellAllocator,
-    protected smtk::mesh::moab::Allocator
+class SMTKCORE_EXPORT BufferedCellAllocator : public smtk::mesh::BufferedCellAllocator,
+                                              protected smtk::mesh::moab::Allocator
 {
 public:
-  BufferedCellAllocator( ::moab::Interface* interface );
+  BufferedCellAllocator(::moab::Interface* interface);
 
   virtual ~BufferedCellAllocator();
 
   bool reserveNumberOfCoordinates(std::size_t nCoordinates);
   bool setCoordinate(std::size_t coord, double* xyz);
 
-  bool addCell(smtk::mesh::CellType ctype, long long int* pointIds,
-               std::size_t nCoordinates = 0)
-  { return this->addCell<long long int>(ctype, pointIds, nCoordinates); }
-  bool addCell(smtk::mesh::CellType ctype, long int* pointIds,
-               std::size_t nCoordinates = 0)
-  { return this->addCell<long int>(ctype, pointIds, nCoordinates); }
-  bool addCell(smtk::mesh::CellType ctype, int* pointIds,
-               std::size_t nCoordinates = 0)
-  { return this->addCell<int>(ctype, pointIds, nCoordinates); }
+  bool addCell(smtk::mesh::CellType ctype, long long int* pointIds, std::size_t nCoordinates = 0)
+  {
+    return this->addCell<long long int>(ctype, pointIds, nCoordinates);
+  }
+  bool addCell(smtk::mesh::CellType ctype, long int* pointIds, std::size_t nCoordinates = 0)
+  {
+    return this->addCell<long int>(ctype, pointIds, nCoordinates);
+  }
+  bool addCell(smtk::mesh::CellType ctype, int* pointIds, std::size_t nCoordinates = 0)
+  {
+    return this->addCell<int>(ctype, pointIds, nCoordinates);
+  }
 
   bool flush();
 
   smtk::mesh::HandleRange cells() { return this->m_cells; }
 
-  protected:
+protected:
   template <typename IntegerType>
-  bool addCell(smtk::mesh::CellType ctype,
-               IntegerType* pointIds,
-               std::int64_t nCoordinates);
+  bool addCell(smtk::mesh::CellType ctype, IntegerType* pointIds, std::int64_t nCoordinates);
 
   ::moab::EntityHandle m_firstCoordinate;
   std::size_t m_nCoordinates;
@@ -72,39 +75,39 @@ public:
   ::moab::Range m_cells;
 
 private:
-  BufferedCellAllocator( const BufferedCellAllocator& other ); //blank since we are used by shared_ptr
-  BufferedCellAllocator& operator=( const BufferedCellAllocator& other ); //blank since we are used by shared_ptr
-
+  BufferedCellAllocator(const BufferedCellAllocator& other); //blank since we are used by shared_ptr
+  BufferedCellAllocator& operator=(
+    const BufferedCellAllocator& other); //blank since we are used by shared_ptr
 };
 
 template <typename IntegerType>
-bool BufferedCellAllocator::addCell(smtk::mesh::CellType ctype,
-                                    IntegerType* pointIds,
-                                    std::int64_t nCoordinates)
+bool BufferedCellAllocator::addCell(
+  smtk::mesh::CellType ctype, IntegerType* pointIds, std::int64_t nCoordinates)
 {
-  if (!this->m_validState) { return false; }
+  if (!this->m_validState)
+  {
+    return false;
+  }
 
   if (ctype != this->m_activeCellType ||
-      (ctype == smtk::mesh::Polygon && nCoordinates != this->m_nCoords))
-    {
+    (ctype == smtk::mesh::Polygon && nCoordinates != this->m_nCoords))
+  {
     this->m_validState = this->flush();
     this->m_activeCellType = ctype;
-    this->m_nCoords = ctype != smtk::mesh::Polygon ?
-      smtk::mesh::verticesPerCell(ctype) : static_cast<int>(nCoordinates);
-    }
+    this->m_nCoords = ctype != smtk::mesh::Polygon ? smtk::mesh::verticesPerCell(ctype)
+                                                   : static_cast<int>(nCoordinates);
+  }
 
   assert(this->m_activeCellType != smtk::mesh::CellType_MAX);
   assert(this->m_nCoords > 0);
 
   for (std::int64_t i = 0; i < this->m_nCoords; i++)
-    {
+  {
     this->m_localConnectivity.push_back(pointIds[i]);
-    }
+  }
 
   return this->m_validState;
 }
-
-
 }
 }
 }

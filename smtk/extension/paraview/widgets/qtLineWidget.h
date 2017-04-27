@@ -16,12 +16,13 @@
 /// qtLineWidget is a qtInteractionWidget subclass that uses
 /// **LineWidgetRepresentation** for enabling suers to interactively set the end
 /// points for a line.
-class SMTKPQWIDGETSEXT_EXPORT qtLineWidget : public qtInteractionWidget {
+class SMTKPQWIDGETSEXT_EXPORT qtLineWidget : public qtInteractionWidget
+{
   Q_OBJECT;
   typedef qtInteractionWidget Superclass;
 
 public:
-  qtLineWidget(QWidget *parent = nullptr);
+  qtLineWidget(QWidget* parent = nullptr);
   virtual ~qtLineWidget();
 
   /// Changes the line color to magenta.
@@ -29,8 +30,9 @@ public:
   void deemphasize() { this->setLineColor(QColor::fromRgbF(1.0, 1.0, 1.0)); }
 
   /// Set the line color
-  void setLineColor(const QColor &color);
-  void setLineColor(const double rgb[3]) {
+  void setLineColor(const QColor& color);
+  void setLineColor(const double rgb[3])
+  {
     this->setLineColor(QColor::fromRgbF(rgb[0], rgb[1], rgb[2]));
   }
   QColor color() const;

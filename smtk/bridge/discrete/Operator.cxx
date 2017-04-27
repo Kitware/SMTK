@@ -12,9 +12,12 @@
 
 #include "smtk/model/EntityRef.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace discrete {
+namespace smtk
+{
+namespace bridge
+{
+namespace discrete
+{
 
 /// Return a shared pointer to the session backing a discrete operator.
 Session* Operator::discreteSession()
@@ -28,6 +31,6 @@ vtkModelItem* Operator::discreteEntity(const smtk::model::EntityRef& smtkEntity)
   return this->discreteSession()->entityForUUID(smtkEntity.entity());
 }
 
-    } // namespace discrete
-  } //namespace bridge
+} // namespace discrete
+} //namespace bridge
 } // namespace smtk

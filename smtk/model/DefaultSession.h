@@ -12,8 +12,10 @@
 
 #include "smtk/model/Session.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief A session that does no transcription.
   *
@@ -59,8 +61,7 @@ public:
   smtkDeclareModelingKernel();
 
   void backsRemoteSession(
-    const std::string& remoteSessionName,
-    const smtk::common::UUID& sessionId);
+    const std::string& remoteSessionName, const smtk::common::UUID& sessionId);
   virtual std::string remoteName() const;
   virtual OperatorPtr op(const std::string& opName) const;
 
@@ -70,7 +71,8 @@ protected:
 
   DefaultSession();
 
-  virtual SessionInfoBits transcribeInternal(const EntityRef& entity, SessionInfoBits flags, int depth = -1);
+  virtual SessionInfoBits transcribeInternal(
+    const EntityRef& entity, SessionInfoBits flags, int depth = -1);
 
   virtual bool ableToOperateDelegate(RemoteOperatorPtr op);
   virtual OperatorResult operateDelegate(RemoteOperatorPtr op);
@@ -80,7 +82,7 @@ protected:
   std::string m_remoteSessionName;
 };
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_model_DefaultSession_h

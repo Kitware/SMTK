@@ -19,40 +19,40 @@
 
 namespace smtk
 {
-  namespace attribute
-  {
-     class SMTKQTEXT_EXPORT qtColorButton : public QToolButton
-    {
-      Q_OBJECT
-      Q_PROPERTY(QColor chosenColor READ chosenColor WRITE setChosenColor)
-    public:
-      /// constructor requires a QComboBox
-      qtColorButton(QWidget* p);
-      /// get the color
-      QColor chosenColor() const;
+namespace attribute
+{
+class SMTKQTEXT_EXPORT qtColorButton : public QToolButton
+{
+  Q_OBJECT
+  Q_PROPERTY(QColor chosenColor READ chosenColor WRITE setChosenColor)
+public:
+  /// constructor requires a QComboBox
+  qtColorButton(QWidget* p);
+  /// get the color
+  QColor chosenColor() const;
 
-    signals:
-      /// signal color changed
-      void chosenColorChanged(const QColor&);
-      /// signal color selected
-      void validColorChosen(const QColor&);
+signals:
+  /// signal color changed
+  void chosenColorChanged(const QColor&);
+  /// signal color selected
+  void validColorChosen(const QColor&);
 
-    public slots:
-      /// set the color
-      virtual void setChosenColor(const QColor&);
+public slots:
+  /// set the color
+  virtual void setChosenColor(const QColor&);
 
-      /// show a dialog to choose the color
-      virtual void chooseColor();
+  /// show a dialog to choose the color
+  virtual void chooseColor();
 
-    protected:
-      /// overridden to resize the color icon.
-      virtual void resizeEvent(QResizeEvent *rEvent);
+protected:
+  /// overridden to resize the color icon.
+  virtual void resizeEvent(QResizeEvent* rEvent);
 
-      /// renders an icon for the color.
-      QIcon renderColorSwatch(const QColor&);
+  /// renders an icon for the color.
+  QIcon renderColorSwatch(const QColor&);
 
-      QColor Color;
-    };
-  };
+  QColor Color;
+};
+};
 };
 #endif

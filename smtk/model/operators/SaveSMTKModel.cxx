@@ -40,8 +40,10 @@ SMTK_THIRDPARTY_POST_INCLUDE
 using namespace smtk::model;
 using namespace boost::filesystem;
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 OperatorResult SaveSMTKModel::operateInternal()
 {
@@ -51,32 +53,31 @@ OperatorResult SaveSMTKModel::operateInternal()
 
   Models models = this->m_specification->associatedModelEntities<Models>();
   if (models.empty())
-    {
+  {
     smtkErrorMacro(this->log(), "No valid models selected for export.");
     return this->createResult(OPERATION_FAILED);
-    }
+  }
 
   std::string filename = filenameItem->value();
   if (filename.empty())
-    {
+  {
     smtkErrorMacro(this->log(), "A filename must be provided.");
     return this->createResult(OPERATION_FAILED);
-    }
+  }
 
   std::ofstream jsonFile(filename.c_str(), std::ios::trunc);
   if (!jsonFile.good())
-    {
+  {
     smtkErrorMacro(this->log(), "Could not open file \"" << filename << "\".");
     return this->createResult(OPERATION_FAILED);
-    }
+  }
 
   cJSON* top = cJSON_CreateObject();
   std::string smtkfilepath = path(filename).parent_path().string();
   std::string smtkfilename = path(filename).stem().string();
 
   smtk::attribute::ValueItemDefinition::ConstPtr renameDef =
-    std::dynamic_pointer_cast<const smtk::attribute::ValueItemDefinition>(
-      renameItem->definition());
+    std::dynamic_pointer_cast<const smtk::attribute::ValueItemDefinition>(renameItem->definition());
   std::string renamePolicy = renameDef->discreteEnum(renameItem->discreteIndex(0));
   smtkDebugMacro(this->log(), "Rename policy: " << renamePolicy);
 
@@ -86,70 +87,67 @@ OperatorResult SaveSMTKModel::operateInternal()
   bool plural = models.size() > 1;
   int counter = 0;
   smtk::model::EntityRefArray modified;
-  for(modit = models.begin(); modit != models.end(); ++modit, ++counter)
-    {
+  for (modit = models.begin(); modit != models.end(); ++modit, ++counter)
+  {
     modit->setStringProperty("smtk_url", filename);
 
     if (renamePolicy != "none")
-      {
+    {
       std::string oldfilename = filename;
       if (modit->hasStringProperty("url"))
-        {
+      {
         oldfilename = path(modit->stringProperty("url")[0]).stem().string();
-        }
+      }
       std::string oldmodelname = modit->name();
       bool matchDefault = false;
       bool matchPrevious = false;
       const std::string defaultPrefix("Model ");
-      if (
-        renamePolicy == "all" ||
-        (matchDefault = std::equal(defaultPrefix.begin(), defaultPrefix.end(), oldmodelname.begin())) ||
+      if (renamePolicy == "all" || (matchDefault = std::equal(defaultPrefix.begin(),
+                                      defaultPrefix.end(), oldmodelname.begin())) ||
         (matchPrevious = std::equal(oldfilename.begin(), oldfilename.end(), oldmodelname.begin())))
-        {
+      {
         std::ostringstream newname;
         newname << smtkfilename;
         std::string suffix;
         if (matchDefault)
-          {
+        {
           suffix = oldmodelname.substr(defaultPrefix.size() - 1); // include space after prefix
-          }
+        }
         else if (matchPrevious)
-          {
+        {
           suffix = oldmodelname.substr(oldfilename.size());
-          }
+        }
         if (!suffix.empty())
-          {
+        {
           newname << suffix;
-          }
+        }
         else if (plural)
-          { // TODO: Use pedigree ID if present? and unique?
+        { // TODO: Use pedigree ID if present? and unique?
           newname << " " << counter;
-          }
+        }
         smtkDebugMacro(this->log(), "Renaming " << oldmodelname << " to " << newname.str());
         modit->setName(newname.str());
-        }
       }
+    }
 
     // we also want to write out the meshes to new "write_locations"
     std::vector<smtk::mesh::CollectionPtr> collections =
       this->manager()->meshes()->associatedCollections(*modit);
     std::vector<smtk::mesh::CollectionPtr>::const_iterator cit;
-    for(cit = collections.begin(); cit != collections.end(); ++cit)
-      {
+    for (cit = collections.begin(); cit != collections.end(); ++cit)
+    {
       std::ostringstream outmeshname;
       outmeshname << smtkfilename << "_" << (*cit)->name() << ".h5m";
       std::string write_path = (path(smtkfilepath) / path(outmeshname.str())).string();
       smtk::common::FileLocation wfLocation(write_path, smtkfilepath);
       (*cit)->writeLocation(wfLocation);
-      }
-
-    modified.push_back(*modit); // All models saved should be marked clean.
     }
 
-  smtk::io::SaveJSON::forManagerSessionPartial(
-    this->session()->sessionId(),
-    this->m_specification->associatedModelEntityIds(),
-    top, this->manager(), true, smtkfilepath);
+    modified.push_back(*modit); // All models saved should be marked clean.
+  }
+
+  smtk::io::SaveJSON::forManagerSessionPartial(this->session()->sessionId(),
+    this->m_specification->associatedModelEntityIds(), top, this->manager(), true, smtkfilepath);
 
   smtk::common::ResourceSetPtr rset = this->manager()->resources();
   smtk::io::SaveJSON::fromResourceSet(top, rset);
@@ -163,21 +161,21 @@ OperatorResult SaveSMTKModel::operateInternal()
   // Now we need to do some work to reset the url property of models since
   // during export, the property may be changed to be relative path, and we want
   // to set it back to be absolute path to display
-  if(!smtkfilepath.empty())
+  if (!smtkfilepath.empty())
+  {
+    for (modit = models.begin(); modit != models.end(); ++modit)
     {
-    for(modit = models.begin(); modit != models.end(); ++modit)
+      if (modit->hasStringProperty("url"))
       {
-      if(modit->hasStringProperty("url"))
-        {
         path url(modit->stringProperty("url")[0]);
         if (!url.string().empty() && !url.is_absolute())
-          {
+        {
           url = smtkfilepath / url;
           url = canonical(url, smtkfilepath);
           // set the url property to be consistent with "modelFiles" record when written out
           modit->setStringProperty("url", url.string());
-          }
         }
+      }
 
       // After a collection is written out successfully or not,
       // we want to clear the writeLocation so that it won't be re-written
@@ -185,12 +183,12 @@ OperatorResult SaveSMTKModel::operateInternal()
       std::vector<smtk::mesh::CollectionPtr> collections =
         this->manager()->meshes()->associatedCollections(*modit);
       std::vector<smtk::mesh::CollectionPtr>::const_iterator cit;
-      for(cit = collections.begin(); cit != collections.end(); ++cit)
-        {
+      for (cit = collections.begin(); cit != collections.end(); ++cit)
+      {
         (*cit)->writeLocation(std::string());
-        }
       }
     }
+  }
 
   auto result = this->createResult(OPERATION_SUCCEEDED);
   this->addEntitiesToResult(result, modified, MODIFIED);
@@ -204,26 +202,21 @@ void SaveSMTKModel::generateSummary(OperatorResult& res)
   smtk::attribute::FileItemPtr fitem = this->findFile("filename");
   msg << this->specification()->definition()->label();
   if (outcome == static_cast<int>(OPERATION_SUCCEEDED))
-    {
+  {
     msg << ": wrote \"" << fitem->value(0) << "\"";
     smtkInfoMacro(this->log(), msg.str());
-    }
+  }
   else
-    {
+  {
     msg << ": failed to write \"" << fitem->value(0) << "\"";
     smtkErrorMacro(this->log(), msg.str());
-    }
+  }
 }
 
-  } //namespace model
+} //namespace model
 } // namespace smtk
 
 #include "smtk/model/SaveSMTKModel_xml.h"
 
-smtkImplementsModelOperator(
-  SMTKCORE_EXPORT,
-  smtk::model::SaveSMTKModel,
-  save_smtk_model,
-  "save smtk model",
-  SaveSMTKModel_xml,
-  smtk::model::Session);
+smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::model::SaveSMTKModel, save_smtk_model,
+  "save smtk model", SaveSMTKModel_xml, smtk::model::Session);

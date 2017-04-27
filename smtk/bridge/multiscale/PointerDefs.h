@@ -18,14 +18,14 @@
 #include "smtk/SystemConfig.h"
 
 namespace smtk
-{  //session relates pointer classes
-  namespace bridge
-  {
-    namespace multiscale
-      {
-      class Session;
-      typedef smtk::shared_ptr< smtk::bridge::multiscale::Session > SessionPtr;
-      }
-  }
+{ //session relates pointer classes
+namespace bridge
+{
+namespace multiscale
+{
+class Session;
+typedef smtk::shared_ptr<smtk::bridge::multiscale::Session> SessionPtr;
+}
+}
 }
 #endif

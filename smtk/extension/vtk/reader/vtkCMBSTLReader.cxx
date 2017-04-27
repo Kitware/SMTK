@@ -36,35 +36,32 @@ vtkCMBSTLReader::~vtkCMBSTLReader()
   this->SetFileName(0);
 }
 
-int vtkCMBSTLReader::RequestData(
-  vtkInformation *vtkNotUsed(request),
-  vtkInformationVector **vtkNotUsed(inputVector),
-  vtkInformationVector *outputVector)
+int vtkCMBSTLReader::RequestData(vtkInformation* vtkNotUsed(request),
+  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
 {
   // get the info object
-  vtkInformation *outInfo = outputVector->GetInformationObject(0);
+  vtkInformation* outInfo = outputVector->GetInformationObject(0);
 
   // get the ouptut
-  vtkPolyData *output = vtkPolyData::SafeDownCast(
-    outInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkPolyData* output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
   std::ifstream fin(this->FileName);
-  if(!fin.good())
-    {
+  if (!fin.good())
+  {
     vtkErrorMacro(<< "File " << this->FileName << " not found");
     fin.close();
     return 0;
-    }
+  }
   fin.close();
 
-  vtkSTLReader *reader = vtkSTLReader::New();
+  vtkSTLReader* reader = vtkSTLReader::New();
   reader->SetFileName(this->GetFileName());
   reader->ScalarTagsOn();
 
   //assign each region a different color scalar
-  vtkPolyDataConnectivityFilter *seperateRegions = vtkPolyDataConnectivityFilter::New();
+  vtkPolyDataConnectivityFilter* seperateRegions = vtkPolyDataConnectivityFilter::New();
   seperateRegions->SetExtractionModeToAllRegions();
-  seperateRegions->SetInputConnection( reader->GetOutputPort() );
+  seperateRegions->SetInputConnection(reader->GetOutputPort());
   seperateRegions->ColorRegionsOn();
   seperateRegions->Update();
 
@@ -73,49 +70,45 @@ int vtkCMBSTLReader::RequestData(
   seperateRegions->Delete();
   reader->Delete();
 
-
-  vtkIdTypeArray *regions = vtkIdTypeArray::SafeDownCast( output->GetPointData()->GetScalars() );
-  if ( !regions )
-    {
+  vtkIdTypeArray* regions = vtkIdTypeArray::SafeDownCast(output->GetPointData()->GetScalars());
+  if (!regions)
+  {
     vtkErrorMacro("Unable to find any region.");
     return 0;
-    }
+  }
 
   //we need to determine which region each cell is in
   //vtkPolyDataConnectivityFilter does not allow a cell to belong to more than one region
-  vtkIntArray *regionArray = vtkIntArray::New();
-  regionArray->SetNumberOfValues( output->GetNumberOfCells() );
-  regionArray->SetName( ReaderHelperFunctions::GetShellTagName() );
-  vtkIdType id=0;
-  for ( vtkIdType i=0; i < output->GetNumberOfCells( ); ++i )
-    {
+  vtkIntArray* regionArray = vtkIntArray::New();
+  regionArray->SetNumberOfValues(output->GetNumberOfCells());
+  regionArray->SetName(ReaderHelperFunctions::GetShellTagName());
+  vtkIdType id = 0;
+  for (vtkIdType i = 0; i < output->GetNumberOfCells(); ++i)
+  {
     id = output->GetCell(i)->GetPointId(0);
-    regionArray->SetValue( i, regions->GetValue( id ) );
-    }
+    regionArray->SetValue(i, regions->GetValue(id));
+  }
 
-  output->GetCellData()->AddArray( regionArray );
+  output->GetCellData()->AddArray(regionArray);
   regionArray->Delete();
-
 
   return 1;
 }
 
-int vtkCMBSTLReader::RequestInformation(
-  vtkInformation *vtkNotUsed(request),
-  vtkInformationVector **vtkNotUsed(inputVector),
-  vtkInformationVector *vtkNotUsed(outputVector))
+int vtkCMBSTLReader::RequestInformation(vtkInformation* vtkNotUsed(request),
+  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* vtkNotUsed(outputVector))
 {
   if (!this->FileName)
-    {
+  {
     vtkErrorMacro("FileName has to be specified!");
     return 0;
-    }
+  }
 
   return 1;
 }
 
 void vtkCMBSTLReader::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
   os << indent << "FileName: " << this->FileName << endl;
 }

@@ -17,7 +17,6 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 
-
 class vtkDiscreteModelEntityGroup;
 class vtkModelEntity;
 class vtkModelItemIterator;
@@ -29,7 +28,7 @@ public:
 
   // Description:
   // Get a pointer to this object that is a vtkModelEntity.
-  virtual vtkModelEntity* GetThisModelEntity()=0;
+  virtual vtkModelEntity* GetThisModelEntity() = 0;
 
   // Description:
   // Given a vtkModelEntity, return a vtkDiscreteModelEntity if
@@ -51,9 +50,8 @@ protected:
   void RemoveAllModelEntityGroups();
 
 private:
-  vtkDiscreteModelEntity(const vtkDiscreteModelEntity&);  // Not implemented.
-  void operator=(const vtkDiscreteModelEntity&);  // Not implemented.
+  vtkDiscreteModelEntity(const vtkDiscreteModelEntity&); // Not implemented.
+  void operator=(const vtkDiscreteModelEntity&);         // Not implemented.
 };
 
 #endif
-

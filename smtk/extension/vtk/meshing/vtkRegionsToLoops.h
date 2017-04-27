@@ -21,24 +21,21 @@ class VTKSMTKMESHINGEXT_EXPORT vtkRegionsToLoops : public vtkPolyDataAlgorithm
 {
 public:
   static vtkRegionsToLoops* New();
-  vtkTypeMacro(vtkRegionsToLoops,vtkPolyDataAlgorithm);
+  vtkTypeMacro(vtkRegionsToLoops, vtkPolyDataAlgorithm);
   virtual void PrintSelf(ostream& os, vtkIndent indent);
 
 protected:
   vtkRegionsToLoops();
   virtual ~vtkRegionsToLoops();
 
-  virtual int FillInputPortInformation(
-    int port, vtkInformation* info);
+  virtual int FillInputPortInformation(int port, vtkInformation* info);
 
   virtual int RequestData(
-    vtkInformation* request,
-    vtkInformationVector** inputInfo,
-    vtkInformationVector* outputInfo);
+    vtkInformation* request, vtkInformationVector** inputInfo, vtkInformationVector* outputInfo);
 
 private:
   vtkRegionsToLoops(const vtkRegionsToLoops&); // Not implemented.
-  void operator = (const vtkRegionsToLoops&); // Not implemented.
+  void operator=(const vtkRegionsToLoops&);    // Not implemented.
 };
 
 #endif // __vtkRegionsToLoops_h

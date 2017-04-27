@@ -26,11 +26,14 @@
 
 #include <string>
 
-namespace smtk {
-  namespace io {
-    class Logger;
-  }
-  namespace model {
+namespace smtk
+{
+namespace io
+{
+class Logger;
+}
+namespace model
+{
 
 /**\brief An enumeration of operation outcomes (or lacks thereof).
   *
@@ -52,10 +55,10 @@ enum OperatorOutcome
   *
   * You must also use the smtkImplementsModelOperator macro in your operator's implementation.
   */
-#define smtkDeclareModelOperator() \
-  static std::string operatorName; \
-  virtual std::string name() const { return operatorName; } \
-  virtual std::string className() const; \
+#define smtkDeclareModelOperator()                                                                 \
+  static std::string operatorName;                                                                 \
+  virtual std::string name() const { return operatorName; }                                        \
+  virtual std::string className() const;                                                           \
   static smtk::model::OperatorPtr baseCreate()
 
 /**\brief Declare that a class implements an operator for solid models.
@@ -85,29 +88,24 @@ enum OperatorOutcome
   *                (i.e., whenever the program or dynamic library containing this macro are
   *                loaded).
   */
-#define smtkImplementsModelOperator(ExportSym, Cls, Comp, Nick, ParamSpec, Brdg) \
-  /***\brief Adapt create() to return a base-class pointer (for register[Static]Operator). */ \
-  smtk::model::OperatorPtr Cls ::baseCreate() { \
-    return Cls ::create(); \
-  } \
-  /* Implement autoinit methods */ \
-  void ExportSym smtk_##Comp##_operator_AutoInit_Construct() { \
-    Brdg ::registerStaticOperator( \
-      Nick , /* Can't rely on operatorName to be initialized yet */ \
-      ParamSpec, \
-      Cls ::baseCreate); \
-  } \
-  void ExportSym smtk_##Comp##_operator_AutoInit_Destruct() { \
-    Brdg ::registerStaticOperator( \
-      Cls ::operatorName, \
-      SMTK_FUNCTION_INIT, \
-      SMTK_FUNCTION_INIT); \
-  } \
-  /* Declare the component name */ \
-  std::string Cls ::operatorName( Nick ); \
-  /**\brief Provide a method to obtain the class name */ \
-  std::string Cls ::className() const { return #Cls ; } \
-  /* Force the registration methods above to be run on load */ \
+#define smtkImplementsModelOperator(ExportSym, Cls, Comp, Nick, ParamSpec, Brdg)                   \
+  /***\brief Adapt create() to return a base-class pointer (for register[Static]Operator). */      \
+  smtk::model::OperatorPtr Cls::baseCreate() { return Cls::create(); }                             \
+  /* Implement autoinit methods */                                                                 \
+  void ExportSym smtk_##Comp##_operator_AutoInit_Construct()                                       \
+  {                                                                                                \
+    Brdg::registerStaticOperator(Nick, /* Can't rely on operatorName to be initialized yet */      \
+      ParamSpec, Cls::baseCreate);                                                                 \
+  }                                                                                                \
+  void ExportSym smtk_##Comp##_operator_AutoInit_Destruct()                                        \
+  {                                                                                                \
+    Brdg::registerStaticOperator(Cls::operatorName, SMTK_FUNCTION_INIT, SMTK_FUNCTION_INIT);       \
+  }                                                                                                \
+  /* Declare the component name */                                                                 \
+  std::string Cls::operatorName(Nick);                                                             \
+  /**\brief Provide a method to obtain the class name */                                           \
+  std::string Cls::className() const { return #Cls; }                                              \
+  /* Force the registration methods above to be run on load */                                     \
   smtkComponentInitMacro(smtk_##Comp##_operator);
 
 /**\brief A base class for solid modeling operations.
@@ -156,7 +154,8 @@ public:
   void observe(OperatorEventType event, OperatorWithResultCallback functionHandle, void* callData);
 
   void unobserve(OperatorEventType event, BareOperatorCallback functionHandle, void* callData);
-  void unobserve(OperatorEventType event, OperatorWithResultCallback functionHandle, void* callData);
+  void unobserve(
+    OperatorEventType event, OperatorWithResultCallback functionHandle, void* callData);
 
   int trigger(OperatorEventType event);
   int trigger(OperatorEventType event, const OperatorResult& result);
@@ -180,65 +179,57 @@ public:
   bool ensureSpecification() const;
 
   /// Convenience method for finding a operator parameter of a known type.
-  template<typename T> typename T::Ptr findAs(
-    const std::string& pname,
-    smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN)
-    { return this->specification()->findAs<T>(pname, style); }
+  template <typename T>
+  typename T::Ptr findAs(
+    const std::string& pname, smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN)
+  {
+    return this->specification()->findAs<T>(pname, style);
+  }
 
   smtk::attribute::IntItemPtr findInt(
-    const std::string& name,
-    smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
+    const std::string& name, smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
   smtk::attribute::DoubleItemPtr findDouble(
-    const std::string& name,
-    smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
+    const std::string& name, smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
   smtk::attribute::StringItemPtr findString(
-    const std::string& name,
-    smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
+    const std::string& name, smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
   smtk::attribute::FileItemPtr findFile(
-    const std::string& name,
-    smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
+    const std::string& name, smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
   smtk::attribute::DirectoryItemPtr findDirectory(
-    const std::string& name,
-    smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
+    const std::string& name, smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
   smtk::attribute::GroupItemPtr findGroup(
-    const std::string& name,
-    smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
+    const std::string& name, smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
   smtk::attribute::RefItemPtr findRef(
-    const std::string& name,
-    smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
+    const std::string& name, smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
   smtk::attribute::ModelEntityItemPtr findModelEntity(
-    const std::string& name,
-    smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
+    const std::string& name, smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
   smtk::attribute::VoidItemPtr findVoid(
-    const std::string& name,
-    smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
+    const std::string& name, smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
   smtk::attribute::MeshSelectionItemPtr findMeshSelection(
-    const std::string& name,
-    smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
+    const std::string& name, smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
   smtk::attribute::MeshItemPtr findMesh(
-    const std::string& name,
-    smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
+    const std::string& name, smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
 
   bool associateEntity(const smtk::model::EntityRef& entity);
   void disassociateEntity(const smtk::model::EntityRef& entity);
   void removeAllAssociations();
-  template<typename T> T associatedEntitiesAs() const;
+  template <typename T>
+  T associatedEntitiesAs() const;
 
   OperatorResult createResult(OperatorOutcome outcome = UNABLE_TO_OPERATE);
   void setResultOutcome(OperatorResult res, OperatorOutcome outcome);
   void eraseResult(OperatorResult res);
 
 #ifndef SHIBOKEN_SKIP
-  bool operator < (const Operator& other) const;
+  bool operator<(const Operator& other) const;
 #endif // SHIBOKEN_SKIP
 
   enum ResultEntityOrigin
-    {
+  {
     CREATED,  //!< This operation is the origin of the entities in question.
     MODIFIED, //!< This operation modified pre-existing entities.
     EXPUNGED, //!< This operation deleted pre-existing entities from the modeling kernel.
     UNKNOWN   //!< The entities in question may be pre-existing or newly-created. Infer as possible.
-    };
+  };
 
   virtual ~Operator();
 
@@ -250,9 +241,11 @@ protected:
   virtual OperatorResult operateInternal() = 0;
   virtual void generateSummary(OperatorResult& res);
 
-  void addEntityToResult(OperatorResult res, const EntityRef& ent, ResultEntityOrigin gen = UNKNOWN);
-  template<typename T>
-  void addEntitiesToResult(OperatorResult res, const T& container, ResultEntityOrigin gen = UNKNOWN);
+  void addEntityToResult(
+    OperatorResult res, const EntityRef& ent, ResultEntityOrigin gen = UNKNOWN);
+  template <typename T>
+  void addEntitiesToResult(
+    OperatorResult res, const T& container, ResultEntityOrigin gen = UNKNOWN);
 
 #ifndef SHIBOKEN_SKIP
   ManagerPtr m_manager; // Model manager, not the attribute manager for the operator.
@@ -268,17 +261,17 @@ protected:
 SMTKCORE_EXPORT std::string outcomeAsString(int oc);
 SMTKCORE_EXPORT OperatorOutcome stringToOutcome(const std::string& oc);
 
-template<typename T>
+template <typename T>
 T Operator::associatedEntitiesAs() const
 {
   bool resetMgr = false;
   this->ensureSpecification();
   if (this->m_specification->system())
     if (!this->m_specification->modelManager())
-      {
+    {
       resetMgr = true;
       this->m_specification->system()->setRefModelManager(this->m_manager);
-      }
+    }
   T result = this->m_specification->associatedModelEntities<T>();
   if (resetMgr)
     this->m_specification->system()->setRefModelManager(smtk::model::ManagerPtr());
@@ -305,50 +298,51 @@ T Operator::associatedEntitiesAs() const
   * in the "modified" item since the model manager will already have a
   * record of them.
   */
-template<typename T>
-void Operator::addEntitiesToResult(OperatorResult res, const T& container, ResultEntityOrigin origin)
+template <typename T>
+void Operator::addEntitiesToResult(
+  OperatorResult res, const T& container, ResultEntityOrigin origin)
 {
   T created;
   T modified;
   T expunged;
   switch (origin)
-    {
-  case CREATED:
-    created = container;
-    break;
-  case MODIFIED:
-    modified = container;
-    break;
-  case EXPUNGED:
-    expunged = container;
-    break;
-  default:
-  case UNKNOWN:
-    for (typename T::const_iterator it = container.begin(); it != container.end(); ++it)
-      if (this->manager()->findEntity(it->entity()))
-        modified.insert(modified.end(), *it);
-      else
-        created.insert(created.end(), *it);
-    break;
-    }
+  {
+    case CREATED:
+      created = container;
+      break;
+    case MODIFIED:
+      modified = container;
+      break;
+    case EXPUNGED:
+      expunged = container;
+      break;
+    default:
+    case UNKNOWN:
+      for (typename T::const_iterator it = container.begin(); it != container.end(); ++it)
+        if (this->manager()->findEntity(it->entity()))
+          modified.insert(modified.end(), *it);
+        else
+          created.insert(created.end(), *it);
+      break;
+  }
   if (!created.empty())
-    {
+  {
     attribute::ModelEntityItemPtr creItem = res->findModelEntity("created");
     creItem->appendValues(created.begin(), created.end());
-    }
+  }
   if (!modified.empty())
-    {
+  {
     attribute::ModelEntityItemPtr modItem = res->findModelEntity("modified");
     modItem->appendValues(modified.begin(), modified.end());
-    }
+  }
   if (!expunged.empty())
-    {
+  {
     attribute::ModelEntityItemPtr expItem = res->findModelEntity("expunged");
     expItem->appendValues(expunged.begin(), expunged.end());
-    }
+  }
 }
 
-  } // model namespace
+} // model namespace
 } // smtk namespace
 
 #endif // __smtk_model_Operator_h

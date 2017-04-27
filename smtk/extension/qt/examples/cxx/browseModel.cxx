@@ -10,8 +10,8 @@
 #include "smtk/extension/qt/qtEntityItemDelegate.h"
 #include "smtk/extension/qt/qtEntityItemModel.h"
 
-#include "smtk/io/SaveJSON.h"
 #include "smtk/io/LoadJSON.h"
+#include "smtk/io/SaveJSON.h"
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/Manager.h"
@@ -45,21 +45,16 @@ int main(int argc, char* argv[])
 
   std::ifstream file(filename);
   if (!file.good())
-    {
-    cout
-      << "Could not open file \"" << filename << "\".\n\n"
-      << "Usage:\n  " << argv[0] << " [[[filename] mask] debug]\n"
-      << "where\n"
-      << "  filename is the path to a JSON model.\n"
-      << "  mask     is an integer entity mask selecting what to display.\n"
-      << "  debug    is any character, indicating a debug session.\n\n"
-      ;
+  {
+    cout << "Could not open file \"" << filename << "\".\n\n"
+         << "Usage:\n  " << argv[0] << " [[[filename] mask] debug]\n"
+         << "where\n"
+         << "  filename is the path to a JSON model.\n"
+         << "  mask     is an integer entity mask selecting what to display.\n"
+         << "  debug    is any character, indicating a debug session.\n\n";
     return 1;
-    }
-  std::string json(
-    (std::istreambuf_iterator<char>(file)),
-    (std::istreambuf_iterator<char>()));
-
+  }
+  std::string json((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
 
   smtk::model::ManagerPtr model = smtk::model::Manager::create();
   smtk::io::LoadJSON::intoModelManager(json.c_str(), model);
@@ -85,10 +80,7 @@ int main(int argc, char* argv[])
   smtk::model::EntityRef::EntityRefsFromUUIDs(
     entityrefs, model, model->entitiesMatchingFlags(mask, false));
   std::cout << std::setbase(10) << "Found " << entityrefs.size() << " entries\n";
-  view->setup(
-    model,
-    qmodel,
-    qdelegate,
+  view->setup(model, qmodel, qdelegate,
     smtk::model::EntityListPhrase::create()
       ->setup(entityrefs)
       ->setDelegate( // set the subphrase generator:
@@ -104,11 +96,11 @@ int main(int argc, char* argv[])
   // FIXME: Actually test something when not in debug mode.
   int status = debug ? app.exec() : 0;
   if (argc > 4)
-    {
+  {
     std::ofstream result(argv[4]);
     result << smtk::io::SaveJSON::fromModelManager(model).c_str() << "\n";
     result.close();
-    }
+  }
 
   delete view;
   delete qmodel;

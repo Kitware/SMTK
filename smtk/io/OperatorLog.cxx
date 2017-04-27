@@ -14,11 +14,14 @@
 
 using namespace smtk::model;
 
-namespace smtk {
-  namespace io {
+namespace smtk
+{
+namespace io
+{
 
 OperatorLog::OperatorLog(smtk::model::ManagerPtr mgr)
-  : m_hasFailures(false), m_manager(mgr)
+  : m_hasFailures(false)
+  , m_manager(mgr)
 {
   mgr->observe(smtk::model::CREATED_OPERATOR, OperatorLog::operatorCreated, this);
 }
@@ -32,13 +35,13 @@ OperatorLog::~OperatorLog()
   smtk::model::OperatorPtr watched;
   WeakOpArray::iterator it;
   for (it = this->m_watching.begin(); it != this->m_watching.end(); ++it)
-    {
+  {
     if ((watched = it->lock()))
-      {
+    {
       watched->unobserve(smtk::model::WILL_OPERATE, OperatorLog::operatorInvoked, this);
       watched->unobserve(smtk::model::DID_OPERATE, OperatorLog::operatorReturned, this);
-      }
     }
+  }
 }
 
 bool OperatorLog::hasFailures() const
@@ -52,9 +55,7 @@ void OperatorLog::resetFailures()
 }
 
 int OperatorLog::operatorCreated(
-  smtk::model::OperatorEventType event,
-  const smtk::model::Operator& op,
-  void* data)
+  smtk::model::OperatorEventType event, const smtk::model::Operator& op, void* data)
 {
   OperatorLog* self = reinterpret_cast<OperatorLog*>(data);
   if (!self || event != CREATED_OPERATOR)
@@ -68,9 +69,7 @@ int OperatorLog::operatorCreated(
 }
 
 int OperatorLog::operatorInvoked(
-  smtk::model::OperatorEventType event,
-  const smtk::model::Operator& op,
-  void* data)
+  smtk::model::OperatorEventType event, const smtk::model::Operator& op, void* data)
 {
   OperatorLog* self = reinterpret_cast<OperatorLog*>(data);
   if (!self)
@@ -79,20 +78,16 @@ int OperatorLog::operatorInvoked(
   return self->recordInvocation(event, op);
 }
 
-int OperatorLog::operatorReturned(
-  smtk::model::OperatorEventType event,
-  const smtk::model::Operator& op,
-  smtk::model::OperatorResult r,
-  void* data)
+int OperatorLog::operatorReturned(smtk::model::OperatorEventType event,
+  const smtk::model::Operator& op, smtk::model::OperatorResult r, void* data)
 {
   OperatorLog* self = reinterpret_cast<OperatorLog*>(data);
   if (!self)
     return 0; // Don't stop an operation just because the recorder is unhappy.
 
-  self->m_hasFailures |=
-    (r->findInt("outcome")->value(0) == smtk::model::OPERATION_FAILED);
+  self->m_hasFailures |= (r->findInt("outcome")->value(0) == smtk::model::OPERATION_FAILED);
   return self->recordResult(event, op, r);
 }
 
-  } // namespace io
+} // namespace io
 } // namespace smtk

@@ -42,26 +42,22 @@ qtAttributeItemWidgetFactory* qtAttribute::s_factory = NULL;
 class qtAttributeInternals
 {
 public:
-  qtAttributeInternals(smtk::attribute::AttributePtr myAttribute, QWidget* p,
-    qtBaseView* myView)
+  qtAttributeInternals(smtk::attribute::AttributePtr myAttribute, QWidget* p, qtBaseView* myView)
   {
-  this->m_parentWidget = p;
-  this->m_attribute = myAttribute;
-  this->m_view = myView;
+    this->m_parentWidget = p;
+    this->m_attribute = myAttribute;
+    this->m_view = myView;
   }
-  ~qtAttributeInternals()
-  {
-  }
- smtk::attribute::WeakAttributePtr m_attribute;
- QPointer<QWidget> m_parentWidget;
- QList<smtk::extension::qtItem*> m_items;
- QPointer<qtBaseView> m_view;
+  ~qtAttributeInternals() {}
+  smtk::attribute::WeakAttributePtr m_attribute;
+  QPointer<QWidget> m_parentWidget;
+  QList<smtk::extension::qtItem*> m_items;
+  QPointer<qtBaseView> m_view;
 };
 
-qtAttribute::qtAttribute(smtk::attribute::AttributePtr myAttribute, QWidget* p,
-   qtBaseView* myView)
+qtAttribute::qtAttribute(smtk::attribute::AttributePtr myAttribute, QWidget* p, qtBaseView* myView)
 {
-  this->m_internals  = new qtAttributeInternals(myAttribute, p, myView);
+  this->m_internals = new qtAttributeInternals(myAttribute, p, myView);
   this->m_widget = NULL;
   this->createWidget();
 }
@@ -69,59 +65,59 @@ qtAttribute::qtAttribute(smtk::attribute::AttributePtr myAttribute, QWidget* p,
 qtAttribute::~qtAttribute()
 {
   // First Clear all the items
-  for(int i=0; i < this->m_internals->m_items.count(); i++)
-    {
+  for (int i = 0; i < this->m_internals->m_items.count(); i++)
+  {
     delete this->m_internals->m_items.value(i);
-    }
+  }
 
   this->m_internals->m_items.clear();
   if (this->m_widget)
-    {
+  {
     delete this->m_widget;
-    }
+  }
 
   delete this->m_internals;
 }
 
 void qtAttribute::createWidget()
 {
-  if(!this->attribute() || (!this->attribute()->numberOfItems() &&
-    !this->attribute()->associations()))
-    {
+  if (!this->attribute() ||
+    (!this->attribute()->numberOfItems() && !this->attribute()->associations()))
+  {
     return;
-    }
+  }
 
   if (!qtAttribute::s_factory)
-    {
+  {
     qtAttribute::setItemWidgetFactory(new qtAttributeItemWidgetFactory());
-    }
+  }
 
   int numShowItems = 0;
   smtk::attribute::AttributePtr att = this->attribute();
   std::size_t i, n = att->numberOfItems();
-  if(this->m_internals->m_view)
-    {
+  if (this->m_internals->m_view)
+  {
     for (i = 0; i < n; i++)
+    {
+      if (this->m_internals->m_view->displayItem(att->item(static_cast<int>(i))))
       {
-      if(this->m_internals->m_view->displayItem(att->item(static_cast<int>(i))))
-        {
         numShowItems++;
-        }
       }
+    }
     // also check associations
-    if(this->m_internals->m_view->displayItem(att->associations()))
-      {
+    if (this->m_internals->m_view->displayItem(att->associations()))
+    {
       numShowItems++;
-      }
     }
+  }
   else // show everything
-    {
+  {
     numShowItems = static_cast<int>(att->associations() ? n + 1 : n);
-    }
-  if(numShowItems == 0)
-    {
+  }
+  if (numShowItems == 0)
+  {
     return;
-    }
+  }
 
   QFrame* attFrame = new QFrame(this->parentWidget());
   attFrame->setFrameShape(QFrame::Box);
@@ -134,12 +130,12 @@ void qtAttribute::createWidget()
 
 void qtAttribute::addItem(qtItem* child)
 {
-  if(!this->m_internals->m_items.contains(child))
-    {
+  if (!this->m_internals->m_items.contains(child))
+  {
     this->m_internals->m_items.append(child);
     // When the item is modified so is the attribute that uses it
     connect(child, SIGNAL(modified()), this, SLOT(onItemModified()));
-    }
+  }
 }
 
 QList<qtItem*>& qtAttribute::items() const
@@ -149,56 +145,55 @@ QList<qtItem*>& qtAttribute::items() const
 
 void qtAttribute::showAdvanceLevelOverlay(bool show)
 {
-  for(int i=0; i < this->m_internals->m_items.count(); i++)
-    {
+  for (int i = 0; i < this->m_internals->m_items.count(); i++)
+  {
     this->m_internals->m_items.value(i)->showAdvanceLevelOverlay(show);
-    }
+  }
 }
 
 void qtAttribute::createBasicLayout(bool includeAssociations)
 {
   //If there is no main widget there is nothing to show
   if (!this->m_widget)
-    {
+  {
     return;
-    }
+  }
 
   QLayout* layout = this->m_widget->layout();
   qtItem* qItem = NULL;
   smtk::attribute::AttributePtr att = this->attribute();
   // If there are model assocications for the attribute, create UI for them if requested.
   // This will be the same widget used for ModelEntityItem.
-  if(includeAssociations && att->associations())
+  if (includeAssociations && att->associations())
+  {
+    qItem = this->createItem(att->associations(), this->m_widget, this->m_internals->m_view);
+    if (qItem && qItem->widget())
     {
-    qItem = this->createItem(att->associations(), this->m_widget,
-      this->m_internals->m_view);
-    if(qItem && qItem->widget())
-      {
       layout->addWidget(qItem->widget());
       this->addItem(qItem);
-      }
     }
+  }
   // Now go through all child items and create ui components.
   std::size_t i, n = att->numberOfItems();
   for (i = 0; i < n; i++)
+  {
+    qItem =
+      this->createItem(att->item(static_cast<int>(i)), this->m_widget, this->m_internals->m_view);
+    if (qItem && qItem->widget())
     {
-    qItem = this->createItem(att->item(static_cast<int>(i)), this->m_widget,
-      this->m_internals->m_view);
-    if(qItem && qItem->widget())
-      {
       layout->addWidget(qItem->widget());
       this->addItem(qItem);
-      }
     }
+  }
 }
 
 void qtAttribute::onRequestEntityAssociation()
 {
-  foreach(qtItem* item, this->m_internals->m_items)
-    {
-    if(qtModelEntityItem* mitem = qobject_cast<qtModelEntityItem*>(item))
+  foreach (qtItem* item, this->m_internals->m_items)
+  {
+    if (qtModelEntityItem* mitem = qobject_cast<qtModelEntityItem*>(item))
       mitem->onRequestEntityAssociation();
-    }
+  }
 }
 
 smtk::attribute::AttributePtr qtAttribute::attribute()
@@ -211,17 +206,17 @@ QWidget* qtAttribute::parentWidget()
   return this->m_internals->m_parentWidget;
 }
 
-qtItem* qtAttribute::createItem(smtk::attribute::ItemPtr item, QWidget* pW,
-  qtBaseView* bview, Qt::Orientation enVectorItemOrient)
+qtItem* qtAttribute::createItem(
+  smtk::attribute::ItemPtr item, QWidget* pW, qtBaseView* bview, Qt::Orientation enVectorItemOrient)
 {
-  if(bview && (!bview->displayItem(item)))
-    {
+  if (bview && (!bview->displayItem(item)))
+  {
     return NULL;
-    }
+  }
 
   qtItem* aItem = NULL;
   switch (item->type())
-    {
+  {
     case smtk::attribute::Item::ATTRIBUTE_REF: // This is always inside valueItem ???
       aItem = qtAttribute::s_factory->createRefItemWidget(
         smtk::dynamic_pointer_cast<RefItem>(item), pW, bview, enVectorItemOrient);
@@ -267,7 +262,7 @@ qtItem* qtAttribute::createItem(smtk::attribute::ItemPtr item, QWidget* pW,
       //this->m_errorStatus << "Error: Unsupported Item Type: " <<
       // smtk::attribute::Item::type2String(item->type()) << "\n";
       break;
-    }
+  }
   return aItem;
 }
 
@@ -284,34 +279,34 @@ static void cleanupItemFactory()
 void qtAttribute::setItemWidgetFactory(qtAttributeItemWidgetFactory* f)
 {
   if (f == qtAttribute::s_factory)
-    {
+  {
     return;
-    }
+  }
 
   delete qtAttribute::s_factory;
   qtAttribute::s_factory = f;
   static bool once = false;
   if (!once && qtAttribute::s_factory)
-    {
+  {
     once = true;
     atexit(cleanupItemFactory);
-    }
+  }
 }
 
 /* Slot for properly emitting signals when an attribute's item is modified */
 void qtAttribute::onItemModified()
 {
   // are we here due to a signal?
-  QObject *sobject = this->sender();
+  QObject* sobject = this->sender();
   if (sobject == NULL)
-    {
+  {
     return;
-    }
+  }
   auto iobject = qobject_cast<smtk::extension::qtItem*>(sobject);
   if (iobject == NULL)
-    {
+  {
     return;
-    }
+  }
   emit this->itemModified(iobject);
   emit this->modified();
 }

@@ -20,88 +20,88 @@
 #include <vector>
 namespace smtk
 {
-  namespace attribute
+namespace attribute
+{
+class GroupItemDefinition;
+class SMTKCORE_EXPORT GroupItem : public Item
+{
+  friend class GroupItemDefinition;
+
+public:
+  typedef std::vector<std::vector<smtk::attribute::ItemPtr> >::const_iterator const_iterator;
+
+  smtkTypeMacro(GroupItem);
+  virtual ~GroupItem();
+  virtual Item::Type type() const;
+  virtual bool isValid() const;
+  std::size_t numberOfRequiredGroups() const;
+  std::size_t maxNumberOfGroups() const;
+
+  bool isExtensible() const;
+
+  std::size_t numberOfGroups() const { return this->m_items.size(); }
+  bool setNumberOfGroups(std::size_t newSize);
+  std::size_t numberOfItemsPerGroup() const;
+  bool appendGroup();
+  bool removeGroup(std::size_t element);
+
+  smtk::attribute::ItemPtr item(std::size_t ith) const { return this->item(0, ith); }
+  smtk::attribute::ItemPtr item(std::size_t element, std::size_t ith) const
   {
-    class GroupItemDefinition;
-    class SMTKCORE_EXPORT GroupItem : public Item
-    {
-      friend class GroupItemDefinition;
-    public:
-      typedef std::vector<std::vector<smtk::attribute::ItemPtr> >::const_iterator const_iterator;
+    assert(this->m_items.size() > element);
+    assert(this->m_items[element].size() > ith);
+    return this->m_items[element][ith];
+  }
 
-      smtkTypeMacro(GroupItem);
-      virtual ~GroupItem();
-      virtual Item::Type type() const;
-      virtual bool isValid() const;
-      std::size_t numberOfRequiredGroups() const;
-      std::size_t maxNumberOfGroups() const;
+  smtk::attribute::ItemPtr find(const std::string& inName) { return this->find(0, inName); }
+  smtk::attribute::ItemPtr find(std::size_t element, const std::string& name);
+  smtk::attribute::ConstItemPtr find(const std::string& inName) const
+  {
+    return this->find(0, inName);
+  }
+  smtk::attribute::ConstItemPtr find(std::size_t element, const std::string& name) const;
 
-      bool isExtensible() const;
+  template <typename T>
+  typename T::Ptr findAs(const std::string& name);
 
-      std::size_t numberOfGroups() const
-      {return this->m_items.size();}
-      bool  setNumberOfGroups(std::size_t newSize);
-      std::size_t numberOfItemsPerGroup() const;
-      bool appendGroup();
-      bool removeGroup(std::size_t element);
+  template <typename T>
+  typename T::ConstPtr findAs(const std::string& name) const;
 
-      smtk::attribute::ItemPtr item(std::size_t ith) const
-      {return this->item(0, ith);}
-      smtk::attribute::ItemPtr item(std::size_t element, std::size_t ith) const
-        {
-          assert(this->m_items.size() > element);
-          assert(this->m_items[element].size() > ith);
-          return this->m_items[element][ith];
-        }
+  virtual void reset();
 
-      smtk::attribute::ItemPtr find(const std::string &inName)
-        {return this->find(0, inName);}
-      smtk::attribute::ItemPtr find(std::size_t element, const std::string &name) ;
-      smtk::attribute::ConstItemPtr find(const std::string &inName) const
-        {return this->find(0, inName);}
-      smtk::attribute::ConstItemPtr find(std::size_t element, const std::string &name) const;
+  // Iterator-style access to values:
+  const_iterator begin() const;
+  const_iterator end() const;
 
-      template<typename T>
-      typename T::Ptr findAs(const std::string& name);
+  // Assigns this item to be equivalent to another.  Options are processed by derived item classes
+  // Returns true if success and false if a problem occured - options are use when copying sub-items.
+  // See Items.h for a description of these options.
+  virtual bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0);
 
-      template<typename T>
-      typename T::ConstPtr findAs(const std::string& name) const;
+protected:
+  GroupItem(Attribute* owningAttribute, int itemPosition);
+  GroupItem(Item* owningItem, int myPosition, int mySubGroupPosition);
+  virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
+  // This method will detach all of the items directly owned by
+  // this group
+  void detachAllItems();
+  std::vector<std::vector<smtk::attribute::ItemPtr> > m_items;
 
-      virtual void reset();
+private:
+};
 
-      // Iterator-style access to values:
-      const_iterator begin() const;
-      const_iterator end() const;
+template <typename T>
+typename T::Ptr GroupItem::findAs(const std::string& iname)
+{
+  return smtk::dynamic_pointer_cast<T>(this->find(iname));
+}
 
-      // Assigns this item to be equivalent to another.  Options are processed by derived item classes
-      // Returns true if success and false if a problem occured - options are use when copying sub-items.
-      // See Items.h for a description of these options.
-      virtual bool assign(smtk::attribute::ConstItemPtr &sourceItem, unsigned int options = 0);
-    protected:
-      GroupItem(Attribute *owningAttribute, int itemPosition);
-      GroupItem(Item *owningItem, int myPosition, int mySubGroupPosition);
-      virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
-      // This method will detach all of the items directly owned by
-      // this group
-      void detachAllItems();
-      std::vector<std::vector<smtk::attribute::ItemPtr> >m_items;
-
-    private:
-    };
-
-    template<typename T>
-    typename T::Ptr GroupItem::findAs(const std::string& iname)
-    {
-    return smtk::dynamic_pointer_cast<T>(this->find(iname));
-    }
-
-    template<typename T>
-    typename T::ConstPtr GroupItem::findAs(const std::string& iname) const
-    {
-    return smtk::dynamic_pointer_cast<const T>(this->find(iname));
-    }
-  } // namespace attribute
+template <typename T>
+typename T::ConstPtr GroupItem::findAs(const std::string& iname) const
+{
+  return smtk::dynamic_pointer_cast<const T>(this->find(iname));
+}
+} // namespace attribute
 } // namespace smtk
-
 
 #endif /* __GroupItem_h */

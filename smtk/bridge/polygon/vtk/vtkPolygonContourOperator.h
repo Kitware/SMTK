@@ -23,8 +23,8 @@ class vtkPolyData;
 class VTKPOLYGONOPERATORSEXT_EXPORT vtkPolygonContourOperator : public vtkSMTKOperator
 {
 public:
-  static vtkPolygonContourOperator * New();
-  vtkTypeMacro(vtkPolygonContourOperator,vtkSMTKOperator);
+  static vtkPolygonContourOperator* New();
+  vtkTypeMacro(vtkPolygonContourOperator, vtkSMTKOperator);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   //Description:
@@ -48,9 +48,10 @@ protected:
 
   vtkPolyData* ContourInput;
   double ImageBounds[6];
+
 private:
-  vtkPolygonContourOperator(const vtkPolygonContourOperator&);  // Not implemented.
-  void operator=(const vtkPolygonContourOperator&);  // Not implemented.
+  vtkPolygonContourOperator(const vtkPolygonContourOperator&); // Not implemented.
+  void operator=(const vtkPolygonContourOperator&);            // Not implemented.
 };
 
 #endif

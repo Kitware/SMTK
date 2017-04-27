@@ -21,9 +21,12 @@
   *
   */
 
-namespace smtk {
-  namespace io {
-namespace mesh {
+namespace smtk
+{
+namespace io
+{
+namespace mesh
+{
 
 class SMTKCORE_EXPORT MeshIOMoab : public MeshIO
 {
@@ -34,21 +37,17 @@ public:
   //Returns an invalid collection that is NOT part of the manager if the
   //file can't be loaded. The third parameter is a label with which the domain
   //can be parsed, but it is not currently implemented for the moab interface
-  smtk::mesh::CollectionPtr
-    importMesh( const std::string& filePath,
-                smtk::mesh::ManagerPtr& manager,
-                const std::string& ) const override;
+  smtk::mesh::CollectionPtr importMesh(const std::string& filePath, smtk::mesh::ManagerPtr& manager,
+    const std::string&) const override;
 
   //Merge a moab data file into an existing valid collection. The third
   //parameter is a label with which the domain can be parsed, but it is not
   //currently implemented for the moab interface
-  bool importMesh( const std::string& filePath,
-                   smtk::mesh::CollectionPtr collection,
-                   const std::string& ) const override;
+  bool importMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+    const std::string&) const override;
 
   //Exports the collection to file. Overwrites any existing content in the file
-  bool exportMesh( const std::string& filePath,
-                   smtk::mesh::CollectionPtr collection ) const override;
+  bool exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection) const override;
 
   //TODO:
   // bool exportMesh( const std::string& filePath,
@@ -59,27 +58,21 @@ public:
   //Load an entire moab data file as a new collection into the given manager
   //Returns an invalid collection that is NOT part of the manager if the
   //file can't be loaded
-  smtk::mesh::CollectionPtr
-    read( const std::string& filePath,
-          smtk::mesh::ManagerPtr& manager,
-          Subset s) const override;
+  smtk::mesh::CollectionPtr read(
+    const std::string& filePath, smtk::mesh::ManagerPtr& manager, Subset s) const override;
 
   //Merge a moab data file into an existing valid collection.
-  bool read( const std::string& filePath,
-             smtk::mesh::CollectionPtr collection,
-             Subset s ) const override;
+  bool read(
+    const std::string& filePath, smtk::mesh::CollectionPtr collection, Subset s) const override;
 
   //Writes the collection to file. Overwrites any existing content in the file
-  bool write( const std::string& filePath,
-              smtk::mesh::CollectionPtr collection,
-              Subset s ) const override;
+  bool write(
+    const std::string& filePath, smtk::mesh::CollectionPtr collection, Subset s) const override;
 
   //Writes the collection to the file specified by the collections data member
   //writeLocation(). Overwrites any existing content in the file
-  bool write( smtk::mesh::CollectionPtr collection,
-              Subset s ) const override;
+  bool write(smtk::mesh::CollectionPtr collection, Subset s) const override;
 };
-
 }
 }
 }

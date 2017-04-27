@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ModelEntityItem.h"
@@ -23,8 +22,8 @@
 using namespace smtk::attribute;
 
 /// Construct an item definition given a name. Names should be unique and non-empty.
-ModelEntityItemDefinition::ModelEntityItemDefinition(const std::string& sname):
-  ItemDefinition(sname)
+ModelEntityItemDefinition::ModelEntityItemDefinition(const std::string& sname)
+  : ItemDefinition(sname)
 {
   this->m_membershipMask = smtk::model::ANY_ENTITY;
   this->m_numberOfRequiredValues = 0;
@@ -73,39 +72,36 @@ void ModelEntityItemDefinition::setMembershipMask(smtk::model::BitFlags entMask)
 bool ModelEntityItemDefinition::isValueValid(const smtk::model::EntityRef& c) const
 {
   if (!this->m_membershipMask)
-    {
+  {
     return false; // Nothing can possibly match.
-    }
+  }
   if (this->m_membershipMask == smtk::model::ANY_ENTITY)
-    {
+  {
     return true; // Fast-track the trivial case.
-    }
+  }
   if (!c.isValid())
-    {
+  {
     return true;
-    }
+  }
 
   smtk::model::BitFlags itemType = c.entityFlags();
   // The m_membershipMask must match the entity type, the dimension, and (if the
   // item is a group) group constraint flags separately;
   // In other words, we require the entity type, the dimension, and the
   // group constraints to be acceptable independently.
-  if (
-    ((this->m_membershipMask & smtk::model::ENTITY_MASK)               &&
-     !(itemType & this->m_membershipMask & smtk::model::ENTITY_MASK)   &&
-     (itemType & smtk::model::ENTITY_MASK) != smtk::model::GROUP_ENTITY)  ||
-    ((this->m_membershipMask & smtk::model::ANY_DIMENSION)             &&
-     !(itemType & this->m_membershipMask & smtk::model::ANY_DIMENSION))   ||
+  if (((this->m_membershipMask & smtk::model::ENTITY_MASK) &&
+        !(itemType & this->m_membershipMask & smtk::model::ENTITY_MASK) &&
+        (itemType & smtk::model::ENTITY_MASK) != smtk::model::GROUP_ENTITY) ||
+    ((this->m_membershipMask & smtk::model::ANY_DIMENSION) &&
+      !(itemType & this->m_membershipMask & smtk::model::ANY_DIMENSION)) ||
     ((itemType & smtk::model::GROUP_ENTITY) &&
-     (this->m_membershipMask & smtk::model::GROUP_CONSTRAINT_MASK)    &&
-     !(itemType & this->m_membershipMask & smtk::model::GROUP_CONSTRAINT_MASK))
-    )
+      (this->m_membershipMask & smtk::model::GROUP_CONSTRAINT_MASK) &&
+      !(itemType & this->m_membershipMask & smtk::model::GROUP_CONSTRAINT_MASK)))
     return false;
-  if (itemType != this->membershipMask() &&
-      itemType & smtk::model::GROUP_ENTITY &&
-      // if the mask is only defined as "group", don't have to check further for members
-      this->m_membershipMask != smtk::model::GROUP_ENTITY)
-    {
+  if (itemType != this->membershipMask() && itemType & smtk::model::GROUP_ENTITY &&
+    // if the mask is only defined as "group", don't have to check further for members
+    this->m_membershipMask != smtk::model::GROUP_ENTITY)
+  {
     // If the the membershipMask is the same as itemType, we don't need to check, else
     // if the item is a group: recursively check that its members
     // all match the criteria. Also, if the HOMOGENOUS_GROUP bit is set,
@@ -113,16 +109,14 @@ bool ModelEntityItemDefinition::isValueValid(const smtk::model::EntityRef& c) co
     smtk::model::BitFlags typeMask = this->m_membershipMask;
     bool mustBeHomogenous = (typeMask & smtk::model::HOMOGENOUS_GROUP) ? true : false;
     if (!(typeMask & smtk::model::NO_SUBGROUPS) && !(typeMask & smtk::model::GROUP_ENTITY))
-      {
+    {
       typeMask |= smtk::model::GROUP_ENTITY; // if groups aren't banned, allow them.
-      }
-    if (
-      !c.as<model::Group>().meetsMembershipConstraintsInternal(
-        c, typeMask, mustBeHomogenous))
-      {
-      return false;
-      }
     }
+    if (!c.as<model::Group>().meetsMembershipConstraintsInternal(c, typeMask, mustBeHomogenous))
+    {
+      return false;
+    }
+  }
   return true;
 }
 
@@ -130,16 +124,14 @@ bool ModelEntityItemDefinition::isValueValid(const smtk::model::EntityRef& c) co
 smtk::attribute::ItemPtr ModelEntityItemDefinition::buildItem(
   Attribute* owningAttribute, int itemPosition) const
 {
-  return smtk::attribute::ItemPtr(
-    new ModelEntityItem(owningAttribute, itemPosition));
+  return smtk::attribute::ItemPtr(new ModelEntityItem(owningAttribute, itemPosition));
 }
 
 //// Construct an item from the definition given its owning item and position.
 smtk::attribute::ItemPtr ModelEntityItemDefinition::buildItem(
   Item* owningItem, int itemPosition, int subGroupPosition) const
 {
-  return smtk::attribute::ItemPtr(
-    new ModelEntityItem(owningItem, itemPosition, subGroupPosition));
+  return smtk::attribute::ItemPtr(new ModelEntityItem(owningItem, itemPosition, subGroupPosition));
 }
 
 /// Return the number of values (model entities) required by this definition.
@@ -152,14 +144,14 @@ std::size_t ModelEntityItemDefinition::numberOfRequiredValues() const
 void ModelEntityItemDefinition::setNumberOfRequiredValues(std::size_t esize)
 {
   if (esize == this->m_numberOfRequiredValues)
-    {
+  {
     return;
-    }
+  }
   this->m_numberOfRequiredValues = esize;
   if (!this->m_useCommonLabel)
-    {
+  {
     this->m_valueLabels.resize(esize);
-    }
+  }
 }
 
 /// Set the maximum number of values accepted (or 0 for no limit).
@@ -178,35 +170,35 @@ bool ModelEntityItemDefinition::hasValueLabels() const
 std::string ModelEntityItemDefinition::valueLabel(std::size_t i) const
 {
   if (this->m_useCommonLabel)
-    {
+  {
     assert(!this->m_valueLabels.empty());
     return this->m_valueLabels[0];
-    }
+  }
   if (this->m_valueLabels.size())
-    {
+  {
     assert(this->m_valueLabels.size() > i);
     return this->m_valueLabels[i];
-    }
+  }
   return "";
 }
 
 /// Set the label for the \a i-th entity.
-void ModelEntityItemDefinition::setValueLabel(std::size_t i, const std::string &elabel)
+void ModelEntityItemDefinition::setValueLabel(std::size_t i, const std::string& elabel)
 {
   if (this->m_numberOfRequiredValues == 0)
-    {
+  {
     return;
-    }
+  }
   if (this->m_valueLabels.size() != this->m_numberOfRequiredValues)
-    {
+  {
     this->m_valueLabels.resize(this->m_numberOfRequiredValues);
-    }
+  }
   this->m_useCommonLabel = false;
   this->m_valueLabels[i] = elabel;
 }
 
 /// Indicate that all values share the \a elabel provided.
-void ModelEntityItemDefinition::setCommonValueLabel(const std::string &elabel)
+void ModelEntityItemDefinition::setCommonValueLabel(const std::string& elabel)
 {
   this->m_useCommonLabel = true;
   this->m_valueLabels.resize(1);
@@ -220,9 +212,7 @@ bool ModelEntityItemDefinition::usingCommonLabel() const
 }
 
 /// Builds and returns copy of self
-ItemDefinitionPtr
-ModelEntityItemDefinition::
-createCopy(ItemDefinition::CopyInfo& info) const
+ItemDefinitionPtr ModelEntityItemDefinition::createCopy(ItemDefinition::CopyInfo& info) const
 {
   (void)info;
   std::size_t i;
@@ -236,16 +226,16 @@ createCopy(ItemDefinition::CopyInfo& info) const
   newDef->setMaxNumberOfValues(m_maxNumberOfValues);
   newDef->setIsExtensible(m_isExtensible);
   if (m_useCommonLabel)
-    {
+  {
     newDef->setCommonValueLabel(m_valueLabels[0]);
-    }
+  }
   else if (this->hasValueLabels())
+  {
+    for (i = 0; i < m_valueLabels.size(); ++i)
     {
-    for (i=0; i<m_valueLabels.size(); ++i)
-      {
       newDef->setValueLabel(i, m_valueLabels[i]);
-      }
     }
+  }
 
   return newDef;
 }

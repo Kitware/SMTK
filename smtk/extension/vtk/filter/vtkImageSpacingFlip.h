@@ -21,20 +21,18 @@
 class VTKSMTKFILTEREXT_EXPORT vtkImageSpacingFlip : public vtkImageAlgorithm
 {
 public:
-  static vtkImageSpacingFlip *New();
-  vtkTypeMacro(vtkImageSpacingFlip,vtkImageAlgorithm);
+  static vtkImageSpacingFlip* New();
+  vtkTypeMacro(vtkImageSpacingFlip, vtkImageAlgorithm);
 
 protected:
-
   vtkImageSpacingFlip();
   ~vtkImageSpacingFlip();
 
-  int RequestData(vtkInformation *, vtkInformationVector **,
-                  vtkInformationVector *) override;
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 
 private:
-  vtkImageSpacingFlip(const vtkImageSpacingFlip&);  // Not implemented.
-  void operator=(const vtkImageSpacingFlip&);  // Not implemented.
+  vtkImageSpacingFlip(const vtkImageSpacingFlip&); // Not implemented.
+  void operator=(const vtkImageSpacingFlip&);      // Not implemented.
 };
 
 #endif

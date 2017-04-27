@@ -22,10 +22,14 @@
 
 #include "Shape/Point.hh"
 
-namespace smtk {
-namespace extension {
-namespace delaunay {
-namespace io {
+namespace smtk
+{
+namespace extension
+{
+namespace delaunay
+{
+namespace io
+{
 
 std::vector<Delaunay::Shape::Point> ExportDelaunayMesh::operator()(
   const smtk::model::Loop& loop) const
@@ -43,16 +47,14 @@ std::vector<Delaunay::Shape::Point> ExportDelaunayMesh::operator()(
     std::vector<int> cell_conn;
     smtk::model::Tessellation::size_type start_off;
     std::vector<std::size_t> numCellsOfType(smtk::mesh::CellType_MAX, 0);
-    for (start_off = tess->begin();
-         start_off != tess->end();
+    for (start_off = tess->begin(); start_off != tess->end();
          start_off = tess->nextCellOffset(start_off))
     {
       tess->vertexIdsOfCell(start_off, cell_conn);
       for (std::size_t j = 0; j < cell_conn.size(); j++)
       {
-        pointsForEdge.push_back(
-          Delaunay::Shape::Point(tess->coords()[cell_conn[j]*3 + 0],
-                                 tess->coords()[cell_conn[j]*3 + 1]));
+        pointsForEdge.push_back(Delaunay::Shape::Point(
+          tess->coords()[cell_conn[j] * 3 + 0], tess->coords()[cell_conn[j] * 3 + 1]));
       }
       cell_conn.clear();
     }
@@ -64,14 +66,14 @@ std::vector<Delaunay::Shape::Point> ExportDelaunayMesh::operator()(
     {
       for (auto p = pointsForEdge.begin() + 1; p != pointsForEdge.end(); ++p)
       {
-        points.push_back(Delaunay::Shape::Point(p->x,p->y));
+        points.push_back(Delaunay::Shape::Point(p->x, p->y));
       }
     }
     else
     {
       for (auto p = pointsForEdge.rbegin() + 1; p != pointsForEdge.rend(); ++p)
       {
-        points.push_back(Delaunay::Shape::Point(p->x,p->y));
+        points.push_back(Delaunay::Shape::Point(p->x, p->y));
       }
     }
     pointsForEdge.clear();
@@ -83,7 +85,7 @@ std::vector<Delaunay::Shape::Point> ExportDelaunayMesh::operator()(
 std::vector<Delaunay::Shape::Point> ExportDelaunayMesh::operator()(
   const smtk::model::Loop& loop, smtk::mesh::CollectionPtr& collection) const
 {
-  std::int64_t connectivityLength= -1;
+  std::int64_t connectivityLength = -1;
   std::int64_t numberOfCells = -1;
   std::int64_t numberOfPoints = -1;
 
@@ -91,7 +93,7 @@ std::vector<Delaunay::Shape::Point> ExportDelaunayMesh::operator()(
   smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(
     loop, collection, connectivityLength, numberOfCells, numberOfPoints);
 
-  std::vector<std::int64_t> conn( connectivityLength );
+  std::vector<std::int64_t> conn(connectivityLength);
   std::vector<float> fpoints(numberOfPoints * 3);
 
   smtk::mesh::PreAllocatedTessellation ftess(&conn[0], &fpoints[0]);
@@ -103,9 +105,9 @@ std::vector<Delaunay::Shape::Point> ExportDelaunayMesh::operator()(
 
   std::vector<Delaunay::Shape::Point> points;
 
-  for (std::size_t i=0;i<fpoints.size(); i+=3)
+  for (std::size_t i = 0; i < fpoints.size(); i += 3)
   {
-    points.push_back(Delaunay::Shape::Point(fpoints[i], fpoints[i+1]));
+    points.push_back(Delaunay::Shape::Point(fpoints[i], fpoints[i + 1]));
   }
 
   // Delaunay polygons do not use a repeated point to denote a loop.
@@ -116,7 +118,6 @@ std::vector<Delaunay::Shape::Point> ExportDelaunayMesh::operator()(
 
   return points;
 }
-
 }
 }
 }

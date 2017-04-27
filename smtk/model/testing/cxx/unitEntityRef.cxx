@@ -47,13 +47,22 @@ static int numberOfGroupsRemoved = 0;
 int didRemove(ManagerEventType event, const EntityRef&, const EntityRef&, void*)
 {
   switch (event.second)
-    {
-  case MODEL_INCLUDES_MODEL:     ++numberOfSubmodelsRemoved; break;
-  case MODEL_INCLUDES_GROUP:     ++numberOfGroupsRemoved; break;
-  case MODEL_INCLUDES_FREE_CELL: ++numberOfFreeCellsRemoved; break;
-  case CELL_INCLUDES_CELL:       ++numberOfInclusionsRemoved; break;
-  default: break;
-    }
+  {
+    case MODEL_INCLUDES_MODEL:
+      ++numberOfSubmodelsRemoved;
+      break;
+    case MODEL_INCLUDES_GROUP:
+      ++numberOfGroupsRemoved;
+      break;
+    case MODEL_INCLUDES_FREE_CELL:
+      ++numberOfFreeCellsRemoved;
+      break;
+    case CELL_INCLUDES_CELL:
+      ++numberOfInclusionsRemoved;
+      break;
+    default:
+      break;
+  }
   return 0;
 }
 
@@ -63,15 +72,15 @@ void testComplexVertexChain()
   Vertices verts;
   VertexUses vu;
   for (int i = 0; i < 6; ++i)
-    {
+  {
     verts.push_back(sm->addVertex());
     vu.push_back(sm->addVertexUse(verts.back(), 0));
-    }
+  }
   VertexUses rvu; // reversed vertex-uses for testing eun.
   for (int i = 0; i < 6; ++i)
-    {
+  {
     rvu.push_back(vu[6 - (i + 1)]);
-    }
+  }
   // Create an edge and uses to hold our chains.
   Edge e = sm->addEdge();
   EdgeUse eun = sm->addEdgeUse(e, 0, NEGATIVE);
@@ -102,7 +111,7 @@ void testComplexVertexChain()
   test(eun.vertexUses() == rvu, "Complex chain traversal failed (reversed).");
 }
 
-template<typename D, typename T>
+template <typename D, typename T>
 void templatedPropertyTest(smtk::model::EntityRef entity, T*& data, const std::string& tname, D val)
 {
   data = entity.hasProperties<T>();
@@ -110,9 +119,12 @@ void templatedPropertyTest(smtk::model::EntityRef entity, T*& data, const std::s
   data = entity.properties<T>();
   test(data != NULL, std::string("Expected properties<") + tname + "> to create data");
   (*data)["foo"] = typename T::mapped_type(1, val);
-  test(entity.removeProperty<T>("foo"),   std::string("Expected removeProperty<") + tname + "> to remove entry");
-  test(!entity.removeProperty<T>("bar"),  std::string("Expected removeProperty<") + tname + "> to not remove missing entry");
-  test(entity.hasProperties<T>() == NULL, std::string("Expected removing only " ) + tname + " entry to remove map");
+  test(entity.removeProperty<T>("foo"),
+    std::string("Expected removeProperty<") + tname + "> to remove entry");
+  test(!entity.removeProperty<T>("bar"),
+    std::string("Expected removeProperty<") + tname + "> to not remove missing entry");
+  test(entity.hasProperties<T>() == NULL,
+    std::string("Expected removing only ") + tname + " entry to remove map");
 }
 
 void testTemplatedPropertyMethods()
@@ -124,9 +136,9 @@ void testTemplatedPropertyMethods()
   FloatData* fd;
   IntegerData* id;
 
-  templatedPropertyTest<String,StringData>(vert, sd, "StringData", "string");
-  templatedPropertyTest<Float,FloatData>(vert, fd, "FloatData", 0.0);
-  templatedPropertyTest<Integer,IntegerData>(vert, id, "IntegerData", 0);
+  templatedPropertyTest<String, StringData>(vert, sd, "StringData", "string");
+  templatedPropertyTest<Float, FloatData>(vert, fd, "FloatData", 0.0);
+  templatedPropertyTest<Integer, IntegerData>(vert, id, "IntegerData", 0);
 }
 
 void testMiscConstructionMethods()
@@ -135,17 +147,17 @@ void testMiscConstructionMethods()
   Vertices verts;
   Edges edges;
   for (int i = 0; i < 6; ++i)
-    {
+  {
     verts.push_back(sm->addVertex());
     if (i > 0)
-      {
+    {
       edges.push_back(sm->addEdge());
-      edges[i-1].addRawRelation(verts[i-1]);
-      edges[i-1].addRawRelation(verts[i]);
-      test(edges[i-1].relationsAs<EntityRefArray>().size() == 2,
+      edges[i - 1].addRawRelation(verts[i - 1]);
+      edges[i - 1].addRawRelation(verts[i]);
+      test(edges[i - 1].relationsAs<EntityRefArray>().size() == 2,
         "Expected addRawRelation() to add a relation.");
-      }
     }
+  }
   edges.push_back(sm->addEdge());
   edges[5].addRawRelation(verts[5]);
   edges[5].addRawRelation(verts[0]);
@@ -200,11 +212,11 @@ void testModelMethods()
 
 int main(int argc, char* argv[])
 {
-  (void) argc;
-  (void) argv;
+  (void)argc;
+  (void)argv;
 
   try
-    {
+  {
     ManagerPtr sm = Manager::create();
     sm->observe(ManagerEventType(DEL_EVENT, CELL_INCLUDES_CELL), didRemove, NULL);
     sm->observe(ManagerEventType(DEL_EVENT, MODEL_INCLUDES_FREE_CELL), didRemove, NULL);
@@ -244,10 +256,7 @@ int main(int argc, char* argv[])
     // Test Model::addCell()
     model.addCell(tet);
     test(model.isEmbedded(tet), "Tetrahedron not embedded in model");
-    test(
-      !model.cells().empty() &&
-      model.cells()[0] == tet,
-      "Tetrahedron not a free cell of model");
+    test(!model.cells().empty() && model.cells()[0] == tet, "Tetrahedron not a free cell of model");
     // Test Model::groups() when empty
     test(model.groups().empty(), "Tetrahedron should not be reported as a group.");
     // Test Model::submodels()
@@ -267,19 +276,14 @@ int main(int argc, char* argv[])
     // Test Group::parent()
     test(bits.parent() == model, "Parent of group incorrect.");
     // Test Model::groups() when non-empty
-    test(
-      !model.groups().empty() &&
-      model.groups()[0] == bits,
+    test(!model.groups().empty() && model.groups()[0] == bits,
       "Group should be reported as member of model.");
     // Test Group::members().
     CellEntities groupCells = bits.members<CellEntities>();
     UseEntities groupUses = bits.members<UseEntities>();
     ShellEntities groupShells = bits.members<ShellEntities>();
-    std::cout
-      << uids.size() << " entities = "
-      << groupCells.size() << " cells + "
-      << groupUses.size() << " uses + "
-      << groupShells.size() << " shells\n";
+    std::cout << uids.size() << " entities = " << groupCells.size() << " cells + "
+              << groupUses.size() << " uses + " << groupShells.size() << " shells\n";
     test(groupCells.size() == 22, "Cell group has wrong number of members.");
     test(groupUses.size() == 30, "Use group has wrong number of members.");
     test(groupShells.size() == 25, "Shell group has wrong number of members.");
@@ -295,30 +299,30 @@ int main(int argc, char* argv[])
     test((entity.entityFlags() & ANY_ENTITY) == (CELL_ENTITY | DIMENSION_0));
 
     for (int dim = 1; dim <= 3; ++dim)
-      {
+    {
       entities = entity.bordantEntities(dim);
       test(entities.size() == sm->bordantEntities(uids[0], dim).size());
       entities = entity.higherDimensionalBordants(dim);
       test(entities.size() == sm->higherDimensionalBordants(uids[0], dim).size());
-      }
+    }
 
-    test( entity.isCellEntity(),     "isCellEntity() incorrect");
-    test(!entity.isUseEntity(),      "isUseEntity() incorrect");
-    test(!entity.isShellEntity(),    "isShellEntity() incorrect");
-    test(!entity.isGroup(),    "isGroup() incorrect");
-    test(!entity.isModel(),    "isModel() incorrect");
+    test(entity.isCellEntity(), "isCellEntity() incorrect");
+    test(!entity.isUseEntity(), "isUseEntity() incorrect");
+    test(!entity.isShellEntity(), "isShellEntity() incorrect");
+    test(!entity.isGroup(), "isGroup() incorrect");
+    test(!entity.isModel(), "isModel() incorrect");
     test(!entity.isInstance(), "isInstance() incorrect");
 
-    test( entity.isVertex(),     "isVertex() incorrect");
-    test(!entity.isEdge(),       "isEdge() incorrect");
-    test(!entity.isFace(),       "isFace() incorrect");
-    test(!entity.isVolume(),     "isVolume() incorrect");
-    test(!entity.isChain(),      "isChain() incorrect");
-    test(!entity.isLoop(),       "isLoop() incorrect");
-    test(!entity.isShell(),      "isShell() incorrect");
-    test(!entity.isVertexUse(),  "isVertexUse() incorrect");
-    test(!entity.isEdgeUse(),    "isEdgeUse() incorrect");
-    test(!entity.isFaceUse(),    "isFaceUse() incorrect");
+    test(entity.isVertex(), "isVertex() incorrect");
+    test(!entity.isEdge(), "isEdge() incorrect");
+    test(!entity.isFace(), "isFace() incorrect");
+    test(!entity.isVolume(), "isVolume() incorrect");
+    test(!entity.isChain(), "isChain() incorrect");
+    test(!entity.isLoop(), "isLoop() incorrect");
+    test(!entity.isShell(), "isShell() incorrect");
+    test(!entity.isVertexUse(), "isVertexUse() incorrect");
+    test(!entity.isEdgeUse(), "isEdgeUse() incorrect");
+    test(!entity.isFaceUse(), "isFaceUse() incorrect");
 
     // Test that "cast"ing to EntityRef subclasses works
     // and that they are valid or invalid as appropriate.
@@ -340,27 +344,24 @@ int main(int argc, char* argv[])
     test(entity.dimension() == 3);
 
     for (int dim = 2; dim >= 0; --dim)
-      {
+    {
       entities = entity.boundaryEntities(dim);
       test(entities.size() == sm->boundaryEntities(uids[21], dim).size());
       entities = entity.lowerDimensionalBoundaries(dim);
       test(entities.size() == sm->lowerDimensionalBoundaries(uids[21], dim).size());
-      }
+    }
 
     entity.setFloatProperty("perpendicular", 1.57);
-    test(
-      entity.floatProperty("perpendicular").size() == 1 &&
+    test(entity.floatProperty("perpendicular").size() == 1 &&
       entity.floatProperty("perpendicular")[0] == 1.57);
 
     entity.setStringProperty("name", "Tetrahedron");
-    test(
-      entity.stringProperty("name").size() == 1 &&
+    test(entity.stringProperty("name").size() == 1 &&
       entity.stringProperty("name")[0] == "Tetrahedron");
 
     entity.setIntegerProperty("7beef", 507631);
     test(
-      entity.integerProperty("7beef").size() == 1 &&
-      entity.integerProperty("7beef")[0] == 507631);
+      entity.integerProperty("7beef").size() == 1 && entity.integerProperty("7beef")[0] == 507631);
 
     std::cout << entity << "\n";
 
@@ -396,9 +397,9 @@ int main(int argc, char* argv[])
     aid1 = smtk::common::UUID::random();
     aid2 = smtk::common::UUID::random();
     test(!entity.hasAttributes(), "Detecting an un-associated attribute");
-    test( entity.associateAttribute(NULL, aid1), "Associating an attribute");
-    test( entity.associateAttribute(NULL, aid1), "Re-associating a repeated attribute");
-    test( entity.disassociateAttribute(NULL, aid1), "Disassociating an associated attribute");
+    test(entity.associateAttribute(NULL, aid1), "Associating an attribute");
+    test(entity.associateAttribute(NULL, aid1), "Re-associating a repeated attribute");
+    test(entity.disassociateAttribute(NULL, aid1), "Disassociating an associated attribute");
     test(!entity.disassociateAttribute(NULL, aid2), "Disassociating an un-associated attribute");
 
     // Test that face entity was created with invalid (but present) face uses.
@@ -406,7 +407,7 @@ int main(int argc, char* argv[])
     test(f.volumes().size() == 1 && f.volumes()[0].isVolume());
 
     test(!f.positiveUse().isValid(), "Positive use");
-    test( f.negativeUse().isValid(), "Negative use" + f.entity().toString());
+    test(f.negativeUse().isValid(), "Negative use" + f.entity().toString());
 
     Vertex v = sm->addVertex();
     sm->addVertexUse(v, 0);
@@ -419,9 +420,7 @@ int main(int argc, char* argv[])
     Volume vol(sm, uids[21]);
     vol.embedEntity(v);
 
-    test(
-      !vol.inclusions<CellEntities>().empty() &&
-      vol.inclusions<CellEntities>()[0] == v,
+    test(!vol.inclusions<CellEntities>().empty() && vol.inclusions<CellEntities>()[0] == v,
       "Volume should have an included vertex.");
 
     // Test removing cell inclusions and model members.
@@ -459,7 +458,8 @@ int main(int argc, char* argv[])
     FaceUses fu(sh.faceUses());
 
     test(fu.size() == 5, "Shell should have 5 faces.");
-    test(fu[0].orientation() == NEGATIVE, "Face-uses of sample tet should all have negative orientation.");
+    test(fu[0].orientation() == NEGATIVE,
+      "Face-uses of sample tet should all have negative orientation.");
     test(fu[0].sense() == 0, "Face-uses of sample tet should be sense 0.");
     test(fu[0].volume() == vol, "Face-use did not report the correct volume it bounds.");
 
@@ -486,57 +486,53 @@ int main(int argc, char* argv[])
     // negatively-oriented face-use and the inner loop is a hole in the face.
     Vertices ieverts = ieus[0].vertices();
     test(ieverts.size() == 2, "Bad number of innerLoop edge vertices.");
-    test(
-      ieverts[0].entity() == uids[4] &&
-      ieverts[1].entity() == uids[3], "Bad innerLoop, edge 0 vertices.");
+    test(ieverts[0].entity() == uids[4] && ieverts[1].entity() == uids[3],
+      "Bad innerLoop, edge 0 vertices.");
 
     // Let's look at uses of the same edge from different triangles.
     EdgeUses oeus = fu[1].loops()[0].edgeUses(); // edge uses of outer loop of "hole" face-use
     test(oeus.size() == 3, "Expecting a triangle.");
     for (int i = 0; i < 3; ++i)
-      {
+    {
       std::ostringstream msg;
-      msg
-        << "Edge-uses sharing the same edge in different contexts should be different.\n"
-        << "Loop entry " << i << ":  "
-        << ieus[i] << " (" << ieus[i].edge() << " "
-        << ieus[i].sense() << " " << (ieus[i].orientation() == POSITIVE ? "+" : "-") << ")  "
-        << oeus[i] << " (" << oeus[i].edge() << " "
-        << oeus[i].sense() << " " << (oeus[i].orientation() == POSITIVE ? "+" : "-") << ")\n";
-      test(
-        oeus[2 - i].edge() == ieus[i].edge() &&
-        oeus[2 - i].sense() != ieus[i].sense() &&
-        oeus[2 - i].orientation() != ieus[i].orientation(),
+      msg << "Edge-uses sharing the same edge in different contexts should be different.\n"
+          << "Loop entry " << i << ":  " << ieus[i] << " (" << ieus[i].edge() << " "
+          << ieus[i].sense() << " " << (ieus[i].orientation() == POSITIVE ? "+" : "-") << ")  "
+          << oeus[i] << " (" << oeus[i].edge() << " " << oeus[i].sense() << " "
+          << (oeus[i].orientation() == POSITIVE ? "+" : "-") << ")\n";
+      test(oeus[2 - i].edge() == ieus[i].edge() && oeus[2 - i].sense() != ieus[i].sense() &&
+          oeus[2 - i].orientation() != ieus[i].orientation(),
         msg.str());
       test(ieus[i].loop() == innerLoop, "EdgeUse did not point to proper parent loop.");
-      }
+    }
 
     // Test Edge and Chain methods:
     Edges allEdges;
     EntityRef::EntityRefsFromUUIDs(allEdges, sm, sm->entitiesMatchingFlags(EDGE, true));
     for (Edges::iterator edgeIt = allEdges.begin(); edgeIt != allEdges.end(); ++edgeIt)
-      {
+    {
       Edge curEdge(*edgeIt);
       EdgeUses curUses(curEdge.edgeUses());
       //std::cout << "Edge \"" << curEdge << "\" has " << curUses.size() << " uses\n";
       for (EdgeUses::iterator useIt = curUses.begin(); useIt != curUses.end(); ++useIt)
-        {
+      {
         //std::cout << "    " << *useIt << " chains:\n";
         Chains curChains(useIt->chains());
         test(!curChains.empty(), "EdgeUses should not have empty chains.");
         for (Chains::iterator chainIt = curChains.begin(); chainIt != curChains.end(); ++chainIt)
-          {
-          test(!chainIt->containingChain().isValid(), "Top-level chains should not have parent chain.");
+        {
+          test(!chainIt->containingChain().isValid(),
+            "Top-level chains should not have parent chain.");
           Chains subchains = chainIt->containedChains();
           //std::cout << "        " << *chainIt << " with " << subchains.size() << " subchains\n";
           VertexUses vu = chainIt->vertexUses();
           test(vu.size() == 2, "All sample tet edges should have 2 vertex uses.");
-          }
         }
+      }
       // Every edge should have at least 2 uses and they should come in pairs
       // with opposite orientations.
       test(!curUses.empty() && curUses.size() % 2 == 0);
-      }
+    }
 
     // Test Vertex and VertexUse methods:
     Vertices allVerts;
@@ -544,15 +540,17 @@ int main(int argc, char* argv[])
     int n6 = 0;
     int n4 = 0;
     for (Vertices::iterator vertIt = allVerts.begin(); vertIt != allVerts.end(); ++vertIt)
-      {
-      test(vertIt->uses<VertexUses>().size() == 1, "All sample tet vertices should have a single use.");
+    {
+      test(vertIt->uses<VertexUses>().size() == 1,
+        "All sample tet vertices should have a single use.");
       VertexUse vu(vertIt->uses<VertexUses>()[0]);
       int n = static_cast<int>(vu.chains().size());
-      test(n == 0 || n == 4 || n == 6, "VertexUses on sample tet should have 0, 4, or 6 chains each.");
+      test(
+        n == 0 || n == 4 || n == 6, "VertexUses on sample tet should have 0, 4, or 6 chains each.");
       n6 += (n == 6 ? 1 : 0);
       n4 += (n == 4 ? 1 : 0);
       //std::cout << vu << " (" << vu.vertex() << " sense " << vu.sense() << ") " << n << "\n";
-      }
+    }
     test(n6 == 4, "4 corner vertex-uses should have 6 chains each.");
     test(n4 == 3, "3 inner-face vertex-uses should have 4 chains each.");
 
@@ -561,12 +559,12 @@ int main(int argc, char* argv[])
     testTemplatedPropertyMethods();
     testVolumeEntityRef();
     testModelMethods();
-    }
+  }
   catch (const std::string& msg)
-    {
+  {
     (void)msg; // the test will already have printed the message.
     return 1;
-    }
+  }
 
   return 0;
 }

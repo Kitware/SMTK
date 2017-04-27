@@ -30,8 +30,10 @@ using smtk::attribute::FileItem;
 using smtk::attribute::IntItem;
 using smtk::io::JSONFlags;
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 smtk::model::OperatorResult ExportModelJSON::operateInternal()
 {
@@ -40,28 +42,28 @@ smtk::model::OperatorResult ExportModelJSON::operateInternal()
 
   Models entities = this->associatedEntitiesAs<Models>();
   if (entities.empty())
-    {
+  {
     smtkErrorMacro(this->log(), "No valid models selected for export.");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
   std::string filename = filenameItem->value();
   if (filename.empty())
-    {
+  {
     smtkErrorMacro(this->log(), "A filename must be provided.");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
   std::ofstream jsonFile(filename.c_str(), std::ios::trunc);
   if (!jsonFile.good())
-    {
+  {
     smtkErrorMacro(this->log(), "Could not open file \"" << filename << "\".");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
   JSONFlags flags = static_cast<JSONFlags>(flagsItem->value(0));
-  std::string jsonStr = smtk::io::SaveJSON::forEntities(
-    entities, smtk::model::ITERATE_MODELS, flags);
+  std::string jsonStr =
+    smtk::io::SaveJSON::forEntities(entities, smtk::model::ITERATE_MODELS, flags);
 
   jsonFile << jsonStr;
   jsonFile.close();
@@ -69,15 +71,10 @@ smtk::model::OperatorResult ExportModelJSON::operateInternal()
   return this->createResult(smtk::model::OPERATION_SUCCEEDED);
 }
 
-  } //namespace model
+} //namespace model
 } // namespace smtk
 
 #include "smtk/model/ExportModelJSON_xml.h"
 
-smtkImplementsModelOperator(
-  SMTKCORE_EXPORT,
-  smtk::model::ExportModelJSON,
-  export_model_json,
-  "export model json",
-  ExportModelJSON_xml,
-  smtk::model::Session);
+smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::model::ExportModelJSON, export_model_json,
+  "export model json", ExportModelJSON_xml, smtk::model::Session);

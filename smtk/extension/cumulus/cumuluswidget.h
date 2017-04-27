@@ -24,7 +24,8 @@ class QIcon;
 class QLabel;
 class QTimer;
 
-namespace Ui {
+namespace Ui
+{
 class CumulusWidget;
 }
 
@@ -39,32 +40,32 @@ class CumulusWidget : public QWidget
   Q_OBJECT
 
 public:
-  explicit CumulusWidget(QWidget *parentObject = 0);
+  explicit CumulusWidget(QWidget* parentObject = 0);
   ~CumulusWidget();
 
-  void girderUrl(const QString &url);
+  void girderUrl(const QString& url);
   bool isGirderRunning() const;
   void showLoginDialog();
 
 signals:
-  void info(const QString &msg);
-  void resultDownloaded(const QString &path);
+  void info(const QString& msg);
+  void resultDownloaded(const QString& path);
 
 protected:
   void createJobTable();
 
-  Ui::CumulusWidget *m_ui;
+  Ui::CumulusWidget* m_ui;
 
 private slots:
   void startJobFetchLoop();
-  void displayAuthError(const QString &msg);
-  void handleError(const QString &msg, QNetworkReply *networkReply);
-  void handleDownloadResult(const cumulus::Job&, const QString &);
+  void displayAuthError(const QString& msg);
+  void handleError(const QString& msg, QNetworkReply* networkReply);
+  void handleDownloadResult(const cumulus::Job&, const QString&);
 
 private:
-  JobTableModel *m_jobTableModel;
-  CumulusProxy *m_cumulusProxy;
-  QTimer *m_timer;
+  JobTableModel* m_jobTableModel;
+  CumulusProxy* m_cumulusProxy;
+  QTimer* m_timer;
   LoginDialog m_loginDialog;
 };
 

@@ -38,7 +38,7 @@ protected:
 
   // Description:
   // Take part in garbage collection.
-  virtual void ReportReferences(vtkGarbageCollector *collector);
+  virtual void ReportReferences(vtkGarbageCollector* collector);
 
   // Description:
   // Performs the actual rendering. Subclasses may override this method.
@@ -46,14 +46,14 @@ protected:
   // if any. When RenderInternal() is called, it is assured that the
   // DelegatePainter is in sync with this painter i.e. UpdateDelegatePainter()
   // has been called.
-  virtual void RenderInternal(vtkRenderer* renderer, vtkActor* actor,
-    unsigned long typeflags, bool forceCompileOnly);
+  virtual void RenderInternal(
+    vtkRenderer* renderer, vtkActor* actor, unsigned long typeflags, bool forceCompileOnly);
 
   vtkDataObject* OutputData;
+
 private:
   vtkCMBModelSelectionPainter(const vtkCMBModelSelectionPainter&); // Not implemented.
-  void operator=(const vtkCMBModelSelectionPainter&); // Not implemented.
-
+  void operator=(const vtkCMBModelSelectionPainter&);              // Not implemented.
 };
 
 #endif

@@ -12,9 +12,12 @@
 
 #include "smtk/bridge/exodus/Operator.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace exodus {
+namespace smtk
+{
+namespace bridge
+{
+namespace exodus
+{
 
 class SMTKEXODUSSESSION_EXPORT ReadOperator : public Operator
 {
@@ -33,8 +36,8 @@ protected:
   attribute::ModelEntityItemPtr m_preservedUUIDs;
 };
 
-    } // namespace exodus
-  } // namespace bridge
+} // namespace exodus
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_exodus_ReadOperator_h

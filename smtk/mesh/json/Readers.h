@@ -10,7 +10,6 @@
 //
 //=============================================================================
 
-
 #ifndef __smtk_mesh_json_Readers_h
 #define __smtk_mesh_json_Readers_h
 
@@ -18,23 +17,23 @@
 #include "smtk/PublicPointerDefs.h"
 
 #ifndef SHIBOKEN_SKIP
-#  include "cJSON.h"
+#include "cJSON.h"
 #endif // SHIBOKEN_SKIP
 
-namespace smtk {
-namespace mesh {
+namespace smtk
+{
+namespace mesh
+{
 namespace json
 {
 
 SMTKCORE_EXPORT
-smtk::mesh::CollectionPtr import(cJSON* child,
-                                 const smtk::mesh::ManagerPtr& manager);
+smtk::mesh::CollectionPtr import(cJSON* child, const smtk::mesh::ManagerPtr& manager);
 
 //Merge the entire json data stream to the collection creating a lightweight
 //collection view, which uses the json backend interface
 SMTKCORE_EXPORT
 bool import(cJSON* json, const smtk::mesh::CollectionPtr& c);
-
 }
 }
 }

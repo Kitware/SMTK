@@ -27,13 +27,13 @@ class vtkPolyData;
 class VTKCMBDISCRETEMODEL_EXPORT vtkAppendSolids : public vtkPolyDataAlgorithm
 {
 public:
-  vtkTypeMacro(vtkAppendSolids,vtkPolyDataAlgorithm);
+  vtkTypeMacro(vtkAppendSolids, vtkPolyDataAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
-  static vtkAppendSolids *New();
+  static vtkAppendSolids* New();
 
   // Description:
   // Set 2nd input input to the filter (required)
-  void AddInputData(vtkPolyData *input);
+  void AddInputData(vtkPolyData* input);
 
   vtkSetStringMacro(RegionArrayName);
   vtkGetStringMacro(RegionArrayName);
@@ -43,15 +43,14 @@ protected:
   ~vtkAppendSolids();
 
   // Usual data generation method
-  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
-  virtual int FillInputPortInformation(int, vtkInformation *);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  virtual int FillInputPortInformation(int, vtkInformation*);
 
 private:
-  vtkAppendSolids(const vtkAppendSolids&);  // Not implemented.
+  vtkAppendSolids(const vtkAppendSolids&); // Not implemented.
   void operator=(const vtkAppendSolids&);  // Not implemented.
 
-  char *RegionArrayName;
-
+  char* RegionArrayName;
 };
 
 #endif

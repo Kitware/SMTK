@@ -10,8 +10,8 @@
 #include "smtk/io/SaveJSON.h"
 #include "smtk/io/SaveJSON.txx"
 
-#include "smtk/common/Version.h"
 #include "smtk/common/ResourceSet.h"
+#include "smtk/common/Version.h"
 
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/Entity.h"
@@ -47,59 +47,55 @@ using namespace smtk::common;
 using namespace smtk::model;
 
 // Some cJSON helpers
-namespace {
-  cJSON* cJSON_CreateLongArray(const long* ints, unsigned count);
-  cJSON* cJSON_CreateStringArray(const std::string* strings, unsigned count);
-  cJSON* cJSON_CreateUUIDArray(const smtk::common::UUID* uids, unsigned count);
+namespace
+{
+cJSON* cJSON_CreateLongArray(const long* ints, unsigned count);
+cJSON* cJSON_CreateStringArray(const std::string* strings, unsigned count);
+cJSON* cJSON_CreateUUIDArray(const smtk::common::UUID* uids, unsigned count);
 
-  cJSON* cJSON_AddAttributeSpec(
-    cJSON* opEntry,
-    const char* tagName, // tag holding name of attribute
-    const char* xmlTagName, // tag holding XML for attribute
-    smtk::attribute::AttributePtr spec)
+cJSON* cJSON_AddAttributeSpec(cJSON* opEntry,
+  const char* tagName,    // tag holding name of attribute
+  const char* xmlTagName, // tag holding XML for attribute
+  smtk::attribute::AttributePtr spec)
+{
+  if (spec)
+  {
+    smtk::attribute::System tmpSys;
+    tmpSys.setRefModelManager(spec->modelManager());
+    tmpSys.copyAttribute(spec, static_cast<bool>(smtk::attribute::System::FORCE_COPY_ASSOCIATIONS));
+    smtk::io::Logger log;
+    smtk::io::AttributeWriter wri;
+    wri.includeDefinitions(false);
+    wri.includeInstances(true);
+    wri.includeModelInformation(false);
+    wri.includeViews(true); // now operator could specify views
+    std::string xml;
+    bool err = wri.writeContents(tmpSys, xml, log, true);
+    if (!err)
     {
-    if (spec)
-      {
-      smtk::attribute::System tmpSys;
-      tmpSys.setRefModelManager(spec->modelManager());
-      tmpSys.copyAttribute(
-        spec,
-        static_cast<bool>(smtk::attribute::System::FORCE_COPY_ASSOCIATIONS));
-      smtk::io::Logger log;
-      smtk::io::AttributeWriter wri;
-      wri.includeDefinitions(false);
-      wri.includeInstances(true);
-      wri.includeModelInformation(false);
-      wri.includeViews(true); // now operator could specify views
-      std::string xml;
-      bool err = wri.writeContents(tmpSys, xml, log, true);
-      if (!err)
-        {
-        cJSON_AddItemToObject(opEntry, tagName,
-          cJSON_CreateString(spec->name().c_str()));
-        cJSON_AddItemToObject(opEntry, xmlTagName,
-          cJSON_CreateString(xml.c_str()));
-        }
-      }
-    return opEntry;
+      cJSON_AddItemToObject(opEntry, tagName, cJSON_CreateString(spec->name().c_str()));
+      cJSON_AddItemToObject(opEntry, xmlTagName, cJSON_CreateString(xml.c_str()));
     }
+  }
+  return opEntry;
+}
 
-  cJSON* cJSON_AddOperator(smtk::model::OperatorPtr op, cJSON* opEntry)
-    {
-    cJSON_AddItemToObject(opEntry, "name", cJSON_CreateString(op->name().c_str()));
-    smtk::attribute::AttributePtr spec = op->specification();
-    if (spec)
-      {
-      cJSON_AddAttributeSpec(opEntry, "spec", "specXML", spec);
-      }
-    /*
+cJSON* cJSON_AddOperator(smtk::model::OperatorPtr op, cJSON* opEntry)
+{
+  cJSON_AddItemToObject(opEntry, "name", cJSON_CreateString(op->name().c_str()));
+  smtk::attribute::AttributePtr spec = op->specification();
+  if (spec)
+  {
+    cJSON_AddAttributeSpec(opEntry, "spec", "specXML", spec);
+  }
+  /*
     cJSON_AddItemToObject(opEntry, "parameters",
       cJSON_CreateParameterArray(op->parameters()));
       */
-    return opEntry;
-    }
+  return opEntry;
+}
 
-  /*
+/*
   cJSON* cJSON_CreateOperatorArray(const smtk::model::Operators& ops)
     {
     cJSON* a = cJSON_CreateArray();
@@ -113,48 +109,51 @@ namespace {
     }
     */
 
-  cJSON* cJSON_CreateUUIDArray(const smtk::common::UUID* uids, unsigned count)
-    {
-    cJSON* a = cJSON_CreateArray();
-    for (unsigned i = 0; i < count; ++i)
-      {
-      cJSON_AddItemToArray(a, cJSON_CreateString(uids[i].toString().c_str()));
-      }
-    return a;
-    }
-
-  cJSON* cJSON_CreateStringArray(const std::string* strings, unsigned count)
-    {
-    cJSON* a = cJSON_CreateArray();
-    for (unsigned i = 0; i < count; ++i)
-      {
-      cJSON_AddItemToArray(a, cJSON_CreateString(strings[i].c_str()));
-      }
-    return a;
-    }
-  cJSON* cJSON_CreateLongArray(const long* ints, unsigned count)
-    {
-    // FIXME: This uses a hack to speed up creation of arrays with many entries
-    // cJSON should provide a method to append given last element in array and
-    // its append method should return each newly-created element.
-
-    cJSON* a = cJSON_CreateArray();
-    cJSON** loc = &a->child;
-    for (unsigned i = 0; i < count; ++i)
-      {
-      if (ints[i] > 9007199254740991.0) //== 2^53 - 1, max integer-accurate double
-        {
-        std::cerr << "Error exporting array: integer value " << i << " (" << ints[i] << ") out of range for cJSON\n";
-        }
-      *loc = cJSON_CreateNumber(ints[i]);
-      loc = &((*loc)->next); // fast way to append to cJSON array
-      }
-    return a;
-    }
+cJSON* cJSON_CreateUUIDArray(const smtk::common::UUID* uids, unsigned count)
+{
+  cJSON* a = cJSON_CreateArray();
+  for (unsigned i = 0; i < count; ++i)
+  {
+    cJSON_AddItemToArray(a, cJSON_CreateString(uids[i].toString().c_str()));
+  }
+  return a;
 }
 
-namespace smtk {
-  namespace io {
+cJSON* cJSON_CreateStringArray(const std::string* strings, unsigned count)
+{
+  cJSON* a = cJSON_CreateArray();
+  for (unsigned i = 0; i < count; ++i)
+  {
+    cJSON_AddItemToArray(a, cJSON_CreateString(strings[i].c_str()));
+  }
+  return a;
+}
+cJSON* cJSON_CreateLongArray(const long* ints, unsigned count)
+{
+  // FIXME: This uses a hack to speed up creation of arrays with many entries
+  // cJSON should provide a method to append given last element in array and
+  // its append method should return each newly-created element.
+
+  cJSON* a = cJSON_CreateArray();
+  cJSON** loc = &a->child;
+  for (unsigned i = 0; i < count; ++i)
+  {
+    if (ints[i] > 9007199254740991.0) //== 2^53 - 1, max integer-accurate double
+    {
+      std::cerr << "Error exporting array: integer value " << i << " (" << ints[i]
+                << ") out of range for cJSON\n";
+    }
+    *loc = cJSON_CreateNumber(ints[i]);
+    loc = &((*loc)->next); // fast way to append to cJSON array
+  }
+  return a;
+}
+}
+
+namespace smtk
+{
+namespace io
+{
 
 using smtk::common::UUID;
 
@@ -162,9 +161,9 @@ cJSON* SaveJSON::fromUUIDs(const UUIDs& uids)
 {
   cJSON* a = cJSON_CreateArray();
   for (UUIDs::const_iterator it = uids.begin(); it != uids.end(); ++it)
-    {
+  {
     cJSON_AddItemToArray(a, cJSON_CreateString(it->toString().c_str()));
-    }
+  }
   return a;
 }
 
@@ -172,33 +171,33 @@ int SaveJSON::fromModelManager(cJSON* json, ManagerPtr modelMgr, JSONFlags secti
 {
   int status = 0;
   if (!json || !modelMgr)
-    {
+  {
     std::cerr << "Invalid arguments.\n";
     return status;
-    }
+  }
 
   cJSON* body = cJSON_CreateObject();
   cJSON* sess = cJSON_CreateObject();
   cJSON* mesh = cJSON_CreateObject();
-  switch(json->type)
-    {
-  case cJSON_Object:
-    cJSON_AddItemToObject(json, "topo", body);
-    cJSON_AddItemToObject(json, "sessions", sess);
-    cJSON_AddItemToObject(json, "mesh_collections", mesh);
-    break;
-  case cJSON_Array:
-    cJSON_AddItemToArray(json, body);
-    cJSON_AddItemToArray(json, sess);
-    break;
-  case cJSON_NULL:
-  case cJSON_Number:
-  case cJSON_String:
-  default:
-    std::cerr << "Invalid toplevel JSON type (" << json->type << ").\n";
-    return status;
-    break;
-    }
+  switch (json->type)
+  {
+    case cJSON_Object:
+      cJSON_AddItemToObject(json, "topo", body);
+      cJSON_AddItemToObject(json, "sessions", sess);
+      cJSON_AddItemToObject(json, "mesh_collections", mesh);
+      break;
+    case cJSON_Array:
+      cJSON_AddItemToArray(json, body);
+      cJSON_AddItemToArray(json, sess);
+      break;
+    case cJSON_NULL:
+    case cJSON_Number:
+    case cJSON_String:
+    default:
+      std::cerr << "Invalid toplevel JSON type (" << json->type << ").\n";
+      return status;
+      break;
+  }
 
   cJSON* mtyp = cJSON_CreateString("Manager");
   cJSON_AddItemToObject(json, "type", mtyp);
@@ -228,27 +227,26 @@ bool SaveJSON::fromModelManagerToFile(smtk::model::ManagerPtr modelMgr, const ch
   return true;
 }
 
-int SaveJSON::fromResourceSet(
-  cJSON* pnode, smtk::common::ResourceSetPtr& rset)
+int SaveJSON::fromResourceSet(cJSON* pnode, smtk::common::ResourceSetPtr& rset)
 {
   if (!pnode || pnode->type != cJSON_Object || !rset)
-    {
+  {
     return 0;
-    }
+  }
 
   cJSON* jset = cJSON_CreateObject();
   cJSON_AddItemToObject(pnode, "resource set", jset);
   if (!rset->linkStartPath().empty())
-    {
+  {
     cJSON_AddItemToObject(jset, "path prefix", cJSON_CreateString(rset->linkStartPath().c_str()));
-    }
+  }
   std::vector<std::string> rids = rset->resourceIds();
   for (auto rid : rids)
-    {
+  {
     smtk::common::ResourcePtr rsrc;
     smtk::model::StoredResourcePtr srsrc;
     if (rset->get(rid, rsrc))
-      {
+    {
       smtk::common::Resource::Type rsrcType;
       smtk::common::ResourceSet::ResourceRole rsrcRole;
       smtk::common::ResourceSet::ResourceState rsrcState;
@@ -257,36 +255,33 @@ int SaveJSON::fromResourceSet(
       cJSON* jsrc = cJSON_CreateObject();
       cJSON_AddItemToObject(jset, rid.c_str(), jsrc);
       if (rset->resourceInfo(rid, rsrcType, rsrcRole, rsrcState, rsrcLink))
-        {
-        cJSON_AddItemToObject(jsrc, "type",
-          cJSON_CreateString(
-            smtk::common::Resource::type2String(rsrcType).c_str()));
+      {
+        cJSON_AddItemToObject(
+          jsrc, "type", cJSON_CreateString(smtk::common::Resource::type2String(rsrcType).c_str()));
         cJSON_AddItemToObject(jsrc, "role",
-          cJSON_CreateString(
-            smtk::common::ResourceSet::role2String(rsrcRole).c_str()));
+          cJSON_CreateString(smtk::common::ResourceSet::role2String(rsrcRole).c_str()));
         cJSON_AddItemToObject(jsrc, "state",
-          cJSON_CreateString(
-            smtk::common::ResourceSet::state2String(rsrcState).c_str()));
+          cJSON_CreateString(smtk::common::ResourceSet::state2String(rsrcState).c_str()));
 
         if ((srsrc = smtk::dynamic_pointer_cast<smtk::model::StoredResource>(rsrc)))
-          {
+        {
           cJSON_AddItemToObject(jsrc, "url", cJSON_CreateString(srsrc->url().c_str()));
           const smtk::model::EntityRefs& children(srsrc->entities());
           if (!children.empty())
-            { // Append entities contained in the file to the resource description:
+          { // Append entities contained in the file to the resource description:
             cJSON* jents = cJSON_CreateArray();
             cJSON_AddItemToObject(jsrc, "entities", jents);
             cJSON** jchild = &(jents->child);
-            for (auto child: children)
-              {
+            for (auto child : children)
+            {
               *jchild = cJSON_CreateString(child.entity().toString().c_str());
               jchild = &((*jchild)->next);
-              }
             }
           }
         }
       }
     }
+  }
   return 1;
 }
 
@@ -294,9 +289,9 @@ int SaveJSON::forManager(
   cJSON* dict, cJSON* sess, cJSON* mesh, ManagerPtr modelMgr, JSONFlags sections)
 {
   if (!dict || !modelMgr)
-    {
+  {
     return 0;
-    }
+  }
   int status = 1;
   UUIDWithEntity it;
 
@@ -304,52 +299,51 @@ int SaveJSON::forManager(
     return status;
 
   for (it = modelMgr->topology().begin(); it != modelMgr->topology().end(); ++it)
-    {
+  {
     if ((it->second.entityFlags() & SESSION) && !(sections & JSON_SESSIONS))
       continue;
 
     cJSON* curChild = cJSON_CreateObject();
-      {
+    {
       std::string suid = it->first.toString();
       cJSON_AddItemToObject(dict, suid.c_str(), curChild);
-      }
+    }
     if (sections & JSON_ENTITIES)
-      {
+    {
       status &= SaveJSON::forManagerEntity(it, curChild, modelMgr);
       status &= SaveJSON::forManagerArrangement(
         modelMgr->arrangements().find(it->first), curChild, modelMgr);
-      }
+    }
     if (sections & JSON_TESSELLATIONS)
       status &= SaveJSON::forManagerTessellation(it->first, curChild, modelMgr);
     if (sections & JSON_ANALYSISMESH)
       status &= SaveJSON::forManagerAnalysis(it->first, curChild, modelMgr);
     if (sections & JSON_PROPERTIES)
-      {
+    {
       status &= SaveJSON::forManagerFloatProperties(it->first, curChild, modelMgr);
       status &= SaveJSON::forManagerStringProperties(it->first, curChild, modelMgr);
       status &= SaveJSON::forManagerIntegerProperties(it->first, curChild, modelMgr);
-      }
     }
+  }
 
   if (sections & JSON_SESSIONS)
-    {
+  {
     smtk::model::SessionRefs sessions = modelMgr->sessions();
     for (smtk::model::SessionRefs::iterator bit = sessions.begin(); bit != sessions.end(); ++bit)
-      {
+    {
       status &= SaveJSON::forManagerSession(bit->entity(), sess, modelMgr);
-      }
     }
+  }
 
   if (sections & JSON_MESHES)
-    {
+  {
     smtk::mesh::ManagerPtr meshPtr = modelMgr->meshes();
     status &= SaveJSON::forManagerMeshes(meshPtr, mesh, modelMgr);
-    }
+  }
   return status;
 }
 
-int SaveJSON::forManagerEntity(
-  UUIDWithEntity& entry, cJSON* entRec, ManagerPtr model)
+int SaveJSON::forManagerEntity(UUIDWithEntity& entry, cJSON* entRec, ManagerPtr model)
 {
   (void)model;
   cJSON* ent = cJSON_CreateNumber(entry->second.entityFlags());
@@ -357,12 +351,11 @@ int SaveJSON::forManagerEntity(
   cJSON_AddItemToObject(entRec, "e", ent);
   cJSON_AddItemToObject(entRec, "d", dim);
   if (!entry->second.relations().empty())
-    {
-    cJSON_AddItemToObject(entRec, "r",
-      cJSON_CreateUUIDArray(
-        &entry->second.relations()[0],
-        static_cast<unsigned int>(entry->second.relations().size())));
-    }
+  {
+    cJSON_AddItemToObject(
+      entRec, "r", cJSON_CreateUUIDArray(&entry->second.relations()[0],
+                     static_cast<unsigned int>(entry->second.relations().size())));
+  }
   /*
   if (entry->second.entityFlags() & MODEL_ENTITY)
     SaveJSON::forModelOperators(entry->first, entRec, model);
@@ -374,44 +367,41 @@ int SaveJSON::forManagerArrangement(
   const UUIDWithArrangementDictionary& entry, cJSON* dict, ManagerPtr model)
 {
   if (entry == model->arrangements().end())
-    {
+  {
     return 0;
-    }
+  }
   ArrangementKindWithArrangements it;
   cJSON* arrNode = cJSON_CreateObject();
   cJSON_AddItemToObject(dict, "a", arrNode);
   for (it = entry->second.begin(); it != entry->second.end(); ++it)
-    {
+  {
     Arrangements& arr(it->second);
     if (!arr.empty())
-      {
+    {
       cJSON* kindNode = cJSON_CreateArray();
-      cJSON_AddItemToObject(arrNode, smtk::model::AbbreviationForArrangementKind(it->first).c_str(), kindNode);
+      cJSON_AddItemToObject(
+        arrNode, smtk::model::AbbreviationForArrangementKind(it->first).c_str(), kindNode);
       Arrangements::iterator ait;
       for (ait = arr.begin(); ait != arr.end(); ++ait)
-        {
+      {
         if (!ait->details().empty())
-          {
+        {
           cJSON_AddItemToArray(kindNode,
             cJSON_CreateIntArray(&(ait->details()[0]), static_cast<int>(ait->details().size())));
-          }
         }
       }
     }
+  }
   return 1;
 }
 
-int SaveJSON::forManagerTessellation(
-  const smtk::common::UUID& uid, cJSON* dict, ManagerPtr model)
+int SaveJSON::forManagerTessellation(const smtk::common::UUID& uid, cJSON* dict, ManagerPtr model)
 {
   UUIDWithTessellation tessIt = model->tessellations().find(uid);
-  if (
-    tessIt == model->tessellations().end() ||
-    tessIt->second.coords().empty()
-    )
-    { // No tessellation? Not a problem.
+  if (tessIt == model->tessellations().end() || tessIt->second.coords().empty())
+  { // No tessellation? Not a problem.
     return 1;
-    }
+  }
   //  "metadata": { "formatVersion" : 3 },
   //  "vertices": [ 0,0,0, 0,0,1, 1,0,1, 1,0,0, ... ],
   //  "normals":  [ 0,1,0, ... ],
@@ -422,31 +412,26 @@ int SaveJSON::forManagerTessellation(
   cJSON* tess = cJSON_CreateObject();
   //cJSON* meta = cJSON_CreateObject();
   cJSON* fmt = cJSON_CreateObject();
-  cJSON_AddItemToObject(fmt,"formatVersion", cJSON_CreateNumber(3));
+  cJSON_AddItemToObject(fmt, "formatVersion", cJSON_CreateNumber(3));
   //cJSON_AddItemToObject(meta, "metadata", fmt);
   //cJSON_AddItemToObject(tess, "3js", meta);
   cJSON_AddItemToObject(tess, "metadata", fmt);
-  cJSON_AddItemToObject(tess, "vertices", cJSON_CreateDoubleArray(
-      &tessIt->second.coords()[0],
-      static_cast<int>(tessIt->second.coords().size())));
-  cJSON_AddItemToObject(tess, "faces", cJSON_CreateIntArray(
-      tessIt->second.conn().empty() ? NULL : &tessIt->second.conn()[0],
+  cJSON_AddItemToObject(tess, "vertices", cJSON_CreateDoubleArray(&tessIt->second.coords()[0],
+                                            static_cast<int>(tessIt->second.coords().size())));
+  cJSON_AddItemToObject(tess, "faces",
+    cJSON_CreateIntArray(tessIt->second.conn().empty() ? NULL : &tessIt->second.conn()[0],
       static_cast<int>(tessIt->second.conn().size())));
   cJSON_AddItemToObject(dict, "t", tess);
   return 1;
 }
 
-int SaveJSON::forManagerAnalysis(
-  const smtk::common::UUID& uid, cJSON* dict, ManagerPtr model)
+int SaveJSON::forManagerAnalysis(const smtk::common::UUID& uid, cJSON* dict, ManagerPtr model)
 {
   UUIDWithTessellation meshIt = model->analysisMesh().find(uid);
-  if (
-    meshIt == model->analysisMesh().end() ||
-    meshIt->second.coords().empty()
-    )
-    { // No tessellation? Not a problem.
+  if (meshIt == model->analysisMesh().end() || meshIt->second.coords().empty())
+  { // No tessellation? Not a problem.
     return 1;
-    }
+  }
   //  "metadata": { "formatVersion" : 3 },
   //  "vertices": [ 0,0,0, 0,0,1, 1,0,1, 1,0,0, ... ],
   //  "normals":  [ 0,1,0, ... ],
@@ -457,15 +442,14 @@ int SaveJSON::forManagerAnalysis(
   cJSON* mesh = cJSON_CreateObject();
   //cJSON* meta = cJSON_CreateObject();
   cJSON* fmt = cJSON_CreateObject();
-  cJSON_AddItemToObject(fmt,"formatVersion", cJSON_CreateNumber(3));
+  cJSON_AddItemToObject(fmt, "formatVersion", cJSON_CreateNumber(3));
   //cJSON_AddItemToObject(meta, "metadata", fmt);
   //cJSON_AddItemToObject(tess, "3js", meta);
   cJSON_AddItemToObject(mesh, "metadata", fmt);
-  cJSON_AddItemToObject(mesh, "vertices", cJSON_CreateDoubleArray(
-      &meshIt->second.coords()[0],
-      static_cast<int>(meshIt->second.coords().size())));
-  cJSON_AddItemToObject(mesh, "faces", cJSON_CreateIntArray(
-      meshIt->second.conn().empty() ? NULL : &meshIt->second.conn()[0],
+  cJSON_AddItemToObject(mesh, "vertices", cJSON_CreateDoubleArray(&meshIt->second.coords()[0],
+                                            static_cast<int>(meshIt->second.coords().size())));
+  cJSON_AddItemToObject(mesh, "faces",
+    cJSON_CreateIntArray(meshIt->second.conn().empty() ? NULL : &meshIt->second.conn()[0],
       static_cast<int>(meshIt->second.conn().size())));
   cJSON_AddItemToObject(dict, "m", mesh);
   return 1;
@@ -477,15 +461,14 @@ int SaveJSON::forFloatData(cJSON* dict, const FloatData& fdata)
   cJSON_AddItemToObject(dict, "f", pdict);
   PropertyNameWithConstFloats entry;
   for (entry = fdata.begin(); entry != fdata.end(); ++entry)
-    {
+  {
     if (entry->second.empty())
-      {
+    {
       continue;
-      }
-    cJSON_AddItemToObject(pdict, entry->first.c_str(),
-      cJSON_CreateDoubleArray(
-        &entry->second[0], static_cast<int>(entry->second.size())));
     }
+    cJSON_AddItemToObject(pdict, entry->first.c_str(),
+      cJSON_CreateDoubleArray(&entry->second[0], static_cast<int>(entry->second.size())));
+  }
   return 1;
 }
 
@@ -495,15 +478,14 @@ int SaveJSON::forStringData(cJSON* dict, const StringData& sdata)
   cJSON_AddItemToObject(dict, "s", pdict);
   PropertyNameWithConstStrings entry;
   for (entry = sdata.begin(); entry != sdata.end(); ++entry)
-    {
+  {
     if (entry->second.empty())
-      {
+    {
       continue;
-      }
-    cJSON_AddItemToObject(pdict, entry->first.c_str(),
-      cJSON_CreateStringArray(
-        &entry->second[0], static_cast<unsigned int>(entry->second.size())));
     }
+    cJSON_AddItemToObject(pdict, entry->first.c_str(),
+      cJSON_CreateStringArray(&entry->second[0], static_cast<unsigned int>(entry->second.size())));
+  }
   return 1;
 }
 
@@ -513,57 +495,55 @@ int SaveJSON::forIntegerData(cJSON* dict, const IntegerData& idata)
   cJSON_AddItemToObject(dict, "i", pdict);
   PropertyNameWithConstIntegers entry;
   for (entry = idata.begin(); entry != idata.end(); ++entry)
-    {
+  {
     if (entry->second.empty())
-      {
+    {
       continue;
-      }
-    cJSON_AddItemToObject(pdict, entry->first.c_str(),
-      cJSON_CreateLongArray(
-        &entry->second[0], static_cast<unsigned int>(entry->second.size())));
     }
+    cJSON_AddItemToObject(pdict, entry->first.c_str(),
+      cJSON_CreateLongArray(&entry->second[0], static_cast<unsigned int>(entry->second.size())));
+  }
   return 1;
 }
 
-int SaveJSON::forManagerFloatProperties(const smtk::common::UUID& uid, cJSON* dict, ManagerPtr model)
+int SaveJSON::forManagerFloatProperties(
+  const smtk::common::UUID& uid, cJSON* dict, ManagerPtr model)
 {
   int status = 1;
   UUIDWithFloatProperties entIt = model->floatProperties().find(uid);
   if (entIt == model->floatProperties().end() || entIt->second.empty())
-    { // No properties is not an error
+  { // No properties is not an error
     return status;
-    }
+  }
   return SaveJSON::forFloatData(dict, entIt->second);
 }
 
-int SaveJSON::forManagerStringProperties(const smtk::common::UUID& uid, cJSON* dict, ManagerPtr model)
+int SaveJSON::forManagerStringProperties(
+  const smtk::common::UUID& uid, cJSON* dict, ManagerPtr model)
 {
   int status = 1;
   UUIDWithStringProperties entIt = model->stringProperties().find(uid);
   if (entIt == model->stringProperties().end() || entIt->second.empty())
-    { // No properties is not an error
+  { // No properties is not an error
     return status;
-    }
+  }
   return SaveJSON::forStringData(dict, entIt->second);
 }
 
-int SaveJSON::forManagerIntegerProperties(const smtk::common::UUID& uid, cJSON* dict, ManagerPtr model)
+int SaveJSON::forManagerIntegerProperties(
+  const smtk::common::UUID& uid, cJSON* dict, ManagerPtr model)
 {
   int status = 1;
   UUIDWithIntegerProperties entIt = model->integerProperties().find(uid);
   if (entIt == model->integerProperties().end() || entIt->second.empty())
-    { // No properties is not an error
+  { // No properties is not an error
     return status;
-    }
+  }
   return SaveJSON::forIntegerData(dict, entIt->second);
 }
 
-int SaveJSON::forManagerSession(
-  const smtk::common::UUID& uid,
-  cJSON* node,
-  ManagerPtr modelMgr,
-  bool writeNativeModels,
-  const std::string& refPath)
+int SaveJSON::forManagerSession(const smtk::common::UUID& uid, cJSON* node, ManagerPtr modelMgr,
+  bool writeNativeModels, const std::string& refPath)
 {
   int status = 1;
   SessionPtr session = SessionRef(modelMgr, uid).session();
@@ -575,13 +555,12 @@ int SaveJSON::forManagerSession(
   cJSON_AddStringToObject(sess, "type", "session");
   cJSON_AddStringToObject(sess, "name", session->name().c_str());
   SessionIOJSONPtr delegate =
-    smtk::dynamic_pointer_cast<SessionIOJSON>(
-      session->createIODelegate("json"));
+    smtk::dynamic_pointer_cast<SessionIOJSON>(session->createIODelegate("json"));
   if (delegate)
-    {
+  {
     delegate->setReferencePath(refPath);
     status &= delegate->exportJSON(modelMgr, session, sess, writeNativeModels);
-    }
+  }
 
   smtk::model::Models modelsOfSession = SessionRef(modelMgr, session).models<smtk::model::Models>();
   SaveJSON::addModelsRecord(modelMgr, modelsOfSession, sess);
@@ -591,12 +570,8 @@ int SaveJSON::forManagerSession(
   return status;
 }
 
-int SaveJSON::forManagerSessionPartial(
-  const smtk::common::UUID& sessionid,
-  const smtk::common::UUIDs& modelIds,
-  cJSON* node,
-  ManagerPtr modelMgr,
-  bool writeNativeModels,
+int SaveJSON::forManagerSessionPartial(const smtk::common::UUID& sessionid,
+  const smtk::common::UUIDs& modelIds, cJSON* node, ManagerPtr modelMgr, bool writeNativeModels,
   const std::string& refPath)
 {
   int status = 1;
@@ -610,13 +585,12 @@ int SaveJSON::forManagerSessionPartial(
   cJSON_AddStringToObject(sess, "name", session->name().c_str());
 
   SessionIOJSONPtr delegate =
-    smtk::dynamic_pointer_cast<SessionIOJSON>(
-      session->createIODelegate("json"));
+    smtk::dynamic_pointer_cast<SessionIOJSON>(session->createIODelegate("json"));
   if (delegate)
-    {
+  {
     delegate->setReferencePath(refPath);
     status &= delegate->exportJSON(modelMgr, session, modelIds, sess, writeNativeModels);
-    }
+  }
   SaveJSON::addModelsRecord(modelMgr, modelIds, sess);
   SaveJSON::addMeshesRecord(modelMgr, modelIds, sess);
   status &= SaveJSON::forOperatorDefinitions(session->operatorSystem(), sess);
@@ -644,10 +618,9 @@ int SaveJSON::forOperatorDefinitions(smtk::attribute::System* opSys, cJSON* entR
   std::string xml;
   bool err = wri.writeContents(*opSys, xml, log, true);
   if (!err)
-    {
-    cJSON_AddItemToObject(entRec, "ops",
-      cJSON_CreateString(xml.c_str()));
-    }
+  {
+    cJSON_AddItemToObject(entRec, "ops", cJSON_CreateString(xml.c_str()));
+  }
   /*
   std::vector<smtk::attribute::DefinitionPtr> ops;
   opSys.derivedDefinitions(
@@ -685,49 +658,50 @@ int SaveJSON::forOperatorResult(OperatorResult res, cJSON* entRec)
   ents.insert(mdfs.begin(), mdfs.end());
   ents.insert(meshents.begin(), meshents.end());
   if (!ents.empty())
-    {
+  {
     // If the operator reports new/modified entities, transcribe the affected models.
     // TODO: In the future, this may be more conservative (i.e., fewer records
     //       would be included to save time and memory) than ITERATE_MODELS.
     cJSON* records = cJSON_CreateObject();
     SaveJSON::forEntities(records, ents, smtk::model::ITERATE_MODELS, JSON_CLIENT_DATA);
     cJSON_AddItemToObject(entRec, "records", records);
-    }
+  }
 
   smtk::attribute::MeshItemPtr modifiedMeshes = res->findMesh("mesh_modified");
   // Also export JSON meshes as a new node "mesh_records"
-  if(!meshents.empty() || modifiedMeshes)
-    {
+  if (!meshents.empty() || modifiedMeshes)
+  {
     // get all collections associated with the input entities
     smtk::common::UUIDs collectionIds;
     smtk::mesh::ManagerPtr meshMgr = res->modelManager()->meshes();
     smtk::model::EntityRefs::const_iterator iter;
     for (iter = meshents.begin(); iter != meshents.end(); ++iter)
-      {
+    {
       smtk::common::UUIDs cids = meshMgr->associatedCollectionIds(*iter);
       collectionIds.insert(cids.begin(), cids.end());
-      }
-    if(modifiedMeshes)
-      {
+    }
+    if (modifiedMeshes)
+    {
       smtk::attribute::MeshItem::const_mesh_it it;
-      for(it = modifiedMeshes->begin(); it != modifiedMeshes->end(); ++it)
-        {
-        collectionIds.insert(it->collection()->entity());
-        }
-      }
-    if(collectionIds.size() > 0)
+      for (it = modifiedMeshes->begin(); it != modifiedMeshes->end(); ++it)
       {
+        collectionIds.insert(it->collection()->entity());
+      }
+    }
+    if (collectionIds.size() > 0)
+    {
       cJSON* mesh_records = cJSON_CreateObject();
       SaveJSON::forMeshCollections(mesh_records, collectionIds, meshMgr);
       cJSON_AddItemToObject(entRec, "mesh_records", mesh_records);
-      }
     }
+  }
 
   return 1;
 }
 
 /// Serialize a session's list of dangling entities held in the given \a modelMgr.
-int SaveJSON::forDanglingEntities(const smtk::common::UUID& sessionId, cJSON* node, ManagerPtr modelMgr)
+int SaveJSON::forDanglingEntities(
+  const smtk::common::UUID& sessionId, cJSON* node, ManagerPtr modelMgr)
 {
   if (!modelMgr || !node || node->type != cJSON_Object)
     return 0;
@@ -742,10 +716,11 @@ int SaveJSON::forDanglingEntities(const smtk::common::UUID& sessionId, cJSON* no
   cJSON_AddItemToObject(danglers, "entities", darray);
   DanglingEntities::const_iterator it;
   for (it = session->danglingEntities().begin(); it != session->danglingEntities().end(); ++it)
-    {
+  {
     if (it->first.manager() == modelMgr)
-      cJSON_AddItemToObject(darray, it->first.entity().toString().c_str(), cJSON_CreateNumber(it->second));
-    }
+      cJSON_AddItemToObject(
+        darray, it->first.entity().toString().c_str(), cJSON_CreateNumber(it->second));
+  }
   return 1;
 }
 
@@ -755,12 +730,10 @@ int SaveJSON::forDanglingEntities(const smtk::common::UUID& sessionId, cJSON* no
   * data required for a Remus server to start an smtk-model-worker
   * process for use by a RemusRemoteSession instance.
   */
-int SaveJSON::forModelWorker(
-    cJSON* wdesc,
-    const std::string& meshTypeIn, const std::string& meshTypeOut,
-    smtk::model::SessionPtr session, const std::string& engine,
-    const std::string& site, const std::string& root,
-    const std::string& workerPath, const std::string& requirementsFileName)
+int SaveJSON::forModelWorker(cJSON* wdesc, const std::string& meshTypeIn,
+  const std::string& meshTypeOut, smtk::model::SessionPtr session, const std::string& engine,
+  const std::string& site, const std::string& root, const std::string& workerPath,
+  const std::string& requirementsFileName)
 {
   if (!wdesc || wdesc->type != cJSON_Object)
     return 0;
@@ -796,8 +769,8 @@ int SaveJSON::forModelWorker(
   cJSON_AddItemToObject(tag, "default_kernel", cJSON_CreateString(session->name().c_str()));
   cJSON_AddItemToObject(tag, "default_engine", cJSON_CreateString(engine.c_str()));
   cJSON_AddItemToObject(tag, "site", cJSON_CreateString(site.c_str()));
-  cJSON_AddItemToObject(tag, "smtk_version",
-    cJSON_CreateString(smtk::common::Version::number().c_str()));
+  cJSON_AddItemToObject(
+    tag, "smtk_version", cJSON_CreateString(smtk::common::Version::number().c_str()));
   return 1;
 }
 
@@ -808,28 +781,25 @@ int SaveJSON::forModelWorker(
   * associated with the given smtk::model.
   */
 int SaveJSON::forManagerMeshes(
-                     smtk::mesh::ManagerPtr meshes,
-                     cJSON* mdesc,
-                     smtk::model::ManagerPtr modelMgr)
+  smtk::mesh::ManagerPtr meshes, cJSON* mdesc, smtk::model::ManagerPtr modelMgr)
 {
   (void)modelMgr;
   //current issue is that a mesh Manager needs to know where to write
   //these collections to disk.
 
   if (!mdesc || mdesc->type != cJSON_Object)
-    {
+  {
     return 0;
-    }
+  }
 
   //step 0. get all collections in the manager
   int status = 1;
-  std::vector< smtk::mesh::CollectionPtr > collections;
+  std::vector<smtk::mesh::CollectionPtr> collections;
   typedef smtk::mesh::Manager::const_iterator cit;
-  for (cit it = meshes->collectionBegin();
-       it != meshes->collectionEnd(); ++it)
-    {
+  for (cit it = meshes->collectionBegin(); it != meshes->collectionEnd(); ++it)
+  {
     status &= forSingleCollection(mdesc, it->second);
-    }
+  }
 
   return status;
 }
@@ -842,32 +812,30 @@ int SaveJSON::forManagerMeshes(
   * associated with the given \a collectionIds of mesh manager (\a meshMgr)
   */
 int SaveJSON::forMeshCollections(
-                     cJSON* pnode,
-                     const smtk::common::UUIDs& collectionIds,
-                     smtk::mesh::ManagerPtr meshMgr)
+  cJSON* pnode, const smtk::common::UUIDs& collectionIds, smtk::mesh::ManagerPtr meshMgr)
 {
   if (!pnode || pnode->type != cJSON_Object)
-    {
+  {
     return 0;
-    }
+  }
 
-  if(collectionIds.empty())
-    {
+  if (collectionIds.empty())
+  {
     return 0;
-    }
+  }
   int status = 1;
   cJSON* mesh = cJSON_GetObjectItem(pnode, "mesh_collections");
-  if(!mesh)
-    {
+  if (!mesh)
+  {
     mesh = cJSON_CreateObject();
     cJSON_AddItemToObject(pnode, "mesh_collections", mesh);
-    }
+  }
 
   smtk::common::UUIDs::const_iterator cit;
-  for(cit = collectionIds.begin(); cit != collectionIds.end(); ++cit)
-    {
+  for (cit = collectionIds.begin(); cit != collectionIds.end(); ++cit)
+  {
     status &= forSingleCollection(mesh, meshMgr->collection(*cit));
-    }
+  }
 
   return status;
 }
@@ -879,52 +847,45 @@ int SaveJSON::forMeshCollections(
   * all mesh collections associated with the given \a modelid.
   */
 int SaveJSON::forModelMeshes(
-                     const smtk::common::UUID& modelid,
-                     cJSON* pnode,
-                     smtk::model::ManagerPtr modelMgr)
+  const smtk::common::UUID& modelid, cJSON* pnode, smtk::model::ManagerPtr modelMgr)
 {
   if (!pnode || pnode->type != cJSON_Object)
-    {
+  {
     return 0;
-    }
+  }
   smtk::mesh::ManagerPtr meshMgr = modelMgr->meshes();
   smtk::model::Model model(modelMgr, modelid);
-  if(!model.isValid() || !meshMgr)
-    {
+  if (!model.isValid() || !meshMgr)
+  {
     return 0;
-    }
+  }
 
   smtk::common::UUIDs cids = meshMgr->associatedCollectionIds(model);
   return SaveJSON::forMeshCollections(pnode, cids, meshMgr);
 }
 
-namespace {
+namespace
+{
 
-template< typename T>
-void writeIntegerValues( cJSON* parent,
-                        std::vector<T> const& values,
-                        std::string name )
+template <typename T>
+void writeIntegerValues(cJSON* parent, std::vector<T> const& values, std::string name)
 {
   cJSON* a = cJSON_CreateArray();
   for (std::size_t i = 0; i < values.size(); ++i)
-    {
+  {
     cJSON_AddItemToArray(a, cJSON_CreateNumber(values[i].value()));
-    }
+  }
   cJSON_AddItemToObject(parent, name.c_str(), a);
 }
 
-void writeHandleValues( cJSON* parent,
-                        smtk::mesh::HandleRange const& values,
-                        std::string name )
+void writeHandleValues(cJSON* parent, smtk::mesh::HandleRange const& values, std::string name)
 {
   //need to implement a free method like:
   cJSON* json = smtk::mesh::to_json(values);
-  cJSON_AddItemToObject(parent,
-                        name.c_str(),
-                        json);
+  cJSON_AddItemToObject(parent, name.c_str(), json);
 }
 
-void writeBoundaryConditions( cJSON* parent, const smtk::mesh::MeshSet& mesh)
+void writeBoundaryConditions(cJSON* parent, const smtk::mesh::MeshSet& mesh)
 {
   cJSON* boundaryJson = cJSON_CreateObject();
   cJSON_AddItemToObject(parent, "boundary_conditions", boundaryJson);
@@ -933,12 +894,12 @@ void writeBoundaryConditions( cJSON* parent, const smtk::mesh::MeshSet& mesh)
   std::stringstream buffer;
 
   //list out the dirichlets that this mesheset contains
-  std::vector< smtk::mesh::Dirichlet > dirichlets = mesh.dirichlets();
-  for(std::size_t i=0; i < dirichlets.size(); ++i)
-    {
+  std::vector<smtk::mesh::Dirichlet> dirichlets = mesh.dirichlets();
+  for (std::size_t i = 0; i < dirichlets.size(); ++i)
+  {
     cJSON* conditionJson = cJSON_CreateObject();
-    cJSON_AddItemToObject(conditionJson,"value", cJSON_CreateNumber(dirichlets[i].value()));
-    cJSON_AddItemToObject(conditionJson,"type", cJSON_CreateString("dirichlet"));
+    cJSON_AddItemToObject(conditionJson, "value", cJSON_CreateNumber(dirichlets[i].value()));
+    cJSON_AddItemToObject(conditionJson, "type", cJSON_CreateString("dirichlet"));
 
     //convert the index to a string.
     buffer << index++;
@@ -946,129 +907,121 @@ void writeBoundaryConditions( cJSON* parent, const smtk::mesh::MeshSet& mesh)
     cJSON_AddItemToObject(boundaryJson, sindex.c_str(), conditionJson);
 
     buffer.str("");
-    }
+  }
 
   //list out the neumanns that this mesheset contains
-  std::vector< smtk::mesh::Neumann > neumanns = mesh.neumanns();
-  for(std::size_t i=0; i < neumanns.size(); ++i)
-    {
+  std::vector<smtk::mesh::Neumann> neumanns = mesh.neumanns();
+  for (std::size_t i = 0; i < neumanns.size(); ++i)
+  {
     cJSON* conditionJson = cJSON_CreateObject();
-    cJSON_AddItemToObject(conditionJson,"value", cJSON_CreateNumber(neumanns[i].value()));
-    cJSON_AddItemToObject(conditionJson,"type", cJSON_CreateString("neumann"));
+    cJSON_AddItemToObject(conditionJson, "value", cJSON_CreateNumber(neumanns[i].value()));
+    cJSON_AddItemToObject(conditionJson, "type", cJSON_CreateString("neumann"));
 
     //convert the index to a string.
     buffer << index++;
     std::string sindex = buffer.str();
     cJSON_AddItemToObject(boundaryJson, sindex.c_str(), conditionJson);
-    }
+  }
 }
 
-void writeUUIDValues( cJSON* parent,
-                smtk::common::UUIDArray const& values,
-                std::string name )
+void writeUUIDValues(cJSON* parent, smtk::common::UUIDArray const& values, std::string name)
 {
   cJSON_AddItemToObject(parent, name.c_str(),
-                        cJSON_CreateUUIDArray(
-                          &values[0], static_cast<unsigned int>(
-                            values.size())));
+    cJSON_CreateUUIDArray(&values[0], static_cast<unsigned int>(values.size())));
 }
 
 class ForMeshset : public smtk::mesh::MeshForEach
 {
 public:
-  ForMeshset(cJSON* json):
-    smtk::mesh::MeshForEach(),
-    m_json(json),
-    m_index(0)
+  ForMeshset(cJSON* json)
+    : smtk::mesh::MeshForEach()
+    , m_json(json)
+    , m_index(0)
   {
   }
 
-  void write(const smtk::mesh::MeshSet& mesh, cJSON* parent,
-             bool writeMeshes, bool writeCellAndPoints)
+  void write(
+    const smtk::mesh::MeshSet& mesh, cJSON* parent, bool writeMeshes, bool writeCellAndPoints)
   {
     std::string cell_bit_types = mesh.types().cellTypes().to_string();
 
-    cJSON_AddStringToObject(parent,"cell_types", cell_bit_types.c_str());
+    cJSON_AddStringToObject(parent, "cell_types", cell_bit_types.c_str());
 
     //needs to be by value since cells() will go out out of scope, and
     //we don't want a reference to a stack object that has gone out of scope
-    if(writeMeshes)
-      {
+    if (writeMeshes)
+    {
       smtk::mesh::HandleRange meshes = mesh.range();
       //note we uses meshIds, since 'meshes' is used by the actual mesh dict
-      writeHandleValues(parent, meshes, std::string("meshIds") );
-      }
+      writeHandleValues(parent, meshes, std::string("meshIds"));
+    }
 
-    if(writeCellAndPoints)
-      {
+    if (writeCellAndPoints)
+    {
       smtk::mesh::HandleRange cells = mesh.cells().range();
-      writeHandleValues(parent, cells, std::string("cells") );
+      writeHandleValues(parent, cells, std::string("cells"));
 
       smtk::mesh::HandleRange points = mesh.points().range();
-      writeHandleValues(parent, points, std::string("points") );
-      }
+      writeHandleValues(parent, points, std::string("points"));
+    }
 
     //list out the domains that this mesheset contains
-    std::vector< smtk::mesh::Domain > domains = mesh.domains();
-    writeIntegerValues(parent, domains, std::string("domains") );
+    std::vector<smtk::mesh::Domain> domains = mesh.domains();
+    writeIntegerValues(parent, domains, std::string("domains"));
 
     //write out the boundary conditions of this meshset
     writeBoundaryConditions(parent, mesh);
 
     //list out the model associations that this mesheset contains
     smtk::common::UUIDArray modelEntityIds = mesh.modelEntityIds();
-    writeUUIDValues(parent, modelEntityIds, std::string("modelEntityIds") );
+    writeUUIDValues(parent, modelEntityIds, std::string("modelEntityIds"));
   }
 
-  void writeProperties(const smtk::mesh::CollectionPtr& collection,
-                       cJSON* parent)
+  void writeProperties(const smtk::mesh::CollectionPtr& collection, cJSON* parent)
   {
-    smtk::mesh::MeshFloatData* fProperties =
-      collection->properties<smtk::mesh::MeshFloatData>();
-    smtk::mesh::MeshStringData* sProperties =
-      collection->properties<smtk::mesh::MeshStringData>();
+    smtk::mesh::MeshFloatData* fProperties = collection->properties<smtk::mesh::MeshFloatData>();
+    smtk::mesh::MeshStringData* sProperties = collection->properties<smtk::mesh::MeshStringData>();
     smtk::mesh::MeshIntegerData* iProperties =
       collection->properties<smtk::mesh::MeshIntegerData>();
     // if there are no properties, just return
-    if( !(fProperties && fProperties->size() > 0) &&
-        !(sProperties && sProperties->size() > 0) &&
-        !(iProperties && iProperties->size() > 0))
-      {
+    if (!(fProperties && fProperties->size() > 0) && !(sProperties && sProperties->size() > 0) &&
+      !(iProperties && iProperties->size() > 0))
+    {
       return;
-      }
+    }
     std::string meshid("meshid");
     cJSON* jsonProperties = cJSON_CreateObject();
     cJSON_AddItemToObject(parent, "properties", jsonProperties);
-    if(fProperties && fProperties->size() > 0)
+    if (fProperties && fProperties->size() > 0)
+    {
+      for (smtk::mesh::MeshFloatData::const_iterator it = fProperties->begin();
+           it != fProperties->end(); ++it)
       {
-      for(smtk::mesh::MeshFloatData::const_iterator it = fProperties->begin();
-          it != fProperties->end(); ++it)
-        {
         cJSON* jMesh = smtk::mesh::to_json(it->first.range());
         cJSON_AddItemToObject(jsonProperties, meshid.c_str(), jMesh);
         SaveJSON::forFloatData(jMesh, it->second);
-        }
       }
-    if(sProperties && sProperties->size() > 0)
+    }
+    if (sProperties && sProperties->size() > 0)
+    {
+      for (smtk::mesh::MeshStringData::const_iterator it = sProperties->begin();
+           it != sProperties->end(); ++it)
       {
-      for(smtk::mesh::MeshStringData::const_iterator it = sProperties->begin();
-          it != sProperties->end(); ++it)
-        {
         cJSON* jMesh = smtk::mesh::to_json(it->first.range());
         cJSON_AddItemToObject(jsonProperties, meshid.c_str(), jMesh);
         SaveJSON::forStringData(jMesh, it->second);
-        }
       }
-    if(iProperties && iProperties->size() > 0)
+    }
+    if (iProperties && iProperties->size() > 0)
+    {
+      for (smtk::mesh::MeshIntegerData::const_iterator it = iProperties->begin();
+           it != iProperties->end(); ++it)
       {
-      for(smtk::mesh::MeshIntegerData::const_iterator it = iProperties->begin();
-          it != iProperties->end(); ++it)
-        {
         cJSON* jMesh = smtk::mesh::to_json(it->first.range());
         cJSON_AddItemToObject(jsonProperties, meshid.c_str(), jMesh);
         SaveJSON::forIntegerData(jMesh, it->second);
-        }
       }
+    }
   }
 
   void forMesh(smtk::mesh::MeshSet& mesh)
@@ -1084,37 +1037,33 @@ public:
     buffer << this->m_index++;
     std::string sindex = buffer.str();
 
-    cJSON_AddItemToObject(this->m_json,
-                          sindex.c_str(),
-                          meshJson);
+    cJSON_AddItemToObject(this->m_json, sindex.c_str(), meshJson);
   }
 
 private:
   cJSON* m_json;
   int m_index;
 };
-
 }
 /**\brief Serialize a single mesh collection
   *
   */
-int SaveJSON::forSingleCollection(cJSON* mdesc,
-                                    smtk::mesh::CollectionPtr collection)
+int SaveJSON::forSingleCollection(cJSON* mdesc, smtk::mesh::CollectionPtr collection)
 {
   cJSON* jsonCollection = cJSON_CreateObject();
 
   std::string collectionUUID = collection->entity().toString();
   cJSON_AddItemToObject(mdesc, collectionUUID.c_str(), jsonCollection);
 
-  cJSON_AddItemToObject(jsonCollection,"formatVersion", cJSON_CreateNumber(1));
+  cJSON_AddItemToObject(jsonCollection, "formatVersion", cJSON_CreateNumber(1));
 
-  cJSON_AddStringToObject(jsonCollection,"name", collection->name().c_str());
+  cJSON_AddStringToObject(jsonCollection, "name", collection->name().c_str());
   //assoicated model uuid of the collection
-  if(!collection->associatedModel().isNull())
-    {
-    cJSON_AddStringToObject(jsonCollection,"associatedModel",
-                            collection->associatedModel().toString().c_str());
-    }
+  if (!collection->associatedModel().isNull())
+  {
+    cJSON_AddStringToObject(
+      jsonCollection, "associatedModel", collection->associatedModel().toString().c_str());
+  }
 
   std::string interfaceName = collection->interfaceName();
   cJSON_AddStringToObject(jsonCollection, "type", interfaceName.c_str());
@@ -1124,18 +1073,17 @@ int SaveJSON::forSingleCollection(cJSON* mdesc,
   //if we have a file.
   //This allows the importer to use the location keyword to figure out
   //if it should use the type, or fall back to the json interface
-  if(!collection->writeLocation().empty())
-    {
+  if (!collection->writeLocation().empty())
+  {
     // if there is a reference path, write out the relative path to it;
     // otherwise, write out the absolute path
-    const std::string& fileWriteLocation =
-      collection->writeLocation().referencePath().empty() ?
-      collection->writeLocation().absolutePath() :
-      collection->writeLocation().relativePath();
+    const std::string& fileWriteLocation = collection->writeLocation().referencePath().empty()
+      ? collection->writeLocation().absolutePath()
+      : collection->writeLocation().relativePath();
 
-    cJSON_AddStringToObject(jsonCollection, "location", fileWriteLocation.c_str() );
+    cJSON_AddStringToObject(jsonCollection, "location", fileWriteLocation.c_str());
     writeMeshFileOk = smtk::io::writeMesh(collection, mesh::Subset::EntireCollection);
-    }
+  }
 
   //currently we only write out the modification state after the possibility
   //of a file write. This is done so that meshes that have a file location
@@ -1148,8 +1096,8 @@ int SaveJSON::forSingleCollection(cJSON* mdesc,
   ForMeshset addInfoAboutCollection(jsonCollection);
   const bool writeMeshes = true;
   const bool writeCellAndPoints = false;
-  addInfoAboutCollection.write(collection->meshes(), jsonCollection,
-                               writeMeshes, writeCellAndPoints);
+  addInfoAboutCollection.write(
+    collection->meshes(), jsonCollection, writeMeshes, writeCellAndPoints);
 
   ///wirte out mesh properties in the collection.
   addInfoAboutCollection.writeProperties(collection, jsonCollection);
@@ -1171,9 +1119,7 @@ int SaveJSON::forSingleCollection(cJSON* mdesc,
   * will be added as children of "models"
   */
 int SaveJSON::addModelsRecord(
-  const smtk::model::ManagerPtr modelMgr,
-  const smtk::common::UUIDs& modelIds,
-  cJSON* sessionRec)
+  const smtk::model::ManagerPtr modelMgr, const smtk::common::UUIDs& modelIds, cJSON* sessionRec)
 {
   smtk::model::Models models;
   smtk::model::EntityRef::EntityRefsFromUUIDs(models, modelMgr, modelIds);
@@ -1181,9 +1127,7 @@ int SaveJSON::addModelsRecord(
 }
 
 int SaveJSON::addModelsRecord(
-  const smtk::model::ManagerPtr modelMgr,
-  const smtk::model::Models& inModels,
-  cJSON* sessionRec)
+  const smtk::model::ManagerPtr modelMgr, const smtk::model::Models& inModels, cJSON* sessionRec)
 {
   // This static method's signature matches the other "add###Record" methods,
   // but parameter <modelMgr> is unused. To remove "unused parameter" warnings,
@@ -1197,21 +1141,18 @@ int SaveJSON::addModelsRecord(
   // add record for each model
   smtk::model::Models::const_iterator modit;
   for (modit = inModels.begin(); modit != inModels.end(); ++modit)
-    {
+  {
     //smtk::model::Model model(modelMgr, *modit);
     cJSON* jmodel = cJSON_CreateObject();
 
     // Write out all entities of the model, only the meta data
     smtk::model::Models currentmodels;
     currentmodels.push_back(*modit);
-    SaveJSON::forEntities(
-      jmodel, currentmodels,
-      smtk::model::ITERATE_MODELS,
-      static_cast<smtk::io::JSONFlags>(
-        smtk::io::JSON_ENTITIES | smtk::io::JSON_PROPERTIES));
+    SaveJSON::forEntities(jmodel, currentmodels, smtk::model::ITERATE_MODELS,
+      static_cast<smtk::io::JSONFlags>(smtk::io::JSON_ENTITIES | smtk::io::JSON_PROPERTIES));
 
     cJSON_AddItemToObject(jmodels, modit->entity().toString().c_str(), jmodel);
-    }
+  }
   return 1;
 }
 
@@ -1221,9 +1162,7 @@ int SaveJSON::addModelsRecord(
   * will be added as children of "mesh_collections"
   */
 int SaveJSON::addMeshesRecord(
-  const smtk::model::ManagerPtr modelMgr,
-  const smtk::common::UUIDs& modelIds,
-  cJSON* sessionRec)
+  const smtk::model::ManagerPtr modelMgr, const smtk::common::UUIDs& modelIds, cJSON* sessionRec)
 {
   smtk::model::Models models;
   smtk::model::EntityRef::EntityRefsFromUUIDs(models, modelMgr, modelIds);
@@ -1231,18 +1170,16 @@ int SaveJSON::addMeshesRecord(
 }
 
 int SaveJSON::addMeshesRecord(
-  const smtk::model::ManagerPtr modelMgr,
-  const smtk::model::Models& inModels,
-  cJSON* sessionRec)
+  const smtk::model::ManagerPtr modelMgr, const smtk::model::Models& inModels, cJSON* sessionRec)
 {
   // Add record for each model
   smtk::model::Models::const_iterator modit;
   for (modit = inModels.begin(); modit != inModels.end(); ++modit)
-    {
+  {
     // Write out related mesh collections.
     // When writing a single collection, all its MeshSets will also be written out.
     smtk::io::SaveJSON::forModelMeshes(modit->entity(), sessionRec, modelMgr);
-    }
+  }
   return 1;
 }
 
@@ -1259,14 +1196,9 @@ int SaveJSON::addMeshesRecord(
   * half-open interval.
   */
 int SaveJSON::forLog(
-  cJSON* logrecordarray,
-  const smtk::io::Logger& log,
-  std::size_t start,
-  std::size_t end)
+  cJSON* logrecordarray, const smtk::io::Logger& log, std::size_t start, std::size_t end)
 {
-  if (
-    !logrecordarray ||
-    logrecordarray->type != cJSON_Array)
+  if (!logrecordarray || logrecordarray->type != cJSON_Array)
     return -1;
 
   // Figure out where to stop writing entries:
@@ -1280,7 +1212,7 @@ int SaveJSON::forLog(
     lastEntry = lastEntry->next;
   cJSON* first = NULL;
   for (; start < finish; ++start)
-    {
+  {
     const smtk::io::Logger::Record& rec(log.record(start));
     if (rec.message.empty())
       continue;
@@ -1288,20 +1220,12 @@ int SaveJSON::forLog(
     cJSON* entry = cJSON_CreateArray();
     ++numberOfRecords;
 
-    cJSON_AddItemToArray(entry,
-      cJSON_CreateNumber(
-        static_cast<int>(rec.severity)));
-    cJSON_AddItemToArray(entry,
-      cJSON_CreateString(
-        rec.message.c_str()));
+    cJSON_AddItemToArray(entry, cJSON_CreateNumber(static_cast<int>(rec.severity)));
+    cJSON_AddItemToArray(entry, cJSON_CreateString(rec.message.c_str()));
     if (!rec.fileName.empty())
-      cJSON_AddItemToArray(entry,
-        cJSON_CreateString(
-          rec.fileName.c_str()));
+      cJSON_AddItemToArray(entry, cJSON_CreateString(rec.fileName.c_str()));
     if (rec.lineNumber)
-      cJSON_AddItemToArray(entry,
-        cJSON_CreateNumber(
-          rec.lineNumber));
+      cJSON_AddItemToArray(entry, cJSON_CreateNumber(rec.lineNumber));
 
     // Append cJSON entry to lastEntry:
     if (lastEntry)
@@ -1310,7 +1234,7 @@ int SaveJSON::forLog(
       first = entry;
     entry->prev = lastEntry;
     lastEntry = entry;
-    }
+  }
   if (!logrecordarray->child && first)
     logrecordarray->child = first;
   return numberOfRecords;
@@ -1328,34 +1252,35 @@ int SaveJSON::forLog(
   * Although not part of the JSON-RPC spec, True, False, and NULL parameters
   * are also accepted by this call.
   */
-cJSON* SaveJSON::createRPCRequest(const std::string& method, cJSON*& params, const std::string& reqId, int paramsType)
+cJSON* SaveJSON::createRPCRequest(
+  const std::string& method, cJSON*& params, const std::string& reqId, int paramsType)
 {
   cJSON* rpcReq = cJSON_CreateObject();
   cJSON_AddItemToObject(rpcReq, "jsonrpc", cJSON_CreateString("2.0"));
   cJSON_AddItemToObject(rpcReq, "method", cJSON_CreateString(method.c_str()));
   cJSON_AddItemToObject(rpcReq, "id", cJSON_CreateString(reqId.c_str()));
   switch (paramsType)
-    {
-  case cJSON_Array:
-    params = cJSON_CreateArray();
-    break;
-  case cJSON_Object:
-    params = cJSON_CreateObject();
-    break;
-  case cJSON_True:
-    params = cJSON_CreateTrue();
-    break;
-  case cJSON_False:
-    params = cJSON_CreateFalse();
-    break;
-  case cJSON_NULL:
-    params = cJSON_CreateNull();
-    break;
-  default:
-    // TODO: Should we emit an error here?
-    return rpcReq;
-    break;
-    }
+  {
+    case cJSON_Array:
+      params = cJSON_CreateArray();
+      break;
+    case cJSON_Object:
+      params = cJSON_CreateObject();
+      break;
+    case cJSON_True:
+      params = cJSON_CreateTrue();
+      break;
+    case cJSON_False:
+      params = cJSON_CreateFalse();
+      break;
+    case cJSON_NULL:
+      params = cJSON_CreateNull();
+      break;
+    default:
+      // TODO: Should we emit an error here?
+      return rpcReq;
+      break;
+  }
   cJSON_AddItemToObject(rpcReq, "params", params);
   return rpcReq;
 }
@@ -1365,9 +1290,7 @@ cJSON* SaveJSON::createRPCRequest(const std::string& method, cJSON*& params, con
   * This variant stores a single string parameter, \a params.
   */
 cJSON* SaveJSON::createRPCRequest(
-  const std::string& method,
-  const std::string& params,
-  const std::string& reqId)
+  const std::string& method, const std::string& params, const std::string& reqId)
 {
   cJSON* paramObj;
   cJSON* rpcReq = SaveJSON::createRPCRequest(method, paramObj, reqId, cJSON_Array);
@@ -1407,6 +1330,5 @@ cJSON* SaveJSON::createIntegerArray(const std::vector<long>& arr)
 {
   return cJSON_CreateLongArray(&arr[0], static_cast<unsigned>(arr.size()));
 }
-
-  }
+}
 }

@@ -25,30 +25,29 @@ class vtkSMProxy;
 
 class VTK_EXPORT vtkCMBMapToCMBModelClient : public vtkObject
 {
-  public:
-    static vtkCMBMapToCMBModelClient * New();
-    vtkTypeMacro(vtkCMBMapToCMBModelClient,vtkObject);
-    void PrintSelf(ostream& os, vtkIndent indent);
+public:
+  static vtkCMBMapToCMBModelClient* New();
+  vtkTypeMacro(vtkCMBMapToCMBModelClient, vtkObject);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-    // Description:
-    // Using the input poly on the server to set up the modle
-    // and serializes the model to the client.
-    // Returns true if the operation was successful.
-    virtual bool Operate(vtkDiscreteModel* Model, vtkSMProxy* ServerModelProxy,
-        vtkSMProxy* PolySourceProxy);
+  // Description:
+  // Using the input poly on the server to set up the modle
+  // and serializes the model to the client.
+  // Returns true if the operation was successful.
+  virtual bool Operate(
+    vtkDiscreteModel* Model, vtkSMProxy* ServerModelProxy, vtkSMProxy* PolySourceProxy);
 
-  protected:
-    vtkCMBMapToCMBModelClient();
-    virtual ~vtkCMBMapToCMBModelClient();
+protected:
+  vtkCMBMapToCMBModelClient();
+  virtual ~vtkCMBMapToCMBModelClient();
 
-    // Description:
-    // Check to see if everything is properly set for the operator.
-    virtual bool AbleToOperate(vtkDiscreteModel* Model);
+  // Description:
+  // Check to see if everything is properly set for the operator.
+  virtual bool AbleToOperate(vtkDiscreteModel* Model);
 
-  private:
-
-    vtkCMBMapToCMBModelClient(const vtkCMBMapToCMBModelClient&);  // Not implemented.
-    void operator=(const vtkCMBMapToCMBModelClient&);  // Not implemented.
+private:
+  vtkCMBMapToCMBModelClient(const vtkCMBMapToCMBModelClient&); // Not implemented.
+  void operator=(const vtkCMBMapToCMBModelClient&);            // Not implemented.
 };
 
 #endif

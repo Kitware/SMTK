@@ -23,12 +23,10 @@
 #include <iostream>
 #include <string>
 
-
 // This macro ensures that exodus session is initialized properly on each platform
 smtkComponentInitMacro(smtk_exodus_session)
 
-
-int main(int argc, char* argv[])
+  int main(int argc, char* argv[])
 {
   // basic check info
   if (argc < 2)
@@ -52,9 +50,7 @@ int main(int argc, char* argv[])
   readOp->specification()->findFile("filename")->setValue(modelPath);
   std::cout << "Importing " << modelPath << "\n";
   smtk::model::OperatorResult opresult = readOp->operate();
-  if (
-    opresult->findInt("outcome")->value() !=
-    smtk::model::OPERATION_SUCCEEDED)
+  if (opresult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
   {
     std::cerr << "Read operator failed\n";
     return 1;
@@ -71,10 +67,10 @@ int main(int argc, char* argv[])
 
   // Check model geometry style
   if (model.geometryStyle() != smtk::model::DISCRETE)
-    {
+  {
     std::cerr << "Incorrect geometry style (not discrete)";
     return 1;
-    }
+  }
 
   //std::cout << "finis" << std::endl;
   return 0;

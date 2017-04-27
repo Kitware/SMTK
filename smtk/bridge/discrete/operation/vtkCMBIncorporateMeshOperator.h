@@ -32,8 +32,8 @@ class vtkDiscreteModelFace;
 class SMTKDISCRETESESSION_EXPORT vtkCMBIncorporateMeshOperator : public vtkObject
 {
 public:
-  static vtkCMBIncorporateMeshOperator * New();
-  vtkTypeMacro(vtkCMBIncorporateMeshOperator,vtkObject);
+  static vtkCMBIncorporateMeshOperator* New();
+  vtkTypeMacro(vtkCMBIncorporateMeshOperator, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -43,10 +43,8 @@ public:
 
   //Description:
   //Add solid meshes
-  void AddSolidMesh(vtkIdType meshRegionId,
-    vtkPolyData* meshRegionSurface);
-  void AddSolidMesh(vtkIdType meshRegionId,
-    vtkAlgorithm* algOut);
+  void AddSolidMesh(vtkIdType meshRegionId, vtkPolyData* meshRegionSurface);
+  void AddSolidMesh(vtkIdType meshRegionId, vtkAlgorithm* algOut);
 
   //Description:
   //Remove all solid meshes
@@ -61,41 +59,29 @@ protected:
   virtual ~vtkCMBIncorporateMeshOperator();
 
   bool IncorporateSolidMesh(
-    vtkDiscreteModel* model,
-    const vtkIdType& solidFile,
-    vtkPolyData* solidRegionSurface);
+    vtkDiscreteModel* model, const vtkIdType& solidFile, vtkPolyData* solidRegionSurface);
   bool SplitMeshRegion(
-    vtkDiscreteModelRegion* meshRegion,
-    vtkDiscreteModel* solidModel,
-    const std::string& solidFile);
-  bool CreateNewMeshRegions( vtkDiscreteModel* solidModel,
-    vtkDiscreteModelRegion* meshRegion,
-    std::map<vtkDiscreteModelRegion*, std::set<vtkDiscreteModelFace*> >
-     &SolidRegionMeshFacesMap,
-    const std::string& solidFile,
-    std::map<vtkIdType, vtkIdType> &SolidToMeshPointMap,
+    vtkDiscreteModelRegion* meshRegion, vtkDiscreteModel* solidModel, const std::string& solidFile);
+  bool CreateNewMeshRegions(vtkDiscreteModel* solidModel, vtkDiscreteModelRegion* meshRegion,
+    std::map<vtkDiscreteModelRegion*, std::set<vtkDiscreteModelFace*> >& SolidRegionMeshFacesMap,
+    const std::string& solidFile, std::map<vtkIdType, vtkIdType>& SolidToMeshPointMap,
     std::set<vtkDiscreteModelFace*>& UsedSolidFaces);
 
-  vtkIdType FindPointsCell(const DiscreteMesh *targetMesh, vtkIdType ptId,
-    vtkPolyData* soucePoly, vtkIdList *points,
-    vtkIdList* visitedCellMask,
-    std::map<vtkIdType, vtkIdType> &SolidToMeshPointMap);
-  bool IsSameCellPoints(
-    const DiscreteMesh* targetMesh, vtkIdList* tpts,
-    vtkPolyData* soucePoly, vtkIdList* spts,
-    std::map<vtkIdType, vtkIdType> &SolidToMeshPointMap);
-  void AddSolidFaceCells(
-    vtkDiscreteModel* meshModel, vtkDiscreteModelFace* faceEntity,
-    vtkIdList* newCellIds,
-    std::map<vtkIdType, vtkIdType> &SolidToMeshPointMap);
+  vtkIdType FindPointsCell(const DiscreteMesh* targetMesh, vtkIdType ptId, vtkPolyData* soucePoly,
+    vtkIdList* points, vtkIdList* visitedCellMask,
+    std::map<vtkIdType, vtkIdType>& SolidToMeshPointMap);
+  bool IsSameCellPoints(const DiscreteMesh* targetMesh, vtkIdList* tpts, vtkPolyData* soucePoly,
+    vtkIdList* spts, std::map<vtkIdType, vtkIdType>& SolidToMeshPointMap);
+  void AddSolidFaceCells(vtkDiscreteModel* meshModel, vtkDiscreteModelFace* faceEntity,
+    vtkIdList* newCellIds, std::map<vtkIdType, vtkIdType>& SolidToMeshPointMap);
 
 private:
   // Description:
   // map for the solid meshes
   std::map<vtkIdType, vtkPolyData*> SolidMeshes;
 
-  vtkCMBIncorporateMeshOperator(const vtkCMBIncorporateMeshOperator&);  // Not implemented.
-  void operator=(const vtkCMBIncorporateMeshOperator&);  // Not implemented.
+  vtkCMBIncorporateMeshOperator(const vtkCMBIncorporateMeshOperator&); // Not implemented.
+  void operator=(const vtkCMBIncorporateMeshOperator&);                // Not implemented.
 
   // Description:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).

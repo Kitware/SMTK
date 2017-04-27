@@ -13,13 +13,11 @@
 // Operator that reads in the simulation mesh on the server and creates a
 // vtkCMBMeshGridRepresentation to be used by the model.
 
-
 #ifndef __vtkCMBMeshGridRepresentationClient_h
 #define __vtkCMBMeshGridRepresentationClient_h
 
 #include "cmbSystemConfig.h"
 #include "vtkObject.h"
-
 
 class vtkDiscreteModel;
 class vtkSMProxy;
@@ -27,8 +25,8 @@ class vtkSMProxy;
 class VTK_EXPORT vtkCMBMeshGridRepresentationClient : public vtkObject
 {
 public:
-  static vtkCMBMeshGridRepresentationClient * New();
-  vtkTypeMacro(vtkCMBMeshGridRepresentationClient,vtkObject);
+  static vtkCMBMeshGridRepresentationClient* New();
+  vtkTypeMacro(vtkCMBMeshGridRepresentationClient, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -47,28 +45,27 @@ public:
   // will be built later in vtkCMBMeshGridRepresentionServer. However, if this is set,
   // it will be passed to vtkCMBMeshGridRepresentionServer as its mesh representation.
   vtkGetObjectMacro(MeshRepresentationSource, vtkSMProxy);
-  void SetMeshRepresentationSource(vtkSMProxy* );
+  void SetMeshRepresentationSource(vtkSMProxy*);
 
   // Description:
   // Reads in the file on the server. Returns true if the operation was successful.
-  bool Operate(vtkDiscreteModel *model, vtkSMProxy* serverMeshProxy);
+  bool Operate(vtkDiscreteModel* model, vtkSMProxy* serverMeshProxy);
 
 protected:
   vtkCMBMeshGridRepresentationClient();
   virtual ~vtkCMBMeshGridRepresentationClient();
 
 private:
-  vtkCMBMeshGridRepresentationClient(const vtkCMBMeshGridRepresentationClient&);  // Not implemented.
-  void operator=(const vtkCMBMeshGridRepresentationClient&);  // Not implemented.
+  vtkCMBMeshGridRepresentationClient(const vtkCMBMeshGridRepresentationClient&); // Not implemented.
+  void operator=(const vtkCMBMeshGridRepresentationClient&);                     // Not implemented.
 
-    // Description:
+  // Description:
   // Flag to indicate that after saving the mesh to file we also want to set this mesh
   // as the grid info representation
   int MeshIsAnalysisGrid;
 
   char* GridFileName;
   vtkSMProxy* MeshRepresentationSource;
-
 };
 
 #endif

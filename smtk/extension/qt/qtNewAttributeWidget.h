@@ -21,31 +21,31 @@
 
 namespace smtk
 {
-  namespace attribute
-  {
-  class SMTKQTEXT_EXPORT qtNewAttributeWidget : public QDialog
-  {
-    Q_OBJECT
-    typedef QDialog Superclass;
+namespace attribute
+{
+class SMTKQTEXT_EXPORT qtNewAttributeWidget : public QDialog
+{
+  Q_OBJECT
+  typedef QDialog Superclass;
 
-  public:
-    qtNewAttributeWidget(QWidget* parent = 0);
-    virtual ~qtNewAttributeWidget();
+public:
+  qtNewAttributeWidget(QWidget* parent = 0);
+  virtual ~qtNewAttributeWidget();
 
-    QString attributeName() const;
-    QString attributeType() const;
-    virtual void setBaseWidget(QWidget* baseWidget);
-    virtual int showWidget(const QString& name, const QList<QString>& attTypes);
+  QString attributeName() const;
+  QString attributeType() const;
+  virtual void setBaseWidget(QWidget* baseWidget);
+  virtual int showWidget(const QString& name, const QList<QString>& attTypes);
 
-  private:
-    qtNewAttributeWidget(const qtNewAttributeWidget&); // Not implemented.
-    void operator=(const qtNewAttributeWidget&); // Not implemented.
+private:
+  qtNewAttributeWidget(const qtNewAttributeWidget&); // Not implemented.
+  void operator=(const qtNewAttributeWidget&);       // Not implemented.
 
-    class PIMPL;
-    PIMPL *Private;
+  class PIMPL;
+  PIMPL* Private;
 
-    }; // class
-  }; // namespace attribute
+}; // class
+}; // namespace attribute
 }; // namespace smtk
 
 #endif

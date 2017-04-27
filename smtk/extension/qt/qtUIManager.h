@@ -33,225 +33,200 @@ class QComboBox;
 
 namespace smtk
 {
-  namespace extension
+namespace extension
+{
+class qtItem;
+class qtFileItem;
+class qtMeshSelectionItem;
+class qtModelEntityItem;
+class qtBaseView;
+class qtModelView;
+class qtSelectionManager;
+
+typedef qtBaseView* (*widgetConstructor)(const ViewInfo& info);
+
+class SMTKQTEXT_EXPORT qtUIManager : public QObject
+{
+
+  Q_OBJECT
+
+public:
+  qtUIManager(smtk::attribute::System& system);
+  virtual ~qtUIManager();
+
+  void initializeUI(QWidget* pWidget, bool useInternalFileBrowser = false);
+  void initializeUI(const smtk::extension::ViewInfo& v, bool useInternalFileBrowser = false);
+  qtBaseView* setSMTKView(smtk::common::ViewPtr v);
+  qtBaseView* setSMTKView(
+    smtk::common::ViewPtr v, QWidget* pWidget, bool useInternalFileBrowser = false);
+  qtBaseView* setSMTKView(const smtk::extension::ViewInfo& v, bool useInternalFileBrowser = false);
+  smtk::common::ViewPtr smtkView() const { return this->m_smtkView; }
+
+  smtk::attribute::System* attSystem() const { return &this->m_AttSystem; }
+
+  // Description:
+  // Set/Get method of qtSelectionManager
+  void setSelectionManager(smtk::extension::qtSelectionManager* SM);
+  smtk::extension::qtSelectionManager* selectionManager() const
   {
-    class qtItem;
-    class qtFileItem;
-    class qtMeshSelectionItem;
-    class qtModelEntityItem;
-    class qtBaseView;
-    class qtModelView;
-    class qtSelectionManager;
+    return this->m_qtSelectionManager;
+  }
 
-    typedef qtBaseView* (*widgetConstructor)(const ViewInfo &info);
+  void setActiveModelView(smtk::extension::qtModelView*);
+  smtk::extension::qtModelView* activeModelView();
 
-    class SMTKQTEXT_EXPORT qtUIManager : public QObject
-    {
+  // Description:
+  // Set/Get the color used for indicating items with default values
+  void setDefaultValueColor(const QColor& color);
+  QColor defaultValueColor() const { return this->DefaultValueColor; }
+  void setInvalidValueColor(const QColor& color);
+  QColor invalidValueColor() const { return this->InvalidValueColor; }
 
-    Q_OBJECT
+  // Description:
+  // Set the advanced values font to be bold and/or italic
+  void setAdvanceFontStyleBold(bool val);
+  bool advanceFontStyleBold() const;
+  void setAdvanceFontStyleItalic(bool val);
+  bool advanceFontStyleItalic() const;
 
-    public:
-    qtUIManager(smtk::attribute::System &system);
-      virtual ~qtUIManager();
+  void setAdvancedBold(bool b) { this->AdvancedBold = b; }
+  bool advancedBold() { return this->AdvancedBold; }
+  void setAdvancedItalic(bool i) { this->AdvancedItalic = i; }
+  bool advancedItalic() { return this->AdvancedItalic; }
 
-      void initializeUI(QWidget* pWidget, bool useInternalFileBrowser=false);
-      void initializeUI(const smtk::extension::ViewInfo &v,
-			bool useInternalFileBrowser=false);
-      qtBaseView *setSMTKView(smtk::common::ViewPtr v);
-      qtBaseView *setSMTKView(smtk::common::ViewPtr v, QWidget* pWidget,
-                              bool useInternalFileBrowser=false);
-      qtBaseView *setSMTKView(const smtk::extension::ViewInfo &v,
-                              bool useInternalFileBrowser=false);
-      smtk::common::ViewPtr smtkView() const
-      {return this->m_smtkView;}
+  //Description:
+  // Set and Get Value Label Lengths
+  int maxValueLabelLength() const { return this->m_maxValueLabelLength; }
+  void setMaxValueLabelLength(int w) { this->m_maxValueLabelLength = w; }
+  int minValueLabelLength() const { return this->m_minValueLabelLength; }
+  void setMinValueLabelLength(int w) { this->m_minValueLabelLength = w; }
 
-      smtk::attribute::System* attSystem() const
-      {return &this->m_AttSystem;}
+  //Description:
+  // Registers a view construction function with a view type string
+  void registerViewConstructor(const std::string& vtype, widgetConstructor f);
+  //Description:
+  // Check if view type string has a registered view construction function
+  bool hasViewConstructor(const std::string& vtype)
+  {
+    return this->m_constructors.find(vtype) != this->m_constructors.end();
+  }
 
-      // Description:
-      // Set/Get method of qtSelectionManager
-      void setSelectionManager(smtk::extension::qtSelectionManager* SM);
-      smtk::extension::qtSelectionManager* selectionManager() const
-      {return this->m_qtSelectionManager;}
+  qtBaseView* topView() { return this->m_topView; }
+  static QString clipBoardText();
+  static void setClipBoardText(QString& text);
+  std::string currentCategory();
+  bool categoryEnabled();
+  void clearRoot();
 
-      void setActiveModelView(smtk::extension::qtModelView*);
-      smtk::extension::qtModelView* activeModelView();
+  bool passAdvancedCheck(int level);
+  bool passAttributeCategoryCheck(smtk::attribute::ConstDefinitionPtr AttDef);
+  bool passItemCategoryCheck(smtk::attribute::ConstItemDefinitionPtr ItemDef);
+  bool passCategoryCheck(const std::set<std::string>& categories);
 
-      // Description:
-      // Set/Get the color used for indicating items with default values
-      void setDefaultValueColor(const QColor &color);
-      QColor defaultValueColor() const
-      {return this->DefaultValueColor;}
-      void setInvalidValueColor(const QColor &color);
-      QColor invalidValueColor() const
-      {return this->InvalidValueColor;}
+  const QFont& advancedFont() { return this->advFont; }
+  int advanceLevel() const { return this->m_currentAdvLevel; }
+  void initAdvanceLevels(QComboBox* combo);
 
-      // Description:
-      // Set the advanced values font to be bold and/or italic
-      void setAdvanceFontStyleBold(bool val);
-      bool advanceFontStyleBold() const;
-      void setAdvanceFontStyleItalic(bool val);
-      bool advanceFontStyleItalic() const;
+  void setWidgetColorToInvalid(QWidget* widget);
+  void setWidgetColorToDefault(QWidget* widget);
+  void setWidgetColorToNormal(QWidget* widget);
+  bool getExpressionArrayString(smtk::attribute::GroupItemPtr dataItem, QString& strValues);
 
-      void setAdvancedBold(bool b)
-      {this->AdvancedBold = b;}
-      bool advancedBold()
-      {return this->AdvancedBold;}
-      void setAdvancedItalic(bool i)
-      {this->AdvancedItalic = i;}
-      bool advancedItalic()
-      {return this->AdvancedItalic;}
+  static void updateArrayTableWidget(smtk::attribute::GroupItemPtr dataItem, QTableWidget* widget);
+  static void updateTableColRows(smtk::attribute::ItemPtr dataItem, int col, QTableWidget* widget);
 
-      //Description:
-      // Set and Get Value Label Lengths
-      int maxValueLabelLength() const
-      {return this->m_maxValueLabelLength;}
-      void setMaxValueLabelLength(int w)
-      {this->m_maxValueLabelLength = w;}
-      int minValueLabelLength() const
-      {return this->m_minValueLabelLength;}
-      void setMinValueLabelLength(int w)
-      {this->m_minValueLabelLength = w;}
+  static void updateArrayDataValue(smtk::attribute::GroupItemPtr dataItem, QTableWidgetItem* item);
+  static void addNewTableValues(
+    smtk::attribute::GroupItemPtr dataItem, QTableWidget* table, double* vals, int numVals);
+  static void removeSelectedTableValues(
+    smtk::attribute::GroupItemPtr dataItem, QTableWidget* table);
 
-      //Description:
-      // Registers a view construction function with a view type string
-      void registerViewConstructor(const std::string &vtype, widgetConstructor f);
-      //Description:
-      // Check if view type string has a registered view construction function
-      bool hasViewConstructor(const std::string &vtype)
-      { return this->m_constructors.find(vtype) != this->m_constructors.end(); }
+  bool updateTableItemCheckState(QTableWidgetItem* labelitem, smtk::attribute::ItemPtr attItem);
 
-      qtBaseView* topView()
-        {return this->m_topView;}
-      static QString clipBoardText();
-      static void setClipBoardText(QString& text);
-      std::string currentCategory();
-      bool categoryEnabled();
-      void clearRoot();
+  virtual int getWidthOfAttributeMaxLabel(smtk::attribute::DefinitionPtr def, const QFont& font);
+  virtual int getWidthOfItemsMaxLabel(
+    const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs, const QFont& font);
 
-      bool passAdvancedCheck(int level);
-      bool passAttributeCategoryCheck(smtk::attribute::ConstDefinitionPtr AttDef);
-      bool passItemCategoryCheck(smtk::attribute::ConstItemDefinitionPtr ItemDef);
-      bool passCategoryCheck(const std::set<std::string> & categories);
-
-      const QFont& advancedFont()
-        {return this->advFont;}
-      int advanceLevel() const
-      {return this->m_currentAdvLevel;}
-      void initAdvanceLevels(QComboBox* combo);
-
-      void setWidgetColorToInvalid(QWidget *widget);
-      void setWidgetColorToDefault(QWidget *widget);
-      void setWidgetColorToNormal(QWidget *widget);
-      bool getExpressionArrayString(
-        smtk::attribute::GroupItemPtr dataItem, QString& strValues);
-
-    static void updateArrayTableWidget(smtk::attribute::GroupItemPtr dataItem,
-                                       QTableWidget* widget);
-    static void updateTableColRows(smtk::attribute::ItemPtr dataItem,
-      int col, QTableWidget* widget);
-
-    static void updateArrayDataValue(smtk::attribute::GroupItemPtr dataItem,
-                                     QTableWidgetItem* item);
-    static void addNewTableValues(smtk::attribute::GroupItemPtr dataItem,
-      QTableWidget* table, double* vals, int numVals);
-    static void removeSelectedTableValues(
-      smtk::attribute::GroupItemPtr dataItem, QTableWidget* table);
-
-    bool updateTableItemCheckState(
-      QTableWidgetItem* labelitem, smtk::attribute::ItemPtr attItem);
-
-
-    virtual int getWidthOfAttributeMaxLabel(smtk::attribute::DefinitionPtr def,
-                                     const QFont &font);
-    virtual int getWidthOfItemsMaxLabel(
-      const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs,
-      const QFont &font);
-
-    qtBaseView* createView(const ViewInfo &info);
+  qtBaseView* createView(const ViewInfo& info);
 
 #ifdef _WIN32
-    #define LINE_BREAKER_STRING "\n";
+#define LINE_BREAKER_STRING "\n";
 #else
-    #define LINE_BREAKER_STRING "\r";
+#define LINE_BREAKER_STRING "\r";
 #endif
 
-    public slots:
-      void onFileItemCreated(smtk::extension::qtFileItem*);
-      void onModelEntityItemCreated(smtk::extension::qtModelEntityItem*);
-      void onMeshSelectionItemCreated(smtk::extension::qtMeshSelectionItem*);
-      void updateModelViews();
-      void onViewUIModified(smtk::extension::qtBaseView*, smtk::attribute::ItemPtr);
-      void setAdvanceLevel(int b);
+public slots:
+  void onFileItemCreated(smtk::extension::qtFileItem*);
+  void onModelEntityItemCreated(smtk::extension::qtModelEntityItem*);
+  void onMeshSelectionItemCreated(smtk::extension::qtMeshSelectionItem*);
+  void updateModelViews();
+  void onViewUIModified(smtk::extension::qtBaseView*, smtk::attribute::ItemPtr);
+  void setAdvanceLevel(int b);
 
-    signals:
-      void fileItemCreated(smtk::extension::qtFileItem* fileItem);
-      void modelEntityItemCreated(smtk::extension::qtModelEntityItem* entItem);
-      void meshSelectionItemCreated(smtk::extension::qtMeshSelectionItem*);
-      void viewUIChanged(smtk::extension::qtBaseView*, smtk::attribute::ItemPtr);
-      // Derepcate this signal when qtSelectionManager has only one output signal
-      void entitiesSelected(const smtk::common::UUIDs&);
-      void sendSelectionsFromAttributePanelToSelectionManager(
-                        const smtk::model::EntityRefs &selEntities,
-                        const smtk::mesh::MeshSets &selMeshes,
-                        const smtk::model::DescriptivePhrases &DesPhrases,
-                        const smtk::extension::SelectionModifier modifierFlag,
-                        const smtk::model::StringList skipList
-                        );
+signals:
+  void fileItemCreated(smtk::extension::qtFileItem* fileItem);
+  void modelEntityItemCreated(smtk::extension::qtModelEntityItem* entItem);
+  void meshSelectionItemCreated(smtk::extension::qtMeshSelectionItem*);
+  void viewUIChanged(smtk::extension::qtBaseView*, smtk::attribute::ItemPtr);
+  // Derepcate this signal when qtSelectionManager has only one output signal
+  void entitiesSelected(const smtk::common::UUIDs&);
+  void sendSelectionsFromAttributePanelToSelectionManager(
+    const smtk::model::EntityRefs& selEntities, const smtk::mesh::MeshSets& selMeshes,
+    const smtk::model::DescriptivePhrases& DesPhrases,
+    const smtk::extension::SelectionModifier modifierFlag, const smtk::model::StringList skipList);
 
-    friend class qtRootView;
-    friend class qtAssociationWidget;
+  friend class qtRootView;
+  friend class qtAssociationWidget;
 
-    protected slots:
-      void invokeEntitiesSelected(const smtk::model::EntityRefs& selEnts);
+protected slots:
+  void invokeEntitiesSelected(const smtk::model::EntityRefs& selEnts);
 
-    protected:
-      virtual void internalInitialize();
+protected:
+  virtual void internalInitialize();
 
-   private:
-      qtBaseView* m_topView;
-      smtk::extension::qtSelectionManager* m_qtSelectionManager;
-      smtk::common::ViewPtr m_smtkView;
-      QWidget *m_parentWidget;
-      qtModelView* m_activeModelView;
+private:
+  qtBaseView* m_topView;
+  smtk::extension::qtSelectionManager* m_qtSelectionManager;
+  smtk::common::ViewPtr m_smtkView;
+  QWidget* m_parentWidget;
+  qtModelView* m_activeModelView;
 
-      QFont advFont;
-      QColor DefaultValueColor;
-      QColor InvalidValueColor;
-      bool AdvancedBold; // true by default
-      bool AdvancedItalic; // false by default
+  QFont advFont;
+  QColor DefaultValueColor;
+  QColor InvalidValueColor;
+  bool AdvancedBold;   // true by default
+  bool AdvancedItalic; // false by default
 
-      smtk::attribute::System &m_AttSystem;
-      bool m_useInternalFileBrowser;
+  smtk::attribute::System& m_AttSystem;
+  bool m_useInternalFileBrowser;
 
-      int m_maxValueLabelLength;
-      int m_minValueLabelLength;
+  int m_maxValueLabelLength;
+  int m_minValueLabelLength;
 
-      // current advance level to show advanced attributes/items
-      int m_currentAdvLevel;
+  // current advance level to show advanced attributes/items
+  int m_currentAdvLevel;
 
-      // map for <Definition, its longest item label>
-      // The longest label is used as a hint when aligning all item labels
-      QMap<smtk::attribute::DefinitionPtr, std::string> Def2LongLabel;
-      void findDefinitionsLongLabels();
-      void findDefinitionLongLabel(smtk::attribute::DefinitionPtr def, std::string &labelText);
-      void getItemsLongLabel(
-        const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs,
-        std::string &labelText);
-      std::map<std::string, widgetConstructor> m_constructors;
+  // map for <Definition, its longest item label>
+  // The longest label is used as a hint when aligning all item labels
+  QMap<smtk::attribute::DefinitionPtr, std::string> Def2LongLabel;
+  void findDefinitionsLongLabels();
+  void findDefinitionLongLabel(smtk::attribute::DefinitionPtr def, std::string& labelText);
+  void getItemsLongLabel(
+    const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs, std::string& labelText);
+  std::map<std::string, widgetConstructor> m_constructors;
 
-    }; // class
+}; // class
 
-    //A sublcass of QTextEdit to give initial sizehint
-    class SMTKQTEXT_EXPORT qtTextEdit : public QTextEdit
-      {
-      Q_OBJECT
-      public:
-        qtTextEdit(QWidget * parent);
-        virtual QSize sizeHint() const;
-      };
+//A sublcass of QTextEdit to give initial sizehint
+class SMTKQTEXT_EXPORT qtTextEdit : public QTextEdit
+{
+  Q_OBJECT
+public:
+  qtTextEdit(QWidget* parent);
+  virtual QSize sizeHint() const;
+};
 
-  }; // namespace extension
+}; // namespace extension
 }; // namespace smtk
 
 #endif

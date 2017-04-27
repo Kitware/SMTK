@@ -19,7 +19,6 @@
 #include <QtCore/QObject>
 #include <QtNetwork/QNetworkReply>
 
-
 class QNetworkAccessManager;
 class QNetworkCookieJar;
 class QNetworkReply;
@@ -32,73 +31,72 @@ class GirderRequest : public QObject
   Q_OBJECT
 
 public:
-  GirderRequest(const QString &girderUrl, const QString &girderToken,
-      QObject *parent = 0);
+  GirderRequest(const QString& girderUrl, const QString& girderToken, QObject* parent = 0);
   ~GirderRequest();
 
   void virtual send() = 0;
 
 signals:
   void complete();
-  void error(const QString &msg, QNetworkReply *networkReply = NULL);
-  void info(const QString &msg);
+  void error(const QString& msg, QNetworkReply* networkReply = NULL);
+  void info(const QString& msg);
 
 protected:
   QString m_girderUrl;
   QString m_girderToken;
-  QNetworkAccessManager *m_networkManager;
+  QNetworkAccessManager* m_networkManager;
 };
 
-class ListItemsRequest: public GirderRequest
+class ListItemsRequest : public GirderRequest
 {
   Q_OBJECT
 
 public:
-  ListItemsRequest(const QString &girderUrl, const QString &girderToken,
-      const QString folderId, QObject *parent = 0);
+  ListItemsRequest(const QString& girderUrl, const QString& girderToken, const QString folderId,
+    QObject* parent = 0);
   ~ListItemsRequest();
 
   void send();
 
 signals:
-  void items(const QList<QString> &itemIds);
+  void items(const QList<QString>& itemIds);
 
 private slots:
-  void finished(QNetworkReply *reply);
+  void finished(QNetworkReply* reply);
   QString folderId() const { return m_folderId; };
 
 private:
   QString m_folderId;
 };
 
-class ListFoldersRequest: public GirderRequest
+class ListFoldersRequest : public GirderRequest
 {
   Q_OBJECT
 
 public:
-  ListFoldersRequest(const QString &girderUrl, const QString &girderToken,
-      const QString folderId, QObject *parent = 0);
+  ListFoldersRequest(const QString& girderUrl, const QString& girderToken, const QString folderId,
+    QObject* parent = 0);
   ~ListFoldersRequest();
 
   void send();
 
 signals:
-  void folders(const QMap<QString, QString> &folders);
+  void folders(const QMap<QString, QString>& folders);
 
 private slots:
-  void finished(QNetworkReply *reply);
+  void finished(QNetworkReply* reply);
 
 private:
   QString m_folderId;
 };
 
-class ListFilesRequest: public GirderRequest
+class ListFilesRequest : public GirderRequest
 {
   Q_OBJECT
 
 public:
-  ListFilesRequest(const QString &girderUrl, const QString &girderToken,
-      const QString itemId,QObject *parent = 0);
+  ListFilesRequest(const QString& girderUrl, const QString& girderToken, const QString itemId,
+    QObject* parent = 0);
   ~ListFilesRequest();
 
   void send();
@@ -106,25 +104,24 @@ public:
   QString path() const { return m_path; };
 
 signals:
-  void files(const QMap<QString, QString> &files);
+  void files(const QMap<QString, QString>& files);
 
 private slots:
-  void finished(QNetworkReply *reply);
+  void finished(QNetworkReply* reply);
 
 private:
   QString m_itemId;
   QString m_path;
 };
 
-class DownloadFolderRequest: public GirderRequest
+class DownloadFolderRequest : public GirderRequest
 {
   Q_OBJECT
 
 public:
-  DownloadFolderRequest(QNetworkCookieJar *cookieJar,
-      const QString &girderUrl, const QString &girderToken,
-      const QString &downloadPath, const QString &folderId,
-      QObject *parent = 0);
+  DownloadFolderRequest(QNetworkCookieJar* cookieJar, const QString& girderUrl,
+    const QString& girderToken, const QString& downloadPath, const QString& folderId,
+    QObject* parent = 0);
   ~DownloadFolderRequest();
 
   void send();
@@ -132,30 +129,29 @@ public:
   QString downloadPath() const { return m_downloadPath; };
 
 private slots:
-  void items(const QList<QString> &itemIds);
-  void folders(const QMap<QString, QString> &folders);
+  void items(const QList<QString>& itemIds);
+  void folders(const QMap<QString, QString>& folders);
   void downloadItemFinished();
   void downloadFolderFinished();
 
 private:
   QString m_folderId;
   QString m_downloadPath;
-  QList<QString> *m_itemsToDownload;
-  QMap<QString, QString> *m_foldersToDownload;
-  QNetworkCookieJar *m_cookieJar;
+  QList<QString>* m_itemsToDownload;
+  QMap<QString, QString>* m_foldersToDownload;
+  QNetworkCookieJar* m_cookieJar;
 
   bool isComplete();
 };
 
-class DownloadFileRequest: public GirderRequest
+class DownloadFileRequest : public GirderRequest
 {
   Q_OBJECT
 
 public:
-  DownloadFileRequest(QNetworkCookieJar *cookieJar,
-      const QString &girderUrl, const QString &girderToken,
-      const QString &path, const QString &fileName, const QString &fileId,
-      QObject *parent = 0);
+  DownloadFileRequest(QNetworkCookieJar* cookieJar, const QString& girderUrl,
+    const QString& girderToken, const QString& path, const QString& fileName, const QString& fileId,
+    QObject* parent = 0);
   ~DownloadFileRequest();
 
   void send();
@@ -164,24 +160,23 @@ public:
   QString downloadPath() const { return m_downloadPath; };
 
 private slots:
-  void finished(QNetworkReply *reply);
+  void finished(QNetworkReply* reply);
 
 private:
   QString m_fileName;
   QString m_fileId;
   QString m_downloadPath;
-  QNetworkCookieJar *m_cookieJar;
+  QNetworkCookieJar* m_cookieJar;
   int m_retryCount;
 };
 
-class DownloadItemRequest: public GirderRequest
+class DownloadItemRequest : public GirderRequest
 {
   Q_OBJECT
 
 public:
-  DownloadItemRequest(QNetworkCookieJar *cookieJar,
-      const QString &girderUrl, const QString &girderToken,
-      const QString &path, const QString &itemId, QObject *parent = 0);
+  DownloadItemRequest(QNetworkCookieJar* cookieJar, const QString& girderUrl,
+    const QString& girderToken, const QString& path, const QString& itemId, QObject* parent = 0);
   ~DownloadItemRequest();
 
   void send();
@@ -189,7 +184,7 @@ public:
   QString downloadPath() const { return m_downloadPath; };
 
 private slots:
-  void files(const QMap<QString, QString> &fileIds);
+  void files(const QMap<QString, QString>& fileIds);
   void fileDownloadFinish();
 
 private:
@@ -197,10 +192,8 @@ private:
   QString m_downloadPath;
   // <fileId => fileName>
   QMap<QString, QString> m_filesToDownload;
-  QNetworkCookieJar *m_cookieJar;
+  QNetworkCookieJar* m_cookieJar;
 };
-
 }
 
 #endif
-

@@ -13,9 +13,12 @@
 #include "smtk/bridge/mesh/Exports.h"
 #include "smtk/model/Operator.h"
 
-namespace smtk {
-namespace bridge {
-namespace mesh {
+namespace smtk
+{
+namespace bridge
+{
+namespace mesh
+{
 
 class Session;
 struct EntityHandle;

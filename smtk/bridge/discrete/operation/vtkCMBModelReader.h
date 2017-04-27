@@ -19,12 +19,11 @@
 #include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
-
 class SMTKDISCRETESESSION_EXPORT vtkCMBModelReader : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkCMBModelReader * New();
-  vtkTypeMacro(vtkCMBModelReader,vtkPolyDataAlgorithm);
+  static vtkCMBModelReader* New();
+  vtkTypeMacro(vtkCMBModelReader, vtkPolyDataAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -36,19 +35,16 @@ protected:
   vtkCMBModelReader();
   virtual ~vtkCMBModelReader();
 
-  int RequestInformation(vtkInformation *,
-                         vtkInformationVector **,
-                         vtkInformationVector *);
-  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
-
+  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
 
 private:
   // Description:
   // The name of the file to be read in.
   char* FileName;
 
-  vtkCMBModelReader(const vtkCMBModelReader&);  // Not implemented.
-  void operator=(const vtkCMBModelReader&);  // Not implemented.
+  vtkCMBModelReader(const vtkCMBModelReader&); // Not implemented.
+  void operator=(const vtkCMBModelReader&);    // Not implemented.
 };
 
 #endif

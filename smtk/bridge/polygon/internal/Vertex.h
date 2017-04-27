@@ -13,10 +13,14 @@
 #include "smtk/SharedFromThis.h"
 #include "smtk/bridge/polygon/internal/Entity.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
-      namespace internal {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
+namespace internal
+{
 
 /**\brief A base class for all internal vertex storage.
   *
@@ -30,37 +34,55 @@ public:
   smtkTypeMacro(vertex);
   smtkCreateMacro(vertex);
   smtkSharedFromThisMacro(entity);
-  virtual ~vertex() { }
+  virtual ~vertex() {}
 
   struct incident_edge_data
-    {
-    Id m_edgeId; // Should never be NULL
+  {
+    Id m_edgeId;       // Should never be NULL
     Id m_adjacentFace; // Face immediately CW of m_edgeId. May be NULL.
-    bool m_edgeOut; // True when edge points outward from vertex (i.e., edge oriented so beginning vertex is this vertex)
+    bool
+      m_edgeOut; // True when edge points outward from vertex (i.e., edge oriented so beginning vertex is this vertex)
 
     incident_edge_data(Id edgeId, bool isEdgeOut)
-      : m_edgeId(edgeId), m_edgeOut(isEdgeOut) { }
+      : m_edgeId(edgeId)
+      , m_edgeOut(isEdgeOut)
+    {
+    }
     incident_edge_data(Id faceId)
-      : m_adjacentFace(faceId) { }
+      : m_adjacentFace(faceId)
+    {
+    }
     incident_edge_data(Id edgeId, bool isEdgeOut, Id faceId)
-      : m_edgeId(edgeId), m_adjacentFace(faceId), m_edgeOut(isEdgeOut) { }
+      : m_edgeId(edgeId)
+      , m_adjacentFace(faceId)
+      , m_edgeOut(isEdgeOut)
+    {
+    }
     incident_edge_data(const incident_edge_data& other)
-      : m_edgeId(other.edgeId()), m_adjacentFace(other.clockwiseFaceId()), m_edgeOut(other.isEdgeOutgoing()) { }
+      : m_edgeId(other.edgeId())
+      , m_adjacentFace(other.clockwiseFaceId())
+      , m_edgeOut(other.isEdgeOutgoing())
+    {
+    }
     incident_edge_data()
-      : m_edgeOut(false) { }
+      : m_edgeOut(false)
+    {
+    }
 
     Id edgeId() const { return this->m_edgeId; }
     Id clockwiseFaceId() const { return this->m_adjacentFace; }
     bool isEdgeOutgoing() const { return this->m_edgeOut; }
-    };
+  };
   typedef std::list<incident_edge_data> incident_edges;
 
   const Point& point() const { return this->m_coords; }
   Point& point() { return this->m_coords; }
 
   bool canInsertEdge(const Point& neighborhood, incident_edges::iterator* where);
-  incident_edges::iterator insertEdgeAt(incident_edges::iterator where, const Id& edgeId, bool edgeOutwards);
-  incident_edges::iterator insertEdgeAt(incident_edges::iterator where, const Id& edgeId, bool edgeOutwards, const Id& faceId);
+  incident_edges::iterator insertEdgeAt(
+    incident_edges::iterator where, const Id& edgeId, bool edgeOutwards);
+  incident_edges::iterator insertEdgeAt(
+    incident_edges::iterator where, const Id& edgeId, bool edgeOutwards, const Id& faceId);
   void removeEdgeAt(incident_edges::iterator where);
 
   incident_edges::size_type numberOfEdgeIncidences() const { return this->m_edges.size(); }
@@ -82,7 +104,8 @@ public:
   incident_edges::reverse_iterator edgesRBegin() { return this->m_edges.rbegin(); }
   incident_edges::reverse_iterator edgesREnd() { return this->m_edges.rend(); }
 
-  bool setFaceAdjacency(const Id& incidentEdge, const Id& adjacentFace, bool isCCW = true, int edgeDir = 0);
+  bool setFaceAdjacency(
+    const Id& incidentEdge, const Id& adjacentFace, bool isCCW = true, int edgeDir = 0);
   int removeFaceAdjacencies(const Id& face);
 
   int removeIncidentEdge(const Id& edge);
@@ -91,24 +114,25 @@ public:
 
   /// To be used by SessionIOJSON only (for deserializing from storage):
   void dangerousAppendEdge(const incident_edge_data& rec)
-    {
+  {
     this->m_edges.insert(this->m_edges.end(), rec);
-    }
+  }
 
   /// For use only by pmodel::splitEdge
-  void setInsideSplit(bool duringSplit)
-    {
-    this->m_insideSplit = duringSplit;
-    }
+  void setInsideSplit(bool duringSplit) { this->m_insideSplit = duringSplit; }
 
 protected:
   friend class pmodel;
 
-  vertex() : m_insideSplit(false) { }
+  vertex()
+    : m_insideSplit(false)
+  {
+  }
 
-  Point m_coords; // position in the plane.
+  Point m_coords;         // position in the plane.
   incident_edges m_edges; // CCW list of incident edges
-  bool m_insideSplit; // Is an edge attached here being split? If so, canInsertEdge will behave differently.
+  bool
+    m_insideSplit; // Is an edge attached here being split? If so, canInsertEdge will behave differently.
 
   // NB: One extension to this structure would be:
   // Ptr m_prev; // Previous model vertex located at this exact point in the plane
@@ -120,9 +144,9 @@ protected:
   // Id m_containingFace; // Face that contains this model vertex as a hard point in its interior.
 };
 
-      } // namespace internal
-    } // namespace polygon
-  } // namespace bridge
+} // namespace internal
+} // namespace polygon
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_bridge_polygon_internal_Vertex_h

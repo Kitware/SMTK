@@ -27,8 +27,8 @@ class vtkModelEntity;
 class SMTKDISCRETESESSION_EXPORT vtkEdgeSplitOperatorBase : public vtkObject
 {
 public:
-  static vtkEdgeSplitOperatorBase * New();
-  vtkTypeMacro(vtkEdgeSplitOperatorBase,vtkObject);
+  static vtkEdgeSplitOperatorBase* New();
+  vtkTypeMacro(vtkEdgeSplitOperatorBase, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -98,8 +98,8 @@ private:
   vtkIdType PointId;
   int IsPointIdSet;
 
-  vtkEdgeSplitOperatorBase(const vtkEdgeSplitOperatorBase&);  // Not implemented.
-  void operator=(const vtkEdgeSplitOperatorBase&);  // Not implemented.
+  vtkEdgeSplitOperatorBase(const vtkEdgeSplitOperatorBase&); // Not implemented.
+  void operator=(const vtkEdgeSplitOperatorBase&);           // Not implemented.
 };
 
 #endif

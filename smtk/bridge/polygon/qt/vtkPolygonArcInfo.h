@@ -35,11 +35,11 @@ public:
 
   //Description:
   //Returns if the this arc is a closed loop
-  bool IsClosedLoop(){return ClosedLoop;}
+  bool IsClosedLoop() { return ClosedLoop; }
 
   //Description:
   //Returns the total number of points which is end nodes + internal points
-  vtkIdType GetNumberOfPoints(){return NumberOfPoints;};
+  vtkIdType GetNumberOfPoints() { return NumberOfPoints; };
 
   // Description:
   // Set/Get the block index to extract information from
@@ -73,10 +73,8 @@ protected:
   char* ModelEntityID;
 
 private:
-
   vtkPolygonArcInfo(const vtkPolygonArcInfo&); // Not implemented
-  void operator=(const vtkPolygonArcInfo&); // Not implemented
-
+  void operator=(const vtkPolygonArcInfo&);    // Not implemented
 };
 
 #endif

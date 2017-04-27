@@ -13,8 +13,10 @@
 #include "smtk/common/Resource.h"
 #include "smtk/common/ResourceSet.h"
 
-namespace smtk {
-  namespace common {
+namespace smtk
+{
+namespace common
+{
 
 // Simple container for single Resource plus meta data
 struct SMTKCORE_EXPORT ResourceWrapper
@@ -27,8 +29,7 @@ struct SMTKCORE_EXPORT ResourceWrapper
   std::string link;
 };
 
-
-  } // namespace common
+} // namespace common
 } // namespace smtk
 
 #endif // smtk_common_ResourceWrapper_h

@@ -22,15 +22,17 @@ SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <string>
 
-namespace smtk {
-  namespace common {
+namespace smtk
+{
+namespace common
+{
 
 //.NAME TimeZone - Representation for time zones
 //.SECTION Description
 // A minimal wrapper for boost::posix_time::posix_time_zone
 class SMTKCORE_EXPORT TimeZone
 {
- public:
+public:
   TimeZone();
 
   bool isSet() const;
@@ -60,7 +62,7 @@ class SMTKCORE_EXPORT TimeZone
   // Intended for internal use
   const boost::local_time::time_zone_ptr boostPointer() const;
 #endif
- private:
+private:
   boost::local_time::time_zone_ptr m_boostTimeZone;
   bool m_isUTC;
   std::string m_region;
@@ -70,7 +72,7 @@ class SMTKCORE_EXPORT TimeZone
   static bool s_databaseLoaded;
 };
 
-  } // namespace common
+} // namespace common
 } // namespace smtk
 
 #endif // __smtk_common_TimeZone_h

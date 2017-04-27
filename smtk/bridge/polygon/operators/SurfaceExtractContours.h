@@ -13,9 +13,12 @@
 
 #include "smtk/bridge/polygon/Operator.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
 /**\brief Create polygon edges from contours extraced from an image.
   *
@@ -38,11 +41,10 @@ public:
 
 protected:
   virtual smtk::model::OperatorResult operateInternal();
-
 };
 
-    } // namespace polygon
-  } // namespace bridge
+} // namespace polygon
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_polygon_SurfaceExtractContours_h

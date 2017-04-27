@@ -14,9 +14,12 @@
 
 //#include "smtk/EntityRef.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
 /**\brief Create a polygonal model made up of vertices, edges, and faces.
   *
@@ -44,12 +47,11 @@ public:
 protected:
   virtual smtk::model::OperatorResult operateInternal();
 
-  template<typename U, typename V, typename W, typename X>
-  bool checkAndAddBoundingCells(const smtk::model::EntityRef& ent, bool
-                  deleteBoundingCells, U& verts, V& edges, W& faces, X& other);
-  template<typename U, typename V, typename W, typename X>
-  void addBoundaryCells(const smtk::model::EntityRef& ent, U& verts, V& edges,
-                        W& faces, X& other);
+  template <typename U, typename V, typename W, typename X>
+  bool checkAndAddBoundingCells(const smtk::model::EntityRef& ent, bool deleteBoundingCells,
+    U& verts, V& edges, W& faces, X& other);
+  template <typename U, typename V, typename W, typename X>
+  void addBoundaryCells(const smtk::model::EntityRef& ent, U& verts, V& edges, W& faces, X& other);
 
   int m_numInUse;
   int m_numWarnings;
@@ -58,8 +60,8 @@ protected:
   smtk::model::EntityRefArray m_expunged;
 };
 
-    } // namespace polygon
-  } //namespace bridge
+} // namespace polygon
+} //namespace bridge
 } // namespace smtk
 
 #endif // smtk_session_polygon_Delete_h

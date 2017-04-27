@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkModelEdgeOperator.h"
 
 #include "vtkDiscreteModel.h"
@@ -29,40 +28,40 @@ vtkModelEdgeOperator::~vtkModelEdgeOperator()
 
 bool vtkModelEdgeOperator::AbleToOperate(vtkDiscreteModelWrapper* ModelWrapper)
 {
-  if(!ModelWrapper)
-    {
+  if (!ModelWrapper)
+  {
     vtkErrorMacro("Passed in a null model wrapper.");
     return 0;
-    }
+  }
 
   return this->Superclass::AbleToOperate(ModelWrapper->GetModel());
 }
 
 void vtkModelEdgeOperator::Operate(vtkDiscreteModelWrapper* ModelWrapper)
 {
-  if(!this->AbleToOperate(ModelWrapper))
-    {
+  if (!this->AbleToOperate(ModelWrapper))
+  {
     this->OperateSucceeded = 0;
     return;
-    }
+  }
 
   vtkDiscreteModelEdge* Entity = this->GetModelEdgeEntity(ModelWrapper->GetModel());
-  if(!Entity)
-    {
+  if (!Entity)
+  {
     vtkErrorMacro("Could not find edge entity with id " << this->GetId());
-    return ;
-    }
+    return;
+  }
   Entity->SetLineResolution(this->GetLineResolution());
 
-  this->OperateSucceeded  = this->Superclass::Operate(ModelWrapper->GetModel());
-  if(this->OperateSucceeded)
-    {
+  this->OperateSucceeded = this->Superclass::Operate(ModelWrapper->GetModel());
+  if (this->OperateSucceeded)
+  {
     ModelWrapper->Modified();
-    }
+  }
 }
 
 void vtkModelEdgeOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
   os << indent << "OperateSucceeded: " << this->OperateSucceeded << endl;
 }

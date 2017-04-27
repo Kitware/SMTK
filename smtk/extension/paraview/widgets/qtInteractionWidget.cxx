@@ -20,56 +20,66 @@
 #include "vtkSMSessionProxyManager.h"
 
 qtInteractionWidget::qtInteractionWidget(
-    const vtkSmartPointer<vtkSMNewWidgetRepresentationProxy> &smproxy,
-    QWidget *parentWdg)
-    : Superclass(parentWdg), WidgetProxy(smproxy.Get()), Interactivity(false) {
+  const vtkSmartPointer<vtkSMNewWidgetRepresentationProxy>& smproxy, QWidget* parentWdg)
+  : Superclass(parentWdg)
+  , WidgetProxy(smproxy.Get())
+  , Interactivity(false)
+{
   Q_ASSERT(smproxy != NULL);
 
-  this->VTKConnect->Connect(smproxy, vtkCommand::StartInteractionEvent, this,
-                            SIGNAL(widgetStartInteraction()));
-  this->VTKConnect->Connect(smproxy, vtkCommand::InteractionEvent, this,
-                            SIGNAL(widgetInteraction()));
-  this->VTKConnect->Connect(smproxy, vtkCommand::EndInteractionEvent, this,
-                            SIGNAL(widgetEndInteraction()));
+  this->VTKConnect->Connect(
+    smproxy, vtkCommand::StartInteractionEvent, this, SIGNAL(widgetStartInteraction()));
+  this->VTKConnect->Connect(
+    smproxy, vtkCommand::InteractionEvent, this, SIGNAL(widgetInteraction()));
+  this->VTKConnect->Connect(
+    smproxy, vtkCommand::EndInteractionEvent, this, SIGNAL(widgetEndInteraction()));
 }
 
-qtInteractionWidget::~qtInteractionWidget() { this->setView(nullptr); }
+qtInteractionWidget::~qtInteractionWidget()
+{
+  this->setView(nullptr);
+}
 
-vtkSmartPointer<vtkSMNewWidgetRepresentationProxy>
-qtInteractionWidget::createWidget(const char *smgroup, const char *smname) {
-  pqServer *server = pqActiveObjects::instance().activeServer();
+vtkSmartPointer<vtkSMNewWidgetRepresentationProxy> qtInteractionWidget::createWidget(
+  const char* smgroup, const char* smname)
+{
+  pqServer* server = pqActiveObjects::instance().activeServer();
   Q_ASSERT(server);
 
-  vtkSMSessionProxyManager *pxm = server->proxyManager();
+  vtkSMSessionProxyManager* pxm = server->proxyManager();
   Q_ASSERT(pxm);
   vtkSmartPointer<vtkSMProxy> proxy;
   proxy.TakeReference(pxm->NewProxy(smgroup, smname));
   vtkSmartPointer<vtkSMNewWidgetRepresentationProxy> reprProxy;
   reprProxy = vtkSMNewWidgetRepresentationProxy::SafeDownCast(proxy.Get());
 
-  if (reprProxy) {
+  if (reprProxy)
+  {
     vtkNew<vtkSMParaViewPipelineController> controller;
     controller->InitializeProxy(reprProxy);
   }
   return reprProxy;
 }
 
-vtkSMNewWidgetRepresentationProxy *qtInteractionWidget::widgetProxy() const {
+vtkSMNewWidgetRepresentationProxy* qtInteractionWidget::widgetProxy() const
+{
   return this->WidgetProxy;
 }
 
-void qtInteractionWidget::setView(pqView *aview) {
-  if (this->View != aview) {
-    if (vtkSMProxy *viewProxy = this->View ? this->View->getProxy() : nullptr) {
-      vtkSMPropertyHelper(viewProxy, "HiddenRepresentations")
-          .Remove(this->widgetProxy());
+void qtInteractionWidget::setView(pqView* aview)
+{
+  if (this->View != aview)
+  {
+    if (vtkSMProxy* viewProxy = this->View ? this->View->getProxy() : nullptr)
+    {
+      vtkSMPropertyHelper(viewProxy, "HiddenRepresentations").Remove(this->widgetProxy());
       viewProxy->UpdateVTKObjects();
       this->render();
     }
     this->View = aview;
-    if (vtkSMProxy *viewProxy = this->View ? this->View->getProxy() : nullptr) {
-      vtkSMPropertyHelper(viewProxy, "HiddenRepresentations")
-          .Add(this->widgetProxy());
+    if (vtkSMProxy* viewProxy = this->View ? this->View->getProxy() : nullptr)
+    {
+      vtkSMPropertyHelper(viewProxy, "HiddenRepresentations").Add(this->widgetProxy());
       viewProxy->UpdateVTKObjects();
       this->render();
     }
@@ -79,12 +89,16 @@ void qtInteractionWidget::setView(pqView *aview) {
   }
 }
 
-pqView *qtInteractionWidget::view() const { return this->View; }
+pqView* qtInteractionWidget::view() const
+{
+  return this->View;
+}
 
-void qtInteractionWidget::setEnableInteractivity(bool val) {
+void qtInteractionWidget::setEnableInteractivity(bool val)
+{
   bool trueInteractivity = (val && this->view());
 
-  vtkSMProxy *wdgProxy = this->widgetProxy();
+  vtkSMProxy* wdgProxy = this->widgetProxy();
   Q_ASSERT(wdgProxy != nullptr);
 
   vtkSMPropertyHelper(wdgProxy, "Visibility", true).Set(trueInteractivity);
@@ -92,14 +106,17 @@ void qtInteractionWidget::setEnableInteractivity(bool val) {
   wdgProxy->UpdateVTKObjects();
   this->render();
 
-  if (this->Interactivity != val) {
+  if (this->Interactivity != val)
+  {
     this->Interactivity = val;
     emit this->enableInteractivityChanged(this->Interactivity);
   }
 }
 
-void qtInteractionWidget::render() {
-  if (this->View) {
+void qtInteractionWidget::render()
+{
+  if (this->View)
+  {
     this->View->render();
   }
 }

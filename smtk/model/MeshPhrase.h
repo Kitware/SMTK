@@ -12,8 +12,10 @@
 
 #include "smtk/model/DescriptivePhrase.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief Describe an meshset or collection for user presentation.
   */
@@ -22,15 +24,17 @@ class SMTKCORE_EXPORT MeshPhrase : public DescriptivePhrase
 public:
   smtkTypeMacro(MeshPhrase);
   smtkSharedPtrCreateMacro(DescriptivePhrase);
-  Ptr setup(const smtk::mesh::MeshSet& meshset, DescriptivePhrase::Ptr parent = DescriptivePhrasePtr());
+  Ptr setup(
+    const smtk::mesh::MeshSet& meshset, DescriptivePhrase::Ptr parent = DescriptivePhrasePtr());
   // NOTE: This is not updating subphrases, nor markDirty, just the related mesh is changed
   void updateMesh(const smtk::mesh::MeshSet& meshset);
 #ifndef SHIBOKEN_SKIP
-  Ptr setup(const smtk::mesh::CollectionPtr& meshes, DescriptivePhrase::Ptr parent = DescriptivePhrasePtr());
+  Ptr setup(const smtk::mesh::CollectionPtr& meshes,
+    DescriptivePhrase::Ptr parent = DescriptivePhrasePtr());
   // NOTE: This is not updating subphrases, nor markDirty, just the related mesh is changed
   void updateMesh(const smtk::mesh::CollectionPtr& c);
 #endif
-  virtual ~MeshPhrase() { }
+  virtual ~MeshPhrase() {}
 
   virtual std::string title();
   virtual bool isTitleMutable() const;
@@ -45,6 +49,7 @@ public:
 
   void setMutability(int whatsMutable);
   bool isCollection() const;
+
 protected:
   MeshPhrase();
 
@@ -53,7 +58,7 @@ protected:
   int m_mutability;
 };
 
-  } // model namespace
+} // model namespace
 } // smtk namespace
 
 #endif // __smtk_model_MeshPhrase_h

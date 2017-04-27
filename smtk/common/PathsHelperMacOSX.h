@@ -14,8 +14,10 @@
 
 #include "smtk/CoreExports.h"
 
-namespace smtk {
-  namespace common {
+namespace smtk
+{
+namespace common
+{
 
 class SMTKCORE_EXPORT PathsHelperMacOSX
 {
@@ -23,7 +25,7 @@ public:
   PathsHelperMacOSX();
 };
 
-  } // namespace common
+} // namespace common
 } // namespace smtk
 
 #endif // __smtk_common_PathsHelperMacOSX_h

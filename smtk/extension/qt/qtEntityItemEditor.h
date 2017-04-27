@@ -16,8 +16,10 @@
 
 class QLineEdit;
 
-namespace smtk {
-  namespace extension {
+namespace smtk
+{
+namespace extension
+{
 
 /**\brief Allow user edits to an smtk::model::Manager instance via QEntityItemModel.
   *
@@ -40,7 +42,7 @@ protected:
   QLineEdit* m_title;
 };
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_extension_QEntityItemEditor_h

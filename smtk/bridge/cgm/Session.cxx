@@ -38,7 +38,7 @@
 #include "smtk/Options.h"
 
 #ifdef CGM_HAVE_VERSION_H
-#  include "cgm_version.h"
+#include "cgm_version.h"
 #endif
 #include "Body.hpp"
 #include "Chain.hpp"
@@ -66,20 +66,23 @@ typedef DLIList<RefEntity*> DLIRefList;
 using smtk::model::EntityRef;
 using namespace smtk::common;
 
-namespace smtk {
-  namespace bridge {
-    namespace cgm {
+namespace smtk
+{
+namespace bridge
+{
+namespace cgm
+{
 
 /// Default constructor.
 Session::Session()
 {
   this->m_maxRelChordErr = 0.01; // fraction of longest edge.
-  this->m_maxAngleErr = 2.0; // maximum angle in degrees.
+  this->m_maxAngleErr = 2.0;     // maximum angle in degrees.
   this->initializeOperatorSystem(Session::s_operators);
   if (!Engines::areInitialized())
-    {
+  {
     Engines::isInitialized("");
-    }
+  }
 }
 
 /// Virtual destructor. Here because Session overrides virtual methods from Session.
@@ -112,9 +115,9 @@ bool Session::addManagerEntityToCGM(const smtk::model::EntityRef& ent)
 int Session::staticSetup(const std::string& optName, const smtk::model::StringList& optVal)
 {
   if (optName == "engine" && !optVal.empty())
-    {
+  {
     return Engines::setDefault(optVal[0]) ? 1 : 0;
-    }
+  }
   return 0;
 }
 
@@ -135,26 +138,26 @@ int Session::setup(const std::string& optName, const smtk::model::StringList& op
   char* valid;
   double value;
   if (!optVal.empty() && !optVal[0].empty())
-    {
+  {
     if (optName == "tessellation maximum relative chord error")
-      {
+    {
       value = strtod(optVal[0].c_str(), &valid);
       if (valid && value != this->m_maxRelChordErr)
-        {
+      {
         this->m_maxRelChordErr = value;
         return 1;
-        }
-      }
-    else if (optName == "tessellation maximum angle error")
-      {
-      value = strtod(optVal[0].c_str(), &valid);
-      if (valid && value != this->m_maxAngleErr)
-        {
-        this->m_maxAngleErr = 2.0; // maximum angle in degrees.
-        return 1;
-        }
       }
     }
+    else if (optName == "tessellation maximum angle error")
+    {
+      value = strtod(optVal[0].c_str(), &valid);
+      if (valid && value != this->m_maxAngleErr)
+      {
+        this->m_maxAngleErr = 2.0; // maximum angle in degrees.
+        return 1;
+      }
+    }
+  }
   return 0;
 }
 
@@ -162,11 +165,9 @@ int Session::setup(const std::string& optName, const smtk::model::StringList& op
   *
   */
 smtk::model::SessionInfoBits Session::transcribeInternal(
-  const smtk::model::EntityRef& entityref,
-  SessionInfoBits requestedInfo,
-  int depth)
+  const smtk::model::EntityRef& entityref, SessionInfoBits requestedInfo, int depth)
 {
-  (void) depth;
+  (void)depth;
   ToolDataUser* tdu = TDUUID::findEntityById(entityref.entity());
   RefEntity* ent = dynamic_cast<RefEntity*>(tdu);
   if (ent)
@@ -187,47 +188,63 @@ smtk::model::SessionInfoBits Session::addCGMEntityToManager(
 {
   DagType dagType = ent->dag_type();
   if (dagType.is_valid())
-    {
+  {
     switch (dagType.functional_type())
-      {
-    case DagType::BasicTopologyEntity_TYPE:
-      switch (dagType.dimension())
+    {
+      case DagType::BasicTopologyEntity_TYPE:
+        switch (dagType.dimension())
         {
-      case 3: return this->addVolumeToManager(entityref, dynamic_cast<RefVolume*>(ent), requestedInfo);
-      case 2: return this->addFaceToManager(entityref, dynamic_cast<RefFace*>(ent), requestedInfo);
-      case 1: return this->addEdgeToManager(entityref, dynamic_cast<RefEdge*>(ent), requestedInfo);
-      case 0: return this->addVertexToManager(entityref, dynamic_cast<RefVertex*>(ent), requestedInfo);
+          case 3:
+            return this->addVolumeToManager(
+              entityref, dynamic_cast<RefVolume*>(ent), requestedInfo);
+          case 2:
+            return this->addFaceToManager(entityref, dynamic_cast<RefFace*>(ent), requestedInfo);
+          case 1:
+            return this->addEdgeToManager(entityref, dynamic_cast<RefEdge*>(ent), requestedInfo);
+          case 0:
+            return this->addVertexToManager(
+              entityref, dynamic_cast<RefVertex*>(ent), requestedInfo);
         }
-      break;
-    case DagType::SenseEntity_TYPE:
-      switch (dagType.dimension())
+        break;
+      case DagType::SenseEntity_TYPE:
+        switch (dagType.dimension())
         {
-      case 3: return this->addVolumeUseToManager(entityref, dynamic_cast<CoVolume*>(ent), requestedInfo);
-      case 2: return this->addFaceUseToManager(entityref, dynamic_cast<CoFace*>(ent), requestedInfo);
-      case 1: return this->addEdgeUseToManager(entityref, dynamic_cast<CoEdge*>(ent), requestedInfo);
-      case 0: return this->addVertexUseToManager(entityref, dynamic_cast<CoVertex*>(ent), requestedInfo);
+          case 3:
+            return this->addVolumeUseToManager(
+              entityref, dynamic_cast<CoVolume*>(ent), requestedInfo);
+          case 2:
+            return this->addFaceUseToManager(entityref, dynamic_cast<CoFace*>(ent), requestedInfo);
+          case 1:
+            return this->addEdgeUseToManager(entityref, dynamic_cast<CoEdge*>(ent), requestedInfo);
+          case 0:
+            return this->addVertexUseToManager(
+              entityref, dynamic_cast<CoVertex*>(ent), requestedInfo);
         }
-      break;
-    case DagType::GroupingEntity_TYPE:
-      switch (dagType.dimension())
+        break;
+      case DagType::GroupingEntity_TYPE:
+        switch (dagType.dimension())
         {
-      case 3: return this->addBodyToManager(entityref, dynamic_cast<Body*>(ent), requestedInfo);
-      case 2: return this->addShellToManager(entityref, dynamic_cast<Shell*>(ent), requestedInfo);
-      case 1: return this->addLoopToManager(entityref, dynamic_cast<Loop*>(ent), requestedInfo);
-      case 0: return this->addChainToManager(entityref, dynamic_cast<Chain*>(ent), requestedInfo);
+          case 3:
+            return this->addBodyToManager(entityref, dynamic_cast<Body*>(ent), requestedInfo);
+          case 2:
+            return this->addShellToManager(entityref, dynamic_cast<Shell*>(ent), requestedInfo);
+          case 1:
+            return this->addLoopToManager(entityref, dynamic_cast<Loop*>(ent), requestedInfo);
+          case 0:
+            return this->addChainToManager(entityref, dynamic_cast<Chain*>(ent), requestedInfo);
         }
-      break;
-      }
+        break;
     }
+  }
   // Might be a RefGroup
   RefGroup* grp = dynamic_cast<RefGroup*>(ent);
-  if (grp) return this->addGroupToManager(entityref, grp, requestedInfo);
+  if (grp)
+    return this->addGroupToManager(entityref, grp, requestedInfo);
 
   // Nothing we know about
-  std::cerr
-    << "Invalid DagType"
-    << "(" << dagType.dimension() << "," << dagType.functional_type() << ")"
-    << " for entity \"" << ent->entity_name().c_str() << "\" " << ent << "\n";
+  std::cerr << "Invalid DagType"
+            << "(" << dagType.dimension() << "," << dagType.functional_type() << ")"
+            << " for entity \"" << ent->entity_name().c_str() << "\" " << ent << "\n";
   return 0;
 }
 
@@ -236,47 +253,63 @@ smtk::model::SessionInfoBits Session::addCGMEntityToManager(
 {
   DagType dagType = grp->dag_type();
   if (dagType.is_valid())
-    {
+  {
     switch (dagType.functional_type())
-      {
-    case DagType::BasicTopologyEntity_TYPE:
-      switch (dagType.dimension())
+    {
+      case DagType::BasicTopologyEntity_TYPE:
+        switch (dagType.dimension())
         {
-      case 3: return this->addVolumeToManager(entityref, dynamic_cast<RefVolume*>(grp), requestedInfo);
-      case 2: return this->addFaceToManager(entityref, dynamic_cast<RefFace*>(grp), requestedInfo);
-      case 1: return this->addEdgeToManager(entityref, dynamic_cast<RefEdge*>(grp), requestedInfo);
-      case 0: return this->addVertexToManager(entityref, dynamic_cast<RefVertex*>(grp), requestedInfo);
+          case 3:
+            return this->addVolumeToManager(
+              entityref, dynamic_cast<RefVolume*>(grp), requestedInfo);
+          case 2:
+            return this->addFaceToManager(entityref, dynamic_cast<RefFace*>(grp), requestedInfo);
+          case 1:
+            return this->addEdgeToManager(entityref, dynamic_cast<RefEdge*>(grp), requestedInfo);
+          case 0:
+            return this->addVertexToManager(
+              entityref, dynamic_cast<RefVertex*>(grp), requestedInfo);
         }
-      break;
-    case DagType::SenseEntity_TYPE:
-      switch (dagType.dimension())
+        break;
+      case DagType::SenseEntity_TYPE:
+        switch (dagType.dimension())
         {
-      case 3: return this->addVolumeUseToManager(entityref, dynamic_cast<CoVolume*>(grp), requestedInfo);
-      case 2: return this->addFaceUseToManager(entityref, dynamic_cast<CoFace*>(grp), requestedInfo);
-      case 1: return this->addEdgeUseToManager(entityref, dynamic_cast<CoEdge*>(grp), requestedInfo);
-      case 0: return this->addVertexUseToManager(entityref, dynamic_cast<CoVertex*>(grp), requestedInfo);
+          case 3:
+            return this->addVolumeUseToManager(
+              entityref, dynamic_cast<CoVolume*>(grp), requestedInfo);
+          case 2:
+            return this->addFaceUseToManager(entityref, dynamic_cast<CoFace*>(grp), requestedInfo);
+          case 1:
+            return this->addEdgeUseToManager(entityref, dynamic_cast<CoEdge*>(grp), requestedInfo);
+          case 0:
+            return this->addVertexUseToManager(
+              entityref, dynamic_cast<CoVertex*>(grp), requestedInfo);
         }
-      break;
-    case DagType::GroupingEntity_TYPE:
-      switch (dagType.dimension())
+        break;
+      case DagType::GroupingEntity_TYPE:
+        switch (dagType.dimension())
         {
-      case 3: return this->addBodyToManager(entityref, dynamic_cast<Body*>(grp), requestedInfo);
-      case 2: return this->addShellToManager(entityref, dynamic_cast<Shell*>(grp), requestedInfo);
-      case 1: return this->addLoopToManager(entityref, dynamic_cast<Loop*>(grp), requestedInfo);
-      case 0: return this->addChainToManager(entityref, dynamic_cast<Chain*>(grp), requestedInfo);
+          case 3:
+            return this->addBodyToManager(entityref, dynamic_cast<Body*>(grp), requestedInfo);
+          case 2:
+            return this->addShellToManager(entityref, dynamic_cast<Shell*>(grp), requestedInfo);
+          case 1:
+            return this->addLoopToManager(entityref, dynamic_cast<Loop*>(grp), requestedInfo);
+          case 0:
+            return this->addChainToManager(entityref, dynamic_cast<Chain*>(grp), requestedInfo);
         }
-      break;
-      }
+        break;
     }
+  }
   // Might be a RefGroup
   RefGroup* refGroup = dynamic_cast<RefGroup*>(grp);
-  if (refGroup) return this->addGroupToManager(entityref, refGroup, requestedInfo);
+  if (refGroup)
+    return this->addGroupToManager(entityref, refGroup, requestedInfo);
 
   // Nothing we know about
-  std::cerr
-    << "Invalid DagType"
-    << "(" << dagType.dimension() << "," << dagType.functional_type() << ")"
-    << " for entity " << grp << "\n";
+  std::cerr << "Invalid DagType"
+            << "(" << dagType.dimension() << "," << dagType.functional_type() << ")"
+            << " for entity " << grp << "\n";
   return 0;
 }
 
@@ -285,72 +318,83 @@ smtk::model::SessionInfoBits Session::addCGMEntityToManager(
 {
   DagType dagType = sns->dag_type();
   if (dagType.is_valid())
-    {
+  {
     switch (dagType.functional_type())
-      {
-    case DagType::BasicTopologyEntity_TYPE:
-      switch (dagType.dimension())
+    {
+      case DagType::BasicTopologyEntity_TYPE:
+        switch (dagType.dimension())
         {
-      case 3: return this->addVolumeToManager(entityref, dynamic_cast<RefVolume*>(sns), requestedInfo);
-      case 2: return this->addFaceToManager(entityref, dynamic_cast<RefFace*>(sns), requestedInfo);
-      case 1: return this->addEdgeToManager(entityref, dynamic_cast<RefEdge*>(sns), requestedInfo);
-      case 0: return this->addVertexToManager(entityref, dynamic_cast<RefVertex*>(sns), requestedInfo);
+          case 3:
+            return this->addVolumeToManager(
+              entityref, dynamic_cast<RefVolume*>(sns), requestedInfo);
+          case 2:
+            return this->addFaceToManager(entityref, dynamic_cast<RefFace*>(sns), requestedInfo);
+          case 1:
+            return this->addEdgeToManager(entityref, dynamic_cast<RefEdge*>(sns), requestedInfo);
+          case 0:
+            return this->addVertexToManager(
+              entityref, dynamic_cast<RefVertex*>(sns), requestedInfo);
         }
-      break;
-    case DagType::SenseEntity_TYPE:
-      switch (dagType.dimension())
+        break;
+      case DagType::SenseEntity_TYPE:
+        switch (dagType.dimension())
         {
-      case 3: return this->addVolumeUseToManager(entityref, dynamic_cast<CoVolume*>(sns), requestedInfo);
-      case 2: return this->addFaceUseToManager(entityref, dynamic_cast<CoFace*>(sns), requestedInfo);
-      case 1: return this->addEdgeUseToManager(entityref, dynamic_cast<CoEdge*>(sns), requestedInfo);
-      case 0: return this->addVertexUseToManager(entityref, dynamic_cast<CoVertex*>(sns), requestedInfo);
+          case 3:
+            return this->addVolumeUseToManager(
+              entityref, dynamic_cast<CoVolume*>(sns), requestedInfo);
+          case 2:
+            return this->addFaceUseToManager(entityref, dynamic_cast<CoFace*>(sns), requestedInfo);
+          case 1:
+            return this->addEdgeUseToManager(entityref, dynamic_cast<CoEdge*>(sns), requestedInfo);
+          case 0:
+            return this->addVertexUseToManager(
+              entityref, dynamic_cast<CoVertex*>(sns), requestedInfo);
         }
-      break;
-    case DagType::GroupingEntity_TYPE:
-      switch (dagType.dimension())
+        break;
+      case DagType::GroupingEntity_TYPE:
+        switch (dagType.dimension())
         {
-      case 3: return this->addBodyToManager(entityref, dynamic_cast<Body*>(sns), requestedInfo);
-      case 2: return this->addShellToManager(entityref, dynamic_cast<Shell*>(sns), requestedInfo);
-      case 1: return this->addLoopToManager(entityref, dynamic_cast<Loop*>(sns), requestedInfo);
-      case 0: return this->addChainToManager(entityref, dynamic_cast<Chain*>(sns), requestedInfo);
+          case 3:
+            return this->addBodyToManager(entityref, dynamic_cast<Body*>(sns), requestedInfo);
+          case 2:
+            return this->addShellToManager(entityref, dynamic_cast<Shell*>(sns), requestedInfo);
+          case 1:
+            return this->addLoopToManager(entityref, dynamic_cast<Loop*>(sns), requestedInfo);
+          case 0:
+            return this->addChainToManager(entityref, dynamic_cast<Chain*>(sns), requestedInfo);
         }
-      break;
-      }
+        break;
     }
+  }
   // Might be a RefGroup
   RefGroup* grp = dynamic_cast<RefGroup*>(sns);
-  if (grp) return this->addGroupToManager(entityref, grp, requestedInfo);
+  if (grp)
+    return this->addGroupToManager(entityref, grp, requestedInfo);
 
   // Nothing we know about
-  std::cerr
-    << "Invalid DagType"
-    << "(" << dagType.dimension() << "," << dagType.functional_type() << ")"
-    << " for entity " << sns << "\n";
+  std::cerr << "Invalid DagType"
+            << "(" << dagType.dimension() << "," << dagType.functional_type() << ")"
+            << " for entity " << sns << "\n";
   return 0;
 }
 
 /// Given a CGM \a body tagged with \a uid, create a record in \a modelManager for it.
 smtk::model::SessionInfoBits Session::addBodyToManager(
-  const smtk::model::Model& entityref,
-  Body* body,
-  SessionInfoBits requestedInfo)
+  const smtk::model::Model& entityref, Body* body, SessionInfoBits requestedInfo)
 {
   SessionInfoBits actual = 0;
   if (body)
-    {
+  {
     EntityRef mutableEntityRef(entityref);
-    mutableEntityRef.manager()->insertModel(
-      entityref.entity(),
-      body->is_sheet_body() ? 2 : 3,
-      /* embedding dim */ 3,
-      body->entity_name().c_str());
+    mutableEntityRef.manager()->insertModel(entityref.entity(), body->is_sheet_body() ? 2 : 3,
+      /* embedding dim */ 3, body->entity_name().c_str());
     actual |= smtk::model::SESSION_ENTITY_TYPE;
 
     // Create a collection associated with the model id
     this->manager()->meshes()->makeCollection(entityref.entity());
 
     if (requestedInfo & (smtk::model::SESSION_ENTITY_RELATIONS | smtk::model::SESSION_ARRANGEMENTS))
-      {
+    {
       // Tell the model its owning session is this instance:
       mutableEntityRef.as<smtk::model::Model>().setSession(
         smtk::model::SessionRef(this->manager(), this->sessionId()));
@@ -364,207 +408,194 @@ smtk::model::SessionInfoBits Session::addBodyToManager(
       body->get_child_ref_entities(children);
       //std::cout << "Body has " << parents.size() << " parents, " << children.size() << " children.\n";
       for (int i = 0; i < children.size(); ++i)
-        {
+      {
         RefEntity* child = children.get_and_step();
-        smtk::model::EntityRef childEntityRef(mutableEntityRef.manager(), TDUUID::ofEntity(child)->entityId());
-        this->declareDanglingEntity(mutableEntityRef,
-          this->transcribeInternal(childEntityRef, requestedInfo)); //smtk::model::SESSION_ENTITY_TYPE));
+        smtk::model::EntityRef childEntityRef(
+          mutableEntityRef.manager(), TDUUID::ofEntity(child)->entityId());
+        this->declareDanglingEntity(
+          mutableEntityRef, this->transcribeInternal(
+                              childEntityRef, requestedInfo)); //smtk::model::SESSION_ENTITY_TYPE));
         //std::cout << "  " << child << "   " << childEntityRef.entity() << "\n";
         if (!childEntityRef.entity().isNull())
-          {
+        {
           entityref.manager()->findOrAddInclusionToCellOrModel(
             entityref.entity(), childEntityRef.entity());
-          }
         }
-      actual |= smtk::model::SESSION_ENTITY_RELATIONS | smtk::model::SESSION_ARRANGEMENTS;
       }
+      actual |= smtk::model::SESSION_ENTITY_RELATIONS | smtk::model::SESSION_ARRANGEMENTS;
+    }
     if (requestedInfo & smtk::model::SESSION_ATTRIBUTE_ASSOCIATIONS)
-      {
+    {
       // FIXME: Todo.
       actual |= smtk::model::SESSION_ATTRIBUTE_ASSOCIATIONS;
-      }
+    }
     if (requestedInfo & smtk::model::SESSION_TESSELLATION)
-      {
+    {
       // FIXME: Todo.
       actual |= smtk::model::SESSION_TESSELLATION;
-      }
+    }
     if (requestedInfo & smtk::model::SESSION_PROPERTIES)
-      {
+    {
       // Set properties.
       smtk::model::ModelGeometryStyle gstyle =
-        !strcmp("facet", body->get_geometry_query_engine()->modeler_type()) ?
-        smtk::model::DISCRETE : smtk::model::PARAMETRIC;
+        !strcmp("facet", body->get_geometry_query_engine()->modeler_type())
+        ? smtk::model::DISCRETE
+        : smtk::model::PARAMETRIC;
       mutableEntityRef.setIntegerProperty(SMTK_GEOM_STYLE_PROP, static_cast<int>(gstyle));
       this->addNamesIfAny(mutableEntityRef, body);
       // If the color is not the default color, add it as a property.
       this->colorPropFromIndex(mutableEntityRef, body->color());
       actual |= smtk::model::SESSION_PROPERTIES;
-      }
     }
+  }
   return actual;
 }
 
 /// Given a CGM \a coVolume tagged with \a entityref's UUID, create a record in \a entityref's manager for it.
 smtk::model::SessionInfoBits Session::addVolumeUseToManager(
-  const smtk::model::VolumeUse& entityref,
-  CoVolume* coVolume,
-  SessionInfoBits requestedInfo)
+  const smtk::model::VolumeUse& entityref, CoVolume* coVolume, SessionInfoBits requestedInfo)
 {
   SessionInfoBits actual = 0;
   if (coVolume)
-    {
+  {
     smtk::model::VolumeUse mutableEntityRef(entityref);
     mutableEntityRef.manager()->insertVolumeUse(entityref.entity());
     actual |= smtk::model::SESSION_ENTITY_TYPE;
 
     if (requestedInfo & (smtk::model::SESSION_ENTITY_RELATIONS | smtk::model::SESSION_ARRANGEMENTS))
-      {
+    {
       // FIXME: Todo.
       actual |= smtk::model::SESSION_ENTITY_RELATIONS | smtk::model::SESSION_ARRANGEMENTS;
-      }
+    }
     if (requestedInfo & smtk::model::SESSION_ATTRIBUTE_ASSOCIATIONS)
-      {
+    {
       // FIXME: Todo.
       actual |= smtk::model::SESSION_ATTRIBUTE_ASSOCIATIONS;
-      }
+    }
     if (requestedInfo & smtk::model::SESSION_TESSELLATION)
-      {
+    {
       // FIXME: Todo.
       actual |= smtk::model::SESSION_TESSELLATION;
-      }
+    }
     if (requestedInfo & smtk::model::SESSION_PROPERTIES)
-      {
+    {
       // Set properties.
       // FIXME: Todo.
-      }
     }
+  }
   return actual;
 }
 
 /// Given a CGM \a coFace tagged with \a uid, create a record in \a manager for it.
 smtk::model::SessionInfoBits Session::addFaceUseToManager(
-  const smtk::model::FaceUse& entityref,
-  CoFace* coFace,
-  SessionInfoBits requestedInfo)
+  const smtk::model::FaceUse& entityref, CoFace* coFace, SessionInfoBits requestedInfo)
 {
   (void)entityref;
   SessionInfoBits actual = 0;
   if (coFace)
-    {
+  {
     if (requestedInfo)
-      {
+    {
       // Add coFace relations and arrangements
-      }
     }
+  }
   return actual;
 }
 
 /// Given a CGM \a coEdge tagged with \a uid, create a record in \a manager for it.
 smtk::model::SessionInfoBits Session::addEdgeUseToManager(
-  const smtk::model::EdgeUse& entityref,
-  CoEdge* coEdge,
-  SessionInfoBits requestedInfo)
+  const smtk::model::EdgeUse& entityref, CoEdge* coEdge, SessionInfoBits requestedInfo)
 {
   (void)entityref;
   SessionInfoBits actual = 0;
   if (coEdge)
-    {
+  {
     if (requestedInfo)
-      {
+    {
       // Add coEdge relations and arrangements
-      }
     }
+  }
   return actual;
 }
 
 /// Given a CGM \a coVertex tagged with \a uid, create a record in \a manager for it.
 smtk::model::SessionInfoBits Session::addVertexUseToManager(
-  const smtk::model::VertexUse& entityref,
-  CoVertex* coVertex,
-  SessionInfoBits requestedInfo)
+  const smtk::model::VertexUse& entityref, CoVertex* coVertex, SessionInfoBits requestedInfo)
 {
   (void)entityref;
   SessionInfoBits actual = 0;
   if (coVertex)
-    {
+  {
     if (requestedInfo)
-      {
+    {
       // Add coVertex relations and arrangements
-      }
     }
+  }
   return actual;
 }
 
 /// Given a CGM \a shell tagged with \a uid, create a record in \a manager for it.
 smtk::model::SessionInfoBits Session::addShellToManager(
-  const smtk::model::Shell& entityref,
-  Shell* shell,
-  SessionInfoBits requestedInfo)
+  const smtk::model::Shell& entityref, Shell* shell, SessionInfoBits requestedInfo)
 {
   (void)entityref;
   SessionInfoBits actual = 0;
   if (shell)
-    {
+  {
     if (requestedInfo)
-      {
+    {
       // Add shell relations and arrangements
-      }
     }
+  }
   return actual;
 }
 
 /// Given a CGM \a loop tagged with \a uid, create a record in \a manager for it.
 smtk::model::SessionInfoBits Session::addLoopToManager(
-  const smtk::model::Loop& entityref,
-  Loop* loop,
-  SessionInfoBits requestedInfo)
+  const smtk::model::Loop& entityref, Loop* loop, SessionInfoBits requestedInfo)
 {
   (void)entityref;
   SessionInfoBits actual = 0;
   if (loop)
-    {
+  {
     if (requestedInfo)
-      {
+    {
       // Add loop relations and arrangements
-      }
     }
+  }
   return actual;
 }
 
 /// Given a CGM \a chain tagged with \a uid, create a record in \a manager for it.
 smtk::model::SessionInfoBits Session::addChainToManager(
-  const smtk::model::Chain& entityref,
-  Chain* chain,
-  SessionInfoBits requestedInfo)
+  const smtk::model::Chain& entityref, Chain* chain, SessionInfoBits requestedInfo)
 {
   (void)entityref;
   SessionInfoBits actual = 0;
   if (chain)
-    {
+  {
     if (requestedInfo)
-      {
+    {
       // Add chain relations and arrangements
-      }
     }
+  }
   return actual;
 }
 
 /// Given a CGM \a refVolume tagged with \a uid, create a record in \a manager for it.
 smtk::model::SessionInfoBits Session::addVolumeToManager(
-  const smtk::model::Volume& entityref,
-  RefVolume* refVolume,
-  SessionInfoBits requestedInfo)
+  const smtk::model::Volume& entityref, RefVolume* refVolume, SessionInfoBits requestedInfo)
 {
   (void)entityref;
   SessionInfoBits actual = 0;
   if (refVolume)
-    {
+  {
     smtk::model::Volume mutableEntityRef(entityref);
     mutableEntityRef.manager()->insertVolume(entityref.entity());
     actual |= smtk::model::SESSION_ENTITY_TYPE;
 
     if (requestedInfo & (smtk::model::SESSION_ENTITY_RELATIONS | smtk::model::SESSION_ARRANGEMENTS))
-      {
+    {
       // Add child relationships
       DLIList<RefEntity*> rels;
       refVolume->get_child_ref_entities(rels);
@@ -574,45 +605,43 @@ smtk::model::SessionInfoBits Session::addVolumeToManager(
       this->addRelations(mutableEntityRef, rels, requestedInfo, -1);
 
       actual |= smtk::model::SESSION_ENTITY_RELATIONS | smtk::model::SESSION_ARRANGEMENTS;
-      }
+    }
     if (requestedInfo & smtk::model::SESSION_ATTRIBUTE_ASSOCIATIONS)
-      {
+    {
       // FIXME: Todo.
       actual |= smtk::model::SESSION_ATTRIBUTE_ASSOCIATIONS;
-      }
+    }
     if (requestedInfo & smtk::model::SESSION_TESSELLATION)
-      {
+    {
       // FIXME: Todo.
       actual |= smtk::model::SESSION_TESSELLATION;
-      }
+    }
     if (requestedInfo & smtk::model::SESSION_PROPERTIES)
-      {
+    {
       // Set properties.
       this->addNamesIfAny(mutableEntityRef, refVolume);
       // If the color is not the default color, add it as a property.
       this->colorPropFromIndex(mutableEntityRef, refVolume->color());
       actual |= smtk::model::SESSION_PROPERTIES;
-      }
     }
+  }
   return actual;
 }
 
 /// Given a CGM \a refFace tagged with \a uid, create a record in \a manager for it.
 smtk::model::SessionInfoBits Session::addFaceToManager(
-  const smtk::model::Face& entityref,
-  RefFace* refFace,
-  SessionInfoBits requestedInfo)
+  const smtk::model::Face& entityref, RefFace* refFace, SessionInfoBits requestedInfo)
 {
   SessionInfoBits actual = 0;
   if (refFace)
-    {
+  {
     smtk::model::Face mutableEntityRef(entityref);
     if (!mutableEntityRef.isValid())
       mutableEntityRef.manager()->insertFace(entityref.entity());
     actual |= smtk::model::SESSION_ENTITY_TYPE;
 
     if (requestedInfo & (smtk::model::SESSION_ENTITY_RELATIONS | smtk::model::SESSION_ARRANGEMENTS))
-      {
+    {
       // Add child relationships
       DLIList<RefEntity*> rels;
       refFace->get_child_ref_entities(rels);
@@ -622,45 +651,43 @@ smtk::model::SessionInfoBits Session::addFaceToManager(
       this->addRelations(mutableEntityRef, rels, requestedInfo, -1);
 
       actual |= smtk::model::SESSION_ENTITY_RELATIONS | smtk::model::SESSION_ARRANGEMENTS;
-      }
+    }
     if (requestedInfo & smtk::model::SESSION_ATTRIBUTE_ASSOCIATIONS)
-      {
+    {
       // FIXME: Todo.
       actual |= smtk::model::SESSION_ATTRIBUTE_ASSOCIATIONS;
-      }
+    }
     if (requestedInfo & smtk::model::SESSION_TESSELLATION)
-      {
+    {
       if (this->addTessellation(entityref, refFace))
         actual |= smtk::model::SESSION_TESSELLATION;
-      }
+    }
     if (requestedInfo & smtk::model::SESSION_PROPERTIES)
-      {
+    {
       // Set properties.
       this->addNamesIfAny(mutableEntityRef, refFace);
       // If the color is not the default color, add it as a property.
       this->colorPropFromIndex(mutableEntityRef, refFace->color());
       actual |= smtk::model::SESSION_PROPERTIES;
-      }
     }
+  }
   return actual;
 }
 
 /// Given a CGM \a refEdge tagged with \a uid, create a record in \a manager for it.
 smtk::model::SessionInfoBits Session::addEdgeToManager(
-  const smtk::model::Edge& entityref,
-  RefEdge* refEdge,
-  SessionInfoBits requestedInfo)
+  const smtk::model::Edge& entityref, RefEdge* refEdge, SessionInfoBits requestedInfo)
 {
   SessionInfoBits actual = 0;
   if (refEdge)
-    {
+  {
     smtk::model::Edge mutableEntityRef(entityref);
     if (!mutableEntityRef.isValid())
       mutableEntityRef.manager()->insertEdge(entityref.entity());
     actual |= smtk::model::SESSION_ENTITY_TYPE;
 
     if (requestedInfo & (smtk::model::SESSION_ENTITY_RELATIONS | smtk::model::SESSION_ARRANGEMENTS))
-      {
+    {
       // Add refEdge relations and arrangements
       // Add child relationships
       DLIList<RefEntity*> rels;
@@ -671,45 +698,43 @@ smtk::model::SessionInfoBits Session::addEdgeToManager(
       this->addRelations(mutableEntityRef, rels, requestedInfo, -1);
 
       actual |= smtk::model::SESSION_ENTITY_RELATIONS | smtk::model::SESSION_ARRANGEMENTS;
-      }
+    }
     if (requestedInfo & smtk::model::SESSION_ATTRIBUTE_ASSOCIATIONS)
-      {
+    {
       // FIXME: Todo.
       actual |= smtk::model::SESSION_ATTRIBUTE_ASSOCIATIONS;
-      }
+    }
     if (requestedInfo & smtk::model::SESSION_TESSELLATION)
-      {
+    {
       if (this->addTessellation(entityref, refEdge))
         actual |= smtk::model::SESSION_TESSELLATION;
-      }
+    }
     if (requestedInfo & smtk::model::SESSION_PROPERTIES)
-      {
+    {
       // Set properties.
       this->addNamesIfAny(mutableEntityRef, refEdge);
       // If the color is not the default color, add it as a property.
       this->colorPropFromIndex(mutableEntityRef, refEdge->color());
       actual |= smtk::model::SESSION_PROPERTIES;
-      }
     }
+  }
   return actual;
 }
 
 /// Given a CGM \a refVertex tagged with \a uid, create a record in \a manager for it.
 smtk::model::SessionInfoBits Session::addVertexToManager(
-  const smtk::model::Vertex& entityref,
-  RefVertex* refVertex,
-  SessionInfoBits requestedInfo)
+  const smtk::model::Vertex& entityref, RefVertex* refVertex, SessionInfoBits requestedInfo)
 {
   SessionInfoBits actual = 0;
   if (refVertex)
-    {
+  {
     smtk::model::Vertex mutableEntityRef(entityref);
     if (!mutableEntityRef.isValid())
       mutableEntityRef.manager()->insertVertex(entityref.entity());
     actual |= smtk::model::SESSION_ENTITY_TYPE;
 
     if (requestedInfo & (smtk::model::SESSION_ENTITY_RELATIONS | smtk::model::SESSION_ARRANGEMENTS))
-      {
+    {
       // Add refVertex relations and arrangements
       DLIList<RefEntity*> rels;
       // Add parent relationships
@@ -717,46 +742,44 @@ smtk::model::SessionInfoBits Session::addVertexToManager(
       this->addRelations(mutableEntityRef, rels, requestedInfo, 0);
 
       actual |= smtk::model::SESSION_ENTITY_RELATIONS | smtk::model::SESSION_ARRANGEMENTS;
-      }
+    }
     if (requestedInfo & smtk::model::SESSION_ATTRIBUTE_ASSOCIATIONS)
-      {
+    {
       // FIXME: Todo.
       actual |= smtk::model::SESSION_ATTRIBUTE_ASSOCIATIONS;
-      }
+    }
     if (requestedInfo & smtk::model::SESSION_TESSELLATION)
-      {
+    {
       if (this->addTessellation(entityref, refVertex))
         actual |= smtk::model::SESSION_TESSELLATION;
-      }
+    }
     if (requestedInfo & smtk::model::SESSION_PROPERTIES)
-      {
+    {
       // Set properties.
       this->addNamesIfAny(mutableEntityRef, refVertex);
       // If the color is not the default color, add it as a property.
       this->colorPropFromIndex(mutableEntityRef, refVertex->color());
       actual |= smtk::model::SESSION_PROPERTIES;
-      }
     }
+  }
   return actual;
 }
 
 /// Given a CGM \a refGroup tagged with \a uid, create a record in \a manager for it.
 smtk::model::SessionInfoBits Session::addGroupToManager(
-  const smtk::model::Group& entityref,
-  RefGroup* refGroup,
-  SessionInfoBits requestedInfo)
+  const smtk::model::Group& entityref, RefGroup* refGroup, SessionInfoBits requestedInfo)
 {
   (void)entityref;
   SessionInfoBits actual = 0;
   if (refGroup)
-    {
+  {
     smtk::model::Group mutableEntityRef(entityref);
     if (!mutableEntityRef.isValid())
       mutableEntityRef.manager()->insertGroup(entityref.entity());
     actual |= smtk::model::SESSION_ENTITY_TYPE;
 
     if (requestedInfo & (smtk::model::SESSION_ENTITY_RELATIONS | smtk::model::SESSION_ARRANGEMENTS))
-      {
+    {
       // Add child relationships
       DLIList<RefEntity*> rels;
       refGroup->get_child_ref_entities(rels);
@@ -766,37 +789,34 @@ smtk::model::SessionInfoBits Session::addGroupToManager(
       this->addRelations(mutableEntityRef, rels, requestedInfo, 1);
 
       actual |= smtk::model::SESSION_ENTITY_RELATIONS | smtk::model::SESSION_ARRANGEMENTS;
-      }
+    }
     if (requestedInfo & smtk::model::SESSION_ATTRIBUTE_ASSOCIATIONS)
-      {
+    {
       // FIXME: Todo.
       actual |= smtk::model::SESSION_ATTRIBUTE_ASSOCIATIONS;
-      }
+    }
     if (requestedInfo & smtk::model::SESSION_TESSELLATION)
-      {
+    {
       // FIXME: Will we ever do this?
-      }
+    }
     if (requestedInfo & smtk::model::SESSION_PROPERTIES)
-      {
+    {
       // Set properties.
       this->addNamesIfAny(mutableEntityRef, refGroup);
       // If the color is not the default color, add it as a property.
       this->colorPropFromIndex(mutableEntityRef, refGroup->color());
       actual |= smtk::model::SESSION_PROPERTIES;
-      }
     }
+  }
   return actual;
 }
 
-void Session::addRelations(
-  smtk::model::EntityRef& entityref,
-  DLIList<RefEntity*>& rels,
-  SessionInfoBits requestedInfo,
-  int depth)
+void Session::addRelations(smtk::model::EntityRef& entityref, DLIList<RefEntity*>& rels,
+  SessionInfoBits requestedInfo, int depth)
 {
   int nc = rels.size();
   for (int j = 0; j < nc; ++j)
-    {
+  {
     RefEntity* rel = rels.get_and_step();
     TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(rel, true);
     smtk::common::UUID smtkChildId = refId->entityId();
@@ -804,7 +824,7 @@ void Session::addRelations(
     entityref.findOrAddRawRelation(smtkChild);
     if (depth > 0)
       this->addCGMEntityToManager(smtkChild, rel, requestedInfo);
-    }
+  }
 }
 
 namespace
@@ -812,23 +832,24 @@ namespace
 smtk::mesh::CellType cgmToSMTKCell(int i)
 {
   switch (i)
-    {
-  case 1:
-    return smtk::mesh::Vertex;
-  case 2:
-    return smtk::mesh::Line;
-  case 3:
-    return smtk::mesh::Triangle;
-  case 4:
-    return smtk::mesh::Quad;
-  default:
-    return smtk::mesh::CellType_MAX;
-    }
+  {
+    case 1:
+      return smtk::mesh::Vertex;
+    case 2:
+      return smtk::mesh::Line;
+    case 3:
+      return smtk::mesh::Triangle;
+    case 4:
+      return smtk::mesh::Quad;
+    default:
+      return smtk::mesh::CellType_MAX;
+  }
 }
 }
 
-template<typename E>
-bool SessionAddTessellation(const EntityRef& entityref, Session& session, E* cgmEnt, double chordErr, double angleErr)
+template <typename E>
+bool SessionAddTessellation(
+  const EntityRef& entityref, Session& session, E* cgmEnt, double chordErr, double angleErr)
 {
   if (!cgmEnt || !entityref.manager() || !entityref.entity())
     return false;
@@ -846,15 +867,15 @@ bool SessionAddTessellation(const EntityRef& entityref, Session& session, E* cgm
 
   GMem primitives;
   double measure = cgmEnt->measure();
-  double maxErr = pow(measure, 1./cgmEnt->dimension()) * chordErr;
+  double maxErr = pow(measure, 1. / cgmEnt->dimension()) * chordErr;
   double longestEdge = measure;
   cgmEnt->get_graphics(primitives, angleErr, maxErr, longestEdge);
   int connCount = primitives.fListCount;
   int npts = primitives.pointListCount;
   if (npts <= 0 || (connCount <= 0 && cgmEnt->dimension() > 1))
-    {
+  {
     return false;
-    }
+  }
 
   // Reset tessellation in the manager
   smtk::model::Tessellation* tess = mutableEnt.resetTessellation();
@@ -864,112 +885,110 @@ bool SessionAddTessellation(const EntityRef& entityref, Session& session, E* cgm
   tess->coords().reserve(3 * npts);
   GPoint* inPts = primitives.point_list();
   for (int j = 0; j < npts; ++j, ++inPts)
-    {
+  {
     tess->addCoords(inPts->x, inPts->y, inPts->z);
-    }
+  }
   // Now translate the connectivity:
   if (cgmEnt->dimension() > 1)
-    {
+  {
     tess->conn().reserve(connCount);
     int* inConn = primitives.facet_list();
     int ptsPerPrim = 0;
     for (int k = 0; k < connCount; k += (ptsPerPrim + 1), inConn += (ptsPerPrim + 1))
-      {
+    {
       ptsPerPrim = *inConn;
       int* pConn = inConn + 1;
       switch (ptsPerPrim)
-        {
-      case 1:
-        // This is a vertex
-        tess->addPoint(pConn[0]);
-        break;
-      case 2:
-        tess->addLine(pConn[0], pConn[1]);
-        break;
-      case 3:
-        tess->addTriangle(pConn[0], pConn[1], pConn[2]);
-        break;
-      case 4:
-        tess->addQuad(pConn[0], pConn[1], pConn[2], pConn[3]);
-      default:
-        std::cerr << "Unknown primitive has " << ptsPerPrim << " conn entries\n";
-        break;
-        }
+      {
+        case 1:
+          // This is a vertex
+          tess->addPoint(pConn[0]);
+          break;
+        case 2:
+          tess->addLine(pConn[0], pConn[1]);
+          break;
+        case 3:
+          tess->addTriangle(pConn[0], pConn[1], pConn[2]);
+          break;
+        case 4:
+          tess->addQuad(pConn[0], pConn[1], pConn[2], pConn[3]);
+        default:
+          std::cerr << "Unknown primitive has " << ptsPerPrim << " conn entries\n";
+          break;
       }
     }
+  }
   else
-    {
+  {
     tess->conn().reserve(npts + 2);
     tess->conn().push_back(smtk::model::TESS_POLYLINE);
     tess->conn().push_back(npts);
     for (int k = 0; k < npts; ++k)
-      {
-      tess->conn().push_back(k);
-      }
-    }
-
-  smtk::mesh::CollectionPtr collection = session.manager()->meshes()->
-    collection(entityref.owningModel().entity());
-  if (collection && collection->isValid())
     {
+      tess->conn().push_back(k);
+    }
+  }
+
+  smtk::mesh::CollectionPtr collection =
+    session.manager()->meshes()->collection(entityref.owningModel().entity());
+  if (collection && collection->isValid())
+  {
     smtk::mesh::MeshSet modified = collection->findAssociatedMeshes(entityref);
     if (!modified.is_empty())
-      {
+    {
       collection->removeMeshes(modified);
-      }
+    }
 
-    smtk::mesh::BufferedCellAllocatorPtr ialloc =
-      collection->interface()->bufferedCellAllocator();
+    smtk::mesh::BufferedCellAllocatorPtr ialloc = collection->interface()->bufferedCellAllocator();
 
     if (!ialloc->reserveNumberOfCoordinates(npts))
-      {
+    {
       return false;
-      }
+    }
 
     inPts = primitives.point_list();
     for (int j = 0; j < npts; ++j, ++inPts)
-      {
+    {
       ialloc->setCoordinate(j, inPts->x, inPts->y, inPts->z);
-      }
+    }
 
     if (cgmEnt->dimension() > 1)
-      {
+    {
       int* inConn = primitives.facet_list();
       int ptsPerPrim = 0;
-      for (int k = 0; k < connCount; k += (ptsPerPrim + 1),
-             inConn += (ptsPerPrim + 1))
-        {
+      for (int k = 0; k < connCount; k += (ptsPerPrim + 1), inConn += (ptsPerPrim + 1))
+      {
         ptsPerPrim = *inConn;
         int* pConn = inConn + 1;
         ialloc->addCell(cgmToSMTKCell(ptsPerPrim), pConn, ptsPerPrim);
-        }
-      }
-    else
-      {
-      long long pts[2];
-      for (int k = 0; k < npts-1; ++k)
-        {
-        pts[0] = k;
-        pts[1] = k+1;
-        ialloc->addCell(smtk::mesh::Line, pts, 2);
-        }
-      }
-    if (ialloc->flush())
-      {
-        smtk::mesh::MeshSet meshForEntity = collection->createMesh(
-          smtk::mesh::CellSet(collection, ialloc->cells()));
-      if (!meshForEntity.is_empty())
-        {
-        meshForEntity.setModelEntity(entityref);
-        }
       }
     }
+    else
+    {
+      long long pts[2];
+      for (int k = 0; k < npts - 1; ++k)
+      {
+        pts[0] = k;
+        pts[1] = k + 1;
+        ialloc->addCell(smtk::mesh::Line, pts, 2);
+      }
+    }
+    if (ialloc->flush())
+    {
+      smtk::mesh::MeshSet meshForEntity =
+        collection->createMesh(smtk::mesh::CellSet(collection, ialloc->cells()));
+      if (!meshForEntity.is_empty())
+      {
+        meshForEntity.setModelEntity(entityref);
+      }
+    }
+  }
 
   return true;
 }
 
-template<>
-bool SessionAddTessellation(const EntityRef& entityref,  Session&, RefVertex* cgmEnt, double, double)
+template <>
+bool SessionAddTessellation(const EntityRef& entityref, Session&, RefVertex* cgmEnt, double, double)
 {
   if (!cgmEnt || !entityref.manager() || !entityref.entity())
     return false;
@@ -1010,17 +1029,20 @@ bool SessionAddTessellation(const EntityRef& entityref,  Session&, RefVertex* cg
 ///@{
 bool Session::addTessellation(const EntityRef& entityref, RefFace* cgmEnt)
 {
-  return SessionAddTessellation(entityref, *this, cgmEnt, this->m_maxRelChordErr, this->m_maxAngleErr);
+  return SessionAddTessellation(
+    entityref, *this, cgmEnt, this->m_maxRelChordErr, this->m_maxAngleErr);
 }
 
 bool Session::addTessellation(const EntityRef& entityref, RefEdge* cgmEnt)
 {
-  return SessionAddTessellation(entityref, *this, cgmEnt, this->m_maxRelChordErr, this->m_maxAngleErr);
+  return SessionAddTessellation(
+    entityref, *this, cgmEnt, this->m_maxRelChordErr, this->m_maxAngleErr);
 }
 
 bool Session::addTessellation(const EntityRef& entityref, RefVertex* cgmEnt)
 {
-  return SessionAddTessellation(entityref, *this, cgmEnt, this->m_maxRelChordErr, this->m_maxAngleErr);
+  return SessionAddTessellation(
+    entityref, *this, cgmEnt, this->m_maxRelChordErr, this->m_maxAngleErr);
 }
 ///@}
 
@@ -1033,29 +1055,29 @@ bool Session::addNamesIfAny(smtk::model::EntityRef& entityref, RefEntity* cgmEnt
 {
   int numNames = cgmEnt->num_names();
   if (numNames > 0)
-    {
+  {
 #if !defined(CGM_MAJOR_VERSION) || CGM_MAJOR_VERSION <= 13
     DLIList<CubitString*> cgmNames;
     cgmEnt->entity_names(cgmNames);
     smtk::model::StringList smtkNames;
     for (int nn = 0; nn < numNames; ++nn)
-      {
+    {
       CubitString* name = cgmNames.get_and_step();
       smtkNames.push_back(name->c_str());
-      }
-#else // CGM_MAJOR_VERSION >= 14
+    }
+#else  // CGM_MAJOR_VERSION >= 14
     DLIList<CubitString> cgmNames;
     cgmEnt->entity_names(cgmNames);
     smtk::model::StringList smtkNames;
     for (int nn = 0; nn < numNames; ++nn)
-      {
+    {
       CubitString name = cgmNames.get_and_step();
       smtkNames.push_back(name.c_str());
-      }
+    }
 #endif // CGM_MAJOR_VERSION
     entityref.setStringProperty("name", smtkNames);
     return true;
-    }
+  }
   return false;
 }
 
@@ -1063,55 +1085,119 @@ bool Session::addNamesIfAny(smtk::model::EntityRef& entityref, RefEntity* cgmEnt
   *
   * Cubit only provides 17 colors. Wah.
   */
-void Session::colorPropFromIndex(
-  smtk::model::EntityRef& entityref, int colorIndex)
+void Session::colorPropFromIndex(smtk::model::EntityRef& entityref, int colorIndex)
 {
 #if CGM_MAJOR_VERSION >= 15
-#define cubit_color(c) CUBIT_ ## c ## _INDEX
+#define cubit_color(c) CUBIT_##c##_INDEX
 #else
-#define cubit_color(c) CUBIT_ ## c
+#define cubit_color(c) CUBIT_##c
 #endif
 
   if (colorIndex != cubit_color(DEFAULT_COLOR))
-    {
+  {
     smtk::model::FloatList rgba(4);
     rgba[3] = 1.; // All CGM colors are solid, not transparent.
     switch (colorIndex)
-      {
-    case cubit_color(BLACK):       rgba[0] = 0.00; rgba[1] = 0.00; rgba[2] = 0.00; break;
-    case cubit_color(GREY):        rgba[0] = 0.75; rgba[1] = 0.75; rgba[2] = 0.75; break;
-    case cubit_color(ORANGE):      rgba[0] = 1.00; rgba[1] = 0.65; rgba[2] = 0.00; break;
-    case cubit_color(RED):         rgba[0] = 0.86; rgba[1] = 0.08; rgba[2] = 0.24; break;
-    case cubit_color(GREEN):       rgba[0] = 0.00; rgba[1] = 0.50; rgba[2] = 0.00; break;
-    case cubit_color(YELLOW):      rgba[0] = 1.00; rgba[1] = 1.00; rgba[2] = 0.00; break;
-    case cubit_color(MAGENTA):     rgba[0] = 0.50; rgba[1] = 0.00; rgba[2] = 0.50; break;
-    case cubit_color(CYAN):        rgba[0] = 0.00; rgba[1] = 0.50; rgba[2] = 0.50; break;
-    case cubit_color(BLUE):        rgba[0] = 0.00; rgba[1] = 0.00; rgba[2] = 1.00; break;
-    case cubit_color(WHITE):       rgba[0] = 1.00; rgba[1] = 1.00; rgba[2] = 1.00; break;
-    case cubit_color(BROWN):       rgba[0] = 0.55; rgba[1] = 0.27; rgba[2] = 0.07; break;
-    case cubit_color(GOLD):        rgba[0] = 1.00; rgba[1] = 0.84; rgba[2] = 0.00; break;
-    case cubit_color(LIGHTBLUE):   rgba[0] = 0.88; rgba[1] = 1.00; rgba[2] = 1.00; break;
-    case cubit_color(LIGHTGREEN):  rgba[0] = 0.56; rgba[1] = 0.93; rgba[2] = 0.56; break;
-    case cubit_color(SALMON):      rgba[0] = 0.98; rgba[1] = 0.50; rgba[2] = 0.45; break;
-    case cubit_color(CORAL):       rgba[0] = 0.86; rgba[1] = 0.44; rgba[2] = 0.58; break;
-    case cubit_color(PINK):        rgba[0] = 1.00; rgba[1] = 0.71; rgba[2] = 0.76; break;
-    default: rgba[3] = -1.; // invalid.
-      }
+    {
+      case cubit_color(BLACK):
+        rgba[0] = 0.00;
+        rgba[1] = 0.00;
+        rgba[2] = 0.00;
+        break;
+      case cubit_color(GREY):
+        rgba[0] = 0.75;
+        rgba[1] = 0.75;
+        rgba[2] = 0.75;
+        break;
+      case cubit_color(ORANGE):
+        rgba[0] = 1.00;
+        rgba[1] = 0.65;
+        rgba[2] = 0.00;
+        break;
+      case cubit_color(RED):
+        rgba[0] = 0.86;
+        rgba[1] = 0.08;
+        rgba[2] = 0.24;
+        break;
+      case cubit_color(GREEN):
+        rgba[0] = 0.00;
+        rgba[1] = 0.50;
+        rgba[2] = 0.00;
+        break;
+      case cubit_color(YELLOW):
+        rgba[0] = 1.00;
+        rgba[1] = 1.00;
+        rgba[2] = 0.00;
+        break;
+      case cubit_color(MAGENTA):
+        rgba[0] = 0.50;
+        rgba[1] = 0.00;
+        rgba[2] = 0.50;
+        break;
+      case cubit_color(CYAN):
+        rgba[0] = 0.00;
+        rgba[1] = 0.50;
+        rgba[2] = 0.50;
+        break;
+      case cubit_color(BLUE):
+        rgba[0] = 0.00;
+        rgba[1] = 0.00;
+        rgba[2] = 1.00;
+        break;
+      case cubit_color(WHITE):
+        rgba[0] = 1.00;
+        rgba[1] = 1.00;
+        rgba[2] = 1.00;
+        break;
+      case cubit_color(BROWN):
+        rgba[0] = 0.55;
+        rgba[1] = 0.27;
+        rgba[2] = 0.07;
+        break;
+      case cubit_color(GOLD):
+        rgba[0] = 1.00;
+        rgba[1] = 0.84;
+        rgba[2] = 0.00;
+        break;
+      case cubit_color(LIGHTBLUE):
+        rgba[0] = 0.88;
+        rgba[1] = 1.00;
+        rgba[2] = 1.00;
+        break;
+      case cubit_color(LIGHTGREEN):
+        rgba[0] = 0.56;
+        rgba[1] = 0.93;
+        rgba[2] = 0.56;
+        break;
+      case cubit_color(SALMON):
+        rgba[0] = 0.98;
+        rgba[1] = 0.50;
+        rgba[2] = 0.45;
+        break;
+      case cubit_color(CORAL):
+        rgba[0] = 0.86;
+        rgba[1] = 0.44;
+        rgba[2] = 0.58;
+        break;
+      case cubit_color(PINK):
+        rgba[0] = 1.00;
+        rgba[1] = 0.71;
+        rgba[2] = 0.76;
+        break;
+      default:
+        rgba[3] = -1.; // invalid.
+    }
     if (rgba[3] >= 0.)
       entityref.setFloatProperty("color", rgba);
-    }
+  }
 }
 
-    } // namespace cgm
-  } //namespace bridge
+} // namespace cgm
+} //namespace bridge
 } // namespace smtk
 
 #include "smtk/bridge/cgm/Session_json.h" // For Session_json
 smtkImplementsModelingKernel(
-  SMTKCGMSESSION_EXPORT,
-  cgm,
-  Session_json,
-  smtk::bridge::cgm::Session::staticSetup,
-  smtk::bridge::cgm::Session,
-  true /* inherit "universal" operators */
-);
+  SMTKCGMSESSION_EXPORT, cgm, Session_json, smtk::bridge::cgm::Session::staticSetup,
+  smtk::bridge::cgm::Session, true /* inherit "universal" operators */
+  );

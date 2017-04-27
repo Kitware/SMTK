@@ -20,7 +20,7 @@ vtkStandardNewMacro(vtkInformationKeyMap);
 
 namespace
 {
-typedef std::map<std::string, vtkSmartPointer<vtkInformationKey> >KeyMapType;
+typedef std::map<std::string, vtkSmartPointer<vtkInformationKey> > KeyMapType;
 struct vtkInformationKeyMapInternals
 {
   KeyMapType Keys;
@@ -47,9 +47,9 @@ vtkInformationKey* vtkInformationKeyMap::FindKey(const char* name)
 {
   KeyMapType::iterator iter = vtkInformationKeyMapKeys.Keys.find(name);
   if (iter != vtkInformationKeyMapKeys.Keys.end())
-    {
+  {
     return iter->second;
-    }
+  }
   return 0;
 }
 
@@ -65,5 +65,5 @@ void vtkInformationKeyMap::RemoveAllKeys()
 
 void vtkInformationKeyMap::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }

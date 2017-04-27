@@ -29,14 +29,13 @@ class vtkDiscreteModel;
 class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelStateOperatorBase : public vtkObject
 {
 public:
-  static vtkCMBModelStateOperatorBase *New();
-  vtkTypeMacro(vtkCMBModelStateOperatorBase,vtkObject);
+  static vtkCMBModelStateOperatorBase* New();
+  vtkTypeMacro(vtkCMBModelStateOperatorBase, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // Get the serialized string of the model.
-  virtual vtkStringArray* GetSerializedModelString()
-    {return this->SerializedModelString;}
+  virtual vtkStringArray* GetSerializedModelString() { return this->SerializedModelString; }
 
 protected:
   vtkCMBModelStateOperatorBase();
@@ -47,11 +46,11 @@ protected:
   virtual bool AbleToOperate(vtkDiscreteModel* Model);
 
   // Internal convenient ivars.
-  vtkStringArray *SerializedModelString;
+  vtkStringArray* SerializedModelString;
 
 private:
-  vtkCMBModelStateOperatorBase(const vtkCMBModelStateOperatorBase&);  // Not implemented.
-  void operator=(const vtkCMBModelStateOperatorBase&);  // Not implemented.
+  vtkCMBModelStateOperatorBase(const vtkCMBModelStateOperatorBase&); // Not implemented.
+  void operator=(const vtkCMBModelStateOperatorBase&);               // Not implemented.
 };
 
 #endif

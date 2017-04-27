@@ -16,9 +16,12 @@
 
 #include <sstream>
 
-namespace smtk {
-  namespace bridge {
-    namespace cgm {
+namespace smtk
+{
+namespace bridge
+{
+namespace cgm
+{
 
 UUIDToCGMRef TDUUID::s_reverseLookup;
 smtk::common::UUIDGenerator TDUUID::s_uuidGenerator;
@@ -36,18 +39,16 @@ TDUUID::TDUUID(ToolDataUser* entity, const smtk::common::UUID& uid)
   : m_entityId(uid)
 {
   if (this->m_entityId.isNull())
-    {
-    while (
-      TDUUID::s_reverseLookup.find(
-        (this->m_entityId = TDUUID::s_uuidGenerator.random())) !=
+  {
+    while (TDUUID::s_reverseLookup.find((this->m_entityId = TDUUID::s_uuidGenerator.random())) !=
       TDUUID::s_reverseLookup.end())
       /* keep generating new UUIDs */;
-    }
+  }
   else
-    {
+  {
     // This may throw an exception. If it doesn't, we are OK to proceed.
     TDUUID::checkForCollision(entity, uid);
-    }
+  }
 
   entity->add_TD(this);
   TDUUID::s_reverseLookup[this->m_entityId] = entity;
@@ -55,21 +56,21 @@ TDUUID::TDUUID(ToolDataUser* entity, const smtk::common::UUID& uid)
   // Update the CubitAttrib if the entity may be cast to it.
   CubitAttribUser* cau = dynamic_cast<CubitAttribUser*>(entity);
   if (cau)
-    {
+  {
     CubitAttrib* attrib = cau->get_cubit_attrib(CA_UUID);
     attrib->has_updated(CUBIT_FALSE);
     attrib->update();
-    }
+  }
 }
 
 TDUUID::~TDUUID()
 {
   UUIDToCGMRef::iterator it = TDUUID::s_reverseLookup.find(this->m_entityId);
   if (it != TDUUID::s_reverseLookup.end())
-    {
+  {
     // TODO: Signal SMTK that an entity is disappearing.
     TDUUID::s_reverseLookup.erase(it);
-    }
+  }
 }
 
 /// Return the SMTK UUID associated with this ToolData (attached to a CGM entity).
@@ -122,12 +123,13 @@ int TDUUID::isTDUUID(const ToolData* td)
   */
 TDUUID* TDUUID::ofEntity(ToolDataUser* entity, bool createNew)
 {
-  if (!entity) return NULL;
+  if (!entity)
+    return NULL;
   TDUUID* result = static_cast<TDUUID*>(entity->get_TD(&TDUUID::isTDUUID));
   if (!result && createNew)
-    {
+  {
     result = new TDUUID(entity);
-    }
+  }
   return result;
 }
 
@@ -139,16 +141,17 @@ void TDUUID::checkForCollision(ToolDataUser* entity, const smtk::common::UUID& u
   UUIDToCGMRef::const_iterator it = TDUUID::s_reverseLookup.find(uid);
   // See if either the entity already has the same TDUUID or there's a collision.
   if (it != TDUUID::s_reverseLookup.end())
-    {
+  {
     std::ostringstream errMsg;
     if (it->second == entity)
       errMsg << "Duplicate TDUUID " << uid << " created for entity " << entity;
     else
-      errMsg << "TDUUID collision. Both " << it->second << " and " << entity << " cannot have ID " << uid;
+      errMsg << "TDUUID collision. Both " << it->second << " and " << entity << " cannot have ID "
+             << uid;
     throw errMsg.str();
-    }
+  }
 }
 
 } // namespace cgm
-  } //namespace bridge
+} //namespace bridge
 } // namespace smtk

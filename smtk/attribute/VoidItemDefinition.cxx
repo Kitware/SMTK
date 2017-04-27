@@ -8,16 +8,14 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "smtk/attribute/VoidItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/VoidItem.h"
 
 using namespace smtk::attribute;
 
-VoidItemDefinition::
-VoidItemDefinition(const std::string &myName):
-  ItemDefinition(myName)
+VoidItemDefinition::VoidItemDefinition(const std::string& myName)
+  : ItemDefinition(myName)
 {
 }
 
@@ -25,22 +23,16 @@ VoidItemDefinition::~VoidItemDefinition()
 {
 }
 
-smtk::attribute::ItemPtr
-VoidItemDefinition::buildItem(Attribute *owningAttribute,
-                              int itemPosition) const
+smtk::attribute::ItemPtr VoidItemDefinition::buildItem(
+  Attribute* owningAttribute, int itemPosition) const
 {
-  return smtk::attribute::ItemPtr(new VoidItem(owningAttribute,
-                                              itemPosition));
+  return smtk::attribute::ItemPtr(new VoidItem(owningAttribute, itemPosition));
 }
 
-smtk::attribute::ItemPtr
-VoidItemDefinition::buildItem(Item *owningItem,
-                              int itemPosition,
-                              int subGroupPosition) const
+smtk::attribute::ItemPtr VoidItemDefinition::buildItem(
+  Item* owningItem, int itemPosition, int subGroupPosition) const
 {
-  return smtk::attribute::ItemPtr(new VoidItem(owningItem,
-                                              itemPosition,
-                                              subGroupPosition));
+  return smtk::attribute::ItemPtr(new VoidItem(owningItem, itemPosition, subGroupPosition));
 }
 
 Item::Type VoidItemDefinition::type() const
@@ -48,9 +40,8 @@ Item::Type VoidItemDefinition::type() const
   return Item::VOID;
 }
 
-smtk::attribute::ItemDefinitionPtr
-smtk::attribute::VoidItemDefinition::
-createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
+smtk::attribute::ItemDefinitionPtr smtk::attribute::VoidItemDefinition::createCopy(
+  smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
   (void)info;
 

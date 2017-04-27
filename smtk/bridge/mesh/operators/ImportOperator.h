@@ -12,9 +12,12 @@
 
 #include "smtk/bridge/mesh/Operator.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace mesh {
+namespace smtk
+{
+namespace bridge
+{
+namespace mesh
+{
 
 class SMTKMESHSESSION_EXPORT ImportOperator : public Operator
 {
@@ -28,8 +31,8 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
 };
 
-    } // namespace mesh
-  } // namespace bridge
+} // namespace mesh
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_mesh_ImportOperator_h

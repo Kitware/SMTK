@@ -32,9 +32,12 @@ class vtkInformationDoubleKey;
 class vtkInformationIntegerKey;
 class vtkInformationStringKey;
 
-namespace smtk {
-  namespace bridge {
-    namespace exodus {
+namespace smtk
+{
+namespace bridge
+{
+namespace exodus
+{
 
 class Session;
 
@@ -42,19 +45,19 @@ class Session;
 /// The types of entities in an Exodus "model"
 enum EntityType
 {
-  EXO_MODEL      = 0x01,   //!< An entire Exodus dataset (a file).
-  EXO_BLOCK      = 0x02,   //!< Exodus BLOCKs are groups of cells inside a MODEL.
-  EXO_SIDE_SET   = 0x03,   //!< Exodus SIDE_SETs are groups of cell boundaries in a MODEL.
-  EXO_NODE_SET   = 0x04,   //!< Exodus NODE_SETs are groups of points in a MODEL.
+  EXO_MODEL = 0x01,    //!< An entire Exodus dataset (a file).
+  EXO_BLOCK = 0x02,    //!< Exodus BLOCKs are groups of cells inside a MODEL.
+  EXO_SIDE_SET = 0x03, //!< Exodus SIDE_SETs are groups of cell boundaries in a MODEL.
+  EXO_NODE_SET = 0x04, //!< Exodus NODE_SETs are groups of points in a MODEL.
 
-  EXO_BLOCKS     = 0x05,   //!< A group of Exodus BLOCKs.
-  EXO_SIDE_SETS  = 0x06,   //!< A group of Exodus SIDE_SETs.
-  EXO_NODE_SETS  = 0x07,   //!< A group of Exodus NODE_SETs.
+  EXO_BLOCKS = 0x05,    //!< A group of Exodus BLOCKs.
+  EXO_SIDE_SETS = 0x06, //!< A group of Exodus SIDE_SETs.
+  EXO_NODE_SETS = 0x07, //!< A group of Exodus NODE_SETs.
 
-  EXO_LABEL_MAP  = 0x08,   //!< A dataset with a label-map array
-  EXO_LABEL      = 0x09,   //!< A dataset representing one label in a label-map array
+  EXO_LABEL_MAP = 0x08, //!< A dataset with a label-map array
+  EXO_LABEL = 0x09,     //!< A dataset representing one label in a label-map array
 
-  EXO_INVALID    = 0xff    //!< The handle is invalid
+  EXO_INVALID = 0xff //!< The handle is invalid
 };
 
 SMTKEXODUSSESSION_EXPORT std::string EntityTypeNameString(EntityType etype);
@@ -62,9 +65,10 @@ SMTKEXODUSSESSION_EXPORT std::string EntityTypeNameString(EntityType etype);
 /// A "handle" for an Exodus entity (file, block, side set, or node set)
 struct SMTKEXODUSSESSION_EXPORT EntityHandle
 {
-  int m_modelNumber; //!< An offset in the vector of models (m_models) owned by the session, whose model owns m_object.
+  int
+    m_modelNumber; //!< An offset in the vector of models (m_models) owned by the session, whose model owns m_object.
   vtkSmartPointer<vtkDataObject> m_object; //!< The dataset being presented as this entity.
-  Session* m_session; //!< The session owning this entity.
+  Session* m_session;                      //!< The session owning this entity.
 
   EntityHandle();
   EntityHandle(int emod, vtkDataObject* obj, Session* sess);
@@ -81,18 +85,18 @@ struct SMTKEXODUSSESSION_EXPORT EntityHandle
 
   EntityHandle parent() const;
 
-  template<typename T>
+  template <typename T>
   T* object() const;
 
-  template<typename T>
+  template <typename T>
   T childrenAs(int depth) const
-    {
+  {
     T container;
     this->appendChildrenTo(container, depth);
     return container;
-    }
+  }
 
-  template<typename T>
+  template <typename T>
   void appendChildrenTo(T& container, int depth) const;
 };
 // -- 2 --
@@ -110,7 +114,7 @@ class SMTKEXODUSSESSION_EXPORT Session : public smtk::model::Session
 {
 public:
   typedef std::vector<vtkSmartPointer<vtkMultiBlockDataSet> > ModelVector_t;
-  typedef std::map<smtk::model::EntityRef,EntityHandle> ReverseIdMap_t;
+  typedef std::map<smtk::model::EntityRef, EntityHandle> ReverseIdMap_t;
   typedef std::pair<vtkDataObject*, int> ParentAndIndex_t;
   typedef std::map<vtkDataObject*, ParentAndIndex_t> ChildParentMap_t;
 
@@ -122,7 +126,9 @@ public:
   typedef smtk::model::SessionInfoBits SessionInfoBits;
   virtual ~Session();
   virtual SessionInfoBits allSupportedInformation() const
-    { return smtk::model::SESSION_EVERYTHING; }
+  {
+    return smtk::model::SESSION_EVERYTHING;
+  }
 
   EntityHandle toEntity(const smtk::model::EntityRef& eid);
   smtk::model::EntityRef toEntityRef(const EntityHandle& ent);
@@ -148,20 +154,17 @@ protected:
   Session();
 
   virtual SessionInfoBits transcribeInternal(
-    const smtk::model::EntityRef& entity,
-    SessionInfoBits requestedInfo,
-    int depth = -1);
+    const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth = -1);
 
   smtk::common::UUIDGenerator m_uuidGen;
   ModelVector_t m_models;
   ReverseIdMap_t m_revIdMap;
-  ChildParentMap_t m_cpMap; // vtkMultiBlockDataSet doesn't provide a fast way to obtain parent of leaf datasets.
+  ChildParentMap_t
+    m_cpMap; // vtkMultiBlockDataSet doesn't provide a fast way to obtain parent of leaf datasets.
   // std::map<EntityHandle,smtk::model::EntityRef> m_fwdIdMap; // not needed; store UUID in vtkInformation.
   // -- 1 --
 
-  bool addTessellation(
-    const smtk::model::EntityRef&,
-    const EntityHandle&);
+  bool addTessellation(const smtk::model::EntityRef&, const EntityHandle&);
 
   size_t numberOfModels() const;
   vtkDataObject* modelOfHandle(const EntityHandle& h) const;
@@ -171,30 +174,31 @@ protected:
 
   smtk::common::UUID uuidOfHandleObject(vtkDataObject* obj) const;
 
-  template<typename T>
+  template <typename T>
   T* modelOfHandleAs(const EntityHandle& h) const
-    { return T::SafeDownCast(this->modelOfHandle(h)); }
+  {
+    return T::SafeDownCast(this->modelOfHandle(h));
+  }
 
-  template<typename T>
+  template <typename T>
   T* parentAs(vtkDataObject* obj) const
-    { return T::SafeDownCast(this->parent(obj)); }
+  {
+    return T::SafeDownCast(this->parent(obj));
+  }
 
   virtual smtk::model::SessionIOPtr createIODelegate(const std::string& format);
 
 private:
-  Session(const Session&); // Not implemented.
-  void operator = (const Session&); // Not implemented.
+  Session(const Session&);        // Not implemented.
+  void operator=(const Session&); // Not implemented.
 };
 
 // ++ 3 ++
-template<typename T>
+template <typename T>
 T* EntityHandle::object() const
 {
   // Never return the pointer if the other data is invalid:
-  if (
-    !this->m_session ||
-    !this->m_object ||
-    this->m_modelNumber < 0 ||
+  if (!this->m_session || !this->m_object || this->m_modelNumber < 0 ||
     this->m_modelNumber > static_cast<int>(this->m_session->numberOfModels()))
     return NULL;
 
@@ -203,7 +207,7 @@ T* EntityHandle::object() const
 // -- 3 --
 
 // ++ 4 ++
-template<typename T>
+template <typename T>
 void EntityHandle::appendChildrenTo(T& container, int depth) const
 {
   if (!this->m_session)
@@ -220,10 +224,10 @@ void EntityHandle::appendChildrenTo(T& container, int depth) const
     return;
 
   if (data)
-    {
+  {
     int nb = data->GetNumberOfBlocks();
     for (int i = 0; i < nb; ++i)
-      {
+    {
       vtkDataObject* childData = data->GetBlock(i);
       if (!childData)
         continue;
@@ -233,18 +237,17 @@ void EntityHandle::appendChildrenTo(T& container, int depth) const
 
       vtkMultiBlockDataSet* mbds = vtkMultiBlockDataSet::SafeDownCast(childData);
       if (mbds && depth != 0)
-        {
+      {
         child.appendChildrenTo(container, depth < 0 ? depth : depth - 1);
-        }
       }
     }
+  }
   else // objkids > 0
-    {
+  {
     for (int i = 0; i < objkids; ++i)
-      {
+    {
       vtkDataObject* childData =
-        vtkDataObject::SafeDownCast(
-          Session::SMTK_CHILDREN()->Get(info, i));
+        vtkDataObject::SafeDownCast(Session::SMTK_CHILDREN()->Get(info, i));
       if (!childData)
         continue;
 
@@ -252,21 +255,17 @@ void EntityHandle::appendChildrenTo(T& container, int depth) const
       container.insert(container.end(), child);
 
       // Recurse here to see if children have children...
-      if (
-        depth != 0 &&
-        Session::SMTK_CHILDREN()->Length(childData->GetInformation()) > 0)
-        {
+      if (depth != 0 && Session::SMTK_CHILDREN()->Length(childData->GetInformation()) > 0)
+      {
         child.appendChildrenTo(container, depth < 0 ? depth : depth - 1);
-        }
       }
     }
+  }
 }
 // -- 4 --
 
-
-    } // namespace exodus
-  } // namespace bridge
+} // namespace exodus
+} // namespace bridge
 } // namespace smtk
-
 
 #endif // __smtk_session_exodus_Session_h

@@ -26,14 +26,14 @@ class vtkSMProxy;
 class VTK_EXPORT vtkCMBModelStateOperatorClient : public vtkCMBModelStateOperatorBase
 {
 public:
-  static vtkCMBModelStateOperatorClient *New();
-  vtkTypeMacro(vtkCMBModelStateOperatorClient,vtkCMBModelStateOperatorBase);
+  static vtkCMBModelStateOperatorClient* New();
+  vtkTypeMacro(vtkCMBModelStateOperatorClient, vtkCMBModelStateOperatorBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // Save and Reload model state
-  virtual int SaveModelState(vtkDiscreteModel *clientModel, vtkSMProxy* serverModelProxy);
-  virtual int LoadModelState(vtkDiscreteModel *clientModel, vtkSMProxy* serverModelProxy);
+  virtual int SaveModelState(vtkDiscreteModel* clientModel, vtkSMProxy* serverModelProxy);
+  virtual int LoadModelState(vtkDiscreteModel* clientModel, vtkSMProxy* serverModelProxy);
 
   virtual vtkStringArray* GetSerializedModelString();
 
@@ -42,13 +42,12 @@ protected:
   ~vtkCMBModelStateOperatorClient();
 
 private:
-  vtkCMBModelStateOperatorClient(const vtkCMBModelStateOperatorClient&);  // Not implemented.
-  void operator=(const vtkCMBModelStateOperatorClient&);  // Not implemented.
+  vtkCMBModelStateOperatorClient(const vtkCMBModelStateOperatorClient&); // Not implemented.
+  void operator=(const vtkCMBModelStateOperatorClient&);                 // Not implemented.
 
   // Description:
   // Proxy for the server side operator
   vtkSMOperatorProxy* OperatorProxy;
-
 };
 
 #endif

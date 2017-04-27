@@ -17,7 +17,6 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"
 
-
 class vtkModelEdgeUse;
 class vtkModelFace;
 class vtkModelLoopUse;
@@ -26,8 +25,8 @@ class vtkModelShellUse;
 class VTKSMTKDISCRETEMODEL_EXPORT vtkModelFaceUse : public vtkModelEntity
 {
 public:
-  static vtkModelFaceUse *New();
-  vtkTypeMacro(vtkModelFaceUse,vtkModelEntity);
+  static vtkModelFaceUse* New();
+  vtkTypeMacro(vtkModelFaceUse, vtkModelEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual int GetType();
@@ -61,15 +60,13 @@ protected:
   virtual bool DestroyLoopUses();
 
 private:
-  vtkModelFaceUse(const vtkModelFaceUse&);  // Not implemented.
+  vtkModelFaceUse(const vtkModelFaceUse&); // Not implemented.
   void operator=(const vtkModelFaceUse&);  // Not implemented.
 
   friend class vtkXMLModelReader;
   friend class vtkModel;
   friend class vtkModelShellUse;
   friend class vtkModelFace;
-
 };
 
 #endif
-

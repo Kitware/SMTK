@@ -23,24 +23,24 @@
 
 #include "smtk/mesh/json/MeshInfo.h"
 
-
 #include <vector>
 
-namespace smtk {
-namespace mesh {
+namespace smtk
+{
+namespace mesh
+{
 namespace json
 {
 //construct an empty interface instance
 SMTKCORE_EXPORT
 smtk::mesh::json::InterfacePtr make_interface();
 
-
 class SMTKCORE_EXPORT Interface : public smtk::mesh::Interface
 {
 public:
   Interface();
 
-  Interface( const std::vector<smtk::mesh::json::MeshInfo>& info );
+  Interface(const std::vector<smtk::mesh::json::MeshInfo>& info);
 
   virtual ~Interface();
 
@@ -55,7 +55,7 @@ public:
   virtual std::string name() const { return std::string("json"); }
 
   //Add more meshes to the Interface
-  void addMeshes( const std::vector<smtk::mesh::json::MeshInfo>& info );
+  void addMeshes(const std::vector<smtk::mesh::json::MeshInfo>& info);
 
   //get back a lightweight interface around allocating memory into the given
   //interface. This is generally used to create new coordinates or cells that
@@ -101,8 +101,10 @@ public:
   //get back an efficient point locator for a range of points
   //This allows for efficient point locator on a per interface basis.
   smtk::mesh::PointLocatorImplPtr pointLocator(const smtk::mesh::HandleRange& points);
-  smtk::mesh::PointLocatorImplPtr pointLocator(const double* const xyzs, std::size_t numPoints, bool ignoreZValues=false);
-  smtk::mesh::PointLocatorImplPtr pointLocator(const float* const xyzs, std::size_t numPoints, bool ignoreZValues=false);
+  smtk::mesh::PointLocatorImplPtr pointLocator(
+    const double* const xyzs, std::size_t numPoints, bool ignoreZValues = false);
+  smtk::mesh::PointLocatorImplPtr pointLocator(
+    const float* const xyzs, std::size_t numPoints, bool ignoreZValues = false);
 
   smtk::mesh::Handle getRoot() const;
 
@@ -112,46 +114,43 @@ public:
   //equal to highest dimension of cell inside
   //Will fail if the HandleRange is empty or doesn't contain valid
   //cell handles.
-  bool createMesh(const smtk::mesh::HandleRange& cells,
-                  smtk::mesh::Handle& meshHandle);
+  bool createMesh(const smtk::mesh::HandleRange& cells, smtk::mesh::Handle& meshHandle);
 
   std::size_t numMeshes(smtk::mesh::Handle handle) const;
 
   smtk::mesh::HandleRange getMeshsets(smtk::mesh::Handle handle) const;
 
-  smtk::mesh::HandleRange getMeshsets(smtk::mesh::Handle handle,
-                                       int dimension) const;
+  smtk::mesh::HandleRange getMeshsets(smtk::mesh::Handle handle, int dimension) const;
 
   //find all entity sets that have this exact name tag
-  smtk::mesh::HandleRange getMeshsets(smtk::mesh::Handle handle,
-                                       const std::string& name) const;
+  smtk::mesh::HandleRange getMeshsets(smtk::mesh::Handle handle, const std::string& name) const;
 
   //find all entity sets that have this exact domain tag
-  smtk::mesh::HandleRange getMeshsets(smtk::mesh::Handle handle,
-                                       const smtk::mesh::Domain& domain) const;
+  smtk::mesh::HandleRange getMeshsets(
+    smtk::mesh::Handle handle, const smtk::mesh::Domain& domain) const;
 
   //find all entity sets that have this exact dirichlet tag
-  smtk::mesh::HandleRange getMeshsets(smtk::mesh::Handle handle,
-                                      const smtk::mesh::Dirichlet& dirichlet) const;
+  smtk::mesh::HandleRange getMeshsets(
+    smtk::mesh::Handle handle, const smtk::mesh::Dirichlet& dirichlet) const;
 
   //find all entity sets that have this exact neumann tag
-  smtk::mesh::HandleRange getMeshsets(smtk::mesh::Handle handle,
-                                      const smtk::mesh::Neumann& neumann) const;
+  smtk::mesh::HandleRange getMeshsets(
+    smtk::mesh::Handle handle, const smtk::mesh::Neumann& neumann) const;
 
   //get all cells held by this range
   smtk::mesh::HandleRange getCells(const smtk::mesh::HandleRange& meshsets) const;
 
   //get all cells held by this range handle of a given cell type
-  smtk::mesh::HandleRange getCells(const smtk::mesh::HandleRange& meshsets,
-                                    smtk::mesh::CellType cellType) const;
+  smtk::mesh::HandleRange getCells(
+    const smtk::mesh::HandleRange& meshsets, smtk::mesh::CellType cellType) const;
 
   //get all cells held by this range handle of a given cell type(s)
-  smtk::mesh::HandleRange getCells(const smtk::mesh::HandleRange& meshsets,
-                                    const smtk::mesh::CellTypes& cellTypes) const;
+  smtk::mesh::HandleRange getCells(
+    const smtk::mesh::HandleRange& meshsets, const smtk::mesh::CellTypes& cellTypes) const;
 
   //get all cells held by this range handle of a given dimension
-  smtk::mesh::HandleRange getCells(const smtk::mesh::HandleRange& meshsets,
-                                    smtk::mesh::DimensionType dim) const;
+  smtk::mesh::HandleRange getCells(
+    const smtk::mesh::HandleRange& meshsets, smtk::mesh::DimensionType dim) const;
 
   //get all points held by this range of handle of a given dimension
   smtk::mesh::HandleRange getPoints(const smtk::mesh::HandleRange& cells) const;
@@ -161,31 +160,30 @@ public:
   //Floats are not how we store the coordinates internally, so asking for
   //the coordinates in such a manner could cause data inaccuracies to appear
   //so generally this is only used if you fully understand the input domain
-  bool getCoordinates(const smtk::mesh::HandleRange& points,
-                      double* xyz) const;
+  bool getCoordinates(const smtk::mesh::HandleRange& points, double* xyz) const;
 
   //get all the coordinates for the points in this range
   //xyz needs to be allocated to 3*points.size()
-  bool getCoordinates(const smtk::mesh::HandleRange& points,
-                      float* xyz) const;
+  bool getCoordinates(const smtk::mesh::HandleRange& points, float* xyz) const;
 
   //set all the coordinates for the points in this range
   //xyz needs to be allocated to 3*points.size()
-  virtual bool setCoordinates(const smtk::mesh::HandleRange& points,
-                              const double* const xyz);
+  virtual bool setCoordinates(const smtk::mesh::HandleRange& points, const double* const xyz);
 
   //set all the coordinates for the points in this range
   //xyz needs to be allocated to 3*points.size()
-  virtual bool setCoordinates(const smtk::mesh::HandleRange& points,
-                              const float* const xyz);
+  virtual bool setCoordinates(const smtk::mesh::HandleRange& points, const float* const xyz);
 
-  std::vector< std::string > computeNames(const smtk::mesh::HandleRange& meshsets) const;
+  std::vector<std::string> computeNames(const smtk::mesh::HandleRange& meshsets) const;
 
-  std::vector< smtk::mesh::Domain > computeDomainValues(const smtk::mesh::HandleRange& meshsets) const;
+  std::vector<smtk::mesh::Domain> computeDomainValues(
+    const smtk::mesh::HandleRange& meshsets) const;
 
-  std::vector< smtk::mesh::Dirichlet > computeDirichletValues(const smtk::mesh::HandleRange& meshsets) const;
+  std::vector<smtk::mesh::Dirichlet> computeDirichletValues(
+    const smtk::mesh::HandleRange& meshsets) const;
 
-  std::vector< smtk::mesh::Neumann > computeNeumannValues(const smtk::mesh::HandleRange& meshsets) const;
+  std::vector<smtk::mesh::Neumann> computeNeumannValues(
+    const smtk::mesh::HandleRange& meshsets) const;
 
   smtk::common::UUIDArray computeModelEntities(const smtk::mesh::HandleRange& meshsets) const;
 
@@ -195,57 +193,49 @@ public:
   bool computeShell(const smtk::mesh::HandleRange& meshes, smtk::mesh::HandleRange& shell) const;
 
   //merge any duplicate points used by the cells that have been passed
-  bool mergeCoincidentContactPoints(const smtk::mesh::HandleRange& meshes,
-                                   double tolerance);
+  bool mergeCoincidentContactPoints(const smtk::mesh::HandleRange& meshes, double tolerance);
 
-  bool setDomain(const smtk::mesh::HandleRange& meshsets,
-                   const smtk::mesh::Domain& domain) const;
+  bool setDomain(const smtk::mesh::HandleRange& meshsets, const smtk::mesh::Domain& domain) const;
 
-  bool setDirichlet(const smtk::mesh::HandleRange& meshsets,
-                    const smtk::mesh::Dirichlet& dirichlet) const;
+  bool setDirichlet(
+    const smtk::mesh::HandleRange& meshsets, const smtk::mesh::Dirichlet& dirichlet) const;
 
-  bool setNeumann(const smtk::mesh::HandleRange& meshsets,
-                  const smtk::mesh::Neumann& neumann) const;
+  bool setNeumann(
+    const smtk::mesh::HandleRange& meshsets, const smtk::mesh::Neumann& neumann) const;
 
-  bool setAssociation(const smtk::common::UUID& modelUUID,
-                      const smtk::mesh::HandleRange& meshsets) const;
+  bool setAssociation(
+    const smtk::common::UUID& modelUUID, const smtk::mesh::HandleRange& meshsets) const;
 
-
-  smtk::mesh::HandleRange findAssociations(const smtk::mesh::Handle& root,
-                                           const smtk::common::UUID& modelUUID) const;
+  smtk::mesh::HandleRange findAssociations(
+    const smtk::mesh::Handle& root, const smtk::common::UUID& modelUUID) const;
 
   bool setRootAssociation(const smtk::common::UUID& modelUUID) const;
 
   smtk::common::UUID rootAssociation() const;
 
-  smtk::mesh::HandleRange rangeIntersect(const smtk::mesh::HandleRange& a,
-                                        const smtk::mesh::HandleRange& b) const;
+  smtk::mesh::HandleRange rangeIntersect(
+    const smtk::mesh::HandleRange& a, const smtk::mesh::HandleRange& b) const;
 
-  smtk::mesh::HandleRange rangeDifference(const smtk::mesh::HandleRange& a,
-                                          const smtk::mesh::HandleRange& b) const;
+  smtk::mesh::HandleRange rangeDifference(
+    const smtk::mesh::HandleRange& a, const smtk::mesh::HandleRange& b) const;
 
-  smtk::mesh::HandleRange rangeUnion(const smtk::mesh::HandleRange& a,
-                                     const smtk::mesh::HandleRange& b) const;
+  smtk::mesh::HandleRange rangeUnion(
+    const smtk::mesh::HandleRange& a, const smtk::mesh::HandleRange& b) const;
 
   smtk::mesh::HandleRange pointIntersect(const smtk::mesh::HandleRange& a,
-                                         const smtk::mesh::HandleRange& b,
-                                         smtk::mesh::PointConnectivity& bpc,
-                                         const smtk::mesh::ContainsFunctor& containsFunctor) const;
+    const smtk::mesh::HandleRange& b, smtk::mesh::PointConnectivity& bpc,
+    const smtk::mesh::ContainsFunctor& containsFunctor) const;
 
   smtk::mesh::HandleRange pointDifference(const smtk::mesh::HandleRange& a,
-                                          const smtk::mesh::HandleRange& b,
-                                          smtk::mesh::PointConnectivity& bpc,
-                                          const smtk::mesh::ContainsFunctor& containsFunctor) const;
+    const smtk::mesh::HandleRange& b, smtk::mesh::PointConnectivity& bpc,
+    const smtk::mesh::ContainsFunctor& containsFunctor) const;
 
-  void pointForEach( const HandleRange &points,
-                     smtk::mesh::PointForEach& filter) const;
+  void pointForEach(const HandleRange& points, smtk::mesh::PointForEach& filter) const;
 
-  void cellForEach( const HandleRange &cells,
-                    smtk::mesh::PointConnectivity& pc,
-                    smtk::mesh::CellForEach& filter) const;
+  void cellForEach(const HandleRange& cells, smtk::mesh::PointConnectivity& pc,
+    smtk::mesh::CellForEach& filter) const;
 
-  void meshForEach( const HandleRange &meshes,
-                    smtk::mesh::MeshForEach& filter) const;
+  void meshForEach(const HandleRange& meshes, smtk::mesh::MeshForEach& filter) const;
 
   bool deleteHandles(const smtk::mesh::HandleRange& toDel);
 
@@ -264,7 +254,6 @@ private:
   mutable smtk::common::UUID m_associated_model;
   mutable bool m_modified;
 };
-
 }
 }
 }

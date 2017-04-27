@@ -18,9 +18,12 @@
 #include <set>
 #include <vector>
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
 /**\brief Create a face given a set of point coordinates or edges (but not both).
   *
@@ -35,9 +38,10 @@ public:
   smtkDeclareModelOperator();
 
   // NB: These must match discrete indices of "construction method" in ForceCreateFace.sbt:
-  enum ConstructionMethod {
+  enum ConstructionMethod
+  {
     POINTS = 0,
-    EDGES  = 1
+    EDGES = 1
   };
 
   virtual bool ableToOperate();
@@ -46,8 +50,8 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
 };
 
-    } // namespace polygon
-  } //namespace bridge
+} // namespace polygon
+} //namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_polygon_ForceCreateFace_h

@@ -12,9 +12,12 @@
 
 #include "vtkDataObject.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace exodus {
+namespace smtk
+{
+namespace bridge
+{
+namespace exodus
+{
 
 /// Return a shared pointer to the session backing a Exodus operator.
 Session* Operator::exodusSession()
@@ -46,6 +49,6 @@ EntityHandle Operator::exodusHandle(const smtk::model::EntityRef& smtkEntity)
   return brdg->toEntity(smtkEntity);
 }
 
-    } // namespace exodus
-  } //namespace bridge
+} // namespace exodus
+} //namespace bridge
 } // namespace smtk

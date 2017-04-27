@@ -33,9 +33,9 @@ vtkSurfaceExtractorOperator::~vtkSurfaceExtractorOperator()
 
 bool vtkSurfaceExtractorOperator::AbleToOperate()
 {
-  bool able2Op = this->m_smtkOp.lock()
-                 && this->m_smtkOp.lock()->name() == "extract surface contour"
-                 && this->m_smtkOp.lock()->ensureSpecification();
+  bool able2Op = this->m_smtkOp.lock() &&
+    this->m_smtkOp.lock()->name() == "extract surface contour" &&
+    this->m_smtkOp.lock()->ensureSpecification();
 
   return able2Op;
 }
@@ -43,10 +43,10 @@ bool vtkSurfaceExtractorOperator::AbleToOperate()
 smtk::model::OperatorResult vtkSurfaceExtractorOperator::Operate()
 {
   // ONLY for create-edge-with-widget and edit-edge operations,
-  if(!this->AbleToOperate())
-    {
+  if (!this->AbleToOperate())
+  {
     return this->m_smtkOp.lock()->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
   smtk::model::OperatorResult edgeResult;
   edgeResult = this->m_smtkOp.lock()->operate();
@@ -56,5 +56,5 @@ smtk::model::OperatorResult vtkSurfaceExtractorOperator::Operate()
 
 void vtkSurfaceExtractorOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }

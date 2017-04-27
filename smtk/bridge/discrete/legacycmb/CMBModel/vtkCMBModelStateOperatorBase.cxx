@@ -29,15 +29,15 @@ vtkCMBModelStateOperatorBase::~vtkCMBModelStateOperatorBase()
 
 bool vtkCMBModelStateOperatorBase::AbleToOperate(vtkDiscreteModel* Model)
 {
-  if(!Model)
-    {
+  if (!Model)
+  {
     vtkErrorMacro("Passed in a null model.");
     return 0;
-    }
+  }
   return 1;
 }
 void vtkCMBModelStateOperatorBase::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
-    os << indent << "SerializedModelString: " << this->SerializedModelString << "\n";
+  this->Superclass::PrintSelf(os, indent);
+  os << indent << "SerializedModelString: " << this->SerializedModelString << "\n";
 }

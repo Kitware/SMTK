@@ -46,7 +46,7 @@
 #include "vtkClientServerStream.h"
 #include <QDebug>
 
-pqPolygonArc::pqPolygonArc(QObject * prnt)
+pqPolygonArc::pqPolygonArc(QObject* prnt)
   : QObject(prnt)
 {
   //for an arc the source is actually the arc provider not the arc itself
@@ -55,17 +55,17 @@ pqPolygonArc::pqPolygonArc(QObject * prnt)
   this->m_currentModelId = smtk::common::UUID::null();
   this->PlaneProjectionNormal = 2;
   this->PlaneProjectionPosition = 0;
-  this->selColor[0]=this->selColor[2]=this->selColor[3]= 1.0;
-  this->selColor[1]=0.0;
-  this->origColor[0]=this->origColor[1]=this->origColor[2]=this->origColor[3]= 1.0;
+  this->selColor[0] = this->selColor[2] = this->selColor[3] = 1.0;
+  this->selColor[1] = 0.0;
+  this->origColor[0] = this->origColor[1] = this->origColor[2] = this->origColor[3] = 1.0;
 }
 
 pqPolygonArc::~pqPolygonArc()
 {
-  if(this->ArcInfo)
-    {
+  if (this->ArcInfo)
+  {
     this->ArcInfo->Delete();
-    }
+  }
 }
 
 void pqPolygonArc::setEdgeOperator(smtk::model::OperatorPtr edgeOp)
@@ -77,12 +77,11 @@ smtk::shared_ptr<smtk::model::Operator> pqPolygonArc::edgeOperator()
   return this->m_edgeOp.lock();
 }
 
-inline vtkSMProxy* internal_createVTKEdgeOperator(
-  vtkSMNewWidgetRepresentationProxy *widgetProxy)
+inline vtkSMProxy* internal_createVTKEdgeOperator(vtkSMNewWidgetRepresentationProxy* widgetProxy)
 {
-  vtkSMProxy* smPolyEdgeOp = vtkSMProxyManager::GetProxyManager()->NewProxy(
-    "polygon_operators", "PolygonArcOperator");
-  if(!smPolyEdgeOp)
+  vtkSMProxy* smPolyEdgeOp =
+    vtkSMProxyManager::GetProxyManager()->NewProxy("polygon_operators", "PolygonArcOperator");
+  if (!smPolyEdgeOp)
     return NULL;
   smPolyEdgeOp->UpdateVTKObjects();
 
@@ -91,77 +90,74 @@ inline vtkSMProxy* internal_createVTKEdgeOperator(
   vtkSMProxy* repProxy = widgetProxy->GetRepresentationProxy();
   repProxy->UpdateVTKObjects();
   vtkClientServerStream stream;
-  stream  << vtkClientServerStream::Invoke
-          << VTKOBJECT(smPolyEdgeOp) << "SetArcRepresentation"
-          << VTKOBJECT(repProxy)
-          << vtkClientServerStream::End;
+  stream << vtkClientServerStream::Invoke << VTKOBJECT(smPolyEdgeOp) << "SetArcRepresentation"
+         << VTKOBJECT(repProxy) << vtkClientServerStream::End;
   smPolyEdgeOp->GetSession()->ExecuteStream(smPolyEdgeOp->GetLocation(), stream);
   return smPolyEdgeOp;
 }
 
-vtkSMProxy* pqPolygonArc::prepareOperation(
-  vtkSMNewWidgetRepresentationProxy *widgetProxy)
+vtkSMProxy* pqPolygonArc::prepareOperation(vtkSMNewWidgetRepresentationProxy* widgetProxy)
 {
-  if(!widgetProxy || !this->edgeOperator())
+  if (!widgetProxy || !this->edgeOperator())
     return NULL;
   smtk::attribute::AttributePtr spec = this->edgeOperator()->specification();
-  if(spec->type() != "tweak edge" && spec->type() != "create edge")
+  if (spec->type() != "tweak edge" && spec->type() != "create edge")
     return NULL;
   smtk::attribute::IntItem::Ptr opProxyIdItem = spec->findInt("HelperGlobalID");
-  if(!opProxyIdItem)
+  if (!opProxyIdItem)
     return NULL;
   vtkSMProxy* smPolyEdgeOp = internal_createVTKEdgeOperator(widgetProxy);
-  if(!smPolyEdgeOp)
+  if (!smPolyEdgeOp)
     return NULL;
   // Now set the GlobalId of smPolyEdgeOp proxy to the edge op, and later
   // on the GlobalId will be used to find the proxy
-    // for Create and Edit operation, we need arc source
+  // for Create and Edit operation, we need arc source
   opProxyIdItem->setValue(smPolyEdgeOp->GetGlobalID());
   return smPolyEdgeOp;
 }
 
-bool pqPolygonArc::createEdge(vtkSMNewWidgetRepresentationProxy *widgetProxy)
+bool pqPolygonArc::createEdge(vtkSMNewWidgetRepresentationProxy* widgetProxy)
 {
   vtkSMProxy* smPolyEdgeOp = this->prepareOperation(widgetProxy);
-  if(!smPolyEdgeOp)
+  if (!smPolyEdgeOp)
     return false;
   emit this->operationRequested(this->edgeOperator());
   smPolyEdgeOp->Delete();
   return true;
 }
 
-bool pqPolygonArc::editEdge(vtkSMNewWidgetRepresentationProxy *widgetProxy,
-                            const smtk::common::UUID& edgeId)
+bool pqPolygonArc::editEdge(
+  vtkSMNewWidgetRepresentationProxy* widgetProxy, const smtk::common::UUID& edgeId)
 {
   vtkSMProxy* smPolyEdgeOp = this->prepareOperation(widgetProxy);
-  if(!smPolyEdgeOp)
-    {
+  if (!smPolyEdgeOp)
+  {
     return false;
-    }
+  }
 
   smtk::attribute::AttributePtr opSpec = this->edgeOperator()->specification();
   smtk::model::Edge edge(this->edgeOperator()->manager(), edgeId);
-  if(!edge.isValid())
-    {
+  if (!edge.isValid())
+  {
     return false;
-    }
-  if(!opSpec->isEntityAssociated(edge))
-    {
+  }
+  if (!opSpec->isEntityAssociated(edge))
+  {
     opSpec->removeAllAssociations();
     opSpec->associateEntity(edge);
-    }
+  }
 
   emit this->operationRequested(this->edgeOperator());
   smPolyEdgeOp->Delete();
   return true;
 }
 
-bool pqPolygonArc::updateArc(vtkSMNewWidgetRepresentationProxy *widget,
-                            vtkIdTypeArray *newlyCreatedArcIds)
+bool pqPolygonArc::updateArc(
+  vtkSMNewWidgetRepresentationProxy* widget, vtkIdTypeArray* newlyCreatedArcIds)
 {
   (void)widget;
   (void)newlyCreatedArcIds;
-/*
+  /*
   if (this->ArcId == -1)
     {
     bool valid = this->createArc(widget);
@@ -203,7 +199,7 @@ bool pqPolygonArc::updateArc(vtkSMNewWidgetRepresentationProxy *widget,
 vtkIdType pqPolygonArc::autoConnect(const vtkIdType& secondArcId)
 {
   (void)secondArcId;
-/*
+  /*
   vtkNew<vtkCMBArcAutoConnectClientOperator> autoConnectOp;
   bool valid = autoConnectOp->Operate(this->ArcId,secondArcId);
   if(valid)
@@ -216,26 +212,25 @@ vtkIdType pqPolygonArc::autoConnect(const vtkIdType& secondArcId)
 
 vtkPolygonArcInfo* pqPolygonArc::getArcInfo(int blockIndex)
 {
-  if(blockIndex < 0)
+  if (blockIndex < 0)
   {
     qCritical() << "The render view is in use with another selection. Stop that selection first.\n";
   }
   bool newInfo = false;
-  if ( !this->ArcInfo )
-    {
+  if (!this->ArcInfo)
+  {
     this->ArcInfo = vtkPolygonArcInfo::New();
     newInfo = true;
-    }
+  }
 
-  if (this->Source && blockIndex >=0
-      && (newInfo || blockIndex != this->ArcInfo->GetBlockIndex()))
-    {
+  if (this->Source && blockIndex >= 0 && (newInfo || blockIndex != this->ArcInfo->GetBlockIndex()))
+  {
     //collect the information from the server poly source into
     //the representation info.
-    vtkSMProxy *proxy = this->Source->getProxy();
+    vtkSMProxy* proxy = this->Source->getProxy();
     this->ArcInfo->SetBlockIndex(blockIndex);
     proxy->GatherInformation(this->ArcInfo);
-    }
+  }
 
   return this->ArcInfo;
 }
@@ -247,45 +242,44 @@ void pqPolygonArc::resetOperationSource()
   this->m_currentModelId = smtk::common::UUID::null();
   // the Source should always reference to the source for the referenced model,
   // which should be activated by emitting activateModel()
-  if(this->m_edgeOp.lock() && this->m_edgeOp.lock()->specification())
+  if (this->m_edgeOp.lock() && this->m_edgeOp.lock()->specification())
+  {
+    smtk::model::EntityRef entref = this->m_edgeOp.lock()->specification()->associations()->value();
+    if (!entref.isValid())
     {
-    smtk::model::EntityRef entref = this->m_edgeOp.lock()->specification()->
-      associations()->value();
-    if(!entref.isValid())
-      {
       return;
-      }
+    }
     smtk::model::Model model;
-    if(entref.isModel()) // "create edge"
-      {
+    if (entref.isModel()) // "create edge"
+    {
       model = entref.as<smtk::model::Model>();
-      }
-    else if(entref.isEdge()) // "tweak edge"
-      {
+    }
+    else if (entref.isEdge()) // "tweak edge"
+    {
       model = entref.as<smtk::model::Edge>().owningModel();
-      }
-    if(model.isValid() && this->m_currentModelId == model.entity() && this->Source
-       && this->Source == pqActiveObjects::instance().activeSource())
-      {
+    }
+    if (model.isValid() && this->m_currentModelId == model.entity() && this->Source &&
+      this->Source == pqActiveObjects::instance().activeSource())
+    {
       // nothing to do
       return;
-      }
-    if(model.isValid())
-      {
+    }
+    if (model.isValid())
+    {
       this->m_currentModelId = model.entity();
       emit this->activateModel(model.entity());
       this->Source = pqActiveObjects::instance().activeSource();
       int blockIndex = this->getAssignedEdgeBlock();
-      if(blockIndex < 0)
-        {
+      if (blockIndex < 0)
+      {
         qCritical() << "Invalid block index for the edge.\n";
-        }
+      }
       else
-        {
+      {
         this->getArcInfo(blockIndex);
-        }
       }
     }
+  }
 }
 
 pqPipelineSource* pqPolygonArc::getSource()
@@ -301,35 +295,34 @@ void pqPolygonArc::setSource(pqPipelineSource* modelSource)
 
 int pqPolygonArc::getAssignedEdgeBlock() const
 {
-  if(this->m_edgeOp.lock() && this->m_edgeOp.lock()->specification())
-    {
+  if (this->m_edgeOp.lock() && this->m_edgeOp.lock()->specification())
+  {
     // for Destroy and Modify operation, we need edge is set
-    smtk::model::EntityRef entref = this->m_edgeOp.lock()->specification()->
-      associations()->value();
+    smtk::model::EntityRef entref = this->m_edgeOp.lock()->specification()->associations()->value();
     smtk::model::Edge edge;
-    if(entref.isModel()) // "create edge"
-      {
+    if (entref.isModel()) // "create edge"
+    {
       edge = entref.as<smtk::model::Edge>();
-      }
-    else if(entref.isEdge()) // "tweak edge"
-      {
+    }
+    else if (entref.isEdge()) // "tweak edge"
+    {
       edge = entref.as<smtk::model::Edge>();
-      }
-    if(edge.isValid())
-      {
+    }
+    if (edge.isValid())
+    {
       const smtk::model::IntegerList& prop(edge.integerProperty("block_index"));
-      if(!prop.empty())
-        {
+      if (!prop.empty())
+      {
         return prop[0];
-        }
       }
     }
+  }
   return -1;
 }
 
 bool pqPolygonArc::isClosedLoop()
 {
-/*
+  /*
   //we need to query the server for this information. The reason is
   //that another arc could have moved an end node causing this to go from
   //unclosed to being closed.
@@ -360,13 +353,13 @@ int pqPolygonArc::getClosedLoop()
   //we need to query the server for this information. The reason is
   //that another arc could have moved an end node causing this to go from
   //unclosed to being closed.
-  return this->isClosedLoop()? 1 : 0;
+  return this->isClosedLoop() ? 1 : 0;
 }
 
-void pqPolygonArc::inheritPolygonRelationships(pqPolygonArc *parent)
+void pqPolygonArc::inheritPolygonRelationships(pqPolygonArc* parent)
 {
   (void)parent;
-/*
+  /*
   //make us have the same polygons
   this->PolygonsUsingArc = parent->PolygonsUsingArc;
   std::set<pqCMBPolygon*>::iterator it;
@@ -379,16 +372,16 @@ void pqPolygonArc::inheritPolygonRelationships(pqPolygonArc *parent)
 */
 }
 
-void pqPolygonArc::setSelectionInput(vtkSMSourceProxy *selectionInput)
+void pqPolygonArc::setSelectionInput(vtkSMSourceProxy* selectionInput)
 {
-  if(!selectionInput)
-    {
+  if (!selectionInput)
+  {
     this->deselect();
-    }
+  }
   else
-    {
+  {
     this->select();
-    }
+  }
   //this->Superclass::setSelectionInput(selectionInput);
 }
 
@@ -404,29 +397,29 @@ void pqPolygonArc::deselect()
 
 void pqPolygonArc::getColor(double color[4]) const
 {
-  for(int i=0; i<4; i++)
-    {
+  for (int i = 0; i < 4; i++)
+  {
     color[i] = this->origColor[i];
-    }
+  }
 }
 
 void pqPolygonArc::setColor(double color[4], bool updateRep)
 {
   (void)updateRep;
-  for(int i=0; i<4; i++)
-    {
+  for (int i = 0; i < 4; i++)
+  {
     this->origColor[i] = color[i];
-    }
+  }
   //this->Superclass::setColor(color, updateRep);
 }
 
 void pqPolygonArc::setMarkedForDeletion()
 {
   if (!this->Source)
-    {
+  {
     return;
-    }
-/*
+  }
+  /*
   vtkNew<vtkCMBArcDeleteClientOperator> undoOp;
   undoOp->SetMarkedForDeletion(this->ArcId);
 
@@ -437,10 +430,10 @@ void pqPolygonArc::setMarkedForDeletion()
 void pqPolygonArc::unsetMarkedForDeletion()
 {
   if (!this->Source)
-    {
+  {
     return;
-    }
-/*
+  }
+  /*
   vtkNew<vtkCMBArcDeleteClientOperator> undoOp;
   undoOp->SetUnMarkedForDeletion(this->ArcId);
 
@@ -450,7 +443,7 @@ void pqPolygonArc::unsetMarkedForDeletion()
 
 void pqPolygonArc::arcIsModified()
 {
-/*
+  /*
   std::set<pqCMBPolygon*>::iterator it;
   for (it=this->PolygonsUsingArc.begin();
        it!=this->PolygonsUsingArc.end();
@@ -461,9 +454,9 @@ void pqPolygonArc::arcIsModified()
 */
 }
 
-void pqPolygonArc::setRepresentation(pqDataRepresentation *rep)
+void pqPolygonArc::setRepresentation(pqDataRepresentation* rep)
 {
-/*
+  /*
   pqCMBSceneObjectBase::setRepresentation(rep);
 
   // For now lets turn off LOD
@@ -471,22 +464,21 @@ void pqPolygonArc::setRepresentation(pqDataRepresentation *rep)
 */
   //set the original color
   vtkSMProxy* reprProxy = rep->getProxy();
-  vtkSMPropertyHelper(reprProxy,"DiffuseColor").Get(this->origColor, 3);
+  vtkSMPropertyHelper(reprProxy, "DiffuseColor").Get(this->origColor, 3);
   this->origColor[3] = vtkSMPropertyHelper(reprProxy, "Opacity").GetAsDouble();
 }
 
-void pqPolygonArc::updatePlaneProjectionInfo(vtkSMNewWidgetRepresentationProxy *widget)
+void pqPolygonArc::updatePlaneProjectionInfo(vtkSMNewWidgetRepresentationProxy* widget)
 {
   vtkSMProxy* repProxy = widget->GetRepresentationProxy();
   vtkSMProxyProperty* proxyProp =
-    vtkSMProxyProperty::SafeDownCast(
-    repProxy->GetProperty("PointPlacer"));
+    vtkSMProxyProperty::SafeDownCast(repProxy->GetProperty("PointPlacer"));
   if (proxyProp && proxyProp->GetNumberOfProxies())
-    {
+  {
     vtkSMProxy* pointplacer = proxyProp->GetProxy(0);
-    this->PlaneProjectionNormal = pqSMAdaptor::getElementProperty(
-      pointplacer->GetProperty("ProjectionNormal")).toInt();
-    this->PlaneProjectionPosition = pqSMAdaptor::getElementProperty(
-      pointplacer->GetProperty("ProjectionPosition")).toDouble();
-    }
+    this->PlaneProjectionNormal =
+      pqSMAdaptor::getElementProperty(pointplacer->GetProperty("ProjectionNormal")).toInt();
+    this->PlaneProjectionPosition =
+      pqSMAdaptor::getElementProperty(pointplacer->GetProperty("ProjectionPosition")).toDouble();
+  }
 }

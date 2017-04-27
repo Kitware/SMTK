@@ -16,9 +16,12 @@
 #include "vtkMergeOperator.h"
 #include "vtkNew.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace discrete {
+namespace smtk
+{
+namespace bridge
+{
+namespace discrete
+{
 
 class Session;
 
@@ -46,14 +49,13 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
   Session* discreteSession() const;
   int fetchCMBCellId(const std::string& parameterName) const;
-  int fetchCMBCellId(
-    const smtk::attribute::ModelEntityItemPtr& entItem, int idx ) const;
+  int fetchCMBCellId(const smtk::attribute::ModelEntityItemPtr& entItem, int idx) const;
 
   vtkNew<vtkMergeOperator> m_op;
 };
 
-    } // namespace discrete
-  } // namespace bridge
+} // namespace discrete
+} // namespace bridge
 
 } // namespace smtk
 

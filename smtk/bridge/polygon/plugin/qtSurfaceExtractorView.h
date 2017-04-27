@@ -26,17 +26,15 @@ class qtSurfaceExtractorView : public smtk::extension::qtBaseView
   Q_OBJECT
 
 public:
-  static smtk::extension::qtBaseView *createViewWidget(
-         const smtk::extension::ViewInfo &info);
+  static smtk::extension::qtBaseView* createViewWidget(const smtk::extension::ViewInfo& info);
 
-  qtSurfaceExtractorView(const smtk::extension::ViewInfo &info);
+  qtSurfaceExtractorView(const smtk::extension::ViewInfo& info);
   virtual ~qtSurfaceExtractorView();
 
 public slots:
   virtual void showAdvanceLevelOverlay(bool show);
   virtual void requestModelEntityAssociation();
-  virtual void onShowCategory()
-   { this->updateAttributeData(); }
+  virtual void onShowCategory() { this->updateAttributeData(); }
   // This will be triggered by selecting different type
   // of edge operations, create-edge, edit-edge, or split-edge.
   virtual void operationSelected(const smtk::model::OperatorPtr& op);
@@ -49,13 +47,11 @@ protected slots:
 
 protected:
   virtual void updateAttributeData();
-  virtual void createWidget( );
+  virtual void createWidget();
 
 private:
-
-  qtSurfaceExtractorViewInternals *Internals;
+  qtSurfaceExtractorViewInternals* Internals;
 
 }; // class
-
 
 #endif

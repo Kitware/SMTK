@@ -38,23 +38,24 @@
 
 #include "smtk/bridge/cgm/CreateSphere_xml.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace cgm {
+namespace smtk
+{
+namespace bridge
+{
+namespace cgm
+{
 
 smtk::model::OperatorResult CreateSphere::operateInternal()
 {
-  smtk::attribute::DoubleItem::Ptr centerItem =
-    this->specification()->findDouble("center");
-  smtk::attribute::DoubleItem::Ptr radiusItem =
-    this->specification()->findDouble("radius");
+  smtk::attribute::DoubleItem::Ptr centerItem = this->specification()->findDouble("center");
+  smtk::attribute::DoubleItem::Ptr radiusItem = this->specification()->findDouble("radius");
   smtk::attribute::DoubleItem::Ptr innerRadiusItem =
     this->specification()->findDouble("inner radius");
 
   double center[3];
   double radius = radiusItem->value();
   double innerRadius = innerRadiusItem->value();
-  for (int i = 0; i < 3; ++i )
+  for (int i = 0; i < 3; ++i)
     center[i] = centerItem->value(i);
 
   //smtk::bridge::cgm::CAUUID::registerWithAttributeManager();
@@ -66,13 +67,13 @@ smtk::model::OperatorResult CreateSphere::operateInternal()
   Body* cgmBody = GeometryModifyTool::instance()->sphere(radius, 0., 0., 0., innerRadius);
   //CGMApp::instance()->attrib_manager()->auto_flag(prevAutoFlag);
   if (!cgmBody)
-    {
+  {
     smtkInfoMacro(log(), "Failed to create body.");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
   // Do this separately because CGM's sphere() method is broken (for OCC at a minimum).
-  CubitVector delta(center[0],center[1],center[2]);
+  CubitVector delta(center[0], center[1], center[2]);
 #if CGM_MAJOR_VERSION >= 15
   DLIList<Body*> cgmBodies;
   cgmBodies.push(cgmBody);
@@ -81,13 +82,12 @@ smtk::model::OperatorResult CreateSphere::operateInternal()
   CubitStatus status = GeometryQueryTool::instance()->translate(cgmBody, delta, center[2]);
 #endif
   if (status != CUBIT_SUCCESS)
-    {
+  {
     smtkInfoMacro(log(), "Failed to translate body.");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
-  smtk::model::OperatorResult result = this->createResult(
-    smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
 
   DLIList<Body*> cgmEntitiesOut;
   cgmEntitiesOut.push(cgmBody);
@@ -97,14 +97,9 @@ smtk::model::OperatorResult CreateSphere::operateInternal()
   return result;
 }
 
-    } // namespace cgm
-  } //namespace bridge
+} // namespace cgm
+} //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(
-  SMTKCGMSESSION_EXPORT,
-  smtk::bridge::cgm::CreateSphere,
-  cgm_create_sphere,
-  "create sphere",
-  CreateSphere_xml,
-  smtk::bridge::cgm::Session);
+smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::CreateSphere,
+  cgm_create_sphere, "create sphere", CreateSphere_xml, smtk::bridge::cgm::Session);

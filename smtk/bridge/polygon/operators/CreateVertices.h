@@ -12,9 +12,12 @@
 
 #include "smtk/bridge/polygon/Operator.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
 /**\brief Create a face given a set of point coordinates or edges (but not both).
   *
@@ -32,8 +35,8 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
 };
 
-    } // namespace polygon
-  } //namespace bridge
+} // namespace polygon
+} //namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_polygon_CreateVertices_h

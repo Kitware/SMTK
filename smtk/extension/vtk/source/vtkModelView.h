@@ -22,15 +22,15 @@ class VTKSMTKSOURCEEXT_EXPORT vtkModelView : public vtkRenderView
 public:
   static vtkModelView* New();
   virtual void PrintSelf(ostream& os, vtkIndent indent);
-  vtkTypeMacro(vtkModelView,vtkRenderView);
+  vtkTypeMacro(vtkModelView, vtkRenderView);
 
 protected:
   vtkModelView();
   virtual ~vtkModelView();
 
 private:
-  vtkModelView(const vtkModelView&); // Not implemented.
-  void operator = (const vtkModelView&); // Not implemented.
+  vtkModelView(const vtkModelView&);   // Not implemented.
+  void operator=(const vtkModelView&); // Not implemented.
 };
 
 #endif // __smtk_vtk_ModelView_h

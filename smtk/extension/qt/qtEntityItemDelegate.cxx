@@ -16,14 +16,20 @@
 #include <QMouseEvent>
 #include <QPainter>
 
-namespace smtk {
-  namespace extension {
+namespace smtk
+{
+namespace extension
+{
 
-QEntityItemDelegate::QEntityItemDelegate(QWidget* owner) :
-  QStyledItemDelegate(owner), m_swatchSize(16),
-  m_titleFontSize(14), m_subtitleFontSize(10),
-  m_titleFontWeight(2), m_subtitleFontWeight(1),
-  m_textVerticalPad(2), m_drawSubtitle(true)
+QEntityItemDelegate::QEntityItemDelegate(QWidget* owner)
+  : QStyledItemDelegate(owner)
+  , m_swatchSize(16)
+  , m_titleFontSize(14)
+  , m_subtitleFontSize(10)
+  , m_titleFontWeight(2)
+  , m_subtitleFontWeight(1)
+  , m_textVerticalPad(2)
+  , m_drawSubtitle(true)
 {
 }
 
@@ -98,8 +104,7 @@ void QEntityItemDelegate::setDrawSubtitle(bool includeSubtitle)
 }
 
 QSize QEntityItemDelegate::sizeHint(
-  const QStyleOptionViewItem& option,
-  const QModelIndex& idx) const
+  const QStyleOptionViewItem& option, const QModelIndex& idx) const
 {
   QIcon icon = qvariant_cast<QIcon>(idx.data(QEntityItemModel::EntityIconRole));
   QSize iconsize = icon.actualSize(option.decorationSize);
@@ -113,23 +118,21 @@ QSize QEntityItemDelegate::sizeHint(
   QFontMetrics subtitleFM(subtitleFont);
   int minHeight = titleFM.height() + 2 * this->m_textVerticalPad;
   if (this->m_drawSubtitle)
-    {
+  {
     minHeight += subtitleFM.height();
-    }
+  }
   if (minHeight < iconsize.height())
-    {
+  {
     minHeight = iconsize.height();
-    }
+  }
 
-  return(QSize(iconsize.width() + this->m_swatchSize, minHeight));
+  return (QSize(iconsize.width() + this->m_swatchSize, minHeight));
 }
 
 void QEntityItemDelegate::paint(
-  QPainter* painter,
-  const QStyleOptionViewItem& option,
-  const QModelIndex& idx) const
+  QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& idx) const
 {
-  QStyledItemDelegate::paint(painter,option,idx);
+  QStyledItemDelegate::paint(painter, option, idx);
 
   painter->save();
 
@@ -161,8 +164,7 @@ void QEntityItemDelegate::paint(
   QRect iconRect = option.rect;
   QRect colorRect = option.rect;
   // visible icon
-  QIcon visicon = qvariant_cast<QIcon>(
-    idx.data(QEntityItemModel::EntityVisibilityRole));
+  QIcon visicon = qvariant_cast<QIcon>(idx.data(QEntityItemModel::EntityVisibilityRole));
   QSize visiconsize = visicon.actualSize(option.decorationSize);
 
   colorRect.setLeft(colorRect.left() + visiconsize.width() + 2);
@@ -176,30 +178,26 @@ void QEntityItemDelegate::paint(
   titleRect.setLeft(iconRect.right());
   subtitleRect.setLeft(iconRect.right());
   titleRect.setTop(titleRect.top() + this->m_textVerticalPad / 2.0);
-  titleRect.setBottom(titleRect.top() + (this->m_drawSubtitle ? titleFM.height() : option.rect.height() - this->m_textVerticalPad));
+  titleRect.setBottom(titleRect.top() +
+    (this->m_drawSubtitle ? titleFM.height() : option.rect.height() - this->m_textVerticalPad));
   subtitleRect.setTop(titleRect.bottom() + this->m_textVerticalPad);
 
-  if(swatchColor.isValid())
-    {
+  if (swatchColor.isValid())
+  {
     painter->save();
     painter->setBrush(swatchColor);
     painter->setPen(Qt::NoPen);
     painter->drawRect(colorRect);
     painter->restore();
-    }
+  }
 
   //painter->drawPixmap(QPoint(iconRect.right()/2,iconRect.top()/2),icon.pixmap(iconsize.width(),iconsize.height()));
   painter->drawPixmap(
-    QPoint(
-      iconRect.left(),
-      iconRect.top() + (option.rect.height() - iconsize.height())/2.),
+    QPoint(iconRect.left(), iconRect.top() + (option.rect.height() - iconsize.height()) / 2.),
     icon.pixmap(iconsize.width(), iconsize.height()));
 
-  if(!visicon.isNull())
-    painter->drawPixmap(
-      QPoint(
-        option.rect.left(),
-        colorRect.top()),
+  if (!visicon.isNull())
+    painter->drawPixmap(QPoint(option.rect.left(), colorRect.top()),
       visicon.pixmap(visiconsize.width(), visiconsize.height()));
 
   if (option.state.testFlag(QStyle::State_Selected))
@@ -208,54 +206,45 @@ void QEntityItemDelegate::paint(
   painter->drawText(titleRect, Qt::AlignVCenter, titleText);
 
   if (this->m_drawSubtitle)
-    {
+  {
     painter->setFont(subtitleFont);
     painter->drawText(subtitleRect, subtitleText);
-    }
+  }
 
   painter->restore();
 }
 
 QWidget* QEntityItemDelegate::createEditor(
-  QWidget* owner,
-  const QStyleOptionViewItem& option,
-  const QModelIndex &idx) const
+  QWidget* owner, const QStyleOptionViewItem& option, const QModelIndex& idx) const
 {
   (void)option;
   (void)idx;
   smtk::extension::QEntityItemEditor* editor = new QEntityItemEditor(owner);
-  QObject::connect(
-    editor, SIGNAL(editingFinished()),
-    this, SLOT(commitAndCloseEditor()));
+  QObject::connect(editor, SIGNAL(editingFinished()), this, SLOT(commitAndCloseEditor()));
   return editor;
 }
 
-void QEntityItemDelegate::setEditorData(
-  QWidget* editor,
-  const QModelIndex& idx) const
+void QEntityItemDelegate::setEditorData(QWidget* editor, const QModelIndex& idx) const
 {
   smtk::extension::QEntityItemEditor* entityEditor =
     qobject_cast<smtk::extension::QEntityItemEditor*>(editor);
   if (entityEditor)
-    {
+  {
     entityEditor->setTitle(idx.data(QEntityItemModel::TitleTextRole).toString());
     // TODO: editor should also allow adjusting entity type?
-    }
+  }
 }
 
 void QEntityItemDelegate::setModelData(
-  QWidget* editor,
-  QAbstractItemModel* model,
-  const QModelIndex &idx) const
+  QWidget* editor, QAbstractItemModel* model, const QModelIndex& idx) const
 {
   smtk::extension::QEntityItemEditor* entityEditor =
     qobject_cast<smtk::extension::QEntityItemEditor*>(editor);
   if (entityEditor)
-    {
+  {
     // TODO: editor should also allow adjusting entity type?
-    model->setData(
-      idx, entityEditor->title(), QEntityItemModel::TitleTextRole);
-    }
+    model->setData(idx, entityEditor->title(), QEntityItemModel::TitleTextRole);
+  }
 }
 
 void QEntityItemDelegate::commitAndCloseEditor()
@@ -268,86 +257,76 @@ void QEntityItemDelegate::commitAndCloseEditor()
 
 bool QEntityItemDelegate::eventFilter(QObject* editor, QEvent* evt)
 {
-  if(evt->type()==QEvent::MouseButtonPress)
+  if (evt->type() == QEvent::MouseButtonPress)
     return false;
   return QStyledItemDelegate::eventFilter(editor, evt);
 }
 
-std::string QEntityItemDelegate::determineAction (
-  const QPoint& pPos, const QModelIndex& idx,
-  const QStyleOptionViewItem & option,
-    const smtk::extension::QEntityItemModel* entityMod) const
+std::string QEntityItemDelegate::determineAction(const QPoint& pPos, const QModelIndex& idx,
+  const QStyleOptionViewItem& option, const smtk::extension::QEntityItemModel* entityMod) const
 {
   std::string res;
   // with the help of styles, return where the pPos is on:
   // the eye-ball, or the color swatch
   // visible icon
-  QIcon visicon = qvariant_cast<QIcon>(
-    idx.data(QEntityItemModel::EntityVisibilityRole));
+  QIcon visicon = qvariant_cast<QIcon>(idx.data(QEntityItemModel::EntityVisibilityRole));
   QSize visiconsize = visicon.actualSize(option.decorationSize);
   int px = pPos.x();
   int py = pPos.y();
   bool bvis = false, bcolor = false;
-  if(!visicon.isNull())
-    {
-    bvis = px > option.rect.left()
-      && px < (option.rect.left() + visiconsize.width())
-      && py > option.rect.top()
-      && py < (option.rect.top() + option.rect.height());
-    }
-  if(!bvis && entityMod && entityMod->getItem(idx)->isRelatedColorMutable())
-    {
-    bcolor = px > (option.rect.left() + visiconsize.width() + 2)
-      && px < (option.rect.left() + visiconsize.width() + 2 + this->m_swatchSize)
-      && py > option.rect.top()
-      && py < (option.rect.top() + option.rect.height());
-    }
+  if (!visicon.isNull())
+  {
+    bvis = px > option.rect.left() && px < (option.rect.left() + visiconsize.width()) &&
+      py > option.rect.top() && py < (option.rect.top() + option.rect.height());
+  }
+  if (!bvis && entityMod && entityMod->getItem(idx)->isRelatedColorMutable())
+  {
+    bcolor = px > (option.rect.left() + visiconsize.width() + 2) &&
+      px < (option.rect.left() + visiconsize.width() + 2 + this->m_swatchSize) &&
+      py > option.rect.top() && py < (option.rect.top() + option.rect.height());
+  }
 
-  if(bvis)
-    {
+  if (bvis)
+  {
     res = "visible";
-    }
-  else if(bcolor)
-    {
+  }
+  else if (bcolor)
+  {
     res = "color";
-    }
+  }
   return res;
 }
 
-
-bool QEntityItemDelegate::editorEvent (
-  QEvent * evt, QAbstractItemModel * mod,
-  const QStyleOptionViewItem & option, const QModelIndex & idx)
+bool QEntityItemDelegate::editorEvent(
+  QEvent* evt, QAbstractItemModel* mod, const QStyleOptionViewItem& option, const QModelIndex& idx)
 {
-  bool res = this->QStyledItemDelegate::editorEvent(
-      evt, mod, option, idx);
-  if(evt->type() != QEvent::MouseButtonPress)
-    {
+  bool res = this->QStyledItemDelegate::editorEvent(evt, mod, option, idx);
+  if (evt->type() != QEvent::MouseButtonPress)
+  {
     return res;
-    }
+  }
   QMouseEvent* e = dynamic_cast<QMouseEvent*>(evt);
-  if(!e || e->button() != Qt::LeftButton)
-    {
+  if (!e || e->button() != Qt::LeftButton)
+  {
     return res;
-    }
+  }
 
   // pass in qEntityItemModel for mutability check
-  smtk::extension::QEntityItemModel* entityMod = dynamic_cast<
-      smtk::extension::QEntityItemModel*>(mod);
-  std::string whichIcon = this->determineAction(e->pos(), idx, option,
-                                                entityMod);
+  smtk::extension::QEntityItemModel* entityMod =
+    dynamic_cast<smtk::extension::QEntityItemModel*>(mod);
+  std::string whichIcon = this->determineAction(e->pos(), idx, option, entityMod);
 
-  if(whichIcon == "visible")
-    {
+  if (whichIcon == "visible")
+  {
     emit this->requestVisibilityChange(idx);
-    }
-  else if(whichIcon == "color")
-    {
+  }
+  else if (whichIcon == "color")
+  {
     emit this->requestColorChange(idx);
-    }
+  }
 
   return res;
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkCMBModelWriterV4.h"
 
 #include "ModelParserHelper.h"
@@ -46,7 +45,7 @@ vtkCMBModelWriterV4::vtkCMBModelWriterV4()
 {
 }
 
-vtkCMBModelWriterV4:: ~vtkCMBModelWriterV4()
+vtkCMBModelWriterV4::~vtkCMBModelWriterV4()
 {
 }
 
@@ -61,22 +60,22 @@ void vtkCMBModelWriterV4::SetModelVertexData(vtkDiscreteModel* Model, vtkPolyDat
   LocationArray->SetNumberOfTuples(NumberOfVertices);
   vtkModelItemIterator* Vertices = Model->NewIterator(vtkModelVertexType);
   vtkIdType Counter = 0;
-  for(Vertices->Begin();!Vertices->IsAtEnd();Vertices->Next(),Counter++)
-    {
+  for (Vertices->Begin(); !Vertices->IsAtEnd(); Vertices->Next(), Counter++)
+  {
     vtkDiscreteModelVertex* Vertex =
       vtkDiscreteModelVertex::SafeDownCast(Vertices->GetCurrentItem());
     PointIdArray->SetValue(Counter, Vertex->GetPointId());
     double xyz[3];
-    if(Vertex->GetPoint(xyz))
-      {
+    if (Vertex->GetPoint(xyz))
+    {
       LocationArray->SetTypedTuple(Counter, xyz);
-      }
-    else
-      {
-      vtkWarningMacro("Model vertex does not have a valid location.");
-      }
-    Entities[Counter] = Vertex;
     }
+    else
+    {
+      vtkWarningMacro("Model vertex does not have a valid location.");
+    }
+    Entities[Counter] = Vertex;
+  }
   Vertices->Delete();
 
   PointIdArray->SetName(ModelParserHelper::GetVertexPointIdString());
@@ -105,31 +104,30 @@ void vtkCMBModelWriterV4::SetModelEdgeData(vtkDiscreteModel* Model, vtkPolyData*
   vtkModelItemIterator* Edges = Model->NewIterator(vtkModelEdgeType);
 
   vtkIdType Counter = 0;
-  for(Edges->Begin();!Edges->IsAtEnd();Edges->Next(),Counter++)
+  for (Edges->Begin(); !Edges->IsAtEnd(); Edges->Next(), Counter++)
+  {
+    vtkDiscreteModelEdge* Edge = vtkDiscreteModelEdge::SafeDownCast(Edges->GetCurrentItem());
+    vtkIdType PointIds[2] = { -1, -1 };
+    for (int i = 0; i < 2; i++)
     {
-    vtkDiscreteModelEdge* Edge =
-      vtkDiscreteModelEdge::SafeDownCast(Edges->GetCurrentItem());
-    vtkIdType PointIds[2] = {-1, -1};
-    for(int i=0;i<2;i++)
-      {
       vtkModelVertex* Vertex = Edge->GetAdjacentModelVertex(i);
-      if(Vertex)
-        {
+      if (Vertex)
+      {
         PointIds[i] = Vertex->GetUniquePersistentId();
-        }
       }
+    }
     PointIdArray->SetTypedTuple(Counter, PointIds);
-    if(Edge->GetModelRegion())
-      {
+    if (Edge->GetModelRegion())
+    {
       EdgeRegionId->SetValue(Counter, Edge->GetModelRegion()->GetUniquePersistentId());
-      }
+    }
     else
-      {
+    {
       EdgeRegionId->SetValue(Counter, -1);
-      }
+    }
     lineSpacing->SetValue(Counter, Edge->GetLineResolution());
     Entities[Counter] = Edge;
-    }
+  }
   Edges->Delete();
 
   PointIdArray->SetName(ModelParserHelper::GetModelEdgeVerticesString());
@@ -160,47 +158,46 @@ void vtkCMBModelWriterV4::SetModelFaceData(vtkDiscreteModel* Model, vtkPolyData*
 
   std::vector<vtkModelEntity*> Entities;
   vtkModelItemIterator* Faces = Model->NewIterator(vtkModelFaceType);
-  for(Faces->Begin();!Faces->IsAtEnd();Faces->Next())
-    {
+  for (Faces->Begin(); !Faces->IsAtEnd(); Faces->Next())
+  {
     vtkDiscreteModelFace* Face = vtkDiscreteModelFace::SafeDownCast(Faces->GetCurrentItem());
     Entities.push_back(Face);
-    vtkIdType ids[2] = {-1, -1};
-    for(int j=0;j<2;j++)
-      {
+    vtkIdType ids[2] = { -1, -1 };
+    for (int j = 0; j < 2; j++)
+    {
       vtkModelRegion* Region = Face->GetModelRegion(j);
-      if(Region)
-        {
+      if (Region)
+      {
         ids[j] = Region->GetUniquePersistentId();
-        }
       }
+    }
     ModelFaceAdjacentRegionsId->InsertNextTypedTuple(ids);
 
     vtkModelMaterial* Material = Face->GetMaterial();
-    if(Material)
-      {
+    if (Material)
+    {
       ModelFaceMaterialIds->InsertNextValue(Material->GetUniquePersistentId());
-      }
+    }
     else
-      {
+    {
       ModelFaceMaterialIds->InsertNextValue(-1);
-      }
+    }
     //TODO: Do we have to encode loop uses???  Just deal with the outerloop
     vtkModelLoopUse* LoopUse = Face->GetModelFaceUse(0)->GetOuterLoopUse();
-    if(LoopUse)
-      {
+    if (LoopUse)
+    {
       vtkModelItemIterator* EdgeUses = LoopUse->NewModelEdgeUseIterator();
-      for(EdgeUses->Begin();!EdgeUses->IsAtEnd();EdgeUses->Next())
-        {
+      for (EdgeUses->Begin(); !EdgeUses->IsAtEnd(); EdgeUses->Next())
+      {
         vtkModelEdgeUse* EdgeUse = vtkModelEdgeUse::SafeDownCast(EdgeUses->GetCurrentItem());
-        ModelFaceAdjacentEdgesId->InsertNextValue(
-          EdgeUse->GetModelEdge()->GetUniquePersistentId());
+        ModelFaceAdjacentEdgesId->InsertNextValue(EdgeUse->GetModelEdge()->GetUniquePersistentId());
         ModelEdgeDirections->InsertNextValue(EdgeUse->GetDirection());
-        }
+      }
       ModelFaceAdjacentEdgesId->InsertNextValue(-1);
       ModelEdgeDirections->InsertNextValue(1);
       EdgeUses->Delete();
-      }
     }
+  }
   Faces->Delete();
   ModelFaceAdjacentRegionsId->SetName(ModelParserHelper::GetModelFaceRegionsString());
   Poly->GetFieldData()->AddArray(ModelFaceAdjacentRegionsId);
@@ -223,5 +220,5 @@ void vtkCMBModelWriterV4::SetModelFaceData(vtkDiscreteModel* Model, vtkPolyData*
 
 void vtkCMBModelWriterV4::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }

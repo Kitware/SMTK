@@ -28,15 +28,14 @@ class vtkDiscreteModelWrapper;
 class SMTKDISCRETESESSION_EXPORT vtkGenerateSimpleModelOperator : public vtkObject
 {
 public:
-  static vtkGenerateSimpleModelOperator * New();
-  vtkTypeMacro(vtkGenerateSimpleModelOperator,vtkObject);
+  static vtkGenerateSimpleModelOperator* New();
+  vtkTypeMacro(vtkGenerateSimpleModelOperator, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // Create a model from the output from inputFilter. If cleanInput is
   // true then we also triangulate and remove coincident points.
-  void Operate(vtkDiscreteModelWrapper* modelWrapper, vtkAlgorithm* inputFilter,
-               int cleanInput);
+  void Operate(vtkDiscreteModelWrapper* modelWrapper, vtkAlgorithm* inputFilter, int cleanInput);
 
   // Description:
   // Returns success (1) or failue (0) for Operation.
@@ -47,8 +46,8 @@ protected:
   virtual ~vtkGenerateSimpleModelOperator();
 
 private:
-  vtkGenerateSimpleModelOperator(const vtkGenerateSimpleModelOperator&);  // Not implemented.
-  void operator=(const vtkGenerateSimpleModelOperator&);  // Not implemented.
+  vtkGenerateSimpleModelOperator(const vtkGenerateSimpleModelOperator&); // Not implemented.
+  void operator=(const vtkGenerateSimpleModelOperator&);                 // Not implemented.
 
   // Description:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).

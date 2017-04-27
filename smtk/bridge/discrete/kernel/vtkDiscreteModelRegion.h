@@ -18,14 +18,13 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkDiscreteModelGeometricEntity.h"
 
-
 class vtkInformationStringKey;
 
 class VTKSMTKDISCRETEMODEL_EXPORT vtkDiscreteModelRegion : public vtkModelRegion,
-  public vtkDiscreteModelGeometricEntity
+                                                           public vtkDiscreteModelGeometricEntity
 {
 public:
-  vtkTypeMacro(vtkDiscreteModelRegion,vtkModelRegion);
+  vtkTypeMacro(vtkDiscreteModelRegion, vtkModelRegion);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual bool Destroy();
@@ -36,7 +35,6 @@ public:
   static vtkInformationDoubleVectorKey* POINTINSIDE();
   void SetPointInside(double pointInside[3]);
   double* GetPointInside();
-
 
   // Description:
   // Functions for caching the solid file the region is
@@ -52,7 +50,7 @@ public:
   virtual void Serialize(vtkSerializer* ser);
 
 protected:
-  static vtkDiscreteModelRegion *New();
+  static vtkDiscreteModelRegion* New();
 
   friend class vtkDiscreteModel;
 
@@ -61,9 +59,8 @@ protected:
   virtual vtkModelEntity* GetThisModelEntity();
 
 private:
-  vtkDiscreteModelRegion(const vtkDiscreteModelRegion&);  // Not implemented.
-  void operator=(const vtkDiscreteModelRegion&);  // Not implemented.
+  vtkDiscreteModelRegion(const vtkDiscreteModelRegion&); // Not implemented.
+  void operator=(const vtkDiscreteModelRegion&);         // Not implemented.
 };
 
 #endif
-

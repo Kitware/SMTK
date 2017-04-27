@@ -20,34 +20,31 @@
 namespace cumulus
 {
 
-JobView::JobView(QWidget *parent) : QTableView(parent)
+JobView::JobView(QWidget* parent)
+  : QTableView(parent)
 {
-
 }
 
 JobView::~JobView()
 {
-
 }
 
-void JobView::contextMenuEvent(QContextMenuEvent *e)
+void JobView::contextMenuEvent(QContextMenuEvent* e)
 {
-  QVariant jobVariant = model()->data(indexAt(e->pos()),
-      Qt::UserRole);
+  QVariant jobVariant = model()->data(indexAt(e->pos()), Qt::UserRole);
   Job job = jobVariant.value<Job>();
 
-  QMenu *menu = new QMenu(this);
-  QAction *del = new QAction("Delete", this);
-  QAction *terminate = new QAction("Terminate", this);
-  QAction *download = new QAction("Download output", this);
+  QMenu* menu = new QMenu(this);
+  QAction* del = new QAction("Delete", this);
+  QAction* terminate = new QAction("Terminate", this);
+  QAction* download = new QAction("Download output", this);
   del->setData(jobVariant);
   terminate->setData(jobVariant);
   download->setData(jobVariant);
 
-
-  if (job.status() == "running" || job.status() == "queued" ||
-      job.status() == "terminating" || job.status() == "uploading" ||
-      job.status() == "terminating") {
+  if (job.status() == "running" || job.status() == "queued" || job.status() == "terminating" ||
+    job.status() == "uploading" || job.status() == "terminating")
+  {
     del->setEnabled(false);
     download->setEnabled(false);
   }
@@ -56,8 +53,8 @@ void JobView::contextMenuEvent(QContextMenuEvent *e)
   menu->addAction(del);
 
   // Terminate
-  if (job.status() != "running" && job.status() != "queued" &&
-      job.status() != "uploading") {
+  if (job.status() != "running" && job.status() != "queued" && job.status() != "uploading")
+  {
     terminate->setEnabled(false);
   }
   connect(terminate, SIGNAL(triggered()), this, SLOT(terminateJob()));
@@ -72,19 +69,19 @@ void JobView::contextMenuEvent(QContextMenuEvent *e)
 
 void JobView::deleteJob()
 {
-  QMessageBox::StandardButton reply = QMessageBox::question(this->parentWidget(),
-      tr("Delete job?"),
-      tr("Are you sure you want to delete this job?\n\n"
-         "Deleting the job will remove all output files from the cluster."),
-      QMessageBox::Yes|QMessageBox::No);
+  QMessageBox::StandardButton reply = QMessageBox::question(this->parentWidget(), tr("Delete job?"),
+    tr("Are you sure you want to delete this job?\n\n"
+       "Deleting the job will remove all output files from the cluster."),
+    QMessageBox::Yes | QMessageBox::No);
 
-  if (reply == QMessageBox::No) {
-      return;
+  if (reply == QMessageBox::No)
+  {
+    return;
   }
 
-  QAction *action = qobject_cast<QAction*>(sender());
-    if (!action)
-      return;
+  QAction* action = qobject_cast<QAction*>(sender());
+  if (!action)
+    return;
 
   Job job = action->data().value<Job>();
 
@@ -93,9 +90,9 @@ void JobView::deleteJob()
 
 void JobView::terminateJob()
 {
-  QAction *action = qobject_cast<QAction*>(sender());
-    if (!action)
-      return;
+  QAction* action = qobject_cast<QAction*>(sender());
+  if (!action)
+    return;
 
   Job job = action->data().value<Job>();
 
@@ -104,24 +101,21 @@ void JobView::terminateJob()
 
 void JobView::downloadJob()
 {
-  QAction *action = qobject_cast<QAction*>(sender());
-    if (!action)
-      return;
+  QAction* action = qobject_cast<QAction*>(sender());
+  if (!action)
+    return;
 
   Job job = action->data().value<Job>();
 
   QString downloadDir = QFileDialog::getExistingDirectory(
-      NULL, tr("Select download directory"), QString(),
-      QFileDialog::ShowDirsOnly);
-
+    NULL, tr("Select download directory"), QString(), QFileDialog::ShowDirsOnly);
 
   this->m_cumulusProxy->downloadJob(downloadDir, job);
 }
 
-void JobView::setCumulusProxy(CumulusProxy *cumulusProxy)
+void JobView::setCumulusProxy(CumulusProxy* cumulusProxy)
 {
   this->m_cumulusProxy = cumulusProxy;
 }
-
 
 } // end namespace

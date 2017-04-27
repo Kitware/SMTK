@@ -10,8 +10,8 @@
 #include "smtk/model/Operator.h"
 #include "smtk/model/Manager.h"
 
-#include "smtk/io/SaveJSON.h"
 #include "smtk/io/Logger.h"
+#include "smtk/io/SaveJSON.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -50,8 +50,10 @@ using smtk::attribute::MeshSelectionItem;
 using smtk::attribute::MeshItem;
 using smtk::attribute::VoidItem;
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /// Constructor. Initialize the session to a NULL pointer.
 Operator::Operator()
@@ -63,13 +65,10 @@ Operator::Operator()
 /// Destructor. Removes its specification() from the session's operator system.
 Operator::~Operator()
 {
-  if (this->m_session  &&
-      this->m_session->operatorSystem() &&
-      this->m_specification)
-    {
-    this->m_session->operatorSystem()->removeAttribute(
-      this->m_specification);
-    }
+  if (this->m_session && this->m_session->operatorSystem() && this->m_specification)
+  {
+    this->m_session->operatorSystem()->removeAttribute(this->m_specification);
+  }
 }
 
 /**\brief Return whether the operator's inputs are well-defined.
@@ -90,21 +89,21 @@ static void markResultModels(
   smtk::attribute::ModelEntityItem::Ptr itm, std::set<smtk::model::Model>& visited, int clean)
 {
   if (!itm)
-    {
+  {
     return;
-    }
+  }
   std::size_t nn = itm->numberOfValues();
   smtk::model::Model mod;
   for (std::size_t ii = 0; ii < nn; ++ii)
-    {
+  {
     EntityRef ent = itm->value(ii);
     mod = (ent.isValid() && !ent.isModel() ? mod = ent.owningModel() : ent.as<Model>());
     if (mod.isValid() && visited.find(mod) == visited.end())
-      { // model we haven't seen before
+    { // model we haven't seen before
       mod.setIntegerProperty("clean", clean);
       visited.insert(mod);
-      }
     }
+  }
 }
 
 // Mark models owning any new/modified entities in the result as either
@@ -133,7 +132,7 @@ OperatorResult Operator::operate()
 {
   OperatorResult result;
   if (this->ableToOperate())
-    {
+  {
     // Remember where the log was so we only serialize messages for this operation:
     std::size_t logStart = this->log().numberOfRecords();
     // Set the debug level if specified as a convenience for subclasses:
@@ -148,63 +147,59 @@ OperatorResult Operator::operate()
     smtk::attribute::IntItem::Ptr assignNamesItem;
     int outcome = result->findInt("outcome")->value();
     if (outcome == OPERATION_SUCCEEDED)
-      {
+    {
       markResultModels(result);
-      if (
-        (assignNamesItem = this->specification()->findInt("assign names")) &&
-        assignNamesItem->isEnabled() &&
-        assignNamesItem->value() != 0)
-        {
+      if ((assignNamesItem = this->specification()->findInt("assign names")) &&
+        assignNamesItem->isEnabled() && assignNamesItem->value() != 0)
+      {
         ModelEntityItem::Ptr thingsToName = result->findModelEntity("created");
         EntityRefArray::const_iterator it;
         for (it = thingsToName->begin(); it != thingsToName->end(); ++it)
-          {
+        {
           Model model(*it);
           if (model.isValid())
             model.assignDefaultNames();
-          }
         }
       }
+    }
     this->generateSummary(result);
     // Now grab all log messages and serialize them into the result attribute.
     std::size_t logEnd = this->log().numberOfRecords();
     if (logEnd > logStart)
-      { // Serialize relevant log records to JSON.
+    { // Serialize relevant log records to JSON.
       cJSON* array = cJSON_CreateArray();
       smtk::io::SaveJSON::forLog(array, this->log(), logStart, logEnd);
       char* logstr = cJSON_Print(array);
       cJSON_Delete(array);
       result->findString("log")->appendValue(logstr);
       free(logstr);
-      }
+    }
     // Inform observers that the operation completed.
     this->trigger(DID_OPERATE, result);
 
-    smtk::attribute::ModelEntityItem::Ptr tess_changed =
-      result->findModelEntity("tess_changed");
+    smtk::attribute::ModelEntityItem::Ptr tess_changed = result->findModelEntity("tess_changed");
     if (tess_changed)
-      {
+    {
       for (auto it = tess_changed->begin(); it != tess_changed->end(); ++it)
-        {
+      {
         smtk::mesh::CollectionPtr collection =
-          it->owningSession().manager()->meshes()->
-          collection(it->owningModel().entity());
+          it->owningSession().manager()->meshes()->collection(it->owningModel().entity());
         if (collection && collection->isValid())
-          {
+        {
           smtk::mesh::MeshSet modified = collection->findAssociatedMeshes(*it);
           if (!modified.is_empty())
-            {
+          {
             collection->removeMeshes(modified);
-            }
           }
         }
       }
     }
+  }
   else
-    {
+  {
     // Do not inform observers since this is currently a non-event.
     result = this->createResult(UNABLE_TO_OPERATE);
-    }
+  }
   return result;
 }
 
@@ -212,32 +207,31 @@ OperatorResult Operator::operate()
 void Operator::observe(OperatorEventType event, BareOperatorCallback functionHandle, void* callData)
 {
   (void)event;
-  this->m_willOperateTriggers.insert(
-    std::make_pair(functionHandle, callData));
+  this->m_willOperateTriggers.insert(std::make_pair(functionHandle, callData));
 }
 
 /// Add an observer of DID_OPERATE events on this operator.
-void Operator::observe(OperatorEventType event, OperatorWithResultCallback functionHandle, void* callData)
+void Operator::observe(
+  OperatorEventType event, OperatorWithResultCallback functionHandle, void* callData)
 {
   (void)event;
-  this->m_didOperateTriggers.insert(
-    std::make_pair(functionHandle, callData));
+  this->m_didOperateTriggers.insert(std::make_pair(functionHandle, callData));
 }
 
 /// Remove an existing WILL_OPERATE observer. The \a callData must match the value passed to Operator::observe().
-void Operator::unobserve(OperatorEventType event, BareOperatorCallback functionHandle, void* callData)
+void Operator::unobserve(
+  OperatorEventType event, BareOperatorCallback functionHandle, void* callData)
 {
   (void)event;
-  this->m_willOperateTriggers.erase(
-    std::make_pair(functionHandle, callData));
+  this->m_willOperateTriggers.erase(std::make_pair(functionHandle, callData));
 }
 
 /// Remove an existing DID_OPERATE observer. The \a callData must match the value passed to Operator::observe().
-void Operator::unobserve(OperatorEventType event, OperatorWithResultCallback functionHandle, void* callData)
+void Operator::unobserve(
+  OperatorEventType event, OperatorWithResultCallback functionHandle, void* callData)
 {
   (void)event;
-  this->m_didOperateTriggers.erase(
-    std::make_pair(functionHandle, callData));
+  this->m_didOperateTriggers.erase(std::make_pair(functionHandle, callData));
 }
 
 /**\brief Invoke all WILL_OPERATE observer callbacks.
@@ -422,67 +416,78 @@ bool Operator::ensureSpecification() const
 ///@{
 
 /// Return the integer-valued parameter named \a name or NULL if it does not exist.
-smtk::attribute::IntItemPtr Operator::findInt(const std::string& pname, smtk::attribute::SearchStyle search)
+smtk::attribute::IntItemPtr Operator::findInt(
+  const std::string& pname, smtk::attribute::SearchStyle search)
 {
   return this->specification()->findAs<IntItem>(pname, search);
 }
 
 /// Return the integer-valued parameter named \a name or NULL if it does not exist.
-smtk::attribute::DoubleItemPtr Operator::findDouble(const std::string& pname, smtk::attribute::SearchStyle search)
+smtk::attribute::DoubleItemPtr Operator::findDouble(
+  const std::string& pname, smtk::attribute::SearchStyle search)
 {
   return this->specification()->findAs<DoubleItem>(pname, search);
 }
 
 /// Return the integer-valued parameter named \a name or NULL if it does not exist.
-smtk::attribute::StringItemPtr Operator::findString(const std::string& pname, smtk::attribute::SearchStyle search)
+smtk::attribute::StringItemPtr Operator::findString(
+  const std::string& pname, smtk::attribute::SearchStyle search)
 {
   return this->specification()->findAs<StringItem>(pname, search);
 }
 
 /// Return the integer-valued parameter named \a name or NULL if it does not exist.
-smtk::attribute::FileItemPtr Operator::findFile(const std::string& pname, smtk::attribute::SearchStyle search)
+smtk::attribute::FileItemPtr Operator::findFile(
+  const std::string& pname, smtk::attribute::SearchStyle search)
 {
   return this->specification()->findAs<FileItem>(pname, search);
 }
 
 /// Return the integer-valued parameter named \a name or NULL if it does not exist.
-smtk::attribute::DirectoryItemPtr Operator::findDirectory(const std::string& pname, smtk::attribute::SearchStyle search)
+smtk::attribute::DirectoryItemPtr Operator::findDirectory(
+  const std::string& pname, smtk::attribute::SearchStyle search)
 {
   return this->specification()->findAs<DirectoryItem>(pname, search);
 }
 
 /// Return the integer-valued parameter named \a name or NULL if it does not exist.
-smtk::attribute::GroupItemPtr Operator::findGroup(const std::string& pname, smtk::attribute::SearchStyle search)
+smtk::attribute::GroupItemPtr Operator::findGroup(
+  const std::string& pname, smtk::attribute::SearchStyle search)
 {
   return this->specification()->findAs<GroupItem>(pname, search);
 }
 
 /// Return the integer-valued parameter named \a name or NULL if it does not exist.
-smtk::attribute::RefItemPtr Operator::findRef(const std::string& pname, smtk::attribute::SearchStyle search)
+smtk::attribute::RefItemPtr Operator::findRef(
+  const std::string& pname, smtk::attribute::SearchStyle search)
 {
   return this->specification()->findAs<RefItem>(pname, search);
 }
 
 /// Return the integer-valued parameter named \a name or NULL if it does not exist.
-smtk::attribute::ModelEntityItemPtr Operator::findModelEntity(const std::string& pname, smtk::attribute::SearchStyle search)
+smtk::attribute::ModelEntityItemPtr Operator::findModelEntity(
+  const std::string& pname, smtk::attribute::SearchStyle search)
 {
   return this->specification()->findAs<ModelEntityItem>(pname, search);
 }
 
 /// Return the integer-valued parameter named \a name or NULL if it does not exist.
-smtk::attribute::VoidItemPtr Operator::findVoid(const std::string& pname, smtk::attribute::SearchStyle search)
+smtk::attribute::VoidItemPtr Operator::findVoid(
+  const std::string& pname, smtk::attribute::SearchStyle search)
 {
   return this->specification()->findAs<VoidItem>(pname, search);
 }
 
 /// Return the mesh-selection-item parameter named \a name or NULL if it does not exist.
-smtk::attribute::MeshSelectionItemPtr Operator::findMeshSelection(const std::string& pname, smtk::attribute::SearchStyle search)
+smtk::attribute::MeshSelectionItemPtr Operator::findMeshSelection(
+  const std::string& pname, smtk::attribute::SearchStyle search)
 {
   return this->specification()->findAs<MeshSelectionItem>(pname, search);
 }
 
 /// Return the mesh-entity-item parameter named \a name or NULL if it does not exist.
-smtk::attribute::MeshItemPtr Operator::findMesh(const std::string& pname, smtk::attribute::SearchStyle search)
+smtk::attribute::MeshItemPtr Operator::findMesh(
+  const std::string& pname, smtk::attribute::SearchStyle search)
 {
   return this->specification()->findAs<MeshItem>(pname, search);
 }
@@ -505,7 +510,6 @@ void Operator::removeAllAssociations()
   this->specification()->removeAllAssociations();
 }
 
-
 /**\brief Create an attribute representing this operator's result type.
   *
   * The default \a outcome is UNABLE_TO_OPERATE.
@@ -514,11 +518,8 @@ OperatorResult Operator::createResult(OperatorOutcome outcome)
 {
   std::ostringstream rname;
   rname << "result(" << this->name() << ")";
-  OperatorResult result =
-    this->session()->operatorSystem()->createAttribute(rname.str());
-  IntItemPtr outcomeItem =
-    smtk::dynamic_pointer_cast<IntItem>(
-      result->find("outcome"));
+  OperatorResult result = this->session()->operatorSystem()->createAttribute(rname.str());
+  IntItemPtr outcomeItem = smtk::dynamic_pointer_cast<IntItem>(result->find("outcome"));
   outcomeItem->setValue(outcome);
   return result;
 }
@@ -529,9 +530,7 @@ OperatorResult Operator::createResult(OperatorOutcome outcome)
   */
 void Operator::setResultOutcome(OperatorResult res, OperatorOutcome outcome)
 {
-  IntItemPtr outcomeItem =
-    smtk::dynamic_pointer_cast<IntItem>(
-      res->find("outcome"));
+  IntItemPtr outcomeItem = smtk::dynamic_pointer_cast<IntItem>(res->find("outcome"));
   outcomeItem->setValue(outcome);
 }
 
@@ -549,16 +548,13 @@ void Operator::eraseResult(OperatorResult res)
 {
   Session* brdg;
   smtk::attribute::System* sys;
-  if (
-    !res ||
-    !(brdg = this->session()) ||
-    !(sys = brdg->operatorSystem()))
+  if (!res || !(brdg = this->session()) || !(sys = brdg->operatorSystem()))
     return;
   sys->removeAttribute(res);
 }
 
 /// A comparator so that Operators may be placed in ordered sets.
-bool Operator::operator < (const Operator& other) const
+bool Operator::operator<(const Operator& other) const
 {
   return this->name() < other.name();
 }
@@ -569,36 +565,45 @@ void Operator::generateSummary(OperatorResult& res)
   int outcome = res->findInt("outcome")->value();
   msg << this->specification()->definition()->label() << ": " << outcomeAsString(outcome);
   if (outcome == static_cast<int>(OPERATION_SUCCEEDED))
-    {
+  {
     smtkInfoMacro(this->log(), msg.str());
-    }
+  }
   else
-    {
+  {
     smtkErrorMacro(this->log(), msg.str());
-    }
+  }
 }
 
 /// Return a string summarizing the outcome of an operation.
 std::string outcomeAsString(int oc)
 {
   switch (oc)
-    {
-  case UNABLE_TO_OPERATE:   return "unable to operate";
-  case OPERATION_CANCELED:  return "operation canceled";
-  case OPERATION_FAILED:    return "operation failed";
-  case OPERATION_SUCCEEDED: return "operation succeeded";
-  case OUTCOME_UNKNOWN:     break;
-    }
+  {
+    case UNABLE_TO_OPERATE:
+      return "unable to operate";
+    case OPERATION_CANCELED:
+      return "operation canceled";
+    case OPERATION_FAILED:
+      return "operation failed";
+    case OPERATION_SUCCEEDED:
+      return "operation succeeded";
+    case OUTCOME_UNKNOWN:
+      break;
+  }
   return "outcome unknown";
 }
 
 /// Given a string summarizing the outcome of an operation, return an enumerant.
 OperatorOutcome stringToOutcome(const std::string& oc)
 {
-  if (oc == "unable to operate")   return UNABLE_TO_OPERATE;
-  if (oc == "operation canceled")  return OPERATION_CANCELED;
-  if (oc == "operation failed")    return OPERATION_FAILED;
-  if (oc == "operation succeeded") return OPERATION_SUCCEEDED;
+  if (oc == "unable to operate")
+    return UNABLE_TO_OPERATE;
+  if (oc == "operation canceled")
+    return OPERATION_CANCELED;
+  if (oc == "operation failed")
+    return OPERATION_FAILED;
+  if (oc == "operation succeeded")
+    return OPERATION_SUCCEEDED;
 
   return OUTCOME_UNKNOWN;
 }
@@ -615,9 +620,9 @@ OperatorOutcome stringToOutcome(const std::string& oc)
   */
 void Operator::addEntityToResult(OperatorResult res, const EntityRef& ent, ResultEntityOrigin gen)
 {
-  EntityRefArray tmp(1,ent);
+  EntityRefArray tmp(1, ent);
   this->addEntitiesToResult(res, tmp, gen);
 }
 
-  } // model namespace
+} // model namespace
 } // smtk namespace

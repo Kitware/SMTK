@@ -21,7 +21,6 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"
 
-
 class vtkInformationIntegerKey;
 class vtkInformationKey;
 class vtkModelEdge;
@@ -33,7 +32,7 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModelEdgeUse : public vtkModelEntity
 {
 public:
   static vtkModelEdgeUse* New();
-  vtkTypeMacro(vtkModelEdgeUse,vtkModelEntity);
+  vtkTypeMacro(vtkModelEdgeUse, vtkModelEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual int GetType();
@@ -53,8 +52,8 @@ public:
   int GetDirection();
 
   using Superclass::Initialize;
-  void Initialize(vtkModelVertex* vertex0, vtkModelVertex* vertex1,
-                  vtkModelEdgeUse* pairedEdgeUse, int direction);
+  void Initialize(vtkModelVertex* vertex0, vtkModelVertex* vertex1, vtkModelEdgeUse* pairedEdgeUse,
+    int direction);
 
   // Description:
   // Static functions for declaring the direction of
@@ -77,8 +76,7 @@ protected:
   vtkModelEdgeUse();
   virtual ~vtkModelEdgeUse();
 
-  void SetModelVertexUses(vtkModelVertexUse* vertexUse0,
-                          vtkModelVertexUse* vertexUse1);
+  void SetModelVertexUses(vtkModelVertexUse* vertexUse0, vtkModelVertexUse* vertexUse1);
 
   void SetDirection(int direction);
 
@@ -89,9 +87,8 @@ protected:
   friend class vtkDiscreteModelGeometricEntity;
 
 private:
-  vtkModelEdgeUse(const vtkModelEdgeUse&);  // Not implemented.
+  vtkModelEdgeUse(const vtkModelEdgeUse&); // Not implemented.
   void operator=(const vtkModelEdgeUse&);  // Not implemented.
 };
 
 #endif
-

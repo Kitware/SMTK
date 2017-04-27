@@ -27,8 +27,8 @@ class vtkSMProxy;
 class VTK_EXPORT vtkCMBImportBCFileOperatorClient : public vtkObject
 {
 public:
-  static vtkCMBImportBCFileOperatorClient * New();
-  vtkTypeMacro(vtkCMBImportBCFileOperatorClient,vtkObject);
+  static vtkCMBImportBCFileOperatorClient* New();
+  vtkTypeMacro(vtkCMBImportBCFileOperatorClient, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -53,8 +53,8 @@ private:
   // The name of the file to be read.
   char* FileName;
 
-  vtkCMBImportBCFileOperatorClient(const vtkCMBImportBCFileOperatorClient&);  // Not implemented.
-  void operator=(const vtkCMBImportBCFileOperatorClient&);  // Not implemented.
+  vtkCMBImportBCFileOperatorClient(const vtkCMBImportBCFileOperatorClient&); // Not implemented.
+  void operator=(const vtkCMBImportBCFileOperatorClient&);                   // Not implemented.
 };
 
 #endif

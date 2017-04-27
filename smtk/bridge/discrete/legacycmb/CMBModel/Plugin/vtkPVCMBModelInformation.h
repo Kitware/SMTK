@@ -51,7 +51,7 @@ public:
   vtkGetVector3Macro(Color, double);
   vtkGetMacro(NumberOfPoints, int);
   vtkGetMacro(NumberOfCells, int);
-  const char *GetObjectType() { return this->ObjectType.c_str(); }
+  const char* GetObjectType() { return this->ObjectType.c_str(); }
 
   vtkGetObjectMacro(ModelFaceInfoArray, vtkIntArray);
   vtkGetObjectMacro(SplitModelFaces, vtkIntArray);
@@ -68,27 +68,25 @@ protected:
   ~vtkPVCMBModelInformation();
 
   // Data information collected from remote processes.
-  vtkTransform  *Transform;
-  double         Translation[3];
-  double         Orientation[3];
-  double         Scale;
-  double         Color[3];
-  int            NumberOfPoints;
-  int            NumberOfCells;
+  vtkTransform* Transform;
+  double Translation[3];
+  double Orientation[3];
+  double Scale;
+  double Color[3];
+  int NumberOfPoints;
+  int NumberOfCells;
 
   std::string ObjectType;
 
-  vtkIntArray    *ModelFaceInfoArray;
-  vtkIntArray    *SplitModelFaces;
-  vtkIntArray    *CellIdMapArray;
+  vtkIntArray* ModelFaceInfoArray;
+  vtkIntArray* SplitModelFaces;
+  vtkIntArray* CellIdMapArray;
 
   std::map<int, vtkIdType> EnityIdsMap;
 
 private:
-
   vtkPVCMBModelInformation(const vtkPVCMBModelInformation&); // Not implemented
-  void operator=(const vtkPVCMBModelInformation&); // Not implemented
-
+  void operator=(const vtkPVCMBModelInformation&);           // Not implemented
 };
 
 #endif

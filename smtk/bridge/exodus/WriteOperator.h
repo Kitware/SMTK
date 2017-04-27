@@ -12,9 +12,12 @@
 
 #include "smtk/bridge/exodus/Operator.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace exodus {
+namespace smtk
+{
+namespace bridge
+{
+namespace exodus
+{
 
 class SMTKEXODUSSESSION_EXPORT WriteOperator : public Operator
 {
@@ -31,8 +34,8 @@ protected:
   virtual smtk::model::OperatorResult writeLabelMap();
 };
 
-    } // namespace exodus
-  } // namespace bridge
+} // namespace exodus
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_exodus_WriteOperator_h

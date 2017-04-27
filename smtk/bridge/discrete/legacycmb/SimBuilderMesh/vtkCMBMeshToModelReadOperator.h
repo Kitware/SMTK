@@ -27,8 +27,8 @@ class vtkDiscreteModel;
 class VTK_EXPORT vtkCMBMeshToModelReadOperator : public vtkObject
 {
 public:
-  static vtkCMBMeshToModelReadOperator * New();
-  vtkTypeMacro(vtkCMBMeshToModelReadOperator,vtkObject);
+  static vtkCMBMeshToModelReadOperator* New();
+  vtkTypeMacro(vtkCMBMeshToModelReadOperator, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -53,8 +53,8 @@ private:
   // The name of the file to be read in.
   char* FileName;
 
-  vtkCMBMeshToModelReadOperator(const vtkCMBMeshToModelReadOperator&);  // Not implemented.
-  void operator=(const vtkCMBMeshToModelReadOperator&);  // Not implemented.
+  vtkCMBMeshToModelReadOperator(const vtkCMBMeshToModelReadOperator&); // Not implemented.
+  void operator=(const vtkCMBMeshToModelReadOperator&);                // Not implemented.
 
   // Description:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).

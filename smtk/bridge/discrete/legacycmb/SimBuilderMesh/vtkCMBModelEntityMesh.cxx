@@ -30,25 +30,25 @@ vtkCMBModelEntityMesh::~vtkCMBModelEntityMesh()
 
 void vtkCMBModelEntityMesh::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 
   os << indent << "Visible: " << this->Visible << "\n";
   os << indent << "Length: " << this->Length << "\n";
   os << indent << "MeshedLength: " << this->MeshedLength << "\n";
-  if(this->MasterMesh)
-    {
+  if (this->MasterMesh)
+  {
     os << indent << "MasterMesh: " << this->MasterMesh << "\n";
-    }
+  }
   else
-    {
+  {
     os << indent << "MasterMesh: (NULL)\n";
-    }
-  if(this->ModelEntityMesh)
-    {
+  }
+  if (this->ModelEntityMesh)
+  {
     os << indent << "ModelEntityMesh: " << this->ModelEntityMesh << "\n";
-    }
+  }
   else
-    {
+  {
     os << indent << "ModelEntityMesh: (NULL)\n";
-    }
+  }
 }

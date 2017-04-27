@@ -12,9 +12,12 @@
 
 #include "smtk/bridge/cgm/Operator.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace cgm {
+namespace smtk
+{
+namespace bridge
+{
+namespace cgm
+{
 
 /**\brief Create a face given height, major and minor radii, and a number of sides.
   *
@@ -32,8 +35,8 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
 };
 
-    } // namespace cgm
-  } //namespace bridge
+} // namespace cgm
+} //namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_cgm_CreateFace_h

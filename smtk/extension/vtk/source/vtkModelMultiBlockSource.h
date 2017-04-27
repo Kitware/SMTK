@@ -36,10 +36,10 @@ class VTKSMTKSOURCEEXT_EXPORT vtkModelMultiBlockSource : public vtkMultiBlockDat
 public:
   static vtkModelMultiBlockSource* New();
   virtual void PrintSelf(ostream& os, vtkIndent indent);
-  vtkTypeMacro(vtkModelMultiBlockSource,vtkMultiBlockDataSetAlgorithm);
+  vtkTypeMacro(vtkModelMultiBlockSource, vtkMultiBlockDataSetAlgorithm);
 
   enum ToplevelBlockType
-    {
+  {
     AUXILIARY_VOLUMES,
     AUXILIARY_SURFACES,
     AUXILIARY_CURVES,
@@ -51,9 +51,9 @@ public:
     EDGES,
     VERTICES,
     NUMBER_OF_BLOCK_TYPES
-    };
+  };
 
-  vtkGetObjectMacro(CachedOutput,vtkMultiBlockDataSet);
+  vtkGetObjectMacro(CachedOutput, vtkMultiBlockDataSet);
 
   smtk::model::ManagerPtr GetModelManager();
   void SetModelManager(smtk::model::ManagerPtr);
@@ -67,16 +67,16 @@ public:
   void GetUUID2BlockIdMap(std::map<smtk::common::UUID, unsigned int>& uuid2mid);
   void Dirty();
 
-  vtkGetVector4Macro(DefaultColor,double);
-  vtkSetVector4Macro(DefaultColor,double);
+  vtkGetVector4Macro(DefaultColor, double);
+  vtkSetVector4Macro(DefaultColor, double);
 
-  vtkGetMacro(ShowAnalysisTessellation,int);
-  vtkSetMacro(ShowAnalysisTessellation,int);
-  vtkBooleanMacro(ShowAnalysisTessellation,int);
+  vtkGetMacro(ShowAnalysisTessellation, int);
+  vtkSetMacro(ShowAnalysisTessellation, int);
+  vtkBooleanMacro(ShowAnalysisTessellation, int);
 
-  vtkGetMacro(AllowNormalGeneration,int);
-  vtkSetMacro(AllowNormalGeneration,int);
-  vtkBooleanMacro(AllowNormalGeneration,int);
+  vtkGetMacro(AllowNormalGeneration, int);
+  vtkSetMacro(AllowNormalGeneration, int);
+  vtkBooleanMacro(AllowNormalGeneration, int);
 
   // Description:
   // Functions get string names used to store cell/field data.
@@ -90,14 +90,13 @@ public:
   static vtkInformationStringKey* ENTITYID();
 
   static smtk::common::UUID GetDataObjectUUID(vtkInformation*);
-  template<typename T>
+  template <typename T>
   static T GetDataObjectEntityAs(smtk::model::ManagerPtr mgr, vtkInformation* info)
-    {
+  {
     return T(mgr, vtkModelMultiBlockSource::GetDataObjectUUID(info));
-    }
+  }
   static vtkSmartPointer<vtkDataObject> GenerateRepresentationFromURL(
-    const smtk::model::AuxiliaryGeometry& auxGeom,
-    bool genNormals);
+    const smtk::model::AuxiliaryGeometry& auxGeom, bool genNormals);
   static std::string GetAuxiliaryFileType(const smtk::model::AuxiliaryGeometry&);
 
 protected:
@@ -105,27 +104,19 @@ protected:
   virtual ~vtkModelMultiBlockSource();
 
   vtkSmartPointer<vtkDataObject> GenerateRepresentationFromModel(
-    const smtk::model::EntityRef& entity,
-    bool genNormals);
+    const smtk::model::EntityRef& entity, bool genNormals);
   vtkSmartPointer<vtkPolyData> GenerateRepresentationFromTessellation(
-    const smtk::model::EntityRef& entity,
-    const smtk::model::Tessellation* tess,
-    bool genNormals);
+    const smtk::model::EntityRef& entity, const smtk::model::Tessellation* tess, bool genNormals);
 
   void GenerateRepresentationFromModel(
-    vtkPolyData* poly,
-    const smtk::model::EntityRef& entity,
-    bool genNormals);
-  void GenerateRepresentationFromModel(
-    vtkMultiBlockDataSet* mbds, smtk::model::ManagerPtr model);
+    vtkPolyData* poly, const smtk::model::EntityRef& entity, bool genNormals);
+  void GenerateRepresentationFromModel(vtkMultiBlockDataSet* mbds, smtk::model::ManagerPtr model);
 
   //virtual int FillInputPortInformation(int port, vtkInformation* request);
   //virtual int FillOutputPortInformation(int port, vtkInformation* request);
 
   virtual int RequestData(
-    vtkInformation* request,
-    vtkInformationVector** inInfo,
-    vtkInformationVector* outInfo);
+    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo);
 
   void SetCachedOutput(vtkMultiBlockDataSet*);
 
@@ -144,7 +135,7 @@ protected:
 
 private:
   vtkModelMultiBlockSource(const vtkModelMultiBlockSource&); // Not implemented.
-  void operator = (const vtkModelMultiBlockSource&); // Not implemented.
+  void operator=(const vtkModelMultiBlockSource&);           // Not implemented.
 };
 
 #endif // __smtk_vtk_ModelMultiBlockSource_h

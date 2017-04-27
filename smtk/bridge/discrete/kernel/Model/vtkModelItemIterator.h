@@ -34,7 +34,7 @@ class vtkModelItem;
 class VTKSMTKDISCRETEMODEL_EXPORT vtkModelItemIterator : public vtkObject
 {
 public:
-  vtkTypeMacro(vtkModelItemIterator,vtkObject);
+  vtkTypeMacro(vtkModelItemIterator, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -62,9 +62,8 @@ protected:
   virtual ~vtkModelItemIterator();
 
 private:
-  vtkModelItemIterator(const vtkModelItemIterator&);  // Not implemented.
-  void operator=(const vtkModelItemIterator&);  // Not implemented.
+  vtkModelItemIterator(const vtkModelItemIterator&); // Not implemented.
+  void operator=(const vtkModelItemIterator&);       // Not implemented.
 };
 
 #endif
-

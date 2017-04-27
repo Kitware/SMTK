@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkCMBModelReadOperatorClient.h"
 
 #include "vtkDiscreteModel.h"
@@ -30,33 +29,31 @@ vtkCMBModelReadOperatorClient::vtkCMBModelReadOperatorClient()
 
 vtkCMBModelReadOperatorClient::~vtkCMBModelReadOperatorClient()
 {
-  if(this->FileName)
-    {
+  if (this->FileName)
+  {
     this->SetFileName(0);
-    }
+  }
 }
 
-bool vtkCMBModelReadOperatorClient::Operate(
-  vtkDiscreteModel* Model, vtkSMProxy* ServerModelProxy)
+bool vtkCMBModelReadOperatorClient::Operate(vtkDiscreteModel* Model, vtkSMProxy* ServerModelProxy)
 {
-  if(!this->AbleToOperate(Model))
-    {
+  if (!this->AbleToOperate(Model))
+  {
     return 0;
-    }
+  }
 
   vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
-  vtkSMOperatorProxy* OperatorProxy = vtkSMOperatorProxy::SafeDownCast(
-    manager->NewProxy("CMBModelGroup", "CMBModelReadOperator"));
-  if(!OperatorProxy)
-    {
+  vtkSMOperatorProxy* OperatorProxy =
+    vtkSMOperatorProxy::SafeDownCast(manager->NewProxy("CMBModelGroup", "CMBModelReadOperator"));
+  if (!OperatorProxy)
+  {
     vtkErrorMacro("Unable to create operator proxy.");
     return 0;
-    }
+  }
   OperatorProxy->SetLocation(ServerModelProxy->GetLocation());
 
   vtkSMStringVectorProperty* strproperty =
-    vtkSMStringVectorProperty::SafeDownCast(
-      OperatorProxy->GetProperty("FileName"));
+    vtkSMStringVectorProperty::SafeDownCast(OperatorProxy->GetProperty("FileName"));
   strproperty->SetElement(0, this->GetFileName());
   strproperty->SetElementType(0, vtkSMStringVectorProperty::STRING);
 
@@ -64,43 +61,40 @@ bool vtkCMBModelReadOperatorClient::Operate(
 
   // check to see if the operation succeeded on the server
   vtkSMIntVectorProperty* OperateSucceeded =
-    vtkSMIntVectorProperty::SafeDownCast(
-      OperatorProxy->GetProperty("OperateSucceeded"));
+    vtkSMIntVectorProperty::SafeDownCast(OperatorProxy->GetProperty("OperateSucceeded"));
 
   OperatorProxy->UpdatePropertyInformation();
 
   int Succeeded = OperateSucceeded->GetElement(0);
   OperatorProxy->Delete();
   OperatorProxy = 0;
-  if(!Succeeded)
-    {
+  if (!Succeeded)
+  {
     vtkErrorMacro("Server side operator failed.");
     return 0;
-    }
+  }
 
   return vtkCMBModelBuilderClient::UpdateClientModel(Model, ServerModelProxy);
 }
 
-
 bool vtkCMBModelReadOperatorClient::AbleToOperate(vtkDiscreteModel* Model)
 {
-  if(!Model)
-    {
+  if (!Model)
+  {
     vtkErrorMacro("Passed in a null model.");
     return 0;
-    }
-  if(this->GetFileName() == 0)
-    {
+  }
+  if (this->GetFileName() == 0)
+  {
     vtkErrorMacro("Must specify a FileName.");
     return 0;
-    }
+  }
 
   return 1;
 }
 
-
 void vtkCMBModelReadOperatorClient::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
   os << indent << "FileName: " << this->FileName << endl;
 }

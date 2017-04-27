@@ -34,34 +34,34 @@ vtkPolygonArcProvider::~vtkPolygonArcProvider()
 {
 }
 
-int vtkPolygonArcProvider::FillInputPortInformation(int, vtkInformation *info)
+int vtkPolygonArcProvider::FillInputPortInformation(int, vtkInformation* info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkMultiBlockDataSet");
   return 1;
 }
 
-int vtkPolygonArcProvider::RequestData(vtkInformation *,
-      vtkInformationVector **inputVector, vtkInformationVector *outputVector)
+int vtkPolygonArcProvider::RequestData(
+  vtkInformation*, vtkInformationVector** inputVector, vtkInformationVector* outputVector)
 {
-  vtkMultiBlockDataSet *input = vtkMultiBlockDataSet::GetData(inputVector[0], 0);
-  vtkPolyData *output = vtkPolyData::GetData(outputVector, 0);
+  vtkMultiBlockDataSet* input = vtkMultiBlockDataSet::GetData(inputVector[0], 0);
+  vtkPolyData* output = vtkPolyData::GetData(outputVector, 0);
 
   if (!input)
-    {
+  {
     vtkErrorMacro("Input not specified!");
     return 0;
-    }
+  }
 
   if (this->BlockIndex == -1)
-    {
+  {
     vtkErrorMacro("Must specify block index to extract!");
     return 0;
-    }
+  }
 
   vtkCompositeDataIterator* iter = input->NewIterator();
   iter->SetSkipEmptyNodes(false);
   vtkDataObjectTreeIterator* treeIter = vtkDataObjectTreeIterator::SafeDownCast(iter);
-  if(treeIter)
+  if (treeIter)
   {
     treeIter->VisitOnlyLeavesOff();
   }
@@ -71,17 +71,17 @@ int vtkPolygonArcProvider::RequestData(vtkInformation *,
   linePoly->Initialize();
   int index = 0;
   for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem(), index++)
-    {
+  {
     if (index == this->BlockIndex)
-      {
-      vtkPolyData *block = vtkPolyData::SafeDownCast( iter->GetCurrentDataObject() );
+    {
+      vtkPolyData* block = vtkPolyData::SafeDownCast(iter->GetCurrentDataObject());
       if (block)
-        {
-        linePoly->ShallowCopy( block );
-        }
-      break;
+      {
+        linePoly->ShallowCopy(block);
       }
+      break;
     }
+  }
   iter->Delete();
 
   output->Initialize();

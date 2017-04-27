@@ -23,14 +23,13 @@
 
 #include <set>
 
-
 vtkModelLoopUse* vtkModelLoopUse::New()
 {
   vtkObject* ret = vtkObjectFactory::CreateInstance("vtkModelLoopUse");
-  if(ret)
-    {
+  if (ret)
+  {
     return static_cast<vtkModelLoopUse*>(ret);
-    }
+  }
   return new vtkModelLoopUse;
 }
 
@@ -50,22 +49,22 @@ bool vtkModelLoopUse::Destroy()
   vtkSmartPointer<vtkModelItemIterator> edgeUses;
   edgeUses.TakeReference(this->NewIterator(vtkModelEdgeUseType));
   std::set<vtkModelEdgeUse*> destroyEdgeUses;
-  for(edgeUses->Begin();!edgeUses->IsAtEnd();edgeUses->Next())
-    {
+  for (edgeUses->Begin(); !edgeUses->IsAtEnd(); edgeUses->Next())
+  {
     vtkModelEdgeUse* edgeUse = vtkModelEdgeUse::SafeDownCast(edgeUses->GetCurrentItem());
-    if(edgeUse->GetModelEdge()->GetNumberOfModelEdgeUses() > 2)
-      {
-     destroyEdgeUses.insert(edgeUse);
-      }
+    if (edgeUse->GetModelEdge()->GetNumberOfModelEdgeUses() > 2)
+    {
+      destroyEdgeUses.insert(edgeUse);
     }
+  }
 
   this->RemoveAllAssociations(vtkModelEdgeUseType);
-  for(std::set<vtkModelEdgeUse*>::iterator it=destroyEdgeUses.begin();
-      it != destroyEdgeUses.end(); ++it)
-    {
+  for (std::set<vtkModelEdgeUse*>::iterator it = destroyEdgeUses.begin();
+       it != destroyEdgeUses.end(); ++it)
+  {
     (*it)->Destroy();
     (*it)->GetModelEdge()->DestroyModelEdgeUse(*it);
-    }
+  }
   return true;
 }
 
@@ -84,13 +83,13 @@ vtkModelFace* vtkModelLoopUse::GetModelFace()
   vtkModelItemIterator* iter = this->NewIterator(vtkModelFaceUseType);
   iter->Begin();
   vtkModelFace* face = 0;
-  if(!iter->IsAtEnd())
+  if (!iter->IsAtEnd())
+  {
+    if (vtkModelFaceUse* FaceUse = vtkModelFaceUse::SafeDownCast(iter->GetCurrentItem()))
     {
-    if(vtkModelFaceUse* FaceUse = vtkModelFaceUse::SafeDownCast(iter->GetCurrentItem()))
-      {
       face = FaceUse->GetModelFace();
-      }
     }
+  }
   iter->Delete();
   return face;
 }
@@ -100,14 +99,14 @@ vtkModelEdgeUse* vtkModelLoopUse::GetModelEdgeUse(int index)
   vtkSmartPointer<vtkModelItemIterator> edgeUses;
   edgeUses.TakeReference(this->NewIterator(vtkModelEdgeUseType));
   int counter = 0;
-  for(edgeUses->Begin();!edgeUses->IsAtEnd();edgeUses->Next())
+  for (edgeUses->Begin(); !edgeUses->IsAtEnd(); edgeUses->Next())
+  {
+    if (counter == index)
     {
-    if(counter == index)
-      {
       return vtkModelEdgeUse::SafeDownCast(edgeUses->GetCurrentItem());
-      }
-    counter++;
     }
+    counter++;
+  }
   vtkWarningMacro("Bad index.");
   return NULL;
 }
@@ -137,14 +136,14 @@ int vtkModelLoopUse::GetModelEdgeUseIndex(vtkModelEdgeUse* edgeUse)
   vtkSmartPointer<vtkModelItemIterator> edgeUses;
   edgeUses.TakeReference(this->NewModelEdgeUseIterator());
   int index = 0;
-  for(edgeUses->Begin();!edgeUses->IsAtEnd();edgeUses->Next())
+  for (edgeUses->Begin(); !edgeUses->IsAtEnd(); edgeUses->Next())
+  {
+    if (edgeUses->GetCurrentItem() == edgeUse)
     {
-    if(edgeUses->GetCurrentItem() == edgeUse)
-      {
       return index;
-      }
-    index++;
     }
+    index++;
+  }
   return -1;
 }
 
@@ -152,25 +151,22 @@ int vtkModelLoopUse::GetNumberOfModelVertices()
 {
   std::set<vtkModelVertex*> vertices;
   vtkModelItemIterator* edgeUses = this->NewModelEdgeUseIterator();
-  for(edgeUses->Begin();!edgeUses->IsAtEnd();edgeUses->Next())
+  for (edgeUses->Begin(); !edgeUses->IsAtEnd(); edgeUses->Next())
+  {
+    vtkModelEdgeUse* edgeUse = vtkModelEdgeUse::SafeDownCast(edgeUses->GetCurrentItem());
+    vtkModelItemIterator* vertexUses = edgeUse->NewIterator(vtkModelVertexUseType);
+    for (vertexUses->Begin(); !vertexUses->IsAtEnd(); vertexUses->Next())
     {
-    vtkModelEdgeUse* edgeUse =
-      vtkModelEdgeUse::SafeDownCast(edgeUses->GetCurrentItem());
-    vtkModelItemIterator* vertexUses =
-      edgeUse->NewIterator(vtkModelVertexUseType);
-    for(vertexUses->Begin();!vertexUses->IsAtEnd();vertexUses->Next())
-      {
-      vtkModelVertexUse* vertexUse =
-        vtkModelVertexUse::SafeDownCast(vertexUses->GetCurrentItem());
+      vtkModelVertexUse* vertexUse = vtkModelVertexUse::SafeDownCast(vertexUses->GetCurrentItem());
       vertices.insert(vertexUse->GetModelVertex());
-      }
-    vertexUses->Delete();
     }
+    vertexUses->Delete();
+  }
   edgeUses->Delete();
   return static_cast<int>(vertices.size());
 }
 
 void vtkModelLoopUse::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }

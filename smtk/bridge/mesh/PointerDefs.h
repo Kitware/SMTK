@@ -18,15 +18,15 @@
 #include "smtk/SystemConfig.h"
 
 namespace smtk
-{  //session relates pointer classes
+{ //session relates pointer classes
 namespace bridge
 {
-  namespace mesh
-    {
-    class Session;
-    typedef smtk::shared_ptr< smtk::bridge::mesh::Session > SessionPtr;
-    struct Topology;
-    }
+namespace mesh
+{
+class Session;
+typedef smtk::shared_ptr<smtk::bridge::mesh::Session> SessionPtr;
+struct Topology;
+}
 }
 }
 #endif

@@ -19,42 +19,40 @@
 
 namespace moab
 {
-  class ReadUtilIface;
+class ReadUtilIface;
 }
 
-namespace smtk {
-namespace mesh {
-namespace moab {
+namespace smtk
+{
+namespace mesh
+{
+namespace moab
+{
 
 class SMTKCORE_EXPORT Allocator : public smtk::mesh::Allocator
 {
 public:
-  Allocator( ::moab::Interface* interface );
+  Allocator(::moab::Interface* interface);
 
   virtual ~Allocator();
 
-  bool allocatePoints( std::size_t numPointsToAlloc,
-                       smtk::mesh::Handle& firstVertexHandle,
-                       std::vector<double* >& coordinateMemory);
+  bool allocatePoints(std::size_t numPointsToAlloc, smtk::mesh::Handle& firstVertexHandle,
+    std::vector<double*>& coordinateMemory);
 
-  bool allocateCells( smtk::mesh::CellType cellType,
-                      std::size_t numCellsToAlloc,
-                      int numVertsPerCell,
-                      smtk::mesh::HandleRange& createdCellIds,
-                      smtk::mesh::Handle*& connectivityArray);
+  bool allocateCells(smtk::mesh::CellType cellType, std::size_t numCellsToAlloc,
+    int numVertsPerCell, smtk::mesh::HandleRange& createdCellIds,
+    smtk::mesh::Handle*& connectivityArray);
 
-  bool connectivityModified( const smtk::mesh::HandleRange& cellsToUpdate,
-                             int numVertsPerCell,
-                             const smtk::mesh::Handle* connectivityArray);
+  bool connectivityModified(const smtk::mesh::HandleRange& cellsToUpdate, int numVertsPerCell,
+    const smtk::mesh::Handle* connectivityArray);
+
 private:
-  Allocator( const Allocator& other ); //blank since we are used by shared_ptr
-  Allocator& operator=( const Allocator& other ); //blank since we are used by shared_ptr
+  Allocator(const Allocator& other);            //blank since we are used by shared_ptr
+  Allocator& operator=(const Allocator& other); //blank since we are used by shared_ptr
 
   //holds a reference to the real moab interface
   ::moab::ReadUtilIface* m_rface;
-
 };
-
 }
 }
 }

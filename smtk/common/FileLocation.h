@@ -26,13 +26,13 @@
 
 #ifdef SMTK_MSVC
 // Ignore symbol exposure warnings for STL classes.
-#pragma warning (disable : 4251)
+#pragma warning(disable : 4251)
 #endif
 
 namespace smtk
 {
-  namespace common
-  {
+namespace common
+{
 class SMTKCORE_EXPORT FileLocation
 {
 public:
@@ -41,42 +41,34 @@ public:
     m_filePath = std::string();
     m_referencePath = std::string();
   }
-  FileLocation(const std::string& filePath,
-    const std::string& refPath = std::string());
+  FileLocation(const std::string& filePath, const std::string& refPath = std::string());
   FileLocation(const FileLocation& other);
-  virtual ~FileLocation() { }
+  virtual ~FileLocation() {}
 
   std::string absolutePath() const;
   std::string relativePath() const;
   std::string referencePath() const;
 
-  bool empty() const
-  {
-    return this->m_filePath.empty();
-  }
+  bool empty() const { return this->m_filePath.empty(); }
   void clear()
   {
     m_filePath.clear();
     m_referencePath.clear();
   }
-  FileLocation &operator=(const FileLocation &from)
+  FileLocation& operator=(const FileLocation& from)
   {
     m_filePath = from.m_filePath;
     m_referencePath = from.m_referencePath;
     return *this;
   }
-  bool operator==(const FileLocation &from) const;
-  bool operator==(const std::string &from) const
-  {
-    return *this == FileLocation(from);
-  }
+  bool operator==(const FileLocation& from) const;
+  bool operator==(const std::string& from) const { return *this == FileLocation(from); }
 
 protected:
   std::string m_filePath;
   std::string m_referencePath;
-
 };
-  }
+}
 }
 
-#endif  /* __smtk_common_FileLocation_h */
+#endif /* __smtk_common_FileLocation_h */

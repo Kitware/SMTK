@@ -44,9 +44,12 @@
 
 using namespace smtk::model;
 
-namespace smtk {
-  namespace bridge {
-    namespace cgm {
+namespace smtk
+{
+namespace bridge
+{
+namespace cgm
+{
 
 smtk::model::OperatorResult BooleanUnion::operateInternal()
 {
@@ -60,24 +63,24 @@ smtk::model::OperatorResult BooleanUnion::operateInternal()
   DLIList<Body*> cgmBodiesOut;
   EntityRefArray expunged;
   bool ok = true;
-  ok &= this->cgmEntities(*this->specification()->associations().get(), cgmBodiesIn, keepInputs, expunged);
+  ok &= this->cgmEntities(
+    *this->specification()->associations().get(), cgmBodiesIn, keepInputs, expunged);
 
   if (cgmBodiesIn.size() < 2)
-    {
+  {
     smtkInfoMacro(log(), "Need multiple bodies to union, given " << cgmBodiesIn.size() << ".");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
   DLIList<RefEntity*> imported;
   CubitStatus s = GeometryModifyTool::instance()->unite(cgmBodiesIn, cgmBodiesOut, keepInputs);
   if (s != CUBIT_SUCCESS)
-    {
+  {
     smtkInfoMacro(log(), "Failed to perform union (status " << s << ").");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
-  smtk::model::OperatorResult result = this->createResult(
-    smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmBodiesOut, result, MODIFIED);
   result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
@@ -85,14 +88,9 @@ smtk::model::OperatorResult BooleanUnion::operateInternal()
   return result;
 }
 
-    } // namespace cgm
-  } //namespace bridge
+} // namespace cgm
+} //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(
-  SMTKCGMSESSION_EXPORT,
-  smtk::bridge::cgm::BooleanUnion,
-  cgm_boolean_union,
-  "union",
-  BooleanUnion_xml,
-  smtk::bridge::cgm::Session);
+smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::BooleanUnion,
+  cgm_boolean_union, "union", BooleanUnion_xml, smtk::bridge::cgm::Session);

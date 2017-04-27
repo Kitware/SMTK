@@ -13,8 +13,10 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/EntityRefArrangementOps.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 class CellEntity;
 class ShellEntity;
@@ -31,21 +33,25 @@ typedef std::vector<UseEntity> UseEntities;
 class SMTKCORE_EXPORT ShellEntity : public EntityRef
 {
 public:
-  SMTK_ENTITYREF_CLASS(ShellEntity,EntityRef,isShellEntity);
+  SMTK_ENTITYREF_CLASS(ShellEntity, EntityRef, isShellEntity);
 
   CellEntity boundingCell() const;
   UseEntity boundingUseEntity() const;
 
   bool contains(const UseEntity& bdyUse) const;
 
-  template<typename T> T uses() const;
-  template<typename T> T cellsOfUses() const;
+  template <typename T>
+  T uses() const;
+  template <typename T>
+  T cellsOfUses() const;
 
   ShellEntity containingShellEntity() const;
-  template<typename T> T containedShellEntities() const;
+  template <typename T>
+  T containedShellEntities() const;
 
   ShellEntity& addUse(const UseEntity& use);
-  template<typename T> ShellEntity& addUses(const T& useContainer);
+  template <typename T>
+  ShellEntity& addUses(const T& useContainer);
 };
 
 /**\brief Return the uses (cells with an orientation, or sense) composing this shell.
@@ -57,7 +63,7 @@ public:
   * returns uses().empty()) be created with multiple containedShells()? Or should
   * shells be allowed to have siblings?
   */
-template<typename T>
+template <typename T>
 T ShellEntity::uses() const
 {
   T result;
@@ -68,7 +74,7 @@ T ShellEntity::uses() const
 /**\brief Return all the shell-entities contained inside this one.
   *
   */
-template<typename T>
+template <typename T>
 T ShellEntity::containedShellEntities() const
 {
   T result;
@@ -76,17 +82,17 @@ T ShellEntity::containedShellEntities() const
   return result;
 }
 
-template<typename T>
+template <typename T>
 ShellEntity& ShellEntity::addUses(const T& useContainer)
 {
   for (typename T::const_iterator it = useContainer.begin(); it != useContainer.end(); ++it)
-    {
+  {
     this->addUse(*it);
-    }
+  }
   return *this;
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_model_ShellEntity_h

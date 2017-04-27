@@ -18,7 +18,6 @@
 #include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkSplitOperatorBase.h"
 
-
 class vtkDiscreteModelWrapper;
 class vtkIdTypeArray;
 class vtkModelEntity;
@@ -26,8 +25,8 @@ class vtkModelEntity;
 class SMTKDISCRETESESSION_EXPORT vtkSplitOperator : public vtkSplitOperatorBase
 {
 public:
-  static vtkSplitOperator * New();
-  vtkTypeMacro(vtkSplitOperator,vtkSplitOperatorBase);
+  static vtkSplitOperator* New();
+  vtkTypeMacro(vtkSplitOperator, vtkSplitOperatorBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -57,8 +56,8 @@ private:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).
   int OperateSucceeded;
 
-  vtkSplitOperator(const vtkSplitOperator&);  // Not implemented.
-  void operator=(const vtkSplitOperator&);  // Not implemented.
+  vtkSplitOperator(const vtkSplitOperator&); // Not implemented.
+  void operator=(const vtkSplitOperator&);   // Not implemented.
 };
 
 #endif

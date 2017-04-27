@@ -26,36 +26,34 @@ vtkDiscreteModelEntity::~vtkDiscreteModelEntity()
 {
 }
 
-vtkDiscreteModelEntity* vtkDiscreteModelEntity::GetThisDiscreteModelEntity(
-  vtkModelEntity* entity)
+vtkDiscreteModelEntity* vtkDiscreteModelEntity::GetThisDiscreteModelEntity(vtkModelEntity* entity)
 {
-  if(!entity)
-    {
+  if (!entity)
+  {
     return 0;
-    }
+  }
 
-  if(vtkDiscreteModelRegion* region = vtkDiscreteModelRegion::SafeDownCast(entity))
-    {
+  if (vtkDiscreteModelRegion* region = vtkDiscreteModelRegion::SafeDownCast(entity))
+  {
     return region;
-    }
+  }
 
-  if(vtkDiscreteModelFace* face = vtkDiscreteModelFace::SafeDownCast(entity))
-    {
+  if (vtkDiscreteModelFace* face = vtkDiscreteModelFace::SafeDownCast(entity))
+  {
     return face;
-    }
+  }
 
-  if(vtkDiscreteModelEdge* edge = vtkDiscreteModelEdge::SafeDownCast(entity))
-    {
+  if (vtkDiscreteModelEdge* edge = vtkDiscreteModelEdge::SafeDownCast(entity))
+  {
     return edge;
-    }
+  }
 
   return 0;
 }
 
 int vtkDiscreteModelEntity::GetNumberOfModelEntityGroups()
 {
-  return this->GetThisModelEntity()->GetNumberOfAssociations(
-    vtkDiscreteModelEntityGroupType);
+  return this->GetThisModelEntity()->GetNumberOfAssociations(vtkDiscreteModelEntityGroupType);
 }
 
 vtkModelItemIterator* vtkDiscreteModelEntity::NewModelEntityGroupIterator()
@@ -70,12 +68,12 @@ void vtkDiscreteModelEntity::CopyModelEntityGroups(vtkDiscreteModelEntity* sourc
   this->RemoveAllModelEntityGroups();
   vtkModelItemIterator* iter = sourceEntity->NewModelEntityGroupIterator();
 
-  for(iter->Begin();!iter->IsAtEnd();iter->Next())
-    {
-    vtkDiscreteModelEntityGroup* entityGroup = vtkDiscreteModelEntityGroup::SafeDownCast(
-      iter->GetCurrentItem());
+  for (iter->Begin(); !iter->IsAtEnd(); iter->Next())
+  {
+    vtkDiscreteModelEntityGroup* entityGroup =
+      vtkDiscreteModelEntityGroup::SafeDownCast(iter->GetCurrentItem());
     entityGroup->AddModelEntity(this);
-    }
+  }
   iter->Delete();
 }
 
@@ -83,17 +81,15 @@ void vtkDiscreteModelEntity::RemoveAllModelEntityGroups()
 {
   vtkModelItemIterator* iter = this->NewModelEntityGroupIterator();
 
-  for(iter->Begin();!iter->IsAtEnd();iter->Next())
-    {
-    vtkDiscreteModelEntityGroup* entityGroup = vtkDiscreteModelEntityGroup::SafeDownCast(
-      iter->GetCurrentItem());
+  for (iter->Begin(); !iter->IsAtEnd(); iter->Next())
+  {
+    vtkDiscreteModelEntityGroup* entityGroup =
+      vtkDiscreteModelEntityGroup::SafeDownCast(iter->GetCurrentItem());
     entityGroup->RemoveModelEntity(this);
-    }
+  }
   iter->Delete();
 }
 
 void vtkDiscreteModelEntity::PrintSelf(ostream& /*os*/, vtkIndent /*indent*/)
 {
-
 }
-

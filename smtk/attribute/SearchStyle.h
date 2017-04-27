@@ -12,8 +12,10 @@
 
 #include "smtk/CoreExports.h"
 
-namespace smtk {
-  namespace attribute {
+namespace smtk
+{
+namespace attribute
+{
 
 /**\brief How should searches for items be conducted?
   *
@@ -25,7 +27,7 @@ enum SearchStyle
   ALL_CHILDREN     //!< Search the attribute, descending all children
 };
 
-  } // attribute namespace
+} // attribute namespace
 } // smtk namespace
 
 #endif // __smtk_attribute_SearchStyle_h

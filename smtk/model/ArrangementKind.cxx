@@ -9,8 +9,10 @@
 //=========================================================================
 #include "smtk/model/ArrangementKind.h"
 
-namespace smtk {
- namespace model {
+namespace smtk
+{
+namespace model
+{
 
 const char* ArrangementKindName[KINDS_OF_ARRANGEMENTS + 1] = {
   "inclusion",    // INCLUDES
@@ -41,12 +43,12 @@ const char* ArrangementKindAbbr[KINDS_OF_ARRANGEMENTS + 1] = {
 ArrangementKind ArrangementKindFromName(const std::string& name)
 {
   for (int i = 0; i < KINDS_OF_ARRANGEMENTS; ++i)
-    {
+  {
     if (name == ArrangementKindName[i])
-      {
+    {
       return ArrangementKind(i);
-      }
     }
+  }
   return KINDS_OF_ARRANGEMENTS;
 }
 
@@ -58,12 +60,12 @@ std::string NameForArrangementKind(ArrangementKind k)
 ArrangementKind ArrangementKindFromAbbreviation(const std::string& abbr)
 {
   for (int i = 0; i < KINDS_OF_ARRANGEMENTS; ++i)
-    {
+  {
     if (abbr == ArrangementKindAbbr[i])
-      {
+    {
       return ArrangementKind(i);
-      }
     }
+  }
   return KINDS_OF_ARRANGEMENTS;
 }
 
@@ -166,26 +168,33 @@ static ArrangementKind ArrangementKindDualSession[KINDS_OF_ARRANGEMENTS] = {
 ArrangementKind Dual(EntityTypeBits entType, ArrangementKind k)
 {
   if (k >= static_cast<ArrangementKind>(0) && k < KINDS_OF_ARRANGEMENTS)
-    {
+  {
     switch (entType & ENTITY_MASK)
-      {
-    case CELL_ENTITY    : return ArrangementKindDualCell[k];
-    case USE_ENTITY     : return ArrangementKindDualUse[k];
-    case SHELL_ENTITY   : return ArrangementKindDualShell[k];
-    case GROUP_ENTITY   : return ArrangementKindDualGroup[k];
-    case MODEL_ENTITY   : return ArrangementKindDualModel[k];
-    case INSTANCE_ENTITY: return ArrangementKindDualInstance[k];
-    case SESSION        : return ArrangementKindDualSession[k];
-    default:
-      // Groups can have membership constraint bits set:
-      if (entType & GROUP_ENTITY)
+    {
+      case CELL_ENTITY:
+        return ArrangementKindDualCell[k];
+      case USE_ENTITY:
+        return ArrangementKindDualUse[k];
+      case SHELL_ENTITY:
+        return ArrangementKindDualShell[k];
+      case GROUP_ENTITY:
         return ArrangementKindDualGroup[k];
-      // Otherwise: Invalid... fall through
-      break;
-      }
+      case MODEL_ENTITY:
+        return ArrangementKindDualModel[k];
+      case INSTANCE_ENTITY:
+        return ArrangementKindDualInstance[k];
+      case SESSION:
+        return ArrangementKindDualSession[k];
+      default:
+        // Groups can have membership constraint bits set:
+        if (entType & GROUP_ENTITY)
+          return ArrangementKindDualGroup[k];
+        // Otherwise: Invalid... fall through
+        break;
     }
+  }
   return KINDS_OF_ARRANGEMENTS;
 }
 
-  } //namespace model
+} //namespace model
 } // namespace smtk

@@ -16,8 +16,10 @@
 #include "vtkNew.h"
 
 class vtkPolyData;
-namespace smtk{
-  namespace model{
+namespace smtk
+{
+namespace model
+{
 
 class BathymetryHelper;
 
@@ -36,10 +38,9 @@ protected:
   BathymetryOperator();
   virtual smtk::model::OperatorResult operateInternal();
   BathymetryHelper* bathyHelper;
-
 };
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_model_BathymetryOperator_h

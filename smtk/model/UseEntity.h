@@ -13,8 +13,10 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/EntityRefArrangementOps.h" // For shellEntities<T>().
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 class CellEntity;
 class ShellEntity;
@@ -51,45 +53,50 @@ typedef std::vector<UseEntity> UseEntities;
 class SMTKCORE_EXPORT UseEntity : public EntityRef
 {
 public:
-  SMTK_ENTITYREF_CLASS(UseEntity,EntityRef,isUseEntity);
+  SMTK_ENTITYREF_CLASS(UseEntity, EntityRef, isUseEntity);
 
   CellEntity cell() const;
   ShellEntity boundingShellEntity() const;
-  template<typename T> T boundingShellEntities() const;
-  template<typename T> T shellEntities() const;
+  template <typename T>
+  T boundingShellEntities() const;
+  template <typename T>
+  T shellEntities() const;
   Orientation orientation() const;
   int sense() const;
 
   UseEntity& setBoundingShellEntity(const ShellEntity& shell);
   UseEntity& addShellEntity(const ShellEntity& shell);
-  template<typename T> UseEntity& addShellEntities(const T& shellContainer);
+  template <typename T>
+  UseEntity& addShellEntities(const T& shellContainer);
 };
 
-template<typename T> T UseEntity::boundingShellEntities() const
+template <typename T>
+T UseEntity::boundingShellEntities() const
 {
   T container;
   EntityRefArrangementOps::appendAllRelations(*this, HAS_SHELL, container);
   return container;
 }
 
-template<typename T> T UseEntity::shellEntities() const
+template <typename T>
+T UseEntity::shellEntities() const
 {
   T container;
   EntityRefArrangementOps::appendAllRelations(*this, INCLUDES, container);
   return container;
 }
 
-template<typename T>
+template <typename T>
 UseEntity& UseEntity::addShellEntities(const T& shellContainer)
 {
   for (typename T::const_iterator it = shellContainer.begin(); it != shellContainer.end(); ++it)
-    {
+  {
     this->addShellEntity(*it);
-    }
+  }
   return *this;
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_model_UseEntity_h

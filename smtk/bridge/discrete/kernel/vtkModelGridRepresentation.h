@@ -28,7 +28,7 @@ class vtkIdTypeArray;
 class VTKSMTKDISCRETEMODEL_EXPORT vtkModelGridRepresentation : public vtkObject
 {
 public:
-  vtkTypeMacro(vtkModelGridRepresentation,vtkObject);
+  vtkTypeMacro(vtkModelGridRepresentation, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   vtkGetStringMacro(GridFileName);
@@ -37,20 +37,20 @@ public:
   // Description:
   // Get the point ids with respect to the analysis grid of the given nodal group.
   // Does checking to make sure that the information is valid and returns true if successful.
-  virtual bool GetBCSNodalAnalysisGridPointIds(vtkDiscreteModel* model, vtkIdType bcsGroupId,
-    int bcGroupType, vtkIdList* pointIds) = 0;
+  virtual bool GetBCSNodalAnalysisGridPointIds(
+    vtkDiscreteModel* model, vtkIdType bcsGroupId, int bcGroupType, vtkIdList* pointIds) = 0;
 
   // Description:
   // Get the point ids with respect to the analysis grid of the given floating edge.
   // Does checking to make sure that the information is valid and returns true if successful.
-  virtual bool GetFloatingEdgeAnalysisGridPointIds(vtkDiscreteModel* model, vtkIdType modelEdgeId,
-                                                   vtkIdList* pointIds) = 0;
+  virtual bool GetFloatingEdgeAnalysisGridPointIds(
+    vtkDiscreteModel* model, vtkIdType modelEdgeId, vtkIdList* pointIds) = 0;
 
   // Description:
   // Get the point ids with respect to the analysis grid of all of the points
   // classified on the model edge with id edgeId.
-  virtual bool GetModelEdgeAnalysisPoints(vtkDiscreteModel* model, vtkIdType edgeId,
-                                          vtkIdTypeArray* edgePoints) = 0;
+  virtual bool GetModelEdgeAnalysisPoints(
+    vtkDiscreteModel* model, vtkIdType edgeId, vtkIdTypeArray* edgePoints) = 0;
 
   // Description:
   // Get the model cell info with respect to the analysis grid of the given boundary group.
@@ -59,9 +59,9 @@ public:
   // cellIds are in fortran style ordering and cell sides are between 1 and 4 for tets.
   // This is meant for 3D models.
   virtual bool GetBoundaryGroupAnalysisFacets(vtkDiscreteModel* model, vtkIdType boundaryGroupId,
-                                              vtkIdList* cellIds, vtkIdList* cellSides) = 0;
+    vtkIdList* cellIds, vtkIdList* cellSides) = 0;
 
-   // Description:
+  // Description:
   // Do some type of validation of the mapping information in model.
   // So far we can't guarantee that this works.
   virtual bool IsModelConsistent(vtkDiscreteModel* model) = 0;
@@ -82,8 +82,8 @@ protected:
   vtkSetStringMacro(ModelInfoFileName);
 
 private:
-  vtkModelGridRepresentation(const vtkModelGridRepresentation&);  // Not implemented.
-  void operator=(const vtkModelGridRepresentation&);  // Not implemented.
+  vtkModelGridRepresentation(const vtkModelGridRepresentation&); // Not implemented.
+  void operator=(const vtkModelGridRepresentation&);             // Not implemented.
 
   // Description:
   // The name of the analysis grid file.
@@ -95,4 +95,3 @@ private:
   char* ModelInfoFileName;
 };
 #endif
-

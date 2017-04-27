@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkCMBModelPointsOperator.h"
 
 #include "vtkAlgorithm.h"
@@ -22,8 +21,8 @@
 
 vtkStandardNewMacro(vtkCMBModelPointsOperator);
 
-vtkCxxSetObjectMacro(vtkCMBModelPointsOperator,ModelPoints,vtkPointSet);
-vtkCxxSetObjectMacro(vtkCMBModelPointsOperator,ModelPointData,vtkPointData);
+vtkCxxSetObjectMacro(vtkCMBModelPointsOperator, ModelPoints, vtkPointSet);
+vtkCxxSetObjectMacro(vtkCMBModelPointsOperator, ModelPointData, vtkPointData);
 
 vtkCMBModelPointsOperator::vtkCMBModelPointsOperator()
 {
@@ -32,7 +31,7 @@ vtkCMBModelPointsOperator::vtkCMBModelPointsOperator()
   this->OperateSucceeded = 0;
 }
 
-vtkCMBModelPointsOperator:: ~vtkCMBModelPointsOperator()
+vtkCMBModelPointsOperator::~vtkCMBModelPointsOperator()
 {
   this->SetModelPoints(0);
   this->SetModelPointData(0);
@@ -40,58 +39,55 @@ vtkCMBModelPointsOperator:: ~vtkCMBModelPointsOperator()
 
 void vtkCMBModelPointsOperator::SetModelPointsInput(vtkAlgorithm* dataAlg)
 {
-  if(dataAlg)
-    {
-    this->SetModelPoints(vtkPointSet::SafeDownCast(
-      dataAlg->GetOutputDataObject(0)));
-    }
+  if (dataAlg)
+  {
+    this->SetModelPoints(vtkPointSet::SafeDownCast(dataAlg->GetOutputDataObject(0)));
+  }
 }
 
 void vtkCMBModelPointsOperator::SetModelPointDataInput(vtkAlgorithm* dataAlg)
 {
-  if(dataAlg)
+  if (dataAlg)
+  {
+    vtkDataSet* dataObj = vtkDataSet::SafeDownCast(dataAlg->GetOutputDataObject(0));
+    if (dataObj)
     {
-    vtkDataSet* dataObj = vtkDataSet::SafeDownCast(
-      dataAlg->GetOutputDataObject(0));
-    if(dataObj)
-      {
       this->SetModelPointData(dataObj->GetPointData());
-      }
     }
+  }
 }
 
 void vtkCMBModelPointsOperator::Operate(vtkDiscreteModelWrapper* ModelWrapper)
 {
   vtkDebugMacro("Changing points of a CMB model.");
   this->OperateSucceeded = 0;
-  if((!this->ModelPoints || !this->ModelPoints->GetPoints()) &&
-      !this->ModelPointData)
-    {
+  if ((!this->ModelPoints || !this->ModelPoints->GetPoints()) && !this->ModelPointData)
+  {
     vtkWarningMacro("Must set a valid point set or point data.");
     return;
-    }
+  }
 
-  if(!ModelWrapper)
-    {
+  if (!ModelWrapper)
+  {
     vtkErrorMacro("Passed in a null model.");
     return;
-    }
+  }
 
-  if(this->ModelPoints && this->ModelPoints->GetPoints())
-    {
+  if (this->ModelPoints && this->ModelPoints->GetPoints())
+  {
     ModelWrapper->SetGeometricEntityPoints(this->ModelPoints->GetPoints());
-    }
+  }
 
-  if(this->ModelPointData)
-    {
+  if (this->ModelPointData)
+  {
     ModelWrapper->SetGeometricEntityPointData(this->ModelPointData);
-    }
+  }
 
   this->OperateSucceeded = 1;
 }
 
 void vtkCMBModelPointsOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
   os << indent << "ModelPoints: " << this->ModelPoints << endl;
 }

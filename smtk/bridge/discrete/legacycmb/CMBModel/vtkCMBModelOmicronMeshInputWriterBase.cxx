@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkCMBModelOmicronMeshInputWriterBase.h"
 
 #include "vtkCMBModelOmicronMeshInputWriter.h"
@@ -42,27 +41,27 @@ void vtkCMBModelOmicronMeshInputWriterBase::Operate(vtkDiscreteModelWrapper* mod
   vtkDebugMacro("Writing a CMB file.");
   this->OperateSucceeded = 0;
   if (!this->GetFileName())
-    {
+  {
     vtkWarningMacro("Must set file name.");
     return;
-    }
+  }
   if (!this->GeometryFileName)
-    {
+  {
     vtkWarningMacro("Must specify GeometryFileName!\n");
     return;
-    }
+  }
 
   if (!this->TetGenOptions)
-    {
+  {
     vtkWarningMacro("Must specify TetGenOptions!\n");
     return;
-    }
+  }
 
-  if(!modelWrapper)
-    {
+  if (!modelWrapper)
+  {
     vtkErrorMacro("Passed in a null model.");
     return;
-    }
+  }
 
   vtkSmartPointer<vtkCMBModelOmicronMeshInputWriter> writer =
     vtkSmartPointer<vtkCMBModelOmicronMeshInputWriter>::New();
@@ -71,7 +70,7 @@ void vtkCMBModelOmicronMeshInputWriterBase::Operate(vtkDiscreteModelWrapper* mod
 
 void vtkCMBModelOmicronMeshInputWriterBase::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
   os << indent << "FileName: " << this->FileName << endl;
   os << indent << "GeometryFileName: " << this->GeometryFileName << endl;
   os << indent << "TetGenOptions: " << this->TetGenOptions << endl;

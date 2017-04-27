@@ -27,11 +27,11 @@ class SMTKDISCRETESESSION_EXPORT vtkCMBParserV5 : public vtkCMBParserBase
 {
 public:
   static vtkCMBParserV5* New();
-  vtkTypeMacro(vtkCMBParserV5,vtkCMBParserBase);
+  vtkTypeMacro(vtkCMBParserV5, vtkCMBParserBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  virtual bool Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
-                     smtk::bridge::discrete::Session* session);
+  virtual bool Parse(
+    vtkPolyData* MasterPoly, vtkDiscreteModel* Model, smtk::bridge::discrete::Session* session);
 
 protected:
   vtkCMBParserV5();
@@ -39,8 +39,7 @@ protected:
 
   // Description:
   // Set the unique persistent Id, color, user name.
-  void SetModelEntityData(
-    vtkPolyData* Poly, std::vector<vtkModelEntity*> & ModelEntities,
+  void SetModelEntityData(vtkPolyData* Poly, std::vector<vtkModelEntity*>& ModelEntities,
     const char* BaseArrayName, vtkDiscreteModel* Model);
 
   // Description:
@@ -51,8 +50,8 @@ protected:
   void SetAnalysisGridData(vtkPolyData* masterPoly, vtkDiscreteModel* model);
 
 private:
-  vtkCMBParserV5(const vtkCMBParserV5&);  // Not implemented.
-  void operator=(const vtkCMBParserV5&);  // Not implemented.
+  vtkCMBParserV5(const vtkCMBParserV5&); // Not implemented.
+  void operator=(const vtkCMBParserV5&); // Not implemented.
 };
 
 #endif

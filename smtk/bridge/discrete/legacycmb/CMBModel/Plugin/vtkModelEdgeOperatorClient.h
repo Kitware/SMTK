@@ -26,8 +26,8 @@ class vtkSMProxy;
 class VTK_EXPORT vtkModelEdgeOperatorClient : public vtkModelEdgeOperatorBase
 {
 public:
-  static vtkModelEdgeOperatorClient * New();
-  vtkTypeMacro(vtkModelEdgeOperatorClient,vtkModelEdgeOperatorBase);
+  static vtkModelEdgeOperatorClient* New();
+  vtkTypeMacro(vtkModelEdgeOperatorClient, vtkModelEdgeOperatorBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   using Superclass::Operate;
@@ -42,8 +42,8 @@ protected:
   virtual ~vtkModelEdgeOperatorClient();
 
 private:
-  vtkModelEdgeOperatorClient(const vtkModelEdgeOperatorClient&);  // Not implemented.
-  void operator=(const vtkModelEdgeOperatorClient&);  // Not implemented.
+  vtkModelEdgeOperatorClient(const vtkModelEdgeOperatorClient&); // Not implemented.
+  void operator=(const vtkModelEdgeOperatorClient&);             // Not implemented.
 };
 
 #endif

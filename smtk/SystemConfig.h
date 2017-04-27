@@ -17,16 +17,16 @@
 
 //Windows specific stuff
 #if defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__)
-#  if !defined(SMTK_DISPLAY_INGORED_WIN_WARNINGS)
-#    pragma warning ( disable : 4251 ) /* missing DLL-interface */
-#  endif //!defined(SMTK_DISPLAY_INGORED_WIN_WARNINGS)
-#endif //Windows specific stuff
+#if !defined(SMTK_DISPLAY_INGORED_WIN_WARNINGS)
+#pragma warning(disable : 4251) /* missing DLL-interface */
+#endif                          //!defined(SMTK_DISPLAY_INGORED_WIN_WARNINGS)
+#endif                          //Windows specific stuff
 
-#define SMTK_BASE_TYPE(thisclass) \
+#define SMTK_BASE_TYPE(thisclass)                                                                  \
   virtual const char* classname() const { return #thisclass; }
 
-#define SMTK_DERIVED_TYPE(thisclass,superclass) \
-  typedef superclass Superclass;\
+#define SMTK_DERIVED_TYPE(thisclass, superclass)                                                   \
+  typedef superclass Superclass;                                                                   \
   SMTK_BASE_TYPE(thisclass)
 
 #endif //__smtk_SystemConfig_h

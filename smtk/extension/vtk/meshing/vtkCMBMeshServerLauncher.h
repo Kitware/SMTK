@@ -20,16 +20,22 @@
 #include "vtkObject.h"
 #include "vtkStdString.h" //needed for the HostName
 
-namespace remus { namespace server { class Server; } }
+namespace remus
+{
+namespace server
+{
+class Server;
+}
+}
 
 class VTKSMTKMESHINGEXT_EXPORT vtkCMBMeshServerLauncher : public vtkObject
 {
 public:
   //construction of this class will spawn
   //the CMBMeshServer
-  vtkTypeMacro(vtkCMBMeshServerLauncher,vtkObject);
+  vtkTypeMacro(vtkCMBMeshServerLauncher, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
-  static vtkCMBMeshServerLauncher *New();
+  static vtkCMBMeshServerLauncher* New();
 
   //create a CMBMeshServer
   //returns if we launched a server, if a server already exists
@@ -46,15 +52,14 @@ public:
   const char* GetHostName() const { return HostName.c_str(); }
 
   //get the port of the server we created
-  vtkGetMacro(PortNumber,int)
+  vtkGetMacro(PortNumber, int)
 
-protected:
-  vtkCMBMeshServerLauncher();
+    protected : vtkCMBMeshServerLauncher();
   ~vtkCMBMeshServerLauncher();
 
 private:
-  vtkCMBMeshServerLauncher(const vtkCMBMeshServerLauncher&);  // Not implemented.
-  void operator=(const vtkCMBMeshServerLauncher&);  // Not implemented.
+  vtkCMBMeshServerLauncher(const vtkCMBMeshServerLauncher&); // Not implemented.
+  void operator=(const vtkCMBMeshServerLauncher&);           // Not implemented.
 
   vtkStdString HostName;
   int PortNumber;

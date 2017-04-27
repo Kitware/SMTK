@@ -12,9 +12,12 @@
 
 #include "smtk/bridge/cgm/Operator.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace cgm {
+namespace smtk
+{
+namespace bridge
+{
+namespace cgm
+{
 
 class SMTKCGMSESSION_EXPORT RemoveModel : public Operator
 {
@@ -28,11 +31,10 @@ public:
 
 protected:
   virtual smtk::model::OperatorResult operateInternal();
-
 };
 
-    } //namespace cgm
-  } //namespace bridge
+} //namespace cgm
+} //namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_discrete_RemoveModel_h

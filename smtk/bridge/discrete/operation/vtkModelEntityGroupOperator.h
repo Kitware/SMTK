@@ -28,11 +28,12 @@
 class vtkDiscreteModelWrapper;
 class vtkIdList;
 
-class SMTKDISCRETESESSION_EXPORT vtkModelEntityGroupOperator : public vtkModelEntityGroupOperatorBase
+class SMTKDISCRETESESSION_EXPORT vtkModelEntityGroupOperator
+  : public vtkModelEntityGroupOperatorBase
 {
 public:
-  static vtkModelEntityGroupOperator * New();
-  vtkTypeMacro(vtkModelEntityGroupOperator,vtkModelEntityGroupOperatorBase);
+  static vtkModelEntityGroupOperator* New();
+  vtkTypeMacro(vtkModelEntityGroupOperator, vtkModelEntityGroupOperatorBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Prevent warnings about hidden base-class virtuals:
@@ -81,8 +82,8 @@ protected:
   virtual bool AbleToOperate(vtkDiscreteModelWrapper* ModelWrapper);
 
 private:
-  vtkModelEntityGroupOperator(const vtkModelEntityGroupOperator&);  // Not implemented.
-  void operator=(const vtkModelEntityGroupOperator&);  // Not implemented.
+  vtkModelEntityGroupOperator(const vtkModelEntityGroupOperator&); // Not implemented.
+  void operator=(const vtkModelEntityGroupOperator&);              // Not implemented.
 
   // Description:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).

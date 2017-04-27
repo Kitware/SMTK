@@ -17,7 +17,6 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelGeometricEntity.h"
 
-
 class vtkIdList;
 class vtkModelItemIterator;
 class vtkModelFace;
@@ -27,15 +26,15 @@ class vtkModelShellUse;
 class VTKSMTKDISCRETEMODEL_EXPORT vtkModelRegion : public vtkModelGeometricEntity
 {
 public:
-  vtkTypeMacro(vtkModelRegion,vtkModelGeometricEntity);
+  vtkTypeMacro(vtkModelRegion, vtkModelGeometricEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   vtkModelItemIterator* NewModelShellUseIterator();
 
   virtual int GetType();
 
-  virtual void Initialize(int numModelFaces, vtkModelFace** faces, int* faceSides,
-                          vtkIdType modelRegionId);
+  virtual void Initialize(
+    int numModelFaces, vtkModelFace** faces, int* faceSides, vtkIdType modelRegionId);
 
   virtual void Initialize(vtkIdType modelRegionId);
 
@@ -58,8 +57,8 @@ public:
   // the boundaries of this model region.
   vtkModelItemIterator* NewAdjacentModelFaceIterator();
 
-  virtual void AddShell(int numFaces, vtkModelFace** faces,
-                        int* faceSides);
+  virtual void AddShell(int numFaces, vtkModelFace** faces, int* faceSides);
+
 protected:
   vtkModelRegion();
   virtual ~vtkModelRegion();
@@ -74,8 +73,8 @@ protected:
   friend class vtkModel;
 
 private:
-  vtkModelRegion(const vtkModelRegion&);  // Not implemented.
-  void operator=(const vtkModelRegion&);  // Not implemented.
+  vtkModelRegion(const vtkModelRegion&); // Not implemented.
+  void operator=(const vtkModelRegion&); // Not implemented.
 };
 
 #endif

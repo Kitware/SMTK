@@ -78,21 +78,19 @@ int main(int argc, char* argv[])
   // read the data
   smtk::model::OperatorPtr readOp = session->op("load smtk model");
   if (!readOp)
-    {
+  {
     std::cerr << "No load smtk model operator\n";
     return 1;
-    }
+  }
 
   readOp->specification()->findFile("filename")->setValue(std::string(argv[1]));
   std::cout << "Importing " << argv[1] << "\n";
   smtk::model::OperatorResult ismopResult = readOp->operate();
-  if (
-    ismopResult->findInt("outcome")->value() !=
-    smtk::model::OPERATION_SUCCEEDED)
-    {
+  if (ismopResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  {
     std::cerr << "Read operator failed\n";
     return 1;
-    }
+  }
   // assign model value
   smtk::model::Model simpleSMTK = ismopResult->findModelEntity("created")->value();
   manager->assignDefaultNames(); // should force transcription of every entity, but doesn't yet.
@@ -106,7 +104,7 @@ int main(int argc, char* argv[])
   // get edge info
   EntityRefs edges = manager->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::EDGE);
   std::cout << "Edges inside model are:\n";
-  for (auto edge:edges)
+  for (auto edge : edges)
   {
     std::cout << " " << edge.name() << "\n";
   }
@@ -133,8 +131,7 @@ int main(int argc, char* argv[])
 
   // it's designed to fail.
   smtk::model::OperatorResult deleteOpResult = deleteOp->operate();
-  if (deleteOpResult->findInt("outcome")->value() ==
-            smtk::model::OPERATION_SUCCEEDED)
+  if (deleteOpResult->findInt("outcome")->value() == smtk::model::OPERATION_SUCCEEDED)
   {
     std::cerr << "Delete operator should not success!\n";
     return 1;

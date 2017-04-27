@@ -13,8 +13,10 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/EntityRefArrangementOps.h" // for templated methods
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 class Group;
 typedef std::vector<Group> Groups;
@@ -25,20 +27,21 @@ typedef std::vector<Group> Groups;
 class SMTKCORE_EXPORT Group : public EntityRef
 {
 public:
-  SMTK_ENTITYREF_CLASS(Group,EntityRef,isGroup);
+  SMTK_ENTITYREF_CLASS(Group, EntityRef, isGroup);
 
   EntityRef parent() const;
-  template<typename T> T members() const;
+  template <typename T>
+  T members() const;
 
   Group& addEntity(const EntityRef& entity);
-  template<typename T> Group& addEntities(const T& container);
+  template <typename T>
+  Group& addEntities(const T& container);
 
   bool removeEntity(const EntityRef& entity);
 
   EntityRef findFirstNonGroupMember();
 
-  virtual bool meetsMembershipConstraints(
-    const EntityRef& prospectiveMember);
+  virtual bool meetsMembershipConstraints(const EntityRef& prospectiveMember);
 
   virtual void setMembershipMask(BitFlags mask);
   BitFlags membershipMask() const;
@@ -47,12 +50,10 @@ protected:
   friend class smtk::attribute::ModelEntityItemDefinition;
 
   bool meetsMembershipConstraintsInternal(
-    const EntityRef& prospectiveMember,
-    BitFlags& typeMask,
-    bool mustBeHomogenous);
+    const EntityRef& prospectiveMember, BitFlags& typeMask, bool mustBeHomogenous);
 };
 
-template<typename T>
+template <typename T>
 T Group::members() const
 {
   T container;
@@ -61,17 +62,17 @@ T Group::members() const
 }
 
 /// Add all the entities in \a container (an STL set, vector, or list) to this group.
-template<typename T>
+template <typename T>
 Group& Group::addEntities(const T& container)
 {
   for (typename T::const_iterator it = container.begin(); it != container.end(); ++it)
-    {
+  {
     this->addEntity(*it);
-    }
+  }
   return *this;
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_model_Group_h

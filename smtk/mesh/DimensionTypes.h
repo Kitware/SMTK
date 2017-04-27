@@ -11,12 +11,12 @@
 #ifndef __smtk_mesh_DimensionTypes_h
 #define __smtk_mesh_DimensionTypes_h
 
-
 #include <bitset>
 
-namespace smtk {
-namespace mesh {
-
+namespace smtk
+{
+namespace mesh
+{
 
 enum DimensionType
 {
@@ -29,7 +29,6 @@ enum DimensionType
 
 //Need a basic blitter for dims queries
 typedef std::bitset<DimensionType_MAX> DimensionTypes;
-
 }
 }
 

@@ -18,7 +18,6 @@
 // a material. We may eventually need to add in the ability to set a
 // warehouseid of a material here as well.
 
-
 #ifndef __vtkMaterialOperator_h
 #define __vtkMaterialOperator_h
 
@@ -36,8 +35,8 @@ class vtkModelEntity;
 class SMTKDISCRETESESSION_EXPORT vtkMaterialOperator : public vtkMaterialOperatorBase
 {
 public:
-  static vtkMaterialOperator * New();
-  vtkTypeMacro(vtkMaterialOperator,vtkMaterialOperatorBase);
+  static vtkMaterialOperator* New();
+  vtkTypeMacro(vtkMaterialOperator, vtkMaterialOperatorBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Prevent warnings about hidden base-class virtuals:
@@ -85,8 +84,8 @@ protected:
   virtual bool AbleToOperate(vtkDiscreteModelWrapper* ModelWrapper);
 
 private:
-  vtkMaterialOperator(const vtkMaterialOperator&);  // Not implemented.
-  void operator=(const vtkMaterialOperator&);  // Not implemented.
+  vtkMaterialOperator(const vtkMaterialOperator&); // Not implemented.
+  void operator=(const vtkMaterialOperator&);      // Not implemented.
 
   // Description:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).

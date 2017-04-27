@@ -28,11 +28,10 @@ class SMTKPQOPERATORVIEWSEXT_EXPORT smtkAssignColorsView : public smtk::extensio
   Q_OBJECT
 
 public:
-  smtkAssignColorsView(const smtk::extension::ViewInfo &info);
+  smtkAssignColorsView(const smtk::extension::ViewInfo& info);
   virtual ~smtkAssignColorsView();
 
-  static smtk::extension::qtBaseView* createViewWidget(
-    const smtk::extension::ViewInfo &info);
+  static smtk::extension::qtBaseView* createViewWidget(const smtk::extension::ViewInfo& info);
   static QIcon renderColorSwatch(const QColor& color, int radius);
   static QIcon renderPaletteSwatch(const QList<QColor>& color, int width, int radius);
   static QIcon renderInvalidSwatch(int radius);
@@ -40,11 +39,10 @@ public:
   virtual bool displayItem(smtk::attribute::ItemPtr);
 
 public slots:
-  virtual void updateUI() { } // NB: Subclass implementation causes crashes.
+  virtual void updateUI() {} // NB: Subclass implementation causes crashes.
   virtual void showAdvanceLevelOverlay(bool show);
   virtual void requestModelEntityAssociation();
-  virtual void onShowCategory()
-   { this->updateAttributeData(); }
+  virtual void onShowCategory() { this->updateAttributeData(); }
   // This will be triggered by selecting different type
   // of construction method in create-edge op.
   virtual void valueChanged(smtk::attribute::ItemPtr optype);
@@ -66,10 +64,10 @@ protected slots:
 
 protected:
   virtual void updateAttributeData();
-  virtual void createWidget( );
+  virtual void createWidget();
 
 private:
-  smtkAssignColorsViewInternals *Internals;
+  smtkAssignColorsViewInternals* Internals;
 };
 
 #endif // smtkAssignColorsView_h

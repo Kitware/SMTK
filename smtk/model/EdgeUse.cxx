@@ -16,8 +16,10 @@
 #include "smtk/model/Vertex.h"
 #include "smtk/model/VertexUse.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 // The face-use on which this edge-use lies (if any).
 FaceUse EdgeUse::faceUse() const
@@ -63,27 +65,27 @@ static void getVertexUsesOfChainBFS(const Chain& c, VertexUses& result)
   VertexUses chainEndPts = c.uses<VertexUses>();
   VertexUses::iterator curEndPt = chainEndPts.begin();
   if (curEndPt != chainEndPts.end())
-    {
+  {
     result.insert(result.end(), *curEndPt);
     ++curEndPt;
-    }
+  }
 
   // Now handle any subchains
   Chains subs = c.containedChains();
   for (Chains::iterator it = subs.begin(); it != subs.end(); ++it)
-    {
+  {
     if (it->isValid())
-      {
+    {
       getVertexUsesOfChainBFS(*it, result);
-      }
     }
+  }
 
   // Now add remaining vertex uses from the current chain
   // (Really there should only be one. Period.)
   for (; curEndPt != chainEndPts.end(); ++curEndPt)
-    {
+  {
     result.insert(result.end(), *curEndPt);
-    }
+  }
 }
 
 /// Ordered list of vertex uses for this edge use.
@@ -92,12 +94,12 @@ VertexUses EdgeUse::vertexUses() const
   VertexUses result;
   Chains toplevel = this->chains();
   for (Chains::iterator it = toplevel.begin(); it != toplevel.end(); ++it)
-    {
+  {
     if (it->isValid())
-      {
+    {
       getVertexUsesOfChainBFS(*it, result);
-      }
     }
+  }
   return result;
 }
 
@@ -107,9 +109,9 @@ Vertices EdgeUse::vertices() const
   Vertices result;
   VertexUses uses = this->vertexUses();
   for (VertexUses::iterator it = uses.begin(); it != uses.end(); ++it)
-    {
+  {
     result.push_back(it->vertex());
-    }
+  }
   // FIXME: If the model does not create vertex uses then this
   //        fetch vertices from the edge and shuffle them according
   //        to the orientation of the use.
@@ -137,5 +139,5 @@ EdgeUse EdgeUse::cwUse() const
   return use;
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

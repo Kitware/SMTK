@@ -33,12 +33,12 @@ public:
   // Description:
   // Implemented by sub classes. Actual rendering is done here.
 
-  virtual void RenderPiece(vtkRenderer *ren, vtkActor *act);
+  virtual void RenderPiece(vtkRenderer* ren, vtkActor* act);
   // Description:
   // Release any graphics resources that are being consumed by this mapper.
   // The parameter window could be used to determine which graphic
   // resources to release.
-  void ReleaseGraphicsResources(vtkWindow *);
+  void ReleaseGraphicsResources(vtkWindow*);
 
   // Description:
   // The cmb model that contains all the CMB model APIs.
@@ -63,8 +63,7 @@ protected:
 
   // Description:
   // Calling rendering for the painter
-  virtual void RenderInternal(vtkDataObject* inputObj,
-    vtkRenderer* renderer, vtkActor* actor,
+  virtual void RenderInternal(vtkDataObject* inputObj, vtkRenderer* renderer, vtkActor* actor,
     unsigned long typeflags, bool forceCompileOnly);
 
   // Description:
@@ -82,8 +81,7 @@ protected:
 
 private:
   vtkCMBModelMapper(const vtkCMBModelMapper&); // Not implemented.
-  void operator=(const vtkCMBModelMapper&); // Not implemented.
-
+  void operator=(const vtkCMBModelMapper&);    // Not implemented.
 };
 
 #endif

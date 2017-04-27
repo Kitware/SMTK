@@ -16,15 +16,18 @@
 #include "smtk/model/Operator.h"
 
 /// A convenience macro for generating debug log messages.
-#define smtkOpDebug(x) \
-  if (this->m_debugLevel > 0) \
-    { \
-    smtkDebugMacro(this->log(), x ); \
-    }
+#define smtkOpDebug(x)                                                                             \
+  if (this->m_debugLevel > 0)                                                                      \
+  {                                                                                                \
+    smtkDebugMacro(this->log(), x);                                                                \
+  }
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
 class Session;
 
@@ -40,16 +43,20 @@ protected:
   Session* polygonSession();
   const Session* polygonSession() const;
 
-  void addStorage(const smtk::common::UUID& uid, smtk::bridge::polygon::internal::entity::Ptr storage);
+  void addStorage(
+    const smtk::common::UUID& uid, smtk::bridge::polygon::internal::entity::Ptr storage);
   bool removeStorage(const smtk::common::UUID& uid);
-  template<typename T>
+  template <typename T>
   typename T::Ptr findStorage(const smtk::common::UUID& uid)
-    { return this->polygonSession()->findStorage<T>(uid); }
-  template<typename T>
+  {
+    return this->polygonSession()->findStorage<T>(uid);
+  }
+  template <typename T>
   T findOrAddStorage(const smtk::common::UUID& uid)
-    { return this->polygonSession()->findOrAddStorage<T>(uid); }
-  int nextModelNumber()
-    { return this->polygonSession()->m_nextModelNumber++; }
+  {
+    return this->polygonSession()->findOrAddStorage<T>(uid);
+  }
+  int nextModelNumber() { return this->polygonSession()->m_nextModelNumber++; }
   /*
   internal::Entity* polygonEntity(const smtk::model::EntityRef& smtkEntity);
 
@@ -57,14 +64,17 @@ protected:
   T polygonEntityAs(const smtk::model::EntityRef& smtkEntity);
   */
 
-  template<typename T, typename U, typename V>
-  void pointsForLoop(T& polypts, int numPtsToUse, U& start, U finish, int numCoordsPerPoint, V pmodel);
+  template <typename T, typename U, typename V>
+  void pointsForLoop(
+    T& polypts, int numPtsToUse, U& start, U finish, int numCoordsPerPoint, V pmodel);
 
-  template<typename T, typename U, typename V, typename W>
-  void pointsForLoop(T& polypts, int numEdgesToUse, U& curEdge, U edgesFinish, V& curEdgeDir, V edgeDirFinish, W& outerLoopEdges);
+  template <typename T, typename U, typename V, typename W>
+  void pointsForLoop(T& polypts, int numEdgesToUse, U& curEdge, U edgesFinish, V& curEdgeDir,
+    V edgeDirFinish, W& outerLoopEdges);
 
-  template<typename T, typename U>
-    void pointsInLoopOrderFromOrientedEdges(T& polypts, U begin, U end, smtk::shared_ptr<internal::pmodel> pmodel);
+  template <typename T, typename U>
+  void pointsInLoopOrderFromOrientedEdges(
+    T& polypts, U begin, U end, smtk::shared_ptr<internal::pmodel> pmodel);
 };
 
 /*
@@ -76,8 +86,8 @@ T Operator::polygonEntityAs(const smtk::model::EntityRef& smtkEntity)
 }
 */
 
-    } // namespace polygon
-  } // namespace bridge
+} // namespace polygon
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_polygon_Operator_h

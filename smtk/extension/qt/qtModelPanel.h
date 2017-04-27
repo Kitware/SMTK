@@ -21,8 +21,10 @@
 
 #include <QWidget>
 
-namespace smtk {
-  namespace extension {
+namespace smtk
+{
+namespace extension
+{
 
 class SMTKQTEXT_EXPORT qtModelPanel : public QWidget
 {
@@ -35,25 +37,22 @@ public:
   qtModelView* getModelView();
 
   enum enumTreeView
-    {
+  {
     VIEW_BY_TOPOLOGY = 0,
     VIEW_BY_ENTITY_LIST
-    };
+  };
 
 public slots:
   void onClearSelection();
   void onViewTypeChanged();
-  void resetView(qtModelPanel::enumTreeView enType,
-                 smtk::model::ManagerPtr modelMgr);
-
+  void resetView(qtModelPanel::enumTreeView enType, smtk::model::ManagerPtr modelMgr);
 
 private:
   class qInternal;
   qInternal* Internal;
-
 };
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_extension_qtModelPanel_h

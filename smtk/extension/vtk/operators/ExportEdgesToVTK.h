@@ -13,8 +13,10 @@
 #include "smtk/extension/vtk/operators/Exports.h" // For export macro
 #include "smtk/model/Operator.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 class VTKSMTKOPERATORSEXT_EXPORT ExportEdgesToVTK : public Operator
 {
@@ -28,7 +30,7 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
 };
 
-  } //namespace model
+} //namespace model
 } // namespace smtk
 
 #endif // __smtk_model_ExportEdgesToVTK_h

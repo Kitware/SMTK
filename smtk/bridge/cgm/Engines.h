@@ -13,7 +13,7 @@
 #include "smtk/Options.h" // for CGM_HAVE_VERSION_H
 #include "smtk/bridge/cgm/Exports.h"
 #ifdef CGM_HAVE_VERSION_H
-#  include "cgm_version.h"
+#include "cgm_version.h"
 #endif
 
 #include <string>
@@ -21,9 +21,12 @@
 
 class Body;
 
-namespace smtk {
-  namespace bridge {
-    namespace cgm {
+namespace smtk
+{
+namespace bridge
+{
+namespace cgm
+{
 
 /**\brief Ensure that CGMA has been initialized.
   *
@@ -37,8 +40,7 @@ public:
   static bool areInitialized();
 
   static bool isInitialized(
-    const std::string& engine,
-    const std::vector<std::string>& args = std::vector<std::string>());
+    const std::string& engine, const std::vector<std::string>& args = std::vector<std::string>());
   static bool setDefault(const std::string& engine);
   static std::string currentEngine();
 
@@ -47,8 +49,8 @@ public:
   static bool shutdown();
 };
 
-    } // namespace cgm
-  } // namespace bridge
+} // namespace cgm
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_cgm_Engines_h

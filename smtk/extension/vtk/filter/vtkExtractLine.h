@@ -26,8 +26,8 @@
 class VTKSMTKFILTEREXT_EXPORT vtkExtractLine : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkExtractLine *New();
-  vtkTypeMacro(vtkExtractLine,vtkPolyDataAlgorithm);
+  static vtkExtractLine* New();
+  vtkTypeMacro(vtkExtractLine, vtkPolyDataAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -35,22 +35,22 @@ public:
   vtkSetMacro(LineId, int);
   vtkGetMacro(LineId, int);
 
-//BTX
+  //BTX
 protected:
   vtkExtractLine();
 
-  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
-  void TryAppend(vtkPolyData *linePD, vtkCellArray *polyLines,
-    vtkIdType currentCell, vtkIdType npts, vtkIdType *ptIds, char *appended);
-  void AppendToLine(vtkPolyData *linePD,
-    vtkIdList *appendedLine, vtkIdType cellToAdd, char *appended);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  void TryAppend(vtkPolyData* linePD, vtkCellArray* polyLines, vtkIdType currentCell,
+    vtkIdType npts, vtkIdType* ptIds, char* appended);
+  void AppendToLine(
+    vtkPolyData* linePD, vtkIdList* appendedLine, vtkIdType cellToAdd, char* appended);
 
 private:
-  vtkExtractLine(const vtkExtractLine&);  // Not implemented.
-  void operator=(const vtkExtractLine&);  // Not implemented.
+  vtkExtractLine(const vtkExtractLine&); // Not implemented.
+  void operator=(const vtkExtractLine&); // Not implemented.
 
   int LineId;
-//ETX
+  //ETX
 };
 
 #endif

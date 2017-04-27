@@ -19,7 +19,6 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelGeometricEntity.h"
 
-
 class vtkModelEdgeUse;
 class vtkModelItemIterator;
 class vtkModelVertex;
@@ -28,7 +27,7 @@ class vtkModelVertexUse;
 class VTKSMTKDISCRETEMODEL_EXPORT vtkModelEdge : public vtkModelGeometricEntity
 {
 public:
-  vtkTypeMacro(vtkModelEdge,vtkModelGeometricEntity);
+  vtkTypeMacro(vtkModelEdge, vtkModelGeometricEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual int GetType();
@@ -50,8 +49,7 @@ public:
   vtkModelItemIterator* NewAdjacentModelFaceIterator();
 
   using Superclass::Initialize;
-  virtual void Initialize(vtkModelVertex* vertex0, vtkModelVertex* vertex1,
-                          vtkIdType edgeId);
+  virtual void Initialize(vtkModelVertex* vertex0, vtkModelVertex* vertex1, vtkIdType edgeId);
 
   // Description:
   // Reads the state of an instance from an archive OR
@@ -78,19 +76,16 @@ protected:
   vtkModelEdgeUse* BuildModelEdgeUsePair();
 
   void DestroyModelEdgeUse(vtkModelEdgeUse* edgeUse);
-  void SplitModelEdgeUse(
-    vtkModelEdgeUse* firstEdgeUse, vtkModelEdgeUse* secondEdgeUse,
-    vtkModelVertexUse* vertexUse0, vtkModelVertexUse* vertexUse1,
-    vtkModelVertexUse* vertexUse2);
+  void SplitModelEdgeUse(vtkModelEdgeUse* firstEdgeUse, vtkModelEdgeUse* secondEdgeUse,
+    vtkModelVertexUse* vertexUse0, vtkModelVertexUse* vertexUse1, vtkModelVertexUse* vertexUse2);
 
   friend class vtkModel;
   friend class vtkModelFace;
   friend class vtkModelLoopUse;
 
 private:
-  vtkModelEdge(const vtkModelEdge&);  // Not implemented.
-  void operator=(const vtkModelEdge&);  // Not implemented.
+  vtkModelEdge(const vtkModelEdge&);   // Not implemented.
+  void operator=(const vtkModelEdge&); // Not implemented.
 };
 
 #endif
-

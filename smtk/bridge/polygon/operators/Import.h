@@ -16,9 +16,12 @@
 class vtkIdTypeArray;
 class vtkPolyData;
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
 /**\brief Import a CMB polygon model file.
   *
@@ -46,15 +49,13 @@ public:
 protected:
   Import();
   virtual smtk::model::OperatorResult operateInternal();
-  int taggedPolyData2PolygonModelEntities(vtkIdTypeArray *tagInfo,
-					  vtkPolyData *mesh,
-					  smtk::model::Model& model);
-  int basicPolyData2PolygonModelEntities(vtkPolyData *mesh,
-					  smtk::model::Model& model);
+  int taggedPolyData2PolygonModelEntities(
+    vtkIdTypeArray* tagInfo, vtkPolyData* mesh, smtk::model::Model& model);
+  int basicPolyData2PolygonModelEntities(vtkPolyData* mesh, smtk::model::Model& model);
 };
 
-    } // namespace polygon
-  } // namespace bridge
+} // namespace polygon
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_polygon_Import_h

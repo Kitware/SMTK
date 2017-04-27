@@ -16,8 +16,10 @@
 #include <string>
 #include <vector>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief Describe a list of property (name,value) pairs
   * associated with an entity for user presentation.
@@ -50,7 +52,7 @@ protected:
   AttributeSet m_attributes; // Subset to be presented, modifications do not affect storage!
 };
 
-  } // model namespace
+} // model namespace
 } // smtk namespace
 
 #endif // __smtk_model_DescriptivePhrase_h

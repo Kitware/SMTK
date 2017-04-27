@@ -22,8 +22,8 @@
 class VTKSMTKREADEREXT_EXPORT vtkCUBITReader : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkCUBITReader *New();
-  vtkTypeMacro(vtkCUBITReader,vtkPolyDataAlgorithm);
+  static vtkCUBITReader* New();
+  vtkTypeMacro(vtkCUBITReader, vtkPolyDataAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -35,19 +35,17 @@ protected:
   vtkCUBITReader();
   ~vtkCUBITReader();
 
-  int RequestInformation(vtkInformation *,
-                         vtkInformationVector **,
-                         vtkInformationVector *);
-  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
-  char *FileName;
+  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  char* FileName;
 
   // Description:
   // Get next line of data (and put in lineStream); skips over comments or blank lines
-  int GetNextLineOfData(ifstream &fin, std::stringstream &lineStream);
+  int GetNextLineOfData(ifstream& fin, std::stringstream& lineStream);
 
 private:
-  vtkCUBITReader(const vtkCUBITReader&);  // Not implemented.
-  void operator=(const vtkCUBITReader&);  // Not implemented.
+  vtkCUBITReader(const vtkCUBITReader&); // Not implemented.
+  void operator=(const vtkCUBITReader&); // Not implemented.
 };
 
 #endif

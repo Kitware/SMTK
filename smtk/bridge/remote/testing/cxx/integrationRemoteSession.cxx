@@ -34,20 +34,18 @@ smtkComponentInitMacro(smtk_cgm_session);
 int main(int argc, char* argv[])
 {
   if (argc < 3)
-    {
-    std::cout
-      << "Usage:\n"
-      << "  " << argv[0] << " filename hint [remusHost [remusPort]]\n"
-      << "where\n"
-      << "  filename     is the path to a model file to read.\n"
-      << "  hint         is the name of an SMTK session or worker.\n"
-      << "  remusHost    is either \"local\" or a hostname where a\n"
-      << "               remus server is running. \"local\" is default.\n"
-      << "  remusPort    is the port number of the remus server.\n"
-      << "               The default port is 50505.\n"
-      ;
+  {
+    std::cout << "Usage:\n"
+              << "  " << argv[0] << " filename hint [remusHost [remusPort]]\n"
+              << "where\n"
+              << "  filename     is the path to a model file to read.\n"
+              << "  hint         is the name of an SMTK session or worker.\n"
+              << "  remusHost    is either \"local\" or a hostname where a\n"
+              << "               remus server is running. \"local\" is default.\n"
+              << "  remusPort    is the port number of the remus server.\n"
+              << "               The default port is 50505.\n";
     return 1;
-    }
+  }
 
   std::string fileName(argv[1]);
   std::string sessionName(argc > 2 ? argv[2] : "");
@@ -55,13 +53,12 @@ int main(int argc, char* argv[])
   int port(argc > 4 ? atoi(argv[4]) : 50505);
 
   smtk::model::Manager::Ptr mgr = smtk::model::Manager::create();
-  RemusConnection::Ptr bconn =
-    RemusConnection::create();
+  RemusConnection::Ptr bconn = RemusConnection::create();
   bconn->setModelManager(mgr);
   // Do not search for workers in default paths; we don't want to pick things up by accident:
   bconn->clearSearchDirs(true);
   if (argc > 5)
-     bconn->addSearchDir(argv[5]);
+    bconn->addSearchDir(argv[5]);
 
   bool didConnect = true;
   if (hostname != "local")
@@ -69,10 +66,10 @@ int main(int argc, char* argv[])
   else
     didConnect = bconn->connectToServer();
   if (!didConnect)
-    {
+  {
     std::cerr << "Could not connect to tcp://" << hostname << ":" << port << "\n";
     return 2;
-    }
+  }
 
   std::vector<std::string> opnames;
   std::vector<std::string> bnames = bconn->sessionTypeNames();
@@ -83,10 +80,10 @@ int main(int argc, char* argv[])
 
   std::set<std::string> bnameset(bnames.begin(), bnames.end());
   if (bnameset.find(sessionName) == bnameset.end())
-    {
+  {
     std::cerr << "Session \"" << sessionName << "\" not available.\n";
     return 4;
-    }
+  }
 
   opnames = bconn->operatorNames(sessionName);
   std::cout << "Operators for session \"" << sessionName << "\":\n";
@@ -97,32 +94,41 @@ int main(int argc, char* argv[])
   StringData::const_iterator sdit;
   std::cout << "File types available for \"" << sessionName << "\":\n";
   for (sdit = fileTypes.begin(); sdit != fileTypes.end(); ++sdit)
-    {
+  {
     std::cout << "  " << sdit->first << ":\n";
     for (strit = sdit->second.begin(); strit != sdit->second.end(); ++strit)
       std::cout << "    " << *strit << "\n";
-    }
+  }
 
   smtk::common::UUID sessionId = bconn->beginSession(sessionName);
   if (sessionId.isNull())
-    {
+  {
     std::cerr << "Null session ID.\n";
     return 8;
-    }
+  }
   std::cout << "Started session " << sessionId.toString() << "\n";
 
   smtk::model::OperatorResult readResult = bconn->readFile(fileName, "", sessionName);
   std::string strout;
   switch (readResult->findInt("outcome")->value())
-    {
-  case smtk::model::UNABLE_TO_OPERATE:   strout = "unable to operate"; break;
-  case smtk::model::OPERATION_CANCELED:  strout = "canceled"; break;
-  case smtk::model::OPERATION_FAILED:    strout = "failed"; break;
-  case smtk::model::OPERATION_SUCCEEDED: strout = "succeeded"; break;
-  case smtk::model::OUTCOME_UNKNOWN:
-  default:
-    strout = "unknown"; break;
-    }
+  {
+    case smtk::model::UNABLE_TO_OPERATE:
+      strout = "unable to operate";
+      break;
+    case smtk::model::OPERATION_CANCELED:
+      strout = "canceled";
+      break;
+    case smtk::model::OPERATION_FAILED:
+      strout = "failed";
+      break;
+    case smtk::model::OPERATION_SUCCEEDED:
+      strout = "succeeded";
+      break;
+    case smtk::model::OUTCOME_UNKNOWN:
+    default:
+      strout = "unknown";
+      break;
+  }
   std::cout << "Read file? " << strout << " (" << readResult->findInt("outcome")->value() << ")\n";
   std::cout << "Output model is " << readResult->findModelEntity("created")->value() << "\n";
 

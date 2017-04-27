@@ -27,17 +27,17 @@ class vtkDataArray;
 class VTK_EXPORT vtkCMBMeshToModelReader : public vtkXMLDataReader
 {
 public:
-  static vtkCMBMeshToModelReader *New();
-  vtkTypeMacro(vtkCMBMeshToModelReader,vtkXMLReader);
+  static vtkCMBMeshToModelReader* New();
+  vtkTypeMacro(vtkCMBMeshToModelReader, vtkXMLReader);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // Get the number of points in the output.
-  virtual vtkIdType GetNumberOfPoints(){return 0;}
+  virtual vtkIdType GetNumberOfPoints() { return 0; }
 
   // Description:
   // Get the number of cells in the output.
-  virtual vtkIdType GetNumberOfCells(){return 0;}
+  virtual vtkIdType GetNumberOfCells() { return 0; }
 
   // Description:
   // Methods to define the file's major and minor version numbers.
@@ -48,7 +48,7 @@ public:
   // Set/get functions for the ModelWrapper.
   vtkGetMacro(ModelWrapper, vtkDiscreteModelWrapper*);
   void SetModelWrapper(vtkDiscreteModelWrapper* Wrapper);
-  bool IsReadSuccessful(){return !this->DataError;}
+  bool IsReadSuccessful() { return !this->DataError; }
 
 protected:
   vtkCMBMeshToModelReader();
@@ -62,7 +62,7 @@ protected:
   virtual void ReadXMLData();
 
   // Setup the output's information.
-  virtual void SetupOutputInformation(vtkInformation *vtkNotUsed(outInfo)) {}
+  virtual void SetupOutputInformation(vtkInformation* vtkNotUsed(outInfo)) {}
 
   // Load the analysis grid info to the model.
   int LoadAnalysisGridInfo(vtkFieldData* fieldData);
@@ -106,8 +106,8 @@ protected:
   char* AnalysisGridFileName;
 
 private:
-  vtkCMBMeshToModelReader(const vtkCMBMeshToModelReader&);  // Not implemented.
-  void operator=(const vtkCMBMeshToModelReader&);  // Not implemented.
+  vtkCMBMeshToModelReader(const vtkCMBMeshToModelReader&); // Not implemented.
+  void operator=(const vtkCMBMeshToModelReader&);          // Not implemented.
 };
 
 #endif

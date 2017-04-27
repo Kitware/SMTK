@@ -13,12 +13,14 @@
 #include <boost/functional.hpp>
 #include <boost/mpl/placeholders.hpp>
 
-struct favorite_int {
-  int operator() () { return 42; }
+struct favorite_int
+{
+  int operator()() { return 42; }
 };
 
-struct conditional_int {
-  int operator() (float x) { return 2 * static_cast<int>(x); }
+struct conditional_int
+{
+  int operator()(float x) { return 2 * static_cast<int>(x); }
 };
 
 int main(int, char**)
@@ -27,5 +29,5 @@ int main(int, char**)
   f = favorite_int();
   boost::function<int()> g;
   g = boost::bind<float>(conditional_int(), 21.0);
-  return (f() == 42 && g() == 42 ) ? 0 : 1;
+  return (f() == 42 && g() == 42) ? 0 : 1;
 }

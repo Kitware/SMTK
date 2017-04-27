@@ -18,25 +18,24 @@
 class VTKSMTKFILTEREXT_EXPORT vtkImageClassFilter : public vtkImageAlgorithm
 {
 public:
-  static vtkImageClassFilter *New();
-  vtkTypeMacro(vtkImageClassFilter,vtkImageAlgorithm);
+  static vtkImageClassFilter* New();
+  vtkTypeMacro(vtkImageClassFilter, vtkImageAlgorithm);
 
-  vtkSetMacro(ForegroundValue,int);
-  vtkGetMacro(ForegroundValue,int);
+  vtkSetMacro(ForegroundValue, int);
+  vtkGetMacro(ForegroundValue, int);
 
-  vtkSetMacro(BackgroundValue,int);
-  vtkGetMacro(BackgroundValue,int);
+  vtkSetMacro(BackgroundValue, int);
+  vtkGetMacro(BackgroundValue, int);
 
-  vtkSetMacro(MinFGSize,double);
-  vtkGetMacro(MinFGSize,double);
+  vtkSetMacro(MinFGSize, double);
+  vtkGetMacro(MinFGSize, double);
 
-  vtkSetMacro(MinBGSize,double);
-  vtkGetMacro(MinBGSize,double);
+  vtkSetMacro(MinBGSize, double);
+  vtkGetMacro(MinBGSize, double);
 
   ~vtkImageClassFilter() override;
 
 protected:
-
   int ForegroundValue;
   int BackgroundValue;
 
@@ -45,12 +44,11 @@ protected:
 
   vtkImageClassFilter();
 
-  int RequestData(vtkInformation *, vtkInformationVector **,
-                  vtkInformationVector *) override;
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 
 private:
-  vtkImageClassFilter(const vtkImageClassFilter&);  // Not implemented.
-  void operator=(const vtkImageClassFilter&);  // Not implemented.
+  vtkImageClassFilter(const vtkImageClassFilter&); // Not implemented.
+  void operator=(const vtkImageClassFilter&);      // Not implemented.
 };
 
 #endif

@@ -15,7 +15,7 @@
 
 using namespace smtk::common;
 
-template<typename T>
+template <typename T>
 int testUnionFind()
 {
   UnionFind<T> uf;
@@ -42,15 +42,13 @@ int testUnionFind()
   test(uf.find(s0) != uf.find(s2), "Expected s0 and s2 to be disjoint after merge.");
   test(uf.find(s3) != uf.find(s2), "Expected s3 and s2 to be disjoint after merge.");
 
-  typename std::map<T,T> collapse;
+  typename std::map<T, T> collapse;
   uf.collapseIds(collapse, 100);
 
-  std::cout
-    << static_cast<int>(s0) << " -> " << static_cast<int>(collapse[uf.find(s0)]) << "\n"
-    << static_cast<int>(s1) << " -> " << static_cast<int>(collapse[uf.find(s1)]) << "\n"
-    << static_cast<int>(s2) << " -> " << static_cast<int>(collapse[uf.find(s2)]) << "\n"
-    << "\n"
-    ;
+  std::cout << static_cast<int>(s0) << " -> " << static_cast<int>(collapse[uf.find(s0)]) << "\n"
+            << static_cast<int>(s1) << " -> " << static_cast<int>(collapse[uf.find(s1)]) << "\n"
+            << static_cast<int>(s2) << " -> " << static_cast<int>(collapse[uf.find(s2)]) << "\n"
+            << "\n";
 
   test(collapse[uf.find(s0)] == 100, "Invalid collapsed ID for s0.");
   test(collapse[uf.find(s1)] == 100, "Invalid collapsed ID for s1.");
@@ -66,7 +64,5 @@ int main(int argc, char* argv[])
   (void)argc;
   (void)argv;
 
-  return
-    testUnionFind<int>() ||
-    testUnionFind<signed char>();
+  return testUnionFind<int>() || testUnionFind<signed char>();
 }

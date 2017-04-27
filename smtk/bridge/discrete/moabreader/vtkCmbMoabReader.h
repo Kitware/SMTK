@@ -17,14 +17,17 @@
 class vtkInformation;
 class vtkInformationVector;
 
-namespace smoab{ class Tag; }
+namespace smoab
+{
+class Tag;
+}
 
 class VTKDISCRETEMOABREADER_EXPORT vtkCmbMoabReader : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkCmbMoabReader *New();
-  vtkTypeMacro(vtkCmbMoabReader,vtkPolyDataAlgorithm)
-  void PrintSelf(ostream& os, vtkIndent indent);
+  static vtkCmbMoabReader* New();
+  vtkTypeMacro(vtkCmbMoabReader, vtkPolyDataAlgorithm) void PrintSelf(
+    ostream& os, vtkIndent indent);
 
   // Description:
   // Name of the file to be read.
@@ -35,15 +38,14 @@ protected:
   vtkCmbMoabReader();
   ~vtkCmbMoabReader();
 
-  int RequestData(vtkInformation *vtkNotUsed(request),
-                  vtkInformationVector **vtkNotUsed(inputVector),
-                  vtkInformationVector *outputVector);
+  int RequestData(vtkInformation* vtkNotUsed(request),
+    vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector);
+
 private:
-  char *FileName;
+  char* FileName;
 
-  vtkCmbMoabReader(const vtkCmbMoabReader&);  // Not implemented.
-  void operator=(const vtkCmbMoabReader&);  // Not implemented.
-
+  vtkCmbMoabReader(const vtkCmbMoabReader&); // Not implemented.
+  void operator=(const vtkCmbMoabReader&);   // Not implemented.
 };
 
 #endif // __vtkCmbMoabReader_h

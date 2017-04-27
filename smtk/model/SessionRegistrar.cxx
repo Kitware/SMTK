@@ -19,31 +19,33 @@
 
 using namespace smtk::common;
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /// A map of all the sessions which may be instantiated (indexed by name).
 SessionConstructors* SessionRegistrar::s_sessions(bool del)
 {
   static SessionConstructors* sessions = SMTK_FUNCTION_INIT;
   if (del)
-    {
+  {
     if (sessions)
-      {
+    {
       //std::cout << "Deleting session list " << sessions << " (" << &sessions << ")" << "\n";
       delete sessions;
       sessions = SMTK_FUNCTION_INIT;
-      }
     }
+  }
   else
-    {
+  {
     if (!sessions)
-      {
+    {
       sessions = new SessionConstructors();
       atexit(cleanupSessions);
       //std::cout << "Allocating session list " << sessions << " (" << &sessions << ")" << "\n";
-      }
     }
+  }
   return sessions;
 }
 
@@ -69,54 +71,41 @@ void SessionRegistrar::parseTags(StaticSessionInfo& session)
     return;
 
   if (json->type == cJSON_Object)
-    {
+  {
     cJSON* kernel = cJSON_GetObjectItem(json, "kernel");
-    if (
-      kernel &&
-      kernel->type == cJSON_String &&
-      kernel->valuestring &&
-      kernel->valuestring[0])
+    if (kernel && kernel->type == cJSON_String && kernel->valuestring && kernel->valuestring[0])
       session.Name = kernel->valuestring;
 
     cJSON* engines = cJSON_GetObjectItem(json, "engines");
-    if (
-      engines &&
-      engines->type == cJSON_Array)
-      {
+    if (engines && engines->type == cJSON_Array)
+    {
       session.Engines.clear();
       session.FileTypes.clear();
       for (cJSON* engine = engines->child; engine; engine = engine->next)
-        {
+      {
         if (engine->type == cJSON_Object)
-          {
+        {
           std::string curEngine;
           cJSON* einfo;
           einfo = cJSON_GetObjectItem(engine, "name");
-          if (
-            einfo &&
-            einfo->type == cJSON_String &&
-            einfo->valuestring &&
-            einfo->valuestring[0])
-            {
+          if (einfo && einfo->type == cJSON_String && einfo->valuestring && einfo->valuestring[0])
+          {
             curEngine = einfo->valuestring;
             session.Engines.push_back(curEngine);
-            }
+          }
           einfo = cJSON_GetObjectItem(engine, SessionRegistrar::fileTypesTag().c_str());
-          if (
-            einfo &&
-            einfo->type == cJSON_Array &&
-            einfo->child)
-            {
+          if (einfo && einfo->type == cJSON_Array && einfo->child)
+          {
             StringList fileTypes;
             smtk::io::LoadJSON::getStringArrayFromJSON(einfo, fileTypes);
             if (curEngine.empty())
               curEngine = "*";
             session.FileTypes[curEngine] = fileTypes;
-            }
           }
         }
       }
     }
+  }
 
   cJSON_Delete(json);
 }
@@ -181,28 +170,24 @@ void SessionRegistrar::parseTags(StaticSessionInfo& session)
   * on the SMTK model worker at the far end of the server
   * connection.
   */
-bool SessionRegistrar::registerSession(
-  const std::string& bname,
-  const std::string& btags,
-  SessionStaticSetup bsetup,
-  SessionConstructor bctor,
-  OperatorConstructors* sopcons)
+bool SessionRegistrar::registerSession(const std::string& bname, const std::string& btags,
+  SessionStaticSetup bsetup, SessionConstructor bctor, OperatorConstructors* sopcons)
 {
   if (!bname.empty() && bctor)
-    {
+  {
     StaticSessionInfo entry(bname, btags, bsetup, bctor, sopcons);
     (*s_sessions())[bname] = entry;
     //std::cout << "Adding session " << bname << "\n";
     return true;
-    }
+  }
   else if (!bname.empty() && s_sessions()->count(bname) > 0)
-    { // unregister the session of the given name.
+  { // unregister the session of the given name.
     s_sessions()->erase(bname);
     //std::cout << "Removing session " << bname << "\n";
     // FIXME: We should ensure that no registered sessions are of type bname.
     //        Presumably, by deleting all such sessions and removing their entities
     //        from storage.
-    }
+  }
   return false;
 }
 
@@ -210,19 +195,18 @@ bool SessionRegistrar::registerSession(
 StringList SessionRegistrar::sessionTypeNames()
 {
   StringList result;
-  for (SessionConstructors::const_iterator it = s_sessions()->begin(); it != s_sessions()->end(); ++it)
+  for (SessionConstructors::const_iterator it = s_sessions()->begin(); it != s_sessions()->end();
+       ++it)
     result.push_back(it->first);
   return result;
 }
 
 /// Return the list of file types this session can read (currently: a list of file extensions).
-StringData SessionRegistrar::sessionFileTypes(
-  const std::string& bname,
-  const std::string& bengine)
+StringData SessionRegistrar::sessionFileTypes(const std::string& bname, const std::string& bengine)
 {
   SessionConstructors::iterator it = s_sessions()->find(bname);
   if (it != s_sessions()->end())
-    {
+  {
     if (!it->second.TagsParsed)
       SessionRegistrar::parseTags(it->second);
     // when there is no engine passed in, we will return all
@@ -230,24 +214,21 @@ StringData SessionRegistrar::sessionFileTypes(
     PropertyNameWithStrings entry;
     StringData retFileTypes;
     if (bengine.empty() && !it->second.FileTypes.empty())
+    {
+      for (entry = it->second.FileTypes.begin(); entry != it->second.FileTypes.end(); ++entry)
       {
-      for (entry = it->second.FileTypes.begin();
-        entry != it->second.FileTypes.end(); ++entry)
-        {
         retFileTypes[entry->first].insert(
-          retFileTypes[entry->first].end(),
-          entry->second.begin(), entry->second.end());
-        }
+          retFileTypes[entry->first].end(), entry->second.begin(), entry->second.end());
       }
-    else if (!bengine.empty())
-      {
-      if ( (entry = it->second.FileTypes.find(bengine)) != it->second.FileTypes.end() )
-        retFileTypes[bengine].insert(
-          retFileTypes[bengine].end(),
-          entry->second.begin(), entry->second.end());
-      }
-    return retFileTypes;
     }
+    else if (!bengine.empty())
+    {
+      if ((entry = it->second.FileTypes.find(bengine)) != it->second.FileTypes.end())
+        retFileTypes[bengine].insert(
+          retFileTypes[bengine].end(), entry->second.begin(), entry->second.end());
+    }
+    return retFileTypes;
+  }
   StringData empty;
   return empty;
 }
@@ -278,11 +259,11 @@ std::string SessionRegistrar::sessionSite(const std::string& bname)
 {
   SessionConstructors::iterator it = s_sessions()->find(bname);
   if (it != s_sessions()->end())
-    {
+  {
     if (!it->second.TagsParsed)
       SessionRegistrar::parseTags(it->second);
     return it->second.Site;
-    }
+  }
   std::string empty;
   return empty;
 }
@@ -297,11 +278,11 @@ StringList SessionRegistrar::sessionEngines(const std::string& bname)
 {
   SessionConstructors::iterator it = s_sessions()->find(bname);
   if (it != s_sessions()->end())
-    {
+  {
     if (!it->second.TagsParsed)
       SessionRegistrar::parseTags(it->second);
     return it->second.Engines;
-    }
+  }
   StringList empty;
   return empty;
 }
@@ -340,9 +321,9 @@ OperatorConstructors* SessionRegistrar::sessionOperatorConstructors(const std::s
   OperatorConstructors* opcons = NULL;
   SessionConstructors::const_iterator it = s_sessions()->find(stype);
   if (it != s_sessions()->end())
-    {
+  {
     opcons = it->second.OpConstructors;
-    }
+  }
   return opcons;
 }
 
@@ -354,12 +335,12 @@ std::set<std::string> SessionRegistrar::sessionOperatorNames(const std::string& 
   std::set<std::string> result;
   OperatorConstructors* opcons = SessionRegistrar::sessionOperatorConstructors(stype);
   if (opcons)
-    {
+  {
     for (auto opit = opcons->begin(); opit != opcons->end(); ++opit)
-      {
+    {
       result.insert(opit->first);
-      }
     }
+  }
   return result;
 }
 
@@ -377,5 +358,5 @@ SessionPtr SessionRegistrar::createSession(const std::string& bname)
   return SessionPtr();
 }
 
-  } // model namespace
+} // model namespace
 } // smtk namespace

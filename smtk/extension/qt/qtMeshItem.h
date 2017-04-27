@@ -23,45 +23,42 @@ class qtMeshItemInternals;
 
 namespace smtk
 {
-  namespace extension
-  {
-    class qtBaseView;
-    class qtAttribute;
+namespace extension
+{
+class qtBaseView;
+class qtAttribute;
 
-    class SMTKQTEXT_EXPORT qtMeshItem : public qtItem
-    {
-      Q_OBJECT
+class SMTKQTEXT_EXPORT qtMeshItem : public qtItem
+{
+  Q_OBJECT
 
-    public:
-      qtMeshItem(smtk::attribute::ItemPtr,
-        QWidget* parent,  qtBaseView* view,
-        Qt::Orientation enVectorItemOrient = Qt::Horizontal);
-      virtual ~qtMeshItem();
+public:
+  qtMeshItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* view,
+    Qt::Orientation enVectorItemOrient = Qt::Horizontal);
+  virtual ~qtMeshItem();
 
-      virtual void setLabelVisible(bool);
-      smtk::attribute::MeshItemPtr meshItem();
+  virtual void setLabelVisible(bool);
+  smtk::attribute::MeshItemPtr meshItem();
 
-      bool add(const smtk::mesh::MeshSet& val);
-      bool remove(const smtk::mesh::MeshSet& val);
+  bool add(const smtk::mesh::MeshSet& val);
+  bool remove(const smtk::mesh::MeshSet& val);
 
-    public slots:
-      void setOutputOptional(int);
+public slots:
+  void setOutputOptional(int);
 
-    protected slots:
-      virtual void updateItemData();
+protected slots:
+  virtual void updateItemData();
 
-    protected:
-      virtual void createWidget();
-      virtual void loadAssociatedEntities();
+protected:
+  virtual void createWidget();
+  virtual void loadAssociatedEntities();
 
-    private:
+private:
+  qtMeshItemInternals* Internals;
 
-      qtMeshItemInternals *Internals;
+}; // class
 
-    }; // class
-
-  }; // namespace attribute
+}; // namespace attribute
 }; // namespace smtk
-
 
 #endif

@@ -11,7 +11,6 @@
 // .NAME vtkEnclosingModelEntityOperator -
 // .SECTION Description
 
-
 #ifndef __vtkEnclosingModelEntityOperator_h
 #define __vtkEnclosingModelEntityOperator_h
 
@@ -26,15 +25,15 @@ class vtkCellLocator;
 class SMTKDISCRETESESSION_EXPORT vtkEnclosingModelEntityOperator : public vtkObject
 {
 public:
-  static vtkEnclosingModelEntityOperator * New();
-  vtkTypeMacro(vtkEnclosingModelEntityOperator,vtkObject);
+  static vtkEnclosingModelEntityOperator* New();
+  vtkTypeMacro(vtkEnclosingModelEntityOperator, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   void BuildLinks(vtkDiscreteModelWrapper* modelWrapper);
 
   // Description:
   // Modify the color and/or the visibility of an object.
-  virtual void Operate(vtkDiscreteModelWrapper* modelWrapper, double *pt);
+  virtual void Operate(vtkDiscreteModelWrapper* modelWrapper, double* pt);
 
   // Description:
   // Return the model entity.
@@ -53,11 +52,11 @@ private:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).
   int OperateSucceeded;
 
-  vtkCellLocator *CellLocator;
-  vtkModelEntity *EnclosingEntity;
+  vtkCellLocator* CellLocator;
+  vtkModelEntity* EnclosingEntity;
 
-  vtkEnclosingModelEntityOperator(const vtkEnclosingModelEntityOperator&);  // Not implemented.
-  void operator=(const vtkEnclosingModelEntityOperator&);  // Not implemented.
+  vtkEnclosingModelEntityOperator(const vtkEnclosingModelEntityOperator&); // Not implemented.
+  void operator=(const vtkEnclosingModelEntityOperator&);                  // Not implemented.
 };
 
 #endif

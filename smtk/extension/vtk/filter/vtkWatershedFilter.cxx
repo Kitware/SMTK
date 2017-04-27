@@ -28,35 +28,34 @@
 vtkStandardNewMacro(vtkWatershedFilter);
 
 vtkWatershedFilter::vtkWatershedFilter()
-: ForegroundValue(0),
-  BackgroundValue(125),
-  UnlabeledValue(255)
+  : ForegroundValue(0)
+  , BackgroundValue(125)
+  , UnlabeledValue(255)
 {
   this->SetNumberOfInputPorts(2);
   this->SetNumberOfOutputPorts(3);
 }
 
-int vtkWatershedFilter::RequestData(vtkInformation *vtkNotUsed(request),
-                                     vtkInformationVector **inputVector,
-                                     vtkInformationVector *outputVector)
+int vtkWatershedFilter::RequestData(vtkInformation* vtkNotUsed(request),
+  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
 {
   // Get the info objects
-  vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
-  vtkInformation *maskInfo = inputVector[1]->GetInformationObject(0);
-  vtkInformation *outLabelInfo = outputVector->GetInformationObject(0);
-  vtkInformation *outNextIterInfo = outputVector->GetInformationObject(1);
-  vtkInformation *outPolyDataInfo = outputVector->GetInformationObject(2);
+  vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
+  vtkInformation* maskInfo = inputVector[1]->GetInformationObject(0);
+  vtkInformation* outLabelInfo = outputVector->GetInformationObject(0);
+  vtkInformation* outNextIterInfo = outputVector->GetInformationObject(1);
+  vtkInformation* outPolyDataInfo = outputVector->GetInformationObject(2);
 
   // Get the input and ouptut
-  vtkImageData *inputVTK = vtkImageData::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
-  vtkImageData *maskVTK = vtkImageData::SafeDownCast(maskInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkImageData* inputVTK = vtkImageData::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkImageData* maskVTK = vtkImageData::SafeDownCast(maskInfo->Get(vtkDataObject::DATA_OBJECT()));
 
-  vtkImageData *outputLable =
-                      vtkImageData::SafeDownCast(outLabelInfo->Get(vtkDataObject::DATA_OBJECT()));
-  vtkImageData *outputNext =
-                    vtkImageData::SafeDownCast(outNextIterInfo->Get(vtkDataObject::DATA_OBJECT()));
-  vtkPolyData * outputPoly =
-                    vtkPolyData::SafeDownCast(outPolyDataInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkImageData* outputLable =
+    vtkImageData::SafeDownCast(outLabelInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkImageData* outputNext =
+    vtkImageData::SafeDownCast(outNextIterInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkPolyData* outputPoly =
+    vtkPolyData::SafeDownCast(outPolyDataInfo->Get(vtkDataObject::DATA_OBJECT()));
 
   vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New();
   vtkSmartPointer<vtkImageData> mask = vtkSmartPointer<vtkImageData>::New();
@@ -68,18 +67,17 @@ int vtkWatershedFilter::RequestData(vtkInformation *vtkNotUsed(request),
   vtkOpenCVHelper::VTKToOpenCV(mask, maskCV, /*to_gray*/ true);
 
 #ifdef DEBUG_GUI
-  cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE );// Create a window for display.
-  cv::imshow( "Display window", maskCV );                  // Show our image inside it.
+  cv::namedWindow("Display window", cv::WINDOW_AUTOSIZE); // Create a window for display.
+  cv::imshow("Display window", maskCV);                   // Show our image inside it.
   cv::waitKey(0);
 #endif
 
-  for(int i = 0; i < maskCV.rows; i++)
+  for (int i = 0; i < maskCV.rows; i++)
   {
     uchar* Mi = maskCV.ptr<uchar>(i);
-    for(int j = 0; j < maskCV.cols; j++)
+    for (int j = 0; j < maskCV.cols; j++)
     {
-      if(Mi[j] != ForegroundValue &&
-         Mi[j] != BackgroundValue )
+      if (Mi[j] != ForegroundValue && Mi[j] != BackgroundValue)
       {
         Mi[j] = UnlabeledValue;
       }
@@ -109,19 +107,19 @@ int vtkWatershedFilter::RequestData(vtkInformation *vtkNotUsed(request),
   }
 
   vtkSmartPointer<vtkPolyData> poly = vtkSmartPointer<vtkPolyData>::New();
-  vtkOpenCVHelper::ExtractContours(outputLabledImageCV, image->GetOrigin(), image->GetSpacing(),
-                                   ForegroundValue, poly);
+  vtkOpenCVHelper::ExtractContours(
+    outputLabledImageCV, image->GetOrigin(), image->GetSpacing(), ForegroundValue, poly);
 
-  vtkOpenCVHelper::OpenCVToVTK(outputLabledImageCV, maskVTK->GetOrigin(), maskVTK->GetSpacing(),
-                               outputLable);
+  vtkOpenCVHelper::OpenCVToVTK(
+    outputLabledImageCV, maskVTK->GetOrigin(), maskVTK->GetSpacing(), outputLable);
   outputNext->DeepCopy(maskVTK);
 
   outputPoly->DeepCopy(poly);
-  
+
   return 1;
 }
 
-int vtkWatershedFilter::FillOutputPortInformation(int port, vtkInformation *info)
+int vtkWatershedFilter::FillOutputPortInformation(int port, vtkInformation* info)
 {
   if (port == 0)
   {

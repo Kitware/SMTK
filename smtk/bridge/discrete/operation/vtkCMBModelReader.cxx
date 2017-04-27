@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkCMBModelReader.h"
 
 #include "vtkCMBParserBase.h"
@@ -28,33 +27,29 @@ vtkCMBModelReader::vtkCMBModelReader()
   this->SetNumberOfInputPorts(0);
 }
 
-vtkCMBModelReader:: ~vtkCMBModelReader()
+vtkCMBModelReader::~vtkCMBModelReader()
 {
   this->SetFileName(0);
 }
 
-int vtkCMBModelReader::RequestData(
-  vtkInformation *vtkNotUsed(request),
-  vtkInformationVector **vtkNotUsed(inputVector),
-  vtkInformationVector *outputVector)
+int vtkCMBModelReader::RequestData(vtkInformation* vtkNotUsed(request),
+  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
 {
   vtkDebugMacro("Reading a CMB file.");
   // get the info object
-  vtkInformation *outInfo = outputVector->GetInformationObject(0);
+  vtkInformation* outInfo = outputVector->GetInformationObject(0);
 
   // get the ouptut
-  vtkPolyData *output = vtkPolyData::SafeDownCast(
-    outInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkPolyData* output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
   struct stat fs;
-  if ( stat(this->FileName, &fs) )
-    {
+  if (stat(this->FileName, &fs))
+  {
     vtkErrorMacro(<< this->FileName << " not found");
     return 0;
-    }
+  }
 
-  vtkSmartPointer<vtkXMLPolyDataReader> reader =
-    vtkSmartPointer<vtkXMLPolyDataReader>::New();
+  vtkSmartPointer<vtkXMLPolyDataReader> reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
   reader->SetFileName(this->GetFileName());
   reader->Update();
 
@@ -63,22 +58,20 @@ int vtkCMBModelReader::RequestData(
   return 1;
 }
 
-int vtkCMBModelReader::RequestInformation(
-  vtkInformation *vtkNotUsed(request),
-  vtkInformationVector **vtkNotUsed(inputVector),
-  vtkInformationVector *vtkNotUsed(outputVector))
+int vtkCMBModelReader::RequestInformation(vtkInformation* vtkNotUsed(request),
+  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* vtkNotUsed(outputVector))
 {
   if (!this->FileName)
-    {
+  {
     vtkErrorMacro("FileName has to be specified!");
     return 0;
-    }
+  }
 
   return 1;
 }
 
 void vtkCMBModelReader::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
   os << indent << "FileName: " << this->FileName << endl;
 }

@@ -32,37 +32,36 @@ namespace
 {
 std::string write_root = SMTK_SCRATCH_DIR;
 
-void cleanup( const std::string& file_path )
+void cleanup(const std::string& file_path)
 {
   //first verify the file exists
-  ::boost::filesystem::path path( file_path );
-  if( ::boost::filesystem::is_regular_file( path ) )
-    {
+  ::boost::filesystem::path path(file_path);
+  if (::boost::filesystem::is_regular_file(path))
+  {
     //remove the file_path if it exists.
-    ::boost::filesystem::remove( path );
-    }
+    ::boost::filesystem::remove(path);
+  }
 }
 
 const char* testInput =
-"<?xml version=\"1.0\" encoding=\"utf-8\" ?>                                   "
-"<SMTK_AttributeSystem Version=\"2\">                                          "
-"  <Definitions>                                                               "
-"    <AttDef Type=\"att1\" BaseType=\"\">                                      "
-"      <ItemDefinitions>                                                       "
-"	<String Name=\"myStrings\" Extensible=\"1\"                            "
-"               NumberOfRequiredValues=\"1\">                                  "
-"	</String>                                                              "
-"	<File Name=\"myFiles\" Extensible=\"1\" ShouldExist=\"false\"          "
-"               NumberOfRequiredValues=\"1\">                                  "
-"	</File>                                                                "
-"      </ItemDefinitions>                                                      "
-"    </AttDef>                                                                 "
-"  </Definitions>                                                              "
-"  <Attributes>                                                                "
-"    <Att Name=\"att\" Type=\"att1\"/>                                         "
-"  </Attributes>                                                               "
-"</SMTK_AttributeSystem>                                                       "
-;
+  "<?xml version=\"1.0\" encoding=\"utf-8\" ?>                                   "
+  "<SMTK_AttributeSystem Version=\"2\">                                          "
+  "  <Definitions>                                                               "
+  "    <AttDef Type=\"att1\" BaseType=\"\">                                      "
+  "      <ItemDefinitions>                                                       "
+  "	<String Name=\"myStrings\" Extensible=\"1\"                            "
+  "               NumberOfRequiredValues=\"1\">                                  "
+  "	</String>                                                              "
+  "	<File Name=\"myFiles\" Extensible=\"1\" ShouldExist=\"false\"          "
+  "               NumberOfRequiredValues=\"1\">                                  "
+  "	</File>                                                                "
+  "      </ItemDefinitions>                                                      "
+  "    </AttDef>                                                                 "
+  "  </Definitions>                                                              "
+  "  <Attributes>                                                                "
+  "    <Att Name=\"att\" Type=\"att1\"/>                                         "
+  "  </Attributes>                                                               "
+  "</SMTK_AttributeSystem>                                                       ";
 }
 
 int main()
@@ -72,20 +71,20 @@ int main()
   smtk::io::AttributeReader reader;
 
   if (reader.readContents(system, testInput, logger))
-    {
+  {
     std::cerr << "Encountered Errors while reading input data\n";
     std::cerr << logger.convertToString();
     return -2;
-    }
+  }
 
   std::vector<smtk::attribute::AttributePtr> atts;
   system.attributes(atts);
   if (atts.size() != 1)
-    {
-    std::cerr << "Unexpected number of attributes: "<<atts.size()<<"\n";
+  {
+    std::cerr << "Unexpected number of attributes: " << atts.size() << "\n";
     std::cerr << logger.convertToString();
     return -2;
-    }
+  }
   smtk::attribute::AttributePtr att = atts[0];
 
   smtk::attribute::StringItemPtr myStrings = att->findString("myStrings");
@@ -99,11 +98,11 @@ int main()
   myFiles->setValue(1, "/path/to/file1");
 
   if (!att->isValid())
-    {
+  {
     std::cerr << "Input attributes are invalid\n";
     std::cerr << logger.convertToString();
     return -2;
-    }
+  }
 
   std::stringstream s;
   s << write_root << "/" << smtk::common::UUID::random().toString() << ".xml";
@@ -112,65 +111,66 @@ int main()
   smtk::io::AttributeWriter writer;
 
   if (writer.write(system, fileName, logger))
-    {
+  {
     std::cerr << "Failed to write to " << fileName << "\n";
     std::cerr << logger.convertToString();
     return -2;
-    }
+  }
 
   smtk::attribute::System copiedSystem;
   if (reader.read(copiedSystem, fileName, logger))
-    {
+  {
     std::cerr << "Failed to read from " << fileName << "\n";
     std::cerr << logger.convertToString();
     return -2;
-    }
+  }
 
   {
-  std::vector<smtk::attribute::AttributePtr> copiedAtts;
-  copiedSystem.attributes(copiedAtts);
-  if (copiedAtts.size() != 1)
+    std::vector<smtk::attribute::AttributePtr> copiedAtts;
+    copiedSystem.attributes(copiedAtts);
+    if (copiedAtts.size() != 1)
     {
-    std::cerr << "Unexpected number of attributes: "<<copiedAtts.size()<<"\n";
-    std::cerr << logger.convertToString();
-    return -2;
+      std::cerr << "Unexpected number of attributes: " << copiedAtts.size() << "\n";
+      std::cerr << logger.convertToString();
+      return -2;
     }
 
-  smtk::attribute::AttributePtr copiedAtt = copiedAtts[0];
-  if (!copiedAtt->isValid())
+    smtk::attribute::AttributePtr copiedAtt = copiedAtts[0];
+    if (!copiedAtt->isValid())
     {
-    std::cerr << "Copied attributes are invalid\n";
-    std::cerr << logger.convertToString();
-    return -2;
+      std::cerr << "Copied attributes are invalid\n";
+      std::cerr << logger.convertToString();
+      return -2;
     }
 
-  smtk::attribute::StringItemPtr myCopiedStrings =
-    copiedAtt->findString("myStrings");
-  smtk::attribute::ItemPtr myStringsAsItems =
-    std::static_pointer_cast<smtk::attribute::Item>(myStrings);
-  smtk::attribute::ConstItemPtr myStringsAsConstItems =
-    std::const_pointer_cast<smtk::attribute::Item>(myStringsAsItems);
-  myCopiedStrings->assign(myStringsAsConstItems);
+    smtk::attribute::StringItemPtr myCopiedStrings = copiedAtt->findString("myStrings");
+    smtk::attribute::ItemPtr myStringsAsItems =
+      std::static_pointer_cast<smtk::attribute::Item>(myStrings);
+    smtk::attribute::ConstItemPtr myStringsAsConstItems =
+      std::const_pointer_cast<smtk::attribute::Item>(myStringsAsItems);
+    myCopiedStrings->assign(myStringsAsConstItems);
 
-  if (myCopiedStrings->numberOfValues() != myStrings->numberOfValues())
+    if (myCopiedStrings->numberOfValues() != myStrings->numberOfValues())
     {
-    std::cerr << "Unexpected number of string values: "<<myCopiedStrings->numberOfValues()<<" vs "<<myStrings->numberOfValues()<<"\n";
-    std::cerr << logger.convertToString();
-    return -2;
+      std::cerr << "Unexpected number of string values: " << myCopiedStrings->numberOfValues()
+                << " vs " << myStrings->numberOfValues() << "\n";
+      std::cerr << logger.convertToString();
+      return -2;
     }
 
-  smtk::attribute::FileItemPtr myCopiedFiles = copiedAtt->findFile("myFiles");
-  smtk::attribute::ItemPtr myFilesAsItems =
-    std::static_pointer_cast<smtk::attribute::Item>(myFiles);
-  smtk::attribute::ConstItemPtr myFilesAsConstItems =
-    std::const_pointer_cast<smtk::attribute::Item>(myFilesAsItems);
-  myCopiedFiles->assign(myFilesAsConstItems);
+    smtk::attribute::FileItemPtr myCopiedFiles = copiedAtt->findFile("myFiles");
+    smtk::attribute::ItemPtr myFilesAsItems =
+      std::static_pointer_cast<smtk::attribute::Item>(myFiles);
+    smtk::attribute::ConstItemPtr myFilesAsConstItems =
+      std::const_pointer_cast<smtk::attribute::Item>(myFilesAsItems);
+    myCopiedFiles->assign(myFilesAsConstItems);
 
-  if (myCopiedFiles->numberOfValues() != myFiles->numberOfValues())
+    if (myCopiedFiles->numberOfValues() != myFiles->numberOfValues())
     {
-    std::cerr << "Unexpected number of file values: "<<myCopiedFiles->numberOfValues()<<" vs "<<myFiles->numberOfValues()<<"\n";
-    std::cerr << logger.convertToString();
-    return -2;
+      std::cerr << "Unexpected number of file values: " << myCopiedFiles->numberOfValues() << " vs "
+                << myFiles->numberOfValues() << "\n";
+      std::cerr << logger.convertToString();
+      return -2;
     }
   }
 

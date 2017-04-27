@@ -20,15 +20,17 @@
 
 namespace smtk
 {
-  namespace attribute
-  {
+namespace attribute
+{
 
 class SMTKCORE_EXPORT ModelEntityItemDefinition : public ItemDefinition
 {
 public:
   smtkTypeMacro(ModelEntityItemDefinition);
   static smtk::attribute::ModelEntityItemDefinitionPtr New(const std::string& sname)
-    { return smtk::attribute::ModelEntityItemDefinitionPtr(new ModelEntityItemDefinition(sname));}
+  {
+    return smtk::attribute::ModelEntityItemDefinitionPtr(new ModelEntityItemDefinition(sname));
+  }
 
   virtual ~ModelEntityItemDefinition();
 
@@ -39,8 +41,7 @@ public:
 
   bool isValueValid(const smtk::model::EntityRef& entity) const;
 
-  virtual smtk::attribute::ItemPtr buildItem(
-    Attribute* owningAttribute, int itemPosition) const;
+  virtual smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const;
   virtual smtk::attribute::ItemPtr buildItem(
     Item* owningItem, int position, int subGroupPosition) const;
 
@@ -55,12 +56,13 @@ public:
 
   bool hasValueLabels() const;
   std::string valueLabel(std::size_t element) const;
-  void setValueLabel(std::size_t element, const std::string &elabel);
-  void setCommonValueLabel(const std::string &elabel);
+  void setValueLabel(std::size_t element, const std::string& elabel);
+  void setCommonValueLabel(const std::string& elabel);
   bool usingCommonLabel() const;
 
-  virtual smtk::attribute::ItemDefinitionPtr
-    createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const;
+  virtual smtk::attribute::ItemDefinitionPtr createCopy(
+    smtk::attribute::ItemDefinition::CopyInfo& info) const;
+
 protected:
   ModelEntityItemDefinition(const std::string& myName);
 
@@ -72,7 +74,7 @@ protected:
   std::size_t m_maxNumberOfValues;
 };
 
-  } // namespace attribute
+} // namespace attribute
 } // namespace smtk
 
 #endif /* __smtk_attribute_ModelEntityItemDefinition_h */

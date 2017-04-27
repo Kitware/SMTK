@@ -16,14 +16,13 @@
 #include "vtkObjectFactory.h"
 #include "vtkSerializer.h"
 
-
 vtkDiscreteModelEntityGroup* vtkDiscreteModelEntityGroup::New()
 {
   vtkObject* ret = vtkObjectFactory::CreateInstance("vtkDiscreteModelEntityGroup");
-  if(ret)
-    {
+  if (ret)
+  {
     return static_cast<vtkDiscreteModelEntityGroup*>(ret);
-    }
+  }
   return new vtkDiscreteModelEntityGroup;
 }
 
@@ -83,10 +82,9 @@ void vtkDiscreteModelEntityGroup::Serialize(vtkSerializer* ser)
   ser->Serialize("EntityType", this->EntityType);
 }
 
-
 void vtkDiscreteModelEntityGroup::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 
   os << indent << "EntityType: " << this->EntityType << "\n";
 }

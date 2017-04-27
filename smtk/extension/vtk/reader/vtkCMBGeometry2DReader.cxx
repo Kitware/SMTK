@@ -46,11 +46,11 @@ vtkCMBGeometry2DReader::vtkCMBGeometry2DReader()
   this->FileName = NULL;
   this->SetNumberOfInputPorts(0);
   for (int i = 0; i < 4; ++i)
-    {
+  {
     this->RelativeMargin[i] = 5.; // in percent
     this->AbsoluteMargin[i] = 1.;
     this->AbsoluteBounds[i] = i % 2 ? -1. : +1.;
-    }
+  }
   this->BoundaryFile = NULL;
   this->BoundaryStyle = NONE;
 }
@@ -63,10 +63,9 @@ vtkCMBGeometry2DReader::~vtkCMBGeometry2DReader()
 
 void vtkCMBGeometry2DReader::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 
-  os << indent << "File Name: "
-     << (this->FileName ? this->FileName : "(none)") << "\n";
+  os << indent << "File Name: " << (this->FileName ? this->FileName : "(none)") << "\n";
   os << indent << "BoundaryStyle: " << this->BoundaryStyle << "\n";
 }
 
@@ -74,18 +73,18 @@ void vtkCMBGeometry2DReader::SetRelativeMarginString(const char* text)
 {
   double vals[4];
   if (this->GetMarginFromString(text, vals))
-    {
+  {
     this->SetRelativeMargin(vals);
-    }
+  }
 }
 
 void vtkCMBGeometry2DReader::SetAbsoluteMarginString(const char* text)
 {
   double vals[4];
   if (this->GetMarginFromString(text, vals))
-    {
+  {
     this->SetAbsoluteMargin(vals);
-    }
+  }
 }
 
 void vtkCMBGeometry2DReader::SetAbsoluteBoundsString(const char* text)
@@ -93,10 +92,10 @@ void vtkCMBGeometry2DReader::SetAbsoluteBoundsString(const char* text)
   double vals[4];
   int numVals = this->GetMarginFromString(text, vals);
   if (numVals != 4)
-    { // Assume we should reset the bounds to be invalid
+  { // Assume we should reset the bounds to be invalid
     vals[0] = vals[2] = +1.;
     vals[1] = vals[3] = -1.;
-    }
+  }
   this->SetAbsoluteBounds(vals);
 }
 
@@ -104,63 +103,57 @@ int vtkCMBGeometry2DReader::GetMarginFromString(const char* text, double vals[4]
 {
   int numVals = sscanf(text, "%lf, %lf, %lf, %lf", vals, vals + 1, vals + 2, vals + 3);
   switch (numVals)
+  {
+    case 1:
+      vals[1] = vals[2] = vals[3] = vals[0];
+      break;
+    case 2:
+      vals[3] = vals[2] = vals[1];
+      vals[1] = vals[0];
+      break;
+    case 3:
+      vals[3] = vals[2];
+      break;
+    case 4:
+      break;
+    default:
     {
-  case 1:
-    vals[1] = vals[2] = vals[3] = vals[0];
-    break;
-  case 2:
-    vals[3] = vals[2] = vals[1];
-    vals[1] = vals[0];
-    break;
-  case 3:
-    vals[3] = vals[2];
-    break;
-  case 4:
-    break;
-  default:
-      {
-      vtkErrorMacro(
-        << "Unable to parse string into 1 or more comma-separated values: \""
-        << text << "\"");
-      }
+      vtkErrorMacro(<< "Unable to parse string into 1 or more comma-separated values: \"" << text
+                    << "\"");
     }
+  }
   return numVals;
 }
 
-int vtkCMBGeometry2DReader::RequestInformation(
-  vtkInformation *vtkNotUsed(request),
-  vtkInformationVector **vtkNotUsed(inputVector),
-  vtkInformationVector *vtkNotUsed(outputVector))
+int vtkCMBGeometry2DReader::RequestInformation(vtkInformation* vtkNotUsed(request),
+  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* vtkNotUsed(outputVector))
 {
   if (!this->FileName)
-    {
+  {
     vtkErrorMacro("FileName has to be specified!");
     return 0;
-    }
+  }
 
   return 1;
 }
 
-int vtkCMBGeometry2DReader::RequestData(
-  vtkInformation *vtkNotUsed(request),
-  vtkInformationVector **vtkNotUsed(inputVector),
-  vtkInformationVector *outputVector)
+int vtkCMBGeometry2DReader::RequestData(vtkInformation* vtkNotUsed(request),
+  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
 {
-  vtkInformation *outInfo = outputVector->GetInformationObject(0);
-  vtkPolyData *output = vtkPolyData::SafeDownCast(
-    outInfo->Get(vtkDataObject::DATA_OBJECT()));
-  std::string fileNameStr =this->FileName;
+  vtkInformation* outInfo = outputVector->GetInformationObject(0);
+  vtkPolyData* output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
+  std::string fileNameStr = this->FileName;
   vtksys::SystemTools::ConvertToUnixSlashes(fileNameStr);
   std::string fullName = vtksys::SystemTools::CollapseFullPath(fileNameStr.c_str());
   struct stat fs;
   if (stat(fileNameStr.c_str(), &fs) != 0)
-    {
-    vtkErrorMacro(<< "Unable to open file: "<< fileNameStr);
-    this->SetErrorCode( vtkErrorCode::CannotOpenFileError );
+  {
+    vtkErrorMacro(<< "Unable to open file: " << fileNameStr);
+    this->SetErrorCode(vtkErrorCode::CannotOpenFileError);
     return 0;
-    }
+  }
   if (fileNameStr.find(".shp") != std::string::npos)
-    {
+  {
     vtkNew<vtkGDALVectorReader> rdr;
     vtkNew<vtkCleanPolyData> cln;
     vtkNew<vtkAppendPolyData> app;
@@ -178,14 +171,11 @@ int vtkCMBGeometry2DReader::RequestData(
 
     cln->SetInputConnection(rdr->GetOutputPort());
     cln->Update();
-    vtkMultiBlockDataSet* mbds =
-      vtkMultiBlockDataSet::SafeDownCast(
-        cln->GetOutputDataObject(0));
+    vtkMultiBlockDataSet* mbds = vtkMultiBlockDataSet::SafeDownCast(cln->GetOutputDataObject(0));
     // Now we do some manual processing:
     // (a) create a polydata for a bounding box
     // (b) add a pedigree ID indicating the original ID of the geometry.
-    vtkPolyData* rdp = mbds ?
-      vtkPolyData::SafeDownCast(mbds->GetBlock(0)) : NULL;
+    vtkPolyData* rdp = mbds ? vtkPolyData::SafeDownCast(mbds->GetBlock(0)) : NULL;
 
     // Remove the "label" attribute if it exists... string arrays
     // can cause problems.
@@ -198,7 +188,7 @@ int vtkCMBGeometry2DReader::RequestData(
     psa->Update();
 
     if (this->BoundaryStyle != NONE)
-      {
+    {
       // ctp will hold a clipping polygon either created manually
       // as a bounding rectangle or read from a separate shapefile.
       vtkNew<vtkPolyData> ctp;
@@ -208,12 +198,12 @@ int vtkCMBGeometry2DReader::RequestData(
       vtkNew<vtkIdTypeArray> cid;
       cid->SetName("_vtkPedigreeIds");
       if (this->BoundaryStyle == IMPORTED_POLYGON)
-        {
+      {
         if (!this->BoundaryFile || !this->BoundaryFile[0])
-          {
+        {
           vtkErrorMacro(<< "Must have a valid boundary filename to import.\n");
           return 0;
-          }
+        }
         vtkNew<vtkGDALVectorReader> rbd;
         vtkNew<vtkCleanPolyData> cpd;
         rbd->SetFileName(this->BoundaryFile);
@@ -223,13 +213,11 @@ int vtkCMBGeometry2DReader::RequestData(
 
         cpd->SetInputConnection(rbd->GetOutputPort());
         cpd->Update();
-        mbds = vtkMultiBlockDataSet::SafeDownCast(
-            cpd->GetOutputDataObject(0));
+        mbds = vtkMultiBlockDataSet::SafeDownCast(cpd->GetOutputDataObject(0));
         // Now we do some manual processing:
         // (a) create a polydata for a bounding box
         // (b) add a pedigree ID indicating the original ID of the geometry.
-        vtkPolyData* rdp2 = mbds ?
-          vtkPolyData::SafeDownCast(mbds->GetBlock(0)) : NULL;
+        vtkPolyData* rdp2 = mbds ? vtkPolyData::SafeDownCast(mbds->GetBlock(0)) : NULL;
 
         // Remove the "label" attribute if it exists... string arrays
         // can cause problems.
@@ -244,36 +232,36 @@ int vtkCMBGeometry2DReader::RequestData(
         ctp->ShallowCopy(ps2->GetOutputDataObject(0));
         cid->SetNumberOfTuples(ctp->GetNumberOfCells());
         cid->FillComponent(0, -1.);
-        }
+      }
       else // generate a rectangle, somehow
-        {
+      {
         cid->SetNumberOfTuples(1);
-        cid->SetValue(0,-1);
+        cid->SetValue(0, -1);
         double bds[6];
         double margin[4];
         if (this->BoundaryStyle == RELATIVE_MARGIN)
-          {
+        {
           this->GetRelativeMargin(margin);
           // convert from percent to world coordinates:
           double dataLength = rdp->GetLength();
           for (int i = 0; i < 4; ++i)
-            {
+          {
             margin[i] *= dataLength / 100.;
-            }
           }
+        }
         else if (this->BoundaryStyle == ABSOLUTE_MARGIN)
-          {
+        {
           this->GetAbsoluteMargin(margin);
-          }
+        }
         else // (this->BoundaryStyle == ABSOLUTE_BOUNDS)
-          {
+        {
           this->GetAbsoluteBounds(margin);
           for (int i = 0; i < 4; ++i)
-            {
+          {
             bds[i] = margin[i];
             margin[i] = 0.;
-            }
           }
+        }
         rdp->GetBounds(bds);
         ctp->SetPoints(ctpPts.GetPointer());
         ctp->SetLines(ctpLin.GetPointer());
@@ -283,31 +271,31 @@ int vtkCMBGeometry2DReader::RequestData(
         ctpPts->SetPoint(2, bds[1] + margin[1], bds[3] + margin[3], bds[4]);
         ctpPts->SetPoint(3, bds[0] - margin[0], bds[3] + margin[3], bds[4]);
         vtkIdType rectConn[] = { 0, 1, 2, 3, 0 };
-        ctp->InsertNextCell(VTK_POLY_LINE, sizeof(rectConn)/sizeof(rectConn[0]), rectConn);
-        }
+        ctp->InsertNextCell(VTK_POLY_LINE, sizeof(rectConn) / sizeof(rectConn[0]), rectConn);
+      }
       ctp->GetCellData()->SetPedigreeIds(cid.GetPointer());
       if (!rdp->GetCellData()->GetPedigreeIds())
-        {
+      {
         vtkNew<vtkIdTypeArray> rid;
         rid->SetName("_vtkPedigreeIds");
         vtkIdType ncell = rdp->GetNumberOfCells();
         rid->SetNumberOfTuples(ncell);
         for (vtkIdType i = 0; i < ncell; ++i)
-          {
+        {
           rid->SetValue(i, i);
-          }
-        rdp->GetCellData()->SetPedigreeIds(rid.GetPointer());
         }
+        rdp->GetCellData()->SetPedigreeIds(rid.GetPointer());
+      }
 
       app->AddInputDataObject(rdp);
       app->AddInputDataObject(ctp.GetPointer());
 
       slf->SetInputConnection(app->GetOutputPort());
-      }
+    }
     else
-      {
+    {
       slf->SetInputConnection(psa->GetOutputPort());
-      }
+    }
     slf->Update();
 
     drg->SetInputConnection(slf->GetOutputPort());
@@ -328,18 +316,18 @@ int vtkCMBGeometry2DReader::RequestData(
     pdn->Update();
 
     output->ShallowCopy(pdn->GetOutput());
-    }
+  }
   else // unrecognized file type
-    {
-    vtkErrorMacro(<< "Unrecognized file type: "<< fileNameStr);
-    this->SetErrorCode( vtkErrorCode::UnrecognizedFileTypeError );
+  {
+    vtkErrorMacro(<< "Unrecognized file type: " << fileNameStr);
+    this->SetErrorCode(vtkErrorCode::UnrecognizedFileTypeError);
     return 0;
-    }
+  }
 
   // Append File name to output
   vtkNew<vtkStringArray> filenameFD;
   filenameFD->SetName("FileName");
   filenameFD->InsertNextValue(fullName);
-  output->GetFieldData()->AddArray( filenameFD.GetPointer() );
+  output->GetFieldData()->AddArray(filenameFD.GetPointer());
   return 1;
 }

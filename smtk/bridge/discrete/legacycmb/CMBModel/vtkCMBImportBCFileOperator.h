@@ -27,8 +27,8 @@ class vtkDiscreteModelWrapper;
 class VTKCMBDISCRETEMODEL_EXPORT vtkCMBImportBCFileOperator : public vtkObject
 {
 public:
-  static vtkCMBImportBCFileOperator * New();
-  vtkTypeMacro(vtkCMBImportBCFileOperator,vtkObject);
+  static vtkCMBImportBCFileOperator* New();
+  vtkTypeMacro(vtkCMBImportBCFileOperator, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -54,8 +54,8 @@ private:
   // The name of the file to be read.
   char* FileName;
 
-  vtkCMBImportBCFileOperator(const vtkCMBImportBCFileOperator&);  // Not implemented.
-  void operator=(const vtkCMBImportBCFileOperator&);  // Not implemented.
+  vtkCMBImportBCFileOperator(const vtkCMBImportBCFileOperator&); // Not implemented.
+  void operator=(const vtkCMBImportBCFileOperator&);             // Not implemented.
 
   // Description:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).

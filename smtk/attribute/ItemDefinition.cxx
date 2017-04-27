@@ -8,12 +8,12 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "smtk/attribute/ItemDefinition.h"
 #include <iostream>
 using namespace smtk::attribute;
 
-ItemDefinition::ItemDefinition(const std::string &myName) : m_name(myName)
+ItemDefinition::ItemDefinition(const std::string& myName)
+  : m_name(myName)
 {
   this->m_version = 0;
   this->m_advanceLevel[0] = 0;
@@ -26,29 +26,29 @@ ItemDefinition::~ItemDefinition()
 {
 }
 
-bool ItemDefinition::isMemberOf(const std::vector<std::string> &inCategories) const
+bool ItemDefinition::isMemberOf(const std::vector<std::string>& inCategories) const
 {
   std::size_t i, n = inCategories.size();
   for (i = 0; i < n; i++)
-    {
+  {
     if (this->isMemberOf(inCategories[i]))
-      {
+    {
       return true;
-      }
     }
-    return false;
+  }
+  return false;
 }
 
 void ItemDefinition::updateCategories()
 {
 }
 
-void ItemDefinition::addCategory(const std::string &category)
+void ItemDefinition::addCategory(const std::string& category)
 {
   this->m_categories.insert(category);
 }
 
-void ItemDefinition::removeCategory(const std::string &category)
+void ItemDefinition::removeCategory(const std::string& category)
 {
   this->m_categories.erase(category);
 }
@@ -56,9 +56,9 @@ void ItemDefinition::removeCategory(const std::string &category)
 void ItemDefinition::setAdvanceLevel(int mode, int level)
 {
   if ((mode < 0) || (mode > 1))
-    {
+  {
     return;
-    }
+  }
   this->m_advanceLevel[mode] = level;
 }
 
@@ -77,9 +77,9 @@ void ItemDefinition::copyTo(ItemDefinitionPtr def) const
 
   std::set<std::string>::const_iterator categoryIter = m_categories.begin();
   for (; categoryIter != m_categories.end(); categoryIter++)
-    {
+  {
     def->addCategory(*categoryIter);
-    }
+  }
 
   def->setAdvanceLevel(0, m_advanceLevel[0]);
   def->setAdvanceLevel(1, m_advanceLevel[1]);

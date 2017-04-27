@@ -17,8 +17,10 @@
 #include "smtk/mesh/CellTypes.h"
 #include "smtk/mesh/Handle.h"
 
-namespace smtk {
-namespace mesh {
+namespace smtk
+{
+namespace mesh
+{
 
 //forward declare of CellSet and MeshSet
 class CellSet;
@@ -37,45 +39,36 @@ public:
 class SMTKCORE_EXPORT CellForEach
 {
 public:
-  CellForEach(bool wantCoordinates=true);
+  CellForEach(bool wantCoordinates = true);
 
   virtual ~CellForEach();
 
-  virtual void forCell(const smtk::mesh::Handle& cellId,
-                       smtk::mesh::CellType cellType,
-                       int numPointIds) = 0;
+  virtual void forCell(
+    const smtk::mesh::Handle& cellId, smtk::mesh::CellType cellType, int numPointIds) = 0;
 
   //returns true if the CellForEach visitor wants its coordinates member
   //variable filled
-  bool wantsCoordinates() const
-    { return this->m_wantsCoordinates; }
+  bool wantsCoordinates() const { return this->m_wantsCoordinates; }
 
-  const smtk::mesh::Handle* pointIds() const
-    { return this->m_pointIds; }
+  const smtk::mesh::Handle* pointIds() const { return this->m_pointIds; }
 
-  smtk::mesh::Handle pointId(int index) const
-    { return this->m_pointIds[index]; }
+  smtk::mesh::Handle pointId(int index) const { return this->m_pointIds[index]; }
 
-  const std::vector<double>& coordinates() const
-    { return *this->m_coords; }
+  const std::vector<double>& coordinates() const { return *this->m_coords; }
 
-  smtk::mesh::CollectionPtr collection() const
-    { return this->m_collection;}
+  smtk::mesh::CollectionPtr collection() const { return this->m_collection; }
 
   //Set the coords for the visitor. This should be only be called by
   //smtk::mesh::Interface implementations
-  void coordinates(std::vector<double>* coords)
-    { this->m_coords = coords; }
+  void coordinates(std::vector<double>* coords) { this->m_coords = coords; }
 
   //Set the pointIds for the visitor. This should be only be called by
   //smtk::mesh::Interface implementations
-  void pointIds(const smtk::mesh::Handle* ptIds)
-    { this->m_pointIds = ptIds; }
+  void pointIds(const smtk::mesh::Handle* ptIds) { this->m_pointIds = ptIds; }
 
   //Set the collection for the visitor. This should be only be called by
   //smtk::mesh::Interface implementations
-  void collection(smtk::mesh::CollectionPtr c)
-    { this->m_collection = c; }
+  void collection(smtk::mesh::CollectionPtr c) { this->m_collection = c; }
 
 private:
   smtk::mesh::CollectionPtr m_collection;
@@ -100,13 +93,11 @@ public:
   // Note: by default coordinatesModified is set to false
   //
   //
-  virtual void forPoints(const smtk::mesh::HandleRange& pointIds,
-                         std::vector<double>& xyz,
-                         bool& coordinatesModified)=0;
+  virtual void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+    bool& coordinatesModified) = 0;
 
   smtk::mesh::CollectionPtr m_collection;
 };
-
 }
 }
 

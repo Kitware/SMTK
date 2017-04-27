@@ -35,38 +35,38 @@ vtkCMBModelStateOperator::~vtkCMBModelStateOperator()
 
 bool vtkCMBModelStateOperator::AbleToOperate(vtkDiscreteModelWrapper* ModelWrapper)
 {
-  if(!ModelWrapper)
-    {
+  if (!ModelWrapper)
+  {
     vtkErrorMacro("Passed in a null model wrapper.");
     return 0;
-    }
+  }
   return this->Superclass::AbleToOperate(ModelWrapper->GetModel());
 }
 
-void vtkCMBModelStateOperator::Operate(vtkDiscreteModelWrapper *modelWrapper)
+void vtkCMBModelStateOperator::Operate(vtkDiscreteModelWrapper* modelWrapper)
 {
-  if(!this->AbleToOperate(modelWrapper))
-    {
+  if (!this->AbleToOperate(modelWrapper))
+  {
     this->OperateSucceeded = 0;
     return;
-    }
+  }
 
-  if(this->OperatorMode == 0)
-    {
+  if (this->OperatorMode == 0)
+  {
     this->OperateSucceeded = this->SaveState(modelWrapper);
-    }
-  else if(this->OperatorMode == 1)
-    {
+  }
+  else if (this->OperatorMode == 1)
+  {
     this->OperateSucceeded = this->LoadSavedState(modelWrapper);
-    }
+  }
 }
 
-int vtkCMBModelStateOperator::SaveState(vtkDiscreteModelWrapper *modelWrapper)
+int vtkCMBModelStateOperator::SaveState(vtkDiscreteModelWrapper* modelWrapper)
 {
   vtkStringArray* serialModel = modelWrapper->SerializeModel();
 
-  if(serialModel && serialModel->GetNumberOfTuples()>0)
-    {
+  if (serialModel && serialModel->GetNumberOfTuples() > 0)
+  {
     this->SerializedModelString->Reset();
     this->SerializedModelString->SetNumberOfTuples(1);
 
@@ -79,101 +79,100 @@ int vtkCMBModelStateOperator::SaveState(vtkDiscreteModelWrapper *modelWrapper)
     vtkDiscreteModel* cmbModel = modelWrapper->GetModel();
 
     // Model faces
-    vtkModelItemIterator* iter=cmbModel->NewIterator(vtkModelFaceType);
+    vtkModelItemIterator* iter = cmbModel->NewIterator(vtkModelFaceType);
     vtkDiscreteModelGeometricEntity* gmEntity = NULL;
-    for(iter->Begin();!iter->IsAtEnd();iter->Next())
-      {
+    for (iter->Begin(); !iter->IsAtEnd(); iter->Next())
+    {
       gmEntity = vtkDiscreteModelFace::SafeDownCast(iter->GetCurrentItem());
-      if(gmEntity)
-        {
+      if (gmEntity)
+      {
         vtkSmartPointer<vtkIdList> ids = vtkSmartPointer<vtkIdList>::New();
         vtkIdTypeArray* idarray = gmEntity->GetReverseClassificationArray();
         vtkIdType entId = gmEntity->GetThisModelEntity()->GetUniquePersistentId();
-        if(idarray)
-          {
+        if (idarray)
+        {
           vtkIdType numIds = idarray->GetNumberOfTuples();
           vtkIdType* idsP = ids->WritePointer(0, numIds);
-          memcpy(idsP, idarray->GetPointer(0), numIds*sizeof(vtkIdType));
+          memcpy(idsP, idarray->GetPointer(0), numIds * sizeof(vtkIdType));
           this->FaceToIds[entId] = ids;
-          }
+        }
         this->EntityToProperties[entId] = vtkModelGeometricEntity::SafeDownCast(
           gmEntity->GetThisModelEntity())->GetDisplayProperty();
-        }
       }
+    }
     iter->Delete();
 
     // Model edges
-    iter=cmbModel->NewIterator(vtkModelEdgeType);
-    for(iter->Begin();!iter->IsAtEnd();iter->Next())
-      {
+    iter = cmbModel->NewIterator(vtkModelEdgeType);
+    for (iter->Begin(); !iter->IsAtEnd(); iter->Next())
+    {
       gmEntity = vtkDiscreteModelEdge::SafeDownCast(iter->GetCurrentItem());
-      if(gmEntity)
-        {
+      if (gmEntity)
+      {
         vtkSmartPointer<vtkIdList> ids = vtkSmartPointer<vtkIdList>::New();
         vtkIdTypeArray* idarray = gmEntity->GetReverseClassificationArray();
         vtkIdType entId = gmEntity->GetThisModelEntity()->GetUniquePersistentId();
-        if(idarray)
-          {
+        if (idarray)
+        {
           vtkIdType numIds = idarray->GetNumberOfTuples();
           vtkIdType* idsP = ids->WritePointer(0, numIds);
-          memcpy(idsP, idarray->GetPointer(0), numIds*sizeof(vtkIdType));
+          memcpy(idsP, idarray->GetPointer(0), numIds * sizeof(vtkIdType));
           this->EdgeToIds[entId] = ids;
-          }
+        }
         this->EntityToProperties[entId] = vtkModelGeometricEntity::SafeDownCast(
           gmEntity->GetThisModelEntity())->GetDisplayProperty();
-        }
       }
+    }
     iter->Delete();
 
     // Model Vertex
-    iter=cmbModel->NewIterator(vtkModelVertexType);
-    for(iter->Begin();!iter->IsAtEnd();iter->Next())
+    iter = cmbModel->NewIterator(vtkModelVertexType);
+    for (iter->Begin(); !iter->IsAtEnd(); iter->Next())
+    {
+      vtkDiscreteModelVertex* vtxEntity =
+        vtkDiscreteModelVertex::SafeDownCast(iter->GetCurrentItem());
+      if (vtxEntity)
       {
-      vtkDiscreteModelVertex* vtxEntity = vtkDiscreteModelVertex::SafeDownCast(iter->GetCurrentItem());
-      if(vtxEntity)
-        {
         this->VertexToIds[vtxEntity->GetUniquePersistentId()] = vtxEntity->GetPointId();
-        }
       }
+    }
     iter->Delete();
 
     this->Modified();
     return 1;
-    }
+  }
 
   return 0;
 }
 
-int vtkCMBModelStateOperator::LoadSavedState(vtkDiscreteModelWrapper *modelWrapper)
+int vtkCMBModelStateOperator::LoadSavedState(vtkDiscreteModelWrapper* modelWrapper)
 {
-  if(modelWrapper && this->SerializedModelString->GetNumberOfTuples()>0)
-    {
-    return modelWrapper->RebuildModel(
-      this->SerializedModelString->GetValue(0).c_str(),
-      this->FaceToIds, this->EdgeToIds, this->VertexToIds,
-      this->EntityToProperties);
-    }
+  if (modelWrapper && this->SerializedModelString->GetNumberOfTuples() > 0)
+  {
+    return modelWrapper->RebuildModel(this->SerializedModelString->GetValue(0).c_str(),
+      this->FaceToIds, this->EdgeToIds, this->VertexToIds, this->EntityToProperties);
+  }
   return 0;
 }
 
 void vtkCMBModelStateOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 
   os << indent << "FaceToIds: \n";
-  for(std::map<vtkIdType, vtkSmartPointer<vtkIdList> >::iterator it=this->FaceToIds.begin();
-    it!=this->FaceToIds.end();it++)
-    {
+  for (std::map<vtkIdType, vtkSmartPointer<vtkIdList> >::iterator it = this->FaceToIds.begin();
+       it != this->FaceToIds.end(); it++)
+  {
     os << indent << "Face: " << it->first << " IDs: " << it->second << "\n";
-    }
-  for(std::map<vtkIdType, vtkSmartPointer<vtkIdList> >::iterator it=this->FaceToIds.begin();
-    it!=this->EdgeToIds.end();it++)
-    {
+  }
+  for (std::map<vtkIdType, vtkSmartPointer<vtkIdList> >::iterator it = this->FaceToIds.begin();
+       it != this->EdgeToIds.end(); it++)
+  {
     os << indent << "Edge: " << it->first << " IDs: " << it->second << "\n";
-    }
-  for(std::map<vtkIdType, vtkIdType >::iterator it=this->VertexToIds.begin();
-    it!=this->VertexToIds.end();it++)
-    {
+  }
+  for (std::map<vtkIdType, vtkIdType>::iterator it = this->VertexToIds.begin();
+       it != this->VertexToIds.end(); it++)
+  {
     os << indent << "Vertex: " << it->first << " ID: " << it->second << "\n";
-    }
+  }
 }

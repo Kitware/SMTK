@@ -16,8 +16,10 @@
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/PropertyListPhrase.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief A subphrase-generator for presenting an abbreviated model.
   *
@@ -28,7 +30,7 @@ class SMTKCORE_EXPORT SimpleModelSubphrases : public SubphraseGenerator
 public:
   smtkTypeMacro(SimpleModelSubphrases);
   smtkSharedPtrCreateMacro(SubphraseGenerator);
-  virtual ~SimpleModelSubphrases() { }
+  virtual ~SimpleModelSubphrases() {}
 
   virtual DescriptivePhrases subphrases(DescriptivePhrase::Ptr src);
   virtual bool shouldOmitProperty(
@@ -49,7 +51,7 @@ protected:
   bool m_abridgeUses;
 };
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_model_SimpleModelSubphrases_h

@@ -10,8 +10,8 @@
 #include "smtk/extension/qt/qtEntityItemDelegate.h"
 #include "smtk/extension/qt/qtEntityItemModel.h"
 
-#include "smtk/io/SaveJSON.h"
 #include "smtk/io/LoadJSON.h"
+#include "smtk/io/SaveJSON.h"
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/Manager.h"
@@ -53,23 +53,21 @@ namespace
 
 std::size_t numTetsInModel = 4;
 
-void create_simple_model( smtk::model::ManagerPtr mgr )
+void create_simple_model(smtk::model::ManagerPtr mgr)
 {
   using namespace smtk::model::testing;
 
   smtk::model::SessionRef sess = mgr->createSession("native");
   smtk::model::Model model = mgr->addModel();
 
-  for(std::size_t i=0; i < numTetsInModel; ++i)
-    {
+  for (std::size_t i = 0; i < numTetsInModel; ++i)
+  {
     smtk::common::UUIDArray uids = createTet(mgr);
-    model.addCell( smtk::model::Volume(mgr, uids[21]));
-    }
+    model.addCell(smtk::model::Volume(mgr, uids[21]));
+  }
   model.setSession(sess);
   mgr->assignDefaultNames();
-
 }
-
 }
 
 int main(int argc, char* argv[])
@@ -84,7 +82,7 @@ int main(int argc, char* argv[])
 
   create_simple_model(model);
   model->assignDefaultNames();
-/*
+  /*
   const char* filename = argc > 1 ? argv[1] : "smtkModel.json";
   std::ifstream file(filename);
   if (!file.good())
@@ -109,8 +107,8 @@ int main(int argc, char* argv[])
 
   smtk::io::ModelToMesh convert;
   smtk::mesh::CollectionPtr c = convert(meshManager, model);
-  test( c->isValid(), "collection should be valid");
-  test( c->numberOfMeshes() == numTetsInModel, "collection should have a mesh per tet");
+  test(c->isValid(), "collection should be valid");
+  test(c->numberOfMeshes() == numTetsInModel, "collection should have a mesh per tet");
 
   smtk::extension::QEntityItemModel* qmodel = new smtk::extension::QEntityItemModel;
   smtk::extension::QEntityItemDelegate* qdelegate = new smtk::extension::QEntityItemDelegate;
@@ -129,8 +127,7 @@ int main(int argc, char* argv[])
   qmodel->setPhrases(plist);
   */
 
-  smtk::model::SimpleModelSubphrases::Ptr spg =
-    smtk::model::SimpleModelSubphrases::create();
+  smtk::model::SimpleModelSubphrases::Ptr spg = smtk::model::SimpleModelSubphrases::create();
   spg->setDirectLimit(-1);
   spg->setSkipAttributes(true);
   spg->setSkipProperties(false);
@@ -142,13 +139,8 @@ int main(int argc, char* argv[])
   smtk::model::EntityRef::EntityRefsFromUUIDs(
     entityrefs, model, model->entitiesMatchingFlags(mask, true));
   std::cout << std::setbase(10) << "Found " << entityrefs.size() << " entries\n";
-  view->setup(
-    model,
-    qmodel,
-    qdelegate,
-    smtk::model::EntityListPhrase::create()
-      ->setup(entityrefs)
-      ->setDelegate( spg ));
+  view->setup(model, qmodel, qdelegate,
+    smtk::model::EntityListPhrase::create()->setup(entityrefs)->setDelegate(spg));
   test(entityrefs.empty() || qmodel->manager() == model,
     "Failed to obtain Manager from QEntityItemModel.");
 
@@ -160,11 +152,11 @@ int main(int argc, char* argv[])
   // FIXME: Actually test something when not in debug mode.
   int status = debug ? app.exec() : 0;
   if (argc > 3)
-    {
+  {
     std::ofstream result(argv[3]);
     result << smtk::io::SaveJSON::fromModelManager(model).c_str() << "\n";
     result.close();
-    }
+  }
 
   delete view;
   delete qmodel;

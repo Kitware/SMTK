@@ -33,78 +33,80 @@ class vtkPolyFileErrorReporter
 {
 public:
   vtkPolyFileErrorReporter(const std::string& fname)
-    {
+  {
     this->FileName = fname;
     this->Warnings = 0;
     this->EndOfFile = 0;
     this->ProvideContext = 1;
-    }
+  }
 
   void PrintContext(std::istream& stream, int posn)
-    {
+  {
     std::streampos where = stream.tellg();
     if (where < 0)
-      {
+    {
       return;
-      }
+    }
     std::cout << "\n";
     std::streamoff i(0);
     for (int numLines = 0; numLines < 3; ++numLines)
-      {
+    {
       stream.clear();
       for (; stream.good(); ++i)
-        {
+      {
         stream.seekg(where - i);
         if (stream.get() == '\n')
-          {
+        {
           break;
-          }
         }
-      ++i; // skip past newline
       }
+      ++i; // skip past newline
+    }
     for (int numLines = 0; numLines < 4; ++numLines)
-      {
+    {
       std::string context;
       std::streampos lineStart = stream.tellg();
       std::getline(stream, context);
       std::cout << static_cast<int>(lineStart) << ":\"" << context << "\"\n";
-      if (lineStart <= posn && (static_cast<size_t>(lineStart) + context.size()) >= static_cast<size_t>(posn))
-        {
+      if (lineStart <= posn &&
+        (static_cast<size_t>(lineStart) + context.size()) >= static_cast<size_t>(posn))
+      {
         std::cout << static_cast<int>(lineStart) << ":-";
         for (int k = posn - static_cast<int>(lineStart); k > 0; --k)
-          {
+        {
           std::cout << "-";
-          }
-        std::cout << "^\n";
         }
+        std::cout << "^\n";
       }
+    }
     std::cout << "\n";
     stream.seekg(where);
-    }
+  }
 
   bool Report(std::istream& stream, const std::string& err)
-    {
+  {
     int posn = static_cast<int>(stream.tellg());
     return this->Report(stream, posn, posn, err);
-    }
+  }
 
   bool Report(std::istream& stream, int pos0, int pos1, const std::string& err)
-    {
+  {
     if (err != VTK_POLYFILE_EOF)
-      {
-      std::cerr << this->FileName << ": \"" << err << "\" at bytes " << pos0 << " -- " << pos1 << ". Ignoring.\n";
+    {
+      std::cerr << this->FileName << ": \"" << err << "\" at bytes " << pos0 << " -- " << pos1
+                << ". Ignoring.\n";
       ++this->Warnings;
       if (this->ProvideContext)
-        {
+      {
         this->PrintContext(stream, pos0);
-        }
       }
-    else
-      { // EOF
-      ++this->EndOfFile;
-      }
-    return false; // false == keep going, true == stop
     }
+    else
+    { // EOF
+      ++this->EndOfFile;
+    }
+    return false; // false == keep going, true == stop
+  }
 
   std::string FileName;
   int Warnings;

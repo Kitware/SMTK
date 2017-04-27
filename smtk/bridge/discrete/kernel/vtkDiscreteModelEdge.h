@@ -18,7 +18,6 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkDiscreteModelGeometricEntity.h"
 
-
 class vtkModelEdgeUse;
 class vtkModelItemIterator;
 class vtkModelVertex;
@@ -26,10 +25,10 @@ class vtkModelRegion;
 class vtkIdList;
 
 class VTKSMTKDISCRETEMODEL_EXPORT vtkDiscreteModelEdge : public vtkModelEdge,
-  public vtkDiscreteModelGeometricEntity
+                                                         public vtkDiscreteModelGeometricEntity
 {
 public:
-  vtkTypeMacro(vtkDiscreteModelEdge,vtkModelEdge);
+  vtkTypeMacro(vtkDiscreteModelEdge, vtkModelEdge);
   static vtkDiscreteModelEdge* New();
   void PrintSelf(ostream& os, vtkIndent indent);
 
@@ -64,8 +63,7 @@ public:
   // use all the same points.  The function fills the created
   // model vertex and edge UniquePersistentIds in createdVertexId
   // and createdEdgeId respectively, and returns true if successful.
-  bool Split(vtkIdType pointId, vtkIdType & createdVertexId,
-             vtkIdType & createdEdgeId);
+  bool Split(vtkIdType pointId, vtkIdType& createdVertexId, vtkIdType& createdEdgeId);
 
   // Definition:
   // Get the representation for the geometry. On the client
@@ -138,9 +136,8 @@ protected:
   bool SplitModelEdgeLoop(vtkIdType pointId);
 
 private:
-  vtkDiscreteModelEdge(const vtkDiscreteModelEdge&);  // Not implemented.
-  void operator=(const vtkDiscreteModelEdge&);  // Not implemented.
+  vtkDiscreteModelEdge(const vtkDiscreteModelEdge&); // Not implemented.
+  void operator=(const vtkDiscreteModelEdge&);       // Not implemented.
 };
 
 #endif
-

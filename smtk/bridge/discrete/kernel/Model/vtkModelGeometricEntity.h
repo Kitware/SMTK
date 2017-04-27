@@ -20,14 +20,13 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"
 
-
 class vtkIdList;
 class vtkProperty;
 
 class VTKSMTKDISCRETEMODEL_EXPORT vtkModelGeometricEntity : public vtkModelEntity
 {
 public:
-  vtkTypeMacro(vtkModelGeometricEntity,vtkModelEntity);
+  vtkTypeMacro(vtkModelGeometricEntity, vtkModelEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Definition:
@@ -91,9 +90,8 @@ protected:
   friend class vtkModel;
 
 private:
-  vtkModelGeometricEntity(const vtkModelGeometricEntity&);  // Not implemented.
-  void operator=(const vtkModelGeometricEntity&);  // Not implemented.
+  vtkModelGeometricEntity(const vtkModelGeometricEntity&); // Not implemented.
+  void operator=(const vtkModelGeometricEntity&);          // Not implemented.
 };
 
 #endif
-

@@ -18,32 +18,28 @@
 
 namespace smtk
 {
-  namespace io
-  {
-    class SMTKCORE_EXPORT XmlDocV3Parser : public XmlDocV2Parser
-    {
-    public:
-      XmlDocV3Parser(smtk::attribute::System &system);
-      virtual ~XmlDocV3Parser();
-      virtual void process(pugi::xml_document &doc);
-      virtual void process(pugi::xml_node &rootNode)
-      { XmlDocV2Parser::process(rootNode); }
+namespace io
+{
+class SMTKCORE_EXPORT XmlDocV3Parser : public XmlDocV2Parser
+{
+public:
+  XmlDocV3Parser(smtk::attribute::System& system);
+  virtual ~XmlDocV3Parser();
+  virtual void process(pugi::xml_document& doc);
+  virtual void process(pugi::xml_node& rootNode) { XmlDocV2Parser::process(rootNode); }
 
-      static bool canParse(pugi::xml_node &node);
-      static bool canParse(pugi::xml_document &doc);
-      static pugi::xml_node getRootNode(pugi::xml_document &doc);
+  static bool canParse(pugi::xml_node& node);
+  static bool canParse(pugi::xml_document& doc);
+  static pugi::xml_node getRootNode(pugi::xml_document& doc);
 
-    protected:
-      virtual void processDateTimeItem(
-        pugi::xml_node &node,
-        smtk::attribute::DateTimeItemPtr item);
-      virtual void processDateTimeDef(
-        pugi::xml_node &node,
-        smtk::attribute::DateTimeItemDefinitionPtr idef);
+protected:
+  virtual void processDateTimeItem(pugi::xml_node& node, smtk::attribute::DateTimeItemPtr item);
+  virtual void processDateTimeDef(
+    pugi::xml_node& node, smtk::attribute::DateTimeItemDefinitionPtr idef);
 
-    private:
-    };
-  }
+private:
+};
+}
 }
 
 #endif /* __smtk_io_XmlDocV3Parser_h */

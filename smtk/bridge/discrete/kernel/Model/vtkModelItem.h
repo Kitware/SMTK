@@ -20,7 +20,6 @@
 #include "../Serialize/vtkSerializableObject.h"
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 
-
 struct vtkModelItemInternals;
 class vtkIdList;
 class vtkInformation;
@@ -30,7 +29,7 @@ class vtkModelItemIterator;
 class VTKSMTKDISCRETEMODEL_EXPORT vtkModelItem : public vtkSerializableObject
 {
 public:
-  vtkTypeMacro(vtkModelItem,vtkSerializableObject);
+  vtkTypeMacro(vtkModelItem, vtkSerializableObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   vtkGetObjectMacro(Properties, vtkInformation);
@@ -79,8 +78,7 @@ protected:
   // Description:
   // Add an association between this object and item at a specified
   // ordered index.  This also then calls AddReverseAssociation.
-  void AddAssociationInPosition(int index,
-                                vtkModelItem* item);
+  void AddAssociationInPosition(int index, vtkModelItem* item);
 
   // Description:
   // Add an association between this object and item.  This also
@@ -88,7 +86,6 @@ protected:
   // since GetType() is a virtual function that is not expected to
   // work in the constructor so we can use myType.
   void AddAssociationToType(vtkModelItem* item, int myType);
-
 
   // Description:
   // Since every association is symmetric, this is used to get
@@ -108,19 +105,17 @@ protected:
 
   // Description:
   // Returns a list of item types that are stored.
-  void GetItemTypesList(vtkIdList * itemTypes);
+  void GetItemTypesList(vtkIdList* itemTypes);
 
 private:
-  vtkModelItem(const vtkModelItem&);  // Not implemented.
-  void operator=(const vtkModelItem&);  // Not implemented.
+  vtkModelItem(const vtkModelItem&);   // Not implemented.
+  void operator=(const vtkModelItem&); // Not implemented.
 
   vtkInformation* Properties;
   vtkModelItemInternals* Internal;
 
   friend class vtkModelItemListIterator;
   friend class vtkXMLModelReader;
-
 };
 
 #endif
-

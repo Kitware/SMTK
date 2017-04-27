@@ -33,54 +33,51 @@ vtkModel3dm2DGridRepresentation::~vtkModel3dm2DGridRepresentation()
 }
 
 bool vtkModel3dm2DGridRepresentation::GetBCSNodalAnalysisGridPointIds(
-  vtkDiscreteModel* model, vtkIdType bcsGroupId,
-  int bcGroupType, vtkIdList* pointIds)
+  vtkDiscreteModel* model, vtkIdType bcsGroupId, int bcGroupType, vtkIdList* pointIds)
 {
   pointIds->Reset();
-  if(this->IsModelConsistent(model) == false)
-    {
+  if (this->IsModelConsistent(model) == false)
+  {
     this->Reset();
     return false;
-    }
-  if(model->HasInValidMesh())
-    {  // we're on the client and don't know this info
+  }
+  if (model->HasInValidMesh())
+  { // we're on the client and don't know this info
     return false;
-    }
+  }
 
-  if(vtkDiscreteModelEntityGroup* bcsNodalGroup =
-     vtkDiscreteModelEntityGroup::SafeDownCast(
-       model->GetModelEntity(vtkDiscreteModelEntityGroupType, bcsGroupId)))
+  if (vtkDiscreteModelEntityGroup* bcsNodalGroup = vtkDiscreteModelEntityGroup::SafeDownCast(
+        model->GetModelEntity(vtkDiscreteModelEntityGroupType, bcsGroupId)))
+  {
+    vtkModelItemIterator* iterEdge = bcsNodalGroup->NewIterator(vtkModelEdgeType);
+    for (iterEdge->Begin(); !iterEdge->IsAtEnd(); iterEdge->Next())
     {
-    vtkModelItemIterator* iterEdge=bcsNodalGroup->NewIterator(vtkModelEdgeType);
-    for(iterEdge->Begin();!iterEdge->IsAtEnd();iterEdge->Next())
+      vtkDiscreteModelEdge* entity = vtkDiscreteModelEdge::SafeDownCast(iterEdge->GetCurrentItem());
+      if (entity)
       {
-      vtkDiscreteModelEdge* entity =
-        vtkDiscreteModelEdge::SafeDownCast(iterEdge->GetCurrentItem());
-      if(entity)
-        {
         vtkNew<vtkIdList> newPointIds;
-        if(bcGroupType == 1)// vtkSBBCInstance::enBCModelEntityAllNodesType)
-          {
+        if (bcGroupType == 1) // vtkSBBCInstance::enBCModelEntityAllNodesType)
+        {
           entity->GetAllPointIds(newPointIds.GetPointer());
-          }
-        else if(bcGroupType == 2)//vtkSBBCInstance::enBCModelEntityBoundaryNodesType)
-          {
+        }
+        else if (bcGroupType == 2) //vtkSBBCInstance::enBCModelEntityBoundaryNodesType)
+        {
           entity->GetBoundaryPointIds(newPointIds.GetPointer());
-          }
-        else if(bcGroupType == 3)//vtkSBBCInstance::enBCModelEntityInteriorNodesType)
-          {
+        }
+        else if (bcGroupType == 3) //vtkSBBCInstance::enBCModelEntityInteriorNodesType)
+        {
           entity->GetInteriorPointIds(newPointIds.GetPointer());
-          }
+        }
         // Adding the new point ids
-        for(vtkIdType i=0; i<newPointIds->GetNumberOfIds(); i++)
-          {
+        for (vtkIdType i = 0; i < newPointIds->GetNumberOfIds(); i++)
+        {
           pointIds->InsertUniqueId(newPointIds->GetId(i));
-          }
         }
       }
+    }
     iterEdge->Delete();
     return true;
-    }
+  }
   return false;
 }
 
@@ -95,42 +92,40 @@ bool vtkModel3dm2DGridRepresentation::GetModelEdgeAnalysisPoints(
   vtkDiscreteModel* model, vtkIdType edgeId, vtkIdTypeArray* edgePoints)
 {
   edgePoints->SetNumberOfComponents(2);
-  if(model->HasInValidMesh())
-    {  // we're on the client and don't know this info
+  if (model->HasInValidMesh())
+  { // we're on the client and don't know this info
     return false;
-    }
+  }
   vtkDiscreteModelEdge* edge =
     vtkDiscreteModelEdge::SafeDownCast(model->GetModelEntity(vtkModelEdgeType, edgeId));
-  if(!edge)
-    {
+  if (!edge)
+  {
     return false;
-    }
+  }
   vtkPolyData* edgePoly = vtkPolyData::SafeDownCast(edge->GetGeometry());
   vtkSmartPointer<vtkIdList> pointIds = vtkSmartPointer<vtkIdList>::New();
-  for(vtkIdType i=0;i<edgePoly->GetNumberOfCells();i++)
-    {
+  for (vtkIdType i = 0; i < edgePoly->GetNumberOfCells(); i++)
+  {
     edgePoly->GetCellPoints(i, pointIds);
-    if(pointIds->GetNumberOfIds() != 2)
-      {
+    if (pointIds->GetNumberOfIds() != 2)
+    {
       vtkErrorMacro("Bad cell type.");
       return false;
-      }
-    edgePoints->InsertValue(i*2, pointIds->GetId(0));
-    edgePoints->InsertValue(i*2+1, pointIds->GetId(1));
     }
+    edgePoints->InsertValue(i * 2, pointIds->GetId(0));
+    edgePoints->InsertValue(i * 2 + 1, pointIds->GetId(1));
+  }
   edgePoints->SetNumberOfTuples(edgePoly->GetNumberOfCells());
   return true;
 }
 
-bool vtkModel3dm2DGridRepresentation::GetBoundaryGroupAnalysisFacets(
-  vtkDiscreteModel* /*model*/, vtkIdType /*boundaryGroupId*/,
-  vtkIdList* /*cellIds*/, vtkIdList* /*cellSides*/)
+bool vtkModel3dm2DGridRepresentation::GetBoundaryGroupAnalysisFacets(vtkDiscreteModel* /*model*/,
+  vtkIdType /*boundaryGroupId*/, vtkIdList* /*cellIds*/, vtkIdList* /*cellSides*/)
 {
   return false;
 }
 
 void vtkModel3dm2DGridRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }
-

@@ -19,10 +19,14 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/Vertex.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
-      namespace internal {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
+namespace internal
+{
 
 /**\brief Create a model edge from ordered segments with preconditions.
   *
@@ -55,15 +59,9 @@ namespace smtk {
   *
   * Finally \a newVerts will be populated with any vertices created when creating the edge.
   */
-template<typename T, typename U>
-model::Edge pmodel::createModelEdgeFromSegments(
-  model::ManagerPtr mgr,
-  T begin,
-  T end,
-  bool addToModel,
-  const U& splitEdgeFaces,
-  bool headIsNewVertex,
-  smtk::model::VertexSet& newVerts)
+template <typename T, typename U>
+model::Edge pmodel::createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, T end,
+  bool addToModel, const U& splitEdgeFaces, bool headIsNewVertex, smtk::model::VertexSet& newVerts)
 {
   if (!mgr || begin == end)
     return smtk::model::Edge();
@@ -84,42 +82,44 @@ model::Edge pmodel::createModelEdgeFromSegments(
   vertex::Ptr vFiniStorage = this->m_session->findStorage<vertex>(vFini);
 
   if (!vInitStorage ^ !vFiniStorage)
-    { // one but not both of the points are model vertices. Error.
-    smtkErrorMacro(this->session()->log(),
-      "Zero or both endpoints must be model vertices to create edge.");
+  { // one but not both of the points are model vertices. Error.
+    smtkErrorMacro(
+      this->session()->log(), "Zero or both endpoints must be model vertices to create edge.");
     return smtk::model::Edge();
-    }
+  }
 
   bool splittingEdge = (!!splitEdgeFaces.first) || (!!splitEdgeFaces.second);
   internal::vertex::incident_edges::iterator whereBegin;
   internal::vertex::incident_edges::iterator whereEnd;
   if (vInitStorage)
-    { // Ensure edge can be inserted without splitting a face.
+  { // Ensure edge can be inserted without splitting a face.
     if (splittingEdge)
-      {
+    {
       vInitStorage->setInsideSplit(true);
-      }
-    if (!vInitStorage->canInsertEdge(begin->second.high(), &whereBegin))
-      {
-      smtkErrorMacro(this->m_session->log(),
-        "Edge would overlap face in neighborhood of first vertex (" << smtk::model::Vertex(mgr, vInit).name() << ")E.");
-      return smtk::model::Edge();
-      }
     }
+    if (!vInitStorage->canInsertEdge(begin->second.high(), &whereBegin))
+    {
+      smtkErrorMacro(
+        this->m_session->log(), "Edge would overlap face in neighborhood of first vertex ("
+          << smtk::model::Vertex(mgr, vInit).name() << ")E.");
+      return smtk::model::Edge();
+    }
+  }
 
   if (vFiniStorage)
-    { // Ensure edge can be inserted without splitting a face.
+  { // Ensure edge can be inserted without splitting a face.
     if (splittingEdge)
-      {
+    {
       vFiniStorage->setInsideSplit(true);
-      }
-    if (!vFiniStorage->canInsertEdge((begin + (end - begin - 1))->second.low(), &whereEnd))
-      {
-      smtkErrorMacro(this->m_session->log(),
-        "Edge would overlap face in neighborhood of last vertex (" << smtk::model::Vertex(mgr, vFini).name() << ")F.");
-      return smtk::model::Edge();
-      }
     }
+    if (!vFiniStorage->canInsertEdge((begin + (end - begin - 1))->second.low(), &whereEnd))
+    {
+      smtkErrorMacro(
+        this->m_session->log(), "Edge would overlap face in neighborhood of last vertex ("
+          << smtk::model::Vertex(mgr, vFini).name() << ")F.");
+      return smtk::model::Edge();
+    }
+  }
 
   // We can safely create the edge now
   smtk::model::Edge created = mgr->addEdge();
@@ -136,12 +136,14 @@ model::Edge pmodel::createModelEdgeFromSegments(
   // Insert edge at proper place in model vertex edge-lists
   vertex::incident_edges::iterator inserted;
   if (vInitStorage)
-    {
-    inserted = vInitStorage->insertEdgeAt(whereBegin, created.entity(), /* edge is outwards: */ true, splitEdgeFaces.second);
+  {
+    inserted = vInitStorage->insertEdgeAt(
+      whereBegin, created.entity(), /* edge is outwards: */ true, splitEdgeFaces.second);
     if (splitEdgeFaces.first)
-      { // Need to mark an adjacent edge with the other face
-      (inserted == vInitStorage->edgesBegin() ? vInitStorage->edgesBack() : *(--inserted)).m_adjacentFace = splitEdgeFaces.first;
-      }
+    { // Need to mark an adjacent edge with the other face
+      (inserted == vInitStorage->edgesBegin() ? vInitStorage->edgesBack() : *(--inserted))
+        .m_adjacentFace = splitEdgeFaces.first;
+    }
     smtk::model::Vertex vert(mgr, vInit);
     if (parentModel.isEmbedded(vert))
       parentModel.unembedEntity(vert);
@@ -149,14 +151,16 @@ model::Edge pmodel::createModelEdgeFromSegments(
     vert.findOrAddRawRelation(created);
     vInitStorage->setInsideSplit(false);
     newVerts.insert(vert);
-    }
+  }
   if (vFiniStorage)
-    {
-    inserted = vFiniStorage->insertEdgeAt(whereEnd, created.entity(), /* edge is outwards: */ false, splitEdgeFaces.first);
+  {
+    inserted = vFiniStorage->insertEdgeAt(
+      whereEnd, created.entity(), /* edge is outwards: */ false, splitEdgeFaces.first);
     if (splitEdgeFaces.second && !headIsNewVertex)
-      { // Need to mark an adjacent edge with the other face
-      (inserted == vFiniStorage->edgesBegin() ? vFiniStorage->edgesBack() : *(--inserted)).m_adjacentFace = splitEdgeFaces.second;
-      }
+    { // Need to mark an adjacent edge with the other face
+      (inserted == vFiniStorage->edgesBegin() ? vFiniStorage->edgesBack() : *(--inserted))
+        .m_adjacentFace = splitEdgeFaces.second;
+    }
     smtk::model::Vertex vert(mgr, vFini);
     if (parentModel.isEmbedded(vert))
       parentModel.unembedEntity(vert);
@@ -164,15 +168,15 @@ model::Edge pmodel::createModelEdgeFromSegments(
     vert.findOrAddRawRelation(created);
     vFiniStorage->setInsideSplit(false);
     newVerts.insert(vert);
-    }
+  }
   // Add tesselation to created edge using storage to lift point coordinates:
   this->addEdgeTessellation(created, storage);
 
   if (addToModel)
-    {
+  {
     parentModel.embedEntity(created);
     created.assignDefaultName(); // Do not move above parentModel.embedEntity() or name will suck.
-    }
+  }
 
   return created;
 }
@@ -192,8 +196,9 @@ model::Edge pmodel::createModelEdgeFromSegments(
   * If these preconditions do not hold, either an invalid (empty) edge will be
   * returned or the model will become inconsistent.
   */
-template<typename T>
-model::Edge pmodel::createModelEdgeFromPoints(model::ManagerPtr mgr, T begin, T end, bool isFreeCell)
+template <typename T>
+model::Edge pmodel::createModelEdgeFromPoints(
+  model::ManagerPtr mgr, T begin, T end, bool isFreeCell)
 {
   if (!mgr || begin == end)
     return smtk::model::Edge();
@@ -205,33 +210,35 @@ model::Edge pmodel::createModelEdgeFromPoints(model::ManagerPtr mgr, T begin, T 
   vertex::Ptr vFiniStorage = this->m_session->findStorage<vertex>(vFini);
 
   if (!vInitStorage ^ !vFiniStorage)
-    { // one but not both of the points are model vertices. Error.
-    smtkErrorMacro(this->session()->log(),
-      "Zero or both endpoints must be model vertices to create edge.");
+  { // one but not both of the points are model vertices. Error.
+    smtkErrorMacro(
+      this->session()->log(), "Zero or both endpoints must be model vertices to create edge.");
     return smtk::model::Edge();
-    }
+  }
 
   internal::vertex::incident_edges::iterator whereBegin;
   internal::vertex::incident_edges::iterator whereEnd;
   if (vInitStorage)
-    { // Ensure edge can be inserted without splitting a face.
+  { // Ensure edge can be inserted without splitting a face.
     if (!vInitStorage->canInsertEdge(*begin, &whereBegin))
-      {
-      smtkErrorMacro(this->m_session->log(),
-        "Edge would overlap face in neighborhood of first vertex (" << smtk::model::Vertex(mgr, vInit).name() << ")C.");
+    {
+      smtkErrorMacro(
+        this->m_session->log(), "Edge would overlap face in neighborhood of first vertex ("
+          << smtk::model::Vertex(mgr, vInit).name() << ")C.");
       return smtk::model::Edge();
-      }
     }
+  }
 
   if (vFiniStorage)
-    { // Ensure edge can be inserted without splitting a face.
+  { // Ensure edge can be inserted without splitting a face.
     if (!vFiniStorage->canInsertEdge(*(end - 1), &whereEnd))
-      {
-      smtkErrorMacro(this->m_session->log(),
-        "Edge would overlap face in neighborhood of last vertex (" << smtk::model::Vertex(mgr, vFini).name() << ")D.");
+    {
+      smtkErrorMacro(
+        this->m_session->log(), "Edge would overlap face in neighborhood of last vertex ("
+          << smtk::model::Vertex(mgr, vFini).name() << ")D.");
       return smtk::model::Edge();
-      }
     }
+  }
 
   // We can safely create the edge now
   smtk::model::Edge created = mgr->addEdge();
@@ -245,74 +252,71 @@ model::Edge pmodel::createModelEdgeFromPoints(model::ManagerPtr mgr, T begin, T 
   smtk::model::Model parentModel(mgr, this->id());
   // Insert edge at proper place in model vertex edge-lists
   if (vInitStorage)
-    {
+  {
     vInitStorage->insertEdgeAt(whereBegin, created.entity(), /* edge is outwards: */ true);
     smtk::model::Vertex vert(mgr, vInit);
     if (parentModel.isEmbedded(vert))
       parentModel.unembedEntity(vert);
     created.findOrAddRawRelation(vert);
     vert.findOrAddRawRelation(created);
-    }
+  }
   if (vFiniStorage)
-    {
+  {
     vFiniStorage->insertEdgeAt(whereEnd, created.entity(), /* edge is outwards: */ false);
     smtk::model::Vertex vert(mgr, vFini);
     if (parentModel.isEmbedded(vert))
       parentModel.unembedEntity(vert);
     created.findOrAddRawRelation(vert);
     vert.findOrAddRawRelation(created);
-    }
+  }
   // Add tesselation to created edge using storage to lift point coordinates:
   this->addEdgeTessellation(created, storage);
 
   if (isFreeCell)
-    {
+  {
     parentModel.embedEntity(created);
     created.assignDefaultName(); // Do not move above parentModel.embedEntity() or name will suck.
-    }
+  }
 
   return created;
 }
 
-template<typename T>
+template <typename T>
 Point pmodel::projectPoint(T coordBegin, T coordEnd)
 {
-  double xyz[3] = {0, 0, 0};
+  double xyz[3] = { 0, 0, 0 };
   int i = 0;
   // Translate to origin
   for (T c = coordBegin; c != coordEnd && i < 3; ++i, ++c)
-    {
+  {
     xyz[i] = *c - this->m_origin[i];
-    }
+  }
   // Assume any unspecified coordinates are 0 and finish translating to origin
   for (; i < 3; ++i)
-    {
-    xyz[i] = - this->m_origin[i];
-    }
+  {
+    xyz[i] = -this->m_origin[i];
+  }
   // Project translated point to x and y axes
   double px = 0, py = 0;
   for (i = 0; i < 3; ++i)
-    {
+  {
     px += xyz[i] * this->m_xAxis[i];
     py += xyz[i] * this->m_yAxis[i];
-    }
+  }
   // Scale point and round to integer
   Point result(static_cast<Point::coordinate_type>(px * this->m_scale),
-               static_cast<Point::coordinate_type>(py * this->m_scale));
+    static_cast<Point::coordinate_type>(py * this->m_scale));
   return result;
 }
 
-template<typename T>
+template <typename T>
 void pmodel::liftPoint(const Point& ix, T coordBegin)
 {
   T coord = coordBegin;
   for (int i = 0; i < 3; ++i, ++coord)
-    {
-    *coord =
-      this->m_origin[i] +
-      ix.x() * this->m_iAxis[i] +
-      ix.y() * this->m_jAxis[i];
-    }
+  {
+    *coord = this->m_origin[i] + ix.x() * this->m_iAxis[i] + ix.y() * this->m_jAxis[i];
+  }
 }
 
 /**\brief Tweak an edge into a new shape, which you promise is valid.
@@ -328,22 +332,23 @@ void pmodel::liftPoint(const Point& ix, T coordBegin)
   * edge's, then any model vertices are tweaked as well.
   * Faces attached to the edge are retessellated.
   */
-template<typename T>
-bool pmodel::tweakEdge(smtk::model::Edge edge, int numCoordsPerPt, T coordBegin, T coordEnd, smtk::model::EntityRefArray& modified)
+template <typename T>
+bool pmodel::tweakEdge(smtk::model::Edge edge, int numCoordsPerPt, T coordBegin, T coordEnd,
+  smtk::model::EntityRefArray& modified)
 {
   internal::PointSeq pseq;
   std::vector<double>::const_iterator coordit = coordBegin;
   for (std::size_t p = 0; coordit != coordEnd; ++p)
-    {
+  {
     internal::Point proj = this->projectPoint(coordit, coordit + numCoordsPerPt);
     pseq.push_back(proj);
     coordit += numCoordsPerPt;
-    }
+  }
   return this->tweakEdge(edge, pseq, modified);
 }
 
-      } // namespace internal
-    } // namespace polygon
-  } // namespace bridge
+} // namespace internal
+} // namespace polygon
+} // namespace bridge
 } // namespace smtk
 #endif // __smtk_bridge_polygon_internal_model_txx

@@ -16,8 +16,10 @@
 #include <string>
 #include <vector>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief Describe a list of property (name,value) pairs
   * associated with an entity for user presentation.
@@ -32,7 +34,8 @@ public:
   smtkTypeMacro(PropertyListPhrase);
   smtkSharedPtrCreateMacro(DescriptivePhrase);
   Ptr setup(const EntityRef& entity, PropertyType ptype, DescriptivePhrasePtr parent);
-  Ptr setup(const EntityRef& entity, PropertyType ptype, const std::set<std::string>& pnames, DescriptivePhrasePtr parent);
+  Ptr setup(const EntityRef& entity, PropertyType ptype, const std::set<std::string>& pnames,
+    DescriptivePhrasePtr parent);
 
   virtual std::string title();
   virtual std::string subtitle();
@@ -54,7 +57,7 @@ protected:
   std::set<std::string> m_propertyNames; // an optional subset of m_entity's properties
 };
 
-  } // model namespace
+} // model namespace
 } // smtk namespace
 
 #endif // __smtk_model_DescriptivePhrase_h

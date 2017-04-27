@@ -19,12 +19,11 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 
 #include "DiscreteMeshCellIdIterator.h" //needed for iterator
-#include "vtkSmartPointer.h" //needed for vtkSmartPointer
-#include "vtkStdString.h"  // needed for FileName
-#include "vtkType.h" //needed for vtkIdType
-#include <map> //needed for the edge storage
-#include <vector> //needed for Face and FaceIds;
-
+#include "vtkSmartPointer.h"            //needed for vtkSmartPointer
+#include "vtkStdString.h"               // needed for FileName
+#include "vtkType.h"                    //needed for vtkIdType
+#include <map>                          //needed for the edge storage
+#include <vector>                       //needed for Face and FaceIds;
 
 class vtkCell;
 class vtkCellLocator;
@@ -59,11 +58,15 @@ class vtkCMBXMLBCSWriter;
 class VTKSMTKDISCRETEMODEL_EXPORT DiscreteMesh
 {
 public:
-  enum DataType{ FACE_DATA=0, EDGE_DATA=1, BOTH_DATA=2};
+  enum DataType
+  {
+    FACE_DATA = 0,
+    EDGE_DATA = 1,
+    BOTH_DATA = 2
+  };
 
   typedef DiscreteMeshCellIdIterator cell_const_iterator;
-  typedef std::pair<vtkIdType,vtkIdType> EdgePointIds;
-
+  typedef std::pair<vtkIdType, vtkIdType> EdgePointIds;
 
   class EdgePoints;
   class Face;
@@ -97,8 +100,7 @@ public:
   //does a deep copy of Edge and Face Data into the returned polydata
   vtkSmartPointer<vtkPolyData> GetAsSinglePolyData() const;
 
-  vtkStdString GetFileName() const
-  { return this->FileName; }
+  vtkStdString GetFileName() const { return this->FileName; }
 
   //Doesn't verify Data is valid!
   //special method to signify that something is sharing
@@ -109,7 +111,8 @@ public:
   void BuildLinks() const;
 
   //Doesn't verify Data is valid!
-  vtkSmartPointer<vtkIncrementalOctreePointLocator> BuildPointLocator( DataType type = FACE_DATA) const;
+  vtkSmartPointer<vtkIncrementalOctreePointLocator> BuildPointLocator(
+    DataType type = FACE_DATA) const;
 
   //Doesn't verify Data is valid!
   bool ComputeCellNormal(vtkIdType index, double norm[3]) const;
@@ -130,8 +133,8 @@ public:
   //More efficient than the general GetCellNeighbors().
   //Assumes links have been built (with BuildLinks()),
   //and looks specifically for edge neighbors.
-  void GetCellEdgeNeighbors(vtkIdType cellIndex, vtkIdType pointIdOne,
-                            vtkIdType pointIdTwo, vtkIdList* neighbors) const;
+  void GetCellEdgeNeighbors(
+    vtkIdType cellIndex, vtkIdType pointIdOne, vtkIdType pointIdTwo, vtkIdList* neighbors) const;
 
   //Doesn't verify Data is valid!
   //overwrite the points that represent the mesh
@@ -147,7 +150,8 @@ public:
   //Doesn't verify Data is valid!
   //Fills cellsForPoint with the cells that a given point index ( index ) is
   //used by. Specify the DataType you want to query ( Face, Edge, Both ).
-  void GetCellsUsingPoint(vtkIdType index, vtkIdList* cellsForPoint, DataType type =  FACE_DATA) const;
+  void GetCellsUsingPoint(
+    vtkIdType index, vtkIdList* cellsForPoint, DataType type = FACE_DATA) const;
 
   //Doesn't verify Data is valid!
   void GetBounds(double bounds[6]) const;
@@ -161,7 +165,6 @@ public:
   //array. EdgePoints is composed of two xyz double values
   DiscreteMesh::EdgePointIds AddEdgePoints(const DiscreteMesh::EdgePoints& e) const;
 
-
   //Returns true if the e or the inverse of the edge ( A,B or B,A ) exists
   //in the mesh. Will set edgeId with the meshIndex if the edge exists, otherwise
   //will not touch the parameter.
@@ -173,7 +176,7 @@ public:
   //add duplicate edges, or an existing edge in the opposite direction.
   //The edge is added in passed in order, so orientation is alway 1/true
   //THIS IS AN ADVANCED METHOD FOR OPTIMIZED ALGORITHMS
-  vtkIdType AddEdge(EdgePointIds &e) const;
+  vtkIdType AddEdge(EdgePointIds& e) const;
 
   //Conditional add an edge to the discrete mesh given two point ids.
   //If the edge already exists in the mesh this will return the existing
@@ -181,13 +184,12 @@ public:
   //to be equal to the edge between B and A. This means that trying to
   //add the edge B,A when A,B exists will cause the function to return
   //the meshId for A,B
-  vtkIdType AddEdgeIfNotExisting(EdgePointIds& e, bool& orientation,
-                                 bool &createdEdge) const;
+  vtkIdType AddEdgeIfNotExisting(EdgePointIds& e, bool& orientation, bool& createdEdge) const;
 
-  vtkIdType AddEdgeIfNotExisting(vtkIdType p0, vtkIdType p1, bool& orientation,
-                                 bool &createdEdge) const;
+  vtkIdType AddEdgeIfNotExisting(
+    vtkIdType p0, vtkIdType p1, bool& orientation, bool& createdEdge) const;
 
-  DiscreteMesh::FaceResult AddFace( const DiscreteMesh::Face& f) const;
+  DiscreteMesh::FaceResult AddFace(const DiscreteMesh::Face& f) const;
 
   friend class vtkDiscreteModelWrapper;
   friend class vtkEnclosingModelEntityOperator;
@@ -195,6 +197,7 @@ public:
   friend class vtkCMBXMLBCSWriter;
   friend class vtkCMBMeshServerJobSubmitter;
   friend class vtkDiscreteModelEdge;
+
 private:
   //verifies that Data is valid.
   //does a shallow copy of Data into the returned polydata
@@ -205,15 +208,25 @@ private:
   void ShallowAssignment(const DiscreteMesh& other);
 
   //given a data type ( face or edge ) return the corect poly data
-  vtkPolyData* GetDataFromType(DiscreteMesh::DataType type ) const;
+  vtkPolyData* GetDataFromType(DiscreteMesh::DataType type) const;
 
   //static method to help with conversions. they actually are implemented
   // the same but I added in EdgeIdSpaceToFlatIdSpace to be less confusing
   // as well as if the indexing mapping changes.
   static inline void FlatIdSpaceToEdgeIdSpace(vtkIdType* cellIds, vtkIdType num)
-    { for(vtkIdType i=0; i < num; ++i) { cellIds[i] ^= -1; } }
+  {
+    for (vtkIdType i = 0; i < num; ++i)
+    {
+      cellIds[i] ^= -1;
+    }
+  }
   static inline void EdgeIdSpaceToFlatIdSpace(vtkIdType* cellIds, vtkIdType num)
-    { for(vtkIdType i=0; i < num; ++i) { cellIds[i] ^= -1; } }
+  {
+    for (vtkIdType i = 0; i < num; ++i)
+    {
+      cellIds[i] ^= -1;
+    }
+  }
 
   vtkPolyData* FaceData;
   vtkPolyData* EdgeData;
@@ -243,36 +256,39 @@ public:
 class DiscreteMesh::Face
 {
   struct point
+  {
+    point(double p[3])
+      : x(p[0])
+      , y(p[1])
+      , z(p[2])
     {
-    point(double p[3]):x(p[0]),y(p[1]),z(p[2]){}
-    double x,y,z;
-    };
+    }
+    double x, y, z;
+  };
 
   int CType;
-  std::vector< vtkIdType > PointIds;
-  std::vector< point > NewPoints;
-public:
-  typedef std::vector< vtkIdType >::const_iterator ids_const_iterator;
-  typedef std::vector< point >::const_iterator points_const_iterator;
+  std::vector<vtkIdType> PointIds;
+  std::vector<point> NewPoints;
 
-  Face(int cellType):
-    CType(cellType),
-    PointIds(),
-    NewPoints()
+public:
+  typedef std::vector<vtkIdType>::const_iterator ids_const_iterator;
+  typedef std::vector<point>::const_iterator points_const_iterator;
+
+  Face(int cellType)
+    : CType(cellType)
+    , PointIds()
+    , NewPoints()
   {
   }
   vtkIdType InvalidId() const { return -1; }
 
-  void AddExistingPointId(vtkIdType id)
-    {
-    this->PointIds.push_back(id);
-    }
+  void AddExistingPointId(vtkIdType id) { this->PointIds.push_back(id); }
 
   void AddNewPoint(double pos[3])
-    {
+  {
     this->NewPoints.push_back(Face::point(pos));
     this->PointIds.push_back(InvalidId());
-    }
+  }
 
   int CellType() const { return this->CType; }
 
@@ -285,15 +301,20 @@ public:
   vtkIdType GetNumberOfPoints() const { return this->PointIds.size(); }
 };
 
-class DiscreteMesh::FaceResult: private std::vector<vtkIdType>
+class DiscreteMesh::FaceResult : private std::vector<vtkIdType>
 {
   typedef vtkIdType T;
   typedef std::vector<vtkIdType> vector;
+
 public:
   typedef vector::const_iterator const_iterator;
   typedef vector::iterator iterator;
 
-  FaceResult():vector(),CellId(0){}
+  FaceResult()
+    : vector()
+    , CellId(0)
+  {
+  }
 
   using vector::front;
   using vector::begin;
@@ -304,25 +325,19 @@ public:
   using vector::size;
   using vector::operator[];
   vtkIdType CellId;
-
 };
 
-inline vtkIdType DiscreteMesh::
-AddEdgeIfNotExisting(vtkIdType p0, vtkIdType p1, bool& orientation,
-                     bool &createdEdge) const
+inline vtkIdType DiscreteMesh::AddEdgeIfNotExisting(
+  vtkIdType p0, vtkIdType p1, bool& orientation, bool& createdEdge) const
 {
   EdgePointIds temp(p0, p1);
-  return this->AddEdgeIfNotExisting(temp, orientation,
-                                    createdEdge);
+  return this->AddEdgeIfNotExisting(temp, orientation, createdEdge);
 }
 
-inline bool DiscreteMesh::
-EdgeExists(vtkIdType p0, vtkIdType p1, vtkIdType &edgeId) const
+inline bool DiscreteMesh::EdgeExists(vtkIdType p0, vtkIdType p1, vtkIdType& edgeId) const
 {
   EdgePointIds temp(p0, p1);
   return this->EdgeExists(temp, edgeId);
 }
-
-
 
 #endif // __DISCRETEMESH_H

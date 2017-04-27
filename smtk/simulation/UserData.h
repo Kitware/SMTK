@@ -17,24 +17,26 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
-
 namespace smtk
 {
-  namespace simulation
+namespace simulation
+{
+//derive from this class to create custom user data.
+class SMTKCORE_EXPORT UserData
+{
+public:
+  static smtk::simulation::UserDataPtr New()
   {
-    //derive from this class to create custom user data.
-    class SMTKCORE_EXPORT UserData
-    {
-    public:
-      static smtk::simulation::UserDataPtr New()
-      { return smtk::simulation::UserDataPtr(new UserData()); }
+    return smtk::simulation::UserDataPtr(new UserData());
+  }
 
-      virtual ~UserData();
-    protected:
-      UserData();
-    };
+  virtual ~UserData();
 
-  } // namespace simulation
+protected:
+  UserData();
+};
+
+} // namespace simulation
 } // namespace smtk
 
 #endif // __smtk_simulation_UserData_h

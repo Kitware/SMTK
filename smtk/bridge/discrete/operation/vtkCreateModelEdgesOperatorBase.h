@@ -18,14 +18,13 @@
 #include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkObject.h"
 
-
 class vtkDiscreteModel;
 
 class SMTKDISCRETESESSION_EXPORT vtkCreateModelEdgesOperatorBase : public vtkObject
 {
 public:
-  static vtkCreateModelEdgesOperatorBase * New();
-  vtkTypeMacro(vtkCreateModelEdgesOperatorBase,vtkObject);
+  static vtkCreateModelEdgesOperatorBase* New();
+  vtkTypeMacro(vtkCreateModelEdgesOperatorBase, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
 protected:
@@ -37,9 +36,8 @@ protected:
   virtual bool AbleToOperate(vtkDiscreteModel* Model);
 
 private:
-
-  vtkCreateModelEdgesOperatorBase(const vtkCreateModelEdgesOperatorBase&);  // Not implemented.
-  void operator=(const vtkCreateModelEdgesOperatorBase&);  // Not implemented.
+  vtkCreateModelEdgesOperatorBase(const vtkCreateModelEdgesOperatorBase&); // Not implemented.
+  void operator=(const vtkCreateModelEdgesOperatorBase&);                  // Not implemented.
 };
 
 #endif

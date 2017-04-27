@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkCMBMeshToModelReadOperator.h"
 
 #include "vtkCMBMeshToModelReader.h"
@@ -27,26 +26,26 @@ vtkCMBMeshToModelReadOperator::vtkCMBMeshToModelReadOperator()
   this->OperateSucceeded = 0;
 }
 
-vtkCMBMeshToModelReadOperator:: ~vtkCMBMeshToModelReadOperator()
+vtkCMBMeshToModelReadOperator::~vtkCMBMeshToModelReadOperator()
 {
   this->SetFileName(0);
 }
 
 void vtkCMBMeshToModelReadOperator::Operate(vtkDiscreteModelWrapper* ModelWrapper)
 {
-  if(!ModelWrapper || !ModelWrapper->GetModel())
-    {
+  if (!ModelWrapper || !ModelWrapper->GetModel())
+  {
     vtkErrorMacro("Must have a valid CMB model.");
     return;
-    }
+  }
 
   vtkDebugMacro("Reading a m2m file into a CMB model.");
   this->OperateSucceeded = 0;
-  if(!this->GetFileName())
-    {
+  if (!this->GetFileName())
+  {
     vtkWarningMacro("Must set m2m file name.");
     return;
-    }
+  }
 
   vtkNew<vtkCMBMeshToModelReader> reader;
   reader->SetFileName(this->GetFileName());
@@ -58,7 +57,7 @@ void vtkCMBMeshToModelReadOperator::Operate(vtkDiscreteModelWrapper* ModelWrappe
 
 void vtkCMBMeshToModelReadOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
   os << indent << "FileName: " << this->FileName << endl;
   os << indent << "OperateSucceeded: " << this->OperateSucceeded << endl;
 }

@@ -35,12 +35,12 @@ public:
   void setImage(std::string inputImage);
   vtkSmartPointer<vtkPolyData> getPolydata();
 
-//public slots:
+  //public slots:
 
-//  virtual void slotExit();
+  //  virtual void slotExit();
 
-//signals:
-//  void send(vtkSmartPointer<vtkPolyData>);
+  //signals:
+  //  void send(vtkSmartPointer<vtkPolyData>);
 
 protected slots:
   void saveMask();
@@ -59,11 +59,10 @@ protected slots:
   //void accept();
 
 private:
-
   class Internal;
-  Internal *internal;
+  Internal* internal;
   // Designer form
-  Ui_imageFeatureExtractor *ui;
+  Ui_imageFeatureExtractor* ui;
 };
 
 #endif

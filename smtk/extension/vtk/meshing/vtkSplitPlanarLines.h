@@ -27,27 +27,26 @@ class VTKSMTKMESHINGEXT_EXPORT vtkSplitPlanarLines : public vtkPolyDataAlgorithm
 {
 public:
   static vtkSplitPlanarLines* New();
-  vtkTypeMacro(vtkSplitPlanarLines,vtkPolyDataAlgorithm);
+  vtkTypeMacro(vtkSplitPlanarLines, vtkPolyDataAlgorithm);
   virtual void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // Set/get the geometric tolerance for point merging and intersection testing.
-  vtkGetMacro(Tolerance,double);
-  vtkSetMacro(Tolerance,double);
+  vtkGetMacro(Tolerance, double);
+  vtkSetMacro(Tolerance, double);
 
 protected:
   vtkSplitPlanarLines();
   virtual ~vtkSplitPlanarLines();
 
   virtual int RequestData(
-    vtkInformation* req,
-    vtkInformationVector** inVec,
-    vtkInformationVector* outVec);
+    vtkInformation* req, vtkInformationVector** inVec, vtkInformationVector* outVec);
 
   double Tolerance;
+
 private:
   vtkSplitPlanarLines(const vtkSplitPlanarLines&); // Not implemented.
-  void operator = (const vtkSplitPlanarLines&); // Not implemented.
+  void operator=(const vtkSplitPlanarLines&);      // Not implemented.
 };
 
 #endif // __vtkSplitPlanarLines_h

@@ -18,7 +18,6 @@
 #include "vtkObject.h"
 #include "vtkStdString.h" // needed for vtkStdString.
 
-
 class vtkCollection;
 class vtkModelXMLParser;
 
@@ -27,7 +26,7 @@ struct vtkXMLElementInternals;
 class VTKSMTKDISCRETEMODEL_EXPORT vtkXMLElement : public vtkObject
 {
 public:
-  vtkTypeMacro(vtkXMLElement,vtkObject);
+  vtkTypeMacro(vtkXMLElement, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
   static vtkXMLElement* New();
 
@@ -193,7 +192,6 @@ protected:
   void ReadXMLAttributes(const char** atts);
   void AddCharacterData(const char* data, int length);
 
-
   // Internal utility methods.
   vtkXMLElement* LookupElementInScope(const char* id);
   vtkXMLElement* LookupElementUpScope(const char* id);
@@ -203,7 +201,7 @@ protected:
 
 private:
   vtkXMLElement(const vtkXMLElement&);  // Not implemented.
-  void operator=(const vtkXMLElement&);  // Not implemented.
+  void operator=(const vtkXMLElement&); // Not implemented.
 };
 
 #endif

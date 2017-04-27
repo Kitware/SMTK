@@ -22,9 +22,12 @@
 
 class vtkDiscreteModelWrapper;
 
-namespace smtk {
-  namespace bridge {
-    namespace discrete {
+namespace smtk
+{
+namespace bridge
+{
+namespace discrete
+{
 
 class Session;
 
@@ -43,27 +46,20 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
   Session* discreteSession() const;
   void findVisibleModelFaces(
-    const smtk::model::CellEntity &cellent,
-    std::set<vtkIdType>& ModelFaceIds, Session* opsession);
+    const smtk::model::CellEntity& cellent, std::set<vtkIdType>& ModelFaceIds, Session* opsession);
 
-  bool writeSelectionResult(
-    const std::map<smtk::common::UUID, std::set<int> >& cachedSelection,
+  bool writeSelectionResult(const std::map<smtk::common::UUID, std::set<int> >& cachedSelection,
     smtk::model::OperatorResult& result);
-  void writeSplitResult(vtkSelectionSplitOperator* splitOp,
-    vtkDiscreteModelWrapper* modelWrapper,
+  void writeSplitResult(vtkSelectionSplitOperator* splitOp, vtkDiscreteModelWrapper* modelWrapper,
     Session* opsession, smtk::model::OperatorResult& result);
   // This grow_selection is a list of cell ids from master polydata,
   // so we need to convert that to the format of
   // <FaceUUID, 'set' of cellIds on that face>
   bool convertAndResetOutSelection(
-    vtkSelection* inSelection,
-    vtkDiscreteModelWrapper* modelWrapper,
-    Session* opsession);
-  bool copyToOutSelection(
-    const smtk::attribute::MeshSelectionItemPtr& inSelectionItem);
-  void convertToGrowSelection(
-  const smtk::attribute::MeshSelectionItemPtr& inSelectionItem,
-  vtkSelection* outSelection, Session* opsession);
+    vtkSelection* inSelection, vtkDiscreteModelWrapper* modelWrapper, Session* opsession);
+  bool copyToOutSelection(const smtk::attribute::MeshSelectionItemPtr& inSelectionItem);
+  void convertToGrowSelection(const smtk::attribute::MeshSelectionItemPtr& inSelectionItem,
+    vtkSelection* outSelection, Session* opsession);
 
   vtkNew<vtkSelectionSplitOperator> m_splitOp;
   vtkNew<vtkSeedGrowSelectionFilter> m_growOp;
@@ -71,8 +67,8 @@ protected:
   std::map<smtk::common::UUID, std::set<int> > m_outSelection;
 };
 
-    } // namespace discrete
-  } // namespace bridge
+} // namespace discrete
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_discrete_GrowOperator_h

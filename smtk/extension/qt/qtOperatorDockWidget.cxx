@@ -10,8 +10,10 @@
 #include "smtk/extension/qt/qtOperatorDockWidget.h"
 #include <QCloseEvent>
 
-namespace smtk {
-  namespace extension {
+namespace smtk
+{
+namespace extension
+{
 
 qtOperatorDockWidget::qtOperatorDockWidget(QWidget* p)
   : QDockWidget(p)
@@ -31,5 +33,5 @@ void qtOperatorDockWidget::closeEvent(QCloseEvent* clevent)
   this->QDockWidget::closeEvent(clevent);
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

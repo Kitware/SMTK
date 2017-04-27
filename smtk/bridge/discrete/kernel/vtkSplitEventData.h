@@ -31,8 +31,8 @@ class vtkDiscreteModelGeometricEntity;
 class VTKSMTKDISCRETEMODEL_EXPORT vtkSplitEventData : public vtkObject
 {
 public:
-  static vtkSplitEventData * New();
-  vtkTypeMacro(vtkSplitEventData,vtkObject);
+  static vtkSplitEventData* New();
+  vtkTypeMacro(vtkSplitEventData, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -54,8 +54,8 @@ private:
   vtkDiscreteModelGeometricEntity* SourceEntity;
   vtkIdList* CreatedModelEntityIds;
 
-  vtkSplitEventData(const vtkSplitEventData&);  // Not implemented.
-  void operator=(const vtkSplitEventData&);  // Not implemented.
+  vtkSplitEventData(const vtkSplitEventData&); // Not implemented.
+  void operator=(const vtkSplitEventData&);    // Not implemented.
 };
 
 #endif

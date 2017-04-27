@@ -12,8 +12,10 @@
 
 #include "smtk/model/ShellEntity.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 class Edge;
 class Chain;
@@ -36,7 +38,7 @@ typedef std::vector<VertexUse> VertexUses;
 class SMTKCORE_EXPORT Chain : public ShellEntity
 {
 public:
-  SMTK_ENTITYREF_CLASS(Chain,ShellEntity,isChain);
+  SMTK_ENTITYREF_CLASS(Chain, ShellEntity, isChain);
 
   Edge edge() const;
   VertexUses vertexUses() const;
@@ -44,7 +46,7 @@ public:
   Chains containedChains() const;
 };
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_model_Chain_h

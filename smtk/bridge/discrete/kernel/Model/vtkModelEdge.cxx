@@ -22,7 +22,6 @@
 
 #include <set>
 
-
 vtkModelEdge::vtkModelEdge()
 {
 }
@@ -43,23 +42,22 @@ int vtkModelEdge::GetNumberOfModelEdgeUses()
 
 vtkModelEdgeUse* vtkModelEdge::GetModelEdgeUse(int which)
 { // 0 <= which < number of modeledgeuses
-  if(which >= this->GetNumberOfAssociations(vtkModelEdgeUseType) || which < 0)
-    {
+  if (which >= this->GetNumberOfAssociations(vtkModelEdgeUseType) || which < 0)
+  {
     return NULL;
-    }
-  vtkModelItemIterator* iter =
-    this->NewIterator(vtkModelEdgeUseType);
+  }
+  vtkModelItemIterator* iter = this->NewIterator(vtkModelEdgeUseType);
   int counter = 0;
   vtkModelEdgeUse* edgeUse = 0;
-  for(iter->Begin();!iter->IsAtEnd();iter->Next())
+  for (iter->Begin(); !iter->IsAtEnd(); iter->Next())
+  {
+    if (counter == which)
     {
-    if(counter == which)
-      {
       edgeUse = vtkModelEdgeUse::SafeDownCast(iter->GetCurrentItem());
       break;
-      }
-    counter++;
     }
+    counter++;
+  }
   iter->Delete();
   return edgeUse;
 }
@@ -77,16 +75,14 @@ int vtkModelEdge::GetNumberOfModelVertexUses()
 
 vtkModelVertex* vtkModelEdge::GetAdjacentModelVertex(int which)
 {
-  if(vtkModelVertexUse* vertexUse =
-     this->GetModelEdgeUse(1)->GetModelVertexUse(which))
-    {
+  if (vtkModelVertexUse* vertexUse = this->GetModelEdgeUse(1)->GetModelVertexUse(which))
+  {
     return vertexUse->GetModelVertex();
-    }
+  }
   return 0;
 }
 
-void vtkModelEdge::Initialize(vtkModelVertex* vertex0, vtkModelVertex* vertex1,
-                              vtkIdType edgeId)
+void vtkModelEdge::Initialize(vtkModelVertex* vertex0, vtkModelVertex* vertex1, vtkIdType edgeId)
 {
   vtkModelEdgeUse* edgeUse0 = vtkModelEdgeUse::New();
   vtkModelEdgeUse* edgeUse1 = vtkModelEdgeUse::New();
@@ -101,25 +97,25 @@ void vtkModelEdge::Initialize(vtkModelVertex* vertex0, vtkModelVertex* vertex1,
 
 vtkModelEdgeUse* vtkModelEdge::BuildModelEdgeUsePair()
 {
-  if(this->GetNumberOfModelEdgeUses() == 0)
-    {
+  if (this->GetNumberOfModelEdgeUses() == 0)
+  {
     vtkErrorMacro("Must have an existing edge use before calling BuildModelEdgeUse.");
     return 0;
-    }
+  }
   vtkModelEdgeUse* firstEdgeUse = this->GetModelEdgeUse(0);
 
   // first edge use is in opposite direction of edge
   vtkModelVertexUse* vertexUse1 = firstEdgeUse->GetModelVertexUse(0);
   vtkModelVertexUse* vertexUse0 = firstEdgeUse->GetModelVertexUse(1);
   vtkModelVertex *vertex0 = 0, *vertex1 = 0;
-  if(vertexUse0)
-    {
+  if (vertexUse0)
+  {
     vertex0 = vertexUse0->GetModelVertex();
-    }
-  if(vertexUse1)
-    {
+  }
+  if (vertexUse1)
+  {
     vertex1 = vertexUse1->GetModelVertex();
-    }
+  }
 
   vtkModelEdgeUse* edgeUse0 = vtkModelEdgeUse::New();
   vtkModelEdgeUse* edgeUse1 = vtkModelEdgeUse::New();
@@ -138,55 +134,50 @@ void vtkModelEdge::DestroyModelEdgeUse(vtkModelEdgeUse* edgeUse)
   this->Modified();
 }
 
-void vtkModelEdge::SplitModelEdge(
-  vtkModelVertex* newVertex, vtkModelEdge* newEdge)
+void vtkModelEdge::SplitModelEdge(vtkModelVertex* newVertex, vtkModelEdge* newEdge)
 {
   // make sure that we only store a single edge of the paired edges
   // that edge use is in the same direction as the model edge (dir=1)
   std::set<vtkModelEdgeUse*> edgeUsePairs;
 
   vtkModelItemIterator* edgeUses = this->NewIterator(vtkModelEdgeUseType);
-  for(edgeUses->Begin();!edgeUses->IsAtEnd();edgeUses->Next())
+  for (edgeUses->Begin(); !edgeUses->IsAtEnd(); edgeUses->Next())
+  {
+    vtkModelEdgeUse* edgeUse = vtkModelEdgeUse::SafeDownCast(edgeUses->GetCurrentItem());
+    if (edgeUse->GetDirection() == 1)
     {
-    vtkModelEdgeUse* edgeUse = vtkModelEdgeUse::SafeDownCast(
-      edgeUses->GetCurrentItem());
-    if(edgeUse->GetDirection() == 1)
-      {
       edgeUsePairs.insert(edgeUse);
-      }
-    else
-      {
-      edgeUsePairs.insert(edgeUse->GetPairedModelEdgeUse());
-      }
     }
+    else
+    {
+      edgeUsePairs.insert(edgeUse->GetPairedModelEdgeUse());
+    }
+  }
   edgeUses->Delete();
 
   // we already have an existing edge use pair for the first pass
-  std::set<vtkModelEdgeUse*>::iterator it=edgeUsePairs.begin();
+  std::set<vtkModelEdgeUse*>::iterator it = edgeUsePairs.begin();
   vtkModelEdgeUse* newEdgeUse = newEdge->GetModelEdgeUse(1);
 
   vtkModelVertexUse* originalVertexUse0 = (*it)->GetModelVertexUse(0);
   vtkModelVertexUse* originalVertexUse1 = (*it)->GetModelVertexUse(1);
   vtkModelVertexUse* vertexUse = newVertex->BuildModelVertexUse();
-  this->SplitModelEdgeUse(*it, newEdgeUse, originalVertexUse0,
-                          vertexUse, originalVertexUse1);
+  this->SplitModelEdgeUse(*it, newEdgeUse, originalVertexUse0, vertexUse, originalVertexUse1);
   int index = (*it)->GetModelLoopUse()->GetModelEdgeUseIndex(*it);
-  (*it)->GetModelLoopUse()->InsertModelEdgeUse(index+1, newEdgeUse);
+  (*it)->GetModelLoopUse()->InsertModelEdgeUse(index + 1, newEdgeUse);
 
   originalVertexUse0 = (*it)->GetPairedModelEdgeUse()->GetModelVertexUse(0);
   originalVertexUse1 = (*it)->GetPairedModelEdgeUse()->GetModelVertexUse(1);
   vertexUse = newVertex->BuildModelVertexUse();
   vtkModelEdgeUse* oldPairedModelEdgeUse = (*it)->GetPairedModelEdgeUse();
-  this->SplitModelEdgeUse(
-    newEdgeUse->GetPairedModelEdgeUse(), oldPairedModelEdgeUse,
+  this->SplitModelEdgeUse(newEdgeUse->GetPairedModelEdgeUse(), oldPairedModelEdgeUse,
     originalVertexUse0, vertexUse, originalVertexUse1);
-  index = oldPairedModelEdgeUse->GetModelLoopUse()
-    ->GetModelEdgeUseIndex(oldPairedModelEdgeUse);
+  index = oldPairedModelEdgeUse->GetModelLoopUse()->GetModelEdgeUseIndex(oldPairedModelEdgeUse);
   oldPairedModelEdgeUse->GetModelLoopUse()->InsertModelEdgeUse(
     index, newEdgeUse->GetPairedModelEdgeUse());
 
-  for(it++ ;it!=edgeUsePairs.end();it++)
-    {
+  for (it++; it != edgeUsePairs.end(); it++)
+  {
     newEdgeUse = newEdge->BuildModelEdgeUsePair();
 
     // BuildeModelEdgeUsePair creates model vertex uses that we don't
@@ -194,57 +185,52 @@ void vtkModelEdge::SplitModelEdge(
     vtkModelVertexUse* vertexUse0 = newEdgeUse->GetModelVertexUse(0);
     vtkModelVertexUse* vertexUse1 = newEdgeUse->GetModelVertexUse(1);
     newEdgeUse->SetModelVertexUses(0, 0);
-    if(vertexUse0 && vertexUse0->GetNumberOfAssociations(vtkModelEdgeUseType) == 0)
-      {
+    if (vertexUse0 && vertexUse0->GetNumberOfAssociations(vtkModelEdgeUseType) == 0)
+    {
       vertexUse0->GetModelVertex()->DestroyModelVertexUse(vertexUse0);
-      }
-    if(vertexUse1 && vertexUse1 != vertexUse0 &&
-       vertexUse1->GetNumberOfAssociations(vtkModelEdgeUseType) == 0)
-      {
+    }
+    if (vertexUse1 && vertexUse1 != vertexUse0 &&
+      vertexUse1->GetNumberOfAssociations(vtkModelEdgeUseType) == 0)
+    {
       vertexUse1->GetModelVertex()->DestroyModelVertexUse(vertexUse1);
-      }
+    }
 
     vertexUse0 = newEdgeUse->GetPairedModelEdgeUse()->GetModelVertexUse(0);
     vertexUse1 = newEdgeUse->GetPairedModelEdgeUse()->GetModelVertexUse(1);
     newEdgeUse->GetPairedModelEdgeUse()->SetModelVertexUses(0, 0);
-    if(vertexUse0 && vertexUse0->GetNumberOfAssociations(vtkModelEdgeUseType) == 0)
-      {
+    if (vertexUse0 && vertexUse0->GetNumberOfAssociations(vtkModelEdgeUseType) == 0)
+    {
       vertexUse0->GetModelVertex()->DestroyModelVertexUse(vertexUse0);
-      }
-    if(vertexUse1 && vertexUse1 != vertexUse0 &&
-       vertexUse1->GetNumberOfAssociations(vtkModelEdgeUseType) == 0)
-      {
+    }
+    if (vertexUse1 && vertexUse1 != vertexUse0 &&
+      vertexUse1->GetNumberOfAssociations(vtkModelEdgeUseType) == 0)
+    {
       vertexUse1->GetModelVertex()->DestroyModelVertexUse(vertexUse1);
-      }
+    }
 
     originalVertexUse0 = (*it)->GetModelVertexUse(0);
     originalVertexUse1 = (*it)->GetModelVertexUse(1);
     vertexUse = newVertex->BuildModelVertexUse();
-    this->SplitModelEdgeUse(*it, newEdgeUse, originalVertexUse0,
-                            vertexUse, originalVertexUse1);
+    this->SplitModelEdgeUse(*it, newEdgeUse, originalVertexUse0, vertexUse, originalVertexUse1);
 
     index = (*it)->GetModelLoopUse()->GetModelEdgeUseIndex(*it);
-    (*it)->GetModelLoopUse()->InsertModelEdgeUse(index+1, newEdgeUse);
+    (*it)->GetModelLoopUse()->InsertModelEdgeUse(index + 1, newEdgeUse);
 
     originalVertexUse0 = (*it)->GetPairedModelEdgeUse()->GetModelVertexUse(0);
     originalVertexUse1 = (*it)->GetPairedModelEdgeUse()->GetModelVertexUse(1);
     vertexUse = newVertex->BuildModelVertexUse();
-    this->SplitModelEdgeUse(
-      newEdgeUse->GetPairedModelEdgeUse(), (*it)->GetPairedModelEdgeUse(),
+    this->SplitModelEdgeUse(newEdgeUse->GetPairedModelEdgeUse(), (*it)->GetPairedModelEdgeUse(),
       originalVertexUse0, vertexUse, originalVertexUse1);
 
     oldPairedModelEdgeUse = (*it)->GetPairedModelEdgeUse();
-    index = oldPairedModelEdgeUse->GetModelLoopUse()
-      ->GetModelEdgeUseIndex(oldPairedModelEdgeUse);
+    index = oldPairedModelEdgeUse->GetModelLoopUse()->GetModelEdgeUseIndex(oldPairedModelEdgeUse);
     oldPairedModelEdgeUse->GetModelLoopUse()->InsertModelEdgeUse(
       index, newEdgeUse->GetPairedModelEdgeUse());
-    }
+  }
 }
 
-void vtkModelEdge::SplitModelEdgeUse(
-  vtkModelEdgeUse* firstEdgeUse, vtkModelEdgeUse* secondEdgeUse,
-  vtkModelVertexUse* vertexUse0, vtkModelVertexUse* vertexUse1,
-  vtkModelVertexUse* vertexUse2)
+void vtkModelEdge::SplitModelEdgeUse(vtkModelEdgeUse* firstEdgeUse, vtkModelEdgeUse* secondEdgeUse,
+  vtkModelVertexUse* vertexUse0, vtkModelVertexUse* vertexUse1, vtkModelVertexUse* vertexUse2)
 {
   firstEdgeUse->SetModelVertexUses(vertexUse0, vertexUse1);
   secondEdgeUse->SetModelVertexUses(vertexUse1, vertexUse2);
@@ -253,35 +239,30 @@ void vtkModelEdge::SplitModelEdgeUse(
 bool vtkModelEdge::SplitModelEdgeLoop(vtkModelVertex* vertex)
 {
   vtkModelItemIterator* edgeUses = this->NewIterator(vtkModelEdgeUseType);
-  for(edgeUses->Begin();!edgeUses->IsAtEnd();edgeUses->Next())
-    {
+  for (edgeUses->Begin(); !edgeUses->IsAtEnd(); edgeUses->Next())
+  {
     vtkModelVertexUse* vertexUse = vertex->BuildModelVertexUse();
-    vtkModelEdgeUse* edgeUse =
-      vtkModelEdgeUse::SafeDownCast(edgeUses->GetCurrentItem());
+    vtkModelEdgeUse* edgeUse = vtkModelEdgeUse::SafeDownCast(edgeUses->GetCurrentItem());
     edgeUse->SetModelVertexUses(vertexUse, vertexUse);
-    }
+  }
   edgeUses->Delete();
-  this->GetModel()->InvokeModelGeometricEntityEvent(
-    ModelGeometricEntityBoundaryModified, this);
+  this->GetModel()->InvokeModelGeometricEntityEvent(ModelGeometricEntityBoundaryModified, this);
   return 1;
 }
 
 int vtkModelEdge::GetNumberOfAdjacentModelFaces()
 {
   std::set<vtkModelFace*> faces;
-  vtkModelItemIterator* edgeUses =
-    this->NewIterator(vtkModelEdgeUseType);
-  for(edgeUses->Begin();!edgeUses->IsAtEnd();edgeUses->Next())
+  vtkModelItemIterator* edgeUses = this->NewIterator(vtkModelEdgeUseType);
+  for (edgeUses->Begin(); !edgeUses->IsAtEnd(); edgeUses->Next())
+  {
+    vtkModelItemIterator* loopUses = edgeUses->GetCurrentItem()->NewIterator(vtkModelLoopUseType);
+    for (loopUses->Begin(); !loopUses->IsAtEnd(); loopUses->Next())
     {
-    vtkModelItemIterator* loopUses =
-      edgeUses->GetCurrentItem()->NewIterator(vtkModelLoopUseType);
-    for(loopUses->Begin();!loopUses->IsAtEnd();loopUses->Next())
-      {
-      faces.insert(vtkModelLoopUse::SafeDownCast(loopUses->GetCurrentItem())->
-                   GetModelFace());
-      }
-    loopUses->Delete();
+      faces.insert(vtkModelLoopUse::SafeDownCast(loopUses->GetCurrentItem())->GetModelFace());
     }
+    loopUses->Delete();
+  }
   edgeUses->Delete();
 
   return static_cast<int>(faces.size());
@@ -290,20 +271,17 @@ int vtkModelEdge::GetNumberOfAdjacentModelFaces()
 vtkModelItemIterator* vtkModelEdge::NewAdjacentModelFaceIterator()
 {
   vtkModelItemGenericIterator* faces = vtkModelItemGenericIterator::New();
-  vtkModelItemIterator* edgeUses =
-    this->NewIterator(vtkModelEdgeUseType);
-  for(edgeUses->Begin();!edgeUses->IsAtEnd();edgeUses->Next())
+  vtkModelItemIterator* edgeUses = this->NewIterator(vtkModelEdgeUseType);
+  for (edgeUses->Begin(); !edgeUses->IsAtEnd(); edgeUses->Next())
+  {
+    vtkModelItemIterator* loopUses = edgeUses->GetCurrentItem()->NewIterator(vtkModelLoopUseType);
+    for (loopUses->Begin(); !loopUses->IsAtEnd(); loopUses->Next())
     {
-    vtkModelItemIterator* loopUses =
-      edgeUses->GetCurrentItem()->NewIterator(vtkModelLoopUseType);
-    for(loopUses->Begin();!loopUses->IsAtEnd();loopUses->Next())
-      {
       faces->AddUniqueModelItem(
-        vtkModelLoopUse::SafeDownCast(loopUses->GetCurrentItem())->
-        GetModelFace());
-      }
-    loopUses->Delete();
+        vtkModelLoopUse::SafeDownCast(loopUses->GetCurrentItem())->GetModelFace());
     }
+    loopUses->Delete();
+  }
   edgeUses->Delete();
 
   return faces;
@@ -316,6 +294,5 @@ void vtkModelEdge::Serialize(vtkSerializer* ser)
 
 void vtkModelEdge::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }
-

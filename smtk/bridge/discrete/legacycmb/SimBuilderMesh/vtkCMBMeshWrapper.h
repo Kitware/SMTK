@@ -46,9 +46,8 @@ protected:
 
 private:
   vtkCMBMeshWrapper(const vtkCMBMeshWrapper&); // Not implemented
-  void operator=(const vtkCMBMeshWrapper&); // Not implemented
+  void operator=(const vtkCMBMeshWrapper&);    // Not implemented
   vtkCMBMeshServer* Mesh;
-
 };
 
 #endif

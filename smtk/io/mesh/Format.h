@@ -20,29 +20,48 @@
 
 #ifdef SMTK_MSVC
 // Ignore symbol exposure warnings for STL classes.
-#pragma warning (disable : 4251)
+#pragma warning(disable : 4251)
 #endif
 
 /**\brief Mesh IO formats
   *
   */
 
-namespace smtk {
-  namespace io {
-namespace mesh {
+namespace smtk
+{
+namespace io
+{
+namespace mesh
+{
 
 struct SMTKCORE_EXPORT Format
 {
   typedef std::bitset<4> IOFlags;
 
-  Format() : Name(""), Extensions(), Flags(IOFlags(0x0)) {}
-  Format(const std::string& name, IOFlags flags) :
-    Name(name), Extensions(), Flags(flags) {}
-  Format(const std::string& name, const std::vector<std::string>& extensions,
-         IOFlags flags) :
-    Name(name), Extensions(extensions), Flags(flags) {}
-  Format(const std::string& name, const std::string& extension, IOFlags flags) :
-    Name(name), Extensions(1,extension), Flags(flags) {}
+  Format()
+    : Name("")
+    , Extensions()
+    , Flags(IOFlags(0x0))
+  {
+  }
+  Format(const std::string& name, IOFlags flags)
+    : Name(name)
+    , Extensions()
+    , Flags(flags)
+  {
+  }
+  Format(const std::string& name, const std::vector<std::string>& extensions, IOFlags flags)
+    : Name(name)
+    , Extensions(extensions)
+    , Flags(flags)
+  {
+  }
+  Format(const std::string& name, const std::string& extension, IOFlags flags)
+    : Name(name)
+    , Extensions(1, extension)
+    , Flags(flags)
+  {
+  }
 
 #ifndef SHIBOKEN_SKIP
   static const IOFlags Import;
@@ -52,15 +71,14 @@ struct SMTKCORE_EXPORT Format
 
   bool CanImport() const { return (this->Flags & Import) == Import; }
   bool CanExport() const { return (this->Flags & Export) == Export; }
-  bool CanRead()   const { return (this->Flags & Read)   == Read; }
-  bool CanWrite()  const { return (this->Flags & Write)  == Write; }
+  bool CanRead() const { return (this->Flags & Read) == Read; }
+  bool CanWrite() const { return (this->Flags & Write) == Write; }
 #endif
 
   std::string Name;
   std::vector<std::string> Extensions;
   IOFlags Flags;
 };
-
 }
 }
 }

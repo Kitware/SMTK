@@ -27,8 +27,8 @@ class vtkAlgorithm;
 class SMTKDISCRETESESSION_EXPORT vtkCMBModelPointsOperator : public vtkObject
 {
 public:
-  static vtkCMBModelPointsOperator * New();
-  vtkTypeMacro(vtkCMBModelPointsOperator,vtkObject);
+  static vtkCMBModelPointsOperator* New();
+  vtkTypeMacro(vtkCMBModelPointsOperator, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -56,16 +56,14 @@ protected:
   virtual ~vtkCMBModelPointsOperator();
 
 private:
-
-  vtkCMBModelPointsOperator(const vtkCMBModelPointsOperator&);  // Not implemented.
-  void operator=(const vtkCMBModelPointsOperator&);  // Not implemented.
+  vtkCMBModelPointsOperator(const vtkCMBModelPointsOperator&); // Not implemented.
+  void operator=(const vtkCMBModelPointsOperator&);            // Not implemented.
 
   // Description:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).
   int OperateSucceeded;
   vtkPointSet* ModelPoints;
   vtkPointData* ModelPointData;
-
 };
 
 #endif

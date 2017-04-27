@@ -22,8 +22,8 @@
 class VTKCMBDISCRETEMODEL_EXPORT vtkSMTKJsonModelReader : public vtkMultiBlockDataSetAlgorithm
 {
 public:
-  static vtkSMTKJsonModelReader * New();
-  vtkTypeMacro(vtkSMTKJsonModelReader,vtkMultiBlockDataSetAlgorithm);
+  static vtkSMTKJsonModelReader* New();
+  vtkTypeMacro(vtkSMTKJsonModelReader, vtkMultiBlockDataSetAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -33,8 +33,7 @@ public:
 
   // Description:
   // Get json string of the smtk model
-  virtual const char* GetJSONModel()
-    {return this->JSONModel.c_str();}
+  virtual const char* GetJSONModel() { return this->JSONModel.c_str(); }
 
   // Description:
   // Get the map of entityid (UUID) to blockindex of multiblock
@@ -44,10 +43,8 @@ protected:
   vtkSMTKJsonModelReader();
   virtual ~vtkSMTKJsonModelReader();
 
-  int RequestInformation(vtkInformation *,
-        vtkInformationVector **,
-        vtkInformationVector *);
-  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
 
 private:
   // Description:
@@ -61,8 +58,8 @@ private:
   class vtkInternal;
   vtkInternal* Internal;
 
-  vtkSMTKJsonModelReader(const vtkSMTKJsonModelReader&);  // Not implemented.
-  void operator=(const vtkSMTKJsonModelReader&);  // Not implemented.
+  vtkSMTKJsonModelReader(const vtkSMTKJsonModelReader&); // Not implemented.
+  void operator=(const vtkSMTKJsonModelReader&);         // Not implemented.
 };
 
 #endif

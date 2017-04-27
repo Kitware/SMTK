@@ -24,36 +24,30 @@
 
 using namespace smtk::common;
 
-namespace smtk {
-  namespace io {
+namespace smtk
+{
+namespace io
+{
 
-bool
-ResourceSetWriter::
-writeFile(std::string filename,
-          const ResourceSet& resources,
-          smtk::io::Logger& logger,
-          LinkedFilesOption option)
+bool ResourceSetWriter::writeFile(std::string filename, const ResourceSet& resources,
+  smtk::io::Logger& logger, LinkedFilesOption option)
 {
   logger.reset();
   std::string content;
   this->writeString(content, resources, logger, option);
   if (!logger.hasErrors())
-    {
+  {
     std::ofstream outfile;
     outfile.open(filename.c_str());
     outfile << content;
     outfile.close();
     std::cout << "Wrote " << filename << std::endl;
-    }
+  }
   return logger.hasErrors();
 }
 
-bool
-ResourceSetWriter::
-writeString(std::string& content,
-            const ResourceSet& resources,
-            smtk::io::Logger& logger,
-            LinkedFilesOption option)
+bool ResourceSetWriter::writeString(std::string& content, const ResourceSet& resources,
+  smtk::io::Logger& logger, LinkedFilesOption option)
 {
   logger.reset();
 
@@ -68,76 +62,72 @@ writeString(std::string& content,
   ResourceSet::ResourceRole role;
   std::string link;
   bool ok = true;
-  for (unsigned i=0; i<resourceIds.size() && ok; ++i)
-    {
+  for (unsigned i = 0; i < resourceIds.size() && ok; ++i)
+  {
     std::string id = resourceIds[i];
     ok = resources.resourceInfo(id, rtype, role, state, link);
     if (!ok)
-      {
+    {
       std::cerr << "Error retrieving" << std::endl;
       continue;
-      }
+    }
 
     rtypeString = smtk::common::Resource::type2String(rtype);
-    pugi::xml_node resourceElement =
-      rootElement.append_child(rtypeString.c_str());
+    pugi::xml_node resourceElement = rootElement.append_child(rtypeString.c_str());
     resourceElement.append_attribute("id").set_value(id.c_str());
 
     if (role != ResourceSet::NOT_DEFINED)
-      {
+    {
       std::string rstring = ResourceSet::role2String(role);
       resourceElement.append_attribute("role").set_value(rstring.c_str());
-      }
+    }
 
-    if ((("" == link) || (EXPAND_LINKED_FILES == option)) &&
-        ResourceSet::LOADED == state)
-      {
+    if ((("" == link) || (EXPAND_LINKED_FILES == option)) && ResourceSet::LOADED == state)
+    {
       // Use XmlStringWriter to generate xml for this attribute system
       smtk::common::ResourcePtr resource;
       ok = resources.get(id, resource);
-      smtk::attribute::System *system =
-        dynamic_cast<smtk::attribute::System *>(resource.get());
+      smtk::attribute::System* system = dynamic_cast<smtk::attribute::System*>(resource.get());
 
       AttributeWriter attWriter;
       // Get the default string writer instance
       // Could consider allowing application to assign version number
-      XmlStringWriter *xmlWriter = attWriter.newXmlStringWriter(*system);
+      XmlStringWriter* xmlWriter = attWriter.newXmlStringWriter(*system);
       xmlWriter->generateXml(resourceElement, logger);
       delete xmlWriter;
-      }
+    }
     else if (link != "")
-      {
+    {
       // If resource is linked, insert <include> element
       pugi::xml_node includeElement = resourceElement.append_child("include");
       includeElement.append_attribute("href").set_value(link.c_str());
 
       // Save linked resources if option selected
       if (option == WRITE_LINKED_FILES)
-        {
+      {
         smtk::common::ResourcePtr resource;
         ok = resources.get(id, resource);
-        smtk::attribute::System *system =
-          dynamic_cast<smtk::attribute::System *>(resource.get());
+        smtk::attribute::System* system = dynamic_cast<smtk::attribute::System*>(resource.get());
         AttributeWriter attWriter;
         bool hasErr = attWriter.write(*system, link, logger);
         ok = !hasErr;
         if (ok)
-          {
+        {
           std::cout << "Wrote linked file " << link << "\n";
-          }
+        }
         else
-          {
+        {
           std::cerr << "ERROR writing linked file " << link << "\n";
-          }
         }
       }
     }
+  }
 
   if (!ok)
-    {
+  {
     std::cerr << "ERROR writing resource file\n";
     return true;
-    }
+  }
 
   // Serialize xml document
   std::stringstream oss;
@@ -153,5 +143,5 @@ writeString(std::string& content,
   return logger.hasErrors();
 }
 
-  } // namespace io
+} // namespace io
 } // namespace smtk

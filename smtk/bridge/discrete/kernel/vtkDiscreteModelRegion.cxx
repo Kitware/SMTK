@@ -27,10 +27,10 @@ vtkInformationKeyMacro(vtkDiscreteModelRegion, SOLIDFILENAME, String);
 vtkDiscreteModelRegion* vtkDiscreteModelRegion::New()
 {
   vtkObject* ret = vtkObjectFactory::CreateInstance("vtkDiscreteModelRegion");
-  if(ret)
-    {
+  if (ret)
+  {
     return static_cast<vtkDiscreteModelRegion*>(ret);
-    }
+  }
   return new vtkDiscreteModelRegion;
 }
 
@@ -56,7 +56,7 @@ bool vtkDiscreteModelRegion::Destroy()
 
 void vtkDiscreteModelRegion::SetPointInside(double* point)
 {
-  this->GetProperties()->Set(POINTINSIDE(),point,3);
+  this->GetProperties()->Set(POINTINSIDE(), point, 3);
   this->Modified();
 }
 
@@ -66,7 +66,7 @@ double* vtkDiscreteModelRegion::GetPointInside()
 }
 void vtkDiscreteModelRegion::SetSolidFileName(const char* filename)
 {
-  this->GetProperties()->Set(SOLIDFILENAME(),filename);
+  this->GetProperties()->Set(SOLIDFILENAME(), filename);
   this->Modified();
 }
 const char* vtkDiscreteModelRegion::GetSolidFileName()
@@ -81,5 +81,5 @@ void vtkDiscreteModelRegion::Serialize(vtkSerializer* ser)
 
 void vtkDiscreteModelRegion::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }
