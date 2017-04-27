@@ -137,6 +137,6 @@ OperatorResult SurfaceExtractContours::operateInternal()
 
 } // namespace smtk
 
-smtkImplementsModelOperator(SMTKPOLYGONSESSION_EXPORT,
-  smtk::bridge::polygon::SurfaceExtractContours, polygon_extract_surface_contours,
-  "extract surface contours", SurfaceExtractContours_xml, smtk::bridge::polygon::Session);
+smtkImplementsModelOperator(SMTKOPENCVEXT_EXPORT, smtk::bridge::polygon::SurfaceExtractContours,
+  opencv_surface_extract_contours, "extract surface contours", SurfaceExtractContours_xml,
+  smtk::bridge::polygon::Session);

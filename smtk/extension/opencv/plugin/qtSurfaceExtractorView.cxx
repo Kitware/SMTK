@@ -13,8 +13,8 @@
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
-#include "smtk/bridge/polygon/qt/imageFeatureExtractorWidget.h"
 #include "smtk/common/View.h"
+#include "smtk/extension/opencv/qt/imageFeatureExtractorWidget.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtModelView.h"
@@ -196,12 +196,6 @@ void qtSurfaceExtractorView::requestOperation(const smtk::model::OperatorPtr& op
 void qtSurfaceExtractorView::cancelOperation(const smtk::model::OperatorPtr& op)
 {
   (void)op;
-  /*if( !op || !this->Widget || !this->Internals->CurrentAtt )
-    return;
-  if(this->Internals->ContoursDialog)
-    {
-    this->Internals->ContoursDialog->close();
-    }*/
 }
 
 void qtSurfaceExtractorView::acceptContours(vtkSmartPointer<vtkPolyData> contourSource)
@@ -218,45 +212,8 @@ void qtSurfaceExtractorView::acceptContours(vtkSmartPointer<vtkPolyData> contour
   smtk::attribute::IntItem::Ptr opProxyIdItem = spec->findInt("HelperGlobalID");
   if (!opProxyIdItem)
     return;
-  /*vtkSMProxy* smPolyEdgeOp = internal_createVTKContourOperator(contourSource->getProxy());
-  if(!smPolyEdgeOp)
-    return;
-  // Now set the GlobalId of smPolyEdgeOp proxy to the edge op, and later
-  // on the GlobalId will be used to find the proxy
-    // for Create and Edit operation, we need arc source
-  opProxyIdItem->setValue(contourSource);*/
   this->requestOperation(this->Internals->CurrentOp.lock());
 }
-
-/*
-pqPipelineSource* internal_createImageSource(const std::string& imageurl)
-{
-  pqApplicationCore* core = pqApplicationCore::instance();
-  pqObjectBuilder* builder = core->getObjectBuilder();
-  pqServer* server = core->getActiveServer();
-  builder->blockSignals(true);
-
-  QStringList files;
-  files << imageurl.c_str();
-
-  pqPipelineSource* source;
-  QFileInfo finfo(imageurl.c_str());
-  if (finfo.completeSuffix().toLower() == "tif" ||
-      finfo.completeSuffix().toLower() == "tiff" ||
-      finfo.completeSuffix().toLower() == "dem")
-    {
-    source =  builder->createReader("sources", "GDALRasterReader", files, server);
-    source =  builder->createFilter("props", "ImageSpacingFlip", source);
-    }
-  else
-    {
-    source =  builder->createReader("sources", "XMLImageDataReader", files, server);
-    }
-  builder->blockSignals(false);
-
-  return source;
-}
- */
 
 void qtSurfaceExtractorView::operationSelected(const smtk::model::OperatorPtr& op)
 {
@@ -285,7 +242,6 @@ void qtSurfaceExtractorView::operationSelected(const smtk::model::OperatorPtr& o
   {
     vtkSmartPointer<vtkPolyData> pd = this->Internals->ExtractorWidget->getPolydata();
     smtk::model::OperatorResult edgeResult;
-    //smtk::attribute::AttributePtr spec = this->m_smtkOp.lock()->specification();
     smtk::attribute::IntItem::Ptr offsetsItem =
       spec->findAs<smtk::attribute::IntItem>("offsets", smtk::attribute::ALL_CHILDREN);
     smtk::attribute::DoubleItem::Ptr pointsItem =
@@ -321,7 +277,6 @@ void qtSurfaceExtractorView::operationSelected(const smtk::model::OperatorPtr& o
 
     offsetsItem->setValues(offsets.begin(), offsets.end());
     acceptContours(pd);
-    //edgeResult = this->m_smtkOp.lock()->operate();
   }
 }
 

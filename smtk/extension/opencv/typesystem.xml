@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<typesystem package="@TYPESYSTEM_NAME@">
+
+  @EXTRA_TYPESYSTEMS@
+
+  <!-- Ignore Shiboken notice that polygon lives inside SMTK namespace -->
+  <suppress-warning text="Duplicate type entry: 'smtk'"/>
+
+  @EXTRA_OBJECTS@
+
+</typesystem>

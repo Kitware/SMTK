@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/bridge/polygon/vtk/vtkSurfaceExtractorOperator.h"
+#include "smtk/extension/opencv/vtk/vtkSurfaceExtractorOperator.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"

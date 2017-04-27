@@ -11,7 +11,7 @@
 #ifndef imageFeatureExtractorWidget_h
 #define imageFeatureExtractorWidget_h
 
-#include "smtk/bridge/polygon/qt/Exports.h"
+#include "smtk/extension/opencv/qt/Exports.h"
 #include <vtkImageData.h>
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
@@ -21,7 +21,7 @@
 // Forward Qt class declarations
 class Ui_imageFeatureExtractor;
 
-class SMTKPOLYGONQTEXT_EXPORT imageFeatureExtractorWidget : public QDialog
+class SMTKOPENCVQTEXT_EXPORT imageFeatureExtractorWidget : public QDialog
 {
   Q_OBJECT
 public:
@@ -34,13 +34,6 @@ public:
 
   void setImage(std::string inputImage);
   vtkSmartPointer<vtkPolyData> getPolydata();
-
-  //public slots:
-
-  //  virtual void slotExit();
-
-  //signals:
-  //  void send(vtkSmartPointer<vtkPolyData>);
 
 protected slots:
   void saveMask();

@@ -78,6 +78,10 @@ if (SMTK_ENABLE_VTK_SUPPORT)
   add_subdirectory(vtk/io)
 endif()
 
+if(SMTK_ENABLE_OPENCV)
+  add_subdirectory(opencv)
+endif()
+
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_subdirectory(paraview)
 endif()

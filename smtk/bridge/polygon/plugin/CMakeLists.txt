@@ -9,9 +9,6 @@ list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 
 smtk_qt_wrap_cpp(MOC_SRCS qtPolygonEdgeOperationView.h)
 smtk_qt_wrap_cpp(MOC_SRCS qtExtractContoursView.h)
-if(SMTK_ENABLE_OPENCV)
-  smtk_qt_wrap_cpp(MOC_SRCS qtSurfaceExtractorView.h)
-endif()
 #smtk_qt_wrap_cpp(UI_SRCS qtPolygonEdgeOperationView.ui)
 
 ADD_SMTK_UI_VIEW(
@@ -27,19 +24,6 @@ ADD_SMTK_UI_VIEW(
   VIEW_NAME smtkPolygonContourView
   )
 
-set(OpenCVSrc)
-if(SMTK_ENABLE_OPENCV)
-  ADD_SMTK_UI_VIEW(
-    OUTIFACES2
-    OUTSRCS2
-    CLASS_NAME qtSurfaceExtractorView
-    VIEW_NAME smtkSurfaceExtractorView
-    )
-  set(OpenCVSrc qtSurfaceExtractorView.cxx)
-endif()
-
-
-
 add_paraview_plugin(
   smtkPolygonSessionPlugin "1.0"
   SERVER_MANAGER_XML smconfig.xml
@@ -48,7 +32,6 @@ add_paraview_plugin(
   GUI_SOURCES ${OUTSRCS} ${OUTSRCS1} ${OUTSRCS2} ${MOC_SRCS} ${UI_SRCS}
               qtPolygonEdgeOperationView.cxx
               qtExtractContoursView.cxx
-              ${OpenCVSrc}
   CS_KITS
     vtkSMTKWidgetsExt
     vtkPolygonOperatorsExt
