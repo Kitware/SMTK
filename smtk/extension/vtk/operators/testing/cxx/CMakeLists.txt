@@ -2,8 +2,8 @@ if (SMTK_DATA_DIR)
   # test to apply BO to a model
   add_executable(BathymetryTestChesapeakeBay BathymetryTestChesapeakeBay.cxx)
   target_link_libraries(BathymetryTestChesapeakeBay
-    smtkCore 
-    vtkSMTKOperatorsExt 
+    smtkCore
+    vtkSMTKOperatorsExt
     smtkDiscreteSession
     vtkSMTKSourceExt
     vtkRenderingGL2PSOpenGL2
@@ -12,11 +12,12 @@ if (SMTK_DATA_DIR)
        NAME BathymetryTestChesapeakeBay
        COMMAND BathymetryTestChesapeakeBay ${SMTK_DATA_DIR}/model/2d/cmb/ChesapeakeBayContour.cmb ${SMTK_DATA_DIR}/dem/ChesapeakeBay100x100.vti -V "${SMTK_DATA_DIR}/baseline/smtk/vtk/bathymetryTestChesapeakeBay.png"      -T "${CMAKE_CURRENT_BINARY_DIR}"
       )
+
   # test to apply BO to model and mesh
   add_executable(BathymetryTestSimple2dm BathymetryTestSimple2dm.cxx)
   target_link_libraries(BathymetryTestSimple2dm
-    smtkCore 
-    vtkSMTKOperatorsExt 
+    smtkCore
+    vtkSMTKOperatorsExt
     smtkDiscreteSession
     vtkSMTKSourceExt
     vtkRenderingGL2PSOpenGL2
@@ -25,6 +26,17 @@ if (SMTK_DATA_DIR)
        NAME BathymetryTestSimple2dm
        COMMAND BathymetryTestSimple2dm ${SMTK_DATA_DIR}/mesh/2d/Simple.2dm ${SMTK_DATA_DIR}/mesh/2d/SimpleBathy.2dm -V "${SMTK_DATA_DIR}/baseline/smtk/vtk/bathymetrySimple2dm.png"      -T "${CMAKE_CURRENT_BINARY_DIR}"
        )
+
+  # test to apply BO to mesh only
+  add_executable(BathymetryTestMeshOnly BathymetryTestMeshOnly.cxx)
+  target_link_libraries(BathymetryTestMeshOnly
+    smtkCore
+    vtkSMTKOperatorsExt
+    smtkDiscreteSession
+    vtkSMTKSourceExt
+    vtkRenderingGL2PSOpenGL2
+    vtkTestingRendering)
+
   if (SMTK_ENABLE_POLYGON_SESSION)
     # test to apply BO to polyon session
     add_executable(BathymetryTestNewRiversmtk BathymetryTestNewRiversmtk.cxx)

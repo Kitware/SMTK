@@ -80,6 +80,12 @@ public:
   vtkSetMacro(InvalidValue, double);
   vtkGetMacro(InvalidValue, double);
 
+  // Description:
+  // Invert scalar values
+  vtkBooleanMacro(InvertScalars, bool);
+  vtkSetMacro(InvertScalars, bool);
+  vtkGetMacro(InvertScalars, bool);
+
   //Description:
   //Remove all connections on port 0, dataset that will be altered
   //with bathymetry
@@ -112,6 +118,7 @@ protected:
   bool FlattenZValues;
   bool NoOP;
   double InvalidValue;
+  bool InvertScalars;
 
   class vtkCmbInternalTerrainInfo;
   vtkCmbInternalTerrainInfo* TerrainInfo;

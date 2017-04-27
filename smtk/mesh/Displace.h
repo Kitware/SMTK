@@ -50,14 +50,16 @@ public:
     : m_clampMin(false)
     , m_clampMax(false)
     , m_useInvalid(false)
+    , m_invertScalars(false)
   {
   }
 
   ElevationControls(bool clampMin, double minElev, bool clampMax, double maxElev,
-    bool useInvalid = false, double invalid = 0.0)
+    bool invertScalars = false, bool useInvalid = false, double invalid = 0.0)
     : m_clampMin(clampMin)
     , m_clampMax(clampMax)
     , m_useInvalid(useInvalid)
+    , m_invertScalars(invertScalars)
     , m_minElev(minElev)
     , m_maxElev(maxElev)
     , m_invalid(invalid)
@@ -67,6 +69,7 @@ public:
   bool m_clampMin;
   bool m_clampMax;
   bool m_useInvalid;
+  bool m_invertScalars;
   double m_minElev;
   double m_maxElev;
   double m_invalid;

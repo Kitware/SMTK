@@ -21,6 +21,7 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
+#include "smtk/attribute/VoidItem.h"
 
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Displace.h"
@@ -96,7 +97,7 @@ bool internal_bathyToAssociatedMeshes(BathymetryHelper* bathyHelper, vtkDataSet*
   const Model& srcModel, const bool& removing, const double& radius, const bool& useHighLimit,
   const double& eleHigh, const bool& useLowLimit, const double& eleLow,
   smtk::mesh::ManagerPtr meshMgr, smtk::mesh::MeshSets& modifiedMeshes,
-  smtk::attribute::MeshItem::Ptr meshItem)
+  smtk::attribute::MeshItem::Ptr meshItem, bool invertScalars)
 {
   bool ok = true;
   std::vector<smtk::mesh::CollectionPtr> meshCollections;
@@ -147,14 +148,16 @@ bool internal_bathyToAssociatedMeshes(BathymetryHelper* bathyHelper, vtkDataSet*
       if (vtkImageData* imageInput = vtkImageData::SafeDownCast(bathyData))
       {
         ElevationStructuredDataForVTKImageData data(imageInput);
-        smtk::mesh::ElevationControls clamp(useHighLimit, eleHigh, useLowLimit, eleLow);
+        smtk::mesh::ElevationControls clamp(
+          useHighLimit, eleHigh, useLowLimit, eleLow, invertScalars);
 
         ok &= smtk::mesh::elevate(data, meshes.points(), radius, clamp);
       }
       else if (vtkUniformGrid* gridInput = vtkUniformGrid::SafeDownCast(bathyData))
       {
         ElevationStructuredDataForVTKUniformGrid data(gridInput);
-        smtk::mesh::ElevationControls clamp(useHighLimit, eleHigh, useLowLimit, eleLow);
+        smtk::mesh::ElevationControls clamp(
+          useHighLimit, eleHigh, useLowLimit, eleLow, invertScalars);
 
         ok &= smtk::mesh::elevate(data, meshes.points(), radius, clamp);
       }
@@ -168,7 +171,8 @@ bool internal_bathyToAssociatedMeshes(BathymetryHelper* bathyHelper, vtkDataSet*
           return false;
         }
 
-        smtk::mesh::ElevationControls clamp(useHighLimit, eleHigh, useLowLimit, eleLow);
+        smtk::mesh::ElevationControls clamp(
+          useHighLimit, eleHigh, useLowLimit, eleLow, invertScalars);
         vtkDataArray* pointCoords = bathyPoints->GetData();
         if (pointCoords->GetDataType() == VTK_FLOAT)
         {
@@ -277,10 +281,13 @@ OperatorResult BathymetryOperator::operateInternal()
     this->specification()->findDouble("set highest elevation");
   smtk::attribute::DoubleItemPtr lowZItem =
     this->specification()->findDouble("set lowest elevation");
+  smtk::attribute::VoidItemPtr invertScalarsItem =
+    this->specification()->findVoid("invert scalars");
   smtk::attribute::MeshItem::Ptr meshItem = this->specification()->findMesh("mesh");
   double aveEleRadius = aveRItem ? aveRItem->value() : 0.0;
   double highElevation = highZItem ? highZItem->value() : 0.0;
   double lowElevation = lowZItem ? lowZItem->value() : 0.0;
+  bool invertScalars = invertScalarsItem ? invertScalarsItem->isEnabled() : false;
   EntityRef inModel;
   smtk::model::AuxiliaryGeometry auxGeo;
 
@@ -371,6 +378,7 @@ OperatorResult BathymetryOperator::operateInternal()
       filter->SetLowestZValue(lowElevation);
       filter->SetUseHighestZValue(highZItem->isEnabled());
       filter->SetUseLowestZValue(lowZItem->isEnabled());
+      filter->SetInvertScalars(invertScalarsItem->isEnabled());
 
       filter->SetInputData(0, masterModelPoly.GetPointer());
       filter->SetInputData(1, bathyPoints);
@@ -431,7 +439,7 @@ OperatorResult BathymetryOperator::operateInternal()
     if (!internal_bathyToAssociatedMeshes(this->bathyHelper, bathyPoints, inModel.as<Model>(),
           optype == "Remove Bathymetry", aveEleRadius, highZItem ? highZItem->isEnabled() : false,
           highElevation, lowZItem ? lowZItem->isEnabled() : false, lowElevation,
-          this->manager()->meshes(), modifiedMeshes, meshItem))
+          this->manager()->meshes(), modifiedMeshes, meshItem, invertScalars))
     {
       std::cerr << "ERROR: Failed to apply bathymetry to associated meshes." << std::endl;
     }

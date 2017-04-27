@@ -33,7 +33,13 @@
             <Double Name="set lowest elevation" Label="Set Lowest Elevation:" Version="0" NumberOfRequiredValues="1" Optional="true">
               <DefaultValue>0.0</DefaultValue>
             </Double>
-            
+
+        <Void Name="invert scalars" Label="Invert Scalar Values" Version="0"
+              Optional="true" IsEnabledByDefault="false" AdvanceLevel="1">
+          <BriefDescription>This toggle adds a prefactor of -1 to the
+          values in the auxiliary geometry's bathymetry values.</BriefDescription>
+        </Void>
+
             <Void Name="applyonlytovisiblemesh" Label="Apply only to the visible meshes on the model" Version="0" AdvanceLevel="0" NumberOfRequiredValues="0"
             Optional="true" IsEnabledByDefault="false">
             </Void>
@@ -47,6 +53,7 @@
                 <Item>averaging elevation radius</Item>
                 <Item>set highest elevation</Item>
                 <Item>set lowest elevation</Item>
+                <Item>invert scalars</Item>
 <!--                <Item>applyonlytovisiblemesh</Item>  -->
               </Items>
             </Structure>
@@ -57,6 +64,7 @@
                 <Item>averaging elevation radius</Item>
                 <Item>set highest elevation</Item>
                 <Item>set lowest elevation</Item>
+                <Item>invert scalars</Item>
                 <Item>mesh</Item>
 <!--                <Item>applyonlytovisiblemesh</Item>  -->
               </Items>
@@ -68,6 +76,7 @@
                 <Item>averaging elevation radius</Item>
                 <Item>set highest elevation</Item>
                 <Item>set lowest elevation</Item>
+                <Item>invert scalars</Item>
 <!--                <Item>applyonlytovisiblemesh</Item>  -->
               </Items>
             </Structure>
@@ -78,6 +87,7 @@
                 <Item>averaging elevation radius</Item>
                 <Item>set highest elevation</Item>
                 <Item>set lowest elevation</Item>
+                <Item>invert scalars</Item>
                 <Item>mesh</Item>
 <!--                <Item>applyonlytovisiblemesh</Item>  -->
               </Items>
