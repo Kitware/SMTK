@@ -10,6 +10,10 @@
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtActiveObjects.h"
 
+#include "smtk/PublicPointerDefs.h"
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/MeshSet.h"
+
 #include "smtk/model/DescriptivePhrase.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityIterator.h"
@@ -368,8 +372,8 @@ void qtModelView::selectionChanged(const QItemSelection& selected, const QItemSe
   smtk::model::EntityRefs selentityrefs;
   smtk::model::DescriptivePhrases selproperties;
   smtk::mesh::MeshSets selmeshes;
-  this->currentSelectionByMask(selentityrefs,
-    CELL_ENTITY | SHELL_ENTITY | GROUP_ENTITY | MODEL_ENTITY | AUX_GEOM_ENTITY | INSTANCE_ENTITY,
+  this->currentSelectionByMask(selentityrefs, CELL_ENTITY | SHELL_ENTITY | GROUP_ENTITY |
+      MODEL_ENTITY | AUX_GEOM_ENTITY | INSTANCE_ENTITY | SESSION,
     selproperties, false, &selmeshes);
 
   // update selection manager
@@ -423,7 +427,6 @@ void qtModelView::filterSelectionByEntity(const smtk::model::DescriptivePhrasePt
         eit.traverse(model, smtk::model::ITERATE_MODELS);
         for (eit.begin(); !eit.isAtEnd(); eit.advance())
         {
-          // needed? @David
           if (eit->isCellEntity() || eit->isAuxiliaryGeometry() || eit->isModel())
           {
             selentityrefs.insert(*eit);
@@ -536,11 +539,31 @@ void qtModelView::selectMeshes(const DescriptivePhrasePtr& dp, smtk::mesh::MeshS
     if (mphrase)
     {
       if (mphrase->relatedMeshCollection())
+      {
         selmeshes->insert(mphrase->relatedMeshCollection()->meshes());
+        // get meshsets inside mesh collection
+        smtk::mesh::CollectionPtr collection = mphrase->relatedMeshCollection();
+
+        smtk::model::EntityRefArray entsMesh =
+          mphrase->relatedMeshCollection()->meshes().modelEntities();
+        for (const auto& entMesh : entsMesh)
+        {
+          smtk::mesh::MeshSet currentMeshSet = collection->findAssociatedMeshes(entMesh);
+          selmeshes->insert(currentMeshSet);
+        }
+      }
       else if (!mphrase->relatedMesh().is_empty())
+      {
         selmeshes->insert(mphrase->relatedMesh());
+        // get meshsets inside meshSets
+        for (std::size_t i = 0; i < mphrase->relatedMesh().size(); ++i)
+        {
+          selmeshes->insert(mphrase->relatedMesh().subset(i));
+        }
+      }
     }
   }
+  // TODO: handle MESH_LIST
 }
 
 void qtModelView::owningEntitiesByMask(smtk::model::DescriptivePhrasePtr inDp,
@@ -1188,7 +1211,6 @@ void qtModelView::toggleEntityVisibility(const QModelIndex& idx)
     return;
 
   DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
-  smtk::model::EntityRef curRef = dp->relatedEntity();
 
   // if the DescriptivePhrase is for a property, skip.
   if (dp->phraseType() == FLOAT_PROPERTY_VALUE || dp->phraseType() == INTEGER_PROPERTY_VALUE ||
@@ -1201,6 +1223,7 @@ void qtModelView::toggleEntityVisibility(const QModelIndex& idx)
   smtk::mesh::MeshSets selmeshes;
   // filter selection by entity instead of DesriptivePhrase
   this->filterSelectionByEntity(dp, selentityrefs, &selmeshes);
+
   bool visible = true;
   if (dp->phraseType() == MESH_LIST || dp->phraseType() == MESH_SUMMARY)
   {

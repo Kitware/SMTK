@@ -110,7 +110,8 @@ void qtSelectionManager::updateSelectedItems(const smtk::model::EntityRefs& selE
     for (const auto& selEnt : selEntities)
     {
       if ((selEnt.owningModel().entity() == qtActiveObjects::instance().activeModel().entity()) ||
-        (selEnt.entity() == qtActiveObjects::instance().activeModel().entity()))
+        (selEnt.entity() == qtActiveObjects::instance().activeModel().entity()) ||
+        selEnt.isSessionRef())
       {
         filteredSelEnts.insert(selEnt);
       }
@@ -275,7 +276,7 @@ void qtSelectionManager::filterEntitySelectionsByMaskAndActiveModel(
     smtk::model::EntityRef ent = *inputEnt;
     // only filter active model's item
     if ((ent.owningModel().entity() != qtActiveObjects::instance().activeModel().entity()) ||
-      (ent.entity() != qtActiveObjects::instance().activeModel().entity()))
+      (ent.isModel() && ent.entity() != qtActiveObjects::instance().activeModel().entity()))
     {
       continue;
     }
