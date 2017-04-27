@@ -29,6 +29,7 @@
 
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
+#include "vtkDoubleArray.h"
 #include "vtkIdTypeArray.h"
 #include "vtkInformation.h"
 #include "vtkInformationStringKey.h"
@@ -36,6 +37,7 @@
 #include "vtkMultiBlockDataSet.h"
 #include "vtkNew.h"
 #include "vtkObjectFactory.h"
+#include "vtkPointData.h"
 #include "vtkPoints.h"
 #include "vtkPolyData.h"
 #include "vtkPolyDataNormals.h"
@@ -330,6 +332,12 @@ void vtkMeshMultiBlockSource::GenerateRepresentationForSingleMesh(const smtk::me
     convert_smtkMesh_to_vtkPolyData(toRender, pts.GetPointer(), pd);
     // std::cout << "Number of points: " << pd->GetNumberOfPoints() << std::endl;
     this->GenerateNormals(pd, entityref, genNormals);
+
+    // Point-coordinates attribute
+    vtkNew<vtkDoubleArray> pointCoords;
+    pointCoords->ShallowCopy(pd->GetPoints()->GetData());
+    pointCoords->SetName("PointCoordinates");
+    pd->GetPointData()->AddArray(pointCoords.GetPointer());
   }
 }
 
