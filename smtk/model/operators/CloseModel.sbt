@@ -8,6 +8,9 @@
         <ModelEntity Name="model" NumberOfRequiredValues="0" Extensible="true">
           <MembershipMask>model</MembershipMask>
         </ModelEntity>
+        <Void Name="show non-active models" AdvanceLevel= "11">
+          <BriefDescription> Show non-active models which belongs to current active model's session in available models combobox.</BriefDescription>
+        </Void>
       </ItemDefinitions>
     </AttDef>
 

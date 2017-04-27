@@ -15,6 +15,7 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/System.h"
+#include "smtk/attribute/VoidItem.h"
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtMeshItem.h"
 #include "smtk/extension/qt/qtModelEntityItem.h"
@@ -126,6 +127,13 @@ void qtModelEntityItemCombo::init()
   this->model()->disconnect();
 
   ModelEntityItemPtr modelEntityItem = this->m_ModelEntityItem->modelEntityItem();
+  smtk::attribute::VoidItemPtr showNonActiveModelPtr =
+    modelEntityItem->attribute()->findVoid("show non-active models");
+  bool showNonActiveModel(false);
+  if (showNonActiveModelPtr)
+  {
+    showNonActiveModel = showNonActiveModelPtr->isValid();
+  }
   const ModelEntityItemDefinition* itemDef =
     static_cast<const ModelEntityItemDefinition*>(modelEntityItem->definition().get());
   System* attSystem = modelEntityItem->attribute()->system();
@@ -150,14 +158,18 @@ void qtModelEntityItemCombo::init()
     {
 
       smtk::model::EntityRef entref(modelManager, it->first);
+      smtk::model::Model activeModel = qtActiveObjects::instance().activeModel();
       if (entref.isValid() && !entref.isUseEntity() &&
         // if the mask is only groups, get all groups from manager
         ((onlyGroups && entref.isGroup()) ||
-          // else, check the membership constraints
-          (!onlyGroups && tmpGrp.meetsMembershipConstraints(entref))) &&
-        // only show entities in active model or its type is model
-        (entref.owningModel().entity() == qtActiveObjects::instance().activeModel().entity() ||
-          entref.isModel()))
+            // else, check the membership constraints
+            (!onlyGroups && tmpGrp.meetsMembershipConstraints(entref))) &&
+        // only show entities in active model or itself is model
+        (entref.owningModel().entity() == activeModel.entity() ||
+            entref.entity() == activeModel.entity() ||
+            // show non-active models only in active model's session if specified
+            (showNonActiveModel && entref.isModel() &&
+              (entref.owningSession().entity() == activeModel.owningSession().entity()))))
       {
         QStandardItem* item = new QStandardItem;
         std::string entName = entref.name();

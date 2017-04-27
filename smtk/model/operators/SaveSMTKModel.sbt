@@ -47,6 +47,9 @@
             <Value Enum="save a copy">save a copy</Value>
           </DiscreteInfo>
         </String>
+        <Void Name="show non-active models" AdvanceLevel= "11">
+          <BriefDescription> Show non-active models which belongs to current active model's session in available models combobox.</BriefDescription>
+        </Void>
         <Void Name="embed data">
           <BriefDescription>Choose whether to embed auxiliary geometry and kernel files.</BriefDescription>
           <DetailedDescription>
