@@ -45,12 +45,13 @@ void flatZValues(T* t, int size, double val)
 }
 template <class T>
 void copyArrayZValues(T* t, vtkIdType size, std::vector<double>& idToElevation, bool useHighLimit,
-  double eleHigh, bool useLowLimit, double eleLow)
+  double eleHigh, bool useLowLimit, double eleLow, bool invertScalars)
 {
+  double scalarPrefactor = invertScalars ? -1. : 1.;
   double dtmp;
   for (vtkIdType i = 0; i < size; ++i)
   {
-    dtmp = static_cast<double>(t[i]);
+    dtmp = scalarPrefactor * static_cast<double>(t[i]);
     dtmp = (useHighLimit && dtmp > eleHigh) ? eleHigh : dtmp;
     dtmp = (useLowLimit && dtmp < eleLow) ? eleLow : dtmp;
     idToElevation[i] = dtmp;
@@ -62,7 +63,7 @@ class vtkCMBApplyBathymetryFilter::vtkCmbInternalTerrainInfo
 {
 public:
   vtkCmbInternalTerrainInfo(vtkInformation* input, const double& radius, double& invalid,
-    bool useHighLimit, double eleHigh, bool useLowLimit, double eleLow);
+    bool useHighLimit, double eleHigh, bool useLowLimit, double eleLow, bool invertScalars);
   ~vtkCmbInternalTerrainInfo() { this->IdToElevation.clear(); }
   //returns the average elevation for a circle given the radius
   template <class T>
@@ -79,7 +80,7 @@ protected:
 
 vtkCMBApplyBathymetryFilter::vtkCmbInternalTerrainInfo::vtkCmbInternalTerrainInfo(
   vtkInformation* inInfo, const double& radius, double& invalid, bool useHighLimit, double eleHigh,
-  bool useLowLimit, double eleLow)
+  bool useLowLimit, double eleLow, bool invertScalars)
   : Radius(radius)
   , InvalidValue(invalid)
 {
@@ -115,6 +116,7 @@ vtkCMBApplyBathymetryFilter::vtkCmbInternalTerrainInfo::vtkCmbInternalTerrainInf
   vtkIdType size, i;
   double p[3];
   double dtmp;
+  double scalarPrefactor = invertScalars ? -1. : 1.;
   // Uniform Grids may not have the max number of points
   if (gridInput)
   {
@@ -132,7 +134,7 @@ vtkCMBApplyBathymetryFilter::vtkCmbInternalTerrainInfo::vtkCmbInternalTerrainInf
       {
         continue;
       }
-      dtmp = dataArray->GetTuple1(i);
+      dtmp = scalarPrefactor * dataArray->GetTuple1(i);
       dtmp = (useHighLimit && dtmp > eleHigh) ? eleHigh : dtmp;
       dtmp = (useLowLimit && dtmp < eleLow) ? eleLow : dtmp;
       imageInput->GetPoint(i, p);
@@ -160,7 +162,8 @@ vtkCMBApplyBathymetryFilter::vtkCmbInternalTerrainInfo::vtkCmbInternalTerrainInf
         //get the point
         inputPoints->GetPoint(i, p);
         // check elevation limit
-        dtmp = (useHighLimit && p[2] > eleHigh) ? eleHigh : p[2];
+        dtmp = scalarPrefactor * p[2];
+        dtmp = (useHighLimit && dtmp > eleHigh) ? eleHigh : dtmp;
         dtmp = (useLowLimit && dtmp < eleLow) ? eleLow : dtmp;
         //store the z value & flatten
         this->IdToElevation[i] = dtmp;
@@ -184,13 +187,13 @@ vtkCMBApplyBathymetryFilter::vtkCmbInternalTerrainInfo::vtkCmbInternalTerrainInf
       {
         vtkFloatArray* floatArray = static_cast<vtkFloatArray*>(dataArray);
         copyArrayZValues(floatArray->GetPointer(0), size, this->IdToElevation, useHighLimit,
-          eleHigh, useLowLimit, eleLow);
+          eleHigh, useLowLimit, eleLow, invertScalars);
       }
       else if (dataArray->GetDataType() == VTK_DOUBLE)
       {
         vtkDoubleArray* doubleArray = static_cast<vtkDoubleArray*>(dataArray);
         copyArrayZValues(doubleArray->GetPointer(0), size, this->IdToElevation, useHighLimit,
-          eleHigh, useLowLimit, eleLow);
+          eleHigh, useLowLimit, eleLow, invertScalars);
       }
 
       for (i = 0; i < size; ++i)
@@ -253,6 +256,7 @@ vtkCMBApplyBathymetryFilter::vtkCMBApplyBathymetryFilter()
   this->UseLowestZValue = false;
   this->HighestZValue = this->LowestZValue = 0.0;
   this->InvalidValue = 0.0;
+  this->InvertScalars = false;
 }
 
 vtkCMBApplyBathymetryFilter::~vtkCMBApplyBathymetryFilter()
@@ -316,7 +320,7 @@ int vtkCMBApplyBathymetryFilter::RequestData(vtkInformation* /*request*/,
     //Construct the TerrainInfo first
     this->TerrainInfo = new vtkCmbInternalTerrainInfo(inputVector[1]->GetInformationObject(0),
       this->ElevationRadius, this->InvalidValue, this->UseHighestZValue, this->HighestZValue,
-      this->UseLowestZValue, this->LowestZValue);
+      this->UseLowestZValue, this->LowestZValue, this->InvertScalars);
     if (!this->TerrainInfo->IdToElevation.empty())
     {
       validMesh = this->ApplyBathymetry(finalMesh->GetPoints());

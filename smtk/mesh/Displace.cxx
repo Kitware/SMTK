@@ -20,12 +20,14 @@
 namespace
 {
 template <typename T>
-void copy_z_values(const T* const pointcloud, std::size_t numPoints, std::vector<T>& z_values)
+void copy_z_values(
+  const T* const pointcloud, std::size_t numPoints, bool invertScalars, std::vector<T>& z_values)
 {
+  T scalarPrefactor = static_cast<T>(invertScalars ? -1. : 1.);
   z_values.resize(numPoints);
   for (std::size_t i = 0; i < numPoints; ++i)
   {
-    z_values[i] = pointcloud[(i * 3) + 2];
+    z_values[i] = scalarPrefactor * pointcloud[(i * 3) + 2];
   }
 }
 
@@ -99,6 +101,7 @@ class ElevatePoint : public smtk::mesh::PointForEach
   double m_radius;
   bool m_useInvalid;
   double m_invalid;
+  double m_scalarPrefactor;
 
 public:
   ElevatePoint(smtk::mesh::PointLocator& locator, std::vector<T>& z_values, double radius,
@@ -123,9 +126,12 @@ public:
     {
       m_locator.find(xyz[offset], xyz[offset + 1], 0.0, m_radius, results);
 
-      if (results.pointIds.empty() && m_useInvalid)
-      { //this point had nothing near it. Elevate it to
-        xyz[offset + 2] = m_invalid;
+      if (results.pointIds.empty())
+      {
+        if (m_useInvalid)
+        {
+          xyz[offset + 2] = m_invalid;
+        }
         continue;
       }
 
@@ -157,7 +163,7 @@ bool do_elevate(const T* const pointcloud, std::size_t numPoints, const smtk::me
   //step 1. Copy the z values out of point cloud into a separate array
   //and make a copy
   std::vector<T> z_values;
-  copy_z_values(pointcloud, numPoints, z_values);
+  copy_z_values(pointcloud, numPoints, controls.m_invertScalars, z_values);
 
   //step 2. Clamp if required the z value we just copied out
   if (controls.m_clampMin && controls.m_clampMax)
@@ -195,6 +201,7 @@ class ElevatePointForStructuredInput : public smtk::mesh::PointForEach
   double m_minElev;
   double m_maxElev;
   int m_discreteRadius[2];
+  double m_scalarPrefactor;
 
   typedef std::pair<int, int> Coord;
 
@@ -207,6 +214,7 @@ public:
     , m_invalid(controls.m_invalid)
     , m_minElev(controls.m_minElev)
     , m_maxElev(controls.m_maxElev)
+    , m_scalarPrefactor(controls.m_invertScalars ? -1. : 1.)
   {
     m_discreteRadius[0] = std::abs(static_cast<int>(std::round(radius / m_data.m_spacing[0])));
     m_discreteRadius[1] = std::abs(static_cast<int>(std::round(radius / m_data.m_spacing[1])));
@@ -364,7 +372,8 @@ public:
       double sum = 0.;
       for (std::size_t j = 0; j < results.size(); j++)
       {
-        sum += clamp(m_data(results[j].first, results[j].second), m_minElev, m_maxElev);
+        sum += clamp(
+          m_scalarPrefactor * m_data(results[j].first, results[j].second), m_minElev, m_maxElev);
       }
       xyz[offset + 2] = static_cast<double>((sum / results.size()));
       results.clear();
