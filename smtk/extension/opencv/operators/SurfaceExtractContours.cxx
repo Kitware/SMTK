@@ -27,7 +27,7 @@
 #include "smtk/model/Operator.h"
 #include "smtk/model/SessionRef.h"
 
-#include "smtk/bridge/polygon/SurfaceExtractContours_xml.h"
+#include "smtk/extension/opencv/SurfaceExtractContours_xml.h"
 
 #include "cJSON.h"
 #include "smtk/io/SaveJSON.h"
