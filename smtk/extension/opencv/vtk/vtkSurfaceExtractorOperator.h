@@ -15,12 +15,12 @@
 #ifndef __smtk_polygon_vtkSurfaceExtractorOperator_h
 #define __smtk_polygon_vtkSurfaceExtractorOperator_h
 
-#include "smtk/bridge/polygon/vtk/Exports.h"
+#include "smtk/extension/opencv/vtk/Exports.h"
 #include "smtk/extension/vtk/operators/vtkSMTKOperator.h"
 
 class vtkPolyData;
 
-class VTKPOLYGONOPERATORSEXT_EXPORT vtkSurfaceExtractorOperator : public vtkSMTKOperator
+class VTKSMTKOPENCVEXT_EXPORT vtkSurfaceExtractorOperator : public vtkSMTKOperator
 {
 public:
   static vtkSurfaceExtractorOperator* New();
