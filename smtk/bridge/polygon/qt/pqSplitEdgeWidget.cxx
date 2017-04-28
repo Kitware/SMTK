@@ -45,6 +45,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
+#include "smtk/attribute/IntItem.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Operator.h"
@@ -264,6 +265,7 @@ void pqSplitEdgeWidget::arcPointPicked(pqOutputPort* port)
           arcInfo->GetSelectedPointCoordinates(ptcoords);
           opSpec->findDouble("point")->setValue(0, ptcoords[0]);
           opSpec->findDouble("point")->setValue(1, ptcoords[1]);
+          opSpec->findInt("point id")->setValue(ptid);
           // now request the operation
           readytoOp = true;
         }

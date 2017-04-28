@@ -78,6 +78,8 @@ public:
 
   bool splitModelEdgeAtPoint(smtk::model::ManagerPtr mgr, const Id& edgeId,
     const std::vector<double>& point, smtk::model::EntityRefArray& created, int debugLevel = 0);
+  bool splitModelEdgeAtIndex(smtk::model::ManagerPtr mgr, const Id& edgeId, int splitPointIndex,
+    smtk::model::EntityRefArray& created, int debugLevel = 0);
   bool splitModelEdgeAtModelVertex(smtk::model::ManagerPtr mgr, const Id& edgeId,
     const Id& vertexId, smtk::model::EntityRefArray& created, int debugLevel = 0);
   bool splitModelEdgeAtModelVertex(smtk::model::ManagerPtr mgr, EdgePtr edgeToSplit,

@@ -41,6 +41,7 @@ smtk::model::OperatorResult SplitEdge::operateInternal()
 
   mgr = sess->manager();
 
+  smtk::attribute::IntItem::Ptr pointIdItem = this->findInt("point id");
   smtk::attribute::DoubleItem::Ptr pointItem = this->findDouble("point");
   smtk::attribute::ModelEntityItem::Ptr edgeItem = this->specification()->associations();
   smtk::model::Edge edgeToSplit(edgeItem->value(0));
@@ -58,10 +59,20 @@ smtk::model::OperatorResult SplitEdge::operateInternal()
     return this->createResult(smtk::model::OPERATION_FAILED);
   }
 
-  std::vector<double> point(pointItem->begin(), pointItem->end());
+  std::vector<double> point;
   smtk::model::EntityRefArray created;
-  bool ok =
-    mod->splitModelEdgeAtPoint(mgr, edgeToSplit.entity(), point, created, this->m_debugLevel);
+  bool ok;
+  if (pointIdItem && pointIdItem->value(0) >= 0 &&
+    pointIdItem->value(0) < static_cast<int>(storage->pointsSize()))
+  {
+    ok = mod->splitModelEdgeAtIndex(
+      mgr, edgeToSplit.entity(), pointIdItem->value(0), created, this->m_debugLevel);
+  }
+  else
+  {
+    point = std::vector<double>(pointItem->begin(), pointItem->end());
+    ok = mod->splitModelEdgeAtPoint(mgr, edgeToSplit.entity(), point, created, this->m_debugLevel);
+  }
   smtk::model::OperatorResult opResult;
   if (ok)
   {
