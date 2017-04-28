@@ -203,6 +203,9 @@ public:
   bool hasAssociations() const;
 
   // Associate a model to the collection.
+  //While a collection can be associated to just a model UUID, it is necessary
+  //to also call setModelManager() to facilitate calls that return associated
+  //EntityRefs, rather than just UUIDs.
   bool associateToModel(const smtk::common::UUID& uuid);
 
   // Find if the collection has an associated model

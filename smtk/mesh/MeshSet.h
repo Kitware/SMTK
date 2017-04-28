@@ -104,7 +104,12 @@ public:
   bool setNeumann(const smtk::mesh::Neumann& n);
 
   smtk::common::UUIDArray modelEntityIds() const;
-  smtk::model::EntityRefArray modelEntities() const;
+
+  //append the passed EntityRefArray with the model entities associated with
+  //this meshset, and return true on success. If the MeshSet's parent collection
+  //does not have its ModelManager set, this method will fail even though
+  //modelEntityIds() will still be valid.
+  bool modelEntities(smtk::model::EntityRefArray&) const;
   bool setModelEntityId(const smtk::common::UUID&);
   bool setModelEntity(const smtk::model::EntityRef&);
 

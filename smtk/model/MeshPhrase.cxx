@@ -137,7 +137,14 @@ std::string MeshPhrase::title()
     if (!hasValidNameProp)
     {
       // trying to use associatied model entity name
-      smtk::model::EntityRefArray relatedEnts = this->m_relatedMesh.modelEntities();
+      smtk::model::EntityRefArray relatedEnts;
+      bool relatedEntsAreValid = this->m_relatedMesh.modelEntities(relatedEnts);
+      // if the related entities are invalid, we cannot find the associated
+      // model entity name.
+      if (!relatedEntsAreValid)
+      {
+        return strText;
+      }
       if (relatedEnts.size() == 1)
       {
         strText = relatedEnts[0].name();

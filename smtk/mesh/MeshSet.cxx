@@ -223,14 +223,13 @@ smtk::common::UUIDArray MeshSet::modelEntityIds() const
   *         its model manager set to a valid value or the result will
   *         be an array of invalid entries.
   */
-smtk::model::EntityRefArray MeshSet::modelEntities() const
+bool MeshSet::modelEntities(smtk::model::EntityRefArray& array) const
 {
-  smtk::common::UUIDArray uids = this->modelEntityIds();
-  smtk::model::EntityRefArray result;
   smtk::model::ManagerPtr mgr = this->m_parent->modelManager();
+  smtk::common::UUIDArray uids = this->modelEntityIds();
   for (smtk::common::UUIDArray::const_iterator it = uids.begin(); it != uids.end(); ++it)
-    result.push_back(smtk::model::EntityRef(mgr, *it));
-  return result;
+    array.push_back(smtk::model::EntityRef(mgr, *it));
+  return (mgr != nullptr);
 }
 
 /**\brief Set the model entity for each meshset member to \a ent.

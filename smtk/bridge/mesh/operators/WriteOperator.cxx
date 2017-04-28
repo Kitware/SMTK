@@ -39,7 +39,8 @@ namespace mesh
 void breakMaterialsByAssociation(const smtk::mesh::CollectionPtr& c)
 {
   //for each association we iterate the meshsets
-  smtk::model::EntityRefArray refs = c->meshes().modelEntities();
+  smtk::model::EntityRefArray refs;
+  c->meshes().modelEntities(refs);
 
   int domain = 0;
   for (auto&& ref : refs)
