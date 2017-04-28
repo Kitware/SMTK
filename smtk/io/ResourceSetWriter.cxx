@@ -87,12 +87,12 @@ bool ResourceSetWriter::writeString(std::string& content, const ResourceSet& res
       // Use XmlStringWriter to generate xml for this attribute system
       smtk::common::ResourcePtr resource;
       ok = resources.get(id, resource);
-      smtk::attribute::System* system = dynamic_cast<smtk::attribute::System*>(resource.get());
+      smtk::attribute::SystemPtr system = dynamic_pointer_cast<smtk::attribute::System>(resource);
 
       AttributeWriter attWriter;
       // Get the default string writer instance
       // Could consider allowing application to assign version number
-      XmlStringWriter* xmlWriter = attWriter.newXmlStringWriter(*system);
+      XmlStringWriter* xmlWriter = attWriter.newXmlStringWriter(system);
       xmlWriter->generateXml(resourceElement, logger);
       delete xmlWriter;
     }
@@ -107,9 +107,9 @@ bool ResourceSetWriter::writeString(std::string& content, const ResourceSet& res
       {
         smtk::common::ResourcePtr resource;
         ok = resources.get(id, resource);
-        smtk::attribute::System* system = dynamic_cast<smtk::attribute::System*>(resource.get());
+        smtk::attribute::SystemPtr system = dynamic_pointer_cast<smtk::attribute::System>(resource);
         AttributeWriter attWriter;
-        bool hasErr = attWriter.write(*system, link, logger);
+        bool hasErr = attWriter.write(system, link, logger);
         ok = !hasErr;
         if (ok)
         {

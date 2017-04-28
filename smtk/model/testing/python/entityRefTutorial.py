@@ -33,7 +33,7 @@ skin = sm.addGroup(smtk.model.MODEL_BOUNDARY | smtk.model.DIMENSION_2, 'skin')
 outlet = sm.addGroup(smtk.model.MODEL_BOUNDARY |
                      smtk.model.DIMENSION_2, 'outlet')
 
-system = smtk.attribute.System()
+system = smtk.attribute.System.create()
 vdef = system.createDefinition('velocity')
 for coord in ['x', 'y', 'z']:
     vi = smtk.attribute.DoubleItemDefinition.New('v' + coord)

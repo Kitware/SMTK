@@ -22,7 +22,7 @@ PySharedPtrClass< smtk::io::XmlDocV2Parser > pybind11_init_smtk_io_XmlDocV2Parse
   PySharedPtrClass< smtk::io::XmlDocV2Parser > instance(m, "XmlDocV2Parser", parent);
   instance
     .def(py::init<::smtk::io::XmlDocV2Parser const &>())
-    .def(py::init<::smtk::attribute::System &>())
+    .def(py::init<::smtk::attribute::SystemPtr>())
     .def_static("canParse", (bool (*)(::pugi::xml_node &)) &smtk::io::XmlDocV2Parser::canParse, py::arg("node"))
     .def_static("canParse", (bool (*)(::pugi::xml_document &)) &smtk::io::XmlDocV2Parser::canParse, py::arg("doc"))
     .def_static("getRootNode", &smtk::io::XmlDocV2Parser::getRootNode, py::arg("doc"))

@@ -30,7 +30,8 @@ int main()
     typedef smtk::attribute::ValueItem ValueItem;
     typedef smtk::attribute::Item AttItem;
 
-    smtk::attribute::System system;
+    smtk::attribute::SystemPtr sysptr = smtk::attribute::System::create();
+    smtk::attribute::System& system(*sysptr.get());
     std::cout << "System Created\n";
     // Lets create an attribute to represent an expression
     smtk::attribute::DefinitionPtr expDef = system.createDefinition("ExpDef");

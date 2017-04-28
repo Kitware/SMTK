@@ -81,7 +81,7 @@ if __name__ == '__main__':
     att_folder = os.path.join(smtk_test_data, 'attribute', 'attribute_system')
     att_path = os.path.join(att_folder, INPUT_FILENAME)
     logging.info('Reading %s' % att_path)
-    input_system = smtk.attribute.System()
+    input_system = smtk.attribute.System.create()
     input_system.setRefModelManager(model_manager)
 
     reader = smtk.io.AttributeReader()
@@ -130,21 +130,14 @@ if __name__ == '__main__':
     #
     # Instantiate 2nd/test system
     #
-    test_system = smtk.attribute.System()
+    test_system = smtk.attribute.System.create()
+    test_system.setRefModelManager(model_manager)
+    # Copy SecondConcrete attribute
+    options = smtk.attribute.Item.AssignmentOptions.COPY_MODEL_ASSOCIATIONS
     if smtk.wrappingProtocol() == 'pybind11':
-        test_system.setRefModelManager(model_manager)
-        options = smtk.attribute.System.CopyOptions.COPY_ASSOCIATIONS
-        test_system.copyAttribute(second_concrete, True)
+        test_system.copyAttribute(second_concrete, True, int(options))
     else:
-        test_system.setRefModelManager(model_manager)
-
-        # Copy SecondConcrete attribute
-        # Note: shiboken refuses to wrap smtk::attribute::System::CopyOptions enum, saying:
-        #   enum 'smtk::model::Manager::CopyOptions' is specified in typesystem, but not declared
-        # Rather than trying to reason with shiboken, the options are specified
-        # numerically
-        options = 0x00000001  # should be smtk.attribute.System.CopyOptions.COPY_ASSOCIATIONS
-        test_system.copyAttribute(second_concrete, options)
+        test_system.copyAttribute(second_concrete, True, options)
     expected_deftypes = [
         'SecondConcrete', 'AnotherAbstractBase', 'CommonBase',
         'FirstConcrete', 'PolyLinearFunction'

@@ -251,7 +251,7 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef, Logger& logg
 }
 
 template <typename ItemType, typename BasicType>
-void processDerivedValue(pugi::xml_node& node, ItemType item, attribute::System& asys,
+void processDerivedValue(pugi::xml_node& node, ItemType item, attribute::SystemPtr asys,
   std::vector<ItemExpressionInfo>& itemExpressionInfo, Logger& logger)
 {
   if (item->isDiscrete())
@@ -316,7 +316,7 @@ void processDerivedValue(pugi::xml_node& node, ItemType item, attribute::System&
       else if (allowsExpressions && (nodeName == "Expression"))
       {
         expName = val.text().get();
-        expAtt = asys.findAttribute(expName);
+        expAtt = asys->findAttribute(expName);
         if (!expAtt)
         {
           info.item = item;
@@ -346,7 +346,7 @@ void processDerivedValue(pugi::xml_node& node, ItemType item, attribute::System&
       if (allowsExpressions && xatt)
       {
         expName = node.text().get();
-        expAtt = asys.findAttribute(expName);
+        expAtt = asys->findAttribute(expName);
         if (!expAtt)
         {
           info.item = item;
@@ -372,7 +372,7 @@ void processDerivedValue(pugi::xml_node& node, ItemType item, attribute::System&
 }
 };
 
-XmlDocV1Parser::XmlDocV1Parser(smtk::attribute::System& mySystem)
+XmlDocV1Parser::XmlDocV1Parser(smtk::attribute::SystemPtr mySystem)
   : m_reportAsError(true)
   , m_system(mySystem)
 {
@@ -464,7 +464,7 @@ void XmlDocV1Parser::process(xml_node& amnode)
   xml_node node, cnode;
 
   // Get the category information, starting with current set
-  std::set<std::string> secCatagories = m_system.categories();
+  std::set<std::string> secCatagories = m_system->categories();
   std::string s;
   node = amnode.child("Categories");
   if (node)
@@ -504,7 +504,7 @@ void XmlDocV1Parser::process(xml_node& amnode)
         }
         catagories.insert(cnode.text().get());
       }
-      this->m_system.defineAnalysis(s, catagories);
+      this->m_system->defineAnalysis(s, catagories);
     }
   }
 
@@ -523,7 +523,7 @@ void XmlDocV1Parser::process(xml_node& amnode)
         tmp << "Level " << val;
         s = tmp.str();
       }
-      this->m_system.addAdvanceLevel(val, s);
+      this->m_system->addAdvanceLevel(val, s);
 
       xml_attribute xatt = anode.attribute("Color");
       if (xatt)
@@ -532,7 +532,7 @@ void XmlDocV1Parser::process(xml_node& amnode)
         s = xatt.value();
         if (!s.empty() && this->decodeColorInfo(s, color) == 0)
         {
-          this->m_system.setAdvanceLevelColor(val, color);
+          this->m_system->setAdvanceLevelColor(val, color);
         }
       }
     }
@@ -544,10 +544,10 @@ void XmlDocV1Parser::process(xml_node& amnode)
 
   // Now we need to check to see if there are any catagories in the system
   // that were not explicitly listed in the catagories section - first update catagories
-  this->m_system.updateCategories();
+  this->m_system->updateCategories();
 
   std::set<std::string>::const_iterator it;
-  const std::set<std::string>& cats = this->m_system.categories();
+  const std::set<std::string>& cats = this->m_system->categories();
   for (it = cats.begin(); it != cats.end(); it++)
   {
     if (secCatagories.find(*it) == secCatagories.end())
@@ -575,7 +575,7 @@ void XmlDocV1Parser::processAttributeInformation(xml_node& root)
     attribute::DefinitionPtr def;
     for (i = 0; i < this->m_itemExpressionDefInfo.size(); i++)
     {
-      def = this->m_system.findDefinition(this->m_itemExpressionDefInfo[i].second);
+      def = this->m_system->findDefinition(this->m_itemExpressionDefInfo[i].second);
       if (def)
       {
         this->m_itemExpressionDefInfo[i].first->setExpressionDefinition(def);
@@ -591,7 +591,7 @@ void XmlDocV1Parser::processAttributeInformation(xml_node& root)
 
     for (i = 0; i < this->m_attRefDefInfo.size(); i++)
     {
-      def = this->m_system.findDefinition(this->m_attRefDefInfo[i].second);
+      def = this->m_system->findDefinition(this->m_attRefDefInfo[i].second);
       if (def)
       {
         this->m_attRefDefInfo[i].first->setAttributeDefinition(def);
@@ -620,7 +620,7 @@ void XmlDocV1Parser::processAttributeInformation(xml_node& root)
   attribute::AttributePtr att;
   for (i = 0; i < this->m_itemExpressionInfo.size(); i++)
   {
-    att = this->m_system.findAttribute(this->m_itemExpressionInfo[i].expName);
+    att = this->m_system->findAttribute(this->m_itemExpressionInfo[i].expName);
     if (att)
     {
       this->m_itemExpressionInfo[i].item->setExpression(m_itemExpressionInfo[i].pos, att);
@@ -635,7 +635,7 @@ void XmlDocV1Parser::processAttributeInformation(xml_node& root)
 
   for (i = 0; i < this->m_attRefInfo.size(); i++)
   {
-    att = this->m_system.findAttribute(this->m_attRefInfo[i].attName);
+    att = this->m_system->findAttribute(this->m_attRefInfo[i].attName);
     if (att)
     {
       this->m_attRefInfo[i].item->setValue(this->m_attRefInfo[i].pos, att);
@@ -667,18 +667,18 @@ void XmlDocV1Parser::createDefinition(xml_node& defNode)
   baseType = defNode.attribute("BaseType").value();
   if (baseType != "")
   {
-    baseDef = this->m_system.findDefinition(baseType);
+    baseDef = this->m_system->findDefinition(baseType);
     if (!baseDef)
     {
       smtkErrorMacro(this->m_logger,
         "Could not find Base Definition: " << baseType << " needed to create Definition: " << type);
       return;
     }
-    def = this->m_system.createDefinition(type, baseDef);
+    def = this->m_system->createDefinition(type, baseDef);
   }
   else
   {
-    def = this->m_system.createDefinition(type);
+    def = this->m_system->createDefinition(type);
   }
   if (!def)
   {
@@ -1111,7 +1111,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
   {
     // Is the attribute definition already in the system?
     std::string etype = child.text().get();
-    attribute::DefinitionPtr adef = this->m_system.findDefinition(etype);
+    attribute::DefinitionPtr adef = this->m_system->findDefinition(etype);
     if (adef)
     {
       idef->setExpressionDefinition(adef);
@@ -1291,7 +1291,7 @@ void XmlDocV1Parser::processRefDef(pugi::xml_node& node, attribute::RefItemDefin
   {
     // Is the attribute definition already in the system?
     std::string etype = child.text().get();
-    attribute::DefinitionPtr adef = this->m_system.findDefinition(etype);
+    attribute::DefinitionPtr adef = this->m_system->findDefinition(etype);
     if (adef)
     {
       idef->setAttributeDefinition(adef);
@@ -1680,7 +1680,7 @@ void XmlDocV1Parser::processAttribute(xml_node& attNode)
 
   id = this->getAttributeID(attNode);
 
-  def = this->m_system.findDefinition(type);
+  def = this->m_system->findDefinition(type);
   if (!def)
   {
     smtkErrorMacro(this->m_logger, "Attribute: " << name << " of Type: " << type
@@ -1699,11 +1699,11 @@ void XmlDocV1Parser::processAttribute(xml_node& attNode)
   // Do we have a valid uuid?
   if (id.isNull())
   {
-    att = this->m_system.createAttribute(name, def);
+    att = this->m_system->createAttribute(name, def);
   }
   else
   {
-    att = this->m_system.createAttribute(name, def, id);
+    att = this->m_system->createAttribute(name, def, id);
   }
 
   if (!att)
@@ -2051,7 +2051,7 @@ void XmlDocV1Parser::processRefItem(pugi::xml_node& node, attribute::RefItemPtr 
         continue;
       }
       attName = val.text().get();
-      att = this->m_system.findAttribute(attName);
+      att = this->m_system->findAttribute(attName);
       if (!att)
       {
         info.item = item;
@@ -2071,7 +2071,7 @@ void XmlDocV1Parser::processRefItem(pugi::xml_node& node, attribute::RefItemPtr 
     if (val)
     {
       attName = val.text().get();
-      att = this->m_system.findAttribute(attName);
+      att = this->m_system->findAttribute(attName);
       if (!att)
       {
         info.item = item;
@@ -2593,7 +2593,7 @@ smtk::common::ViewPtr XmlDocV1Parser::createView(xml_node& node, const std::stri
     val = xatt.value();
     view->details().setAttribute("Icon", val);
   }
-  this->m_system.addView(view);
+  this->m_system->addView(view);
   return view;
 }
 

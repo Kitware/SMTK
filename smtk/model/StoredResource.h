@@ -24,7 +24,10 @@ namespace model
 class SMTKCORE_EXPORT StoredResource : public smtk::common::Resource
 {
 public:
-  static StoredResourcePtr create();
+  smtkTypeMacro(StoredResource);
+  smtkCreateMacro(StoredResource);
+  smtkSharedFromThisMacro(smtk::common::Resource);
+
   virtual ~StoredResource();
 
   std::string url() const;

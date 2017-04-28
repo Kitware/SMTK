@@ -54,7 +54,7 @@ PySharedPtrClass< smtk::attribute::ItemDefinition > pybind11_init_smtk_attribute
     .def("version", &smtk::attribute::ItemDefinition::version)
     ;
   PySharedPtrClass< smtk::attribute::ItemDefinition::CopyInfo >(instance, "CopyInfo")
-    .def(py::init<::smtk::attribute::System const *>())
+    .def(py::init<::smtk::attribute::SystemPtr>())
     .def(py::init<::smtk::attribute::ItemDefinition::CopyInfo const &>())
     // .def_readwrite("ToSystem", &smtk::attribute::ItemDefinition::CopyInfo::ToSystem)
     .def_readwrite("UnresolvedExpItems", &smtk::attribute::ItemDefinition::CopyInfo::UnresolvedExpItems)

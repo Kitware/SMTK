@@ -52,7 +52,7 @@ public:
   // attribute definition through the System. It should never change.
   const std::string& type() const { return this->m_type; }
 
-  smtk::attribute::System* system() const { return this->m_system; }
+  smtk::attribute::SystemPtr system() const { return this->m_system; }
 
   // The label is what can be displayed in an application.  Unlike the type
   // which is constant w/r to the definition, an application can change the label
@@ -212,7 +212,7 @@ protected:
   friend class smtk::attribute::System;
   // AttributeDefinitions can only be created by an attribute system
   Definition(const std::string& myType, smtk::attribute::DefinitionPtr myBaseDef,
-    smtk::attribute::System* mySystem);
+    smtk::attribute::SystemPtr mySystem);
 
   void clearSystem() { this->m_system = NULL; }
 
@@ -222,7 +222,7 @@ protected:
   // definition's items have been changed
   void updateDerivedDefinitions();
 
-  smtk::attribute::System* m_system;
+  smtk::attribute::SystemPtr m_system;
   int m_version;
   bool m_isAbstract;
   smtk::attribute::DefinitionPtr m_baseDefinition;

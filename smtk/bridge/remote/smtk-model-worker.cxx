@@ -273,7 +273,7 @@ int main(int argc, char* argv[])
     smtk::model::Session::Ptr session = mgr->createSession(wkOpts.kernel()).session();
     if (!session)
       return usage(logr, 1, "Could not create session \"" + wkOpts.kernel() + "\"");
-    smtk::attribute::System* opsys = session->operatorSystem();
+    smtk::attribute::SystemPtr opsys = session->operatorSystem();
     cJSON* spec = cJSON_CreateObject();
     std::string opspec;
     if (smtk::io::SaveJSON::forOperatorDefinitions(opsys, spec))

@@ -207,15 +207,15 @@ bool ResourceSetReader::readEmbeddedAttSystem(pugi::xml_node& element,
   smtk::common::ResourcePtr& resource, std::string& linkStartPath, smtk::io::Logger& logger)
 {
   // Initialize attribute system
-  smtk::attribute::System* system = NULL;
+  smtk::attribute::SystemPtr system;
   // If input resource is empty, create attribute manager
   if (resource)
   {
-    system = dynamic_cast<smtk::attribute::System*>(resource.get());
+    system = smtk::dynamic_pointer_cast<smtk::attribute::System>(resource);
   }
   else
   {
-    system = new smtk::attribute::System();
+    system = smtk::attribute::System::create();
     resource = smtk::common::ResourcePtr(system);
   }
 
@@ -233,7 +233,7 @@ bool ResourceSetReader::readEmbeddedAttSystem(pugi::xml_node& element,
     searchPaths.push_back(linkStartPath);
     reader.setSearchPaths(searchPaths);
   }
-  reader.readContents(*system, element, logger);
+  reader.readContents(system, element, logger);
   return !logger.hasErrors();
 }
 
@@ -251,15 +251,15 @@ bool ResourceSetReader::readIncludedManager(const pugi::xml_node& element,
   }
 
   // Initialize attribute system
-  smtk::attribute::System* system = NULL;
+  smtk::attribute::SystemPtr system;
   // If input resource is empty, create attribute manager
   if (resource)
   {
-    system = dynamic_cast<smtk::attribute::System*>(resource.get());
+    system = smtk::dynamic_pointer_cast<smtk::attribute::System>(resource);
   }
   else
   {
-    system = new smtk::attribute::System();
+    system = smtk::attribute::System::create();
     resource = smtk::common::ResourcePtr(system);
   }
 
@@ -270,7 +270,7 @@ bool ResourceSetReader::readIncludedManager(const pugi::xml_node& element,
   }
 
   smtk::io::AttributeReader reader;
-  bool hasErr = reader.read(*system, path, true, logger);
+  bool hasErr = reader.read(system, path, true, logger);
   if (hasErr)
   {
     return false;

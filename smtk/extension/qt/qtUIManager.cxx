@@ -77,7 +77,7 @@ QSize qtTextEdit::sizeHint() const
   return QSize(200, 70);
 }
 
-qtUIManager::qtUIManager(smtk::attribute::System& system)
+qtUIManager::qtUIManager(smtk::attribute::SystemPtr system)
   : m_parentWidget(NULL)
   , m_AttSystem(system)
   , m_useInternalFileBrowser(false)
@@ -224,7 +224,7 @@ void qtUIManager::internalInitialize()
   this->findDefinitionsLongLabels();
 
   // initialize initial advance level
-  const std::map<int, std::string>& levels = this->m_AttSystem.advanceLevels();
+  const std::map<int, std::string>& levels = this->m_AttSystem->advanceLevels();
   if (levels.size() > 0)
   {
     // use the minimum enum value as initial advance level
@@ -257,7 +257,7 @@ void qtUIManager::setAdvanceLevel(int b)
 void qtUIManager::initAdvanceLevels(QComboBox* combo)
 {
   combo->blockSignals(true);
-  const std::map<int, std::string>& levels = this->m_AttSystem.advanceLevels();
+  const std::map<int, std::string>& levels = this->m_AttSystem->advanceLevels();
   if (levels.size() == 0)
   {
     // for backward compatibility, we automatically add
@@ -699,13 +699,13 @@ void qtUIManager::findDefinitionsLongLabels()
   // Generate list of all concrete definitions in the manager
   std::vector<smtk::attribute::DefinitionPtr> defs;
   std::vector<smtk::attribute::DefinitionPtr> baseDefinitions;
-  this->m_AttSystem.findBaseDefinitions(baseDefinitions);
+  this->m_AttSystem->findBaseDefinitions(baseDefinitions);
   std::vector<smtk::attribute::DefinitionPtr>::const_iterator baseIter;
 
   for (baseIter = baseDefinitions.begin(); baseIter != baseDefinitions.end(); baseIter++)
   {
     std::vector<smtk::attribute::DefinitionPtr> derivedDefs;
-    m_AttSystem.findAllDerivedDefinitions(*baseIter, true, derivedDefs);
+    m_AttSystem->findAllDerivedDefinitions(*baseIter, true, derivedDefs);
     defs.insert(defs.end(), derivedDefs.begin(), derivedDefs.end());
   }
 

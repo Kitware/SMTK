@@ -573,8 +573,8 @@ UUIDs Manager::bordantEntities(const UUID& ofEntity, int ofDimension) const
     }
     else if ((it->second.entityFlags() & CELL_ENTITY) && (other->second.entityFlags() & USE_ENTITY))
     { // ... or it is a use: follow the use upwards.
-      ShellEntities bshells = UseEntity(smtk::const_pointer_cast<Manager>(shared_from_this()),
-        *ai).boundingShellEntities<ShellEntities>();
+      ShellEntities bshells = UseEntity(smtk::const_pointer_cast<Manager>(shared_from_this()), *ai)
+                                .boundingShellEntities<ShellEntities>();
       for (ShellEntities::iterator shellIt = bshells.begin(); shellIt != bshells.end(); ++shellIt)
       {
         CellEntity cell = shellIt->boundingCell();
@@ -637,8 +637,8 @@ UUIDs Manager::boundaryEntities(const UUID& ofEntity, int ofDimension) const
     }
     else if ((it->second.entityFlags() & CELL_ENTITY) && (other->second.entityFlags() & USE_ENTITY))
     { // ... or it is a use: follow the use downwards.
-      ShellEntities shells = UseEntity(smtk::const_pointer_cast<Manager>(shared_from_this()),
-        *ai).shellEntities<ShellEntities>();
+      ShellEntities shells = UseEntity(smtk::const_pointer_cast<Manager>(shared_from_this()), *ai)
+                               .shellEntities<ShellEntities>();
       for (ShellEntities::iterator shellIt = shells.begin(); shellIt != shells.end(); ++shellIt)
       {
         CellEntities cells = shellIt->cellsOfUses<CellEntities>();
@@ -3067,7 +3067,7 @@ bool Manager::hasAttribute(const UUID& attribId, const UUID& toEntity)
   * and false otherwise.
   */
 bool Manager::associateAttribute(
-  smtk::attribute::System* sys, const UUID& attribId, const UUID& toEntity)
+  smtk::attribute::SystemPtr sys, const UUID& attribId, const UUID& toEntity)
 {
   bool allowed = true;
   if (sys)
@@ -3085,7 +3085,7 @@ bool Manager::associateAttribute(
   *
   */
 bool Manager::disassociateAttribute(
-  smtk::attribute::System* sys, const UUID& attribId, const UUID& fromEntity, bool reverse)
+  smtk::attribute::SystemPtr sys, const UUID& attribId, const UUID& fromEntity, bool reverse)
 {
   bool didRemove = false;
   UUIDWithAttributeAssignments ref = this->m_attributeAssignments->find(fromEntity);

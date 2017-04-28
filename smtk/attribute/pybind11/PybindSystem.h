@@ -29,8 +29,6 @@ PySharedPtrClass< smtk::attribute::System, smtk::common::Resource > pybind11_ini
 {
   PySharedPtrClass< smtk::attribute::System, smtk::common::Resource > instance(m, "System");
   instance
-    .def(py::init<::smtk::attribute::System const &>())
-    .def(py::init<>())
     .def("deepcopy", (smtk::attribute::System & (smtk::attribute::System::*)(::smtk::attribute::System const &)) &smtk::attribute::System::operator=)
     .def("addAdvanceLevel", &smtk::attribute::System::addAdvanceLevel, py::arg("level"), py::arg("label"), py::arg("l_color") = 0)
     .def("addView", &smtk::attribute::System::addView, py::arg("arg0"))
@@ -84,7 +82,8 @@ PySharedPtrClass< smtk::attribute::System, smtk::common::Resource > pybind11_ini
     .def("updateCategories", &smtk::attribute::System::updateCategories)
     .def("updateDerivedDefinitionIndexOffsets", &smtk::attribute::System::updateDerivedDefinitionIndexOffsets, py::arg("def"))
     .def("views", &smtk::attribute::System::views)
-    .def_static("New", [](){ return std::make_shared<smtk::attribute::System>(); }, py::return_value_policy::take_ownership)
+    .def_static("New", [](){ return smtk::attribute::System::create(); }, py::return_value_policy::take_ownership)
+    .def_static("create", [](){ return smtk::attribute::System::create(); }, py::return_value_policy::take_ownership)
     ;
   py::enum_<smtk::attribute::System::CopyOptions>(instance, "CopyOptions")
     .value("COPY_ASSOCIATIONS", smtk::attribute::System::CopyOptions::COPY_ASSOCIATIONS)

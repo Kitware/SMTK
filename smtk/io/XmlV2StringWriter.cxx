@@ -289,7 +289,7 @@ struct XmlV2StringWriter::PugiPrivate
   }
 };
 
-XmlV2StringWriter::XmlV2StringWriter(const attribute::System& mySystem)
+XmlV2StringWriter::XmlV2StringWriter(const attribute::SystemPtr mySystem)
   : XmlStringWriter(mySystem)
 {
 }
@@ -360,22 +360,22 @@ void XmlV2StringWriter::generateXml(pugi::xml_node& parent_node, Logger& logger,
     .set_value("**********  Category and Analysis Information ***********");
 
   // Write out the category and analysis information
-  if (this->m_system.numberOfCategories())
+  if (this->m_system->numberOfCategories())
   {
     xml_node cnode, catNodes = this->m_pugi->root.append_child("Categories");
     std::set<std::string>::const_iterator it;
-    const std::set<std::string>& cats = this->m_system.categories();
+    const std::set<std::string>& cats = this->m_system->categories();
     for (it = cats.begin(); it != cats.end(); it++)
     {
       catNodes.append_child("Cat").text().set(it->c_str());
     }
   }
 
-  if (this->m_system.numberOfAnalyses())
+  if (this->m_system->numberOfAnalyses())
   {
     xml_node cnode, catNodes = this->m_pugi->root.append_child("Analyses");
     std::map<std::string, std::set<std::string> >::const_iterator it;
-    const std::map<std::string, std::set<std::string> >& analyses = this->m_system.analyses();
+    const std::map<std::string, std::set<std::string> >& analyses = this->m_system->analyses();
     for (it = analyses.begin(); it != analyses.end(); it++)
     {
       xml_node anode = catNodes.append_child("Analysis");
@@ -389,19 +389,19 @@ void XmlV2StringWriter::generateXml(pugi::xml_node& parent_node, Logger& logger,
   }
 
   // Write out the advance levels information
-  if (this->m_system.numberOfAdvanceLevels())
+  if (this->m_system->numberOfAdvanceLevels())
   {
     xml_node cnode, catNodes = this->m_pugi->root.append_child("AdvanceLevels");
     std::map<int, std::string>::const_iterator it;
-    const std::map<int, std::string>& levels = this->m_system.advanceLevels();
+    const std::map<int, std::string>& levels = this->m_system->advanceLevels();
     for (it = levels.begin(); it != levels.end(); it++)
     {
       xml_node anode = catNodes.append_child("Level");
       anode.append_attribute("Label").set_value(it->second.c_str());
-      if (this->m_system.advanceLevelColor(it->first))
+      if (this->m_system->advanceLevelColor(it->first))
       {
         anode.append_attribute("Color").set_value(
-          this->encodeColor(this->m_system.advanceLevelColor(it->first)).c_str());
+          this->encodeColor(this->m_system->advanceLevelColor(it->first)).c_str());
       }
       anode.text().set(getValueForXMLElement(it->first));
     }
@@ -425,7 +425,7 @@ void XmlV2StringWriter::generateXml(pugi::xml_node& parent_node, Logger& logger,
 void XmlV2StringWriter::processAttributeInformation()
 {
   std::vector<smtk::attribute::DefinitionPtr> baseDefs;
-  this->m_system.findBaseDefinitions(baseDefs);
+  this->m_system->findBaseDefinitions(baseDefs);
   std::size_t i, n = baseDefs.size();
   xml_node definitions, attributes;
 
@@ -543,7 +543,7 @@ void XmlV2StringWriter::processDefinition(
   {
     // Process all attributes based on this class
     std::vector<smtk::attribute::AttributePtr> atts;
-    this->m_system.findDefinitionAttributes(def->type(), atts);
+    this->m_system->findDefinitionAttributes(def->type(), atts);
     n = atts.size();
     for (i = 0; i < n; i++)
     {
@@ -552,7 +552,7 @@ void XmlV2StringWriter::processDefinition(
   }
   // Now process all of its derived classes
   std::vector<smtk::attribute::DefinitionPtr> defs;
-  this->m_system.derivedDefinitions(def, defs);
+  this->m_system->derivedDefinitions(def, defs);
   n = defs.size();
   for (i = 0; i < n; i++)
   {
@@ -1434,7 +1434,7 @@ void XmlV2StringWriter::processViews()
   xml_node views = this->m_pugi->root.append_child("Views");
   std::map<std::string, smtk::common::ViewPtr>::const_iterator iter;
   bool isTop;
-  for (iter = this->m_system.views().begin(); iter != this->m_system.views().end(); iter++)
+  for (iter = this->m_system->views().begin(); iter != this->m_system->views().end(); iter++)
   {
     if (!(iter->second->details().attributeAsBool("TopLevel", isTop) && isTop))
     {
@@ -1451,7 +1451,7 @@ void XmlV2StringWriter::processViews()
     }
     this->processViewComponent(iter->second->details(), node);
   }
-  for (iter = this->m_system.views().begin(); iter != this->m_system.views().end(); iter++)
+  for (iter = this->m_system->views().begin(); iter != this->m_system->views().end(); iter++)
   {
     if (iter->second->details().attributeAsBool("TopLevel", isTop) && isTop)
     {

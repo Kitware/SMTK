@@ -284,7 +284,7 @@ bool qtModelOperationWidget::initOperatorUI(const smtk::model::OperatorPtr& brOp
   smtk::attribute::AttributePtr att = brOp->specification();
   att->system()->setRefModelManager(brOp->manager());
 
-  smtk::extension::qtUIManager* uiManager = new smtk::extension::qtUIManager(*(att->system()));
+  smtk::extension::qtUIManager* uiManager = new smtk::extension::qtUIManager(att->system());
   uiManager->setActiveModelView(this->Internals->ModelView);
 
   // find out what view to use to construct the UI, if none is specified for this op

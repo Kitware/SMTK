@@ -383,7 +383,7 @@ void qtSimpleExpressionView::onFuncNameChanged(QListWidgetItem* item)
   smtk::attribute::AttributePtr func = this->getFunctionFromItem(item);
   if (func)
   {
-    System* attSystem = func->definition()->system();
+    SystemPtr attSystem = func->definition()->system();
     attSystem->rename(func, item->text().toLatin1().constData());
   }
 }
@@ -489,7 +489,7 @@ void qtSimpleExpressionView::createNewFunction(smtk::attribute::DefinitionPtr at
     return;
   }
   this->Internals->FuncList->blockSignals(true);
-  System* attSystem = attDef->system();
+  SystemPtr attSystem = attDef->system();
 
   smtk::attribute::AttributePtr newFunc = attSystem->createAttribute(attDef->type());
   QListWidgetItem* item = this->addFunctionListItem(newFunc);
@@ -631,7 +631,7 @@ void qtSimpleExpressionView::onDeleteSelected()
       return;
     }
 
-    smtk::attribute::System* sys = this->uiManager()->attSystem();
+    smtk::attribute::SystemPtr sys = this->uiManager()->attSystem();
     sys->removeAttribute(this->getFunctionFromItem(selItem));
 
     this->Internals->FuncList->takeItem(this->Internals->FuncList->row(selItem));
@@ -798,7 +798,7 @@ void qtSimpleExpressionView::initFunctionList()
   {
     return;
   }
-  smtk::attribute::System* sys = this->uiManager()->attSystem();
+  smtk::attribute::SystemPtr sys = this->uiManager()->attSystem();
   // There should be only 1 child component called Type
   if ((view->details().numberOfChildren() != 1) || (view->details().child(0).name() != "Att"))
   {

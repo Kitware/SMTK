@@ -100,7 +100,7 @@ class TestModelAttributes(unittest.TestCase):
             smtk.testing.DATA_DIR, 'attribute', 'attribute_system')
         att_path = os.path.join(att_folder, SBT_FILENAME)
         logging.info('Reading %s' % att_path)
-        system = smtk.attribute.System()
+        system = smtk.attribute.System.create()
         # system.setRefModelManager(scope.store)
         reader = smtk.io.AttributeReader()
         logger = smtk.io.Logger()
@@ -188,7 +188,7 @@ class TestModelAttributes(unittest.TestCase):
 
         for t in scope.att_data:
             att_name, entity_uuid = t
-            #logging.debug('att_name %s, uuid %s' % t)
+            # logging.debug('att_name %s, uuid %s' % t)
             att = system.findAttribute(att_name)
             if not att:
                 logging.error('Missing attribute %s' % att_name)
@@ -256,7 +256,7 @@ class TestModelAttributes(unittest.TestCase):
 
         # Re-read attribute file
         logging.info('Reading back %s' % SBI_FILENAME)
-        test_system = smtk.attribute.System()
+        test_system = smtk.attribute.System.create()
         reader = smtk.io.AttributeReader()
         err = reader.read(test_system, SBI_FILENAME, logger)
         if err:

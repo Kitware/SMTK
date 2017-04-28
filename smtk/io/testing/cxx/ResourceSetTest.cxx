@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/attribute/System.h"
 #include "smtk/common/ResourceSet.h"
+#include "smtk/attribute/System.h"
 
 #include <iostream>
 
@@ -23,7 +23,7 @@ int main(int /* argc */, const char* /* argv */ [])
   smtk::common::ResourceSet resourceSet;
 
   // Create and add attribute system
-  smtk::attribute::SystemPtr system1(new smtk::attribute::System());
+  smtk::attribute::SystemPtr system1 = smtk::attribute::System::create();
   result = resourceSet.addResource(system1, "system1", "", smtk::common::ResourceSet::TEMPLATE);
   n = static_cast<unsigned>(resourceSet.numberOfResources());
   if (!result)
@@ -38,7 +38,7 @@ int main(int /* argc */, const char* /* argv */ [])
   }
 
   // Create amd add 2nd attribute system
-  smtk::attribute::SystemPtr system2(new smtk::attribute::System());
+  smtk::attribute::SystemPtr system2 = smtk::attribute::System::create();
   result =
     resourceSet.addResource(system2, "system2", "path2", smtk::common::ResourceSet::INSTANCE);
   n = static_cast<unsigned>(resourceSet.numberOfResources());

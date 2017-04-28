@@ -11,7 +11,7 @@ if smtk.wrappingProtocol() == 'pybind11':
     from smtk import io
     from smtk import model
 
-asys = smtk.attribute.System()
+asys = smtk.attribute.System.create()
 mmgr = smtk.model.Manager.create()
 
 # Connect the managers:

@@ -352,7 +352,7 @@ bool ValueItem::assign(ConstItemPtr& sourceItem, unsigned int options)
   this->setNumberOfValues(sourceValueItem->numberOfValues());
 
   // Get reference to attribute system
-  System* system = this->attribute()->system();
+  SystemPtr system = this->attribute()->system();
 
   // Update values
   for (std::size_t i = 0; i < sourceValueItem->numberOfValues(); ++i)

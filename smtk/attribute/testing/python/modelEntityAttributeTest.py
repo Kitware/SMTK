@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
     status = 0
 
-    attribSys = smtk.attribute.System()
+    attribSys = smtk.attribute.System.create()
     modelMgr = smtk.model.Manager()
     print 'Systems created'
     def_ = attribSys.createDefinition('testDef')

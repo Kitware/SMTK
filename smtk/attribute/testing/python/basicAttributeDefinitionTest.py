@@ -24,7 +24,7 @@ if __name__ == '__main__':
 
     status = 0
 
-    system = smtk.attribute.System()
+    system = smtk.attribute.System.create()
     print 'System created'
     def_ = system.createDefinition('testDef')
     if def_ is not None:

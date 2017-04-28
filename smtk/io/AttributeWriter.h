@@ -15,16 +15,12 @@
 #define __smtk_io_AttributeWriter_h
 
 #include "smtk/CoreExports.h"
+#include "smtk/PublicPointerDefs.h"
 #include "smtk/SystemConfig.h"
 #include <string>
 
 namespace smtk
 {
-namespace attribute
-{
-class System;
-}
-
 namespace io
 {
 class Logger;
@@ -46,8 +42,8 @@ public:
 
   // Returns true if there was a problem with writing the file
   bool write(
-    const smtk::attribute::System& system, const std::string& filename, smtk::io::Logger& logger);
-  bool writeContents(const smtk::attribute::System& system, std::string& filecontents,
+    const smtk::attribute::SystemPtr system, const std::string& filename, smtk::io::Logger& logger);
+  bool writeContents(const smtk::attribute::SystemPtr system, std::string& filecontents,
     smtk::io::Logger& logger, bool no_declaration = false);
   //Control which sections of the attribute system should be writtern out
   // By Default all sections are processed.  These are advance options!!
@@ -67,7 +63,7 @@ protected:
 #ifndef SHIBOKEN_SKIP
   // Instantiates internal writer
   // Caller is responsible for deleting the instance
-  XmlStringWriter* newXmlStringWriter(const smtk::attribute::System& system) const;
+  XmlStringWriter* newXmlStringWriter(const smtk::attribute::SystemPtr system) const;
 #endif
 private:
   unsigned int m_fileVersion;

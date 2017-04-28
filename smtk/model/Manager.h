@@ -343,9 +343,9 @@ public:
   bool findOrAddEntityToGroup(const smtk::common::UUID& grp, const smtk::common::UUID& ent);
 
   bool hasAttribute(const smtk::common::UUID& attribId, const smtk::common::UUID& toEntity);
-  bool associateAttribute(smtk::attribute::System* sys, const smtk::common::UUID& attribId,
+  bool associateAttribute(smtk::attribute::SystemPtr sys, const smtk::common::UUID& attribId,
     const smtk::common::UUID& toEntity);
-  bool disassociateAttribute(smtk::attribute::System* sys, const smtk::common::UUID& attribId,
+  bool disassociateAttribute(smtk::attribute::SystemPtr sys, const smtk::common::UUID& attribId,
     const smtk::common::UUID& fromEntity, bool reverse = true);
 
   Vertex insertVertex(const smtk::common::UUID& uid);

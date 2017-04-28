@@ -27,7 +27,7 @@ if __name__ == '__main__':
         intdef = smtk.attribute.IntItemDefinition.New('intdef')
         groupdef.addItemDefinition(intdef)
 
-        system = smtk.attribute.System()
+        system = smtk.attribute.System.create()
         defn = system.createDefinition('testdef')
         defn.addItemDefinition(groupdef)
 

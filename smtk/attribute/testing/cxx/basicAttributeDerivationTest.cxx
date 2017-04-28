@@ -32,7 +32,8 @@ int main()
     typedef smtk::attribute::ValueItem ValueComp;
     typedef smtk::attribute::Item AttComp;
 
-    smtk::attribute::System system;
+    smtk::attribute::SystemPtr sysptr = smtk::attribute::System::create();
+    smtk::attribute::System& system(*sysptr.get());
     std::cout << "System Created\n";
     smtk::attribute::DefinitionPtr base = system.createDefinition("BaseDef");
     // Lets add some item definitions

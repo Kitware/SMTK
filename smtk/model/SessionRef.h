@@ -38,7 +38,7 @@ public:
   SessionRef& addModel(const Model& mod);
 
   StringList operatorNames(bool includeAdvanced = true) const;
-  smtk::attribute::System* opSys() const;
+  smtk::attribute::SystemPtr opSys() const;
   OperatorDefinition opDef(const std::string& opName) const;
   OperatorPtr op(const std::string& opName) const;
 

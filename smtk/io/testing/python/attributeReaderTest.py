@@ -19,6 +19,7 @@ from smtk.simple import *
 
 
 class TestAttributeReader():
+
     """A test for AttributeReader"""
 
     def setUp(self):
@@ -31,7 +32,7 @@ class TestAttributeReader():
 
         self.status = 0  # return value
 
-        self.attsys = smtk.attribute.System()
+        self.attsys = smtk.attribute.System.create()
         self.reader = smtk.io.AttributeReader()
         self.logger = smtk.io.Logger()
 

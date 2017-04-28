@@ -41,7 +41,8 @@ void verifyDefault()
   test(dtDef->type() == sa::Item::DATE_TIME, "Failed to return DATE_TIME as definition type");
 
   // Instantiate att system, attdef, & attribute
-  sa::System system;
+  sa::SystemPtr sysptr = sa::System::create();
+  sa::System& system(*sysptr.get());
   sa::DefinitionPtr attDef = system.createDefinition("test-datetime");
   attDef->addItemDefinition(dtDef);
   sa::AttributePtr att = system.createAttribute(attDef);
@@ -91,7 +92,8 @@ void verifySerialize()
   std::string contents;
 
   // Instantiate att system, attdef, & attribute to write out
-  sa::System outputSystem;
+  auto outputSysptr = sa::System::create();
+  sa::System& outputSystem(*outputSysptr.get());
   sa::DefinitionPtr attDef = outputSystem.createDefinition("test-att");
 
   // First DateTimeItemDefinition
@@ -150,7 +152,7 @@ void verifySerialize()
   dt2Item->setValue(dtz2);
 
   // Write to string
-  bool writeError = writer.writeContents(outputSystem, contents, logger);
+  bool writeError = writer.writeContents(outputSysptr, contents, logger);
   if (writeError)
   {
     std::string reason = logger.convertToString(true);
@@ -162,9 +164,10 @@ void verifySerialize()
             << contents << std::endl;
 
   // Read back
-  sa::System inputSystem;
+  auto inputSysptr = sa::System::create();
+  sa::System& inputSystem(*inputSysptr.get());
   smtk::io::AttributeReader reader;
-  bool readError = reader.readContents(inputSystem, contents, logger);
+  bool readError = reader.readContents(inputSysptr, contents, logger);
   if (readError)
   {
     std::string reason = logger.convertToString(true);

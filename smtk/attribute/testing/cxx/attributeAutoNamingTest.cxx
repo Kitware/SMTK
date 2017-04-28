@@ -17,7 +17,8 @@ int main()
 {
   int status = 0;
   {
-    smtk::attribute::System system;
+    smtk::attribute::SystemPtr sysptr = smtk::attribute::System::create();
+    smtk::attribute::System& system(*sysptr.get());
     std::cout << "System Created\n";
     smtk::attribute::DefinitionPtr def = system.createDefinition("testDef");
     if (def)

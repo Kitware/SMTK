@@ -136,7 +136,7 @@ void qtModelEntityItemCombo::init()
   }
   const ModelEntityItemDefinition* itemDef =
     static_cast<const ModelEntityItemDefinition*>(modelEntityItem->definition().get());
-  System* attSystem = modelEntityItem->attribute()->system();
+  SystemPtr attSystem = modelEntityItem->attribute()->system();
   smtk::model::ManagerPtr modelManager = attSystem->refModelManager();
 
   QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());
@@ -277,7 +277,7 @@ void qtMeshItemCombo::init()
   this->model()->disconnect();
 
   MeshItemPtr meshItem = this->m_MeshItem->meshItem();
-  System* attSystem = meshItem->attribute()->system();
+  SystemPtr attSystem = meshItem->attribute()->system();
   smtk::model::ManagerPtr modelManager = attSystem->refModelManager();
 
   QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());

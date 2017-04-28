@@ -37,6 +37,10 @@ class Definition;
 class SMTKCORE_EXPORT System : public smtk::common::Resource
 {
 public:
+  smtkTypeMacro(System);
+  smtkCreateMacro(System);
+  smtkSharedFromThisMacro(smtk::common::Resource);
+
   enum CopyOptions
   {
     COPY_ASSOCIATIONS =
@@ -45,7 +49,6 @@ public:
       0x00000003 //!< Should associations and model-entity items *always* be copied?
   };
 
-  System();
   virtual ~System();
 
   virtual smtk::common::Resource::Type resourceType() const;
@@ -144,6 +147,7 @@ public:
   void attributes(std::vector<smtk::attribute::AttributePtr>& result) const;
 
 protected:
+  System();
   void internalFindAllDerivedDefinitions(smtk::attribute::DefinitionPtr def, bool onlyConcrete,
     std::vector<smtk::attribute::DefinitionPtr>& result) const;
   void internalFindAttributes(

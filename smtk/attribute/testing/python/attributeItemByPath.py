@@ -26,7 +26,7 @@ class TestAttributeItemByPath(smtk.testing.TestCase):
         if smtk.testing.DATA_DIR == '':
             self.skipTest('SMTK test-data directory not provided')
 
-        self.system = smtk.attribute.System()
+        self.system = smtk.attribute.System.create()
         logger = smtk.io.Logger()
         reader = smtk.io.AttributeReader()
         filenm = os.path.join(smtk.testing.DATA_DIR, 'attribute',

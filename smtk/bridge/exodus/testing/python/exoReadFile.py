@@ -73,7 +73,7 @@ class TestExodusSession(smtk.testing.TestCase):
         someGroup = allgroups[0]
         self.assertEqual(someGroup.attributes(), set([]),
                          'Group should not have any attribute associations.')
-        asys = smtk.attribute.System()
+        asys = smtk.attribute.System.create()
         adef = asys.createDefinition('testDef')
         adef.setAssociationMask(int(smtk.model.GROUP_ENTITY))
         adef.associationRule().setNumberOfRequiredValues(1)

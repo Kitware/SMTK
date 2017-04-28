@@ -95,7 +95,7 @@ void qtBaseView::getDefinitions(
   smtk::attribute::DefinitionPtr attDef, QList<smtk::attribute::DefinitionPtr>& defs)
 {
   std::vector<smtk::attribute::DefinitionPtr> newdefs;
-  attribute::System* attSystem = attDef->system();
+  attribute::SystemPtr attSystem = attDef->system();
   attSystem->findAllDerivedDefinitions(attDef, true, newdefs);
   if (!attDef->isAbstract() && !defs.contains(attDef))
   {
@@ -245,7 +245,7 @@ void qtBaseView::makeTopLevel()
   }
 
   this->Internals->clearWidgets();
-  const attribute::System* attSys = this->uiManager()->attSystem();
+  const attribute::SystemPtr attSys = this->uiManager()->attSystem();
 
   bool flag;
   // Do we need to provide advance level filtering? - this is on by default

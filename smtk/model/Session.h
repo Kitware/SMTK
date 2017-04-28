@@ -342,8 +342,8 @@ public:
   const DanglingEntities& danglingEntities() const;
   void declareDanglingEntity(const EntityRef& ent, SessionInfoBits present = 0);
 
-  smtk::attribute::System* operatorSystem();
-  const smtk::attribute::System* operatorSystem() const;
+  smtk::attribute::SystemPtr operatorSystem();
+  smtk::attribute::ConstSystemPtr operatorSystem() const;
 
   virtual int setup(const std::string& optName, const StringList& optVal);
 
@@ -418,7 +418,7 @@ protected:
 
   DanglingEntities m_dangling;
   smtk::common::UUID m_sessionId;
-  smtk::attribute::System* m_operatorSys;
+  smtk::attribute::SystemPtr m_operatorSys;
   Manager* m_manager;
 };
 

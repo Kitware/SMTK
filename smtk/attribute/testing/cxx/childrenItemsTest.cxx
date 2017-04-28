@@ -39,7 +39,8 @@ int main(int argc, char* argv[])
       std::cerr << "Usage: " << argv[0] << " filename\n";
       return -1;
     }
-    smtk::attribute::System system;
+    smtk::attribute::SystemPtr sysptr = smtk::attribute::System::create();
+    smtk::attribute::System& system(*sysptr.get());
     std::cout << "System Created\n";
     // Lets add some analyses
     std::set<std::string> analysis;
@@ -232,7 +233,7 @@ int main(int argc, char* argv[])
     item = att->item(2);
     vitem = smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(item);
     smtk::io::AttributeWriter writer;
-    if (writer.write(system, argv[1], logger))
+    if (writer.write(sysptr, argv[1], logger))
     {
       std::cerr << "Errors encountered creating Attribute File:\n";
       std::cerr << logger.convertToString();

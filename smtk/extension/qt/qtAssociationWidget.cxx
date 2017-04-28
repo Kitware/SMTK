@@ -142,7 +142,7 @@ void qtAssociationWidget::showDomainsAssociation(
   }
 
   std::vector<smtk::attribute::DefinitionPtr>::iterator itAttDef = attDefs.begin();
-  System* attSystem = (*itAttDef)->system();
+  SystemPtr attSystem = (*itAttDef)->system();
   QList<smtk::attribute::AttributePtr> allAtts;
   for (; itAttDef != attDefs.end(); ++itAttDef)
   {
@@ -176,7 +176,7 @@ void qtAssociationWidget::showDomainsAssociation(
 
 void qtAssociationWidget::updateAvailableListBySelection(const smtk::common::UUIDs& selEntites)
 {
-  smtk::attribute::System* attSystem = this->Internals->View->uiManager()->attSystem();
+  smtk::attribute::SystemPtr attSystem = this->Internals->View->uiManager()->attSystem();
   smtk::model::ManagerPtr modelManager;
   if (attSystem)
   {
@@ -235,7 +235,7 @@ void qtAssociationWidget::showAttributeAssociation(
   }
 
   std::vector<smtk::attribute::DefinitionPtr>::iterator itAttDef = attDefs.begin();
-  System* attSystem = (*itAttDef)->system();
+  SystemPtr attSystem = (*itAttDef)->system();
 
   // figure out how many unique definitions this model item has
   QList<smtk::attribute::DefinitionPtr> uniqueDefs =
@@ -381,7 +381,7 @@ std::set<smtk::model::EntityRef> qtAssociationWidget::processAttUniqueness(
   {
     // we need to exclude any entities that are already assigned another att
     // Get the most "basic" definition that is unique
-    System* attSystem = attDef->system();
+    SystemPtr attSystem = attDef->system();
     smtk::model::ManagerPtr modelManager = attSystem->refModelManager();
 
     smtk::attribute::ConstDefinitionPtr baseDef = attSystem->findIsUniqueBaseClass(attDef);
@@ -412,7 +412,7 @@ std::set<smtk::model::EntityRef> qtAssociationWidget::processAttUniqueness(
 }
 
 QList<smtk::attribute::DefinitionPtr> qtAssociationWidget::processDefUniqueness(
-  const smtk::model::EntityRef& theEntity, smtk::attribute::System* attSystem)
+  const smtk::model::EntityRef& theEntity, smtk::attribute::SystemPtr attSystem)
 {
   QList<smtk::attribute::DefinitionPtr> uniqueDefs;
 
@@ -494,7 +494,7 @@ smtk::model::EntityRef qtAssociationWidget::getModelEntityItem(QListWidgetItem* 
   {
     QVariant var = item->data(Qt::UserRole);
     smtk::common::UUID uid(var.toString().toStdString());
-    smtk::attribute::System* attSystem = this->Internals->View->uiManager()->attSystem();
+    smtk::attribute::SystemPtr attSystem = this->Internals->View->uiManager()->attSystem();
     if (attSystem)
     {
       smtk::model::ManagerPtr modelManager = attSystem->refModelManager();
@@ -564,7 +564,7 @@ QListWidgetItem* qtAssociationWidget::addAttributeAssociationItem(
 void qtAssociationWidget::addDomainListItem(
   const smtk::model::Group& domainEnt, QList<smtk::attribute::AttributePtr>& allAtts)
 {
-  smtk::attribute::System* attSystem = this->Internals->View->uiManager()->attSystem();
+  smtk::attribute::SystemPtr attSystem = this->Internals->View->uiManager()->attSystem();
 
   QTableWidgetItem* domainItem = new QTableWidgetItem(QString::fromStdString(domainEnt.name()));
   domainItem->setFlags(Qt::ItemIsEnabled);
@@ -840,7 +840,7 @@ void qtAssociationWidget::onNodalOptionChanged(int idx)
 
 void qtAssociationWidget::onDomainAssociationChanged()
 {
-  smtk::attribute::System* attSystem = this->Internals->View->uiManager()->attSystem();
+  smtk::attribute::SystemPtr attSystem = this->Internals->View->uiManager()->attSystem();
   smtk::model::ManagerPtr modelManager = attSystem->refModelManager();
 
   QComboBox* const combo = qobject_cast<QComboBox*>(QObject::sender());

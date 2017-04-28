@@ -16,6 +16,9 @@
 #define smtk_common_Resource_h
 
 #include "smtk/CoreExports.h"
+#include "smtk/SharedFromThis.h"
+#include "smtk/SystemConfig.h"
+
 #include <string>
 
 namespace smtk
@@ -23,9 +26,10 @@ namespace smtk
 namespace common
 {
 
-class SMTKCORE_EXPORT Resource
+class SMTKCORE_EXPORT Resource : smtkEnableSharedPtr(Resource)
 {
 public:
+  smtkTypeMacro(Resource);
   virtual ~Resource();
 
   /// Identifies resource type

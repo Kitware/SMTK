@@ -40,7 +40,7 @@ namespace io
 class SMTKCORE_EXPORT XmlV2StringWriter : public XmlStringWriter
 {
 public:
-  XmlV2StringWriter(const smtk::attribute::System& system);
+  XmlV2StringWriter(const smtk::attribute::SystemPtr system);
   virtual ~XmlV2StringWriter();
   virtual std::string convertToString(smtk::io::Logger& logger, bool no_declaration = false);
   void generateXml(pugi::xml_node& parent_node, smtk::io::Logger& logger, bool createRoot = true);

@@ -17,11 +17,6 @@ namespace smtk
 namespace model
 {
 
-StoredResourcePtr StoredResource::create()
-{
-  return StoredResourcePtr(new StoredResource);
-}
-
 StoredResource::StoredResource()
   : m_generation(0)
   , m_urlGeneration(0)
