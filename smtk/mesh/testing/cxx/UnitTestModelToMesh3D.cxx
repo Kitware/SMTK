@@ -327,7 +327,9 @@ void verify_cell_conversion()
   }
 
   std::cout << "Entity lookup via reverse classification\n";
-  smtk::model::EntityRefArray ents = c->meshes().modelEntities();
+  smtk::model::EntityRefArray ents;
+  bool entsAreValid = c->meshes().modelEntities(ents);
+  test(entsAreValid == true, "Expected valid entity refs.");
   test(ents.size() == numTetsInModel, "Expected 1 tetrahedron per model.");
   for (smtk::model::EntityRefArray::iterator eit = ents.begin(); eit != ents.end(); ++eit)
   {

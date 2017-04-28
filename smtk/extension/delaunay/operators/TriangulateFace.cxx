@@ -121,6 +121,7 @@ OperatorResult TriangulateFace::operateInternal()
 
   // construct a collection and associate it with the face's model
   smtk::mesh::CollectionPtr collection = this->session()->meshManager()->makeCollection();
+  collection->setModelManager(face.manager());
   collection->associateToModel(face.model().entity());
 
   // populate the new collection

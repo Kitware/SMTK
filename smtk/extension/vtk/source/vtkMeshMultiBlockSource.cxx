@@ -466,8 +466,9 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSe
         this->GenerateRepresentationForSingleMesh(
           singleMesh, poly.GetPointer(), smtk::model::EntityRef(), modelRequiresNormals);
         mbds->SetBlock(static_cast<unsigned>(i), poly.GetPointer());
-        smtk::model::EntityRefArray ents = singleMesh.modelEntities();
-        if (ents.size() > 0)
+        smtk::model::EntityRefArray ents;
+        bool validEnts = singleMesh.modelEntities(ents);
+        if (validEnts && ents.size() > 0)
         {
           internal_AddBlockEntityInfo(
             singleMesh, ents[0], i, poly.GetPointer(), this->m_Meshset2BlockIdMap);

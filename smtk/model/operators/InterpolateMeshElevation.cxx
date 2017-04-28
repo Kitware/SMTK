@@ -136,8 +136,9 @@ smtk::model::OperatorResult InterpolateMeshElevation::operateInternal()
 
     modifiedMeshes->appendValue(mesh);
 
-    smtk::model::EntityRefArray entities = mesh.modelEntities();
-    if (!entities.empty())
+    smtk::model::EntityRefArray entities;
+    bool entitiesAreValid = mesh.modelEntities(entities);
+    if (entitiesAreValid && !entities.empty())
     {
       result->findModelEntity("tess_changed")->appendValue(entities[0].owningModel());
     }

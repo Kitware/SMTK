@@ -544,8 +544,12 @@ void qtModelView::selectMeshes(const DescriptivePhrasePtr& dp, smtk::mesh::MeshS
         // get meshsets inside mesh collection
         smtk::mesh::CollectionPtr collection = mphrase->relatedMeshCollection();
 
-        smtk::model::EntityRefArray entsMesh =
-          mphrase->relatedMeshCollection()->meshes().modelEntities();
+        // grab the associated entity refs, and exit if they are invalid
+        smtk::model::EntityRefArray entsMesh;
+        if (!mphrase->relatedMeshCollection()->meshes().modelEntities(entsMesh))
+        {
+          return;
+        }
         for (const auto& entMesh : entsMesh)
         {
           smtk::mesh::MeshSet currentMeshSet = collection->findAssociatedMeshes(entMesh);

@@ -277,7 +277,8 @@ std::vector<MeshByRegion> subsetByRegion(
     return meshesByModelRef;
   }
 
-  smtk::model::EntityRefArray modelIds = meshes.modelEntities();
+  smtk::model::EntityRefArray modelIds;
+  meshes.modelEntities(modelIds);
 
   if (modelIds.size() <= 1)
   { //explicitly done so that no model relationship is equal to everything
@@ -314,7 +315,8 @@ std::vector<MeshByRegion> subsetByModelProperty(smtk::mesh::CollectionPtr collec
     return meshesByModelRef;
   }
 
-  smtk::model::EntityRefArray modelIds = meshes.modelEntities();
+  smtk::model::EntityRefArray modelIds;
+  meshes.modelEntities(modelIds);
   if (modelIds.size() <= 1)
   { //if don't have any associations to the model we should fail
     return meshesByModelRef;
