@@ -10,6 +10,7 @@
 
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 
+#include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtCollapsibleGroupWidget.h"
 #include "smtk/extension/qt/qtInstancedView.h"
@@ -166,8 +167,12 @@ QSize qtModelOperationWidget::sizeHint() const
 
 void qtModelOperationWidget::setSession(smtk::model::SessionPtr session)
 {
-  if (this->Internals->CurrentSession.lock() == session)
+  // if it's current session and we've already constructed operators for it
+  if (this->Internals->CurrentSession.lock() == session &&
+    this->Internals->OperationCombo->count() != 0)
+  {
     return;
+  }
 
   // clean up current UI
   QStackedLayout* opLayout = this->Internals->OperationsLayout;
@@ -452,6 +457,29 @@ void qtModelOperationWidget::displayResult(const smtk::io::Logger& log)
 {
   QString txt(log.convertToString(false).c_str());
   this->Internals->ResultLog->setText(txt);
+}
+
+void qtModelOperationWidget::resetUI()
+{
+  smtk::model::SessionRef activeSession = qtActiveObjects::instance().activeModel().owningSession();
+  // clean up current UI only when switching to a new session
+  // then model tree would update properly
+  if (this->Internals && activeSession.session() != this->Internals->CurrentSession.lock())
+  {
+    QStackedLayout* opLayout = this->Internals->OperationsLayout;
+    for (int i = 0; i < opLayout->count(); ++i)
+    {
+      if (opLayout->widget(i))
+      {
+        delete opLayout->widget(i);
+      }
+    }
+    this->Internals->CurrentSession = activeSession.session();
+    this->Internals->OperationCombo->blockSignals(true);
+    this->Internals->OperationCombo->clear();
+    this->Internals->OperationCombo->blockSignals(false);
+    this->Internals->OperatorMap.clear();
+  }
 }
 
 void qtModelOperationWidget::onMeshSelectionItemCreated(
