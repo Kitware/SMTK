@@ -52,14 +52,15 @@ set(modelSrcs
   operators/AddImage.cxx
   operators/AssignColors.cxx
   operators/CloseModel.cxx
+  operators/DeleteMesh.cxx
   operators/EntityGroupOperator.cxx
-  operators/SetProperty.cxx
+  operators/ExportMesh.cxx
+  operators/InterpolateMeshElevation.cxx
   operators/ExportModelJSON.cxx
-  operators/SaveSMTKModel.cxx
   operators/LoadSMTKModel.cxx
   operators/PackageSMTKModel.cxx
-  operators/DeleteMesh.cxx
-  operators/ExportMesh.cxx
+  operators/SaveSMTKModel.cxx
+  operators/SetProperty.cxx
   operators/WriteMesh.cxx
   )
 
@@ -123,14 +124,15 @@ set(modelHeaders
   operators/AddImage.h
   operators/AssignColors.h
   operators/CloseModel.h
+  operators/DeleteMesh.h
   operators/EntityGroupOperator.h
-  operators/SetProperty.h
+  operators/ExportMesh.h
   operators/ExportModelJSON.h
-  operators/SaveSMTKModel.h
+  operators/InterpolateMeshElevation.h
   operators/LoadSMTKModel.h
   operators/PackageSMTKModel.h
-  operators/DeleteMesh.h
-  operators/ExportMesh.h
+  operators/SaveSMTKModel.h
+  operators/SetProperty.h
   operators/WriteMesh.h
   )
 
@@ -139,14 +141,15 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/AddImage.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/AddAuxiliaryGeometry.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/AssignColors.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CloseModel.sbt" defOpXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/DeleteMesh.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EntityGroupOperator.sbt" defOpXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SetProperty.sbt" defOpXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportMesh.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportModelJSON.sbt" defOpXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SaveSMTKModel.sbt" defOpXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/InterpolateMeshElevation.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/LoadSMTKModel.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/PackageSMTKModel.sbt" defOpXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/DeleteMesh.sbt" defOpXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportMesh.sbt" defOpXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SaveSMTKModel.sbt" defOpXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SetProperty.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteMesh.sbt" defOpXML)
 
 #install the headers
