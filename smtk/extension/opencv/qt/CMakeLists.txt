@@ -2,49 +2,33 @@ smtk_find_package_qt(qt_targets REQUIRED
   QT4_COMPONENTS QtCore QtGui
   QT5_COMPONENTS Core Widgets)
 
-# set up sources to build
-set(PQWidgetsSrcs
-  pqArcWidgetManager.cxx
-  pqArcWidgetPanel.cxx
-  pqPolygonArc.cxx
-  pqSplitEdgeWidget.cxx
-)
+find_package( VTK REQUIRED )
+include_directories(${VTK_INCLUDE_DIRS})
 
-set(PQWidgetsUIs
-  qtArcWidgetPanel.ui
-)
-
-set(PQWidgetsMocHeaders
-  pqArcWidgetManager.h
-  pqArcWidgetPanel.h
-  pqPolygonArc.h
-  pqSplitEdgeWidget.h
-)
+set(OpenCVOperatorsHeaders imageFeatureExtractorWidget.h)
+set(OpenCVOperatorsSrcs imageFeatureExtractorWidget.cxx)
+set(OpenCVOperatorsUI imageFeatureExtractor.ui)
 
 #install the headers
-smtk_public_headers(${PQWidgetsMocHeaders} vtkPolygonArcInfo.h)
+smtk_public_headers(${OpenCVOperatorsHeaders})
 
-smtk_qt_wrap_cpp(MOC_BUILT_SOURCES ${PQWidgetsMocHeaders})
-smtk_qt_wrap_ui(UI_BUILT_SOURCES ${PQWidgetsUIs})
-smtk_qt_add_resources(RCS_RESOURCES qtWidgetsIcons.qrc)
+smtk_qt_wrap_cpp(MOC_BUILT_SOURCES ${OpenCVOperatorsHeaders})
+smtk_qt_wrap_ui(UI_BUILT_SOURCES ${OpenCVOperatorsUI})
 
-source_group("Qt_Source" FILES ${PQWidgetsSrcs} ${PQWidgetsUIs})
+source_group("Qt_Source" FILES ${OpenCVOperatorsSrcs} ${OpenCVOperatorsUI})
 source_group("Qt_Generated" FILES ${MOC_BUILT_SOURCES} ${UI_BUILT_SOURCES} ${RCS_RESOURCES})
-source_group("Qt_Header" FILES ${PQWidgetsMocHeaders})
+source_group("Qt_Header" FILES ${OpenCVOperatorsMocHeaders})
 
-add_library(smtkPolygonQtExt
-  ${PQWidgetsSrcs}
-  vtkPolygonArcInfo.cxx
+add_library(smtkOpenCVQtExt
+  ${OpenCVOperatorsSrcs}
   ${MOC_BUILT_SOURCES}
   ${UI_BUILT_SOURCES}
   ${RCS_RESOURCES}
 )
 
-#we need to add the location of the moc files to the include dir for smtkPWWidgetExt
-target_include_directories(smtkPolygonQtExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(smtkOpenCVQtExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
-#set smtkPolygonQtExt to publicly link to smtkCore
-target_link_libraries(smtkPolygonQtExt LINK_PUBLIC
+target_link_libraries(smtkOpenCVQtExt LINK_PUBLIC
   pqApplicationComponents
   smtkCore
   smtkPQWidgetsExt
@@ -57,10 +41,10 @@ LINK_PRIVATE
   ${VTK_LIBRARIES}
 )
 
-smtk_export_header(smtkPolygonQtExt Exports.h)
+smtk_export_header(smtkOpenCVQtExt Exports.h)
 
 #install the library and exports the library when used from a build tree
-smtk_install_library(smtkPolygonQtExt)
+smtk_install_library(smtkOpenCVQtExt)
 
 if (SMTK_ENABLE_TESTING)
   # Link *everything* in this directory to VTK modules
@@ -81,6 +65,6 @@ if (SMTK_ENABLE_TESTING)
     endif()
   endforeach()
 
-  target_link_libraries(TestBuild_smtk_bridge_polygon_qt PUBLIC ${SMTK_VTK_TARGET_LIST}
+  target_link_libraries(TestBuild_smtk_extension_opencv_qt PUBLIC ${SMTK_VTK_TARGET_LIST}
     smtkQtExt)
 endif()

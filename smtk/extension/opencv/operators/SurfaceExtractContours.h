@@ -8,10 +8,11 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_session_polygon_SurfaceExtractContours_h
-#define __smtk_session_polygon_SurfaceExtractContours_h
+#ifndef __smtk_extension_opencv_SurfaceExtractContours_h
+#define __smtk_extension_opencv_SurfaceExtractContours_h
 
 #include "smtk/bridge/polygon/Operator.h"
+#include "smtk/extension/opencv/Exports.h"
 
 namespace smtk
 {
@@ -22,13 +23,13 @@ namespace polygon
 
 /**\brief Create polygon edges from contours extraced from an image.
   *
-  * This operator will eate polygon edges from contours extraced from
+  * This operator will create polygon edges from contours extraced from
   * an image assoicated with a model. It interacts with the application
   * through a view "UIConstructor", specified in the operator's template
   * file.
   *
   */
-class SMTKPOLYGONSESSION_EXPORT SurfaceExtractContours : public Operator
+class SMTKOPENCVEXT_EXPORT SurfaceExtractContours : public Operator
 {
 public:
   smtkTypeMacro(SurfaceExtractContours);
@@ -47,4 +48,4 @@ protected:
 } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_session_polygon_SurfaceExtractContours_h
+#endif

@@ -1,13 +1,9 @@
 set(srcs
-  vtkPolygonArcOperator.cxx
-  vtkPolygonArcProvider.cxx
-  vtkPolygonContourOperator.cxx
+  vtkSurfaceExtractorOperator.cxx
   )
 
 set(headers
-  vtkPolygonArcOperator.h
-  vtkPolygonArcProvider.h
-  vtkPolygonContourOperator.h
+  vtkSurfaceExtractorOperator.h
 )
 
 set(${vtk-module}_NO_HeaderTest 1)
@@ -42,13 +38,7 @@ endif ()
 
 smtk_public_headers(${headers})
 
-# Potentially wrap in Python using VTK's wrapping methods, not shiboken.
-# This makes the filters available for use with other VTK-wrapped filters.
-#if (SMTK_ENABLE_PYTHON_WRAPPING AND VTK_WRAP_PYTHON)
-#  vtk_smtk_wrap_module_python3(${vtk-module} "${headers}")
-#endif()
-
 if (SMTK_ENABLE_TESTING)
   # ... and make header compilation tests link properly:
-  target_link_libraries(TestBuild_smtk_bridge_polygon_vtk LINK_PRIVATE vtkCommonCore)
+  target_link_libraries(TestBuild_smtk_extension_opencv_vtk LINK_PRIVATE vtkCommonCore)
 endif()
