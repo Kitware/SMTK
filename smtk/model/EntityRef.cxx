@@ -1301,7 +1301,7 @@ EntityRef EntityRef::embeddedIn() const
 Model EntityRef::owningModel() const
 {
   ManagerPtr mgr = this->m_manager.lock();
-  return Model(mgr, mgr->modelOwningEntity(this->m_entity));
+  return mgr ? Model(mgr, mgr->modelOwningEntity(this->m_entity)) : Model();
 }
 
 /**\brief Return the SessionRef which owns this entity.
@@ -1313,7 +1313,7 @@ Model EntityRef::owningModel() const
 SessionRef EntityRef::owningSession() const
 {
   ManagerPtr mgr = this->m_manager.lock();
-  return SessionRef(mgr, mgr->sessionOwningEntity(this->m_entity));
+  return mgr ? SessionRef(mgr, mgr->sessionOwningEntity(this->m_entity)) : SessionRef();
 }
 
 /**\brief Return the Groups which contains this entity.
