@@ -347,6 +347,9 @@ public:
     const smtk::common::UUID& toEntity);
   bool disassociateAttribute(smtk::attribute::SystemPtr sys, const smtk::common::UUID& attribId,
     const smtk::common::UUID& fromEntity, bool reverse = true);
+  bool insertEntityAssociations(
+    const EntityRef& modelEntity, std::set<smtk::attribute::AttributePtr>& associations);
+  std::set<smtk::attribute::AttributePtr> associations(const EntityRef& modelEntity);
 
   Vertex insertVertex(const smtk::common::UUID& uid);
   Edge insertEdge(const smtk::common::UUID& uid);
@@ -466,6 +469,9 @@ protected:
   smtk::shared_ptr<UUIDsToAttributeAssignments> m_attributeAssignments;
   smtk::shared_ptr<UUIDsToSessions> m_sessions;
   smtk::shared_ptr<common::ResourceSet> m_resources;
+  typedef std::owner_less<smtk::attribute::WeakSystemPtr> SystemLessThan;
+  typedef std::set<smtk::attribute::WeakSystemPtr, SystemLessThan> WeakSystemSet;
+  WeakSystemSet m_attributeSystems; // weak references to attribute systems
 
   smtk::shared_ptr<Session> m_defaultSession;
   smtk::common::UUIDGenerator m_uuidGenerator;

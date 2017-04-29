@@ -353,6 +353,22 @@ public:
 
   virtual ~Session();
 
+  virtual bool splitEntity(const EntityRef& from, const EntityRefs& to) const
+  {
+    bool ok = this->splitAttributes(from, to);
+    ok &= this->splitProperties(from, to);
+    return ok;
+  }
+  virtual bool mergeEntities(const EntityRefs& from, EntityRef& to) const
+  {
+    bool ok = this->mergeAttributes(from, to);
+    ok &= this->mergeProperties(from, to);
+    return ok;
+  }
+
+  virtual bool splitAttributes(const EntityRef& from, const EntityRefs& to) const;
+  virtual bool mergeAttributes(const EntityRefs& from, EntityRef& to) const;
+
   virtual bool removeGeneratedProperties(const EntityRef& ent, SessionInfoBits propFlags);
   virtual bool splitProperties(const EntityRef& from, const EntityRefs& to) const;
   virtual bool mergeProperties(const EntityRefs& from, EntityRef& to) const;

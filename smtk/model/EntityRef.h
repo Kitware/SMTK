@@ -205,6 +205,17 @@ public:
   bool disassociateAttribute(
     smtk::attribute::SystemPtr sys, const smtk::common::UUID& attribId, bool reverse = true);
   bool disassociateAllAttributes(smtk::attribute::SystemPtr sys, bool reverse = true);
+  /// Returns true if at least 1 attribute in the set of \a attribPtrs was removed.
+  template <typename T>
+  bool disassociateAttributes(const T& attribPtrs)
+  {
+    bool removedAny = false;
+    for (auto attribPtr : attribPtrs)
+    {
+      removedAny |= this->disassociateAttribute(attribPtr->system(), attribPtr->id());
+    }
+    return removedAny;
+  }
 
   AttributeSet attributes() const;
 

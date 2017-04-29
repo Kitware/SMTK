@@ -46,6 +46,7 @@
   <suppress-warning text="skipping function 'smtk::model::SessionRef::operatorsForAssociation', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityRef::EntityRefsFromUUIDs', unmatched parameter type 'S&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityRef::EntityRefsToUUIDs', unmatched parameter type 'S&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::EntityRef::disassociateAttributes', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Model::addCells', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Model::addGroups', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Group::members', unmatched return type 'T'"/>
@@ -197,6 +198,8 @@
   <suppress-warning text="skipping field 'Manager::m_sessions' with unmatched type 'smtk::shared_ptr&lt;UUIDsToSessions&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::Manager', unmatched parameter type 'shared_ptr&lt;smtk::model::Manager::storage_type&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_arrangements' with unmatched type 'smtk::shared_ptr&lt;UUIDsToArrangements&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::m_attributeSystems' with unmatched type 'std::set&lt;smtk::attribute::WeakSystemPtr,std::owner_less&lt;smtk::attribute::WeakSystemPtr&gt;&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::m_attributeSystems' with unmatched type 'std::set&lt;smtk::attribute::WeakSystemPtr,smtk::model::Manager::SystemLessThan&gt;'"/>
   <suppress-warning text="skipping field 'UUIDGenerator::P' with unmatched type 'Internal'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::assignDefaultNamesWithOwner', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
   <suppress-warning text="skipping field 'ResourceSet::m_resourceMap' with unmatched type 'std::map&lt;std::string,ResourceWrapper*&gt;'"/>
