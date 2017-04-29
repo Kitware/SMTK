@@ -57,6 +57,7 @@ public slots:
     emit activateOperationTarget(eid);
   }
   virtual void displayResult(const smtk::io::Logger& html);
+  virtual void resetUI();
 
 signals:
   void operationRequested(const smtk::model::OperatorPtr& brOp);

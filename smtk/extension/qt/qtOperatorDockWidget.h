@@ -36,6 +36,9 @@ public:
   qtOperatorDockWidget(QWidget* p = NULL);
   ~qtOperatorDockWidget();
 
+public slots:
+  void reset();
+
 signals:
   void closing();
 

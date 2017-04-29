@@ -1064,6 +1064,8 @@ qtOperatorDockWidget* qtModelView::operatorsDock()
 
   this->m_OperatorsWidget = opWidget;
   this->m_OperatorsDock = dw;
+  QObject::connect(&qtActiveObjects::instance(), SIGNAL(activeModelChanged()),
+    this->m_OperatorsDock, SLOT(reset()), Qt::UniqueConnection);
   //  this->m_OperatorsDock->hide();
   return dw;
 }
