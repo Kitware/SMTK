@@ -60,7 +60,7 @@ struct ItemExpressionInfo
 class SMTKCORE_EXPORT XmlDocV1Parser
 {
 public:
-  XmlDocV1Parser(smtk::attribute::System& asys);
+  XmlDocV1Parser(smtk::attribute::SystemPtr asys);
   virtual ~XmlDocV1Parser();
   virtual void process(pugi::xml_document& doc);
   virtual void process(pugi::xml_node& rootNode);
@@ -136,7 +136,7 @@ protected:
   smtk::model::BitFlags decodeModelEntityMask(const std::string& s);
   static int decodeColorInfo(const std::string& s, double* color);
   bool m_reportAsError;
-  smtk::attribute::System& m_system;
+  smtk::attribute::SystemPtr m_system;
   std::vector<ItemExpressionDefInfo> m_itemExpressionDefInfo;
   std::vector<AttRefDefInfo> m_attRefDefInfo;
   std::vector<ItemExpressionInfo> m_itemExpressionInfo;

@@ -274,7 +274,7 @@ bool RefItem::assign(ConstItemPtr& sourceItem, unsigned int options)
   }
 
   // Get reference to attribute system
-  System* system = this->attribute()->system();
+  SystemPtr system = this->attribute()->system();
 
   // Update values, copying as practical
   this->setNumberOfValues(sourceRefItem->numberOfValues());

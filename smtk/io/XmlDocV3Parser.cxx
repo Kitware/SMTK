@@ -19,7 +19,7 @@ using namespace pugi;
 using namespace smtk::io;
 using namespace smtk;
 
-XmlDocV3Parser::XmlDocV3Parser(smtk::attribute::System& mySystem)
+XmlDocV3Parser::XmlDocV3Parser(smtk::attribute::SystemPtr mySystem)
   : XmlDocV2Parser(mySystem)
 {
 }

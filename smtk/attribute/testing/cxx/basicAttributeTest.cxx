@@ -17,7 +17,8 @@
 int main()
 {
   int status = 0;
-  smtk::attribute::System system;
+  smtk::attribute::SystemPtr sysptr = smtk::attribute::System::create();
+  smtk::attribute::System& system(*sysptr.get());
   std::cout << "System Created\n";
   smtk::common::Resource::Type t = system.resourceType();
   if (t != smtk::common::Resource::ATTRIBUTE)
@@ -179,7 +180,7 @@ int main()
       std::cout << "Should not applies to interior node.\n";
       status++;
     }
-    if (att->system() != &system)
+    if (att->system() != sysptr)
     {
       std::cout << "Should be this system.\n";
       status++;

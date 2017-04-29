@@ -115,7 +115,7 @@ void qtAttributeDisplay::createWidget()
   BottomLayout->setMargin(0);
   BottomFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 */
-  const System* attSys = this->Internals->UIManager->attSystem();
+  const SystemPtr attSys = this->Internals->UIManager->attSystem();
 
   this->Internals->FilterByCheck = new QCheckBox(this->Internals->FiltersFrame);
   this->Internals->FilterByCheck->setText("Show by Category: ");
@@ -274,7 +274,7 @@ void qtAttributeDisplay::initSelectPropCombo(
     return;
   }
   std::vector<smtk::attribute::AttributePtr> result;
-  System* attSystem = attDef->system();
+  SystemPtr attSystem = attDef->system();
   attSystem->findAttributes(attDef, result);
   if (result.size() == 0)
   {
@@ -346,7 +346,7 @@ void qtAttributeDisplay::getDefinitionsWithAssociations()
   if (!this->Internals->UIManager)
     return;
 
-  smtk::attribute::System* attsys = this->Internals->UIManager->attSystem();
+  smtk::attribute::SystemPtr attsys = this->Internals->UIManager->attSystem();
   this->Internals->AllAssignedDefs.clear();
   this->Internals->AttDefMap.clear();
 

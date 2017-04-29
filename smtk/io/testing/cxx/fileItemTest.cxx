@@ -29,12 +29,12 @@ namespace si = smtk::io;
 int testFileItemSerialization()
 {
   // Create simple attribute system with file item assigned 1 value
-  sa::System system;
-  sa::DefinitionPtr attdef = system.createDefinition("file-item-test");
+  auto system = sa::System::create();
+  sa::DefinitionPtr attdef = system->createDefinition("file-item-test");
   sa::FileItemDefinitionPtr itemdef = sa::FileItemDefinition::New("file-item");
   attdef->addItemDefinition(itemdef);
 
-  sa::AttributePtr att = system.createAttribute("file-item-att", attdef);
+  sa::AttributePtr att = system->createAttribute("file-item-att", attdef);
   sa::FileItemPtr item = att->findFile("file-item");
   item->setValue(__FILE__);
 
@@ -45,7 +45,7 @@ int testFileItemSerialization()
   writer.writeContents(system, content, logger);
 
   // Deserialize
-  sa::System readbackSystem;
+  sa::SystemPtr readbackSystem = sa::System::create();
   si::AttributeReader reader;
   bool err = reader.readContents(readbackSystem, content, logger);
   if (err)
@@ -56,7 +56,7 @@ int testFileItemSerialization()
   }
 
   // Check file item
-  sa::AttributePtr readbackAtt = readbackSystem.findAttribute("file-item-att");
+  sa::AttributePtr readbackAtt = readbackSystem->findAttribute("file-item-att");
   sa::FileItemPtr readbackItem = readbackAtt->findFile("file-item");
   test(readbackItem->value() == __FILE__, "file item did not match");
 

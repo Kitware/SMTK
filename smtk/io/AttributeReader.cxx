@@ -142,7 +142,7 @@ bool Internal_scanIncludes(pugi::xml_node& root, std::vector<std::string>& inclu
 }
 
 void Internal_parseXml(
-  smtk::attribute::System& system, pugi::xml_node& root, bool reportAsError, Logger& logger)
+  smtk::attribute::SystemPtr system, pugi::xml_node& root, bool reportAsError, Logger& logger)
 {
   if (!root)
   {
@@ -178,7 +178,7 @@ void Internal_parseXml(
   }
 }
 
-void Internal_readAttributes(smtk::attribute::System& system, const std::string& initialFileName,
+void Internal_readAttributes(smtk::attribute::SystemPtr system, const std::string& initialFileName,
   pugi::xml_node& root, const std::vector<std::string>& spaths, bool reportAsError, Logger& logger)
 {
   if (!root)
@@ -229,7 +229,7 @@ void Internal_readAttributes(smtk::attribute::System& system, const std::string&
 } // namespace
 
 bool AttributeReader::read(
-  smtk::attribute::System& system, const std::string& filename, bool includePath, Logger& logger)
+  smtk::attribute::SystemPtr system, const std::string& filename, bool includePath, Logger& logger)
 {
   logger.reset();
   // First load in the xml document
@@ -266,13 +266,13 @@ bool AttributeReader::read(
 }
 
 bool AttributeReader::readContents(
-  smtk::attribute::System& system, const std::string& filecontents, Logger& logger)
+  smtk::attribute::SystemPtr system, const std::string& filecontents, Logger& logger)
 {
   return this->readContents(system, filecontents.c_str(), filecontents.size(), logger);
 }
 
 bool AttributeReader::readContents(
-  smtk::attribute::System& system, const char* content, std::size_t length, Logger& logger)
+  smtk::attribute::SystemPtr system, const char* content, std::size_t length, Logger& logger)
 {
   logger.reset();
   // First load in the xml document
@@ -290,7 +290,7 @@ bool AttributeReader::readContents(
 }
 
 bool AttributeReader::readContents(
-  smtk::attribute::System& system, pugi::xml_node& root, Logger& logger)
+  smtk::attribute::SystemPtr system, pugi::xml_node& root, Logger& logger)
 {
   logger.reset();
   if (root)

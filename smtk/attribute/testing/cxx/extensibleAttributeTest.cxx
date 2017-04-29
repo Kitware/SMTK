@@ -607,12 +607,12 @@ int checkDirectoryItem(const char* name, smtk::attribute::AttributePtr att, bool
   return checkItem<>(sitem, isExtensible);
 }
 
-int checkSystem(smtk::attribute::System& system)
+int checkSystem(smtk::attribute::SystemPtr system)
 {
   int status = 0;
 
   std::cout << "Checking Extensible Value Items........\n";
-  smtk::attribute::DefinitionPtr def = system.findDefinition("Derived2");
+  smtk::attribute::DefinitionPtr def = system->findDefinition("Derived2");
   if (!def)
   {
     std::cerr << "Could not find Derived 2 Def! - ERROR\n";
@@ -710,10 +710,10 @@ int checkSystem(smtk::attribute::System& system)
   }
 
   // Find or Create an attribute
-  smtk::attribute::AttributePtr att = system.findAttribute("Derived2Att");
+  smtk::attribute::AttributePtr att = system->findAttribute("Derived2Att");
   if (!att)
   {
-    att = system.createAttribute("Derived2Att", def);
+    att = system->createAttribute("Derived2Att", def);
     if (!att)
     {
       std::cerr << "Could not create Attribute - ERROR\n";
@@ -781,7 +781,7 @@ int checkSystem(smtk::attribute::System& system)
   }
 
   std::cout << "Checking Extensible Group Items........\n";
-  def = system.findDefinition("Derived3");
+  def = system->findDefinition("Derived3");
   if (!def)
   {
     std::cerr << "Could not find Derived 3 Def! - ERROR\n";
@@ -836,10 +836,10 @@ int checkSystem(smtk::attribute::System& system)
   }
 
   // Find or Create an attribute
-  att = system.findAttribute("Derived3Att");
+  att = system->findAttribute("Derived3Att");
   if (!att)
   {
-    att = system.createAttribute("Derived3Att", def);
+    att = system->createAttribute("Derived3Att", def);
     if (!att)
     {
       std::cerr << "Could not create Attribute - ERROR\n";
@@ -885,7 +885,7 @@ int main(int argc, char* argv[])
   std::string outputFilename = argv[2];
 
   {
-    smtk::attribute::System system;
+    smtk::attribute::SystemPtr system = smtk::attribute::System::create();
     std::cout << "System Created\n";
     smtk::io::AttributeReader reader;
     smtk::io::Logger logger;
@@ -926,7 +926,7 @@ int main(int argc, char* argv[])
 
   //Use separate scope to read attribute system back in
   {
-    smtk::attribute::System readbackSystem;
+    smtk::attribute::SystemPtr readbackSystem = smtk::attribute::System::create();
     std::cout << "Readback System Created\n";
     smtk::io::AttributeReader reader2;
     smtk::io::Logger logger2;

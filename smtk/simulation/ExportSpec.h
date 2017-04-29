@@ -31,8 +31,8 @@ class SMTKCORE_EXPORT ExportSpec
 {
 public:
   // Data-get methods, intended to be called from python scripts
-  smtk::attribute::System* getSimulationAttributes() const { return m_simulationSystem; }
-  smtk::attribute::System* getExportAttributes() const { return m_exportSystem; }
+  smtk::attribute::SystemPtr getSimulationAttributes() const { return m_simulationSystem; }
+  smtk::attribute::SystemPtr getExportAttributes() const { return m_exportSystem; }
   smtk::model::GridInfoPtr getAnalysisGridInfo() const { return m_analysisGridInfo; }
   smtk::io::Logger getLogger() const { return m_logger; }
 
@@ -40,16 +40,16 @@ public:
   ExportSpec();
   void clear();
 
-  void setSimulationAttributes(smtk::attribute::System* system) { m_simulationSystem = system; }
-  void setExportAttributes(smtk::attribute::System* system) { m_exportSystem = system; }
+  void setSimulationAttributes(smtk::attribute::SystemPtr system) { m_simulationSystem = system; }
+  void setExportAttributes(smtk::attribute::SystemPtr system) { m_exportSystem = system; }
   void setAnalysisGridInfo(smtk::model::GridInfoPtr analysisGridInfo)
   {
     m_analysisGridInfo = analysisGridInfo;
   }
 
 private:
-  smtk::attribute::System* m_simulationSystem;
-  smtk::attribute::System* m_exportSystem;
+  smtk::attribute::SystemPtr m_simulationSystem;
+  smtk::attribute::SystemPtr m_exportSystem;
   smtk::model::GridInfoPtr m_analysisGridInfo;
   smtk::io::Logger m_logger;
 };

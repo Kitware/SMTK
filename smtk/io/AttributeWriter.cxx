@@ -57,7 +57,7 @@ unsigned int AttributeWriter::fileVersion() const
 }
 
 bool AttributeWriter::write(
-  const smtk::attribute::System& system, const std::string& filename, Logger& logger)
+  const smtk::attribute::SystemPtr system, const std::string& filename, Logger& logger)
 {
   logger.reset();
   XmlStringWriter* theWriter = this->newXmlStringWriter(system);
@@ -85,7 +85,7 @@ bool AttributeWriter::write(
   return logger.hasErrors();
 }
 
-bool AttributeWriter::writeContents(const smtk::attribute::System& system,
+bool AttributeWriter::writeContents(const smtk::attribute::SystemPtr system,
   std::string& filecontents, Logger& logger, bool no_declaration)
 {
   logger.reset();
@@ -99,7 +99,7 @@ bool AttributeWriter::writeContents(const smtk::attribute::System& system,
   return logger.hasErrors();
 }
 
-XmlStringWriter* AttributeWriter::newXmlStringWriter(const smtk::attribute::System& system) const
+XmlStringWriter* AttributeWriter::newXmlStringWriter(const smtk::attribute::SystemPtr system) const
 {
   XmlStringWriter* writer = NULL;
   switch (this->m_fileVersion)

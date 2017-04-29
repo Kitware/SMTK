@@ -21,7 +21,7 @@ if __name__ == '__main__':
     errcode = 0
 
     # Create attribute definition with 2 datetime item definiitons
-    system = smtk.attribute.System()
+    system = smtk.attribute.System.create()
     attdef = system.createDefinition('test-att')
 
     # First DateTimeItemDefinition

@@ -28,7 +28,8 @@ int main()
 {
   // ----
   // I. First see how things work when System is not yet set.
-  attribute::System sys;
+  attribute::SystemPtr sysptr = attribute::System::create();
+  attribute::System& sys(*sysptr.get());
   test(!sys.refModelManager(), "System should not have model storage by default.");
 
   DefinitionPtr def = sys.createDefinition("testDef");

@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
     return -1;
   }
   {
-    smtk::attribute::System system;
+    smtk::attribute::SystemPtr system = smtk::attribute::System::create();
     smtk::io::Logger logger;
     smtk::io::AttributeReader reader;
     smtk::io::AttributeWriter writer;

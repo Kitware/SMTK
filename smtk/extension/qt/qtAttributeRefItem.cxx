@@ -45,7 +45,7 @@ void init_Att_Names_and_NEW(QList<QString>& attNames, const RefItemDefinition* i
   }
   attNames.push_back("None");
   std::vector<smtk::attribute::AttributePtr> result;
-  System* attSystem = attDef->system();
+  SystemPtr attSystem = attDef->system();
   attSystem->findAttributes(attDef, result);
   std::vector<smtk::attribute::AttributePtr>::iterator it;
   for (it = result.begin(); it != result.end(); ++it)
@@ -483,7 +483,7 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
     const RefItemDefinition* itemDef =
       dynamic_cast<const RefItemDefinition*>(item->definition().get());
     attribute::DefinitionPtr attDef = itemDef->attributeDefinition();
-    System* attSystem = attDef->system();
+    SystemPtr attSystem = attDef->system();
     if (curIdx == comboBox->count() - 1) // create New attribute
     {
       QList<smtk::attribute::DefinitionPtr> AllDefs;

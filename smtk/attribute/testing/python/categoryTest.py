@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
     status = 0
 
-    system = smtk.attribute.System()
+    system = smtk.attribute.System.create()
     print 'System created'
 
     expDef = system.createDefinition("ExpDef")

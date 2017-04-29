@@ -66,7 +66,7 @@ const char* testInput =
 
 int main()
 {
-  smtk::attribute::System system;
+  smtk::attribute::SystemPtr system = smtk::attribute::System::create();
   smtk::io::Logger logger;
   smtk::io::AttributeReader reader;
 
@@ -78,7 +78,7 @@ int main()
   }
 
   std::vector<smtk::attribute::AttributePtr> atts;
-  system.attributes(atts);
+  system->attributes(atts);
   if (atts.size() != 1)
   {
     std::cerr << "Unexpected number of attributes: " << atts.size() << "\n";
@@ -117,7 +117,7 @@ int main()
     return -2;
   }
 
-  smtk::attribute::System copiedSystem;
+  smtk::attribute::SystemPtr copiedSystem = smtk::attribute::System::create();
   if (reader.read(copiedSystem, fileName, logger))
   {
     std::cerr << "Failed to read from " << fileName << "\n";
@@ -127,7 +127,7 @@ int main()
 
   {
     std::vector<smtk::attribute::AttributePtr> copiedAtts;
-    copiedSystem.attributes(copiedAtts);
+    copiedSystem->attributes(copiedAtts);
     if (copiedAtts.size() != 1)
     {
       std::cerr << "Unexpected number of attributes: " << copiedAtts.size() << "\n";

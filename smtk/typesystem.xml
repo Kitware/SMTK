@@ -370,13 +370,18 @@
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;Attribute&gt;' of 'Attribute' is not known"/>
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;Definition&gt;' of 'Definition' is not known"/>
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;Item&gt;' of 'Item' is not known"/>
+  <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'Resource' is not known"/>
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'Manager' is not known"/>
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'Session' is not known"/>
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'DescriptivePhrase' is not known"/>
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'Operator' is not known"/>
+  <suppress-warning text="skipping function 'smtk::attribute::System::create', unmatched return type 'smtk::shared_ptr&lt;smtk::attribute::System::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::Manager::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::Manager::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::Manager::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::System::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::attribute::System::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::System::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::attribute::System::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Session::operatorSystem', unmatched return type 'smtk::attribute::ConstSystemPtr'"/>
 
   <!-- TODO: Fix or categorize these warnings -->
   <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::addEntityProperties', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
@@ -1223,6 +1228,23 @@
   <value-type template="smtk::shared_ptr" args="smtk::attribute::MeshItem" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::MeshItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::System">
+    <add-function
+      signature="createDefinition(const std::string &amp;)"
+      return-type="smtk::shared_ptr&lt;smtk::attribute::Definition&gt;">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE %0 = %CPPSELF->get()->createDefinition(%1);
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+      </inject-code>
+    </add-function>
+    <add-function
+      signature="attributes()"
+      return-type="std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Attribute&gt; &gt;">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE %0;
+        %CPPSELF->get()->attributes(%0);
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+      </inject-code>
+    </add-function>
     <modify-function signature="findAttributes(const std::string &amp;, std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Attribute&gt; &gt; &amp;)">
       <modify-argument index="2">
         <remove-argument />
@@ -2162,6 +2184,14 @@
       <object-type name="System">
         <include file-name="smtk/attribute/System.h" location="local" />
         <enum-type name="CopyOptions" />
+        <add-function signature="create()"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::attribute::System&gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::attribute::System::create();
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
         <add-function signature="_ExporterGeneratedFunStringConverterDoNotUse_(std::string const &amp;)"
           static="yes"
           return-type="smtk::attribute::System *">
@@ -2271,7 +2301,7 @@
           static="yes"
           return-type="smtk::shared_ptr&lt;smtk::attribute::System &gt;">
           <inject-code>
-            %RETURN_TYPE %0(new smtk::attribute::System());
+            %RETURN_TYPE %0(smtk::attribute::System::create());
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
@@ -2494,7 +2524,7 @@
       <object-type name="AttributeWriter">
         <include file-name="smtk/io/AttributeWriter.h" location="local"/>
         <modify-function
-          signature="writeContents(const smtk::attribute::System &amp;, std::string &amp;, smtk::io::Logger &amp;, bool)">
+          signature="writeContents(smtk::shared_ptr&lt;smtk::attribute::System&gt;, std::string &amp;, smtk::io::Logger &amp;, bool)">
           <modify-argument index="return">
             <replace-type modified-type="std::string">
             </replace-type>
@@ -2581,8 +2611,6 @@
       <object-type name="ExportSpec">
         <include file-name="smtk/simulation/ExportSpec.h" location="local"/>
         <modify-function signature="clear()" access="private" />
-        <modify-function signature="setSimulationAttributes(smtk::attribute::System*)" access="private" />
-        <modify-function signature="setExportAttributes(smtk::attribute::System*)" access="private" />
         <modify-function signature="setAnalysisGridInfo(smtk::shared_ptr&lt;smtk::model::GridInfo&gt;)" access="private" />
         <add-function signature="_InternalConverterDoNotUse_(std::string const &amp;)"
           static="yes"

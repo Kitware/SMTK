@@ -320,7 +320,7 @@ namespace io
 
 template <typename T>
 int cJSON_GetObjectParameters(
-  cJSON* node, T& obj, smtk::attribute::System* sys, const char* attName, const char* attXML)
+  cJSON* node, T& obj, smtk::attribute::SystemPtr sys, const char* attName, const char* attXML)
 {
   cJSON* params = cJSON_GetObjectItem(node, attXML);
   cJSON* opspec = cJSON_GetObjectItem(node, attName);
@@ -330,7 +330,7 @@ int cJSON_GetObjectParameters(
     smtk::io::Logger log;
     smtk::io::AttributeReader rdr;
     rdr.setReportDuplicateDefinitionsAsErrors(false);
-    if (rdr.readContents(*sys, params->valuestring, strlen(params->valuestring), log))
+    if (rdr.readContents(sys, params->valuestring, strlen(params->valuestring), log))
     {
       std::cerr << "Error. Log follows:\n---\n" << log.convertToString() << "\n---\n";
       throw std::string("Could not parse operator parameter XML.");
@@ -719,7 +719,7 @@ int LoadJSON::ofRemoteSession(
   smtk::io::AttributeReader rdr;
   rdr.setReportDuplicateDefinitionsAsErrors(false);
   if (rdr.readContents(
-        *destSession->operatorSystem(), opsObj->valuestring, strlen(opsObj->valuestring), log))
+        destSession->operatorSystem(), opsObj->valuestring, strlen(opsObj->valuestring), log))
   {
     std::cerr << "Error. Log follows:\n---\n" << log.convertToString() << "\n---\n";
     throw std::string("Could not parse operator XML.");
@@ -930,7 +930,7 @@ int LoadJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
 int LoadJSON::ofOperatorResult(
   cJSON* node, OperatorResult& resOut, smtk::model::RemoteOperatorPtr op)
 {
-  smtk::attribute::System* opSys = op->session()->operatorSystem();
+  smtk::attribute::SystemPtr opSys = op->session()->operatorSystem();
   // Deserialize the OperatorResult into \a resOut:
   int status = cJSON_GetObjectParameters(node, resOut, opSys, "result", "resultXML");
 

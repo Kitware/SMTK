@@ -54,7 +54,7 @@ if __name__ == '__main__':
     att_folder = os.path.join(smtk_test_data, 'attribute', 'attribute_system')
     att_path = os.path.join(att_folder, SBT_FILENAME)
     logging.info('Reading %s' % att_path)
-    input_system = smtk.attribute.System()
+    input_system = smtk.attribute.System.create()
     reader = smtk.io.AttributeReader()
     logger = smtk.io.Logger()
     err = reader.read(input_system, att_path, logger)
@@ -66,7 +66,7 @@ if __name__ == '__main__':
     err_count = 0
 
     # Instantiate 2nd system
-    test_system = smtk.attribute.System()
+    test_system = smtk.attribute.System.create()
 
     # Copy SecondConcrete definition, which should copy alot of stuff
     source_def = input_system.findDefinition('SecondConcrete')

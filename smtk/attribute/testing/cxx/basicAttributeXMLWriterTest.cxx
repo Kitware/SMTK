@@ -56,7 +56,8 @@ int main(int argc, char* argv[])
       std::cerr << "Usage: " << argv[0] << " FullAttributeFilename InstanceOnlyFileName\n";
       return -1;
     }
-    smtk::attribute::System system;
+    smtk::attribute::SystemPtr sysptr = smtk::attribute::System::create();
+    smtk::attribute::System& system(*sysptr.get());
     std::cout << "System Created\n";
     // Lets add some analyses
     std::set<std::string> analysis;
@@ -188,7 +189,7 @@ int main(int argc, char* argv[])
     vitem = smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(item);
     smtk::io::AttributeWriter writer;
     smtk::io::Logger logger;
-    if (writer.write(system, argv[1], logger))
+    if (writer.write(sysptr, argv[1], logger))
     {
       std::cerr << "Errors encountered creating Attribute File:\n";
       std::cerr << logger.convertToString();
@@ -196,9 +197,9 @@ int main(int argc, char* argv[])
     }
 
     // Sanity check readback
-    smtk::attribute::System inputSystem;
+    auto inputSysptr = smtk::attribute::System::create();
     smtk::io::AttributeReader reader;
-    if (reader.read(inputSystem, argv[1], logger))
+    if (reader.read(inputSysptr, argv[1], logger))
     {
       std::cerr << "Errors encountered reading back Attribute File:\n";
       std::cerr << logger.convertToString();
@@ -209,7 +210,7 @@ int main(int argc, char* argv[])
     writer.includeModelInformation(false);
     writer.includeDefinitions(false);
     writer.includeViews(false);
-    if (writer.write(system, argv[2], logger))
+    if (writer.write(sysptr, argv[2], logger))
     {
       std::cerr << "Errors encountered creating Instance Only Attribute File:\n";
       std::cerr << logger.convertToString();

@@ -25,7 +25,7 @@ PySharedPtrClass< smtk::io::XmlV3StringWriter, smtk::io::XmlV2StringWriter > pyb
   PySharedPtrClass< smtk::io::XmlV3StringWriter, smtk::io::XmlV2StringWriter > instance(m, "XmlV3StringWriter");
   instance
     .def(py::init<::smtk::io::XmlV3StringWriter const &>())
-    .def(py::init<::smtk::attribute::System const &>())
+    .def(py::init<::smtk::attribute::SystemPtr>())
     ;
   return instance;
 }

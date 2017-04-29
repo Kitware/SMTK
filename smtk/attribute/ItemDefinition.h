@@ -52,7 +52,7 @@ public:
     std::queue<std::pair<std::string, smtk::attribute::ItemDefinitionPtr> > UnresolvedExpItems;
     // List of RefItemDefinitions that reference types not currently in this system
     std::queue<std::pair<std::string, smtk::attribute::ItemDefinitionPtr> > UnresolvedRefItems;
-    CopyInfo(const smtk::attribute::System* mgr)
+    CopyInfo(const smtk::attribute::SystemPtr mgr)
       : ToSystem(*mgr)
     {
     }

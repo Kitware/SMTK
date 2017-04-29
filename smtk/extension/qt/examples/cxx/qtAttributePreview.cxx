@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
   }
 
   // Instantiate and load attribute system
-  smtk::attribute::System system;
+  smtk::attribute::SystemPtr system = smtk::attribute::System::create();
   char* inputPath = argv[1];
   std::cout << "Loading simulation file: " << inputPath << std::endl;
   smtk::io::AttributeReader reader;
@@ -73,13 +73,13 @@ int main(int argc, char* argv[])
 
   // If system contains no views, create InstancedView by default
   // assume there is at most one root type view
-  smtk::common::ViewPtr root = system.findTopLevelView();
+  smtk::common::ViewPtr root = system->findTopLevelView();
 
   if (!root)
   {
     root = smtk::common::View::New("Group", "RootView");
     root->details().setAttribute("TopLevel", "true");
-    system.addView(root);
+    system->addView(root);
     smtk::common::View::Component& temp = root->details().addChild("Views");
     (void)temp;
     int viewsIndex = root->details().findChild("Views");
@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
     smtk::common::View::Component& viewsComp = root->details().child(viewsIndex);
     std::vector<smtk::attribute::DefinitionPtr> defs;
     std::vector<smtk::attribute::DefinitionPtr> baseDefinitions;
-    system.findBaseDefinitions(baseDefinitions);
+    system->findBaseDefinitions(baseDefinitions);
     std::vector<smtk::attribute::DefinitionPtr>::const_iterator baseIter;
 
     for (baseIter = baseDefinitions.begin(); baseIter != baseDefinitions.end(); baseIter++)
@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
       }
 
       std::vector<smtk::attribute::DefinitionPtr> derivedDefs;
-      system.findAllDerivedDefinitions(*baseIter, true, derivedDefs);
+      system->findAllDerivedDefinitions(*baseIter, true, derivedDefs);
       defs.insert(defs.end(), derivedDefs.begin(), derivedDefs.end());
     }
 
@@ -115,14 +115,14 @@ int main(int argc, char* argv[])
         instanced->details().addChild("InstancedAttributes").addChild("Att");
       comp.setAttribute("Type", (*defIter)->type());
       comp.setAttribute("Name", (*defIter)->type());
-      system.addView(instanced);
-      smtk::attribute::AttributePtr instance = system.createAttribute((*defIter)->type());
+      system->addView(instanced);
+      smtk::attribute::AttributePtr instance = system->createAttribute((*defIter)->type());
       comp.setContents(instance->name());
       viewsComp.addChild("View").setAttribute("Title", (*defIter)->type());
     }
   }
 
-  smtk::model::ManagerPtr modelManager = system.refModelManager();
+  smtk::model::ManagerPtr modelManager = system->refModelManager();
 
   // Instantiate Qt application
   QApplication* app = new QApplication(argc, argv);
@@ -150,7 +150,7 @@ int main(int argc, char* argv[])
     // Render one view (experimental)
     // First check if argv[3] isa name
     std::string input = argv[3];
-    view = system.findView(input);
+    view = system->findView(input);
     if (!view)
     {
       std::cout << "ERROR: View \"" << input << "\" not found" << std::endl;

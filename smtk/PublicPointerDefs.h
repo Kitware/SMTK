@@ -363,8 +363,9 @@ typedef smtk::shared_ptr<const smtk::attribute::VoidItemDefinition> ConstVoidIte
 typedef smtk::shared_ptr<const smtk::attribute::RefItem> ConstRefItemPtr;
 typedef smtk::shared_ptr<const smtk::attribute::RefItemDefinition> ConstRefItemDefinitionPtr;
 
-// Note used by SMTK but added for completeness
 typedef smtk::shared_ptr<smtk::attribute::System> SystemPtr;
+typedef smtk::shared_ptr<const smtk::attribute::System> ConstSystemPtr;
+typedef smtk::weak_ptr<smtk::attribute::System> WeakSystemPtr;
 }
 
 namespace bridge

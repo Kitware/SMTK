@@ -157,7 +157,7 @@ void qtGroupView::createWidget()
   smtk::common::View::Component& viewsComp = view->details().child(viewsIndex);
   std::size_t i, n = viewsComp.numberOfChildren();
   smtk::common::ViewPtr v;
-  smtk::attribute::System* sys = this->uiManager()->attSystem();
+  smtk::attribute::SystemPtr sys = this->uiManager()->attSystem();
   qtBaseView* qtView;
 
   for (i = 0; i < n; i++)

@@ -42,11 +42,12 @@ const char* testInput =
 
 int main()
 {
-  smtk::attribute::System system;
+  smtk::attribute::SystemPtr sysptr = smtk::attribute::System::create();
+  smtk::attribute::System& system(*sysptr.get());
   smtk::io::Logger logger;
   smtk::io::AttributeReader reader;
 
-  if (reader.readContents(system, testInput, logger))
+  if (reader.readContents(sysptr, testInput, logger))
   {
     std::cerr << "Encountered Errors while reading input data\n";
     std::cerr << logger.convertToString();

@@ -64,13 +64,13 @@ public:
   }
 };
 
-AttributePtr createAttribForTest(System& system)
+AttributePtr createAttribForTest(SystemPtr system)
 {
-  DefinitionPtr def = system.createDefinition("test def");
+  DefinitionPtr def = system->createDefinition("test def");
   StringItemDefinitionPtr stringChild =
     def->addItemDefinition<StringItemDefinitionPtr>("test string");
 
-  AttributePtr att = system.createAttribute("testAtt", "test def");
+  AttributePtr att = system->createAttribute("testAtt", "test def");
   double color[] = { 3, 24, 12, 6 };
   att->setColor(color);
   att->setAppliesToBoundaryNodes(true);
@@ -89,7 +89,7 @@ int testLifecycle()
 
   // This should not crash even though the factory is null
   // (because a new default factory should be created on demand).
-  smtk::attribute::System system;
+  smtk::attribute::SystemPtr system = smtk::attribute::System::create();
   AttributePtr att = createAttribForTest(system);
   qtUIManager* mgr = new qtUIManager(system);
   QWidget* w = new QWidget;

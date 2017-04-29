@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
     status = 0
 
-    system = smtk.attribute.System()
+    system = smtk.attribute.System.create()
     print 'System created'
     base = system.createDefinition("BaseDef")
 
@@ -128,7 +128,8 @@ if __name__ == '__main__':
     for i in range(n):
         comp = att.item(i)
         print '\t%s Type = %s, ' % (comp.name(),
-                                    smtk.attribute.Item.type2String(comp.type())),
+                                    smtk.attribute.Item.type2String(
+                                        comp.type())),
         vcomp = smtk.attribute.ValueItem.CastTo(comp)
         if vcomp:
             if vcomp.type() == smtk.attribute.Item.DOUBLE:
@@ -203,7 +204,8 @@ if __name__ == '__main__':
     for i in range(n):
         comp = att.item(i)
         print '\t%s Type = %s, ' % (comp.name(),
-                                    smtk.attribute.Item.type2String(comp.type())),
+                                    smtk.attribute.Item.type2String(
+                                        comp.type())),
         vcomp = smtk.attribute.ValueItem.CastTo(comp)
         if vcomp:
             if vcomp.type() == smtk.attribute.Item.DOUBLE:

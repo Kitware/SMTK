@@ -51,7 +51,7 @@ class SMTKQTEXT_EXPORT qtUIManager : public QObject
   Q_OBJECT
 
 public:
-  qtUIManager(smtk::attribute::System& system);
+  qtUIManager(smtk::attribute::SystemPtr system);
   virtual ~qtUIManager();
 
   void initializeUI(QWidget* pWidget, bool useInternalFileBrowser = false);
@@ -62,7 +62,7 @@ public:
   qtBaseView* setSMTKView(const smtk::extension::ViewInfo& v, bool useInternalFileBrowser = false);
   smtk::common::ViewPtr smtkView() const { return this->m_smtkView; }
 
-  smtk::attribute::System* attSystem() const { return &this->m_AttSystem; }
+  smtk::attribute::SystemPtr attSystem() const { return this->m_AttSystem; }
 
   // Description:
   // Set/Get method of qtSelectionManager
@@ -197,7 +197,7 @@ private:
   bool AdvancedBold;   // true by default
   bool AdvancedItalic; // false by default
 
-  smtk::attribute::System& m_AttSystem;
+  smtk::attribute::SystemPtr m_AttSystem;
   bool m_useInternalFileBrowser;
 
   int m_maxValueLabelLength;

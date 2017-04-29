@@ -38,7 +38,7 @@ using namespace pugi;
 using namespace smtk::io;
 using namespace smtk;
 
-XmlDocV2Parser::XmlDocV2Parser(smtk::attribute::System& mySystem)
+XmlDocV2Parser::XmlDocV2Parser(smtk::attribute::SystemPtr mySystem)
   : XmlDocV1Parser(mySystem)
 {
 }
@@ -343,7 +343,7 @@ void XmlDocV2Parser::processModelEntityItem(
   xml_node valsNode;
   std::size_t i, n = item->numberOfValues();
   smtk::common::UUID uid;
-  smtk::model::ManagerPtr mmgr = this->m_system.refModelManager();
+  smtk::model::ManagerPtr mmgr = this->m_system->refModelManager();
   xml_node val;
   std::size_t numRequiredVals = item->numberOfRequiredValues();
   std::string attName;
@@ -468,7 +468,7 @@ void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node& node, attribute::Mesh
   }
 
   smtk::common::UUID cid;
-  smtk::model::ManagerPtr modelmgr = this->m_system.refModelManager();
+  smtk::model::ManagerPtr modelmgr = this->m_system->refModelManager();
   xml_node valsNode, val;
 
   std::size_t i = 0;
@@ -617,7 +617,7 @@ void XmlDocV2Parser::processViews(xml_node& root)
       view->setIconName(icon);
     }
     this->processViewComponent(view->details(), child, true);
-    this->m_system.addView(view);
+    this->m_system->addView(view);
   }
 }
 

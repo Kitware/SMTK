@@ -74,7 +74,7 @@ StringList SessionRef::operatorNames(bool includeAdvanced) const
 /**\brief Return the smtk::attribute::System holding all the operator definitions.
   *
   */
-smtk::attribute::System* SessionRef::opSys() const
+smtk::attribute::SystemPtr SessionRef::opSys() const
 {
   Session::Ptr brdg = this->session();
   if (!brdg)
@@ -87,7 +87,7 @@ smtk::attribute::System* SessionRef::opSys() const
   */
 OperatorDefinition SessionRef::opDef(const std::string& opName) const
 {
-  smtk::attribute::System* sys = this->opSys();
+  smtk::attribute::SystemPtr sys = this->opSys();
   if (!sys)
     return OperatorDefinition();
   return sys->findDefinition(opName);
@@ -110,7 +110,7 @@ Operator::Ptr SessionRef::op(const std::string& opName) const
 StringList SessionRef::operatorsForAssociation(BitFlags assocMask) const
 {
   StringList result;
-  smtk::attribute::System* sys = this->opSys();
+  smtk::attribute::SystemPtr sys = this->opSys();
   if (!assocMask || !sys)
     return result;
 

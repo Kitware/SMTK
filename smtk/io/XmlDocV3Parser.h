@@ -23,7 +23,7 @@ namespace io
 class SMTKCORE_EXPORT XmlDocV3Parser : public XmlDocV2Parser
 {
 public:
-  XmlDocV3Parser(smtk::attribute::System& system);
+  XmlDocV3Parser(smtk::attribute::SystemPtr system);
   virtual ~XmlDocV3Parser();
   virtual void process(pugi::xml_document& doc);
   virtual void process(pugi::xml_node& rootNode) { XmlDocV2Parser::process(rootNode); }

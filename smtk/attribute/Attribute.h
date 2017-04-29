@@ -181,7 +181,7 @@ public:
 
   bool isValid() const;
 
-  smtk::attribute::System* system() const;
+  smtk::attribute::SystemPtr system() const;
   smtk::model::ManagerPtr modelManager() const;
 
   void setUserData(const std::string& key, smtk::simulation::UserDataPtr value)

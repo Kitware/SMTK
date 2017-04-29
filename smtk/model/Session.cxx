@@ -47,16 +47,15 @@ namespace model
 /// Default constructor. This assigns a random session ID to each Session instance.
 Session::Session()
   : m_sessionId(smtk::common::UUID::random())
-  , m_operatorSys(NULL)
-  , m_manager(NULL)
+  , m_operatorSys(nullptr)
+  , m_manager(nullptr)
 {
   this->initializeOperatorSystem(Session::s_operators);
 }
 
-/// Destructor. We must delete the attribute system that tracks operator definitions.
+/// Destructor.
 Session::~Session()
 {
-  delete this->m_operatorSys;
 }
 
 /**\brief Return the name of the session type (i.e., the name of the modeling kernel).
@@ -238,14 +237,14 @@ void Session::declareDanglingEntity(const EntityRef& ent, SessionInfoBits presen
   * Each operator should have a definition of the same name held in this manager.
   */
 ///@{
-smtk::attribute::System* Session::operatorSystem()
+smtk::attribute::SystemPtr Session::operatorSystem()
 {
   return this->m_operatorSys;
 }
 
-const smtk::attribute::System* Session::operatorSystem() const
+smtk::attribute::ConstSystemPtr Session::operatorSystem() const
 {
-  return this->m_operatorSys;
+  return dynamic_pointer_cast<const smtk::attribute::System>(this->m_operatorSys);
 }
 ///@}
 
@@ -793,9 +792,9 @@ void Session::initializeOperatorSystem(const OperatorConstructors* opList)
   // we cannot remove Definitions from an attribute System
   // and may want to override an operator with a session-specific
   // version, we must wipe away whatever already exists.
-  smtk::attribute::System* other = this->m_operatorSys;
+  smtk::attribute::SystemPtr other = this->m_operatorSys;
 
-  this->m_operatorSys = new smtk::attribute::System;
+  this->m_operatorSys = smtk::attribute::System::create();
   // Create the "base" definitions that all operators and results will inherit.
   Definition::Ptr opdefn = this->m_operatorSys->createDefinition("operator");
 
@@ -844,7 +843,6 @@ void Session::initializeOperatorSystem(const OperatorConstructors* opList)
 
   if (!opList && this->inheritsOperators())
   {
-    delete this->m_operatorSys;
     this->m_operatorSys = other;
     return;
   }
@@ -861,7 +859,7 @@ void Session::initializeOperatorSystem(const OperatorConstructors* opList)
         continue;
 
       ok &= !rdr.readContents(
-        *this->m_operatorSys, it->second.first.c_str(), it->second.first.size(), tmpLog);
+        this->m_operatorSys, it->second.first.c_str(), it->second.first.size(), tmpLog);
     }
     if (!ok)
     {
@@ -908,8 +906,6 @@ void Session::initializeOperatorSystem(const OperatorConstructors* opList)
         }
       }
     }
-
-    delete other;
   }
 }
 
@@ -926,7 +922,7 @@ void Session::importOperatorXML(const std::string& opXML)
   {
     smtk::io::AttributeReader rdr;
     bool ok = true;
-    ok &= !rdr.readContents(*this->m_operatorSys, opXML.c_str(), opXML.size(), this->log());
+    ok &= !rdr.readContents(this->m_operatorSys, opXML.c_str(), opXML.size(), this->log());
 
     if (!ok)
     {

@@ -674,7 +674,7 @@ QWidget* qtInputsItem::createExpressionRefWidget(int elementIdx)
   std::vector<smtk::attribute::AttributePtr> result;
   if (attDef)
   {
-    System* lAttSystem = attDef->system();
+    SystemPtr lAttSystem = attDef->system();
     lAttSystem->findAttributes(attDef, result);
   }
   funCheck->setEnabled(result.size() > 0);
@@ -710,7 +710,7 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
 
   int elementIdx = funCheck->property("ElementIndex").toInt();
   auto inputitem = this->valueItem();
-  System* lAttSystem = inputitem->attribute()->system();
+  SystemPtr lAttSystem = inputitem->attribute()->system();
   if (!inputitem)
   {
     return;
@@ -830,7 +830,7 @@ void qtInputsItem::onExpressionReferenceChanged()
 
   if (curIdx >= 0)
   {
-    System* lAttSystem = item->attribute()->system();
+    SystemPtr lAttSystem = item->attribute()->system();
     AttributePtr attPtr = lAttSystem->findAttribute(comboBox->currentText().toStdString());
     if (elementIdx >= 0 && inputitem->isSet(elementIdx) &&
       attPtr == inputitem->expression(elementIdx))

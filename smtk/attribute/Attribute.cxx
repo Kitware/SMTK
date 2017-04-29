@@ -258,7 +258,7 @@ bool Attribute::isValid() const
   return true;
 }
 
-System* Attribute::system() const
+SystemPtr Attribute::system() const
 {
   return this->m_definition->system();
 }
@@ -272,7 +272,7 @@ System* Attribute::system() const
 smtk::model::ManagerPtr Attribute::modelManager() const
 {
   smtk::model::ManagerPtr result;
-  smtk::attribute::System* attSys = this->system();
+  smtk::attribute::SystemPtr attSys = this->system();
   if (attSys)
   {
     result = attSys->refModelManager();

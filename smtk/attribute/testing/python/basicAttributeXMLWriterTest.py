@@ -33,7 +33,7 @@ if __name__ == '__main__':
         print 'Usage: %s filename' % sys.argv[0]
         sys.exit(-1)
 
-    system = smtk.attribute.System()
+    system = smtk.attribute.System.create()
     print 'System created'
     # Let's add some analyses
     analysis = set()

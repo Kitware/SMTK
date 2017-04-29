@@ -547,7 +547,7 @@ void Operator::setResultOutcome(OperatorResult res, OperatorOutcome outcome)
 void Operator::eraseResult(OperatorResult res)
 {
   Session* brdg;
-  smtk::attribute::System* sys;
+  smtk::attribute::SystemPtr sys;
   if (!res || !(brdg = this->session()) || !(sys = brdg->operatorSystem()))
     return;
   sys->removeAttribute(res);

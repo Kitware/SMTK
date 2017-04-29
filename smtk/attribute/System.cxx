@@ -63,7 +63,7 @@ smtk::attribute::DefinitionPtr System::createDefinition(
       return smtk::attribute::DefinitionPtr();
     }
   }
-  smtk::attribute::DefinitionPtr newDef(new Definition(typeName, def, this));
+  smtk::attribute::DefinitionPtr newDef(new Definition(typeName, def, shared_from_this()));
   this->m_definitions[typeName] = newDef;
   if (def)
   {
@@ -79,12 +79,12 @@ smtk::attribute::DefinitionPtr System::createDefinition(
   smtk::attribute::DefinitionPtr def = this->findDefinition(typeName);
   // Does this definition already exist or if the base def is not part
   // of this manger
-  if (!(!def && (!baseDef || ((baseDef->system() == this)))))
+  if (!(!def && (!baseDef || ((baseDef->system() == shared_from_this())))))
   {
     return smtk::attribute::DefinitionPtr();
   }
 
-  smtk::attribute::DefinitionPtr newDef(new Definition(typeName, baseDef, this));
+  smtk::attribute::DefinitionPtr newDef(new Definition(typeName, baseDef, shared_from_this()));
   this->m_definitions[typeName] = newDef;
   if (baseDef)
   {
@@ -99,7 +99,7 @@ smtk::attribute::AttributePtr System::createAttribute(
 {
   // Make sure the definition belongs to this system or if the definition
   // is abstract
-  if ((def->system() != this) || def->isAbstract())
+  if ((def->system() != shared_from_this()) || def->isAbstract())
   {
     return smtk::attribute::AttributePtr();
   }
@@ -215,7 +215,7 @@ smtk::attribute::AttributePtr System::createAttribute(
 bool System::removeAttribute(smtk::attribute::AttributePtr att)
 {
   // Make sure that this system is managing this attribute
-  if (att->system() != this)
+  if (att->system() != shared_from_this())
   {
     return false;
   }
@@ -249,7 +249,7 @@ void System::findAttributes(
   smtk::attribute::DefinitionPtr def, std::vector<smtk::attribute::AttributePtr>& result) const
 {
   result.clear();
-  if (def && (def->system() == this))
+  if (def && (def->system() == shared_from_this()))
   {
     this->internalFindAttributes(def, result);
   }
@@ -285,7 +285,7 @@ void System::findAllDerivedDefinitions(smtk::attribute::DefinitionPtr def, bool 
   std::vector<smtk::attribute::DefinitionPtr>& result) const
 {
   result.clear();
-  if (def && (def->system() == this))
+  if (def && (def->system() == shared_from_this()))
   {
     this->internalFindAllDerivedDefinitions(def, onlyConcrete, result);
   }
@@ -315,7 +315,7 @@ void System::internalFindAllDerivedDefinitions(smtk::attribute::DefinitionPtr de
 bool System::rename(smtk::attribute::AttributePtr att, const std::string& newName)
 {
   // Make sure that this system is managing this attribute
-  if (att->system() != this)
+  if (att->system() != shared_from_this())
   {
     return false;
   }
@@ -505,7 +505,7 @@ smtk::attribute::DefinitionPtr System::copyDefinition(
   smtk::attribute::DefinitionPtr newDef = smtk::attribute::DefinitionPtr();
 
   // Call internal copy method
-  smtk::attribute::ItemDefinition::CopyInfo info(this);
+  smtk::attribute::ItemDefinition::CopyInfo info(shared_from_this());
   if (this->copyDefinitionImpl(sourceDef, info))
   {
     newDef = this->findDefinition(sourceDef->type());
@@ -688,7 +688,7 @@ smtk::attribute::AttributePtr System::copyAttribute(const smtk::attribute::Attri
   smtk::attribute::AttributePtr newAtt;
   smtk::attribute::DefinitionPtr newDef;
   // Are we copying the attribute to the same attribute system?
-  bool sameSystem = (this == sourceAtt->system());
+  bool sameSystem = (shared_from_this() == sourceAtt->system());
   std::string newName;
   if (sameSystem)
   {

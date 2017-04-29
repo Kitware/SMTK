@@ -31,7 +31,7 @@ namespace io
 class SMTKCORE_EXPORT XmlV3StringWriter : public XmlV2StringWriter
 {
 public:
-  XmlV3StringWriter(const smtk::attribute::System& system);
+  XmlV3StringWriter(const smtk::attribute::SystemPtr system);
   virtual ~XmlV3StringWriter();
 
 protected:

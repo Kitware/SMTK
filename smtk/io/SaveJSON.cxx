@@ -60,9 +60,10 @@ cJSON* cJSON_AddAttributeSpec(cJSON* opEntry,
 {
   if (spec)
   {
-    smtk::attribute::System tmpSys;
-    tmpSys.setRefModelManager(spec->modelManager());
-    tmpSys.copyAttribute(spec, static_cast<bool>(smtk::attribute::System::FORCE_COPY_ASSOCIATIONS));
+    smtk::attribute::SystemPtr tmpSys = smtk::attribute::System::create();
+    tmpSys->setRefModelManager(spec->modelManager());
+    tmpSys->copyAttribute(
+      spec, static_cast<bool>(smtk::attribute::System::FORCE_COPY_ASSOCIATIONS));
     smtk::io::Logger log;
     smtk::io::AttributeWriter wri;
     wri.includeDefinitions(false);
@@ -420,7 +421,7 @@ int SaveJSON::forManagerTessellation(const smtk::common::UUID& uid, cJSON* dict,
                                             static_cast<int>(tessIt->second.coords().size())));
   cJSON_AddItemToObject(tess, "faces",
     cJSON_CreateIntArray(tessIt->second.conn().empty() ? NULL : &tessIt->second.conn()[0],
-      static_cast<int>(tessIt->second.conn().size())));
+                          static_cast<int>(tessIt->second.conn().size())));
   cJSON_AddItemToObject(dict, "t", tess);
   return 1;
 }
@@ -450,7 +451,7 @@ int SaveJSON::forManagerAnalysis(const smtk::common::UUID& uid, cJSON* dict, Man
                                             static_cast<int>(meshIt->second.coords().size())));
   cJSON_AddItemToObject(mesh, "faces",
     cJSON_CreateIntArray(meshIt->second.conn().empty() ? NULL : &meshIt->second.conn()[0],
-      static_cast<int>(meshIt->second.conn().size())));
+                          static_cast<int>(meshIt->second.conn().size())));
   cJSON_AddItemToObject(dict, "m", mesh);
   return 1;
 }
@@ -607,7 +608,7 @@ int SaveJSON::forModelOperators(const smtk::common::UUID& uid, cJSON* entRec, Ma
   return 1; // SaveJSON::forOperators(ops, entRec);
 } */
 
-int SaveJSON::forOperatorDefinitions(smtk::attribute::System* opSys, cJSON* entRec)
+int SaveJSON::forOperatorDefinitions(smtk::attribute::SystemPtr opSys, cJSON* entRec)
 {
   smtk::io::Logger log;
   smtk::io::AttributeWriter wri;
@@ -616,7 +617,7 @@ int SaveJSON::forOperatorDefinitions(smtk::attribute::System* opSys, cJSON* entR
   wri.includeModelInformation(false);
   wri.includeViews(true); // now operator could specify views
   std::string xml;
-  bool err = wri.writeContents(*opSys, xml, log, true);
+  bool err = wri.writeContents(opSys, xml, log, true);
   if (!err)
   {
     cJSON_AddItemToObject(entRec, "ops", cJSON_CreateString(xml.c_str()));

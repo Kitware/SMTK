@@ -33,7 +33,7 @@ namespace io
 class SMTKCORE_EXPORT XmlStringWriter
 {
 public:
-  XmlStringWriter(const smtk::attribute::System& system)
+  XmlStringWriter(smtk::attribute::SystemPtr system)
     : m_system(system)
     , m_includeDefinitions(true)
     , m_includeInstances(true)
@@ -68,7 +68,7 @@ public:
   void includeViews(bool val) { this->m_includeViews = val; }
 
 protected:
-  const smtk::attribute::System& m_system;
+  smtk::attribute::SystemPtr m_system;
   bool m_includeDefinitions;
   bool m_includeInstances;
   bool m_includeModelInformation;

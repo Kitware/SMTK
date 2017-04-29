@@ -201,10 +201,10 @@ public:
 
   bool hasAttributes() const;
   bool hasAttribute(const smtk::common::UUID& attribId) const;
-  bool associateAttribute(smtk::attribute::System* sys, const smtk::common::UUID& attribId);
+  bool associateAttribute(smtk::attribute::SystemPtr sys, const smtk::common::UUID& attribId);
   bool disassociateAttribute(
-    smtk::attribute::System* sys, const smtk::common::UUID& attribId, bool reverse = true);
-  bool disassociateAllAttributes(smtk::attribute::System* sys, bool reverse = true);
+    smtk::attribute::SystemPtr sys, const smtk::common::UUID& attribId, bool reverse = true);
+  bool disassociateAllAttributes(smtk::attribute::SystemPtr sys, bool reverse = true);
 
   AttributeSet attributes() const;
 

@@ -8,9 +8,9 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#include "smtk/io/ResourceSetWriter.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
-#include "smtk/io/ResourceSetWriter.h"
 
 #include "smtk/attribute/System.h"
 
@@ -55,9 +55,9 @@ int main(int argc, const char* argv[])
   {
     const char* input_path = argv[i];
 
-    smtk::attribute::System* system = new smtk::attribute::System();
+    smtk::attribute::SystemPtr system = smtk::attribute::System::create();
     smtk::io::AttributeReader reader;
-    bool err = reader.read(*system, input_path, logger);
+    bool err = reader.read(system, input_path, logger);
     if (err)
     {
       std::cerr << "Error loading " << input_path << ": \n" << logger.convertToString() << "\n";

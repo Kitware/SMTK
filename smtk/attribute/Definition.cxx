@@ -25,7 +25,7 @@ double Definition::s_notApplicableBaseColor[4] = { 0.0, 0.0, 0.0, 0.0 };
 double Definition::s_defaultBaseColor[4] = { 1.0, 1.0, 1.0, 1.0 };
 
 Definition::Definition(
-  const std::string& myType, smtk::attribute::DefinitionPtr myBaseDef, System* mySystem)
+  const std::string& myType, smtk::attribute::DefinitionPtr myBaseDef, SystemPtr mySystem)
 {
   this->m_system = mySystem;
   this->m_baseDefinition = myBaseDef;
