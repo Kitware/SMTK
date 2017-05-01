@@ -91,7 +91,7 @@ int polyLines2modelEdges(vtkPolyData* mesh, smtk::model::Operator::Ptr edgeOp,
 int Import::taggedPolyData2PolygonModelEntities(
   vtkIdTypeArray* tagInfo, vtkPolyData* pdata, smtk::model::Model& model)
 {
-  smtk::bridge::polygon::Session* sess = this->polygonSession();
+  smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
   smtk::model::Manager::Ptr mgr = sess->manager();
   internal::pmodel::Ptr storage = this->findStorage<internal::pmodel>(model.entity());
   vtkPoints* points = pdata->GetPoints();
@@ -194,7 +194,7 @@ int Import::taggedPolyData2PolygonModelEntities(
 
 int Import::basicPolyData2PolygonModelEntities(vtkPolyData* polyLines, smtk::model::Model& model)
 {
-  smtk::bridge::polygon::Session* sess = this->polygonSession();
+  smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
   // First lets strip the original polydata into polylines
   vtkNew<vtkPolyData> pdata;
   vtkNew<vtkStripper> stripper;
@@ -237,7 +237,7 @@ int Import::basicPolyData2PolygonModelEntities(vtkPolyData* polyLines, smtk::mod
 }
 
 int polyLines2modelEdgesAndFaces(vtkPolyData* mesh, smtk::model::Model& model,
-  smtk::bridge::polygon::Session* sess, smtk::io::Logger& logger)
+  smtk::bridge::polygon::SessionPtr sess, smtk::io::Logger& logger)
 {
   int numEdges = 0;
   vtkCellArray* lines = mesh->GetLines();
@@ -358,7 +358,7 @@ bool Import::ableToOperate()
 OperatorResult Import::operateInternal()
 {
   OperatorResult result;
-  smtk::bridge::polygon::Session* sess = this->polygonSession();
+  smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
   if (!sess)
   {
     smtkErrorMacro(log(), "Invalid polygon session.");
@@ -385,8 +385,7 @@ OperatorResult Import::operateInternal()
       ext == ".fac" ||
       ext == ".obj" ||
       ext == ".sol" || */
-    ext == ".stl" ||
-    ext == ".vtp")
+    ext == ".stl" || ext == ".vtp")
   {
     vtkNew<vtkCMBGeometryReader> reader;
     reader->SetFileName(filename.c_str());

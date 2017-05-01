@@ -86,7 +86,7 @@ smtk::model::OperatorResult CreateModel::operateInternal()
   smtk::model::OperatorResult result;
   if (ok)
   {
-    smtk::bridge::polygon::Session* sess = this->polygonSession();
+    smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
     smtk::model::Manager::Ptr mgr;
     if (sess)
     {

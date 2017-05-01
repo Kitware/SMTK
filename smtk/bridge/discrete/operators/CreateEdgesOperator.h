@@ -11,8 +11,7 @@
 #ifndef __smtk_session_discrete_CreateEdgesOperator_h
 #define __smtk_session_discrete_CreateEdgesOperator_h
 
-#include "smtk/bridge/discrete/Exports.h"
-#include "smtk/model/Operator.h"
+#include "smtk/bridge/discrete/Operator.h"
 #include "vtkCreateModelEdgesOperator.h"
 #include "vtkNew.h"
 
@@ -25,7 +24,7 @@ namespace discrete
 
 class Session;
 
-class SMTKDISCRETESESSION_EXPORT CreateEdgesOperator : public smtk::model::Operator
+class SMTKDISCRETESESSION_EXPORT CreateEdgesOperator : public Operator
 {
 public:
   smtkTypeMacro(CreateEdgesOperator);
@@ -38,7 +37,6 @@ public:
 protected:
   CreateEdgesOperator();
   virtual smtk::model::OperatorResult operateInternal();
-  Session* discreteSession() const;
 
   vtkNew<vtkCreateModelEdgesOperator> m_op;
 };

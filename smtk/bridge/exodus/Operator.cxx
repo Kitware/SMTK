@@ -20,9 +20,9 @@ namespace exodus
 {
 
 /// Return a shared pointer to the session backing a Exodus operator.
-Session* Operator::exodusSession()
+SessionPtr Operator::exodusSession()
 {
-  return dynamic_cast<smtk::bridge::exodus::Session*>(this->session());
+  return smtk::dynamic_pointer_cast<smtk::bridge::exodus::Session>(this->session());
 }
 
 /**\brief A helper to return the Exodus data object associated with an \a smtkEntity.
@@ -30,7 +30,7 @@ Session* Operator::exodusSession()
   */
 vtkDataObject* Operator::exodusData(const smtk::model::EntityRef& smtkEntity)
 {
-  Session* brdg = this->exodusSession();
+  SessionPtr brdg = this->exodusSession();
   if (!brdg)
     return NULL;
 
@@ -42,7 +42,7 @@ vtkDataObject* Operator::exodusData(const smtk::model::EntityRef& smtkEntity)
   */
 EntityHandle Operator::exodusHandle(const smtk::model::EntityRef& smtkEntity)
 {
-  Session* brdg = this->exodusSession();
+  SessionPtr brdg = this->exodusSession();
   if (!brdg)
     return EntityHandle();
 

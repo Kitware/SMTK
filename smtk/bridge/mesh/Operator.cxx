@@ -18,9 +18,9 @@ namespace mesh
 {
 
 /// Return a shared pointer to the session backing a Mesh operator.
-Session* Operator::activeSession()
+SessionPtr Operator::activeSession()
 {
-  return dynamic_cast<smtk::bridge::mesh::Session*>(this->session());
+  return smtk::dynamic_pointer_cast<smtk::bridge::mesh::Session>(this->session());
 }
 
 } // namespace mesh

@@ -262,7 +262,7 @@ void GrowOperator::findVisibleModelFaces(
 
 smtk::model::OperatorResult GrowOperator::operateInternal()
 {
-  Session* opsession = this->discreteSession();
+  SessionPtr opsession = this->discreteSession();
   smtk::model::Model model =
     this->specification()->findModelEntity("model")->value().as<smtk::model::Model>();
   vtkDiscreteModelWrapper* modelWrapper = opsession->findModelEntity(model.entity());
@@ -276,7 +276,7 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
   {
     case ACCEPT:
       // convert current outSelection to grow Selection
-      this->convertToGrowSelection(inSelectionItem, m_growSelection.GetPointer(), opsession);
+      this->convertToGrowSelection(inSelectionItem, m_growSelection.GetPointer(), opsession.get());
       // Use current selection to split faces if necessary
       this->m_splitOp->Operate(modelWrapper, this->m_growSelection.GetPointer());
       ok = this->m_splitOp->GetOperateSucceeded() != 0;
@@ -295,7 +295,7 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
                                   // do grow
       {
         std::set<vtkIdType> visModelFaceIds;
-        this->findVisibleModelFaces(model, visModelFaceIds, opsession);
+        this->findVisibleModelFaces(model, visModelFaceIds, opsession.get());
         this->m_growOp->SetModelWrapper(modelWrapper);
         // NOTE:
         // The fact that operators are state-less, we can NOT cache
@@ -330,7 +330,8 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
           this->m_growOp->SetFaceCellId(
             face->GetUniquePersistentId(), *(inSelectionItem->begin()->second.begin()));
           this->m_growOp->Update();
-          ok = this->convertAndResetOutSelection(m_growOp->GetOutput(), modelWrapper, opsession);
+          ok =
+            this->convertAndResetOutSelection(m_growOp->GetOutput(), modelWrapper, opsession.get());
         }
       }
 
@@ -351,7 +352,7 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
     switch (opType)
     {
       case ACCEPT:
-        this->writeSplitResult(m_splitOp.GetPointer(), modelWrapper, opsession, result);
+        this->writeSplitResult(m_splitOp.GetPointer(), modelWrapper, opsession.get(), result);
         break;
       case RESET:
       case MERGE:
@@ -370,14 +371,8 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
   return result;
 }
 
-Session* GrowOperator::discreteSession() const
-{
-  return dynamic_cast<Session*>(this->session());
-}
-
 } // namespace discrete
 } // namespace bridge
-
 } // namespace smtk
 
 smtkImplementsModelOperator(SMTKDISCRETESESSION_EXPORT, smtk::bridge::discrete::GrowOperator,

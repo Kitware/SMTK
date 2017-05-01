@@ -141,7 +141,7 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
 
   internal::pmodel::Ptr storage; // Look up from session = internal::pmodel::create();
 
-  Session* sess = this->polygonSession();
+  SessionPtr sess = this->polygonSession();
   smtk::model::ManagerPtr mgr;
   if (!sess || !(mgr = sess->manager()))
   {

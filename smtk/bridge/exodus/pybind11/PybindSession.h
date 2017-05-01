@@ -54,8 +54,8 @@ py::class_< smtk::bridge::exodus::EntityHandle > pybind11_init_smtk_bridge_exodu
   instance
     .def(py::init<::smtk::bridge::exodus::EntityHandle const &>())
     .def(py::init<>())
-    .def(py::init<int, ::vtkDataObject *, ::smtk::bridge::exodus::Session *>())
-    .def(py::init<int, ::vtkDataObject *, ::vtkDataObject *, int, ::smtk::bridge::exodus::Session *>())
+    .def(py::init<int, ::vtkDataObject *, ::smtk::bridge::exodus::SessionPtr>())
+    .def(py::init<int, ::vtkDataObject *, ::vtkDataObject *, int, ::smtk::bridge::exodus::SessionPtr>())
     .def("deepcopy", (smtk::bridge::exodus::EntityHandle & (smtk::bridge::exodus::EntityHandle::*)(::smtk::bridge::exodus::EntityHandle const &)) &smtk::bridge::exodus::EntityHandle::operator=)
     .def("entityType", &smtk::bridge::exodus::EntityHandle::entityType)
     .def("isValid", &smtk::bridge::exodus::EntityHandle::isValid)

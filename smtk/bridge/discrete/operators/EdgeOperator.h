@@ -11,8 +11,7 @@
 #ifndef __smtk_session_discrete_EdgeOperator_h
 #define __smtk_session_discrete_EdgeOperator_h
 
-#include "smtk/bridge/discrete/Exports.h"
-#include "smtk/model/Operator.h"
+#include "smtk/bridge/discrete/Operator.h"
 #include "vtkEdgeSplitOperator.h"
 #include "vtkMergeOperator.h"
 #include "vtkNew.h"
@@ -41,7 +40,7 @@ namespace discrete
 
 class Session;
 
-class SMTKDISCRETESESSION_EXPORT EdgeOperator : public smtk::model::Operator
+class SMTKDISCRETESESSION_EXPORT EdgeOperator : public Operator
 {
 public:
   smtkTypeMacro(EdgeOperator);
@@ -54,20 +53,19 @@ public:
 protected:
   EdgeOperator();
   virtual smtk::model::OperatorResult operateInternal();
-  Session* discreteSession() const;
 
   // some internal methods
   void getSelectedVertsAndEdges(std::map<smtk::common::UUID, vtkDiscreteModelVertex*>& selVTXs,
     std::map<smtk::common::UUID, std::pair<vtkDiscreteModelEdge*, std::set<int> > >& selArcs,
     const smtk::attribute::MeshSelectionItemPtr& inSelectionItem,
-    smtk::bridge::discrete::Session* opsession);
+    smtk::bridge::discrete::SessionPtr opsession);
   bool convertSelectedEndNodes(const std::map<smtk::common::UUID, vtkDiscreteModelVertex*>& selVTXs,
-    vtkDiscreteModelWrapper* modelWrapper, smtk::bridge::discrete::Session* opsession,
+    vtkDiscreteModelWrapper* modelWrapper, smtk::bridge::discrete::SessionPtr opsession,
     smtk::model::EntityRefArray& srcsRemoved, smtk::model::EntityRefArray& srcsModified,
     smtk::mesh::MeshSets& modifiedMeshes, vtkMergeOperator* mergOp);
   bool splitSelectedEdgeNodes(
     const std::map<smtk::common::UUID, std::pair<vtkDiscreteModelEdge*, std::set<int> > >& selArcs,
-    vtkDiscreteModelWrapper* modelWrapper, smtk::bridge::discrete::Session* opsession,
+    vtkDiscreteModelWrapper* modelWrapper, smtk::bridge::discrete::SessionPtr opsession,
     smtk::model::EntityRefArray& srcsCreated, smtk::model::EntityRefArray& srcsModified,
     smtk::mesh::MeshSets& modifiedMeshes, vtkEdgeSplitOperator* splitOp);
   int convertToGlobalPointId(int localPid, vtkDiscreteModelEdge* cmbModelEdge);

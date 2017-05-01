@@ -11,8 +11,7 @@
 #ifndef __smtk_session_discrete_ReadOperator_h
 #define __smtk_session_discrete_ReadOperator_h
 
-#include "smtk/bridge/discrete/Exports.h"
-#include "smtk/model/Operator.h"
+#include "smtk/bridge/discrete/Operator.h"
 #include "vtkCMBModelReadOperator.h"
 #include "vtkNew.h"
 
@@ -23,14 +22,12 @@ namespace bridge
 namespace discrete
 {
 
-class Session;
-
 /**\brief Read a CMB discrete model file.
   *
   * This requires the file to be of type/extension "cmb" (which
   * is really just a VTK XML polydata file).
   */
-class SMTKDISCRETESESSION_EXPORT ReadOperator : public smtk::model::Operator
+class SMTKDISCRETESESSION_EXPORT ReadOperator : public smtk::bridge::discrete::Operator
 {
 public:
   smtkTypeMacro(ReadOperator);
@@ -43,7 +40,6 @@ public:
 protected:
   ReadOperator();
   virtual smtk::model::OperatorResult operateInternal();
-  Session* discreteSession() const;
 
   vtkNew<vtkCMBModelReadOperator> m_op;
 };

@@ -11,8 +11,7 @@
 #ifndef __smtk_session_discrete_GrowOperator_h
 #define __smtk_session_discrete_GrowOperator_h
 
-#include "smtk/bridge/discrete/Exports.h"
-#include "smtk/model/Operator.h"
+#include "smtk/bridge/discrete/Operator.h"
 #include "vtkNew.h"
 #include "vtkSeedGrowSelectionFilter.h"
 #include "vtkSelection.h"
@@ -31,7 +30,7 @@ namespace discrete
 
 class Session;
 
-class SMTKDISCRETESESSION_EXPORT GrowOperator : public smtk::model::Operator
+class SMTKDISCRETESESSION_EXPORT GrowOperator : public Operator
 {
 public:
   smtkTypeMacro(GrowOperator);
@@ -44,7 +43,6 @@ public:
 protected:
   GrowOperator();
   virtual smtk::model::OperatorResult operateInternal();
-  Session* discreteSession() const;
   void findVisibleModelFaces(
     const smtk::model::CellEntity& cellent, std::set<vtkIdType>& ModelFaceIds, Session* opsession);
 

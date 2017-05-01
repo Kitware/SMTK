@@ -47,7 +47,7 @@ smtk::model::OperatorResult CreateVertices::operateInternal()
   }
   smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->associations();
 
-  smtk::bridge::polygon::Session* sess = this->polygonSession();
+  smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
   smtk::model::OperatorResult result;
   if (sess)
   {
@@ -63,9 +63,9 @@ smtk::model::OperatorResult CreateVertices::operateInternal()
     {
       for (int j = 0; j < numCoordsPerPt; j++)
       {
-        pcoords.push_back(smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(
-          pointsInfo->item(
-            i, 0))->value(j));
+        pcoords.push_back(
+          smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(pointsInfo->item(i, 0))
+            ->value(j));
       }
     }
 

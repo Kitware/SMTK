@@ -11,8 +11,7 @@
 #ifndef __smtk_session_discrete_ImportOperator_h
 #define __smtk_session_discrete_ImportOperator_h
 
-#include "smtk/bridge/discrete/Exports.h"
-#include "smtk/model/Operator.h"
+#include "smtk/bridge/discrete/Operator.h"
 #include "vtkCMBModelBuilder.h"
 
 #include "smtk/Options.h" // for SMTK_ENABLE_REMUS_SUPPORT
@@ -46,7 +45,7 @@ class Session;
   *    "Poly files (*.poly *.smesh)
   *    "Shape files (*.shp)
   */
-class SMTKDISCRETESESSION_EXPORT ImportOperator : public smtk::model::Operator
+class SMTKDISCRETESESSION_EXPORT ImportOperator : public Operator
 {
 public:
   smtkTypeMacro(ImportOperator);
@@ -59,7 +58,6 @@ public:
 protected:
   ImportOperator();
   virtual smtk::model::OperatorResult operateInternal();
-  Session* discreteSession() const;
 
   vtkNew<vtkCMBModelBuilder> m_op;
 #ifdef SMTK_ENABLE_REMUS_SUPPORT

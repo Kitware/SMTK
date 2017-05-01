@@ -21,6 +21,7 @@ namespace mesh
 {
 
 class Session;
+typedef smtk::shared_ptr<Session> SessionPtr;
 struct EntityHandle;
 
 /**\brief An operator using the Mesh "kernel."
@@ -32,7 +33,7 @@ struct EntityHandle;
 class SMTKMESHSESSION_EXPORT Operator : public smtk::model::Operator
 {
 protected:
-  Session* activeSession();
+  SessionPtr activeSession();
 };
 
 } // namespace mesh

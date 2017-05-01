@@ -72,7 +72,7 @@ OperatorResult ReadOperator::operateInternal()
 
   // Create a new model to hold the result.
   vtkNew<vtkDiscreteModelWrapper> mod;
-  this->m_op->Operate(mod.GetPointer(), this->discreteSession());
+  this->m_op->Operate(mod.GetPointer(), this->discreteSession().get());
 
   // Now assign a UUID to the model and associate its filename with
   // a URL property (if things went OK).
@@ -102,11 +102,6 @@ OperatorResult ReadOperator::operateInternal()
     smtk::model::SessionRef(this->manager(), this->session()->sessionId()));
 
   return result;
-}
-
-Session* ReadOperator::discreteSession() const
-{
-  return dynamic_cast<Session*>(this->session());
 }
 
 } // namespace discrete

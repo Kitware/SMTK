@@ -58,16 +58,16 @@ namespace model
 /// Constructor. Initialize the session to a NULL pointer.
 Operator::Operator()
 {
-  this->m_session = NULL;
   this->m_debugLevel = 0;
 }
 
 /// Destructor. Removes its specification() from the session's operator system.
 Operator::~Operator()
 {
-  if (this->m_session && this->m_session->operatorSystem() && this->m_specification)
+  Session::Ptr sess = this->session();
+  if (sess && sess->operatorSystem() && this->m_specification)
   {
-    this->m_session->operatorSystem()->removeAttribute(this->m_specification);
+    sess->operatorSystem()->removeAttribute(this->m_specification);
   }
 }
 
@@ -300,19 +300,19 @@ Operator::Ptr Operator::setMeshManager(smtk::mesh::ManagerPtr s)
 }
 
 /// Return the session associated with this operator (or a "null"/invalid shared-pointer).
-Session* Operator::session() const
+SessionPtr Operator::session() const
 {
-  return this->m_session;
+  return this->m_session.lock();
 }
 
 /**\brief Set the session that owns this operation.
   *
   * The return value is a shared pointer to this operator.
   */
-Operator::Ptr Operator::setSession(Session* b)
+Operator::Ptr Operator::setSession(SessionPtr b)
 {
   this->m_session = b;
-  return shared_from_this();
+  return this->shared_from_this();
 }
 
 /**\brief A convenience method to return the manager's log.
@@ -342,7 +342,7 @@ smtk::io::Logger& Operator::log()
 OperatorDefinition Operator::definition() const
 {
   Manager::Ptr mgr = this->manager();
-  Session* brg = this->session();
+  SessionPtr brg = this->session();
   if (!mgr || !brg)
     return attribute::DefinitionPtr();
 
@@ -400,13 +400,17 @@ bool Operator::ensureSpecification() const
   if (this->m_specification)
     return true;
 
-  if (!this->m_session)
+  SessionPtr sess = this->session(); // Lock the session
+  if (!sess)
+  {
     return false;
+  }
 
-  smtk::attribute::AttributePtr spec =
-    this->m_session->operatorSystem()->createAttribute(this->name());
+  smtk::attribute::AttributePtr spec = sess->operatorSystem()->createAttribute(this->name());
   if (!spec)
+  {
     return false;
+  }
   return const_cast<Operator*>(this)->setSpecification(spec);
 }
 
@@ -546,7 +550,7 @@ void Operator::setResultOutcome(OperatorResult res, OperatorOutcome outcome)
   */
 void Operator::eraseResult(OperatorResult res)
 {
-  Session* brdg;
+  SessionPtr brdg;
   smtk::attribute::SystemPtr sys;
   if (!res || !(brdg = this->session()) || !(sys = brdg->operatorSystem()))
     return;

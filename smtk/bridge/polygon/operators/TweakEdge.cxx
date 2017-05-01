@@ -35,7 +35,7 @@ namespace polygon
 
 smtk::model::OperatorResult TweakEdge::operateInternal()
 {
-  smtk::bridge::polygon::Session* sess = this->polygonSession();
+  smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
   smtk::model::Manager::Ptr mgr;
   if (!sess)
   {

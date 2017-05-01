@@ -58,8 +58,8 @@ bool WriteOperator::ableToOperate()
   bool able2Op = this->ensureSpecification() &&
     // The SMTK model must be valid
     (models.size() > 0 && models[0].isValid() &&
-      // The CMB model must exist
-      this->discreteSession()->findModelEntity(models[0].entity()));
+                   // The CMB model must exist
+                   this->discreteSession()->findModelEntity(models[0].entity()));
   if (!able2Op)
     return false;
 
@@ -84,7 +84,7 @@ OperatorResult WriteOperator::operateInternal()
   }
 
   this->m_op->SetFileName(fname.c_str());
-  Session* opsession = this->discreteSession();
+  SessionPtr opsession = this->discreteSession();
 
   // ableToOperate should have verified that the model exists
   smtk::model::Models models =
@@ -97,7 +97,7 @@ OperatorResult WriteOperator::operateInternal()
 
   // write the file out.
   this->m_op->SetVersion(this->m_currentversion);
-  this->m_op->Operate(modelWrapper, this->discreteSession());
+  this->m_op->Operate(modelWrapper, this->discreteSession().get());
 
   if (!this->m_op->GetOperateSucceeded())
   {
@@ -113,14 +113,8 @@ OperatorResult WriteOperator::operateInternal()
   return result;
 }
 
-Session* WriteOperator::discreteSession() const
-{
-  return dynamic_cast<Session*>(this->session());
-}
-
 } // namespace discrete
 } // namespace bridge
-
 } // namespace smtk
 
 smtkImplementsModelOperator(SMTKDISCRETESESSION_EXPORT, smtk::bridge::discrete::WriteOperator,

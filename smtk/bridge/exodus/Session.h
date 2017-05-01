@@ -40,6 +40,7 @@ namespace exodus
 {
 
 class Session;
+typedef smtk::shared_ptr<Session> SessionPtr;
 
 // ++ 2 ++
 /// The types of entities in an Exodus "model"
@@ -68,11 +69,12 @@ struct SMTKEXODUSSESSION_EXPORT EntityHandle
   int
     m_modelNumber; //!< An offset in the vector of models (m_models) owned by the session, whose model owns m_object.
   vtkSmartPointer<vtkDataObject> m_object; //!< The dataset being presented as this entity.
-  Session* m_session;                      //!< The session owning this entity.
+  SessionPtr m_session;                    //!< The session owning this entity.
 
   EntityHandle();
-  EntityHandle(int emod, vtkDataObject* obj, Session* sess);
-  EntityHandle(int emod, vtkDataObject* obj, vtkDataObject* parent, int idxInParent, Session* sess);
+  EntityHandle(int emod, vtkDataObject* obj, SessionPtr sess);
+  EntityHandle(
+    int emod, vtkDataObject* obj, vtkDataObject* parent, int idxInParent, SessionPtr sess);
 
   bool isValid() const;
 

@@ -43,7 +43,7 @@ class Session;
 class SMTKCGMSESSION_EXPORT Operator : public smtk::model::Operator
 {
 protected:
-  Session* cgmSession();
+  SessionPtr cgmSession();
   ToolDataUser* cgmData(const smtk::model::EntityRef& smtkEntity);
   RefEntity* cgmEntity(const smtk::model::EntityRef& smtkEntity);
 
@@ -111,7 +111,7 @@ template <typename T>
 void Operator::addEntitiesToResult(
   DLIList<T>& cgmContainer, smtk::model::OperatorResult result, ResultEntityOrigin origin)
 {
-  Session* session = this->cgmSession();
+  SessionPtr session = this->cgmSession();
   int numBodiesOut = cgmContainer.size();
 
   smtk::model::EntityRefArray creArr;

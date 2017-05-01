@@ -125,9 +125,9 @@ public:
   double featureSize() const { return this->m_featureSize; }
   double modelScale() const { return static_cast<double>(this->m_scale); }
 
-  const Session* session() const { return this->m_session; }
-  Session* session() { return this->m_session; }
-  void setSession(Session* s) { this->m_session = s; }
+  //ConstSessionPtr session() const { return this->m_session; }
+  SessionPtr session() { return this->m_session; }
+  void setSession(SessionPtr s) { this->m_session = s; }
 
   Id pointId(const Point& p) const;
 
@@ -159,7 +159,7 @@ public:
   void addVertexIndex(VertexPtr vert);
 
 protected:
-  Session* m_session; // Parent session of this pmodel.
+  SessionPtr m_session; // Parent session of this pmodel.
   long long
     m_scale; // Recommend this be a large composite number w/ factors 2, 3, 5 (e.g., 15360, 231000, or 1182720)
   double m_featureSize;

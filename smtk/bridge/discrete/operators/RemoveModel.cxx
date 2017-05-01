@@ -55,12 +55,8 @@ smtk::model::OperatorResult RemoveModel::operateInternal()
   return result;
 }
 
-Session* RemoveModel::discreteSession() const
-{
-  return dynamic_cast<Session*>(this->session());
-}
-}
-} //namespace model
+} // namespace discrete
+} // namespace bridge
 } // namespace smtk
 
 #include "RemoveModel_xml.h"

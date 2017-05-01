@@ -11,8 +11,7 @@
 #ifndef __smtk_session_discrete_SplitFaceOperator_h
 #define __smtk_session_discrete_SplitFaceOperator_h
 
-#include "smtk/bridge/discrete/Exports.h"
-#include "smtk/model/Operator.h"
+#include "smtk/bridge/discrete/Operator.h"
 #include "vtkNew.h"
 #include "vtkSplitOperator.h"
 
@@ -23,9 +22,7 @@ namespace bridge
 namespace discrete
 {
 
-class Session;
-
-class SMTKDISCRETESESSION_EXPORT SplitFaceOperator : public smtk::model::Operator
+class SMTKDISCRETESESSION_EXPORT SplitFaceOperator : public Operator
 {
 public:
   smtkTypeMacro(SplitFaceOperator);
@@ -38,7 +35,6 @@ public:
 protected:
   SplitFaceOperator();
   virtual smtk::model::OperatorResult operateInternal();
-  Session* discreteSession() const;
   int fetchCMBFaceId() const;
   int fetchCMBCellId(const smtk::attribute::ModelEntityItemPtr& entItem, int idx) const;
 

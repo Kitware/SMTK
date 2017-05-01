@@ -26,7 +26,7 @@ namespace polygon
 {
 
 Neighborhood::Neighborhood(SweeplinePosition& x, FragmentArray& fragments,
-  SweepEventSet& eventQueue, ActiveFragmentTree& active, smtk::bridge::polygon::Session* sess)
+  SweepEventSet& eventQueue, ActiveFragmentTree& active, smtk::bridge::polygon::SessionPtr sess)
   : m_point(&x)
   , m_fragments(&fragments)
   , m_eventQueue(&eventQueue)
@@ -379,9 +379,10 @@ bool Neighborhood::insertFragmentBetween(const std::list<FragmentId>::iterator& 
   internal::HighPrecisionCoord oaXob = cross2d(oa, ob);
   if ((oaXoo > 0 && ooXob > 0) || // oaXob < pi and "other" is between them; or...
     (oaXob < 0 &&
-      !(ooXob < 0 &&
-        oaXoo < 0))) // oaXob > pi and "other" is *not between* the short CCW path between B and A.
-  {                  // other is between ringA and ringB. Insert it just before ringB:
+        !(ooXob < 0 &&
+          oaXoo <
+            0))) // oaXob > pi and "other" is *not between* the short CCW path between B and A.
+  {              // other is between ringA and ringB. Insert it just before ringB:
     this->m_ring.insert(ringB, fragId);
     return true;
   }

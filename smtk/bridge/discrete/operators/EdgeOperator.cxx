@@ -121,7 +121,7 @@ bool EdgeOperator::ableToOperate()
 int EdgeOperator::convertToGlobalPointId(int localPid, vtkDiscreteModelEdge* cmbModelEdge)
 {
   int globalPid = -1;
-  Session* opsession = this->discreteSession();
+  SessionPtr opsession = this->discreteSession();
   smtk::common::UUID edgeid = opsession->findOrSetEntityUUID(cmbModelEdge);
   smtk::model::Edge edge(opsession->manager(), edgeid);
 
@@ -135,12 +135,11 @@ int EdgeOperator::convertToGlobalPointId(int localPid, vtkDiscreteModelEdge* cmb
   smtk::model::Tessellation::size_type off;
   int cellIdx = -1, pointIdx = -1;
   std::vector<int>::const_iterator it;
-  smtk::model::Tessellation::size_type num_verts;
   for (off = tess->begin(); off != tess->end(); off = tess->nextCellOffset(off))
   {
     cellIdx++;
     std::vector<int> cell_conn;
-    num_verts = tess->vertexIdsOfCell(off, cell_conn);
+    tess->vertexIdsOfCell(off, cell_conn);
     it = std::find(cell_conn.begin(), cell_conn.end(), localPid);
     if (it != cell_conn.end())
     {
@@ -162,7 +161,7 @@ void EdgeOperator::getSelectedVertsAndEdges(
   std::map<smtk::common::UUID, vtkDiscreteModelVertex*>& selVTXs,
   std::map<smtk::common::UUID, std::pair<vtkDiscreteModelEdge*, std::set<int> > >& selArcs,
   const smtk::attribute::MeshSelectionItemPtr& inSelectionItem,
-  smtk::bridge::discrete::Session* opsession)
+  smtk::bridge::discrete::SessionPtr opsession)
 {
   smtk::attribute::MeshSelectionItem::const_sel_map_it mapIt;
   for (mapIt = inSelectionItem->begin(); mapIt != inSelectionItem->end(); ++mapIt)
@@ -221,7 +220,7 @@ void EdgeOperator::getSelectedVertsAndEdges(
 
 smtk::model::OperatorResult EdgeOperator::operateInternal()
 {
-  Session* opsession = this->discreteSession();
+  SessionPtr opsession = this->discreteSession();
   smtk::model::Model model =
     this->specification()->findModelEntity("model")->value().as<smtk::model::Model>();
   vtkDiscreteModelWrapper* modelWrapper = opsession->findModelEntity(model.entity());
@@ -308,7 +307,7 @@ smtk::model::OperatorResult EdgeOperator::operateInternal()
 
 bool EdgeOperator::splitSelectedEdgeNodes(
   const std::map<smtk::common::UUID, std::pair<vtkDiscreteModelEdge*, std::set<int> > >& selArcs,
-  vtkDiscreteModelWrapper* modelWrapper, smtk::bridge::discrete::Session* opsession,
+  vtkDiscreteModelWrapper* modelWrapper, smtk::bridge::discrete::SessionPtr opsession,
   smtk::model::EntityRefArray& srcsCreated, smtk::model::EntityRefArray& srcsModified,
   smtk::mesh::MeshSets& modifiedMeshes, vtkEdgeSplitOperator* splitOp)
 {
@@ -393,7 +392,7 @@ bool EdgeOperator::splitSelectedEdgeNodes(
 
 bool EdgeOperator::convertSelectedEndNodes(
   const std::map<smtk::common::UUID, vtkDiscreteModelVertex*>& selVTXs,
-  vtkDiscreteModelWrapper* modelWrapper, smtk::bridge::discrete::Session* opsession,
+  vtkDiscreteModelWrapper* modelWrapper, smtk::bridge::discrete::SessionPtr opsession,
   smtk::model::EntityRefArray& srcsRemoved, smtk::model::EntityRefArray& srcsModified,
   smtk::mesh::MeshSets& modifiedMeshes, vtkMergeOperator* mergOp)
 {
@@ -497,14 +496,8 @@ bool EdgeOperator::convertSelectedEndNodes(
   return success;
 }
 
-Session* EdgeOperator::discreteSession() const
-{
-  return dynamic_cast<Session*>(this->session());
-}
-
 } // namespace discrete
 } // namespace bridge
-
 } // namespace smtk
 
 smtkImplementsModelOperator(SMTKDISCRETESESSION_EXPORT, smtk::bridge::discrete::EdgeOperator,

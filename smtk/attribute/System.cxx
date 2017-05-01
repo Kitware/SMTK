@@ -215,7 +215,7 @@ smtk::attribute::AttributePtr System::createAttribute(
 bool System::removeAttribute(smtk::attribute::AttributePtr att)
 {
   // Make sure that this system is managing this attribute
-  if (att->system() != shared_from_this())
+  if (!att || att->system() != shared_from_this())
   {
     return false;
   }

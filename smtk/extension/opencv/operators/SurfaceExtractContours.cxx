@@ -103,7 +103,7 @@ int internal_createEdge(smtk::model::Operator::Ptr edgeOp, smtk::attribute::Attr
 OperatorResult SurfaceExtractContours::operateInternal()
 {
 
-  Session* opsession = this->polygonSession();
+  SessionPtr opsession = this->polygonSession();
   // ableToOperate should have verified that aux is valid
   smtk::model::AuxiliaryGeometry aux =
     this->specification()->associations()->value().as<smtk::model::AuxiliaryGeometry>();

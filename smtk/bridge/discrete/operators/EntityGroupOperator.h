@@ -11,7 +11,7 @@
 #ifndef __smtk_session_discrete_EntityGroupOperator_h
 #define __smtk_session_discrete_EntityGroupOperator_h
 
-#include "smtk/bridge/discrete/Exports.h"
+#include "smtk/bridge/discrete/Operator.h"
 #include "smtk/model/operators/EntityGroupOperator.h"
 #include "vtkMaterialOperator.h"
 #include "vtkModelEntityGroupOperator.h"
@@ -23,8 +23,6 @@ namespace bridge
 {
 namespace discrete
 {
-
-class Session;
 
 /**\brief Create, desctory or modify a model entity group.
   *
@@ -46,7 +44,7 @@ public:
 protected:
   EntityGroupOperator();
   virtual smtk::model::OperatorResult operateInternal();
-  Session* discreteSession() const;
+  SessionPtr discreteSession() const;
   vtkModelEntity* fetchCMBCell(const std::string& parameterName) const;
   vtkModelEntity* fetchCMBCell(const smtk::attribute::ModelEntityItemPtr&, int idx) const;
   int createBoundaryGroup(vtkDiscreteModelWrapper* modelWrapper);

@@ -20,9 +20,9 @@ namespace discrete
 {
 
 /// Return a shared pointer to the session backing a discrete operator.
-Session* Operator::discreteSession()
+SessionPtr Operator::discreteSession() const
 {
-  return dynamic_cast<smtk::bridge::discrete::Session*>(this->session());
+  return smtk::dynamic_pointer_cast<smtk::bridge::discrete::Session>(this->session());
 }
 
 /// A helper to return the CGM entity associated with \a smtkEntity.

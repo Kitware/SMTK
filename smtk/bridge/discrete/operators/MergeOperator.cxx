@@ -73,7 +73,7 @@ bool MergeOperator::ableToOperate()
 
 OperatorResult MergeOperator::operateInternal()
 {
-  Session* opsession = this->discreteSession();
+  SessionPtr opsession = this->discreteSession();
   smtk::model::Model model =
     this->specification()->findModelEntity("model")->value().as<smtk::model::Model>();
   vtkDiscreteModelWrapper* modelWrapper = opsession->findModelEntity(model.entity());
@@ -135,11 +135,6 @@ OperatorResult MergeOperator::operateInternal()
   }
 
   return result;
-}
-
-Session* MergeOperator::discreteSession() const
-{
-  return dynamic_cast<Session*>(this->session());
 }
 
 int MergeOperator::fetchCMBCellId(const std::string& pname) const

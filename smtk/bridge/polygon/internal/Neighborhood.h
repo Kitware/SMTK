@@ -39,7 +39,7 @@ class Neighborhood
 {
 public:
   Neighborhood(SweeplinePosition& x, FragmentArray& fragments, SweepEventSet& eventQueue,
-    ActiveFragmentTree& active, smtk::bridge::polygon::Session* sess);
+    ActiveFragmentTree& active, smtk::bridge::polygon::SessionPtr sess);
 
   int sweep();
 
@@ -101,7 +101,7 @@ public:
     m_related; // regions containing other regions (first = parent, second=child)
   RegionId m_outside;
   smtk::model::Manager::Ptr m_mgr;
-  smtk::bridge::polygon::Session* m_session;
+  smtk::bridge::polygon::SessionPtr m_session;
   int m_debugLevel;
 };
 

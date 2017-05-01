@@ -237,6 +237,7 @@ namespace model
 {
 // Model Related Pointer Classes
 typedef smtk::shared_ptr<smtk::model::Session> SessionPtr;
+typedef smtk::weak_ptr<smtk::model::Session> WeakSessionPtr;
 typedef std::map<smtk::common::UUID, smtk::shared_ptr<smtk::model::Session> > UUIDsToSessions;
 typedef smtk::shared_ptr<smtk::model::DefaultSession> DefaultSessionPtr;
 typedef smtk::shared_ptr<smtk::model::SessionIO> SessionIOPtr;

@@ -70,9 +70,10 @@ bool ForceCreateFace::ableToOperate()
   int numOrient = static_cast<int>(edgeDirItem->numberOfValues());
   return this->Superclass::ableToOperate() &&
     (method == ForceCreateFace::POINTS ||
-      (method == ForceCreateFace::EDGES &&
-        (numOrient == -1 ||
-          numOrient == static_cast<int>(this->specification()->associations()->numberOfValues()))));
+           (method == ForceCreateFace::EDGES &&
+             (numOrient == -1 ||
+               numOrient ==
+                 static_cast<int>(this->specification()->associations()->numberOfValues()))));
 }
 
 /// Create one or more polygonal faces without sanity checks.
@@ -90,7 +91,7 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
   smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->associations();
   smtk::model::Model smodel;
 
-  Session* sess = this->polygonSession();
+  SessionPtr sess = this->polygonSession();
   smtk::model::ManagerPtr mgr;
   if (!sess || !(mgr = sess->manager()))
   {

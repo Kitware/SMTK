@@ -99,7 +99,7 @@ int EntityGroupOperator::createDomainSet(vtkDiscreteModelWrapper* modelWrapper)
 OperatorResult EntityGroupOperator::operateInternal()
 {
   smtk::model::ManagerPtr pstore = this->manager();
-  Session* opsession = this->discreteSession();
+  SessionPtr opsession = this->discreteSession();
   // ableToOperate should have verified that model is valid
   smtk::model::Model model =
     this->specification()->findModelEntity("model")->value().as<smtk::model::Model>();
@@ -251,9 +251,9 @@ OperatorResult EntityGroupOperator::operateInternal()
   return result;
 }
 
-Session* EntityGroupOperator::discreteSession() const
+SessionPtr EntityGroupOperator::discreteSession() const
 {
-  return dynamic_cast<Session*>(this->session());
+  return smtk::dynamic_pointer_cast<Session>(this->session());
 }
 
 vtkModelEntity* EntityGroupOperator::fetchCMBCell(const std::string& pname) const
@@ -281,7 +281,7 @@ bool EntityGroupOperator::modifyGroup(vtkDiscreteModelWrapper* modelWrapper,
   bool ok = newGroup;
 
   smtk::model::ManagerPtr pstore = this->manager();
-  Session* opsession = this->discreteSession();
+  SessionPtr opsession = this->discreteSession();
 
   if (grpEntity && (vtkModelMaterial::SafeDownCast(grpEntity) ||
                      vtkDiscreteModelEntityGroup::SafeDownCast(grpEntity)))
@@ -388,7 +388,6 @@ bool EntityGroupOperator::modifyGroup(vtkDiscreteModelWrapper* modelWrapper,
 
 } // namespace discrete
 } // namespace bridge
-
 } // namespace smtk
 
 smtkImplementsModelOperator(SMTKDISCRETESESSION_EXPORT, smtk::bridge::discrete::EntityGroupOperator,

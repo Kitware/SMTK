@@ -23,9 +23,9 @@ namespace cgm
 {
 
 /// Return a shared pointer to the session backing a CGM operator.
-Session* Operator::cgmSession()
+SessionPtr Operator::cgmSession()
 {
-  return dynamic_cast<smtk::bridge::cgm::Session*>(this->session());
+  return smtk::dynamic_pointer_cast<smtk::bridge::cgm::Session>(this->session());
 }
 
 /**\brief A helper to return the CGM ToolDataUser associated with \a smtkEntity.

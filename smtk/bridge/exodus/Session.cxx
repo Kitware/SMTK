@@ -104,7 +104,7 @@ EntityHandle::EntityHandle()
 }
 
 /// Construct a possibly-valid handle (of a top-level model).
-EntityHandle::EntityHandle(int emod, vtkDataObject* obj, Session* sess)
+EntityHandle::EntityHandle(int emod, vtkDataObject* obj, SessionPtr sess)
   : m_modelNumber(emod)
   , m_object(obj)
   , m_session(sess)
@@ -113,7 +113,7 @@ EntityHandle::EntityHandle(int emod, vtkDataObject* obj, Session* sess)
 
 /// Construct a possibly-valid handle (of a non-top-level entity).
 EntityHandle::EntityHandle(
-  int emod, vtkDataObject* obj, vtkDataObject* parent, int idxInParent, Session* sess)
+  int emod, vtkDataObject* obj, vtkDataObject* parent, int idxInParent, SessionPtr sess)
   : m_modelNumber(emod)
   , m_object(obj)
   , m_session(sess)
@@ -228,7 +228,8 @@ smtk::model::EntityRef Session::toEntityRef(const EntityHandle& ent)
 /// Add the dataset and its blocks to the session.
 smtk::model::Model Session::addModel(vtkSmartPointer<vtkMultiBlockDataSet>& model)
 {
-  EntityHandle handle(static_cast<int>(this->m_models.size()), model.GetPointer(), this);
+  EntityHandle handle(
+    static_cast<int>(this->m_models.size()), model.GetPointer(), shared_from_this());
   this->m_models.push_back(model);
   smtk::model::Model result = this->toEntityRef(handle);
   this->m_revIdMap[result] = handle;

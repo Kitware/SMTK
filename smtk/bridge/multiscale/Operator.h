@@ -23,6 +23,7 @@ namespace multiscale
 {
 
 class Session;
+typedef smtk::shared_ptr<Session> SessionPtr;
 
 /**\brief An operator using the Multiscale "kernel."
   *
@@ -33,7 +34,7 @@ class Session;
 class SMTKMULTISCALESESSION_EXPORT Operator : public smtk::model::Operator
 {
 protected:
-  Session* activeSession();
+  SessionPtr activeSession();
 };
 
 } // namespace multiscale

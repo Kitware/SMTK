@@ -30,6 +30,7 @@ namespace discrete
 {
 
 class Session;
+typedef shared_ptr<Session> SessionPtr;
 
 /**\brief An operator using the discrete kernel.
   *
@@ -40,7 +41,7 @@ class Session;
 class SMTKDISCRETESESSION_EXPORT Operator : public smtk::model::Operator
 {
 protected:
-  Session* discreteSession();
+  SessionPtr discreteSession() const;
   vtkModelItem* discreteEntity(const smtk::model::EntityRef& smtkEntity);
 
   template <typename T>

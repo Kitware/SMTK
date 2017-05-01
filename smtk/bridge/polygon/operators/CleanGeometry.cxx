@@ -621,7 +621,7 @@ bool CleanGeometry::deleteIfDuplicates(T& edgePair, U& modified, U& expunged)
   */
 smtk::model::OperatorResult CleanGeometry::operateInternal()
 {
-  smtk::bridge::polygon::Session* sess = this->polygonSession();
+  smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
   smtk::model::Manager::Ptr mgr;
   if (!sess)
     return this->createResult(smtk::model::OPERATION_FAILED);

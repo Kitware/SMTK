@@ -41,7 +41,7 @@ RemoteOperator::Ptr RemoteOperator::setName(const std::string& opName)
   */
 bool RemoteOperator::ableToOperate()
 {
-  DefaultSession* fwdSession = dynamic_cast<DefaultSession*>(this->session());
+  DefaultSessionPtr fwdSession = smtk::dynamic_pointer_cast<DefaultSession>(this->session());
   if (!fwdSession)
     return false;
 
@@ -50,7 +50,7 @@ bool RemoteOperator::ableToOperate()
 
 OperatorResult RemoteOperator::operateInternal()
 {
-  DefaultSession* fwdSession = dynamic_cast<DefaultSession*>(this->session());
+  DefaultSessionPtr fwdSession = smtk::dynamic_pointer_cast<DefaultSession>(this->session());
   if (!fwdSession)
     return this->createResult(OPERATION_FAILED);
 
