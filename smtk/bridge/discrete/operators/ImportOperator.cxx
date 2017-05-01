@@ -322,14 +322,8 @@ OperatorResult ImportOperator::operateInternal()
   return result;
 }
 
-Session* ImportOperator::discreteSession() const
-{
-  return dynamic_cast<Session*>(this->session());
-}
-
 } // namespace discrete
 } // namespace bridge
-
 } // namespace smtk
 
 smtkImplementsModelOperator(SMTKDISCRETESESSION_EXPORT, smtk::bridge::discrete::ImportOperator,

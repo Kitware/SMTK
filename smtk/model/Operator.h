@@ -167,8 +167,8 @@ public:
   smtk::mesh::ManagerPtr meshManager() const;
   Ptr setMeshManager(smtk::mesh::ManagerPtr s);
 
-  Session* session() const;
-  Ptr setSession(Session* b);
+  SessionPtr session() const;
+  Ptr setSession(SessionPtr b);
 
   smtk::io::Logger& log();
 
@@ -250,7 +250,7 @@ protected:
 #ifndef SHIBOKEN_SKIP
   ManagerPtr m_manager; // Model manager, not the attribute manager for the operator.
   smtk::mesh::ManagerPtr m_meshmanager;
-  Session* m_session;
+  WeakSessionPtr m_session;
   OperatorSpecification m_specification;
   std::set<BareOperatorObserver> m_willOperateTriggers;
   std::set<OperatorWithResultObserver> m_didOperateTriggers;

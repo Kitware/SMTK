@@ -240,7 +240,7 @@ smtk::model::OperatorResult ReadOperator::readExodus()
 
   // Now that the datasets we wish to present are marked,
   // have the Session create entries in the model manager for us:
-  Session* brdg = this->exodusSession();
+  SessionPtr brdg = this->exodusSession();
   smtk::model::Model smtkModelOut = brdg->addModel(modelOut);
 
   smtkModelOut.setStringProperty("url", filename);
@@ -298,7 +298,7 @@ smtk::model::OperatorResult ReadOperator::readSLAC()
   // Mark any volumes as "invisible" so there is no z-fighting by default:
   MarkChildren(voluBlocks.GetPointer(), Session::SMTK_VISIBILITY(), -1);
 
-  Session* brdg = this->exodusSession();
+  SessionPtr brdg = this->exodusSession();
   smtk::model::Model smtkModelOut = brdg->addModel(modelOut);
   smtkModelOut.setStringProperty("url", filename);
   smtkModelOut.setStringProperty("type", "slac");
@@ -443,7 +443,7 @@ smtk::model::OperatorResult ReadOperator::readLabelMap()
       vtkDataObject::SafeDownCast(Session::SMTK_CHILDREN()->Get(info, j)), img.GetPointer(), j);
   }
 
-  Session* brdg = this->exodusSession();
+  SessionPtr brdg = this->exodusSession();
   smtk::model::Model smtkModelOut = brdg->addModel(modelOut);
   smtkModelOut.setStringProperty("url", filename);
   smtkModelOut.setStringProperty("type", "label map");

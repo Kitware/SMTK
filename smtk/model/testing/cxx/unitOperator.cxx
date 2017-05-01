@@ -235,8 +235,8 @@ void testSessionAssociation(Manager::Ptr manager)
   test(op ? 1 : 0, "Model::op(\"outcome test\") returned a \"null\" shared pointer.");
 
   // Test Operator->Session association
-  test(op->session() == manager->sessions().begin()->session().get(),
-    "Bad session reported by operator.");
+  test(
+    op->session() == manager->sessions().begin()->session(), "Bad session reported by operator.");
 
   // Test Operator->Manager association
   test(op->manager() == manager, "Bad manager reported by operator.");

@@ -10,8 +10,7 @@
 #ifndef __smtk_session_discrete_RemoveModel_h
 #define __smtk_session_discrete_RemoveModel_h
 
-#include "smtk/bridge/discrete/Exports.h"
-#include "smtk/model/Operator.h"
+#include "smtk/bridge/discrete/Operator.h"
 
 namespace smtk
 {
@@ -20,9 +19,7 @@ namespace bridge
 namespace discrete
 {
 
-class Session;
-
-class SMTKDISCRETESESSION_EXPORT RemoveModel : public smtk::model::Operator
+class SMTKDISCRETESESSION_EXPORT RemoveModel : public Operator
 {
 public:
   smtkTypeMacro(RemoveModel);
@@ -34,11 +31,10 @@ public:
 
 protected:
   virtual smtk::model::OperatorResult operateInternal();
-
-  Session* discreteSession() const;
 };
-}
-} //namespace model
+
+} // namespace discrete
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_discrete_RemoveModel_h

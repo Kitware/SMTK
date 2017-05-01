@@ -23,6 +23,7 @@ namespace exodus
 {
 
 class Session;
+typedef smtk::shared_ptr<Session> SessionPtr;
 struct EntityHandle;
 
 /**\brief An operator using the Exodus "kernel."
@@ -34,7 +35,7 @@ struct EntityHandle;
 class SMTKEXODUSSESSION_EXPORT Operator : public smtk::model::Operator
 {
 protected:
-  Session* exodusSession();
+  SessionPtr exodusSession();
   vtkDataObject* exodusData(const smtk::model::EntityRef& smtkEntity);
   EntityHandle exodusHandle(const smtk::model::EntityRef& smtkEntity);
 };

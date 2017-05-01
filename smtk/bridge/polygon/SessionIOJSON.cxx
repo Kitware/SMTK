@@ -129,7 +129,7 @@ int SessionIOJSON::importJSON(smtk::model::ManagerPtr mgr, const smtk::model::Se
         newModels.insert(newModel);
         internal::pmodel::Ptr mod = this->deserializeModel(entry, newModel);
         parentAddrMap[uid] = mod;
-        mod->setSession(psession.get());
+        mod->setSession(psession);
         eptr = mod;
       }
       else if (etype == "face")
@@ -240,8 +240,8 @@ int SessionIOJSON::exportJSON(smtk::model::ManagerPtr mgr, const smtk::model::Se
             modelIds.find(sit->second->id()) !=
               modelIds.end()) || // We are a model and listed in modelIds
         (sit->second->parent() &&
-          modelIds.find(sit->second->parent()->id()) !=
-            modelIds.end())) // Our parent is in modelIds
+            modelIds.find(sit->second->parent()->id()) !=
+              modelIds.end())) // Our parent is in modelIds
       {
         internal::pmodel::Ptr pmodel;
         internal::edge::Ptr edge;

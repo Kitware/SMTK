@@ -54,7 +54,7 @@ void printSegment(internal::pmodel::Ptr storage, const std::string& msg, T& seg)
 
 smtk::model::OperatorResult CreateEdge::operateInternal()
 {
-  smtk::bridge::polygon::Session* sess = this->polygonSession();
+  smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
   smtk::model::Manager::Ptr mgr;
   if (!sess)
     return this->createResult(smtk::model::OPERATION_FAILED);
@@ -266,12 +266,12 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
           internal::HighPrecisionPoint(static_cast<internal::HighPrecisionPoint::coordinate_type>(
                                          edgeIt->high().x() - edgeIt->low().x()),
             static_cast<internal::HighPrecisionPoint::coordinate_type>(
-              edgeIt->high().y() - edgeIt->low().y()));
+                                         edgeIt->high().y() - edgeIt->low().y()));
         internal::HighPrecisionPoint deltaDst =
           internal::HighPrecisionPoint(static_cast<internal::HighPrecisionPoint::coordinate_type>(
                                          sit->second.high().x() - sit->second.low().x()),
             static_cast<internal::HighPrecisionPoint::coordinate_type>(
-              sit->second.high().y() - sit->second.low().y()));
+                                         sit->second.high().y() - sit->second.low().y()));
         // Whether the segments are reversed or not, determine which
         // output segments correspond to a single input segment:
         if (deltaDst.x() * deltaSrc.x() < 0 || deltaDst.y() * deltaSrc.y() < 0)

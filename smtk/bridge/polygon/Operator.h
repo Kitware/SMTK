@@ -30,6 +30,8 @@ namespace polygon
 {
 
 class Session;
+typedef smtk::shared_ptr<Session> SessionPtr;
+typedef smtk::shared_ptr<const Session> ConstSessionPtr;
 
 /**\brief An operator using the polygon kernel.
   *
@@ -40,8 +42,8 @@ class Session;
 class SMTKPOLYGONSESSION_EXPORT Operator : public smtk::model::Operator
 {
 protected:
-  Session* polygonSession();
-  const Session* polygonSession() const;
+  SessionPtr polygonSession();
+  ConstSessionPtr polygonSession() const;
 
   void addStorage(
     const smtk::common::UUID& uid, smtk::bridge::polygon::internal::entity::Ptr storage);

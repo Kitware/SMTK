@@ -18,9 +18,9 @@ namespace multiscale
 {
 
 /// Return a shared pointer to the session backing a multiscale operator.
-Session* Operator::activeSession()
+SessionPtr Operator::activeSession()
 {
-  return dynamic_cast<smtk::bridge::multiscale::Session*>(this->session());
+  return smtk::dynamic_pointer_cast<smtk::bridge::multiscale::Session>(this->session());
 }
 
 } // namespace multiscale

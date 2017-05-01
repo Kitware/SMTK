@@ -90,7 +90,7 @@ OperatorPtr DefaultSession::op(const std::string& opName) const
     // Naughty, but necessary so we can pretend that the
     // operator existed all along.
     DefaultSession* self = const_cast<DefaultSession*>(this);
-    rop->setSession(self);
+    rop->setSession(self->shared_from_this());
     oper = rop;
   }
   return oper;

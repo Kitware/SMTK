@@ -189,7 +189,7 @@ OperatorPtr Session::op(const std::string& opName) const
   if (!oper)
     return oper;
 
-  oper->setSession(const_cast<Session*>(this));
+  oper->setSession(const_cast<Session*>(this)->shared_from_this());
   oper->setManager(this->manager());
   oper->setMeshManager(this->meshManager());
 

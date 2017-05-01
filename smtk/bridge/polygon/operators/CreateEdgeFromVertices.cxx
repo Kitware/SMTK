@@ -52,7 +52,7 @@ void printSegment(internal::pmodel::Ptr storage, const std::string& msg, T& seg)
 
 smtk::model::OperatorResult CreateEdgeFromVertices::operateInternal()
 {
-  smtk::bridge::polygon::Session* sess = this->polygonSession();
+  smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
   smtk::model::Manager::Ptr mgr;
   if (!sess)
     return this->createResult(smtk::model::OPERATION_FAILED);

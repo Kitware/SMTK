@@ -63,7 +63,7 @@ bool SplitFaceOperator::ableToOperate()
 
 OperatorResult SplitFaceOperator::operateInternal()
 {
-  Session* opsession = this->discreteSession();
+  SessionPtr opsession = this->discreteSession();
 
   // Translate SMTK inputs into CMB inputs
   this->m_op->SetFeatureAngle(this->specification()->findDouble("feature angle")->value());
@@ -150,11 +150,6 @@ OperatorResult SplitFaceOperator::operateInternal()
   }
 
   return result;
-}
-
-Session* SplitFaceOperator::discreteSession() const
-{
-  return dynamic_cast<Session*>(this->session());
 }
 
 int SplitFaceOperator::fetchCMBFaceId() const

@@ -34,7 +34,7 @@ namespace polygon
 
 smtk::model::OperatorResult DemoteVertex::operateInternal()
 {
-  smtk::bridge::polygon::Session* sess = this->polygonSession();
+  smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
   smtk::model::Manager::Ptr mgr;
   if (!sess)
     return this->createResult(smtk::model::OPERATION_FAILED);

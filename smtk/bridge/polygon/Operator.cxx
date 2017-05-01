@@ -20,14 +20,14 @@ namespace polygon
 {
 
 /// Return a shared pointer to the session backing a polygon operator.
-Session* Operator::polygonSession()
+SessionPtr Operator::polygonSession()
 {
-  return dynamic_cast<smtk::bridge::polygon::Session*>(this->session());
+  return smtk::dynamic_pointer_cast<smtk::bridge::polygon::Session>(this->session());
 }
 
-const Session* Operator::polygonSession() const
+ConstSessionPtr Operator::polygonSession() const
 {
-  return dynamic_cast<const smtk::bridge::polygon::Session*>(this->session());
+  return smtk::dynamic_pointer_cast<const smtk::bridge::polygon::Session>(this->session());
 }
 
 void Operator::addStorage(

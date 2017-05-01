@@ -75,7 +75,7 @@ bool CreateEdgesOperator::ableToOperate()
 
 OperatorResult CreateEdgesOperator::operateInternal()
 {
-  Session* opsession = this->discreteSession();
+  SessionPtr opsession = this->discreteSession();
 
   smtk::model::EntityRef inModel = this->specification()->findModelEntity("model")->value();
 
@@ -114,11 +114,6 @@ OperatorResult CreateEdgesOperator::operateInternal()
   }
 
   return result;
-}
-
-Session* CreateEdgesOperator::discreteSession() const
-{
-  return dynamic_cast<Session*>(this->session());
 }
 
 } // namespace discrete

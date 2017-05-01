@@ -280,7 +280,7 @@ smtk::model::OperatorResult PartitionBoundaries::operateInternal()
   result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
   this->addEntitiesToResult(result, created, CREATED);
 
-  smtk::bridge::multiscale::Session* sess = this->activeSession();
+  smtk::bridge::multiscale::SessionPtr sess = this->activeSession();
   if (sess)
   {
     smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->associations();
