@@ -46,7 +46,7 @@ class MultiSessionDescriptivePhrase(unittest.TestCase):
             self.sessions[session_type]['entities'] = Read(filename)
             print 'Session ', session_type, ' entities ', self.sessions[session_type]['entities']
         self.mgr.assignDefaultNames()
-
+        self.models = []
         baseline = (
             smtk.testing.DATA_DIR,
             'baseline',
@@ -78,15 +78,26 @@ class MultiSessionDescriptivePhrase(unittest.TestCase):
                 self.printPhrases(indent + '  ', entry)
 
     def testPhrase(self):
-        #sessions = self.mgr.findEntitiesOfType(smtk.model.SESSION, True)
+        # sessions = self.mgr.findEntitiesOfType(smtk.model.SESSION, True)
         phrase = smtk.model.EntityListPhrase.create().setup(
             [x[1]['session_ref'] for x in self.sessions.items()])
         spg = smtk.model.SimpleModelSubphrases.create()
         spg.setDirectLimit(-1)
         phrase.setDelegate(spg)
+        # set active model
+        self.models = self.mgr.findEntitiesOfType(
+            int(smtk.model.MODEL_ENTITY), True)
+        for model in self.models:
+            #  set cgm session's model as active model
+            if model.owningSession().name() == "cgm session":
+                phrase.findDelegate().setActiveModel(model)
 
         allPhrases = self.recursePhrase(phrase, 0)
+
+        print "allPhrases: "
         print allPhrases
+        print "\n self.correct:"
+        print self.correct
         self.printPhrases('', allPhrases)
         self.assertEqual(allPhrases, self.correct, "Phrases mismatched.")
 
