@@ -25,6 +25,12 @@ qtActiveObjects& qtActiveObjects::instance()
   return theInstance;
 }
 
+smtk::extension::qtSelectionManagerPtr qtActiveObjects::smtkSelectionManager()
+{
+
+  return this->m_selectionMgr.lock();
+}
+
 void qtActiveObjects::setActiveModel(const smtk::model::Model& inputModel)
 {
   this->m_activeModel = inputModel;

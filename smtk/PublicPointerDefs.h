@@ -71,6 +71,12 @@ class VoidItem;
 class VoidItemDefinition;
 }
 
+namespace extension
+{
+class qtSelectionManager;
+typedef smtk::shared_ptr<smtk::extension::qtSelectionManager> qtSelectionManagerPtr;
+}
+
 namespace mesh
 {
 class Manager;

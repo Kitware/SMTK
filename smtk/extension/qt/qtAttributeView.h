@@ -17,6 +17,7 @@
 
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtSelectionManager.h"
 
 #include <QMap>
 #include <QModelIndex>
@@ -74,7 +75,9 @@ signals:
   void numOfAttriubtesChanged();
   void attColorChanged();
   void attAssociationChanged();
-  void selectionChanged(const smtk::common::UUIDs& selEntities) const;
+  void relaySelectionToAssiocationWidget(const smtk::model::EntityRefs& selEntities,
+    const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& selDPs,
+    const std::string& selectionSource);
 
 protected:
   virtual void createWidget();

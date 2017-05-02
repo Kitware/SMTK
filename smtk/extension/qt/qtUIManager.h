@@ -41,7 +41,6 @@ class qtMeshSelectionItem;
 class qtModelEntityItem;
 class qtBaseView;
 class qtModelView;
-class qtSelectionManager;
 
 typedef qtBaseView* (*widgetConstructor)(const ViewInfo& info);
 
@@ -63,14 +62,6 @@ public:
   smtk::common::ViewPtr smtkView() const { return this->m_smtkView; }
 
   smtk::attribute::SystemPtr attSystem() const { return this->m_AttSystem; }
-
-  // Description:
-  // Set/Get method of qtSelectionManager
-  void setSelectionManager(smtk::extension::qtSelectionManager* SM);
-  smtk::extension::qtSelectionManager* selectionManager() const
-  {
-    return this->m_qtSelectionManager;
-  }
 
   void setActiveModelView(smtk::extension::qtModelView*);
   smtk::extension::qtModelView* activeModelView();
@@ -168,25 +159,23 @@ signals:
   void modelEntityItemCreated(smtk::extension::qtModelEntityItem* entItem);
   void meshSelectionItemCreated(smtk::extension::qtMeshSelectionItem*);
   void viewUIChanged(smtk::extension::qtBaseView*, smtk::attribute::ItemPtr);
-  // Derepcate this signal when qtSelectionManager has only one output signal
-  void entitiesSelected(const smtk::common::UUIDs&);
   void sendSelectionsFromAttributePanelToSelectionManager(
     const smtk::model::EntityRefs& selEntities, const smtk::mesh::MeshSets& selMeshes,
     const smtk::model::DescriptivePhrases& DesPhrases,
-    const smtk::extension::SelectionModifier modifierFlag, const smtk::model::StringList skipList);
+    const smtk::extension::SelectionModifier modifierFlag, const std::string& selectionSource);
 
   friend class qtRootView;
   friend class qtAssociationWidget;
 
 protected slots:
-  void invokeEntitiesSelected(const smtk::model::EntityRefs& selEnts);
+  void invokeEntitiesSelected(
+    const smtk::model::EntityRefs& selEnts, const std::string& selectionSource);
 
 protected:
   virtual void internalInitialize();
 
 private:
   qtBaseView* m_topView;
-  smtk::extension::qtSelectionManager* m_qtSelectionManager;
   smtk::common::ViewPtr m_smtkView;
   QWidget* m_parentWidget;
   qtModelView* m_activeModelView;

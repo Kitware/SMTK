@@ -15,6 +15,7 @@
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/System.h"
 #include "smtk/common/UUID.h"
+#include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtCheckItemComboBox.h"
 #include "smtk/extension/qt/qtSelectionManager.h"
@@ -63,10 +64,25 @@ qtModelEntityItem::qtModelEntityItem(smtk::attribute::ItemPtr dataObj, QWidget* 
   {
     bview->uiManager()->onModelEntityItemCreated(this);
   }
+  std::ostringstream receiverSource;
+  receiverSource << "qtModelEntityItem(operatorDialog)_" << this;
+  this->m_selectionSourceName = receiverSource.str();
+  if (qtActiveObjects::instance().smtkSelectionManager() &&
+    !qtActiveObjects::instance().smtkSelectionManager()->registerSelectionSource(
+      this->m_selectionSourceName))
+  {
+    std::cerr << "register selection source " << this->m_selectionSourceName
+              << "failed. Already existed!" << std::endl;
+  }
 }
 
 qtModelEntityItem::~qtModelEntityItem()
 {
+  if (qtActiveObjects::instance().smtkSelectionManager())
+  {
+    qtActiveObjects::instance().smtkSelectionManager()->unregisterSelectionSource(
+      this->m_selectionSourceName);
+  }
   delete this->Internals;
 }
 
@@ -100,9 +116,11 @@ bool qtModelEntityItem::add(const smtk::model::EntityRef& val)
     emit this->modified();
     smtk::model::EntityRefs addEntityRefs;
     addEntityRefs.insert(val);
+
     emit this->sendSelectionFromModelEntityToSelectionManager(addEntityRefs, smtk::mesh::MeshSets(),
       smtk::model::DescriptivePhrases(),
-      smtk::extension::SelectionModifier::SELECTION_ADDITION_UNFILTERED, smtk::model::StringList());
+      smtk::extension::SelectionModifier::SELECTION_ADDITION_UNFILTERED,
+      this->m_selectionSourceName);
     return true;
   }
   return false;
@@ -128,10 +146,11 @@ bool qtModelEntityItem::remove(const smtk::model::EntityRef& val)
   emit this->modified();
   smtk::model::EntityRefs removeEntityRefs;
   removeEntityRefs.insert(val);
+
   emit this->sendSelectionFromModelEntityToSelectionManager(removeEntityRefs,
     smtk::mesh::MeshSets(), smtk::model::DescriptivePhrases(),
     smtk::extension::SelectionModifier::SELECTION_SUBTRACTION_UNFILTERED,
-    smtk::model::StringList());
+    this->m_selectionSourceName);
   return true;
 }
 
@@ -398,9 +417,10 @@ void qtModelEntityItem::clearEntityAssociations()
     this->Internals->EntityItemCombo->init();
   }
   emit this->modified();
+
   emit this->sendSelectionFromModelEntityToSelectionManager(smtk::model::EntityRefs(),
     smtk::mesh::MeshSets(), smtk::model::DescriptivePhrases(),
-    smtk::extension::SelectionModifier::SELECTION_REPLACE_UNFILTERED, smtk::model::StringList());
+    smtk::extension::SelectionModifier::SELECTION_REPLACE_UNFILTERED, this->m_selectionSourceName);
 }
 
 void qtModelEntityItem::onRequestEntityAssociation()

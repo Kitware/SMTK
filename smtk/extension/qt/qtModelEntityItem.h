@@ -40,6 +40,7 @@ public:
   virtual void associateEntities(
     const smtk::model::EntityRefs& selEntityRefs, bool resetExisting = true);
   smtk::attribute::ModelEntityItemPtr modelEntityItem();
+  virtual std::string selectionSourceName() { return this->m_selectionSourceName; }
 
   bool add(const smtk::model::EntityRef& val);
   bool remove(const smtk::model::EntityRef& val);
@@ -53,7 +54,7 @@ signals:
   void entityListHighlighted(const smtk::common::UUIDs& uuids);
   void sendSelectionFromModelEntityToSelectionManager(const smtk::model::EntityRefs& selEntities,
     const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& DesPhrases,
-    const smtk::extension::SelectionModifier modifierFlag, const smtk::model::StringList skipList);
+    const smtk::extension::SelectionModifier modifierFlag, const std::string& incomingSourceName);
 
 protected slots:
   virtual void updateItemData();
@@ -68,6 +69,7 @@ protected:
 
 private:
   qtModelEntityItemInternals* Internals;
+  std::string m_selectionSourceName;
 
 }; // class
 }; // namespace extension

@@ -68,6 +68,20 @@ public:
   void getSelectedEntitiesAsEntityRefs(smtk::model::EntityRefs& selEntities);
   void getSelectedMeshes(smtk::mesh::MeshSets& selMeshes);
 
+  // Description
+  // a set store the name of all selection sources
+  void getSelectionSources(std::set<std::string>& selectionSources);
+
+  bool registerSelectionSource(std::string name)
+  {
+    return this->m_selectionSources.insert(name).second;
+  }
+
+  bool unregisterSelectionSource(std::string name)
+  {
+    return (this->m_selectionSources.erase(name) > 0);
+  }
+
   void setSelectionModifierToAddition()
   {
     this->m_selectionModifier = SelectionModifier::SELECTION_ADDITION_FILTERED;
@@ -80,37 +94,24 @@ public:
 
 signals:
   // Description
-  // Broadcast selection to model tree
-  // If you do not block signal, both tree and view would be updated
-  // It's preferred to set it to true and emit a seperate signal to update
-  // render view
-  void broadcastToModelTree(const smtk::common::UUIDs& selEntities,
-    const smtk::mesh::MeshSets& selMeshes, bool blocksignals) const;
-
-  // Description
-  // Broadcast selection to render view by entityRef
-  void broadcastToRenderView(const smtk::model::EntityRefs& selEntities,
-    const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& DesPhrases) const;
-
-  // Description
-  // Broadcast selection to render view by UUIDs
-  void broadcastToRenderView(const smtk::common::UUIDs& selEntities,
-    const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& DesPhrases) const;
-  // Description
-  // Broadcast selection to attrite panel
-  void broadcastToAttributeView(const smtk::common::UUIDs& selEntities) const;
+  // Broadcast selection (universally)
+  // \a currently DesPhrases is always empty! we never pass DP into selectionManager.
+  void broadcastToReceivers(const smtk::model::EntityRefs& selEntities,
+    const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& DesPhrases,
+    const std::string& incomingSelectionSource);
 
 public slots:
   // Description
   // this SLOT is used to update selected items
   // SelectionModifer is used to specify how to update selectionManager
-  // skipList is used to specify which receiver you want to skip. Ex you do
+  // selectionSource is used to specify which receiver you want to skip. Ex. you do
   // not want the current selection to update render window since the update
   // is coming from render window.
-  // skiplist: "rendering window", "model tree", "attribute panel"
+  // selectionSource: ${className}_${memoryAddress}
+  // Ex class. qtModelView, qtAssociationWidget and pqSmtkModelPanel
   void updateSelectedItems(const smtk::model::EntityRefs& selEntities,
     const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& DesPhrases,
-    const smtk::extension::SelectionModifier modifierFlag, const smtk::model::StringList skipList);
+    const smtk::extension::SelectionModifier modifierFlag, const std::string& selectionSource);
 
   // Description
   // update mask for models
@@ -156,10 +157,13 @@ protected:
   smtk::model::BitFlags m_mask;
   smtk::model::DescriptivePhrases m_desPhrases;
   smtk::model::EntityRefs m_selEntityRefs;
-  smtk::model::StringList m_skipList;
   bool m_filterMeshes;
   smtk::model::ManagerPtr m_modelMgr;
   SelectionModifier m_selectionModifier;
+  // a set store the name of the selection sources so that we do not need to
+  // update the sender when broadcasting.
+  // format: ${senderClassName}+${memoryAddress}
+  std::set<std::string> m_selectionSources;
 };
 
 }; // namespace extension

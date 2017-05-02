@@ -47,6 +47,7 @@ class SMTKQTEXT_EXPORT qtModelView : public QTreeView
 public:
   qtModelView(QWidget* p = NULL);
   ~qtModelView();
+  virtual std::string selectionSourceName() { return this->m_selectionSourceName; }
 
   smtk::extension::QEntityItemModel* getModel() const;
   smtk::model::DescriptivePhrasePtr currentItem() const;
@@ -71,18 +72,9 @@ public:
 public slots:
   void updateActiveModelByModelIndex();
   bool removeSession(const smtk::model::SessionRef& sref);
-  void selectItems(const smtk::common::UUIDs& selEntities, const smtk::mesh::MeshSets& selMeshes,
-    bool blocksignal);
-  void selectEntityItems(const smtk::common::UUIDs& selEntityRefs, bool blocksignal);
-  void selectEntities(const smtk::common::UUIDs& selEntIds)
-  {
-    this->selectEntityItems(selEntIds, false);
-  }
-  void selectMeshItems(const smtk::mesh::MeshSets& selMeshes, bool blocksignal);
-  void selectMeshes(const smtk::mesh::MeshSets& selMeshes)
-  {
-    this->selectMeshItems(selMeshes, false);
-  }
+  void onSelectionChangedUpdateModelTree(const smtk::model::EntityRefs& selEntities,
+    const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& selproperties,
+    const std::string& selectionSource);
 
   void showContextMenu(const QPoint& p);
   void showContextMenu(const QModelIndex& idx, const QPoint& p = QPoint());
@@ -99,7 +91,7 @@ public slots:
 signals:
   void sendSelectionsFromModelViewToSelectionManager(const smtk::model::EntityRefs& selEntities,
     const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& DesPhrases,
-    const smtk::extension::SelectionModifier modifierFlag, const smtk::model::StringList skipList);
+    const smtk::extension::SelectionModifier modifierFlag, const std::string& selectionSource);
 
   void operationRequested(const smtk::model::OperatorPtr& brOp);
   void operationCancelled(const smtk::model::OperatorPtr& brOp);
@@ -195,6 +187,7 @@ protected:
   std::map<std::string, std::pair<std::vector<std::string>, std::map<std::string, std::string> > >
     m_sessionInfo;
   QModelIndex m_contextMenuIndex;
+  std::string m_selectionSourceName;
 };
 
 } // namespace extension
