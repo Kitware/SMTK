@@ -70,9 +70,8 @@ void qtSelectionManager::updateSelectedItems(const smtk::model::EntityRefs& selE
   const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& /*DesPhrases*/,
   const smtk::extension::SelectionModifier modifierFlag, const smtk::model::StringList skipList)
 {
-  // \b selection from qtModelItem/operator dialog
   if (modifierFlag == smtk::extension::SelectionModifier::SELECTION_ADDITION_UNFILTERED)
-  {
+  { // \b selection from qtModelItem/operator dialog
     this->m_selEntityRefs.insert(selEntities.begin(), selEntities.end());
     this->m_selMeshes.insert(selMeshes.begin(), selMeshes.end());
     // Deprecated start
@@ -83,7 +82,7 @@ void qtSelectionManager::updateSelectedItems(const smtk::model::EntityRefs& selE
     // Deprecated end
   }
   else if (modifierFlag == smtk::extension::SelectionModifier::SELECTION_SUBTRACTION_UNFILTERED)
-  {
+  { // \b selection from qtModelItem/operator dialog
     for (auto selEntity : selEntities)
     {
       if (this->m_selEntityRefs.find(selEntity) != this->m_selEntityRefs.end())
@@ -126,10 +125,8 @@ void qtSelectionManager::updateSelectedItems(const smtk::model::EntityRefs& selE
     }
     // Deprecated end
   }
-
-  // \b selection from render window
   else if (modifierFlag == smtk::extension::SelectionModifier::SELECTION_INQUIRY)
-  {
+  { // \b selection from render window
     if (this->m_selectionModifier == SelectionModifier::SELECTION_REPLACE_FILTERED)
     { // clear and select
       this->clear();
@@ -197,12 +194,12 @@ void qtSelectionManager::updateSelectedItems(const smtk::model::EntityRefs& selE
   if (true || std::find(skipList.begin(), skipList.end(), this->m_skipList[0]) == skipList.end())
   {
     emit broadcastToRenderView(
-      this->m_selEntities, smtk::mesh::MeshSets(), smtk::model::DescriptivePhrases());
+      this->m_selEntities, this->m_selMeshes, smtk::model::DescriptivePhrases());
   }
 
   if (std::find(skipList.begin(), skipList.end(), this->m_skipList[1]) == skipList.end())
   {
-    emit broadcastToModelTree(this->m_selEntities, smtk::mesh::MeshSets(), true);
+    emit broadcastToModelTree(this->m_selEntities, this->m_selMeshes, true);
   }
 
   if (std::find(skipList.begin(), skipList.end(), this->m_skipList[2]) == skipList.end())
@@ -219,28 +216,28 @@ void qtSelectionManager::filterModels(bool checked)
 
 void qtSelectionManager::filterVolumes(bool checked)
 {
-  // smtk::model::CELL_ENTITY makes sure that you do not affect other
+  // smtk::model::CELL_ENTITY makes sure that you do not affect each other
   this->m_mask = (checked) ? (this->m_mask | smtk::model::VOLUME)
                            : (m_mask & (~smtk::model::VOLUME | smtk::model::CELL_ENTITY));
 }
 
 void qtSelectionManager::filterFaces(bool checked)
 {
-  // smtk::model::CELL_ENTITY makes sure that you do not affect other
+  // smtk::model::CELL_ENTITY makes sure that you do not affect each other
   this->m_mask = (checked) ? (this->m_mask | smtk::model::FACE)
                            : (m_mask & (~smtk::model::FACE | smtk::model::CELL_ENTITY));
 }
 
 void qtSelectionManager::filterEdges(bool checked)
 {
-  // smtk::model::CELL_ENTITY makes sure that you do not affect other
+  // smtk::model::CELL_ENTITY makes sure that you do not affect each other
   this->m_mask = (checked) ? (this->m_mask | smtk::model::EDGE)
                            : (m_mask & (~smtk::model::EDGE | smtk::model::CELL_ENTITY));
 }
 
 void qtSelectionManager::filterVertices(bool checked)
 {
-  // smtk::model::CELL_ENTITY makes sure that you do not affect other
+  // smtk::model::CELL_ENTITY makes sure that you do not affect each other
   this->m_mask = (checked) ? (this->m_mask | smtk::model::VERTEX)
                            : (m_mask & (~smtk::model::VERTEX | smtk::model::CELL_ENTITY));
 }
@@ -274,6 +271,7 @@ void qtSelectionManager::filterEntitySelectionsByMaskAndActiveModel(
        inputEnt++)
   {
     smtk::model::EntityRef ent = *inputEnt;
+
     // only filter active model's item
     if ((ent.owningModel().entity() != qtActiveObjects::instance().activeModel().entity()) ||
       (ent.isModel() && ent.entity() != qtActiveObjects::instance().activeModel().entity()))
@@ -295,56 +293,54 @@ void qtSelectionManager::filterEntitySelectionsByMaskAndActiveModel(
       filteredSelEnts.insert(ent);
     }
 
-    // Comment out for now since tessellation for volume and model is not added
-    //if (this->m_mask & smtk::model::MODEL_ENTITY)
-    //{
-    //  this->m_selEntities.insert(ent.owningModel().entity());
-    //}
+    if (this->m_mask & smtk::model::MODEL_ENTITY)
+    {
+      this->m_selEntities.insert(ent.owningModel().entity());
+    }
 
-    //// check only volume condition
-    //if (this->m_mask & ~smtk::model::CELL_ENTITY & smtk::model::VOLUME)
-    //{
-    //  if (ent.isFace())
-    //  {
-    //    smtk::model::Face face = ent.as<smtk::model::Face>();
-    //    smtk::model::Volumes volumesFa = face.volumes();
-    //    for (const auto & volume : volumesFa)
-    //    {
-    //      this->m_selEntities.insert(volume.entity());
-    //    }
-    //  }
-    //  else if (ent.isEdge())
-    //  {
-    //    smtk::model::Edge edge = ent.as<smtk::model::Edge>();
-    //    smtk::model::Faces facesEd = edge.faces();
-    //    for (const auto & faceEd: facesEd)
-    //    {
-    //      smtk::model::Volumes volumesFaEd = faceEd.volumes();
-    //      for (const auto & volumeFaEd : volumesFaEd)
-    //      {
-    //        this->m_selEntities.insert(volumeFaEd.entity());
-    //      }
-    //    }
-    //  }
-    //  else if (ent.isVertex())
-    //  {
-    //    smtk::model::Vertex vertex = ent.as<smtk::model::Vertex>();
-    //    smtk::model::Edges edgesVe = vertex.edges();
-    //    for (const auto & edgeVe : edgesVe)
-    //    {
-    //      smtk::model::Faces facesEdVe = edgeVe.faces();
-    //      for (const auto & faceEdVe : facesEdVe)
-    //      {
-    //        smtk::model::Volumes volumesFaEdVe = faceEdVe.volumes();
-    //        for (const auto & volumeFaEdVe : volumesFaEdVe)
-    //        {
-    //          this->m_selEntities.insert(volumeFaEdVe.entity());
-    //        }
-    //      }
-    //    }
-    //  }
-
-    //}
+    // check only volume condition
+    if (this->m_mask & ~smtk::model::CELL_ENTITY & smtk::model::VOLUME)
+    {
+      if (ent.isFace())
+      {
+        smtk::model::Face face = ent.as<smtk::model::Face>();
+        smtk::model::Volumes volumesFa = face.volumes();
+        for (const auto& volume : volumesFa)
+        {
+          this->m_selEntities.insert(volume.entity());
+        }
+      }
+      else if (ent.isEdge())
+      {
+        smtk::model::Edge edge = ent.as<smtk::model::Edge>();
+        smtk::model::Faces facesEd = edge.faces();
+        for (const auto& faceEd : facesEd)
+        {
+          smtk::model::Volumes volumesFaEd = faceEd.volumes();
+          for (const auto& volumeFaEd : volumesFaEd)
+          {
+            this->m_selEntities.insert(volumeFaEd.entity());
+          }
+        }
+      }
+      else if (ent.isVertex())
+      {
+        smtk::model::Vertex vertex = ent.as<smtk::model::Vertex>();
+        smtk::model::Edges edgesVe = vertex.edges();
+        for (const auto& edgeVe : edgesVe)
+        {
+          smtk::model::Faces facesEdVe = edgeVe.faces();
+          for (const auto& faceEdVe : facesEdVe)
+          {
+            smtk::model::Volumes volumesFaEdVe = faceEdVe.volumes();
+            for (const auto& volumeFaEdVe : volumesFaEdVe)
+            {
+              this->m_selEntities.insert(volumeFaEdVe.entity());
+            }
+          }
+        }
+      }
+    }
   }
 }
 
