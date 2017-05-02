@@ -427,7 +427,8 @@ void qtModelView::filterSelectionByEntity(const smtk::model::DescriptivePhrasePt
         eit.traverse(model, smtk::model::ITERATE_MODELS);
         for (eit.begin(); !eit.isAtEnd(); eit.advance())
         {
-          if (eit->isCellEntity() || eit->isAuxiliaryGeometry() || eit->isModel())
+          if (eit->isCellEntity() || eit->isAuxiliaryGeometry() || eit->isModel() ||
+            eit->isGroup() /*exodus*/)
           {
             selentityrefs.insert(*eit);
           }
@@ -446,7 +447,8 @@ void qtModelView::filterSelectionByEntity(const smtk::model::DescriptivePhrasePt
       eit.traverse(relatedEnt, smtk::model::ITERATE_CHILDREN);
       for (eit.begin(); !eit.isAtEnd(); eit.advance())
       {
-        if (eit->isCellEntity() || eit->isAuxiliaryGeometry() || eit->isModel())
+        if (eit->isCellEntity() || eit->isAuxiliaryGeometry() || eit->isModel() ||
+          eit->isGroup() /*exodus*/)
         {
           selentityrefs.insert(*eit);
         }
@@ -486,6 +488,21 @@ void qtModelView::filterSelectionByEntity(const smtk::model::DescriptivePhrasePt
             selentityrefs.insert(lowerEnt);
           }
           // EntityIterator would fail here to give wrong boundary entities
+        }
+      }
+      // dPhrase is an entity summary of group
+      if (EntityPhrasePtr entity = smtk::dynamic_pointer_cast<EntityPhrase>(dPhrase))
+      {
+        smtk::model::EntityRef ent = entity->relatedEntity();
+        if (ent.isGroup())
+        {
+          smtk::model::Group groupEnt = ent.as<smtk::model::Group>();
+          // exodus session
+          smtk::model::EntityRefs groupItems = groupEnt.members<smtk::model::EntityRefs>();
+          for (const auto& groupItem : groupItems)
+          {
+            selentityrefs.insert(groupItem);
+          }
         }
       }
     }
@@ -559,7 +576,7 @@ void qtModelView::selectMeshes(const DescriptivePhrasePtr& dp, smtk::mesh::MeshS
       else if (!mphrase->relatedMesh().is_empty())
       {
         selmeshes->insert(mphrase->relatedMesh());
-        // get meshsets inside meshSets
+        // get submeshsets inside meshSet
         for (std::size_t i = 0; i < mphrase->relatedMesh().size(); ++i)
         {
           selmeshes->insert(mphrase->relatedMesh().subset(i));
@@ -1497,6 +1514,15 @@ bool qtModelView::setEntityColor(const smtk::model::EntityRefs& selentityrefs,
   EntityRefs::const_iterator it;
   for (it = selentityrefs.begin(); it != selentityrefs.end(); it++)
   {
+    // if entity self is a summary of group(exodus session)
+    smtk::model::Group groupSelRefs;
+    smtk::model::EntityRefs groupItems = smtk::model::EntityRefs();
+    if (it->isGroup())
+    {
+      groupSelRefs = it->as<smtk::model::Group>();
+      groupItems = groupSelRefs.members<smtk::model::EntityRefs>();
+    }
+
     if (newColor.isValid())
     {
       QColor currentColor = Qt::white;
@@ -1509,12 +1535,22 @@ bool qtModelView::setEntityColor(const smtk::model::EntityRefs& selentityrefs,
       {
         numChangingEnts++;
         attrib->associateEntity(*it);
+        for (const auto& groupItem : groupItems)
+        {
+          numChangingEnts++;
+          attrib->associateEntity(groupItem);
+        }
       }
     }
     else if ((*it).hasColor()) // remove "color" property
     {
       numChangingEnts++;
       attrib->associateEntity(*it);
+      for (const auto& groupItem : groupItems)
+      {
+        numChangingEnts++;
+        attrib->associateEntity(groupItem);
+      }
     }
   }
 
