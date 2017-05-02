@@ -7,7 +7,7 @@
       <ItemDefinitions>
         <MeshEntity Name="mesh" NumberOfRequiredValues="1" Extensible="true" />
         <File Name="filename" NumberOfRequiredValues="1" ShouldExist="false"
-          FileFilters="Aquaveo XMS 2D Mesh file (*.2dm);;Aquaveo XMS 3D Mesh file (*.3dm)">
+          FileFilters="AdH 2D Mesh file (*.2dm);;AdH 3D Mesh file (*.3dm)">
         </File>
       </ItemDefinitions>
     </AttDef>

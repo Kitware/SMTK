@@ -113,6 +113,21 @@ qtFileItem::qtFileItem(smtk::attribute::FileSystemItemPtr dataObj, QWidget* p, q
   }
 }
 
+namespace
+{
+
+QString extractFileTypeName(const std::string& fileTypeDescription)
+{
+  // Trim the extensions to get just the file type name
+  std::string name = fileTypeDescription.substr(0, fileTypeDescription.find_last_of("("));
+
+  // Trim leading and trailing whitespace, remove multiple spaces.
+  name = regex_replace(name, regex("^ +| +$|( ) +"), "$1");
+
+  return QString::fromStdString(name);
+}
+}
+
 qtFileItem::~qtFileItem()
 {
   delete this->Internals;
@@ -184,7 +199,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
         this->Internals->fileExtCombo->setEditable(false);
         for (; it != last; ++it)
         {
-          this->Internals->fileExtCombo->addItem(QString::fromStdString(it->str()));
+          this->Internals->fileExtCombo->addItem(extractFileTypeName(it->str()));
         }
       }
     }
