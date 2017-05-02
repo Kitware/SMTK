@@ -125,10 +125,16 @@ smtk::model::OperatorResult InterpolateMeshElevation::operateInternal()
     interpolator.addSourcePoint(p, pointItem->value(2));
   }
 
-  // Elevate the meshes and mark their associated models as "tess_changed"
+  // Access the attribute associated with the modified meshes
   OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
   smtk::attribute::MeshItem::Ptr modifiedMeshes = result->findMesh("mesh_modified");
+  modifiedMeshes->setNumberOfValues(meshItem->numberOfValues());
 
+  // Access the attribute associated with the changed tessellation
+  smtk::attribute::ModelEntityItem::Ptr modifiedEntities = result->findModelEntity("tess_changed");
+  modifiedEntities->setNumberOfValues(meshItem->numberOfValues());
+
+  // Elevate the meshes and populate the result attributes
   for (std::size_t i = 0; i < meshItem->numberOfValues(); i++)
   {
     smtk::mesh::MeshSet mesh = meshItem->value(i);
@@ -140,11 +146,13 @@ smtk::model::OperatorResult InterpolateMeshElevation::operateInternal()
     bool entitiesAreValid = mesh.modelEntities(entities);
     if (entitiesAreValid && !entities.empty())
     {
-      result->findModelEntity("tess_changed")->appendValue(entities[0].owningModel());
+      smtk::model::Model model = entities[0].owningModel();
+      this->addEntityToResult(result, model, MODIFIED);
+      modifiedEntities->appendValue(model);
     }
   }
 
-  return this->createResult(OPERATION_SUCCEEDED);
+  return result;
 }
 }
 }
