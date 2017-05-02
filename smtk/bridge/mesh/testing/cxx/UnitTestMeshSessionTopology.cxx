@@ -7,7 +7,6 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
 #include "smtk/bridge/mesh/Session.h"
 
@@ -20,6 +19,7 @@
 #include "smtk/mesh/Manager.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
 
+#include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
@@ -28,6 +28,8 @@
 #include <chrono>
 
 #ifdef SMTK_ENABLE_VTK_SUPPORT
+#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
+
 #include "vtkActor.h"
 #include "vtkCamera.h"
 #include "vtkCommand.h"
