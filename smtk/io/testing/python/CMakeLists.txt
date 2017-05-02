@@ -9,6 +9,7 @@ endif()
 
 # Additional tests that require SMTK_DATA_DIR
 set(smtkIOPythonDataTests
+  readSMTKFile
 )
 
 foreach (test ${smtkIOPythonTests})
