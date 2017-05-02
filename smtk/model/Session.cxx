@@ -398,6 +398,9 @@ bool Session::splitProperties(const EntityRef& from, const EntityRefs& to) const
   const char* stringPropertyNamesToBroadcast[] = { "name" };
   unsigned nps = sizeof(stringPropertyNamesToBroadcast) / sizeof(stringPropertyNamesToBroadcast[0]);
 
+  const char* floatPropertyNamesToBroadcast[] = { "color" };
+  unsigned npf = sizeof(floatPropertyNamesToBroadcast) / sizeof(floatPropertyNamesToBroadcast[0]);
+
   // TODO: It should be possible to use different rules on a case-by-case basis:
   // Split rule for integers: broadcast value to all.
   const IntegerData& idata(from.integerProperties());
@@ -429,6 +432,22 @@ bool Session::splitProperties(const EntityRef& from, const EntityRefs& to) const
       }
     }
   }
+
+  // TODO: It should be possible to use different rules on a case-by-case basis:
+  // Split rule for floats: broadcast value to all.
+  const FloatData& fdata(from.floatProperties());
+  for (unsigned i = 0; i < npf; ++i)
+  {
+    FloatData::const_iterator fpit;
+    if ((fpit = fdata.find(floatPropertyNamesToBroadcast[i])) != fdata.end())
+    {
+      for (EntityRefs::iterator oit = to.begin(); oit != to.end(); ++oit)
+      {
+        EntityRef mutableEnt(*oit);
+        mutableEnt.setFloatProperty(floatPropertyNamesToBroadcast[i], fpit->second);
+      }
+    }
+  }
   return true;
 }
 
@@ -449,6 +468,16 @@ bool Session::mergeProperties(const EntityRefs& from, EntityRef& to) const
 
   const char* stringPropertyNamesToReduce[] = { "name" };
   unsigned nps = sizeof(stringPropertyNamesToReduce) / sizeof(stringPropertyNamesToReduce[0]);
+
+  const char* floatPropertyNamesToReduce[] = { "color" };
+  unsigned npf = sizeof(floatPropertyNamesToReduce) / sizeof(floatPropertyNamesToReduce[0]);
+
+  std::cout << "Merging from:\n";
+  for (auto fent : from)
+  {
+    std::cout << "  " << fent.name() << "\n";
+  }
+  std::cout << "to:\n  " << to.name() << "\n";
 
   // TODO: It should be possible to use different rules on a case-by-case basis:
   // Merge rule for integers: union all values.
@@ -486,8 +515,8 @@ bool Session::mergeProperties(const EntityRefs& from, EntityRef& to) const
   {
     bool haveString = false;
     EntityRefs::const_iterator eit;
-    const StringData& toVals(to.stringProperties());
-    if (toVals.find(stringPropertyNamesToReduce[ii]) == toVals.end())
+    const StringData* toVals = to.hasStringProperties() ? &to.stringProperties() : nullptr;
+    if (!toVals || toVals->find(stringPropertyNamesToReduce[ii]) == toVals->end())
     {
       for (eit = from.begin(); eit != from.end(); ++eit)
       {
@@ -504,6 +533,36 @@ bool Session::mergeProperties(const EntityRefs& from, EntityRef& to) const
       {
         to.setStringProperty(
           stringPropertyNamesToReduce[ii], StringList(svalue.begin(), svalue.end()));
+      }
+    }
+  }
+
+  // TODO: It should be possible to use different rules on a case-by-case basis:
+  // Merge rule for floats: choose the first one, and only if not already present:
+  FloatList fvalue;
+  for (unsigned int ii = 0; ii < npf; ++ii)
+  {
+    bool haveFloat = false;
+    EntityRefs::const_iterator eit;
+    const FloatData* toVals = to.hasFloatProperties() ? &to.floatProperties() : nullptr;
+    if (!toVals || toVals->find(floatPropertyNamesToReduce[ii]) == toVals->end())
+    {
+      std::cout << to.name() << " needs " << floatPropertyNamesToReduce[ii] << "\n";
+      for (eit = from.begin(); eit != from.end(); ++eit)
+      {
+        const FloatData& values(eit->floatProperties());
+        FloatData::const_iterator valueIt = values.find(floatPropertyNamesToReduce[ii]);
+        if (valueIt != values.end())
+        {
+          haveFloat = true;
+          fvalue.insert(fvalue.end(), valueIt->second.begin(), valueIt->second.end());
+          break;
+        }
+      }
+      if (haveFloat)
+      {
+        to.setFloatProperty(
+          floatPropertyNamesToReduce[ii], FloatList(fvalue.begin(), fvalue.end()));
       }
     }
   }

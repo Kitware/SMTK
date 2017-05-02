@@ -520,11 +520,11 @@ int SaveJSON::forManagerFloatProperties(
 }
 
 int SaveJSON::forManagerStringProperties(
-  const smtk::common::UUID& uid, cJSON* dict, ManagerPtr model)
+  const smtk::common::UUID& uid, cJSON* dict, ManagerPtr modelManager)
 {
   int status = 1;
-  UUIDWithStringProperties entIt = model->stringProperties().find(uid);
-  if (entIt == model->stringProperties().end() || entIt->second.empty())
+  UUIDWithStringProperties entIt = modelManager->stringProperties().find(uid);
+  if (entIt == modelManager->stringProperties().end() || entIt->second.empty())
   { // No properties is not an error
     return status;
   }

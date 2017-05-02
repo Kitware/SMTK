@@ -974,13 +974,25 @@ std::set<std::string> EntityRef::floatPropertyNames() const
 FloatData& EntityRef::floatProperties()
 {
   ManagerPtr mgr = this->m_manager.lock();
-  return mgr->floatProperties().find(this->m_entity)->second;
+  auto pit = mgr->floatProperties().find(this->m_entity);
+  if (pit == mgr->floatProperties().end())
+  {
+    auto blank = std::make_pair(this->m_entity, FloatData());
+    pit = mgr->floatProperties().insert(blank).first;
+  }
+  return pit->second;
 }
 
 FloatData const& EntityRef::floatProperties() const
 {
   ManagerPtr mgr = this->m_manager.lock();
-  return mgr->floatProperties().find(this->m_entity)->second;
+  auto pit = mgr->floatProperties().find(this->m_entity);
+  if (pit == mgr->floatProperties().end())
+  {
+    auto blank = std::make_pair(this->m_entity, FloatData());
+    pit = mgr->floatProperties().insert(blank).first;
+  }
+  return pit->second;
 }
 
 void EntityRef::setStringProperty(const std::string& propName, const smtk::model::String& propValue)
@@ -1064,13 +1076,25 @@ std::set<std::string> EntityRef::stringPropertyNames() const
 StringData& EntityRef::stringProperties()
 {
   ManagerPtr mgr = this->m_manager.lock();
-  return mgr->stringProperties().find(this->m_entity)->second;
+  auto pit = mgr->stringProperties().find(this->m_entity);
+  if (pit == mgr->stringProperties().end())
+  {
+    auto blank = std::make_pair(this->m_entity, StringData());
+    pit = mgr->stringProperties().insert(blank).first;
+  }
+  return pit->second;
 }
 
 StringData const& EntityRef::stringProperties() const
 {
   ManagerPtr mgr = this->m_manager.lock();
-  return mgr->stringProperties().find(this->m_entity)->second;
+  auto pit = mgr->stringProperties().find(this->m_entity);
+  if (pit == mgr->stringProperties().end())
+  {
+    auto blank = std::make_pair(this->m_entity, StringData());
+    pit = mgr->stringProperties().insert(blank).first;
+  }
+  return pit->second;
 }
 
 void EntityRef::setIntegerProperty(const std::string& propName, smtk::model::Integer propValue)
@@ -1154,13 +1178,25 @@ std::set<std::string> EntityRef::integerPropertyNames() const
 IntegerData& EntityRef::integerProperties()
 {
   ManagerPtr mgr = this->m_manager.lock();
-  return mgr->integerProperties().find(this->m_entity)->second;
+  auto pit = mgr->integerProperties().find(this->m_entity);
+  if (pit == mgr->integerProperties().end())
+  {
+    auto blank = std::make_pair(this->m_entity, IntegerData());
+    pit = mgr->integerProperties().insert(blank).first;
+  }
+  return pit->second;
 }
 
 IntegerData const& EntityRef::integerProperties() const
 {
   ManagerPtr mgr = this->m_manager.lock();
-  return mgr->integerProperties().find(this->m_entity)->second;
+  auto pit = mgr->integerProperties().find(this->m_entity);
+  if (pit == mgr->integerProperties().end())
+  {
+    auto blank = std::make_pair(this->m_entity, IntegerData());
+    pit = mgr->integerProperties().insert(blank).first;
+  }
+  return pit->second;
 }
 
 /// Return the number of arrangements of the given kind \a k.
