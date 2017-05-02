@@ -40,6 +40,23 @@ using namespace boost::filesystem;
 using smtk::attribute::FileItem;
 using smtk::attribute::IntItem;
 
+static void updateSMTKURLs(cJSON* parent, cJSON* node, const std::string& filename)
+{
+  for (; node; node = node->next)
+  {
+    if (parent && parent->type == cJSON_Object && node->type == cJSON_Array && node->string &&
+      node->string[0] && std::string(node->string) == "smtk_url")
+    {
+      cJSON* replacement = cJSON_CreateString(filename.c_str());
+      cJSON_ReplaceItemInArray(node, 0, replacement);
+    }
+    else if ((node->type == cJSON_Object || node->type == cJSON_Array) && node->child)
+    {
+      updateSMTKURLs(node, node->child, filename);
+    }
+  }
+}
+
 namespace smtk
 {
 namespace model
@@ -79,6 +96,7 @@ smtk::model::OperatorResult LoadSMTKModel::operateInternal()
 
   int status = 0;
   cJSON* root = cJSON_Parse(data.c_str());
+  updateSMTKURLs(NULL, root, filename);
   if (root && root->type == cJSON_Object && root->child)
   {
     status = smtk::io::LoadJSON::ofLocalSession(
