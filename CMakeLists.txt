@@ -404,13 +404,12 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     elseif (SMTK_ENABLE_VTK_SUPPORT)
       list(APPEND required_python_modules
         vtk)
-      # TODO: VTK needs to export a variable for this; this currently only
-      # works for VTK build trees.
+      # TODO: VTK needs to export a variable for this
       set(vtk_PYTHONPATH
-        "${VTK_DIR}/lib/site-packages"
-        "${VTK_DIR}/lib")
+        "${VTK_INSTALL_PREFIX}/lib/python2.7/site-packages"
+        "${VTK_INSTALL_PREFIX}/lib")
       set(vtk_libpath
-        "${VTK_DIR}/lib")
+        "${VTK_INSTALL_PREFIX}/lib")
     endif ()
 
     set(envsep ":")
