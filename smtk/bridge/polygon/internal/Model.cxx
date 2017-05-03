@@ -613,6 +613,7 @@ bool pmodel::splitModelEdgeAtIndex(smtk::model::ManagerPtr mgr, const Id& edgeId
   smtk::model::Vertex v = this->findOrAddModelVertex(mgr, pt, /*add as free cell?*/ false);
   bool result = this->splitModelEdgeAtModelVertex(mgr, edgeId, v.entity(), created, debugLevel);
   v.assignDefaultName(); // Assign the name after the vertex is added to the edge (and has a parent model).
+  created.push_back(v);
   return result;
 }
 
