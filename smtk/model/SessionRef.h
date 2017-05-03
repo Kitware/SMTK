@@ -50,6 +50,7 @@ public:
   std::string site() const;
   StringList engines() const;
   StringData fileTypes(const std::string& engine = std::string()) const;
+  std::string defaultFileExtension(const Model& model = Model()) const;
 
   void close();
 };

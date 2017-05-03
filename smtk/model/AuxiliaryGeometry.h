@@ -46,6 +46,9 @@ public:
   bool hasUrl() const;
   std::string url() const;
   void setUrl(const std::string& url);
+
+  bool isModified() const;
+  void setIsModified(bool isModified);
 };
 
 typedef std::vector<AuxiliaryGeometry> AuxiliaryGeometries;

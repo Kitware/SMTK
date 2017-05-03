@@ -72,6 +72,11 @@ smtk::model::SessionInfoBits Session::allSupportedInformation() const
   return smtk::model::SESSION_EVERYTHING;
 }
 
+std::string Session::defaultFileExtension(const smtk::model::Model&) const
+{
+  return "";
+}
+
 smtk::model::SessionInfoBits Session::transcribeInternal(
   const smtk::model::EntityRef& entity, smtk::model::SessionInfoBits requestedInfo, int depth)
 {

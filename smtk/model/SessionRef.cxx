@@ -164,6 +164,12 @@ StringData SessionRef::fileTypes(const std::string& engine) const
   return SessionRegistrar::sessionFileTypes(this->session()->name(), engine);
 }
 
+/// Return a filename extension (including ".") appropriate for saving \a model.
+std::string SessionRef::defaultFileExtension(const Model& model) const
+{
+  return this->session()->defaultFileExtension(model);
+}
+
 void SessionRef::close()
 {
   ManagerPtr mgr = this->manager();

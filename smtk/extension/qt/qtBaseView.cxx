@@ -139,7 +139,7 @@ void qtBaseView::buildUI()
 {
   if (this->m_isTopLevel && (!this->m_topLevelInitialized))
   {
-    // Process the aspects associate with top level views
+    // Process the aspects associated with top level views
     this->makeTopLevel();
   }
 

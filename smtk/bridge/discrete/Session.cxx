@@ -333,6 +333,12 @@ vtkDiscreteModelWrapper* Session::findModelEntity(const smtk::common::UUID& uid)
   return NULL;
 }
 
+std::string Session::defaultFileExtension(const smtk::model::Model& model) const
+{
+  (void)model;
+  return ".cmb";
+}
+
 /**\brief Find the kernel entity corresponding to \a entRef and add a record for it to \a entRef's manager.
   *
   * No bidirectional relationships or arrangements should be added

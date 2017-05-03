@@ -65,6 +65,11 @@ public:
   /// Set the directory to use during import/export for creating relative paths.
   void setReferencePath(const std::string& p) { this->m_referencePath = p; }
 
+  /**\brief Save a resource file owned by the session for which this object delegates.
+    */
+  virtual int saveResource(
+    const EntityRef& ent, smtk::common::ResourceSetPtr rset, StoredResourcePtr rsrc);
+
 protected:
   std::string m_referencePath;
 };

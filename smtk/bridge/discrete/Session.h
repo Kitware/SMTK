@@ -115,6 +115,8 @@ public:
 
   vtkDiscreteModelWrapper* findModelEntity(const smtk::common::UUID& uid) const;
 
+  std::string defaultFileExtension(const smtk::model::Model& model) const;
+
 protected:
   friend class vtkItemWatcherCommand;
   friend class MergeOperator;

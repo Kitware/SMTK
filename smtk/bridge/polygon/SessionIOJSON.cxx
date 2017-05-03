@@ -218,6 +218,18 @@ int SessionIOJSON::exportJSON(smtk::model::ManagerPtr mgr, const smtk::model::Se
   return 1;
 }
 
+///
+int SessionIOJSON::saveJSON(
+  cJSON* node, const smtk::model::SessionRef& sref, const smtk::model::Models& models)
+{
+  smtk::common::UUIDs uids;
+  for (auto model : models)
+  {
+    uids.insert(model.entity());
+  }
+  return this->exportJSON(sref.manager(), sref.session(), uids, node, true);
+}
+
 /**\brief Encode information into \a sessionRec for the given \a modelId of the \a mgr.
   *
   * Subclasses should return 1 on success and 0 on failure.

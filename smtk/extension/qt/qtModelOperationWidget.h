@@ -30,6 +30,7 @@ class Logger;
 }
 namespace extension
 {
+class qtBaseView;
 class qtFileItem;
 class qtModelEntityItem;
 class qtMeshSelectionItem;
@@ -46,6 +47,7 @@ public:
   virtual QSize sizeHint() const;
   virtual qtModelView* modelView();
   virtual smtk::model::OperatorPtr existingOperator(const std::string& opname);
+  virtual qtBaseView* existingOperatorView(const std::string& opname);
 
 public slots:
   virtual bool setCurrentOperator(const std::string& opName, smtk::model::SessionPtr session);

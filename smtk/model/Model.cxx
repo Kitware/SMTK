@@ -92,6 +92,29 @@ void Model::setSession(const SessionRef& sess)
   }
 }
 
+bool Model::isModified() const
+{
+  smtk::model::Manager::Ptr mgr = this->manager();
+  if (!mgr || !this->hasIntegerProperty("clean"))
+  {
+    return false;
+  }
+
+  const IntegerList& prop(this->integerProperty("clean"));
+  return (!prop.empty() && (prop[0] != 1));
+}
+
+void Model::setIsModified(bool isModified)
+{
+  smtk::model::Manager::Ptr mgr = this->manager();
+  if (!mgr)
+  {
+    return;
+  }
+
+  this->setIntegerProperty("clean", isModified ? 0 : 1);
+}
+
 /// Return the cells directly owned by this model.
 CellEntities Model::cells() const
 {

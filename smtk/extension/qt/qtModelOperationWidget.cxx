@@ -276,6 +276,7 @@ bool qtModelOperationWidget::initOperatorUI(const smtk::model::OperatorPtr& brOp
 
   if (!brOp->specification())
   {
+    std::cerr << "  Operator has no specification\n";
     return false;
   }
 
@@ -375,12 +376,14 @@ bool qtModelOperationWidget::setCurrentOperator(
   }
 
   std::string opLabel = this->Internals->m_operatorNameMap[opName];
+  std::cerr << "Looking for " << opLabel << " aka " << opName << "\n";
   int idx = this->Internals->findLabelPosition(opLabel);
   if (this->Internals->OperationCombo->currentIndex() != idx)
   {
     this->Internals->OperationCombo->setCurrentIndex(idx);
     return true;
   }
+  std::cerr << "  map has " << this->Internals->OperatorMap.size() << " entries\n";
   OperatorPtr brOp = this->Internals->OperatorMap.contains(opName)
     ? this->Internals->OperatorMap[opName].opPtr
     : session->op(opName); // create the operator
@@ -404,6 +407,17 @@ smtk::model::OperatorPtr qtModelOperationWidget::existingOperator(const std::str
   }
 
   return brOp;
+}
+
+qtBaseView* qtModelOperationWidget::existingOperatorView(const std::string& opName)
+{
+  qtBaseView* opview = nullptr;
+  if (this->Internals->OperatorMap.contains(opName))
+  {
+    opview = this->Internals->OperatorMap[opName].opUiView;
+  }
+
+  return opview;
 }
 
 void qtModelOperationWidget::expungeEntities(const smtk::model::EntityRefs& expungedEnts)

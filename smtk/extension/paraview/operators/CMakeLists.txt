@@ -4,14 +4,17 @@ include(ParaViewPlugins)
 # set up sources to build
 set(srcs
   smtkAssignColorsView.cxx
+  smtkSaveModelView.cxx
 )
 
 set(hdrs
   smtkAssignColorsView.h
+  smtkSaveModelView.h
 )
 
 set(qtui
   smtkAssignColorsParameters.ui
+  smtkSaveModelParameters.ui
 )
 
 #install the headers
@@ -46,6 +49,7 @@ target_link_libraries(smtkPQOperatorViewsExt
     smtkQtExt
     smtkCore
     ${QT_QTCORE_LIBRARY}
+    ${Boost_LIBRARIES}
     vtkjsoncpp
 )
 
@@ -58,17 +62,28 @@ endif()
 
 smtk_export_header(smtkPQOperatorViewsExt Exports.h)
 
-add_smtk_ui_view(
-  assignColorsInterfaces
-  assignColorsSources
-  CLASS_NAME smtkAssignColorsView
-  VIEW_NAME smtkAssignColorsView
-)
+# Generate the ParaView plugin code for each view class
+# added to the smtkPQOperatorViewsExt library above:
+set(viewInterfaces)
+set(viewSources)
+foreach(src ${srcs})
+  string(REPLACE ".cxx" "" srcClass ${src})
+  set(vitmp)
+  set(vstmp)
+  add_smtk_ui_view(
+    vitmp
+    vstmp
+    CLASS_NAME ${srcClass}
+    VIEW_NAME ${srcClass}
+  )
+  list(APPEND viewInterfaces ${vitmp})
+  list(APPEND viewSources ${vstmp})
+endforeach()
 
 add_paraview_plugin(
   smtkPQOperatorViewsPlugin "1.0"
-  GUI_INTERFACES ${assignColorsInterfaces}
-  GUI_SOURCES ${assignColorsSources}
+  GUI_INTERFACES ${viewInterfaces}
+  GUI_SOURCES ${viewSources}
   CS_KITS
   vtkSMTKWidgetsExt
 )

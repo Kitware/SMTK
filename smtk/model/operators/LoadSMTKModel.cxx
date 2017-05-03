@@ -57,6 +57,35 @@ static void updateSMTKURLs(cJSON* parent, cJSON* node, const std::string& filena
   }
 }
 
+static void updateURLs(cJSON* parent, cJSON* node, const ::boost::filesystem::path& embedDir)
+{
+  for (; node; node = node->next)
+  {
+    if (parent && parent->type == cJSON_Object && node->type == cJSON_Array && node->string &&
+      node->string[0] && std::string(node->string) == "url")
+    {
+      int nn = 0;
+      for (cJSON *urlNode = node->child; urlNode; urlNode = urlNode->next, ++nn)
+      {
+        if (urlNode->valuestring && urlNode->valuestring[0])
+        {
+          ::boost::filesystem::path url(urlNode->valuestring);
+          if (url.is_relative())
+          {
+            cJSON* replacement = cJSON_CreateString((embedDir / url).string().c_str());
+            cJSON_ReplaceItemInArray(node, nn, replacement);
+            urlNode = replacement;
+          }
+        }
+      }
+    }
+    else if ((node->type == cJSON_Object || node->type == cJSON_Array) && node->child)
+    {
+      updateURLs(node, node->child, embedDir);
+    }
+  }
+}
+
 namespace smtk
 {
 namespace model
@@ -97,6 +126,11 @@ smtk::model::OperatorResult LoadSMTKModel::operateInternal()
   int status = 0;
   cJSON* root = cJSON_Parse(data.c_str());
   updateSMTKURLs(NULL, root, filename);
+  ::boost::filesystem::path embedDir = ::boost::filesystem::path(filename).parent_path();
+  if (!embedDir.empty())
+  {
+    updateURLs(NULL, root, embedDir);
+  }
   if (root && root->type == cJSON_Object && root->child)
   {
     status = smtk::io::LoadJSON::ofLocalSession(

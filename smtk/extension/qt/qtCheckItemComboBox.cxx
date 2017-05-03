@@ -128,11 +128,11 @@ void qtModelEntityItemCombo::init()
 
   ModelEntityItemPtr modelEntityItem = this->m_ModelEntityItem->modelEntityItem();
   smtk::attribute::VoidItemPtr showNonActiveModelPtr =
-    modelEntityItem->attribute()->findVoid("show non-active models");
+    modelEntityItem ? modelEntityItem->attribute()->findVoid("show non-active models") : nullptr;
   bool showNonActiveModel(false);
   if (showNonActiveModelPtr)
   {
-    showNonActiveModel = showNonActiveModelPtr->isValid();
+    showNonActiveModel = showNonActiveModelPtr->isEnabled();
   }
   const ModelEntityItemDefinition* itemDef =
     static_cast<const ModelEntityItemDefinition*>(modelEntityItem->definition().get());

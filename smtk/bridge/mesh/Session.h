@@ -47,6 +47,8 @@ public:
   void addTopology(Topology t) { this->m_topologies.push_back(t); }
   Topology* topology(smtk::model::Model& model);
 
+  std::string defaultFileExtension(const smtk::model::Model&) const { return ""; }
+
 protected:
   Session();
 

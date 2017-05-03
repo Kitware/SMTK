@@ -8,6 +8,7 @@ set(modelSrcs
   AuxiliaryGeometry.cxx
   Session.cxx
   SessionRef.cxx
+  SessionIO.cxx
   SessionIOJSON.cxx
   SessionRegistrar.cxx
   CellEntity.cxx

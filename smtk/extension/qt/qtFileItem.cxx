@@ -428,13 +428,12 @@ void qtFileItem::onInputValueChanged()
   }
 }
 
-void qtFileItem::onLaunchFileBrowser()
+bool qtFileItem::onLaunchFileBrowser()
 {
   // If we are not using local file browser, just emit signal and return
   if (!this->Internals->FileBrowser)
   {
-    emit this->launchFileBrowser();
-    return;
+    return emit launchFileBrowser();
   }
 
   // If local file browser instantiated, get data from it
@@ -474,7 +473,9 @@ void qtFileItem::onLaunchFileBrowser()
   {
     QStringList files = this->Internals->FileBrowser->selectedFiles();
     this->setInputValue(files[0]);
+    return true;
   }
+  return false;
 }
 
 void qtFileItem::updateFileComboList(const QString& newFile)

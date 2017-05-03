@@ -50,6 +50,17 @@ SessionIOJSON::SessionIOJSON()
 {
 }
 
+int SessionIOJSON::saveJSON(
+  cJSON* node, const smtk::model::SessionRef& sref, const smtk::model::Models& models)
+{
+  smtk::common::UUIDs uids;
+  for (auto model : models)
+  {
+    uids.insert(model.entity());
+  }
+  return this->exportJSON(sref.manager(), sref.session(), uids, node, true);
+}
+
 /**\brief Load a model file while preserving UUIDs contained in the JSON file in traversal-order.
   */
 int SessionIOJSON::loadExodusFileWithUUIDs(

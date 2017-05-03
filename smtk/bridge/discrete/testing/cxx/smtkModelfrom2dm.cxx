@@ -24,7 +24,9 @@
 
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/MeshSelectionItem.h"
+#include "smtk/attribute/StringItem.h"
 #include "smtk/common/UUID.h"
 
 #include "vtkActor.h"
@@ -80,8 +82,9 @@ void cleanupsmtkfiles(const std::string& file_path, const std::string& meshname)
   std::string smtkfilename = path.stem().string();
 
   std::ostringstream outfilename;
-  outfilename << smtkfilename << "_out.cmb";
+  outfilename << smtkfilename << ".cmb";
   path = ::boost::filesystem::path(smtkfilepath) / ::boost::filesystem::path(outfilename.str());
+  std::cout << "Should remove " << path.string() << "\n";
   if (::boost::filesystem::is_regular_file(path))
   {
     //remove the file_path if it exists.
@@ -153,12 +156,24 @@ int main(int argc, char* argv[])
       test((mc->meshes(smtk::mesh::Dims1)).size() == 10, "Expecting 10 edge mesh");
       test((mc->meshes(smtk::mesh::Dims0)).size() == 7, "Expecting 7 vertex mesh");
 
-      // write out the smtk model after loading 2dm, which uses mergeCoincidentContactPoints() in meshes
+      // write out the smtk model after loading 2dm,
+      // which uses mergeCoincidentContactPoints() in meshes
       std::string write_path(write_root);
       write_path += "/test2D_2dm_save.smtk";
 
+      std::ostringstream model_path;
+      model_path << write_root << "/test2D_2dm_save.cmb";
+      model2dm.setStringProperty("url", model_path.str());
+
+      std::ostringstream mesh_path;
+      mesh_path << write_root << "/test2D_2dm_save_" << mc->name() << ".h5m";
+
       op = brg->op("save smtk model");
       op->findFile("filename")->setValue(write_path);
+      op->findMesh("save meshes")->setNumberOfValues(1);
+      op->findMesh("save meshes")->setValue(smtk::mesh::MeshSet(mc, 0));
+      op->findString("save mesh urls")->setNumberOfValues(1);
+      op->findString("save mesh urls")->setValue(mesh_path.str());
       op->associateEntity(model2dm);
       //write out the smtk model.
       result = op->operate();

@@ -34,12 +34,12 @@ class Logger;
   */
 enum JSONFlags
 {
-  JSON_NOTHING = 0x00, //!< Export nothing.
-  JSON_ENTITIES =
-    0x01, //!< Export model-entity entries in Manager (not including tessellations or properties).
-  JSON_SESSIONS = 0x02, //!< Export sessions (i.e., session IDs, the session type, and operators).
-  JSON_PROPERTIES =
-    0x04, //!< Export string/float/integer properties of model-entity entries in the Manager.
+  JSON_NOTHING = 0x00,    //!< Export nothing.
+  JSON_ENTITIES = 0x01,   //!< Export model-entity entries in Manager
+                          //!< (not including tessellations or properties).
+  JSON_SESSIONS = 0x02,   //!< Export sessions (i.e., session IDs, the session type, operators).
+  JSON_PROPERTIES = 0x04, //!< Export string/float/integer properties of
+                          //!< model-entity entries in the Manager.
 
   JSON_TESSELLATIONS = 0x10, //!< Export tessellations of model-entity entries in the Manager.
   JSON_ANALYSISMESH = 0x20,  //!< Export tessellations of model-entity entries in the Manager.
@@ -49,7 +49,7 @@ enum JSONFlags
   JSON_DEFAULT = 0xff      //!< By default, export everything.
 };
 
-/**\brief Export an SMTK model into a JSON-formatted string.
+/**\brief Save an SMTK model into a JSON-formatted string.
   *
   * Methods are also provided for creating cJSON nodes representing
   * individual records and groups of records from SMTK storage (a model
@@ -70,6 +70,24 @@ public:
 
   // Serialize a ResourceSet (for now, only smtk::model::StoredModel entries are handled). For debug use only.
   static int fromResourceSet(cJSON* pnode, smtk::common::ResourceSetPtr& rset);
+
+  /// Returns true if all models have URLs; false otherwise.
+  static bool canSaveModels(const smtk::model::Models& modelsToSave);
+  /**\brief Store state changes required to save in a mode into the given object \a obj .
+    *
+    * Returns true when saving in the given \a mode is possible and false otherwise.
+    *
+    */
+  template <typename T>
+  static bool prepareToSave(const smtk::model::Models& modelsToSave,
+    const std::string& mode,     // "save", "save as", or "save a copy"
+    const std::string& filename, // only used when mode == "save as" or "save a copy"
+    const std::string& renamePolicy, bool embedData,
+    T& obj // structure whose ivars will contain changes to be made before/during/after saving.
+    );
+  /// Save \a models (and potentially others that share the same URLs) to their pre-existing URLs.
+  static int save(cJSON* pnode, const smtk::model::Models& models, bool renameModels = true,
+    const std::string& embedDir = "");
 
   template <typename T>
   static int forEntities(cJSON* json, const T& entities,

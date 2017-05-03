@@ -121,6 +121,10 @@
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::itemAtPathAs', unmatched return type 'T::ConstPtr'"/>
 
   <!-- Use cJSON objects. For now we will ignore these-->
+  <suppress-warning text="skipping function 'smtk::io::SaveJSON::saveACopy', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::SaveJSON::save', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::SaveJSON::saveAs', unmatched parameter type 'cJSON*'"/>
+
   <suppress-warning text="skipping function 'smtk::io::LoadJSON::ofDanglingEntities', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::LoadJSON::ofManager', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::LoadJSON::ofManagerEntityData', unmatched parameter type 'cJSON*'"/>
@@ -389,6 +393,8 @@
   <suppress-warning text="skipping function 'smtk::model::Session::operatorSystem', unmatched return type 'smtk::attribute::ConstSystemPtr'"/>
 
   <!-- TODO: Fix or categorize these warnings -->
+  <suppress-warning text="skipping function 'smtk::io::SaveJSON::canSaveModels', unmatched parameter type 'smtk::model::Models const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::io::SaveJSON::prepareToSave', unmatched parameter type 'smtk::model::Models const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::addEntityProperties', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::shouldOmitProperty', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityListPhrase::setup', unmatched return type 'smtk::model::EntityListPhrase::Ptr'"/>
@@ -516,6 +522,7 @@
 
   <!-- Platform-specific warnings induced by system headers -->
   <suppress-warning text="enum '__codecvt_result' does not have a type entry or is not an enum"/>
+  <suppress-warning text="enum 'smtk::model::ModificationResolution' does not have a type entry or is not an enum"/>
   <suppress-warning text="enum 'FP_NORMAL' does not have a type entry or is not an enum"/>
   <suppress-warning text="\*\* WARNING scope not found for symbol:KWIML_INT_detail_VERIFY_::int8_t_v1"/>
   <suppress-warning text="\*\* WARNING scope not found for symbol:KWIML_INT_detail_VERIFY_::int8_t_v1"/>

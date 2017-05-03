@@ -40,6 +40,9 @@ public:
 
   virtual ~SessionIOJSON() {}
 
+  virtual int saveJSON(
+    cJSON* node, const smtk::model::SessionRef& sref, const smtk::model::Models& models) override;
+
   virtual int importJSON(smtk::model::ManagerPtr mgr, const smtk::model::SessionPtr& session,
     cJSON* sessionRec, bool loadNativeModels = false);
   virtual int exportJSON(smtk::model::ManagerPtr mgr, const smtk::model::SessionPtr& sessPtr,

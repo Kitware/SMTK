@@ -2,6 +2,7 @@
 set(ioSrcs
   AttributeReader.cxx
   AttributeWriter.cxx
+  Helpers.cxx
   SaveJSON.cxx
   LoadJSON.cxx
   Logger.cxx
@@ -19,6 +20,7 @@ set(ioSrcs
 set(ioHeaders
   AttributeReader.h
   AttributeWriter.h
+  Helpers.h
   SaveJSON.h
   LoadJSON.h
   Logger.h

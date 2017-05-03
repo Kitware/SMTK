@@ -807,9 +807,7 @@ int LoadJSON::ofLocalSession(
     !node->string || !node->string[0] ||
     // Does the node have fields "name" and "ops" (for "operators") of type String?
     !(nameObj = cJSON_GetObjectItem(node, "name")) || nameObj->type != cJSON_String ||
-    !nameObj->valuestring || !nameObj->valuestring[0] ||
-    !(opsObj = cJSON_GetObjectItem(node, "ops")) || opsObj->type != cJSON_String ||
-    !opsObj->valuestring || !opsObj->valuestring[0])
+    !nameObj->valuestring || !nameObj->valuestring[0])
   {
     return status;
   }

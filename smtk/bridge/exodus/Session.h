@@ -147,6 +147,8 @@ public:
 
   smtk::model::Model addModel(vtkSmartPointer<vtkMultiBlockDataSet>& model);
 
+  std::string defaultFileExtension(const smtk::model::Model& model) const;
+
 protected:
   friend class Operator;
   friend class ReadOperator;
