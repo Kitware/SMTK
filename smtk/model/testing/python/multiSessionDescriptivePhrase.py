@@ -90,7 +90,7 @@ class MultiSessionDescriptivePhrase(unittest.TestCase):
         for model in self.models:
             #  set cgm session's model as active model
             if model.owningSession().name() == "cgm session":
-                phrase.findDelegate().setActiveModel(model)
+                spg.setActiveModel(model)
 
         allPhrases = self.recursePhrase(phrase, 0)
 
