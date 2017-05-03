@@ -25,13 +25,16 @@
 #include <vtkImageCanvasSource2D.h>
 #include <vtkImageChangeInformation.h>
 #include <vtkImageData.h>
+#include <vtkImageMapToColors.h>
 #include <vtkImageMapper3D.h>
 #include <vtkImageViewer2.h>
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
 #include <vtkInteractorStyle.h>
 #include <vtkInteractorStyleImage.h>
+#include <vtkLookupTable.h>
 #include <vtkMath.h>
+#include <vtkPointData.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkPropPicker.h>
 #include <vtkPropPicker.h>
@@ -612,6 +615,19 @@ void imageFeatureExtractorWidget::setImage(std::string imagefile)
     source->SetFileName(imagefile.c_str());
     source->Update();
     inputImage = source->GetOutput();
+
+    // When dealing with indexed data into a color map, vtkGDALRasterReader
+    // creates a point data named "Categories" and associates to it the
+    // appropriate lookup table to convert to RGB space. We key off of the
+    // existence of this scalar data to convert our data from indices to RGB.
+    if (strcmp(inputImage->GetPointData()->GetScalars()->GetName(), "Categories") == 0)
+    {
+      vtkNew<vtkImageMapToColors> imageMapToColors;
+      imageMapToColors->SetInputData(inputImage);
+      imageMapToColors->SetLookupTable(inputImage->GetPointData()->GetScalars()->GetLookupTable());
+      imageMapToColors->Update();
+      inputImage = imageMapToColors->GetOutput();
+    }
   }
   else
   {
