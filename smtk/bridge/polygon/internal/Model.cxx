@@ -526,7 +526,7 @@ bool pmodel::demoteModelVertex(smtk::model::ManagerPtr mgr, internal::VertexPtr 
       smtk::model::EntityRefs merged;
       merged.insert(e1);
       merged.insert(e2);
-      this->session()->mergeProperties(merged, eout);
+      this->session()->mergeEntities(merged, eout);
 
       model.removeCell(e1);
       model.removeCell(e2);
@@ -829,11 +829,14 @@ bool pmodel::splitModelEdgeAtModelVertices(smtk::model::ManagerPtr mgr, edge::Pt
     eout = this->createModelEdgeFromSegments(
       mgr, last, *sgit, /*addToModel:*/ false, adjacentFaces, *sgit != segs.end(), newVerts);
     // Tie edge to model (if edge is not "owned" by a face).
-    if (isFreeCell)
-    {
-      model.addCell(eout);
+    if (eout.isValid())
+    { // An invalid edge may be returned when splitting a loop that previously had no vertices.
+      if (isFreeCell)
+      {
+        model.addCell(eout);
+      }
+      created.push_back(eout);
     }
-    created.push_back(eout);
     last = *sgit;
     if (last == segs.end())
     {
@@ -912,7 +915,7 @@ bool pmodel::splitModelEdgeAtModelVertices(smtk::model::ManagerPtr mgr, edge::Pt
 
   smtk::model::EntityRefs createdSet(created.begin() + crepre, created.end());
   // Handle property assignments to output edges:
-  this->session()->splitProperties(modelEdge, createdSet);
+  this->session()->splitEntity(modelEdge, createdSet);
 
   model.removeCell(modelEdge);
   //DumpSegSplits("Split A: ", segs.begin(), segSplit);

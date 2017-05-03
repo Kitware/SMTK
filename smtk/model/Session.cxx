@@ -355,6 +355,102 @@ void Session::setManager(Manager* mgr)
   this->m_operatorSys->setRefModelManager(mgr->shared_from_this());
 }
 
+/**\brief Called when an entity is being split so that attribute assignments can be updated.
+  *
+  * The default implementation removes all attributes from \a from and
+  * assigns those same attributes to each entity of \a to.
+  */
+bool Session::splitAttributes(const EntityRef& from, const EntityRefs& to) const
+{
+  bool ok = true;
+  smtk::model::Manager::Ptr mgr = from.manager();
+  if (!mgr)
+  {
+    return ok;
+  }
+
+  // Fetch the attributes of the source entity.
+  // If there are none, then return with success.
+  std::set<smtk::attribute::AttributePtr> attrs;
+  if (!mgr->insertEntityAssociations(from, attrs))
+  {
+    return ok;
+  }
+
+  // If the output entities do not include the input,
+  // remove attributes from the input as otherwise
+  // adding them to the target entities might be disallowed
+  // by the attribute system.
+  if (to.find(from) == to.end())
+  {
+    EntityRef mutableFrom(from);
+    ok &= mutableFrom.disassociateAttributes(attrs);
+  }
+
+  for (auto attr : attrs)
+  {
+    for (auto ent : to)
+    {
+      if (ent != from && ent.isValid())
+      {
+        ok &= ent.associateAttribute(attr->system(), attr->id());
+      }
+    }
+  }
+  return ok;
+}
+
+/**\brief Called when an entity is being split so that attribute assignments can be updated.
+  *
+  * The default implementation removes all attributes from \a from and
+  * assigns those same attributes to each entity of \a to.
+  */
+bool Session::mergeAttributes(const EntityRefs& from, EntityRef& to) const
+{
+  bool ok = true;
+  if (from.empty())
+  {
+    return ok;
+  }
+
+  smtk::model::Manager::Ptr mgr = from.begin()->manager();
+  if (!mgr)
+  {
+    mgr = this->manager();
+    if (!mgr)
+    {
+      std::cerr << "Warning: No model manager when trying to merge attributes.\n";
+      return ok;
+    }
+  }
+
+  // Capture attributes in {from \ to} and disassociate them.
+  // Be careful not to remove attributes from the target
+  // entity as we might not be able to re-associate it later
+  // (if the attribute may only exist on one entity, for example).
+  std::set<smtk::attribute::AttributePtr> attrs;
+  for (auto ent : from)
+  {
+    if (ent == to || !ent.isValid())
+    {
+      continue; // Leave the target entity's attributes alone. Ignore invalid entities.
+    }
+    mgr->insertEntityAssociations(ent, attrs);
+    ok &= ent.disassociateAttributes(attrs);
+  }
+  if (attrs.empty())
+  {
+    return ok; // No attributes on any entity in \a from == success unless we could not disassociate...
+  }
+
+  // Add attributes previously in {from \ to} to target (to).
+  for (auto attr : attrs)
+  {
+    ok &= to.associateAttribute(attr->system(), attr->id());
+  }
+  return ok;
+}
+
 /**\brief This is used by the manager when erasing a model entity.
   *
   * Subclasses should implement this and erase all of the string, integer,
