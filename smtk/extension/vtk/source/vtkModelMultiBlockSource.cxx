@@ -33,9 +33,11 @@
 #include "vtkGDALRasterReader.h"
 #include "vtkIdTypeArray.h"
 #include "vtkImageData.h"
+#include "vtkImageMapToColors.h"
 #include "vtkInformation.h"
 #include "vtkInformationStringKey.h"
 #include "vtkInformationVector.h"
+#include "vtkLookupTable.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkNew.h"
@@ -539,6 +541,18 @@ vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationF
     vtkSmartPointer<vtkImageData> outImage = ReadData<vtkImageData, vtkGDALRasterReader>(auxGeom);
     if (outImage.GetPointer())
     {
+      // When dealing with indexed data into a color map, vtkGDALRasterReader
+      // creates a point data named "Categories" and associates to it the
+      // appropriate lookup table to convert to RGB space. We key off of the
+      // existence of this scalar data to convert our data from indices to RGB.
+      if (strcmp(outImage->GetPointData()->GetScalars()->GetName(), "Categories") == 0)
+      {
+        vtkNew<vtkImageMapToColors> imageMapToColors;
+        imageMapToColors->SetInputData(outImage);
+        imageMapToColors->SetLookupTable(outImage->GetPointData()->GetScalars()->GetLookupTable());
+        imageMapToColors->Update();
+        outImage->ShallowCopy(imageMapToColors->GetOutput());
+      }
       vtkNew<vtkImageSpacingFlip> flipImage;
       flipImage->SetInputData(outImage);
       flipImage->Update();
