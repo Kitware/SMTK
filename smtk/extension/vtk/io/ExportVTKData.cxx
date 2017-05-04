@@ -12,13 +12,15 @@
 
 #include "smtk/extension/vtk/io/ExportVTKData.h"
 
+#include "smtk/mesh/CellField.h"
 #include "smtk/mesh/CellSet.h"
 #include "smtk/mesh/CellTraits.h"
 #include "smtk/mesh/Collection.h"
-#include "smtk/mesh/ExtractField.h"
+#include "smtk/mesh/ExtractMeshConstants.h"
 #include "smtk/mesh/ExtractTessellation.h"
 #include "smtk/mesh/Manager.h"
 #include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/PointField.h"
 
 #include "vtkAOSDataArrayTemplate.h"
 #include "vtkCell.h"
@@ -227,9 +229,9 @@ void ExportVTKData::operator()(
     std::int64_t* cellData_ = new std::int64_t[numberOfCells];
     std::int64_t* pointData_ = new std::int64_t[numberOfPoints];
 
-    //extract field information
-    smtk::mesh::PreAllocatedField field(cellData_, pointData_);
-    smtk::mesh::extractDomainField(meshset, field);
+    //extract mesh constant information
+    smtk::mesh::PreAllocatedMeshConstants meshConstants(cellData_, pointData_);
+    smtk::mesh::extractDomainMeshConstants(meshset, meshConstants);
 
     vtkIdType* cellData;
     {
@@ -255,6 +257,40 @@ void ExportVTKData::operator()(
     pointDataArray->SetArray(
       pointData, numberOfPoints, false, vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
     pd->GetPointData()->AddArray(pointDataArray.GetPointer());
+  }
+
+  // CellFields and PointFields are easier than mesh constants because they are
+  // required to be set on all of the cells/points in the meshset.
+  {
+    std::set<smtk::mesh::CellField> cellfields =
+      meshset.subset(static_cast<smtk::mesh::DimensionType>(dimension)).cellFields();
+    for (auto& cellfield : cellfields)
+    {
+      double* cellData = new double[cellfield.size() * cellfield.dimension()];
+      cellfield.get(cellData);
+
+      vtkNew<vtkDoubleArray> cellDataArray;
+      cellDataArray->SetName(cellfield.name().c_str());
+      cellDataArray->SetArray(cellData, cellfield.size() * cellfield.dimension(), false,
+        vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
+      cellDataArray->SetNumberOfComponents(static_cast<int>(cellfield.dimension()));
+      pd->GetCellData()->AddArray(cellDataArray.GetPointer());
+    }
+
+    std::set<smtk::mesh::PointField> pointfields =
+      meshset.subset(static_cast<smtk::mesh::DimensionType>(dimension)).pointFields();
+    for (auto& pointfield : pointfields)
+    {
+      double* pointData = new double[pointfield.size() * pointfield.dimension()];
+      pointfield.get(pointData);
+
+      vtkNew<vtkDoubleArray> pointDataArray;
+      pointDataArray->SetName(pointfield.name().c_str());
+      pointDataArray->SetArray(pointData, pointfield.size() * pointfield.dimension(), false,
+        vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
+      pointDataArray->SetNumberOfComponents(static_cast<int>(pointfield.dimension()));
+      pd->GetPointData()->AddArray(pointDataArray.GetPointer());
+    }
   }
 }
 
@@ -330,8 +366,8 @@ void ExportVTKData::operator()(
     std::int64_t* pointData_ = new std::int64_t[numberOfPoints];
 
     //extract field information
-    smtk::mesh::PreAllocatedField field(cellData_, pointData_);
-    smtk::mesh::extractDomainField(meshset, field);
+    smtk::mesh::PreAllocatedMeshConstants meshConstants(cellData_, pointData_);
+    smtk::mesh::extractDomainMeshConstants(meshset, meshConstants);
 
     vtkIdType* cellData;
     {
@@ -357,6 +393,38 @@ void ExportVTKData::operator()(
     pointDataArray->SetArray(
       pointData, numberOfPoints, false, vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
     ug->GetPointData()->AddArray(pointDataArray.GetPointer());
+  }
+
+  // CellFields and PointFields are easier than mesh constants because they are
+  // required to be set on all of the cells/points in the meshset.
+  {
+    std::set<smtk::mesh::CellField> cellfields = meshset.cellFields();
+    for (auto& cellfield : cellfields)
+    {
+      double* cellData = new double[cellfield.size() * cellfield.dimension()];
+      cellfield.get(cellData);
+
+      vtkNew<vtkDoubleArray> cellDataArray;
+      cellDataArray->SetName(cellfield.name().c_str());
+      cellDataArray->SetArray(cellData, cellfield.size() * cellfield.dimension(), false,
+        vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
+      cellDataArray->SetNumberOfComponents(static_cast<int>(cellfield.dimension()));
+      ug->GetCellData()->AddArray(cellDataArray.GetPointer());
+    }
+
+    std::set<smtk::mesh::PointField> pointfields = meshset.pointFields();
+    for (auto& pointfield : pointfields)
+    {
+      double* pointData = new double[pointfield.size() * pointfield.dimension()];
+      pointfield.get(pointData);
+
+      vtkNew<vtkDoubleArray> pointDataArray;
+      pointDataArray->SetName(pointfield.name().c_str());
+      pointDataArray->SetArray(pointData, pointfield.size() * pointfield.dimension(), false,
+        vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
+      pointDataArray->SetNumberOfComponents(static_cast<int>(pointfield.dimension()));
+      ug->GetPointData()->AddArray(pointDataArray.GetPointer());
+    }
   }
 }
 }

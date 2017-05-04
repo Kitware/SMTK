@@ -55,7 +55,7 @@ set(modelSrcs
   operators/DeleteMesh.cxx
   operators/EntityGroupOperator.cxx
   operators/ExportMesh.cxx
-  operators/InterpolateMeshElevation.cxx
+  operators/InterpolateMesh.cxx
   operators/ExportModelJSON.cxx
   operators/LoadSMTKModel.cxx
   operators/PackageSMTKModel.cxx
@@ -128,7 +128,7 @@ set(modelHeaders
   operators/EntityGroupOperator.h
   operators/ExportMesh.h
   operators/ExportModelJSON.h
-  operators/InterpolateMeshElevation.h
+  operators/InterpolateMesh.h
   operators/LoadSMTKModel.h
   operators/PackageSMTKModel.h
   operators/SaveSMTKModel.h
@@ -145,7 +145,7 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/DeleteMesh.sbt" defOpXM
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EntityGroupOperator.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportMesh.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportModelJSON.sbt" defOpXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/InterpolateMeshElevation.sbt" defOpXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/InterpolateMesh.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/LoadSMTKModel.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/PackageSMTKModel.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SaveSMTKModel.sbt" defOpXML)

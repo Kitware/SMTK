@@ -9,9 +9,13 @@
 //=========================================================================
 
 #include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/CellField.h"
 #include "smtk/mesh/Collection.h"
+#include "smtk/mesh/PointField.h"
 
 #include "smtk/mesh/Interface.h"
+
+#include <cassert>
 
 namespace smtk
 {
@@ -387,6 +391,156 @@ bool MeshSet::mergeCoincidentContactPoints(double tolerance)
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
   return iface->mergeCoincidentContactPoints(this->m_range, tolerance);
+}
+
+smtk::mesh::CellField MeshSet::createCellField(
+  const std::string& name, int dimension, const std::vector<double>& data)
+{
+  assert(data.size() == this->cells().size() * dimension);
+  return this->createCellField(name, dimension, &data[0]);
+}
+
+smtk::mesh::CellField MeshSet::createCellField(
+  const std::string& name, int dimension, const double* const data)
+{
+  if (name.empty() || dimension <= 0)
+  {
+    // CellFields must be named and have dimension higher than zero.
+    return CellField();
+  }
+
+  const smtk::mesh::InterfacePtr& iface = this->collection()->interface();
+  if (!iface)
+  {
+    return CellField();
+  }
+
+  bool success;
+  if (data != nullptr)
+  {
+    success = iface->createCellField(m_range, name, dimension, data);
+  }
+  else
+  {
+    std::vector<double> tmp(this->cells().size() * dimension, 0.);
+    success = iface->createCellField(m_range, name, dimension, &tmp[0]);
+  }
+  return success ? CellField(*this, name) : CellField();
+}
+
+smtk::mesh::CellField MeshSet::cellField(const std::string& name) const
+{
+  return CellField(*this, name);
+}
+
+std::set<smtk::mesh::CellField> MeshSet::cellFields() const
+{
+  std::set<smtk::mesh::CellField> cellfields;
+
+  const smtk::mesh::InterfacePtr& iface = this->collection()->interface();
+  if (!iface)
+  {
+    return cellfields;
+  }
+
+  std::set<smtk::mesh::CellFieldTag> tags = iface->computeCellFieldTags(this->m_handle);
+  for (auto& tag : tags)
+  {
+    if (iface->hasCellField(this->range(), tag))
+    {
+      cellfields.insert(CellField(*this, tag.name()));
+    }
+  }
+
+  return cellfields;
+}
+
+std::vector<smtk::mesh::CellField> MeshSet::cellFieldsForShiboken() const
+{
+  auto cellfields = this->cellFields();
+  return std::vector<smtk::mesh::CellField>(cellfields.begin(), cellfields.end());
+}
+
+bool MeshSet::removeCellField(smtk::mesh::CellField cellfield)
+{
+  const smtk::mesh::InterfacePtr& iface = this->collection()->interface();
+
+  return iface->deleteCellField(CellFieldTag(cellfield.name()), m_range);
+}
+
+smtk::mesh::PointField MeshSet::createPointField(
+  const std::string& name, int dimension, const std::vector<double>& data)
+{
+  assert(data.size() == this->points().size() * dimension);
+  return this->createPointField(name, dimension, &data[0]);
+}
+
+smtk::mesh::PointField MeshSet::createPointField(
+  const std::string& name, int dimension, const double* const data)
+{
+  if (name.empty() || dimension <= 0)
+  {
+    // PointFields must be named and have dimension higher than zero.
+    return PointField();
+  }
+
+  const smtk::mesh::InterfacePtr& iface = this->collection()->interface();
+  if (!iface)
+  {
+    return PointField();
+  }
+
+  bool success;
+  if (data != nullptr)
+  {
+    success = iface->createPointField(m_range, name, dimension, data);
+  }
+  else
+  {
+    std::vector<double> tmp(this->points().size() * dimension, 0.);
+    success = iface->createPointField(m_range, name, dimension, &tmp[0]);
+  }
+  return success ? PointField(*this, name) : PointField();
+}
+
+smtk::mesh::PointField MeshSet::pointField(const std::string& name) const
+{
+  return PointField(*this, name);
+}
+
+std::set<smtk::mesh::PointField> MeshSet::pointFields() const
+{
+  std::set<smtk::mesh::PointField> pointfields;
+
+  const smtk::mesh::InterfacePtr& iface = this->collection()->interface();
+  if (!iface)
+  {
+    return pointfields;
+  }
+
+  std::set<smtk::mesh::PointFieldTag> tags = iface->computePointFieldTags(this->m_handle);
+  for (auto& tag : tags)
+  {
+    if (iface->hasPointField(this->range(), tag))
+    {
+      pointfields.insert(PointField(*this, tag.name()));
+    }
+  }
+
+  return pointfields;
+}
+
+std::vector<smtk::mesh::PointField> MeshSet::pointFieldsForShiboken() const
+{
+  auto pointfields = this->pointFields();
+  return std::vector<smtk::mesh::PointField>(pointfields.begin(), pointfields.end());
+}
+
+bool MeshSet::removePointField(smtk::mesh::PointField pointfield)
+{
+  const smtk::mesh::InterfacePtr& iface = this->collection()->interface();
+
+  return iface->deletePointField(PointFieldTag(pointfield.name()), m_range);
 }
 
 //intersect two mesh sets, placing the results in the return mesh set

@@ -224,6 +224,62 @@ public:
 
   smtk::common::UUID rootAssociation() const;
 
+  bool createCellField(const smtk::mesh::HandleRange& meshsets, const std::string& name,
+    std::size_t dimension, const double* data);
+
+  int getCellFieldDimension(const smtk::mesh::CellFieldTag& cfTag) const;
+
+  smtk::mesh::HandleRange getMeshsets(
+    smtk::mesh::Handle handle, const smtk::mesh::CellFieldTag& cfTag) const;
+
+  bool hasCellField(
+    const smtk::mesh::HandleRange& meshsets, const smtk::mesh::CellFieldTag& cfTag) const;
+
+  bool getCellField(const smtk::mesh::HandleRange& meshsets, const smtk::mesh::CellFieldTag& cfTag,
+    double* data) const;
+
+  virtual bool getField(const smtk::mesh::HandleRange& cells, const smtk::mesh::CellFieldTag& cfTag,
+    double* data) const;
+
+  virtual bool setField(const smtk::mesh::HandleRange& cells, const smtk::mesh::CellFieldTag& cfTag,
+    const double* const data);
+
+  bool setCellField(const smtk::mesh::HandleRange& meshsets, const smtk::mesh::CellFieldTag& cfTag,
+    const double* const data);
+
+  std::set<smtk::mesh::CellFieldTag> computeCellFieldTags(const smtk::mesh::Handle& handle) const;
+
+  bool deleteCellField(
+    const smtk::mesh::CellFieldTag& cfTag, const smtk::mesh::HandleRange& meshsets);
+
+  bool createPointField(const smtk::mesh::HandleRange& meshsets, const std::string& name,
+    std::size_t dimension, const double* data);
+
+  int getPointFieldDimension(const smtk::mesh::PointFieldTag& pfTag) const;
+
+  smtk::mesh::HandleRange getMeshsets(
+    smtk::mesh::Handle handle, const smtk::mesh::PointFieldTag& pfTag) const;
+
+  bool hasPointField(
+    const smtk::mesh::HandleRange& meshsets, const smtk::mesh::PointFieldTag& pfTag) const;
+
+  bool getPointField(const smtk::mesh::HandleRange& meshsets,
+    const smtk::mesh::PointFieldTag& pfTag, double* data) const;
+
+  virtual bool getField(const smtk::mesh::HandleRange& points,
+    const smtk::mesh::PointFieldTag& pfTag, double* data) const;
+
+  virtual bool setField(const smtk::mesh::HandleRange& points,
+    const smtk::mesh::PointFieldTag& pfTag, const double* const data);
+
+  bool setPointField(const smtk::mesh::HandleRange& meshsets,
+    const smtk::mesh::PointFieldTag& pfTag, const double* const data);
+
+  std::set<smtk::mesh::PointFieldTag> computePointFieldTags(const smtk::mesh::Handle& handle) const;
+
+  bool deletePointField(
+    const smtk::mesh::PointFieldTag& pfTag, const smtk::mesh::HandleRange& meshsets);
+
   smtk::mesh::HandleRange rangeIntersect(
     const smtk::mesh::HandleRange& a, const smtk::mesh::HandleRange& b) const;
 

@@ -368,6 +368,8 @@
   <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'const smtk::mesh::Handle *' in function 'smtk::mesh::CellForEach::pointIds(const smtk::mesh::Handle * ptIds)'"/>
   <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'const double *' in function 'smtk::model::Tessellation::setPoint(std::size_t id, const double * points)'"/>
   <suppress-warning text="skipping function 'smtk::common::distance2', unmatched parameter type 'T const*'"/>
+  <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'const double *' in function 'smtk::mesh::MeshSet::createCellField(const std::string &amp; name, int dimension, const double * field)'"/>
+  <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'const double *' in function 'smtk::mesh::MeshSet::createPointField(const std::string &amp; name, int dimension, const double * field)'"/>
 
   <!-- ignore shared_from_this base class-->
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;Attribute&gt;' of 'Attribute' is not known"/>
@@ -2709,6 +2711,14 @@
 
       <value-type name="MeshSet">
         <include file-name="smtk/mesh/MeshSet.h" location="local"/>
+      </value-type>
+
+      <value-type name="CellField">
+        <include file-name="smtk/mesh/CellField.h" location="local"/>
+      </value-type>
+
+      <value-type name="PointField">
+        <include file-name="smtk/mesh/PointField.h" location="local"/>
       </value-type>
 
       <value-type name="Neumann">

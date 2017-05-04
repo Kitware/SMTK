@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_extension_vtk_InterpolateMeshElevation_h
-#define __smtk_extension_vtk_InterpolateMeshElevation_h
+#ifndef __smtk_extension_vtk_InterpolateMesh_h
+#define __smtk_extension_vtk_InterpolateMesh_h
 
 #include "smtk/model/Operator.h"
 
@@ -17,13 +17,13 @@ namespace smtk
 namespace model
 {
 
-/**\brief A class for "roughing in" a mesh elevation from interpolation points.
+/**\brief A class for "roughing in" a mesh data set from interpolation points.
   */
-class SMTKCORE_EXPORT InterpolateMeshElevation : public Operator
+class SMTKCORE_EXPORT InterpolateMesh : public Operator
 {
 public:
-  smtkTypeMacro(InterpolateMeshElevation);
-  smtkCreateMacro(InterpolateMeshElevation);
+  smtkTypeMacro(InterpolateMesh);
+  smtkCreateMacro(InterpolateMesh);
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
@@ -35,4 +35,4 @@ protected:
 }
 }
 
-#endif // __smtk_extension_vtk_InterpolateMeshElevation_h
+#endif // __smtk_extension_vtk_InterpolateMesh_h

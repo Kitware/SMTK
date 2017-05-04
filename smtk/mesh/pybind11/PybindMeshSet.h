@@ -15,6 +15,19 @@
 
 #include "smtk/mesh/MeshSet.h"
 
+#include "smtk/common/UUID.h"
+#include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
+#include "smtk/mesh/CellField.h"
+#include "smtk/mesh/CellSet.h"
+#include "smtk/mesh/CellTypes.h"
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Handle.h"
+#include "smtk/mesh/PointField.h"
+#include "smtk/mesh/PointConnectivity.h"
+#include "smtk/mesh/PointSet.h"
+#include "smtk/mesh/TypeSet.h"
+#include "smtk/model/EntityRef.h"
+
 namespace py = pybind11;
 
 PySharedPtrClass< smtk::mesh::MeshSet > pybind11_init_smtk_mesh_MeshSet(py::module &m)
@@ -37,18 +50,28 @@ PySharedPtrClass< smtk::mesh::MeshSet > pybind11_init_smtk_mesh_MeshSet(py::modu
     .def("cells", (smtk::mesh::CellSet (smtk::mesh::MeshSet::*)(::smtk::mesh::CellTypes) const) &smtk::mesh::MeshSet::cells, py::arg("cTypes"))
     .def("cells", (smtk::mesh::CellSet (smtk::mesh::MeshSet::*)(::smtk::mesh::DimensionType) const) &smtk::mesh::MeshSet::cells, py::arg("dim"))
     .def("collection", &smtk::mesh::MeshSet::collection)
+    .def("createCellField", (smtk::mesh::CellField (smtk::mesh::MeshSet::*)(const std::string& name, int dimension, const std::vector<double>& field)) &smtk::mesh::MeshSet::createCellField, py::arg("name"), py::arg("dimension"), py::arg("field"))
+    .def("createCellField", (smtk::mesh::CellField (smtk::mesh::MeshSet::*)(const std::string& name, int dimension, const double* const field)) &smtk::mesh::MeshSet::createCellField, py::arg("name"), py::arg("dimension"), py::arg("field") = nullptr)
+    .def("cellField", &smtk::mesh::MeshSet::cellField, py::arg("name"))
+    .def("cellFields", &smtk::mesh::MeshSet::cellFields)
+    .def("createPointField", (smtk::mesh::PointField (smtk::mesh::MeshSet::*)(const std::string& name, int dimension, const std::vector<double>& field)) &smtk::mesh::MeshSet::createPointField, py::arg("name"), py::arg("dimension"), py::arg("field"))
+    .def("createPointField", (smtk::mesh::PointField (smtk::mesh::MeshSet::*)(const std::string& name, int dimension, const double* const field)) &smtk::mesh::MeshSet::createPointField, py::arg("name"), py::arg("dimension"), py::arg("field") = nullptr)
+    .def("pointField", &smtk::mesh::MeshSet::pointField, py::arg("name"))
+    .def("pointFields", &smtk::mesh::MeshSet::pointFields)
     .def("dirichlets", &smtk::mesh::MeshSet::dirichlets)
     .def("domains", &smtk::mesh::MeshSet::domains)
     .def("extractShell", &smtk::mesh::MeshSet::extractShell)
     .def("is_empty", &smtk::mesh::MeshSet::is_empty)
     .def("mergeCoincidentContactPoints", &smtk::mesh::MeshSet::mergeCoincidentContactPoints, py::arg("tolerance") = 9.9999999999999995E-7)
-    .def("modelEntities", &smtk::mesh::MeshSet::modelEntities)
+    .def("modelEntities", &smtk::mesh::MeshSet::modelEntities, py::arg("arg0"))
     .def("modelEntityIds", &smtk::mesh::MeshSet::modelEntityIds)
     .def("names", &smtk::mesh::MeshSet::names)
     .def("neumanns", &smtk::mesh::MeshSet::neumanns)
     .def("pointConnectivity", &smtk::mesh::MeshSet::pointConnectivity)
     .def("points", &smtk::mesh::MeshSet::points)
     .def("range", &smtk::mesh::MeshSet::range)
+    .def("removeCellField", &smtk::mesh::MeshSet::removeCellField, py::arg("cellfield"))
+    .def("removePointField", &smtk::mesh::MeshSet::removePointField, py::arg("pointfield"))
     .def("setDirichlet", &smtk::mesh::MeshSet::setDirichlet, py::arg("d"))
     .def("setDomain", &smtk::mesh::MeshSet::setDomain, py::arg("d"))
     .def("setModelEntity", &smtk::mesh::MeshSet::setModelEntity, py::arg("arg0"))

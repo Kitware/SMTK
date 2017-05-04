@@ -12,6 +12,7 @@
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshItem.h"
+#include "smtk/attribute/StringItem.h"
 
 #include "smtk/io/LoadJSON.h"
 #include "smtk/io/ModelToMesh.h"
@@ -19,6 +20,7 @@
 
 #include "smtk/model/DefaultSession.h"
 
+#include "smtk/mesh/CellField.h"
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/ForEachTypes.h"
 #include "smtk/mesh/Manager.h"
@@ -43,41 +45,41 @@ void create_simple_mesh_model(smtk::model::ManagerPtr mgr, std::string file_path
   file.close();
 }
 
-class HistogramElevations : public smtk::mesh::PointForEach
+class HistogramFieldData : public smtk::mesh::CellForEach
 {
 public:
-  HistogramElevations(std::size_t nBins, double min, double max)
-    : m_min(min)
+  HistogramFieldData(std::size_t nBins, double min, double max, smtk::mesh::CellField& cf)
+    : smtk::mesh::CellForEach(true)
+    , m_cellField(cf)
+    , m_min(min)
     , m_max(max)
   {
     m_hist.resize(nBins, 0);
   }
 
-  void forPoints(
-    const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz, bool& coordinatesModified)
+  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType, int)
   {
-    (void)pointIds;
-    coordinatesModified = false; //we are not modifying the coords
-
-    for (std::size_t offset = 0; offset < xyz.size(); offset += 3)
-    {
-      std::size_t bin =
-        static_cast<std::size_t>((xyz[offset + 2] - m_min) / (m_max - m_min) * (m_hist.size() + 1));
-      ++m_hist[bin];
-    }
+    smtk::mesh::HandleRange range;
+    range.insert(cellId);
+    double value = 0.;
+    this->m_cellField.get(range, &value);
+    std::size_t bin =
+      static_cast<std::size_t>((value - m_min) / (m_max - m_min) * (m_hist.size() + 1));
+    ++m_hist[bin];
   }
 
   const std::vector<std::size_t>& histogram() const { return m_hist; }
 
 private:
+  smtk::mesh::CellField& m_cellField;
   std::vector<std::size_t> m_hist;
   double m_min;
   double m_max;
 };
 }
 
-// Load in a model, convert it to a mesh, and elevate that mesh using
-// interpolation points. Then, histogram the elevation values of the mesh points
+// Load in a model, convert it to a mesh, and construct a dataset for that mesh
+// using interpolation points. Then, histogram the values of the mesh cells
 // and compare the histogram to expected values.
 
 int main(int argc, char* argv[])
@@ -127,17 +129,27 @@ int main(int argc, char* argv[])
   smtk::io::ModelToMesh convert;
   smtk::mesh::CollectionPtr c = convert(meshManager, manager);
 
-  // Create an "Interpolate Mesh Elevation" operator
-  smtk::model::OperatorPtr elevateMeshOp = sessRef.session()->op("interpolate mesh elevation");
-  if (!elevateMeshOp)
+  // Create an "Interpolate Mesh" operator
+  smtk::model::OperatorPtr interpolateMeshOp = sessRef.session()->op("interpolate mesh");
+  if (!interpolateMeshOp)
   {
-    std::cerr << "No \"interpolate mesh elevation\" operator\n";
+    std::cerr << "No \"interpolate mesh\" operator\n";
+    return 1;
+  }
+
+  // Set the operator's data set name
+  bool valueSet =
+    interpolateMeshOp->specification()->findString("dsname")->setValue("my cell field");
+
+  if (!valueSet)
+  {
+    std::cerr << "Failed to set data set name on operator\n";
     return 1;
   }
 
   // Set the operator's input mesh
-  bool valueSet = elevateMeshOp->specification()->findMesh("mesh")->setValue(
-    meshManager->collectionBegin()->second->meshes());
+  smtk::mesh::MeshSet mesh = meshManager->collectionBegin()->second->meshes();
+  valueSet = interpolateMeshOp->specification()->findMesh("mesh")->setValue(mesh);
 
   if (!valueSet)
   {
@@ -146,7 +158,7 @@ int main(int argc, char* argv[])
   }
 
   // Set the operator's input power
-  smtk::attribute::DoubleItemPtr power = elevateMeshOp->specification()->findDouble("power");
+  smtk::attribute::DoubleItemPtr power = interpolateMeshOp->specification()->findDouble("power");
 
   if (!power)
   {
@@ -157,7 +169,7 @@ int main(int argc, char* argv[])
   power->setValue(2.);
 
   // Set the operator's input points
-  smtk::attribute::GroupItemPtr points = elevateMeshOp->specification()->findGroup("points");
+  smtk::attribute::GroupItemPtr points = interpolateMeshOp->specification()->findGroup("points");
 
   if (!points)
   {
@@ -166,8 +178,8 @@ int main(int argc, char* argv[])
   }
 
   std::size_t numberOfPoints = 4;
-  double pointData[4][3] = { { -1., -1., 0. }, { -1., 6., 25. }, { 10., -1., 50. },
-    { 10., 6., 40. } };
+  double pointData[4][4] = { { -1., -1., 0., 0. }, { -1., 6., 0., 25. }, { 10., -1., 0., 50. },
+    { 10., 6., 0., 40. } };
 
   points->setNumberOfGroups(numberOfPoints);
   for (std::size_t i = 0; i < numberOfPoints; i++)
@@ -176,34 +188,35 @@ int main(int argc, char* argv[])
     {
       points->appendGroup();
     }
-    for (std::size_t j = 0; j < 3; j++)
+    for (std::size_t j = 0; j < 4; j++)
     {
       smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(points->item(i, 0))
         ->setValue(j, pointData[i][j]);
     }
   }
 
-  // Execute "Interpolate Mesh Elevation" operator...
-  smtk::model::OperatorResult elevateMeshOpResult = elevateMeshOp->operate();
+  // Execute "Interpolate Mesh" operator...
+  smtk::model::OperatorResult interpolateMeshOpResult = interpolateMeshOp->operate();
   // ...and test the results for success.
-  if (elevateMeshOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (interpolateMeshOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
   {
-    std::cerr << "\"interpolate mesh elevation\" operator failed\n";
+    std::cerr << "\"interpolate mesh\" operator failed\n";
     return 1;
   }
 
   // Histogram the resulting points and compare against expected values.
-  HistogramElevations histogramElevations(10, 0., 50.);
-  smtk::mesh::for_each(c->points(), histogramElevations);
+  smtk::mesh::CellField cellField =
+    meshManager->collectionBegin()->second->meshes().cellField("my cell field");
+  HistogramFieldData histogramFieldData(10, 0., 50., cellField);
+  smtk::mesh::for_each(mesh.cells(), histogramFieldData);
 
-  std::array<std::size_t, 10> expected = { { 5, 3, 3, 6, 4, 3, 3, 3, 1, 1 } };
-
+  std::array<std::size_t, 10> expected = { { 8, 9, 10, 20, 8, 9, 9, 6, 4, 1 } };
   std::size_t counter = 0;
-  for (auto& bin : histogramElevations.histogram())
+  for (auto& bin : histogramFieldData.histogram())
   {
     if (bin != expected[counter++])
     {
-      std::cerr << "\"interpolate mesh elevation\" operator produced unexpected results\n";
+      std::cerr << "\"interpolate mesh\" operator produced unexpected results\n";
       return 1;
     }
   }

@@ -9,7 +9,7 @@
 //=========================================================================
 
 #include "smtk/mesh/Collection.h"
-#include "smtk/mesh/ExtractField.h"
+#include "smtk/mesh/ExtractMeshConstants.h"
 #include "smtk/mesh/Manager.h"
 
 #include "smtk/io/ReadMesh.h"
@@ -156,13 +156,14 @@ void verify_extract_domain()
   std::int64_t numberOfCells;
   std::int64_t numberOfPoints;
 
-  smtk::mesh::PreAllocatedField::determineAllocationLengths(meshes, numberOfCells, numberOfPoints);
+  smtk::mesh::PreAllocatedMeshConstants::determineAllocationLengths(
+    meshes, numberOfCells, numberOfPoints);
 
   std::int64_t* cells = new std::int64_t[numberOfCells];
   std::int64_t* points = new std::int64_t[numberOfPoints];
 
-  smtk::mesh::PreAllocatedField field(cells, points);
-  smtk::mesh::extractDomainField(meshes, field);
+  smtk::mesh::PreAllocatedMeshConstants meshConstants(cells, points);
+  smtk::mesh::extractDomainMeshConstants(meshes, meshConstants);
 
   std::vector<smtk::mesh::Domain> domains = meshes.domains();
   std::vector<smtk::mesh::CellSet> cellsByDomain;
@@ -184,7 +185,7 @@ void verify_extract_domain()
 }
 }
 
-int UnitTestExtractField(int, char** const)
+int UnitTestExtractMeshConstants(int, char** const)
 {
   verify_extract_domain();
 

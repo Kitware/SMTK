@@ -28,6 +28,8 @@ namespace smtk
 {
 namespace mesh
 {
+class CellField;
+class PointField;
 
 typedef std::vector<smtk::mesh::MeshSet> MeshList;
 typedef std::set<smtk::mesh::MeshSet> MeshSets;
@@ -147,6 +149,32 @@ public:
   //Will cause any existing PointConnectivity and PointSet's to become
   //invalid, and using them will cause any undefined behavior
   bool mergeCoincidentContactPoints(double tolerance = 1.0e-6);
+
+  //Create a new cell field with the given name, dimension and data. The number
+  //of values in <data> must be the # of cells in the meshset multiplied by the
+  //dimension of the cell field.
+  smtk::mesh::CellField createCellField(
+    const std::string& name, int dimension, const std::vector<double>& field);
+  smtk::mesh::CellField createCellField(
+    const std::string& name, int dimension, const double* const field = nullptr);
+  smtk::mesh::CellField cellField(const std::string& name) const;
+  std::set<smtk::mesh::CellField> cellFields() const;
+  std::vector<smtk::mesh::CellField> cellFieldsForShiboken() const;
+  //Remove the dataset from this meshset.
+  bool removeCellField(smtk::mesh::CellField cellfield);
+
+  //Create a new point field with the given name, dimension and data. The number
+  //of values in <data> must be the # of points in the meshset multiplied by the
+  //dimension of the point field.
+  smtk::mesh::PointField createPointField(
+    const std::string& name, int dimension, const std::vector<double>& field);
+  smtk::mesh::PointField createPointField(
+    const std::string& name, int dimension, const double* const field = nullptr);
+  smtk::mesh::PointField pointField(const std::string& name) const;
+  std::set<smtk::mesh::PointField> pointFields() const;
+  std::vector<smtk::mesh::PointField> pointFieldsForShiboken() const;
+  //Remove the dataset from this meshset.
+  bool removePointField(smtk::mesh::PointField pointfield);
 
   //get the underlying HandleRange that this MeshSet represents
   const smtk::mesh::HandleRange& range() const { return this->m_range; }
