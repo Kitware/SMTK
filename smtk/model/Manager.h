@@ -149,6 +149,8 @@ public:
     const EntityRef& entityref, SessionInfoBits flags = smtk::model::SESSION_EVERYTHING);
   virtual SessionInfoBits eraseModel(
     const Model& entityref, SessionInfoBits flags = smtk::model::SESSION_EVERYTHING);
+  SessionInfoBits hardErase(
+    const EntityRef& eref, SessionInfoBits flags = smtk::model::SESSION_EVERYTHING);
 
   smtk::common::UUIDs bordantEntities(
     const smtk::common::UUID& ofEntity, int ofDimension = -2) const;

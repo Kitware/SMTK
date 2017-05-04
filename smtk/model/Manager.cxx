@@ -303,6 +303,99 @@ SessionInfoBits Manager::erase(const EntityRef& entityref, SessionInfoBits flags
   return this->Manager::erase(entityref.entity(), flags);
 }
 
+/**\brief Erase records related to the entity with no clean or safety checks.
+  *
+  * Returns bit flags indicating what types of data were erased.
+  *
+  * **Warning**: If \a flags contains SESSION_PROPERTIES and *not* SESSION_USER_DEFINED_PROPERTIES,
+  * then \a eref will be queried for its owning model and the model for its owning session.
+  * This can lead to problems if relationships have been erased by previous calls to hardErase.
+  */
+SessionInfoBits Manager::hardErase(const EntityRef& eref, SessionInfoBits flags)
+{
+  smtk::common::UUID uid(eref.entity());
+  if (!uid)
+  {
+    return SessionInfoBits(0);
+  }
+
+  SessionInfoBits actual = flags;
+  if (flags & SESSION_ENTITY_RELATIONS)
+    actual |= SESSION_ARRANGEMENTS;
+
+  UUIDWithEntity ent;
+  if (actual & (SESSION_ENTITY_TYPE | SESSION_ENTITY_RELATIONS))
+  {
+    if (!this->m_topology->erase(uid))
+    { // without an Entity record, we cannot erase these things:
+      actual &= ~(SESSION_ENTITY_TYPE | SESSION_ENTITY_RELATIONS);
+    }
+  }
+
+  if (flags & SESSION_ARRANGEMENTS)
+  {
+    if (!this->arrangements().erase(uid))
+    {
+      actual &= ~SESSION_ARRANGEMENTS;
+    }
+  }
+
+  if (actual & SESSION_TESSELLATION)
+  {
+    if (!this->tessellations().erase(uid))
+    {
+      actual &= ~SESSION_TESSELLATION;
+    }
+  }
+
+  if (actual & SESSION_ATTRIBUTE_ASSOCIATIONS)
+  {
+    if (!this->m_attributeAssignments->erase(uid))
+    {
+      actual &= ~SESSION_ATTRIBUTE_ASSOCIATIONS;
+    }
+  }
+
+  if (actual & SESSION_USER_DEFINED_PROPERTIES)
+  {
+    if (actual & SESSION_FLOAT_PROPERTIES)
+    {
+      if (!this->m_floatData->erase(uid))
+      {
+        actual &= ~SESSION_FLOAT_PROPERTIES;
+      }
+    }
+    if (actual & SESSION_STRING_PROPERTIES)
+    {
+      if (!this->m_stringData->erase(uid))
+      {
+        actual &= ~SESSION_STRING_PROPERTIES;
+      }
+    }
+    if (actual & SESSION_INTEGER_PROPERTIES)
+    {
+      if (!this->m_integerData->erase(uid))
+      {
+        actual &= ~SESSION_INTEGER_PROPERTIES;
+      }
+    }
+  }
+  else if (actual & SESSION_PROPERTIES)
+  {
+    SessionRef sref(shared_from_this(), uid);
+    if (!sref.isValid())
+    {
+      Model owningModel(shared_from_this(), this->modelOwningEntity(uid));
+      sref = owningModel.session();
+    }
+    if (sref.session())
+    {
+      sref.session()->removeGeneratedProperties(EntityRef(shared_from_this(), uid), actual);
+    }
+  }
+  return actual;
+}
+
 /**\brief A convenience method for erasing a model and its children.
   *
   * This removes the model plus all of its free cells, groups, and
@@ -2515,13 +2608,69 @@ bool Manager::findDualArrangements(
         }
       }
       break;
-    case HAS_CELL:
-    case HAS_SHELL:
     case SUPERSET_OF:
     case SUBSET_OF:
+      if ((*arr)[index].IndexFromSimple(relationIdx))
+      { // OK, find the related entity's reference to this one.
+        if (relationIdx < 0 || static_cast<int>(src->relations().size()) <= relationIdx)
+        {
+          return false;
+        }
+        dualEntityId = src->relations()[relationIdx];
+        dualKind = (kind == SUPERSET_OF ? SUBSET_OF : SUPERSET_OF);
+        if ((dualIndex = this->findArrangementInvolvingEntity(dualEntityId, dualKind, entityId)) >=
+          0)
+        {
+          duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
+          return true;
+        }
+      }
+      break;
     case INSTANCE_OF:
     case INSTANCED_BY:
+      if ((*arr)[index].IndexFromSimple(relationIdx))
+      { // OK, find the related entity's reference to this one.
+        if (relationIdx < 0 || static_cast<int>(src->relations().size()) <= relationIdx)
+        {
+          return false;
+        }
+        dualEntityId = src->relations()[relationIdx];
+        dualKind = (kind == INSTANCED_BY ? INSTANCE_OF : INSTANCED_BY);
+        if ((dualIndex = this->findArrangementInvolvingEntity(dualEntityId, dualKind, entityId)) >=
+          0)
+        {
+          duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
+          return true;
+        }
+      }
+      break;
+    case HAS_CELL:
+    case HAS_SHELL:
+      // These (HAS_CELL, HAS_SHELL) are not duals of each other.
+      // Instead, they are the easier half of HAS_USE relations,
+      // and is only defined when the source is a use-record.
+      if ((src->entityFlags() & ENTITY_MASK) == USE_ENTITY)
+      {
+        if ((*arr)[index].IndexFromSimple(relationIdx))
+        { // OK, find the related entity's reference to this one.
+          if (relationIdx < 0 || static_cast<int>(src->relations().size()) <= relationIdx)
+          {
+            return false;
+          }
+          dualEntityId = src->relations()[relationIdx];
+          dualKind = HAS_USE;
+          if ((dualIndex =
+                  this->findArrangementInvolvingEntity(dualEntityId, dualKind, entityId)) >= 0)
+          {
+            duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
+            return true;
+          }
+        }
+      }
+      break;
     default:
+      smtkErrorMacro(const_cast<Manager*>(this)->log(),
+        "Asked to find dual of unknown kind of arrangement: " << kind << ".");
       break;
   }
   return false;
@@ -3673,11 +3822,20 @@ bool Manager::closeSession(const SessionRef& sref)
     UUIDsToSessions::iterator us = this->m_sessions->find(sref.entity());
     if (us != this->m_sessions->end())
     {
-      //smtkDebugMacro(this->log(), "Deleting session " << sref.name() << " (" << sref.entity() << ")");
+      EntityRefs all; // a set of all entities in the session
       Models models = sref.models<Models>();
-      for (auto mit = models.begin(); mit != models.end(); ++mit)
+      EntityIterator eit;
+      eit.traverse(models.begin(), models.end(), ITERATE_MODELS);
+      for (eit.begin(); !eit.isAtEnd(); ++eit)
       {
-        this->eraseModel(*mit, SESSION_EVERYTHING);
+        if (!eit->isSessionRef())
+        {
+          all.insert(*eit);
+        }
+      }
+      for (auto ent : all)
+      {
+        this->hardErase(ent);
       }
       bool didClose = this->unregisterSession(sref.session(), true);
       return didClose;
