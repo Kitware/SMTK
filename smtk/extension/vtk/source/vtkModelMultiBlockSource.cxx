@@ -545,7 +545,8 @@ vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationF
       // creates a point data named "Categories" and associates to it the
       // appropriate lookup table to convert to RGB space. We key off of the
       // existence of this scalar data to convert our data from indices to RGB.
-      if (strcmp(outImage->GetPointData()->GetScalars()->GetName(), "Categories") == 0)
+      if (outImage->GetPointData() && outImage->GetPointData()->GetScalars() &&
+        strcmp(outImage->GetPointData()->GetScalars()->GetName(), "Categories") == 0)
       {
         vtkNew<vtkImageMapToColors> imageMapToColors;
         imageMapToColors->SetInputData(outImage);
