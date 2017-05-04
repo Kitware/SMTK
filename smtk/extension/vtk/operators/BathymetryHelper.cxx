@@ -9,6 +9,7 @@
 //=========================================================================
 #include "BathymetryHelper.h"
 
+#include "smtk/extension/vtk/filter/vtkImageSpacingFlip.h"
 #include "smtk/extension/vtk/reader/vtkCMBGeometryReader.h"
 #include "smtk/extension/vtk/reader/vtkLASReader.h"
 #include "smtk/mesh/Collection.h"
@@ -97,13 +98,15 @@ bool BathymetryHelper::loadBathymetryFile(const std::string& filename)
     polyOutput->ShallowCopy(reader->GetOutput());
     dataOutput = polyOutput;
   }
-  else if (ext == ".dem")
+  else if (ext == ".dem" || ext == ".tif" || ext == ".tiff")
   {
     vtkNew<vtkGDALRasterReader> reader;
     reader->SetFileName(filename.c_str());
-    reader->Update();
+    vtkNew<vtkImageSpacingFlip> flipImage;
+    flipImage->SetInputConnection(reader->GetOutputPort());
+    flipImage->Update();
     vtkUniformGrid* ugOutput = vtkUniformGrid::New();
-    ugOutput->ShallowCopy(reader->GetOutput());
+    ugOutput->ShallowCopy(flipImage->GetOutput());
     dataOutput = ugOutput;
   }
   else if (ext == ".las")
@@ -142,16 +145,6 @@ bool BathymetryHelper::loadBathymetryFile(const std::string& filename)
     //    image2struct->SetInputData(readout);
     //    image2struct->Update();
     //    imagepoly->SetPoints(image2struct->GetOutput()->GetPoints());
-    vtkImageData* imgOutput = vtkImageData::New();
-    imgOutput->ShallowCopy(reader->GetOutput());
-    dataOutput = imgOutput;
-  }
-  else if (ext == ".tiff" || ext == ".tif")
-  {
-    vtkNew<vtkTIFFReader> reader;
-    reader->SetFileName(filename.c_str());
-    reader->Update();
-
     vtkImageData* imgOutput = vtkImageData::New();
     imgOutput->ShallowCopy(reader->GetOutput());
     dataOutput = imgOutput;
