@@ -87,7 +87,8 @@ void Model::setSession(const SessionRef& sess)
   if (sess.isValid())
   {
     SessionRef mutableSess(sess);
-    mutableSess.addMemberEntity(*this);
+    mutableSess.addModel(*this);
+    //mutableSess.addMemberEntity(*this);
   }
 }
 

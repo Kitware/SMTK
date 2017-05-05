@@ -20,6 +20,8 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/Operator.h"
 
+#include "smtk/common/testing/cxx/helpers.h"
+
 #include <iostream>
 #include <string>
 
@@ -42,35 +44,27 @@ smtkComponentInitMacro(smtk_exodus_session)
 
   // Load model file
   smtk::model::OperatorPtr readOp = session.op("load smtk model");
-  if (!readOp)
-  {
-    std::cerr << "No operator import-smtk-model\n";
-    return 1;
-  }
+  test(!!readOp, "No operator import-smtk-model.");
+
   readOp->specification()->findFile("filename")->setValue(modelPath);
   std::cout << "Importing " << modelPath << "\n";
   smtk::model::OperatorResult opresult = readOp->operate();
-  if (opresult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
-  {
-    std::cerr << "Read operator failed\n";
-    return 1;
-  }
+  test(opresult->findInt("outcome")->value() == smtk::model::OPERATION_SUCCEEDED,
+    "Read operator failed");
   smtk::model::EntityRef entRef = opresult->findModelEntity("created")->value();
   smtk::model::Model model(entRef);
 
   // Check model validity
-  if (!model.isValid())
-  {
-    std::cerr << "Invalid model!\n";
-    return 1;
-  }
+  test(model.isValid(), "Invalid model");
 
   // Check model geometry style
-  if (model.geometryStyle() != smtk::model::DISCRETE)
-  {
-    std::cerr << "Incorrect geometry style (not discrete)";
-    return 1;
-  }
+  test(model.geometryStyle() == smtk::model::DISCRETE, "Incorrect geometry style (not discrete)");
+
+  test(model.session() == session, "Model should have parent session.");
+  test(session.models<std::set<smtk::model::Model> >().find(model)->isValid(),
+    "Session should own model.");
+
+  session.close();
 
   //std::cout << "finis" << std::endl;
   return 0;

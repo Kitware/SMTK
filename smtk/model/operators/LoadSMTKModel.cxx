@@ -117,6 +117,7 @@ smtk::model::OperatorResult LoadSMTKModel::operateInternal()
     smtk::model::Models newmodels =
       this->manager()->entitiesMatchingFlagsAs<smtk::model::Models>(smtk::model::MODEL_ENTITY);
     smtk::model::Models::const_iterator newit;
+    std::set<smtk::model::SessionRef> otherSessions;
     for (newit = newmodels.begin(); newit != newmodels.end(); ++newit)
     {
       // ignore submodels
@@ -128,8 +129,22 @@ smtk::model::OperatorResult LoadSMTKModel::operateInternal()
       else
         modelCreArr.push_back(*newit);
 
+      if (newit->session().session() != this->session())
+      {
+        if (newit->session().isValid())
+        {
+          otherSessions.insert(newit->session());
+        }
+        newit->as<smtk::model::Model>().setSession(
+          smtk::model::SessionRef(newit->manager(), this->session()->sessionId()));
+      }
+
       if (meshMgr->associatedCollections(*newit).size() > 0)
         meshArr.push_back(*newit);
+    }
+    for (auto importedSess : otherSessions)
+    {
+      importedSess.manager()->hardErase(importedSess);
     }
 
     /*
