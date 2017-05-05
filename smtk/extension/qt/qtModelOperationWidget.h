@@ -66,7 +66,6 @@ signals:
   void modelEntityItemCreated(smtk::extension::qtModelEntityItem* entItem);
   void meshSelectionItemCreated(smtk::extension::qtMeshSelectionItem* meshItem,
     const std::string& opName, const smtk::common::UUID& uuid);
-  void entitiesSelected(const smtk::common::UUIDs&);
   void activateOperationTarget(const smtk::common::UUID&);
 
   friend class qtModelView;

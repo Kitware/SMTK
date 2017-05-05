@@ -46,9 +46,6 @@ qtSelectionManager::qtSelectionManager()
   this->m_selEntityRefs = smtk::model::EntityRefs();
   this->m_selMeshes = smtk::mesh::MeshSets();
   this->m_selectionModifier = SelectionModifier::SELECTION_REPLACE_FILTERED;
-  this->m_skipList.push_back(std::string("rendering window"));
-  this->m_skipList.push_back(std::string("model tree"));
-  this->m_skipList.push_back(std::string("attribute panel"));
 }
 
 void qtSelectionManager::getSelectedEntities(smtk::common::UUIDs& selEntities)
@@ -66,9 +63,14 @@ void qtSelectionManager::getSelectedMeshes(smtk::mesh::MeshSets& selMeshes)
   selMeshes = this->m_selMeshes;
 }
 
+void qtSelectionManager::getSelectionSources(std::set<std::string>& selectionSources)
+{
+  selectionSources = this->m_selectionSources;
+}
+
 void qtSelectionManager::updateSelectedItems(const smtk::model::EntityRefs& selEntities,
   const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& /*DesPhrases*/,
-  const smtk::extension::SelectionModifier modifierFlag, const smtk::model::StringList skipList)
+  const smtk::extension::SelectionModifier modifierFlag, const std::string& incomingSelectionSource)
 {
   if (modifierFlag == smtk::extension::SelectionModifier::SELECTION_ADDITION_UNFILTERED)
   { // \b selection from qtModelItem/operator dialog
@@ -186,26 +188,9 @@ void qtSelectionManager::updateSelectedItems(const smtk::model::EntityRefs& selE
     this->m_selectionModifier = SelectionModifier::SELECTION_REPLACE_FILTERED; // reset
   }
 
-  // broadcast to rendering view, model tree and attribute panel if they are
-  // not in skipList
-  // TODO: Since we want to use surface representation for faces, we have to
-  // update render view again to use our settings of pqDataRepresentation
-  // *true* should be removed
-  if (true || std::find(skipList.begin(), skipList.end(), this->m_skipList[0]) == skipList.end())
-  {
-    emit broadcastToRenderView(
-      this->m_selEntities, this->m_selMeshes, smtk::model::DescriptivePhrases());
-  }
-
-  if (std::find(skipList.begin(), skipList.end(), this->m_skipList[1]) == skipList.end())
-  {
-    emit broadcastToModelTree(this->m_selEntities, this->m_selMeshes, true);
-  }
-
-  if (std::find(skipList.begin(), skipList.end(), this->m_skipList[2]) == skipList.end())
-  {
-    emit broadcastToAttributeView(this->m_selEntities);
-  }
+  // broadcast to rendering view, model tree and attribute panel if needed
+  emit broadcastToReceivers(
+    this->m_selEntityRefs, this->m_selMeshes, this->m_desPhrases, incomingSelectionSource);
 }
 
 void qtSelectionManager::filterModels(bool checked)
@@ -251,7 +236,7 @@ void qtSelectionManager::clearAllSelections()
 {
   this->updateSelectedItems(smtk::model::EntityRefs(), smtk::mesh::MeshSets(),
     smtk::model::DescriptivePhrases(),
-    smtk::extension::SelectionModifier::SELECTION_REPLACE_UNFILTERED, smtk::model::StringList());
+    smtk::extension::SelectionModifier::SELECTION_REPLACE_UNFILTERED, std::string());
 }
 
 void qtSelectionManager::clear()

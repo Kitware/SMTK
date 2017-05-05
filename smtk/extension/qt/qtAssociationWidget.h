@@ -19,6 +19,9 @@
 #include "smtk/extension/qt/Exports.h"
 #include <QWidget>
 
+#include "smtk/mesh/MeshSet.h"
+
+#include "smtk/model/DescriptivePhrase.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 
@@ -41,6 +44,8 @@ public:
   qtAssociationWidget(QWidget* p, qtBaseView* view);
   virtual ~qtAssociationWidget();
   bool hasSelectedItem();
+  // when register the instance with qtSelectionManager, also add the memory address.
+  virtual std::string selectionSourceName() { return this->m_selectionSourceName; }
 
 public slots:
   virtual void showEntityAssociation(smtk::attribute::AttributePtr theAtt);
@@ -48,7 +53,9 @@ public slots:
     smtk::model::EntityRef theEntiy, std::vector<smtk::attribute::DefinitionPtr>& attDefs);
   virtual void showDomainsAssociation(std::vector<smtk::model::Group>& theDomains,
     std::vector<smtk::attribute::DefinitionPtr>& attDefs);
-  void updateAvailableListBySelection(const smtk::common::UUIDs& selEntities);
+  void updateAvailableListBySelection(const smtk::model::EntityRefs& selEntities,
+    const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& selDPs,
+    const std::string& senderSourceName);
 
 signals:
   void attAssociationChanged();
@@ -96,6 +103,7 @@ protected:
 
 private:
   qtAssociationWidgetInternals* Internals;
+  std::string m_selectionSourceName;
 
 }; // class
 }; // namespace attribute

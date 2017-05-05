@@ -12,8 +12,12 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/qt/Exports.h"
+#include "smtk/extension/qt/qtSelectionManager.h"
 #include "smtk/model/Model.h" //for smtk::model::Model
+
 #include <QObject>
+
+#include <memory>
 
 namespace smtk
 {
@@ -45,6 +49,15 @@ public:
   /// Returns the active model.
   smtk::model::Model activeModel() const { return this->m_activeModel; }
 
+  /// Returns the smtk selection Manager;
+  smtk::extension::qtSelectionManagerPtr smtkSelectionManager();
+
+  /// Set a weak reference to qtSeletionManager
+  void setSmtkSelectionManager(smtk::extension::qtSelectionManagerPtr SM)
+
+  {
+    this->m_selectionMgr = SM;
+  }
 public slots:
   /// Set the active module.
   void setActiveModel(const smtk::model::Model& inputModel);
@@ -60,6 +73,7 @@ protected:
   virtual ~qtActiveObjects();
 
   smtk::model::Model m_activeModel;
+  std::weak_ptr<smtk::extension::qtSelectionManager> m_selectionMgr;
 
 private:
   Q_DISABLE_COPY(qtActiveObjects)

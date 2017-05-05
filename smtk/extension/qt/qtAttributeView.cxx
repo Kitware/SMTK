@@ -10,6 +10,7 @@
 
 #include "smtk/extension/qt/qtAttributeView.h"
 
+#include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtAssociationWidget.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtAttributeRefItem.h"
@@ -121,19 +122,23 @@ qtBaseView* qtAttributeView::createViewWidget(const ViewInfo& info)
 {
   qtAttributeView* view = new qtAttributeView(info);
   // connect with selection manager
-  smtk::extension::qtSelectionManager* selMgr;
-  if (view->uiManager()->selectionManager())
+  if (smtk::extension::qtSelectionManagerPtr selMgr =
+        qtActiveObjects::instance().smtkSelectionManager())
   {
-    selMgr = view->uiManager()->selectionManager();
-    QObject::connect(selMgr, SIGNAL(broadcastToAttributeView(const smtk::common::UUIDs&)), view,
-      SIGNAL(selectionChanged(const smtk::common::UUIDs&)));
+    // need a relay since association widget might be empty at this time
+    QObject::connect(selMgr.get(),
+      SIGNAL(broadcastToReceivers(const smtk::model::EntityRefs&, const smtk::mesh::MeshSets&,
+        const smtk::model::DescriptivePhrases&, const std::string&)),
+      view,
+      SIGNAL(relaySelectionToAssiocationWidget(const smtk::model::EntityRefs&,
+        const smtk::mesh::MeshSets&, const smtk::model::DescriptivePhrases&, const std::string&)));
     view->buildUI();
     smtk::model::EntityRefs selEntities;
     selMgr->getSelectedEntitiesAsEntityRefs(selEntities);
     //qt 4 signals are private. Just use the slot for update
     selMgr->updateSelectedItems(selEntities, smtk::mesh::MeshSets(),
       smtk::model::DescriptivePhrases(),
-      smtk::extension::SelectionModifier::SELECTION_REPLACE_UNFILTERED, smtk::model::StringList());
+      smtk::extension::SelectionModifier::SELECTION_REPLACE_UNFILTERED, std::string());
   }
   else
   {
@@ -345,9 +350,12 @@ void qtAttributeView::createWidget()
   QObject::connect(this->Internals->AssociationsWidget, SIGNAL(attAssociationChanged()), this,
     SIGNAL(attAssociationChanged()));
 
-  QObject::connect(this, SIGNAL(selectionChanged(const smtk::common::UUIDs&)),
+  QObject::connect(this,
+    SIGNAL(relaySelectionToAssiocationWidget(const smtk::model::EntityRefs&,
+      const smtk::mesh::MeshSets&, const smtk::model::DescriptivePhrases&, const std::string&)),
     this->Internals->AssociationsWidget,
-    SLOT(updateAvailableListBySelection(const smtk::common::UUIDs&)));
+    SLOT(updateAvailableListBySelection(const smtk::model::EntityRefs&, const smtk::mesh::MeshSets&,
+      const smtk::model::DescriptivePhrases&, const std::string&)));
 
   QObject::connect(
     this->Internals->ViewByCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(onViewBy(int)));
@@ -589,15 +597,15 @@ void qtAttributeView::insertTableColumn(
 
 void qtAttributeView::updateSelectionOfEntities()
 {
-  smtk::extension::qtSelectionManager* selMgr = this->uiManager()->selectionManager();
-  if (selMgr)
+  if (smtk::extension::qtSelectionManagerPtr selMgr =
+        qtActiveObjects::instance().smtkSelectionManager())
   {
     smtk::model::EntityRefs selEntities;
     selMgr->getSelectedEntitiesAsEntityRefs(selEntities);
     //qt 4 signals are private. Just use the slot for update
     selMgr->updateSelectedItems(selEntities, smtk::mesh::MeshSets(),
       smtk::model::DescriptivePhrases(),
-      smtk::extension::SelectionModifier::SELECTION_REPLACE_UNFILTERED, smtk::model::StringList());
+      smtk::extension::SelectionModifier::SELECTION_REPLACE_UNFILTERED, std::string());
   }
 }
 

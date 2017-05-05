@@ -129,10 +129,26 @@ qtModelView::qtModelView(QWidget* p)
     SLOT(dataChanged(const QModelIndex&, const QModelIndex&)), Qt::QueuedConnection);
   QObject::connect(qmodel, SIGNAL(newIndexAdded(const QModelIndex&)), this,
     SLOT(newIndexAdded(const QModelIndex&)), Qt::QueuedConnection);
+
+  std::ostringstream receiverSource;
+  receiverSource << "qtModelView_" << this;
+  this->m_selectionSourceName = receiverSource.str();
+  if (qtActiveObjects::instance().smtkSelectionManager() &&
+    !qtActiveObjects::instance().smtkSelectionManager()->registerSelectionSource(
+      this->m_selectionSourceName))
+  {
+    std::cerr << "register selection source " << this->m_selectionSourceName
+              << "failed. Already existed!" << std::endl;
+  }
 }
 
 qtModelView::~qtModelView()
 {
+  if (qtActiveObjects::instance().smtkSelectionManager())
+  {
+    qtActiveObjects::instance().smtkSelectionManager()->unregisterSelectionSource(
+      this->m_selectionSourceName);
+  }
   if (this->m_ContextMenu)
     delete this->m_ContextMenu;
 
@@ -376,11 +392,9 @@ void qtModelView::selectionChanged(const QItemSelection& selected, const QItemSe
       MODEL_ENTITY | AUX_GEOM_ENTITY | INSTANCE_ENTITY | SESSION,
     selproperties, false, &selmeshes);
 
-  // update selection manager
-  smtk::model::StringList skipList;
-  skipList.push_back(String("model tree"));
+  // update selection manager and skip model tree
   emit this->sendSelectionsFromModelViewToSelectionManager(selentityrefs, selmeshes, selproperties,
-    smtk::extension::SelectionModifier::SELECTION_REPLACE_UNFILTERED, skipList);
+    smtk::extension::SelectionModifier::SELECTION_REPLACE_UNFILTERED, this->m_selectionSourceName);
 }
 
 // when the dataChanged is emitted from the model, we want to scroll to
@@ -662,37 +676,38 @@ bool qtModelView::removeSession(const smtk::model::SessionRef& sref)
   return false;
 }
 
-void qtModelView::selectItems(
-  const smtk::common::UUIDs& selEntities, const smtk::mesh::MeshSets& selMeshes, bool blocksignal)
+void qtModelView::onSelectionChangedUpdateModelTree(const smtk::model::EntityRefs& selEntities,
+  const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& /* selproperties */,
+  const std::string& selectionSourceName)
 {
-  smtk::extension::QEntityItemModel* qmodel =
-    dynamic_cast<smtk::extension::QEntityItemModel*>(this->model());
-
-  // Now recursively check which model indices should be selected:
-  QItemSelection selItems;
-  this->selectionHelper(qmodel, this->rootIndex(), selEntities, selMeshes, selItems);
-  this->blockSignals(blocksignal);
-  // If we have any items selected, show them
-  if (selItems.count())
+  // check if skip model tree or not
+  if (this->m_selectionSourceName != selectionSourceName)
   {
-    this->selectionModel()->select(selItems, QItemSelectionModel::ClearAndSelect);
-    this->scrollTo(selItems.value(0).topLeft());
-  }
-  else
-  {
-    this->clearSelection();
-  }
-  this->blockSignals(false);
-}
+    smtk::extension::QEntityItemModel* qmodel =
+      dynamic_cast<smtk::extension::QEntityItemModel*>(this->model());
+    // convert entityRefs to uuids
+    smtk::common::UUIDs selEntitiesInUUID;
+    for (const auto& selEnt : selEntities)
+    {
+      selEntitiesInUUID.insert(selEnt.entity());
+    }
 
-void qtModelView::selectEntityItems(const smtk::common::UUIDs& selEntities, bool blocksignal)
-{
-  this->selectItems(selEntities, smtk::mesh::MeshSets(), blocksignal);
-}
-
-void qtModelView::selectMeshItems(const smtk::mesh::MeshSets& selMeshes, bool blocksignal)
-{
-  this->selectItems(smtk::common::UUIDs(), selMeshes, blocksignal);
+    // Now recursively check which model indices should be selected:
+    QItemSelection selItems;
+    this->selectionHelper(qmodel, this->rootIndex(), selEntitiesInUUID, selMeshes, selItems);
+    this->blockSignals(true);
+    // If we have any items selected, show them
+    if (selItems.count())
+    {
+      this->selectionModel()->select(selItems, QItemSelectionModel::ClearAndSelect);
+      this->scrollTo(selItems.value(0).topLeft());
+    }
+    else
+    {
+      this->clearSelection();
+    }
+    this->blockSignals(false);
+  }
 }
 
 void qtModelView::expandToRoot(QEntityItemModel* qmodel, const QModelIndex& idx)
@@ -1054,8 +1069,6 @@ qtOperatorDockWidget* qtModelView::operatorsDock()
                                const std::string&, const smtk::common::UUID&)),
     this, SIGNAL(meshSelectionItemCreated(
             smtk::extension::qtMeshSelectionItem*, const std::string&, const smtk::common::UUID&)));
-  QObject::connect(opWidget, SIGNAL(entitiesSelected(const smtk::common::UUIDs&)), this,
-    SLOT(selectEntities(const smtk::common::UUIDs&)));
 
   QWidget* dockP = NULL;
   foreach (QWidget* widget, QApplication::topLevelWidgets())

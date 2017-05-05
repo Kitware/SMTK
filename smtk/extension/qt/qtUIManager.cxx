@@ -86,7 +86,6 @@ qtUIManager::qtUIManager(smtk::attribute::SystemPtr system)
   this->m_activeModelView = NULL;
   this->m_maxValueLabelLength = 200;
   this->m_minValueLabelLength = 50;
-  this->m_qtSelectionManager = NULL;
 
   // default settings
   this->advFont.setBold(true);
@@ -196,14 +195,6 @@ qtBaseView* qtUIManager::setSMTKView(
     this->initializeUI(pWidget, useInternalFileBrowser);
   }
   return this->m_topView;
-}
-
-void qtUIManager::setSelectionManager(smtk::extension::qtSelectionManager* SM)
-{
-  if (SM)
-  {
-    this->m_qtSelectionManager = SM;
-  }
 }
 
 void qtUIManager::setActiveModelView(smtk::extension::qtModelView* mv)
@@ -718,18 +709,12 @@ void qtUIManager::findDefinitionsLongLabels()
   }
 }
 
-void qtUIManager::invokeEntitiesSelected(const smtk::model::EntityRefs& selEnts)
+void qtUIManager::invokeEntitiesSelected(
+  const smtk::model::EntityRefs& selEnts, const std::string& selectionSource)
 {
-  smtk::model::StringList skipList;
-  skipList.push_back(std::string("attribute panel"));
+  // select entities in atribute panel
+  // skip attribute panel
   emit this->sendSelectionsFromAttributePanelToSelectionManager(selEnts, smtk::mesh::MeshSets(),
     smtk::model::DescriptivePhrases(),
-    smtk::extension::SelectionModifier::SELECTION_REPLACE_UNFILTERED, skipList);
-  // Derepcate this signal when qtSelectionManager has only one output signal
-  smtk::common::UUIDs uuids;
-  for (auto selEnt : selEnts)
-  {
-    uuids.insert(selEnt.entity());
-  }
-  emit entitiesSelected(uuids);
+    smtk::extension::SelectionModifier::SELECTION_REPLACE_UNFILTERED, selectionSource);
 }

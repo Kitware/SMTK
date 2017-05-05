@@ -44,6 +44,7 @@
 #include <QVariant>
 
 #include <algorithm>
+#include <sstream>
 
 #include "ui_qtAttributeAssociation.h"
 
@@ -87,10 +88,25 @@ qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
   this->initWidget();
   this->Internals->domainGroup->setVisible(false);
   this->Internals->boundaryGroup->setVisible(false);
+  std::ostringstream receiverSource;
+  receiverSource << "qtAssociationWidget_" << this;
+  this->m_selectionSourceName = receiverSource.str();
+  if (qtActiveObjects::instance().smtkSelectionManager() &&
+    !qtActiveObjects::instance().smtkSelectionManager()->registerSelectionSource(
+      this->m_selectionSourceName))
+  {
+    std::cerr << "register selection source " << this->m_selectionSourceName
+              << "failed. Already existed!" << std::endl;
+  }
 }
 
 qtAssociationWidget::~qtAssociationWidget()
 {
+  if (qtActiveObjects::instance().smtkSelectionManager())
+  {
+    qtActiveObjects::instance().smtkSelectionManager()->unregisterSelectionSource(
+      this->m_selectionSourceName);
+  }
   delete this->Internals;
 }
 
@@ -174,38 +190,43 @@ void qtAssociationWidget::showDomainsAssociation(
   this->Internals->DomainMaterialTable->blockSignals(false);
 }
 
-void qtAssociationWidget::updateAvailableListBySelection(const smtk::common::UUIDs& selEntites)
+void qtAssociationWidget::updateAvailableListBySelection(const smtk::model::EntityRefs& selEntities,
+  const smtk::mesh::MeshSets& /*selMeshes*/,
+  const smtk::model::DescriptivePhrases& /*selproperties*/, const std::string& senderSourceName)
 {
-  smtk::attribute::SystemPtr attSystem = this->Internals->View->uiManager()->attSystem();
-  smtk::model::ManagerPtr modelManager;
-  if (attSystem)
+  // check if the sender equals receiver
+  if (this->m_selectionSourceName != senderSourceName)
   {
-    modelManager = attSystem->refModelManager();
-  }
-
-  this->Internals->AvailableList->blockSignals(true);
-
-  // unselect all items
-  for (int i = 0; i < this->Internals->AvailableList->count(); i++)
-  {
-    this->Internals->AvailableList->item(i)->setSelected(false);
-  }
-
-  for (const auto& item : selEntites)
-  {
-    // map UUID into QString for search
-    EntityRef selEntity(modelManager, item);
-    QString selEntityName = QString::fromStdString(selEntity.name());
-    QList<QListWidgetItem*> findList =
-      this->Internals->AvailableList->findItems(selEntityName, Qt::MatchExactly);
-
-    // check with current available list item. If included mark as highted
-    foreach (QListWidgetItem* findItem, findList)
+    smtk::attribute::SystemPtr attSystem = this->Internals->View->uiManager()->attSystem();
+    smtk::model::ManagerPtr modelManager;
+    if (attSystem)
     {
-      findItem->setSelected(true);
+      modelManager = attSystem->refModelManager();
     }
+
+    this->Internals->AvailableList->blockSignals(true);
+
+    // unselect all items
+    for (int i = 0; i < this->Internals->AvailableList->count(); i++)
+    {
+      this->Internals->AvailableList->item(i)->setSelected(false);
+    }
+
+    for (const auto& selEntity : selEntities)
+    {
+      // map UUID into QString for search
+      QString selEntityName = QString::fromStdString(selEntity.name());
+      QList<QListWidgetItem*> findList =
+        this->Internals->AvailableList->findItems(selEntityName, Qt::MatchExactly);
+
+      // check with current available list item. If included mark it as highted
+      foreach (QListWidgetItem* findItem, findList)
+      {
+        findItem->setSelected(true);
+      }
+    }
+    this->Internals->AvailableList->blockSignals(false);
   }
-  this->Internals->AvailableList->blockSignals(false);
 }
 
 bool qtAssociationWidget::hasSelectedItem()
@@ -467,7 +488,8 @@ void qtAssociationWidget::onEntitySelected()
   }
   if (selents.size() > 0)
   {
-    this->Internals->View->uiManager()->invokeEntitiesSelected(selents);
+    this->Internals->View->uiManager()->invokeEntitiesSelected(
+      selents, this->m_selectionSourceName);
   }
 }
 
