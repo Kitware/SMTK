@@ -80,7 +80,9 @@ public:
   bool IsDirectory;
   QFileDialog* FileBrowser;
   QPointer<QComboBox> fileCombo;
+
   QPointer<QComboBox> fileExtCombo;
+  QVector<QString> fileExtensions;
 
   QPointer<QGridLayout> EntryLayout;
   QPointer<QLabel> theLabel;
@@ -125,6 +127,16 @@ QString extractFileTypeName(const std::string& fileTypeDescription)
   name = regex_replace(name, regex("^ +| +$|( ) +"), "$1");
 
   return QString::fromStdString(name);
+}
+
+QString extractFileTypeExtension(const std::string& fileTypeDescription)
+{
+  std::size_t begin =
+    fileTypeDescription.find_first_of("*", fileTypeDescription.find_first_of("(")) + 1;
+  std::size_t end = fileTypeDescription.find_first_of(" \n\r\t)", begin);
+  std::string acceptableSuffix = fileTypeDescription.substr(begin, end - begin);
+
+  return QString::fromStdString(acceptableSuffix);
 }
 }
 
@@ -200,6 +212,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
         for (; it != last; ++it)
         {
           this->Internals->fileExtCombo->addItem(extractFileTypeName(it->str()));
+          this->Internals->fileExtensions.push_back(extractFileTypeExtension(it->str()));
         }
       }
     }
@@ -377,14 +390,10 @@ void qtFileItem::onInputValueChanged()
     else
     {
       // the value does not have a suffix that matches our definition, so we
-      // set the extension according to the combo box.
-
-      std::string filter = this->Internals->fileExtCombo->currentText().toStdString();
-      std::size_t begin = filter.find_first_of("*", filter.find_first_of("(")) + 1;
-      std::size_t end = filter.find_first_of(" \n\r\t)", begin);
-      std::string acceptableSuffix = filter.substr(begin, end - begin);
-
-      item->setValue(elementIdx, value + acceptableSuffix);
+      // set the extension according to the chosen filter.
+      item->setValue(elementIdx, value +
+          this->Internals->fileExtensions.at(this->Internals->fileExtCombo->currentIndex())
+            .toStdString());
     }
 
     emit this->modified();
