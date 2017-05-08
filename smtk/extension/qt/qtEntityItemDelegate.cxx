@@ -220,8 +220,51 @@ QWidget* QEntityItemDelegate::createEditor(
   (void)option;
   (void)idx;
   smtk::extension::QEntityItemEditor* editor = new QEntityItemEditor(owner);
-  QObject::connect(editor, SIGNAL(editingFinished()), this, SLOT(commitAndCloseEditor()));
   return editor;
+}
+
+void QEntityItemDelegate::updateEditorGeometry(
+  QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& idx) const
+{
+  QIcon icon = qvariant_cast<QIcon>(idx.data(QEntityItemModel::EntityIconRole));
+  QSize iconsize = icon.actualSize(option.decorationSize);
+  QFont titleFont = QApplication::font();
+  QFont subtitleFont = QApplication::font();
+  titleFont.setPixelSize(this->m_titleFontSize);
+  /// add a method to set/get title font
+  titleFont.setBold(this->titleFontWeight() > 1 ? true : false);
+  // bold the active model title
+  if (idx.data(Qt::FontRole).toBool())
+  {
+    titleFont.setBold(true);
+  }
+  subtitleFont.setPixelSize(this->m_subtitleFontSize);
+  subtitleFont.setBold(this->subtitleFontWeight() > 1 ? true : false);
+
+  //subtitleFont.setWeight(subtitleFont.weight() - 2);
+  QFontMetrics titleFM(titleFont);
+
+  QString titleText = qvariant_cast<QString>(idx.data(QEntityItemModel::TitleTextRole));
+  QString subtitleText = qvariant_cast<QString>(idx.data(QEntityItemModel::SubtitleTextRole));
+
+  QRect titleRect = option.rect;
+  QRect iconRect = option.rect;
+  QRect colorRect = option.rect;
+  // visible icon
+  QIcon visicon = qvariant_cast<QIcon>(idx.data(QEntityItemModel::EntityVisibilityRole));
+  QSize visiconsize = visicon.actualSize(option.decorationSize);
+
+  colorRect.setLeft(colorRect.left() + visiconsize.width() + 2);
+  colorRect.setRight(colorRect.left() + this->m_swatchSize);
+  int swdelta = (colorRect.height() - this->m_swatchSize) / 2;
+  swdelta = (swdelta < 0 ? 0 : swdelta);
+  colorRect.adjust(0, swdelta, 0, -swdelta);
+  iconRect.setLeft(colorRect.left());
+  iconRect.setRight(iconRect.left() + iconsize.width() + 15);
+  iconRect.setTop(iconRect.top() + 1);
+  titleRect.setLeft(iconRect.right());
+
+  editor->setGeometry(titleRect);
 }
 
 void QEntityItemDelegate::setEditorData(QWidget* editor, const QModelIndex& idx) const
@@ -245,14 +288,6 @@ void QEntityItemDelegate::setModelData(
     // TODO: editor should also allow adjusting entity type?
     model->setData(idx, entityEditor->title(), QEntityItemModel::TitleTextRole);
   }
-}
-
-void QEntityItemDelegate::commitAndCloseEditor()
-{
-  smtk::extension::QEntityItemEditor* entityEditor =
-    qobject_cast<smtk::extension::QEntityItemEditor*>(sender());
-  emit commitData(entityEditor);
-  emit closeEditor(entityEditor);
 }
 
 bool QEntityItemDelegate::eventFilter(QObject* editor, QEvent* evt)
