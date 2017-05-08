@@ -131,8 +131,8 @@ void QEntityItemModel::clear()
 {
   if (this->m_root && !this->m_root->subphrases().empty())
   {
-    this->beginRemoveRows(
-      index(0, 0, QModelIndex()), 0, static_cast<int>(this->m_root->subphrases().size()));
+    // provide an invalid parent since you want to clear all
+    this->beginRemoveRows(QModelIndex(), 0, static_cast<int>(this->m_root->subphrases().size()));
     this->m_root = DescriptivePhrasePtr();
     this->endRemoveRows();
   }
