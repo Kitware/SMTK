@@ -699,7 +699,7 @@ void qtAssociationWidget::onAddAvailable()
           selItem = this->addModelAssociationListItem(
             this->Internals->CurrentList, currentItem, true, true);
         }
-        else // faied to assoicate with new entity
+        else // failed to associate with new entity
         {
           QMessageBox::warning(
             this, tr("Associate Entities"), tr("Failed to associate with new entity!"));
@@ -721,7 +721,7 @@ void qtAssociationWidget::onAddAvailable()
           this->removeItem(theList, item);
           selItem = this->addAttributeAssociationItem(this->Internals->CurrentList, currentAtt);
         }
-        else // faied to assoicate with new entity
+        else // failed to associate with new entity
         {
           QMessageBox::warning(
             this, tr("Associate Entities"), tr("Failed to associate with new entity!"));

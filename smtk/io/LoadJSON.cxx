@@ -1120,7 +1120,7 @@ int LoadJSON::ofMeshesOfModel(
       continue;
     }
 
-    //assoicated model uuid of the collection
+    //associated model uuid of the collection
     smtk::common::UUID associatedModelId;
     if (cJSON* modelIdNode = cJSON_GetObjectItem(child, "associatedModel"))
     {

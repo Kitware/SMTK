@@ -23,7 +23,7 @@ namespace polygon
 /**\brief Create polygon edges from contours extraced from an image.
   *
   * This operator will eate polygon edges from contours extraced from
-  * an image assoicated with a model. It interacts with the application
+  * an image associated with a model. It interacts with the application
   * through a view "UIConstructor", specified in the operator's template
   * file.
   *
