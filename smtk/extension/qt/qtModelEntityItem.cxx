@@ -196,7 +196,7 @@ void qtModelEntityItem::addEntityAssociationWidget()
   // associate button
   this->Internals->LinkSelectionButton = new QToolButton(this->Widget);
   QString iconName(":/icons/attribute/selLinkIn.png");
-  this->Internals->LinkSelectionButton->setToolTip("Assoicate With Selected Entities");
+  this->Internals->LinkSelectionButton->setToolTip("Associate With Selected Entities");
   this->Internals->LinkSelectionButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
   this->Internals->LinkSelectionButton->setFixedSize(QSize(16, 16));
   this->Internals->LinkSelectionButton->setIcon(QIcon(iconName));

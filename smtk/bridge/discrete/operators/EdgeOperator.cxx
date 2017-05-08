@@ -458,7 +458,7 @@ bool EdgeOperator::convertSelectedEndNodes(
       smtk::model::Edge toRemove(opsession->manager(), fromEid);
       srcsRemoved.push_back(toRemove);
 
-      // update assoicated mesh first before removing the edge
+      // update associated mesh first before removing the edge
       if (!internal_mergeAssociatedMeshes(remVert, toRemove,
             smtk::model::Edge(this->manager(), toEid), this->manager()->meshes(), modifiedMeshes))
       {

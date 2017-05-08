@@ -122,7 +122,7 @@ smtk::model::OperatorResult SetProperty::operateInternal()
         nameItem->value(0), integerItem, c, *it);
       modifiedMeshes.insert(*it);
 
-      // label the assoicated model as modified
+      // label the associated model as modified
       smtk::common::UUID modid = c->associatedModel();
       if (!modid.isNull())
         extraModifiedModels.insert(smtk::model::Model(this->manager(), modid));

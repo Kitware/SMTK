@@ -284,7 +284,7 @@ void qtMeshItemCombo::init()
 
   if (modelManager)
   {
-    // find out all assoicated collections, or use all collections if none associated
+    // find out all associated collections, or use all collections if none associated
     smtk::common::UUIDs collectionIds;
     smtk::model::EntityRefs associatedEnts =
       meshItem->attribute()->associatedModelEntities<smtk::model::EntityRefs>();
@@ -300,7 +300,7 @@ void qtMeshItemCombo::init()
     {
       collections.push_back(modelManager->meshes()->collection(*uit));
     }
-    // if no entities assoicated, use all collections with associations
+    // if no entities associated, use all collections with associations
     if (associatedEnts.size() == 0)
     {
       collections = modelManager->meshes()->collectionsWithAssociations();

@@ -203,7 +203,7 @@ bool Collection::reparent(smtk::mesh::ManagerPtr newParent)
   //re-parent the collection onto a new manager
   smtk::mesh::ManagerPtr currentManager = this->m_internals->manager();
   if (currentManager)
-  { //if we are assoicated with a valid manager remove the manager reference
+  { //if we are associated with a valid manager remove the manager reference
     //to us before we re-parent our selves and this becomes impossible
     currentManager->removeCollection(this->shared_from_this());
   }
