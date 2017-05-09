@@ -465,11 +465,7 @@ vtkSmartPointer<vtkPolyData> vtkModelMultiBlockSource::GenerateRepresentationFro
       }
     }
 
-    // Point-coordinates attribute
-    vtkNew<vtkDoubleArray> pointCoords;
-    pointCoords->ShallowCopy(pd->GetPoints()->GetData());
-    pointCoords->SetName("PointCoordinates");
-    pd->GetPointData()->AddArray(pointCoords.GetPointer());
+    vtkModelMultiBlockSource::AddPointsAsAttribute(pd);
   }
   return pd;
 }
@@ -514,7 +510,9 @@ vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationF
   std::string fileType = vtkModelMultiBlockSource::GetAuxiliaryFileType(auxGeom);
   if (fileType == "vtp")
   {
-    return ReadData<vtkPolyData, vtkXMLPolyDataReader>(auxGeom);
+    auto data = ReadData<vtkPolyData, vtkXMLPolyDataReader>(auxGeom);
+    vtkModelMultiBlockSource::AddPointsAsAttribute(data);
+    return data;
   }
   else if (fileType == "vtu")
   {
@@ -530,11 +528,15 @@ vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationF
   }
   else if (fileType == "obj")
   {
-    return ReadData<vtkPolyData, vtkOBJReader>(auxGeom);
+    auto data = ReadData<vtkPolyData, vtkOBJReader>(auxGeom);
+    vtkModelMultiBlockSource::AddPointsAsAttribute(data);
+    return data;
   }
   else if ((fileType == "pts") || (fileType == "xyz"))
   {
-    return ReadData<vtkPolyData, vtkPTSReader>(auxGeom);
+    auto data = ReadData<vtkPolyData, vtkPTSReader>(auxGeom);
+    vtkModelMultiBlockSource::AddPointsAsAttribute(data);
+    return data;
   }
   else if (fileType == "dem" || fileType == "tif" || fileType == "tiff")
   {
@@ -615,11 +617,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
       }
     }
 
-    // Point-coordinates attribute
-    vtkNew<vtkDoubleArray> pointCoords;
-    pointCoords->ShallowCopy(pd->GetPoints()->GetData());
-    pointCoords->SetName("PointCoordinates");
-    pd->GetPointData()->AddArray(pointCoords.GetPointer());
+    vtkModelMultiBlockSource::AddPointsAsAttribute(pd);
   }
 }
 
@@ -879,4 +877,12 @@ int vtkModelMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
   }
   output->ShallowCopy(this->CachedOutput);
   return 1;
+}
+
+void vtkModelMultiBlockSource::AddPointsAsAttribute(vtkPolyData* data)
+{
+  vtkNew<vtkDoubleArray> pointCoords;
+  pointCoords->ShallowCopy(data->GetPoints()->GetData());
+  pointCoords->SetName("PointCoordinates");
+  data->GetPointData()->AddArray(pointCoords.GetPointer());
 }

@@ -103,6 +103,8 @@ protected:
   vtkModelMultiBlockSource();
   virtual ~vtkModelMultiBlockSource();
 
+  static void AddPointsAsAttribute(vtkPolyData* data);
+
   vtkSmartPointer<vtkDataObject> GenerateRepresentationFromModel(
     const smtk::model::EntityRef& entity, bool genNormals);
   vtkSmartPointer<vtkPolyData> GenerateRepresentationFromTessellation(
