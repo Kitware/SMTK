@@ -319,8 +319,8 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
   }
   else if (fileCombo)
   {
-    QObject::connect(
-      fileCombo, SIGNAL(textChanged(const QString&)), this->Internals->SignalMapper, SLOT(map()));
+    QObject::connect(fileCombo, SIGNAL(editTextChanged(const QString&)),
+      this->Internals->SignalMapper, SLOT(map()));
     QObject::connect(
       fileCombo, SIGNAL(currentIndexChanged(int)), this->Internals->SignalMapper, SLOT(map()));
     this->Internals->SignalMapper->setMapping(fileCombo, fileCombo);
