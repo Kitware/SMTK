@@ -16,8 +16,8 @@
   </qresource>
 
   <qresource prefix="/icons/display">
-    <file>eyeball_16.png</file>
-    <file>eyeballx_16.png</file>
+    <file>eyeball.png</file>
+    <file>eyeballClosed.png</file>
   </qresource>
 
 </RCC>
