@@ -158,6 +158,11 @@ public:
 
   smtk::attribute::ItemDefinitionPtr itemDefinition(int ith) const;
 
+  const std::vector<smtk::attribute::ItemDefinitionPtr>& localItemDefinitions() const
+  {
+    return m_itemDefs;
+  }
+
   // Description:
   // Item definitions are the definitions of what data is stored
   // in the attribute. For example, an IntItemDefinition would store
