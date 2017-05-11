@@ -61,6 +61,8 @@ signals:
 
   void editingStarted();
   void startPicking();
+  //update faces vislibility when arc picking changes
+  void arcPickChanged(bool status);
 
 public slots:
   void updateActiveView(pqRenderView* view) { View = view; }

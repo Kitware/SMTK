@@ -40,6 +40,8 @@ public slots:
   // This will be triggered by selecting different type
   // of construction method in create-edge op.
   virtual void valueChanged(smtk::attribute::ItemPtr optype);
+  // update faces visibility when picking arcs
+  virtual void hideAllFaces(bool status);
 
 protected slots:
   virtual void requestOperation(const smtk::model::OperatorPtr& op);

@@ -279,6 +279,7 @@ void pqArcWidgetPanel::showPickWidget()
 
 void pqArcWidgetPanel::pickWholeArc()
 {
+  emit hideAllFaces(true);
   if (this->Internals->SelectArcButton->isChecked())
   {
     // The edge operator will tell which edge to use for editing
@@ -301,6 +302,7 @@ void pqArcWidgetPanel::pickWholeArc()
 
 void pqArcWidgetPanel::arcPicked()
 {
+  emit hideAllFaces(false);
   if (this->Arc && this->Arc->edgeOperator())
   {
     smtk::model::Edge edge(this->Arc->edgeOperator()->manager(), this->ArcInfo.EdgeId);
@@ -449,6 +451,7 @@ void pqArcWidgetPanel::arcEditingFinished()
 
 void pqArcWidgetPanel::cancelEdit()
 {
+  emit hideAllFaces(false); // restore face visibility
   //marks that that we don't want to save the modifications
   //to the arc
   this->hideArcWidget();
