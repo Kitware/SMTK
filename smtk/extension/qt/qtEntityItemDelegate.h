@@ -66,6 +66,8 @@ public:
 
   virtual QWidget* createEditor(
     QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+  void updateEditorGeometry(
+    QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 
   virtual void setEditorData(QWidget* editor, const QModelIndex& index) const;
   virtual void setModelData(
@@ -76,9 +78,6 @@ public:
   std::string determineAction(const QPoint& pPos, const QModelIndex& idx,
     const QStyleOptionViewItem& option,
     const smtk::extension::QEntityItemModel* entityMod = nullptr) const;
-
-protected slots:
-  virtual void commitAndCloseEditor();
 
 protected:
   virtual bool eventFilter(QObject* editor, QEvent* event);
