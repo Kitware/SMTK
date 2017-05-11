@@ -421,7 +421,13 @@ QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
         }
         return color;
       }
-      else if (role == Qt::FontRole)
+      else if (role == EntityCleanRole)
+      {
+        EntityRef ent = item->relatedEntity();
+        return QVariant(
+          static_cast<int>(ent.hasIntegerProperty("clean") ? ent.integerProperty("clean")[0] : -1));
+      }
+      else if (role == ModelActiveRole)
       {
         // used to bold the active model's title
         return (item->relatedEntity().entity() ==

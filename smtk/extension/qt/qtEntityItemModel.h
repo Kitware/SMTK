@@ -52,11 +52,13 @@ public:
   /// Enumeration of model-specific data roles.
   enum DataRoles
   {
-    TitleTextRole = Qt::UserRole + 100,       //!< Entity name (user-editable)
-    SubtitleTextRole = Qt::UserRole + 101,    //!< Entity type description
-    EntityIconRole = Qt::UserRole + 102,      //!< Entity type icon
-    EntityColorRole = Qt::UserRole + 103,     //!< Per-entity color
-    EntityVisibilityRole = Qt::UserRole + 104 //!< Entity visibility
+    TitleTextRole = Qt::UserRole + 100,        //!< Entity name (user-editable)
+    SubtitleTextRole = Qt::UserRole + 101,     //!< Entity type description
+    EntityIconRole = Qt::UserRole + 102,       //!< Entity type icon
+    EntityColorRole = Qt::UserRole + 103,      //!< Per-entity color
+    EntityVisibilityRole = Qt::UserRole + 104, //!< Entity visibility
+    EntityCleanRole = Qt::UserRole + 105,      //!< Is entity clean (0), dirty (1), or N/A (-1)?
+    ModelActiveRole = Qt::UserRole + 106       //!< Is entity the active model?
   };
 
   virtual QModelIndex index(int row, int column, const QModelIndex& parent) const;
@@ -143,16 +145,16 @@ protected:
     const QModelIndex& topIndex);
   virtual void updateChildPhrases(const model::DescriptivePhrasePtr& phrase,
     const QModelIndex& topIndex, bool emitEvenNoChanges = true);
-  virtual void findDirectParentPhrasesForAdd(const model::DescriptivePhrasePtr& parntDp,
-    const smtk::attribute::ModelEntityItemPtr& newEnts,
+  virtual void findDirectParentPhrasesForAdd(
+    const model::DescriptivePhrasePtr& parntDp, const smtk::attribute::ModelEntityItemPtr& newEnts,
     std::map<model::DescriptivePhrasePtr,
       std::vector<std::pair<model::DescriptivePhrasePtr, int> > >& changedPhrases);
-  virtual void findDirectParentPhrasesForRemove(const model::DescriptivePhrasePtr& parntDp,
-    const smtk::attribute::ModelEntityItemPtr& remEnts,
+  virtual void findDirectParentPhrasesForRemove(
+    const model::DescriptivePhrasePtr& parntDp, const smtk::attribute::ModelEntityItemPtr& remEnts,
     std::map<model::DescriptivePhrasePtr,
       std::vector<std::pair<model::DescriptivePhrasePtr, int> > >& changedPhrases);
-  virtual void findDirectParentPhrasesForRemove(const model::DescriptivePhrasePtr& parntDp,
-    const smtk::attribute::MeshItemPtr& remMeshes,
+  virtual void findDirectParentPhrasesForRemove(
+    const model::DescriptivePhrasePtr& parntDp, const smtk::attribute::MeshItemPtr& remMeshes,
     std::map<model::DescriptivePhrasePtr,
       std::vector<std::pair<model::DescriptivePhrasePtr, int> > >& changedPhrases);
 

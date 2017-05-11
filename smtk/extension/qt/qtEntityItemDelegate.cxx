@@ -144,7 +144,7 @@ void QEntityItemDelegate::paint(
   /// add a method to set/get title font
   titleFont.setBold(this->titleFontWeight() > 1 ? true : false);
   // bold the active model title
-  if (idx.data(Qt::FontRole).toBool())
+  if (idx.data(QEntityItemModel::ModelActiveRole).toBool())
   {
     titleFont.setBold(true);
   }
@@ -155,6 +155,10 @@ void QEntityItemDelegate::paint(
   QFontMetrics titleFM(titleFont);
 
   QString titleText = qvariant_cast<QString>(idx.data(QEntityItemModel::TitleTextRole));
+  if (idx.data(QEntityItemModel::EntityCleanRole).toInt() == 0)
+  {
+    titleText = titleText + " *";
+  }
   QString subtitleText = qvariant_cast<QString>(idx.data(QEntityItemModel::SubtitleTextRole));
   //std::cout << "Paint " << idx.internalPointer() << " " << idx.row() << " " << titleText.toStdString().c_str() << "\n";
   QColor swatchColor = qvariant_cast<QColor>(idx.data(QEntityItemModel::EntityColorRole));
@@ -234,7 +238,7 @@ void QEntityItemDelegate::updateEditorGeometry(
   /// add a method to set/get title font
   titleFont.setBold(this->titleFontWeight() > 1 ? true : false);
   // bold the active model title
-  if (idx.data(Qt::FontRole).toBool())
+  if (idx.data(QEntityItemModel::ModelActiveRole).toBool())
   {
     titleFont.setBold(true);
   }
@@ -246,6 +250,10 @@ void QEntityItemDelegate::updateEditorGeometry(
 
   QString titleText = qvariant_cast<QString>(idx.data(QEntityItemModel::TitleTextRole));
   QString subtitleText = qvariant_cast<QString>(idx.data(QEntityItemModel::SubtitleTextRole));
+  if (idx.data(QEntityItemModel::EntityCleanRole).toInt() == 0)
+  {
+    titleText += " *";
+  }
 
   QRect titleRect = option.rect;
   QRect iconRect = option.rect;
