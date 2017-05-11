@@ -5,7 +5,7 @@
     <!-- Operator -->
     <AttDef Type="add auxiliary geometry" BaseType="operator" Label=" Model - Add Auxiliary Geometry">
       <AssociationsDef Name="entities" NumberOfRequiredValues="1">
-        <MembershipMask>model|aux_geom</MembershipMask>
+        <MembershipMask>model</MembershipMask>
       </AssociationsDef>
       <BriefDescription>
         Add auxiliary geometry (scene geometry not part of the model domain)
