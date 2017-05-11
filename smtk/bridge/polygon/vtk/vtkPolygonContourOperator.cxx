@@ -24,7 +24,7 @@
 #include <vector>
 
 vtkStandardNewMacro(vtkPolygonContourOperator);
-
+vtkCxxSetObjectMacro(vtkPolygonContourOperator, ContourInput, vtkPolyData);
 vtkPolygonContourOperator::vtkPolygonContourOperator()
 {
   this->ContourInput = NULL;

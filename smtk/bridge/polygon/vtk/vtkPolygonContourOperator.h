@@ -34,8 +34,8 @@ public:
 
   //Description:
   //Get/Set the Contour Input
-  vtkGetMacro(ContourInput, vtkPolyData*);
-  vtkSetMacro(ContourInput, vtkPolyData*);
+  vtkGetObjectMacro(ContourInput, vtkPolyData);
+  void SetContourInput(vtkPolyData* data);
 
   // Description:
   // The bounds of the image where the contours are created from
