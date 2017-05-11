@@ -136,7 +136,10 @@ void qtOperatorView::onOperate()
   if ((!this->m_applied) && this->Internals->m_instancedView->isValid())
   {
     emit this->operationRequested(this->Internals->m_operator);
-    this->Internals->m_applyButton->setEnabled(false);
+    if (this->Internals->m_applyButton)
+    { // The button may disappear when a session is closed by an operator.
+      this->Internals->m_applyButton->setEnabled(false);
+    }
     this->m_applied = true;
   }
 }

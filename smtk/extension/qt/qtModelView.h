@@ -68,6 +68,8 @@ public:
   std::string determineAction(const QPoint& pPos) const;
   qtModelOperationWidget* operatorsWidget();
   void expandAllModels();
+  bool setEntityVisibility(const smtk::model::EntityRefs& selentityrefs,
+    const smtk::mesh::MeshSets& selmeshes, int vis, smtk::model::OperatorPtr op);
 
 public slots:
   void updateActiveModelByModelIndex();
@@ -176,8 +178,6 @@ protected:
     const smtk::common::UUIDs& selEntities,
     QModelIndexList& foundIndexes);
 */
-  bool setEntityVisibility(const smtk::model::EntityRefs& selentityrefs,
-    const smtk::mesh::MeshSets& selmeshes, int vis, smtk::model::OperatorPtr op);
   bool setEntityColor(const smtk::model::EntityRefs& selentityrefs,
     const smtk::mesh::MeshSets& selmeshes, const QColor& newcolor, smtk::model::OperatorPtr brOp);
 

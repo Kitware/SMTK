@@ -117,7 +117,7 @@ OperatorResult SaveSMTKModel::operateInternal()
         {
           suffix = oldmodelname.substr(oldfilename.size());
         }
-        if (!suffix.empty())
+        if (!suffix.empty() && plural)
         {
           newname << suffix;
         }
