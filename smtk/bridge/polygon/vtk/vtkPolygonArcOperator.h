@@ -35,8 +35,8 @@ public:
 
   //Description:
   //Get/Set the arc representation
-  vtkGetMacro(ArcRepresentation, vtkContourRepresentation*);
-  vtkSetMacro(ArcRepresentation, vtkContourRepresentation*);
+  vtkGetObjectMacro(ArcRepresentation, vtkContourRepresentation);
+  virtual void SetArcRepresentation(vtkContourRepresentation*);
 
 protected:
   vtkPolygonArcOperator();
