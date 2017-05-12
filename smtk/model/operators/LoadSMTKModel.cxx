@@ -108,7 +108,6 @@ smtk::model::OperatorResult LoadSMTKModel::operateInternal()
   // figure out new models and meshes
   if (status && modelsObj)
   {
-    smtk::model::EntityRefArray modelModArr;
     smtk::model::EntityRefArray modelCreArr;
     smtk::model::EntityRefArray meshArr;
     smtk::mesh::ManagerPtr meshMgr = this->manager()->meshes();
@@ -124,49 +123,29 @@ smtk::model::OperatorResult LoadSMTKModel::operateInternal()
       if (newit->parent().isModel())
         continue;
       bool existing = std::find(models.begin(), models.end(), *newit) != models.end();
-      if (existing)
-        modelModArr.push_back(*newit);
-      else
+      if (!existing)
+      {
         modelCreArr.push_back(*newit);
 
-      if (newit->session().session() != this->session())
-      {
-        if (newit->session().isValid())
+        if (newit->session().session() != this->session())
         {
-          otherSessions.insert(newit->session());
+          if (newit->session().isValid())
+          {
+            otherSessions.insert(newit->session());
+          }
+          newit->as<smtk::model::Model>().setSession(
+            smtk::model::SessionRef(newit->manager(), this->session()->sessionId()));
         }
-        newit->as<smtk::model::Model>().setSession(
-          smtk::model::SessionRef(newit->manager(), this->session()->sessionId()));
-      }
 
-      if (meshMgr->associatedCollections(*newit).size() > 0)
-        meshArr.push_back(*newit);
+        if (meshMgr->associatedCollections(*newit).size() > 0)
+          meshArr.push_back(*newit);
+      }
     }
     for (auto importedSess : otherSessions)
     {
       importedSess.manager()->hardErase(importedSess);
     }
 
-    /*
-    // import all native models model entites, should only have meta info
-    cJSON* modelentry;
-    for (modelentry = modelsObj->child; modelentry; modelentry = modelentry->next)
-      {
-      if (!modelentry->string || !modelentry->string[0])
-        continue;
-      smtk::common::UUID modId(modelentry->string);
-      smtk::model::Model curModel(this->manager(), modId);
-      bool existing = std::find(models.begin(), models.end(), curModel) != models.end();
-      if(existing)
-        modelModArr.push_back(curModel);
-      else
-        modelCreArr.push_back(curModel);
-
-      if(meshMgr->associatedCollections(curModel).size() > 0)
-        meshArr.push_back(curModel);
-      }
-*/
-    this->addEntitiesToResult(result, modelModArr, MODIFIED);
     this->addEntitiesToResult(result, modelCreArr, CREATED);
     result->findModelEntity("mesh_created")->setValues(meshArr.begin(), meshArr.end());
   }

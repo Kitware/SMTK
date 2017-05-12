@@ -110,7 +110,8 @@ static void markResultModels(
 // "clean" (newly loaded/saved) or "dirty" (modified from file or never written).
 static void markResultModels(OperatorResult result)
 {
-  int clean = result->findVoid("cleanse entities") ? 1 : 0;
+  auto cleanseItem = result->findVoid("cleanse entities");
+  int clean = cleanseItem && cleanseItem->isEnabled() ? 1 : 0;
   std::set<smtk::model::Model> visited;
   markResultModels(result->findModelEntity("created"), visited, clean);
   markResultModels(result->findModelEntity("modified"), visited, clean);
