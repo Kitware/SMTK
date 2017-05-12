@@ -23,6 +23,7 @@
 #include "vtkPolyData.h"
 
 vtkStandardNewMacro(vtkPolygonArcOperator);
+vtkCxxSetObjectMacro(vtkPolygonArcOperator, ArcRepresentation, vtkContourRepresentation);
 
 vtkPolygonArcOperator::vtkPolygonArcOperator()
 {
