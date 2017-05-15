@@ -41,7 +41,7 @@ qtSelectionManager::qtSelectionManager()
   m_mask |= smtk::model::FACE;
   m_mask |= smtk::model::EDGE;
   m_mask |= smtk::model::VERTEX;
-  this->m_filterMeshes = true;
+  this->m_filterMeshes = false;
   this->m_modelMgr = nullptr;
   this->m_selEntityRefs = smtk::model::EntityRefs();
   this->m_selMeshes = smtk::mesh::MeshSets();
@@ -50,7 +50,10 @@ qtSelectionManager::qtSelectionManager()
 
 void qtSelectionManager::getSelectedEntities(smtk::common::UUIDs& selEntities)
 {
-  selEntities = this->m_selEntities;
+  for (const auto& selEnt : this->m_selEntityRefs)
+  {
+    selEntities.insert(selEnt.entity());
+  }
 }
 
 void qtSelectionManager::getSelectedEntitiesAsEntityRefs(smtk::model::EntityRefs& selEntities)
@@ -76,12 +79,6 @@ void qtSelectionManager::updateSelectedItems(const smtk::model::EntityRefs& selE
   { // \b selection from qtModelItem/operator dialog
     this->m_selEntityRefs.insert(selEntities.begin(), selEntities.end());
     this->m_selMeshes.insert(selMeshes.begin(), selMeshes.end());
-    // Deprecated start
-    for (auto selEntity : selEntities)
-    {
-      this->m_selEntities.insert(selEntity.entity());
-    }
-    // Deprecated end
   }
   else if (modifierFlag == smtk::extension::SelectionModifier::SELECTION_SUBTRACTION_UNFILTERED)
   { // \b selection from qtModelItem/operator dialog
@@ -93,12 +90,6 @@ void qtSelectionManager::updateSelectedItems(const smtk::model::EntityRefs& selE
       }
     }
     this->m_selMeshes.erase(selMeshes.begin(), selMeshes.end());
-    // Deprecated start
-    for (auto selEntity : selEntities)
-    {
-      this->m_selEntities.erase(selEntity.entity());
-    }
-    // Deprecated end
   }
   else if (modifierFlag == smtk::extension::SelectionModifier::SELECTION_REPLACE_UNFILTERED)
   {
@@ -120,12 +111,6 @@ void qtSelectionManager::updateSelectedItems(const smtk::model::EntityRefs& selE
     this->clear();
     this->m_selEntityRefs.insert(filteredSelEnts.begin(), filteredSelEnts.end());
     this->m_selMeshes.insert(selMeshes.begin(), selMeshes.end());
-    // Deprecated start
-    for (auto selEntity : filteredSelEnts)
-    {
-      this->m_selEntities.insert(selEntity.entity());
-    }
-    // Deprecated end
   }
   else if (modifierFlag == smtk::extension::SelectionModifier::SELECTION_INQUIRY)
   { // \b selection from render window
@@ -138,12 +123,6 @@ void qtSelectionManager::updateSelectedItems(const smtk::model::EntityRefs& selE
       {
         this->m_selMeshes.insert(selMeshes.begin(), selMeshes.end());
       }
-      // Deprecated start
-      for (auto selEntity : this->m_selEntityRefs)
-      {
-        this->m_selEntities.insert(selEntity.entity());
-      }
-      // Deprecated end
     }
     else if (this->m_selectionModifier == SelectionModifier::SELECTION_ADDITION_FILTERED)
     { // add to current selection
@@ -156,12 +135,6 @@ void qtSelectionManager::updateSelectedItems(const smtk::model::EntityRefs& selE
       {
         this->m_selMeshes.insert(selMeshes.begin(), selMeshes.end());
       }
-      // Deprecated start
-      for (auto selEntity : currentSelFiltered)
-      {
-        this->m_selEntities.insert(selEntity.entity());
-      }
-      // Deprecated end
     }
     else if (this->m_selectionModifier == SelectionModifier::SELECTION_SUBTRACTION_FILTERED)
     { //subtract from current selection
@@ -170,9 +143,6 @@ void qtSelectionManager::updateSelectedItems(const smtk::model::EntityRefs& selE
         const_cast<smtk::model::EntityRefs&>(selEntities), currentSelFiltered);
       for (const auto& selEnt : currentSelFiltered)
       {
-        // Deprecatred start
-        this->m_selEntities.erase(selEnt.entity());
-        // Deprecatred end
         this->m_selEntityRefs.erase(selEnt);
       }
 
@@ -241,7 +211,6 @@ void qtSelectionManager::clearAllSelections()
 
 void qtSelectionManager::clear()
 {
-  this->m_selEntities.clear();
   this->m_selEntityRefs.clear();
   this->m_selMeshes.clear();
   this->m_desPhrases.clear();
@@ -280,7 +249,7 @@ void qtSelectionManager::filterEntitySelectionsByMaskAndActiveModel(
 
     if (this->m_mask & smtk::model::MODEL_ENTITY)
     {
-      this->m_selEntities.insert(ent.owningModel().entity());
+      filteredSelEnts.insert(ent.owningModel());
     }
 
     // check only volume condition
@@ -292,7 +261,7 @@ void qtSelectionManager::filterEntitySelectionsByMaskAndActiveModel(
         smtk::model::Volumes volumesFa = face.volumes();
         for (const auto& volume : volumesFa)
         {
-          this->m_selEntities.insert(volume.entity());
+          filteredSelEnts.insert(volume);
         }
       }
       else if (ent.isEdge())
@@ -304,7 +273,7 @@ void qtSelectionManager::filterEntitySelectionsByMaskAndActiveModel(
           smtk::model::Volumes volumesFaEd = faceEd.volumes();
           for (const auto& volumeFaEd : volumesFaEd)
           {
-            this->m_selEntities.insert(volumeFaEd.entity());
+            filteredSelEnts.insert(volumeFaEd);
           }
         }
       }
@@ -320,7 +289,7 @@ void qtSelectionManager::filterEntitySelectionsByMaskAndActiveModel(
             smtk::model::Volumes volumesFaEdVe = faceEdVe.volumes();
             for (const auto& volumeFaEdVe : volumesFaEdVe)
             {
-              this->m_selEntities.insert(volumeFaEdVe.entity());
+              filteredSelEnts.insert(volumeFaEdVe);
             }
           }
         }

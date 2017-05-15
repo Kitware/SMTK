@@ -153,7 +153,6 @@ protected:
   void filterRubberBandSelection(smtk::model::EntityRef ent);
 
   smtk::mesh::MeshSets m_selMeshes;
-  smtk::common::UUIDs m_selEntities; // Deprecate it with m_selEntityRefs
   smtk::model::BitFlags m_mask;
   smtk::model::DescriptivePhrases m_desPhrases;
   smtk::model::EntityRefs m_selEntityRefs;
