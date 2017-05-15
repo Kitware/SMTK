@@ -21,8 +21,12 @@
           </DiscreteInfo>
         </Int>
 
+        <File Name="ptsfile" NumberOfValues="1"
+              ShouldExist="true" Optional="true" FileFilters="CSV file (*.csv)">
+        </File>
+
         <Group Name="points" Label="Interpolation Points"
-               Extensible="true" NumberOfRequiredGroups="1" >
+               Extensible="true" NumberOfRequiredGroups="0" >
           <BriefDescription>The points and their scalar values to interpolate.</BriefDescription>
           <DetailedDescription>
             An implicit function is described by interpolating points
