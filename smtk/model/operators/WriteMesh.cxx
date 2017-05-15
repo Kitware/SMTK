@@ -113,7 +113,16 @@ smtk::model::OperatorResult WriteMesh::operateInternal()
     }
   }
 
-  return this->createResult(OPERATION_SUCCEEDED);
+  // We mark the written meshes as "modified" so that the containing collection's URL can
+  // be properly updated.
+  OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
+  smtk::attribute::MeshItem::Ptr modifiedMeshes = result->findMesh("mesh_modified");
+  for (auto& mesh : written)
+  {
+    modifiedMeshes->appendValue(mesh);
+  }
+
+  return result;
 }
 }
 }
