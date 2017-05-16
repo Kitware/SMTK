@@ -27,10 +27,11 @@ set(unit_tests_which_require_data
   UnitTestAddFileToCollection.cxx
   UnitTestCellSet.cxx
   UnitTestCreateMesh.cxx
+  UnitTestCellField.cxx
   UnitTestElevate.cxx
   UnitTestExportMesh2DM.cxx
   UnitTestExportMesh3DM.cxx
-  UnitTestExtractField.cxx
+  UnitTestExtractMeshConstants.cxx
   UnitTestExtractTessellation.cxx
   UnitTestExtractTessellationOfModel.cxx
 
@@ -39,6 +40,7 @@ set(unit_tests_which_require_data
   UnitTestMeshSet.cxx
   UnitTestModelToMesh2D.cxx
   UnitTestPointConnectivity.cxx
+  UnitTestPointField.cxx
   UnitTestPointLocator.cxx
   UnitTestPointSet.cxx
   UnitTestReadWriteMeshJSON.cxx

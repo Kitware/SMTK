@@ -1028,6 +1028,534 @@ smtk::common::UUID Interface::rootAssociation() const
   return smtk::common::UUID::null();
 }
 
+//create a data set named <name> with <dimension> doubles for each cell in
+//<meshsets>, and populate it with <data>
+bool Interface::createCellField(const smtk::mesh::HandleRange& meshsets, const std::string& name,
+  std::size_t dimension, const double* data)
+{
+  if (meshsets.empty())
+  {
+    // If there are no meshsets, then we return with failure
+    return false;
+  }
+
+  // We first construct the data set for the cells associated with the meshsets.
+  smtk::mesh::HandleRange cells = this->getCells(meshsets);
+  if (cells.empty())
+  {
+    // If there are no cells, then there we return with failure.
+    return false;
+  }
+  // The double tag is used to associate double-valued data with the cells
+  tag::QueryDoubleTag dtag(name.c_str(), static_cast<int>(dimension), this->moabInterface());
+  if (dtag.state() != ::moab::MB_SUCCESS && dtag.state() != ::moab::MB_ALREADY_ALLOCATED)
+  {
+    return false;
+  }
+
+  const double* tag_values = data;
+  ::moab::ErrorCode rval = m_iface->tag_set_data(dtag.moabTag(), cells, tag_values);
+  bool tagged = (rval == ::moab::MB_SUCCESS);
+
+  if (tagged)
+  {
+    // We successfully constructed the data set associated with the cells. Now we mark the meshset
+    // as having the associated dataset. For this, we use a bit tag to simply denote the dataset's
+    // existence.
+    tag::QueryBitTag btag(name.c_str(), this->moabInterface());
+    bool* boolean_tag_values = new bool[meshsets.size()];
+    memset(boolean_tag_values, true, meshsets.size());
+    rval = m_iface->tag_set_data(btag.moabTag(), meshsets, boolean_tag_values);
+    assert(rval == ::moab::MB_SUCCESS);
+
+    auto tags = this->computeCellFieldTags(*meshsets.begin());
+
+    delete[] boolean_tag_values;
+
+    this->m_modified = true;
+  }
+  return tagged;
+}
+
+//get the dimension of a dataset.
+int Interface::getCellFieldDimension(const smtk::mesh::CellFieldTag& cfTag) const
+{
+  ::moab::Tag tag;
+  std::string dTagName = cfTag.name() + std::string("_");
+  ::moab::ErrorCode rval = m_iface->tag_get_handle(dTagName.c_str(), tag);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    return 0;
+  }
+  int dimension = 0;
+  m_iface->tag_get_length(tag, dimension);
+
+  return dimension;
+}
+
+//find all mesh sets that have this data set
+smtk::mesh::HandleRange Interface::getMeshsets(
+  smtk::mesh::Handle handle, const smtk::mesh::CellFieldTag& cfTag) const
+{
+  // First access the tag associated with <name>
+  ::moab::Tag tag;
+  ::moab::ErrorCode rval = m_iface->tag_get_handle(cfTag.name().c_str(), tag);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    return smtk::mesh::HandleRange();
+  }
+
+  smtk::mesh::HandleRange result;
+
+  rval = m_iface->get_entities_by_type_and_tag(handle, ::moab::MBENTITYSET, &tag, NULL, 1, result);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    result.clear();
+  }
+  return result;
+}
+
+bool Interface::hasCellField(
+  const smtk::mesh::HandleRange& meshsets, const smtk::mesh::CellFieldTag& cfTag) const
+{
+  if (meshsets.empty())
+  {
+    // If there are no meshsets, then we return with failure
+    return false;
+  }
+
+  ::moab::Tag moab_tag;
+  ::moab::ErrorCode rval = m_iface->tag_get_handle(cfTag.name().c_str(), moab_tag);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    return false;
+  }
+
+  //fetch all entities with the given tag
+  smtk::mesh::HandleRange entitiesWithTag;
+  bool flagValue = true;
+  void* flagPtr = &flagValue;
+  m_iface->get_entities_by_type_and_tag(
+    m_iface->get_root_set(), ::moab::MBENTITYSET, &moab_tag, &flagPtr, 1, entitiesWithTag);
+
+  return ::moab::intersect(entitiesWithTag, meshsets) == meshsets;
+}
+
+bool Interface::getCellField(const smtk::mesh::HandleRange& meshsets,
+  const smtk::mesh::CellFieldTag& cfTag, double* field) const
+{
+  if (meshsets.empty())
+  {
+    // If there are no meshsets, then we return with failure
+    return false;
+  }
+
+  return this->getField(this->getCells(meshsets), cfTag, field);
+}
+
+bool Interface::setCellField(const smtk::mesh::HandleRange& meshsets,
+  const smtk::mesh::CellFieldTag& cfTag, const double* const field)
+{
+  if (meshsets.empty())
+  {
+    // If there are no meshsets, then we return with failure
+    return false;
+  }
+
+  return this->setField(this->getCells(meshsets), cfTag, field);
+}
+
+bool Interface::getField(
+  const smtk::mesh::HandleRange& cells, const smtk::mesh::CellFieldTag& cfTag, double* field) const
+{
+  if (cells.empty())
+  {
+    // If there are no cells, then there we return with failure.
+    return false;
+  }
+
+  std::string dTagName = cfTag.name() + std::string("_");
+
+  ::moab::Tag moab_tag;
+  ::moab::ErrorCode rval = m_iface->tag_get_handle(dTagName.c_str(), moab_tag);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    return false;
+  }
+
+  rval = m_iface->tag_get_data(moab_tag, cells, field);
+  return (rval == ::moab::MB_SUCCESS);
+}
+
+bool Interface::setField(const smtk::mesh::HandleRange& cells,
+  const smtk::mesh::CellFieldTag& cfTag, const double* const field)
+{
+  if (cells.empty())
+  {
+    // If there are no cells, then there we return with failure.
+    return false;
+  }
+
+  std::string dTagName = cfTag.name() + std::string("_");
+
+  ::moab::Tag moab_tag;
+  ::moab::ErrorCode rval = m_iface->tag_get_handle(dTagName.c_str(), moab_tag);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    return false;
+  }
+
+  rval = m_iface->tag_set_data(moab_tag, cells, field);
+
+  this->m_modified = (rval == ::moab::MB_SUCCESS);
+  return this->m_modified;
+}
+
+std::set<smtk::mesh::CellFieldTag> Interface::computeCellFieldTags(
+  const smtk::mesh::Handle& handle) const
+{
+  std::set<smtk::mesh::CellFieldTag> cellFieldTags;
+
+  // first collect all tag handles
+  std::vector< ::moab::Tag> moab_tag_handles;
+  m_iface->tag_get_tags(moab_tag_handles);
+
+  for (auto& tag : moab_tag_handles)
+  {
+    // then filter them by type
+    ::moab::DataType data_type;
+    m_iface->tag_get_data_type(tag, data_type);
+    if (data_type == ::moab::MB_TYPE_BIT)
+    {
+      // then check if there are tagged instances under our handle
+      ::moab::Range range;
+      ::moab::ErrorCode rval = rval =
+        m_iface->get_entities_by_type_and_tag(handle, ::moab::MBENTITYSET, &tag, NULL, 1, range);
+      if (rval == ::moab::MB_SUCCESS && !range.empty())
+      {
+        std::string name;
+        m_iface->tag_get_name(tag, name);
+        cellFieldTags.insert(smtk::mesh::CellFieldTag(name));
+      }
+    }
+  }
+
+  return cellFieldTags;
+}
+
+bool Interface::deleteCellField(
+  const smtk::mesh::CellFieldTag& cfTag, const smtk::mesh::HandleRange& meshsets)
+{
+  if (meshsets.empty())
+  {
+    return true;
+  }
+
+  smtk::mesh::HandleRange cells = this->getCells(meshsets);
+  if (cells.empty())
+  {
+    // If there are no cells, then there we return with failure.
+    return true;
+  }
+
+  // Access the tag associated with the cellsets
+  std::string dTagName = cfTag.name() + std::string("_");
+  ::moab::Tag dTag;
+  ::moab::ErrorCode rval = m_iface->tag_get_handle(dTagName.c_str(), dTag);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    return false;
+  }
+
+  // Delete the data from the cellsets
+  rval = m_iface->tag_delete_data(dTag, cells);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    return false;
+  }
+
+  // Access the tag associated with the meshsets
+  ::moab::Tag tag;
+  rval = m_iface->tag_get_handle(cfTag.name().c_str(), tag);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    return false;
+  }
+
+  // Delete the data flag from the meshsets
+  rval = m_iface->tag_delete_data(tag, meshsets);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    return false;
+  }
+
+  return true;
+}
+
+//create a data set named <name> with <dimension> doubles for each point in
+//<meshsets>, and populate it with <data>
+bool Interface::createPointField(const smtk::mesh::HandleRange& meshsets, const std::string& name,
+  std::size_t dimension, const double* data)
+{
+  if (meshsets.empty())
+  {
+    // If there are no meshsets, then we return with failure
+    return false;
+  }
+
+  // We first construct the data set for the points associated with the meshsets.
+  smtk::mesh::HandleRange points = this->getPoints(this->getCells(meshsets));
+  if (points.empty())
+  {
+    // If there are no points, then there we return with failure.
+    return false;
+  }
+  // The double tag is used to associate double-valued data with the points
+  tag::QueryDoubleTag dtag(name.c_str(), static_cast<int>(dimension), this->moabInterface());
+  if (dtag.state() != ::moab::MB_SUCCESS && dtag.state() != ::moab::MB_ALREADY_ALLOCATED)
+  {
+    return false;
+  }
+
+  const double* tag_values = data;
+  ::moab::ErrorCode rval = m_iface->tag_set_data(dtag.moabTag(), points, tag_values);
+  bool tagged = (rval == ::moab::MB_SUCCESS);
+
+  if (tagged)
+  {
+    // We successfully constructed the data set associated with the points. Now we mark the meshset
+    // as having the associated dataset. For this, we use a bit tag to simply denote the dataset's
+    // existence.
+    tag::QueryBitTag btag(name.c_str(), this->moabInterface());
+    bool* boolean_tag_values = new bool[meshsets.size()];
+    memset(boolean_tag_values, true, meshsets.size());
+    rval = m_iface->tag_set_data(btag.moabTag(), meshsets, boolean_tag_values);
+    assert(rval == ::moab::MB_SUCCESS);
+
+    auto tags = this->computePointFieldTags(*meshsets.begin());
+
+    delete[] boolean_tag_values;
+
+    this->m_modified = true;
+  }
+  return tagged;
+}
+
+//get the dimension of a dataset.
+int Interface::getPointFieldDimension(const smtk::mesh::PointFieldTag& pfTag) const
+{
+  ::moab::Tag tag;
+  std::string dTagName = pfTag.name() + std::string("_");
+  ::moab::ErrorCode rval = m_iface->tag_get_handle(dTagName.c_str(), tag);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    return 0;
+  }
+  int dimension = 0;
+  m_iface->tag_get_length(tag, dimension);
+
+  return dimension;
+}
+
+//find all mesh sets that have this data set
+smtk::mesh::HandleRange Interface::getMeshsets(
+  smtk::mesh::Handle handle, const smtk::mesh::PointFieldTag& pfTag) const
+{
+  // First access the tag associated with <name>
+  ::moab::Tag tag;
+  ::moab::ErrorCode rval = m_iface->tag_get_handle(pfTag.name().c_str(), tag);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    return smtk::mesh::HandleRange();
+  }
+
+  smtk::mesh::HandleRange result;
+
+  rval = m_iface->get_entities_by_type_and_tag(handle, ::moab::MBENTITYSET, &tag, NULL, 1, result);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    result.clear();
+  }
+  return result;
+}
+
+bool Interface::hasPointField(
+  const smtk::mesh::HandleRange& meshsets, const smtk::mesh::PointFieldTag& pfTag) const
+{
+  if (meshsets.empty())
+  {
+    // If there are no meshsets, then we return with failure
+    return false;
+  }
+
+  ::moab::Tag moab_tag;
+  ::moab::ErrorCode rval = m_iface->tag_get_handle(pfTag.name().c_str(), moab_tag);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    return false;
+  }
+
+  //fetch all entities with the given tag
+  smtk::mesh::HandleRange entitiesWithTag;
+  bool flagValue = true;
+  void* flagPtr = &flagValue;
+  m_iface->get_entities_by_type_and_tag(
+    m_iface->get_root_set(), ::moab::MBENTITYSET, &moab_tag, &flagPtr, 1, entitiesWithTag);
+
+  return ::moab::intersect(entitiesWithTag, meshsets) == meshsets;
+}
+
+bool Interface::getPointField(const smtk::mesh::HandleRange& meshsets,
+  const smtk::mesh::PointFieldTag& pfTag, double* field) const
+{
+  if (meshsets.empty())
+  {
+    // If there are no meshsets, then we return with failure
+    return false;
+  }
+
+  return this->getField(this->getPoints(this->getCells(meshsets)), pfTag, field);
+}
+
+bool Interface::setPointField(const smtk::mesh::HandleRange& meshsets,
+  const smtk::mesh::PointFieldTag& pfTag, const double* const field)
+{
+  if (meshsets.empty())
+  {
+    // If there are no meshsets, then we return with failure
+    return false;
+  }
+
+  return this->setField(this->getPoints(this->getCells(meshsets)), pfTag, field);
+}
+
+bool Interface::getField(const smtk::mesh::HandleRange& points,
+  const smtk::mesh::PointFieldTag& pfTag, double* field) const
+{
+  if (points.empty())
+  {
+    // If there are no points, then there we return with failure.
+    return false;
+  }
+
+  std::string dTagName = pfTag.name() + std::string("_");
+
+  ::moab::Tag moab_tag;
+  ::moab::ErrorCode rval = m_iface->tag_get_handle(dTagName.c_str(), moab_tag);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    return false;
+  }
+
+  rval = m_iface->tag_get_data(moab_tag, points, field);
+  return (rval == ::moab::MB_SUCCESS);
+}
+
+bool Interface::setField(const smtk::mesh::HandleRange& points,
+  const smtk::mesh::PointFieldTag& pfTag, const double* const field)
+{
+  if (points.empty())
+  {
+    // If there are no points, then there we return with failure.
+    return false;
+  }
+
+  std::string dTagName = pfTag.name() + std::string("_");
+
+  ::moab::Tag moab_tag;
+  ::moab::ErrorCode rval = m_iface->tag_get_handle(dTagName.c_str(), moab_tag);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    return false;
+  }
+
+  rval = m_iface->tag_set_data(moab_tag, points, field);
+
+  this->m_modified = (rval == ::moab::MB_SUCCESS);
+  return this->m_modified;
+}
+
+std::set<smtk::mesh::PointFieldTag> Interface::computePointFieldTags(
+  const smtk::mesh::Handle& handle) const
+{
+  std::set<smtk::mesh::PointFieldTag> pointFieldTags;
+
+  // first collect all tag handles
+  std::vector< ::moab::Tag> moab_tag_handles;
+  m_iface->tag_get_tags(moab_tag_handles);
+
+  for (auto& tag : moab_tag_handles)
+  {
+    // then filter them by type
+    ::moab::DataType data_type;
+    m_iface->tag_get_data_type(tag, data_type);
+    if (data_type == ::moab::MB_TYPE_BIT)
+    {
+      // then check if there are tagged instances under our handle
+      ::moab::Range range;
+      ::moab::ErrorCode rval = rval =
+        m_iface->get_entities_by_type_and_tag(handle, ::moab::MBENTITYSET, &tag, NULL, 1, range);
+      if (rval == ::moab::MB_SUCCESS && !range.empty())
+      {
+        std::string name;
+        m_iface->tag_get_name(tag, name);
+        pointFieldTags.insert(smtk::mesh::PointFieldTag(name));
+      }
+    }
+  }
+
+  return pointFieldTags;
+}
+
+bool Interface::deletePointField(
+  const smtk::mesh::PointFieldTag& pfTag, const smtk::mesh::HandleRange& meshsets)
+{
+  if (meshsets.empty())
+  {
+    return true;
+  }
+
+  smtk::mesh::HandleRange points = this->getPoints(this->getCells(meshsets));
+  if (points.empty())
+  {
+    // If there are no points, then there we return with failure.
+    return true;
+  }
+
+  // Access the tag associated with the pointsets
+  std::string dTagName = pfTag.name() + std::string("_");
+  ::moab::Tag dTag;
+  ::moab::ErrorCode rval = m_iface->tag_get_handle(dTagName.c_str(), dTag);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    return false;
+  }
+
+  // Delete the data from the pointsets
+  rval = m_iface->tag_delete_data(dTag, points);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    return false;
+  }
+
+  // Access the tag associated with the meshsets
+  ::moab::Tag tag;
+  rval = m_iface->tag_get_handle(pfTag.name().c_str(), tag);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    return false;
+  }
+
+  // Delete the data flag from the meshsets
+  rval = m_iface->tag_delete_data(tag, meshsets);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    return false;
+  }
+
+  return true;
+}
+
 smtk::mesh::HandleRange Interface::rangeIntersect(
   const smtk::mesh::HandleRange& a, const smtk::mesh::HandleRange& b) const
 {
@@ -1143,7 +1671,7 @@ void Interface::pointForEach(const HandleRange& points, smtk::mesh::PointForEach
     const std::size_t numPointsPerLoop = 65536; //selected so that buffer is ~1MB
     const std::size_t numLoops = numPoints / 65536;
 
-    //We explicitly reserve than resize to avoid the cost of resize behavior
+    //We explicitly reserve then resize to avoid the cost of resize behavior
     //of setting the value of each element to T(). But at the same time we
     //need to use resize to set the proper size of the vector ( reserve == capacity )
     coords.reserve(numPointsPerLoop * 3);

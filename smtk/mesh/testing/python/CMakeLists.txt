@@ -3,6 +3,7 @@
 # tests that require SMTK_DATA_DIR
 set(smtkMeshPythonDataTests
   extractTessellation
+  cellField
   simple
 )
 

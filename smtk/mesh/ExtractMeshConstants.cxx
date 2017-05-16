@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/mesh/ExtractField.h"
+#include "smtk/mesh/ExtractMeshConstants.h"
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/ExtractTessellation.h"
 #include "smtk/mesh/Manager.h"
@@ -32,7 +32,7 @@ namespace smtk
 namespace mesh
 {
 
-void PreAllocatedField::determineAllocationLengths(
+void PreAllocatedMeshConstants::determineAllocationLengths(
   const smtk::mesh::MeshSet& ms, std::int64_t& numberOfCells, std::int64_t& numberOfPoints)
 {
   std::int64_t connectivityLength;
@@ -40,64 +40,65 @@ void PreAllocatedField::determineAllocationLengths(
     ms.cells(), connectivityLength, numberOfCells, numberOfPoints);
 }
 
-PreAllocatedField::PreAllocatedField(std::int64_t* cellField, std::int64_t* pointField)
-  : m_cellField(cellField)
-  , m_pointField(pointField)
+PreAllocatedMeshConstants::PreAllocatedMeshConstants(
+  std::int64_t* cellMeshConstants, std::int64_t* pointMeshConstants)
+  : m_cellMeshConstants(cellMeshConstants)
+  , m_pointMeshConstants(pointMeshConstants)
 {
 }
 
 template <typename QueryTag>
-void Field::extract(const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps)
+void MeshConstants::extract(const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps)
 {
   //determine the lengths
   std::int64_t numberOfCells = -1;
   std::int64_t numberOfPoints = -1;
 
-  PreAllocatedField::determineAllocationLengths(ms, numberOfCells, numberOfPoints);
+  PreAllocatedMeshConstants::determineAllocationLengths(ms, numberOfCells, numberOfPoints);
   this->m_cellData.resize(numberOfCells);
   //since the input PointSet can contain more points that the computed number,
   //set numberOfPoints to the PointSet size.
   numberOfPoints = ps.size();
   this->m_pointData.resize(numberOfPoints);
 
-  smtk::mesh::PreAllocatedField field(&this->m_cellData[0], &this->m_pointData[0]);
+  smtk::mesh::PreAllocatedMeshConstants field(&this->m_cellData[0], &this->m_pointData[0]);
 
-  extractField<QueryTag>(ms, ps, field);
+  extractMeshConstants<QueryTag>(ms, ps, field);
 }
 
-template void Field::extract<smtk::mesh::Dirichlet>(
+template void MeshConstants::extract<smtk::mesh::Dirichlet>(
   const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps);
-template void Field::extract<smtk::mesh::Neumann>(
+template void MeshConstants::extract<smtk::mesh::Neumann>(
   const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps);
-template void Field::extract<smtk::mesh::Domain>(
+template void MeshConstants::extract<smtk::mesh::Domain>(
   const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps);
 
-void Field::extractDirichlet(const smtk::mesh::MeshSet& ms)
+void MeshConstants::extractDirichlet(const smtk::mesh::MeshSet& ms)
 {
   this->extract<smtk::mesh::Dirichlet>(ms, ms.points());
 }
 
-void Field::extractNeumann(const smtk::mesh::MeshSet& ms)
+void MeshConstants::extractNeumann(const smtk::mesh::MeshSet& ms)
 {
   this->extract<smtk::mesh::Neumann>(ms, ms.points());
 }
 
-void Field::extractDomain(const smtk::mesh::MeshSet& ms)
+void MeshConstants::extractDomain(const smtk::mesh::MeshSet& ms)
 {
   this->extract<smtk::mesh::Domain>(ms, ms.points());
 }
 
-void Field::extractDirichlet(const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps)
+void MeshConstants::extractDirichlet(const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps)
 {
   this->extract<smtk::mesh::Dirichlet>(ms, ps);
 }
 
-void Field::extractNeumann(const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps)
+void MeshConstants::extractNeumann(const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps)
 {
   this->extract<smtk::mesh::Neumann>(ms, ps);
 }
 
-void Field::extractDomain(const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps)
+void MeshConstants::extractDomain(const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps)
 {
   this->extract<smtk::mesh::Domain>(ms, ps);
 }
@@ -139,8 +140,8 @@ struct TaggedRangeForQuery
 }
 
 template <typename QueryTag>
-void extractField(
-  const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps, PreAllocatedField& field)
+void extractMeshConstants(
+  const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps, PreAllocatedMeshConstants& field)
 {
   // We need to preserve the internal ordering of the cells and points in
   // MeshSet <ms>. So, we first separate <ms> into discrete submeshes for each
@@ -255,8 +256,8 @@ void extractField(
   for (auto&& range : cellRanges)
   {
     std::size_t span = range.m_range.second - range.m_range.first + 1;
-    std::fill(&field.m_cellField[cellRangeStart], &field.m_cellField[cellRangeStart] + span,
-      range.m_tag.value());
+    std::fill(&field.m_cellMeshConstants[cellRangeStart],
+      &field.m_cellMeshConstants[cellRangeStart] + span, range.m_tag.value());
     cellRangeStart += span;
   }
 
@@ -264,50 +265,50 @@ void extractField(
   for (auto&& range : pointRanges)
   {
     std::size_t span = range.m_range.second - range.m_range.first + 1;
-    std::fill(&field.m_pointField[pointRangeStart], &field.m_pointField[pointRangeStart] + span,
-      range.m_tag.value());
+    std::fill(&field.m_pointMeshConstants[pointRangeStart],
+      &field.m_pointMeshConstants[pointRangeStart] + span, range.m_tag.value());
     pointRangeStart += span;
   }
 }
 
-template void extractField<smtk::mesh::Dirichlet>(
-  const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedField&);
-template void extractField<smtk::mesh::Neumann>(
-  const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedField&);
-template void extractField<smtk::mesh::Domain>(
-  const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedField&);
+template void extractMeshConstants<smtk::mesh::Dirichlet>(
+  const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedMeshConstants&);
+template void extractMeshConstants<smtk::mesh::Neumann>(
+  const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedMeshConstants&);
+template void extractMeshConstants<smtk::mesh::Domain>(
+  const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedMeshConstants&);
 
-void extractDirichletField(const smtk::mesh::MeshSet& ms, PreAllocatedField& field)
+void extractDirichletMeshConstants(const smtk::mesh::MeshSet& ms, PreAllocatedMeshConstants& field)
 {
-  extractField<smtk::mesh::Dirichlet>(ms, ms.points(), field);
+  extractMeshConstants<smtk::mesh::Dirichlet>(ms, ms.points(), field);
 }
 
-void extractNeumannField(const smtk::mesh::MeshSet& ms, PreAllocatedField& field)
+void extractNeumannMeshConstants(const smtk::mesh::MeshSet& ms, PreAllocatedMeshConstants& field)
 {
-  extractField<smtk::mesh::Neumann>(ms, ms.points(), field);
+  extractMeshConstants<smtk::mesh::Neumann>(ms, ms.points(), field);
 }
 
-void extractDomainField(const smtk::mesh::MeshSet& ms, PreAllocatedField& field)
+void extractDomainMeshConstants(const smtk::mesh::MeshSet& ms, PreAllocatedMeshConstants& field)
 {
-  extractField<smtk::mesh::Domain>(ms, ms.points(), field);
+  extractMeshConstants<smtk::mesh::Domain>(ms, ms.points(), field);
 }
 
-void extractDirichletField(
-  const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps, PreAllocatedField& field)
+void extractDirichletMeshConstants(
+  const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps, PreAllocatedMeshConstants& field)
 {
-  extractField<smtk::mesh::Dirichlet>(ms, ps, field);
+  extractMeshConstants<smtk::mesh::Dirichlet>(ms, ps, field);
 }
 
-void extractNeumannField(
-  const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps, PreAllocatedField& field)
+void extractNeumannMeshConstants(
+  const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps, PreAllocatedMeshConstants& field)
 {
-  extractField<smtk::mesh::Neumann>(ms, ps, field);
+  extractMeshConstants<smtk::mesh::Neumann>(ms, ps, field);
 }
 
-void extractDomainField(
-  const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps, PreAllocatedField& field)
+void extractDomainMeshConstants(
+  const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps, PreAllocatedMeshConstants& field)
 {
-  extractField<smtk::mesh::Domain>(ms, ps, field);
+  extractMeshConstants<smtk::mesh::Domain>(ms, ps, field);
 }
 }
 }

@@ -139,6 +139,44 @@ public:
   }
 };
 
+class SMTKCORE_EXPORT CellFieldTag
+{
+public:
+  explicit CellFieldTag(const std::string& name)
+    : m_name(name)
+  {
+  }
+
+  //custom operators to make comparing tags easy
+  bool operator<(const CellFieldTag& other) const { return this->m_name < other.m_name; }
+  bool operator==(const CellFieldTag& other) const { return this->m_name == other.m_name; }
+  bool operator!=(const CellFieldTag& other) const { return this->m_name != other.m_name; }
+
+  std::string name() const { return this->m_name; }
+
+private:
+  std::string m_name;
+};
+
+class SMTKCORE_EXPORT PointFieldTag
+{
+public:
+  explicit PointFieldTag(const std::string& name)
+    : m_name(name)
+  {
+  }
+
+  //custom operators to make comparing tags easy
+  bool operator<(const PointFieldTag& other) const { return this->m_name < other.m_name; }
+  bool operator==(const PointFieldTag& other) const { return this->m_name == other.m_name; }
+  bool operator!=(const PointFieldTag& other) const { return this->m_name != other.m_name; }
+
+  std::string name() const { return this->m_name; }
+
+private:
+  std::string m_name;
+};
+
 enum ContainmentType
 {
   PartiallyContained = 1,

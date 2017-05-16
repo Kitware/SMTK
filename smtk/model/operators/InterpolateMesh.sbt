@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the "interpolate mesh elevation" Operator -->
+<!-- Description of the "interpolate mesh" Operator -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="interpolate mesh elevation" Label="Mesh - Interpolate Elevation" BaseType="operator">
+    <AttDef Type="interpolate mesh"
+            Label="Mesh - Interpolate" BaseType="operator">
       <ItemDefinitions>
         <MeshEntity Name="mesh" NumberOfRequiredValues="1" Extensible="true" >
           <BriefDescription>The mesh to elevate.</BriefDescription>
         </MeshEntity>
+
+        <String Name="dsname" NumberOfRequiredValues="1">
+          <BriefDescription>The name of the data set.</BriefDescription>
+        </String>
+
+        <Int Name="interpmode" Label="Output Field Type" NumberOfRequiredValues="1" Extensible="false">
+          <DiscreteInfo DefaultIndex="0">
+            <Value Enum="Cell Fields">0</Value>
+            <Value Enum="Point Fields">1</Value>
+          </DiscreteInfo>
+        </Int>
 
         <Group Name="points" Label="Interpolation Points"
                Extensible="true" NumberOfRequiredGroups="1" >
@@ -17,10 +29,11 @@
             and their associated scalar value.
           </DetailedDescription>
           <ItemDefinitions>
-            <Double Name="point" Label="Point" NumberOfRequiredValues="3">
+            <Double Name="point" Label="Point" NumberOfRequiredValues="4">
               <ComponentLabels>
                 <Label>X</Label>
                 <Label>Y</Label>
+                <Label>Z</Label>
                 <Label>Scalar</Label>
               </ComponentLabels>
             </Double>
@@ -42,7 +55,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
-    <AttDef Type="result(interpolate mesh elevation)" BaseType="result">
+    <AttDef Type="result(interpolate mesh)" BaseType="result">
       <ItemDefinitions>
         <MeshEntity Name="mesh_modified" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>
         <ModelEntity Name="tess_changed" NumberOfRequiredValues="0"

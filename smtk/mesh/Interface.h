@@ -420,6 +420,64 @@ public:
 
   virtual smtk::common::UUID rootAssociation() const = 0;
 
+  virtual bool createCellField(const smtk::mesh::HandleRange& meshsets, const std::string& name,
+    std::size_t dimension, const double* data) = 0;
+
+  virtual int getCellFieldDimension(const smtk::mesh::CellFieldTag& cfTag) const = 0;
+
+  virtual smtk::mesh::HandleRange getMeshsets(
+    smtk::mesh::Handle handle, const smtk::mesh::CellFieldTag& cfTag) const = 0;
+
+  virtual bool hasCellField(
+    const smtk::mesh::HandleRange& meshsets, const smtk::mesh::CellFieldTag& cfTag) const = 0;
+
+  virtual bool getCellField(const smtk::mesh::HandleRange& meshsets,
+    const smtk::mesh::CellFieldTag& cfTag, double* data) const = 0;
+
+  virtual bool setCellField(const smtk::mesh::HandleRange& meshsets,
+    const smtk::mesh::CellFieldTag& cfTag, const double* const data) = 0;
+
+  virtual bool getField(const smtk::mesh::HandleRange& cells, const smtk::mesh::CellFieldTag& cfTag,
+    double* data) const = 0;
+
+  virtual bool setField(const smtk::mesh::HandleRange& cells, const smtk::mesh::CellFieldTag& cfTag,
+    const double* const data) = 0;
+
+  virtual std::set<smtk::mesh::CellFieldTag> computeCellFieldTags(
+    const smtk::mesh::Handle& handle) const = 0;
+
+  virtual bool deleteCellField(
+    const smtk::mesh::CellFieldTag& dsTag, const smtk::mesh::HandleRange& meshsets) = 0;
+
+  virtual bool createPointField(const smtk::mesh::HandleRange& meshsets, const std::string& name,
+    std::size_t dimension, const double* data) = 0;
+
+  virtual int getPointFieldDimension(const smtk::mesh::PointFieldTag& pfTag) const = 0;
+
+  virtual smtk::mesh::HandleRange getMeshsets(
+    smtk::mesh::Handle handle, const smtk::mesh::PointFieldTag& pfTag) const = 0;
+
+  virtual bool hasPointField(
+    const smtk::mesh::HandleRange& meshsets, const smtk::mesh::PointFieldTag& pfTag) const = 0;
+
+  virtual bool getPointField(const smtk::mesh::HandleRange& meshsets,
+    const smtk::mesh::PointFieldTag& pfTag, double* data) const = 0;
+
+  virtual bool setPointField(const smtk::mesh::HandleRange& meshsets,
+    const smtk::mesh::PointFieldTag& pfTag, const double* const data) = 0;
+
+  virtual bool getField(const smtk::mesh::HandleRange& points,
+    const smtk::mesh::PointFieldTag& pfTag, double* data) const = 0;
+
+  virtual bool setField(const smtk::mesh::HandleRange& points,
+    const smtk::mesh::PointFieldTag& pfTag, const double* const data) = 0;
+
+  virtual std::set<smtk::mesh::PointFieldTag> computePointFieldTags(
+    const smtk::mesh::Handle& handle) const = 0;
+
+  virtual bool deletePointField(
+    const smtk::mesh::PointFieldTag& dsTag, const smtk::mesh::HandleRange& meshsets) = 0;
+
   virtual smtk::mesh::HandleRange rangeIntersect(
     const smtk::mesh::HandleRange& a, const smtk::mesh::HandleRange& b) const = 0;
 

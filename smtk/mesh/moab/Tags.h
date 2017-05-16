@@ -217,6 +217,64 @@ public:
   }
 };
 
+class QueryBitTag
+{
+  ::moab::Interface* m_iface;
+  ::moab::TagInfo* m_tag;
+  std::string m_tag_name;
+
+public:
+  QueryBitTag(const char* name, ::moab::Interface* iface)
+  {
+    this->m_iface = iface;
+    this->m_tag_name = std::string(name);
+
+    //populate our tag
+    ::moab::Tag moab_tag;
+    this->m_iface->tag_get_handle(this->m_tag_name.c_str(), 1, ::moab::MB_TYPE_BIT, moab_tag,
+      ::moab::MB_TAG_BYTES | ::moab::MB_TAG_CREAT | ::moab::MB_TAG_SPARSE);
+
+    this->m_tag = moab_tag;
+  }
+
+  ::moab::TagInfo* moabTag() { return this->m_tag; }
+
+  ::moab::TagInfo* const* moabTagPtr() { return &this->m_tag; }
+
+  int size() const { return 1; }
+};
+
+class QueryDoubleTag
+{
+  ::moab::Interface* m_iface;
+  ::moab::TagInfo* m_tag;
+  ::moab::ErrorCode m_state;
+  std::string m_tag_name;
+  int m_size;
+
+public:
+  QueryDoubleTag(const char* name, int size, ::moab::Interface* iface)
+  {
+    this->m_iface = iface;
+    this->m_tag_name = std::string(name) + std::string("_");
+    this->m_size = size;
+
+    //populate our tag
+    ::moab::Tag moab_tag;
+    this->m_state = this->m_iface->tag_get_handle(this->m_tag_name.c_str(), this->m_size,
+      ::moab::MB_TYPE_DOUBLE, moab_tag, ::moab::MB_TAG_CREAT | ::moab::MB_TAG_DENSE);
+    this->m_tag = moab_tag;
+  }
+
+  ::moab::TagInfo* moabTag() { return this->m_tag; }
+
+  ::moab::TagInfo* const* moabTagPtr() { return &this->m_tag; }
+
+  ::moab::ErrorCode state() { return this->m_state; }
+
+  int size() const { return this->m_size; }
+};
+
 } // namespace tag
 } // namespace moab
 } // namespace mesh

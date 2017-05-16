@@ -1,16 +1,18 @@
 # set up sources to build
 set(meshSrcs
   CellSet.cxx
+  CellField.cxx
   CellTypes.cxx
   Collection.cxx
   Displace.cxx
-  ExtractField.cxx
+  ExtractMeshConstants.cxx
   ExtractTessellation.cxx
   ForEachTypes.cxx
   Handle.cxx
   Manager.cxx
   MeshSet.cxx
   PointConnectivity.cxx
+  PointField.cxx
   PointLocator.cxx
   PointSet.cxx
   QueryTypes.cxx
@@ -35,12 +37,13 @@ set(meshSrcs
 
 set(meshHeaders
   CellSet.h
+  CellField.h
   CellTraits.h
   CellTypes.h
   Collection.h
   DimensionTypes.h
   Displace.h
-  ExtractField.h
+  ExtractMeshConstants.h
   ExtractTessellation.h
   ForEachTypes.h
   Handle.h
@@ -48,6 +51,7 @@ set(meshHeaders
   Manager.h
   MeshSet.h
   PointConnectivity.h
+  PointField.h
   PointSet.h
   PropertyData.h
   QueryTypes.h
