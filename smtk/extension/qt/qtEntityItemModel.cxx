@@ -381,9 +381,9 @@ QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
         }
 
         if (visible)
-          return QVariant(QIcon(":/icons/display/eyeball_16.png"));
+          return QVariant(QIcon(":/icons/display/eyeball.png"));
         else
-          return QVariant(QIcon(":/icons/display/eyeballx_16.png"));
+          return QVariant(QIcon(":/icons/display/eyeballClosed.png"));
       }
       else if (role == EntityColorRole &&
         (item->phraseType() == MESH_SUMMARY || item->relatedEntity().isValid() ||

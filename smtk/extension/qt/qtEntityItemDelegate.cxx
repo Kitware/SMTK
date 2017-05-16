@@ -172,7 +172,9 @@ void QEntityItemDelegate::paint(
   QSize visiconsize = visicon.actualSize(option.decorationSize);
 
   colorRect.setLeft(colorRect.left() + visiconsize.width() + 2);
-  colorRect.setRight(colorRect.left() + this->m_swatchSize);
+  colorRect.setRight(colorRect.left() + this->m_swatchSize - 1);
+  //  colorRect.setTop(colorRect.top() + 1);
+  colorRect.setTop(colorRect.top() + 2);
   int swdelta = (colorRect.height() - this->m_swatchSize) / 2;
   swdelta = (swdelta < 0 ? 0 : swdelta);
   colorRect.adjust(0, swdelta, 0, -swdelta);
