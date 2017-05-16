@@ -51,6 +51,15 @@ smtk::model::OperatorResult CloseModel::operateInternal()
   bool success = true;
   for (EntityRefArray::const_iterator mit = modelItem->begin(); mit != modelItem->end(); ++mit)
   {
+    // Auxiliary geometry must be added to the "expunged" attribute so it can be properly closed on
+    // the client side. It must be added before we erase the model, or else the auxiliary geometries
+    // will not be accessible via the model.
+    AuxiliaryGeometries auxs = mit->as<smtk::model::Model>().auxiliaryGeometry();
+    for (AuxiliaryGeometries::iterator ait = auxs.begin(); ait != auxs.end(); ++ait)
+    {
+      expunged.push_back(*ait);
+    }
+
     if (!this->manager()->eraseModel(*mit))
     {
       success = false;
