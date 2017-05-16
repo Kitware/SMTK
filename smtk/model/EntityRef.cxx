@@ -294,12 +294,12 @@ bool EntityRef::hasVisibility() const
 
 /** Report the visibility associated with this entity.
   *
-  * If there is no "visible" property set,return false
+  * If there is no "visible" property set,return true
   */
 bool EntityRef::visible() const
 {
   if (!this->hasVisibility())
-    return false;
+    return true;
 
   const IntegerList& prop(this->integerProperty("visible"));
   return (!prop.empty() && (prop[0] != 0));

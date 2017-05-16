@@ -1299,22 +1299,13 @@ void qtModelView::toggleEntityVisibility(const QModelIndex& idx)
     for (it = lphrase->relatedEntities().begin();
          it != lphrase->relatedEntities().end() && !hasVisibleChild; ++it)
     {
-      if (it->hasVisibility())
-      {
-        const IntegerList& prop(it->integerProperty("visible"));
-        if (!prop.empty() && prop[0] != 0)
-          hasVisibleChild = true;
-      }
-      else // default is visible
-        hasVisibleChild = true;
+      hasVisibleChild = it->visible();
     }
     visible = hasVisibleChild;
   }
-  else if (dp->relatedEntity().hasVisibility())
+  else
   {
-    const IntegerList& prop(dp->relatedEntity().integerProperty("visible"));
-    if (!prop.empty())
-      visible = (prop[0] != 0);
+    visible = dp->relatedEntity().visible();
   }
 
   int newVis = visible ? 0 : 1;

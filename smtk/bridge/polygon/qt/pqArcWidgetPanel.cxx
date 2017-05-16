@@ -279,7 +279,6 @@ void pqArcWidgetPanel::showPickWidget()
 
 void pqArcWidgetPanel::pickWholeArc()
 {
-  emit hideAllFaces(true);
   if (this->Internals->SelectArcButton->isChecked())
   {
     // The edge operator will tell which edge to use for editing
@@ -292,6 +291,8 @@ void pqArcWidgetPanel::pickWholeArc()
     this->Picker.doPick(this->View, this->Arc, this->ArcInfo);
     // clear all selections
     emit this->startArcPicking();
+    // hide faces so you can pick arc properly
+    emit hideAllFaces(true);
   }
   else
   {
