@@ -64,7 +64,7 @@ public:
   vtkSetStringMacro(ModelEntityID);
   vtkGetStringMacro(ModelEntityID);
 
-  void GetUUID2BlockIdMap(std::map<smtk::common::UUID, unsigned int>& uuid2mid);
+  void GetUUID2BlockIdMap(std::map<smtk::common::UUID, vtkIdType>& uuid2mid);
   void Dirty();
 
   vtkGetVector4Macro(DefaultColor, double);
@@ -131,7 +131,7 @@ protected:
   int AllowNormalGeneration;
   int ShowAnalysisTessellation;
   vtkNew<vtkPolyDataNormals> NormalGenerator;
-  std::map<smtk::common::UUID, unsigned int> UUID2BlockIdMap; // UUIDs to block index map
+  std::map<smtk::common::UUID, vtkIdType> UUID2BlockIdMap; // UUIDs to block index map
 
   static smtk::common::UUIDGenerator UUIDGenerator;
 

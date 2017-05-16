@@ -56,7 +56,7 @@ public:
   vtkSetStringMacro(MeshCollectionID);
   vtkGetStringMacro(MeshCollectionID);
 
-  void GetMeshSet2BlockIdMap(std::map<smtk::mesh::MeshSet, unsigned int>& mesh2block);
+  void GetMeshSet2BlockIdMap(std::map<smtk::mesh::MeshSet, vtkIdType>& mesh2block);
   void Dirty();
 
   vtkGetMacro(AllowNormalGeneration, int);
@@ -86,7 +86,7 @@ protected:
 
   smtk::model::ManagerPtr m_modelMgr;
   smtk::mesh::ManagerPtr m_meshMgr;
-  std::map<smtk::mesh::MeshSet, unsigned int> m_Meshset2BlockIdMap; // MeshSets to block index map
+  std::map<smtk::mesh::MeshSet, vtkIdType> m_Meshset2BlockIdMap; // MeshSets to block index map
   vtkNew<vtkPolyDataNormals> m_normalGenerator;
 
   vtkMultiBlockDataSet* CachedOutput;
