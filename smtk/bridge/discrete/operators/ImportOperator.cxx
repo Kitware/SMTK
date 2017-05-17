@@ -310,7 +310,7 @@ OperatorResult ImportOperator::operateInternal()
     {
       if (c->name().empty())
       {
-        c->name("original_mesh");
+        c->name(vtksys::SystemTools::GetFilenameWithoutExtension(filename));
       }
       result->findModelEntity("mesh_created")->setValue(modelEntity);
     }
