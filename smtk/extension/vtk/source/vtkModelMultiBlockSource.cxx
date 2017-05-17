@@ -881,6 +881,14 @@ int vtkModelMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
 
 void vtkModelMultiBlockSource::AddPointsAsAttribute(vtkPolyData* data)
 {
+  // If a data read prior to this call failed, the data passed to this method
+  // may be incomplete. So, we guard against bad data to prevent the subsequent
+  // logic from causing the program to crash.
+  if (data == nullptr || data->GetNumberOfPoints() == 0)
+  {
+    return;
+  }
+
   vtkNew<vtkDoubleArray> pointCoords;
   pointCoords->ShallowCopy(data->GetPoints()->GetData());
   pointCoords->SetName("PointCoordinates");
