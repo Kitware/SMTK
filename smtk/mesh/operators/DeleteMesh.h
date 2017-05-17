@@ -7,23 +7,21 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_ExportMesh_h
-#define __smtk_model_ExportMesh_h
+#ifndef __smtk_mesh_DeleteMesh_h
+#define __smtk_mesh_DeleteMesh_h
 
 #include "smtk/model/Operator.h"
 
 namespace smtk
 {
-namespace model
+namespace mesh
 {
 
-/**\brief A class for writing meshes to file.
-  */
-class SMTKCORE_EXPORT ExportMesh : public Operator
+class SMTKCORE_EXPORT DeleteMesh : public smtk::model::Operator
 {
 public:
-  smtkTypeMacro(ExportMesh);
-  smtkCreateMacro(ExportMesh);
+  smtkTypeMacro(DeleteMesh);
+  smtkCreateMacro(DeleteMesh);
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
@@ -33,7 +31,7 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
 };
 
-} // model namespace
-} // smtk namespace
+} //namespace mesh
+} // namespace smtk
 
-#endif // __smtk_model_ExportMesh_h
+#endif // __smtk_mesh_DeleteMesh_h

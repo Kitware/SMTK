@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/model/operators/WriteMesh.h"
+#include "smtk/mesh/operators/WriteMesh.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
@@ -49,7 +49,7 @@ void cleanup(const std::string& file_path)
 
 namespace smtk
 {
-namespace model
+namespace mesh
 {
 
 bool WriteMesh::ableToOperate()
@@ -109,13 +109,13 @@ smtk::model::OperatorResult WriteMesh::operateInternal()
       {
         cleanup(file);
       }
-      return this->createResult(OPERATION_FAILED);
+      return this->createResult(smtk::model::OPERATION_FAILED);
     }
   }
 
   // We mark the written meshes as "modified" so that the containing collection's URL can
   // be properly updated.
-  OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
   smtk::attribute::MeshItem::Ptr modifiedMeshes = result->findMesh("mesh_modified");
   for (auto& mesh : written)
   {
@@ -127,7 +127,7 @@ smtk::model::OperatorResult WriteMesh::operateInternal()
 }
 }
 
-#include "smtk/model/WriteMesh_xml.h"
+#include "smtk/mesh/WriteMesh_xml.h"
 
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::model::WriteMesh, write_mesh, "write mesh",
+smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::mesh::WriteMesh, write_mesh, "write mesh",
   WriteMesh_xml, smtk::model::Session);

@@ -33,6 +33,11 @@ set(meshSrcs
   moab/PointLocatorImpl.cxx
   moab/Readers.cxx
   moab/Writers.cxx
+
+  operators/DeleteMesh.cxx
+  operators/ExportMesh.cxx
+  operators/InterpolateMesh.cxx
+  operators/WriteMesh.cxx
   )
 
 set(meshHeaders
@@ -64,7 +69,17 @@ set(meshHeaders
   json/MeshInfo.h
   moab/Interface.h
   moab/HandleRange.h
+
+  operators/DeleteMesh.h
+  operators/ExportMesh.h
+  operators/InterpolateMesh.h
+  operators/WriteMesh.h
   )
+
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/DeleteMesh.sbt" defOpXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportMesh.sbt" defOpXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/InterpolateMesh.sbt" defOpXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteMesh.sbt" defOpXML)
 
 #install the headers
 smtk_public_headers(${meshHeaders})

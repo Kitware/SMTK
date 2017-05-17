@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="write mesh" BaseType="operator">
+    <AttDef Type="write mesh" BaseType="operator" Label="Mesh - Write">
       <ItemDefinitions>
         <MeshEntity Name="mesh" NumberOfRequiredValues="1" Extensible="true" />
         <File Name="filename" NumberOfRequiredValues="1" ShouldExist="false"
