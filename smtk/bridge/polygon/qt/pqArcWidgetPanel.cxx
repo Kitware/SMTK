@@ -128,53 +128,52 @@ void ArcPicker::selectedInfo(pqOutputPort* port)
 
   if (port && this->Arc->edgeOperator())
   {
-    // get the selected point id
     // This "IDs" only have three components [composite_index, processId, Index]
-    // because the arc source is a block in a Composite Dataset
+    // where composit_index is blockId and index is cellId
+    // Arc source is a block in a Composite Dataset
     vtkSMSourceProxy* selSource = port->getSelectionInput();
-    // [composite_index, process_id, index]
     vtkSMPropertyHelper selIDs(selSource, "IDs");
-    unsigned int count = selIDs.GetNumberOfElements();
-    if (count > 2)
+    std::vector<vtkIdType> ids = selIDs.GetArray<vtkIdType>();
+
+    if (ids.size() > 2 && (ids.size() % 3 == 0)) // a valid selection
     {
-      // get first selected point
-      vtkIdType flatIdx = selIDs.GetAsInt(0);
+      // get first selected edge
       vtkNew<vtkPolygonArcInfo> arcInfo;
       //collect the information from the server model source
       vtkSMProxy* proxy = port->getSource()->getProxy();
-      arcInfo->SetBlockIndex(flatIdx - 1);
-      proxy->GatherInformation(arcInfo.GetPointer());
-      if (arcInfo->GetModelEntityID())
+      smtk::model::Edge edge;
+      vtkIdType flatIdx(-1);
+      smtk::common::UUID edgeId;
+
+      // get the first selected edge's blockId
+      for (size_t index = 0; index <= ids.size(); index++)
       {
-        smtk::common::UUID edgeId(arcInfo->GetModelEntityID());
-        smtk::model::Edge edge(this->Arc->edgeOperator()->manager(), edgeId);
-        if (edge.isValid())
+        // we only care about blockId
+        flatIdx = ids[index * 3];
+        //TODO: why minus 1 here?
+        arcInfo->SetBlockIndex(flatIdx - 1);
+        proxy->GatherInformation(arcInfo.GetPointer());
+        if (arcInfo->GetModelEntityID())
         {
-          this->Info->EdgeId = edgeId;
-          this->Info->BlockIndex = flatIdx - 1;
-          this->Arc->setSource(port->getSource());
-          // once find the edge needed, turn off the selection for model source
-          port->setSelectionInput(NULL, 0);
-          this->View->render();
+          edgeId = smtk::common::UUID(arcInfo->GetModelEntityID());
+          edge = smtk::model::Edge(this->Arc->edgeOperator()->manager(), edgeId);
+          if (edge.isValid())
+          {
+            break;
+          }
         }
       }
-    }
-    /*
-    // get the selected point id
-    // This "IDs" only have three components [composite_index, processId, Index]
-    // because the arc source is a block in a Composite Dataset
-    vtkSMSourceProxy* selSource = port->getSelectionInput();
-    // [composite_index, process_id, index]
-    vtkSMPropertyHelper selIDs(selSource, "IDs");
-    unsigned int count = selIDs.GetNumberOfElements();
-    if(count > 2)
+
+      if (flatIdx != -1)
       {
-      // get first selected point
-      this->Info->BlockIndex = selIDs.GetAsInt(0);
-      this->Info->PointId = selIDs.GetAsInt(2);
-      this->Info->IsValid = true;
+        this->Info->EdgeId = edgeId;
+        this->Info->BlockIndex = flatIdx - 1;
+        this->Arc->setSource(port->getSource());
+        // once find the edge needed, turn off the selection for model source
+        port->setSelectionInput(NULL, 0);
+        this->View->render();
       }
-*/
+    }
   }
 }
 
@@ -291,8 +290,6 @@ void pqArcWidgetPanel::pickWholeArc()
     this->Picker.doPick(this->View, this->Arc, this->ArcInfo);
     // clear all selections
     emit this->startArcPicking();
-    // hide faces so you can pick arc properly
-    emit hideAllFaces(true);
   }
   else
   {
@@ -303,7 +300,6 @@ void pqArcWidgetPanel::pickWholeArc()
 
 void pqArcWidgetPanel::arcPicked()
 {
-  emit hideAllFaces(false);
   if (this->Arc && this->Arc->edgeOperator())
   {
     smtk::model::Edge edge(this->Arc->edgeOperator()->manager(), this->ArcInfo.EdgeId);
@@ -452,7 +448,6 @@ void pqArcWidgetPanel::arcEditingFinished()
 
 void pqArcWidgetPanel::cancelEdit()
 {
-  emit hideAllFaces(false); // restore face visibility
   //marks that that we don't want to save the modifications
   //to the arc
   this->hideArcWidget();

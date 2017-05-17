@@ -148,8 +148,6 @@ int pqArcWidgetManager::edit()
       this->EditWidget, SIGNAL(arcModificationfinished()), this, SLOT(editingFinished()));
     QObject::connect(this->EditWidget, SIGNAL(startArcEditing()), this, SIGNAL(editingStarted()));
     QObject::connect(this->EditWidget, SIGNAL(startArcPicking()), this, SIGNAL(startPicking()));
-    QObject::connect(
-      this->EditWidget, SIGNAL(hideAllFaces(bool)), this, SIGNAL(arcPickChanged(bool)));
   }
 
   pqPolygonArc* arcObj = this->Arc;
