@@ -1062,7 +1062,7 @@ bool Interface::createCellField(const smtk::mesh::HandleRange& meshsets, const s
     // We successfully constructed the data set associated with the cells. Now we mark the meshset
     // as having the associated dataset. For this, we use a bit tag to simply denote the dataset's
     // existence.
-    tag::QueryBitTag btag(name.c_str(), this->moabInterface());
+    tag::QueryCellFieldTag btag(name.c_str(), this->moabInterface());
     bool* boolean_tag_values = new bool[meshsets.size()];
     memset(boolean_tag_values, true, meshsets.size());
     rval = m_iface->tag_set_data(btag.moabTag(), meshsets, boolean_tag_values);
@@ -1099,7 +1099,8 @@ smtk::mesh::HandleRange Interface::getMeshsets(
 {
   // First access the tag associated with <name>
   ::moab::Tag tag;
-  ::moab::ErrorCode rval = m_iface->tag_get_handle(cfTag.name().c_str(), tag);
+  std::string name = std::string("c_") + cfTag.name();
+  ::moab::ErrorCode rval = m_iface->tag_get_handle(name.c_str(), tag);
   if (rval != ::moab::MB_SUCCESS)
   {
     return smtk::mesh::HandleRange();
@@ -1125,7 +1126,8 @@ bool Interface::hasCellField(
   }
 
   ::moab::Tag moab_tag;
-  ::moab::ErrorCode rval = m_iface->tag_get_handle(cfTag.name().c_str(), moab_tag);
+  std::string name = std::string("c_") + cfTag.name();
+  ::moab::ErrorCode rval = m_iface->tag_get_handle(name.c_str(), moab_tag);
   if (rval != ::moab::MB_SUCCESS)
   {
     return false;
@@ -1235,7 +1237,7 @@ std::set<smtk::mesh::CellFieldTag> Interface::computeCellFieldTags(
       {
         std::string name;
         m_iface->tag_get_name(tag, name);
-        cellFieldTags.insert(smtk::mesh::CellFieldTag(name));
+        cellFieldTags.insert(smtk::mesh::CellFieldTag(name.substr(2)));
       }
     }
   }
@@ -1276,7 +1278,8 @@ bool Interface::deleteCellField(
 
   // Access the tag associated with the meshsets
   ::moab::Tag tag;
-  rval = m_iface->tag_get_handle(cfTag.name().c_str(), tag);
+  std::string name = std::string("c_") + cfTag.name();
+  rval = m_iface->tag_get_handle(name.c_str(), tag);
   if (rval != ::moab::MB_SUCCESS)
   {
     return false;
@@ -1326,7 +1329,7 @@ bool Interface::createPointField(const smtk::mesh::HandleRange& meshsets, const 
     // We successfully constructed the data set associated with the points. Now we mark the meshset
     // as having the associated dataset. For this, we use a bit tag to simply denote the dataset's
     // existence.
-    tag::QueryBitTag btag(name.c_str(), this->moabInterface());
+    tag::QueryPointFieldTag btag(name.c_str(), this->moabInterface());
     bool* boolean_tag_values = new bool[meshsets.size()];
     memset(boolean_tag_values, true, meshsets.size());
     rval = m_iface->tag_set_data(btag.moabTag(), meshsets, boolean_tag_values);
@@ -1363,7 +1366,8 @@ smtk::mesh::HandleRange Interface::getMeshsets(
 {
   // First access the tag associated with <name>
   ::moab::Tag tag;
-  ::moab::ErrorCode rval = m_iface->tag_get_handle(pfTag.name().c_str(), tag);
+  std::string name = std::string("p_") + pfTag.name();
+  ::moab::ErrorCode rval = m_iface->tag_get_handle(name.c_str(), tag);
   if (rval != ::moab::MB_SUCCESS)
   {
     return smtk::mesh::HandleRange();
@@ -1389,7 +1393,8 @@ bool Interface::hasPointField(
   }
 
   ::moab::Tag moab_tag;
-  ::moab::ErrorCode rval = m_iface->tag_get_handle(pfTag.name().c_str(), moab_tag);
+  std::string name = std::string("p_") + pfTag.name();
+  ::moab::ErrorCode rval = m_iface->tag_get_handle(name.c_str(), moab_tag);
   if (rval != ::moab::MB_SUCCESS)
   {
     return false;
@@ -1499,7 +1504,7 @@ std::set<smtk::mesh::PointFieldTag> Interface::computePointFieldTags(
       {
         std::string name;
         m_iface->tag_get_name(tag, name);
-        pointFieldTags.insert(smtk::mesh::PointFieldTag(name));
+        pointFieldTags.insert(smtk::mesh::PointFieldTag(name.substr(2)));
       }
     }
   }
@@ -1540,7 +1545,8 @@ bool Interface::deletePointField(
 
   // Access the tag associated with the meshsets
   ::moab::Tag tag;
-  rval = m_iface->tag_get_handle(pfTag.name().c_str(), tag);
+  std::string name = std::string("p_") + pfTag.name();
+  rval = m_iface->tag_get_handle(name.c_str(), tag);
   if (rval != ::moab::MB_SUCCESS)
   {
     return false;
