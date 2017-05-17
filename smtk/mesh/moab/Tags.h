@@ -244,6 +244,24 @@ public:
   int size() const { return 1; }
 };
 
+class QueryCellFieldTag : public QueryBitTag
+{
+public:
+  QueryCellFieldTag(const char* name, ::moab::Interface* iface)
+    : QueryBitTag(std::string(std::string("c_") + std::string(name)).c_str(), iface)
+  {
+  }
+};
+
+class QueryPointFieldTag : public QueryBitTag
+{
+public:
+  QueryPointFieldTag(const char* name, ::moab::Interface* iface)
+    : QueryBitTag(std::string(std::string("p_") + std::string(name)).c_str(), iface)
+  {
+  }
+};
+
 class QueryDoubleTag
 {
   ::moab::Interface* m_iface;
