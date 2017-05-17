@@ -32,6 +32,7 @@ target_include_directories(${vtk-module}
 target_link_libraries(${vtk-module}
   LINK_PUBLIC
     smtkCore
+    smtkIOVTK
   LINK_PRIVATE
     ${Boost_LIBRARIES}
 )
