@@ -45,6 +45,13 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindReclassify.h"
 #include "PybindTypeSet.h"
 
+#include "PybindDeleteMesh.h"
+#include "PybindExportMesh.h"
+#include "PybindInterpolateMesh.h"
+#include "PybindWriteMesh.h"
+
+#include "smtk/model/Operator.h"
+
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
 PYBIND11_PLUGIN(_smtkPybindMesh)
@@ -142,6 +149,11 @@ PYBIND11_PLUGIN(_smtkPybindMesh)
   PySharedPtrClass< smtk::mesh::PartiallyContainedFunctor > smtk_mesh_PartiallyContainedFunctor = pybind11_init_smtk_mesh_PartiallyContainedFunctor(mesh, smtk_mesh_ContainsFunctor);
   PySharedPtrClass< smtk::mesh::UUIDTag > smtk_mesh_UUIDTag = pybind11_init_smtk_mesh_UUIDTag(mesh, smtk_mesh_OpaqueTag_16_);
   PySharedPtrClass< smtk::mesh::Model > smtk_mesh_Model = pybind11_init_smtk_mesh_Model(mesh, smtk_mesh_UUIDTag);
+
+  PySharedPtrClass< smtk::mesh::DeleteMesh, smtk::model::Operator > smtk_mesh_DeleteMesh = pybind11_init_smtk_mesh_DeleteMesh(mesh);
+  PySharedPtrClass< smtk::mesh::ExportMesh, smtk::model::Operator > smtk_mesh_ExportMesh = pybind11_init_smtk_mesh_ExportMesh(mesh);
+  PySharedPtrClass< smtk::mesh::InterpolateMesh, smtk::model::Operator > smtk_mesh_InterpolateMesh = pybind11_init_smtk_mesh_InterpolateMesh(mesh);
+  PySharedPtrClass< smtk::mesh::WriteMesh, smtk::model::Operator > smtk_mesh_WriteMesh = pybind11_init_smtk_mesh_WriteMesh(mesh);
 
   return mesh.ptr();
 }

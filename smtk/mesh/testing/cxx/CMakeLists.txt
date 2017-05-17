@@ -66,3 +66,26 @@ smtk_unit_tests(
   SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
   LIBRARIES smtkCore smtkCoreModelTesting ${extra_libs} ${Boost_LIBRARIES}
 )
+
+add_executable(UnitTestInterpolateMesh UnitTestInterpolateMesh.cxx)
+target_compile_definitions(UnitTestInterpolateMesh PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
+target_link_libraries(UnitTestInterpolateMesh smtkCore ${Boost_LIBRARIES})
+
+if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
+  add_test(NAME UnitTestInterpolateMeshToCells
+    COMMAND $<TARGET_FILE:UnitTestInterpolateMesh>
+    "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json")
+  set_tests_properties(UnitTestInterpolateMeshToCells PROPERTIES LABELS "Mesh")
+  add_test(NAME UnitTestInterpolateMeshToPoints
+    COMMAND $<TARGET_FILE:UnitTestInterpolateMesh>
+    "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json" 0)
+  set_tests_properties(UnitTestInterpolateMeshToPoints PROPERTIES LABELS "Mesh")
+  add_test(NAME UnitTestInterpolateMeshToCellsCSV
+    COMMAND $<TARGET_FILE:UnitTestInterpolateMesh>
+    "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json" 0 1)
+  set_tests_properties(UnitTestInterpolateMeshToCellsCSV PROPERTIES LABELS "Mesh")
+  add_test(NAME UnitTestInterpolateMeshToPointsCSV
+    COMMAND $<TARGET_FILE:UnitTestInterpolateMesh>
+    "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json" 1 1)
+  set_tests_properties(UnitTestInterpolateMeshToPointsCSV PROPERTIES LABELS "Mesh")
+endif()

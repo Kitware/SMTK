@@ -78,13 +78,10 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 #include "PybindAddAuxiliaryGeometry.h"
 #include "PybindCloseModel.h"
-#include "PybindDeleteMesh.h"
-#include "PybindExportMesh.h"
 #include "PybindExportModelJSON.h"
 #include "PybindSaveSMTKModel.h"
 #include "PybindLoadSMTKModel.h"
 #include "PybindSetProperty.h"
-#include "PybindWriteMesh.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
@@ -190,13 +187,10 @@ PYBIND11_PLUGIN(_smtkPybindModel)
 
   PySharedPtrClass< smtk::model::AddAuxiliaryGeometry, smtk::model::Operator > smtk_model_AddAuxiliaryGeometry = pybind11_init_smtk_model_AddAuxiliaryGeometry(model);
   PySharedPtrClass< smtk::model::CloseModel, smtk::model::Operator > smtk_model_CloseModel = pybind11_init_smtk_model_CloseModel(model);
-  PySharedPtrClass< smtk::model::DeleteMesh, smtk::model::Operator > smtk_model_DeleteMesh = pybind11_init_smtk_model_DeleteMesh(model);
-  PySharedPtrClass< smtk::model::ExportMesh, smtk::model::Operator > smtk_model_ExportMesh = pybind11_init_smtk_model_ExportMesh(model);
   PySharedPtrClass< smtk::model::ExportModelJSON, smtk::model::Operator > smtk_model_ExportModelJSON = pybind11_init_smtk_model_ExportModelJSON(model);
   PySharedPtrClass< smtk::model::SaveSMTKModel, smtk::model::Operator > smtk_model_SaveSMTKModel = pybind11_init_smtk_model_SaveSMTKModel(model);
   PySharedPtrClass< smtk::model::LoadSMTKModel, smtk::model::Operator > smtk_model_LoadSMTKModel = pybind11_init_smtk_model_LoadSMTKModel(model);
   PySharedPtrClass< smtk::model::SetProperty, smtk::model::Operator > smtk_model_SetProperty = pybind11_init_smtk_model_SetProperty(model);
-  PySharedPtrClass< smtk::model::WriteMesh, smtk::model::Operator > smtk_model_WriteMesh = pybind11_init_smtk_model_WriteMesh(model);
 
   return model.ptr();
 }

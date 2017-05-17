@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/model/operators/InterpolateMesh.h"
+#include "smtk/mesh/operators/InterpolateMesh.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -220,7 +220,7 @@ public:
 
 namespace smtk
 {
-namespace model
+namespace mesh
 {
 
 bool InterpolateMesh::ableToOperate()
@@ -268,7 +268,7 @@ smtk::model::OperatorResult InterpolateMesh::operateInternal()
     if (!success)
     {
       smtkErrorMacro(this->log(), "Could not read CSV file.");
-      return this->createResult(OPERATION_FAILED);
+      return this->createResult(smtk::model::OPERATION_FAILED);
     }
   }
 
@@ -282,7 +282,7 @@ smtk::model::OperatorResult InterpolateMesh::operateInternal()
   }
 
   // Access the attribute associated with the modified meshes
-  OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
   smtk::attribute::MeshItem::Ptr modifiedMeshes = result->findMesh("mesh_modified");
   modifiedMeshes->setNumberOfValues(meshItem->numberOfValues());
 
@@ -328,7 +328,7 @@ smtk::model::OperatorResult InterpolateMesh::operateInternal()
 }
 }
 
-#include "smtk/model/InterpolateMesh_xml.h"
+#include "smtk/mesh/InterpolateMesh_xml.h"
 
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::model::InterpolateMesh, interpolate_mesh,
+smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::mesh::InterpolateMesh, interpolate_mesh,
   "interpolate mesh", InterpolateMesh_xml, smtk::model::Session);

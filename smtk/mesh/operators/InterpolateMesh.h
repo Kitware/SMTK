@@ -7,23 +7,23 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_WriteMesh_h
-#define __smtk_model_WriteMesh_h
+#ifndef __smtk_mesh_operators_InterpolateMesh_h
+#define __smtk_mesh_operators_InterpolateMesh_h
 
 #include "smtk/model/Operator.h"
 
 namespace smtk
 {
-namespace model
+namespace mesh
 {
 
-/**\brief A class for writing meshes to file.
+/**\brief A class for generating a mesh data set from interpolation points.
   */
-class SMTKCORE_EXPORT WriteMesh : public Operator
+class SMTKCORE_EXPORT InterpolateMesh : public smtk::model::Operator
 {
 public:
-  smtkTypeMacro(WriteMesh);
-  smtkCreateMacro(WriteMesh);
+  smtkTypeMacro(InterpolateMesh);
+  smtkCreateMacro(InterpolateMesh);
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
@@ -32,8 +32,7 @@ public:
 protected:
   virtual smtk::model::OperatorResult operateInternal();
 };
+}
+}
 
-} // model namespace
-} // smtk namespace
-
-#endif // __smtk_model_WriteMesh_h
+#endif // __smtk_mesh_operators_InterpolateMesh_h

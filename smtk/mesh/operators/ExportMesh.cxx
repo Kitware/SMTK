@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/model/operators/ExportMesh.h"
+#include "smtk/mesh/operators/ExportMesh.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
@@ -49,7 +49,7 @@ void cleanup(const std::string& file_path)
 
 namespace smtk
 {
-namespace model
+namespace mesh
 {
 
 bool ExportMesh::ableToOperate()
@@ -106,16 +106,16 @@ smtk::model::OperatorResult ExportMesh::operateInternal()
       {
         cleanup(file);
       }
-      return this->createResult(OPERATION_FAILED);
+      return this->createResult(smtk::model::OPERATION_FAILED);
     }
   }
 
-  return this->createResult(OPERATION_SUCCEEDED);
+  return this->createResult(smtk::model::OPERATION_SUCCEEDED);
 }
 }
 }
 
-#include "smtk/model/ExportMesh_xml.h"
+#include "smtk/mesh/ExportMesh_xml.h"
 
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::model::ExportMesh, export_mesh, "export mesh",
+smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::mesh::ExportMesh, export_mesh, "export mesh",
   ExportMesh_xml, smtk::model::Session);

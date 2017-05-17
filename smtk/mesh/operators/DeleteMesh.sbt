@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="delete mesh" BaseType="operator" Label="Delete - Mesh">
+    <AttDef Type="delete mesh" BaseType="operator" Label="Mesh - Delete">
       <ItemDefinitions>
         <MeshEntity Name="mesh" NumberOfRequiredValues="1" Extensible="true" />
       </ItemDefinitions>

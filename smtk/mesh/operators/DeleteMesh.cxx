@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/model/operators/DeleteMesh.h"
+#include "smtk/mesh/operators/DeleteMesh.h"
 
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
@@ -21,7 +21,7 @@
 
 namespace smtk
 {
-namespace model
+namespace mesh
 {
 
 bool DeleteMesh::ableToOperate()
@@ -57,7 +57,8 @@ smtk::model::OperatorResult DeleteMesh::operateInternal()
     }
   }
 
-  OperatorResult result = this->createResult(success ? OPERATION_SUCCEEDED : OPERATION_FAILED);
+  smtk::model::OperatorResult result =
+    this->createResult(success ? smtk::model::OPERATION_SUCCEEDED : smtk::model::OPERATION_FAILED);
 
   if (success)
   {
@@ -66,10 +67,10 @@ smtk::model::OperatorResult DeleteMesh::operateInternal()
   return result;
 }
 
-} //namespace model
+} //namespace mesh
 } // namespace smtk
 
-#include "smtk/model/DeleteMesh_xml.h"
+#include "smtk/mesh/DeleteMesh_xml.h"
 
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::model::DeleteMesh, delete_mesh, "delete mesh",
+smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::mesh::DeleteMesh, delete_mesh, "delete mesh",
   DeleteMesh_xml, smtk::model::Session);

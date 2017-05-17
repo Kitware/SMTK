@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="export mesh" BaseType="operator">
+    <AttDef Type="export mesh" BaseType="operator" Label="Mesh - Export">
       <ItemDefinitions>
         <MeshEntity Name="mesh" NumberOfRequiredValues="1" Extensible="true" />
         <File Name="filename" NumberOfRequiredValues="1" ShouldExist="false"
