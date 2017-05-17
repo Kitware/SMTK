@@ -24,8 +24,9 @@
 #include "smtk/mesh/CellSet.h"
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/DimensionTypes.h"
-#include "smtk/mesh/ExtractTessellation.h"
 #include "smtk/mesh/Manager.h"
+
+#include "smtk/extension/vtk/io/ExportVTKData.h"
 
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
@@ -181,98 +182,6 @@ static void internal_AddBlockInfo(const smtk::mesh::CollectionPtr& meshcollect,
   }
 }
 
-static void convert_smtkMesh_singleDimCells_to_vtkPolyData(
-  const smtk::mesh::CellSet& cells, vtkPoints* pts, vtkPolyData* pd)
-{
-  std::int64_t connectivityLength = -1;
-  std::int64_t numberOfCells = -1;
-  std::int64_t numberOfPoints = -1;
-
-  //query for all cells
-  smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(
-    cells, connectivityLength, numberOfCells, numberOfPoints);
-
-  //  std::vector<std::int64_t> conn( connectivityLength + numberOfCells );
-  //  std::vector<std::int64_t> locations( numberOfCells );
-  //  std::vector<unsigned char> types( numberOfCells );
-  //  std::vector<double> dpoints( numberOfPoints * 3 );
-
-  // cell connectivity
-  vtkNew<vtkCellArray> cellarray;
-
-  // points coordinates
-  pts->SetDataTypeToDouble();
-
-  if (numberOfPoints == 1)
-  {
-    double xyz[3];
-    cells.points().get(xyz);
-    pts->InsertNextPoint(xyz);
-    vtkNew<vtkIdList> ptids;
-    ptids->InsertNextId(0);
-    cellarray->InsertNextCell(ptids.GetPointer());
-    pd->SetVerts(cellarray.GetPointer());
-  }
-  else
-  {
-    pts->SetNumberOfPoints(numberOfPoints);
-    double* rawPoints = static_cast<double*>(pts->GetVoidPointer(0));
-
-    cellarray->Allocate(connectivityLength + numberOfCells);
-    std::int64_t* cellconn = reinterpret_cast<std::int64_t*>(
-      cellarray->WritePointer(numberOfCells, connectivityLength + numberOfCells));
-    smtk::mesh::PreAllocatedTessellation tess(cellconn, rawPoints);
-
-    smtk::mesh::extractTessellation(cells, tess);
-    smtk::mesh::CellTypes ctypes = cells.types().cellTypes();
-    // We are using highest dimension cells only
-    if (ctypes[smtk::mesh::Triangle] || ctypes[smtk::mesh::Quad] || ctypes[smtk::mesh::Polygon])
-    {
-      pd->SetPolys(cellarray.GetPointer());
-    }
-    else if (ctypes[smtk::mesh::Line])
-    {
-      pd->SetLines(cellarray.GetPointer());
-    }
-    else if (ctypes[smtk::mesh::Vertex])
-    {
-      pd->SetVerts(cellarray.GetPointer());
-    }
-    /*
-    else if (ctypes[smtk::mesh::Tetrahedron]
-      || ctypes[smtk::mesh::Pyramid]
-      || ctypes[smtk::mesh::Wedge]
-      || ctypes[smtk::mesh::Hexahedron]
-      )
-      {
-      }
-  */
-    else
-    {
-      // any strips ??
-      // pd->SetStrips(cellarray);
-    }
-  }
-}
-
-static void convert_smtkMesh_to_vtkPolyData(
-  const smtk::mesh::MeshSet& entMesh, vtkPoints* pts, vtkPolyData* pd)
-{
-  // We are only getting the highest dimension cells starting Dims2
-  smtk::mesh::CellSet cells = entMesh.cells(smtk::mesh::Dims2);
-
-  if (cells.is_empty() == true)
-  {
-    cells = entMesh.cells(smtk::mesh::Dims1);
-  }
-  if (cells.is_empty() == true)
-  {
-    cells = entMesh.cells(smtk::mesh::Dims0);
-  }
-
-  convert_smtkMesh_singleDimCells_to_vtkPolyData(cells, pts, pd);
-}
-
 /// Loop over the model generating blocks of polydata.
 void vtkMeshMultiBlockSource::GenerateNormals(
   vtkPolyData* pd, const smtk::model::EntityRef& entityref, bool genNormals)
@@ -298,26 +207,8 @@ void vtkMeshMultiBlockSource::GenerateNormals(
 void vtkMeshMultiBlockSource::GenerateRepresentationForSingleMesh(const smtk::mesh::MeshSet& meshes,
   vtkPolyData* pd, const smtk::model::EntityRef& entityref, bool genNormals)
 {
-  vtkNew<vtkPoints> pts;
-  pd->SetPoints(pts.GetPointer());
-
   if (!meshes.is_empty())
   {
-    /*
-    std::cout << "single mesh, size=" << meshes.size() << ", cells=" << meshes.cells().size() << std::endl;
-    smtk::mesh::CellTypes ctypes = meshes.cells().types().cellTypes();
-    std::cout << "TypeSet hasCells=" << meshes.cells().types().hasCells() << ", cellTypes=" << ctypes.size() << std::endl;
-
-    std::cout << "CellType vertex=" << ctypes[smtk::mesh::Vertex] << std::endl;
-    std::cout << "CellType line=" << ctypes[smtk::mesh::Line] << std::endl;
-    std::cout << "CellType triagle=" << ctypes[smtk::mesh::Triangle] << std::endl;
-    std::cout << "CellType quad=" << ctypes[smtk::mesh::Quad] << std::endl;
-    std::cout << "CellType polygon=" << ctypes[smtk::mesh::Polygon] << std::endl;
-    std::cout << "CellType tet=" << ctypes[smtk::mesh::Tetrahedron] << std::endl;
-    std::cout << "CellType pyramid=" << ctypes[smtk::mesh::Pyramid] << std::endl;
-    std::cout << "CellType wedge=" << ctypes[smtk::mesh::Wedge] << std::endl;
-    std::cout << "CellType hex=" << ctypes[smtk::mesh::Hexahedron] << std::endl;
-*/
     //we want all 0d, 1d, 2d, and shells of 3d elments
     smtk::mesh::MeshSet shell = meshes.subset(smtk::mesh::Dims3).extractShell();
     smtk::mesh::MeshSet twoD = meshes.subset(smtk::mesh::Dims2);
@@ -329,8 +220,9 @@ void vtkMeshMultiBlockSource::GenerateRepresentationForSingleMesh(const smtk::me
     toRender.append(oneD);
     toRender.append(zeroD);
 
-    convert_smtkMesh_to_vtkPolyData(toRender, pts.GetPointer(), pd);
-    // std::cout << "Number of points: " << pd->GetNumberOfPoints() << std::endl;
+    smtk::extension::vtk::io::ExportVTKData exportVTKData;
+    exportVTKData(toRender, pd);
+
     this->GenerateNormals(pd, entityref, genNormals);
 
     // Point-coordinates attribute
