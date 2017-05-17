@@ -335,7 +335,7 @@ int main(int argc, char* argv[])
   }
 
   std::array<std::size_t, 10> expectedForCells = { { 0, 1, 4, 6, 9, 14, 20, 18, 9, 3 } };
-  std::array<std::size_t, 10> expectedForPoints = { { 21, 0, 2, 0, 1, 3, 0, 2, 2, 1 } };
+  std::array<std::size_t, 10> expectedForPoints = { { 0, 1, 3, 1, 3, 4, 9, 5, 4, 2 } };
   std::array<std::size_t, 10>& expected =
     interpolateToPoints ? expectedForPoints : expectedForCells;
 

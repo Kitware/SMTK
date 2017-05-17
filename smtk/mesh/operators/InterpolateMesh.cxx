@@ -203,14 +203,17 @@ public:
 
   void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz, bool&)
   {
+    // The internal <m_counter> provides access to the the point field in
+    // sequence. The local <xyzCounter> provides access to the coordinates of
+    // the points currently being iterated. The iterator <i> provides access to
+    // the memory space of the points (we currently use it for iteration).
     std::size_t xyzCounter = 0;
     typedef smtk::mesh::HandleRange::const_iterator c_it;
-    for (c_it i = pointIds.begin(); i != pointIds.end(); ++i)
+    for (c_it i = pointIds.begin(); i != pointIds.end(); ++i, ++xyzCounter)
     {
       double value = this->m_dataGenerator(
         xyz[xyzCounter * 3 + 0], xyz[xyzCounter * 3 + 1], xyz[xyzCounter * 3 + 2]);
       this->m_data[this->m_counter++] = value;
-      xyzCounter += 3;
     }
   }
 
