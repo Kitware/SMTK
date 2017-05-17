@@ -96,9 +96,6 @@ signals:
   void arcModificationCacelled();
   void startArcEditing();
   void startArcPicking();
-  //update faces vislibility when picking edges.
-  //hide all faces when picking then restore the visibility after picking
-  void hideAllFaces(bool status);
 
   friend class pqArcWidgetManager;
 

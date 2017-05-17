@@ -99,7 +99,6 @@ public:
 
   QPointer<pqSplitEdgeWidget> SplitEdgeWidget;
   smtk::weak_ptr<smtk::model::Operator> CurrentOp;
-  std::map<smtk::common::UUID, int> EntitiesToVisibility;
 };
 
 qtBaseView* qtPolygonEdgeOperationView::createViewWidget(const ViewInfo& info)
@@ -225,8 +224,6 @@ void qtPolygonEdgeOperationView::updateAttributeData()
         this->Internals->ArcManager, SIGNAL(operationDone()), this, SLOT(arcOperationDone()));
       QObject::connect(
         this->Internals->ArcManager, SIGNAL(startPicking()), this, SLOT(clearSelection()));
-      QObject::connect(
-        this->Internals->ArcManager, SIGNAL(arcPickChanged(bool)), this, SLOT(hideAllFaces(bool)));
     }
     else
     {
@@ -294,62 +291,6 @@ void qtPolygonEdgeOperationView::valueChanged(smtk::attribute::ItemPtr valitem)
     return;
   }
   this->operationSelected(this->Internals->CurrentOp.lock());
-}
-
-void qtPolygonEdgeOperationView::hideAllFaces(bool status)
-{
-  // get all faces
-  smtk::model::EntityRefs faces;
-  // for polygon model, cells should be enough to cover all faces
-  smtk::model::CellEntities facesInCell = qtActiveObjects::instance().activeModel().cells();
-  for (const auto& face : facesInCell)
-  {
-    if (face.isFace())
-    {
-      faces.insert(face.as<smtk::model::EntityRef>());
-    }
-  }
-
-  smtk::model::SessionRef activeSession = qtActiveObjects::instance().activeModel().session();
-  smtk::model::OperatorPtr setPropertyOp = activeSession.op("set property");
-
-  if (setPropertyOp && setPropertyOp->specification())
-  {
-    setPropertyOp->specification()->system()->setRefModelManager(activeSession.manager());
-    if (status)
-    { // cache faces' visiblity and set them all to invisible
-      for (const auto& face : faces)
-      {
-        int visible = face.hasVisibility() ? face.visible() : 1;
-        this->Internals->EntitiesToVisibility[face.entity()] = visible;
-      }
-      this->uiManager()->activeModelView()->setEntityVisibility(
-        faces, smtk::mesh::MeshSets(), false, setPropertyOp);
-    }
-    else
-    { // use the cached visibility to restore them
-      smtk::model::EntityRefs visibleFaces, invisibleFaces;
-      for (const auto& face : faces)
-      {
-        if (this->Internals->EntitiesToVisibility.find(face.entity()) !=
-          this->Internals->EntitiesToVisibility.end())
-        {
-          if (this->Internals->EntitiesToVisibility[face.entity()])
-          {
-            visibleFaces.insert(face);
-          }
-          else
-          {
-            invisibleFaces.insert(face);
-          }
-        }
-      }
-      this->uiManager()->activeModelView()->setEntityVisibility(
-        visibleFaces, smtk::mesh::MeshSets(), true, setPropertyOp);
-      this->uiManager()->activeModelView()->setEntityVisibility(
-        invisibleFaces, smtk::mesh::MeshSets(), false, setPropertyOp);
-    }
-  }
 }
 
 void qtPolygonEdgeOperationView::arcOperationDone()
