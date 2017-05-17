@@ -64,7 +64,8 @@ target_link_libraries(unitExportMeshOperator smtkCore smtkCoreModelTesting
   ${Boost_LIBRARIES})
 
 add_executable(unitInterpolateMesh unitInterpolateMesh.cxx)
-target_link_libraries(unitInterpolateMesh smtkCore)
+target_compile_definitions(unitInterpolateMesh PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
+target_link_libraries(unitInterpolateMesh smtkCore ${Boost_LIBRARIES})
 
 add_executable(benchmarkModel benchmarkModel.cxx)
 target_link_libraries(benchmarkModel smtkCore smtkCoreModelTesting)
@@ -79,7 +80,16 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
   add_test(NAME unitExportMeshOperator
     COMMAND $<TARGET_FILE:unitExportMeshOperator>
     "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json")
-  add_test(NAME unitInterpolateMesh
+  add_test(NAME unitInterpolateMeshToCells
     COMMAND $<TARGET_FILE:unitInterpolateMesh>
     "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json")
+  add_test(NAME unitInterpolateMeshToPoints
+    COMMAND $<TARGET_FILE:unitInterpolateMesh>
+    "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json" 0)
+  add_test(NAME unitInterpolateMeshToCellsCSV
+    COMMAND $<TARGET_FILE:unitInterpolateMesh>
+    "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json" 0 1)
+  add_test(NAME unitInterpolateMeshToPointsCSV
+    COMMAND $<TARGET_FILE:unitInterpolateMesh>
+    "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json" 1 1)
 endif()

@@ -12,6 +12,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
+#include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshItem.h"
@@ -26,6 +27,31 @@
 
 #include <array>
 #include <cmath>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
+
+// We use either STL regex or Boost regex, depending on support. These flags
+// correspond to the equivalent logic used to determine the inclusion of Boost's
+// regex library.
+#if defined(SMTK_CLANG) ||                                                                         \
+  (defined(SMTK_GCC) && __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)) ||                 \
+  defined(SMTK_MSVC)
+#include <regex>
+using std::regex;
+using std::sregex_token_iterator;
+using std::regex_replace;
+using std::regex_search;
+using std::regex_match;
+#else
+#include <boost/regex.hpp>
+using boost::regex;
+using boost::sregex_token_iterator;
+using boost::regex_replace;
+using boost::regex_search;
+using boost::regex_match;
+#endif
 
 namespace
 {
@@ -81,6 +107,40 @@ public:
   void addSourcePoint(const Point& p, double value)
   {
     this->m_sources.push_back(std::make_pair(p, value));
+  }
+
+  bool readPointsFromCSV(const std::string& fileName)
+  {
+    std::ifstream infile(fileName.c_str());
+    if (!infile.good())
+    {
+      return false;
+    }
+    std::string line;
+    regex re(",");
+    Point p;
+    double value;
+    while (std::getline(infile, line))
+    {
+      // passing -1 as the submatch index parameter performs splitting
+      sregex_token_iterator first{ line.begin(), line.end(), re, -1 }, last;
+
+      // Se are looking for (x, y, z, value). So, we must have at least 4
+      // components.
+      if (std::distance(first, last) < 4)
+      {
+        return false;
+      }
+
+      p[0] = std::stod(*(first++));
+      p[1] = std::stod(*(first++));
+      p[2] = std::stod(*(first++));
+      value = std::stod(*(first++));
+      this->addSourcePoint(p, value);
+    }
+
+    infile.close();
+    return true;
   }
 
 private:
@@ -199,6 +259,18 @@ smtk::model::OperatorResult InterpolateMesh::operateInternal()
   // Construct an instance of our interpolator and set its parameters
   ShepardInterpolator interpolator;
   interpolator.setPower(powerItem->value());
+
+  // Access the points CSV file name, if it is enabled
+  smtk::attribute::FileItem::Ptr ptsFileItem = this->specification()->findFile("ptsfile");
+  if (ptsFileItem->isEnabled())
+  {
+    bool success = interpolator.readPointsFromCSV(ptsFileItem->value(0));
+    if (!success)
+    {
+      smtkErrorMacro(this->log(), "Could not read CSV file.");
+      return this->createResult(OPERATION_FAILED);
+    }
+  }
 
   for (std::size_t i = 0; i < interpolationPointsItem->numberOfGroups(); i++)
   {

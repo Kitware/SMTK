@@ -8,7 +8,10 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#include "smtk/common/UUID.h"
+
 #include "smtk/attribute/DoubleItem.h"
+#include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshItem.h"
@@ -24,15 +27,24 @@
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/ForEachTypes.h"
 #include "smtk/mesh/Manager.h"
+#include "smtk/mesh/PointField.h"
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/Operator.h"
 
+#include <algorithm>
 #include <array>
 #include <fstream>
 
+//force to use filesystem version 3
+#define BOOST_FILESYSTEM_VERSION 3
+#include <boost/filesystem.hpp>
+using namespace boost::filesystem;
+
 namespace
 {
+std::string write_root = SMTK_SCRATCH_DIR;
+
 void create_simple_mesh_model(smtk::model::ManagerPtr mgr, std::string file_path)
 {
   std::ifstream file(file_path.c_str());
@@ -45,16 +57,43 @@ void create_simple_mesh_model(smtk::model::ManagerPtr mgr, std::string file_path
   file.close();
 }
 
-class HistogramFieldData : public smtk::mesh::CellForEach
+void cleanup(const std::string& file_path)
+{
+  //first verify the file exists
+  ::boost::filesystem::path path(file_path);
+  if (::boost::filesystem::is_regular_file(path))
+  {
+    //remove the file_path if it exists.
+    ::boost::filesystem::remove(path);
+  }
+}
+
+class HistogramFieldData
 {
 public:
-  HistogramFieldData(std::size_t nBins, double min, double max, smtk::mesh::CellField& cf)
-    : smtk::mesh::CellForEach(true)
-    , m_cellField(cf)
-    , m_min(min)
+  HistogramFieldData(std::size_t nBins, double min, double max)
+    : m_min(min)
     , m_max(max)
   {
     m_hist.resize(nBins, 0);
+  }
+
+  const std::vector<std::size_t>& histogram() const { return m_hist; }
+
+protected:
+  std::vector<std::size_t> m_hist;
+  double m_min;
+  double m_max;
+};
+
+class HistogramCellFieldData : public smtk::mesh::CellForEach, public HistogramFieldData
+{
+public:
+  HistogramCellFieldData(std::size_t nBins, double min, double max, smtk::mesh::CellField& cf)
+    : smtk::mesh::CellForEach(false)
+    , HistogramFieldData(nBins, min, max)
+    , m_cellField(cf)
+  {
   }
 
   void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType, int)
@@ -63,18 +102,38 @@ public:
     range.insert(cellId);
     double value = 0.;
     this->m_cellField.get(range, &value);
-    std::size_t bin =
-      static_cast<std::size_t>((value - m_min) / (m_max - m_min) * (m_hist.size() + 1));
+    std::size_t bin = static_cast<std::size_t>((value - m_min) / (m_max - m_min) * m_hist.size());
     ++m_hist[bin];
   }
 
-  const std::vector<std::size_t>& histogram() const { return m_hist; }
-
-private:
+protected:
   smtk::mesh::CellField& m_cellField;
-  std::vector<std::size_t> m_hist;
-  double m_min;
-  double m_max;
+};
+
+class HistogramPointFieldData : public smtk::mesh::PointForEach, public HistogramFieldData
+{
+public:
+  HistogramPointFieldData(std::size_t nBins, double min, double max, smtk::mesh::PointField& pf)
+    : smtk::mesh::PointForEach()
+    , HistogramFieldData(nBins, min, max)
+    , m_pointField(pf)
+  {
+  }
+
+  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>&, bool&)
+  {
+    std::vector<double> values(pointIds.size());
+    this->m_pointField.get(pointIds, &values[0]);
+    for (auto& value : values)
+    {
+      std::size_t bin = static_cast<std::size_t>((value - m_min) / (m_max - m_min) * m_hist.size());
+
+      ++m_hist[bin];
+    }
+  }
+
+protected:
+  smtk::mesh::PointField& m_pointField;
 };
 }
 
@@ -125,7 +184,7 @@ int main(int argc, char* argv[])
   // Load in the model
   create_simple_mesh_model(manager, std::string(argv[1]));
 
-  // Convert it t a mesh
+  // Convert it to a mesh
   smtk::io::ModelToMesh convert;
   smtk::mesh::CollectionPtr c = convert(meshManager, manager);
 
@@ -138,8 +197,7 @@ int main(int argc, char* argv[])
   }
 
   // Set the operator's data set name
-  bool valueSet =
-    interpolateMeshOp->specification()->findString("dsname")->setValue("my cell field");
+  bool valueSet = interpolateMeshOp->specification()->findString("dsname")->setValue("my field");
 
   if (!valueSet)
   {
@@ -168,35 +226,88 @@ int main(int argc, char* argv[])
 
   power->setValue(2.);
 
-  // Set the operator's input points
-  smtk::attribute::GroupItemPtr points = interpolateMeshOp->specification()->findGroup("points");
-
-  if (!points)
+  bool interpolateToPoints = false;
+  if (argc > 2)
   {
-    std::cerr << "No \"points\" item in specification\n";
+    interpolateToPoints = std::atoi(argv[2]) == 1;
+  }
+
+  smtk::attribute::IntItemPtr interpMode =
+    interpolateMeshOp->specification()->findInt("interpmode");
+
+  if (!interpMode)
+  {
+    std::cerr << "Failed to set interpolation mode on operator\n";
     return 1;
   }
 
+  interpMode->setValue(interpolateToPoints ? 1 : 0);
+
+  // Set the operator's input points
   std::size_t numberOfPoints = 4;
   double pointData[4][4] = { { -1., -1., 0., 0. }, { -1., 6., 0., 25. }, { 10., -1., 0., 50. },
     { 10., 6., 0., 40. } };
 
-  points->setNumberOfGroups(numberOfPoints);
-  for (std::size_t i = 0; i < numberOfPoints; i++)
+  bool fromCSV = false;
+  if (argc > 3)
   {
-    if (i != 0)
+    fromCSV = std::atoi(argv[3]) == 1;
+  }
+
+  std::string write_path = "";
+  if (fromCSV)
+  {
+    write_path = std::string(write_root + "/" + smtk::common::UUID::random().toString() + ".csv");
+    std::ofstream outfile(write_path.c_str());
+    for (std::size_t i = 0; i < 4; i++)
     {
-      points->appendGroup();
+      outfile << pointData[i][0] << "," << pointData[i][1] << "," << pointData[i][2] << ","
+              << pointData[i][3] << std::endl;
     }
-    for (std::size_t j = 0; j < 4; j++)
+    outfile.close();
+
+    smtk::attribute::FileItemPtr ptsFile = interpolateMeshOp->specification()->findFile("ptsfile");
+    if (!ptsFile)
     {
-      smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(points->item(i, 0))
-        ->setValue(j, pointData[i][j]);
+      std::cerr << "No \"ptsfile\" item in specification\n";
+      cleanup(write_path);
+      return 1;
+    }
+
+    ptsFile->setIsEnabled(true);
+    ptsFile->setValue(write_path);
+  }
+  else
+  {
+    // Set the operator's input points
+    smtk::attribute::GroupItemPtr points = interpolateMeshOp->specification()->findGroup("points");
+
+    if (!points)
+    {
+      std::cerr << "No \"points\" item in specification\n";
+      return 1;
+    }
+
+    points->setNumberOfGroups(numberOfPoints);
+    for (std::size_t i = 0; i < numberOfPoints; i++)
+    {
+      for (std::size_t j = 0; j < 4; j++)
+      {
+        smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(points->item(i, 0))
+          ->setValue(j, pointData[i][j]);
+      }
     }
   }
 
   // Execute "Interpolate Mesh" operator...
   smtk::model::OperatorResult interpolateMeshOpResult = interpolateMeshOp->operate();
+
+  // ...delete the generated points file...
+  if (fromCSV)
+  {
+    cleanup(write_path);
+  }
+
   // ...and test the results for success.
   if (interpolateMeshOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
   {
@@ -205,14 +316,31 @@ int main(int argc, char* argv[])
   }
 
   // Histogram the resulting points and compare against expected values.
-  smtk::mesh::CellField cellField =
-    meshManager->collectionBegin()->second->meshes().cellField("my cell field");
-  HistogramFieldData histogramFieldData(10, 0., 50., cellField);
-  smtk::mesh::for_each(mesh.cells(), histogramFieldData);
+  std::vector<std::size_t> histogram;
+  if (interpolateToPoints)
+  {
+    smtk::mesh::PointField pointField =
+      meshManager->collectionBegin()->second->meshes().pointField("my field");
+    HistogramPointFieldData histogramPointFieldData(10, -.01, 50.01, pointField);
+    smtk::mesh::for_each(mesh.points(), histogramPointFieldData);
+    histogram = histogramPointFieldData.histogram();
+  }
+  else
+  {
+    smtk::mesh::CellField cellField =
+      meshManager->collectionBegin()->second->meshes().cellField("my field");
+    HistogramCellFieldData histogramCellFieldData(10, -.01, 50.01, cellField);
+    smtk::mesh::for_each(mesh.cells(), histogramCellFieldData);
+    histogram = histogramCellFieldData.histogram();
+  }
 
-  std::array<std::size_t, 10> expected = { { 8, 9, 10, 20, 8, 9, 9, 6, 4, 1 } };
+  std::array<std::size_t, 10> expectedForCells = { { 0, 1, 4, 6, 9, 14, 20, 18, 9, 3 } };
+  std::array<std::size_t, 10> expectedForPoints = { { 21, 0, 2, 0, 1, 3, 0, 2, 2, 1 } };
+  std::array<std::size_t, 10>& expected =
+    interpolateToPoints ? expectedForPoints : expectedForCells;
+
   std::size_t counter = 0;
-  for (auto& bin : histogramFieldData.histogram())
+  for (auto& bin : histogram)
   {
     if (bin != expected[counter++])
     {
