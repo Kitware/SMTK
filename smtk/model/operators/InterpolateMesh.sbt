@@ -6,11 +6,11 @@
     <AttDef Type="interpolate mesh"
             Label="Mesh - Interpolate" BaseType="operator">
       <ItemDefinitions>
-        <MeshEntity Name="mesh" NumberOfRequiredValues="1" Extensible="true" >
+        <MeshEntity Name="mesh" Label="Mesh" NumberOfRequiredValues="1" Extensible="true" >
           <BriefDescription>The mesh to elevate.</BriefDescription>
         </MeshEntity>
 
-        <String Name="dsname" NumberOfRequiredValues="1">
+        <String Name="dsname" Label="Field Name" NumberOfRequiredValues="1">
           <BriefDescription>The name of the data set.</BriefDescription>
         </String>
 
@@ -21,7 +21,7 @@
           </DiscreteInfo>
         </Int>
 
-        <File Name="ptsfile" NumberOfValues="1"
+        <File Name="ptsfile" Label="Input CSV File" NumberOfValues="1"
               ShouldExist="true" Optional="true" FileFilters="CSV file (*.csv)">
         </File>
 
