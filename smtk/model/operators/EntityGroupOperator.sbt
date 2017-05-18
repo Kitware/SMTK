@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operation -->
-    <AttDef Type="entity group" BaseType="operator">
+    <AttDef Type="entity group" Label=" Model - Create Group" BaseType="operator">
       <ItemDefinitions>
         <ModelEntity Name="model" NumberOfRequiredValues="1">
           <MembershipMask>model</MembershipMask>

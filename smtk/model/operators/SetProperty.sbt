@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="set property" BaseType="operator">
+    <AttDef Type="set property" Label="Entities - Set Property" BaseType="operator" AdvanceLevel="10">
       <AssociationsDef Name="Entities" NumberOfRequiredValues="0" Extensible="true">
         <MembershipMask>any</MembershipMask>
       </AssociationsDef>

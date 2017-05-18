@@ -3,12 +3,12 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="assign colors" BaseType="operator">
+    <AttDef Type="assign colors" Label=" Model Entities - Assign Colors" BaseType="operator">
       <AssociationsDef Name="entities" NumberOfRequiredValues="1" Extensible="true">
         <MembershipMask>model|group|cell|anydim</MembershipMask>
       </AssociationsDef>
       <BriefDescription>
-        Assign one or more colors to one or more entities.
+        Assign one or more colors to one or more entities using a color palette.
       </BriefDescription>
       <DetailedDescription>
         Assign colors from the given list to the associated

@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="apply bathymetry" BaseType="operator">
+    <AttDef Type="apply bathymetry" Label="Mesh - Apply Bathymetry" BaseType="operator">
       <ItemDefinitions>
 
         <String Name="operation" Label="Operation" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
