@@ -16,7 +16,11 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/Session.h"
 
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
+
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 
 using namespace smtk::model;
@@ -48,6 +52,7 @@ smtk::model::OperatorResult CloseModel::operateInternal()
   }
 
   EntityRefArray expunged;
+  smtk::mesh::MeshSets expungedMeshes;
   bool success = true;
   for (EntityRefArray::const_iterator mit = modelItem->begin(); mit != modelItem->end(); ++mit)
   {
@@ -58,6 +63,12 @@ smtk::model::OperatorResult CloseModel::operateInternal()
     for (AuxiliaryGeometries::iterator ait = auxs.begin(); ait != auxs.end(); ++ait)
     {
       expunged.push_back(*ait);
+    }
+
+    // Similarly, meshes must be added to the "mesh_expunged" attribute.
+    for (auto cit : this->manager()->meshes()->associatedCollections(mit->as<smtk::model::Model>()))
+    {
+      expungedMeshes.insert(cit->meshes());
     }
 
     if (!this->manager()->eraseModel(*mit))
@@ -71,7 +82,10 @@ smtk::model::OperatorResult CloseModel::operateInternal()
   OperatorResult result = this->createResult(success ? OPERATION_SUCCEEDED : OPERATION_FAILED);
 
   if (success)
+  {
     result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
+    result->findMesh("mesh_expunged")->appendValues(expungedMeshes);
+  }
   return result;
 }
 
