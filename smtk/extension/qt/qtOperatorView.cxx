@@ -14,8 +14,10 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/common/View.h"
 #include "smtk/extension/qt/qtAttribute.h"
+#include "smtk/extension/qt/qtOperatorInfoDialog.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
+#include <QApplication>
 #include <QDialogButtonBox>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -41,6 +43,8 @@ public:
   std::unique_ptr<qtInstancedView> m_instancedView;
   smtk::common::ViewPtr m_instancedViewDef;
   QPointer<QPushButton> m_applyButton;
+  QPointer<QPushButton> m_infoButton;
+  QPointer<qtOperatorInfoDialog> m_infoDialog;
 };
 
 qtBaseView* qtOperatorView::createViewWidget(const ViewInfo& info)
@@ -111,6 +115,15 @@ void qtOperatorView::createWidget()
   //bbox->addButton(this->Internals->m_applyButton, QDialogButtonBox::AcceptRole);
   layout->addWidget(this->Internals->m_applyButton);
   //layout->addWidget( bbox);
+  this->Internals->m_infoButton = new QPushButton("Info", this->Widget);
+  this->Internals->m_infoButton->setObjectName("OpViewApplyButton");
+  this->Internals->m_infoButton->setMinimumHeight(32);
+  this->Internals->m_infoButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  QObject::connect(this->Internals->m_infoButton, SIGNAL(clicked()), this, SLOT(onInfo()));
+  //auto bbox = new QDialogButtonBox(this->Widget);
+  //bbox->addButton(this->Internals->m_applyButton, QDialogButtonBox::AcceptRole);
+  layout->addWidget(this->Internals->m_infoButton);
+  //layout->addWidget( bbox);
   this->Internals->m_applyButton->setEnabled((!this->m_applied) && iview->isValid());
 }
 
@@ -129,6 +142,26 @@ void qtOperatorView::showAdvanceLevelOverlay(bool show)
 void qtOperatorView::requestModelEntityAssociation()
 {
   this->Internals->m_instancedView->requestModelEntityAssociation();
+}
+
+void qtOperatorView::onInfo()
+{
+  if (!this->Internals->m_infoDialog)
+  {
+    //this->Internals->m_infoDialog = new qtOperatorInfoDialog(this->widget());
+    // Because the operator dock widget is a dock widget it will always display
+    // over the info dialog (unless it is docked)  To at least get the dialog
+    // not to be completely hidden by the operator widget when it is undocked
+    // we need to parent the dialog on something else
+    QWidgetList l = QApplication::topLevelWidgets();
+    this->Internals->m_infoDialog = new qtOperatorInfoDialog(l.value(0));
+  }
+  this->Internals->m_infoDialog->displayOperator(this->Internals->m_operator);
+  this->Internals->m_infoDialog->show();
+  this->Internals->m_infoDialog->raise();
+  this->Internals->m_infoDialog->activateWindow();
+
+  //this->Internals->m_infoDialog->exec();
 }
 
 void qtOperatorView::onOperate()

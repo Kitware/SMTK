@@ -642,6 +642,8 @@ bool System::copyDefinitionImpl(
   newDef->setAdvanceLevel(sourceDef->advanceLevel());
   newDef->setIsUnique(sourceDef->isUnique());
   newDef->setIsNodal(sourceDef->isNodal());
+  newDef->setDetailedDescription(sourceDef->detailedDescription());
+  newDef->setBriefDescription(sourceDef->briefDescription());
   if (sourceDef->isNotApplicableColorSet())
   {
     newDef->setNotApplicableColor(sourceDef->notApplicableColor());

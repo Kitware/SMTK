@@ -62,6 +62,7 @@ public slots:
   virtual void onShowCategory() { this->updateAttributeData(); }
   virtual void onModifiedParameters();
   void onOperate();
+  void onInfo();
 
 signals:
   void operationRequested(const smtk::model::OperatorPtr& brOp);
