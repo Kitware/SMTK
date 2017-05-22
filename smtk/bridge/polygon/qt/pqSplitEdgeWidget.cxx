@@ -258,7 +258,7 @@ void pqSplitEdgeWidget::arcPointPicked(pqOutputPort* port)
     // find the first proper point to start spliting
     if (ids.size() > 2 && (ids.size() % 3 == 0)) // A valid selection
     {
-      for (auto index = 0; index < ids.size() / 3; index++)
+      for (size_t index = 0; index < ids.size() / 3; index++)
       {
         flatIdx = ids[3 * index];
         ptid = ids[3 * index + 2];
