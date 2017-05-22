@@ -8,14 +8,13 @@
         <MembershipMask>model</MembershipMask>
       </AssociationsDef>
       <BriefDescription>
-        Add am image as  auxiliary geometry (scene geometry not part of the model domain)
+        Add an image as  auxiliary geometry (scene geometry not part of the model domain)
         to a model or to another auxiliary geometry instance.
       </BriefDescription>
       <DetailedDescription>
-        Add am image as auxiliary geometry (scene geometry not part of the model domain)
+        &lt;p&gt;Add an image as auxiliary geometry (scene geometry not part of the model domain)
         to a model or to another auxiliary geometry instance.
-
-        Auxiliary geometry may be made hierarchical, by adding an auxiliary
+        &lt;p&gt;Auxiliary geometry may be made hierarchical, by adding an auxiliary
         geometry instance with no URL to a model and then adding 1 or more
         auxiliary geometry instances to the first instance above.
         This is useful when you wish to instance multiple files into the
@@ -34,7 +33,7 @@
             Should the auxiliary geometry's representation be separate from its owning model's?
           </BriefDescription>
           <DetailedDescription>
-            Should the auxiliary geometry's representation be separate from its owning model's?
+            &lt;p&gt;Should the auxiliary geometry's representation be separate from its owning model's?
             If yes, a separate rendering pipeline will be created for auxiliary geometry and
             its representation will be controlled with its own set of display properties;
             if no, the geometry will be shown and controlled as sub-blocks in the model's multiblock dataset,
