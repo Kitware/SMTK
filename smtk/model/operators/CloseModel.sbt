@@ -17,6 +17,9 @@
     <!-- Result -->
     <AttDef Type="result(close model)" BaseType="result">
       <!-- The close models are stored in the base result's "expunged" item. -->
+      <ItemDefinitions>
+        <MeshEntity Name="mesh_expunged" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>
+      </ItemDefinitions>
     </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>
