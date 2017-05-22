@@ -132,7 +132,7 @@ void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
 
   smtk::extension::ViewInfo vinfo(this->m_smtkView, pWidget, this);
   this->m_topView = this->createView(vinfo);
-  if (this->m_topView)
+  if (this->m_topView && this->m_currentAdvLevel) // only build advanced level when needed
   {
     this->m_topView->showAdvanceLevel(this->m_currentAdvLevel);
   }
@@ -156,7 +156,7 @@ void qtUIManager::initializeUI(
   this->internalInitialize();
 
   this->m_topView = this->createView(viewInfo);
-  if (this->m_topView)
+  if (this->m_topView && this->m_currentAdvLevel) // only build advanced level when needed
   {
     this->m_topView->showAdvanceLevel(this->m_currentAdvLevel);
   }

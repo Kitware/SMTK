@@ -146,7 +146,7 @@ void ArcPicker::selectedInfo(pqOutputPort* port)
       smtk::common::UUID edgeId;
 
       // get the first selected edge's blockId
-      for (size_t index = 0; index <= ids.size(); index++)
+      for (size_t index = 0; index <= ids.size() / 3; index++)
       {
         // we only care about blockId
         flatIdx = ids[index * 3];

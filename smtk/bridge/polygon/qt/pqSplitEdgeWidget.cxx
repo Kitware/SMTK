@@ -46,6 +46,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Operator.h"
@@ -198,6 +199,9 @@ void pqSplitEdgeWidget::splitEdgeOperation(bool start)
 {
   if (this->View && this->m_edgeOp.lock() && start)
   {
+    // clear the selection first
+    qtActiveObjects::instance().smtkSelectionManager()->clearAllSelections();
+
     int curSelMode = 0;
     vtkSMPropertyHelper(this->View->getRenderViewProxy(), "InteractionMode").Get(&curSelMode);
     if (curSelMode == vtkPVRenderView::INTERACTION_MODE_SELECTION)
@@ -218,10 +222,12 @@ void pqSplitEdgeWidget::splitEdgeOperation(bool start)
     QObject::connect(this->View, SIGNAL(selectionModeChanged(bool)), this, SLOT(resetWidget()),
       Qt::UniqueConnection);
 
+    emit hideAllFaces(true); // hide faces before selection
     this->m_edgePointPicker->doPick(this->View);
   }
   else
   {
+    emit hideAllFaces(false); // restore faces visibility
     this->resetWidget();
   }
 }
@@ -239,35 +245,43 @@ void pqSplitEdgeWidget::arcPointPicked(pqOutputPort* port)
     vtkSMSourceProxy* selSource = port->getSelectionInput();
     // [composite_index, process_id, index]
     vtkSMPropertyHelper selIDs(selSource, "IDs");
-    unsigned int count = selIDs.GetNumberOfElements();
+    std::vector<vtkIdType> ids = selIDs.GetArray<vtkIdType>();
     bool readytoOp = false;
-    if (count > 2)
+    vtkIdType flatIdx;
+    vtkIdType ptid;
+    vtkNew<vtkPolygonArcInfo> arcInfo;
+
+    //collect the information from the server model source
+    vtkSMProxy* proxy = port->getSource()->getProxy();
+    smtk::attribute::AttributePtr opSpec = this->m_edgeOp.lock()->specification();
+
+    // find the first proper point to start spliting
+    if (ids.size() > 2 && (ids.size() % 3 == 0)) // A valid selection
     {
-      // get first selected point
-      vtkIdType flatIdx = selIDs.GetAsInt(0);
-      vtkIdType ptid = selIDs.GetAsInt(2);
-      vtkNew<vtkPolygonArcInfo> arcInfo;
-      //collect the information from the server model source
-      vtkSMProxy* proxy = port->getSource()->getProxy();
-      arcInfo->SetBlockIndex(flatIdx - 1);
-      arcInfo->SetSelectedPointId(ptid);
-      proxy->GatherInformation(arcInfo.GetPointer());
-      if (arcInfo->GetModelEntityID())
+      for (auto index = 0; index < ids.size() / 3; index++)
       {
-        smtk::common::UUID edgeId(arcInfo->GetModelEntityID());
-        smtk::model::Edge edge(this->m_edgeOp.lock()->manager(), edgeId);
-        if (edge.isValid())
+        flatIdx = ids[3 * index];
+        ptid = ids[3 * index + 2];
+        arcInfo->SetBlockIndex(flatIdx - 1);
+        arcInfo->SetSelectedPointId(ptid);
+        proxy->GatherInformation(arcInfo.GetPointer());
+        if (arcInfo->GetModelEntityID())
         {
-          smtk::attribute::AttributePtr opSpec = this->m_edgeOp.lock()->specification();
-          opSpec->removeAllAssociations();
-          opSpec->associateEntity(edge);
-          double ptcoords[3];
-          arcInfo->GetSelectedPointCoordinates(ptcoords);
-          opSpec->findDouble("point")->setValue(0, ptcoords[0]);
-          opSpec->findDouble("point")->setValue(1, ptcoords[1]);
-          opSpec->findInt("point id")->setValue(ptid);
-          // now request the operation
-          readytoOp = true;
+          smtk::common::UUID edgeId(arcInfo->GetModelEntityID());
+          smtk::model::Edge edge(this->m_edgeOp.lock()->manager(), edgeId);
+          if (edge.isValid())
+          {
+            opSpec->removeAllAssociations();
+            opSpec->associateEntity(edge);
+            double ptcoords[3];
+            arcInfo->GetSelectedPointCoordinates(ptcoords);
+            opSpec->findDouble("point")->setValue(0, ptcoords[0]);
+            opSpec->findDouble("point")->setValue(1, ptcoords[1]);
+            opSpec->findInt("point id")->setValue(ptid);
+            // now request the operation
+            readytoOp = true;
+            break;
+          }
         }
       }
     }
@@ -303,7 +317,9 @@ void pqSplitEdgeWidget::onSelectionModeChanged()
     vtkSMRenderViewProxy* rmp = this->View->getRenderViewProxy();
     int curSelMode = 0;
     vtkSMPropertyHelper(rmp, "InteractionMode").Get(&curSelMode);
-    if (curSelMode != vtkPVRenderView::INTERACTION_MODE_SELECTION)
+    if (curSelMode != vtkPVRenderView::INTERACTION_MODE_SELECTION &&
+      curSelMode != vtkPVRenderView::INTERACTION_MODE_2D &&
+      curSelMode != vtkPVRenderView::INTERACTION_MODE_3D)
     {
       this->resetWidget();
     }
