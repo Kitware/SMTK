@@ -149,14 +149,12 @@ qtModelView::~qtModelView()
     qtActiveObjects::instance().smtkSelectionManager()->unregisterSelectionSource(
       this->m_selectionSourceName);
   }
-  if (this->m_ContextMenu)
-    delete this->m_ContextMenu;
 
-  //  if(this->m_OperatorsWidget)
-  //    delete this->m_OperatorsWidget;
-
-  if (this->m_OperatorsDock)
+  // Explicitly delete dock widget if not parented
+  if (this->m_OperatorsDock && !m_OperatorsDock->parent())
+  {
     delete this->m_OperatorsDock;
+  }
 }
 
 smtk::extension::QEntityItemModel* qtModelView::getModel() const
