@@ -44,6 +44,7 @@ void qtOperatorDockWidget::reset()
   else
   {
     this->setWindowTitle("Operator Window");
+    this->hide();
   }
   QScrollArea* s = dynamic_cast<QScrollArea*>(this->widget());
   if (s && s->widget())
