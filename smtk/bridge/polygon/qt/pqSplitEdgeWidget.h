@@ -59,6 +59,10 @@ public:
 
 signals:
   void operationRequested(const smtk::model::OperatorPtr& brOp);
+  /// update face visbility before picking points
+  /// hide all faces when picking then restore the visibility after picking
+  void hideAllFaces(bool status);
+
 public slots:
   void resetWidget();
   void onSelectionModeChanged();

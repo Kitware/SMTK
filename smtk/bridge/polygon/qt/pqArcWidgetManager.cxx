@@ -173,6 +173,8 @@ void pqArcWidgetManager::cancelOperation(const smtk::model::OperatorPtr& op)
 
   delete this->ArcWidget;
   this->ActiveWidget = NULL;
+  delete this->EditWidget;
+  this->EditWidget = NULL;
   emit this->operationCancelled();
 }
 

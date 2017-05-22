@@ -99,6 +99,7 @@ public:
 
   QPointer<pqSplitEdgeWidget> SplitEdgeWidget;
   smtk::weak_ptr<smtk::model::Operator> CurrentOp;
+  std::map<smtk::common::UUID, int> EntitiesToVisibility;
 };
 
 qtBaseView* qtPolygonEdgeOperationView::createViewWidget(const ViewInfo& info)
@@ -293,6 +294,62 @@ void qtPolygonEdgeOperationView::valueChanged(smtk::attribute::ItemPtr valitem)
   this->operationSelected(this->Internals->CurrentOp.lock());
 }
 
+void qtPolygonEdgeOperationView::onHideAllFaces(bool status)
+{
+  // get all faces
+  smtk::model::EntityRefs faces;
+  // for polygon model, cells should be enough to cover all faces
+  smtk::model::CellEntities facesInCell = qtActiveObjects::instance().activeModel().cells();
+  for (const auto& face : facesInCell)
+  {
+    if (face.isFace())
+    {
+      faces.insert(face.as<smtk::model::EntityRef>());
+    }
+  }
+
+  smtk::model::SessionRef activeSession = qtActiveObjects::instance().activeModel().session();
+  smtk::model::OperatorPtr setPropertyOp = activeSession.op("set property");
+
+  if (setPropertyOp && setPropertyOp->specification())
+  {
+    setPropertyOp->specification()->system()->setRefModelManager(activeSession.manager());
+    if (status)
+    { // cache faces' visiblity and set them all to invisible
+      for (const auto& face : faces)
+      {
+        int visible = face.visible();
+        this->Internals->EntitiesToVisibility[face.entity()] = visible;
+      }
+      this->uiManager()->activeModelView()->setEntityVisibility(
+        faces, smtk::mesh::MeshSets(), false, setPropertyOp);
+    }
+    else
+    { // use the cached visibility to restore them
+      smtk::model::EntityRefs visibleFaces, invisibleFaces;
+      for (const auto& face : faces)
+      {
+        if (this->Internals->EntitiesToVisibility.find(face.entity()) !=
+          this->Internals->EntitiesToVisibility.end())
+        {
+          if (this->Internals->EntitiesToVisibility[face.entity()])
+          {
+            visibleFaces.insert(face);
+          }
+          else
+          {
+            invisibleFaces.insert(face);
+          }
+        }
+      }
+      this->uiManager()->activeModelView()->setEntityVisibility(
+        visibleFaces, smtk::mesh::MeshSets(), true, setPropertyOp);
+      this->uiManager()->activeModelView()->setEntityVisibility(
+        invisibleFaces, smtk::mesh::MeshSets(), false, setPropertyOp);
+    }
+  }
+}
+
 void qtPolygonEdgeOperationView::arcOperationDone()
 {
   if (!this->Internals->CurrentAtt || !this->Widget || !this->Internals->CurrentOp.lock())
@@ -410,6 +467,8 @@ void qtPolygonEdgeOperationView::operationSelected(const smtk::model::OperatorPt
         QObject::connect(this->Internals->SplitEdgeWidget,
           SIGNAL(operationRequested(const smtk::model::OperatorPtr&)), this,
           SLOT(requestOperation(const smtk::model::OperatorPtr&)));
+        QObject::connect(this->Internals->SplitEdgeWidget, SIGNAL(hideAllFaces(bool)), this,
+          SLOT(onHideAllFaces(bool)));
       }
 
       pqRenderView* renView = qobject_cast<pqRenderView*>(pqActiveObjects::instance().activeView());
