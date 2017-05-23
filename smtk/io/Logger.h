@@ -116,7 +116,7 @@ public:
     , m_ownStream(false)
   {
   }
-  ~Logger();
+  virtual ~Logger();
   std::size_t numberOfRecords() const { return this->m_records.size(); }
 
   bool hasErrors() const { return this->m_hasErrors; }
