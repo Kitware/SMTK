@@ -20,6 +20,10 @@ namespace io
 Logger::~Logger()
 {
   this->setFlushToStream(NULL, false, false);
+  if (this->m_callback)
+  {
+    this->m_callback();
+  }
 }
 
 void Logger::addRecord(
@@ -225,6 +229,12 @@ void Logger::setFlushToStdout(bool includePast)
 void Logger::setFlushToStderr(bool includePast)
 {
   this->setFlushToStream(&std::cerr, false, includePast);
+}
+
+/// Set a function to be called upon the destruction of the logger.
+void Logger::setCallback(std::function<void()> fn)
+{
+  this->m_callback = fn;
 }
 
 /// This is a helper routine to write records to the stream (if one has been set).

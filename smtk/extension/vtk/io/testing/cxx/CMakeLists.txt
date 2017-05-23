@@ -10,17 +10,22 @@
 #
 #=============================================================================
 
+set(unit_tests
+  UnitTestRedirectOutput.cxx
+  )
+
 set(unit_tests_which_require_data
   UnitTestImportExportVTKData.cxx
   UnitTestMeshIOVTK.cxx
   ImportExportMeshWithCellField.cxx
   )
 
-smtk_unit_tests(LABEL "Mesh"
+smtk_unit_tests(LABEL "vtk/io"
+                SOURCES ${unit_tests}
                 SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
-                LIBRARIES smtkIOVTK  smtkCoreModelTesting vtkFiltersSources
-                vtkIOXML vtkFiltersCore vtkCommonComputationalGeometry
-                ${Boost_LIBRARIES})
+                LIBRARIES smtkIOVTK smtkCoreModelTesting vtkCommonCore
+                vtkFiltersSources vtkIOXML vtkFiltersCore
+                vtkCommonComputationalGeometry ${Boost_LIBRARIES})
 
 add_executable(MultiScaleConverter MultiScaleConverter.cxx)
 target_link_libraries(MultiScaleConverter
