@@ -13,6 +13,7 @@
 
 #include "smtk/CoreExports.h"
 #include "smtk/SystemConfig.h"
+#include <functional>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -111,11 +112,11 @@ public:
 
   Logger()
     : m_hasErrors(false)
-    , m_stream(NULL)
+    , m_stream(nullptr)
     , m_ownStream(false)
   {
   }
-  ~Logger();
+  virtual ~Logger();
   std::size_t numberOfRecords() const { return this->m_records.size(); }
 
   bool hasErrors() const { return this->m_hasErrors; }
@@ -144,6 +145,8 @@ public:
   void setFlushToStdout(bool includePast);
   void setFlushToStderr(bool includePast);
 
+  void setCallback(std::function<void()> fn);
+
 protected:
   void flushRecordsToStream(std::size_t beginRec, std::size_t endRec);
 
@@ -151,6 +154,7 @@ protected:
   bool m_hasErrors;
   std::ostream* m_stream;
   bool m_ownStream;
+  std::function<void()> m_callback;
 
 private:
 };

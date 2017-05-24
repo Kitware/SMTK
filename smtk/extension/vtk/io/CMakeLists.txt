@@ -2,18 +2,20 @@ set(srcs
   ExportVTKData.cxx
   ImportVTKData.cxx
   MeshIOVTK.cxx
+  RedirectOutput.cxx
   )
 
 set(headers
   ExportVTKData.h
   ImportVTKData.h
   MeshIOVTK.h
+  RedirectOutput.h
   )
 
 add_library(smtkIOVTK ${srcs})
 
 target_link_libraries(smtkIOVTK
-      LINK_PUBLIC smtkCore vtkCommonDataModel vtkIOXML vtksys )
+      LINK_PUBLIC smtkCore vtkCommonCore vtkCommonDataModel vtkIOXML vtksys )
 
 smtk_export_header(smtkIOVTK IOVTKExports.h)
 

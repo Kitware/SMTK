@@ -70,6 +70,7 @@ set(QAttrLibMocHeaders
   qtBaseView.h
   qtCheckItemComboBox.h
   qtCollapsibleGroupWidget.h
+  qtEmittingStringBuffer.h
   qtEntityItemDelegate.h
   qtEntityItemEditor.h
   qtEntityItemModel.h
@@ -152,3 +153,5 @@ endif()
 if (SMTK_ENABLE_EXAMPLES)
   add_subdirectory(examples)
 endif()
+
+add_subdirectory(testing)
