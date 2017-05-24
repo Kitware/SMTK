@@ -48,7 +48,7 @@ void Logger::append(const Logger& l)
 void Logger::reset()
 {
   this->m_hasErrors = false;
-  this->m_records.empty();
+  this->m_records.clear();
 }
 
 std::string Logger::severityAsString(Severity s)
