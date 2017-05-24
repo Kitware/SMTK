@@ -77,7 +77,5 @@ protected:
 private:
   ItemDefinitionsDataModel(const ItemDefinitionsDataModel&) = delete;
   void operator=(const ItemDefinitionsDataModel&) = delete;
-
-  smtk::attribute::SystemPtr System;
 };
 #endif //__ItemDefinitionsDataModel_h

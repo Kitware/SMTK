@@ -235,7 +235,7 @@ void qtGroupItem::addSubGroup(int i)
     return;
   }
 
-  std::size_t j, m = item->numberOfItemsPerGroup();
+  const std::size_t numItems = item->numberOfItemsPerGroup();
   QBoxLayout* frameLayout = qobject_cast<QBoxLayout*>(this->Internals->ChildrensFrame->layout());
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QBoxLayout* subGrouplayout = new QVBoxLayout();
@@ -244,7 +244,7 @@ void qtGroupItem::addSubGroup(int i)
   QList<qtItem*> itemList;
 
   QList<smtk::attribute::ItemDefinitionPtr> childDefs;
-  for (j = 0; j < m; j++)
+  for (std::size_t j = 0; j < numItems; j++)
   {
     smtk::attribute::ConstItemDefinitionPtr itDef =
       item->item(i, static_cast<int>(j))->definition();
@@ -252,12 +252,12 @@ void qtGroupItem::addSubGroup(int i)
     //  smtk::const_pointer_cast<ItemDefinition>(itDef));
     childDefs.push_back(smtk::const_pointer_cast<attribute::ItemDefinition>(itDef));
   }
-  int tmpLen = this->baseView()->uiManager()->getWidthOfItemsMaxLabel(
+  const int tmpLen = this->baseView()->uiManager()->getWidthOfItemsMaxLabel(
     childDefs, this->baseView()->uiManager()->advancedFont());
-  int currentLen = this->baseView()->fixedLabelWidth();
+  const int currentLen = this->baseView()->fixedLabelWidth();
   this->baseView()->setFixedLabelWidth(tmpLen);
 
-  for (j = 0; j < m; j++)
+  for (std::size_t j = 0; j < numItems; j++)
   {
     qtItem* childItem = qtAttribute::createItem(item->item(i, static_cast<int>(j)), this->Widget,
       this->baseView(), this->Internals->VectorItemOrient);

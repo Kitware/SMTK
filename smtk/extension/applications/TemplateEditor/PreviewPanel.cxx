@@ -55,11 +55,17 @@ smtk::common::ViewPtr PreviewPanel::createView(const smtk::attribute::Definition
   comp.setAttribute("Type", title);
   comp.setAttribute("Name", title);
 
+  if (this->CurrentViewAttr)
+  {
+    this->AttributeSystem->removeAttribute(this->CurrentViewAttr);
+  }
+  this->CurrentViewAttr = nullptr;
+
   smtk::attribute::AttributePtr attr = this->AttributeSystem->createAttribute(title);
   const std::string attrName = attr ? attr->name() : std::string();
-
   comp.setContents(attrName);
 
+  this->CurrentViewAttr = attr;
   return view;
 }
 

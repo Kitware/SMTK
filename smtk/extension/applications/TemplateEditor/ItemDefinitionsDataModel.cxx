@@ -12,6 +12,7 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/ItemDefinition.h"
+#include "smtk/attribute/System.h"
 
 #include "ItemDefinitionHelper.h"
 #include "ItemDefinitionsDataModel.h"
@@ -98,6 +99,17 @@ void ItemDefinitionsDataModel::insertItem(ItemDefProperties const& props)
   {
     auto group = std::static_pointer_cast<smtk::attribute::GroupItemDefinition>(parentItemDef);
     group->addItemDefinition(itemDef);
+  }
+
+  // Update the attribute (qtUIManager->qtInstancedView generates an attribute
+  // and items for each of the ui elements [or some], and stores them in
+  // attribute::system so we need to update this attribute).
+  std::vector<smtk::attribute::AttributePtr> atts;
+  auto sys = props.Definition->system();
+  sys->findAttributes(props.Definition->type(), atts);
+  for (const auto& att : atts)
+  {
+    sys->removeAttribute(att);
   }
 
   const int rowIndex = parentElement->childCount(); /// TODO use the position where it was

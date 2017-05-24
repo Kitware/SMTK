@@ -80,7 +80,6 @@ public:
   {
     assert(this->m_items.size() > element);
     assert(this->m_items[element].size() > ith);
-    std::cout << "->>> items size: " << m_items[element].size() << "\n";
     return this->m_items[element][ith];
   }
 
