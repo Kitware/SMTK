@@ -23,7 +23,7 @@ namespace
 class OutputWindow : public vtkOutputWindow
 {
 public:
-  typedef std::tuple<std::string, std::size_t, std::string> FormattedOutput;
+  typedef std::tuple<std::string, unsigned int, std::string> FormattedOutput;
 
   static OutputWindow* New();
   vtkTypeMacro(OutputWindow, vtkOutputWindow);
@@ -104,7 +104,7 @@ void OutputWindow::DisplayDebugText(const char* msg)
     smtk::io::Logger::DEBUG, std::get<2>(out), std::get<0>(out), std::get<1>(out));
 }
 
-std::tuple<std::string, std::size_t, std::string> OutputWindow::ParseOutput(const char* msg) const
+std::tuple<std::string, unsigned int, std::string> OutputWindow::ParseOutput(const char* msg) const
 {
   // A typical VTK-style message looks like this:
   //

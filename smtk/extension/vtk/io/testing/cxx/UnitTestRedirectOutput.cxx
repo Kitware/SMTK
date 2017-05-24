@@ -43,7 +43,7 @@ public:
   void DebugMessage() { vtkDebugMacro(<< "VTK-style debug message!"); }
 };
 
-int UnitTestRedirectOutput(int, char**)
+int UnitTestRedirectOutput(int, char** const)
 {
   vtkNew<vtkMyObject> myVTKObject;
   myVTKObject->DebugOn();

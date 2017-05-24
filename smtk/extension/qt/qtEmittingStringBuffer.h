@@ -36,7 +36,7 @@ namespace extension
   * NOTE: This is not a very performant way to pass log messages, and could
   * become a performance bottleneck.
   */
-class qtEmittingStringBuffer : public QObject, public std::stringbuf
+class SMTKQTEXT_EXPORT qtEmittingStringBuffer : public QObject, public std::stringbuf
 {
   Q_OBJECT
 
