@@ -1,6 +1,7 @@
 # Add the Qt GUI code if enabled
 if(SMTK_ENABLE_QT_SUPPORT)
   add_subdirectory(qt)
+  add_subdirectory(applications)
 endif()
 
 # Add mesh operator if Remus is enabled.
