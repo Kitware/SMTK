@@ -13,6 +13,7 @@
 #include "smtk/attribute/System.h"
 
 #include "smtk/model/AttributeAssignments.h"
+#include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/Chain.h"
 #include "smtk/model/DefaultSession.h"
 #include "smtk/model/Edge.h"
@@ -4119,8 +4120,18 @@ void Manager::computeResources()
         std::string newResourceName = uniqueResourceName(ent, preexistingIds, counter);
         srsrc = StoredResource::create();
         srsrc->setURL(url);
-        srsrc->markModified(srsrc->exists(
-          this->m_resources->linkStartPath())); // FIXME: track modified prop of entity
+        if (ent.isModel())
+        {
+          srsrc->markModified(ent.as<Model>().isModified());
+        }
+        else if (ent.isAuxiliaryGeometry())
+        {
+          srsrc->markModified(ent.as<AuxiliaryGeometry>().isModified());
+        }
+        else
+        { // Assume it's modified if not on disk, otherwise unmodified
+          srsrc->markModified(srsrc->exists(this->m_resources->linkStartPath()));
+        }
         this->m_resources->addResource(srsrc, newResourceName, "",
           ent.isAuxiliaryGeometry() ? ResourceSet::AUX_GEOM_RESOURCE : ResourceSet::MODEL_RESOURCE);
         urlsToResourceNames[url] = newResourceName;
@@ -4140,8 +4151,18 @@ void Manager::computeResources()
         std::string newResourceName = uniqueResourceName(ent, preexistingIds, counter);
         srsrc = StoredResource::create();
         srsrc->setURL(url);
-        srsrc->markModified(srsrc->exists(
-          this->m_resources->linkStartPath())); // FIXME: track modified prop of entity
+        if (ent.isModel())
+        {
+          srsrc->markModified(ent.as<Model>().isModified());
+        }
+        else if (ent.isAuxiliaryGeometry())
+        {
+          srsrc->markModified(ent.as<AuxiliaryGeometry>().isModified());
+        }
+        else
+        { // Assume it's modified if not on disk, otherwise unmodified
+          srsrc->markModified(srsrc->exists(this->m_resources->linkStartPath()));
+        }
         this->m_resources->addResource(srsrc, newResourceName, "", ResourceSet::MODEL_RESOURCE);
         urlsToResourceNames[url] = newResourceName;
       }

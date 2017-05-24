@@ -128,9 +128,12 @@ public:
 
   smtk::mesh::ManagerPtr meshes() const;
 
-  smtk::common::ResourceSetPtr resources()
+  smtk::common::ResourceSetPtr resources(bool skipUpdate = false)
   {
-    this->computeResources();
+    if (!skipUpdate)
+    {
+      this->computeResources();
+    }
     return this->m_resources;
   }
 

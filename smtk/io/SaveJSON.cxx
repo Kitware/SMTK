@@ -286,6 +286,139 @@ int SaveJSON::fromResourceSet(cJSON* pnode, smtk::common::ResourceSetPtr& rset)
   return 1;
 }
 
+bool SaveJSON::canSaveModels(const smtk::model::Models& models)
+{
+  std::set<smtk::model::Manager::Ptr> mgrs;
+  for (auto model : models)
+  {
+    if (!model.isValid())
+    {
+      continue;
+    }
+    if (mgrs.find(model.manager()) == mgrs.end())
+    {
+      (void)model.manager()->resources(); // force computeResources to be called
+    }
+    if (!model.hasStringProperty("smtk_url"))
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+int SaveJSON::save(
+  cJSON* pnode, const smtk::model::Models& models, bool renameModels, const std::string& embedDir)
+{
+  (void)renameModels; // FIXME
+
+  int status = 1;
+  std::set<smtk::model::Manager::Ptr> mgrs;
+  smtk::model::SessionIOJSON::Ptr delegate;
+  std::map<smtk::model::SessionRef, smtk::model::SessionIOJSON::Ptr> delegates;
+  std::map<smtk::model::SessionRef, smtk::model::SessionIOJSON::Ptr>::iterator delegateIter;
+  for (auto model : models)
+  {
+    if (!model.isValid())
+    {
+      continue;
+    }
+    // If we have never seen this model's manager, save the
+    // models in this manager that have been requested:
+    if (mgrs.find(model.manager()) == mgrs.end())
+    {
+      smtk::common::ResourceSetPtr rset = model.manager()->resources();
+      if (!embedDir.empty())
+      {
+        rset->setLinkStartPath(embedDir);
+      }
+      std::vector<std::string> rids = rset->resourceIds();
+      for (auto rsrcId : rids)
+      {
+        smtk::common::ResourcePtr rsrc;
+        smtk::model::StoredResourcePtr srsrc;
+        smtk::model::SessionRef sref;
+        if (rset->get(rsrcId, rsrc) && (srsrc = smtk::dynamic_pointer_cast<StoredResource>(rsrc)) &&
+          (srsrc->entities().find(model) != srsrc->entities().end()) &&
+          (sref = srsrc->session()).isValid())
+        {
+          // Get an I/O delegate for this session
+          delegateIter = delegates.find(sref);
+          if (delegateIter != delegates.end())
+          {
+            delegate = delegateIter->second;
+          }
+          else
+          {
+            delegate = smtk::dynamic_pointer_cast<smtk::model::SessionIOJSON>(
+              sref.session()->createIODelegate("json"));
+            delegate->setReferencePath(rset->linkStartPath());
+            delegates[sref] = delegate;
+          }
+          // Tell the delegate to save this resource for us
+          if (delegate)
+          {
+            //delegate->saveResource(pnode, model, srsrc);
+            delegate->saveResource(model, rset, srsrc);
+          }
+        }
+      }
+    }
+  }
+
+  // Now we've written out CAD files and auxiliary geometry as required.
+  // We still need to save JSON data. Do so on a per-session basis, which
+  // we can do with our fancy "delegates" map.
+  for (delegateIter = delegates.begin(); delegateIter != delegates.end(); ++delegateIter)
+  {
+    cJSON* sess = cJSON_CreateObject();
+    cJSON_AddItemToObject(pnode, delegateIter->first.entity().toString().c_str(), sess);
+    cJSON_AddStringToObject(sess, "type", "session");
+    cJSON_AddStringToObject(sess, "name", delegateIter->first.session()->name().c_str());
+
+    delegate = delegateIter->second;
+    if (delegate)
+    {
+      status &= delegate->saveJSON(sess, delegateIter->first, models);
+    }
+
+    // Add mesh info to the session JSON node for models in this session:
+    smtk::io::WriteMesh write;
+    for (auto model : models)
+    {
+      if (model.owningSession() == delegateIter->first)
+      {
+        smtk::mesh::ManagerPtr meshMgr = model.manager()->meshes();
+        smtk::common::UUIDs cids = meshMgr->associatedCollectionIds(model);
+        for (auto cid : cids)
+        {
+          smtk::mesh::CollectionPtr coll = meshMgr->collection(cid);
+          std::string meshFile;
+          if (coll && coll->isModified() &&
+            !(meshFile = coll->writeLocation().absolutePath()).empty())
+          {
+            // Write the mesh. This should reset coll->isModified() so it only
+            // happens once even if multiple models have meshes in the same collection.
+            bool ok = write(meshFile, coll, smtk::io::mesh::Subset::EntireCollection);
+            if (!ok)
+            {
+              smtkErrorMacro(model.manager()->log(), "Could not write mesh ("
+                  << coll->name() << ") to \"" << meshFile << "\".");
+            }
+          }
+        }
+        smtk::io::SaveJSON::forModelMeshes(model.entity(), sess, model.manager());
+      }
+    }
+
+    //SaveJSON::addMeshesRecord(delegateIter->first.manager(), models, sess);
+    SaveJSON::addModelsRecord(delegateIter->first.manager(), models, sess);
+  }
+
+  //status &= SaveJSON::forOperatorDefinitions(session->operatorSystem(), sess);
+  return status;
+}
+
 int SaveJSON::forManager(
   cJSON* dict, cJSON* sess, cJSON* mesh, ManagerPtr modelMgr, JSONFlags sections)
 {

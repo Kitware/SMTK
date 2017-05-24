@@ -18,6 +18,10 @@
 
 namespace smtk
 {
+namespace model
+{
+class Model;
+}
 namespace bridge
 {
 namespace polygon
@@ -57,6 +61,8 @@ public:
 
   template <typename T, typename U, typename V>
   void consistentInternalDelete(T& container, U& modified, V& expunged, bool logDebug);
+
+  std::string defaultFileExtension(const smtk::model::Model&) const;
 
 protected:
   friend class Neighborhood;

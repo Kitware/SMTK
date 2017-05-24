@@ -373,6 +373,8 @@ public:
   virtual bool splitProperties(const EntityRef& from, const EntityRefs& to) const;
   virtual bool mergeProperties(const EntityRefs& from, EntityRef& to) const;
 
+  virtual std::string defaultFileExtension(const Model& model) const;
+
 protected:
   friend class io::SaveJSON;
   friend class io::LoadJSON;

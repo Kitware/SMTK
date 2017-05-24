@@ -39,6 +39,9 @@ public:
   SessionRef session() const;
   void setSession(const SessionRef& sess);
 
+  bool isModified() const;
+  void setIsModified(bool isModified);
+
   CellEntities cells() const;
   Groups groups() const;
   Models submodels() const;

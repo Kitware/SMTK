@@ -240,6 +240,24 @@ smtk::model::Model Session::addModel(vtkSmartPointer<vtkMultiBlockDataSet>& mode
 }
 // -- 6 --
 
+std::string Session::defaultFileExtension(const smtk::model::Model& model) const
+{
+  std::string result = ".simple";
+  if (model.hasStringProperty("type"))
+  {
+    const StringList& tval(model.stringProperty("type"));
+    if (!tval.empty())
+    {
+      result = tval[0];
+      if (result == "slac")
+        return ".ncdf";
+      else if (result == "exodus")
+        return ".exo";
+    }
+  }
+  return result;
+}
+
 // ++ 7 ++
 SessionInfoBits Session::transcribeInternal(
   const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth)

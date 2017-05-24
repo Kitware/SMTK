@@ -43,11 +43,11 @@ public:
 public slots:
   virtual void onInputValueChanged();
   void setOutputOptional(int);
-  virtual void onLaunchFileBrowser();
+  virtual bool onLaunchFileBrowser();
   virtual void updateFileComboList(const QString&);
 
 signals:
-  void launchFileBrowser();
+  bool launchFileBrowser();
 
 protected slots:
   virtual void updateItemData();

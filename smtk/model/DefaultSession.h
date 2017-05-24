@@ -65,6 +65,9 @@ public:
   virtual std::string remoteName() const;
   virtual OperatorPtr op(const std::string& opName) const;
 
+  /// Return an empty string. Subclasses should override this.
+  virtual std::string defaultFileExtension(const Model&) const { return ""; }
+
 protected:
   friend class RemoteOperator;
   friend class io::LoadJSON;

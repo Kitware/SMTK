@@ -25,7 +25,25 @@ public:
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
+  void extractChanges();
+
+  /**\brief Apply changes (or unapply temporary changes) in preparation for saving data.
+    *
+    * Call this method just before saving and, if entities are to be reverted
+    * to their original state, then again just after saving.
+    *
+    * Entries will be added to \a modified for each entity being modified and for
+    * each model begin saved (regardless of whether it is modified), **unless**
+    * entities are to be reverted to their original state (in which case no entities
+    * are modified).
+    */
+  bool applyChanges(smtk::model::EntityRefs& modified);
+
 protected:
+  class Internals;
+  Internals* m_data;
+
+  SaveSMTKModel();
   virtual OperatorResult operateInternal();
   virtual void generateSummary(OperatorResult&);
 };

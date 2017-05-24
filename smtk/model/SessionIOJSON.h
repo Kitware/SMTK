@@ -32,6 +32,10 @@ public:
 
   virtual ~SessionIOJSON() {}
 
+  // New-style API
+  virtual int saveJSON(cJSON* node, const SessionRef& sref, const Models& models);
+
+  // Deprecated API
   virtual int importJSON(ManagerPtr modelMgr, const SessionPtr& session, cJSON* sessionRec,
     bool loadNativeModels = false);
   virtual int exportJSON(ManagerPtr modelMgr, const SessionPtr& sessPtr, cJSON* sessionRec,

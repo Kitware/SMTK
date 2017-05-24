@@ -42,6 +42,7 @@
     : superclass(inManager, entityId)                                                              \
   {                                                                                                \
   }                                                                                                \
+  virtual ~thisclass() {} /* Avoid warnings about non-virtual destructor */                        \
   bool isValid() const { return this->EntityRef::isValid(); }                                      \
   virtual bool isValid(Entity** entRec) const                                                      \
   {                                                                                                \

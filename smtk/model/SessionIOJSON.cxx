@@ -32,6 +32,27 @@ namespace smtk
 namespace model
 {
 
+/**\brief Populate \a jsonSession with records from the subset of \a models owned by \a sref.
+  */
+int SessionIOJSON::saveJSON(cJSON* jsonSession, const SessionRef& sref, const Models& models)
+{
+  if (models.empty())
+  {
+    return 1; // no models => silent failure.
+  }
+
+  smtk::model::Manager::Ptr mgr = models.begin()->manager();
+  smtk::model::Models modelsOfSession;
+  for (auto model : models)
+  {
+    if (model.owningSession() == sref)
+    {
+      modelsOfSession.push_back(model);
+    }
+  }
+  return smtk::io::SaveJSON::addModelsRecord(mgr, modelsOfSession, jsonSession);
+}
+
 /**\brief Decode information from \a sessionRec for the given \a modelMgr.
   *
   * Subclasses should return 1 on success and 0 on failure.
@@ -101,6 +122,17 @@ int SessionIOJSON::importJSON(
 
         if (!nativemodelfile.empty())
         {
+          // Prefer reference path if filename is relative:
+          ::boost::filesystem::path nativeFile(nativemodelfile);
+          if (!this->referencePath().empty() && nativeFile.is_relative())
+          {
+            ::boost::filesystem::path root(this->referencePath());
+            nativeFile = root / nativeFile;
+            if (::boost::filesystem::exists(nativeFile))
+            {
+              nativemodelfile = nativeFile.string();
+            }
+          }
           // failed to load native model is still ok;
           // If the model is loaded successfully, we need to cache the loadedURL so that we
           // can recover it because loadModelsRecord may set the "url" to something else

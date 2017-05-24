@@ -10,6 +10,8 @@
 
 #include "smtk/model/StoredResource.h"
 
+#include "smtk/model/SessionRef.h"
+
 #include <fstream>
 
 namespace smtk
@@ -136,6 +138,16 @@ bool StoredResource::removeEntity(const EntityRef& ent)
     return true;
   }
   return false;
+}
+
+/// Return the session owning the entities (or an invalid session reference).
+SessionRef StoredResource::session() const
+{
+  if (this->m_entities.empty())
+  {
+    return SessionRef();
+  }
+  return this->m_entities.begin()->owningSession();
 }
 
 /// An internal method for restoring generation numbers; call markModified() instead of this.

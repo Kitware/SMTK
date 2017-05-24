@@ -7,10 +7,6 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME GroupItem.h -
-// .SECTION Description
-// .SECTION See Also
-
 #ifndef __smtk_attribute_GroupItem_h
 #define __smtk_attribute_GroupItem_h
 
@@ -23,6 +19,31 @@ namespace smtk
 namespace attribute
 {
 class GroupItemDefinition;
+
+/**\brief A group is an array of structures in SMTK.
+  *
+  * Groups are arrays of structures.
+  * The structure is defined by the children items in the group;
+  * each child item in the group is repeated once for every element
+  * of the array.
+  *
+  * The numberOfGroups() method returns the number of entries in the array,
+  * while numberOfItemsPerGroup() returns the number of children items.
+  * Groups may have other groups as children.
+  *
+  * As an example, consider a group g with 2 child items: a string item
+  * named "key" and a double item named "value".
+  * Calling setNumberOfGroups(5) will cause 5 key-value pairs to be allocated.
+  * You may then set values by like so:
+  *
+  * ```
+  *   const char* keyNames[];
+  *   for (std::size_t ii = 0; ii < 5; ++ii)
+  *   {
+  *     g->findAs<StringItem>(ii, "key")->setValue(keyNames[ii]);
+  *     g->findAs<DoubleItem>(ii, "value")->setValue(0.5 * ii);
+  *   }
+  */
 class SMTKCORE_EXPORT GroupItem : public Item
 {
   friend class GroupItemDefinition;
@@ -45,7 +66,15 @@ public:
   bool appendGroup();
   bool removeGroup(std::size_t element);
 
+  /// Return the i-th item in the first entry of the group.
   smtk::attribute::ItemPtr item(std::size_t ith) const { return this->item(0, ith); }
+  /**\brief Return the \a i-th item in for the \a element-th value of the group.
+    *
+    * If a group has M required values and each value consists of N items,
+    * then \a element must be in [0,M - 1] and \a ith in [0, N - 1].
+    *
+    * Note that numberOfGroups() returns M and numberOfItemsPerGroup() returns N.
+    */
   smtk::attribute::ItemPtr item(std::size_t element, std::size_t ith) const
   {
     assert(this->m_items.size() > element);
@@ -60,6 +89,12 @@ public:
     return this->find(0, inName);
   }
   smtk::attribute::ConstItemPtr find(std::size_t element, const std::string& name) const;
+
+  template <typename T>
+  typename T::Ptr findAs(std::size_t element, const std::string& name);
+
+  template <typename T>
+  typename T::ConstPtr findAs(std::size_t element, const std::string& name) const;
 
   template <typename T>
   typename T::Ptr findAs(const std::string& name);
@@ -89,6 +124,18 @@ protected:
 
 private:
 };
+
+template <typename T>
+typename T::Ptr GroupItem::findAs(std::size_t element, const std::string& iname)
+{
+  return smtk::dynamic_pointer_cast<T>(this->find(element, iname));
+}
+
+template <typename T>
+typename T::ConstPtr GroupItem::findAs(std::size_t element, const std::string& iname) const
+{
+  return smtk::dynamic_pointer_cast<const T>(this->find(element, iname));
+}
 
 template <typename T>
 typename T::Ptr GroupItem::findAs(const std::string& iname)

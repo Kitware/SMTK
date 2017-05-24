@@ -72,6 +72,8 @@ public:
   static int staticSetup(const std::string& optName, const smtk::model::StringList& optVal);
   virtual int setup(const std::string& optName, const smtk::model::StringList& optVal);
 
+  std::string defaultFileExtension(const smtk::model::Model& model) const;
+
   double maxRelChordErr() const { return this->m_maxRelChordErr; }
   double maxAngleErr() const { return this->m_maxAngleErr; }
 

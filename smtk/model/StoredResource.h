@@ -13,8 +13,11 @@
 #include "smtk/PublicPointerDefs.h"
 
 #include "smtk/model/EntityRef.h"
+#include "smtk/model/URLDisposition.h"
 
 #include "smtk/common/Resource.h"
+
+#include <vector>
 
 namespace smtk
 {
@@ -44,6 +47,11 @@ public:
   bool addEntity(const EntityRef& ent);
   bool removeEntity(const EntityRef& ent);
   const EntityRefs& entities() const { return this->m_entities; }
+  SessionRef session() const;
+
+  size_t addURLDisposition(const URLDisposition& disposition);
+  const std::vector<URLDisposition>& dispositions() const { return this->m_dispositions; }
+  bool clearDispositions();
 
 protected:
   StoredResource();
@@ -55,6 +63,8 @@ protected:
   int
     m_urlGeneration; // The generation number at the last time the resource was written to/read from disk.
   EntityRefs m_entities; // The model entities stored by this resource.
+  std::vector<URLDisposition>
+    m_dispositions; // Used to plan a write operation; only valid during writes.
 };
 
 } // namespace model

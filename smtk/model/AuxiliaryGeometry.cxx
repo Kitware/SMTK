@@ -57,5 +57,28 @@ void AuxiliaryGeometry::setUrl(const std::string& url)
   this->setStringProperty("url", url);
 }
 
+bool AuxiliaryGeometry::isModified() const
+{
+  smtk::model::Manager::Ptr mgr = this->manager();
+  if (!mgr || !this->hasIntegerProperty("clean"))
+  {
+    return false;
+  }
+
+  const IntegerList& prop(this->integerProperty("clean"));
+  return (!prop.empty() && (prop[0] != 1));
+}
+
+void AuxiliaryGeometry::setIsModified(bool isModified)
+{
+  smtk::model::Manager::Ptr mgr = this->manager();
+  if (!mgr)
+  {
+    return;
+  }
+
+  this->setIntegerProperty("clean", isModified ? 0 : 1);
+}
+
 } // namespace model
 } // namespace smtk

@@ -665,6 +665,19 @@ bool Session::mergeProperties(const EntityRefs& from, EntityRef& to) const
   return true;
 }
 
+/**\brief Return a filename extension (including ".") appropriate for saving \a model.
+  *
+  * Subclasses of session should override this method.
+  * If a method returns the empty string, it indicates that the model
+  * requires no "native" model file. (The polygon session is an example
+  * of this where all information is saved in the SMTK file.)
+  */
+std::string Session::defaultFileExtension(const Model& model) const
+{
+  (void)model;
+  return ".native";
+}
+
 /// Subclasses implement this; it should add a record for \a entRef to the manager.
 Entity* Session::addEntityRecord(const EntityRef& entRef)
 {

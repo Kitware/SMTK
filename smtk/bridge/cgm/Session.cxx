@@ -161,6 +161,13 @@ int Session::setup(const std::string& optName, const smtk::model::StringList& op
   return 0;
 }
 
+std::string Session::defaultFileExtension(const smtk::model::Model& model) const
+{
+  // TODO: Detect proper modeling kernel extension should we support non-OCC kernels
+  (void)model;
+  return ".brep";
+}
+
 /**\brief Populate records for \a entityref that reflect the CGM \a entity.
   *
   */
