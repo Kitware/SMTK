@@ -119,7 +119,7 @@ smtk::mesh::ManagerPtr vtkMeshMultiBlockSource::GetMeshManager()
 
 /// Get the map from model entity UUID to the block index in multiblock output
 void vtkMeshMultiBlockSource::GetMeshSet2BlockIdMap(
-  std::map<smtk::mesh::MeshSet, unsigned int>& uuid2mid)
+  std::map<smtk::mesh::MeshSet, vtkIdType>& uuid2mid)
 {
   uuid2mid.clear();
   uuid2mid.insert(this->m_Meshset2BlockIdMap.begin(), this->m_Meshset2BlockIdMap.end());
@@ -138,9 +138,9 @@ void vtkMeshMultiBlockSource::Dirty()
 /// Mapping from UUID to block id
 static void internal_AddBlockEntityInfo(const smtk::mesh::MeshSet& mesh,
   const smtk::model::EntityRef& entityref, const vtkIdType& blockId, vtkPolyData* poly,
-  std::map<smtk::mesh::MeshSet, unsigned int>& mesh2BlockId)
+  std::map<smtk::mesh::MeshSet, vtkIdType>& mesh2BlockId)
 {
-  mesh2BlockId[mesh] = static_cast<unsigned int>(blockId);
+  mesh2BlockId[mesh] = static_cast<vtkIdType>(blockId);
 
   // Add Entity UUID to fieldData
   vtkNew<vtkStringArray> uuidArray;
@@ -157,7 +157,7 @@ static void internal_AddBlockEntityInfo(const smtk::mesh::MeshSet& mesh,
 static void internal_AddBlockInfo(const smtk::mesh::CollectionPtr& meshcollect,
   const smtk::model::EntityRef& entityref, const smtk::mesh::MeshSet& blockmesh,
   const smtk::model::EntityRef& bordantCell, const vtkIdType& blockId, vtkPolyData* poly,
-  std::map<smtk::mesh::MeshSet, unsigned int>& mesh2BlockId)
+  std::map<smtk::mesh::MeshSet, vtkIdType>& mesh2BlockId)
 {
   meshcollect->setIntegerProperty(blockmesh, "block_index", blockId);
 

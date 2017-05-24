@@ -172,8 +172,7 @@ smtk::model::ManagerPtr vtkModelMultiBlockSource::GetModelManager()
 }
 
 /// Get the map from model entity UUID to the block index in multiblock output
-void vtkModelMultiBlockSource::GetUUID2BlockIdMap(
-  std::map<smtk::common::UUID, unsigned int>& uuid2mid)
+void vtkModelMultiBlockSource::GetUUID2BlockIdMap(std::map<smtk::common::UUID, vtkIdType>& uuid2mid)
 {
   uuid2mid.clear();
   uuid2mid.insert(this->UUID2BlockIdMap.begin(), this->UUID2BlockIdMap.end());
@@ -360,10 +359,10 @@ static void AddEntityTessToPolyData(const smtk::model::EntityRef& entityref, vtk
 /// 'Volume' field array to color by volume
 static void addBlockInfo(smtk::model::ManagerPtr manager, const smtk::model::EntityRef& entityref,
   const smtk::model::EntityRef& bordantCell, const vtkIdType& blockId, vtkDataObject* dobj,
-  std::map<smtk::common::UUID, unsigned int>& uuid2BlockId)
+  std::map<smtk::common::UUID, vtkIdType>& uuid2BlockId)
 {
   manager->setIntegerProperty(entityref.entity(), "block_index", blockId);
-  uuid2BlockId[entityref.entity()] = static_cast<unsigned int>(blockId);
+  uuid2BlockId[entityref.entity()] = blockId;
 
   // Add Entity UUID to fieldData
   vtkNew<vtkStringArray> uuidArray;
