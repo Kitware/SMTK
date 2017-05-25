@@ -63,6 +63,7 @@ void qtCheckItemComboBox::init()
 {
   this->m_displayItem = new QStandardItem;
   this->m_displayItem->setFlags(Qt::ItemIsEnabled);
+  this->m_displayItem->setCheckable(false);
   this->m_displayItem->setText("0 " + m_displayTextExt);
   QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());
   if (itemModel)
@@ -201,6 +202,7 @@ void qtModelEntityItemCombo::init()
 
 void qtModelEntityItemCombo::showPopup()
 {
+  this->setModel(new QStandardItemModel());
   this->init();
   this->qtCheckItemComboBox::showPopup();
 }

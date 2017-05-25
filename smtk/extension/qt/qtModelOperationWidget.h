@@ -60,6 +60,7 @@ public slots:
   }
   virtual void displayResult(const smtk::io::Logger& html);
   virtual void resetUI();
+  virtual void onModelEntityItemCreated(smtk::extension::qtModelEntityItem* entItem);
 
 signals:
   void operationRequested(const smtk::model::OperatorPtr& brOp);
@@ -69,6 +70,7 @@ signals:
   void meshSelectionItemCreated(smtk::extension::qtMeshSelectionItem* meshItem,
     const std::string& opName, const smtk::common::UUID& uuid);
   void activateOperationTarget(const smtk::common::UUID&);
+  void broadcastExpungeEntities(const smtk::model::EntityRefs& expungedEnts);
 
   friend class qtModelView;
 

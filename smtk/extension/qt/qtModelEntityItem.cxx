@@ -435,6 +435,21 @@ void qtModelEntityItem::onRequestEntityAssociation()
   emit this->modified();
 }
 
+void qtModelEntityItem::onExpungeEntities(const smtk::model::EntityRefs& expungedEnts)
+{
+  smtk::attribute::ModelEntityItemPtr modEntityItem =
+    dynamic_pointer_cast<ModelEntityItem>(this->getObject());
+  for (smtk::model::EntityRefs::const_iterator bit = expungedEnts.begin();
+       bit != expungedEnts.end(); ++bit)
+  {
+    std::ptrdiff_t idx = modEntityItem->find(*bit);
+    if (idx >= 0)
+    {
+      modEntityItem->removeValue(static_cast<std::size_t>(idx));
+    }
+  }
+}
+
 void qtModelEntityItem::popupViewItemSelected()
 {
   QStandardItemModel* itemModel =
