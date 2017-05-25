@@ -151,7 +151,8 @@ std::string EntityHandle::name() const
   if (!obj)
     return std::string();
 
-  return obj->GetInformation()->Get(vtkCompositeDataSet::NAME());
+  const char* val = obj->GetInformation()->Get(vtkCompositeDataSet::NAME());
+  return val ? std::string(val) : std::string();
 }
 
 /// Return the pedigree ID assigned to this object.
@@ -259,6 +260,29 @@ std::string Session::defaultFileExtension(const smtk::model::Model& model) const
   return result;
 }
 
+void AddCellToParent(smtk::model::EntityRef& mutableEntityRef, EntityHandle& handle, Session* sess)
+{
+  if (mutableEntityRef.isCellEntity())
+  {
+    EntityHandle pp = handle;
+    while (pp.entityType() != EXO_INVALID)
+    {
+      if (pp.parent().entityType() != EXO_INVALID)
+      {
+        pp = pp.parent();
+      }
+      else
+      {
+        break;
+      }
+    }
+    if (pp != handle)
+    {
+      sess->toEntityRef(pp).as<smtk::model::Model>().addCell(mutableEntityRef);
+    }
+  }
+}
+
 // ++ 7 ++
 SessionInfoBits Session::transcribeInternal(
   const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth)
@@ -309,16 +333,19 @@ SessionInfoBits Session::transcribeInternal(
       case EXO_BLOCK:
         mutableEntityRef.manager()->addCellOfDimensionWithUUID(mutableEntityRef.entity(), dim);
         mutableEntityRef.setName(handle.name());
+        AddCellToParent(mutableEntityRef, handle, this);
         break;
       // .. and other cases.
       // -- 9 --
       case EXO_SIDE_SET:
         mutableEntityRef.manager()->addCellOfDimensionWithUUID(mutableEntityRef.entity(), dim);
         mutableEntityRef.setName(handle.name());
+        AddCellToParent(mutableEntityRef, handle, this);
         break;
       case EXO_NODE_SET:
         mutableEntityRef.manager()->addCellOfDimensionWithUUID(mutableEntityRef.entity(), 0);
         mutableEntityRef.setName(handle.name());
+        AddCellToParent(mutableEntityRef, handle, this);
         break;
 
       // Groups of groups:
@@ -380,7 +407,10 @@ SessionInfoBits Session::transcribeInternal(
       }
       if (handle.entityType() == EXO_MODEL)
       {
-        //mutableEntityRef.as<smtk::model::Model>().addGroup(childEntityRef);
+        if (childEntityRef.isCellEntity())
+          mutableEntityRef.as<smtk::model::Model>().addCell(childEntityRef);
+        else if (childEntityRef.isGroup())
+          mutableEntityRef.as<smtk::model::Model>().addGroup(childEntityRef);
       }
       else
       {

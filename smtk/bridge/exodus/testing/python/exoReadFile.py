@@ -48,15 +48,16 @@ class TestExodusSession(smtk.testing.TestCase):
         self.assertEqual(
             numGroups, 3, 'Expected 3 groups, found %d' % numGroups)
 
-        numSubGroupsExpected = [1, 7, 3]
-        allgroups = []
-        for i in range(len(numSubGroupsExpected)):
-            numSubGroups = len(subgroups[i].members())
-            self.assertEqual(numSubGroupsExpected[i], numSubGroups,
-                             'Expected {e} groups, found {a}'.format(e=numSubGroupsExpected[i], a=numSubGroups))
-            allgroups += subgroups[i].members()
+        numGroupMembersExpected = [1, 7, 3]
+        allCells = []
+        for i in range(len(numGroupMembersExpected)):
+            numMembers = len(subgroups[i].members())
+            self.assertEqual(
+                numGroupMembersExpected[i], numMembers,
+                'Expected {e} groups, found {a}'.format(e=numGroupMembersExpected[i], a=numMembers))
+            allCells += subgroups[i].members()
 
-        # Verify that the group names match those from the Exodus file.
+        # Verify that the cell names match those from the Exodus file.
         nameset = {
             'Unnamed block ID: 1 Type: HEX8': '#5a5255',
             'Unnamed set ID: 1':              '#ae5a41',
@@ -67,55 +68,55 @@ class TestExodusSession(smtk.testing.TestCase):
             'Unnamed set ID: 6':              '#8b1ec4',
             'Unnamed set ID: 7':              '#ff6700'
         }
-        self.assertTrue(all([x.name() in nameset for x in allgroups]),
-                        'Not all group names recognized.')
+        self.assertTrue(all([x.name() in nameset for x in allCells]),
+                        'Not all cell names recognized.')
 
-        someGroup = allgroups[0]
-        self.assertEqual(someGroup.attributes(), set([]),
-                         'Group should not have any attribute associations.')
+        someCell = allCells[0]
+        self.assertEqual(someCell.attributes(), set([]),
+                         'Cell should not have any attribute associations.')
         asys = smtk.attribute.System.create()
         adef = asys.createDefinition('testDef')
-        adef.setAssociationMask(int(smtk.model.GROUP_ENTITY))
+        adef.setAssociationMask(int(smtk.model.CELL_ENTITY))
         adef.associationRule().setNumberOfRequiredValues(1)
         self.assertEqual(adef.associationRule().numberOfRequiredValues(), 1)
         attr = asys.createAttribute(adef.type())
 
-        self.assertTrue(attr.associateEntity(someGroup),
-                        'Could not associate group to attribute')
-        self.assertEqual(someGroup.attributes(), set([attr.id()]),
-                         'Group should have the assigned attribute.')
+        self.assertTrue(attr.associateEntity(someCell),
+                        'Could not associate cell to attribute')
+        self.assertEqual(someCell.attributes(), set([attr.id()]),
+                         'Cell should have the assigned attribute.')
 
-        # Verify that no groups which are not in the list above are present.
-        groupnames = [x.name() for x in allgroups]
-        self.assertTrue(all([x in groupnames for x in nameset]),
-                        'Some expected group names not present.')
+        # Verify that no cells which are not in the list above are present.
+        cellNames = [x.name() for x in allCells]
+        self.assertTrue(all([x in cellNames for x in nameset]),
+                        'Some expected cell names not present.')
 
-        # Count the number of each *type* of group (node, face, volume)
+        # Count the number of each *type* of cell (node, face, volume)
         # print '\n'.join([str((x.name(), x.flagSummary())) for x in
-        # allgroups])
-        grouptypes = [x.flagSummary() for x in allgroups]
-        gtc = {x: grouptypes.count(x) for x in grouptypes}
-        expectedgrouptypecounts = {
-            'boundary group (0-d entities)': 3,
-            'boundary group (0,1,2-d entities)': 7,
-            'domain group (3-d entities)': 1
+        # allCells])
+        cellTypes = [x.flagSummary() for x in allCells]
+        gtc = {x: cellTypes.count(x) for x in cellTypes}
+        expectedCellTypeCounts = {
+            'vertex': 3,
+            'face': 7,
+            'volume': 1
         }
         for entry in gtc.items():
             print '%40s: %d' % entry
-        self.assertEqual(gtc, expectedgrouptypecounts,
-                         'At least one group was of the wrong type.')
+        self.assertEqual(gtc, expectedCellTypeCounts,
+                         'At least one cell was of the wrong type.')
 
         if self.haveVTK() and self.haveVTKExtension():
 
-            # Render groups with colors:
-            for grp in allgroups:
-                color = self.hex2rgb(nameset[grp.name()])
-                SetEntityProperty(grp, 'color', as_float=color)
+            # Render cells with colors:
+            for cell in allCells:
+                color = self.hex2rgb(nameset[cell.name()])
+                SetEntityProperty(cell, 'color', as_float=color)
                 # The element block should not be shown as it is coincident with some
                 # of the side sets and throws off baseline images. Remove its
                 # tessellation.
-                if grp.name() == 'Unnamed block ID: 1 Type: HEX8':
-                    grp.setTessellation(smtk.model.Tessellation())
+                if cell.name() == 'Unnamed block ID: 1 Type: HEX8':
+                    cell.setTessellation(smtk.model.Tessellation())
 
             self.startRenderTest()
             mbs, filt, mapper, actor = self.addModelToScene(self.model)
@@ -127,6 +128,7 @@ class TestExodusSession(smtk.testing.TestCase):
             cam.SetViewUp(-0.891963, -0.122107, -0.435306)
             self.renderer.ResetCamera()
             self.renderWindow.Render()
+            self.interact()
             try:
                 self.assertImageMatch(
                     ['baseline', 'smtk', 'exodus', 'disk_out_ref.png'])

@@ -100,6 +100,17 @@ struct SMTKEXODUSSESSION_EXPORT EntityHandle
 
   template <typename T>
   void appendChildrenTo(T& container, int depth) const;
+
+  bool operator==(const EntityHandle& other) const
+  {
+    return this->m_session == other.m_session && this->m_object == other.m_object &&
+      this->m_modelNumber == other.m_modelNumber;
+  }
+  bool operator!=(const EntityHandle& other) const
+  {
+    return this->m_session != other.m_session || this->m_object != other.m_object ||
+      this->m_modelNumber != other.m_modelNumber;
+  }
 };
 // -- 2 --
 
@@ -246,7 +257,7 @@ void EntityHandle::appendChildrenTo(T& container, int depth) const
       }
     }
   }
-  else // objkids > 0
+  if (objkids > 0)
   {
     for (int i = 0; i < objkids; ++i)
     {
