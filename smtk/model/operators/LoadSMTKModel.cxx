@@ -88,7 +88,7 @@ static void updateURLs(cJSON* parent, cJSON* node, const ::boost::filesystem::pa
 
 static void replaceUUID(cJSON* node, const char* original, const char* replacement)
 {
-  if (node->string && node->string[0] && !strncmp(original, node->valuestring, 36))
+  if (node->string && node->string[0] && !strncmp(original, node->string, 36))
   {
     strncpy(node->string, replacement, 36);
   }

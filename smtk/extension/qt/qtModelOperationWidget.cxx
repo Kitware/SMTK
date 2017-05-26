@@ -376,14 +376,12 @@ bool qtModelOperationWidget::setCurrentOperator(
   }
 
   std::string opLabel = this->Internals->m_operatorNameMap[opName];
-  std::cerr << "Looking for " << opLabel << " aka " << opName << "\n";
   int idx = this->Internals->findLabelPosition(opLabel);
   if (this->Internals->OperationCombo->currentIndex() != idx)
   {
     this->Internals->OperationCombo->setCurrentIndex(idx);
     return true;
   }
-  std::cerr << "  map has " << this->Internals->OperatorMap.size() << " entries\n";
   OperatorPtr brOp = this->Internals->OperatorMap.contains(opName)
     ? this->Internals->OperatorMap[opName].opPtr
     : session->op(opName); // create the operator
