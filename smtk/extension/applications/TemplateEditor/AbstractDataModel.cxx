@@ -17,7 +17,6 @@
 // -----------------------------------------------------------------------------
 AbstractDataModel::AbstractDataModel(QObject* parent_)
   : QAbstractItemModel(parent_)
-  , RootItem(new QTreeWidgetItem())
 {
 }
 

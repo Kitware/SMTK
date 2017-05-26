@@ -27,6 +27,7 @@ ItemDefinitionsDataModel::ItemDefinitionsDataModel(QObject* parent)
 // ------------------------------------------------------------------------
 void ItemDefinitionsDataModel::initializeRootItem()
 {
+  AbstractDataModel::RootItem = new ItemDefElement;
   AbstractDataModel::RootItem->setData(0, Qt::DisplayRole, "Name");
   AbstractDataModel::RootItem->setData(1, Qt::DisplayRole, "Type");
   AbstractDataModel::RootItem->setData(2, Qt::DisplayRole, "Inherited From");
@@ -112,7 +113,8 @@ void ItemDefinitionsDataModel::insertItem(ItemDefProperties const& props)
     sys->removeAttribute(att);
   }
 
-  const int rowIndex = parentElement->childCount(); /// TODO use the position where it was
+  /// TODO use the position where it was
+  const int rowIndex = parentElement->childCount();
   QAbstractItemModel::beginInsertRows(props.ParentNode, rowIndex, rowIndex);
 
   ItemDefElement* elem = new ItemDefElement();

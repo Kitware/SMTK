@@ -45,6 +45,10 @@ smtk::common::ViewPtr PreviewPanel::createView(const smtk::attribute::Definition
     return nullptr;
   }
 
+  /// TODO Bob says this should be enough to flush the 'involved' attributes
+  /// (no additional ones should be created?). Try killing the view before
+  /// inserting any new itemdefinition. Also invalidate the view as soon as
+  /// the ItemDef changes (otherwise manipulating it could cause a crash).
   const std::string title = def->type();
   const std::string type = "Instanced";
   smtk::common::ViewPtr view = smtk::common::View::New(type, title);

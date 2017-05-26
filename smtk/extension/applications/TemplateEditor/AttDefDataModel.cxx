@@ -27,6 +27,7 @@ AttDefDataModel::~AttDefDataModel() = default;
 // -----------------------------------------------------------------------------
 void AttDefDataModel::initializeRootItem()
 {
+  AbstractDataModel::RootItem = new AttDefElement;
   AbstractDataModel::RootItem->setData(0, Qt::DisplayRole, "Type");
   //AbstractDataModel::RootItem->setData(1, Qt::DisplayRole, "Included In");
 }

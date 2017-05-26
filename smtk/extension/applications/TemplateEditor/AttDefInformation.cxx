@@ -135,7 +135,6 @@ void AttDefInformation::onAddItemDef()
   {
     QItemSelectionModel* sm = this->Ui->tvOwnedItems->selectionModel();
     auto currentIndex = sm->currentIndex();
-    auto itemDef = this->OwnedItemDefModel->getItemDef(currentIndex);
 
     ItemDefinitionsDataModel::ItemDefProperties props;
     props.Definition = this->CurrentAttDef;

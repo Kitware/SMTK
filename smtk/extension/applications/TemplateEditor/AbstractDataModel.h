@@ -67,7 +67,10 @@ protected:
   QTreeWidgetItem* getItem(const QModelIndex& index) const;
 
   /**
-  * Initialize the root item which holds the header tags.
+  * Construct the root element. This is the element holding the header tags
+  * so these should be initialized here. Concrete classes should implement this
+  * method as it is up to them to decide the concrete time of element
+  * (QTreeWidgetItem subclasses) to use.
   */
   virtual void initializeRootItem() = 0;
 
@@ -76,7 +79,7 @@ protected:
   */
   bool isIndexValid(const QModelIndex& index_) const;
 
-  QTreeWidgetItem* RootItem;
+  QTreeWidgetItem* RootItem = nullptr;
 
 private:
   void operator=(const AbstractDataModel&) = delete;

@@ -44,8 +44,6 @@ inline ItemDefinitionPtr create(DefinitionPtr def, const int type, const std::st
       return def->addItemDefinition<FileItemDefinition>(name);
     case Item::DIRECTORY:
       return def->addItemDefinition<DirectoryItemDefinition>(name);
-    //      case Item::COLOR:
-    //        return def->addItemDefinition<>(name);
     case Item::MODEL_ENTITY:
       return def->addItemDefinition<ModelEntityItemDefinition>(name);
     case Item::MESH_SELECTION:
