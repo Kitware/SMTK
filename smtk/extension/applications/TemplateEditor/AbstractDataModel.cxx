@@ -73,17 +73,19 @@ QModelIndex AbstractDataModel::parent(const QModelIndex& index_) const
 
   if (parentItem == nullptr)
   {
-    std::cout << "->>> parent item is null !\n";
     return QModelIndex();
   }
 
-  return QAbstractItemModel::createIndex(parentItem->indexOfChild(childItem), 0, parentItem);
+  QTreeWidgetItem* grandParentItem = parentItem->parent();
+  const int row = grandParentItem->indexOfChild(parentItem);
+
+  return QAbstractItemModel::createIndex(row, 0, parentItem);
 }
 
 // -----------------------------------------------------------------------------
 QVariant AbstractDataModel::data(const QModelIndex& index_, int role) const
 {
-  if (!this->isIndexValid(index_))
+  if (!this->isIndexValidUpperBound(index_))
   {
     return QVariant();
   }
@@ -105,7 +107,7 @@ QVariant AbstractDataModel::data(const QModelIndex& index_, int role) const
 // -----------------------------------------------------------------------------
 bool AbstractDataModel::setData(const QModelIndex& index_, const QVariant& value, int role)
 {
-  if (!this->isIndexValid(index_))
+  if (!this->isIndexValidUpperBound(index_))
   {
     return false;
   }
@@ -144,7 +146,7 @@ Qt::ItemFlags AbstractDataModel::flags(const QModelIndex& index_) const
 }
 
 // -----------------------------------------------------------------------------
-bool AbstractDataModel::isIndexValid(const QModelIndex& index_) const
+bool AbstractDataModel::isIndexValidUpperBound(const QModelIndex& index_) const
 {
   if (!index_.isValid())
   {
@@ -163,7 +165,6 @@ bool AbstractDataModel::isIndexValid(const QModelIndex& index_) const
 // -----------------------------------------------------------------------------
 QTreeWidgetItem* AbstractDataModel::getItem(const QModelIndex& index) const
 {
-  /// TODO Use isIndexValid
   if (index.isValid())
   {
     QTreeWidgetItem* item = static_cast<QTreeWidgetItem*>(index.internalPointer());

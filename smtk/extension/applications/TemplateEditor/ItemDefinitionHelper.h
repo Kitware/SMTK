@@ -22,9 +22,47 @@ namespace ItemDefinitionHelper
 using namespace smtk::attribute;
 
 /**
-   * Map int type to ItemDef concrete type.
+   * Create item definitions from enum type.
    */
 inline ItemDefinitionPtr create(DefinitionPtr def, const int type, const std::string& name)
+{
+  switch (type)
+  {
+    case Item::ATTRIBUTE_REF:
+      return RefItemDefinition::New(name);
+    case Item::DOUBLE:
+      return DoubleItemDefinition::New(name);
+    case Item::GROUP:
+      return GroupItemDefinition::New(name);
+    case Item::INT:
+      return IntItemDefinition::New(name);
+    case Item::STRING:
+      return StringItemDefinition::New(name);
+    case Item::VOID:
+      return VoidItemDefinition::New(name);
+    case Item::FILE:
+      return FileItemDefinition::New(name);
+    case Item::DIRECTORY:
+      return DirectoryItemDefinition::New(name);
+    case Item::MODEL_ENTITY:
+      return ModelEntityItemDefinition::New(name);
+    case Item::MESH_SELECTION:
+      return MeshSelectionItemDefinition::New(name);
+    case Item::MESH_ENTITY:
+      return MeshItemDefinition::New(name);
+    case Item::DATE_TIME:
+      return DateTimeItemDefinition::New(name);
+    default:
+      std::cout << "Error: Unknown type! Creating an Item::VOID\n";
+      return VoidItemDefinition::New(name);
+  }
+};
+
+/**
+   * Add a new ItemDefinition to def.
+   */
+inline ItemDefinitionPtr addItemDefinition(
+  DefinitionPtr def, const int type, const std::string& name)
 {
   switch (type)
   {

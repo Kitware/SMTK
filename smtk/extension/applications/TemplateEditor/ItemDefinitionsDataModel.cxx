@@ -101,6 +101,10 @@ void ItemDefinitionsDataModel::insertItem(ItemDefProperties const& props)
     auto group = std::static_pointer_cast<smtk::attribute::GroupItemDefinition>(parentItemDef);
     group->addItemDefinition(itemDef);
   }
+  else
+  {
+    props.Definition->addItemDefinition(itemDef);
+  }
 
   // Update the attribute (qtUIManager->qtInstancedView generates an attribute
   // and items for each of the ui elements [or some], and stores them in

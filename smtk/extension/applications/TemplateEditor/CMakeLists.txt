@@ -60,5 +60,6 @@ target_link_libraries(TemplateEditor
 
 install(TARGETS TemplateEditor
     RUNTIME DESTINATION bin
+    BUNDLE DESTINATION bin      # Required for MACOSX_BUNDLE
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib)

@@ -75,9 +75,12 @@ protected:
   virtual void initializeRootItem() = 0;
 
   /**
-  * Helper for a more comprehensive validation of indices.
+  * More comprehensive validation. In addition to the standard QModelIndex::isValid
+  * it checks the upper bounds. Because it internally calls QModelIndex::parent()
+  * (and thus QAbstractItemMode::parent()) it should never be called from within
+  * parent().
   */
-  bool isIndexValid(const QModelIndex& index_) const;
+  bool isIndexValidUpperBound(const QModelIndex& index_) const;
 
   QTreeWidgetItem* RootItem = nullptr;
 
