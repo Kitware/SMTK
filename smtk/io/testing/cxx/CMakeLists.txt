@@ -7,15 +7,25 @@ set(ioTests
 )
 
 set(ioDataTests
-  readSMTKFile
   ResourceSetWriterTest
   ResourceSetReaderTest
 )
 
-set(readSMTKFile_EXTRA_LIBRARIES smtkExodusSession)
-set(readSMTKFile_ARGUMENTS
-  ${SMTK_DATA_DIR}/model/3d/netcdf/pillbox.smtk
-)
+# readSMTKFile requires the Exodus session, so we only enable it if the Exodus
+# session is enabled.
+
+set(readSMTKFile_EXTRA_LIBRARIES)
+set(readSMTKFile_ARGUMENTS)
+
+if (SMTK_ENABLE_EXODUS_SESSION)
+  list(APPEND ioDataTests
+    readSMTKFile
+    )
+  set(readSMTKFile_EXTRA_LIBRARIES smtkExodusSession)
+  set(readSMTKFile_ARGUMENTS
+    ${SMTK_DATA_DIR}/model/3d/netcdf/pillbox.smtk
+    )
+endif ()
 
 set(ResourceSetWriterTest_ARGUMENTS
   ${SMTK_DATA_DIR}/attribute/attribute_system/Basic2DFluid.sbt
