@@ -137,8 +137,7 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
   smtk::model::EntityRefArray expunged;
   if (!splitLocs.empty())
   {
-    smtkInfoMacro(
-      this->log(), "Splitting tweaked edge into " << (splitLocs.size() + 1) << " pieces.");
+    smtkInfoMacro(this->log(), "Splitting tweaked edge at " << splitLocs.size() << " places.");
     if (!pmod->splitModelEdgeAtModelVertices(
           mgr, storage, promotedVerts, splitLocs, edgesAdded, this->m_debugLevel))
     {

@@ -706,7 +706,10 @@ bool pmodel::splitModelEdgeAtModelVertices(smtk::model::ManagerPtr mgr, edge::Pt
       // at their beginning and end... we have to remove the duplicate before
       // splicing and then add a duplicate of the new start point to the end
       // of the list.
-      smtkDebugMacro(this->session()->log(), "Edge is periodic, split is interior!");
+      if (debugLevel > 0)
+      {
+        smtkDebugMacro(this->session()->log(), "Edge is periodic, split is interior!");
+      }
 
 #if defined(GCC_STDLIBCXX_SUPPORT_BROKEN)
       // GCC 4.9.2 does not support iterator conversions for
@@ -806,7 +809,7 @@ bool pmodel::splitModelEdgeAtModelVertices(smtk::model::ManagerPtr mgr, edge::Pt
   // to insert a coincident edge at the existing edge endpoints).
   std::pair<Id, Id> adjacentFaces = this->removeModelEdgeFromEndpoints(mgr, edgeToSplit);
   bool isFreeCell = (!adjacentFaces.first && !adjacentFaces.second);
-  if (debugLevel > -1)
+  if (debugLevel > 0)
   {
     smtkDebugMacro(this->m_session->log(), "Split " << modelEdge.name() << "  faces "
                                                     << adjacentFaces.first.toString() << " / "
@@ -846,7 +849,7 @@ bool pmodel::splitModelEdgeAtModelVertices(smtk::model::ManagerPtr mgr, edge::Pt
     ++sgit;
   } while (1);
 
-  if (debugLevel > -1)
+  if (debugLevel > 0)
   {
     std::ostringstream summ;
     summ << "Edge incidences at new interior vertices:\n";
@@ -1570,20 +1573,18 @@ bool pmodel::tweakEdge(
     }
   }
   modified.insert(modified.end(), modEdgesAndFaces.begin(), modEdgesAndFaces.end());
-  // If the edge had no model vertices, then we must see if any faces are attached to it
-  // and update their tessellations. (If it did have verts, tweakVertex will have updated them.)
-  if (verts.empty())
+  // We must check any attached faces and retessellate them if they haven't been redone already.
+  // This can happen on edges with faces but no model vertices or when the model vertex
+  // positions have not been changed by the tweak.
+  smtk::model::Faces facesOnEdge = edge.faces();
+  for (smtk::model::Faces::iterator fit = facesOnEdge.begin(); fit != facesOnEdge.end(); ++fit)
   {
-    smtk::model::Faces facesOnEdge = edge.faces();
-    for (smtk::model::Faces::iterator fit = facesOnEdge.begin(); fit != facesOnEdge.end(); ++fit)
+    // If we have a face attached, re-tessellate it and add to modEdgesAndFaces
+    if (modEdgesAndFaces.find(*fit) == modEdgesAndFaces.end())
     {
-      // If we have a face attached, re-tessellate it and add to modEdgesAndFaces
-      if (modEdgesAndFaces.find(*fit) == modEdgesAndFaces.end())
-      {
-        smtkDebugMacro(this->m_session->log(), "Retessellating face " << fit->name() << ".");
-        this->addFaceTessellation(*fit);
-        modEdgesAndFaces.insert(*fit);
-      }
+      smtkDebugMacro(this->m_session->log(), "Retessellating face " << fit->name() << ".");
+      this->addFaceTessellation(*fit);
+      modEdgesAndFaces.insert(*fit);
     }
   }
   return true;
