@@ -180,22 +180,18 @@ int main(int argc, char* argv[])
   egOp->specification()->findModelEntity("remove cell group")->setValue(modifyGroup);
 
   egResult = egOp->operate();
-  if (egResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
-  {
-    std::cerr << "Entity group operator failed!\n";
-    return 1;
-  }
-  // print out the elements in the group
+  test(egResult->findInt("outcome")->value() == smtk::model::OPERATION_SUCCEEDED,
+    "Entity group operator failed!");
+
+  // Print out the elements in the group
   groups = manager->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::GROUP_ENTITY);
-  std::cout << "After remove, group size is: " << groups.size() << endl;
-  test(groups.size() == 14, "Expecting 14 group");
-  std::cout << "The items in groups is:\n";
+  std::cout << "After removal, the number of groups is: " << groups.size() << endl;
+  std::cout << "The groups are:\n";
   for (EntityRefs::iterator it = groups.begin(); it != groups.end(); ++it)
   {
     std::cout << "  " << it->name() << "\n";
-    //std::cout<< "  number of values"<<it->numberOfValues()<< std::endl;
   }
   std::cout << std::endl;
-  test(groups.size() == 14, "groups size is not right!\n");
+  test(groups.size() == 3, "Expecting 3 groups.");
   return 0;
 }

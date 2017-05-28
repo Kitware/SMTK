@@ -67,12 +67,7 @@ EntityRef Model::parent() const
   */
 SessionRef Model::session() const
 {
-  std::set<EntityRef> parents; // prevent infinite loops
-  EntityRef pp = this->parent();
-  while (pp.isValid() && !pp.isSessionRef() && parents.find(pp) == parents.end())
-    pp = pp.as<Model>().parent();
-
-  return pp.as<SessionRef>();
+  return this->owningSession();
 }
 
 /// Update this model so that it refers to \a sess as its owner.

@@ -15,6 +15,7 @@
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
 
+#include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
@@ -150,7 +151,8 @@ std::string EntityHandle::name() const
   if (!obj)
     return std::string();
 
-  return obj->GetInformation()->Get(vtkCompositeDataSet::NAME());
+  const char* val = obj->GetInformation()->Get(vtkCompositeDataSet::NAME());
+  return val ? std::string(val) : std::string();
 }
 
 /// Return the pedigree ID assigned to this object.
@@ -258,6 +260,29 @@ std::string Session::defaultFileExtension(const smtk::model::Model& model) const
   return result;
 }
 
+void AddCellToParent(smtk::model::EntityRef& mutableEntityRef, EntityHandle& handle, Session* sess)
+{
+  if (mutableEntityRef.isCellEntity())
+  {
+    EntityHandle pp = handle;
+    while (pp.entityType() != EXO_INVALID)
+    {
+      if (pp.parent().entityType() != EXO_INVALID)
+      {
+        pp = pp.parent();
+      }
+      else
+      {
+        break;
+      }
+    }
+    if (pp != handle)
+    {
+      sess->toEntityRef(pp).as<smtk::model::Model>().addCell(mutableEntityRef);
+    }
+  }
+}
+
 // ++ 7 ++
 SessionInfoBits Session::transcribeInternal(
   const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth)
@@ -306,25 +331,21 @@ SessionInfoBits Session::transcribeInternal(
       case EXO_LABEL_MAP:
       case EXO_LABEL:
       case EXO_BLOCK:
-        entityDimBits = Entity::dimensionToDimensionBits(dim);
-        mutableEntityRef.manager()->insertGroup(
-          mutableEntityRef.entity(), MODEL_DOMAIN | entityDimBits, handle.name());
-        mutableEntityRef.as<Group>().setMembershipMask(VOLUME);
+        mutableEntityRef.manager()->addCellOfDimensionWithUUID(mutableEntityRef.entity(), dim);
+        mutableEntityRef.setName(handle.name());
+        AddCellToParent(mutableEntityRef, handle, this);
         break;
       // .. and other cases.
       // -- 9 --
       case EXO_SIDE_SET:
-        entityDimBits = 0;
-        for (int i = 0; i <= dim; ++i)
-          entityDimBits |= Entity::dimensionToDimensionBits(i);
-        mutableEntityRef.manager()->insertGroup(
-          mutableEntityRef.entity(), MODEL_BOUNDARY | entityDimBits, handle.name());
-        mutableEntityRef.as<Group>().setMembershipMask(CELL_ENTITY | entityDimBits);
+        mutableEntityRef.manager()->addCellOfDimensionWithUUID(mutableEntityRef.entity(), dim);
+        mutableEntityRef.setName(handle.name());
+        AddCellToParent(mutableEntityRef, handle, this);
         break;
       case EXO_NODE_SET:
-        mutableEntityRef.manager()->insertGroup(
-          mutableEntityRef.entity(), MODEL_BOUNDARY | DIMENSION_0, handle.name());
-        mutableEntityRef.as<Group>().setMembershipMask(VERTEX);
+        mutableEntityRef.manager()->addCellOfDimensionWithUUID(mutableEntityRef.entity(), 0);
+        mutableEntityRef.setName(handle.name());
+        AddCellToParent(mutableEntityRef, handle, this);
         break;
 
       // Groups of groups:
@@ -385,9 +406,18 @@ SessionInfoBits Session::transcribeInternal(
         this->transcribeInternal(childEntityRef, requestedInfo, depth < 0 ? depth : depth - 1);
       }
       if (handle.entityType() == EXO_MODEL)
-        mutableEntityRef.as<smtk::model::Model>().addGroup(childEntityRef);
+      {
+        if (childEntityRef.isCellEntity())
+          mutableEntityRef.as<smtk::model::Model>().addCell(childEntityRef);
+        else if (childEntityRef.isGroup())
+          mutableEntityRef.as<smtk::model::Model>().addGroup(childEntityRef);
+      }
       else
+      {
         mutableEntityRef.as<smtk::model::Group>().addEntity(childEntityRef);
+        if (childEntityRef.isCellEntity())
+          mutableEntityRef.owningModel().addCell(childEntityRef);
+      }
     }
 
     // Mark that we added this information to the manager:
@@ -416,17 +446,14 @@ SessionInfoBits Session::transcribeInternal(
     {
       case EXO_BLOCK:
         mutableEntityRef.setStringProperty("_simple type", "element block");
-        mutableEntityRef.as<smtk::model::Group>().setMembershipMask(DIMENSION_3 | MODEL_DOMAIN);
         mutableEntityRef.setIntegerProperty("pedigree id", handle.pedigree());
         break;
       case EXO_NODE_SET:
         mutableEntityRef.setStringProperty("_simple type", "node set");
-        mutableEntityRef.as<smtk::model::Group>().setMembershipMask(DIMENSION_0 | MODEL_BOUNDARY);
         mutableEntityRef.setIntegerProperty("pedigree id", handle.pedigree());
         break;
       case EXO_SIDE_SET:
         mutableEntityRef.setStringProperty("_simple type", "side set");
-        mutableEntityRef.as<smtk::model::Group>().setMembershipMask(ANY_DIMENSION | MODEL_BOUNDARY);
         mutableEntityRef.setIntegerProperty("pedigree id", handle.pedigree());
         break;
       case EXO_BLOCKS:

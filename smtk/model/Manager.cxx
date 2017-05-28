@@ -1308,206 +1308,17 @@ UUIDWithIntegerProperties Manager::integerPropertiesForEntity(const UUID& entity
 /// Attempt to find a model owning the given entity.
 UUID Manager::modelOwningEntity(const UUID& ent) const
 {
-  UUID uid(ent);
-  UUIDsToEntities::const_iterator it = this->m_topology->find(uid);
-  if (it != this->m_topology->end())
-  {
-    // If we have a use or a shell, get the associated cell, if any
-    smtk::model::BitFlags etype = it->second.entityFlags();
-    switch (etype & ENTITY_MASK)
-    {
-      case AUX_GEOM_ENTITY:
-      {
-        ManagerPtr self = const_cast<Manager*>(this)->shared_from_this();
-        EntityRef aux(self, ent);
-        for (aux = aux.embeddedIn(); aux.isValid(); aux = aux.embeddedIn())
-        {
-          if (aux.isModel())
-          {
-            return aux.entity();
-          }
-        }
-        return UUID();
-      }
-      break;
-      case GROUP_ENTITY:
-      {
-        // If we have a superset arrangement, ask for supersets and traverse upwards.
-        ManagerPtr self = const_cast<Manager*>(this)->shared_from_this();
-        EntityRefArray supersets;
-        EntityRefArrangementOps::appendAllRelations(
-          EntityRef(self->shared_from_this(), ent), SUBSET_OF, supersets);
-        if (!supersets.empty())
-        {
-          EntityRef super;
-          for (EntityRefArray::iterator spit = supersets.begin(); spit != supersets.end(); ++spit)
-          {
-            if (spit->isModel())
-              return spit->entity();
-          }
-          // No models are in my superset... traverse up the first superset to find a model:
-          return this->modelOwningEntity(supersets.begin()->entity());
-        }
-
-        // Assume the first relationship that is a group or model is our owner.
-        // Keep going up parent groups until we hit the top.
-        for (UUIDArray::const_iterator sit = it->second.relations().begin();
-             sit != it->second.relations().end(); ++sit)
-        {
-          UUIDsToEntities::const_iterator subentity = this->topology().find(*sit);
-          if (subentity != this->topology().end() && subentity->first != uid)
-          {
-            if (subentity->second.entityFlags() & MODEL_ENTITY)
-              return subentity->first;
-            if (subentity->second.entityFlags() & GROUP_ENTITY)
-            { // Switch to finding relations of the group (assume it is our parent)
-              uid = subentity->first;
-              it = this->m_topology->find(uid);
-              sit = it->second.relations().begin();
-            }
-          }
-        }
-      }
-      break;
-      case INSTANCE_ENTITY:
-        // Look for any relationship. We assume the first one is our prototype.
-        for (UUIDArray::const_iterator sit = it->second.relations().begin();
-             sit != it->second.relations().end(); ++sit)
-        {
-          UUIDsToEntities::const_iterator subentity = this->topology().find(*sit);
-          if (subentity != this->topology().end() && subentity->first != uid)
-          {
-            if (subentity->second.entityFlags() & MODEL_ENTITY)
-              return subentity->first;
-            return this->modelOwningEntity(subentity->first);
-            break;
-          }
-        }
-        break;
-      case SHELL_ENTITY:
-        // Loop for a relationship to a use.
-        for (UUIDArray::const_iterator sit = it->second.relations().begin();
-             sit != it->second.relations().end(); ++sit)
-        {
-          UUIDsToEntities::const_iterator subentity = this->topology().find(*sit);
-          if (subentity != this->topology().end() &&
-            smtk::model::isUseEntity(subentity->second.entityFlags()))
-          {
-            it = subentity;
-            break;
-          }
-        }
-      // Now fall through and look for the use's relationship to a cell.
-      case USE_ENTITY:
-        // Look for a relationship to a cell
-        for (UUIDArray::const_iterator sit = it->second.relations().begin();
-             sit != it->second.relations().end(); ++sit)
-        {
-          UUIDsToEntities::const_iterator subentity = this->topology().find(*sit);
-          if (subentity != this->topology().end() &&
-            smtk::model::isCellEntity(subentity->second.entityFlags()))
-          {
-            it = subentity;
-            break;
-          }
-        }
-        break;
-      case MODEL_ENTITY:
-        // For models, life is tricky. Without arrangement information, we cannot
-        // know whether a related model is a child or a parent. Two models might
-        // point to each other, which could throw us into an infinite loop. So,
-        // we attempt to cast ourselves to Manager and identify a parent model.
-        {
-          // Although const_pointer_cast is evil, changing the entityref classes
-          // to accept any type of shared_ptr<X/X const> is more evil.
-          ManagerPtr self = smtk::const_pointer_cast<Manager>(shared_from_this());
-          return Model(self, ent).parent().entity();
-        }
-        break;
-      // Remaining types should all have a direct relationship with a model if they are free:
-      default:
-      case CELL_ENTITY:
-        break;
-    }
-    // Now look for a direct relationship with a model.
-    // If none exists, look for relationships with higher-dimensional entities
-    // and check *them* for models.
-    int dim;
-    UUIDs uids;
-    uids.insert(it->first);
-    for (dim = it->second.dimension(); dim >= 0 && dim < 4; ++dim)
-    {
-      for (UUIDs::iterator uit = uids.begin(); uit != uids.end(); ++uit)
-      {
-        const Entity* bordEnt = this->findEntity(*uit);
-        if (!bordEnt)
-          continue;
-        for (UUIDArray::const_iterator rit = bordEnt->relations().begin();
-             rit != bordEnt->relations().end(); ++rit)
-        {
-          const Entity* relEnt = this->findEntity(*rit);
-          if (relEnt && relEnt != bordEnt && (relEnt->entityFlags() & MODEL_ENTITY))
-          {
-            return *rit;
-          }
-        }
-      }
-      // FIXME: This is slow. Avoid calling bordantEntities().
-      uids = this->bordantEntities(uids, dim + 1);
-    }
-  }
-  return UUID::null();
+  std::set<UUID> visited;
+  UUID result = this->modelOwningEntityRecursive(ent, visited);
+  return result;
 }
 
 /// Attempt to find a session owning the given entity.
 UUID Manager::sessionOwningEntity(const UUID& ent) const
 {
-  const Entity* erec = this->findEntity(ent);
-  if (erec)
-  {
-    // Traverse up to the owning model
-    UUID uid = isModel(erec->entityFlags()) ? ent : modelOwningEntity(ent);
-    // The parent of a model should be another model or session.
-
-    // If we have a superset arrangement, ask for supersets and traverse upwards.
-    ManagerPtr self = const_cast<Manager*>(this)->shared_from_this();
-    EntityRefArray supersets;
-    EntityRefArrangementOps::appendAllRelations(
-      EntityRef(self->shared_from_this(), uid), SUBSET_OF, supersets);
-    if (!supersets.empty())
-    {
-      EntityRef super;
-      for (EntityRefArray::iterator spit = supersets.begin(); spit != supersets.end(); ++spit)
-      {
-        if (spit->isSessionRef())
-          return spit->entity();
-      }
-      // No sessions are in my superset... traverse up the first superset to find one:
-      return this->sessionOwningEntity(supersets.begin()->entity());
-    }
-
-    // Assume the first relationship that is a session or model is our owner.
-    // Keep going up parents until we hit the top.
-    UUIDsToEntities::const_iterator it = this->m_topology->find(uid);
-    for (UUIDArray::const_iterator sit = it->second.relations().begin();
-         sit != it->second.relations().end(); ++sit)
-    {
-      UUIDsToEntities::const_iterator subentity = this->topology().find(*sit);
-      if (subentity != this->topology().end() && subentity->first != uid)
-      {
-        if (isSessionRef(subentity->second.entityFlags()))
-          return subentity->first;
-        if (isModel(subentity->second.entityFlags()))
-        { // Switch to finding relations of the model (assume it is our parent)
-          uid = subentity->first;
-          it = this->m_topology->find(uid);
-          sit = it->second.relations().begin();
-        }
-      }
-    }
-    return uid;
-  }
-  return UUID::null();
+  std::set<UUID> visited;
+  UUID result = this->sessionOwningEntityRecursive(ent, visited);
+  return result;
 }
 
 /**\brief Assign a string property named "name" to every entity without one.
@@ -4189,6 +4000,241 @@ void Manager::computeResources()
       this->m_resources->removeResource(unused);
     }
   }
+}
+
+/// Internal method used by modelOwningEntity to prevent infinite recursion
+UUID Manager::modelOwningEntityRecursive(const UUID& ent, std::set<UUID>& visited) const
+{
+  if (visited.find(ent) != visited.end())
+  {
+    return UUID::null(); // We've already search here with no result.
+  }
+  visited.insert(ent);
+
+  UUID uid(ent);
+  UUIDsToEntities::const_iterator it = this->m_topology->find(uid);
+  if (it != this->m_topology->end())
+  {
+    // If we have a use or a shell, get the associated cell, if any
+    smtk::model::BitFlags etype = it->second.entityFlags();
+    switch (etype & ENTITY_MASK)
+    {
+      case AUX_GEOM_ENTITY:
+      {
+        ManagerPtr self = const_cast<Manager*>(this)->shared_from_this();
+        EntityRef aux(self, ent);
+        for (aux = aux.embeddedIn(); aux.isValid(); aux = aux.embeddedIn())
+        {
+          if (aux.isModel())
+          {
+            return aux.entity();
+          }
+        }
+        return UUID();
+      }
+      break;
+      case GROUP_ENTITY:
+      {
+        // If we have a superset arrangement, ask for supersets and traverse upwards.
+        ManagerPtr self = const_cast<Manager*>(this)->shared_from_this();
+        EntityRefArray supersets;
+        EntityRefArrangementOps::appendAllRelations(
+          EntityRef(self->shared_from_this(), ent), SUBSET_OF, supersets);
+        if (!supersets.empty())
+        {
+          EntityRef super;
+          for (EntityRefArray::iterator spit = supersets.begin(); spit != supersets.end(); ++spit)
+          {
+            if (spit->isModel())
+              return spit->entity();
+          }
+          // No models are in my superset... traverse up the first superset to find a model:
+          for (auto ssentry = supersets.begin(); ssentry != supersets.end(); ++ssentry)
+          {
+            UUID result = this->modelOwningEntityRecursive(ssentry->entity(), visited);
+            if (result)
+            {
+              return result;
+            }
+          }
+        }
+
+        // Assume the first relationship that is a group or model is our owner.
+        // Keep going up parent groups until we hit the top.
+        for (UUIDArray::const_iterator sit = it->second.relations().begin();
+             sit != it->second.relations().end(); ++sit)
+        {
+          UUIDsToEntities::const_iterator subentity = this->topology().find(*sit);
+          if (subentity != this->topology().end() && subentity->first != uid)
+          {
+            if (subentity->second.entityFlags() & MODEL_ENTITY)
+              return subentity->first;
+            if (subentity->second.entityFlags() & GROUP_ENTITY)
+            { // Switch to finding relations of the group (assume it is our parent)
+              uid = subentity->first;
+              it = this->m_topology->find(uid);
+              sit = it->second.relations().begin();
+            }
+          }
+        }
+      }
+      break;
+      case INSTANCE_ENTITY:
+        // Look for any relationship. We assume the first one is our prototype.
+        for (UUIDArray::const_iterator sit = it->second.relations().begin();
+             sit != it->second.relations().end(); ++sit)
+        {
+          UUIDsToEntities::const_iterator subentity = this->topology().find(*sit);
+          if (subentity != this->topology().end() && subentity->first != uid)
+          {
+            if (subentity->second.entityFlags() & MODEL_ENTITY)
+              return subentity->first;
+            UUID result = this->modelOwningEntityRecursive(subentity->first, visited);
+            if (result)
+            {
+              return result;
+            }
+            break;
+          }
+        }
+        break;
+      case SHELL_ENTITY:
+        // Loop for a relationship to a use.
+        for (UUIDArray::const_iterator sit = it->second.relations().begin();
+             sit != it->second.relations().end(); ++sit)
+        {
+          UUIDsToEntities::const_iterator subentity = this->topology().find(*sit);
+          if (subentity != this->topology().end() &&
+            smtk::model::isUseEntity(subentity->second.entityFlags()))
+          {
+            it = subentity;
+            break;
+          }
+        }
+      // Now fall through and look for the use's relationship to a cell.
+      case USE_ENTITY:
+        // Look for a relationship to a cell
+        for (UUIDArray::const_iterator sit = it->second.relations().begin();
+             sit != it->second.relations().end(); ++sit)
+        {
+          UUIDsToEntities::const_iterator subentity = this->topology().find(*sit);
+          if (subentity != this->topology().end() &&
+            smtk::model::isCellEntity(subentity->second.entityFlags()))
+          {
+            it = subentity;
+            break;
+          }
+        }
+        break;
+      case MODEL_ENTITY:
+        // For models, life is tricky. Without arrangement information, we cannot
+        // know whether a related model is a child or a parent. Two models might
+        // point to each other, which could throw us into an infinite loop. So,
+        // we attempt to cast ourselves to Manager and identify a parent model.
+        {
+          // Although const_pointer_cast is evil, changing the entityref classes
+          // to accept any type of shared_ptr<X/X const> is more evil.
+          ManagerPtr self = smtk::const_pointer_cast<Manager>(shared_from_this());
+          return Model(self, ent).parent().entity();
+        }
+        break;
+      // Remaining types should all have a direct relationship with a model if they are free:
+      default:
+      case CELL_ENTITY:
+        break;
+    }
+    // Now look for a direct relationship with a model.
+    // If none exists, look for relationships with higher-dimensional entities
+    // and check *them* for models.
+    int dim;
+    UUIDs uids;
+    uids.insert(it->first);
+    for (dim = it->second.dimension(); dim >= 0 && dim < 4; ++dim)
+    {
+      for (UUIDs::iterator uit = uids.begin(); uit != uids.end(); ++uit)
+      {
+        const Entity* bordEnt = this->findEntity(*uit);
+        if (!bordEnt)
+          continue;
+        for (UUIDArray::const_iterator rit = bordEnt->relations().begin();
+             rit != bordEnt->relations().end(); ++rit)
+        {
+          const Entity* relEnt = this->findEntity(*rit);
+          if (relEnt && relEnt != bordEnt && (relEnt->entityFlags() & MODEL_ENTITY))
+          {
+            return *rit;
+          }
+        }
+      }
+      // FIXME: This is slow. Avoid calling bordantEntities().
+      uids = this->bordantEntities(uids, dim + 1);
+    }
+  }
+  return UUID::null();
+}
+
+/// Attempt to find a session owning the given entity.
+UUID Manager::sessionOwningEntityRecursive(const UUID& ent, std::set<UUID>& visited) const
+{
+  if (visited.find(ent) != visited.end())
+  {
+    return UUID::null(); // We've already been here with no result
+  }
+  visited.insert(ent);
+
+  const Entity* erec = this->findEntity(ent);
+  if (erec)
+  {
+    // Traverse up to the owning model
+    UUID uid = isModel(erec->entityFlags()) ? ent : modelOwningEntity(ent);
+    // The parent of a model should be another model or session.
+
+    // If we have a superset arrangement, ask for supersets and traverse upwards.
+    ManagerPtr self = const_cast<Manager*>(this)->shared_from_this();
+    EntityRefArray supersets;
+    EntityRefArrangementOps::appendAllRelations(
+      EntityRef(self->shared_from_this(), uid), SUBSET_OF, supersets);
+    if (!supersets.empty())
+    {
+      EntityRef super;
+      for (EntityRefArray::iterator spit = supersets.begin(); spit != supersets.end(); ++spit)
+      {
+        if (spit->isSessionRef())
+          return spit->entity();
+      }
+      // No sessions are in my superset... traverse up the first superset to find one:
+      for (auto ssentry = supersets.begin(); ssentry != supersets.end(); ++ssentry)
+      {
+        UUID result = this->sessionOwningEntityRecursive(ssentry->entity(), visited);
+        if (result)
+        {
+          return result;
+        }
+      }
+    }
+
+    // Assume the first relationship that is a session or model is our owner.
+    // Keep going up parents until we hit the top.
+    UUIDsToEntities::const_iterator it = this->m_topology->find(uid);
+    for (UUIDArray::const_iterator sit = it->second.relations().begin();
+         sit != it->second.relations().end(); ++sit)
+    {
+      UUIDsToEntities::const_iterator subentity = this->topology().find(*sit);
+      if (subentity != this->topology().end() && subentity->first != uid)
+      {
+        if (isSessionRef(subentity->second.entityFlags()))
+          return subentity->first;
+        if (isModel(subentity->second.entityFlags()))
+        { // Switch to finding relations of the model (assume it is our parent)
+          uid = subentity->first;
+          it = this->m_topology->find(uid);
+          sit = it->second.relations().begin();
+        }
+      }
+    }
+    return uid;
+  }
+  return UUID::null();
 }
 
 } // namespace model

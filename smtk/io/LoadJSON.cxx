@@ -811,41 +811,46 @@ int LoadJSON::ofLocalSession(
   {
     return status;
   }
+  smtk::common::UUID suid(node->string);
+  SessionRef sref(context, suid);
 
-  // See if the session node has any "static-options".
-  // If so, then we must call the session's staticSetup function
-  // on each entry before creating an instance of the session.
-  cJSON* staticOptions = cJSON_GetObjectItem(node, "static-options");
-  if (staticOptions && staticOptions->type == cJSON_Object)
-  { // Turn every string-valued entry in the object into a setting.
-    SessionStaticSetup sessionSetup = SessionRegistrar::sessionStaticSetup(nameObj->valuestring);
-    if (sessionSetup)
-    {
-      for (cJSON* entry = staticOptions->child; entry; entry = entry->next)
+  if (!sref.isValid())
+  { // We are being asked to create a new session.
+    // See if the session node has any "static-options".
+    // If so, then we must call the session's staticSetup function
+    // on each entry before creating an instance of the session.
+    cJSON* staticOptions = cJSON_GetObjectItem(node, "static-options");
+    if (staticOptions && staticOptions->type == cJSON_Object)
+    { // Turn every string-valued entry in the object into a setting.
+      SessionStaticSetup sessionSetup = SessionRegistrar::sessionStaticSetup(nameObj->valuestring);
+      if (sessionSetup)
       {
-        if (!entry->string || !entry->string[0])
-        { // Skip dictionary entries with invalid keys.
-          continue;
-        }
-        StringList optVal;
-        if (entry->type == cJSON_String && entry->valuestring && entry->valuestring[0])
+        for (cJSON* entry = staticOptions->child; entry; entry = entry->next)
         {
-          optVal.push_back(entry->valuestring);
-        }
-        else if (entry->type == cJSON_Array)
-        {
-          LoadJSON::getStringArrayFromJSON(entry, optVal);
-        }
-        if (!optVal.empty())
-        {
-          sessionSetup(entry->string, optVal);
+          if (!entry->string || !entry->string[0])
+          { // Skip dictionary entries with invalid keys.
+            continue;
+          }
+          StringList optVal;
+          if (entry->type == cJSON_String && entry->valuestring && entry->valuestring[0])
+          {
+            optVal.push_back(entry->valuestring);
+          }
+          else if (entry->type == cJSON_Array)
+          {
+            LoadJSON::getStringArrayFromJSON(entry, optVal);
+          }
+          if (!optVal.empty())
+          {
+            sessionSetup(entry->string, optVal);
+          }
         }
       }
     }
+
+    sref = context->createSession(nameObj->valuestring, sref);
   }
 
-  SessionRef sref(context, smtk::common::UUID(node->string));
-  sref = context->createSession(nameObj->valuestring, sref);
   if (!sref.isValid())
     return status;
 

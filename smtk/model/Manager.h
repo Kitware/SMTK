@@ -462,6 +462,11 @@ protected:
   void prepareForEntity(std::pair<smtk::common::UUID, Entity>& entry);
   void computeResources();
 
+  smtk::common::UUID modelOwningEntityRecursive(
+    const smtk::common::UUID& uid, std::set<smtk::common::UUID>& visited) const;
+  smtk::common::UUID sessionOwningEntityRecursive(
+    const smtk::common::UUID& uid, std::set<smtk::common::UUID>& visited) const;
+
   // Below are all the different things that can be mapped to a UUID:
   smtk::shared_ptr<UUIDsToEntities> m_topology;
   smtk::shared_ptr<UUIDsToFloatData> m_floatData;

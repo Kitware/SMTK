@@ -112,6 +112,27 @@ static void AddPreservedUUIDsRecursive(
   }
 }
 
+static void AddExodusModelChildren(vtkMultiBlockDataSet* data)
+{
+  if (!data)
+    return;
+
+  std::vector<vtkObjectBase*> children;
+  auto iter = data->NewTreeIterator();
+  iter->VisitOnlyLeavesOn();
+  for (iter->GoToFirstItem(); !iter->IsDoneWithTraversal(); iter->GoToNextItem())
+  {
+    vtkDataObject* obj = iter->GetCurrentDataObject();
+    if (obj)
+    {
+      children.push_back(obj);
+    }
+  }
+  iter->Delete();
+  Session::SMTK_CHILDREN()->SetRange(
+    data->GetInformation(), &children[0], 0, 0, static_cast<int>(children.size()));
+}
+
 static void MarkMeshInfo(
   vtkDataObject* data, int dim, const char* name, EntityType etype, int pedigree)
 {
@@ -143,6 +164,7 @@ static void MarkExodusMeshWithChildren(vtkMultiBlockDataSet* data, int dim, cons
   vtkExodusIIReader::ObjectType rdrIdType)
 {
   MarkMeshInfo(data, dim, name, etype, -1);
+  Session::SMTK_CHILDREN()->Resize(data->GetInformation(), 0);
   int nb = data->GetNumberOfBlocks();
   for (int i = 0; i < nb; ++i)
   {
@@ -216,6 +238,7 @@ smtk::model::OperatorResult ReadOperator::readExodus()
   // with information needed by the session to determine how it should
   // be presented.
   MarkMeshInfo(modelOut, dim, path(filename).stem().string<std::string>().c_str(), EXO_MODEL, -1);
+  AddExodusModelChildren(modelOut);
   vtkMultiBlockDataSet* elemBlocks = vtkMultiBlockDataSet::SafeDownCast(modelOut->GetBlock(0));
 
   if (!elemBlocks)

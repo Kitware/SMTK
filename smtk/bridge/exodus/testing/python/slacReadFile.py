@@ -43,16 +43,16 @@ class TestExodusSession(smtk.testing.TestCase):
         self.assertEqual(
             numGroups, 2, 'Expected 2 groups, found %d' % numGroups)
 
-        numSubGroupsExpected = [5, 1]
-        allgroups = []
-        for i in range(len(numSubGroupsExpected)):
-            numSubGroups = len(subgroups[i].members())
-            self.assertEqual(numSubGroupsExpected[i], numSubGroups,
-                             'Expected {e} groups, found {a}'.format(e=numSubGroupsExpected[i], a=numSubGroups))
-            allgroups += subgroups[i].members()
+        numGroupMembersExpected = [5, 1]
+        allCells = []
+        for i in range(len(numGroupMembersExpected)):
+            numMembers = len(subgroups[i].members())
+            self.assertEqual(numGroupMembersExpected[i], numMembers,
+                             'Expected {e} groups, found {a}'.format(e=numGroupMembersExpected[i], a=numMembers))
+            allCells += subgroups[i].members()
 
-        print '\n'.join([x.name() for x in allgroups])
-        # Verify that the group names match those from the Exodus file.
+        print '\n'.join([x.name() for x in allCells])
+        # Verify that the cell names match those from the Exodus file.
         nameset = {
             'side set 1':                     '#5a5255',
             'side set 2':                     '#ae5a41',
@@ -61,35 +61,35 @@ class TestExodusSession(smtk.testing.TestCase):
             'side set 6':                     '#1b85b8',
             'element block 1':                '#cb2c31'
         }
-        self.assertTrue(all([x.name() in nameset for x in allgroups]),
-                        'Not all group names recognized.')
-        # Verify that no groups which are not in the list above are present.
-        groupnames = [x.name() for x in allgroups]
-        self.assertTrue(all([x in groupnames for x in nameset]),
-                        'Some expected group names not present.')
+        self.assertTrue(all([x.name() in nameset for x in allCells]),
+                        'Not all cell names recognized.')
+        # Verify that no cells which are not in the list above are present.
+        cellNames = [x.name() for x in allCells]
+        self.assertTrue(all([x in cellNames for x in nameset]),
+                        'Some expected cell names not present.')
 
-        # Count the number of each *type* of group (node, face, volume)
+        # Count the number of each *type* of cell (node, face, volume)
         # print '\n'.join([str((x.name(), x.flagSummary())) for x in
-        # allgroups])
-        grouptypes = [x.flagSummary() for x in allgroups]
-        gtc = {x: grouptypes.count(x) for x in grouptypes}
-        expectedgrouptypecounts = {
-            'boundary group (0,1,2-d entities)': 5,
-            'domain group (3-d entities)': 1
+        # allCells])
+        cellTypes = [x.flagSummary() for x in allCells]
+        gtc = {x: cellTypes.count(x) for x in cellTypes}
+        expectedCellTypeCounts = {
+            'face': 5,
+            'volume': 1
         }
         for entry in gtc.items():
             print '%40s: %d' % entry
-        self.assertEqual(gtc, expectedgrouptypecounts,
-                         'At least one group was of the wrong type.')
+        self.assertEqual(gtc, expectedCellTypeCounts,
+                         'At least one cell was of the wrong type.')
 
         if self.haveVTK() and self.haveVTKExtension():
 
-            # Render groups with colors:
-            for grp in allgroups:
-                color = self.hex2rgb(nameset[grp.name()])
-                SetEntityProperty(grp, 'color', as_float=color)
-                if grp.name() == 'element block 1':
-                    grp.setTessellation(smtk.model.Tessellation())
+            # Render cells with colors:
+            for cell in allCells:
+                color = self.hex2rgb(nameset[cell.name()])
+                SetEntityProperty(cell, 'color', as_float=color)
+                if cell.name() == 'element block 1':
+                    cell.setTessellation(smtk.model.Tessellation())
 
             self.startRenderTest()
             mbs = self.addModelToScene(self.model)

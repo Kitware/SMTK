@@ -86,6 +86,58 @@ static void updateURLs(cJSON* parent, cJSON* node, const ::boost::filesystem::pa
   }
 }
 
+static void replaceUUID(cJSON* node, const char* original, const char* replacement)
+{
+  if (node->string && node->string[0] && !strncmp(original, node->string, 36))
+  {
+    strncpy(node->string, replacement, 36);
+  }
+  if (node->type == cJSON_String && !strncmp(original, node->valuestring, 36))
+  {
+    strncpy(node->valuestring, replacement, 36);
+  }
+  else if (node->child)
+  {
+    for (cJSON* child = node->child; child; child = child->next)
+    {
+      replaceUUID(child, original, replacement);
+    }
+  }
+}
+
+static bool updateSessionID(cJSON* root, const smtk::model::SessionRef& curSess)
+{
+  bool didReplace = false;
+  if (!root || root->type != cJSON_Object)
+    return didReplace;
+
+  std::string replaceStr(curSess.entity().toString()); // Only convert UUID to string once.
+  for (cJSON* sessNode = root->child; sessNode; sessNode = sessNode->next)
+  {
+    smtk::common::UUID nodeUUID;
+    if (sessNode->string && sessNode->string[0] && strlen(sessNode->string) == 36 &&
+      (nodeUUID = smtk::common::UUID(sessNode->string)) && sessNode->type == cJSON_Object)
+    {
+      cJSON* ntype = cJSON_GetObjectItem(sessNode, "type");
+      cJSON* sname = cJSON_GetObjectItem(sessNode, "name");
+      if (ntype && ntype->type == cJSON_String && ntype->valuestring && ntype->valuestring[0] &&
+        std::string(ntype->valuestring) == "session" && sname && sname->type == cJSON_String &&
+        sname->valuestring && sname->valuestring[0] &&
+        curSess.session()->name() == sname->valuestring)
+      { // The node's key is a valid UUID and its contents indicate it is a session of the same
+        // type as curSess.
+        std::string originalStr(sessNode->string);
+        if (originalStr != replaceStr)
+        {
+          replaceUUID(sessNode, originalStr.c_str(), replaceStr.c_str());
+          didReplace = true;
+        }
+      }
+    }
+  }
+  return didReplace;
+}
+
 namespace smtk
 {
 namespace model
@@ -125,14 +177,23 @@ smtk::model::OperatorResult LoadSMTKModel::operateInternal()
 
   int status = 0;
   cJSON* root = cJSON_Parse(data.c_str());
+  // Rewrite the JSON to use absolute paths:
   updateSMTKURLs(NULL, root, filename);
   ::boost::filesystem::path embedDir = ::boost::filesystem::path(filename).parent_path();
   if (!embedDir.empty())
   {
     updateURLs(NULL, root, embedDir);
   }
-  if (root && root->type == cJSON_Object && root->child)
+  smtk::model::SessionPtr curSessObj = this->session();
+  if (root && root->type == cJSON_Object && root->child && curSessObj)
   {
+    smtk::model::SessionRef curSess(this->manager(), curSessObj->sessionId());
+    if (curSess.isValid())
+    {
+      // Rewrite the JSON so that the stored session UUID
+      // is replaced with this pre-existing session's UUID.
+      updateSessionID(root, curSess);
+    }
     status = smtk::io::LoadJSON::ofLocalSession(
       root->child, this->manager(), true, path(filename).parent_path().string());
   }

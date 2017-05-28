@@ -60,6 +60,13 @@ smtkComponentInitMacro(smtk_exodus_session)
   // Check model geometry style
   test(model.geometryStyle() == smtk::model::DISCRETE, "Incorrect geometry style (not discrete)");
 
+  std::cout << "Session " << session.entity() << " " << session.name() << "\n"
+            << "Session models " << session.models<smtk::model::EntityRefs>().size() << "\n"
+            << "Session model " << session.models<smtk::model::EntityRefs>().begin()->entity()
+            << " " << session.models<smtk::model::EntityRefs>().begin()->name() << "\n"
+            << "Model " << model.entity() << " " << model.name() << "\n"
+            << "Session " << model.owningSession().entity() << " " << model.session().name()
+            << "\n";
   test(model.session() == session, "Model should have parent session.");
   test(session.models<std::set<smtk::model::Model> >().find(model)->isValid(),
     "Session should own model.");
