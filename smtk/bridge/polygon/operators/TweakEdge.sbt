@@ -46,7 +46,7 @@
             <Max Inclusive="true">3</Max>
           </RangeInfo>
         </Int>
-        <Int Name="promote" Optional="true" Extensible="true" AdvanceLevel="1">
+        <Int Name="promote" Optional="true" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="1">
           <BriefDescription>Indices into the list of points indicating model vertices.</BriefDescription>
           <DetailedDescription>
             By default, the input edge will have only its tessellation modified.
@@ -62,7 +62,8 @@
         </Int>
         <!-- This is needed for linking with a vtkSMTKOperator that is used as an smtk operator interface
         to vtk pipeline -->
-        <Int Name="HelperGlobalID" Label="Unique global ID for a helper object" AdvanceLevel="11" NumberOfRequiredValues="1" Optional="true">
+        <Int Name="HelperGlobalID" Label="Unique global ID for a helper object"
+          AdvanceLevel="11" NumberOfRequiredValues="1" Optional="true">
           <DefaultValue>0</DefaultValue>
         </Int>
       </ItemDefinitions>
