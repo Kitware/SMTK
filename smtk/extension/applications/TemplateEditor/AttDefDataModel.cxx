@@ -76,6 +76,16 @@ smtk::attribute::DefinitionPtr const& AttDefDataModel::getAttDef(const QModelInd
 }
 
 // -----------------------------------------------------------------------------
+bool AttDefDataModel::hasDerivedTypes(const QModelIndex& index) const
+{
+  auto def = this->getAttDef(index);
+
+  DefinitionPtrVec defVec;
+  def->system()->derivedDefinitions(def, defVec);
+  return defVec.size() > 0;
+}
+
+// -----------------------------------------------------------------------------
 void AttDefDataModel::addAttDef(DefProperties const& props)
 {
   smtk::attribute::DefinitionPtr newDef =
@@ -109,14 +119,16 @@ void AttDefDataModel::removeAttDef(const QModelIndex& attDefIndex)
   const int row = attDefIndex.row();
   const QModelIndex parentIndex = attDefIndex.parent();
 
+  auto child = static_cast<AttDefElement*>(this->getItem(attDefIndex));
+  if (!this->System->removeDefinition(child->getReferencedDataConst()))
+  {
+    return;
+  }
+
   QAbstractItemModel::beginRemoveRows(parentIndex, row, row);
 
-  QTreeWidgetItem* child = this->getItem(attDefIndex);
   QTreeWidgetItem* parent = this->getItem(parentIndex);
   parent->removeChild(child);
-
-  ///TODO Remove the DefinitionPtr from the current attribute::System
-  // only allow leave remotions
 
   QAbstractItemModel::endRemoveRows();
 }

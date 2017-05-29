@@ -63,7 +63,7 @@ public:
 
   void insertItem(ItemDefProperties const& props);
 
-  void removeItem(const QModelIndex& itemIndex);
+  void removeItem(const QModelIndex& itemIndex, smtk::attribute::DefinitionPtr def);
 
 protected:
   void initializeRootItem();
@@ -73,6 +73,21 @@ protected:
    */
   void appendRecursively(smtk::attribute::ItemDefinitionPtr parentItemDef,
     QTreeWidgetItem* parentItem, const QString& attDefType);
+
+  /**
+   * Update the attribute system. This ensures the attribute::system instance is
+   * purged from any Attributes affected by a change in this ItemDefinition (currently
+   * wipes anything related to the Definition). qtUIManager->qtInstancedView generates
+   * an attribute and items for each (or some) of the ui elements, and stores them in
+   * attribute::system, which could lead to Attributes with ItemDefinitions in an
+   * invalid state.
+   *
+   * Call this function whenever an ItemDefinition has be modified in the attribute::
+   * system instance.
+   * TODO Reproduce the issue by not calling this during insertion and talk to
+   * Bob. This might be a bug in the UIManager.
+   */
+  void clearAttributes(smtk::attribute::DefinitionPtr def);
 
 private:
   ItemDefinitionsDataModel(const ItemDefinitionsDataModel&) = delete;

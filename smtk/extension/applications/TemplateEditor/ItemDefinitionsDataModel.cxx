@@ -106,16 +106,7 @@ void ItemDefinitionsDataModel::insertItem(ItemDefProperties const& props)
     props.Definition->addItemDefinition(itemDef);
   }
 
-  // Update the attribute (qtUIManager->qtInstancedView generates an attribute
-  // and items for each of the ui elements [or some], and stores them in
-  // attribute::system so we need to update this attribute).
-  std::vector<smtk::attribute::AttributePtr> atts;
-  auto sys = props.Definition->system();
-  sys->findAttributes(props.Definition->type(), atts);
-  for (const auto& att : atts)
-  {
-    sys->removeAttribute(att);
-  }
+  this->clearAttributes(props.Definition);
 
   /// TODO use the position where it was
   const int rowIndex = parentElement->childCount();
@@ -132,8 +123,51 @@ void ItemDefinitionsDataModel::insertItem(ItemDefProperties const& props)
 }
 
 // ------------------------------------------------------------------------
-void ItemDefinitionsDataModel::removeItem(const QModelIndex& itemIndex)
+void ItemDefinitionsDataModel::removeItem(
+  const QModelIndex& itemIndex, smtk::attribute::DefinitionPtr def)
 {
+  const QModelIndex parentIndex = itemIndex.parent();
+
+  const auto parentElem = static_cast<ItemDefElement*>(this->getItem(parentIndex));
+  const auto& parentItemDef = parentElem->getReferencedDataConst();
+  const auto item = static_cast<ItemDefElement*>(this->getItem(itemIndex));
+  auto itemDef = item->getReferencedDataConst();
+  if (parentItemDef && parentItemDef->type() == smtk::attribute::Item::GROUP)
+  {
+    auto group = std::static_pointer_cast<smtk::attribute::GroupItemDefinition>(parentItemDef);
+    group->removeItemDefinition(itemDef);
+  }
+  else
+  {
+    def->removeItemDefinition(itemDef);
+  }
+
+  /// TODO share this definition through the base class
+
+  /// TODO handle the   itemDef->changed->view->isInvalid and require
+  /// update issue.
+
+  this->clearAttributes(def);
+
+  const int row = itemIndex.row();
+  QAbstractItemModel::beginRemoveRows(parentIndex, row, row);
+
+  auto parent = this->getItem(parentIndex);
+  parent->removeChild(item);
+
+  QAbstractItemModel::endRemoveRows();
+}
+
+// ------------------------------------------------------------------------
+void ItemDefinitionsDataModel::clearAttributes(smtk::attribute::DefinitionPtr def)
+{
+  std::vector<smtk::attribute::AttributePtr> atts;
+  auto sys = def->system();
+  sys->findAttributes(def->type(), atts);
+  for (const auto& att : atts)
+  {
+    sys->removeAttribute(att);
+  }
 }
 
 // ------------------------------------------------------------------------

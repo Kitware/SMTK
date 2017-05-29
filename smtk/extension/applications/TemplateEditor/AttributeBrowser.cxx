@@ -59,10 +59,19 @@ void AttributeBrowser::populateDefinitions(smtk::attribute::SystemPtr system)
   QItemSelectionModel* sm = this->Ui->viewDefinitions->selectionModel();
 
   connect(sm, SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this,
-    SIGNAL(attDefChanged(const QModelIndex&, const QModelIndex&)));
+    SLOT(onAttDefSelectionChanged(const QModelIndex&, const QModelIndex&)));
 
   const QModelIndex defaultIndex = this->AttDefModel->getDefaultIndex();
   sm->setCurrentIndex(defaultIndex, QItemSelectionModel::Select);
+}
+
+//------------------------------------------------------------------------------
+void AttributeBrowser::onAttDefSelectionChanged(
+  const QModelIndex& current, const QModelIndex& previous)
+{
+  // Disable deletion if other definitions derive from current
+  this->Ui->pbDelDefinition->setEnabled(!this->AttDefModel->hasDerivedTypes(current));
+  emit attDefChanged(current, previous);
 }
 
 //------------------------------------------------------------------------------

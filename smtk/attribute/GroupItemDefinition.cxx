@@ -10,6 +10,8 @@
 
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/GroupItem.h"
+
+#include <algorithm>
 #include <iostream>
 
 using namespace smtk::attribute;
@@ -176,8 +178,7 @@ void GroupItemDefinition::setIsExtensible(bool mode)
   }
 }
 
-smtk::attribute::ItemDefinitionPtr smtk::attribute::GroupItemDefinition::createCopy(
-  smtk::attribute::ItemDefinition::CopyInfo& info) const
+ItemDefinitionPtr GroupItemDefinition::createCopy(ItemDefinition::CopyInfo& info) const
 {
   (void)info;
 
@@ -212,4 +213,21 @@ smtk::attribute::ItemDefinitionPtr smtk::attribute::GroupItemDefinition::createC
   }
 
   return instance;
+}
+
+bool GroupItemDefinition::removeItemDefinition(ItemDefinitionPtr itemDef)
+{
+  if (!itemDef || this->findItemPosition(itemDef->name()) < 0)
+  {
+    // Not found
+    return false;
+  }
+
+  auto itItemDef = std::find(this->m_itemDefs.cbegin(), this->m_itemDefs.cend(), itemDef);
+  if (itItemDef != this->m_itemDefs.cend())
+  {
+    this->m_itemDefs.erase(itItemDef);
+  }
+  this->m_itemDefPositions.erase(itemDef->name());
+  return true;
 }

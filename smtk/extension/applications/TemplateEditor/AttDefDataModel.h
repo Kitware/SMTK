@@ -59,6 +59,8 @@ public:
 
   const std::string getAttDefType(const QModelIndex& index) const;
 
+  bool hasDerivedTypes(const QModelIndex& index) const;
+
 protected:
   void initializeRootItem();
 

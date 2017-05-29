@@ -57,6 +57,11 @@ public:
     const std::string& typeName, const std::string& baseTypeName = "");
   smtk::attribute::DefinitionPtr createDefinition(
     const std::string& name, attribute::DefinitionPtr baseDefiniiton);
+  // Description:
+  // For simplicity, only Definitions without any children can be currently
+  // removed (external nodes).
+  bool removeDefinition(smtk::attribute::DefinitionPtr def);
+
   smtk::attribute::AttributePtr createAttribute(const std::string& name, const std::string& type);
   smtk::attribute::AttributePtr createAttribute(attribute::DefinitionPtr def);
   smtk::attribute::AttributePtr createAttribute(const std::string& type);

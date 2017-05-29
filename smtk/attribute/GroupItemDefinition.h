@@ -62,6 +62,16 @@ public:
     return item;
   }
 
+  // Description:
+  // This method will only remove the specified ItemDefinition (if it exists)
+  // from the class internals.
+  //
+  // Warning:
+  // It is up to the caller to ensure integrity of the attribute::System
+  // instance (e.g. Attribute instances/ Items created using this ItemDefinition
+  // need to be cleansed from the system).
+  bool removeItemDefinition(ItemDefinitionPtr itemDef);
+
   int findItemPosition(const std::string& name) const;
 
   // Returns or Sets the def's extensiblity property.  If true then items from this def

@@ -149,7 +149,8 @@ void AttDefInformation::onAddItemDef()
 // -----------------------------------------------------------------------------
 void AttDefInformation::onRemoveItemDef()
 {
-  // TODO
+  QItemSelectionModel* sm = this->Ui->tvOwnedItems->selectionModel();
+  this->OwnedItemDefModel->removeItem(sm->currentIndex(), this->CurrentAttDef);
 }
 
 // -----------------------------------------------------------------------------

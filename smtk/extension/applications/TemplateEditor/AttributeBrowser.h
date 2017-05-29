@@ -59,6 +59,11 @@ private slots:
  */
   void onDeleteDefinition();
 
+  /**
+ * Adjust UI (enable/disable buttons, etc.) and emit signal.
+ */
+  void onAttDefSelectionChanged(const QModelIndex& currentIndex, const QModelIndex& previousIndex);
+
 private:
   AttributeBrowser(const AttributeBrowser&) = delete;
   void operator=(const AttributeBrowser&) = delete;
