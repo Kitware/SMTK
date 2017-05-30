@@ -80,6 +80,9 @@ void TemplateEditorMain::initialize()
   QMainWindow::setCentralWidget(this->AttDefInfo);
   QMainWindow::addDockWidget(Qt::LeftDockWidgetArea, this->AttDefBrowser);
   QMainWindow::addDockWidget(Qt::RightDockWidgetArea, this->AttPreviewPanel);
+
+  this->Ui->actSave->setEnabled(true);
+  this->Ui->actSaveAs->setEnabled(true);
 }
 
 // -----------------------------------------------------------------------------
@@ -98,6 +101,9 @@ void TemplateEditorMain::reset()
   this->AttPreviewPanel = nullptr;
 
   this->AttributeSystem = nullptr;
+
+  this->Ui->actSave->setEnabled(false);
+  this->Ui->actSaveAs->setEnabled(false);
 }
 
 // -----------------------------------------------------------------------------

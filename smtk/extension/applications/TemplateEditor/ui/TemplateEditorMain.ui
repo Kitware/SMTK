@@ -30,6 +30,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actNew"/>
    <addaction name="actLoad"/>
    <addaction name="actSave"/>
    <addaction name="actSaveAs"/>
@@ -40,7 +41,7 @@
      <x>0</x>
      <y>0</y>
      <width>1389</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -53,7 +54,6 @@
     <addaction name="actSaveAs"/>
     <addaction name="actInclude"/>
     <addaction name="separator"/>
-    <addaction name="actCopyFrom"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -82,21 +82,25 @@
    </property>
   </action>
   <action name="actSave">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Save</string>
    </property>
   </action>
   <action name="actInclude">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Include</string>
    </property>
   </action>
-  <action name="actCopyFrom">
-   <property name="text">
-    <string>Copy From</string>
-   </property>
-  </action>
   <action name="actSaveAs">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Save As...</string>
    </property>
