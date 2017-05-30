@@ -27,3 +27,15 @@ set (CTEST_CUSTOM_WARNING_EXCEPTION
 #set (CTEST_CUSTOM_ERROR_EXCEPTION
 #  ${CTEST_CUSTOM_ERROR_EXCEPTION}
 #)
+
+cmake_policy(SET CMP0012 NEW)
+
+if(@SMTK_COVERAGE_ENABLED@)
+  set(COVERAGE_EXTRA_FLAGS "-l -p")
+  set(CTEST_CUSTOM_COVERAGE_EXCLUDE
+    "thirdparty"
+    "testing"
+    "pybind11"
+    "qt"
+    )
+endif()
