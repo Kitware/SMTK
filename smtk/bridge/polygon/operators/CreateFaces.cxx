@@ -136,6 +136,7 @@ bool CreateFaces::populateEdgeMap()
 
 smtk::model::OperatorResult CreateFaces::operateInternal()
 {
+  this->m_debugLevel = 1000;
   smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->associations();
   smtk::model::Model model;
 
