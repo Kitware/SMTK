@@ -17,6 +17,8 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/io/Logger.h"
+
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
@@ -404,9 +406,18 @@ smtk::model::OperatorResult ReadOperator::readLabelMap()
   smtk::attribute::StringItem::Ptr labelItem = this->specification()->findString("label map");
 
   std::string filename = filenameItem->value();
-  std::string labelname = labelItem->value();
-  if (labelname.empty())
-    labelname = "label map";
+  std::string labelname;
+  if (!labelItem->isEnabled())
+  { // you need a label map to indicate which segment each cell belongs to
+
+    smtkErrorMacro(this->log(), "Label map is needed to indicate which "
+                                "segment each cell belongs to.");
+    return this->createResult(smtk::model::OPERATION_FAILED);
+  }
+  else
+  {
+    labelname = labelItem->value();
+  }
 
   vtkNew<vtkXMLImageDataReader> rdr;
   rdr->SetFileName(filenameItem->value(0).c_str());

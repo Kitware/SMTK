@@ -32,7 +32,7 @@ public:
   virtual ~StringItem();
   virtual Item::Type type() const;
 
-  // Returns true is the item's value is not to be displayed in a GUI
+  // Returns true if the item's value is not to be displayed in a GUI
   bool isSecure() const;
 
   // Assigns this item to be equivalent to another.  Options are processed by derived item classes
