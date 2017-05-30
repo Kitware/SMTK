@@ -120,7 +120,7 @@ smtk::model::OperatorResult vtkPolygonArcOperator::Operate()
   { // We must indicate that the first edge starts at 0 even if it is not marked as a model edge
     indices.push_back(0);
   }
-  int count = this->ArcRepresentation->GetNumberOfNodes() - 1;
+  int count = this->ArcRepresentation->GetNumberOfNodes();
   int offsets = 0;
   for (int i = 0; i < count; ++i, ++offsets) // ++offset for the node
   {
