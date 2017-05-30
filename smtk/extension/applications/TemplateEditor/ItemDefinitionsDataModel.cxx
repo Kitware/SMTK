@@ -37,12 +37,6 @@ void ItemDefinitionsDataModel::initializeRootItem()
 ItemDefinitionsDataModel::~ItemDefinitionsDataModel() = default;
 
 // ------------------------------------------------------------------------
-void ItemDefinitionsDataModel::clear()
-{
-  /// TODO requres removeRows, etc.
-}
-
-// ------------------------------------------------------------------------
 void ItemDefinitionsDataModel::appendBranchToRoot(smtk::attribute::DefinitionPtr def)
 {
   const size_t numItems = def->numberOfItemDefinitions();
@@ -108,7 +102,7 @@ void ItemDefinitionsDataModel::insertItem(ItemDefProperties const& props)
 
   this->clearAttributes(props.Definition);
 
-  /// TODO use the position where it was
+  /// TODO insert next to the currentIndex (use its row position)
   const int rowIndex = parentElement->childCount();
   QAbstractItemModel::beginInsertRows(props.ParentNode, rowIndex, rowIndex);
 
@@ -144,8 +138,8 @@ void ItemDefinitionsDataModel::removeItem(
 
   /// TODO share this definition through the base class
 
-  /// TODO handle the   itemDef->changed->view->isInvalid and require
-  /// update issue.
+  /// TODO handle issue:  itemDef-changed -> view-isInvalid -> required to
+  // invalidate/destroy view or auto-update.
 
   this->clearAttributes(def);
 

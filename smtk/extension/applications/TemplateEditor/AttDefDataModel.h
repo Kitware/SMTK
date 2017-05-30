@@ -64,16 +64,6 @@ protected:
   QModelIndex findElementByData(
     QTreeWidgetItem* element, const smtk::attribute::DefinitionPtr& dataMatch);
 
-  /**
-   * Traverse the tree and find the item referencing the base DefinitionPtr.
-   * This method is used when inserting a new smtk::attribute::Definition
-   * (to update the model).
-   *
-   * \note  TODO This is deprecated, use findElementByData since the 'item'
-   * now holds a  DefinitionPtr.
-   */
-  QModelIndex findItemByType(QTreeWidgetItem* parent, const std::string& type);
-
 private:
   AttDefDataModel(const AttDefDataModel&) = delete;
   void operator=(const AttDefDataModel&) = delete;

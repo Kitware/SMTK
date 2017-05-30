@@ -41,8 +41,6 @@ public:
   ItemDefinitionsDataModel(QObject* parent = nullptr);
   ~ItemDefinitionsDataModel();
 
-  void clear();
-
   void appendBranchToRoot(smtk::attribute::DefinitionPtr def);
 
   const smtk::attribute::ItemDefinitionPtr& getItemDef(const QModelIndex& index) const;
@@ -70,8 +68,13 @@ protected:
    *
    * Call this function whenever an ItemDefinition has be modified in the attribute::
    * system instance.
-   * TODO Reproduce the issue by not calling this during insertion and talk to
-   * Bob. This might be a bug in the UIManager.
+   *
+   * \note TODO Reproduce the issue by not calling this during insertion and talk to
+   * Bob, it could be a bug in the UIManager. Bob says PreviewPanel::createView should
+   * be enough to flush the 'involved' attributes (no additional ones should be
+   * created?). Try killing the view before inserting any new itemdefinition. Also
+   * invalidate the view as soon as the ItemDef changes (otherwise manipulating it
+   * could cause a crash).
    */
   void clearAttributes(smtk::attribute::DefinitionPtr def);
 

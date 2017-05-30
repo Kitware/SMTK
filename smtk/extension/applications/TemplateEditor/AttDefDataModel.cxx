@@ -158,30 +158,6 @@ QModelIndex AttDefDataModel::findElementByData(
 }
 
 // -----------------------------------------------------------------------------
-QModelIndex AttDefDataModel::findItemByType(QTreeWidgetItem* parent, const std::string& type)
-{
-  const int count = parent->childCount();
-  for (int i = 0; i < count; i++)
-  {
-    const auto childItem = parent->child(i);
-
-    const std::string childType = childItem->data(0, Qt::DisplayRole).toString().toStdString();
-    if (childType == type)
-    {
-      return QAbstractItemModel::createIndex(parent->indexOfChild(childItem), 0, childItem);
-    }
-
-    const QModelIndex index = this->findItemByType(childItem, type);
-    if (index.isValid())
-    {
-      return index;
-    }
-  }
-
-  return QModelIndex();
-}
-
-// -----------------------------------------------------------------------------
 const std::string AttDefDataModel::getAttDefType(const QModelIndex& index) const
 {
   return this->data(index, Qt::DisplayRole).toString().toStdString();

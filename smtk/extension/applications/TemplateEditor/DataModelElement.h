@@ -17,7 +17,7 @@
  *
  * The class and instances are referred to as 'elements' instead of 'items'
  * to avoid any confusion with the term 'item' in the context of the SMTK
- * attribute system (ItemDefinition, etc.).
+ * attribute system (ItemDefinition, Item, etc.).
  */
 template <typename T>
 class DataModelElement : public QTreeWidgetItem
@@ -28,13 +28,11 @@ public:
 
   void setReferencedData(const T& data);
 
-  //@{
   /**
  * Get the actual underlying data referenced by this element in the
  * data model.
  */
   const T& getReferencedDataConst() const;
-  //@}
 
 private:
   DataModelElement(const DataModelElement&) = delete;

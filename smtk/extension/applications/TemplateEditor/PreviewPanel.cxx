@@ -21,16 +21,9 @@
 // -----------------------------------------------------------------------------
 PreviewPanel::PreviewPanel(QWidget* parent, smtk::attribute::SystemPtr system)
   : QDockWidget(parent)
-  //, Ui(new Ui::PreviewPanel)
   , AttributeSystem(system)
 {
   this->setWindowTitle("Preview Panel");
-
-  // TODO Center SMTK generated UI in panel. For this a proxy central widget
-  // is used. SMTK's preview widget is added as a child to it.
-  //  QWidget* centralWid = new QWidget(this);
-  //  this->Ui->setupUi(centralWid);
-  //  this->setWidget(centralWid);
 }
 
 // -----------------------------------------------------------------------------
@@ -45,10 +38,6 @@ smtk::common::ViewPtr PreviewPanel::createView(const smtk::attribute::Definition
     return nullptr;
   }
 
-  /// TODO Bob says this should be enough to flush the 'involved' attributes
-  /// (no additional ones should be created?). Try killing the view before
-  /// inserting any new itemdefinition. Also invalidate the view as soon as
-  /// the ItemDef changes (otherwise manipulating it could cause a crash).
   const std::string title = def->type();
   const std::string type = "Instanced";
   smtk::common::ViewPtr view = smtk::common::View::New(type, title);
@@ -131,14 +120,9 @@ void PreviewPanel::updateCurrentView(const QModelIndex& current, const QModelInd
   const AttDefDataModel* model = qobject_cast<const AttDefDataModel*>(current.model());
   const auto def = model->getAttDef(current);
 
-  // TODO Use the API to check whether a given view was already added (by title,
-  // etc.). Create it only if necessary (ensure this approach still updates
-  // changes to the definition & itemDefs correctly).
-  //
   // TODO might be necessary to remove views (in order to save/export only those
   // views created by the user or already available beforehand).
   auto view = this->createView(def);
-  //this->Ui->laAttDefType->setText(QString::fromStdString(def->type()));
   if (!view)
   {
     // No view is created for empty AttributeDefinitions
@@ -156,7 +140,6 @@ void PreviewPanel::createViewWidget(const smtk::common::ViewPtr& view)
   if (!view)
   {
     this->setWidget(nullptr);
-    //this->widget()->layout()->removeWidget(this->PreviewWidget);
     return;
   }
 
@@ -164,13 +147,11 @@ void PreviewPanel::createViewWidget(const smtk::common::ViewPtr& view)
   // parented by one of its internal widgets (m_ScrollArea).
   this->UIManager.reset(new smtk::extension::qtUIManager(this->AttributeSystem));
 
-  //this->widget()->layout()->removeWidget(this->PreviewWidget);
   this->PreviewWidget = new QWidget(this);
   this->PreviewWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   QVBoxLayout* wlayout = new QVBoxLayout();
   this->PreviewWidget->setLayout(wlayout);
   this->setWidget(this->PreviewWidget);
-  //this->widget()->layout()->addWidget(this->PreviewWidget);
 
   this->UIManager->setSMTKView(view, this->PreviewWidget, true);
 }

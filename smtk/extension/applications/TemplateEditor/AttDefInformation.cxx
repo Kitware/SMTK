@@ -74,12 +74,9 @@ void AttDefInformation::updateAttDefData(const QModelIndex& currentDef)
 // -----------------------------------------------------------------------------
 void AttDefInformation::updateOwnedItemDef()
 {
-  // TODO Deleting is currently necessary only because removeRow()/clear() are
-  // not implemented in the model. The model instance could be reused once these
-  // are implemented.
   delete this->OwnedItemDefModel;
   this->OwnedItemDefModel = new ItemDefinitionsDataModel(this);
-  this->OwnedItemDefModel->clear();
+
   this->OwnedItemDefModel->appendBranchToRoot(this->CurrentAttDef);
   this->Ui->tvOwnedItems->setModel(this->OwnedItemDefModel);
   this->Ui->tvOwnedItems->setColumnWidth(0, 250);
@@ -92,7 +89,6 @@ void AttDefInformation::updateInheritedItemDef()
 {
   delete this->InheritedItemDefModel;
   this->InheritedItemDefModel = new ItemDefinitionsDataModel(this);
-  //this->InheritedItemDefModel->clear(); // TODO Instead of deleting the mod
 
   // Add inherited ItemDefinitions from each parent type recursively
   std::function<void(smtk::attribute::DefinitionPtr&)> recursiveAdd;
@@ -104,7 +100,6 @@ void AttDefInformation::updateInheritedItemDef()
       recursiveAdd(baseDef);
     }
   };
-
   recursiveAdd(this->CurrentAttDef);
 
   this->Ui->tvInheritedItems->setModel(this->InheritedItemDefModel);
@@ -118,8 +113,6 @@ void AttDefInformation::onSaveAttDef()
   this->CurrentAttDef->setLabel(this->Ui->leLabel->text().toStdString());
   this->CurrentAttDef->setIsUnique(this->Ui->cbUnique->isChecked());
   this->CurrentAttDef->setIsAbstract(this->Ui->cbAbstract->isChecked());
-
-  // TODO Update Associations
 }
 
 // -----------------------------------------------------------------------------
@@ -183,6 +176,7 @@ void AttDefInformation::showInheritedItemDetails(const QModelIndex& index)
 // -----------------------------------------------------------------------------
 void AttDefInformation::showOwnedItemDetails(const QModelIndex& index)
 {
-  /// TODO Temporary hack to show the dialog.
+  /// TODO Temporary hack to show the dialog. This dialogs should inherit from
+  // InputDialog and handle whether editing is enabled or not.
   this->showInheritedItemDetails(index);
 }
