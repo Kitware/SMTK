@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.6)
 
+cmake_policy(SET CMP0012 NEW)
 cmake_policy(SET CMP0020 NEW)
 if (POLICY CMP0028)
   cmake_policy(SET CMP0028 NEW)
@@ -56,6 +57,9 @@ include(SMTKMacros)
 # include cmake code that allows for easier testing of SMTK classes
 # and also provides helpers around create_test_sourcelist
 include(CMake/SMTKTestingMacros.cmake)
+
+# Add options for performing code coverage tests.
+include(CMake/SMTKCoverage.cmake)
 
 # Include mechanism for determining function and bind support
 include(Function)
@@ -156,10 +160,16 @@ cmake_dependent_option(
 if (SMTK_ENABLE_TESTING)
   enable_testing()
   include(CTest)
+
+  set(SMTK_COVERAGE_ENABLED OFF)
+  if(SMTK_ENABLE_COVERAGE)
+    set(SMTK_COVERAGE_ENABLED ON)
+  endif()
+
   # Do not report some warnings from generated code to the dashboard:
   configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/CMake/CTestCustom.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/CTestCustom.cmake" COPYONLY)
+    "${CMAKE_CURRENT_BINARY_DIR}/CTestCustom.cmake")
 
   # Add a test to check for the copyright statment in all source:
   add_test(NAME CopyrightStatement
