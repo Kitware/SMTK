@@ -87,7 +87,7 @@ Attribute::~Attribute()
 
 void Attribute::removeAllItems()
 {
-  // we need to detatch all items owned bu this attribute
+  // we need to detatch all items owned by this attribute
   std::size_t i, n = this->m_items.size();
   for (i = 0; i < n; i++)
   {

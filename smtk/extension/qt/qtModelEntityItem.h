@@ -48,6 +48,7 @@ public:
 public slots:
   void setOutputOptional(int);
   virtual void onRequestEntityAssociation();
+  void onExpungeEntities(const smtk::model::EntityRefs& expungedEnts);
 
 signals:
   void requestEntityAssociation();

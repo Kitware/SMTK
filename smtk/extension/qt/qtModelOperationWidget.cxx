@@ -337,6 +337,8 @@ bool qtModelOperationWidget::initOperatorUI(const smtk::model::OperatorPtr& brOp
     SIGNAL(fileItemCreated(smtk::extension::qtFileItem*)));
   QObject::connect(uiManager, SIGNAL(modelEntityItemCreated(smtk::extension::qtModelEntityItem*)),
     this, SIGNAL(modelEntityItemCreated(smtk::extension::qtModelEntityItem*)));
+  QObject::connect(uiManager, SIGNAL(modelEntityItemCreated(smtk::extension::qtModelEntityItem*)),
+    this, SLOT(onModelEntityItemCreated(smtk::extension::qtModelEntityItem*)));
   QObject::connect(uiManager,
     SIGNAL(meshSelectionItemCreated(smtk::extension::qtMeshSelectionItem*)), this,
     SLOT(onMeshSelectionItemCreated(smtk::extension::qtMeshSelectionItem*)));
@@ -427,15 +429,45 @@ void qtModelOperationWidget::expungeEntities(const smtk::model::EntityRefs& expu
     it.next();
     bool associationChanged = false;
     if (it.value().opPtr && it.value().opPtr->specification())
-    {
-      for (EntityRefs::const_iterator bit = expungedEnts.begin(); bit != expungedEnts.end(); ++bit)
+    { // FIXME it should recursively update all modelEntityItems in the attribute
+      for (auto i = 0; i < it.value().opPtr->specification()->numberOfItems(); ++i)
       {
-        if (it.value().opPtr->specification()->isEntityAssociated(*bit))
+        smtk::attribute::ItemPtr currentItem = it.value().opPtr->specification()->item(i);
+        if (currentItem->isValid())
         {
-          //std::cout << "expunge from op " << bit->flagSummary(0) << " " << bit->entity() << "\n";
-          it.value().opPtr->specification()->disassociateEntity(*bit);
-          associationChanged = true;
+          smtk::attribute::ModelEntityItemPtr currentMEItem =
+            smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItem>(currentItem);
+          if (currentMEItem && currentMEItem->isValid())
+          {
+            for (smtk::model::EntityRefs::const_iterator bit = expungedEnts.begin();
+                 bit != expungedEnts.end(); ++bit)
+            {
+              std::ptrdiff_t idx = currentMEItem->find(*bit);
+              if (idx >= 0)
+              {
+                currentMEItem->removeValue(static_cast<std::size_t>(idx));
+              }
+            }
+          }
         }
+      }
+
+      if (it.value().opPtr->specification()->associations())
+      {
+        for (EntityRefs::const_iterator bit = expungedEnts.begin(); bit != expungedEnts.end();
+             ++bit)
+        {
+          if (it.value().opPtr->specification()->isEntityAssociated(*bit))
+          {
+            //std::cout << "expunge from op " << bit->flagSummary(0) << " " << bit->entity() << "\n";
+            it.value().opPtr->specification()->disassociateEntity(*bit);
+            associationChanged = true;
+          }
+        }
+      }
+      else // operator's modelEntityItem has been expunged update in qtModelEntityItem
+      {
+        emit broadcastExpungeEntities(expungedEnts);
       }
     }
     if (associationChanged)
@@ -489,6 +521,15 @@ void qtModelOperationWidget::resetUI()
     this->Internals->OperationCombo->clear();
     this->Internals->OperationCombo->blockSignals(false);
     this->Internals->OperatorMap.clear();
+  }
+}
+
+void qtModelOperationWidget::onModelEntityItemCreated(smtk::extension::qtModelEntityItem* entItem)
+{
+  if (entItem)
+  {
+    QObject::connect(this, SIGNAL(broadcastExpungeEntities(const smtk::model::EntityRefs&)),
+      entItem, SLOT(onExpungeEntities(const smtk::model::EntityRefs&)));
   }
 }
 
