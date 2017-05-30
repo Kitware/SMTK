@@ -21,8 +21,11 @@ from docutils.parsers.rst import directives, states
 from docutils.parsers.rst.directives.images import Image, Figure
 import sphinx.builders
 
+rememberedApp = None
+
 
 class FindImageDirective(Image):
+
     """A directive that finds images in a search path."""
 
     def run(self):
@@ -32,10 +35,7 @@ class FindImageDirective(Image):
         if not os.path.isabs(reference):
             # A relative path means we should search for the image
             # Find the builder-specific path-list to search:
-            bname = env.app.builder.name
-            if bname in sphinx.builders.BUILTIN_BUILDERS:
-                # Get a simplified name (htmlhelp->html, etc)
-                bname = sphinx.builders.BUILTIN_BUILDERS[bname][0]
+            bname = rememberedApp.builder.format if rememberedApp != None else env.app.builder.name
 
             if bname in env.app.config.findfigure_paths:
                 searchdirs = env.app.config.findfigure_paths[bname]
@@ -51,8 +51,8 @@ class FindImageDirective(Image):
                 elif '*' in env.app.config.findfigure_types:
                     searchexts = env.app.config.findfigure_types['*']
                 else:
-                    searchexts = ('.svg', '.pdf', '.png', '.jpeg',
-                                  '.jpg', '.tiff', '.tif', '.gif')
+                    searchexts = (
+                        '.svg', '.pdf', '.png', '.jpeg', '.jpg', '.tiff', '.tif', '.gif')
             else:
                 base = reference
                 searchexts = ('',)
@@ -75,8 +75,8 @@ class FindImageDirective(Image):
                 # print 'MISSING FILE %s' % reference
                 return []
             # print 'RESOLVED %s to %s' % (reference, aref)
-            rewr = os.path.relpath(aref, os.path.join(
-                env.srcdir, os.path.dirname(env.docname)))
+            rewr = os.path.relpath(
+                aref, os.path.join(env.srcdir, os.path.dirname(env.docname)))
             # NB: We must rewrite path relative to source directory
             #     because otherwise the output stage will be unable
             #     to find it.
@@ -86,6 +86,7 @@ class FindImageDirective(Image):
 
 
 class FindFigureDirective(Figure):
+
     """A directive that finds figure images in a search path."""
 
     def run(self):
@@ -95,10 +96,7 @@ class FindFigureDirective(Figure):
         if not os.path.isabs(reference):
             # A relative path means we should search for the image
             # Find the builder-specific path-list to search:
-            bname = env.app.builder.name
-            if bname in sphinx.builders.BUILTIN_BUILDERS:
-                # Get a simplified name (htmlhelp->html, etc)
-                bname = sphinx.builders.BUILTIN_BUILDERS[bname][0]
+            bname = rememberedApp.builder.format if rememberedApp != None else env.app.builder.name
 
             if bname in env.app.config.findfigure_paths:
                 searchdirs = env.app.config.findfigure_paths[bname]
@@ -114,8 +112,8 @@ class FindFigureDirective(Figure):
                 elif '*' in env.app.config.findfigure_types:
                     searchexts = env.app.config.findfigure_types['*']
                 else:
-                    searchexts = ('.svg', '.pdf', '.png', '.jpeg',
-                                  '.jpg', '.tiff', '.tif', '.gif')
+                    searchexts = (
+                        '.svg', '.pdf', '.png', '.jpeg', '.jpg', '.tiff', '.tif', '.gif')
             else:
                 base = reference
                 searchexts = ('',)
@@ -138,8 +136,8 @@ class FindFigureDirective(Figure):
                 # print 'MISSING FILE %s' % reference
                 return []
             # print 'RESOLVED %s to %s' % (reference, aref)
-            rewr = os.path.relpath(aref, os.path.join(
-                env.srcdir, os.path.dirname(env.docname)))
+            rewr = os.path.relpath(
+                aref, os.path.join(env.srcdir, os.path.dirname(env.docname)))
             # NB: We must rewrite path relative to source directory
             #     because otherwise the output stage will be unable
             #     to find it.
@@ -198,13 +196,14 @@ def setup(app):
     defaultpath = os.path.abspath('.')
     app.add_config_value('findfigure_paths',
                          {
-                             '*': (defaultpath,)
+                         '*': (defaultpath,)
                          }, 'env')
     app.add_config_value('findfigure_types',
                          {
-                             'html': ('.svg', '.png', '.jpeg', '.jpg', '.tiff', '.tif', '.gif'),
-                             'epub': ('.svg', '.png', '.jpeg', '.jpg', '.tiff', '.tif', '.gif'),
-                             'latex': ('.pdf', '.png', '.jpeg', '.jpg', '.tiff', '.tif')
+                         'html': ('.svg', '.png', '.jpeg', '.jpg', '.tiff', '.tif', '.gif'),
+                         'epub': ('.svg', '.png', '.jpeg', '.jpg', '.tiff', '.tif', '.gif'),
+                         'latex': ('.pdf', '.png', '.jpeg', '.jpg', '.tiff', '.tif')
                          }, 'env')
     app.add_directive('findimage', FindImageDirective)
     app.add_directive('findfigure', FindFigureDirective)
+    rememberedApp = app
