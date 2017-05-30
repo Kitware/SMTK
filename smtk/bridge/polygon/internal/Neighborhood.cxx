@@ -305,11 +305,25 @@ void Neighborhood::relateNeighborhoods(FragmentId fA, EdgeFragment& fragA, bool 
 void Neighborhood::mergeRelated()
 {
   std::set<std::pair<RegionId, RegionId> >::iterator relIt;
+  RegionId firstOutside = -1;
   for (relIt = this->m_related.begin(); relIt != this->m_related.end(); ++relIt)
   {
     if (this->m_regionIds.mergeSets(relIt->first, relIt->second) < 0)
     {
       this->m_outside = this->m_regionIds.find(relIt->first < 0 ? relIt->second : relIt->first);
+    }
+    // mergeSets will not accept negative region IDs;
+    // ensure outside regions merge with each other like so:
+    if (relIt->first == -1 && relIt->second >= 0)
+    {
+      if (firstOutside >= 0)
+      {
+        this->m_regionIds.mergeSets(firstOutside, relIt->second);
+      }
+      else
+      {
+        firstOutside = relIt->second;
+      }
     }
   }
 }
@@ -699,7 +713,7 @@ RegionId Neighborhood::traverseLoop(
   std::map<smtk::model::Edge, int> already;
   if (this->m_debugLevel > 1)
   {
-    std::cout << "   ";
+    std::cout << "   Traverse Loop [ ";
   }
   do
   {
@@ -727,6 +741,11 @@ RegionId Neighborhood::traverseLoop(
     );
   if (this->m_debugLevel > 1)
   {
+    std::cout << "]";
+    for (auto nr : neighborRegions)
+    {
+      std::cout << " " << nr;
+    }
     std::cout << "\n";
   }
   return lr;
