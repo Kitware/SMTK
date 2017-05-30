@@ -17,7 +17,7 @@
             <Structure><Value Enum="yes">1</Value></Structure>
           </DiscreteInfo>
         </Int>
-        <String Name="label map" NumberOfRequiredValues="0">
+        <String Name="label map" NumberOfRequiredValues="1"  Optional="true" >
           <BriefDescription>
             The name of a scalar cell-data array indicating which segment each cell belongs to.
           </BriefDescription>
