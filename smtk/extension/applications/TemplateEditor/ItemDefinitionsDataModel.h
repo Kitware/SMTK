@@ -17,6 +17,7 @@
 #include "smtk/PublicPointerDefs.h"
 
 #include "AbstractDataModel.h"
+#include "AttributeProperties.h"
 #include "DataModelElement.h"
 
 /**
@@ -36,21 +37,6 @@ public:
   using ItemDefPtr = smtk::attribute::ItemDefinitionPtr;
   using ItemDefPtrVec = std::vector<ItemDefPtr>;
   using ItemDefElement = DataModelElement<smtk::attribute::ItemDefinitionPtr>;
-
-  /**
-   * \brief Container for parameters to create an item definition.
-   * TODO Move this into its own class. Different subclasses will define
-   * properties for different concrete ItemDefinitions.
-   */
-  struct ItemDefProperties
-  {
-    ItemDefProperties(){};
-
-    smtk::attribute::DefinitionPtr Definition;
-    std::string Name;
-    std::string Type;
-    QModelIndex ParentNode;
-  };
 
   ItemDefinitionsDataModel(QObject* parent = nullptr);
   ~ItemDefinitionsDataModel();

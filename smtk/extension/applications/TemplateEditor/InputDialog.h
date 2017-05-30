@@ -33,6 +33,12 @@ public:
 
   QWidget* centralWidget();
 
+protected:
+  virtual bool validate_impl(); // = 0;
+
+protected slots:
+  void validate(); // override;
+
 private:
   InputDialog(const InputDialog&) = delete;
   void operator=(const InputDialog&) = delete;

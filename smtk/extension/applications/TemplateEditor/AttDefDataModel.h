@@ -15,6 +15,7 @@
 #include <smtk/PublicPointerDefs.h>
 
 #include "AbstractDataModel.h"
+#include "AttributeProperties.h"
 #include "DataModelElement.h"
 
 /**
@@ -32,20 +33,6 @@ public:
   using DefinitionPtrVec = std::vector<smtk::attribute::DefinitionPtr>;
   using AttDefElement = DataModelElement<smtk::attribute::DefinitionPtr>;
 
-  /**
-   * \brief Container for parameters to create an attribute definition.
-   */
-  struct DefProperties
-  {
-    DefProperties(){};
-
-    std::string Type;
-    std::string BaseType;
-    std::string Label;
-    bool IsUnique;
-    bool IsAbstract;
-  };
-
   AttDefDataModel(QObject* parent = nullptr);
   ~AttDefDataModel();
 
@@ -53,7 +40,7 @@ public:
 
   const smtk::attribute::DefinitionPtr& getAttDef(const QModelIndex& index) const;
 
-  void addAttDef(DefProperties const& props);
+  void addAttDef(const DefProperties& props);
 
   void removeAttDef(const QModelIndex& attDefIndex);
 

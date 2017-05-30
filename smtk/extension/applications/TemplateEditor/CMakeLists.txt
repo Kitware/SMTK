@@ -10,7 +10,7 @@ set(TE_UI_FORMS
   ui/AttDefInformation.ui
   ui/AttributeBrowser.ui
   ui/CategoriesForm.ui
-  ui/DefinitionsForm.ui
+  ui/AttDefDialog.ui
   ui/InputDialog.ui
   ui/ItemDefinitionForm.ui
   ui/ItemDefInputForm.ui
@@ -26,6 +26,8 @@ set(TE_SOURCE
   AbstractDataModel.cxx
   AttDefDataModel.h
   AttDefDataModel.cxx
+  AttDefDialog.h
+  AttDefDialog.cxx
   AttDefInformation.h
   AttDefInformation.cxx
   AttributeBrowser.cxx
@@ -38,6 +40,7 @@ set(TE_SOURCE
   main.cxx
   PreviewPanel.h
   PreviewPanel.cxx
+  AttributeProperties.h
   TemplateEditorMain.cxx
   TemplateEditorMain.h
   ${TE_UIC_SOURCE})

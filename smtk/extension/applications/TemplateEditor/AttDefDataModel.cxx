@@ -86,7 +86,7 @@ bool AttDefDataModel::hasDerivedTypes(const QModelIndex& index) const
 }
 
 // -----------------------------------------------------------------------------
-void AttDefDataModel::addAttDef(DefProperties const& props)
+void AttDefDataModel::addAttDef(const DefProperties& props)
 {
   smtk::attribute::DefinitionPtr newDef =
     this->System->createDefinition(props.Type, props.BaseType);

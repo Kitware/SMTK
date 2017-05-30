@@ -10,8 +10,9 @@
 #include "smtk/attribute/Definition.h"
 
 #include "AttDefDataModel.h"
+#include "AttDefDialog.h"
 #include "AttributeBrowser.h"
-#include "InputDialog.h"
+#include "AttributeProperties.h"
 #include "ui_AttributeBrowser.h"
 #include "ui_DefinitionsForm.h"
 
@@ -77,29 +78,13 @@ void AttributeBrowser::onAttDefSelectionChanged(
 //------------------------------------------------------------------------------
 void AttributeBrowser::onAddDefinition()
 {
-  InputDialog dialog(this);
-
-  using FormPtr = std::unique_ptr<Ui::DefinitionsForm>;
-  FormPtr defUi = FormPtr(new Ui::DefinitionsForm);
-  defUi->setupUi(dialog.centralWidget());
-  defUi->tvTypes->setHeaderHidden(true);
-  defUi->tvTypes->setModel(AttDefModel);
-  defUi->tvTypes->expandAll();
-  // TODO Set selection to the currently selected in UI->viewDefinitions
+  AttDefDialog dialog(this);
+  const auto defIndex = this->Ui->viewDefinitions->selectionModel()->currentIndex();
+  dialog.setBaseAttDef(this->AttDefModel->getAttDef(defIndex));
 
   if (dialog.exec() == QDialog::Accepted)
   {
-    // TODO handle cbRootType
-    AttDefDataModel::DefProperties props;
-    props.Type = defUi->leType->text().toStdString();
-    QItemSelectionModel* sm = defUi->tvTypes->selectionModel();
-    props.BaseType = this->AttDefModel->getAttDefType(sm->currentIndex());
-
-    props.IsUnique = defUi->cbUnique->isChecked();
-    props.IsAbstract = defUi->cbAbstract->isChecked();
-    props.Label = defUi->leLabel->text().toStdString();
-
-    this->AttDefModel->addAttDef(props);
+    this->AttDefModel->addAttDef(dialog.getInputValues());
   }
 }
 
