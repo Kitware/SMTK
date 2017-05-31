@@ -121,18 +121,33 @@ std::tuple<std::string, unsigned int, std::string> OutputWindow::ParseOutput(con
   std::string input(msg);
   FormattedOutput output;
 
-  std::size_t fileStart = input.find_first_of("In ", input.find_first_of(":")) + 1;
-  std::size_t fileEnd = input.find_first_of(",", fileStart);
+  std::size_t fileStart = input.find_first_of("In ", input.find_first_of(":"));
+  if (fileStart != std::string::npos)
+  {
+    ++fileStart; // Skip space at end?
+    std::size_t fileEnd = input.find_first_of(",", fileStart);
 
-  std::size_t lineStart = fileEnd + 6;
-  std::size_t lineEnd = input.find_first_of("\n", lineStart);
+    std::size_t lineStart = fileEnd + 6;
+    std::size_t lineEnd = input.find_first_of("\n", lineStart);
 
-  std::size_t messageStart = lineEnd + 1;
-  std::size_t messageEnd = input.size() - 2;
+    std::size_t messageStart = lineEnd + 1;
+    std::size_t messageEnd = input.size() - 2;
 
-  return std::make_tuple(input.substr(fileStart, fileEnd - fileStart),
-    std::stoi(input.substr(lineStart, lineEnd - lineStart)),
-    input.substr(messageStart, messageEnd - messageStart));
+    try
+    {
+      return std::make_tuple(input.substr(fileStart, fileEnd - fileStart),
+        std::stoi(input.substr(lineStart, lineEnd - lineStart)),
+        input.substr(messageStart, messageEnd - messageStart));
+    }
+    catch (std::invalid_argument& stoibad)
+    {
+      (void)stoibad;
+      // do nothing
+    }
+  }
+  // The message does not match the usual pattern.
+  // Pass it along with no file/line information.
+  return std::make_tuple("", -1, input);
 }
 }
 
