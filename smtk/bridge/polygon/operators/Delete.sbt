@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="delete" BaseType="operator" Label=" Model Entities - Delete">
+    <AttDef Type="delete" BaseType="operator" Label="Model Entities - Delete">
       <BriefDescription>Delete model entities.</BriefDescription>
       <DetailedDescription>
         Permanently remove model entities (vertices, edges, faces) from a model.

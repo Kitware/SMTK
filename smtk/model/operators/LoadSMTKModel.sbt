@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="load smtk model" Label=" Model - Load File" BaseType="operator">
+    <AttDef Type="load smtk model" Label="Model - Load File" BaseType="operator">
       <BriefDescription>
         Import a JSON description of smtk model(s).
       </BriefDescription>

@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="save smtk model" Label=" Model - Save" BaseType="operator">
+    <AttDef Type="save smtk model" Label="Model - Save" BaseType="operator">
       <AssociationsDef Name="models" NumberOfRequiredValues="1" Extensible="true">
         <MembershipMask>model</MembershipMask>
       </AssociationsDef>

@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="export edges to vtk" BaseType="operator" Label=" Model - Export edges to VTK">
+    <AttDef Type="export edges to vtk" BaseType="operator" Label="Model - Export edges to VTK">
       <AssociationsDef Name="models" NumberOfRequiredValues="1">
         <MembershipMask>model</MembershipMask>
       </AssociationsDef>

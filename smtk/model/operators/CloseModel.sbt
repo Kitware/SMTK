@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="close model" Label=" Model - Close" BaseType="operator">
+    <AttDef Type="close model" Label="Model - Close" BaseType="operator">
       <ItemDefinitions>
         <ModelEntity Name="model" NumberOfRequiredValues="0" Extensible="true">
           <MembershipMask>model</MembershipMask>
