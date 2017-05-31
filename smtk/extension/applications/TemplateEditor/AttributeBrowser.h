@@ -46,6 +46,7 @@ public:
 
 signals:
   void attDefChanged(const QModelIndex& currentIndex, const QModelIndex& previousIndex);
+  void systemChanged(bool needsSaving);
 
 private slots:
   /**

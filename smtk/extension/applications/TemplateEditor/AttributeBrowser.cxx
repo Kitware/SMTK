@@ -85,6 +85,7 @@ void AttributeBrowser::onAddDefinition()
   if (dialog.exec() == QDialog::Accepted)
   {
     this->AttDefModel->insert(dialog.getInputValues());
+    emit systemChanged(true);
   }
 }
 
@@ -95,4 +96,5 @@ void AttributeBrowser::onDeleteDefinition()
   auto attDefIndex = sm->currentIndex();
 
   this->AttDefModel->remove(attDefIndex);
+  emit systemChanged(true);
 }

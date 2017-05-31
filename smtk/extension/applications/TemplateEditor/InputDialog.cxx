@@ -18,10 +18,11 @@ InputDialog::InputDialog(QWidget* parent)
   , Ui(new Ui::InputDialog)
 {
   this->Ui->setupUi(this);
-  this->Ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
+  this->Ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(false);
 
-  connect(this->Ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
   connect(this->Ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+  connect(this->Ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this,
+    SLOT(acceptOnApply(QAbstractButton*)));
 }
 
 // ------------------------------------------------------------------------
@@ -43,11 +44,21 @@ bool InputDialog::validate_impl()
 void InputDialog::validate()
 {
   const bool isValid = this->validate_impl();
-  this->Ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(isValid);
+  this->Ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(isValid);
 }
 
 // ------------------------------------------------------------------------
 QDialogButtonBox* InputDialog::buttonBox()
 {
   return this->Ui->buttonBox;
+}
+
+// ------------------------------------------------------------------------
+void InputDialog::acceptOnApply(QAbstractButton* button)
+{
+  QDialogButtonBox::ButtonRole role = this->Ui->buttonBox->buttonRole(button);
+  if (role == QDialogButtonBox::ApplyRole)
+  {
+    this->accept();
+  }
 }

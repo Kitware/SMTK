@@ -68,6 +68,8 @@ void TemplateEditorMain::initialize()
     this->Ui->menuView->addAction(this->AttPreviewPanel->toggleViewAction());
   }
 
+  connect(this->AttDefInfo, SIGNAL(systemChanged(bool)), this, SLOT(onSystemChanged(bool)));
+  connect(this->AttDefBrowser, SIGNAL(systemChanged(bool)), this, SLOT(onSystemChanged(bool)));
   connect(this->AttDefBrowser, SIGNAL(attDefChanged(const QModelIndex&, const QModelIndex&)),
     this->AttDefInfo, SLOT(onAttDefChanged(const QModelIndex&, const QModelIndex&)));
   connect(this->AttDefBrowser, SIGNAL(attDefChanged(const QModelIndex&, const QModelIndex&)),
@@ -154,6 +156,13 @@ void TemplateEditorMain::load(char const* fileName)
 }
 
 // -----------------------------------------------------------------------------
+void TemplateEditorMain::onSystemChanged(bool needsSaving)
+{
+  const QString saveMark = needsSaving ? "*" : QString();
+  this->setWindowTitle(APP_NAME + QString(": ") + this->ActiveFilePath + saveMark);
+}
+
+// -----------------------------------------------------------------------------
 void TemplateEditorMain::onSave()
 {
   this->save(this->ActiveFilePath);
@@ -189,5 +198,7 @@ void TemplateEditorMain::save(const QString& filePath)
     const QString text = "Error writing simulation file:\n" + filePath + "\n" +
       QString::fromStdString(logger.convertToString()) + "\n";
     QMessageBox::critical(this, "Error", text);
+    return;
   }
+  this->onSystemChanged(false);
 }

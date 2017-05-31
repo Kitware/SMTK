@@ -50,9 +50,10 @@
     </property>
     <addaction name="actNew"/>
     <addaction name="actLoad"/>
+    <addaction name="actInclude"/>
+    <addaction name="separator"/>
     <addaction name="actSave"/>
     <addaction name="actSaveAs"/>
-    <addaction name="actInclude"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -78,7 +79,7 @@
   </action>
   <action name="actLoad">
    <property name="text">
-    <string>Load</string>
+    <string>Load...</string>
    </property>
   </action>
   <action name="actSave">
@@ -94,7 +95,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Include</string>
+    <string>Include...</string>
    </property>
   </action>
   <action name="actSaveAs">

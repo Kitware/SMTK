@@ -44,6 +44,9 @@ public slots:
    */
   void onSaveAttDef();
 
+signals:
+  void systemChanged(bool needsSaving);
+
 private slots:
   void showInheritedItemDetails(const QModelIndex& index);
   void showOwnedItemDetails(const QModelIndex& index);

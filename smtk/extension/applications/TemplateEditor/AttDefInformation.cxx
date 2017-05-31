@@ -29,7 +29,7 @@ AttDefInformation::AttDefInformation(QWidget* parent)
 {
   this->Ui->setupUi(this);
 
-  connect(this->Ui->pbSaveDef, SIGNAL(clicked()), this, SLOT(onSaveAttDef()));
+  connect(this->Ui->pbApplyDef, SIGNAL(clicked()), this, SLOT(onSaveAttDef()));
   connect(this->Ui->pbAddItemDef, SIGNAL(clicked()), this, SLOT(onAddItemDef()));
   connect(this->Ui->pbDeleteItemDef, SIGNAL(clicked()), this, SLOT(onRemoveItemDef()));
 
@@ -111,6 +111,7 @@ void AttDefInformation::onSaveAttDef()
   this->CurrentAttDef->setLabel(this->Ui->leLabel->text().toStdString());
   this->CurrentAttDef->setIsUnique(this->Ui->cbUnique->isChecked());
   this->CurrentAttDef->setIsAbstract(this->Ui->cbAbstract->isChecked());
+  emit systemChanged(true);
 }
 
 // -----------------------------------------------------------------------------
@@ -129,6 +130,7 @@ void AttDefInformation::onAddItemDef()
     props.ParentIndex = currentIndex.parent();
 
     this->OwnedItemDefModel->insert(props);
+    emit systemChanged(true);
   }
 }
 
@@ -137,6 +139,7 @@ void AttDefInformation::onRemoveItemDef()
 {
   QItemSelectionModel* sm = this->Ui->tvOwnedItems->selectionModel();
   this->OwnedItemDefModel->remove(sm->currentIndex(), this->CurrentAttDef);
+  emit systemChanged(true);
 }
 
 // -----------------------------------------------------------------------------
@@ -174,5 +177,6 @@ void AttDefInformation::showOwnedItemDetails(const QModelIndex& index)
     auto props = dialog.getInputValues();
     itemDef->setLabel(props.Label);
     itemDef->setVersion(props.Version);
+    emit systemChanged(true);
   }
 }

@@ -18,6 +18,7 @@
 
 #include <QDialog>
 
+class QAbstractButton;
 class QDialogButtonBox;
 
 namespace Ui
@@ -35,13 +36,21 @@ public:
 
   QWidget* centralWidget();
 
+protected slots:
+  void validate();
+
 protected:
   virtual bool validate_impl() = 0;
 
   QDialogButtonBox* buttonBox();
 
-protected slots:
-  void validate();
+private slots:
+  /**
+ * The 'Apply' button is used by default to save changes (and exit the
+ * dialog). This slot is used to accomplish that, since this button has
+ * an 'ApplyRole' which does not trigger accept automatically.
+ */
+  void acceptOnApply(QAbstractButton* button);
 
 private:
   InputDialog(const InputDialog&) = delete;

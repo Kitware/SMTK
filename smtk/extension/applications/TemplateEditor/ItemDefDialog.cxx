@@ -28,6 +28,7 @@ ItemDefDialog::ItemDefDialog(QWidget* parent)
   this->setEditMode(EditMode::NEW);
 
   connect(this->Ui->leName, SIGNAL(textChanged(const QString&)), this, SLOT(validate()));
+  validate();
 }
 
 // ------------------------------------------------------------------------
@@ -112,7 +113,7 @@ void ItemDefDialog::setEditMode(EditMode mode)
 {
   bool enable = true;
   using QDBB = QDialogButtonBox;
-  QDBB::StandardButtons buttons = QDBB::Cancel | QDBB::Ok;
+  QDBB::StandardButtons buttons = QDBB::Cancel | QDBB::Apply;
   switch (mode)
   {
     case EditMode::NEW:
