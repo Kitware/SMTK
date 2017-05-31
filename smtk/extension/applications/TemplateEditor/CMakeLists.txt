@@ -12,8 +12,8 @@ set(TE_UI_FORMS
   ui/CategoriesForm.ui
   ui/AttDefDialog.ui
   ui/InputDialog.ui
+  ui/ItemDefDialog.ui
   ui/ItemDefinitionForm.ui
-  ui/ItemDefInputForm.ui
   ui/PreviewPanel.ui
   ui/TemplateEditorMain.ui)
 
@@ -34,6 +34,8 @@ set(TE_SOURCE
   AttributeBrowser.h
   InputDialog.cxx
   InputDialog.h
+  ItemDefDialog.h
+  ItemDefDialog.cxx
   ItemDefinitionsDataModel.h
   ItemDefinitionsDataModel.cxx
   ItemDefinitionHelper.h

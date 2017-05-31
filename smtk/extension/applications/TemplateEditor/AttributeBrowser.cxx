@@ -80,11 +80,11 @@ void AttributeBrowser::onAddDefinition()
 {
   AttDefDialog dialog(this);
   const auto defIndex = this->Ui->viewDefinitions->selectionModel()->currentIndex();
-  dialog.setBaseAttDef(this->AttDefModel->getAttDef(defIndex));
+  dialog.setBaseAttDef(this->AttDefModel->get(defIndex));
 
   if (dialog.exec() == QDialog::Accepted)
   {
-    this->AttDefModel->addAttDef(dialog.getInputValues());
+    this->AttDefModel->insert(dialog.getInputValues());
   }
 }
 
@@ -94,5 +94,5 @@ void AttributeBrowser::onDeleteDefinition()
   auto sm = this->Ui->viewDefinitions->selectionModel();
   auto attDefIndex = sm->currentIndex();
 
-  this->AttDefModel->removeAttDef(attDefIndex);
+  this->AttDefModel->remove(attDefIndex);
 }

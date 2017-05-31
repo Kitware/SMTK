@@ -118,7 +118,7 @@ void PreviewPanel::createViewForAllAttributes(smtk::common::ViewPtr& root)
 void PreviewPanel::updateCurrentView(const QModelIndex& current, const QModelIndex& previous)
 {
   const AttDefDataModel* model = qobject_cast<const AttDefDataModel*>(current.model());
-  const auto def = model->getAttDef(current);
+  const auto def = model->get(current);
 
   // TODO might be necessary to remove views (in order to save/export only those
   // views created by the user or already available beforehand).

@@ -38,18 +38,23 @@ public:
 
   void populate(smtk::attribute::SystemPtr system);
 
-  const smtk::attribute::DefinitionPtr& getAttDef(const QModelIndex& index) const;
+  const smtk::attribute::DefinitionPtr& get(const QModelIndex& index) const;
 
-  void addAttDef(const DefProperties& props);
+  /**
+   * An empty base type will insert the Definition into the root node (this is
+   * how beginInsertRows()->QAbstractItemMdoel::parent() handles a default/invalid
+   * QModelIndex()).
+   */
+  void insert(const DefProperties& props);
 
-  void removeAttDef(const QModelIndex& attDefIndex);
+  void remove(const QModelIndex& attDefIndex);
 
-  const std::string getAttDefType(const QModelIndex& index) const;
+  const std::string getType(const QModelIndex& index) const;
 
   bool hasDerivedTypes(const QModelIndex& index) const;
 
 protected:
-  void initializeRootItem();
+  void initializeRootItem() override;
 
   /**
    * Append all of the derived AttDef instances (children of parentDef).

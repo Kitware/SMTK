@@ -67,7 +67,7 @@ void AttDefDataModel::appendRecursively(
 }
 
 // -----------------------------------------------------------------------------
-smtk::attribute::DefinitionPtr const& AttDefDataModel::getAttDef(const QModelIndex& index) const
+smtk::attribute::DefinitionPtr const& AttDefDataModel::get(const QModelIndex& index) const
 {
   const QTreeWidgetItem* item = this->getItem(index);
   const AttDefElement* element = static_cast<const AttDefElement*>(item);
@@ -78,7 +78,7 @@ smtk::attribute::DefinitionPtr const& AttDefDataModel::getAttDef(const QModelInd
 // -----------------------------------------------------------------------------
 bool AttDefDataModel::hasDerivedTypes(const QModelIndex& index) const
 {
-  auto def = this->getAttDef(index);
+  auto def = this->get(index);
 
   DefinitionPtrVec defVec;
   def->system()->derivedDefinitions(def, defVec);
@@ -86,8 +86,9 @@ bool AttDefDataModel::hasDerivedTypes(const QModelIndex& index) const
 }
 
 // -----------------------------------------------------------------------------
-void AttDefDataModel::addAttDef(const DefProperties& props)
+void AttDefDataModel::insert(const DefProperties& props)
 {
+  // Attribute system insert.
   smtk::attribute::DefinitionPtr newDef =
     this->System->createDefinition(props.Type, props.BaseType);
 
@@ -95,14 +96,16 @@ void AttDefDataModel::addAttDef(const DefProperties& props)
   newDef->setIsAbstract(props.IsAbstract);
   newDef->setLabel(props.Label);
 
-  // An empty QModelIndex() means insertion in the root node.
   const auto dataMatch = newDef->baseDefinition();
+  // TODO Instead of findElementByData, just include the current QModelIndex in
+  // props, this way the insertion point (parent) is already known.
   const auto parentIndex =
     props.BaseType.empty() ? QModelIndex() : this->findElementByData(this->RootItem, dataMatch);
 
   const auto parentItem = this->getItem(parentIndex);
   const int rowIndex = parentItem->childCount();
 
+  // QAbstractItemModel insert.
   QAbstractItemModel::beginInsertRows(parentIndex, rowIndex, rowIndex);
 
   AttDefElement* item = new AttDefElement();
@@ -114,23 +117,19 @@ void AttDefDataModel::addAttDef(const DefProperties& props)
 }
 
 // -----------------------------------------------------------------------------
-void AttDefDataModel::removeAttDef(const QModelIndex& attDefIndex)
+void AttDefDataModel::remove(const QModelIndex& attDefIndex)
 {
-  const int row = attDefIndex.row();
+  // Attribute system remove.
   const QModelIndex parentIndex = attDefIndex.parent();
-
-  auto child = static_cast<AttDefElement*>(this->getItem(attDefIndex));
+  const auto child = static_cast<AttDefElement*>(this->getItem(attDefIndex));
   if (!this->System->removeDefinition(child->getReferencedDataConst()))
   {
     return;
   }
 
-  QAbstractItemModel::beginRemoveRows(parentIndex, row, row);
-
-  QTreeWidgetItem* parent = this->getItem(parentIndex);
-  parent->removeChild(child);
-
-  QAbstractItemModel::endRemoveRows();
+  // QAbstractItemModel remove.
+  const int row = attDefIndex.row();
+  AbstractDataModel::removeRows(row, 1, parentIndex);
 }
 
 // -----------------------------------------------------------------------------
@@ -158,7 +157,7 @@ QModelIndex AttDefDataModel::findElementByData(
 }
 
 // -----------------------------------------------------------------------------
-const std::string AttDefDataModel::getAttDefType(const QModelIndex& index) const
+const std::string AttDefDataModel::getType(const QModelIndex& index) const
 {
   return this->data(index, Qt::DisplayRole).toString().toStdString();
 }

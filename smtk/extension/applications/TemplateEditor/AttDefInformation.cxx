@@ -15,12 +15,10 @@
 
 #include "AttDefDataModel.h"
 #include "AttDefInformation.h"
-#include "InputDialog.h"
+#include "ItemDefDialog.h"
 #include "ItemDefinitionHelper.h"
 #include "ItemDefinitionsDataModel.h"
 #include "ui_AttDefInformation.h"
-#include "ui_ItemDefInputForm.h"
-#include "ui_ItemDefinitionForm.h" //TODO rename ItemDefInfoForm
 
 // -----------------------------------------------------------------------------
 AttDefInformation::AttDefInformation(QWidget* parent)
@@ -59,7 +57,7 @@ void AttDefInformation::onAttDefChanged(
 void AttDefInformation::updateAttDefData(const QModelIndex& currentDef)
 {
   AttDefDataModel const* model = qobject_cast<AttDefDataModel const*>(currentDef.model());
-  this->CurrentAttDef = model->getAttDef(currentDef);
+  this->CurrentAttDef = model->get(currentDef);
 
   auto baseDef = this->CurrentAttDef->baseDefinition();
   QString baseDefStr = baseDef ? QString::fromStdString(baseDef->type()) : "";
@@ -118,24 +116,19 @@ void AttDefInformation::onSaveAttDef()
 // -----------------------------------------------------------------------------
 void AttDefInformation::onAddItemDef()
 {
-  InputDialog dialog(this);
-  using FormPtr = std::unique_ptr<Ui::ItemDefInputForm>;
-  FormPtr defUi = FormPtr(new Ui::ItemDefInputForm);
-  defUi->setupUi(dialog.centralWidget());
-  defUi->cbTypes->addItems(ItemDefinitionHelper::getTypes());
-
+  ItemDefDialog dialog(this);
+  dialog.setAttDef(this->CurrentAttDef);
   if (dialog.exec() == QDialog::Accepted)
   {
-    QItemSelectionModel* sm = this->Ui->tvOwnedItems->selectionModel();
-    auto currentIndex = sm->currentIndex();
-
-    ItemDefProperties props;
+    // Get data input from the user and add current selection specifics.
+    auto props = dialog.getInputValues();
     props.Definition = this->CurrentAttDef;
-    props.Type = defUi->cbTypes->currentText().toStdString();
-    props.Name = defUi->leName->text().toStdString();
-    props.ParentNode = currentIndex.parent();
 
-    this->OwnedItemDefModel->insertItem(props);
+    QItemSelectionModel* sm = this->Ui->tvOwnedItems->selectionModel();
+    const auto currentIndex = sm->currentIndex();
+    props.ParentIndex = currentIndex.parent();
+
+    this->OwnedItemDefModel->insert(props);
   }
 }
 
@@ -143,40 +136,43 @@ void AttDefInformation::onAddItemDef()
 void AttDefInformation::onRemoveItemDef()
 {
   QItemSelectionModel* sm = this->Ui->tvOwnedItems->selectionModel();
-  this->OwnedItemDefModel->removeItem(sm->currentIndex(), this->CurrentAttDef);
+  this->OwnedItemDefModel->remove(sm->currentIndex(), this->CurrentAttDef);
 }
 
 // -----------------------------------------------------------------------------
 void AttDefInformation::showInheritedItemDetails(const QModelIndex& index)
 {
-  InputDialog dialog(this);
-
-  using FormPtr = std::unique_ptr<Ui::ItemDefinitionForm>;
-  FormPtr defUi = FormPtr(new Ui::ItemDefinitionForm);
-  defUi->setupUi(dialog.centralWidget());
-
-  // Fill up form with current values
   ItemDefinitionsDataModel const* model =
     qobject_cast<ItemDefinitionsDataModel const*>(index.model());
-  auto const& itemDef = model->getItemDef(index);
+  auto const& itemDef = model->get(index);
 
-  defUi->laType->setText(
-    QString::fromStdString(smtk::attribute::Item::type2String(itemDef->type())));
-  defUi->leName->setText(QString::fromStdString(itemDef->name()));
-  defUi->leLabel->setText(QString::fromStdString(itemDef->label()));
-  defUi->leVersion->setText(QString::number(itemDef->version()));
-  defUi->leAdvanceLevel->setText(QString::number(itemDef->advanceLevel()));
-
-  if (dialog.exec() == QDialog::Accepted)
-  {
-    // TODO save values
-  }
+  ItemDefDialog dialog(this);
+  dialog.setItemDef(itemDef);
+  dialog.setEditMode(ItemDefDialog::EditMode::SHOW);
+  dialog.exec();
 }
 
 // -----------------------------------------------------------------------------
 void AttDefInformation::showOwnedItemDetails(const QModelIndex& index)
 {
-  /// TODO Temporary hack to show the dialog. This dialogs should inherit from
-  // InputDialog and handle whether editing is enabled or not.
-  this->showInheritedItemDetails(index);
+  ItemDefinitionsDataModel const* model =
+    qobject_cast<ItemDefinitionsDataModel const*>(index.model());
+  auto const& itemDef = model->get(index);
+
+  ItemDefDialog dialog(this);
+  dialog.setItemDef(itemDef);
+  dialog.setAttDef(this->CurrentAttDef);
+  dialog.setEditMode(ItemDefDialog::EditMode::EDIT);
+  if (dialog.exec() == QDialog::Accepted)
+  {
+    // TODO update values depending on its concrete implementation.
+    // This should probably be done in the Model class.
+    QItemSelectionModel* sm = this->Ui->tvOwnedItems->selectionModel();
+    const auto currentIndex = sm->currentIndex();
+    auto itemDef = this->OwnedItemDefModel->get(currentIndex);
+
+    auto props = dialog.getInputValues();
+    itemDef->setLabel(props.Label);
+    itemDef->setVersion(props.Version);
+  }
 }

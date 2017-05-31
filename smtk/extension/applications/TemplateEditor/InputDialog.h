@@ -18,6 +18,8 @@
 
 #include <QDialog>
 
+class QDialogButtonBox;
+
 namespace Ui
 {
 class InputDialog;
@@ -34,10 +36,12 @@ public:
   QWidget* centralWidget();
 
 protected:
-  virtual bool validate_impl(); // = 0;
+  virtual bool validate_impl() = 0;
+
+  QDialogButtonBox* buttonBox();
 
 protected slots:
-  void validate(); // override;
+  void validate();
 
 private:
   InputDialog(const InputDialog&) = delete;

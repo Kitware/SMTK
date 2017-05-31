@@ -16,8 +16,8 @@ struct DefProperties
   std::string Type;
   std::string BaseType;
   std::string Label;
-  bool IsUnique;
-  bool IsAbstract;
+  bool IsUnique = false;
+  bool IsAbstract = false;
 };
 
 /**
@@ -32,7 +32,9 @@ struct ItemDefProperties
   smtk::attribute::DefinitionPtr Definition;
   std::string Name;
   std::string Type;
-  QModelIndex ParentNode;
+  std::string Label;
+  int Version = 0;
+  QModelIndex ParentIndex;
 };
 
 #endif // AttributeProperties_h

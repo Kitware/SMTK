@@ -83,12 +83,13 @@ void ItemDefinitionsDataModel::appendRecursively(smtk::attribute::ItemDefinition
 }
 
 // ------------------------------------------------------------------------
-void ItemDefinitionsDataModel::insertItem(ItemDefProperties const& props)
+void ItemDefinitionsDataModel::insert(ItemDefProperties const& props)
 {
+  // Attribute system insert. Inserts into either the parent
+  // GroupItemDefinition or the Definition.
   const auto itemDef = ItemDefinitionHelper::create(
     props.Definition, smtk::attribute::Item::string2Type(props.Type), props.Name);
-
-  const auto parentElement = static_cast<ItemDefElement*>(this->getItem(props.ParentNode));
+  const auto parentElement = static_cast<ItemDefElement*>(this->getItem(props.ParentIndex));
   const auto& parentItemDef = parentElement->getReferencedDataConst();
   if (parentItemDef && parentItemDef->type() == smtk::attribute::Item::GROUP)
   {
@@ -102,26 +103,30 @@ void ItemDefinitionsDataModel::insertItem(ItemDefProperties const& props)
 
   this->clearAttributes(props.Definition);
 
-  /// TODO insert next to the currentIndex (use its row position)
+  // QAbstractItemModel insert.
+  /// TODO insert next to the currentIndex (use its row position). Also
+  // necessary to handle insertion into a GroupItemDefinition (this could be
+  // handled by the Information class (just pass in a different parent)).
   const int rowIndex = parentElement->childCount();
-  QAbstractItemModel::beginInsertRows(props.ParentNode, rowIndex, rowIndex);
+  QAbstractItemModel::beginInsertRows(props.ParentIndex, rowIndex, rowIndex);
 
   ItemDefElement* elem = new ItemDefElement();
   elem->setData(0, Qt::DisplayRole, QString::fromStdString(props.Name));
   elem->setData(1, Qt::DisplayRole, QString::fromStdString(props.Type));
   elem->setData(2, Qt::DisplayRole, QString::fromStdString(props.Definition->type()));
   elem->setReferencedData(itemDef);
-  parentElement->insertChild(rowIndex, elem); /* sets item's parent */
+  parentElement->insertChild(rowIndex, elem);
 
   QAbstractItemModel::endInsertRows();
 }
 
 // ------------------------------------------------------------------------
-void ItemDefinitionsDataModel::removeItem(
+void ItemDefinitionsDataModel::remove(
   const QModelIndex& itemIndex, smtk::attribute::DefinitionPtr def)
 {
+  // Attribute system remove. Removes from either the parent
+  // GroupItemDefinition or the Definition.
   const QModelIndex parentIndex = itemIndex.parent();
-
   const auto parentElem = static_cast<ItemDefElement*>(this->getItem(parentIndex));
   const auto& parentItemDef = parentElem->getReferencedDataConst();
   const auto item = static_cast<ItemDefElement*>(this->getItem(itemIndex));
@@ -136,20 +141,14 @@ void ItemDefinitionsDataModel::removeItem(
     def->removeItemDefinition(itemDef);
   }
 
-  /// TODO share this definition through the base class
-
   /// TODO handle issue:  itemDef-changed -> view-isInvalid -> required to
   // invalidate/destroy view or auto-update.
 
   this->clearAttributes(def);
 
+  // QAbstractItemModel remove.
   const int row = itemIndex.row();
-  QAbstractItemModel::beginRemoveRows(parentIndex, row, row);
-
-  auto parent = this->getItem(parentIndex);
-  parent->removeChild(item);
-
-  QAbstractItemModel::endRemoveRows();
+  AbstractDataModel::removeRows(row, 1, parentIndex);
 }
 
 // ------------------------------------------------------------------------
@@ -165,7 +164,7 @@ void ItemDefinitionsDataModel::clearAttributes(smtk::attribute::DefinitionPtr de
 }
 
 // ------------------------------------------------------------------------
-const smtk::attribute::ItemDefinitionPtr& ItemDefinitionsDataModel::getItemDef(
+const smtk::attribute::ItemDefinitionPtr& ItemDefinitionsDataModel::get(
   const QModelIndex& index) const
 {
   const QTreeWidgetItem* item = this->getItem(index);

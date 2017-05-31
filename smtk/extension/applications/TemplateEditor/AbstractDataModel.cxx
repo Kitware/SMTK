@@ -182,3 +182,24 @@ const QModelIndex AbstractDataModel::getDefaultIndex()
 {
   return this->index(0, 0, QModelIndex());
 }
+
+// -----------------------------------------------------------------------------
+bool AbstractDataModel::removeRows(int row, int count, const QModelIndex& parent)
+{
+  QTreeWidgetItem* parentItem = this->getItem(parent);
+  if (row < 0 || row + count > parentItem->childCount())
+  {
+    return false;
+  }
+
+  QAbstractItemModel::beginRemoveRows(parent, row, row + count - 1);
+
+  for (int i = 0; i < count; i++)
+  {
+    // Shortens the list on every iteration
+    delete parentItem->takeChild(row);
+  }
+
+  QAbstractItemModel::endRemoveRows();
+  return true;
+}

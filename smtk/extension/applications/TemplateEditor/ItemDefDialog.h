@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __AttDefDialog_h
-#define __AttDefDialog_h
+#ifndef __ItemDefDialog_h
+#define __ItemDefDialog_h
 
 #include <memory>
 
@@ -19,33 +19,45 @@
 
 namespace Ui
 {
-class AttDefDialog;
+class ItemDefDialog;
 }
 
 /**
  * \brief Input dialog for a new AttributeDefinition.
  */
-class AttDefDialog : public InputDialog
+class ItemDefDialog : public InputDialog
 {
   Q_OBJECT
 
 public:
-  AttDefDialog(QWidget* parent = nullptr);
-  ~AttDefDialog();
+  ItemDefDialog(QWidget* parent = nullptr);
+  ~ItemDefDialog();
 
-  void setBaseAttDef(smtk::attribute::DefinitionPtr def);
+  enum class EditMode : unsigned char
+  {
+    NEW,
+    EDIT,
+    SHOW
+  };
 
-  const DefProperties& getInputValues();
+  void setItemDef(smtk::attribute::ItemDefinitionPtr def);
+
+  void setAttDef(smtk::attribute::DefinitionPtr def);
+
+  const ItemDefProperties& getInputValues();
+
+  void setEditMode(EditMode mode);
 
 protected slots:
   bool validate_impl() override;
 
 private:
-  AttDefDialog(const AttDefDialog&) = delete;
-  void operator=(const AttDefDialog&) = delete;
+  ItemDefDialog(const ItemDefDialog&) = delete;
+  void operator=(const ItemDefDialog&) = delete;
 
-  std::unique_ptr<Ui::AttDefDialog> Ui;
-  DefProperties Properties;
-  smtk::attribute::DefinitionPtr BaseDef;
+  std::unique_ptr<Ui::ItemDefDialog> Ui;
+  ItemDefProperties Properties;
+  smtk::attribute::ItemDefinitionPtr ItemDef;
+  smtk::attribute::DefinitionPtr AttDef;
 };
-#endif //__AttDefDialog_h
+#endif //__ItemDefDialog_h

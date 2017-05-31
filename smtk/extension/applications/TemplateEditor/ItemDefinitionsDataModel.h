@@ -43,14 +43,14 @@ public:
 
   void appendBranchToRoot(smtk::attribute::DefinitionPtr def);
 
-  const smtk::attribute::ItemDefinitionPtr& getItemDef(const QModelIndex& index) const;
+  const smtk::attribute::ItemDefinitionPtr& get(const QModelIndex& index) const;
 
-  void insertItem(ItemDefProperties const& props);
+  void insert(ItemDefProperties const& props);
 
-  void removeItem(const QModelIndex& itemIndex, smtk::attribute::DefinitionPtr def);
+  void remove(const QModelIndex& itemIndex, smtk::attribute::DefinitionPtr def);
 
 protected:
-  void initializeRootItem();
+  void initializeRootItem() override;
 
   /**
    * Append all AttDef types recursively.

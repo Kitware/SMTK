@@ -45,3 +45,9 @@ void InputDialog::validate()
   const bool isValid = this->validate_impl();
   this->Ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(isValid);
 }
+
+// ------------------------------------------------------------------------
+QDialogButtonBox* InputDialog::buttonBox()
+{
+  return this->Ui->buttonBox;
+}

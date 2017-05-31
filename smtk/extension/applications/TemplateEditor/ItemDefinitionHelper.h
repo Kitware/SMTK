@@ -116,5 +116,9 @@ inline QStringList getTypes()
    * Map int type to corresponding instanced ui form.
    */
 //ItemDefinitionHelper::createUi(props.type);
+
+/**
+   * Create a concrete Properties structure.
+   */
 }
 #endif // ItemDefinitionHelper_h
