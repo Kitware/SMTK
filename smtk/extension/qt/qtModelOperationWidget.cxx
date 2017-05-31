@@ -430,9 +430,10 @@ void qtModelOperationWidget::expungeEntities(const smtk::model::EntityRefs& expu
     bool associationChanged = false;
     if (it.value().opPtr && it.value().opPtr->specification())
     { // FIXME it should recursively update all modelEntityItems in the attribute
-      for (auto i = 0; i < it.value().opPtr->specification()->numberOfItems(); ++i)
+      for (std::size_t i = 0; i < it.value().opPtr->specification()->numberOfItems(); ++i)
       {
-        smtk::attribute::ItemPtr currentItem = it.value().opPtr->specification()->item(i);
+        smtk::attribute::ItemPtr currentItem =
+          it.value().opPtr->specification()->item(static_cast<int>(i));
         if (currentItem->isValid())
         {
           smtk::attribute::ModelEntityItemPtr currentMEItem =
