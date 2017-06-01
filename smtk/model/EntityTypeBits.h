@@ -176,21 +176,41 @@ inline bool isCellEntity(BitFlags entityFlags)
 {
   return (entityFlags & ENTITY_MASK) == CELL_ENTITY;
 }
+inline bool doesMaskAllowCellEntities(BitFlags entityFlags)
+{
+  return ((entityFlags & CELL_ENTITY) == CELL_ENTITY);
+}
 inline bool isVertex(BitFlags entityFlags)
 {
   return (entityFlags & ANY_ENTITY) == CELL_0D;
+}
+inline bool doesMaskAllowVertexEntities(BitFlags entityFlags)
+{
+  return ((entityFlags & CELL_0D) == CELL_0D);
 }
 inline bool isEdge(BitFlags entityFlags)
 {
   return (entityFlags & ANY_ENTITY) == CELL_1D;
 }
+inline bool doesMaskAllowEdgeEntities(BitFlags entityFlags)
+{
+  return ((entityFlags & CELL_1D) == CELL_1D);
+}
 inline bool isFace(BitFlags entityFlags)
 {
   return (entityFlags & ANY_ENTITY) == CELL_2D;
 }
+inline bool doesMaskAllowFaceEntities(BitFlags entityFlags)
+{
+  return ((entityFlags & CELL_2D) == CELL_2D);
+}
 inline bool isVolume(BitFlags entityFlags)
 {
   return (entityFlags & ANY_ENTITY) == CELL_3D;
+}
+inline bool doesMaskAllowVolumeEntities(BitFlags entityFlags)
+{
+  return ((entityFlags & CELL_3D) == CELL_3D);
 }
 
 inline bool isUseEntity(BitFlags entityFlags)
@@ -240,6 +260,10 @@ inline bool isGroup(BitFlags entityFlags)
 inline bool isModel(BitFlags entityFlags)
 {
   return (entityFlags & ENTITY_MASK) == MODEL_ENTITY;
+}
+inline bool doesMaskAllowModelEntities(BitFlags entityFlags)
+{
+  return ((entityFlags & MODEL_ENTITY) == MODEL_ENTITY);
 }
 inline bool isInstance(BitFlags entityFlags)
 {

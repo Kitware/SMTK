@@ -71,6 +71,7 @@ signals:
     const std::string& opName, const smtk::common::UUID& uuid);
   void activateOperationTarget(const smtk::common::UUID&);
   void broadcastExpungeEntities(const smtk::model::EntityRefs& expungedEnts);
+  void operatorSet(const smtk::model::OperatorPtr& brOp);
 
   friend class qtModelView;
 

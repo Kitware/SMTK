@@ -55,6 +55,7 @@ public:
 
   std::size_t numberOfValues() const;
   bool setNumberOfValues(std::size_t newSize);
+  virtual smtk::attribute::ConstModelEntityItemDefinitionPtr definition() const;
 
   std::size_t numberOfRequiredValues() const;
   smtk::model::EntityRef value(std::size_t element = 0) const;
