@@ -13,7 +13,12 @@ set(TE_UI_FORMS
   ui/AttDefDialog.ui
   ui/InputDialog.ui
   ui/ItemDefDialog.ui
+  ui/ItemDefDoubleForm.ui
+  ui/ItemDefGroupForm.ui
   ui/ItemDefinitionForm.ui
+  ui/ItemDefIntForm.ui
+  ui/ItemDefStringForm.ui
+  ui/ItemDefValueForm.ui
   ui/PreviewPanel.ui
   ui/TemplateEditorMain.ui)
 
@@ -33,6 +38,15 @@ set(TE_SOURCE
   AttDefTreeView.h
   AttributeBrowser.cxx
   AttributeBrowser.h
+  HandlerGroup.h
+  HandlerGroup.cxx
+  HandlerItemDef.h
+  HandlerItemDef.cxx
+  HandlerValue.h
+  HandlerValue.cxx
+  HandlerVoid.h
+  HandlerVoid.cxx
+  DataModelContainers.h
   InputDialog.cxx
   InputDialog.h
   ItemDefDialog.h
@@ -43,7 +57,6 @@ set(TE_SOURCE
   main.cxx
   PreviewPanel.h
   PreviewPanel.cxx
-  AttributeProperties.h
   TemplateEditorMain.cxx
   TemplateEditorMain.h
   ${TE_UIC_SOURCE})

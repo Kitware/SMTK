@@ -9,12 +9,11 @@
 //=========================================================================
 #ifndef __AttDefDialog_h
 #define __AttDefDialog_h
-
 #include <memory>
 
 #include "smtk/PublicPointerDefs.h"
 
-#include "AttributeProperties.h"
+#include "DataModelContainers.h"
 #include "InputDialog.h"
 
 namespace Ui
@@ -35,17 +34,16 @@ public:
 
   void setBaseAttDef(smtk::attribute::DefinitionPtr def);
 
-  const DefProperties& getInputValues();
-
-protected slots:
-  bool validate_impl() override;
+  const AttDefContainer& getInputValues();
 
 private:
   AttDefDialog(const AttDefDialog&) = delete;
   void operator=(const AttDefDialog&) = delete;
 
+  bool validate_impl() override;
+
   std::unique_ptr<Ui::AttDefDialog> Ui;
-  DefProperties Properties;
+  AttDefContainer Container;
   smtk::attribute::DefinitionPtr BaseDef;
 };
 #endif //__AttDefDialog_h

@@ -10,9 +10,11 @@
 #include <QDialogButtonBox>
 
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/System.h"
 
+#include "HandlerItemDef.h"
 #include "ItemDefDialog.h"
 #include "ItemDefinitionHelper.h"
 #include "ui_ItemDefDialog.h"
@@ -25,9 +27,9 @@ ItemDefDialog::ItemDefDialog(QWidget* parent)
   this->setWindowTitle(tr("Item Definition"));
   this->Ui->setupUi(this->centralWidget());
   this->Ui->cbTypes->addItems(ItemDefinitionHelper::getTypes());
-  this->setEditMode(EditMode::NEW);
 
   connect(this->Ui->leName, SIGNAL(textChanged(const QString&)), this, SLOT(validate()));
+
   validate();
 }
 
@@ -44,8 +46,6 @@ void ItemDefDialog::setItemDef(smtk::attribute::ItemDefinitionPtr def)
   }
 
   using SMTKItem = smtk::attribute::Item;
-
-  this->ItemDef = def;
   const SMTKItem::Type type = def->type();
   this->Ui->cbTypes->setCurrentIndex(type);
   this->Ui->leName->setText(QString::fromStdString(def->name()));
@@ -53,40 +53,35 @@ void ItemDefDialog::setItemDef(smtk::attribute::ItemDefinitionPtr def)
   this->Ui->leVersion->setText(QString::number(def->version()));
   //this->Ui->leAdvanceLevel->setText(QString::number(def->advanceLevel()));
 
-  if (type == SMTKItem::VOID)
+  this->Handler = ItemDefinitionHelper::createHandler(type);
+  this->Handler->initialize(def, this->Ui->gbConcrete);
+}
+
+// ------------------------------------------------------------------------
+void ItemDefDialog::setValidationInstances(
+  smtk::attribute::ItemDefinitionPtr itemDef, smtk::attribute::DefinitionPtr def)
+{
+  if (itemDef && itemDef->type() == smtk::attribute::Item::GROUP)
   {
-    this->Ui->gbConcreteParams->hide();
+    this->ParentGroup = std::static_pointer_cast<smtk::attribute::GroupItemDefinition>(itemDef);
   }
   else
   {
-    const QString title = QString::fromStdString(SMTKItem::type2String(type)) + " Properties";
-    this->Ui->gbConcreteParams->setTitle(title);
+    this->AttDef = def;
   }
 }
 
 // ------------------------------------------------------------------------
-void ItemDefDialog::setAttDef(smtk::attribute::DefinitionPtr def)
+smtk::attribute::ItemDefinitionPtr ItemDefDialog::getItemDef()
 {
-  if (!def)
-  {
-    std::cerr << "ERROR: invalid Attribute Definition!\n";
-    return;
-  }
+  // Update ItemDefinition with input values
+  auto itemDef = this->Handler->updateItemDef(this->Ui->leName->text().toStdString());
 
-  this->AttDef = def;
-}
+  ///TODO Add numeric validator to int line-edits.
+  itemDef->setLabel(this->Ui->leLabel->text().toStdString());
+  itemDef->setVersion(this->Ui->leVersion->text().toInt());
 
-// ------------------------------------------------------------------------
-const ItemDefProperties& ItemDefDialog::getInputValues()
-{
-  //auto props = this->Customizer->getInputValues();
-  this->Properties.Type = this->Ui->cbTypes->currentText().toStdString();
-  this->Properties.Name = this->Ui->leName->text().toStdString();
-  this->Properties.Label = this->Ui->leLabel->text().toStdString();
-  ///TODO Add validator to int line-edits.
-  this->Properties.Version = this->Ui->leVersion->text().toInt();
-
-  return this->Properties;
+  return itemDef;
 }
 
 // ------------------------------------------------------------------------
@@ -101,8 +96,12 @@ bool ItemDefDialog::validate_impl()
   {
     int pos = this->AttDef->findItemPosition(name.toStdString());
     valid &= pos < 0;
+  }
 
-    /// TODO Validate GroupItemDefinition entries too.
+  if (this->ParentGroup)
+  {
+    int pos = this->ParentGroup->findItemPosition(name.toStdString());
+    valid &= pos < 0;
   }
 
   return valid;
@@ -119,23 +118,46 @@ void ItemDefDialog::setEditMode(EditMode mode)
     case EditMode::NEW:
       this->Ui->cbTypes->setEnabled(enable);
       this->Ui->leName->setEnabled(enable);
+      connect(
+        this->Ui->cbTypes, SIGNAL(currentIndexChanged(int)), this, SLOT(onTypeChanged(const int)));
       break;
+
     case EditMode::EDIT:
       this->Ui->cbTypes->setEnabled(false);
       this->Ui->leName->setEnabled(false);
       break;
+
     case EditMode::SHOW:
       this->Ui->cbTypes->setEnabled(false);
       this->Ui->leName->setEnabled(false);
       enable = false;
       buttons = QDBB::Close;
       break;
+
     default:
       std::cout << "Error: Invalid edit mode!\n";
   }
 
   this->Ui->leLabel->setEnabled(enable);
   this->Ui->leVersion->setEnabled(enable);
-  this->Ui->gbConcreteParams->setEnabled(enable);
+  this->Ui->gbConcrete->setEnabled(enable);
   this->buttonBox()->setStandardButtons(buttons);
+}
+
+// ------------------------------------------------------------------------
+void ItemDefDialog::onTypeChanged(const int type)
+{
+  this->Handler = ItemDefinitionHelper::createHandler(type);
+
+  delete this->Ui->gbConcrete;
+  this->Ui->gbConcrete = new QGroupBox(this);
+  this->Ui->wPlaceholder->layout()->addWidget(this->Ui->gbConcrete);
+
+  using SMTKItem = smtk::attribute::Item;
+  const QString title =
+    QString::fromStdString(SMTKItem::type2String(static_cast<SMTKItem::Type>(type))) +
+    " Properties";
+  this->Ui->gbConcrete->setTitle(title);
+
+  this->Handler->initialize(nullptr, this->Ui->gbConcrete);
 }

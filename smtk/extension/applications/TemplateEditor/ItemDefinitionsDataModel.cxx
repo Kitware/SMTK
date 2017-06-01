@@ -83,12 +83,11 @@ void ItemDefinitionsDataModel::appendRecursively(smtk::attribute::ItemDefinition
 }
 
 // ------------------------------------------------------------------------
-void ItemDefinitionsDataModel::insert(ItemDefProperties const& props)
+void ItemDefinitionsDataModel::insert(const Container& props)
 {
   // Attribute system insert. Inserts into either the parent
   // GroupItemDefinition or the Definition.
-  const auto itemDef = ItemDefinitionHelper::create(
-    props.Definition, smtk::attribute::Item::string2Type(props.Type), props.Name);
+  const auto itemDef = props.ItemDefinition;
   const auto parentElement = static_cast<ItemDefElement*>(this->getItem(props.ParentIndex));
   const auto& parentItemDef = parentElement->getReferencedDataConst();
   if (parentItemDef && parentItemDef->type() == smtk::attribute::Item::GROUP)
@@ -111,8 +110,9 @@ void ItemDefinitionsDataModel::insert(ItemDefProperties const& props)
   QAbstractItemModel::beginInsertRows(props.ParentIndex, rowIndex, rowIndex);
 
   ItemDefElement* elem = new ItemDefElement();
-  elem->setData(0, Qt::DisplayRole, QString::fromStdString(props.Name));
-  elem->setData(1, Qt::DisplayRole, QString::fromStdString(props.Type));
+  elem->setData(0, Qt::DisplayRole, QString::fromStdString(itemDef->name()));
+  elem->setData(1, Qt::DisplayRole,
+    QString::fromStdString(smtk::attribute::Item::type2String(itemDef->type())));
   elem->setData(2, Qt::DisplayRole, QString::fromStdString(props.Definition->type()));
   elem->setReferencedData(itemDef);
   parentElement->insertChild(rowIndex, elem);

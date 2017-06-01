@@ -89,6 +89,13 @@ protected:
 private:
   void operator=(const AbstractDataModel&) = delete;
   AbstractDataModel(const AbstractDataModel&) = delete;
+
+  //  ///TODO use the Non-virtual interface idiom. Implement ReferencedData specific
+  //  // queries in private virtuals.
+  //  QVariant data_impl(const QModelIndex& index_,
+  //    int role = Qt::DisplayRole) const override;
+  //  bool setData_impl(const QModelIndex& index_, const QVariant& value,
+  //    int role) override;
 };
 
 #endif //__AbstractDataModel_h

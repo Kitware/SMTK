@@ -61,8 +61,15 @@
      <string>View</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionSMTK_User_s_Guide"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
+   <addaction name="menuHelp"/>
   </widget>
   <action name="actPreview">
    <property name="text">
@@ -129,6 +136,14 @@
   <action name="actUpdate">
    <property name="text">
     <string>Update...</string>
+   </property>
+  </action>
+  <action name="actionSMTK_User_s_Guide">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>SMTK User's Guide</string>
    </property>
   </action>
  </widget>

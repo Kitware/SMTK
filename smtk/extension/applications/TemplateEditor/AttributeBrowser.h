@@ -65,6 +65,8 @@ private slots:
  */
   void onAttDefSelectionChanged(const QModelIndex& currentIndex, const QModelIndex& previousIndex);
 
+  void onSearchAttDef(const QString& text);
+
 private:
   AttributeBrowser(const AttributeBrowser&) = delete;
   void operator=(const AttributeBrowser&) = delete;

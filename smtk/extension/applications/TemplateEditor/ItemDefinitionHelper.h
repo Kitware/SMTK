@@ -1,3 +1,12 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #ifndef ItemDefinitionHelper_h
 #define ItemDefinitionHelper_h
 #include <QStringList>
@@ -17,9 +26,60 @@
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/VoidItemDefinition.h"
 
+#include "HandlerGroup.h"
+#include "HandlerValue.h"
+#include "HandlerVoid.h"
+
 namespace ItemDefinitionHelper
 {
 using namespace smtk::attribute;
+
+/**
+   * Map attribute::Item::Type to corresponding Handler.  Handlers customize
+   * UI and create concrete ItemDefinition.
+   */
+inline std::shared_ptr<HandlerItemDef> createHandler(const int type)
+{
+  switch (type)
+  {
+    case Item::DOUBLE:
+    {
+      auto ptr = std::make_shared<HandlerDouble>();
+      return ptr;
+    }
+    case Item::GROUP:
+    {
+      auto ptr = std::make_shared<HandlerGroup>();
+      return ptr;
+    }
+    case Item::INT:
+    {
+      auto ptr = std::make_shared<HandlerInt>();
+      return ptr;
+    }
+    case Item::STRING:
+    {
+      auto ptr = std::make_shared<HandlerString>();
+      return ptr;
+    }
+    case Item::VOID:
+    case Item::FILE:
+    case Item::DIRECTORY:
+    case Item::COLOR:
+    case Item::MODEL_ENTITY:
+    case Item::MESH_SELECTION:
+    case Item::MESH_ENTITY:
+    case Item::DATE_TIME:
+    case Item::ATTRIBUTE_REF:
+    {
+      auto ptr = std::make_shared<HandlerVoid>();
+      return ptr;
+    }
+    default:
+      std::cout << "Error: Unknown type!\n";
+      return nullptr;
+  }
+}
 
 /**
    * Create item definitions from enum type.
@@ -59,44 +119,6 @@ inline ItemDefinitionPtr create(DefinitionPtr def, const int type, const std::st
 };
 
 /**
-   * Add a new ItemDefinition to def.
-   */
-inline ItemDefinitionPtr addItemDefinition(
-  DefinitionPtr def, const int type, const std::string& name)
-{
-  switch (type)
-  {
-    case Item::ATTRIBUTE_REF:
-      return def->addItemDefinition<RefItemDefinition>(name);
-    case Item::DOUBLE:
-      return def->addItemDefinition<DoubleItemDefinition>(name);
-    case Item::GROUP:
-      return def->addItemDefinition<GroupItemDefinition>(name);
-    case Item::INT:
-      return def->addItemDefinition<IntItemDefinition>(name);
-    case Item::STRING:
-      return def->addItemDefinition<StringItemDefinition>(name);
-    case Item::VOID:
-      return def->addItemDefinition<VoidItemDefinition>(name);
-    case Item::FILE:
-      return def->addItemDefinition<FileItemDefinition>(name);
-    case Item::DIRECTORY:
-      return def->addItemDefinition<DirectoryItemDefinition>(name);
-    case Item::MODEL_ENTITY:
-      return def->addItemDefinition<ModelEntityItemDefinition>(name);
-    case Item::MESH_SELECTION:
-      return def->addItemDefinition<MeshSelectionItemDefinition>(name);
-    case Item::MESH_ENTITY:
-      return def->addItemDefinition<MeshItemDefinition>(name);
-    case Item::DATE_TIME:
-      return def->addItemDefinition<DateTimeItemDefinition>(name);
-    default:
-      std::cout << "Error: Unknown type! Creating an Item::VOID\n";
-      return def->addItemDefinition<VoidItemDefinition>(name);
-  }
-};
-
-/**
    * Arrange types in list of strings. Uses smtk::attribute::Item string types.
    * This assumes smtk::attribute::Item::Type is continuous and NUMBER_OF_TYPES
    * is the last type.
@@ -111,14 +133,5 @@ inline QStringList getTypes()
 
   return names;
 };
-
-/**
-   * Map int type to corresponding instanced ui form.
-   */
-//ItemDefinitionHelper::createUi(props.type);
-
-/**
-   * Create a concrete Properties structure.
-   */
 }
 #endif // ItemDefinitionHelper_h

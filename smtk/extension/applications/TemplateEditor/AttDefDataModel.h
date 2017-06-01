@@ -15,7 +15,7 @@
 #include <smtk/PublicPointerDefs.h>
 
 #include "AbstractDataModel.h"
-#include "AttributeProperties.h"
+#include "DataModelContainers.h"
 #include "DataModelElement.h"
 
 /**
@@ -45,7 +45,7 @@ public:
    * how beginInsertRows()->QAbstractItemMdoel::parent() handles a default/invalid
    * QModelIndex()).
    */
-  void insert(const DefProperties& props);
+  void insert(const AttDefContainer& props);
 
   void remove(const QModelIndex& attDefIndex);
 

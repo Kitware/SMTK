@@ -14,7 +14,6 @@
 
 #include "smtk/PublicPointerDefs.h"
 
-#include "AttributeProperties.h"
 #include "InputDialog.h"
 
 namespace Ui
@@ -22,8 +21,17 @@ namespace Ui
 class ItemDefDialog;
 }
 
+class HandlerItemDef;
+
 /**
- * \brief Input dialog for a new AttributeDefinition.
+ * \brief Input dialog for a new ItemDefinition.
+ *
+ * This dialog can be used to visualize/edit properties of or create new
+ * concrete ItemDefinitions. If an ItemDefinition has been set, then
+ * the dialog will either SHOW or EDIT modes (depending on the active mode).
+ * If no ItemDefinition is set, then it will try to create a new one.
+ *
+ * \sa smtk::attribute::ItemDefinition
  */
 class ItemDefDialog : public InputDialog
 {
@@ -42,22 +50,32 @@ public:
 
   void setItemDef(smtk::attribute::ItemDefinitionPtr def);
 
-  void setAttDef(smtk::attribute::DefinitionPtr def);
+  /**
+   * Set instances (Group or Definition) against which name input will be
+   * validated when defining a new ItemDefinition.
+   */
+  void setValidationInstances(
+    smtk::attribute::ItemDefinitionPtr itemDef, smtk::attribute::DefinitionPtr attDef);
 
-  const ItemDefProperties& getInputValues();
+  /**
+   * Applies changes and returns the edited or newly created ItemDef.
+   */
+  smtk::attribute::ItemDefinitionPtr getItemDef();
 
   void setEditMode(EditMode mode);
 
-protected slots:
-  bool validate_impl() override;
+private slots:
+  void onTypeChanged(const int type);
 
 private:
   ItemDefDialog(const ItemDefDialog&) = delete;
   void operator=(const ItemDefDialog&) = delete;
 
+  bool validate_impl() override;
+
   std::unique_ptr<Ui::ItemDefDialog> Ui;
-  ItemDefProperties Properties;
-  smtk::attribute::ItemDefinitionPtr ItemDef;
   smtk::attribute::DefinitionPtr AttDef;
+  smtk::attribute::GroupItemDefinitionPtr ParentGroup;
+  std::shared_ptr<HandlerItemDef> Handler;
 };
 #endif //__ItemDefDialog_h

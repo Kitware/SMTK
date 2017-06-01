@@ -125,16 +125,20 @@ void AttDefInformation::onSaveAttDef()
 void AttDefInformation::onAddItemDef()
 {
   ItemDefDialog dialog(this);
-  dialog.setAttDef(this->CurrentAttDef);
+  dialog.setEditMode(ItemDefDialog::EditMode::NEW);
+
+  QItemSelectionModel* sm = this->Ui->tvOwnedItems->selectionModel();
+  const auto parentIndex = sm->currentIndex().parent();
+  auto parentItemDef = this->OwnedItemDefModel->get(parentIndex);
+  dialog.setValidationInstances(parentItemDef, this->CurrentAttDef);
+
   if (dialog.exec() == QDialog::Accepted)
   {
     // Get data input from the user and add current selection specifics.
-    auto props = dialog.getInputValues();
+    auto props = ItemDefinitionsDataModel::Container();
+    props.ItemDefinition = dialog.getItemDef();
     props.Definition = this->CurrentAttDef;
-
-    QItemSelectionModel* sm = this->Ui->tvOwnedItems->selectionModel();
-    const auto currentIndex = sm->currentIndex();
-    props.ParentIndex = currentIndex.parent();
+    props.ParentIndex = parentIndex;
 
     this->OwnedItemDefModel->insert(props);
     emit systemChanged(true);
@@ -171,19 +175,10 @@ void AttDefInformation::showOwnedItemDetails(const QModelIndex& index)
 
   ItemDefDialog dialog(this);
   dialog.setItemDef(itemDef);
-  dialog.setAttDef(this->CurrentAttDef);
   dialog.setEditMode(ItemDefDialog::EditMode::EDIT);
   if (dialog.exec() == QDialog::Accepted)
   {
-    // TODO update values depending on its concrete implementation.
-    // This should probably be done in the Model class.
-    QItemSelectionModel* sm = this->Ui->tvOwnedItems->selectionModel();
-    const auto currentIndex = sm->currentIndex();
-    auto itemDef = this->OwnedItemDefModel->get(currentIndex);
-
-    auto props = dialog.getInputValues();
-    itemDef->setLabel(props.Label);
-    itemDef->setVersion(props.Version);
+    dialog.getItemDef(); /* updates ItemDef's properties */
     emit systemChanged(true);
   }
 }

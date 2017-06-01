@@ -17,7 +17,6 @@
 #include "smtk/PublicPointerDefs.h"
 
 #include "AbstractDataModel.h"
-#include "AttributeProperties.h"
 #include "DataModelElement.h"
 
 /**
@@ -45,7 +44,19 @@ public:
 
   const smtk::attribute::ItemDefinitionPtr& get(const QModelIndex& index) const;
 
-  void insert(ItemDefProperties const& props);
+  /**
+ * \brief Container for parameters to insert an item definition.
+ */
+  struct Container
+  {
+    Container(){};
+
+    smtk::attribute::ItemDefinitionPtr ItemDefinition;
+    smtk::attribute::DefinitionPtr Definition;
+    QModelIndex ParentIndex;
+  };
+
+  void insert(const Container& props);
 
   void remove(const QModelIndex& itemIndex, smtk::attribute::DefinitionPtr def);
 

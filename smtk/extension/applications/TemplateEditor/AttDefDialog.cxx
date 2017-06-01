@@ -37,19 +37,19 @@ void AttDefDialog::setBaseAttDef(smtk::attribute::DefinitionPtr def)
 }
 
 // ------------------------------------------------------------------------
-const DefProperties& AttDefDialog::getInputValues()
+const AttDefContainer& AttDefDialog::getInputValues()
 {
   if (this->Ui->cbBaseType->isChecked())
   {
-    this->Properties.BaseType = this->Ui->laBaseType->text().toStdString();
+    this->Container.BaseType = this->Ui->laBaseType->text().toStdString();
   }
 
-  this->Properties.Type = this->Ui->leType->text().toStdString();
-  this->Properties.IsUnique = this->Ui->cbUnique->isChecked();
-  this->Properties.IsAbstract = this->Ui->cbAbstract->isChecked();
-  this->Properties.Label = this->Ui->leLabel->text().toStdString();
+  this->Container.Type = this->Ui->leType->text().toStdString();
+  this->Container.IsUnique = this->Ui->cbUnique->isChecked();
+  this->Container.IsAbstract = this->Ui->cbAbstract->isChecked();
+  this->Container.Label = this->Ui->leLabel->text().toStdString();
 
-  return this->Properties;
+  return this->Container;
 }
 
 // ------------------------------------------------------------------------

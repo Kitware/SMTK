@@ -12,7 +12,6 @@
 #include "AttDefDataModel.h"
 #include "AttDefDialog.h"
 #include "AttributeBrowser.h"
-#include "AttributeProperties.h"
 #include "ui_AttributeBrowser.h"
 #include "ui_DefinitionsForm.h"
 
@@ -28,6 +27,9 @@ AttributeBrowser::AttributeBrowser(QWidget* parent)
     SLOT(onAddDefinition()));
 
   connect(this->Ui->pbDelDefinition, SIGNAL(clicked()), this, SLOT(onDeleteDefinition()));
+
+  connect(this->Ui->leSearch, SIGNAL(textChanged(const QString&)), this,
+    SLOT(onSearchAttDef(const QString&)));
 }
 
 //------------------------------------------------------------------------------
@@ -100,4 +102,18 @@ void AttributeBrowser::onDeleteDefinition()
 
   this->AttDefModel->remove(attDefIndex);
   emit systemChanged(true);
+}
+
+//------------------------------------------------------------------------------
+void AttributeBrowser::onSearchAttDef(const QString& text)
+{
+  if (text.isEmpty())
+  {
+    // Set model's default index
+    QItemSelectionModel* sm = this->Ui->viewDefinitions->selectionModel();
+    const QModelIndex defaultIndex = this->AttDefModel->getDefaultIndex();
+    sm->setCurrentIndex(defaultIndex, QItemSelectionModel::Select);
+  }
+
+  this->Ui->viewDefinitions->keyboardSearch(text);
 }
