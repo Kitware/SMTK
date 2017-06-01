@@ -294,7 +294,7 @@ QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
               break;
           }
         }
-        return QVariant(this->lookupIconForEntityFlags(item, color.lightness()));
+        return QVariant(this->lookupIconForEntityFlags(item, color));
       }
       else if (role == EntityVisibilityRole)
       {
@@ -634,8 +634,10 @@ smtk::model::ManagerPtr QEntityItemModel::manager() const
   return store;
 }
 
-QIcon QEntityItemModel::lookupIconForEntityFlags(DescriptivePhrasePtr item, int lightness)
+QIcon QEntityItemModel::lookupIconForEntityFlags(DescriptivePhrasePtr item, QColor color)
 {
+  //REFERENCE: https://stackoverflow.com/questions/3942878/how-to-decide-font-color-in-white-or-black-depending-on-background-color
+  double lightness = 0.2126 * color.redF() + 0.7152 * color.greenF() + 0.0722 * color.blueF();
   // phrase list(0) would use relatedBitFlags
   smtk::model::BitFlags flags =
     (item->phraseType()) ? item->relatedEntity().entityFlags() : item->relatedBitFlags();
@@ -681,11 +683,11 @@ QIcon QEntityItemModel::lookupIconForEntityFlags(DescriptivePhrasePtr item, int 
   }
 
   // lightness controls black/white ico
-  if (lightness >= (255 / 2 + 1) && ((flags & ENTITY_MASK) == CELL_ENTITY))
+  if (lightness >= 0.179 && ((flags & ENTITY_MASK) == CELL_ENTITY))
   {
     resourceName << "_b";
   }
-  else if (lightness < (255 / 2 + 1) && ((flags & ENTITY_MASK) == CELL_ENTITY))
+  else if (lightness < 0.179 && ((flags & ENTITY_MASK) == CELL_ENTITY))
   {
     resourceName << "_w";
   }

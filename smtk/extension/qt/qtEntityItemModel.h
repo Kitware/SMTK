@@ -93,7 +93,7 @@ public:
 
   void setDeleteOnRemoval(bool del) { this->m_deleteOnRemoval = del; }
 
-  static QIcon lookupIconForEntityFlags(model::DescriptivePhrasePtr item, int lightness);
+  static QIcon lookupIconForEntityFlags(model::DescriptivePhrasePtr item, QColor color);
 
   model::DescriptivePhrasePtr getItem(const QModelIndex& idx) const;
 
