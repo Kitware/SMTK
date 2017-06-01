@@ -127,6 +127,15 @@ bool ModelEntityItem::setNumberOfValues(std::size_t newSize)
   return true;
 }
 
+/// return the modelEntityItemDefinition
+smtk::attribute::ConstModelEntityItemDefinitionPtr ModelEntityItem::definition() const
+{
+  smtk::attribute::ConstModelEntityItemDefinitionPtr ptr =
+    smtk::dynamic_pointer_cast<const smtk::attribute::ModelEntityItemDefinition>(
+      this->m_definition);
+  return ptr ? ptr : nullptr;
+}
+
 /// Return the \a i-th entity stored in this item.
 smtk::model::EntityRef ModelEntityItem::value(std::size_t i) const
 {

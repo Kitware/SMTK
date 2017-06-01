@@ -211,6 +211,7 @@
   <suppress-warning text="skipping field 'OperatorLog::m_manager' with unmatched type 'smtk::weak_ptr&lt;smtk::model::Manager&gt;'"/>
   <suppress-warning text="skipping function 'smtk::io::OperatorLog::hintSystem', unmatched return type 'smtk::attribute::SystemPtr'"/>
   <suppress-warning text="skipping field 'OperatorLog::m_hintSys' with unmatched type 'smtk::shared_ptr&lt;smtk::attribute::System&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::definition', unmatched return type 'smtk::attribute::ConstModelEntityItemDefinitionPtr'"/>
 
   <!-- do not support input or output streams-->
   <suppress-warning text="skipping function 'smtk::common::operator&lt;&lt;', unmatched return type 'std::ostream&amp;'"/>

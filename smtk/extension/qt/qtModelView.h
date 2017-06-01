@@ -51,6 +51,7 @@ public:
 
   smtk::extension::QEntityItemModel* getModel() const;
   smtk::model::DescriptivePhrasePtr currentItem() const;
+  qtOperatorDockWidget* operatorsDock();
   void syncEntityVisibility(const smtk::model::SessionPtr& sessPtr,
     const smtk::common::UUIDs& entids, const smtk::mesh::MeshSets& meshes, int vis);
   void syncEntityColor(const smtk::model::SessionPtr&, const smtk::common::UUIDs& entids,
@@ -169,7 +170,6 @@ protected:
   smtk::model::Group groupParent(const smtk::model::DescriptivePhrasePtr& phrase);
   bool initOperator(smtk::model::OperatorPtr op);
   void initOperatorsDock(const std::string& opName, smtk::model::SessionPtr session);
-  qtOperatorDockWidget* operatorsDock();
 
   /*
   void findIndexes(

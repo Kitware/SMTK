@@ -395,6 +395,7 @@ bool qtModelOperationWidget::setCurrentOperator(
               << " (" << session->sessionId() << ")\n";
     return false;
   }
+  emit operatorSet(brOp);
   return this->initOperatorUI(brOp);
 }
 
