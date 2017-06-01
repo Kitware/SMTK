@@ -147,8 +147,8 @@
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
-        <widget class="QTreeView" name="tvInheritedItems"/>
-        <widget class="QTreeView" name="tvOwnedItems"/>
+        <widget class="AttDefTreeView" name="tvInheritedItems"/>
+        <widget class="AttDefTreeView" name="tvOwnedItems"/>
        </widget>
       </item>
       <item>
@@ -199,6 +199,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>AttDefTreeView</class>
+   <extends>QTreeView</extends>
+   <header>AttDefTreeView.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

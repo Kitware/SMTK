@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1389</width>
-    <height>1084</height>
+    <height>1087</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -76,10 +76,16 @@
    <property name="text">
     <string>New</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
   </action>
   <action name="actLoad">
    <property name="text">
     <string>Load...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
    </property>
   </action>
   <action name="actSave">
@@ -88,6 +94,9 @@
    </property>
    <property name="text">
     <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="actInclude">
@@ -107,6 +116,9 @@
    </property>
    <property name="toolTip">
     <string>Save with a specific file name.</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
    </property>
   </action>
   <action name="actionAttributes">

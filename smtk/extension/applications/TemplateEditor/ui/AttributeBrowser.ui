@@ -64,7 +64,7 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <widget class="QTreeView" name="viewDefinitions"/>
+         <widget class="AttDefTreeView" name="viewDefinitions"/>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -130,6 +130,13 @@
    </layout>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>AttDefTreeView</class>
+   <extends>QTreeView</extends>
+   <header>AttDefTreeView.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

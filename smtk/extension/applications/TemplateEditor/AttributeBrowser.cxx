@@ -23,8 +23,11 @@ AttributeBrowser::AttributeBrowser(QWidget* parent)
 {
   this->Ui->setupUi(this);
 
-  QObject::connect(this->Ui->pbAddDefinition, SIGNAL(clicked()), this, SLOT(onAddDefinition()));
-  QObject::connect(this->Ui->pbDelDefinition, SIGNAL(clicked()), this, SLOT(onDeleteDefinition()));
+  connect(this->Ui->pbAddDefinition, SIGNAL(clicked()), this, SLOT(onAddDefinition()));
+  connect(this->Ui->viewDefinitions, SIGNAL(showDialog(const QModelIndex&)), this,
+    SLOT(onAddDefinition()));
+
+  connect(this->Ui->pbDelDefinition, SIGNAL(clicked()), this, SLOT(onDeleteDefinition()));
 }
 
 //------------------------------------------------------------------------------

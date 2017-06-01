@@ -30,6 +30,7 @@ set(TE_SOURCE
   AttDefDialog.cxx
   AttDefInformation.h
   AttDefInformation.cxx
+  AttDefTreeView.h
   AttributeBrowser.cxx
   AttributeBrowser.h
   InputDialog.cxx
@@ -65,6 +66,6 @@ target_link_libraries(TemplateEditor
 
 install(TARGETS TemplateEditor
     RUNTIME DESTINATION bin
-    BUNDLE DESTINATION bin      # Required for MACOSX_BUNDLE
+    BUNDLE DESTINATION Applications      # Required for MACOSX_BUNDLE
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib)

@@ -30,15 +30,22 @@ AttDefInformation::AttDefInformation(QWidget* parent)
   this->Ui->setupUi(this);
 
   connect(this->Ui->pbApplyDef, SIGNAL(clicked()), this, SLOT(onSaveAttDef()));
+
   connect(this->Ui->pbAddItemDef, SIGNAL(clicked()), this, SLOT(onAddItemDef()));
   connect(this->Ui->pbDeleteItemDef, SIGNAL(clicked()), this, SLOT(onRemoveItemDef()));
 
-  this->Ui->tvInheritedItems->setExpandsOnDoubleClick(false);
-  this->Ui->tvOwnedItems->setExpandsOnDoubleClick(false);
   connect(this->Ui->tvInheritedItems, SIGNAL(doubleClicked(const QModelIndex&)), this,
     SLOT(showInheritedItemDetails(const QModelIndex&)));
+  connect(this->Ui->tvInheritedItems, SIGNAL(showDialog(const QModelIndex&)), this,
+    SLOT(showInheritedItemDetails(const QModelIndex&)));
+
   connect(this->Ui->tvOwnedItems, SIGNAL(doubleClicked(const QModelIndex&)), this,
     SLOT(showOwnedItemDetails(const QModelIndex&)));
+  connect(this->Ui->tvOwnedItems, SIGNAL(showDialog(const QModelIndex&)), this,
+    SLOT(showOwnedItemDetails(const QModelIndex&)));
+
+  this->Ui->tvInheritedItems->setExpandsOnDoubleClick(false);
+  this->Ui->tvOwnedItems->setExpandsOnDoubleClick(false);
 }
 
 // -----------------------------------------------------------------------------
