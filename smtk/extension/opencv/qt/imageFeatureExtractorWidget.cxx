@@ -62,6 +62,8 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
+#include <set>
+
 class vtkDEMImageCanvasSource2D : public vtkImageCanvasSource2D
 {
 public:
@@ -934,20 +936,22 @@ void imageFeatureExtractorWidget::loadLines()
   }
   double color[4];
   internal->drawing->GetDrawColor(color);
+  std::set<double> colors;
   for (int z = 0; z < dims[2]; z++)
   {
     for (int y = 0; y < dims[1]; y++)
     {
       for (int x = 0; x < dims[0]; x++)
       {
-        double tmpC[] = { updateMask->GetScalarComponentAsFloat(x, y, z, 0),
-          updateMask->GetScalarComponentAsFloat(x, y, z, 0),
-          updateMask->GetScalarComponentAsFloat(x, y, z, 0), 0 };
+        double val = updateMask->GetScalarComponentAsFloat(x, y, z, 0);
+        double tmpC[] = { val, val, val, 0 };
         internal->drawing->SetDrawColor(tmpC);
         internal->drawing->DrawPoint(x, y);
+        colors.insert(val);
       }
     }
   }
   internal->drawing->SetDrawColor(color);
   internal->updateAlphas();
+  internal->Run->setEnabled(colors.size() > 1);
 }
