@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="add auxiliary geometry" BaseType="operator" Label=" Model - Add Auxiliary Geometry">
+    <AttDef Type="add auxiliary geometry" BaseType="operator" Label="Model - Add Auxiliary Geometry">
       <AssociationsDef Name="entities" NumberOfRequiredValues="1">
         <MembershipMask>model</MembershipMask>
       </AssociationsDef>

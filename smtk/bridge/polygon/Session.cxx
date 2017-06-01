@@ -53,12 +53,6 @@ Session::Session()
   : m_nextModelNumber(0)
 {
   this->initializeOperatorSystem(Session::s_operators);
-  // Lets rename the export model operator definition  to be save model in terms of its label
-  auto attDef = this->m_operatorSys->findDefinition("save smtk model");
-  if (attDef)
-  {
-    attDef->setLabel(" Model - Save");
-  }
 }
 
 /// Virtual destructor. Here because Session overrides virtual methods from Session.

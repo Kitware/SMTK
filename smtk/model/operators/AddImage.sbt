@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="add image" BaseType="operator" Label=" Model - Add Image">
+    <AttDef Type="add image" BaseType="operator" Label="Model - Add Image">
       <AssociationsDef Name="entities" NumberOfRequiredValues="1">
         <MembershipMask>model</MembershipMask>
       </AssociationsDef>

@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="import" Label=" Model - Import Geometry" BaseType="operator">
+    <AttDef Type="import" Label="Model - Import Geometry" BaseType="operator">
       <ItemDefinitions>
         <File Name="filename" Label="File Name" NumberOfRequiredValues="1"
           ShouldExist="true"

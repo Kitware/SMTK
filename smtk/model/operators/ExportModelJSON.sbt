@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="export model json" Label=" Model - Export JSON" BaseType="operator" AdvanceLevel="10">
+    <AttDef Type="export model json" Label="Model - Export JSON" BaseType="operator" AdvanceLevel="10">
       <AssociationsDef Name="models" NumberOfRequiredValues="1" Extensible="true">
         <MembershipMask>model</MembershipMask>
       </AssociationsDef>

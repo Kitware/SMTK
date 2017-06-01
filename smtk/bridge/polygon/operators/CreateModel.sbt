@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="create model" Label=" Model - Create" BaseType="operator">
+    <AttDef Type="create model" Label="Model - Create" BaseType="operator">
       <BriefDescription>Create a planar model.</BriefDescription>
       <DetailedDescription>
         Create a model given a set of coordinate axes in 3D and a minimum feature size.
