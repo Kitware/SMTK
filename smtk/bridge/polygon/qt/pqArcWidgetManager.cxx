@@ -155,7 +155,7 @@ int pqArcWidgetManager::edit()
   this->EditWidget->setArc(arcObj);
   this->EditWidget->setArcManager(this);
   this->EditWidget->resetWidget();
-  this->EditWidget->show();
+  //this->EditWidget->show();
   this->ActiveWidget = this->EditWidget;
   return 1;
 }
