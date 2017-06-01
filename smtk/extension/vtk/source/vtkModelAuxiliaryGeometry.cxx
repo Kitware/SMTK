@@ -20,7 +20,6 @@
 #include "vtkMultiBlockDataSet.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkNew.h"
-#include "vtkOBJReader.h"
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"
 #include "vtkPolyDataNormals.h"

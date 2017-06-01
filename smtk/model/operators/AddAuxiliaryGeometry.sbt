@@ -23,7 +23,7 @@
       </DetailedDescription>
       <ItemDefinitions>
         <File Name="url" Label = "Filename"  Optional="true" NumberOfRequiredValues="1" IsEnabledByDefault="true" ShouldExist="true"
-          FileFilters="Aux Geom Files (*.tif *.tiff *.dem *.vti *.vtp *.vtu *.vtm *.obj *.pts *.xyz);; Image files (*.tif *.tiff *.dem);;VTK files (*.vti *.vtp *.vtu *.vtm);;Wavefront OBJ files (*.obj);;Point Cloud Files (*.pts *.xyz);;All files (*.*)">
+          FileFilters="Aux Geom Files (*.tif *.tiff *.dem *.vti *.vtp *.vtu *.vtm *.obj *.ply *.pts *.xyz);; Image files (*.tif *.tiff *.dem);;VTK files (*.vti *.vtp *.vtu *.vtm);;Wavefront OBJ files (*.obj);;Point Cloud Files (*.pts *.xyz);;Stanford Triangle Files (*.ply);;All files (*.*)">
           <BriefDescription>The file containing the auxiliary scene geometry.</BriefDescription>
         </File>
         <String Name="type" NumberOfRequiredValues="1" AdvanceLevel="1">
