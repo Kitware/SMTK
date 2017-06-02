@@ -43,6 +43,7 @@
 #include "vtkNew.h"
 #include "vtkOBJReader.h"
 #include "vtkObjectFactory.h"
+#include "vtkPLYReader.h"
 #include "vtkPTSReader.h"
 #include "vtkPointData.h"
 #include "vtkPoints.h"
@@ -528,6 +529,12 @@ vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationF
   else if (fileType == "obj")
   {
     auto data = ReadData<vtkPolyData, vtkOBJReader>(auxGeom);
+    vtkModelMultiBlockSource::AddPointsAsAttribute(data);
+    return data;
+  }
+  else if (fileType == "ply")
+  {
+    auto data = ReadData<vtkPolyData, vtkPLYReader>(auxGeom);
     vtkModelMultiBlockSource::AddPointsAsAttribute(data);
     return data;
   }

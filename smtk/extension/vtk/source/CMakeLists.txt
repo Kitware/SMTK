@@ -64,6 +64,7 @@ foreach(target
   vtkRenderingVolumeOpenGL2
   vtkRenderingGL2PSOpenGL2
   vtkIOGeometry
+  vtkIOPLY
   vtkIOMPIParallel
   vtkIOMPIImage
   )
