@@ -22,6 +22,7 @@
 #include "smtk/extension/qt/qtOperatorView.h"
 #include "smtk/extension/qt/qtSMTKUtilities.h"
 #include "smtk/extension/qt/qtSelectionManager.h"
+#include "smtk/extension/qt/qtSelectorView.h"
 #include "smtk/extension/qt/qtSimpleExpressionView.h"
 
 #include <QApplication>
@@ -100,6 +101,7 @@ qtUIManager::qtUIManager(smtk::attribute::SystemPtr system)
   this->registerViewConstructor("Group", qtGroupView::createViewWidget);
   this->registerViewConstructor("Instanced", qtInstancedView::createViewWidget);
   this->registerViewConstructor("Operator", qtOperatorView::createViewWidget);
+  this->registerViewConstructor("Selector", qtSelectorView::createViewWidget);
   this->registerViewConstructor("SimpleExpression", qtSimpleExpressionView::createViewWidget);
 
   // register view constructors coming from plugins.

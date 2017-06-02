@@ -316,3 +316,17 @@ void ValueItemDefinition::copyTo(
     }
   }
 }
+
+bool ValueItemDefinition::getEnumIndex(const std::string& enumVal, std::size_t& index) const
+{
+  std::size_t i, n = this->m_discreteValueEnums.size();
+  for (i = static_cast<std::size_t>(0); i < n; i++)
+  {
+    if (this->m_discreteValueEnums.at(i) == enumVal)
+    {
+      index = i;
+      return true;
+    }
+  }
+  return false;
+}
