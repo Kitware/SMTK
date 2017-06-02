@@ -130,7 +130,10 @@ void qtOperatorView::createWidget()
 void qtOperatorView::onModifiedParameters()
 {
   this->m_applied = false;
-  this->Internals->m_applyButton->setEnabled(this->Internals->m_instancedView->isValid());
+  if (this->Internals->m_applyButton)
+  {
+    this->Internals->m_applyButton->setEnabled(this->Internals->m_instancedView->isValid());
+  }
 }
 
 void qtOperatorView::showAdvanceLevelOverlay(bool show)
