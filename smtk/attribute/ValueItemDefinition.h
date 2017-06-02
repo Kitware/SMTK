@@ -56,6 +56,7 @@ public:
     assert(this->m_discreteValueEnums.size() > ith);
     return this->m_discreteValueEnums[ith];
   }
+  bool getEnumIndex(const std::string& enumVal, std::size_t& index) const;
   int defaultDiscreteIndex() const { return this->m_defaultDiscreteIndex; }
   void setDefaultDiscreteIndex(int discreteIndex);
 

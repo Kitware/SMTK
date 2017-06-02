@@ -22,6 +22,7 @@ set(QAttrLibSrcs
   qtOperatorInfoDialog.cxx
   qtOperatorView.cxx
   #qtModelView.cxx
+  qtSelectorView.cxx
   qtSimpleExpressionView.cxx
   qtFileItem.cxx
   qtAttributeRefItem.cxx
@@ -80,6 +81,7 @@ set(QAttrLibMocHeaders
   qtOperatorInfoDialog.h
   qtOperatorView.h
   #qtModelView.h
+  qtSelectorView.h
   qtSimpleExpressionView.h
   qtFileItem.h
   qtAttributeRefItem.h
