@@ -82,13 +82,22 @@ smtk_install_library(${vtk-module})
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   vtk_add_cs_wrapping(${vtk-module})
   smtk_install_library(${vtk-module}CS)
-endif ()
+endif()
 
-# Potentially wrap in Python using VTK's wrapping methods, not shiboken.
-# This makes the filters available for use with other VTK-wrapped filters.
-if (SMTK_ENABLE_PYTHON_WRAPPING AND VTK_WRAP_PYTHON)
-  vtk_add_python_wrapping(${vtk-module} VTKLibSrcs)
-  vtk_add_python_wrapping_library(${vtk-module} VTKLibSrcs ${vtk-module})
+if (SMTK_ENABLE_PYTHON_WRAPPING)
+  if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+    vtk_add_python_wrapping(${vtk-module} VTKLibSrcs)
+    vtk_add_python_wrapping_library(${vtk-module} VTKLibSrcs ${vtk-module})
+  elseif (VTK_WRAP_PYTHON)
+    # Potentially wrap in Python using VTK's wrapping methods, not shiboken.
+    # This makes the filters available for use with other VTK-wrapped filters.
+    vtk_module_load(${vtk-module})
+    vtk_module_headers_load(${vtk-module})
+    vtk_add_python_wrapping(${vtk-module} VTKLibSrcs)
+    vtk_add_python_wrapping_library(${vtk-module} VTKLibSrcs ${vtk-module})
+    smtk_install_library(${vtk-module}PythonD)
+    smtk_install_library(${vtk-module}Python)
+  endif()
 endif()
 
 if (SMTK_USE_PYBIND11)
