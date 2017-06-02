@@ -9,10 +9,16 @@ set(smtkModelPythonDataTests
   modelAttributes
   modelSetPropertyOp
   modelCloseModelOp
-  importExport
 )
 
 # Additional tests that require specific bridges
+if (SMTK_ENABLE_EXODUS_SESSION)
+  set(smtkModelPythonDataTests
+    ${smtkModelPythonDataTests}
+    importExport
+  )
+endif()
+
 if (SMTK_ENABLE_EXODUS_SESSION AND SMTK_ENABLE_DISCRETE_SESSION AND SMTK_ENABLE_CGM_SESSION)
   set(smtkModelPythonDataTests
     ${smtkModelPythonDataTests}
