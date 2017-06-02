@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/extension/qt/qtAttributeItemWidgetFactory.h"
 
+#include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtAttributeRefItem.h"
 #include "smtk/extension/qt/qtDateTimeItem.h"
 #include "smtk/extension/qt/qtFileItem.h"
@@ -98,7 +99,10 @@ qtItem* qtAttributeItemWidgetFactory::createVoidItemWidget(
 qtItem* qtAttributeItemWidgetFactory::createModelEntityItemWidget(
   ModelEntityItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient)
 {
-  return new qtModelEntityItem(item, p, bview, orient);
+  qtItem* newItem = new qtModelEntityItem(item, p, bview, orient);
+  QObject::connect(&qtActiveObjects::instance(), SIGNAL(activeModelChanged()), newItem,
+    SLOT(clearEntityAssociations())); /// base class pointer?
+  return newItem;
 }
 
 /**\brief Create a widget that illustrates an item whose value is a set of model geometric selections.

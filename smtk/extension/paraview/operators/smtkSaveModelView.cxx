@@ -26,6 +26,7 @@
 #include "smtk/io/SaveJSON.h"
 #include "smtk/io/SaveJSON.txx"
 
+#include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtFileItem.h"
 #include "smtk/extension/qt/qtModelEntityItem.h"
@@ -350,6 +351,8 @@ void smtkSaveModelView::createWidget()
   this->Internals->AssocModels =
     new qtModelEntityItem(this->Internals->CurrentOp.lock()->specification()->associations(),
       nullptr, this, Qt::Horizontal);
+  QObject::connect(&qtActiveObjects::instance(), SIGNAL(activeModelChanged()),
+    this->Internals->AssocModels, SLOT(clearEntityAssociations()));
   layout->addWidget(this->Internals->AssocModels->widget());
 
   this->Internals->FileItem = new qtFileItem(

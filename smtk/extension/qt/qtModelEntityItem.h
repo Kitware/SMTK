@@ -49,6 +49,8 @@ public slots:
   void setOutputOptional(int);
   virtual void onRequestEntityAssociation();
   void onExpungeEntities(const smtk::model::EntityRefs& expungedEnts);
+  /// when active model changed, entityAssociations would be cleared
+  virtual void clearEntityAssociations();
 
 signals:
   void requestEntityAssociation();
@@ -60,7 +62,6 @@ signals:
 protected slots:
   virtual void updateItemData();
   virtual void popupViewItemSelected();
-  virtual void clearEntityAssociations();
 
 protected:
   virtual void createWidget();

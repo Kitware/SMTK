@@ -358,8 +358,6 @@ bool qtModelOperationWidget::initOperatorUI(const smtk::model::OperatorPtr& brOp
       this, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)));
   }
 
-  theView->requestModelEntityAssociation();
-
   this->Internals->OperatorMap[opName].opUiView = theView;
 
   this->Internals->OperationsLayout->addWidget(opParent);
