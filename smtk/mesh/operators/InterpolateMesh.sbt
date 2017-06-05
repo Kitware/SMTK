@@ -5,6 +5,18 @@
     <!-- Operator -->
     <AttDef Type="interpolate mesh"
             Label="Mesh - Interpolate" BaseType="operator">
+      <BriefDescription>
+        Create a field on mesh nodes/elements from
+        interpolated 2-dimensional data.
+      </BriefDescription>
+      <DetailedDescription>
+        &lt;p&gt;Create a field on mesh nodes/elements from
+        interpolated 2-dimensional data.
+        &lt;p&gt;This operator accepts as input two-dimensional points
+        with associated scalar values, and interpolates these values
+        onto either the points or the cells of the mesh. The input
+        points can be inserted manually or read from a CSV file.
+      </DetailedDescription>
       <ItemDefinitions>
         <MeshEntity Name="mesh" Label="Mesh" NumberOfRequiredValues="1" Extensible="true" >
           <BriefDescription>The mesh to elevate.</BriefDescription>
