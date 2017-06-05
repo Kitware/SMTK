@@ -18,6 +18,8 @@
 #include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 
+#include "smtk/io/Logger.h"
+
 #include "smtk/model/Events.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/Manager.h"
@@ -271,6 +273,7 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
     this->specification()->findMeshSelection("selection");
   MeshModifyMode opType = inSelectionItem->modifyMode();
   int numSelValues = static_cast<int>(inSelectionItem->numberOfValues());
+  double featureAngle = this->specification()->findDouble("feature angle")->value();
 
   switch (opType)
   {
@@ -289,11 +292,16 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
       // only do modification of current grow selection using the input selection.
       if (inSelectionItem->isCtrlKeyDown() || numSelValues > 1)
       {
+        smtkInfoMacro(log(), "Multiple cells are selected. Modifying current grow selection using "
+                             "the input selection.");
         ok = this->copyToOutSelection(inSelectionItem);
       }
       else if (numSelValues == 1) // one cell is clicked.
                                   // do grow
       {
+        smtkInfoMacro(
+          log(), "One cell is selected. Grow mesh selection constrainted by feature angle "
+            << featureAngle << ".");
         std::set<vtkIdType> visModelFaceIds;
         this->findVisibleModelFaces(model, visModelFaceIds, opsession.get());
         this->m_growOp->SetModelWrapper(modelWrapper);
@@ -318,8 +326,7 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
         int mode = 0;
 
         this->m_growOp->SetGrowMode(mode);
-        this->m_growOp->SetFeatureAngle(
-          this->specification()->findDouble("feature angle")->value());
+        this->m_growOp->SetFeatureAngle(featureAngle);
         this->m_growOp->SetInputSelection(this->m_growSelection.GetPointer());
         this->m_growOp->SetGrowFaceIds(visModelFaceIds);
 
