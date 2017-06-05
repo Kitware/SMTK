@@ -4,6 +4,15 @@
   <Definitions>
     <!-- Operator -->
     <AttDef Type="apply bathymetry" Label="Mesh - Apply Bathymetry" BaseType="operator">
+      <BriefDescription>
+        Add or Remove elevation from a model or mesh.
+      </BriefDescription>
+      <DetailedDescription>
+        &lt;p&gt;Add or Remove elevation from a model or mesh.
+        &lt;p&gt;This operator modifies the z-coordinate of a model, a
+        mesh or both a model and a mesh according to an auxiliary
+        geometry. The elevation data can be applied or removed.
+      </DetailedDescription>
       <ItemDefinitions>
 
         <String Name="operation" Label="Operation" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">

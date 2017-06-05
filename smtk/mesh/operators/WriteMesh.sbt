@@ -4,6 +4,17 @@
   <Definitions>
     <!-- Operator -->
     <AttDef Type="write mesh" Label="Mesh - Save" BaseType="operator">
+      <BriefDescription>
+        Write a mesh to disk.
+      </BriefDescription>
+      <DetailedDescription>
+        &lt;p&gt;Write a mesh to disk.
+        &lt;p&gt;This operator creates a file representing the
+        selected mesh and saves it to disk. The created file is
+        readable by this application, and the resulting
+        mesh is guaranteed to contain all of the information from
+        the original mesh.
+      </DetailedDescription>
       <ItemDefinitions>
         <MeshEntity Name="mesh" NumberOfRequiredValues="1" Extensible="true" />
         <File Name="filename" NumberOfRequiredValues="1" ShouldExist="false"
