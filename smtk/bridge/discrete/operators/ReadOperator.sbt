@@ -4,6 +4,14 @@
   <Definitions>
     <!-- Operator -->
     <AttDef Type="read" BaseType="operator">
+      <BriefDescription>
+        Read a cmb file and import it into Conceptual Model Builder.
+      </BriefDescription>
+      <DetailedDescription>
+        Read a cmb file and import it into Conceptual Model Builder.
+
+        This operator only supports read .cmb file.
+      </DetailedDescription>
       <ItemDefinitions>
         <File Name="filename" NumberOfRequiredValues="1"
           ShouldExist="true"

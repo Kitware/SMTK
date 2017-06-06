@@ -4,6 +4,18 @@
   <Definitions>
     <!-- Operator -->
     <AttDef Type="split face" BaseType="operator">
+      <BriefDescription>
+        Split a face/faces into several small faces. Feature angle is used to decide whether split the
+        face or not.
+      </BriefDescription>
+      <DetailedDescription>
+        Split a face/faces into several small faces. Feature angle is used to decide whether split the
+        face or not.
+
+        Only when the feature angle of two adjacent faces is smaller than the threthold provided by the
+        user then would the face be split.
+
+      </DetailedDescription>
       <ItemDefinitions>
         <ModelEntity Name="model" NumberOfRequiredValues="1">
           <MembershipMask>model</MembershipMask>
@@ -17,6 +29,17 @@
             <Min Inclusive="true">0.</Min>
             <Max Inclusive="true">360.</Max>
           </RangeInfo>
+           <BriefDescription>
+             Feature angle is the angle between the normals of two adjacent faces. Here feature
+             angle is defind as an upper bound.
+           </BriefDescription>
+           <DetailedDescription>
+             Feature angle is the angle between the normals of two adjacent faces. Here feature
+             angle is defined as an upper bound.
+
+             Feature angle also is the supplementary angle of the dihedral angle between
+             two adjacent faces.
+           </DetailedDescription>
         </Double>
       </ItemDefinitions>
     </AttDef>
