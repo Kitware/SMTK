@@ -8,8 +8,10 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/extension/paraview/operators/smtkSaveModelView.h"
-#include "smtk/extension/paraview/operators/ui_smtkSaveModelParameters.h"
+#include "smtk/extension/paraview/operators/smtkExportModelView.h"
+#include "smtk/extension/paraview/operators/ui_smtkExportModelParameters.h"
+#include "smtk/extension/qt/qtActiveObjects.h"
+#include "smtk/extension/qt/qtOperatorView.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
@@ -31,7 +33,6 @@
 #include "smtk/extension/qt/qtModelEntityItem.h"
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtModelView.h"
-#include "smtk/extension/qt/qtOperatorView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/model/Operator.h"
@@ -65,7 +66,7 @@
 
 using namespace smtk::extension;
 
-class smtkSaveActions
+class smtkExportActions
 {
 public:
   std::ostringstream m_saveErrors;
@@ -79,7 +80,7 @@ public:
   std::string m_errorColor;
   bool m_enabled;
 
-  smtkSaveActions()
+  smtkExportActions()
     : m_errorColor("#aa7777")
     , m_enabled(true)
   {
@@ -98,10 +99,10 @@ public:
   }
 };
 
-class smtkSaveModelViewInternals : public Ui::smtkSaveModelParameters
+class smtkExportModelViewInternals : public Ui::smtkExportModelParameters
 {
 public:
-  smtkSaveModelViewInternals()
+  smtkExportModelViewInternals()
     : AssocModels(nullptr)
     , FileItem(nullptr)
     , SummaryMode("save")
@@ -109,7 +110,7 @@ public:
   {
   }
 
-  ~smtkSaveModelViewInternals()
+  ~smtkExportModelViewInternals()
   {
     /*
     if (CurrentAtt)
@@ -126,9 +127,9 @@ public:
   QString UserFilename;
   std::string SummaryMode;
 
-  smtkSaveActions SaveActions;
-  smtkSaveActions SaveAsActions;
-  smtkSaveActions ExportActions;
+  smtkExportActions SaveActions;
+  smtkExportActions SaveAsActions;
+  smtkExportActions ExportActions;
 
   smtk::weak_ptr<smtk::model::Operator> CurrentOp;
 
@@ -136,7 +137,7 @@ public:
 };
 
 template <typename T>
-bool smtkSaveModelView::updateOperatorFromUI(const std::string& mode, const T& action)
+bool smtkExportModelView::updateOperatorFromUI(const std::string& mode, const T& action)
 {
   using namespace ::boost::filesystem;
   using namespace smtk::model;
@@ -211,45 +212,45 @@ bool smtkSaveModelView::updateOperatorFromUI(const std::string& mode, const T& a
   return true;
 }
 
-smtkSaveModelView::smtkSaveModelView(const ViewInfo& info)
+smtkExportModelView::smtkExportModelView(const ViewInfo& info)
   : smtkModelIOView(info)
 {
-  this->Internals = new smtkSaveModelViewInternals;
-  auto opinfo = dynamic_cast<const smtk::extension::OperatorViewInfo*>(&info);
+  this->Internals = new smtkExportModelViewInternals;
+  auto opinfo = dynamic_cast<const OperatorViewInfo*>(&info);
   if (opinfo)
   {
     this->Internals->CurrentOp = opinfo->m_operator;
   }
 }
 
-smtkSaveModelView::~smtkSaveModelView()
+smtkExportModelView::~smtkExportModelView()
 {
   delete this->Internals;
 }
 
-bool smtkSaveModelView::displayItem(smtk::attribute::ItemPtr item)
+bool smtkExportModelView::displayItem(smtk::attribute::ItemPtr item)
 {
   (void)item;
   // We display everything ourselves:
   return false;
 }
 
-qtBaseView* smtkSaveModelView::createViewWidget(const ViewInfo& info)
+qtBaseView* smtkExportModelView::createViewWidget(const ViewInfo& info)
 {
   //std::cout << "createViewWidget\n";
-  smtkSaveModelView* view = new smtkSaveModelView(info);
+  smtkExportModelView* view = new smtkExportModelView(info);
   view->buildUI();
   return view;
 }
 
-void smtkSaveModelView::attributeModified()
+void smtkExportModelView::attributeModified()
 {
   // Always enable the apply button here.
   //std::cout << "attributeModified\n";
   this->updateSummary("unhovered");
 }
 
-void smtkSaveModelView::refreshSummary()
+void smtkExportModelView::refreshSummary()
 {
   /*
   std::cout << "refresh (rename " << (this->Internals->RenameModelsBtn->isChecked() ? "T" : "F") << " embed "
@@ -258,7 +259,7 @@ void smtkSaveModelView::refreshSummary()
   this->updateSummary("unhovered");
 }
 
-void smtkSaveModelView::widgetDestroyed(QObject* w)
+void smtkExportModelView::widgetDestroyed(QObject* w)
 {
   if (this->Widget == w)
   {
@@ -266,7 +267,7 @@ void smtkSaveModelView::widgetDestroyed(QObject* w)
   }
 }
 
-void smtkSaveModelView::updateAttributeData()
+void smtkExportModelView::updateAttributeData()
 {
   //std::cout << "updateAttributeData\n";
   smtk::common::ViewPtr view = this->getObject();
@@ -322,7 +323,7 @@ void smtkSaveModelView::updateAttributeData()
   //this->Internals->CurrentAtt = this->Internals->createAttUI(att, this->Widget, this);
 }
 
-void smtkSaveModelView::createWidget()
+void smtkExportModelView::createWidget()
 {
   //std::cout << "createWidget\n";
   smtk::common::ViewPtr view = this->getObject();
@@ -376,17 +377,17 @@ void smtkSaveModelView::createWidget()
     this->Widget, SIGNAL(destroyed(QObject*)), this, SLOT(widgetDestroyed(QObject*)));
 
   // Signals and slots that run the operator
-  QObject::connect(this->Internals->SaveBtn, SIGNAL(released()), this, SLOT(onSave()));
-  QObject::connect(this->Internals->SaveAsBtn, SIGNAL(released()), this, SLOT(onSaveAs()));
-  //QObject::connect(this->Internals->ExportBtn, SIGNAL(released()), this, SLOT(onExport()));
+  //QObject::connect(this->Internals->SaveBtn, SIGNAL(released()), this, SLOT(onSave()));
+  //QObject::connect(this->Internals->SaveAsBtn, SIGNAL(released()), this, SLOT(onSaveAs()));
+  QObject::connect(this->Internals->ExportBtn, SIGNAL(released()), this, SLOT(onExport()));
 
   // Respond to focus-in/out events on the save buttons:
-  this->Internals->SaveBtn->installEventFilter(this);
-  this->Internals->SaveBtn->setMouseTracking(true);
-  this->Internals->SaveAsBtn->installEventFilter(this);
-  this->Internals->SaveAsBtn->setMouseTracking(true);
-  //this->Internals->ExportBtn->installEventFilter(this);
-  //this->Internals->ExportBtn->setMouseTracking(true);
+  //this->Internals->SaveBtn->installEventFilter(this);
+  //this->Internals->SaveBtn->setMouseTracking(true);
+  //this->Internals->SaveAsBtn->installEventFilter(this);
+  //this->Internals->SaveAsBtn->setMouseTracking(true);
+  this->Internals->ExportBtn->installEventFilter(this);
+  this->Internals->ExportBtn->setMouseTracking(true);
 
   QObject::connect(
     this->Internals->RenameModelsBtn, SIGNAL(stateChanged(int)), this, SLOT(refreshSummary()));
@@ -399,8 +400,9 @@ void smtkSaveModelView::createWidget()
   this->updateSummary("unhovered");
 }
 
-bool smtkSaveModelView::eventFilter(QObject* obj, QEvent* evnt)
+bool smtkExportModelView::eventFilter(QObject* obj, QEvent* evnt)
 {
+  /*
   if (obj == this->Internals->SaveBtn)
   {
     if (evnt->type() == QEvent::FocusIn || evnt->type() == QEvent::Enter)
@@ -417,18 +419,19 @@ bool smtkSaveModelView::eventFilter(QObject* obj, QEvent* evnt)
       //std::cout << "Save as focus\n";
     }
   }
-  /*
-  else if (obj == this->Internals->ExportBtn)
+  else
+  */
+  if (obj == this->Internals->ExportBtn)
   {
     if (evnt->type() == QEvent::FocusIn || evnt->type() == QEvent::Enter)
     {
       this->updateSummary("save a copy");
-      //std::cout << "Save a copy focus\n";
+      //std::cout << "Export a copy focus\n";
     }
   }
-  */
 
-  if (obj == this->Internals->SaveBtn || obj == this->Internals->SaveAsBtn)
+  //if (obj == this->Internals->SaveBtn || obj == this->Internals->SaveAsBtn ||
+  if (obj == this->Internals->ExportBtn)
   {
     if (evnt->type() == QEvent::FocusOut || evnt->type() == QEvent::Leave)
     {
@@ -439,13 +442,13 @@ bool smtkSaveModelView::eventFilter(QObject* obj, QEvent* evnt)
   return this->smtk::extension::qtBaseView::eventFilter(obj, evnt);
 }
 
-void smtkSaveModelView::mouseMoveEvent(QMouseEvent* event)
+void smtkExportModelView::mouseMoveEvent(QMouseEvent* event)
 {
   (void)event;
   //std::cout << "Urf\n";
 }
 
-void smtkSaveModelView::requestOperation(const smtk::model::OperatorPtr& op)
+void smtkExportModelView::requestOperation(const smtk::model::OperatorPtr& op)
 {
   if (!op || !op->specification())
   {
@@ -454,7 +457,7 @@ void smtkSaveModelView::requestOperation(const smtk::model::OperatorPtr& op)
   this->uiManager()->activeModelView()->requestOperation(op, false);
 }
 
-void smtkSaveModelView::cancelOperation(const smtk::model::OperatorPtr& op)
+void smtkExportModelView::cancelOperation(const smtk::model::OperatorPtr& op)
 {
   if (!op || !this->Widget || !this->Internals->CurrentOp.lock())
   {
@@ -463,14 +466,14 @@ void smtkSaveModelView::cancelOperation(const smtk::model::OperatorPtr& op)
   // Reset widgets here
 }
 
-void smtkSaveModelView::valueChanged(smtk::attribute::ItemPtr valItem)
+void smtkExportModelView::valueChanged(smtk::attribute::ItemPtr valItem)
 {
   (void)valItem;
   std::cout << "Item " << valItem->name() << " type " << valItem->type() << " changed\n";
   this->updateSummary("unhovered");
 }
 
-bool smtkSaveModelView::canSave() const
+bool smtkExportModelView::canSave() const
 {
   smtk::attribute::ModelEntityItem::Ptr assoc = this->Internals->AssocModels->modelEntityItem();
   bool ok = true;
@@ -485,7 +488,7 @@ bool smtkSaveModelView::canSave() const
   return ok;
 }
 
-bool smtkSaveModelView::onSave()
+bool smtkExportModelView::onSave()
 {
   std::cout << "Try saving\n";
   if (this->updateOperatorFromUI("save as", this->Internals->SaveActions))
@@ -496,7 +499,7 @@ bool smtkSaveModelView::onSave()
   return false;
 }
 
-bool smtkSaveModelView::onSaveAs()
+bool smtkExportModelView::onSaveAs()
 {
   std::cout << "Try saving as\n";
   if (this->updateOperatorFromUI("save as", this->Internals->SaveAsActions))
@@ -507,7 +510,7 @@ bool smtkSaveModelView::onSaveAs()
   return false;
 }
 
-bool smtkSaveModelView::onExport()
+bool smtkExportModelView::onExport()
 {
   std::cout << "Try saving a copy\n";
   if (this->updateOperatorFromUI("save a copy", this->Internals->ExportActions))
@@ -518,7 +521,7 @@ bool smtkSaveModelView::onExport()
   return false;
 }
 
-void smtkSaveModelView::chooseFile(const std::string& mode)
+void smtkExportModelView::chooseFile(const std::string& mode)
 {
   if (this->Internals->FileItem)
   {
@@ -529,7 +532,7 @@ void smtkSaveModelView::chooseFile(const std::string& mode)
   }
 }
 
-void smtkSaveModelView::attemptSave(const std::string& mode)
+void smtkExportModelView::attemptSave(const std::string& mode)
 {
   bool shouldSave = false;
   if (mode == "save")
@@ -579,43 +582,43 @@ void smtkSaveModelView::attemptSave(const std::string& mode)
   }
 }
 
-void smtkSaveModelView::clearSelection()
+void smtkExportModelView::clearSelection()
 {
   this->uiManager()->activeModelView()->clearSelection();
 }
 
-void smtkSaveModelView::setEmbedData(bool doEmbed)
+void smtkExportModelView::setEmbedData(bool doEmbed)
 {
   this->Internals->EmbedDataBtn->setCheckState(doEmbed ? Qt::Checked : Qt::Unchecked);
 }
 
-void smtkSaveModelView::setRenameModels(bool doRename)
+void smtkExportModelView::setRenameModels(bool doRename)
 {
   this->Internals->RenameModelsBtn->setCheckState(doRename ? Qt::Checked : Qt::Unchecked);
 }
 
-void smtkSaveModelView::updateUI()
+void smtkExportModelView::updateUI()
 {
   this->qtBaseView::updateUI();
 }
 
-void smtkSaveModelView::showAdvanceLevelOverlay(bool show)
+void smtkExportModelView::showAdvanceLevelOverlay(bool show)
 {
   this->qtBaseView::showAdvanceLevelOverlay(show);
 }
 
-void smtkSaveModelView::requestModelEntityAssociation()
+void smtkExportModelView::requestModelEntityAssociation()
 {
   std::cout << "requestModelEntityAssociation\n";
   this->updateAttributeData();
 }
 
-void smtkSaveModelView::setModeToPreview(const std::string& mode)
+void smtkExportModelView::setModeToPreview(const std::string& mode)
 {
   this->updateSummary(mode);
 }
 
-void smtkSaveModelView::setModelToSave(const smtk::model::Model& model)
+void smtkExportModelView::setModelToSave(const smtk::model::Model& model)
 {
   smtk::model::EntityRefs assoc;
   assoc.insert(model);
@@ -623,7 +626,7 @@ void smtkSaveModelView::setModelToSave(const smtk::model::Model& model)
   this->updateActions();
 }
 
-void smtkSaveModelView::updateSummary(const std::string& mode)
+void smtkExportModelView::updateSummary(const std::string& mode)
 {
   if (this->Internals->Fini)
   {
@@ -635,7 +638,7 @@ void smtkSaveModelView::updateSummary(const std::string& mode)
   {
     this->Internals->SummaryMode = mode;
   }
-  smtkSaveActions* action = (this->Internals->SummaryMode == "save"
+  smtkExportActions* action = (this->Internals->SummaryMode == "save"
       ? &this->Internals->SaveActions
       : (this->Internals->SummaryMode == "save as"
             ? &this->Internals->SaveAsActions
@@ -646,10 +649,10 @@ void smtkSaveModelView::updateSummary(const std::string& mode)
 
   if (action)
   {
-    //this->Internals->SaveSummaryLabel->setText(action->m_saveErrors.str().c_str());
+    //this->Internals->ExportSummaryLabel->setText(action->m_saveErrors.str().c_str());
     std::string summary;
     std::ostringstream builder;
-    builder << "<h2> Summary (" << this->Internals->SummaryMode << ")</h2><br>";
+    builder << "<h2> Summary (export)</h2><br>";
 
     std::map<std::string, std::string>::const_iterator ssit;
     if (action->m_enabled)
@@ -722,23 +725,24 @@ void smtkSaveModelView::updateSummary(const std::string& mode)
     builder.str("");
     builder.clear();
 
-    this->Internals->SaveSummaryLabel->setText(summary.c_str());
+    this->Internals->ExportSummaryLabel->setText(summary.c_str());
   }
 
-  QPushButton* btns[2] = {
-    this->Internals->SaveBtn, this->Internals->SaveAsBtn //, this->Internals->ExportBtn,
+  QPushButton* btns[1] = {
+    //this->Internals->SaveBtn, this->Internals->SaveAsBtn,
+    this->Internals->ExportBtn,
   };
   /*
   QLabel* lbls[3] = {
     this->Internals->SaveStatus, this->Internals->SaveAsStatus, this->Internals->ExportStatus,
   };
   */
-  smtkSaveActions* act[2] = {
-    &this->Internals->SaveActions, &this->Internals->SaveAsActions,
-    // &this->Internals->ExportActions,
+  smtkExportActions* act[1] = {
+    // &this->Internals->SaveActions, &this->Internals->SaveAsActions,
+    &this->Internals->ExportActions,
   };
   //QLabel* statusLabel;
-  for (int ii = 0; ii < 2; ++ii)
+  for (int ii = 0; ii < 1; ++ii)
   {
     focusBtn = btns[ii];
     action = act[ii];
@@ -766,7 +770,7 @@ void smtkSaveModelView::updateSummary(const std::string& mode)
   }
 }
 
-void smtkSaveModelView::updateActions()
+void smtkExportModelView::updateActions()
 {
   if (this->Internals->Fini)
   {

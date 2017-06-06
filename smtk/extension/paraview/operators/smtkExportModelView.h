@@ -7,28 +7,24 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME smtkSaveModelView - UI component for assigning colors to entities
-// .SECTION Description
-// .SECTION See Also
-// qtSection
-
-#ifndef smtkSaveModelView_h
-#define smtkSaveModelView_h
+#ifndef smtkExportModelView_h
+#define smtkExportModelView_h
 
 #include "smtk/extension/paraview/operators/smtkModelIOView.h"
 
 class QColor;
 class QIcon;
 class QMouseEvent;
-class smtkSaveModelViewInternals;
+class smtkExportModelViewInternals;
 
-class SMTKPQOPERATORVIEWSEXT_EXPORT smtkSaveModelView : public smtkModelIOView
+/// A view for exporting SMTK "packages" (SMTK files with data saved to the same directory).
+class SMTKPQOPERATORVIEWSEXT_EXPORT smtkExportModelView : public smtkModelIOView
 {
   Q_OBJECT
 
 public:
-  smtkSaveModelView(const smtk::extension::ViewInfo& info);
-  virtual ~smtkSaveModelView();
+  smtkExportModelView(const smtk::extension::ViewInfo& info);
+  virtual ~smtkExportModelView();
 
   static smtk::extension::qtBaseView* createViewWidget(const smtk::extension::ViewInfo& info);
 
@@ -83,7 +79,7 @@ protected:
   bool updateOperatorFromUI(const std::string& mode, const T& action);
 
 private:
-  smtkSaveModelViewInternals* Internals;
+  smtkExportModelViewInternals* Internals;
 };
 
-#endif // smtkSaveModelView_h
+#endif // smtkExportModelView_h
