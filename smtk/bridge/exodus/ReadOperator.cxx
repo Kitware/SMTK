@@ -114,7 +114,7 @@ static void AddPreservedUUIDsRecursive(
   }
 }
 
-static void AddExodusModelChildren(vtkMultiBlockDataSet* data)
+static void AddBlockChildrenAsModelChildren(vtkMultiBlockDataSet* data)
 {
   if (!data)
     return;
@@ -240,7 +240,7 @@ smtk::model::OperatorResult ReadOperator::readExodus()
   // with information needed by the session to determine how it should
   // be presented.
   MarkMeshInfo(modelOut, dim, path(filename).stem().string<std::string>().c_str(), EXO_MODEL, -1);
-  AddExodusModelChildren(modelOut);
+  AddBlockChildrenAsModelChildren(modelOut);
   vtkMultiBlockDataSet* elemBlocks = vtkMultiBlockDataSet::SafeDownCast(modelOut->GetBlock(0));
 
   if (!elemBlocks)
@@ -319,6 +319,7 @@ smtk::model::OperatorResult ReadOperator::readSLAC()
     modelOut.GetPointer(), 3, path(filename).stem().string<std::string>().c_str(), EXO_MODEL, -1);
   MarkSLACMeshWithChildren(surfBlocks.GetPointer(), 2, "surfaces", EXO_SIDE_SETS, EXO_SIDE_SET);
   MarkSLACMeshWithChildren(voluBlocks.GetPointer(), 3, "volumes", EXO_BLOCKS, EXO_BLOCK);
+  AddBlockChildrenAsModelChildren(modelOut);
 
   // Mark any volumes as "invisible" so there is no z-fighting by default:
   MarkChildren(voluBlocks.GetPointer(), Session::SMTK_VISIBILITY(), -1);
