@@ -33,6 +33,7 @@
 #include "smtk/extension/qt/qtModelEntityItem.h"
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtModelView.h"
+#include "smtk/extension/qt/qtOperatorView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/model/Operator.h"
@@ -73,7 +74,6 @@ public:
   std::string m_smtkFilename;
   std::string m_embedDir;
   std::map<smtk::model::EntityRef, smtk::model::StringData> m_modelChanges;
-  //std::map<smtk::mesh::CollectionPtr,smtk::model::StringData> m_meshChanges;
   std::map<std::string, std::string> m_copyFiles;
   std::map<std::string, std::string> m_saveModels;
   std::map<smtk::mesh::CollectionPtr, std::string> m_saveMeshes;
@@ -92,7 +92,6 @@ public:
     this->m_saveErrors.clear();
     this->m_enabled = true;
     this->m_modelChanges.clear();
-    //this->m_meshChanges.clear();
     this->m_copyFiles.clear();
     this->m_saveModels.clear();
     this->m_saveMeshes.clear();
@@ -112,12 +111,6 @@ public:
 
   ~smtkExportModelViewInternals()
   {
-    /*
-    if (CurrentAtt)
-      {
-      delete CurrentAtt;
-      }
-      */
     delete this->AssocModels;
     delete this->FileItem;
   }
@@ -237,7 +230,6 @@ bool smtkExportModelView::displayItem(smtk::attribute::ItemPtr item)
 
 qtBaseView* smtkExportModelView::createViewWidget(const ViewInfo& info)
 {
-  //std::cout << "createViewWidget\n";
   smtkExportModelView* view = new smtkExportModelView(info);
   view->buildUI();
   return view;
@@ -246,16 +238,11 @@ qtBaseView* smtkExportModelView::createViewWidget(const ViewInfo& info)
 void smtkExportModelView::attributeModified()
 {
   // Always enable the apply button here.
-  //std::cout << "attributeModified\n";
   this->updateSummary("unhovered");
 }
 
 void smtkExportModelView::refreshSummary()
 {
-  /*
-  std::cout << "refresh (rename " << (this->Internals->RenameModelsBtn->isChecked() ? "T" : "F") << " embed "
-    << (this->Internals->EmbedDataBtn->isChecked() ? "T" : "F") << ")\n";
-    */
   this->updateSummary("unhovered");
 }
 
@@ -269,19 +256,11 @@ void smtkExportModelView::widgetDestroyed(QObject* w)
 
 void smtkExportModelView::updateAttributeData()
 {
-  //std::cout << "updateAttributeData\n";
   smtk::common::ViewPtr view = this->getObject();
   if (!view || !this->Widget)
   {
     return;
   }
-
-  /*
-  if(this->Internals->CurrentAtt)
-    {
-    delete this->Internals->CurrentAtt;
-    }
-    */
 
   int i = view->details().findChild("AttributeTypes");
   if (i < 0)
@@ -293,7 +272,6 @@ void smtkExportModelView::updateAttributeData()
   for (std::size_t ci = 0; ci < comp.numberOfChildren(); ++ci)
   {
     smtk::common::View::Component& attComp = comp.child(ci);
-    //std::cout << "  component " << attComp.name() << "\n";
     if (attComp.name() != "Att")
     {
       continue;
@@ -301,7 +279,6 @@ void smtkExportModelView::updateAttributeData()
     std::string optype;
     if (attComp.attribute("Type", optype) && !optype.empty())
     {
-      //std::cout << "    component type " << optype << "\n";
       if (optype == "save smtk model")
       {
         defName = optype;
@@ -325,7 +302,6 @@ void smtkExportModelView::updateAttributeData()
 
 void smtkExportModelView::createWidget()
 {
-  //std::cout << "createWidget\n";
   smtk::common::ViewPtr view = this->getObject();
   if (!view)
   {
@@ -402,50 +378,22 @@ void smtkExportModelView::createWidget()
 
 bool smtkExportModelView::eventFilter(QObject* obj, QEvent* evnt)
 {
-  /*
-  if (obj == this->Internals->SaveBtn)
-  {
-    if (evnt->type() == QEvent::FocusIn || evnt->type() == QEvent::Enter)
-    {
-      this->updateSummary("save");
-      //std::cout << "Save summary update\n";
-    }
-  }
-  else if (obj == this->Internals->SaveAsBtn)
-  {
-    if (evnt->type() == QEvent::FocusIn || evnt->type() == QEvent::Enter)
-    {
-      this->updateSummary("save as");
-      //std::cout << "Save as focus\n";
-    }
-  }
-  else
-  */
   if (obj == this->Internals->ExportBtn)
   {
     if (evnt->type() == QEvent::FocusIn || evnt->type() == QEvent::Enter)
     {
       this->updateSummary("save a copy");
-      //std::cout << "Export a copy focus\n";
     }
   }
 
-  //if (obj == this->Internals->SaveBtn || obj == this->Internals->SaveAsBtn ||
   if (obj == this->Internals->ExportBtn)
   {
     if (evnt->type() == QEvent::FocusOut || evnt->type() == QEvent::Leave)
     {
-      //std::cout << "unhovered\n";
       this->updateSummary("unhovered");
     }
   }
   return this->smtk::extension::qtBaseView::eventFilter(obj, evnt);
-}
-
-void smtkExportModelView::mouseMoveEvent(QMouseEvent* event)
-{
-  (void)event;
-  //std::cout << "Urf\n";
 }
 
 void smtkExportModelView::requestOperation(const smtk::model::OperatorPtr& op)
@@ -469,7 +417,6 @@ void smtkExportModelView::cancelOperation(const smtk::model::OperatorPtr& op)
 void smtkExportModelView::valueChanged(smtk::attribute::ItemPtr valItem)
 {
   (void)valItem;
-  std::cout << "Item " << valItem->name() << " type " << valItem->type() << " changed\n";
   this->updateSummary("unhovered");
 }
 
@@ -490,7 +437,6 @@ bool smtkExportModelView::canSave() const
 
 bool smtkExportModelView::onSave()
 {
-  std::cout << "Try saving\n";
   if (this->updateOperatorFromUI("save as", this->Internals->SaveActions))
   {
     this->requestOperation(this->Internals->CurrentOp.lock());
@@ -501,7 +447,6 @@ bool smtkExportModelView::onSave()
 
 bool smtkExportModelView::onSaveAs()
 {
-  std::cout << "Try saving as\n";
   if (this->updateOperatorFromUI("save as", this->Internals->SaveAsActions))
   {
     this->requestOperation(this->Internals->CurrentOp.lock());
@@ -512,7 +457,6 @@ bool smtkExportModelView::onSaveAs()
 
 bool smtkExportModelView::onExport()
 {
-  std::cout << "Try saving a copy\n";
   if (this->updateOperatorFromUI("save a copy", this->Internals->ExportActions))
   {
     this->requestOperation(this->Internals->CurrentOp.lock());
@@ -573,12 +517,6 @@ void smtkExportModelView::attemptSave(const std::string& mode)
     {
       this->requestOperation(this->Internals->CurrentOp.lock());
     }
-    /*
-    smtk::model::SessionRef sref =
-      this->Internals->AssocModels->modelEntityItem()->value().owningSession();
-    this->uiManager()->activeModelView()->requestOperation(
-      "save smtk model", sref.entity(), true);
-      */
   }
 }
 
@@ -609,7 +547,6 @@ void smtkExportModelView::showAdvanceLevelOverlay(bool show)
 
 void smtkExportModelView::requestModelEntityAssociation()
 {
-  std::cout << "requestModelEntityAssociation\n";
   this->updateAttributeData();
 }
 
@@ -649,7 +586,6 @@ void smtkExportModelView::updateSummary(const std::string& mode)
 
   if (action)
   {
-    //this->Internals->ExportSummaryLabel->setText(action->m_saveErrors.str().c_str());
     std::string summary;
     std::ostringstream builder;
     builder << "<h2> Summary (export)</h2><br>";
@@ -691,17 +627,6 @@ void smtkExportModelView::updateSummary(const std::string& mode)
         didRename = true;
       }
     }
-    /*
-    std::map<smtk::mesh::CollectionPtr,smtk::model::StringData>::const_iterator mecit;
-    for (mecit = action->m_meshChanges.begin(); mecit != action->m_meshChanges.end(); ++mecit)
-    {
-      if (mecit->second.find("name") != mecit->second.end())
-      {
-        builder << "<li>" << mecit->first->name() << " to " << mecit->second.find("name")->second[0] << "</li>\n";
-        didRename = true;
-      }
-    }
-    */
     builder << "</ul>\n";
     if (didRename)
     {
@@ -732,41 +657,15 @@ void smtkExportModelView::updateSummary(const std::string& mode)
     //this->Internals->SaveBtn, this->Internals->SaveAsBtn,
     this->Internals->ExportBtn,
   };
-  /*
-  QLabel* lbls[3] = {
-    this->Internals->SaveStatus, this->Internals->SaveAsStatus, this->Internals->ExportStatus,
-  };
-  */
   smtkExportActions* act[1] = {
     // &this->Internals->SaveActions, &this->Internals->SaveAsActions,
     &this->Internals->ExportActions,
   };
-  //QLabel* statusLabel;
   for (int ii = 0; ii < 1; ++ii)
   {
     focusBtn = btns[ii];
     action = act[ii];
-    //statusLabel = lbls[ii];
-    if (!action->m_enabled)
-    {
-      QColor btnColor = this->uiManager()->invalidValueColor();
-      QPalette pal = focusBtn->palette();
-      pal.setColor(QPalette::Window, btnColor);
-      //statusLabel->setAutoFillBackground(true);
-      //statusLabel->setPalette(pal);
-      //statusLabel->update();
-      //statusLabel->setText(QString::fromUtf8(" \xe2\x9c\x97 ", 5));
-      focusBtn->setEnabled(false);
-    }
-    else
-    {
-      focusBtn->setAutoFillBackground(false);
-      QPalette pal = QApplication::palette();
-      //statusLabel->setPalette(pal);
-      //statusLabel->update();
-      //statusLabel->setText(QString::fromUtf8(" \xe2\x9c\x93 ", 5));
-      focusBtn->setEnabled(true);
-    }
+    focusBtn->setEnabled(action->m_enabled);
   }
 }
 

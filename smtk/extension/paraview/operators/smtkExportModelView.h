@@ -71,7 +71,6 @@ protected:
   virtual void updateAttributeData();
   virtual void createWidget();
   virtual bool eventFilter(QObject* obj, QEvent* evnt);
-  virtual void mouseMoveEvent(QMouseEvent* event);
   virtual void updateSummary(const std::string& mode);
   virtual void updateActions();
 
