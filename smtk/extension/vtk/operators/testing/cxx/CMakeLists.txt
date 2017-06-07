@@ -37,6 +37,19 @@ if (SMTK_DATA_DIR)
     vtkRenderingGL2PSOpenGL2
     vtkTestingRendering)
 
+  add_executable(UnitTestElevateMesh UnitTestElevateMesh.cxx)
+  target_link_libraries(UnitTestElevateMesh
+    smtkCore
+    vtkSMTKOperatorsExt
+    smtkDiscreteSession
+    vtkSMTKSourceExt
+    vtkRenderingGL2PSOpenGL2
+    vtkTestingRendering)
+  add_test(
+       NAME UnitTestElevateMesh
+       COMMAND UnitTestElevateMesh ${SMTK_DATA_DIR}/mesh/2d/Simple.2dm ${SMTK_DATA_DIR}/mesh/2d/SimpleBathy.2dm
+       )
+
   if (SMTK_ENABLE_POLYGON_SESSION)
     # test to apply BO to polyon session
     add_executable(BathymetryTestNewRiversmtk BathymetryTestNewRiversmtk.cxx)

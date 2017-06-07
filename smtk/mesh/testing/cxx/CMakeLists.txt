@@ -28,7 +28,6 @@ set(unit_tests_which_require_data
   UnitTestCellSet.cxx
   UnitTestCreateMesh.cxx
   UnitTestCellField.cxx
-  UnitTestElevate.cxx
   UnitTestExportMesh2DM.cxx
   UnitTestExportMesh3DM.cxx
   UnitTestExtractMeshConstants.cxx
@@ -71,6 +70,10 @@ add_executable(UnitTestInterpolateMesh UnitTestInterpolateMesh.cxx)
 target_compile_definitions(UnitTestInterpolateMesh PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
 target_link_libraries(UnitTestInterpolateMesh smtkCore ${Boost_LIBRARIES})
 
+add_executable(UnitTestWarpMesh UnitTestWarpMesh.cxx)
+target_compile_definitions(UnitTestWarpMesh PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
+target_link_libraries(UnitTestWarpMesh smtkCore ${Boost_LIBRARIES})
+
 if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
   add_test(NAME UnitTestInterpolateMeshToCells
     COMMAND $<TARGET_FILE:UnitTestInterpolateMesh>
@@ -88,4 +91,10 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
     COMMAND $<TARGET_FILE:UnitTestInterpolateMesh>
     "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json" 1 1)
   set_tests_properties(UnitTestInterpolateMeshToPointsCSV PROPERTIES LABELS "Mesh")
+  add_test(NAME UnitTestWarpMesh
+    COMMAND $<TARGET_FILE:UnitTestWarpMesh>
+    "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json" 0)
+  add_test(NAME UnitTestWarpMeshCSV
+    COMMAND $<TARGET_FILE:UnitTestWarpMesh>
+    "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json" 1)
 endif()

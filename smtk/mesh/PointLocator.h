@@ -17,6 +17,8 @@
 #include "smtk/mesh/Interface.h"
 #include "smtk/mesh/PointSet.h"
 
+#include <array>
+
 namespace smtk
 {
 namespace mesh
@@ -37,21 +39,26 @@ public:
   //These are the points you will be searching against
   PointLocator(const smtk::mesh::PointSet& ps);
 
-  //Construct a point locator given a set of raw points.
+  //Construct a point locator given a coordinate generating function.
   //Based on the backend these points maybe be added to the collection for
   //duration of the PointLocator
-  //Set ignoreZValues to true if you want all the points to be located
-  //on a plane at Z == 0.0
-  PointLocator(const smtk::mesh::CollectionPtr collection, const double* const xyzs,
-    std::size_t numPoints, bool ignoreZValues = false);
-
-  //Construct a point locator given a set of raw points.
-  //Based on the backend these points maybe be added to the collection for
-  //duration of the PointLocator
-  //Set ignoreZValues to true if you want all the points to be located
-  //on a plane at Z == 0.0
-  PointLocator(const smtk::mesh::CollectionPtr collection, const float* const xyzs,
-    std::size_t numPoints, bool ignoreZValues = false);
+  PointLocator(const smtk::mesh::CollectionPtr collection, std::size_t numPoints,
+    const std::function<std::array<double, 3>(std::size_t)>& coordinates);
+  PointLocator(
+    const smtk::mesh::CollectionPtr collection, std::size_t numPoints, const double* const xyzs)
+    : PointLocator(collection, numPoints, [&](std::size_t i) {
+      return std::array<double, 3>({ { xyzs[3 * i], xyzs[3 * i + 1], xyzs[3 * i + 2] } });
+    })
+  {
+  }
+  PointLocator(
+    const smtk::mesh::CollectionPtr collection, std::size_t numPoints, const float* const xyzs)
+    : PointLocator(collection, numPoints, [&](std::size_t i) {
+      return std::array<double, 3>({ { static_cast<double>(xyzs[3 * i]),
+        static_cast<double>(xyzs[3 * i + 1]), static_cast<double>(xyzs[3 * i + 2]) } });
+    })
+  {
+  }
 
   //returns all the point ids that are inside the locator
   smtk::mesh::HandleRange range() const;

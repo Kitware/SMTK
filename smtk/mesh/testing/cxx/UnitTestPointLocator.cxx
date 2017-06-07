@@ -43,7 +43,7 @@ void verify_empty_locator(const smtk::mesh::CollectionPtr& c)
 
   double* xyzs = NULL;
   std::size_t numPoints = 0;
-  smtk::mesh::PointLocator locator2(c, xyzs, numPoints);
+  smtk::mesh::PointLocator locator2(c, numPoints, xyzs);
 }
 
 void verify_raw_ptr_constructors(const smtk::mesh::CollectionPtr& c)
@@ -55,12 +55,12 @@ void verify_raw_ptr_constructors(const smtk::mesh::CollectionPtr& c)
   std::size_t numPoints = 2;
 
   { //test raw double pointer
-    smtk::mesh::PointLocator locator2(c, d_xyzs, numPoints);
+    smtk::mesh::PointLocator locator2(c, numPoints, d_xyzs);
     test((c->points().size() == initialNumPoints + numPoints));
   }
   test((c->points().size() == initialNumPoints));
   { //test raw float pointer
-    smtk::mesh::PointLocator locator2(c, f_xyzs, numPoints);
+    smtk::mesh::PointLocator locator2(c, numPoints, f_xyzs);
     test((c->points().size() == initialNumPoints + numPoints));
   }
   test((c->points().size() == initialNumPoints));
@@ -87,9 +87,9 @@ public:
     std::size_t index = 0;
     smtk::mesh::PointLocator::LocatorResults results;
     results.want_Coordinates = true;
-    for (c_it i = pointIds.begin(); i != pointIds.end(); ++i, index += 3)
+    for (c_it i = pointIds.begin(); i != pointIds.end(); ++i, ++index)
     {
-      m_locator.find(xyz[index], xyz[index + 1], xyz[index + 2], 0.0, results);
+      m_locator.find(xyz[3 * index], xyz[3 * index + 1], xyz[3 * index + 2], 0.0, results);
 
       test((results.x_s.size() == results.pointIds.size()));
       test((results.y_s.size() == results.pointIds.size()));
@@ -99,10 +99,10 @@ public:
       //should only return a single point as inside a radius of 0.0. So verify
       //the Id and coordinates are the same
       test((results.pointIds.size() == 1));
-      test((results.pointIds[0] == *i));
-      test((xyz[index] == results.x_s[0]));
-      test((xyz[index + 1] == results.y_s[0]));
-      test((xyz[index + 2] == results.z_s[0]));
+      test((results.pointIds[0] == index));
+      test((xyz[3 * index] == results.x_s[0]));
+      test((xyz[3 * index + 1] == results.y_s[0]));
+      test((xyz[3 * index + 2] == results.z_s[0]));
     }
   }
 };

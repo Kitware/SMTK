@@ -28,7 +28,6 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindCollection.h"
 #include "PybindContainsFunctors.h"
 #include "PybindDimensionTypes.h"
-#include "PybindDisplace.h"
 #include "PybindExtractMeshConstants.h"
 #include "PybindExtractTessellation.h"
 #include "PybindForEachTypes.h"
@@ -76,7 +75,6 @@ PYBIND11_PLUGIN(_smtkPybindMesh)
   PySharedPtrClass< smtk::mesh::ContainsFunctor > smtk_mesh_ContainsFunctor = pybind11_init_smtk_mesh_ContainsFunctor(mesh);
   PySharedPtrClass< smtk::mesh::CellField > smtk_mesh_CellField = pybind11_init_smtk_mesh_CellField(mesh);
   PySharedPtrClass< smtk::mesh::CellField > smtk_mesh_PointField = pybind11_init_smtk_mesh_PointField(mesh);
-  PySharedPtrClass< smtk::mesh::ElevationControls > smtk_mesh_ElevationControls = pybind11_init_smtk_mesh_ElevationControls(mesh);
   PySharedPtrClass< smtk::mesh::MeshConstants > smtk_mesh_MeshConstants = pybind11_init_smtk_mesh_MeshConstants(mesh);
   PySharedPtrClass< smtk::mesh::IntegerTag > smtk_mesh_IntegerTag = pybind11_init_smtk_mesh_IntegerTag(mesh);
   PySharedPtrClass< smtk::mesh::Interface > smtk_mesh_Interface = pybind11_init_smtk_mesh_Interface(mesh);
@@ -96,14 +94,6 @@ PYBIND11_PLUGIN(_smtkPybindMesh)
   pybind11_init_smtk_mesh_CellType(mesh);
   pybind11_init_smtk_mesh_ContainmentType(mesh);
   pybind11_init_smtk_mesh_cellTypeSummary(mesh);
-  pybind11_init__ZN4smtk4mesh8displaceERKNS0_8PointSetERKNS0_7MeshSetEd(mesh);
-  pybind11_init__ZN4smtk4mesh8displaceERKNS0_8PointSetES3_d(mesh);
-  pybind11_init__ZN4smtk4mesh7elevateERKNSt3__16vectorIdNS1_9allocatorIdEEEERKNS0_7MeshSetEdNS0_17ElevationControlsE(mesh);
-  pybind11_init__ZN4smtk4mesh7elevateERKNSt3__16vectorIdNS1_9allocatorIdEEEERKNS0_8PointSetEdNS0_17ElevationControlsE(mesh);
-  pybind11_init__ZN4smtk4mesh7elevateEPKdmRKNS0_7MeshSetEdNS0_17ElevationControlsE(mesh);
-  pybind11_init__ZN4smtk4mesh7elevateEPKfmRKNS0_7MeshSetEdNS0_17ElevationControlsE(mesh);
-  pybind11_init__ZN4smtk4mesh7elevateEPKdmRKNS0_8PointSetEdNS0_17ElevationControlsE(mesh);
-  pybind11_init__ZN4smtk4mesh7elevateEPKfmRKNS0_8PointSetEdNS0_17ElevationControlsE(mesh);
   pybind11_init__ZN4smtk4mesh21extractDirichletMeshConstantsERKNS0_7MeshSetERNS0_17PreAllocatedMeshConstantsE(mesh);
   pybind11_init__ZN4smtk4mesh21extractDirichletMeshConstantsERKNS0_7MeshSetERKNS0_8PointSetERNS0_17PreAllocatedMeshConstantsE(mesh);
   pybind11_init__ZN4smtk4mesh18extractDomainMeshConstantsERKNS0_7MeshSetERNS0_17PreAllocatedMeshConstantsE(mesh);

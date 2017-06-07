@@ -111,9 +111,7 @@ public:
   //This allows for efficient point locator on a per interface basis.
   smtk::mesh::PointLocatorImplPtr pointLocator(const smtk::mesh::HandleRange& points);
   smtk::mesh::PointLocatorImplPtr pointLocator(
-    const double* const xyzs, std::size_t numPoints, bool ignoreZValues = false);
-  smtk::mesh::PointLocatorImplPtr pointLocator(
-    const float* const xyzs, std::size_t numPoints, bool ignoreZValues = false);
+    std::size_t numPoints, const std::function<std::array<double, 3>(std::size_t)>& coordinates);
 
   smtk::mesh::Handle getRoot() const;
 

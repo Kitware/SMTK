@@ -196,6 +196,12 @@
   <suppress-warning text="skipping function 'smtk::io::SaveJSON::addModelsRecord', unmatched parameter type 'smtk::model::Models const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::io::SaveJSON::addMeshesRecord', unmatched parameter type 'smtk::model::Models const&amp;'"/>
 
+  <suppress-warning text="skipping function 'smtk::mesh::applyScalarCellField', unmatched parameter type 'std::function&lt;double&gt; const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::mesh::applyVectorPointField', unmatched parameter type 'std::function&lt;std::array&lt;double&gt;&gt; const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::mesh::applyScalarPointField', unmatched parameter type 'std::function&lt;double&gt; const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::mesh::applyVectorCellField', unmatched parameter type 'std::function&lt;std::array&lt;double&gt;&gt; const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::mesh::applyWarp', unmatched parameter type 'std::function&lt;std::array&lt;double&gt;&gt; const&amp;'"/>
+
   <!-- Ignore warnings from protected functions and members -->
   <suppress-warning text="skipping function 'smtk::model::Manager::insertEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::removeEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
@@ -2759,10 +2765,6 @@
 
       <value-type name="TypeSet">
         <include file-name="smtk/mesh/TypeSet.h" location="local"/>
-      </value-type>
-
-      <value-type name="ElevationControls">
-        <include file-name="smtk/mesh/Displace.h" location="local"/>
       </value-type>
 
       <!-- Needed so we can wrap merge/split functions  -->

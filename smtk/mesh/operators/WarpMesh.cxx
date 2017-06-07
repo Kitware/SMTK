@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/mesh/operators/InterpolateMesh.h"
+#include "smtk/mesh/operators/WarpMesh.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -59,13 +59,6 @@ using boost::regex_match;
 
 namespace
 {
-// A key that corresponds to the .sbt file's values for output field type.
-enum
-{
-  CELL_FIELD = 0,
-  POINT_FIELD = 1
-};
-
 bool readCSVFile(
   const std::string& fileName, std::vector<double>& coordinates, std::vector<double>& values)
 {
@@ -104,7 +97,7 @@ namespace smtk
 namespace mesh
 {
 
-bool InterpolateMesh::ableToOperate()
+bool WarpMesh::ableToOperate()
 {
   if (!this->ensureSpecification())
   {
@@ -120,16 +113,10 @@ bool InterpolateMesh::ableToOperate()
   return true;
 }
 
-smtk::model::OperatorResult InterpolateMesh::operateInternal()
+smtk::model::OperatorResult WarpMesh::operateInternal()
 {
   // Access the mesh to elevate
   smtk::attribute::MeshItem::Ptr meshItem = this->specification()->findMesh("mesh");
-
-  // Access the data set name
-  smtk::attribute::StringItem::Ptr nameItem = this->specification()->findString("dsname");
-
-  // Access the output interpolation Field type
-  smtk::attribute::IntItem::Ptr modeItem = this->specification()->findInt("interpmode");
 
   // Access the interpolation points
   smtk::attribute::GroupItem::Ptr interpolationPointsItem = this->findGroup("points");
@@ -177,22 +164,16 @@ smtk::model::OperatorResult InterpolateMesh::operateInternal()
   smtk::attribute::ModelEntityItem::Ptr modifiedEntities = result->findModelEntity("tess_changed");
   modifiedEntities->setNumberOfValues(meshItem->numberOfValues());
 
-  std::function<double(std::array<double, 3>)> fn = [&](
-    std::array<double, 3> x) { return interpolator(x); };
+  std::function<std::array<double, 3>(std::array<double, 3>)> fn = [&](std::array<double, 3> x) {
+    return std::array<double, 3>({ { x[0], x[1], interpolator(x) } });
+  };
 
   // apply the interpolator to the meshes and populate the result attributes
   for (std::size_t i = 0; i < meshItem->numberOfValues(); i++)
   {
     smtk::mesh::MeshSet mesh = meshItem->value(i);
 
-    if (modeItem->value(0) == CELL_FIELD)
-    {
-      smtk::mesh::applyScalarCellField(fn, nameItem->value(), mesh);
-    }
-    else
-    {
-      smtk::mesh::applyScalarPointField(fn, nameItem->value(), mesh);
-    }
+    smtk::mesh::applyWarp(fn, mesh, true);
 
     modifiedMeshes->appendValue(mesh);
 
@@ -211,7 +192,7 @@ smtk::model::OperatorResult InterpolateMesh::operateInternal()
 }
 }
 
-#include "smtk/mesh/InterpolateMesh_xml.h"
+#include "smtk/mesh/WarpMesh_xml.h"
 
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::mesh::InterpolateMesh, interpolate_mesh,
-  "interpolate mesh", InterpolateMesh_xml, smtk::model::Session);
+smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::mesh::WarpMesh, warp_mesh, "warp mesh",
+  WarpMesh_xml, smtk::model::Session);

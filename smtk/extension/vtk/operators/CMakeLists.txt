@@ -3,6 +3,7 @@ set(srcs
   vtkSMTKOperator.cxx
   BathymetryHelper.cxx
   BathymetryOperator.cxx
+  ElevateMesh.cxx
   ExportEdgesToVTK.cxx
   )
 
@@ -10,15 +11,18 @@ set(headers
   vtkSMTKOperator.h
   BathymetryHelper.h
   BathymetryOperator.h
+  ElevateMesh.h
   ExportEdgesToVTK.h
 )
 
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/BathymetryOperator.sbt" smtkVTKOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ElevateMesh.sbt" smtkVTKOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ExportEdgesToVTK.sbt" smtkVTKOperatorXML)
 
 set_source_files_properties(
   BathymetryHelper.cxx
   BathymetryOperator.cxx
+  ElevateMesh.cxx
   ExportEdgesToVTK.cxx
   PROPERTIES
     WRAP_EXCLUDE 1)
