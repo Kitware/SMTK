@@ -31,7 +31,7 @@ private:
 
   smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override;
   smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;
-  bool initialize_impl(smtk::attribute::ItemDefinitionPtr def, QWidget* parent) override;
+  bool initialize_impl(QWidget* parent) override;
 
   std::unique_ptr<Ui::ItemDefGroupForm> Ui;
 };

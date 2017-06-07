@@ -14,7 +14,6 @@
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/System.h"
 
-#include "ItemDefinitionHelper.h"
 #include "ItemDefinitionsDataModel.h"
 
 // ------------------------------------------------------------------------

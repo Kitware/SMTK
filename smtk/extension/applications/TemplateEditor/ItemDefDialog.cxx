@@ -16,7 +16,6 @@
 
 #include "HandlerItemDef.h"
 #include "ItemDefDialog.h"
-#include "ItemDefinitionHelper.h"
 #include "ui_ItemDefDialog.h"
 
 // ------------------------------------------------------------------------
@@ -26,7 +25,7 @@ ItemDefDialog::ItemDefDialog(QWidget* parent)
 {
   this->setWindowTitle(tr("Item Definition"));
   this->Ui->setupUi(this->centralWidget());
-  this->Ui->cbTypes->addItems(ItemDefinitionHelper::getTypes());
+  this->Ui->cbTypes->addItems(this->getTypeList());
 
   connect(this->Ui->leName, SIGNAL(textChanged(const QString&)), this, SLOT(validate()));
 
@@ -53,7 +52,7 @@ void ItemDefDialog::setItemDef(smtk::attribute::ItemDefinitionPtr def)
   this->Ui->leVersion->setText(QString::number(def->version()));
   //this->Ui->leAdvanceLevel->setText(QString::number(def->advanceLevel()));
 
-  this->Handler = ItemDefinitionHelper::createHandler(type);
+  this->Handler = HandlerItemDef::create(type);
   this->Handler->initialize(def, this->Ui->gbConcrete);
 }
 
@@ -120,6 +119,7 @@ void ItemDefDialog::setEditMode(EditMode mode)
       this->Ui->leName->setEnabled(enable);
       connect(
         this->Ui->cbTypes, SIGNAL(currentIndexChanged(int)), this, SLOT(onTypeChanged(const int)));
+      this->onTypeChanged(this->Ui->cbTypes->currentIndex());
       break;
 
     case EditMode::EDIT:
@@ -135,7 +135,7 @@ void ItemDefDialog::setEditMode(EditMode mode)
       break;
 
     default:
-      std::cout << "Error: Invalid edit mode!\n";
+      std::cerr << "Error: Invalid edit mode!\n";
   }
 
   this->Ui->leLabel->setEnabled(enable);
@@ -147,7 +147,7 @@ void ItemDefDialog::setEditMode(EditMode mode)
 // ------------------------------------------------------------------------
 void ItemDefDialog::onTypeChanged(const int type)
 {
-  this->Handler = ItemDefinitionHelper::createHandler(type);
+  this->Handler = HandlerItemDef::create(type);
 
   delete this->Ui->gbConcrete;
   this->Ui->gbConcrete = new QGroupBox(this);
@@ -160,4 +160,17 @@ void ItemDefDialog::onTypeChanged(const int type)
   this->Ui->gbConcrete->setTitle(title);
 
   this->Handler->initialize(nullptr, this->Ui->gbConcrete);
+}
+
+// ------------------------------------------------------------------------
+QStringList ItemDefDialog::getTypeList()
+{
+  QStringList names;
+  using namespace smtk::attribute;
+  for (int type = 0; type < Item::NUMBER_OF_TYPES; type++)
+  {
+    names << QString::fromStdString(Item::type2String(static_cast<Item::Type>(type)));
+  }
+
+  return names;
 }

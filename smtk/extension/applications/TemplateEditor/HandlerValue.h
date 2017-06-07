@@ -11,6 +11,8 @@
 #define __HandlerString_h
 #include "HandlerItemDef.h"
 
+#include "smtk/attribute/ValueItemDefinitionTemplate.h"
+
 namespace Ui
 {
 class ItemDefValueForm;
@@ -26,22 +28,21 @@ class QWidget;
  */
 class HandlerValue : public HandlerItemDef
 {
+  //Q_OBJECT
 public:
   HandlerValue();
   ~HandlerValue();
 
 protected:
-  QWidget* getSubclassWidget();
-
   smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override = 0;
   smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;
-  bool initialize_impl(smtk::attribute::ItemDefinitionPtr def, QWidget* parent) override;
+  bool initialize_impl(QWidget* parent) override;
+
+  std::shared_ptr<Ui::ItemDefValueForm> Ui;
 
 private:
   HandlerValue(const HandlerValue&) = delete;
   void operator=(const HandlerValue&) = delete;
-
-  std::unique_ptr<Ui::ItemDefValueForm> Ui;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -65,25 +66,20 @@ private:
 
   smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override;
   smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;
-  bool initialize_impl(smtk::attribute::ItemDefinitionPtr def, QWidget* parent) override;
+  bool initialize_impl(QWidget* parent) override;
 
   std::unique_ptr<Ui::ItemDefStringForm> Ui;
 };
 
 ///////////////////////////////////////////////////////////////////////////
-namespace Ui
-{
-class ItemDefDoubleForm;
-}
-
 /**
  * \brief Generates a custom UI for a DoubleItemDefinition instance.
  */
 class HandlerDouble : public HandlerValue
 {
 public:
-  HandlerDouble();
-  ~HandlerDouble();
+  HandlerDouble() = default;
+  ~HandlerDouble() = default;
 
 private:
   HandlerDouble(const HandlerDouble&) = delete;
@@ -91,25 +87,18 @@ private:
 
   smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override;
   smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;
-  bool initialize_impl(smtk::attribute::ItemDefinitionPtr def, QWidget* parent) override;
-
-  std::unique_ptr<Ui::ItemDefDoubleForm> Ui;
+  bool initialize_impl(QWidget* parent) override;
 };
 
 ///////////////////////////////////////////////////////////////////////////
-namespace Ui
-{
-class ItemDefIntForm;
-}
-
 /**
  * \brief Generates a custom UI for a DoubleItemDefinition instance.
  */
 class HandlerInt : public HandlerValue
 {
 public:
-  HandlerInt();
-  ~HandlerInt();
+  HandlerInt() = default;
+  ~HandlerInt() = default;
 
 private:
   HandlerInt(const HandlerInt&) = delete;
@@ -117,8 +106,6 @@ private:
 
   smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override;
   smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;
-  bool initialize_impl(smtk::attribute::ItemDefinitionPtr def, QWidget* parent) override;
-
-  std::unique_ptr<Ui::ItemDefIntForm> Ui;
+  bool initialize_impl(QWidget* parent) override;
 };
 #endif // __HandlerValue_h

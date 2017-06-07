@@ -13,10 +13,9 @@ set(TE_UI_FORMS
   ui/AttDefDialog.ui
   ui/InputDialog.ui
   ui/ItemDefDialog.ui
-  ui/ItemDefDoubleForm.ui
   ui/ItemDefGroupForm.ui
   ui/ItemDefinitionForm.ui
-  ui/ItemDefIntForm.ui
+  ui/ItemDefRefForm.ui
   ui/ItemDefStringForm.ui
   ui/ItemDefValueForm.ui
   ui/PreviewPanel.ui
@@ -53,7 +52,6 @@ set(TE_SOURCE
   ItemDefDialog.cxx
   ItemDefinitionsDataModel.h
   ItemDefinitionsDataModel.cxx
-  ItemDefinitionHelper.h
   main.cxx
   PreviewPanel.h
   PreviewPanel.cxx

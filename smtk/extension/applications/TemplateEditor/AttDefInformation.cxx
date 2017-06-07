@@ -16,7 +16,6 @@
 #include "AttDefDataModel.h"
 #include "AttDefInformation.h"
 #include "ItemDefDialog.h"
-#include "ItemDefinitionHelper.h"
 #include "ItemDefinitionsDataModel.h"
 #include "ui_AttDefInformation.h"
 

@@ -18,6 +18,9 @@
  * The class and instances are referred to as 'elements' instead of 'items'
  * to avoid any confusion with the term 'item' in the context of the SMTK
  * attribute system (ItemDefinition, Item, etc.).
+ *
+ * ///TODO Implement the rest of the virtual interface of QTreeWidgetItem
+ * to customize how data is set and queried from.
  */
 template <typename T>
 class DataModelElement : public QTreeWidgetItem

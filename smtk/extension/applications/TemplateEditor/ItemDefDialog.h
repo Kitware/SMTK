@@ -73,6 +73,13 @@ private:
 
   bool validate_impl() override;
 
+  /**
+   * Arrange types in list of strings. Uses smtk::attribute::Item string types.
+   * This assumes smtk::attribute::Item::Type is continuous and NUMBER_OF_TYPES
+   * is the last type.
+   */
+  QStringList getTypeList();
+
   std::unique_ptr<Ui::ItemDefDialog> Ui;
   smtk::attribute::DefinitionPtr AttDef;
   smtk::attribute::GroupItemDefinitionPtr ParentGroup;

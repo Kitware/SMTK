@@ -17,34 +17,41 @@ class QWidget;
 /**
  * \brief Generates a custom UI for each concrete ItemDef.
  *
- * Concrete classes handles UI logic for each of the different configurations
+ * Concrete classes handle UI logic for each of the different configurations
  * and create/modify ItemDefinitions.
  */
 class HandlerItemDef
 {
 public:
-  HandlerItemDef();
-  ~HandlerItemDef();
+  using ItemDefPtr = smtk::attribute::ItemDefinitionPtr;
 
-  bool initialize(smtk::attribute::ItemDefinitionPtr itemDef, QWidget* parent);
+  /**
+   * Factory method. Maps attribute::Item::Type to corresponding Handler.
+   */
+  static std::shared_ptr<HandlerItemDef> create(const int type);
+
+  bool initialize(ItemDefPtr itemDef, QWidget* parent);
 
   /**
    * Returns the current ItemDefinition. If no ItemDef was set, it creates
    * a new one of the type defined when initialized.
    */
-  smtk::attribute::ItemDefinitionPtr updateItemDef(const std::string& name);
-
-  smtk::attribute::ItemDefinitionPtr createItemDef(const std::string& name);
+  ItemDefPtr updateItemDef(const std::string& name);
 
 protected:
-  smtk::attribute::ItemDefinitionPtr ItemDef;
+  HandlerItemDef();
+  ~HandlerItemDef();
+
+  ItemDefPtr createItemDef(const std::string& name);
+
+  ItemDefPtr ItemDef;
 
 private:
   HandlerItemDef(const HandlerItemDef&) = delete;
   void operator=(const HandlerItemDef&) = delete;
 
-  virtual smtk::attribute::ItemDefinitionPtr updateItemDef_impl() = 0;
-  virtual bool initialize_impl(smtk::attribute::ItemDefinitionPtr def, QWidget* parent) = 0;
-  virtual smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) = 0;
+  virtual ItemDefPtr updateItemDef_impl() = 0;
+  virtual bool initialize_impl(QWidget* parent) = 0;
+  virtual ItemDefPtr createItemDef_impl(const std::string& name) = 0;
 };
 #endif // __HandlerItemDef_h

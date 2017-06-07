@@ -21,20 +21,24 @@ HandlerGroup::HandlerGroup()
 
 HandlerGroup::~HandlerGroup() = default;
 
-bool HandlerGroup::initialize_impl(smtk::attribute::ItemDefinitionPtr def, QWidget* parent)
+bool HandlerGroup::initialize_impl(QWidget* parent)
 {
-  this->ItemDef = def;
   this->Ui->setupUi(parent);
+  QObject::connect(this->Ui->cbCommonLabel, SIGNAL(toggled(bool)), this->Ui->leCommonLabel,
+    SLOT(setEnabled(bool)));
 
-  if (def)
+  if (this->ItemDef)
   {
-    auto item = std::static_pointer_cast<smtk::attribute::GroupItemDefinition>(this->ItemDef);
+    const auto item = std::static_pointer_cast<smtk::attribute::GroupItemDefinition>(this->ItemDef);
 
     this->Ui->leNumReqGroups->setText(QString::number(item->numberOfRequiredGroups()));
     this->Ui->leMaxNumGroups->setText(QString::number(item->maxNumberOfGroups()));
     this->Ui->cbExtensible->setChecked(item->isExtensible());
+
+    const bool useCommonLabel = item->usingCommonSubGroupLabel();
+    this->Ui->cbCommonLabel->setChecked(useCommonLabel);
+    this->Ui->leCommonLabel->setVisible(useCommonLabel);
     this->Ui->leCommonLabel->setText(QString::fromStdString(item->subGroupLabel(0)));
-    this->Ui->cbCommonLabel->setChecked(item->usingCommonSubGroupLabel());
   }
   return true;
 }
