@@ -81,6 +81,14 @@ void AttributeBrowser::onAttDefSelectionChanged(
 }
 
 //------------------------------------------------------------------------------
+void AttributeBrowser::triggerSelection()
+{
+  auto sm = this->Ui->viewDefinitions->selectionModel();
+  const auto index = sm->currentIndex();
+  emit attDefChanged(index, index);
+}
+
+//------------------------------------------------------------------------------
 void AttributeBrowser::onAddDefinition()
 {
   AttDefDialog dialog(this);

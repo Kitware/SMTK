@@ -44,6 +44,14 @@ public:
  */
   void populate(smtk::attribute::SystemPtr system);
 
+public slots:
+  /**
+   * Emits attDefChanged() with whatever the current selection is. Forcing
+   * the emission of this signal can be useful to trigger a sequence of
+   * events dependent on the signal (e.g. preview update, etc.).
+   */
+  void triggerSelection();
+
 signals:
   void attDefChanged(const QModelIndex& currentIndex, const QModelIndex& previousIndex);
   void systemChanged(bool needsSaving);

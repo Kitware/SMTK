@@ -50,7 +50,7 @@ public slots:
   void onLoad();
   void onSaveAs();
   void onSave();
-  void onSystemChanged(bool needsSaving);
+  void updateTitle(bool needsSaving);
 
 private:
   TemplateEditorMain(const TemplateEditorMain&) = delete;
