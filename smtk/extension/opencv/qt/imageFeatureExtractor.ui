@@ -41,7 +41,7 @@
       <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Draw Radius</string>
+         <string>Line Thickness</string>
         </property>
        </widget>
       </item>
