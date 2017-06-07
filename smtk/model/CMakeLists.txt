@@ -55,8 +55,8 @@ set(modelSrcs
   operators/CloseModel.cxx
   operators/EntityGroupOperator.cxx
   operators/ExportModelJSON.cxx
+  operators/ExportSMTKModel.cxx
   operators/LoadSMTKModel.cxx
-  operators/PackageSMTKModel.cxx
   operators/SaveSMTKModel.cxx
   operators/SetProperty.cxx
   )
@@ -123,8 +123,8 @@ set(modelHeaders
   operators/CloseModel.h
   operators/EntityGroupOperator.h
   operators/ExportModelJSON.h
+  operators/ExportSMTKModel.h
   operators/LoadSMTKModel.h
-  operators/PackageSMTKModel.h
   operators/SaveSMTKModel.h
   operators/SetProperty.h
   )
@@ -136,8 +136,8 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/AssignColors.sbt" defOp
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CloseModel.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EntityGroupOperator.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportModelJSON.sbt" defOpXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportSMTKModel.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/LoadSMTKModel.sbt" defOpXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/PackageSMTKModel.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SaveSMTKModel.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SetProperty.sbt" defOpXML)
 

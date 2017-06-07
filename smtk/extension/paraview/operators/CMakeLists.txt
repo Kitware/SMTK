@@ -5,16 +5,20 @@ include(ParaViewPlugins)
 set(srcs
   smtkAssignColorsView.cxx
   smtkSaveModelView.cxx
+  smtkExportModelView.cxx
 )
 
 set(hdrs
   smtkAssignColorsView.h
+  smtkModelIOView.h
   smtkSaveModelView.h
+  smtkExportModelView.h
 )
 
 set(qtui
   smtkAssignColorsParameters.ui
   smtkSaveModelParameters.ui
+  smtkExportModelParameters.ui
 )
 
 #install the headers

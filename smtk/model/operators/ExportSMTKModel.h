@@ -7,30 +7,30 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_PackageSMTKModel_h
-#define __smtk_model_PackageSMTKModel_h
+#ifndef __smtk_model_ExportSMTKModel_h
+#define __smtk_model_ExportSMTKModel_h
 
-#include "smtk/model/Operator.h"
+#include "smtk/model/operators/SaveSMTKModel.h"
 
 namespace smtk
 {
 namespace model
 {
 
-class SMTKCORE_EXPORT PackageSMTKModel : public Operator
+/// Export an SMTK model (identical server-side operation to saving; we override nothing).
+class SMTKCORE_EXPORT ExportSMTKModel : public SaveSMTKModel
 {
 public:
-  smtkTypeMacro(PackageSMTKModel);
-  smtkCreateMacro(PackageSMTKModel);
+  smtkTypeMacro(ExportSMTKModel);
+  smtkCreateMacro(ExportSMTKModel);
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
 protected:
-  virtual OperatorResult operateInternal();
-  virtual void generateSummary(OperatorResult&);
+  ExportSMTKModel();
 };
 
 } //namespace model
 } // namespace smtk
 
-#endif // __smtk_model_PackageSMTKModel_h
+#endif // __smtk_model_ExportSMTKModel_h
