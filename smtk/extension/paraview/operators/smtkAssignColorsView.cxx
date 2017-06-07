@@ -313,6 +313,9 @@ void smtkAssignColorsView::createWidget()
   QObject::connect(this->uiManager()->activeModelView(),
     SIGNAL(operationCancelled(const smtk::model::OperatorPtr&)), this,
     SLOT(cancelOperation(const smtk::model::OperatorPtr&)));
+
+  // Show help when the info button is clicked.
+  QObject::connect(this->Internals->InfoBtn, SIGNAL(released()), this, SLOT(onInfo()));
 }
 
 void smtkAssignColorsView::updateAttributeData()
@@ -502,4 +505,9 @@ void smtkAssignColorsView::showAdvanceLevelOverlay(bool show)
 void smtkAssignColorsView::requestModelEntityAssociation()
 {
   this->updateAttributeData();
+}
+
+void smtkAssignColorsView::setInfoToBeDisplayed()
+{
+  this->m_infoDialog->displayInfo(this->getObject());
 }

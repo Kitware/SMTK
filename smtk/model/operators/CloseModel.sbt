@@ -4,6 +4,14 @@
   <Definitions>
     <!-- Operator -->
     <AttDef Type="close model" Label="Model - Close" BaseType="operator">
+      <BriefDescription>
+        Close the associated models.
+      </BriefDescription>
+      <DetailedDescription>
+        Close the associated models.
+        This will permanently discard any changes you may have made to the models.
+        Save the models first if you want to keep any changes.
+      </DetailedDescription>
       <ItemDefinitions>
         <ModelEntity Name="model" NumberOfRequiredValues="0" Extensible="true">
           <MembershipMask>model</MembershipMask>

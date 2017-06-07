@@ -77,6 +77,7 @@ protected:
   virtual bool eventFilter(QObject* obj, QEvent* evnt);
   virtual void updateSummary(const std::string& mode);
   virtual void updateActions();
+  virtual void setInfoToBeDisplayed() override;
 
   template <typename T>
   bool updateOperatorFromUI(const std::string& mode, const T& action);
