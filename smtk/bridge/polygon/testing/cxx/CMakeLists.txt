@@ -12,7 +12,10 @@
 
 set (unit_tests
   UnitTestPolygonCreateModel.cxx
-  UnitTestPolygonCreateEdgeFromPoints.cxx)
+  UnitTestPolygonCreateEdgeFromPoints.cxx
+  UnitTestPolygonCreateEdgeFromVertices.cxx
+  UnitTestPolygonCreateFacesFromEdges.cxx
+  UnitTestPolygonDemoteVertex.cxx)
 
 set (unit_tests_which_require_data)
 
