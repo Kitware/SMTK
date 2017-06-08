@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_AddAuxiliaryGeometry_h
-#define __smtk_model_AddAuxiliaryGeometry_h
+#ifndef smtk_model_operators_AddAuxiliaryGeometry_h
+#define smtk_model_operators_AddAuxiliaryGeometry_h
 
 #include "smtk/model/Operator.h"
 
@@ -32,4 +32,4 @@ protected:
 } //namespace model
 } // namespace smtk
 
-#endif // __smtk_model_AddAuxiliaryGeometry_h
+#endif // smtk_model_operators_AddAuxiliaryGeometry_h
