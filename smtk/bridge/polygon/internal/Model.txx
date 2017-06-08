@@ -12,6 +12,7 @@
 
 #include "smtk/bridge/polygon/Session.h"
 #include "smtk/bridge/polygon/internal/Edge.h"
+#include "smtk/bridge/polygon/internal/Model.h"
 #include "smtk/bridge/polygon/internal/Vertex.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/Face.h"
