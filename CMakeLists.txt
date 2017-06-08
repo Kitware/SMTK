@@ -626,6 +626,11 @@ endif ()
 
 add_subdirectory(smtk)
 
+# Build SMTK Applications
+if(SMTK_ENABLE_QT_SUPPORT)
+  add_subdirectory(applications)
+endif()
+
 ################################################################################
 # Install a package targets file
 #

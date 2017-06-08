@@ -13,7 +13,6 @@
 #include "AttDefDialog.h"
 #include "AttributeBrowser.h"
 #include "ui_AttributeBrowser.h"
-#include "ui_DefinitionsForm.h"
 
 //------------------------------------------------------------------------------
 AttributeBrowser::AttributeBrowser(QWidget* parent)

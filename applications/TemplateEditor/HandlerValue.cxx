@@ -14,8 +14,6 @@
 #include "smtk/attribute/StringItemDefinition.h"
 
 #include "HandlerValue.h"
-#include "ui_ItemDefDoubleForm.h"
-#include "ui_ItemDefIntForm.h"
 #include "ui_ItemDefStringForm.h"
 #include "ui_ItemDefValueForm.h"
 
