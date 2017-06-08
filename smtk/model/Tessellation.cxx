@@ -21,7 +21,7 @@ Tessellation::Tessellation()
 }
 
 /// Add a 3-D point coordinate to the tessellation, but not a vertex record.
-int Tessellation::addCoords(double* a)
+int Tessellation::addCoords(const double* a)
 {
   std::vector<double>::size_type ipt = this->m_coords.size();
   for (int i = 0; i < 3; ++i)
@@ -41,14 +41,14 @@ Tessellation& Tessellation::addCoords(double x, double y, double z)
 }
 
 /// Add a 3-D point coordinate to the tessellation plus a vertex record.
-Tessellation& Tessellation::addPoint(double* a)
+Tessellation& Tessellation::addPoint(const double* a)
 {
   int ai = this->addCoords(a);
   return this->addPoint(ai);
 }
 
 /// Add two 3-D point coordinates to the tessellation plus a line-segment record.
-Tessellation& Tessellation::addLine(double* a, double* b)
+Tessellation& Tessellation::addLine(const double* a, const double* b)
 {
   int ai = this->addCoords(a);
   int bi = this->addCoords(b);
@@ -56,13 +56,14 @@ Tessellation& Tessellation::addLine(double* a, double* b)
 }
 
 /// Add three 3-D point coordinates to the tessellation plus a triangle record.
-Tessellation& Tessellation::addTriangle(double* a, double* b, double* c)
+Tessellation& Tessellation::addTriangle(const double* a, const double* b, const double* c)
 {
   return this->addTriangle(this->addCoords(a), this->addCoords(b), this->addCoords(c));
 }
 
 /// Add four 3-D point coordinates to the tessellation plus a quadrilateral record.
-Tessellation& Tessellation::addQuad(double* a, double* b, double* c, double* d)
+Tessellation& Tessellation::addQuad(
+  const double* a, const double* b, const double* c, const double* d)
 {
   return this->addQuad(
     this->addCoords(a), this->addCoords(b), this->addCoords(c), this->addCoords(d));
