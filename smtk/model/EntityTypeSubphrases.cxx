@@ -335,10 +335,16 @@ void EntityTypeSubphrases::childrenOfEntity(EntityPhrase::Ptr phr, DescriptivePh
 
       this->meshesOfModel(phr, ment, result);
     }
+    /* For now, to prevent infinite recursion because some things
+     * are foolishly using the tree view to create a selection
+     * (qtModelView ::selectionChanged and ::currentSelectionByMask,
+     * I'm lookin' at you!), do not report the prototype of an instance
+     * as one of its children.
     else if (ient.isValid())
     {
       this->prototypeOfInstance(phr, ient, result);
     }
+     */
     else if (sess.isValid())
     {
       this->modelsOfSession(phr, sess, result);
