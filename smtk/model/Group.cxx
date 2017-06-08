@@ -208,7 +208,7 @@ bool Group::meetsMembershipConstraintsInternal(
         memberMask &= preExistingMember.entityFlags();
     }
     // Now we look at how the dimensionality of members should be constrained.
-    // First, do we require things to matcht he model dimensionality (or its boundary)?
+    // First, do we require things to match the model dimensionality (or its boundary)?
     if (groupFlags & (MODEL_BOUNDARY | MODEL_DOMAIN))
     {
       BitFlags dimMask;

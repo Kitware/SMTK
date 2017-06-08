@@ -4,12 +4,25 @@
   <Definitions>
     <!-- Operation -->
     <AttDef Type="entity group" Label="Model - Create Group" BaseType="operator">
+      <BriefDescription>
+        Create a group of cell entities. User can modify and remove the created group afterwards.
+      </BriefDescription>
+      <DetailedDescription>
+        Create a group of cell entities. User can modify and remove the created group afterwards.
+
+        If advance level is turned on, user can filter the entities by their cell type then use them to modify the group.
+      </DetailedDescription>
       <ItemDefinitions>
         <ModelEntity Name="model" NumberOfRequiredValues="1">
           <MembershipMask>model</MembershipMask>
         </ModelEntity>
         <String Name="Operation" Label="Operation" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-          <BriefDescription>operation for the operator</BriefDescription>
+          <BriefDescription>
+            The operation determines which action to take on the group: create it, modify its membership, or remove it.
+          </BriefDescription>
+          <DetailedDescription>
+            The operation determines which action to take on the group: create it, modify its membership, or remove it.
+          </DetailedDescription>
           <ChildrenDefinitions>
             <ModelEntity Name="modify cell group" NumberOfRequiredValues="1">
               <MembershipMask>group</MembershipMask>
@@ -23,31 +36,21 @@
             <ModelEntity Name="cell to remove" NumberOfRequiredValues="0" Extensible="1">
               <MembershipMask>volume|face|edge</MembershipMask>
             </ModelEntity>
-            <Int Name="group type" Label="Group Type:" Version="0" NumberOfRequiredValues="1">
-              <BriefDescription>Group type for the discrete model kernel:
-          Boundary group (face or edge) is not partitioned, meaning each entity can belong to multiple boundary groups;
-          Domain group (volume or face) is partitioned, meaning each entity will only belong to one domain group.
-              </BriefDescription>
-              <DiscreteInfo DefaultIndex="0">
-                <Value Enum="Cover">0</Value>
-                <Value Enum="Partition">1</Value>
-              </DiscreteInfo>
-            </Int>
             <Void Name="Vertex" Label="Vertex" Version="0" NumberOfRequiredValues="1" Optional="true" AdvanceLevel = "1" Option = "true" IsEnabledByDefault = "true">
-              <BriefDescription>Allow vertex to be added to the group.
-              </BriefDescription> 
+              <BriefDescription>Allow vertices to be added to the group.</BriefDescription>
+              <DetailedDescription>Allow vertices to be added to the group.</DetailedDescription>
             </Void>
             <Void Name="Edge" Label="Edge" Version="0" NumberOfRequiredValues="1" Optional="true" AdvanceLevel = "1" Option = "true" IsEnabledByDefault = "true">
-              <BriefDescription>Allow edge to be added to the group.
-              </BriefDescription>  
+              <BriefDescription>Allow edges to be added to the group.</BriefDescription>
+              <DetailedDescription>Allow edges to be added to the group.</DetailedDescription>
             </Void>
             <Void Name="Face" Label="Face" Version="0" NumberOfRequiredValues="1" Optional="true" AdvanceLevel = "1" Option = "true" IsEnabledByDefault = "true"> 
-              <BriefDescription>Allow face to be added to the group.
-              </BriefDescription> 
+              <BriefDescription>Allow faces to be added to the group.</BriefDescription>
+              <DetailedDescription>Allow faces to be added to the group.</DetailedDescription>
             </Void>
             <Void Name="Volume" Label="Volume" Version="0" NumberOfRequiredValues="1" Optional="true" AdvanceLevel = "1" Option = "true" IsEnabledByDefault = "true">
-              <BriefDescription>Allow volume to be added to the group.
-              </BriefDescription>  
+              <BriefDescription>Allow volumes to be added to the group.</BriefDescription>
+              <DetailedDescription>Allow volumes to be added to the group.</DetailedDescription>
             </Void>
             <String Name="group name" Label="group name" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
               <DefaultValue>new group</DefaultValue>
@@ -96,3 +99,4 @@
     </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>
+

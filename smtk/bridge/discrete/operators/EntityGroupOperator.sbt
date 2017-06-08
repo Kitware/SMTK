@@ -4,12 +4,27 @@
   <Definitions>
     <!-- Operation -->
     <AttDef Type="entity group" BaseType="operator">
+      <BriefDescription>
+        Create a group of cell entities. User can modify and remove the created group afterwards.
+      </BriefDescription>
+      <DetailedDescription>
+        Create a group of cell entities. User can modify and remove the created group afterwards.
+
+        Boundary groups are intended to hold cell entities of the highest dimension that the model contains.
+        Domain groups are intended to hold cell entities that are lower than the highest dimension
+        that the mode contains.
+      </DetailedDescription>
       <ItemDefinitions>
         <ModelEntity Name="model" NumberOfRequiredValues="1">
           <MembershipMask>model</MembershipMask>
         </ModelEntity>
         <String Name="Operation" Label="Operation" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-          <BriefDescription>operation for the operator</BriefDescription>
+          <BriefDescription>
+            The operation determines which action to take on the group: create it, modify its membership, or remove it.
+          </BriefDescription>
+          <DetailedDescription>
+            The operation determines which action to take on the group: create it, modify its membership, or remove it.
+          </DetailedDescription>
           <ChildrenDefinitions>
             <ModelEntity Name="modify cell group" NumberOfRequiredValues="1">
               <MembershipMask>group</MembershipMask>
@@ -24,9 +39,12 @@
               <MembershipMask>volume|face|edge</MembershipMask>
             </ModelEntity>
             <Int Name="group type" Label="Group Type:" Version="0" NumberOfRequiredValues="1">
-              <BriefDescription>Group type for the discrete model kernel:
-          Boundary group (face or edge) is not partitioned, meaning each entity can belong to multiple boundary groups;
-          Domain group (volume or face) is partitioned, meaning each entity will only belong to one domain group.
+              <BriefDescription>
+                Group type for the discrete model kernel:
+
+                Boundary groups are intended to hold cell entities of the highest dimension that the model contains.
+                Domain groups are intended to hold cell entities that are lower than the highest dimension
+                that the mode contains.
               </BriefDescription>
               <DiscreteInfo DefaultIndex="0">
                 <Value Enum="Boundary">0</Value>
