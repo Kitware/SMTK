@@ -206,19 +206,7 @@ int SessionIOJSON::exportJSON(model::ManagerPtr modelMgr, const model::SessionPt
       this->addModelUUIDs(*mit, uuidArray);
       if (mit->hasStringProperty("url"))
       {
-        path url(mit->stringProperty("url")[0]);
-        if (!refPath.string().empty())
-        {
-          boost::system::error_code err;
-          path tryme = relative(url, refPath, err);
-          if (err == boost::system::errc::success)
-          {
-            url = tryme.string();
-          }
-        }
-        // set the url property to be consistent with "modelFiles" record when written out
-        mit->setStringProperty("url", url.string());
-        modelFiles.insert(url.string());
+        modelFiles.insert(mit->stringProperty("url")[0]);
       }
     }
   }
@@ -229,6 +217,8 @@ int SessionIOJSON::exportJSON(model::ManagerPtr modelMgr, const model::SessionPt
     sessionRec, "toplevelOffsets", smtk::io::SaveJSON::createIntegerArray(toplevelOffsets));
   cJSON_AddItemToObject(
     sessionRec, "modelNumbers", smtk::io::SaveJSON::createIntegerArray(modelNumbers));
+  // When we have time, "modelFiles" should go away as it is redundant with
+  // string properties already being saved.
   std::vector<std::string> urlArray(modelFiles.begin(), modelFiles.end());
   cJSON_AddItemToObject(sessionRec, "modelFiles", smtk::io::SaveJSON::createStringArray(urlArray));
 

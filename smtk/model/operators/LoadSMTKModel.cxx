@@ -62,7 +62,8 @@ static void updateURLs(cJSON* parent, cJSON* node, const ::boost::filesystem::pa
   for (; node; node = node->next)
   {
     if (parent && parent->type == cJSON_Object && node->type == cJSON_Array && node->string &&
-      node->string[0] && std::string(node->string) == "url")
+      node->string[0] &&
+      (std::string(node->string) == "url" || std::string(node->string) == "modelFiles"))
     {
       int nn = 0;
       for (cJSON *urlNode = node->child; urlNode; urlNode = urlNode->next, ++nn)
