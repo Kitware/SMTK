@@ -9,7 +9,6 @@
 //=========================================================================
 #ifndef __AttributeBrowser_h
 #define __AttributeBrowser_h
-
 #include <memory>
 #include <vector>
 
@@ -27,9 +26,11 @@ class QStringListModel;
 class AttDefDataModel;
 
 /**
- * \brief Widget displaying the internal structure of an attribute template
- * file.
+ * \brief Widget displaying the hierarchy of attribute definitions.
  *
+ * It will eventually be extended to also display analysis, categories,
+ * etc. (each on a separate tab). Tab selection will then control the
+ * central widget in TemplateEditorMain.
  */
 class AttributeBrowser : public QDockWidget
 {
@@ -40,7 +41,7 @@ public:
   ~AttributeBrowser();
 
   /**
- * Populate the UI with SMTK attributes, definitions, etc.
+ * Populate the UI with attribute definitions.
  */
   void populate(smtk::attribute::SystemPtr system);
 
@@ -50,7 +51,7 @@ public slots:
    * the emission of this signal can be useful to trigger a sequence of
    * events dependent on the signal (e.g. preview update, etc.).
    */
-  void triggerSelection();
+  void emitAttDefChanged();
 
 signals:
   void attDefChanged(const QModelIndex& currentIndex, const QModelIndex& previousIndex);
@@ -69,10 +70,13 @@ private slots:
   void onDeleteDefinition();
 
   /**
- * Adjust UI (enable/disable buttons, etc.) and emit signal.
+ * Adjust UI (enable/disable buttons, etc.) and emit attDefChanged().
  */
   void onAttDefSelectionChanged(const QModelIndex& currentIndex, const QModelIndex& previousIndex);
 
+  /**
+* Trigger model search.
+*/
   void onSearchAttDef(const QString& text);
 
 private:

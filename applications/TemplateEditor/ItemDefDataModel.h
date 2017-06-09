@@ -7,9 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __ItemDefinitionsDataModel_h
-#define __ItemDefinitionsDataModel_h
-
+#ifndef __ItemDefDataModel_h
+#define __ItemDefDataModel_h
 #include <memory>
 
 #include <QModelIndex>
@@ -20,14 +19,15 @@
 #include "DataModelElement.h"
 
 /**
- * \brief Qt data model used to display smtk::attribute::ItemDefinitions in a
- * view.
+ * \brief Qt data model for smtk::attribute::ItemDefinitionPtr instances.
  *
  * The class was named after the XML element it represents in an attribute
- * template file (*.sbt) as a Qt data model.
+ * template file (*.sbt) as a Qt data model. This model serves as an interface
+ * to the attribute system for insertion and removal of Item Definitions
+ * (through a given Attribute Definition).
  *
  */
-class ItemDefinitionsDataModel : public AbstractDataModel
+class ItemDefDataModel : public AbstractDataModel
 {
   Q_OBJECT
 
@@ -37,15 +37,24 @@ public:
   using ItemDefPtrVec = std::vector<ItemDefPtr>;
   using ItemDefElement = DataModelElement<smtk::attribute::ItemDefinitionPtr>;
 
-  ItemDefinitionsDataModel(QObject* parent = nullptr);
-  ~ItemDefinitionsDataModel();
+  ItemDefDataModel(QObject* parent = nullptr);
+  ~ItemDefDataModel();
 
+  /**
+* Appends a branch of ItemDefinition instances contained in a Definition
+* to the data model's root node.  This method is used to populate the tree.
+*/
   void appendBranchToRoot(smtk::attribute::DefinitionPtr def);
 
+  /**
+* Query the internal data (ItemDefinitionPtr in this case) of a given index.
+*/
   const smtk::attribute::ItemDefinitionPtr& get(const QModelIndex& index) const;
 
   /**
  * \brief Container for parameters to insert an item definition.
+ * Holds the ItemDefinition itself, the Definition it belongs to and its
+ * parent index in the tree.
  */
   struct Container
   {
@@ -56,15 +65,24 @@ public:
     QModelIndex ParentIndex;
   };
 
+  /**
+* Insert an ItemDefinition into an AttDef. It inserts as well a data element
+* into the tree defined by this data model.
+*/
   void insert(const Container& props);
 
+  /**
+* Remove an ItemDef from an AttDef (and its corresponding data element in the
+* tree.
+*/
   void remove(const QModelIndex& itemIndex, smtk::attribute::DefinitionPtr def);
 
 protected:
   void initializeRootItem() override;
 
   /**
-   * Append all AttDef types recursively.
+   * Append all ItemDefinition types in an AttDef recursively to populate the
+   * tree.
    */
   void appendRecursively(smtk::attribute::ItemDefinitionPtr parentItemDef,
     QTreeWidgetItem* parentItem, const QString& attDefType);
@@ -74,7 +92,7 @@ protected:
    * purged from any Attributes affected by a change in this ItemDefinition (currently
    * wipes anything related to the Definition). qtUIManager->qtInstancedView generates
    * an attribute and items for each (or some) of the ui elements, and stores them in
-   * attribute::system, which could lead to Attributes with ItemDefinitions in an
+   * attribute::system, which could lead to Attributes with Item Definitions in an
    * invalid state.
    *
    * Call this function whenever an ItemDefinition has be modified in the attribute::
@@ -90,7 +108,7 @@ protected:
   void clearAttributes(smtk::attribute::DefinitionPtr def);
 
 private:
-  ItemDefinitionsDataModel(const ItemDefinitionsDataModel&) = delete;
-  void operator=(const ItemDefinitionsDataModel&) = delete;
+  ItemDefDataModel(const ItemDefDataModel&) = delete;
+  void operator=(const ItemDefDataModel&) = delete;
 };
-#endif //__ItemDefinitionsDataModel_h
+#endif //__ItemDefDataModel_h

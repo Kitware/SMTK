@@ -80,7 +80,7 @@ void AttributeBrowser::onAttDefSelectionChanged(
 }
 
 //------------------------------------------------------------------------------
-void AttributeBrowser::triggerSelection()
+void AttributeBrowser::emitAttDefChanged()
 {
   auto sm = this->Ui->viewDefinitions->selectionModel();
   const auto index = sm->currentIndex();

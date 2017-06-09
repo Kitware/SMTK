@@ -9,7 +9,6 @@
 //=========================================================================
 #ifndef DataModelElement_h
 #define DataModelElement_h
-
 #include <QTreeWidgetItem>
 
 /**

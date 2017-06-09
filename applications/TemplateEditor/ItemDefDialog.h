@@ -9,7 +9,6 @@
 //=========================================================================
 #ifndef __ItemDefDialog_h
 #define __ItemDefDialog_h
-
 #include <memory>
 
 #include "smtk/PublicPointerDefs.h"
@@ -24,11 +23,11 @@ class ItemDefDialog;
 class HandlerItemDef;
 
 /**
- * \brief Input dialog for a new ItemDefinition.
+ * \brief Input dialog to show, edit or create new ItemDefinitions.
  *
  * This dialog can be used to visualize/edit properties of or create new
  * concrete ItemDefinitions. If an ItemDefinition has been set, then
- * the dialog will either SHOW or EDIT modes (depending on the active mode).
+ * the dialog will either SHOW or EDIT the ItemDef (depending on the active mode).
  * If no ItemDefinition is set, then it will try to create a new one.
  *
  * \sa smtk::attribute::ItemDefinition
@@ -41,13 +40,11 @@ public:
   ItemDefDialog(QWidget* parent = nullptr);
   ~ItemDefDialog();
 
-  enum class EditMode : unsigned char
-  {
-    NEW,
-    EDIT,
-    SHOW
-  };
-
+  /**
+   * Set the ItemDefinition to Show or Edit.
+   * ///TODO Make the Dialog choose the EditMode automatically (no need
+   * // to set it explicitly).
+   */
   void setItemDef(smtk::attribute::ItemDefinitionPtr def);
 
   /**
@@ -58,19 +55,43 @@ public:
     smtk::attribute::ItemDefinitionPtr itemDef, smtk::attribute::DefinitionPtr attDef);
 
   /**
-   * Applies changes and returns the edited or newly created ItemDef.
+   * Apply changes and return the edited or newly created ItemDef.
    */
   smtk::attribute::ItemDefinitionPtr getItemDef();
 
+  //@{
+  /**
+   * Show or edit an active ItemDefinition or create a new entity if none
+   * was set.
+   */
+  enum class EditMode : unsigned char
+  {
+    NEW,
+    EDIT,
+    SHOW
+  };
+
   void setEditMode(EditMode mode);
+  //@}
 
 private slots:
+  /**
+   * Update the UI depending on the currently selected concrete ItemDef type.
+   * The Dialog uses HandlerItemDef instances to customize and create ItemDefinition
+   * instances.
+   *
+   * \sa HandlerItemDef
+   */
   void onTypeChanged(const int type);
 
 private:
   ItemDefDialog(const ItemDefDialog&) = delete;
   void operator=(const ItemDefDialog&) = delete;
 
+  /**
+   * Implements validation of critical fields for ItemDefinition instantiation
+   * (e.g. Name, etc.).
+   */
   bool validate_impl() override;
 
   /**

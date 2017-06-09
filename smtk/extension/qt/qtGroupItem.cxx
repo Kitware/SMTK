@@ -237,7 +237,6 @@ void qtGroupItem::addSubGroup(int i)
 
   const std::size_t numItems = item->numberOfItemsPerGroup();
   QBoxLayout* frameLayout = qobject_cast<QBoxLayout*>(this->Internals->ChildrensFrame->layout());
-  QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QBoxLayout* subGrouplayout = new QVBoxLayout();
   subGrouplayout->setMargin(0);
   subGrouplayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);

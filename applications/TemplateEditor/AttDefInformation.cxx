@@ -15,16 +15,16 @@
 
 #include "AttDefDataModel.h"
 #include "AttDefInformation.h"
+#include "ItemDefDataModel.h"
 #include "ItemDefDialog.h"
-#include "ItemDefinitionsDataModel.h"
 #include "ui_AttDefInformation.h"
 
 // -----------------------------------------------------------------------------
 AttDefInformation::AttDefInformation(QWidget* parent)
   : QWidget(parent)
   , Ui(new Ui::AttDefInformation)
-  , InheritedItemDefModel(new ItemDefinitionsDataModel(this))
-  , OwnedItemDefModel(new ItemDefinitionsDataModel(this))
+  , InheritedItemDefModel(new ItemDefDataModel(this))
+  , OwnedItemDefModel(new ItemDefDataModel(this))
 {
   this->Ui->setupUi(this);
 
@@ -54,6 +54,7 @@ AttDefInformation::~AttDefInformation() = default;
 void AttDefInformation::onAttDefChanged(
   const QModelIndex& currentDef, const QModelIndex& previousDef)
 {
+  Q_UNUSED(previousDef);
   this->updateAttDefData(currentDef);
   this->updateInheritedItemDef();
   this->updateOwnedItemDef();
@@ -79,7 +80,7 @@ void AttDefInformation::updateAttDefData(const QModelIndex& currentDef)
 void AttDefInformation::updateOwnedItemDef()
 {
   delete this->OwnedItemDefModel;
-  this->OwnedItemDefModel = new ItemDefinitionsDataModel(this);
+  this->OwnedItemDefModel = new ItemDefDataModel(this);
 
   this->OwnedItemDefModel->appendBranchToRoot(this->CurrentAttDef);
   this->Ui->tvOwnedItems->setModel(this->OwnedItemDefModel);
@@ -92,7 +93,7 @@ void AttDefInformation::updateOwnedItemDef()
 void AttDefInformation::updateInheritedItemDef()
 {
   delete this->InheritedItemDefModel;
-  this->InheritedItemDefModel = new ItemDefinitionsDataModel(this);
+  this->InheritedItemDefModel = new ItemDefDataModel(this);
 
   // Add inherited ItemDefinitions from each parent type recursively
   std::function<void(smtk::attribute::DefinitionPtr&)> recursiveAdd;
@@ -134,7 +135,7 @@ void AttDefInformation::onAddItemDef()
   if (dialog.exec() == QDialog::Accepted)
   {
     // Get data input from the user and add current selection specifics.
-    auto props = ItemDefinitionsDataModel::Container();
+    auto props = ItemDefDataModel::Container();
     props.ItemDefinition = dialog.getItemDef();
     props.Definition = this->CurrentAttDef;
     props.ParentIndex = parentIndex;
@@ -155,8 +156,7 @@ void AttDefInformation::onRemoveItemDef()
 // -----------------------------------------------------------------------------
 void AttDefInformation::showInheritedItemDetails(const QModelIndex& index)
 {
-  ItemDefinitionsDataModel const* model =
-    qobject_cast<ItemDefinitionsDataModel const*>(index.model());
+  ItemDefDataModel const* model = qobject_cast<ItemDefDataModel const*>(index.model());
   auto const& itemDef = model->get(index);
 
   ItemDefDialog dialog(this);
@@ -168,8 +168,7 @@ void AttDefInformation::showInheritedItemDetails(const QModelIndex& index)
 // -----------------------------------------------------------------------------
 void AttDefInformation::showOwnedItemDetails(const QModelIndex& index)
 {
-  ItemDefinitionsDataModel const* model =
-    qobject_cast<ItemDefinitionsDataModel const*>(index.model());
+  ItemDefDataModel const* model = qobject_cast<ItemDefDataModel const*>(index.model());
   auto const& itemDef = model->get(index);
 
   ItemDefDialog dialog(this);

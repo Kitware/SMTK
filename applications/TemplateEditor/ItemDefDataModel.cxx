@@ -14,17 +14,17 @@
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/System.h"
 
-#include "ItemDefinitionsDataModel.h"
+#include "ItemDefDataModel.h"
 
 // ------------------------------------------------------------------------
-ItemDefinitionsDataModel::ItemDefinitionsDataModel(QObject* parent)
+ItemDefDataModel::ItemDefDataModel(QObject* parent)
   : AbstractDataModel(parent)
 {
   this->initializeRootItem();
 }
 
 // ------------------------------------------------------------------------
-void ItemDefinitionsDataModel::initializeRootItem()
+void ItemDefDataModel::initializeRootItem()
 {
   AbstractDataModel::RootItem = new ItemDefElement;
   AbstractDataModel::RootItem->setData(0, Qt::DisplayRole, "Name");
@@ -33,12 +33,11 @@ void ItemDefinitionsDataModel::initializeRootItem()
 }
 
 // ------------------------------------------------------------------------
-ItemDefinitionsDataModel::~ItemDefinitionsDataModel() = default;
+ItemDefDataModel::~ItemDefDataModel() = default;
 
 // ------------------------------------------------------------------------
-void ItemDefinitionsDataModel::appendBranchToRoot(smtk::attribute::DefinitionPtr def)
+void ItemDefDataModel::appendBranchToRoot(smtk::attribute::DefinitionPtr def)
 {
-  const size_t numItems = def->numberOfItemDefinitions();
   std::vector<ItemDefPtr> const& itemDefs = def->localItemDefinitions();
   const QString& attDefType = QString::fromStdString(def->type());
 
@@ -59,14 +58,14 @@ void ItemDefinitionsDataModel::appendBranchToRoot(smtk::attribute::DefinitionPtr
 }
 
 // ------------------------------------------------------------------------
-void ItemDefinitionsDataModel::appendRecursively(smtk::attribute::ItemDefinitionPtr parentItemDef,
+void ItemDefDataModel::appendRecursively(smtk::attribute::ItemDefinitionPtr parentItemDef,
   QTreeWidgetItem* parentItem, const QString& attDefType)
 {
   const GroupDef* group = static_cast<const GroupDef*>(parentItemDef.get());
   const size_t numItems = group->numberOfItemDefinitions();
   for (size_t i = 0; i < numItems; i++)
   {
-    ItemDefPtr itemDef = group->itemDefinition(i);
+    ItemDefPtr itemDef = group->itemDefinition(static_cast<int>(i));
     ItemDefElement* item = new ItemDefElement(parentItem);
     item->setData(0, Qt::DisplayRole, QString::fromStdString(itemDef->name()));
     item->setData(1, Qt::DisplayRole,
@@ -82,7 +81,7 @@ void ItemDefinitionsDataModel::appendRecursively(smtk::attribute::ItemDefinition
 }
 
 // ------------------------------------------------------------------------
-void ItemDefinitionsDataModel::insert(const Container& props)
+void ItemDefDataModel::insert(const Container& props)
 {
   // Attribute system insert. Inserts into either the parent
   // GroupItemDefinition or the Definition.
@@ -102,8 +101,8 @@ void ItemDefinitionsDataModel::insert(const Container& props)
   this->clearAttributes(props.Definition);
 
   // QAbstractItemModel insert.
-  /// TODO insert next to the currentIndex (use its row position). Also
-  // necessary to handle insertion into a GroupItemDefinition (this could be
+  /// TODO insert next to the currentIndex (use its row position).
+  /// TODO Also necessary to handle insertion into a GroupItemDefinition (this could be
   // handled by the Information class (just pass in a different parent)).
   const int rowIndex = parentElement->childCount();
   QAbstractItemModel::beginInsertRows(props.ParentIndex, rowIndex, rowIndex);
@@ -120,8 +119,7 @@ void ItemDefinitionsDataModel::insert(const Container& props)
 }
 
 // ------------------------------------------------------------------------
-void ItemDefinitionsDataModel::remove(
-  const QModelIndex& itemIndex, smtk::attribute::DefinitionPtr def)
+void ItemDefDataModel::remove(const QModelIndex& itemIndex, smtk::attribute::DefinitionPtr def)
 {
   // Attribute system remove. Removes from either the parent
   // GroupItemDefinition or the Definition.
@@ -140,9 +138,6 @@ void ItemDefinitionsDataModel::remove(
     def->removeItemDefinition(itemDef);
   }
 
-  /// TODO handle issue:  itemDef-changed -> view-isInvalid -> required to
-  // invalidate/destroy view or auto-update.
-
   this->clearAttributes(def);
 
   // QAbstractItemModel remove.
@@ -151,7 +146,7 @@ void ItemDefinitionsDataModel::remove(
 }
 
 // ------------------------------------------------------------------------
-void ItemDefinitionsDataModel::clearAttributes(smtk::attribute::DefinitionPtr def)
+void ItemDefDataModel::clearAttributes(smtk::attribute::DefinitionPtr def)
 {
   std::vector<smtk::attribute::AttributePtr> atts;
   auto sys = def->system();
@@ -163,8 +158,7 @@ void ItemDefinitionsDataModel::clearAttributes(smtk::attribute::DefinitionPtr de
 }
 
 // ------------------------------------------------------------------------
-const smtk::attribute::ItemDefinitionPtr& ItemDefinitionsDataModel::get(
-  const QModelIndex& index) const
+const smtk::attribute::ItemDefinitionPtr& ItemDefDataModel::get(const QModelIndex& index) const
 {
   const QTreeWidgetItem* item = this->getItem(index);
   const ItemDefElement* element = static_cast<const ItemDefElement*>(item);

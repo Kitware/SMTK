@@ -50,6 +50,7 @@ void ItemDefDialog::setItemDef(smtk::attribute::ItemDefinitionPtr def)
   this->Ui->leName->setText(QString::fromStdString(def->name()));
   this->Ui->leLabel->setText(QString::fromStdString(def->label()));
   this->Ui->leVersion->setText(QString::number(def->version()));
+  ///TODO Add advanceLevel to UI
   //this->Ui->leAdvanceLevel->setText(QString::number(def->advanceLevel()));
 
   this->Handler = HandlerItemDef::create(type);

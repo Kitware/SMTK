@@ -9,7 +9,6 @@
 //=========================================================================
 #ifndef __AttDefInformation_h
 #define __AttDefInformation_h
-
 #include <memory>
 
 #include <QWidget>
@@ -20,12 +19,13 @@ class AttDefInformation;
 }
 
 class QModelIndex;
-class ItemDefinitionsDataModel;
+class ItemDefDataModel;
 
 /**
- * \brief Widget which displays an attribute definition.
+ * \brief Widget displaying attribute definition's properties
  *
- * Displays <AttDef> elements defined in a (*.sbt) file.
+ * Displays <AttDef> elements defined in a (*.sbt) file and the ItemDefinitions
+ * it contains.
  *
  */
 class AttDefInformation : public QWidget
@@ -37,14 +37,22 @@ public:
   ~AttDefInformation();
 
 public slots:
+  /**
+   * Handles signals from the view (QSelectionModel) displaying the attribute
+   * definitions.
+   */
   void onAttDefChanged(const QModelIndex& currentDef, const QModelIndex& previousDef);
 
   /**
-   * Sets the current user input in the smtk::attribute::Definition.
+   * Updates the current user input in the smtk::attribute::Definition.
    */
   void onSaveAttDef();
 
 signals:
+  /**
+   * Indicates to the parent widget that a change has been made in the attribute
+   * system (or any of its entities) so that the user is informed about it.
+   */
   void systemChanged(bool needsSaving);
 
 private slots:
@@ -65,8 +73,8 @@ private:
   void updateOwnedItemDef();
 
   std::unique_ptr<Ui::AttDefInformation> Ui;
-  ItemDefinitionsDataModel* InheritedItemDefModel = nullptr;
-  ItemDefinitionsDataModel* OwnedItemDefModel = nullptr;
+  ItemDefDataModel* InheritedItemDefModel = nullptr;
+  ItemDefDataModel* OwnedItemDefModel = nullptr;
 
   smtk::attribute::DefinitionPtr CurrentAttDef;
 };

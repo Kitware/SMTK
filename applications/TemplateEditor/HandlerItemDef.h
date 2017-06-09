@@ -30,6 +30,10 @@ public:
    */
   static std::shared_ptr<HandlerItemDef> create(const int type);
 
+  /**
+   * Instantiates UI forms with parent. Syncrhonize widget state/contents
+   * with itemDef properties (if not a nullptr).
+   */
   bool initialize(ItemDefPtr itemDef, QWidget* parent);
 
   /**
@@ -42,6 +46,9 @@ protected:
   HandlerItemDef();
   ~HandlerItemDef();
 
+  /**
+   * Instantiate an ItemDef if a nullptr was passed on initialization.
+   */
   ItemDefPtr createItemDef(const std::string& name);
 
   ItemDefPtr ItemDef;
@@ -50,6 +57,9 @@ private:
   HandlerItemDef(const HandlerItemDef&) = delete;
   void operator=(const HandlerItemDef&) = delete;
 
+  /**
+   * Concrete ItemDef handlers implement actual behavior.
+   */
   virtual ItemDefPtr updateItemDef_impl() = 0;
   virtual bool initialize_impl(QWidget* parent) = 0;
   virtual ItemDefPtr createItemDef_impl(const std::string& name) = 0;

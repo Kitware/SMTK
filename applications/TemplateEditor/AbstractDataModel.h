@@ -9,7 +9,6 @@
 //=========================================================================
 #ifndef __AbstractDataModel_h
 #define __AbstractDataModel_h
-
 #include <QAbstractItemModel>
 
 class QTreeWidgetItem;

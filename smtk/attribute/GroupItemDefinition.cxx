@@ -180,8 +180,6 @@ void GroupItemDefinition::setIsExtensible(bool mode)
 
 ItemDefinitionPtr GroupItemDefinition::createCopy(ItemDefinition::CopyInfo& info) const
 {
-  (void)info;
-
   std::size_t i;
 
   smtk::attribute::GroupItemDefinitionPtr instance =

@@ -26,7 +26,8 @@
 
 #define APP_NAME "Template Editor"
 #define TE_TYPES                                                                                   \
-  "Simulation Baseline Template (*.sbt);; CMB Resource File (*.crf);; XML Files (*.xml)"
+  "Simulation Baseline Template (*.sbt);; CMB Resource File (*.crf);;"                             \
+  " XML Files (*.xml)"
 
 // -----------------------------------------------------------------------------
 TemplateEditorMain::TemplateEditorMain()
@@ -42,6 +43,7 @@ TemplateEditorMain::~TemplateEditorMain() = default;
 // -----------------------------------------------------------------------------
 void TemplateEditorMain::connectActions()
 {
+  ///TODO Manipulating Newly created templates is currently disabled (not tested).
   QObject::connect(this->Ui->actNew, SIGNAL(triggered()), this, SLOT(onNew()));
   QObject::connect(this->Ui->actLoad, SIGNAL(triggered()), this, SLOT(onLoad()));
   QObject::connect(this->Ui->actSave, SIGNAL(triggered()), this, SLOT(onSave()));
@@ -70,7 +72,7 @@ void TemplateEditorMain::initialize()
 
   connect(this->AttDefInfo, SIGNAL(systemChanged(bool)), this, SLOT(updateTitle(bool)));
   connect(
-    this->AttDefInfo, SIGNAL(systemChanged(bool)), this->AttDefBrowser, SLOT(triggerSelection()));
+    this->AttDefInfo, SIGNAL(systemChanged(bool)), this->AttDefBrowser, SLOT(emitAttDefChanged()));
   connect(this->AttDefBrowser, SIGNAL(systemChanged(bool)), this, SLOT(updateTitle(bool)));
   connect(this->AttDefBrowser, SIGNAL(attDefChanged(const QModelIndex&, const QModelIndex&)),
     this->AttDefInfo, SLOT(onAttDefChanged(const QModelIndex&, const QModelIndex&)));

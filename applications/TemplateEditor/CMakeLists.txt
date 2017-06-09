@@ -50,8 +50,8 @@ set(TE_SOURCE
   InputDialog.h
   ItemDefDialog.h
   ItemDefDialog.cxx
-  ItemDefinitionsDataModel.h
-  ItemDefinitionsDataModel.cxx
+  ItemDefDataModel.h
+  ItemDefDataModel.cxx
   main.cxx
   PreviewPanel.h
   PreviewPanel.cxx

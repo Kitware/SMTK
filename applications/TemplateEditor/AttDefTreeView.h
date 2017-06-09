@@ -14,6 +14,8 @@
 
 /**
  * \brief Regular QTreeView with additional keyboard shortcuts.
+ *
+ * //TODO Add 'delete item' shortcut.
  */
 class AttDefTreeView : public QTreeView
 {

@@ -9,7 +9,6 @@
 //=========================================================================
 #ifndef __TemplateEditorMain_h
 #define __TemplateEditorMain_h
-
 #include <memory>
 
 #include <QMainWindow>
@@ -26,7 +25,10 @@ class AttDefInformation;
 class PreviewPanel;
 
 /**
- * \brief GUI to edit and visualize smtk attribute template files.
+ * \brief TemplateEditor's main window.
+ *
+ * TemplateEditor is a Qt-based application that serves as a UI to create,
+ * edit and preview SMTK sbt files.
  */
 
 class TemplateEditorMain : public QMainWindow
@@ -38,19 +40,26 @@ public:
   ~TemplateEditorMain();
 
   /**
- * Load a template to edit.
- */
+   * Load a template file to edit. This method is also used for commmand
+   * line arguments.
+   */
   void load(char const* fileName);
 
 public slots:
+  ///@{
   /**
- * Create a new and empty template to work on.
- */
+   * Handlers for QAction signals to load, create new, save, etc.
+   */
   void onNew();
   void onLoad();
   void onSaveAs();
   void onSave();
+
+  /**
+   * Modify the window title if there has been an Attribute System change.
+   */
   void updateTitle(bool needsSaving);
+  ///@}
 
 private:
   TemplateEditorMain(const TemplateEditorMain&) = delete;
@@ -58,10 +67,21 @@ private:
 
   void connectActions();
 
+  /**
+   * Initialize panels and other resources.
+   */
   void initialize();
 
+  /**
+   * Resets application to its initial state. Destorys current panels,
+   * etc.
+   */
   void reset();
 
+  /**
+   * Save template file to filePath. Currently saves the current
+   * attribute system to a single file.
+   */
   void save(const QString& filePath);
 
   smtk::attribute::SystemPtr AttributeSystem;
