@@ -62,7 +62,9 @@ public:
   };
 
   smtk::model::Session::WeakPtr CurrentSession;
-  std::string CurrrentOpName;
+  smtk::model::Session::WeakPtr PreviousSession;
+  std::string CurrentOpName;
+  std::string PreviousOpName;
   QSplitter* LogSplitter;
   QVBoxLayout* WidgetLayout;
   QPointer<QComboBox> OperationCombo;
@@ -222,7 +224,7 @@ qtModelView* qtModelOperationWidget::modelView()
 
 void qtModelOperationWidget::cancelCurrentOperator()
 {
-  this->cancelOperator(this->Internals->CurrrentOpName);
+  this->cancelOperator(this->Internals->CurrentOpName);
 }
 
 void qtModelOperationWidget::cancelOperator(const std::string& opName)
@@ -251,7 +253,7 @@ bool qtModelOperationWidget::initOperatorUI(const smtk::model::OperatorPtr& brOp
 {
   std::string opName = brOp->name();
   std::string opLabel = this->Internals->m_operatorNameMap[opName];
-  std::string prevOpName = this->Internals->CurrrentOpName;
+  std::string prevOpName = this->Internals->CurrentOpName;
   if (!prevOpName.empty() && opName != prevOpName)
   {
     // we need to reset previous operator's UI
@@ -270,7 +272,7 @@ bool qtModelOperationWidget::initOperatorUI(const smtk::model::OperatorPtr& brOp
   // if the operator is already created, just set its UI to be current widget
   if (this->checkExistingOperator(opName))
   {
-    this->Internals->CurrrentOpName = opName;
+    this->Internals->CurrentOpName = opName;
     return true;
   }
 
@@ -364,13 +366,23 @@ bool qtModelOperationWidget::initOperatorUI(const smtk::model::OperatorPtr& brOp
 
   this->Internals->OperationsLayout->addWidget(opParent);
   this->Internals->OperationsLayout->setCurrentWidget(opParent);
-  this->Internals->CurrrentOpName = opName;
+  this->Internals->CurrentOpName = opName;
   return true;
 }
 
 bool qtModelOperationWidget::setCurrentOperator(
   const std::string& opName, smtk::model::SessionPtr session)
 {
+  smtk::model::Session::WeakPtr prevSession = this->Internals->CurrentSession;
+  std::string currOpName = this->Internals->CurrentOpName;
+  QMap<std::string, qtModelOperationWidgetInternals::OperatorInfo>::Iterator opIt;
+  // Do not set the previous operator to be an "advanced" operator or the "Model - Save" operator:
+  std::string prevOpName =
+    (opIt = this->Internals->OperatorMap.find(currOpName)) != this->Internals->OperatorMap.end() &&
+      opIt->opPtr && opIt->opPtr->specification()->definition()->advanceLevel() < 1 &&
+      currOpName != "save smtk model"
+    ? currOpName
+    : std::string();
   this->setSession(session);
   if (!session)
   {
@@ -381,6 +393,11 @@ bool qtModelOperationWidget::setCurrentOperator(
   int idx = this->Internals->findLabelPosition(opLabel);
   if (this->Internals->OperationCombo->currentIndex() != idx)
   {
+    if (prevSession.lock() && !prevOpName.empty())
+    {
+      this->Internals->PreviousSession = prevSession;
+      this->Internals->PreviousOpName = prevOpName;
+    }
     this->Internals->OperationCombo->setCurrentIndex(idx);
     return true;
   }
@@ -396,7 +413,15 @@ bool qtModelOperationWidget::setCurrentOperator(
     return false;
   }
   emit operatorSet(brOp);
-  return this->initOperatorUI(brOp);
+  // We cannot rely on initOperatorUI to set PreviousSession since we may have
+  // changed the session above.
+  bool didChange = this->initOperatorUI(brOp);
+  if (didChange && !prevOpName.empty())
+  {
+    this->Internals->PreviousSession = prevSession;
+    this->Internals->PreviousOpName = prevOpName;
+  }
+  return didChange;
 }
 
 smtk::model::OperatorPtr qtModelOperationWidget::existingOperator(const std::string& opName)
@@ -518,6 +543,8 @@ void qtModelOperationWidget::resetUI()
         delete opLayout->widget(i);
       }
     }
+    this->Internals->PreviousSession = smtk::model::Session::WeakPtr();
+    this->Internals->PreviousOpName.clear();
     this->Internals->CurrentSession = activeSession.session();
     this->Internals->OperationCombo->blockSignals(true);
     this->Internals->OperationCombo->clear();
@@ -533,6 +560,16 @@ void qtModelOperationWidget::onModelEntityItemCreated(smtk::extension::qtModelEn
     QObject::connect(this, SIGNAL(broadcastExpungeEntities(const smtk::model::EntityRefs&)),
       entItem, SLOT(onExpungeEntities(const smtk::model::EntityRefs&)));
   }
+}
+
+bool qtModelOperationWidget::showPreviousOp()
+{
+  smtk::model::Session::Ptr prevSess = this->Internals->PreviousSession.lock();
+  if (!prevSess || this->Internals->PreviousOpName.empty())
+  {
+    return false;
+  }
+  return this->setCurrentOperator(this->Internals->PreviousOpName, prevSess);
 }
 
 void qtModelOperationWidget::onMeshSelectionItemCreated(

@@ -1790,6 +1790,22 @@ void qtModelView::onOperationPanelClosing()
   }
 }
 
+bool qtModelView::showPreviousOpOrHide()
+{
+  if (this->m_OperatorsWidget)
+  {
+    if (this->m_OperatorsWidget->showPreviousOp())
+    {
+      return true;
+    }
+    if (this->m_OperatorsDock)
+    {
+      this->m_OperatorsDock->hide();
+    }
+  }
+  return false; // false implies the widget is hidden
+}
+
 void qtModelView::syncEntityVisibility(const smtk::common::UUID& sessid,
   const smtk::common::UUIDs& entids, const smtk::mesh::MeshSets& meshes, int vis)
 {

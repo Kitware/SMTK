@@ -396,13 +396,13 @@ bool smtkExportModelView::eventFilter(QObject* obj, QEvent* evnt)
   return this->smtk::extension::qtBaseView::eventFilter(obj, evnt);
 }
 
-void smtkExportModelView::requestOperation(const smtk::model::OperatorPtr& op)
+bool smtkExportModelView::requestOperation(const smtk::model::OperatorPtr& op)
 {
   if (!op || !op->specification())
   {
-    return;
+    return false;
   }
-  this->uiManager()->activeModelView()->requestOperation(op, false);
+  return this->uiManager()->activeModelView()->requestOperation(op, false);
 }
 
 void smtkExportModelView::cancelOperation(const smtk::model::OperatorPtr& op)
@@ -465,18 +465,19 @@ bool smtkExportModelView::onExport()
   return false;
 }
 
-void smtkExportModelView::chooseFile(const std::string& mode)
+bool smtkExportModelView::chooseFile(const std::string& mode)
 {
   if (this->Internals->FileItem)
   {
     if (this->Internals->FileItem->onLaunchFileBrowser())
     { // User picked a file... try to perform the save
-      this->attemptSave(mode);
+      return this->attemptSave(mode);
     }
   }
+  return false;
 }
 
-void smtkExportModelView::attemptSave(const std::string& mode)
+bool smtkExportModelView::attemptSave(const std::string& mode)
 {
   bool shouldSave = false;
   if (mode == "save")
@@ -515,9 +516,10 @@ void smtkExportModelView::attemptSave(const std::string& mode)
     }
     if (shouldSave)
     {
-      this->requestOperation(this->Internals->CurrentOp.lock());
+      return this->requestOperation(this->Internals->CurrentOp.lock());
     }
   }
+  return false;
 }
 
 void smtkExportModelView::clearSelection()

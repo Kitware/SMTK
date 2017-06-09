@@ -55,11 +55,11 @@ public slots:
   virtual bool onSaveAs();
   virtual bool onExport();
 
-  virtual void chooseFile(const std::string& mode);
-  virtual void attemptSave(const std::string& mode);
+  virtual bool chooseFile(const std::string& mode);
+  virtual bool attemptSave(const std::string& mode);
 
 protected slots:
-  virtual void requestOperation(const smtk::model::OperatorPtr& op);
+  virtual bool requestOperation(const smtk::model::OperatorPtr& op);
   virtual void cancelOperation(const smtk::model::OperatorPtr&);
   virtual void clearSelection();
 
