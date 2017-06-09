@@ -61,8 +61,8 @@ public slots:
   virtual bool onSaveAs() = 0;
   virtual bool onExport() = 0;
 
-  virtual void chooseFile(const std::string& mode) = 0;
-  virtual void attemptSave(const std::string& mode) = 0;
+  virtual bool chooseFile(const std::string& mode) = 0;
+  virtual bool attemptSave(const std::string& mode) = 0;
 };
 
 #endif // smtk_extension_paraview_operators_smtkModelIOView_h
