@@ -1,11 +1,19 @@
-set(remusExtSource MeshOperator.cxx)
-set(remusExtHeaders MeshOperator.h)
+set(remusExtSource
+  MeshOperator.cxx
+  MeshServerLauncher.cxx)
+
+set(remusExtHeaders
+  MeshOperator.h
+  MeshServerLauncher.h)
+
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/MeshOperator.sbt" remusOperatorXML)
 
 add_library(smtkRemusExt ${remusExtSource})
 target_link_libraries(smtkRemusExt
   LINK_PRIVATE
     RemusClient
+    RemusCommon
+    RemusServer
     smtkCore
     ${Boost_LIBRARIES}
 )
@@ -38,8 +46,4 @@ add_subdirectory(plugin)
 
 if (SMTK_USE_PYBIND11)
   add_subdirectory(pybind11)
-endif()
-
-if (SMTK_ENABLE_TESTING)
-  add_subdirectory(testing)
 endif()

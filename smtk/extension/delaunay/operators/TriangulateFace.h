@@ -15,7 +15,7 @@
 
 namespace smtk
 {
-namespace model
+namespace mesh
 {
 
 class Session;
@@ -28,7 +28,7 @@ class Session;
   * collection does not yet exist during the construction of the mesh, it is
   * created and populated with the MeshSet.
   */
-class SMTKDELAUNAYEXT_EXPORT TriangulateFace : public Operator
+class SMTKDELAUNAYEXT_EXPORT TriangulateFace : public smtk::model::Operator
 {
 public:
   smtkTypeMacro(TriangulateFace);

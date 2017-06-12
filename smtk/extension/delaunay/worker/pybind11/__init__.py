@@ -10,4 +10,7 @@
 #
 #=============================================================================
 
-from _smtkPybindMeshDelaunay import *
+import smtk.model
+import smtk.mesh.delaunay
+
+from _smtkPybindMeshWorkerDelaunay import *

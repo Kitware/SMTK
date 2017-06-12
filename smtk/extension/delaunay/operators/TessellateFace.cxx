@@ -35,7 +35,7 @@
 
 namespace smtk
 {
-namespace model
+namespace mesh
 {
 
 TessellateFace::TessellateFace()
@@ -50,7 +50,7 @@ bool TessellateFace::ableToOperate()
     eRef.owningModel().isValid();
 }
 
-OperatorResult TessellateFace::operateInternal()
+smtk::model::OperatorResult TessellateFace::operateInternal()
 {
   smtk::model::Face face = this->specification()->associations()->value().as<smtk::model::Face>();
 
@@ -65,7 +65,7 @@ OperatorResult TessellateFace::operateInternal()
   {
     // if we don't have loops, there is nothing to mesh
     smtkErrorMacro(this->log(), "No loops associated with this face.");
-    return this->createResult(OPERATION_FAILED);
+    return this->createResult(smtk::model::OPERATION_FAILED);
   }
 
   // the first loop is the exterior loop
@@ -89,7 +89,7 @@ OperatorResult TessellateFace::operateInternal()
   {
     // the polygon is invalid, so we exit with failure
     smtkErrorMacro(this->log(), "Outer boundary polygon is invalid.");
-    return this->createResult(OPERATION_FAILED);
+    return this->createResult(smtk::model::OPERATION_FAILED);
   }
 
   // discretize the polygon
@@ -113,7 +113,7 @@ OperatorResult TessellateFace::operateInternal()
     {
       // the polygon is invalid, so we exit with failure
       smtkErrorMacro(this->log(), "Inner boundary polygon is invalid.");
-      return this->createResult(OPERATION_FAILED);
+      return this->createResult(smtk::model::OPERATION_FAILED);
     }
 
     excise(p_sub, mesh);
@@ -123,7 +123,7 @@ OperatorResult TessellateFace::operateInternal()
   smtk::extension::delaunay::io::ImportDelaunayMesh importFromDelaunayMesh;
   importFromDelaunayMesh(mesh, face);
 
-  OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
   this->addEntityToResult(result, face, MODIFIED);
   result->findModelEntity("tess_changed")->setValue(face);
   return result;
@@ -135,5 +135,5 @@ OperatorResult TessellateFace::operateInternal()
 #include "smtk/extension/delaunay/Exports.h"
 #include "smtk/extension/delaunay/TessellateFace_xml.h"
 
-smtkImplementsModelOperator(SMTKDELAUNAYEXT_EXPORT, smtk::model::TessellateFace,
+smtkImplementsModelOperator(SMTKDELAUNAYEXT_EXPORT, smtk::mesh::TessellateFace,
   delaunay_tessellate_face, "tessellate face", TessellateFace_xml, smtk::model::Session);

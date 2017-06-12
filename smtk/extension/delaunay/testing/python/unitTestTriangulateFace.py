@@ -16,7 +16,7 @@ import smtk
 if smtk.wrappingProtocol() == 'pybind11':
     import smtk.mesh
     import smtk.model
-    import smtk.model.delaunay
+    import smtk.mesh.delaunay
     import smtk.bridge.polygon
 import smtk.testing
 from smtk.simple import *

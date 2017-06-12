@@ -15,7 +15,7 @@
 
 namespace smtk
 {
-namespace model
+namespace mesh
 {
 
 class Session;
@@ -25,7 +25,7 @@ class Session;
   * This operation updates the smtk::model::Tessellation associated with an
   * smtk::model::Face using Delaunay.
   */
-class SMTKDELAUNAYEXT_EXPORT TessellateFace : public Operator
+class SMTKDELAUNAYEXT_EXPORT TessellateFace : public smtk::model::Operator
 {
 public:
   smtkTypeMacro(TessellateFace);

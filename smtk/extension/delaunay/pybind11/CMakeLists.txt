@@ -1,9 +1,9 @@
-set(library_name "_smtkPybindModelDelaunay")
-set(module_path "model/delaunay")
+set(library_name "_smtkPybindMeshDelaunay")
+set(module_path "mesh/delaunay")
 set(build_path "${PROJECT_BINARY_DIR}/smtk/${module_path}")
 set(install_path "${SMTK_PYTHON_MODULEDIR}/smtk/${module_path}")
 
-pybind11_add_module(${library_name} PybindModelDelaunay.cxx)
+pybind11_add_module(${library_name} PybindMeshDelaunay.cxx)
 target_include_directories(${library_name} PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
   )

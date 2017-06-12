@@ -1,13 +1,19 @@
 set(smtkDelaunayExtPythonDataTests)
 
-# This testfails during superbuild testing when built with shiboken, so we only
-# test it when pybind11 bindings are enabled
 if (SMTK_ENABLE_POLYGON_SESSION AND SMTK_USE_PYBIND11)
   set(smtkDelaunayExtPythonDataTests
     ${smtkDelaunayExtPythonDataTests}
-    unitTestTessellateFace
-    unitTestTriangulateFace
+    testDelaunayMeshWorker
   )
+
+# TODO: figure out why active test only works on OS X
+if (APPLE)
+  set(smtkDelaunayExtPythonDataTests
+    ${smtkDelaunayExtPythonDataTests}
+    testActiveDelaunayMeshWorker
+  )
+endif()
+
 endif()
 
 if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)

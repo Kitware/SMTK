@@ -53,6 +53,10 @@ if (SMTK_USE_PYBIND11)
   add_subdirectory(pybind11)
 endif()
 
+if (SMTK_ENABLE_REMUS_SUPPORT)
+  add_subdirectory(worker)
+endif()
+
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
 endif()
