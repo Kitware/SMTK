@@ -397,6 +397,8 @@ int SaveJSON::save(
           if (coll && coll->isModified() &&
             !(meshFile = coll->writeLocation().absolutePath()).empty())
           {
+            // Always write the mesh URL relative to the SMTK file:
+            coll->writeLocation(smtk::common::FileLocation(meshFile, embedDir));
             // Write the mesh. This should reset coll->isModified() so it only
             // happens once even if multiple models have meshes in the same collection.
             bool ok = write(meshFile, coll, smtk::io::mesh::Subset::EntireCollection);
@@ -1215,7 +1217,7 @@ int SaveJSON::forSingleCollection(cJSON* mdesc, smtk::mesh::CollectionPtr collec
       ? collection->writeLocation().absolutePath()
       : collection->writeLocation().relativePath();
 
-    cJSON_AddStringToObject(jsonCollection, "location", fileWriteLocation.c_str());
+    cJSON_AddStringToObject(jsonCollection, "url", fileWriteLocation.c_str());
     writeMeshFileOk = smtk::io::writeMesh(collection, mesh::Subset::EntireCollection);
   }
 
