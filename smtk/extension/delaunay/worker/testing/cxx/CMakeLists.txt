@@ -9,6 +9,31 @@ if(SMTK_ENABLE_POLYGON_SESSION AND
   find_package(Boost 1.55.0
     COMPONENTS thread filesystem system REQUIRED)
 
+  add_executable(UnitTestDelaunayMeshWorker
+                 UnitTestDelaunayMeshWorker.cxx)
+
+  target_link_libraries(UnitTestDelaunayMeshWorker
+                        LINK_PRIVATE
+                        DelaunayWorker
+                        smtkCore
+                        smtkPolygonSession
+                        smtkRemusExt
+                        RemusClient
+                        RemusServer
+                        ${Boost_LIBRARIES}
+                        ${CMAKE_THREAD_LIBS_INIT}
+                        )
+  get_filename_component(build_search_path "${CMAKE_BINARY_DIR}/bin" ABSOLUTE)
+  get_filename_component(install_search_path "${CMAKE_INSTALL_PREFIX}/bin" ABSOLUTE)
+  target_compile_definitions(UnitTestDelaunayMeshWorker PRIVATE "BUILD_SEARCH_PATH=\"${build_search_path}\"")
+  target_compile_definitions(UnitTestDelaunayMeshWorker PRIVATE "INSTALL_SEARCH_PATH=\"${install_search_path}\"")
+
+  add_test(NAME UnitTestDelaunayMeshWorker
+           COMMAND $<TARGET_FILE:UnitTestDelaunayMeshWorker>
+                   "${SMTK_DATA_DIR}/mesh/2d/boxWithHole.smtk")
+  set_tests_properties(UnitTestDelaunayMeshWorker PROPERTIES
+                       LABELS "ExtDelaunay")
+
   add_executable(TestDelaunayMeshWorker
                  TestDelaunayMeshWorker.cxx)
 
@@ -23,9 +48,9 @@ if(SMTK_ENABLE_POLYGON_SESSION AND
                         ${CMAKE_THREAD_LIBS_INIT}
                         )
 
-  add_test(NAME UnitTestDelaunayMeshWorker
+  add_test(NAME TestDelaunayMeshWorker
            COMMAND $<TARGET_FILE:TestDelaunayMeshWorker>
                    "${SMTK_DATA_DIR}/mesh/2d/boxWithHole.smtk")
-  set_tests_properties(UnitTestDelaunayMeshWorker PROPERTIES
+  set_tests_properties(TestDelaunayMeshWorker PROPERTIES
                        LABELS "ExtDelaunay")
 endif()
