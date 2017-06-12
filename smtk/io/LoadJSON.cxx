@@ -1132,7 +1132,11 @@ int LoadJSON::ofMeshesOfModel(
       associatedModelId = UUID(modelIdVal);
     }
     //get the location and type nodes from json
-    cJSON* fLocationNode = cJSON_GetObjectItem(child, "location");
+    cJSON* fLocationNode = cJSON_GetObjectItem(child, "url");
+    if (!fLocationNode)
+    {
+      fLocationNode = cJSON_GetObjectItem(child, "location");
+    }
     cJSON* fTypeNode = cJSON_GetObjectItem(child, "type");
     std::string collectionTypeName;
     cJSON_GetStringValue(fTypeNode, collectionTypeName);
