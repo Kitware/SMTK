@@ -4,6 +4,7 @@ set(commonSrcs
   DateTime.cxx
   DateTimeZonePair.cxx
   Environment.cxx
+  Extension.cxx
   FileLocation.cxx
   Paths.cxx
   Resource.cxx
@@ -21,6 +22,7 @@ set(commonHeaders
   DateTime.h
   DateTimeZonePair.h
   Environment.h
+  Extension.h
   FileLocation.h
   GeometryUtilities.h
   Paths.h

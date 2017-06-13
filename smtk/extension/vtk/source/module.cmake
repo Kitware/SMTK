@@ -15,9 +15,11 @@ endforeach()
 
 vtk_module(vtkSMTKSourceExt
   DEPENDS
+    vtkSMTKReaderExt
     vtkCommonCore
     vtkCommonDataModel
     vtkCommonExecutionModel
+    vtkCommonTransforms
     vtkRenderingCore
     vtkInteractionStyle
     vtkRenderingFreeType

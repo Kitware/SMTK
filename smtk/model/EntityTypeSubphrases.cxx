@@ -295,6 +295,7 @@ void EntityTypeSubphrases::childrenOfEntity(EntityPhrase::Ptr phr, DescriptivePh
     //    ShellEntity sent = ent.as<ShellEntity>();
     Group gent = ent.as<Group>();
     Model ment = ent.as<Model>();
+    AuxiliaryGeometry aent = ent.as<AuxiliaryGeometry>();
     Instance ient = ent.as<Instance>();
     SessionRef sess = ent.as<SessionRef>();
     /*
@@ -314,7 +315,11 @@ void EntityTypeSubphrases::childrenOfEntity(EntityPhrase::Ptr phr, DescriptivePh
       this->usesOfShell(phr, sent, result);
       }
 */
-    if (gent.isValid())
+    if (aent.isValid())
+    {
+      this->childrenOfAuxiliaryGeometry(phr, aent, result);
+    }
+    else if (gent.isValid())
     {
       this->membersOfGroup(phr, gent, result);
     }

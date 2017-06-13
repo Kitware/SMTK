@@ -16,6 +16,7 @@
 #include "smtk/model/Events.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/Group.h"
+#include "smtk/model/Instance.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Tessellation.h"
@@ -703,7 +704,15 @@ const Tessellation* EntityRef::hasTessellation() const
   {
     UUIDsToTessellations::const_iterator it = mgr->tessellations().find(this->m_entity);
     if (it != mgr->tessellations().end())
+    {
       return &it->second;
+    }
+    // But wait, there's more! Instances store rules that can be used to
+    // generate a tessellation. So we should try that before giving up:
+    if (this->isInstance())
+    {
+      return this->as<Instance>().generateTessellation();
+    }
   }
   return NULL;
 }

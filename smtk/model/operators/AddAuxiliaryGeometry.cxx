@@ -10,11 +10,14 @@
 #include "smtk/model/operators/AddAuxiliaryGeometry.h"
 
 #include "smtk/model/AuxiliaryGeometry.h"
+#include "smtk/model/AuxiliaryGeometryExtension.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/Manager.txx"
 #include "smtk/model/Model.h"
 #include "smtk/model/Session.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
@@ -50,6 +53,22 @@ smtk::model::OperatorResult AddAuxiliaryGeometry::operateInternal()
   smtk::attribute::IntItemPtr dimItem = this->findInt("dimension");
   int dim = dimItem != nullptr ? dimItem->value(0) : 2;
 
+  // Transform
+  smtk::attribute::DoubleItemPtr transformItems[3] = { this->findDouble("scale"),
+    this->findDouble("rotate"), this->findDouble("translate") };
+  bool transformIsDefault[3] = { true, true, true };
+  for (int ii = 0; ii < 3; ++ii)
+  {
+    if (!transformItems[ii])
+    {
+      continue;
+    }
+    for (int jj = 0; jj < 3; ++jj)
+    {
+      transformIsDefault[ii] &= transformItems[ii]->isUsingDefault(jj);
+    }
+  }
+
   smtk::attribute::VoidItem::Ptr separateRepOption = this->findVoid("separate representation");
   bool bSeparateRep = separateRepOption->isEnabled();
 
@@ -64,11 +83,20 @@ smtk::model::OperatorResult AddAuxiliaryGeometry::operateInternal()
   }
   auxGeom.assignDefaultName();
   auxGeom.setIntegerProperty("display as separate representation", bSeparateRep ? 1 : 0);
+  // Add transform properties if they are not default values:
+  for (int ii = 0; ii < 3; ++ii)
+  {
+    if (!transformIsDefault[ii])
+    {
+      auxGeom.setFloatProperty(transformItems[ii]->name(),
+        FloatList(transformItems[ii]->begin(), transformItems[ii]->end()));
+    }
+  }
 
   if (!urlItem->value().empty())
   {
     path filePath(urlItem->value());
-    auxGeom.setUrl(filePath.string());
+    auxGeom.setURL(filePath.string());
     // Grab the file name as the name for the aux geometry
     auxGeom.setName(filePath.filename().string());
   }
@@ -78,13 +106,54 @@ smtk::model::OperatorResult AddAuxiliaryGeometry::operateInternal()
     auxGeom.setStringProperty("type", dtypeItem->value(0));
   }
 
+  std::string urlStr = auxGeom.url();
+  bool isURLValid = true; // It can only be invalid if we have a way to test validity.
+  bool haveBBox;
+  std::vector<double> bbox;
+  if (!urlStr.empty())
+  {
+    AuxiliaryGeometryExtension::Ptr ext;
+    smtk::common::Extension::visit<AuxiliaryGeometryExtension::Ptr>(
+      [&ext](const std::string&, AuxiliaryGeometryExtension::Ptr obj) {
+        if (obj)
+        {
+          ext = obj;
+          return std::make_pair(true, true);
+        }
+        return std::make_pair(false, false);
+      });
+    if (ext)
+    {
+      isURLValid = ext->canHandleAuxiliaryGeometry(auxGeom, bbox);
+      haveBBox = true;
+    }
+    else
+    { // We can at least test whether the file exists.
+      isURLValid = exists(path(urlStr));
+    }
+  }
+
+  if (!isURLValid)
+  {
+    // Delete the auxiliary geometry and fail.
+    AuxiliaryGeometries del;
+    del.push_back(auxGeom);
+    EntityRefArray modified;
+    EntityRefArray expunged;
+    parent.manager()->deleteEntities(del, modified, expunged, /*log*/ false);
+    smtkErrorMacro(this->log(), "The url \"" << urlStr << "\" is invalid or unhandled.");
+    return this->createResult(smtk::model::OPERATION_FAILED);
+  }
+
   smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
 
   this->addEntityToResult(result, parent, MODIFIED);
   this->addEntityToResult(result, auxGeom, CREATED);
-  if (auxGeom.hasUrl())
+  if (auxGeom.hasURL())
   {
-    result->findModelEntity("tess_changed")->setValue(auxGeom);
+    auto tessItem = result->findModelEntity("tess_changed");
+    tessItem->setNumberOfValues(1);
+    tessItem->setValue(auxGeom);
   }
 
   return result;

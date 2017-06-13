@@ -35,10 +35,10 @@ py::class_< smtk::model::AuxiliaryGeometry, smtk::model::EntityRef > pybind11_in
     .def("deepcopy", (smtk::model::AuxiliaryGeometry & (smtk::model::AuxiliaryGeometry::*)(::smtk::model::AuxiliaryGeometry const &)) &smtk::model::AuxiliaryGeometry::operator=)
     .def("__eq__", (bool (smtk::model::AuxiliaryGeometry::*)(::smtk::model::EntityRef const &) const) &smtk::model::AuxiliaryGeometry::operator==)
     .def("classname", &smtk::model::AuxiliaryGeometry::classname)
-    .def("hasUrl", &smtk::model::AuxiliaryGeometry::hasUrl)
+    .def("hasURL", &smtk::model::AuxiliaryGeometry::hasURL)
     .def("isValid", (bool (smtk::model::AuxiliaryGeometry::*)() const) &smtk::model::AuxiliaryGeometry::isValid)
     // .def("isValid", (bool (smtk::model::AuxiliaryGeometry::*)(::smtk::model::Entity * *) const) &smtk::model::AuxiliaryGeometry::isValid, py::arg("entRec"))
-    .def("setUrl", &smtk::model::AuxiliaryGeometry::setUrl, py::arg("url"))
+    .def("setURL", &smtk::model::AuxiliaryGeometry::setURL, py::arg("url"))
     .def("url", &smtk::model::AuxiliaryGeometry::url)
     ;
   return instance;

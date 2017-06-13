@@ -17,10 +17,44 @@ namespace smtk
 namespace model
 {
 
+bool AuxiliaryGeometry::reparent(const Model& m)
+{
+  if (!m.isValid() || this->owningModel() != m)
+  {
+    return false;
+  }
+  EntityRef immediateParent = this->embeddedIn();
+  if (immediateParent == m)
+  {
+    return false;
+  }
+
+  immediateParent.unembedEntity(*this);
+  m.as<Model>().addAuxiliaryGeometry(*this);
+  return true;
+}
+
+bool AuxiliaryGeometry::reparent(const AuxiliaryGeometry& a)
+{
+  if (!a.isValid() || this->owningModel() != a.owningModel())
+  {
+    return false;
+  }
+  EntityRef immediateParent = this->embeddedIn();
+  if (immediateParent == a)
+  {
+    return false;
+  }
+
+  immediateParent.unembedEntity(*this);
+  a.as<AuxiliaryGeometry>().embedEntity(*this);
+  return true;
+}
+
 /**\brief Indicate whether the entity has a URL to external geometry.
   *
   */
-bool AuxiliaryGeometry::hasUrl() const
+bool AuxiliaryGeometry::hasURL() const
 {
   if (!this->hasStringProperties())
   {
@@ -52,7 +86,7 @@ std::string AuxiliaryGeometry::url() const
 /**\brief Set the URL of external geometry referenced by this auxiliary geometry.
   *
   */
-void AuxiliaryGeometry::setUrl(const std::string& url)
+void AuxiliaryGeometry::setURL(const std::string& url)
 {
   this->setStringProperty("url", url);
 }
@@ -78,6 +112,11 @@ void AuxiliaryGeometry::setIsModified(bool isModified)
   }
 
   this->setIntegerProperty("clean", isModified ? 0 : 1);
+}
+
+AuxiliaryGeometries AuxiliaryGeometry::auxiliaryGeometries() const
+{
+  return this->embeddedEntities<AuxiliaryGeometries>();
 }
 
 } // namespace model

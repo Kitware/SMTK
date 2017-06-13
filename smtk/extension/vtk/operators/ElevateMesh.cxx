@@ -10,9 +10,7 @@
 
 #include "smtk/extension/vtk/operators/ElevateMesh.h"
 
-#include "smtk/extension/vtk/filter/vtkImageSpacingFlip.h"
-#include "smtk/extension/vtk/reader/vtkCMBGeometryReader.h"
-#include "smtk/extension/vtk/reader/vtkLASReader.h"
+#include "smtk/extension/vtk/source/vtkAuxiliaryGeometryExtension.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -39,18 +37,14 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Session.h"
 
-#include "vtkAppendPoints.h"
-#include "vtkCompositeDataIterator.h"
 #include "vtkDoubleArray.h"
 #include "vtkFloatArray.h"
-#include "vtkGDALRasterReader.h"
 #include "vtkImageData.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkNew.h"
 #include "vtkPointData.h"
 #include "vtkPolyData.h"
 #include "vtkUniformGrid.h"
-#include "vtkXMLImageDataReader.h"
 
 #include <vtksys/SystemTools.hxx>
 
@@ -60,95 +54,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-
-namespace
-{
-// Copied from BathymetryHelper.cxx. This should be refactored to be cleaner.
-vtkDataSet* loadAuxiliaryGeometry(const std::string& filename)
-{
-  if (filename.empty())
-  {
-    std::cerr << "File name is empty!\n";
-    return nullptr;
-  }
-
-  vtkDataSet* dataOutput = NULL;
-  std::string ext = vtksys::SystemTools::GetFilenameLastExtension(filename);
-  std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-
-  if (ext == ".pts" || ext == ".xyz" || ext == ".bin" || ext == ".vtk" || ext == ".vtp" ||
-    ext == ".2dm" || ext == ".3dm" || ext == ".tin" || ext == ".poly" || ext == ".smesh" ||
-    ext == ".obj" || ext == ".fac" || ext == ".sol" || ext == ".stl")
-  {
-    vtkNew<vtkCMBGeometryReader> reader;
-    reader->SetFileName(filename.c_str());
-    reader->SetPrepNonClosedSurfaceForModelCreation(false);
-    reader->SetEnablePostProcessMesh(false);
-    reader->Update();
-
-    vtkPolyData* polyOutput = vtkPolyData::New();
-    polyOutput->ShallowCopy(reader->GetOutput());
-    dataOutput = polyOutput;
-  }
-  else if (ext == ".dem" || ext == ".tif" || ext == ".tiff")
-  {
-    vtkNew<vtkGDALRasterReader> reader;
-    reader->SetFileName(filename.c_str());
-
-    vtkNew<vtkImageSpacingFlip> flipImage;
-    flipImage->SetInputConnection(reader->GetOutputPort());
-    flipImage->Update();
-
-    vtkUniformGrid* ugOutput = vtkUniformGrid::New();
-    ugOutput->ShallowCopy(flipImage->GetOutput());
-    dataOutput = ugOutput;
-  }
-  else if (ext == ".las")
-  {
-    vtkNew<vtkLASReader> reader;
-    reader->SetFileName(filename.c_str());
-    reader->Update();
-
-    vtkMultiBlockDataSet* readout = reader->GetOutput();
-    vtkNew<vtkAppendPoints> appendPoints;
-
-    vtkCompositeDataIterator* iter = readout->NewIterator();
-    for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem())
-    {
-      vtkPolyData* blockPoly = vtkPolyData::SafeDownCast(iter->GetCurrentDataObject());
-      if (!blockPoly)
-      {
-        vtkGenericWarningMacro(<< "This block from LAS reader is not a polydata!\n");
-        continue;
-      }
-      appendPoints->AddInputData(blockPoly);
-    }
-    iter->Delete();
-    appendPoints->Update();
-
-    vtkPolyData* polyOutput = vtkPolyData::New();
-    polyOutput->ShallowCopy(appendPoints->GetOutput());
-    dataOutput = polyOutput;
-  }
-  else if (ext == ".vti")
-  {
-    vtkNew<vtkXMLImageDataReader> reader;
-    reader->SetFileName(filename.c_str());
-    reader->Update();
-
-    vtkImageData* imgOutput = vtkImageData::New();
-    imgOutput->ShallowCopy(reader->GetOutput());
-    dataOutput = imgOutput;
-  }
-  else
-  {
-    vtkGenericWarningMacro(<< "File type is not supported!\n");
-    return nullptr;
-  }
-
-  return dataOutput;
-}
-}
 
 namespace smtk
 {
@@ -238,7 +143,13 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
   }
 
   // Convert the auxiliary geometry from a file name to a vtkDataset
-  vtkDataSet* externalData = loadAuxiliaryGeometry(auxGeo.url());
+  vtkDataSet* externalData = nullptr;
+  auto loader = vtkAuxiliaryGeometryExtension::create();
+  std::vector<double> bbox(6);
+  if (loader && loader->canHandleAuxiliaryGeometry(auxGeo, bbox))
+  {
+    externalData = vtkDataSet::SafeDownCast(loader->fetchCachedGeometry(auxGeo));
+  }
   if (!externalData)
   {
     smtkErrorMacro(this->log(), "Could not read auxiliary geometry.");
