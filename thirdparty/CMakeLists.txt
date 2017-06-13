@@ -113,7 +113,9 @@ if (NOT SMTK_USE_SYSTEM_MOAB)
     endif()
 
     foreach(moab_target MOAB moabio moab_loc_discr moabverdict mhdf)
-      set_property(TARGET ${moab_target} APPEND_STRING PROPERTY COMPILE_FLAGS ${ignore_rules_for_moab})
+      if (TARGET ${moab_target})
+        set_property(TARGET ${moab_target} APPEND_STRING PROPERTY COMPILE_FLAGS ${ignore_rules_for_moab})
+      endif()
     endforeach()
   endif()
 
