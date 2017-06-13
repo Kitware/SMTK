@@ -102,6 +102,21 @@ std::size_t RefItem::numberOfRequiredValues() const
   return def->numberOfRequiredValues();
 }
 
+void RefItem::visitChildren(std::function<void(ItemPtr, bool)> visitor, bool activeChildren)
+{
+  for (auto item : this->m_values)
+  {
+    Attribute* attPtr = item.lock().get();
+    if (attPtr)
+    {
+      for (std::size_t index = 0; index < attPtr->numberOfItems(); ++index)
+      {
+        visitor(attPtr->item(static_cast<int>(index)), activeChildren);
+      }
+    }
+  }
+}
+
 bool RefItem::setValue(std::size_t element, smtk::attribute::AttributePtr att)
 {
   const RefItemDefinition* def = static_cast<const RefItemDefinition*>(this->definition().get());

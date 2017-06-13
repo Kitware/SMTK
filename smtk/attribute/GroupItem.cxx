@@ -177,6 +177,17 @@ std::size_t GroupItem::maxNumberOfGroups() const
   return def->maxNumberOfGroups();
 }
 
+void GroupItem::visitChildren(std::function<void(ItemPtr, bool)> visitor, bool activeChildren)
+{
+  for (size_t elementIndex = 0; elementIndex < this->numberOfGroups(); elementIndex++)
+  {
+    for (size_t valueIndex = 0; valueIndex < this->numberOfItemsPerGroup(); valueIndex++)
+    {
+      visitor(this->item(elementIndex, valueIndex), activeChildren);
+    }
+  }
+}
+
 bool GroupItem::appendGroup()
 {
   if (!this->isExtensible())

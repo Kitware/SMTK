@@ -52,6 +52,15 @@ public:
   bool setExpression(std::size_t elementIndex, smtk::attribute::AttributePtr exp);
   virtual bool appendExpression(smtk::attribute::AttributePtr exp);
   virtual bool setNumberOfValues(std::size_t newSize) = 0;
+  /**
+   * @brief visitChildren Invoke a function on each (or, if \a findInActiveChildren
+   * is true, each active) child item. If a subclass presents childern items(ValueItem,
+   * Group, RefItem, ...) then this function should be overriden.
+   * @param visitor a lambda function which would be applied on children items
+   * @param activeChildren a flag indicating whether it should be applied to active children only or not
+   */
+  virtual void visitChildren(
+    std::function<void(smtk::attribute::ItemPtr, bool)> visitor, bool activeChildren = true);
 
   int discreteIndex(std::size_t elementIndex = 0) const
   {

@@ -455,45 +455,11 @@ void qtModelOperationWidget::expungeEntities(const smtk::model::EntityRefs& expu
     it.next();
     bool associationChanged = false;
     if (it.value().opPtr && it.value().opPtr->specification())
-    { // FIXME it should recursively update all modelEntityItems in the attribute
-      for (std::size_t i = 0; i < it.value().opPtr->specification()->numberOfItems(); ++i)
-      {
-        smtk::attribute::ItemPtr currentItem =
-          it.value().opPtr->specification()->item(static_cast<int>(i));
-        if (currentItem->isValid())
-        {
-          smtk::attribute::ModelEntityItemPtr currentMEItem =
-            smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItem>(currentItem);
-          if (currentMEItem && currentMEItem->isValid())
-          {
-            for (smtk::model::EntityRefs::const_iterator bit = expungedEnts.begin();
-                 bit != expungedEnts.end(); ++bit)
-            {
-              std::ptrdiff_t idx = currentMEItem->find(*bit);
-              if (idx >= 0)
-              {
-                currentMEItem->removeValue(static_cast<std::size_t>(idx));
-              }
-            }
-          }
-        }
-      }
-
-      if (it.value().opPtr->specification()->associations())
-      {
-        for (EntityRefs::const_iterator bit = expungedEnts.begin(); bit != expungedEnts.end();
-             ++bit)
-        {
-          if (it.value().opPtr->specification()->isEntityAssociated(*bit))
-          {
-            //std::cout << "expunge from op " << bit->flagSummary(0) << " " << bit->entity() << "\n";
-            it.value().opPtr->specification()->disassociateEntity(*bit);
-            associationChanged = true;
-          }
-        }
-      }
-      else // operator's modelEntityItem has been expunged update in qtModelEntityItem
-      {
+    {
+      // update operator's specification
+      associationChanged = it.value().opPtr->specification()->removeExpungedEntities(expungedEnts);
+      if (!it.value().opPtr->specification()->associations())
+      { // Operator's modelEntityItem has been expunged. Update in qtModelEntityItem
         emit broadcastExpungeEntities(expungedEnts);
       }
     }

@@ -17,8 +17,10 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
+#include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/SearchStyle.h"
+#include "smtk/attribute/ValueItem.h"
 
 #include "smtk/common/UUID.h" // for template associatedModelEntities()
 
@@ -110,6 +112,20 @@ public:
   template <typename T>
   typename T::ConstPtr findAs(const std::string& name, SearchStyle style = ACTIVE_CHILDREN) const;
 
+  /**
+   * @brief Given a container, file items in the attribute by a lambda function
+   * @param values a container which holds items
+   * @param test a lambda function which would be applied on children items
+   * Example filter double and int items
+   *  [](Item::Ptr item) { return item->type() == DOUBLE || item->type() == INT; }
+   * Example filter modelEntity items
+   *  [](ModelEntity::Ptr item) { return true; }
+   * @param activeChildren a flag indicates whether it should be applied to active children only or not
+   */
+  template <typename T>
+  void filterItems(
+    T& values, std::function<bool(typename T::value_type)> test, bool activeChildren = true);
+
   IntItemPtr findInt(const std::string& name);
   ConstIntItemPtr findInt(const std::string& name) const;
 
@@ -160,6 +176,14 @@ public:
   void disassociateEntity(const smtk::common::UUID& entity, bool reverse = true);
   void disassociateEntity(const smtk::model::EntityRef& entity, bool reverse = true);
   void removeAllAssociations();
+
+  /**
+   * @brief Remove expunged Entities from attribute
+   * @param expungedEnts a set of expunged entities
+   * @return if assocation or modelEntityItem has been updated, return true.
+   * (then operator widget should update its UI)
+   */
+  bool removeExpungedEntities(const smtk::model::EntityRefs& expungedEnts);
 
   MeshSelectionItemPtr findMeshSelection(const std::string& name);
   ConstMeshSelectionItemPtr findMeshSelection(const std::string& name) const;
@@ -321,6 +345,32 @@ typename T::ConstPtr Attribute::findAs(const std::string& iname, SearchStyle sty
 {
   return smtk::dynamic_pointer_cast<const T>(this->find(iname, style));
 }
+
+template <typename T>
+void Attribute::filterItems(
+  T& filtered, std::function<bool(typename T::value_type)> test, bool activeChildren)
+{
+  // Given an item, this lambda function which would recursively visit all children and apply test function
+  std::function<void(ItemPtr, bool)> visitor = [&filtered, test, &visitor](
+    smtk::attribute::ItemPtr item, bool activeChildrenLocal) {
+    typename T::value_type testItem =
+      smtk::dynamic_pointer_cast<typename T::value_type::element_type>(item);
+    // base condition
+    if (testItem && test(testItem))
+    {
+      filtered.insert(filtered.end(), testItem);
+    }
+    // Only items which have children would have a non-empty visitChildren method
+    item->visitChildren(visitor, activeChildrenLocal);
+
+  };
+
+  for (std::size_t index = 0; index < this->numberOfItems(); ++index)
+  {
+    visitor(this->item(static_cast<int>(index)), activeChildren);
+  }
+}
+
 } // attribute namespace
 } // smtk namespace
 

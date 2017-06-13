@@ -71,6 +71,17 @@ public:
   std::string label() const;
   virtual Item::Type type() const = 0;
   virtual bool isValid() const = 0;
+  /**
+   * @brief visitChildren Invoke a function on each (or, if \a findInActiveChildren
+   * is true, each active) child item. If a subclass presents childern items(ValueItem,
+   * Group, RefItem, ...) then this function should be overriden.
+   * @param visitor a lambda function which would be applied on children items
+   * @param activeChildren a flag indicating whether it should be applied to active children only or not
+   */
+  virtual void visitChildren(
+    std::function<void(smtk::attribute::ItemPtr, bool)> /*visitor*/, bool /*activeChildren = true*/)
+  {
+  }
   smtk::attribute::ConstItemDefinitionPtr definition() const { return this->m_definition; }
 
   // Return the attribute that owns this item

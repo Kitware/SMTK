@@ -304,6 +304,49 @@ void Attribute::removeAllAssociations()
   }
 }
 
+/**\brief Update attribute when entities has been expunged
+  * Note it would check associations and every modelEntityItem
+  */
+bool Attribute::removeExpungedEntities(const smtk::model::EntityRefs& expungedEnts)
+{
+  bool associationChanged = false;
+  // update all modelEntityItems
+  std::set<smtk::attribute::ModelEntityItemPtr> modelEntityPtrs;
+  this->filterItems(
+    modelEntityPtrs, [](smtk::attribute::ModelEntityItemPtr) { return true; }, false);
+  for (std::set<smtk::attribute::ModelEntityItemPtr>::iterator iterator = modelEntityPtrs.begin();
+       iterator != modelEntityPtrs.end(); iterator++)
+  {
+    smtk::attribute::ModelEntityItemPtr MEItem = *iterator;
+    if (MEItem && MEItem->isValid())
+    {
+      for (smtk::model::EntityRefs::const_iterator bit = expungedEnts.begin();
+           bit != expungedEnts.end(); ++bit)
+      {
+        std::ptrdiff_t idx = MEItem->find(*bit);
+        if (idx >= 0)
+        {
+          MEItem->removeValue(static_cast<std::size_t>(idx));
+          associationChanged = true;
+        }
+      }
+    }
+  }
+  if (this->associations())
+  {
+    for (smtk::model::EntityRefs::const_iterator bit = expungedEnts.begin();
+         bit != expungedEnts.end(); ++bit)
+    {
+      if (this->isEntityAssociated(*bit))
+      {
+        this->disassociateEntity(*bit);
+        associationChanged = true;
+      }
+    }
+  }
+  return associationChanged;
+}
+
 /**\brief Is the model \a entity associated with this attribute?
   *
   */
