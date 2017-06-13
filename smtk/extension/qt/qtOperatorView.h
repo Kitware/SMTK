@@ -57,18 +57,18 @@ public:
   virtual ~qtOperatorView();
 
 public slots:
-  virtual void showAdvanceLevelOverlay(bool show);
-  virtual void requestModelEntityAssociation();
-  virtual void onShowCategory() { this->updateAttributeData(); }
+  void showAdvanceLevelOverlay(bool show) override;
+  void requestModelEntityAssociation() override;
+  void onShowCategory() override { this->updateAttributeData(); }
   virtual void onModifiedParameters();
-  void onOperate();
-  void onInfo();
+  virtual void onOperate();
 
 signals:
   void operationRequested(const smtk::model::OperatorPtr& brOp);
 
 protected:
-  virtual void createWidget();
+  void createWidget() override;
+  void setInfoToBeDisplayed() override;
   bool m_applied; // indicates if the current settings have been applied
 
 private:

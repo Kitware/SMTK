@@ -15,6 +15,7 @@
 
 #include "smtk/common/View.h"
 
+#include <QApplication>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QFrame>
@@ -397,4 +398,26 @@ void qtBaseView::onAdvanceLevelChanged(int levelIdx)
 int qtBaseView::advanceLevel()
 {
   return this->Internals->AdvLevelCombo->currentIndex();
+}
+
+void qtBaseView::onInfo()
+{
+  if (!this->m_infoDialog)
+  {
+    // Try to get the dialog to be displayed on top - note that in the
+    // case of dock widgets this can be an issue.  In that case to at least get the dialog
+    // not to be completely hidden by the operator widget when it is undocked
+    // we need to parent the dialog on something else
+    QWidgetList l = QApplication::topLevelWidgets();
+    this->m_infoDialog = new qtViewInfoDialog(l.value(0));
+  }
+  this->setInfoToBeDisplayed();
+  this->m_infoDialog->show();
+  this->m_infoDialog->raise();
+  this->m_infoDialog->activateWindow();
+}
+
+void qtBaseView::setInfoToBeDisplayed()
+{
+  this->m_infoDialog->displayInfo(this->getObject());
 }

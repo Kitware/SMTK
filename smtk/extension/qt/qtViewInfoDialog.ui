@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>qtOperatorInfoDialog</class>
- <widget class="QDialog" name="qtOperatorInfoDialog">
+ <class>qtViewInfoDialog</class>
+ <widget class="QDialog" name="qtViewInfoDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -31,7 +31,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>clicked(QAbstractButton*)</signal>
-   <receiver>qtOperatorInfoDialog</receiver>
+   <receiver>qtViewInfoDialog</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">

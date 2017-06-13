@@ -19,11 +19,11 @@ set(QAttrLibSrcs
   qtGroupView.cxx
   qtAttributeView.cxx
   qtInstancedView.cxx
-  qtOperatorInfoDialog.cxx
   qtOperatorView.cxx
   #qtModelView.cxx
   qtSelectorView.cxx
   qtSimpleExpressionView.cxx
+  qtViewInfoDialog.cxx
   qtFileItem.cxx
   qtAttributeRefItem.cxx
   qtTableWidget.cxx
@@ -57,8 +57,8 @@ set(QAttrLibUIs
   qtCollapsibleGroupWidgetInternals.ui
   qtModelPanel.ui
   qtNewAttributeWidget.ui
-  qtOperatorInfoDialog.ui
   qtTimeZoneSelectWidget.ui
+  qtViewInfoDialog.ui
 )
 
 
@@ -78,11 +78,11 @@ set(QAttrLibMocHeaders
   qtGroupView.h
   qtAttributeView.h
   qtInstancedView.h
-  qtOperatorInfoDialog.h
   qtOperatorView.h
   #qtModelView.h
   qtSelectorView.h
   qtSimpleExpressionView.h
+  qtViewInfoDialog.h
   qtFileItem.h
   qtAttributeRefItem.h
   qtTableWidget.h

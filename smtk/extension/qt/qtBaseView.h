@@ -16,9 +16,11 @@
 #include <QLayout>
 #include <QList>
 #include <QObject>
+#include <QPointer>
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/qt/Exports.h"
+#include "smtk/extension/qt/qtViewInfoDialog.h"
 
 class qtBaseViewInternals;
 class QScrollArea;
@@ -29,6 +31,7 @@ namespace extension
 {
 class qtUIManager;
 class qtItem;
+class qtViewInfoDialog;
 
 // This struct is used to initialize qtView-based classes
 class SMTKQTEXT_EXPORT ViewInfo
@@ -104,6 +107,8 @@ public slots:
   virtual void showAdvanceLevel(int i);
   virtual void updateViewUI(int /* currentTab */) {}
   virtual void enableShowBy(int /* enable */);
+  virtual void onInfo(); /* for displaying View Information */
+
   virtual void onShowCategory() {}
 
   virtual void requestModelEntityAssociation() { ; }
@@ -126,11 +131,16 @@ protected:
   // Adds properties associated with respects to a top level view
   virtual void makeTopLevel();
 
+  // Description:
+  // Set the information to be displayed in the ViewInfoDialog
+  virtual void setInfoToBeDisplayed();
+
   QWidget* Widget;
   QScrollArea* m_ScrollArea;
   bool m_isTopLevel;
   bool m_topLevelInitialized;
   ViewInfo m_viewInfo;
+  QPointer<qtViewInfoDialog> m_infoDialog;
 
 private:
   bool m_advOverlayVisible;
