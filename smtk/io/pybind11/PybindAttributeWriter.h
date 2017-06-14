@@ -31,7 +31,9 @@ PySharedPtrClass< smtk::io::AttributeWriter > pybind11_init_smtk_io_AttributeWri
     .def("setMaxFileVersion", &smtk::io::AttributeWriter::setMaxFileVersion)
     .def("fileVersion", &smtk::io::AttributeWriter::fileVersion)
     .def("write", &smtk::io::AttributeWriter::write, py::arg("system"), py::arg("filename"), py::arg("logger"))
-    .def("writeContents", &smtk::io::AttributeWriter::writeContents, py::arg("system"), py::arg("filecontents"), py::arg("logger"), py::arg("no_declaration") = false)
+    // As per python convention, all strings passed to functions are immutable (see pybind11 FAQ).
+//    .def("writeContents", &smtk::io::AttributeWriter::writeContents, py::arg("system"), py::arg("filecontents"), py::arg("logger"), py::arg("no_declaration") = false)
+    .def("writeContents", [](smtk::io::AttributeWriter& writer, const smtk::attribute::SystemPtr system, smtk::io::Logger& logger, bool no_declaration){ std::string filecontents; writer.writeContents(system, filecontents, logger, no_declaration); return filecontents; }, py::arg("system"), py::arg("logger"), py::arg("no_declaration") = false)
     .def("includeDefinitions", &smtk::io::AttributeWriter::includeDefinitions, py::arg("val"))
     .def("includeInstances", &smtk::io::AttributeWriter::includeInstances, py::arg("val"))
     .def("includeModelInformation", &smtk::io::AttributeWriter::includeModelInformation, py::arg("val"))
