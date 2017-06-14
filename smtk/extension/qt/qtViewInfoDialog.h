@@ -7,11 +7,11 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME qtOperatorInfoDialog - A Information Dialog for SMTK Operators
+// .NAME qtViewInfoDialog - A Information Dialog for SMTK Operators
 // .SECTION Description
 // .SECTION Caveats
-#ifndef _qtOperatorInfoDialog_h
-#define _qtOperatorInfoDialog_h
+#ifndef _qtViewInfoDialog_h
+#define _qtViewInfoDialog_h
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/qt/Exports.h"
@@ -19,7 +19,7 @@
 
 namespace Ui
 {
-class qtOperatorInfoDialog;
+class qtViewInfoDialog;
 }
 
 namespace smtk
@@ -27,23 +27,24 @@ namespace smtk
 namespace extension
 {
 
-class SMTKQTEXT_EXPORT qtOperatorInfoDialog : public QDialog
+class SMTKQTEXT_EXPORT qtViewInfoDialog : public QDialog
 {
   Q_OBJECT
 
 public:
-  qtOperatorInfoDialog(QWidget* Parent);
-  ~qtOperatorInfoDialog() override;
+  qtViewInfoDialog(QWidget* Parent);
+  ~qtViewInfoDialog() override;
+  qtViewInfoDialog(const qtViewInfoDialog&) = delete;
+  qtViewInfoDialog& operator=(const qtViewInfoDialog&) = delete;
 
-  void displayOperator(smtk::model::OperatorPtr op);
+  void displayInfo(smtk::attribute::AttributePtr att);
+  void displayInfo(smtk::common::ViewPtr view);
 
 private:
-  qtOperatorInfoDialog(const qtOperatorInfoDialog&);
-  qtOperatorInfoDialog& operator=(const qtOperatorInfoDialog&);
-
-  Ui::qtOperatorInfoDialog* m_dialog;
-  smtk::model::OperatorPtr m_op;
+  Ui::qtViewInfoDialog* m_dialog;
+  smtk::common::ViewPtr m_view;
+  smtk::attribute::AttributePtr m_attribute;
 };
 }
 }
-#endif // !_qtOperatorInfoDialog_h
+#endif // !_qtViewInfoDialog_h
