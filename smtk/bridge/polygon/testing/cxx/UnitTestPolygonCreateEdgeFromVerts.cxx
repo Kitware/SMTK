@@ -25,7 +25,7 @@ namespace
 static const double tolerance = 1.e-5;
 }
 
-int UnitTestPolygonCreateEdgeFromVertices(int argc, char* argv[])
+int UnitTestPolygonCreateEdgeFromVerts(int argc, char* argv[])
 {
   (void)argc;
   (void)argv;

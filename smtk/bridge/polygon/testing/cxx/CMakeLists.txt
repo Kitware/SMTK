@@ -13,7 +13,7 @@
 set (unit_tests
   UnitTestPolygonCreateModel.cxx
   UnitTestPolygonCreateEdgeFromPoints.cxx
-  UnitTestPolygonCreateEdgeFromVertices.cxx
+  UnitTestPolygonCreateEdgeFromVerts.cxx
   UnitTestPolygonCreateFacesFromEdges.cxx
   UnitTestPolygonDemoteVertex.cxx)
 
