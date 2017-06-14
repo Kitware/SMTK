@@ -1,5 +1,3 @@
-PROJECT(SMTKVTKExtensionReader)
-
 # Required for support of shapefiles, which is required to construct
 # the gdal wrapper classes needed by cmb.
 find_package(GDAL REQUIRED)
@@ -74,7 +72,6 @@ if(SMTK_ENABLE_REMUS_SUPPORT)
   target_include_directories(${vtk-module} PRIVATE ${REMUS_INCLUDE_DIRS})
 endif()
 
-
 # Link GDAL and Add a compiler definition to the target
 target_link_libraries(${vtk-module} LINK_PRIVATE ${GDAL_LIBRARY} )
 target_include_directories(${vtk-module} PRIVATE ${GDAL_INCLUDE_DIR})
@@ -97,4 +94,5 @@ smtk_public_headers(${headers})
 if (SMTK_ENABLE_TESTING)
   # ... and make header compilation tests link properly:
   target_link_libraries(TestBuild_smtk_extension_vtk_reader LINK_PRIVATE vtkCommonCore)
+  add_subdirectory(testing)
 endif()
