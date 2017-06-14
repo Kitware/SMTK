@@ -19,6 +19,10 @@ set (unit_tests
 
 set (unit_tests_which_require_data)
 
+if (SMTK_ENABLE_REMUS_SUPPORT)
+  list(APPEND unit_tests_which_require_data UnitTestPolygonImport.cxx)
+endif ()
+
 set(external_libs ${Boost_LIBRARIES})
 
 smtk_unit_tests(
