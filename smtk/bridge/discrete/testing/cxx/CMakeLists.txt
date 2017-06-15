@@ -70,7 +70,7 @@ if(SMTK_DATA_DIR)
     )
   add_test(
     NAME entityGroup2dmTest
-    COMMAND 
+    COMMAND
       $<TARGET_FILE:entityGroup2dmTest>
       "${SMTK_DATA_DIR}/mesh/2d/test2D.2dm"
   )
@@ -84,9 +84,38 @@ if(SMTK_DATA_DIR)
     )
   add_test(
     NAME boundingBox2dmTest
-    COMMAND 
+    COMMAND
       $<TARGET_FILE:boundingBox2dmTest>
       "${SMTK_DATA_DIR}/mesh/2d/test2D.2dm"
   )
 
+  add_executable(remove2dmTest remove2dm.cxx)
+  target_link_libraries(remove2dmTest
+    smtkCore
+    smtkDiscreteSession
+    vtkSMTKSourceExt
+    vtkRenderingGL2PSOpenGL2
+    vtkTestingRendering
+  )
+  add_test(
+    NAME discreteRemove2dmTest
+    COMMAND
+      $<TARGET_FILE:remove2dmTest>
+      "${SMTK_DATA_DIR}/mesh/2d/test2D.2dm"
+  )
+
+  add_executable(mergeFaceTest mergeFaceTest.cxx)
+  target_link_libraries(mergeFaceTest
+    smtkCore
+    smtkDiscreteSession
+    vtkSMTKSourceExt
+    vtkRenderingGL2PSOpenGL2
+    vtkTestingRendering
+  )
+  add_test(
+    NAME discreteMergeFaceTest
+    COMMAND
+      $<TARGET_FILE:mergeFaceTest>
+      "${SMTK_DATA_DIR}/model/3d/cmb/simplebox.cmb"
+  )
 endif()
