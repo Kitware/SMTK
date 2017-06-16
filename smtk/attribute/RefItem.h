@@ -53,6 +53,15 @@ public:
     assert(this->m_values.size() > element);
     return this->m_values[element].lock();
   }
+  //  /**
+  //   * @brief visitChildren Invoke a function on each (or, if \a findInActiveChildren
+  //   * is true, each active) child item. If a subclass presents childern items(ValueItem,
+  //   * Group, RefItem, ...) then this function should be overriden.
+  //   * @param visitor a lambda function which would be applied on children items
+  //   * @param activeChildren a flag indicating whether it should be applied to active children only or not
+  //   */
+  virtual void visitChildren(
+    std::function<void(smtk::attribute::ItemPtr, bool)> visitor, bool activeChildren = true);
   bool setValue(smtk::attribute::AttributePtr val) { return this->setValue(0, val); }
   bool setValue(std::size_t element, smtk::attribute::AttributePtr val);
   bool appendValue(smtk::attribute::AttributePtr val);

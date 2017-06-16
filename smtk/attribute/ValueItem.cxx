@@ -263,6 +263,26 @@ bool ValueItem::appendExpression(smtk::attribute::AttributePtr exp)
   return true;
 }
 
+void ValueItem::visitChildren(std::function<void(ItemPtr, bool)> visitor, bool activeChildren)
+{
+  if (activeChildren)
+  {
+    for (std::size_t index = 0; index < this->numberOfActiveChildrenItems(); index++)
+    {
+      visitor(this->activeChildItem(static_cast<int>(index)), activeChildren);
+    }
+  }
+  else
+  {
+    std::map<std::string, smtk::attribute::ItemPtr>::const_iterator iter;
+    const std::map<std::string, smtk::attribute::ItemPtr>& childrenItems = this->childrenItems();
+    for (iter = childrenItems.begin(); iter != childrenItems.end(); iter++)
+    {
+      visitor(iter->second, activeChildren);
+    }
+  }
+}
+
 bool ValueItem::isDiscrete() const
 {
   return static_cast<const ValueItemDefinition*>(this->m_definition.get())->isDiscrete();

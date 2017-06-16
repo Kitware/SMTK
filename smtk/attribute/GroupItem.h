@@ -57,6 +57,15 @@ public:
   virtual bool isValid() const;
   std::size_t numberOfRequiredGroups() const;
   std::size_t maxNumberOfGroups() const;
+  /**
+   * @brief visitChildren Invoke a function on each (or, if \a findInActiveChildren
+   * is true, each active) child item. If a subclass presents children items(ValueItem,
+   * Group, RefItem, ...) then this function should be overriden.
+   * @param visitor a lambda function which would be applied on children items
+   * @param activeChildren a flag indicating whether it should be applied to active children only or not
+   */
+  virtual void visitChildren(
+    std::function<void(smtk::attribute::ItemPtr, bool)> visitor, bool activeChildren = true);
 
   bool isExtensible() const;
 

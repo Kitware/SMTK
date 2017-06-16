@@ -98,6 +98,11 @@
   <suppress-warning text="skipping function 'smtk::model::Model::submodelsAs', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::Model::groupsAs', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::Model::cellsAs', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::filterItems', unmatched parameter type 'T&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::ValueItem::visitChildren', unmatched parameter type 'std::function&lt;void&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::RefItem::visitChildren', unmatched parameter type 'std::function&lt;void&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::GroupItem::visitChildren', unmatched parameter type 'std::function&lt;void&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Item::visitChildren', unmatched parameter type 'std::function&lt;void&gt;'"/>
 
   <!-- Return a list.  For now we will ignore the iterators-->
   <suppress-warning text="skipping function 'smtk::model::Item::beginAssociatedAttributes', unmatched return type 'smtk::model::Item::const_iterator'"/>
