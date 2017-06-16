@@ -17,7 +17,7 @@ set (unit_tests
   UnitTestPolygonCreateFacesFromEdges.cxx
   UnitTestPolygonDemoteVertex.cxx
   UnitTestPolygonFindOperatorAttributeItems.cxx
-  )
+  UnitTestPolygonCleanGeometry.cxx)
 
 set (unit_tests_which_require_data)
 

@@ -101,9 +101,41 @@ bool vertex::canInsertEdge(const Point& neighborhood, incident_edges::iterator* 
         return false;
       }
     }
+    else if (axt == 0)
+    {
+      // check if t and a are collinear and on the opposite sides
+      if (pa.x() != 0 && HighPrecisionCoord(pt.x() / pa.x()) < 0)
+      {
+        if (where)
+          *where = it;
+        return true;
+      }
+      else if (pa.y() != 0 && HighPrecisionCoord(pt.y() / pa.y()) < 0)
+      {
+        if (where)
+          *where = it;
+        return true;
+      }
+    }
+    else if (txb == 0)
+    {
+      // check if t and b are collinear and on the opposite sides
+      if (pb.x() != 0 && HighPrecisionCoord(pt.x() / pb.x()) < 0)
+      {
+        if (where)
+          *where = it;
+        return true;
+      }
+      else if (pb.y() != 0 && HighPrecisionCoord(pt.y() / pb.y()) < 0)
+      {
+        if (where)
+          *where = it;
+        return true;
+      }
+    }
     pa = pb;
   }
-  smtkErrorMacro(model->session()->log(), "Collinear edges");
+  smtkErrorMacro(model->session()->log(), "Overlapping collinear edges");
   return false;
 }
 
@@ -156,12 +188,12 @@ bool vertex::setFaceAdjacency(
     // This conditional is complex because we must handle the case when
     // an edge has both endpoints into the same vertex:
     if (it->edgeId() == incidentEdge &&
-      (                 // The edge ID matches and either:
-        edgeDir == 0 || // we don't care about edge direction or
-        (edgeDir != 0 &&
-          (edgeDir > 0) ==
-            it->isEdgeOutgoing()) // the edge direction also matches (i.e., head at vertex)
-        ))
+      (                   // The edge ID matches and either:
+          edgeDir == 0 || // we don't care about edge direction or
+          (edgeDir != 0 &&
+            (edgeDir > 0) ==
+              it->isEdgeOutgoing()) // the edge direction also matches (i.e., head at vertex)
+          ))
     {
       if (isCCW)
       {
