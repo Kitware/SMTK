@@ -35,7 +35,7 @@
 
 namespace smtk
 {
-namespace model
+namespace mesh
 {
 
 TriangulateFace::TriangulateFace()
@@ -50,7 +50,7 @@ bool TriangulateFace::ableToOperate()
     eRef.owningModel().isValid();
 }
 
-OperatorResult TriangulateFace::operateInternal()
+smtk::model::OperatorResult TriangulateFace::operateInternal()
 {
   smtk::model::Face face = this->specification()->associations()->value().as<smtk::model::Face>();
 
@@ -65,7 +65,7 @@ OperatorResult TriangulateFace::operateInternal()
   {
     // if we don't have loops, there is nothing to mesh
     smtkErrorMacro(this->log(), "No loops associated with this face.");
-    return this->createResult(OPERATION_FAILED);
+    return this->createResult(smtk::model::OPERATION_FAILED);
   }
 
   // the first loop is the exterior loop
@@ -89,7 +89,7 @@ OperatorResult TriangulateFace::operateInternal()
   {
     // the polygon is invalid, so we exit with failure
     smtkErrorMacro(this->log(), "Outer boundary polygon is invalid.");
-    return this->createResult(OPERATION_FAILED);
+    return this->createResult(smtk::model::OPERATION_FAILED);
   }
 
   // discretize the polygon
@@ -113,7 +113,7 @@ OperatorResult TriangulateFace::operateInternal()
     {
       // the polygon is invalid, so we exit with failure
       smtkErrorMacro(this->log(), "Inner boundary polygon is invalid.");
-      return this->createResult(OPERATION_FAILED);
+      return this->createResult(smtk::model::OPERATION_FAILED);
     }
 
     excise(p_sub, mesh);
@@ -133,7 +133,7 @@ OperatorResult TriangulateFace::operateInternal()
     collection->setAssociation(face, meshSet);
   }
 
-  OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
   this->addEntityToResult(result, face, MODIFIED);
   result->findModelEntity("mesh_created")->setValue(face);
   return result;
@@ -145,5 +145,5 @@ OperatorResult TriangulateFace::operateInternal()
 #include "smtk/extension/delaunay/Exports.h"
 #include "smtk/extension/delaunay/TriangulateFace_xml.h"
 
-smtkImplementsModelOperator(SMTKDELAUNAYEXT_EXPORT, smtk::model::TriangulateFace,
+smtkImplementsModelOperator(SMTKDELAUNAYEXT_EXPORT, smtk::mesh::TriangulateFace,
   delaunay_triangulate_face, "triangulate face", TriangulateFace_xml, smtk::model::Session);
