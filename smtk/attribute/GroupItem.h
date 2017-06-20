@@ -13,6 +13,7 @@
 #include "smtk/CoreExports.h"
 #include "smtk/attribute/Item.h"
 #include <cassert>
+#include <iostream>
 #include <vector>
 namespace smtk
 {

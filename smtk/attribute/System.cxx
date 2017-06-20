@@ -19,6 +19,7 @@
 #include "smtk/common/UUIDGenerator.h"
 #include "smtk/common/View.h"
 #include "smtk/model/Manager.h"
+
 #include <iostream>
 #include <queue>
 #include <sstream>
@@ -92,6 +93,43 @@ smtk::attribute::DefinitionPtr System::createDefinition(
     this->m_derivedDefInfo[baseDef].insert(newDef);
   }
   return newDef;
+}
+
+bool System::removeDefinition(DefinitionPtr def)
+{
+  if (!def || def->system() != shared_from_this())
+  {
+    std::cerr << "ERROR: " << def->type() << " does not belong to the specified"
+                                             " attribute system!";
+    return false;
+  }
+
+  const auto childrenIt = this->m_derivedDefInfo.find(def);
+  const bool hasChildren =
+    childrenIt != this->m_derivedDefInfo.cend() && (*childrenIt).second.size() > 0;
+  if (hasChildren)
+  {
+    std::cerr << "ERROR: Removing base Definition instances is not"
+                 " supported!\n";
+    return false;
+  }
+
+  const auto baseDef = def->baseDefinition();
+  auto& siblings = this->m_derivedDefInfo[baseDef];
+  const auto defIt = siblings.find(def);
+  if (defIt != siblings.cend())
+  {
+    siblings.erase(defIt);
+  }
+
+  if (childrenIt != this->m_derivedDefInfo.cend())
+  {
+    this->m_derivedDefInfo.erase(childrenIt);
+  }
+
+  this->m_definitions.erase(def->type());
+
+  return true;
 }
 
 smtk::attribute::AttributePtr System::createAttribute(

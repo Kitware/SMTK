@@ -16,6 +16,7 @@
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/System.h"
 
+#include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <sstream>
@@ -343,4 +344,22 @@ int Definition::findItemPosition(const std::string& name) const
     }
   }
   return it->second + static_cast<int>(this->m_baseItemOffset);
+}
+
+bool Definition::removeItemDefinition(ItemDefinitionPtr itemDef)
+{
+  if (!itemDef || this->findItemPosition(itemDef->name()) < 0)
+  {
+    // Not found
+    return false;
+  }
+
+  auto itItemDef = std::find(this->m_itemDefs.cbegin(), this->m_itemDefs.cend(), itemDef);
+  if (itItemDef != this->m_itemDefs.cend())
+  {
+    this->m_itemDefs.erase(itItemDef);
+  }
+  this->m_itemDefPositions.erase(itemDef->name());
+  this->updateDerivedDefinitions();
+  return true;
 }

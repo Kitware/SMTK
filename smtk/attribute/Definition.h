@@ -158,6 +158,11 @@ public:
 
   smtk::attribute::ItemDefinitionPtr itemDefinition(int ith) const;
 
+  const std::vector<smtk::attribute::ItemDefinitionPtr>& localItemDefinitions() const
+  {
+    return m_itemDefs;
+  }
+
   // Description:
   // Item definitions are the definitions of what data is stored
   // in the attribute. For example, an IntItemDefinition would store
@@ -181,6 +186,18 @@ public:
     }
     return item;
   }
+
+  // Description:
+  // This method will only remove the specified ItemDefinition (if it exists)
+  // from the class internals. Only ItemDefinitions local to this Definition
+  // can be removed. Remove inherited ItemDefinitinos directy from the inherited
+  // type.
+  //
+  // Warning:
+  // It is up to the caller to ensure integrity of the attribute::System
+  // instance (e.g. Attribute instances of this Definition type need to be
+  // cleansed from the system).
+  bool removeItemDefinition(ItemDefinitionPtr itemDef);
 
   int findItemPosition(const std::string& name) const;
 
