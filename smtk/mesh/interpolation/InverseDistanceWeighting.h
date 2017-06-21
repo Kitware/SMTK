@@ -25,6 +25,14 @@ namespace mesh
 class PointCloud;
 class StructuredGrid;
 
+/**\brief A functor that converts an external data set into a continuous field
+   via inverse distance weighting.
+
+   Given an external data set of either structured or unstructured data, this
+   functor is a continuous function from R^3->R whose values are computed as the
+   inverse distance weights of the data set. Shepard's method is used to perform
+   the computation.
+  */
 class SMTKCORE_EXPORT InverseDistanceWeighting
 {
 public:

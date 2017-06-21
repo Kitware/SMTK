@@ -24,6 +24,15 @@ namespace smtk
 namespace mesh
 {
 
+/**\brief A wrapper for structured data.
+
+   This class is a facade for describing external two-dimensional data sets that
+   consist of a structured grid of points and associated scalar values. The user
+   must assign an index extent, origin and spacing, as well as an I^2->R
+   function describing the scalar value associated with index (i,j).
+   Additionally, an I^2->bool function can be passed to the class to denote cell
+   validity, facilitating blanking.
+  */
 class StructuredGrid
 {
 public:

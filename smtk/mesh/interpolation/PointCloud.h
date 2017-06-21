@@ -23,6 +23,16 @@ namespace smtk
 namespace mesh
 {
 
+/**\brief A wrapper for point cloud data.
+
+   This class is a facade for describing external data sets that consist of
+   unstructured points and associated scalar values. While there is convenience
+   API for converting arrays of coordinates and data into this format, the
+   general use of this class is to pass it a size <nPoints> and two functors
+   <coordinates> and <data>. <coordinates> is an I->R^3 function for accessing
+   the ith coordinate of the data set, and <data> is an I->R function for
+   accessing the scalar value associated with the ith point.
+  */
 class SMTKCORE_EXPORT PointCloud
 {
 public:

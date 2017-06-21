@@ -17,7 +17,14 @@ namespace smtk
 namespace mesh
 {
 
-/**\brief A class for generating a mesh data set from interpolation points.
+/**\brief A class for modifying the z-coordinates of a mesh's nodes according
+   to an external data set.
+
+   Given an external data set of either structured or unstructured data and an
+   input mesh, the z-coordinate of each point in the input mesh is set to the
+   inverse distance weighted average of the values in the external data. The
+   resulting mesh deformation can be undone by subsequently applying the "Undo
+   Warp" filter, returning the mesh nodes to their original position.
   */
 class SMTKCORE_EXPORT WarpMesh : public smtk::model::Operator
 {

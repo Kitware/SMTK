@@ -17,7 +17,11 @@ namespace smtk
 namespace mesh
 {
 
-/**\brief A class for generating a mesh data set from interpolation points.
+/**\brief A class for reversing the results of operators that warp a mesh.
+
+   Operators that use the methods defined in ApplyToMesh to deform a mesh's
+   coordinates can optionally cache the original unwarped coordinate values.
+   This operator then reverts the deformation performed by these operators.
   */
 class SMTKCORE_EXPORT UndoWarpMesh : public smtk::model::Operator
 {
