@@ -39,6 +39,7 @@ set(meshSrcs
 
   operators/DeleteMesh.cxx
   operators/ExportMesh.cxx
+  operators/GenerateHotStartData.cxx
   operators/InterpolateMesh.cxx
   operators/UndoWarpMesh.cxx
   operators/WarpMesh.cxx
@@ -82,6 +83,7 @@ set(meshHeaders
 
   operators/DeleteMesh.h
   operators/ExportMesh.h
+  operators/GenerateHotStartData.h
   operators/InterpolateMesh.h
   operators/UndoWarpMesh.h
   operators/WarpMesh.h
@@ -90,6 +92,7 @@ set(meshHeaders
 
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/DeleteMesh.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportMesh.sbt" defOpXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/GenerateHotStartData.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/InterpolateMesh.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/UndoWarpMesh.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WarpMesh.sbt" defOpXML)

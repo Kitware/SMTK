@@ -66,6 +66,10 @@ smtk_unit_tests(
   LIBRARIES smtkCore smtkCoreModelTesting ${extra_libs} ${Boost_LIBRARIES}
 )
 
+add_executable(UnitTestGenerateHotStartData UnitTestGenerateHotStartData.cxx)
+target_compile_definitions(UnitTestGenerateHotStartData PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
+target_link_libraries(UnitTestGenerateHotStartData smtkCore ${Boost_LIBRARIES})
+
 add_executable(UnitTestInterpolateMesh UnitTestInterpolateMesh.cxx)
 target_compile_definitions(UnitTestInterpolateMesh PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
 target_link_libraries(UnitTestInterpolateMesh smtkCore ${Boost_LIBRARIES})
@@ -75,6 +79,14 @@ target_compile_definitions(UnitTestWarpMesh PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_
 target_link_libraries(UnitTestWarpMesh smtkCore ${Boost_LIBRARIES})
 
 if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
+  add_test(NAME UnitTestGenerateHotStartData
+    COMMAND $<TARGET_FILE:UnitTestGenerateHotStartData>
+    "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json")
+  set_tests_properties(UnitTestGenerateHotStartData PROPERTIES LABELS "Mesh")
+  add_test(NAME UnitTestGenerateHotStartDataCSV
+    COMMAND $<TARGET_FILE:UnitTestGenerateHotStartData>
+    "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json" 1)
+  set_tests_properties(UnitTestGenerateHotStartDataCSV PROPERTIES LABELS "Mesh")
   add_test(NAME UnitTestInterpolateMeshToCells
     COMMAND $<TARGET_FILE:UnitTestInterpolateMesh>
     "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json")
