@@ -100,11 +100,18 @@
   </Definitions>
 
   <Views>
-     <!--
-      The customized view "Type" needs to match the plugin's VIEW_NAME:
-      add_smtk_ui_view(...  VIEW_NAME smtkExportModelView ...)
-      -->
+     <!-- Keep Type attribute in sync with VIEW_NAME param in CMake add_smtk_ui_view() macro: -->
     <View Type="smtkExportModelView" Title="Export Model">
+      <Description>
+        Click the "Export" button to save the associated models to
+        the ".smtk" file you specify in the "filename" widget.
+        All the supporting files (meshes, auxiliary geometry/images, etc.) will be written to
+        files in the same directory as the SMTK file; zip the directory containing the
+        SMTK file to create a shareable package of the model.
+
+        Hover over the "Export" button to see a list of what will be written once you click
+        the button.
+      </Description>
       <AttributeTypes>
         <Att Type="export smtk model"/>
       </AttributeTypes>

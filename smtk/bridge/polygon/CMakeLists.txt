@@ -37,12 +37,16 @@ set(polygonHeaders
   SessionIOJSON.h
   Operator.h
   internal/ActiveFragmentTree.h
+  internal/Config.h
+  internal/Entity.h
   internal/Fragment.h
   internal/Model.h
+  internal/Model.txx
   internal/Neighborhood.h
   internal/Neighborhood.txx
   internal/Region.h
   internal/SweepEvent.h
+  internal/Vertex.h
   operators/CleanGeometry.h
   operators/CreateModel.h
   operators/CreateVertices.h

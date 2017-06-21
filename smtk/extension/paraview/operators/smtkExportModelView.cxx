@@ -374,6 +374,10 @@ void smtkExportModelView::createWidget()
   // currently-selected models:
   this->Internals->AssocModels->onRequestEntityAssociation();
   this->updateSummary("unhovered");
+
+  // Connect the "info" button to display help
+  QObject::connect(this->Internals->InfoBtn, SIGNAL(released()), this, SLOT(onInfo()));
+  this->Internals->InfoBtn->setEnabled(true);
 }
 
 bool smtkExportModelView::eventFilter(QObject* obj, QEvent* evnt)
@@ -703,4 +707,9 @@ void smtkExportModelView::updateActions()
     smtk::io::SaveJSON::prepareToSave(models, "save a copy", filename,
       this->Internals->RenameModelsBtn->isChecked() ? "only default" : "none",
       this->Internals->EmbedDataBtn->isChecked(), this->Internals->ExportActions);
+}
+
+void smtkExportModelView::setInfoToBeDisplayed()
+{
+  this->m_infoDialog->displayInfo(this->getObject());
 }
