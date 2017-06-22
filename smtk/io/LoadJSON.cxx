@@ -814,7 +814,7 @@ int LoadJSON::ofLocalSession(
   smtk::common::UUID suid(node->string);
   SessionRef sref(context, suid);
 
-  if (!sref.isValid())
+  if (!sref.isValid() || !sref.session())
   { // We are being asked to create a new session.
     // See if the session node has any "static-options".
     // If so, then we must call the session's staticSetup function
