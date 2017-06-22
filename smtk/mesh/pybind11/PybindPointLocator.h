@@ -23,8 +23,9 @@ PySharedPtrClass< smtk::mesh::PointLocator > pybind11_init_smtk_mesh_PointLocato
   instance
     .def(py::init<::smtk::mesh::PointLocator const &>())
     .def(py::init<::smtk::mesh::PointSet const &>())
-    .def(py::init<::smtk::mesh::CollectionPtr const, double const * const, ::size_t, bool>())
-    .def(py::init<::smtk::mesh::CollectionPtr const, float const * const, ::size_t, bool>())
+    .def(py::init<::smtk::mesh::CollectionPtr const, ::size_t, const std::function<std::array<double, 3>(::size_t)>&>())
+    .def(py::init<::smtk::mesh::CollectionPtr const, ::size_t, double const * const>())
+    .def(py::init<::smtk::mesh::CollectionPtr const, ::size_t, float const * const>())
     .def("deepcopy", (smtk::mesh::PointLocator & (smtk::mesh::PointLocator::*)(::smtk::mesh::PointLocator const &)) &smtk::mesh::PointLocator::operator=)
     .def("find", &smtk::mesh::PointLocator::find, py::arg("x"), py::arg("y"), py::arg("z"), py::arg("radius"), py::arg("results"))
     .def("range", &smtk::mesh::PointLocator::range)

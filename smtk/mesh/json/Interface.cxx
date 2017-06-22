@@ -88,12 +88,8 @@ smtk::mesh::PointLocatorImplPtr Interface::pointLocator(const smtk::mesh::Handle
   return smtk::mesh::PointLocatorImplPtr();
 }
 
-smtk::mesh::PointLocatorImplPtr Interface::pointLocator(const double* const, std::size_t, bool)
-{
-  return smtk::mesh::PointLocatorImplPtr();
-}
-
-smtk::mesh::PointLocatorImplPtr Interface::pointLocator(const float* const, std::size_t, bool)
+smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
+  std::size_t, const std::function<std::array<double, 3>(std::size_t)>&)
 {
   return smtk::mesh::PointLocatorImplPtr();
 }

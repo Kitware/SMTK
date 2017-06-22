@@ -18,12 +18,13 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <algorithm>
+#include <array>
 
 namespace
 {
-template <typename T>
-smtk::mesh::Handle create_point_mesh(::moab::Interface* iface, const T* const xyzs,
-  std::size_t numPoints, bool ignoreZValues, smtk::mesh::HandleRange& points)
+smtk::mesh::Handle create_point_mesh(::moab::Interface* iface, std::size_t numPoints,
+  const std::function<std::array<double, 3>(std::size_t)>& coordinates,
+  smtk::mesh::HandleRange& points)
 {
   ::moab::ReadUtilIface* alloc;
   iface->query_interface(alloc);
@@ -37,22 +38,12 @@ smtk::mesh::Handle create_point_mesh(::moab::Interface* iface, const T* const xy
     firstId, coords);
 
   //copy the points into the collection
-  if (ignoreZValues)
-  { //in this case ignoring the z values from the input points
-    for (std::size_t i = 0; i < numPoints; ++i)
-    {
-      coords[0][i] = static_cast<double>(xyzs[(i * 3)]);
-      coords[1][i] = static_cast<double>(xyzs[(i * 3) + 1]);
-      coords[2][i] = 0.0;
-    }
-  }
-  else
+  for (std::size_t i = 0; i < numPoints; ++i)
   {
-    for (std::size_t i = 0; i < numPoints; ++i)
+    std::array<double, 3> x = coordinates(i);
+    for (std::size_t j = 0; j < 3; ++j)
     {
-      coords[0][i] = static_cast<double>(xyzs[(i * 3)]);
-      coords[1][i] = static_cast<double>(xyzs[(i * 3) + 1]);
-      coords[2][i] = static_cast<double>(xyzs[(i * 3) + 2]);
+      coords[j][i] = x[j];
     }
   }
   points.insert(firstId, firstId + numPoints - 1);
@@ -85,8 +76,8 @@ PointLocatorImpl::PointLocatorImpl(
 {
 }
 
-PointLocatorImpl::PointLocatorImpl(
-  ::moab::Interface* interface, const double* const xyzs, std::size_t numPoints, bool ignoreZValues)
+PointLocatorImpl::PointLocatorImpl(::moab::Interface* interface, std::size_t numPoints,
+  const std::function<std::array<double, 3>(std::size_t)>& coordinates)
   : m_interface(interface)
   , m_meshOwningPoints()
   , m_deletePoints(true)
@@ -94,21 +85,7 @@ PointLocatorImpl::PointLocatorImpl(
 {
   smtk::mesh::HandleRange points;
   m_meshOwningPoints =
-    create_point_mesh(interface, xyzs, static_cast<int>(numPoints), ignoreZValues, points);
-  // hacker solution to speed up the bathymetry Operator
-  ::moab::FileOptions treeOptions("MAX_DEPTH=13");
-  m_tree.build_tree(points, NULL, &treeOptions);
-}
-
-PointLocatorImpl::PointLocatorImpl(
-  ::moab::Interface* interface, const float* const xyzs, std::size_t numPoints, bool ignoreZValues)
-  : m_interface(interface)
-  , m_meshOwningPoints()
-  , m_deletePoints(true)
-  , m_tree(interface)
-{
-  smtk::mesh::HandleRange points;
-  m_meshOwningPoints = create_point_mesh(interface, xyzs, numPoints, ignoreZValues, points);
+    create_point_mesh(interface, static_cast<int>(numPoints), coordinates, points);
   // hacker solution to speed up the bathymetry Operator
   ::moab::FileOptions treeOptions("MAX_DEPTH=13");
   m_tree.build_tree(points, NULL, &treeOptions);
@@ -160,7 +137,7 @@ void add_to<false>(std::vector<double>&, double)
 template <bool SaveSqDistances, bool SaveCoords>
 void find_valid_points(const double x, const double y, const double z, const double sqRadius,
   const smtk::mesh::HandleRange& points, const std::vector<double>& x_locs,
-  const std::vector<double>& y_locs, const std::vector<double>& z_locs,
+  const std::vector<double>& y_locs, const std::vector<double>& z_locs, std::size_t pointIdOffset,
   smtk::mesh::PointLocatorImpl::Results& results)
 {
 
@@ -176,7 +153,7 @@ void find_valid_points(const double x, const double y, const double z, const dou
   results.y_s.clear();
   results.z_s.clear();
 
-  ptId_temp.reserve(numPoints);
+  results.pointIds.reserve(numPoints);
   reserve_space<SaveSqDistances>(results.sqDistances, numPoints);
   reserve_space<SaveCoords>(results.x_s, numPoints);
   reserve_space<SaveCoords>(results.y_s, numPoints);
@@ -189,15 +166,13 @@ void find_valid_points(const double x, const double y, const double z, const dou
 
     if (sqLen <= sqRadius)
     {
-      ptId_temp.push_back(*ptIter);
+      results.pointIds.push_back(static_cast<std::size_t>(*ptIter) - pointIdOffset);
       add_to<SaveSqDistances>(results.sqDistances, sqLen);
       add_to<SaveCoords>(results.x_s, x_locs[i]);
       add_to<SaveCoords>(results.y_s, y_locs[i]);
       add_to<SaveCoords>(results.z_s, z_locs[i]);
     }
   }
-
-  std::copy(ptId_temp.rbegin(), ptId_temp.rend(), ::moab::range_inserter(results.pointIds));
 }
 }
 
@@ -234,19 +209,23 @@ void PointLocatorImpl::locatePointsWithinRadius(
   const bool wantCoords = results.want_Coordinates;
   if (wantDistance && wantCoords)
   {
-    find_valid_points<true, true>(x, y, z, sqRadius, points, x_locs, y_locs, z_locs, results);
+    find_valid_points<true, true>(
+      x, y, z, sqRadius, points, x_locs, y_locs, z_locs, this->range()[0], results);
   }
   else if (wantDistance)
   {
-    find_valid_points<true, false>(x, y, z, sqRadius, points, x_locs, y_locs, z_locs, results);
+    find_valid_points<true, false>(
+      x, y, z, sqRadius, points, x_locs, y_locs, z_locs, this->range()[0], results);
   }
   else if (wantCoords)
   {
-    find_valid_points<false, true>(x, y, z, sqRadius, points, x_locs, y_locs, z_locs, results);
+    find_valid_points<false, true>(
+      x, y, z, sqRadius, points, x_locs, y_locs, z_locs, this->range()[0], results);
   }
   else
   {
-    find_valid_points<false, false>(x, y, z, sqRadius, points, x_locs, y_locs, z_locs, results);
+    find_valid_points<false, false>(
+      x, y, z, sqRadius, points, x_locs, y_locs, z_locs, this->range()[0], results);
   }
 }
 }

@@ -34,11 +34,8 @@ class SMTKCORE_EXPORT PointLocatorImpl : public smtk::mesh::PointLocatorImpl
 public:
   PointLocatorImpl(::moab::Interface* interface, const smtk::mesh::HandleRange& points);
 
-  PointLocatorImpl(::moab::Interface* interface, const double* const xyzs, std::size_t numPoints,
-    bool ignoreZValues);
-
-  PointLocatorImpl(::moab::Interface* interface, const float* const xyzs, std::size_t numPoints,
-    bool ignoreZValues);
+  PointLocatorImpl(::moab::Interface* interface, std::size_t numPoints,
+    const std::function<std::array<double, 3>(std::size_t)>& coordinates);
 
   ~PointLocatorImpl();
 

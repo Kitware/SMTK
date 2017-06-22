@@ -1,10 +1,10 @@
 # set up sources to build
 set(meshSrcs
+  ApplyToMesh.cxx
   CellSet.cxx
   CellField.cxx
   CellTypes.cxx
   Collection.cxx
-  Displace.cxx
   ExtractMeshConstants.cxx
   ExtractTessellation.cxx
   ForEachTypes.cxx
@@ -34,20 +34,25 @@ set(meshSrcs
   moab/Readers.cxx
   moab/Writers.cxx
 
+  interpolation/InverseDistanceWeighting.cxx
+  interpolation/RadialAverage.cxx
+
   operators/DeleteMesh.cxx
   operators/ExportMesh.cxx
   operators/InterpolateMesh.cxx
+  operators/UndoWarpMesh.cxx
+  operators/WarpMesh.cxx
   operators/WriteMesh.cxx
   )
 
 set(meshHeaders
+  ApplyToMesh.h
   CellSet.h
   CellField.h
   CellTraits.h
   CellTypes.h
   Collection.h
   DimensionTypes.h
-  Displace.h
   ExtractMeshConstants.h
   ExtractTessellation.h
   ForEachTypes.h
@@ -70,15 +75,24 @@ set(meshHeaders
   moab/Interface.h
   moab/HandleRange.h
 
+  interpolation/InverseDistanceWeighting.h
+  interpolation/PointCloud.h
+  interpolation/RadialAverage.h
+  interpolation/StructuredGrid.h
+
   operators/DeleteMesh.h
   operators/ExportMesh.h
   operators/InterpolateMesh.h
+  operators/UndoWarpMesh.h
+  operators/WarpMesh.h
   operators/WriteMesh.h
   )
 
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/DeleteMesh.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportMesh.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/InterpolateMesh.sbt" defOpXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/UndoWarpMesh.sbt" defOpXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WarpMesh.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteMesh.sbt" defOpXML)
 
 #install the headers

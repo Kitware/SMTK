@@ -21,6 +21,7 @@
 #include "smtk/mesh/Handle.h"
 #include "smtk/mesh/TypeSet.h"
 
+#include <array>
 #include <vector>
 
 namespace smtk
@@ -208,7 +209,7 @@ public:
     {
     }
 
-    smtk::mesh::HandleRange pointIds;
+    std::vector<std::size_t> pointIds;
     std::vector<double> sqDistances;
     std::vector<double> x_s, y_s, z_s;
     bool want_sqDistances;
@@ -287,10 +288,8 @@ public:
   //get back an efficient point locator for a range of points
   //This allows for efficient point locator on a per interface basis.
   virtual smtk::mesh::PointLocatorImplPtr pointLocator(const smtk::mesh::HandleRange& points) = 0;
-  virtual smtk::mesh::PointLocatorImplPtr pointLocator(
-    const double* const xyzs, std::size_t numPoints, bool ignoreZValues = false) = 0;
-  virtual smtk::mesh::PointLocatorImplPtr pointLocator(
-    const float* const xyzs, std::size_t numPoints, bool ignoreZValues = false) = 0;
+  virtual smtk::mesh::PointLocatorImplPtr pointLocator(std::size_t numPoints,
+    const std::function<std::array<double, 3>(std::size_t)>& coordinates) = 0;
 
   virtual smtk::mesh::Handle getRoot() const = 0;
 
