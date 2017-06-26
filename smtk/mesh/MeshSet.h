@@ -137,12 +137,19 @@ public:
   //subset this MeshSet given an index into moab entity sets (m_range)
   smtk::mesh::MeshSet subset(std::size_t ith) const;
 
-  //Extract the shell ( exterior face elements ) of this set of meshes
-  //This operation might create new cells if no shell already exists
+  //Extract the shell ( exterior (D-1)-dimensional elements ) of this set of
+  //meshes. This operation might create new cells if no shell already exists
   //for the given meshset. The resulting meshset will be added to the
   //database so that the shell is saved.
   //Will return an empty set when no shell can be found
   smtk::mesh::MeshSet extractShell() const;
+
+  //Extract the adjacency cells of this set of meshes for a given dimension.
+  //This operation might create new cells if they do not already exist
+  //for the given meshset. The resulting meshset will be added to the
+  //database so that the adjacencies are saved.
+  //Will return an empty set when no adjacencies can be found
+  smtk::mesh::MeshSet extractAdjacenciesOfDimension(int dimension) const;
 
   //Merge all duplicate points contained within this meshset.
   //Will return true when any points have been merged

@@ -380,6 +380,10 @@ public:
   virtual bool computeShell(
     const smtk::mesh::HandleRange& meshes, smtk::mesh::HandleRange& shell) const = 0;
 
+  //compute adjacencies of a given dimension, creating them if necessary
+  virtual bool computeAdjacenciesOfDimension(
+    const smtk::mesh::HandleRange& meshes, int dimension, smtk::mesh::HandleRange& adj) const = 0;
+
   //merge any duplicate points used by the cells that have been passed
   //Note: Will mark the interface as modified when successful
   virtual bool mergeCoincidentContactPoints(
