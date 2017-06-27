@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="read" BaseType="operator">
+    <AttDef Type="read" BaseType="operator" Label="Model - Read">
       <BriefDescription>
         Read a cmb file and import it into Conceptual Model Builder.
       </BriefDescription>

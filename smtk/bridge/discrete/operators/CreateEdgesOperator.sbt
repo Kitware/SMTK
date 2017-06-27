@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="create edges" BaseType="operator">
+    <AttDef Type="create edges" BaseType="operator" Label="Edge - Create from face adjacencies">
       <BriefDescription>
         Given a discrete model, create edges and corresponding vertices.
       </BriefDescription>

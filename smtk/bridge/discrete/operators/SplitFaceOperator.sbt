@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="split face" BaseType="operator">
+    <AttDef Type="split face" BaseType="operator" Label="Face - Split">
       <BriefDescription>
         Split a face/faces into several small faces. Feature angle is used to decide whether split the
         face or not.

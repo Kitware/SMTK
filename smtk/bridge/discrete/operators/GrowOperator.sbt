@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="grow" BaseType="operator">
+    <AttDef Type="grow" BaseType="operator" Label="Face - Grow">
       <BriefDescription>
         Create a new face by a group of mesh faces selected by user or a group of mesh faces grown from
         a seed face.
