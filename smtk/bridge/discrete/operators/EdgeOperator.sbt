@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="modify edge" BaseType="operator">
+    <AttDef Type="modify edge" BaseType="operator" Label="Edge - Modify">
       <BriefDescription>
         Modify mesh edges by merging two edges into one or splitting one edge into two.
       </BriefDescription>

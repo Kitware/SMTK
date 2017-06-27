@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operation -->
-    <AttDef Type="entity group" BaseType="operator">
+    <AttDef Type="entity group" BaseType="operator" Label="Model - Create Group">
       <BriefDescription>
         Create a group of cell entities. User can modify and remove the created group afterwards.
       </BriefDescription>

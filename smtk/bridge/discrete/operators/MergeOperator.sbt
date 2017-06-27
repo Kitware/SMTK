@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="merge face" BaseType="operator">
+    <AttDef Type="merge face" BaseType="operator" Label="Face - Merge">
       <BriefDescription>
         Merge several faces into one face.
       </BriefDescription>
