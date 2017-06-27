@@ -26,7 +26,7 @@
 using namespace smtk::model;
 using namespace smtk::attribute;
 
-int UnitTestPolygonFindOperatorAttributeItems(int argc, char* argv[])
+int UnitTestPolygonFindOperatorAttItems(int argc, char* argv[])
 {
   (void)argc;
   (void)argv;
