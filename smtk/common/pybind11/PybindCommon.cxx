@@ -50,9 +50,9 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
-PYBIND11_PLUGIN(_smtkPybindCommon)
+PYBIND11_MODULE(_smtkPybindCommon, common)
 {
-  py::module common("_smtkPybindCommon", "<description>");
+  common.doc() = "<description>";
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
@@ -78,6 +78,4 @@ PYBIND11_PLUGIN(_smtkPybindCommon)
   py::class_< smtk::common::UUIDGenerator > smtk_common_UUIDGenerator = pybind11_init_smtk_common_UUIDGenerator(common);
   py::class_< smtk::common::Version > smtk_common_Version = pybind11_init_smtk_common_Version(common);
   py::class_< smtk::common::View > smtk_common_View = pybind11_init_smtk_common_View(common);
-
-  return common.ptr();
 }

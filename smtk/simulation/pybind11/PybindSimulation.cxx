@@ -26,16 +26,12 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
-PYBIND11_PLUGIN(_smtkPybindSimulation)
+PYBIND11_MODULE(_smtkPybindSimulation, simulation)
 {
-  py::module simulation("_smtkPybindSimulation", "<description>");
-  // py::module smtk = m.def_submodule("smtk", "<description>");
-  // py::module simulation = smtk.def_submodule("simulation", "<description>");
+  simulation.doc() = "<description>";
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
   py::class_< smtk::simulation::ExportSpec > smtk_simulation_ExportSpec = pybind11_init_smtk_simulation_ExportSpec(simulation);
   py::class_< smtk::simulation::UserData > smtk_simulation_UserData = pybind11_init_smtk_simulation_UserData(simulation);
-
-  return simulation.ptr();
 }

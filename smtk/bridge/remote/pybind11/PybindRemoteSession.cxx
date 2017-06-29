@@ -32,9 +32,9 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
-PYBIND11_PLUGIN(_smtkPybindRemoteSession)
+PYBIND11_MODULE(_smtkPybindRemoteSession, remote)
 {
-  py::module remote("_smtkPybindRemoteSession", "<description>");
+  remote.doc() = "<description>";
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
@@ -43,6 +43,4 @@ PYBIND11_PLUGIN(_smtkPybindRemoteSession)
   // py::class_< smtk::bridge::remote::RemusRPCWorker > smtk_bridge_remote_RemusRPCWorker = pybind11_init_smtk_bridge_remote_RemusRPCWorker(remote);
   py::class_< smtk::bridge::remote::RemusStaticSessionInfo > smtk_bridge_remote_RemusStaticSessionInfo = pybind11_init_smtk_bridge_remote_RemusStaticSessionInfo(remote);
   PySharedPtrClass< smtk::bridge::remote::Session, smtk::model::Session > smtk_bridge_remote_Session = pybind11_init_smtk_bridge_remote_Session(remote);
-
-  return remote.ptr();
 }

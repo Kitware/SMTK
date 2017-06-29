@@ -46,9 +46,9 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
-PYBIND11_PLUGIN(_smtkPybindDiscreteSession)
+PYBIND11_MODULE(_smtkPybindDiscreteSession, discrete)
 {
-  py::module discrete("_smtkPybindDiscreteSession", "<description>");
+  discrete.doc() = "<description>";
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
@@ -67,6 +67,4 @@ PYBIND11_PLUGIN(_smtkPybindDiscreteSession)
   PySharedPtrClass< smtk::bridge::discrete::SetProperty, smtk::model::Operator > smtk_bridge_discrete_SetProperty = pybind11_init_smtk_bridge_discrete_SetProperty(discrete);
   PySharedPtrClass< smtk::bridge::discrete::SplitFaceOperator, smtk::model::Operator > smtk_bridge_discrete_SplitFaceOperator = pybind11_init_smtk_bridge_discrete_SplitFaceOperator(discrete);
   PySharedPtrClass< smtk::bridge::discrete::WriteOperator, smtk::model::Operator > smtk_bridge_discrete_WriteOperator = pybind11_init_smtk_bridge_discrete_WriteOperator(discrete);
-
-  return discrete.ptr();
 }

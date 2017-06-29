@@ -53,9 +53,9 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
-PYBIND11_PLUGIN(_smtkPybindMesh)
+PYBIND11_MODULE(_smtkPybindMesh, mesh)
 {
-  py::module mesh("_smtkPybindMesh", "<description>");
+  mesh.doc() = "<description>";
   py::module moab = mesh.def_submodule("moab", "<description>");
 
   // The order of these function calls is important! It was determined by
@@ -144,6 +144,4 @@ PYBIND11_PLUGIN(_smtkPybindMesh)
   PySharedPtrClass< smtk::mesh::ExportMesh, smtk::model::Operator > smtk_mesh_ExportMesh = pybind11_init_smtk_mesh_ExportMesh(mesh);
   PySharedPtrClass< smtk::mesh::InterpolateMesh, smtk::model::Operator > smtk_mesh_InterpolateMesh = pybind11_init_smtk_mesh_InterpolateMesh(mesh);
   PySharedPtrClass< smtk::mesh::WriteMesh, smtk::model::Operator > smtk_mesh_WriteMesh = pybind11_init_smtk_mesh_WriteMesh(mesh);
-
-  return mesh.ptr();
 }
