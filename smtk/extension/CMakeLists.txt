@@ -92,5 +92,13 @@ if(SMTK_ENABLE_QT_SUPPORT AND SMTK_ENABLE_CUMULUS_SUPPORT)
 endif()
 
 if (SMTK_USE_PYBIND11)
+
+  option(SMTK_ENABLE_MATPLOTLIB "Enable matplotlib" OFF)
+  set(SMTK_MATPLOTLIB_SUPPORT_ENABLED "False")
+  if(SMTK_ENABLE_MATPLOTLIB)
+    set(SMTK_MATPLOTLIB_SUPPORT_ENABLED "True")
+    add_subdirectory(matplotlib)
+  endif()
+
   add_subdirectory(pybind11)
 endif()

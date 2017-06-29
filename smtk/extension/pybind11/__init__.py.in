@@ -15,6 +15,9 @@ _sessions = []
 if @SMTK_VTK_SUPPORT_ENABLED@:
     _sessions.append("vtk")
 
+if @SMTK_MATPLOTLIB_SUPPORT_ENABLED@:
+    _sessions.append("matplotlib")
+
 __all__ = (_sessions)
 
 del _sessions

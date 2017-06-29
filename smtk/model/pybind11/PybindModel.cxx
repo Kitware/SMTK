@@ -103,7 +103,7 @@ PYBIND11_MODULE(_smtkPybindModel, model)
   py::class_< smtk::model::GridInfo > smtk_model_GridInfo = pybind11_init_smtk_model_GridInfo(model);
   PySharedPtrClass< smtk::model::Manager > smtk_model_Manager = pybind11_init_smtk_model_Manager(model);
   pybind11_init_smtk_model_OperatorOutcome(model);
-  PySharedPtrClass< smtk::model::Operator > smtk_model_Operator = pybind11_init_smtk_model_Operator(model);
+  PySharedPtrClass< smtk::model::Operator, smtk::model::PyOperator > smtk_model_Operator = pybind11_init_smtk_model_Operator(model);
   PySharedPtrClass< smtk::model::Session > smtk_model_Session = pybind11_init_smtk_model_Session(model);
   py::class_< smtk::model::SessionIO > smtk_model_SessionIO = pybind11_init_smtk_model_SessionIO(model);
   py::class_< smtk::model::SessionRegistrar > smtk_model_SessionRegistrar = pybind11_init_smtk_model_SessionRegistrar(model);
