@@ -49,9 +49,9 @@ namespace
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
-PYBIND11_PLUGIN(_smtkPybindMeshWorkerDelaunay)
+PYBIND11_MODULE(_smtkPybindMeshWorkerDelaunay, delaunay)
 {
-  py::module delaunay("_smtkPybindMeshWorkerDelaunay", "<description>");
+  delaunay.doc() = "<description>";
 
   delaunay.def("start_worker", [](const std::string& dest){
       remus::worker::ServerConnection connection =
@@ -96,6 +96,4 @@ PYBIND11_PLUGIN(_smtkPybindMeshWorkerDelaunay)
   delaunay.def("search_paths", [](){
       return absolute_search_paths();
     });
-
-  return delaunay.ptr();
 }

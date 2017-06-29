@@ -118,16 +118,17 @@ if __name__ == '__main__':
         stream("namespace py = pybind11;")
         stream("")
         stream("template <typename T, typename... Args>")
-        stream("using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;")
+        stream(
+            "using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;")
         stream("")
         for output_file in output_files:
             stream("#include \"%s\"" % os.path.basename(output_file))
         stream("")
         stream('PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);')
         stream("")
-        stream("PYBIND11_PLUGIN(%s)" % args.module)
+        stream("PYBIND11_MODULE(%s, m)" % args.module)
         stream("{")
-        stream("  py::module m(\"%s\", \"<description>\");" % args.module)
+        stream("  m.doc() = \"<description>\";" % args.module)
 
         modules = set()
         for obj in wrapped_objects:
@@ -141,7 +142,8 @@ if __name__ == '__main__':
         stream("")
         stream(
             "  // The order of these function calls is important! It was determined by")
-        stream("  // comparing the dependencies of each of the wrapped objects.")
+        stream(
+            "  // comparing the dependencies of each of the wrapped objects.")
 
         topological_mapping = {}
         for obj in wrapped_objects:
@@ -171,6 +173,4 @@ if __name__ == '__main__':
                                               module))
             else:
                 stream("  %s(%s);" % (signature, module))
-        stream("")
-        stream("  return m.ptr();")
         stream("}")

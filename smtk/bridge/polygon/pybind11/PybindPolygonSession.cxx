@@ -46,9 +46,9 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
-PYBIND11_PLUGIN(_smtkPybindPolygonSession)
+PYBIND11_MODULE(_smtkPybindPolygonSession, polygon)
 {
-  py::module polygon("_smtkPybindPolygonSession", "<description>");
+  polygon.doc() = "<description>";
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
@@ -71,6 +71,4 @@ PYBIND11_PLUGIN(_smtkPybindPolygonSession)
   PySharedPtrClass< smtk::bridge::polygon::SplitEdge > smtk_bridge_polygon_SplitEdge = pybind11_init_smtk_bridge_polygon_SplitEdge(polygon, smtk_bridge_polygon_Operator);
   PySharedPtrClass< smtk::bridge::polygon::TweakEdge > smtk_bridge_polygon_TweakEdge = pybind11_init_smtk_bridge_polygon_TweakEdge(polygon, smtk_bridge_polygon_Operator);
   PySharedPtrClass< smtk::bridge::polygon::CreateFacesFromEdges > smtk_bridge_polygon_CreateFacesFromEdges = pybind11_init_smtk_bridge_polygon_CreateFacesFromEdges(polygon, smtk_bridge_polygon_CreateFaces);
-
-  return polygon.ptr();
 }

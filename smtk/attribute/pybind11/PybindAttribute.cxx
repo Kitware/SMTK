@@ -60,9 +60,9 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
-PYBIND11_PLUGIN(_smtkPybindAttribute)
+PYBIND11_MODULE(_smtkPybindAttribute, attribute)
 {
-  py::module attribute("_smtkPybindAttribute", "<description>");
+  attribute.doc() = "<description>";
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
@@ -108,6 +108,4 @@ PYBIND11_PLUGIN(_smtkPybindAttribute)
 
   PySharedPtrClass< smtk::attribute::DateTimeItem, smtk::attribute::Item > smtk_attribute_DateTimeItem = pybind11_init_smtk_attribute_DateTimeItem(attribute);
   PySharedPtrClass< smtk::attribute::DateTimeItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_DateTimeItemDefinition = pybind11_init_smtk_attribute_DateTimeItemDefinition(attribute);
-
-  return attribute.ptr();
 }

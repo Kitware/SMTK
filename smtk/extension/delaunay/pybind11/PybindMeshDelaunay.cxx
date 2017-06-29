@@ -26,12 +26,10 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
-PYBIND11_PLUGIN(_smtkPybindMeshDelaunay)
+PYBIND11_MODULE(_smtkPybindMeshDelaunay, delaunay)
 {
-  py::module delaunay("_smtkPybindMeshDelaunay", "<description>");
+  delaunay.doc() = "<description>";
 
   py::class_< smtk::mesh::TessellateFace, smtk::model::Operator > smtk_extension_delaunay_TessellateFace = pybind11_init_smtk_extension_delaunay_TessellateFace(delaunay);
   py::class_< smtk::mesh::TriangulateFace, smtk::model::Operator > smtk_extension_delaunay_TriangulateFace = pybind11_init_smtk_extension_delaunay_TriangulateFace(delaunay);
-
-  return delaunay.ptr();
 }

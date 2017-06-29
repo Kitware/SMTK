@@ -35,9 +35,9 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
-PYBIND11_PLUGIN(_smtkPybindMeshSession)
+PYBIND11_MODULE(_smtkPybindMeshSession, mesh)
 {
-  py::module mesh("_smtkPybindMeshSession", "<description>");
+  mesh.doc() = "<description>";
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
@@ -48,6 +48,4 @@ PYBIND11_PLUGIN(_smtkPybindMeshSession)
   PySharedPtrClass< smtk::bridge::mesh::ImportOperator > smtk_bridge_mesh_ImportOperator = pybind11_init_smtk_bridge_mesh_ImportOperator(mesh, smtk_bridge_mesh_Operator);
   PySharedPtrClass< smtk::bridge::mesh::ReadOperator > smtk_bridge_mesh_ReadOperator = pybind11_init_smtk_bridge_mesh_ReadOperator(mesh, smtk_bridge_mesh_Operator);
   PySharedPtrClass< smtk::bridge::mesh::WriteOperator > smtk_bridge_mesh_WriteOperator = pybind11_init_smtk_bridge_mesh_WriteOperator(mesh, smtk_bridge_mesh_Operator);
-
-  return mesh.ptr();
 }

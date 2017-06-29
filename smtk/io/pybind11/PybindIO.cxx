@@ -47,9 +47,9 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
-PYBIND11_PLUGIN(_smtkPybindIO)
+PYBIND11_MODULE(_smtkPybindIO, io)
 {
-  py::module io("_smtkPybindIO", "<description>");
+  io.doc() = "<description>";
   py::module mesh = io.def_submodule("mesh", "<description>");
 
   // The order of these function calls is important! It was determined by
@@ -108,6 +108,4 @@ PYBIND11_PLUGIN(_smtkPybindIO)
   pybind11_init__ZN4smtk2io12writeNeumannERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10CollectionEEE(io);
   pybind11_init__ZN4smtk2io12writeNeumannENSt3__110shared_ptrINS_4mesh10CollectionEEE(io);
   PySharedPtrClass< smtk::io::XmlDocV2Parser > smtk_io_XmlDocV2Parser = pybind11_init_smtk_io_XmlDocV2Parser(io, smtk_io_XmlDocV1Parser);
-
-  return io.ptr();
 }

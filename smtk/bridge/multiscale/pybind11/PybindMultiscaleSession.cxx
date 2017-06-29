@@ -32,9 +32,9 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
-PYBIND11_PLUGIN(smtkPybindMultiscaleSession)
+PYBIND11_MODULE(smtkPybindMultiscaleSession, multiscale)
 {
-  py::module multiscale("smtkPybindMultiscaleSession", "<description>");
+  multiscale.doc() = "<description>";
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
@@ -45,6 +45,4 @@ PYBIND11_PLUGIN(smtkPybindMultiscaleSession)
   PySharedPtrClass< smtk::bridge::multiscale::Revolve, smtk::bridge::multiscale::Operator > smtk_bridge_multiscale_Revolve = pybind11_init_smtk_bridge_multiscale_Revolve(multiscale);
   PySharedPtrClass< smtk::bridge::multiscale::Dream3DPipeline, smtk::bridge::multiscale::PythonScript > smtk_bridge_multiscale_Dream3DPipeline = pybind11_init_smtk_bridge_multiscale_Dream3DPipeline(multiscale);
   PySharedPtrClass< smtk::bridge::multiscale::PartitionBoundaries, smtk::bridge::multiscale::Operator > smtk_bridge_multiscale_PartitionBoundaries = pybind11_init_smtk_bridge_multiscale_PartitionBoundaries(multiscale);
-
-  return multiscale.ptr();
 }

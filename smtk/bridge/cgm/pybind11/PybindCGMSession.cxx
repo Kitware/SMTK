@@ -54,9 +54,9 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
-PYBIND11_PLUGIN(_smtkPybindCGMSession)
+PYBIND11_MODULE(_smtkPybindCGMSession, cgm)
 {
-  py::module cgm("_smtkPybindCGMSession", "<description>");
+  cgm.doc() = "<description>";
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
@@ -85,6 +85,4 @@ PYBIND11_PLUGIN(_smtkPybindCGMSession)
   PySharedPtrClass< smtk::bridge::cgm::Sweep > smtk_bridge_cgm_Sweep = pybind11_init_smtk_bridge_cgm_Sweep(cgm, smtk_bridge_cgm_Operator);
   PySharedPtrClass< smtk::bridge::cgm::Translate > smtk_bridge_cgm_Translate = pybind11_init_smtk_bridge_cgm_Translate(cgm, smtk_bridge_cgm_Operator);
   PySharedPtrClass< smtk::bridge::cgm::Write > smtk_bridge_cgm_Write = pybind11_init_smtk_bridge_cgm_Write(cgm, smtk_bridge_cgm_Operator);
-
-  return cgm.ptr();
 }
