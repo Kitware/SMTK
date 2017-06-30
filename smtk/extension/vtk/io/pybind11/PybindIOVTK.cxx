@@ -37,9 +37,9 @@ PYBIND11_VTK_TYPECASTER(vtkUnstructuredGrid)
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
-PYBIND11_PLUGIN(_smtkPybindIOVTK)
+PYBIND11_MODULE(_smtkPybindIOVTK, io)
 {
-  py::module io("_smtkPybindIOVTK", "<description>");
+  io.doc() = "<description>";
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
