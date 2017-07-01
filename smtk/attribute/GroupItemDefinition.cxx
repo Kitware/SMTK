@@ -12,6 +12,7 @@
 #include "smtk/attribute/GroupItem.h"
 
 #include <algorithm>
+#include <functional>
 #include <iostream>
 
 using namespace smtk::attribute;
@@ -221,8 +222,8 @@ bool GroupItemDefinition::removeItemDefinition(ItemDefinitionPtr itemDef)
     return false;
   }
 
-  auto itItemDef = std::find(this->m_itemDefs.cbegin(), this->m_itemDefs.cend(), itemDef);
-  if (itItemDef != this->m_itemDefs.cend())
+  auto itItemDef = std::find(this->m_itemDefs.begin(), this->m_itemDefs.end(), itemDef);
+  if (itItemDef != this->m_itemDefs.end())
   {
     this->m_itemDefs.erase(itItemDef);
   }
