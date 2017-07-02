@@ -38,6 +38,7 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <cassert>
+#include <functional>
 #include <iostream>
 
 using namespace smtk::attribute;
@@ -312,8 +313,9 @@ bool Attribute::removeExpungedEntities(const smtk::model::EntityRefs& expungedEn
   bool associationChanged = false;
   // update all modelEntityItems
   std::set<smtk::attribute::ModelEntityItemPtr> modelEntityPtrs;
-  this->filterItems(
-    modelEntityPtrs, [](smtk::attribute::ModelEntityItemPtr) { return true; }, false);
+  std::function<bool(smtk::attribute::ModelEntityItemPtr)> filter = [](
+    smtk::attribute::ModelEntityItemPtr) { return true; };
+  this->filterItems(modelEntityPtrs, filter, false);
   for (std::set<smtk::attribute::ModelEntityItemPtr>::iterator iterator = modelEntityPtrs.begin();
        iterator != modelEntityPtrs.end(); iterator++)
   {

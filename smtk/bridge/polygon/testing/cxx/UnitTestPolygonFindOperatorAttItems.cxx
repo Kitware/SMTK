@@ -34,20 +34,31 @@ int UnitTestPolygonFindOperatorAttItems(int argc, char* argv[])
   smtk::model::ManagerPtr manager = smtk::model::Manager::create();
   smtk::model::SessionRef session = manager->createSession("polygon");
 
+  // Explicitly instantiate item filters for gcc4.8
+  std::function<bool(smtk::attribute::ItemPtr)> itemFilter = [](
+    smtk::attribute::ItemPtr) { return true; };
+  std::function<bool(smtk::attribute::DoubleItemPtr)> doubleFilter = [](
+    DoubleItemPtr) { return true; };
+  std::function<bool(smtk::attribute::IntItemPtr)> intFilter = [](IntItemPtr) { return true; };
+  std::function<bool(smtk::attribute::ItemPtr)> intDoubleFilter = [](
+    ItemPtr item) { return item->type() == Item::DOUBLE || item->type() == Item::INT; };
+  std::function<bool(smtk::attribute::ModelEntityItemPtr)> modelEntityFilter = [](
+    ModelEntityItemPtr) { return true; };
+  std::function<bool(smtk::attribute::VoidItemPtr)> voidFilter = [](VoidItemPtr) { return true; };
+
   std::cout << "Use create model operator to test filterItems function in attribute." << std::endl;
   /// Use "create model" operator to valid valueItem
   smtk::model::OperatorPtr createModelOp = session.op("create model");
   std::vector<ItemPtr> cmItems, intDoubleItems;
-  createModelOp->specification()->filterItems(cmItems, [](ItemPtr) { return true; }, false);
+  createModelOp->specification()->filterItems(cmItems, itemFilter, false);
   test(cmItems.size() == 10, "  Number of items including all children does not equal 10");
   // Find int and double items in all children
-  createModelOp->specification()->filterItems(intDoubleItems,
-    [](ItemPtr item) { return item->type() == Item::DOUBLE || item->type() == Item::INT; }, false);
+  createModelOp->specification()->filterItems(intDoubleItems, intDoubleFilter, false);
   test(intDoubleItems.size() == 9,
     "  Number of int and double items including all children does not equal 9");
   // Find items in active children
   std::vector<DoubleItemPtr> cmDoubleItems;
-  createModelOp->specification()->filterItems(cmDoubleItems, [](DoubleItemPtr) { return true; });
+  createModelOp->specification()->filterItems(cmDoubleItems, doubleFilter);
   test(cmDoubleItems.size() == 4,
     "  Number of double items only including active child does not equal 4");
   test(cmDoubleItems[0]->name() == std::string("origin"), "  Double item origin is missing");
@@ -57,8 +68,7 @@ int UnitTestPolygonFindOperatorAttItems(int argc, char* argv[])
 
   // Find items in all children
   cmDoubleItems.clear();
-  createModelOp->specification()->filterItems(
-    cmDoubleItems, [](DoubleItemPtr) { return true; }, false);
+  createModelOp->specification()->filterItems(cmDoubleItems, doubleFilter, false);
   test(
     cmDoubleItems.size() == 5, "  Number of double items include all children does not equal five");
   test(cmDoubleItems[0]->name() == "feature size", "  Double item feature size is missing");
@@ -74,9 +84,9 @@ int UnitTestPolygonFindOperatorAttItems(int argc, char* argv[])
   std::vector<ItemPtr> groupItems, allGroupItems;
   std::vector<VoidItemPtr> voidGroupItems;
   std::vector<ModelEntityItemPtr> modelEntityGroupItems;
-  groupOp->specification()->filterItems(groupItems, [](ItemPtr) { return true; });
-  groupOp->specification()->filterItems(allGroupItems, [](ItemPtr) { return true; }, false);
-  groupOp->specification()->filterItems(voidGroupItems, [](VoidItemPtr) { return true; });
+  groupOp->specification()->filterItems(groupItems, itemFilter);
+  groupOp->specification()->filterItems(allGroupItems, itemFilter, false);
+  groupOp->specification()->filterItems(voidGroupItems, voidFilter);
 
   test(groupItems.size() == 10, "Number of items only including active child does not equal 10");
   test(allGroupItems.size() == 13, "Number of items including all children does not equal 13");
@@ -87,13 +97,11 @@ int UnitTestPolygonFindOperatorAttItems(int argc, char* argv[])
   test(voidGroupItems[2]->name() == std::string("Face"), "void item Face is missing");
   test(voidGroupItems[3]->name() == std::string("Volume"), "void item Volume is missing");
 
-  groupOp->specification()->filterItems(
-    modelEntityGroupItems, [](ModelEntityItemPtr) { return true; });
+  groupOp->specification()->filterItems(modelEntityGroupItems, modelEntityFilter);
   test(modelEntityGroupItems.size() == 2,
     "Number of modelEntity items only including active child does not equal 2");
   modelEntityGroupItems.clear();
-  groupOp->specification()->filterItems(
-    modelEntityGroupItems, [](ModelEntityItemPtr) { return true; }, false);
+  groupOp->specification()->filterItems(modelEntityGroupItems, modelEntityFilter, false);
   test(modelEntityGroupItems.size() == 5,
     "Number of modelEntity items including childern does not equal 5");
   std::cout << "  All passed" << std::endl;
@@ -104,11 +112,10 @@ int UnitTestPolygonFindOperatorAttItems(int argc, char* argv[])
   std::vector<ItemPtr> CEItems, allCEItems;
   std::vector<IntItemPtr> CEIntItems;
   std::vector<DoubleItemPtr> CEDoubleItems;
-  createEdge->specification()->filterItems(CEItems, [](ItemPtr) { return true; });
-  createEdge->specification()->filterItems(CEIntItems, [](IntItemPtr) { return true; });
-  createEdge->specification()->filterItems(
-    CEDoubleItems, [](DoubleItemPtr) { return true; }, false);
-  createEdge->specification()->filterItems(allCEItems, [](ItemPtr) { return true; }, false);
+  createEdge->specification()->filterItems(CEItems, itemFilter);
+  createEdge->specification()->filterItems(CEIntItems, intFilter);
+  createEdge->specification()->filterItems(CEDoubleItems, doubleFilter, false);
+  createEdge->specification()->filterItems(allCEItems, itemFilter, false);
 
   test(CEItems.size() == 4, "Number of items only including active child does not equal 4");
   test(allCEItems.size() == 7, "Number of items including all children does not equal 7");
