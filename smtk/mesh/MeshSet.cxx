@@ -387,6 +387,27 @@ smtk::mesh::MeshSet MeshSet::extractShell() const
   return smtk::mesh::MeshSet(this->m_parent, this->m_handle, entities);
 }
 
+smtk::mesh::MeshSet MeshSet::extractAdjacenciesOfDimension(int dimension) const
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+
+  smtk::mesh::HandleRange entities;
+  smtk::mesh::HandleRange cells;
+  const bool adjacenciesExtracted =
+    iface->computeAdjacenciesOfDimension(this->m_range, dimension, cells);
+  if (adjacenciesExtracted)
+  {
+    smtk::mesh::Handle meshSetHandle;
+    //create a mesh for these cells since they don't have a meshset currently
+    const bool meshCreated = iface->createMesh(cells, meshSetHandle);
+    if (meshCreated)
+    {
+      entities.insert(meshSetHandle);
+    }
+  }
+  return smtk::mesh::MeshSet(this->m_parent, this->m_handle, entities);
+}
+
 bool MeshSet::mergeCoincidentContactPoints(double tolerance)
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();

@@ -832,6 +832,19 @@ bool Interface::computeShell(
   return (rval == ::moab::MB_SUCCESS);
 }
 
+bool Interface::computeAdjacenciesOfDimension(
+  const smtk::mesh::HandleRange& meshes, int dimension, smtk::mesh::HandleRange& adj) const
+{
+  if (dimension < smtk::mesh::Dims0 || dimension >= smtk::mesh::DimensionType_MAX)
+  {
+    return false;
+  }
+  ::moab::ErrorCode rval = this->moabInterface()->get_adjacencies(
+    this->getCells(meshes), dimension, true, adj, ::moab::Interface::UNION);
+
+  return (rval == ::moab::MB_SUCCESS);
+}
+
 bool Interface::mergeCoincidentContactPoints(
   const smtk::mesh::HandleRange& meshes, double tolerance)
 {

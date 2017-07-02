@@ -11,6 +11,7 @@ set(meshSrcs
   Handle.cxx
   Manager.cxx
   MeshSet.cxx
+  Metrics.cxx
   PointConnectivity.cxx
   PointField.cxx
   PointLocator.cxx
@@ -61,6 +62,7 @@ set(meshHeaders
   Interface.h
   Manager.h
   MeshSet.h
+  Metrics.h
   PointConnectivity.h
   PointField.h
   PointSet.h

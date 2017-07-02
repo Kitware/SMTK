@@ -190,6 +190,10 @@ public:
   //compute the cells that make the shell/skin of the set of meshes
   bool computeShell(const smtk::mesh::HandleRange& meshes, smtk::mesh::HandleRange& shell) const;
 
+  //compute adjacencies of a given dimension, creating them if necessary
+  bool computeAdjacenciesOfDimension(
+    const smtk::mesh::HandleRange& meshes, int dimension, smtk::mesh::HandleRange& adj) const;
+
   //merge any duplicate points used by the cells that have been passed
   bool mergeCoincidentContactPoints(const smtk::mesh::HandleRange& meshes, double tolerance);
 

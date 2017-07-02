@@ -453,6 +453,12 @@ bool Interface::computeShell(const smtk::mesh::HandleRange&, smtk::mesh::HandleR
   return false;
 }
 
+bool Interface::computeAdjacenciesOfDimension(
+  const smtk::mesh::HandleRange&, int, smtk::mesh::HandleRange&) const
+{
+  return false;
+}
+
 bool Interface::mergeCoincidentContactPoints(const smtk::mesh::HandleRange&, double)
 {
   return false;
