@@ -17,7 +17,6 @@ set(unit_tests
   UnitTestBufferedCellAllocator.cxx
   UnitTestIncrementalAllocator.cxx
   UnitTestManager.cxx
-  UnitTestMeshMetrics.cxx
   UnitTestModelToMesh3D.cxx
   UnitTestQueryTypes.cxx
   UnitTestReadWriteHandles.cxx
@@ -37,6 +36,7 @@ set(unit_tests_which_require_data
 
   UnitTestLoadMesh.cxx
   UnitTestMergeContactPoints.cxx
+  UnitTestMeshMetrics.cxx
   UnitTestMeshSet.cxx
   UnitTestModelToMesh2D.cxx
   UnitTestPointConnectivity.cxx
