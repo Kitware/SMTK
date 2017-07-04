@@ -55,12 +55,25 @@ configure_file(
   @ONLY
 )
 
-#install the headers
-smtk_public_headers(${commonHeaders})
-
 if (SMTK_USE_PYBIND11)
+  # Construct a C++ header containing the smtk python path as a char array
+  string(REPLACE "${envsep}" "," smtk_pythonpath_list "${smtk_pythonpath_env}")
+  configureStringAsCVariable(smtk_pythonpath_list
+    ${CMAKE_CURRENT_BINARY_DIR}/smtkPythonPath.h smtkPythonPath)
+
+  list(APPEND commonSrcs
+    PythonInterpreter.cxx
+    )
+  list(APPEND commonHeaders
+    PythonInterpreter.h
+    ${CMAKE_CURRENT_BINARY_DIR}/smtkPythonPath.h
+    )
+
   add_subdirectory(pybind11)
 endif()
+
+#install the headers
+smtk_public_headers(${commonHeaders})
 
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)

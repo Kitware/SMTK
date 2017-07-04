@@ -41,16 +41,53 @@ set(smtk_srcs
   ${ioSrcs}
 )
 
+set(smtkCore_public_include_directories
+  $<BUILD_INTERFACE:${SMTK_SOURCE_DIR}>
+  $<BUILD_INTERFACE:${SMTK_BINARY_DIR}>
+  $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>
+  )
+
+set(smtkCore_private_include_directories
+  )
+
+set(smtkCore_public_link_libraries
+  cJSON
+  MOAB
+  )
+
+set(smtkCore_private_link_libraries
+  ${Boost_LIBRARIES}
+  )
+
+if(SMTK_USE_PYBIND11)
+  # If we are using Pybind11, then we require its include directory and the
+  # python include directory and libraries for an embedded python environment
+
+  list(APPEND smtkCore_public_include_directories
+    $<BUILD_INTERFACE:${PYBIND11_INCLUDE_DIR}>
+    )
+
+  list(APPEND smtkCore_private_include_directories
+    ${PYTHON_INCLUDE_DIRS}
+    )
+
+  list(APPEND smtkCore_private_link_libraries
+    ${PYTHON_LIBRARIES}
+    )
+
+  add_subdirectory(pybind11)
+endif()
+
 add_library(smtkCore ${smtk_srcs})
 target_include_directories(smtkCore
   PUBLIC
-    $<BUILD_INTERFACE:${SMTK_SOURCE_DIR}>
-    $<BUILD_INTERFACE:${SMTK_BINARY_DIR}>
-    $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>
+  ${smtkCore_public_include_directories}
+  PRIVATE
+  ${smtkCore_private_include_directories}
 )
 target_link_libraries(smtkCore
-  LINK_PUBLIC cJSON MOAB
-  LINK_PRIVATE ${Boost_LIBRARIES})
+  LINK_PUBLIC ${smtkCore_public_link_libraries}
+  LINK_PRIVATE ${smtkCore_private_link_libraries})
 
 smtk_export_header(smtkCore CoreExports.h)
 if (NOT BUILD_SHARED_LIBS AND SMTK_ENABLE_PYTHON_WRAPPING)
@@ -179,7 +216,3 @@ add_subdirectory(extension)
 # any custom model bridge sessions that the user has enabled.
 ################################################################################
 add_subdirectory(bridge)
-
-if(SMTK_USE_PYBIND11)
-  add_subdirectory(pybind11)
-endif()

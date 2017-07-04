@@ -11,7 +11,8 @@
 #ifndef smtkRegressionTestImage_h
 #define smtkRegressionTestImage_h
 
-#include "vtkCMBGeometryReader.h"
+#include "smtk/extension/vtk/reader/vtkCMBGeometryReader.h"
+
 #include "vtkNew.h"
 #include "vtkPolyData.h"
 #include "vtkPolyDataMapper.h"

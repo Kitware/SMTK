@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtkRegressionTestImage.h"
+#include "smtk/extension/vtk/reader/testing/cxx/smtkRegressionTestImage.h"
 #include <vtksys/SystemTools.hxx>
 
 // This function returns vtkTesting::PASSED on success

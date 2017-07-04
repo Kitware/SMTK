@@ -10,18 +10,24 @@ function(encodeStringAsCVariable rawString encodedVarName stringOut)
 
 endfunction()
 
+function(configureStringAsCVariable rawString dstFileName encodedVarName)
+
+  encodeStringAsCVariable(${rawString} ${encodedVarName} encodedContents)
+  if (EXISTS ${dstFileName})
+    file(READ ${dstFileName} already)
+  endif()
+  #message("Writing ${dstFileName}")
+  if (NOT "${encodedContents}" STREQUAL "${already}")
+    file(WRITE ${dstFileName} "${encodedContents}")
+  endif()
+
+endfunction()
+
 function(configureFileAsCVariable srcFileName dstFileName encodedVarName)
 
   if (EXISTS ${srcFileName})
     file(READ ${srcFileName} fileContents)
-    encodeStringAsCVariable(fileContents ${encodedVarName} encodedContents)
-    if (EXISTS ${dstFileName})
-      file(READ ${dstFileName} already)
-    endif()
-    #message("Writing ${dstFileName}")
-    if (NOT "${encodedContents}" STREQUAL "${already}")
-      file(WRITE ${dstFileName} "${encodedContents}")
-    endif()
+    configureStringAsCVariable(fileContents ${dstFileName} ${encodedVarName})
   else()
     file(REMOVE ${dstFileName})
   endif()

@@ -17,6 +17,8 @@
 
 #include "smtk/model/Operator.h"
 
+#include "smtk/common/PythonInterpreter.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryItem.h"
@@ -37,6 +39,46 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Session.h"
 
+namespace smtk
+{
+namespace model
+{
+class PyOperator : public Operator
+{
+public:
+  PyOperator() : Operator() {}
+  virtual ~PyOperator() {}
+
+  static std::shared_ptr<smtk::model::Operator> create(std::string modulename, std::string classname)
+    {
+      // Import the module containing our operator
+      pybind11::module module = pybind11::module::import(modulename.c_str());
+
+      // Create an instance of our operator
+      pybind11::object obj = module.attr(classname.c_str())();
+
+      // Have the instance hold onto its python object. This way, we let the C++ side have control of memory allocation.
+      obj.cast<std::shared_ptr<smtk::model::PyOperator> >()->setObject(obj);
+
+      return obj.cast<std::shared_ptr<smtk::model::Operator> >();
+    }
+
+  std::string name() const override { PYBIND11_OVERLOAD_PURE(std::string, Operator, name, ); }
+  std::string className() const override { PYBIND11_OVERLOAD_PURE(std::string, Operator, className, ); }
+  bool ableToOperate() override { PYBIND11_OVERLOAD(bool, Operator, ableToOperate, ); }
+  OperatorResult operate() override { PYBIND11_OVERLOAD(OperatorResult, Operator, operate, ); }
+
+  OperatorResult operateInternal() override { PYBIND11_OVERLOAD_PURE(OperatorResult, Operator, operateInternal, ); }
+  void generateSummary(OperatorResult& res) override { PYBIND11_OVERLOAD(void, Operator, generateSummary, res); }
+
+  private:
+  void setObject(pybind11::object obj) { m_object = obj; }
+
+  pybind11::object m_object;
+};
+}
+}
+
 namespace py = pybind11;
 
 void pybind11_init_smtk_model_OperatorOutcome(py::module &m)
@@ -50,18 +92,20 @@ void pybind11_init_smtk_model_OperatorOutcome(py::module &m)
     .export_values();
 }
 
-PySharedPtrClass< smtk::model::Operator > pybind11_init_smtk_model_Operator(py::module &m)
+PySharedPtrClass< smtk::model::Operator, smtk::model::PyOperator > pybind11_init_smtk_model_Operator(py::module &m)
 {
   typedef std::underlying_type<::smtk::attribute::SearchStyle>::type SearchStyleType;
 
-  PySharedPtrClass< smtk::model::Operator > instance(m, "Operator");
+  PySharedPtrClass< smtk::model::Operator, smtk::model::PyOperator > instance(m, "Operator");
   instance
+    .def(py::init<>())
     .def("__lt__", (bool (smtk::model::Operator::*)(::smtk::model::Operator const &) const) &smtk::model::Operator::operator<)
     .def("deepcopy", (smtk::model::Operator & (smtk::model::Operator::*)(::smtk::model::Operator const &)) &smtk::model::Operator::operator=)
     .def("ableToOperate", &smtk::model::Operator::ableToOperate)
     .def("associateEntity", &smtk::model::Operator::associateEntity, py::arg("entity"))
     .def("className", &smtk::model::Operator::className)
     .def("classname", &smtk::model::Operator::classname)
+    .def_static("create", &smtk::model::PyOperator::create)
     .def("createResult", &smtk::model::Operator::createResult, py::arg("outcome") = ::smtk::model::OperatorOutcome::UNABLE_TO_OPERATE)
     .def("definition", &smtk::model::Operator::definition)
     .def("disassociateEntity", &smtk::model::Operator::disassociateEntity, py::arg("entity"))
@@ -131,6 +175,9 @@ PySharedPtrClass< smtk::model::Operator > pybind11_init_smtk_model_Operator(py::
     .value("EXPUNGED", smtk::model::Operator::ResultEntityOrigin::EXPUNGED)
     .value("UNKNOWN", smtk::model::Operator::ResultEntityOrigin::UNKNOWN)
     .export_values();
+
+  py::implicitly_convertible<py::object, smtk::model::Operator>();
+
   return instance;
 }
 
