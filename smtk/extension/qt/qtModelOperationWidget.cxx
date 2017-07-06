@@ -71,6 +71,7 @@ public:
   QStackedLayout* OperationsLayout;
   QMap<std::string, OperatorInfo> OperatorMap;
   QPointer<qtModelView> ModelView;
+  QPointer<qtCollapsibleGroupWidget> opLogInfo;
   QTextEdit* ResultLog;
   std::map<std::string, std::string> m_operatorLabelMap;
   std::map<std::string, std::string> m_operatorNameMap;
@@ -129,12 +130,15 @@ void qtModelOperationWidget::initWidget()
     "font: \"Monaco\", \"Menlo\", \"Andale Mono\", \"fixed\";");
   this->Internals->ResultLog->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-  qtCollapsibleGroupWidget* gw = new qtCollapsibleGroupWidget(this->Internals->LogSplitter);
-  gw->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
-  gw->setName("Show Operator Log");
-  gw->contentsLayout()->addWidget(this->Internals->ResultLog);
-  gw->collapse();
-  this->Internals->LogSplitter->addWidget(gw);
+  this->Internals->opLogInfo = new qtCollapsibleGroupWidget(this->Internals->LogSplitter);
+  // For now since we have the ability to show the log in the applicatiom lets hide the
+  // logging widget initially
+  this->Internals->opLogInfo->hide();
+  this->Internals->opLogInfo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+  this->Internals->opLogInfo->setName("Show Operator Log");
+  this->Internals->opLogInfo->contentsLayout()->addWidget(this->Internals->ResultLog);
+  this->Internals->opLogInfo->collapse();
+  this->Internals->LogSplitter->addWidget(this->Internals->opLogInfo);
   this->Internals->LogSplitter->setCollapsible(0, false);
   this->Internals->LogSplitter->setCollapsible(1, false);
   this->Internals->LogSplitter->setStretchFactor(1, 0);
@@ -145,6 +149,11 @@ void qtModelOperationWidget::initWidget()
   // signals/slots
   QObject::connect(this->Internals->OperationCombo, SIGNAL(currentIndexChanged(int)), this,
     SLOT(onOperationSelected()));
+}
+
+void qtModelOperationWidget::showLogInfo(bool visibilityMode)
+{
+  this->Internals->opLogInfo->setVisible(visibilityMode);
 }
 
 QSize qtModelOperationWidget::sizeHint() const

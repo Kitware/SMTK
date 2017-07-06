@@ -62,6 +62,7 @@ public slots:
   virtual void resetUI();
   virtual void onModelEntityItemCreated(smtk::extension::qtModelEntityItem* entItem);
   virtual bool showPreviousOp();
+  virtual void showLogInfo(bool visibilityMode);
 
 signals:
   void operationRequested(const smtk::model::OperatorPtr& brOp);
