@@ -124,7 +124,7 @@ qtModelView::qtModelView(QWidget* p)
   QObject::connect(qdelegate, SIGNAL(requestColorChange(const QModelIndex&)), this,
     SLOT(changeEntityColor(const QModelIndex&)), Qt::QueuedConnection);
   QObject::connect(qmodel, SIGNAL(phraseTitleChanged(const QModelIndex&)), this,
-    SLOT(changeEntityName(const QModelIndex&)), Qt::QueuedConnection);
+    SLOT(changeEntityName(const QModelIndex&)));
   QObject::connect(qmodel, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this,
     SLOT(dataChanged(const QModelIndex&, const QModelIndex&)), Qt::QueuedConnection);
   QObject::connect(qmodel, SIGNAL(newIndexAdded(const QModelIndex&)), this,
@@ -1213,12 +1213,12 @@ OperatorPtr qtModelView::getOp(const QModelIndex& idx, const std::string& opname
 
 OperatorPtr qtModelView::getOp(const smtk::model::SessionPtr& brSession, const std::string& opname)
 {
-  OperatorPtr brOp = brSession->op(opname);
-  if (!brOp)
+  OperatorPtr brOp;
+  if (!brSession || !(brOp = brSession->op(opname)))
   {
     std::cerr << "Could not create operator: \"" << opname << "\" for session"
-              << " \"" << brSession->name() << "\""
-              << " (" << brSession->sessionId() << ")\n";
+              << " \"" << (brSession ? brSession->name() : "(null)") << "\""
+              << " (" << (brSession ? brSession->sessionId().toString() : "--") << ")\n";
     return OperatorPtr();
   }
 
@@ -1644,10 +1644,12 @@ void qtModelView::syncEntityColor(const smtk::model::SessionPtr& session,
 
 void qtModelView::changeEntityName(const QModelIndex& idx)
 {
-  OperatorPtr brOp = this->getOp(idx, "set property");
+  DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
+  smtk::model::EntityRef ent = dp->relatedEntity();
+  smtk::model::SessionRef sref = ent.owningSession();
+  OperatorPtr brOp = this->getOp(sref.session(), "set property");
   if (!brOp || !brOp->specification())
     return;
-  DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
   smtk::attribute::AttributePtr attrib = brOp->specification();
   smtk::attribute::StringItemPtr nameItem = attrib->findString("name");
   smtk::attribute::StringItemPtr titleItem = attrib->findString("string value");
