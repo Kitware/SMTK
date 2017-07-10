@@ -2223,7 +2223,7 @@
           static="yes"
           return-type="smtk::attribute::System *">
           <inject-code>
-            unsigned long tadd;
+            uintptr_t tadd;
             std::stringstream ss;
             ss &lt;&lt; std::hex &lt;&lt; %1;
             ss &gt;&gt; tadd;
@@ -2643,7 +2643,7 @@
           static="yes"
           return-type="smtk::simulation::ExportSpec *">
           <inject-code>
-            unsigned long tadd;
+            uintptr_t tadd;
             std::stringstream ss;
             ss &lt;&lt; std::hex &lt;&lt; %1;
             ss &gt;&gt; tadd;
