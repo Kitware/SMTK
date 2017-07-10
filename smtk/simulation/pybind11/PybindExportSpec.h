@@ -18,6 +18,7 @@
 #include "smtk/model/GridInfo.h"
 #include "smtk/simulation/ExportSpec.h"
 
+#include <cstdint>
 #include <sstream>
 #include <string>
 
@@ -41,7 +42,7 @@ py::class_< smtk::simulation::ExportSpec > pybind11_init_smtk_simulation_ExportS
 
     // Converter method used by CMB vtkPythonExporter
     .def_static("_InternalConverterDoNotUse_", [](const std::string& specAddressString) {
-      unsigned long long memAddress;
+      uintptr_t memAddress;
       std::stringstream ss;
       ss << std::hex << specAddressString;
       ss >> memAddress;
