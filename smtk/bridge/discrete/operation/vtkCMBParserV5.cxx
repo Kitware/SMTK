@@ -636,7 +636,10 @@ void vtkCMBParserV5::SetAnalysisGridData(vtkPolyData* masterPoly, vtkDiscreteMod
         masterPoly->GetFieldData()->GetAbstractArray(ModelParserHelper::GetAnalysisGridFileName())))
   {
     vtkVariant name = gridName->GetVariantValue(0);
-    model->GetAnalysisGridInfo()->SetGridFileName(name.ToString().c_str());
+    if (model->GetAnalysisGridInfo())
+    {
+      model->GetAnalysisGridInfo()->SetGridFileName(name.ToString().c_str());
+    }
   }
 
   // delete out some unneeded arrays
