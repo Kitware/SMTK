@@ -162,6 +162,7 @@ public:
 
 protected:
   void copyTo(ValueItemDefinitionPtr def, smtk::attribute::ItemDefinition::CopyInfo& info) const;
+  void updateCategories() override;
 
   virtual void updateDiscreteValue() = 0;
   bool m_hasDefault;
