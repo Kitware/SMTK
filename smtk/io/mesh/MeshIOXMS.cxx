@@ -317,10 +317,6 @@ std::vector<MeshByRegion> subsetByModelProperty(smtk::mesh::CollectionPtr collec
 
   smtk::model::EntityRefArray modelIds;
   meshes.modelEntities(modelIds);
-  if (modelIds.size() <= 1)
-  { //if don't have any associations to the model we should fail
-    return meshesByModelRef;
-  }
 
   typedef smtk::model::EntityRefArray::const_iterator it;
   for (it i = modelIds.begin(); i != modelIds.end(); ++i)
