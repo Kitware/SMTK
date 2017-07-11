@@ -55,7 +55,7 @@ const std::vector<std::string>& relative_search_paths()
 
 const std::vector<std::string>& absolute_search_paths()
 {
-  static std::vector<std::string> abs_search_paths = { INSTALL_SEARCH_PATH, BUILD_SEARCH_PATH };
+  static std::vector<std::string> abs_search_paths = { BUILD_SEARCH_PATH };
   return abs_search_paths;
 }
 }
