@@ -222,6 +222,14 @@ std::vector<std::string> ValueItemDefinition::conditionalItems(const std::string
   return citer->second;
 }
 
+void ValueItemDefinition::updateCategories()
+{
+  for (auto& i : this->m_itemDefs)
+  {
+    i.second->updateCategories();
+  }
+}
+
 void ValueItemDefinition::setIsExtensible(bool mode)
 {
   this->m_isExtensible = mode;
