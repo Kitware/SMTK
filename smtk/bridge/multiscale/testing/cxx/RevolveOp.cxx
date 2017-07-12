@@ -8,6 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#include "smtk/PythonAutoInit.h"
+
 #include "smtk/bridge/multiscale/Session.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -30,14 +32,12 @@
 #include "smtk/model/Operator.h"
 #include "smtk/model/SimpleModelSubphrases.h"
 #include "smtk/model/Tessellation.h"
-#include "smtk/model/Vertex.h"
 
 //force to use filesystem version 3
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
 using namespace boost::filesystem;
 
-#include <cassert>
 #include <fstream>
 
 static int maxIndent = 10;
@@ -61,7 +61,7 @@ void cleanup(const std::string& file_path)
 }
 }
 
-int UnitTestPartitionBoundariesOp(int argc, char* argv[])
+int RevolveOp(int argc, char* argv[])
 {
   if (afrlRoot.empty())
   {
@@ -86,78 +86,54 @@ int UnitTestPartitionBoundariesOp(int argc, char* argv[])
     std::cout << "  " << *it << "\n";
   std::cout << "\n";
 
-  smtk::model::OperatorPtr dream3dOp = session->op("dream3d");
-  if (!dream3dOp)
+  smtk::model::OperatorPtr importFromDeformOp = session->op("import from deform");
+  if (!importFromDeformOp)
   {
-    std::cerr << "No dream3d operator\n";
+    std::cerr << "No import from deform operator\n";
     return 1;
   }
 
-  dream3dOp->specification()
+  importFromDeformOp->specification()
     ->findFile("point-file")
-    ->setValue(afrlRoot + "/Dream3DPipelines/Inputs/DEF_PTR.RST");
-  dream3dOp->specification()
-    ->findFile("step-file")
-    ->setValue(afrlRoot + "/Dream3DPipelines/Inputs/F2_DataExtract_Step623.DAT");
-  dream3dOp->specification()
+    ->setValue(afrlRoot + "/Data/afrl_test_forging/ti6242_ptrak_fg.csv");
+  importFromDeformOp->specification()->findInt("timestep")->setValue(66);
+  importFromDeformOp->specification()
+    ->findFile("element-file")
+    ->setValue(afrlRoot + "/Data/afrl_test_forging/ti6242_node_elem_fg.dat");
+  importFromDeformOp->specification()
     ->findFile("pipeline-executable")
-    ->setValue(afrlRoot + "/Placeholders/bin/PipelineRunner");
-  dream3dOp->specification()->findFile("output-file")->setValue("out.dream3d");
-  dream3dOp->specification()->findString("attribute")->setToDefault();
+    ->setValue(afrlRoot + "/../dream3d/install/DREAM3D.app/Contents/bin/PipelineRunner");
+  importFromDeformOp->specification()->findString("attribute")->setToDefault();
+  importFromDeformOp->specification()
+    ->findFile("output-file")
+    ->setValue(afrlRoot + "/tmp/out.dream3d");
 
-  smtk::attribute::FileItem::Ptr statsfiles = dream3dOp->specification()->findFile("stats-files");
-  if (!statsfiles)
+  std::vector<double> mu = { { 2.29, 2.29, 2.29, 2.29, 3. } };
+  std::vector<double> sigma = { { .1, .1, .1, .1, .2 } };
+  std::vector<double> min_cutoff = { { 5, 5, 5, 5, 4 } };
+  std::vector<double> max_cutoff = { { 5, 5, 5, 5, 6 } };
+
+  smtk::attribute::GroupItem::Ptr stats = importFromDeformOp->specification()->findGroup("stats");
+  stats->setNumberOfGroups(mu.size());
+
+  for (std::size_t i = 0; i < mu.size(); i++)
   {
-    std::cerr << "No stats files!\n";
+    stats->findAs<smtk::attribute::DoubleItem>(i, "mu")->setValue(mu.at(i));
+    stats->findAs<smtk::attribute::DoubleItem>(i, "sigma")->setValue(sigma.at(i));
+    stats->findAs<smtk::attribute::DoubleItem>(i, "min_cutoff")->setValue(min_cutoff.at(i));
+    stats->findAs<smtk::attribute::DoubleItem>(i, "max_cutoff")->setValue(max_cutoff.at(i));
+  }
+
+  smtk::model::OperatorResult importFromDeformOpResult = importFromDeformOp->operate();
+  // cleanup("out.dream3d");
+  // cleanup("out.xdmf");
+  if (importFromDeformOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  {
+    std::cerr << "import from deform operator failed\n";
     return 1;
   }
 
-  bool ok = statsfiles->setNumberOfValues(4);
-
-  if (!ok)
-  {
-    std::cerr << "FileItem failed\n";
-    return 1;
-  }
-
-  statsfiles->setValue(0, afrlRoot + "/Dream3DPipelines/Inputs/randomEquiaxed_mu1.dream3d");
-  statsfiles->setValue(1, afrlRoot + "/Dream3DPipelines/Inputs/randomEquiaxed_mu15.dream3d");
-  statsfiles->setValue(2, afrlRoot + "/Dream3DPipelines/Inputs/randomEquiaxed_mu2.dream3d");
-  statsfiles->setValue(3, afrlRoot + "/Dream3DPipelines/Inputs/randomEquiaxed_mu25.dream3d");
-
-  smtk::model::OperatorResult dream3dOpResult = dream3dOp->operate();
-  cleanup("out.dream3d");
-  if (dream3dOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
-  {
-    std::cerr << "Dream3d operator failed\n";
-    return 1;
-  }
-
-  smtk::model::Model model = dream3dOpResult->findModelEntity("model")->value();
-
-  if (false)
-  {
-    smtk::model::OperatorPtr writeOp = session->op("export mesh");
-    if (!writeOp)
-    {
-      std::cerr << "No write operator\n";
-      return 1;
-    }
-
-    writeOp->specification()
-      ->findFile("filename")
-      ->setValue("/Users/tjcorona/Desktop/Dream3DOutputModel.vtk");
-    // writeOp->specification()->associateEntity(model);
-    bool valueSet = writeOp->specification()->findMesh("mesh")->setValue(
-      manager->meshes()->findCollection(model.entity())->second->meshes());
-
-    smtk::model::OperatorResult writeOpResult = writeOp->operate();
-    if (writeOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
-    {
-      std::cerr << "Write operator failed\n";
-      return 1;
-    }
-  }
+  smtk::model::Model model = importFromDeformOpResult->findModelEntity("model")->value();
 
   smtk::model::OperatorPtr revolveOp = session->op("revolve");
   if (!revolveOp)
@@ -183,42 +159,9 @@ int UnitTestPartitionBoundariesOp(int argc, char* argv[])
     return 1;
   }
 
-  model = revolveOpResult->findModelEntity("model")->value();
-
-  smtk::model::OperatorPtr partitionBoundariesOp = session->op("partition boundaries");
-  if (!partitionBoundariesOp)
-  {
-    std::cerr << "No partition boundaries operator\n";
-    return 1;
-  }
-
-  partitionBoundariesOp->specification()->associateEntity(model);
-  partitionBoundariesOp->specification()->findDouble("origin")->setValue(0, -0.02);
-  partitionBoundariesOp->specification()->findDouble("origin")->setValue(1, 0.);
-  partitionBoundariesOp->specification()->findDouble("origin")->setValue(2, 0.);
-  partitionBoundariesOp->specification()->findDouble("radius")->setValue(1.2);
-
-  smtk::model::OperatorResult partitionBoundariesOpResult = partitionBoundariesOp->operate();
-
-  if (partitionBoundariesOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
-  {
-    std::cerr << "Apply thermal boundaries operator failed\n";
-    return 1;
-  }
-
-  smtk::attribute::ModelEntityItemPtr created =
-    partitionBoundariesOpResult->findModelEntity("created");
-
-  assert(created->numberOfValues() == 3);
-
-  for (smtk::attribute::ModelEntityItem::const_iterator it = created->begin(); it != created->end();
-       ++it)
-  {
-    assert(it->isVertex());
-  }
-
   return 0;
 }
 
 // This macro ensures the vtk io library is loaded into the executable
 smtkComponentInitMacro(smtk_extension_vtk_io_MeshIOVTK)
+  smtkPythonInitMacro(import_from_deform, smtk.bridge.multiscale.import_from_deform);

@@ -6,7 +6,7 @@ endfunction()
 
 function(configureStringAsPyVariable rawString dstFileName encodedVarName)
 
-    encodeStringAsPyVariable(fileContents ${encodedVarName} encodedContents)
+    encodeStringAsPyVariable(${rawString} ${encodedVarName} encodedContents)
     if (EXISTS ${dstFileName})
       file(READ ${dstFileName} already)
     endif()

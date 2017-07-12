@@ -1,29 +1,29 @@
-pybind11_add_module(smtkPybindMultiscaleSession PybindMultiscaleSession.cxx)
-target_include_directories(smtkPybindMultiscaleSession PUBLIC
+set(library_name "_smtkPybindMultiscaleSession")
+set(module_path "bridge/multiscale")
+set(build_path "${PROJECT_BINARY_DIR}/smtk/${module_path}")
+set(install_path "${SMTK_PYTHON_MODULEDIR}/smtk/${module_path}")
+
+pybind11_add_module(${library_name} PybindMultiscaleSession.cxx)
+target_include_directories(${library_name} PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
   )
-set(import_vtk_depends
-    vtkCommonDataModel
-    vtkPythonInterpreter
-    vtkIOXdmf2
-    vtkImagingCore
-    vtkFiltersGeneral
-    vtkFiltersGeometry
-    )
-target_link_libraries(smtkPybindMultiscaleSession LINK_PUBLIC smtkCore smtkMultiscaleSession LINK_PRIVATE ${import_vtk_depends})
-set_target_properties(smtkPybindMultiscaleSession
+target_link_libraries(${library_name} LINK_PUBLIC smtkCore smtkMultiscaleSession)
+set_target_properties(${library_name}
   PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib"
-)
-install(TARGETS smtkPybindMultiscaleSession DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
-
-configure_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py.in"
-  "${PROJECT_BINARY_DIR}/smtk/bridge/multiscale/__init__.py" @ONLY
+    LIBRARY_OUTPUT_DIRECTORY "${build_path}"
+    COMPILE_FLAGS ${SMTK_PYBIND11_FLAGS}
   )
 
-install(CODE
-  "set(LIBRARY_OUTPUT_PATH \"${CMAKE_INSTALL_PREFIX}/lib\")
-       configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/__init__.py.in
-       ${CMAKE_INSTALL_PREFIX}/${SMTK_PYTHON_MODULEDIR}/smtk/bridge/multiscale/__init__.py )"
+# Install library
+install(TARGETS ${library_name} DESTINATION "${install_path}")
+
+# Create and install module __init__.py
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py.in"
+  "${build_path}/__init__.py" @ONLY
+  )
+
+install(
+  FILES "${build_path}/__init__.py"
+  DESTINATION "${install_path}"
   )

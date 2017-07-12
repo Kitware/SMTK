@@ -25,14 +25,13 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindPointerDefs.h"
 #include "PybindSession.h"
 
-#include "PybindDream3DPipeline.h"
 #include "PybindPartitionBoundaries.h"
 #include "PybindPythonScript.h"
 #include "PybindRevolve.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
-PYBIND11_MODULE(smtkPybindMultiscaleSession, multiscale)
+PYBIND11_MODULE(_smtkPybindMultiscaleSession, multiscale)
 {
   multiscale.doc() = "<description>";
 
@@ -43,6 +42,5 @@ PYBIND11_MODULE(smtkPybindMultiscaleSession, multiscale)
 
   PySharedPtrClass< smtk::bridge::multiscale::PythonScript, smtk::bridge::multiscale::Operator > smtk_bridge_multiscale_PythonScript = pybind11_init_smtk_bridge_multiscale_PythonScript(multiscale);
   PySharedPtrClass< smtk::bridge::multiscale::Revolve, smtk::bridge::multiscale::Operator > smtk_bridge_multiscale_Revolve = pybind11_init_smtk_bridge_multiscale_Revolve(multiscale);
-  PySharedPtrClass< smtk::bridge::multiscale::Dream3DPipeline, smtk::bridge::multiscale::PythonScript > smtk_bridge_multiscale_Dream3DPipeline = pybind11_init_smtk_bridge_multiscale_Dream3DPipeline(multiscale);
   PySharedPtrClass< smtk::bridge::multiscale::PartitionBoundaries, smtk::bridge::multiscale::Operator > smtk_bridge_multiscale_PartitionBoundaries = pybind11_init_smtk_bridge_multiscale_PartitionBoundaries(multiscale);
 }
