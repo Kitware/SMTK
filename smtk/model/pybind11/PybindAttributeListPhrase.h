@@ -34,7 +34,7 @@ PySharedPtrClass< smtk::model::AttributeListPhrase, smtk::model::DescriptivePhra
     .def("relatedEntity", &smtk::model::AttributeListPhrase::relatedEntity)
     .def("relatedEntityId", &smtk::model::AttributeListPhrase::relatedEntityId)
     // .def("setup", (smtk::model::AttributeListPhrase::Ptr (smtk::model::AttributeListPhrase::*)(::smtk::model::EntityRef const &, ::smtk::model::DescriptivePhrasePtr)) &smtk::model::AttributeListPhrase::setup, py::arg("ent"), py::arg("parent"))
-    .def("setup", (smtk::model::AttributeListPhrase::Ptr (smtk::model::AttributeListPhrase::*)(::smtk::model::EntityRef const &, ::smtk::model::AttributeSet const &, ::smtk::model::DescriptivePhrasePtr)) &smtk::model::AttributeListPhrase::setup, py::arg("ent"), py::arg("subset"), py::arg("parent"))
+    .def("setup", (smtk::model::AttributeListPhrase::Ptr (smtk::model::AttributeListPhrase::*)(::smtk::model::EntityRef const &, ::smtk::common::UUIDs const &, ::smtk::model::DescriptivePhrasePtr)) &smtk::model::AttributeListPhrase::setup, py::arg("ent"), py::arg("subset"), py::arg("parent"))
     .def("shared_from_this", (std::shared_ptr<const smtk::model::AttributeListPhrase> (smtk::model::AttributeListPhrase::*)() const) &smtk::model::AttributeListPhrase::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<smtk::model::AttributeListPhrase> (smtk::model::AttributeListPhrase::*)()) &smtk::model::AttributeListPhrase::shared_from_this)
     .def("subtitle", &smtk::model::AttributeListPhrase::subtitle)

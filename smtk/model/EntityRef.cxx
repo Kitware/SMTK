@@ -868,8 +868,8 @@ bool EntityRef::disassociateAttribute(
   */
 bool EntityRef::disassociateAllAttributes(smtk::attribute::SystemPtr sys, bool reverse)
 {
-  AttributeSet atts = this->attributes();
-  AttributeSet::const_iterator it;
+  smtk::common::UUIDs atts = this->attributes();
+  smtk::common::UUIDs::const_iterator it;
   bool res = true;
   for (it = atts.begin(); it != atts.end(); ++it)
   {
@@ -881,14 +881,14 @@ bool EntityRef::disassociateAllAttributes(smtk::attribute::SystemPtr sys, bool r
 
 /**\brief Does the entityref have any attributes associated with it?
   */
-AttributeSet EntityRef::attributes() const
+smtk::common::UUIDs EntityRef::attributes() const
 {
   ManagerPtr mgr = this->m_manager.lock();
   UUIDsToAttributeAssignments::const_iterator entry =
     mgr->attributeAssignments().find(this->m_entity);
   if (entry == mgr->attributeAssignments().end())
   {
-    return AttributeSet();
+    return smtk::common::UUIDs();
   }
   return entry->second.attributes();
 }
