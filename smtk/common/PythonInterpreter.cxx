@@ -36,6 +36,10 @@ using boost::regex_search;
 using boost::regex_match;
 #endif
 SMTK_THIRDPARTY_POST_INCLUDE
+#if WIN32
+#include <Python.h>
+extern __declspec(dllimport) int Py_NoSiteFlag;
+#endif
 
 namespace
 {
@@ -72,6 +76,7 @@ void PythonInterpreter::initialize()
 {
   if (!this->isInitialized())
   {
+    Py_NoSiteFlag = 1;
     pybind11::initialize_interpreter();
 
     // Add the contents of our python path list to the path
