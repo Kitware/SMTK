@@ -24,6 +24,7 @@
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkModel.h"
 #include "vtkModelItem.h"
+
 #include <vtksys/SystemTools.hxx>
 
 #include "ReadOperator_xml.h"
@@ -69,6 +70,7 @@ OperatorResult ReadOperator::operateInternal()
     return this->createResult(OPERATION_FAILED);
 
   this->m_op->SetFileName(fname.c_str());
+  std::string modelName = vtksys::SystemTools::GetFilenameWithoutExtension(fname.c_str());
 
   // Create a new model to hold the result.
   vtkNew<vtkDiscreteModelWrapper> mod;
@@ -85,6 +87,7 @@ OperatorResult ReadOperator::operateInternal()
   smtk::common::UUID modelId =
     this->discreteSession()->trackModel(mod.GetPointer(), fname, this->manager());
   smtk::model::EntityRef modelEntity(this->manager(), modelId);
+  modelEntity.setName(modelName);
 
   OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
   smtk::attribute::ModelEntityItemPtr models = result->findModelEntity("created");
