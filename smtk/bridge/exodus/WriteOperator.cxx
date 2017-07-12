@@ -136,7 +136,7 @@ void RewriteLabels(vtkImageData* img, T* lblp, double thresh,
     if ((dist = (x - basept).Dot(normal)) < -delta) // Below the lower cutoff plane?
       lblp[p] = VOXEL_VOID;
     else if ((dist < delta) && (lblp[p] == 1)) // "On" the lower cutoff plane?
-      lblp[p] = OUTLET;
+      lblp[p] = static_cast<char>(OUTLET);
     else if ((dist = sqrt((ray = (x - scenter)).Dot(ray)) - sradius) <
       delta) // In or on the nose sphere?
     {

@@ -218,7 +218,7 @@ public:
     return removedAny;
   }
 
-  AttributeSet attributes() const;
+  smtk::common::UUIDs attributes() const;
 
 #ifndef SHIBOKEN_SKIP
   // For T = {IntegerData, FloatData, StringData}:

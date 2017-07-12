@@ -35,7 +35,7 @@ public:
   smtkSharedPtrCreateMacro(DescriptivePhrase);
   // This method has no implementation!
   Ptr setup(const EntityRef& ent, DescriptivePhrasePtr parent);
-  Ptr setup(const EntityRef& ent, const AttributeSet& subset, DescriptivePhrasePtr parent);
+  Ptr setup(const EntityRef& ent, const smtk::common::UUIDs& subset, DescriptivePhrasePtr parent);
 
   virtual std::string title();
   virtual std::string subtitle();
@@ -49,7 +49,7 @@ protected:
   virtual bool buildSubphrasesInternal();
 
   EntityRef m_entity;
-  AttributeSet m_attributes; // Subset to be presented, modifications do not affect storage!
+  smtk::common::UUIDs m_attributes; // Subset to be presented, modifications do not affect storage!
 };
 
 } // model namespace
