@@ -27,8 +27,7 @@
           <DiscreteInfo DefaultIndex="0">
             <Value Enum="Initial Depth">Initial Depth</Value>
             <Value Enum="Initial Concentration">Initial Concentration</Value>
-            <Value Enum="Initial Water Surface Elevation">Initial
-            Water Surface Elevation</Value>
+            <Value Enum="Initial Water Surface Elevation">Initial Water Surface Elevation</Value>
           </DiscreteInfo>
         </String>
 
