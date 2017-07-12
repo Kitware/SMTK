@@ -108,48 +108,39 @@ bool SaveJSON::prepareToSave(const smtk::model::Models& modelsToSave,
         Helpers::isDirectoryASubdirectory(embedDir.string(), url.parent_path().string(), relPath);
       if (embedData)
       {
-        /*
-        std::cout
-          << "Is URL <" << url.parent_path().string() << "> inside EmbedDir <" << embedDir << ">? "
-          << (alreadyEmbedded ? "Y" : "N")
-          << "   --- " << relPath << "\n";
-          */
-        if (ok && !alreadyEmbedded)
-        {
-          std::string embeddedURL;
-          if (obj.m_saveModels.find(modelURL) == obj.m_saveModels.end())
-          { // We haven't seen this model URL before.
-            embeddedURL = smtk::io::Helpers::uniqueFilename(url.filename().string(),
-              preExistingFilenames, smtkStem, defaultFileExtension, obj.m_embedDir);
-            obj.m_saveModels[modelURL] = embeddedURL;
-            smtk::model::SessionRef sref = model.owningSession();
-            if (!sref.op("write") && !sref.op("export") && !sref.op("save"))
+        std::string embeddedURL;
+        if (obj.m_saveModels.find(modelURL) == obj.m_saveModels.end())
+        { // We haven't seen this model URL before.
+          embeddedURL = smtk::io::Helpers::uniqueFilename(smtkStem + defaultFileExtension,
+            preExistingFilenames, smtkStem, defaultFileExtension, obj.m_embedDir);
+          obj.m_saveModels[modelURL] = embeddedURL;
+          smtk::model::SessionRef sref = model.owningSession();
+          if (!sref.op("write") && !sref.op("export") && !sref.op("save"))
+          {
+            // We don't have an operator to save the model, so
+            // assume it hasn't changed and copy the file to its
+            // embedded location (if it exists in its original location).
+            ::boost::filesystem::path prevURL(modelURL);
+            if (prevURL.is_relative() && model.hasStringProperty("smtk_url"))
             {
-              // We don't have an operator to save the model, so
-              // assume it hasn't changed and copy the file to its
-              // embedded location (if it exists in its original location).
-              ::boost::filesystem::path prevURL(modelURL);
-              if (prevURL.is_relative() && model.hasStringProperty("smtk_url"))
-              {
-                prevURL = prevEmbedDir / modelURL;
-              }
-              if (::boost::filesystem::exists(prevURL))
-              {
-                obj.m_copyFiles[prevURL.string()] = (embedDir / embeddedURL).string();
-              }
+              prevURL = prevEmbedDir / modelURL;
+            }
+            if (::boost::filesystem::exists(prevURL))
+            {
+              obj.m_copyFiles[prevURL.string()] = (embedDir / embeddedURL).string();
             }
           }
-          else
-          { // Another model was stored in the same file URL as this model; look up the new URL.
-            embeddedURL = obj.m_saveModels[modelURL];
-          }
-          if (!embeddedURL.empty())
-          {
-            obj.m_modelChanges[model]["url"] = smtk::model::StringList(1, embeddedURL);
-            //::boost::filesystem::path url = ::boost::filesystem::canonical(modelURL, embedDir);
-            obj.m_saveErrors << "<li>Save " << url.filename().string() << " to "
-                             << (embedDir / embeddedURL).string() << "</li>";
-          }
+        }
+        else
+        { // Another model was stored in the same file URL as this model; look up the new URL.
+          embeddedURL = obj.m_saveModels[modelURL];
+        }
+        if (!embeddedURL.empty())
+        {
+          obj.m_modelChanges[model]["url"] = smtk::model::StringList(1, embeddedURL);
+          //::boost::filesystem::path url = ::boost::filesystem::canonical(modelURL, embedDir);
+          obj.m_saveErrors << "<li>Save " << url.filename().string() << " to "
+                           << (embedDir / embeddedURL).string() << "</li>";
         }
       }
       else
