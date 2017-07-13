@@ -40,6 +40,9 @@ class SMTKCORE_EXPORT ResourceSetReader
   typedef std::map<std::string, smtk::common::ResourcePtr> ResourceMapType;
 
 public:
+  ResourceSetReader();
+  ResourceSetReader(smtk::model::ManagerPtr mgr);
+
   bool readFile(std::string filename, smtk::common::ResourceSet& resources,
     smtk::io::Logger& logger, bool loadLinkedFiles = true);
   bool readString(const std::string& content, smtk::common::ResourceSet& resources,
@@ -52,6 +55,8 @@ protected:
     std::string& path, smtk::io::Logger& logger);
   std::string buildIncludePath(
     const smtk::common::ResourceSet& resources, const std::string link) const;
+
+  smtk::model::ManagerPtr m_modelManager;
 };
 
 } // namespace io

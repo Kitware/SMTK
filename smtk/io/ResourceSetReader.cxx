@@ -19,6 +19,8 @@
 
 #include "smtk/common/CompilerInformation.h"
 
+#include "smtk/model/Manager.h"
+
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
@@ -32,6 +34,15 @@ namespace smtk
 {
 namespace io
 {
+
+ResourceSetReader::ResourceSetReader()
+{
+}
+
+ResourceSetReader::ResourceSetReader(smtk::model::ManagerPtr mgr)
+  : m_modelManager(mgr)
+{
+}
 
 bool ResourceSetReader::readFile(
   std::string filename, ResourceSet& resources, smtk::io::Logger& logger, bool loadLinkedFiles)
@@ -223,6 +234,11 @@ bool ResourceSetReader::readEmbeddedAttSystem(pugi::xml_node& element,
   {
     smtkErrorMacro(logger, "Failed to initialize attribute system");
     return false;
+  }
+
+  if (m_modelManager && !system->refModelManager())
+  {
+    system->setRefModelManager(m_modelManager);
   }
 
   // Instantiate AttributeReader and load contents

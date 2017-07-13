@@ -11,6 +11,10 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/System.h"
+#include "smtk/model/Manager.h"
+
 using namespace smtk::attribute;
 
 /// Construct an item given its owning attribute and location in the attribute.
@@ -141,7 +145,16 @@ smtk::model::EntityRef ModelEntityItem::value(std::size_t i) const
 {
   if (i >= static_cast<std::size_t>(this->m_values.size()))
     return smtk::model::EntityRef();
-  return this->m_values[i];
+  auto result = this->m_values[i];
+  if (!result.manager())
+  {
+    smtk::model::Manager::Ptr mgr = this->attribute()->system()->refModelManager();
+    if (mgr)
+    {
+      result.setManager(mgr);
+    }
+  }
+  return result;
 }
 
 /**\brief Set the entity stored with this item.
