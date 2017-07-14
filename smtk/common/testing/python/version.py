@@ -40,12 +40,11 @@ class Version(unittest.TestCase):
         readme.readline()  # Skip title
         readmeVersion = readme.readline().strip()
         readmeMatch = 'Version %s' % number
-
         self.assertEqual(readmeVersion, readmeMatch,
-                         """Mismatched version numbers in CMakeLists.txt and ReadMe.mkd.
+                         """Mismatched version numbers in CMakeLists.txt and doc/index.rst.
 
            Do not take version bumps lightheartedly.
-           Do not remove this test nor the line in the ReadMe.mkd
+           Do not remove this test nor the line in the doc/index.rst
            with the explicit version number; it is your friend.
 
            This test exists as a reminder to follow the release
@@ -55,7 +54,10 @@ class Version(unittest.TestCase):
            All tests should be passing and all issues assigned to
            the milestone for this release (you **do** have a
            milestone for this release, right?) have been closed.
-        """)
+
+           From index.rst: %s
+           From smtkCore (via CMakeLists.txt): %s
+        """ % (readmeVersion, readmeMatch))
 
 
 if __name__ == '__main__':
