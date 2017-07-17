@@ -1,5 +1,6 @@
 smtk_find_package_qt(qt_targets REQUIRED
-  QT4_COMPONENTS QtCore QtGui QtNetwork)
+  QT4_COMPONENTS QtCore QtGui QtNetwork
+  QT5_COMPONENTS Core Gui Network)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 

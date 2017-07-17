@@ -17,6 +17,7 @@
 #include "job.h"
 
 #include <QtCore/QList>
+#include <QtCore/QObject>
 
 class QNetworkReply;
 class QSslError;
