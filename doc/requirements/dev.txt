@@ -1,3 +1,4 @@
+pyparsing==1.5.7
 Pygments==1.6
 Sphinx==1.2.2
 actdiag==0.5.3

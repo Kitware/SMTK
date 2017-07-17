@@ -15,7 +15,7 @@
 import sys
 import os
 
-readTheDocs = os.environ.get('READTHEDOCS', None) == 'True'
+readTheDocs = os.environ.get('READTHEDOCS', None) != None
 sys.path.append(os.getcwd())  # So that the findfigure package can be imported
 # FIXME: Is the penultimate argument always the source dir?
 sourcedir = sys.argv[-2]
