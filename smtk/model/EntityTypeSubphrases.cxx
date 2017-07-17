@@ -295,6 +295,7 @@ void EntityTypeSubphrases::childrenOfEntity(EntityPhrase::Ptr phr, DescriptivePh
     //    ShellEntity sent = ent.as<ShellEntity>();
     Group gent = ent.as<Group>();
     Model ment = ent.as<Model>();
+    AuxiliaryGeometry aent = ent.as<AuxiliaryGeometry>();
     Instance ient = ent.as<Instance>();
     SessionRef sess = ent.as<SessionRef>();
     /*
@@ -314,7 +315,11 @@ void EntityTypeSubphrases::childrenOfEntity(EntityPhrase::Ptr phr, DescriptivePh
       this->usesOfShell(phr, sent, result);
       }
 */
-    if (gent.isValid())
+    if (aent.isValid())
+    {
+      this->childrenOfAuxiliaryGeometry(phr, aent, result);
+    }
+    else if (gent.isValid())
     {
       this->membersOfGroup(phr, gent, result);
     }
@@ -335,10 +340,16 @@ void EntityTypeSubphrases::childrenOfEntity(EntityPhrase::Ptr phr, DescriptivePh
 
       this->meshesOfModel(phr, ment, result);
     }
+    /* For now, to prevent infinite recursion because some things
+     * are foolishly using the tree view to create a selection
+     * (qtModelView ::selectionChanged and ::currentSelectionByMask,
+     * I'm lookin' at you!), do not report the prototype of an instance
+     * as one of its children.
     else if (ient.isValid())
     {
       this->prototypeOfInstance(phr, ient, result);
     }
+     */
     else if (sess.isValid())
     {
       this->modelsOfSession(phr, sess, result);

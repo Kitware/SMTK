@@ -802,17 +802,22 @@ inline QModelIndex _internal_getPhraseIndex(smtk::extension::QEntityItemModel* q
   if (dp == phrase)
     return top;
 
-  for (int row = 0; row < qmodel->rowCount(top); ++row)
+  // Only look at subphrases if they are already built; otherwise, this can cause
+  // infinite recursion when qmodel->rowCount() or ->index() are called.
+  if (dp->areSubphrasesBuilt())
   {
-    QModelIndex cIdx(qmodel->index(row, 0, top));
-    dp = qmodel->getItem(cIdx);
-    if (dp == phrase)
-      return cIdx;
-    if (recursive)
+    for (int row = 0; row < qmodel->rowCount(top); ++row)
     {
-      QModelIndex recurIdx(_internal_getPhraseIndex(qmodel, phrase, cIdx, recursive));
-      if (recurIdx.isValid())
-        return recurIdx;
+      QModelIndex cIdx(qmodel->index(row, 0, top));
+      dp = qmodel->getItem(cIdx);
+      if (dp == phrase)
+        return cIdx;
+      if (recursive)
+      {
+        QModelIndex recurIdx(_internal_getPhraseIndex(qmodel, phrase, cIdx, recursive));
+        if (recurIdx.isValid())
+          return recurIdx;
+      }
     }
   }
   return QModelIndex();

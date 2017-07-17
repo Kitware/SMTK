@@ -301,6 +301,16 @@ void SubphraseGenerator::meshesOfModel(
   addMeshPhrases(meshCollections, src, this->directLimit(), result);
 }
 
+void SubphraseGenerator::childrenOfAuxiliaryGeometry(
+  DescriptivePhrase::Ptr src, const AuxiliaryGeometry& aux, DescriptivePhrases& result)
+{
+  auto children = aux.embeddedEntities<AuxiliaryGeometries>();
+  for (auto child : children)
+  {
+    result.push_back(EntityPhrase::create()->setup(child, src));
+  }
+}
+
 void SubphraseGenerator::prototypeOfInstance(
   DescriptivePhrase::Ptr src, const Instance& ent, DescriptivePhrases& result)
 {

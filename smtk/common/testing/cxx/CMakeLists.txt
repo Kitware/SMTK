@@ -1,10 +1,11 @@
 smtk_public_headers(helpers.h)
 
 set(commonTests
-  unitUUID
+  unitExtension
   unitPaths
-  unitUnionFind
   unitRangeDetector
+  unitUnionFind
+  unitUUID
 )
 
 foreach (test ${commonTests})

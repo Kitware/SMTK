@@ -283,11 +283,11 @@ public:                                                                         
 
 /**\brief A base class for bridging modelers into SMTK.
   *
-  * SMTK can act as a session between other (foreign) solid modelers
+  * SMTK can act as a bridge between other (foreign) solid modelers
   * and client applications.
-  * Either the session or the foreign modeler must provide techniques
-  * for attaching UUIDs to foreign model entities and for obtaining
-  * notification when foreign model entities are modified or
+  * The session must provide techniques for attaching UUIDs to foreign model
+  * entities (on its own or by using facilities provided by the foreign modeler)
+  * and for obtaining notification when foreign model entities are modified or
   * destroyed. In extreme cases, the SMTK model manager must be reset after
   * each modeling operation to guarantee a consistent model.
   *

@@ -55,7 +55,40 @@
           </DiscreteInfo>
         </Int>
 
-        <Void Name="separate representation" AdvanceLevel="1" Optional="true" IsEnabledByDefault="true"
+        <Double Name="scale" NumberOfRequiredValues="3">
+          <BriefDescription>
+            Scale data read from the URL? If so, specify a scale factor for each axis.
+          </BriefDescription>
+          <DetailedDescription>
+            Enabling this item allows you to specify a scale factor per axis for the
+            auxiliary geometry.
+            Scaling is performed about the origin before rotation and translation.
+          </DetailedDescription>
+          <DefaultValue>1, 1, 1</DefaultValue>
+        </Double>
+        <Double Name="rotate" NumberOfRequiredValues="3">
+          <BriefDescription>
+            Rotate data read from the URL? If so, specify angles about each axis in degrees.
+          </BriefDescription>
+          <DetailedDescription>
+            Enabling this item allows you to specify angles (in degrees) about which to rotate
+            the auxiliary geometry. Angles are specified about the origin and rotation is applied
+            before translation.
+          </DetailedDescription>
+          <DefaultValue>0, 0, 0</DefaultValue>
+        </Double>
+        <Double Name="translate" NumberOfRequiredValues="3">
+          <BriefDescription>Translate data read from the URL? If so, specify a vector.</BriefDescription>
+          <DetailedDescription>
+            Enabling this item allows you to specify a vector to add to each original point
+            of the auxiliary geometry.
+            Translation is applied after scaling and rotation;
+            therefore the vector is not modified by the specifed scaling and rotation (if any).
+          </DetailedDescription>
+          <DefaultValue>0, 0, 0</DefaultValue>
+        </Double>
+
+        <Void Name="separate representation" AdvanceLevel="1" Optional="true" IsEnabledByDefault="false"
           Label="Display as separate representation from model">
           <BriefDescription>
             Should the auxiliary geometry's representation be separate from its owning model's?
@@ -75,7 +108,7 @@
     <AttDef Type="result(add auxiliary geometry)" BaseType="result">
       <ItemDefinitions>
         <!-- The modified entities are stored in the base result's "modified" item. -->
-        <ModelEntity Name="tess_changed" NumberOfRequiredValues="1"/>
+        <ModelEntity Name="tess_changed" NumberOfRequiredValues="0" Extensible="true"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

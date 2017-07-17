@@ -1,4 +1,5 @@
 set(VTKLibSrcs
+  vtkAuxiliaryGeometryExtension.cxx
   vtkMeshMultiBlockSource.cxx
   vtkModelAuxiliaryGeometry.cxx
   vtkModelMultiBlockSource.cxx
@@ -8,12 +9,20 @@ set(VTKLibSrcs
 )
 
 set(VTKLibHeaders
+  vtkAuxiliaryGeometryExtension.h
   vtkMeshMultiBlockSource.h
   vtkModelAuxiliaryGeometry.h
   vtkModelMultiBlockSource.h
   vtkModelRepresentation.h
   vtkModelSource.h
   vtkModelView.h
+)
+
+set_source_files_properties(
+  vtkAuxiliaryGeometryExtension.h
+  PROPERTIES
+    WRAP_EXCLUDE 1
+    WRAP_EXCLUDE_PYTHON 1
 )
 
 # Add compile definitions to force linking to implementation modules

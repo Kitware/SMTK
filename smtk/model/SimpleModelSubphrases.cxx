@@ -252,7 +252,7 @@ void SimpleModelSubphrases::childrenOfEntity(EntityPhrase::Ptr phr, DescriptiveP
     if (dimBits > 0 && phr->relatedEntity().dimensionBits() > 0 &&
       ((dimBits > phr->relatedEntity().dimensionBits() &&
          !(dimBits & phr->relatedEntity().dimensionBits())) ||
-        phr->relatedEntity().isModel()))
+          phr->relatedEntity().isModel()))
     { // Do not report higher-dimensional relation
       return;
     }
@@ -268,6 +268,7 @@ void SimpleModelSubphrases::childrenOfEntity(EntityPhrase::Ptr phr, DescriptiveP
     ShellEntity sent = ent.as<ShellEntity>();
     Group gent = ent.as<Group>();
     Model ment = ent.as<Model>();
+    AuxiliaryGeometry aent = ent.as<AuxiliaryGeometry>();
     Instance ient = ent.as<Instance>();
     SessionRef sess = ent.as<SessionRef>();
     if (uent.isValid())
@@ -300,6 +301,10 @@ void SimpleModelSubphrases::childrenOfEntity(EntityPhrase::Ptr phr, DescriptiveP
       this->freeCellsOfModel(phr, ment, result);
       this->freeAuxiliaryGeometriesOfModel(phr, ment, result);
       this->meshesOfModel(phr, ment, result);
+    }
+    else if (aent.isValid())
+    {
+      this->childrenOfAuxiliaryGeometry(phr, aent, result);
     }
     else if (ient.isValid())
     {

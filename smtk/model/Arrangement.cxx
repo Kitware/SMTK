@@ -529,6 +529,15 @@ bool Arrangement::relations(
           return AuxiliaryGeometryEmbeddedInEntityRelationHelper()(relsOut, ent, *this);
         case INCLUDES:
           return AuxiliaryGeometryIncludesEntityRelationHelper()(relsOut, ent, *this);
+
+        // Should auxiliary geometry be allowed to be supersets?
+        case SUPERSET_OF:
+          return EntitySupersetOfRelationHelper()(relsOut, ent, *this);
+        case SUBSET_OF:
+          return EntitySubsetOfRelationHelper()(relsOut, ent, *this);
+
+        case INSTANCED_BY:
+          return InstanceInstancedByRelationHelper()(relsOut, ent, *this);
         default:
           break;
       }
@@ -676,6 +685,26 @@ bool Arrangement::relationIndices(
         case INCLUDES:
           return CellIncludesEntityRelationHelper()(idxsOut, ent, *this);
 
+        case SUPERSET_OF:
+          return EntitySupersetOfRelationHelper()(idxsOut, ent, *this);
+        case SUBSET_OF:
+          return EntitySubsetOfRelationHelper()(idxsOut, ent, *this);
+
+        case INSTANCED_BY:
+          return InstanceInstancedByRelationHelper()(idxsOut, ent, *this);
+        default:
+          break;
+      }
+      break;
+    case AUX_GEOM_ENTITY:
+      switch (k)
+      {
+        case EMBEDDED_IN:
+          return AuxiliaryGeometryEmbeddedInEntityRelationHelper()(idxsOut, ent, *this);
+        case INCLUDES:
+          return AuxiliaryGeometryIncludesEntityRelationHelper()(idxsOut, ent, *this);
+
+        // Should auxiliary geometry be allowed to be supersets?
         case SUPERSET_OF:
           return EntitySupersetOfRelationHelper()(idxsOut, ent, *this);
         case SUBSET_OF:
