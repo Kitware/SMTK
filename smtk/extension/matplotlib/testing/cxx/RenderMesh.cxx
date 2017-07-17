@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
   // Set the mesh to be rendered
   op->specification()->findMesh("mesh")->setValue(c->meshes());
 
-  // Set the file path for the rendered imagel
+  // Set the file path for the rendered image
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".png";
   op->specification()->findFile("filename")->setValue(write_path);
