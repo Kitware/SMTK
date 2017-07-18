@@ -23,7 +23,7 @@
 #include <QtNetwork/QNetworkRequest>
 
 #if QT_VERSION >= 0x050000
-#include <QtCore/QQUrlQuery>
+#include <QtCore/QUrlQuery>
 #endif
 
 namespace cumulus
