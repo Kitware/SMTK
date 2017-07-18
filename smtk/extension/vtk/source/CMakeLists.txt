@@ -16,6 +16,7 @@ set(VTKLibHeaders
   vtkModelRepresentation.h
   vtkModelSource.h
   vtkModelView.h
+  vtkTracksAllInstances.h
 )
 
 set_source_files_properties(
