@@ -34,100 +34,123 @@ namespace smtk
 {
 
 /**\brief Classes used throughout the toolkit.
-    *
-    */
+  *
+  */
 namespace common
 {
 }
 
 /**\brief Define attributes describing simulation inputs.
-    *
-    */
+  *
+  */
 namespace attribute
 {
 }
 
 /**\brief Represent geometric and topological models of simulation domains.
-    *
-    * The Manager class holds records defining one or more geometric-
-    * and/or topological-domain decompositions;
-    * it maps smtk::common::UUID values to Entity, Arrangement, and
-    * Tessellation instances.
-    * However, most developers will use the EntityRef classes
-    * (Vertex, Edge, Face, Volume, VertexUse, EdgeUse, FaceUse, VolumeUse,
-    * Chain, Loop, Shell, Group, Model, and Instance)
-    * to access this information.
-    * EntityRef is a base class for traversing records in Manager
-    * and provides some capability for modifying the model.
-    * Attributes may be defined on any record in storage by virtue of the
-    * fact that all records in storage are named by their UUID.
-    *
-    * A set of classes exist for presenting model information to users.
-    * DescriptivePhrase is an abstract base class with subclasses
-    * EntityPhrase, EntityListPhrase, PropertyValuePhrase, and
-    * PropertyListPhrase. These instances are placed into a hierarchy
-    * that describe the model in a context; in a functional modeling
-    * context, perhaps only descriptions of models and their groups will
-    * be displayed. When assigning geometry to functional groups,
-    * perhaps only geometric cells of a particular dimension will be shown.
-    * The SubphraseGenerator class is what determines the particular
-    * hierarchy, and a subclass will generally be written for each
-    * context in which model Manager should be presented.
-    *
-    * If built with VTK, several classes beginning with "vtk" are available
-    * for rendering and interacting with model entities which have
-    * tessellation information.
-    *
-    * If built with Qt, the QEntityItemModel, QEntityItemDelegate, and
-    * QEntityItemEditor classes may be used to display model information
-    * as exposed by a hierarchy of DescriptivePhrase instances.
-    */
+  *
+  * The Manager class holds records defining one or more geometric-
+  * and/or topological-domain decompositions;
+  * it maps smtk::common::UUID values to Entity, Arrangement, and
+  * Tessellation instances.
+  * However, most developers will use the EntityRef classes
+  * (Vertex, Edge, Face, Volume, VertexUse, EdgeUse, FaceUse, VolumeUse,
+  * Chain, Loop, Shell, Group, Model, and Instance)
+  * to access this information.
+  * EntityRef is a base class for traversing records in Manager
+  * and provides some capability for modifying the model.
+  * Attributes may be defined on any record in storage by virtue of the
+  * fact that all records in storage are named by their UUID.
+  *
+  * A set of classes exist for presenting model information to users.
+  * DescriptivePhrase is an abstract base class with subclasses
+  * EntityPhrase, EntityListPhrase, PropertyValuePhrase, and
+  * PropertyListPhrase. These instances are placed into a hierarchy
+  * that describe the model in a context; in a functional modeling
+  * context, perhaps only descriptions of models and their groups will
+  * be displayed. When assigning geometry to functional groups,
+  * perhaps only geometric cells of a particular dimension will be shown.
+  * The SubphraseGenerator class is what determines the particular
+  * hierarchy, and a subclass will generally be written for each
+  * context in which model Manager should be presented.
+  *
+  * If built with VTK, several classes beginning with "vtk" are available
+  * for rendering and interacting with model entities which have
+  * tessellation information.
+  *
+  * If built with Qt, the QEntityItemModel, QEntityItemDelegate, and
+  * QEntityItemEditor classes may be used to display model information
+  * as exposed by a hierarchy of DescriptivePhrase instances.
+  */
 namespace model
 {
 }
 
+/**\brief Mesh representation, classification, and manipulation.
+  *
+  */
+namespace mesh
+{
+}
+
 /**\brief Tools for exporting simulation input decks from attributes.
-    *
-    */
+  *
+  */
 namespace simulation
 {
 }
 
 /**\brief I/O utilities for the toolkit.
-    *
-    */
+  *
+  */
 namespace io
 {
 }
 
 /**\brief Sessions to solid modeling kernels.
-    *
-    */
+  *
+  */
 namespace bridge
 {
 /**\brief A session using the Common Geometry Module (Argonne).
-      *
-      */
+  *
+  */
 namespace cgm
 {
 }
 /**\brief A session that imports Exodus meshes.
-      *
-      */
+  *
+  */
 namespace exodus
 {
 }
 /**\brief A forwarding session that uses Remus.
-      *
-      */
+  *
+  */
 namespace remote
 {
 }
 }
 
+/**\brief Extensions to SMTK that introduce external dependencies.
+  *
+  * Generally, any functionality that introduces external dependencies but
+  * does not expose a modeling kernel belongs in this namespace.
+  */
+namespace extension
+{
+
+/**\brief A simple mesh generator.
+  *
+  */
+namespace delaunay
+{
+}
+}
+
 /**\brief Representations of SMTK components in user interfaces.
-    *
-    */
+  *
+  */
 namespace view
 {
 }

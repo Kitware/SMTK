@@ -66,8 +66,22 @@ def runDoxygen(rtdsrcdir, rtdblddir, doxyfileIn, doxyfileOut):
     os.chdir(orgdir)
 
 
+def configFile(srcdir, blddir, templateFile, outputFile, keywords):
+    ofile = open(os.path.join(srcdir, outputFile), 'w')
+    data = open(os.path.join(srcdir, templateFile), 'r').read()
+    for (patt, repl) in keywords.iteritems():
+        data = data.replace(patt, str(repl))
+    ofile.write(data)
+    ofile.close()
+
 if readTheDocs:
-    """Run Doxygen ourselves"""
+    """Configure files and run Doxygen ourselves"""
+    # Configure some files
+    configFile(sourcedir, builddir, '../CMake/Version.h.in', '../smtk/common/Version.h', {
+        '@SMTK_VERSION_MAJOR@': 1,
+        '@SMTK_VERSION_MINOR@': 1,
+        '@SMTK_VERSION_PATCH@': 0,
+        '@SMTK_VERSION@': '1.1.0'})
     # Run doxygen ourselves on ReadTheDocs.org so that doxylinks will work.
     runDoxygen(sourcedir, builddir, 'sparsehash.doxyfile.in',
                'sparsehash.doxyfile')
@@ -172,7 +186,8 @@ pygments_style = 'sphinx'
 findfigure_paths = {
     '*': [
         sourcedir,
-        os.path.join(sourcedir, 'images', 'userguide', 'figures'),
+        os.path.join(sourcedir, 'images'),
+        os.path.join(sourcedir, 'userguide', 'figures'),
         builddir,
         os.path.join(builddir, '..')]
 }
