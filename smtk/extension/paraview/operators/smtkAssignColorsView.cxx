@@ -298,7 +298,7 @@ void smtkAssignColorsView::createWidget()
     SLOT(show()));
   QObject::connect( // When the user has chosen a preference, remember and apply it.
     this->Internals->PaletteChooser, SIGNAL(applyPreset(const Json::Value&)), this,
-    SLOT(setDefaultPaletteAndApply(const Json::Value&)));
+    SLOT(setDefaultPaletteAndApply()));
 
   // Signals and slots related to single-color mode:
   QObject::connect( // When asked, apply the colormap specified by the user preference.
@@ -433,10 +433,11 @@ void smtkAssignColorsView::applyDefaultColor()
   this->requestOperation(op);
 }
 
-void smtkAssignColorsView::setDefaultPaletteAndApply(const Json::Value& preset)
+void smtkAssignColorsView::setDefaultPaletteAndApply()
 {
+  const Json::Value& preset = this->Internals->PaletteChooser->currentPreset();
   std::string name(preset["Name"].asString().c_str());
-  //std::cout << "Change default palette to \"" << name << "\"\n";
+  //std::cerr << "Change default palette to \"" << name << "\"" << std::endl;
   pqSettings* settings = pqApplicationCore::instance()->settings();
   settings->setValue("ModelBuilder/Operators/AssignColors/defaultPalette", name.c_str());
   this->Internals->PaletteChooser->hide();
