@@ -1,7 +1,7 @@
 .. _generating-pybind11-bindings:
 
 Generating pybind11 bindings
-=====================
+============================
 
 SMTK's pybind11_ bindings are generated via python scripts that use
 pygccxml_ to construct a C++ header file corresponding to each header

@@ -9,6 +9,7 @@
 //=========================================================================
 #ifndef __smtk_model_Manager_h
 #define __smtk_model_Manager_h
+/*!\file */
 
 #include "smtk/Options.h" // for SMTK_HASH_STORAGE
 #include "smtk/PublicPointerDefs.h"

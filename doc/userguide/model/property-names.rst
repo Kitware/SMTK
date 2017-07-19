@@ -128,6 +128,19 @@ Properties used internally are in the following table:
 |                                |               | See :smtk:`Entity::defaultNameFromCounters()` to understand how the array  |
 |                                |               | is used.                                                                   |
 +--------------------------------+---------------+----------------------------------------------------------------------------+
+| _tessgen                       | Integer       | An integer used as a generation number for tessellation and bounding       |
+|                                |               | box data; it is incremented each time the entity geometry changes.         |
++--------------------------------+---------------+----------------------------------------------------------------------------+
+| _meshgen                       | Integer       | An integer used as a generation number for mesh data; it is incremented    |
+|                                |               | each time a mesh is modified (e.g., by displacing it, not by remeshing).   |
++--------------------------------+---------------+----------------------------------------------------------------------------+
+| _geomstyle                     | Integer       | Indicates whether the modeling kernel represents geometry                  |
+|                                |               | discretely (:smtk:`smtk::model::DISCRETE`) or                              |
+|                                |               | parametrically (:smtk:`smtk::model::PARAMETRIC`).                          |
++--------------------------------+---------------+----------------------------------------------------------------------------+
+| _boundingBox                   | Float         | The world-coordinate, axis-aligned bounds of an entity, reported as a      |
+|                                |               | 6-vector: [xmin, xmax, ymin, ymax, zmin, zmax].                            |
++--------------------------------+---------------+----------------------------------------------------------------------------+
 
 ..  Blank row:
 ..  |                                |               |                                                                            |
@@ -135,7 +148,7 @@ Properties used internally are in the following table:
 .. _session-model-properties:
 
 Model properties of sessions
----------------------------
+----------------------------
 
 In general, sessions should choose a prefix for their property names
 so that developers can easily identify the source of the property,
@@ -148,6 +161,8 @@ Properties specific to the Exodus session are listed in the table below.
 +--------------------------------+---------------+----------------------------------------------------------------------------+
 | Property name                  | Property type | Description                                                                |
 +================================+===============+============================================================================+
+| cmb id                         | Integer       | A pedigree ID assigned to model entities in discrete sessions.             |
++--------------------------------+---------------+----------------------------------------------------------------------------+
 | exodus id                      | Integer       | The block ID or set ID as stored in the Exodus file.                       |
 +--------------------------------+---------------+----------------------------------------------------------------------------+
 | exodus type                    | String        | One of "block", "side set", or "node set".                                 |

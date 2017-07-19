@@ -2,7 +2,7 @@
 IO
 ==
 
-:smtk:`writeMesh <smtk::io::writeMesh>`
+:smtk:`WriteMesh <smtk::io::WriteMesh>`
   Writes out a given :smtk:`Collection <smtk::mesh::Collection>`, or only
   the elements that match a given Domain, Dirichlet or Neumann
   property. This is a preserving process: all information relevant to
@@ -13,7 +13,7 @@ IO
       + MOAB (h5m, mhdf)
       + Exodus II (exo exoII exo2 g gen)
 
-:smtk:`readMesh <smtk::io::readMesh>`
+:smtk:`ReadMesh <smtk::io::ReadMesh>`
   Load a given file in as a new :smtk:`Collection <smtk::mesh::Collection>` or
   part of an existing :smtk:`Collection <smtk::mesh::Collection>`. Also
   supports loading just elements that a given Domain, Dirichlet or Neumann
@@ -24,7 +24,7 @@ IO
       + MOAB (h5m, mhdf)
       + Exodus II (exo exoII exo2 g gen)
 
-:smtk:`importMesh <smtk::io::importMesh>`
+:smtk:`ImportMesh <smtk::io::ImportMesh>`
   Import a given file in as a new :smtk:`Collection <smtk::mesh::Collection>` or
   part of an existing :smtk:`Collection
   <smtk::mesh::Collection>`. Imports are not preserving processes:
@@ -41,7 +41,7 @@ IO
       + Gmsh (msh gmsh)
       + Stereolithography (stl)
 
-:smtk:`exportMesh <smtk::io::exportMesh>`
+:smtk:`ExportMesh <smtk::io::ExportMesh>`
   Export a given :smtk:`Collection <smtk::mesh::Collection>`  to
   file. Exports are not preserving processes:
   all mesh information contained in the mesh database is not
@@ -60,9 +60,9 @@ IO
 
 
 Serialization
-============
+=============
 
-:smtk:`ExportJSON <smtk::io::ExportJSON>`
+:smtk:`SaveJSON <smtk::io::SaveJSON>`
   Export all the :smtk:`Collection <smtk::mesh::Collection>` that have
   associations with the any model that is part of the passed in
   :smtk:`Manager <smtk::model::Manager>`. The exporter will save each
@@ -145,7 +145,7 @@ Serialization
    }
 
 
-:smtk:`ImportJSON <smtk::io::ImportJSON>`
+:smtk:`LoadJSON <smtk::io::LoadJSON>`
   Imports all the :smtk:`Collection <smtk::mesh::Collection>` that are listed
   in the provided JSON string. Each Collection will be marked as being associated
   with the provided model :smtk:`Manager <smtk::model::Manager>`.
