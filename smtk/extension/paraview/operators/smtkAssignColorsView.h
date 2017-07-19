@@ -54,9 +54,9 @@ protected slots:
 
   virtual void chooseDefaultColorAndApply();
   virtual void applyDefaultColor();
-  virtual void setDefaultPaletteAndApply(const Json::Value& preset);
   virtual void applyDefaultPalette();
   virtual void removeColors();
+  virtual void setDefaultPaletteAndApply();
 
   // This slot is used to indicate that the underlying attribute
   // for the operation should be checked for validity
