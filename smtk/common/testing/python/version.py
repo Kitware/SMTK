@@ -37,11 +37,10 @@ class Version(unittest.TestCase):
 
         readme = open(os.path.join(smtk.testing.SOURCE_DIR, 'doc/index.rst'))
         readme.readline()  # Skip title flare
-        readme.readline()  # Skip title
         readmeVersion = readme.readline().strip()
         readmeMatch = 'Version %s' % number
-        self.assertEqual(readmeVersion, readmeMatch,
-                         """Mismatched version numbers in CMakeLists.txt and doc/index.rst.
+        self.assertTrue(readmeVersion.find(readmeMatch) > 0,
+                        """Mismatched version numbers in CMakeLists.txt and doc/index.rst.
 
            Do not take version bumps lightheartedly.
            Do not remove this test nor the line in the doc/index.rst
