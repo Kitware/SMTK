@@ -11,7 +11,7 @@
 # - Do not pass a version number. That will not be processed correctly. The
 #   version number is determined by this macro itself.
 # - Do not use COMPONENTS or OPTIONAL_COMPONENTS instead, use QT4_COMPONENTS,
-#   QT4_OPTIONAL_COMPONENTS and QT5_COMPONENTS, QT5_COMPONENTS to separately
+#   QT4_OPTIONAL_COMPONENTS and QT5_COMPONENTS, QT5_OPTIONAL_COMPONENTS to separately
 #   specify the components to use for Qt4 and Qt5.
 macro(smtk_find_package_qt out_targets_var)
   if(NOT DEFINED SMTK_QT_VERSION)

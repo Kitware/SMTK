@@ -42,7 +42,7 @@ add_library(smtkPQOperatorViewsExt
   ${uisrc}
 )
 
-#we need to add the location of the moc files to the include dir for smtkPWWidgetExt
+#we need to add the location of the moc files to the include dir for smtkPQWidgetExt
 target_include_directories(smtkPQOperatorViewsExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 #qt4_use_modules(smtkPQOperatorViewsExt LINK_PUBLIC Core Gui)
 
@@ -52,7 +52,7 @@ target_link_libraries(smtkPQOperatorViewsExt
     pqApplicationComponents
     smtkQtExt
     smtkCore
-    ${QT_QTCORE_LIBRARY}
+    ${QT_QTCORE_LIBRARY} # It seems it's empty
     ${Boost_LIBRARIES}
     vtkjsoncpp
 )

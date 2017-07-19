@@ -12,6 +12,7 @@ set(modelOps
   LoadSMTKModel
   SaveSMTKModel
   SetProperty
+  TerrainExtraction
 )
 
 set(modelSrcs
