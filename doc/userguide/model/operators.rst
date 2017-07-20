@@ -101,9 +101,16 @@ what changes an operator has made to the model:
   This is signaled separately from ``modified`` above to minimize the overhead in
   rendering when only topological changes have occurred.
 * ``cleanse entities`` (:smtk:`VoidItem <smtk::attribute::VoidItem>`)
-  When present *and enabled* this operator marks the ``modified`` and ``created`` entities
+  When present *and enabled*, this operator marks the ``modified`` and ``created`` entities
   as "clean" (meaning that they do not need to be saved; they are at exactly the state
   present in their owning-model's URL).
+* ``allow camera reset`` (:smtk:`VoidItem <smtk::attribute::VoidItem>`)
+  When present *and enabled*, this operator will *allow* (but not force) the camera of the
+  active render view to be reset. A reset will actually occur when no renderable entities
+  existed prior to the operation but at least one renderable entity exists afterward.
+  Operators which load data from files are encouraged to include this item in their result
+  attribute while operators which let users create or modify entities interactively — especially
+  through interaction in render-views — are discouraged from allowing camera resets.
 
 Registration
 ------------

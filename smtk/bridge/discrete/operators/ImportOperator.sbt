@@ -66,6 +66,7 @@
     <AttDef Type="result(import)" BaseType="result">
       <ItemDefinitions>
         <ModelEntity Name="mesh_created" NumberOfRequiredValues="1"/>
+        <Void Name="allow camera reset" IsEnabledByDefault="true" AdvanceLevel="11"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

@@ -18,6 +18,7 @@
         <!-- The model read from the file. -->
         <ModelEntity Name="model" NumberOfRequiredValues="1" Extensible="1" MembershipMask="4096"/>
         <ModelEntity Name="mesh_created" NumberOfRequiredValues="1"/>
+        <Void Name="allow camera reset" IsEnabledByDefault="true" AdvanceLevel="11"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

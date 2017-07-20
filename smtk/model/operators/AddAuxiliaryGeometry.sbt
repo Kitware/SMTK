@@ -109,6 +109,7 @@
       <ItemDefinitions>
         <!-- The modified entities are stored in the base result's "modified" item. -->
         <ModelEntity Name="tess_changed" NumberOfRequiredValues="0" Extensible="true"/>
+        <Void Name="allow camera reset" IsEnabledByDefault="true" AdvanceLevel="11"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

@@ -25,6 +25,7 @@
       <ItemDefinitions>
         <ModelEntity Name="mesh_created" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>
         <Void Name="cleanse entities" IsEnabledByDefault="true"></Void>
+        <Void Name="allow camera reset" IsEnabledByDefault="true" AdvanceLevel="11"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>
