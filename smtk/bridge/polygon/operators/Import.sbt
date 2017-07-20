@@ -63,6 +63,10 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
-    <AttDef Type="result(import)" BaseType="result"/>
+    <AttDef Type="result(import)" BaseType="result">
+      <ItemDefinitions>
+        <Void Name="allow camera reset" IsEnabledByDefault="true" AdvanceLevel="11"/>
+      </ItemDefinitions>
+    </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>
