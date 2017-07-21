@@ -6,10 +6,10 @@ find_package( VTK REQUIRED )
 include_directories(${VTK_INCLUDE_DIRS})
 
 set(VXLWidgetsHeaders
-  bar.h
+  pqTerrainExtractionManager.h
    )
 set(VXLWidgetsSrcs
-  bar.cxx
+  pqTerrainExtractionManager.cxx
    )
 set(VXLWidgetsUI
    )
@@ -38,6 +38,7 @@ target_link_libraries(smtkVXLWidgetsExt LINK_PUBLIC
   smtkCore
   smtkPQWidgetsExt
   vtkSMTKSourceExt
+  smtkVXLOperatorViewsExt
   ${qt_targets}
 LINK_PRIVATE
   ${VTK_LIBRARIES}

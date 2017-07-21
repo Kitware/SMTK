@@ -15,25 +15,26 @@
 #ifndef smtkTerrainExtractionView_h
 #define smtkTerrainExtractionView_h
 
-#include "Exports.h"
 #include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/vxl/operators/Exports.h"
+#include "smtk/extension/vxl/operators/ui_smtkTerrainExtractionParameters.h"
 #include <vtk_jsoncpp.h> // for Json::Value; must be in header due to VTK mangling
 
 #include <QtCore/QObject>
-#include <QtWidgets/QLayout>
 
 class smtkTerrainExtractionViewInternals;
+class QWidget;
 
-/// A view for exporting SMTK "packages" (SMTK files with data saved to the same directory).
 class SMTKVXLOPERATORVIEWSEXT_EXPORT smtkTerrainExtractionView : public smtk::extension::qtBaseView
 {
   Q_OBJECT
 
 public:
-  static smtk::extension::qtBaseView* createViewWidget(const smtk::extension::ViewInfo& info);
-
   smtkTerrainExtractionView(const smtk::extension::ViewInfo& info);
   virtual ~smtkTerrainExtractionView();
+  static smtk::extension::qtBaseView* createViewWidget(const smtk::extension::ViewInfo& info);
+
+  Ui::TerrainExtractionParameters* terrainExtractionParameterUI();
 
   // virtual bool displayItem(smtk::attribute::ItemPtr);
 

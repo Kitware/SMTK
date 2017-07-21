@@ -25,6 +25,8 @@
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
+#include <QtWidgets/QWidget>
+
 using namespace smtk::extension;
 
 class smtkTerrainExtractionViewInternals : public Ui::TerrainExtractionParameters
@@ -79,6 +81,11 @@ qtBaseView* smtkTerrainExtractionView::createViewWidget(const smtk::extension::V
   smtkTerrainExtractionView* view = new smtkTerrainExtractionView(info);
   view->buildUI();
   return view;
+}
+
+Ui::TerrainExtractionParameters* smtkTerrainExtractionView::terrainExtractionParameterUI()
+{
+  return this->Internals;
 }
 
 void smtkTerrainExtractionView::attributeModified()
