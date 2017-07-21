@@ -47,8 +47,6 @@ target_link_libraries(smtkVXLOperatorViewsExt
   LINK_PRIVATE
     smtkPQWidgetsExt
     #${QT_QTCORE_LIBRARY} # it seems that it's deprecated
-    ${Boost_LIBRARIES}
-    vtkjsoncpp
 )
 
 # if (SMTK_ENABLE_TESTING)

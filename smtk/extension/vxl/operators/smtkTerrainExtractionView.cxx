@@ -60,6 +60,7 @@ public:
 
   QPointer<qtAttribute> CurrentAtt;
   smtk::weak_ptr<smtk::model::Operator> CurrentOp;
+  QPointer<QWidget> terrainExtraction;
 };
 
 smtkTerrainExtractionView::smtkTerrainExtractionView(const smtk::extension::ViewInfo& info)
@@ -82,8 +83,9 @@ qtBaseView* smtkTerrainExtractionView::createViewWidget(const smtk::extension::V
 
 void smtkTerrainExtractionView::attributeModified()
 {
-  // Always enable the apply button here
-  // Question: Do I need it?
+  // enable when user has picked a point cloud
+  this->Internals->terrainExtraction->setEnabled(
+    this->Internals->CurrentAtt->attribute()->isValid());
 }
 
 void smtkTerrainExtractionView::createWidget()
@@ -115,9 +117,12 @@ void smtkTerrainExtractionView::createWidget()
 
   this->updateAttributeData();
 
-  QWidget* wtmp = new QWidget;
-  this->Internals->setupUi(wtmp);
-  layout->addWidget(wtmp); // ui must have a default layout other wise it would not work
+  this->Internals->terrainExtraction = new QWidget;
+  this->Internals->setupUi(this->Internals->terrainExtraction);
+  layout->addWidget(
+    this->Internals
+      ->terrainExtraction); // ui must have a default layout other wise it would not work
+  this->Internals->terrainExtraction->setEnabled(false);
 
   // Signals and slots
 }
@@ -174,6 +179,11 @@ void smtkTerrainExtractionView::updateAttributeData()
   // expecting only 1 instance of the op?
   smtk::attribute::AttributePtr att = terrainExtractionOp->specification();
   this->Internals->CurrentAtt = this->Internals->createAttUI(att, this->Widget, this);
+  if (this->Internals->CurrentAtt)
+  {
+    QObject::connect(
+      this->Internals->CurrentAtt, SIGNAL(modified()), this, SLOT(attributeModified()));
+  }
 }
 
 void smtkTerrainExtractionView::requestOperation(const smtk::model::OperatorPtr& op)

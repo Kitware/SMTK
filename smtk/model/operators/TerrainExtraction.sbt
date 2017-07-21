@@ -4,7 +4,7 @@
   <Definitions>
     <!-- Operator -->
     <AttDef Type="terrain extraction" Label="Model - Terrain Extraction" BaseType="operator">
-      <AssociationsDef Name="Image" NumberOfRequiredValues="1" AdvanceLevel="0">
+      <AssociationsDef Name="Point Cloud" NumberOfRequiredValues="1" AdvanceLevel="0">
         <MembershipMask>aux_geom</MembershipMask>
       </AssociationsDef>
       <BriefDescription>
