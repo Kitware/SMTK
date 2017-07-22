@@ -1,6 +1,7 @@
-################################################
-SMTK: Simulation Modeling Tool Kit Version 1.1.0
-################################################
+##################################
+SMTK: Simulation Modeling Tool Kit
+##################################
+Version: |release|
 
 .. highlight:: c++
 

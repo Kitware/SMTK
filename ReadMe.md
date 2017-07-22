@@ -1,8 +1,8 @@
-![CMB](doc/images/smtk_logo.png)
+![SMTK](doc/images/smtk_logo.png)
 
 Introduction
 ============
-The [Simulation Model Toolkit (SMTK)][SMTK] is an open-source, multi-platform toolkit for supporting simulation workflows by providing access to different modeling kernels, mesh databases, and simulation infomation (via its attribute system). SMTK is developed as part of the [Computational Model Builder (CMB)][CMB] effort and provides extensions for [ParaView][], 
+The [Simulation Model Toolkit (SMTK)][SMTK] is an open-source, multi-platform toolkit for supporting simulation workflows by providing access to different modeling kernels, mesh databases, and simulation infomation (via its attribute system). SMTK is developed as part of the [Computational Model Builder (CMB)][CMB] effort and provides extensions for [ParaView][],
 [Visualization Toolkit (VTK)][VTK] and [Qt][].
 
 The project
@@ -64,6 +64,6 @@ License
 =======
 
 CMB is distributed under the OSI-approved BSD 3-clause License.
-See [License.txt][] for details. 
+See [License.txt][] for details.
 
 [License.txt]: LICENSE.txt
