@@ -591,6 +591,7 @@ install (FILES ${PROJECT_BINARY_DIR}/smtk/Options.h
 install(
   FILES
     ${PROJECT_SOURCE_DIR}/CMake/EncodeCStringFunctions.cmake
+    ${PROJECT_SOURCE_DIR}/CMake/EncodePyStringFunctions.cmake
     ${PROJECT_SOURCE_DIR}/CMake/SMTKOperatorXML.cmake
     ${PROJECT_SOURCE_DIR}/CMake/SMTKSessionJSON.cmake
   DESTINATION
