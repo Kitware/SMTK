@@ -13,6 +13,7 @@
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtAttributeRefItem.h"
 #include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtTableWidget.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/attribute/GroupItem.h"
@@ -353,10 +354,9 @@ void qtGroupItem::addItemsToTable(int i)
   QBoxLayout* frameLayout = qobject_cast<QBoxLayout*>(this->Internals->ChildrensFrame->layout());
   if (!this->Internals->ItemsTable)
   {
-    this->Internals->ItemsTable = new QTableWidget(this->Internals->ChildrensFrame);
+    this->Internals->ItemsTable = new qtTableWidget(this->Internals->ChildrensFrame);
     this->Internals->ItemsTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    //this->Internals->ItemsTable->horizontalHeader()->setStretchLastSection(true);
-    //this->Internals->ItemsTable->setFixedHeight(120);
+
     this->Internals->ItemsTable->setColumnCount(1); // for minus button
     frameLayout->addWidget(this->Internals->ItemsTable);
   }
