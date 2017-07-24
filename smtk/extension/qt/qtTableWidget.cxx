@@ -7,7 +7,6 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-
 #include "smtk/extension/qt/qtTableWidget.h"
 
 #include <QHeaderView>
@@ -17,8 +16,13 @@ using namespace smtk::extension;
 qtTableWidget::qtTableWidget(QWidget* p)
   : QTableWidget(p)
 {
-  //we want the table to always fill the frame
+  // Table should always fills the frame and resizes to contents
   this->horizontalHeader()->setStretchLastSection(true);
+#if QT_VERSION >= 0x050000
+  this->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+#else
+  this->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+#endif
 }
 
 qtTableWidget::~qtTableWidget()
