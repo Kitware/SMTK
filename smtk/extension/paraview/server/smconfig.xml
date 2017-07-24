@@ -1,0 +1,465 @@
+<ServerManagerConfiguration>
+  <ProxyGroup name="sources">
+
+    <!-- ==================================================================== -->
+    <SourceProxy name="LIDARReader"
+      class="vtkLIDARReader"
+      label="LIDAR reader">
+      <Documentation
+        short_help="Read LIDAR input file">
+        long_help="Read a file of format (pts xyz bin.pts or bin) for LIDAR object"
+      </Documentation>
+
+      <DoubleVectorProperty
+        name = "Origin"
+        label = "change the origin"
+        command = "SetOrigin"
+        argument_is_array="1"
+        default_values='0 0 0'
+        number_of_elements="3">
+        <Documentation>
+          subtracts off the value.
+        </Documentation>
+      </DoubleVectorProperty>
+
+      <StringVectorProperty
+        name="FileName"
+        command="SetFileName"
+        animateable="0"
+        number_of_elements="1">
+        <FileListDomain name="files"/>
+        <Documentation>
+          This property specifies the file name for the reader.
+        </Documentation>
+      </StringVectorProperty>
+
+      <IntVectorProperty name="LimitToMaxNumberOfPoints"
+        command="SetLimitToMaxNumberOfPoints"
+        number_of_elements="1"
+        default_values="0" >
+        <BooleanDomain name="bool"/>
+      </IntVectorProperty>
+
+      <IdTypeVectorProperty name="MaxNumberOfPoints"
+        command="SetMaxNumberOfPoints"
+        number_of_elements="1"
+        default_values="1000000" >
+      </IdTypeVectorProperty>
+
+
+      <IdTypeVectorProperty name="GetMaxNumberOfPoints"
+        command="GetMaxNumberOfPoints"
+        repeat_command="0"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0">
+        <SimpleIdTypeInformationHelper/>
+      </IdTypeVectorProperty>
+
+      <IntVectorProperty
+        name="PieceIndex"
+        command="SetPieceIndex"
+        number_of_elements="1"
+        label="Piece Index"
+        default_values="-1">
+        <Documentation>
+          The index of the piece to set/get values for.
+        </Documentation>
+      </IntVectorProperty>
+
+      <DoubleVectorProperty
+        name="Transform"
+        label="Piece Transformation"
+        command="SetTransform"
+        argument_is_array="1"
+        default_values='1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1'
+        number_of_elements="16">
+        <Documentation>
+          Transformation matrix for transforming points after they are read in.  Row major.
+        </Documentation>
+      </DoubleVectorProperty>
+
+      <IntVectorProperty name="TransformOutputData"
+        command="SetTransformOutputData"
+        number_of_elements="1"
+        default_values="0" >
+        <BooleanDomain name="bool"/>
+      </IntVectorProperty>
+
+      <IntVectorProperty name="LimitReadToBounds"
+        command="SetLimitReadToBounds"
+        number_of_elements="1"
+        default_values="0" >
+        <BooleanDomain name="bool"/>
+      </IntVectorProperty>
+
+      <DoubleVectorProperty
+        name="ReadBounds"
+        command="SetReadBounds"
+        number_of_elements="6"
+        default_values="0.0 0.0 0.0 0.0 0.0 0.0" >
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+        name="DataBounds"
+        command="GetDataBounds"
+        information_only="1">
+        <SimpleDoubleInformationHelper/>
+      </DoubleVectorProperty>
+
+      <IntVectorProperty name="ConvertFromLatLongToXYZ"
+        command="SetConvertFromLatLongToXYZ"
+        number_of_elements="1"
+        default_values="0" >
+        <BooleanDomain name="bool"/>
+      </IntVectorProperty>
+
+      <IntVectorProperty name="OutputDataTypeIsDouble"
+        command="SetOutputDataTypeIsDouble"
+        number_of_elements="1"
+        default_values="0" >
+        <BooleanDomain name="bool"/>
+      </IntVectorProperty>
+
+      <IntVectorProperty name="RequestedPiecesForRead"
+        command="AddRequestedPieceForRead"
+        clean_command="RemoveAllRequestedReadPieces"
+        repeat_command="1"
+        number_of_elements_per_command="2">
+      </IntVectorProperty>
+
+      <IntVectorProperty name="KnownNumberOfPieces"
+        command="GetKnownNumberOfPieces"
+        repeat_command="0"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0">
+        <SimpleIntInformationHelper/>
+      </IntVectorProperty>
+      <IdTypeVectorProperty name="RealNumberOfOutputPoints"
+        command="GetRealNumberOfOutputPoints"
+        repeat_command="0"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0">
+        <SimpleIdTypeInformationHelper/>
+      </IdTypeVectorProperty>
+      <IdTypeVectorProperty name="NumberOfPointsInPiece"
+        command="GetNumberOfPointsInPiece"
+        repeat_command="0"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0">
+        <SimpleIdTypeInformationHelper/>
+      </IdTypeVectorProperty>
+      <IdTypeVectorProperty name="TotalNumberOfPoints"
+        command="GetTotalNumberOfPoints"
+        repeat_command="0"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0">
+        <SimpleIdTypeInformationHelper/>
+      </IdTypeVectorProperty>
+
+      <IntVectorProperty
+        name="AbortExecute"
+        command="SetAbortExecute"
+        number_of_elements="1"
+        default_values="0" >
+        <BooleanDomain name="bool"/>
+        <Documentation>
+          vtkAlgorithm::SetAbortExecute()
+        </Documentation>
+      </IntVectorProperty>
+
+      <Property
+        name="ClearTransform"
+        command="ClearTransform">
+      </Property>
+      <Hints>
+        <ReaderFactory extensions="pts xyz"
+                       file_description="LIDAR Files" />
+      </Hints>
+    </SourceProxy>
+
+  </ProxyGroup>
+  <ProxyGroup name="filters">
+   <!-- ==================================================================== -->
+   <SourceProxy name="TerrainExtract" class="vtkTerrainExtractionFilter"
+      label="Terrain Extraction Filter">
+
+      <InputProperty
+         name="Input"
+         command="SetInputConnection"
+         clean_command="RemoveAllInputs">
+        <ProxyGroupDomain name="groups">
+          <Group name="sources"/>
+          <Group name="filters"/>
+        </ProxyGroupDomain>
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkPolyData"/>
+        </DataTypeDomain>
+        <Documentation>
+          Set the input to the Terrain Extraction filter.
+        </Documentation>
+      </InputProperty>
+
+      <StringVectorProperty
+        name="OutputPath"
+        command="SetOutputPath"
+        animateable="0"
+        number_of_elements="1">
+        <FileListDomain name="files"/>
+        <Documentation>
+          Directory for temporary files.
+        </Documentation>
+      </StringVectorProperty>
+
+      <StringVectorProperty
+        name="OutputBaseFileName"
+        command="SetOutputBaseFileName"
+        animateable="0"
+        number_of_elements="1">
+        <FileListDomain name="files"/>
+        <Documentation>
+          Base filename for output (without extension).
+        </Documentation>
+      </StringVectorProperty>
+
+      <IntVectorProperty
+        name="OutputPtsFormat"
+        command="SetOutputPtsFormat"
+         number_of_elements="1"
+         default_values="0" >
+        <EnumerationDomain name="enum">
+          <Entry value="0" text="XML PolyData"/>
+          <Entry value="1" text="ASCII Pts"/>
+          <Entry value="2" text="Binary Pts"/>
+        </EnumerationDomain>
+        <Documentation>
+          Controls the which of the three output formats to use.
+        </Documentation>
+      </IntVectorProperty>
+
+      <IntVectorProperty
+         name="ExecuteMode"
+         command="SetExecuteMode"
+         number_of_elements="1"
+         default_values="0" >
+        <EnumerationDomain name="enum">
+          <Entry value="0" text="Setup Refine"/>
+          <Entry value="1" text="Execute Refine"/>
+          <Entry value="2" text="Execute Extract"/>
+        </EnumerationDomain>
+        <Documentation>
+          Controls the which of the two modes/steps to execute.
+        </Documentation>
+      </IntVectorProperty>
+
+      <IntVectorProperty
+        name="NumberOfLevels"
+        repeat_command="0"
+        label="Number Of Levels"
+        command="GetNumberOfLevels"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+        <SimpleIntInformationHelper/>
+      </IntVectorProperty>
+
+      <IntVectorProperty
+         name="MinExtractLevel"
+         label="Minimum Extract Level"
+         command="SetMinExtractLevel"
+         number_of_elements="1"
+         default_values="0" >
+        <IntRangeDomain name="range" min="0" />
+        <Documentation>
+          The minimum extraction level.
+        </Documentation>
+      </IntVectorProperty>
+
+      <IntVectorProperty
+         name="MaxExtractLevel"
+         label="Maximum Extract Level"
+         command="SetMaxExtractLevel"
+         number_of_elements="1"
+         default_values="1" >
+        <DoubleRangeDomain name="range" min="0"/>
+        <Documentation>
+          The maximum extraction level.
+        </Documentation>
+      </IntVectorProperty>
+
+      <IntVectorProperty
+        name="AbortExecute"
+        command="SetAbortExecute"
+        number_of_elements="1"
+        default_values="0" >
+        <BooleanDomain name="bool"/>
+        <Documentation>
+          vtkAlgorithm::SetAbortExecute()
+        </Documentation>
+      </IntVectorProperty>
+
+      <IntVectorProperty
+         name="RefineVisualizationOutputMode"
+         label="Refine Visualization Output Mode"
+         command="SetRefineVisualizationOutputMode"
+         number_of_elements="1"
+         default_values="1" >
+        <EnumerationDomain name="enum">
+          <Entry value="0" text="Disk"/>
+          <Entry value="1" text="Output Port"/>
+          <Entry value="2" text="Off"/>
+        </EnumerationDomain>
+        <Documentation>
+          Control if (and how) refine visualization output is generated.
+        </Documentation>
+      </IntVectorProperty>
+
+      <IntVectorProperty
+         name="WriteExtractionResultsToDisk"
+         label="Write Extraction Results to Disk"
+         command="SetWriteExtractionResultsToDisk"
+         number_of_elements="1"
+         default_values="0" >
+        <BooleanDomain name="bool"/>
+        <Documentation>
+          Indicate whether to write Extract phase results to disk.
+        </Documentation>
+      </IntVectorProperty>
+
+      <IntVectorProperty
+         name="CacheRefineResultsToDisk"
+         label="Cache Refine Results To Disk"
+         command="SetCacheRefineResultsToDisk"
+         number_of_elements="1"
+         default_values="0" >
+        <BooleanDomain name="bool"/>
+        <Documentation>
+          Indicate whether to cache Refine phase results to disk.
+        </Documentation>
+      </IntVectorProperty>
+
+      <IntVectorProperty
+         name="ComputeDataTransform"
+         label="Compute the transform during Setup Refine Stage"
+         command="SetComputeDataTransform"
+         number_of_elements="1"
+         default_values="1">
+        <Documentation>
+          Indicate whether to compute the internal transform during Setup Refine stage
+        </Documentation>
+      </IntVectorProperty>
+
+      <DoubleVectorProperty
+        name="SetDataTransform"
+        label="Set Data Transform"
+        command="SetDataTransform"
+        argument_is_array="1"
+        default_values='1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1'
+        number_of_elements="16">
+        <Documentation>
+          Transformation matrix to apply to points before and after (inverse) extraction calculation
+        </Documentation>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+           name="GetDataTransform"
+           label="Get Data Transform"
+           command="GetDataTransform"
+           number_of_elements="16"
+           information_only="1"
+           default_values='1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1'>
+        <SimpleDoubleInformationHelper/>
+      </DoubleVectorProperty>
+
+      <IntVectorProperty
+         name="SetComputeInitialScale"
+         label="Compute The Initial Scale During Setup Refine Stage"
+         command="SetComputeInitialScale"
+         number_of_elements="1"
+         default_values="0">
+        <Documentation>
+          Indicate whether to compute the initial scale during Setup Refine stage
+        </Documentation>
+      </IntVectorProperty>
+
+      <DoubleVectorProperty name="GetComputeInitialScale"
+       label="GetComputeInitialScale"
+           command="GetComputeInitialScale"
+           number_of_elements="1"
+           information_only="1"
+           default_values="0">
+        <SimpleDoubleInformationHelper/>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+         name="SetInitialScale"
+         label="Resolution of the points in the extraction grid"
+         command="SetInitialScale"
+         number_of_elements="1"
+         default_values="0">
+        <Documentation>
+          Resolution of the points in the extraction grid
+        </Documentation>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+         name="SetMaskSize"
+         label="Mask Size of the refine stage"
+         command="SetMaskSize"
+         number_of_elements="1"
+         default_values="1">
+        <DoubleRangeDomain name="range" min="0" max="1" />
+        <Documentation>
+          Resolution of the mask size
+        </Documentation>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty name="GetInitialScale"
+      command="GetInitialScale"
+          number_of_elements="1"
+          information_only="1"
+          default_values="0">
+        <SimpleDoubleInformationHelper/>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+           name="InputBounds"
+           label="Input Bounds"
+           command="GetInputBounds"
+           number_of_elements="6"
+           information_only="1"
+           default_values="0.0 0.0 0.0 0.0 0.0 0.0" >
+        <SimpleDoubleInformationHelper/>
+      </DoubleVectorProperty>
+
+      <StringVectorProperty
+          name="IntermediateResultsPath"
+          command="SetIntermediateResultsPath"
+          animateable="0"
+          number_of_elements="1">
+        <FileListDomain name="files"/>
+        <Documentation>
+          Directory for refine files.
+        </Documentation>
+      </StringVectorProperty>
+
+      <IntVectorProperty
+         name="DetermineIntensityAndColor"
+         label="Determine Intensity and Color for Output from Input"
+         command="SetDetermineIntensityAndColor"
+         number_of_elements="1"
+         default_values="1" >
+        <BooleanDomain name="bool"/>
+        <Documentation>
+          Indicate whether to use memory and time resources to find nearest point in input to extract color and intensity info (if present).
+        </Documentation>
+      </IntVectorProperty>
+
+      <!-- End of TerrainExtract -->
+    </SourceProxy>
+  </ProxyGroup>
+</ServerManagerConfiguration>
