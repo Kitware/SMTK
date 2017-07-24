@@ -7,6 +7,12 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+// .NAME pqTerrainExtractionManager - helper class for smtkTerrainExtraction view to connect UI part with extraction logic. All UI changes are done
+// in the view
+// .SECTION Description
+// TODO: Add progress bar and suport for more file types
+// .SECTION See Also
+// pqCMBLIDARTerrainExtractionManager
 
 #ifndef _pqTerrainExtractionManager_h
 #define _pqTerrainExtractionManager_h
@@ -14,28 +20,33 @@
 #include <smtk/SharedPtr.h>
 
 #include "smtk/extension/vxl/widgets/Exports.h"
+#include "smtk/model/AuxiliaryGeometry.h"
 #include <QtCore/QObject>
 
+class QString;
 class QWidget;
 class pqOutputPort;
 class pqDataRepresentation;
 class pqPipelineSource;
-class smtkTerrainExtractionView;
 
 class SMTKVXLWIDGETSEXT_EXPORT pqTerrainExtractionManager : public QObject
 {
   Q_OBJECT
 
 public:
-  pqTerrainExtractionManager(smtkTerrainExtractionView* view);
+  pqTerrainExtractionManager();
   ~pqTerrainExtractionManager() override;
 
-  pqPipelineSource* getTerrainFilter() { return this->TerrainExtractFilter; }
-  pqPipelineSource* getFullTerrainFilter() { return this->FullProcessTerrainExtractFilter; }
+  //  pqPipelineSource* getTerrainFilter() { return this->TerrainExtractFilter; }
+  //  pqPipelineSource* getFullTerrainFilter() { return this->FullProcessTerrainExtractFilter; }
+
+signals:
+  void numPointsCalculationFinshed(long numPoints);
+  void resolutionEditChanged(QString scaleString);
 
 public slots:
-  // when user has pick an aux_geom, update the view
-  void onAuxGeomPicked();
+  // set aux_geom input then compute basic resolution and guess cache dir
+  void setAuxGeom(smtk::model::AuxiliaryGeometry aux);
 
 protected slots:
   //  void onProcesssFullData();
@@ -57,17 +68,17 @@ protected slots:
   //  void onSaveRefineResultsChange(bool change);
 
 protected:
-  //  //resolution controls
-  //  double ComputeResolution(pqPipelineSource* extractionFilter, bool computeDetailedScale);
+  //resolution controls
+  double ComputeResolution(pqPipelineSource* extractionFilter, bool computeDetailedScale);
 
-  //  //methods called from onShow()
-  //  void GuessCacheDirectory();
-  //  void ComputeBasicResolution();
+  //methods called from setAuxGeom()
+  void ComputeBasicResolution();
 
   //  pqDataRepresentation* createPreviewRepresentation(QString& filename);
   //  pqPipelineSource* setupFullProcessTerrainFilter();
 
-  //  pqPipelineSource* PrepDataForTerrainExtraction();
+  // Process the Aux_geom and convert it into a pqPipelineSource
+  pqPipelineSource* PrepDataForTerrainExtraction();
 
   //  // load the auxgeom back in!
   ////  void addExtractionOutputToTree(
@@ -88,7 +99,7 @@ protected:
 
   std::vector<pqPipelineSource*> PDSources;
 
-  smtkTerrainExtractionView* View;
+  smtk::model::AuxiliaryGeometry Aux_geom;
 };
 
 #endif /* __pqTerrainExtractionManager_h */

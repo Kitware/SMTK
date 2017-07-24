@@ -41,17 +41,23 @@
 #include "pqRenderView.h"
 #include "pqSMAdaptor.h"
 #include "smtk/extension/paraview/widgets/qtArcWidget.h"
-#include "smtk/extension/vxl/operators/smtkTerrainExtractionView.h"
+#include "smtk/io/Logger.h"
 
 #include "vtkDataObject.h"
 
-pqTerrainExtractionManager::pqTerrainExtractionManager(smtkTerrainExtractionView* view)
+pqTerrainExtractionManager::pqTerrainExtractionManager()
 {
-  this->View = view;
+  //this->View = view;
+
+  this->TerrainExtractFilter = 0;
+  this->FullProcessTerrainExtractFilter = 0;
+
+  this->DetailedScale = 0;
   this->InputDims[0] = 1;
   this->InputDims[1] = 1;
 
-  //this->setupExtractionPanel(); // connect these signal slots in smtkTerrainExtractionView
+  this->SaveRefineResults = false;
+  this->CacheRefineDataForFullProcess = true;
 }
 
 pqTerrainExtractionManager::~pqTerrainExtractionManager()
@@ -67,10 +73,12 @@ pqTerrainExtractionManager::~pqTerrainExtractionManager()
   }
 }
 
-void pqTerrainExtractionManager::onAuxGeomPicked()
+void pqTerrainExtractionManager::setAuxGeom(smtk::model::AuxiliaryGeometry aux)
 {
-  //  this->ComputeBasicResolution();
-  //  this->GuessCacheDirectory();
+  this->Aux_geom = aux;
+  std::cout << "set AuxGeom: " << this->Aux_geom.url() << std::endl;
+  this->ComputeBasicResolution();
+  this->CacheRefineDataForFullProcess = true;
 }
 
 void pqTerrainExtractionManager::onResolutionScaleChange(QString scaleString)
@@ -79,45 +87,40 @@ void pqTerrainExtractionManager::onResolutionScaleChange(QString scaleString)
   if (scale > 0)
   {
     long numPoints = (ceil(this->InputDims[0] / scale) * ceil(this->InputDims[1] / scale));
-    this->View->terrainExtractionParameterUI()->scaleNumPointsLabel->setText(
-      "will generate ~" + QString::number(numPoints) + " points.");
+    emit this->numPointsCalculationFinshed(numPoints);
   }
 }
 
-//void pqTerrainExtractionManager::ComputeBasicResolution()
-//{
-//  this->LIDARPanel->getGUIPanel()->tabWidget->setEnabled(false);
-//  emit this->enableMenuItems(false);
+void pqTerrainExtractionManager::ComputeBasicResolution()
+{
+  pqObjectBuilder* builder = pqApplicationCore::instance()->getObjectBuilder();
 
-//  pqObjectBuilder* builder = pqApplicationCore::instance()->getObjectBuilder();
+  // cleanup
+  if (this->TerrainExtractFilter)
+  {
+    builder->destroy(this->TerrainExtractFilter);
+    this->TerrainExtractFilter = 0;
+  }
 
-//  // cleanup
-//  if (this->TerrainExtractFilter)
-//  {
-//    builder->destroy(this->TerrainExtractFilter);
-//    this->TerrainExtractFilter = 0;
-//  }
+  pqPipelineSource* pdSource = this->PrepDataForTerrainExtraction();
+  this->TerrainExtractFilter = builder->createFilter("filters", "TerrainExtract", pdSource);
 
-//  pqPipelineSource* pdSource = this->PrepDataForTerrainExtraction();
-//  this->TerrainExtractFilter = builder->createFilter("filters", "TerrainExtract", pdSource);
+  double computedScale = this->ComputeResolution(this->TerrainExtractFilter, false);
 
-//  double computedScale = this->ComputeResolution(this->TerrainExtractFilter, false);
+  // UpdatePropertyInformation in ComputeResolution
+  this->DataTransform = pqSMAdaptor::getMultipleElementProperty(
+    this->TerrainExtractFilter->getProxy()->GetProperty("GetDataTransform"));
 
-//  // UpdatePropertyInformation in ComputeResolution
-//  this->DataTransform = pqSMAdaptor::getMultipleElementProperty(
-//    this->TerrainExtractFilter->getProxy()->GetProperty("GetDataTransform"));
+  // release the memory
+  builder->destroy(this->TerrainExtractFilter);
+  builder->destroy(pdSource);
+  this->TerrainExtractFilter = 0;
 
-//  // release the memory
-//  builder->destroy(this->TerrainExtractFilter);
-//  builder->destroy(pdSource);
-//  this->TerrainExtractFilter = 0;
-
-//  QString scaleString;
-//  scaleString.setNum(computedScale);
-//  this->LIDARPanel->getGUIPanel()->resolutionEdit->setText(scaleString);
-//  this->LIDARPanel->getGUIPanel()->tabWidget->setEnabled(true);
-//  emit this->enableMenuItems(true);
-//}
+  QString scaleString;
+  scaleString.setNum(computedScale);
+  // Update resolutionEdit
+  emit resolutionEditChanged(scaleString);
+}
 
 //void pqTerrainExtractionManager::ComputeDetailedResolution()
 //{
@@ -162,40 +165,43 @@ void pqTerrainExtractionManager::onResolutionScaleChange(QString scaleString)
 //  this->LIDARPanel->getGUIPanel()->resolutionEdit->setText(scaleString);
 //}
 
-//double pqTerrainExtractionManager::ComputeResolution(
-//  pqPipelineSource* extractionFilter, bool computeDetailedScale)
-//{
-//  this->LIDARCore->updateProgress(QString("Computing Resolution"), 0);
+double pqTerrainExtractionManager::ComputeResolution(
+  pqPipelineSource* extractionFilter, bool computeDetailedScale)
+{
+  pqSMAdaptor::setElementProperty(
+    extractionFilter->getProxy()->GetProperty("ExecuteMode"), 0); // setup refine
 
-//  pqSMAdaptor::setElementProperty(
-//    extractionFilter->getProxy()->GetProperty("ExecuteMode"), 0); // setup refine
+  //set if we want a detailed scan of the dataset to determin the scaling
+  pqSMAdaptor::setElementProperty(
+    extractionFilter->getProxy()->GetProperty("SetComputeInitialScale"), computeDetailedScale);
 
-//  //set if we want a detailed scan of the dataset to determin the scaling
-//  pqSMAdaptor::setElementProperty(
-//    extractionFilter->getProxy()->GetProperty("SetComputeInitialScale"), computeDetailedScale);
+  pqSMAdaptor::setElementProperty(
+    extractionFilter->getProxy()->GetProperty("ComputeDataTransform"), !computeDetailedScale);
 
-//  pqSMAdaptor::setElementProperty(
-//    extractionFilter->getProxy()->GetProperty("ComputeDataTransform"), !computeDetailedScale);
+  extractionFilter->getProxy()->UpdateVTKObjects();
+  vtkSMSourceProxy::SafeDownCast(extractionFilter->getProxy())->UpdatePipeline();
+  extractionFilter->getProxy()->UpdatePropertyInformation();
 
-//  extractionFilter->getProxy()->UpdateVTKObjects();
-//  vtkSMSourceProxy::SafeDownCast(extractionFilter->getProxy())->UpdatePipeline();
-//  extractionFilter->getProxy()->UpdatePropertyInformation();
+  QList<QVariant> vbounds = pqSMAdaptor::getMultipleElementProperty(
+    extractionFilter->getProxy()->GetProperty("InputBounds"));
 
-//  QList<QVariant> vbounds = pqSMAdaptor::getMultipleElementProperty(
-//    extractionFilter->getProxy()->GetProperty("InputBounds"));
+  // query the server for the computed scale
+  double scale =
+    pqSMAdaptor::getElementProperty(extractionFilter->getProxy()->GetProperty("GetInitialScale"))
+      .toDouble();
 
-//  // query the server for the computed scale
-//  double scale =
-//    pqSMAdaptor::getElementProperty(extractionFilter->getProxy()->GetProperty("GetInitialScale"))
-//      .toDouble();
+  // Update the render view
+  pqApplicationCore::instance()->render();
 
-//  this->LIDARCore->onRequestRender();
+  this->InputDims[0] = (vbounds[1].toDouble() - vbounds[0].toDouble());
+  this->InputDims[1] = (vbounds[3].toDouble() - vbounds[2].toDouble());
+  /*******************************************************************/
+  std::cout << "ComputeResolution with dim as " << this->InputDims[0] << " " << this->InputDims[1]
+            << " with computeDetailedScale as " << computeDetailedScale << std::endl;
+  /*******************************************************************/
 
-//  this->InputDims[0] = (vbounds[1].toDouble() - vbounds[0].toDouble());
-//  this->InputDims[1] = (vbounds[3].toDouble() - vbounds[2].toDouble());
-
-//  return scale;
-//}
+  return scale;
+}
 
 //void pqTerrainExtractionManager::onMaskSizeTextChanged(QString text)
 //{
@@ -222,66 +228,89 @@ void pqTerrainExtractionManager::onResolutionScaleChange(QString scaleString)
 //  }
 //}
 
-//pqPipelineSource* pqTerrainExtractionManager::PrepDataForTerrainExtraction()
-//{
-//  pqObjectBuilder* builder = pqApplicationCore::instance()->getObjectBuilder();
-//  QList<pqCMBLIDARPieceObject*> pieces =
-//    this->LIDARCore->getLIDARPieceTable()->getVisiblePieceObjects();
+pqPipelineSource* pqTerrainExtractionManager::PrepDataForTerrainExtraction()
+{
+  // Use the same logic in pqCMBLIDARTerrainExtractionManager::createPreviewRepresentation
+  /***********************************************************************/
+  std::cout << "pqterrainExtractionManager::PrepDataForTerrainExtraction url: "
+            << this->Aux_geom.url() << std::endl;
+  /***********************************************************************/
+  QString filename(QString::fromStdString(this->Aux_geom.url()));
+  QFileInfo fileInfo(filename);
+  QString extension(fileInfo.completeSuffix().toLower());
+  QStringList filenameSL;
+  filenameSL << filename;
+  pqServer* server = pqApplicationCore::instance()->getActiveServer();
 
-//  QList<pqOutputPort*> inputs;
-//  QList<pqPipelineSource*> transformFilters;
-//  for (int i = 0; i < pieces.count(); i++)
-//  {
-//    pqCMBLIDARPieceObject* dataObj = pieces[i];
-//    if (dataObj)
-//    {
-//      if (dataObj->isPieceTransformed())
-//      {
-//        vtkSmartPointer<vtkTransform> transform = vtkSmartPointer<vtkTransform>::New();
-//        dataObj->getTransform(transform);
-//        vtkMatrix4x4* matrix = transform->GetMatrix();
-//        QList<QVariant> values;
-//        for (int k = 0; k < 4; k++)
-//        {
-//          for (int j = 0; j < 4; j++)
-//          {
-//            values << matrix->Element[k][j];
-//          }
-//        }
+  pqObjectBuilder* builder = pqApplicationCore::instance()->getObjectBuilder();
+  builder->blockSignals(true);
+  pqPipelineSource* readerSource;
+  double minPt[3] = { 0, 0, 0 }, maxPt[3] = { 0, 0, 0 };
+  if (extension == "pts" || extension == "xyz")
+  {
+    readerSource = builder->createReader("sources", "LIDARReader", filenameSL, server);
+    if (!readerSource)
+    {
+      std::cerr << "No LIDARReader source when preparing data for extraction" << std::endl;
+      return nullptr;
+    }
 
-//        vtkSMProxy* transformProxy = builder->createProxy(
-//          "transforms", "Transform", this->LIDARCore->getActiveServer(), "transforms");
-//        pqSMAdaptor::setMultipleElementProperty(transformProxy->GetProperty("Matrix"), values);
-//        transformProxy->UpdateVTKObjects();
+    vtkSMPropertyHelper(readerSource->getProxy(), "MaxNumberOfPoints").Set(100000);
+    vtkSMPropertyHelper(readerSource->getProxy(), "LimitToMaxNumberOfPoints").Set(1);
+    readerSource->getProxy()->UpdateVTKObjects();
+    vtkSMSourceProxy::SafeDownCast(readerSource->getProxy())->UpdatePipeline();
+    readerSource->getProxy()->UpdatePropertyInformation();
+    double* dataBounds =
+      vtkSMDoubleVectorProperty::SafeDownCast(readerSource->getProxy()->GetProperty("DataBounds"))
+        ->GetElements();
+    minPt[2] = dataBounds[4];
+    maxPt[2] = dataBounds[5];
+  }
+  else
+  {
+    // TODO: add support for other files by CMBGeometryReader check pqCMBLIDARTerrainExtractionManager
+    smtk::io::Logger logger;
+    smtkWarningMacro(
+      logger, "File type not supported. ModelBuilder now only supports xyz and pts format.");
+  }
+  builder->blockSignals(false);
 
-//        pqPipelineSource* transformFilter =
-//          builder->createFilter("filters", "TransformFilter", dataObj->getThresholdSource());
-//        pqSMAdaptor::setProxyProperty(
-//          transformFilter->getProxy()->GetProperty("Transform"), transformProxy);
-//        transformFilter->getProxy()->UpdateVTKObjects();
-//        vtkSMSourceProxy::SafeDownCast(transformFilter->getProxy())->UpdatePipeline();
+  pqPipelineSource* elevationSource =
+    builder->createFilter("filters", "LIDARElevationFilter", readerSource);
+  if (!elevationSource)
+  {
+    std::cerr << "No LIDARElevationFilter filter when preparing data for extraction" << std::endl;
+    return nullptr;
+  }
 
-//        inputs.push_back(transformFilter->getOutputPort(0));
-//        transformFilters.push_back(transformFilter);
-//      }
-//      else
-//      {
-//        inputs.push_back(dataObj->getThresholdSource()->getOutputPort(0));
-//      }
-//    }
-//  }
+  pqSMAdaptor::setMultipleElementProperty(
+    elevationSource->getProxy()->GetProperty("LowPoint"), 0, minPt[0]);
+  pqSMAdaptor::setMultipleElementProperty(
+    elevationSource->getProxy()->GetProperty("LowPoint"), 1, minPt[1]);
+  pqSMAdaptor::setMultipleElementProperty(
+    elevationSource->getProxy()->GetProperty("LowPoint"), 2, minPt[2]);
+  elevationSource->getProxy()->UpdateProperty("LowPoint", true);
+  pqSMAdaptor::setMultipleElementProperty(
+    elevationSource->getProxy()->GetProperty("HighPoint"), 0, maxPt[0]);
+  pqSMAdaptor::setMultipleElementProperty(
+    elevationSource->getProxy()->GetProperty("HighPoint"), 1, maxPt[1]);
+  pqSMAdaptor::setMultipleElementProperty(
+    elevationSource->getProxy()->GetProperty("HighPoint"), 2, maxPt[2]);
+  elevationSource->getProxy()->UpdateProperty("HighPoint", true);
 
-//  pqPipelineSource* pdSource = this->LIDARCore->getAppendedSource(inputs);
-//  if (transformFilters.count() > 0)
-//  {
-//    for (int i = 0; i < transformFilters.count(); i++)
-//    {
-//      builder->destroy(transformFilters.at(i));
-//    }
-//  }
+  vtkSMSourceProxy::SafeDownCast(elevationSource->getProxy())->UpdatePipeline();
 
-//  return pdSource;
-//}
+  pqPipelineSource* pdSource = builder->createSource("sources", "HydroModelPolySource", server);
+
+  vtkSMDataSourceProxy::SafeDownCast(pdSource->getProxy())
+    ->CopyData(vtkSMSourceProxy::SafeDownCast(elevationSource->getProxy()));
+  pdSource->updatePipeline();
+
+  builder->destroy(elevationSource);
+  builder->destroy(readerSource);
+
+  return pdSource;
+}
 
 //pqPipelineSource* pqTerrainExtractionManager::setupFullProcessTerrainFilter()
 //{
@@ -854,23 +883,6 @@ void pqTerrainExtractionManager::onResolutionScaleChange(QString scaleString)
 //    this->LIDARPanel->getGUIPanel()->autoSaveLabel->setToolTip(extractFileInfo.absoluteFilePath());
 //  }
 //  return ret;
-//}
-
-//void pqTerrainExtractionManager::GuessCacheDirectory()
-//{
-//  this->CacheRefineDataForFullProcess = true;
-//  QFileInfo cacheDirInfo(this->LIDARPanel->getGUIPanel()->CacheDirectoryLabel->text());
-
-//  if (!cacheDirInfo.isDir())
-//  {
-//    QString directory = QDir::tempPath();
-//    this->LIDARPanel->getGUIPanel()->CacheDirectoryLabel->setText(directory);
-//    this->LIDARPanel->getGUIPanel()->CacheDirectoryLabel->setToolTip(directory);
-
-//    QFileInfo extractFileInfo(directory + "/TerrainExtract.pts");
-//    this->LIDARPanel->getGUIPanel()->autoSaveLabel->setText(extractFileInfo.absoluteFilePath());
-//    this->LIDARPanel->getGUIPanel()->autoSaveLabel->setToolTip(extractFileInfo.absoluteFilePath());
-//  }
 //}
 
 //bool pqTerrainExtractionManager::onSelectCacheDirectory()

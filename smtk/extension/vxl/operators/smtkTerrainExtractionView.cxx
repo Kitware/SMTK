@@ -10,6 +10,7 @@
 
 #include "smtk/extension/vxl/operators/smtkTerrainExtractionView.h"
 #include "smtk/extension/vxl/operators/ui_smtkTerrainExtractionParameters.h"
+#include "smtk/extension/vxl/widgets/pqTerrainExtractionManager.h"
 
 #include "smtk/model/Operator.h"
 
@@ -25,6 +26,9 @@
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
+#include <QtCore/QDebug>
+#include <QtCore/QDir>
+#include <QtCore/QFileInfo>
 #include <QtWidgets/QWidget>
 
 using namespace smtk::extension;
@@ -69,11 +73,13 @@ smtkTerrainExtractionView::smtkTerrainExtractionView(const smtk::extension::View
   : qtBaseView(info)
 {
   this->Internals = new smtkTerrainExtractionViewInternals;
+  this->TerrainExtractionManager = new pqTerrainExtractionManager();
 }
 
 smtkTerrainExtractionView::~smtkTerrainExtractionView()
 {
   delete this->Internals;
+  delete this->TerrainExtractionManager;
 }
 
 qtBaseView* smtkTerrainExtractionView::createViewWidget(const smtk::extension::ViewInfo& info)
@@ -93,6 +99,40 @@ void smtkTerrainExtractionView::attributeModified()
   // enable when user has picked a point cloud
   this->Internals->terrainExtraction->setEnabled(
     this->Internals->CurrentAtt->attribute()->isValid());
+
+  if (this->Internals->CurrentAtt->attribute()->isValid())
+  {
+    // pass in the aux_geom to manager
+    smtk::attribute::AttributePtr spec = this->Internals->CurrentOp.lock()->specification();
+    smtk::attribute::ModelEntityItem::Ptr modelItem = spec->associations();
+    smtk::model::AuxiliaryGeometry aux(modelItem->value(0));
+    if (!aux.isValid())
+    {
+      qCritical() << "No AuxiliaryGeometry is associated with the operator.\n";
+      return;
+    }
+    // set aux_geom and compute basic resolution
+    this->TerrainExtractionManager->setAuxGeom(aux);
+    // guess cache directory
+    QFileInfo cacheDirInfo(this->Internals->CacheDirectoryLabel->text());
+
+    if (!cacheDirInfo.isDir())
+    {
+      QString directory = QDir::tempPath();
+      this->Internals->CacheDirectoryLabel->setText(directory);
+      this->Internals->CacheDirectoryLabel->setToolTip(directory);
+
+      QFileInfo extractFileInfo(directory + "/TerrainExtract.pts");
+      this->Internals->autoSaveLabel->setText(extractFileInfo.absoluteFilePath());
+      this->Internals->autoSaveLabel->setToolTip(extractFileInfo.absoluteFilePath());
+    }
+  }
+}
+
+void smtkTerrainExtractionView::onNumPointsCalculationFinshed(long numPoints)
+{
+  this->Internals->scaleNumPointsLabel->setText(
+    "will generate ~" + QString::number(numPoints) + " points.");
 }
 
 void smtkTerrainExtractionView::createWidget()
@@ -132,6 +172,16 @@ void smtkTerrainExtractionView::createWidget()
   this->Internals->terrainExtraction->setEnabled(false);
 
   // Signals and slots
+  // User changes resolutionEdit
+  QObject::connect(this->Internals->resolutionEdit, SIGNAL(textChanged(QString)),
+    this->TerrainExtractionManager, SLOT(onResolutionScaleChange(QString)));
+  QObject::connect(this->TerrainExtractionManager, SIGNAL(numPointsCalculationFinshed(long)), this,
+    SLOT(onNumPointsCalculationFinshed(long)));
+
+  // ResolutionEdit value is calculated by manager
+  QObject::connect(this->TerrainExtractionManager,
+    &pqTerrainExtractionManager::resolutionEditChanged, this,
+    &smtkTerrainExtractionView::onResolutionEditChanged);
 }
 
 void smtkTerrainExtractionView::updateAttributeData()
@@ -214,6 +264,11 @@ void smtkTerrainExtractionView::cancelOperation(const smtk::model::OperatorPtr& 
 void smtkTerrainExtractionView::valueChanged(smtk::attribute::ItemPtr /*valItem*/)
 {
   this->requestOperation(this->Internals->CurrentOp.lock());
+}
+
+void smtkTerrainExtractionView::onResolutionEditChanged(QString scaleString)
+{
+  this->Internals->resolutionEdit->setText(scaleString);
 }
 
 void smtkTerrainExtractionView::requestModelEntityAssociation()

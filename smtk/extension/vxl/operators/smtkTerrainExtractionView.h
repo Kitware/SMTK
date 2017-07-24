@@ -23,6 +23,8 @@
 #include <QtCore/QObject>
 
 class smtkTerrainExtractionViewInternals;
+class pqTerrainExtractionManager;
+class QString;
 class QWidget;
 
 class SMTKVXLOPERATORVIEWSEXT_EXPORT smtkTerrainExtractionView : public smtk::extension::qtBaseView
@@ -45,6 +47,7 @@ public slots:
   // This will be triggered by selecting different type
   // of construction method in create-edge op.
   virtual void valueChanged(smtk::attribute::ItemPtr optype);
+  void onResolutionEditChanged(QString scaleString);
 
 protected slots:
   virtual void requestOperation(const smtk::model::OperatorPtr& op);
@@ -55,6 +58,7 @@ protected slots:
   virtual void attributeModified();
 
   virtual void updateAttributeData();
+  void onNumPointsCalculationFinshed(long numPoints);
 
 protected:
   virtual void createWidget();
@@ -62,6 +66,7 @@ protected:
 
 private:
   smtkTerrainExtractionViewInternals* Internals;
+  pqTerrainExtractionManager* TerrainExtractionManager;
 };
 
 #endif // smtkTerrainExtractionView_h

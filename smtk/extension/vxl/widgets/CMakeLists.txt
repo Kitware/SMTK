@@ -38,7 +38,6 @@ target_link_libraries(smtkVXLWidgetsExt LINK_PUBLIC
   smtkCore
   smtkPQWidgetsExt
   vtkSMTKSourceExt
-  smtkVXLOperatorViewsExt
   ${qt_targets}
 LINK_PRIVATE
   ${VTK_LIBRARIES}

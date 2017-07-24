@@ -45,6 +45,7 @@ target_link_libraries(smtkVXLOperatorViewsExt
     pqApplicationComponents
     smtkCore
   LINK_PRIVATE
+    smtkVXLWidgetsExt
     smtkPQWidgetsExt
     #${QT_QTCORE_LIBRARY} # it seems that it's deprecated
 )
