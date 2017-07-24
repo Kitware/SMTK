@@ -1,5 +1,6 @@
 set(VTKLibSrcs
   vtkAuxiliaryGeometryExtension.cxx
+  vtkHydroModelPolySource.cxx
   vtkMeshMultiBlockSource.cxx
   vtkModelAuxiliaryGeometry.cxx
   vtkModelMultiBlockSource.cxx
@@ -10,6 +11,7 @@ set(VTKLibSrcs
 
 set(VTKLibHeaders
   vtkAuxiliaryGeometryExtension.h
+  vtkHydroModelPolySource.h
   vtkMeshMultiBlockSource.h
   vtkModelAuxiliaryGeometry.h
   vtkModelMultiBlockSource.h

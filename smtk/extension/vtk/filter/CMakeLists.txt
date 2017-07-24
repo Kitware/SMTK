@@ -24,8 +24,8 @@ set(srcs
    vtkExtractImageBlock.cxx
    vtkExtractLine.cxx
    vtkImageSpacingFlip.cxx
+   vtkLIDARElevationFilter.cxx
    vtkPolyDataStatsFilter.cxx
-   vktTerrainExtractionFilter.cxx
    ${openCVFilterSource}
   )
 
@@ -36,8 +36,8 @@ set(headers
    vtkExtractImageBlock.h
    vtkExtractLine.h
    vtkImageSpacingFlip.h
+   vtkLIDARElevationFilter.h
    vtkPolyDataStatsFilter.h
-   vktTerrainExtractionFilter.h
    ${openCVFilterHeader}
 )
 
