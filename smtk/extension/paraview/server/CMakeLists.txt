@@ -42,6 +42,7 @@ target_link_libraries(smtkPVServerExtPlugin
     smtkCore
     vtkSMTKSourceExt
     vtkSMTKReaderExt # vtkLIDARReader
+    vtkSMTKFilterExt # vtkTerrainExtractionFilter
 )
 smtk_export_header(smtkPVServerExtPlugin Exports.h)
 

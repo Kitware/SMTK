@@ -25,6 +25,7 @@ set(srcs
    vtkExtractLine.cxx
    vtkImageSpacingFlip.cxx
    vtkPolyDataStatsFilter.cxx
+   vktTerrainExtractionFilter.cxx
    ${openCVFilterSource}
   )
 
@@ -36,6 +37,7 @@ set(headers
    vtkExtractLine.h
    vtkImageSpacingFlip.h
    vtkPolyDataStatsFilter.h
+   vktTerrainExtractionFilter.h
    ${openCVFilterHeader}
 )
 
