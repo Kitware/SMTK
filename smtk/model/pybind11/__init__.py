@@ -51,13 +51,17 @@ def operator(nickname, opsession):
                 raise ImportError(
                     'Class "%s" has no description method and no "%s.sbt" file found.' % (module, module))
 
+        # add a method that accesses the derived session
+        def activeSession(self):
+            return opsession.CastTo(self.session())
+
+        setattr(opclass, 'activeSession', activeSession)
+
         from functools import partial
 
         # register this operator with the session
-        opsession.registerStaticOperator(
-            nickname, opclass.description(),
-            partial(_smtkPybindModel.Operator.create, opclass.__module__,
-                    opclass.__name__))
+        opsession.registerStaticPyOperator(
+            nickname, opclass.description(), opclass.__module__, opclass.__name__)
 
         return opclass
     return decorator
