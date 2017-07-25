@@ -3,6 +3,7 @@ set(srcs
   ImportVTKData.cxx
   MeshIOVTK.cxx
   RedirectOutput.cxx
+  vtkLIDARPtsWriter.cxx # For terrain extraction
   )
 
 set(headers
@@ -10,6 +11,7 @@ set(headers
   ImportVTKData.h
   MeshIOVTK.h
   RedirectOutput.h
+  vtkLIDARPtsWriter.h # For terrain extraction
   )
 
 add_library(smtkIOVTK ${srcs})
