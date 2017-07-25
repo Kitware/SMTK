@@ -34,8 +34,8 @@
 
 // refine
 #include <rgtl/rgtl_serialize_ostream.hxx>
-#include <rtvl/rtvl_refine.hxx>
-#include <rtvl/rtvl_tokens.hxx>
+#include <smtk/extension/vxl/rtvl/rtvl_refine.hxx>
+#include <smtk/extension/vxl/rtvl/rtvl_tokens.hxx>
 
 #include <vcl_fstream.h>
 #include <vcl_memory.h>
@@ -43,13 +43,13 @@
 
 // extract
 #include <rgtl/rgtl_serialize_istream.hxx>
-#include <rtvl/rtvl_tensor.hxx>
-#include <rtvl/rtvl_tensor_d.hxx>
-#include <rtvl/rtvl_vote.hxx>
-#include <rtvl/rtvl_votee.hxx>
-#include <rtvl/rtvl_votee_d.hxx>
-#include <rtvl/rtvl_voter.hxx>
-#include <rtvl/rtvl_weight_smooth.hxx>
+#include <smtk/extension/vxl/rtvl/rtvl_tensor.hxx>
+#include <smtk/extension/vxl/rtvl/rtvl_tensor_d.hxx>
+#include <smtk/extension/vxl/rtvl/rtvl_vote.hxx>
+#include <smtk/extension/vxl/rtvl/rtvl_votee.hxx>
+#include <smtk/extension/vxl/rtvl/rtvl_votee_d.hxx>
+#include <smtk/extension/vxl/rtvl/rtvl_voter.hxx>
+#include <smtk/extension/vxl/rtvl/rtvl_weight_smooth.hxx>
 
 #include <rgtl/rgtl_object_array_points.hxx>
 #include <rgtl/rgtl_octree_cell_bounds.hxx>

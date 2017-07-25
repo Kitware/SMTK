@@ -20,6 +20,7 @@ target_link_libraries(${vtk-module}
     vtkSMTKFilterExt # needed?
 		smtkIOVTK # vtkLIDARWriter
   LINK_PRIVATE
+    rtvl
   )
 
 target_include_directories(${vtk-module}
@@ -27,8 +28,9 @@ target_include_directories(${vtk-module}
     $<BUILD_INTERFACE:${SMTK_SOURCE_DIR}>
     $<BUILD_INTERFACE:${SMTK_BINARY_DIR}>
     $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../rtvl>
   PRIVATE
-		${VXL_RPL_INCLUDE_DIR}
+	${VXL_RPL_INCLUDE_DIR}
     ${VXL_VCL_INCLUDE_DIR}
     ${VXL_CORE_INCLUDE_DIR}
     ${Boost_INCLUDE_DIRS}

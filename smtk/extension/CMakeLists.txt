@@ -104,6 +104,5 @@ if (SMTK_USE_PYBIND11)
 endif()
 
 if (SMTK_ENABLE_VXL_SUPPORT AND SMTK_ENABLE_QT_SUPPORT)
-  find_package(VXL REQUIRED)
   add_subdirectory(vxl)
 endif()
