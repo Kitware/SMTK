@@ -101,10 +101,10 @@ bool readCSVFile(
 // Compute the bounding box of a point cloud
 std::array<double, 6> bounds(const smtk::mesh::PointCloud& pc)
 {
-  std::array<double, 6> b = { std::numeric_limits<double>::max(),
+  std::array<double, 6> b = { { std::numeric_limits<double>::max(),
     std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(),
     std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(),
-    std::numeric_limits<double>::lowest() };
+    std::numeric_limits<double>::lowest() } };
 
   for (std::size_t i = 0; i < pc.size(); i++)
   {
@@ -128,10 +128,10 @@ std::array<double, 6> bounds(const smtk::mesh::PointCloud& pc)
 // Compute the bounding box of a mesh set
 std::array<double, 6> bounds(smtk::mesh::MeshSet ms)
 {
-  std::array<double, 6> b = { std::numeric_limits<double>::max(),
+  std::array<double, 6> b = { { std::numeric_limits<double>::max(),
     std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(),
     std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(),
-    std::numeric_limits<double>::lowest() };
+    std::numeric_limits<double>::lowest() } };
 
   class Extent : public smtk::mesh::PointForEach
   {
