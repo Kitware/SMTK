@@ -10,7 +10,7 @@
 // .NAME pqTerrainExtractionManager - helper class for smtkTerrainExtraction view to connect UI part with extraction logic. All UI changes are done
 // in the view
 // .SECTION Description
-// TODO: Add progress bar and suport for more file types
+// TODO: Add progress bar and preview mode
 // .SECTION See Also
 // pqCMBLIDARTerrainExtractionManager
 
@@ -21,6 +21,7 @@
 
 #include "smtk/extension/vxl/widgets/Exports.h"
 #include "smtk/model/AuxiliaryGeometry.h"
+#include <QtCore/QFileInfo>
 #include <QtCore/QObject>
 
 class QString;
@@ -37,8 +38,8 @@ public:
   pqTerrainExtractionManager();
   ~pqTerrainExtractionManager() override;
 
-  //  pqPipelineSource* getTerrainFilter() { return this->TerrainExtractFilter; }
-  //  pqPipelineSource* getFullTerrainFilter() { return this->FullProcessTerrainExtractFilter; }
+  pqPipelineSource* getTerrainFilter() { return this->TerrainExtractFilter; }
+  pqPipelineSource* getFullTerrainFilter() { return this->FullProcessTerrainExtractFilter; }
 
 signals:
   void numPointsCalculationFinshed(long numPoints);
@@ -48,18 +49,15 @@ public slots:
   // set aux_geom input then compute basic resolution and guess cache dir
   void setAuxGeom(smtk::model::AuxiliaryGeometry aux);
 
+  void onProcesssFullData(double scale, double maskSize, QFileInfo cacheFileInfo,
+    QFileInfo autoSaveInfo, bool computeColor, bool previewOutput);
 protected slots:
-  //  void onProcesssFullData();
-
-  //  //resolution controls
+  //resolution controls
   void onResolutionScaleChange(QString scaleString);
   void ComputeDetailedResolution();
 
-  //  //mask size control
-  //  void onMaskSizeTextChanged(QString);
-
-  //  //if we are saving the refine results
-  //  void onSaveRefineResultsChange(bool change);
+  //if we are saving the refine results
+  void onSaveRefineResultsChange(bool change);
 
 protected:
   //resolution controls
@@ -68,15 +66,13 @@ protected:
   //methods called from setAuxGeom()
   void ComputeBasicResolution();
 
-  //  pqDataRepresentation* createPreviewRepresentation(QString& filename);
   pqPipelineSource* setupFullProcessTerrainFilter();
 
   // Process the Aux_geom and convert it into a pqPipelineSource
   pqPipelineSource* PrepDataForTerrainExtraction();
 
-  //  // load the auxgeom back in!
-  ////  void addExtractionOutputToTree(
-  ////    int minLevel, int maxLevel, double initialScale, QFileInfo& autoSaveInfo);
+  // Load the new aux_geom back as aux_geom
+  // void PreviewResults();
 
   // Description:
   // Some internal ivars.

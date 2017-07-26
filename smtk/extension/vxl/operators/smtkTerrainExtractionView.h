@@ -60,6 +60,8 @@ protected slots:
   // Cache directory slots
   bool onSelectCacheDirectory(); //returns true if the user selected a directory
 
+  // A relay function to pass needed data to TerrainExtractionManager
+  void onProcessFullExtraction();
   // This slot is used to indicate that the underlying attribute
   // for the operation should be checked for validity
   virtual void attributeModified();

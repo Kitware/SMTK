@@ -194,10 +194,12 @@ void smtkTerrainExtractionView::createWidget()
   QObject::connect(this->Internals->autoSaveFileButton, SIGNAL(clicked(bool)), this,
     SLOT(onAutoSaveExtractFileName()));
 
-  // For now just disable cachedGroup so we only save the best output
-  this->Internals->cacheGroup->setEnabled(false);
+  // For now just hide cachedGroup since it's not clear
+  this->Internals->cacheGroup->setVisible(false);
   QObject::connect(this->Internals->cacheDirectoryButton, SIGNAL(clicked(bool)), this,
     SLOT(onSelectCacheDirectory()));
+  QObject::connect(this->Internals->saveRefinedCheckBox, SIGNAL(toggled(bool)),
+    this->TerrainExtractionManager, SLOT(onSaveRefineResultsChange(bool)));
 
   // Mask size controls
   QDoubleValidator* maskValidator = new QDoubleValidator(0.0, 1.0, 8, this->Internals->MaskSize);
@@ -205,7 +207,8 @@ void smtkTerrainExtractionView::createWidget()
   this->Internals->MaskSize->setValidator(maskValidator);
   QObject::connect(this->Internals->MaskSize, SIGNAL(textChanged(QString)), this,
     SLOT(onMaskSizeTextChanged(QString)));
-  //QObject::connect(this->Internals->processFullExtraction, SINGAL(clicked()));
+  QObject::connect(this->Internals->processFullExtraction, SIGNAL(clicked()), this,
+    SLOT(onProcessFullExtraction()));
 }
 
 void smtkTerrainExtractionView::updateAttributeData()
@@ -357,6 +360,18 @@ bool smtkTerrainExtractionView::onSelectCacheDirectory()
     this->Internals->CacheDirectoryLabel->setToolTip(afp);
   }
   return ret;
+}
+
+void smtkTerrainExtractionView::onProcessFullExtraction()
+{
+  double scale = this->Internals->resolutionEdit->text().toDouble();
+  double maskSize = this->Internals->MaskSize->text().toDouble();
+  QFileInfo cacheFileInfo(this->Internals->CacheDirectoryLabel->text());
+  QFileInfo autoSaveInfo(this->Internals->autoSaveLabel->text());
+  bool computeColor = this->Internals->computeColor->isChecked();
+  bool previewOutput = this->Internals->previewOnCompletionCheckBox->isChecked();
+  this->TerrainExtractionManager->onProcesssFullData(
+    scale, maskSize, cacheFileInfo, autoSaveInfo, computeColor, previewOutput);
 }
 
 void smtkTerrainExtractionView::valueChanged(smtk::attribute::ItemPtr /*valItem*/)
