@@ -9,6 +9,10 @@
 //=========================================================================
 
 #include "smtk/extension/vxl/operators/smtkTerrainExtractionView.h"
+
+#include "pqApplicationCore.h"
+#include "pqFileDialog.h"
+
 #include "smtk/extension/vxl/operators/ui_smtkTerrainExtractionParameters.h"
 #include "smtk/extension/vxl/widgets/pqTerrainExtractionManager.h"
 
@@ -29,6 +33,7 @@
 #include <QtCore/QDebug>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
+#include <QtGui/QValidator>
 #include <QtWidgets/QWidget>
 
 using namespace smtk::extension;
@@ -171,7 +176,7 @@ void smtkTerrainExtractionView::createWidget()
       ->terrainExtraction); // ui must have a default layout other wise it would not work
   this->Internals->terrainExtraction->setEnabled(false);
 
-  // Signals and slots
+  /// Signals and slots
   // User changes resolutionEdit
   QObject::connect(this->Internals->resolutionEdit, SIGNAL(textChanged(QString)),
     this->TerrainExtractionManager, SLOT(onResolutionScaleChange(QString)));
@@ -182,6 +187,25 @@ void smtkTerrainExtractionView::createWidget()
   QObject::connect(this->TerrainExtractionManager,
     &pqTerrainExtractionManager::resolutionEditChanged, this,
     &smtkTerrainExtractionView::onResolutionEditChanged);
+
+  QObject::connect(this->Internals->detailedResolutionButton, SIGNAL(clicked(bool)),
+    this->TerrainExtractionManager, SLOT(ComputeDetailedResolution()));
+
+  QObject::connect(this->Internals->autoSaveFileButton, SIGNAL(clicked(bool)), this,
+    SLOT(onAutoSaveExtractFileName()));
+
+  // For now just disable cachedGroup so we only save the best output
+  this->Internals->cacheGroup->setEnabled(false);
+  QObject::connect(this->Internals->cacheDirectoryButton, SIGNAL(clicked(bool)), this,
+    SLOT(onSelectCacheDirectory()));
+
+  // Mask size controls
+  QDoubleValidator* maskValidator = new QDoubleValidator(0.0, 1.0, 8, this->Internals->MaskSize);
+  maskValidator->setNotation(QDoubleValidator::StandardNotation);
+  this->Internals->MaskSize->setValidator(maskValidator);
+  QObject::connect(this->Internals->MaskSize, SIGNAL(textChanged(QString)), this,
+    SLOT(onMaskSizeTextChanged(QString)));
+  //QObject::connect(this->Internals->processFullExtraction, SINGAL(clicked()));
 }
 
 void smtkTerrainExtractionView::updateAttributeData()
@@ -259,6 +283,80 @@ void smtkTerrainExtractionView::cancelOperation(const smtk::model::OperatorPtr& 
     return;
   }
   // Reset widgets here
+}
+
+bool smtkTerrainExtractionView::onAutoSaveExtractFileName()
+{
+  QString filters = "LIDAR ASCII (*.pts);; LIDAR binary (*.bin.pts);; VTK PolyData (*.vtp);;";
+  QString baseFileName = this->Internals->autoSaveLabel->text();
+  QFileInfo baseFileInfo(baseFileName);
+  pqFileDialog file_dialog(pqApplicationCore::instance()->getActiveServer(), this->parentWidget(),
+    tr("Base Filename for Extraction Output:"), baseFileInfo.canonicalPath(), filters);
+  file_dialog.setFileMode(pqFileDialog::AnyFile);
+  file_dialog.setWindowModality(Qt::WindowModal);
+  file_dialog.setObjectName("FileSaveDialog");
+
+  bool ret = file_dialog.exec() == QDialog::Accepted;
+  if (ret)
+  {
+    //use the file info so that sperators between auto save & cache stay consitent
+    QFileInfo extractFileInfo(file_dialog.getSelectedFiles()[0]);
+    this->Internals->autoSaveLabel->setText(extractFileInfo.absoluteFilePath());
+    this->Internals->autoSaveLabel->setToolTip(extractFileInfo.absoluteFilePath());
+  }
+  return ret;
+}
+
+void smtkTerrainExtractionView::onMaskSizeTextChanged(QString text)
+{
+  if (text.size() == 0 || text == ".")
+  {
+    //we want to exempt empty strings from the below changes so that people
+    //can delete the current text.
+    //we want to also exempt a string starting with the decimal dot.
+    return;
+  }
+  QLineEdit* masksize = this->Internals->MaskSize;
+  const QDoubleValidator* validator = qobject_cast<const QDoubleValidator*>(masksize->validator());
+  if (validator)
+  {
+    int pos = 0; //needed just as paramter for the double validator
+    QValidator::State state = validator->validate(text, pos);
+    if (state != QValidator::Acceptable)
+    {
+      //convert this to the closest value
+      double value = text.toDouble();
+      value = (value < validator->bottom()) ? validator->bottom() : validator->top();
+      masksize->setText(QString::number(value));
+    }
+  }
+}
+
+bool smtkTerrainExtractionView::onSelectCacheDirectory()
+{
+  QString directory = this->Internals->CacheDirectoryLabel->text();
+  QFileInfo dirInfo(directory);
+
+  pqFileDialog file_dialog(pqApplicationCore::instance()->getActiveServer(), this->parentWidget(),
+    tr("Cache Directory:"), dirInfo.absoluteFilePath());
+  file_dialog.setObjectName("Cache Directory Dialog");
+  file_dialog.setFileMode(pqFileDialog::Directory);
+
+  bool ret = file_dialog.exec() == QDialog::Accepted;
+  if (ret)
+  {
+    QFileInfo cacheDirInfo(file_dialog.getSelectedFiles()[0]);
+    QString afp = cacheDirInfo.absoluteFilePath();
+    QLabel* cacheLbl = this->Internals->CacheDirectoryLabel;
+
+    //if the text is longer than the viewable area, right align the text
+    Qt::Alignment align = (afp.size() >= 35) ? Qt::AlignRight : Qt::AlignLeft;
+    cacheLbl->setAlignment(align);
+
+    this->Internals->CacheDirectoryLabel->setText(afp);
+    this->Internals->CacheDirectoryLabel->setToolTip(afp);
+  }
+  return ret;
 }
 
 void smtkTerrainExtractionView::valueChanged(smtk::attribute::ItemPtr /*valItem*/)

@@ -4,6 +4,58 @@
       class="vtkHydroModelPolySource">
       <!-- End of HydroModelPolySource -->
     </DataSourceProxy>
+        <SourceProxy name="CMBGeometryReader"
+      class="vtkCMBGeometryReader"
+      label="CMB Geometry reader">
+      <Documentation
+        short_help="Read an CMB Geometry file."
+        long_help="Read an CMB Geometry file (several different file formats).">
+      </Documentation>
+
+      <StringVectorProperty
+        name="FileName"
+        command="SetFileName"
+        animateable="0"
+        number_of_elements="1">
+        <FileListDomain name="files"/>
+        <Documentation>
+          This property specifies the file name for the reader.
+        </Documentation>
+      </StringVectorProperty>
+
+      <IntVectorProperty
+        name="PrepNonClosedSurfaceForModelCreation"
+        command="SetPrepNonClosedSurfaceForModelCreation"
+        number_of_elements="1"
+        default_values="0" >
+        <BooleanDomain name="bool"/>
+      </IntVectorProperty>
+
+      <IntVectorProperty
+        name="HasBoundaryEdges"
+        command="GetHasBoundaryEdges"
+        number_of_elements="1"
+        default_values="0"
+        information_only="1">
+        <SimpleIntInformationHelper/>
+        <BooleanDomain name="bool"/>
+      </IntVectorProperty>
+
+      <IntVectorProperty
+        name="RegionIdentifiersModified"
+        command="GetRegionIdentifiersModified"
+        number_of_elements="1"
+        default_values="0"
+        information_only="1">
+        <SimpleIntInformationHelper/>
+        <BooleanDomain name="bool"/>
+      </IntVectorProperty>
+      <Hints>
+        <ReaderFactory extensions="fac obj poly
+				   smesh pts sol stl tin xyz"
+                       file_description="CMB Point, Edge and Surface Geometry Files" />
+      </Hints>
+    </SourceProxy>
     <!-- ==================================================================== -->
     <SourceProxy name="LIDARReader"
       class="vtkLIDARReader"
@@ -187,6 +239,136 @@
 
   </ProxyGroup>
   <ProxyGroup name="filters">
+    <SourceProxy name="PolyDataStatsFilter" class="vtkPolyDataStatsFilter" label="PolyDataStats">
+     <Documentation
+        long_help="Calculate the statistics of a PolyDataSet."
+        short_help="Get PolyDataSet Statistics.">
+     </Documentation>
+     <InputProperty
+        name="Input"
+        command="SetInputConnection">
+           <ProxyGroupDomain name="groups">
+             <Group name="sources"/>
+             <Group name="filters"/>
+           </ProxyGroupDomain>
+           <DataTypeDomain name="input_type">
+             <DataType value="vtkPolyData"/>
+           </DataTypeDomain>
+      </InputProperty>
+
+      <DoubleVectorProperty
+         name="AreaStats"
+         label="Area Statistics"
+         command="GetAreaStats"
+         number_of_elements="3"
+         information_only="1"
+         default_values="0.0 0.0 0.0" >
+        <SimpleDoubleInformationHelper/>
+        <Documentation>
+          Area Result of the PolyDataSet Statistic calculation.
+        </Documentation>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+         name="GeometryBounds"
+         label="Geometry Bounds"
+         command="GetGeometryBounds"
+         number_of_elements="6"
+         information_only="1"
+         default_values="0.0 0.0 0.0 0.0 0.0 0.0" >
+        <SimpleDoubleInformationHelper/>
+        <Documentation>
+          Geometric Bounds Result of the PolyDataSet Statistic calculation.
+        </Documentation>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+         name="PolygonalSideStats"
+         label="Polygonal Side Statistics"
+         command="GetPolygonalSideStats"
+         number_of_elements="3"
+         information_only="1"
+         default_values="0.0 0.0 0.0" >
+        <SimpleDoubleInformationHelper/>
+        <Documentation>
+          Polygonal Side Result of the PolyDataSet Statistic calculation.
+        </Documentation>
+      </DoubleVectorProperty>
+
+      <IdTypeVectorProperty
+        name="NumberOfPoints"
+        label="Number of Points"
+        command="GetNumberOfPoints"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0">
+        <SimpleIdTypeInformationHelper/>
+      </IdTypeVectorProperty>
+
+      <IdTypeVectorProperty
+        name="NumberOfLines"
+        label="Number of Lines"
+        command="GetNumberOfLines"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0">
+        <SimpleIdTypeInformationHelper/>
+      </IdTypeVectorProperty>
+
+      <IdTypeVectorProperty
+        name="NumberOfPolygons"
+        label="Number of Polygons"
+        command="GetNumberOfPolygons"
+        information_only="1"
+        number_of_elements="1"
+        default_values="0">
+        <SimpleIdTypeInformationHelper/>
+      </IdTypeVectorProperty>
+
+      <DoubleVectorProperty
+        name="TotalSurfaceArea"
+        label="Total Surface Area"
+        command="GetTotalSurfaceArea"
+        information_only="1"
+        number_of_elements="1"
+        default_values="0.0">
+        <SimpleDoubleInformationHelper/>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+         name="Translation"
+         label="Translation"
+         command="SetTranslation"
+         number_of_elements="3"
+         default_values="0.0 0.0 0.0" >
+          <Documentation>
+           Defines the translation from data space to world space.
+         </Documentation>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+         name="Orientation"
+         label="Orientation"
+         command="SetOrientation"
+         number_of_elements="3"
+         default_values="0.0 0.0 0.0" >
+          <Documentation>
+           Defines the orientation from data space to world space.
+         </Documentation>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+         name="Scale"
+         label="Scale"
+         command="SetScale"
+         number_of_elements="3"
+         default_values="1.0 1.0 1.0" >
+          <Documentation>
+           Defines the scale from data space to world space.
+         </Documentation>
+      </DoubleVectorProperty>
+      <!-- End ClosestPointFilter -->
+   </SourceProxy>
    <!-- ==================================================================== -->
    <SourceProxy name="TerrainExtract" class="vtkTerrainExtractionFilter"
       label="Terrain Extraction Filter">

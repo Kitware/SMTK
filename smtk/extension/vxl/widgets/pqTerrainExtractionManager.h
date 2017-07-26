@@ -51,15 +51,9 @@ public slots:
 protected slots:
   //  void onProcesssFullData();
 
-  //  //auto save slots
-  //  bool onAutoSaveExtractFileName(); //returns true if the user selected a file
-
-  //  //cache directory slots
-  //  bool onSelectCacheDirectory(); //returns true if the user selected a directory
-
   //  //resolution controls
   void onResolutionScaleChange(QString scaleString);
-  //void ComputeDetailedResolution();
+  void ComputeDetailedResolution();
 
   //  //mask size control
   //  void onMaskSizeTextChanged(QString);
@@ -75,7 +69,7 @@ protected:
   void ComputeBasicResolution();
 
   //  pqDataRepresentation* createPreviewRepresentation(QString& filename);
-  //  pqPipelineSource* setupFullProcessTerrainFilter();
+  pqPipelineSource* setupFullProcessTerrainFilter();
 
   // Process the Aux_geom and convert it into a pqPipelineSource
   pqPipelineSource* PrepDataForTerrainExtraction();

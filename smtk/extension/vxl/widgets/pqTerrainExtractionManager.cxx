@@ -103,6 +103,11 @@ void pqTerrainExtractionManager::ComputeBasicResolution()
   }
 
   pqPipelineSource* pdSource = this->PrepDataForTerrainExtraction();
+  if (!pdSource)
+  {
+    smtk::io::Logger logger;
+    smtkWarningMacro(logger, "Computing basic resolution failed due to empty pqPipelineSource.");
+  }
   this->TerrainExtractFilter = builder->createFilter("filters", "TerrainExtract", pdSource);
 
   double computedScale = this->ComputeResolution(this->TerrainExtractFilter, false);
@@ -122,48 +127,40 @@ void pqTerrainExtractionManager::ComputeBasicResolution()
   emit resolutionEditChanged(scaleString);
 }
 
-//void pqTerrainExtractionManager::ComputeDetailedResolution()
-//{
-//  if (this->DetailedScale == 0)
-//  {
-//    this->LIDARPanel->getGUIPanel()->tabWidget->setEnabled(false);
-//    emit this->enableMenuItems(false);
-//    pqPipelineSource* appendedSource = this->setupFullProcessTerrainFilter();
-//    if (!appendedSource)
-//    {
-//      this->LIDARPanel->getGUIPanel()->tabWidget->setEnabled(true);
-//      emit this->enableMenuItems(true);
-//      return;
-//    }
+void pqTerrainExtractionManager::ComputeDetailedResolution()
+{
+  if (this->DetailedScale == 0)
+  {
+    pqPipelineSource* appendedSource = this->setupFullProcessTerrainFilter();
+    if (!appendedSource)
+    {
+      return;
+    }
 
-//    QMessageBox msgBox;
-//    msgBox.setText("Computing spacing (may take awhile)...");
-//    msgBox.setModal(false);
-//    msgBox.show();
+    QMessageBox msgBox;
+    msgBox.setText("Computing spacing (may take awhile)...");
+    msgBox.setModal(false);
+    msgBox.show();
 
-//    if (this->FullProcessTerrainExtractFilter)
-//    {
+    if (this->FullProcessTerrainExtractFilter)
+    {
 
-//      //users first time clicking on the detailed
-//      //res button. Store the computed value so we can save time on subsequent clicks
-//      this->DetailedScale = this->ComputeResolution(this->FullProcessTerrainExtractFilter, true);
+      //users first time clicking on the detailed
+      //res button. Store the computed value so we can save time on subsequent clicks
+      this->DetailedScale = this->ComputeResolution(this->FullProcessTerrainExtractFilter, true);
 
-//      // after "setting up refine", can get rid of appendedSource
-//      pqSMAdaptor::setInputProperty(
-//        this->FullProcessTerrainExtractFilter->getProxy()->GetProperty("Input"), 0, 0);
-//      this->FullProcessTerrainExtractFilter->getProxy()->UpdateVTKObjects();
-//      pqApplicationCore::instance()->getObjectBuilder()->destroy(appendedSource);
-
-//      this->LIDARPanel->getGUIPanel()->tabWidget->setEnabled(true);
-//    }
-
-//    emit this->enableMenuItems(true);
-//  }
-//  //if you click on the button after the first time, we reset the spinbox to the computed estimate
-//  QString scaleString;
-//  scaleString.setNum(this->DetailedScale);
-//  this->LIDARPanel->getGUIPanel()->resolutionEdit->setText(scaleString);
-//}
+      // after "setting up refine", can get rid of appendedSource
+      pqSMAdaptor::setInputProperty(
+        this->FullProcessTerrainExtractFilter->getProxy()->GetProperty("Input"), 0, 0);
+      this->FullProcessTerrainExtractFilter->getProxy()->UpdateVTKObjects();
+      pqApplicationCore::instance()->getObjectBuilder()->destroy(appendedSource);
+    }
+  }
+  //if you click on the button after the first time, we reset the spinbox to the computed estimate
+  QString scaleString;
+  scaleString.setNum(this->DetailedScale);
+  emit resolutionEditChanged(scaleString);
+}
 
 double pqTerrainExtractionManager::ComputeResolution(
   pqPipelineSource* extractionFilter, bool computeDetailedScale)
@@ -268,10 +265,18 @@ pqPipelineSource* pqTerrainExtractionManager::PrepDataForTerrainExtraction()
   }
   else
   {
-    // TODO: add support for other files by CMBGeometryReader check pqCMBLIDARTerrainExtractionManager
-    smtk::io::Logger logger;
-    smtkWarningMacro(
-      logger, "File type not supported. ModelBuilder now only supports xyz and pts format.");
+    readerSource = builder->createReader(
+      "sources", "CMBGeometryReader", filenameSL, pqApplicationCore::instance()->getActiveServer());
+    pqPipelineSource* polyDataStatsFilter =
+      builder->createFilter("filters", "PolyDataStatsFilter", readerSource);
+    vtkSMSourceProxy::SafeDownCast(polyDataStatsFilter->getProxy())->UpdatePipeline();
+    minPt[2] = pqSMAdaptor::getMultipleElementProperty(
+                 polyDataStatsFilter->getProxy()->GetProperty("GeometryBounds"), 4)
+                 .toDouble();
+    maxPt[2] = pqSMAdaptor::getMultipleElementProperty(
+                 polyDataStatsFilter->getProxy()->GetProperty("GeometryBounds"), 5)
+                 .toDouble();
+    builder->destroy(polyDataStatsFilter);
   }
   builder->blockSignals(false);
 
@@ -312,56 +317,36 @@ pqPipelineSource* pqTerrainExtractionManager::PrepDataForTerrainExtraction()
   return pdSource;
 }
 
-//pqPipelineSource* pqTerrainExtractionManager::setupFullProcessTerrainFilter()
-//{
-//  pqObjectBuilder* builder = pqApplicationCore::instance()->getObjectBuilder();
+pqPipelineSource* pqTerrainExtractionManager::setupFullProcessTerrainFilter()
+{
+  pqObjectBuilder* builder = pqApplicationCore::instance()->getObjectBuilder();
 
-//  // cleanup
-//  if (this->FullProcessTerrainExtractFilter)
-//  {
-//    builder->destroy(this->FullProcessTerrainExtractFilter);
-//    this->FullProcessTerrainExtractFilter = 0;
-//  }
+  // cleanup
+  if (this->FullProcessTerrainExtractFilter)
+  {
+    builder->destroy(this->FullProcessTerrainExtractFilter);
+    this->FullProcessTerrainExtractFilter = 0;
+  }
 
-//  // request full data
-//  QList<pqCMBLIDARPieceObject*> pieces =
-//    this->LIDARCore->getLIDARPieceTable()->getVisiblePieceObjects();
+  // Set value for FullProcessTerrainExtractFilter and get appendedSource
+  pqPipelineSource* appendedSource = this->PrepDataForTerrainExtraction();
+  if (!appendedSource)
+  {
+    smtk::io::Logger logger;
+    smtkWarningMacro(logger, "Setting up full process terrain filter failed due to emtpy source");
+  }
 
-//  // update pieces if necessary
-//  QList<pqPipelineSource*> sourcesForAppend;
-//  if (this->LIDARCore->getReaderManager()->getSourcesForOutput(
-//        false, pieces, sourcesForAppend, true) == false)
-//  {
-//    return 0;
-//  }
+  this->FullProcessTerrainExtractFilter =
+    builder->createFilter("filters", "TerrainExtract", appendedSource);
 
-//  QList<pqOutputPort*> outputsForAppend;
-//  for (int i = 0; i < sourcesForAppend.count(); i++)
-//  {
-//    outputsForAppend.push_back(sourcesForAppend[i]->getOutputPort(0));
-//  }
+  // setup the data transform
+  pqSMAdaptor::setMultipleElementProperty(
+    this->FullProcessTerrainExtractFilter->getProxy()->GetProperty("SetDataTransform"),
+    this->DataTransform);
+  this->FullProcessTerrainExtractFilter->getProxy()->UpdateVTKObjects();
 
-//  pqPipelineSource* appendedSource = this->LIDARCore->getAppendedSource(outputsForAppend);
-//  // done with temp source as soon as we've appended
-//  this->LIDARCore->getReaderManager()->destroyTemporarySources();
-
-//  if (!appendedSource)
-//  {
-//    return 0;
-//  }
-
-//  this->LIDARCore->enableAbort(false);
-//  this->FullProcessTerrainExtractFilter =
-//    builder->createFilter("filters", "TerrainExtract", appendedSource);
-
-//  // setup the data transform
-//  pqSMAdaptor::setMultipleElementProperty(
-//    this->FullProcessTerrainExtractFilter->getProxy()->GetProperty("SetDataTransform"),
-//    this->DataTransform);
-//  this->FullProcessTerrainExtractFilter->getProxy()->UpdateVTKObjects();
-
-//  return appendedSource;
-//}
+  return appendedSource;
+}
 
 //void pqTerrainExtractionManager::onProcesssFullData()
 //{
@@ -861,55 +846,6 @@ pqPipelineSource* pqTerrainExtractionManager::PrepDataForTerrainExtraction()
 //      pqApplicationCore::instance()->getObjectBuilder()->destroy(rep);
 //    }
 //  }
-//}
-
-//bool pqTerrainExtractionManager::onAutoSaveExtractFileName()
-//{
-//  QString filters = "LIDAR ASCII (*.pts);; LIDAR binary (*.bin.pts);; VTK PolyData (*.vtp);;";
-//  QString baseFileName = this->LIDARPanel->getGUIPanel()->autoSaveLabel->text();
-//  QFileInfo baseFileInfo(baseFileName);
-//  pqFileDialog file_dialog(this->LIDARCore->getActiveServer(), this->LIDARCore->parentWidget(),
-//    tr("Base Filename for Extraction Output:"), baseFileInfo.canonicalPath(), filters);
-//  file_dialog.setFileMode(pqFileDialog::AnyFile);
-//  file_dialog.setWindowModality(Qt::WindowModal);
-//  file_dialog.setObjectName("FileSaveDialog");
-
-//  bool ret = file_dialog.exec() == QDialog::Accepted;
-//  if (ret)
-//  {
-//    //use the file info so that sperators between auto save & cache stay consitent
-//    QFileInfo extractFileInfo(file_dialog.getSelectedFiles()[0]);
-//    this->LIDARPanel->getGUIPanel()->autoSaveLabel->setText(extractFileInfo.absoluteFilePath());
-//    this->LIDARPanel->getGUIPanel()->autoSaveLabel->setToolTip(extractFileInfo.absoluteFilePath());
-//  }
-//  return ret;
-//}
-
-//bool pqTerrainExtractionManager::onSelectCacheDirectory()
-//{
-//  QString directory = this->LIDARPanel->getGUIPanel()->CacheDirectoryLabel->text();
-//  QFileInfo dirInfo(directory);
-
-//  pqFileDialog file_dialog(this->LIDARCore->getActiveServer(), this->LIDARCore->parentWidget(),
-//    tr("Cache Directory:"), dirInfo.absoluteFilePath());
-//  file_dialog.setObjectName("Cache Directory Dialog");
-//  file_dialog.setFileMode(pqFileDialog::Directory);
-
-//  bool ret = file_dialog.exec() == QDialog::Accepted;
-//  if (ret)
-//  {
-//    QFileInfo cacheDirInfo(file_dialog.getSelectedFiles()[0]);
-//    QString afp = cacheDirInfo.absoluteFilePath();
-//    QLabel* cacheLbl = this->LIDARPanel->getGUIPanel()->CacheDirectoryLabel;
-
-//    //if the text is longer than the viewable area, right align the text
-//    Qt::Alignment align = (afp.size() >= 35) ? Qt::AlignRight : Qt::AlignLeft;
-//    cacheLbl->setAlignment(align);
-
-//    this->LIDARPanel->getGUIPanel()->CacheDirectoryLabel->setText(afp);
-//    this->LIDARPanel->getGUIPanel()->CacheDirectoryLabel->setToolTip(afp);
-//  }
-//  return ret;
 //}
 
 //void pqTerrainExtractionManager::onSaveRefineResultsChange(bool change)

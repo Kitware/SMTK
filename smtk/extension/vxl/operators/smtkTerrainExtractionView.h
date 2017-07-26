@@ -53,6 +53,13 @@ protected slots:
   virtual void requestOperation(const smtk::model::OperatorPtr& op);
   virtual void cancelOperation(const smtk::model::OperatorPtr&);
 
+  // Auto save slots
+  bool onAutoSaveExtractFileName(); //Returns true if user selected a file
+  // Mask size
+  void onMaskSizeTextChanged(QString text);
+  // Cache directory slots
+  bool onSelectCacheDirectory(); //returns true if the user selected a directory
+
   // This slot is used to indicate that the underlying attribute
   // for the operation should be checked for validity
   virtual void attributeModified();
