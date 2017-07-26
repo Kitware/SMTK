@@ -141,6 +141,7 @@ PySharedPtrClass< smtk::model::Operator, smtk::model::PyOperator > pybind11_init
     .def("observe", (void (smtk::model::Operator::*)(::smtk::model::OperatorEventType, ::smtk::model::OperatorWithResultCallback, void *)) &smtk::model::Operator::observe, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))
     .def("operate", &smtk::model::Operator::operate)
     .def("removeAllAssociations", &smtk::model::Operator::removeAllAssociations)
+    .def("associatedEntities", [](smtk::model::Operator& o){ return o.associatedEntitiesAs<smtk::model::EntityRefs>(); })
     .def("session", &smtk::model::Operator::session)
     .def("setManager", &smtk::model::Operator::setManager, py::arg("manager"))
     .def("setMeshManager", &smtk::model::Operator::setMeshManager, py::arg("s"))
