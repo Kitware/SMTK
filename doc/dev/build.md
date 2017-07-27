@@ -59,14 +59,13 @@ If you want to build the documentation you will need
 + [actdiag](https://pypi.python.org/pypi/sphinxcontrib-actdiag) version 1.0 or newer, and
 + optionally [sphinx_rtd_theme](https://docs.readthedocs.org/en/latest/theme.html) for a much-improved appearance.
 
-You may wish to obtain the test-data repository for SMTK in order
-to run tests which require input datasets; run:
+In order to obtain the testing data used by SMTK's data directory, you will
+need to use [git-lfs](https://git-lfs.github.com/). Once you have it available
+in your `PATH` environment variable, you can run:
 
-    git clone git@gitlab.kitware.com:cmb/smtk-testing-data.git
-
-somewhere *outside* the SMTK source directory. When running CMake on SMTK,
-set the `SMTK_DATA_DIR` variable to point to the directory `git clone`
-created.
+  * `git lfs install --local`
+  * `git lfs fetch`
+  * `git lfs checkout`
 
 Once you have prepared all of the dependencies, it is time to
 create a build directory (again, *outside* the SMTK source directory
