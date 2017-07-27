@@ -39,7 +39,7 @@ add_test(
 ##
 ## Test model browsing (for crashes only, not behavior)
 
-if (NOT WIN32 AND SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
+if (NOT WIN32 AND SMTK_DATA_DIR)
   add_test(
     NAME browseModel
     COMMAND

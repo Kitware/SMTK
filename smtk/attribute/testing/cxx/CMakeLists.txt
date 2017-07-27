@@ -30,7 +30,7 @@ endforeach()
 ################################################################################
 # Tests that require SMTK_DATA_DIR
 ################################################################################
-if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
+if (SMTK_DATA_DIR)
   set(attributeDataTests
     attributeReaderTest
     extensibleAttributeTest
