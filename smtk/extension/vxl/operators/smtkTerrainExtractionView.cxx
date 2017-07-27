@@ -22,6 +22,7 @@
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/VoidItem.h"
 
 #include "smtk/common/View.h"
 #include "smtk/extension/qt/qtAttribute.h"
@@ -29,6 +30,7 @@
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/io/Logger.h"
 
 #include <QtCore/QDebug>
 #include <QtCore/QDir>
@@ -44,9 +46,9 @@ public:
   smtkTerrainExtractionViewInternals() {}
   ~smtkTerrainExtractionViewInternals()
   {
-    if (CurrentAtt)
+    if (TerrainExtractionAtt)
     {
-      delete CurrentAtt;
+      delete TerrainExtractionAtt;
     }
   }
 
@@ -69,8 +71,9 @@ public:
     return NULL;
   }
 
-  QPointer<qtAttribute> CurrentAtt;
-  smtk::weak_ptr<smtk::model::Operator> CurrentOp;
+  QPointer<qtAttribute> TerrainExtractionAtt;
+  smtk::weak_ptr<smtk::model::Operator> terrainExtractionOp;
+  smtk::weak_ptr<smtk::model::Operator> addAux_GeomOp;
   QPointer<QWidget> terrainExtraction;
 };
 
@@ -79,6 +82,22 @@ smtkTerrainExtractionView::smtkTerrainExtractionView(const smtk::extension::View
 {
   this->Internals = new smtkTerrainExtractionViewInternals;
   this->TerrainExtractionManager = new pqTerrainExtractionManager();
+
+  // SIGNAL SLOTS that has nothing to do with UI
+  QObject::connect(this->TerrainExtractionManager, SIGNAL(numPointsCalculationFinshed(long)), this,
+    SLOT(onNumPointsCalculationFinshed(long)));
+  // ResolutionEdit value is calculated by manager
+  QObject::connect(this->TerrainExtractionManager,
+    &pqTerrainExtractionManager::resolutionEditChanged, this,
+    &smtkTerrainExtractionView::onResolutionEditChanged);
+
+  // Let user choose desired result then load it in
+  QObject::connect(this->TerrainExtractionManager, SIGNAL(showPickResultFileDialog(std::string&)),
+    this, SLOT(onShowPickResultFileDialog(std::string&)));
+
+  // Use add auxiliary geometry operator to load result into ModelBuilder
+  QObject::connect(this->TerrainExtractionManager, SIGNAL(viewTerrainExtractionResults()), this,
+    SLOT(onViewTerrainExtractionResults()));
 }
 
 smtkTerrainExtractionView::~smtkTerrainExtractionView()
@@ -101,14 +120,15 @@ Ui::TerrainExtractionParameters* smtkTerrainExtractionView::terrainExtractionPar
 
 void smtkTerrainExtractionView::attributeModified()
 {
-  // enable when user has picked a point cloud
+  // Enable when user has picked a point cloud
   this->Internals->terrainExtraction->setEnabled(
-    this->Internals->CurrentAtt->attribute()->isValid());
+    this->Internals->TerrainExtractionAtt->attribute()->isValid());
 
-  if (this->Internals->CurrentAtt->attribute()->isValid())
+  if (this->Internals->TerrainExtractionAtt->attribute()->isValid())
   {
-    // pass in the aux_geom to manager
-    smtk::attribute::AttributePtr spec = this->Internals->CurrentOp.lock()->specification();
+    // Pass in the aux_geom to manager
+    smtk::attribute::AttributePtr spec =
+      this->Internals->terrainExtractionOp.lock()->specification();
     smtk::attribute::ModelEntityItem::Ptr modelItem = spec->associations();
     smtk::model::AuxiliaryGeometry aux(modelItem->value(0));
     if (!aux.isValid())
@@ -129,8 +149,48 @@ void smtkTerrainExtractionView::attributeModified()
 
       QFileInfo extractFileInfo(directory + "/TerrainExtract.pts");
       this->Internals->autoSaveLabel->setText(extractFileInfo.absoluteFilePath());
-      this->Internals->autoSaveLabel->setToolTip(extractFileInfo.absoluteFilePath());
+      this->Internals->autoSaveLabel->setToolTip("Files of different resolution "
+                                                 "would be generated");
     }
+
+    // Cache add auxiliary geometry operator if not cached yet so when
+    // terrain extraction has finished, we can load the result into Model Builder
+    if (!this->Internals->addAux_GeomOp.lock())
+    {
+      // Add auxgom operator has been called before. Safe to skip check conditon
+      std::string aux_GeomName("add auxiliary geometry");
+
+      this->Internals->addAux_GeomOp =
+        this->uiManager()->activeModelView()->operatorsWidget()->existingOperator(aux_GeomName);
+
+      this->TerrainExtractionManager->setAuxGeomOperator(
+        this->uiManager()->activeModelView()->operatorsWidget()->existingOperator(aux_GeomName));
+    }
+  }
+}
+
+void smtkTerrainExtractionView::onViewTerrainExtractionResults()
+{
+  this->requestOperation(this->Internals->addAux_GeomOp.lock());
+  this->requestOperation(this->Internals->terrainExtractionOp.lock());
+}
+
+void smtkTerrainExtractionView::onShowPickResultFileDialog(std::string& filename)
+{
+  QString filters = "LIDAR ASCII (*.pts);; LIDAR binary (*.bin.pts);; VTK PolyData (*.vtp);;";
+  QString baseFileName = this->Internals->autoSaveLabel->text();
+  QFileInfo baseFileInfo(baseFileName);
+  pqFileDialog file_dialog(pqApplicationCore::instance()->getActiveServer(), this->parentWidget(),
+    tr("Base Filename for Extraction Output:"), baseFileInfo.absolutePath(), filters);
+  file_dialog.setFileMode(pqFileDialog::ExistingFile);
+  file_dialog.setWindowModality(Qt::WindowModal);
+  file_dialog.setObjectName("FileOpenDialog");
+
+  bool ret = file_dialog.exec() == QDialog::Accepted;
+  if (ret)
+  {
+    QFileInfo extractFileInfo(file_dialog.getSelectedFiles()[0]);
+    filename = extractFileInfo.absoluteFilePath().toStdString();
   }
 }
 
@@ -171,22 +231,14 @@ void smtkTerrainExtractionView::createWidget()
 
   this->Internals->terrainExtraction = new QWidget;
   this->Internals->setupUi(this->Internals->terrainExtraction);
-  layout->addWidget(
-    this->Internals
-      ->terrainExtraction); // ui must have a default layout other wise it would not work
+  // ui must have a default layout other wise it would not work
+  layout->addWidget(this->Internals->terrainExtraction);
   this->Internals->terrainExtraction->setEnabled(false);
 
   /// Signals and slots
   // User changes resolutionEdit
   QObject::connect(this->Internals->resolutionEdit, SIGNAL(textChanged(QString)),
     this->TerrainExtractionManager, SLOT(onResolutionScaleChange(QString)));
-  QObject::connect(this->TerrainExtractionManager, SIGNAL(numPointsCalculationFinshed(long)), this,
-    SLOT(onNumPointsCalculationFinshed(long)));
-
-  // ResolutionEdit value is calculated by manager
-  QObject::connect(this->TerrainExtractionManager,
-    &pqTerrainExtractionManager::resolutionEditChanged, this,
-    &smtkTerrainExtractionView::onResolutionEditChanged);
 
   QObject::connect(this->Internals->detailedResolutionButton, SIGNAL(clicked(bool)),
     this->TerrainExtractionManager, SLOT(ComputeDetailedResolution()));
@@ -209,6 +261,9 @@ void smtkTerrainExtractionView::createWidget()
     SLOT(onMaskSizeTextChanged(QString)));
   QObject::connect(this->Internals->processFullExtraction, SIGNAL(clicked()), this,
     SLOT(onProcessFullExtraction()));
+
+  // Show help when the info button is clicked.
+  QObject::connect(this->Internals->InfoButton, SIGNAL(released()), this, SLOT(onInfo()));
 }
 
 void smtkTerrainExtractionView::updateAttributeData()
@@ -219,9 +274,9 @@ void smtkTerrainExtractionView::updateAttributeData()
     return;
   }
 
-  if (this->Internals->CurrentAtt)
+  if (this->Internals->TerrainExtractionAtt)
   {
-    delete this->Internals->CurrentAtt;
+    delete this->Internals->TerrainExtractionAtt;
   }
 
   int i = view->details().findChild("AttributeTypes");
@@ -234,7 +289,6 @@ void smtkTerrainExtractionView::updateAttributeData()
   for (std::size_t ci = 0; ci < comp.numberOfChildren(); ++ci)
   {
     smtk::common::View::Component& attComp = comp.child(ci);
-    std::cout << "  component " << attComp.name() << "\n";
     if (attComp.name() != "Att")
     {
       continue;
@@ -242,31 +296,30 @@ void smtkTerrainExtractionView::updateAttributeData()
     std::string optype;
     if (attComp.attribute("Type", optype) && !optype.empty())
     {
-      std::cout << "    component type " << optype << "\n";
       if (optype == "terrain extraction")
       {
         defName = optype;
-        std::cout << "match terrain extraction!" << std::endl;
         break;
       }
     }
   }
   if (defName.empty())
   {
+    std::cout << "No match terrain extraction!" << std::endl;
     return;
   }
 
   smtk::model::OperatorPtr terrainExtractionOp =
     this->uiManager()->activeModelView()->operatorsWidget()->existingOperator(defName);
-  this->Internals->CurrentOp = terrainExtractionOp;
+  this->Internals->terrainExtractionOp = terrainExtractionOp;
 
   // expecting only 1 instance of the op?
   smtk::attribute::AttributePtr att = terrainExtractionOp->specification();
-  this->Internals->CurrentAtt = this->Internals->createAttUI(att, this->Widget, this);
-  if (this->Internals->CurrentAtt)
+  this->Internals->TerrainExtractionAtt = this->Internals->createAttUI(att, this->Widget, this);
+  if (this->Internals->TerrainExtractionAtt)
   {
     QObject::connect(
-      this->Internals->CurrentAtt, SIGNAL(modified()), this, SLOT(attributeModified()));
+      this->Internals->TerrainExtractionAtt, SIGNAL(modified()), this, SLOT(attributeModified()));
   }
 }
 
@@ -281,7 +334,7 @@ void smtkTerrainExtractionView::requestOperation(const smtk::model::OperatorPtr&
 
 void smtkTerrainExtractionView::cancelOperation(const smtk::model::OperatorPtr& op)
 {
-  if (!op || !this->Widget || !this->Internals->CurrentAtt)
+  if (!op || !this->Widget || !this->Internals->TerrainExtractionAtt)
   {
     return;
   }
@@ -369,14 +422,19 @@ void smtkTerrainExtractionView::onProcessFullExtraction()
   QFileInfo cacheFileInfo(this->Internals->CacheDirectoryLabel->text());
   QFileInfo autoSaveInfo(this->Internals->autoSaveLabel->text());
   bool computeColor = this->Internals->computeColor->isChecked();
-  bool previewOutput = this->Internals->previewOnCompletionCheckBox->isChecked();
+  bool viewOutput = this->Internals->ViewOnCompletionCheckBox->isChecked();
+  bool pickCustomResult = this->Internals->terrainExtractionOp.lock()
+                            ->specification()
+                            ->findVoid("pick custom result")
+                            ->isEnabled();
   this->TerrainExtractionManager->onProcesssFullData(
-    scale, maskSize, cacheFileInfo, autoSaveInfo, computeColor, previewOutput);
+    scale, maskSize, cacheFileInfo, autoSaveInfo, computeColor, viewOutput, pickCustomResult);
 }
 
 void smtkTerrainExtractionView::valueChanged(smtk::attribute::ItemPtr /*valItem*/)
 {
-  this->requestOperation(this->Internals->CurrentOp.lock());
+  // Do nothing since the operation is done in the custom view
+  //this->requestOperation(this->Internals->terrainExtractionOp.lock());
 }
 
 void smtkTerrainExtractionView::onResolutionEditChanged(QString scaleString)

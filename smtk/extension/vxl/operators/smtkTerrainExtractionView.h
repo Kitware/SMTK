@@ -11,6 +11,7 @@
 // .SECTION Description
 // .SECTION See Also
 // qtSection
+// smtkTerrainExtractionView owns pqTerrainExtractionMananger to avoid cyclic dendency
 
 #ifndef smtkTerrainExtractionView_h
 #define smtkTerrainExtractionView_h
@@ -65,6 +66,10 @@ protected slots:
   // This slot is used to indicate that the underlying attribute
   // for the operation should be checked for validity
   virtual void attributeModified();
+
+  void onViewTerrainExtractionResults();
+
+  void onShowPickResultFileDialog(std::string& filename);
 
   virtual void updateAttributeData();
   void onNumPointsCalculationFinshed(long numPoints);

@@ -48,25 +48,25 @@ smtk_export_header(smtkVXLWidgetsExt Exports.h)
 #install the library and exports the library when used from a build tree
 smtk_install_library(smtkVXLWidgetsExt)
 
-#if (SMTK_ENABLE_TESTING)
-#  # Link *everything* in this directory to VTK modules
-#  # This is required for the TestBuild targets.
-#  # We must test whether each of the targets below exist
-#  # because they are required when built into VTK but
-#  # may not be present, especially since the OpenGL2
-#  # backend became available.
-#  set(SMTK_VTK_TARGET_LIST)
-#  foreach(target
-#    vtkInteractionStyle
-#    vtkRenderingFreeType
-#    vtkRenderingOpenGL2
-#    ${qt_targets}
-#    )
-#    if (TARGET ${target})
-#      list(APPEND SMTK_VTK_TARGET_LIST ${target})
-#    endif()
-#  endforeach()
-#
-#  target_link_libraries(TestBuild_smtk_extension_opencv_qt PUBLIC ${SMTK_VTK_TARGET_LIST}
-#    smtkQtExt)
-#endif()
+if (SMTK_ENABLE_TESTING)
+  # Link *everything* in this directory to VTK modules
+  # This is required for the TestBuild targets.
+  # We must test whether each of the targets below exist
+  # because they are required when built into VTK but
+  # may not be present, especially since the OpenGL2
+  # backend became available.
+  set(SMTK_VTK_TARGET_LIST)
+  foreach(target
+    vtkInteractionStyle
+    vtkRenderingFreeType
+    vtkRenderingOpenGL2
+    ${qt_targets}
+    )
+    if (TARGET ${target})
+      list(APPEND SMTK_VTK_TARGET_LIST ${target})
+    endif()
+  endforeach()
+
+  target_link_libraries(TestBuild_smtk_extension_vxl_widgets PUBLIC ${SMTK_VTK_TARGET_LIST}
+    smtkQtExt)
+endif()

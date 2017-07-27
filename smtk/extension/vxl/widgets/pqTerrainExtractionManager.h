@@ -17,10 +17,12 @@
 #ifndef _pqTerrainExtractionManager_h
 #define _pqTerrainExtractionManager_h
 
+#include "smtk/PublicPointerDefs.h"
 #include <smtk/SharedPtr.h>
 
 #include "smtk/extension/vxl/widgets/Exports.h"
 #include "smtk/model/AuxiliaryGeometry.h"
+#include "smtk/model/Operator.h"
 #include <QtCore/QFileInfo>
 #include <QtCore/QObject>
 
@@ -38,19 +40,23 @@ public:
   pqTerrainExtractionManager();
   ~pqTerrainExtractionManager() override;
 
-  pqPipelineSource* getTerrainFilter() { return this->TerrainExtractFilter; }
-  pqPipelineSource* getFullTerrainFilter() { return this->FullProcessTerrainExtractFilter; }
-
 signals:
   void numPointsCalculationFinshed(long numPoints);
   void resolutionEditChanged(QString scaleString);
+  void viewTerrainExtractionResults();
+  void showPickResultFileDialog(std::string& filename);
 
 public slots:
   // set aux_geom input then compute basic resolution and guess cache dir
   void setAuxGeom(smtk::model::AuxiliaryGeometry aux);
 
+  void setAuxGeomOperator(smtk::model::OperatorPtr addAux_GeomOp)
+  {
+    this->AddAux_GeomOp = addAux_GeomOp;
+  }
+
   void onProcesssFullData(double scale, double maskSize, QFileInfo cacheFileInfo,
-    QFileInfo autoSaveInfo, bool computeColor, bool previewOutput);
+    QFileInfo autoSaveInfo, bool computeColor, bool viewOutput, bool pickCustomResult);
 protected slots:
   //resolution controls
   void onResolutionScaleChange(QString scaleString);
@@ -72,8 +78,9 @@ protected:
   pqPipelineSource* PrepDataForTerrainExtraction();
 
   // Load the new aux_geom back as aux_geom
-  // void PreviewResults();
+  void ViewResults(QFileInfo autoSaveInfo, bool pickCustomResult);
 
+  void clear();
   // Description:
   // Some internal ivars.
   bool CacheRefineDataForFullProcess;
@@ -87,7 +94,7 @@ protected:
 
   QList<QVariant> DataTransform;
 
-  std::vector<pqPipelineSource*> PDSources;
+  smtk::weak_ptr<smtk::model::Operator> AddAux_GeomOp;
 
   smtk::model::AuxiliaryGeometry Aux_geom;
 };

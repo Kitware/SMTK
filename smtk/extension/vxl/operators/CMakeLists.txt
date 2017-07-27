@@ -47,7 +47,6 @@ target_link_libraries(smtkVXLOperatorViewsExt
   LINK_PRIVATE
     smtkVXLWidgetsExt
     smtkPQWidgetsExt
-    #${QT_QTCORE_LIBRARY} # it seems that it's deprecated
 )
 
 # if (SMTK_ENABLE_TESTING)
@@ -80,12 +79,10 @@ endforeach()
 add_paraview_plugin(
   smtkVXLOperatorViewsPlugin "1.0"
   #SERVER_MANAGER_XML smconfig.xml
-  #SERVER_SOURCES sessionInit.cxx # do I need it here?
   GUI_INTERFACES ${viewInterfaces}
   GUI_SOURCES ${viewSources}
   CS_KITS
     vtkSMTKWidgetsExt
-    # TBDadd other libraries in vxl
 )
 target_link_libraries(smtkVXLOperatorViewsPlugin
   LINK_PUBLIC

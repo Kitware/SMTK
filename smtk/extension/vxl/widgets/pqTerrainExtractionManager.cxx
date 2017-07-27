@@ -12,10 +12,7 @@
 
 #include <QDir>
 #include <QDoubleValidator>
-#include <QIcon>
-#include <QList>
 #include <QMessageBox>
-#include <QPixmap>
 #include <QVariant>
 #include <QtCore/QFileInfo>
 
@@ -40,24 +37,18 @@
 #include "pqProgressManager.h"
 #include "pqRenderView.h"
 #include "pqSMAdaptor.h"
+
+#include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/VoidItem.h"
 #include "smtk/extension/paraview/widgets/qtArcWidget.h"
+#include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/io/Logger.h"
 
 #include "vtkDataObject.h"
 
 pqTerrainExtractionManager::pqTerrainExtractionManager()
 {
-  //this->View = view;
-
-  this->TerrainExtractFilter = 0;
-  this->FullProcessTerrainExtractFilter = 0;
-
-  this->DetailedScale = 0;
-  this->InputDims[0] = 1;
-  this->InputDims[1] = 1;
-
-  this->SaveRefineResults = false;
-  this->CacheRefineDataForFullProcess = true;
+  this->clear();
 }
 
 pqTerrainExtractionManager::~pqTerrainExtractionManager()
@@ -73,12 +64,24 @@ pqTerrainExtractionManager::~pqTerrainExtractionManager()
   }
 }
 
+void pqTerrainExtractionManager::clear()
+{
+  this->TerrainExtractFilter = 0;
+  this->FullProcessTerrainExtractFilter = 0;
+
+  this->DetailedScale = 0;
+  this->InputDims[0] = 1;
+  this->InputDims[1] = 1;
+
+  this->SaveRefineResults = false;
+  this->CacheRefineDataForFullProcess = true;
+}
+
 void pqTerrainExtractionManager::setAuxGeom(smtk::model::AuxiliaryGeometry aux)
 {
+  this->clear();
   this->Aux_geom = aux;
-  std::cout << "set AuxGeom: " << this->Aux_geom.url() << std::endl;
   this->ComputeBasicResolution();
-  this->CacheRefineDataForFullProcess = true;
 }
 
 void pqTerrainExtractionManager::onResolutionScaleChange(QString scaleString)
@@ -131,6 +134,9 @@ void pqTerrainExtractionManager::ComputeDetailedResolution()
 {
   if (this->DetailedScale == 0)
   {
+    // FIXME: pqCMBLIDARTerrainExtractionManager::setupFullProcessTerrainFilter
+    // has a complex logic to get pqPieLineSource. For now it just simply read
+    // the data without updating pieces
     pqPipelineSource* appendedSource = this->setupFullProcessTerrainFilter();
     if (!appendedSource)
     {
@@ -192,10 +198,6 @@ double pqTerrainExtractionManager::ComputeResolution(
 
   this->InputDims[0] = (vbounds[1].toDouble() - vbounds[0].toDouble());
   this->InputDims[1] = (vbounds[3].toDouble() - vbounds[2].toDouble());
-  /*******************************************************************/
-  std::cout << "ComputeResolution with dim as " << this->InputDims[0] << " " << this->InputDims[1]
-            << " with computeDetailedScale as " << computeDetailedScale << std::endl;
-  /*******************************************************************/
 
   return scale;
 }
@@ -320,9 +322,13 @@ pqPipelineSource* pqTerrainExtractionManager::setupFullProcessTerrainFilter()
 }
 
 void pqTerrainExtractionManager::onProcesssFullData(double scale, double maskSize,
-  QFileInfo /*cacheFileInfo*/, QFileInfo autoSaveInfo, bool computeColor, bool previewOutput)
+  QFileInfo /*cacheFileInfo*/, QFileInfo autoSaveInfo, bool computeColor, bool viewOutput,
+  bool pickCustomResult)
 {
   // TODO: Hide all aux_geoms?
+  QMessageBox warningBox;
+  warningBox.setText("Extracting terrain (may take a while)...");
+  warningBox.exec();
 
   // for now, assume one shot... do not save refine output (handled upon exit by
   // destroying the filter)
@@ -482,10 +488,9 @@ void pqTerrainExtractionManager::onProcesssFullData(double scale, double maskSiz
   }
   msgBox.exec();
 
-  if (previewOutput)
+  if (viewOutput)
   {
-    // TODO: load the file back as aux_geom
-    //this->addExtractionOutputToTree(minLevel, maxLevel, scale, autoSaveInfo);
+    this->ViewResults(autoSaveInfo, pickCustomResult);
   }
 
   // right now not supporting repeat full process
@@ -499,4 +504,24 @@ void pqTerrainExtractionManager::onProcesssFullData(double scale, double maskSiz
 void pqTerrainExtractionManager::onSaveRefineResultsChange(bool change)
 {
   this->SaveRefineResults = change;
+}
+
+void pqTerrainExtractionManager::ViewResults(QFileInfo autoSaveInfo, bool pickCustomResult)
+{
+  smtk::attribute::AttributePtr att = this->AddAux_GeomOp.lock()->specification();
+  std::string filename;
+  if (pickCustomResult)
+  { // Let user choose a file
+    emit showPickResultFileDialog(filename);
+  }
+  else
+  { // Load the finest result
+    filename += autoSaveInfo.absolutePath().toStdString() + "/";
+    filename += autoSaveInfo.baseName().toStdString();
+    filename += "_00.";
+    filename += autoSaveInfo.completeSuffix().toStdString();
+  }
+  att->associateEntity(qtActiveObjects::instance().activeModel());
+  att->findFile("url")->setValue(filename);
+  emit viewTerrainExtractionResults();
 }

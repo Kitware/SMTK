@@ -28,6 +28,20 @@ namespace model
 
 smtk::model::OperatorResult TerrainExtraction::operateInternal()
 {
+  EntityRefArray entities = this->associatedEntitiesAs<EntityRefArray>();
+  if (entities.empty())
+  {
+    smtkErrorMacro(this->log(), "No parent specified.");
+    return this->createResult(smtk::model::OPERATION_FAILED);
+  }
+
+  // Hide the visibilty of input aux_geom
+  EntityRef parent = entities[0];
+  parent.setVisible(false);
+  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+
+  this->addEntityToResult(result, parent, MODIFIED);
+  return result;
 }
 
 } //namespace model
