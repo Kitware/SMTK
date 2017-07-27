@@ -80,13 +80,7 @@ void PythonInterpreter::initialize()
     pybind11::initialize_interpreter();
 
     // Add the contents of our python path list to the path
-    pybind11::module sys = pybind11::module::import("sys");
-    regex re(",");
-    sregex_token_iterator it(python_path_list.begin(), python_path_list.end(), re, -1), last;
-    for (; it != last; ++it)
-    {
-      sys.attr("path").attr("append")(it->str().c_str());
-    }
+    addToPythonPath(python_path_list);
   }
 }
 
@@ -96,6 +90,24 @@ void PythonInterpreter::finalize()
   {
     pybind11::finalize_interpreter();
   }
+}
+
+bool PythonInterpreter::addToPythonPath(std::string path_list, std::string separator)
+{
+  if (!this->isInitialized())
+  {
+    this->initialize();
+  }
+
+  pybind11::module sys = pybind11::module::import("sys");
+  regex re(separator);
+  sregex_token_iterator it(path_list.begin(), path_list.end(), re, -1), last;
+  for (; it != last; ++it)
+  {
+    sys.attr("path").attr("append")(it->str().c_str());
+  }
+
+  return true;
 }
 }
 }
