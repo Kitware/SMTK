@@ -13,6 +13,8 @@
 
 #include "smtk/CoreExports.h"
 
+#include <string>
+
 namespace smtk
 {
 namespace common
@@ -36,6 +38,7 @@ public:
 
   void initialize();
   void finalize();
+  bool addToPythonPath(std::string paths, std::string separator = ",");
 
 private:
   PythonInterpreter();
