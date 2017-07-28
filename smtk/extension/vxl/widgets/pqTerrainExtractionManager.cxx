@@ -480,11 +480,11 @@ void pqTerrainExtractionManager::onProcesssFullData(double scale, double maskSiz
   QMessageBox msgBox;
   if (aborted)
   {
-    msgBox.setText("Terrain Extraction Abored");
+    msgBox.setText("Terrain extraction Aborted");
   }
   else
   {
-    msgBox.setText("The terrain Extraction has completed");
+    msgBox.setText("The Terrain extraction has completed");
   }
   msgBox.exec();
 

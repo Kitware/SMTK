@@ -213,10 +213,10 @@ if (SMTK_ENABLE_VXL_SUPPORT)
   #include_directories(${VTKExtensions_SOURCE_DIR})
 
   # Use the standard VXL include directories.
-  INCLUDE_DIRECTORIES(${VXL_VCL_INCLUDE_DIR} ${VXL_CORE_INCLUDE_DIR})
+  include_directories(${VXL_VCL_INCLUDE_DIR} ${VXL_CORE_INCLUDE_DIR})
 
   # Add link directories needed to use VXL.
-  LINK_DIRECTORIES(${VXL_LIBRARY_DIR})
+  include_directories(${VXL_LIBRARY_DIR})
 
   # Build the Tensor Voting library.
   add_subdirectory(rtvl)

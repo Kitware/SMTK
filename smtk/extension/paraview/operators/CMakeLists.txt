@@ -1,3 +1,7 @@
+smtk_find_package_qt(qt_targets REQUIRED
+  QT4_COMPONENTS QtCore QtGui
+  QT5_COMPONENTS Core Widgets)
+
 include(${PARAVIEW_USE_FILE})
 include(ParaViewPlugins)
 
@@ -52,7 +56,7 @@ target_link_libraries(smtkPQOperatorViewsExt
     pqApplicationComponents
     smtkQtExt
     smtkCore
-    ${QT_QTCORE_LIBRARY} # It seems it's empty
+    ${qt_targets}
     ${Boost_LIBRARIES}
     vtkjsoncpp
 )

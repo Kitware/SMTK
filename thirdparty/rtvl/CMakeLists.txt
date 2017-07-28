@@ -59,25 +59,4 @@ endif()
 set_property(TARGET rtvl APPEND_STRING
   PROPERTY COMPILE_FLAGS ${ignore_rules_for_rtvl})
 
-find_library(RGTL_LIBRARY
-  NAMES rgtl
-  PATHS ${VXL_LIBRARY_DIR}
-  PATH_SUFFIXES
-    Release Debug)
-find_library(VNL_ALGO_LIBRARY
-  NAMES vnl_algo
-  PATHS ${VXL_LIBRARY_DIR}
-  PATH_SUFFIXES
-    Release Debug)
-find_library(VNL_LIBRARY
-  NAMES vnl
-  PATHS ${VXL_LIBRARY_DIR}
-  PATH_SUFFIXES
-    Release Debug)
-find_library(V3P_NETLIB_LIBRARY
-  NAMES v3p_netlib
-  PATHS ${VXL_LIBRARY_DIR}
-  PATH_SUFFIXES
-    Release Debug)
-
 target_link_libraries(rtvl ${RGTL_LIBRARY} ${VNL_ALGO_LIBRARY} ${VNL_LIBRARY} ${V3P_NETLIB_LIBRARY})

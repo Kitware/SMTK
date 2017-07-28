@@ -1,3 +1,6 @@
+smtk_find_package_qt(qt_targets REQUIRED
+  QT4_COMPONENTS QtCore QtGui
+  QT5_COMPONENTS Core Gui Widgets)
 #include(${PARAVIEW_USE_FILE})
 #include(ParaViewPlugins)
 
@@ -17,13 +20,8 @@ set(qtui
 #install the headers
 smtk_public_headers(${hdrs})
 
-if (PARAVIEW_QT_VERSION VERSION_GREATER "4")
-  qt5_wrap_cpp(mocs ${hdrs})
-  qt5_wrap_ui(uisrc ${qtui})
-else()
-  qt4_wrap_cpp(mocs ${hdrs})
-  qt4_wrap_ui(uisrc ${qtui})
-endif()
+smtk_qt_wrap_cpp(MOC_BUILT_SOURCES ${hdrs})
+smtk_qt_wrap_ui(SMTKVXLOPERATORVIEWSEXT_UI_BUILT_SOURCES ${qtui})
 
 source_group("Qt_Source" FILES ${srcs} )
 source_group("Qt_Generated" FILES ${mocs} ${uisrc})
@@ -44,6 +42,7 @@ target_link_libraries(smtkVXLOperatorViewsExt
     smtkQtExt
     pqApplicationComponents
     smtkCore
+    ${qt_targets}
   LINK_PRIVATE
     smtkVXLWidgetsExt
     smtkPQWidgetsExt
