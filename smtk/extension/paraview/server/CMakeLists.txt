@@ -11,7 +11,7 @@ set(serverUnwrappedHdrs
 )
 
 set(serverXMLSrcs
-  # smconfig.xml
+  smconfig.xml
 )
 
 set(serverWrappedSrcs
@@ -41,6 +41,8 @@ target_link_libraries(smtkPVServerExtPlugin
   LINK_PUBLIC
     smtkCore
     vtkSMTKSourceExt
+    vtkSMTKReaderExt # vtkLIDARReader
+    vtkSMTKFilterExt # vtkTerrainExtractionFilter, vtkLIDARElevationFilter
 )
 smtk_export_header(smtkPVServerExtPlugin Exports.h)
 

@@ -110,6 +110,9 @@ mark_as_advanced(SMTK_INSTALL_PYTHON_TO_SITE_PACKAGES)
 option(SMTK_ENABLE_QT_SUPPORT "Build Qt GUI" OFF)
 cmake_dependent_option(SMTK_ENABLE_APPLICATIONS "Build Qt-enabled applications" ON SMTK_ENABLE_QT_SUPPORT OFF)
 option(SMTK_ENABLE_VTK_SUPPORT "Build VTK component" ON)
+# SMTK uses vxl library for terrain extraction. It also depends on VTK and ParaView.
+cmake_dependent_option(SMTK_ENABLE_VXL_SUPPORT "Build VXL component" ON
+  "SMTK_ENABLE_PARAVIEW_SUPPORT;SMTK_ENABLE_QT_SUPPORT;SMTK_ENABLE_VTK_SUPPORT" OFF)
 option(SMTK_ENABLE_REMUS_SUPPORT "Build Remus components" OFF)
 cmake_dependent_option(SMTK_ENABLE_PARAVIEW_SUPPORT "Build paraview plugins for model sessions" OFF
   SMTK_ENABLE_VTK_SUPPORT OFF)

@@ -15,7 +15,7 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/qt/Exports.h"
-#include <QDialog>
+#include <QtWidgets/QDialog>
 
 namespace Ui
 {
