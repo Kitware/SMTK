@@ -1106,6 +1106,7 @@ qtModelOperationWidget* qtModelView::operatorsWidget()
 void qtModelView::initOperatorsDock(const std::string& opName, smtk::model::SessionPtr session)
 {
   // make sure the operator widget is created.
+  this->operatorsDock()->raise();
   this->operatorsDock()->show();
   SessionRef bs(session->manager(), session->sessionId());
 
