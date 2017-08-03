@@ -2,4 +2,5 @@
 # during git commit after local hooks have been installed.
 
 [hooks "chain"]
+	pre-commit = utilities/git/pre-commit
 	pre-push = utilities/git/pre-push
