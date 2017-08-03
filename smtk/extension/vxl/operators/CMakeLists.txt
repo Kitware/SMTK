@@ -21,16 +21,16 @@ set(qtui
 smtk_public_headers(${hdrs})
 
 smtk_qt_wrap_cpp(MOC_BUILT_SOURCES ${hdrs})
-smtk_qt_wrap_ui(SMTKVXLOPERATORVIEWSEXT_UI_BUILT_SOURCES ${qtui})
+smtk_qt_wrap_ui(UI_BUILT_SOURCES ${qtui})
 
-source_group("Qt_Source" FILES ${srcs} )
-source_group("Qt_Generated" FILES ${mocs} ${uisrc})
+source_group("Qt_Source" FILES ${srcs} ${qtui} )
+source_group("Qt_Generated" FILES ${MOC_BUILT_SOURCES} ${UI_BUILT_SOURCES})
 source_group("Qt_Header" FILES ${hdrs})
 
 add_library(smtkVXLOperatorViewsExt
   ${srcs}
-  ${mocs}
-  ${uisrc}
+  ${MOC_BUILT_SOURCES}
+  ${UI_BUILT_SOURCES}
 )
 
 #we need to add the location of the moc files to the include dir for smtkVXLWidgetExt
@@ -48,12 +48,12 @@ target_link_libraries(smtkVXLOperatorViewsExt
     smtkPQWidgetsExt
 )
 
-# if (SMTK_ENABLE_TESTING)
-#   target_link_libraries(TestBuild_smtk_extension_paraview_operators
-#     LINK_PUBLIC
-#     smtkVXLOperatorViewsExt
-#     )
-# endif()
+if (SMTK_ENABLE_TESTING)
+  target_link_libraries(TestBuild_smtk_extension_vxl_operators
+    LINK_PUBLIC
+    smtkVXLOperatorViewsExt
+    )
+endif()
 
 smtk_export_header(smtkVXLOperatorViewsExt Exports.h)
 
