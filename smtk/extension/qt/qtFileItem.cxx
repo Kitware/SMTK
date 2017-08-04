@@ -303,7 +303,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
 
     if (this->Internals->fileExtCombo)
     {
-      QObject::connect(this->Internals->fileExtCombo, SIGNAL(textChanged(const QString&)),
+      QObject::connect(this->Internals->fileExtCombo, SIGNAL(currentTextChanged(const QString&)),
         this->Internals->SignalMapper, SLOT(map()));
       QObject::connect(this->Internals->fileExtCombo, SIGNAL(currentIndexChanged(int)),
         this->Internals->SignalMapper, SLOT(map()));

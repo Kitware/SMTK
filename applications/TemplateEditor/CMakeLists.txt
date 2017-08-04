@@ -3,6 +3,10 @@
 # ==============================================================================
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
+smtk_find_package_qt(qt_targets REQUIRED
+  QT4_COMPONENTS QtCore
+  QT5_COMPONENTS Core Widgets)
+
 # Qt UI files
 # ------------
 set(TE_UI_FORMS
