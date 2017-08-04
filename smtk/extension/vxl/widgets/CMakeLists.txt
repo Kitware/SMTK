@@ -41,6 +41,7 @@ target_link_libraries(smtkVXLWidgetsExt LINK_PUBLIC
   ${qt_targets}
 LINK_PRIVATE
   ${VTK_LIBRARIES}
+  smtkQtExt
 )
 
 smtk_export_header(smtkVXLWidgetsExt Exports.h)
