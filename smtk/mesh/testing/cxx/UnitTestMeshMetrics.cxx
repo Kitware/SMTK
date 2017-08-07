@@ -40,6 +40,7 @@ void verify_eulerCharacteristic_cube()
   test(c->isValid(), "collection should be valid");
 
   test(eulerCharacteristic(c->meshes().extractShell()) == 2);
+  test(eulerCharacteristic(c->meshes()) == 1);
 }
 
 void verify_eulerCharacteristic_cubeWithHole()
