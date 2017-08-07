@@ -136,4 +136,4 @@ int ImportFromDEFORMOp(int argc, char* argv[])
   return 0;
 }
 
-smtkPythonInitMacro(import_from_deform, smtk.bridge.multiscale.import_from_deform);
+smtkPythonInitMacro(import_from_deform, smtk.bridge.multiscale.import_from_deform, true);

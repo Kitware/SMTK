@@ -224,4 +224,4 @@ int PartitionBoundariesOp(int argc, char* argv[])
 
 // This macro ensures the vtk io library is loaded into the executable
 smtkComponentInitMacro(smtk_extension_vtk_io_MeshIOVTK)
-  smtkPythonInitMacro(import_from_deform, smtk.bridge.multiscale.import_from_deform);
+  smtkPythonInitMacro(import_from_deform, smtk.bridge.multiscale.import_from_deform, true);

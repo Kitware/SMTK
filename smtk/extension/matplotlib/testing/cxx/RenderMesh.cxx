@@ -150,4 +150,4 @@ int main(int argc, char* argv[])
   return 0;
 }
 
-smtkPythonInitMacro(render_mesh, smtk.extension.matplotlib.render_mesh);
+smtkPythonInitMacro(render_mesh, smtk.extension.matplotlib.render_mesh, true);

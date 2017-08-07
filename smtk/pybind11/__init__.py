@@ -10,12 +10,6 @@
 #
 #=============================================================================
 
-# For Windows builds, we must initialize our python interpreter with
-# "Py_NoSiteFlag" enabled. We therefore import it here instead. Since this
-# module is usually imported at python's initialization, this should have no
-# effect when another python implementation imports smtk.
-import site
-
 __all__ = ('common', 'attribute', 'model',
            'mesh', 'io', 'bridge', 'simulation')
 
