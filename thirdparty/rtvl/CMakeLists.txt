@@ -60,3 +60,5 @@ set_property(TARGET rtvl APPEND_STRING
   PROPERTY COMPILE_FLAGS ${ignore_rules_for_rtvl})
 
 target_link_libraries(rtvl ${RGTL_LIBRARY} ${VNL_ALGO_LIBRARY} ${VNL_LIBRARY} ${V3P_NETLIB_LIBRARY})
+
+smtk_install_library(rtvl)

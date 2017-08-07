@@ -13,6 +13,19 @@ set(${vtk-module}_NO_HeaderTest 1)
 set(VTK_INSTALL_NO_HEADERS 1)
 vtk_module_library(${vtk-module} ${srcs})
 
+target_include_directories(${vtk-module}
+  PRIVATE
+    $<BUILD_INTERFACE:${SMTK_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${SMTK_BINARY_DIR}>
+    $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../../../thirdparty/rtvl/
+
+    ${VXL_RPL_INCLUDE_DIR}
+    ${VXL_VCL_INCLUDE_DIR}
+    ${VXL_CORE_INCLUDE_DIR}
+    ${Boost_INCLUDE_DIRS}
+)
+
 target_link_libraries(${vtk-module}
   LINK_PUBLIC
     vtkSMTKReaderExt # vtkLIDARReader
@@ -20,19 +33,10 @@ target_link_libraries(${vtk-module}
     smtkIOVTK # vtkLIDARWriter
   LINK_PRIVATE
     rtvl
+    vnl
+    rgtl
   )
 
-target_include_directories(${vtk-module}
-  PRIVATE
-    $<BUILD_INTERFACE:${SMTK_SOURCE_DIR}>
-    $<BUILD_INTERFACE:${SMTK_BINARY_DIR}>
-    $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../rtvl>
-    ${VXL_RPL_INCLUDE_DIR}
-    ${VXL_VCL_INCLUDE_DIR}
-    ${VXL_CORE_INCLUDE_DIR}
-    ${Boost_INCLUDE_DIRS}
-)
 
 # ... and make header compilation tests link properly:
 smtk_install_library(${vtk-module})
