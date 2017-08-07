@@ -60,22 +60,9 @@ set(smtkCore_private_link_libraries
   )
 
 if(SMTK_USE_PYBIND11)
-  # If we are using Pybind11, then we require its include directory and the
-  # python include directory and libraries for an embedded python environment
-
-  list(APPEND smtkCore_public_include_directories
-    $<BUILD_INTERFACE:${PYBIND11_INCLUDE_DIR}>
-    )
-
-  list(APPEND smtkCore_private_include_directories
-    ${PYTHON_INCLUDE_DIRS}
-    )
-
   list(APPEND smtkCore_private_link_libraries
-    ${PYTHON_LIBRARIES}
+    pybind11::embed
     )
-
-  add_subdirectory(pybind11)
 endif()
 
 add_library(smtkCore ${smtk_srcs})
