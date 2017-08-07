@@ -16,6 +16,13 @@ foreach (test ${commonTests})
     COMMAND $<TARGET_FILE:${test}>)
 endforeach()
 
+add_executable(QuerySMTKPythonForModule QuerySMTKPythonForModule.cxx)
+target_link_libraries(QuerySMTKPythonForModule smtkCore)
+install(TARGETS QuerySMTKPythonForModule
+        DESTINATION bin)
+add_test(
+  NAME QuerySMTKPython
+  COMMAND $<TARGET_FILE:QuerySMTKPythonForModule>)
 
 ################################################################################
 # New tests using smtk test harness

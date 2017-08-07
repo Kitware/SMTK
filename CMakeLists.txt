@@ -229,7 +229,7 @@ else()
   list(APPEND required_boost_components regex)
 endif()
 
-find_package(Boost 1.60.0
+find_package(Boost 1.64.0
              COMPONENTS ${required_boost_components} REQUIRED)
 
 if(WIN32 AND MSVC)
@@ -492,13 +492,15 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
         "${module}" "${${module}_PYTHONPATH}" "${${module}_libpath}")
     endforeach ()
 
-    # Add the path to the build tree's compiled modules.
-    list(APPEND smtk_pythonpaths
+    # Add the path to the build tree's compiled modules, prioritizing it over
+    # the other directories (since the other directories will likely include the
+    # location of the module's install).
+    list(INSERT smtk_pythonpaths 0
       "${PROJECT_BINARY_DIR}${envsep}${PROJECT_BINARY_DIR}/lib")
-    list(APPEND smtk_libpaths
+    list(INSERT smtk_libpaths 0
       "${PROJECT_BINARY_DIR}/lib")
     if (CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-      list(APPEND smtk_libpaths
+      list(INSERT smtk_libpaths 0
         "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
     endif ()
 

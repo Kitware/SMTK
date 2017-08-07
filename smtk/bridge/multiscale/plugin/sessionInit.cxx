@@ -17,4 +17,4 @@
 smtkComponentInitMacro(smtk_multiscale_session);
 
 // Also add python operators.
-smtkPythonInitMacro(import_from_deform, smtk.bridge.multiscale.import_from_deform);
+smtkPythonInitMacro(import_from_deform, smtk.bridge.multiscale.import_from_deform, true);
