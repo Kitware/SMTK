@@ -3,7 +3,7 @@
 # (See accompanying file rtvl_license_1_0.txt or copy at
 #  http://www.boost.org/LICENSE_1_0.txt)
 
-add_library(rtvl STATIC
+set(rtvl_headers
   rtvl_intpow.hxx
   rtvl_terms.hxx
   rtvl_tokens.hxx
@@ -17,6 +17,10 @@ add_library(rtvl STATIC
   rtvl_weight.hxx
   rtvl_weight_original.hxx              rtvl_weight_original.txx
   rtvl_weight_smooth.hxx                rtvl_weight_smooth.txx
+  )
+
+add_library(rtvl STATIC
+  ${rtvl_headers}
 
   Templates/rtvl_vote+2-.cxx
   Templates/rtvl_votee+2-.cxx
@@ -48,15 +52,29 @@ set(ignore_rules_for_rtvl "")
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR
     CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR
     CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-  #Silence warning about std::auto_ptr being deprecated.
-  set(ignore_rules_for_rtvl
-    "${ignore_rules_for_rtvl} -Wno-deprecated-declarations")
-  #Silence warning about unused parameters.
-  set(ignore_rules_for_rtvl
-    "${ignore_rules_for_rtvl} -Wno-unused-parameter")
+  target_compile_options(rtvl
+    PRIVATE
+      # Silence warning about std::auto_ptr being deprecated.
+      -Wno-deprecated-declarations
+      # Silence warning about unused parameters.
+      -Wno-unused-parameter)
 endif()
 
-set_property(TARGET rtvl APPEND_STRING
-  PROPERTY COMPILE_FLAGS ${ignore_rules_for_rtvl})
+target_include_directories(rtvl
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
+    $<INSTALL_INTERFACE:include>
+    ${VXL_RPL_INCLUDE_DIR}
+    ${VXL_VCL_INCLUDE_DIR}
+    ${VXL_CORE_INCLUDE_DIR})
 
-target_link_libraries(rtvl ${RGTL_LIBRARY} ${VNL_ALGO_LIBRARY} ${VNL_LIBRARY} ${V3P_NETLIB_LIBRARY})
+target_link_libraries(rtvl
+  LINK_PUBLIC
+  ${RGTL_LIBRARY} ${VNL_ALGO_LIBRARY} ${VNL_LIBRARY} ${V3P_NETLIB_LIBRARY})
+
+install(TARGETS rtvl
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
+install(FILES ${rtvl_headers}
+  DESTINATION include/rtvl)
