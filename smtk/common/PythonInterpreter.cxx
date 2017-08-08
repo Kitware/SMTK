@@ -115,10 +115,16 @@ void PythonInterpreter::initialize()
   // We first look for SMTK as run from the build tree.
   bool smtkFound = this->addPathToBuildTree(smtkLibDir.parent_path().string(), "smtk");
 
-  // If we don't find it, then we look for SMTK as an installed package.
+  // If we don't find it, then we look for SMTK as an installed module.
   if (!smtkFound)
   {
     this->addPathToInstalledModule(smtkLibDir.string(), "smtk");
+  }
+
+  // If we don't find it, then we look for SMTK as a packaged module.
+  if (!smtkFound)
+  {
+    this->addPathToPackagedModule(smtkLibDir.string(), "smtk");
   }
 
   // If we still don't find it, we don't do anyting special. Consuming projects
@@ -213,6 +219,24 @@ bool PythonInterpreter::canFindModule(const std::string& module) const
   found = locals["found"].cast<bool>();
 
   return found;
+}
+
+bool PythonInterpreter::addPathToPackagedModule(
+  const std::string& libPackageDir, const std::string& module)
+{
+  // If <module> is run out of a package, we expect that the directory that
+  // contains its libraries is at the same level as "Python/<module>", so we
+  // attempt to add this directory to the PYTHONPATH.
+
+  boost::filesystem::path bundledPyInit =
+    boost::filesystem::path(libPackageDir).parent_path() / "Python" / module / "__init__.py";
+
+  if (boost::filesystem::is_regular_file(bundledPyInit))
+  {
+    this->addToPythonPath(bundledPyInit.parent_path().parent_path().string());
+    return true;
+  }
+  return false;
 }
 
 bool PythonInterpreter::addPathToInstalledModule(
