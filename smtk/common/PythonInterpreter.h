@@ -55,6 +55,11 @@ public:
   // Check if <module> can be loaded by the python interpereter.
   bool canFindModule(const std::string& module) const;
 
+  // Given the packaging semantics used in SMTK, VTK, ParaView, etc., locate
+  // <module> and add it to the embedded python's PYTHONPATH, and return a
+  // success flag.
+  bool addPathToPackagedModule(const std::string& libPackageDir, const std::string& module);
+
   // Given the install semantics used in SMTK, VTK, ParaView, etc., locate
   // <module> and add it to the embedded python's PYTHONPATH, and return a
   // success flag.
