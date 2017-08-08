@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/common/PythonInterpreter.h"
 #include "smtk/common/CompilerInformation.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
@@ -49,6 +48,10 @@ extern __declspec(dllimport) int Py_NoSiteFlag;
 #include <patchlevel.h>
 
 SMTK_THIRDPARTY_POST_INCLUDE
+
+// We include the header after the third party includes because Python.h warns
+// if it is not included before the stl headers our header file includes.
+#include "smtk/common/PythonInterpreter.h"
 
 #include <cstdlib>
 #include <sstream>
