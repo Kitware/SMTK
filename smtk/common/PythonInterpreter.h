@@ -55,9 +55,6 @@ public:
   // Check if <module> can be loaded by the python interpereter.
   bool canFindModule(const std::string& module) const;
 
-  // Return the directory containing the library that describes <func>.
-  static std::string pathToLibraryContainingFunction(void (*func)(void));
-
   // Given the install semantics used in SMTK, VTK, ParaView, etc., locate
   // <module> and add it to the embedded python's PYTHONPATH, and return a
   // success flag.

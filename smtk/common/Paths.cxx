@@ -35,6 +35,10 @@
 #define smtkGetCurrentDir _getcwd
 #endif
 
+SMTK_THIRDPARTY_PRE_INCLUDE
+#include <boost/dll.hpp>
+SMTK_THIRDPARTY_POST_INCLUDE
+
 namespace smtk
 {
 namespace common
@@ -107,6 +111,12 @@ std::vector<std::string> Paths::pruneInvalidDirectories(const std::vector<std::s
     if (Paths::directoryExists(*it))
       result.push_back(*it);
   return result;
+}
+
+/// Return the directory containing the library that describes <func>.
+std::string Paths::pathToLibraryContainingFunction(void (*func)(void))
+{
+  return boost::dll::symbol_location(*func).parent_path().string();
 }
 
 /**\brief Return the best guess at the directory containing the current process's executable.

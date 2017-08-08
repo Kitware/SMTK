@@ -53,6 +53,8 @@ SMTK_THIRDPARTY_POST_INCLUDE
 // if it is not included before the stl headers our header file includes.
 #include "smtk/common/PythonInterpreter.h"
 
+#include "smtk/common/Paths.h"
+
 #include <cstdlib>
 #include <sstream>
 
@@ -92,8 +94,7 @@ void PythonInterpreter::initialize()
 
   // Locate the directory containing the python library in use, and set
   // PYTHONHOME to this path.
-  static std::string pythonLibraryLocation =
-    PythonInterpreter::pathToLibraryContainingFunction(Py_Initialize);
+  static std::string pythonLibraryLocation = Paths::pathToLibraryContainingFunction(Py_Initialize);
   Py_SetProgramName(const_cast<char*>(pythonLibraryLocation.c_str()));
 
   // Initialize the embedded interpreter.
@@ -212,11 +213,6 @@ bool PythonInterpreter::canFindModule(const std::string& module) const
   found = locals["found"].cast<bool>();
 
   return found;
-}
-
-std::string PythonInterpreter::pathToLibraryContainingFunction(void (*func)(void))
-{
-  return boost::dll::symbol_location(*func).parent_path().string();
 }
 
 bool PythonInterpreter::addPathToInstalledModule(
