@@ -20,21 +20,6 @@ if (SMTK_IGNORE_CJSON_WARNINGS)
   set_property(TARGET cJSON APPEND_STRING PROPERTY COMPILE_FLAGS ${ignore_rules_for_cjson})
 endif()
 
-if(SMTK_USE_PYBIND11)
-  # by including the correct python cmake scripts before adding pybind11, we
-  # work around pybind11's custom python cmake scripts without having to patch
-  # pybind11.
-  find_package(PythonInterp REQUIRED)
-  find_package(PythonLibs REQUIRED)
-  if(MSVC)
-    set(PYTHON_MODULE_EXTENSION ".pyd")
-  else()
-    set(PYTHON_MODULE_EXTENSION ".so")
-  endif()
-  set(PYTHON_MODULE_PREFIX "")
-  add_subdirectory(pybind11)
-endif()
-
 if (NOT SMTK_USE_SYSTEM_MOAB)
   #guard against MOAB polluting the cmake C/CXX/Fortran flags
   set(save_CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")

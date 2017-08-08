@@ -369,6 +369,14 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
 
 
   if(SMTK_USE_PYBIND11)
+    if(WIN32)
+      set(PYTHON_MODULE_EXTENSION ".pyd")
+    else()
+      set(PYTHON_MODULE_EXTENSION ".so")
+    endif()
+    set(PYTHON_MODULE_PREFIX "")
+    find_package(pybind11 REQUIRED)
+
     set(SMTK_PYBIND11_FLAGS " ")
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR
        CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR
