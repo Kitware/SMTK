@@ -65,6 +65,9 @@ void cleanup(const std::string& file_path)
 // environment.
 int main(int argc, char* argv[])
 {
+  (void)argc;
+  (void)argv;
+
   // Create a model manager
   smtk::model::ManagerPtr manager = smtk::model::Manager::create();
 
@@ -97,7 +100,7 @@ int main(int argc, char* argv[])
   smtk::mesh::CollectionPtr c = smtk::io::importMesh(input_path, meshManager);
   if (!c || !c->isValid())
   {
-    std::cerr << "Could not read mesh from " << argv[1] << std::endl;
+    std::cerr << "Could not read mesh from " << input_path << std::endl;
   }
 
   // Construct a "render mesh" operator
