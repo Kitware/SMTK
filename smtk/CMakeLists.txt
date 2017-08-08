@@ -63,6 +63,7 @@ if(SMTK_USE_PYBIND11)
   list(APPEND smtkCore_private_link_libraries
     pybind11::embed
     )
+  add_subdirectory(pybind11)
 endif()
 
 add_library(smtkCore ${smtk_srcs})
