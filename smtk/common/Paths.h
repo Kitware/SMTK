@@ -47,6 +47,7 @@ public:
   static std::string currentDirectory();
   static bool directoryExists(const std::string& path);
   static std::vector<std::string> pruneInvalidDirectories(const std::vector<std::string>& src);
+  static std::string pathToLibraryContainingFunction(void (*func)(void));
 
   std::string executableDirectory();
   std::string toplevelDirectory();
