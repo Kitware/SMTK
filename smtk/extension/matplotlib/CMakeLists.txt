@@ -17,7 +17,7 @@ foreach(pyfile ${matplotlibPySrcs})
 endforeach()
 install(
   FILES ${matplotlib_pymodulefiles}
-  DESTINATION "${SMTK_PYTHON_MODULEDIR}/smtk/matplotlib"
+  DESTINATION "${SMTK_PYTHON_MODULEDIR}/smtk/extension/matplotlib"
   )
 
 add_subdirectory(plugin)
