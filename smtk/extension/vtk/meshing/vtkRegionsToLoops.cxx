@@ -185,7 +185,7 @@ public:
 
     vtkNew<vtkArrayCalculator> cal;
     cal->SetInputConnection(str->GetOutputPort());
-    cal->SetAttributeModeToUseCellData();
+    cal->SetAttributeTypeToCellData();
     cal->SetResultArrayName("modelfaceids");
     cal->SetResultArrayType(VTK_ID_TYPE);
     {
@@ -213,7 +213,7 @@ public:
 
     vtkNew<vtkArrayCalculator> ped;
     ped->SetInputConnection(app->GetOutputPort());
-    ped->SetAttributeModeToUsePointData();
+    ped->SetAttributeTypeToPointData();
     ped->SetResultArrayName("modelfaceids");
     ped->SetResultArrayType(VTK_ID_TYPE);
     {
