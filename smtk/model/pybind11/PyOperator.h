@@ -37,10 +37,33 @@ public:
       // Create an instance of our operator
       pybind11::object obj = module.attr(classname.c_str())();
 
-      // Have the instance hold onto its python object. This way, we let the C++ side have control of memory allocation.
-      obj.cast<std::shared_ptr<smtk::model::PyOperator> >()->setObject(obj);
+      if (smtk::common::PythonInterpreter::instance().isEmbedded())
+      {
+        // If we are running in embedded mode, we allow the C++ side to perform
+        // memory management. We do this by internally incrementing the
+        // python-side object's internel reference count to ensure that the
+        // python environment does not delete our operator out from under us.
+        obj.inc_ref();
 
-      return obj.cast<std::shared_ptr<smtk::model::Operator> >();
+        std::shared_ptr<smtk::model::PyOperator> op(obj.cast<smtk::model::PyOperator*>());
+        // Have the instance hold onto its python object, so when the instance
+        // is removed so is the tether to the python object.
+        op->setObject(obj);
+
+        return std::static_pointer_cast<smtk::model::Operator>(op);
+      }
+      else
+      {
+        // Have the instance hold onto its python object, so when the instance
+        // is removed so is the tether to the python object.
+        obj.cast<std::shared_ptr<smtk::model::PyOperator> >()->setObject(obj);
+
+        // If we are running in a native python instance (i.e. not our embedded
+        // instance), then memory management is handled by python. We need only
+        // to cast our python object into a shared_ptr so the SMTK operator
+        // handling system can use it.
+        return obj.cast<std::shared_ptr<smtk::model::Operator> >();
+      }
     }
 
   std::string name() const override { PYBIND11_OVERLOAD_PURE(std::string, Operator, name, ); }

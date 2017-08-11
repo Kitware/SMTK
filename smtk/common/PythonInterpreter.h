@@ -35,7 +35,7 @@ class SMTKCORE_EXPORT PythonInterpreter
 public:
   static PythonInterpreter& instance();
 
-  // Check if the embedded python is initialized.
+  // Check if python is initialized.
   bool isInitialized() const;
 
   // Initialize the embedded python, with additional logic to add SMTK to the
@@ -70,11 +70,16 @@ public:
   // success flag.
   bool addPathToBuildTree(const std::string& buildTreePath, const std::string& module);
 
+  // Returns true if the embedded python session has been initialized.
+  bool isEmbedded() const { return m_embedded; }
+
 private:
   PythonInterpreter();
   virtual ~PythonInterpreter();
 
   static PythonInterpreter m_instance;
+
+  bool m_embedded;
 };
 }
 }
