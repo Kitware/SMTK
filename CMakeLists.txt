@@ -243,6 +243,16 @@ if(WIN32 AND MSVC)
   add_definitions(-DBOOST_ALL_NO_LIB)
 endif()
 
+# Setting this ensures that "make install" will leave rpaths to external
+# libraries (not part of the build-tree e.g. Qt, ffmpeg, etc.) intact on
+# "make install". This ensures that one can install a version of ParaView on the
+# build machine without any issues. If this not desired, simply specify
+# CMAKE_INSTALL_RPATH_USE_LINK_PATH when configuring and "make install" will
+# strip all rpaths, which is default behavior.
+if (NOT CMAKE_INSTALL_RPATH_USE_LINK_PATH)
+  set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+endif ()
+
 ################################################################################
 # Moab Related Settings
 ################################################################################
