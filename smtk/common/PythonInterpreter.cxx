@@ -98,6 +98,7 @@ void PythonInterpreter::initialize()
   Py_SetProgramName(const_cast<char*>(pythonLibraryLocation.c_str()));
 
   // Initialize the embedded interpreter.
+  Py_NoSiteFlag = 1;
   pybind11::initialize_interpreter();
 
   // If the executing process's environment has set PYTHONPATH to find smtk,
