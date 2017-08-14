@@ -1,15 +1,11 @@
 set(smtkIOPythonTests
   unitOperatorLog
+  logMessage
 )
 
-# do not add ResourceSetTest if we are running on windows with shiboken
-if (NOT (WIN32 AND NOT SMTK_USE_PYBIND11))
+# do not add ResourceSetTest if we are running on windows
+if (NOT WIN32)
   list(APPEND smtkIOPythonTests ResourceSetTest)
-endif()
-
-# only add logMessage if we are running with pybind11
-if (SMTK_USE_PYBIND11)
-  list(APPEND smtkIOPythonTests logMessage)
 endif()
 
 # Additional tests that require SMTK_DATA_DIR
@@ -41,8 +37,8 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
     19
     )
 
-  # do not add ResourceSetReaderTest if we are running on windows with shiboken
-  if (NOT (WIN32 AND NOT SMTK_USE_PYBIND11))
+  # do not add ResourceSetReaderTest if we are running on windows
+  if (NOT WIN32)
     set(reader_test ResourceSetReaderTest)
     smtk_add_test_python(${reader_test}Py ${reader_test}.py
       ${SMTK_DATA_DIR}/attribute/attribute_system/resourceTest/resources.xml

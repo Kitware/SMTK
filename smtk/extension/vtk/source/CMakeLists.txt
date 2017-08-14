@@ -102,7 +102,7 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
     vtk_add_python_wrapping(${vtk-module} VTKLibSrcs)
     vtk_add_python_wrapping_library(${vtk-module} VTKLibSrcs ${vtk-module})
   elseif (VTK_WRAP_PYTHON)
-    # Potentially wrap in Python using VTK's wrapping methods, not shiboken.
+    # Potentially wrap in Python using VTK's wrapping methods.
     # This makes the filters available for use with other VTK-wrapped filters.
     vtk_module_load(${vtk-module})
     vtk_module_headers_load(${vtk-module})

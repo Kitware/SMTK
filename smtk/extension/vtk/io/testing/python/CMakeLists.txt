@@ -12,14 +12,8 @@
 
 set(smtkExtensionVTKIOPythonDataTests
   MultiScaleConverter
+  unitImportExportVTKData
 )
-
-if (SMTK_USE_PYBIND11)
-  set(smtkExtensionVTKIOPythonDataTests
-    ${smtkExtensionVTKIOPythonDataTests}
-    unitImportExportVTKData
-  )
-endif()
 
 if (SMTK_DATA_DIR
     AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)

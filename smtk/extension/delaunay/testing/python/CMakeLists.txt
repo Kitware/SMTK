@@ -1,8 +1,6 @@
 set(smtkDelaunayExtPythonDataTests)
 
-# This testfails during superbuild testing when built with shiboken, so we only
-# test it when pybind11 bindings are enabled
-if (SMTK_ENABLE_POLYGON_SESSION AND SMTK_USE_PYBIND11)
+if (SMTK_ENABLE_POLYGON_SESSION)
   set(smtkDelaunayExtPythonDataTests
     ${smtkDelaunayExtPythonDataTests}
     unitTestTessellateFace

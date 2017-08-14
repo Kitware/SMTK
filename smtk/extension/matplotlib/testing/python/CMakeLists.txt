@@ -1,11 +1,6 @@
-set(smtkMatplotlibExtPythonDataTests)
-
-if (SMTK_USE_PYBIND11)
-  set(smtkMatplotlibExtPythonDataTests
-    ${smtkMatplotlibExtPythonDataTests}
-    renderMesh
-  )
-endif()
+set(smtkMatplotlibExtPythonDataTests
+  renderMesh
+)
 
 if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
   foreach (test ${smtkMatplotlibExtPythonDataTests})

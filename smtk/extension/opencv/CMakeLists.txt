@@ -66,31 +66,6 @@ if(SMTK_ENABLE_POLYGON_SESSION)
   # Install the headers
   smtk_public_headers(${opencvHeaders})
 
-  if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
-
-    # Extract the headers from polygon library we built to give them to shiboken
-    sbk_wrap_library(smtkOpenCVExt
-      PACKAGE smtk
-      GENERATOR_ARGS --avoid-protected-hack
-      WORKING_DIRECTORY ${SMTK_SOURCE_DIR}/smtk
-      LOCAL_INCLUDE_DIRECTORIES
-      ${SMTK_SOURCE_DIR}/smtk/common
-      ${SMTK_SOURCE_DIR}/smtk/attribute
-      ${SMTK_SOURCE_DIR}/smtk/model
-      ${SMTK_SOURCE_DIR}/smtk/session
-      ${SMTK_SOURCE_DIR}/smtk/bridge/polygon
-      ${SMTK_SOURCE_DIR}/smtk/simulation
-      ${SMTK_SOURCE_DIR}/smtk/io
-      ${SMTK_SOURCE_DIR}/smtk/view
-      ${SMTK_SOURCE_DIR}/smtk
-      ${SMTK_BINARY_DIR}/smtk
-      ${CMAKE_CURRENT_BINARY_DIR}
-      TYPESYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/typesystem.xml
-      HEADERS ${polygonHeaders}
-      DEPENDS smtkCore
-      )
-  endif()
-
   if(SMTK_ENABLE_PARAVIEW_SUPPORT)
     add_subdirectory(qt)
     add_subdirectory(plugin)

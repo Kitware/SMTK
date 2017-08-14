@@ -10,6 +10,7 @@ set(smtkModelPythonDataTests
   modelInstance
   modelSetPropertyOp
   modelCloseModelOp
+  modelPhrase
 )
 
 # Additional tests that require specific bridges
@@ -24,14 +25,6 @@ if (SMTK_ENABLE_EXODUS_SESSION AND SMTK_ENABLE_DISCRETE_SESSION AND SMTK_ENABLE_
   set(smtkModelPythonDataTests
     ${smtkModelPythonDataTests}
     multiSessionDescriptivePhrase
-  )
-endif()
-
-#Additiionals tests that only works on pybind
-if (SMTK_USE_PYBIND11)
-  set(smtkModelPythonDataTests
-    ${smtkModelPythonDataTests}
-    modelPhrase
   )
 endif()
 
