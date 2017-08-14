@@ -24,7 +24,6 @@ except ImportError:
     print app_description
     print 'Not able to import smtk library. You might need to:'
     print '  - Use the PYTHONPATH variable to point to the smtk python lib'
-    print '  - And/or use the LD_LIBRARY_PATH variable to point to the shiboken libraries'
     print
     sys.exit(-1)
 
@@ -170,7 +169,7 @@ def process_items(parent, parent_description, refitem_list, group_index=None):
 
     item_list = parent_description.get('items', list())
     # if debug_flag:
-    #    #print 'item_list', item_list
+    # print 'item_list', item_list
     for item_description in item_list:
         item_name = item_description.get('name')
         if debug_flag:
@@ -178,7 +177,7 @@ def process_items(parent, parent_description, refitem_list, group_index=None):
         if group_index is None:
             item = parent.find(item_name)
         else:
-            #item = parent.find(group_index, item_name)
+            # item = parent.find(group_index, item_name)
             item = fetch_subgroup_item(parent, group_index, item_name)
             if debug_flag:
                 print 'item:', item

@@ -11,7 +11,7 @@
 #=============================================================================
 """
   Manual port of SMTK/smtk/attribute/Testing/expressionTest.cxx
-  For verifying python-shiboken wrappers
+  For verifying python wrappers
 
   Requires smtkCorePython.so to be in module path
   """

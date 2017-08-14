@@ -24,7 +24,6 @@ try:
 except ImportError:
     print 'Not able to import smtk library. You might need to:'
     print '  - Use the PYTHONPATH variable to point to the smtk python lib'
-    print '  - And/or use the LD_LIBRARY_PATH variable to point to the shiboken libraries'
     print
     sys.exit(-1)
 

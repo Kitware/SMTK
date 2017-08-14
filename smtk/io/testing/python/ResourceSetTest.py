@@ -87,11 +87,8 @@ def RSTest():
                       (ids[i], expectedNames[i]))
                 status = status + 1
 
-    # Missing: ResourceInfo tests (function not implemented)
-
-    # Note: ResourcePtr is not implemented (and cannot be due Resource being abstract -- shiboken issues)
-    # Note: ResourceSet.get is modified by shiboken to return a
-    # ResourcePtr/shared_ptr<Resource>
+    # TODO: ResourceInfo tests (function not implemented)
+    # TODO: ResourcePtr is not implemented
 
     resource = resourceSet.get("system2")
     if resource == None:

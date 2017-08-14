@@ -57,10 +57,7 @@ def test_read_cell_field(mesh_path):
         raise RuntimeError("Failed to read back valid mesh")
 
     mesh = c.meshes()
-    if smtk.wrappingProtocol() == 'pybind11':
-        cellfields = mesh.cellFields()
-    else:
-        cellfields = mesh.cellFieldsForShiboken()
+    cellfields = mesh.cellFields()
 
     if not cellfields:
         raise RuntimeError("No cell fields associated with the mesh")
