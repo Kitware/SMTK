@@ -1,8 +1,8 @@
 .. _smtk-mesh-sys:
 
-******************
+------------------
 SMTK's Mesh System
-******************
+------------------
 
 SMTK's third major component is its meshing system,
 which allows you to interact with multiple mesh generators

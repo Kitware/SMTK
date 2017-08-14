@@ -27,19 +27,14 @@ project(SMTK)
 # to keep appending over multiple runs.
 file(REMOVE ${PROJECT_BINARY_DIR}/SMTKTargets.cmake)
 
+#Add our Cmake directory to the module search path
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${SMTK_SOURCE_DIR}/CMake)
+
 ################################################################################
 # SMTK version number
+include(SMTKVersion)
 
-set(SMTK_VERSION_MAJOR 1)
-set(SMTK_VERSION_MINOR 1)
-set(SMTK_VERSION_PATCH 0)
-set(SMTK_VERSION
-  "${SMTK_VERSION_MAJOR}.${SMTK_VERSION_MINOR}.${SMTK_VERSION_PATCH}")
-#
 ################################################################################
-
-#Add our Cmake directory to the module search path
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${SMTK_SOURCE_DIR}/CMake)
 
 # Include GNU install directory module to detect where to install
 # files on Linux/Unix systems (e.g., lib vs lib64)
