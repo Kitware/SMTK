@@ -381,8 +381,7 @@ void EntityRef::setColor(double red, double green, double blue, double alpha)
 
 /**\brief Return whether the entityref is pointing to valid manager that contains the UUID of the entity.
   *
-  * Subclasses should not override this method. It is a convenience
-  * which makes the shiboken wrapper more functional.
+  * Subclasses should not override this method.
   */
 bool EntityRef::isValid() const
 {

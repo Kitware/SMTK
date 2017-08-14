@@ -239,8 +239,6 @@ typedef smtk::shared_ptr<smtk::mesh::json::Interface> InterfacePtr;
 }
 }
 
-//Shiboken requires that we use fully qualified namespaces for all
-//types that these shared_ptr and weak_ptr are holding
 namespace model
 {
 // Model Related Pointer Classes

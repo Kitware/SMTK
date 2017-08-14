@@ -50,7 +50,7 @@ public:
 
 SMTKCORE_EXPORT smtk::mesh::CollectionPtr readMesh(const std::string& filePath,
   smtk::mesh::ManagerPtr manager, mesh::Subset subset = mesh::Subset::EntireCollection);
-// Explicit functions for each subset type for Shiboken to digest
+// Explicit functions for each subset type
 SMTKCORE_EXPORT smtk::mesh::CollectionPtr readEntireCollection(
   const std::string& filePath, smtk::mesh::ManagerPtr manager);
 SMTKCORE_EXPORT smtk::mesh::CollectionPtr readDomain(
@@ -62,7 +62,7 @@ SMTKCORE_EXPORT smtk::mesh::CollectionPtr readNeumann(
 
 SMTKCORE_EXPORT bool readMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
   mesh::Subset subset = mesh::Subset::EntireCollection);
-// Explicit functions for each subset type for Shiboken to digest
+// Explicit functions for each subset type
 SMTKCORE_EXPORT bool readEntireCollection(
   const std::string& filePath, smtk::mesh::CollectionPtr collection);
 SMTKCORE_EXPORT bool readDomain(const std::string& filePath, smtk::mesh::CollectionPtr collection);
