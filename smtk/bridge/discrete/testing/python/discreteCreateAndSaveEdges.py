@@ -13,8 +13,7 @@
 import os
 import sys
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.bridge.discrete
+import smtk.bridge.discrete
 import smtk.testing
 from smtk.simple import *
 
@@ -88,7 +87,8 @@ class TestDiscreteCreateAndSaveEdges(smtk.testing.TestCase):
 
         res = btm.operate()
         sys.stdout.flush()
-        self.assertEqual(res.findInt('outcome').value(0), smtk.model.OPERATION_SUCCEEDED,
+        self.assertEqual(
+            res.findInt('outcome').value(0), smtk.model.OPERATION_SUCCEEDED,
                          'create edges failed.')
 
         writeop = GetActiveSession().op('write')
@@ -99,7 +99,8 @@ class TestDiscreteCreateAndSaveEdges(smtk.testing.TestCase):
         writeop.findAsFile('filename').setValue(0, outfilename)
         res = writeop.operate()
         sys.stdout.flush()
-        self.assertEqual(res.findInt('outcome').value(0), smtk.model.OPERATION_SUCCEEDED,
+        self.assertEqual(
+            res.findInt('outcome').value(0), smtk.model.OPERATION_SUCCEEDED,
                          'write SimpleBox model with edges failed.')
 
         mod = smtk.model.Model(Read(outfilename)[0])

@@ -13,14 +13,14 @@
 
 import os
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.io
-    import smtk.mesh
+import smtk.io
+import smtk.mesh
 import smtk.testing
 import sys
 
 
 class MeshVisitor(smtk.mesh.MeshForEach):
+
     def __init__(self):
         smtk.mesh.MeshForEach.__init__(self)
         self.count = 0
@@ -30,6 +30,7 @@ class MeshVisitor(smtk.mesh.MeshForEach):
 
 
 class CellVisitor(smtk.mesh.CellForEach):
+
     def __init__(self):
         smtk.mesh.CellForEach.__init__(self, True)
         self.count = 0
@@ -52,6 +53,7 @@ class CellVisitor(smtk.mesh.CellForEach):
 
 
 class PointVisitor(smtk.mesh.PointForEach):
+
     def __init__(self):
         smtk.mesh.PointForEach.__init__(self)
         self.count = 0

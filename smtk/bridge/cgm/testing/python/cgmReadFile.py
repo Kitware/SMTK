@@ -12,8 +12,7 @@
 import os
 import sys
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.bridge.cgm
+import smtk.bridge.cgm
 
 if 'cgm' not in smtk.model.Manager.sessionTypeNames():
     print 'ERROR: cgm not available.'

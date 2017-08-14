@@ -17,10 +17,9 @@ Requires smtkCorePython.so to be in module path
 """
 
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    from smtk import attribute
-    from smtk import io
-    from smtk import model
+from smtk import attribute
+from smtk import io
+from smtk import model
 
 # print(dir(smtk.io))
 
@@ -40,30 +39,20 @@ if __name__ == '__main__':
     analysis.add('Flow')
     analysis.add('General')
     analysis.add('Time')
-    if smtk.wrappingProtocol() == 'pybind11':
-        system.defineAnalysis('CFD Flow', analysis)
-    else:
-        # Note pass analysis in as list, not set
-        system.defineAnalysis('CFD Flow', list(analysis))
+    system.defineAnalysis('CFD Flow', analysis)
     analysis.clear()
 
     analysis.add('Flow')
     analysis.add('Heat')
     analysis.add('General')
     analysis.add('Time')
-    if smtk.wrappingProtocol() == 'pybind11':
-        system.defineAnalysis('CFD Flow with Heat Transfer', analysis)
-    else:
-        system.defineAnalysis('CFD Flow with Heat Transfer', list(analysis))
+    system.defineAnalysis('CFD Flow with Heat Transfer', analysis)
     analysis.clear()
 
     analysis.add('Constituent')
     analysis.add('General')
     analysis.add('Time')
-    if smtk.wrappingProtocol() == 'pybind11':
-        system.defineAnalysis('Constituent Transport', analysis)
-    else:
-        system.defineAnalysis('Constituent Transport', list(analysis))
+    system.defineAnalysis('Constituent Transport', analysis)
     analysis.clear()
 
     # Lets create an attribute to represent an expression

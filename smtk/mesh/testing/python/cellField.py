@@ -12,12 +12,9 @@
 
 import os
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.common
-    import smtk.io
-    import smtk.mesh
-else:
-    import uuid
+import smtk.common
+import smtk.io
+import smtk.mesh
 import smtk.testing
 import sys
 
@@ -37,12 +34,8 @@ def test_create_cell_field():
     mesh.createCellField('cell field', 1, field)
 
     write_path = ''
-    if smtk.wrappingProtocol() == 'pybind11':
-        write_path = os.path.join(smtk.testing.TEMP_DIR,
-                                  str(smtk.common.UUID.random()) + ".h5m")
-    else:
-        write_path = os.path.join(smtk.testing.TEMP_DIR,
-                                  str(uuid.uuid4()) + ".h5m")
+    write_path = os.path.join(smtk.testing.TEMP_DIR,
+                              str(smtk.common.UUID.random()) + ".h5m")
 
     smtk.io.exportMesh(write_path, c)
     return write_path

@@ -41,12 +41,11 @@ will use its operators. ::
 """
 import os
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.common
-    import smtk.attribute
-    import smtk.mesh
-    import smtk.model
-    import smtk.io
+import smtk.common
+import smtk.attribute
+import smtk.mesh
+import smtk.model
+import smtk.io
 
 activeSession = None
 lastOperatorResult = None
@@ -357,10 +356,7 @@ def LoadSMTKModel(filename):
     """Load an SMTK model into the active session."""
     sess = GetActiveSession()
     op = sess.op('load smtk model')
-    if smtk.wrappingProtocol() == 'pybind11':
-        fname = op.findFile('filename', int(smtk.attribute.ALL_CHILDREN))
-    else:
-        fname = op.findFile('filename', smtk.attribute.ALL_CHILDREN)
+    fname = op.findFile('filename', int(smtk.attribute.ALL_CHILDREN))
     fname.setValue(filename)
     res = op.operate()
     SetLastResult(res)
@@ -444,12 +440,8 @@ def Subtract(workpiece, tool, **args):
     # Convert tool to a list
     if type(tool) != type([]):
         tool = [tool, ]
-    if smtk.wrappingProtocol() == 'pybind11':
-        SetVectorValue(op.findModelEntity(
-            'tools', int(smtk.attribute.ALL_CHILDREN)), tool)
-    else:
-        SetVectorValue(op.findModelEntity(
-            'tools', smtk.attribute.ALL_CHILDREN), tool)
+    SetVectorValue(op.findModelEntity(
+        'tools', int(smtk.attribute.ALL_CHILDREN)), tool)
 
     res = op.operate()
     SetLastResult(res)

@@ -11,9 +11,8 @@
 #
 #=============================================================================
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.bridge.cgm
-    import smtk.io
+import smtk.bridge.cgm
+import smtk.io
 from smtk.simple import *
 
 # def SetVectorValue(x,v):
@@ -45,7 +44,7 @@ fedg = [
     (SurfaceType.PLANAR, 0, 4, 2),
     (SurfaceType.PLANAR, 1, 5, 2)
 ]
-#   (SurfaceType.CYLINDRICAL, 3, 5, 4) # <-- OpenCascade cannot infer that this face should be cylindrical
+# (SurfaceType.CYLINDRICAL, 3, 5, 4) # <-- OpenCascade cannot infer that this face should be cylindrical
 
 mgr = smtk.model.Manager.create()
 sref = mgr.createSession('cgm', smtk.model.SessionRef())

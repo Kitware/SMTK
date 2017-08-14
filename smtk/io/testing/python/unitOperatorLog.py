@@ -12,9 +12,8 @@ import sys
 #
 #=============================================================================
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.io
-    import smtk.model
+import smtk.io
+import smtk.model
 import smtk.testing
 from smtk.simple import *
 

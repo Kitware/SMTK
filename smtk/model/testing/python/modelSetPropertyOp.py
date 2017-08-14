@@ -16,9 +16,8 @@ Try running a "universal" operator on an imported model.
 import os
 import sys
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.io
-    import smtk.model
+import smtk.io
+import smtk.model
 import smtk.testing
 from uuid import uuid4
 import unittest

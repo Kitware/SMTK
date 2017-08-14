@@ -12,9 +12,8 @@
 import os
 import smtk
 from smtk.simple import *
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.model
-    import smtk.bridge.exodus
+import smtk.model
+import smtk.bridge.exodus
 import smtk.testing
 import sys
 

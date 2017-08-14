@@ -13,9 +13,8 @@ import sys
 #=============================================================================
 from pprint import pprint
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.attribute
-    import smtk.common
+import smtk.attribute
+import smtk.common
 from smtk.simple import *
 
 

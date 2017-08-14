@@ -12,8 +12,7 @@
 #=============================================================================
 import sys
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.bridge.discrete
+import smtk.bridge.discrete
 import smtk.testing
 from smtk.simple import *
 
@@ -59,7 +58,9 @@ class TestDiscreteSplitEdge(smtk.testing.TestCase):
         # We will split Edge10 at an inner vertex of its Tessellation.
         etess = innerEdge.hasTessellation()
         # We should verify that etess.conn()
-        self.assertEqual(etess.conn(), [2048, 2, 0, 1, 2048, 2, 1, 2, 2048, 2, 2, 3, 2048, 2, 3, 0],
+        self.assertEqual(
+            etess.conn(), [
+                2048, 2, 0, 1, 2048, 2, 1, 2, 2048, 2, 2, 3, 2048, 2, 3, 0],
                          'Unexpected connectivity for Edge10')
         splits = [(innerEdge.entity(), [2, ]), ]
         return splits
@@ -151,12 +152,10 @@ class TestDiscreteSplitEdge(smtk.testing.TestCase):
         SetVectorValue(spl.findAsModelEntity('model'), [mod, ])
         sel = spl.specification().findMeshSelection('selection')
         sel.setModifyMode(smtk.attribute.ACCEPT)
-        if smtk.wrappingProtocol() == 'pybind11':
-            [sel.setValues(ent, set(tess)) for (ent, tess) in splits]
-        else:
-            [sel.setValues(ent, tess) for (ent, tess) in splits]
+        [sel.setValues(ent, set(tess)) for (ent, tess) in splits]
         res = spl.operate()
-        self.assertEqual(res.findInt('outcome').value(0), smtk.model.OPERATION_SUCCEEDED,
+        self.assertEqual(
+            res.findInt('outcome').value(0), smtk.model.OPERATION_SUCCEEDED,
                          'Split failed.')
 
         if validator:

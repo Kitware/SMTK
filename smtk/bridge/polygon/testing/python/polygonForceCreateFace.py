@@ -12,8 +12,7 @@ import sys
 #
 #=============================================================================
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.bridge.polygon
+import smtk.bridge.polygon
 from smtk.simple import *
 import smtk.testing
 
@@ -49,7 +48,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
         sessiontag = sess.tag()
         print '\n'
 
-        #opnames = sess.operatorNames()
+        # opnames = sess.operatorNames()
         # print opnames
 
     def renderTestModel(self, mod, baselinePath):
@@ -79,7 +78,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
             self.renderWindow.Render()
 
             # Uncomment for debugging before the image test fails:
-            #smtk.testing.INTERACTIVE = True
+            # smtk.testing.INTERACTIVE = True
             # self.interact()
 
             # Skip the image match if we don't have a baseline.
@@ -137,15 +136,17 @@ class TestPolygonCreation(smtk.testing.TestCase):
         mod = CreateModel()
 
         # Create some edges
-        elist = self.createEdges(mod, [ \
+        elist = self.createEdges(mod, [
             # Face 1 Outer
-            [[0.0, 0.0],  [5.0, 0.0]], \
-            [[5.0, 5.0],  [5.0, 0.0]], \
-            [[5.0, 5.0],  [0.0, 5.0],  [0.0, 0.0]], \
+            [[0.0, 0.0],  [5.0, 0.0]],
+            [[5.0, 5.0],  [5.0, 0.0]],
+            [[5.0, 5.0],  [0.0, 5.0],  [0.0, 0.0]],
             \
             # Face 1 Inner
-            [[1.0, 1.0],  [1.5, 2.5],  [1.0, 4.0],  [2.0, 4.0],  [2.0, 1.0],  [1.0, 1.0]], \
-            [[3.0, 2.0],  [2.7, 2.5],  [3.0, 3.0],  [4.0, 3.0],  [3.7, 2.5],  [4.0, 2.0],  [3.0, 2.0]], \
+            [[1.0, 1.0],  [1.5, 2.5],  [1.0, 4.0],
+                [2.0, 4.0],  [2.0, 1.0],  [1.0, 1.0]],
+            [[3.0, 2.0],  [2.7, 2.5],  [3.0, 3.0],  [4.0, 3.0],
+                [3.7, 2.5],  [4.0, 2.0],  [3.0, 2.0]],
             \
             # Face 2 Outer
             [[5.0, 0.0],  [7.0, 0.0],  [8.0, 6.0],  [5.0, 5.0]],

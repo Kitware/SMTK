@@ -13,8 +13,7 @@
 import os
 import sys
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.bridge.discrete
+import smtk.bridge.discrete
 import smtk.testing
 from smtk.simple import *
 
@@ -89,7 +88,8 @@ class TestDiscreteCreateEdges(smtk.testing.TestCase):
 
         sys.stdout.flush()
 
-        self.assertEqual(res.findInt('outcome').value(0), smtk.model.OPERATION_SUCCEEDED,
+        self.assertEqual(
+            res.findInt('outcome').value(0), smtk.model.OPERATION_SUCCEEDED,
                          'create edges failed.')
 
         if validator:
