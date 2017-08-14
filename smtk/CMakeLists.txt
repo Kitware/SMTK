@@ -60,7 +60,7 @@ set(smtkCore_private_link_libraries
   )
 
 if(SMTK_USE_PYBIND11)
-  list(APPEND smtkCore_private_link_libraries
+  list(APPEND smtkCore_public_link_libraries
     pybind11::embed
     )
   add_subdirectory(pybind11)
@@ -107,7 +107,6 @@ install(
   FILES
     AutoInit.h
     PublicPointerDefs.h
-    PythonAutoInit.h
     SharedFromThis.h
     SharedPtr.h
     SystemConfig.h
@@ -119,6 +118,16 @@ install(
 # Generate Python wrapping of the smtkCore library
 
 if (SMTK_USE_PYBIND11)
+
+  #only install PythonAutoInit.h if pybind11 is enabled, since it directly
+  #includes pybind11 headers
+  install(
+    FILES
+      PythonAutoInit.h
+    DESTINATION
+      include/smtk/${SMTK_VERSION}/smtk
+    )
+
   set(SMTK_PYTHON_MODULE_SRCS
     simple
     testing
