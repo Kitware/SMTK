@@ -10,7 +10,7 @@
 #
 #=============================================================================
 """
-Manual port of SMTK/smtk/attribute/Testing/atributeAutoNameingTest.cxx
+Manual port of SMTK/smtk/attribute/Testing/attributeAutoNamingTest.cxx
 For verifying python-shiboken wrappers
 
 Requires smtkCorePython.so to be in module path
