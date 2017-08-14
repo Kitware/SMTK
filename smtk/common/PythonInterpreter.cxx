@@ -70,6 +70,7 @@ PythonInterpreter& PythonInterpreter::instance()
 }
 
 PythonInterpreter::PythonInterpreter()
+  : m_embedded(false)
 {
   this->initialize();
 }
@@ -91,6 +92,9 @@ void PythonInterpreter::initialize()
   {
     return;
   }
+
+  // We are initializing the embedded python.
+  m_embedded = true;
 
   // Locate the directory containing the python library in use, and set
   // PYTHONHOME to this path.
@@ -141,6 +145,7 @@ void PythonInterpreter::finalize()
   if (this->isInitialized())
   {
     pybind11::finalize_interpreter();
+    m_embedded = false;
   }
 }
 
