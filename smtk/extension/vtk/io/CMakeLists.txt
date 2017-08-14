@@ -32,7 +32,7 @@ smtk_public_headers(${headers})
 # ... and make header compilation tests link properly:
 smtk_install_library(smtkIOVTK)
 
-if (SMTK_USE_PYBIND11)
+if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)
 endif()
 

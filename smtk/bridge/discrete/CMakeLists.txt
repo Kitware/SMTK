@@ -245,7 +245,7 @@ if(SMTK_ENABLE_PARAVIEW_SUPPORT AND SMTK_ENABLE_DISCRETE_SESSION)
   add_subdirectory(plugin)
 endif()
 
-if (SMTK_USE_PYBIND11)
+if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)
 endif()
 

@@ -106,7 +106,7 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteMesh.sbt" defOpXML
 #install the headers
 smtk_public_headers(${meshHeaders})
 
-if (SMTK_USE_PYBIND11)
+if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)
 endif()
 

@@ -67,7 +67,7 @@ if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_subdirectory(plugin)
 endif()
 
-if (SMTK_USE_PYBIND11)
+if (SMTK_ENABLE_PYTHON_WRAPPING)
 
 set(multiscalePySrcs
   operators/import_from_deform.py

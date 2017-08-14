@@ -91,11 +91,6 @@ option(SMTK_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" O
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
 option(SMTK_ENABLE_EXAMPLES "Enable Examples" OFF)
 option(SMTK_ENABLE_PYTHON_WRAPPING "Build Python Wrappings" OFF)
-cmake_dependent_option(
-  SMTK_USE_PYBIND11
-  "Build Python Wrappings using Pybind11"
-  OFF
-  SMTK_ENABLE_PYTHON_WRAPPING OFF)
 # Provide system packagers with the ability to install SMTK
 # to the system's Python site package directory. The default
 # is off so that people building relocatable bundles (such as
@@ -378,7 +373,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
   endif()
 
 
-  if(SMTK_USE_PYBIND11)
+  if(SMTK_ENABLE_PYTHON_WRAPPING)
     if(WIN32)
       set(PYTHON_MODULE_EXTENSION ".pyd")
     else()

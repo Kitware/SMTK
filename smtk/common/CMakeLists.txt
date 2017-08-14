@@ -57,7 +57,7 @@ configure_file(
   @ONLY
 )
 
-if (SMTK_USE_PYBIND11)
+if (SMTK_ENABLE_PYTHON_WRAPPING)
   list(APPEND commonSrcs
     PythonInterpreter.cxx
     )

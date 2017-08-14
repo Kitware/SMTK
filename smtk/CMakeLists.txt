@@ -59,7 +59,7 @@ set(smtkCore_private_link_libraries
   ${Boost_LIBRARIES}
   )
 
-if(SMTK_USE_PYBIND11)
+if(SMTK_ENABLE_PYTHON_WRAPPING)
   list(APPEND smtkCore_public_link_libraries
     pybind11::embed
     )
@@ -117,7 +117,7 @@ install(
 ################################################################################
 # Generate Python wrapping of the smtkCore library
 
-if (SMTK_USE_PYBIND11)
+if (SMTK_ENABLE_PYTHON_WRAPPING)
 
   #only install PythonAutoInit.h if pybind11 is enabled, since it directly
   #includes pybind11 headers

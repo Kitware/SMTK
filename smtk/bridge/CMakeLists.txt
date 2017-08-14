@@ -66,6 +66,6 @@ if (SMTK_ENABLE_REMOTE_SESSION AND Remus_FOUND)
   add_subdirectory(remote)
 endif()
 
-if (SMTK_USE_PYBIND11)
+if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)
 endif()
