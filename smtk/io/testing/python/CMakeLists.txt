@@ -3,7 +3,7 @@ set(smtkIOPythonTests
 )
 
 # do not add ResourceSetTest if we are running on windows with shiboken
-if (NOT (MSVC AND NOT SMTK_USE_PYBIND11))
+if (NOT (WIN32 AND NOT SMTK_USE_PYBIND11))
   list(APPEND smtkIOPythonTests ResourceSetTest)
 endif()
 
@@ -42,7 +42,7 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
     )
 
   # do not add ResourceSetReaderTest if we are running on windows with shiboken
-  if (NOT (MSVC AND NOT SMTK_USE_PYBIND11))
+  if (NOT (WIN32 AND NOT SMTK_USE_PYBIND11))
     set(reader_test ResourceSetReaderTest)
     smtk_add_test_python(${reader_test}Py ${reader_test}.py
       ${SMTK_DATA_DIR}/attribute/attribute_system/resourceTest/resources.xml
