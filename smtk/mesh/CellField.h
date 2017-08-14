@@ -84,7 +84,6 @@ public:
   //a success flag. <values> must be at least size() * dimension() in length.
   bool set(const std::vector<double>& values);
 
-#ifndef SHIBOKEN_SKIP
   //Get the data associated with all of the cells in the meshset and return
   //a success flag. <values> must be at least cellIds.size() * dimension() in
   //length.
@@ -102,7 +101,6 @@ public:
   //Set the data associated with all of the cells in the meshset and return
   //a success flag. <values> must be at least size() * dimension() in length.
   bool set(const double* const values);
-#endif
 
 private:
   std::string m_name;

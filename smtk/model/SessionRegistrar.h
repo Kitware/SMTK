@@ -9,7 +9,6 @@
 //=========================================================================
 #ifndef __smtk_model_SessionRegistrar_h
 #define __smtk_model_SessionRegistrar_h
-#ifndef SHIBOKEN_SKIP
 
 #include "smtk/Function.h"
 #include "smtk/PublicPointerDefs.h"
@@ -126,5 +125,4 @@ protected:
 } // namespace model
 } // namespace smtk
 
-#endif // SHIBOKEN_SKIP
 #endif // __smtk_model_SessionRegistrar_h

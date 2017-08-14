@@ -93,8 +93,6 @@ enum SessionInformation
     0x000001ff //!< Erase **all** information about the entity, including user-specified.
 };
 
-#ifndef SHIBOKEN_SKIP
-
 /**\brief Boilerplate for classes that accept operator registration.
  *
  * This is invoked by smtkDeclareModelingKernel(), so you should not
@@ -261,26 +259,6 @@ public:                                                                         
   smtkImplementsOperatorRegistration(Cls, Inherits);                                               \
   smtkComponentInitMacro(smtk_##Comp##_session);
 
-#else // SHIBOKEN_SKIP
-
-#define smtkDeclareOperatorRegistration()
-
-#define smtkImplementsOperatorRegistration()
-
-#define smtkImplementsModelingKernel(Comp, Tags, Setup, Cls)                                       \
-  std::string Cls::sessionName(#Comp);                                                             \
-  std::string Cls::staticClassName() { return #Cls; }                                              \
-  std::string Cls::className() const;                                                              \
-  std::string Cls::findOperatorXML(const std::string& opName) const;
-
-#define smtkDeclareModelingKernel()                                                                \
-  static std::string sessionName;                                                                  \
-  static std::string staticClassName();                                                            \
-  virtual std::string name();                                                                      \
-  virtual std::string className() const;
-
-#endif // SHIBOKEN_SKIP
-
 /**\brief A base class for bridging modelers into SMTK.
   *
   * SMTK can act as a bridge between other (foreign) solid modelers
@@ -423,14 +401,12 @@ protected:
   virtual SessionInfoBits updateTessellation(
     const EntityRef& entRef, SessionInfoBits flags, ArrangementHelper* helper);
 
-#ifndef SHIBOKEN_SKIP
   void initializeOperatorSystem(const OperatorConstructors* opList);
   void importOperatorXML(const std::string& opXML);
   virtual OperatorConstructor findOperatorConstructorInternal(
     const std::string&, const OperatorConstructors* opList) const;
   virtual std::string findOperatorXMLInternal(
     const std::string&, const OperatorConstructors* opList) const;
-#endif // SHIBOKEN_SKIP
 
   virtual SessionIOPtr createIODelegate(const std::string& format);
 

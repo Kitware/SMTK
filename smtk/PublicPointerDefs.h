@@ -266,11 +266,9 @@ typedef smtk::shared_ptr<smtk::model::Operator> OperatorPtr;
 typedef smtk::weak_ptr<smtk::model::Operator> WeakOperatorPtr;
 typedef std::set<smtk::model::OperatorPtr> Operators;
 typedef smtk::shared_ptr<smtk::model::RemoteOperator> RemoteOperatorPtr;
-#ifndef SHIBOKEN_SKIP
 typedef std::function<smtk::model::OperatorPtr()> OperatorConstructor;
 typedef std::pair<std::string, OperatorConstructor> StaticOperatorInfo;
 typedef std::map<std::string, StaticOperatorInfo> OperatorConstructors;
-#endif
 typedef smtk::shared_ptr<smtk::model::StoredResource> StoredResourcePtr;
 typedef smtk::shared_ptr<const smtk::model::StoredResource> ConstStoredResourcePtr;
 typedef smtk::shared_ptr<smtk::model::Entity> EntityPtr;

@@ -16,11 +16,9 @@
 
 #include "smtk/common/CompilerInformation.h"
 
-#ifndef SHIBOKEN_SKIP
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include <boost/uuid/uuid.hpp>
 SMTK_THIRDPARTY_POST_INCLUDE
-#endif
 
 #include <iostream>
 #include <set>

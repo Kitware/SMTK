@@ -48,10 +48,6 @@ public:
   //default constructor generates an invalid MeshSet
   MeshSet();
 
-#ifndef SHIBOKEN_SKIP
-  //need to suppress all MeshSet constructors that have a CollectionPtr
-  //Otherwise shiboken will not wrap ANY of the constructors
-
   //construct a MeshSet that represents all meshes that are children
   //of the handle
   MeshSet(const smtk::mesh::CollectionPtr& parent, smtk::mesh::Handle handle);
@@ -63,7 +59,6 @@ public:
     const smtk::mesh::HandleRange& range);
   MeshSet(const smtk::mesh::ConstCollectionPtr& parent, smtk::mesh::Handle handle,
     const smtk::mesh::HandleRange& range);
-#endif
 
   //Copy Constructor required for rule of 3
   MeshSet(const MeshSet& other);
@@ -166,7 +161,6 @@ public:
     const std::string& name, int dimension, const double* const field = nullptr);
   smtk::mesh::CellField cellField(const std::string& name) const;
   std::set<smtk::mesh::CellField> cellFields() const;
-  std::vector<smtk::mesh::CellField> cellFieldsForShiboken() const;
   //Remove the dataset from this meshset.
   bool removeCellField(smtk::mesh::CellField cellfield);
 
@@ -179,7 +173,6 @@ public:
     const std::string& name, int dimension, const double* const field = nullptr);
   smtk::mesh::PointField pointField(const std::string& name) const;
   std::set<smtk::mesh::PointField> pointFields() const;
-  std::vector<smtk::mesh::PointField> pointFieldsForShiboken() const;
   //Remove the dataset from this meshset.
   bool removePointField(smtk::mesh::PointField pointfield);
 

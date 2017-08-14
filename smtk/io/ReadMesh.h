@@ -33,14 +33,12 @@ public:
   ReadMesh();
   ~ReadMesh();
 
-#ifndef SHIBOKEN_SKIP
   ReadMesh& operator=(const ReadMesh&) = delete;
   ReadMesh(const ReadMesh&) = delete;
 
   static std::vector<smtk::io::mesh::MeshIOPtr>& SupportedIOTypes();
 
   static bool ExtensionIsSupported(const std::string& ext);
-#endif
 
   //Load the domain sets from a moab data file as a new collection into the
   //given manager.

@@ -7,7 +7,6 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef SHIBOKEN_SKIP
 #include "smtk/bridge/remote/RemusConnection.h"
 #include "smtk/bridge/remote/Session.h"
 
@@ -698,4 +697,3 @@ bool RemusConnection::findRequirementsForRemusType(
 } // namespace remote
 } // namespace bridge
 } // namespace smtk
-#endif // SHIBOKEN_SKIP

@@ -76,7 +76,6 @@ public:
   //Set all the point coordinates to the values from the input std::vector
   bool set(const std::vector<double>& xyz) const;
 
-#ifndef SHIBOKEN_SKIP
   // Skipping the following:
   // double*, and float* they are not nicely wrapped so the length is unknown
   // std::vector<float>& skipped since python uses doubles not floats
@@ -107,7 +106,6 @@ public:
   //Set all the point coordinates from the pre-allocated buffer. The
   //buffer is required to have a length of size*3.
   bool set(const std::vector<float>& xyz);
-#endif
 
   //get the underlying HandleRange that this PointSet represents
   const smtk::mesh::HandleRange& range() const { return this->m_points; }

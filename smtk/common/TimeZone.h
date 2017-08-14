@@ -14,11 +14,9 @@
 #include "smtk/SystemConfig.h"
 #include "smtk/common/CompilerInformation.h"
 
-#ifndef SHIBOKEN_SKIP
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include <boost/date_time/local_time/local_time.hpp>
 SMTK_THIRDPARTY_POST_INCLUDE
-#endif
 
 #include <string>
 
@@ -58,10 +56,9 @@ public:
   bool utcOffset(int& hours, int& minutes) const;
   bool dstShift(int& hours, int& minutes) const;
 
-#ifndef SHIBOKEN_SKIP
   // Intended for internal use
   const boost::local_time::time_zone_ptr boostPointer() const;
-#endif
+
 private:
   boost::local_time::time_zone_ptr m_boostTimeZone;
   bool m_isUTC;

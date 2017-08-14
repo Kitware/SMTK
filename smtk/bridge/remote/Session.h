@@ -10,16 +10,13 @@
 #ifndef __smtk_session_remote_Session_h
 #define __smtk_session_remote_Session_h
 
-#ifndef SHIBOKEN_SKIP
-#include "smtk/bridge/remote/RemusStaticSessionInfo.h"
-#include "smtk/model/SessionRegistrar.h"
-#endif                                  // SHIBOKEN_SKIP
 #include "smtk/SharedPtr.h"             // for export macro
 #include "smtk/bridge/remote/Exports.h" // for export macro
+#include "smtk/bridge/remote/RemusStaticSessionInfo.h"
 #include "smtk/model/DefaultSession.h"
+#include "smtk/model/SessionRegistrar.h"
 #include "smtk/model/StringData.h"
 
-#ifndef SHIBOKEN_SKIP
 #ifndef _MSC_VER
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdelete-non-virtual-dtor"
@@ -29,7 +26,6 @@
 #ifndef _MSC_VER
 #pragma GCC diagnostic pop
 #endif
-#endif // SHIBOKEN_SKIP
 
 namespace smtk
 {
@@ -74,7 +70,6 @@ public:
   virtual ~Session();
 
   using smtk::model::Session::setup;
-#ifndef SHIBOKEN_SKIP
   Ptr setup(RemusConnection* remusServerConnection, remus::proto::JobRequirements& jreq);
   remus::proto::JobRequirements remusRequirements() const;
 
@@ -104,7 +99,6 @@ protected:
   static std::map<std::string, RemusStaticSessionInfo>* s_remotes;
 
   static void cleanupSessionTypes();
-#endif // SHIBOKEN_SKIP
 };
 
 } // namespace remote

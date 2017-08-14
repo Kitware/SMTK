@@ -63,7 +63,6 @@ struct SMTKCORE_EXPORT Format
   {
   }
 
-#ifndef SHIBOKEN_SKIP
   static const IOFlags Import;
   static const IOFlags Export;
   static const IOFlags Read;
@@ -73,7 +72,6 @@ struct SMTKCORE_EXPORT Format
   bool CanExport() const { return (this->Flags & Export) == Export; }
   bool CanRead() const { return (this->Flags & Read) == Read; }
   bool CanWrite() const { return (this->Flags & Write) == Write; }
-#endif
 
   std::string Name;
   std::vector<std::string> Extensions;

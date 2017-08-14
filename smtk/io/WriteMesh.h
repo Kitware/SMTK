@@ -33,12 +33,10 @@ public:
   WriteMesh();
   ~WriteMesh();
 
-#ifndef SHIBOKEN_SKIP
   WriteMesh& operator=(const WriteMesh&) = delete;
   WriteMesh(const WriteMesh&) = delete;
 
   static std::vector<smtk::io::mesh::MeshIOPtr>& SupportedIOTypes();
-#endif
 
   bool operator()(const std::string& filePath, smtk::mesh::CollectionPtr collection,
     mesh::Subset subset = mesh::Subset::EntireCollection) const;

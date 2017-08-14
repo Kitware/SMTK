@@ -196,9 +196,7 @@ public:
     std::map<smtk::model::EntityRef, smtk::model::EntityRef>& entityrefMap,
     std::set<smtk::model::EntityRef>& touched) const;
   int tessellationGeneration() const;
-#ifndef SHIBOKEN_SKIP
   void setBoundingBox(const double bbox[6]);
-#endif
 
   bool hasAttributes() const;
   bool hasAttribute(const smtk::common::UUID& attribId) const;
@@ -220,7 +218,6 @@ public:
 
   smtk::common::UUIDs attributes() const;
 
-#ifndef SHIBOKEN_SKIP
   // For T = {IntegerData, FloatData, StringData}:
   template <typename T>
   T* properties();
@@ -230,7 +227,6 @@ public:
   const T* hasProperties() const;
   template <typename T>
   bool removeProperty(const std::string& name);
-#endif // SHIBOKEN_SKIP
 
   void setFloatProperty(const std::string& propName, smtk::model::Float propValue);
   void setFloatProperty(const std::string& propName, const smtk::model::FloatList& propValue);

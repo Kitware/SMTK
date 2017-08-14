@@ -163,10 +163,8 @@ public:
   static int numCellPropsFromType(size_type cellType);
   static int numVertexPropsFromType(size_type cellType);
 
-#ifndef SHIBOKEN_SKIP
   static void invalidBoundingBox(double bbox[6]);
   bool getBoundingBox(double bbox[6]) const;
-#endif
 
 protected:
   std::vector<double> m_coords;

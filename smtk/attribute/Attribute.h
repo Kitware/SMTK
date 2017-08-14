@@ -242,7 +242,6 @@ protected:
     this->m_references.erase(attRefItem);
   }
 
-#ifndef SHIBOKEN_SKIP
   std::string m_name;
   std::vector<smtk::attribute::ItemPtr> m_items;
   ModelEntityItemPtr m_associations;
@@ -258,7 +257,6 @@ protected:
   // would need to be done otherwise
   bool m_aboutToBeDeleted;
   double m_color[4];
-#endif // SHIBOKEN_SKIP
 };
 
 inline smtk::simulation::UserDataPtr Attribute::userData(const std::string& key) const

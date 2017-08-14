@@ -36,7 +36,6 @@ namespace mesh
 class StructuredGrid
 {
 public:
-#ifndef SHIBOKEN_SKIP
   StructuredGrid(const int extent[4], const double origin[2], const double spacing[2],
     const std::function<double(int, int)>& data, const std::function<bool(int, int)>& valid)
     : m_data(data)
@@ -58,7 +57,6 @@ public:
     : StructuredGrid(extent, origin, spacing, data, [](int, int) { return true; })
   {
   }
-#endif
 
   // Given indices int othe structured data, determine whether or not the cell
   // is valid.
@@ -68,9 +66,7 @@ public:
       m_valid(ix, iy);
   }
 
-#ifndef SHIBOKEN_SKIP
   const std::function<double(int, int)>& data() const { return m_data; }
-#endif
 
   int m_extent[4];     // [istart, iend, jstart, jend]
   double m_origin[2];  // location of pixel index (0,0)
