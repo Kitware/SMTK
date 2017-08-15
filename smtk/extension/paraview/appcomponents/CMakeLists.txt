@@ -1,6 +1,4 @@
-smtk_find_package_qt(qt_targets REQUIRED
-  QT4_COMPONENTS QtCore
-  QT5_COMPONENTS Core)
+find_package(Qt5 REQUIRED COMPONENTS Core)
 
 # set up sources to build
 set(PQComponentsSrcs
@@ -14,7 +12,7 @@ set(PQComponentsHeaders
 #install the headers
 smtk_public_headers(${PQComponentsHeaders})
 
-smtk_qt_wrap_cpp(MOC_BUILT_SOURCES ${PQComponentsHeaders})
+qt5_wrap_cpp(MOC_BUILT_SOURCES ${PQComponentsHeaders})
 
 source_group("Qt_Source" FILES ${PQComponentsSrcs} )
 source_group("Qt_Generated" FILES ${MOC_BUILT_SOURCES} )
@@ -32,7 +30,7 @@ target_include_directories(smtkPQComponentsExt PRIVATE ${CMAKE_CURRENT_BINARY_DI
 target_link_libraries(smtkPQComponentsExt LINK_PUBLIC
   pqApplicationComponents
   smtkQtExt
-  ${qt_targets}
+  Qt5::Core
 )
 
 if (SMTK_ENABLE_TESTING)

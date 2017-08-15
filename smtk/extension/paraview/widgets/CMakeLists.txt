@@ -1,6 +1,4 @@
-smtk_find_package_qt(qt_targets REQUIRED
-  QT4_COMPONENTS QtCore QtGui
-  QT5_COMPONENTS Core Widgets)
+find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
 
 # set up sources to build
 set(PQWidgetsSrcs
@@ -30,9 +28,9 @@ set(PQWidgetsHeaders
 #install the headers
 smtk_public_headers(${PQWidgetsHeaders})
 
-smtk_qt_wrap_cpp(MOC_BUILT_SOURCES ${PQWidgetsMocHeaders})
-smtk_qt_wrap_ui(UI_BUILT_SOURCES ${PQWidgetsUIs})
-smtk_qt_add_resources(RCS_RESOURCES qtWidgetsIcons.qrc)
+qt5_wrap_cpp(MOC_BUILT_SOURCES ${PQWidgetsMocHeaders})
+qt5_wrap_ui(UI_BUILT_SOURCES ${PQWidgetsUIs})
+qt5_add_resources(RCS_RESOURCES qtWidgetsIcons.qrc)
 
 source_group("Qt_Source" FILES ${PQWidgetsSrcs} ${PQWidgetsUIs})
 source_group("Qt_Generated" FILES ${MOC_BUILT_SOURCES} ${UI_BUILT_SOURCES} ${RCS_RESOURCES})
@@ -53,7 +51,8 @@ target_link_libraries(smtkPQWidgetsExt LINK_PUBLIC
   pqApplicationComponents
   vtkPVServerManagerRendering
   smtkCore
-  ${qt_targets}
+  Qt5::Core
+  Qt5::Widgets
   )
 
 if (SMTK_ENABLE_TESTING)

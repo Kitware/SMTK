@@ -269,8 +269,10 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
   // potentially several lineEdits, fileCombos or fileBrowserButtons, to our
   // slot, which is the method setActiveField(QWidget*). This way,
   // setActiveField can tag the appropriate field to be used within
-  // onInputValueChanged(). When we depricate Qt4 in favor of Qt5, this may be
-  // handled more elegantly using lambda expressions as slots.
+  // onInputValueChanged().
+  //
+  // TODO: This may be handled more elegantly using lambda expressions as
+  // slots.
 
   if (lineEdit)
   {
@@ -461,12 +463,8 @@ bool qtFileItem::onLaunchFileBrowser()
     mode = fItemDef->shouldExist() ? QFileDialog::ExistingFile : QFileDialog::AnyFile;
   }
   this->Internals->FileBrowser->setFileMode(mode);
-#if QT_VERSION >= 0x050000
   QStringList name_filters = filters.split(";;");
   this->Internals->FileBrowser->setNameFilters(name_filters);
-#else
-  this->Internals->FileBrowser->setFilter(filters);
-#endif
 
   this->Internals->FileBrowser->setWindowModality(Qt::WindowModal);
   if (this->Internals->FileBrowser->exec() == QDialog::Accepted)
