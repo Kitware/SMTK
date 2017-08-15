@@ -1,6 +1,4 @@
-smtk_find_package_qt(qt_targets REQUIRED
-  QT4_COMPONENTS QtCore QtGui
-  QT5_COMPONENTS Core Widgets)
+find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
 
 include(${PARAVIEW_USE_FILE})
 include(ParaViewPlugins)
@@ -28,13 +26,8 @@ set(qtui
 #install the headers
 smtk_public_headers(${hdrs})
 
-if (PARAVIEW_QT_VERSION VERSION_GREATER "4")
-  qt5_wrap_cpp(mocs ${hdrs})
-  qt5_wrap_ui(uisrc ${qtui})
-else()
-  qt4_wrap_cpp(mocs ${hdrs})
-  qt4_wrap_ui(uisrc ${qtui})
-endif()
+qt5_wrap_cpp(mocs ${hdrs})
+qt5_wrap_ui(uisrc ${qtui})
 
 source_group("Qt_Source" FILES ${srcs} )
 source_group("Qt_Generated" FILES ${mocs} ${uisrc})
@@ -48,7 +41,6 @@ add_library(smtkPQOperatorViewsExt
 
 #we need to add the location of the moc files to the include dir for smtkPQWidgetExt
 target_include_directories(smtkPQOperatorViewsExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-#qt4_use_modules(smtkPQOperatorViewsExt LINK_PUBLIC Core Gui)
 
 #set smtkPQOperatorViewsExt to publicly link to smtkCore
 target_link_libraries(smtkPQOperatorViewsExt
@@ -56,7 +48,8 @@ target_link_libraries(smtkPQOperatorViewsExt
     pqApplicationComponents
     smtkQtExt
     smtkCore
-    ${qt_targets}
+    Qt5::Core
+    Qt5::Widgets
     ${Boost_LIBRARIES}
     vtkjsoncpp
 )

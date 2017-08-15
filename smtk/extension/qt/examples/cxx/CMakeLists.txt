@@ -1,7 +1,7 @@
 ##
 ## Create browseModel to test browsing model entity tree:
 
-smtk_qt_wrap_ui(browseModel_UI_BUILT_SOURCES ModelBrowser.ui)
+qt5_wrap_ui(browseModel_UI_BUILT_SOURCES ModelBrowser.ui)
 
 add_executable(browseModel MACOSX_BUNDLE
   browseModel.cxx

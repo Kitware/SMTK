@@ -265,16 +265,6 @@ endif()
 # Qt Related Settings
 ################################################################################
 
-#make find qt4 bring in import targets which are far nicer to use
-if(SMTK_ENABLE_QT_SUPPORT OR SMTK_ENABLE_PARAVIEW_SUPPORT)
-  set(SMTK_QT_VERSION "4"
-    CACHE STRING "The major version of Qt to use")
-  set_property(CACHE SMTK_QT_VERSION
-    PROPERTY
-      STRINGS "4;5")
-  include(SMTKQt)
-endif()
-
 ################################################################################
 # NOTE: This has be before any find_package(VTK), because currently ParaView
 # and VTK can NOT be easily switched due to modules and macros intermixed

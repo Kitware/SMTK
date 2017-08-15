@@ -1,6 +1,4 @@
-smtk_find_package_qt(qt_targets REQUIRED
-  QT4_COMPONENTS QtCore QtGui
-  QT5_COMPONENTS Core Gui Widgets)
+find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets)
 
 find_package( VTK REQUIRED )
 include_directories(${VTK_INCLUDE_DIRS})
@@ -17,8 +15,8 @@ set(VXLWidgetsUI
 #install the headers
 smtk_public_headers(${VXLWidgetsHeaders})
 
-smtk_qt_wrap_cpp(MOC_BUILT_SOURCES ${VXLWidgetsHeaders})
-smtk_qt_wrap_ui(UI_BUILT_SOURCES ${VXLWidgetsUI})
+qt5_wrap_cpp(MOC_BUILT_SOURCES ${VXLWidgetsHeaders})
+qt5_wrap_ui(UI_BUILT_SOURCES ${VXLWidgetsUI})
 
 source_group("Qt_Source" FILES ${VXLWidgetsSrcs} ${VXLWidgetsUI})
 source_group("Qt_Generated" FILES ${MOC_BUILT_SOURCES} ${UI_BUILT_SOURCES} ${RCS_RESOURCES})
@@ -38,7 +36,9 @@ target_link_libraries(smtkVXLWidgetsExt LINK_PUBLIC
   smtkCore
   smtkPQWidgetsExt
   vtkSMTKSourceExt
-  ${qt_targets}
+  Qt5::Core
+  Qt5::Gui
+  Qt5::Widgets
 LINK_PRIVATE
   ${VTK_LIBRARIES}
   smtkQtExt
@@ -61,7 +61,9 @@ if (SMTK_ENABLE_TESTING)
     vtkInteractionStyle
     vtkRenderingFreeType
     vtkRenderingOpenGL2
-    ${qt_targets}
+    Qt5::Core
+    Qt5::Gui
+    Qt5::Widgets
     )
     if (TARGET ${target})
       list(APPEND SMTK_VTK_TARGET_LIST ${target})

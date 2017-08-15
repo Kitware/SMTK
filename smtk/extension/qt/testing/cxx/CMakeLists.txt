@@ -21,7 +21,7 @@ set(unit_tests
 set(unit_tests_which_require_data
   )
 
-smtk_qt_wrap_cpp(unit_tests_headers_moc ${unit_tests_headers})
+qt5_wrap_cpp(unit_tests_headers_moc ${unit_tests_headers})
 
 smtk_unit_tests(LABEL "qt"
   SOURCES ${unit_tests}

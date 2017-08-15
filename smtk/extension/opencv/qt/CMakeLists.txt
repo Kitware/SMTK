@@ -1,6 +1,4 @@
-smtk_find_package_qt(qt_targets REQUIRED
-  QT4_COMPONENTS QtCore QtGui
-  QT5_COMPONENTS Core Widgets)
+find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
 
 find_package( VTK REQUIRED )
 include_directories(${VTK_INCLUDE_DIRS})
@@ -12,8 +10,8 @@ set(OpenCVOperatorsUI imageFeatureExtractor.ui)
 #install the headers
 smtk_public_headers(${OpenCVOperatorsHeaders})
 
-smtk_qt_wrap_cpp(MOC_BUILT_SOURCES ${OpenCVOperatorsHeaders})
-smtk_qt_wrap_ui(UI_BUILT_SOURCES ${OpenCVOperatorsUI})
+qt5_wrap_cpp(MOC_BUILT_SOURCES ${OpenCVOperatorsHeaders})
+qt5_wrap_ui(UI_BUILT_SOURCES ${OpenCVOperatorsUI})
 
 source_group("Qt_Source" FILES ${OpenCVOperatorsSrcs} ${OpenCVOperatorsUI})
 source_group("Qt_Generated" FILES ${MOC_BUILT_SOURCES} ${UI_BUILT_SOURCES} ${RCS_RESOURCES})
@@ -36,7 +34,8 @@ target_link_libraries(smtkOpenCVQtExt LINK_PUBLIC
   vtkSMTKSourceExt
   vtkDomainsChemistryOpenGL2
   vtkSMTKFilterExt
-  ${qt_targets}
+  Qt5::Core
+  Qt5::Widgets
 LINK_PRIVATE
   ${VTK_LIBRARIES}
 )
@@ -58,7 +57,8 @@ if (SMTK_ENABLE_TESTING)
     vtkInteractionStyle
     vtkRenderingFreeType
     vtkRenderingOpenGL2
-    ${qt_targets}
+    Qt5::Core
+    Qt5::Widgets
     )
     if (TARGET ${target})
       list(APPEND SMTK_VTK_TARGET_LIST ${target})
