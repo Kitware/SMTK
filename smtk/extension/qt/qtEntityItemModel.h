@@ -119,9 +119,7 @@ public:
   virtual void newSessionOperatorResult(
     const smtk::model::SessionRef& sref, const model::OperatorResult& result);
 
-#if QT_VERSION >= 0x050000
   Qt::DropActions supportedDropActions() const;
-#endif
 
 signals:
   void phraseTitleChanged(const QModelIndex&);

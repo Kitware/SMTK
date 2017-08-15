@@ -461,12 +461,8 @@ bool qtFileItem::onLaunchFileBrowser()
     mode = fItemDef->shouldExist() ? QFileDialog::ExistingFile : QFileDialog::AnyFile;
   }
   this->Internals->FileBrowser->setFileMode(mode);
-#if QT_VERSION >= 0x050000
   QStringList name_filters = filters.split(";;");
   this->Internals->FileBrowser->setNameFilters(name_filters);
-#else
-  this->Internals->FileBrowser->setFilter(filters);
-#endif
 
   this->Internals->FileBrowser->setWindowModality(Qt::WindowModal);
   if (this->Internals->FileBrowser->exec() == QDialog::Accepted)

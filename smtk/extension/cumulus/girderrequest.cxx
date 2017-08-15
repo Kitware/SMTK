@@ -17,14 +17,11 @@
 #include <QtCore/QFile>
 #include <QtCore/QList>
 #include <QtCore/QMap>
+#include <QtCore/QUrlQuery>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkCookieJar>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
-
-#if QT_VERSION >= 0x050000
-#include <QtCore/QUrlQuery>
-#endif
 
 namespace cumulus
 {
@@ -54,16 +51,11 @@ ListItemsRequest::~ListItemsRequest()
 
 void ListItemsRequest::send()
 {
-#if QT_VERSION >= 0x050000
   QUrlQuery urlQuery(QString("%1/item").arg(this->m_girderUrl));
   urlQuery.addQueryItem("folderId", this->m_folderId);
 
   QUrl url(QString("%1/item").arg(this->m_girderUrl));
   url.setQuery(urlQuery); // reconstructs the query string from the QUrlQuery
-#else
-  QUrl url(QString("%1/item").arg(this->m_girderUrl));
-  url.addQueryItem("folderId", this->m_folderId);
-#endif
 
   QNetworkRequest request(url);
   request.setRawHeader(QByteArray("Girder-Token"), this->m_girderToken.toUtf8());
@@ -198,19 +190,12 @@ ListFoldersRequest::~ListFoldersRequest()
 
 void ListFoldersRequest::send()
 {
-#if QT_VERSION >= 0x050000
   QUrlQuery urlQuery(QString("%1/item").arg(this->m_girderUrl));
   urlQuery.addQueryItem("parentId", this->m_folderId);
   urlQuery.addQueryItem("parentType", "folder");
 
   QUrl url(QString("%1/folder").arg(this->m_girderUrl));
   url.setQuery(urlQuery); // reconstructs the query string from the QUrlQuery
-
-#else
-  QUrl url(QString("%1/folder").arg(this->m_girderUrl));
-  url.addQueryItem("parentId", this->m_folderId);
-  url.addQueryItem("parentType", "folder");
-#endif
 
   QNetworkRequest request(url);
   request.setRawHeader(QByteArray("Girder-Token"), this->m_girderToken.toUtf8());

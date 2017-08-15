@@ -19,16 +19,13 @@
 #include <QtCore/QList>
 #include <QtCore/QThread>
 #include <QtCore/QTimer>
+#include <QtCore/QUrlQuery>
 #include <QtCore/QVariant>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkCookie>
 #include <QtNetwork/QNetworkCookieJar>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
-
-#if QT_VERSION >= 0x050000
-#include <QtCore/QUrlQuery>
-#endif
 
 namespace
 {
@@ -105,22 +102,14 @@ void CumulusProxy::authenticateNewt(const QString& username, const QString& pass
   QNetworkRequest request(url);
   request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
-#if QT_VERSION >= 0x050000
   QUrlQuery params;
-#else
-  QUrl params;
-#endif
   params.addQueryItem("username", username);
   params.addQueryItem("password", password);
 
   QObject::connect(manager, SIGNAL(finished(QNetworkReply*)), this,
     SLOT(authenticationNewtFinished(QNetworkReply*)));
 
-#if QT_VERSION >= 0x050000
   manager->post(request, params.query().toUtf8());
-#else
-  manager->post(request, params.encodedQuery());
-#endif
 }
 
 void CumulusProxy::authenticationNewtFinished(QNetworkReply* reply)

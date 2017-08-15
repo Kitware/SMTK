@@ -1501,12 +1501,10 @@ void QEntityItemModel::newSessionOperatorResult(
   }
 }
 
-#if QT_VERSION >= 0x050000
 Qt::DropActions QEntityItemModel::supportedDropActions() const
 {
   return Qt::CopyAction;
 }
-#endif
 
 void QEntityItemModel::updateObserver()
 {
