@@ -34,6 +34,9 @@ class RenderMesh(smtk.testing.TestCase):
 
     def testRenderMesh(self):
         renderMesh = self.sess.op('render mesh')
+        if not renderMesh:
+            raise ImportError('Could not find operator \'render mesh\'')
+
         renderMesh.specification().findMesh(
             'mesh').setValue(self.collection.meshes())
         self.outFile = os.path.join(
