@@ -101,10 +101,16 @@ int main(int argc, char* argv[])
   if (!c || !c->isValid())
   {
     std::cerr << "Could not read mesh from " << input_path << std::endl;
+    return 1;
   }
 
   // Construct a "render mesh" operator
   smtk::model::OperatorPtr op = sessRef.session()->op("render mesh");
+  if (!op)
+  {
+    std::cerr << "Could create \"render mesh\" operator" << std::endl;
+    return 1;
+  }
 
   // Set the mesh to be rendered
   op->specification()->findMesh("mesh")->setValue(c->meshes());
