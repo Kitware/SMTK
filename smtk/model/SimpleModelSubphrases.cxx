@@ -30,7 +30,6 @@ namespace smtk
 namespace model
 {
 
-
 SimpleModelSubphrases::SimpleModelSubphrases()
   : m_abridgeUses(true)
 {
@@ -152,7 +151,7 @@ void SimpleModelSubphrases::childrenOfEntity(EntityPhrase::Ptr phr, DescriptiveP
     if (dimBits > 0 && phr->relatedEntity().dimensionBits() > 0 &&
       ((dimBits > phr->relatedEntity().dimensionBits() &&
          !(dimBits & phr->relatedEntity().dimensionBits())) ||
-        phr->relatedEntity().isModel()))
+          phr->relatedEntity().isModel()))
     { // Do not report higher-dimensional relation
       return;
     }

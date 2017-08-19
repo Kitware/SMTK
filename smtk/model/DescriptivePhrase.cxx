@@ -170,8 +170,8 @@ bool DescriptivePhrase::isPropertyValueType() const
     phType == STRING_PROPERTY_VALUE;
 }
 
-bool DescriptivePhrase::compareByModelInfo(const DescriptivePhrasePtr& a,
-    const DescriptivePhrasePtr& b)
+bool DescriptivePhrase::compareByModelInfo(
+  const DescriptivePhrasePtr& a, const DescriptivePhrasePtr& b)
 {
   static const int sortOrder[] = {
     1,  // ENTITY_LIST
@@ -245,8 +245,7 @@ bool DescriptivePhrase::compareByModelInfo(const DescriptivePhrasePtr& a,
   return compareByTitle(a, b);
 }
 
-bool DescriptivePhrase::compareByTitle(const DescriptivePhrasePtr& a,
-    const DescriptivePhrasePtr& b)
+bool DescriptivePhrase::compareByTitle(const DescriptivePhrasePtr& a, const DescriptivePhrasePtr& b)
 {
   std::string ta(a->title());
   std::string tb(b->title());
@@ -279,7 +278,6 @@ bool DescriptivePhrase::compareByTitle(const DescriptivePhrasePtr& a,
   double nb = atof(tb.substr(i).c_str());
   return na < nb;
 }
-
 
 } // model namespace
 } // smtk namespace

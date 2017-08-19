@@ -149,18 +149,16 @@ public:
   * The sorting is based on Entity Type, Entity Dimension and Title
   */
 
-  static bool compareByModelInfo(const DescriptivePhrasePtr& a,
-    const DescriptivePhrasePtr& b);
-  
+  static bool compareByModelInfo(const DescriptivePhrasePtr& a, const DescriptivePhrasePtr& b);
+
   /**\brief Ttile-based Comparison method for DescriptivePhrases
   *
   * This can be used to help sort DescriptivePhrases based on their
   * titles.
   */
 
-  static bool compareByTitle(const DescriptivePhrasePtr& a,
-    const DescriptivePhrasePtr& b);
-  
+  static bool compareByTitle(const DescriptivePhrasePtr& a, const DescriptivePhrasePtr& b);
+
 protected:
   DescriptivePhrase();
 
