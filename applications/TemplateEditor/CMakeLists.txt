@@ -21,7 +21,7 @@ set(TE_UI_FORMS
   ui/PreviewPanel.ui
   ui/TemplateEditorMain.ui)
 
-smtk_qt_wrap_ui(TE_UIC_SOURCE  ${TE_UI_FORMS})
+qt5_wrap_ui(TE_UIC_SOURCE  ${TE_UI_FORMS})
 
 # Source files
 # ------------

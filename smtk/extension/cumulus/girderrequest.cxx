@@ -17,6 +17,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QList>
 #include <QtCore/QMap>
+#include <QtCore/QUrlQuery>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkCookieJar>
 #include <QtNetwork/QNetworkReply>
@@ -50,8 +51,11 @@ ListItemsRequest::~ListItemsRequest()
 
 void ListItemsRequest::send()
 {
+  QUrlQuery urlQuery(QString("%1/item").arg(this->m_girderUrl));
+  urlQuery.addQueryItem("folderId", this->m_folderId);
+
   QUrl url(QString("%1/item").arg(this->m_girderUrl));
-  url.addQueryItem("folderId", this->m_folderId);
+  url.setQuery(urlQuery); // reconstructs the query string from the QUrlQuery
 
   QNetworkRequest request(url);
   request.setRawHeader(QByteArray("Girder-Token"), this->m_girderToken.toUtf8());
@@ -186,9 +190,12 @@ ListFoldersRequest::~ListFoldersRequest()
 
 void ListFoldersRequest::send()
 {
+  QUrlQuery urlQuery(QString("%1/item").arg(this->m_girderUrl));
+  urlQuery.addQueryItem("parentId", this->m_folderId);
+  urlQuery.addQueryItem("parentType", "folder");
+
   QUrl url(QString("%1/folder").arg(this->m_girderUrl));
-  url.addQueryItem("parentId", this->m_folderId);
-  url.addQueryItem("parentType", "folder");
+  url.setQuery(urlQuery); // reconstructs the query string from the QUrlQuery
 
   QNetworkRequest request(url);
   request.setRawHeader(QByteArray("Girder-Token"), this->m_girderToken.toUtf8());
@@ -289,8 +296,6 @@ void DownloadFolderRequest::send()
 
 void DownloadFolderRequest::items(const QList<QString>& itemIds)
 {
-  ListItemsRequest* request = qobject_cast<ListItemsRequest*>(this->sender());
-
   this->m_itemsToDownload = new QList<QString>(itemIds);
 
   foreach (QString itemId, itemIds)
@@ -322,8 +327,6 @@ void DownloadFolderRequest::downloadItemFinished()
 
 void DownloadFolderRequest::folders(const QMap<QString, QString>& folders)
 {
-  ListFoldersRequest* request = qobject_cast<ListFoldersRequest*>(this->sender());
-
   this->m_foldersToDownload = new QMap<QString, QString>(folders);
 
   QMapIterator<QString, QString> i(folders);
@@ -394,8 +397,6 @@ void DownloadItemRequest::send()
 
 void DownloadItemRequest::files(const QMap<QString, QString>& files)
 {
-  ListItemsRequest* request = qobject_cast<ListItemsRequest*>(this->sender());
-
   this->m_filesToDownload = files;
 
   QMapIterator<QString, QString> i(files);

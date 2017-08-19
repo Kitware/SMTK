@@ -48,7 +48,18 @@ also accessible in Python, whose instances perform the following functions:
 
 :smtk:`System <smtk::attribute::System>`
   instances hold collections of attributes associated with a
-  particular purpose such as defining a simulation's input deck.
+  particular purpose such as
+
+  * defining a simulation's input deck (see the
+    `simulation workflows repository <https://gitlab.kitware.com/cmb/simulation-workflows>`_
+    for examples);
+  * specifying locations where input and output files are located
+    during the export process (SMTK's simulation subsystem creates
+    an attribute system for this purpose); and
+  * defining operations that can be performed on a geometric model
+    (SMTK's geometric modeling system uses an attribute system to
+    hold definitions for each modeling operation that can be
+    performed by each of its modeling kernels).
 
 Because it can be tedious to programmatically create a bunch of
 instances of the classes above to represent a particular simulation's
@@ -56,10 +67,10 @@ input deck, SMTK provides an XML file format for serializing and
 deserializing all of the attributes, definitions, items, and item-definitions
 stored in an attribute system.
 
-Components of the attribute system
+Interfaces to the attribute system
 ----------------------------------
 
-The attribute system has three main components:
+The attribute system has three interfaces:
 
 1. An XML file syntax for specifying the kinds data to be modeled
 for individual simulation codes and problem domains.

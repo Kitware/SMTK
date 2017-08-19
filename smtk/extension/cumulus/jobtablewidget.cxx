@@ -41,7 +41,7 @@ void JobTableWidget::setModel(QAbstractItemModel* model)
   this->m_proxyModel->setSourceModel(model);
   ui->table->setModel(this->m_proxyModel);
 
-  ui->table->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+  ui->table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
 void JobTableWidget::setCumulusProxy(CumulusProxy* cumulusProxy)

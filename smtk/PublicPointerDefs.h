@@ -142,6 +142,8 @@ class GridInfo2D;
 class GridInfo3D;
 class Group;
 class Instance;
+typedef std::vector<smtk::model::Instance> Instances;
+typedef std::set<smtk::model::Instance> InstanceSet;
 class Loop;
 typedef std::vector<smtk::model::Loop> Loops;
 class Entity;

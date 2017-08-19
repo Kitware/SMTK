@@ -1,5 +1,4 @@
 set(smtkCommonPythonTests
-  version
   uuidGenerator
   datetimezonepairtest
 )

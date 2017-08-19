@@ -7,6 +7,11 @@ if (NOT (MSVC AND NOT SMTK_USE_PYBIND11))
   list(APPEND smtkIOPythonTests ResourceSetTest)
 endif()
 
+# only add logMessage if we are running with pybind11
+if (SMTK_USE_PYBIND11)
+  list(APPEND smtkIOPythonTests logMessage)
+endif()
+
 # Additional tests that require SMTK_DATA_DIR
 set(smtkIOPythonDataTests
 )

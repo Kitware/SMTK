@@ -11,4 +11,4 @@
 #include "smtk/Options.h"
 #include "smtk/PythonAutoInit.h"
 
-smtkPythonInitMacro(render_mesh, smtk.extension.matplotlib.render_mesh);
+smtkPythonInitMacro(render_mesh, smtk.extension.matplotlib.render_mesh, false);

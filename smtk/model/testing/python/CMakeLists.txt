@@ -7,6 +7,7 @@ set(smtkModelPythonTests
 # Additional tests that require SMTK_DATA_DIR
 set(smtkModelPythonDataTests
   modelAttributes
+  modelInstance
   modelSetPropertyOp
   modelCloseModelOp
 )

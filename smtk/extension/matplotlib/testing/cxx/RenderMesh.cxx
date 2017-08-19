@@ -65,6 +65,9 @@ void cleanup(const std::string& file_path)
 // environment.
 int main(int argc, char* argv[])
 {
+  (void)argc;
+  (void)argv;
+
   // Create a model manager
   smtk::model::ManagerPtr manager = smtk::model::Manager::create();
 
@@ -97,16 +100,22 @@ int main(int argc, char* argv[])
   smtk::mesh::CollectionPtr c = smtk::io::importMesh(input_path, meshManager);
   if (!c || !c->isValid())
   {
-    std::cerr << "Could not read mesh from " << argv[1] << std::endl;
+    std::cerr << "Could not read mesh from " << input_path << std::endl;
+    return 1;
   }
 
   // Construct a "render mesh" operator
   smtk::model::OperatorPtr op = sessRef.session()->op("render mesh");
+  if (!op)
+  {
+    std::cerr << "Could create \"render mesh\" operator" << std::endl;
+    return 1;
+  }
 
   // Set the mesh to be rendered
   op->specification()->findMesh("mesh")->setValue(c->meshes());
 
-  // Set the file path for the rendered imagel
+  // Set the file path for the rendered image
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".png";
   op->specification()->findFile("filename")->setValue(write_path);
@@ -150,4 +159,4 @@ int main(int argc, char* argv[])
   return 0;
 }
 
-smtkPythonInitMacro(render_mesh, smtk.extension.matplotlib.render_mesh);
+smtkPythonInitMacro(render_mesh, smtk.extension.matplotlib.render_mesh, true);

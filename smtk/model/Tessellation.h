@@ -117,13 +117,13 @@ public:
   /// Direct access to the underlying connectivity storage
   std::vector<int> const& conn() const { return this->m_conn; }
 
-  int addCoords(double* a);
+  int addCoords(const double* a);
   Tessellation& addCoords(double x, double y, double z);
 
-  Tessellation& addPoint(double* a);
-  Tessellation& addLine(double* a, double* b);
-  Tessellation& addTriangle(double* a, double* b, double* c);
-  Tessellation& addQuad(double* a, double* b, double* c, double* d);
+  Tessellation& addPoint(const double* a);
+  Tessellation& addLine(const double* a, const double* b);
+  Tessellation& addTriangle(const double* a, const double* b, const double* c);
+  Tessellation& addQuad(const double* a, const double* b, const double* c, const double* d);
 
   Tessellation& addPoint(int ai);
   Tessellation& addLine(int ai, int bi);

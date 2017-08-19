@@ -227,6 +227,10 @@ bool Delete::checkAndAddBoundingCells(const smtk::model::EntityRef& ent, bool de
       other.insert(ent);
     }
   }
+  else if (ent.isInstance())
+  {
+    other.insert(ent);
+  }
   else
   {
     smtkWarningMacro(this->log(), "Cannot delete non-cell entity " << ent.name() << ". Skipping.");
@@ -319,19 +323,23 @@ smtk::model::OperatorResult Delete::operateInternal()
   {
     if (eSit->isVertex())
     {
-      vArray.push_back((*eSit).as<smtk::model::Vertex>());
+      vArray.push_back(*eSit);
     }
     else if (eSit->isEdge())
     {
-      eArray.push_back((*eSit).as<smtk::model::Edge>());
+      eArray.push_back(*eSit);
     }
     else if (eSit->isFace())
     {
-      fArray.push_back((*eSit).as<smtk::model::Face>());
+      fArray.push_back(*eSit);
     }
     else if (eSit->isAuxiliaryGeometry())
     {
-      oArray.push_back((*eSit).as<smtk::model::AuxiliaryGeometry>());
+      oArray.push_back(*eSit);
+    }
+    else if (eSit->isInstance())
+    {
+      oArray.push_back(*eSit);
     }
     else
     {

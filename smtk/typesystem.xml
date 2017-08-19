@@ -382,7 +382,7 @@
   <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'const int *' in function 'smtk::model::Tessellation::insertCell(int offset, int connLen, const int * cellConn)'."/>
   <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'const int *' in function 'smtk::model::Tessellation::insertNextCell(int connLen, const int * cellConn)'."/>
   <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'int *' in function 'smtk::model::Tessellation::numberOfCellVertices(int offset, int * cellTypeOut) const'."/>
-  <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'double *' in function 'smtk::model::Tessellation::addQuad(double * a, double * b, double * c, double * d)'."/>
+  <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'const double *' in function 'smtk::model::Tessellation::addQuad(const double * a, const double * b, const double * c, const double * d)'."/>
   <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'const smtk::mesh::Handle *' in function 'smtk::mesh::CellForEach::pointIds(const smtk::mesh::Handle * ptIds)'"/>
   <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'const double *' in function 'smtk::model::Tessellation::setPoint(std::size_t id, const double * points)'"/>
   <suppress-warning text="skipping function 'smtk::common::distance2', unmatched parameter type 'T const*'"/>
@@ -410,6 +410,7 @@
   <suppress-warning text="skipping function 'smtk::io::SaveJSON::canSaveModels', unmatched parameter type 'smtk::model::Models const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::io::SaveJSON::prepareToSave', unmatched parameter type 'smtk::model::Models const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::addEntityProperties', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::childrenOfAuxiliaryGeometry', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::shouldOmitProperty', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityListPhrase::setup', unmatched return type 'smtk::model::EntityListPhrase::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::prototypeOfInstance', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
@@ -1522,6 +1523,15 @@
       <value-type name="EntityRef" hash-function="smtk::model::entityrefHash">
         <include file-name="smtk/model/EntityRef.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+        <add-function
+          signature="instances()" static="no"
+          return-type="std::vector&lt; smtk::model::EntityRef &gt;">
+          <inject-code>
+            std::vector&lt; smtk::model::EntityRef &gt; result =
+              %CPPSELF->instances&lt;std::vector&lt; smtk::model::EntityRef &gt; &gt;();
+            return %CONVERTTOPYTHON[ std::vector&lt; smtk::model::EntityRef &gt; ](result);
+          </inject-code>
+        </add-function>
       </value-type>
 
       <enum-type name="DescriptivePhraseType">
@@ -1737,10 +1747,10 @@
 
       <object-type name="Tessellation">
         <include file-name="smtk/model/Tessellation.h" location="local"/>
-        <modify-function signature="addCoords(double*)" remove="all"/>
-        <modify-function signature="addPoint(double*)" remove="all"/>
-        <modify-function signature="addLine(double *, double *)" remove="all"/>
-        <modify-function signature="addTriangle(double*, double*, double*)" remove="all"/>
+        <modify-function signature="addCoords(const double*)" remove="all"/>
+        <modify-function signature="addPoint(const double*)" remove="all"/>
+        <modify-function signature="addLine(const double *, const double *)" remove="all"/>
+        <modify-function signature="addTriangle(const double*, const double*, const double*)" remove="all"/>
       </object-type>
 
       <enum-type name="TessellationCellType">

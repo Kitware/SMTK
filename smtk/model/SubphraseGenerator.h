@@ -101,6 +101,9 @@ protected:
   void freeAuxiliaryGeometriesOfModel(
     DescriptivePhrase::Ptr src, const Model& mod, DescriptivePhrases& result);
 
+  void childrenOfAuxiliaryGeometry(
+    DescriptivePhrase::Ptr src, const AuxiliaryGeometry& aux, DescriptivePhrases& result);
+
   void prototypeOfInstance(
     DescriptivePhrase::Ptr src, const Instance& ent, DescriptivePhrases& result);
 

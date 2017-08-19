@@ -19,9 +19,6 @@
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Loop.h"
 
-#include "smtk/io/ExportMesh.h"
-#include "smtk/io/ModelToMesh.h"
-
 #include "smtk/mesh/testing/cxx/helpers.h"
 
 #include "smtk/attribute/FileItem.h"

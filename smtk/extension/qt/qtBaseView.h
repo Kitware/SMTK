@@ -13,10 +13,10 @@
 #ifndef __smtk_extension_qtBaseView_h
 #define __smtk_extension_qtBaseView_h
 
-#include <QLayout>
-#include <QList>
-#include <QObject>
-#include <QPointer>
+#include <QtCore/QList>
+#include <QtCore/QObject>
+#include <QtCore/QPointer>
+#include <QtWidgets/QLayout>
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/qt/Exports.h"

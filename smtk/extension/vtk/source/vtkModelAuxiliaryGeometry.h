@@ -11,7 +11,8 @@
 #define __smtk_vtk_ModelAuxiliaryGeometry_h
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/extension/vtk/source/Exports.h"
+#include "smtk/extension/vtk/source/vtkAuxiliaryGeometryExtension.h"
+#include "smtk/extension/vtk/source/vtkTracksAllInstances.h"
 
 #include "vtkMultiBlockDataSetAlgorithm.h"
 #include "vtkNew.h"
@@ -30,6 +31,7 @@ class vtkPolyDataNormals;
 class VTKSMTKSOURCEEXT_EXPORT vtkModelAuxiliaryGeometry : public vtkMultiBlockDataSetAlgorithm
 {
 public:
+  smtkDeclareTracksAllInstances(vtkModelAuxiliaryGeometry);
   static vtkModelAuxiliaryGeometry* New();
   void PrintSelf(ostream& os, vtkIndent indent) override;
   vtkTypeMacro(vtkModelAuxiliaryGeometry, vtkMultiBlockDataSetAlgorithm);
@@ -46,12 +48,13 @@ public:
 
   void Dirty();
 
+  /// A helper method to read data using a templated VTK reader and output data-object class.
+  template <typename T, typename U>
+  static vtkSmartPointer<T> ReadData(const smtk::model::AuxiliaryGeometry& auxGeom);
+
 protected:
   vtkModelAuxiliaryGeometry();
   ~vtkModelAuxiliaryGeometry() override;
-
-  vtkSmartPointer<vtkDataObject> GenerateRepresentationFromModel(
-    const smtk::model::AuxiliaryGeometry& entity, bool genNormals);
 
   int RequestInformation(vtkInformation* request, vtkInformationVector** inputVector,
     vtkInformationVector* outputVector) override;
@@ -67,6 +70,7 @@ protected:
   char* AuxiliaryEntityID; // Auxiliary Entity UUID
   int AllowNormalGeneration;
   vtkNew<vtkPolyDataNormals> NormalGenerator;
+  vtkAuxiliaryGeometryExtension::Ptr AuxGeomHelper;
 
 private:
   vtkModelAuxiliaryGeometry(const vtkModelAuxiliaryGeometry&); // Not implemented.

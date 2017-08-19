@@ -411,6 +411,7 @@ specific to it.
        .. code:: xml
 
           <DefaultValue Sep=":">Oh, my!:Oh no!:Yes, please.</DefaultValue>
+
        to specify different defaults for each component.
        You can also use the separator to prevent a default value
        from having per-component values. For instance, the same
@@ -419,6 +420,7 @@ specific to it.
        .. code:: xml
 
           <DefaultValue Sep=":">Commas, they are my style.</DefaultValue>
+
        to force the default value to have a single entry used to
        initialize all components.
 

@@ -75,13 +75,15 @@ for our example, we've created a new type named :cxx:`EntityHandle`.
 
 Each :cxx:`EntityHandle` instance stores information about a model
 or group that should be presented in SMTK:
-(1) :cxx:`m_session`,
-    a pointer to the session owning the model or group;
-(2) :cxx:`m_modelNumber`,
-    an integer offset into the session's list of top-level models
-    (this indicates the model that owns the data object); and
-(3) :cxx:`m_object`,
-    a pointer to a VTK dataset holding the corresponding model geometry.
+
+1. :cxx:`m_session`,
+   a pointer to the session owning the model or group;
+2. :cxx:`m_modelNumber`,
+   an integer offset into the session's list of top-level models
+   (this indicates the model that owns the data object); and
+3. :cxx:`m_object`,
+   a pointer to a VTK dataset holding the corresponding model geometry.
+
 The session also holds a map to identify the parent model or group of
 each VTK data object since multiblock datasets in VTK do not provide
 a way to discover the parent of a dataset (only its children).

@@ -19,15 +19,14 @@
 #include <string>
 #include <vector>
 
-/**\brief Import an entire SMTK mesh collection from a file, or just sub-sections
-  *
-  */
-
 namespace smtk
 {
 namespace io
 {
 
+/**\brief Import an entire SMTK mesh collection from a file, or just sub-sections
+  *
+  */
 class SMTKCORE_EXPORT ImportMesh
 {
 public:

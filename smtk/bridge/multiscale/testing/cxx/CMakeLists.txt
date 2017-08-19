@@ -11,9 +11,10 @@
 #=============================================================================
 
 set (unit_tests
-  UnitTestDream3DPipelineOp.cxx
-  UnitTestRevolveOp.cxx
-  UnitTestPartitionBoundariesOp.cxx)
+  ImportFromDEFORMOp.cxx
+  RevolveOp.cxx
+  PartitionBoundariesOp.cxx
+)
 
 set (unit_tests_which_require_data)
 

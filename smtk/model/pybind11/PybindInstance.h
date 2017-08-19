@@ -38,6 +38,15 @@ py::class_< smtk::model::Instance, smtk::model::EntityRef > pybind11_init_smtk_m
     .def("isValid", (bool (smtk::model::Instance::*)() const) &smtk::model::Instance::isValid)
     // .def("isValid", (bool (smtk::model::Instance::*)(::smtk::model::Entity * *) const) &smtk::model::Instance::isValid, py::arg("entRec"))
     .def("prototype", &smtk::model::Instance::prototype)
+    .def("generateTessellation", &smtk::model::Instance::generateTessellation)
+    .def("rule", &smtk::model::Instance::rule)
+    .def("setRule", &smtk::model::Instance::setRule)
+    .def("snapEntities", &smtk::model::Instance::snapEntities)
+    .def("addSnapEntity", &smtk::model::Instance::addSnapEntity)
+    .def("removeSnapEntity", &smtk::model::Instance::removeSnapEntity)
+    .def("setSnapEntity", &smtk::model::Instance::setSnapEntity)
+    .def("setSnapEntities", (bool (smtk::model::Instance::*)(const smtk::model::EntityRefs&))
+      &smtk::model::Instance::setSnapEntities)
     ;
   return instance;
 }

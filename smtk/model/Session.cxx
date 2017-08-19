@@ -237,11 +237,13 @@ void Session::declareDanglingEntity(const EntityRef& ent, SessionInfoBits presen
   * Each operator should have a definition of the same name held in this manager.
   */
 ///@{
+/// Return the attribute system that holds definitions for all of this session's operators.
 smtk::attribute::SystemPtr Session::operatorSystem()
 {
   return this->m_operatorSys;
 }
 
+/// Return the attribute system that holds definitions for all of this session's operators.
 smtk::attribute::ConstSystemPtr Session::operatorSystem() const
 {
   return dynamic_pointer_cast<const smtk::attribute::System>(this->m_operatorSys);

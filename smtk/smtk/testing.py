@@ -112,6 +112,7 @@ def compare_image(render_window, baseline_path):
 
 
 class TestCaseMeta(type):
+
     """A metaclass for tests.
 
     This is used to make TestCase inherit vtk.test.Testing.vtkTest
@@ -213,6 +214,14 @@ class TestCase:
             return self.addToScene(trivialProducer)
         else:
             print "Shiboken does not support vtk/smtk compatibility layer"
+
+    def addImageToScene(self, msource):
+        import vtk
+        vsource = msource
+        self.renderWindow = vtk.vtkImageViewer2()
+        self.renderer = self.renderWindow.GetRenderer()
+        self.renderWindow.SetInputConnection(vsource.GetOutputPort())
+        self.renderWindow.SetupInteractor(self.interactor)
 
     def interactive(self):
         """Return false if the test should exit at completion."""

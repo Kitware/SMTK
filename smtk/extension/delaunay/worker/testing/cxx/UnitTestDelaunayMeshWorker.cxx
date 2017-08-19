@@ -40,7 +40,6 @@
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/ExportMesh.h"
 #include "smtk/io/Logger.h"
-#include "smtk/io/ModelToMesh.h"
 
 #include <fstream>
 

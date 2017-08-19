@@ -1,8 +1,8 @@
 .. _smtk-model-sys:
 
-*****************************
+-----------------------------
 SMTK's Geometric Model System
-*****************************
+-----------------------------
 
 SMTK's second major component is its geometric modeling system,
 which allows you to interact with multiple modeling sessions
@@ -14,6 +14,7 @@ that may each interact with different solid modeling kernels.
    concepts.rst
    sessions.rst
    property-names.rst
+   operators.rst
    user-interface.rst
    session-cgm.rst
    session-discrete.rst

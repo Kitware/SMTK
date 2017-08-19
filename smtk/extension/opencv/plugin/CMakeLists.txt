@@ -7,7 +7,7 @@ include(ParaViewPlugins)
 # not be found.
 list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 
-smtk_qt_wrap_cpp(MOC_SRCS qtSurfaceExtractorView.h)
+qt5_wrap_cpp(MOC_SRCS qtSurfaceExtractorView.h)
 
 ADD_SMTK_UI_VIEW(
   OUTIFACES

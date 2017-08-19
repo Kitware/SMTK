@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.8.2)
 
 cmake_policy(SET CMP0012 NEW)
 cmake_policy(SET CMP0020 NEW)
@@ -27,19 +27,14 @@ project(SMTK)
 # to keep appending over multiple runs.
 file(REMOVE ${PROJECT_BINARY_DIR}/SMTKTargets.cmake)
 
+#Add our Cmake directory to the module search path
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${SMTK_SOURCE_DIR}/CMake)
+
 ################################################################################
 # SMTK version number
+include(SMTKVersion)
 
-set(SMTK_VERSION_MAJOR 1)
-set(SMTK_VERSION_MINOR 1)
-set(SMTK_VERSION_PATCH 0)
-set(SMTK_VERSION
-  "${SMTK_VERSION_MAJOR}.${SMTK_VERSION_MINOR}.${SMTK_VERSION_PATCH}")
-#
 ################################################################################
-
-#Add our Cmake directory to the module search path
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${SMTK_SOURCE_DIR}/CMake)
 
 # Include GNU install directory module to detect where to install
 # files on Linux/Unix systems (e.g., lib vs lib64)
@@ -110,6 +105,9 @@ mark_as_advanced(SMTK_INSTALL_PYTHON_TO_SITE_PACKAGES)
 option(SMTK_ENABLE_QT_SUPPORT "Build Qt GUI" OFF)
 cmake_dependent_option(SMTK_ENABLE_APPLICATIONS "Build Qt-enabled applications" ON SMTK_ENABLE_QT_SUPPORT OFF)
 option(SMTK_ENABLE_VTK_SUPPORT "Build VTK component" ON)
+# SMTK uses vxl library for terrain extraction. It also depends on VTK and ParaView.
+cmake_dependent_option(SMTK_ENABLE_VXL_SUPPORT "Build VXL component" ON
+  "SMTK_ENABLE_PARAVIEW_SUPPORT;SMTK_ENABLE_QT_SUPPORT;SMTK_ENABLE_VTK_SUPPORT" OFF)
 option(SMTK_ENABLE_REMUS_SUPPORT "Build Remus components" OFF)
 cmake_dependent_option(SMTK_ENABLE_PARAVIEW_SUPPORT "Build paraview plugins for model sessions" OFF
   SMTK_ENABLE_VTK_SUPPORT OFF)
@@ -226,7 +224,7 @@ else()
   list(APPEND required_boost_components regex)
 endif()
 
-find_package(Boost 1.60.0
+find_package(Boost 1.64.0
              COMPONENTS ${required_boost_components} REQUIRED)
 
 if(WIN32 AND MSVC)
@@ -239,6 +237,16 @@ if(WIN32 AND MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4503")
   add_definitions(-DBOOST_ALL_NO_LIB)
 endif()
+
+# Setting this ensures that "make install" will leave rpaths to external
+# libraries (not part of the build-tree e.g. Qt, ffmpeg, etc.) intact on
+# "make install". This ensures that one can install a version of ParaView on the
+# build machine without any issues. If this not desired, simply specify
+# CMAKE_INSTALL_RPATH_USE_LINK_PATH when configuring and "make install" will
+# strip all rpaths, which is default behavior.
+if (NOT CMAKE_INSTALL_RPATH_USE_LINK_PATH)
+  set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+endif ()
 
 ################################################################################
 # Moab Related Settings
@@ -256,16 +264,6 @@ endif()
 ################################################################################
 # Qt Related Settings
 ################################################################################
-
-#make find qt4 bring in import targets which are far nicer to use
-if(SMTK_ENABLE_QT_SUPPORT OR SMTK_ENABLE_PARAVIEW_SUPPORT)
-  set(SMTK_QT_VERSION "4"
-    CACHE STRING "The major version of Qt to use")
-  set_property(CACHE SMTK_QT_VERSION
-    PROPERTY
-      STRINGS "4;5")
-  include(SMTKQt)
-endif()
 
 ################################################################################
 # NOTE: This has be before any find_package(VTK), because currently ParaView
@@ -366,6 +364,14 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
 
 
   if(SMTK_USE_PYBIND11)
+    if(WIN32)
+      set(PYTHON_MODULE_EXTENSION ".pyd")
+    else()
+      set(PYTHON_MODULE_EXTENSION ".so")
+    endif()
+    set(PYTHON_MODULE_PREFIX "")
+    find_package(pybind11 REQUIRED)
+
     set(SMTK_PYBIND11_FLAGS " ")
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR
        CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR
@@ -489,13 +495,15 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
         "${module}" "${${module}_PYTHONPATH}" "${${module}_libpath}")
     endforeach ()
 
-    # Add the path to the build tree's compiled modules.
-    list(APPEND smtk_pythonpaths
+    # Add the path to the build tree's compiled modules, prioritizing it over
+    # the other directories (since the other directories will likely include the
+    # location of the module's install).
+    list(INSERT smtk_pythonpaths 0
       "${PROJECT_BINARY_DIR}${envsep}${PROJECT_BINARY_DIR}/lib")
-    list(APPEND smtk_libpaths
+    list(INSERT smtk_libpaths 0
       "${PROJECT_BINARY_DIR}/lib")
     if (CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-      list(APPEND smtk_libpaths
+      list(INSERT smtk_libpaths 0
         "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
     endif ()
 
