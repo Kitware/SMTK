@@ -143,6 +143,24 @@ public:
   SubphraseGeneratorPtr findDelegate();
   virtual bool isPropertyValueType() const;
 
+  /**\brief Detailed Comparison method for Model Entity DescriptivePhrases
+  *
+  * This can be used to help sort DescriptivePhrases for Model Entities.
+  * The sorting is based on Entity Type, Entity Dimension and Title
+  */
+
+  static bool compareByModelInfo(const DescriptivePhrasePtr& a,
+    const DescriptivePhrasePtr& b);
+  
+  /**\brief Ttile-based Comparison method for DescriptivePhrases
+  *
+  * This can be used to help sort DescriptivePhrases based on their
+  * titles.
+  */
+
+  static bool compareByTitle(const DescriptivePhrasePtr& a,
+    const DescriptivePhrasePtr& b);
+  
 protected:
   DescriptivePhrase();
 
