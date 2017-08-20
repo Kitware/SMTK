@@ -298,7 +298,13 @@ void SubphraseGenerator::meshesOfModel(
 {
   std::vector<smtk::mesh::CollectionPtr> meshCollections =
     mod.manager()->meshes()->associatedCollections(mod);
-  addMeshPhrases(meshCollections, src, this->directLimit(), result);
+  // We need to sort the meshes before we add them to the result since if
+  // we sort the result itself we could be intermixing the mesh and model
+  // information
+  DescriptivePhrases meshPhrases;
+  addMeshPhrases(meshCollections, src, this->directLimit(), meshPhrases);
+  std::sort(meshPhrases.begin(), meshPhrases.end(), DescriptivePhrase::compareByTitle);
+  result.insert(result.end(), meshPhrases.begin(), meshPhrases.end());
 }
 
 void SubphraseGenerator::childrenOfAuxiliaryGeometry(
