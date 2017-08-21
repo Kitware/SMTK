@@ -3,7 +3,6 @@ set(meshSrcs
   Session.cxx
   Topology.cxx
   operators/ImportOperator.cxx
-  operators/ReadOperator.cxx
   operators/WriteOperator.cxx
 )
 
@@ -13,7 +12,6 @@ set(meshHeaders
   Session.h
   Topology.h
   operators/ImportOperator.h
-  operators/ReadOperator.h
   operators/WriteOperator.h
 )
 
@@ -41,7 +39,6 @@ smtk_install_library(smtkMeshSession)
 # to meshOperatorXML) since the operators themselves include
 # the header in their implementations.
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ImportOperator.sbt" meshOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ReadOperator.sbt" meshOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteOperator.sbt" meshOperatorXML)
 smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" meshSessionJSON)
 

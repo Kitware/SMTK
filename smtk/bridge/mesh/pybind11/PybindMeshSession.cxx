@@ -27,7 +27,6 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindTopology.h"
 
 #include "PybindImportOperator.h"
-#include "PybindReadOperator.h"
 #include "PybindWriteOperator.h"
 
 #include "smtk/model/Operator.h"
@@ -46,6 +45,5 @@ PYBIND11_MODULE(_smtkPybindMeshSession, mesh)
   PySharedPtrClass< smtk::bridge::mesh::Session, smtk::model::Session > smtk_bridge_mesh_Session = pybind11_init_smtk_bridge_mesh_Session(mesh);
 
   PySharedPtrClass< smtk::bridge::mesh::ImportOperator > smtk_bridge_mesh_ImportOperator = pybind11_init_smtk_bridge_mesh_ImportOperator(mesh, smtk_bridge_mesh_Operator);
-  PySharedPtrClass< smtk::bridge::mesh::ReadOperator > smtk_bridge_mesh_ReadOperator = pybind11_init_smtk_bridge_mesh_ReadOperator(mesh, smtk_bridge_mesh_Operator);
   PySharedPtrClass< smtk::bridge::mesh::WriteOperator > smtk_bridge_mesh_WriteOperator = pybind11_init_smtk_bridge_mesh_WriteOperator(mesh, smtk_bridge_mesh_Operator);
 }
