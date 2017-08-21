@@ -229,9 +229,11 @@ void qtSelectionManager::filterEntitySelectionsByMaskAndActiveModel(
     smtk::model::EntityRef ent = *inputEnt;
 
     // only filter active model's item
-    if ((ent.owningModel().entity() != qtActiveObjects::instance().activeModel().entity()) ||
-      (ent.isModel() && ent.entity() != qtActiveObjects::instance().activeModel().entity()) ||
-      (ent.owningModel().parent().entity() != qtActiveObjects::instance().activeModel().entity()))
+    if ((ent.owningModel().entity() != qtActiveObjects::instance().activeModel().entity()) &&
+      (ent.isModel() && ent.entity() != qtActiveObjects::instance().activeModel().entity()) &&
+      (ent.owningModel().parent().isValid() &&
+          ent.owningModel().parent().entity() !=
+            qtActiveObjects::instance().activeModel().entity()))
     {
       continue;
     }
@@ -253,6 +255,11 @@ void qtSelectionManager::filterEntitySelectionsByMaskAndActiveModel(
     if (this->m_mask & smtk::model::MODEL_ENTITY)
     {
       filteredSelEnts.insert(ent.owningModel());
+      // Add top level model
+      if (ent.owningModel().parent().isValid() && ent.owningModel().parent().isModel())
+      {
+        filteredSelEnts.insert(ent.owningModel().parent());
+      }
     }
 
     // check only volume condition
