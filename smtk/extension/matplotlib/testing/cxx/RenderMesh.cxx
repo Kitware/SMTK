@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
   smtk::model::OperatorPtr op = sessRef.session()->op("render mesh");
   if (!op)
   {
-    std::cerr << "Could create \"render mesh\" operator" << std::endl;
+    std::cerr << "Couldn't create \"render mesh\" operator" << std::endl;
     return 1;
   }
 
