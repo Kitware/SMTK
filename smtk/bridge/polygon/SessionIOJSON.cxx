@@ -262,6 +262,7 @@ int SessionIOJSON::exportJSON(smtk::model::ManagerPtr mgr, const smtk::model::Se
         {
           smtk::model::Model mm(mgr, pmodel->id());
           entry = this->serializeModel(pmodel, mm);
+          smtk::io::SaveJSON::addMeshesRecord(mgr, smtk::model::Models(1, mm), sessionRec);
           // Now, because faces have no polygon-session storage but must be free cells
           // in models if they exist, we also serialize them here:
           smtk::model::Faces ff(mm.cellsAs<smtk::model::Faces>());

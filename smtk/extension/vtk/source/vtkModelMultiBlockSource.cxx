@@ -14,6 +14,11 @@
 #include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.txx"
 
 #include "smtk/extension/vtk/filter/vtkImageSpacingFlip.h"
+
+#include "smtk/extension/vtk/io/ExportVTKData.h"
+
+#include "smtk/mesh/MeshSet.h"
+
 #include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/EdgeUse.h"
@@ -112,56 +117,6 @@ void vtkModelMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "ModelEntityID: " << this->ModelEntityID << "\n";
   os << indent << "AllowNormalGeneration: " << (this->AllowNormalGeneration ? "ON" : "OFF") << "\n";
   os << indent << "ShowAnalysisTessellation: " << this->ShowAnalysisTessellation << "\n";
-}
-
-/**\brief For Python users, this method is the only way to bridge VTK and SMTK wrappings.
-  *
-  */
-void vtkModelMultiBlockSource::SetModelManager(const char* pointerAsString)
-{
-  bool valid = true;
-  vtkTypeUInt64 ptrInt;
-  if (!pointerAsString || !pointerAsString[0])
-  {
-    valid = false;
-  }
-  else
-  {
-    int base = 16;
-    if (pointerAsString[0] == '0' && pointerAsString[1] == 'x')
-    {
-      pointerAsString += 2;
-    }
-    char* endPtr;
-    ptrInt = strtoll(pointerAsString, &endPtr, base);
-    if (ptrInt == 0 && errno)
-      valid = false;
-  }
-  if (valid)
-  {
-    if (ptrInt)
-    {
-#ifndef _MSC_VER
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wstrict-aliasing"
-#endif
-      Manager* direct = *(reinterpret_cast<Manager**>(&ptrInt));
-#ifndef _MSC_VER
-#pragma GCC diagnostic pop
-#endif
-      this->SetModelManager(direct->shared_from_this());
-    }
-    else
-    {
-      // Set to "NULL"
-      vtkWarningMacro("Setting model manager to NULL");
-      this->SetModelManager(ManagerPtr());
-    }
-  }
-  else
-  {
-    vtkWarningMacro("Not setting model manager, errno = " << errno);
-  }
 }
 
 /// Set the SMTK model to be displayed.
@@ -410,6 +365,11 @@ vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationF
   {
     return this->GenerateRepresentationFromTessellation(entity, tess, genNormals);
   }
+  else if (!entity.meshTessellation().is_empty())
+  {
+    return this->GenerateRepresentationFromMeshTessellation(entity, genNormals);
+  }
+
   smtk::model::AuxiliaryGeometry aux(entity);
   std::string url;
   if (aux.isValid())
@@ -482,6 +442,52 @@ vtkSmartPointer<vtkPolyData> vtkModelMultiBlockSource::GenerateRepresentationFro
 
     vtkModelMultiBlockSource::AddPointsAsAttribute(pd);
   }
+  return pd;
+}
+
+vtkSmartPointer<vtkPolyData> vtkModelMultiBlockSource::GenerateRepresentationFromMeshTessellation(
+  const smtk::model::EntityRef& entity, bool genNormals)
+{
+  vtkSmartPointer<vtkPolyData> pd = vtkSmartPointer<vtkPolyData>::New();
+  if (!entity.isValid())
+  {
+    return pd;
+  }
+  smtk::extension::vtk::io::ExportVTKData exportVTKData;
+  exportVTKData(entity.meshTessellation(), pd);
+
+  // Only create the color array if there is a valid default:
+  if (this->DefaultColor[3] >= 0.)
+  {
+    FloatList rgba = entity.color();
+    vtkNew<vtkUnsignedCharArray> cellColor;
+    cellColor->SetNumberOfComponents(4);
+    cellColor->SetNumberOfTuples(pd->GetNumberOfCells());
+    cellColor->SetName("Entity Color");
+    for (int i = 0; i < 4; ++i)
+    {
+      cellColor->FillComponent(i, (rgba[3] >= 0 ? rgba[i] : this->DefaultColor[i]) * 255.);
+    }
+    pd->GetCellData()->AddArray(cellColor.GetPointer());
+    pd->GetCellData()->SetScalars(cellColor.GetPointer());
+  }
+  if (this->AllowNormalGeneration && pd->GetPolys()->GetSize() > 0)
+  {
+    bool reallyNeedNormals = genNormals;
+    if (entity.hasIntegerProperty("generate normals"))
+    { // Allow per-entity setting to override per-model setting
+      const IntegerList& prop(entity.integerProperty("generate normals"));
+      reallyNeedNormals = (!prop.empty() && prop[0]);
+    }
+    if (reallyNeedNormals)
+    {
+      this->NormalGenerator->SetInputDataObject(pd);
+      this->NormalGenerator->Update();
+      pd->ShallowCopy(this->NormalGenerator->GetOutput());
+    }
+  }
+
+  vtkModelMultiBlockSource::AddPointsAsAttribute(pd);
   return pd;
 }
 

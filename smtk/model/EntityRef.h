@@ -30,6 +30,14 @@
 #include <set>
 #include <vector>
 
+namespace smtk
+{
+namespace mesh
+{
+class MeshSet;
+}
+}
+
 /// A macro to implement mandatory EntityRef-subclass constructors.
 #define SMTK_ENTITYREF_CLASS(thisclass, superclass, typecheck)                                     \
   SMTK_DERIVED_TYPE(thisclass, superclass);                                                        \
@@ -181,6 +189,8 @@ public:
   EntityRef& addRawRelation(const EntityRef& ent);
   EntityRef& findOrAddRawRelation(const EntityRef& ent);
   EntityRef& elideRawRelation(const EntityRef& ent);
+
+  smtk::mesh::MeshSet meshTessellation() const;
 
   Tessellation* resetTessellation();
   const Tessellation* hasTessellation() const;

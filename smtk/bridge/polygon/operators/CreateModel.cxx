@@ -125,7 +125,10 @@ smtk::model::OperatorResult CreateModel::operateInternal()
 
       if (result)
       {
-        sess->manager()->meshes()->makeCollection(model.entity());
+        sess->manager()
+          ->meshes()
+          ->makeCollection(model.entity())
+          ->name(model.name() + "_tessellation");
       }
     }
   }

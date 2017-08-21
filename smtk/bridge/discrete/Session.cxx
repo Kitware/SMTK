@@ -65,6 +65,7 @@
 #include "vtkModelVertexUse.h"
 
 #include "vtkCellArray.h"
+#include "vtkCleanPolyData.h"
 #include "vtkCommand.h"
 #include "vtkCompositeDataPipeline.h" // for UPDATE_COMPOSITE_INDICES()
 #include "vtkInformation.h"
@@ -1144,7 +1145,8 @@ smtk::common::UUID Session::trackModel(
   smtkModel.setSession(smtk::model::SessionRef(mgr, this->sessionId()));
 
   // Create a collection associated with the model id
-  this->manager()->meshes()->makeCollection(mid);
+  this->manager()->meshes()->makeCollection(mid)->name(
+    smtk::model::EntityRef(mgr, mid).name() + "_tessellation");
 
   // Now add the record to manager and assign the URL to
   // the model as a string property.
@@ -1575,7 +1577,17 @@ bool Session::addTessellation(
       }
 
       smtk::extension::vtk::io::ImportVTKData importVTKData;
-      smtk::mesh::MeshSet meshForEntity = importVTKData(poly, collection);
+
+      // Discrete models are multiblock data sets with a single set of points.
+      // To prevent all of these points from being copied over for each element,
+      // we run vtkCleanPolyData to ensure that only the points that are relevent
+      // to the entity are passed to smtk::mesh.
+      vtkNew<vtkCleanPolyData> cleanPolyData;
+      cleanPolyData->SetInputData(poly);
+      cleanPolyData->Update();
+
+      // import the polydata into the collection.
+      smtk::mesh::MeshSet meshForEntity = importVTKData(cleanPolyData->GetOutput(), collection);
       if (meshForEntity.is_empty())
       {
         return false;

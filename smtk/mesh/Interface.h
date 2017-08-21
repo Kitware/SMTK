@@ -61,7 +61,7 @@ public:
 };
 
 // BufferedCellAllocator allows for the allocation of meshes by
-// 1. reserving memmory for all of your points
+// 1. reserving memory for all of your points
 // 2. filling your points and cell connectivities by point index.
 // Point indices are assumed to be contiguous with first index at 0.
 class SMTKCORE_EXPORT BufferedCellAllocator

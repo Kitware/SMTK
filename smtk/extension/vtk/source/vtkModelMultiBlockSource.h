@@ -68,7 +68,6 @@ public:
 
   smtk::model::ManagerPtr GetModelManager();
   void SetModelManager(smtk::model::ManagerPtr);
-  void SetModelManager(const char* pointerAsString);
 
   // Description:
   // Model entity ID that this source will be built upon.
@@ -117,6 +116,8 @@ protected:
     const smtk::model::EntityRef& entity, bool genNormals);
   vtkSmartPointer<vtkPolyData> GenerateRepresentationFromTessellation(
     const smtk::model::EntityRef& entity, const smtk::model::Tessellation* tess, bool genNormals);
+  vtkSmartPointer<vtkPolyData> GenerateRepresentationFromMeshTessellation(
+    const smtk::model::EntityRef& entity, bool genNormals);
 
   void GenerateRepresentationFromModel(
     vtkPolyData* poly, const smtk::model::EntityRef& entity, bool genNormals);
@@ -130,6 +131,9 @@ protected:
     std::map<smtk::model::EntityRef, vtkIdType>& instancePrototypes);
   void GenerateRepresentationFromModel(vtkMultiBlockDataSet* mbds, vtkPolyData* instancePoly,
     vtkMultiBlockDataSet* protoBlocks, smtk::model::ManagerPtr model);
+  void GenerateRepresentationFromMeshTessellation(
+    vtkPolyData* poly, const smtk::model::EntityRef& entity, bool genNormals);
+  void GenerateRepresentationFromModel(vtkMultiBlockDataSet* mbds, smtk::model::ManagerPtr model);
 
   //virtual int FillInputPortInformation(int port, vtkInformation* request);
   virtual int FillOutputPortInformation(int port, vtkInformation* request);
