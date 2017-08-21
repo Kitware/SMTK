@@ -1584,6 +1584,7 @@ bool pmodel::tweakEdge(
     {
       smtkDebugMacro(this->m_session->log(), "Retessellating face " << fit->name() << ".");
       this->addFaceTessellation(*fit);
+      this->addFaceMeshTessellation(*fit);
       modEdgesAndFaces.insert(*fit);
     }
   }
@@ -1639,6 +1640,7 @@ bool pmodel::tweakVertex(smtk::model::Vertex vertRec, const Point& vertPosn,
     }
     *pit = vertPosn;
     this->addEdgeTessellation(edgeRec, ee);
+    this->addEdgeMeshTessellation(edgeRec, ee);
     modifiedEdgesAndFaces.insert(edgeRec);
 
     // If any faces are attached to the vertex, they must be retessellated.
@@ -1657,6 +1659,7 @@ bool pmodel::tweakVertex(smtk::model::Vertex vertRec, const Point& vertPosn,
 
   // Update the SMTK tessellation in world coordinates:
   this->addVertTessellation(vertRec, vv);
+  this->addVertMeshTessellation(vertRec, vv);
 
   return didChange;
 }
