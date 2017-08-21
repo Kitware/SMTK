@@ -60,11 +60,10 @@ public:
   void includeViews(bool val) { this->m_includeViews = val; }
 
 protected:
-#ifndef SHIBOKEN_SKIP
   // Instantiates internal writer
   // Caller is responsible for deleting the instance
   XmlStringWriter* newXmlStringWriter(const smtk::attribute::SystemPtr system) const;
-#endif
+
 private:
   unsigned int m_fileVersion;
   bool m_includeDefinitions;

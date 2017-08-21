@@ -28,12 +28,10 @@ public:
     const smtk::mesh::MeshSet& meshset, DescriptivePhrase::Ptr parent = DescriptivePhrasePtr());
   // NOTE: This is not updating subphrases, nor markDirty, just the related mesh is changed
   void updateMesh(const smtk::mesh::MeshSet& meshset);
-#ifndef SHIBOKEN_SKIP
   Ptr setup(const smtk::mesh::CollectionPtr& meshes,
     DescriptivePhrase::Ptr parent = DescriptivePhrasePtr());
   // NOTE: This is not updating subphrases, nor markDirty, just the related mesh is changed
   void updateMesh(const smtk::mesh::CollectionPtr& c);
-#endif
   virtual ~MeshPhrase() {}
 
   virtual std::string title();

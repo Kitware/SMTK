@@ -16,9 +16,7 @@
 #include "smtk/CoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/PublicPointerDefs.h"
 
-#ifndef SHIBOKEN_SKIP
 #include "cJSON.h"
-#endif // SHIBOKEN_SKIP
 
 namespace smtk
 {

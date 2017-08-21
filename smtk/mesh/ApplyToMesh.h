@@ -23,7 +23,6 @@ namespace smtk
 namespace mesh
 {
 
-#ifndef SHIBOKEN_SKIP
 // deform each point in a meshset according to an R^3->R^3 mapping.
 SMTKCORE_EXPORT
 bool applyWarp(const std::function<std::array<double, 3>(std::array<double, 3>)>&,
@@ -57,7 +56,6 @@ bool applyVectorPointField(const std::function<std::array<double, 3>(std::array<
 SMTKCORE_EXPORT
 bool applyVectorCellField(const std::function<std::array<double, 3>(std::array<double, 3>)>&,
   const std::string& name, smtk::mesh::MeshSet& ms);
-#endif
 }
 }
 

@@ -13,11 +13,10 @@ import os
 import sys
 import unittest
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.mesh
-    import smtk.model
-    import smtk.mesh.delaunay
-    import smtk.bridge.polygon
+import smtk.mesh
+import smtk.model
+import smtk.mesh.delaunay
+import smtk.bridge.polygon
 import smtk.testing
 from smtk.simple import *
 
@@ -34,10 +33,7 @@ class UnitTessellateFace(smtk.testing.TestCase):
         self.model = LoadSMTKModel(self.modelFile)[0]
 
     def testMeshing2D(self):
-        if smtk.wrappingProtocol() == 'pybind11':
-            face = self.mgr.findEntitiesOfType(int(smtk.model.FACE))[0]
-        else:
-            face = self.mgr.findEntitiesOfType(smtk.model.FACE, True)[0]
+        face = self.mgr.findEntitiesOfType(int(smtk.model.FACE))[0]
         tessellateFace = self.sess.op('tessellate face')
         tessellateFace.specification().associateEntity(face)
         result = tessellateFace.operate()

@@ -21,16 +21,6 @@
 
 /**! \file Function.h
   * \brief Aliases to make function, bind, bind2nd, and placeholders platform-independent.
-  *
-  * Note that including this header generally precludes you from wrapping
-  * methods which use it using shiboken. Be aware that you will probably
-  * need to exclude portions of your API that use these methods from processing
-  * by shiboken using the SHIBOKEN_SKIP preprocessor macro:<pre>
-  *
-  *   #ifndef SHIBOKEN_SKIP
-  *     void registerCallback(smtk::function cbfunc);
-  *   #endif
-  * </pre>
   */
 namespace smtk
 {

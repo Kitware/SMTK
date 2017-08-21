@@ -7,7 +7,6 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef SHIBOKEN_SKIP
 #include "smtk/bridge/remote/RemusRPCWorker.h"
 #include "smtk/bridge/remote/Session.h"
 
@@ -370,4 +369,3 @@ void RemusRPCWorker::generateError(cJSON* err, const std::string& errMsg, const 
 } // namespace remote
 } // namespace bridge
 } // namespace smtk
-#endif // SHIBOKEN_SKIP

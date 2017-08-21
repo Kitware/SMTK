@@ -11,7 +11,6 @@
 //=============================================================================
 #ifndef __smtk_session_remote_RemusStaticSessionInfo_h
 #define __smtk_session_remote_RemusStaticSessionInfo_h
-#ifndef SHIBOKEN_SKIP
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/bridge/remote/Exports.h"
@@ -70,5 +69,4 @@ public:
 } // namespace bridge
 } // namespace smtk
 
-#endif // SHIBOKEN_SKIP
 #endif // __smtk_session_remote_RemusStaticSessionInfo_h

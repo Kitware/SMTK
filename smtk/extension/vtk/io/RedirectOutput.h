@@ -10,7 +10,6 @@
 #ifndef __smtk_extension_vtk_io_RedirectOutput_h
 #define __smtk_extension_vtk_io_RedirectOutput_h
 
-#ifndef SHIBOKEN_SKIP
 #include "smtk/PublicPointerDefs.h"
 
 #include "smtk/extension/vtk/io/IOVTKExports.h"
@@ -42,5 +41,4 @@ SMTKIOVTK_EXPORT void ResetVTKOutput();
 }
 }
 
-#endif
 #endif

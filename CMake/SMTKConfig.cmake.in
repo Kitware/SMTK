@@ -13,7 +13,7 @@ if(IS_DIRECTORY "${smtk_module_dir}")
 endif()
 unset(smtk_module_dir)
 
-set(SMTK_HAS_PYTHON @SMTK_USE_PYBIND11@)
+set(SMTK_HAS_PYTHON @SMTK_ENABLE_PYTHON_WRAPPING@)
 if (SMTK_HAS_PYTHON)
   find_package(pybind11 REQUIRED)
 endif ()

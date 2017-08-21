@@ -476,12 +476,6 @@ std::set<smtk::mesh::CellField> MeshSet::cellFields() const
   return cellfields;
 }
 
-std::vector<smtk::mesh::CellField> MeshSet::cellFieldsForShiboken() const
-{
-  auto cellfields = this->cellFields();
-  return std::vector<smtk::mesh::CellField>(cellfields.begin(), cellfields.end());
-}
-
 bool MeshSet::removeCellField(smtk::mesh::CellField cellfield)
 {
   const smtk::mesh::InterfacePtr& iface = this->collection()->interface();
@@ -549,12 +543,6 @@ std::set<smtk::mesh::PointField> MeshSet::pointFields() const
   }
 
   return pointfields;
-}
-
-std::vector<smtk::mesh::PointField> MeshSet::pointFieldsForShiboken() const
-{
-  auto pointfields = this->pointFields();
-  return std::vector<smtk::mesh::PointField>(pointfields.begin(), pointfields.end());
 }
 
 bool MeshSet::removePointField(smtk::mesh::PointField pointfield)

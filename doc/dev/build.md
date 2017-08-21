@@ -33,8 +33,8 @@ You may optionally provide
   built with
   [OpenCascade](http://opencascade.org/) for importing CAD models;
 + [Python](http://python.org) version 2.7.3 or newer and
-  [Shiboken](http://github.com/OpenGeoscience/shiboken) from the smtk-head branch,
-  for Python wrappings of SMTK's C++ classes;
+  [Pybind11](http://github.com/pybind/pybind11), for Python wrappings of
+  SMTK's C++ classes;
 + [Qt](http://qt-project.org) version 4.8 or newer,
   for widgets to interact with attributes and models;
 + [Remus](https://github.com/robertmaynard/Remus) from the master branch,

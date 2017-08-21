@@ -59,7 +59,7 @@ set(smtkCore_private_link_libraries
   ${Boost_LIBRARIES}
   )
 
-if(SMTK_USE_PYBIND11)
+if(SMTK_ENABLE_PYTHON_WRAPPING)
   list(APPEND smtkCore_public_link_libraries
     pybind11::embed
     )
@@ -117,7 +117,7 @@ install(
 ################################################################################
 # Generate Python wrapping of the smtkCore library
 
-if (SMTK_USE_PYBIND11)
+if (SMTK_ENABLE_PYTHON_WRAPPING)
 
   #only install PythonAutoInit.h if pybind11 is enabled, since it directly
   #includes pybind11 headers
@@ -144,62 +144,6 @@ if (SMTK_USE_PYBIND11)
 	DESTINATION "${SMTK_PYTHON_MODULEDIR}/smtk"
 	)
 endif()
-
-if(NOT SMTK_USE_PYBIND11 AND SMTK_ENABLE_PYTHON_WRAPPING)
-  sbk_wrap_library(smtkCore
-    PACKAGE smtk
-    GENERATOR_ARGS --avoid-protected-hack
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    LOCAL_INCLUDE_DIRECTORIES
-      ${CMAKE_CURRENT_SOURCE_DIR}/common
-      ${CMAKE_CURRENT_SOURCE_DIR}/attribute
-      ${CMAKE_CURRENT_SOURCE_DIR}/mesh
-      ${CMAKE_CURRENT_SOURCE_DIR}/model
-      ${CMAKE_CURRENT_SOURCE_DIR}/simulation
-      ${CMAKE_CURRENT_SOURCE_DIR}/io
-      ${CMAKE_CURRENT_SOURCE_DIR}
-      ${CMAKE_CURRENT_BINARY_DIR}
-	TYPESYSTEM typesystem.xml
-	HEADERS ${smtk_headers}
-	)
-
-    set(SMTK_PYTHON_MODULE_SRCS
-	__init__
-	simple
-	testing
-	)
-    set(SMTK_PYTHON_MODULEFILES)
-    set(smtk_find_shiboken "build_tree")
-    foreach(pyfile ${SMTK_PYTHON_MODULE_SRCS})
-	configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/smtk/${pyfile}.py"
-        "${SMTK_BINARY_DIR}/smtk/${pyfile}.py" @ONLY
-	  )
-	list(APPEND SMTK_PYTHON_MODULEFILES "smtk/${pyfile}.py")
-    endforeach()
-
-    # TODO: We need to install this file in such a way that it can resolve
-    #       the location of shiboken, which is going to mean running fixup
-    #       bundle on the mac, and then fixing up the smtk/__init__.py
-    #       package script
-
-    get_filename_component(SHIBOKEN_LIBRARY_NAME ${SHIBOKEN_LIBRARY} NAME)
-
-    install(
-	FILES ${SMTK_PYTHON_MODULEFILES}
-	DESTINATION "${SMTK_PYTHON_MODULEDIR}/smtk"
-	)
-    set(SMTK_FIND_SHIBOKEN "install_tree"
-	CACHE STRING "Set to empty if shiboken should be impicitly found in the install")
-    mark_as_advanced(SMTK_FIND_SHIBOKEN)
-    install(CODE
-	"set(LIBRARY_OUTPUT_PATH \"${CMAKE_INSTALL_PREFIX}/lib\")
-       set(SHIBOKEN_LIBRARY \"${CMAKE_INSTALL_PREFIX}/lib/${SHIBOKEN_LIBRARY_NAME}\")
-       set(smtk_find_shiboken \"${SMTK_FIND_SHIBOKEN}\")
-       configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/smtk/__init__.py
-         ${CMAKE_INSTALL_PREFIX}/${SMTK_PYTHON_MODULEDIR}/smtk/__init__.py )"
-	)
-  endif()
 
 ################################################################################
 # Build smtk extensions

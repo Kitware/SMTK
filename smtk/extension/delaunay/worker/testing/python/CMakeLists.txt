@@ -1,6 +1,6 @@
 set(smtkDelaunayExtPythonDataTests)
 
-if (SMTK_ENABLE_POLYGON_SESSION AND SMTK_USE_PYBIND11)
+if (SMTK_ENABLE_POLYGON_SESSION)
   set(smtkDelaunayExtPythonDataTests
     ${smtkDelaunayExtPythonDataTests}
     testDelaunayMeshWorker

@@ -42,7 +42,7 @@ endif ()
 
 smtk_public_headers(${headers})
 
-# Potentially wrap in Python using VTK's wrapping methods, not shiboken.
+# Potentially wrap in Python using VTK's wrapping methods.
 # This makes the filters available for use with other VTK-wrapped filters.
 #if (SMTK_ENABLE_PYTHON_WRAPPING AND VTK_WRAP_PYTHON)
 #  vtk_smtk_wrap_module_python3(${vtk-module} "${headers}")

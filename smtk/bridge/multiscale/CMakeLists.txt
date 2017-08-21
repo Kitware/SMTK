@@ -63,38 +63,11 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Revolve.sbt" multiscale
 # Install the headers
 smtk_public_headers(${multiscaleHeaders})
 
-if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
-  #extract the headers from multiscale library we built to give them to shiboken
-
-  sbk_wrap_library(smtkMultiscaleSession
-    PACKAGE smtk
-    GENERATOR_ARGS --avoid-protected-hack
-    WORKING_DIRECTORY ${SMTK_SOURCE_DIR}/smtk
-    LOCAL_INCLUDE_DIRECTORIES
-      ${SMTK_SOURCE_DIR}/smtk/common
-      ${SMTK_SOURCE_DIR}/smtk/attribute
-      ${SMTK_SOURCE_DIR}/smtk/model
-      ${SMTK_SOURCE_DIR}/smtk/session
-      ${SMTK_SOURCE_DIR}/smtk/bridge/multiscale
-      ${SMTK_SOURCE_DIR}/smtk/simulation
-      ${SMTK_SOURCE_DIR}/smtk/io
-      ${SMTK_SOURCE_DIR}/smtk/view
-      ${SMTK_SOURCE_DIR}/smtk
-      ${SMTK_BINARY_DIR}/smtk
-      ${CMAKE_CURRENT_BINARY_DIR}
-    TYPESYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/typesystem.xml
-    HEADERS ${multiscaleHeaders}
-    DEPENDS smtkCore
-  )
-target_include_directories(smtkMultiscaleSessionPython
-    PRIVATE ${MULTISCALE_INCLUDE_DIRS})
-endif()
-
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_subdirectory(plugin)
 endif()
 
-if (SMTK_USE_PYBIND11)
+if (SMTK_ENABLE_PYTHON_WRAPPING)
 
 set(multiscalePySrcs
   operators/import_from_deform.py

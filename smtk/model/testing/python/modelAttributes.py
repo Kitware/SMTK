@@ -26,15 +26,13 @@ import unittest
 
 try:
     import smtk
-    if smtk.wrappingProtocol() == 'pybind11':
-        import smtk.io
-        import smtk.model
+    import smtk.io
+    import smtk.model
     import smtk.testing
 except ImportError:
     print
     print 'Not able to import smtk library. You might need to:'
     print '  - Use the PYTHONPATH variable to point to the smtk python lib'
-    print '  - And/or use the LD_LIBRARY_PATH variable to point to the shiboken libraries'
     print
     sys.exit(-1)
 
@@ -139,19 +137,13 @@ class TestModelAttributes(unittest.TestCase):
         uuid_list = list()
         for i in [0, 1, 2]:
             uuid_list.append(uuid.UUID(scope.edge_list[i]))
-        if smtk.wrappingProtocol() == 'pybind11':
-            scope.store.addToGroup(left_edges.entity(), set(uuid_list))
-        else:
-            scope.store.addToGroup(left_edges.entity(), uuid_list)
+        scope.store.addToGroup(left_edges.entity(), set(uuid_list))
 
         right_edges = scope.store.addGroup(flags, 'right_edges')
         del uuid_list[:]
         for i in [6, 9]:
             uuid_list.append(uuid.UUID(scope.edge_list[i]))
-        if smtk.wrappingProtocol() == 'pybind11':
-            scope.store.addToGroup(right_edges.entity(), set(uuid_list))
-        else:
-            scope.store.addToGroup(right_edges.entity(), uuid_list)
+        scope.store.addToGroup(right_edges.entity(), set(uuid_list))
 
         # Create boundary condition attributes
         defn = system.findDefinition('Velocity')

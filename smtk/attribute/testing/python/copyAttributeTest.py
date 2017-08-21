@@ -22,15 +22,13 @@ import uuid
 
 try:
     import smtk
-    if smtk.wrappingProtocol() == 'pybind11':
-        from smtk import attribute
-        from smtk import io
-        from smtk import model
+    from smtk import attribute
+    from smtk import io
+    from smtk import model
 except ImportError:
     print
     print 'Not able to import smtk library. You might need to:'
     print '  - Use the PYTHONPATH variable to point to the smtk python lib'
-    print '  - And/or use the LD_LIBRARY_PATH variable to point to the shiboken libraries'
     print
     sys.exit(-1)
 
@@ -134,10 +132,7 @@ if __name__ == '__main__':
     test_system.setRefModelManager(model_manager)
     # Copy SecondConcrete attribute
     options = smtk.attribute.Item.AssignmentOptions.COPY_MODEL_ASSOCIATIONS
-    if smtk.wrappingProtocol() == 'pybind11':
-        test_system.copyAttribute(second_concrete, True, int(options))
-    else:
-        test_system.copyAttribute(second_concrete, True, options)
+    test_system.copyAttribute(second_concrete, True, int(options))
     expected_deftypes = [
         'SecondConcrete', 'AnotherAbstractBase', 'CommonBase',
         'FirstConcrete', 'PolyLinearFunction'

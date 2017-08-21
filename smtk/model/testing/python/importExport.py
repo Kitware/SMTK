@@ -10,10 +10,9 @@
 #
 #=============================================================================
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.attribute
-    import smtk.bridge.exodus
-    import smtk.model
+import smtk.attribute
+import smtk.bridge.exodus
+import smtk.model
 from smtk.simple import *
 import smtk.testing
 import sys
@@ -58,12 +57,8 @@ class TestExportImport(smtk.testing.TestCase):
         ftmp = os.path.join(smtk.testing.TEMP_DIR, str(uuid.uuid4()) + '.smtk')
         #   Export to ftmp
         exp = sess.op('save smtk model')
-        if smtk.wrappingProtocol() == 'pybind11':
-            SetVectorValue(exp.findFile('filename', int(
-                smtk.attribute.SearchStyle.ACTIVE_CHILDREN)), [ftmp, ])
-        else:
-            SetVectorValue(exp.findFile(
-                'filename', smtk.attribute.SearchStyle.ACTIVE_CHILDREN), [ftmp, ])
+        SetVectorValue(exp.findFile('filename', int(
+            smtk.attribute.SearchStyle.ACTIVE_CHILDREN)), [ftmp, ])
         SetVectorValue(exp.specification().associations(), models)
         result = exp.operate()
         PrintResultLog(result)
@@ -75,12 +70,8 @@ class TestExportImport(smtk.testing.TestCase):
         SetActiveSession(se2)
         #   Import from ftmp
         imp = se2.op('load smtk model')
-        if smtk.wrappingProtocol() == 'pybind11':
-            SetVectorValue(imp.findFile('filename', int(
-                smtk.attribute.ACTIVE_CHILDREN)), [ftmp, ])
-        else:
-            SetVectorValue(imp.findFile(
-                'filename', smtk.attribute.ACTIVE_CHILDREN), [ftmp, ])
+        SetVectorValue(imp.findFile('filename', int(
+            smtk.attribute.ACTIVE_CHILDREN)), [ftmp, ])
         result = imp.operate()
         PrintResultLog(result)
         self.assertEqual(result.findInt('outcome').value(

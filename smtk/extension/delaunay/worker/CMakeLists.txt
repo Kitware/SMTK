@@ -66,7 +66,7 @@ install(FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/DelaunayMesh.rw"
         DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
-if (SMTK_USE_PYBIND11)
+if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)
 endif()
 

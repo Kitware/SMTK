@@ -73,7 +73,6 @@ private:
 
 //Don't wrap these for python, instead python should use the MeshConstants class and
 //the extract method
-#ifndef SHIBOKEN_SKIP
 
 SMTKCORE_EXPORT void extractDirichletMeshConstants(
   const smtk::mesh::MeshSet&, PreAllocatedMeshConstants&);
@@ -95,8 +94,6 @@ SMTKCORE_EXPORT void extractDomainMeshConstants(
 template <typename QueryTag>
 SMTKCORE_EXPORT void extractMeshConstants(
   const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedMeshConstants&);
-
-#endif //SHIBOKEN_SKIP
 }
 }
 

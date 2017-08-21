@@ -13,8 +13,7 @@ import os
 #
 #=============================================================================
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.bridge.polygon
+import smtk.bridge.polygon
 from smtk.simple import *
 import smtk.testing
 
@@ -40,7 +39,7 @@ class TestPolygonImport(smtk.testing.TestCase):
         sessiontag = sess.tag()
         print '\n'
 
-        #opnames = sess.operatorNames()
+        # opnames = sess.operatorNames()
         # print opnames
 
     def color(self, i):

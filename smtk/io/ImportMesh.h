@@ -33,7 +33,6 @@ public:
   ImportMesh();
   ~ImportMesh();
 
-#ifndef SHIBOKEN_SKIP
   ImportMesh& operator=(const ImportMesh&) = delete;
   ImportMesh(const ImportMesh&) = delete;
 
@@ -47,7 +46,6 @@ public:
     std::string domainPropertyName = std::string()) const;
   bool operator()(const std::string& filePath, smtk::mesh::CollectionPtr collection,
     std::string domainPropertyName = std::string()) const;
-#endif
 };
 
 SMTKCORE_EXPORT smtk::mesh::CollectionPtr importMesh(

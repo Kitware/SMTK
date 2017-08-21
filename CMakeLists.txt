@@ -86,11 +86,6 @@ option(SMTK_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" O
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
 option(SMTK_ENABLE_EXAMPLES "Enable Examples" OFF)
 option(SMTK_ENABLE_PYTHON_WRAPPING "Build Python Wrappings" OFF)
-cmake_dependent_option(
-  SMTK_USE_PYBIND11
-  "Build Python Wrappings using Pybind11 instead of Shiboken"
-  OFF
-  SMTK_ENABLE_PYTHON_WRAPPING OFF)
 # Provide system packagers with the ability to install SMTK
 # to the system's Python site package directory. The default
 # is off so that people building relocatable bundles (such as
@@ -363,7 +358,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
   endif()
 
 
-  if(SMTK_USE_PYBIND11)
+  if(SMTK_ENABLE_PYTHON_WRAPPING)
     if(WIN32)
       set(PYTHON_MODULE_EXTENSION ".pyd")
     else()
@@ -378,28 +373,12 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
        CMAKE_CXX_COMPILER_ID MATCHES "Intel")
       set(SMTK_PYBIND11_FLAGS "${SMTK_PYBIND11_FLAGS} -Wno-shadow")
     endif()
-  else()
-    include(UseShiboken)
   endif()
 
 
   # Set up environment variables needed to import the python modules for tests.
   if (PYTHONINTERP_FOUND AND SMTK_ENABLE_TESTING)
     set(required_python_modules)
-
-    if (NOT SMTK_USE_PYBIND11)
-      list(APPEND required_python_modules
-	shiboken)
-      set(shiboken_PYTHONPATH
-	"${SHIBOKEN_PYTHONPATH}")
-      if (WIN32)
-	get_filename_component(shiboken_runtime_dir "${SHIBOKEN_BINARY}" PATH)
-      else ()
-	get_filename_component(shiboken_runtime_dir "${SHIBOKEN_LIBRARY}" PATH)
-      endif ()
-      set(shiboken_libpath
-	"${shiboken_runtime_dir}")
-    endif()
 
     if (SMTK_ENABLE_PARAVIEW_SUPPORT)
       list(APPEND required_python_modules

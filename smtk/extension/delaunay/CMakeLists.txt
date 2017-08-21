@@ -28,28 +28,7 @@ smtk_install_library(smtkDelaunayExt)
 
 add_subdirectory(plugin)
 
-if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
-
-  sbk_wrap_library(smtkDelaunayExt
-    PACKAGE smtk
-    GENERATOR_ARGS --avoid-protected-hack
-    WORKING_DIRECTORY ${SMTK_SOURCE_DIR}/smtk
-    LOCAL_INCLUDE_DIRECTORIES
-      ${SMTK_SOURCE_DIR}/smtk/attribute
-      ${SMTK_SOURCE_DIR}/smtk/common
-      ${SMTK_SOURCE_DIR}/smtk/mesh
-      ${SMTK_SOURCE_DIR}/smtk/model
-      ${SMTK_SOURCE_DIR}/smtk/extension/delaunay
-      ${SMTK_SOURCE_DIR}/smtk
-      ${SMTK_BINARY_DIR}/smtk
-      ${CMAKE_CURRENT_BINARY_DIR}
-    TYPESYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/typesystem.xml
-    HEADERS ${headers}
-    DEPENDS smtkCore
-  )
-endif()
-
-if (SMTK_USE_PYBIND11)
+if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)
 endif()
 

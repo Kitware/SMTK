@@ -63,10 +63,7 @@ class MeshSet;
       return true;                                                                                 \
     }                                                                                              \
     return false;                                                                                  \
-  }                                                                                                \
-  /* Required for shiboken: */                                                                     \
-  bool operator==(const EntityRef& other) const { return this->superclass::operator==(other); }    \
-  bool operator!=(const EntityRef& other) const { return this->superclass::operator!=(other); }
+  }
 
 namespace smtk
 {
@@ -76,9 +73,8 @@ namespace model
 class EntityRef;
 class Model;
 class Tessellation;
-// Use full names including namespace to make Shiboken less unhappy:
-typedef std::set<smtk::model::EntityRef> EntityRefs;
-typedef std::vector<smtk::model::EntityRef> EntityRefArray;
+typedef std::set<EntityRef> EntityRefs;
+typedef std::vector<EntityRef> EntityRefArray;
 typedef std::vector<Group> Groups;
 
 /**\brief A lightweight entityref pointing to a model entity's manager.
@@ -206,9 +202,7 @@ public:
     std::map<smtk::model::EntityRef, smtk::model::EntityRef>& entityrefMap,
     std::set<smtk::model::EntityRef>& touched) const;
   int tessellationGeneration() const;
-#ifndef SHIBOKEN_SKIP
   void setBoundingBox(const double bbox[6]);
-#endif
 
   bool hasAttributes() const;
   bool hasAttribute(const smtk::common::UUID& attribId) const;
@@ -230,7 +224,6 @@ public:
 
   smtk::common::UUIDs attributes() const;
 
-#ifndef SHIBOKEN_SKIP
   // For T = {IntegerData, FloatData, StringData}:
   template <typename T>
   T* properties();
@@ -240,7 +233,6 @@ public:
   const T* hasProperties() const;
   template <typename T>
   bool removeProperty(const std::string& name);
-#endif // SHIBOKEN_SKIP
 
   void setFloatProperty(const std::string& propName, smtk::model::Float propValue);
   void setFloatProperty(const std::string& propName, const smtk::model::FloatList& propValue);

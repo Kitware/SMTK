@@ -16,8 +16,6 @@
 #pragma warning(disable : 4267)
 #endif
 
-#ifndef SHIBOKEN_SKIP
-
 #include "smtk/Options.h"
 #include "smtk/SharedPtr.h"
 
@@ -187,4 +185,3 @@ int main(int argc, char* argv[])
   server.waitForBrokeringToFinish();
   return valid ? 0 : 1;
 }
-#endif // SHIBOKEN_SKIP

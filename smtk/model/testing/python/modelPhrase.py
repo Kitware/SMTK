@@ -16,9 +16,8 @@ Test methods on descriptive phrases and subphrase generators.
 import os
 import sys
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.io
-    import smtk.model
+import smtk.io
+import smtk.model
 import smtk.testing
 from smtk.simple import *
 from uuid import uuid4, UUID
@@ -80,7 +79,9 @@ class TestModelPhrases(unittest.TestCase):
                          'Expected model color to be immutable.')
         self.assertEqual(s1[0].relatedPropertyName(), '',
                          'Unexpected related property name "{p}".'.format(p=s1[0].relatedPropertyName()))
-        self.assertEqual(s1[0].relatedAttributeId(), UUID('00000000-0000-0000-0000-000000000000'),
+        self.assertEqual(
+            s1[0].relatedAttributeId(), UUID(
+                '00000000-0000-0000-0000-000000000000'),
                          'Unexpected related attribute ID {u}.'.format(u=s1[0].relatedAttributeId()))
 
         kname = smtk.model.NameForArrangementKind(

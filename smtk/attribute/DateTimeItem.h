@@ -60,10 +60,8 @@ public:
 protected:
   DateTimeItem(Attribute* owningAttribute, int itemPosition);
   DateTimeItem(Item* owningItem, int myPosition, int mySubGroupPosition);
-#ifndef SHIBOKEN_SKIP
   virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
   ConstDateTimeItemDefinitionPtr itemDefinition() const;
-#endif
   std::vector< ::smtk::common::DateTimeZonePair> m_values;
   std::vector<bool> m_isSet;
 

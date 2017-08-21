@@ -14,9 +14,8 @@
 import math
 import os
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.io.vtk
-    import smtk.mesh
+import smtk.io.vtk
+import smtk.mesh
 import sys
 import smtk.testing
 import vtk
@@ -34,6 +33,7 @@ def readXMLFile(fileName):
 
 
 class CoolingPlateFilter(smtk.mesh.CellForEach):
+
     def __init__(self, yval, rval, o, less):
         smtk.mesh.CellForEach.__init__(self, True)
         self.validPoints = list()
@@ -57,6 +57,7 @@ class CoolingPlateFilter(smtk.mesh.CellForEach):
 
 
 class OuterEdgeFilter(smtk.mesh.CellForEach):
+
     def __init__(self, o, rmin):
         smtk.mesh.CellForEach.__init__(self, True)
         self.validPoints = list()
@@ -68,8 +69,10 @@ class OuterEdgeFilter(smtk.mesh.CellForEach):
             return
 
         v0 = [0., 0., 0.]  # unit vector from origin to first point in cell
-        v1 = [0., 0., 0.]  # unit vector from first point to second point in cell
-        v2 = [0., 0., 0.]  # unit vector from first point to third point in cell
+        v1 = [0., 0., 0.]
+            # unit vector from first point to second point in cell
+        v2 = [0., 0., 0.]
+            # unit vector from first point to third point in cell
         normal = [0., 0., 0.]  # unit normal of cell
         length = [0., 0., 0.]
 
@@ -164,10 +167,7 @@ def breakMaterialsByCellType(c):
 
 
 def convert(inputFile, manager, material):
-    if smtk.wrappingProtocol() == 'pybind11':
-        cnvrt = smtk.io.vtk.ImportVTKData()
-    else:
-        cnvrt = smtk.extension.vtk.io.ImportVTKData()
+    cnvrt = smtk.io.vtk.ImportVTKData()
     collection = cnvrt(inputFile, manager, material)
     return collection
 

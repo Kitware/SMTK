@@ -9,7 +9,6 @@
 //=========================================================================
 #ifndef __smtk_model_SessionRegistrar_h
 #define __smtk_model_SessionRegistrar_h
-#ifndef SHIBOKEN_SKIP
 
 #include "smtk/Function.h"
 #include "smtk/PublicPointerDefs.h"
@@ -91,11 +90,6 @@ inline int SessionHasNoStaticSetup(const std::string&, const StringList&)
 }
 
 /**\brief A static class for holding information about sessions to modeling kernels.
-  *
-  * This class is not wrapped for use in Python because shiboken
-  * cannot parse headers for boost::bind and boost::function.
-  * Use the model manager to identify available sessions and create sessions
-  * as Manager (a subclass of Manager) exposes methods that can be wrapped.
   */
 class SMTKCORE_EXPORT SessionRegistrar
 {
@@ -126,5 +120,4 @@ protected:
 } // namespace model
 } // namespace smtk
 
-#endif // SHIBOKEN_SKIP
 #endif // __smtk_model_SessionRegistrar_h

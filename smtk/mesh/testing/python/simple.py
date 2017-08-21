@@ -12,9 +12,8 @@
 
 import os
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.io
-    import smtk.mesh
+import smtk.io
+import smtk.mesh
 import smtk.testing
 import sys
 

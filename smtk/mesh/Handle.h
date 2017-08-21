@@ -16,9 +16,7 @@
 #include "smtk/CoreExports.h"
 #include "smtk/mesh/moab/HandleRange.h"
 
-#ifndef SHIBOKEN_SKIP
 #include "cJSON.h"
-#endif // SHIBOKEN_SKIP
 
 namespace smtk
 {

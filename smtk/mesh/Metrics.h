@@ -24,7 +24,6 @@ namespace smtk
 namespace mesh
 {
 
-#ifndef SHIBOKEN_SKIP
 // Compute the highest cell dimension present a mesh set
 SMTKCORE_EXPORT
 smtk::mesh::DimensionType highestDimension(const smtk::mesh::MeshSet& ms);
@@ -32,7 +31,6 @@ smtk::mesh::DimensionType highestDimension(const smtk::mesh::MeshSet& ms);
 // Compute the Euler-Poincare characteristic of a mesh set
 SMTKCORE_EXPORT
 int eulerCharacteristic(const smtk::mesh::MeshSet& ms);
-#endif
 }
 }
 

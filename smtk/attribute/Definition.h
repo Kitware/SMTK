@@ -268,11 +268,9 @@ protected:
 
 private:
   // These colors are returned for base definitions w/o set colors
-  //needs to be private for shiboken wrapping to work properly
   static double s_notApplicableBaseColor[4];
   static double s_defaultBaseColor[4];
 
-  //needs to be private for shiboken wrapping to work properly
   double m_notApplicableColor[4];
   double m_defaultColor[4];
 };

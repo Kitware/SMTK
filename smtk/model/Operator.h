@@ -149,7 +149,6 @@ public:
   virtual bool ableToOperate();
   virtual OperatorResult operate();
 
-#ifndef SHIBOKEN_SKIP
   void observe(OperatorEventType event, BareOperatorCallback functionHandle, void* callData);
   void observe(OperatorEventType event, OperatorWithResultCallback functionHandle, void* callData);
 
@@ -159,7 +158,6 @@ public:
 
   int trigger(OperatorEventType event);
   int trigger(OperatorEventType event, const OperatorResult& result);
-#endif // SHIBOKEN_SKIP
 
   ManagerPtr manager() const;
   Ptr setManager(ManagerPtr s);
@@ -219,9 +217,7 @@ public:
   void setResultOutcome(OperatorResult res, OperatorOutcome outcome);
   void eraseResult(OperatorResult res);
 
-#ifndef SHIBOKEN_SKIP
   bool operator<(const Operator& other) const;
-#endif // SHIBOKEN_SKIP
 
   enum ResultEntityOrigin
   {
@@ -247,7 +243,6 @@ protected:
   void addEntitiesToResult(
     OperatorResult res, const T& container, ResultEntityOrigin gen = UNKNOWN);
 
-#ifndef SHIBOKEN_SKIP
   ManagerPtr m_manager; // Model manager, not the attribute manager for the operator.
   smtk::mesh::ManagerPtr m_meshmanager;
   WeakSessionPtr m_session;
@@ -255,7 +250,6 @@ protected:
   std::set<BareOperatorObserver> m_willOperateTriggers;
   std::set<OperatorWithResultObserver> m_didOperateTriggers;
   int m_debugLevel;
-#endif // SHIBOKEN_SKIP
 };
 
 SMTKCORE_EXPORT std::string outcomeAsString(int oc);

@@ -13,10 +13,9 @@ import os
 import sys
 import unittest
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.mesh
-    import smtk.model
-    import smtk.extension.matplotlib
+import smtk.mesh
+import smtk.model
+import smtk.extension.matplotlib
 import smtk.testing
 from smtk.simple import *
 
