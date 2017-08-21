@@ -13,6 +13,17 @@
 import smtk.common
 from _smtkPybindAttribute import *
 
+"""
+Several methods in smtk.attribute return a base item when queried. We wrap these
+methods in a python <to_concrete> function that returns the most derived version
+of that item.
+"""
+func_list = \
+    [(Attribute, Attribute._find, "find"),
+     (GroupItem, GroupItem._find, "find"),
+     (ValueItem, ValueItem._activeChildItem, "activeChildItem"),
+     (ValueItem, ValueItem._findChild, "findChild")]
+
 type_dict = \
     {Item.ATTRIBUTE_REF:
      (RefItem, RefItemDefinition),
@@ -68,3 +79,21 @@ def to_concrete(item):
     elif isinstance(item, set):
         return set([fun(x) for x in item])
     return fun(item)
+
+
+def get_wrapped_func(meth):
+    def wrapped_func(*args, **kwargs):
+        return to_concrete(meth(*args, **kwargs))
+    return wrapped_func
+
+for (cls, meth, new_func_name) in func_list:
+    setattr(cls, new_func_name, get_wrapped_func(meth))
+
+
+def to_concrete_passthrough(item):
+    import warnings
+    warnings.warn(
+        "Call to deprecated function \"to_concrete()\". As of 1.1, smtk.attribute methods return derived item types.")
+    return item
+
+to_concrete = to_concrete_passthrough
