@@ -88,3 +88,12 @@ def get_wrapped_func(meth):
 
 for (cls, meth, new_func_name) in func_list:
     setattr(cls, new_func_name, get_wrapped_func(meth))
+
+
+def to_concrete_passthrough(item):
+    import warnings
+    warnings.warn(
+        "Call to deprecated function \"to_concrete()\". As of 1.1, smtk.attribute methods return derived item types.")
+    return item
+
+to_concrete = to_concrete_passthrough
