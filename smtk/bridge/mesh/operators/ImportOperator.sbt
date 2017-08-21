@@ -3,13 +3,21 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="import" BaseType="operator">
+    <AttDef Type="import" Label="Model - Import from Mesh" BaseType="operator">
+      <BriefDescription>
+        Import a model from a mesh.
+      </BriefDescription>
+      <DetailedDescription>
+        &lt;p&gt;Import a model from a mesh.
+        &lt;p&gt;This operator imports a mesh into smtk, and then
+        parses its components by dimension and connectivity to form a model.
+      </DetailedDescription>
       <ItemDefinitions>
         <File Name="filename" NumberOfRequiredValues="1"
           ShouldExist="true"
-          FileFilters="Moab files (*.h5m);;Exodus II Datasets (*.e *.exo *.ex2);;VTK files (*.vtu *.vtp *.vtk);;All files (*.*)">
+          FileFilters="Moab files (*.h5m);;Exodus II Datasets (*.e *.exo *.ex2);;VTK files (*.vtu *.vtp *.vtk);;General Mesh Viewer (*.gmv);;Ansys (*.ans);;Gmsh (*.msh *.gmsh);;STL (*.stl);;All files (*.*)">
         </File>
-        <String Name="label" NumberOfRequiredValues="1">
+        <String Name="label" Label="Domain Property" NumberOfRequiredValues="1" AdvanceLevel="1">
 	  <DefaultValue></DefaultValue>
 	</String>
         <String Name="filetype" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false"/>

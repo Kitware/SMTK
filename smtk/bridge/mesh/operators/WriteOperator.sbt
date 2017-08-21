@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the Exodus "Write" Operator -->
+<!-- Description of the Mesh Session "Write" Operator -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="write" BaseType="operator">
+    <AttDef Type="write" Label="Model - Write" BaseType="operator">
       <AssociationsDef Name="Model(s)" NumberOfRequiredValues="1" Extensible="true">
         <MembershipMask>model</MembershipMask>
       </AssociationsDef>

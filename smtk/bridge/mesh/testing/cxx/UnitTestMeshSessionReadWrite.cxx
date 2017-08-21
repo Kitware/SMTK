@@ -73,32 +73,32 @@ int UnitTestMeshSessionReadWrite(int argc, char* argv[])
   smtk::model::Model model;
 
   {
-    smtk::model::OperatorPtr readOp = session.op("read");
-    if (!readOp)
+    smtk::model::OperatorPtr importOp = session.op("import");
+    if (!importOp)
     {
-      std::cerr << "No read operator\n";
+      std::cerr << "No import operator\n";
       return 1;
     }
 
-    std::string readFilePath(dataRoot);
-    readFilePath += "/model/3d/exodus/SimpleReactorCore/SimpleReactorCore.exo";
+    std::string importFilePath(dataRoot);
+    importFilePath += "/model/3d/exodus/SimpleReactorCore/SimpleReactorCore.exo";
 
-    readOp->specification()->findFile("filename")->setValue(readFilePath);
+    importOp->specification()->findFile("filename")->setValue(importFilePath);
 
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
 
-    smtk::model::OperatorResult readOpResult = readOp->operate();
+    smtk::model::OperatorResult importOpResult = importOp->operate();
 
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
     std::cout << "elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
 
-    model = readOpResult->findModelEntity("model")->value();
+    model = importOpResult->findModelEntity("model")->value();
 
-    if (readOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+    if (importOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
     {
-      std::cerr << "Read operator failed\n";
+      std::cerr << "Import operator failed\n";
       return 1;
     }
   }

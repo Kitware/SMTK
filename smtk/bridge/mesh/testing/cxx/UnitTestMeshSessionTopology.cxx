@@ -71,20 +71,13 @@ smtkComponentInitMacro(smtk_extension_vtk_io_MeshIOVTK)
       importOp->specification()->findFile("filename")->setValue(filename);
       importOp->specification()->findString("label")->setValue(label);
 
-      std::chrono::time_point<std::chrono::system_clock> start, end;
-      start = std::chrono::system_clock::now();
-
       smtk::model::OperatorResult importOpResult = importOp->operate();
-
-      end = std::chrono::system_clock::now();
-      std::chrono::duration<double> elapsed_seconds = end - start;
-      std::cout << "elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
 
       model = importOpResult->findModelEntity("model")->value();
 
       if (importOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
       {
-        std::cerr << "Read operator failed\n";
+        std::cerr << "Import operator failed\n";
         return 1;
       }
     }
