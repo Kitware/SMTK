@@ -23,6 +23,8 @@
 #include "smtk/bridge/polygon/Operator.h"
 #include "smtk/bridge/polygon/Session.h"
 
+#include "smtk/common/Paths.h"
+
 #include "smtk/extension/remus/MeshServerLauncher.h"
 
 #include "smtk/mesh/Collection.h"
@@ -52,10 +54,10 @@ const std::vector<std::string>& relative_search_paths()
   return rel_search_paths;
 }
 
-const std::vector<std::string>& absolute_search_paths()
+const std::vector<std::string> absolute_search_paths()
 {
-  static std::vector<std::string> abs_search_paths = { BUILD_SEARCH_PATH };
-  return abs_search_paths;
+  static smtk::common::Paths paths;
+  return paths.workerSearchPaths();
 }
 }
 
@@ -114,9 +116,8 @@ int main(int argc, char** const argv)
 
   // Provide the worker factory with a list of locations where it can
   // find the job requirements file (*.rw) and associated executable.
-  // The first path is the install location of the worker, and the second
-  // path is the build location.
-  for (std::string path : absolute_search_paths())
+  smtk::common::Paths paths;
+  for (std::string path : paths.workerSearchPaths())
   {
     meshServerLauncher.addWorkerSearchDirectory(path);
   }

@@ -151,6 +151,7 @@ std::string Paths::bundleDirectory()
 std::vector<std::string> Paths::workerSearchPaths(bool pruneInvalid)
 {
   this->update();
+
   return pruneInvalid ? Paths::pruneInvalidDirectories(Paths::s_workerSearchPaths)
                       : Paths::s_workerSearchPaths;
 }
@@ -193,6 +194,17 @@ bool Paths::update()
 #endif
 
     Paths::s_lastGen = Paths::s_lastSet;
+
+    // Let's look for search paths relative to the location of the library
+    // containing this method.
+    boost::filesystem::path smtkLibDir =
+      boost::dll::symbol_location(Paths::currentDirectory).parent_path();
+    boost::filesystem::path smtkBinDir = smtkLibDir.parent_path() / "bin";
+    if (boost::filesystem::is_directory(smtkBinDir))
+    {
+      Paths::s_workerSearchPaths.push_back(smtkBinDir.string());
+    }
+
     return true;
   }
   return false;

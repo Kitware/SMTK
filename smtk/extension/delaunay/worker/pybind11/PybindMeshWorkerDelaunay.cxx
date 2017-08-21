@@ -19,12 +19,14 @@ SMTK_THIRDPARTY_POST_INCLUDE
 #include <utility>
 
 #include "smtk/extension/delaunay/worker/DelaunayMeshWorker.h"
+
 #include "remus/common/LocateFile.h"
 #include "remus/proto/JobRequirements.h"
 #include "remus/common/MeshIOType.h"
 #include "remus/common/ContentTypes.h"
 
 #include "smtk/attribute/System.h"
+#include "smtk/common/Paths.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
@@ -39,11 +41,10 @@ namespace
     return rel_search_paths;
   }
 
-  const std::vector<std::string>& absolute_search_paths()
+  const std::vector<std::string> absolute_search_paths()
   {
-    static std::vector<std::string> abs_search_paths =
-      { INSTALL_SEARCH_PATH, BUILD_SEARCH_PATH };
-    return abs_search_paths;
+    static smtk::common::Paths paths;
+    return paths.workerSearchPaths();
   }
 }
 
@@ -91,9 +92,5 @@ PYBIND11_MODULE(_smtkPybindMeshWorkerDelaunay, delaunay)
                                       absolute_search_paths()).path(),
               logger);
   return sysptr;
-    });
-
-  delaunay.def("search_paths", [](){
-      return absolute_search_paths();
     });
 }

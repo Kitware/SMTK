@@ -64,10 +64,9 @@ class TestDelaunayMeshWorker(smtk.testing.TestCase):
 
         # provide the worker factory with a list of locations where it can
         # find the job requirements file (*.rw) and associated executable.
-        # The first path is the install location of the worker, and the second
-        # path is the build location.
-        for directory in smtk.mesh.delaunay.worker.search_paths():
-            self.meshServerLauncher.addWorkerSearchDirectory(directory)
+        paths = smtk.common.Paths()
+        for search_path in paths.workerSearchPaths():
+            self.meshServerLauncher.addWorkerSearchDirectory(search_path)
 
         # access the meshing attribute system for the delaunay worker
         meshingAttributes = smtk.mesh.delaunay.worker.meshing_attributes()
