@@ -398,7 +398,10 @@ smtk::model::SessionInfoBits Session::addBodyToManager(
     actual |= smtk::model::SESSION_ENTITY_TYPE;
 
     // Create a collection associated with the model id
-    this->manager()->meshes()->makeCollection(entityref.entity());
+    this->manager()
+      ->meshes()
+      ->makeCollection(entityref.entity())
+      ->name(entityref.name() + "_tessellation");
 
     if (requestedInfo & (smtk::model::SESSION_ENTITY_RELATIONS | smtk::model::SESSION_ARRANGEMENTS))
     {
