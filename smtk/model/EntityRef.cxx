@@ -22,6 +22,10 @@
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Volume.h"
 
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/MeshSet.h"
+
 #include <boost/functional/hash.hpp>
 #include <float.h>
 
@@ -692,6 +696,26 @@ Tessellation* EntityRef::resetTessellation()
   Tessellation blank;
   UUIDsToTessellations::iterator tessit = mgr->setTessellation(this->m_entity, blank);
   return &tessit->second;
+}
+
+/**\brief Return the entity's mesh tessellation.
+  *
+  * Each entity has a single meshset describing its tessellation. The meshset
+  * could, but does not have to, contain sub-meshsets within it.
+  */
+smtk::mesh::MeshSet EntityRef::meshTessellation() const
+{
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
+  {
+    smtk::mesh::CollectionPtr collection = mgr->meshes()->collection(this->owningModel().entity());
+
+    if (collection && collection->isValid())
+    {
+      return collection->findAssociatedMeshes(*this);
+    }
+  }
+  return smtk::mesh::MeshSet();
 }
 
 /**\brief Return the entity's tessellation if one exists or NULL otherwise.
