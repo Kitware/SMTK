@@ -114,56 +114,6 @@ void vtkModelMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "ShowAnalysisTessellation: " << this->ShowAnalysisTessellation << "\n";
 }
 
-/**\brief For Python users, this method is the only way to bridge VTK and SMTK wrappings.
-  *
-  */
-void vtkModelMultiBlockSource::SetModelManager(const char* pointerAsString)
-{
-  bool valid = true;
-  vtkTypeUInt64 ptrInt;
-  if (!pointerAsString || !pointerAsString[0])
-  {
-    valid = false;
-  }
-  else
-  {
-    int base = 16;
-    if (pointerAsString[0] == '0' && pointerAsString[1] == 'x')
-    {
-      pointerAsString += 2;
-    }
-    char* endPtr;
-    ptrInt = strtoll(pointerAsString, &endPtr, base);
-    if (ptrInt == 0 && errno)
-      valid = false;
-  }
-  if (valid)
-  {
-    if (ptrInt)
-    {
-#ifndef _MSC_VER
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wstrict-aliasing"
-#endif
-      Manager* direct = *(reinterpret_cast<Manager**>(&ptrInt));
-#ifndef _MSC_VER
-#pragma GCC diagnostic pop
-#endif
-      this->SetModelManager(direct->shared_from_this());
-    }
-    else
-    {
-      // Set to "NULL"
-      vtkWarningMacro("Setting model manager to NULL");
-      this->SetModelManager(ManagerPtr());
-    }
-  }
-  else
-  {
-    vtkWarningMacro("Not setting model manager, errno = " << errno);
-  }
-}
-
 /// Set the SMTK model to be displayed.
 void vtkModelMultiBlockSource::SetModelManager(smtk::model::ManagerPtr model)
 {
