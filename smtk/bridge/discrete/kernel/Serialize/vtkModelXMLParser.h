@@ -34,11 +34,6 @@ public:
   // Get the root element from the XML document.
   vtkXMLElement* GetRootElement();
 
-  // Description:
-  // Get/Set the file from which to read the configuration.
-  vtkSetStringMacro(FileName);
-  vtkGetStringMacro(FileName);
-
 protected:
   vtkModelXMLParser();
   ~vtkModelXMLParser() override;
