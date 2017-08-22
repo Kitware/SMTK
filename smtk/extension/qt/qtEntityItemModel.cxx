@@ -30,6 +30,8 @@
 #include <QtCore/QFile>
 #include <QtCore/QVariant>
 
+#include "pqApplicationCore.h"
+#include "pqSettings.h"
 #include <deque>
 #include <iomanip>
 #include <map>
@@ -393,8 +395,27 @@ QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
         FloatList rgba = item->relatedColor();
         if (rgba.size() >= 4 && rgba[3] < 0)
         {
-          // assign an invalid color
-          color = QColor(255, 255, 255, 0);
+          pqSettings* settings = pqApplicationCore::instance()->settings();
+          if (item->relatedEntity().isFace())
+          {
+            color = settings->value("ModelBuilder/FaceColor", QColor::fromRgbF(1.0, 1.0, 1.0))
+                      .value<QColor>();
+          }
+          else if (item->relatedEntity().isEdge())
+          {
+            color = settings->value("ModelBuilder/EdgeColor", QColor::fromRgbF(1.0, 1.0, 1.0))
+                      .value<QColor>();
+          }
+          else if (item->relatedEntity().isVertex())
+          {
+            color = settings->value("ModelBuilder/VertexColor", QColor::fromRgbF(1.0, 1.0, 1.0))
+                      .value<QColor>();
+          }
+          else
+          {
+            // Assign an invalid color
+            color = QColor(255, 255, 255, 0);
+          }
         }
         else
         {

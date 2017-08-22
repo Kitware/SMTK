@@ -1377,8 +1377,10 @@ void qtModelView::changeEntityColor(const QModelIndex& idx)
       colorName = Entity::flagSummary(elp->relatedBitFlags());
       colorName += " color";
       // get the color for the list
-      QColor newColor = QColorDialog::getColor(currentColor, this, "Choose Entity Color",
-        QColorDialog::DontUseNativeDialog | QColorDialog::ShowAlphaChannel);
+      QColor newColor =
+        QColorDialog::getColor(currentColor, this, "Choose"
+                                                   " Entity Color (Click Cancel to remove color)",
+          QColorDialog::DontUseNativeDialog | QColorDialog::ShowAlphaChannel);
 
       // store color property on the model
       // use set property operator to store color
@@ -1400,9 +1402,9 @@ void qtModelView::changeEntityColor(const QModelIndex& idx)
         colorItem->setValue(3, newColor.alphaF());
       }
       else
-      {
+      { // User invalidates the color
         colorItem->setNumberOfValues(4);
-        std::vector<double> nullColor(4, -1.);
+        std::vector<double> nullColor(4, -2.);
         colorItem->setValues(nullColor.begin(), nullColor.end());
       }
       attrib->associateEntity(model);

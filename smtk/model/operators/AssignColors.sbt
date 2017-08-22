@@ -50,7 +50,9 @@
         will get the same palette color.
 
         You can also click on the swatch with the slash through it to remove any
-        previously-assigned color from the associated entities.
+        previously-assigned color from the associated entities. For now it would not
+        remove the color assigned by entity list(In order to do so, when assigning a color
+        to entity list you should just click Cancel button in the dialog).
 
         You can pick a new color for the single-color swatch or a new palette for
         the palette swatch by clicking the buttons below the swatches, respectively.
