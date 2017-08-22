@@ -26,8 +26,11 @@ statistics feature parameters provided by the user.
 import AFRLDir
 
 import sys
-sys.path.append(AFRLDir.description.replace(
-    '\n', '') + '/CMBPreprocessingScripts')
+
+afrlDir = AFRLDir.description.replace('\n', '') + '/CMBPreprocessingScripts'
+
+if afrlDir not in sys.path:
+    sys.path.append(afrlDir)
 
 import Dream3DPipeline
 
