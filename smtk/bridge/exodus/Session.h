@@ -138,7 +138,7 @@ public:
   smtkDeclareModelingKernel();
   typedef smtk::model::SessionInfoBits SessionInfoBits;
   virtual ~Session();
-  virtual SessionInfoBits allSupportedInformation() const
+  SessionInfoBits allSupportedInformation() const override
   {
     return smtk::model::SESSION_EVERYTHING;
   }
@@ -158,7 +158,7 @@ public:
 
   smtk::model::Model addModel(vtkSmartPointer<vtkMultiBlockDataSet>& model);
 
-  std::string defaultFileExtension(const smtk::model::Model& model) const;
+  std::string defaultFileExtension(const smtk::model::Model& model) const override;
 
 protected:
   friend class Operator;
@@ -168,8 +168,8 @@ protected:
 
   Session();
 
-  virtual SessionInfoBits transcribeInternal(
-    const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth = -1);
+  SessionInfoBits transcribeInternal(
+    const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth = -1) override;
 
   smtk::common::UUIDGenerator m_uuidGen;
   ModelVector_t m_models;
@@ -201,7 +201,7 @@ protected:
     return T::SafeDownCast(this->parent(obj));
   }
 
-  virtual smtk::model::SessionIOPtr createIODelegate(const std::string& format);
+  smtk::model::SessionIOPtr createIODelegate(const std::string& format) override;
 
 private:
   Session(const Session&);        // Not implemented.

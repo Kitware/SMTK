@@ -25,7 +25,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelSelectionPainter : public vtkPainter
 public:
   static vtkCMBModelSelectionPainter* New();
   vtkTypeMacro(vtkCMBModelSelectionPainter, vtkPainter);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Get the output data object from this painter. The default implementation

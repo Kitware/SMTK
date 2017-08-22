@@ -23,7 +23,7 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModelXMLParser : public vtkXMLParser
 {
 public:
   vtkTypeMacro(vtkModelXMLParser, vtkXMLParser);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
   static vtkModelXMLParser* New();
 
   // Description:
@@ -41,11 +41,11 @@ public:
 
 protected:
   vtkModelXMLParser();
-  ~vtkModelXMLParser();
+  ~vtkModelXMLParser() override;
 
-  void StartElement(const char* name, const char** atts);
-  void EndElement(const char* name);
-  void CharacterDataHandler(const char* data, int length);
+  void StartElement(const char* name, const char** atts) override;
+  void EndElement(const char* name) override;
+  void CharacterDataHandler(const char* data, int length) override;
 
   void AddElement(vtkXMLElement* element);
   void PushOpenElement(vtkXMLElement* element);
@@ -64,7 +64,7 @@ protected:
 
   // Called by Parse() to read the stream and call ParseBuffer.  Can
   // be replaced by subclasses to change how input is read.
-  virtual int ParseXML();
+  int ParseXML() override;
 
 private:
   vtkModelXMLParser(const vtkModelXMLParser&); // Not implemented.

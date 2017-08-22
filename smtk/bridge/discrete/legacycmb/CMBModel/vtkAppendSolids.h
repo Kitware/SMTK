@@ -28,7 +28,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkAppendSolids : public vtkPolyDataAlgorithm
 {
 public:
   vtkTypeMacro(vtkAppendSolids, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
   static vtkAppendSolids* New();
 
   // Description:
@@ -43,7 +43,7 @@ protected:
   ~vtkAppendSolids();
 
   // Usual data generation method
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
   virtual int FillInputPortInformation(int, vtkInformation*);
 
 private:

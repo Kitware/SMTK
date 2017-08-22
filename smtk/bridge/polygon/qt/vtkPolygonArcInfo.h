@@ -22,16 +22,16 @@ class SMTKPOLYGONQTEXT_EXPORT vtkPolygonArcInfo : public vtkPVInformation
 public:
   static vtkPolygonArcInfo* New();
   vtkTypeMacro(vtkPolygonArcInfo, vtkPVInformation);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Transfer information about a single object into this object.
-  virtual void CopyFromObject(vtkObject*);
+  void CopyFromObject(vtkObject*) override;
 
   // Description:
   // Manage a serialized version of the information.
-  virtual void CopyToStream(vtkClientServerStream*);
-  virtual void CopyFromStream(const vtkClientServerStream*);
+  void CopyToStream(vtkClientServerStream*) override;
+  void CopyFromStream(const vtkClientServerStream*) override;
 
   //Description:
   //Returns if the this arc is a closed loop
@@ -60,7 +60,7 @@ public:
 
 protected:
   vtkPolygonArcInfo();
-  ~vtkPolygonArcInfo();
+  ~vtkPolygonArcInfo() override;
 
   vtkSetStringMacro(ModelEntityID);
   vtkSetVector3Macro(SelectedPointCoordinates, double);

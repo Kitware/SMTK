@@ -45,7 +45,7 @@ public:
   smtkDeclareModelOperator();
 
 protected:
-  virtual smtk::model::OperatorResult operateInternal();
+  smtk::model::OperatorResult operateInternal() override;
 
   template <typename U, typename V, typename W, typename X>
   bool checkAndAddBoundingCells(const smtk::model::EntityRef& ent, bool deleteBoundingCells,

@@ -35,7 +35,7 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModelItemIterator : public vtkObject
 {
 public:
   vtkTypeMacro(vtkModelItemIterator, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Go to the first item with given type.
@@ -59,7 +59,7 @@ public:
 
 protected:
   vtkModelItemIterator();
-  virtual ~vtkModelItemIterator();
+  ~vtkModelItemIterator() override;
 
 private:
   vtkModelItemIterator(const vtkModelItemIterator&); // Not implemented.

@@ -30,7 +30,7 @@ class SMTKQTEXT_EXPORT qtNewAttributeWidget : public QDialog
 
 public:
   qtNewAttributeWidget(QWidget* parent = 0);
-  virtual ~qtNewAttributeWidget();
+  ~qtNewAttributeWidget() override;
 
   QString attributeName() const;
   QString attributeType() const;

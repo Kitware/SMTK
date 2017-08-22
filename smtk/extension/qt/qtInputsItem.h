@@ -40,7 +40,7 @@ public:
   qtInputsItem(smtk::attribute::ItemPtr, QWidget* p, qtBaseView* bview,
     Qt::Orientation enumOrient = Qt::Horizontal);
   virtual ~qtInputsItem();
-  virtual void setLabelVisible(bool);
+  void setLabelVisible(bool) override;
   smtk::attribute::ValueItemPtr valueItem();
   void unsetValue(int elementIndex);
   bool setDiscreteValue(int elementIndex, int discreteValIndex);
@@ -54,14 +54,14 @@ public slots:
   void onInputValueChanged(QObject*);
 
 protected slots:
-  virtual void updateItemData();
+  void updateItemData() override;
   virtual void onAddNewValue();
   virtual void onRemoveValue();
   void displayExpressionWidget(bool checkstate);
   virtual void onChildItemModified();
 
 protected:
-  virtual void createWidget();
+  void createWidget() override;
   virtual void loadInputValues();
   virtual void updateUI();
   virtual void addInputEditor(int i);
@@ -82,7 +82,7 @@ class SMTKQTEXT_EXPORT qtDoubleValidator : public QDoubleValidator
   Q_OBJECT
 public:
   qtDoubleValidator(qtInputsItem* item, int elementIndex, QLineEdit* lineEdit, QObject* parent);
-  virtual void fixup(QString& input) const;
+  void fixup(QString& input) const override;
 
 private:
   qtInputsItem* m_item;
@@ -96,7 +96,7 @@ class SMTKQTEXT_EXPORT qtIntValidator : public QIntValidator
   Q_OBJECT
 public:
   qtIntValidator(qtInputsItem* item, int elementIndex, QLineEdit* lineEdit, QObject* parent);
-  virtual void fixup(QString& input) const;
+  void fixup(QString& input) const override;
 
 private:
   qtInputsItem* m_item;

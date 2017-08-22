@@ -47,13 +47,13 @@ public:
   void addTopology(Topology t) { this->m_topologies.push_back(t); }
   Topology* topology(smtk::model::Model& model);
 
-  std::string defaultFileExtension(const smtk::model::Model&) const { return ""; }
+  std::string defaultFileExtension(const smtk::model::Model&) const override { return ""; }
 
 protected:
   Session();
 
-  virtual SessionInfoBits transcribeInternal(
-    const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth = -1);
+  SessionInfoBits transcribeInternal(
+    const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth = -1) override;
 
   std::vector<Topology> m_topologies;
 };

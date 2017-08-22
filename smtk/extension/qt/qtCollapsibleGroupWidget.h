@@ -30,7 +30,7 @@ class SMTKQTEXT_EXPORT qtCollapsibleGroupWidget : public QWidget
 
 public:
   qtCollapsibleGroupWidget(QWidget* parent);
-  virtual ~qtCollapsibleGroupWidget();
+  ~qtCollapsibleGroupWidget() override;
 
   QLayout* contentsLayout() const;
   void setContentsLayout(QLayout* newLayout);

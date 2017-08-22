@@ -30,7 +30,7 @@ class VTK_EXPORT vtkMergeOperatorClient : public vtkMergeOperatorBase
 public:
   static vtkMergeOperatorClient* New();
   vtkTypeMacro(vtkMergeOperatorClient, vtkMergeOperatorBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   using Superclass::Operate;
 

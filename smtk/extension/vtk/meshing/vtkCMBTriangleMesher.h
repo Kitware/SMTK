@@ -38,7 +38,7 @@ class VTKSMTKMESHINGEXT_EXPORT vtkCMBTriangleMesher : public vtkPolyDataAlgorith
 public:
   static vtkCMBTriangleMesher* New();
   vtkTypeMacro(vtkCMBTriangleMesher, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
   // Description:
   // When relativly calculating maximum areas the size of
   // each individual polygon is used when this is true.
@@ -159,7 +159,7 @@ protected:
   // Allow the same launcher for multiple meshing operations:
   vtkCMBMeshServerLauncher* Launcher;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 
 private:
   vtkCMBTriangleMesher(const vtkCMBTriangleMesher&); // Not implemented.

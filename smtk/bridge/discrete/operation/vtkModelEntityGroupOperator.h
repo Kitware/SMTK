@@ -34,7 +34,7 @@ class SMTKDISCRETESESSION_EXPORT vtkModelEntityGroupOperator
 public:
   static vtkModelEntityGroupOperator* New();
   vtkTypeMacro(vtkModelEntityGroupOperator, vtkModelEntityGroupOperatorBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Prevent warnings about hidden base-class virtuals:
   using Superclass::Build;
@@ -73,7 +73,7 @@ public:
 
 protected:
   vtkModelEntityGroupOperator();
-  virtual ~vtkModelEntityGroupOperator();
+  ~vtkModelEntityGroupOperator() override;
 
   using Superclass::AbleToOperate;
 

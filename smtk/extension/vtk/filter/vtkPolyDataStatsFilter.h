@@ -26,7 +26,7 @@ class VTKSMTKFILTEREXT_EXPORT vtkPolyDataStatsFilter : public vtkPolyDataAlgorit
 public:
   static vtkPolyDataStatsFilter* New();
   vtkTypeMacro(vtkPolyDataStatsFilter, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   vtkGetVector3Macro(AreaStats, double);
   vtkGetMacro(TotalSurfaceArea, double);
@@ -67,7 +67,7 @@ protected:
   double Orientation[3];
   double Scale[3];
   vtkTransform* Transform;
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
   vtkTimeStamp BuildTime; // time at which the transform was built
 
 private:

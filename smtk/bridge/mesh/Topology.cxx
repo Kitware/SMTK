@@ -43,7 +43,7 @@ public:
   void setElementShells(ElementShells* shells) { this->m_shells = shells; }
   void setDimension(int dimension) { this->m_dimension = dimension; }
 
-  void forMesh(smtk::mesh::MeshSet& singleMesh)
+  void forMesh(smtk::mesh::MeshSet& singleMesh) override
   {
     // Each free mesh is an element. It gets a unique id and has the model as
     // its parent.

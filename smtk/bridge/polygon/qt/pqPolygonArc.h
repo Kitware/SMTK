@@ -41,7 +41,7 @@ public:
   //needs createArc called on once its input for arc shape is created
   pqPolygonArc(QObject* parent = 0);
 
-  virtual ~pqPolygonArc();
+  ~pqPolygonArc() override;
 
   //Description:
   //Creates the server side arc from the widget poly data that is passed in

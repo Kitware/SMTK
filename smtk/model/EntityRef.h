@@ -52,7 +52,7 @@ class MeshSet;
   }                                                                                                \
   virtual ~thisclass() {} /* Avoid warnings about non-virtual destructor */                        \
   bool isValid() const { return this->EntityRef::isValid(); }                                      \
-  virtual bool isValid(Entity** entRec) const                                                      \
+  bool isValid(Entity** entRec) const override                                                     \
   {                                                                                                \
     Entity* er;                                                                                    \
     if (/* NB: EntityRef::isValid() may return true even when er == NULL */                        \

@@ -28,7 +28,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelMapper : public vtkCompositePolyData
 public:
   static vtkCMBModelMapper* New();
   vtkTypeMacro(vtkCMBModelMapper, vtkCompositePolyDataMapper2);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Implemented by sub classes. Actual rendering is done here.

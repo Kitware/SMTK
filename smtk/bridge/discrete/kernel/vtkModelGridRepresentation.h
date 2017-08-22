@@ -29,7 +29,7 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModelGridRepresentation : public vtkObject
 {
 public:
   vtkTypeMacro(vtkModelGridRepresentation, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   vtkGetStringMacro(GridFileName);
   vtkSetStringMacro(GridFileName);
@@ -76,7 +76,7 @@ public:
 
 protected:
   vtkModelGridRepresentation();
-  virtual ~vtkModelGridRepresentation();
+  ~vtkModelGridRepresentation() override;
 
   vtkGetStringMacro(ModelInfoFileName);
   vtkSetStringMacro(ModelInfoFileName);

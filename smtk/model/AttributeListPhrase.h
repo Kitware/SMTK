@@ -37,11 +37,11 @@ public:
   Ptr setup(const EntityRef& ent, DescriptivePhrasePtr parent);
   Ptr setup(const EntityRef& ent, const smtk::common::UUIDs& subset, DescriptivePhrasePtr parent);
 
-  virtual std::string title();
-  virtual std::string subtitle();
+  std::string title() override;
+  std::string subtitle() override;
 
-  virtual smtk::common::UUID relatedEntityId() const;
-  virtual EntityRef relatedEntity() const;
+  smtk::common::UUID relatedEntityId() const override;
+  EntityRef relatedEntity() const override;
 
 protected:
   AttributeListPhrase();

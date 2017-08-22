@@ -44,7 +44,7 @@ class SMTKCORE_EXPORT ValueItemDefinition : public smtk::attribute::ItemDefiniti
 public:
   smtkTypeMacro(ValueItemDefinition);
   ValueItemDefinition(const std::string& myname);
-  virtual ~ValueItemDefinition();
+  ~ValueItemDefinition() override;
 
   const std::string& units() const { return this->m_units; }
   void setUnits(const std::string& newUnits) { this->m_units = newUnits; }

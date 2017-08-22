@@ -53,11 +53,11 @@ public:
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
-  virtual bool ableToOperate();
+  bool ableToOperate() override;
 
 protected:
   ImportOperator();
-  virtual smtk::model::OperatorResult operateInternal();
+  smtk::model::OperatorResult operateInternal() override;
 
   vtkNew<vtkCMBModelBuilder> m_op;
 #ifdef SMTK_ENABLE_REMUS_SUPPORT

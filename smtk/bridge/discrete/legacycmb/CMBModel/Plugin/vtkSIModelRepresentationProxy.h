@@ -23,7 +23,7 @@ class vtkSIModelRepresentationProxy : public vtkSIPVRepresentationProxy
 public:
   static vtkSIModelRepresentationProxy* New();
   vtkTypeMacro(vtkSIModelRepresentationProxy, vtkSIPVRepresentationProxy);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
 protected:
   vtkSIModelRepresentationProxy();

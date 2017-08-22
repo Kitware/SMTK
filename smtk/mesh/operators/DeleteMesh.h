@@ -25,10 +25,10 @@ public:
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
-  virtual bool ableToOperate();
+  bool ableToOperate() override;
 
 protected:
-  virtual smtk::model::OperatorResult operateInternal();
+  smtk::model::OperatorResult operateInternal() override;
 };
 
 } //namespace mesh

@@ -28,7 +28,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkModelEdgeOperatorBase : public vtkModelEntit
 public:
   static vtkModelEdgeOperatorBase* New();
   vtkTypeMacro(vtkModelEdgeOperatorBase, vtkModelEntityOperatorBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Modify the color, user name, and/or the visibility of an object.

@@ -33,9 +33,9 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModelEdgeUse : public vtkModelEntity
 public:
   static vtkModelEdgeUse* New();
   vtkTypeMacro(vtkModelEdgeUse, vtkModelEntity);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual int GetType();
+  int GetType() override;
 
   vtkModelEdge* GetModelEdge();
 
@@ -64,17 +64,17 @@ public:
   // Destroy the object.  It will still have an association
   // to the "owning" model edge so the model edge must get
   // rid of the associations in order to actually delete it.
-  virtual bool Destroy();
+  bool Destroy() override;
 
   // Description:
   // Reads the state of an instance from an archive OR
   // writes the state of an instance to an archive. See
   // the documentation for this class for details.
-  virtual void Serialize(vtkSerializer* ser);
+  void Serialize(vtkSerializer* ser) override;
 
 protected:
   vtkModelEdgeUse();
-  virtual ~vtkModelEdgeUse();
+  ~vtkModelEdgeUse() override;
 
   void SetModelVertexUses(vtkModelVertexUse* vertexUse0, vtkModelVertexUse* vertexUse1);
 

@@ -72,7 +72,7 @@ public:
     }
   }
 
-  void forCell(const smtk::mesh::Handle&, smtk::mesh::CellType, int numPts)
+  void forCell(const smtk::mesh::Handle&, smtk::mesh::CellType, int numPts) override
   {
     const std::vector<double>& coords = this->coordinates();
     const smtk::mesh::Handle* const ptIds = this->pointIds();
@@ -116,7 +116,7 @@ public:
     }
   }
 
-  void forCell(const smtk::mesh::Handle&, smtk::mesh::CellType, int numPts)
+  void forCell(const smtk::mesh::Handle&, smtk::mesh::CellType, int numPts) override
   {
     const std::vector<double>& coords = this->coordinates();
     const smtk::mesh::Handle* const ptIds = this->pointIds();

@@ -79,7 +79,7 @@ public:
          << (mask & smtk::model::DIMENSION_2 ? " Faces" : "")
          << (mask & smtk::model::DIMENSION_3 ? " Volumes" : "") << "\n";
   }
-  virtual void Execute(vtkObject* caller, unsigned long eventId, void* vtkNotUsed(callData))
+  void Execute(vtkObject* caller, unsigned long eventId, void* vtkNotUsed(callData)) override
   {
     /*
     cout

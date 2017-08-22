@@ -33,7 +33,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelStateOperator : public vtkCMBModelSt
 public:
   static vtkCMBModelStateOperator* New();
   vtkTypeMacro(vtkCMBModelStateOperator, vtkCMBModelStateOperatorBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Common API of model operator classes.

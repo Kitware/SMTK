@@ -35,7 +35,7 @@ public:
   smtkDeclareModelOperator();
 
 protected:
-  virtual bool populateEdgeMap();
+  bool populateEdgeMap() override;
 };
 
 } // namespace polygon

@@ -36,7 +36,7 @@ class VTKSMTKREADEREXT_EXPORT vtkLIDARReader : public vtkPolyDataAlgorithm
 public:
   static vtkLIDARReader* New();
   vtkTypeMacro(vtkLIDARReader, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   enum FileReadingStatus
   {
@@ -161,8 +161,8 @@ protected:
 
   friend class vtkLIDARMultiFilesReader;
 
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
   int MoveToStartOfPiece(ifstream& fin, int pieceIndex);
 
   int ReadPiece(ifstream& fin, int pieceIndex, int onRatio, long totalNumPts, vtkPoints* newPts,

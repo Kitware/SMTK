@@ -32,13 +32,13 @@ public:
   PropertyValuePhrase();
   Ptr setup(PropertyType propType, const std::string& propName, DescriptivePhrase::Ptr parent);
 
-  virtual std::string title();
-  virtual std::string subtitle();
+  std::string title() override;
+  std::string subtitle() override;
 
-  virtual smtk::common::UUID relatedEntityId() const;
-  virtual EntityRef relatedEntity() const;
-  virtual std::string relatedPropertyName() const;
-  virtual PropertyType relatedPropertyType() const;
+  smtk::common::UUID relatedEntityId() const override;
+  EntityRef relatedEntity() const override;
+  std::string relatedPropertyName() const override;
+  PropertyType relatedPropertyType() const override;
 
   static DescriptivePhraseType propertyToPhraseType(PropertyType p);
 

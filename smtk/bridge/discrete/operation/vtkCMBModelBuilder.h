@@ -33,7 +33,7 @@ class SMTKDISCRETESESSION_EXPORT vtkCMBModelBuilder : public vtkObject
 public:
   static vtkCMBModelBuilder* New();
   vtkTypeMacro(vtkCMBModelBuilder, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Load the input polydata into Model.
@@ -45,7 +45,7 @@ public:
 
 protected:
   vtkCMBModelBuilder();
-  virtual ~vtkCMBModelBuilder();
+  ~vtkCMBModelBuilder() override;
 
   /// copied from vtkTriangulateConcavePolysFilter in CMB/VTKExtension.
   // Tests whether the cell is concave

@@ -23,7 +23,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkCMBSMModelProxy : public vtkSMProxy
 public:
   static vtkCMBSMModelProxy* New();
   vtkTypeMacro(vtkCMBSMModelProxy, vtkSMProxy);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   void Refresh();
 

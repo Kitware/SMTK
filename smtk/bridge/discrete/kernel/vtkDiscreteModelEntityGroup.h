@@ -27,7 +27,7 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkDiscreteModelEntityGroup : public vtkModelE
 {
 public:
   vtkTypeMacro(vtkDiscreteModelEntityGroup, vtkModelEntity);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   void AddModelEntity(vtkDiscreteModelEntity*);
   bool RemoveModelEntity(vtkDiscreteModelEntity*);
@@ -42,7 +42,7 @@ public:
   // that is grouped by this object.
   vtkModelItemIterator* NewModelEntityIterator();
 
-  virtual int GetType();
+  int GetType() override;
 
   vtkSetMacro(EntityType, int);
   vtkGetMacro(EntityType, int);
@@ -51,17 +51,17 @@ public:
   // Reads the state of an instance from an archive OR
   // writes the state of an instance to an archive. See
   // the documentation for this class for details.
-  virtual void Serialize(vtkSerializer* ser);
+  void Serialize(vtkSerializer* ser) override;
 
 protected:
   vtkDiscreteModelEntityGroup();
-  virtual ~vtkDiscreteModelEntityGroup();
+  ~vtkDiscreteModelEntityGroup() override;
   static vtkDiscreteModelEntityGroup* New();
 
   friend class vtkDiscreteModel;
 
   virtual bool IsDestroyable();
-  virtual bool Destroy();
+  bool Destroy() override;
 
   int EntityType;
 

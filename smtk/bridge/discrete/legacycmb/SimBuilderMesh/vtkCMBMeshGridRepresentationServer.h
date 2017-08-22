@@ -45,7 +45,7 @@ class VTK_EXPORT vtkCMBMeshGridRepresentationServer : public vtkModelGeneratedGr
 public:
   static vtkCMBMeshGridRepresentationServer* New();
   vtkTypeMacro(vtkCMBMeshGridRepresentationServer, vtkModelGeneratedGridRepresentation);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // See vtkModelGridRepresentation.

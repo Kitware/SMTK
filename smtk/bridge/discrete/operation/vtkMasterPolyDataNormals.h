@@ -30,18 +30,18 @@ class SMTKDISCRETESESSION_EXPORT vtkMasterPolyDataNormals : public vtkPolyDataAl
 public:
   static vtkMasterPolyDataNormals* New();
   vtkTypeMacro(vtkMasterPolyDataNormals, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
 protected:
   vtkMasterPolyDataNormals();
-  ~vtkMasterPolyDataNormals();
+  ~vtkMasterPolyDataNormals() override;
 
   // Description:
   // This is called within ProcessRequest when a request asks the algorithm
   // to do its work. This is the method you should override to do whatever the
   // algorithm is designed to do. This happens during the fourth pass in the
   // pipeline execution process.
-  virtual int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 
 private:
   vtkMasterPolyDataNormals(const vtkMasterPolyDataNormals&); // Not implemented.

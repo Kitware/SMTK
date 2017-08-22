@@ -41,7 +41,7 @@ class SMTKDISCRETESESSION_EXPORT vtkCMBModelWriterBase : public vtkObject
 public:
   static vtkCMBModelWriterBase* New();
   vtkTypeMacro(vtkCMBModelWriterBase, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Write the CMB file out.  This is the operator version of writing.
@@ -74,7 +74,7 @@ public:
 
 protected:
   vtkCMBModelWriterBase();
-  virtual ~vtkCMBModelWriterBase();
+  ~vtkCMBModelWriterBase() override;
 
 private:
   vtkCMBModelWriterBase(const vtkCMBModelWriterBase&); // Not implemented.

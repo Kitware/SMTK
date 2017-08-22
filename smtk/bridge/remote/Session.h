@@ -80,11 +80,11 @@ protected:
 
   Session();
 
-  virtual smtk::model::SessionInfoBits transcribeInternal(
-    const smtk::model::EntityRef& entity, smtk::model::SessionInfoBits flags, int depth = -1);
+  smtk::model::SessionInfoBits transcribeInternal(const smtk::model::EntityRef& entity,
+    smtk::model::SessionInfoBits flags, int depth = -1) override;
 
-  virtual bool ableToOperateDelegate(smtk::model::RemoteOperatorPtr op);
-  virtual smtk::model::OperatorResult operateDelegate(smtk::model::RemoteOperatorPtr op);
+  bool ableToOperateDelegate(smtk::model::RemoteOperatorPtr op) override;
+  smtk::model::OperatorResult operateDelegate(smtk::model::RemoteOperatorPtr op) override;
 
   static RemusStaticSessionInfo createFunctor(RemusConnectionPtr remusConn,
     const remus::proto::JobRequirements& jobReq, const std::string& meshType);

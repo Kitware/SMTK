@@ -119,9 +119,9 @@ protected:
   // If 'Delete' button is pressed, invoke proper operation if possible.
   // For example, in discrete session, user can delete a group,
   // or remove members from a group by selecting them then press delete key.
-  virtual void keyPressEvent(QKeyEvent*);
+  void keyPressEvent(QKeyEvent*) override;
 
-  virtual void mouseReleaseEvent(QMouseEvent*);
+  void mouseReleaseEvent(QMouseEvent*) override;
 
   template <typename T>
   T owningEntityAs(const QModelIndex& idx) const;
@@ -139,14 +139,14 @@ protected:
   //Description:
   // Support for customized drag-n-drop events
   virtual Qt::DropActions supportedDropActions() const;
-  void dragEnterEvent(QDragEnterEvent* event);
-  void dragMoveEvent(QDragMoveEvent* event);
-  virtual void startDrag(Qt::DropActions supportedActions);
-  virtual void dropEvent(QDropEvent* event);
+  void dragEnterEvent(QDragEnterEvent* event) override;
+  void dragMoveEvent(QDragMoveEvent* event) override;
+  void startDrag(Qt::DropActions supportedActions) override;
+  void dropEvent(QDropEvent* event) override;
 
   // Description:
   // Customized selection related methods
-  virtual void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
+  void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected) override;
   virtual void selectionHelper(QEntityItemModel* qmodel, const QModelIndex& parent,
     const smtk::common::UUIDs& selEntities, const smtk::mesh::MeshSets& selMeshes,
     QItemSelection& selItems);

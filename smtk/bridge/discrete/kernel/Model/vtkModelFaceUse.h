@@ -27,9 +27,9 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModelFaceUse : public vtkModelEntity
 public:
   static vtkModelFaceUse* New();
   vtkTypeMacro(vtkModelFaceUse, vtkModelEntity);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual int GetType();
+  int GetType() override;
 
   // Description:
   // Adjacency information.
@@ -41,7 +41,7 @@ public:
   // Reads the state of an instance from an archive OR
   // writes the state of an instance to an archive. See
   // the documentation for this class for details.
-  virtual void Serialize(vtkSerializer* ser);
+  void Serialize(vtkSerializer* ser) override;
 
   // Description:
   // Get all of the  loop uses for the model face use.
@@ -50,13 +50,13 @@ public:
 
 protected:
   vtkModelFaceUse();
-  virtual ~vtkModelFaceUse();
+  ~vtkModelFaceUse() override;
 
   // Description:
   // Add a loop to the face use.
   void AddLoopUse(vtkModelLoopUse* loopUse);
   //bool DestroyModelLoopUse(vtkModelLoopUse* LoopUse);
-  virtual bool Destroy();
+  bool Destroy() override;
   virtual bool DestroyLoopUses();
 
 private:

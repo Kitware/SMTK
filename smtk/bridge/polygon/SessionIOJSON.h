@@ -43,12 +43,12 @@ public:
   virtual int saveJSON(
     cJSON* node, const smtk::model::SessionRef& sref, const smtk::model::Models& models) override;
 
-  virtual int importJSON(smtk::model::ManagerPtr mgr, const smtk::model::SessionPtr& session,
-    cJSON* sessionRec, bool loadNativeModels = false);
-  virtual int exportJSON(smtk::model::ManagerPtr mgr, const smtk::model::SessionPtr& sessPtr,
-    cJSON* sessionRec, bool writeNativeModels = false);
-  virtual int exportJSON(smtk::model::ManagerPtr mgr, const smtk::model::SessionPtr& session,
-    const common::UUIDs& modelIds, cJSON* sessionRec, bool writeNativeModels = false);
+  int importJSON(smtk::model::ManagerPtr mgr, const smtk::model::SessionPtr& session,
+    cJSON* sessionRec, bool loadNativeModels = false) override;
+  int exportJSON(smtk::model::ManagerPtr mgr, const smtk::model::SessionPtr& sessPtr,
+    cJSON* sessionRec, bool writeNativeModels = false) override;
+  int exportJSON(smtk::model::ManagerPtr mgr, const smtk::model::SessionPtr& session,
+    const common::UUIDs& modelIds, cJSON* sessionRec, bool writeNativeModels = false) override;
 
 protected:
   cJSON* serializeModel(internal::ModelPtr pmodel, const smtk::model::Model& mod);

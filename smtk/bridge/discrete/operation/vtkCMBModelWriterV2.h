@@ -55,7 +55,7 @@ class SMTKDISCRETESESSION_EXPORT vtkCMBModelWriterV2 : public vtkObject
 public:
   static vtkCMBModelWriterV2* New();
   vtkTypeMacro(vtkCMBModelWriterV2, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Write the CMB file out.
@@ -82,7 +82,7 @@ public:
 
 protected:
   vtkCMBModelWriterV2();
-  virtual ~vtkCMBModelWriterV2();
+  ~vtkCMBModelWriterV2() override;
 
   // Description:
   // Set the vtkDiscreteModelVertex data in Poly.  Version 2 does not

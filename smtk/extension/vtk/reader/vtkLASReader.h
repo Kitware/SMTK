@@ -42,7 +42,7 @@ class VTKSMTKREADEREXT_EXPORT vtkLASReader : public vtkMultiBlockDataSetAlgorith
 public:
   static vtkLASReader* New();
   vtkTypeMacro(vtkLASReader, vtkMultiBlockDataSetAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Name of the file to be read.
@@ -126,8 +126,8 @@ protected:
   vtkLASReader();
   ~vtkLASReader();
 
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 
   int ReadHeaderBlock();
 

@@ -43,25 +43,25 @@ class SMTKDISCRETESESSION_EXPORT vtkCMBModelWriterV5 : public vtkCMBModelWriterV
 public:
   static vtkCMBModelWriterV5* New();
   vtkTypeMacro(vtkCMBModelWriterV5, vtkCMBModelWriterV4);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual int GetVersion() { return 5; }
+  int GetVersion() override { return 5; }
 
 protected:
   vtkCMBModelWriterV5();
-  virtual ~vtkCMBModelWriterV5();
+  ~vtkCMBModelWriterV5() override;
 
   // Description:
   // Set the vtkDiscreteModelEdge data in Poly.
-  virtual void SetModelEdgeData(vtkDiscreteModel* model, vtkPolyData* poly);
+  void SetModelEdgeData(vtkDiscreteModel* model, vtkPolyData* poly) override;
 
   // Description:
   // Set the vtkDiscreteModelFace data in Poly.
-  virtual void SetModelFaceData(vtkDiscreteModel* Model, vtkPolyData* Poly);
+  void SetModelFaceData(vtkDiscreteModel* Model, vtkPolyData* Poly) override;
 
   // Description:
   // Set any information that maps the model grid to the analysis grid.
-  virtual void SetAnalysisGridData(vtkDiscreteModel* model, vtkPolyData* poly);
+  void SetAnalysisGridData(vtkDiscreteModel* model, vtkPolyData* poly) override;
 
 private:
   vtkCMBModelWriterV5(const vtkCMBModelWriterV5&); // Not implemented.

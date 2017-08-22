@@ -165,20 +165,20 @@ public:
 protected:
   TestForwardingSession() { this->initializeOperatorSystem(TestForwardingSession::s_operators); }
 
-  virtual SessionInfoBits transcribeInternal(
-    const EntityRef& entity, SessionInfoBits flags, int depth = -1)
+  SessionInfoBits transcribeInternal(
+    const EntityRef& entity, SessionInfoBits flags, int depth = -1) override
   {
     return remoteSession->transcribe(EntityRef(remoteModel, entity.entity()), flags, false, depth);
   }
 
-  virtual bool ableToOperateDelegate(RemoteOperatorPtr oper)
+  bool ableToOperateDelegate(RemoteOperatorPtr oper) override
   {
     OperatorPtr remOp = remoteSession->op(oper->name());
     remOp->setSpecification(remoteSession->operatorSystem()->copyAttribute(oper->specification()));
     return remOp->ableToOperate();
   }
 
-  virtual OperatorResult operateDelegate(RemoteOperatorPtr localOp)
+  OperatorResult operateDelegate(RemoteOperatorPtr localOp) override
   {
     printParams(localOp->specification(), "local input");
     OperatorPtr remOp = remoteSession->op(localOp->name());
@@ -209,7 +209,7 @@ public:
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
-  virtual bool ableToOperate()
+  bool ableToOperate() override
   {
     if (!this->specification()->isValid())
       return false;
@@ -225,7 +225,7 @@ public:
 protected:
   TestForwardingOperator() {}
 
-  virtual OperatorResult operateInternal()
+  OperatorResult operateInternal() override
   {
     printParams(this->specification(), "actual input");
 

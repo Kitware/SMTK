@@ -28,18 +28,18 @@ class SMTKCORE_EXPORT ConnectivityStorage : public smtk::mesh::ConnectivityStora
 public:
   ConnectivityStorage(::moab::Interface* interface, const smtk::mesh::HandleRange& cells);
 
-  virtual ~ConnectivityStorage();
+  ~ConnectivityStorage() override;
 
-  void initTraversal(smtk::mesh::ConnectivityStorage::IterationState& state);
+  void initTraversal(smtk::mesh::ConnectivityStorage::IterationState& state) override;
 
   bool fetchNextCell(smtk::mesh::ConnectivityStorage::IterationState& state,
-    smtk::mesh::CellType& cellType, int& numPts, const smtk::mesh::Handle*& points);
+    smtk::mesh::CellType& cellType, int& numPts, const smtk::mesh::Handle*& points) override;
 
-  bool equal(smtk::mesh::ConnectivityStorage* other) const;
+  bool equal(smtk::mesh::ConnectivityStorage* other) const override;
 
-  std::size_t cellSize() const { return NumberOfCells; }
+  std::size_t cellSize() const override { return NumberOfCells; }
 
-  std::size_t vertSize() const { return NumberOfVerts; }
+  std::size_t vertSize() const override { return NumberOfVerts; }
 
 private:
   //blank since we are used by shared_ptr

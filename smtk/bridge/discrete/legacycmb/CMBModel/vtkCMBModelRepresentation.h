@@ -32,7 +32,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelRepresentation
 public:
   static vtkCMBModelRepresentation* New();
   vtkTypeMacro(vtkCMBModelRepresentation, vtkGeometryRepresentationWithFaces);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // vtkAlgorithm::ProcessRequest() equivalent for rendering passes. This is
@@ -109,7 +109,7 @@ protected:
 
   // Description:
   // Overriding to connect in the vtkImageTextureCrop filter
-  virtual int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 
   // Description:
   // Adds the representation to the view.  This is called from

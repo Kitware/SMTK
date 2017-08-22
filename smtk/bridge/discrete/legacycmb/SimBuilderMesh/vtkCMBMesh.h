@@ -30,7 +30,7 @@ class VTK_EXPORT vtkCMBMesh : public vtkObject
 {
 public:
   vtkTypeMacro(vtkCMBMesh, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Set/get visible (non-zero is visible).

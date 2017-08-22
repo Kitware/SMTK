@@ -25,7 +25,7 @@ class VTKSMTKFILTEREXT_EXPORT vtkCleanPolylines : public vtkPolyDataAlgorithm
 public:
   static vtkCleanPolylines* New();
   vtkTypeMacro(vtkCleanPolylines, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   vtkSetClampMacro(MinimumLineLength, double, 0, VTK_FLOAT_MAX);
   vtkGetMacro(MinimumLineLength, double);
@@ -41,7 +41,7 @@ public:
 protected:
   vtkCleanPolylines();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
   void TraverseLine(vtkIdType startPid, vtkIdType startCellId, vtkPolyData* input,
     unsigned char* marks, vtkIdList* ids, double* length, vtkIdType* lastLineId);
   void StripLines(vtkPolyData* input, vtkPolyData* result, vtkDoubleArray* lengths);

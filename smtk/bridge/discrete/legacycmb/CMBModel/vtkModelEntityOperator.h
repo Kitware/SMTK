@@ -28,7 +28,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkModelEntityOperator : public vtkModelEntityO
 public:
   static vtkModelEntityOperator* New();
   vtkTypeMacro(vtkModelEntityOperator, vtkModelEntityOperatorBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Prevent warnings about hidden base-class virtuals:
   using Superclass::Operate;

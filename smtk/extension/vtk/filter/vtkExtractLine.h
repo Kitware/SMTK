@@ -28,7 +28,7 @@ class VTKSMTKFILTEREXT_EXPORT vtkExtractLine : public vtkPolyDataAlgorithm
 public:
   static vtkExtractLine* New();
   vtkTypeMacro(vtkExtractLine, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // The Id of the line to extract
@@ -39,7 +39,7 @@ public:
 protected:
   vtkExtractLine();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
   void TryAppend(vtkPolyData* linePD, vtkCellArray* polyLines, vtkIdType currentCell,
     vtkIdType npts, vtkIdType* ptIds, char* appended);
   void AppendToLine(

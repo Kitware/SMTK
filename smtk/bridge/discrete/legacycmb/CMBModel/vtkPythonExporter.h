@@ -31,7 +31,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkPythonExporter : public vtkObject
 public:
   static vtkPythonExporter* New();
   vtkTypeMacro(vtkPythonExporter, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // This method is for standard paraview client-server apps
   virtual void Operate(vtkDiscreteModelWrapper* modelWrapper, const char* smtkContents);

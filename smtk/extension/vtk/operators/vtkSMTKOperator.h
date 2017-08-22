@@ -26,7 +26,7 @@ class VTKSMTKOPERATORSEXT_EXPORT vtkSMTKOperator : public vtkObject
 public:
   static vtkSMTKOperator* New();
   vtkTypeMacro(vtkSMTKOperator, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   //Description:
   //Derived class should override this methods to do vtk specific processing,

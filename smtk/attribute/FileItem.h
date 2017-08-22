@@ -31,9 +31,9 @@ class SMTKCORE_EXPORT FileItem : public FileSystemItem
 
 public:
   smtkTypeMacro(FileItem);
-  virtual ~FileItem();
+  ~FileItem() override;
 
-  Item::Type type() const;
+  Item::Type type() const override;
 
   const std::vector<std::string>& recentValues() const { return this->m_recentValues; }
   void addRecentValue(const std::string& val);
@@ -41,7 +41,7 @@ public:
 protected:
   FileItem(Attribute* owningAttribute, int itemPosition);
   FileItem(Item* owningItem, int position, int subGroupPosition);
-  virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef);
+  bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef) override;
 
   std::vector<std::string> m_recentValues;
 

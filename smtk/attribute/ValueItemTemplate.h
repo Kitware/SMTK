@@ -36,13 +36,13 @@ public:
   typedef value_type const_iterator;
   typedef ValueItemDefinitionTemplate<DataType> DefType;
 
-  virtual ~ValueItemTemplate() {}
+  ~ValueItemTemplate() override {}
   typename std::vector<DataT>::const_iterator begin() const { return this->m_values.begin(); }
   typename std::vector<DataT>::const_iterator end() const { return this->m_values.end(); }
-  virtual bool setNumberOfValues(std::size_t newSize);
+  bool setNumberOfValues(std::size_t newSize) override;
   DataT value(std::size_t element = 0) const { return this->m_values[element]; }
-  virtual std::string valueAsString() const { return this->valueAsString(0); }
-  virtual std::string valueAsString(std::size_t element) const;
+  std::string valueAsString() const override { return this->valueAsString(0); }
+  std::string valueAsString(std::size_t element) const override;
   bool setValue(const DataT& val) { return this->setValue(0, val); }
   bool setValue(std::size_t element, const DataT& val);
   template <typename I>
@@ -66,12 +66,12 @@ public:
     return ok;
   }
   bool appendValue(const DataT& val);
-  virtual bool appendExpression(smtk::attribute::AttributePtr exp);
+  bool appendExpression(smtk::attribute::AttributePtr exp) override;
   bool removeValue(std::size_t element);
-  virtual void reset();
-  virtual bool setToDefault(std::size_t element = 0);
-  virtual bool isUsingDefault(std::size_t element) const;
-  virtual bool isUsingDefault() const;
+  void reset() override;
+  bool setToDefault(std::size_t element = 0) override;
+  bool isUsingDefault(std::size_t element) const override;
+  bool isUsingDefault() const override;
   DataT defaultValue() const;
   const std::vector<DataT>& defaultValues() const;
   // Assigns this item to be equivalent to another.  Options are processed by derived item classes
@@ -79,7 +79,7 @@ public:
   // to represent an expression will be copied if needed.  Use IGNORE_EXPRESSIONS option to prevent this
   // When an expression attribute is copied, its model associations are by default not.
   // Use COPY_MODEL_ASSOCIATIONS if you want them copied as well.These options are defined in Item.h .
-  virtual bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0);
+  bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0) override;
   shared_ptr<const DefType> concreteDefinition() const
   {
     return dynamic_pointer_cast<const DefType>(this->definition());
@@ -88,8 +88,8 @@ public:
 protected:
   ValueItemTemplate(Attribute* owningAttribute, int itemPosition);
   ValueItemTemplate(Item* owningItem, int myPosition, int mySubGroupPosition);
-  virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef);
-  virtual void updateDiscreteValue(std::size_t element);
+  bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef) override;
+  void updateDiscreteValue(std::size_t element) override;
   std::vector<DataT> m_values;
   const std::vector<DataT> m_dummy; //(1, DataT());
 private:

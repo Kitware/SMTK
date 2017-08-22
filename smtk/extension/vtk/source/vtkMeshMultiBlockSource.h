@@ -37,7 +37,7 @@ class VTKSMTKSOURCEEXT_EXPORT vtkMeshMultiBlockSource : public vtkMultiBlockData
 public:
   smtkDeclareTracksAllInstances(vtkMeshMultiBlockSource);
   static vtkMeshMultiBlockSource* New();
-  virtual void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
   vtkTypeMacro(vtkMeshMultiBlockSource, vtkMultiBlockDataSetAlgorithm);
 
   vtkGetObjectMacro(CachedOutput, vtkMultiBlockDataSet);
@@ -73,8 +73,8 @@ protected:
   void GenerateRepresentationForSingleMesh(const smtk::mesh::MeshSet& meshes, vtkPolyData* pd,
     const smtk::model::EntityRef& entityref, bool genNormals);
 
-  virtual int RequestData(
-    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo);
+  int RequestData(
+    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
 
   void SetCachedOutput(vtkMultiBlockDataSet*);
 

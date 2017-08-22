@@ -29,7 +29,7 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModelGeneratedGridRepresentation
 {
 public:
   vtkTypeMacro(vtkModelGeneratedGridRepresentation, vtkModelGridRepresentation);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   virtual void WriteMeshToFile() = 0;
 
@@ -60,7 +60,7 @@ public:
 
 protected:
   vtkModelGeneratedGridRepresentation();
-  virtual ~vtkModelGeneratedGridRepresentation();
+  ~vtkModelGeneratedGridRepresentation() override;
 
 private:
   vtkModelGeneratedGridRepresentation(

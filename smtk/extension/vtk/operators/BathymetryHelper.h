@@ -90,8 +90,8 @@ public:
   {
   }
 
-  void forPoints(
-    const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz, bool& coordinatesModified)
+  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+    bool& coordinatesModified) override
   {
     if (!m_modifyZ)
     {

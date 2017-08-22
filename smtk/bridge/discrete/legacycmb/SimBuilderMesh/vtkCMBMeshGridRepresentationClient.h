@@ -27,7 +27,7 @@ class VTK_EXPORT vtkCMBMeshGridRepresentationClient : public vtkObject
 public:
   static vtkCMBMeshGridRepresentationClient* New();
   vtkTypeMacro(vtkCMBMeshGridRepresentationClient, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Set if the mesh should be used as the simultation input mesh.

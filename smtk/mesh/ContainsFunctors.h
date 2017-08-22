@@ -34,7 +34,7 @@ class PartiallyContainedFunctor : public ContainsFunctor
 {
 public:
   bool operator()(const smtk::mesh::HandleRange& points, const smtk::mesh::Handle* connectivity,
-    const std::size_t num_nodes) const
+    const std::size_t num_nodes) const override
   {
     bool contains = false;
     for (std::size_t j = 0; j < num_nodes && contains == false; ++j)
@@ -49,7 +49,7 @@ class FullyContainedFunctor : public ContainsFunctor
 {
 public:
   bool operator()(const smtk::mesh::HandleRange& points, const smtk::mesh::Handle* connectivity,
-    const std::size_t num_nodes) const
+    const std::size_t num_nodes) const override
   {
     bool contains = true;
     for (std::size_t j = 0; j < num_nodes && contains == true; ++j)

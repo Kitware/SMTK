@@ -54,7 +54,7 @@ public:
 public slots:
   void onViewBy(int);
   void onViewByWithDefinition(int viewBy, smtk::attribute::DefinitionPtr attDef);
-  void onShowCategory();
+  void onShowCategory() override;
   void onListBoxSelectionChanged();
   void onAttributeValueChanged(QTableWidgetItem*);
   void onAttributeNameChanged(QTableWidgetItem*);
@@ -62,14 +62,14 @@ public slots:
   void onCopySelected();
   void onDeleteSelected();
   void updateAssociationEnableState(smtk::attribute::AttributePtr);
-  virtual void updateModelAssociation();
+  void updateModelAssociation() override;
   void onListBoxClicked(QTableWidgetItem* item);
   void onAttributeCellChanged(int, int);
   void onPropertyDefSelected();
   void attributeFilterChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
   void propertyFilterChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
-  virtual void childrenResized();
-  virtual void showAdvanceLevelOverlay(bool show);
+  void childrenResized() override;
+  void showAdvanceLevelOverlay(bool show) override;
 
 signals:
   void numOfAttriubtesChanged();
@@ -80,7 +80,7 @@ signals:
     const std::string& selectionSource);
 
 protected:
-  virtual void createWidget();
+  void createWidget() override;
   smtk::attribute::AttributePtr getAttributeFromItem(QTableWidgetItem* item);
   smtk::attribute::ItemPtr getAttributeItemFromItem(QTableWidgetItem* item);
 

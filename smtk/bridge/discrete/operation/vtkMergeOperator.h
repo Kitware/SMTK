@@ -28,7 +28,7 @@ class SMTKDISCRETESESSION_EXPORT vtkMergeOperator : public vtkMergeOperatorBase
 public:
   static vtkMergeOperator* New();
   vtkTypeMacro(vtkMergeOperator, vtkMergeOperatorBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   using Superclass::Operate;
 
@@ -46,9 +46,9 @@ public:
 
 protected:
   vtkMergeOperator();
-  virtual ~vtkMergeOperator();
+  ~vtkMergeOperator() override;
 
-  virtual bool AbleToOperate(vtkDiscreteModel* model)
+  bool AbleToOperate(vtkDiscreteModel* model) override
   {
     return this->Superclass::AbleToOperate(model);
   }

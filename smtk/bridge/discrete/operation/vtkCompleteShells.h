@@ -40,7 +40,7 @@ class SMTKDISCRETESESSION_EXPORT vtkCompleteShells : public vtkPolyDataAlgorithm
 public:
   static vtkCompleteShells* New();
   vtkTypeMacro(vtkCompleteShells, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // If true (which is the default), after initial fixup, another pass
@@ -72,12 +72,12 @@ public:
 
 protected:
   vtkCompleteShells();
-  ~vtkCompleteShells();
+  ~vtkCompleteShells() override;
 
-  virtual int FillInputPortInformation(int port, vtkInformation* info);
+  int FillInputPortInformation(int port, vtkInformation* info) override;
 
   /// Implementation of the algorithm.
-  virtual int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 
 private:
   vtkCompleteShells(const vtkCompleteShells&); // Not implemented.

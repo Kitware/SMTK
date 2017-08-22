@@ -24,13 +24,13 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkDiscreteModelVertex : public vtkModelVertex
 {
 public:
   vtkTypeMacro(vtkDiscreteModelVertex, vtkModelVertex);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Pure virtual function to get the point location of the
   // model vertex.  Returns true for success and false for failure.
   // Fills the x, y, and z values in xyz if success.
-  virtual bool GetPoint(double*);
+  bool GetPoint(double*) override;
 
   // Description:
   // The point id of the model vertex defined on the master polydata.
@@ -53,7 +53,7 @@ public:
 protected:
   static vtkDiscreteModelVertex* New();
   vtkDiscreteModelVertex();
-  virtual ~vtkDiscreteModelVertex();
+  ~vtkDiscreteModelVertex() override;
 
   friend class vtkDiscreteModel;
   friend class vtkModel;

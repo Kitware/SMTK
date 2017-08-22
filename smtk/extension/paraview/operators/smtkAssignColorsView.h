@@ -36,16 +36,16 @@ public:
   static QIcon renderPaletteSwatch(const QList<QColor>& color, int width, int radius);
   static QIcon renderInvalidSwatch(int radius);
 
-  virtual bool displayItem(smtk::attribute::ItemPtr);
+  bool displayItem(smtk::attribute::ItemPtr) override;
 
 public slots:
-  virtual void updateUI() {} // NB: Subclass implementation causes crashes.
-  virtual void showAdvanceLevelOverlay(bool show);
-  virtual void requestModelEntityAssociation();
-  virtual void onShowCategory() { this->updateAttributeData(); }
+  void updateUI() override {} // NB: Subclass implementation causes crashes.
+  void showAdvanceLevelOverlay(bool show) override;
+  void requestModelEntityAssociation() override;
+  void onShowCategory() override { this->updateAttributeData(); }
   // This will be triggered by selecting different type
   // of construction method in create-edge op.
-  virtual void valueChanged(smtk::attribute::ItemPtr optype);
+  void valueChanged(smtk::attribute::ItemPtr optype) override;
 
 protected slots:
   virtual void requestOperation(const smtk::model::OperatorPtr& op);
@@ -63,8 +63,8 @@ protected slots:
   virtual void attributeModified();
 
 protected:
-  virtual void updateAttributeData();
-  virtual void createWidget();
+  void updateAttributeData() override;
+  void createWidget() override;
   virtual void setInfoToBeDisplayed() override;
 
 private:

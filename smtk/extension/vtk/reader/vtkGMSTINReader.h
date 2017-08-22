@@ -32,7 +32,7 @@ class VTKSMTKREADEREXT_EXPORT vtkGMSTINReader : public vtkMultiBlockDataSetAlgor
 public:
   static vtkGMSTINReader* New();
   vtkTypeMacro(vtkGMSTINReader, vtkMultiBlockDataSetAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Name of the file to be read.
@@ -43,8 +43,8 @@ protected:
   vtkGMSTINReader();
   ~vtkGMSTINReader();
 
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 
   int ReadTIN(unsigned int block, vtkMultiBlockDataSet* output);
   void ReadTriangles(vtkCellArray*);

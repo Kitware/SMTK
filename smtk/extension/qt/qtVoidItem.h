@@ -31,16 +31,16 @@ class SMTKQTEXT_EXPORT qtVoidItem : public qtItem
 public:
   qtVoidItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview);
   virtual ~qtVoidItem();
-  virtual void setLabelVisible(bool);
+  void setLabelVisible(bool) override;
 
 public slots:
   void setOutputOptional(int);
 
 protected slots:
-  virtual void updateItemData();
+  void updateItemData() override;
 
 protected:
-  virtual void createWidget();
+  void createWidget() override;
 
 private:
   qtVoidItemInternals* Internals;

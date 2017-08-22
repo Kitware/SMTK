@@ -44,12 +44,12 @@ public:
   virtual int saveJSON(
     cJSON* node, const smtk::model::SessionRef& sref, const smtk::model::Models& models) override;
 
-  virtual int importJSON(model::ManagerPtr modelMgr, const model::SessionPtr& session,
-    cJSON* sessionRec, bool loadNativeModels = false);
-  virtual int exportJSON(model::ManagerPtr modelMgr, const model::SessionPtr& sessPtr,
-    cJSON* sessionRec, bool writeNativeModels = false);
-  virtual int exportJSON(model::ManagerPtr modelMgr, const model::SessionPtr& session,
-    const common::UUIDs& modelIds, cJSON* sessionRec, bool writeNativeModels = false);
+  int importJSON(model::ManagerPtr modelMgr, const model::SessionPtr& session, cJSON* sessionRec,
+    bool loadNativeModels = false) override;
+  int exportJSON(model::ManagerPtr modelMgr, const model::SessionPtr& sessPtr, cJSON* sessionRec,
+    bool writeNativeModels = false) override;
+  int exportJSON(model::ManagerPtr modelMgr, const model::SessionPtr& session,
+    const common::UUIDs& modelIds, cJSON* sessionRec, bool writeNativeModels = false) override;
 
 protected:
   void addModelUUIDs(const model::EntityRef& parent, common::UUIDArray& uuids);

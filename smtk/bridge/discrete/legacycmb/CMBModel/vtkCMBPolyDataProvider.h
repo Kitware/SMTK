@@ -30,7 +30,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkCMBPolyDataProvider : public vtkPolyDataAlgo
 public:
   static vtkCMBPolyDataProvider* New();
   vtkTypeMacro(vtkCMBPolyDataProvider, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   void SetModelWrapper(vtkDiscreteModelWrapper*);
   vtkGetMacro(ModelWrapper, vtkDiscreteModelWrapper*);
@@ -63,8 +63,8 @@ protected:
   // Description:
   // This is called by the superclass.
   // This is the method you should override.
-  virtual int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector);
+  int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
+    vtkInformationVector* outputVector) override;
 
   // Description:
   // This is called by the superclass.

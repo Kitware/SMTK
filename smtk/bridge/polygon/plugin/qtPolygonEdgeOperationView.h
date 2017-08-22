@@ -30,16 +30,16 @@ public:
   virtual ~qtPolygonEdgeOperationView();
 
 public slots:
-  virtual void updateUI() {} // NB: Subclass implementation causes crashes.
-  virtual void showAdvanceLevelOverlay(bool show);
-  virtual void requestModelEntityAssociation();
-  virtual void onShowCategory() { this->updateAttributeData(); }
+  void updateUI() override {} // NB: Subclass implementation causes crashes.
+  void showAdvanceLevelOverlay(bool show) override;
+  void requestModelEntityAssociation() override;
+  void onShowCategory() override { this->updateAttributeData(); }
   // This will be triggered by selecting different type
   // of edge operations, create-edge, edit-edge, or split-edge.
   virtual void operationSelected(const smtk::model::OperatorPtr& op);
   // This will be triggered by selecting different type
   // of construction method in create-edge op.
-  virtual void valueChanged(smtk::attribute::ItemPtr optype);
+  void valueChanged(smtk::attribute::ItemPtr optype) override;
   // Update faces visibility when spliting edges
   virtual void onHideAllFaces(bool status);
 
@@ -53,8 +53,8 @@ protected slots:
   virtual void attributeModified();
 
 protected:
-  virtual void updateAttributeData();
-  virtual void createWidget();
+  void updateAttributeData() override;
+  void createWidget() override;
 
 private:
   qtPolygonEdgeOperationViewInternals* Internals;

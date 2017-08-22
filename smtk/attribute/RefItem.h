@@ -36,14 +36,14 @@ public:
   typedef std::vector<attribute::WeakAttributePtr>::const_iterator const_iterator;
 
   smtkTypeMacro(RefItem);
-  virtual ~RefItem();
-  virtual Item::Type type() const;
+  ~RefItem() override;
+  Item::Type type() const override;
   // A RefItem is valid if it is either no enabled or if all of
   // its values are set and the attributes it references exist
   // It does NOT check to see if the attribute(s) it refers to are
   // valid - the reason for this is to avoid infinite loops if 2
   // attributes contain items that reference each other.
-  virtual bool isValid() const;
+  bool isValid() const override;
 
   std::size_t numberOfValues() const { return this->m_values.size(); }
   bool setNumberOfValues(std::size_t newSize);
@@ -60,13 +60,13 @@ public:
   //   * @param visitor a lambda function which would be applied on children items
   //   * @param activeChildren a flag indicating whether it should be applied to active children only or not
   //   */
-  virtual void visitChildren(
-    std::function<void(smtk::attribute::ItemPtr, bool)> visitor, bool activeChildren = true);
+  void visitChildren(std::function<void(smtk::attribute::ItemPtr, bool)> visitor,
+    bool activeChildren = true) override;
   bool setValue(smtk::attribute::AttributePtr val) { return this->setValue(0, val); }
   bool setValue(std::size_t element, smtk::attribute::AttributePtr val);
   bool appendValue(smtk::attribute::AttributePtr val);
   bool removeValue(std::size_t element);
-  virtual void reset();
+  void reset() override;
   virtual std::string valueAsString(const std::string& format = "") const
   {
     return this->valueAsString(0, format);
@@ -92,12 +92,12 @@ public:
   // item will also be copied if needed.  Use IGNORE_ATTRIBUTE_REF_ITEMS option to prevent this.
   // When the reference attribute is copied, its model associations are not copied by default.
   // Use COPY_MODEL_ASSOCIATIONS if you want them copied as well These options are defined in Item.h .
-  virtual bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0);
+  bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0) override;
 
 protected:
   RefItem(Attribute* owningAttribute, int itemPosition);
   RefItem(Item* owningItem, int myPosition, int mySubGroupPosition);
-  virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
+  bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def) override;
   void clearAllReferences();
   std::vector<attribute::WeakAttributePtr> m_values;
 

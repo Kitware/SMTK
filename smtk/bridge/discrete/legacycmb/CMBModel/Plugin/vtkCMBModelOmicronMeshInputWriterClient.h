@@ -25,7 +25,7 @@ class VTK_EXPORT vtkCMBModelOmicronMeshInputWriterClient : public vtkObject
 public:
   static vtkCMBModelOmicronMeshInputWriterClient* New();
   vtkTypeMacro(vtkCMBModelOmicronMeshInputWriterClient, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   bool Operate(vtkDiscreteModel* model, vtkSMProxy* serverModelProxy);

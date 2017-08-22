@@ -43,7 +43,7 @@ signals:
   void closing();
 
 protected:
-  virtual void closeEvent(QCloseEvent* event);
+  void closeEvent(QCloseEvent* event) override;
 };
 
 } // namespace model

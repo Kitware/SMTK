@@ -44,9 +44,9 @@ public:
   typedef std::map<smtk::common::UUID, std::set<int> >::const_iterator const_sel_map_it;
 
   smtkTypeMacro(MeshSelectionItem);
-  virtual ~MeshSelectionItem();
-  virtual Item::Type type() const;
-  virtual bool isValid() const;
+  ~MeshSelectionItem() override;
+  Item::Type type() const override;
+  bool isValid() const override;
 
   void setValues(const smtk::common::UUID&, const std::set<int>&);
   void unionValues(const smtk::common::UUID&, const std::set<int>&);
@@ -58,10 +58,10 @@ public:
 
   std::size_t numberOfValues() const;
   const std::set<int>& values(const smtk::common::UUID&);
-  virtual void reset();
+  void reset() override;
   // Assigns this item to be equivalent to another.  Options are currently not used.
   // Returns true if success and false if a problem occured
-  virtual bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0);
+  bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0) override;
 
   const_sel_map_it begin() const;
   const_sel_map_it end() const;
@@ -74,7 +74,7 @@ protected:
 
   MeshSelectionItem(Attribute* owningAttribute, int itemPosition);
   MeshSelectionItem(Item* owningItem, int position, int subGroupPosition);
-  virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef);
+  bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef) override;
   std::map<smtk::common::UUID, std::set<int> > m_selectionValues;
   MeshModifyMode m_modifyMode;
   bool m_isCtrlKeyDown;

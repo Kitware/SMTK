@@ -39,11 +39,11 @@ public:
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
-  virtual bool ableToOperate();
+  bool ableToOperate() override;
 
 protected:
   MergeOperator();
-  virtual smtk::model::OperatorResult operateInternal();
+  smtk::model::OperatorResult operateInternal() override;
   int fetchCMBCellId(const std::string& parameterName) const;
   int fetchCMBCellId(const smtk::attribute::ModelEntityItemPtr& entItem, int idx) const;
 

@@ -30,11 +30,11 @@ public:
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
-  virtual bool ableToOperate();
+  bool ableToOperate() override;
 
 protected:
   SplitFaceOperator();
-  virtual smtk::model::OperatorResult operateInternal();
+  smtk::model::OperatorResult operateInternal() override;
   int fetchCMBFaceId() const;
   int fetchCMBCellId(const smtk::attribute::ModelEntityItemPtr& entItem, int idx) const;
 

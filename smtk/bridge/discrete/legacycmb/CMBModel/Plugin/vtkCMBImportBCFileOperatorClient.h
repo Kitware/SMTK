@@ -29,7 +29,7 @@ class VTK_EXPORT vtkCMBImportBCFileOperatorClient : public vtkObject
 public:
   static vtkCMBImportBCFileOperatorClient* New();
   vtkTypeMacro(vtkCMBImportBCFileOperatorClient, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Get/Set the name of the file to be imported from.

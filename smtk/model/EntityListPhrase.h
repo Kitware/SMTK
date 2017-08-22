@@ -29,16 +29,16 @@ public:
   Ptr setup(const T& entities, DescriptivePhrase::Ptr parent = DescriptivePhrasePtr());
   virtual ~EntityListPhrase() {}
 
-  virtual std::string title();
-  virtual std::string subtitle();
+  std::string title() override;
+  std::string subtitle() override;
 
   EntityRefArray relatedEntities() const;
-  virtual BitFlags relatedBitFlags() const { return this->m_commonFlags; }
+  BitFlags relatedBitFlags() const override { return this->m_commonFlags; }
   EntityRefArray& relatedEntities();
   virtual void setFlags(BitFlags commonFlags, BitFlags unionFlags);
 
-  virtual bool isRelatedColorMutable() const;
-  virtual FloatList relatedColor() const;
+  bool isRelatedColorMutable() const override;
+  FloatList relatedColor() const override;
 
 protected:
   EntityListPhrase();

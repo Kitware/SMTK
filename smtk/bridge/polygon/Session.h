@@ -57,12 +57,12 @@ public:
   typedef smtk::model::SessionInfoBits SessionInfoBits;
   virtual ~Session();
 
-  virtual SessionInfoBits allSupportedInformation() const;
+  SessionInfoBits allSupportedInformation() const override;
 
   template <typename T, typename U, typename V>
   void consistentInternalDelete(T& container, U& modified, V& expunged, bool logDebug);
 
-  std::string defaultFileExtension(const smtk::model::Model&) const;
+  std::string defaultFileExtension(const smtk::model::Model&) const override;
 
 protected:
   friend class Neighborhood;
@@ -72,8 +72,8 @@ protected:
 
   Session();
 
-  virtual smtk::model::SessionInfoBits transcribeInternal(
-    const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth = -1);
+  smtk::model::SessionInfoBits transcribeInternal(
+    const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth = -1) override;
 
   void addStorage(
     const smtk::common::UUID& uid, smtk::bridge::polygon::internal::entity::Ptr storage);
@@ -108,7 +108,7 @@ protected:
     return smtk::dynamic_pointer_cast<T>(it->second);
   }
 
-  virtual smtk::model::SessionIOPtr createIODelegate(const std::string& format);
+  smtk::model::SessionIOPtr createIODelegate(const std::string& format) override;
 
   internal::EntityIdToPtr::iterator findStorageIterator(const smtk::common::UUID& uid);
   internal::EntityIdToPtr::iterator beginStorage();

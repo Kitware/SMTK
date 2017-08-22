@@ -38,17 +38,17 @@ public:
   bool isValid() const;
 
 public slots:
-  virtual void showAdvanceLevelOverlay(bool show);
-  virtual void requestModelEntityAssociation();
-  virtual void onShowCategory() { this->updateAttributeData(); }
+  void showAdvanceLevelOverlay(bool show) override;
+  void requestModelEntityAssociation() override;
+  void onShowCategory() override { this->updateAttributeData(); }
 
 signals:
   // emitted when an attribute is modified
   void modified();
 
 protected:
-  virtual void updateAttributeData();
-  virtual void createWidget();
+  void updateAttributeData() override;
+  void createWidget() override;
 
 private:
   qtInstancedViewInternals* Internals;

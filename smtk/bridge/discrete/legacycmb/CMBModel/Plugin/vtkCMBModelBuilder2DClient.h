@@ -31,7 +31,7 @@ class VTK_EXPORT vtkCMBModelBuilder2DClient : public vtkObject
 public:
   static vtkCMBModelBuilder2DClient* New();
   vtkTypeMacro(vtkCMBModelBuilder2DClient, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Using the input poly on the server to set up the modle

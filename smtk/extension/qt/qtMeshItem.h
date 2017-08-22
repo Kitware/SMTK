@@ -37,7 +37,7 @@ public:
     Qt::Orientation enVectorItemOrient = Qt::Horizontal);
   virtual ~qtMeshItem();
 
-  virtual void setLabelVisible(bool);
+  void setLabelVisible(bool) override;
   smtk::attribute::MeshItemPtr meshItem();
 
   bool add(const smtk::mesh::MeshSet& val);
@@ -47,10 +47,10 @@ public slots:
   void setOutputOptional(int);
 
 protected slots:
-  virtual void updateItemData();
+  void updateItemData() override;
 
 protected:
-  virtual void createWidget();
+  void createWidget() override;
   virtual void loadAssociatedEntities();
 
 private:

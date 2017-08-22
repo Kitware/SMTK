@@ -37,7 +37,7 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModelItemListIterator : public vtkModelItem
 public:
   static vtkModelItemListIterator* New();
   vtkTypeMacro(vtkModelItemListIterator, vtkModelItemIterator);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Set/get functions for Root.  Root is set by the function that
@@ -53,27 +53,27 @@ public:
 
   // Description:
   // Go to the first item with given type.
-  void Begin();
+  void Begin() override;
 
   // Description:
   // Is the iterator at the end of the list.
-  int IsAtEnd();
+  int IsAtEnd() override;
 
   // Description:
   // Move to the next iterator.
-  void Next();
+  void Next() override;
 
   // Description:
   // Returns the current item.
-  vtkModelItem* GetCurrentItem();
+  vtkModelItem* GetCurrentItem() override;
 
   // Description:
   // Returns the number of items being iterated over.
-  virtual int Size();
+  int Size() override;
 
 protected:
   vtkModelItemListIterator();
-  virtual ~vtkModelItemListIterator();
+  ~vtkModelItemListIterator() override;
 
 private:
   vtkModelItemListIterator(const vtkModelItemListIterator&); // Not implemented.

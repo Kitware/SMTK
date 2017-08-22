@@ -34,9 +34,9 @@ public:
     return smtk::attribute::MeshSelectionItemDefinitionPtr(new MeshSelectionItemDefinition(myName));
   }
 
-  virtual ~MeshSelectionItemDefinition();
+  ~MeshSelectionItemDefinition() override;
 
-  virtual Item::Type type() const;
+  Item::Type type() const override;
   smtk::model::BitFlags membershipMask() const;
   void setMembershipMask(smtk::model::BitFlags entMask);
   std::string refModelEntityName() const { return m_RefModelEntityDefName; }
@@ -46,12 +46,12 @@ public:
 
   bool isValueValid(const int& val) const;
 
-  virtual smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const;
-  virtual smtk::attribute::ItemPtr buildItem(
-    Item* owningItem, int position, int subGroupPosition) const;
+  smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
+  smtk::attribute::ItemPtr buildItem(
+    Item* owningItem, int position, int subGroupPosition) const override;
 
-  virtual smtk::attribute::ItemDefinitionPtr createCopy(
-    smtk::attribute::ItemDefinition::CopyInfo& info) const;
+  smtk::attribute::ItemDefinitionPtr createCopy(
+    smtk::attribute::ItemDefinition::CopyInfo& info) const override;
 
 protected:
   MeshSelectionItemDefinition(const std::string& myName);

@@ -32,16 +32,16 @@ public:
     return smtk::attribute::DirectoryItemDefinitionPtr(new DirectoryItemDefinition(myName));
   }
 
-  virtual ~DirectoryItemDefinition();
+  ~DirectoryItemDefinition() override;
 
-  virtual Item::Type type() const;
+  Item::Type type() const override;
 
-  virtual smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const;
-  virtual smtk::attribute::ItemPtr buildItem(
-    Item* owningItem, int position, int subGroupPosition) const;
+  smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
+  smtk::attribute::ItemPtr buildItem(
+    Item* owningItem, int position, int subGroupPosition) const override;
 
-  virtual smtk::attribute::ItemDefinitionPtr createCopy(
-    smtk::attribute::ItemDefinition::CopyInfo& info) const;
+  smtk::attribute::ItemDefinitionPtr createCopy(
+    smtk::attribute::ItemDefinition::CopyInfo& info) const override;
 
 protected:
   DirectoryItemDefinition(const std::string& myName);

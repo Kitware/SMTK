@@ -33,7 +33,7 @@ class VTKSMTKMESHINGEXT_EXPORT vtkRayIntersectionLocator : public vtkCellTreeLoc
 public:
   static vtkRayIntersectionLocator* New();
   vtkTypeMacro(vtkRayIntersectionLocator, vtkCellTreeLocator);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   virtual int AllIntersectionsAlongSegment(const vtkVector3d& p0, const vtkVector3d& p1,
     std::vector<vtkVector3d>& points, std::vector<double>& params,

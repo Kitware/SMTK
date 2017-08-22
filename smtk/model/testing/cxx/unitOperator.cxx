@@ -93,7 +93,7 @@ public:
     : m_able(false) // fail operation until told otherwise
   {
   }
-  virtual bool ableToOperate()
+  bool ableToOperate() override
   {
     this->ensureSpecification();
     return
@@ -103,7 +103,7 @@ public:
   bool m_able; // Used to force UNABLE_TO_OPERATE result.
 
 protected:
-  virtual OperatorResult operateInternal()
+  OperatorResult operateInternal() override
   {
     return this->createResult(this->specification()->findInt("shouldSucceed")->value()
         ? OPERATION_SUCCEEDED

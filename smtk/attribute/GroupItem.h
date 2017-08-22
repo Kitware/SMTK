@@ -53,9 +53,9 @@ public:
   typedef std::vector<std::vector<smtk::attribute::ItemPtr> >::const_iterator const_iterator;
 
   smtkTypeMacro(GroupItem);
-  virtual ~GroupItem();
-  virtual Item::Type type() const;
-  virtual bool isValid() const;
+  ~GroupItem() override;
+  Item::Type type() const override;
+  bool isValid() const override;
   std::size_t numberOfRequiredGroups() const;
   std::size_t maxNumberOfGroups() const;
   /**
@@ -65,8 +65,8 @@ public:
    * @param visitor a lambda function which would be applied on children items
    * @param activeChildren a flag indicating whether it should be applied to active children only or not
    */
-  virtual void visitChildren(
-    std::function<void(smtk::attribute::ItemPtr, bool)> visitor, bool activeChildren = true);
+  void visitChildren(std::function<void(smtk::attribute::ItemPtr, bool)> visitor,
+    bool activeChildren = true) override;
 
   bool isExtensible() const;
 
@@ -112,7 +112,7 @@ public:
   template <typename T>
   typename T::ConstPtr findAs(const std::string& name) const;
 
-  virtual void reset();
+  void reset() override;
 
   // Iterator-style access to values:
   const_iterator begin() const;
@@ -121,12 +121,12 @@ public:
   // Assigns this item to be equivalent to another.  Options are processed by derived item classes
   // Returns true if success and false if a problem occured - options are use when copying sub-items.
   // See Items.h for a description of these options.
-  virtual bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0);
+  bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0) override;
 
 protected:
   GroupItem(Attribute* owningAttribute, int itemPosition);
   GroupItem(Item* owningItem, int myPosition, int mySubGroupPosition);
-  virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
+  bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def) override;
   // This method will detach all of the items directly owned by
   // this group
   void detachAllItems();

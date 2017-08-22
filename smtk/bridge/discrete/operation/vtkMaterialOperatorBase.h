@@ -35,12 +35,12 @@ class SMTKDISCRETESESSION_EXPORT vtkMaterialOperatorBase : public vtkModelEntity
 public:
   static vtkMaterialOperatorBase* New();
   vtkTypeMacro(vtkMaterialOperatorBase, vtkModelEntityOperatorBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Set the model entity type to vtkModelMaterialType to override
   // the superclass virtual function.
-  virtual void SetItemType(int itemType);
+  void SetItemType(int itemType) override;
 
   // Description:
   // Get the material from Model.
@@ -78,7 +78,7 @@ public:
 
   // Description:
   // Do the operations on the specified material.
-  virtual bool Operate(vtkDiscreteModel* Model);
+  bool Operate(vtkDiscreteModel* Model) override;
 
   // Description:
   // Build the material on the server and client before operating
@@ -92,11 +92,11 @@ public:
 
 protected:
   vtkMaterialOperatorBase();
-  virtual ~vtkMaterialOperatorBase();
+  ~vtkMaterialOperatorBase() override;
 
   // Description:
   // Check to see if everything is properly set for the operator.
-  virtual bool AbleToOperate(vtkDiscreteModel* Model);
+  bool AbleToOperate(vtkDiscreteModel* Model) override;
 
 private:
   vtkMaterialOperatorBase(const vtkMaterialOperatorBase&); // Not implemented.

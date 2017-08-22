@@ -29,14 +29,14 @@ public:
     return smtk::attribute::DoubleItemDefinitionPtr(new DoubleItemDefinition(myName));
   }
 
-  virtual ~DoubleItemDefinition();
-  virtual Item::Type type() const;
-  virtual smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const;
-  virtual smtk::attribute::ItemPtr buildItem(
-    Item* owningItem, int position, int subGroupPosition) const;
+  ~DoubleItemDefinition() override;
+  Item::Type type() const override;
+  smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
+  smtk::attribute::ItemPtr buildItem(
+    Item* owningItem, int position, int subGroupPosition) const override;
 
-  virtual smtk::attribute::ItemDefinitionPtr createCopy(
-    smtk::attribute::ItemDefinition::CopyInfo& info) const;
+  smtk::attribute::ItemDefinitionPtr createCopy(
+    smtk::attribute::ItemDefinition::CopyInfo& info) const override;
 
 protected:
   DoubleItemDefinition(const std::string& myName);

@@ -38,11 +38,11 @@ public:
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
-  virtual bool ableToOperate();
+  bool ableToOperate() override;
 
 protected:
   GrowOperator();
-  virtual smtk::model::OperatorResult operateInternal();
+  smtk::model::OperatorResult operateInternal() override;
   void findVisibleModelFaces(
     const smtk::model::CellEntity& cellent, std::set<vtkIdType>& ModelFaceIds, Session* opsession);
 

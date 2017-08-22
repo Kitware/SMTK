@@ -37,7 +37,7 @@ class VTKSMTKSOURCEEXT_EXPORT vtkModelMultiBlockSource : public vtkMultiBlockDat
 public:
   smtkDeclareTracksAllInstances(vtkModelMultiBlockSource);
   static vtkModelMultiBlockSource* New();
-  virtual void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
   vtkTypeMacro(vtkModelMultiBlockSource, vtkMultiBlockDataSetAlgorithm);
 
   enum OutputPorts
@@ -110,7 +110,7 @@ public:
 
 protected:
   vtkModelMultiBlockSource();
-  virtual ~vtkModelMultiBlockSource();
+  ~vtkModelMultiBlockSource() override;
 
   vtkSmartPointer<vtkDataObject> GenerateRepresentationFromModel(
     const smtk::model::EntityRef& entity, bool genNormals);
@@ -136,10 +136,10 @@ protected:
   void GenerateRepresentationFromModel(vtkMultiBlockDataSet* mbds, smtk::model::ManagerPtr model);
 
   //virtual int FillInputPortInformation(int port, vtkInformation* request);
-  virtual int FillOutputPortInformation(int port, vtkInformation* request);
+  int FillOutputPortInformation(int port, vtkInformation* request) override;
 
-  virtual int RequestData(
-    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo);
+  int RequestData(
+    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
 
   void SetCachedOutput(vtkMultiBlockDataSet*, vtkPolyData*, vtkMultiBlockDataSet*);
 

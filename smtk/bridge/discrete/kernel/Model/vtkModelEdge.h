@@ -28,9 +28,9 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModelEdge : public vtkModelGeometricEntity
 {
 public:
   vtkTypeMacro(vtkModelEdge, vtkModelGeometricEntity);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual int GetType();
+  int GetType() override;
 
   int GetNumberOfModelEdgeUses();
   vtkModelEdgeUse* GetModelEdgeUse(int i);
@@ -55,7 +55,7 @@ public:
   // Reads the state of an instance from an archive OR
   // writes the state of an instance to an archive. See
   // the documentation for this class for details.
-  virtual void Serialize(vtkSerializer* ser);
+  void Serialize(vtkSerializer* ser) override;
 
   // Description:
   // Split the edge with given vertex and/or edge. This is mainly used
@@ -67,7 +67,7 @@ public:
 
 protected:
   vtkModelEdge();
-  virtual ~vtkModelEdge();
+  ~vtkModelEdge() override;
 
   // Description:
   // Build a model edge use pair (2 model edge uses).

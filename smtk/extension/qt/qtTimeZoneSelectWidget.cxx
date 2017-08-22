@@ -29,8 +29,8 @@ public:
     : QSortFilterProxyModel(parent)
   {
   }
-  virtual QVariant headerData(
-    int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+  QVariant headerData(
+    int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 };
 
 QVariant TimeZoneRegionProxyModel::headerData(

@@ -39,7 +39,7 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkSerializationHelperMap : public vtkObject
 public:
   static vtkSerializationHelperMap* New();
   vtkTypeMacro(vtkSerializationHelperMap, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Instantiate all "known" (supporting core VTK and VTKEdge) helpers
@@ -82,7 +82,7 @@ public:
 
 protected:
   vtkSerializationHelperMap();
-  ~vtkSerializationHelperMap();
+  ~vtkSerializationHelperMap() override;
 
 private:
   vtkSerializationHelperMap(const vtkSerializationHelperMap&); // Not implemented.

@@ -1160,7 +1160,7 @@ public:
     }
   }
 
-  void forMesh(smtk::mesh::MeshSet& mesh)
+  void forMesh(smtk::mesh::MeshSet& mesh) override
   {
     cJSON* meshJson = cJSON_CreateObject();
 

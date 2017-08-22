@@ -76,7 +76,7 @@ public:
   static vtkDiscreteModel* New();
 
   vtkTypeMacro(vtkDiscreteModel, vtkModel);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Get the geometric representation of the model.
@@ -113,7 +113,7 @@ public:
   // associations to the model of objects aggregated by the model.
   // NOTE: This function should be called before call Delete, otherwise,
   // there might be leaks due to model associations.
-  virtual void Reset();
+  void Reset() override;
 
   // Description:
   // Build a model entity. The model is responsible for the management
@@ -122,19 +122,19 @@ public:
   virtual vtkModelVertex* BuildModelVertex(vtkIdType pointId, bool bCreateGeometry = false);
   virtual vtkModelVertex* BuildModelVertex(
     vtkIdType pointId, vtkIdType vertexId, bool bCreateGeometry = false);
-  virtual vtkModelEdge* BuildModelEdge(vtkModelVertex* vertex0, vtkModelVertex* vertex1);
+  vtkModelEdge* BuildModelEdge(vtkModelVertex* vertex0, vtkModelVertex* vertex1) override;
 
   virtual vtkModelEdge* BuildModelEdge(
     vtkModelVertex* vertex0, vtkModelVertex* vertex1, vtkIdType edgeId);
 
   virtual vtkModelFace* BuildModelFace(
     int numEdges, vtkModelEdge** edges, int* edgeDirections, vtkModelMaterial* material);
-  virtual vtkModelFace* BuildModelFace(int numEdges, vtkModelEdge** edges, int* edgeDirections);
+  vtkModelFace* BuildModelFace(int numEdges, vtkModelEdge** edges, int* edgeDirections) override;
   virtual vtkModelFace* BuildModelFace(
     int NumEdges, vtkModelEdge** Edges, int* edgeDirections, vtkIdType modelFaceId);
-  virtual vtkModelRegion* BuildModelRegion();
+  vtkModelRegion* BuildModelRegion() override;
   virtual vtkModelRegion* BuildModelRegion(vtkIdType modelRegionId);
-  virtual vtkModelRegion* BuildModelRegion(int numFaces, vtkModelFace** faces, int* faceSides);
+  vtkModelRegion* BuildModelRegion(int numFaces, vtkModelFace** faces, int* faceSides) override;
   virtual vtkModelRegion* BuildModelRegion(
     int numFaces, vtkModelFace** faces, int* faceSides, vtkIdType modelRegionId);
   virtual vtkModelRegion* BuildModelRegion(
@@ -142,9 +142,9 @@ public:
   virtual vtkModelRegion* BuildModelRegion(int numFaces, vtkModelFace** faces, int* faceSides,
     vtkIdType modelRegionId, vtkModelMaterial* material);
 
-  virtual bool DestroyModelGeometricEntity(vtkModelGeometricEntity* geomEntity);
+  bool DestroyModelGeometricEntity(vtkModelGeometricEntity* geomEntity) override;
 
-  virtual void GetBounds(double bounds[6]);
+  void GetBounds(double bounds[6]) override;
 
   virtual vtkModelMaterial* BuildMaterial();
   virtual vtkModelMaterial* BuildMaterial(vtkIdType id);
@@ -184,7 +184,7 @@ public:
   // Reads the state of an instance from an archive OR
   // writes the state of an instance to an archive. See
   // the documentation for this class for details.
-  virtual void Serialize(vtkSerializer* ser);
+  void Serialize(vtkSerializer* ser) override;
 
   // Description:
   // Static function for getting the information object
@@ -204,7 +204,7 @@ public:
 
 protected:
   vtkDiscreteModel();
-  virtual ~vtkDiscreteModel();
+  ~vtkDiscreteModel() override;
 
   // Description:
   // Function to get the next default name for a model entity.  It

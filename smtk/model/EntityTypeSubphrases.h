@@ -32,9 +32,9 @@ public:
   smtkSharedPtrCreateMacro(SubphraseGenerator);
   virtual ~EntityTypeSubphrases() {}
 
-  virtual DescriptivePhrases subphrases(DescriptivePhrase::Ptr src);
-  virtual bool shouldOmitProperty(
-    DescriptivePhrase::Ptr parent, PropertyType ptype, const std::string& pname) const;
+  DescriptivePhrases subphrases(DescriptivePhrase::Ptr src) override;
+  bool shouldOmitProperty(
+    DescriptivePhrase::Ptr parent, PropertyType ptype, const std::string& pname) const override;
 
 protected:
   EntityTypeSubphrases();

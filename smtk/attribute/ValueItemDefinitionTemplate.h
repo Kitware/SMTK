@@ -29,7 +29,7 @@ class ValueItemDefinitionTemplate : public smtk::attribute::ValueItemDefinition
 public:
   typedef DataT DataType;
 
-  virtual ~ValueItemDefinitionTemplate() {}
+  ~ValueItemDefinitionTemplate() override {}
 
   const DataT& defaultValue() const;
   const DataT& defaultValue(std::size_t element) const;
@@ -39,7 +39,7 @@ public:
   const DataT& discreteValue(std::size_t element) const { return this->m_discreteValues[element]; }
   void addDiscreteValue(const DataT& val);
   void addDiscreteValue(const DataT& val, const std::string& discreteEnum);
-  virtual bool hasRange() const { return this->m_minRangeSet || this->m_maxRangeSet; }
+  bool hasRange() const override { return this->m_minRangeSet || this->m_maxRangeSet; }
   bool hasMinRange() const { return this->m_minRangeSet; }
   const DataT& minRange() const { return this->m_minRange; }
   bool minRangeInclusive() const { return this->m_minRangeInclusive; }
@@ -55,7 +55,7 @@ public:
 protected:
   ValueItemDefinitionTemplate(const std::string& myname);
   void copyTo(ValueItemDefinitionPtr def, smtk::attribute::ItemDefinition::CopyInfo& info) const;
-  virtual void updateDiscreteValue();
+  void updateDiscreteValue() override;
   std::vector<DataT> m_defaultValue;
   DataT m_minRange;
   bool m_minRangeSet;
