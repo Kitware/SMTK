@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>409</width>
+    <width>468</width>
     <height>112</height>
    </rect>
   </property>
@@ -62,7 +62,7 @@
    <item row="0" column="3">
     <widget class="QToolButton" name="RemoveColorBtn">
      <property name="toolTip">
-      <string>Click here to reset the entity so it inherits the default color.</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Click here to reset the entity so it inherits the default color assigned to its parent entity list. If the parent entity list has no color, the default color for the entity type — set in user preferences — will be used.&lt;/p&gt;&lt;p&gt;To invalidate a parent entity list's color, click on its color swatch in the tree view and hit &amp;quot;Cancel&amp;quot; in the color dialog.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>inherited default</string>

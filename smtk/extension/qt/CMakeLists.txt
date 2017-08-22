@@ -1,5 +1,8 @@
 find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
 
+include(${PARAVIEW_USE_FILE})
+include(ParaViewPlugins)
+
 # set up sources to build
 set(QAttrLibSrcs
   qtActiveObjects.cxx
@@ -138,6 +141,7 @@ target_include_directories(smtkQtExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 #set smtkQtExt to publicly link to smtkCore
 target_link_libraries(smtkQtExt LINK_PUBLIC
   smtkCore
+  pqCore # pqSettings pqApplicationCore
   Qt5::Core
   Qt5::Widgets
   )
