@@ -1,6 +1,7 @@
 # ==============================================================================
 # Source
 # ==============================================================================
+find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 # Qt UI files

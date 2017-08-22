@@ -7,7 +7,6 @@ set(smtkModelPythonTests
 # Additional tests that require SMTK_DATA_DIR
 set(smtkModelPythonDataTests
   modelAttributes
-  modelInstance
   modelSetPropertyOp
   modelCloseModelOp
   modelPhrase
@@ -18,6 +17,13 @@ if (SMTK_ENABLE_EXODUS_SESSION)
   set(smtkModelPythonDataTests
     ${smtkModelPythonDataTests}
     importExport
+  )
+endif()
+
+if (SMTK_ENABLE_POLYGON_SESSION)
+  set(smtkModelPythonDataTests
+    ${smtkModelPythonDataTests}
+    modelInstance
   )
 endif()
 
