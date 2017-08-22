@@ -16,16 +16,17 @@ namespace simulation
 {
 
 ExportSpec::ExportSpec()
+  : m_logger(new smtk::io::Logger)
 {
   this->clear();
 }
 
 void ExportSpec::clear()
 {
-  m_simulationSystem = NULL;
-  m_exportSystem = NULL;
   m_analysisGridInfo = smtk::model::GridInfoPtr();
-  m_logger.reset();
+  m_simulationSystem = nullptr;
+  m_exportSystem = nullptr;
+  m_logger->reset();
 }
 
 } // namespace simulation

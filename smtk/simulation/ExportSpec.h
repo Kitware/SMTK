@@ -34,7 +34,7 @@ public:
   smtk::attribute::SystemPtr getSimulationAttributes() const { return m_simulationSystem; }
   smtk::attribute::SystemPtr getExportAttributes() const { return m_exportSystem; }
   smtk::model::GridInfoPtr getAnalysisGridInfo() const { return m_analysisGridInfo; }
-  smtk::io::Logger getLogger() const { return m_logger; }
+  smtk::io::LoggerPtr getLogger() const { return m_logger; }
 
   // Constructor and data-set methods, intended to be called from C/C++ code
   ExportSpec();
@@ -51,7 +51,7 @@ private:
   smtk::attribute::SystemPtr m_simulationSystem;
   smtk::attribute::SystemPtr m_exportSystem;
   smtk::model::GridInfoPtr m_analysisGridInfo;
-  smtk::io::Logger m_logger;
+  smtk::io::LoggerPtr m_logger;
 };
 }
 }
