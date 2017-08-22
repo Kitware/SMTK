@@ -38,12 +38,6 @@
 #include <boost/filesystem.hpp>
 using namespace boost::filesystem;
 
-#include <fstream>
-
-static int maxIndent = 10;
-
-using namespace smtk::model;
-
 namespace
 {
 
@@ -72,8 +66,8 @@ int ImportFromDEFORMOp(int argc, char* argv[])
   smtk::model::ManagerPtr manager = smtk::model::Manager::create();
 
   std::cout << "Available sessions\n";
-  StringList sessions = manager->sessionTypeNames();
-  for (StringList::iterator it = sessions.begin(); it != sessions.end(); ++it)
+  smtk::model::StringList sessions = manager->sessionTypeNames();
+  for (smtk::model::StringList::iterator it = sessions.begin(); it != sessions.end(); ++it)
     std::cout << "  " << *it << "\n";
   std::cout << "\n";
 
@@ -81,8 +75,8 @@ int ImportFromDEFORMOp(int argc, char* argv[])
   manager->registerSession(session);
 
   std::cout << "Available cmb operators\n";
-  StringList opnames = session->operatorNames();
-  for (StringList::iterator it = opnames.begin(); it != opnames.end(); ++it)
+  smtk::model::StringList opnames = session->operatorNames();
+  for (smtk::model::StringList::iterator it = opnames.begin(); it != opnames.end(); ++it)
     std::cout << "  " << *it << "\n";
   std::cout << "\n";
 
