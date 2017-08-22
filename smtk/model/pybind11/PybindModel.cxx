@@ -45,7 +45,6 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindFace.h"
 #include "PybindFaceUse.h"
 #include "PybindFloatData.h"
-#include "PybindGridInfo.h"
 #include "PybindGroup.h"
 #include "PybindInstance.h"
 #include "PybindIntegerData.h"
@@ -100,7 +99,6 @@ PYBIND11_MODULE(_smtkPybindModel, model)
   py::class_< smtk::model::EntityIterator > smtk_model_EntityIterator = pybind11_init_smtk_model_EntityIterator(model);
   py::class_< smtk::model::EntityRef > smtk_model_EntityRef = pybind11_init_smtk_model_EntityRef(model);
   py::class_< smtk::model::EntityRefArrangementOps > smtk_model_EntityRefArrangementOps = pybind11_init_smtk_model_EntityRefArrangementOps(model);
-  py::class_< smtk::model::GridInfo > smtk_model_GridInfo = pybind11_init_smtk_model_GridInfo(model);
   PySharedPtrClass< smtk::model::Manager > smtk_model_Manager = pybind11_init_smtk_model_Manager(model);
   pybind11_init_smtk_model_OperatorOutcome(model);
   PySharedPtrClass< smtk::model::Operator, smtk::model::PyOperator > smtk_model_Operator = pybind11_init_smtk_model_Operator(model);

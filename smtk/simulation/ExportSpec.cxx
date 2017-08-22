@@ -23,7 +23,6 @@ ExportSpec::ExportSpec()
 
 void ExportSpec::clear()
 {
-  m_analysisGridInfo = smtk::model::GridInfoPtr();
   m_simulationSystem = nullptr;
   m_exportSystem = nullptr;
   m_logger->reset();

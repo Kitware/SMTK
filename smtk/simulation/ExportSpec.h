@@ -33,7 +33,6 @@ public:
   // Data-get methods, intended to be called from python scripts
   smtk::attribute::SystemPtr getSimulationAttributes() const { return m_simulationSystem; }
   smtk::attribute::SystemPtr getExportAttributes() const { return m_exportSystem; }
-  smtk::model::GridInfoPtr getAnalysisGridInfo() const { return m_analysisGridInfo; }
   smtk::io::LoggerPtr getLogger() const { return m_logger; }
 
   // Constructor and data-set methods, intended to be called from C/C++ code
@@ -42,15 +41,10 @@ public:
 
   void setSimulationAttributes(smtk::attribute::SystemPtr system) { m_simulationSystem = system; }
   void setExportAttributes(smtk::attribute::SystemPtr system) { m_exportSystem = system; }
-  void setAnalysisGridInfo(smtk::model::GridInfoPtr analysisGridInfo)
-  {
-    m_analysisGridInfo = analysisGridInfo;
-  }
 
 private:
   smtk::attribute::SystemPtr m_simulationSystem;
   smtk::attribute::SystemPtr m_exportSystem;
-  smtk::model::GridInfoPtr m_analysisGridInfo;
   smtk::io::LoggerPtr m_logger;
 };
 }
