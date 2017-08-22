@@ -107,7 +107,7 @@ public:
   typedef storage_type::iterator iter_type;
   typedef UUIDsToTessellations::iterator tess_iter_type;
 
-  smtkTypeMacro(Manager);
+  smtkTypeMacroBase(Manager);
   smtkCreateMacro(Manager);
   Manager();
   Manager(shared_ptr<UUIDsToEntities> topology, shared_ptr<UUIDsToArrangements> arrangements,

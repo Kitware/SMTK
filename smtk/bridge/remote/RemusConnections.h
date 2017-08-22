@@ -40,7 +40,7 @@ class RemusConnection;
 class SMTKREMOTESESSION_EXPORT RemusConnections
 {
 public:
-  smtkTypeMacro(RemusConnections);
+  smtkTypeMacroBase(RemusConnections);
   smtkCreateMacro(RemusConnections);
   ~RemusConnections();
 

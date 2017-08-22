@@ -67,7 +67,7 @@ class Session;
 class SMTKREMOTESESSION_EXPORT RemusConnection : smtkEnableSharedPtr(RemusConnection)
 {
 public:
-  smtkTypeMacro(RemusConnection);
+  smtkTypeMacroBase(RemusConnection);
   smtkCreateMacro(RemusConnection);
   virtual ~RemusConnection();
 

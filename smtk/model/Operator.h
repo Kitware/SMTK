@@ -142,7 +142,7 @@ enum OperatorOutcome
 class SMTKCORE_EXPORT Operator : smtkEnableSharedPtr(Operator)
 {
 public:
-  smtkTypeMacro(Operator);
+  smtkTypeMacroBase(Operator);
 
   virtual std::string name() const = 0;
   virtual std::string className() const = 0;

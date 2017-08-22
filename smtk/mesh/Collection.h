@@ -70,7 +70,7 @@ class SMTKCORE_EXPORT Collection : public smtk::enable_shared_from_this<Collecti
     smtk::mesh::ManagerPtr mngr);
 
 public:
-  smtkTypeMacro(Collection);
+  smtkTypeMacroBase(Collection);
   //construct an invalid collection
   smtkCreateMacro(Collection);
 

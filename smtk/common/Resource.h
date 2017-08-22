@@ -29,7 +29,7 @@ namespace common
 class SMTKCORE_EXPORT Resource : smtkEnableSharedPtr(Resource)
 {
 public:
-  smtkTypeMacro(Resource);
+  smtkTypeMacroBase(Resource);
   virtual ~Resource();
 
   /// Identifies resource type

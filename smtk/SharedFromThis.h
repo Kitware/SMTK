@@ -40,12 +40,17 @@
   * These types are useful when dealing with shared pointers
   * in a class hierarchy.
   */
-#define smtkTypeMacro(...)                                                                         \
+#define smtkTypedefs(...)                                                                          \
   typedef __VA_ARGS__ SelfType;                                                                    \
   typedef smtk::shared_ptr<__VA_ARGS__> Ptr;                                                       \
   typedef smtk::shared_ptr<const __VA_ARGS__> ConstPtr;                                            \
   typedef smtk::weak_ptr<__VA_ARGS__> WeakPtr;                                                     \
-  typedef smtk::weak_ptr<const __VA_ARGS__> WeakConstPtr;                                          \
+  typedef smtk::weak_ptr<const __VA_ARGS__> WeakConstPtr
+#define smtkTypeMacro(...)                                                                         \
+  smtkTypedefs(__VA_ARGS__);                                                                       \
+  std::string classname() const override { return #__VA_ARGS__; }
+#define smtkTypeMacroBase(...)                                                                     \
+  smtkTypedefs(__VA_ARGS__);                                                                       \
   virtual std::string classname() const { return #__VA_ARGS__; }
 
 /**\brief Add a typedef to the superclass of this class.

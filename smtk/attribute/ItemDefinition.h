@@ -42,7 +42,7 @@ class SMTKCORE_EXPORT ItemDefinition
   friend class smtk::attribute::ValueItemDefinition;
 
 public:
-  smtkTypeMacro(ItemDefinition);
+  smtkTypeMacroBase(ItemDefinition);
   // Temp structure used for copying definitions
   struct CopyInfo
   {

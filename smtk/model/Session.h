@@ -297,7 +297,7 @@ public:                                                                         
 class SMTKCORE_EXPORT Session : smtkEnableSharedPtr(Session)
 {
 public:
-  smtkTypeMacro(Session);
+  smtkTypeMacroBase(Session);
 
   // From smtkDeclareOperatorRegistration
 protected:

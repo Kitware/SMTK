@@ -45,7 +45,7 @@ namespace remote
 class RemusRPCWorker
 {
 public:
-  smtkTypeMacro(RemusRPCWorker);
+  smtkTypeMacroBase(RemusRPCWorker);
   smtkCreateMacro(RemusRPCWorker);
   virtual ~RemusRPCWorker();
 

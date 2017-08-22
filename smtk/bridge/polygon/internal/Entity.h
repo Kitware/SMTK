@@ -32,7 +32,7 @@ namespace internal
 class entity : smtkEnableSharedPtr(entity)
 {
 public:
-  smtkTypeMacro(entity);
+  smtkTypeMacroBase(entity);
 
   Id id() const { return this->m_id; }
   void setId(const Id& i) { this->m_id = i; }

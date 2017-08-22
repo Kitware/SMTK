@@ -11,7 +11,7 @@
 #define __smtk_model_BathymetryHelper_h
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/SharedFromThis.h"                  // for smtkTypeMacro
+#include "smtk/SharedFromThis.h"                  // for smtkTypeMacroBase
 #include "smtk/extension/vtk/operators/Exports.h" // for VTKSMTKOPERATORSEXT_EXPORT
 #include "smtk/mesh/ForEachTypes.h"
 
@@ -41,7 +41,7 @@ class Session;
 class VTKSMTKOPERATORSEXT_EXPORT BathymetryHelper
 {
 public:
-  smtkTypeMacro(BathymetryHelper);
+  smtkTypeMacroBase(BathymetryHelper);
   virtual ~BathymetryHelper();
 
   virtual bool loadBathymetryFile(const std::string& filename);
