@@ -23,9 +23,6 @@ if(SMTK_ENABLE_POLYGON_SESSION AND
                         ${Boost_LIBRARIES}
                         ${CMAKE_THREAD_LIBS_INIT}
                         )
-  get_filename_component(build_search_path "${CMAKE_BINARY_DIR}/bin" ABSOLUTE)
-  get_filename_component(install_search_path "${CMAKE_INSTALL_PREFIX}/bin" ABSOLUTE)
-  target_compile_definitions(UnitTestDelaunayMeshWorker PRIVATE "BUILD_SEARCH_PATH=\"${build_search_path}\"")
 
   add_test(NAME UnitTestDelaunayMeshWorker
            COMMAND $<TARGET_FILE:UnitTestDelaunayMeshWorker>

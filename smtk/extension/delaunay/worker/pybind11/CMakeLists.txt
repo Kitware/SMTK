@@ -26,11 +26,6 @@ set_target_properties(${library_name}
     COMPILE_FLAGS ${SMTK_PYBIND11_FLAGS}
   )
 
-get_filename_component(build_search_path "${CMAKE_BINARY_DIR}/bin" ABSOLUTE)
-get_filename_component(install_search_path "${CMAKE_INSTALL_PREFIX}/bin" ABSOLUTE)
-target_compile_definitions(${library_name} PRIVATE "BUILD_SEARCH_PATH=\"${build_search_path}\"")
-target_compile_definitions(${library_name} PRIVATE "INSTALL_SEARCH_PATH=\"${install_search_path}\"")
-
 # Install library
 install(TARGETS ${library_name} DESTINATION "${install_path}")
 
