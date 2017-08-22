@@ -56,25 +56,25 @@ int UnitTestMeshSessionEulerRatio(int argc, char* argv[])
   smtk::model::Model model;
 
   {
-    smtk::model::OperatorPtr readOp = session.op("read");
-    if (!readOp)
+    smtk::model::OperatorPtr importOp = session.op("import");
+    if (!importOp)
     {
-      std::cerr << "No read operator\n";
+      std::cerr << "No import operator\n";
       return 1;
     }
 
-    std::string readFilePath(dataRoot);
-    readFilePath += "/mesh/3d/cube.exo";
+    std::string importFilePath(dataRoot);
+    importFilePath += "/mesh/3d/cube.exo";
 
-    readOp->specification()->findFile("filename")->setValue(readFilePath);
+    importOp->specification()->findFile("filename")->setValue(importFilePath);
 
-    smtk::model::OperatorResult readOpResult = readOp->operate();
+    smtk::model::OperatorResult importOpResult = importOp->operate();
 
-    model = readOpResult->findModelEntity("model")->value();
+    model = importOpResult->findModelEntity("model")->value();
 
-    if (readOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+    if (importOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
     {
-      std::cerr << "Read operator failed\n";
+      std::cerr << "Import operator failed\n";
       return 1;
     }
   }
