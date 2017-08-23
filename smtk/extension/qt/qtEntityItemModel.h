@@ -46,6 +46,13 @@ class SMTKQTEXT_EXPORT QEntityItemModel : public QAbstractItemModel
 public:
   QEntityItemModel(QObject* parent = 0);
   virtual ~QEntityItemModel();
+  // Set and get default entity color
+  static void setDefaultEntityColor(const std::string& entityType, const QColor& color)
+  {
+    s_defaultColors[entityType] = color;
+  }
+
+  static QColor defaultEntityColor(const std::string& entityType);
 
   void clear();
 
@@ -130,6 +137,7 @@ signals:
 protected:
   smtk::model::DescriptivePhrasePtr m_root;
   bool m_deleteOnRemoval; // remove UUIDs from mesh when they are removed from the list?
+  static std::map<std::string, QColor> s_defaultColors;
   class Internal;
   Internal* P;
 
