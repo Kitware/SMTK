@@ -41,13 +41,13 @@ public:
   const QList<qtBaseView*>& childViews() const;
 
 public slots:
-  virtual void updateUI();
-  virtual void showAdvanceLevelOverlay(bool show);
-  virtual void updateModelAssociation();
-  virtual void onShowCategory();
+  void updateUI() override;
+  void showAdvanceLevelOverlay(bool show) override;
+  void updateModelAssociation() override;
+  void onShowCategory() override;
 
 protected:
-  virtual void createWidget();
+  void createWidget() override;
   virtual void addGroupBoxEntry(qtBaseView*);
   virtual void addTabEntry(qtBaseView*);
   virtual void addTileEntry(qtBaseView*);

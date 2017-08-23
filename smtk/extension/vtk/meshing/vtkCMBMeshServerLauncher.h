@@ -34,7 +34,7 @@ public:
   //construction of this class will spawn
   //the CMBMeshServer
   vtkTypeMacro(vtkCMBMeshServerLauncher, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
   static vtkCMBMeshServerLauncher* New();
 
   //create a CMBMeshServer

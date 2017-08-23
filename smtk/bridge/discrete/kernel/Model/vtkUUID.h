@@ -40,7 +40,7 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkUUID : public vtkObject
 public:
   static vtkUUID* New();
   vtkTypeMacro(vtkUUID, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Generate a (binary) UUID using system/platform method call.  Note, it may

@@ -90,7 +90,7 @@ class VTKSMTKREADEREXT_EXPORT vtkPolyFileReader : public vtkPolyDataAlgorithm
 public:
   static vtkPolyFileReader* New();
   vtkTypeMacro(vtkPolyFileReader, vtkPolyDataAlgorithm);
-  virtual void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Get/set the filename of the polyfile to read.
@@ -137,8 +137,8 @@ protected:
   vtkPolyFileReader();
   virtual ~vtkPolyFileReader();
 
-  virtual int RequestData(
-    vtkInformation* request, vtkInformationVector** inVec, vtkInformationVector* outVec);
+  int RequestData(
+    vtkInformation* request, vtkInformationVector** inVec, vtkInformationVector* outVec) override;
 
   template <typename T>
   void ReadFile(std::istream& in, int isSimpleMesh, T& errorReporter,

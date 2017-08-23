@@ -33,7 +33,7 @@ void extent(smtk::mesh::MeshSet ms, double ext[6])
       m_values[1] = m_values[3] = m_values[5] = std::numeric_limits<double>::lowest();
     }
 
-    void forPoints(const smtk::mesh::HandleRange&, std::vector<double>& xyz, bool&)
+    void forPoints(const smtk::mesh::HandleRange&, std::vector<double>& xyz, bool&) override
     {
       for (std::size_t i = 0; i < xyz.size(); i += 3)
       {
@@ -93,7 +93,7 @@ public:
     }
   }
 
-  void forCell(const smtk::mesh::Handle&, smtk::mesh::CellType, int numPts)
+  void forCell(const smtk::mesh::Handle&, smtk::mesh::CellType, int numPts) override
   {
     const std::vector<double>& coords = this->coordinates();
     const smtk::mesh::Handle* const ptIds = this->pointIds();
@@ -132,7 +132,7 @@ public:
     }
   }
 
-  void forCell(const smtk::mesh::Handle&, smtk::mesh::CellType, int numPts)
+  void forCell(const smtk::mesh::Handle&, smtk::mesh::CellType, int numPts) override
   {
     const std::vector<double>& coords = this->coordinates();
     const smtk::mesh::Handle* const ptIds = this->pointIds();

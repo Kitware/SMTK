@@ -26,7 +26,7 @@ class VTKSMTKREADEREXT_EXPORT vtkExtractRegionEdges : public vtkPolyDataAlgorith
 public:
   static vtkExtractRegionEdges* New();
   vtkTypeMacro(vtkExtractRegionEdges, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   vtkSetStringMacro(RegionArrayName);
   vtkGetStringMacro(RegionArrayName);
@@ -35,10 +35,10 @@ public:
 
 protected:
   vtkExtractRegionEdges();
-  ~vtkExtractRegionEdges();
+  ~vtkExtractRegionEdges() override;
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
-  virtual int FillInputPortInformation(int port, vtkInformation* info);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int FillInputPortInformation(int port, vtkInformation* info) override;
 
   void ConvertInputToPolyData(vtkPointSet* input, vtkPolyData* polyData);
   void ExtractRegionEdgeSegments(

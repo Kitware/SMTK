@@ -68,7 +68,7 @@ class SMTKQTEXT_EXPORT qtBaseView : public QObject
 
 public:
   qtBaseView(const ViewInfo& info);
-  virtual ~qtBaseView();
+  ~qtBaseView() override;
 
   smtk::common::ViewPtr getObject() const { return this->m_viewInfo.m_view; }
   QWidget* widget() const { return this->Widget; }

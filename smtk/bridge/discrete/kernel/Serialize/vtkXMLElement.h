@@ -27,7 +27,7 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkXMLElement : public vtkObject
 {
 public:
   vtkTypeMacro(vtkXMLElement, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
   static vtkXMLElement* New();
 
   // Description:
@@ -177,7 +177,7 @@ public:
 
 protected:
   vtkXMLElement();
-  ~vtkXMLElement();
+  ~vtkXMLElement() override;
 
   vtkXMLElementInternals* Internal;
 

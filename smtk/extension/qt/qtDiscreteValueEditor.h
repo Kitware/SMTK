@@ -33,7 +33,7 @@ class SMTKQTEXT_EXPORT qtDiscreteValueEditor : public QWidget
 public:
   qtDiscreteValueEditor(qtInputsItem* item, int elementIdx, QLayout* childLayout);
   virtual ~qtDiscreteValueEditor();
-  virtual QSize sizeHint() const;
+  QSize sizeHint() const override;
 
 public slots:
   void onInputValueChanged();

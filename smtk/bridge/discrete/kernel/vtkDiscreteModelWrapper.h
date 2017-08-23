@@ -51,7 +51,7 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkDiscreteModelWrapper : public vtkDataObject
 {
 public:
   vtkTypeMacro(vtkDiscreteModelWrapper, vtkDataObjectTree);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
   static vtkDiscreteModelWrapper* New();
 
   // Description:
@@ -133,7 +133,7 @@ public:
 
   // Description:
   // Get the modified time of this object.
-  virtual vtkMTimeType GetMTime();
+  vtkMTimeType GetMTime() override;
   // Description:
   // Get the composite index given an entity id, return true if EntityId is found
   bool GetChildIndexByEntityId(vtkIdType EntityId, unsigned int& index);
@@ -150,7 +150,7 @@ public:
 
 protected:
   vtkDiscreteModelWrapper();
-  ~vtkDiscreteModelWrapper();
+  ~vtkDiscreteModelWrapper() override;
 
   // Description:
   // This is protected on purpose

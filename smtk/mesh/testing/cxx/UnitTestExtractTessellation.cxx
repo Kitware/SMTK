@@ -48,7 +48,7 @@ public:
   {
   }
 
-  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType cellType, int numPts)
+  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType cellType, int numPts) override
   {
     this->m_cells.insert(cellId);
     //verify the offset is in the correct location
@@ -98,8 +98,8 @@ public:
   {
   }
 
-  void forPoints(
-    const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz, bool& coordinatesModified)
+  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+    bool& coordinatesModified) override
   {
     coordinatesModified = false; //we are not modifying the coords
 

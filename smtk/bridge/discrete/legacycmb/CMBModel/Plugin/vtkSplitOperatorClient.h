@@ -29,7 +29,7 @@ class VTK_EXPORT vtkSplitOperatorClient : public vtkSplitOperatorBase
 public:
   static vtkSplitOperatorClient* New();
   vtkTypeMacro(vtkSplitOperatorClient, vtkSplitOperatorBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Modify the color and/or the visibility of an object. The

@@ -38,9 +38,9 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModelFace : public vtkModelGeometricEntity
 {
 public:
   vtkTypeMacro(vtkModelFace, vtkModelGeometricEntity);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual int GetType();
+  int GetType() override;
 
   // Description:
   // Return the vtkModelFaceUse in the inputted direction.
@@ -87,7 +87,7 @@ public:
   // Reads the state of an instance from an archive OR
   // writes the state of an instance to an archive. See
   // the documentation for this class for details.
-  virtual void Serialize(vtkSerializer* ser);
+  void Serialize(vtkSerializer* ser) override;
 
   // Description:
   // Adds an edge loop to a model face
@@ -111,10 +111,10 @@ public:
 
 protected:
   vtkModelFace();
-  virtual ~vtkModelFace();
+  ~vtkModelFace() override;
 
-  virtual bool IsDestroyable();
-  virtual bool Destroy();
+  bool IsDestroyable() override;
+  bool Destroy() override;
 
   // Description:
   // Helper function that combines "end" of edgeUse1 with "beginning" of edgeUse2.

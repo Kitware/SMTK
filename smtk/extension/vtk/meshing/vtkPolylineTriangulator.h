@@ -22,7 +22,7 @@ class VTKSMTKMESHINGEXT_EXPORT vtkPolylineTriangulator : public vtkPolyDataAlgor
 public:
   static vtkPolylineTriangulator* New();
   vtkTypeMacro(vtkPolylineTriangulator, vtkPolyDataAlgorithm);
-  virtual void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // The name of a cell array defined on the input polylines
@@ -52,8 +52,8 @@ protected:
 
   virtual int FillInputPortInformation(int port, vtkInformation* info);
 
-  virtual int RequestData(
-    vtkInformation* req, vtkInformationVector** inInfo, vtkInformationVector* outInfo);
+  int RequestData(
+    vtkInformation* req, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
 
   char* ModelFaceArrayName;
   vtkCMBMeshServerLauncher* Launcher;

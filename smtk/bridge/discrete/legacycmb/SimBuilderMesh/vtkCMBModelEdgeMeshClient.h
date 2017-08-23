@@ -30,7 +30,7 @@ class VTK_EXPORT vtkCMBModelEdgeMeshClient : public vtkCMBModelEdgeMesh
 public:
   static vtkCMBModelEdgeMeshClient* New();
   vtkTypeMacro(vtkCMBModelEdgeMeshClient, vtkCMBModelEdgeMesh);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Set the local mesh length for both the client and the server

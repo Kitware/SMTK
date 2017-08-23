@@ -37,7 +37,7 @@ public:
     Qt::Orientation enVectorItemOrient = Qt::Horizontal);
   virtual ~qtAttributeRefItem();
 
-  virtual void setLabelVisible(bool);
+  void setLabelVisible(bool) override;
   // this will turn on/off the Edit button.
   // Also, if the turning off, the Attribute widget will be turned off too
   virtual void setAttributeEditorVisible(bool);
@@ -50,11 +50,11 @@ public slots:
   void onLaunchAttributeView();
 
 protected slots:
-  virtual void updateItemData();
+  void updateItemData() override;
   virtual void setOutputOptional(int);
 
 protected:
-  virtual void createWidget();
+  void createWidget() override;
   virtual void refreshUI(QComboBox* combo);
   virtual void updateAttWidgetState(qtAttribute* qa);
   virtual void setAttributesVisible(bool visible);
@@ -70,8 +70,8 @@ class SMTKQTEXT_EXPORT qtAttRefCombo : public QComboBox
   Q_OBJECT
 public:
   qtAttRefCombo(smtk::attribute::ItemPtr, QWidget* parent);
-  virtual void showPopup();
-  //virtual QSize sizeHint() const;
+  void showPopup() override;
+  //QSize sizeHint() const override;
 private:
   smtk::attribute::WeakItemPtr m_RefItem;
 };

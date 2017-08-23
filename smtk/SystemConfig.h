@@ -27,6 +27,6 @@
 
 #define SMTK_DERIVED_TYPE(thisclass, superclass)                                                   \
   typedef superclass Superclass;                                                                   \
-  SMTK_BASE_TYPE(thisclass)
+  const char* classname() const override { return #thisclass; }
 
 #endif //__smtk_SystemConfig_h

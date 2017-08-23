@@ -30,7 +30,7 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkSerializationHelper : public vtkObject
 {
 public:
   vtkTypeMacro(vtkSerializationHelper, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // This member registers ALL the classes supported by this helper with the
@@ -55,7 +55,7 @@ public:
 
 protected:
   vtkSerializationHelper() {}
-  ~vtkSerializationHelper() {}
+  ~vtkSerializationHelper() override {}
 
 private:
   vtkSerializationHelper(const vtkSerializationHelper&); // Not implemented.

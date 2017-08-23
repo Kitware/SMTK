@@ -49,9 +49,9 @@ public:
       0x00000003 //!< Should associations and model-entity items *always* be copied?
   };
 
-  virtual ~System();
+  ~System() override;
 
-  virtual smtk::common::Resource::Type resourceType() const;
+  smtk::common::Resource::Type resourceType() const override;
 
   smtk::attribute::DefinitionPtr createDefinition(
     const std::string& typeName, const std::string& baseTypeName = "");

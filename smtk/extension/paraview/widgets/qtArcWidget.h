@@ -29,7 +29,7 @@ class SMTKPQWIDGETSEXT_EXPORT qtArcWidget : public qtInteractionWidget
 
 public:
   qtArcWidget(QWidget* parent = nullptr);
-  virtual ~qtArcWidget();
+  ~qtArcWidget() override;
 
   /// Changes the line color to magenta.
   void emphasize() { this->setLineColor(QColor::fromRgbF(1.0, 0.0, 1.0)); }

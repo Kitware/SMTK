@@ -32,13 +32,13 @@ public:
     return smtk::attribute::VoidItemDefinitionPtr(new VoidItemDefinition(myName));
   }
 
-  virtual ~VoidItemDefinition();
-  virtual Item::Type type() const;
-  virtual smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const;
-  virtual smtk::attribute::ItemPtr buildItem(
-    Item* owningItem, int position, int subGroupPosition) const;
-  virtual smtk::attribute::ItemDefinitionPtr createCopy(
-    smtk::attribute::ItemDefinition::CopyInfo& info) const;
+  ~VoidItemDefinition() override;
+  Item::Type type() const override;
+  smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
+  smtk::attribute::ItemPtr buildItem(
+    Item* owningItem, int position, int subGroupPosition) const override;
+  smtk::attribute::ItemDefinitionPtr createCopy(
+    smtk::attribute::ItemDefinition::CopyInfo& info) const override;
 
 protected:
   VoidItemDefinition(const std::string& myName);

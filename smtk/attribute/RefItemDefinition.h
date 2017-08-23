@@ -33,18 +33,18 @@ public:
     return smtk::attribute::RefItemDefinitionPtr(new RefItemDefinition(myName));
   }
 
-  virtual ~RefItemDefinition();
+  ~RefItemDefinition() override;
 
-  virtual Item::Type type() const;
+  Item::Type type() const override;
   smtk::attribute::DefinitionPtr attributeDefinition() const { return this->m_definition.lock(); }
 
   void setAttributeDefinition(smtk::attribute::DefinitionPtr def) { this->m_definition = def; }
 
   bool isValueValid(smtk::attribute::AttributePtr att) const;
 
-  virtual smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const;
-  virtual smtk::attribute::ItemPtr buildItem(
-    Item* owningItem, int position, int subGroupPosition) const;
+  smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
+  smtk::attribute::ItemPtr buildItem(
+    Item* owningItem, int position, int subGroupPosition) const override;
   std::size_t numberOfRequiredValues() const { return this->m_numberOfRequiredValues; }
   void setNumberOfRequiredValues(std::size_t esize);
 
@@ -55,8 +55,8 @@ public:
   bool usingCommonLabel() const { return this->m_useCommonLabel; }
 
   std::string valueLabel(std::size_t element) const;
-  virtual smtk::attribute::ItemDefinitionPtr createCopy(
-    smtk::attribute::ItemDefinition::CopyInfo& info) const;
+  smtk::attribute::ItemDefinitionPtr createCopy(
+    smtk::attribute::ItemDefinition::CopyInfo& info) const override;
 
 protected:
   RefItemDefinition(const std::string& myName);

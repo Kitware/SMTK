@@ -32,18 +32,18 @@ public:
   qtGroupItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview,
     Qt::Orientation enVectorItemOrient = Qt::Horizontal);
   virtual ~qtGroupItem();
-  virtual void setLabelVisible(bool);
+  void setLabelVisible(bool) override;
 
 protected slots:
-  virtual void updateItemData();
+  void updateItemData() override;
   virtual void setEnabledState(bool checked);
   virtual void onAddSubGroup();
   virtual void onRemoveSubGroup();
-  virtual void onChildWidgetSizeChanged();
+  void onChildWidgetSizeChanged() override;
   virtual void onChildItemModified();
 
 protected:
-  virtual void createWidget();
+  void createWidget() override;
   virtual void addSubGroup(int i);
   virtual void updateExtensibleState();
   virtual void addItemsToTable(int i);

@@ -40,7 +40,7 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkSerializer : public vtkObject
 {
 public:
   vtkTypeMacro(vtkSerializer, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // This method returns true if the serializer is an output
@@ -210,7 +210,7 @@ public:
 
 protected:
   vtkSerializer();
-  ~vtkSerializer() {}
+  ~vtkSerializer() override {}
 
 private:
   vtkSerializer(const vtkSerializer&);  // Not implemented.

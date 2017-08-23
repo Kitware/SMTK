@@ -29,14 +29,14 @@ public:
     return smtk::attribute::IntItemDefinitionPtr(new IntItemDefinition(myName));
   }
 
-  virtual ~IntItemDefinition();
-  virtual Item::Type type() const;
-  virtual smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const;
-  virtual smtk::attribute::ItemPtr buildItem(
-    Item* owningItem, int position, int subGroupPosition) const;
+  ~IntItemDefinition() override;
+  Item::Type type() const override;
+  smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
+  smtk::attribute::ItemPtr buildItem(
+    Item* owningItem, int position, int subGroupPosition) const override;
 
-  virtual smtk::attribute::ItemDefinitionPtr createCopy(
-    smtk::attribute::ItemDefinition::CopyInfo& info) const;
+  smtk::attribute::ItemDefinitionPtr createCopy(
+    smtk::attribute::ItemDefinition::CopyInfo& info) const override;
 
 protected:
   IntItemDefinition(const std::string& myName);

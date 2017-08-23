@@ -46,7 +46,7 @@ public slots:
 
 protected:
   /// overridden to resize the color icon.
-  virtual void resizeEvent(QResizeEvent* rEvent);
+  void resizeEvent(QResizeEvent* rEvent) override;
 
   /// renders an icon for the color.
   QIcon renderColorSwatch(const QColor&);

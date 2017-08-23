@@ -51,8 +51,8 @@ public:
     int iter_pos = 0);
   void resetArrangements();
 
-  virtual void doneAddingEntities(
-    smtk::model::SessionPtr baseSession, smtk::model::SessionInfoBits flags);
+  void doneAddingEntities(
+    smtk::model::SessionPtr baseSession, smtk::model::SessionInfoBits flags) override;
 
   // Start of discrete-session specific methods:
   int findOrAssignSense(vtkModelEdgeUse* eu1);

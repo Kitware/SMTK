@@ -61,12 +61,12 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkXMLModelWriter : public vtkSerializer
 public:
   static vtkXMLModelWriter* New();
   vtkTypeMacro(vtkXMLModelWriter, vtkSerializer);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // This method returns true if the serializer is an output
   // serializer (writer). Returns true.
-  virtual bool IsWriting() { return true; }
+  bool IsWriting() override { return true; }
 
   // Description:
   // This is the main entry point used to write a vector of
@@ -97,69 +97,69 @@ public:
 
   // Description:
   // Serializes a single integer.
-  virtual void Serialize(const char* name, int& val);
+  void Serialize(const char* name, int& val) override;
 
   // Description:
   // Serializes an array.
-  virtual void Serialize(const char* name, int*& val, unsigned int& length);
+  void Serialize(const char* name, int*& val, unsigned int& length) override;
 
   // Description:
   // Serializes a single unsigned long.
-  virtual void Serialize(const char* name, unsigned long& val);
+  void Serialize(const char* name, unsigned long& val) override;
 
   // Description:
   // Serializes an array.
-  virtual void Serialize(const char* name, unsigned long*& val, unsigned int& length);
+  void Serialize(const char* name, unsigned long*& val, unsigned int& length) override;
 
 // Description:
 // Reads a single vtkIdType.
 #if defined(VTK_USE_64BIT_IDS)
-  virtual void Serialize(const char* name, vtkIdType& val);
+  void Serialize(const char* name, vtkIdType& val) override;
 #endif
 
 // Description:
 // Reads an array.
 #if defined(VTK_USE_64BIT_IDS)
-  virtual void Serialize(const char* name, vtkIdType*& val, unsigned int& length);
+  void Serialize(const char* name, vtkIdType*& val, unsigned int& length) override;
 #endif
 
   // Description:
   // Serializes a single double.
-  virtual void Serialize(const char* name, double& val);
+  void Serialize(const char* name, double& val) override;
 
   // Description:
   // Serializes an array.
-  virtual void Serialize(const char* name, double*& val, unsigned int& length);
+  void Serialize(const char* name, double*& val, unsigned int& length) override;
 
   // Description:
   // Serializes a string.
-  virtual void Serialize(const char* name, char*& str);
+  void Serialize(const char* name, char*& str) override;
 
   // Description:
   // Serializes a string.
-  virtual void Serialize(const char* name, std::string& str);
+  void Serialize(const char* name, std::string& str) override;
 
   // Description:
   // Serializes a vtkSerializableObject.
-  virtual void Serialize(const char* name, vtkObject*& obj, bool weakPtr = false);
+  void Serialize(const char* name, vtkObject*& obj, bool weakPtr = false) override;
 
   // Description:
   // Serializes a vtkInformationObject.
-  virtual void Serialize(const char* name, vtkInformation* info);
+  void Serialize(const char* name, vtkInformation* info) override;
 
   // Description:
   // Serializes a vector of vtkSerializableObjects.
-  virtual void Serialize(
-    const char* name, std::vector<vtkSmartPointer<vtkObject> >& objs, bool weakPtr = false);
+  void Serialize(const char* name, std::vector<vtkSmartPointer<vtkObject> >& objs,
+    bool weakPtr = false) override;
 
   // Description:
   // Serializes a map from int to vector of vtkSerializableObject.
-  virtual void Serialize(
-    const char* name, std::map<int, std::vector<vtkSmartPointer<vtkObject> > >& objs);
+  void Serialize(
+    const char* name, std::map<int, std::vector<vtkSmartPointer<vtkObject> > >& objs) override;
 
 protected:
   vtkXMLModelWriter();
-  ~vtkXMLModelWriter();
+  ~vtkXMLModelWriter() override;
 
   virtual void Initialize(const char* name);
   virtual vtkIdType Serialize(vtkSerializableObject*& obj);

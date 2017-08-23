@@ -25,12 +25,12 @@ class VTKPOLYGONOPERATORSEXT_EXPORT vtkPolygonContourOperator : public vtkSMTKOp
 public:
   static vtkPolygonContourOperator* New();
   vtkTypeMacro(vtkPolygonContourOperator, vtkSMTKOperator);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   //Description:
   //Convert the passed-in polydata into polygon edge(s)
-  virtual bool AbleToOperate();
-  virtual smtk::model::OperatorResult Operate();
+  bool AbleToOperate() override;
+  smtk::model::OperatorResult Operate() override;
 
   //Description:
   //Get/Set the Contour Input

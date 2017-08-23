@@ -58,17 +58,17 @@ public slots:
   void onRemoveSelectedValues();
 
   virtual void createFunctionWithExpression();
-  virtual void onShowCategory() { this->updateAttributeData(); }
+  void onShowCategory() override { this->updateAttributeData(); }
 
 signals:
   void onCreateFunctionWithExpression(
     QString& expression, double initVal, double deltaVal, int numVals);
 
 protected slots:
-  virtual void updateAttributeData() { this->initFunctionList(); }
+  void updateAttributeData() override { this->initFunctionList(); }
 
 protected:
-  virtual void createWidget();
+  void createWidget() override;
   void updateTableHeader();
   smtk::attribute::GroupItemPtr getArrayDataFromItem(QListWidgetItem* item);
   smtk::attribute::ValueItemPtr getStringDataFromItem(QListWidgetItem* item);

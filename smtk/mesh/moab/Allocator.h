@@ -34,17 +34,17 @@ class SMTKCORE_EXPORT Allocator : public smtk::mesh::Allocator
 public:
   Allocator(::moab::Interface* interface);
 
-  virtual ~Allocator();
+  ~Allocator() override;
 
   bool allocatePoints(std::size_t numPointsToAlloc, smtk::mesh::Handle& firstVertexHandle,
-    std::vector<double*>& coordinateMemory);
+    std::vector<double*>& coordinateMemory) override;
 
   bool allocateCells(smtk::mesh::CellType cellType, std::size_t numCellsToAlloc,
     int numVertsPerCell, smtk::mesh::HandleRange& createdCellIds,
-    smtk::mesh::Handle*& connectivityArray);
+    smtk::mesh::Handle*& connectivityArray) override;
 
   bool connectivityModified(const smtk::mesh::HandleRange& cellsToUpdate, int numVertsPerCell,
-    const smtk::mesh::Handle* connectivityArray);
+    const smtk::mesh::Handle* connectivityArray) override;
 
 private:
   Allocator(const Allocator& other);            //blank since we are used by shared_ptr

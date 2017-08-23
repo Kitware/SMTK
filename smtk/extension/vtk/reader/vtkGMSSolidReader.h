@@ -31,7 +31,7 @@ class VTKSMTKREADEREXT_EXPORT vtkGMSSolidReader : public vtkMultiBlockDataSetAlg
 public:
   static vtkGMSSolidReader* New();
   vtkTypeMacro(vtkGMSSolidReader, vtkMultiBlockDataSetAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Name of the file to be read.
@@ -42,8 +42,8 @@ protected:
   vtkGMSSolidReader();
   ~vtkGMSSolidReader();
 
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 
   int ReadSolid(unsigned int block, vtkMultiBlockDataSet* output);
   void ReadTriangles(vtkCellArray*, vtkUnsignedCharArray*);

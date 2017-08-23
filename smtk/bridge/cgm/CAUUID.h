@@ -47,15 +47,15 @@ public:
 #else
   CAUUID(RefEntity*, CubitSimpleAttrib*);
 #endif
-  virtual ~CAUUID();
+  ~CAUUID() override;
 
   virtual const std::type_info& entity_type_info() const;
-  virtual int int_attrib_type();
-  virtual CubitStatus actuate();
-  virtual CubitStatus update();
-  virtual CubitStatus reset();
+  int int_attrib_type() override;
+  CubitStatus actuate() override;
+  CubitStatus update() override;
+  CubitStatus reset() override;
 #if CGM_MAJOR_VERSION >= 14
-  virtual CubitSimpleAttrib cubit_simple_attrib();
+  CubitSimpleAttrib cubit_simple_attrib() override;
 #else
   virtual CubitSimpleAttrib* cubit_simple_attrib();
 #endif

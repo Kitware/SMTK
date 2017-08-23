@@ -29,9 +29,9 @@ class SMTKCORE_EXPORT FileSystemItemDefinition : public ItemDefinition
 public:
   smtkTypeMacro(FileSystemItemDefinition);
 
-  virtual ~FileSystemItemDefinition();
+  ~FileSystemItemDefinition() override;
 
-  virtual Item::Type type() const;
+  Item::Type type() const override;
   virtual bool isValueValid(const std::string& val) const;
 
   // Returns or Sets the def's extensiblity property.  If true then items from this def
@@ -66,13 +66,13 @@ public:
   void setDefaultValue(const std::string& val);
   void unsetDefaultValue() { this->m_hasDefault = false; }
   bool hasDefault() const { return m_hasDefault; }
-  virtual smtk::attribute::ItemPtr buildItem(
-    Attribute* owningAttribute, int itemPosition) const = 0;
-  virtual smtk::attribute::ItemPtr buildItem(
-    Item* owningItem, int position, int subGroupPosition) const = 0;
+  smtk::attribute::ItemPtr buildItem(
+    Attribute* owningAttribute, int itemPosition) const override = 0;
+  smtk::attribute::ItemPtr buildItem(
+    Item* owningItem, int position, int subGroupPosition) const override = 0;
 
-  virtual smtk::attribute::ItemDefinitionPtr createCopy(
-    smtk::attribute::ItemDefinition::CopyInfo& info) const = 0;
+  smtk::attribute::ItemDefinitionPtr createCopy(
+    smtk::attribute::ItemDefinition::CopyInfo& info) const override = 0;
 
 protected:
   FileSystemItemDefinition(const std::string& myName);

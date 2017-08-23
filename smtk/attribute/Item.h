@@ -39,7 +39,7 @@ class SMTKCORE_EXPORT Item : public smtk::enable_shared_from_this<Item>
   friend class ValueItemDefinition;
 
 public:
-  smtkTypeMacro(Item);
+  smtkTypeMacroBase(Item);
   enum Type
   {
     ATTRIBUTE_REF,

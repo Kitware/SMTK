@@ -43,7 +43,7 @@ public:
 
   // Description:
   // Get a pointer to this object that is a vtkModelEntity.
-  virtual vtkModelEntity* GetThisModelEntity() = 0;
+  vtkModelEntity* GetThisModelEntity() override = 0;
 
   // Description:
   // Returns the material.  Should return zero values for objects that
@@ -74,7 +74,7 @@ public:
 
 protected:
   vtkDiscreteModelGeometricEntity();
-  virtual ~vtkDiscreteModelGeometricEntity();
+  ~vtkDiscreteModelGeometricEntity() override;
 
   // for using AddCellsToGeometry
   friend class vtkDiscreteModel;

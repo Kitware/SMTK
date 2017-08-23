@@ -30,7 +30,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkADHExporterOperator : public vtkADHExporterO
 public:
   static vtkADHExporterOperator* New();
   vtkTypeMacro(vtkADHExporterOperator, vtkADHExporterOperatorBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   using Superclass::Operate;
 

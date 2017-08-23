@@ -24,7 +24,7 @@ class VTKSMTKREADEREXT_EXPORT vtkCUBITReader : public vtkPolyDataAlgorithm
 public:
   static vtkCUBITReader* New();
   vtkTypeMacro(vtkCUBITReader, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Name of the file to be read.
@@ -35,8 +35,8 @@ protected:
   vtkCUBITReader();
   ~vtkCUBITReader();
 
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
   char* FileName;
 
   // Description:

@@ -19,7 +19,7 @@
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/SharedFromThis.h"       // For smtkTypeMacro.
+#include "smtk/SharedFromThis.h"       // For smtkTypeMacroBase.
 #include "smtk/model/EntityRef.h"      //for EntityRef version of canBeAssociated
 #include "smtk/model/EntityTypeBits.h" // for BitFlags type
 
@@ -44,7 +44,7 @@ class System;
 class SMTKCORE_EXPORT Definition : public smtk::enable_shared_from_this<Definition>
 {
 public:
-  smtkTypeMacro(Definition);
+  smtkTypeMacroBase(Definition);
   virtual ~Definition();
 
   // Description:

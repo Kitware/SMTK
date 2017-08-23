@@ -27,7 +27,7 @@ class VTK_EXPORT vtkGeoTransformOperatorClient : public vtkObject
 public:
   static vtkGeoTransformOperatorClient* New();
   vtkTypeMacro(vtkGeoTransformOperatorClient, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Using the input poly on the server to set up the modle

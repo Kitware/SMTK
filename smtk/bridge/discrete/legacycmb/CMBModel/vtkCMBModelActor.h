@@ -29,7 +29,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelActor : public vtkPVLODActor
 {
 public:
   vtkTypeMacro(vtkCMBModelActor, vtkPVLODActor);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   static vtkCMBModelActor* New();
 

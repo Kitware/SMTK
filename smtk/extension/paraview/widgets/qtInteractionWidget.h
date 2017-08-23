@@ -31,7 +31,7 @@ class SMTKPQWIDGETSEXT_EXPORT qtInteractionWidget : public QWidget
   Q_PROPERTY(bool enableInteractivity READ isInteractivityEnabled WRITE setEnableInteractivity);
 
 public:
-  virtual ~qtInteractionWidget();
+  ~qtInteractionWidget() override;
 
   //@{
   /// Set the pqView (typically pqRenderView) which in which to show the widget

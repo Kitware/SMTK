@@ -23,7 +23,7 @@ class VTKSMTKREADEREXT_EXPORT vtkCMBSTLReader : public vtkPolyDataAlgorithm
 public:
   static vtkCMBSTLReader* New();
   vtkTypeMacro(vtkCMBSTLReader, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Get/Set the name of the input file.
@@ -32,10 +32,10 @@ public:
 
 protected:
   vtkCMBSTLReader();
-  virtual ~vtkCMBSTLReader();
+  ~vtkCMBSTLReader() override;
 
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 
 private:
   vtkCMBSTLReader(const vtkCMBSTLReader&); // Not implemented.

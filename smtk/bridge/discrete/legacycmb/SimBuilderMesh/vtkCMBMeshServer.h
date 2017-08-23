@@ -31,7 +31,7 @@ class VTK_EXPORT vtkCMBMeshServer : public vtkCMBMesh
 public:
   static vtkCMBMeshServer* New();
   vtkTypeMacro(vtkCMBMeshServer, vtkCMBMesh);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   virtual void Initialize(vtkModel* model);
 

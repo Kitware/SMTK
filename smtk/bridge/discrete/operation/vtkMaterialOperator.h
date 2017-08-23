@@ -37,7 +37,7 @@ class SMTKDISCRETESESSION_EXPORT vtkMaterialOperator : public vtkMaterialOperato
 public:
   static vtkMaterialOperator* New();
   vtkTypeMacro(vtkMaterialOperator, vtkMaterialOperatorBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Prevent warnings about hidden base-class virtuals:
   using Superclass::AbleToOperate;
@@ -77,7 +77,7 @@ public:
 
 protected:
   vtkMaterialOperator();
-  virtual ~vtkMaterialOperator();
+  ~vtkMaterialOperator() override;
 
   // Description:
   // Check to see if everything is properly set for the operator.

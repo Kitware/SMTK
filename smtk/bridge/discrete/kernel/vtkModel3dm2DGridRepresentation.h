@@ -33,33 +33,33 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModel3dm2DGridRepresentation
 public:
   static vtkModel3dm2DGridRepresentation* New();
   vtkTypeMacro(vtkModel3dm2DGridRepresentation, vtkModelGridRepresentation);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetBCSNodalAnalysisGridPointIds(
-    vtkDiscreteModel* model, vtkIdType bcsGroupId, int bcGroupType, vtkIdList* pointIds);
+  bool GetBCSNodalAnalysisGridPointIds(
+    vtkDiscreteModel* model, vtkIdType bcsGroupId, int bcGroupType, vtkIdList* pointIds) override;
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetFloatingEdgeAnalysisGridPointIds(
-    vtkDiscreteModel* model, vtkIdType modelEdgeId, vtkIdList* pointIds);
+  bool GetFloatingEdgeAnalysisGridPointIds(
+    vtkDiscreteModel* model, vtkIdType modelEdgeId, vtkIdList* pointIds) override;
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetModelEdgeAnalysisPoints(
-    vtkDiscreteModel* model, vtkIdType edgeId, vtkIdTypeArray* edgePoints);
+  bool GetModelEdgeAnalysisPoints(
+    vtkDiscreteModel* model, vtkIdType edgeId, vtkIdTypeArray* edgePoints) override;
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetBoundaryGroupAnalysisFacets(
-    vtkDiscreteModel* model, vtkIdType boundaryGroupId, vtkIdList* cellIds, vtkIdList* cellSides);
+  bool GetBoundaryGroupAnalysisFacets(vtkDiscreteModel* model, vtkIdType boundaryGroupId,
+    vtkIdList* cellIds, vtkIdList* cellSides) override;
 
-  virtual bool IsModelConsistent(vtkDiscreteModel*) { return true; }
+  bool IsModelConsistent(vtkDiscreteModel*) override { return true; }
 
 protected:
   vtkModel3dm2DGridRepresentation();
-  virtual ~vtkModel3dm2DGridRepresentation();
+  ~vtkModel3dm2DGridRepresentation() override;
 
 private:
   vtkModel3dm2DGridRepresentation(const vtkModel3dm2DGridRepresentation&); // Not implemented.

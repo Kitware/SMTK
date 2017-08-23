@@ -43,29 +43,29 @@ class SMTKDISCRETESESSION_EXPORT vtkCMBModelWriterV4 : public vtkCMBModelWriterV
 public:
   static vtkCMBModelWriterV4* New();
   vtkTypeMacro(vtkCMBModelWriterV4, vtkCMBModelWriterV2);
-  void PrintSelf(ostream& os, vtkIndent indent);
-  virtual int GetVersion() { return 4; }
+  void PrintSelf(ostream& os, vtkIndent indent) override;
+  int GetVersion() override { return 4; }
 
 protected:
   vtkCMBModelWriterV4();
-  virtual ~vtkCMBModelWriterV4();
+  ~vtkCMBModelWriterV4() override;
 
   // Description:
   // Set the vtkDiscreteModelVertex data in Poly.
-  virtual void SetModelVertexData(vtkDiscreteModel* Model, vtkPolyData* Poly);
+  void SetModelVertexData(vtkDiscreteModel* Model, vtkPolyData* Poly) override;
 
   // Description:
   // Set the vtkDiscreteModelFace data in Edge.
-  virtual void SetModelEdgeData(vtkDiscreteModel* Model, vtkPolyData* Poly);
+  void SetModelEdgeData(vtkDiscreteModel* Model, vtkPolyData* Poly) override;
 
   // Description:
   // Set the vtkDiscreteModelFace data in Poly.
-  virtual void SetModelFaceData(vtkDiscreteModel* Model, vtkPolyData* Poly);
+  void SetModelFaceData(vtkDiscreteModel* Model, vtkPolyData* Poly) override;
 
   // Description:
   // Set the vtkDiscreteModelEdge data in Poly. Floating edges act just like
   // every other edge so we should have it already taken care of.
-  virtual void SetFloatingEdgeData(vtkDiscreteModel* /*Model*/, vtkPolyData* /*Poly*/){};
+  void SetFloatingEdgeData(vtkDiscreteModel* /*Model*/, vtkPolyData* /*Poly*/) override{};
 
 private:
   vtkCMBModelWriterV4(const vtkCMBModelWriterV4&); // Not implemented.

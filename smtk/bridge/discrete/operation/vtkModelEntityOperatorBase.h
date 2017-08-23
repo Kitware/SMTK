@@ -28,7 +28,7 @@ class SMTKDISCRETESESSION_EXPORT vtkModelEntityOperatorBase : public vtkObject
 public:
   static vtkModelEntityOperatorBase* New();
   vtkTypeMacro(vtkModelEntityOperatorBase, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Set/get the model entity unique persistent id to operate on.
@@ -93,7 +93,7 @@ public:
 
 protected:
   vtkModelEntityOperatorBase();
-  virtual ~vtkModelEntityOperatorBase();
+  ~vtkModelEntityOperatorBase() override;
 
   // Description:
   // Check to see if everything is properly set for the operator.

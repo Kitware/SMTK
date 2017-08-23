@@ -40,29 +40,31 @@ class SMTKCORE_EXPORT IncrementalAllocator : public smtk::mesh::IncrementalAlloc
 public:
   IncrementalAllocator(::moab::Interface* interface);
 
-  virtual ~IncrementalAllocator() {}
+  ~IncrementalAllocator() override {}
 
-  std::size_t addCoordinate(double* xyz);
-  bool setCoordinate(std::size_t coord, double* xyz);
+  std::size_t addCoordinate(double* xyz) override;
+  bool setCoordinate(std::size_t coord, double* xyz) override;
 
-  bool addCell(smtk::mesh::CellType ctype, long long int* pointIds, std::size_t nCoordinates = 0)
+  bool addCell(
+    smtk::mesh::CellType ctype, long long int* pointIds, std::size_t nCoordinates = 0) override
   {
     return BufferedCellAllocator::addCell(ctype, pointIds, nCoordinates);
   }
-  virtual bool addCell(smtk::mesh::CellType ctype, long int* pointIds, std::size_t nCoordinates = 0)
+  bool addCell(
+    smtk::mesh::CellType ctype, long int* pointIds, std::size_t nCoordinates = 0) override
   {
     return BufferedCellAllocator::addCell(ctype, pointIds, nCoordinates);
   }
-  virtual bool addCell(smtk::mesh::CellType ctype, int* pointIds, std::size_t nCoordinates = 0)
+  bool addCell(smtk::mesh::CellType ctype, int* pointIds, std::size_t nCoordinates = 0) override
   {
     return BufferedCellAllocator::addCell(ctype, pointIds, nCoordinates);
   }
 
-  virtual bool flush() { return BufferedCellAllocator::flush(); }
+  bool flush() override { return BufferedCellAllocator::flush(); }
 
-  virtual smtk::mesh::HandleRange cells() { return BufferedCellAllocator::cells(); }
+  smtk::mesh::HandleRange cells() override { return BufferedCellAllocator::cells(); }
 
-  virtual bool isValid() const { return BufferedCellAllocator::isValid(); }
+  bool isValid() const override { return BufferedCellAllocator::isValid(); }
 
 protected:
   bool allocateCoordinates(std::size_t nCoordinates);

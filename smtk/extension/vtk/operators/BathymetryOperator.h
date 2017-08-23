@@ -31,12 +31,12 @@ public:
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
-  virtual bool ableToOperate();
+  bool ableToOperate() override;
   virtual ~BathymetryOperator();
 
 protected:
   BathymetryOperator();
-  virtual smtk::model::OperatorResult operateInternal();
+  smtk::model::OperatorResult operateInternal() override;
   BathymetryHelper* bathyHelper;
 };
 

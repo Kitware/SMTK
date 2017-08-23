@@ -23,7 +23,7 @@ class SMTKPQWIDGETSEXT_EXPORT qtLineWidget : public qtInteractionWidget
 
 public:
   qtLineWidget(QWidget* parent = nullptr);
-  virtual ~qtLineWidget();
+  ~qtLineWidget() override;
 
   /// Changes the line color to magenta.
   void emphasize() { this->setLineColor(QColor::fromRgbF(1.0, 0.0, 1.0)); }

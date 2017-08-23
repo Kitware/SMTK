@@ -27,7 +27,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkModelEdgeOperator : public vtkModelEdgeOpera
 public:
   static vtkModelEdgeOperator* New();
   vtkTypeMacro(vtkModelEdgeOperator, vtkModelEdgeOperatorBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   using Superclass::Operate;
 

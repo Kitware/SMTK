@@ -22,7 +22,7 @@ class VTKSMTKMESHINGEXT_EXPORT vtkRegionsToLoops : public vtkPolyDataAlgorithm
 public:
   static vtkRegionsToLoops* New();
   vtkTypeMacro(vtkRegionsToLoops, vtkPolyDataAlgorithm);
-  virtual void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
 protected:
   vtkRegionsToLoops();
@@ -30,8 +30,8 @@ protected:
 
   virtual int FillInputPortInformation(int port, vtkInformation* info);
 
-  virtual int RequestData(
-    vtkInformation* request, vtkInformationVector** inputInfo, vtkInformationVector* outputInfo);
+  int RequestData(vtkInformation* request, vtkInformationVector** inputInfo,
+    vtkInformationVector* outputInfo) override;
 
 private:
   vtkRegionsToLoops(const vtkRegionsToLoops&); // Not implemented.

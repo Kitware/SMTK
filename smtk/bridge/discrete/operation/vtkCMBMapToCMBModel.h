@@ -28,7 +28,7 @@ class SMTKDISCRETESESSION_EXPORT vtkCMBMapToCMBModel : public vtkObject
 public:
   static vtkCMBMapToCMBModel* New();
   vtkTypeMacro(vtkCMBMapToCMBModel, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   void Operate(vtkDiscreteModelWrapper* ModelWrapper, vtkAlgorithm* inputPoly);
 

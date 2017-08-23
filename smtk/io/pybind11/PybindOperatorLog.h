@@ -25,14 +25,14 @@ public:
   OperatorLog_(smtk::model::ManagerPtr mgr) : OperatorLog(mgr) {}
   virtual ~OperatorLog_() {}
 
-  virtual int recordInvocation(
+  int recordInvocation(
     smtk::model::OperatorEventType event,
-    const smtk::model::Operator& op) = 0;
+    const smtk::model::Operator& op) override = 0;
 
-  virtual int recordResult(
+  int recordResult(
     smtk::model::OperatorEventType event,
     const smtk::model::Operator& op,
-    smtk::model::OperatorResult r) = 0;
+    smtk::model::OperatorResult r) override = 0;
 };
 }
 }

@@ -37,7 +37,7 @@ public:
   qtMeshSelectionItem(smtk::attribute::ItemPtr, QWidget* p, qtBaseView* bview,
     Qt::Orientation enumOrient = Qt::Horizontal);
   virtual ~qtMeshSelectionItem();
-  virtual void setLabelVisible(bool);
+  void setLabelVisible(bool) override;
   // update the selection input to the operation
   virtual void updateInputSelection(
     const std::map<smtk::common::UUID, std::set<int> >& selectionValues);
@@ -58,11 +58,11 @@ signals:
   void requestMeshSelection(smtk::attribute::ModelEntityItemPtr pEntItem);
 
 protected slots:
-  virtual void updateItemData();
+  void updateItemData() override;
   virtual void onRequestMeshSelection();
 
 protected:
-  virtual void createWidget();
+  void createWidget() override;
   virtual void updateUI();
   virtual void addMeshOpButtons();
 

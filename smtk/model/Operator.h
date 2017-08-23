@@ -57,8 +57,8 @@ enum OperatorOutcome
   */
 #define smtkDeclareModelOperator()                                                                 \
   static std::string operatorName;                                                                 \
-  virtual std::string name() const { return operatorName; }                                        \
-  virtual std::string className() const;                                                           \
+  std::string name() const override { return operatorName; }                                       \
+  std::string className() const override;                                                          \
   static smtk::model::OperatorPtr baseCreate()
 
 /**\brief Declare that a class implements an operator for solid models.
@@ -142,7 +142,7 @@ enum OperatorOutcome
 class SMTKCORE_EXPORT Operator : smtkEnableSharedPtr(Operator)
 {
 public:
-  smtkTypeMacro(Operator);
+  smtkTypeMacroBase(Operator);
 
   virtual std::string name() const = 0;
   virtual std::string className() const = 0;

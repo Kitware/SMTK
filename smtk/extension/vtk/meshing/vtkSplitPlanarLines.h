@@ -28,7 +28,7 @@ class VTKSMTKMESHINGEXT_EXPORT vtkSplitPlanarLines : public vtkPolyDataAlgorithm
 public:
   static vtkSplitPlanarLines* New();
   vtkTypeMacro(vtkSplitPlanarLines, vtkPolyDataAlgorithm);
-  virtual void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Set/get the geometric tolerance for point merging and intersection testing.
@@ -39,8 +39,8 @@ protected:
   vtkSplitPlanarLines();
   virtual ~vtkSplitPlanarLines();
 
-  virtual int RequestData(
-    vtkInformation* req, vtkInformationVector** inVec, vtkInformationVector* outVec);
+  int RequestData(
+    vtkInformation* req, vtkInformationVector** inVec, vtkInformationVector* outVec) override;
 
   double Tolerance;
 

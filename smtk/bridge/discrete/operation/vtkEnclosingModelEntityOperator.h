@@ -27,7 +27,7 @@ class SMTKDISCRETESESSION_EXPORT vtkEnclosingModelEntityOperator : public vtkObj
 public:
   static vtkEnclosingModelEntityOperator* New();
   vtkTypeMacro(vtkEnclosingModelEntityOperator, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   void BuildLinks(vtkDiscreteModelWrapper* modelWrapper);
 
@@ -45,7 +45,7 @@ public:
 
 protected:
   vtkEnclosingModelEntityOperator();
-  virtual ~vtkEnclosingModelEntityOperator();
+  ~vtkEnclosingModelEntityOperator() override;
 
 private:
   // Description:

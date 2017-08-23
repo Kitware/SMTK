@@ -141,7 +141,7 @@ class VTKSMTKMESHINGEXT_EXPORT vtkCMBPrepareForTriangleMesher : public vtkObject
 public:
   static vtkCMBPrepareForTriangleMesher* New();
   vtkTypeMacro(vtkCMBPrepareForTriangleMesher, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   void SetPolyData(vtkPolyData* pd); //Set the polydata to work on
 

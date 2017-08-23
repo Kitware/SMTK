@@ -39,23 +39,23 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModelItemGenericIterator : public vtkModelI
 public:
   static vtkModelItemGenericIterator* New();
   vtkTypeMacro(vtkModelItemGenericIterator, vtkModelItemIterator);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Go to the first item with given type.
-  virtual void Begin();
+  void Begin() override;
 
   // Description:
   // Is the iterator at the end of the list.
-  virtual int IsAtEnd();
+  int IsAtEnd() override;
 
   // Description:
   // Move to the next iterator.
-  virtual void Next();
+  void Next() override;
 
   // Description:
   // Returns the current item.
-  virtual vtkModelItem* GetCurrentItem();
+  vtkModelItem* GetCurrentItem() override;
 
   // Description:
   // Add a model item to the group of objects to be iterated over.
@@ -76,11 +76,11 @@ public:
 
   // Description:
   // Returns the number of items being iterated over.
-  virtual int Size();
+  int Size() override;
 
 protected:
   vtkModelItemGenericIterator();
-  virtual ~vtkModelItemGenericIterator();
+  ~vtkModelItemGenericIterator() override;
 
 private:
   vtkModelItemGenericIterator(const vtkModelItemGenericIterator&); // Not implemented.

@@ -34,7 +34,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkCMBXMLBCSWriter : public vtkXMLWriter
 public:
   static vtkCMBXMLBCSWriter* New();
   vtkTypeMacro(vtkCMBXMLBCSWriter, vtkXMLWriter);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   virtual const char* GetDefaultFileExtension();
 

@@ -28,7 +28,7 @@ class VTK_EXPORT vtkCMBModelEdgeMesh : public vtkCMBModelEntityMesh
 {
 public:
   vtkTypeMacro(vtkCMBModelEdgeMesh, vtkCMBModelEntityMesh);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   virtual vtkModelGeometricEntity* GetModelGeometricEntity();
 

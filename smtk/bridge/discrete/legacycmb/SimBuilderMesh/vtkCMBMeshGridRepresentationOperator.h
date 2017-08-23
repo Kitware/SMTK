@@ -28,7 +28,7 @@ class VTK_EXPORT vtkCMBMeshGridRepresentationOperator : public vtkObject
 public:
   static vtkCMBMeshGridRepresentationOperator* New();
   vtkTypeMacro(vtkCMBMeshGridRepresentationOperator, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Sets OperateSucceeded.

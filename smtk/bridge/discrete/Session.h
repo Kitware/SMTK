@@ -100,7 +100,7 @@ public:
   typedef smtk::model::SessionInfoBits SessionInfoBits;
   virtual ~Session();
 
-  virtual SessionInfoBits allSupportedInformation() const;
+  SessionInfoBits allSupportedInformation() const override;
 
   smtk::model::EntityRef addCMBEntityToManager(
     const smtk::common::UUID& entity, smtk::model::ManagerPtr storage, int relDepth = 1);
@@ -115,7 +115,7 @@ public:
 
   vtkDiscreteModelWrapper* findModelEntity(const smtk::common::UUID& uid) const;
 
-  std::string defaultFileExtension(const smtk::model::Model& model) const;
+  std::string defaultFileExtension(const smtk::model::Model& model) const override;
 
 protected:
   friend class vtkItemWatcherCommand;
@@ -134,38 +134,40 @@ protected:
 
   Session();
 
-  virtual smtk::model::Entity* addEntityRecord(const smtk::model::EntityRef& entRef);
-  virtual smtk::model::ArrangementHelper* createArrangementHelper();
-  virtual int findOrAddCellAdjacencies(const smtk::model::CellEntity& entRef,
-    SessionInfoBits request, smtk::model::ArrangementHelper* helper);
-  virtual int findOrAddCellUses(const smtk::model::CellEntity& entRef, SessionInfoBits request,
-    smtk::model::ArrangementHelper* helper);
-  virtual int findOrAddOwningCell(const smtk::model::UseEntity& entRef, SessionInfoBits request,
-    smtk::model::ArrangementHelper* helper);
-  virtual int findOrAddShellAdjacencies(const smtk::model::UseEntity& entRef,
-    SessionInfoBits request, smtk::model::ArrangementHelper* helper);
-  virtual int findOrAddUseAdjacencies(const smtk::model::ShellEntity& entRef,
-    SessionInfoBits request, smtk::model::ArrangementHelper* helper);
-  virtual int findOrAddGroupOwner(const smtk::model::Group& entRef, SessionInfoBits request,
-    smtk::model::ArrangementHelper* helper);
-  virtual int findOrAddFreeCells(const smtk::model::Model& entRef, SessionInfoBits request,
-    smtk::model::ArrangementHelper* helper);
-  virtual int findOrAddRelatedModels(const smtk::model::Model& entRef, SessionInfoBits request,
-    smtk::model::ArrangementHelper* helper);
-  virtual int findOrAddPrototype(const smtk::model::Instance& entRef, SessionInfoBits request,
-    smtk::model::ArrangementHelper* helper);
-  virtual int findOrAddRelatedModels(const smtk::model::SessionRef& entRef, SessionInfoBits request,
-    smtk::model::ArrangementHelper* helper);
-  virtual int findOrAddRelatedGroups(const smtk::model::EntityRef& entRef, SessionInfoBits request,
-    smtk::model::ArrangementHelper* helper);
-  virtual int findOrAddRelatedInstances(const smtk::model::EntityRef& entRef,
-    SessionInfoBits request, smtk::model::ArrangementHelper* helper);
-  virtual SessionInfoBits findOrAddArrangements(const smtk::model::EntityRef& entRef,
-    smtk::model::Entity* entRec, SessionInfoBits flags, smtk::model::ArrangementHelper* helper);
-  virtual SessionInfoBits updateProperties(const smtk::model::EntityRef& entRef,
-    smtk::model::Entity* entRec, SessionInfoBits flags, smtk::model::ArrangementHelper* helper);
-  virtual SessionInfoBits updateTessellation(const smtk::model::EntityRef& entRef,
-    SessionInfoBits flags, smtk::model::ArrangementHelper* helper);
+  smtk::model::Entity* addEntityRecord(const smtk::model::EntityRef& entRef) override;
+  smtk::model::ArrangementHelper* createArrangementHelper() override;
+  int findOrAddCellAdjacencies(const smtk::model::CellEntity& entRef, SessionInfoBits request,
+    smtk::model::ArrangementHelper* helper) override;
+  int findOrAddCellUses(const smtk::model::CellEntity& entRef, SessionInfoBits request,
+    smtk::model::ArrangementHelper* helper) override;
+  int findOrAddOwningCell(const smtk::model::UseEntity& entRef, SessionInfoBits request,
+    smtk::model::ArrangementHelper* helper) override;
+  int findOrAddShellAdjacencies(const smtk::model::UseEntity& entRef, SessionInfoBits request,
+    smtk::model::ArrangementHelper* helper) override;
+  int findOrAddUseAdjacencies(const smtk::model::ShellEntity& entRef, SessionInfoBits request,
+    smtk::model::ArrangementHelper* helper) override;
+  int findOrAddGroupOwner(const smtk::model::Group& entRef, SessionInfoBits request,
+    smtk::model::ArrangementHelper* helper) override;
+  int findOrAddFreeCells(const smtk::model::Model& entRef, SessionInfoBits request,
+    smtk::model::ArrangementHelper* helper) override;
+  int findOrAddRelatedModels(const smtk::model::Model& entRef, SessionInfoBits request,
+    smtk::model::ArrangementHelper* helper) override;
+  int findOrAddPrototype(const smtk::model::Instance& entRef, SessionInfoBits request,
+    smtk::model::ArrangementHelper* helper) override;
+  int findOrAddRelatedModels(const smtk::model::SessionRef& entRef, SessionInfoBits request,
+    smtk::model::ArrangementHelper* helper) override;
+  int findOrAddRelatedGroups(const smtk::model::EntityRef& entRef, SessionInfoBits request,
+    smtk::model::ArrangementHelper* helper) override;
+  int findOrAddRelatedInstances(const smtk::model::EntityRef& entRef, SessionInfoBits request,
+    smtk::model::ArrangementHelper* helper) override;
+  SessionInfoBits findOrAddArrangements(const smtk::model::EntityRef& entRef,
+    smtk::model::Entity* entRec, SessionInfoBits flags,
+    smtk::model::ArrangementHelper* helper) override;
+  SessionInfoBits updateProperties(const smtk::model::EntityRef& entRef,
+    smtk::model::Entity* entRec, SessionInfoBits flags,
+    smtk::model::ArrangementHelper* helper) override;
+  SessionInfoBits updateTessellation(const smtk::model::EntityRef& entRef, SessionInfoBits flags,
+    smtk::model::ArrangementHelper* helper) override;
 
   smtk::common::UUID trackModel(
     vtkDiscreteModelWrapper* mod, const std::string& url, smtk::model::ManagerPtr storage);

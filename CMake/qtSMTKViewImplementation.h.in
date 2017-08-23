@@ -26,10 +26,10 @@ public:
   @ARG_CLASS_NAME@Implementation(QObject* p);
   ~@ARG_CLASS_NAME@Implementation();
 
-  virtual QString viewName() const;
+  QString viewName() const override;
 
   /// return a static constructor for derived class of qtBaseView 
-  virtual qtSMTKViewConstructor viewConstructor();
+  qtSMTKViewConstructor viewConstructor() override;
 
 protected:
   qtSMTKViewConstructor view_constructor_pointer;

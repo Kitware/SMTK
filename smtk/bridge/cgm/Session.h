@@ -63,16 +63,16 @@ public:
   smtkCreateMacro(smtk::model::Session);
   smtkDeclareModelingKernel();
   typedef smtk::model::SessionInfoBits SessionInfoBits;
-  virtual ~Session();
+  ~Session() override;
 
-  virtual SessionInfoBits allSupportedInformation() const;
+  SessionInfoBits allSupportedInformation() const override;
 
   static bool addManagerEntityToCGM(const smtk::model::EntityRef& ent);
 
   static int staticSetup(const std::string& optName, const smtk::model::StringList& optVal);
-  virtual int setup(const std::string& optName, const smtk::model::StringList& optVal);
+  int setup(const std::string& optName, const smtk::model::StringList& optVal) override;
 
-  std::string defaultFileExtension(const smtk::model::Model& model) const;
+  std::string defaultFileExtension(const smtk::model::Model& model) const override;
 
   double maxRelChordErr() const { return this->m_maxRelChordErr; }
   double maxAngleErr() const { return this->m_maxAngleErr; }
@@ -83,8 +83,8 @@ protected:
 
   Session();
 
-  virtual SessionInfoBits transcribeInternal(
-    const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth = -1);
+  SessionInfoBits transcribeInternal(
+    const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth = -1) override;
 
   SessionInfoBits addCGMEntityToManager(
     const smtk::model::EntityRef& entity, RefEntity* refEnt, SessionInfoBits requestedInfo);

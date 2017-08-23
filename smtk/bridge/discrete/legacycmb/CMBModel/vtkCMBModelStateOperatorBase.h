@@ -31,7 +31,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelStateOperatorBase : public vtkObject
 public:
   static vtkCMBModelStateOperatorBase* New();
   vtkTypeMacro(vtkCMBModelStateOperatorBase, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Get the serialized string of the model.

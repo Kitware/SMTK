@@ -29,7 +29,7 @@ class SMTKDISCRETESESSION_EXPORT vtkSelectionSplitOperatorBase : public vtkObjec
 public:
   static vtkSelectionSplitOperatorBase* New();
   vtkTypeMacro(vtkSelectionSplitOperatorBase, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Get the list of modified geometric model entity pairs during a
@@ -91,7 +91,7 @@ public:
 
 protected:
   vtkSelectionSplitOperatorBase();
-  virtual ~vtkSelectionSplitOperatorBase();
+  ~vtkSelectionSplitOperatorBase() override;
 
   // Description:
   // Check to see if everything is properly set for the operator.

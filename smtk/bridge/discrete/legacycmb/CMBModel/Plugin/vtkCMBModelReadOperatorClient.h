@@ -27,7 +27,7 @@ class VTK_EXPORT vtkCMBModelReadOperatorClient : public vtkObject
 public:
   static vtkCMBModelReadOperatorClient* New();
   vtkTypeMacro(vtkCMBModelReadOperatorClient, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Get/Set the name of the file to be read in.

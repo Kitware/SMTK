@@ -28,7 +28,7 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModelUserName : public vtkObject
 public:
   static vtkModelUserName* New();
   vtkTypeMacro(vtkModelUserName, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   static void SetUserName(vtkModelEntity* entity, const char* userName);
 
@@ -38,7 +38,7 @@ public:
 
 protected:
   vtkModelUserName(){};
-  ~vtkModelUserName(){};
+  ~vtkModelUserName() override{};
 
 private:
   vtkModelUserName(const vtkModelUserName&); // Not implemented.

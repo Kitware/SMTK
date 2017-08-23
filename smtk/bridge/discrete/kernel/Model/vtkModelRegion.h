@@ -27,16 +27,16 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModelRegion : public vtkModelGeometricEntit
 {
 public:
   vtkTypeMacro(vtkModelRegion, vtkModelGeometricEntity);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   vtkModelItemIterator* NewModelShellUseIterator();
 
-  virtual int GetType();
+  int GetType() override;
 
   virtual void Initialize(
     int numModelFaces, vtkModelFace** faces, int* faceSides, vtkIdType modelRegionId);
 
-  virtual void Initialize(vtkIdType modelRegionId);
+  void Initialize(vtkIdType modelRegionId) override;
 
   // Description:
   // Get the number of shells the region has
@@ -50,7 +50,7 @@ public:
   // Reads the state of an instance from an archive OR
   // writes the state of an instance to an archive. See
   // the documentation for this class for details.
-  virtual void Serialize(vtkSerializer* ser);
+  void Serialize(vtkSerializer* ser) override;
 
   // Description:
   // Return an iterator to access the model faces that define
@@ -61,14 +61,14 @@ public:
 
 protected:
   vtkModelRegion();
-  virtual ~vtkModelRegion();
+  ~vtkModelRegion() override;
 
   virtual vtkModelShellUse* BuildModelShellUse(
     int numModelFaces, vtkModelFace** faces, int* faceSides);
   virtual bool DestroyModelShellUse(vtkModelShellUse* shellUse);
 
-  virtual bool IsDestroyable();
-  virtual bool Destroy();
+  bool IsDestroyable() override;
+  bool Destroy() override;
 
   friend class vtkModel;
 

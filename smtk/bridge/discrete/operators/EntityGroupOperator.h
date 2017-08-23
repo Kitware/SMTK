@@ -39,11 +39,11 @@ public:
   smtkSharedFromThisMacro(smtk::model::EntityGroupOperator);
   smtkDeclareModelOperator();
 
-  virtual bool ableToOperate();
+  bool ableToOperate() override;
 
 protected:
   EntityGroupOperator();
-  virtual smtk::model::OperatorResult operateInternal();
+  smtk::model::OperatorResult operateInternal() override;
   SessionPtr discreteSession() const;
   vtkModelEntity* fetchCMBCell(const std::string& parameterName) const;
   vtkModelEntity* fetchCMBCell(const smtk::attribute::ModelEntityItemPtr&, int idx) const;

@@ -24,9 +24,9 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModelVertex : public vtkModelGeometricEntit
 {
 public:
   vtkTypeMacro(vtkModelVertex, vtkModelGeometricEntity);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual int GetType();
+  int GetType() override;
 
   // Description:
   // Pure virtual function to get the point location of the
@@ -34,7 +34,7 @@ public:
   // Fills the x, y, and z values in xyz if success.
   virtual bool GetPoint(double* xyz) = 0;
 
-  virtual bool GetBounds(double bounds[6]);
+  bool GetBounds(double bounds[6]) override;
 
   int GetNumberOfModelVertexUses();
   vtkModelItemIterator* NewModelVertexUseIterator();
@@ -54,14 +54,14 @@ public:
   // Reads the state of an instance from an archive OR
   // writes the state of an instance to an archive. See
   // the documentation for this class for details.
-  virtual void Serialize(vtkSerializer* ser);
+  void Serialize(vtkSerializer* ser) override;
 
 protected:
   vtkModelVertex();
-  virtual ~vtkModelVertex();
+  ~vtkModelVertex() override;
 
-  virtual bool IsDestroyable();
-  virtual bool Destroy();
+  bool IsDestroyable() override;
+  bool Destroy() override;
 
   // Description:
   // Build and destroy a vtkModelVertexUse.  The vtkModelVertex

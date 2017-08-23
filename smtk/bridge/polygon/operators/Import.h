@@ -44,11 +44,11 @@ public:
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
-  virtual bool ableToOperate();
+  bool ableToOperate() override;
 
 protected:
   Import();
-  virtual smtk::model::OperatorResult operateInternal();
+  smtk::model::OperatorResult operateInternal() override;
   int taggedPolyData2PolygonModelEntities(
     vtkIdTypeArray* tagInfo, vtkPolyData* mesh, smtk::model::Model& model);
   int basicPolyData2PolygonModelEntities(vtkPolyData* mesh, smtk::model::Model& model);

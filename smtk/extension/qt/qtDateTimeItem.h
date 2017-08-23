@@ -35,7 +35,7 @@ public:
   qtDateTimeItem(smtk::attribute::DateTimeItemPtr, QWidget* p, qtBaseView* bview,
     Qt::Orientation enumOrient = Qt::Horizontal);
   virtual ~qtDateTimeItem();
-  virtual void setLabelVisible(bool);
+  void setLabelVisible(bool) override;
 
 public slots:
   void setOutputOptional(int);
@@ -43,8 +43,8 @@ public slots:
 signals:
 
 protected slots:
-  virtual void updateItemData();
-  virtual void onChildWidgetSizeChanged();
+  void updateItemData() override;
+  void onChildWidgetSizeChanged() override;
   /* virtual void onAddNewValue(); */
   /* virtual void onRemoveValue(); */
 
@@ -60,7 +60,7 @@ protected slots:
 
 protected:
   smtk::attribute::DateTimeItemPtr datetimeItem();
-  virtual void createWidget();
+  void createWidget() override;
   QWidget* createDateTimeWidget(int elementIdx);
   virtual void loadInputValues();
   virtual void updateUI();

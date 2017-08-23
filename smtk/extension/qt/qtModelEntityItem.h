@@ -36,7 +36,7 @@ public:
   qtModelEntityItem(smtk::attribute::ItemPtr, QWidget* p, qtBaseView* bview,
     Qt::Orientation enumOrient = Qt::Horizontal);
   virtual ~qtModelEntityItem();
-  virtual void setLabelVisible(bool);
+  void setLabelVisible(bool) override;
   virtual void associateEntities(
     const smtk::model::EntityRefs& selEntityRefs, bool resetExisting = true);
   smtk::attribute::ModelEntityItemPtr modelEntityItem();
@@ -60,11 +60,11 @@ signals:
     const smtk::extension::SelectionModifier modifierFlag, const std::string& incomingSourceName);
 
 protected slots:
-  virtual void updateItemData();
+  void updateItemData() override;
   virtual void popupViewItemSelected();
 
 protected:
-  virtual void createWidget();
+  void createWidget() override;
   virtual void loadAssociatedEntities();
   virtual void updateUI();
   virtual void addEntityAssociationWidget();

@@ -32,7 +32,7 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkDiscreteModelFace : public vtkModelFace,
 {
 public:
   vtkTypeMacro(vtkDiscreteModelFace, vtkModelFace);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   static vtkDiscreteModelFace* New();
 
@@ -70,7 +70,7 @@ protected:
   friend class vtkModelBCGridRepresentation;
 
   vtkDiscreteModelFace();
-  virtual ~vtkDiscreteModelFace();
+  ~vtkDiscreteModelFace() override;
 
   // Description:
   // Build a new model face from the cells listed in CellIds.
@@ -90,8 +90,8 @@ protected:
   friend class vtkSelectionSplitOperator;
   friend class vtkCMBIncorporateMeshOperator;
 
-  virtual vtkModelEntity* GetThisModelEntity();
-  virtual bool Destroy();
+  vtkModelEntity* GetThisModelEntity() override;
+  bool Destroy() override;
 
   // Description:
   // Extract the edges of the face and return the information
@@ -113,7 +113,7 @@ protected:
   // Reads the state of an instance from an archive OR
   // writes the state of an instance to an archive. See
   // the documentation for this class for details.
-  virtual void Serialize(vtkSerializer* ser);
+  void Serialize(vtkSerializer* ser) override;
 
 private:
   vtkDiscreteModelFace(const vtkDiscreteModelFace&); // Not implemented.

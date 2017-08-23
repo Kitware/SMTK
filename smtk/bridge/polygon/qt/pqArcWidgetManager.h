@@ -39,7 +39,7 @@ class SMTKPOLYGONQTEXT_EXPORT pqArcWidgetManager : public QObject
 
 public:
   pqArcWidgetManager(pqServer* server, pqRenderView* view);
-  virtual ~pqArcWidgetManager();
+  ~pqArcWidgetManager() override;
 
   int create();
   int edit();

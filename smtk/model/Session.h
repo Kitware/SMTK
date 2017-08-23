@@ -109,15 +109,15 @@ protected:                                                                      
                                                                                                    \
 public:                                                                                            \
   static smtk::model::OperatorConstructors* s_operators;                                           \
-  virtual bool registerOperator(                                                                   \
-    const std::string& opName, const char* opDescrXML, smtk::model::OperatorConstructor opCtor);   \
+  bool registerOperator(const std::string& opName, const char* opDescrXML,                         \
+    smtk::model::OperatorConstructor opCtor) override;                                             \
   static bool registerStaticOperator(                                                              \
     const std::string& opName, const char* opDescrXML, smtk::model::OperatorConstructor opCtor);   \
-  virtual std::string findOperatorXML(const std::string& opName) const;                            \
-  virtual smtk::model::OperatorConstructor findOperatorConstructor(const std::string& opName)      \
-    const;                                                                                         \
-  virtual smtk::model::OperatorConstructors* operatorConstructors();                               \
-  virtual bool inheritsOperators() const
+  std::string findOperatorXML(const std::string& opName) const override;                           \
+  smtk::model::OperatorConstructor findOperatorConstructor(const std::string& opName)              \
+    const override;                                                                                \
+  smtk::model::OperatorConstructors* operatorConstructors() override;                              \
+  bool inheritsOperators() const override
 
 /**\brief Implement methods declared by smtkDeclareOperatorRegistration().
   *
@@ -201,8 +201,8 @@ public:                                                                         
 #define smtkDeclareModelingKernel()                                                                \
   static std::string sessionName;                                                                  \
   static std::string staticClassName();                                                            \
-  virtual std::string name() const { return sessionName; }                                         \
-  virtual std::string className() const;                                                           \
+  std::string name() const override { return sessionName; }                                        \
+  std::string className() const override;                                                          \
   smtkDeclareOperatorRegistration()
 
 /**\brief Declare that a class implements a session to a solid modeling kernel.
@@ -297,8 +297,23 @@ public:                                                                         
 class SMTKCORE_EXPORT Session : smtkEnableSharedPtr(Session)
 {
 public:
-  smtkTypeMacro(Session);
-  smtkDeclareOperatorRegistration();
+  smtkTypeMacroBase(Session);
+
+  // From smtkDeclareOperatorRegistration
+protected:
+  static void cleanupOperators();
+
+public:
+  static smtk::model::OperatorConstructors* s_operators;
+  virtual bool registerOperator(
+    const std::string& opName, const char* opDescrXML, smtk::model::OperatorConstructor opCtor);
+  static bool registerStaticOperator(
+    const std::string& opName, const char* opDescrXML, smtk::model::OperatorConstructor opCtor);
+  virtual std::string findOperatorXML(const std::string& opName) const;
+  virtual smtk::model::OperatorConstructor findOperatorConstructor(const std::string& opName) const;
+  virtual smtk::model::OperatorConstructors* operatorConstructors();
+  virtual bool inheritsOperators() const;
+  // End smtkDeclareOperatorRegistration
 
   // Required to be circular for Superclass::findOperator{Constructor,XML}:
   smtkSuperclassMacro(smtk::model::Session);

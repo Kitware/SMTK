@@ -137,7 +137,7 @@ class vtkItemWatcherCommand : public vtkCommand
 public:
   static vtkItemWatcherCommand* New() { return new vtkItemWatcherCommand; }
   vtkTypeMacro(vtkItemWatcherCommand, vtkCommand);
-  virtual void Execute(vtkObject* caller, unsigned long eventId, void* callData)
+  void Execute(vtkObject* caller, unsigned long eventId, void* callData) override
   {
     if (!session)
     { // The session has been deleted while models still existed.

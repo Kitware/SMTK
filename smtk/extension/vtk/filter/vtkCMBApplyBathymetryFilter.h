@@ -24,7 +24,7 @@ class VTKSMTKFILTEREXT_EXPORT vtkCMBApplyBathymetryFilter : public vtkDataSetAlg
 public:
   static vtkCMBApplyBathymetryFilter* New();
   vtkTypeMacro(vtkCMBApplyBathymetryFilter, vtkDataSetAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   //Description:
   //Set/Get the radius of the cone to use for elevation smoothing
@@ -97,11 +97,11 @@ public:
 
 protected:
   vtkCMBApplyBathymetryFilter();
-  ~vtkCMBApplyBathymetryFilter();
+  ~vtkCMBApplyBathymetryFilter() override;
 
-  virtual int FillInputPortInformation(int port, vtkInformation* info);
-  virtual int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector);
+  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
+    vtkInformationVector* outputVector) override;
 
   //methods for flattening mesh
   bool FlattenMesh(vtkPoints*);

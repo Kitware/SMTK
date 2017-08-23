@@ -28,7 +28,7 @@ public:
   smtkDeclareModelOperator();
 
 protected:
-  virtual smtk::model::OperatorResult operateInternal();
+  smtk::model::OperatorResult operateInternal() override;
 
   template <typename V, typename VL, typename VD, typename VI>
   void setPropertyValue(

@@ -42,7 +42,7 @@ class Instance;
 class SMTKCORE_EXPORT SubphraseGenerator : smtkEnableSharedPtr(SubphraseGenerator)
 {
 public:
-  smtkTypeMacro(SubphraseGenerator);
+  smtkTypeMacroBase(SubphraseGenerator);
   virtual ~SubphraseGenerator() {}
 
   virtual DescriptivePhrases subphrases(DescriptivePhrase::Ptr src);

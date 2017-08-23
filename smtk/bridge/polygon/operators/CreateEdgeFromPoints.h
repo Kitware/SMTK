@@ -41,7 +41,7 @@ public:
     std::vector<double>& pnts, int numCoordsPerPoint, smtk::model::Model& parentModel);
 
 protected:
-  virtual smtk::model::OperatorResult operateInternal();
+  smtk::model::OperatorResult operateInternal() override;
 };
 
 } // namespace polygon

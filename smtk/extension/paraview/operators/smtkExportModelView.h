@@ -28,31 +28,31 @@ public:
 
   static smtk::extension::qtBaseView* createViewWidget(const smtk::extension::ViewInfo& info);
 
-  virtual bool displayItem(smtk::attribute::ItemPtr);
+  bool displayItem(smtk::attribute::ItemPtr) override;
 
-  virtual void setEmbedData(bool doEmbed);
-  virtual void setRenameModels(bool doRename);
+  void setEmbedData(bool doEmbed) override;
+  void setRenameModels(bool doRename) override;
 
 public slots:
-  virtual void updateUI();
-  virtual void showAdvanceLevelOverlay(bool show);
-  virtual void requestModelEntityAssociation();
-  virtual void onShowCategory() { this->updateAttributeData(); }
+  void updateUI() override;
+  void showAdvanceLevelOverlay(bool show) override;
+  void requestModelEntityAssociation() override;
+  void onShowCategory() override { this->updateAttributeData(); }
   // This will be triggered by selecting different type
   // of construction method in create-edge op.
-  virtual void valueChanged(smtk::attribute::ItemPtr optype);
+  void valueChanged(smtk::attribute::ItemPtr optype) override;
 
-  virtual void setModeToPreview(const std::string& mode);
+  void setModeToPreview(const std::string& mode) override;
 
-  virtual void setModelToSave(const smtk::model::Model& model);
-  virtual bool canSave() const;
+  void setModelToSave(const smtk::model::Model& model) override;
+  bool canSave() const override;
 
-  virtual bool onSave();
-  virtual bool onSaveAs();
-  virtual bool onExport();
+  bool onSave() override;
+  bool onSaveAs() override;
+  bool onExport() override;
 
-  virtual bool chooseFile(const std::string& mode);
-  virtual bool attemptSave(const std::string& mode);
+  bool chooseFile(const std::string& mode) override;
+  bool attemptSave(const std::string& mode) override;
 
 protected slots:
   virtual bool requestOperation(const smtk::model::OperatorPtr& op);
@@ -68,9 +68,9 @@ protected slots:
   virtual void widgetDestroyed(QObject* w);
 
 protected:
-  virtual void updateAttributeData();
-  virtual void createWidget();
-  virtual bool eventFilter(QObject* obj, QEvent* evnt);
+  void updateAttributeData() override;
+  void createWidget() override;
+  bool eventFilter(QObject* obj, QEvent* evnt) override;
   virtual void updateSummary(const std::string& mode);
   virtual void updateActions();
   virtual void setInfoToBeDisplayed() override;

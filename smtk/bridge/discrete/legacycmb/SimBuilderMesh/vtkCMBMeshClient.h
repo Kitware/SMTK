@@ -33,7 +33,7 @@ class VTK_EXPORT vtkCMBMeshClient : public vtkCMBMesh
 public:
   static vtkCMBMeshClient* New();
   vtkTypeMacro(vtkCMBMeshClient, vtkCMBMesh);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   void Initialize(vtkModel* model, vtkSMProxy* serverModelProxy);
 

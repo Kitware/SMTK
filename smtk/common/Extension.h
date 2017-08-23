@@ -92,7 +92,7 @@ namespace common
 class SMTKCORE_EXPORT Extension : smtkEnableSharedPtr(Extension)
 {
 public:
-  smtkTypeMacro(Extension);
+  smtkTypeMacroBase(Extension);
   virtual ~Extension();
 
   /**\brief Register an extension with a unique name.

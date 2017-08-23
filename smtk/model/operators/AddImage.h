@@ -26,7 +26,7 @@ public:
   smtkDeclareModelOperator();
 
 private:
-  virtual smtk::model::OperatorResult operateInternal();
+  smtk::model::OperatorResult operateInternal() override;
 };
 
 } //namespace model

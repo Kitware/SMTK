@@ -31,8 +31,8 @@ public:
     DescriptivePhrase::Ptr parent = DescriptivePhrasePtr());
   virtual ~MeshListPhrase() {}
 
-  virtual std::string title();
-  virtual std::string subtitle();
+  std::string title() override;
+  std::string subtitle() override;
   std::vector<smtk::mesh::CollectionPtr> relatedCollections() const;
   std::vector<smtk::mesh::MeshSet> relatedMeshes() const;
 

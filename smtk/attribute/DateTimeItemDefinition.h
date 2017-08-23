@@ -31,8 +31,8 @@ public:
     return smtk::attribute::DateTimeItemDefinitionPtr(new DateTimeItemDefinition(myName));
   }
 
-  virtual ~DateTimeItemDefinition();
-  virtual Item::Type type() const;
+  ~DateTimeItemDefinition() override;
+  Item::Type type() const override;
 
   const ::smtk::common::DateTimeZonePair& defaultValue() const { return this->m_defaultValue; }
   bool setDefaultValue(const ::smtk::common::DateTimeZonePair& value);
@@ -60,12 +60,12 @@ public:
   void setEnableCalendarPopup(bool mode) { this->m_useCalendarPopup = mode; }
   bool useCalendarPopup() const { return m_useCalendarPopup; }
 
-  virtual smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const;
-  virtual smtk::attribute::ItemPtr buildItem(
-    Item* owningItem, int position, int subGroupPosition) const;
+  smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
+  smtk::attribute::ItemPtr buildItem(
+    Item* owningItem, int position, int subGroupPosition) const override;
 
-  virtual smtk::attribute::ItemDefinitionPtr createCopy(
-    smtk::attribute::ItemDefinition::CopyInfo& info) const;
+  smtk::attribute::ItemDefinitionPtr createCopy(
+    smtk::attribute::ItemDefinition::CopyInfo& info) const override;
 
 protected:
   DateTimeItemDefinition(const std::string& myName);

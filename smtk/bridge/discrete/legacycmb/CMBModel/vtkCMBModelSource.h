@@ -30,7 +30,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelSource : public vtkCompositeDataSetA
 public:
   static vtkCMBModelSource* New();
   vtkTypeMacro(vtkCMBModelSource, vtkCompositeDataSetAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Copy a model source/wrapper
@@ -54,7 +54,7 @@ protected:
   virtual int RequestDataObject(
     vtkInformation* request, vtkInformationVector** inputData, vtkInformationVector* outputData);
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
   // see algorithm for more info
   virtual int FillOutputPortInformation(int port, vtkInformation* info);
 

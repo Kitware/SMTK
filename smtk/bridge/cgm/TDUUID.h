@@ -51,12 +51,12 @@ class SMTKCGMSESSION_EXPORT TDUUID : public ToolData
 {
 public:
   TDUUID(ToolDataUser* entity, const smtk::common::UUID& uid = smtk::common::UUID());
-  virtual ~TDUUID();
+  ~TDUUID() override;
 
   smtk::common::UUID entityId() const;
 
-  virtual ToolData* propogate(ToolDataUser* new_td_user);
-  virtual ToolData* merge(ToolDataUser* other_td_user);
+  ToolData* propogate(ToolDataUser* new_td_user) override;
+  ToolData* merge(ToolDataUser* other_td_user) override;
 
   static ToolDataUser* findEntityById(const smtk::common::UUID& uid);
   static int isTDUUID(const ToolData* td);

@@ -61,27 +61,27 @@ public:
     ModelActiveRole = Qt::UserRole + 106       //!< Is entity the active model?
   };
 
-  virtual QModelIndex index(int row, int column, const QModelIndex& parent) const;
-  virtual QModelIndex parent(const QModelIndex& child) const;
-  virtual bool hasChildren(const QModelIndex& parent) const;
+  QModelIndex index(int row, int column, const QModelIndex& parent) const override;
+  QModelIndex parent(const QModelIndex& child) const override;
+  bool hasChildren(const QModelIndex& parent) const override;
 
-  int rowCount(const QModelIndex& parent = QModelIndex()) const;
-  int columnCount(const QModelIndex& inParent = QModelIndex()) const
+  int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+  int columnCount(const QModelIndex& inParent = QModelIndex()) const override
   {
     (void)inParent;
     return 1;
   }
 
-  QVariant headerData(int section, Qt::Orientation orientation, int role) const;
-  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+  QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
 
-  //virtual bool insertRows(int position, int rows, const QModelIndex& parent = QModelIndex());
-  virtual bool removeRows(int position, int rows, const QModelIndex& parent = QModelIndex());
-  bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
+  //bool insertRows(int position, int rows, const QModelIndex& parent = QModelIndex()) override;
+  bool removeRows(int position, int rows, const QModelIndex& parent = QModelIndex()) override;
+  bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
 
-  //virtual void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
+  //void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) override;
 
-  Qt::ItemFlags flags(const QModelIndex& index) const;
+  Qt::ItemFlags flags(const QModelIndex& index) const override;
 
   void setRoot(model::DescriptivePhrasePtr root)
   {
@@ -119,7 +119,7 @@ public:
   virtual void newSessionOperatorResult(
     const smtk::model::SessionRef& sref, const model::OperatorResult& result);
 
-  Qt::DropActions supportedDropActions() const;
+  Qt::DropActions supportedDropActions() const override;
 
 signals:
   void phraseTitleChanged(const QModelIndex&);

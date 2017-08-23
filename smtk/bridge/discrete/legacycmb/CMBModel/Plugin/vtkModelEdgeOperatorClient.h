@@ -28,7 +28,7 @@ class VTK_EXPORT vtkModelEdgeOperatorClient : public vtkModelEdgeOperatorBase
 public:
   static vtkModelEdgeOperatorClient* New();
   vtkTypeMacro(vtkModelEdgeOperatorClient, vtkModelEdgeOperatorBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   using Superclass::Operate;
 

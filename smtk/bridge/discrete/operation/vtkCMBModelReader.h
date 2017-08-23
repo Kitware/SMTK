@@ -24,7 +24,7 @@ class SMTKDISCRETESESSION_EXPORT vtkCMBModelReader : public vtkPolyDataAlgorithm
 public:
   static vtkCMBModelReader* New();
   vtkTypeMacro(vtkCMBModelReader, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Get/Set the name of the input file.
@@ -33,10 +33,10 @@ public:
 
 protected:
   vtkCMBModelReader();
-  virtual ~vtkCMBModelReader();
+  ~vtkCMBModelReader() override;
 
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 
 private:
   // Description:

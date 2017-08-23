@@ -31,15 +31,15 @@ public:
   void SetLogger(smtk::io::Logger* log);
   smtk::io::Logger* GetLogger() const;
 
-  virtual void DisplayText(const char* msg) VTK_OVERRIDE;
-  virtual void DisplayErrorText(const char* msg) VTK_OVERRIDE;
-  virtual void DisplayWarningText(const char* msg) VTK_OVERRIDE;
-  virtual void DisplayGenericWarningText(const char* msg) VTK_OVERRIDE;
-  virtual void DisplayDebugText(const char* msg) VTK_OVERRIDE;
+  void DisplayText(const char* msg) VTK_OVERRIDE;
+  void DisplayErrorText(const char* msg) VTK_OVERRIDE;
+  void DisplayWarningText(const char* msg) VTK_OVERRIDE;
+  void DisplayGenericWarningText(const char* msg) VTK_OVERRIDE;
+  void DisplayDebugText(const char* msg) VTK_OVERRIDE;
 
 protected:
   OutputWindow();
-  ~OutputWindow();
+  ~OutputWindow() override;
 
   FormattedOutput ParseOutput(const char* msg) const;
 

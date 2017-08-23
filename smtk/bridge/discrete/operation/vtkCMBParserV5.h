@@ -28,10 +28,10 @@ class SMTKDISCRETESESSION_EXPORT vtkCMBParserV5 : public vtkCMBParserBase
 public:
   static vtkCMBParserV5* New();
   vtkTypeMacro(vtkCMBParserV5, vtkCMBParserBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual bool Parse(
-    vtkPolyData* MasterPoly, vtkDiscreteModel* Model, smtk::bridge::discrete::Session* session);
+  bool Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
+    smtk::bridge::discrete::Session* session) override;
 
 protected:
   vtkCMBParserV5();

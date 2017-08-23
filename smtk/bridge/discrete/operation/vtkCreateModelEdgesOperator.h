@@ -33,7 +33,7 @@ public:
   class LoopInfo;
   static vtkCreateModelEdgesOperator* New();
   vtkTypeMacro(vtkCreateModelEdgesOperator, vtkCreateModelEdgesOperatorBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Create the model edges
@@ -51,7 +51,7 @@ public:
 
 protected:
   vtkCreateModelEdgesOperator();
-  virtual ~vtkCreateModelEdgesOperator();
+  ~vtkCreateModelEdgesOperator() override;
 
   using Superclass::AbleToOperate;
 

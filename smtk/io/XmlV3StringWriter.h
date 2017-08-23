@@ -37,12 +37,12 @@ public:
 protected:
   // Override methods
   // Two virtual methods for writing contents
-  virtual std::string className() const;
-  virtual unsigned int fileVersion() const;
+  std::string className() const override;
+  unsigned int fileVersion() const override;
 
-  virtual void processItemDefinitionType(
-    pugi::xml_node& node, smtk::attribute::ItemDefinitionPtr idef);
-  virtual void processItemType(pugi::xml_node& node, smtk::attribute::ItemPtr item);
+  void processItemDefinitionType(
+    pugi::xml_node& node, smtk::attribute::ItemDefinitionPtr idef) override;
+  void processItemType(pugi::xml_node& node, smtk::attribute::ItemPtr item) override;
 
   // New methods
   void processDateTimeDef(pugi::xml_node& node, smtk::attribute::DateTimeItemDefinitionPtr idef);

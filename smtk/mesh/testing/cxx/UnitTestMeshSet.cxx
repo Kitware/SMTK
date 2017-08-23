@@ -377,7 +377,7 @@ public:
   {
   }
 
-  void forMesh(smtk::mesh::MeshSet& mesh)
+  void forMesh(smtk::mesh::MeshSet& mesh) override
   {
     this->numMeshesIteratedOver++;
     this->cellsSeen.append(mesh.cells());

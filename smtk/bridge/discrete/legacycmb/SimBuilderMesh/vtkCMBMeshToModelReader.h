@@ -29,7 +29,7 @@ class VTK_EXPORT vtkCMBMeshToModelReader : public vtkXMLDataReader
 public:
   static vtkCMBMeshToModelReader* New();
   vtkTypeMacro(vtkCMBMeshToModelReader, vtkXMLReader);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Get the number of points in the output.

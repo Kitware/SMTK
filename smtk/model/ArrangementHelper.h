@@ -12,7 +12,7 @@
 
 #include "smtk/CoreExports.h" // for SMTKCORE_EXPORT
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/SharedFromThis.h" // for smtkTypeMacro
+#include "smtk/SharedFromThis.h" // for smtkTypeMacroBase
 #include "smtk/model/Session.h"
 
 namespace smtk
@@ -29,7 +29,7 @@ namespace model
 class SMTKCORE_EXPORT ArrangementHelper
 {
 public:
-  smtkTypeMacro(ArrangementHelper);
+  smtkTypeMacroBase(ArrangementHelper);
   virtual ~ArrangementHelper();
 
   virtual void doneAddingEntities(SessionPtr sess, SessionInfoBits flags);

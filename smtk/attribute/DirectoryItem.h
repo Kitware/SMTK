@@ -31,8 +31,8 @@ class SMTKCORE_EXPORT DirectoryItem : public FileSystemItem
 
 public:
   smtkTypeMacro(DirectoryItem);
-  virtual ~DirectoryItem();
-  virtual Item::Type type() const;
+  ~DirectoryItem() override;
+  Item::Type type() const override;
 
 protected:
   DirectoryItem(Attribute* owningAttribute, int itemPosition);

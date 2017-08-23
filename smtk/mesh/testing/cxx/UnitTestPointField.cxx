@@ -220,7 +220,7 @@ public:
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz, bool&)
+  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz, bool&) override
   {
     std::size_t counter = 0;
     typedef smtk::mesh::HandleRange::const_iterator c_it;
@@ -252,7 +252,7 @@ public:
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz, bool&)
+  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz, bool&) override
   {
     std::size_t counter = 0;
     typedef smtk::mesh::HandleRange::const_iterator c_it;

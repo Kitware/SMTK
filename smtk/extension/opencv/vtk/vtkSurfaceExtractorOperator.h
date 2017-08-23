@@ -25,12 +25,12 @@ class VTKSMTKOPENCVEXT_EXPORT vtkSurfaceExtractorOperator : public vtkSMTKOperat
 public:
   static vtkSurfaceExtractorOperator* New();
   vtkTypeMacro(vtkSurfaceExtractorOperator, vtkSMTKOperator);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   //Description:
   //Convert the passed-in polydata into polygon edge(s)
-  virtual bool AbleToOperate();
-  virtual smtk::model::OperatorResult Operate();
+  bool AbleToOperate() override;
+  smtk::model::OperatorResult Operate() override;
 
 protected:
   vtkSurfaceExtractorOperator();

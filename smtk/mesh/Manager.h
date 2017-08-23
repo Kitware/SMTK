@@ -30,7 +30,7 @@ class SMTKCORE_EXPORT Manager : public smtk::enable_shared_from_this<Manager>
   typedef std::map<smtk::common::UUID, smtk::mesh::CollectionPtr> ContainerType;
 
 public:
-  smtkTypeMacro(Manager);
+  smtkTypeMacroBase(Manager);
   smtkCreateMacro(Manager);
   virtual ~Manager();
 

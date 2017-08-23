@@ -26,7 +26,7 @@ class VTK_EXPORT vtkCMBModelFaceMeshOperator : public vtkObject
 public:
   static vtkCMBModelFaceMeshOperator* New();
   vtkTypeMacro(vtkCMBModelFaceMeshOperator, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Modify the color, user name, and/or the visibility of an object.

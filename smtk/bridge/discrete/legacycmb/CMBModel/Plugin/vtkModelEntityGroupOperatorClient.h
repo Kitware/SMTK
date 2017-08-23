@@ -37,7 +37,7 @@ class VTK_EXPORT vtkModelEntityGroupOperatorClient : public vtkModelEntityGroupO
 public:
   static vtkModelEntityGroupOperatorClient* New();
   vtkTypeMacro(vtkModelEntityGroupOperatorClient, vtkModelEntityGroupOperatorBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Prevent warnings about hidden base-class virtuals:
   using Superclass::Build;

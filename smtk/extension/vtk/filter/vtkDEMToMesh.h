@@ -23,12 +23,12 @@ public:
 
 protected:
   vtkDEMToMesh();
-  virtual ~vtkDEMToMesh();
+  ~vtkDEMToMesh() override;
 
-  virtual int FillInputPortInformation(int port, vtkInformation* info);
+  int FillInputPortInformation(int port, vtkInformation* info) override;
 
-  virtual int RequestData(
-    vtkInformation* req, vtkInformationVector** inInfo, vtkInformationVector* outInfo);
+  int RequestData(
+    vtkInformation* req, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
 
   int UseScalerForZ;
   int SubSampleStepSize;

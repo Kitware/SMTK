@@ -28,7 +28,7 @@ class SMTKDISCRETESESSION_EXPORT vtkSplitOperatorBase : public vtkObject
 public:
   static vtkSplitOperatorBase* New();
   vtkTypeMacro(vtkSplitOperatorBase, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Set/get the model entity unique persistent id to operate on.
@@ -87,7 +87,7 @@ public:
 
 protected:
   vtkSplitOperatorBase();
-  virtual ~vtkSplitOperatorBase();
+  ~vtkSplitOperatorBase() override;
 
   // Description:
   // Check to see if everything is properly set for the operator.

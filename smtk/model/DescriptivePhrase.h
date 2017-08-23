@@ -77,7 +77,7 @@ typedef std::vector<DescriptivePhrasePtr> DescriptivePhrases;
 class SMTKCORE_EXPORT DescriptivePhrase : smtkEnableSharedPtr(DescriptivePhrase)
 {
 public:
-  smtkTypeMacro(DescriptivePhrase);
+  smtkTypeMacroBase(DescriptivePhrase);
   virtual ~DescriptivePhrase() {}
 
   Ptr setup(DescriptivePhraseType phraseType, Ptr parent = Ptr());

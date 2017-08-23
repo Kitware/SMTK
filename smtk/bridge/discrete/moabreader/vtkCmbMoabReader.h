@@ -26,8 +26,8 @@ class VTKDISCRETEMOABREADER_EXPORT vtkCmbMoabReader : public vtkPolyDataAlgorith
 {
 public:
   static vtkCmbMoabReader* New();
-  vtkTypeMacro(vtkCmbMoabReader, vtkPolyDataAlgorithm) void PrintSelf(
-    ostream& os, vtkIndent indent);
+  vtkTypeMacro(vtkCmbMoabReader, vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Name of the file to be read.
@@ -39,7 +39,7 @@ protected:
   ~vtkCmbMoabReader();
 
   int RequestData(vtkInformation* vtkNotUsed(request),
-    vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector);
+    vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector) override;
 
 private:
   char* FileName;

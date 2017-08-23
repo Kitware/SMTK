@@ -28,7 +28,7 @@ class VTK_EXPORT vtkCMBModelStateOperatorClient : public vtkCMBModelStateOperato
 public:
   static vtkCMBModelStateOperatorClient* New();
   vtkTypeMacro(vtkCMBModelStateOperatorClient, vtkCMBModelStateOperatorBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Save and Reload model state

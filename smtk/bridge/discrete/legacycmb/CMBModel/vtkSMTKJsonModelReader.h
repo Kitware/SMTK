@@ -24,7 +24,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkSMTKJsonModelReader : public vtkMultiBlockDa
 public:
   static vtkSMTKJsonModelReader* New();
   vtkTypeMacro(vtkSMTKJsonModelReader, vtkMultiBlockDataSetAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Get/Set the name of the input file.
@@ -43,8 +43,8 @@ protected:
   vtkSMTKJsonModelReader();
   virtual ~vtkSMTKJsonModelReader();
 
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 
 private:
   // Description:

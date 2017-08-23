@@ -33,32 +33,32 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModel3dmGridRepresentation : public vtkMode
 public:
   static vtkModel3dmGridRepresentation* New();
   vtkTypeMacro(vtkModel3dmGridRepresentation, vtkModelGridRepresentation);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetBCSNodalAnalysisGridPointIds(
-    vtkDiscreteModel* model, vtkIdType bcsGroupId, int bcGroupType, vtkIdList* pointIds);
+  bool GetBCSNodalAnalysisGridPointIds(
+    vtkDiscreteModel* model, vtkIdType bcsGroupId, int bcGroupType, vtkIdList* pointIds) override;
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetFloatingEdgeAnalysisGridPointIds(
-    vtkDiscreteModel* model, vtkIdType modelEdgeId, vtkIdList* pointIds);
+  bool GetFloatingEdgeAnalysisGridPointIds(
+    vtkDiscreteModel* model, vtkIdType modelEdgeId, vtkIdList* pointIds) override;
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetModelEdgeAnalysisPoints(
-    vtkDiscreteModel* model, vtkIdType edgeId, vtkIdTypeArray* edgePoints);
+  bool GetModelEdgeAnalysisPoints(
+    vtkDiscreteModel* model, vtkIdType edgeId, vtkIdTypeArray* edgePoints) override;
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetBoundaryGroupAnalysisFacets(
-    vtkDiscreteModel* model, vtkIdType boundaryGroupId, vtkIdList* cellIds, vtkIdList* cellSides);
+  bool GetBoundaryGroupAnalysisFacets(vtkDiscreteModel* model, vtkIdType boundaryGroupId,
+    vtkIdList* cellIds, vtkIdList* cellSides) override;
 
   // Description:
   // Do some type of validation of the mapping information in model.
   // So far we can't guarantee that this works.
-  virtual bool IsModelConsistent(vtkDiscreteModel* model);
+  bool IsModelConsistent(vtkDiscreteModel* model) override;
 
   // Description:
   // Initialize the information from a given 3dm file. Returns true for success.
@@ -68,11 +68,11 @@ public:
 
   // Description:
   // Set GridFileName to NULL and clear the analysis grid info.
-  void Reset();
+  void Reset() override;
 
 protected:
   vtkModel3dmGridRepresentation();
-  virtual ~vtkModel3dmGridRepresentation();
+  ~vtkModel3dmGridRepresentation() override;
 
   friend class vtkCMBModelWriterV2;
   friend class vtkCMBModelWriterV5;

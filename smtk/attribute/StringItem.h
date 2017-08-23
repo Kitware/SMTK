@@ -29,8 +29,8 @@ class SMTKCORE_EXPORT StringItem : public ValueItemTemplate<std::string>
 
 public:
   smtkTypeMacro(StringItem);
-  virtual ~StringItem();
-  virtual Item::Type type() const;
+  ~StringItem() override;
+  Item::Type type() const override;
 
   // Returns true if the item's value is not to be displayed in a GUI
   bool isSecure() const;
@@ -40,7 +40,7 @@ public:
   // to represent an expression will be copied if needed.  Use IGNORE_EXPRESSIONS option to prevent this
   // When an expression attribute is copied, its model associations are by default not.
   // Use COPY_MODEL_ASSOCIATIONS if you want them copied as well.These options are defined in Item.h .
-  virtual bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0);
+  bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0) override;
 
 protected:
   StringItem(Attribute* owningAttribute, int itemPosition);

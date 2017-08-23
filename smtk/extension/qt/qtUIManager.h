@@ -212,7 +212,7 @@ class SMTKQTEXT_EXPORT qtTextEdit : public QTextEdit
   Q_OBJECT
 public:
   qtTextEdit(QWidget* parent);
-  virtual QSize sizeHint() const;
+  QSize sizeHint() const override;
 };
 
 }; // namespace extension

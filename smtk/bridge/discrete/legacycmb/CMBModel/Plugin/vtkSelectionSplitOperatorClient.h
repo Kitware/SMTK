@@ -31,7 +31,7 @@ class VTK_EXPORT vtkSelectionSplitOperatorClient : public vtkSelectionSplitOpera
 public:
   static vtkSelectionSplitOperatorClient* New();
   vtkTypeMacro(vtkSelectionSplitOperatorClient, vtkSelectionSplitOperatorBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Split the model faces based on the input Selection.

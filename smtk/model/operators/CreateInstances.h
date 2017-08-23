@@ -26,7 +26,7 @@ public:
   smtkDeclareModelOperator();
 
 protected:
-  virtual smtk::model::OperatorResult operateInternal();
+  smtk::model::OperatorResult operateInternal() override;
 
   void addTabularRule(Instance& instance, const EntityRef& prototype);
   void addUniformRandomRule(Instance& instance, const EntityRef& prototype);

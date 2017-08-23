@@ -33,7 +33,7 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkInformationKeyMap : public vtkObject
 public:
   static vtkInformationKeyMap* New();
   vtkTypeMacro(vtkInformationKeyMap, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Register a key with the map. The key will be KeyLocation::KeyName.
@@ -56,7 +56,7 @@ public:
 
 protected:
   vtkInformationKeyMap();
-  ~vtkInformationKeyMap();
+  ~vtkInformationKeyMap() override;
 
 private:
   vtkInformationKeyMap(const vtkInformationKeyMap&); // Not implemented.

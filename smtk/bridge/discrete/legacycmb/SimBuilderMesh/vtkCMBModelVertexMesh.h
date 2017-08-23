@@ -24,7 +24,7 @@ class VTK_EXPORT vtkCMBModelVertexMesh : public vtkCMBModelEntityMesh
 public:
   static vtkCMBModelVertexMesh* New();
   vtkTypeMacro(vtkCMBModelVertexMesh, vtkCMBModelEntityMesh);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
   // Description:
   // Get the actual length the model edge will be meshed with.
   // 0 indicates no length has been set.
