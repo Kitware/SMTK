@@ -82,7 +82,7 @@ smtk::model::SessionInfoBits Session::transcribeInternal(
       // We have a model. We insert the model using the manager API. It takes
       // the UUID of the model, its parametric dimension and its embedded
       // dimension. Additionally, we denote that this model is discrete.
-      mutableEntityRef.manager()->insertModel(mutableEntityRef.entity(), dimension, dimension);
+      this->manager()->insertModel(mutableEntityRef.entity(), dimension, dimension);
       mutableEntityRef.setIntegerProperty(SMTK_GEOM_STYLE_PROP, smtk::model::DISCRETE);
     }
     else
@@ -92,16 +92,16 @@ smtk::model::SessionInfoBits Session::transcribeInternal(
       switch (dimension)
       {
         case 0:
-          mutableEntityRef.manager()->insertVertex(mutableEntityRef.entity());
+          this->manager()->insertVertex(mutableEntityRef.entity());
           break;
         case 1:
-          mutableEntityRef.manager()->insertEdge(mutableEntityRef.entity());
+          this->manager()->insertEdge(mutableEntityRef.entity());
           break;
         case 2:
-          mutableEntityRef.manager()->insertFace(mutableEntityRef.entity());
+          this->manager()->insertFace(mutableEntityRef.entity());
           break;
         case 3:
-          mutableEntityRef.manager()->insertVolume(mutableEntityRef.entity());
+          this->manager()->insertVolume(mutableEntityRef.entity());
           break;
         default:
           return actual;
