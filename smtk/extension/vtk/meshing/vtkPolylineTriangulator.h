@@ -50,7 +50,7 @@ protected:
   vtkPolylineTriangulator();
   virtual ~vtkPolylineTriangulator();
 
-  virtual int FillInputPortInformation(int port, vtkInformation* info);
+  int FillInputPortInformation(int port, vtkInformation* info) override;
 
   int RequestData(
     vtkInformation* req, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
