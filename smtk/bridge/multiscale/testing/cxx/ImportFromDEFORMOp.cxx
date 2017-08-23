@@ -10,8 +10,6 @@
 
 #include "smtk/PythonAutoInit.h"
 
-#include "smtk/bridge/multiscale/Session.h"
-
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/FileItem.h"
@@ -20,9 +18,13 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/bridge/multiscale/Session.h"
+
+#include "smtk/io/ExportMesh.h"
+#include "smtk/io/SaveJSON.h"
+
 #include "smtk/mesh/Manager.h"
 
-#include "smtk/io/SaveJSON.h"
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Face.h"
@@ -33,26 +35,9 @@
 #include "smtk/model/SimpleModelSubphrases.h"
 #include "smtk/model/Tessellation.h"
 
-//force to use filesystem version 3
-#define BOOST_FILESYSTEM_VERSION 3
-#include <boost/filesystem.hpp>
-using namespace boost::filesystem;
-
 namespace
 {
-
 std::string afrlRoot = std::string(AFRL_DIR);
-
-void cleanup(const std::string& file_path)
-{
-  //first verify the file exists
-  ::boost::filesystem::path path(file_path);
-  if (::boost::filesystem::is_regular_file(path))
-  {
-    //remove the file_path if it exists.
-    ::boost::filesystem::remove(path);
-  }
-}
 }
 
 int ImportFromDEFORMOp(int argc, char* argv[])
@@ -119,11 +104,16 @@ int ImportFromDEFORMOp(int argc, char* argv[])
   }
 
   smtk::model::OperatorResult importFromDeformOpResult = importFromDeformOp->operate();
-  // cleanup("out.dream3d");
-  // cleanup("out.xdmf");
   if (importFromDeformOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
   {
     std::cerr << "import from deform operator failed\n";
+    return 1;
+  }
+
+  smtk::model::Model model = importFromDeformOpResult->findModelEntity("created")->value();
+  if (!model.isValid())
+  {
+    std::cerr << "import from deform operator constructed an invalid model\n";
     return 1;
   }
 
