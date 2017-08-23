@@ -205,6 +205,7 @@ class SaveJSON;
 class LoadJSON;
 class OperatorLog;
 class Logger;
+typedef smtk::shared_ptr<smtk::io::Logger> LoggerPtr;
 }
 
 namespace common
