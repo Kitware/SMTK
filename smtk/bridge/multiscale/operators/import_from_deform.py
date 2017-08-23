@@ -134,28 +134,30 @@ class import_from_deform(smtk.model.Operator):
         # Import the vtk data object as an SMTK mesh
         cnvrt = smtk.io.vtk.ImportVTKData()
         collection = cnvrt(
-            volumeDataContainer, self.session().meshManager(), 'ZoneIds')
+            volumeDataContainer, self.meshManager(), 'ZoneIds')
 
         # Ensure that the import succeeded
         if not collection or not collection.isValid():
             return self.createResult(smtk.model.OPERATION_FAILED)
 
         # Assign its model manager to the one associated with this session
-        collection.modelManager = self.session().manager()
-        collection.name("result(import_from_deform)")
+        collection.modelManager = self.manager()
+        collection.name("DEFORM mesh")
 
         # Construct the topology
         self.activeSession().addTopology(smtk.bridge.mesh.Topology(collection))
 
-        # Our collections will already have a UUID, so here we create a model given
-        # the model manager and UUID
-        model = smtk.model.Model(self.session().manager(), collection.entity())
-
-        collection.associateToModel(model.entity())
+        # Our collections will already have a UUID, so here we create a model
+        # given the model manager and UUID
+        model = self.manager().insertModel(
+            collection.entity(), 2, 2, "DEFORM model")
+        self.session().declareDanglingEntity(model)
 
         # Set the model's session to point to the current session
         model.setSession(
-            smtk.model.SessionRef(self.session().manager(), self.session().sessionId()))
+            smtk.model.SessionRef(self.manager(), self.session().sessionId()))
+
+        collection.associateToModel(model.entity())
 
         # If we don't call "transcribe" ourselves, it never gets called.
         self.activeSession().transcribe(

@@ -22,8 +22,8 @@
 #include "vtkUnstructuredGrid.h"
 #include "vtkVolumeOfRevolutionFilter.h"
 
-#include "vtkIdTypeArray.h"
-#include "vtkUnstructuredGridReader.h"
+#include "vtkXMLUnstructuredGridReader.h"
+#include "vtkXMLUnstructuredGridWriter.h"
 
 #include <sstream>
 
@@ -121,12 +121,43 @@ smtk::model::OperatorResult Revolve::operateInternal()
   // Run the filter
   revolve->Update();
 
-  // Convert the vtkUnstructuredGrid back into an smtk mesh, preserving the
-  // domain partitioning.
-  smtk::extension::vtk::io::ImportVTKData importVTKData;
-  smtk::mesh::ManagerPtr meshManager = this->activeSession()->meshManager();
-  collection =
-    importVTKData(vtkUnstructuredGrid::SafeDownCast(revolve->GetOutput()), meshManager, "ZoneIds");
+  // This hack is in place because vtkVolumeOfRevolutionFilter has a bug in it
+  // where the output unstructured grid has bad values for its cell locations.
+  // Once the VTK bundled in the CMB superbuild catches up, this hack should go
+  // away.
+  bool hack = true;
+
+  if (hack)
+  {
+    std::stringstream s;
+    s << write_root << "/" << smtk::common::UUID::random().toString() << ".vtu";
+    std::string fileName = s.str();
+
+    vtkNew<vtkXMLUnstructuredGridWriter> writer;
+    writer->SetFileName(fileName.c_str());
+    writer->SetInputConnection(revolve->GetOutputPort());
+    writer->Write();
+
+    vtkNew<vtkXMLUnstructuredGridReader> reader;
+    reader->SetFileName(fileName.c_str());
+    reader->Update();
+
+    cleanup(fileName);
+
+    smtk::extension::vtk::io::ImportVTKData importVTKData;
+    smtk::mesh::ManagerPtr meshManager = this->activeSession()->meshManager();
+    collection =
+      importVTKData(vtkUnstructuredGrid::SafeDownCast(reader->GetOutput()), meshManager, "ZoneIds");
+  }
+  else
+  {
+    // Convert the vtkUnstructuredGrid back into an smtk mesh, preserving the
+    // domain partitioning.
+    smtk::extension::vtk::io::ImportVTKData importVTKData;
+    smtk::mesh::ManagerPtr meshManager = this->activeSession()->meshManager();
+    collection = importVTKData(
+      vtkUnstructuredGrid::SafeDownCast(revolve->GetOutput()), meshManager, "ZoneIds");
+  }
 
   if (!collection || !collection->isValid())
   {
@@ -136,7 +167,7 @@ smtk::model::OperatorResult Revolve::operateInternal()
 
   // Assign its model manager to the one associated with this session
   collection->setModelManager(this->activeSession()->manager());
-  collection->name("result(revolve)");
+  collection->name("Revolved mesh");
 
   // Construct the topology
   this->activeSession()->addTopology(std::move(smtk::bridge::mesh::Topology(collection)));
@@ -144,7 +175,10 @@ smtk::model::OperatorResult Revolve::operateInternal()
   // Our collection already has a UUID, so here we create a model given the
   // model manager and UUID
   smtk::model::Model model =
-    smtk::model::EntityRef(this->activeSession()->manager(), collection->entity());
+    this->manager()->insertModel(collection->entity(), 3, 3, "Revolved model");
+  this->session()->declareDanglingEntity(model);
+
+  model.setSession(smtk::model::SessionRef(this->manager(), this->session()->sessionId()));
 
   // Associate the collection to our newly created model
   collection->associateToModel(model.entity());
