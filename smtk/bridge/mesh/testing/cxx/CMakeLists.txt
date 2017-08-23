@@ -13,6 +13,7 @@
 set (unit_tests)
 
 set (unit_tests_which_require_data
+  ImportFromVTK.cxx
   UnitTestMeshSessionEulerRatio.cxx
   UnitTestMeshSessionTopology.cxx
   UnitTestMeshSessionReadWrite.cxx)
