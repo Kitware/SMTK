@@ -41,6 +41,9 @@ std::string dataRoot = SMTK_DATA_DIR;
 
 int ImportFromVTK(int argc, char* argv[])
 {
+  (void)argc;
+  (void)argv;
+
   smtk::model::ManagerPtr manager = smtk::model::Manager::create();
 
   std::cout << "Available sessions\n";
