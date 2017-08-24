@@ -151,6 +151,8 @@ class import_from_deform(smtk.model.Operator):
         # given the model manager and UUID
         model = self.manager().insertModel(
             collection.entity(), 2, 2, "DEFORM model")
+
+        # Declare the model as "dangling" so it will be transcribed
         self.session().declareDanglingEntity(model)
 
         # Set the model's session to point to the current session

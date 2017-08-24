@@ -19,6 +19,8 @@
 
 #include "smtk/io/ImportMesh.h"
 
+#include "smtk/mesh/Metrics.h"
+
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
@@ -55,21 +57,26 @@ smtk::model::OperatorResult ImportOperator::operateInternal()
   }
 
   // Assign its model manager to the one associated with this session
-  collection->setModelManager(this->activeSession()->manager());
+  collection->setModelManager(this->manager());
 
   // Construct the topology
   this->activeSession()->addTopology(Topology(collection));
 
+  // Determine the model's dimension
+  int dimension = int(smtk::mesh::highestDimension(collection->meshes()));
+
   // Our collections will already have a UUID, so here we create a model given
   // the model manager and uuid
   smtk::model::Model model =
-    smtk::model::EntityRef(this->activeSession()->manager(), collection->entity());
+    this->manager()->insertModel(collection->entity(), dimension, dimension);
+
+  // Declare the model as "dangling" so it will be transcribed
+  this->session()->declareDanglingEntity(model);
 
   collection->associateToModel(model.entity());
 
   // Set the model's session to point to the current session
-  model.setSession(
-    smtk::model::SessionRef(this->activeSession()->manager(), this->activeSession()->sessionId()));
+  model.setSession(smtk::model::SessionRef(this->manager(), this->activeSession()->sessionId()));
 
   // If we don't call "transcribe" ourselves, it never gets called.
   this->activeSession()->transcribe(model, smtk::model::SESSION_EVERYTHING, false);
