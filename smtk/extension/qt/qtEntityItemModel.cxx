@@ -30,8 +30,6 @@
 #include <QtCore/QFile>
 #include <QtCore/QVariant>
 
-#include "pqApplicationCore.h"
-#include "pqSettings.h"
 #include <deque>
 #include <iomanip>
 #include <map>
@@ -68,6 +66,7 @@ namespace smtk
 {
 namespace extension
 {
+std::map<std::string, QColor> QEntityItemModel::s_defaultColors = {};
 
 /// Private storage for QEntityItemModel.
 class QEntityItemModel::Internal
@@ -129,6 +128,17 @@ QEntityItemModel::~QEntityItemModel()
   delete this->P;
 }
 
+QColor QEntityItemModel::defaultEntityColor(const std::string& entityType)
+{
+  if (s_defaultColors.find(entityType) == s_defaultColors.end())
+  {
+    return QColor();
+  }
+  else
+  {
+    return s_defaultColors[entityType];
+  }
+}
 void QEntityItemModel::clear()
 {
   if (this->m_root && !this->m_root->subphrases().empty())
@@ -395,21 +405,17 @@ QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
         FloatList rgba = item->relatedColor();
         if (rgba.size() >= 4 && rgba[3] < 0)
         {
-          pqSettings* settings = pqApplicationCore::instance()->settings();
           if (item->relatedEntity().isFace())
           {
-            color = settings->value("ModelBuilder/FaceColor", QColor::fromRgbF(1.0, 1.0, 1.0))
-                      .value<QColor>();
+            color = QEntityItemModel::defaultEntityColor("Face");
           }
           else if (item->relatedEntity().isEdge())
           {
-            color = settings->value("ModelBuilder/EdgeColor", QColor::fromRgbF(1.0, 1.0, 1.0))
-                      .value<QColor>();
+            color = QEntityItemModel::defaultEntityColor("Edge");
           }
           else if (item->relatedEntity().isVertex())
           {
-            color = settings->value("ModelBuilder/VertexColor", QColor::fromRgbF(1.0, 1.0, 1.0))
-                      .value<QColor>();
+            color = QEntityItemModel::defaultEntityColor("Vertex");
           }
           else
           {
