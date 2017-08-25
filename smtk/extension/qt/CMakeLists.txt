@@ -1,8 +1,5 @@
 find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
 
-include(${PARAVIEW_USE_FILE})
-include(ParaViewPlugins)
-
 # set up sources to build
 set(QAttrLibSrcs
   qtActiveObjects.cxx
