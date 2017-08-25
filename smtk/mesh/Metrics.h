@@ -17,12 +17,17 @@
 #include "smtk/mesh/DimensionTypes.h"
 #include "smtk/mesh/MeshSet.h"
 
+#include <array>
 #include <string>
 
 namespace smtk
 {
 namespace mesh
 {
+
+// Compute the bounding box of a mesh set
+SMTKCORE_EXPORT
+std::array<double, 6> extent(const smtk::mesh::MeshSet& ms);
 
 // Compute the highest cell dimension present a mesh set
 SMTKCORE_EXPORT
