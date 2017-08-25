@@ -48,5 +48,28 @@ smtk.WarningMessage = functools.partial(_message, Logger.WARNING)
 smtk.DebugMessage = functools.partial(_message, Logger.DEBUG)
 smtk.InfoMessage = _infoMessage
 
+# For backward compatibility with simulation workflow export
+# scripts written for CMB V4.
+
+
+def _addError(logger, message):
+    smtk.ErrorMessage(logger, message)
+
+
+def _addWarning(logger, message):
+    smtk.WarningMessage(logger, message)
+
+
+def _addDebug(logger, message):
+    smtk.DebugMessage(logger, message)
+
+Logger.addError = _addError
+Logger.addWarning = _addWarning
+Logger.addDebug = _addDebug
+
+del _addError
+del _addWarning
+del _addDebug
+
 del _message
 del _infoMessage
