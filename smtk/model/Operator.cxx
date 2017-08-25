@@ -184,7 +184,7 @@ OperatorResult Operator::operate()
       for (auto it = tess_changed->begin(); it != tess_changed->end(); ++it)
       {
         smtk::mesh::CollectionPtr collection =
-          it->owningSession().manager()->meshes()->collection(it->owningModel().entity());
+          this->manager()->meshes()->collection(it->owningModel().entity());
         if (collection && collection->isValid())
         {
           smtk::mesh::MeshSet modified = collection->findAssociatedMeshes(*it);
