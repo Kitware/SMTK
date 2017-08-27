@@ -24,6 +24,9 @@
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/VoidItem.h"
 
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
+
 #include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
@@ -72,6 +75,16 @@ bool BathymetryOperator::ableToOperate()
     {
       smtkErrorMacro(this->log(), "No model specified!");
       return false;
+    }
+    if (optype == "Apply Bathymetry (Model&Mesh)" || optype == "Apply Bathymetry (Mesh Only)")
+    {
+
+      smtk::attribute::MeshItem::Ptr meshItem = this->specification()->findMesh("mesh");
+      if (meshItem->values().size() <= 0)
+      { // User should pick a mesh
+        smtkErrorMacro(this->log(), "No mesh specified!");
+        return false;
+      }
     }
     isAuxValid = auxGeo.isValid();
     return isModelValid && isAuxValid;
@@ -138,13 +151,41 @@ OperatorResult BathymetryOperator::operateInternal()
   EntityRef inModel;
   smtk::model::AuxiliaryGeometry auxGeo;
 
+  // Apply BO to model
+  if (optype != "Remove Bathymetry")
+  {
+    auxGeo = this->specification()->findModelEntity("auxiliary geometry")->value();
+    inModel = auxGeo.owningModel();
+  }
+  else
+  {
+    inModel = this->findModelEntity("model")->value();
+  }
+
+  smtk::mesh::MeshList meshes;
+
+  if ((ApplyToMesh && !meshItem) || optype == "Remove Bathymetry")
+  { // Try to find the meshes on the model if not specified
+    std::vector<smtk::mesh::CollectionPtr> meshCollections =
+      this->manager()->meshes()->associatedCollections(inModel);
+
+    for (auto it = meshCollections.begin(); it != meshCollections.end(); it++)
+    {
+      meshes.push_back((*it)->meshes());
+    }
+  }
+  else
+  {
+    meshes = meshItem->values();
+  }
+
   // Apply BO to mesh
-  if (ApplyToMesh && meshItem && meshItem->isValid())
+  if ((ApplyToMesh || optype == "Remove Bathymetry") && (meshes.size() > 0))
   {
     if (optype == "Remove Bathymetry")
     {
       smtk::model::OperatorPtr undoWarpMesh = this->session()->op("undo warp mesh");
-      undoWarpMesh->specification()->findMesh("mesh")->appendValues(meshItem->values());
+      undoWarpMesh->specification()->findMesh("mesh")->appendValues(meshes);
 
       smtk::model::OperatorResult undoWarpMeshResult = undoWarpMesh->operate();
 
@@ -157,7 +198,7 @@ OperatorResult BathymetryOperator::operateInternal()
     {
       smtk::model::OperatorPtr elevateMesh = this->session()->op("elevate mesh");
 
-      elevateMesh->specification()->findMesh("mesh")->appendValues(meshItem->values());
+      elevateMesh->specification()->findMesh("mesh")->appendValues(meshes);
       elevateMesh->specification()->findModelEntity("auxiliary geometry")->setValue(auxGeo);
       elevateMesh->specification()->findDouble("radius")->setValue(aveEleRadius);
       elevateMesh->specification()->findDouble("max elevation")->setValue(highElevation);
@@ -173,16 +214,6 @@ OperatorResult BathymetryOperator::operateInternal()
     }
   }
 
-  // Apply BO to model
-  if (optype != "Remove Bathymetry")
-  {
-    auxGeo = this->specification()->findModelEntity("auxiliary geometry")->value();
-    inModel = auxGeo.owningModel();
-  }
-  else
-  {
-    inModel = this->findModelEntity("model")->value();
-  }
   // masterModelPts holds all points from vertices, edges and faces
   vtkNew<vtkPoints> masterModelPts;
   masterModelPts->SetDataTypeToDouble();
