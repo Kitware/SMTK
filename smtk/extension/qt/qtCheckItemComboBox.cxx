@@ -152,6 +152,7 @@ void qtModelEntityItemCombo::init()
   tmpGrp.setMembershipMask(itemDef->membershipMask());
 
   int row = 1;
+  QStandardItem* item = nullptr;
   if (modelManager)
   {
     for (smtk::model::UUIDWithEntity it = modelManager->topology().begin();
@@ -172,7 +173,7 @@ void qtModelEntityItemCombo::init()
             (showNonActiveModel && entref.isModel() &&
               (entref.owningSession().entity() == activeModel.owningSession().entity()))))
       {
-        QStandardItem* item = new QStandardItem;
+        item = new QStandardItem;
         std::string entName = entref.name();
         item->setText(entName.c_str());
         item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsSelectable);
@@ -187,7 +188,6 @@ void qtModelEntityItemCombo::init()
     }
     itemModel->sort(0);
   }
-
   connect(this->model(), SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this,
     SLOT(itemCheckChanged(const QModelIndex&, const QModelIndex&)));
 
@@ -198,6 +198,14 @@ void qtModelEntityItemCombo::init()
   // this->view()->setSelectionMode(QAbstractItemView::ExtendedSelection);
   this->updateText();
   this->hidePopup();
+
+  // If there is only 1 model entity that matches the criteria then lets select it by default
+  // Note that the combobox always has 1 entry even if there are no model entities that match the
+  // requirements - hence why the count needs to be 2 and not 1
+  if (this->count() == 2)
+  {
+    item->setCheckState(Qt::Checked);
+  }
 }
 
 void qtModelEntityItemCombo::showPopup()
@@ -241,6 +249,7 @@ void qtModelEntityItemCombo::itemCheckChanged(const QModelIndex& topLeft, const 
     return;
   }
   ModelEntityItemPtr modelEntityItem = this->m_ModelEntityItem->modelEntityItem();
+  auto def = modelEntityItem->definition();
   QString entid = item->data(Qt::UserRole).toString();
   if (!entid.isEmpty())
   {
@@ -248,12 +257,36 @@ void qtModelEntityItemCombo::itemCheckChanged(const QModelIndex& topLeft, const 
       modelEntityItem->attribute()->system()->refModelManager(), entid.toStdString());
     if (item->checkState() == Qt::Checked)
     {
-      // see if we can add it to the model item
+      // see if we can add it to the model item (base on size or if we are dealing with a simple item
+      // (one that is not existenible and has only 1 required value).  If that is the case
+      // then unslect the previous item and select the new one
       if (!this->m_ModelEntityItem->add(selentityref))
       {
         this->blockSignals(true);
-        item->setCheckState(Qt::Unchecked);
-        this->blockSignals(false);
+        if ((def->numberOfRequiredValues() == 1) && (!def->isExtensible()))
+        {
+          // We need tp turn off the item that was originally checked
+          for (int row = 1; row < this->count(); row++)
+          {
+            if (itemModel->item(row)->checkState() == Qt::Checked)
+            {
+              if (itemModel->item(row) != item)
+              {
+                itemModel->item(row)->setCheckState(Qt::Unchecked);
+                QString oldEntid = itemModel->item(row)->data(Qt::UserRole).toString();
+                smtk::model::EntityRef previousRef(
+                  modelEntityItem->attribute()->system()->refModelManager(),
+                  oldEntid.toStdString());
+                this->m_ModelEntityItem->remove(previousRef);
+              }
+            }
+          }
+        }
+        else
+        {
+          item->setCheckState(Qt::Unchecked);
+          this->blockSignals(false);
+        }
       }
     }
     else
@@ -284,6 +317,7 @@ void qtMeshItemCombo::init()
 
   QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());
 
+  QStandardItem* item = nullptr;
   if (modelManager)
   {
     // find out all associated collections, or use all collections if none associated
@@ -315,7 +349,7 @@ void qtMeshItemCombo::init()
     {
       if ((*cit)->isValid())
       {
-        QStandardItem* item = new QStandardItem;
+        item = new QStandardItem;
         std::string meshName = (*cit)->name();
         item->setText(meshName.c_str());
         item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsSelectable);
@@ -355,6 +389,14 @@ void qtMeshItemCombo::init()
   // this->view()->setSelectionMode(QAbstractItemView::ExtendedSelection);
   this->updateText();
   this->hidePopup();
+
+  // If there is only 1 mesh entity that matches the criteria then lets select it by default
+  // Note that the combobox always has 1 entry even if there are no mesh entities that match the
+  // requirements - hence why the count needs to be 2 and not 1
+  if (this->count() == 2)
+  {
+    item->setCheckState(Qt::Checked);
+  }
 }
 
 void qtMeshItemCombo::showPopup()
@@ -402,6 +444,7 @@ void qtMeshItemCombo::itemCheckChanged(const QModelIndex& topLeft, const QModelI
     return;
   }
   MeshItemPtr meshItem = this->m_MeshItem->meshItem();
+  auto def = smtk::dynamic_pointer_cast<const MeshItemDefinition>(meshItem->definition());
   smtk::common::UUID collectionid(strcollectionid.toStdString());
   smtk::mesh::CollectionPtr selcollection =
     meshItem->attribute()->system()->refModelManager()->meshes()->collection(collectionid);
@@ -410,11 +453,40 @@ void qtMeshItemCombo::itemCheckChanged(const QModelIndex& topLeft, const QModelI
     smtk::mesh::MeshSet allmeshes = selcollection->meshes();
     if (item->checkState() == Qt::Checked)
     {
+      // see if we can add it to the mesh item (base on size or if we are dealing with a simple item
+      // (one that is not existenible and has only 1 required value).  If that is the case
+      // then unslect the previous item and select the new one
       if (!this->m_MeshItem->add(allmeshes))
       {
         this->blockSignals(true);
-        item->setCheckState(Qt::Unchecked);
-        this->blockSignals(false);
+        if ((def->numberOfRequiredValues() == 1) && (!def->isExtensible()))
+        {
+          // We need tp turn off the item that was originally checked
+          for (int row = 1; row < this->count(); row++)
+          {
+            if (itemModel->item(row)->checkState() == Qt::Checked)
+            {
+              if (itemModel->item(row) != item)
+              {
+                itemModel->item(row)->setCheckState(Qt::Unchecked);
+                QString oldCollectionId = itemModel->item(row)->data(Qt::UserRole).toString();
+                auto oldCollection =
+                  meshItem->attribute()->system()->refModelManager()->meshes()->collection(
+                    oldCollectionId.toStdString());
+                if (selcollection && selcollection->isValid())
+                {
+                  smtk::mesh::MeshSet oldMeshes = selcollection->meshes();
+                  this->m_MeshItem->remove(oldMeshes);
+                }
+              }
+            }
+          }
+        }
+        else
+        {
+          item->setCheckState(Qt::Unchecked);
+          this->blockSignals(false);
+        }
       }
     }
     else
