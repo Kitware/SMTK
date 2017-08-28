@@ -48,7 +48,7 @@ bool ModelEntityItem::isValid() const
   {
     return true;
   }
-  // Do we have atleats the number of required values present?
+  // Do we have at least the number of required values present?
   if (this->numberOfValues() < this->numberOfRequiredValues())
   {
     return false;

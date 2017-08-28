@@ -74,6 +74,16 @@ qtModelEntityItem::qtModelEntityItem(smtk::attribute::ItemPtr dataObj, QWidget* 
     std::cerr << "register selection source " << this->m_selectionSourceName
               << "failed. Already existed!" << std::endl;
   }
+  // If there is a selection manager then lets see if we can set the checkbox widget to
+  // match the current selection state
+
+  if (qtActiveObjects::instance().smtkSelectionManager())
+  {
+    smtk::model::EntityRefs selEntities;
+    qtActiveObjects::instance().smtkSelectionManager()->getSelectedEntitiesAsEntityRefs(
+      selEntities);
+    this->associateEntities(selEntities, false);
+  }
 }
 
 qtModelEntityItem::~qtModelEntityItem()
@@ -371,12 +381,35 @@ void qtModelEntityItem::associateEntities(
   {
     return;
   }
+  auto def = modEntityItem->definition();
+  smtk::model::EntityRefs ents;
+  // First lets filter out any entities that are not valid w/r to the item's
+  // definition
+  for (auto it = selEntityRefs.begin(); it != selEntityRefs.end(); ++it)
+  {
+    if (def->isValueValid(*it))
+    {
+      ents.insert(*it);
+    }
+  }
+  // OK - so we now have a list of valid elements - next we need to see if there is a restriction as to the
+  // number of entities that can be assigned to the item
+  auto numEnts = ents.size();
+  if ((numEnts == 0) || ((!def->isExtensible() || ((def->maxNumberOfValues() != 0) &&
+                                                    (numEnts > def->maxNumberOfValues()))) &&
+                          (numEnts > def->numberOfRequiredValues())))
+  {
+    std::cerr << "Not Setting ModelEntityItem, numEnts = " << numEnts
+              << " Def isExtensible = " << def->isExtensible()
+              << " Num Vals = " << def->numberOfRequiredValues() << std::endl;
+    return;
+  }
+
   if (resetExisting)
     modEntityItem->reset();
 
   std::size_t idx = 0;
-  for (smtk::model::EntityRefs::const_iterator it = selEntityRefs.begin();
-       it != selEntityRefs.end(); ++it)
+  for (smtk::model::EntityRefs::const_iterator it = ents.begin(); it != ents.end(); ++it)
   {
     bool success = false;
     if (idx < modEntityItem->numberOfValues())
