@@ -41,36 +41,36 @@ public:
 
   // Description:
   // Reimplemented to support bad compilers
-  virtual int IntersectWithLine(double a0[3], double a1[3], double tol, double& t, double x[3],
-    double pcoords[3], int& subId, vtkIdType& cellId, vtkGenericCell* cell);
+  int IntersectWithLine(double a0[3], double a1[3], double tol, double& t, double x[3],
+    double pcoords[3], int& subId, vtkIdType& cellId, vtkGenericCell* cell) override;
 
   // Description:
   // Reimplemented to support bad compilers
-  virtual int IntersectWithLine(
-    double p1[3], double p2[3], double tol, double& t, double x[3], double pcoords[3], int& subId)
+  int IntersectWithLine(double p1[3], double p2[3], double tol, double& t, double x[3],
+    double pcoords[3], int& subId) override
   {
     return this->Superclass::IntersectWithLine(p1, p2, tol, t, x, pcoords, subId);
   }
 
   // Description:
   // Reimplemented to support bad compilers
-  virtual int IntersectWithLine(double p1[3], double p2[3], double tol, double& t, double x[3],
-    double pcoords[3], int& subId, vtkIdType& cellId)
+  int IntersectWithLine(double p1[3], double p2[3], double tol, double& t, double x[3],
+    double pcoords[3], int& subId, vtkIdType& cellId) override
   {
     return this->Superclass::IntersectWithLine(p1, p2, tol, t, x, pcoords, subId, cellId);
   }
 
   // Description:
   // Reimplemented to support bad compilers
-  virtual int IntersectWithLine(
-    const double p1[3], const double p2[3], vtkPoints* points, vtkIdList* cellIds)
+  int IntersectWithLine(
+    const double p1[3], const double p2[3], vtkPoints* points, vtkIdList* cellIds) override
   {
     return this->Superclass::IntersectWithLine(p1, p2, points, cellIds);
   }
 
   // Description:
   // Reimplemented to support bad compilers
-  virtual vtkIdType FindCell(double x[3]) { return this->Superclass::FindCell(x); }
+  vtkIdType FindCell(double x[3]) override { return this->Superclass::FindCell(x); }
 
 protected:
   vtkRayIntersectionLocator();

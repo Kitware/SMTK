@@ -145,9 +145,9 @@ protected:
   vtkDiscoverRegions();
   virtual ~vtkDiscoverRegions();
 
-  virtual int FillInputPortInformation(int port, vtkInformation* info);
+  int FillInputPortInformation(int port, vtkInformation* info) override;
 
-  virtual int FillOutputPortInformation(int port, vtkInformation* info);
+  int FillOutputPortInformation(int port, vtkInformation* info) override;
 
   int RequestData(
     vtkInformation* req, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;

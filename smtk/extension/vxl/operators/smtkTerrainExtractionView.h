@@ -42,12 +42,12 @@ public:
   // virtual bool displayItem(smtk::attribute::ItemPtr);
 
 public slots:
-  virtual void updateUI() {} // NB: Subclass implementation causes crashes.
-  virtual void requestModelEntityAssociation();
-  virtual void onShowCategory() { this->updateAttributeData(); }
+  void updateUI() override {} // NB: Subclass implementation causes crashes.
+  void requestModelEntityAssociation() override;
+  void onShowCategory() override { this->updateAttributeData(); }
   // This will be triggered by selecting different type
   // of construction method in create-edge op.
-  virtual void valueChanged(smtk::attribute::ItemPtr optype);
+  void valueChanged(smtk::attribute::ItemPtr optype) override;
   void onResolutionEditChanged(QString scaleString);
 
 protected slots:
@@ -71,11 +71,11 @@ protected slots:
 
   void onShowPickResultFileDialog(std::string& filename);
 
-  virtual void updateAttributeData();
+  void updateAttributeData() override;
   void onNumPointsCalculationFinshed(long numPoints);
 
 protected:
-  virtual void createWidget();
+  void createWidget() override;
   virtual void setInfoToBeDisplayed() override;
 
 private:

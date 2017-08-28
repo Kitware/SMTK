@@ -28,7 +28,7 @@ protected:
   vtkRegionsToLoops();
   virtual ~vtkRegionsToLoops();
 
-  virtual int FillInputPortInformation(int port, vtkInformation* info);
+  int FillInputPortInformation(int port, vtkInformation* info) override;
 
   int RequestData(vtkInformation* request, vtkInformationVector** inputInfo,
     vtkInformationVector* outputInfo) override;
