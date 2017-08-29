@@ -13,7 +13,6 @@
 #include "smtk/common/UUID.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
@@ -23,16 +22,34 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Operator.h"
 
-#include <cmath>
+//force to use filesystem version 3
+#define BOOST_FILESYSTEM_VERSION 3
+#include <boost/filesystem.hpp>
+using namespace boost::filesystem;
+
+#include <chrono>
+#include <fstream>
 
 using namespace smtk::model;
 
 namespace
 {
 std::string dataRoot = SMTK_DATA_DIR;
+std::string writeRoot = SMTK_SCRATCH_DIR;
+
+void cleanup(const std::string& file_path)
+{
+  //first verify the file exists
+  ::boost::filesystem::path path(file_path);
+  if (::boost::filesystem::is_regular_file(path))
+  {
+    //remove the file_path if it exists.
+    ::boost::filesystem::remove(path);
+  }
+}
 }
 
-int UnitTestMeshSessionEulerRatio(int argc, char* argv[])
+int UnitTestReadWrite(int argc, char* argv[])
 {
   (void)argc;
   (void)argv;
@@ -64,11 +81,18 @@ int UnitTestMeshSessionEulerRatio(int argc, char* argv[])
     }
 
     std::string importFilePath(dataRoot);
-    importFilePath += "/mesh/3d/cube.exo";
+    importFilePath += "/model/3d/exodus/SimpleReactorCore/SimpleReactorCore.exo";
 
     importOp->specification()->findFile("filename")->setValue(importFilePath);
 
+    std::chrono::time_point<std::chrono::system_clock> start, end;
+    start = std::chrono::system_clock::now();
+
     smtk::model::OperatorResult importOpResult = importOp->operate();
+
+    end = std::chrono::system_clock::now();
+    std::chrono::duration<double> elapsed_seconds = end - start;
+    std::cout << "elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
 
     model = importOpResult->findModelEntity("model")->value();
 
@@ -80,27 +104,27 @@ int UnitTestMeshSessionEulerRatio(int argc, char* argv[])
   }
 
   {
-    smtk::model::OperatorPtr eulerOp = session.op("euler characteristic ratio");
-    if (!eulerOp)
+    smtk::model::OperatorPtr writeOp = session.op("write");
+    if (!writeOp)
     {
-      std::cerr << "No \"euler characteristic ratio\" operator\n";
+      std::cerr << "No write operator\n";
       return 1;
     }
 
-    eulerOp->specification()->associateEntity(model);
+    std::string writeFilePath(writeRoot);
+    writeFilePath += "/" + smtk::common::UUID::random().toString() + ".exo";
 
-    smtk::model::OperatorResult eulerOpResult = eulerOp->operate();
-    if (eulerOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+    writeOp->specification()->findFile("filename")->setValue(writeFilePath);
+    writeOp->specification()->associateEntity(model);
+
+    smtk::model::OperatorResult writeOpResult = writeOp->operate();
+    if (writeOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
     {
-      std::cerr << "\"Euler characteristic ratio\" operator failed\n";
+      std::cerr << "Write operator failed\n";
       return 1;
     }
 
-    if (std::abs(eulerOpResult->findDouble("value")->value() - 2.) > 1.e-10)
-    {
-      std::cerr << "Unexpected Euler ratio\n";
-      return 1;
-    }
+    cleanup(writeFilePath);
   }
 
   return 0;

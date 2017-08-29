@@ -107,8 +107,6 @@ smtkComponentInitMacro(smtk_extension_vtk_io_MeshIOVTK)
 
   void ParseModelTopology(smtk::model::Model & model, std::size_t * count)
   {
-    smtk::mesh::CollectionPtr collection = model.manager()->meshes()->collection(model.entity());
-
     std::set<smtk::model::EntityRef> unique;
     UniqueEntities(model, unique);
 
@@ -165,7 +163,7 @@ smtkComponentInitMacro(smtk_extension_vtk_io_MeshIOVTK)
   }
 }
 
-int UnitTestMeshSessionTopology(int argc, char* argv[])
+int UnitTestTopology(int argc, char* argv[])
 {
   (void)argc;
   (void)argv;
@@ -188,11 +186,38 @@ int UnitTestMeshSessionTopology(int argc, char* argv[])
     std::cout << count[3] << " volumes" << std::endl;
     test(count[3] == 3, "There should be three volumes");
     std::cout << count[2] << " faces" << std::endl;
-    test(count[2] == 5, "There should be five faces");
+    test(count[2] == 14, "There should be fourteen faces");
     std::cout << count[1] << " edges" << std::endl;
-    test(count[1] == 2, "There should be two lines");
+    test(count[1] == 6, "There should be six lines");
     std::cout << count[0] << " vertex groups" << std::endl;
     test(count[0] == 0, "There should be no vertex groups");
+
+    bool debug = false;
+    if (debug)
+    {
+      VisualizeModel(model);
+    }
+  }
+
+  {
+    smtk::model::Model model;
+
+    std::string readFilePath(dataRoot);
+    readFilePath += "/model/3d/genesis/gun-1fourth.gen";
+
+    test(ImportModel(model, session, readFilePath) == 0, "Could not import model " + readFilePath);
+
+    std::size_t count[4] = { 0, 0, 0, 0 };
+    ParseModelTopology(model, count);
+
+    std::cout << count[3] << " volumes" << std::endl;
+    test(count[3] == 1, "There should be one volume");
+    std::cout << count[2] << " faces" << std::endl;
+    test(count[2] == 5, "There should be five faces");
+    std::cout << count[1] << " edges" << std::endl;
+    test(count[1] == 9, "There should be nine lines");
+    std::cout << count[0] << " vertex groups" << std::endl;
+    test(count[0] == 6, "There should be six vertex groups");
 
     bool debug = false;
     if (debug)
