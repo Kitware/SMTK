@@ -84,7 +84,9 @@ public:
   std::size_t size() const;
 
   smtk::mesh::TypeSet types() const;
-  smtk::mesh::PointSet points() const;                     //all points of the cellset
+  //all points of the cellset; if boundary_only is true then higher-order points
+  //are omitted.
+  smtk::mesh::PointSet points(bool boundary_only = false) const;
   smtk::mesh::PointConnectivity pointConnectivity() const; //all connectivity info for all cells
 
   //get the points for a single cell

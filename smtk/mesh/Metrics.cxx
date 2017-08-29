@@ -84,13 +84,17 @@ int eulerCharacteristic(const smtk::mesh::MeshSet& ms)
     return 0;
   }
 
-  for (int i = highestDim; i >= smtk::mesh::Dims0; i--)
+  // We compute xi by counting the number of adjacency cells at each dimension.
+  // Because of the way MOAB deals with higher-order cells, we must treat the
+  // vertex count by specifically requesting the number of "corners-only" points
+  // rather than the zero-dimensional adjacencies.
+  for (int i = highestDim; i >= smtk::mesh::Dims1; i--)
   {
     meshSet = meshSet.extractAdjacenciesOfDimension(i);
     int prefactor = (i % 2 == 0 ? +1 : -1);
     xi += static_cast<long long>(prefactor * meshSet.cells().size());
-    meshSet.mergeCoincidentContactPoints();
   }
+  xi += static_cast<long long>(meshSet.points(true).size());
 
   return static_cast<int>(xi);
 }

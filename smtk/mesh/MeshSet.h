@@ -112,8 +112,10 @@ public:
 
   std::vector<std::string> names() const;
   smtk::mesh::TypeSet types() const;
-  smtk::mesh::CellSet cells() const;   //all cells of the meshset
-  smtk::mesh::PointSet points() const; //all points of the meshset
+  smtk::mesh::CellSet cells() const; //all cells of the meshset
+  //all points of the meshset; if boundary_only is true then higher-order points
+  //are omitted.
+  smtk::mesh::PointSet points(bool boundary_only = false) const;
   smtk::mesh::PointConnectivity pointConnectivity()
     const; //all point connectivity info for all cells
 

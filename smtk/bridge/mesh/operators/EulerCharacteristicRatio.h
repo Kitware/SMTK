@@ -7,12 +7,14 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_mesh_EulerCharacteristicRatio_h
-#define __smtk_mesh_EulerCharacteristicRatio_h
+#ifndef __smtk_bridge_mesh_EulerCharacteristicRatio_h
+#define __smtk_bridge_mesh_EulerCharacteristicRatio_h
 
-#include "smtk/model/Operator.h"
+#include "smtk/bridge/mesh/Operator.h"
 
 namespace smtk
+{
+namespace bridge
 {
 namespace mesh
 {
@@ -20,7 +22,7 @@ namespace mesh
 /**\brief Compute and return the ratio of Euler characteristic surface to volume
    for a model's mesh tessellation.
   */
-class SMTKCORE_EXPORT EulerCharacteristicRatio : public smtk::model::Operator
+class SMTKMESHSESSION_EXPORT EulerCharacteristicRatio : public Operator
 {
 public:
   smtkTypeMacro(EulerCharacteristicRatio);
@@ -33,6 +35,7 @@ protected:
 };
 
 } // namespace mesh
+} // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_mesh_EulerCharacteristicRatio_h
+#endif // __smtk_bridge_mesh_EulerCharacteristicRatio_h

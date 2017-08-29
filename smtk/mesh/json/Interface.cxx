@@ -288,7 +288,8 @@ smtk::mesh::HandleRange Interface::getCells(
 }
 
 //get all points held by this range handle
-smtk::mesh::HandleRange Interface::getPoints(const smtk::mesh::HandleRange& cells) const
+smtk::mesh::HandleRange Interface::getPoints(
+  const smtk::mesh::HandleRange& cells, bool boundary_only) const
 {
   // We don't support modifying operations via the JSON interface (like meshset
   // construction, point merging, etc.); in keeping with this paradigm, the only
@@ -297,6 +298,8 @@ smtk::mesh::HandleRange Interface::getPoints(const smtk::mesh::HandleRange& cell
   // Moab). Any queries involving cells that are not the union of cell sets
   // contained within the meshInfo vector yield a null return value. This is
   // sufficient for relaying server-side information about points to the client.
+
+  (void)boundary_only;
 
   smtk::mesh::HandleRange points;
   smtk::mesh::HandleRange cellsToVisit = cells;
