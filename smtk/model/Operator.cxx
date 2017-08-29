@@ -131,11 +131,12 @@ static void markResultModels(OperatorResult result)
   */
 OperatorResult Operator::operate()
 {
+  // Remember where the log was so we only serialize messages for this operation:
+  std::size_t logStart = this->log().numberOfRecords();
+
   OperatorResult result;
   if (this->ableToOperate())
   {
-    // Remember where the log was so we only serialize messages for this operation:
-    std::size_t logStart = this->log().numberOfRecords();
     // Set the debug level if specified as a convenience for subclasses:
     smtk::attribute::IntItem::Ptr debugItem = this->specification()->findInt("debug level");
     this->m_debugLevel = (debugItem->isEnabled() ? debugItem->value() : 0);
@@ -200,6 +201,17 @@ OperatorResult Operator::operate()
   {
     // Do not inform observers since this is currently a non-event.
     result = this->createResult(UNABLE_TO_OPERATE);
+    // Now grab all log messages and serialize them into the result attribute.
+    std::size_t logEnd = this->log().numberOfRecords();
+    if (logEnd > logStart)
+    { // Serialize relevant log records to JSON.
+      cJSON* array = cJSON_CreateArray();
+      smtk::io::SaveJSON::forLog(array, this->log(), logStart, logEnd);
+      char* logstr = cJSON_Print(array);
+      cJSON_Delete(array);
+      result->findString("log")->appendValue(logstr);
+      free(logstr);
+    }
   }
   return result;
 }
