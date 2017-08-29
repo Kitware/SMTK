@@ -15,12 +15,13 @@
       <ItemDefinitions>
         <File Name="filename" NumberOfRequiredValues="1"
           ShouldExist="true"
-          FileFilters="Moab files (*.h5m);;Exodus II Datasets (*.e *.exo *.ex2);;VTK files (*.vtu *.vtp *.vtk);;General Mesh Viewer (*.gmv);;Ansys (*.ans);;Gmsh (*.msh *.gmsh);;STL (*.stl);;All files (*.*)">
+          FileFilters="Supported Formats (*.h5m *.e *.exo *.ex2 *.g *.gen *.vtu *.vtp *.vtk *.gmv *.ans *.msh *.gmsh *.stl);;Moab files (*.h5m);;Exodus II Datasets (*.e *.exo *.ex2);;Genesis files (*.g *.gen);;VTK files (*.vtu *.vtp *.vtk);;General Mesh Viewer (*.gmv);;Ansys (*.ans);;Gmsh (*.msh *.gmsh);;STL (*.stl);;All files (*.*)">
         </File>
         <String Name="label" Label="Domain Property" NumberOfRequiredValues="1" AdvanceLevel="1">
 	  <DefaultValue></DefaultValue>
 	</String>
         <String Name="filetype" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false"/>
+        <Void Name="construct hierarchy" Label="Construct Model Hierarchy" Optional="true" IsEnabledByDefault="true"/>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
