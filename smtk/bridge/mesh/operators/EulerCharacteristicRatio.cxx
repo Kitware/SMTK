@@ -81,7 +81,7 @@ smtk::model::OperatorResult EulerCharacteristicRatio::operateInternal()
 } // namespace bridge
 } // namespace smtk
 
-#include "smtk/mesh/EulerCharacteristicRatio_xml.h"
+#include "smtk/bridge/mesh/EulerCharacteristicRatio_xml.h"
 
 smtkImplementsModelOperator(SMTKMESHSESSION_EXPORT, smtk::bridge::mesh::EulerCharacteristicRatio,
   euler_characteristic_ratio, "euler characteristic ratio", EulerCharacteristicRatio_xml,
