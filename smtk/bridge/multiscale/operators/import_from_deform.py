@@ -81,8 +81,8 @@ class import_from_deform(smtk.model.Operator):
 
         # The location of the template pipeline is hard-coded w.r.t. the AFRL
         # directory
-        template_pipeline_file = AFRLDir.description.replace(
-            '\n', '') + '/Dream3DPipelines/Pipelines/DREAM3D_Phase1_Pipeline.json'
+        template_pipeline_file = AFRLDir.description.replace('\n', '') + \
+            '/Dream3DPipelines/Pipelines/DREAM3D_Phase1_Pipeline.json'
 
         # Extract the parameters into python lists
         mu = []
