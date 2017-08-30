@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="euler characteristic ratio" BaseType="operator">
+    <AttDef Type="euler characteristic ratio" Label="Model - Compute Euler Characteristic Ratio" BaseType="operator">
       <BriefDescription>
         Compute the ratio of the Euler characteristics for a model's
         boundary to its volume.
