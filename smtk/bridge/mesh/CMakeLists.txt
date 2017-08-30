@@ -1,16 +1,20 @@
 set(meshSrcs
+  Facade.cxx
   Operator.cxx
   Session.cxx
   Topology.cxx
+  operators/EulerCharacteristicRatio.cxx
   operators/ImportOperator.cxx
   operators/WriteOperator.cxx
 )
 
 set(meshHeaders
+  Facade.h
   Operator.h
   PointerDefs.h
   Session.h
   Topology.h
+  operators/EulerCharacteristicRatio.h
   operators/ImportOperator.h
   operators/WriteOperator.h
 )
@@ -38,6 +42,7 @@ smtk_install_library(smtkMeshSession)
 # We do not need the path to the generated header (appended
 # to meshOperatorXML) since the operators themselves include
 # the header in their implementations.
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EulerCharacteristicRatio.sbt" meshOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ImportOperator.sbt" meshOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteOperator.sbt" meshOperatorXML)
 smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" meshSessionJSON)

@@ -66,6 +66,28 @@ bool ImportMesh::ExtensionIsSupported(const std::string& ext)
   return false;
 }
 
+smtk::io::mesh::Format ImportMesh::fileFormat(const std::string& filePath)
+{
+  // Grab the file extension
+  std::string ext = boost::filesystem::extension(filePath);
+  std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+  for (auto& importer : smtk::io::ImportMesh::SupportedIOTypes())
+  {
+    for (auto& format : importer->FileFormats())
+    {
+      if (format.CanImport() &&
+        std::find(format.Extensions.begin(), format.Extensions.end(), ext) !=
+          format.Extensions.end())
+      {
+        return format;
+      }
+    }
+  }
+
+  return smtk::io::mesh::Format();
+}
+
 smtk::mesh::CollectionPtr ImportMesh::operator()(
   const std::string& filePath, smtk::mesh::ManagerPtr manager, std::string domainPropertyName) const
 {
@@ -142,6 +164,12 @@ bool importMesh(const std::string& filePath, smtk::mesh::CollectionPtr collectio
 {
   ImportMesh importM;
   return importM(filePath, collection, domainPropertyName);
+}
+
+smtk::io::mesh::Format meshFileFormat(const std::string& filePath)
+{
+  ImportMesh importM;
+  return importM.fileFormat(filePath);
 }
 }
 }

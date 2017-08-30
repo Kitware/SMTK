@@ -34,7 +34,7 @@ PySharedPtrClass< smtk::mesh::CellSet > pybind11_init_smtk_mesh_CellSet(py::modu
     .def("is_empty", &smtk::mesh::CellSet::is_empty)
     .def("pointConnectivity", (smtk::mesh::PointConnectivity (smtk::mesh::CellSet::*)() const) &smtk::mesh::CellSet::pointConnectivity)
     .def("pointConnectivity", (smtk::mesh::PointConnectivity (smtk::mesh::CellSet::*)(::size_t) const) &smtk::mesh::CellSet::pointConnectivity, py::arg("arg0"))
-    .def("points", (smtk::mesh::PointSet (smtk::mesh::CellSet::*)() const) &smtk::mesh::CellSet::points)
+    .def("points", (smtk::mesh::PointSet (smtk::mesh::CellSet::*)(bool) const) &smtk::mesh::CellSet::points, py::arg("boundary_only") = false)
     .def("points", (smtk::mesh::PointSet (smtk::mesh::CellSet::*)(::size_t) const) &smtk::mesh::CellSet::points, py::arg("arg0"))
     .def("range", &smtk::mesh::CellSet::range)
     .def("size", &smtk::mesh::CellSet::size)

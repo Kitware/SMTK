@@ -162,8 +162,11 @@ public:
   smtk::mesh::HandleRange getCells(
     const smtk::mesh::HandleRange& meshsets, smtk::mesh::DimensionType dim) const override;
 
-  //get all points held by this range of handle of a given dimension
-  smtk::mesh::HandleRange getPoints(const smtk::mesh::HandleRange& cells) const override;
+  //get all points held by this range of handle of a given dimension. If
+  //boundary_only is set to true, ignore the higher order points of the
+  //cells
+  smtk::mesh::HandleRange getPoints(
+    const smtk::mesh::HandleRange& cells, bool boundary_only = false) const override;
 
   //get all the coordinates for the points in this range
   //xyz needs to be allocated to 3*points.size()

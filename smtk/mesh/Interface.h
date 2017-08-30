@@ -338,8 +338,11 @@ public:
   virtual smtk::mesh::HandleRange getCells(
     const smtk::mesh::HandleRange& meshsets, smtk::mesh::DimensionType dim) const = 0;
 
-  //get all points held by this range of handle of a given dimension
-  virtual smtk::mesh::HandleRange getPoints(const smtk::mesh::HandleRange& cells) const = 0;
+  //get all points held by this range of handle of a given dimension. If
+  //boundary_only is set to true, ignore the higher order points of the
+  //cells
+  virtual smtk::mesh::HandleRange getPoints(
+    const smtk::mesh::HandleRange& cells, bool boundary_only = false) const = 0;
 
   //get all the coordinates for the points in this range
   //xyz needs to be allocated to 3*points.size()

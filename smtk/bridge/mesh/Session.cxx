@@ -156,7 +156,42 @@ smtk::model::SessionInfoBits Session::transcribeInternal(
 
   if (requestedInfo & smtk::model::SESSION_PROPERTIES)
   {
-    // TODO
+    // Models generated from a mesh set naturally have the same properties as
+    // mesh sets. We query the model entity's associated mesh set for domain,
+    // Dirichlet and Neumann properties.
+
+    if (topologyElement.m_mesh.size() == 1)
+    {
+      // To avoid elements that only partially contain the properties in question,
+      // we check that the associated meshset contains exactly one property and
+      // that the property completely spans the meshset.
+      std::vector<smtk::mesh::Domain> domains = topologyElement.m_mesh.domains();
+      std::vector<smtk::mesh::Dirichlet> dirichlets = topologyElement.m_mesh.dirichlets();
+      std::vector<smtk::mesh::Neumann> neumanns = topologyElement.m_mesh.neumanns();
+
+      if (domains.size() == 1 && topologyElement.m_mesh.size() == 1)
+      {
+        mutableEntityRef.setIntegerProperty("pedigree id", domains[0].value());
+        std::stringstream s;
+        s << m_facade["domain"] << " " << domains[0].value();
+        mutableEntityRef.setName(s.str());
+      }
+      else if (dirichlets.size() == 1 && topologyElement.m_mesh.size() == 1)
+      {
+        mutableEntityRef.setIntegerProperty("pedigree id", dirichlets[0].value());
+        std::stringstream s;
+        s << m_facade["dirichlet"] << " " << dirichlets[0].value();
+        mutableEntityRef.setName(s.str());
+      }
+      else if (neumanns.size() == 1 && topologyElement.m_mesh.size() == 1)
+      {
+        mutableEntityRef.setIntegerProperty("pedigree id", neumanns[0].value());
+        std::stringstream s;
+        s << m_facade["neumann"] << " " << neumanns[0].value();
+        mutableEntityRef.setName(s.str());
+      }
+    }
+
     actual |= smtk::model::SESSION_PROPERTIES;
   }
 

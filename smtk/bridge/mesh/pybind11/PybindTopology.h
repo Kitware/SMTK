@@ -28,7 +28,7 @@ py::class_< smtk::bridge::mesh::Topology > pybind11_init_smtk_bridge_mesh_Topolo
     .def_readwrite("m_elements", &smtk::bridge::mesh::Topology::m_elements)
     ;
   py::class_< smtk::bridge::mesh::Topology::Element >(instance, "Element")
-    .def(py::init<int>())
+    .def(py::init<::smtk::mesh::MeshSet, int>())
     .def(py::init<::smtk::bridge::mesh::Topology::Element const &>())
     .def("deepcopy", (smtk::bridge::mesh::Topology::Element & (smtk::bridge::mesh::Topology::Element::*)(::smtk::bridge::mesh::Topology::Element const &)) &smtk::bridge::mesh::Topology::Element::operator=)
     .def_readwrite("m_dimension", &smtk::bridge::mesh::Topology::Element::m_dimension)

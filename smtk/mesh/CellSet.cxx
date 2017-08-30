@@ -102,10 +102,10 @@ smtk::mesh::TypeSet CellSet::types() const
   return iface->computeTypes(this->m_range);
 }
 
-smtk::mesh::PointSet CellSet::points() const
+smtk::mesh::PointSet CellSet::points(bool boundary_only) const
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
-  smtk::mesh::HandleRange range = iface->getPoints(this->m_range);
+  smtk::mesh::HandleRange range = iface->getPoints(this->m_range, boundary_only);
   return smtk::mesh::PointSet(this->m_parent, range);
 }
 

@@ -40,7 +40,6 @@ set(meshSrcs
 
   operators/DeleteMesh.cxx
   operators/EulerCharacteristic.cxx
-  operators/EulerCharacteristicRatio.cxx
   operators/ExportMesh.cxx
   operators/GenerateHotStartData.cxx
   operators/InterpolateMesh.cxx
@@ -87,7 +86,6 @@ set(meshHeaders
 
   operators/DeleteMesh.h
   operators/EulerCharacteristic.h
-  operators/EulerCharacteristicRatio.h
   operators/ExportMesh.h
   operators/GenerateHotStartData.h
   operators/InterpolateMesh.h
@@ -99,7 +97,6 @@ set(meshHeaders
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/DeleteMesh.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportMesh.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EulerCharacteristic.sbt" defOpXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EulerCharacteristicRatio.sbt" meshOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/GenerateHotStartData.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/InterpolateMesh.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/UndoWarpMesh.sbt" defOpXML)

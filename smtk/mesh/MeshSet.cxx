@@ -281,11 +281,11 @@ smtk::mesh::CellSet MeshSet::cells() const
   return smtk::mesh::CellSet(this->m_parent, range);
 }
 
-smtk::mesh::PointSet MeshSet::points() const
+smtk::mesh::PointSet MeshSet::points(bool boundary_only) const
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
   smtk::mesh::HandleRange cells = iface->getCells(this->m_range);
-  smtk::mesh::HandleRange range = iface->getPoints(cells);
+  smtk::mesh::HandleRange range = iface->getPoints(cells, boundary_only);
   return smtk::mesh::PointSet(this->m_parent, range);
 }
 

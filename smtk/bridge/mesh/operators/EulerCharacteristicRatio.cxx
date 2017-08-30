@@ -7,9 +7,9 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/mesh/operators/EulerCharacteristicRatio.h"
+#include "smtk/bridge/mesh/operators/EulerCharacteristicRatio.h"
 
-#include "smtk/model/Session.h"
+#include "smtk/bridge/mesh/Session.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -27,6 +27,8 @@ using namespace smtk::model;
 using namespace smtk::common;
 
 namespace smtk
+{
+namespace bridge
 {
 namespace mesh
 {
@@ -76,10 +78,11 @@ smtk::model::OperatorResult EulerCharacteristicRatio::operateInternal()
 }
 
 } // namespace mesh
+} // namespace bridge
 } // namespace smtk
 
 #include "smtk/mesh/EulerCharacteristicRatio_xml.h"
 
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::mesh::EulerCharacteristicRatio,
+smtkImplementsModelOperator(SMTKMESHSESSION_EXPORT, smtk::bridge::mesh::EulerCharacteristicRatio,
   euler_characteristic_ratio, "euler characteristic ratio", EulerCharacteristicRatio_xml,
-  smtk::model::Session);
+  smtk::bridge::mesh::Session);

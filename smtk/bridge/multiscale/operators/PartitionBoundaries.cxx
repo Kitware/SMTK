@@ -146,7 +146,7 @@ bool labelIntersection(const smtk::mesh::CollectionPtr& collection,
       // construct a new uuid
       smtk::common::UUID id = collection->modelManager()->unusedUUID();
       // construct a topology element for the vertex set (dimension 0)
-      Topology::Element element(0);
+      Topology::Element element(domainMeshes, 0);
       // insert the element into the topology under the parent level
       // (designating it as a "free" element)
       topology.m_elements.insert(std::make_pair(id, element));

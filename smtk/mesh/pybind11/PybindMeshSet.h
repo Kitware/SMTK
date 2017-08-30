@@ -68,7 +68,7 @@ PySharedPtrClass< smtk::mesh::MeshSet > pybind11_init_smtk_mesh_MeshSet(py::modu
     .def("names", &smtk::mesh::MeshSet::names)
     .def("neumanns", &smtk::mesh::MeshSet::neumanns)
     .def("pointConnectivity", &smtk::mesh::MeshSet::pointConnectivity)
-    .def("points", &smtk::mesh::MeshSet::points)
+    .def("points", &smtk::mesh::MeshSet::points, py::arg("boundary_only") = false)
     .def("range", &smtk::mesh::MeshSet::range)
     .def("removeCellField", &smtk::mesh::MeshSet::removeCellField, py::arg("cellfield"))
     .def("removePointField", &smtk::mesh::MeshSet::removePointField, py::arg("pointfield"))

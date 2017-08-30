@@ -11,6 +11,7 @@
 #define __smtk_session_mesh_Session_h
 
 #include "smtk/bridge/mesh/Exports.h"
+#include "smtk/bridge/mesh/Facade.h"
 #include "smtk/bridge/mesh/Topology.h"
 
 #include "smtk/mesh/Collection.h"
@@ -49,6 +50,8 @@ public:
 
   std::string defaultFileExtension(const smtk::model::Model&) const override { return ""; }
 
+  Facade& facade() { return m_facade; }
+
 protected:
   Session();
 
@@ -56,6 +59,7 @@ protected:
     const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth = -1) override;
 
   std::vector<Topology> m_topologies;
+  Facade m_facade;
 };
 
 } // namespace mesh

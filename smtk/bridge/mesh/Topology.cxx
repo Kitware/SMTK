@@ -53,23 +53,49 @@ public:
     // add the unique id as a child of the model
     this->m_root->m_children.push_back(id);
     // construct an element for the mesh, insert it into the topology's map
-    // with its id as the key, and store its shell as a pair along with a
-    // pointer to its associated Element (for use in extracting bound elements).
+    // with its id as the key and, if requested, store its shell as a pair along
+    // with a pointer to its associated Element (for use in extracting bound
+    // elements).
     Topology::Element* element =
-      &this->m_topology->m_elements.insert(std::make_pair(id, Topology::Element(this->m_dimension)))
+      &this->m_topology->m_elements
+         .insert(std::make_pair(id, Topology::Element(singleMesh, this->m_dimension)))
          .first->second;
     if (this->m_shells)
     {
       smtk::mesh::MeshSet shell = singleMesh.extractShell();
       if (!shell.is_empty())
       {
-        for (std::size_t i = 0; i < shell.size(); i++)
+        // The shell is a new meshset containing all of the cells that comprise
+        // the shell. It does not account for the existing meshsets that may
+        // comprise the shell (which is what we need). So, we partition the
+        // shell using the existing meshests of the appropriate dimension.
+        smtk::mesh::CellSet shellCells = shell.cells();
+        smtk::mesh::MeshSet cellsOfDimension = smtk::mesh::set_difference(
+          this->m_topology->m_collection->meshes(smtk::mesh::DimensionType(this->m_dimension - 1)),
+          shell);
+        for (std::size_t i = 0; i < cellsOfDimension.size(); i++)
         {
-          if (!shell.subset(i).is_empty())
+          smtk::mesh::CellSet intersect =
+            smtk::mesh::set_intersect(cellsOfDimension.subset(i).cells(), shell.cells());
+
+          // If the intersection is nonzero and the mesh subset is entirely
+          // contained by the shell, we add the subset as a child entity and we
+          // remove its contents from the list of shell cells.
+          if (!intersect.is_empty() &&
+            intersect.size() == cellsOfDimension.subset(i).cells().size())
           {
-            this->m_shells->push_back(std::make_pair(shell.subset(i), element));
+            this->m_shells->push_back(std::make_pair(cellsOfDimension.subset(i), element));
+            shellCells = smtk::mesh::set_difference(shellCells, intersect);
           }
         }
+        // After all predescribed entities have been removed from the shell,
+        // whatever remains is also an entity.
+        if (!shellCells.is_empty())
+        {
+          this->m_shells->push_back(
+            std::make_pair(this->m_topology->m_collection->createMesh(shellCells), element));
+        }
+        this->m_topology->m_collection->removeMeshes(shell);
       }
     }
   }
@@ -112,7 +138,6 @@ struct AddBoundElements
             m = this->m_topology->m_collection->createMesh(cs);
             activeShells.push_back(j);
           }
-
           if (this->m_dimension == 2 && activeShells.size() == 2)
           {
             break;
@@ -146,7 +171,7 @@ struct AddBoundElements
           // lower dimension
           Topology::Element* element =
             &this->m_topology->m_elements
-               .insert(std::make_pair(id, Topology::Element(this->m_dimension)))
+               .insert(std::make_pair(id, Topology::Element(m, this->m_dimension)))
                .first->second;
           if (this->m_shells)
           {
@@ -171,69 +196,85 @@ struct AddBoundElements
 };
 }
 
-Topology::Topology(smtk::mesh::CollectionPtr collection)
+Topology::Topology(smtk::mesh::CollectionPtr collection, bool constructHierarchy)
   : m_collection(collection)
 {
   // Insert the collection as the top-level element representing the model
   Element* model =
-    &(this->m_elements.insert(std::make_pair(collection->entity(), Element())).first->second);
+    &(this->m_elements.insert(std::make_pair(collection->entity(), Element(collection->meshes())))
+        .first->second);
 
-  // Extract single meshes as volumes and grab their shells
-  ElementShells volumeShells;
-  ElementShells faceShells;
-  ElementShells edgeShells;
-
-  ElementShells* elementShells[4] = { nullptr, &edgeShells, &faceShells, &volumeShells };
-
-  AddFreeElements addFreeElements(this, model);
-
-  // all meshes of the highest dimension are considered to be free elements with
-  // the model as their parent
-  int dimension = 3;
-  smtk::mesh::TypeSet types = collection->types();
-  while (dimension >= 0 && !types.hasDimension(static_cast<smtk::mesh::DimensionType>(dimension)))
+  if (constructHierarchy)
   {
+    // Extract single meshes as volumes and grab their shells
+    ElementShells volumeShells;
+    ElementShells faceShells;
+    ElementShells edgeShells;
+
+    ElementShells* elementShells[4] = { nullptr, &edgeShells, &faceShells, &volumeShells };
+
+    AddFreeElements addFreeElements(this, model);
+
+    // all meshes of the highest dimension are considered to be free elements with
+    // the model as their parent
+    int dimension = smtk::mesh::DimensionType_MAX - 1;
+    smtk::mesh::TypeSet types = collection->types();
+    while (dimension >= 0 && !types.hasDimension(static_cast<smtk::mesh::DimensionType>(dimension)))
+    {
+      --dimension;
+    }
+
+    if (dimension < 0)
+    {
+      // We have been passed an empty collection.
+      return;
+    }
+
+    {
+      addFreeElements.setElementShells(elementShells[dimension]);
+      addFreeElements.setDimension(dimension);
+      smtk::mesh::for_each(
+        collection->meshes(static_cast<smtk::mesh::DimensionType>(dimension)), addFreeElements);
+    }
+
+    AddBoundElements addBoundElements(this);
     --dimension;
-  }
-
-  if (dimension < 0)
-  {
-    // We have been passed an empty collection.
-    return;
-  }
-
-  {
-    addFreeElements.setElementShells(elementShells[dimension]);
-    addFreeElements.setDimension(dimension);
-    smtk::mesh::for_each(
-      collection->meshes(static_cast<smtk::mesh::DimensionType>(dimension)), addFreeElements);
-  }
-
-  AddBoundElements addBoundElements(this);
-  --dimension;
-  for (; dimension >= 0; dimension--)
-  {
-    addFreeElements.setElementShells(elementShells[dimension]);
-    addFreeElements.setDimension(dimension);
-
-    smtk::mesh::MeshSet allMeshes =
-      collection->meshes(static_cast<smtk::mesh::DimensionType>(dimension));
-    smtk::mesh::MeshSet boundMeshes;
-
-    for (auto&& shell : *elementShells[dimension + 1])
+    for (; dimension >= 0; dimension--)
     {
-      boundMeshes.append(shell.first);
-    }
-    if (!boundMeshes.is_empty() && !boundMeshes.cells().is_empty())
-    {
-      smtk::mesh::MeshSet freeMeshes = m_collection->createMesh(
-        smtk::mesh::set_difference(allMeshes.cells(), boundMeshes.cells()));
-      smtk::mesh::for_each(freeMeshes, addFreeElements);
-    }
+      addFreeElements.setElementShells(elementShells[dimension]);
+      addFreeElements.setDimension(dimension);
 
-    addBoundElements.setElementShells(elementShells[dimension]);
-    addBoundElements.setDimension(dimension);
-    addBoundElements(elementShells[dimension + 1]->begin(), elementShells[dimension + 1]->end());
+      smtk::mesh::MeshSet allMeshes =
+        collection->meshes(static_cast<smtk::mesh::DimensionType>(dimension));
+      smtk::mesh::MeshSet boundMeshes;
+
+      for (auto&& shell : *elementShells[dimension + 1])
+      {
+        boundMeshes.append(shell.first);
+      }
+      if (!boundMeshes.is_empty() && !boundMeshes.cells().is_empty())
+      {
+        smtk::mesh::MeshSet freeMeshes = m_collection->createMesh(
+          smtk::mesh::set_difference(allMeshes.cells(), boundMeshes.cells()));
+        smtk::mesh::for_each(freeMeshes, addFreeElements);
+      }
+
+      addBoundElements.setElementShells(elementShells[dimension]);
+      addBoundElements.setDimension(dimension);
+      addBoundElements(elementShells[dimension + 1]->begin(), elementShells[dimension + 1]->end());
+    }
+  }
+  else
+  {
+    AddFreeElements addFreeElements(this, model);
+
+    // all meshes are considered to be free elements with the model as their parent
+    for (int dimension = smtk::mesh::DimensionType_MAX - 1; dimension >= 0; dimension--)
+    {
+      addFreeElements.setDimension(dimension);
+      smtk::mesh::for_each(
+        collection->meshes(static_cast<smtk::mesh::DimensionType>(dimension)), addFreeElements);
+    }
   }
 
   if (false)

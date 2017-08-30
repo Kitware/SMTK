@@ -569,11 +569,12 @@ smtk::mesh::HandleRange Interface::getCells(
 }
 
 //get all cells held by this range handle of a given dimension
-smtk::mesh::HandleRange Interface::getPoints(const smtk::mesh::HandleRange& cells) const
+smtk::mesh::HandleRange Interface::getPoints(
+  const smtk::mesh::HandleRange& cells, bool boundary_only) const
 
 {
   smtk::mesh::HandleRange pointIds;
-  m_iface->get_connectivity(cells, pointIds);
+  m_iface->get_connectivity(cells, pointIds, boundary_only);
   return pointIds;
 }
 

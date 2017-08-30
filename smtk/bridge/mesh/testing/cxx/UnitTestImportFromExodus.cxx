@@ -17,12 +17,14 @@
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/VoidItem.h"
 
 #include "smtk/io/ExportMesh.h"
 #include "smtk/io/SaveJSON.h"
 
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
+#include "smtk/mesh/testing/cxx/helpers.h"
 
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityRef.h"
@@ -37,9 +39,47 @@
 namespace
 {
 std::string dataRoot = SMTK_DATA_DIR;
+
+void UniqueEntities(const smtk::model::EntityRef& root, std::set<smtk::model::EntityRef>& unique)
+{
+  smtk::model::EntityRefArray children = (root.isModel()
+      ? root.as<smtk::model::Model>().cellsAs<smtk::model::EntityRefArray>()
+      : (root.isCellEntity()
+            ? root.as<smtk::model::CellEntity>().boundingCellsAs<smtk::model::EntityRefArray>()
+            : (root.isGroup() ? root.as<smtk::model::Group>().members<smtk::model::EntityRefArray>()
+                              : smtk::model::EntityRefArray())));
+
+  for (smtk::model::EntityRefArray::const_iterator it = children.begin(); it != children.end();
+       ++it)
+  {
+    if (unique.find(*it) == unique.end())
+    {
+      unique.insert(*it);
+      UniqueEntities(*it, unique);
+    }
+  }
 }
 
-int ImportFromVTK(int argc, char* argv[])
+void ParseModelTopology(smtk::model::Model& model, std::size_t* count)
+{
+  std::set<smtk::model::EntityRef> unique;
+  UniqueEntities(model, unique);
+
+  for (auto&& entity : unique)
+  {
+    if (entity.dimension() >= 0 && entity.dimension() <= 3)
+    {
+      count[entity.dimension()]++;
+      float r = static_cast<float>(entity.dimension()) / 3;
+      float b = static_cast<float>(1.) - r;
+      const_cast<smtk::model::EntityRef&>(entity).setColor(
+        (r < 1. ? r : 1.), 0., (b < 1. ? b : 1.), 1.);
+    }
+  }
+}
+}
+
+int UnitTestImportFromExodus(int argc, char* argv[])
 {
   (void)argc;
   (void)argv;
@@ -69,9 +109,10 @@ int ImportFromVTK(int argc, char* argv[])
   }
 
   std::string importFilePath(dataRoot);
-  importFilePath += "/mesh/2d/ImportFromDEFORM.vtu";
+  importFilePath += "/model/3d/genesis/gun-1fourth.gen";
 
   importOp->specification()->findFile("filename")->setValue(importFilePath);
+  importOp->specification()->findVoid("construct hierarchy")->setIsEnabled(false);
 
   smtk::model::OperatorResult importOpResult = importOp->operate();
 
@@ -89,8 +130,17 @@ int ImportFromVTK(int argc, char* argv[])
     return 1;
   }
 
+  std::size_t count[4] = { 0, 0, 0, 0 };
+  ParseModelTopology(model, count);
+
+  std::cout << count[3] << " volumes" << std::endl;
+  test(count[3] == 1, "There should be one volume");
+  std::cout << count[2] << " faces" << std::endl;
+  test(count[2] == 5, "There should be five faces");
+  std::cout << count[1] << " edges" << std::endl;
+  test(count[1] == 0, "There should be no lines");
+  std::cout << count[0] << " vertex groups" << std::endl;
+  test(count[0] == 0, "There should be no vertex groups");
+
   return 0;
 }
-
-// This macro ensures the vtk io library is loaded into the executable
-smtkComponentInitMacro(smtk_extension_vtk_io_MeshIOVTK)
