@@ -74,16 +74,6 @@ qtModelEntityItem::qtModelEntityItem(smtk::attribute::ItemPtr dataObj, QWidget* 
     std::cerr << "register selection source " << this->m_selectionSourceName
               << "failed. Already existed!" << std::endl;
   }
-  // If there is a selection manager then lets see if we can set the checkbox widget to
-  // match the current selection state
-
-  if (qtActiveObjects::instance().smtkSelectionManager())
-  {
-    smtk::model::EntityRefs selEntities;
-    qtActiveObjects::instance().smtkSelectionManager()->getSelectedEntitiesAsEntityRefs(
-      selEntities);
-    this->associateEntities(selEntities, false);
-  }
 }
 
 qtModelEntityItem::~qtModelEntityItem()
@@ -94,6 +84,30 @@ qtModelEntityItem::~qtModelEntityItem()
       this->m_selectionSourceName);
   }
   delete this->Internals;
+}
+
+// This method will tie the object to the Selection Manager in terms of both
+// initializing based on the current selection as well as future selections
+void qtModelEntityItem::useSelectionManager()
+{
+  // If there is a selection manager then lets see if we can set the checkbox widget to
+  // match the current selection state
+
+  if (!qtActiveObjects::instance().smtkSelectionManager())
+  {
+    return; // There is no selection manager available
+  }
+
+  smtk::model::EntityRefs selEntities;
+  qtActiveObjects::instance().smtkSelectionManager()->getSelectedEntitiesAsEntityRefs(selEntities);
+  this->associateEntities(selEntities, false);
+  connect(qtActiveObjects::instance().smtkSelectionManager().get(),
+    SIGNAL(broadcastToReceivers(const smtk::model::EntityRefs&, const smtk::mesh::MeshSets&,
+      const smtk::model::DescriptivePhrases&, const std::string&)),
+    this, SLOT(updateSelection(const smtk::model::EntityRefs&, const smtk::mesh::MeshSets&,
+            const smtk::model::DescriptivePhrases&, const std::string&)));
+  this->Internals->LinkSelectionButton->hide();
+  this->Internals->ClearButton->hide();
 }
 
 smtk::attribute::ModelEntityItemPtr qtModelEntityItem::modelEntityItem()
@@ -372,6 +386,12 @@ void qtModelEntityItem::setOutputOptional(int state)
   }
 }
 
+void qtModelEntityItem::updateSelection(const smtk::model::EntityRefs& selEntities,
+  const smtk::mesh::MeshSets&, const smtk::model::DescriptivePhrases&, const std::string&)
+{
+  this->associateEntities(selEntities);
+}
+
 void qtModelEntityItem::associateEntities(
   const smtk::model::EntityRefs& selEntityRefs, bool resetExisting)
 {
@@ -399,9 +419,9 @@ void qtModelEntityItem::associateEntities(
                                                     (numEnts > def->maxNumberOfValues()))) &&
                           (numEnts > def->numberOfRequiredValues())))
   {
-    std::cerr << "Not Setting ModelEntityItem, numEnts = " << numEnts
-              << " Def isExtensible = " << def->isExtensible()
-              << " Num Vals = " << def->numberOfRequiredValues() << std::endl;
+    //std::cerr << "Not Setting ModelEntityItem, numEnts = " << numEnts
+    //<< " Def isExtensible = " << def->isExtensible()
+    //<< " Num Vals = " << def->numberOfRequiredValues() << std::endl;
     return;
   }
 
@@ -434,6 +454,7 @@ void qtModelEntityItem::associateEntities(
   {
     this->Internals->EntityItemCombo->init();
   }
+  emit modified();
 }
 
 void qtModelEntityItem::clearEntityAssociations()
