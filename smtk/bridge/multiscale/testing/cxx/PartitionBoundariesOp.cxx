@@ -40,9 +40,6 @@
 using namespace boost::filesystem;
 
 #include <cassert>
-#include <fstream>
-
-static int maxIndent = 10;
 
 using namespace smtk::model;
 
@@ -50,6 +47,7 @@ namespace
 {
 
 std::string afrlRoot = std::string(AFRL_DIR);
+std::string dataRoot = SMTK_DATA_DIR;
 
 void cleanup(const std::string& file_path)
 {
@@ -88,77 +86,32 @@ int PartitionBoundariesOp(int argc, char* argv[])
     std::cout << "  " << *it << "\n";
   std::cout << "\n";
 
-  smtk::model::OperatorPtr importFromDeformOp = session->op("import from deform");
-  if (!importFromDeformOp)
+  smtk::model::OperatorPtr importOp = session->op("import");
+  if (!importOp)
   {
-    std::cerr << "No import from deform operator\n";
+    std::cerr << "No import operator\n";
     return 1;
   }
 
-  importFromDeformOp->specification()
-    ->findFile("point-file")
-    ->setValue(afrlRoot + "/Data/afrl_test_forging/ti6242_ptrak_fg.csv");
-  importFromDeformOp->specification()->findInt("timestep")->setValue(66);
-  importFromDeformOp->specification()
-    ->findFile("element-file")
-    ->setValue(afrlRoot + "/Data/afrl_test_forging/ti6242_node_elem_fg.dat");
-  importFromDeformOp->specification()
-    ->findFile("pipeline-executable")
-    ->setValue(afrlRoot + "/../dream3d/install/DREAM3D.app/Contents/bin/PipelineRunner");
-  importFromDeformOp->specification()->findString("attribute")->setToDefault();
-  importFromDeformOp->specification()
-    ->findFile("output-file")
-    ->setValue(afrlRoot + "/tmp/out.dream3d");
+  std::string importFilePath(dataRoot);
+  importFilePath += "/mesh/2d/ImportFromDEFORM.h5m";
 
-  std::vector<double> mu = { { 2.29, 2.29, 2.29, 2.29, 3. } };
-  std::vector<double> sigma = { { .1, .1, .1, .1, .2 } };
-  std::vector<double> min_cutoff = { { 5, 5, 5, 5, 4 } };
-  std::vector<double> max_cutoff = { { 5, 5, 5, 5, 6 } };
+  importOp->specification()->findFile("filename")->setValue(importFilePath);
 
-  smtk::attribute::GroupItem::Ptr stats = importFromDeformOp->specification()->findGroup("stats");
-  stats->setNumberOfGroups(mu.size());
+  smtk::model::OperatorResult importOpResult = importOp->operate();
 
-  for (std::size_t i = 0; i < mu.size(); i++)
+  if (importOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
   {
-    stats->findAs<smtk::attribute::DoubleItem>(i, "mu")->setValue(mu.at(i));
-    stats->findAs<smtk::attribute::DoubleItem>(i, "sigma")->setValue(sigma.at(i));
-    stats->findAs<smtk::attribute::DoubleItem>(i, "min_cutoff")->setValue(min_cutoff.at(i));
-    stats->findAs<smtk::attribute::DoubleItem>(i, "max_cutoff")->setValue(max_cutoff.at(i));
-  }
-
-  smtk::model::OperatorResult importFromDeformOpResult = importFromDeformOp->operate();
-  // cleanup("out.dream3d");
-  // cleanup("out.xdmf");
-  if (importFromDeformOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
-  {
-    std::cerr << "import from deform operator failed\n";
+    std::cerr << "Import operator failed\n";
     return 1;
   }
 
-  smtk::model::Model model = importFromDeformOpResult->findModelEntity("model")->value();
+  smtk::model::Model model = importOpResult->findModelEntity("model")->value();
 
-  if (false)
+  if (!model.isValid())
   {
-    smtk::model::OperatorPtr writeOp = session->op("export mesh");
-    if (!writeOp)
-    {
-      std::cerr << "No write operator\n";
-      return 1;
-    }
-
-    writeOp->specification()
-      ->findFile("filename")
-      ->setValue("/Users/tjcorona/Desktop/Dream3DOutputModel.vtk");
-    // writeOp->specification()->associateEntity(model);
-    bool valueSet = writeOp->specification()->findMesh("mesh")->setValue(
-      manager->meshes()->findCollection(model.entity())->second->meshes());
-
-    smtk::model::OperatorResult writeOpResult = writeOp->operate();
-    if (writeOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
-    {
-      std::cerr << "Write operator failed\n";
-      return 1;
-    }
+    std::cerr << "Import operator returned an invalid model\n";
+    return 1;
   }
 
   smtk::model::OperatorPtr revolveOp = session->op("revolve");
@@ -211,11 +164,12 @@ int PartitionBoundariesOp(int argc, char* argv[])
   smtk::attribute::ModelEntityItemPtr created =
     partitionBoundariesOpResult->findModelEntity("created");
 
-  assert(created->numberOfValues() == 3);
+  assert(created->numberOfValues() == 7);
 
   for (smtk::attribute::ModelEntityItem::const_iterator it = created->begin(); it != created->end();
        ++it)
   {
+    assert(it->isValid());
     assert(it->isVertex());
   }
 
