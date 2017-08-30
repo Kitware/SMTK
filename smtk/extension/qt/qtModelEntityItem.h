@@ -44,6 +44,8 @@ public:
 
   bool add(const smtk::model::EntityRef& val);
   bool remove(const smtk::model::EntityRef& val);
+  /// Automatically update the item when the selection is changed via the Manager
+  void useSelectionManager();
 
 public slots:
   void setOutputOptional(int);
@@ -51,6 +53,10 @@ public slots:
   void onExpungeEntities(const smtk::model::EntityRefs& expungedEnts);
   /// when active model changed, entityAssociations would be cleared
   virtual void clearEntityAssociations();
+  /// used by the Selection Manager if useSelectionManager method has been called
+  void updateSelection(const smtk::model::EntityRefs& selEntities,
+    const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& DesPhrases,
+    const std::string& incomingSelectionSource);
 
 signals:
   void requestEntityAssociation();
