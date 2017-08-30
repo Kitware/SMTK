@@ -20,7 +20,6 @@
         <String Name="label" Label="Domain Property" NumberOfRequiredValues="1" AdvanceLevel="1">
 	  <DefaultValue></DefaultValue>
 	</String>
-        <String Name="filetype" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false"/>
         <Void Name="construct hierarchy" Label="Construct Model Hierarchy" Optional="true" IsEnabledByDefault="true"/>
       </ItemDefinitions>
     </AttDef>
