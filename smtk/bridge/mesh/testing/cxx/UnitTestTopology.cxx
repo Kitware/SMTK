@@ -186,11 +186,11 @@ int UnitTestTopology(int argc, char* argv[])
     std::cout << count[3] << " volumes" << std::endl;
     test(count[3] == 3, "There should be three volumes");
     std::cout << count[2] << " faces" << std::endl;
-    test(count[2] == 14, "There should be fourteen faces");
+    test(count[2] == 9, "There should be nine faces");
     std::cout << count[1] << " edges" << std::endl;
-    test(count[1] == 6, "There should be six lines");
+    test(count[1] == 7, "There should be seven lines");
     std::cout << count[0] << " vertex groups" << std::endl;
-    test(count[0] == 0, "There should be no vertex groups");
+    test(count[0] == 1, "There should be one vertex group");
 
     bool debug = false;
     if (debug)
