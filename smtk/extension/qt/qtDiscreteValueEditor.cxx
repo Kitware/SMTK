@@ -24,6 +24,7 @@
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtModelEntityItem.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 using namespace smtk::extension;
@@ -221,6 +222,7 @@ void qtDiscreteValueEditor::onInputValueChanged()
 
     QList<smtk::attribute::ItemDefinitionPtr> activeChildDefs;
     std::size_t i, m = item->numberOfActiveChildrenItems();
+    std::vector<qtModelEntityItem*> mitems;
     for (i = 0; i < m; i++)
     {
       smtk::attribute::ConstItemDefinitionPtr itDef =
@@ -251,7 +253,23 @@ void qtDiscreteValueEditor::onInputValueChanged()
         this->Internals->m_childItems.push_back(childItem);
         connect(
           childItem, SIGNAL(modified()), this->Internals->m_inputItem, SLOT(onChildItemModified()));
+        // Is this a model entity item? - if so lets put it in the vector so we can decide later
+        // if we are going to automatically update it via the Selection Manager
+        auto mitem = dynamic_cast<qtModelEntityItem*>(childItem);
+        if (mitem)
+        {
+          mitems.push_back(mitem);
+        }
       }
+    }
+    if (!mitems.size())
+    {
+      return;
+    }
+    if (mitems.size() == 1)
+    {
+      // Simple case - there is only 1 - go ahead and set it to use the new selection manager support
+      mitems.at(0)->useSelectionManager();
     }
     this->Internals->m_inputItem->baseView()->setFixedLabelWidth(currentLen);
     this->Internals->m_hintChildWidth = this->Internals->m_childrenFrame->width();
