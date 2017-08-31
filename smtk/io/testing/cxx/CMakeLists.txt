@@ -46,7 +46,7 @@ foreach (test ${ioTests})
 endforeach()
 
 # ResourceSetWriterTest uses input files in SMTKTestData
-if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
+if (SMTK_DATA_DIR)
   foreach(test ${ioDataTests})
     add_executable(${test} ${test}.cxx)
     target_link_libraries(${test}

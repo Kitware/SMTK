@@ -129,7 +129,6 @@ endif()
 option(SMTK_USE_SYSTEM_MOAB "Use the system-installed moab?" OFF)
 option(SMTK_USE_SYSTEM_SPARSEHASH "Use the system-installed sparsehash?" OFF)
 option(SMTK_HASH_STORAGE "Use sparsehash library for primary storage?" OFF)
-set(SMTK_DATA_DIR "" CACHE PATH "Path to a directory of SMTK test data.")
 mark_as_advanced(SMTK_USE_SYSTEM_SPARSEHASH SMTK_HASH_STORAGE)
 
 option(SMTK_ENABLE_DOCUMENTATION
@@ -154,6 +153,17 @@ cmake_dependent_option(
 if (SMTK_ENABLE_TESTING)
   enable_testing()
   include(CTest)
+
+  unset(SMTK_DATA_DIR CACHE)
+  file(READ "${CMAKE_CURRENT_SOURCE_DIR}/data/smtk-data" data)
+  if (NOT data STREQUAL "\n")
+    message(WARNING
+      "Testing is enabled, but the data is not available. Use git-lfs in order "
+      "to obtain the testing data.")
+    set(SMTK_DATA_DIR)
+  else ()
+    set(SMTK_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data")
+  endif ()
 
   set(SMTK_COVERAGE_ENABLED OFF)
   if(SMTK_ENABLE_COVERAGE)

@@ -53,7 +53,7 @@ endif()
 
 target_link_libraries(RenderMesh smtkCore smtkCoreModelTesting ${additional_libraries})
 
-if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
+if (SMTK_DATA_DIR)
   add_test(NAME RenderMesh COMMAND $<TARGET_FILE:RenderMesh>)
   set_tests_properties(RenderMesh PROPERTIES
                        LABELS "ExtMatplotlib")

@@ -2,9 +2,7 @@
 #a remus client and server and verifies that the mesh worker behaves properly
 #########################################################################
 
-if(SMTK_ENABLE_POLYGON_SESSION AND
-    SMTK_DATA_DIR AND
-    EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
+if(SMTK_ENABLE_POLYGON_SESSION AND SMTK_DATA_DIR)
 
   find_package(Boost 1.55.0
     COMPONENTS thread filesystem system REQUIRED)

@@ -16,7 +16,7 @@ endif()
 
 endif()
 
-if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
+if (SMTK_DATA_DIR)
   foreach (test ${smtkDelaunayExtPythonDataTests})
     smtk_add_test_python(${test}Py ${test}.py
       --data-dir=${SMTK_DATA_DIR})
