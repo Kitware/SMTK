@@ -18,6 +18,8 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
+#include "smtk/common/Paths.h"
+
 #include "smtk/io/ImportMesh.h"
 
 #include "smtk/mesh/Metrics.h"
@@ -55,6 +57,13 @@ smtk::model::OperatorResult ImportOperator::operateInternal()
   smtk::mesh::CollectionPtr collection =
     smtk::io::importMesh(filePath, this->activeSession()->meshManager(), label);
 
+  // Name the mesh according to the stem of the file
+  std::string name = smtk::common::Paths::stem(filePath);
+  if (!name.empty())
+  {
+    collection->name(name);
+  }
+
   if (!collection || !collection->isValid())
   {
     // The file was not correctly read.
@@ -82,6 +91,12 @@ smtk::model::OperatorResult ImportOperator::operateInternal()
   // the model manager and uuid
   smtk::model::Model model =
     this->manager()->insertModel(collection->entity(), dimension, dimension);
+
+  // Name the model according to the stem of the file
+  if (!name.empty())
+  {
+    model.setName(name);
+  }
 
   // Declare the model as "dangling" so it will be transcribed
   this->session()->declareDanglingEntity(model);

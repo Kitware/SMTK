@@ -119,6 +119,24 @@ std::string Paths::pathToLibraryContainingFunction(void (*func)(void))
   return boost::dll::symbol_location(*func).parent_path().string();
 }
 
+/// Return the file name, given a path to the file.
+std::string Paths::filename(const std::string& path)
+{
+  return boost::filesystem::path(path).filename().string();
+}
+
+/// Return the file name without extension, given a path to the file.
+std::string Paths::stem(const std::string& path)
+{
+  return boost::filesystem::path(path).stem().string();
+}
+
+/// Return the file extension, given a path to the file.
+std::string Paths::extension(const std::string& path)
+{
+  return boost::filesystem::path(path).extension().string();
+}
+
 /**\brief Return the best guess at the directory containing the current process's executable.
   */
 std::string Paths::executableDirectory()
