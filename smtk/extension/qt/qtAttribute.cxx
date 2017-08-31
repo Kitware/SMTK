@@ -162,6 +162,9 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
   QLayout* layout = this->m_widget->layout();
   qtItem* qItem = NULL;
   smtk::attribute::AttributePtr att = this->attribute();
+  // We want to track the attribute's model entity items so we can decide if we are going
+  // use the Selection Manager to automatically update them
+  std::vector<qtModelEntityItem*> mitems;
   // If there are model assocications for the attribute, create UI for them if requested.
   // This will be the same widget used for ModelEntityItem.
   if (includeAssociations && att->associations())
@@ -171,6 +174,11 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
     {
       layout->addWidget(qItem->widget());
       this->addItem(qItem);
+      auto mitem = dynamic_cast<qtModelEntityItem*>(qItem);
+      if (mitem)
+      {
+        mitems.push_back(mitem);
+      }
     }
   }
   // Now go through all child items and create ui components.
@@ -183,7 +191,29 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
     {
       layout->addWidget(qItem->widget());
       this->addItem(qItem);
+      auto mitem = dynamic_cast<qtModelEntityItem*>(qItem);
+      if (mitem)
+      {
+        mitems.push_back(mitem);
+      }
     }
+  }
+  // if we found no model entities then there is nothing to do
+  if (!mitems.size())
+  {
+    return;
+  }
+  // Currently we are supporting the simple case of only one model entity item being automatically
+  // updated by the Selection Manager.  The issue we want to avoid is multiple model entity items that overlap
+  // in terms of the types of entities they can hold, being updated at the same time from the Selection
+  // Manager.  In the future we can either make the model entity item "smarter" or we could atleast
+  // compare the bit masks of the underlying item to determine if we would have a problem using the
+  // Selection Manager.  Note that there is a potential issue of multiple model entity items owned
+  // by internal items. This check would not catch it.
+  if (mitems.size() == 1)
+  {
+    // Simple case - there is only 1 - go ahead and set it to use the new selection manager support
+    mitems.at(0)->useSelectionManager();
   }
 }
 
