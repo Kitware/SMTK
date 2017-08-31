@@ -16,6 +16,7 @@
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/common/ResourceComponent.h"
 
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
@@ -42,7 +43,7 @@ class System;
 /**\brief Represent a (possibly composite) value according to a definition.
       *
       */
-class SMTKCORE_EXPORT Attribute : public smtk::enable_shared_from_this<Attribute>
+class SMTKCORE_EXPORT Attribute : public common::ResourceComponent
 {
   friend class smtk::attribute::Definition;
   friend class smtk::attribute::System;
@@ -63,9 +64,13 @@ public:
 
   virtual ~Attribute();
 
+  AttributePtr shared_from_this()
+  {
+    return static_pointer_cast<Attribute>(ResourceComponent::shared_from_this());
+  }
+
   // NOTE: To rename an attribute use the System!
   const std::string& name() const { return this->m_name; }
-  const smtk::common::UUID& id() const { return this->m_id; }
 
   const std::string& type() const;
   std::vector<std::string> types() const;
@@ -206,6 +211,7 @@ public:
   bool isValid() const;
 
   smtk::attribute::SystemPtr system() const;
+  smtk::common::ResourcePtr resource() const override;
   smtk::model::ManagerPtr modelManager() const;
 
   void setUserData(const std::string& key, smtk::simulation::UserDataPtr value)
@@ -245,7 +251,6 @@ protected:
   std::string m_name;
   std::vector<smtk::attribute::ItemPtr> m_items;
   ModelEntityItemPtr m_associations;
-  smtk::common::UUID m_id;
   smtk::attribute::DefinitionPtr m_definition;
   std::map<smtk::attribute::RefItem*, std::set<std::size_t> > m_references;
   bool m_appliesToBoundaryNodes;

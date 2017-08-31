@@ -26,7 +26,13 @@
 
 using namespace smtk::attribute;
 
-System::System()
+System::System(const smtk::common::UUID& myID, smtk::common::ResourceManager* manager)
+  : Resource(myID, manager)
+{
+}
+
+System::System(smtk::common::ResourceManager* manager)
+  : Resource(manager)
 {
 }
 
@@ -849,4 +855,9 @@ std::vector<smtk::common::ViewPtr> System::findTopLevelViews() const
     }
   }
   return topViews;
+}
+
+smtk::common::ResourceComponentPtr System::find(const smtk::common::UUID& attId) const
+{
+  return this->findAttribute(attId);
 }

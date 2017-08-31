@@ -26,6 +26,8 @@ namespace smtk
 namespace common
 {
 class Resource;
+class ResourceComponent;
+class ResourceManager;
 class ResourceSet;
 class UUID;
 class UUIDGenerator;
@@ -211,6 +213,7 @@ typedef smtk::shared_ptr<smtk::io::Logger> LoggerPtr;
 namespace common
 {
 typedef smtk::shared_ptr<smtk::common::Resource> ResourcePtr;
+typedef smtk::shared_ptr<smtk::common::ResourceComponent> ResourceComponentPtr;
 typedef smtk::shared_ptr<smtk::common::ResourceSet> ResourceSetPtr;
 typedef smtk::shared_ptr<const smtk::common::Resource> ConstResourcePtr;
 typedef smtk::shared_ptr<const smtk::common::ResourceSet> ConstResourceSetPtr;

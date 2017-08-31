@@ -8,6 +8,7 @@ set(commonSrcs
   FileLocation.cxx
   Paths.cxx
   Resource.cxx
+  ResourceComponent.cxx
   ResourceSet.cxx
   StringUtil.cxx
   TimeZone.cxx
@@ -28,6 +29,7 @@ set(commonHeaders
   Paths.h
   RangeDetector.h
   Resource.h
+  ResourceComponent.h
   ResourceSet.h
   StringUtil.h
   TimeZone.h

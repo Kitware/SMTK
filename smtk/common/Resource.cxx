@@ -12,14 +12,24 @@
 // .SECTION See Also
 
 #include "smtk/common/Resource.h"
+#include "smtk/common/UUIDGenerator.h"
 
 namespace smtk
 {
 namespace common
 {
 
-Resource::Resource()
+Resource::Resource(const UUID& myID, ResourceManager* manager)
+  : m_id(myID)
+  , m_manager(manager)
 {
+}
+
+Resource::Resource(ResourceManager* manager)
+  : m_manager(manager)
+{
+  smtk::common::UUIDGenerator gen;
+  this->m_id = gen.random();
 }
 
 Resource::~Resource()

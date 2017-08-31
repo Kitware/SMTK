@@ -70,6 +70,7 @@ public:
   bool removeAttribute(smtk::attribute::AttributePtr att);
   smtk::attribute::AttributePtr findAttribute(const std::string& name) const;
   smtk::attribute::AttributePtr findAttribute(const smtk::common::UUID& id) const;
+  smtk::common::ResourceComponentPtr find(const smtk::common::UUID& id) const override;
   void findAttributes(
     const std::string& type, std::vector<smtk::attribute::AttributePtr>& result) const;
   std::vector<smtk::attribute::AttributePtr> findAttributes(const std::string& type) const;
@@ -150,7 +151,8 @@ public:
   void attributes(std::vector<smtk::attribute::AttributePtr>& result) const;
 
 protected:
-  System();
+  System(const smtk::common::UUID& myID, smtk::common::ResourceManager* manager);
+  System(smtk::common::ResourceManager* manager = nullptr);
   void internalFindAllDerivedDefinitions(smtk::attribute::DefinitionPtr def, bool onlyConcrete,
     std::vector<smtk::attribute::DefinitionPtr>& result) const;
   void internalFindAttributes(

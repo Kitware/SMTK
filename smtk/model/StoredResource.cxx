@@ -20,7 +20,8 @@ namespace model
 {
 
 StoredResource::StoredResource()
-  : m_generation(0)
+  : Resource(nullptr)
+  , m_generation(0)
   , m_urlGeneration(0)
 {
 }
@@ -154,6 +155,11 @@ SessionRef StoredResource::session() const
 void StoredResource::setGeneration(int gen)
 {
   this->m_generation = gen;
+}
+
+smtk::common::ResourceComponentPtr StoredResource::find(const smtk::common::UUID& compId) const
+{
+  return smtk::common::ResourceComponentPtr();
 }
 
 } // namespace model

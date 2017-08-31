@@ -31,7 +31,6 @@
 #include "smtk/model/Manager.h"
 
 #include "smtk/common/CompilerInformation.h"
-#include "smtk/common/UUIDGenerator.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/algorithm/string.hpp"
@@ -46,8 +45,8 @@ using namespace smtk::common;
 
 Attribute::Attribute(const std::string& myName, smtk::attribute::DefinitionPtr myDefinition,
   const smtk::common::UUID& myId)
-  : m_name(myName)
-  , m_id(myId)
+  : ResourceComponent(myId)
+  , m_name(myName)
   , m_definition(myDefinition)
   , m_appliesToBoundaryNodes(false)
   , m_appliesToInteriorNodes(false)
@@ -58,15 +57,14 @@ Attribute::Attribute(const std::string& myName, smtk::attribute::DefinitionPtr m
 }
 
 Attribute::Attribute(const std::string& myName, smtk::attribute::DefinitionPtr myDefinition)
-  : m_name(myName)
+  : ResourceComponent()
+  , m_name(myName)
   , m_definition(myDefinition)
   , m_appliesToBoundaryNodes(false)
   , m_appliesToInteriorNodes(false)
   , m_isColorSet(false)
   , m_aboutToBeDeleted(false)
 {
-  smtk::common::UUIDGenerator gen;
-  this->m_id = gen.random();
   this->m_definition->buildAttribute(this);
 }
 
@@ -264,6 +262,11 @@ SystemPtr Attribute::system() const
   return this->m_definition->system();
 }
 
+smtk::common::ResourcePtr Attribute::resource() const
+{
+  return this->system();
+}
+
 /**\brief Return the model Manager instance whose entities may have attributes.
   *
   * This returns a shared pointer to smtk::model::Manager, which may be
@@ -295,7 +298,7 @@ void Attribute::removeAllAssociations()
     smtk::model::EntityRefArray::const_iterator it;
     for (it = this->m_associations->begin(); it != this->m_associations->end(); ++it)
     {
-      modelMgr->disassociateAttribute(this->system(), this->m_id, it->entity(), false);
+      modelMgr->disassociateAttribute(this->system(), this->id(), it->entity(), false);
     }
   }
 
