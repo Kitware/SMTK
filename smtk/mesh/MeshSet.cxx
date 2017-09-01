@@ -369,6 +369,13 @@ smtk::mesh::MeshSet MeshSet::subset(std::size_t ith) const
 
 smtk::mesh::MeshSet MeshSet::extractShell() const
 {
+  bool created;
+  return this->extractShell(created);
+}
+
+smtk::mesh::MeshSet MeshSet::extractShell(bool& created) const
+{
+  created = false;
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
 
   smtk::mesh::HandleRange entities;
@@ -378,8 +385,8 @@ smtk::mesh::MeshSet MeshSet::extractShell() const
   {
     smtk::mesh::Handle meshSetHandle;
     //create a mesh for these cells since they don't have a meshset currently
-    const bool meshCreated = iface->createMesh(cells, meshSetHandle);
-    if (meshCreated)
+    created = iface->createMesh(cells, meshSetHandle);
+    if (created)
     {
       entities.insert(meshSetHandle);
     }
@@ -389,6 +396,13 @@ smtk::mesh::MeshSet MeshSet::extractShell() const
 
 smtk::mesh::MeshSet MeshSet::extractAdjacenciesOfDimension(int dimension) const
 {
+  bool created;
+  return this->extractAdjacenciesOfDimension(dimension, created);
+}
+
+smtk::mesh::MeshSet MeshSet::extractAdjacenciesOfDimension(int dimension, bool& created) const
+{
+  created = false;
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
 
   smtk::mesh::HandleRange entities;
@@ -399,8 +413,8 @@ smtk::mesh::MeshSet MeshSet::extractAdjacenciesOfDimension(int dimension) const
   {
     smtk::mesh::Handle meshSetHandle;
     //create a mesh for these cells since they don't have a meshset currently
-    const bool meshCreated = iface->createMesh(cells, meshSetHandle);
-    if (meshCreated)
+    created = iface->createMesh(cells, meshSetHandle);
+    if (created)
     {
       entities.insert(meshSetHandle);
     }

@@ -136,10 +136,17 @@ public:
 
   //Extract the shell ( exterior (D-1)-dimensional elements ) of this set of
   //meshes. This operation might create new cells if no shell already exists
-  //for the given meshset. The resulting meshset will be added to the
-  //database so that the shell is saved.
+  //for the given meshset. If not already present, the resulting meshset will
+  //be added to the database so that the shell is saved.
   //Will return an empty set when no shell can be found
   smtk::mesh::MeshSet extractShell() const;
+
+  //Extract the shell ( exterior (D-1)-dimensional elements ) of this set of
+  //meshes. This operation might create new cells if no shell already exists
+  //for the given meshset. The input field <created> is set to reflect
+  //whether or not the resulting meshset is added to the database.
+  //Will return an empty set when no shell can be found
+  smtk::mesh::MeshSet extractShell(bool& created) const;
 
   //Extract the adjacency cells of this set of meshes for a given dimension.
   //This operation might create new cells if they do not already exist
@@ -147,6 +154,13 @@ public:
   //database so that the adjacencies are saved.
   //Will return an empty set when no adjacencies can be found
   smtk::mesh::MeshSet extractAdjacenciesOfDimension(int dimension) const;
+
+  //Extract the adjacency cells of this set of meshes for a given dimension.
+  //This operation might create new cells if they do not already exist
+  //for the given meshset. he input field <created> is set to reflect
+  //whether or not the resulting meshset is added to the database.
+  //Will return an empty set when no adjacencies can be found
+  smtk::mesh::MeshSet extractAdjacenciesOfDimension(int dimension, bool& created) const;
 
   //Merge all duplicate points contained within this meshset.
   //Will return true when any points have been merged
