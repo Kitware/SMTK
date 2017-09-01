@@ -27,7 +27,6 @@ MeshSet::MeshSet()
   , m_handle()
   , m_range()
 {
-  //Trying to make Shitbroken happy
 }
 
 MeshSet::MeshSet(const smtk::mesh::CollectionPtr& parent, smtk::mesh::Handle handle)
