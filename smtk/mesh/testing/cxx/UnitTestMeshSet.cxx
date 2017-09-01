@@ -41,6 +41,7 @@ void verify_num_meshes(const smtk::mesh::CollectionPtr& c)
   smtk::mesh::MeshSet all_meshes = c->meshes();
   test(numMeshes == all_meshes.size());
   test(all_meshes.is_empty() == false);
+  test(all_meshes.isValid() == true);
 }
 
 void verify_constructors(const smtk::mesh::CollectionPtr& c)
@@ -52,6 +53,7 @@ void verify_constructors(const smtk::mesh::CollectionPtr& c)
   smtk::mesh::MeshSet ms2(ms);
   smtk::mesh::MeshSet ms3 = c->meshes("bad_name");
   test(ms3.is_empty() == true);
+  test(ms3.isValid() == false);
   test(ms3.size() == 0);
 
   test(ms.size() == ms2.size());

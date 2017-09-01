@@ -109,7 +109,7 @@ bool MeshItem::isValid() const
   for (auto it = this->m_meshValues.begin(); it != this->m_meshValues.end(); ++it)
   {
     // If the mesh is empty
-    if ((*it).is_empty())
+    if (!(*it).isValid() || (*it).is_empty())
     {
       return false;
     }

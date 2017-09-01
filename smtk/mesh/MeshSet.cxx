@@ -165,6 +165,17 @@ bool MeshSet::append(const MeshSet& other)
   return can_append;
 }
 
+bool MeshSet::isValid() const
+{
+  // A valid meshset has a valid collection and is a member of the collection.
+  smtk::mesh::CollectionPtr collection = this->collection();
+  if (!collection)
+  {
+    return false;
+  }
+  return set_intersect(*this, collection->meshes()).is_empty() == false;
+}
+
 bool MeshSet::is_empty() const
 {
   return this->m_range.empty();
