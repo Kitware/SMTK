@@ -212,8 +212,13 @@ void vtkMeshMultiBlockSource::GenerateRepresentationForSingleMesh(const smtk::me
 {
   if (!meshes.is_empty())
   {
-    //we want all 0d, 1d, 2d, and shells of 3d elments
-    smtk::mesh::MeshSet shell = meshes.subset(smtk::mesh::Dims3).extractShell();
+    //we want all 0d, 1d, 2d, and shells of 3d elments.
+    //To preserve the state of the mesh database, we track
+    //whether or not a new meshset was created to represent
+    //the 3d shell; if it was created, we delete it when we
+    //are finished with it.
+    bool shellCreated;
+    smtk::mesh::MeshSet shell = meshes.subset(smtk::mesh::Dims3).extractShell(shellCreated);
     smtk::mesh::MeshSet twoD = meshes.subset(smtk::mesh::Dims2);
     smtk::mesh::MeshSet oneD = meshes.subset(smtk::mesh::Dims1);
     smtk::mesh::MeshSet zeroD = meshes.subset(smtk::mesh::Dims0);
@@ -233,6 +238,11 @@ void vtkMeshMultiBlockSource::GenerateRepresentationForSingleMesh(const smtk::me
     pointCoords->ShallowCopy(pd->GetPoints()->GetData());
     pointCoords->SetName("PointCoordinates");
     pd->GetPointData()->AddArray(pointCoords.GetPointer());
+
+    if (shellCreated)
+    {
+      meshes.collection()->removeMeshes(shell);
+    }
   }
 }
 
