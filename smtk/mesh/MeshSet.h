@@ -85,6 +85,9 @@ public:
   // for( int i=0; i < size; ++i ) { ms.append( query.meshes() ) }
   bool append(const MeshSet& other);
 
+  //determine if the given MeshSet is valid.
+  bool isValid() const;
+
   bool is_empty() const;
 
   //number of meshes
