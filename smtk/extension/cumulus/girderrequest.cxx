@@ -501,7 +501,7 @@ void DownloadFileRequest::finished(QNetworkReply* reply)
     qint64 count = 0;
     char bytes[1024];
 
-    while ((count = reply->read(bytes, 1024)) != -1)
+    while ((count = reply->read(bytes, sizeof(bytes))) > 0)
     {
       file.write(bytes, count);
     }
