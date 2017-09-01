@@ -110,9 +110,60 @@ bool JobTableModel::insertRows(int row, int count, const QModelIndex&)
 
 void JobTableModel::jobsUpdated(QList<Job> jobs)
 {
-  beginResetModel();
-  m_jobs = jobs;
-  endResetModel();
+  // Load map with input jobs
+  QMap<QString, Job> inputMap;
+  Job inputJob;
+  foreach (inputJob, jobs)
+  {
+    inputMap.insert(inputJob.id(), inputJob);
+  }
+
+  // Traverse current jobs and update those found in inputMap
+  for (int row = 0; row < m_jobs.size(); ++row)
+  {
+    Job modelJob = m_jobs[row];
+    QString modelJobId = modelJob.id();
+    if (!inputMap.contains(modelJobId))
+    {
+      continue;
+    }
+
+    // Get the input job; also remove it from the input map
+    inputJob = inputMap[modelJobId];
+    inputMap.remove(modelJobId);
+
+    if (inputJob.status() == modelJob.status())
+    {
+      continue;
+    }
+
+    // Update status
+    //qDebug() << "update status " << newJob.id() << "to" << inputJob.status();
+    modelJob.setStatus(inputJob.status());
+    QModelIndex index = this->index(row, JOB_STATUS);
+    emit this->dataChanged(index, index);
+  } // for (row)
+
+  // If inputMap is empty, then we are done
+  if (inputMap.isEmpty())
+  {
+    return;
+  }
+
+  // (else) Insert new input jobs
+  int first = m_jobs.size();
+  int last = first + inputMap.size() - 1;
+  this->beginInsertRows(QModelIndex(), first, last);
+
+  QMap<QString, Job>::const_iterator iter = inputMap.constBegin();
+  for (; iter != inputMap.constEnd(); ++iter)
+  {
+    Job newJob(iter.value());
+    //qDebug() << "insert job:" << newJob.id();
+    m_jobs.push_back(newJob);
+  }
+
+  this->endInsertRows();
 }
 
 } // end namespace

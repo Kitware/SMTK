@@ -38,6 +38,7 @@ public:
   QString machine() const { return this->m_machine; };
   QList<QString> outputFolderIds() const { return this->m_outputFolderIds; };
   bool isValid() const { return !this->m_id.isEmpty(); };
+  void setStatus(const QString& status) { this->m_status = status; }
 
   static Job fromJSON(cJSON* obj);
 
