@@ -11,6 +11,13 @@
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/MeshItemDefinition.h"
+#include "smtk/attribute/System.h"
+
+#include "smtk/model/Manager.h"
+
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
+
 #include <algorithm> // for std::find and std::copy
 #include <iostream>
 #include <stdio.h>
@@ -108,8 +115,15 @@ bool MeshItem::isValid() const
   }
   for (auto it = this->m_meshValues.begin(); it != this->m_meshValues.end(); ++it)
   {
-    // If the mesh is empty
+    // If the mesh is empty or invalid return false
     if (!(*it).isValid() || (*it).is_empty())
+    {
+      return false;
+    }
+
+    // If the mesh belongs to a collection that the mesh manager is not tracking return false
+    smtk::mesh::Manager::Ptr mgr = this->attribute()->system()->refModelManager()->meshes();
+    if (!mgr->hasCollection((*it).collection()))
     {
       return false;
     }
