@@ -26,7 +26,7 @@ namespace mesh
 
 Session::Session()
 {
-  this->initializeOperatorSystem(Session::s_operators);
+  this->initializeOperatorCollection(Session::s_operators);
 }
 
 Topology* Session::topology(smtk::model::Model& model)

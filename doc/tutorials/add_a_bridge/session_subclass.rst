@@ -146,7 +146,7 @@ This macro takes 6 parameters:
    modeling kernel engine (e.g., OpenCascade, FACET) since the
    engine should be prepared before the session is constructed.
    Otherwise, the modeling operations listed in the session's
-   attribute system might not reflect those available for the engine
+   attribute collection might not reflect those available for the engine
    being used.
 
 5. The fully-qualified name of the session class, including namespaces.
@@ -169,7 +169,7 @@ about session-specific operators:
    :end-before: // -- 2 --
 
 The :smtk:`Session::initializeOperatorSystem` method creates
-a new attribute :smtk:`System` and populates it with all the
+a new attribute :smtk:`Collection` and populates it with all the
 operators in the given :cxx:`Session::s_operators` member,
 which is declared by the :cxx:`smtkDeclareModelingKernel` macro
 and instantiated by the :cxx:`smtkImplementsModelingKernel` macro.

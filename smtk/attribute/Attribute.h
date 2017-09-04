@@ -38,7 +38,7 @@ namespace attribute
 {
 class RefItem;
 class Item;
-class System;
+class Collection;
 
 /**\brief Represent a (possibly composite) value according to a definition.
       *
@@ -46,7 +46,7 @@ class System;
 class SMTKCORE_EXPORT Attribute : public common::ResourceComponent
 {
   friend class smtk::attribute::Definition;
-  friend class smtk::attribute::System;
+  friend class smtk::attribute::Collection;
   friend class smtk::attribute::RefItem;
 
 public:
@@ -69,7 +69,7 @@ public:
     return static_pointer_cast<Attribute>(ResourceComponent::shared_from_this());
   }
 
-  // NOTE: To rename an attribute use the System!
+  // NOTE: To rename an attribute use the collection!
   const std::string& name() const { return this->m_name; }
 
   const std::string& type() const;
@@ -210,7 +210,7 @@ public:
 
   bool isValid() const;
 
-  smtk::attribute::SystemPtr system() const;
+  smtk::attribute::CollectionPtr collection() const;
   smtk::common::ResourcePtr resource() const override;
   smtk::model::ManagerPtr modelManager() const;
 

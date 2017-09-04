@@ -15,7 +15,7 @@
 
 #include "smtk/model/EntityRef.h"
 
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/model/Arrangement.h"

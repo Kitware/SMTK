@@ -9,6 +9,7 @@
 //=========================================================================
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DoubleItemDefinition.h"
@@ -16,7 +17,6 @@
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
-#include "smtk/attribute/System.h"
 #include <iostream>
 
 int main()
@@ -30,15 +30,15 @@ int main()
     typedef smtk::attribute::ValueItem ValueItem;
     typedef smtk::attribute::Item AttItem;
 
-    smtk::attribute::SystemPtr sysptr = smtk::attribute::System::create();
-    smtk::attribute::System& system(*sysptr.get());
-    std::cout << "System Created\n";
+    smtk::attribute::CollectionPtr sysptr = smtk::attribute::Collection::create();
+    smtk::attribute::Collection& collection(*sysptr.get());
+    std::cout << "Collection Created\n";
     // Lets create an attribute to represent an expression
-    smtk::attribute::DefinitionPtr expDef = system.createDefinition("ExpDef");
+    smtk::attribute::DefinitionPtr expDef = collection.createDefinition("ExpDef");
     smtk::attribute::StringItemDefinitionPtr eitemdef = StringItemDef::New("Expression String");
     expDef->addItemDefinition(eitemdef);
 
-    smtk::attribute::DefinitionPtr base = system.createDefinition("BaseDef");
+    smtk::attribute::DefinitionPtr base = collection.createDefinition("BaseDef");
     // Lets add some item definitions
     smtk::attribute::IntItemDefinitionPtr iitemdef = IntItemDef::New("IntItem1");
     base->addItemDefinition(iitemdef);
@@ -46,7 +46,7 @@ int main()
     iitemdef2->setDefaultValue(10);
     base->addItemDefinition(iitemdef2);
 
-    smtk::attribute::DefinitionPtr def1 = system.createDefinition("Derived1", "BaseDef");
+    smtk::attribute::DefinitionPtr def1 = collection.createDefinition("Derived1", "BaseDef");
     // Lets add some item definitions
     smtk::attribute::DoubleItemDefinitionPtr ditemdef = DoubleItemDef::New("DoubleItem1");
     // Allow this one to hold an expression
@@ -62,7 +62,7 @@ int main()
     ditemdef2->setDefaultValue(-35.2);
     def1->addItemDefinition(ditemdef2);
 
-    smtk::attribute::DefinitionPtr def2 = system.createDefinition("Derived2", "Derived1");
+    smtk::attribute::DefinitionPtr def2 = collection.createDefinition("Derived2", "Derived1");
     // Lets add some item definitions
     smtk::attribute::StringItemDefinitionPtr sitemdef = StringItemDef::New("StringItem1");
     def1->addItemDefinition(sitemdef);
@@ -71,8 +71,8 @@ int main()
     def1->addItemDefinition(sitemdef2);
 
     // Lets test creating an attribute by passing in the expression definition explicitly
-    smtk::attribute::AttributePtr expAtt = system.createAttribute("Exp1", expDef);
-    smtk::attribute::AttributePtr att = system.createAttribute("testAtt", "Derived2");
+    smtk::attribute::AttributePtr expAtt = collection.createAttribute("Exp1", expDef);
+    smtk::attribute::AttributePtr att = collection.createAttribute("testAtt", "Derived2");
     if (att)
     {
       std::cout << "Attribute testAtt created\n";
@@ -188,7 +188,7 @@ int main()
         }
       }
     }
-    std::cout << "System destroyed\n";
+    std::cout << "Collection destroyed\n";
   }
   return status;
 }

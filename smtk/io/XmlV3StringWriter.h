@@ -17,7 +17,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/io/XmlV2StringWriter.h"
 
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 
 namespace pugi
 {
@@ -31,7 +31,7 @@ namespace io
 class SMTKCORE_EXPORT XmlV3StringWriter : public XmlV2StringWriter
 {
 public:
-  XmlV3StringWriter(const smtk::attribute::SystemPtr system);
+  XmlV3StringWriter(const smtk::attribute::CollectionPtr collection);
   virtual ~XmlV3StringWriter();
 
 protected:

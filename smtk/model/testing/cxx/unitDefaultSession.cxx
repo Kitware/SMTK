@@ -163,7 +163,10 @@ public:
   }
 
 protected:
-  TestForwardingSession() { this->initializeOperatorSystem(TestForwardingSession::s_operators); }
+  TestForwardingSession()
+  {
+    this->initializeOperatorCollection(TestForwardingSession::s_operators);
+  }
 
   SessionInfoBits transcribeInternal(
     const EntityRef& entity, SessionInfoBits flags, int depth = -1) override
@@ -174,7 +177,8 @@ protected:
   bool ableToOperateDelegate(RemoteOperatorPtr oper) override
   {
     OperatorPtr remOp = remoteSession->op(oper->name());
-    remOp->setSpecification(remoteSession->operatorSystem()->copyAttribute(oper->specification()));
+    remOp->setSpecification(
+      remoteSession->operatorCollection()->copyAttribute(oper->specification()));
     return remOp->ableToOperate();
   }
 
@@ -183,13 +187,13 @@ protected:
     printParams(localOp->specification(), "local input");
     OperatorPtr remOp = remoteSession->op(localOp->name());
     remOp->setSpecification(
-      remoteSession->operatorSystem()->copyAttribute(localOp->specification()));
+      remoteSession->operatorCollection()->copyAttribute(localOp->specification()));
     OperatorResult remResult = remOp->operate();
-    OperatorResult localResult = this->operatorSystem()->copyAttribute(remResult);
+    OperatorResult localResult = this->operatorCollection()->copyAttribute(remResult);
 
     // Kill remote operator and result.
-    remOp->session()->operatorSystem()->removeAttribute(remOp->specification());
-    remResult->system()->removeAttribute(remResult);
+    remOp->session()->operatorCollection()->removeAttribute(remOp->specification());
+    remResult->collection()->removeAttribute(remResult);
 
     printParams(localResult, "local output");
     return localResult;

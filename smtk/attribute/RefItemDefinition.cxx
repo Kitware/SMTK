@@ -10,9 +10,9 @@
 
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/RefItem.h"
-#include "smtk/attribute/System.h"
 
 #include <queue>
 
@@ -123,7 +123,7 @@ smtk::attribute::ItemDefinitionPtr smtk::attribute::RefItemDefinition::createCop
   if (this->attributeDefinition())
   {
     std::string typeStr = this->attributeDefinition()->type();
-    smtk::attribute::DefinitionPtr def = info.ToSystem.findDefinition(typeStr);
+    smtk::attribute::DefinitionPtr def = info.ToCollection.findDefinition(typeStr);
     if (def)
     {
       newRef->setAttributeDefinition(def);

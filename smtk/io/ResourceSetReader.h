@@ -49,7 +49,7 @@ public:
     smtk::io::Logger& logger, bool loadLinkedFiles = true, ResourceMapType* resourceMap = NULL);
 
 protected:
-  bool readEmbeddedAttSystem(pugi::xml_node& element, smtk::common::ResourcePtr& resource,
+  bool readEmbeddedAttCollection(pugi::xml_node& element, smtk::common::ResourcePtr& resource,
     std::string& linkStartPath, smtk::io::Logger& logger);
   bool readIncludedManager(const pugi::xml_node& element, smtk::common::ResourcePtr& resource,
     std::string& path, smtk::io::Logger& logger);

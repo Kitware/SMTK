@@ -9,18 +9,18 @@
 //=========================================================================
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/System.h"
 #include <iostream>
 
 int main()
 {
   int status = 0;
   {
-    smtk::attribute::SystemPtr sysptr = smtk::attribute::System::create();
-    smtk::attribute::System& system(*sysptr.get());
-    std::cout << "System Created\n";
-    smtk::attribute::DefinitionPtr def = system.createDefinition("testDef");
+    smtk::attribute::CollectionPtr sysptr = smtk::attribute::Collection::create();
+    smtk::attribute::Collection& collection(*sysptr.get());
+    std::cout << "Collection Created\n";
+    smtk::attribute::DefinitionPtr def = collection.createDefinition("testDef");
     if (def)
     {
       std::cout << "Definition testDef created\n";
@@ -31,7 +31,7 @@ int main()
       status = -1;
     }
 
-    smtk::attribute::AttributePtr att = system.createAttribute("testDef");
+    smtk::attribute::AttributePtr att = collection.createAttribute("testDef");
     if (att)
     {
       std::cout << "Attribute " << att->name() << " created\n";
@@ -42,7 +42,7 @@ int main()
       status = -1;
     }
 
-    att = system.createAttribute("testDef");
+    att = collection.createAttribute("testDef");
     if (att)
     {
       std::cout << "Attribute " << att->name() << " created\n";
@@ -53,7 +53,7 @@ int main()
       status = -1;
     }
 
-    att = system.createAttribute("testDef");
+    att = collection.createAttribute("testDef");
     if (att)
     {
       std::cout << "Attribute " << att->name() << " created\n";
@@ -63,7 +63,7 @@ int main()
       std::cout << "ERROR: 3rd Attribute not created\n";
       status = -1;
     }
-    std::cout << "System destroyed\n";
+    std::cout << "Collection destroyed\n";
   }
   return status;
 }

@@ -36,10 +36,10 @@ if (SMTK_DATA_DIR)
     extensibleAttributeTest
   )
   set(attributeReaderTest_ARGS
-    "${SMTK_DATA_DIR}/attribute/attribute_system/HydraTemplateV1.sbt"
+    "${SMTK_DATA_DIR}/attribute/attribute_collection/HydraTemplateV1.sbt"
   )
   set(extensibleAttributeTest_ARGS
-    "${SMTK_DATA_DIR}/attribute/attribute_system/ExtensibleTemplateTest.xml"
+    "${SMTK_DATA_DIR}/attribute/attribute_collection/ExtensibleTemplateTest.xml"
     "${CMAKE_BINARY_DIR}/Testing/Temporary/ExtensibleTemplateTestResult.xml"
   )
   foreach(tst ${attributeDataTests})

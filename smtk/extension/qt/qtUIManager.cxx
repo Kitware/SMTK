@@ -42,6 +42,7 @@
 #include <QToolButton>
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -57,7 +58,6 @@
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
-#include "smtk/attribute/System.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 
@@ -78,9 +78,9 @@ QSize qtTextEdit::sizeHint() const
   return QSize(200, 70);
 }
 
-qtUIManager::qtUIManager(smtk::attribute::SystemPtr system)
+qtUIManager::qtUIManager(smtk::attribute::CollectionPtr collection)
   : m_parentWidget(NULL)
-  , m_AttSystem(system)
+  , m_AttCollection(collection)
   , m_useInternalFileBrowser(false)
 {
   this->m_topView = NULL;
@@ -217,7 +217,7 @@ void qtUIManager::internalInitialize()
   this->findDefinitionsLongLabels();
 
   // initialize initial advance level
-  const std::map<int, std::string>& levels = this->m_AttSystem->advanceLevels();
+  const std::map<int, std::string>& levels = this->m_AttCollection->advanceLevels();
   if (levels.size() > 0)
   {
     // use the minimum enum value as initial advance level
@@ -250,7 +250,7 @@ void qtUIManager::setAdvanceLevel(int b)
 void qtUIManager::initAdvanceLevels(QComboBox* combo)
 {
   combo->blockSignals(true);
-  const std::map<int, std::string>& levels = this->m_AttSystem->advanceLevels();
+  const std::map<int, std::string>& levels = this->m_AttCollection->advanceLevels();
   if (levels.size() == 0)
   {
     // for backward compatibility, we automatically add
@@ -692,13 +692,13 @@ void qtUIManager::findDefinitionsLongLabels()
   // Generate list of all concrete definitions in the manager
   std::vector<smtk::attribute::DefinitionPtr> defs;
   std::vector<smtk::attribute::DefinitionPtr> baseDefinitions;
-  this->m_AttSystem->findBaseDefinitions(baseDefinitions);
+  this->m_AttCollection->findBaseDefinitions(baseDefinitions);
   std::vector<smtk::attribute::DefinitionPtr>::const_iterator baseIter;
 
   for (baseIter = baseDefinitions.begin(); baseIter != baseDefinitions.end(); baseIter++)
   {
     std::vector<smtk::attribute::DefinitionPtr> derivedDefs;
-    m_AttSystem->findAllDerivedDefinitions(*baseIter, true, derivedDefs);
+    m_AttCollection->findAllDerivedDefinitions(*baseIter, true, derivedDefs);
     defs.insert(defs.end(), derivedDefs.begin(), derivedDefs.end());
   }
 
@@ -714,7 +714,7 @@ void qtUIManager::findDefinitionsLongLabels()
 void qtUIManager::invokeEntitiesSelected(
   const smtk::model::EntityRefs& selEnts, const std::string& selectionSource)
 {
-  // select entities in atribute panel
+  // select entities in attribute panel
   // skip attribute panel
   emit this->sendSelectionsFromAttributePanelToSelectionManager(selEnts, smtk::mesh::MeshSets(),
     smtk::model::DescriptivePhrases(),

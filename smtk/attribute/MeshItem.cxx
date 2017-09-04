@@ -273,7 +273,7 @@ bool MeshItem::assign(ConstItemPtr& sourceItem, unsigned int options)
 
   // Update values
   // Update values
-  // Only set values if both att systems are using the same model
+  // Only set values if both att collections are using the same model
   this->setNumberOfValues(sourceMeshItem->numberOfValues());
   for (std::size_t i = 0; i < sourceMeshItem->numberOfValues(); ++i)
   {

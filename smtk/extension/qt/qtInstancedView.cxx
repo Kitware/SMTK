@@ -86,7 +86,7 @@ void qtInstancedView::updateAttributeData()
     return;
   }
 
-  smtk::attribute::SystemPtr sys = this->uiManager()->attSystem();
+  smtk::attribute::CollectionPtr sys = this->uiManager()->attCollection();
   std::string attName, defName;
   smtk::attribute::AttributePtr att;
   smtk::attribute::DefinitionPtr attDef;

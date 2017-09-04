@@ -157,7 +157,8 @@ void StoredResource::setGeneration(int gen)
   this->m_generation = gen;
 }
 
-smtk::common::ResourceComponentPtr StoredResource::find(const smtk::common::UUID& compId) const
+/// Thi method needs to be filled out to support find
+smtk::common::ResourceComponentPtr StoredResource::find(const smtk::common::UUID&) const
 {
   return smtk::common::ResourceComponentPtr();
 }

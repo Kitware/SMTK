@@ -13,7 +13,7 @@
 
 #include <pybind11/pybind11.h>
 
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/io/Logger.h"
 #include "smtk/model/GridInfo.h"
 #include "smtk/simulation/ExportSpec.h"

@@ -1,7 +1,7 @@
 Key Concepts
 ------------
 
-The attribute system is composed of C++ classes,
+The attribute collection is composed of C++ classes,
 also accessible in Python, whose instances perform the following functions:
 
 :smtk:`Attribute`
@@ -46,7 +46,7 @@ also accessible in Python, whose instances perform the following functions:
   value may be held in the Item), that it is a floating point
   value, and that it must be positive.
 
-:smtk:`System <smtk::attribute::System>`
+:smtk:`Collection <smtk::attribute::Collection>`
   instances hold collections of attributes associated with a
   particular purpose such as
 
@@ -55,9 +55,9 @@ also accessible in Python, whose instances perform the following functions:
     for examples);
   * specifying locations where input and output files are located
     during the export process (SMTK's simulation subsystem creates
-    an attribute system for this purpose); and
+    an attribute collection for this purpose); and
   * defining operations that can be performed on a geometric model
-    (SMTK's geometric modeling system uses an attribute system to
+    (SMTK's geometric modeling system uses an attribute collection to
     hold definitions for each modeling operation that can be
     performed by each of its modeling kernels).
 
@@ -65,12 +65,12 @@ Because it can be tedious to programmatically create a bunch of
 instances of the classes above to represent a particular simulation's
 input deck, SMTK provides an XML file format for serializing and
 deserializing all of the attributes, definitions, items, and item-definitions
-stored in an attribute system.
+stored in an attribute collection.
 
-Interfaces to the attribute system
+Interfaces to the attribute collection
 ----------------------------------
 
-The attribute system has three interfaces:
+The attribute collection has three interfaces:
 
 1. An XML file syntax for specifying the kinds data to be modeled
 for individual simulation codes and problem domains.

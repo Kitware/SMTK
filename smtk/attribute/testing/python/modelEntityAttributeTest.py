@@ -25,9 +25,9 @@ if __name__ == '__main__':
 
     status = 0
 
-    attribSys = smtk.attribute.System.create()
+    attribSys = smtk.attribute.Collection.create()
     modelMgr = smtk.model.Manager()
-    print 'Systems created'
+    print 'Collections created'
     def_ = attribSys.createDefinition('testDef')
     if def_ is not None:
         print 'Definition testDef created'
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     me_hg_def = smtk.attribute.ModelEntityItemDefinition.New(
         'EdgeOrFaceGroups')
     # Must explicitly cast from ItemDefinition in order to add to Definition
-    # Use ToItemDefinition() method that was added to typesystem
+    # Use ToItemDefinition() method that was added to typecollection
     e_def = smtk.attribute.ModelEntityItemDefinition.ToItemDefinition(me_e_def)
     f_def = smtk.attribute.ModelEntityItemDefinition.ToItemDefinition(me_f_def)
     hg_def = smtk.attribute.ModelEntityItemDefinition.ToItemDefinition(

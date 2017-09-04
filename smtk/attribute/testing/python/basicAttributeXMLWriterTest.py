@@ -32,31 +32,31 @@ if __name__ == '__main__':
         print 'Usage: %s filename' % sys.argv[0]
         sys.exit(-1)
 
-    system = smtk.attribute.System.create()
-    print 'System created'
+    collection = smtk.attribute.Collection.create()
+    print 'Collection created'
     # Let's add some analyses
     analysis = set()
     analysis.add('Flow')
     analysis.add('General')
     analysis.add('Time')
-    system.defineAnalysis('CFD Flow', analysis)
+    collection.defineAnalysis('CFD Flow', analysis)
     analysis.clear()
 
     analysis.add('Flow')
     analysis.add('Heat')
     analysis.add('General')
     analysis.add('Time')
-    system.defineAnalysis('CFD Flow with Heat Transfer', analysis)
+    collection.defineAnalysis('CFD Flow with Heat Transfer', analysis)
     analysis.clear()
 
     analysis.add('Constituent')
     analysis.add('General')
     analysis.add('Time')
-    system.defineAnalysis('Constituent Transport', analysis)
+    collection.defineAnalysis('Constituent Transport', analysis)
     analysis.clear()
 
     # Lets create an attribute to represent an expression
-    expDef = system.createDefinition('ExpDef')
+    expDef = collection.createDefinition('ExpDef')
     expDef.setBriefDescription('Sample Expression')
     expDef.setDetailedDescription(
         'Sample Expression for testing\nThere is not much here!')
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     eitemdef4 = smtk.attribute.ModelEntityItemDefinition.New('Aux String')
     expDef.addItemDefinition(eitemdef4)
 
-    base = system.createDefinition('BaseDef')
+    base = collection.createDefinition('BaseDef')
     # Lets add some item definitions
     iitemdef = smtk.attribute.IntItemDefinition.New('TEMPORAL')
     base.addItemDefinition(iitemdef)
@@ -87,7 +87,7 @@ if __name__ == '__main__':
     iitemdef.setDefaultValue(10)
     iitemdef.addCategory('Heat')
 
-    def1 = system.createDefinition('Derived1', 'BaseDef')
+    def1 = collection.createDefinition('Derived1', 'BaseDef')
     def1.setAssociationMask(int(smtk.model.MODEL_DOMAIN))  # belongs on model
     # Lets add some item definitions
     ditemdef = smtk.attribute.DoubleItemDefinition.New('DoubleItem1')
@@ -110,7 +110,7 @@ if __name__ == '__main__':
     vdef.setIsOptional(True)
     vdef.setLabel('Option 1')
 
-    def2 = system.createDefinition('Derived2', 'Derived1')
+    def2 = collection.createDefinition('Derived2', 'Derived1')
     def2.setAssociationMask(int(smtk.model.VOLUME))
     # Lets add some item definitions
     sitemdef = smtk.attribute.StringItemDefinition.New('StringItem1')
@@ -150,18 +150,18 @@ if __name__ == '__main__':
     sitemdef.addCategory('Flow')
 
     # Add in a Attribute definition with a reference to another attribute
-    attrefdef = system.createDefinition('AttributeReferenceDef')
+    attrefdef = collection.createDefinition('AttributeReferenceDef')
     aritemdef = smtk.attribute.RefItemDefinition.New('BaseDefItem')
     attrefdef.addItemDefinition(aritemdef)
     aritemdef.setCommonValueLabel('A reference to another attribute')
     aritemdef.setAttributeDefinition(base)
 
     # Process Categories
-    system.updateCategories()
+    collection.updateCategories()
     # Lets test creating an attribute by passing in the expression definition
     # explicitly
-    expAtt = system.createAttribute('Exp1', expDef)
-    att = system.createAttribute('testAtt', 'Derived2')
+    expAtt = collection.createAttribute('Exp1', expDef)
+    att = collection.createAttribute('testAtt', 'Derived2')
     if att is None:
         print 'ERROR: Attribute testAtt not created'
         status = -1
@@ -171,13 +171,13 @@ if __name__ == '__main__':
     vitem = smtk.attribute.ValueItem.CastTo(item)
     writer = smtk.io.AttributeWriter()
     logger = smtk.io.Logger()
-    if writer.write(system, sys.argv[1], logger):
+    if writer.write(collection, sys.argv[1], logger):
         sys.stderr.write('Errors encountered creating Attribute File:\n')
         sys.stderr.write(logger.convertToString())
         sys.stderr.write('\n')
         status = -1
 
-    del system
-    print 'System destroyed'
+    del collection
+    print 'Collection destroyed'
 
     sys.exit(status)

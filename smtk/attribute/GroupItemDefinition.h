@@ -67,9 +67,9 @@ public:
   // from the class internals.
   //
   // Warning:
-  // It is up to the caller to ensure integrity of the attribute::System
+  // It is up to the caller to ensure integrity of the attribute::Collection
   // instance (e.g. Attribute instances/ Items created using this ItemDefinition
-  // need to be cleansed from the system).
+  // need to be cleansed from the collection).
   bool removeItemDefinition(ItemDefinitionPtr itemDef);
 
   int findItemPosition(const std::string& name) const;

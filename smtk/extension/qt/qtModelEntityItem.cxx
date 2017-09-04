@@ -11,9 +11,9 @@
 #include "smtk/extension/qt/qtModelEntityItem.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
-#include "smtk/attribute/System.h"
 #include "smtk/common/UUID.h"
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtBaseView.h"

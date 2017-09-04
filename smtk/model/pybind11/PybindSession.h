@@ -16,7 +16,7 @@
 
 #include "smtk/model/Session.h"
 
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/io/Logger.h"
@@ -71,8 +71,8 @@ PySharedPtrClass< smtk::model::Session > pybind11_init_smtk_model_Session(py::mo
     .def("operatorLabelsMap", &smtk::model::Session::operatorLabelsMap, py::arg("includeAdvanced") = true)
     .def("operatorNames", &smtk::model::Session::operatorNames, py::arg("includeAdvanced") = true)
     .def("operatorConstructors", &smtk::model::Session::operatorConstructors)
-    .def("operatorSystem", (smtk::attribute::SystemPtr (smtk::model::Session::*)()) &smtk::model::Session::operatorSystem)
-    .def("operatorSystem", (smtk::attribute::ConstSystemPtr (smtk::model::Session::*)() const) &smtk::model::Session::operatorSystem)
+    .def("operatorCollection", (smtk::attribute::CollectionPtr (smtk::model::Session::*)()) &smtk::model::Session::operatorCollection)
+    .def("operatorCollection", (smtk::attribute::ConstCollectionPtr (smtk::model::Session::*)() const) &smtk::model::Session::operatorCollection)
     .def("registerOperator", &smtk::model::Session::registerOperator, py::arg("opName"), py::arg("opDescrXML"), py::arg("opCtor"))
     .def_static("registerStaticOperator", &smtk::model::Session::registerStaticOperator, py::arg("opName"), py::arg("opDescrXML"), py::arg("opCtor"))
     .def_static("registerStaticPyOperator", [](const std::string& opName, const char* opDescrXML, const std::string& opModuleName, const std::string& opClassName) { return smtk::model::Session::registerStaticOperator(opName, opDescrXML, std::bind(smtk::model::PyOperator::create, opModuleName, opClassName)); } )

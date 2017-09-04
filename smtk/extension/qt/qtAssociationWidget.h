@@ -96,7 +96,7 @@ protected:
     smtk::attribute::DefinitionPtr attDef, const smtk::model::EntityRefs& assignedIds);
 
   QList<smtk::attribute::DefinitionPtr> processDefUniqueness(
-    const smtk::model::EntityRef& theEntity, smtk::attribute::SystemPtr attSystem);
+    const smtk::model::EntityRef& theEntity, smtk::attribute::CollectionPtr attCollection);
 
   // helper function to update available/current list after selection
   void updateListItemSelectionAfterChange(QList<QListWidgetItem*> selItems, QListWidget* list);

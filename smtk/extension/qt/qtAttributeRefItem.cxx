@@ -11,10 +11,10 @@
 #include "smtk/extension/qt/qtAttributeRefItem.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
-#include "smtk/attribute/System.h"
 #include "smtk/common/View.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtAttributeView.h"
@@ -45,8 +45,8 @@ void init_Att_Names_and_NEW(QList<QString>& attNames, const RefItemDefinition* i
   }
   attNames.push_back("None");
   std::vector<smtk::attribute::AttributePtr> result;
-  SystemPtr attSystem = attDef->system();
-  attSystem->findAttributes(attDef, result);
+  CollectionPtr attCollection = attDef->collection();
+  attCollection->findAttributes(attDef, result);
   std::vector<smtk::attribute::AttributePtr>::iterator it;
   for (it = result.begin(); it != result.end(); ++it)
   {
@@ -483,7 +483,7 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
     const RefItemDefinition* itemDef =
       dynamic_cast<const RefItemDefinition*>(item->definition().get());
     attribute::DefinitionPtr attDef = itemDef->attributeDefinition();
-    SystemPtr attSystem = attDef->system();
+    CollectionPtr attCollection = attDef->collection();
     if (curIdx == comboBox->count() - 1) // create New attribute
     {
       QList<smtk::attribute::DefinitionPtr> AllDefs;
@@ -501,14 +501,14 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
       }
       if (defTypes.count() > 0)
       {
-        std::string attName = attSystem->createUniqueName(defTypes[0].toStdString());
+        std::string attName = attCollection->createUniqueName(defTypes[0].toStdString());
         qtNewAttributeWidget attDialog(comboBox);
         attDialog.setBaseWidget(comboBox);
         if (attDialog.showWidget(attName.c_str(), defLabels) == QDialog::Accepted &&
           !attDialog.attributeName().isEmpty())
         {
           int defIndex = defLabels.indexOf(attDialog.attributeType());
-          attPtr = attSystem->createAttribute(
+          attPtr = attCollection->createAttribute(
             attDialog.attributeName().toStdString(), defTypes[defIndex].toStdString());
           comboBox->blockSignals(true);
           comboBox->insertItem(1, attDialog.attributeName());
@@ -537,7 +537,7 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
     }
     else
     {
-      attPtr = attSystem->findAttribute(comboBox->currentText().toStdString());
+      attPtr = attCollection->findAttribute(comboBox->currentText().toStdString());
     }
 
     if (elementIdx >= 0 && static_cast<int>(item->numberOfValues()) > elementIdx &&

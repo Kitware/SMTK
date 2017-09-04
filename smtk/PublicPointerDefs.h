@@ -39,6 +39,7 @@ typedef std::vector<UUID> UUIDArray;
 namespace attribute
 {
 class Attribute;
+class Collection;
 class RefItem;
 class RefItemDefinition;
 class DateTimeItem;
@@ -58,7 +59,6 @@ class IntItem;
 class IntItemDefinition;
 class Item;
 class ItemDefinition;
-class System;
 class MeshItem;
 class MeshItemDefinition;
 class MeshSelectionItem;
@@ -372,9 +372,9 @@ typedef smtk::shared_ptr<const smtk::attribute::VoidItemDefinition> ConstVoidIte
 typedef smtk::shared_ptr<const smtk::attribute::RefItem> ConstRefItemPtr;
 typedef smtk::shared_ptr<const smtk::attribute::RefItemDefinition> ConstRefItemDefinitionPtr;
 
-typedef smtk::shared_ptr<smtk::attribute::System> SystemPtr;
-typedef smtk::shared_ptr<const smtk::attribute::System> ConstSystemPtr;
-typedef smtk::weak_ptr<smtk::attribute::System> WeakSystemPtr;
+typedef smtk::shared_ptr<smtk::attribute::Collection> CollectionPtr;
+typedef smtk::shared_ptr<const smtk::attribute::Collection> ConstCollectionPtr;
+typedef smtk::weak_ptr<smtk::attribute::Collection> WeakCollectionPtr;
 }
 
 namespace bridge

@@ -881,7 +881,7 @@ bool EntityRef::hasAttribute(const smtk::common::UUID& attribId) const
 /**\brief Does the entityref have any attributes associated with it?
   */
 bool EntityRef::associateAttribute(
-  smtk::attribute::SystemPtr sys, const smtk::common::UUID& attribId)
+  smtk::attribute::CollectionPtr sys, const smtk::common::UUID& attribId)
 {
   ManagerPtr mgr = this->m_manager.lock();
   return mgr->associateAttribute(sys, attribId, this->m_entity);
@@ -890,7 +890,7 @@ bool EntityRef::associateAttribute(
 /**\brief Does the entityref have any attributes associated with it?
   */
 bool EntityRef::disassociateAttribute(
-  smtk::attribute::SystemPtr sys, const smtk::common::UUID& attribId, bool reverse)
+  smtk::attribute::CollectionPtr sys, const smtk::common::UUID& attribId, bool reverse)
 {
   ManagerPtr mgr = this->m_manager.lock();
   return mgr->disassociateAttribute(sys, attribId, this->m_entity, reverse);
@@ -898,7 +898,7 @@ bool EntityRef::disassociateAttribute(
 
 /**\brief Remove all attribute association form this entityref
   */
-bool EntityRef::disassociateAllAttributes(smtk::attribute::SystemPtr sys, bool reverse)
+bool EntityRef::disassociateAllAttributes(smtk::attribute::CollectionPtr sys, bool reverse)
 {
   smtk::common::UUIDs atts = this->attributes();
   smtk::common::UUIDs::const_iterator it;

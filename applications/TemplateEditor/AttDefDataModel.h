@@ -22,8 +22,8 @@
  *
  * The class was named after the XML element it represents in an attribute
  * template file (*.sbt) as a Qt data model. This model serves as an interface
- * to the attribute system for insertion and removal of Attribute Definitions
- * (through the attribute system instance).
+ * to the attribute collection for insertion and removal of Attribute Definitions
+ * (through the attribute collection instance).
  *
  */
 class AttDefDataModel : public AbstractDataModel
@@ -40,7 +40,7 @@ public:
   /**
    * Populates the attribute definition tree.
    */
-  void populate(smtk::attribute::SystemPtr system);
+  void populate(smtk::attribute::CollectionPtr collection);
 
   /**
    * Query the internal data (DefinitionPtr in this case) of a given index.
@@ -48,7 +48,7 @@ public:
   const smtk::attribute::DefinitionPtr& get(const QModelIndex& index) const;
 
   /**
-   * Insert an attribute Definition into the system, it inserts as well a data
+   * Insert an attribute Definition into the collection, it inserts as well a data
    * element into the tree defined by this data model.  An empty base type will
    * insert the Definition into the root node (this is how beginInsertRows()->
    * QAbstractItemMdoel::parent() handles a default/invalid QModelIndex()).
@@ -56,7 +56,7 @@ public:
   void insert(const AttDefContainer& props);
 
   /**
-   * Remove an attribute Definition from the system (and its corresponding data
+   * Remove an attribute Definition from the collection (and its corresponding data
    * element in the tree).
    */
   void remove(const QModelIndex& attDefIndex);
@@ -90,6 +90,6 @@ private:
   AttDefDataModel(const AttDefDataModel&) = delete;
   void operator=(const AttDefDataModel&) = delete;
 
-  smtk::attribute::SystemPtr System;
+  smtk::attribute::CollectionPtr Collection;
 };
 #endif //__AttDefDataModel_h

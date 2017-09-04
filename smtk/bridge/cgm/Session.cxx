@@ -78,7 +78,7 @@ Session::Session()
 {
   this->m_maxRelChordErr = 0.01; // fraction of longest edge.
   this->m_maxAngleErr = 2.0;     // maximum angle in degrees.
-  this->initializeOperatorSystem(Session::s_operators);
+  this->initializeOperatorCollection(Session::s_operators);
   if (!Engines::areInitialized())
   {
     Engines::isInitialized("");

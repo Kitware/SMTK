@@ -4,7 +4,7 @@ SMTK's Simulation System
 
 Once you have
 a model or mesh and
-an attribute system describing a simulation,
+an attribute collection describing a simulation,
 you are ready to create an input deck for the simulation.
 
 One option is to have your simulation link directly to SMTK,
@@ -22,8 +22,8 @@ text file.
 The :smtk:`smtk::simulation::ExportSpec` class aggregates
 all of the information you should need to write the input deck:
 
-* an attribute system holding simulation parameters
-* an attribute system holding locations of files involved in the export
+* an attribute collection holding simulation parameters
+* an attribute collection holding locations of files involved in the export
 * an object that provides methods for querying the analysis grid (be it a model or mesh).
 
 Your python export script is expected to take a single argument (an

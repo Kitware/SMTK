@@ -195,7 +195,7 @@ EntityHandle EntityHandle::parent() const
 // ++ 2 ++
 Session::Session()
 {
-  this->initializeOperatorSystem(Session::s_operators);
+  this->initializeOperatorCollection(Session::s_operators);
 }
 // -- 2 --
 

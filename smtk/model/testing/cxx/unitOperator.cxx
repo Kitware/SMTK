@@ -145,9 +145,9 @@ void testExPostFactoOperatorRegistration(Manager::Ptr manager)
   typedef std::vector<smtk::attribute::DefinitionPtr> OpListType;
   // Add operator descriptions to the default session of our manager.
   smtk::model::SessionPtr session = defSess.session();
-  smtk::attribute::DefinitionPtr opBase = session->operatorSystem()->findDefinition("operator");
+  smtk::attribute::DefinitionPtr opBase = session->operatorCollection()->findDefinition("operator");
   OpListType origOpList;
-  session->operatorSystem()->derivedDefinitions(opBase, origOpList);
+  session->operatorCollection()->derivedDefinitions(opBase, origOpList);
 
   // Register the operator
   session->registerOperator(
@@ -155,7 +155,7 @@ void testExPostFactoOperatorRegistration(Manager::Ptr manager)
 
   // Now enumerate attribute definitions that inherit "operator".
   OpListType opList;
-  session->operatorSystem()->derivedDefinitions(opBase, opList);
+  session->operatorCollection()->derivedDefinitions(opBase, opList);
   std::cout << "Imported XML for operators:\n";
   for (OpListType::iterator it = opList.begin(); it != opList.end(); ++it)
   {

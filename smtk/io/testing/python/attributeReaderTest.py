@@ -23,7 +23,7 @@ class TestAttributeReader():
 
     def setUp(self):
         if len(sys.argv) < 2:
-            print "Reads attribute system file"
+            print "Reads attribute collection file"
             print "Usage: AttributeReaderTest attribute_file"
             print "  [expect_number_of_definitions]"
             print "  [expect_number_of_attributes]"
@@ -31,7 +31,7 @@ class TestAttributeReader():
 
         self.status = 0  # return value
 
-        self.attsys = smtk.attribute.System.create()
+        self.attsys = smtk.attribute.Collection.create()
         self.reader = smtk.io.AttributeReader()
         self.logger = smtk.io.Logger()
 

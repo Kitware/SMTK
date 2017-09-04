@@ -11,10 +11,10 @@
 #include "smtk/attribute/Definition.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
-#include "smtk/attribute/System.h"
 
 #include <algorithm>
 #include <cassert>
@@ -27,9 +27,9 @@ double Definition::s_notApplicableBaseColor[4] = { 0.0, 0.0, 0.0, 0.0 };
 double Definition::s_defaultBaseColor[4] = { 1.0, 1.0, 1.0, 1.0 };
 
 Definition::Definition(
-  const std::string& myType, smtk::attribute::DefinitionPtr myBaseDef, SystemPtr mySystem)
+  const std::string& myType, smtk::attribute::DefinitionPtr myBaseDef, CollectionPtr myCollection)
 {
-  this->m_system = mySystem;
+  this->m_collection = myCollection;
   this->m_baseDefinition = myBaseDef;
   this->m_type = myType;
   this->m_label = this->m_type;
@@ -88,7 +88,7 @@ bool Definition::conflicts(smtk::attribute::DefinitionPtr def) const
   }
 
   // Get the most "basic" definition that is unique
-  smtk::attribute::ConstDefinitionPtr baseDef = this->m_system->findIsUniqueBaseClass(def);
+  smtk::attribute::ConstDefinitionPtr baseDef = this->m_collection->findIsUniqueBaseClass(def);
   // See if the other definition is derived from this base definition.
   // If it is not then we know there is no conflict
   return def->isA(baseDef);
@@ -290,7 +290,7 @@ void Definition::updateDerivedDefinitions()
   DefinitionPtr def = this->shared_from_this();
   if (def)
   {
-    this->m_system->updateDerivedDefinitionIndexOffsets(def);
+    this->m_collection->updateDerivedDefinitionIndexOffsets(def);
   }
 }
 

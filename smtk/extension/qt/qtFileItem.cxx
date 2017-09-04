@@ -32,13 +32,13 @@
 #include <QVariant>
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/DirectoryItemDefinition.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/FileSystemItem.h"
 #include "smtk/attribute/FileSystemItemDefinition.h"
-#include "smtk/attribute/System.h"
 
 #include <cassert>
 

@@ -9,10 +9,10 @@
 //=========================================================================
 #include <QTreeWidgetItem>
 
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/ItemDefinition.h"
-#include "smtk/attribute/System.h"
 
 #include "ItemDefDataModel.h"
 
@@ -83,7 +83,7 @@ void ItemDefDataModel::appendRecursively(smtk::attribute::ItemDefinitionPtr pare
 // ------------------------------------------------------------------------
 void ItemDefDataModel::insert(const Container& props)
 {
-  // Attribute system insert. Inserts into either the parent
+  // Attribute collection insert. Inserts into either the parent
   // GroupItemDefinition or the Definition.
   const auto itemDef = props.ItemDefinition;
   const auto parentElement = static_cast<ItemDefElement*>(this->getItem(props.ParentIndex));
@@ -121,7 +121,7 @@ void ItemDefDataModel::insert(const Container& props)
 // ------------------------------------------------------------------------
 void ItemDefDataModel::remove(const QModelIndex& itemIndex, smtk::attribute::DefinitionPtr def)
 {
-  // Attribute system remove. Removes from either the parent
+  // Attribute collection remove. Removes from either the parent
   // GroupItemDefinition or the Definition.
   const QModelIndex parentIndex = itemIndex.parent();
   const auto parentElem = static_cast<ItemDefElement*>(this->getItem(parentIndex));
@@ -149,7 +149,7 @@ void ItemDefDataModel::remove(const QModelIndex& itemIndex, smtk::attribute::Def
 void ItemDefDataModel::clearAttributes(smtk::attribute::DefinitionPtr def)
 {
   std::vector<smtk::attribute::AttributePtr> atts;
-  auto sys = def->system();
+  auto sys = def->collection();
   sys->findAttributes(def->type(), atts);
   for (const auto& att : atts)
   {

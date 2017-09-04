@@ -43,7 +43,7 @@ std::map<std::string, RemusStaticSessionInfo>* Session::s_remotes = NULL;
 
 Session::Session()
 {
-  this->initializeOperatorSystem(Session::s_operators);
+  this->initializeOperatorCollection(Session::s_operators);
 }
 
 Session::~Session()

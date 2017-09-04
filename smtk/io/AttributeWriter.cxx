@@ -57,10 +57,10 @@ unsigned int AttributeWriter::fileVersion() const
 }
 
 bool AttributeWriter::write(
-  const smtk::attribute::SystemPtr system, const std::string& filename, Logger& logger)
+  const smtk::attribute::CollectionPtr collection, const std::string& filename, Logger& logger)
 {
   logger.reset();
-  XmlStringWriter* theWriter = this->newXmlStringWriter(system);
+  XmlStringWriter* theWriter = this->newXmlStringWriter(collection);
   theWriter->includeDefinitions(this->m_includeDefinitions);
   theWriter->includeInstances(this->m_includeInstances);
   theWriter->includeModelInformation(this->m_includeModelInformation);
@@ -85,11 +85,11 @@ bool AttributeWriter::write(
   return logger.hasErrors();
 }
 
-bool AttributeWriter::writeContents(const smtk::attribute::SystemPtr system,
+bool AttributeWriter::writeContents(const smtk::attribute::CollectionPtr collection,
   std::string& filecontents, Logger& logger, bool no_declaration)
 {
   logger.reset();
-  XmlStringWriter* theWriter = this->newXmlStringWriter(system);
+  XmlStringWriter* theWriter = this->newXmlStringWriter(collection);
   theWriter->includeDefinitions(this->m_includeDefinitions);
   theWriter->includeInstances(this->m_includeInstances);
   theWriter->includeModelInformation(this->m_includeModelInformation);
@@ -99,17 +99,18 @@ bool AttributeWriter::writeContents(const smtk::attribute::SystemPtr system,
   return logger.hasErrors();
 }
 
-XmlStringWriter* AttributeWriter::newXmlStringWriter(const smtk::attribute::SystemPtr system) const
+XmlStringWriter* AttributeWriter::newXmlStringWriter(
+  const smtk::attribute::CollectionPtr collection) const
 {
   XmlStringWriter* writer = NULL;
   switch (this->m_fileVersion)
   {
     case 2:
-      writer = new XmlV2StringWriter(system);
+      writer = new XmlV2StringWriter(collection);
       break;
 
     case 3:
-      writer = new XmlV3StringWriter(system);
+      writer = new XmlV3StringWriter(collection);
       break;
 
     default:

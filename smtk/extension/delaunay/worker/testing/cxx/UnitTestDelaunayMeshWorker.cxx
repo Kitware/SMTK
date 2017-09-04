@@ -15,10 +15,10 @@
 
 #include "smtk/AutoInit.h"
 
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
-#include "smtk/attribute/System.h"
 
 #include "smtk/bridge/polygon/Operator.h"
 #include "smtk/bridge/polygon/Session.h"
@@ -153,7 +153,7 @@ int main(int argc, char** const argv)
   // Set the meshing attributes for the operator
   std::string meshingAttributesStr;
   {
-    smtk::attribute::SystemPtr meshingAttributes = smtk::attribute::System::create();
+    smtk::attribute::CollectionPtr meshingAttributes = smtk::attribute::Collection::create();
     smtk::io::Logger logger;
     smtk::io::AttributeReader reader;
     reader.read(meshingAttributes, remus::common::findFile("DelaunayMeshingDefs", "sbt",
@@ -168,7 +168,7 @@ int main(int argc, char** const argv)
     // attribute ourselves.
     //
     // TODO: the construction of default attributes should be an automated
-    //       process that is callable within the atribute system.
+    //       process that is callable within the attribute collection.
     meshingAttributes->createAttribute("Globals", "Globals");
     smtk::io::AttributeWriter writer;
     writer.writeContents(meshingAttributes, meshingAttributesStr, logger);

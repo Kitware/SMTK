@@ -7,12 +7,12 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME System.h - the main class for storing attribute information
+// .NAME Collection.h - the main class for storing attribute information
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_System_h
-#define __smtk_attribute_System_h
+#ifndef __smtk_attribute_Collection_h
+#define __smtk_attribute_Collection_h
 
 #include "smtk/common/Resource.h" // base class
 #include "smtk/common/UUID.h"
@@ -34,11 +34,11 @@ namespace attribute
 {
 class Attribute;
 class Definition;
-class SMTKCORE_EXPORT System : public smtk::common::Resource
+class SMTKCORE_EXPORT Collection : public smtk::common::Resource
 {
 public:
-  smtkTypeMacro(System);
-  smtkCreateMacro(System);
+  smtkTypeMacro(Collection);
+  smtkCreateMacro(Collection);
   smtkSharedFromThisMacro(smtk::common::Resource);
 
   enum CopyOptions
@@ -49,7 +49,7 @@ public:
       0x00000003 //!< Should associations and model-entity items *always* be copied?
   };
 
-  ~System() override;
+  ~Collection() override;
 
   smtk::common::Resource::Type resourceType() const override;
 
@@ -135,24 +135,24 @@ public:
   // item offsets which is used by the find item method
   void updateDerivedDefinitionIndexOffsets(smtk::attribute::DefinitionPtr def);
 
-  // Copies definition from another system
+  // Copies definition from another Collection
   smtk::attribute::DefinitionPtr copyDefinition(
     const smtk::attribute::DefinitionPtr def, unsigned int options = 0);
-  // Copies attribute from another system
+  // Copies attribute from another Collection
   // Note: that if the attribute is unique (meaning only 1 attribute of this type can be asociated
   // to a model entity, the copyModelAssociations flag is ignored since it would violate this constraint.
   // In terms of options - these are item assignment options - see Item.h for documentation.
   smtk::attribute::AttributePtr copyAttribute(const smtk::attribute::AttributePtr att,
     const bool& copyModelAssociations = false, const unsigned int& options = 0);
 
-  //Get a list of all definitions in the system
+  //Get a list of all definitions in the Collection
   void definitions(std::vector<smtk::attribute::DefinitionPtr>& result) const;
-  //Get a list of all attributes in the system
+  //Get a list of all attributes in the Collection
   void attributes(std::vector<smtk::attribute::AttributePtr>& result) const;
 
 protected:
-  System(const smtk::common::UUID& myID, smtk::common::ResourceManager* manager);
-  System(smtk::common::ResourceManager* manager = nullptr);
+  Collection(const smtk::common::UUID& myID, smtk::common::ResourceManager* manager);
+  Collection(smtk::common::ResourceManager* manager = nullptr);
   void internalFindAllDerivedDefinitions(smtk::attribute::DefinitionPtr def, bool onlyConcrete,
     std::vector<smtk::attribute::DefinitionPtr>& result) const;
   void internalFindAttributes(
@@ -178,35 +178,36 @@ protected:
 private:
 };
 
-inline smtk::common::ViewPtr System::findView(const std::string& name) const
+inline smtk::common::ViewPtr Collection::findView(const std::string& name) const
 {
   std::map<std::string, smtk::common::ViewPtr>::const_iterator it;
   it = this->m_views.find(name);
   return (it == this->m_views.end()) ? smtk::common::ViewPtr() : it->second;
 }
 
-inline smtk::attribute::AttributePtr System::findAttribute(const std::string& name) const
+inline smtk::attribute::AttributePtr Collection::findAttribute(const std::string& name) const
 {
   std::map<std::string, AttributePtr>::const_iterator it;
   it = this->m_attributes.find(name);
   return (it == this->m_attributes.end()) ? smtk::attribute::AttributePtr() : it->second;
 }
 
-inline smtk::attribute::AttributePtr System::findAttribute(const smtk::common::UUID& attId) const
+inline smtk::attribute::AttributePtr Collection::findAttribute(
+  const smtk::common::UUID& attId) const
 {
   std::map<smtk::common::UUID, AttributePtr>::const_iterator it;
   it = this->m_attributeIdMap.find(attId);
   return (it == this->m_attributeIdMap.end()) ? smtk::attribute::AttributePtr() : it->second;
 }
 
-inline smtk::attribute::DefinitionPtr System::findDefinition(const std::string& typeName) const
+inline smtk::attribute::DefinitionPtr Collection::findDefinition(const std::string& typeName) const
 {
   std::map<std::string, smtk::attribute::DefinitionPtr>::const_iterator it;
   it = this->m_definitions.find(typeName);
   return (it == this->m_definitions.end()) ? smtk::attribute::DefinitionPtr() : it->second;
 }
 
-inline void System::findDefinitionAttributes(
+inline void Collection::findDefinitionAttributes(
   const std::string& typeName, std::vector<smtk::attribute::AttributePtr>& result) const
 {
   result.clear();
@@ -218,7 +219,7 @@ inline void System::findDefinitionAttributes(
   }
 }
 
-inline void System::findAttributes(
+inline void Collection::findAttributes(
   const std::string& type, std::vector<smtk::attribute::AttributePtr>& result) const
 {
   result.clear();
@@ -229,7 +230,7 @@ inline void System::findAttributes(
   }
 }
 
-inline std::vector<smtk::attribute::AttributePtr> System::findAttributes(
+inline std::vector<smtk::attribute::AttributePtr> Collection::findAttributes(
   const std::string& type) const
 {
   std::vector<smtk::attribute::AttributePtr> result;
@@ -237,7 +238,7 @@ inline std::vector<smtk::attribute::AttributePtr> System::findAttributes(
   return result;
 }
 
-inline std::set<std::string> System::analysisCategories(const std::string& analysisType) const
+inline std::set<std::string> Collection::analysisCategories(const std::string& analysisType) const
 {
   std::map<std::string, std::set<std::string> >::const_iterator it;
   it = this->m_analyses.find(analysisType);
@@ -248,7 +249,7 @@ inline std::set<std::string> System::analysisCategories(const std::string& analy
   return std::set<std::string>();
 }
 
-inline bool System::defineAnalysis(
+inline bool Collection::defineAnalysis(
   const std::string& analysisName, const std::set<std::string>& categoriesIn)
 {
   std::map<std::string, std::set<std::string> >::const_iterator it;
@@ -264,4 +265,4 @@ inline bool System::defineAnalysis(
 }
 }
 
-#endif /* __smtk_attribute_System_h */
+#endif /* __smtk_attribute_Collection_h */

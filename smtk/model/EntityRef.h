@@ -206,10 +206,10 @@ public:
 
   bool hasAttributes() const;
   bool hasAttribute(const smtk::common::UUID& attribId) const;
-  bool associateAttribute(smtk::attribute::SystemPtr sys, const smtk::common::UUID& attribId);
+  bool associateAttribute(smtk::attribute::CollectionPtr sys, const smtk::common::UUID& attribId);
   bool disassociateAttribute(
-    smtk::attribute::SystemPtr sys, const smtk::common::UUID& attribId, bool reverse = true);
-  bool disassociateAllAttributes(smtk::attribute::SystemPtr sys, bool reverse = true);
+    smtk::attribute::CollectionPtr sys, const smtk::common::UUID& attribId, bool reverse = true);
+  bool disassociateAllAttributes(smtk::attribute::CollectionPtr sys, bool reverse = true);
   /// Returns true if at least 1 attribute in the set of \a attribPtrs was removed.
   template <typename T>
   bool disassociateAttributes(const T& attribPtrs)
@@ -217,7 +217,7 @@ public:
     bool removedAny = false;
     for (auto attribPtr : attribPtrs)
     {
-      removedAny |= this->disassociateAttribute(attribPtr->system(), attribPtr->id());
+      removedAny |= this->disassociateAttribute(attribPtr->collection(), attribPtr->id());
     }
     return removedAny;
   }

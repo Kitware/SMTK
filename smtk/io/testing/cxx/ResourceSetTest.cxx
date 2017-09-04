@@ -9,7 +9,7 @@
 //=========================================================================
 
 #include "smtk/common/ResourceSet.h"
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 
 #include <iostream>
 
@@ -22,9 +22,10 @@ int main(int /* argc */, const char* /* argv */ [])
   unsigned n;
   smtk::common::ResourceSet resourceSet;
 
-  // Create and add attribute system
-  smtk::attribute::SystemPtr system1 = smtk::attribute::System::create();
-  result = resourceSet.addResource(system1, "system1", "", smtk::common::ResourceSet::TEMPLATE);
+  // Create and add attribute collection
+  smtk::attribute::CollectionPtr collection1 = smtk::attribute::Collection::create();
+  result =
+    resourceSet.addResource(collection1, "collection1", "", smtk::common::ResourceSet::TEMPLATE);
   n = static_cast<unsigned>(resourceSet.numberOfResources());
   if (!result)
   {
@@ -37,10 +38,10 @@ int main(int /* argc */, const char* /* argv */ [])
     status += 1;
   }
 
-  // Create amd add 2nd attribute system
-  smtk::attribute::SystemPtr system2 = smtk::attribute::System::create();
-  result =
-    resourceSet.addResource(system2, "system2", "path2", smtk::common::ResourceSet::INSTANCE);
+  // Create amd add 2nd attribute collection
+  smtk::attribute::CollectionPtr collection2 = smtk::attribute::Collection::create();
+  result = resourceSet.addResource(
+    collection2, "collection2", "path2", smtk::common::ResourceSet::INSTANCE);
   n = static_cast<unsigned>(resourceSet.numberOfResources());
   if (!result)
   {
@@ -53,9 +54,9 @@ int main(int /* argc */, const char* /* argv */ [])
     status += 1;
   }
 
-  // Add 1st system w/different id and role
+  // Add 1st collection w/different id and role
   result = resourceSet.addResource(
-    system1, "system1-different-id", "", smtk::common::ResourceSet::SCENARIO);
+    collection1, "collection1-different-id", "", smtk::common::ResourceSet::SCENARIO);
   n = static_cast<unsigned>(resourceSet.numberOfResources());
   if (!result)
   {
@@ -69,7 +70,7 @@ int main(int /* argc */, const char* /* argv */ [])
   }
 
   // Try using same id twice
-  result = resourceSet.addResource(system2, "system2");
+  result = resourceSet.addResource(collection2, "collection2");
   n = static_cast<unsigned>(resourceSet.numberOfResources());
   if (result)
   {
@@ -91,7 +92,7 @@ int main(int /* argc */, const char* /* argv */ [])
   }
   else
   {
-    const char* expectedNames[] = { "system1", "system2", "system1-different-id" };
+    const char* expectedNames[] = { "collection1", "collection2", "collection1-different-id" };
     for (unsigned i = 0; i < ids.size(); i++)
     {
       if (ids[i] != expectedNames[i])
@@ -108,7 +109,7 @@ int main(int /* argc */, const char* /* argv */ [])
   smtk::common::ResourceSet::ResourceRole role;
   smtk::common::ResourceSet::ResourceState state;
   std::string link;
-  result = resourceSet.resourceInfo("system2", rtype, role, state, link);
+  result = resourceSet.resourceInfo("collection2", rtype, role, state, link);
   if (!result)
   {
     std::cerr << "info() call failed" << std::endl;
@@ -143,7 +144,7 @@ int main(int /* argc */, const char* /* argv */ [])
 
   // Retrieve resource
   smtk::common::ResourcePtr resource;
-  result = resourceSet.get("system2", resource);
+  result = resourceSet.get("collection2", resource);
   if (!result)
   {
     std::cerr << "get() failed" << std::endl;

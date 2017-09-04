@@ -25,18 +25,18 @@ if __name__ == '__main__':
 
     status = 0
 
-    system = smtk.attribute.System.create()
-    print 'System created'
+    collection = smtk.attribute.Collection.create()
+    print 'Collection created'
 
     # Lets create an attribute to represent an expression
-    expDef = system.createDefinition("ExpDef")
+    expDef = collection.createDefinition("ExpDef")
     eitemdef = smtk.attribute.StringItemDefinition.New("Expression String")
     expDef.addItemDefinition(eitemdef)
     eitemdef2 = smtk.attribute.StringItemDefinition.New("Aux String")
     expDef.addItemDefinition(eitemdef2)
     eitemdef.setDefaultValue("sample")
 
-    base = system.createDefinition("BaseDef")
+    base = collection.createDefinition("BaseDef")
     # Lets add some item definitions
     iitemdef = smtk.attribute.IntItemDefinition.New("IntItem1")
     base.addItemDefinition(iitemdef)
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     base.addItemDefinition(iitemdef)
     iitemdef.setDefaultValue(10)
 
-    def1 = system.createDefinition("Derived1", "BaseDef")
+    def1 = collection.createDefinition("Derived1", "BaseDef")
     # add some item definitions
     ditemdef = smtk.attribute.DoubleItemDefinition.New("DoubleItem1")
     def1.addItemDefinition(ditemdef)
@@ -58,7 +58,7 @@ if __name__ == '__main__':
     def1.addItemDefinition(ditemdef)
     ditemdef.setDefaultValue(-35.2)
 
-    def2 = system.createDefinition("Derived2", "Derived1")
+    def2 = collection.createDefinition("Derived2", "Derived1")
     # Lets add some item definitions
     sitemdef = smtk.attribute.StringItemDefinition.New("StringItem1")
     def2.addItemDefinition(sitemdef)
@@ -68,8 +68,8 @@ if __name__ == '__main__':
 
     # Lets test creating an attribute by passing in the expression definition
     # explicitly
-    expAtt = system.createAttribute("Exp1", expDef)
-    att = system.createAttribute("testAtt", "Derived2")
+    expAtt = collection.createAttribute("Exp1", expDef)
+    att = collection.createAttribute("testAtt", "Derived2")
     if att is not None:
         print "Attribute testAtt created"
     else:
@@ -98,7 +98,7 @@ if __name__ == '__main__':
             else:
                 print " Value = %s" % vitem.valueAsString()
 
-    del system
-    print 'System destroyed'
+    del collection
+    print 'Collection destroyed'
 
     sys.exit(status)

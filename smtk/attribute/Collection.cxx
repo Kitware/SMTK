@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/RefItem.h"
@@ -26,32 +26,32 @@
 
 using namespace smtk::attribute;
 
-System::System(const smtk::common::UUID& myID, smtk::common::ResourceManager* manager)
+Collection::Collection(const smtk::common::UUID& myID, smtk::common::ResourceManager* manager)
   : Resource(myID, manager)
 {
 }
 
-System::System(smtk::common::ResourceManager* manager)
+Collection::Collection(smtk::common::ResourceManager* manager)
   : Resource(manager)
 {
 }
 
-System::~System()
+Collection::~Collection()
 {
   std::map<std::string, smtk::attribute::DefinitionPtr>::const_iterator it;
   for (it = this->m_definitions.begin(); it != this->m_definitions.end(); it++)
   {
-    // Decouple all defintions from this system
-    (*it).second->clearSystem();
+    // Decouple all defintions from this Collection
+    (*it).second->clearCollection();
   }
 }
 
-smtk::common::Resource::Type System::resourceType() const
+smtk::common::Resource::Type Collection::resourceType() const
 {
   return smtk::common::Resource::ATTRIBUTE;
 }
 
-smtk::attribute::DefinitionPtr System::createDefinition(
+smtk::attribute::DefinitionPtr Collection::createDefinition(
   const std::string& typeName, const std::string& baseTypeName)
 {
   smtk::attribute::DefinitionPtr def = this->findDefinition(typeName);
@@ -80,13 +80,13 @@ smtk::attribute::DefinitionPtr System::createDefinition(
   return newDef;
 }
 
-smtk::attribute::DefinitionPtr System::createDefinition(
+smtk::attribute::DefinitionPtr Collection::createDefinition(
   const std::string& typeName, smtk::attribute::DefinitionPtr baseDef)
 {
   smtk::attribute::DefinitionPtr def = this->findDefinition(typeName);
   // Does this definition already exist or if the base def is not part
   // of this manger
-  if (!(!def && (!baseDef || ((baseDef->system() == shared_from_this())))))
+  if (!(!def && (!baseDef || ((baseDef->collection() == shared_from_this())))))
   {
     return smtk::attribute::DefinitionPtr();
   }
@@ -101,12 +101,12 @@ smtk::attribute::DefinitionPtr System::createDefinition(
   return newDef;
 }
 
-bool System::removeDefinition(DefinitionPtr def)
+bool Collection::removeDefinition(DefinitionPtr def)
 {
-  if (!def || def->system() != shared_from_this())
+  if (!def || def->collection() != shared_from_this())
   {
     std::cerr << "ERROR: " << def->type() << " does not belong to the specified"
-                                             " attribute system!";
+                                             " attribute Collection!";
     return false;
   }
 
@@ -138,12 +138,12 @@ bool System::removeDefinition(DefinitionPtr def)
   return true;
 }
 
-smtk::attribute::AttributePtr System::createAttribute(
+smtk::attribute::AttributePtr Collection::createAttribute(
   const std::string& name, smtk::attribute::DefinitionPtr def)
 {
-  // Make sure the definition belongs to this system or if the definition
+  // Make sure the definition belongs to this Collection or if the definition
   // is abstract
-  if ((def->system() != shared_from_this()) || def->isAbstract())
+  if ((def->collection() != shared_from_this()) || def->isAbstract())
   {
     return smtk::attribute::AttributePtr();
   }
@@ -160,14 +160,14 @@ smtk::attribute::AttributePtr System::createAttribute(
   return a;
 }
 
-smtk::attribute::AttributePtr System::createAttribute(smtk::attribute::DefinitionPtr def)
+smtk::attribute::AttributePtr Collection::createAttribute(smtk::attribute::DefinitionPtr def)
 {
   smtk::attribute::AttributePtr att =
     this->createAttribute(this->createUniqueName(def->rootName()), def);
   return att;
 }
 
-smtk::attribute::AttributePtr System::createAttribute(const std::string& typeName)
+smtk::attribute::AttributePtr Collection::createAttribute(const std::string& typeName)
 {
   smtk::attribute::DefinitionPtr def = this->findDefinition(typeName);
   if (!def)
@@ -180,7 +180,7 @@ smtk::attribute::AttributePtr System::createAttribute(const std::string& typeNam
   return att;
 }
 
-smtk::attribute::AttributePtr System::createAttribute(
+smtk::attribute::AttributePtr Collection::createAttribute(
   const std::string& name, const std::string& typeName)
 {
   smtk::attribute::DefinitionPtr def = this->findDefinition(typeName);
@@ -192,7 +192,7 @@ smtk::attribute::AttributePtr System::createAttribute(
   return att;
 }
 
-void System::definitions(std::vector<smtk::attribute::DefinitionPtr>& result) const
+void Collection::definitions(std::vector<smtk::attribute::DefinitionPtr>& result) const
 {
   std::map<std::string, DefinitionPtr>::const_iterator it;
   result.resize(this->m_definitions.size());
@@ -203,7 +203,7 @@ void System::definitions(std::vector<smtk::attribute::DefinitionPtr>& result) co
   }
 }
 
-void System::attributes(std::vector<smtk::attribute::AttributePtr>& result) const
+void Collection::attributes(std::vector<smtk::attribute::AttributePtr>& result) const
 {
   std::map<std::string, AttributePtr>::const_iterator it;
   result.resize(this->m_attributes.size());
@@ -215,7 +215,7 @@ void System::attributes(std::vector<smtk::attribute::AttributePtr>& result) cons
 }
 
 // For Reader classes
-smtk::attribute::AttributePtr System::createAttribute(
+smtk::attribute::AttributePtr Collection::createAttribute(
   const std::string& name, smtk::attribute::DefinitionPtr def, const smtk::common::UUID& id)
 {
   // First we need to check to see if an attribute exists by the same name
@@ -232,7 +232,7 @@ smtk::attribute::AttributePtr System::createAttribute(
   return a;
 }
 
-smtk::attribute::AttributePtr System::createAttribute(
+smtk::attribute::AttributePtr Collection::createAttribute(
   const std::string& name, const std::string& typeName, const smtk::common::UUID& id)
 {
   // First we need to check to see if an attribute exists by the same name
@@ -256,10 +256,10 @@ smtk::attribute::AttributePtr System::createAttribute(
   return a;
 }
 
-bool System::removeAttribute(smtk::attribute::AttributePtr att)
+bool Collection::removeAttribute(smtk::attribute::AttributePtr att)
 {
-  // Make sure that this system is managing this attribute
-  if (!att || att->system() != shared_from_this())
+  // Make sure that this Collection is managing this attribute
+  if (!att || att->collection() != shared_from_this())
   {
     return false;
   }
@@ -272,7 +272,7 @@ bool System::removeAttribute(smtk::attribute::AttributePtr att)
 /**\brief Find the attribute definitions that can be associated with \a mask.
   *
   */
-void System::findDefinitions(
+void Collection::findDefinitions(
   unsigned long mask, std::vector<smtk::attribute::DefinitionPtr>& result) const
 {
   smtk::attribute::DefinitionPtr def;
@@ -289,17 +289,17 @@ void System::findDefinitions(
   }
 }
 
-void System::findAttributes(
+void Collection::findAttributes(
   smtk::attribute::DefinitionPtr def, std::vector<smtk::attribute::AttributePtr>& result) const
 {
   result.clear();
-  if (def && (def->system() == shared_from_this()))
+  if (def && (def->collection() == shared_from_this()))
   {
     this->internalFindAttributes(def, result);
   }
 }
 
-void System::internalFindAttributes(
+void Collection::internalFindAttributes(
   smtk::attribute::DefinitionPtr def, std::vector<smtk::attribute::AttributePtr>& result) const
 {
   if (!def->isAbstract())
@@ -325,17 +325,17 @@ void System::internalFindAttributes(
   }
 }
 
-void System::findAllDerivedDefinitions(smtk::attribute::DefinitionPtr def, bool onlyConcrete,
+void Collection::findAllDerivedDefinitions(smtk::attribute::DefinitionPtr def, bool onlyConcrete,
   std::vector<smtk::attribute::DefinitionPtr>& result) const
 {
   result.clear();
-  if (def && (def->system() == shared_from_this()))
+  if (def && (def->collection() == shared_from_this()))
   {
     this->internalFindAllDerivedDefinitions(def, onlyConcrete, result);
   }
 }
 
-void System::internalFindAllDerivedDefinitions(smtk::attribute::DefinitionPtr def,
+void Collection::internalFindAllDerivedDefinitions(smtk::attribute::DefinitionPtr def,
   bool onlyConcrete, std::vector<smtk::attribute::DefinitionPtr>& result) const
 {
   if (!(def->isAbstract() && onlyConcrete))
@@ -356,10 +356,10 @@ void System::internalFindAllDerivedDefinitions(smtk::attribute::DefinitionPtr de
   }
 }
 
-bool System::rename(smtk::attribute::AttributePtr att, const std::string& newName)
+bool Collection::rename(smtk::attribute::AttributePtr att, const std::string& newName)
 {
-  // Make sure that this system is managing this attribute
-  if (att->system() != shared_from_this())
+  // Make sure that this Collection is managing this attribute
+  if (att->collection() != shared_from_this())
   {
     return false;
   }
@@ -375,7 +375,7 @@ bool System::rename(smtk::attribute::AttributePtr att, const std::string& newNam
   return true;
 }
 
-std::string System::createUniqueName(const std::string& type) const
+std::string Collection::createUniqueName(const std::string& type) const
 {
   int i = 0;
   std::string base = type, newName;
@@ -395,7 +395,7 @@ std::string System::createUniqueName(const std::string& type) const
   return "";
 }
 
-void System::findBaseDefinitions(std::vector<smtk::attribute::DefinitionPtr>& result) const
+void Collection::findBaseDefinitions(std::vector<smtk::attribute::DefinitionPtr>& result) const
 {
   result.clear();
   // Insert all top most definitions into the queue
@@ -409,7 +409,7 @@ void System::findBaseDefinitions(std::vector<smtk::attribute::DefinitionPtr>& re
   }
 }
 
-void System::updateCategories()
+void Collection::updateCategories()
 {
   std::queue<attribute::DefinitionPtr> toBeProcessed;
   // Insert all top most definitions into the queue
@@ -443,7 +443,7 @@ void System::updateCategories()
     toBeProcessed.pop();
   }
   // Now all of the definitions have been processed we need to combine all
-  // of their categories to form the systems
+  // of their categories to form the Collections
   this->m_categories.clear();
   for (it = this->m_definitions.begin(); it != this->m_definitions.end(); it++)
   {
@@ -451,7 +451,7 @@ void System::updateCategories()
   }
 }
 
-void System::derivedDefinitions(
+void Collection::derivedDefinitions(
   smtk::attribute::DefinitionPtr def, std::vector<smtk::attribute::DefinitionPtr>& result) const
 {
   std::map<smtk::attribute::DefinitionPtr, smtk::attribute::WeakDefinitionPtrSet>::const_iterator
@@ -471,7 +471,7 @@ void System::derivedDefinitions(
   }
 }
 
-smtk::attribute::ConstDefinitionPtr System::findIsUniqueBaseClass(
+smtk::attribute::ConstDefinitionPtr Collection::findIsUniqueBaseClass(
   smtk::attribute::DefinitionPtr attDef) const
 {
   if (!attDef.get() || !attDef->isUnique() || !attDef->baseDefinition().get())
@@ -491,12 +491,12 @@ smtk::attribute::ConstDefinitionPtr System::findIsUniqueBaseClass(
   return smtk::attribute::ConstDefinitionPtr();
 }
 
-void System::setRefModelManager(smtk::model::ManagerPtr refModelMgr)
+void Collection::setRefModelManager(smtk::model::ManagerPtr refModelMgr)
 {
   this->m_refModelMgr = refModelMgr;
 }
 
-void System::updateDerivedDefinitionIndexOffsets(smtk::attribute::DefinitionPtr def)
+void Collection::updateDerivedDefinitionIndexOffsets(smtk::attribute::DefinitionPtr def)
 {
   WeakDefinitionPtrSet ddefs = m_derivedDefInfo[def];
   WeakDefinitionPtrSet::iterator iter;
@@ -513,13 +513,13 @@ void System::updateDerivedDefinitionIndexOffsets(smtk::attribute::DefinitionPtr 
   }
 }
 
-void System::addAdvanceLevel(int level, std::string label, const double* l_color)
+void Collection::addAdvanceLevel(int level, std::string label, const double* l_color)
 {
   this->m_advLevels[level] = label;
   this->setAdvanceLevelColor(level, l_color);
 }
 
-const double* System::advanceLevelColor(int level) const
+const double* Collection::advanceLevelColor(int level) const
 {
   std::map<int, std::vector<double> >::const_iterator it = this->m_advLevelColors.find(level);
   if (it != this->m_advLevelColors.end() && it->second.size() == 4)
@@ -529,7 +529,7 @@ const double* System::advanceLevelColor(int level) const
   return NULL;
 }
 
-void System::setAdvanceLevelColor(int level, const double* l_color)
+void Collection::setAdvanceLevelColor(int level, const double* l_color)
 {
   if (l_color && this->m_advLevels.find(level) != this->m_advLevels.end())
   {
@@ -538,11 +538,11 @@ void System::setAdvanceLevelColor(int level, const double* l_color)
   }
 }
 
-// Copies attribute defintion into this system
+// Copies attribute defintion into this Collection
 // Returns smart pointer (will be empty if operation unsuccessful)
 // If definition contains RefItemDefinition instances, might have to
 // copy additional definitions for their targets.
-smtk::attribute::DefinitionPtr System::copyDefinition(
+smtk::attribute::DefinitionPtr Collection::copyDefinition(
   const smtk::attribute::DefinitionPtr sourceDef, unsigned int /*options*/)
 {
   // Returns defintion
@@ -575,10 +575,10 @@ smtk::attribute::DefinitionPtr System::copyDefinition(
         }
         else
         {
-          // Need to copy definition, first find it in the input system
+          // Need to copy definition, first find it in the input Collection
           std::cout << "Copying \"" << type << "\" definition" << std::endl;
-          smtk::attribute::DefinitionPtr nextDef = sourceDef->system()->findDefinition(type);
-          // Definition missing only if source system is invalid, but check anyway
+          smtk::attribute::DefinitionPtr nextDef = sourceDef->collection()->findDefinition(type);
+          // Definition missing only if source Collection is invalid, but check anyway
           if (!nextDef)
           {
             std::cerr << "ERROR: Unable to find source definition " << type
@@ -614,10 +614,10 @@ smtk::attribute::DefinitionPtr System::copyDefinition(
         }
         else
         {
-          // Need to copy definition, first find it in the input system
+          // Need to copy definition, first find it in the input Collection
           std::cout << "Copying \"" << type << "\" definition" << std::endl;
-          smtk::attribute::DefinitionPtr nextDef = sourceDef->system()->findDefinition(type);
-          // Definition missing only if source system is invalid, but check anyway
+          smtk::attribute::DefinitionPtr nextDef = sourceDef->collection()->findDefinition(type);
+          // Definition missing only if source Collection is invalid, but check anyway
           if (!nextDef)
           {
             std::cerr << "ERROR: Unable to find source definition " << type
@@ -641,8 +641,8 @@ smtk::attribute::DefinitionPtr System::copyDefinition(
   return newDef;
 }
 
-// Copies attribute definition into this system, returning true if successful
-bool System::copyDefinitionImpl(
+// Copies attribute definition into this Collection, returning true if successful
+bool Collection::copyDefinitionImpl(
   smtk::attribute::DefinitionPtr sourceDef, smtk::attribute::ItemDefinition::CopyInfo& info)
 {
   // Check for type conflict
@@ -658,7 +658,7 @@ bool System::copyDefinitionImpl(
   smtk::attribute::DefinitionPtr sourceBaseDef = sourceDef->baseDefinition();
   if (sourceBaseDef)
   {
-    // Check if base definition of this type already exists in this system
+    // Check if base definition of this type already exists in this Collection
     std::string baseTypeName = sourceBaseDef->type();
     if (!this->findDefinition(baseTypeName))
     {
@@ -724,26 +724,27 @@ bool System::copyDefinitionImpl(
   return true;
 }
 
-// Copies attribute into this system
+// Copies attribute into this Collection
 // Returns smart pointer (will be empty if operation unsuccessful)
 // If definition contains RefItem or ExpressionType instances, might also
-// copy additional attributes from the source attribute system.
-smtk::attribute::AttributePtr System::copyAttribute(const smtk::attribute::AttributePtr sourceAtt,
-  const bool& copyModelAssocs, const unsigned int& itemCopyOptions)
+// copy additional attributes from the source attribute Collection.
+smtk::attribute::AttributePtr Collection::copyAttribute(
+  const smtk::attribute::AttributePtr sourceAtt, const bool& copyModelAssocs,
+  const unsigned int& itemCopyOptions)
 {
   smtk::attribute::AttributePtr newAtt;
   smtk::attribute::DefinitionPtr newDef;
-  // Are we copying the attribute to the same attribute system?
-  bool sameSystem = (shared_from_this() == sourceAtt->system());
+  // Are we copying the attribute to the same attribute Collection?
+  bool sameCollection = (shared_from_this() == sourceAtt->collection());
   std::string newName;
-  if (sameSystem)
+  if (sameCollection)
   {
     newName = this->createUniqueName(sourceAtt->definition()->type());
     newDef = sourceAtt->definition();
   }
   else
   {
-    // Copying into a new system
+    // Copying into a new Collection
     // First do we need tp copy its definition?
     newDef = this->findDefinition(sourceAtt->definition()->type());
     if (!newDef)
@@ -796,7 +797,7 @@ smtk::attribute::AttributePtr System::copyAttribute(const smtk::attribute::Attri
   }
   // Copy model associations if requested and the attribute is not Unique
   // with respects to the model entitiy
-  if (copyModelAssocs && !(sameSystem && sourceAtt->definition()->isUnique()))
+  if (copyModelAssocs && !(sameCollection && sourceAtt->definition()->isUnique()))
   {
     smtk::common::UUIDs uuidSet = sourceAtt->associatedModelEntityIds();
     smtk::common::UUIDs::const_iterator it;
@@ -810,12 +811,12 @@ smtk::attribute::AttributePtr System::copyAttribute(const smtk::attribute::Attri
   return newAtt;
 }
 
-void System::addView(smtk::common::ViewPtr v)
+void Collection::addView(smtk::common::ViewPtr v)
 {
   this->m_views[v->title()] = v;
 }
 
-smtk::common::ViewPtr System::findViewByType(const std::string& vtype) const
+smtk::common::ViewPtr Collection::findViewByType(const std::string& vtype) const
 {
   std::map<std::string, smtk::common::ViewPtr>::const_iterator it;
   for (it = this->m_views.begin(); it != this->m_views.end(); ++it)
@@ -828,7 +829,7 @@ smtk::common::ViewPtr System::findViewByType(const std::string& vtype) const
   return smtk::common::ViewPtr();
 }
 
-smtk::common::ViewPtr System::findTopLevelView() const
+smtk::common::ViewPtr Collection::findTopLevelView() const
 {
   std::map<std::string, smtk::common::ViewPtr>::const_iterator it;
   bool isTopLevel;
@@ -842,7 +843,7 @@ smtk::common::ViewPtr System::findTopLevelView() const
   return smtk::common::ViewPtr();
 }
 
-std::vector<smtk::common::ViewPtr> System::findTopLevelViews() const
+std::vector<smtk::common::ViewPtr> Collection::findTopLevelViews() const
 {
   std::map<std::string, smtk::common::ViewPtr>::const_iterator it;
   bool isTopLevel;
@@ -857,7 +858,7 @@ std::vector<smtk::common::ViewPtr> System::findTopLevelViews() const
   return topViews;
 }
 
-smtk::common::ResourceComponentPtr System::find(const smtk::common::UUID& attId) const
+smtk::common::ResourceComponentPtr Collection::find(const smtk::common::UUID& attId) const
 {
   return this->findAttribute(attId);
 }

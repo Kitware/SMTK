@@ -22,7 +22,7 @@
 #include "smtk/model/Manager.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 
 #include <string>
 
@@ -137,7 +137,7 @@ enum OperatorOutcome
   * Instances of the Operator class should always have a valid
   * pointer to their owning Session instance.
   * Every operator's specification() Attribute is managed by the
-  * Session's operatorSystem().
+  * Session's operatorCollection().
   */
 class SMTKCORE_EXPORT Operator : smtkEnableSharedPtr(Operator)
 {
@@ -260,15 +260,15 @@ T Operator::associatedEntitiesAs() const
 {
   bool resetMgr = false;
   this->ensureSpecification();
-  if (this->m_specification->system())
+  if (this->m_specification->collection())
     if (!this->m_specification->modelManager())
     {
       resetMgr = true;
-      this->m_specification->system()->setRefModelManager(this->m_manager);
+      this->m_specification->collection()->setRefModelManager(this->m_manager);
     }
   T result = this->m_specification->associatedModelEntities<T>();
   if (resetMgr)
-    this->m_specification->system()->setRefModelManager(smtk::model::ManagerPtr());
+    this->m_specification->collection()->setRefModelManager(smtk::model::ManagerPtr());
   return result;
 }
 

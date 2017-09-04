@@ -308,7 +308,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Instantiate attribute system for outpot
-    system = smtk.attribute.System()
+    system = smtk.attribute.Collection()
 
     # Generate default expression types
     sim_exp = system.createDefinition('SimExpression')
