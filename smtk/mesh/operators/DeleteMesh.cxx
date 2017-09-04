@@ -24,14 +24,6 @@ namespace smtk
 namespace mesh
 {
 
-bool DeleteMesh::ableToOperate()
-{
-  if (!this->ensureSpecification())
-    return false;
-  smtk::attribute::MeshItem::Ptr meshItem = this->specification()->findMesh("mesh");
-  return meshItem && meshItem->numberOfValues() > 0;
-}
-
 smtk::model::OperatorResult DeleteMesh::operateInternal()
 {
   // ableToOperate should have verified that mesh(s) are set
@@ -44,15 +36,21 @@ smtk::model::OperatorResult DeleteMesh::operateInternal()
   {
     for (attribute::MeshItem::const_mesh_it mit = meshItem->begin(); mit != meshItem->end(); ++mit)
     {
+      // all mesh items are guaranteed to have a valid associated collection by ableToOperate
       smtk::mesh::CollectionPtr collec = mit->collection();
-      if (collec)
-      { //can have an invalid collection when trying to delete
-        //an NULL/Invalid MeshSet.
-        const bool wasRemoved = meshMgr->removeCollection(collec);
-        if (wasRemoved)
-        {
-          expunged.insert(*mit);
-        }
+
+      //remove the mesh from its collection
+      success = collec->removeMeshes(smtk::mesh::MeshSet(*mit));
+      if (success)
+      {
+        expunged.insert(*mit);
+      }
+
+      //if the collection no longer has any meshes, remove
+      //the collection from the manager as well
+      if (collec->numberOfMeshes() == 0)
+      {
+        meshMgr->removeCollection(collec);
       }
     }
   }
