@@ -3,31 +3,31 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="tessellate face" Label="Face - Tessellate" BaseType="operator">
-      <BriefDescription>Tessellate a model face.</BriefDescription>
+    <AttDef Type="tessellate faces" Label="Faces - Tessellate" BaseType="operator">
+      <BriefDescription>Tessellate model faces.</BriefDescription>
       <DetailedDescription>
-        Tessellate a model face using Delaunay.
+        Tessellate model faces using Delaunay.
 
-        This operation updates the smtk::mesh::Tessellation associated with an
-        smtk::mesh::Face using Delaunay. The resulting tessellation is
+        This operation updates the smtk::mesh::Tessellations associated with
+        smtk::mesh::Faces using Delaunay. The resulting tessellations are
         composed only of the boundary points.
       </DetailedDescription>
-      <AssociationsDef Name="face" NumberOfRequiredValues="1">
+      <AssociationsDef Name="faces" NumberOfRequiredValues="1" Extensible="true">
         <MembershipMask>face</MembershipMask>
-        <BriefDescription>The face to tessellate.</BriefDescription>
+        <BriefDescription>The faces to tessellate.</BriefDescription>
       </AssociationsDef>
       <ItemDefinitions>
         <Void Name="validate polygons" Label="Validate Polygons prior to Tessellation"
               Optional="true" AdvanceLevel="1">
           <BriefDescription>Ensure the polygons describing the
-          boundaries are valid before tessellating the face.</BriefDescription>
+          boundaries are valid before tessellating the faces.</BriefDescription>
         </Void>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
-    <AttDef Type="result(tessellate face)" BaseType="result">
+    <AttDef Type="result(tessellate faces)" BaseType="result">
       <ItemDefinitions>
-        <ModelEntity Name="tess_changed" NumberOfRequiredValues="1"/>
+        <ModelEntity Name="tess_changed" NumberOfRequiredValues="1" Extensible="true"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

@@ -21,8 +21,8 @@ namespace py = pybind11;
 template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
-#include "PybindTessellateFace.h"
-#include "PybindTriangulateFace.h"
+#include "PybindTessellateFaces.h"
+#include "PybindTriangulateFaces.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
@@ -30,6 +30,6 @@ PYBIND11_MODULE(_smtkPybindMeshDelaunay, delaunay)
 {
   delaunay.doc() = "<description>";
 
-  py::class_< smtk::mesh::TessellateFace, smtk::model::Operator > smtk_extension_delaunay_TessellateFace = pybind11_init_smtk_extension_delaunay_TessellateFace(delaunay);
-  py::class_< smtk::mesh::TriangulateFace, smtk::model::Operator > smtk_extension_delaunay_TriangulateFace = pybind11_init_smtk_extension_delaunay_TriangulateFace(delaunay);
+  py::class_< smtk::mesh::TessellateFaces, smtk::model::Operator > smtk_extension_delaunay_TessellateFaces = pybind11_init_smtk_extension_delaunay_TessellateFaces(delaunay);
+  py::class_< smtk::mesh::TriangulateFaces, smtk::model::Operator > smtk_extension_delaunay_TriangulateFaces = pybind11_init_smtk_extension_delaunay_TriangulateFaces(delaunay);
 }

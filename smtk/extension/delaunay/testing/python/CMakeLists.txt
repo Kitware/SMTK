@@ -3,8 +3,8 @@ set(smtkDelaunayExtPythonDataTests)
 if (SMTK_ENABLE_POLYGON_SESSION)
   set(smtkDelaunayExtPythonDataTests
     ${smtkDelaunayExtPythonDataTests}
-    unitTestTessellateFace
-    unitTestTriangulateFace
+    unitTestTessellateFaces
+    unitTestTriangulateFaces
   )
 endif()
 
