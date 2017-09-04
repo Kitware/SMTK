@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_extension_delaunay_TriangulateFace_h
-#define __smtk_extension_delaunay_TriangulateFace_h
+#ifndef __smtk_extension_delaunay_TriangulateFaces_h
+#define __smtk_extension_delaunay_TriangulateFaces_h
 
 #include "smtk/extension/delaunay/Exports.h"
 #include "smtk/model/Operator.h"
@@ -20,31 +20,31 @@ namespace mesh
 
 class Session;
 
-/**\brief Triangulate a model face into a mesh using Delaunay.
+/**\brief Triangulate model faces into meshes using Delaunay.
   *
-  * This operation creates an smtk::mesh::MeshSet associated with an
-  * smtk::mesh::Face using Delaunay. The MeshSet resides in the
-  * smtk::mesh::Collection with the same UUID as the Face's model. If this
-  * collection does not yet exist during the construction of the mesh, it is
-  * created and populated with the MeshSet.
+  * This operation creates smtk::mesh::MeshSets associated with
+  * smtk::mesh::Faces using Delaunay. The MeshSets reside in the
+  * smtk::mesh::Collection with the same UUID as the Faces' model. If this
+  * collection does not yet exist during the construction of the meshes, it is
+  * created and populated with the MeshSets.
   */
-class SMTKDELAUNAYEXT_EXPORT TriangulateFace : public smtk::model::Operator
+class SMTKDELAUNAYEXT_EXPORT TriangulateFaces : public smtk::model::Operator
 {
 public:
-  smtkTypeMacro(TriangulateFace);
+  smtkTypeMacro(TriangulateFaces);
   smtkSuperclassMacro(Operator);
-  smtkCreateMacro(TriangulateFace);
+  smtkCreateMacro(TriangulateFaces);
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
   bool ableToOperate() override;
 
 protected:
-  TriangulateFace();
+  TriangulateFaces();
   smtk::model::OperatorResult operateInternal() override;
 };
 
 } // namespace model
 } // namespace smtk
 
-#endif // __smtk_extension_delaunay_TriangulateFace_h
+#endif // __smtk_extension_delaunay_TriangulateFaces_h

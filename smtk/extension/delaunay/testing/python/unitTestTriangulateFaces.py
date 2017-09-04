@@ -21,7 +21,7 @@ import smtk.testing
 from smtk.simple import *
 
 
-class UnitTriangulateFace(smtk.testing.TestCase):
+class UnitTriangulateFaces(smtk.testing.TestCase):
 
     def setUp(self):
         self.mgr = smtk.model.Manager.create()
@@ -34,7 +34,7 @@ class UnitTriangulateFace(smtk.testing.TestCase):
 
     def testMeshing2D(self):
         face = self.mgr.findEntitiesOfType(int(smtk.model.FACE))[0]
-        triangulateFace = self.sess.op('triangulate face')
+        triangulateFace = self.sess.op('triangulate faces')
         triangulateFace.specification().associateEntity(face)
         result = triangulateFace.operate()
         triangulatedFace = self.mgr.meshes().associatedCollections(face)[0]

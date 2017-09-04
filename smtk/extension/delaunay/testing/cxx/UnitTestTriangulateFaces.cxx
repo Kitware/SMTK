@@ -19,6 +19,8 @@
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Loop.h"
 
+#include "smtk/io/ExportMesh.h"
+
 #include "smtk/mesh/testing/cxx/helpers.h"
 
 #include "smtk/attribute/FileItem.h"
@@ -57,7 +59,7 @@ void removeRefsWithoutTess(smtk::model::EntityRefs& ents)
 }
 }
 
-int UnitTestTessellateFace(int, char** const)
+int UnitTestTriangulateFaces(int, char** const)
 {
   // Somehow grab an EntityRef with an associated tessellation
   smtk::model::EntityRef eRef;
@@ -111,49 +113,54 @@ int UnitTestTessellateFace(int, char** const)
       return 1;
     }
 
-    smtk::model::OperatorPtr tessellateFace = session->op("tessellate face");
-    if (!tessellateFace)
+    smtk::model::OperatorPtr triangulateFace = session->op("triangulate faces");
+    if (!triangulateFace)
     {
-      std::cerr << "No tessellate face operator\n";
+      std::cerr << "No triangulate face operator\n";
       return 1;
     }
-    tessellateFace->specification()->associateEntity(face);
+    triangulateFace->specification()->associateEntity(face);
 
-    if (!tessellateFace->ableToOperate())
+    if (!triangulateFace->ableToOperate())
     {
-      std::cerr << "Tessellate face operator cannot operate\n";
+      std::cerr << "Triangulate face operator cannot operate\n";
       return 1;
     }
 
-    smtk::model::OperatorResult result = tessellateFace->operate();
+    smtk::model::OperatorResult result = triangulateFace->operate();
     if (result->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
     {
-      std::cerr << "Tessellate face operator failed\n";
+      std::cerr << "Triangulate face operator failed\n";
       return 1;
     }
 
-    const smtk::model::Face& tessellatedFace = result->findModelEntity("tess_changed")->value();
-    if (face != tessellatedFace)
+    const smtk::model::Face& meshedFace = result->findModelEntity("mesh_created")->value();
+
+    if (face != meshedFace)
     {
-      std::cerr << "Tessellate face operator did something strange\n";
+      std::cerr << "Triangulate face operator did something strange\n";
       return 1;
     }
 
-    const smtk::model::Tessellation* tess = tessellatedFace.hasTessellation();
-    if (!tess)
+    auto associatedCollections = meshManager->associatedCollections(face);
+    smtk::mesh::CollectionPtr triangulatedFace = associatedCollections[0];
+
+    if (triangulatedFace->points().size() != 8 || triangulatedFace->cells().size() != 8)
     {
-      std::cerr << "Tessellate face operator did not create a tessellation\n";
+      std::cerr << "Triangulate faces operator did something wrong\n";
       return 1;
     }
 
-    if (tess->coords().size() != 8 * 3 || tess->conn().size() != 8 * 4)
+    if (false)
     {
-      std::cerr << "Tessellate face operator did something wrong\n";
-      return 1;
+      smtk::io::ExportMesh exportMesh;
+      std::string output_path(scratch_root);
+      output_path += "/boxWithHole.vtk";
+      exportMesh(output_path, triangulatedFace);
     }
   }
 
   return 0;
 }
 
-smtkComponentInitMacro(smtk_delaunay_tessellate_face_operator);
+smtkComponentInitMacro(smtk_delaunay_triangulate_faces_operator);

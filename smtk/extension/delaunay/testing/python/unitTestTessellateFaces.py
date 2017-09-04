@@ -21,7 +21,7 @@ import smtk.testing
 from smtk.simple import *
 
 
-class UnitTessellateFace(smtk.testing.TestCase):
+class UnitTessellateFaces(smtk.testing.TestCase):
 
     def setUp(self):
         self.mgr = smtk.model.Manager.create()
@@ -34,7 +34,7 @@ class UnitTessellateFace(smtk.testing.TestCase):
 
     def testMeshing2D(self):
         face = self.mgr.findEntitiesOfType(int(smtk.model.FACE))[0]
-        tessellateFace = self.sess.op('tessellate face')
+        tessellateFace = self.sess.op('tessellate faces')
         tessellateFace.specification().associateEntity(face)
         result = tessellateFace.operate()
         tessellatedFace = face.hasTessellation()
