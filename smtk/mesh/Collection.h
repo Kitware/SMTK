@@ -227,7 +227,7 @@ public:
   //that is not referenced by any other mesh
   //This will invalidate any smtk::mesh::MeshSet that contains a reference to
   //one of the meshes that has been deleted.
-  bool removeMeshes(smtk::mesh::MeshSet& meshesToDelete);
+  bool removeMeshes(const smtk::mesh::MeshSet& meshesToDelete);
 
   // Domain Queries
   //get all the current domains
