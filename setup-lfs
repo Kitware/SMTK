@@ -26,11 +26,13 @@ die() {
 cd "${BASH_SOURCE%/*}" &&
 
 # Set the LFS filter configuration up.
-if git lfs --version; then
+if git lfs version; then
 	git config filter.lfs.clean "git-lfs clean -- %f" &&
 	git config filter.lfs.smudge "git-lfs smudge -- %f" &&
 	git config filter.lfs.process "git-lfs filter-process" &&
 	git config filter.lfs.required true &&
+	git lfs fetch &&
+	git lfs checkout &&
 	echo 'LFS is now configured.'
 else
 	die 'Git LFS is not available. Please make it available on the PATH' \
