@@ -240,6 +240,11 @@ bool qtModelEntityItemCombo::eventFilter(QObject* editor, QEvent* evt)
   return QObject::eventFilter(editor, evt);
 }
 
+void qtModelEntityItemCombo::showEvent(QShowEvent*)
+{
+  this->init();
+}
+
 void qtModelEntityItemCombo::itemCheckChanged(const QModelIndex& topLeft, const QModelIndex&)
 {
   QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());
@@ -403,6 +408,11 @@ void qtMeshItemCombo::showPopup()
 {
   this->init();
   this->qtCheckItemComboBox::showPopup();
+}
+
+void qtMeshItemCombo::showEvent(QShowEvent*)
+{
+  this->init();
 }
 
 bool qtMeshItemCombo::eventFilter(QObject* editor, QEvent* evt)

@@ -25,8 +25,6 @@ public:
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
-  bool ableToOperate() override;
-
 protected:
   smtk::model::OperatorResult operateInternal() override;
 };
