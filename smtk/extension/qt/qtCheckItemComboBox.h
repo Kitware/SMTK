@@ -67,6 +67,7 @@ protected slots:
 
 protected:
   bool eventFilter(QObject* editor, QEvent* event) override;
+  void showEvent(QShowEvent* e) override;
 
 private:
   qtModelEntityItem* m_ModelEntityItem;
@@ -86,6 +87,7 @@ protected slots:
 
 protected:
   bool eventFilter(QObject* editor, QEvent* event) override;
+  void showEvent(QShowEvent* e) override;
 
 private:
   qtMeshItem* m_MeshItem;
