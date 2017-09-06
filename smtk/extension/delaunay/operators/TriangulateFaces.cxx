@@ -144,8 +144,12 @@ smtk::model::OperatorResult TriangulateFaces::operateInternal()
     }
     meshSet.mergeCoincidentContactPoints();
 
-    this->addEntityToResult(result, face, MODIFIED);
-    result->findModelEntity("mesh_created")->appendValue(face);
+    // we flag the model that owns this face as modified so that a mesh
+    // collection for the entire model is placed in ModelBuilder's model
+    // tree. In the future, ModelBuilder should be able to handle meshes
+    // on model entities (rather than entire models).
+    this->addEntityToResult(result, face.owningModel(), MODIFIED);
+    result->findModelEntity("mesh_created")->appendValue(face.owningModel());
   }
 
   return result;
