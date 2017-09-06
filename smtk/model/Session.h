@@ -427,7 +427,7 @@ protected:
 
   DanglingEntities m_dangling;
   smtk::common::UUID m_sessionId;
-  smtk::attribute::CollectionPtr m_operatorSys;
+  smtk::attribute::CollectionPtr m_operatorCollection;
   Manager* m_manager;
 };
 

@@ -47,7 +47,7 @@ namespace model
 /// Default constructor. This assigns a random session ID to each Session instance.
 Session::Session()
   : m_sessionId(smtk::common::UUID::random())
-  , m_operatorSys(nullptr)
+  , m_operatorCollection(nullptr)
   , m_manager(nullptr)
 {
   this->initializeOperatorCollection(Session::s_operators);
@@ -139,7 +139,8 @@ SessionInfoBits Session::allSupportedInformation() const
 StringList Session::operatorNames(bool includeAdvanced) const
 {
   std::vector<smtk::attribute::DefinitionPtr> ops;
-  this->m_operatorSys->derivedDefinitions(this->m_operatorSys->findDefinition("operator"), ops);
+  this->m_operatorCollection->derivedDefinitions(
+    this->m_operatorCollection->findDefinition("operator"), ops);
 
   StringList nameList;
   std::vector<smtk::attribute::DefinitionPtr>::iterator it;
@@ -159,8 +160,9 @@ std::map<std::string, std::string> Session::operatorLabelsMap(bool includeAdvanc
 {
   std::vector<smtk::attribute::DefinitionPtr> ops;
   std::map<std::string, std::string> result;
-  this->m_operatorSys->derivedDefinitions(this->m_operatorSys->findDefinition("operator"), ops);
-  //std::cerr << "Getting Map from system " << this->m_operatorSys << ": \n";
+  this->m_operatorCollection->derivedDefinitions(
+    this->m_operatorCollection->findDefinition("operator"), ops);
+  //std::cerr << "Getting Map from system " << this->m_operatorCollection << ": \n";
   std::vector<smtk::attribute::DefinitionPtr>::iterator it;
   for (it = ops.begin(); it != ops.end(); ++it)
   {
@@ -240,13 +242,13 @@ void Session::declareDanglingEntity(const EntityRef& ent, SessionInfoBits presen
 /// Return the attribute collection that holds definitions for all of this session's operators.
 smtk::attribute::CollectionPtr Session::operatorCollection()
 {
-  return this->m_operatorSys;
+  return this->m_operatorCollection;
 }
 
 /// Return the attribute collection that holds definitions for all of this session's operators.
 smtk::attribute::ConstCollectionPtr Session::operatorCollection() const
 {
-  return dynamic_pointer_cast<const smtk::attribute::Collection>(this->m_operatorSys);
+  return dynamic_pointer_cast<const smtk::attribute::Collection>(this->m_operatorCollection);
 }
 ///@}
 
@@ -354,7 +356,7 @@ void Session::setSessionId(const smtk::common::UUID& sessId)
 void Session::setManager(Manager* mgr)
 {
   this->m_manager = mgr;
-  this->m_operatorSys->setRefModelManager(mgr->shared_from_this());
+  this->m_operatorCollection->setRefModelManager(mgr->shared_from_this());
 }
 
 /**\brief Called when an entity is being split so that attribute assignments can be updated.
@@ -962,11 +964,11 @@ void Session::initializeOperatorCollection(const OperatorConstructors* opList)
   // we cannot remove Definitions from an attribute.Collection
   // and may want to override an operator with a session-specific
   // version, we must wipe away whatever already exists.
-  smtk::attribute::CollectionPtr other = this->m_operatorSys;
+  smtk::attribute::CollectionPtr other = this->m_operatorCollection;
 
-  this->m_operatorSys = smtk::attribute::Collection::create();
+  this->m_operatorCollection = smtk::attribute::Collection::create();
   // Create the "base" definitions that all operators and results will inherit.
-  Definition::Ptr opdefn = this->m_operatorSys->createDefinition("operator");
+  Definition::Ptr opdefn = this->m_operatorCollection->createDefinition("operator");
 
   IntItemDefinition::Ptr assignNamesDefn = IntItemDefinition::New("assign names");
   // Do not assign names to entities after the operation by default:
@@ -982,7 +984,7 @@ void Session::initializeOperatorCollection(const OperatorConstructors* opList)
   opdefn->addItemDefinition(assignNamesDefn);
   opdefn->addItemDefinition(debugLevelDefn);
 
-  Definition::Ptr resultdefn = this->m_operatorSys->createDefinition("result");
+  Definition::Ptr resultdefn = this->m_operatorCollection->createDefinition("result");
   IntItemDefinition::Ptr outcomeDefn = IntItemDefinition::New("outcome");
   ModelEntityItemDefinition::Ptr entcreDefn = ModelEntityItemDefinition::New("created");
   ModelEntityItemDefinition::Ptr entmodDefn = ModelEntityItemDefinition::New("modified");
@@ -1013,7 +1015,7 @@ void Session::initializeOperatorCollection(const OperatorConstructors* opList)
 
   if (!opList && this->inheritsOperators())
   {
-    this->m_operatorSys = other;
+    this->m_operatorCollection = other;
     return;
   }
 
@@ -1029,7 +1031,7 @@ void Session::initializeOperatorCollection(const OperatorConstructors* opList)
         continue;
 
       ok &= !rdr.readContents(
-        this->m_operatorSys, it->second.first.c_str(), it->second.first.size(), tmpLog);
+        this->m_operatorCollection, it->second.first.c_str(), it->second.first.size(), tmpLog);
     }
     if (!ok)
     {
@@ -1049,9 +1051,9 @@ void Session::initializeOperatorCollection(const OperatorConstructors* opList)
       other->derivedDefinitions(otherOperator, tmp);
       for (it = tmp.begin(); it != tmp.end(); ++it)
       {
-        if (!this->m_operatorSys->findDefinition((*it)->type()))
+        if (!this->m_operatorCollection->findDefinition((*it)->type()))
         {
-          this->m_operatorSys->copyDefinition(*it);
+          this->m_operatorCollection->copyDefinition(*it);
         }
       }
 
@@ -1059,9 +1061,9 @@ void Session::initializeOperatorCollection(const OperatorConstructors* opList)
       other->derivedDefinitions(otherResult, tmp);
       for (it = tmp.begin(); it != tmp.end(); ++it)
       {
-        if (!this->m_operatorSys->findDefinition((*it)->type()))
+        if (!this->m_operatorCollection->findDefinition((*it)->type()))
         {
-          this->m_operatorSys->copyDefinition(*it);
+          this->m_operatorCollection->copyDefinition(*it);
         }
       }
 
@@ -1070,9 +1072,9 @@ void Session::initializeOperatorCollection(const OperatorConstructors* opList)
       std::map<std::string, smtk::common::ViewPtr>::const_iterator vit;
       for (vit = otherViews.begin(); vit != otherViews.end(); ++vit)
       {
-        if (!this->m_operatorSys->findView(vit->first))
+        if (!this->m_operatorCollection->findView(vit->first))
         {
-          this->m_operatorSys->addView(vit->second);
+          this->m_operatorCollection->addView(vit->second);
         }
       }
     }
@@ -1088,11 +1090,11 @@ void Session::initializeOperatorCollection(const OperatorConstructors* opList)
   */
 void Session::importOperatorXML(const std::string& opXML)
 {
-  if (this->m_operatorSys && !opXML.empty())
+  if (this->m_operatorCollection && !opXML.empty())
   {
     smtk::io::AttributeReader rdr;
     bool ok = true;
-    ok &= !rdr.readContents(this->m_operatorSys, opXML.c_str(), opXML.size(), this->log());
+    ok &= !rdr.readContents(this->m_operatorCollection, opXML.c_str(), opXML.size(), this->log());
 
     if (!ok)
     {

@@ -10,8 +10,8 @@
 
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/MeshItemDefinition.h"
-#include "smtk/attribute/System.h"
 
 #include "smtk/model/Manager.h"
 
@@ -122,7 +122,7 @@ bool MeshItem::isValid() const
     }
 
     // If the mesh belongs to a collection that the mesh manager is not tracking return false
-    smtk::mesh::Manager::Ptr mgr = this->attribute()->system()->refModelManager()->meshes();
+    smtk::mesh::Manager::Ptr mgr = this->attribute()->collection()->refModelManager()->meshes();
     if (!mgr->hasCollection((*it).collection()))
     {
       return false;
