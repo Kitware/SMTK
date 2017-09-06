@@ -32,7 +32,7 @@ if (SMTK_DATA_DIR)
 
   set(reader_test attributeReaderTest)
   smtk_add_test_python(${reader_test}Py ${reader_test}.py
-    ${SMTK_DATA_DIR}/attribute/attribute_system/resourceTest/ShallowWater2D.sbi
+    ${SMTK_DATA_DIR}/attribute/attribute_collection/resourceTest/ShallowWater2D.sbi
     29
     19
     )
@@ -41,7 +41,7 @@ if (SMTK_DATA_DIR)
   if (NOT WIN32)
     set(reader_test ResourceSetReaderTest)
     smtk_add_test_python(${reader_test}Py ${reader_test}.py
-      ${SMTK_DATA_DIR}/attribute/attribute_system/resourceTest/resources.xml
+      ${SMTK_DATA_DIR}/attribute/attribute_collection/resourceTest/resources.xml
       2
       )
   endif()

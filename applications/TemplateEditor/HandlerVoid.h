@@ -58,7 +58,7 @@ private:
 ////////////////////////////////////////////////////////////////////////////////
 /**
  * \brief Generates a custom UI for a FileItemDefinition instance.
- * TODO Derive from HandlerFileSystem
+ * TODO Derive from HandlerFileCollection
  */
 class HandlerFile : public HandlerItemDef
 {
@@ -78,7 +78,7 @@ private:
 ////////////////////////////////////////////////////////////////////////////////
 /**
  * \brief Generates a custom UI for a DirectoryItemDefinition instance.
- * TODO Derive from HandlerFileSystem
+ * TODO Derive from HandlerFileCollection
  */
 class HandlerDirectory : public HandlerItemDef
 {

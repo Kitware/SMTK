@@ -32,15 +32,15 @@ skin = sm.addGroup(smtk.model.MODEL_BOUNDARY | smtk.model.DIMENSION_2, 'skin')
 outlet = sm.addGroup(smtk.model.MODEL_BOUNDARY |
                      smtk.model.DIMENSION_2, 'outlet')
 
-system = smtk.attribute.System.create()
-vdef = system.createDefinition('velocity')
+collection = smtk.attribute.Collection.create()
+vdef = collection.createDefinition('velocity')
 for coord in ['x', 'y', 'z']:
     vi = smtk.attribute.DoubleItemDefinition.New('v' + coord)
     vi.setDefaultValue(-1.2 if coord == 'x' else 0.0)  # in [m/s]
     vdef.addItemDefinition(vi)
 
-velocity = system.createAttribute('velocity', vdef)
-inlet.associateAttribute(system, velocity.id())
+velocity = collection.createAttribute('velocity', vdef)
+inlet.associateAttribute(collection, velocity.id())
 
 print sm.entitiesOfDimension(2)
 print sm.entitiesOfDimension(3)

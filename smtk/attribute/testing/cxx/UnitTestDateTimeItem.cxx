@@ -13,13 +13,13 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/Item.h"
-#include "smtk/attribute/System.h"
 #include "smtk/common/DateTime.h"
 #include "smtk/common/DateTimeZonePair.h"
 #include "smtk/io/AttributeReader.h"
@@ -40,12 +40,12 @@ void verifyDefault()
   test(!!dtDef, "Failed to instantiate DateTimeItemDefinition");
   test(dtDef->type() == sa::Item::DATE_TIME, "Failed to return DATE_TIME as definition type");
 
-  // Instantiate att system, attdef, & attribute
-  sa::SystemPtr sysptr = sa::System::create();
-  sa::System& system(*sysptr.get());
-  sa::DefinitionPtr attDef = system.createDefinition("test-datetime");
+  // Instantiate att collection, attdef, & attribute
+  sa::CollectionPtr sysptr = sa::Collection::create();
+  sa::Collection& collection(*sysptr.get());
+  sa::DefinitionPtr attDef = collection.createDefinition("test-datetime");
   attDef->addItemDefinition(dtDef);
-  sa::AttributePtr att = system.createAttribute(attDef);
+  sa::AttributePtr att = collection.createAttribute(attDef);
 
   sa::ItemPtr item = att->find("dt-def");
   test(!!item, "Failed to find Item");
@@ -68,7 +68,7 @@ void verifyDefault()
   dtz.setTimeZone(tz);
 
   dtDef->setDefaultValue(dtz);
-  sa::AttributePtr attSet = system.createAttribute(attDef);
+  sa::AttributePtr attSet = collection.createAttribute(attDef);
   sa::DateTimeItemPtr dtItemSet = att->findDateTime("dt-def");
   // Must explicitly set to default
   dtItemSet->setToDefault(0);
@@ -91,10 +91,10 @@ void verifySerialize()
   smtk::io::Logger logger;
   std::string contents;
 
-  // Instantiate att system, attdef, & attribute to write out
-  auto outputSysptr = sa::System::create();
-  sa::System& outputSystem(*outputSysptr.get());
-  sa::DefinitionPtr attDef = outputSystem.createDefinition("test-att");
+  // Instantiate att collection, attdef, & attribute to write out
+  auto outputSysptr = sa::Collection::create();
+  sa::Collection& outputCollection(*outputSysptr.get());
+  sa::DefinitionPtr attDef = outputCollection.createDefinition("test-att");
 
   // First DateTimeItemDefinition
   sa::DateTimeItemDefinitionPtr dt1Def = sa::DateTimeItemDefinition::New("dt1");
@@ -134,7 +134,7 @@ void verifySerialize()
   attDef->addItemDefinition(discreteDef);
 
   // Instantiate attribute
-  sa::AttributePtr att = outputSystem.createAttribute(attDef);
+  sa::AttributePtr att = outputCollection.createAttribute(attDef);
 
   // Get first item and set to the default value
   sa::DateTimeItemPtr dt1Item = att->findDateTime("dt1");
@@ -164,8 +164,8 @@ void verifySerialize()
             << contents << std::endl;
 
   // Read back
-  auto inputSysptr = sa::System::create();
-  sa::System& inputSystem(*inputSysptr.get());
+  auto inputSysptr = sa::Collection::create();
+  sa::Collection& inputCollection(*inputSysptr.get());
   smtk::io::AttributeReader reader;
   bool readError = reader.readContents(inputSysptr, contents, logger);
   if (readError)
@@ -175,7 +175,7 @@ void verifySerialize()
   }
 
   // Check item-definition contents
-  sa::DefinitionPtr inputDef = inputSystem.findDefinition("test-att");
+  sa::DefinitionPtr inputDef = inputCollection.findDefinition("test-att");
   test(!!inputDef, "Failed to read back definition");
   test(inputDef->numberOfItemDefinitions() == 4, "Wrong number of item definitions read back");
   int i1 = inputDef->findItemPosition("dt1");
@@ -191,7 +191,7 @@ void verifySerialize()
   test(dt1InputDef->hasDefault(), "Failed to read back default value");
 
   // Check attribute
-  sa::AttributePtr inputAtt = inputSystem.findAttribute(att->name());
+  sa::AttributePtr inputAtt = inputCollection.findAttribute(att->name());
   test(!!inputAtt, "Failed to read back attribute");
 
   // Check first DateTimeItem

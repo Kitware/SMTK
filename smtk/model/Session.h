@@ -19,7 +19,7 @@
 
 #include "smtk/common/UUID.h"
 
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/SessionRegistrar.h"
@@ -275,8 +275,8 @@ public:                                                                         
   * that implements the modeling operation using the "foreign" modeling
   * kernel, and (2) a pair of smtk::attribute::Definition instances that
   * define the structure of operator parameters and results.
-  * The latter Definition instances are kept inside an attribute system
-  * owned by the Session; you can access it with smtk::Session::operatorSystem().
+  * The latter Definition instances are kept inside an attribute collection
+  * owned by the Session; you can access it with smtk::Session::operatorCollection().
   *
   * Instances of Session subclasses should be registered with a
   * model using Manager::sessionModel(). Then, when an
@@ -335,8 +335,8 @@ public:
   const DanglingEntities& danglingEntities() const;
   void declareDanglingEntity(const EntityRef& ent, SessionInfoBits present = 0);
 
-  smtk::attribute::SystemPtr operatorSystem();
-  smtk::attribute::ConstSystemPtr operatorSystem() const;
+  smtk::attribute::CollectionPtr operatorCollection();
+  smtk::attribute::ConstCollectionPtr operatorCollection() const;
 
   virtual int setup(const std::string& optName, const StringList& optVal);
 
@@ -416,7 +416,7 @@ protected:
   virtual SessionInfoBits updateTessellation(
     const EntityRef& entRef, SessionInfoBits flags, ArrangementHelper* helper);
 
-  void initializeOperatorSystem(const OperatorConstructors* opList);
+  void initializeOperatorCollection(const OperatorConstructors* opList);
   void importOperatorXML(const std::string& opXML);
   virtual OperatorConstructor findOperatorConstructorInternal(
     const std::string&, const OperatorConstructors* opList) const;
@@ -427,7 +427,7 @@ protected:
 
   DanglingEntities m_dangling;
   smtk::common::UUID m_sessionId;
-  smtk::attribute::SystemPtr m_operatorSys;
+  smtk::attribute::CollectionPtr m_operatorSys;
   Manager* m_manager;
 };
 

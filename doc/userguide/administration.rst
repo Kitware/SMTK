@@ -146,7 +146,7 @@ two files are normally written:
 the first, specified by the :arg:`-rwfile` argument is the
 actual Remus worker file and is formatted as a JSON object.
 The second has the same filename with a :file:`.requirements`
-suffix appended and is formatted as an XML attribute system
+suffix appended and is formatted as an XML attribute collection
 describing the modeling operations available.
 
 You should generate a separate Remus worker file for each combination

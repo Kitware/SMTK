@@ -19,7 +19,7 @@
 
 #include "smtk/io/Logger.h"
 
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/common/View.h"
 #include "smtk/model/EntityTypeBits.h"
 
@@ -40,7 +40,7 @@ namespace io
 class SMTKCORE_EXPORT XmlV2StringWriter : public XmlStringWriter
 {
 public:
-  XmlV2StringWriter(const smtk::attribute::SystemPtr system);
+  XmlV2StringWriter(const smtk::attribute::CollectionPtr collection);
   virtual ~XmlV2StringWriter();
   std::string convertToString(smtk::io::Logger& logger, bool no_declaration = false) override;
   void generateXml(

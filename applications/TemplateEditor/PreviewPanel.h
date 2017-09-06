@@ -19,7 +19,7 @@ namespace smtk
 {
 namespace attribute
 {
-class System;
+class Collection;
 }
 
 namespace extension
@@ -47,7 +47,7 @@ class PreviewPanel : public QDockWidget
   Q_OBJECT
 
 public:
-  PreviewPanel(QWidget* parent, smtk::attribute::SystemPtr system);
+  PreviewPanel(QWidget* parent, smtk::attribute::CollectionPtr collection);
   ~PreviewPanel();
 
 public slots:
@@ -84,7 +84,7 @@ private:
 
   std::unique_ptr<Ui::PreviewPanel> Ui;
   QWidget* PreviewWidget = nullptr;
-  smtk::attribute::SystemPtr AttributeSystem;
+  smtk::attribute::CollectionPtr AttributeCollection;
   smtk::attribute::AttributePtr CurrentViewAttr;
   std::unique_ptr<smtk::extension::qtUIManager> UIManager;
 };

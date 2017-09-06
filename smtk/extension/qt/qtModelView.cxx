@@ -1223,7 +1223,7 @@ OperatorPtr qtModelView::getOp(const smtk::model::SessionPtr& brSession, const s
     return OperatorPtr();
   }
 
-  attrib->system()->setRefModelManager(brSession->manager());
+  attrib->collection()->setRefModelManager(brSession->manager());
 
   return brOp;
 }

@@ -9,6 +9,7 @@
 //=========================================================================
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryItem.h"
@@ -23,7 +24,6 @@
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/StringItem.h"
-#include "smtk/attribute/System.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/VoidItem.h"
 
@@ -31,7 +31,6 @@
 #include "smtk/model/Manager.h"
 
 #include "smtk/common/CompilerInformation.h"
-#include "smtk/common/UUIDGenerator.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/algorithm/string.hpp"
@@ -46,8 +45,8 @@ using namespace smtk::common;
 
 Attribute::Attribute(const std::string& myName, smtk::attribute::DefinitionPtr myDefinition,
   const smtk::common::UUID& myId)
-  : m_name(myName)
-  , m_id(myId)
+  : ResourceComponent(myId)
+  , m_name(myName)
   , m_definition(myDefinition)
   , m_appliesToBoundaryNodes(false)
   , m_appliesToInteriorNodes(false)
@@ -58,15 +57,14 @@ Attribute::Attribute(const std::string& myName, smtk::attribute::DefinitionPtr m
 }
 
 Attribute::Attribute(const std::string& myName, smtk::attribute::DefinitionPtr myDefinition)
-  : m_name(myName)
+  : ResourceComponent()
+  , m_name(myName)
   , m_definition(myDefinition)
   , m_appliesToBoundaryNodes(false)
   , m_appliesToInteriorNodes(false)
   , m_isColorSet(false)
   , m_aboutToBeDeleted(false)
 {
-  smtk::common::UUIDGenerator gen;
-  this->m_id = gen.random();
   this->m_definition->buildAttribute(this);
 }
 
@@ -259,21 +257,26 @@ bool Attribute::isValid() const
   return true;
 }
 
-SystemPtr Attribute::system() const
+CollectionPtr Attribute::collection() const
 {
-  return this->m_definition->system();
+  return this->m_definition->collection();
+}
+
+smtk::common::ResourcePtr Attribute::resource() const
+{
+  return this->collection();
 }
 
 /**\brief Return the model Manager instance whose entities may have attributes.
   *
   * This returns a shared pointer to smtk::model::Manager, which may be
-  * null if no manager is referenced by the attribute system (or if the
-  * attribute definition does not reference a valid system).
+  * null if no manager is referenced by the attribute collection (or if the
+  * attribute definition does not reference a valid collection).
   */
 smtk::model::ManagerPtr Attribute::modelManager() const
 {
   smtk::model::ManagerPtr result;
-  smtk::attribute::SystemPtr attSys = this->system();
+  smtk::attribute::CollectionPtr attSys = this->collection();
   if (attSys)
   {
     result = attSys->refModelManager();
@@ -295,7 +298,7 @@ void Attribute::removeAllAssociations()
     smtk::model::EntityRefArray::const_iterator it;
     for (it = this->m_associations->begin(); it != this->m_associations->end(); ++it)
     {
-      modelMgr->disassociateAttribute(this->system(), this->m_id, it->entity(), false);
+      modelMgr->disassociateAttribute(this->collection(), this->id(), it->entity(), false);
     }
   }
 
@@ -436,7 +439,7 @@ bool Attribute::associateEntity(const smtk::model::EntityRef& entityRef)
   }
   if (modelMgr)
   {
-    res = modelMgr->associateAttribute(this->system(), this->id(), entityRef.entity());
+    res = modelMgr->associateAttribute(this->collection(), this->id(), entityRef.entity());
   }
   return res;
 }
@@ -463,7 +466,7 @@ void Attribute::disassociateEntity(const smtk::common::UUID& entity, bool revers
       smtk::model::ManagerPtr modelMgr = this->modelManager();
       if (modelMgr)
       {
-        modelMgr->disassociateAttribute(this->system(), this->id(), entity, false);
+        modelMgr->disassociateAttribute(this->collection(), this->id(), entity, false);
       }
     }
   }
@@ -486,7 +489,7 @@ void Attribute::disassociateEntity(const smtk::model::EntityRef& entity, bool re
     if (reverse)
     {
       smtk::model::EntityRef mutableEntity(entity);
-      mutableEntity.disassociateAttribute(this->system(), this->id(), false);
+      mutableEntity.disassociateAttribute(this->collection(), this->id(), false);
     }
   }
 }

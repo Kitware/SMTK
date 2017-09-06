@@ -10,8 +10,8 @@ First steps in Python
 To demonstrate the basic workflow in Python, we'll cover how to:
 
 * create attribute and model managers;
-* create an attribute system to hold simulation information;
-* populate the attribute system with definitions for a particular simulation run;
+* create an attribute collection to hold simulation information;
+* populate the attribute collection with definitions for a particular simulation run;
 * generate an ensemble of input decks whose attributes use these definitions
   with different values as part of a sensitivity study;
 * load a geometric model that has side sets used to hold boundary conditions;
@@ -117,7 +117,7 @@ attributes based on the definitions above:
    :end-before: # -- 5 --
    :linenos:
 
-When you ask the :smtk:`System <smtk::attribute::System>` to
+When you ask the :smtk:`Collection <smtk::attribute::Collection>` to
 create an :smtk:`Attribute`, it provides an :smtk:`Item` to match
 every :smtk:`ItemDefinition` in the attribute's underlying
 :smtk:`Definition`.

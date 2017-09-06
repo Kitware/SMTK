@@ -1,7 +1,7 @@
 Key Concepts
 ============
 
-Like the attribute system, the model system is composed of C++ classes,
+Like the attribute collection, the model system is composed of C++ classes,
 also accessible in Python, whose instances perform the following functions:
 
 :smtk:`Manager <smtk::model::Manager>`
@@ -10,7 +10,7 @@ also accessible in Python, whose instances perform the following functions:
   assigned a UUID by SMTK.
   You can think of the manager as a key-value store from UUID values to
   model entities, their properties, their arrangement with other entities,
-  their ties to the attribute system, and their tessellations.
+  their ties to the attribute collection, and their tessellations.
 
 :smtk:`Session <smtk::model::Session>`
   instances relate entries in a model Manager to a solid modeling kernel.
@@ -28,7 +28,7 @@ also accessible in Python, whose instances perform the following functions:
   Operators usually require the entries in the model Manager to be
   updated after they are executed (in the solid modeling kernel).
   Each operator implements a method to invoke its operation in the modeling kernel
-  and owns an attribute system Attribute instance (its *specification*) to store
+  and owns an attribute collection Attribute instance (its *specification*) to store
   the parameters required by the operation.
   SMTK expects the primary operand of an operator (e.g., a set of edge entities
   in the model manager to be swept into a face) to be model entities

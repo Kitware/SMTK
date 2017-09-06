@@ -61,13 +61,13 @@ Operator::Operator()
   this->m_debugLevel = 0;
 }
 
-/// Destructor. Removes its specification() from the session's operator system.
+/// Destructor. Removes its specification() from the session's operator collection.
 Operator::~Operator()
 {
   Session::Ptr sess = this->session();
-  if (sess && sess->operatorSystem() && this->m_specification)
+  if (sess && sess->operatorCollection() && this->m_specification)
   {
-    sess->operatorSystem()->removeAttribute(this->m_specification);
+    sess->operatorCollection()->removeAttribute(this->m_specification);
   }
 }
 
@@ -359,7 +359,7 @@ OperatorDefinition Operator::definition() const
   if (!mgr || !brg)
     return attribute::DefinitionPtr();
 
-  return brg->operatorSystem()->findDefinition(this->name());
+  return brg->operatorCollection()->findDefinition(this->name());
 }
 
 /**\brief Return the specification of this operator (creating one if none exists).
@@ -419,7 +419,7 @@ bool Operator::ensureSpecification() const
     return false;
   }
 
-  smtk::attribute::AttributePtr spec = sess->operatorSystem()->createAttribute(this->name());
+  smtk::attribute::AttributePtr spec = sess->operatorCollection()->createAttribute(this->name());
   if (!spec)
   {
     return false;
@@ -535,7 +535,7 @@ OperatorResult Operator::createResult(OperatorOutcome outcome)
 {
   std::ostringstream rname;
   rname << "result(" << this->name() << ")";
-  OperatorResult result = this->session()->operatorSystem()->createAttribute(rname.str());
+  OperatorResult result = this->session()->operatorCollection()->createAttribute(rname.str());
   IntItemPtr outcomeItem = smtk::dynamic_pointer_cast<IntItem>(result->find("outcome"));
   outcomeItem->setValue(outcome);
   return result;
@@ -564,8 +564,8 @@ void Operator::setResultOutcome(OperatorResult res, OperatorOutcome outcome)
 void Operator::eraseResult(OperatorResult res)
 {
   SessionPtr brdg;
-  smtk::attribute::SystemPtr sys;
-  if (!res || !(brdg = this->session()) || !(sys = brdg->operatorSystem()))
+  smtk::attribute::CollectionPtr sys;
+  if (!res || !(brdg = this->session()) || !(sys = brdg->operatorCollection()))
     return;
   sys->removeAttribute(res);
 }

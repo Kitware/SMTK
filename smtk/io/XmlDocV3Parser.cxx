@@ -19,8 +19,8 @@ using namespace pugi;
 using namespace smtk::io;
 using namespace smtk;
 
-XmlDocV3Parser::XmlDocV3Parser(smtk::attribute::SystemPtr mySystem)
-  : XmlDocV2Parser(mySystem)
+XmlDocV3Parser::XmlDocV3Parser(smtk::attribute::CollectionPtr myCollection)
+  : XmlDocV2Parser(myCollection)
 {
 }
 
@@ -30,7 +30,7 @@ XmlDocV3Parser::~XmlDocV3Parser()
 
 bool XmlDocV3Parser::canParse(xml_document& doc)
 {
-  // Get the attribute system node
+  // Get the attribute collection node
   xml_node amnode = doc.child("SMTK_AttributeSystem");
   if (amnode.empty())
   {
@@ -84,7 +84,7 @@ xml_node XmlDocV3Parser::getRootNode(xml_document& doc)
 
 void XmlDocV3Parser::process(xml_document& doc)
 {
-  // Get the attribute system node
+  // Get the attribute collection node
   xml_node amnode = doc.child("SMTK_AttributeSystem");
 
   // Check that there is content

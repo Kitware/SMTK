@@ -52,7 +52,7 @@ namespace polygon
 Session::Session()
   : m_nextModelNumber(0)
 {
-  this->initializeOperatorSystem(Session::s_operators);
+  this->initializeOperatorCollection(Session::s_operators);
 }
 
 /// Virtual destructor. Here because Session overrides virtual methods from Session.

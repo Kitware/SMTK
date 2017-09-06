@@ -51,9 +51,9 @@ public slots:
 signals:
   /**
    * Indicates to the parent widget that a change has been made in the attribute
-   * system (or any of its entities) so that the user is informed about it.
+   * collection (or any of its entities) so that the user is informed about it.
    */
-  void systemChanged(bool needsSaving);
+  void collectionChanged(bool needsSaving);
 
 private slots:
   void showInheritedItemDetails(const QModelIndex& index);

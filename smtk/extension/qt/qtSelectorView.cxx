@@ -96,7 +96,7 @@ bool qtSelectorView::createSelector()
   this->Widget->setLayout(layout);
 
   // Get the Selector Attribute
-  smtk::attribute::SystemPtr sys = this->uiManager()->attSystem();
+  smtk::attribute::CollectionPtr sys = this->uiManager()->attCollection();
   std::string attName, defName;
   view->details().attribute("SelectorName", attName);
   view->details().attribute("SelectorType", defName);
@@ -149,7 +149,7 @@ bool qtSelectorView::createSelector()
 bool qtSelectorView::createChildren()
 {
   smtk::common::ViewPtr view = this->getObject();
-  smtk::attribute::SystemPtr sys = this->uiManager()->attSystem();
+  smtk::attribute::CollectionPtr sys = this->uiManager()->attCollection();
 
   // We need the selector item's definition in order to get the enumeration info
   auto selItemDef =
@@ -183,7 +183,7 @@ bool qtSelectorView::createChildren()
     v = sys->findView(t);
     if (!v)
     {
-      // No such View by that name in attribute system
+      // No such View by that name in attribute collection
       continue;
     }
 

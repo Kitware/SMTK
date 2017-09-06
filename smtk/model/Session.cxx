@@ -24,11 +24,11 @@
 #include "smtk/mesh/Manager.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/StringItemDefinition.h"
-#include "smtk/attribute/System.h"
 
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
@@ -50,7 +50,7 @@ Session::Session()
   , m_operatorSys(nullptr)
   , m_manager(nullptr)
 {
-  this->initializeOperatorSystem(Session::s_operators);
+  this->initializeOperatorCollection(Session::s_operators);
 }
 
 /// Destructor.
@@ -232,21 +232,21 @@ void Session::declareDanglingEntity(const EntityRef& ent, SessionInfoBits presen
 }
 
 /** @name Operator Manager
-  *\brief Return this session's internal attribute system, used to describe operators.
+  *\brief Return this session's internal attribute collection, used to describe operators.
   *
   * Each operator should have a definition of the same name held in this manager.
   */
 ///@{
-/// Return the attribute system that holds definitions for all of this session's operators.
-smtk::attribute::SystemPtr Session::operatorSystem()
+/// Return the attribute collection that holds definitions for all of this session's operators.
+smtk::attribute::CollectionPtr Session::operatorCollection()
 {
   return this->m_operatorSys;
 }
 
-/// Return the attribute system that holds definitions for all of this session's operators.
-smtk::attribute::ConstSystemPtr Session::operatorSystem() const
+/// Return the attribute collection that holds definitions for all of this session's operators.
+smtk::attribute::ConstCollectionPtr Session::operatorCollection() const
 {
-  return dynamic_pointer_cast<const smtk::attribute::System>(this->m_operatorSys);
+  return dynamic_pointer_cast<const smtk::attribute::Collection>(this->m_operatorSys);
 }
 ///@}
 
@@ -382,7 +382,7 @@ bool Session::splitAttributes(const EntityRef& from, const EntityRefs& to) const
   // If the output entities do not include the input,
   // remove attributes from the input as otherwise
   // adding them to the target entities might be disallowed
-  // by the attribute system.
+  // by the attribute collection.
   if (to.find(from) == to.end())
   {
     EntityRef mutableFrom(from);
@@ -395,7 +395,7 @@ bool Session::splitAttributes(const EntityRef& from, const EntityRefs& to) const
     {
       if (ent != from && ent.isValid())
       {
-        ok &= ent.associateAttribute(attr->system(), attr->id());
+        ok &= ent.associateAttribute(attr->collection(), attr->id());
       }
     }
   }
@@ -448,7 +448,7 @@ bool Session::mergeAttributes(const EntityRefs& from, EntityRef& to) const
   // Add attributes previously in {from \ to} to target (to).
   for (auto attr : attrs)
   {
-    ok &= to.associateAttribute(attr->system(), attr->id());
+    ok &= to.associateAttribute(attr->collection(), attr->id());
   }
   return ok;
 }
@@ -954,17 +954,17 @@ SessionInfoBits Session::updateTessellation(
   * of the subclass (since the base class does not have access to the map).
   *
   * This method traverses the XML descriptions and imports each into
-  * the session's attribute system.
+  * the session's attribute collection.
   */
-void Session::initializeOperatorSystem(const OperatorConstructors* opList)
+void Session::initializeOperatorCollection(const OperatorConstructors* opList)
 {
   // Superclasses may already have initialized, but since
-  // we cannot remove Definitions from an attribute System
+  // we cannot remove Definitions from an attribute.Collection
   // and may want to override an operator with a session-specific
   // version, we must wipe away whatever already exists.
-  smtk::attribute::SystemPtr other = this->m_operatorSys;
+  smtk::attribute::CollectionPtr other = this->m_operatorSys;
 
-  this->m_operatorSys = smtk::attribute::System::create();
+  this->m_operatorSys = smtk::attribute::Collection::create();
   // Create the "base" definitions that all operators and results will inherit.
   Definition::Ptr opdefn = this->m_operatorSys->createDefinition("operator");
 
@@ -1079,11 +1079,11 @@ void Session::initializeOperatorSystem(const OperatorConstructors* opList)
   }
 }
 
-/**\brief Import XML describing an operator into this session's operator system.
+/**\brief Import XML describing an operator into this session's operator collection.
   *
   * This does not register a constructor for the operator;
   * it is meant for exposing operators registered after this session instance
-  * has been constructed (and thus not defined by initializeOperatorSystem()),
+  * has been constructed (and thus not defined by initializeOperatorCollection()),
   * so it should only be called from within registerOperator().
   */
 void Session::importOperatorXML(const std::string& opXML)

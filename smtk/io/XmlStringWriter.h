@@ -16,7 +16,7 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/io/Logger.h"
 
 #include <string>
@@ -33,8 +33,8 @@ namespace io
 class SMTKCORE_EXPORT XmlStringWriter
 {
 public:
-  XmlStringWriter(smtk::attribute::SystemPtr system)
-    : m_system(system)
+  XmlStringWriter(smtk::attribute::CollectionPtr collection)
+    : m_collection(collection)
     , m_includeDefinitions(true)
     , m_includeInstances(true)
     , m_includeModelInformation(true)
@@ -53,7 +53,7 @@ public:
   virtual void generateXml(
     pugi::xml_node& parent_node, smtk::io::Logger& logger, bool createRoot = true) = 0;
 
-  //Control which sections of the attribute system should be writtern out
+  //Control which sections of the attribute collection should be writtern out
   // By Default all sections are processed.  These are advance options!!
   // If val is false then defintions will not be saved
   void includeDefinitions(bool val) { this->m_includeDefinitions = val; }
@@ -68,7 +68,7 @@ public:
   void includeViews(bool val) { this->m_includeViews = val; }
 
 protected:
-  smtk::attribute::SystemPtr m_system;
+  smtk::attribute::CollectionPtr m_collection;
   bool m_includeDefinitions;
   bool m_includeInstances;
   bool m_includeModelInformation;

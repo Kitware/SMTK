@@ -23,12 +23,12 @@
 #include "smtk/extension/qt/qtVoidItem.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/RefItem.h"
-#include "smtk/attribute/System.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/VoidItem.h"
@@ -180,7 +180,7 @@ void qtAttributeView::createWidget()
   // since the getAllDefinitions() call needs the categories list in AttDefMap
   // Create a map for all catagories so we can cluster the definitions
   this->Internals->AttDefMap.clear();
-  const SystemPtr attSys = this->uiManager()->attSystem();
+  const CollectionPtr attSys = this->uiManager()->attCollection();
   std::set<std::string>::const_iterator it;
   const std::set<std::string>& cats = attSys->categories();
 
@@ -480,8 +480,8 @@ void qtAttributeView::onAttributeNameChanged(QTableWidgetItem* item)
   smtk::attribute::AttributePtr aAttribute = this->getAttributeFromItem(item);
   if (aAttribute && item->text().toStdString() != aAttribute->name())
   {
-    SystemPtr attSystem = aAttribute->definition()->system();
-    attSystem->rename(aAttribute, item->text().toStdString());
+    CollectionPtr attCollection = aAttribute->definition()->collection();
+    attCollection->rename(aAttribute, item->text().toStdString());
     //aAttribute->definition()->setLabel(item->text().toAscii().constData());
     this->updateSelectionOfEntities();
   }
@@ -530,8 +530,8 @@ void qtAttributeView::updateTableWithProperties()
   }
 
   std::vector<smtk::attribute::AttributePtr> result;
-  SystemPtr attSystem = rawPtr->system();
-  attSystem->findAttributes(rawPtr->shared_from_this(), result);
+  CollectionPtr attCollection = rawPtr->collection();
+  attCollection->findAttributes(rawPtr->shared_from_this(), result);
   if (result.size() == 0)
   {
     this->Internals->ValuesTable->blockSignals(false);
@@ -713,9 +713,9 @@ void qtAttributeView::createNewAttribute(smtk::attribute::DefinitionPtr attDef)
     return;
   }
 
-  SystemPtr attSystem = attDef->system();
+  CollectionPtr attCollection = attDef->collection();
 
-  smtk::attribute::AttributePtr newAtt = attSystem->createAttribute(attDef->type());
+  smtk::attribute::AttributePtr newAtt = attCollection->createAttribute(attDef->type());
   QTableWidgetItem* item = this->addAttributeListItem(newAtt);
   if (item)
   {
@@ -733,8 +733,8 @@ void qtAttributeView::onCopySelected()
     return;
   }
 
-  SystemPtr attSystem = selObject->system();
-  newObject = attSystem->copyAttribute(selObject);
+  CollectionPtr attCollection = selObject->collection();
+  newObject = attCollection->copyAttribute(selObject);
   if (newObject)
   {
     QTableWidgetItem* item = this->addAttributeListItem(newObject);
@@ -756,8 +756,8 @@ void qtAttributeView::onDeleteSelected()
     this->Internals->AttSelections.remove(keyName);
 
     attribute::DefinitionPtr attDef = selObject->definition();
-    SystemPtr attSystem = attDef->system();
-    attSystem->removeAttribute(selObject);
+    CollectionPtr attCollection = attDef->collection();
+    attCollection->removeAttribute(selObject);
 
     QTableWidgetItem* selItem = this->getSelectedItem();
     this->Internals->ListTable->removeRow(selItem->row());
@@ -900,8 +900,8 @@ void qtAttributeView::onViewByWithDefinition(int viewBy, smtk::attribute::Defini
     return;
   }
   std::vector<smtk::attribute::AttributePtr> result;
-  SystemPtr attSystem = attDef->system();
-  attSystem->findAttributes(attDef, result);
+  CollectionPtr attCollection = attDef->collection();
+  attCollection->findAttributes(attDef, result);
   if (result.size() && viewBy == VIEWBY_Attribute)
   {
     std::vector<smtk::attribute::AttributePtr>::iterator it;
@@ -997,8 +997,8 @@ void qtAttributeView::initSelectPropCombo(smtk::attribute::DefinitionPtr attDef)
     return;
   }
   std::vector<smtk::attribute::AttributePtr> result;
-  SystemPtr attSystem = attDef->system();
-  attSystem->findAttributes(attDef, result);
+  CollectionPtr attCollection = attDef->collection();
+  attCollection->findAttributes(attDef, result);
   if (result.size() == 0)
   {
     this->Internals->SelectPropCombo->blockSignals(false);
@@ -1065,8 +1065,8 @@ void qtAttributeView::initSelectAttCombo(smtk::attribute::DefinitionPtr attDef)
   }
 
   std::vector<smtk::attribute::AttributePtr> result;
-  SystemPtr attSystem = attDef->system();
-  attSystem->findAttributes(attDef, result);
+  CollectionPtr attCollection = attDef->collection();
+  attCollection->findAttributes(attDef, result);
   std::vector<smtk::attribute::AttributePtr>::iterator it;
   int row = 1;
   for (it = result.begin(); it != result.end(); ++it, ++row)
@@ -1301,8 +1301,8 @@ void qtAttributeView::addComparativeProperty(
   QTableWidget* vtWidget = this->Internals->ValuesTable;
 
   std::vector<smtk::attribute::AttributePtr> result;
-  SystemPtr attSystem = attDef->system();
-  attSystem->findAttributes(attDef, result);
+  CollectionPtr attCollection = attDef->collection();
+  attCollection->findAttributes(attDef, result);
 
   int numRows = this->Internals->ValuesTable->rowCount();
   int insertRow = numRows;
@@ -1355,7 +1355,7 @@ void qtAttributeView::getAllDefinitions()
     return;
   }
 
-  smtk::attribute::SystemPtr sys = this->uiManager()->attSystem();
+  smtk::attribute::CollectionPtr sys = this->uiManager()->attCollection();
 
   std::string attName, defName, val;
   smtk::attribute::AttributePtr att;

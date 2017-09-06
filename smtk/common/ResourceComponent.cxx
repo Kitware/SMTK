@@ -7,26 +7,32 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+// .NAME smtkResourceComponent.cxx - Abstract base class for CMB ResourceComponents
+// .SECTION Description
+// .SECTION See Also
 
-#include "ExportSpec.h"
+#include "smtk/common/ResourceComponent.h"
+#include "smtk/common/UUIDGenerator.h"
 
 namespace smtk
 {
-namespace simulation
+namespace common
 {
 
-ExportSpec::ExportSpec()
-  : m_logger(new smtk::io::Logger)
+ResourceComponent::ResourceComponent(const UUID& myID)
+  : m_id(myID)
 {
-  this->clear();
 }
 
-void ExportSpec::clear()
+ResourceComponent::ResourceComponent()
 {
-  m_simulationCollection = nullptr;
-  m_exportCollection = nullptr;
-  m_logger->reset();
+  smtk::common::UUIDGenerator gen;
+  this->m_id = gen.random();
 }
 
-} // namespace simulation
+ResourceComponent::~ResourceComponent()
+{
+}
+
+} // namespace common
 } // namespace smtk

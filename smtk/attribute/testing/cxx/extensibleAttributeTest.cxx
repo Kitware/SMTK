@@ -9,6 +9,7 @@
 //=========================================================================
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/DirectoryItemDefinition.h"
@@ -23,7 +24,6 @@
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
-#include "smtk/attribute/System.h"
 #include "smtk/attribute/VoidItemDefinition.h"
 
 #include "smtk/io/AttributeReader.h"
@@ -607,12 +607,12 @@ int checkDirectoryItem(const char* name, smtk::attribute::AttributePtr att, bool
   return checkItem<>(sitem, isExtensible);
 }
 
-int checkSystem(smtk::attribute::SystemPtr system)
+int checkCollection(smtk::attribute::CollectionPtr collection)
 {
   int status = 0;
 
   std::cout << "Checking Extensible Value Items........\n";
-  smtk::attribute::DefinitionPtr def = system->findDefinition("Derived2");
+  smtk::attribute::DefinitionPtr def = collection->findDefinition("Derived2");
   if (!def)
   {
     std::cerr << "Could not find Derived 2 Def! - ERROR\n";
@@ -710,10 +710,10 @@ int checkSystem(smtk::attribute::SystemPtr system)
   }
 
   // Find or Create an attribute
-  smtk::attribute::AttributePtr att = system->findAttribute("Derived2Att");
+  smtk::attribute::AttributePtr att = collection->findAttribute("Derived2Att");
   if (!att)
   {
-    att = system->createAttribute("Derived2Att", def);
+    att = collection->createAttribute("Derived2Att", def);
     if (!att)
     {
       std::cerr << "Could not create Attribute - ERROR\n";
@@ -781,7 +781,7 @@ int checkSystem(smtk::attribute::SystemPtr system)
   }
 
   std::cout << "Checking Extensible Group Items........\n";
-  def = system->findDefinition("Derived3");
+  def = collection->findDefinition("Derived3");
   if (!def)
   {
     std::cerr << "Could not find Derived 3 Def! - ERROR\n";
@@ -836,10 +836,10 @@ int checkSystem(smtk::attribute::SystemPtr system)
   }
 
   // Find or Create an attribute
-  att = system->findAttribute("Derived3Att");
+  att = collection->findAttribute("Derived3Att");
   if (!att)
   {
-    att = system->createAttribute("Derived3Att", def);
+    att = collection->createAttribute("Derived3Att", def);
     if (!att)
     {
       std::cerr << "Could not create Attribute - ERROR\n";
@@ -885,11 +885,11 @@ int main(int argc, char* argv[])
   std::string outputFilename = argv[2];
 
   {
-    smtk::attribute::SystemPtr system = smtk::attribute::System::create();
-    std::cout << "System Created\n";
+    smtk::attribute::CollectionPtr collection = smtk::attribute::Collection::create();
+    std::cout << "Collection Created\n";
     smtk::io::AttributeReader reader;
     smtk::io::Logger logger;
-    if (reader.read(system, argv[1], true, logger))
+    if (reader.read(collection, argv[1], true, logger))
     {
       std::cerr << "Errors encountered reading Attribute File: " << argv[1] << "\n";
       std::cerr << logger.convertToString();
@@ -900,10 +900,10 @@ int main(int argc, char* argv[])
       std::cout << "Read in template - PASSED\n";
     }
 
-    // Write output file *before* checking system (checking changes system)
+    // Write output file *before* checking collection (checking changes collection)
     smtk::io::AttributeWriter writer;
     smtk::io::Logger logger1;
-    if (writer.write(system, outputFilename, logger1))
+    if (writer.write(collection, outputFilename, logger1))
     {
       std::cerr << "Errors encountered creating Attribute File:\n";
       std::cerr << logger1.convertToString();
@@ -914,30 +914,30 @@ int main(int argc, char* argv[])
       std::cout << "Wrote " << outputFilename << std::endl;
     }
 
-    // Check system
-    status = checkSystem(system);
+    // Check collection
+    status = checkCollection(collection);
     if (status < 0)
     {
       return status;
     }
 
-    std::cout << "System destroyed\n";
+    std::cout << "Collection destroyed\n";
   }
 
-  //Use separate scope to read attribute system back in
+  //Use separate scope to read attribute collection back in
   {
-    smtk::attribute::SystemPtr readbackSystem = smtk::attribute::System::create();
-    std::cout << "Readback System Created\n";
+    smtk::attribute::CollectionPtr readbackCollection = smtk::attribute::Collection::create();
+    std::cout << "Readback Collection Created\n";
     smtk::io::AttributeReader reader2;
     smtk::io::Logger logger2;
-    if (reader2.read(readbackSystem, outputFilename, true, logger2))
+    if (reader2.read(readbackCollection, outputFilename, true, logger2))
     {
       std::cerr << "Errors encountered reading Attribute File: " << outputFilename << "\n";
       std::cerr << logger2.convertToString();
       return -1;
     }
 
-    status = checkSystem(readbackSystem);
+    status = checkCollection(readbackCollection);
   }
   if (status == 0)
   {

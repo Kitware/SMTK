@@ -25,11 +25,11 @@ if __name__ == '__main__':
 
     status = 0
 
-    system = smtk.attribute.System.create()
-    print 'System created'
+    collection = smtk.attribute.Collection.create()
+    print 'Collection created'
 
     # Lets create an attribute to represent an expression
-    expDef = system.createDefinition("ExpDef")
+    expDef = collection.createDefinition("ExpDef")
     eitemdef = smtk.attribute.StringItemDefinition.New("Expression String")
     expDef.addItemDefinition(eitemdef)
     eitemdef2 = smtk.attribute.StringItemDefinition.New("Aux String")
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     print eitemdef.name()
     print eitemdef2.name()
 
-    base = system.createDefinition("BaseDef")
+    base = collection.createDefinition("BaseDef")
 
     # Lets add some item definitions
     ditemdef = smtk.attribute.DoubleItemDefinition.New("DoubleItem1")
@@ -48,11 +48,11 @@ if __name__ == '__main__':
 
     # Lets test creating an attribute by passing in the expression definition
     # explicitly
-    expAtt1 = system.createAttribute("Exp1", expDef)
-    expAtt2 = system.createAttribute("Exp2", expDef)
-    att = system.createAttribute("testAtt1", "BaseDef")
-    att1 = system.createAttribute("testAtt2", "BaseDef")
-    att2 = system.createAttribute("testAtt3", "BaseDef")
+    expAtt1 = collection.createAttribute("Exp1", expDef)
+    expAtt2 = collection.createAttribute("Exp2", expDef)
+    att = collection.createAttribute("testAtt1", "BaseDef")
+    att1 = collection.createAttribute("testAtt2", "BaseDef")
+    att2 = collection.createAttribute("testAtt3", "BaseDef")
 
     smtk.attribute.ValueItem.CastTo(att.item(0)).setExpression(expAtt1)
     smtk.attribute.ValueItem.CastTo(att1.item(0)).setExpression(expAtt1)
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     for i in refs:
         print "\tAtt: %s Item: %s " % (i.attribute().name(), i.owningItem().name())
 
-    system.removeAttribute(att1)
+    collection.removeAttribute(att1)
     del att1  # Should delete att1
     print "testAtt1 deleted"
     refs = expAtt1.references()
@@ -95,7 +95,7 @@ if __name__ == '__main__':
     for i in refs:
         print "\tAtt: %s Item: %s " % (i.attribute().name(), i.owningItem().name())
 
-    del system
-    print 'System destroyed'
+    del collection
+    print 'Collection destroyed'
 
     sys.exit(status)

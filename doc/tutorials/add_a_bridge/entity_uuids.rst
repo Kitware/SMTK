@@ -22,7 +22,7 @@ There are two ways to go about storing and maintaining this
 bidirectional map between modeling kernel entities and SMTK
 UUIDs:
 
-1. If the modeling kernel provides an attribute system,
+1. If the modeling kernel provides an attribute collection,
    then the UUIDs can be stored as attributes on entities.
    Note that it is important to verify that attributes
    can be stored on all the entities you wish SMTK to be
@@ -52,7 +52,7 @@ on each :cxx:`vtkDataObject`'s information object using the :cxx:`SMTK_UUID_KEY`
    :end-before: // -- 1 --
 
 The advantage to the first approach is that modeling
-kernels with attribute systems generally provide a way
+kernels with attribute collections generally provide a way
 to preserve attributes across modeling operations.
 When using the latter method, there is no robust way to
 track entities across modeling operations that change
@@ -93,7 +93,7 @@ Adding UUIDs as attributes
 
 Although we do not provide example code in this tutorial,
 it should be straightforward to add UUIDs to a modeling kernel's
-attribute system either as a 16-byte binary blob or an ASCII string
+attribute collection either as a 16-byte binary blob or an ASCII string
 per entity.
 
 For example, if we wished to make VTK points and cells available
@@ -105,7 +105,7 @@ instances (one for points, one for cells).
 
 VTK provides the concept of pedigree IDs for mapping points and cells
 from inputs to corresponding outputs, so (for filters that support
-pedigree IDs) VTK behaves much like an attribute system in a geometric
+pedigree IDs) VTK behaves much like an attribute collection in a geometric
 modeling kernel.
 
 If we ever expose individual points and cells in the SMTK Exodus session,

@@ -368,7 +368,7 @@ if __name__ == '__main__':
     attribute_file = sys.argv[1]
     print 'Loading attribute file %s' % attribute_file
     attribute_reader = smtk.util.AttributeReader()
-    src_system = smtk.attribute.System()
+    src_system = smtk.attribute.Collection()
     io_logger.reset()
     err = attribute_reader.read(src_system, attribute_file, io_logger)
     if err:
@@ -379,7 +379,7 @@ if __name__ == '__main__':
     template_file = sys.argv[2]
     print 'Loading template file %s' % template_file
     template_reader = smtk.util.AttributeReader()
-    dst_system = smtk.attribute.System()
+    dst_system = smtk.attribute.Collection()
     io_logger.reset()
     err = template_reader.read(dst_system, template_file, io_logger)
     if err:

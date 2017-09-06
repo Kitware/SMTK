@@ -25,7 +25,7 @@ SMTK_THIRDPARTY_POST_INCLUDE
 #include "remus/common/MeshIOType.h"
 #include "remus/common/ContentTypes.h"
 
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/common/Paths.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/AttributeWriter.h"
@@ -83,7 +83,7 @@ PYBIND11_MODULE(_smtkPybindMeshWorkerDelaunay, delaunay)
     });
 
   delaunay.def("meshing_attributes", [](){
-  smtk::attribute::SystemPtr sysptr = smtk::attribute::System::create();
+  smtk::attribute::CollectionPtr sysptr = smtk::attribute::Collection::create();
   smtk::io::Logger logger;
   smtk::io::AttributeReader reader;
   reader.read(sysptr,

@@ -88,33 +88,33 @@ class TestModelAttributes(unittest.TestCase):
             sys.exit(3)
 
     def generate_attributes(self, scope):
-        '''Builds and returns attribute system
+        '''Builds and returns attribute collection
 
         Also adds boundary groups to the model
         '''
         # Load attribute file
         att_folder = os.path.join(self.model_folder, 'attribute')
         att_folder = os.path.join(
-            smtk.testing.DATA_DIR, 'attribute', 'attribute_system')
+            smtk.testing.DATA_DIR, 'attribute', 'attribute_collection')
         att_path = os.path.join(att_folder, SBT_FILENAME)
         logging.info('Reading %s' % att_path)
-        system = smtk.attribute.System.create()
-        # system.setRefModelManager(scope.store)
+        collection = smtk.attribute.Collection.create()
+        # collection.setRefModelManager(scope.store)
         reader = smtk.io.AttributeReader()
         logger = smtk.io.Logger()
-        err = reader.read(system, att_path, logger)
+        err = reader.read(collection, att_path, logger)
         if err:
             logging.error("Unable to load template file")
             logging.error(logger.convertToString())
             sys.exit(4)
 
         # Create material attribute & associate to model face
-        system.setRefModelManager(scope.store)
-        defn = system.findDefinition('Material')
+        collection.setRefModelManager(scope.store)
+        defn = collection.findDefinition('Material')
         value = 1.01
         for i, face in enumerate(scope.face_list, start=1):
             att_name = 'material %d' % i
-            att = system.createAttribute(att_name, defn)
+            att = collection.createAttribute(att_name, defn)
 
             for item_name in ['Density', 'Viscosity']:
                 item = att.find(item_name)
@@ -146,8 +146,8 @@ class TestModelAttributes(unittest.TestCase):
         scope.store.addToGroup(right_edges.entity(), set(uuid_list))
 
         # Create boundary condition attributes
-        defn = system.findDefinition('Velocity')
-        left_att = system.createAttribute('leftBC', defn)
+        defn = collection.findDefinition('Velocity')
+        left_att = collection.createAttribute('leftBC', defn)
         item = left_att.item(0)
         concrete_item = smtk.attribute.to_concrete(item)
         concrete_item.setValue(0, 3.14159)
@@ -158,8 +158,8 @@ class TestModelAttributes(unittest.TestCase):
         meta = (left_att.name(), left_edges.entity())
         scope.att_data.append(meta)
 
-        defn = system.findDefinition('Pressure')
-        right_att = system.createAttribute('rightBC', defn)
+        defn = collection.findDefinition('Pressure')
+        right_att = collection.createAttribute('rightBC', defn)
         item = left_att.item(0)
         concrete_item = smtk.attribute.to_concrete(item)
         concrete_item.setValue(0, 14.1)
@@ -169,9 +169,9 @@ class TestModelAttributes(unittest.TestCase):
         meta = (right_att.name(), right_edges.entity())
         scope.att_data.append(meta)
 
-        return system
+        return collection
 
-    def check_attributes(self, scope, system):
+    def check_attributes(self, scope, collection):
         '''Checks for attributes and associations
 
         Returns number of errors found
@@ -181,7 +181,7 @@ class TestModelAttributes(unittest.TestCase):
         for t in scope.att_data:
             att_name, entity_uuid = t
             # logging.debug('att_name %s, uuid %s' % t)
-            att = system.findAttribute(att_name)
+            att = collection.findAttribute(att_name)
             if not att:
                 logging.error('Missing attribute %s' % att_name)
                 error_count += 1
@@ -227,11 +227,11 @@ class TestModelAttributes(unittest.TestCase):
 
         # Build attributes and write to file
         scope.att_data = list()
-        system = self.generate_attributes(scope)
+        collection = self.generate_attributes(scope)
         logging.info('Writing %s' % SBI_FILENAME)
         writer = smtk.io.AttributeWriter()
         logger = smtk.io.Logger()
-        err = writer.write(system, SBI_FILENAME, logger)
+        err = writer.write(collection, SBI_FILENAME, logger)
         if err:
             logging.error('Unable to write attribute file')
             logging.error(logger.convertToString())
@@ -239,7 +239,7 @@ class TestModelAttributes(unittest.TestCase):
 
         # Delete model & attributes
         del scope.store
-        del system
+        del collection
 
         # Re-import model
         test_store = smtk.model.Manager.create()
@@ -248,17 +248,17 @@ class TestModelAttributes(unittest.TestCase):
 
         # Re-read attribute file
         logging.info('Reading back %s' % SBI_FILENAME)
-        test_system = smtk.attribute.System.create()
+        test_collection = smtk.attribute.Collection.create()
         reader = smtk.io.AttributeReader()
-        err = reader.read(test_system, SBI_FILENAME, logger)
+        err = reader.read(test_collection, SBI_FILENAME, logger)
         if err:
             logging.error("Unable to read attribute file")
             logging.error(logger.convertToString())
         self.assertTrue(not err, "Unable to read attribute file")
 
         # Set model and verify attributes
-        test_system.setRefModelManager(scope.store)
-        error_count = self.check_attributes(scope, test_system)
+        test_collection.setRefModelManager(scope.store)
+        error_count = self.check_attributes(scope, test_collection)
         self.assertEqual(error_count, 0, "At least one error occurred.")
 
 

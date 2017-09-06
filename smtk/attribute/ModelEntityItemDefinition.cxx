@@ -10,8 +10,8 @@
 
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/ModelEntityItem.h"
-#include "smtk/attribute/System.h"
 #include "smtk/common/UUID.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
@@ -93,10 +93,10 @@ bool ModelEntityItemDefinition::isValueValid(const smtk::model::EntityRef& c) co
         !(itemType & this->m_membershipMask & smtk::model::ENTITY_MASK) &&
         (itemType & smtk::model::ENTITY_MASK) != smtk::model::GROUP_ENTITY) ||
     ((this->m_membershipMask & smtk::model::ANY_DIMENSION) &&
-      !(itemType & this->m_membershipMask & smtk::model::ANY_DIMENSION)) ||
+        !(itemType & this->m_membershipMask & smtk::model::ANY_DIMENSION)) ||
     ((itemType & smtk::model::GROUP_ENTITY) &&
-      (this->m_membershipMask & smtk::model::GROUP_CONSTRAINT_MASK) &&
-      !(itemType & this->m_membershipMask & smtk::model::GROUP_CONSTRAINT_MASK)))
+        (this->m_membershipMask & smtk::model::GROUP_CONSTRAINT_MASK) &&
+        !(itemType & this->m_membershipMask & smtk::model::GROUP_CONSTRAINT_MASK)))
     return false;
   if (itemType != this->membershipMask() && itemType & smtk::model::GROUP_ENTITY &&
     // if the mask is only defined as "group", don't have to check further for members

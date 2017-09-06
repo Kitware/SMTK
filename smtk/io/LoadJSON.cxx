@@ -20,8 +20,8 @@
 #include "smtk/model/Tessellation.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/System.h"
 
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
@@ -320,7 +320,7 @@ namespace io
 
 template <typename T>
 int cJSON_GetObjectParameters(
-  cJSON* node, T& obj, smtk::attribute::SystemPtr sys, const char* attName, const char* attXML)
+  cJSON* node, T& obj, smtk::attribute::CollectionPtr sys, const char* attName, const char* attXML)
 {
   cJSON* params = cJSON_GetObjectItem(node, attXML);
   cJSON* opspec = cJSON_GetObjectItem(node, attName);
@@ -341,7 +341,7 @@ int cJSON_GetObjectParameters(
     }
 
     // Now link the loaded XML to the operator instance by searching
-    // the operatorSystem for its name.
+    // the operatorCollection for its name.
     obj = sys->findAttribute(opspec->valuestring);
     return !!obj;
   }
@@ -714,12 +714,12 @@ int LoadJSON::ofRemoteSession(
   destSession->backsRemoteSession(nameObj->valuestring, smtk::common::UUID(node->string));
 
   // Import the XML definitions of the serialized session
-  // into the destination session's operatorSystem():
+  // into the destination session's operatorCollection():
   smtk::io::Logger log;
   smtk::io::AttributeReader rdr;
   rdr.setReportDuplicateDefinitionsAsErrors(false);
   if (rdr.readContents(
-        destSession->operatorSystem(), opsObj->valuestring, strlen(opsObj->valuestring), log))
+        destSession->operatorCollection(), opsObj->valuestring, strlen(opsObj->valuestring), log))
   {
     std::cerr << "Error. Log follows:\n---\n" << log.convertToString() << "\n---\n";
     throw std::string("Could not parse operator XML.");
@@ -923,7 +923,7 @@ int LoadJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
   // If the operator has a specification, use it.
   // It is not an error to pass an unspecified operator.
   OperatorSpecification spec;
-  if (cJSON_GetObjectParameters(node, spec, op->session()->operatorSystem(), "spec", "specXML"))
+  if (cJSON_GetObjectParameters(node, spec, op->session()->operatorCollection(), "spec", "specXML"))
   {
     op->setSpecification(spec);
   }
@@ -933,7 +933,7 @@ int LoadJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
 int LoadJSON::ofOperatorResult(
   cJSON* node, OperatorResult& resOut, smtk::model::RemoteOperatorPtr op)
 {
-  smtk::attribute::SystemPtr opSys = op->session()->operatorSystem();
+  smtk::attribute::CollectionPtr opSys = op->session()->operatorCollection();
   // Deserialize the OperatorResult into \a resOut:
   int status = cJSON_GetObjectParameters(node, resOut, opSys, "result", "resultXML");
 

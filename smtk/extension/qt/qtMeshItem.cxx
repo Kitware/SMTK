@@ -11,10 +11,10 @@
 #include "smtk/extension/qt/qtMeshItem.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/MeshItemDefinition.h"
-#include "smtk/attribute/System.h"
 #include "smtk/common/View.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtAttributeView.h"

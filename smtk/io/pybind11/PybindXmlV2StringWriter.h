@@ -15,7 +15,7 @@
 
 #include "smtk/io/XmlV2StringWriter.h"
 
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/io/Logger.h"
 #include "smtk/io/XmlStringWriter.h"
 
@@ -26,7 +26,7 @@ PySharedPtrClass< smtk::io::XmlV2StringWriter, smtk::io::XmlStringWriter > pybin
   PySharedPtrClass< smtk::io::XmlV2StringWriter, smtk::io::XmlStringWriter > instance(m, "XmlV2StringWriter");
   instance
     .def(py::init<::smtk::io::XmlV2StringWriter const &>())
-    .def(py::init<::smtk::attribute::SystemPtr>())
+    .def(py::init<::smtk::attribute::CollectionPtr>())
     .def("convertToString", &smtk::io::XmlV2StringWriter::convertToString, py::arg("logger"), py::arg("no_declaration") = false)
     .def("generateXml", &smtk::io::XmlV2StringWriter::generateXml, py::arg("parent_node"), py::arg("logger"), py::arg("createRoot") = true)
     .def("messageLog", &smtk::io::XmlV2StringWriter::messageLog)

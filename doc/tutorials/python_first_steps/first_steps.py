@@ -10,7 +10,7 @@ from smtk import attribute
 from smtk import io
 from smtk import model
 
-asys = smtk.attribute.System.create()
+asys = smtk.attribute.Collection.create()
 mmgr = smtk.model.Manager.create()
 
 # Connect the managers:

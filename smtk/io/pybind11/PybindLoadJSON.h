@@ -27,7 +27,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"

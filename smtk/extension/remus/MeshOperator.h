@@ -38,7 +38,7 @@ class Session;
   *
   * Key ["remusRequirements"]: The filled out requirements of the worker
   *
-  * Key ["meshingControlAttributes"]: The attribute system of the worker
+  * Key ["meshingControlAttributes"]: The attribute collection of the worker
   *
   *
   *

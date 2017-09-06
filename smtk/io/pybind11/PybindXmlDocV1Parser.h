@@ -41,7 +41,7 @@
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/VoidItem.h"
@@ -87,7 +87,7 @@ PySharedPtrClass< smtk::io::XmlDocV1Parser > pybind11_init_smtk_io_XmlDocV1Parse
   PySharedPtrClass< smtk::io::XmlDocV1Parser > instance(m, "XmlDocV1Parser");
   instance
     .def(py::init<::smtk::io::XmlDocV1Parser const &>())
-    .def(py::init<::smtk::attribute::SystemPtr>())
+    .def(py::init<::smtk::attribute::CollectionPtr>())
     .def_static("canParse", (bool (*)(::pugi::xml_document &)) &smtk::io::XmlDocV1Parser::canParse, py::arg("doc"))
     .def_static("canParse", (bool (*)(::pugi::xml_node &)) &smtk::io::XmlDocV1Parser::canParse, py::arg("node"))
     .def_static("getRootNode", &smtk::io::XmlDocV1Parser::getRootNode, py::arg("doc"))

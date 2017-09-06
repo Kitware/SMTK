@@ -15,7 +15,7 @@
 #define PUGIXML_HEADER_ONLY
 #include "pugixml/src/pugixml.cpp"
 
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 
 #include "smtk/common/CompilerInformation.h"
 
@@ -191,7 +191,7 @@ bool ResourceSetReader::readString(const std::string& content, ResourceSet& reso
     {
       //std::cout << "  Embedded\n";
       std::string path = resources.linkStartPath();
-      if (readEmbeddedAttSystem(childElement, r, path, logger))
+      if (readEmbeddedAttCollection(childElement, r, path, logger))
       {
         resources.addResource(r, id, "", role);
       }
@@ -214,31 +214,31 @@ bool ResourceSetReader::readString(const std::string& content, ResourceSet& reso
   return logger.hasErrors();
 }
 
-bool ResourceSetReader::readEmbeddedAttSystem(pugi::xml_node& element,
+bool ResourceSetReader::readEmbeddedAttCollection(pugi::xml_node& element,
   smtk::common::ResourcePtr& resource, std::string& linkStartPath, smtk::io::Logger& logger)
 {
-  // Initialize attribute system
-  smtk::attribute::SystemPtr system;
+  // Initialize attribute collection
+  smtk::attribute::CollectionPtr collection;
   // If input resource is empty, create attribute manager
   if (resource)
   {
-    system = smtk::dynamic_pointer_cast<smtk::attribute::System>(resource);
+    collection = smtk::dynamic_pointer_cast<smtk::attribute::Collection>(resource);
   }
   else
   {
-    system = smtk::attribute::System::create();
-    resource = smtk::common::ResourcePtr(system);
+    collection = smtk::attribute::Collection::create();
+    resource = smtk::common::ResourcePtr(collection);
   }
 
-  if (!system)
+  if (!collection)
   {
-    smtkErrorMacro(logger, "Failed to initialize attribute system");
+    smtkErrorMacro(logger, "Failed to initialize attribute collection");
     return false;
   }
 
-  if (m_modelManager && !system->refModelManager())
+  if (m_modelManager && !collection->refModelManager())
   {
-    system->setRefModelManager(m_modelManager);
+    collection->setRefModelManager(m_modelManager);
   }
 
   // Instantiate AttributeReader and load contents
@@ -249,7 +249,7 @@ bool ResourceSetReader::readEmbeddedAttSystem(pugi::xml_node& element,
     searchPaths.push_back(linkStartPath);
     reader.setSearchPaths(searchPaths);
   }
-  reader.readContents(system, element, logger);
+  reader.readContents(collection, element, logger);
   return !logger.hasErrors();
 }
 
@@ -266,27 +266,27 @@ bool ResourceSetReader::readIncludedManager(const pugi::xml_node& element,
     return false;
   }
 
-  // Initialize attribute system
-  smtk::attribute::SystemPtr system;
+  // Initialize attribute collection
+  smtk::attribute::CollectionPtr collection;
   // If input resource is empty, create attribute manager
   if (resource)
   {
-    system = smtk::dynamic_pointer_cast<smtk::attribute::System>(resource);
+    collection = smtk::dynamic_pointer_cast<smtk::attribute::Collection>(resource);
   }
   else
   {
-    system = smtk::attribute::System::create();
-    resource = smtk::common::ResourcePtr(system);
+    collection = smtk::attribute::Collection::create();
+    resource = smtk::common::ResourcePtr(collection);
   }
 
-  if (!system)
+  if (!collection)
   {
-    smtkErrorMacro(logger, "Failed to initialize attribute system");
+    smtkErrorMacro(logger, "Failed to initialize attribute collection");
     return false;
   }
 
   smtk::io::AttributeReader reader;
-  bool hasErr = reader.read(system, path, true, logger);
+  bool hasErr = reader.read(collection, path, true, logger);
   if (hasErr)
   {
     return false;

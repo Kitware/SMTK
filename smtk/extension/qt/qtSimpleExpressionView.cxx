@@ -15,6 +15,7 @@
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DoubleItemDefinition.h"
@@ -24,7 +25,6 @@
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
-#include "smtk/attribute/System.h"
 #include "smtk/common/View.h"
 
 #include <QFileDialog>
@@ -383,8 +383,8 @@ void qtSimpleExpressionView::onFuncNameChanged(QListWidgetItem* item)
   smtk::attribute::AttributePtr func = this->getFunctionFromItem(item);
   if (func)
   {
-    SystemPtr attSystem = func->definition()->system();
-    attSystem->rename(func, item->text().toLatin1().constData());
+    CollectionPtr attCollection = func->definition()->collection();
+    attCollection->rename(func, item->text().toLatin1().constData());
   }
 }
 
@@ -489,9 +489,9 @@ void qtSimpleExpressionView::createNewFunction(smtk::attribute::DefinitionPtr at
     return;
   }
   this->Internals->FuncList->blockSignals(true);
-  SystemPtr attSystem = attDef->system();
+  CollectionPtr attCollection = attDef->collection();
 
-  smtk::attribute::AttributePtr newFunc = attSystem->createAttribute(attDef->type());
+  smtk::attribute::AttributePtr newFunc = attCollection->createAttribute(attDef->type());
   QListWidgetItem* item = this->addFunctionListItem(newFunc);
   if (item)
   {
@@ -631,7 +631,7 @@ void qtSimpleExpressionView::onDeleteSelected()
       return;
     }
 
-    smtk::attribute::SystemPtr sys = this->uiManager()->attSystem();
+    smtk::attribute::CollectionPtr sys = this->uiManager()->attCollection();
     sys->removeAttribute(this->getFunctionFromItem(selItem));
 
     this->Internals->FuncList->takeItem(this->Internals->FuncList->row(selItem));
@@ -798,7 +798,7 @@ void qtSimpleExpressionView::initFunctionList()
   {
     return;
   }
-  smtk::attribute::SystemPtr sys = this->uiManager()->attSystem();
+  smtk::attribute::CollectionPtr sys = this->uiManager()->attCollection();
   // There should be only 1 child component called Type
   if ((view->details().numberOfChildren() != 1) || (view->details().child(0).name() != "Att"))
   {

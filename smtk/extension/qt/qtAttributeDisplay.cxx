@@ -11,9 +11,9 @@
 #include "smtk/extension/qt/qtAttributeDisplay.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ItemDefinition.h"
-#include "smtk/attribute/System.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/extension/qt/qtItem.h"
@@ -115,7 +115,7 @@ void qtAttributeDisplay::createWidget()
   BottomLayout->setMargin(0);
   BottomFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 */
-  const SystemPtr attSys = this->Internals->UIManager->attSystem();
+  const CollectionPtr attSys = this->Internals->UIManager->attCollection();
 
   this->Internals->FilterByCheck = new QCheckBox(this->Internals->FiltersFrame);
   this->Internals->FilterByCheck->setText("Show by Category: ");
@@ -274,8 +274,8 @@ void qtAttributeDisplay::initSelectPropCombo(
     return;
   }
   std::vector<smtk::attribute::AttributePtr> result;
-  SystemPtr attSystem = attDef->system();
-  attSystem->findAttributes(attDef, result);
+  CollectionPtr attCollection = attDef->collection();
+  attCollection->findAttributes(attDef, result);
   if (result.size() == 0)
   {
     this->Internals->SelectPropCombo->setCurrentIndex(0);
@@ -346,7 +346,7 @@ void qtAttributeDisplay::getDefinitionsWithAssociations()
   if (!this->Internals->UIManager)
     return;
 
-  smtk::attribute::SystemPtr attsys = this->Internals->UIManager->attSystem();
+  smtk::attribute::CollectionPtr attsys = this->Internals->UIManager->attCollection();
   this->Internals->AllAssignedDefs.clear();
   this->Internals->AttDefMap.clear();
 

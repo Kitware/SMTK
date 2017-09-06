@@ -19,7 +19,7 @@
 
 #include "smtk/io/Logger.h"
 
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 
 #include "smtk/model/EntityTypeBits.h"
 
@@ -60,7 +60,7 @@ struct ItemExpressionInfo
 class SMTKCORE_EXPORT XmlDocV1Parser
 {
 public:
-  XmlDocV1Parser(smtk::attribute::SystemPtr asys);
+  XmlDocV1Parser(smtk::attribute::CollectionPtr asys);
   virtual ~XmlDocV1Parser();
   virtual void process(pugi::xml_document& doc);
   virtual void process(pugi::xml_node& rootNode);
@@ -136,7 +136,7 @@ protected:
   smtk::model::BitFlags decodeModelEntityMask(const std::string& s);
   static int decodeColorInfo(const std::string& s, double* color);
   bool m_reportAsError;
-  smtk::attribute::SystemPtr m_system;
+  smtk::attribute::CollectionPtr m_collection;
   std::vector<ItemExpressionDefInfo> m_itemExpressionDefInfo;
   std::vector<AttRefDefInfo> m_attRefDefInfo;
   std::vector<ItemExpressionInfo> m_itemExpressionInfo;

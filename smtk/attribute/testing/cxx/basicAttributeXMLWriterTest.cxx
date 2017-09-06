@@ -9,6 +9,7 @@
 //=========================================================================
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryItemDefinition.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -20,7 +21,6 @@
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
-#include "smtk/attribute/System.h"
 #include "smtk/attribute/VoidItemDefinition.h"
 
 #include "smtk/model/EntityTypeBits.h"
@@ -56,39 +56,39 @@ int main(int argc, char* argv[])
       std::cerr << "Usage: " << argv[0] << " FullAttributeFilename InstanceOnlyFileName\n";
       return -1;
     }
-    smtk::attribute::SystemPtr sysptr = smtk::attribute::System::create();
-    smtk::attribute::System& system(*sysptr.get());
-    std::cout << "System Created\n";
+    smtk::attribute::CollectionPtr sysptr = smtk::attribute::Collection::create();
+    smtk::attribute::Collection& collection(*sysptr.get());
+    std::cout << "Collection Created\n";
     // Lets add some analyses
     std::set<std::string> analysis;
     analysis.insert("Flow");
     analysis.insert("General");
     analysis.insert("Time");
-    system.defineAnalysis("CFD Flow", analysis);
+    collection.defineAnalysis("CFD Flow", analysis);
     analysis.clear();
 
     analysis.insert("Flow");
     analysis.insert("Heat");
     analysis.insert("General");
     analysis.insert("Time");
-    system.defineAnalysis("CFD Flow with Heat Transfer", analysis);
+    collection.defineAnalysis("CFD Flow with Heat Transfer", analysis);
     analysis.clear();
 
     analysis.insert("Constituent");
     analysis.insert("General");
     analysis.insert("Time");
-    system.defineAnalysis("Constituent Transport", analysis);
+    collection.defineAnalysis("Constituent Transport", analysis);
     analysis.clear();
 
     double lcolor1[] = { 1.0, 1.0, 0.0, 0.1 };
     double lcolor2[] = { 1.0, 0.0, 1.0, 0.2 };
     double lcolor3[] = { 0.0, 1.0, 1.0, 0.3 };
-    system.addAdvanceLevel(0, "Level 0", lcolor1);
-    system.addAdvanceLevel(1, "Level 1", lcolor2);
-    system.addAdvanceLevel(2, "Level 2", lcolor3);
+    collection.addAdvanceLevel(0, "Level 0", lcolor1);
+    collection.addAdvanceLevel(1, "Level 1", lcolor2);
+    collection.addAdvanceLevel(2, "Level 2", lcolor3);
 
     // Lets create an attribute to represent an expression
-    smtk::attribute::DefinitionPtr expDef = system.createDefinition("ExpDef");
+    smtk::attribute::DefinitionPtr expDef = collection.createDefinition("ExpDef");
     expDef->setBriefDescription("Sample Expression");
     expDef->setDetailedDescription("Sample Expression for testing\nThere is not much here!");
     smtk::attribute::StringItemDefinitionPtr eitemdef =
@@ -97,7 +97,7 @@ int main(int argc, char* argv[])
       expDef->addItemDefinition<smtk::attribute::StringItemDefinition>("Aux String");
     eitemdef->setDefaultValue("sample");
 
-    smtk::attribute::DefinitionPtr base = system.createDefinition("BaseDef");
+    smtk::attribute::DefinitionPtr base = collection.createDefinition("BaseDef");
     // Lets add some item definitions
     smtk::attribute::IntItemDefinitionPtr iitemdef =
       base->addItemDefinition<smtk::attribute::IntItemDefinitionPtr>("TEMPORAL");
@@ -113,7 +113,7 @@ int main(int argc, char* argv[])
     iitemdef->setDefaultValue(10);
     iitemdef->addCategory("Heat");
 
-    smtk::attribute::DefinitionPtr def1 = system.createDefinition("Derived1", "BaseDef");
+    smtk::attribute::DefinitionPtr def1 = collection.createDefinition("Derived1", "BaseDef");
     def1->setAssociationMask(smtk::model::MODEL_ENTITY); // belongs on model
                                                          // Lets add some item definitions
     smtk::attribute::DoubleItemDefinitionPtr ditemdef =
@@ -137,7 +137,7 @@ int main(int argc, char* argv[])
     vdef->setIsOptional(true);
     vdef->setLabel("Option 1");
 
-    smtk::attribute::DefinitionPtr def2 = system.createDefinition("Derived2", "Derived1");
+    smtk::attribute::DefinitionPtr def2 = collection.createDefinition("Derived2", "Derived1");
     def2->setAssociationMask(smtk::model::VOLUME);
     // Lets add some item definitions
     smtk::attribute::StringItemDefinitionPtr sitemdef =
@@ -164,17 +164,17 @@ int main(int argc, char* argv[])
     sitemdef->addCategory("Flow");
 
     // Add in a Attribute definition with a reference to another attribute
-    smtk::attribute::DefinitionPtr attrefdef = system.createDefinition("AttributeReferenceDef");
+    smtk::attribute::DefinitionPtr attrefdef = collection.createDefinition("AttributeReferenceDef");
     smtk::attribute::RefItemDefinitionPtr aritemdef =
       attrefdef->addItemDefinition<smtk::attribute::RefItemDefinitionPtr>("BaseDefItem");
     aritemdef->setCommonValueLabel("A reference to another attribute");
     aritemdef->setAttributeDefinition(base);
 
     // Process Categories
-    system.updateCategories();
+    collection.updateCategories();
     // Lets test creating an attribute by passing in the expression definition explicitly
-    smtk::attribute::AttributePtr expAtt = system.createAttribute("Exp1", expDef);
-    smtk::attribute::AttributePtr att = system.createAttribute("testAtt", "Derived2");
+    smtk::attribute::AttributePtr expAtt = collection.createAttribute("Exp1", expDef);
+    smtk::attribute::AttributePtr att = collection.createAttribute("testAtt", "Derived2");
     if (!att)
     {
       std::cout << "ERROR: Attribute testAtt not created\n";
@@ -197,7 +197,7 @@ int main(int argc, char* argv[])
     }
 
     // Sanity check readback
-    auto inputSysptr = smtk::attribute::System::create();
+    auto inputSysptr = smtk::attribute::Collection::create();
     smtk::io::AttributeReader reader;
     if (reader.read(inputSysptr, argv[1], logger))
     {
@@ -217,7 +217,7 @@ int main(int argc, char* argv[])
       status = -1;
     }
 
-    std::cout << "System destroyed\n";
+    std::cout << "Collection destroyed\n";
 
     cleanup(argv[1]);
     cleanup(argv[2]);

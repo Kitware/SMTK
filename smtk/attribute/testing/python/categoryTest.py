@@ -25,10 +25,10 @@ if __name__ == '__main__':
 
     status = 0
 
-    system = smtk.attribute.System.create()
-    print 'System created'
+    collection = smtk.attribute.Collection.create()
+    print 'Collection created'
 
-    expDef = system.createDefinition("ExpDef")
+    expDef = collection.createDefinition("ExpDef")
     expDef.setBriefDescription("Sample Expression")
     expDef.setDetailedDescription(
         "Sample Expression for testing\nThere is not much here!")
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     expDef.addItemDefinition(eitemdef2)
     eitemdef.setDefaultValue("sample")
 
-    base = system.createDefinition("BaseDef")
+    base = collection.createDefinition("BaseDef")
     # Lets add some item definitions
     iitemdef = smtk.attribute.IntItemDefinition.New("IntItem1")
     base.addItemDefinition(iitemdef)
@@ -48,7 +48,7 @@ if __name__ == '__main__':
     iitemdef.setDefaultValue(10)
     iitemdef.addCategory("Heat")
 
-    def1 = system.createDefinition("Derived1", "BaseDef")
+    def1 = collection.createDefinition("Derived1", "BaseDef")
     # Lets add some item definitions
     ditemdef = smtk.attribute.DoubleItemDefinition.New("DoubleItem1")
     def1.addItemDefinition(ditemdef)
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     ditemdef.setDefaultValue(-35.2)
     ditemdef.addCategory("Constituent")
 
-    def2 = system.createDefinition("Derived2", "Derived1")
+    def2 = collection.createDefinition("Derived2", "Derived1")
     # Lets add some item definitions
     sitemdef = smtk.attribute.StringItemDefinition.New("StringItem1")
     def2.addItemDefinition(sitemdef)
@@ -75,7 +75,7 @@ if __name__ == '__main__':
     sitemdef.addCategory("General")
 
     # Process Categories
-    system.updateCategories()
+    collection.updateCategories()
     # Lets see what categories the attribute definitions think they are
     if expDef.numberOfCategories() != 0:
         categories = expDef.categories()
@@ -93,8 +93,8 @@ if __name__ == '__main__':
         print "ERROR: Def2 has no categories!"
     # Lets test creating an attribute by passing in the expression definition
     # explicitly
-    expAtt = system.createAttribute("Exp1", expDef)
-    att = system.createAttribute("testAtt", "Derived2")
+    expAtt = collection.createAttribute("Exp1", expDef)
+    att = collection.createAttribute("testAtt", "Derived2")
     if att is not None:
         print "Attribute testAtt created"
     else:
@@ -122,10 +122,10 @@ if __name__ == '__main__':
                 print "\t\tusing Expression: %s" % vitem.expression(0).name()
             else:
                 print "\t\tValue = %s" % vitem.valueAsString()
-#    writer = smtk.attribute.XmlV1StringWriter(system)
+#    writer = smtk.attribute.XmlV1StringWriter(collection)
 #    print writer.convertToString()
 
-    del system
-    print 'System destroyed'
+    del collection
+    print 'Collection destroyed'
 
     sys.exit(status)

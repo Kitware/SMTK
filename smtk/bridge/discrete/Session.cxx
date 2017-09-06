@@ -160,7 +160,7 @@ public:
   */
 Session::Session()
 {
-  this->initializeOperatorSystem(Session::s_operators);
+  this->initializeOperatorCollection(Session::s_operators);
   this->m_itemWatcher = vtkItemWatcherCommand::New();
   this->m_itemWatcher->session = this;
 }

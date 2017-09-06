@@ -26,7 +26,7 @@ namespace model
 /// Default constructor. Initializes statically-registered operators.
 DefaultSession::DefaultSession()
 {
-  this->initializeOperatorSystem(DefaultSession::s_operators);
+  this->initializeOperatorCollection(DefaultSession::s_operators);
 }
 
 /// Indicate that, since we have no "backing store" model, the entire model is already present.

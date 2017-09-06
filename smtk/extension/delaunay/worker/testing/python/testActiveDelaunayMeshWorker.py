@@ -70,7 +70,7 @@ class TestActiveDelaunayMeshWorker(smtk.testing.TestCase):
             print("Could not load Delaunay mesh worker:", sys.exc_info()[0])
             raise
 
-        # access the meshing attribute system for the delaunay worker
+        # access the meshing attribute collection for the delaunay worker
         meshingAttributes = smtk.mesh.delaunay.worker.meshing_attributes()
 
         # the mesher may require an attribute of type "Globals" that is named
@@ -80,10 +80,10 @@ class TestActiveDelaunayMeshWorker(smtk.testing.TestCase):
         # attribute ourselves.
         #
         # TODO: the construction of default attributes should be an automated
-        #       process that is callable within the atribute system.
+        #       process that is callable within the attribute collection.
         meshingAttributes.createAttribute("Globals", "Globals")
 
-        # now that we have a minimally sufficient attribute system, we must
+        # now that we have a minimally sufficient attribute collection, we must
         # stringify it so it can be passed to the mesh operator.
         logger = smtk.io.Logger()
         writer = smtk.io.AttributeWriter()

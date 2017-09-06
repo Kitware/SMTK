@@ -17,7 +17,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Item.h"
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 
 namespace py = pybind11;
 
@@ -54,9 +54,9 @@ PySharedPtrClass< smtk::attribute::ItemDefinition > pybind11_init_smtk_attribute
     .def("version", &smtk::attribute::ItemDefinition::version)
     ;
   PySharedPtrClass< smtk::attribute::ItemDefinition::CopyInfo >(instance, "CopyInfo")
-    .def(py::init<::smtk::attribute::SystemPtr>())
+    .def(py::init<::smtk::attribute::CollectionPtr>())
     .def(py::init<::smtk::attribute::ItemDefinition::CopyInfo const &>())
-    // .def_readwrite("ToSystem", &smtk::attribute::ItemDefinition::CopyInfo::ToSystem)
+    // .def_readwrite("ToCollection", &smtk::attribute::ItemDefinition::CopyInfo::ToCollection)
     .def_readwrite("UnresolvedExpItems", &smtk::attribute::ItemDefinition::CopyInfo::UnresolvedExpItems)
     .def_readwrite("UnresolvedRefItems", &smtk::attribute::ItemDefinition::CopyInfo::UnresolvedRefItems)
     ;

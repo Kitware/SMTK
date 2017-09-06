@@ -15,7 +15,7 @@
 
 #include "smtk/io/XmlV3StringWriter.h"
 
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/io/XmlV2StringWriter.h"
 
 namespace py = pybind11;
@@ -25,7 +25,7 @@ PySharedPtrClass< smtk::io::XmlV3StringWriter, smtk::io::XmlV2StringWriter > pyb
   PySharedPtrClass< smtk::io::XmlV3StringWriter, smtk::io::XmlV2StringWriter > instance(m, "XmlV3StringWriter");
   instance
     .def(py::init<::smtk::io::XmlV3StringWriter const &>())
-    .def(py::init<::smtk::attribute::SystemPtr>())
+    .def(py::init<::smtk::attribute::CollectionPtr>())
     ;
   return instance;
 }

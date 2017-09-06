@@ -24,7 +24,7 @@ Inputs and Outputs
 The inputs that an operator requires in order to run and
 the outputs that an operator may produce are each modeled
 as :smtk:`attribute definitions <smtk::attribute::Definition>`.
-These definitions reside in an :smtk:`attribute system <smtk::attribute::System>`
+These definitions reside in an :smtk:`attribute collection <smtk::attribute::Collection>`
 owned by an instance of a :smtk:`modeling session <smtk::model::Session>`.
 
 Each operator's inputs are specified by a Definition that inherits a base attribute-definition
@@ -39,7 +39,7 @@ Given an instance of an Operator subclass, you can call its
 the Attribute which models its inputs.
 When the operator is executed, it returns an Attribute instance that models its result.
 
-Recall that the attribute System holds Definitions which contain ItemDefinitions.
+Recall that the attribute.Collection holds Definitions which contain ItemDefinitions.
 When a Definition is instantiated as an Attribute, all its active ItemDefinitions
 are instantiated as Items.
 The Definitions themselves specify what types of model-entities may be
@@ -49,7 +49,7 @@ denote the entities that the operator will act upon.
 The operator-attribute's Items specify input parameters such as point locations,
 geometric distances, etc.
 
-The fact that inputs and outputs are specified using SMTK's own attribute system
+The fact that inputs and outputs are specified using SMTK's own attribute collection
 means that one need not construct an instance of the operator's C++ class in order
 to obtain information about it;
 instead, simply call :smtk:`operatorSystem() <smtk::model::Session::operatorSystem>`
@@ -64,7 +64,7 @@ There are no *naming* conventions for input parameters, however:
 
 * operators should use model-entity associations as the primary means
   for selecting geometry that an operator will act upon;
-* also, by using the attribute system to hold operator specifications,
+* also, by using the attribute collection to hold operator specifications,
   simply checking whether an attribute is in a valid state is usually enough to guarantee
   that the operator can run successfully.
   This is what the default implementation of ableToOperate() does.

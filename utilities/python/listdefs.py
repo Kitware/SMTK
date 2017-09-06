@@ -170,7 +170,7 @@ if __name__ == '__main__':
     #  Load template file
     logger = smtk.util.Logger()
     print 'Loading template file %s' % args.template_filename
-    system = smtk.attribute.System()
+    system = smtk.attribute.Collection()
     reader = smtk.util.AttributeReader()
     err = reader.read(system, args.template_filename, logger)
     if err:

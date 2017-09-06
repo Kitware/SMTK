@@ -60,7 +60,7 @@ two inherited virtual methods
 
 + :smtk:`ableToOperate <Operator::ableToOperate>` which is an opportunity for an
   operator to perform checks on the validity of input parameters
-  that cannot be easily encoded using the attribute system; and
+  that cannot be easily encoded using the attribute collection; and
 
 + :smtk:`operateInternal <Operator::operateInternal>` which implements the actual
   behavior of the operator.
@@ -74,7 +74,7 @@ in the class header file. We only declare :smtk:`Operator::operateInternal`:
    :linenos:
 
 By calling :smtk:`Operator::ensureSpecification` in :smtk:`Operator::ableToOperate`,
-we force the attribute system to build an attribute instance which
+we force the attribute collection to build an attribute instance which
 holds specifications for each parameter of this instance of the
 Operator.
 Then in :smtk:`Operator::operateInternal` we can refer to the specification
