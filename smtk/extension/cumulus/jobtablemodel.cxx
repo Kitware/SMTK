@@ -110,6 +110,8 @@ bool JobTableModel::insertRows(int row, int count, const QModelIndex&)
 
 void JobTableModel::jobsUpdated(QList<Job> jobs)
 {
+  QList<int> rowsToRemove;
+
   // Load map with input jobs
   QMap<QString, Job> inputMap;
   Job inputJob;
@@ -123,8 +125,11 @@ void JobTableModel::jobsUpdated(QList<Job> jobs)
   {
     Job modelJob = m_jobs[row];
     QString modelJobId = modelJob.id();
+
+    // If row is not in the input, remember to remove it from the model
     if (!inputMap.contains(modelJobId))
     {
+      rowsToRemove.push_back(row);
       continue;
     }
 
@@ -138,11 +143,24 @@ void JobTableModel::jobsUpdated(QList<Job> jobs)
     }
 
     // Update status
-    //qDebug() << "update status " << newJob.id() << "to" << inputJob.status();
+    //qDebug() << "update status " << modelJobId << "to" << inputJob.status();
     modelJob.setStatus(inputJob.status());
+    m_jobs[row] = modelJob;
     QModelIndex index = this->index(row, JOB_STATUS);
     emit this->dataChanged(index, index);
   } // for (row)
+
+  // Remove any rows not in the input
+  // (Do this in reverse order so that row numbers remain consistent)
+  QListIterator<int> rowIter(rowsToRemove);
+  rowIter.toBack();
+  while (rowIter.hasPrevious())
+  {
+    int row = rowIter.previous();
+    this->beginRemoveRows(QModelIndex(), row, row);
+    m_jobs.removeAt(row);
+    this->endRemoveRows();
+  }
 
   // If inputMap is empty, then we are done
   if (inputMap.isEmpty())
