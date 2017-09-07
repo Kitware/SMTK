@@ -134,9 +134,9 @@ int UnitTestTriangulateFaces(int, char** const)
       return 1;
     }
 
-    const smtk::model::Face& meshedFace = result->findModelEntity("mesh_created")->value();
+    const smtk::model::Model& meshedModel = result->findModelEntity("mesh_created")->value();
 
-    if (face != meshedFace)
+    if (face.owningModel() != meshedModel)
     {
       std::cerr << "Triangulate face operator did something strange\n";
       return 1;
