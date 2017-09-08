@@ -48,6 +48,10 @@ public:
   virtual void init();
   virtual void updateText();
 
+protected:
+  bool eventFilter(QObject* editor, QEvent* event) override;
+  void showEvent(QShowEvent* e) override;
+
 private:
   QStandardItem* m_displayItem;
   QString m_displayTextExt;
@@ -65,10 +69,6 @@ public:
 protected slots:
   virtual void itemCheckChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
 
-protected:
-  bool eventFilter(QObject* editor, QEvent* event) override;
-  void showEvent(QShowEvent* e) override;
-
 private:
   qtModelEntityItem* m_ModelEntityItem;
 };
@@ -84,10 +84,6 @@ public:
 
 protected slots:
   virtual void itemCheckChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
-
-protected:
-  bool eventFilter(QObject* editor, QEvent* event) override;
-  void showEvent(QShowEvent* e) override;
 
 private:
   qtMeshItem* m_MeshItem;
