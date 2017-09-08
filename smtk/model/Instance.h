@@ -27,6 +27,25 @@ public:
 
   EntityRef prototype() const;
 
+  /**\brief Apply rules (stored in properties) to recompute the tessellation for this instance.
+    *
+    * This will always update the instance's tessellation whether it needs it or not.
+    * This method is called by EntityRef::hasTessellation() when no tessellation exists,
+    * so if you change properties that govern an instance's placements/transforms you
+    * may just remove the current tessellation and the tessellation will be created when
+    * asked for.
+    */
+  Tessellation* generateTessellation();
+
+  std::string rule() const;
+  bool setRule(const std::string& nextRule);
+
+  EntityRefs snapEntities() const;
+  bool addSnapEntity(const EntityRef& snapTo);
+  bool removeSnapEntity(const EntityRef& snapTo);
+  bool setSnapEntity(const EntityRef& snapTo);
+  bool setSnapEntities(const EntityRefs& snapTo);
+
   // Instance& setTransform(const smtk::common::Matrix4d&);
   // smtk::common::Matrix4d transform() const;
 };

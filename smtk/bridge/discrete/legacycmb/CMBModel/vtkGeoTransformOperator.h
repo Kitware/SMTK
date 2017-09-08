@@ -32,7 +32,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkGeoTransformOperator : public vtkObject
 public:
   static vtkGeoTransformOperator* New();
   vtkTypeMacro(vtkGeoTransformOperator, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Load the input polydata into Model.

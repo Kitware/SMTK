@@ -29,7 +29,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkSeedGrowSelectionFilter : public vtkSelectio
 public:
   static vtkSeedGrowSelectionFilter* New();
   vtkTypeMacro(vtkSeedGrowSelectionFilter, vtkSelectionAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Specify the vtkSelection object used for selecting the
@@ -136,7 +136,7 @@ protected:
   // to do its work. This is the method you should override to do whatever the
   // algorithm is designed to do. This happens during the fourth pass in the
   // pipeline execution process.
-  virtual int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
   virtual int FillInputPortInformation(int port, vtkInformation* info);
 
 private:

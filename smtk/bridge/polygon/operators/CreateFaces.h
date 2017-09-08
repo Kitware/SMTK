@@ -76,7 +76,7 @@ protected:
   friend class Neighborhood;
 
   virtual bool populateEdgeMap();
-  virtual smtk::model::OperatorResult operateInternal();
+  smtk::model::OperatorResult operateInternal() override;
 
   void evaluateLoop(RegionId faceNumber, OrientedEdges& loop, std::set<RegionId>& borders);
   void updateLoopVertices(const smtk::model::Loop& loop, const smtk::model::Face& brd, bool isCCW);

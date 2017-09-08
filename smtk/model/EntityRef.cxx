@@ -16,10 +16,15 @@
 #include "smtk/model/Events.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/Group.h"
+#include "smtk/model/Instance.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Volume.h"
+
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/MeshSet.h"
 
 #include <boost/functional/hash.hpp>
 #include <float.h>
@@ -380,8 +385,7 @@ void EntityRef::setColor(double red, double green, double blue, double alpha)
 
 /**\brief Return whether the entityref is pointing to valid manager that contains the UUID of the entity.
   *
-  * Subclasses should not override this method. It is a convenience
-  * which makes the shiboken wrapper more functional.
+  * Subclasses should not override this method.
   */
 bool EntityRef::isValid() const
 {
@@ -693,6 +697,26 @@ Tessellation* EntityRef::resetTessellation()
   return &tessit->second;
 }
 
+/**\brief Return the entity's mesh tessellation.
+  *
+  * Each entity has a single meshset describing its tessellation. The meshset
+  * could, but does not have to, contain sub-meshsets within it.
+  */
+smtk::mesh::MeshSet EntityRef::meshTessellation() const
+{
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
+  {
+    smtk::mesh::CollectionPtr collection = mgr->meshes()->collection(this->owningModel().entity());
+
+    if (collection && collection->isValid())
+    {
+      return collection->findAssociatedMeshes(*this);
+    }
+  }
+  return smtk::mesh::MeshSet();
+}
+
 /**\brief Return the entity's tessellation if one exists or NULL otherwise.
   *
   */
@@ -703,7 +727,15 @@ const Tessellation* EntityRef::hasTessellation() const
   {
     UUIDsToTessellations::const_iterator it = mgr->tessellations().find(this->m_entity);
     if (it != mgr->tessellations().end())
+    {
       return &it->second;
+    }
+    // But wait, there's more! Instances store rules that can be used to
+    // generate a tessellation. So we should try that before giving up:
+    if (this->isInstance())
+    {
+      return this->as<Instance>().generateTessellation();
+    }
   }
   return NULL;
 }
@@ -849,7 +881,7 @@ bool EntityRef::hasAttribute(const smtk::common::UUID& attribId) const
 /**\brief Does the entityref have any attributes associated with it?
   */
 bool EntityRef::associateAttribute(
-  smtk::attribute::SystemPtr sys, const smtk::common::UUID& attribId)
+  smtk::attribute::CollectionPtr sys, const smtk::common::UUID& attribId)
 {
   ManagerPtr mgr = this->m_manager.lock();
   return mgr->associateAttribute(sys, attribId, this->m_entity);
@@ -858,7 +890,7 @@ bool EntityRef::associateAttribute(
 /**\brief Does the entityref have any attributes associated with it?
   */
 bool EntityRef::disassociateAttribute(
-  smtk::attribute::SystemPtr sys, const smtk::common::UUID& attribId, bool reverse)
+  smtk::attribute::CollectionPtr sys, const smtk::common::UUID& attribId, bool reverse)
 {
   ManagerPtr mgr = this->m_manager.lock();
   return mgr->disassociateAttribute(sys, attribId, this->m_entity, reverse);
@@ -866,7 +898,7 @@ bool EntityRef::disassociateAttribute(
 
 /**\brief Remove all attribute association form this entityref
   */
-bool EntityRef::disassociateAllAttributes(smtk::attribute::SystemPtr sys, bool reverse)
+bool EntityRef::disassociateAllAttributes(smtk::attribute::CollectionPtr sys, bool reverse)
 {
   smtk::common::UUIDs atts = this->attributes();
   smtk::common::UUIDs::const_iterator it;

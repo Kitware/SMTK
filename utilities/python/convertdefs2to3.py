@@ -39,7 +39,6 @@ except ImportError:
     print app_description
     print 'Not able to import smtk library. You might need to:'
     print '  - Use the PYTHONPATH variable to point to the smtk python lib'
-    print '  - And/or use the LD_LIBRARY_PATH variable to point to the shiboken libraries'
     print
     sys.exit(-1)
 
@@ -309,7 +308,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Instantiate attribute system for outpot
-    system = smtk.attribute.System()
+    system = smtk.attribute.Collection()
 
     # Generate default expression types
     sim_exp = system.createDefinition('SimExpression')
@@ -331,7 +330,8 @@ if __name__ == '__main__':
     poly_exp.addItemDefinition(name_item)
     global_exp_def = poly_exp
 
-    #input_path = '/media/ssd/sim/cmb_core/git/CMB/Source/Applications/ModelBuilder/SimBuilder/XML/GEOTACS_Template.sbt'
+    # input_path =
+    # '/media/ssd/sim/cmb_core/git/CMB/Source/Applications/ModelBuilder/SimBuilder/XML/GEOTACS_Template.sbt'
     input_path = args.input_template_file
     tree = ET.parse(input_path)
     root = tree.getroot()

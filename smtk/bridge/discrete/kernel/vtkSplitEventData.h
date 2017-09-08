@@ -33,7 +33,7 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkSplitEventData : public vtkObject
 public:
   static vtkSplitEventData* New();
   vtkTypeMacro(vtkSplitEventData, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Set/get the SourceEntity
@@ -48,7 +48,7 @@ public:
 
 protected:
   vtkSplitEventData();
-  virtual ~vtkSplitEventData();
+  ~vtkSplitEventData() override;
 
 private:
   vtkDiscreteModelGeometricEntity* SourceEntity;

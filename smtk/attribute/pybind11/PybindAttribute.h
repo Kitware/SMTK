@@ -30,7 +30,7 @@
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/SearchStyle.h"
 #include "smtk/attribute/StringItem.h"
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/VoidItem.h"
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
@@ -61,8 +61,8 @@ PySharedPtrClass< smtk::attribute::Attribute > pybind11_init_smtk_attribute_Attr
     .def("definition", &smtk::attribute::Attribute::definition)
     .def("disassociateEntity", (void (smtk::attribute::Attribute::*)(::smtk::common::UUID const &, bool)) &smtk::attribute::Attribute::disassociateEntity, py::arg("entity"), py::arg("reverse") = true)
     .def("disassociateEntity", (void (smtk::attribute::Attribute::*)(::smtk::model::EntityRef const &, bool)) &smtk::attribute::Attribute::disassociateEntity, py::arg("entity"), py::arg("reverse") = true)
-    .def("find", (smtk::attribute::ItemPtr (smtk::attribute::Attribute::*)(::std::string const &, ::smtk::attribute::SearchStyle)) &smtk::attribute::Attribute::find, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::ACTIVE_CHILDREN)
-    .def("find", (smtk::attribute::ConstItemPtr (smtk::attribute::Attribute::*)(::std::string const &, ::smtk::attribute::SearchStyle) const) &smtk::attribute::Attribute::find, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::ACTIVE_CHILDREN)
+    .def("_find", (smtk::attribute::ItemPtr (smtk::attribute::Attribute::*)(::std::string const &, ::smtk::attribute::SearchStyle)) &smtk::attribute::Attribute::find, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::ACTIVE_CHILDREN)
+    .def("_find", (smtk::attribute::ConstItemPtr (smtk::attribute::Attribute::*)(::std::string const &, ::smtk::attribute::SearchStyle) const) &smtk::attribute::Attribute::find, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::ACTIVE_CHILDREN)
     .def("findDateTime", (smtk::attribute::DateTimeItemPtr (smtk::attribute::Attribute::*)(::std::string const &)) &smtk::attribute::Attribute::findDateTime, py::arg("name"))
     .def("findDateTime", (smtk::attribute::ConstDateTimeItemPtr (smtk::attribute::Attribute::*)(::std::string const &) const) &smtk::attribute::Attribute::findDateTime, py::arg("name"))
     .def("findDirectory", (smtk::attribute::DirectoryItemPtr (smtk::attribute::Attribute::*)(::std::string const &)) &smtk::attribute::Attribute::findDirectory, py::arg("name"))
@@ -96,9 +96,8 @@ PySharedPtrClass< smtk::attribute::Attribute > pybind11_init_smtk_attribute_Attr
     .def("isMemberOf", (bool (smtk::attribute::Attribute::*)(::std::string const &) const) &smtk::attribute::Attribute::isMemberOf, py::arg("category"))
     .def("isMemberOf", (bool (smtk::attribute::Attribute::*)(::std::vector<std::basic_string<char>, std::allocator<std::basic_string<char> > > const &) const) &smtk::attribute::Attribute::isMemberOf, py::arg("categories"))
     .def("isValid", &smtk::attribute::Attribute::isValid)
-    .def("item", &smtk::attribute::Attribute::item, py::arg("ith"))
-    .def("itemAtPath", (smtk::attribute::ConstItemPtr (smtk::attribute::Attribute::*)(::std::string const &, ::std::string const &) const) &smtk::attribute::Attribute::itemAtPath, py::arg("path"), py::arg("seps") = "/")
-    .def("itemAtPath", (smtk::attribute::ItemPtr (smtk::attribute::Attribute::*)(::std::string const &, ::std::string const &)) &smtk::attribute::Attribute::itemAtPath, py::arg("path"), py::arg("seps") = "/")
+    .def("_item", &smtk::attribute::Attribute::item, py::arg("ith"))
+    .def("_itemAtPath", (smtk::attribute::ItemPtr (smtk::attribute::Attribute::*)(::std::string const &, ::std::string const &)) &smtk::attribute::Attribute::itemAtPath, py::arg("path"), py::arg("seps") = "/")
     .def("modelManager", &smtk::attribute::Attribute::modelManager)
     .def("name", &smtk::attribute::Attribute::name)
     .def("numberOfItems", &smtk::attribute::Attribute::numberOfItems)
@@ -110,7 +109,7 @@ PySharedPtrClass< smtk::attribute::Attribute > pybind11_init_smtk_attribute_Attr
     .def("setColor", (void (smtk::attribute::Attribute::*)(double, double, double, double)) &smtk::attribute::Attribute::setColor, py::arg("r"), py::arg("g"), py::arg("b"), py::arg("alpha"))
     .def("setColor", (void (smtk::attribute::Attribute::*)(double const *)) &smtk::attribute::Attribute::setColor, py::arg("l_color"))
     .def("setUserData", &smtk::attribute::Attribute::setUserData, py::arg("key"), py::arg("value"))
-    .def("system", &smtk::attribute::Attribute::system)
+    .def("collection", &smtk::attribute::Attribute::collection)
     .def("type", &smtk::attribute::Attribute::type)
     .def("types", &smtk::attribute::Attribute::types)
     .def("unsetColor", &smtk::attribute::Attribute::unsetColor)

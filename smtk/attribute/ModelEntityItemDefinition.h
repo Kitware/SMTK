@@ -32,18 +32,18 @@ public:
     return smtk::attribute::ModelEntityItemDefinitionPtr(new ModelEntityItemDefinition(sname));
   }
 
-  virtual ~ModelEntityItemDefinition();
+  ~ModelEntityItemDefinition() override;
 
-  virtual Item::Type type() const;
+  Item::Type type() const override;
 
   smtk::model::BitFlags membershipMask() const;
   void setMembershipMask(smtk::model::BitFlags entMask);
 
   bool isValueValid(const smtk::model::EntityRef& entity) const;
 
-  virtual smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const;
-  virtual smtk::attribute::ItemPtr buildItem(
-    Item* owningItem, int position, int subGroupPosition) const;
+  smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
+  smtk::attribute::ItemPtr buildItem(
+    Item* owningItem, int position, int subGroupPosition) const override;
 
   std::size_t numberOfRequiredValues() const;
   void setNumberOfRequiredValues(std::size_t esize);
@@ -60,8 +60,8 @@ public:
   void setCommonValueLabel(const std::string& elabel);
   bool usingCommonLabel() const;
 
-  virtual smtk::attribute::ItemDefinitionPtr createCopy(
-    smtk::attribute::ItemDefinition::CopyInfo& info) const;
+  smtk::attribute::ItemDefinitionPtr createCopy(
+    smtk::attribute::ItemDefinition::CopyInfo& info) const override;
 
 protected:
   ModelEntityItemDefinition(const std::string& myName);

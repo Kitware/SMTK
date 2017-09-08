@@ -1,8 +1,8 @@
 .. _smtk-bindings:
 
-******************
+---------------
 SMTK's Bindings
-******************
+---------------
 
 SMTK is written in C++ and uses pybind11_ to generate python bindings.
 

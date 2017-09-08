@@ -22,9 +22,6 @@
 #include "vtkUnstructuredGrid.h"
 #include "vtkVolumeOfRevolutionFilter.h"
 
-#include "vtkIdTypeArray.h"
-#include "vtkUnstructuredGridReader.h"
-#include "vtkUnstructuredGridWriter.h"
 #include "vtkXMLUnstructuredGridReader.h"
 #include "vtkXMLUnstructuredGridWriter.h"
 
@@ -170,7 +167,7 @@ smtk::model::OperatorResult Revolve::operateInternal()
 
   // Assign its model manager to the one associated with this session
   collection->setModelManager(this->activeSession()->manager());
-  collection->name("result(revolve)");
+  collection->name("Revolved mesh");
 
   // Construct the topology
   this->activeSession()->addTopology(std::move(smtk::bridge::mesh::Topology(collection)));
@@ -178,7 +175,10 @@ smtk::model::OperatorResult Revolve::operateInternal()
   // Our collection already has a UUID, so here we create a model given the
   // model manager and UUID
   smtk::model::Model model =
-    smtk::model::EntityRef(this->activeSession()->manager(), collection->entity());
+    this->manager()->insertModel(collection->entity(), 3, 3, "Revolved model");
+  this->session()->declareDanglingEntity(model);
+
+  model.setSession(smtk::model::SessionRef(this->manager(), this->session()->sessionId()));
 
   // Associate the collection to our newly created model
   collection->associateToModel(model.entity());

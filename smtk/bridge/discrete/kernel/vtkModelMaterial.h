@@ -26,7 +26,7 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModelMaterial : public vtkModelEntity
 {
 public:
   vtkTypeMacro(vtkModelMaterial, vtkModelEntity);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   bool SetWarehouseId(double* uuid);
   double* GetWarehouseId();
@@ -36,14 +36,14 @@ public:
   // we figure out how to do it for nonmanifold models
   //vtkModelItemIterator* NewModelGeometricEntityIterator();
 
-  virtual int GetType();
+  int GetType() override;
   static vtkInformationDoubleVectorKey* WAREHOUSEID();
 
   // Description:
   // Reads the state of an instance from an archive OR
   // writes the state of an instance to an archive. See
   // the documentation for this class for details.
-  virtual void Serialize(vtkSerializer* ser);
+  void Serialize(vtkSerializer* ser) override;
 
   // Description:
   // Add in GeometricEntity to this material.  If
@@ -53,7 +53,7 @@ public:
 
 protected:
   vtkModelMaterial();
-  virtual ~vtkModelMaterial();
+  ~vtkModelMaterial() override;
   static vtkModelMaterial* New();
 
   friend class vtkMaterialOperatorBase;
@@ -63,7 +63,7 @@ protected:
   bool RemoveModelGeometricEntity(vtkModelGeometricEntity* geometricEntity);
 
   virtual bool IsDestroyable();
-  virtual bool Destroy();
+  bool Destroy() override;
 
 private:
   vtkModelMaterial(const vtkModelMaterial&); // Not implemented.

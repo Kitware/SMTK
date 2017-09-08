@@ -31,7 +31,7 @@ class VTK_EXPORT vtkEdgeSplitOperatorClient : public vtkEdgeSplitOperatorBase
 public:
   static vtkEdgeSplitOperatorClient* New();
   vtkTypeMacro(vtkEdgeSplitOperatorClient, vtkEdgeSplitOperatorBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Initiate the split on the server and then follow up with the

@@ -11,3 +11,7 @@
 
 thirdparty/**  -format.clang-format -format.autopep8
 **/pybind11/*  -format.clang-format
+
+[attr]lfs       filter=lfs diff=lfs merge=lfs -text
+
+data/**         lfs

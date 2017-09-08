@@ -4,9 +4,11 @@ set(commonSrcs
   DateTime.cxx
   DateTimeZonePair.cxx
   Environment.cxx
+  Extension.cxx
   FileLocation.cxx
   Paths.cxx
   Resource.cxx
+  ResourceComponent.cxx
   ResourceSet.cxx
   StringUtil.cxx
   TimeZone.cxx
@@ -21,11 +23,13 @@ set(commonHeaders
   DateTime.h
   DateTimeZonePair.h
   Environment.h
+  Extension.h
   FileLocation.h
   GeometryUtilities.h
   Paths.h
   RangeDetector.h
   Resource.h
+  ResourceComponent.h
   ResourceSet.h
   StringUtil.h
   TimeZone.h
@@ -55,18 +59,12 @@ configure_file(
   @ONLY
 )
 
-if (SMTK_USE_PYBIND11)
-  # Construct a C++ header containing the smtk python path as a char array
-  string(REPLACE "${envsep}" "," smtk_pythonpath_list "${smtk_pythonpath_env}")
-  configureStringAsCVariable(smtk_pythonpath_list
-    ${CMAKE_CURRENT_BINARY_DIR}/smtkPythonPath.h smtkPythonPath)
-
+if (SMTK_ENABLE_PYTHON_WRAPPING)
   list(APPEND commonSrcs
     PythonInterpreter.cxx
     )
   list(APPEND commonHeaders
     PythonInterpreter.h
-    ${CMAKE_CURRENT_BINARY_DIR}/smtkPythonPath.h
     )
 
   add_subdirectory(pybind11)

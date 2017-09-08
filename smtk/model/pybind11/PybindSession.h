@@ -16,7 +16,7 @@
 
 #include "smtk/model/Session.h"
 
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/io/Logger.h"
@@ -24,6 +24,7 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Operator.h"
+#include "smtk/model/pybind11/PybindOperator.h"
 
 namespace py = pybind11;
 
@@ -70,10 +71,11 @@ PySharedPtrClass< smtk::model::Session > pybind11_init_smtk_model_Session(py::mo
     .def("operatorLabelsMap", &smtk::model::Session::operatorLabelsMap, py::arg("includeAdvanced") = true)
     .def("operatorNames", &smtk::model::Session::operatorNames, py::arg("includeAdvanced") = true)
     .def("operatorConstructors", &smtk::model::Session::operatorConstructors)
-    .def("operatorSystem", (smtk::attribute::SystemPtr (smtk::model::Session::*)()) &smtk::model::Session::operatorSystem)
-    .def("operatorSystem", (smtk::attribute::ConstSystemPtr (smtk::model::Session::*)() const) &smtk::model::Session::operatorSystem)
+    .def("operatorCollection", (smtk::attribute::CollectionPtr (smtk::model::Session::*)()) &smtk::model::Session::operatorCollection)
+    .def("operatorCollection", (smtk::attribute::ConstCollectionPtr (smtk::model::Session::*)() const) &smtk::model::Session::operatorCollection)
     .def("registerOperator", &smtk::model::Session::registerOperator, py::arg("opName"), py::arg("opDescrXML"), py::arg("opCtor"))
     .def_static("registerStaticOperator", &smtk::model::Session::registerStaticOperator, py::arg("opName"), py::arg("opDescrXML"), py::arg("opCtor"))
+    .def_static("registerStaticPyOperator", [](const std::string& opName, const char* opDescrXML, const std::string& opModuleName, const std::string& opClassName) { return smtk::model::Session::registerStaticOperator(opName, opDescrXML, std::bind(smtk::model::PyOperator::create, opModuleName, opClassName)); } )
     .def("sessionId", &smtk::model::Session::sessionId)
     .def("setup", &smtk::model::Session::setup, py::arg("optName"), py::arg("optVal"))
     .def_static("staticClassName", &smtk::model::Session::staticClassName)
@@ -81,6 +83,7 @@ PySharedPtrClass< smtk::model::Session > pybind11_init_smtk_model_Session(py::mo
     .def("removeGeneratedProperties", &smtk::model::Session::removeGeneratedProperties, py::arg("entity"), py::arg("propFlags"))
     .def("splitProperties", &smtk::model::Session::splitProperties, py::arg("from"), py::arg("to"))
     .def("mergeProperties", &smtk::model::Session::mergeProperties, py::arg("from"), py::arg("to"))
+    .def_static("CastTo", [](const std::shared_ptr<smtk::model::Session> i) { return i; })
     ;
   return instance;
 }

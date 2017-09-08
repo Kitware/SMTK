@@ -29,7 +29,7 @@ public:
   void setColor(const QColor& ocolor) { this->m_overlayColor = ocolor; }
 
 protected:
-  void paintEvent(QPaintEvent*);
+  void paintEvent(QPaintEvent*) override;
   QPointer<QWidget> m_overlayWidget;
   QColor m_overlayColor;
 };
@@ -41,14 +41,14 @@ class SMTKQTEXT_EXPORT qtOverlayFilter : public QObject
 public:
   // onWidget is what the overlay will be covering
   qtOverlayFilter(QWidget* onWidget, QObject* parent = 0);
-  virtual ~qtOverlayFilter();
+  ~qtOverlayFilter() override;
   qtOverlay* overlay() { return m_overlay; }
   void setActive(bool val);
   bool active() { return m_Active; }
   void addOverlayWidget(QWidget* w);
 
 protected:
-  bool eventFilter(QObject* obj, QEvent* ev);
+  bool eventFilter(QObject* obj, QEvent* ev) override;
 
   QPointer<qtOverlay> m_overlay;
   QPointer<QWidget> m_overlayOn;

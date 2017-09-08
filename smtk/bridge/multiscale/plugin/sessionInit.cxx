@@ -10,9 +10,11 @@
 
 #include "smtk/AutoInit.h"
 #include "smtk/Options.h"
+#include "smtk/PythonAutoInit.h"
 
-#ifdef SMTK_ENABLE_MULTISCALE_SESSION
-// If multiscale-session is included in the build, ensure that it is loaded
-// (and thus registered with the model manager).
+// Ensure that the multiscale session is loaded (and thus registered with the
+// model manager).
 smtkComponentInitMacro(smtk_multiscale_session);
-#endif // SMTK_ENABLE_MULTISCALE_SESSION
+
+// Also add python operators.
+smtkPythonInitMacro(import_from_deform, smtk.bridge.multiscale.import_from_deform, true);

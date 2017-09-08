@@ -26,7 +26,7 @@ namespace mesh
 
 Session::Session()
 {
-  this->initializeOperatorSystem(Session::s_operators);
+  this->initializeOperatorCollection(Session::s_operators);
 }
 
 Topology* Session::topology(smtk::model::Model& model)
@@ -82,7 +82,7 @@ smtk::model::SessionInfoBits Session::transcribeInternal(
       // We have a model. We insert the model using the manager API. It takes
       // the UUID of the model, its parametric dimension and its embedded
       // dimension. Additionally, we denote that this model is discrete.
-      mutableEntityRef.manager()->insertModel(mutableEntityRef.entity(), dimension, dimension);
+      this->manager()->insertModel(mutableEntityRef.entity(), dimension, dimension);
       mutableEntityRef.setIntegerProperty(SMTK_GEOM_STYLE_PROP, smtk::model::DISCRETE);
     }
     else
@@ -92,16 +92,16 @@ smtk::model::SessionInfoBits Session::transcribeInternal(
       switch (dimension)
       {
         case 0:
-          mutableEntityRef.manager()->insertVertex(mutableEntityRef.entity());
+          this->manager()->insertVertex(mutableEntityRef.entity());
           break;
         case 1:
-          mutableEntityRef.manager()->insertEdge(mutableEntityRef.entity());
+          this->manager()->insertEdge(mutableEntityRef.entity());
           break;
         case 2:
-          mutableEntityRef.manager()->insertFace(mutableEntityRef.entity());
+          this->manager()->insertFace(mutableEntityRef.entity());
           break;
         case 3:
-          mutableEntityRef.manager()->insertVolume(mutableEntityRef.entity());
+          this->manager()->insertVolume(mutableEntityRef.entity());
           break;
         default:
           return actual;
@@ -156,7 +156,42 @@ smtk::model::SessionInfoBits Session::transcribeInternal(
 
   if (requestedInfo & smtk::model::SESSION_PROPERTIES)
   {
-    // TODO
+    // Models generated from a mesh set naturally have the same properties as
+    // mesh sets. We query the model entity's associated mesh set for domain,
+    // Dirichlet and Neumann properties.
+
+    if (topologyElement.m_mesh.size() == 1)
+    {
+      // To avoid elements that only partially contain the properties in question,
+      // we check that the associated meshset contains exactly one property and
+      // that the property completely spans the meshset.
+      std::vector<smtk::mesh::Domain> domains = topologyElement.m_mesh.domains();
+      std::vector<smtk::mesh::Dirichlet> dirichlets = topologyElement.m_mesh.dirichlets();
+      std::vector<smtk::mesh::Neumann> neumanns = topologyElement.m_mesh.neumanns();
+
+      if (domains.size() == 1 && topologyElement.m_mesh.size() == 1)
+      {
+        mutableEntityRef.setIntegerProperty("pedigree id", domains[0].value());
+        std::stringstream s;
+        s << m_facade["domain"] << " " << domains[0].value();
+        mutableEntityRef.setName(s.str());
+      }
+      else if (dirichlets.size() == 1 && topologyElement.m_mesh.size() == 1)
+      {
+        mutableEntityRef.setIntegerProperty("pedigree id", dirichlets[0].value());
+        std::stringstream s;
+        s << m_facade["dirichlet"] << " " << dirichlets[0].value();
+        mutableEntityRef.setName(s.str());
+      }
+      else if (neumanns.size() == 1 && topologyElement.m_mesh.size() == 1)
+      {
+        mutableEntityRef.setIntegerProperty("pedigree id", neumanns[0].value());
+        std::stringstream s;
+        s << m_facade["neumann"] << " " << neumanns[0].value();
+        mutableEntityRef.setName(s.str());
+      }
+    }
+
     actual |= smtk::model::SESSION_PROPERTIES;
   }
 

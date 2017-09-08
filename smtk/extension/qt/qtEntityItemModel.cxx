@@ -66,6 +66,7 @@ namespace smtk
 {
 namespace extension
 {
+std::map<std::string, QColor> QEntityItemModel::s_defaultColors = {};
 
 /// Private storage for QEntityItemModel.
 class QEntityItemModel::Internal
@@ -127,6 +128,17 @@ QEntityItemModel::~QEntityItemModel()
   delete this->P;
 }
 
+QColor QEntityItemModel::defaultEntityColor(const std::string& entityType)
+{
+  if (s_defaultColors.find(entityType) == s_defaultColors.end())
+  {
+    return QColor();
+  }
+  else
+  {
+    return s_defaultColors[entityType];
+  }
+}
 void QEntityItemModel::clear()
 {
   if (this->m_root && !this->m_root->subphrases().empty())
@@ -393,8 +405,23 @@ QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
         FloatList rgba = item->relatedColor();
         if (rgba.size() >= 4 && rgba[3] < 0)
         {
-          // assign an invalid color
-          color = QColor(255, 255, 255, 0);
+          if (item->relatedEntity().isFace())
+          {
+            color = QEntityItemModel::defaultEntityColor("Face");
+          }
+          else if (item->relatedEntity().isEdge())
+          {
+            color = QEntityItemModel::defaultEntityColor("Edge");
+          }
+          else if (item->relatedEntity().isVertex())
+          {
+            color = QEntityItemModel::defaultEntityColor("Vertex");
+          }
+          else
+          {
+            // Assign an invalid color
+            color = QColor(255, 255, 255, 0);
+          }
         }
         else
         {
@@ -802,17 +829,22 @@ inline QModelIndex _internal_getPhraseIndex(smtk::extension::QEntityItemModel* q
   if (dp == phrase)
     return top;
 
-  for (int row = 0; row < qmodel->rowCount(top); ++row)
+  // Only look at subphrases if they are already built; otherwise, this can cause
+  // infinite recursion when qmodel->rowCount() or ->index() are called.
+  if (dp->areSubphrasesBuilt())
   {
-    QModelIndex cIdx(qmodel->index(row, 0, top));
-    dp = qmodel->getItem(cIdx);
-    if (dp == phrase)
-      return cIdx;
-    if (recursive)
+    for (int row = 0; row < qmodel->rowCount(top); ++row)
     {
-      QModelIndex recurIdx(_internal_getPhraseIndex(qmodel, phrase, cIdx, recursive));
-      if (recurIdx.isValid())
-        return recurIdx;
+      QModelIndex cIdx(qmodel->index(row, 0, top));
+      dp = qmodel->getItem(cIdx);
+      if (dp == phrase)
+        return cIdx;
+      if (recursive)
+      {
+        QModelIndex recurIdx(_internal_getPhraseIndex(qmodel, phrase, cIdx, recursive));
+        if (recurIdx.isValid())
+          return recurIdx;
+      }
     }
   }
   return QModelIndex();
@@ -1496,12 +1528,10 @@ void QEntityItemModel::newSessionOperatorResult(
   }
 }
 
-#if QT_VERSION >= 0x050000
 Qt::DropActions QEntityItemModel::supportedDropActions() const
 {
   return Qt::CopyAction;
 }
-#endif
 
 void QEntityItemModel::updateObserver()
 {

@@ -32,7 +32,7 @@ public:
   vtkTypeMacro(vtkGDALRasterPolydataWrapper, vtkDataSetAlgorithm);
 
   vtkGDALRasterPolydataWrapper();
-  virtual ~vtkGDALRasterPolydataWrapper();
+  ~vtkGDALRasterPolydataWrapper() override;
 
   // Description:
   // Set input file name
@@ -111,15 +111,15 @@ public:
   vtkGetMacro(IsNorth, bool);
 
 protected:
-  virtual int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector);
+  int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
+    vtkInformationVector* outputVector) override;
 
-  virtual int RequestInformation(vtkInformation* request, vtkInformationVector** inputVector,
-    vtkInformationVector* outputVector);
+  int RequestInformation(vtkInformation* request, vtkInformationVector** inputVector,
+    vtkInformationVector* outputVector) override;
 
-  virtual int RequestDataObject(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestDataObject(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 
-  virtual int FillOutputPortInformation(int port, vtkInformation* info);
+  int FillOutputPortInformation(int port, vtkInformation* info) override;
 
 protected:
   vtkSmartPointer<vtkGDALRasterReader> Reader;

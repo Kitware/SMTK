@@ -36,21 +36,21 @@ namespace factory
 class NoSupportFactory : public remus::server::WorkerFactory
 {
 public:
-  remus::proto::JobRequirementsSet workerRequirements(remus::common::MeshIOType type) const
+  remus::proto::JobRequirementsSet workerRequirements(remus::common::MeshIOType type) const override
   { //return empty
     (void)type;
     return remus::proto::JobRequirementsSet();
   }
 
-  bool haveSupport(const remus::proto::JobRequirements& reqs) const
+  bool haveSupport(const remus::proto::JobRequirements& reqs) const override
   {
     (void)reqs;
     //we want to return true here so that the server always queues
     return true;
   }
 
-  bool createWorker(
-    const remus::proto::JobRequirements& type, WorkerFactory::FactoryDeletionBehavior lifespan)
+  bool createWorker(const remus::proto::JobRequirements& type,
+    WorkerFactory::FactoryDeletionBehavior lifespan) override
   {
     (void)type;
     (void)lifespan;

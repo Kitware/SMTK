@@ -89,33 +89,7 @@ install(TARGETS smtk-model-server smtk-model-worker
     ARCHIVE DESTINATION lib
   )
 
-if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
-  #extract the headers from the library we built to give them to shiboken
-
-  sbk_wrap_library(smtkRemoteSession
-    PACKAGE smtk
-    GENERATOR_ARGS --avoid-protected-hack
-    WORKING_DIRECTORY ${SMTK_SOURCE_DIR}/smtk
-    LOCAL_INCLUDE_DIRECTORIES
-      ${SMTK_SOURCE_DIR}/smtk/common
-      ${SMTK_SOURCE_DIR}/smtk/attribute
-      ${SMTK_SOURCE_DIR}/smtk/model
-      ${SMTK_SOURCE_DIR}/smtk/bridge
-      ${SMTK_SOURCE_DIR}/smtk/bridge/remote
-      ${SMTK_SOURCE_DIR}/smtk/simulation
-      ${SMTK_SOURCE_DIR}/smtk/io
-      ${SMTK_SOURCE_DIR}/smtk/view
-      ${SMTK_SOURCE_DIR}/smtk
-      ${SMTK_BINARY_DIR}/smtk
-      ${CMAKE_CURRENT_BINARY_DIR}
-    TYPESYSTEM ${SMTK_SOURCE_DIR}/smtk/bridge/remote/typesystem.xml
-    HEADERS ${RemoteLibHeaders}
-    DEPENDS smtkCore
-  )
-  #target_include_directories(smtkRemoteSessionPython PRIVATE ${CGM_INCLUDE_DIRS})
-endif()
-
-if (SMTK_USE_PYBIND11)
+if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)
 endif()
 

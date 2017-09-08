@@ -30,6 +30,14 @@
 #include <set>
 #include <vector>
 
+namespace smtk
+{
+namespace mesh
+{
+class MeshSet;
+}
+}
+
 /// A macro to implement mandatory EntityRef-subclass constructors.
 #define SMTK_ENTITYREF_CLASS(thisclass, superclass, typecheck)                                     \
   SMTK_DERIVED_TYPE(thisclass, superclass);                                                        \
@@ -44,7 +52,7 @@
   }                                                                                                \
   virtual ~thisclass() {} /* Avoid warnings about non-virtual destructor */                        \
   bool isValid() const { return this->EntityRef::isValid(); }                                      \
-  virtual bool isValid(Entity** entRec) const                                                      \
+  bool isValid(Entity** entRec) const override                                                     \
   {                                                                                                \
     Entity* er;                                                                                    \
     if (/* NB: EntityRef::isValid() may return true even when er == NULL */                        \
@@ -55,10 +63,7 @@
       return true;                                                                                 \
     }                                                                                              \
     return false;                                                                                  \
-  }                                                                                                \
-  /* Required for shiboken: */                                                                     \
-  bool operator==(const EntityRef& other) const { return this->superclass::operator==(other); }    \
-  bool operator!=(const EntityRef& other) const { return this->superclass::operator!=(other); }
+  }
 
 namespace smtk
 {
@@ -68,9 +73,8 @@ namespace model
 class EntityRef;
 class Model;
 class Tessellation;
-// Use full names including namespace to make Shiboken less unhappy:
-typedef std::set<smtk::model::EntityRef> EntityRefs;
-typedef std::vector<smtk::model::EntityRef> EntityRefArray;
+typedef std::set<EntityRef> EntityRefs;
+typedef std::vector<EntityRef> EntityRefArray;
 typedef std::vector<Group> Groups;
 
 /**\brief A lightweight entityref pointing to a model entity's manager.
@@ -182,6 +186,8 @@ public:
   EntityRef& findOrAddRawRelation(const EntityRef& ent);
   EntityRef& elideRawRelation(const EntityRef& ent);
 
+  smtk::mesh::MeshSet meshTessellation() const;
+
   Tessellation* resetTessellation();
   const Tessellation* hasTessellation() const;
   const Tessellation* hasAnalysisMesh() const;
@@ -196,16 +202,14 @@ public:
     std::map<smtk::model::EntityRef, smtk::model::EntityRef>& entityrefMap,
     std::set<smtk::model::EntityRef>& touched) const;
   int tessellationGeneration() const;
-#ifndef SHIBOKEN_SKIP
   void setBoundingBox(const double bbox[6]);
-#endif
 
   bool hasAttributes() const;
   bool hasAttribute(const smtk::common::UUID& attribId) const;
-  bool associateAttribute(smtk::attribute::SystemPtr sys, const smtk::common::UUID& attribId);
+  bool associateAttribute(smtk::attribute::CollectionPtr sys, const smtk::common::UUID& attribId);
   bool disassociateAttribute(
-    smtk::attribute::SystemPtr sys, const smtk::common::UUID& attribId, bool reverse = true);
-  bool disassociateAllAttributes(smtk::attribute::SystemPtr sys, bool reverse = true);
+    smtk::attribute::CollectionPtr sys, const smtk::common::UUID& attribId, bool reverse = true);
+  bool disassociateAllAttributes(smtk::attribute::CollectionPtr sys, bool reverse = true);
   /// Returns true if at least 1 attribute in the set of \a attribPtrs was removed.
   template <typename T>
   bool disassociateAttributes(const T& attribPtrs)
@@ -213,14 +217,13 @@ public:
     bool removedAny = false;
     for (auto attribPtr : attribPtrs)
     {
-      removedAny |= this->disassociateAttribute(attribPtr->system(), attribPtr->id());
+      removedAny |= this->disassociateAttribute(attribPtr->collection(), attribPtr->id());
     }
     return removedAny;
   }
 
   smtk::common::UUIDs attributes() const;
 
-#ifndef SHIBOKEN_SKIP
   // For T = {IntegerData, FloatData, StringData}:
   template <typename T>
   T* properties();
@@ -230,7 +233,6 @@ public:
   const T* hasProperties() const;
   template <typename T>
   bool removeProperty(const std::string& name);
-#endif // SHIBOKEN_SKIP
 
   void setFloatProperty(const std::string& propName, smtk::model::Float propValue);
   void setFloatProperty(const std::string& propName, const smtk::model::FloatList& propValue);

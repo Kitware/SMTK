@@ -19,27 +19,24 @@
 #include <string>
 #include <vector>
 
-/**\brief Export an entire SMTK mesh collection from a file, or just sub-sections
-  *
-  */
-
 namespace smtk
 {
 namespace io
 {
 
+/**\brief Export an entire SMTK mesh collection from a file, or just sub-sections
+  *
+  */
 class SMTKCORE_EXPORT ExportMesh
 {
 public:
   ExportMesh();
   ~ExportMesh();
 
-#ifndef SHIBOKEN_SKIP
   ExportMesh& operator=(const ExportMesh&) = delete;
   ExportMesh(const ExportMesh&) = delete;
 
   static std::vector<smtk::io::mesh::MeshIOPtr>& SupportedIOTypes();
-#endif
 
   bool operator()(const std::string& filePath, smtk::mesh::CollectionPtr collection) const;
   bool operator()(const std::string& filePath, smtk::mesh::CollectionPtr collection,

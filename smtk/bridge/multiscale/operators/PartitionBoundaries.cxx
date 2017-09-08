@@ -14,6 +14,7 @@
 #include "smtk/bridge/multiscale/Session.h"
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
+#include "smtk/mesh/Metrics.h"
 #include "smtk/model/Vertex.h"
 
 using namespace smtk::model;
@@ -21,47 +22,6 @@ using namespace smtk::common;
 
 namespace
 {
-void extent(smtk::mesh::MeshSet ms, double ext[6])
-{
-  class Extent : public smtk::mesh::PointForEach
-  {
-  public:
-    Extent()
-      : smtk::mesh::PointForEach()
-    {
-      m_values[0] = m_values[2] = m_values[4] = std::numeric_limits<double>::max();
-      m_values[1] = m_values[3] = m_values[5] = std::numeric_limits<double>::lowest();
-    }
-
-    void forPoints(const smtk::mesh::HandleRange&, std::vector<double>& xyz, bool&)
-    {
-      for (std::size_t i = 0; i < xyz.size(); i += 3)
-      {
-        for (std::size_t j = 0; j < 3; j++)
-        {
-          if (xyz[i + j] < this->m_values[2 * j])
-          {
-            this->m_values[2 * j] = xyz[i + j];
-          }
-          if (xyz[i + j] > this->m_values[2 * j + 1])
-          {
-            this->m_values[2 * j + 1] = xyz[i + j];
-          }
-        }
-      }
-    }
-
-    double m_values[6];
-  };
-
-  Extent extent;
-  smtk::mesh::for_each(ms.points(), extent);
-  for (std::size_t i = 0; i < 6; i++)
-  {
-    ext[i] = extent.m_values[i];
-  }
-}
-
 class Filter : public smtk::mesh::CellForEach
 {
 public:
@@ -93,7 +53,7 @@ public:
     }
   }
 
-  void forCell(const smtk::mesh::Handle&, smtk::mesh::CellType, int numPts)
+  void forCell(const smtk::mesh::Handle&, smtk::mesh::CellType, int numPts) override
   {
     const std::vector<double>& coords = this->coordinates();
     const smtk::mesh::Handle* const ptIds = this->pointIds();
@@ -132,7 +92,7 @@ public:
     }
   }
 
-  void forCell(const smtk::mesh::Handle&, smtk::mesh::CellType, int numPts)
+  void forCell(const smtk::mesh::Handle&, smtk::mesh::CellType, int numPts) override
   {
     const std::vector<double>& coords = this->coordinates();
     const smtk::mesh::Handle* const ptIds = this->pointIds();
@@ -186,7 +146,7 @@ bool labelIntersection(const smtk::mesh::CollectionPtr& collection,
       // construct a new uuid
       smtk::common::UUID id = collection->modelManager()->unusedUUID();
       // construct a topology element for the vertex set (dimension 0)
-      Topology::Element element(0);
+      Topology::Element element(domainMeshes, 0);
       // insert the element into the topology under the parent level
       // (designating it as a "free" element)
       topology.m_elements.insert(std::make_pair(id, element));
@@ -239,6 +199,13 @@ smtk::model::OperatorResult PartitionBoundaries::operateInternal()
     return this->createResult(smtk::model::OPERATION_FAILED);
   }
 
+  smtk::bridge::multiscale::SessionPtr sess = this->activeSession();
+  if (!sess)
+  {
+    smtkErrorMacro(this->log(), "No session associated with this model.");
+    return this->createResult(smtk::model::OPERATION_FAILED);
+  }
+
   // Set the origin from the values held in the specification
   double origin[3];
   smtk::attribute::DoubleItemPtr originItem = this->specification()->findDouble("origin");
@@ -254,8 +221,7 @@ smtk::model::OperatorResult PartitionBoundaries::operateInternal()
   smtk::mesh::MeshSet shell = collection->meshes().extractShell();
 
   // compute the shell's bounds
-  double bounds[6];
-  extent(shell, bounds);
+  std::array<double, 6> bounds = smtk::mesh::extent(shell);
 
   // we're going to generate vertices, so we need to keep track of them
   smtk::model::EntityRefArray created;
@@ -278,16 +244,17 @@ smtk::model::OperatorResult PartitionBoundaries::operateInternal()
   }
 
   result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  result->findModelEntity("created")->setIsEnabled(true);
   this->addEntitiesToResult(result, created, CREATED);
-
-  smtk::bridge::multiscale::SessionPtr sess = this->activeSession();
-  if (sess)
+  for (auto entity : created)
   {
-    smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->associations();
-    smtk::model::Model model = modelItem->value(0);
-    model.addCells(created);
-    this->addEntityToResult(result, model, MODIFIED);
+    this->session()->declareDanglingEntity(entity);
   }
+
+  smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->associations();
+  smtk::model::Model model = modelItem->value(0);
+  model.addCells(created);
+  this->addEntityToResult(result, model, MODIFIED);
 
   return result;
 }

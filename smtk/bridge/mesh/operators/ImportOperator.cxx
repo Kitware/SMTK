@@ -16,8 +16,13 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/VoidItem.h"
+
+#include "smtk/common/Paths.h"
 
 #include "smtk/io/ImportMesh.h"
+
+#include "smtk/mesh/Metrics.h"
 
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
@@ -44,9 +49,20 @@ smtk::model::OperatorResult ImportOperator::operateInternal()
   smtk::attribute::StringItem::Ptr labelItem = this->specification()->findString("label");
   std::string label = labelItem->value();
 
+  smtk::attribute::VoidItem::Ptr hierarchyItem =
+    this->specification()->findVoid("construct hierarchy");
+  bool constructHierarchy = hierarchyItem->isEnabled();
+
   // Get the collection from the file
   smtk::mesh::CollectionPtr collection =
     smtk::io::importMesh(filePath, this->activeSession()->meshManager(), label);
+
+  // Name the mesh according to the stem of the file
+  std::string name = smtk::common::Paths::stem(filePath);
+  if (!name.empty())
+  {
+    collection->name(name);
+  }
 
   if (!collection || !collection->isValid())
   {
@@ -54,22 +70,41 @@ smtk::model::OperatorResult ImportOperator::operateInternal()
     return this->createResult(smtk::model::OPERATION_FAILED);
   }
 
+  auto format = smtk::io::meshFileFormat(filePath);
+  if (format.Name == "exodus")
+  {
+    this->activeSession()->facade()["domain"] = "Element Block";
+    this->activeSession()->facade()["dirichlet"] = "Node Set";
+    this->activeSession()->facade()["neumann"] = "Side Set";
+  }
+
   // Assign its model manager to the one associated with this session
-  collection->setModelManager(this->activeSession()->manager());
+  collection->setModelManager(this->manager());
 
   // Construct the topology
-  this->activeSession()->addTopology(Topology(collection));
+  this->activeSession()->addTopology(Topology(collection, constructHierarchy));
+
+  // Determine the model's dimension
+  int dimension = int(smtk::mesh::highestDimension(collection->meshes()));
 
   // Our collections will already have a UUID, so here we create a model given
   // the model manager and uuid
   smtk::model::Model model =
-    smtk::model::EntityRef(this->activeSession()->manager(), collection->entity());
+    this->manager()->insertModel(collection->entity(), dimension, dimension);
+
+  // Name the model according to the stem of the file
+  if (!name.empty())
+  {
+    model.setName(name);
+  }
+
+  // Declare the model as "dangling" so it will be transcribed
+  this->session()->declareDanglingEntity(model);
 
   collection->associateToModel(model.entity());
 
   // Set the model's session to point to the current session
-  model.setSession(
-    smtk::model::SessionRef(this->activeSession()->manager(), this->activeSession()->sessionId()));
+  model.setSession(smtk::model::SessionRef(this->manager(), this->activeSession()->sessionId()));
 
   // If we don't call "transcribe" ourselves, it never gets called.
   this->activeSession()->transcribe(model, smtk::model::SESSION_EVERYTHING, false);

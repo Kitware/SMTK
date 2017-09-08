@@ -33,7 +33,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkADHExporterOperatorBase : public vtkObject
 public:
   static vtkADHExporterOperatorBase* New();
   vtkTypeMacro(vtkADHExporterOperatorBase, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Get/Set the name of the file that the node and face boundary

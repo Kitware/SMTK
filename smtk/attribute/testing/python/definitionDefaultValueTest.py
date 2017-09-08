@@ -26,7 +26,7 @@ stringTest = ['Oh, no!', 'Yes, please.', 'Bleh.']
 doubleTest = [3., 2., 1.]
 
 # Create an attribute definition whose items have vector default values
-asys = smtk.attribute.System.create()
+asys = smtk.attribute.Collection.create()
 foo = asys.createDefinition('foo')
 
 bar = smtk.attribute.DoubleItemDefinition.New('bar')
@@ -58,7 +58,7 @@ if not sdef or 'Sep' not in sdef.attributes.keys() or sdef.attributes['Sep'].val
     print 'Invalid default value in StringItemDefinition: %s' % sdef.toxml()
     err |= 2
 
-asys = smtk.attribute.System.create()
+asys = smtk.attribute.Collection.create()
 rdr = smtk.io.AttributeReader()
 rdr.read(asys, sys.argv[1], log)
 att = asys.createAttribute('foobly', asys.findDefinition('foo'))

@@ -24,9 +24,9 @@
 #include "smtk/model/Tessellation.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/MeshItem.h"
-#include "smtk/attribute/System.h"
 
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
@@ -60,10 +60,10 @@ cJSON* cJSON_AddAttributeSpec(cJSON* opEntry,
 {
   if (spec)
   {
-    smtk::attribute::SystemPtr tmpSys = smtk::attribute::System::create();
+    smtk::attribute::CollectionPtr tmpSys = smtk::attribute::Collection::create();
     tmpSys->setRefModelManager(spec->modelManager());
     tmpSys->copyAttribute(
-      spec, static_cast<bool>(smtk::attribute::System::FORCE_COPY_ASSOCIATIONS));
+      spec, static_cast<bool>(smtk::attribute::Collection::FORCE_COPY_ASSOCIATIONS));
     smtk::io::Logger log;
     smtk::io::AttributeWriter wri;
     wri.includeDefinitions(false);
@@ -417,7 +417,7 @@ int SaveJSON::save(
     SaveJSON::addModelsRecord(delegateIter->first.manager(), models, sess);
   }
 
-  //status &= SaveJSON::forOperatorDefinitions(session->operatorSystem(), sess);
+  //status &= SaveJSON::forOperatorDefinitions(session->operatorCollection(), sess);
   return status;
 }
 
@@ -702,7 +702,7 @@ int SaveJSON::forManagerSession(const smtk::common::UUID& uid, cJSON* node, Mana
   SaveJSON::addModelsRecord(modelMgr, modelsOfSession, sess);
   SaveJSON::addMeshesRecord(modelMgr, modelsOfSession, sess);
 
-  status &= SaveJSON::forOperatorDefinitions(session->operatorSystem(), sess);
+  status &= SaveJSON::forOperatorDefinitions(session->operatorCollection(), sess);
   return status;
 }
 
@@ -729,7 +729,7 @@ int SaveJSON::forManagerSessionPartial(const smtk::common::UUID& sessionid,
   }
   SaveJSON::addModelsRecord(modelMgr, modelIds, sess);
   SaveJSON::addMeshesRecord(modelMgr, modelIds, sess);
-  status &= SaveJSON::forOperatorDefinitions(session->operatorSystem(), sess);
+  status &= SaveJSON::forOperatorDefinitions(session->operatorCollection(), sess);
   return status;
 }
 
@@ -743,7 +743,7 @@ int SaveJSON::forModelOperators(const smtk::common::UUID& uid, cJSON* entRec, Ma
   return 1; // SaveJSON::forOperators(ops, entRec);
 } */
 
-int SaveJSON::forOperatorDefinitions(smtk::attribute::SystemPtr opSys, cJSON* entRec)
+int SaveJSON::forOperatorDefinitions(smtk::attribute::CollectionPtr opSys, cJSON* entRec)
 {
   smtk::io::Logger log;
   smtk::io::AttributeWriter wri;
@@ -1160,7 +1160,7 @@ public:
     }
   }
 
-  void forMesh(smtk::mesh::MeshSet& mesh)
+  void forMesh(smtk::mesh::MeshSet& mesh) override
   {
     cJSON* meshJson = cJSON_CreateObject();
 

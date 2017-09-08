@@ -45,7 +45,7 @@ class SMTKDISCRETESESSION_EXPORT vtkCMBParserBase : public vtkObject
 {
 public:
   vtkTypeMacro(vtkCMBParserBase, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Parse the input \a MasterPoly into the discrete \a Model.
@@ -99,7 +99,7 @@ public:
 
 protected:
   vtkCMBParserBase();
-  virtual ~vtkCMBParserBase();
+  ~vtkCMBParserBase() override;
 
   //Description:
   // Convert a flat cell Id space where some cells represent edges

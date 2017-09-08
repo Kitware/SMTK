@@ -30,7 +30,7 @@ class SMTKCORE_EXPORT Manager : public smtk::enable_shared_from_this<Manager>
   typedef std::map<smtk::common::UUID, smtk::mesh::CollectionPtr> ContainerType;
 
 public:
-  smtkTypeMacro(Manager);
+  smtkTypeMacroBase(Manager);
   smtkCreateMacro(Manager);
   virtual ~Manager();
 
@@ -44,7 +44,6 @@ public:
   //this manager
   smtk::mesh::CollectionPtr makeCollection(const smtk::common::UUID& collectionID);
 
-#ifndef SHIBOKEN_SKIP
   //Construct a collection. Manager will generate the UUID, and use
   //the Interface provided by the caller
   smtk::mesh::CollectionPtr makeCollection(smtk::mesh::InterfacePtr interface);
@@ -54,7 +53,6 @@ public:
   //this manager
   smtk::mesh::CollectionPtr makeCollection(
     const smtk::common::UUID& collectionID, smtk::mesh::InterfacePtr interface);
-#endif
 
   std::size_t numberOfCollections() const;
   bool hasCollection(const smtk::mesh::CollectionPtr& collection) const;

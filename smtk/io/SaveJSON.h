@@ -18,9 +18,7 @@
 #include "smtk/model/EntityIterator.h" // For IteratorStyle
 #include "smtk/model/Manager.h"        // For UUIDWithEntity
 
-#ifndef SHIBOKEN_SKIP
 #include "cJSON.h"
-#endif // SHIBOKEN_SKIP
 
 namespace smtk
 {
@@ -123,7 +121,7 @@ public:
     const common::UUIDs& modelIds, cJSON*, smtk::model::ManagerPtr modelMgrId,
     bool writeNativeModels = false, const std::string& referencePath = std::string());
   //static int forModelOperators(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
-  static int forOperatorDefinitions(smtk::attribute::SystemPtr opSys, cJSON*);
+  static int forOperatorDefinitions(smtk::attribute::CollectionPtr opSys, cJSON*);
   static int forOperator(smtk::model::OperatorSpecification op, cJSON*);
   static int forOperator(smtk::model::OperatorPtr op, cJSON*);
   static int forOperatorResult(smtk::model::OperatorResult res, cJSON*);
@@ -163,13 +161,8 @@ public:
   // JSON-RPC helpers:
   static cJSON* createRPCRequest(
     const std::string& method, const std::string& params, const std::string& reqId);
-#ifndef SHIBOKEN_SKIP
   static cJSON* createRPCRequest(const std::string& method, cJSON*& params,
     const std::string& reqId, int paramsType = cJSON_Array);
-#else
-  static cJSON* createRPCRequest(
-    const std::string& method, cJSON*& params, const std::string& reqId, int paramsType);
-#endif
 
   // Low-level helpers:
   static cJSON* createStringArray(const std::vector<std::string>& arr);

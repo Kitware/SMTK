@@ -9,8 +9,8 @@
 //=========================================================================
 #include "smtk/model/SessionRef.h"
 
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/System.h"
 
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/CellEntity.h"
@@ -71,15 +71,15 @@ StringList SessionRef::operatorNames(bool includeAdvanced) const
   return brdg->operatorNames(includeAdvanced);
 }
 
-/**\brief Return the smtk::attribute::System holding all the operator definitions.
+/**\brief Return the smtk::attribute::Collection holding all the operator definitions.
   *
   */
-smtk::attribute::SystemPtr SessionRef::opSys() const
+smtk::attribute::CollectionPtr SessionRef::opSys() const
 {
   Session::Ptr brdg = this->session();
   if (!brdg)
     return NULL;
-  return brdg->operatorSystem();
+  return brdg->operatorCollection();
 }
 
 /**\brief Return the smtk::attribute::Definition describing an operator.
@@ -87,7 +87,7 @@ smtk::attribute::SystemPtr SessionRef::opSys() const
   */
 OperatorDefinition SessionRef::opDef(const std::string& opName) const
 {
-  smtk::attribute::SystemPtr sys = this->opSys();
+  smtk::attribute::CollectionPtr sys = this->opSys();
   if (!sys)
     return OperatorDefinition();
   return sys->findDefinition(opName);
@@ -110,7 +110,7 @@ Operator::Ptr SessionRef::op(const std::string& opName) const
 StringList SessionRef::operatorsForAssociation(BitFlags assocMask) const
 {
   StringList result;
-  smtk::attribute::SystemPtr sys = this->opSys();
+  smtk::attribute::CollectionPtr sys = this->opSys();
   if (!assocMask || !sys)
     return result;
 

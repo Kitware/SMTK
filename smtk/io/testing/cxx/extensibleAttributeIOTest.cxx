@@ -12,10 +12,10 @@
 #include <sstream>
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/StringItem.h"
-#include "smtk/attribute/System.h"
 
 #include "smtk/common/UUID.h"
 
@@ -66,11 +66,11 @@ const char* testInput =
 
 int main()
 {
-  smtk::attribute::SystemPtr system = smtk::attribute::System::create();
+  smtk::attribute::CollectionPtr collection = smtk::attribute::Collection::create();
   smtk::io::Logger logger;
   smtk::io::AttributeReader reader;
 
-  if (reader.readContents(system, testInput, logger))
+  if (reader.readContents(collection, testInput, logger))
   {
     std::cerr << "Encountered Errors while reading input data\n";
     std::cerr << logger.convertToString();
@@ -78,7 +78,7 @@ int main()
   }
 
   std::vector<smtk::attribute::AttributePtr> atts;
-  system->attributes(atts);
+  collection->attributes(atts);
   if (atts.size() != 1)
   {
     std::cerr << "Unexpected number of attributes: " << atts.size() << "\n";
@@ -110,15 +110,15 @@ int main()
 
   smtk::io::AttributeWriter writer;
 
-  if (writer.write(system, fileName, logger))
+  if (writer.write(collection, fileName, logger))
   {
     std::cerr << "Failed to write to " << fileName << "\n";
     std::cerr << logger.convertToString();
     return -2;
   }
 
-  smtk::attribute::SystemPtr copiedSystem = smtk::attribute::System::create();
-  if (reader.read(copiedSystem, fileName, logger))
+  smtk::attribute::CollectionPtr copiedCollection = smtk::attribute::Collection::create();
+  if (reader.read(copiedCollection, fileName, logger))
   {
     std::cerr << "Failed to read from " << fileName << "\n";
     std::cerr << logger.convertToString();
@@ -127,7 +127,7 @@ int main()
 
   {
     std::vector<smtk::attribute::AttributePtr> copiedAtts;
-    copiedSystem->attributes(copiedAtts);
+    copiedCollection->attributes(copiedAtts);
     if (copiedAtts.size() != 1)
     {
       std::cerr << "Unexpected number of attributes: " << copiedAtts.size() << "\n";

@@ -15,6 +15,7 @@
 
 #include "smtk/bridge/multiscale/Session.h"
 
+#include "smtk/model/Session.h"
 #include "smtk/bridge/mesh/Session.h"
 
 namespace py = pybind11;
@@ -37,6 +38,9 @@ PySharedPtrClass< smtk::bridge::multiscale::Session, smtk::bridge::mesh::Session
     .def("findOperatorConstructor", &smtk::bridge::multiscale::Session::findOperatorConstructor, py::arg("opName"))
     .def("inheritsOperators", &smtk::bridge::multiscale::Session::inheritsOperators)
     .def_readwrite_static("sessionName", &smtk::bridge::multiscale::Session::sessionName)
+    .def_static("CastTo", [](const std::shared_ptr<smtk::model::Session> i) {
+        return std::dynamic_pointer_cast<smtk::bridge::multiscale::Session>(i);
+      })
     ;
   return instance;
 }

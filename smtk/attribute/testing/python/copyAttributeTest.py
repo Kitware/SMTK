@@ -10,7 +10,7 @@
 #
 #=============================================================================
 """
-Test smtk.attribute.System.copyAttribute() method
+Test smtk.attribute.Collection.copyAttribute() method
 
 Uses copyAttributeTest.sbi in the SMTKTestData repo.
 """
@@ -22,15 +22,13 @@ import uuid
 
 try:
     import smtk
-    if smtk.wrappingProtocol() == 'pybind11':
-        from smtk import attribute
-        from smtk import io
-        from smtk import model
+    from smtk import attribute
+    from smtk import io
+    from smtk import model
 except ImportError:
     print
     print 'Not able to import smtk library. You might need to:'
     print '  - Use the PYTHONPATH variable to point to the smtk python lib'
-    print '  - And/or use the LD_LIBRARY_PATH variable to point to the shiboken libraries'
     print
     sys.exit(-1)
 
@@ -45,7 +43,7 @@ if __name__ == '__main__':
     # First (and) only argument is the path to the smtk data directory
     if len(sys.argv) < 2:
         print
-        print 'Test smtk.attribute.System.copyAttribute()'
+        print 'Test smtk.attribute.Collection.copyAttribute()'
         print 'Usage: python %s path-to-SMTKTestData'
         print
         sys.exit(-1)
@@ -76,17 +74,18 @@ if __name__ == '__main__':
         sys.exit(-4)
 
     #
-    # Load attribute file into system
+    # Load attribute file into collection
     #
-    att_folder = os.path.join(smtk_test_data, 'attribute', 'attribute_system')
+    att_folder = os.path.join(
+        smtk_test_data, 'attribute', 'attribute_collection')
     att_path = os.path.join(att_folder, INPUT_FILENAME)
     logging.info('Reading %s' % att_path)
-    input_system = smtk.attribute.System.create()
-    input_system.setRefModelManager(model_manager)
+    input_collection = smtk.attribute.Collection.create()
+    input_collection.setRefModelManager(model_manager)
 
     reader = smtk.io.AttributeReader()
     logger = smtk.io.Logger()
-    err = reader.read(input_system, att_path, logger)
+    err = reader.read(input_collection, att_path, logger)
     if err:
         logging.error("Unable to load template file")
         logging.error(logger.convertToString())
@@ -95,7 +94,7 @@ if __name__ == '__main__':
     err_count = 0
 
     # Add model associations, using known UUID values (see test2D.xref)
-    att_list = input_system.findAttributes('FirstConcrete')
+    att_list = input_collection.findAttributes('FirstConcrete')
     if not att_list:
         logging.error("Unable to find FirstConcrete attribute")
         sys.exit(-2)
@@ -105,7 +104,7 @@ if __name__ == '__main__':
     vertex_id = uuid.UUID(vertex09)
     first_concrete.associateEntity(vertex_id)
 
-    att_list = input_system.findAttributes('SecondConcrete')
+    att_list = input_collection.findAttributes('SecondConcrete')
     if not att_list:
         logging.error("Unable to find SecondConcrete attribute")
         sys.exit(-2)
@@ -128,22 +127,19 @@ if __name__ == '__main__':
     model_entity_item.setValue(0, entityref)
 
     #
-    # Instantiate 2nd/test system
+    # Instantiate 2nd/test collection
     #
-    test_system = smtk.attribute.System.create()
-    test_system.setRefModelManager(model_manager)
+    test_collection = smtk.attribute.Collection.create()
+    test_collection.setRefModelManager(model_manager)
     # Copy SecondConcrete attribute
     options = smtk.attribute.Item.AssignmentOptions.COPY_MODEL_ASSOCIATIONS
-    if smtk.wrappingProtocol() == 'pybind11':
-        test_system.copyAttribute(second_concrete, True, int(options))
-    else:
-        test_system.copyAttribute(second_concrete, True, options)
+    test_collection.copyAttribute(second_concrete, True, int(options))
     expected_deftypes = [
         'SecondConcrete', 'AnotherAbstractBase', 'CommonBase',
         'FirstConcrete', 'PolyLinearFunction'
     ]
     for def_type in expected_deftypes:
-        defn = test_system.findDefinition(def_type)
+        defn = test_collection.findDefinition(def_type)
         if defn is None:
             logging.error('Expected %s definition, found None' % def_type)
             err_count += 1
@@ -151,18 +147,18 @@ if __name__ == '__main__':
     expected_atttypes = ['FirstConcrete',
                          'SecondConcrete', 'PolyLinearFunction']
     for att_type in expected_atttypes:
-        att_list = test_system.findAttributes(att_type)
+        att_list = test_collection.findAttributes(att_type)
         if len(att_list) != 1:
             logging.error('Expected %s attribute, found %d' %
                           (att_type, len(att_list)))
             err_count += 1
 
     # Note there is ALOT more that could & should be verified here
-    logging.debug('Writing system')
+    logging.debug('Writing collection')
 
     # Write data out FYI
     writer = smtk.io.AttributeWriter()
-    err = writer.write(test_system, OUTPUT_FILENAME, logger)
+    err = writer.write(test_collection, OUTPUT_FILENAME, logger)
     if err:
         logging.error("Unable to write output file")
         sys.exit(-6)

@@ -25,10 +25,10 @@ namespace cumulus
 CumulusWidget::CumulusWidget(QWidget* parentObject)
   : QWidget(parentObject)
   , m_ui(new Ui::CumulusWidget)
-  , m_loginDialog(this)
   , m_jobTableModel(new JobTableModel(this))
   , m_cumulusProxy(new CumulusProxy(this))
   , m_timer(NULL)
+  , m_loginDialog(this)
 {
   m_ui->setupUi(this);
 

@@ -25,9 +25,9 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModelVertexUse : public vtkModelEntity
 public:
   static vtkModelVertexUse* New();
   vtkTypeMacro(vtkModelVertexUse, vtkModelEntity);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual int GetType();
+  int GetType() override;
 
   vtkModelVertex* GetModelVertex();
 
@@ -41,11 +41,11 @@ public:
   // Reads the state of an instance from an archive OR
   // writes the state of an instance to an archive. See
   // the documentation for this class for details.
-  virtual void Serialize(vtkSerializer* ser);
+  void Serialize(vtkSerializer* ser) override;
 
 protected:
   vtkModelVertexUse();
-  virtual ~vtkModelVertexUse();
+  ~vtkModelVertexUse() override;
 
   void AddModelEdgeUse(vtkModelEdgeUse* edgeUse);
   void RemoveModelEdgeUse(vtkModelEdgeUse* edgeUse);
@@ -53,7 +53,7 @@ protected:
   friend class vtkModelEdge;
   friend class vtkModelEdgeUse;
 
-  virtual bool Destroy();
+  bool Destroy() override;
   // for destroying
 
   friend class vtkModelFace;

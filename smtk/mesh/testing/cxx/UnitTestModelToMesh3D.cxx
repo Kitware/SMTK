@@ -49,7 +49,7 @@ public:
   {
   }
 
-  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType cellType, int numPts)
+  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType cellType, int numPts) override
   {
     (void)cellId;
     (void)cellType;

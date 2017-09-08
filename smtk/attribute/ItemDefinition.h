@@ -42,18 +42,18 @@ class SMTKCORE_EXPORT ItemDefinition
   friend class smtk::attribute::ValueItemDefinition;
 
 public:
-  smtkTypeMacro(ItemDefinition);
+  smtkTypeMacroBase(ItemDefinition);
   // Temp structure used for copying definitions
   struct CopyInfo
   {
-    // Reference to system that is getting modified ("to")
-    const smtk::attribute::System& ToSystem;
-    // List of ValueItemDefinitions that reference expressions not currently in this system
+    // Reference to collection that is getting modified ("to")
+    const smtk::attribute::Collection& ToCollection;
+    // List of ValueItemDefinitions that reference expressions not currently in this collection
     std::queue<std::pair<std::string, smtk::attribute::ItemDefinitionPtr> > UnresolvedExpItems;
-    // List of RefItemDefinitions that reference types not currently in this system
+    // List of RefItemDefinitions that reference types not currently in this collection
     std::queue<std::pair<std::string, smtk::attribute::ItemDefinitionPtr> > UnresolvedRefItems;
-    CopyInfo(const smtk::attribute::SystemPtr mgr)
-      : ToSystem(*mgr)
+    CopyInfo(const smtk::attribute::CollectionPtr mgr)
+      : ToCollection(*mgr)
     {
     }
   };

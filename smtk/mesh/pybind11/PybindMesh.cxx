@@ -36,6 +36,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindInterface.h"
 #include "PybindManager.h"
 #include "PybindMeshSet.h"
+#include "PybindMetrics.h"
 #include "PybindPointField.h"
 #include "PybindPointConnectivity.h"
 #include "PybindPointLocator.h"
@@ -111,6 +112,7 @@ PYBIND11_MODULE(_smtkPybindMesh, mesh)
   pybind11_init__ZN4smtk4mesh19extractTessellationERKNS0_7CellSetERKNS0_8PointSetERNS0_24PreAllocatedTessellationE(mesh);
   pybind11_init__ZN4smtk4mesh19extractTessellationERNS0_17PointConnectivityERKNS0_8PointSetERNS0_24PreAllocatedTessellationE(mesh);
   pybind11_init__ZN4smtk4mesh19extractTessellationERKNS_5model9EntityRefERKNSt3__110shared_ptrINS0_10CollectionEEERKNS0_8PointSetERNS0_24PreAllocatedTessellationE(mesh);
+  pybind11_init_smtk_mesh_metrics(mesh);
   pybind11_init_smtk_mesh_cell_for_each(mesh);
   pybind11_init_smtk_mesh_mesh_for_each(mesh);
   pybind11_init_smtk_mesh_point_for_each(mesh);

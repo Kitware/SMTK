@@ -79,6 +79,9 @@ smtk::model::OperatorResult AssignColors::operateInternal()
     {
       // TODO: It would be nice to call ent.RemoveFloatProperty("color")
       //       here, but doing so does not remove the colors on the client.
+      // TODO: Add support for remove color assigned by entity list. For now if
+      // user assign color by entityListPhrase, there is no way to remove it
+      // (unless manually set it to white).
       if (ent.isValid())
       {
         ent.setColor(0, 0, 0, -1);

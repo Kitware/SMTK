@@ -41,7 +41,7 @@ public:
   {
   }
 
-  void forMesh(smtk::mesh::MeshSet& mesh)
+  void forMesh(smtk::mesh::MeshSet& mesh) override
   {
     std::size_t i = this->m_index++ % this->m_order.size();
     if (i != 0)
@@ -70,7 +70,7 @@ public:
   {
   }
 
-  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType, int)
+  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType, int) override
   {
     // default to the value for unlabeled domains
     std::int64_t domainValue = -1;
@@ -109,7 +109,7 @@ public:
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>&, bool&)
+  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>&, bool&) override
   {
     for (auto point = pointIds.begin(); point != pointIds.end(); ++point)
     {

@@ -101,8 +101,13 @@ smtk::mesh::CellType vtkToSMTKCell(int t)
 
 template <typename VTKDataSetType>
 smtk::mesh::HandleRange convertVTKDataSet(
-  VTKDataSetType* dataset, smtk::mesh::BufferedCellAllocatorPtr& alloc)
+  VTKDataSetType* dataset, smtk::mesh::CollectionPtr& collection)
 {
+  smtk::mesh::InterfacePtr iface = collection->interface();
+  smtk::mesh::BufferedCellAllocatorPtr alloc = iface->bufferedCellAllocator();
+
+  smtk::mesh::HandleRange initRange = collection->cells().range();
+
   if (!alloc->reserveNumberOfCoordinates(dataset->GetPoints()->GetNumberOfPoints()))
   {
     return smtk::mesh::HandleRange();
@@ -129,7 +134,7 @@ smtk::mesh::HandleRange convertVTKDataSet(
     return smtk::mesh::HandleRange();
   }
 
-  return alloc->cells();
+  return subtract(alloc->cells(), initRange);
 }
 
 template <typename TReader>
@@ -243,14 +248,11 @@ smtk::mesh::MeshSet ImportVTKData::operator()(
     return smtk::mesh::MeshSet();
   }
 
-  smtk::mesh::InterfacePtr iface = collection->interface();
-  smtk::mesh::BufferedCellAllocatorPtr alloc = iface->bufferedCellAllocator();
-
   if (polydata->NeedToBuildCells())
   {
     polydata->BuildCells();
   }
-  smtk::mesh::HandleRange cells = convertVTKDataSet(polydata, alloc);
+  smtk::mesh::HandleRange cells = convertVTKDataSet(polydata, collection);
 
   smtk::mesh::MeshSet meshset = collection->createMesh(smtk::mesh::CellSet(collection, cells));
 
@@ -278,7 +280,7 @@ bool ImportVTKData::operator()(vtkPolyData* polydata, smtk::mesh::CollectionPtr 
   {
     polydata->BuildCells();
   }
-  smtk::mesh::HandleRange cells = convertVTKDataSet(polydata, alloc);
+  smtk::mesh::HandleRange cells = convertVTKDataSet(polydata, collection);
 
   smtk::mesh::MeshSet mesh;
 
@@ -350,7 +352,7 @@ bool ImportVTKData::operator()(vtkUnstructuredGrid* ugrid, smtk::mesh::Collectio
   smtk::mesh::InterfacePtr iface = collection->interface();
   smtk::mesh::BufferedCellAllocatorPtr alloc = iface->bufferedCellAllocator();
 
-  smtk::mesh::HandleRange cells = convertVTKDataSet(ugrid, alloc);
+  smtk::mesh::HandleRange cells = convertVTKDataSet(ugrid, collection);
 
   smtk::mesh::MeshSet mesh;
 

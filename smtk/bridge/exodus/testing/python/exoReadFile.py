@@ -11,8 +11,7 @@
 #=============================================================================
 import os
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.bridge.exodus
+import smtk.bridge.exodus
 import smtk.testing
 from smtk.simple import *
 import sys
@@ -74,7 +73,7 @@ class TestExodusSession(smtk.testing.TestCase):
         someCell = allCells[0]
         self.assertEqual(someCell.attributes(), set([]),
                          'Cell should not have any attribute associations.')
-        asys = smtk.attribute.System.create()
+        asys = smtk.attribute.Collection.create()
         adef = asys.createDefinition('testDef')
         adef.setAssociationMask(int(smtk.model.CELL_ENTITY))
         adef.associationRule().setNumberOfRequiredValues(1)

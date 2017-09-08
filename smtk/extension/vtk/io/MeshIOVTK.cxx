@@ -10,6 +10,7 @@
 
 #include "smtk/extension/vtk/io/MeshIOVTK.h"
 
+#include "smtk/io/ExportMesh.h"
 #include "smtk/io/ImportMesh.h"
 #include "smtk/io/mesh/Format.h"
 #include "smtk/io/mesh/MeshIO.h"
@@ -69,6 +70,8 @@ bool MeshIOVTK::exportMesh(const std::string& filePath, smtk::mesh::CollectionPt
 void smtk_extension_vtk_io_MeshIOVTK_AutoInit_Construct()
 {
   smtk::io::ImportMesh::SupportedIOTypes().push_back(
+    smtk::io::mesh::MeshIOPtr(new smtk::extension::vtk::io::MeshIOVTK()));
+  smtk::io::ExportMesh::SupportedIOTypes().push_back(
     smtk::io::mesh::MeshIOPtr(new smtk::extension::vtk::io::MeshIOVTK()));
 }
 

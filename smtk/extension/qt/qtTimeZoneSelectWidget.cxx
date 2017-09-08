@@ -29,8 +29,8 @@ public:
     : QSortFilterProxyModel(parent)
   {
   }
-  virtual QVariant headerData(
-    int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+  QVariant headerData(
+    int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 };
 
 QVariant TimeZoneRegionProxyModel::headerData(
@@ -85,11 +85,7 @@ qtTimeZoneSelectWidget::qtTimeZoneSelectWidget(QWidget* parent)
   this->UI->Splitter->setStretchFactor(0, 0);
   this->UI->Splitter->setStretchFactor(1, 1);
   this->UI->RegionView->horizontalHeader()->setStretchLastSection(true);
-#if QT_VERSION >= 0x050000
   this->UI->RegionView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-#else
-  this->UI->RegionView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
-#endif
 }
 
 qtTimeZoneSelectWidget::~qtTimeZoneSelectWidget()

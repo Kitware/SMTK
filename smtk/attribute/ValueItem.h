@@ -34,9 +34,9 @@ public:
   smtkTypeMacro(ValueItem);
   friend class ValueItemDefinition;
 
-  virtual ~ValueItem();
+  ~ValueItem() override;
   virtual std::size_t numberOfValues() const { return this->m_isSet.size(); }
-  virtual bool isValid() const;
+  bool isValid() const override;
   std::size_t numberOfRequiredValues() const;
   std::size_t maxNumberOfValues() const;
 
@@ -59,8 +59,8 @@ public:
    * @param visitor a lambda function which would be applied on children items
    * @param activeChildren a flag indicating whether it should be applied to active children only or not
    */
-  virtual void visitChildren(
-    std::function<void(smtk::attribute::ItemPtr, bool)> visitor, bool activeChildren = true);
+  void visitChildren(std::function<void(smtk::attribute::ItemPtr, bool)> visitor,
+    bool activeChildren = true) override;
 
   int discreteIndex(std::size_t elementIndex = 0) const
   {
@@ -78,7 +78,7 @@ public:
   // it will be marked as unset.
   //If the item's definition indicated a size of 0 then it will go back to
   // having no values
-  virtual void reset();
+  void reset() override;
   virtual bool setToDefault(std::size_t elementIndex = 0) = 0;
   // Returns true if there is a default defined and the item is curently set to it
   virtual bool isUsingDefault(std::size_t elementIndex) const = 0;
@@ -126,7 +126,7 @@ public:
   // to represent an expression will be copied if needed.  Use IGNORE_EXPRESSIONS option to prevent this
   // When an expression attribute is copied, its model associations are by default not.
   // Use COPY_MODEL_ASSOCIATIONS if you want them copied as well.These options are defined in Item.h .
-  virtual bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0);
+  bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0) override;
 
   ItemPtr findChild(const std::string& name, smtk::attribute::SearchStyle);
   ConstItemPtr findChild(const std::string& name, smtk::attribute::SearchStyle) const;
@@ -134,7 +134,7 @@ public:
 protected:
   ValueItem(Attribute* owningAttribute, int itemPosition);
   ValueItem(Item* owningItem, int myPosition, int mySubGroupPosition);
-  virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
+  bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def) override;
   virtual void updateDiscreteValue(std::size_t elementIndex) = 0;
   virtual void updateActiveChildrenItems();
   std::vector<int> m_discreteIndices;

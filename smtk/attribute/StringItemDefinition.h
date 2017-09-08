@@ -29,11 +29,11 @@ public:
     return smtk::attribute::StringItemDefinitionPtr(new StringItemDefinition(myName));
   }
 
-  virtual ~StringItemDefinition();
-  virtual Item::Type type() const;
-  virtual smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const;
-  virtual smtk::attribute::ItemPtr buildItem(
-    Item* owningItem, int position, int subGroupPosition) const;
+  ~StringItemDefinition() override;
+  Item::Type type() const override;
+  smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
+  smtk::attribute::ItemPtr buildItem(
+    Item* owningItem, int position, int subGroupPosition) const override;
   bool isMultiline() const { return this->m_multiline; }
   void setIsMultiline(bool val) { this->m_multiline = val; }
 
@@ -43,8 +43,8 @@ public:
   void setIsSecure(bool val) { this->m_secure = val; }
   bool isSecure() const { return this->m_secure; }
 
-  virtual smtk::attribute::ItemDefinitionPtr createCopy(
-    smtk::attribute::ItemDefinition::CopyInfo& info) const;
+  smtk::attribute::ItemDefinitionPtr createCopy(
+    smtk::attribute::ItemDefinition::CopyInfo& info) const override;
 
 protected:
   StringItemDefinition(const std::string& myName);

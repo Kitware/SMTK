@@ -12,9 +12,8 @@ import sys
 #
 #=============================================================================
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.bridge.polygon
-    import smtk.io
+import smtk.bridge.polygon
+import smtk.io
 from smtk.simple import *
 import smtk.testing
 
@@ -40,7 +39,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
         sessiontag = sess.tag()
         print '\n'
 
-        #opnames = sess.operatorNames()
+        # opnames = sess.operatorNames()
         # print opnames
 
     def createTestEdges(self, mod):
@@ -58,7 +57,8 @@ class TestPolygonCreation(smtk.testing.TestCase):
 
         # Test non-periodic edge with self-intersection.
         # Test periodic edge with self-intersection.
-        #edgeTestVerts = [[0,1], [1,2], [0,2], [1,1],   [4,0], [4,3], [5,3], [3,0], [4,0], [11,10]]
+        # edgeTestVerts = [[0,1], [1,2], [0,2], [1,1],   [4,0], [4,3], [5,3],
+        # [3,0], [4,0], [11,10]]
         edgeTestVerts = [[0, 1], [1, 2], [0, 2], [0.5, 1.5],
                          [4, 0], [4, 3], [5, 3], [3, 0], [4, 0], [11, 10]]
         edgeTestOffsets = [0, 4, 9, 9, 12]  # Only first 3 edges are valid
@@ -116,7 +116,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
 
             self.startRenderTest()
 
-            #mod = smtk.model.Model(mod)
+            # mod = smtk.model.Model(mod)
             #[mod.addCell(x) for x in self.mgr.findEntitiesOfType(smtk.model.CELL_ENTITY, False)]
 
             # Color faces but not edges or vertices
@@ -144,11 +144,11 @@ class TestPolygonCreation(smtk.testing.TestCase):
             cam.SetViewUp(0, 1, 0)
             self.renderer.ResetCamera()
             self.renderWindow.Render()
-            #smtk.testing.INTERACTIVE = doInteract
+            # smtk.testing.INTERACTIVE = doInteract
             # Skip the image match if we don't have a baseline.
             # This allows the test to succeed even on systems without the test
             # data but requires a match on systems with the test data.
-            #self.assertImageMatchIfFileExists(imagePath, 70)
+            # self.assertImageMatchIfFileExists(imagePath, 70)
             # self.assertImageMatch(imagePath)
             self.interact()
 

@@ -13,9 +13,8 @@ import sys
 #=============================================================================
 from pprint import pprint
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.attribute
-    import smtk.common
+import smtk.attribute
+import smtk.common
 from smtk.simple import *
 
 
@@ -30,11 +29,11 @@ def RSTest():
     n = 0
     resourceSet = smtk.common.ResourceSet()
 
-    system1 = smtk.attribute.System.New()
-    print system1
-    print system1.resourceType()
+    collection1 = smtk.attribute.Collection.New()
+    print collection1
+    print collection1.resourceType()
     result = resourceSet.addResource(
-        system1, "system1", "", smtk.common.ResourceSet.TEMPLATE)
+        collection1, "collection1", "", smtk.common.ResourceSet.TEMPLATE)
 
     n = resourceSet.numberOfResources()
     if result == False:
@@ -44,9 +43,9 @@ def RSTest():
         print("Wrong number of resources: %i, should be 1" % n)
         status = status + 1
 
-    system2 = smtk.attribute.System.New()
+    collection2 = smtk.attribute.Collection.New()
     result = resourceSet.addResource(
-        system2, "system2", "path2", smtk.common.ResourceSet.INSTANCE)
+        collection2, "collection2", "path2", smtk.common.ResourceSet.INSTANCE)
 
     n = resourceSet.numberOfResources()
     if result == False:
@@ -57,7 +56,7 @@ def RSTest():
         status = status + 1
 
     result = resourceSet.addResource(
-        system1, "system1-different-id", "", smtk.common.ResourceSet.SCENARIO)
+        collection1, "collection1-different-id", "", smtk.common.ResourceSet.SCENARIO)
     n = resourceSet.numberOfResources()
     if result == False:
         print("addResource() call failed")
@@ -66,7 +65,7 @@ def RSTest():
         print("Wrong number of resources: %i, should be 3" % n)
         status = status + 1
 
-    result = resourceSet.addResource(system2, "system2")
+    result = resourceSet.addResource(collection2, "collection2")
     n = resourceSet.numberOfResources()
     if result == True:
         print("addResource() call didn't fail failed")
@@ -80,20 +79,18 @@ def RSTest():
         print("Wrong number of ids: %i, should be 3")
         status = status + 1
     else:
-        expectedNames = ["system1", "system2", "system1-different-id"]
+        expectedNames = [
+            "collection1", "collection2", "collection1-different-id"]
         for i in range(len(ids)):
             if ids[i] != expectedNames[i]:
                 print("Wrong resource name %s, should be %s" %
                       (ids[i], expectedNames[i]))
                 status = status + 1
 
-    # Missing: ResourceInfo tests (function not implemented)
+    # TODO: ResourceInfo tests (function not implemented)
+    # TODO: ResourcePtr is not implemented
 
-    # Note: ResourcePtr is not implemented (and cannot be due Resource being abstract -- shiboken issues)
-    # Note: ResourceSet.get is modified by shiboken to return a
-    # ResourcePtr/shared_ptr<Resource>
-
-    resource = resourceSet.get("system2")
+    resource = resourceSet.get("collection2")
     if resource == None:
         print("get() failed")
         status = status + 1

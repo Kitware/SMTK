@@ -16,10 +16,9 @@ Try running a "universal" operator (close model) on imported models.
 import os
 import sys
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.bridge
-    import smtk.io
-    import smtk.model
+import smtk.bridge
+import smtk.io
+import smtk.model
 from smtk.simple import *
 import smtk.testing
 from uuid import uuid4

@@ -18,20 +18,41 @@
 // See smtk/model/Session.h and its subclasses for an example of how
 // these macros are used to register components with the model Manager.
 
-#include "smtk/common/PythonInterpreter.h"
+#include "smtk/common/CompilerInformation.h"
 
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "pybind11/pybind11.h"
+SMTK_THIRDPARTY_POST_INCLUDE
+
+#include "smtk/common/PythonInterpreter.h"
 
 #include <iostream>
 
-#define smtkPythonInitMacro(C, ModuleName)                                                         \
+#define smtkPythonInitMacro(C, ModuleName, WarnOnFailure)                                          \
   static struct C##_PythonComponentInit                                                            \
   {                                                                                                \
     /* Call <mod>_AutoInit_Construct during initialization.  */                                    \
     C##_PythonComponentInit()                                                                      \
     {                                                                                              \
       smtk::common::PythonInterpreter::instance().initialize();                                    \
-      pybind11::module mod = pybind11::module::import(#ModuleName);                                \
+      if (!smtk::common::PythonInterpreter::instance().canFindModule(#ModuleName))                 \
+      {                                                                                            \
+        if (WarnOnFailure)                                                                         \
+        {                                                                                          \
+          std::cerr << "WARNING: \"" << #ModuleName                                                \
+                    << "\" has been requested but cannot be imported." << std::endl;               \
+          std::cerr << std::endl << "Paths searched:" << std::endl;                                \
+          auto paths = smtk::common::PythonInterpreter::instance().pythonPath();                   \
+          for (auto path : paths)                                                                  \
+          {                                                                                        \
+            std::cerr << path << std::endl;                                                        \
+          }                                                                                        \
+        }                                                                                          \
+      }                                                                                            \
+      else                                                                                         \
+      {                                                                                            \
+        pybind11::module mod = pybind11::module::import(#ModuleName);                              \
+      }                                                                                            \
     }                                                                                              \
     /* Call <mod>_AutoInit_Destruct during finalization.  */                                       \
     ~C##_PythonComponentInit() {}                                                                  \

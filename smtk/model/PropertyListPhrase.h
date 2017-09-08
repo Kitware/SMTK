@@ -37,12 +37,12 @@ public:
   Ptr setup(const EntityRef& entity, PropertyType ptype, const std::set<std::string>& pnames,
     DescriptivePhrasePtr parent);
 
-  virtual std::string title();
-  virtual std::string subtitle();
+  std::string title() override;
+  std::string subtitle() override;
 
-  virtual smtk::common::UUID relatedEntityId() const;
-  virtual EntityRef relatedEntity() const;
-  virtual PropertyType relatedPropertyType() const;
+  smtk::common::UUID relatedEntityId() const override;
+  EntityRef relatedEntity() const override;
+  PropertyType relatedPropertyType() const override;
 
   std::set<std::string>& propertyNames() { return this->m_propertyNames; }
   const std::set<std::string>& propertyNames() const { return this->m_propertyNames; }

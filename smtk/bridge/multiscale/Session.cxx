@@ -11,8 +11,14 @@
 //=============================================================================
 #include "smtk/bridge/multiscale/Session.h"
 
+#include "smtk/common/PythonInterpreter.h"
+
 #include "smtk/model/ArrangementHelper.h"
 #include "smtk/model/Model.h"
+
+SMTK_THIRDPARTY_PRE_INCLUDE
+#include <pybind11/embed.h>
+SMTK_THIRDPARTY_POST_INCLUDE
 
 using namespace smtk::model;
 using namespace smtk::common;
@@ -26,7 +32,7 @@ namespace multiscale
 
 Session::Session()
 {
-  this->initializeOperatorSystem(Session::s_operators);
+  this->initializeOperatorCollection(Session::s_operators);
 }
 
 Session::~Session()

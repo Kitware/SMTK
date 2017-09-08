@@ -29,7 +29,7 @@ class VTK_EXPORT vtkCMBMeshToModelReadOperator : public vtkObject
 public:
   static vtkCMBMeshToModelReadOperator* New();
   vtkTypeMacro(vtkCMBMeshToModelReadOperator, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Load the file into Model.

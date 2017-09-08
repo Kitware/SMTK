@@ -39,7 +39,7 @@ class SMTKDISCRETESESSION_EXPORT vtkCMBModelReadOperator : public vtkObject
 public:
   static vtkCMBModelReadOperator* New();
   vtkTypeMacro(vtkCMBModelReadOperator, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Load the file into Model.

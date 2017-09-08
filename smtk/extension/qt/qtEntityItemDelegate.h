@@ -59,19 +59,19 @@ signals:
   void requestColorChange(const QModelIndex&);
 
 public:
-  virtual QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const;
+  QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 
-  virtual void paint(
-    QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+  void paint(
+    QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 
-  virtual QWidget* createEditor(
-    QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+  QWidget* createEditor(
+    QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
   void updateEditorGeometry(
     QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 
-  virtual void setEditorData(QWidget* editor, const QModelIndex& index) const;
-  virtual void setModelData(
-    QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const;
+  void setEditorData(QWidget* editor, const QModelIndex& index) const override;
+  void setModelData(
+    QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override;
 
   // return which icon the Point position is on
   // 'visible', 'color', or empty string;
@@ -80,9 +80,9 @@ public:
     const smtk::extension::QEntityItemModel* entityMod = nullptr) const;
 
 protected:
-  virtual bool eventFilter(QObject* editor, QEvent* event);
-  virtual bool editorEvent(QEvent* event, QAbstractItemModel* model,
-    const QStyleOptionViewItem& option, const QModelIndex& index);
+  bool eventFilter(QObject* editor, QEvent* event) override;
+  bool editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option,
+    const QModelIndex& index) override;
 
   int m_swatchSize;
   int m_titleFontSize;

@@ -49,7 +49,7 @@ public:
   virtual ~qtEmittingStringBuffer() { sync(); }
 
 protected:
-  int sync()
+  int sync() override
   {
     emit flush();
     str("");

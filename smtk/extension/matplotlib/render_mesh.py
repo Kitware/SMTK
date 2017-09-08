@@ -72,8 +72,7 @@ class RenderMesh(smtk.model.Operator):
 
         # Construct a pyplot, populate it with the triangles and color it by the
         # z-coordinate of the mesh
-        plt.figure()
-        plt.gca().set_aspect('equal')
+        plt.figure(figsize=(3, 2), dpi=100)
         plt.tricontourf([c[0] for c in coords], [c[1]
                         for c in coords], tris, [c[2] for c in coords])
         plt.colorbar()

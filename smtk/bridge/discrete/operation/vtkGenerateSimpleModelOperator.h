@@ -30,7 +30,7 @@ class SMTKDISCRETESESSION_EXPORT vtkGenerateSimpleModelOperator : public vtkObje
 public:
   static vtkGenerateSimpleModelOperator* New();
   vtkTypeMacro(vtkGenerateSimpleModelOperator, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Create a model from the output from inputFilter. If cleanInput is
@@ -43,7 +43,7 @@ public:
 
 protected:
   vtkGenerateSimpleModelOperator();
-  virtual ~vtkGenerateSimpleModelOperator();
+  ~vtkGenerateSimpleModelOperator() override;
 
 private:
   vtkGenerateSimpleModelOperator(const vtkGenerateSimpleModelOperator&); // Not implemented.

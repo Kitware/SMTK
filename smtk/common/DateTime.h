@@ -15,11 +15,9 @@
 #include "smtk/common/CompilerInformation.h"
 #include "smtk/common/TimeZone.h"
 
-#ifndef SHIBOKEN_SKIP
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include <boost/date_time/posix_time/ptime.hpp>
 SMTK_THIRDPARTY_POST_INCLUDE
-#endif
 
 #include <iostream>
 #include <string>
@@ -51,9 +49,6 @@ public:
     return this->setComponents(year, month, day, hour, minute, second, millisecond, NULL);
   }
 
-#ifndef SHIBOKEN_SKIP
-  // Reimplemented in Shiboken typesystem
-
   // Returns each component WITH time zone conversion
   bool components(TimeZone timeZone, int& year, int& month, int& day, int& hour, int& minute,
     int& second, int& millisecond) const
@@ -67,7 +62,6 @@ public:
   {
     return this->components(year, month, day, hour, minute, second, millisecond, NULL);
   }
-#endif
 
   /// Indicates if instance represents valid datetime value
   bool isSet() const;
@@ -90,7 +84,6 @@ public:
   bool operator>(const DateTime& dt) const;
 
 protected:
-#ifndef SHIBOKEN_SKIP
   boost::posix_time::ptime m_ptime;
 
   bool setComponents(int year, int month, int day, int hour, int minute, int second,
@@ -98,8 +91,6 @@ protected:
 
   bool components(int& year, int& month, int& day, int& hour, int& minute, int& second,
     int& millisecond, TimeZone* timeZone) const;
-
-#endif
 };
 
 } // namespace common

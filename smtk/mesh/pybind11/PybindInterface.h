@@ -145,7 +145,7 @@ PySharedPtrClass< smtk::mesh::Interface > pybind11_init_smtk_mesh_Interface(py::
     .def("getMeshsets", (smtk::mesh::HandleRange (smtk::mesh::Interface::*)(::smtk::mesh::Handle, ::smtk::mesh::PointFieldTag const &) const) &smtk::mesh::Interface::getMeshsets, py::arg("handle"), py::arg("pfTag"))
     .def("getPointField", &smtk::mesh::Interface::getPointField, py::arg("meshsets"), py::arg("cfTag"), py::arg("field"))
     .def("getPointFieldDimension", &smtk::mesh::Interface::getPointFieldDimension, py::arg("cfTag"))
-    .def("getPoints", &smtk::mesh::Interface::getPoints, py::arg("cells"))
+    .def("getPoints", &smtk::mesh::Interface::getPoints, py::arg("cells"), py::arg("boundary_only") = false)
     .def("getRoot", &smtk::mesh::Interface::getRoot)
     .def("hasCellField", &smtk::mesh::Interface::hasCellField, py::arg("meshsets"), py::arg("cfTag"))
     .def("hasPointField", &smtk::mesh::Interface::hasPointField, py::arg("meshsets"), py::arg("cfTag"))

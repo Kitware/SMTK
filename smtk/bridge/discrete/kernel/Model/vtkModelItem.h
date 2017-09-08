@@ -30,7 +30,7 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModelItem : public vtkSerializableObject
 {
 public:
   vtkTypeMacro(vtkModelItem, vtkSerializableObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   vtkGetObjectMacro(Properties, vtkInformation);
 
@@ -58,11 +58,11 @@ public:
   // Reads the state of an instance from an archive OR
   // writes the state of an instance to an archive. See
   // the documentation for this class for details.
-  virtual void Serialize(vtkSerializer* ser);
+  void Serialize(vtkSerializer* ser) override;
 
 protected:
   vtkModelItem();
-  virtual ~vtkModelItem();
+  ~vtkModelItem() override;
 
   // Description:
   // Add an association between this object and item.  This also

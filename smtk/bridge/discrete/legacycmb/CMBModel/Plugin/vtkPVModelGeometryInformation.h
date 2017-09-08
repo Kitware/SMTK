@@ -28,7 +28,7 @@ class VTK_EXPORT vtkPVModelGeometryInformation : public vtkPVInformation
 public:
   static vtkPVModelGeometryInformation* New();
   vtkTypeMacro(vtkPVModelGeometryInformation, vtkPVInformation);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Transfer information about a single object into this object.

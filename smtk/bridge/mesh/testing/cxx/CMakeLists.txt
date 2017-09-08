@@ -13,8 +13,11 @@
 set (unit_tests)
 
 set (unit_tests_which_require_data
-  UnitTestMeshSessionTopology.cxx
-  UnitTestMeshSessionReadWrite.cxx)
+  UnitTestEulerRatio.cxx
+  UnitTestImportFromExodus.cxx
+  UnitTestImportFromVTK.cxx
+  UnitTestTopology.cxx
+  UnitTestReadWrite.cxx)
 
 set(external_libs ${Boost_LIBRARIES})
 

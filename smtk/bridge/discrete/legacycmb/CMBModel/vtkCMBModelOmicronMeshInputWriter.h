@@ -34,7 +34,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelOmicronMeshInputWriter
 public:
   static vtkCMBModelOmicronMeshInputWriter* New();
   vtkTypeMacro(vtkCMBModelOmicronMeshInputWriter, vtkCMBModelOmicronMeshInputWriterBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Write the CMB file out.

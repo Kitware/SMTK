@@ -13,6 +13,9 @@
 
 #include "smtk/CoreExports.h"
 
+#include <string>
+#include <vector>
+
 namespace smtk
 {
 namespace common
@@ -32,16 +35,51 @@ class SMTKCORE_EXPORT PythonInterpreter
 public:
   static PythonInterpreter& instance();
 
+  // Check if python is initialized.
   bool isInitialized() const;
 
+  // Initialize the embedded python, with additional logic to add SMTK to the
+  // PYTHONPATH.
   void initialize();
+
+  // Finalize the embedded python.
   void finalize();
+
+  // Return a list of the directories in the embedded python's PYTHONPATH
+  std::vector<std::string> pythonPath();
+
+  // Given a string <paths> containing a <separator>-separated list of paths,
+  // add each path to the embedded python's PYTHONPATH.
+  bool addToPythonPath(const std::string& paths, std::string separator = ",");
+
+  // Check if <module> can be loaded by the python interpereter.
+  bool canFindModule(const std::string& module) const;
+
+  // Given the packaging semantics used in SMTK, VTK, ParaView, etc., locate
+  // <module> and add it to the embedded python's PYTHONPATH, and return a
+  // success flag.
+  bool addPathToPackagedModule(const std::string& libPackageDir, const std::string& module);
+
+  // Given the install semantics used in SMTK, VTK, ParaView, etc., locate
+  // <module> and add it to the embedded python's PYTHONPATH, and return a
+  // success flag.
+  bool addPathToInstalledModule(const std::string& libInstallDir, const std::string& module);
+
+  // Given the build semantics used in SMTK, VTK, ParaView, etc., locate
+  // <module> and add it to the embedded python's PYTHONPATH, and return a
+  // success flag.
+  bool addPathToBuildTree(const std::string& buildTreePath, const std::string& module);
+
+  // Returns true if the embedded python session has been initialized.
+  bool isEmbedded() const { return m_embedded; }
 
 private:
   PythonInterpreter();
   virtual ~PythonInterpreter();
 
   static PythonInterpreter m_instance;
+
+  bool m_embedded;
 };
 }
 }

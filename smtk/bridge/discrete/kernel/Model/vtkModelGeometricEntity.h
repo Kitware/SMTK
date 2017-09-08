@@ -27,7 +27,7 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModelGeometricEntity : public vtkModelEntit
 {
 public:
   vtkTypeMacro(vtkModelGeometricEntity, vtkModelEntity);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Definition:
   // Get/set the representation for the geometry. On the client
@@ -71,11 +71,11 @@ public:
   // Reads the state of an instance from an archive OR
   // writes the state of an instance to an archive. See
   // the documentation for this class for details.
-  virtual void Serialize(vtkSerializer* ser);
+  void Serialize(vtkSerializer* ser) override;
 
 protected:
   vtkModelGeometricEntity();
-  virtual ~vtkModelGeometricEntity();
+  ~vtkModelGeometricEntity() override;
 
   // Description:
   // Determine if this object and everything it aggregates is

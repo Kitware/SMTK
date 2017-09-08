@@ -79,7 +79,7 @@ add_executable(UnitTestWarpMesh UnitTestWarpMesh.cxx)
 target_compile_definitions(UnitTestWarpMesh PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
 target_link_libraries(UnitTestWarpMesh smtkCore ${Boost_LIBRARIES})
 
-if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
+if (SMTK_DATA_DIR)
   add_test(NAME UnitTestGenerateHotStartData
     COMMAND $<TARGET_FILE:UnitTestGenerateHotStartData>
     "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json")

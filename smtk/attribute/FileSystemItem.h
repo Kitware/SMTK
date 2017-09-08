@@ -33,9 +33,9 @@ public:
   typedef std::vector<std::string>::const_iterator const_iterator;
 
   smtkTypeMacro(FileSystemItem);
-  virtual ~FileSystemItem();
-  virtual Item::Type type() const = 0;
-  virtual bool isValid() const;
+  ~FileSystemItem() override;
+  Item::Type type() const override = 0;
+  bool isValid() const override;
   bool shouldBeRelative() const;
   bool shouldExist() const;
   std::size_t numberOfValues() const { return this->m_values.size(); }
@@ -48,7 +48,7 @@ public:
   bool setValue(std::size_t element, const std::string& val);
   bool appendValue(const std::string& val);
   bool removeValue(int element);
-  virtual void reset();
+  void reset() override;
   virtual bool setToDefault(std::size_t elementIndex = 0);
   // Returns true if there is a default defined and the item is curently set to it
   virtual bool isUsingDefault(std::size_t elementIndex) const;
@@ -75,12 +75,12 @@ public:
 
   // Assigns this item to be equivalent to another.  Options are processed by derived item classes
   // Returns true if success and false if a problem occured.  Does not use options.
-  virtual bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0);
+  bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0) override;
 
 protected:
   FileSystemItem(Attribute* owningAttribute, int itemPosition);
   FileSystemItem(Item* owningItem, int position, int subGroupPosition);
-  virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef);
+  bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef) override;
   std::vector<std::string> m_values;
   std::vector<bool> m_isSet;
 

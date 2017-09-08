@@ -17,7 +17,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/io/XmlV2StringWriter.h"
 
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 
 namespace pugi
 {
@@ -31,18 +31,18 @@ namespace io
 class SMTKCORE_EXPORT XmlV3StringWriter : public XmlV2StringWriter
 {
 public:
-  XmlV3StringWriter(const smtk::attribute::SystemPtr system);
+  XmlV3StringWriter(const smtk::attribute::CollectionPtr collection);
   virtual ~XmlV3StringWriter();
 
 protected:
   // Override methods
   // Two virtual methods for writing contents
-  virtual std::string className() const;
-  virtual unsigned int fileVersion() const;
+  std::string className() const override;
+  unsigned int fileVersion() const override;
 
-  virtual void processItemDefinitionType(
-    pugi::xml_node& node, smtk::attribute::ItemDefinitionPtr idef);
-  virtual void processItemType(pugi::xml_node& node, smtk::attribute::ItemPtr item);
+  void processItemDefinitionType(
+    pugi::xml_node& node, smtk::attribute::ItemDefinitionPtr idef) override;
+  void processItemType(pugi::xml_node& node, smtk::attribute::ItemPtr item) override;
 
   // New methods
   void processDateTimeDef(pugi::xml_node& node, smtk::attribute::DateTimeItemDefinitionPtr idef);

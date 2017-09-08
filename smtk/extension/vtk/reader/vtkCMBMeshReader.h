@@ -78,7 +78,7 @@ public:
 
   static vtkCMBMeshReader* New();
   vtkTypeMacro(vtkCMBMeshReader, vtkUnstructuredGridAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Determine whether the file can be read by this reader.
@@ -121,8 +121,8 @@ protected:
   vtkCMBMeshReader();
   ~vtkCMBMeshReader();
 
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 
   int PreviewFile(vtkIdType& ncells, vtkIdType& npts);
   void ReadCell(int cellType, int npts, vtkUnstructuredGrid* output, vtkIntArray* cellMaterialArray,

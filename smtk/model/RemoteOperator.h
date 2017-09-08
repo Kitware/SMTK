@@ -49,9 +49,9 @@ public:
   static std::string operatorName;
   static smtk::model::OperatorPtr baseCreate();
 
-  virtual std::string name() const;
-  virtual std::string className() const;
-  virtual bool ableToOperate();
+  std::string name() const override;
+  std::string className() const override;
+  bool ableToOperate() override;
 
 protected:
   friend class Session;
@@ -59,7 +59,7 @@ protected:
 
   Ptr setName(const std::string& opName);
 
-  virtual OperatorResult operateInternal();
+  OperatorResult operateInternal() override;
 
   std::string m_name;
 };

@@ -27,7 +27,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelSelectionSource : public vtkSelectio
 public:
   static vtkCMBModelSelectionSource* New();
   vtkTypeMacro(vtkCMBModelSelectionSource, vtkSelectionAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   void CopyData(vtkSelection* selection);
@@ -48,7 +48,7 @@ protected:
   vtkCMBModelSelectionSource();
   ~vtkCMBModelSelectionSource();
 
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
   void RemoveAllSelectedEntityIdsInternal();
 
   // Description:

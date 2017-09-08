@@ -96,7 +96,7 @@ public:
 
 protected:
   vtkSerializableObject();
-  ~vtkSerializableObject();
+  ~vtkSerializableObject() override;
 
 private:
   vtkSerializableObject(const vtkSerializableObject&); // Not implemented.

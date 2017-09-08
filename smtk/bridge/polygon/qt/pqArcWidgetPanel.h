@@ -51,7 +51,7 @@ class ArcPicker : public QAction
 
 public:
   ArcPicker(QObject* parent);
-  virtual ~ArcPicker();
+  ~ArcPicker() override;
 signals:
   //called by the selector when a valid selection is finished.
   void pickFinished();
@@ -84,7 +84,7 @@ class SMTKPOLYGONQTEXT_EXPORT pqArcWidgetPanel : public QWidget
 
 public:
   explicit pqArcWidgetPanel(QWidget* parent = 0);
-  virtual ~pqArcWidgetPanel();
+  ~pqArcWidgetPanel() override;
 
   virtual void setView(pqRenderView* view) { this->View = view; }
   virtual void setArc(pqPolygonArc* arc);

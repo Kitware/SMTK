@@ -38,7 +38,8 @@ if (SMTK_ENABLE_VTK_SUPPORT)
   # Add compile definitions to force linking to implementation modules
   set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS ${VTK_DEFINITIONS})
 
-target_compile_definitions(RenderMesh PRIVATE "USE_VTK=1")
+# Do not enable VTK integration for testing
+#  target_compile_definitions(RenderMesh PRIVATE "USE_VTK=1")
 
   list(APPEND additional_libraries
     vtkRenderingGL2PSOpenGL2
@@ -52,7 +53,7 @@ endif()
 
 target_link_libraries(RenderMesh smtkCore smtkCoreModelTesting ${additional_libraries})
 
-if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
+if (SMTK_DATA_DIR)
   add_test(NAME RenderMesh COMMAND $<TARGET_FILE:RenderMesh>)
   set_tests_properties(RenderMesh PROPERTIES
                        LABELS "ExtMatplotlib")

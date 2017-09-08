@@ -42,7 +42,7 @@ class Instance;
 class SMTKCORE_EXPORT SubphraseGenerator : smtkEnableSharedPtr(SubphraseGenerator)
 {
 public:
-  smtkTypeMacro(SubphraseGenerator);
+  smtkTypeMacroBase(SubphraseGenerator);
   virtual ~SubphraseGenerator() {}
 
   virtual DescriptivePhrases subphrases(DescriptivePhrase::Ptr src);
@@ -100,6 +100,9 @@ protected:
   void freeCellsOfModel(DescriptivePhrase::Ptr src, const Model& mod, DescriptivePhrases& result);
   void freeAuxiliaryGeometriesOfModel(
     DescriptivePhrase::Ptr src, const Model& mod, DescriptivePhrases& result);
+
+  void childrenOfAuxiliaryGeometry(
+    DescriptivePhrase::Ptr src, const AuxiliaryGeometry& aux, DescriptivePhrases& result);
 
   void prototypeOfInstance(
     DescriptivePhrase::Ptr src, const Instance& ent, DescriptivePhrases& result);

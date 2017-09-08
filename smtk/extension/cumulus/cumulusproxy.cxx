@@ -19,6 +19,7 @@
 #include <QtCore/QList>
 #include <QtCore/QThread>
 #include <QtCore/QTimer>
+#include <QtCore/QUrlQuery>
 #include <QtCore/QVariant>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkCookie>
@@ -101,14 +102,14 @@ void CumulusProxy::authenticateNewt(const QString& username, const QString& pass
   QNetworkRequest request(url);
   request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
-  QUrl params;
+  QUrlQuery params;
   params.addQueryItem("username", username);
   params.addQueryItem("password", password);
 
   QObject::connect(manager, SIGNAL(finished(QNetworkReply*)), this,
     SLOT(authenticationNewtFinished(QNetworkReply*)));
 
-  manager->post(request, params.encodedQuery());
+  manager->post(request, params.query().toUtf8());
 }
 
 void CumulusProxy::authenticationNewtFinished(QNetworkReply* reply)
@@ -143,7 +144,7 @@ void CumulusProxy::authenticationNewtFinished(QNetworkReply* reply)
   this->sender()->deleteLater();
 }
 
-void CumulusProxy::authenticateGirder(const QString& newtSessionId)
+void CumulusProxy::authenticateGirder(const QString& /*newtSessionId*/)
 {
   m_girderToken.clear();
 
@@ -340,7 +341,7 @@ void CumulusProxy::terminateJobFinished()
   this->fetchJobs();
 }
 
-void CumulusProxy::sslErrors(QNetworkReply* reply, const QList<QSslError>& errors)
+void CumulusProxy::sslErrors(QNetworkReply* reply, const QList<QSslError>& /*errors*/)
 {
   emit error(reply->errorString());
   this->sender()->deleteLater();

@@ -15,13 +15,15 @@
 
 #include "smtk/AutoInit.h"
 
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
-#include "smtk/attribute/System.h"
 
 #include "smtk/bridge/polygon/Operator.h"
 #include "smtk/bridge/polygon/Session.h"
+
+#include "smtk/common/Paths.h"
 
 #include "smtk/extension/remus/MeshServerLauncher.h"
 
@@ -40,7 +42,6 @@
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/ExportMesh.h"
 #include "smtk/io/Logger.h"
-#include "smtk/io/ModelToMesh.h"
 
 #include <fstream>
 
@@ -53,10 +54,10 @@ const std::vector<std::string>& relative_search_paths()
   return rel_search_paths;
 }
 
-const std::vector<std::string>& absolute_search_paths()
+const std::vector<std::string> absolute_search_paths()
 {
-  static std::vector<std::string> abs_search_paths = { BUILD_SEARCH_PATH };
-  return abs_search_paths;
+  static smtk::common::Paths paths;
+  return paths.workerSearchPaths();
 }
 }
 
@@ -115,9 +116,8 @@ int main(int argc, char** const argv)
 
   // Provide the worker factory with a list of locations where it can
   // find the job requirements file (*.rw) and associated executable.
-  // The first path is the install location of the worker, and the second
-  // path is the build location.
-  for (std::string path : absolute_search_paths())
+  smtk::common::Paths paths;
+  for (std::string path : paths.workerSearchPaths())
   {
     meshServerLauncher.addWorkerSearchDirectory(path);
   }
@@ -153,7 +153,7 @@ int main(int argc, char** const argv)
   // Set the meshing attributes for the operator
   std::string meshingAttributesStr;
   {
-    smtk::attribute::SystemPtr meshingAttributes = smtk::attribute::System::create();
+    smtk::attribute::CollectionPtr meshingAttributes = smtk::attribute::Collection::create();
     smtk::io::Logger logger;
     smtk::io::AttributeReader reader;
     reader.read(meshingAttributes, remus::common::findFile("DelaunayMeshingDefs", "sbt",
@@ -168,7 +168,7 @@ int main(int argc, char** const argv)
     // attribute ourselves.
     //
     // TODO: the construction of default attributes should be an automated
-    //       process that is callable within the atribute system.
+    //       process that is callable within the attribute collection.
     meshingAttributes->createAttribute("Globals", "Globals");
     smtk::io::AttributeWriter writer;
     writer.writeContents(meshingAttributes, meshingAttributesStr, logger);

@@ -44,6 +44,6 @@ endif()
 
 add_subdirectory(plugin)
 
-if (SMTK_USE_PYBIND11)
+if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)
 endif()

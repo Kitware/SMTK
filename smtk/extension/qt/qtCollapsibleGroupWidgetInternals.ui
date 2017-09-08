@@ -50,7 +50,7 @@
    <sender>VisibilityControl</sender>
    <signal>toggled(bool)</signal>
    <receiver>BodyFrame</receiver>
-   <slot>setShown(bool)</slot>
+   <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>56</x>

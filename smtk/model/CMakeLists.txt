@@ -1,4 +1,20 @@
 # set up sources to build
+set(modelOps
+  AddAuxiliaryGeometry
+  AddImage
+  AssignColors
+  CloseModel
+  CreateInstances
+  EntityGroupOperator
+  ExportModelJSON
+  ExportSMTKModel
+  GroupAuxiliaryGeometry
+  LoadSMTKModel
+  SaveSMTKModel
+  SetProperty
+  TerrainExtraction
+)
+
 set(modelSrcs
   Arrangement.cxx
   ArrangementHelper.cxx
@@ -6,6 +22,7 @@ set(modelSrcs
   AttributeAssignments.cxx
   AttributeListPhrase.cxx
   AuxiliaryGeometry.cxx
+  AuxiliaryGeometryExtension.cxx
   Session.cxx
   SessionRef.cxx
   SessionIO.cxx
@@ -34,6 +51,7 @@ set(modelSrcs
   MeshPhrase.cxx
   Model.cxx
   Operator.cxx
+  PointLocatorExtension.cxx
   PropertyListPhrase.cxx
   PropertyValuePhrase.cxx
   RemoteOperator.cxx
@@ -49,17 +67,7 @@ set(modelSrcs
   VertexUse.cxx
   Volume.cxx
   VolumeUse.cxx
-  operators/AddAuxiliaryGeometry.cxx
-  operators/AddImage.cxx
-  operators/AssignColors.cxx
-  operators/CloseModel.cxx
-  operators/EntityGroupOperator.cxx
-  operators/ExportModelJSON.cxx
-  operators/ExportSMTKModel.cxx
-  operators/LoadSMTKModel.cxx
-  operators/SaveSMTKModel.cxx
-  operators/SetProperty.cxx
-  )
+)
 
 set(modelHeaders
   Arrangement.h
@@ -68,6 +76,7 @@ set(modelHeaders
   AttributeAssignments.h
   AttributeListPhrase.h
   AuxiliaryGeometry.h
+  AuxiliaryGeometryExtension.h
   Session.h
   SessionRef.h
   SessionIO.h
@@ -100,6 +109,7 @@ set(modelHeaders
   MeshPhrase.h
   Model.h
   Operator.h
+  PointLocatorExtension.h
   PropertyType.h
   PropertyListPhrase.h
   PropertyValuePhrase.h
@@ -117,34 +127,19 @@ set(modelHeaders
   VertexUse.h
   Volume.h
   VolumeUse.h
-  operators/AddAuxiliaryGeometry.h
-  operators/AddImage.h
-  operators/AssignColors.h
-  operators/CloseModel.h
-  operators/EntityGroupOperator.h
-  operators/ExportModelJSON.h
-  operators/ExportSMTKModel.h
-  operators/LoadSMTKModel.h
-  operators/SaveSMTKModel.h
-  operators/SetProperty.h
-  )
+)
 
 smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/DefaultSession.json" defSessionJSON)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/AddImage.sbt" defOpXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/AddAuxiliaryGeometry.sbt" defOpXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/AssignColors.sbt" defOpXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CloseModel.sbt" defOpXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EntityGroupOperator.sbt" defOpXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportModelJSON.sbt" defOpXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportSMTKModel.sbt" defOpXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/LoadSMTKModel.sbt" defOpXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SaveSMTKModel.sbt" defOpXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SetProperty.sbt" defOpXML)
+foreach (operator ${modelOps})
+  smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt" defOpXML)
+  list(APPEND modelSrcs operators/${operator}.cxx)
+  list(APPEND modelHeaders operators/${operator}.h)
+endforeach()
 
 #install the headers
 smtk_public_headers(${modelHeaders})
 
-if (SMTK_USE_PYBIND11)
+if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)
 endif()
 

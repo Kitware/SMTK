@@ -31,7 +31,7 @@ class VTK_EXPORT vtkADHExporterOperatorClient : public vtkADHExporterOperatorBas
 public:
   static vtkADHExporterOperatorClient* New();
   vtkTypeMacro(vtkADHExporterOperatorClient, vtkADHExporterOperatorBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Get/Set the text that the client generated

@@ -10,10 +10,10 @@
 
 #include <algorithm>
 
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
-#include "smtk/attribute/System.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 
@@ -263,7 +263,7 @@ void ValueItemDefinition::copyTo(
   {
     // Set expression definition (if possible)
     std::string typeStr = this->expressionDefinition()->type();
-    smtk::attribute::DefinitionPtr exp = info.ToSystem.findDefinition(typeStr);
+    smtk::attribute::DefinitionPtr exp = info.ToCollection.findDefinition(typeStr);
     if (exp)
     {
       def->setExpressionDefinition(exp);

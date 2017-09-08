@@ -29,7 +29,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkCMBImportBCFileOperator : public vtkObject
 public:
   static vtkCMBImportBCFileOperator* New();
   vtkTypeMacro(vtkCMBImportBCFileOperator, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Reads in the file assuming we're on the server.

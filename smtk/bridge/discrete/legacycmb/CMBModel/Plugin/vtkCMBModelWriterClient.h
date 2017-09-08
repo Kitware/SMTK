@@ -29,7 +29,7 @@ class VTK_EXPORT vtkCMBModelWriterClient : public vtkObject
 public:
   static vtkCMBModelWriterClient* New();
   vtkTypeMacro(vtkCMBModelWriterClient, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Write the CMB file out.

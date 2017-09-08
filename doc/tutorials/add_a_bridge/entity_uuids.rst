@@ -22,7 +22,7 @@ There are two ways to go about storing and maintaining this
 bidirectional map between modeling kernel entities and SMTK
 UUIDs:
 
-1. If the modeling kernel provides an attribute system,
+1. If the modeling kernel provides an attribute collection,
    then the UUIDs can be stored as attributes on entities.
    Note that it is important to verify that attributes
    can be stored on all the entities you wish SMTK to be
@@ -52,7 +52,7 @@ on each :cxx:`vtkDataObject`'s information object using the :cxx:`SMTK_UUID_KEY`
    :end-before: // -- 1 --
 
 The advantage to the first approach is that modeling
-kernels with attribute systems generally provide a way
+kernels with attribute collections generally provide a way
 to preserve attributes across modeling operations.
 When using the latter method, there is no robust way to
 track entities across modeling operations that change
@@ -75,13 +75,15 @@ for our example, we've created a new type named :cxx:`EntityHandle`.
 
 Each :cxx:`EntityHandle` instance stores information about a model
 or group that should be presented in SMTK:
-(1) :cxx:`m_session`,
-    a pointer to the session owning the model or group;
-(2) :cxx:`m_modelNumber`,
-    an integer offset into the session's list of top-level models
-    (this indicates the model that owns the data object); and
-(3) :cxx:`m_object`,
-    a pointer to a VTK dataset holding the corresponding model geometry.
+
+1. :cxx:`m_session`,
+   a pointer to the session owning the model or group;
+2. :cxx:`m_modelNumber`,
+   an integer offset into the session's list of top-level models
+   (this indicates the model that owns the data object); and
+3. :cxx:`m_object`,
+   a pointer to a VTK dataset holding the corresponding model geometry.
+
 The session also holds a map to identify the parent model or group of
 each VTK data object since multiblock datasets in VTK do not provide
 a way to discover the parent of a dataset (only its children).
@@ -91,7 +93,7 @@ Adding UUIDs as attributes
 
 Although we do not provide example code in this tutorial,
 it should be straightforward to add UUIDs to a modeling kernel's
-attribute system either as a 16-byte binary blob or an ASCII string
+attribute collection either as a 16-byte binary blob or an ASCII string
 per entity.
 
 For example, if we wished to make VTK points and cells available
@@ -103,7 +105,7 @@ instances (one for points, one for cells).
 
 VTK provides the concept of pedigree IDs for mapping points and cells
 from inputs to corresponding outputs, so (for filters that support
-pedigree IDs) VTK behaves much like an attribute system in a geometric
+pedigree IDs) VTK behaves much like an attribute collection in a geometric
 modeling kernel.
 
 If we ever expose individual points and cells in the SMTK Exodus session,

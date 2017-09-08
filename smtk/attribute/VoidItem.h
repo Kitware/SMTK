@@ -30,14 +30,14 @@ class SMTKCORE_EXPORT VoidItem : public Item
 
 public:
   smtkTypeMacro(VoidItem);
-  virtual ~VoidItem();
-  virtual Item::Type type() const;
-  virtual bool isValid() const;
+  ~VoidItem() override;
+  Item::Type type() const override;
+  bool isValid() const override;
 
 protected:
   VoidItem(Attribute* owningAttribute, int itemPosition);
   VoidItem(Item* owningItem, int myPosition, int mySubGroupPosition);
-  virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
+  bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def) override;
 
 private:
 };

@@ -25,18 +25,13 @@ function(smtk_unit_tests)
   endif()
 
   if (SMTK_DATA_DIR)
-    if (NOT EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
-      message(WARNING
-	"SMTK_DATA_DIR has been set to invalid location \"${SMTK_DATA_DIR}\".")
-    elseif(SMTK_ENABLE_TESTING AND NOT using_hdf AND NOT ENABLE_HDF5)
+    if(SMTK_ENABLE_TESTING AND NOT using_hdf AND NOT ENABLE_HDF5)
       message(WARNING
 	"SMTK_DATA_DIR has been set, but hdf5 is not enabled. Skipping tests that use data.")
     endif ()
   endif()
 
-  if (SMTK_DATA_DIR
-      AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker
-      AND using_hdf)
+  if (using_hdf)
     #we check moab for hdf support since that is the file format
     #for all our test data
     set(have_testing_data ON)
@@ -81,12 +76,4 @@ function(smtk_unit_tests)
       endif()
     endforeach(test)
   endif (SMTK_ENABLE_TESTING)
-
-if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
-  list(APPEND unit_tests
-
-       )
-endif()
-
-
 endfunction(smtk_unit_tests)

@@ -9,7 +9,6 @@
 //=============================================================================
 #ifndef __smtk_bridge_polygon_internal_bpConfig_h
 #define __smtk_bridge_polygon_internal_bpConfig_h
-#ifndef SHIBOKEN_SKIP
 
 #include "smtk/SharedPtr.h"
 #include "smtk/common/CompilerInformation.h"
@@ -62,5 +61,4 @@ typedef std::map<Point, VertexPtr> VertexById;
 } // namespace bridge
 } // namespace smtk
 
-#endif // SHIBOKEN_SKIP
 #endif // __smtk_bridge_polygon_internal_bpConfig_h

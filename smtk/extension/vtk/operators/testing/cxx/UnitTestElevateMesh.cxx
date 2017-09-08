@@ -68,7 +68,7 @@ public:
     m_hist.resize(nBins, 0);
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz, bool&)
+  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz, bool&) override
   {
     typedef smtk::mesh::HandleRange::const_iterator c_it;
     int counter = 0;

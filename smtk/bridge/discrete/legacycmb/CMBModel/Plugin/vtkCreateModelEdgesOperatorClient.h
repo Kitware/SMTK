@@ -29,7 +29,7 @@ class VTK_EXPORT vtkCreateModelEdgesOperatorClient : public vtkCreateModelEdgesO
 public:
   static vtkCreateModelEdgesOperatorClient* New();
   vtkTypeMacro(vtkCreateModelEdgesOperatorClient, vtkCreateModelEdgesOperatorBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Modify the color and/or the visibility of an object. The

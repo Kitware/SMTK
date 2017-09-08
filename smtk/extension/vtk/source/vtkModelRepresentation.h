@@ -30,7 +30,7 @@ class VTKSMTKSOURCEEXT_EXPORT vtkModelRepresentation : public vtkRenderedReprese
 {
 public:
   static vtkModelRepresentation* New();
-  virtual void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
   vtkTypeMacro(vtkModelRepresentation, vtkRenderedRepresentation);
 
   /**\brief Get/set the selection mask.
@@ -58,7 +58,7 @@ public:
   smtk::model::ManagerPtr GetModel() { return this->Model; }
   //@}
 
-  virtual void ApplyViewTheme(vtkViewTheme* theme);
+  void ApplyViewTheme(vtkViewTheme* theme) override;
 
   vtkGetObjectMacro(Transform, vtkTransformFilter);
   vtkGetObjectMacro(ApplyColors, vtkApplyColors);
@@ -69,16 +69,16 @@ protected:
   vtkModelRepresentation();
   virtual ~vtkModelRepresentation();
 
-  //virtual int FillInputPortInformation(int port, vtkInformation* request);
-  //virtual int FillOutputPortInformation(int port, vtkInformation* request);
+  //int FillInputPortInformation(int port, vtkInformation* request) override;
+  //int FillOutputPortInformation(int port, vtkInformation* request) override;
 
-  virtual int RequestData(
-    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo);
+  int RequestData(
+    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
 
-  virtual void PrepareForRendering(vtkRenderView* view);
-  virtual bool AddToView(vtkView* view);
-  virtual bool RemoveFromView(vtkView* view);
-  virtual vtkSelection* ConvertSelection(vtkView* view, vtkSelection* selection);
+  void PrepareForRendering(vtkRenderView* view) override;
+  bool AddToView(vtkView* view) override;
+  bool RemoveFromView(vtkView* view) override;
+  vtkSelection* ConvertSelection(vtkView* view, vtkSelection* selection) override;
 
   void SetTransform(vtkTransformFilter*);
   void SetApplyColors(vtkApplyColors*);

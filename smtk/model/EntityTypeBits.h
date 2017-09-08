@@ -97,11 +97,7 @@ typedef unsigned int BitFlags;
   */
 
 // clang-format off
-#ifndef SHIBOKEN_SKIP
 enum EntityTypeBits : BitFlags
-#else
-enum EntityTypeBits
-#endif
 {
   // Dimensionality bits:
   DIMENSION_0          = 0x00000001, //!< The entity may include 0-dimensional components

@@ -3,16 +3,24 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="import" BaseType="operator">
+    <AttDef Type="import" Label="Model - Import from Mesh" BaseType="operator">
+      <BriefDescription>
+        Import a model from a mesh.
+      </BriefDescription>
+      <DetailedDescription>
+        &lt;p&gt;Import a model from a mesh.
+        &lt;p&gt;This operator imports a mesh into smtk, and then
+        parses its components by dimension and connectivity to form a model.
+      </DetailedDescription>
       <ItemDefinitions>
         <File Name="filename" NumberOfRequiredValues="1"
           ShouldExist="true"
-          FileFilters="Moab files (*.h5m);;Exodus II Datasets (*.e *.exo *.ex2);;VTK files (*.vtu *.vtp *.vtk);;All files (*.*)">
+          FileFilters="Supported Formats (*.h5m *.e *.exo *.ex2 *.g *.gen *.vtu *.vtp *.vtk *.gmv *.ans *.msh *.gmsh *.stl);;Moab files (*.h5m);;Exodus II Datasets (*.e *.exo *.ex2);;Genesis files (*.g *.gen);;VTK files (*.vtu *.vtp *.vtk);;General Mesh Viewer (*.gmv);;Ansys (*.ans);;Gmsh (*.msh *.gmsh);;STL (*.stl);;All files (*.*)">
         </File>
-        <String Name="label" NumberOfRequiredValues="1">
+        <String Name="label" Label="Domain Property" NumberOfRequiredValues="1" AdvanceLevel="1">
 	  <DefaultValue></DefaultValue>
 	</String>
-        <String Name="filetype" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false"/>
+        <Void Name="construct hierarchy" Label="Construct Model Hierarchy" Optional="true" IsEnabledByDefault="true"/>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
@@ -21,6 +29,7 @@
         <!-- The model imported from the file. -->
         <ModelEntity Name="model" NumberOfRequiredValues="1" Extensible="1" MembershipMask="4096"/>
         <ModelEntity Name="mesh_created" NumberOfRequiredValues="1"/>
+        <Void Name="allow camera reset" IsEnabledByDefault="true" AdvanceLevel="11"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

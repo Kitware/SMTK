@@ -32,9 +32,9 @@ public:
   virtual ~qtSurfaceExtractorView();
 
 public slots:
-  virtual void showAdvanceLevelOverlay(bool show);
-  virtual void requestModelEntityAssociation();
-  virtual void onShowCategory() { this->updateAttributeData(); }
+  void showAdvanceLevelOverlay(bool show) override;
+  void requestModelEntityAssociation() override;
+  void onShowCategory() override { this->updateAttributeData(); }
   // This will be triggered by selecting different type
   // of edge operations, create-edge, edit-edge, or split-edge.
   virtual void operationSelected(const smtk::model::OperatorPtr& op);
@@ -46,8 +46,8 @@ protected slots:
   virtual void acceptContours(vtkSmartPointer<vtkPolyData>);
 
 protected:
-  virtual void updateAttributeData();
-  virtual void createWidget();
+  void updateAttributeData() override;
+  void createWidget() override;
 
 private:
   qtSurfaceExtractorViewInternals* Internals;

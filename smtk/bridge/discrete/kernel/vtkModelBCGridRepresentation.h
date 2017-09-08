@@ -39,32 +39,32 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModelBCGridRepresentation : public vtkModel
 public:
   static vtkModelBCGridRepresentation* New();
   vtkTypeMacro(vtkModelBCGridRepresentation, vtkModelGridRepresentation);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetBCSNodalAnalysisGridPointIds(
-    vtkDiscreteModel* model, vtkIdType bcsGroupId, int bcGroupType, vtkIdList* pointIds);
+  bool GetBCSNodalAnalysisGridPointIds(
+    vtkDiscreteModel* model, vtkIdType bcsGroupId, int bcGroupType, vtkIdList* pointIds) override;
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetFloatingEdgeAnalysisGridPointIds(
-    vtkDiscreteModel* model, vtkIdType modelEdgeId, vtkIdList* pointIds);
+  bool GetFloatingEdgeAnalysisGridPointIds(
+    vtkDiscreteModel* model, vtkIdType modelEdgeId, vtkIdList* pointIds) override;
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetModelEdgeAnalysisPoints(
-    vtkDiscreteModel* model, vtkIdType edgeId, vtkIdTypeArray* edgePoints);
+  bool GetModelEdgeAnalysisPoints(
+    vtkDiscreteModel* model, vtkIdType edgeId, vtkIdTypeArray* edgePoints) override;
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetBoundaryGroupAnalysisFacets(
-    vtkDiscreteModel* model, vtkIdType boundaryGroupId, vtkIdList* cellIds, vtkIdList* cellSides);
+  bool GetBoundaryGroupAnalysisFacets(vtkDiscreteModel* model, vtkIdType boundaryGroupId,
+    vtkIdList* cellIds, vtkIdList* cellSides) override;
 
   // Description:
   // Do some type of validation of the mapping information in model.
   // So far we can't guarantee that this works.
-  virtual bool IsModelConsistent(vtkDiscreteModel* model);
+  bool IsModelConsistent(vtkDiscreteModel* model) override;
 
   // Description:
   // Initialize the information from a given bc file.  The format of the bc file
@@ -81,7 +81,7 @@ public:
 
   // Description:
   // Set GridFileName to NULL and clear the analysis grid info.
-  virtual void Reset();
+  void Reset() override;
 
   // Description:
   // Check to see if a floating edge has the same amount of points in it as
@@ -100,7 +100,7 @@ public:
 
 protected:
   vtkModelBCGridRepresentation();
-  virtual ~vtkModelBCGridRepresentation();
+  ~vtkModelBCGridRepresentation() override;
 
 private:
   vtkModelBCGridRepresentation(const vtkModelBCGridRepresentation&); // Not implemented.

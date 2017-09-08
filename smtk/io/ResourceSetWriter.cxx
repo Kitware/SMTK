@@ -13,7 +13,7 @@
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/XmlStringWriter.h"
 
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 
 #define PUGIXML_HEADER_ONLY
 #include "pugixml/src/pugixml.cpp"
@@ -84,15 +84,16 @@ bool ResourceSetWriter::writeString(std::string& content, const ResourceSet& res
 
     if ((("" == link) || (EXPAND_LINKED_FILES == option)) && ResourceSet::LOADED == state)
     {
-      // Use XmlStringWriter to generate xml for this attribute system
+      // Use XmlStringWriter to generate xml for this attribute collection
       smtk::common::ResourcePtr resource;
       ok = resources.get(id, resource);
-      smtk::attribute::SystemPtr system = dynamic_pointer_cast<smtk::attribute::System>(resource);
+      smtk::attribute::CollectionPtr collection =
+        dynamic_pointer_cast<smtk::attribute::Collection>(resource);
 
       AttributeWriter attWriter;
       // Get the default string writer instance
       // Could consider allowing application to assign version number
-      XmlStringWriter* xmlWriter = attWriter.newXmlStringWriter(system);
+      XmlStringWriter* xmlWriter = attWriter.newXmlStringWriter(collection);
       xmlWriter->generateXml(resourceElement, logger);
       delete xmlWriter;
     }
@@ -107,9 +108,10 @@ bool ResourceSetWriter::writeString(std::string& content, const ResourceSet& res
       {
         smtk::common::ResourcePtr resource;
         ok = resources.get(id, resource);
-        smtk::attribute::SystemPtr system = dynamic_pointer_cast<smtk::attribute::System>(resource);
+        smtk::attribute::CollectionPtr collection =
+          dynamic_pointer_cast<smtk::attribute::Collection>(resource);
         AttributeWriter attWriter;
-        bool hasErr = attWriter.write(system, link, logger);
+        bool hasErr = attWriter.write(collection, link, logger);
         ok = !hasErr;
         if (ok)
         {

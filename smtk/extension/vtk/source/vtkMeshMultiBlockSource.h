@@ -11,6 +11,7 @@
 #define __smtk_vtk_MeshMultiBlockSource_h
 
 #include "smtk/extension/vtk/source/Exports.h"
+#include "smtk/extension/vtk/source/vtkTracksAllInstances.h"
 #include "smtk/mesh/MeshSet.h"     // for MeshSet
 #include "smtk/model/CellEntity.h" // for CellEntities
 
@@ -34,8 +35,9 @@ class vtkPolyDataNormals;
 class VTKSMTKSOURCEEXT_EXPORT vtkMeshMultiBlockSource : public vtkMultiBlockDataSetAlgorithm
 {
 public:
+  smtkDeclareTracksAllInstances(vtkMeshMultiBlockSource);
   static vtkMeshMultiBlockSource* New();
-  virtual void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
   vtkTypeMacro(vtkMeshMultiBlockSource, vtkMultiBlockDataSetAlgorithm);
 
   vtkGetObjectMacro(CachedOutput, vtkMultiBlockDataSet);
@@ -71,8 +73,8 @@ protected:
   void GenerateRepresentationForSingleMesh(const smtk::mesh::MeshSet& meshes, vtkPolyData* pd,
     const smtk::model::EntityRef& entityref, bool genNormals);
 
-  virtual int RequestData(
-    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo);
+  int RequestData(
+    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
 
   void SetCachedOutput(vtkMultiBlockDataSet*);
 

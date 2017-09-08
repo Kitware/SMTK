@@ -3,6 +3,7 @@ set(srcs
   ImportVTKData.cxx
   MeshIOVTK.cxx
   RedirectOutput.cxx
+  vtkLIDARPtsWriter.cxx # For terrain extraction
   )
 
 set(headers
@@ -10,12 +11,13 @@ set(headers
   ImportVTKData.h
   MeshIOVTK.h
   RedirectOutput.h
+  vtkLIDARPtsWriter.h # For terrain extraction
   )
 
 add_library(smtkIOVTK ${srcs})
 
 target_link_libraries(smtkIOVTK
-      LINK_PUBLIC smtkCore vtkCommonCore vtkCommonDataModel vtkIOXML vtksys )
+  LINK_PUBLIC smtkCore vtkCommonCore vtkCommonDataModel vtkIOCore vtkIOXML vtksys vtkFiltersCore)
 
 smtk_export_header(smtkIOVTK IOVTKExports.h)
 
@@ -30,27 +32,7 @@ smtk_public_headers(${headers})
 # ... and make header compilation tests link properly:
 smtk_install_library(smtkIOVTK)
 
-if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
-  #extract the headers from cgm library we built to give them to shiboken
-
-  sbk_wrap_library(smtkIOVTK
-    PACKAGE smtk
-    GENERATOR_ARGS --avoid-protected-hack
-    WORKING_DIRECTORY ${SMTK_SOURCE_DIR}/smtk
-    LOCAL_INCLUDE_DIRECTORIES
-      ${SMTK_SOURCE_DIR}/smtk/common
-      ${SMTK_SOURCE_DIR}/smtk/mesh
-      ${SMTK_SOURCE_DIR}/smtk/extension/vtk/io
-      ${SMTK_SOURCE_DIR}/smtk
-      ${SMTK_BINARY_DIR}/smtk
-      ${CMAKE_CURRENT_BINARY_DIR}
-    TYPESYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/typesystem.xml
-    HEADERS ${headers}
-    DEPENDS smtkCore
-  )
-endif()
-
-if (SMTK_USE_PYBIND11)
+if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)
 endif()
 

@@ -19,22 +19,20 @@
 #include <string>
 #include <vector>
 
-/**\brief Import an entire SMTK mesh collection from a file, or just sub-sections
-  *
-  */
-
 namespace smtk
 {
 namespace io
 {
 
+/**\brief Import an entire SMTK mesh collection from a file, or just sub-sections
+  *
+  */
 class SMTKCORE_EXPORT ImportMesh
 {
 public:
   ImportMesh();
   ~ImportMesh();
 
-#ifndef SHIBOKEN_SKIP
   ImportMesh& operator=(const ImportMesh&) = delete;
   ImportMesh(const ImportMesh&) = delete;
 
@@ -48,7 +46,9 @@ public:
     std::string domainPropertyName = std::string()) const;
   bool operator()(const std::string& filePath, smtk::mesh::CollectionPtr collection,
     std::string domainPropertyName = std::string()) const;
-#endif
+
+  //Return the file format selected to read the file at <filePath>.
+  smtk::io::mesh::Format fileFormat(const std::string& filePath);
 };
 
 SMTKCORE_EXPORT smtk::mesh::CollectionPtr importMesh(
@@ -58,6 +58,7 @@ SMTKCORE_EXPORT smtk::mesh::CollectionPtr importMesh(const std::string& filePath
 SMTKCORE_EXPORT bool importMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection);
 SMTKCORE_EXPORT bool importMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
   const std::string& domainPropertyName);
+SMTKCORE_EXPORT smtk::io::mesh::Format meshFileFormat(const std::string& filePath);
 }
 }
 

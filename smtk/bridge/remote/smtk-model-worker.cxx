@@ -19,7 +19,6 @@
 
 // Steal code from CMB's vtkModelManagerWrapper.
 
-#ifndef SHIBOKEN_SKIP
 #include "smtk/bridge/remote/RemusRPCWorker.h"
 #include "smtk/bridge/remote/Session.h"
 
@@ -273,7 +272,7 @@ int main(int argc, char* argv[])
     smtk::model::Session::Ptr session = mgr->createSession(wkOpts.kernel()).session();
     if (!session)
       return usage(logr, 1, "Could not create session \"" + wkOpts.kernel() + "\"");
-    smtk::attribute::SystemPtr opsys = session->operatorSystem();
+    smtk::attribute::CollectionPtr opsys = session->operatorCollection();
     cJSON* spec = cJSON_CreateObject();
     std::string opspec;
     if (smtk::io::SaveJSON::forOperatorDefinitions(opsys, spec))
@@ -282,7 +281,7 @@ int main(int argc, char* argv[])
     requirements = make_JobRequirements(
       io_type, wkOpts.workerName(), opspec.c_str(), remus::common::ContentFormat::XML);
 
-    // Write the model operator attribute system as the job requirements:
+    // Write the model operator attribute collection as the job requirements:
     std::string reqFileName = wkOpts.rwfile() + ".requirements";
     std::ofstream reqFile(reqFileName.c_str());
     reqFile << opspec;
@@ -445,4 +444,3 @@ int main(int argc, char* argv[])
   delete w;
   return 0;
 }
-#endif // SHIBOKEN_SKIP

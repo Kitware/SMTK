@@ -26,7 +26,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkSMOperatorProxy : public vtkSMProxy
 public:
   static vtkSMOperatorProxy* New();
   vtkTypeMacro(vtkSMOperatorProxy, vtkSMProxy);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Operate on the model on the server.

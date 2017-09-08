@@ -11,7 +11,7 @@
 // .SECTION Description
 // Stores all of the necessary information for a definition of a
 // single attribute. Attributes should be created through
-// System::createAttribute().
+// Collection::createAttribute().
 // .SECTION See Also
 
 #ifndef __smtk_attribute_Definition_h
@@ -19,7 +19,7 @@
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/SharedFromThis.h"       // For smtkTypeMacro.
+#include "smtk/SharedFromThis.h"       // For smtkTypeMacroBase.
 #include "smtk/model/EntityRef.h"      //for EntityRef version of canBeAssociated
 #include "smtk/model/EntityTypeBits.h" // for BitFlags type
 
@@ -39,20 +39,20 @@ namespace attribute
 {
 class Attribute;
 class ItemDefinition;
-class System;
+class Collection;
 
 class SMTKCORE_EXPORT Definition : public smtk::enable_shared_from_this<Definition>
 {
 public:
-  smtkTypeMacro(Definition);
+  smtkTypeMacroBase(Definition);
   virtual ~Definition();
 
   // Description:
   // The type is the identifier that is used to access the
-  // attribute definition through the System. It should never change.
+  // attribute definition through the Collection. It should never change.
   const std::string& type() const { return this->m_type; }
 
-  smtk::attribute::SystemPtr system() const { return this->m_system; }
+  smtk::attribute::CollectionPtr collection() const { return this->m_collection; }
 
   // The label is what can be displayed in an application.  Unlike the type
   // which is constant w/r to the definition, an application can change the label
@@ -194,9 +194,9 @@ public:
   // type.
   //
   // Warning:
-  // It is up to the caller to ensure integrity of the attribute::System
+  // It is up to the caller to ensure integrity of the attribute::Collection
   // instance (e.g. Attribute instances of this Definition type need to be
-  // cleansed from the system).
+  // cleansed from the collection).
   bool removeItemDefinition(ItemDefinitionPtr itemDef);
 
   int findItemPosition(const std::string& name) const;
@@ -214,24 +214,24 @@ public:
 
   // Description:
   // Sets and returns the root name to be used to construct the name for
-  // an attribute. This is used by the attribute system when creating an
+  // an attribute. This is used by the attribute collection when creating an
   // attribute without specifying a name - by default it is set to be the
   // type name of the definition
   void setRootName(const std::string& val) { this->m_rootName = val; }
   std::string rootName() const { return this->m_rootName; }
 
   //This method resets the definition item offset - this is used by the
-  // system when a definition is modified
+  // collection when a definition is modified
   void resetItemOffset();
   std::size_t itemOffset() const { return this->m_baseItemOffset; }
 
 protected:
-  friend class smtk::attribute::System;
-  // AttributeDefinitions can only be created by an attribute system
+  friend class smtk::attribute::Collection;
+  // AttributeDefinitions can only be created by an attribute collection
   Definition(const std::string& myType, smtk::attribute::DefinitionPtr myBaseDef,
-    smtk::attribute::SystemPtr mySystem);
+    smtk::attribute::CollectionPtr myCollection);
 
-  void clearSystem() { this->m_system = NULL; }
+  void clearCollection() { this->m_collection = NULL; }
 
   void setCategories();
 
@@ -239,7 +239,7 @@ protected:
   // definition's items have been changed
   void updateDerivedDefinitions();
 
-  smtk::attribute::SystemPtr m_system;
+  smtk::attribute::CollectionPtr m_collection;
   int m_version;
   bool m_isAbstract;
   smtk::attribute::DefinitionPtr m_baseDefinition;
@@ -268,11 +268,9 @@ protected:
 
 private:
   // These colors are returned for base definitions w/o set colors
-  //needs to be private for shiboken wrapping to work properly
   static double s_notApplicableBaseColor[4];
   static double s_defaultBaseColor[4];
 
-  //needs to be private for shiboken wrapping to work properly
   double m_notApplicableColor[4];
   double m_defaultColor[4];
 };

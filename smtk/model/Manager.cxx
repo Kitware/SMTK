@@ -10,7 +10,7 @@
 #include "smtk/model/Manager.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 
 #include "smtk/model/AttributeAssignments.h"
 #include "smtk/model/AuxiliaryGeometry.h"
@@ -3028,7 +3028,7 @@ bool Manager::hasAttribute(const UUID& attribId, const UUID& toEntity)
   * and false otherwise.
   */
 bool Manager::associateAttribute(
-  smtk::attribute::SystemPtr sys, const UUID& attribId, const UUID& toEntity)
+  smtk::attribute::CollectionPtr sys, const UUID& attribId, const UUID& toEntity)
 {
   bool allowed = true;
   if (sys)
@@ -3038,7 +3038,7 @@ bool Manager::associateAttribute(
     {
       allowed = false;
     }
-    this->m_attributeSystems.insert(sys);
+    this->m_attributeCollections.insert(sys);
   }
   if (allowed)
     (*this->m_attributeAssignments)[toEntity].associateAttribute(attribId);
@@ -3049,7 +3049,7 @@ bool Manager::associateAttribute(
   *
   */
 bool Manager::disassociateAttribute(
-  smtk::attribute::SystemPtr sys, const UUID& attribId, const UUID& fromEntity, bool reverse)
+  smtk::attribute::CollectionPtr sys, const UUID& attribId, const UUID& fromEntity, bool reverse)
 {
   bool didRemove = false;
   UUIDWithAttributeAssignments ref = this->m_attributeAssignments->find(fromEntity);
@@ -3086,9 +3086,9 @@ bool Manager::disassociateAttribute(
 /**\brief Insert the attributes associated with \a modelEntity into the \a associations set.
   *
   * Returns true when modelEntity had any attributes (whether they were already
-  * present in \a associations or not) in any attribute system and false otherwise.
+  * present in \a associations or not) in any attribute collection and false otherwise.
   *
-  * Note that attribute UUIDs may not be stored in any of the attribute systems
+  * Note that attribute UUIDs may not be stored in any of the attribute collections
   * (e.g., when a model was loaded from a save file but the attributes were not),
   * in which case this method will return false even though attribute UUIDs were
   * stored on the model entity.
@@ -3105,15 +3105,15 @@ bool Manager::insertEntityAssociations(
   }
   for (auto attribId : eait->second.attributes())
   {
-    for (auto attribSys : this->m_attributeSystems)
+    for (auto attribSys : this->m_attributeCollections)
     {
-      smtk::attribute::System::Ptr asys = attribSys.lock();
+      smtk::attribute::Collection::Ptr asys = attribSys.lock();
       smtk::attribute::AttributePtr att;
       if (asys && (att = asys->findAttribute(attribId)))
       {
         associations.insert(att);
         didFind = true;
-        break; // no need to check other attribute systems (attributes are unique across systems).
+        break; // no need to check other attribute collections (attributes are unique across collections).
       }
     }
   }

@@ -30,7 +30,7 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkDiscreteModelEdge : public vtkModelEdge,
 public:
   vtkTypeMacro(vtkDiscreteModelEdge, vtkModelEdge);
   static vtkDiscreteModelEdge* New();
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Add the association to a region.  This is intended for
@@ -71,7 +71,7 @@ public:
   // a vtkDataObject*.  If we are on the server and this is a
   // floating edge then we will construct the representation
   // if it doesn't exist.
-  virtual vtkObject* GetGeometry();
+  vtkObject* GetGeometry() override;
 
   // Description:
   // Get All/Boundary/Interior point Ids of this model edge.
@@ -85,12 +85,12 @@ public:
 
 protected:
   vtkDiscreteModelEdge();
-  virtual ~vtkDiscreteModelEdge();
+  ~vtkDiscreteModelEdge() override;
 
-  virtual bool IsDestroyable();
-  virtual bool Destroy();
+  bool IsDestroyable() override;
+  bool Destroy() override;
 
-  virtual vtkModelEntity* GetThisModelEntity();
+  vtkModelEntity* GetThisModelEntity() override;
 
   // for using AddCellsToGeometry
   friend class vtkDiscreteModel;
@@ -112,15 +112,15 @@ protected:
   // vtkDiscreteModelGeometricEntity that is classified on.
   // Note that it can potentially modify the values inside
   //  of cellIds.
-  virtual bool AddCellsToGeometry(vtkIdList* cellIds);
+  bool AddCellsToGeometry(vtkIdList* cellIds) override;
 
-  virtual bool AddCellsClassificationToMesh(vtkIdList* cellIds);
+  bool AddCellsClassificationToMesh(vtkIdList* cellIds) override;
 
   // Description:
   // Reads the state of an instance from an archive OR
   // writes the state of an instance to an archive. See
   // the documentation for this class for details.
-  virtual void Serialize(vtkSerializer* ser);
+  void Serialize(vtkSerializer* ser) override;
 
   // Description:
   // This function is intended for use with floating model edges.

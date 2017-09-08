@@ -25,11 +25,11 @@ class SMTKDISCRETESESSION_EXPORT vtkCreateModelEdgesOperatorBase : public vtkObj
 public:
   static vtkCreateModelEdgesOperatorBase* New();
   vtkTypeMacro(vtkCreateModelEdgesOperatorBase, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
 protected:
   vtkCreateModelEdgesOperatorBase();
-  virtual ~vtkCreateModelEdgesOperatorBase();
+  ~vtkCreateModelEdgesOperatorBase() override;
 
   // Description:
   // Check to see if everything is properly set for the operator.

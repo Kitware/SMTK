@@ -28,13 +28,13 @@ if (SMTK_ENABLE_EXODUS_SESSION)
 endif ()
 
 set(ResourceSetWriterTest_ARGUMENTS
-  ${SMTK_DATA_DIR}/attribute/attribute_system/Basic2DFluid.sbt
-  ${SMTK_DATA_DIR}/attribute/attribute_system/copyAttributeTest.sbi
+  ${SMTK_DATA_DIR}/attribute/attribute_collection/Basic2DFluid.sbt
+  ${SMTK_DATA_DIR}/attribute/attribute_collection/copyAttributeTest.sbi
   writer_output.crf
 )
 
 set(ResourceSetReaderTest_ARGUMENTS
-  ${SMTK_DATA_DIR}/attribute/attribute_system/resourceTest/resources.xml
+  ${SMTK_DATA_DIR}/attribute/attribute_collection/resourceTest/resources.xml
   2
 )
 
@@ -46,7 +46,7 @@ foreach (test ${ioTests})
 endforeach()
 
 # ResourceSetWriterTest uses input files in SMTKTestData
-if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
+if (SMTK_DATA_DIR)
   foreach(test ${ioDataTests})
     add_executable(${test} ${test}.cxx)
     target_link_libraries(${test}

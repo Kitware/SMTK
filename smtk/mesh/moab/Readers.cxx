@@ -104,6 +104,19 @@ bool moab_load(const smtk::mesh::moab::InterfacePtr& interface, const std::strin
   }
 #endif
 
+  //moab has a concept of "reverse meshes" that are mesh sets that span the same
+  //cells and points as an extant mesh set, but are tagged by "NEUSET_SENSE".
+  //In smtk we handle this concept at the model level, so we filter out meshsets
+  // of this type here.
+  {
+    ::moab::Range sense_sets;
+    ::moab::Tag sense_tag;
+    m_iface->tag_get_handle("NEUSET_SENSE", 1, ::moab::MB_TYPE_INTEGER, sense_tag);
+    m_iface->get_entities_by_type_and_tag(
+      0, ::moab::MBENTITYSET, &sense_tag, NULL, 1, sense_sets, ::moab::Interface::UNION);
+    m_iface->delete_entities(sense_sets);
+  }
+
   const bool readFromDisk = (err == ::moab::MB_SUCCESS);
   if (readFromDisk)
   { //if we are loaded from file, we clear the modified flag

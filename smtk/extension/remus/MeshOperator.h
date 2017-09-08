@@ -38,7 +38,7 @@ class Session;
   *
   * Key ["remusRequirements"]: The filled out requirements of the worker
   *
-  * Key ["meshingControlAttributes"]: The attribute system of the worker
+  * Key ["meshingControlAttributes"]: The attribute collection of the worker
   *
   *
   *
@@ -69,11 +69,11 @@ public:
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
-  virtual bool ableToOperate();
+  bool ableToOperate() override;
 
 protected:
   MeshOperator();
-  virtual smtk::model::OperatorResult operateInternal();
+  smtk::model::OperatorResult operateInternal() override;
 };
 
 } // namespace model

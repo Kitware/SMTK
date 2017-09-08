@@ -12,9 +12,8 @@ import sys
 #
 #=============================================================================
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.bridge.polygon
-    import smtk.io
+import smtk.bridge.polygon
+import smtk.io
 from smtk.simple import *
 import smtk.testing
 
@@ -48,7 +47,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
         sessiontag = sess.tag()
         print '\n'
 
-        #opnames = sess.operatorNames()
+        # opnames = sess.operatorNames()
         # print opnames
 
     def createModelA(self, mod, origin, x_axis, y_axis, normal, feature_size, model_scale):
@@ -167,7 +166,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
             [0.25, 4.25], [0.75, 4.25], [0.75, 4.75],
             [0.25, 4.25], [0.25, 4.75], [0.75, 4.75],
         ]
-        #innerLoopOffsets = [0, 4]
+        # innerLoopOffsets = [0, 4]
         innerLoopOffsets = [0, 4, 8, 10, 13]
         elist = CreateEdge(innerLoopVerts, offsets=innerLoopOffsets, model=mod)
 
@@ -260,7 +259,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
 
             self.startRenderTest()
 
-            #mod = smtk.model.Model(mod)
+            # mod = smtk.model.Model(mod)
             #[mod.addCell(x) for x in self.mgr.findEntitiesOfType(smtk.model.CELL_ENTITY, False)]
 
             # Color faces but not edges or vertices

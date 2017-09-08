@@ -35,6 +35,10 @@
 #define smtkGetCurrentDir _getcwd
 #endif
 
+SMTK_THIRDPARTY_PRE_INCLUDE
+#include <boost/dll.hpp>
+SMTK_THIRDPARTY_POST_INCLUDE
+
 namespace smtk
 {
 namespace common
@@ -109,6 +113,30 @@ std::vector<std::string> Paths::pruneInvalidDirectories(const std::vector<std::s
   return result;
 }
 
+/// Return the directory containing the library that describes <func>.
+std::string Paths::pathToLibraryContainingFunction(void (*func)(void))
+{
+  return boost::dll::symbol_location(*func).parent_path().string();
+}
+
+/// Return the file name, given a path to the file.
+std::string Paths::filename(const std::string& path)
+{
+  return boost::filesystem::path(path).filename().string();
+}
+
+/// Return the file name without extension, given a path to the file.
+std::string Paths::stem(const std::string& path)
+{
+  return boost::filesystem::path(path).stem().string();
+}
+
+/// Return the file extension, given a path to the file.
+std::string Paths::extension(const std::string& path)
+{
+  return boost::filesystem::path(path).extension().string();
+}
+
 /**\brief Return the best guess at the directory containing the current process's executable.
   */
 std::string Paths::executableDirectory()
@@ -141,6 +169,7 @@ std::string Paths::bundleDirectory()
 std::vector<std::string> Paths::workerSearchPaths(bool pruneInvalid)
 {
   this->update();
+
   return pruneInvalid ? Paths::pruneInvalidDirectories(Paths::s_workerSearchPaths)
                       : Paths::s_workerSearchPaths;
 }
@@ -183,6 +212,17 @@ bool Paths::update()
 #endif
 
     Paths::s_lastGen = Paths::s_lastSet;
+
+    // Let's look for search paths relative to the location of the library
+    // containing this method.
+    boost::filesystem::path smtkLibDir =
+      boost::dll::symbol_location(Paths::currentDirectory).parent_path();
+    boost::filesystem::path smtkBinDir = smtkLibDir.parent_path() / "bin";
+    if (boost::filesystem::is_directory(smtkBinDir))
+    {
+      Paths::s_workerSearchPaths.push_back(smtkBinDir.string());
+    }
+
     return true;
   }
   return false;

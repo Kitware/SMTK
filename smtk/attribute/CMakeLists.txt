@@ -17,7 +17,7 @@ set(attributeHeaders
   IntItemDefinition.h
   Item.h
   ItemDefinition.h
-  System.h
+  Collection.h
   MeshItem.h
   MeshItemDefinition.h
   MeshSelectionItem.h
@@ -56,7 +56,7 @@ set(attributeSrcs
   IntItemDefinition.cxx
   Item.cxx
   ItemDefinition.cxx
-  System.cxx
+  Collection.cxx
   MeshItem.cxx
   MeshItemDefinition.cxx
   MeshSelectionItem.cxx
@@ -76,7 +76,7 @@ set(attributeSrcs
 #install the headers
 smtk_public_headers(${attributeHeaders})
 
-if (SMTK_USE_PYBIND11)
+if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)
 endif()
 

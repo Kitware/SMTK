@@ -680,23 +680,29 @@ INPUT                  = \
   "@SMTK_SOURCE_DIR@/smtk/bridge/discrete/kernel" \
   "@SMTK_SOURCE_DIR@/smtk/common" \
   "@SMTK_SOURCE_DIR@/smtk/common/testing/cxx" \
+  "@SMTK_SOURCE_DIR@/smtk/mesh" \
   "@SMTK_SOURCE_DIR@/smtk/model" \
   "@SMTK_SOURCE_DIR@/smtk/model/testing/cxx" \
-  "@SMTK_SOURCE_DIR@/smtk/extension/vtk" \
+  "@SMTK_SOURCE_DIR@/smtk/extension/paraview" \
   "@SMTK_SOURCE_DIR@/smtk/extension/qt" \
+  "@SMTK_SOURCE_DIR@/smtk/extension/vtk" \
   "@SMTK_SOURCE_DIR@/smtk/io" \
+  "@SMTK_SOURCE_DIR@/smtk/io/mesh" \
   "@SMTK_SOURCE_DIR@/smtk/simulation" \
   "@SMTK_SOURCE_DIR@/smtk/view" \
   "@SMTK_BINARY_DIR@/smtk" \
   "@SMTK_BINARY_DIR@/smtk/attribute" \
   "@SMTK_BINARY_DIR@/smtk/cgm" \
+  "@SMTK_BINARY_DIR@/smtk/mesh" \
   "@SMTK_BINARY_DIR@/smtk/model" \
   "@SMTK_BINARY_DIR@/smtk/model/testing" \
+  "@SMTK_BINARY_DIR@/smtk/extension/paraview" \
   "@SMTK_BINARY_DIR@/smtk/extension/qt" \
   "@SMTK_BINARY_DIR@/smtk/extension/vtk" \
   "@SMTK_BINARY_DIR@/smtk/remote" \
   "@SMTK_BINARY_DIR@/smtk/common" \
   "@SMTK_BINARY_DIR@/smtk/io" \
+  "@SMTK_BINARY_DIR@/smtk/io/mesh" \
   "@SMTK_BINARY_DIR@/smtk/simulation" \
   "@SMTK_BINARY_DIR@/smtk/view" \
 

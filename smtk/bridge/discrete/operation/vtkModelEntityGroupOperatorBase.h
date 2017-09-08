@@ -34,12 +34,12 @@ class SMTKDISCRETESESSION_EXPORT vtkModelEntityGroupOperatorBase : public vtkMod
 public:
   static vtkModelEntityGroupOperatorBase* New();
   vtkTypeMacro(vtkModelEntityGroupOperatorBase, vtkModelEntityOperatorBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Set the model entity type to vtkDiscreteModelEntityGroupType to override
   // the superclass virtual function.
-  virtual void SetItemType(int itemType);
+  void SetItemType(int itemType) override;
 
   // Description:
   // Get the model entity group from Model.
@@ -83,7 +83,7 @@ public:
 
   // Description:
   // Do the operations on the specified model entity group.
-  virtual bool Operate(vtkDiscreteModel* Model);
+  bool Operate(vtkDiscreteModel* Model) override;
 
   // Description:
   // Build the model entity group on the server and client before operating
@@ -97,11 +97,11 @@ public:
 
 protected:
   vtkModelEntityGroupOperatorBase();
-  virtual ~vtkModelEntityGroupOperatorBase();
+  ~vtkModelEntityGroupOperatorBase() override;
 
   // Description:
   // Check to see if everything is properly set for the operator.
-  virtual bool AbleToOperate(vtkDiscreteModel* Model);
+  bool AbleToOperate(vtkDiscreteModel* Model) override;
 
 private:
   vtkModelEntityGroupOperatorBase(const vtkModelEntityGroupOperatorBase&); // Not implemented.

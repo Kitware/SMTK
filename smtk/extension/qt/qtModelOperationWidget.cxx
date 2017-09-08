@@ -20,10 +20,10 @@
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
-#include "smtk/attribute/System.h"
 #include "smtk/attribute/VoidItem.h"
 
 #include "smtk/common/View.h"
@@ -299,9 +299,9 @@ bool qtModelOperationWidget::initOperatorUI(const smtk::model::OperatorPtr& brOp
   opLayout->setMargin(0);
 
   smtk::attribute::AttributePtr att = brOp->specification();
-  att->system()->setRefModelManager(brOp->manager());
+  att->collection()->setRefModelManager(brOp->manager());
 
-  smtk::extension::qtUIManager* uiManager = new smtk::extension::qtUIManager(att->system());
+  smtk::extension::qtUIManager* uiManager = new smtk::extension::qtUIManager(att->collection());
   uiManager->setActiveModelView(this->Internals->ModelView);
 
   // find out what view to use to construct the UI, if none is specified for this op
@@ -311,7 +311,7 @@ bool qtModelOperationWidget::initOperatorUI(const smtk::model::OperatorPtr& brOp
   smtk::common::ViewPtr opView;
 
   std::map<std::string, smtk::common::ViewPtr>::const_iterator it;
-  for (it = att->system()->views().begin(); it != att->system()->views().end(); ++it)
+  for (it = att->collection()->views().begin(); it != att->collection()->views().end(); ++it)
   {
     int i = it->second->details().findChild("AttributeTypes");
     if (i < 0)
@@ -339,7 +339,7 @@ bool qtModelOperationWidget::initOperatorUI(const smtk::model::OperatorPtr& brOp
     smtk::common::View::Component& comp =
       opView->details().addChild("InstancedAttributes").addChild("Att");
     comp.setAttribute("Type", att->type()).setAttribute("Name", att->name());
-    att->system()->addView(opView);
+    att->collection()->addView(opView);
   }
 
   opView->details().setAttribute("TopLevel", "true");

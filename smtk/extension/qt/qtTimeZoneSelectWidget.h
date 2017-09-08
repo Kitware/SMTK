@@ -33,7 +33,7 @@ class SMTKQTEXT_EXPORT qtTimeZoneSelectWidget : public QWidget
 
 public:
   qtTimeZoneSelectWidget(QWidget* parent = NULL);
-  ~qtTimeZoneSelectWidget();
+  ~qtTimeZoneSelectWidget() override;
 
   // Used to initialize model
   void setRegion(const QString& index);

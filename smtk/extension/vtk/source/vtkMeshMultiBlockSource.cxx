@@ -54,6 +54,7 @@ using namespace smtk::model;
 
 vtkStandardNewMacro(vtkMeshMultiBlockSource);
 vtkCxxSetObjectMacro(vtkMeshMultiBlockSource, CachedOutput, vtkMultiBlockDataSet);
+smtkImplementTracksAllInstances(vtkMeshMultiBlockSource);
 
 vtkMeshMultiBlockSource::vtkMeshMultiBlockSource()
 {
@@ -62,10 +63,12 @@ vtkMeshMultiBlockSource::vtkMeshMultiBlockSource()
   this->ModelEntityID = NULL;
   this->MeshCollectionID = NULL;
   this->AllowNormalGeneration = 0;
+  this->linkInstance();
 }
 
 vtkMeshMultiBlockSource::~vtkMeshMultiBlockSource()
 {
+  this->unlinkInstance();
   this->SetCachedOutput(NULL);
   this->SetModelEntityID(NULL);
   this->SetMeshCollectionID(NULL);

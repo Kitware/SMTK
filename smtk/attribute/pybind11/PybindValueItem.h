@@ -27,7 +27,7 @@ PySharedPtrClass< smtk::attribute::ValueItem, smtk::attribute::Item > pybind11_i
   PySharedPtrClass< smtk::attribute::ValueItem, smtk::attribute::Item > instance(m, "ValueItem");
   instance
     .def("deepcopy", (smtk::attribute::ValueItem & (smtk::attribute::ValueItem::*)(::smtk::attribute::ValueItem const &)) &smtk::attribute::ValueItem::operator=)
-    .def("activeChildItem", &smtk::attribute::ValueItem::activeChildItem, py::arg("i"))
+    .def("_activeChildItem", &smtk::attribute::ValueItem::activeChildItem, py::arg("i"))
     .def("allowsExpressions", &smtk::attribute::ValueItem::allowsExpressions)
     .def("appendExpression", &smtk::attribute::ValueItem::appendExpression, py::arg("exp"))
     .def("assign", &smtk::attribute::ValueItem::assign, py::arg("sourceItem"), py::arg("options") = 0)
@@ -36,8 +36,8 @@ PySharedPtrClass< smtk::attribute::ValueItem, smtk::attribute::Item > pybind11_i
     .def("discreteIndex", &smtk::attribute::ValueItem::discreteIndex, py::arg("elementIndex") = 0)
     .def("expression", &smtk::attribute::ValueItem::expression, py::arg("elementIndex") = 0)
     .def("expressionReference", &smtk::attribute::ValueItem::expressionReference, py::arg("elementIndex") = 0)
-    .def("findChild", (smtk::attribute::ItemPtr (smtk::attribute::ValueItem::*)(::std::string const &, ::smtk::attribute::SearchStyle)) &smtk::attribute::ValueItem::findChild, py::arg("name"), py::arg("arg1"))
-    .def("findChild", (smtk::attribute::ConstItemPtr (smtk::attribute::ValueItem::*)(::std::string const &, ::smtk::attribute::SearchStyle) const) &smtk::attribute::ValueItem::findChild, py::arg("name"), py::arg("arg1"))
+    .def("_findChild", (smtk::attribute::ItemPtr (smtk::attribute::ValueItem::*)(::std::string const &, ::smtk::attribute::SearchStyle)) &smtk::attribute::ValueItem::findChild, py::arg("name"), py::arg("arg1"))
+    .def("_findChild", (smtk::attribute::ConstItemPtr (smtk::attribute::ValueItem::*)(::std::string const &, ::smtk::attribute::SearchStyle) const) &smtk::attribute::ValueItem::findChild, py::arg("name"), py::arg("arg1"))
     .def("hasDefault", &smtk::attribute::ValueItem::hasDefault)
     .def("isDiscrete", &smtk::attribute::ValueItem::isDiscrete)
     .def("isDiscreteIndexValid", &smtk::attribute::ValueItem::isDiscreteIndexValid, py::arg("value"))

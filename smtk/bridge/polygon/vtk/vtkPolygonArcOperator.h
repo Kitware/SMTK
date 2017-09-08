@@ -26,12 +26,12 @@ class VTKPOLYGONOPERATORSEXT_EXPORT vtkPolygonArcOperator : public vtkSMTKOperat
 public:
   static vtkPolygonArcOperator* New();
   vtkTypeMacro(vtkPolygonArcOperator, vtkSMTKOperator);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   //Description:
   //Convert the passed-in polydata into polygon edge(s)
-  virtual bool AbleToOperate();
-  virtual smtk::model::OperatorResult Operate();
+  bool AbleToOperate() override;
+  smtk::model::OperatorResult Operate() override;
 
   //Description:
   //Get/Set the arc representation

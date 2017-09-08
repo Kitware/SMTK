@@ -167,6 +167,10 @@ void EntityIterator::updateQueue(const EntityRef& ent)
         EntityRefs subshells = ent.as<ShellEntity>().containedShellEntities<EntityRefs>();
         children.insert(subshells.begin(), subshells.end());
       }
+      else if (ent.isAuxiliaryGeometry())
+      {
+        children = ent.embeddedEntities<EntityRefs>();
+      }
       else if (ent.isGroup())
       {
         children = ent.as<Group>().members<EntityRefs>();
@@ -185,6 +189,10 @@ void EntityIterator::updateQueue(const EntityRef& ent)
         AuxiliaryGeometries maux = ent.as<smtk::model::Model>().auxiliaryGeometry();
         children.insert(maux.begin(), maux.end());
       }
+      // Now, since pretty much anything can be instanced, add instances if present:
+      EntityRefs instances = ent.instances<smtk::model::EntityRefs>();
+      children.insert(instances.begin(), instances.end());
+      // Add any unvisited children.
       for (EntityRefs::const_iterator cit = children.begin(); cit != children.end(); ++cit)
         if (this->m_visited.find(*cit) == this->m_visited.end())
           this->m_queue.insert(*cit);

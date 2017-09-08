@@ -13,10 +13,8 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
-#ifndef SHIBOKEN_SKIP
 #include "remus/worker/Job.h"
 #include "remus/worker/Worker.h"
-#endif // SHIBOKEN_SKIP
 
 #include "smtk/model/StringData.h"
 
@@ -47,17 +45,15 @@ namespace remote
 class RemusRPCWorker
 {
 public:
-  smtkTypeMacro(RemusRPCWorker);
+  smtkTypeMacroBase(RemusRPCWorker);
   smtkCreateMacro(RemusRPCWorker);
   virtual ~RemusRPCWorker();
 
   virtual void setOption(const std::string& optName, const std::string& optVal);
   virtual void clearOptions();
 
-#ifndef SHIBOKEN_SKIP
   void processJob(
     remus::worker::Worker*& w, remus::worker::Job& jd, remus::proto::JobRequirements& r);
-#endif // SHIBOKEN_SKIP
 
   smtk::model::ManagerPtr manager();
   void setManager(smtk::model::ManagerPtr);
@@ -65,12 +61,10 @@ public:
 protected:
   RemusRPCWorker();
 
-#ifndef SHIBOKEN_SKIP
   void generateError(cJSON* err, const std::string& errMsg, const std::string& reqId);
 
   smtk::model::ManagerPtr m_modelMgr;
   smtk::model::StringData m_options;
-#endif // SHIBOKEN_SKIP
 
 private:
   RemusRPCWorker(const RemusRPCWorker&); // Not implemented.

@@ -7,7 +7,6 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef SHIBOKEN_SKIP
 #include "smtk/bridge/remote/Session.h"
 #include "smtk/bridge/remote/RemusConnection.h"
 
@@ -44,7 +43,7 @@ std::map<std::string, RemusStaticSessionInfo>* Session::s_remotes = NULL;
 
 Session::Session()
 {
-  this->initializeOperatorSystem(Session::s_operators);
+  this->initializeOperatorCollection(Session::s_operators);
 }
 
 Session::~Session()
@@ -183,4 +182,3 @@ smtkImplementsModelingKernel(
   SMTKREMOTESESSION_EXPORT, remus_remote, "", smtk::model::SessionHasNoStaticSetup,
   smtk::bridge::remote::Session, false /* do not inherit local operators */
   );
-#endif // SHIBOKEN_SKIP

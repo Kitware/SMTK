@@ -12,9 +12,8 @@ import sys
 #
 #=============================================================================
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.bridge.polygon
-    import smtk.io
+import smtk.bridge.polygon
+import smtk.io
 from smtk.simple import *
 import smtk.testing
 
@@ -40,7 +39,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
         sessiontag = sess.tag()
         print '\n'
 
-        #opnames = sess.operatorNames()
+        # opnames = sess.operatorNames()
         # print opnames
 
     def checkModel(self, mod, origin, x_axis, y_axis, normal, feature_size, model_scale):
@@ -53,7 +52,9 @@ class TestPolygonCreation(smtk.testing.TestCase):
         self.assertEqual(mod.floatProperty('feature size'), [feature_size, ],
                          'Bad feature size {:.3g}'.format(*mod.floatProperty('feature size')))
         print 'Mod scale ', mod.floatProperty('model scale')[0], int(model_scale / feature_size), mod.floatProperty('model scale')[0] / int(model_scale / feature_size)
-        self.assertEqual(int(mod.floatProperty('model scale')[0]), int(model_scale / feature_size),
+        self.assertEqual(
+            int(mod.floatProperty('model scale')[0]), int(
+                model_scale / feature_size),
                          'Bad model scale {:1}'.format(*mod.floatProperty('model scale')))
 
         # print smtk.io.SaveJSON.fromModelManager(self.mgr,

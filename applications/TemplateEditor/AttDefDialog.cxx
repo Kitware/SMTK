@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/System.h"
 
 #include "AttDefDialog.h"
 #include "ui_AttDefDialog.h"
@@ -60,7 +60,7 @@ bool AttDefDialog::validate_impl()
   const QString type = this->Ui->leType->text();
   valid &= !type.isEmpty();
 
-  auto def = this->BaseDef->system()->findDefinition(type.toStdString());
+  auto def = this->BaseDef->collection()->findDefinition(type.toStdString());
   valid &= !def;
 
   return valid;

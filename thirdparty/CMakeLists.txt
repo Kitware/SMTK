@@ -20,21 +20,6 @@ if (SMTK_IGNORE_CJSON_WARNINGS)
   set_property(TARGET cJSON APPEND_STRING PROPERTY COMPILE_FLAGS ${ignore_rules_for_cjson})
 endif()
 
-if(SMTK_USE_PYBIND11)
-  # by including the correct python cmake scripts before adding pybind11, we
-  # work around pybind11's custom python cmake scripts without having to patch
-  # pybind11.
-  find_package(PythonInterp REQUIRED)
-  find_package(PythonLibs REQUIRED)
-  if(MSVC)
-    set(PYTHON_MODULE_EXTENSION ".pyd")
-  else()
-    set(PYTHON_MODULE_EXTENSION ".so")
-  endif()
-  set(PYTHON_MODULE_PREFIX "")
-  add_subdirectory(pybind11)
-endif()
-
 if (NOT SMTK_USE_SYSTEM_MOAB)
   #guard against MOAB polluting the cmake C/CXX/Fortran flags
   set(save_CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
@@ -196,4 +181,19 @@ if (SMTK_IGNORE_DELAUNAY_WARNINGS)
     set_property(TARGET ${delaunay_target} APPEND_STRING
       PROPERTY COMPILE_FLAGS ${ignore_rules_for_delaunay})
   endforeach()
+endif()
+
+if (SMTK_ENABLE_VXL_SUPPORT)
+  # We need VXL for rgtl, vnl_algo, vnl, and vcl.
+  find_package(VXL REQUIRED)
+  if(NOT VXL_RPL_FOUND)
+    message(FATAL_ERROR "vxl must be built with BUILD_RPL enabled")
+  endif(NOT VXL_RPL_FOUND)
+  if(NOT VXL_RPL_RGTL_FOUND)
+    message(FATAL_ERROR "vxl must be built with BUILD_RPL_RGTL enabled")
+  endif(NOT VXL_RPL_RGTL_FOUND)
+  include(${VXL_CMAKE_DIR}/UseVXL.cmake)
+
+  # Build the Tensor Voting library.
+  add_subdirectory(rtvl)
 endif()

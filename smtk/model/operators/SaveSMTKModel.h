@@ -44,8 +44,8 @@ protected:
   Internals* m_data;
 
   SaveSMTKModel();
-  virtual OperatorResult operateInternal();
-  virtual void generateSummary(OperatorResult&);
+  OperatorResult operateInternal() override;
+  void generateSummary(OperatorResult&) override;
 };
 
 } //namespace model

@@ -144,7 +144,6 @@ private:
 
 //Don't wrap these for python, instead python should use the Tessellation class
 //and the extract method
-#ifndef SHIBOKEN_SKIP
 
 SMTKCORE_EXPORT void extractTessellation(const smtk::mesh::MeshSet&, PreAllocatedTessellation&);
 SMTKCORE_EXPORT void extractTessellation(const smtk::mesh::CellSet&, PreAllocatedTessellation&);
@@ -170,8 +169,6 @@ SMTKCORE_EXPORT void extractOrderedTessellation(const smtk::model::EdgeUse&,
   const smtk::mesh::CollectionPtr&, const smtk::mesh::PointSet&, PreAllocatedTessellation&);
 SMTKCORE_EXPORT void extractOrderedTessellation(const smtk::model::Loop&,
   const smtk::mesh::CollectionPtr&, const smtk::mesh::PointSet&, PreAllocatedTessellation&);
-
-#endif //SHIBOKEN_SKIP
 }
 }
 

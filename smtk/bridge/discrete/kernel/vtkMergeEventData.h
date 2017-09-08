@@ -30,7 +30,7 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkMergeEventData : public vtkObject
 public:
   static vtkMergeEventData* New();
   vtkTypeMacro(vtkMergeEventData, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Set/get the SourceEntity
@@ -49,7 +49,7 @@ public:
 
 protected:
   vtkMergeEventData();
-  virtual ~vtkMergeEventData();
+  ~vtkMergeEventData() override;
 
 private:
   vtkDiscreteModelGeometricEntity* SourceEntity;

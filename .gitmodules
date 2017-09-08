@@ -1,7 +1,3 @@
-[submodule "thirdparty/pybind11"]
-	path = thirdparty/pybind11
-	url = https://github.com/pybind/pybind11.git
-
 [submodule "thirdparty/delaunay"]
 	path = thirdparty/delaunay
 	url = https://github.com/tjcorona/Delaunay.git

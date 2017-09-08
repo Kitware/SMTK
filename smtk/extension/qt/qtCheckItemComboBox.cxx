@@ -10,11 +10,11 @@
 #include "smtk/extension/qt/qtCheckItemComboBox.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/MeshItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
-#include "smtk/attribute/System.h"
 #include "smtk/attribute/VoidItem.h"
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtMeshItem.h"
@@ -137,8 +137,8 @@ void qtModelEntityItemCombo::init()
   }
   const ModelEntityItemDefinition* itemDef =
     static_cast<const ModelEntityItemDefinition*>(modelEntityItem->definition().get());
-  SystemPtr attSystem = modelEntityItem->attribute()->system();
-  smtk::model::ManagerPtr modelManager = attSystem->refModelManager();
+  CollectionPtr attCollection = modelEntityItem->attribute()->collection();
+  smtk::model::ManagerPtr modelManager = attCollection->refModelManager();
 
   QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());
   // need to update the list, since it may be changed
@@ -240,6 +240,11 @@ bool qtModelEntityItemCombo::eventFilter(QObject* editor, QEvent* evt)
   return QObject::eventFilter(editor, evt);
 }
 
+void qtModelEntityItemCombo::showEvent(QShowEvent*)
+{
+  this->init();
+}
+
 void qtModelEntityItemCombo::itemCheckChanged(const QModelIndex& topLeft, const QModelIndex&)
 {
   QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());
@@ -254,7 +259,7 @@ void qtModelEntityItemCombo::itemCheckChanged(const QModelIndex& topLeft, const 
   if (!entid.isEmpty())
   {
     smtk::model::EntityRef selentityref(
-      modelEntityItem->attribute()->system()->refModelManager(), entid.toStdString());
+      modelEntityItem->attribute()->collection()->refModelManager(), entid.toStdString());
     if (item->checkState() == Qt::Checked)
     {
       // see if we can add it to the model item (base on size or if we are dealing with a simple item
@@ -275,7 +280,7 @@ void qtModelEntityItemCombo::itemCheckChanged(const QModelIndex& topLeft, const 
                 itemModel->item(row)->setCheckState(Qt::Unchecked);
                 QString oldEntid = itemModel->item(row)->data(Qt::UserRole).toString();
                 smtk::model::EntityRef previousRef(
-                  modelEntityItem->attribute()->system()->refModelManager(),
+                  modelEntityItem->attribute()->collection()->refModelManager(),
                   oldEntid.toStdString());
                 this->m_ModelEntityItem->remove(previousRef);
               }
@@ -312,8 +317,8 @@ void qtMeshItemCombo::init()
   this->model()->disconnect();
 
   MeshItemPtr meshItem = this->m_MeshItem->meshItem();
-  SystemPtr attSystem = meshItem->attribute()->system();
-  smtk::model::ManagerPtr modelManager = attSystem->refModelManager();
+  CollectionPtr attCollection = meshItem->attribute()->collection();
+  smtk::model::ManagerPtr modelManager = attCollection->refModelManager();
 
   QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());
 
@@ -405,6 +410,11 @@ void qtMeshItemCombo::showPopup()
   this->qtCheckItemComboBox::showPopup();
 }
 
+void qtMeshItemCombo::showEvent(QShowEvent*)
+{
+  this->init();
+}
+
 bool qtMeshItemCombo::eventFilter(QObject* editor, QEvent* evt)
 {
   if (evt->type() == QEvent::MouseButtonRelease)
@@ -447,7 +457,7 @@ void qtMeshItemCombo::itemCheckChanged(const QModelIndex& topLeft, const QModelI
   auto def = smtk::dynamic_pointer_cast<const MeshItemDefinition>(meshItem->definition());
   smtk::common::UUID collectionid(strcollectionid.toStdString());
   smtk::mesh::CollectionPtr selcollection =
-    meshItem->attribute()->system()->refModelManager()->meshes()->collection(collectionid);
+    meshItem->attribute()->collection()->refModelManager()->meshes()->collection(collectionid);
   if (selcollection && selcollection->isValid())
   {
     smtk::mesh::MeshSet allmeshes = selcollection->meshes();
@@ -471,7 +481,7 @@ void qtMeshItemCombo::itemCheckChanged(const QModelIndex& topLeft, const QModelI
                 itemModel->item(row)->setCheckState(Qt::Unchecked);
                 QString oldCollectionId = itemModel->item(row)->data(Qt::UserRole).toString();
                 auto oldCollection =
-                  meshItem->attribute()->system()->refModelManager()->meshes()->collection(
+                  meshItem->attribute()->collection()->refModelManager()->meshes()->collection(
                     oldCollectionId.toStdString());
                 if (selcollection && selcollection->isValid())
                 {

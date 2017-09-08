@@ -29,7 +29,7 @@ class SMTKDISCRETESESSION_EXPORT vtkCMBModelPointsOperator : public vtkObject
 public:
   static vtkCMBModelPointsOperator* New();
   vtkTypeMacro(vtkCMBModelPointsOperator, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Load the file into Model.
@@ -53,7 +53,7 @@ public:
 
 protected:
   vtkCMBModelPointsOperator();
-  virtual ~vtkCMBModelPointsOperator();
+  ~vtkCMBModelPointsOperator() override;
 
 private:
   vtkCMBModelPointsOperator(const vtkCMBModelPointsOperator&); // Not implemented.

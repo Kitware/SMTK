@@ -69,8 +69,8 @@ public:
     return found;
   }
 
-  void forCell(
-    const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*cellType*/, int /*numPointIds*/)
+  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*cellType*/,
+    int /*numPointIds*/) override
   {
     bool contained = true;
     //see if the coordinates for this cell are all contained

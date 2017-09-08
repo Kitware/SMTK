@@ -25,9 +25,9 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModelShellUse : public vtkModelEntity
 {
 public:
   vtkTypeMacro(vtkModelShellUse, vtkModelEntity);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual int GetType();
+  int GetType() override;
 
   vtkModelItemIterator* NewModelFaceUseIterator();
   int GetNumberOfModelFaceUses();
@@ -38,12 +38,12 @@ public:
   // Reads the state of an instance from an archive OR
   // writes the state of an instance to an archive. See
   // the documentation for this class for details.
-  virtual void Serialize(vtkSerializer* ser);
+  void Serialize(vtkSerializer* ser) override;
 
 protected:
   static vtkModelShellUse* New();
   vtkModelShellUse();
-  virtual ~vtkModelShellUse();
+  ~vtkModelShellUse() override;
 
   // Description:
   // Remove a face use from this shell use.
@@ -55,7 +55,7 @@ protected:
   // removes that association.
   void AddModelFaceUse(vtkModelFaceUse* faceUse);
 
-  virtual bool Destroy();
+  bool Destroy() override;
 
   friend class vtkModelRegion;
   friend class vtkDiscreteModelFace;

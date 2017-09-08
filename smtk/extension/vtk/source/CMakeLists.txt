@@ -1,4 +1,6 @@
 set(VTKLibSrcs
+  vtkAuxiliaryGeometryExtension.cxx
+  vtkHydroModelPolySource.cxx
   vtkMeshMultiBlockSource.cxx
   vtkModelAuxiliaryGeometry.cxx
   vtkModelMultiBlockSource.cxx
@@ -8,12 +10,22 @@ set(VTKLibSrcs
 )
 
 set(VTKLibHeaders
+  vtkAuxiliaryGeometryExtension.h
+  vtkHydroModelPolySource.h
   vtkMeshMultiBlockSource.h
   vtkModelAuxiliaryGeometry.h
   vtkModelMultiBlockSource.h
   vtkModelRepresentation.h
   vtkModelSource.h
   vtkModelView.h
+  vtkTracksAllInstances.h
+)
+
+set_source_files_properties(
+  vtkAuxiliaryGeometryExtension.h
+  PROPERTIES
+    WRAP_EXCLUDE 1
+    WRAP_EXCLUDE_PYTHON 1
 )
 
 # Add compile definitions to force linking to implementation modules
@@ -90,7 +102,7 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
     vtk_add_python_wrapping(${vtk-module} VTKLibSrcs)
     vtk_add_python_wrapping_library(${vtk-module} VTKLibSrcs ${vtk-module})
   elseif (VTK_WRAP_PYTHON)
-    # Potentially wrap in Python using VTK's wrapping methods, not shiboken.
+    # Potentially wrap in Python using VTK's wrapping methods.
     # This makes the filters available for use with other VTK-wrapped filters.
     vtk_module_load(${vtk-module})
     vtk_module_headers_load(${vtk-module})
@@ -101,7 +113,7 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
   endif()
 endif()
 
-if (SMTK_USE_PYBIND11)
+if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)
 endif()
 

@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
@@ -23,10 +23,10 @@ int main(int argc, char* argv[])
     return -1;
   }
   {
-    smtk::attribute::SystemPtr system = smtk::attribute::System::create();
+    smtk::attribute::CollectionPtr collection = smtk::attribute::Collection::create();
     smtk::io::Logger logger;
     smtk::io::AttributeReader reader;
-    if (reader.read(system, argv[1], logger))
+    if (reader.read(collection, argv[1], logger))
     {
       std::cerr << "Encountered Errors while processing " << argv[1] << "\n";
       std::cerr << logger.convertToString();

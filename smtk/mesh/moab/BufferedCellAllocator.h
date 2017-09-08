@@ -40,27 +40,29 @@ class SMTKCORE_EXPORT BufferedCellAllocator : public smtk::mesh::BufferedCellAll
 public:
   BufferedCellAllocator(::moab::Interface* interface);
 
-  virtual ~BufferedCellAllocator();
+  ~BufferedCellAllocator() override;
 
-  bool reserveNumberOfCoordinates(std::size_t nCoordinates);
-  bool setCoordinate(std::size_t coord, double* xyz);
+  bool reserveNumberOfCoordinates(std::size_t nCoordinates) override;
+  bool setCoordinate(std::size_t coord, double* xyz) override;
 
-  bool addCell(smtk::mesh::CellType ctype, long long int* pointIds, std::size_t nCoordinates = 0)
+  bool addCell(
+    smtk::mesh::CellType ctype, long long int* pointIds, std::size_t nCoordinates = 0) override
   {
     return this->addCell<long long int>(ctype, pointIds, nCoordinates);
   }
-  bool addCell(smtk::mesh::CellType ctype, long int* pointIds, std::size_t nCoordinates = 0)
+  bool addCell(
+    smtk::mesh::CellType ctype, long int* pointIds, std::size_t nCoordinates = 0) override
   {
     return this->addCell<long int>(ctype, pointIds, nCoordinates);
   }
-  bool addCell(smtk::mesh::CellType ctype, int* pointIds, std::size_t nCoordinates = 0)
+  bool addCell(smtk::mesh::CellType ctype, int* pointIds, std::size_t nCoordinates = 0) override
   {
     return this->addCell<int>(ctype, pointIds, nCoordinates);
   }
 
-  bool flush();
+  bool flush() override;
 
-  smtk::mesh::HandleRange cells() { return this->m_cells; }
+  smtk::mesh::HandleRange cells() override { return this->m_cells; }
 
 protected:
   template <typename IntegerType>

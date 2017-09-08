@@ -1,7 +1,7 @@
 ##
 ## Create browseModel to test browsing model entity tree:
 
-smtk_qt_wrap_ui(browseModel_UI_BUILT_SOURCES ModelBrowser.ui)
+qt5_wrap_ui(browseModel_UI_BUILT_SOURCES ModelBrowser.ui)
 
 add_executable(browseModel MACOSX_BUNDLE
   browseModel.cxx
@@ -39,7 +39,7 @@ add_test(
 ##
 ## Test model browsing (for crashes only, not behavior)
 
-if (NOT WIN32 AND SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
+if (NOT WIN32 AND SMTK_DATA_DIR)
   add_test(
     NAME browseModel
     COMMAND

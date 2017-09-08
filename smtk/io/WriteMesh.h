@@ -19,27 +19,24 @@
 #include <string>
 #include <vector>
 
-/**\brief Write an entire SMTK mesh collection from a file, or just sub-sections
-  *
-  */
-
 namespace smtk
 {
 namespace io
 {
 
+/**\brief Write an entire SMTK mesh collection from a file, or just sub-sections
+  *
+  */
 class SMTKCORE_EXPORT WriteMesh
 {
 public:
   WriteMesh();
   ~WriteMesh();
 
-#ifndef SHIBOKEN_SKIP
   WriteMesh& operator=(const WriteMesh&) = delete;
   WriteMesh(const WriteMesh&) = delete;
 
   static std::vector<smtk::io::mesh::MeshIOPtr>& SupportedIOTypes();
-#endif
 
   bool operator()(const std::string& filePath, smtk::mesh::CollectionPtr collection,
     mesh::Subset subset = mesh::Subset::EntireCollection) const;
@@ -51,7 +48,7 @@ SMTKCORE_EXPORT bool writeMesh(const std::string& filePath, smtk::mesh::Collecti
   mesh::Subset subset = mesh::Subset::EntireCollection);
 SMTKCORE_EXPORT bool writeEntireCollection(
   const std::string& filePath, smtk::mesh::CollectionPtr collection);
-// Explicit functions for each subset type for Shiboken to digest
+// Explicit functions for each subset type
 SMTKCORE_EXPORT bool writeDomain(const std::string& filePath, smtk::mesh::CollectionPtr collection);
 SMTKCORE_EXPORT bool writeDirichlet(
   const std::string& filePath, smtk::mesh::CollectionPtr collection);
@@ -60,7 +57,7 @@ SMTKCORE_EXPORT bool writeNeumann(
 
 SMTKCORE_EXPORT bool writeMesh(
   smtk::mesh::CollectionPtr collection, mesh::Subset subset = mesh::Subset::EntireCollection);
-// Explicit functions for each subset type for Shiboken to digest
+// Explicit functions for each subset type
 SMTKCORE_EXPORT bool writeEntireCollection(smtk::mesh::CollectionPtr collection);
 SMTKCORE_EXPORT bool writeDomain(smtk::mesh::CollectionPtr collection);
 SMTKCORE_EXPORT bool writeDirichlet(smtk::mesh::CollectionPtr collection);

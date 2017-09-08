@@ -41,11 +41,11 @@ public:
   unsigned int fileVersion() const;
 
   // Returns true if there was a problem with writing the file
-  bool write(
-    const smtk::attribute::SystemPtr system, const std::string& filename, smtk::io::Logger& logger);
-  bool writeContents(const smtk::attribute::SystemPtr system, std::string& filecontents,
+  bool write(const smtk::attribute::CollectionPtr collection, const std::string& filename,
+    smtk::io::Logger& logger);
+  bool writeContents(const smtk::attribute::CollectionPtr collection, std::string& filecontents,
     smtk::io::Logger& logger, bool no_declaration = false);
-  //Control which sections of the attribute system should be writtern out
+  //Control which sections of the attribute collection should be writtern out
   // By Default all sections are processed.  These are advance options!!
   // If val is false then defintions will not be saved
   void includeDefinitions(bool val) { this->m_includeDefinitions = val; }
@@ -60,11 +60,10 @@ public:
   void includeViews(bool val) { this->m_includeViews = val; }
 
 protected:
-#ifndef SHIBOKEN_SKIP
   // Instantiates internal writer
   // Caller is responsible for deleting the instance
-  XmlStringWriter* newXmlStringWriter(const smtk::attribute::SystemPtr system) const;
-#endif
+  XmlStringWriter* newXmlStringWriter(const smtk::attribute::CollectionPtr collection) const;
+
 private:
   unsigned int m_fileVersion;
   bool m_includeDefinitions;

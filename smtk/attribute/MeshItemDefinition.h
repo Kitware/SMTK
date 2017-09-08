@@ -34,9 +34,9 @@ public:
     return smtk::attribute::MeshItemDefinitionPtr(new MeshItemDefinition(myName));
   }
 
-  virtual ~MeshItemDefinition();
+  ~MeshItemDefinition() override;
 
-  virtual Item::Type type() const;
+  Item::Type type() const override;
   std::size_t numberOfRequiredValues() const;
   void setNumberOfRequiredValues(std::size_t esize);
   std::size_t maxNumberOfValues() const { return this->m_maxNumberOfValues; }
@@ -46,12 +46,12 @@ public:
   bool isExtensible() const { return this->m_isExtensible; }
   void setIsExtensible(bool extensible) { this->m_isExtensible = extensible; }
 
-  virtual smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const;
-  virtual smtk::attribute::ItemPtr buildItem(
-    Item* owningItem, int position, int subGroupPosition) const;
+  smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
+  smtk::attribute::ItemPtr buildItem(
+    Item* owningItem, int position, int subGroupPosition) const override;
 
-  virtual smtk::attribute::ItemDefinitionPtr createCopy(
-    smtk::attribute::ItemDefinition::CopyInfo& info) const;
+  smtk::attribute::ItemDefinitionPtr createCopy(
+    smtk::attribute::ItemDefinition::CopyInfo& info) const override;
 
 protected:
   MeshItemDefinition(const std::string& myName);

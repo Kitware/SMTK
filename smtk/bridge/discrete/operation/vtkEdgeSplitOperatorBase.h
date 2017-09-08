@@ -29,7 +29,7 @@ class SMTKDISCRETESESSION_EXPORT vtkEdgeSplitOperatorBase : public vtkObject
 public:
   static vtkEdgeSplitOperatorBase* New();
   vtkTypeMacro(vtkEdgeSplitOperatorBase, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Set/get the model entity unique persistent id to operate on.
@@ -59,7 +59,7 @@ public:
 
 protected:
   vtkEdgeSplitOperatorBase();
-  virtual ~vtkEdgeSplitOperatorBase();
+  ~vtkEdgeSplitOperatorBase() override;
 
   // Description:
   // Set function for the created model edge id.  It is protected

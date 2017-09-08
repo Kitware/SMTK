@@ -39,8 +39,8 @@ template <typename vtkArrayType>
 struct vtkArrayStorage : public Storage
 {
   vtkArrayStorage(vtkDataArray* array) { this->Array = vtkArrayType::SafeDownCast(array); }
-  virtual ~vtkArrayStorage() { this->Array = NULL; }
-  virtual int value(int pos) { return static_cast<int>(this->Array->GetValue(pos)); }
+  ~vtkArrayStorage() override { this->Array = NULL; }
+  int value(int pos) override { return static_cast<int>(this->Array->GetValue(pos)); }
 private:
   vtkArrayType* Array;
 };
@@ -50,8 +50,8 @@ struct vtkArrayStorage<vtkDataArray> : public Storage
 {
   vtkArrayStorage(vtkDataArray* array) { this->Array = array; }
 
-  virtual ~vtkArrayStorage() { this->Array = NULL; }
-  virtual int value(int pos) { return static_cast<int>(this->Array->GetTuple1(pos)); }
+  ~vtkArrayStorage() override { this->Array = NULL; }
+  int value(int pos) override { return static_cast<int>(this->Array->GetTuple1(pos)); }
 
 private:
   vtkDataArray* Array;

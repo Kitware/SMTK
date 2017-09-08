@@ -12,8 +12,6 @@ cmake \
   -DSMTK_ENABLE_TESTING:BOOL=ON \
   -DSMTK_ENABLE_CGM_SESSIONA:BOOL=ON \
   -DCGM_CFG:FILEPATH=/usr/include/cgm.make \
-  -DSMTK_ENABLE_PYTHON_WRAPPING:BOOL=ON \
-  "-DShiboken_DIR:PATH=${HOME}/smtk-deps/shiboken/install/lib/cmake/Shiboken-1.2.1" \
   -DSMTK_NO_SYSTEM_BOOST:BOOL=OFF \
   "-DCMAKE_INSTALL_PREFIX=${HOME}/smtk-install" \
   ${TRAVIS_BUILD_DIR}

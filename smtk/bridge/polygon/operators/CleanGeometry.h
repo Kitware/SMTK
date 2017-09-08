@@ -33,7 +33,7 @@ public:
   smtkDeclareModelOperator();
 
 protected:
-  virtual smtk::model::OperatorResult operateInternal();
+  smtk::model::OperatorResult operateInternal() override;
 
   template <typename T, typename U, typename V, typename W, typename X>
   bool splitEdgeAsNeeded(const smtk::model::Edge& curEdge, internal::EdgePtr storage, T& result,

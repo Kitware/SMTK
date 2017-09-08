@@ -27,7 +27,7 @@ class VTK_EXPORT vtkCMBMeshWrapper : public vtkObject
 public:
   static vtkCMBMeshWrapper* New();
   vtkTypeMacro(vtkCMBMeshWrapper, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Initialize vtkCMBMeshServer.

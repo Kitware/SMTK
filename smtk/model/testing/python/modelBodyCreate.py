@@ -15,8 +15,7 @@ Demonstrate model construction from within Python.
 
 import os
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.model
+import smtk.model
 
 if __name__ == '__main__':
     import sys

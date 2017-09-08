@@ -13,10 +13,10 @@
 #ifndef __smtk_extension_qtBaseView_h
 #define __smtk_extension_qtBaseView_h
 
-#include <QLayout>
-#include <QList>
-#include <QObject>
-#include <QPointer>
+#include <QtCore/QList>
+#include <QtCore/QObject>
+#include <QtCore/QPointer>
+#include <QtWidgets/QLayout>
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/qt/Exports.h"
@@ -68,7 +68,7 @@ class SMTKQTEXT_EXPORT qtBaseView : public QObject
 
 public:
   qtBaseView(const ViewInfo& info);
-  virtual ~qtBaseView();
+  ~qtBaseView() override;
 
   smtk::common::ViewPtr getObject() const { return this->m_viewInfo.m_view; }
   QWidget* widget() const { return this->Widget; }

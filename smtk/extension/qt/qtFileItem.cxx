@@ -32,13 +32,13 @@
 #include <QVariant>
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/DirectoryItemDefinition.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/FileSystemItem.h"
 #include "smtk/attribute/FileSystemItemDefinition.h"
-#include "smtk/attribute/System.h"
 
 #include <cassert>
 
@@ -269,8 +269,10 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
   // potentially several lineEdits, fileCombos or fileBrowserButtons, to our
   // slot, which is the method setActiveField(QWidget*). This way,
   // setActiveField can tag the appropriate field to be used within
-  // onInputValueChanged(). When we depricate Qt4 in favor of Qt5, this may be
-  // handled more elegantly using lambda expressions as slots.
+  // onInputValueChanged().
+  //
+  // TODO: This may be handled more elegantly using lambda expressions as
+  // slots.
 
   if (lineEdit)
   {
@@ -303,7 +305,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
 
     if (this->Internals->fileExtCombo)
     {
-      QObject::connect(this->Internals->fileExtCombo, SIGNAL(textChanged(const QString&)),
+      QObject::connect(this->Internals->fileExtCombo, SIGNAL(currentTextChanged(const QString&)),
         this->Internals->SignalMapper, SLOT(map()));
       QObject::connect(this->Internals->fileExtCombo, SIGNAL(currentIndexChanged(int)),
         this->Internals->SignalMapper, SLOT(map()));
@@ -461,12 +463,8 @@ bool qtFileItem::onLaunchFileBrowser()
     mode = fItemDef->shouldExist() ? QFileDialog::ExistingFile : QFileDialog::AnyFile;
   }
   this->Internals->FileBrowser->setFileMode(mode);
-#if QT_VERSION >= 0x050000
   QStringList name_filters = filters.split(";;");
   this->Internals->FileBrowser->setNameFilters(name_filters);
-#else
-  this->Internals->FileBrowser->setFilter(filters);
-#endif
 
   this->Internals->FileBrowser->setWindowModality(Qt::WindowModal);
   if (this->Internals->FileBrowser->exec() == QDialog::Accepted)

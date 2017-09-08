@@ -15,7 +15,7 @@ foreach (test ${smtkPolygonSessionPythonTests})
   smtk_add_test_python(${test}Py ${test}.py)
 endforeach()
 
-if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
+if (SMTK_DATA_DIR)
   foreach (test ${smtkPolygonSessionPythonDataTests})
     smtk_add_test_python(${test}Py ${test}.py
       -D "${SMTK_DATA_DIR}")

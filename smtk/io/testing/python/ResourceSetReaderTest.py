@@ -13,9 +13,8 @@ import sys
 #
 #=============================================================================
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.common
-    import smtk.io
+import smtk.common
+import smtk.io
 
 
 def TestResourceSetReader(readFromFile):
@@ -76,7 +75,7 @@ def TestResourceSetReader(readFromFile):
             for id in resourceIds:
                 print id
 
-    #print ('dir'), dir(resources)
+    # print ('dir'), dir(resources)
     # print help(resources.get)
     res0 = resources.get('att0')
     print 'type', res0.resourceType()

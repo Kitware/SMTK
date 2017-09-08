@@ -7,7 +7,6 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef SHIBOKEN_SKIP
 #include "smtk/common/StringUtil.h"
 
 #include "smtk/Function.h" // for smtk::bind
@@ -39,9 +38,9 @@ std::string& StringUtil::trim(std::string& s)
 std::string& StringUtil::trimLeft(std::string& s)
 {
   s.erase(s.begin(),
-    std::find_if(s.begin(), s.end(),
-      std::not1(std::ptr_fun<int, int>(isspace //smtk::bind(std::isspace<char>, _1, safeLocale)
-        ))));
+    std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(
+                                       isspace //smtk::bind(std::isspace<char>, _1, safeLocale)
+                                       ))));
   return s;
 }
 
@@ -93,5 +92,3 @@ std::vector<std::string> StringUtil::split(
 
 } // namespace common
 } // namespace smtk
-
-#endif // SHIBOKEN_SKIP

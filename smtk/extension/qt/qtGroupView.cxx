@@ -157,7 +157,7 @@ void qtGroupView::createWidget()
   smtk::common::View::Component& viewsComp = view->details().child(viewsIndex);
   std::size_t i, n = viewsComp.numberOfChildren();
   smtk::common::ViewPtr v;
-  smtk::attribute::SystemPtr sys = this->uiManager()->attSystem();
+  smtk::attribute::CollectionPtr sys = this->uiManager()->attCollection();
   qtBaseView* qtView;
 
   for (i = 0; i < n; i++)
@@ -174,7 +174,7 @@ void qtGroupView::createWidget()
     v = sys->findView(t);
     if (!v)
     {
-      // No such View by that name in attribute system
+      // No such View by that name in attribute collection
 
       continue;
     }

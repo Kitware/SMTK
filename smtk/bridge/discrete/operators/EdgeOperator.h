@@ -48,11 +48,11 @@ public:
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
-  virtual bool ableToOperate();
+  bool ableToOperate() override;
 
 protected:
   EdgeOperator();
-  virtual smtk::model::OperatorResult operateInternal();
+  smtk::model::OperatorResult operateInternal() override;
 
   // some internal methods
   void getSelectedVertsAndEdges(std::map<smtk::common::UUID, vtkDiscreteModelVertex*>& selVTXs,

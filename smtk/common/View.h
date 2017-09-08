@@ -93,11 +93,9 @@ public:
 
   ~View();
 
-// Copy the contents of one View into another - this View will be the same as
-// v with the exception of its title and type
-#ifndef SHIBOKEN_SKIP
+  // Copy the contents of one View into another - this View will be the same as
+  // v with the exception of its title and type
   void copyContents(const View& v);
-#endif
   const std::string& title() const { return this->m_title; }
 
   const std::string& type() const { return this->m_type; }

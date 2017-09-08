@@ -34,9 +34,9 @@ public:
   typedef smtk::mesh::MeshList::iterator mesh_it;
 
   smtkTypeMacro(MeshItem);
-  virtual ~MeshItem();
-  virtual Item::Type type() const;
-  virtual bool isValid() const;
+  ~MeshItem() override;
+  Item::Type type() const override;
+  bool isValid() const override;
 
   std::size_t numberOfRequiredValues() const;
   bool isExtensible() const;
@@ -56,10 +56,10 @@ public:
   std::size_t numberOfValues() const;
   bool setNumberOfValues(std::size_t newSize);
   const smtk::mesh::MeshList& values() const;
-  virtual void reset();
+  void reset() override;
   // Assigns this item to be equivalent to another.  Options are processed by derived item classes
   // Returns true if success and false if a problem occured.
-  virtual bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0);
+  bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0) override;
 
   const_mesh_it begin() const;
   const_mesh_it end() const;
@@ -70,7 +70,7 @@ protected:
 
   MeshItem(Attribute* owningAttribute, int itemPosition);
   MeshItem(Item* owningItem, int position, int subGroupPosition);
-  virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef);
+  bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef) override;
   smtk::mesh::MeshList m_meshValues;
 };
 

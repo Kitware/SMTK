@@ -24,7 +24,7 @@ class VTKCMBDISCRETEMODEL_EXPORT vtkSMModelRepresentationProxy : public vtkSMPVR
 public:
   static vtkSMModelRepresentationProxy* New();
   vtkTypeMacro(vtkSMModelRepresentationProxy, vtkSMPVRepresentationProxy);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Set the type of representation.

@@ -8,7 +8,9 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.h"
+#include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.txx"
 
+#include "smtk/extension/vtk/source/vtkAuxiliaryGeometryExtension.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 #include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/Manager.h"
@@ -24,6 +26,8 @@
 #include "vtkPolyData.h"
 #include "vtkPolyDataNormals.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
+#include "vtkTransform.h"
+#include "vtkTransformFilter.h"
 #include "vtkUnstructuredGrid.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
@@ -38,16 +42,20 @@ using namespace smtk::model;
 
 vtkStandardNewMacro(vtkModelAuxiliaryGeometry);
 vtkCxxSetObjectMacro(vtkModelAuxiliaryGeometry, CachedOutput, vtkMultiBlockDataSet);
+smtkImplementTracksAllInstances(vtkModelAuxiliaryGeometry);
 
 vtkModelAuxiliaryGeometry::vtkModelAuxiliaryGeometry()
 {
   this->SetNumberOfInputPorts(0);
   this->CachedOutput = NULL;
   this->AuxiliaryEntityID = NULL;
+  this->linkInstance();
+  this->AuxGeomHelper = vtkAuxiliaryGeometryExtension::create();
 }
 
 vtkModelAuxiliaryGeometry::~vtkModelAuxiliaryGeometry()
 {
+  this->unlinkInstance();
   this->SetCachedOutput(NULL);
   this->SetAuxiliaryEntityID(NULL);
 }
@@ -86,29 +94,6 @@ void vtkModelAuxiliaryGeometry::Dirty()
   this->SetCachedOutput(NULL);
 }
 
-/// Generate a data object representing the entity. It may be polydata, image data, or a multiblock dataset.
-vtkSmartPointer<vtkDataObject> vtkModelAuxiliaryGeometry::GenerateRepresentationFromModel(
-  const smtk::model::AuxiliaryGeometry& aux, bool genNormals)
-{
-  std::string url;
-  if (aux.isValid() && !(url = aux.url()).empty())
-  {
-    return vtkModelMultiBlockSource::GenerateRepresentationFromURL(aux, genNormals);
-  }
-  return vtkSmartPointer<vtkDataObject>();
-}
-
-template <typename T, typename U>
-vtkSmartPointer<T> ReadData(const smtk::model::AuxiliaryGeometry& auxGeom)
-{
-  vtkNew<U> rdr;
-  rdr->SetFileName(auxGeom.url().c_str());
-  rdr->Update();
-  vtkSmartPointer<T> data = vtkSmartPointer<T>::New();
-  data->ShallowCopy(rdr->GetOutput());
-  return data;
-}
-
 // Fill in the WholeExtent and spacing information from the image block
 int vtkModelAuxiliaryGeometry::RequestInformation(vtkInformation* vtkNotUsed(request),
   vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
@@ -121,9 +106,9 @@ int vtkModelAuxiliaryGeometry::RequestInformation(vtkInformation* vtkNotUsed(req
 
   smtk::common::UUID uid(this->AuxiliaryEntityID);
   smtk::model::AuxiliaryGeometry auxGeoEntity(this->ModelMgr, uid);
-  if (auxGeoEntity.isValid() && auxGeoEntity.hasUrl())
+  if (auxGeoEntity.isValid() && auxGeoEntity.hasURL())
   {
-    std::string fileType = vtkModelMultiBlockSource::GetAuxiliaryFileType(auxGeoEntity);
+    std::string fileType = vtkAuxiliaryGeometryExtension::getAuxiliaryFileType(auxGeoEntity);
     if (fileType == "vti" || fileType == "dem" || fileType == "tif" || fileType == "tiff")
     {
       // add some temp parameters so that downstream filters could use them.
@@ -161,7 +146,7 @@ int vtkModelAuxiliaryGeometry::RequestData(vtkInformation* vtkNotUsed(request),
 
   smtk::common::UUID uid(this->AuxiliaryEntityID);
   smtk::model::AuxiliaryGeometry auxGeoEntity(this->ModelMgr, uid);
-  if (!auxGeoEntity.isValid() || !auxGeoEntity.hasUrl())
+  if (!auxGeoEntity.isValid() || !auxGeoEntity.hasURL())
   {
     vtkErrorMacro("No valid AuxiliaryEntity");
     return 0;
@@ -175,21 +160,13 @@ int vtkModelAuxiliaryGeometry::RequestData(vtkInformation* vtkNotUsed(request),
 
   if (!this->CachedOutput)
   {
-    // See if the model has any instructions about
-    // whether to generate surface normals.
-    bool modelRequiresNormals = false;
-    if (auxGeoEntity.owningModel().hasIntegerProperty("generate normals"))
+    // create vtkDataObject by asking our helper to read it.
+    vtkSmartPointer<vtkDataObject> auxRep;
+    std::vector<double> bbox;
+    if (this->AuxGeomHelper->canHandleAuxiliaryGeometry(auxGeoEntity, bbox))
     {
-      const IntegerList& prop(auxGeoEntity.owningModel().integerProperty("generate normals"));
-      if (!prop.empty() && prop[0])
-      {
-        modelRequiresNormals = true;
-      }
+      auxRep = this->AuxGeomHelper->fetchCachedGeometry(auxGeoEntity);
     }
-
-    // create vtkDataObject by reading the Url property of AuxiliaryGeometry.
-    vtkSmartPointer<vtkDataObject> auxRep =
-      this->GenerateRepresentationFromModel(auxGeoEntity, modelRequiresNormals);
     if (auxRep.GetPointer())
     {
       vtkImageData* imgOut = vtkImageData::SafeDownCast(auxRep);

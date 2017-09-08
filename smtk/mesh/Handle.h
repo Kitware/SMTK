@@ -11,19 +11,23 @@
 #ifndef __smtk_mesh_Handle_h
 #define __smtk_mesh_Handle_h
 
+/*! \file Handle.h */
+
 #include "smtk/CoreExports.h"
 #include "smtk/mesh/moab/HandleRange.h"
 
-#ifndef SHIBOKEN_SKIP
 #include "cJSON.h"
-#endif // SHIBOKEN_SKIP
 
 namespace smtk
 {
 namespace mesh
 {
+
+/// A mesh handle is a reference to a single mesh entity (i.e., a meshset, cell, or point).
 typedef smtk::mesh::moab::Handle Handle;
+/// A mesh handle range refers to a contiguous range of mesh entities.
 typedef smtk::mesh::moab::HandleRange HandleRange;
+
 typedef smtk::mesh::moab::HandleRangeInserter HandleRangeInserter;
 
 SMTKCORE_EXPORT cJSON* to_json(const smtk::mesh::HandleRange& range);

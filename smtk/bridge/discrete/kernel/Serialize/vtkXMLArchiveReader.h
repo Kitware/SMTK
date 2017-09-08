@@ -39,12 +39,12 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkXMLArchiveReader : public vtkSerializer
 public:
   static vtkXMLArchiveReader* New();
   vtkTypeMacro(vtkXMLArchiveReader, vtkSerializer);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // This method returns true if the serializer is an output
   // serializer (writer). Returns false.
-  virtual bool IsWriting() { return false; }
+  bool IsWriting() override { return false; }
 
   // Description:
   // Main entry point called to read an XML archive.
@@ -63,71 +63,71 @@ public:
 
   // Description:
   // Reads a single integer.
-  virtual void Serialize(const char* name, int& val);
+  void Serialize(const char* name, int& val) override;
 
   // Description:
   // Reads an array.
-  virtual void Serialize(const char* name, int*& val, unsigned int& length);
+  void Serialize(const char* name, int*& val, unsigned int& length) override;
 
   // Description:
   // Serializes a single unsigned long.
-  virtual void Serialize(const char* name, unsigned long& val);
+  void Serialize(const char* name, unsigned long& val) override;
 
   // Description:
   // Serializes an array.
-  virtual void Serialize(const char* name, unsigned long*& val, unsigned int& length);
+  void Serialize(const char* name, unsigned long*& val, unsigned int& length) override;
 
 // Description:
 // Reads a single vtkIdType.
 #if defined(VTK_USE_64BIT_IDS)
-  virtual void Serialize(const char* name, vtkIdType& val);
+  void Serialize(const char* name, vtkIdType& val) override;
 #endif
 
 // Description:
 // Reads an array.
 #if defined(VTK_USE_64BIT_IDS)
-  virtual void Serialize(const char* name, vtkIdType*& val, unsigned int& length);
+  void Serialize(const char* name, vtkIdType*& val, unsigned int& length) override;
 #endif
 
   // Description:
   // Reads a single double.
-  virtual void Serialize(const char* name, double& val);
+  void Serialize(const char* name, double& val) override;
 
   // Description:
   // Reads an array.
-  virtual void Serialize(const char* name, double*& val, unsigned int& length);
+  void Serialize(const char* name, double*& val, unsigned int& length) override;
 
   // Description:
   // Serializes a string.
-  virtual void Serialize(const char* name, char*& str);
+  void Serialize(const char* name, char*& str) override;
 
   // Description:
   // Serializes a string.
-  virtual void Serialize(const char* name, std::string& str);
+  void Serialize(const char* name, std::string& str) override;
 
   // Description:
   // Reads a vtkObject.  weakPtr should be set to true if this reference to the
   // object should NOT be reference counted.
-  virtual void Serialize(const char* name, vtkObject*& obj, bool weakPtr = false);
+  void Serialize(const char* name, vtkObject*& obj, bool weakPtr = false) override;
 
   // Description:
   // Reads a vtkInformationObject. Note that only keys registered
   // with the vtkInformationKeyMap are restored.
-  virtual void Serialize(const char* name, vtkInformation* info);
+  void Serialize(const char* name, vtkInformation* info) override;
 
   // Description:
   // Reads a vector of vtkObjects.
-  virtual void Serialize(
-    const char* name, std::vector<vtkSmartPointer<vtkObject> >& objs, bool weakPtr = false);
+  void Serialize(const char* name, std::vector<vtkSmartPointer<vtkObject> >& objs,
+    bool weakPtr = false) override;
 
   // Description:
   // Reads a map from int to vector of vtkObject.
-  virtual void Serialize(
-    const char* name, std::map<int, std::vector<vtkSmartPointer<vtkObject> > >& objs);
+  void Serialize(
+    const char* name, std::map<int, std::vector<vtkSmartPointer<vtkObject> > >& objs) override;
 
 protected:
   vtkXMLArchiveReader();
-  ~vtkXMLArchiveReader();
+  ~vtkXMLArchiveReader() override;
 
 private:
   vtkXMLArchiveReader(const vtkXMLArchiveReader&); // Not implemented.

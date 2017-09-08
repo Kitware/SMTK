@@ -34,7 +34,7 @@ class SMTKDISCRETESESSION_EXPORT vtkCMBIncorporateMeshOperator : public vtkObjec
 public:
   static vtkCMBIncorporateMeshOperator* New();
   vtkTypeMacro(vtkCMBIncorporateMeshOperator, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Reads in the file assuming we're on the server.
@@ -56,7 +56,7 @@ public:
 
 protected:
   vtkCMBIncorporateMeshOperator();
-  virtual ~vtkCMBIncorporateMeshOperator();
+  ~vtkCMBIncorporateMeshOperator() override;
 
   bool IncorporateSolidMesh(
     vtkDiscreteModel* model, const vtkIdType& solidFile, vtkPolyData* solidRegionSurface);

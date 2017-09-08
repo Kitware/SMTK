@@ -22,7 +22,7 @@
 #include "smtk/model/Manager.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 
 #include <string>
 
@@ -57,8 +57,8 @@ enum OperatorOutcome
   */
 #define smtkDeclareModelOperator()                                                                 \
   static std::string operatorName;                                                                 \
-  virtual std::string name() const { return operatorName; }                                        \
-  virtual std::string className() const;                                                           \
+  std::string name() const override { return operatorName; }                                       \
+  std::string className() const override;                                                          \
   static smtk::model::OperatorPtr baseCreate()
 
 /**\brief Declare that a class implements an operator for solid models.
@@ -137,19 +137,18 @@ enum OperatorOutcome
   * Instances of the Operator class should always have a valid
   * pointer to their owning Session instance.
   * Every operator's specification() Attribute is managed by the
-  * Session's operatorSystem().
+  * Session's operatorCollection().
   */
 class SMTKCORE_EXPORT Operator : smtkEnableSharedPtr(Operator)
 {
 public:
-  smtkTypeMacro(Operator);
+  smtkTypeMacroBase(Operator);
 
   virtual std::string name() const = 0;
   virtual std::string className() const = 0;
   virtual bool ableToOperate();
   virtual OperatorResult operate();
 
-#ifndef SHIBOKEN_SKIP
   void observe(OperatorEventType event, BareOperatorCallback functionHandle, void* callData);
   void observe(OperatorEventType event, OperatorWithResultCallback functionHandle, void* callData);
 
@@ -159,7 +158,6 @@ public:
 
   int trigger(OperatorEventType event);
   int trigger(OperatorEventType event, const OperatorResult& result);
-#endif // SHIBOKEN_SKIP
 
   ManagerPtr manager() const;
   Ptr setManager(ManagerPtr s);
@@ -219,9 +217,7 @@ public:
   void setResultOutcome(OperatorResult res, OperatorOutcome outcome);
   void eraseResult(OperatorResult res);
 
-#ifndef SHIBOKEN_SKIP
   bool operator<(const Operator& other) const;
-#endif // SHIBOKEN_SKIP
 
   enum ResultEntityOrigin
   {
@@ -247,7 +243,6 @@ protected:
   void addEntitiesToResult(
     OperatorResult res, const T& container, ResultEntityOrigin gen = UNKNOWN);
 
-#ifndef SHIBOKEN_SKIP
   ManagerPtr m_manager; // Model manager, not the attribute manager for the operator.
   smtk::mesh::ManagerPtr m_meshmanager;
   WeakSessionPtr m_session;
@@ -255,7 +250,6 @@ protected:
   std::set<BareOperatorObserver> m_willOperateTriggers;
   std::set<OperatorWithResultObserver> m_didOperateTriggers;
   int m_debugLevel;
-#endif // SHIBOKEN_SKIP
 };
 
 SMTKCORE_EXPORT std::string outcomeAsString(int oc);
@@ -266,15 +260,15 @@ T Operator::associatedEntitiesAs() const
 {
   bool resetMgr = false;
   this->ensureSpecification();
-  if (this->m_specification->system())
+  if (this->m_specification->collection())
     if (!this->m_specification->modelManager())
     {
       resetMgr = true;
-      this->m_specification->system()->setRefModelManager(this->m_manager);
+      this->m_specification->collection()->setRefModelManager(this->m_manager);
     }
   T result = this->m_specification->associatedModelEntities<T>();
   if (resetMgr)
-    this->m_specification->system()->setRefModelManager(smtk::model::ManagerPtr());
+    this->m_specification->collection()->setRefModelManager(smtk::model::ManagerPtr());
   return result;
 }
 

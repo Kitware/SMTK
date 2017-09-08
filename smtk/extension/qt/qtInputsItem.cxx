@@ -32,13 +32,13 @@
 #include <QVariant>
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
-#include "smtk/attribute/System.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/ValueItemTemplate.h"
@@ -674,8 +674,8 @@ QWidget* qtInputsItem::createExpressionRefWidget(int elementIdx)
   std::vector<smtk::attribute::AttributePtr> result;
   if (attDef)
   {
-    SystemPtr lAttSystem = attDef->system();
-    lAttSystem->findAttributes(attDef, result);
+    CollectionPtr lAttCollection = attDef->collection();
+    lAttCollection->findAttributes(attDef, result);
   }
   funCheck->setEnabled(result.size() > 0);
 
@@ -710,7 +710,7 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
 
   int elementIdx = funCheck->property("ElementIndex").toInt();
   auto inputitem = this->valueItem();
-  SystemPtr lAttSystem = inputitem->attribute()->system();
+  CollectionPtr lAttCollection = inputitem->attribute()->collection();
   if (!inputitem)
   {
     return;
@@ -734,7 +734,7 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
     if (attDef)
     {
       std::vector<smtk::attribute::AttributePtr> result;
-      lAttSystem->findAttributes(attDef, result);
+      lAttCollection->findAttributes(attDef, result);
       std::vector<smtk::attribute::AttributePtr>::iterator it;
       for (it = result.begin(); it != result.end(); ++it)
       {
@@ -769,7 +769,7 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
       if (prevExpression.isValid())
       {
         QString expName = prevExpression.toString();
-        AttributePtr attPtr = lAttSystem->findAttribute(expName.toStdString());
+        AttributePtr attPtr = lAttCollection->findAttribute(expName.toStdString());
         if (attPtr)
         {
           setIndex = attNames.indexOf(expName);
@@ -830,8 +830,8 @@ void qtInputsItem::onExpressionReferenceChanged()
 
   if (curIdx >= 0)
   {
-    SystemPtr lAttSystem = item->attribute()->system();
-    AttributePtr attPtr = lAttSystem->findAttribute(comboBox->currentText().toStdString());
+    CollectionPtr lAttCollection = item->attribute()->collection();
+    AttributePtr attPtr = lAttCollection->findAttribute(comboBox->currentText().toStdString());
     if (elementIdx >= 0 && inputitem->isSet(elementIdx) &&
       attPtr == inputitem->expression(elementIdx))
     {

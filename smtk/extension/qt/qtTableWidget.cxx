@@ -18,11 +18,7 @@ qtTableWidget::qtTableWidget(QWidget* p)
 {
   // Table should always fills the frame and resizes to contents
   this->horizontalHeader()->setStretchLastSection(true);
-#if QT_VERSION >= 0x050000
   this->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-#else
-  this->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
-#endif
 }
 
 qtTableWidget::~qtTableWidget()

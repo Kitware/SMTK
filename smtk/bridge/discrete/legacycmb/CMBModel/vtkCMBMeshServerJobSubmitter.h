@@ -30,7 +30,7 @@ public:
   //construction of this class will spawn
   //the CMBMeshServer
   vtkTypeMacro(vtkCMBMeshServerJobSubmitter, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
   static vtkCMBMeshServerJobSubmitter* New();
 
   // Description:

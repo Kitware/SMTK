@@ -9,10 +9,10 @@
 //=========================================================================
 #include <QDialogButtonBox>
 
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/Item.h"
-#include "smtk/attribute/System.h"
 
 #include "HandlerItemDef.h"
 #include "ItemDefDialog.h"

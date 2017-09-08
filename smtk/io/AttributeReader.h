@@ -39,22 +39,22 @@ public:
   }
 
   // Returns true if there was a problem with reading the file
-  bool read(smtk::attribute::SystemPtr system, const std::string& filename, bool includePath,
-    smtk::io::Logger& logger);
-  bool read(
-    smtk::attribute::SystemPtr system, const std::string& filename, smtk::io::Logger& logger)
+  bool read(smtk::attribute::CollectionPtr collection, const std::string& filename,
+    bool includePath, smtk::io::Logger& logger);
+  bool read(smtk::attribute::CollectionPtr collection, const std::string& filename,
+    smtk::io::Logger& logger)
   {
-    return this->read(system, filename, false, logger);
+    return this->read(collection, filename, false, logger);
   }
 
-  bool readContents(
-    smtk::attribute::SystemPtr system, const std::string& filecontents, smtk::io::Logger& logger);
-
-  bool readContents(smtk::attribute::SystemPtr system, const char* contents, std::size_t length,
+  bool readContents(smtk::attribute::CollectionPtr collection, const std::string& filecontents,
     smtk::io::Logger& logger);
 
+  bool readContents(smtk::attribute::CollectionPtr collection, const char* contents,
+    std::size_t length, smtk::io::Logger& logger);
+
   bool readContents(
-    smtk::attribute::SystemPtr system, pugi::xml_node& rootNode, smtk::io::Logger& logger);
+    smtk::attribute::CollectionPtr collection, pugi::xml_node& rootNode, smtk::io::Logger& logger);
 
   void setSearchPaths(const std::vector<std::string>& paths) { this->m_searchPaths = paths; }
 

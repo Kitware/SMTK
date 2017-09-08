@@ -1,6 +1,4 @@
-smtk_find_package_qt(qt_targets REQUIRED
-  QT4_COMPONENTS QtCore QtGui
-  QT5_COMPONENTS Core Widgets)
+find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
 
 # set up sources to build
 set(QAttrLibSrcs
@@ -119,9 +117,9 @@ set(QAttrLibHeaders
 #install the headers
 smtk_public_headers(${QAttrLibHeaders})
 
-smtk_qt_wrap_cpp(MOC_BUILT_SOURCES ${QAttrLibMocHeaders})
-smtk_qt_wrap_ui(SMTKQTEXT_UI_BUILT_SOURCES ${QAttrLibUIs})
-smtk_qt_add_resources(RCS_RESOURCES qtEntityItemModelIcons.qrc qtAttributeIcons.qrc)
+qt5_wrap_cpp(MOC_BUILT_SOURCES ${QAttrLibMocHeaders})
+qt5_wrap_ui(SMTKQTEXT_UI_BUILT_SOURCES ${QAttrLibUIs})
+qt5_add_resources(RCS_RESOURCES qtEntityItemModelIcons.qrc qtAttributeIcons.qrc)
 
 source_group("Qt_Source" FILES ${QAttrLibSrcs} ${QAttrLibUIs})
 source_group("Qt_Generated" FILES ${MOC_BUILT_SOURCES} ${SMTKQTEXT_UI_BUILT_SOURCES} ${RCS_RESOURCES})
@@ -140,7 +138,8 @@ target_include_directories(smtkQtExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 #set smtkQtExt to publicly link to smtkCore
 target_link_libraries(smtkQtExt LINK_PUBLIC
   smtkCore
-  ${qt_targets}
+  Qt5::Core
+  Qt5::Widgets
   )
 smtk_export_header(smtkQtExt Exports.h)
 

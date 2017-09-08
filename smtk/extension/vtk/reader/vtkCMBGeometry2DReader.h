@@ -24,7 +24,7 @@ class VTKSMTKREADEREXT_EXPORT vtkCMBGeometry2DReader : public vtkPolyDataAlgorit
 public:
   static vtkCMBGeometry2DReader* New();
   vtkTypeMacro(vtkCMBGeometry2DReader, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Name of the file to be read.
@@ -105,9 +105,9 @@ protected:
   int GetMarginFromString(const char* text, double margin[4]);
 
   int RequestInformation(
-    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo);
+    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
   int RequestData(
-    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo);
+    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
 
   char* FileName;
   int BoundaryStyle;

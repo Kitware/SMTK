@@ -29,7 +29,7 @@ class VTK_EXPORT vtkPVCMBModelInformation : public vtkPVInformation
 public:
   static vtkPVCMBModelInformation* New();
   vtkTypeMacro(vtkPVCMBModelInformation, vtkPVInformation);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Transfer information about a single object into this object.

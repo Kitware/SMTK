@@ -32,7 +32,7 @@ class SMTKDISCRETESESSION_EXPORT vtkMergeDuplicateCells : public vtkPolyDataAlgo
 public:
   static vtkMergeDuplicateCells* New();
   vtkTypeMacro(vtkMergeDuplicateCells, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   vtkSetStringMacro(ModelRegionArrayName);
   vtkGetStringMacro(ModelRegionArrayName);
@@ -61,12 +61,12 @@ public:
 
 protected:
   vtkMergeDuplicateCells();
-  ~vtkMergeDuplicateCells();
+  ~vtkMergeDuplicateCells() override;
 
-  virtual int FillInputPortInformation(int port, vtkInformation* info);
+  int FillInputPortInformation(int port, vtkInformation* info) override;
 
   /// Implementation of the algorithm.
-  virtual int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 
   // Description:
   // Insert a vtkCell into the outputted vtkPolyData based on the region

@@ -25,9 +25,9 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModelLoopUse : public vtkModelEntity
 {
 public:
   vtkTypeMacro(vtkModelLoopUse, vtkModelEntity);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual int GetType();
+  int GetType() override;
 
   int GetNumberOfModelEdgeUses();
   vtkModelEdgeUse* GetModelEdgeUse(int index);
@@ -39,7 +39,7 @@ public:
   // Reads the state of an instance from an archive OR
   // writes the state of an instance to an archive. See
   // the documentation for this class for details.
-  virtual void Serialize(vtkSerializer* ser);
+  void Serialize(vtkSerializer* ser) override;
 
   // Description:
   // Get the index of edgeUse in this loop.  Returns -1
@@ -55,7 +55,7 @@ public:
 protected:
   static vtkModelLoopUse* New();
   vtkModelLoopUse();
-  virtual ~vtkModelLoopUse();
+  ~vtkModelLoopUse() override;
 
   void InsertModelEdgeUse(int Index, vtkModelEdgeUse* edgeUse);
 
@@ -68,7 +68,7 @@ protected:
   friend class vtkModelFaceUse;
   friend class vtkModel;
 
-  virtual bool Destroy();
+  bool Destroy() override;
 
 private:
   vtkModelLoopUse(const vtkModelLoopUse&); // Not implemented.

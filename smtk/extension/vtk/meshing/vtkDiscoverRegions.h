@@ -70,7 +70,7 @@ class VTKSMTKMESHINGEXT_EXPORT vtkDiscoverRegions : public vtkPolyDataAlgorithm
 public:
   static vtkDiscoverRegions* New();
   vtkTypeMacro(vtkDiscoverRegions, vtkPolyDataAlgorithm);
-  virtual void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // The name of a cell array defined on the input polydata
@@ -145,12 +145,12 @@ protected:
   vtkDiscoverRegions();
   virtual ~vtkDiscoverRegions();
 
-  virtual int FillInputPortInformation(int port, vtkInformation* info);
+  int FillInputPortInformation(int port, vtkInformation* info) override;
 
-  virtual int FillOutputPortInformation(int port, vtkInformation* info);
+  int FillOutputPortInformation(int port, vtkInformation* info) override;
 
-  virtual int RequestData(
-    vtkInformation* req, vtkInformationVector** inInfo, vtkInformationVector* outInfo);
+  int RequestData(
+    vtkInformation* req, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
 
   int ReportRegionsByModelFace;
   int GenerateRegionInteriorPoints;

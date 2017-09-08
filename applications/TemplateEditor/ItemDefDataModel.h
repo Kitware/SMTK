@@ -23,7 +23,7 @@
  *
  * The class was named after the XML element it represents in an attribute
  * template file (*.sbt) as a Qt data model. This model serves as an interface
- * to the attribute system for insertion and removal of Item Definitions
+ * to the attribute collection for insertion and removal of Item Definitions
  * (through a given Attribute Definition).
  *
  */
@@ -88,15 +88,15 @@ protected:
     QTreeWidgetItem* parentItem, const QString& attDefType);
 
   /**
-   * Update the attribute system. This ensures the attribute::system instance is
+   * Update the attribute collection. This ensures the attribute::collection instance is
    * purged from any Attributes affected by a change in this ItemDefinition (currently
    * wipes anything related to the Definition). qtUIManager->qtInstancedView generates
    * an attribute and items for each (or some) of the ui elements, and stores them in
-   * attribute::system, which could lead to Attributes with Item Definitions in an
+   * attribute::collection, which could lead to Attributes with Item Definitions in an
    * invalid state.
    *
    * Call this function whenever an ItemDefinition has be modified in the attribute::
-   * system instance.
+   * collection instance.
    *
    * \note TODO Reproduce the issue by not calling this during insertion and talk to
    * Bob, it could be a bug in the UIManager. Bob says PreviewPanel::createView should

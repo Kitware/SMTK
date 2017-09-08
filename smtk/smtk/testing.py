@@ -112,6 +112,7 @@ def compare_image(render_window, baseline_path):
 
 
 class TestCaseMeta(type):
+
     """A metaclass for tests.
 
     This is used to make TestCase inherit vtk.test.Testing.vtkTest
@@ -188,31 +189,31 @@ class TestCase:
 
     def addModelToScene(self, model):
         import smtk
-        if smtk.wrappingProtocol() == 'pybind11':
-            import smtk.extension.vtk.source
-            mbs = smtk.extension.vtk.source.vtkModelMultiBlockSource()
-            mbs.SetModelManager(self.mgr)
-        else:
-            import vtkSMTKSourceExtPython
-            mbs = vtkSMTKSourceExtPython.vtkModelMultiBlockSource()
-            mbs.SetModelManager(self.mgr.pointerAsString())
+        import smtk.extension.vtk.source
+        mbs = smtk.extension.vtk.source.vtkModelMultiBlockSource()
+        mbs.SetModelManager(self.mgr)
         mbs.SetModelEntityID(str(model.entity()))
         # mbs.ShowAnalysisTessellationOff()
         return self.addToScene(mbs)
 
     def addMeshToScene(self, mesh):
         import smtk
-        if smtk.wrappingProtocol() == 'pybind11':
-            import vtk
-            import smtk.io.vtk
-            exprt = smtk.io.vtk.ExportVTKData()
-            pd = vtk.vtkPolyData()
-            exprt(mesh, pd)
-            trivialProducer = vtk.vtkTrivialProducer()
-            trivialProducer.SetOutput(pd)
-            return self.addToScene(trivialProducer)
-        else:
-            print "Shiboken does not support vtk/smtk compatibility layer"
+        import vtk
+        import smtk.io.vtk
+        exprt = smtk.io.vtk.ExportVTKData()
+        pd = vtk.vtkPolyData()
+        exprt(mesh, pd)
+        trivialProducer = vtk.vtkTrivialProducer()
+        trivialProducer.SetOutput(pd)
+        return self.addToScene(trivialProducer)
+
+    def addImageToScene(self, msource):
+        import vtk
+        vsource = msource
+        self.renderWindow = vtk.vtkImageViewer2()
+        self.renderer = self.renderWindow.GetRenderer()
+        self.renderWindow.SetInputConnection(vsource.GetOutputPort())
+        self.renderWindow.SetupInteractor(self.interactor)
 
     def interactive(self):
         """Return false if the test should exit at completion."""

@@ -12,8 +12,7 @@ import sys
 #
 #=============================================================================
 import smtk
-if smtk.wrappingProtocol() == 'pybind11':
-    import smtk.bridge.cgm
+import smtk.bridge.cgm
 import smtk.testing
 from smtk.simple import *
 
@@ -43,7 +42,7 @@ class CGMTransforms(smtk.testing.TestCase):
 
         brick5 = Union([brick1, brick4])
         print brick5, brick5.name(), brick5.flagSummary(0)
-        #brick6 = Scale([brick5], [3.0, 2.0, 1.0])[0]
+        # brick6 = Scale([brick5], [3.0, 2.0, 1.0])[0]
 
         print self.haveVTK(), self.haveVTKExtension()
         if self.haveVTK() and self.haveVTKExtension():
@@ -53,10 +52,10 @@ class CGMTransforms(smtk.testing.TestCase):
                 # brick4: '#ae5a41',
                 brick5: '#559e83'
                 # brick6: '#c3cb71'
-                #'#1b85b8',
-                #'#cb2c31',
-                #'#8b1ec4',
-                #'#ff6700'
+                # '#1b85b8',
+                # '#cb2c31',
+                # '#8b1ec4',
+                # '#ff6700'
             }
 
             self.startRenderTest()
@@ -88,7 +87,8 @@ class CGMTransforms(smtk.testing.TestCase):
         sref = GetActiveSession()
         SetActiveSession(smtk.model.SessionRef())
         # self.mgr.closeSession(sref)
-        #sys.exit(0 if sref.name() == ('invalid id ' + str(sref.entity())) else 1)
+        # sys.exit(0 if sref.name() == ('invalid id ' + str(sref.entity()))
+        # else 1)
 
 
 if __name__ == '__main__':

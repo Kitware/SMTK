@@ -44,7 +44,7 @@ public:
   qtModelOperationWidget(QWidget* p = NULL);
   virtual ~qtModelOperationWidget();
   virtual void setSession(smtk::model::SessionPtr session);
-  virtual QSize sizeHint() const;
+  QSize sizeHint() const override;
   virtual qtModelView* modelView();
   virtual smtk::model::OperatorPtr existingOperator(const std::string& opname);
   virtual qtBaseView* existingOperatorView(const std::string& opname);

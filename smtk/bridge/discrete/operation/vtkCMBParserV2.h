@@ -28,14 +28,14 @@ class SMTKDISCRETESESSION_EXPORT vtkCMBParserV2 : public vtkCMBParserBase
 public:
   static vtkCMBParserV2* New();
   vtkTypeMacro(vtkCMBParserV2, vtkCMBParserBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  virtual bool Parse(
-    vtkPolyData* MasterPoly, vtkDiscreteModel* Model, smtk::bridge::discrete::Session* session);
+  bool Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
+    smtk::bridge::discrete::Session* session) override;
 
 protected:
   vtkCMBParserV2();
-  virtual ~vtkCMBParserV2();
+  ~vtkCMBParserV2() override;
 
   // Description:
   // Set the unique persistent Id,

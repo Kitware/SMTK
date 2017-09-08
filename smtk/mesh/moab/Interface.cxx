@@ -569,11 +569,12 @@ smtk::mesh::HandleRange Interface::getCells(
 }
 
 //get all cells held by this range handle of a given dimension
-smtk::mesh::HandleRange Interface::getPoints(const smtk::mesh::HandleRange& cells) const
+smtk::mesh::HandleRange Interface::getPoints(
+  const smtk::mesh::HandleRange& cells, bool boundary_only) const
 
 {
   smtk::mesh::HandleRange pointIds;
-  m_iface->get_connectivity(cells, pointIds);
+  m_iface->get_connectivity(cells, pointIds, boundary_only);
   return pointIds;
 }
 
@@ -602,7 +603,7 @@ public:
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange&, std::vector<double>& xyz, bool&)
+  void forPoints(const smtk::mesh::HandleRange&, std::vector<double>& xyz, bool&) override
   {
     //use local variable instead of member to help locality
     std::size_t index = xyz_index;
@@ -655,7 +656,7 @@ public:
   }
 
   void forPoints(
-    const smtk::mesh::HandleRange&, std::vector<double>& xyz, bool& coordinatesModified)
+    const smtk::mesh::HandleRange&, std::vector<double>& xyz, bool& coordinatesModified) override
   {
     coordinatesModified = true;
     //use local variable instead of member to help locality

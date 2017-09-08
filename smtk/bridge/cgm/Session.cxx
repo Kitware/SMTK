@@ -78,7 +78,7 @@ Session::Session()
 {
   this->m_maxRelChordErr = 0.01; // fraction of longest edge.
   this->m_maxAngleErr = 2.0;     // maximum angle in degrees.
-  this->initializeOperatorSystem(Session::s_operators);
+  this->initializeOperatorCollection(Session::s_operators);
   if (!Engines::areInitialized())
   {
     Engines::isInitialized("");
@@ -398,7 +398,10 @@ smtk::model::SessionInfoBits Session::addBodyToManager(
     actual |= smtk::model::SESSION_ENTITY_TYPE;
 
     // Create a collection associated with the model id
-    this->manager()->meshes()->makeCollection(entityref.entity());
+    this->manager()
+      ->meshes()
+      ->makeCollection(entityref.entity())
+      ->name(entityref.name() + "_tessellation");
 
     if (requestedInfo & (smtk::model::SESSION_ENTITY_RELATIONS | smtk::model::SESSION_ARRANGEMENTS))
     {

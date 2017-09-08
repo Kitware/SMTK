@@ -9,7 +9,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //
 //=============================================================================
-#ifndef SHIBOKEN_SKIP
 #include "smtk/bridge/remote/RemusStaticSessionInfo.h"
 
 #include "smtk/bridge/remote/RemusConnection.h"
@@ -97,4 +96,3 @@ smtk::model::SessionPtr RemusStaticSessionInfo::operator()() const
 } // namespace remote
 } // namespace bridge
 } // namespace smtk
-#endif // SHIBOKEN_SKIP

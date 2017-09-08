@@ -31,9 +31,9 @@ class SMTKCORE_EXPORT DateTimeItem : public Item
 
 public:
   smtkTypeMacro(DateTimeItem);
-  virtual ~DateTimeItem();
-  virtual Item::Type type() const;
-  virtual bool isValid() const;
+  ~DateTimeItem() override;
+  Item::Type type() const override;
+  bool isValid() const override;
 
   std::size_t numberOfValues() const { return this->m_values.size(); }
   bool setNumberOfValues(std::size_t newSize);
@@ -44,7 +44,7 @@ public:
   }
   bool setValue(const ::smtk::common::DateTimeZonePair& val) { return this->setValue(0, val); }
   bool setValue(std::size_t element, const ::smtk::common::DateTimeZonePair& val);
-  virtual void reset();
+  void reset() override;
   virtual bool setToDefault(std::size_t elementIndex = 0);
   // Returns true if there is a default defined and the item is curently set to it
   virtual bool isUsingDefault(std::size_t elementIndex) const;
@@ -55,15 +55,13 @@ public:
 
   // Assigns this item to be equivalent to another. Options are processed by derived item classes.
   // The options are defined in Item.h. Returns true if success and false if a problem occured.
-  virtual bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0);
+  bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0) override;
 
 protected:
   DateTimeItem(Attribute* owningAttribute, int itemPosition);
   DateTimeItem(Item* owningItem, int myPosition, int mySubGroupPosition);
-#ifndef SHIBOKEN_SKIP
-  virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
+  bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def) override;
   ConstDateTimeItemDefinitionPtr itemDefinition() const;
-#endif
   std::vector< ::smtk::common::DateTimeZonePair> m_values;
   std::vector<bool> m_isSet;
 

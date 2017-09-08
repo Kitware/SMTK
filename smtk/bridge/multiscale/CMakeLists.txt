@@ -8,7 +8,6 @@ set(multiscaleSrcs
   Session.cxx
   Operator.cxx
   operators/PartitionBoundaries.cxx
-  operators/Dream3DPipeline.cxx
   operators/PythonScript.cxx
   operators/Revolve.cxx
 )
@@ -17,7 +16,6 @@ set(multiscaleHeaders
   Session.h
   Operator.h
   operators/PartitionBoundaries.h
-  operators/Dream3DPipeline.h
   operators/PythonScript.h
   operators/Revolve.h
 )
@@ -25,7 +23,7 @@ set(multiscaleHeaders
 install(FILES PointerDefs.h DESTINATION include/smtk/${SMTK_VERSION}/smtk/bridge/multiscale)
 
 add_library(smtkMultiscaleSession ${multiscaleSrcs})
-set_target_properties(smtkMultiscaleSession PROPERTIES COMPILE_FLAGS "-DAFRL_DIR=${AFRL_DIR} -DVTKPY_DIR=${VTKPY_DIR}")
+target_compile_definitions(smtkMultiscaleSession PRIVATE "AFRL_DIR=\"${AFRL_DIR}\"")
 target_compile_definitions(smtkMultiscaleSession PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
 
 #set smtkMultiscaleSession to publicly link to smtkCore and VTK
@@ -60,44 +58,43 @@ smtk_install_library(smtkMultiscaleSession)
 # the header in their implementations.
 smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" multiscaleSessionJSON)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/PartitionBoundaries.sbt" multiscaleOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Dream3DPipeline.sbt" multiscaleOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Revolve.sbt" multiscaleOperatorXML)
 
 # Install the headers
 smtk_public_headers(${multiscaleHeaders})
 
-if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
-  #extract the headers from multiscale library we built to give them to shiboken
-
-  sbk_wrap_library(smtkMultiscaleSession
-    PACKAGE smtk
-    GENERATOR_ARGS --avoid-protected-hack
-    WORKING_DIRECTORY ${SMTK_SOURCE_DIR}/smtk
-    LOCAL_INCLUDE_DIRECTORIES
-      ${SMTK_SOURCE_DIR}/smtk/common
-      ${SMTK_SOURCE_DIR}/smtk/attribute
-      ${SMTK_SOURCE_DIR}/smtk/model
-      ${SMTK_SOURCE_DIR}/smtk/session
-      ${SMTK_SOURCE_DIR}/smtk/bridge/multiscale
-      ${SMTK_SOURCE_DIR}/smtk/simulation
-      ${SMTK_SOURCE_DIR}/smtk/io
-      ${SMTK_SOURCE_DIR}/smtk/view
-      ${SMTK_SOURCE_DIR}/smtk
-      ${SMTK_BINARY_DIR}/smtk
-      ${CMAKE_CURRENT_BINARY_DIR}
-    TYPESYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/typesystem.xml
-    HEADERS ${multiscaleHeaders}
-    DEPENDS smtkCore
-  )
-target_include_directories(smtkMultiscaleSessionPython
-    PRIVATE ${MULTISCALE_INCLUDE_DIRS})
-endif()
-
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_subdirectory(plugin)
 endif()
 
-if (SMTK_USE_PYBIND11)
+if (SMTK_ENABLE_PYTHON_WRAPPING)
+
+set(multiscalePySrcs
+  operators/import_from_deform.py
+  )
+
+  set(multiscale_pymodulefiles)
+
+configureStringAsPyVariable(AFRL_DIR
+  ${CMAKE_CURRENT_BINARY_DIR}/AFRLDir.py AFRLDir)
+list(APPEND multiscale_pymodulefiles
+  ${CMAKE_CURRENT_BINARY_DIR}/AFRLDir.py)
+
+  smtk_pyoperator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/import_from_deform.sbt" multiscale_pymodulefiles)
+
+  foreach(pyfile ${multiscalePySrcs})
+    get_filename_component(filename ${pyfile} NAME)
+    configure_file(
+      "${CMAKE_CURRENT_SOURCE_DIR}/${pyfile}"
+      "${CMAKE_CURRENT_BINARY_DIR}/${filename}" @ONLY
+      )
+    list(APPEND multiscale_pymodulefiles "${CMAKE_CURRENT_BINARY_DIR}/${filename}")
+  endforeach()
+  install(
+    FILES ${multiscale_pymodulefiles}
+    DESTINATION "${SMTK_PYTHON_MODULEDIR}/smtk/bridge/multiscale"
+    )
+
   add_subdirectory(pybind11)
 endif()
 

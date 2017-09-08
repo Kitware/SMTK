@@ -13,10 +13,10 @@ To enforce the concept of interacting with mesh elements in
 aggregate, all mesh elements are represented as sets: there are no
 classes that represent individual mesh elements (point, cell or
 mesh). A user can interact with individual mesh elements via the
-:smtk:`ForEach` interface, which iterates over single elements that
-may be represented as slement sets containing a single element. It
-should be noted that element-wise access to a mesh is usually not the
-correct approach for most algorithms.
+:smtk:`MeshForEach <smtk::mesh::MeshForEach>` interface, which iterates
+over single elements that may be represented as element sets containing
+a single element. It should be noted that element-wise access to a mesh
+is usually not the correct approach for most algorithms.
 
 The class instances, listed hierarchically from the most granular to
 the most aggregate, are as follows:
@@ -36,7 +36,7 @@ the most aggregate, are as follows:
   meshes with implicit connectivity can be compactly represented.
 
 :smtk:`PointSet <smtk::mesh::PointSet>`
-  instances group :smtk:`HandleRange` instances referring to points
+  instances group :smtk:`HandleRange <smtk::mesh::HandleRange>` instances referring to points
   together so they can be marked with properties such as a common
   association with a model entity, material, boundary condition, or
   initial condition. As a set, each :smtk:`PointSet` supports set-theoretic
@@ -46,7 +46,7 @@ the most aggregate, are as follows:
   individual points.
 
 :smtk:`CellSet <smtk::mesh::CellSet>`
-  instances group :smtk:`HandleRange` instances referring to cells
+  instances group :smtk:`HandleRange <smtk::mesh::HandleRange>` instances referring to cells
   together so they can be marked with properties such as a common
   association with a model entity, material, boundary condition, or
   initial condition. As a set, each :smtk:`CellSet` supports set-theoretic
@@ -56,7 +56,7 @@ the most aggregate, are as follows:
   individual cells.
 
 :smtk:`MeshSet <smtk::mesh::MeshSet>`
-  instances group :smtk:`HandleRange` instances referring to meshes
+  instances group :smtk:`HandleRange <smtk::mesh::HandleRange>` instances referring to meshes
   together so that they can be marked with properties such as a common
   association with a model entity, material, boundary condition, or
   initial condition. As a set, each :smtk:`MeshSet` supports set-theoretic

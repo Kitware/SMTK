@@ -18,7 +18,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/model/EntityRef.h"
 
 namespace py = pybind11;
@@ -31,7 +31,7 @@ PySharedPtrClass< smtk::attribute::Definition > pybind11_init_smtk_attribute_Def
     .def("deepcopy", (smtk::attribute::Definition & (smtk::attribute::Definition::*)(::smtk::attribute::Definition const &)) &smtk::attribute::Definition::operator=)
     .def("classname", &smtk::attribute::Definition::classname)
     .def("type", &smtk::attribute::Definition::type)
-    .def("system", &smtk::attribute::Definition::system)
+    .def("collection", &smtk::attribute::Definition::collection)
     .def("label", &smtk::attribute::Definition::label)
     .def("setLabel", &smtk::attribute::Definition::setLabel, py::arg("newLabel"))
     .def("baseDefinition", &smtk::attribute::Definition::baseDefinition)

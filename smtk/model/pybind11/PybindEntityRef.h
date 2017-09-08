@@ -15,7 +15,7 @@
 
 #include "smtk/model/EntityRef.h"
 
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/model/Arrangement.h"
@@ -90,6 +90,9 @@ py::class_< smtk::model::EntityRef > pybind11_init_smtk_model_EntityRef(py::modu
     .def("hasVisibility", &smtk::model::EntityRef::hasVisibility)
     .def("hash", &smtk::model::EntityRef::hash)
     .def("higherDimensionalBordants", &smtk::model::EntityRef::higherDimensionalBordants, py::arg("higherDimension"))
+    .def("instances", [](const smtk::model::EntityRef& prototype) {
+      auto result = prototype.instances<smtk::model::Instances>();
+      return result; })
     .def("integerProperties", (smtk::model::IntegerData & (smtk::model::EntityRef::*)()) &smtk::model::EntityRef::integerProperties)
     .def("integerProperties", (smtk::model::IntegerData const & (smtk::model::EntityRef::*)() const) &smtk::model::EntityRef::integerProperties)
     .def("integerProperty", (smtk::model::IntegerList const & (smtk::model::EntityRef::*)(::std::string const &) const) &smtk::model::EntityRef::integerProperty, py::arg("propName"))

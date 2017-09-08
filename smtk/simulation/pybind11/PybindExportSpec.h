@@ -13,7 +13,7 @@
 
 #include <pybind11/pybind11.h>
 
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/io/Logger.h"
 #include "smtk/model/GridInfo.h"
 #include "smtk/simulation/ExportSpec.h"
@@ -33,12 +33,10 @@ py::class_< smtk::simulation::ExportSpec > pybind11_init_smtk_simulation_ExportS
     .def("deepcopy", (smtk::simulation::ExportSpec & (smtk::simulation::ExportSpec::*)(::smtk::simulation::ExportSpec const &)) &smtk::simulation::ExportSpec::operator=)
     .def("getSimulationAttributes", &smtk::simulation::ExportSpec::getSimulationAttributes)
     .def("getExportAttributes", &smtk::simulation::ExportSpec::getExportAttributes)
-    .def("getAnalysisGridInfo", &smtk::simulation::ExportSpec::getAnalysisGridInfo)
     .def("getLogger", &smtk::simulation::ExportSpec::getLogger)
     .def("clear", &smtk::simulation::ExportSpec::clear)
     .def("setSimulationAttributes", &smtk::simulation::ExportSpec::setSimulationAttributes, py::arg("system"))
     .def("setExportAttributes", &smtk::simulation::ExportSpec::setExportAttributes, py::arg("system"))
-    .def("setAnalysisGridInfo", &smtk::simulation::ExportSpec::setAnalysisGridInfo, py::arg("analysisGridInfo"))
 
     // Converter method used by CMB vtkPythonExporter
     .def_static("_InternalConverterDoNotUse_", [](const std::string& specAddressString) {

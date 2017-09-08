@@ -20,10 +20,10 @@ public:
   // -- 1 --
 
   // ++ 2 ++
-  virtual bool ableToOperate() { return this->ensureSpecification(); }
+  bool ableToOperate() override { return this->ensureSpecification(); }
 
 protected:
-  virtual smtk::model::OperatorResult operateInternal();
+  smtk::model::OperatorResult operateInternal() override;
   // -- 2 --
 };
 

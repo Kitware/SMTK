@@ -11,7 +11,7 @@
 #=============================================================================
 """
 Manual port of SMTK/smtk/attribute/Testing/basicAttributeTest.cxx
-For verifying python-shiboken wrappers
+For verifying python wrappers
 
 Requires smtkCorePython.so to be in module path
 """
@@ -25,33 +25,33 @@ if __name__ == '__main__':
 
     status = 0
 
-    system = smtk.attribute.System.create()
-    print 'System created'
-    t = system.resourceType()
+    collection = smtk.attribute.Collection.create()
+    print 'Collection created'
+    t = collection.resourceType()
     if t != smtk.common.Resource.ATTRIBUTE:
         print 'ERROR: Returned wrong resource type'
         status = -1
     print 'Resource type:', smtk.common.Resource.type2String(t)
-    def_ = system.createDefinition('testDef')
+    def_ = collection.createDefinition('testDef')
     if def_ is not None:
         print 'Definition testDef created'
     else:
         print 'ERROR: Definition testDef not created'
         status = -1
-    def1 = system.createDefinition("testDef")
+    def1 = collection.createDefinition("testDef")
     if def1 is None:
         print 'Duplicated definition testDef not created'
     else:
         print 'ERROR: Duplicated definition testDef created'
         status = -1
-    att = system.createAttribute('testAtt', 'testDef')
+    att = collection.createAttribute('testAtt', 'testDef')
     if not att is None:
         print 'Attribute testAtt created'
     else:
         print 'ERROR: Attribute testAtt not created'
         status = -1
 
-    att1 = system.createAttribute('testAtt', 'testDef')
+    att1 = collection.createAttribute('testAtt', 'testDef')
     if att1 is None:
         print 'Duplicate Attribute testAtt not created'
     else:
@@ -95,10 +95,10 @@ if __name__ == '__main__':
     if att.appliesToInteriorNodes():
         print "Should not applies to interior node.\n"
         status = -1
-#    if att.system() is not None:
+#    if att.collection() is not None:
 #       print "Should not be null.\n"
 #       status = -1
-    del system
-    print 'System destroyed'
+    del collection
+    print 'Collection destroyed'
 
     sys.exit(status)

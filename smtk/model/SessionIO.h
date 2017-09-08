@@ -50,7 +50,7 @@ namespace model
 class SMTKCORE_EXPORT SessionIO
 {
 public:
-  smtkTypeMacro(SessionIO);
+  smtkTypeMacroBase(SessionIO);
   virtual ~SessionIO() {} // virtual method needed so dynamic_cast will work
 
   /**\brief Return a reference directory to use during import/export.

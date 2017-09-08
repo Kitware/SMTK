@@ -37,7 +37,7 @@ class SMTKQTEXT_EXPORT qtTableWidget : public QTableWidget
 
 public:
   qtTableWidget(QWidget* p = NULL);
-  ~qtTableWidget();
+  ~qtTableWidget() override;
 
   QModelIndexList getSelectedIndexes() const { return this->selectedIndexes(); }
 public slots:
@@ -46,7 +46,7 @@ signals:
   void keyPressed(QKeyEvent*);
 
 protected slots:
-  virtual void keyPressEvent(QKeyEvent*);
+  void keyPressEvent(QKeyEvent*) override;
 };
 };
 };

@@ -113,8 +113,8 @@ You can run
 to obtain reference information on the command-line arguments.
 It will also print a list of available modeling kernels.
 
-Each model worker exposes a single modeling kernel (via the
-:smtk:`RemusRemoteSession` on the client, which talks to
+Each model worker exposes a single modeling kernel (via
+:smtk:`smtk::bridge::remote::Session` on the client, which talks to
 a :smtk:`RemusRPCWorker` in the worker process).
 Normally, the model worker executable expects to be given the
 following command-line arguments:
@@ -146,7 +146,7 @@ two files are normally written:
 the first, specified by the :arg:`-rwfile` argument is the
 actual Remus worker file and is formatted as a JSON object.
 The second has the same filename with a :file:`.requirements`
-suffix appended and is formatted as an XML attribute system
+suffix appended and is formatted as an XML attribute collection
 describing the modeling operations available.
 
 You should generate a separate Remus worker file for each combination

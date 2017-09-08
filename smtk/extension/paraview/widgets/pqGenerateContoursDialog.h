@@ -37,9 +37,9 @@ class SMTKPQWIDGETSEXT_EXPORT pqGenerateContoursDialog : public QDialog
 public:
   pqGenerateContoursDialog(pqPipelineSource*, const bool& mapScalars2Colors, QWidget* parent = NULL,
     Qt::WindowFlags flags = 0);
-  virtual ~pqGenerateContoursDialog();
+  ~pqGenerateContoursDialog() override;
 
-  int exec();
+  int exec() override;
   void close();
 
 signals:
@@ -88,7 +88,7 @@ class SMTKPQWIDGETSEXT_EXPORT InternalDoubleValidator : public QDoubleValidator
   Q_OBJECT
 public:
   InternalDoubleValidator(QObject* parent);
-  virtual void fixup(QString& input) const;
+  void fixup(QString& input) const override;
 };
 
 #endif

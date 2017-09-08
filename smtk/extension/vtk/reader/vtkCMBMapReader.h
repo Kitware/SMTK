@@ -26,7 +26,7 @@ class VTKSMTKREADEREXT_EXPORT vtkCMBMapReader : public vtkPolyDataAlgorithm
 public:
   static vtkCMBMapReader* New();
   vtkTypeMacro(vtkCMBMapReader, vtkPolyDataAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Name of the file to be read.
@@ -39,8 +39,8 @@ protected:
   vtkCMBMapReader();
   ~vtkCMBMapReader();
 
-  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
-  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
   char* FileName;
 
   int NumArcs;

@@ -18,7 +18,6 @@
 
 #include "smtk/common/UUID.h"
 
-#ifndef SHIBOKEN_SKIP
 #include "remus/client/Client.h"
 #include "remus/client/ServerConnection.h"
 
@@ -28,7 +27,6 @@
 #include "remus/proto/JobRequirements.h"
 
 #include "cJSON.h"
-#endif // SHIBOKEN_SKIP
 
 #include <map>
 #include <set>
@@ -69,28 +67,20 @@ class Session;
 class SMTKREMOTESESSION_EXPORT RemusConnection : smtkEnableSharedPtr(RemusConnection)
 {
 public:
-  smtkTypeMacro(RemusConnection);
+  smtkTypeMacroBase(RemusConnection);
   smtkCreateMacro(RemusConnection);
   virtual ~RemusConnection();
 
   void addSearchDir(const std::string& searchDir);
   void clearSearchDirs(bool clearDefaultsToo = false);
-#ifndef SHIBOKEN_SKIP
   bool connectToServer(
     const std::string& hostname = "local", int port = remus::server::CLIENT_PORT);
-#else
-  // Shiboken cannot parse the default port and does not
-  // properly handle default arguments anyway, so provide
-  // something for it to wrap:
-  bool connectToServer(const std::string& hostname, int port);
-#endif
 
   std::vector<std::string> sessionTypeNames();
 
   int staticSetup(const std::string& sessionName, const std::string& optName,
     const smtk::model::StringList& optVal);
 
-#ifndef SHIBOKEN_SKIP
   smtk::common::UUID beginSession(const std::string& sessionName);
   bool endSession(const smtk::common::UUID& sessionId);
   SessionPtr findSession(const smtk::common::UUID& sessionId);
@@ -136,7 +126,6 @@ protected:
   smtk::model::ManagerPtr m_modelMgr;
   std::map<std::string, std::string> m_remoteSessionNameToType;
   std::map<smtk::common::UUID, std::string> m_remoteSessionRefIds;
-#endif // SHIBOKEN_SKIP
 };
 
 } // namespace remote

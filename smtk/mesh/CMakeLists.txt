@@ -39,6 +39,7 @@ set(meshSrcs
   interpolation/RadialAverage.cxx
 
   operators/DeleteMesh.cxx
+  operators/EulerCharacteristic.cxx
   operators/ExportMesh.cxx
   operators/GenerateHotStartData.cxx
   operators/InterpolateMesh.cxx
@@ -84,6 +85,7 @@ set(meshHeaders
   interpolation/StructuredGrid.h
 
   operators/DeleteMesh.h
+  operators/EulerCharacteristic.h
   operators/ExportMesh.h
   operators/GenerateHotStartData.h
   operators/InterpolateMesh.h
@@ -94,6 +96,7 @@ set(meshHeaders
 
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/DeleteMesh.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportMesh.sbt" defOpXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EulerCharacteristic.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/GenerateHotStartData.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/InterpolateMesh.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/UndoWarpMesh.sbt" defOpXML)
@@ -103,7 +106,7 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteMesh.sbt" defOpXML
 #install the headers
 smtk_public_headers(${meshHeaders})
 
-if (SMTK_USE_PYBIND11)
+if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)
 endif()
 

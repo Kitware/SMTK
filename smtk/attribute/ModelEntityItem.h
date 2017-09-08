@@ -13,10 +13,10 @@
 //
 // While the actual value stored is a EntityRef, only the UUID of the model entity
 // is saved when the attribute is serialized.
-// Then, when deserialized, the attribute system's refModelManager()
+// Then, when deserialized, the attribute collection's refModelManager()
 // is used to recreate the entityref.
 // (Thus the UUID is assumed to be present in the model manager referenced by
-// the attribute system. See smtk::attrib::System::refModelManager().)
+// the attribute collection. See smtk::attrib::Collection::refModelManager().)
 // If the entity is not present, the returned smtk::model::EntityRef
 // instances will be invalid and no type checking of attribute values
 // can be performed.
@@ -49,9 +49,9 @@ public:
   typedef smtk::model::EntityRefArray::const_iterator const_iterator;
 
   smtkTypeMacro(ModelEntityItem);
-  virtual ~ModelEntityItem();
-  virtual Item::Type type() const;
-  virtual bool isValid() const;
+  ~ModelEntityItem() override;
+  Item::Type type() const override;
+  bool isValid() const override;
 
   std::size_t numberOfValues() const;
   bool setNumberOfValues(std::size_t newSize);
@@ -69,7 +69,7 @@ public:
 
   bool appendValue(const smtk::model::EntityRef& val);
   bool removeValue(std::size_t element);
-  virtual void reset();
+  void reset() override;
   virtual std::string valueAsString() const;
   virtual std::string valueAsString(std::size_t element) const;
   virtual bool isSet(std::size_t element = 0) const;
@@ -77,7 +77,7 @@ public:
   // Assigns this item to be equivalent to another.  Options are processed by derived item classes
   // Returns true if success and false if a problem occured.  By default, the model enity is assigned.
   // Use IGNORE_MODEL_ENTITIES option to prevent this (defined in Item.h).
-  virtual bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0);
+  bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0) override;
 
   bool isExtensible() const;
 
@@ -96,7 +96,7 @@ protected:
   ModelEntityItem(Attribute* owningAttribute, int itemPosition);
   ModelEntityItem(Item* owningItem, int myPosition, int mySubGroupPosition);
 
-  virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
+  bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def) override;
 
   smtk::model::EntityRefArray m_values;
 };

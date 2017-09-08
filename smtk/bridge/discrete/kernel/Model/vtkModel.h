@@ -75,7 +75,7 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModel : public vtkModelItem
 {
 public:
   vtkTypeMacro(vtkModel, vtkModelItem);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Build a model entity. The model is responsible for the management
@@ -123,7 +123,7 @@ public:
 
   virtual void GetBounds(double bounds[6]) = 0;
 
-  virtual int GetType();
+  int GetType() override;
 
   virtual int GetModelDimension();
 
@@ -131,7 +131,7 @@ public:
   // Reads the state of an instance from an archive OR
   // writes the state of an instance to an archive. See
   // the documentation for this class for details.
-  virtual void Serialize(vtkSerializer* ser);
+  void Serialize(vtkSerializer* ser) override;
 
   // Description:
   // Set LargestUsedUniqueId.
@@ -145,7 +145,7 @@ public:
 
 protected:
   vtkModel();
-  virtual ~vtkModel();
+  ~vtkModel() override;
 
   // Description:
   // Return LargestUsedUniqueId and then incrememt it.

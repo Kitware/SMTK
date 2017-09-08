@@ -26,8 +26,8 @@ namespace smtk
 namespace io
 {
 
-XmlV3StringWriter::XmlV3StringWriter(const attribute::SystemPtr mySystem)
-  : XmlV2StringWriter(mySystem)
+XmlV3StringWriter::XmlV3StringWriter(const attribute::CollectionPtr myCollection)
+  : XmlV2StringWriter(myCollection)
 {
 }
 

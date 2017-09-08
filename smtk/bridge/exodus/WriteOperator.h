@@ -28,7 +28,7 @@ public:
   smtkDeclareModelOperator();
 
 protected:
-  virtual smtk::model::OperatorResult operateInternal();
+  smtk::model::OperatorResult operateInternal() override;
   virtual smtk::model::OperatorResult writeExodus();
   virtual smtk::model::OperatorResult writeSLAC();
   virtual smtk::model::OperatorResult writeLabelMap();

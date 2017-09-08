@@ -13,6 +13,11 @@ if(IS_DIRECTORY "${smtk_module_dir}")
 endif()
 unset(smtk_module_dir)
 
+set(SMTK_HAS_PYTHON @SMTK_ENABLE_PYTHON_WRAPPING@)
+if (SMTK_HAS_PYTHON)
+  find_package(pybind11 REQUIRED)
+endif ()
+
 #When building documentation internally we re-import ourselves, which
 #doesnt work and generates CMake warnings. So we will only look for SMTK
 #if the smtkCore target doesn't already exist

@@ -1,9 +1,10 @@
 set(smtkIOPythonTests
   unitOperatorLog
+  logMessage
 )
 
-# do not add ResourceSetTest if we are running on windows with shiboken
-if (NOT (MSVC AND NOT SMTK_USE_PYBIND11))
+# do not add ResourceSetTest if we are running on windows
+if (NOT WIN32)
   list(APPEND smtkIOPythonTests ResourceSetTest)
 endif()
 
@@ -23,7 +24,7 @@ foreach (test ${smtkIOPythonTests})
   smtk_add_test_python(${test}Py ${test}.py)
 endforeach()
 
-if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
+if (SMTK_DATA_DIR)
   foreach (test ${smtkIOPythonDataTests})
     smtk_add_test_python(${test}Py ${test}.py
       --data-dir=${SMTK_DATA_DIR})
@@ -31,16 +32,16 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
 
   set(reader_test attributeReaderTest)
   smtk_add_test_python(${reader_test}Py ${reader_test}.py
-    ${SMTK_DATA_DIR}/attribute/attribute_system/resourceTest/ShallowWater2D.sbi
+    ${SMTK_DATA_DIR}/attribute/attribute_collection/resourceTest/ShallowWater2D.sbi
     29
     19
     )
 
-  # do not add ResourceSetReaderTest if we are running on windows with shiboken
-  if (NOT (MSVC AND NOT SMTK_USE_PYBIND11))
+  # do not add ResourceSetReaderTest if we are running on windows
+  if (NOT WIN32)
     set(reader_test ResourceSetReaderTest)
     smtk_add_test_python(${reader_test}Py ${reader_test}.py
-      ${SMTK_DATA_DIR}/attribute/attribute_system/resourceTest/resources.xml
+      ${SMTK_DATA_DIR}/attribute/attribute_collection/resourceTest/resources.xml
       2
       )
   endif()

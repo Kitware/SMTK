@@ -365,8 +365,8 @@ public:
   {
   }
 
-  void forPoints(
-    const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz, bool& coordinatesModified)
+  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+    bool& coordinatesModified) override
   {
     //verify the coordinates and the number of points match
     test((xyz.size() == (pointIds.size() * 3)));
@@ -395,8 +395,8 @@ void verify_pointset_for_each_read(const smtk::mesh::CollectionPtr& c)
 class FlattenZ : public smtk::mesh::PointForEach
 {
 public:
-  void forPoints(
-    const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz, bool& coordinatesModified)
+  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+    bool& coordinatesModified) override
   {
     //verify the coordinates and the number of points match
     test((xyz.size() == (pointIds.size() * 3)));
@@ -415,8 +415,8 @@ public:
 class VerifyZ : public smtk::mesh::PointForEach
 {
 public:
-  void forPoints(
-    const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz, bool& coordinatesModified)
+  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+    bool& coordinatesModified) override
   {
     (void)coordinatesModified;
 

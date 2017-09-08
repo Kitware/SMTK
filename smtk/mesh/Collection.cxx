@@ -520,7 +520,7 @@ smtk::mesh::MeshSet Collection::createMesh(const smtk::mesh::CellSet& cells)
     this->shared_from_this(), this->m_internals->mesh_root_handle(), entities);
 }
 
-bool Collection::removeMeshes(smtk::mesh::MeshSet& meshesToDelete)
+bool Collection::removeMeshes(const smtk::mesh::MeshSet& meshesToDelete)
 {
   const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
   if (meshesToDelete.m_parent == this->shared_from_this())

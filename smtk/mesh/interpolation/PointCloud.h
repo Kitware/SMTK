@@ -36,7 +36,6 @@ namespace mesh
 class SMTKCORE_EXPORT PointCloud
 {
 public:
-#ifndef SHIBOKEN_SKIP
   PointCloud(std::size_t nPoints,
     const std::function<std::array<double, 3>(std::size_t)>& coordinates,
     const std::function<double(std::size_t)>& data)
@@ -45,7 +44,6 @@ public:
     , m_data(data)
   {
   }
-#endif
 
   PointCloud(std::size_t nPoints, const double* const coordinates, const double* const data)
     : PointCloud(nPoints,
@@ -77,13 +75,11 @@ public:
 
   std::size_t size() const { return m_size; }
 
-#ifndef SHIBOKEN_SKIP
   const std::function<std::array<double, 3>(std::size_t)>& coordinates() const
   {
     return m_coordinates;
   }
   const std::function<double(std::size_t)>& data() const { return m_data; }
-#endif
 
 protected:
   std::size_t m_size;

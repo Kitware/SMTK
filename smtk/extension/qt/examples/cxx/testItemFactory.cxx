@@ -30,9 +30,9 @@
 #include "smtk/attribute/VoidItem.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/StringItemDefinition.h"
-#include "smtk/attribute/System.h"
 
 #include "smtk/common/View.h"
 
@@ -64,13 +64,13 @@ public:
   }
 };
 
-AttributePtr createAttribForTest(SystemPtr system)
+AttributePtr createAttribForTest(CollectionPtr collection)
 {
-  DefinitionPtr def = system->createDefinition("test def");
+  DefinitionPtr def = collection->createDefinition("test def");
   StringItemDefinitionPtr stringChild =
     def->addItemDefinition<StringItemDefinitionPtr>("test string");
 
-  AttributePtr att = system->createAttribute("testAtt", "test def");
+  AttributePtr att = collection->createAttribute("testAtt", "test def");
   double color[] = { 3, 24, 12, 6 };
   att->setColor(color);
   att->setAppliesToBoundaryNodes(true);
@@ -89,9 +89,9 @@ int testLifecycle()
 
   // This should not crash even though the factory is null
   // (because a new default factory should be created on demand).
-  smtk::attribute::SystemPtr system = smtk::attribute::System::create();
-  AttributePtr att = createAttribForTest(system);
-  qtUIManager* mgr = new qtUIManager(system);
+  smtk::attribute::CollectionPtr collection = smtk::attribute::Collection::create();
+  AttributePtr att = createAttribForTest(collection);
+  qtUIManager* mgr = new qtUIManager(collection);
   QWidget* w = new QWidget;
   smtk::extension::ViewInfo vinfo(smtk::common::View::New("base", "test view"), w, mgr);
   qtBaseView* v = new qtBaseView(vinfo);

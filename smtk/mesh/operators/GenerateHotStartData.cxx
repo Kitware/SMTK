@@ -97,6 +97,81 @@ bool readCSVFile(
   infile.close();
   return true;
 }
+
+// Compute the bounding box of a point cloud
+std::array<double, 6> bounds(const smtk::mesh::PointCloud& pc)
+{
+  std::array<double, 6> b = { { std::numeric_limits<double>::max(),
+    std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(),
+    std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(),
+    std::numeric_limits<double>::lowest() } };
+
+  for (std::size_t i = 0; i < pc.size(); i++)
+  {
+    auto coord = pc.coordinates()(i);
+    for (std::size_t dim = 0; dim < 3; dim++)
+    {
+      if (coord[dim] < b[2 * dim])
+      {
+        b[2 * dim] = coord[dim];
+      }
+      if (coord[dim] > b[2 * dim + 1])
+      {
+        b[2 * dim + 1] = coord[dim];
+      }
+    }
+  }
+
+  return b;
+}
+
+// Compute the bounding box of a mesh set
+std::array<double, 6> bounds(smtk::mesh::MeshSet ms)
+{
+  std::array<double, 6> b = { { std::numeric_limits<double>::max(),
+    std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(),
+    std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(),
+    std::numeric_limits<double>::lowest() } };
+
+  class Extent : public smtk::mesh::PointForEach
+  {
+  public:
+    Extent()
+      : smtk::mesh::PointForEach()
+    {
+      m_values[0] = m_values[2] = m_values[4] = std::numeric_limits<double>::max();
+      m_values[1] = m_values[3] = m_values[5] = std::numeric_limits<double>::lowest();
+    }
+
+    void forPoints(const smtk::mesh::HandleRange&, std::vector<double>& xyz, bool&) override
+    {
+      for (std::size_t i = 0; i < xyz.size(); i += 3)
+      {
+        for (std::size_t j = 0; j < 3; j++)
+        {
+          if (xyz[i + j] < this->m_values[2 * j])
+          {
+            this->m_values[2 * j] = xyz[i + j];
+          }
+          if (xyz[i + j] > this->m_values[2 * j + 1])
+          {
+            this->m_values[2 * j + 1] = xyz[i + j];
+          }
+        }
+      }
+    }
+
+    double m_values[6];
+  };
+
+  Extent extent;
+  smtk::mesh::for_each(ms.points(), extent);
+  for (std::size_t i = 0; i < 6; i++)
+  {
+    b[i] = extent.m_values[i];
+  }
+  return b;
+}
 }
 
 namespace smtk
@@ -162,8 +237,35 @@ smtk::model::OperatorResult GenerateHotStartData::operateInternal()
     sourceValues.push_back(pointItem->value(2));
   }
 
-  // Construct an instance of our interpolator and set its parameters
+  // Construct a point cloud from our source points
   smtk::mesh::PointCloud pointcloud(sourceCoordinates, sourceValues);
+
+  // Check if any meshes extend beyond the bounds of our interpolation point cloud,
+  // and warn if they do.
+  std::array<double, 6> pc_bounds = bounds(pointcloud);
+  bool meshIsContainedByPointCloud = true;
+  for (std::size_t i = 0; i < meshItem->numberOfValues(); i++)
+  {
+    smtk::mesh::MeshSet mesh = meshItem->value(i);
+    std::array<double, 6> mesh_bounds = bounds(mesh);
+
+    for (std::size_t j = 0; j < 3; j++)
+    {
+      if (mesh_bounds[2 * j] < pc_bounds[2 * j] || mesh_bounds[2 * j + 1] > pc_bounds[2 * j + 1])
+      {
+        meshIsContainedByPointCloud = false;
+      }
+    }
+  }
+
+  if (!meshIsContainedByPointCloud)
+  {
+    std::stringstream s;
+    s << "Input mesh extends beyond the interpolation point cloud.";
+    smtkWarningMacro(this->log(), s.str());
+  }
+
+  // Construct an instance of our interpolator and set its parameters
   smtk::mesh::InverseDistanceWeighting interpolator(pointcloud, powerItem->value());
 
   // Access the attribute associated with the modified meshes

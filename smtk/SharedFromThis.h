@@ -40,23 +40,18 @@
   * These types are useful when dealing with shared pointers
   * in a class hierarchy.
   */
-#ifndef SHIBOKEN_SKIP
-#define smtkTypeMacro(...)                                                                         \
-  typedef __VA_ARGS__ SelfType;                                                                    \
-  typedef smtk::shared_ptr<__VA_ARGS__> Ptr;                                                       \
-  typedef smtk::shared_ptr<const __VA_ARGS__> ConstPtr;                                            \
-  typedef smtk::weak_ptr<__VA_ARGS__> WeakPtr;                                                     \
-  typedef smtk::weak_ptr<const __VA_ARGS__> WeakConstPtr;                                          \
-  virtual std::string classname() const { return #__VA_ARGS__; }
-#else
-// This is required because shiboken cannot properly parse the #__VA_ARGS__ in classname() above:
-#define smtkTypeMacro(...)                                                                         \
+#define smtkTypedefs(...)                                                                          \
   typedef __VA_ARGS__ SelfType;                                                                    \
   typedef smtk::shared_ptr<__VA_ARGS__> Ptr;                                                       \
   typedef smtk::shared_ptr<const __VA_ARGS__> ConstPtr;                                            \
   typedef smtk::weak_ptr<__VA_ARGS__> WeakPtr;                                                     \
   typedef smtk::weak_ptr<const __VA_ARGS__> WeakConstPtr
-#endif
+#define smtkTypeMacro(...)                                                                         \
+  smtkTypedefs(__VA_ARGS__);                                                                       \
+  std::string classname() const override { return #__VA_ARGS__; }
+#define smtkTypeMacroBase(...)                                                                     \
+  smtkTypedefs(__VA_ARGS__);                                                                       \
+  virtual std::string classname() const { return #__VA_ARGS__; }
 
 /**\brief Add a typedef to the superclass of this class.
   *

@@ -195,7 +195,7 @@ EntityHandle EntityHandle::parent() const
 // ++ 2 ++
 Session::Session()
 {
-  this->initializeOperatorSystem(Session::s_operators);
+  this->initializeOperatorCollection(Session::s_operators);
 }
 // -- 2 --
 
@@ -235,7 +235,7 @@ smtk::model::Model Session::addModel(vtkSmartPointer<vtkMultiBlockDataSet>& mode
   this->m_models.push_back(model);
   smtk::model::Model result = this->toEntityRef(handle);
   this->m_revIdMap[result] = handle;
-  this->manager()->meshes()->makeCollection(result.entity());
+  this->manager()->meshes()->makeCollection(result.entity())->name(result.name() + "_tessellation");
   this->transcribe(result, smtk::model::SESSION_EVERYTHING, false);
   result.setSession(smtk::model::SessionRef(this->manager(), this->sessionId()));
   return result;

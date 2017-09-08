@@ -11,5 +11,5 @@
 #include "smtk/AutoInit.h"
 #include "smtk/Options.h"
 
-smtkComponentInitMacro(smtk_delaunay_tessellate_face_operator);
-smtkComponentInitMacro(smtk_delaunay_triangulate_face_operator);
+smtkComponentInitMacro(smtk_delaunay_tessellate_faces_operator);
+smtkComponentInitMacro(smtk_delaunay_triangulate_faces_operator);

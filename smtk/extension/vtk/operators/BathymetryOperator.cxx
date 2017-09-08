@@ -76,8 +76,7 @@ bool BathymetryOperator::ableToOperate()
       smtkErrorMacro(this->log(), "No model specified!");
       return false;
     }
-    if (optype == "Apply Bathymetry (Model&Mesh)" ||
-        optype == "Apply Bathymetry (Mesh Only)")
+    if (optype == "Apply Bathymetry (Model&Mesh)" || optype == "Apply Bathymetry (Mesh Only)")
     {
 
       smtk::attribute::MeshItem::Ptr meshItem = this->specification()->findMesh("mesh");
@@ -168,7 +167,7 @@ OperatorResult BathymetryOperator::operateInternal()
   if ((ApplyToMesh && !meshItem) || optype == "Remove Bathymetry")
   { // Try to find the meshes on the model if not specified
     std::vector<smtk::mesh::CollectionPtr> meshCollections =
-        this->manager()->meshes()->associatedCollections(inModel);
+      this->manager()->meshes()->associatedCollections(inModel);
 
     for (auto it = meshCollections.begin(); it != meshCollections.end(); it++)
     {
@@ -181,7 +180,7 @@ OperatorResult BathymetryOperator::operateInternal()
   }
 
   // Apply BO to mesh
-  if ((ApplyToMesh || optype == "Remove Bathymetry" ) && (meshes.size() > 0 ))
+  if ((ApplyToMesh || optype == "Remove Bathymetry") && (meshes.size() > 0))
   {
     if (optype == "Remove Bathymetry")
     {

@@ -25,7 +25,7 @@ class VTKSMTKSOURCEEXT_EXPORT vtkModelSource : public vtkPolyDataAlgorithm
 {
 public:
   static vtkModelSource* New();
-  virtual void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
   vtkTypeMacro(vtkModelSource, vtkPolyDataAlgorithm);
 
   vtkGetObjectMacro(CachedOutput, vtkPolyData);
@@ -57,8 +57,8 @@ protected:
   //virtual int FillInputPortInformation(int port, vtkInformation* request);
   //virtual int FillOutputPortInformation(int port, vtkInformation* request);
 
-  virtual int RequestData(
-    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo);
+  int RequestData(
+    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
 
   void SetCachedOutput(vtkPolyData*);
 

@@ -26,6 +26,8 @@ namespace smtk
 namespace common
 {
 class Resource;
+class ResourceComponent;
+class ResourceManager;
 class ResourceSet;
 class UUID;
 class UUIDGenerator;
@@ -37,6 +39,7 @@ typedef std::vector<UUID> UUIDArray;
 namespace attribute
 {
 class Attribute;
+class Collection;
 class RefItem;
 class RefItemDefinition;
 class DateTimeItem;
@@ -56,7 +59,6 @@ class IntItem;
 class IntItemDefinition;
 class Item;
 class ItemDefinition;
-class System;
 class MeshItem;
 class MeshItemDefinition;
 class MeshSelectionItem;
@@ -142,6 +144,8 @@ class GridInfo2D;
 class GridInfo3D;
 class Group;
 class Instance;
+typedef std::vector<smtk::model::Instance> Instances;
+typedef std::set<smtk::model::Instance> InstanceSet;
 class Loop;
 typedef std::vector<smtk::model::Loop> Loops;
 class Entity;
@@ -203,11 +207,13 @@ class SaveJSON;
 class LoadJSON;
 class OperatorLog;
 class Logger;
+typedef smtk::shared_ptr<smtk::io::Logger> LoggerPtr;
 }
 
 namespace common
 {
 typedef smtk::shared_ptr<smtk::common::Resource> ResourcePtr;
+typedef smtk::shared_ptr<smtk::common::ResourceComponent> ResourceComponentPtr;
 typedef smtk::shared_ptr<smtk::common::ResourceSet> ResourceSetPtr;
 typedef smtk::shared_ptr<const smtk::common::Resource> ConstResourcePtr;
 typedef smtk::shared_ptr<const smtk::common::ResourceSet> ConstResourceSetPtr;
@@ -237,8 +243,6 @@ typedef smtk::shared_ptr<smtk::mesh::json::Interface> InterfacePtr;
 }
 }
 
-//Shiboken requires that we use fully qualified namespaces for all
-//types that these shared_ptr and weak_ptr are holding
 namespace model
 {
 // Model Related Pointer Classes
@@ -264,11 +268,9 @@ typedef smtk::shared_ptr<smtk::model::Operator> OperatorPtr;
 typedef smtk::weak_ptr<smtk::model::Operator> WeakOperatorPtr;
 typedef std::set<smtk::model::OperatorPtr> Operators;
 typedef smtk::shared_ptr<smtk::model::RemoteOperator> RemoteOperatorPtr;
-#ifndef SHIBOKEN_SKIP
 typedef std::function<smtk::model::OperatorPtr()> OperatorConstructor;
 typedef std::pair<std::string, OperatorConstructor> StaticOperatorInfo;
 typedef std::map<std::string, StaticOperatorInfo> OperatorConstructors;
-#endif
 typedef smtk::shared_ptr<smtk::model::StoredResource> StoredResourcePtr;
 typedef smtk::shared_ptr<const smtk::model::StoredResource> ConstStoredResourcePtr;
 typedef smtk::shared_ptr<smtk::model::Entity> EntityPtr;
@@ -370,9 +372,9 @@ typedef smtk::shared_ptr<const smtk::attribute::VoidItemDefinition> ConstVoidIte
 typedef smtk::shared_ptr<const smtk::attribute::RefItem> ConstRefItemPtr;
 typedef smtk::shared_ptr<const smtk::attribute::RefItemDefinition> ConstRefItemDefinitionPtr;
 
-typedef smtk::shared_ptr<smtk::attribute::System> SystemPtr;
-typedef smtk::shared_ptr<const smtk::attribute::System> ConstSystemPtr;
-typedef smtk::weak_ptr<smtk::attribute::System> WeakSystemPtr;
+typedef smtk::shared_ptr<smtk::attribute::Collection> CollectionPtr;
+typedef smtk::shared_ptr<const smtk::attribute::Collection> ConstCollectionPtr;
+typedef smtk::weak_ptr<smtk::attribute::Collection> WeakCollectionPtr;
 }
 
 namespace bridge

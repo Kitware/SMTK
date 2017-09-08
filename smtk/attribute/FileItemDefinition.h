@@ -33,23 +33,23 @@ public:
     return smtk::attribute::FileItemDefinitionPtr(new FileItemDefinition(myName));
   }
 
-  virtual ~FileItemDefinition();
+  ~FileItemDefinition() override;
 
-  virtual Item::Type type() const;
-  virtual bool isValueValid(const std::string& val) const;
+  Item::Type type() const override;
+  bool isValueValid(const std::string& val) const override;
   // return the index of the filter that accepts val, or -1 if the value is
   // invalid
   int filterId(const std::string& val) const;
 
-  virtual smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const;
-  virtual smtk::attribute::ItemPtr buildItem(
-    Item* owningItem, int position, int subGroupPosition) const;
+  smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
+  smtk::attribute::ItemPtr buildItem(
+    Item* owningItem, int position, int subGroupPosition) const override;
 
   const std::string& getFileFilters() const { return this->m_fileFilters; }
   void setFileFilters(const std::string& filters) { this->m_fileFilters = filters; }
 
-  virtual smtk::attribute::ItemDefinitionPtr createCopy(
-    smtk::attribute::ItemDefinition::CopyInfo& info) const;
+  smtk::attribute::ItemDefinitionPtr createCopy(
+    smtk::attribute::ItemDefinition::CopyInfo& info) const override;
 
 protected:
   FileItemDefinition(const std::string& myName);

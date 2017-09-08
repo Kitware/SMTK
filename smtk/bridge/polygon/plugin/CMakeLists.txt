@@ -7,9 +7,9 @@ include(ParaViewPlugins)
 # not be found.
 list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 
-smtk_qt_wrap_cpp(MOC_SRCS qtPolygonEdgeOperationView.h)
-smtk_qt_wrap_cpp(MOC_SRCS qtExtractContoursView.h)
-#smtk_qt_wrap_cpp(UI_SRCS qtPolygonEdgeOperationView.ui)
+qt5_wrap_cpp(MOC_SRCS qtPolygonEdgeOperationView.h)
+qt5_wrap_cpp(MOC_SRCS qtExtractContoursView.h)
+#qt5_wrap_cpp(UI_SRCS qtPolygonEdgeOperationView.ui)
 
 ADD_SMTK_UI_VIEW(
   OUTIFACES

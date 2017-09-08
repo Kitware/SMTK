@@ -42,7 +42,7 @@ class VTK_EXPORT vtkMaterialOperatorClient : public vtkMaterialOperatorBase
 public:
   static vtkMaterialOperatorClient* New();
   vtkTypeMacro(vtkMaterialOperatorClient, vtkMaterialOperatorBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Prevent warnings about hidden base-class virtuals:
   using Superclass::Build;

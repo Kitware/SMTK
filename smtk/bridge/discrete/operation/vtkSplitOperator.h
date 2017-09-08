@@ -27,7 +27,7 @@ class SMTKDISCRETESESSION_EXPORT vtkSplitOperator : public vtkSplitOperatorBase
 public:
   static vtkSplitOperator* New();
   vtkTypeMacro(vtkSplitOperator, vtkSplitOperatorBase);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Modify the color and/or the visibility of an object.
@@ -43,7 +43,7 @@ public:
 
 protected:
   vtkSplitOperator();
-  virtual ~vtkSplitOperator();
+  ~vtkSplitOperator() override;
 
   using Superclass::AbleToOperate;
 

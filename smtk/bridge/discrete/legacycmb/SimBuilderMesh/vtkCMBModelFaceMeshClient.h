@@ -25,7 +25,7 @@ class VTK_EXPORT vtkCMBModelFaceMeshClient : public vtkCMBModelFaceMesh
 public:
   static vtkCMBModelFaceMeshClient* New();
   vtkTypeMacro(vtkCMBModelFaceMeshClient, vtkCMBModelFaceMesh);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Set the local mesh length, min angle

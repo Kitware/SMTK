@@ -34,7 +34,7 @@ public:
   qtFileItem(smtk::attribute::FileSystemItemPtr, QWidget* p, qtBaseView* bview,
     Qt::Orientation enumOrient = Qt::Horizontal);
   virtual ~qtFileItem();
-  virtual void setLabelVisible(bool);
+  void setLabelVisible(bool) override;
 
   void enableFileBrowser(bool state = true);
   bool isDirectory();
@@ -50,13 +50,13 @@ signals:
   bool launchFileBrowser();
 
 protected slots:
-  virtual void updateItemData();
+  void updateItemData() override;
   virtual void onAddNewValue();
   virtual void onRemoveValue();
   virtual void setActiveField(QWidget*);
 
 protected:
-  virtual void createWidget();
+  void createWidget() override;
   QWidget* createFileBrowseWidget(int elementIdx);
   virtual void loadInputValues();
   virtual void updateUI();

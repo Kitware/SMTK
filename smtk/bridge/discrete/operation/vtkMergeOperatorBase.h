@@ -29,7 +29,7 @@ class SMTKDISCRETESESSION_EXPORT vtkMergeOperatorBase : public vtkObject
 public:
   static vtkMergeOperatorBase* New();
   vtkTypeMacro(vtkMergeOperatorBase, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // Set/get the target vtkDiscreteModelGeometricEntity's unique persistent
@@ -74,7 +74,7 @@ public:
 
 protected:
   vtkMergeOperatorBase();
-  virtual ~vtkMergeOperatorBase();
+  ~vtkMergeOperatorBase() override;
 
   // Description:
   // Do the basic merge operation that needs to get done on both the

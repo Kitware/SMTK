@@ -90,9 +90,6 @@ qtModelView::qtModelView(QWidget* p)
   qdelegate->setDrawSubtitle(false);
   qdelegate->setTextVerticalPad(6);
   qdelegate->setTitleFontWeight(1);
-#if QT_VERSION < 0x050000
-  qmodel->setSupportedDragActions(Qt::CopyAction);
-#endif
   this->setModel(qmodel); // must come after qmodel->setRoot()
   this->setItemDelegate(qdelegate);
 
@@ -114,11 +111,7 @@ qtModelView::qtModelView(QWidget* p)
   this->m_OperatorsDock = NULL;
   this->m_OperatorsWidget = NULL;
 
-#if QT_VERSION >= 0x050000
   this->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
-#else
-  this->header()->setResizeMode(QHeaderView::ResizeToContents);
-#endif
   QObject::connect(qdelegate, SIGNAL(requestVisibilityChange(const QModelIndex&)), this,
     SLOT(toggleEntityVisibility(const QModelIndex&)), Qt::QueuedConnection);
   QObject::connect(qdelegate, SIGNAL(requestColorChange(const QModelIndex&)), this,
@@ -1230,7 +1223,7 @@ OperatorPtr qtModelView::getOp(const smtk::model::SessionPtr& brSession, const s
     return OperatorPtr();
   }
 
-  attrib->system()->setRefModelManager(brSession->manager());
+  attrib->collection()->setRefModelManager(brSession->manager());
 
   return brOp;
 }
@@ -1384,8 +1377,10 @@ void qtModelView::changeEntityColor(const QModelIndex& idx)
       colorName = Entity::flagSummary(elp->relatedBitFlags());
       colorName += " color";
       // get the color for the list
-      QColor newColor = QColorDialog::getColor(currentColor, this, "Choose Entity Color",
-        QColorDialog::DontUseNativeDialog | QColorDialog::ShowAlphaChannel);
+      QColor newColor =
+        QColorDialog::getColor(currentColor, this, "Choose"
+                                                   " Entity Color (Click Cancel to remove color)",
+          QColorDialog::DontUseNativeDialog | QColorDialog::ShowAlphaChannel);
 
       // store color property on the model
       // use set property operator to store color
@@ -1407,9 +1402,9 @@ void qtModelView::changeEntityColor(const QModelIndex& idx)
         colorItem->setValue(3, newColor.alphaF());
       }
       else
-      {
+      { // User invalidates the color
         colorItem->setNumberOfValues(4);
-        std::vector<double> nullColor(4, -1.);
+        std::vector<double> nullColor(4, -2.);
         colorItem->setValues(nullColor.begin(), nullColor.end());
       }
       attrib->associateEntity(model);

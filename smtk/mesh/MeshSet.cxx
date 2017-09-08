@@ -27,7 +27,6 @@ MeshSet::MeshSet()
   , m_handle()
   , m_range()
 {
-  //Trying to make Shitbroken happy
 }
 
 MeshSet::MeshSet(const smtk::mesh::CollectionPtr& parent, smtk::mesh::Handle handle)
@@ -166,6 +165,17 @@ bool MeshSet::append(const MeshSet& other)
   return can_append;
 }
 
+bool MeshSet::isValid() const
+{
+  // A valid meshset has a valid collection and is a member of the collection.
+  smtk::mesh::CollectionPtr collection = this->collection();
+  if (!collection)
+  {
+    return false;
+  }
+  return set_intersect(*this, collection->meshes()).is_empty() == false;
+}
+
 bool MeshSet::is_empty() const
 {
   return this->m_range.empty();
@@ -281,11 +291,11 @@ smtk::mesh::CellSet MeshSet::cells() const
   return smtk::mesh::CellSet(this->m_parent, range);
 }
 
-smtk::mesh::PointSet MeshSet::points() const
+smtk::mesh::PointSet MeshSet::points(bool boundary_only) const
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
   smtk::mesh::HandleRange cells = iface->getCells(this->m_range);
-  smtk::mesh::HandleRange range = iface->getPoints(cells);
+  smtk::mesh::HandleRange range = iface->getPoints(cells, boundary_only);
   return smtk::mesh::PointSet(this->m_parent, range);
 }
 
@@ -490,12 +500,6 @@ std::set<smtk::mesh::CellField> MeshSet::cellFields() const
   return cellfields;
 }
 
-std::vector<smtk::mesh::CellField> MeshSet::cellFieldsForShiboken() const
-{
-  auto cellfields = this->cellFields();
-  return std::vector<smtk::mesh::CellField>(cellfields.begin(), cellfields.end());
-}
-
 bool MeshSet::removeCellField(smtk::mesh::CellField cellfield)
 {
   const smtk::mesh::InterfacePtr& iface = this->collection()->interface();
@@ -563,12 +567,6 @@ std::set<smtk::mesh::PointField> MeshSet::pointFields() const
   }
 
   return pointfields;
-}
-
-std::vector<smtk::mesh::PointField> MeshSet::pointFieldsForShiboken() const
-{
-  auto pointfields = this->pointFields();
-  return std::vector<smtk::mesh::PointField>(pointfields.begin(), pointfields.end());
 }
 
 bool MeshSet::removePointField(smtk::mesh::PointField pointfield)

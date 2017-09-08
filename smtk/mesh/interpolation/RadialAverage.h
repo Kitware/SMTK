@@ -39,9 +39,7 @@ public:
   RadialAverage(CollectionPtr collection, const PointCloud&, double radius);
   RadialAverage(const StructuredGrid&, double radius);
 
-#ifndef SHIBOKEN_SKIP
   double operator()(std::array<double, 3> x) const { return m_function(x); }
-#endif
 
 private:
   std::function<double(std::array<double, 3>)> m_function;

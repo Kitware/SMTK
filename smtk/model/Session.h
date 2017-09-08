@@ -19,7 +19,7 @@
 
 #include "smtk/common/UUID.h"
 
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/Collection.h"
 
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/SessionRegistrar.h"
@@ -93,8 +93,6 @@ enum SessionInformation
     0x000001ff //!< Erase **all** information about the entity, including user-specified.
 };
 
-#ifndef SHIBOKEN_SKIP
-
 /**\brief Boilerplate for classes that accept operator registration.
  *
  * This is invoked by smtkDeclareModelingKernel(), so you should not
@@ -111,15 +109,15 @@ protected:                                                                      
                                                                                                    \
 public:                                                                                            \
   static smtk::model::OperatorConstructors* s_operators;                                           \
-  virtual bool registerOperator(                                                                   \
-    const std::string& opName, const char* opDescrXML, smtk::model::OperatorConstructor opCtor);   \
+  bool registerOperator(const std::string& opName, const char* opDescrXML,                         \
+    smtk::model::OperatorConstructor opCtor) override;                                             \
   static bool registerStaticOperator(                                                              \
     const std::string& opName, const char* opDescrXML, smtk::model::OperatorConstructor opCtor);   \
-  virtual std::string findOperatorXML(const std::string& opName) const;                            \
-  virtual smtk::model::OperatorConstructor findOperatorConstructor(const std::string& opName)      \
-    const;                                                                                         \
-  virtual smtk::model::OperatorConstructors* operatorConstructors();                               \
-  virtual bool inheritsOperators() const
+  std::string findOperatorXML(const std::string& opName) const override;                           \
+  smtk::model::OperatorConstructor findOperatorConstructor(const std::string& opName)              \
+    const override;                                                                                \
+  smtk::model::OperatorConstructors* operatorConstructors() override;                              \
+  bool inheritsOperators() const override
 
 /**\brief Implement methods declared by smtkDeclareOperatorRegistration().
   *
@@ -203,8 +201,8 @@ public:                                                                         
 #define smtkDeclareModelingKernel()                                                                \
   static std::string sessionName;                                                                  \
   static std::string staticClassName();                                                            \
-  virtual std::string name() const { return sessionName; }                                         \
-  virtual std::string className() const;                                                           \
+  std::string name() const override { return sessionName; }                                        \
+  std::string className() const override;                                                          \
   smtkDeclareOperatorRegistration()
 
 /**\brief Declare that a class implements a session to a solid modeling kernel.
@@ -261,33 +259,13 @@ public:                                                                         
   smtkImplementsOperatorRegistration(Cls, Inherits);                                               \
   smtkComponentInitMacro(smtk_##Comp##_session);
 
-#else // SHIBOKEN_SKIP
-
-#define smtkDeclareOperatorRegistration()
-
-#define smtkImplementsOperatorRegistration()
-
-#define smtkImplementsModelingKernel(Comp, Tags, Setup, Cls)                                       \
-  std::string Cls::sessionName(#Comp);                                                             \
-  std::string Cls::staticClassName() { return #Cls; }                                              \
-  std::string Cls::className() const;                                                              \
-  std::string Cls::findOperatorXML(const std::string& opName) const;
-
-#define smtkDeclareModelingKernel()                                                                \
-  static std::string sessionName;                                                                  \
-  static std::string staticClassName();                                                            \
-  virtual std::string name();                                                                      \
-  virtual std::string className() const;
-
-#endif // SHIBOKEN_SKIP
-
 /**\brief A base class for bridging modelers into SMTK.
   *
-  * SMTK can act as a session between other (foreign) solid modelers
+  * SMTK can act as a bridge between other (foreign) solid modelers
   * and client applications.
-  * Either the session or the foreign modeler must provide techniques
-  * for attaching UUIDs to foreign model entities and for obtaining
-  * notification when foreign model entities are modified or
+  * The session must provide techniques for attaching UUIDs to foreign model
+  * entities (on its own or by using facilities provided by the foreign modeler)
+  * and for obtaining notification when foreign model entities are modified or
   * destroyed. In extreme cases, the SMTK model manager must be reset after
   * each modeling operation to guarantee a consistent model.
   *
@@ -297,8 +275,8 @@ public:                                                                         
   * that implements the modeling operation using the "foreign" modeling
   * kernel, and (2) a pair of smtk::attribute::Definition instances that
   * define the structure of operator parameters and results.
-  * The latter Definition instances are kept inside an attribute system
-  * owned by the Session; you can access it with smtk::Session::operatorSystem().
+  * The latter Definition instances are kept inside an attribute collection
+  * owned by the Session; you can access it with smtk::Session::operatorCollection().
   *
   * Instances of Session subclasses should be registered with a
   * model using Manager::sessionModel(). Then, when an
@@ -319,8 +297,23 @@ public:                                                                         
 class SMTKCORE_EXPORT Session : smtkEnableSharedPtr(Session)
 {
 public:
-  smtkTypeMacro(Session);
-  smtkDeclareOperatorRegistration();
+  smtkTypeMacroBase(Session);
+
+  // From smtkDeclareOperatorRegistration
+protected:
+  static void cleanupOperators();
+
+public:
+  static smtk::model::OperatorConstructors* s_operators;
+  virtual bool registerOperator(
+    const std::string& opName, const char* opDescrXML, smtk::model::OperatorConstructor opCtor);
+  static bool registerStaticOperator(
+    const std::string& opName, const char* opDescrXML, smtk::model::OperatorConstructor opCtor);
+  virtual std::string findOperatorXML(const std::string& opName) const;
+  virtual smtk::model::OperatorConstructor findOperatorConstructor(const std::string& opName) const;
+  virtual smtk::model::OperatorConstructors* operatorConstructors();
+  virtual bool inheritsOperators() const;
+  // End smtkDeclareOperatorRegistration
 
   // Required to be circular for Superclass::findOperator{Constructor,XML}:
   smtkSuperclassMacro(smtk::model::Session);
@@ -342,8 +335,8 @@ public:
   const DanglingEntities& danglingEntities() const;
   void declareDanglingEntity(const EntityRef& ent, SessionInfoBits present = 0);
 
-  smtk::attribute::SystemPtr operatorSystem();
-  smtk::attribute::ConstSystemPtr operatorSystem() const;
+  smtk::attribute::CollectionPtr operatorCollection();
+  smtk::attribute::ConstCollectionPtr operatorCollection() const;
 
   virtual int setup(const std::string& optName, const StringList& optVal);
 
@@ -423,20 +416,18 @@ protected:
   virtual SessionInfoBits updateTessellation(
     const EntityRef& entRef, SessionInfoBits flags, ArrangementHelper* helper);
 
-#ifndef SHIBOKEN_SKIP
-  void initializeOperatorSystem(const OperatorConstructors* opList);
+  void initializeOperatorCollection(const OperatorConstructors* opList);
   void importOperatorXML(const std::string& opXML);
   virtual OperatorConstructor findOperatorConstructorInternal(
     const std::string&, const OperatorConstructors* opList) const;
   virtual std::string findOperatorXMLInternal(
     const std::string&, const OperatorConstructors* opList) const;
-#endif // SHIBOKEN_SKIP
 
   virtual SessionIOPtr createIODelegate(const std::string& format);
 
   DanglingEntities m_dangling;
   smtk::common::UUID m_sessionId;
-  smtk::attribute::SystemPtr m_operatorSys;
+  smtk::attribute::CollectionPtr m_operatorCollection;
   Manager* m_manager;
 };
 

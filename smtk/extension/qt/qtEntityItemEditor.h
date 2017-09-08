@@ -29,7 +29,7 @@ class SMTKQTEXT_EXPORT QEntityItemEditor : public QWidget
   Q_OBJECT
 public:
   QEntityItemEditor(QWidget* parent = 0);
-  virtual ~QEntityItemEditor();
+  ~QEntityItemEditor() override;
 
   //QSize sizeHint() const;
   QString title() const;

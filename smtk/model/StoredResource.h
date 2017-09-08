@@ -42,7 +42,8 @@ public:
 
   bool exists(const std::string& prefix = "") const;
 
-  virtual Resource::Type resourceType() const { return MODEL; }
+  Resource::Type resourceType() const override { return MODEL; }
+  smtk::common::ResourceComponentPtr find(const smtk::common::UUID& compId) const override;
 
   bool addEntity(const EntityRef& ent);
   bool removeEntity(const EntityRef& ent);

@@ -30,7 +30,7 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkRenderingSerializationHelper : public vtkSe
 public:
   static vtkRenderingSerializationHelper* New();
   vtkTypeMacro(vtkRenderingSerializationHelper, vtkSerializationHelper);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
   // This member registers ALL the classes supported by this helper with the
@@ -38,24 +38,24 @@ public:
   // called after construction unless you only want to enable support for
   // a subset (in which case it must be done "manually" by calling
   // vtkSerializationHelperMap::RegisterHelperForClass()
-  virtual void RegisterWithHelperMap();
+  void RegisterWithHelperMap() override;
 
   // Description:
   // Unregister this helper (remove each class type/helper pair) with the
   // vtkSerializationHelperMap
-  virtual void UnRegisterWithHelperMap();
+  void UnRegisterWithHelperMap() override;
 
   // Description:
   // Get the value for the "type" attribute of the specfied object type
-  virtual const char* GetSerializationType(vtkObject* object);
+  const char* GetSerializationType(vtkObject* object) override;
 
   // Description:
   // Serialize the input object.  Returns 1 if successful.
-  virtual int Serialize(vtkObject* object, vtkSerializer* serializer);
+  int Serialize(vtkObject* object, vtkSerializer* serializer) override;
 
 protected:
   vtkRenderingSerializationHelper();
-  ~vtkRenderingSerializationHelper() {}
+  ~vtkRenderingSerializationHelper() override {}
 
   // Description:
   // Serialize a vtkCamera

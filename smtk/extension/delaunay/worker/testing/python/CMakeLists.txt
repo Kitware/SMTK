@@ -1,6 +1,6 @@
 set(smtkDelaunayExtPythonDataTests)
 
-if (SMTK_ENABLE_POLYGON_SESSION AND SMTK_USE_PYBIND11)
+if (SMTK_ENABLE_POLYGON_SESSION)
   set(smtkDelaunayExtPythonDataTests
     ${smtkDelaunayExtPythonDataTests}
     testDelaunayMeshWorker
@@ -16,7 +16,7 @@ endif()
 
 endif()
 
-if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
+if (SMTK_DATA_DIR)
   foreach (test ${smtkDelaunayExtPythonDataTests})
     smtk_add_test_python(${test}Py ${test}.py
       --data-dir=${SMTK_DATA_DIR})

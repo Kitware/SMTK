@@ -33,8 +33,8 @@ public:
     return smtk::attribute::GroupItemDefinitionPtr(new GroupItemDefinition(myName));
   }
 
-  virtual ~GroupItemDefinition();
-  virtual Item::Type type() const;
+  ~GroupItemDefinition() override;
+  Item::Type type() const override;
   std::size_t numberOfItemDefinitions() const { return this->m_itemDefs.size(); }
   smtk::attribute::ItemDefinitionPtr itemDefinition(int ith) const
   {
@@ -67,9 +67,9 @@ public:
   // from the class internals.
   //
   // Warning:
-  // It is up to the caller to ensure integrity of the attribute::System
+  // It is up to the caller to ensure integrity of the attribute::Collection
   // instance (e.g. Attribute instances/ Items created using this ItemDefinition
-  // need to be cleansed from the system).
+  // need to be cleansed from the collection).
   bool removeItemDefinition(ItemDefinitionPtr itemDef);
 
   int findItemPosition(const std::string& name) const;
@@ -101,19 +101,19 @@ public:
   bool usingCommonSubGroupLabel() const { return this->m_useCommonLabel; }
   std::string subGroupLabel(std::size_t element) const;
 
-  virtual smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const;
-  virtual smtk::attribute::ItemPtr buildItem(
-    Item* owningItem, int position, int subGroupPosition) const;
+  smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
+  smtk::attribute::ItemPtr buildItem(
+    Item* owningItem, int position, int subGroupPosition) const override;
   void buildGroup(smtk::attribute::GroupItem* group, int subGroupPosition) const;
-  virtual void addCategory(const std::string& category);
-  virtual void removeCategory(const std::string& category);
+  void addCategory(const std::string& category) override;
+  void removeCategory(const std::string& category) override;
 
-  virtual smtk::attribute::ItemDefinitionPtr createCopy(
-    smtk::attribute::ItemDefinition::CopyInfo& info) const;
+  smtk::attribute::ItemDefinitionPtr createCopy(
+    smtk::attribute::ItemDefinition::CopyInfo& info) const override;
 
 protected:
   GroupItemDefinition(const std::string& myname);
-  virtual void updateCategories();
+  void updateCategories() override;
   std::vector<smtk::attribute::ItemDefinitionPtr> m_itemDefs;
   std::map<std::string, int> m_itemDefPositions;
   std::vector<std::string> m_labels;

@@ -59,7 +59,6 @@ class SMTKCORE_EXPORT Collection : public smtk::enable_shared_from_this<Collecti
   //default constructor generates an invalid collection
   Collection();
 
-#ifndef SHIBOKEN_SKIP
   //Construct a valid collection that is associated with a manager
   //but has an empty interface that can be populated
   Collection(const smtk::common::UUID& collectionID, smtk::mesh::ManagerPtr mngr);
@@ -69,10 +68,9 @@ class SMTKCORE_EXPORT Collection : public smtk::enable_shared_from_this<Collecti
   //to different mesh interfaces
   Collection(const smtk::common::UUID& collectionID, smtk::mesh::InterfacePtr interface,
     smtk::mesh::ManagerPtr mngr);
-#endif
 
 public:
-  smtkTypeMacro(Collection);
+  smtkTypeMacroBase(Collection);
   //construct an invalid collection
   smtkCreateMacro(Collection);
 
@@ -229,7 +227,7 @@ public:
   //that is not referenced by any other mesh
   //This will invalidate any smtk::mesh::MeshSet that contains a reference to
   //one of the meshes that has been deleted.
-  bool removeMeshes(smtk::mesh::MeshSet& meshesToDelete);
+  bool removeMeshes(const smtk::mesh::MeshSet& meshesToDelete);
 
   // Domain Queries
   //get all the current domains
@@ -308,7 +306,6 @@ public:
     const smtk::mesh::MeshSet& meshset, const std::string& propName);
   bool hasIntegerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName) const;
   bool removeIntegerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName);
-#ifndef SHIBOKEN_SKIP
   // For T = {MeshIntegerData, MeshFloatData, MeshStringData}:
   template <typename T>
   T* properties();
@@ -317,7 +314,6 @@ public:
   T* meshProperties(const smtk::mesh::MeshSet& meshset);
   template <typename T>
   bool removeProperty(const smtk::mesh::MeshSet& meshset, const std::string& name);
-#endif // SHIBOKEN_SKIP
 
 private:
   Collection(const Collection& other);            //blank since we are used by shared_ptr
