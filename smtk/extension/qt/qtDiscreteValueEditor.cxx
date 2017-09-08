@@ -262,13 +262,10 @@ void qtDiscreteValueEditor::onInputValueChanged()
         }
       }
     }
-    if (!mitems.size())
-    {
-      return;
-    }
     if (mitems.size() == 1)
     {
-      // Simple case - there is only 1 - go ahead and set it to use the new selection manager support
+      // Simple case - there is only 1
+      // model entity item - go ahead and set it to use the new selection manager support
       mitems.at(0)->useSelectionManager();
     }
     this->Internals->m_inputItem->baseView()->setFixedLabelWidth(currentLen);
