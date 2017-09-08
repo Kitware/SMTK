@@ -63,7 +63,6 @@ void qtCheckItemComboBox::init()
 {
   this->m_displayItem = new QStandardItem;
   this->m_displayItem->setFlags(Qt::ItemIsEnabled);
-  this->m_displayItem->setCheckable(false);
   this->m_displayItem->setText("0 " + m_displayTextExt);
   QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());
   if (itemModel)
@@ -93,7 +92,15 @@ void qtCheckItemComboBox::updateText()
     : QString::number(numSel) + " " + m_displayTextExt;
   this->m_displayItem->setText(displayText);
   this->view()->model()->setData(this->view()->model()->index(0, 0), displayText, Qt::DisplayRole);
-  this->view()->update();
+
+  // For the item list, all the painting operations take place in the viewport
+  // (since it is a QAbstractItemView), so use its update() to reflect any changes.
+  // http://doc.qt.io/qt-5/qabstractitemview.html#update
+  this->view()->viewport()->update();
+
+  // Additionally, update the baseclass to reflect the changes in the
+  // actual combobox (selected item name and button).
+  this->update();
 }
 
 void qtCheckItemComboBox::hidePopup()
@@ -109,6 +116,32 @@ void qtCheckItemComboBox::showPopup()
   this->QComboBox::showPopup();
 }
 
+bool qtCheckItemComboBox::eventFilter(QObject* editor, QEvent* evt)
+{
+  if (evt->type() == QEvent::MouseButtonRelease)
+  {
+    const int index = view()->currentIndex().row();
+    auto itemModel = qobject_cast<QStandardItemModel*>(this->model());
+    QStandardItem* item = itemModel->item(index);
+    if (item->isCheckable())
+    {
+      const auto newState =
+        itemData(index, Qt::CheckStateRole) == Qt::Checked ? Qt::Unchecked : Qt::Checked;
+      setItemData(index, newState, Qt::CheckStateRole);
+    }
+
+    return true;
+  }
+
+  return QObject::eventFilter(editor, evt);
+}
+
+void qtCheckItemComboBox::showEvent(QShowEvent*)
+{
+  this->init();
+}
+
+////////////////////////////////////////////////////////////////////////////////
 qtModelEntityItemCombo::qtModelEntityItemCombo(
   qtModelEntityItem* entitem, QWidget* inParent, const QString& displayExt)
   : qtCheckItemComboBox(inParent, displayExt)
@@ -195,7 +228,6 @@ void qtModelEntityItemCombo::init()
   //  this, SLOT(attributeFilterChanged(QStandardItem*)));
   this->blockSignals(false);
   this->view()->viewport()->installEventFilter(this);
-  // this->view()->setSelectionMode(QAbstractItemView::ExtendedSelection);
   this->updateText();
   this->hidePopup();
 
@@ -210,39 +242,8 @@ void qtModelEntityItemCombo::init()
 
 void qtModelEntityItemCombo::showPopup()
 {
-  this->setModel(new QStandardItemModel());
   this->init();
   this->qtCheckItemComboBox::showPopup();
-}
-
-bool qtModelEntityItemCombo::eventFilter(QObject* editor, QEvent* evt)
-{
-  if (evt->type() == QEvent::MouseButtonRelease)
-  {
-    int index = view()->currentIndex().row();
-    /*
-    // with the help of styles, check if checkbox rect contains 'pos'
-    QMouseEvent* e = dynamic_cast<QMouseEvent*>(evt);
-    QStyleOptionButton opt;
-    opt.rect = view()->visualRect(view()->currentIndex());
-    QRect r = style()->subElementRect(QStyle::SE_ViewItemCheckIndicator, &opt);
-    if(r.contains(e->pos()))
-      {
-*/
-    if (itemData(index, Qt::CheckStateRole) == Qt::Checked)
-      setItemData(index, Qt::Unchecked, Qt::CheckStateRole);
-    else
-      setItemData(index, Qt::Checked, Qt::CheckStateRole);
-    //      }
-    return true;
-  }
-
-  return QObject::eventFilter(editor, evt);
-}
-
-void qtModelEntityItemCombo::showEvent(QShowEvent*)
-{
-  this->init();
 }
 
 void qtModelEntityItemCombo::itemCheckChanged(const QModelIndex& topLeft, const QModelIndex&)
@@ -302,6 +303,7 @@ void qtModelEntityItemCombo::itemCheckChanged(const QModelIndex& topLeft, const 
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////
 qtMeshItemCombo::qtMeshItemCombo(qtMeshItem* entitem, QWidget* inParent, const QString& displayExt)
   : qtCheckItemComboBox(inParent, displayExt)
   , m_MeshItem(entitem)
@@ -391,7 +393,6 @@ void qtMeshItemCombo::init()
   //  this, SLOT(attributeFilterChanged(QStandardItem*)));
   this->blockSignals(false);
   this->view()->viewport()->installEventFilter(this);
-  // this->view()->setSelectionMode(QAbstractItemView::ExtendedSelection);
   this->updateText();
   this->hidePopup();
 
@@ -408,36 +409,6 @@ void qtMeshItemCombo::showPopup()
 {
   this->init();
   this->qtCheckItemComboBox::showPopup();
-}
-
-void qtMeshItemCombo::showEvent(QShowEvent*)
-{
-  this->init();
-}
-
-bool qtMeshItemCombo::eventFilter(QObject* editor, QEvent* evt)
-{
-  if (evt->type() == QEvent::MouseButtonRelease)
-  {
-    int index = view()->currentIndex().row();
-    /*
-    // with the help of styles, check if checkbox rect contains 'pos'
-    QMouseEvent* e = dynamic_cast<QMouseEvent*>(evt);
-    QStyleOptionButton opt;
-    opt.rect = view()->visualRect(view()->currentIndex());
-    QRect r = style()->subElementRect(QStyle::SE_ViewItemCheckIndicator, &opt);
-    if(r.contains(e->pos()))
-      {
-*/
-    if (itemData(index, Qt::CheckStateRole) == Qt::Checked)
-      setItemData(index, Qt::Unchecked, Qt::CheckStateRole);
-    else
-      setItemData(index, Qt::Checked, Qt::CheckStateRole);
-    //      }
-    return true;
-  }
-
-  return QObject::eventFilter(editor, evt);
 }
 
 void qtMeshItemCombo::itemCheckChanged(const QModelIndex& topLeft, const QModelIndex&)
