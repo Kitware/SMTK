@@ -33,8 +33,8 @@ class SMTKQTEXT_EXPORT qtCheckableComboItemDelegate : public QStyledItemDelegate
   Q_OBJECT
 public:
   qtCheckableComboItemDelegate(QWidget* owner);
-  virtual void paint(
-    QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+  void paint(
+    QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 };
 
 //A sublcass of QComboBox to set text when hidePopup
@@ -43,10 +43,13 @@ class SMTKQTEXT_EXPORT qtCheckItemComboBox : public QComboBox
   Q_OBJECT
 public:
   qtCheckItemComboBox(QWidget* parentW, const QString& displayExt);
-  virtual void hidePopup();
-  virtual void showPopup();
+  void hidePopup() override;
+  void showPopup() override;
   virtual void init();
   virtual void updateText();
+
+protected:
+  bool eventFilter(QObject* editor, QEvent* event) override;
 
 private:
   QStandardItem* m_displayItem;
@@ -59,14 +62,11 @@ class SMTKQTEXT_EXPORT qtModelEntityItemCombo : public qtCheckItemComboBox
   Q_OBJECT
 public:
   qtModelEntityItemCombo(qtModelEntityItem* item, QWidget* parent, const QString& displayExt);
-  virtual void showPopup();
-  virtual void init();
+  void showPopup() override;
+  void init() override;
 
 protected slots:
   virtual void itemCheckChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
-
-protected:
-  virtual bool eventFilter(QObject* editor, QEvent* event);
 
 private:
   qtModelEntityItem* m_ModelEntityItem;
@@ -78,14 +78,11 @@ class SMTKQTEXT_EXPORT qtMeshItemCombo : public qtCheckItemComboBox
   Q_OBJECT
 public:
   qtMeshItemCombo(qtMeshItem* item, QWidget* parent, const QString& displayExt);
-  virtual void showPopup();
-  virtual void init();
+  void showPopup() override;
+  void init() override;
 
 protected slots:
   virtual void itemCheckChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
-
-protected:
-  virtual bool eventFilter(QObject* editor, QEvent* event);
 
 private:
   qtMeshItem* m_MeshItem;
