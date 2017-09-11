@@ -11,7 +11,9 @@
         &lt;p&gt;Add or Remove elevation from a model or mesh.
         &lt;p&gt;This operator modifies the z-coordinate of a model, a
         mesh or both a model and a mesh according to an auxiliary
-        geometry. The elevation data can be applied or removed.
+        geometry. It computes new z-coordinates at each mesh node
+        as a radial average of the scalar values in the external data
+        set. The elevation data can be applied or removed.
       </DetailedDescription>
       <ItemDefinitions>
 
@@ -32,15 +34,23 @@
             </MeshEntity>
 
             <Double Name="averaging elevation radius" Label="Radius for Averaging Elevation:" Version="0" NumberOfRequiredValues="1">
-              <DefaultValue>1.0</DefaultValue>
+              <BriefDescription>The radius used to identify a point locus
+              for computing elevation.</BriefDescription>
+              <DetailedDescription>
+                The radius used to identify a point locus for computing
+                elevation.
+
+                For each node in the input mesh or model tessellation,
+                a corresponding point locus whose positions projected
+                onto the x-y plane are within a radius of the node is
+                used to compute a new elevation value.
+              </DetailedDescription>
             </Double>
 
-            <Double Name="set highest elevation" Label="Set Highest Elevation:" Version="0" NumberOfRequiredValues="1" Optional="true">
-              <DefaultValue>0.0</DefaultValue>
+            <Double Name="set highest elevation" Label="Highest Elevation" Version="0" NumberOfRequiredValues="1" Optional="true">
             </Double>
 
-            <Double Name="set lowest elevation" Label="Set Lowest Elevation:" Version="0" NumberOfRequiredValues="1" Optional="true">
-              <DefaultValue>0.0</DefaultValue>
+            <Double Name="set lowest elevation" Label="Lowest Elevation" Version="0" NumberOfRequiredValues="1" Optional="true">
             </Double>
 
         <Void Name="invert scalars" Label="Invert Scalar Values" Version="0"
@@ -48,10 +58,6 @@
           <BriefDescription>This toggle adds a prefactor of -1 to the
           values in the auxiliary geometry's bathymetry values.</BriefDescription>
         </Void>
-
-            <Void Name="applyonlytovisiblemesh" Label="Apply only to the visible meshes on the model" Version="0" AdvanceLevel="0" NumberOfRequiredValues="0"
-            Optional="true" IsEnabledByDefault="false">
-            </Void>
 
           </ChildrenDefinitions>
           <DiscreteInfo DefaultIndex="0">
@@ -63,7 +69,6 @@
                 <Item>set highest elevation</Item>
                 <Item>set lowest elevation</Item>
                 <Item>invert scalars</Item>
-<!--                <Item>applyonlytovisiblemesh</Item>  -->
               </Items>
             </Structure>
             <Structure>
@@ -75,7 +80,6 @@
                 <Item>set lowest elevation</Item>
                 <Item>invert scalars</Item>
                 <Item>mesh</Item>
-<!--                <Item>applyonlytovisiblemesh</Item>  -->
               </Items>
             </Structure>
             <Structure>
@@ -86,7 +90,6 @@
                 <Item>set highest elevation</Item>
                 <Item>set lowest elevation</Item>
                 <Item>invert scalars</Item>
-<!--                <Item>applyonlytovisiblemesh</Item>  -->
               </Items>
             </Structure>
             <Structure>
@@ -98,7 +101,6 @@
                 <Item>set lowest elevation</Item>
                 <Item>invert scalars</Item>
                 <Item>mesh</Item>
-<!--                <Item>applyonlytovisiblemesh</Item>  -->
               </Items>
             </Structure>
             <Structure>
