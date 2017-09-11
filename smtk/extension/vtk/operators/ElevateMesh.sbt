@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the "interpolate mesh" Operator -->
+<!-- Description of the "elevate mesh" Operator -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
@@ -40,7 +40,6 @@
             within a radius of the node is used to compute a new
             elevation value.
           </DetailedDescription>
-          <DefaultValue>1.</DefaultValue>
         </Double>
 
         <Double Name="max elevation" Label="Maximum Elevation"
