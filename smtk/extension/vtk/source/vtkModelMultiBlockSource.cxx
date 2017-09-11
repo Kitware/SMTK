@@ -405,7 +405,7 @@ vtkSmartPointer<vtkPolyData> vtkModelMultiBlockSource::GenerateRepresentationFro
 
   vtkIdType npts = tess->coords().size() / 3;
   pts->Allocate(npts);
-  smtk::model::Entity* entrec;
+  smtk::model::EntityPtr entrec;
   if (entity.isValid(&entrec))
   {
     AddEntityTessToPolyData(entity, pts.GetPointer(), pd, this->ShowAnalysisTessellation);
@@ -505,7 +505,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
   }
   vtkIdType npts = tess->coords().size() / 3;
   pts->Allocate(npts);
-  smtk::model::Entity* entity;
+  smtk::model::EntityPtr entity;
   if (entityref.isValid(&entity))
   {
     AddEntityTessToPolyData(entityref, pts.GetPointer(), pd, this->ShowAnalysisTessellation);

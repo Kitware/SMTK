@@ -188,10 +188,9 @@ void qtModelEntityItemCombo::init()
   QStandardItem* item = nullptr;
   if (modelManager)
   {
-    for (smtk::model::UUIDWithEntity it = modelManager->topology().begin();
+    for (smtk::model::UUIDWithEntityPtr it = modelManager->topology().begin();
          it != modelManager->topology().end(); ++it)
     {
-
       smtk::model::EntityRef entref(modelManager, it->first);
       smtk::model::Model activeModel = qtActiveObjects::instance().activeModel();
       if (entref.isValid() && !entref.isUseEntity() &&

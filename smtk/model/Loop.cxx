@@ -76,7 +76,7 @@ Loops Loop::containedLoops() const
 bool Loop::replaceEdgeUseWithUses(const EdgeUse& original, const EdgeUses& replacements)
 {
   Manager::Ptr mgr = this->manager(); // Lock mgr
-  Entity* entRec = mgr->findEntity(this->entity());
+  EntityPtr entRec = mgr->findEntity(this->entity());
   if (!entRec)
   {
     return false;
@@ -146,7 +146,7 @@ bool Loop::replaceEdgeUseWithUses(const EdgeUse& original, const EdgeUses& repla
   //std::cout << "Did remove original " << didRemove << "\n";
   for (EdgeUses::const_iterator rit = replacements.begin(); rit != replacements.end(); ++rit)
   {
-    Entity* useRec = mgr->findEntity(rit->entity());
+    EntityPtr useRec = mgr->findEntity(rit->entity());
     if (!useRec)
     {
       continue;

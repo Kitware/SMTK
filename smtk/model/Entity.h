@@ -13,7 +13,7 @@
 #include "smtk/CoreExports.h" // for SMTKCORE_EXPORT macro
 #include "smtk/SystemConfig.h"
 
-#include "smtk/common/UUID.h"
+#include "smtk/common/ResourceComponent.h"
 
 #include "smtk/model/EntityTypeBits.h" // for entityFlags values
 #include "smtk/model/IntegerData.h"    // for IntegerList
@@ -42,11 +42,20 @@ namespace model
   * This also encodes the parametric dimension (or dimensions) associated
   * with the entity.
   */
-class SMTKCORE_EXPORT Entity
+class SMTKCORE_EXPORT Entity : public smtk::common::ResourceComponent
 {
 public:
-  Entity();
-  Entity(BitFlags entityFlags, int dimension);
+  using ResourcePtr = smtk::common::ResourcePtr;
+
+  smtkTypeMacro(Entity);
+  smtkSharedPtrCreateMacro(smtk::common::ResourceComponent);
+  virtual ~Entity();
+
+  static EntityPtr create(BitFlags entityFlags, int dimension, ManagerPtr resource = nullptr);
+  EntityPtr setup(
+    BitFlags entityFlags, int dimension, ManagerPtr resource = nullptr, bool resetRelations = true);
+
+  ResourcePtr resource() const override;
 
   int dimension() const;
   BitFlags dimensionBits() const;
@@ -57,8 +66,8 @@ public:
   const smtk::common::UUIDArray& relations() const;
 
   int appendRelation(const smtk::common::UUID& b, bool useHoles = true);
-  Entity& pushRelation(const smtk::common::UUID& b);
-  Entity& removeRelation(const smtk::common::UUID& b);
+  EntityPtr pushRelation(const smtk::common::UUID& b);
+  EntityPtr removeRelation(const smtk::common::UUID& b);
   void resetRelations();
 
   int findOrAppendRelation(const smtk::common::UUID& r);
@@ -86,10 +95,12 @@ public:
   static BitFlags dimensionToDimensionBits(int dim);
 
 protected:
+  Entity();
   int consumeInvalidIndex(const smtk::common::UUID& uid);
 
   BitFlags m_entityFlags;
   smtk::common::UUIDArray m_relations;
+  smtk::model::WeakManagerPtr m_resource;
   int m_firstInvalid;
 };
 

@@ -15,19 +15,28 @@
 
 #include "smtk/model/Entity.h"
 
+#include "smtk/common/ResourceComponent.h"
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
+#include "smtk/model/Entity.h"
+#include "smtk/model/Manager.h"
 
 namespace py = pybind11;
 
-py::class_< smtk::model::Entity > pybind11_init_smtk_model_Entity(py::module &m)
+PySharedPtrClass< smtk::model::Entity, smtk::common::ResourceComponent > pybind11_init_smtk_model_Entity(py::module &m)
 {
-  py::class_< smtk::model::Entity > instance(m, "Entity");
+  PySharedPtrClass< smtk::model::Entity, smtk::common::ResourceComponent > instance(m, "Entity");
   instance
-    .def(py::init<>())
-    .def(py::init<::smtk::model::BitFlags, int>())
     .def(py::init<::smtk::model::Entity const &>())
     .def("deepcopy", (smtk::model::Entity & (smtk::model::Entity::*)(::smtk::model::Entity const &)) &smtk::model::Entity::operator=)
+    .def("classname", &smtk::model::Entity::classname)
+    .def("shared_from_this", (std::shared_ptr<smtk::model::Entity> (smtk::model::Entity::*)()) &smtk::model::Entity::shared_from_this)
+    .def("shared_from_this", (std::shared_ptr<const smtk::model::Entity> (smtk::model::Entity::*)() const) &smtk::model::Entity::shared_from_this)
+    .def_static("create", (std::shared_ptr<smtk::model::Entity> (*)()) &smtk::model::Entity::create)
+    .def_static("create", (std::shared_ptr<smtk::model::Entity> (*)(::std::shared_ptr<smtk::model::Entity> &)) &smtk::model::Entity::create, py::arg("ref"))
+    .def_static("create", (smtk::model::EntityPtr (*)(::smtk::model::BitFlags, int, ::smtk::model::ManagerPtr)) &smtk::model::Entity::create, py::arg("entityFlags"), py::arg("dimension"), py::arg("resource") = nullptr)
+    .def("setup", &smtk::model::Entity::setup, py::arg("entityFlags"), py::arg("dimension"), py::arg("resource") = nullptr, py::arg("resetRelations") = true)
+    .def("resource", &smtk::model::Entity::resource)
     .def("dimension", &smtk::model::Entity::dimension)
     .def("dimensionBits", &smtk::model::Entity::dimensionBits)
     .def("entityFlags", &smtk::model::Entity::entityFlags)

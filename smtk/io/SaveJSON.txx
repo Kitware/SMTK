@@ -325,9 +325,9 @@ int SaveJSON::forEntities(
 
     // Generate JSON for the queued entity
     ManagerPtr modelMgr = ent.manager();
-    UUIDWithEntity it = modelMgr->topology().find(ent.entity());
+    UUIDWithEntityPtr it = modelMgr->topology().find(ent.entity());
     if ((it == ent.manager()->topology().end()) ||
-      ((it->second.entityFlags() & SESSION) && !(sections & JSON_SESSIONS)))
+      ((it->second->entityFlags() & SESSION) && !(sections & JSON_SESSIONS)))
       continue;
 
     cJSON* curChild = cJSON_CreateObject();

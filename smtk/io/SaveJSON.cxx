@@ -429,14 +429,14 @@ int SaveJSON::forManager(
     return 0;
   }
   int status = 1;
-  UUIDWithEntity it;
+  UUIDWithEntityPtr it;
 
   if (sections == JSON_NOTHING)
     return status;
 
   for (it = modelMgr->topology().begin(); it != modelMgr->topology().end(); ++it)
   {
-    if ((it->second.entityFlags() & SESSION) && !(sections & JSON_SESSIONS))
+    if ((it->second->entityFlags() & SESSION) && !(sections & JSON_SESSIONS))
       continue;
 
     cJSON* curChild = cJSON_CreateObject();
@@ -479,21 +479,21 @@ int SaveJSON::forManager(
   return status;
 }
 
-int SaveJSON::forManagerEntity(UUIDWithEntity& entry, cJSON* entRec, ManagerPtr model)
+int SaveJSON::forManagerEntity(UUIDWithEntityPtr& entry, cJSON* entRec, ManagerPtr model)
 {
   (void)model;
-  cJSON* ent = cJSON_CreateNumber(entry->second.entityFlags());
-  cJSON* dim = cJSON_CreateNumber(entry->second.dimension());
+  cJSON* ent = cJSON_CreateNumber(entry->second->entityFlags());
+  cJSON* dim = cJSON_CreateNumber(entry->second->dimension());
   cJSON_AddItemToObject(entRec, "e", ent);
   cJSON_AddItemToObject(entRec, "d", dim);
-  if (!entry->second.relations().empty())
+  if (!entry->second->relations().empty())
   {
     cJSON_AddItemToObject(
-      entRec, "r", cJSON_CreateUUIDArray(&entry->second.relations()[0],
-                     static_cast<unsigned int>(entry->second.relations().size())));
+      entRec, "r", cJSON_CreateUUIDArray(&entry->second->relations()[0],
+                     static_cast<unsigned int>(entry->second->relations().size())));
   }
   /*
-  if (entry->second.entityFlags() & MODEL_ENTITY)
+  if (entry->second->entityFlags() & MODEL_ENTITY)
     SaveJSON::forModelOperators(entry->first, entRec, model);
     */
   return 1;

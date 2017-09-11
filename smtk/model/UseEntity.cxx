@@ -44,7 +44,7 @@ Orientation UseEntity::orientation() const
   if (!mgr)
     return UNDEFINED;
 
-  Entity* ent = mgr->findEntity(this->m_entity);
+  EntityPtr ent = mgr->findEntity(this->m_entity);
   if (!ent)
     return UNDEFINED;
 
@@ -73,7 +73,7 @@ int UseEntity::sense() const
 {
   ManagerPtr mgr = this->manager();
   // Find the cell for this use record.
-  Entity* ent = mgr->findEntity(this->m_entity);
+  EntityPtr ent = mgr->findEntity(this->m_entity);
   const Arrangement* arr = mgr->findArrangement(this->m_entity, HAS_CELL, 0);
   if (ent && arr)
   {

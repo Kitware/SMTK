@@ -29,11 +29,11 @@ if __name__ == '__main__':
         # Add a group
         group = store.addGroup(0, 'Test Group')
         # Add a volume and 4 faces the hard way:
-        volume = smtk.model.Entity(int(smtk.model.CELL_ENTITY), 3)
-        f1 = smtk.model.Entity(int(smtk.model.CELL_ENTITY), 2)
-        f2 = smtk.model.Entity(int(smtk.model.CELL_ENTITY), 2)
-        f3 = smtk.model.Entity(int(smtk.model.CELL_ENTITY), 2)
-        f4 = smtk.model.Entity(int(smtk.model.CELL_ENTITY), 2)
+        volume = smtk.model.Entity.create(int(smtk.model.CELL_ENTITY), 3)
+        f1 = smtk.model.Entity.create(int(smtk.model.CELL_ENTITY), 2)
+        f2 = smtk.model.Entity.create(int(smtk.model.CELL_ENTITY), 2)
+        f3 = smtk.model.Entity.create(int(smtk.model.CELL_ENTITY), 2)
+        f4 = smtk.model.Entity.create(int(smtk.model.CELL_ENTITY), 2)
         u01 = store.addEntity(f1)
         u02 = store.addEntity(f2)
         u03 = store.addEntity(f3)

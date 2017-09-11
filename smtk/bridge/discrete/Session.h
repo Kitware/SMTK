@@ -134,7 +134,7 @@ protected:
 
   Session();
 
-  smtk::model::Entity* addEntityRecord(const smtk::model::EntityRef& entRef) override;
+  smtk::model::EntityPtr addEntityRecord(const smtk::model::EntityRef& entRef) override;
   smtk::model::ArrangementHelper* createArrangementHelper() override;
   int findOrAddCellAdjacencies(const smtk::model::CellEntity& entRef, SessionInfoBits request,
     smtk::model::ArrangementHelper* helper) override;
@@ -161,10 +161,10 @@ protected:
   int findOrAddRelatedInstances(const smtk::model::EntityRef& entRef, SessionInfoBits request,
     smtk::model::ArrangementHelper* helper) override;
   SessionInfoBits findOrAddArrangements(const smtk::model::EntityRef& entRef,
-    smtk::model::Entity* entRec, SessionInfoBits flags,
+    smtk::model::EntityPtr entRec, SessionInfoBits flags,
     smtk::model::ArrangementHelper* helper) override;
   SessionInfoBits updateProperties(const smtk::model::EntityRef& entRef,
-    smtk::model::Entity* entRec, SessionInfoBits flags,
+    smtk::model::EntityPtr entRec, SessionInfoBits flags,
     smtk::model::ArrangementHelper* helper) override;
   SessionInfoBits updateTessellation(const smtk::model::EntityRef& entRef, SessionInfoBits flags,
     smtk::model::ArrangementHelper* helper) override;

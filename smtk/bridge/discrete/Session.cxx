@@ -346,7 +346,7 @@ std::string Session::defaultFileExtension(const smtk::model::Model& model) const
   * at this point since there is no guarantee that their records
   * exist in the manager.
   */
-Entity* Session::addEntityRecord(const smtk::model::EntityRef& entRef)
+EntityPtr Session::addEntityRecord(const smtk::model::EntityRef& entRef)
 {
   vtkModelItem* ent = this->entityForUUID(entRef.entity());
   if (!ent)
@@ -1085,7 +1085,7 @@ int Session::findOrAddRelatedInstances(const smtk::model::EntityRef& entRef,
 }
 
 smtk::model::SessionInfoBits Session::findOrAddArrangements(const smtk::model::EntityRef& entRef,
-  Entity* entRec, SessionInfoBits flags, smtk::model::ArrangementHelper* helper)
+  EntityPtr entRec, SessionInfoBits flags, smtk::model::ArrangementHelper* helper)
 {
   (void)entRef;
   (void)entRec;
@@ -1094,7 +1094,7 @@ smtk::model::SessionInfoBits Session::findOrAddArrangements(const smtk::model::E
   return 0;
 }
 
-SessionInfoBits Session::updateProperties(const smtk::model::EntityRef& entRef, Entity* entRec,
+SessionInfoBits Session::updateProperties(const smtk::model::EntityRef& entRef, EntityPtr entRec,
   SessionInfoBits flags, smtk::model::ArrangementHelper* helper)
 {
   (void)entRec;

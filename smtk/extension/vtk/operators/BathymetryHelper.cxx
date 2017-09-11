@@ -325,7 +325,7 @@ vtkIdType BathymetryHelper::GenerateRepresentationFromModel(
     return 0;
   }
   vtkIdType npts = tess->coords().size() / 3;
-  smtk::model::Entity* entity;
+  smtk::model::EntityPtr entity;
   if (entityref.isValid(&entity))
   {
     for (vtkIdType i = 0; i < npts; ++i)
@@ -345,7 +345,7 @@ void BathymetryHelper::CopyCoordinatesToTessellation(
   { // Oops.
     std::cerr << "Do not have tessellation" << std::endl;
   }
-  smtk::model::Entity* entity;
+  smtk::model::EntityPtr entity;
   vtkIdType npts = tess->coords().size() / 3;
   if (entityref.isValid(&entity) && (startingIndex + npts <= pts->GetNumberOfPoints()))
   {

@@ -66,7 +66,8 @@ namespace model
 //@{
 /// Create a default, empty model manager.
 Manager::Manager()
-  : m_topology(new UUIDsToEntities)
+  : smtk::common::Resource(nullptr)
+  , m_topology(new UUIDsToEntities)
   , m_floatData(new UUIDsToFloatData)
   , m_stringData(new UUIDsToStringData)
   , m_integerData(new UUIDsToIntegerData)
@@ -88,7 +89,8 @@ Manager::Manager(shared_ptr<UUIDsToEntities> inTopology,
   shared_ptr<UUIDsToArrangements> inArrangements, shared_ptr<UUIDsToTessellations> tess,
   shared_ptr<UUIDsToTessellations> analysismesh, shared_ptr<smtk::mesh::Manager> meshes,
   shared_ptr<UUIDsToAttributeAssignments> attribs)
-  : m_topology(inTopology)
+  : smtk::common::Resource(nullptr)
+  , m_topology(inTopology)
   , m_floatData(new UUIDsToFloatData)
   , m_stringData(new UUIDsToStringData)
   , m_integerData(new UUIDsToIntegerData)
@@ -197,7 +199,7 @@ SessionInfoBits Manager::erase(const UUID& uid, SessionInfoBits flags)
   if (flags & SESSION_ENTITY_RELATIONS)
     actual |= SESSION_ARRANGEMENTS;
 
-  UUIDWithEntity ent;
+  UUIDWithEntityPtr ent;
   bool haveEnt = false;
   if (actual & (SESSION_ENTITY_TYPE | SESSION_ENTITY_RELATIONS))
   {
@@ -324,7 +326,7 @@ SessionInfoBits Manager::hardErase(const EntityRef& eref, SessionInfoBits flags)
   if (flags & SESSION_ENTITY_RELATIONS)
     actual |= SESSION_ARRANGEMENTS;
 
-  UUIDWithEntity ent;
+  UUIDWithEntityPtr ent;
   if (actual & (SESSION_ENTITY_TYPE | SESSION_ENTITY_RELATIONS))
   {
     if (!this->m_topology->erase(uid))
@@ -460,11 +462,19 @@ Manager::iter_type Manager::insertEntityOfTypeAndDimension(BitFlags entityFlags,
   return this->setEntityOfTypeAndDimension(actual, entityFlags, dim);
 }
 
-/// Insert the specified cell, returning an iterator with a new, unique UUID.
-Manager::iter_type Manager::insertEntity(Entity& c)
+/**\brief Insert the specified cell, returning an iterator.
+  *
+  * If \a c has a null UUID, one will be generated and set;
+  * otherwise the existing UUID will be used when inserting
+  * into this class's map.
+  */
+Manager::iter_type Manager::insertEntity(EntityPtr c)
 {
-  UUID actual = this->unusedUUID();
-  return this->setEntity(actual, c);
+  if (!c->id())
+  {
+    c->setId(this->unusedUUID());
+  }
+  return this->setEntity(c);
 }
 
 /**\brief Create and map a new cell of the given \a dimension to the given \a uid.
@@ -484,7 +494,7 @@ Manager::iter_type Manager::insertEntity(Entity& c)
 Manager::iter_type Manager::setEntityOfTypeAndDimension(
   const UUID& uid, BitFlags entityFlags, int dim)
 {
-  UUIDsToEntities::iterator it;
+  UUIDWithEntityPtr it;
   if (uid.isNull())
   {
     std::ostringstream msg;
@@ -492,14 +502,16 @@ Manager::iter_type Manager::setEntityOfTypeAndDimension(
     throw msg.str();
   }
   if (((it = this->m_topology->find(uid)) != this->m_topology->end()) &&
-    (entityFlags & GROUP_ENTITY) != 0 && dim >= 0 && it->second.dimension() != dim)
+    (entityFlags & GROUP_ENTITY) != 0 && dim >= 0 && it->second->dimension() != dim)
   {
     std::ostringstream msg;
-    msg << "Duplicate UUID '" << uid << "' of different dimension " << it->second.dimension()
+    msg << "Duplicate UUID '" << uid << "' of different dimension " << it->second->dimension()
         << " != " << dim;
     throw msg.str();
   }
-  std::pair<UUID, Entity> entry(uid, Entity(entityFlags, dim));
+  EntityPtr entrec = Entity::create(entityFlags, dim, shared_from_this());
+  entrec->setId(uid);
+  std::pair<UUID, EntityPtr> entry(uid, entrec);
   this->prepareForEntity(entry);
   std::pair<Manager::iter_type, bool> result = this->m_topology->insert(entry);
 
@@ -516,22 +528,22 @@ Manager::iter_type Manager::setEntityOfTypeAndDimension(
   *
   * Passing a nil or non-unique \a uid is an error here and will throw an exception.
   */
-Manager::iter_type Manager::setEntity(const UUID& uid, Entity& c)
+Manager::iter_type Manager::setEntity(EntityPtr c)
 {
-  UUIDsToEntities::iterator it;
-  if (uid.isNull())
+  UUIDWithEntityPtr it;
+  if (c->id().isNull())
   {
     std::ostringstream msg;
     msg << "Nil UUID";
     throw msg.str();
   }
-  if ((it = this->m_topology->find(uid)) != this->m_topology->end())
+  if ((it = this->m_topology->find(c->id())) != this->m_topology->end())
   {
-    if (it->second.dimension() != c.dimension())
+    if (it->second->dimension() != c->dimension())
     {
       std::ostringstream msg;
-      msg << "Duplicate UUID '" << uid << "' of different dimension " << it->second.dimension()
-          << " != " << c.dimension();
+      msg << "Duplicate UUID '" << c->id() << "' of different dimension " << it->second->dimension()
+          << " != " << c->dimension();
       throw msg.str();
     }
     this->removeEntityReferences(it);
@@ -539,7 +551,7 @@ Manager::iter_type Manager::setEntity(const UUID& uid, Entity& c)
     this->insertEntityReferences(it);
     return it;
   }
-  std::pair<UUID, Entity> entry(uid, c);
+  std::pair<UUID, EntityPtr> entry(c->id(), c);
   this->prepareForEntity(entry);
   it = this->m_topology->insert(entry).first;
   this->insertEntityReferences(it);
@@ -553,7 +565,7 @@ UUID Manager::addEntityOfTypeAndDimension(BitFlags entityFlags, int dim)
 }
 
 /// A wrappable version of InsertEntity
-UUID Manager::addEntity(Entity& cell)
+UUID Manager::addEntity(EntityPtr cell)
 {
   return this->insertEntity(cell)->first;
 }
@@ -564,10 +576,11 @@ UUID Manager::addEntityOfTypeAndDimensionWithUUID(const UUID& uid, BitFlags enti
   return this->setEntityOfTypeAndDimension(uid, entityFlags, dim)->first;
 }
 
-/// A wrappable version of SetEntity
-UUID Manager::addEntityWithUUID(const UUID& uid, Entity& cell)
+/// A wrappable version of setEntity. This will override the UUID in \a cell.
+UUID Manager::addEntityWithUUID(const UUID& uid, EntityPtr cell)
 {
-  return this->setEntity(uid, cell)->first;
+  cell->setId(uid);
+  return this->setEntity(cell)->first;
 }
 //@}
 
@@ -599,15 +612,15 @@ UUID Manager::addCellOfDimensionWithUUID(const UUID& uid, int dim)
 /// Return the type of entity that the link represents.
 BitFlags Manager::type(const UUID& ofEntity) const
 {
-  UUIDsToEntities::iterator it = this->m_topology->find(ofEntity);
-  return (it == this->m_topology->end() ? INVALID : it->second.entityFlags());
+  UUIDWithEntityPtr it = this->m_topology->find(ofEntity);
+  return (it == this->m_topology->end() ? INVALID : it->second->entityFlags());
 }
 
 /// Return the dimension of the manifold that the passed entity represents.
 int Manager::dimension(const UUID& ofEntity) const
 {
-  UUIDsToEntities::iterator it = this->m_topology->find(ofEntity);
-  return (it == this->m_topology->end() ? -1 : it->second.dimension());
+  UUIDWithEntityPtr it = this->m_topology->find(ofEntity);
+  return (it == this->m_topology->end() ? -1 : it->second->dimension());
 }
 
 /**\brief Return a name for the given entity ID.
@@ -626,12 +639,12 @@ std::string Manager::name(const UUID& ofEntity) const
       return nprop[0];
     }
   }
-  UUIDsToEntities::iterator it = this->m_topology->find(ofEntity);
+  UUIDWithEntityPtr it = this->m_topology->find(ofEntity);
   if (it == this->m_topology->end())
   {
     return "invalid id " + ofEntity.toString();
   }
-  return Manager::shortUUIDName(it->first, it->second.entityFlags());
+  return Manager::shortUUIDName(it->first, it->second->entityFlags());
 }
 
 /**\brief Return the (Dimension+1 or higher)-entities that are the immediate bordants of the passed entity.
@@ -641,31 +654,32 @@ std::string Manager::name(const UUID& ofEntity) const
 UUIDs Manager::bordantEntities(const UUID& ofEntity, int ofDimension) const
 {
   UUIDs result;
-  UUIDsToEntities::const_iterator it = this->m_topology->find(ofEntity);
+  UUIDWithConstEntityPtr it = this->m_topology->find(ofEntity);
   if (it == this->m_topology->end())
   {
     return result;
   }
-  if (ofDimension >= 0 && it->second.dimension() >= ofDimension)
+  if (ofDimension >= 0 && it->second->dimension() >= ofDimension)
   {
     // can't ask for "higher" dimensional boundaries that are lower than the dimension of this cell.
     return result;
   }
-  UUIDsToEntities::const_iterator other;
-  for (UUIDArray::const_iterator ai = it->second.relations().begin();
-       ai != it->second.relations().end(); ++ai)
+  UUIDWithConstEntityPtr other;
+  for (UUIDArray::const_iterator ai = it->second->relations().begin();
+       ai != it->second->relations().end(); ++ai)
   {
     other = this->m_topology->find(*ai);
     if (other == this->m_topology->end())
     { // TODO: silently skip bad relations or complain?
       continue;
     }
-    if ((ofDimension >= 0 && other->second.dimension() == ofDimension) ||
-      (ofDimension == -2 && other->second.dimension() >= it->second.dimension()))
+    if ((ofDimension >= 0 && other->second->dimension() == ofDimension) ||
+      (ofDimension == -2 && other->second->dimension() >= it->second->dimension()))
     { // The dimension is higher, so dumbly push it into the result:
       result.insert(*ai);
     }
-    else if ((it->second.entityFlags() & CELL_ENTITY) && (other->second.entityFlags() & USE_ENTITY))
+    else if ((it->second->entityFlags() & CELL_ENTITY) &&
+      (other->second->entityFlags() & USE_ENTITY))
     { // ... or it is a use: follow the use upwards.
       ShellEntities bshells = UseEntity(smtk::const_pointer_cast<Manager>(shared_from_this()), *ai)
                                 .boundingShellEntities<ShellEntities>();
@@ -705,31 +719,32 @@ UUIDs Manager::bordantEntities(const UUIDs& ofEntities, int ofDimension) const
 UUIDs Manager::boundaryEntities(const UUID& ofEntity, int ofDimension) const
 {
   UUIDs result;
-  UUIDsToEntities::const_iterator it = this->m_topology->find(ofEntity);
+  UUIDWithConstEntityPtr it = this->m_topology->find(ofEntity);
   if (it == this->m_topology->end())
   {
     return result;
   }
-  if (ofDimension >= 0 && it->second.dimension() <= ofDimension)
+  if (ofDimension >= 0 && it->second->dimension() <= ofDimension)
   {
     // can't ask for "lower" dimensional boundaries that are higher than the dimension of this cell.
     return result;
   }
-  UUIDsToEntities::iterator other;
-  for (UUIDArray::const_iterator ai = it->second.relations().begin();
-       ai != it->second.relations().end(); ++ai)
+  UUIDWithEntityPtr other;
+  for (UUIDArray::const_iterator ai = it->second->relations().begin();
+       ai != it->second->relations().end(); ++ai)
   {
     other = this->m_topology->find(*ai);
     if (other == this->m_topology->end())
     { // TODO: silently skip bad relations or complain?
       continue;
     }
-    if ((ofDimension >= 0 && other->second.dimension() == ofDimension) ||
-      (ofDimension == -2 && other->second.dimension() <= it->second.dimension()))
+    if ((ofDimension >= 0 && other->second->dimension() == ofDimension) ||
+      (ofDimension == -2 && other->second->dimension() <= it->second->dimension()))
     {
       result.insert(*ai);
     }
-    else if ((it->second.entityFlags() & CELL_ENTITY) && (other->second.entityFlags() & USE_ENTITY))
+    else if ((it->second->entityFlags() & CELL_ENTITY) &&
+      (other->second->entityFlags() & USE_ENTITY))
     { // ... or it is a use: follow the use downwards.
       ShellEntities shells = UseEntity(smtk::const_pointer_cast<Manager>(shared_from_this()), *ai)
                                .shellEntities<ShellEntities>();
@@ -790,12 +805,12 @@ UUIDs Manager::boundaryEntities(const UUIDs& ofEntities, int ofDimension) const
 UUIDs Manager::lowerDimensionalBoundaries(const UUID& ofEntity, int lowerDimension)
 {
   UUIDs result;
-  UUIDsToEntities::iterator it = this->m_topology->find(ofEntity);
+  UUIDWithEntityPtr it = this->m_topology->find(ofEntity);
   if (it == this->m_topology->end())
   {
     return result;
   }
-  if (it->second.dimension() <= lowerDimension)
+  if (it->second->dimension() <= lowerDimension)
   {
     // do nothing
   }
@@ -805,7 +820,7 @@ UUIDs Manager::lowerDimensionalBoundaries(const UUID& ofEntity, int lowerDimensi
     //        a cell's relations are dimension (d+1) or
     //        (d-1). We should also collect any out-of-place
     //        relations that match lowerDimension as we go.
-    int currentDim = it->second.dimension() - 1;
+    int currentDim = it->second->dimension() - 1;
     int delta = currentDim - lowerDimension;
     result = this->boundaryEntities(ofEntity, currentDim--);
     for (int i = delta; i > 0; --i, --currentDim)
@@ -837,18 +852,18 @@ UUIDs Manager::lowerDimensionalBoundaries(const UUID& ofEntity, int lowerDimensi
 UUIDs Manager::higherDimensionalBordants(const UUID& ofEntity, int higherDimension)
 {
   UUIDs result;
-  UUIDsToEntities::iterator it = this->m_topology->find(ofEntity);
+  UUIDWithEntityPtr it = this->m_topology->find(ofEntity);
   if (it == this->m_topology->end())
   {
     return result;
   }
-  if (higherDimension >= 0 && it->second.dimension() >= higherDimension)
+  if (higherDimension >= 0 && it->second->dimension() >= higherDimension)
   {
     // do nothing
   }
   else
   {
-    int currentDim = it->second.dimension() + 1;
+    int currentDim = it->second->dimension() + 1;
     int delta = higherDimension < 0 ? 4 : higherDimension - currentDim;
     result = this->bordantEntities(ofEntity, currentDim++);
     for (int i = delta; i > 0; --i, ++currentDim)
@@ -876,9 +891,9 @@ UUIDs Manager::adjacentEntities(const UUID& ofEntity, int ofDimension)
 UUIDs Manager::entitiesMatchingFlags(BitFlags mask, bool exactMatch)
 {
   UUIDs result;
-  for (UUIDWithEntity it = this->m_topology->begin(); it != this->m_topology->end(); ++it)
+  for (UUIDWithEntityPtr it = this->m_topology->begin(); it != this->m_topology->end(); ++it)
   {
-    BitFlags masked = it->second.entityFlags() & mask;
+    BitFlags masked = it->second->entityFlags() & mask;
     if ((masked && mask == ANY_ENTITY) || (!exactMatch && masked) || (exactMatch && masked == mask))
     {
       result.insert(it->first);
@@ -891,9 +906,9 @@ UUIDs Manager::entitiesMatchingFlags(BitFlags mask, bool exactMatch)
 UUIDs Manager::entitiesOfDimension(int dim)
 {
   UUIDs result;
-  for (UUIDWithEntity it = this->m_topology->begin(); it != this->m_topology->end(); ++it)
+  for (UUIDWithEntityPtr it = this->m_topology->begin(); it != this->m_topology->end(); ++it)
   {
-    if (it->second.dimension() == dim)
+    if (it->second->dimension() == dim)
     {
       result.insert(it->first);
     }
@@ -904,16 +919,17 @@ UUIDs Manager::entitiesOfDimension(int dim)
 
 /**\brief Return the smtk::model::Entity associated with \a uid (or NULL).
   *
-  * Note that even the const version of this method may invalidate other
-  * pointers to Entity records since it may ask a Session instance to fetch
-  * a dangling UUID (one marked as existing but un-transcribed) and insert
-  * the Entity into Manager. If it is important that Entity pointers remain
-  * valid, call with the second argument (\a trySessions) set to false.
+  * Note that even though const, this method may change the records in
+  * \a m_topology when \a trySessions is true (as transcription may modify
+  * existing entities to insert newly-transcribed relationships)
+  * since it may ask a Session instance to fetch a dangling UUID (one
+  * marked as existing but un-transcribed) and insert the Entity into
+  * Manager. If it is important that entities remain unchanged,
+  * call with the second argument (\a trySessions) set to false.
   */
-//@{
-const Entity* Manager::findEntity(const UUID& uid, bool trySessions) const
+EntityPtr Manager::findEntity(const UUID& uid, bool trySessions) const
 {
-  UUIDWithEntity it = this->m_topology->find(uid);
+  UUIDWithEntityPtr it = this->m_topology->find(uid);
   if (it == this->m_topology->end())
   {
     // Not in storage... is it in any session's dangling entity list?
@@ -930,46 +946,26 @@ const Entity* Manager::findEntity(const UUID& uid, bool trySessions) const
         {
           it = this->m_topology->find(uid);
           if (it != this->m_topology->end())
-            return &it->second;
+            return it->second;
         }
       }
     }
-    return NULL;
+    return nullptr;
   }
-  return &it->second;
+  return it->second;
 }
 
-Entity* Manager::findEntity(const UUID& uid, bool trySessions)
+smtk::common::ResourceComponentPtr Manager::find(const smtk::common::UUID& uid) const
 {
-  UUIDWithEntity it = this->m_topology->find(uid);
-  if (it == this->m_topology->end())
-  { // Not in storage... is it in any session's dangling entity list?
-    ManagerPtr self = const_cast<Manager*>(this)->shared_from_this();
-    if (trySessions && self)
-    {
-      UUIDsToSessions::iterator bit;
-      for (bit = self->m_sessions->begin(); bit != self->m_sessions->end(); ++bit)
-      {
-        if (bit->second->transcribe(EntityRef(self, uid), SESSION_ENTITY_ARRANGED, true))
-        {
-          it = this->m_topology->find(uid);
-          if (it != this->m_topology->end())
-            return &it->second;
-        }
-      }
-    }
-    return NULL;
-  }
-  return &it->second;
+  return std::dynamic_pointer_cast<smtk::common::ResourceComponent>(this->findEntity(uid));
 }
-//@}
 
 /// Given an entity \a c, ensure that all of its references contain a reference to it.
-void Manager::insertEntityReferences(const UUIDWithEntity& c)
+void Manager::insertEntityReferences(const UUIDWithEntityPtr& c)
 {
   UUIDArray::const_iterator bit;
-  Entity* ref;
-  for (bit = c->second.relations().begin(); bit != c->second.relations().end(); ++bit)
+  EntityPtr ref;
+  for (bit = c->second->relations().begin(); bit != c->second->relations().end(); ++bit)
   {
     ref = this->findEntity(*bit);
     if (ref)
@@ -987,10 +983,10 @@ void Manager::insertEntityReferences(const UUIDWithEntity& c)
   * array of relations held by \a c and potentially other entities related
   * to \a c.
   */
-bool Manager::elideOneEntityReference(const UUIDWithEntity& c, const UUID& r)
+bool Manager::elideOneEntityReference(const UUIDWithEntityPtr& c, const UUID& r)
 {
   UUIDArray::const_iterator bit;
-  return c->second.invalidateRelation(r) < 0 ? false : true;
+  return c->second->invalidateRelation(r) < 0 ? false : true;
 }
 
 /**\brief Given an entity \a c, ensure that all of its references
@@ -1002,11 +998,11 @@ bool Manager::elideOneEntityReference(const UUIDWithEntity& c, const UUID& r)
   * relations are used by arrangements and we do not want to
   * rewrite arrangements.
   */
-void Manager::elideEntityReferences(const UUIDWithEntity& c)
+void Manager::elideEntityReferences(const UUIDWithEntityPtr& c)
 {
   UUIDArray::const_iterator bit;
-  Entity* ref;
-  for (bit = c->second.relations().begin(); bit != c->second.relations().end(); ++bit)
+  EntityPtr ref;
+  for (bit = c->second->relations().begin(); bit != c->second->relations().end(); ++bit)
   {
     ref = this->findEntity(*bit);
     if (ref)
@@ -1024,11 +1020,11 @@ void Manager::elideEntityReferences(const UUIDWithEntity& c)
 }
 
 /// Given an entity \a c, ensure that all of its references contain <b>no</b> reference to it.
-void Manager::removeEntityReferences(const UUIDWithEntity& c)
+void Manager::removeEntityReferences(const UUIDWithEntityPtr& c)
 {
   UUIDArray::const_iterator bit;
-  Entity* ref;
-  for (bit = c->second.relations().begin(); bit != c->second.relations().end(); ++bit)
+  EntityPtr ref;
+  for (bit = c->second->relations().begin(); bit != c->second->relations().end(); ++bit)
   {
     ref = this->findEntity(*bit);
     if (ref)
@@ -1047,7 +1043,7 @@ void Manager::removeEntityReferences(const UUIDWithEntity& c)
   */
 void Manager::addToGroup(const UUID& groupId, const UUIDs& uids)
 {
-  UUIDWithEntity result = this->m_topology->find(groupId);
+  UUIDWithEntityPtr result = this->m_topology->find(groupId);
   if (result == this->m_topology->end())
   {
     return;
@@ -1055,7 +1051,7 @@ void Manager::addToGroup(const UUID& groupId, const UUIDs& uids)
 
   for (UUIDs::const_iterator it = uids.begin(); it != uids.end(); ++it)
   {
-    result->second.appendRelation(*it);
+    result->second->appendRelation(*it);
   }
   this->insertEntityReferences(result);
 }
@@ -1330,13 +1326,13 @@ UUID Manager::sessionOwningEntity(const UUID& ent) const
 void Manager::assignDefaultNames()
 {
   // I. Put every UUID into a bin for processing
-  UUIDWithEntity it;
+  UUIDWithEntityPtr it;
   UUIDs models;  // models that have not had all of their children named
   UUIDs orphans; // entities that may or may not be parent-less
   UUIDs named;   // entities with names
   for (it = this->m_topology->begin(); it != this->m_topology->end(); ++it)
   {
-    BitFlags etype = it->second.entityFlags();
+    BitFlags etype = it->second->entityFlags();
     if (etype & MODEL_ENTITY)
     {
       models.insert(it->first);
@@ -1360,7 +1356,7 @@ void Manager::assignDefaultNames()
     else
       oname = this->stringProperty(*uit, "name")[0];
 
-    UUIDWithEntity iit = this->m_topology->find(*uit);
+    UUIDWithEntityPtr iit = this->m_topology->find(*uit);
     this->assignDefaultNamesWithOwner(iit, *uit, oname, orphans, false);
   }
   for (uit = orphans.begin(); uit != orphans.end(); ++uit)
@@ -1377,7 +1373,7 @@ void Manager::assignDefaultNames()
 void Manager::assignDefaultNamesToModelChildren(const smtk::common::UUID& modelId)
 {
   bool oops = true;
-  UUIDWithEntity it = this->m_topology->find(modelId);
+  UUIDWithEntityPtr it = this->m_topology->find(modelId);
   if (it != this->m_topology->end())
   {
     Model model(shared_from_this(), modelId);
@@ -1418,10 +1414,10 @@ void Manager::assignDefaultNamesToModelChildren(const smtk::common::UUID& modelI
   */
 std::string Manager::assignDefaultName(const UUID& uid)
 {
-  UUIDWithEntity it = this->m_topology->find(uid);
+  UUIDWithEntityPtr it = this->m_topology->find(uid);
   if (it != this->m_topology->end())
   {
-    return this->assignDefaultName(it->first, it->second.entityFlags());
+    return this->assignDefaultName(it->first, it->second->entityFlags());
   }
   return std::string();
 }
@@ -1433,32 +1429,32 @@ std::string Manager::assignDefaultName(const UUID& uid)
   */
 std::string Manager::assignDefaultNameIfMissing(const UUID& uid)
 {
-  UUIDWithEntity it = this->m_topology->find(uid);
+  UUIDWithEntityPtr it = this->m_topology->find(uid);
   if (it != this->m_topology->end())
   {
     return this->hasStringProperty(uid, "name")
       ? this->name(uid)
-      : this->assignDefaultName(it->first, it->second.entityFlags());
+      : this->assignDefaultName(it->first, it->second->entityFlags());
   }
   return std::string();
 }
 
-void Manager::assignDefaultNamesWithOwner(const UUIDWithEntity& irec, const UUID& owner,
+void Manager::assignDefaultNamesWithOwner(const UUIDWithEntityPtr& irec, const UUID& owner,
   const std::string& ownersName, std::set<smtk::common::UUID>& remaining, bool nokids)
 {
   remaining.erase(irec->first);
   // Assign the item a name if required:
   if (!this->hasStringProperty(irec->first, "name"))
   {
-    IntegerList& counts(this->entityCounts(owner, irec->second.entityFlags()));
+    IntegerList& counts(this->entityCounts(owner, irec->second->entityFlags()));
     if (!this->hasIntegerProperty(irec->first, "pedigree id"))
     {
-      int pedigree = Entity::countForType(irec->second.entityFlags(), counts, false);
+      int pedigree = Entity::countForType(irec->second->entityFlags(), counts, false);
       this->setIntegerProperty(irec->first, "pedigree id", pedigree);
     }
     std::string defaultName = counts.empty()
-      ? this->shortUUIDName(irec->first, irec->second.entityFlags())
-      : Entity::defaultNameFromCounters(irec->second.entityFlags(), counts);
+      ? this->shortUUIDName(irec->first, irec->second->entityFlags())
+      : Entity::defaultNameFromCounters(irec->second->entityFlags(), counts);
     this->setStringProperty(irec->first, "name", defaultName);
   }
 
@@ -1469,14 +1465,14 @@ void Manager::assignDefaultNamesWithOwner(const UUIDWithEntity& irec, const UUID
   // Do not ascend... check that relIt dimension decreases or
   // that certain ownership rules are met.
   UUIDArray::const_iterator relIt;
-  BitFlags iflg = irec->second.entityFlags();
+  BitFlags iflg = irec->second->entityFlags();
   BitFlags idim = iflg & ANY_DIMENSION;
-  for (relIt = irec->second.relations().begin(); relIt != irec->second.relations().end(); ++relIt)
+  for (relIt = irec->second->relations().begin(); relIt != irec->second->relations().end(); ++relIt)
   {
-    UUIDWithEntity child = this->m_topology->find(*relIt);
+    UUIDWithEntityPtr child = this->m_topology->find(*relIt);
     if (child == this->m_topology->end())
       continue;
-    BitFlags cflg = child->second.entityFlags();
+    BitFlags cflg = child->second->entityFlags();
     bool yesButNoKids = (cflg & GROUP_ENTITY) && (iflg & MODEL_ENTITY);
     if (((cflg & ANY_DIMENSION) < idim && !(iflg & SHELL_ENTITY)) ||
       ((cflg & SHELL_ENTITY) && (iflg & USE_ENTITY)) ||
@@ -1715,9 +1711,9 @@ IntegerList& Manager::entityCounts(const UUID& modelId, BitFlags entityFlags)
   *
   * This is an internal method invoked by setEntity and SetEntityOfTypeAndDimension.
   */
-void Manager::prepareForEntity(std::pair<UUID, Entity>& entry)
+void Manager::prepareForEntity(std::pair<UUID, EntityPtr>& entry)
 {
-  if ((entry.second.entityFlags() & CELL_2D) == CELL_2D)
+  if ((entry.second->entityFlags() & CELL_2D) == CELL_2D)
   {
     if (!this->hasArrangementsOfKindForEntity(entry.first, HAS_USE))
     {
@@ -1728,7 +1724,7 @@ void Manager::prepareForEntity(std::pair<UUID, Entity>& entry)
         entry.first, HAS_USE, Arrangement::CellHasUseWithIndexSenseAndOrientation(-1, 0, POSITIVE));
     }
   }
-  else if (entry.second.entityFlags() & USE_ENTITY)
+  else if (entry.second->entityFlags() & USE_ENTITY)
   {
     if (!this->hasArrangementsOfKindForEntity(entry.first, HAS_SHELL))
     {
@@ -1736,7 +1732,7 @@ void Manager::prepareForEntity(std::pair<UUID, Entity>& entry)
       this->arrangeEntity(entry.first, HAS_SHELL, Arrangement::UseHasShellWithIndex(-1));
     }
   }
-  else if ((entry.second.entityFlags() & MODEL_ENTITY) == MODEL_ENTITY)
+  else if ((entry.second->entityFlags() & MODEL_ENTITY) == MODEL_ENTITY)
   {
     // New models keep counters indicating their local entity counters
     Integer topoCountsData[] = { 0, 0, 0, 0, 0, 0 };
@@ -2090,7 +2086,7 @@ int Manager::unarrangeEntity(const UUID& entityId, ArrangementKind k, int index,
 
   // TODO: notify relation + entity (or their delegates) of imminent removal?
   std::vector<int> relIdxs;
-  Entity* erec;
+  EntityPtr erec;
   if ((ak->second.begin() + index)
         ->relationIndices(relIdxs, (erec = this->findEntity(entityId, false)), k))
   {
@@ -2282,7 +2278,7 @@ Arrangement* Manager::findArrangement(const UUID& cellId, ArrangementKind kind, 
 int Manager::findArrangementInvolvingEntity(
   const UUID& entityId, ArrangementKind kind, const UUID& involvedEntity) const
 {
-  const Entity* src = this->findEntity(entityId);
+  const EntityPtr src = this->findEntity(entityId);
   if (!src)
     return -1;
 
@@ -2332,7 +2328,7 @@ bool Manager::findDualArrangements(
   if (index < 0)
     return false;
 
-  const Entity* src = this->findEntity(entityId);
+  EntityPtr src = this->findEntity(entityId);
   if (!src)
     return false;
 
@@ -2494,7 +2490,7 @@ bool Manager::findDualArrangements(
 bool Manager::addDualArrangement(const smtk::common::UUID& parent, const smtk::common::UUID& child,
   ArrangementKind kind, int sense, Orientation orientation)
 {
-  Entity* erec;
+  EntityPtr erec;
   erec = this->findEntity(parent, false);
   if (!erec)
     return false;
@@ -2550,7 +2546,7 @@ bool Manager::addDualArrangement(const smtk::common::UUID& parent, const smtk::c
   */
 int Manager::findCellHasUseWithSense(const UUID& cellId, const UUID& use, int sense) const
 {
-  const Entity* erec = this->findEntity(cellId);
+  EntityPtr erec = this->findEntity(cellId);
   const Arrangements* arrs = this->hasArrangementsOfKindForEntity(cellId, HAS_USE);
   if (arrs && erec)
   {
@@ -2624,7 +2620,7 @@ UUID Manager::cellHasUseOfSenseAndOrientation(const UUID& cell, int sense, Orien
 UUID Manager::findCreateOrReplaceCellUseOfSenseAndOrientation(
   const UUID& cell, int sense, Orientation orient, const UUID& replacement)
 {
-  Entity* entity = this->findEntity(cell);
+  EntityPtr entity = this->findEntity(cell);
   if (!entity)
   {
     return UUID::null();
@@ -2713,7 +2709,7 @@ UUID Manager::findCreateOrReplaceCellUseOfSenseAndOrientation(
     this->arrangeEntity(cell, HAS_USE, Arrangement::CellHasUseWithIndexSenseAndOrientation(
                                          entity->appendRelation(use), sense, orient),
       arrIdx);
-    Entity* useEnt = this->findEntity(use);
+    EntityPtr useEnt = this->findEntity(use);
     this->arrangeEntity(
       use, HAS_CELL, Arrangement::UseHasCellWithIndexAndSense(useEnt->appendRelation(cell), sense));
   }
@@ -2731,7 +2727,7 @@ UUID Manager::findCreateOrReplaceCellUseOfSenseAndOrientation(
 UUIDs Manager::useOrShellIncludesShells(const UUID& cellUseOrShell) const
 {
   UUIDs shells;
-  const Entity* ent = this->findEntity(cellUseOrShell);
+  EntityPtr ent = this->findEntity(cellUseOrShell);
   if (ent && (ent->entityFlags() & (USE_ENTITY | SHELL_ENTITY)))
   {
     const UUIDArray& rels(ent->relations());
@@ -2763,7 +2759,7 @@ UUIDs Manager::useOrShellIncludesShells(const UUID& cellUseOrShell) const
   */
 UUID Manager::createIncludedShell(const UUID& useOrShell)
 {
-  Entity* entity = this->findEntity(useOrShell);
+  EntityPtr entity = this->findEntity(useOrShell);
   if (!entity)
   {
     return UUID::null();
@@ -2776,7 +2772,7 @@ UUID Manager::createIncludedShell(const UUID& useOrShell)
     // included k-shell must have same dimension as parent:
     entity->dimensionBits();
   int indexOfNewShell = static_cast<int>(entity->relations().size());
-  UUIDWithEntity shell = this->insertEntityOfTypeAndDimension(SHELL_ENTITY | shellDim, -1);
+  UUIDWithEntityPtr shell = this->insertEntityOfTypeAndDimension(SHELL_ENTITY | shellDim, -1);
   this->arrangeEntity(
     useOrShell, INCLUDES, Arrangement::UseOrShellIncludesShellWithIndex(indexOfNewShell));
   // We must re-find the entity record since insertEntityOfTypeAndDimension
@@ -2784,8 +2780,8 @@ UUID Manager::createIncludedShell(const UUID& useOrShell)
   this->findEntity(useOrShell)->appendRelation(shell->first);
   this->arrangeEntity(
     shell->first, EMBEDDED_IN, Arrangement::ShellEmbeddedInUseOrShellWithIndex(
-                                 static_cast<int>(shell->second.relations().size())));
-  shell->second.appendRelation(useOrShell);
+                                 static_cast<int>(shell->second->relations().size())));
+  shell->second->appendRelation(useOrShell);
 
   return shell->first;
 }
@@ -2797,8 +2793,8 @@ UUID Manager::createIncludedShell(const UUID& useOrShell)
   */
 bool Manager::findOrAddIncludedShell(const UUID& parentUseOrShell, const UUID& shellToInclude)
 {
-  Entity* parEnt = this->findEntity(parentUseOrShell);
-  Entity* shlEnt = this->findEntity(shellToInclude);
+  EntityPtr parEnt = this->findEntity(parentUseOrShell);
+  EntityPtr shlEnt = this->findEntity(shellToInclude);
   if (!parEnt || !shlEnt)
   {
     return false;
@@ -2836,8 +2832,8 @@ bool Manager::findOrAddIncludedShell(const UUID& parentUseOrShell, const UUID& s
   */
 bool Manager::findOrAddUseToShell(const UUID& shell, const UUID& use)
 {
-  Entity* shellEnt;
-  Entity* useEnt;
+  EntityPtr shellEnt;
+  EntityPtr useEnt;
   // Check that the shell and use are valid and that the use has the proper dimension for the shell.
   if ((shellEnt = this->findEntity(shell)) && (useEnt = this->findEntity(use)))
   {
@@ -2937,8 +2933,8 @@ bool Manager::findOrAddUseToShell(const UUID& shell, const UUID& use)
   */
 bool Manager::findOrAddInclusionToCellOrModel(const UUID& cell, const UUID& inclusion)
 {
-  Entity* cellEnt;
-  Entity* incEnt;
+  EntityPtr cellEnt;
+  EntityPtr incEnt;
   // Check that the cell and inclusion are valid and that the inclusion has the proper dimension for the cell.
   if ((cellEnt = this->findEntity(cell)) && (incEnt = this->findEntity(inclusion)))
   {
@@ -3491,7 +3487,7 @@ Shell Manager::addShell(const VolumeUse& v)
   */
 Group Manager::insertGroup(const UUID& uid, int extraFlags, const std::string& groupName)
 {
-  UUIDWithEntity result = this->setEntityOfTypeAndDimension(uid, GROUP_ENTITY | extraFlags, -1);
+  UUIDWithEntityPtr result = this->setEntityOfTypeAndDimension(uid, GROUP_ENTITY | extraFlags, -1);
   if (result == this->m_topology->end())
     return Group();
 
@@ -3511,7 +3507,7 @@ Group Manager::addGroup(int extraFlags, const std::string& groupName)
 /// Add auxiliary geometry (of the given \a dim, which may be -1) to the manager with the specified \a uid.
 AuxiliaryGeometry Manager::insertAuxiliaryGeometry(const smtk::common::UUID& uid, int dim)
 {
-  UUIDWithEntity result = this->setEntityOfTypeAndDimension(uid, AUX_GEOM_ENTITY, dim);
+  UUIDWithEntityPtr result = this->setEntityOfTypeAndDimension(uid, AUX_GEOM_ENTITY, dim);
   if (result == this->m_topology->end())
   {
     return AuxiliaryGeometry();
@@ -3565,7 +3561,7 @@ AuxiliaryGeometry Manager::addAuxiliaryGeometry(const AuxiliaryGeometry& parent,
 Model Manager::insertModel(
   const UUID& uid, int parametricDim, int embeddingDim, const std::string& modelName)
 {
-  UUIDWithEntity result = this->setEntityOfTypeAndDimension(uid, MODEL_ENTITY, parametricDim);
+  UUIDWithEntityPtr result = this->setEntityOfTypeAndDimension(uid, MODEL_ENTITY, parametricDim);
   if (result == this->m_topology->end())
     return Model();
 
@@ -4012,11 +4008,11 @@ UUID Manager::modelOwningEntityRecursive(const UUID& ent, std::set<UUID>& visite
   visited.insert(ent);
 
   UUID uid(ent);
-  UUIDsToEntities::const_iterator it = this->m_topology->find(uid);
+  UUIDWithConstEntityPtr it = this->m_topology->find(uid);
   if (it != this->m_topology->end())
   {
     // If we have a use or a shell, get the associated cell, if any
-    smtk::model::BitFlags etype = it->second.entityFlags();
+    smtk::model::BitFlags etype = it->second->entityFlags();
     switch (etype & ENTITY_MASK)
     {
       case AUX_GEOM_ENTITY:
@@ -4061,19 +4057,19 @@ UUID Manager::modelOwningEntityRecursive(const UUID& ent, std::set<UUID>& visite
 
         // Assume the first relationship that is a group or model is our owner.
         // Keep going up parent groups until we hit the top.
-        for (UUIDArray::const_iterator sit = it->second.relations().begin();
-             sit != it->second.relations().end(); ++sit)
+        for (UUIDArray::const_iterator sit = it->second->relations().begin();
+             sit != it->second->relations().end(); ++sit)
         {
-          UUIDsToEntities::const_iterator subentity = this->topology().find(*sit);
+          UUIDWithConstEntityPtr subentity = this->topology().find(*sit);
           if (subentity != this->topology().end() && subentity->first != uid)
           {
-            if (subentity->second.entityFlags() & MODEL_ENTITY)
+            if (subentity->second->entityFlags() & MODEL_ENTITY)
               return subentity->first;
-            if (subentity->second.entityFlags() & GROUP_ENTITY)
+            if (subentity->second->entityFlags() & GROUP_ENTITY)
             { // Switch to finding relations of the group (assume it is our parent)
               uid = subentity->first;
               it = this->m_topology->find(uid);
-              sit = it->second.relations().begin();
+              sit = it->second->relations().begin();
             }
           }
         }
@@ -4081,13 +4077,13 @@ UUID Manager::modelOwningEntityRecursive(const UUID& ent, std::set<UUID>& visite
       break;
       case INSTANCE_ENTITY:
         // Look for any relationship. We assume the first one is our prototype.
-        for (UUIDArray::const_iterator sit = it->second.relations().begin();
-             sit != it->second.relations().end(); ++sit)
+        for (UUIDArray::const_iterator sit = it->second->relations().begin();
+             sit != it->second->relations().end(); ++sit)
         {
-          UUIDsToEntities::const_iterator subentity = this->topology().find(*sit);
+          UUIDWithConstEntityPtr subentity = this->topology().find(*sit);
           if (subentity != this->topology().end() && subentity->first != uid)
           {
-            if (subentity->second.entityFlags() & MODEL_ENTITY)
+            if (subentity->second->entityFlags() & MODEL_ENTITY)
               return subentity->first;
             UUID result = this->modelOwningEntityRecursive(subentity->first, visited);
             if (result)
@@ -4100,12 +4096,12 @@ UUID Manager::modelOwningEntityRecursive(const UUID& ent, std::set<UUID>& visite
         break;
       case SHELL_ENTITY:
         // Loop for a relationship to a use.
-        for (UUIDArray::const_iterator sit = it->second.relations().begin();
-             sit != it->second.relations().end(); ++sit)
+        for (UUIDArray::const_iterator sit = it->second->relations().begin();
+             sit != it->second->relations().end(); ++sit)
         {
-          UUIDsToEntities::const_iterator subentity = this->topology().find(*sit);
+          UUIDWithConstEntityPtr subentity = this->topology().find(*sit);
           if (subentity != this->topology().end() &&
-            smtk::model::isUseEntity(subentity->second.entityFlags()))
+            smtk::model::isUseEntity(subentity->second->entityFlags()))
           {
             it = subentity;
             break;
@@ -4114,12 +4110,12 @@ UUID Manager::modelOwningEntityRecursive(const UUID& ent, std::set<UUID>& visite
       // Now fall through and look for the use's relationship to a cell.
       case USE_ENTITY:
         // Look for a relationship to a cell
-        for (UUIDArray::const_iterator sit = it->second.relations().begin();
-             sit != it->second.relations().end(); ++sit)
+        for (UUIDArray::const_iterator sit = it->second->relations().begin();
+             sit != it->second->relations().end(); ++sit)
         {
-          UUIDsToEntities::const_iterator subentity = this->topology().find(*sit);
+          UUIDWithConstEntityPtr subentity = this->topology().find(*sit);
           if (subentity != this->topology().end() &&
-            smtk::model::isCellEntity(subentity->second.entityFlags()))
+            smtk::model::isCellEntity(subentity->second->entityFlags()))
           {
             it = subentity;
             break;
@@ -4149,17 +4145,17 @@ UUID Manager::modelOwningEntityRecursive(const UUID& ent, std::set<UUID>& visite
     int dim;
     UUIDs uids;
     uids.insert(it->first);
-    for (dim = it->second.dimension(); dim >= 0 && dim < 4; ++dim)
+    for (dim = it->second->dimension(); dim >= 0 && dim < 4; ++dim)
     {
       for (UUIDs::iterator uit = uids.begin(); uit != uids.end(); ++uit)
       {
-        const Entity* bordEnt = this->findEntity(*uit);
+        EntityPtr bordEnt = this->findEntity(*uit);
         if (!bordEnt)
           continue;
         for (UUIDArray::const_iterator rit = bordEnt->relations().begin();
              rit != bordEnt->relations().end(); ++rit)
         {
-          const Entity* relEnt = this->findEntity(*rit);
+          EntityPtr relEnt = this->findEntity(*rit);
           if (relEnt && relEnt != bordEnt && (relEnt->entityFlags() & MODEL_ENTITY))
           {
             return *rit;
@@ -4182,7 +4178,7 @@ UUID Manager::sessionOwningEntityRecursive(const UUID& ent, std::set<UUID>& visi
   }
   visited.insert(ent);
 
-  const Entity* erec = this->findEntity(ent);
+  EntityPtr erec = this->findEntity(ent);
   if (erec)
   {
     // Traverse up to the owning model
@@ -4215,20 +4211,20 @@ UUID Manager::sessionOwningEntityRecursive(const UUID& ent, std::set<UUID>& visi
 
     // Assume the first relationship that is a session or model is our owner.
     // Keep going up parents until we hit the top.
-    UUIDsToEntities::const_iterator it = this->m_topology->find(uid);
-    for (UUIDArray::const_iterator sit = it->second.relations().begin();
-         sit != it->second.relations().end(); ++sit)
+    UUIDWithConstEntityPtr it = this->m_topology->find(uid);
+    for (UUIDArray::const_iterator sit = it->second->relations().begin();
+         sit != it->second->relations().end(); ++sit)
     {
-      UUIDsToEntities::const_iterator subentity = this->topology().find(*sit);
+      UUIDWithConstEntityPtr subentity = this->topology().find(*sit);
       if (subentity != this->topology().end() && subentity->first != uid)
       {
-        if (isSessionRef(subentity->second.entityFlags()))
+        if (isSessionRef(subentity->second->entityFlags()))
           return subentity->first;
-        if (isModel(subentity->second.entityFlags()))
+        if (isModel(subentity->second->entityFlags()))
         { // Switch to finding relations of the model (assume it is our parent)
           uid = subentity->first;
           it = this->m_topology->find(uid);
-          sit = it->second.relations().begin();
+          sit = it->second->relations().begin();
         }
       }
     }

@@ -31,7 +31,7 @@ using smtk::shared_ptr;
 smtk::model::BitFlags maskOrder[] = { MODEL_ENTITY, INSTANCE_ENTITY, GROUP_ENTITY, CELL_3D, CELL_2D,
   CELL_1D, CELL_0D, SHELL_2D, USE_2D, SHELL_1D, USE_1D, SHELL_0D, USE_0D };
 
-void ReportEntity(ManagerPtr sm, UUIDWithEntity& eit)
+void ReportEntity(ManagerPtr sm, UUIDWithEntityPtr& eit)
 {
   UUIDWithArrangementDictionary ait;
   UUIDWithFloatProperties fpit;
@@ -40,10 +40,10 @@ void ReportEntity(ManagerPtr sm, UUIDWithEntity& eit)
   ait = sm->arrangements().find(eit->first);
   if (ait != sm->arrangements().end())
   {
-    std::cout << sm->name(eit->first) << " (" << eit->second.flagSummary();
-    if (eit->second.dimension() >= 0)
+    std::cout << sm->name(eit->first) << " (" << eit->second->flagSummary();
+    if (eit->second->dimension() >= 0)
     {
-      std::cout << ", dim " << eit->second.dimension();
+      std::cout << ", dim " << eit->second->dimension();
     }
     std::cout << ")\n";
     ArrangementKindWithArrangements kit;
@@ -129,10 +129,10 @@ int main(int argc, char* argv[])
       if ((mask & maskOrder[section]) != maskOrder[section])
         continue; // skip sections that do not overlap the mask.
       std::cout << "\n## " << Entity::flagSummary(maskOrder[section], 1) << " ##\n\n";
-      UUIDWithEntity eit;
+      UUIDWithEntityPtr eit;
       for (eit = sm->topology().begin(); eit != sm->topology().end(); ++eit)
       {
-        if ((eit->second.entityFlags() & maskOrder[section]) != maskOrder[section])
+        if ((eit->second->entityFlags() & maskOrder[section]) != maskOrder[section])
         { // Skip entities that don't overlap our mask
           continue;
         }

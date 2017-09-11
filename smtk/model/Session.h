@@ -381,7 +381,7 @@ protected:
   void setSessionId(const smtk::common::UUID& sessId);
   void setManager(Manager* mgr);
 
-  virtual Entity* addEntityRecord(const EntityRef& entRef);
+  virtual EntityPtr addEntityRecord(const EntityRef& entRef);
   virtual ArrangementHelper* createArrangementHelper();
   int findOrAddRelatedEntities(
     const EntityRef& entRef, SessionInfoBits flags, ArrangementHelper* helper);
@@ -410,9 +410,9 @@ protected:
   virtual int findOrAddRelatedInstances(
     const EntityRef& entRef, SessionInfoBits request, ArrangementHelper* helper);
   virtual SessionInfoBits findOrAddArrangements(
-    const EntityRef& entRef, Entity* entRec, SessionInfoBits flags, ArrangementHelper* helper);
+    const EntityRef& entRef, EntityPtr entRec, SessionInfoBits flags, ArrangementHelper* helper);
   virtual SessionInfoBits updateProperties(
-    const EntityRef& entRef, Entity* entRec, SessionInfoBits flags, ArrangementHelper* helper);
+    const EntityRef& entRef, EntityPtr entRec, SessionInfoBits flags, ArrangementHelper* helper);
   virtual SessionInfoBits updateTessellation(
     const EntityRef& entRef, SessionInfoBits flags, ArrangementHelper* helper);
 

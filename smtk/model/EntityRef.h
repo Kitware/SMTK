@@ -52,9 +52,9 @@ class MeshSet;
   }                                                                                                \
   virtual ~thisclass() {} /* Avoid warnings about non-virtual destructor */                        \
   bool isValid() const { return this->EntityRef::isValid(); }                                      \
-  bool isValid(Entity** entRec) const override                                                     \
+  bool isValid(EntityPtr* entRec) const override                                                   \
   {                                                                                                \
-    Entity* er;                                                                                    \
+    EntityPtr er;                                                                                  \
     if (/* NB: EntityRef::isValid() may return true even when er == NULL */                        \
       this->EntityRef::isValid(&er) && er && smtk::model::typecheck(er->entityFlags()))            \
     {                                                                                              \
@@ -125,8 +125,8 @@ public:
   void setColor(double r, double g, double b, double a = 1.);
 
   bool isValid() const;
-  virtual bool isValid(Entity** entityRecord) const;
-  virtual bool checkForArrangements(ArrangementKind k, Entity*& entry, Arrangements*& arr) const;
+  virtual bool isValid(EntityPtr* entityRecord) const;
+  virtual bool checkForArrangements(ArrangementKind k, EntityPtr& entry, Arrangements*& arr) const;
 
   bool isCellEntity() const { return smtk::model::isCellEntity(this->entityFlags()); }
   bool isUseEntity() const { return smtk::model::isUseEntity(this->entityFlags()); }
@@ -333,7 +333,7 @@ T EntityRef::relationsAs() const
 {
   T result;
   ManagerPtr mgr = this->m_manager.lock();
-  smtk::model::Entity* entRec;
+  smtk::model::EntityPtr entRec;
   if (!this->isValid(&entRec))
     return result;
 

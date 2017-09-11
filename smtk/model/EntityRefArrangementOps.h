@@ -31,7 +31,7 @@ public:
   template <typename T>
   static T firstRelation(const EntityRef& c, ArrangementKind k)
   {
-    Entity* entRec;
+    EntityPtr entRec;
     Arrangements* arr;
     if (c.checkForArrangements(k, entRec, arr))
     {
@@ -56,7 +56,7 @@ public:
   template <typename T>
   static void appendAllRelations(const EntityRef& c, ArrangementKind k, T& result)
   {
-    Entity* entRec;
+    EntityPtr entRec;
     Arrangements* arr;
     if (c.checkForArrangements(k, entRec, arr))
     {
@@ -92,7 +92,7 @@ public:
     */
   template <typename T>
   static void appendAllUseHasCellRelations(
-    ManagerPtr manager, Entity* entRec, Arrangements* arr, T& result)
+    ManagerPtr manager, EntityPtr entRec, Arrangements* arr, T& result)
   {
     smtk::common::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
@@ -109,7 +109,7 @@ public:
   }
   template <typename T>
   static void appendAllCellHasUseRelations(
-    ManagerPtr manager, Entity* entRec, Arrangements* arr, T& result)
+    ManagerPtr manager, EntityPtr entRec, Arrangements* arr, T& result)
   {
     smtk::common::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
@@ -127,7 +127,7 @@ public:
   }
   template <typename T>
   static void appendAllShellHasUseRelations(
-    ManagerPtr manager, Entity* entRec, Arrangements* arr, T& result)
+    ManagerPtr manager, EntityPtr entRec, Arrangements* arr, T& result)
   {
     smtk::common::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
@@ -151,7 +151,7 @@ public:
   /// This can be used as a first step in rewriting loops (which must have edge-uses remain in order).
   template <typename T, typename U>
   static void popAllShellHasUseRelations(
-    ManagerPtr manager, Entity* entRec, Arrangements* arr, T& result, U& rangeDetector)
+    ManagerPtr manager, EntityPtr entRec, Arrangements* arr, T& result, U& rangeDetector)
   {
     smtk::common::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
@@ -175,7 +175,7 @@ public:
   }
   template <typename T>
   static void appendAllSimpleRelations(
-    ManagerPtr manager, Entity* entRec, Arrangements* arr, T& result)
+    ManagerPtr manager, EntityPtr entRec, Arrangements* arr, T& result)
   {
     smtk::common::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)

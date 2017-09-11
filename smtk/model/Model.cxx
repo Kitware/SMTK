@@ -122,7 +122,7 @@ CellEntities Model::cells() const
   EntityRefArrangementOps::appendAllRelations(*this, INCLUDES, result);
   if (result.empty())
   { // We may have a "simple" model that has no arrangements but does have relations.
-    const Entity* erec = mgr->findEntity(this->m_entity);
+    EntityPtr erec = mgr->findEntity(this->m_entity);
     if (erec)
     {
       smtk::common::UUIDArray::const_iterator rit;
@@ -178,7 +178,7 @@ Model& Model::removeCell(const CellEntity& c)
     std::cout << "Unable to remove cell " << c.name() << " from model\n";
     }
     */
-  UUIDWithEntity ent;
+  UUIDWithEntityPtr ent;
   ent = mgr->topology().find(this->m_entity);
   if (ent != mgr->topology().end())
   {

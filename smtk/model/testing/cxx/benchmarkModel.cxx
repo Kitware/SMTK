@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
   UUID nil;
   for (int i = 0; i < numMisses; ++i)
   {
-    Entity* ent = sm->findEntity(nil);
+    EntityPtr ent = sm->findEntity(nil);
     (void)ent;
     (*nil.begin())++; // twiddling bits should still result in a missing UUID.
   }
@@ -60,20 +60,20 @@ int main(int argc, char* argv[])
             << " missed lookups/sec\n";
 
   // #### Hits
-  UUIDWithEntity it;
+  UUIDWithEntityPtr it;
   it = sm->topology().begin();
   do
     ++it;
-  while (it != sm->topology().end() && it->second.relations().empty());
+  while (it != sm->topology().end() && it->second->relations().empty());
   int numHits = 2000000;
   t.mark();
   for (int i = 0; i < numHits; ++i)
   {
-    Entity* ent = sm->findEntity(it->second.relations().front());
+    EntityPtr ent = sm->findEntity(it->second->relations().front());
     (void)ent;
     do
       ++it;
-    while (it != sm->topology().end() && it->second.relations().empty());
+    while (it != sm->topology().end() && it->second->relations().empty());
     if (it == sm->topology().end())
       it = sm->topology().begin();
   }

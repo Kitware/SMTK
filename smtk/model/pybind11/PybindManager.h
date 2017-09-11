@@ -16,6 +16,9 @@
 #include "smtk/model/Manager.h"
 
 #include "smtk/attribute/Collection.h"
+#include "smtk/common/Resource.h"
+#include "smtk/common/ResourceComponent.h"
+#include "smtk/common/ResourceSet.h"
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/io/Logger.h"
@@ -47,9 +50,9 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::model::Manager > pybind11_init_smtk_model_Manager(py::module &m)
+PySharedPtrClass< smtk::model::Manager, smtk::common::Resource > pybind11_init_smtk_model_Manager(py::module &m)
 {
-  PySharedPtrClass< smtk::model::Manager > instance(m, "Manager", py::dynamic_attr());
+  PySharedPtrClass< smtk::model::Manager, smtk::common::Resource > instance(m, "Manager");
   instance
     .def(py::init<::smtk::model::Manager const &>())
     .def(py::init<>())
@@ -126,6 +129,7 @@ PySharedPtrClass< smtk::model::Manager > pybind11_init_smtk_model_Manager(py::mo
     .def("erase", (smtk::model::SessionInfoBits (smtk::model::Manager::*)(::smtk::common::UUID const &, ::smtk::model::SessionInfoBits)) &smtk::model::Manager::erase, py::arg("uid"), py::arg("flags") = ::smtk::model::SessionInfoBits(::smtk::model::SessionInformation::SESSION_EVERYTHING))
     .def("erase", (smtk::model::SessionInfoBits (smtk::model::Manager::*)(::smtk::model::EntityRef const &, ::smtk::model::SessionInfoBits)) &smtk::model::Manager::erase, py::arg("entityref"), py::arg("flags") = ::smtk::model::SessionInfoBits(::smtk::model::SessionInformation::SESSION_EVERYTHING))
     .def("eraseModel", &smtk::model::Manager::eraseModel, py::arg("entityref"), py::arg("flags") = ::smtk::model::SessionInfoBits(::smtk::model::SessionInformation::SESSION_EVERYTHING))
+    .def("find", &smtk::model::Manager::find, py::arg("uid"))
     .def("findArrangement", (smtk::model::Arrangement const * (smtk::model::Manager::*)(::smtk::common::UUID const &, ::smtk::model::ArrangementKind, int) const) &smtk::model::Manager::findArrangement, py::arg("entityId"), py::arg("kind"), py::arg("index"))
     .def("findArrangement", (smtk::model::Arrangement * (smtk::model::Manager::*)(::smtk::common::UUID const &, ::smtk::model::ArrangementKind, int)) &smtk::model::Manager::findArrangement, py::arg("entityId"), py::arg("kind"), py::arg("index"))
     .def("findArrangementInvolvingEntity", &smtk::model::Manager::findArrangementInvolvingEntity, py::arg("entityId"), py::arg("kind"), py::arg("involved"))
@@ -140,8 +144,7 @@ PySharedPtrClass< smtk::model::Manager > pybind11_init_smtk_model_Manager(py::mo
     .def("findEntitiesByProperty", (smtk::model::EntityRefArray (smtk::model::Manager::*)(::std::string const &, ::smtk::model::FloatList const &)) &smtk::model::Manager::findEntitiesByProperty, py::arg("pname"), py::arg("pval"))
     .def("findEntitiesByProperty", (smtk::model::EntityRefArray (smtk::model::Manager::*)(::std::string const &, ::smtk::model::StringList const &)) &smtk::model::Manager::findEntitiesByProperty, py::arg("pname"), py::arg("pval"))
     .def("_findEntitiesOfType", &smtk::model::Manager::findEntitiesOfType, py::arg("flags"), py::arg("exactMatch") = true)
-    .def("findEntity", (smtk::model::Entity const * (smtk::model::Manager::*)(::smtk::common::UUID const &, bool) const) &smtk::model::Manager::findEntity, py::arg("uid"), py::arg("trySessions") = true, py::return_value_policy::reference)
-    .def("findEntity", (smtk::model::Entity * (smtk::model::Manager::*)(::smtk::common::UUID const &, bool)) &smtk::model::Manager::findEntity, py::arg("uid"), py::arg("trySessions") = true, py::return_value_policy::reference)
+    .def("findEntity", &smtk::model::Manager::findEntity, py::arg("uid"), py::arg("trySessions") = true)
     .def("findOrAddEntityToGroup", &smtk::model::Manager::findOrAddEntityToGroup, py::arg("grp"), py::arg("ent"))
     .def("findOrAddIncludedShell", &smtk::model::Manager::findOrAddIncludedShell, py::arg("parentUseOrShell"), py::arg("shellToInclude"))
     .def("findOrAddInclusionToCellOrModel", &smtk::model::Manager::findOrAddInclusionToCellOrModel, py::arg("cell"), py::arg("inclusion"))
@@ -152,6 +155,7 @@ PySharedPtrClass< smtk::model::Manager > pybind11_init_smtk_model_Manager(py::mo
     .def("floatPropertiesForEntity", (smtk::model::UUIDWithFloatProperties (smtk::model::Manager::*)(::smtk::common::UUID const &)) &smtk::model::Manager::floatPropertiesForEntity, py::arg("entity"))
     .def("floatProperty", (smtk::model::FloatList const & (smtk::model::Manager::*)(::smtk::common::UUID const &, ::std::string const &) const) &smtk::model::Manager::floatProperty, py::arg("entity"), py::arg("propName"))
     .def("floatProperty", (smtk::model::FloatList & (smtk::model::Manager::*)(::smtk::common::UUID const &, ::std::string const &)) &smtk::model::Manager::floatProperty, py::arg("entity"), py::arg("propName"))
+    .def("hardErase", &smtk::model::Manager::hardErase, py::arg("eref"), py::arg("flags") = ::smtk::model::SessionInfoBits(::smtk::model::SessionInformation::SESSION_EVERYTHING))
     .def("hasArrangementsOfKindForEntity", (smtk::model::Arrangements const * (smtk::model::Manager::*)(::smtk::common::UUID const &, ::smtk::model::ArrangementKind) const) &smtk::model::Manager::hasArrangementsOfKindForEntity, py::arg("cellId"), py::arg("arg1"))
     .def("hasArrangementsOfKindForEntity", (smtk::model::Arrangements * (smtk::model::Manager::*)(::smtk::common::UUID const &, ::smtk::model::ArrangementKind)) &smtk::model::Manager::hasArrangementsOfKindForEntity, py::arg("cellId"), py::arg("arg1"))
     .def("hasAttribute", &smtk::model::Manager::hasAttribute, py::arg("attribId"), py::arg("toEntity"))
@@ -198,16 +202,19 @@ PySharedPtrClass< smtk::model::Manager > pybind11_init_smtk_model_Manager(py::mo
     .def("removeIntegerProperty", &smtk::model::Manager::removeIntegerProperty, py::arg("entity"), py::arg("propName"))
     .def("removeStringProperty", &smtk::model::Manager::removeStringProperty, py::arg("entity"), py::arg("propName"))
     .def("removeTessellation", &smtk::model::Manager::removeTessellation, py::arg("cellId"), py::arg("removeGen") = false)
+    .def("resourceType", &smtk::model::Manager::resourceType)
+    .def("resources", &smtk::model::Manager::resources, py::arg("skipUpdate") = false)
     .def("sessionData", &smtk::model::Manager::sessionData, py::arg("sessRef"))
     .def_static("sessionFileTypes", &smtk::model::Manager::sessionFileTypes, py::arg("sname"), py::arg("engine") = std::string())
     .def("sessionOwningEntity", &smtk::model::Manager::sessionOwningEntity, py::arg("uid"))
     .def_static("sessionTypeNames", &smtk::model::Manager::sessionTypeNames)
     .def("sessions", &smtk::model::Manager::sessions)
+    .def("setBoundingBox", &smtk::model::Manager::setBoundingBox, py::arg("cellId"), py::arg("coords"), py::arg("providedBBox") = 0)
     .def("setCellOfDimension", &smtk::model::Manager::setCellOfDimension, py::arg("uid"), py::arg("dim"))
     .def("setChain", (smtk::model::Chain (smtk::model::Manager::*)(::smtk::common::UUID const &, ::smtk::model::EdgeUse const &)) &smtk::model::Manager::setChain, py::arg("uid"), py::arg("use"))
     .def("setChain", (smtk::model::Chain (smtk::model::Manager::*)(::smtk::common::UUID const &, ::smtk::model::Chain const &)) &smtk::model::Manager::setChain, py::arg("uid"), py::arg("parent"))
     .def("setEdgeUse", &smtk::model::Manager::setEdgeUse, py::arg("uid"), py::arg("src"), py::arg("sense"), py::arg("o"))
-    .def("setEntity", &smtk::model::Manager::setEntity, py::arg("uid"), py::arg("cell"))
+    .def("setEntity", &smtk::model::Manager::setEntity, py::arg("cell"))
     .def("setEntityOfTypeAndDimension", &smtk::model::Manager::setEntityOfTypeAndDimension, py::arg("uid"), py::arg("entityFlags"), py::arg("dim"))
     .def("setFaceUse", &smtk::model::Manager::setFaceUse, py::arg("uid"), py::arg("src"), py::arg("sense"), py::arg("o"))
     .def("setFloatProperty", (void (smtk::model::Manager::*)(::smtk::common::UUID const &, ::std::string const &, ::smtk::model::Float)) &smtk::model::Manager::setFloatProperty, py::arg("entity"), py::arg("propName"), py::arg("propValue"))
