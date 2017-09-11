@@ -21,7 +21,6 @@
 #include "smtk/SystemConfig.h"
 #include "smtk/common/UUID.h"
 
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <string>
 
 namespace smtk
