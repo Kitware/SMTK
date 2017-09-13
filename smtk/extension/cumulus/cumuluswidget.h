@@ -16,12 +16,12 @@
 
 #include "logindialog.h"
 
-#include <QMainWindow>
-#include <QNetworkReply>
+#include <QString>
 
 class QAction;
 class QIcon;
 class QLabel;
+class QNetworkReply;
 class QTimer;
 
 namespace Ui
@@ -46,6 +46,12 @@ public:
   void girderUrl(const QString& url);
   bool isGirderRunning() const;
   void showLoginDialog();
+
+  // Allows applications to add custom items to the context menu.
+  // One QAction can be added per status type (created, queued, etc.)
+  // The intended use is for applications to add an item to load/open
+  // simulation results when the status is "downloaded".
+  void addContextMenuAction(const QString& status, QAction* action);
 
 signals:
   void info(const QString& msg);

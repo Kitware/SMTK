@@ -47,4 +47,9 @@ void JobTableWidget::setCumulusProxy(CumulusProxy* cumulusProxy)
   ui->table->setCumulusProxy(cumulusProxy);
 }
 
+void JobTableWidget::addContextMenuAction(const QString& status, QAction* action)
+{
+  ui->table->addContextMenuAction(status, action);
+}
+
 } // end namespace

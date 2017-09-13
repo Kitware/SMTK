@@ -369,7 +369,7 @@ void CumulusProxy::downloadJobFinished()
 
   // Update status to "downloaded"
   cJSON* body = cJSON_CreateObject();
-  cJSON_AddStringToObject(body, "status", "download complete");
+  cJSON_AddStringToObject(body, "status", "downloaded");
 
   PatchJobRequest* updateRequest =
     new PatchJobRequest(this->m_girderUrl, this->m_girderToken, request->job(), body);

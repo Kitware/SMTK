@@ -47,6 +47,7 @@ protected:
 
 private slots:
   void displayInfo(const QString& msg);
+  void test(); // for testing custom menus
 
 private:
   Ui::MainWindow* m_ui;
