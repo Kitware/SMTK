@@ -12,7 +12,6 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/common/UUID.h"
-#include "smtk/common/UUIDGenerator.h"
 #include "smtk/extension/vtk/source/Exports.h"
 #include "smtk/extension/vtk/source/vtkTracksAllInstances.h"
 #include "smtk/model/CellEntity.h" // for CellEntities
@@ -153,8 +152,6 @@ protected:
   int ShowAnalysisTessellation;
   vtkNew<vtkPolyDataNormals> NormalGenerator;
   std::map<smtk::common::UUID, vtkIdType> UUID2BlockIdMap; // UUIDs to block index map
-
-  static smtk::common::UUIDGenerator UUIDGenerator;
 
 private:
   vtkModelMultiBlockSource(const vtkModelMultiBlockSource&); // Not implemented.

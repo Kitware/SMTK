@@ -19,8 +19,6 @@
 #include "vtkModelEdge.h"
 #include "vtkModelEdgeUse.h"
 
-static smtk::common::UUIDGenerator s_idGen;
-
 namespace
 {
 struct IterationOrder
@@ -207,7 +205,7 @@ smtk::common::UUID IdForEntity(
   typename std::map<T*, smtk::common::UUID>::const_iterator it = fwd.find(ent);
   if (it == fwd.end())
   {
-    smtk::common::UUID regionId = s_idGen.random();
+    smtk::common::UUID regionId = smtk::common::UUIDGenerator::instance().random();
     fwd[ent] = regionId;
     bck[regionId] = ent;
     return regionId;

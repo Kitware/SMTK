@@ -27,7 +27,7 @@ ResourceComponent::ResourceComponent(const UUID& myID)
 ResourceComponent::ResourceComponent()
 {
   smtk::common::UUIDGenerator gen;
-  this->m_id = gen.random();
+  this->m_id = smtk::common::UUIDGenerator::instance().random();
 }
 
 ResourceComponent::~ResourceComponent()

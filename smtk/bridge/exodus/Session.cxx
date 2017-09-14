@@ -12,6 +12,7 @@
 #include "smtk/bridge/exodus/Session.h"
 #include "smtk/bridge/exodus/SessionExodusIOJSON.h"
 
+#include "smtk/common/UUIDGenerator.h"
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
 
@@ -724,7 +725,7 @@ smtk::common::UUID Session::uuidOfHandleObject(vtkDataObject* obj) const
   const char* uuidChar = obj->GetInformation()->Get(SMTK_UUID_KEY());
   if (!uuidChar)
   { // We have not assigned a UUID yet. Do so now.
-    uid = const_cast<Session*>(this)->m_uuidGen.random();
+    uid = smtk::common::UUIDGenerator::instance().random();
     obj->GetInformation()->Set(SMTK_UUID_KEY(), uid.toString().c_str());
   }
   else

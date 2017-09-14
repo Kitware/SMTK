@@ -31,7 +31,6 @@
 
 #include "smtk/common/Resource.h"
 #include "smtk/common/UUID.h"
-#include "smtk/common/UUIDGenerator.h"
 
 #include "smtk/io/Logger.h"
 
@@ -473,7 +472,6 @@ protected:
   WeakCollectionSet m_attributeCollections; // weak references to attribute collections
 
   smtk::shared_ptr<Session> m_defaultSession;
-  smtk::common::UUIDGenerator m_uuidGenerator;
 
   IntegerList m_globalCounters; // first entry is session counter, second is model counter
 

@@ -38,6 +38,7 @@
 #include "smtk/mesh/Manager.h"
 
 #include "smtk/common/ResourceSet.h"
+#include "smtk/common/UUIDGenerator.h"
 
 #include <float.h>
 
@@ -450,7 +451,7 @@ UUID Manager::unusedUUID()
   UUID actual;
   do
   {
-    actual = this->m_uuidGenerator.random();
+    actual = smtk::common::UUIDGenerator::instance().random();
   } while (this->m_topology->find(actual) != this->m_topology->end());
   return actual;
 }

@@ -11,7 +11,7 @@
 #include "smtk/mesh/Manager.h"
 #include "smtk/mesh/Collection.h"
 
-#include "smtk/common/UUID.h"
+#include "smtk/common/UUIDGenerator.h"
 
 #include <boost/lexical_cast.hpp>
 
@@ -117,7 +117,6 @@ private:
 Manager::Manager()
   : m_collector(new InternalStorageImpl())
   , m_nameGenerator(new InternalNameGeneratorImpl())
-  , m_uuidGenerator()
 {
 }
 
@@ -125,16 +124,10 @@ Manager::~Manager()
 { //needs to be in impl file
 }
 
-smtk::common::UUID Manager::nextEntityId()
-{
-  //return the next random uuid
-  return this->m_uuidGenerator.random();
-}
-
 smtk::mesh::CollectionPtr Manager::makeCollection()
 {
-  smtk::mesh::CollectionPtr collection(
-    new smtk::mesh::Collection(this->nextEntityId(), this->shared_from_this()));
+  smtk::mesh::CollectionPtr collection(new smtk::mesh::Collection(
+    smtk::common::UUIDGenerator::instance().random(), this->shared_from_this()));
 
   this->addCollection(collection);
   return collection;
@@ -151,8 +144,8 @@ smtk::mesh::CollectionPtr Manager::makeCollection(const smtk::common::UUID& coll
 
 smtk::mesh::CollectionPtr Manager::makeCollection(smtk::mesh::InterfacePtr interface)
 {
-  smtk::mesh::CollectionPtr collection(
-    new smtk::mesh::Collection(this->nextEntityId(), interface, this->shared_from_this()));
+  smtk::mesh::CollectionPtr collection(new smtk::mesh::Collection(
+    smtk::common::UUIDGenerator::instance().random(), interface, this->shared_from_this()));
 
   this->addCollection(collection);
   return collection;

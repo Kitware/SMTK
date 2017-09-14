@@ -12,7 +12,7 @@
 #include "smtk/bridge/discrete/ArrangementHelper.h"
 
 #include "smtk/AutoInit.h"
-#include "smtk/common/UUID.h"
+#include "smtk/common/UUIDGenerator.h"
 
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
@@ -1194,7 +1194,7 @@ smtk::common::UUID Session::findOrSetEntityUUID(vtkInformation* mp)
   }
   else
   {
-    mid = this->m_idGenerator.random();
+    mid = smtk::common::UUIDGenerator::instance().random();
     mp->Set(vtkCompositeDataPipeline::UPDATE_COMPOSITE_INDICES(),
       reinterpret_cast<int*>(mid.begin()), 16 / sizeof(unsigned int));
   }

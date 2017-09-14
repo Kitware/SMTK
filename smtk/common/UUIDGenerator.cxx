@@ -85,5 +85,11 @@ UUID UUIDGenerator::null()
   return UUID(this->P->m_nullGenerator());
 }
 
+UUIDGenerator& UUIDGenerator::instance()
+{
+  static UUIDGenerator s_generator;
+  return s_generator;
+}
+
 } // namespace common
 } // namespace smtk

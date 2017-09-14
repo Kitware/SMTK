@@ -18,7 +18,6 @@
 #include "smtk/model/EntityRef.h"
 
 #include "smtk/common/UUID.h"
-#include "smtk/common/UUIDGenerator.h"
 
 namespace smtk
 {
@@ -105,8 +104,6 @@ private:
   //used to get the next entity id
   friend class smtk::mesh::Collection;
 
-  smtk::common::UUID nextEntityId();
-
   std::string nextUniqueName();
 
   //returns true if the collection was added or already is part of this manager
@@ -119,8 +116,6 @@ private:
 
   class InternalNameGeneratorImpl;
   smtk::shared_ptr<InternalNameGeneratorImpl> m_nameGenerator;
-
-  smtk::common::UUIDGenerator m_uuidGenerator;
 };
 }
 }

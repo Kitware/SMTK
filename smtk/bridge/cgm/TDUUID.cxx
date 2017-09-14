@@ -10,6 +10,8 @@
 #include "smtk/bridge/cgm/TDUUID.h"
 #include "smtk/bridge/cgm/CAUUID.h"
 
+#include "smtk/common/UUIDGenerator.h"
+
 #include "CubitAttrib.hpp"
 #include "CubitAttribUser.hpp"
 #include "ToolDataUser.hpp"
@@ -24,7 +26,6 @@ namespace cgm
 {
 
 UUIDToCGMRef TDUUID::s_reverseLookup;
-smtk::common::UUIDGenerator TDUUID::s_uuidGenerator;
 
 /**\brief Attach an SMTK UUID (\a uid) to the CGM \a entity.
   *
@@ -40,7 +41,8 @@ TDUUID::TDUUID(ToolDataUser* entity, const smtk::common::UUID& uid)
 {
   if (this->m_entityId.isNull())
   {
-    while (TDUUID::s_reverseLookup.find((this->m_entityId = TDUUID::s_uuidGenerator.random())) !=
+    while (TDUUID::s_reverseLookup.find(
+             (this->m_entityId = smtk::common::UUIDGenerator::instance().random())) !=
       TDUUID::s_reverseLookup.end())
       /* keep generating new UUIDs */;
   }
@@ -85,7 +87,7 @@ smtk::common::UUID TDUUID::entityId() const
 ToolData* TDUUID::propogate(ToolDataUser* new_td_user)
 {
   // TODO: Signal SMTK that an entity is appearing.
-  return new TDUUID(new_td_user, TDUUID::s_uuidGenerator.random());
+  return new TDUUID(new_td_user, smtk::common::UUIDGenerator::instance().random());
 }
 
 /**\brief Generate the ToolData for the ToolDataUser when this CGM entity and \a other_td_user are merged.
