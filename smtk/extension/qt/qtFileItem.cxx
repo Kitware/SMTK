@@ -229,7 +229,15 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
   if (lineEdit)
     lineEdit->setAlignment(Qt::AlignRight);
   else if (fileCombo)
+  {
     fileCombo->lineEdit()->setAlignment(Qt::AlignRight);
+    fileCombo->setMinimumContentsLength(10);
+
+    // http://doc.qt.io/qt-5/qcombobox.html#sizeAdjustPolicy-prop
+    // Recommends using QComboBox::AdjustToContents, but that does not seem to
+    // work on Linux.
+    fileCombo->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
+  }
 
   frame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   fileTextWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);

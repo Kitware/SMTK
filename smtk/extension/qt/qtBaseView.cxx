@@ -318,6 +318,7 @@ void qtBaseView::makeTopLevel()
 
   this->m_ScrollArea = new QScrollArea(this->parentWidget());
   this->m_ScrollArea->setWidgetResizable(true);
+  this->m_ScrollArea->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
   this->m_ScrollArea->setFrameShape(QFrame::NoFrame);
   this->m_ScrollArea->setObjectName("topLevelScrollArea");
   parentlayout->addWidget(this->m_ScrollArea);
