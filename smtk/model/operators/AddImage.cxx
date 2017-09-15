@@ -23,7 +23,7 @@ smtk::model::OperatorResult AddImage::operateInternal()
   smtk::attribute::ModelEntityItemPtr created = res->findModelEntity("created");
   for (size_t i = 0; i < created->numberOfValues(); ++i)
   {
-    smtk::model::Entity* entRec;
+    smtk::model::EntityPtr entRec;
     if (created->value(i).isValid(&entRec))
     {
       entRec->setEntityFlags(entRec->entityFlags() | DIMENSION_2);

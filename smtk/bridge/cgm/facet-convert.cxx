@@ -105,14 +105,14 @@ void AddEntitiesToBody(DLIList<E*>& entities, smtk::model::ManagerPtr manager,
   {
     // First, create a cell for the given entity:
     E* entry = entities.get_and_step();
-    smtk::model::UUIDWithEntity cell = manager->insertCellOfDimension(entry->dimension());
+    smtk::model::UUIDWithEntityPtr cell = manager->insertCellOfDimension(entry->dimension());
     int cgmId = TDUniqueId::get_unique_id(entry);
     // Now, if owningBodyId is non-NULL (because the entity is a "free" member
     // of the body (i.e., not attached to some higher-dimensional entity), then
     // we relate it to the body.
     if (owningBodyId)
     {
-      cell->second.relations().push_back(owningBodyId);
+      cell->second->relations().push_back(owningBodyId);
       manager->arrangeEntity(cell->first, smtk::model::EMBEDDED_IN,
         smtk::model::Arrangement::CellEmbeddedInEntityWithIndex(0));
       smtk::model::Arrangements& bodyInclusions(
@@ -138,7 +138,7 @@ void AddEntitiesToBody(DLIList<E*>& entities, smtk::model::ManagerPtr manager,
     {
       RefEntity* child = children.get_and_step();
       smtk::common::UUID smtkChildId = translation[TDUniqueId::get_unique_id(child)];
-      cell->second.relations().push_back(smtkChildId);
+      cell->second->relations().push_back(smtkChildId);
       manager->findEntity(smtkChildId)->relations().push_back(cell->first);
     }
   }
@@ -162,7 +162,7 @@ void AddArrangementsToBody(DLIList<E*>& entities, smtk::model::ManagerPtr manage
     RefEntity* vol = shell->get_basic_topology_entity_ptr();
     int cgmId = TDUniqueId::get_unique_id(vol);
     smtk::common::UUID smtkId = translation[cgmId];
-    smtk::model::Entity* vcell = manager->findEntity(smtkId);
+    smtk::model::EntityPtr vcell = manager->findEntity(smtkId);
     if (!vcell)
     {
       std::cerr << "Shell for unknown cell TDUniqueId " << cgmId << " UUID " << smtkId

@@ -481,9 +481,9 @@ int LoadJSON::ofManagerEntity(const UUID& uid, cJSON* cellRec, ManagerPtr manage
   status |= cJSON_GetObjectIntegerValue(cellRec, "e", entityFlags);
   if (status == 0)
   {
-    UUIDWithEntity iter = manager->setEntityOfTypeAndDimension(uid, entityFlags, dim);
+    UUIDWithEntityPtr iter = manager->setEntityOfTypeAndDimension(uid, entityFlags, dim);
     // Ignore status from these as they need not be present:
-    cJSON_GetObjectUUIDArray(cellRec, "r", iter->second.relations());
+    cJSON_GetObjectUUIDArray(cellRec, "r", iter->second->relations());
   }
   return status ? 0 : 1;
 }

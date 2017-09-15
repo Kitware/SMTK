@@ -14,19 +14,7 @@
 
 #include "smtk/common/UUID.h"
 
-#ifdef SMTK_HASH_STORAGE
-#if defined(_MSC_VER) // Visual studio
-#pragma warning(push)
-#pragma warning(disable : 4996) // Overeager "unsafe" parameter check
-#endif
-#include "sparsehash/sparse_hash_map"
-#if defined(_MSC_VER) // Visual studio
-#pragma warning(pop)
-#endif
-#else // SMTK_HASH_STORAGE
 #include <map>
-#endif // SMTK_HASH_STORAGE
-
 #include <string>
 #include <vector>
 
@@ -37,14 +25,8 @@ namespace model
 
 typedef double Float;
 typedef std::vector<Float> FloatList;
-#ifdef SMTK_HASH_STORAGE
-typedef google::sparse_hash_map<std::string, FloatList> FloatData;
-typedef google::sparse_hash_map<smtk::common::UUID, FloatData> UUIDsToFloatData;
-#else  // SMTK_HASH_STORAGE
 typedef std::map<std::string, FloatList> FloatData;
 typedef std::map<smtk::common::UUID, FloatData> UUIDsToFloatData;
-#endif // SMTK_HASH_STORAGE
-
 typedef UUIDsToFloatData::iterator UUIDWithFloatProperties;
 typedef FloatData::iterator PropertyNameWithFloats;
 typedef FloatData::const_iterator PropertyNameWithConstFloats;

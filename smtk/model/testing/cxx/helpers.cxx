@@ -60,43 +60,56 @@ UUIDArray createTet(smtk::model::ManagerPtr sm)
   UUID uc05 = sm->insertCellOfDimension(0)->first;
   UUID uc06 = sm->insertCellOfDimension(0)->first;
 
-  UUID uc07 = sm->insertEntity(Entity(CELL_ENTITY, 1).pushRelation(uc00).pushRelation(uc01))->first;
-  UUID uc08 = sm->insertEntity(Entity(CELL_ENTITY, 1).pushRelation(uc01).pushRelation(uc02))->first;
-  UUID uc09 = sm->insertEntity(Entity(CELL_ENTITY, 1).pushRelation(uc02).pushRelation(uc00))->first;
-  UUID uc10 = sm->insertEntity(Entity(CELL_ENTITY, 1).pushRelation(uc03).pushRelation(uc04))->first;
-  UUID uc11 = sm->insertEntity(Entity(CELL_ENTITY, 1).pushRelation(uc04).pushRelation(uc05))->first;
-  UUID uc12 = sm->insertEntity(Entity(CELL_ENTITY, 1).pushRelation(uc05).pushRelation(uc03))->first;
-  UUID uc13 = sm->insertEntity(Entity(CELL_ENTITY, 1).pushRelation(uc00).pushRelation(uc06))->first;
-  UUID uc14 = sm->insertEntity(Entity(CELL_ENTITY, 1).pushRelation(uc01).pushRelation(uc06))->first;
-  UUID uc15 = sm->insertEntity(Entity(CELL_ENTITY, 1).pushRelation(uc02).pushRelation(uc06))->first;
+  UUID uc07 =
+    sm->insertEntity(Entity::create(CELL_ENTITY, 1)->pushRelation(uc00)->pushRelation(uc01))->first;
+  UUID uc08 =
+    sm->insertEntity(Entity::create(CELL_ENTITY, 1)->pushRelation(uc01)->pushRelation(uc02))->first;
+  UUID uc09 =
+    sm->insertEntity(Entity::create(CELL_ENTITY, 1)->pushRelation(uc02)->pushRelation(uc00))->first;
+  UUID uc10 =
+    sm->insertEntity(Entity::create(CELL_ENTITY, 1)->pushRelation(uc03)->pushRelation(uc04))->first;
+  UUID uc11 =
+    sm->insertEntity(Entity::create(CELL_ENTITY, 1)->pushRelation(uc04)->pushRelation(uc05))->first;
+  UUID uc12 =
+    sm->insertEntity(Entity::create(CELL_ENTITY, 1)->pushRelation(uc05)->pushRelation(uc03))->first;
+  UUID uc13 =
+    sm->insertEntity(Entity::create(CELL_ENTITY, 1)->pushRelation(uc00)->pushRelation(uc06))->first;
+  UUID uc14 =
+    sm->insertEntity(Entity::create(CELL_ENTITY, 1)->pushRelation(uc01)->pushRelation(uc06))->first;
+  UUID uc15 =
+    sm->insertEntity(Entity::create(CELL_ENTITY, 1)->pushRelation(uc02)->pushRelation(uc06))->first;
 
-  UUID uc16 = sm->insertEntity(Entity(CELL_ENTITY, 2)
-                                 .pushRelation(uc07)
-                                 .pushRelation(uc08)
-                                 .pushRelation(uc09)
-                                 .pushRelation(uc10)
-                                 .pushRelation(uc11)
-                                 .pushRelation(uc12))
+  UUID uc16 = sm->insertEntity(Entity::create(CELL_ENTITY, 2)
+                                 ->pushRelation(uc07)
+                                 ->pushRelation(uc08)
+                                 ->pushRelation(uc09)
+                                 ->pushRelation(uc10)
+                                 ->pushRelation(uc11)
+                                 ->pushRelation(uc12))
                 ->first;
-  UUID uc17 = sm->insertEntity(
-                  Entity(CELL_ENTITY, 2).pushRelation(uc10).pushRelation(uc12).pushRelation(uc11))
-                ->first;
-  UUID uc18 = sm->insertEntity(
-                  Entity(CELL_ENTITY, 2).pushRelation(uc07).pushRelation(uc13).pushRelation(uc14))
-                ->first;
-  UUID uc19 = sm->insertEntity(
-                  Entity(CELL_ENTITY, 2).pushRelation(uc08).pushRelation(uc14).pushRelation(uc15))
-                ->first;
-  UUID uc20 = sm->insertEntity(
-                  Entity(CELL_ENTITY, 2).pushRelation(uc09).pushRelation(uc15).pushRelation(uc13))
-                ->first;
+  UUID uc17 =
+    sm->insertEntity(
+        Entity::create(CELL_ENTITY, 2)->pushRelation(uc10)->pushRelation(uc12)->pushRelation(uc11))
+      ->first;
+  UUID uc18 =
+    sm->insertEntity(
+        Entity::create(CELL_ENTITY, 2)->pushRelation(uc07)->pushRelation(uc13)->pushRelation(uc14))
+      ->first;
+  UUID uc19 =
+    sm->insertEntity(
+        Entity::create(CELL_ENTITY, 2)->pushRelation(uc08)->pushRelation(uc14)->pushRelation(uc15))
+      ->first;
+  UUID uc20 =
+    sm->insertEntity(
+        Entity::create(CELL_ENTITY, 2)->pushRelation(uc09)->pushRelation(uc15)->pushRelation(uc13))
+      ->first;
 
-  UUID uc21 = sm->insertEntity(Entity(CELL_ENTITY, 3)
-                                 .pushRelation(uc16)
-                                 .pushRelation(uc17)
-                                 .pushRelation(uc18)
-                                 .pushRelation(uc19)
-                                 .pushRelation(uc20))
+  UUID uc21 = sm->insertEntity(Entity::create(CELL_ENTITY, 3)
+                                 ->pushRelation(uc16)
+                                 ->pushRelation(uc17)
+                                 ->pushRelation(uc18)
+                                 ->pushRelation(uc19)
+                                 ->pushRelation(uc20))
                 ->first;
 
   sm->setTessellationAndBoundingBox(uc21, Tessellation()

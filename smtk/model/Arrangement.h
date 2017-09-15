@@ -17,17 +17,6 @@
 #include "smtk/model/ArrangementKind.h"
 #include "smtk/model/Entity.h"
 
-#ifdef SMTK_HASH_STORAGE
-#if defined(_MSC_VER) // Visual studio
-#pragma warning(push)
-#pragma warning(disable : 4996) // Overeager "unsafe" parameter check
-#endif
-#include "sparsehash/sparse_hash_map"
-#if defined(_MSC_VER) // Visual studio
-#pragma warning(pop)
-#endif
-#endif // SMTK_HASH_STORAGE
-
 #include <map>
 #include <vector>
 
@@ -98,15 +87,15 @@ public:
   static Arrangement SimpleIndex(int relationIdx);
   bool IndexFromSimple(int& relationIdx) const;
 
-  bool relations(smtk::common::UUIDArray& relsOut, const Entity* ent, ArrangementKind k) const;
-  bool relationIndices(std::vector<int>& relsOut, const Entity* ent, ArrangementKind k) const;
+  bool relations(smtk::common::UUIDArray& relsOut, const EntityPtr ent, ArrangementKind k) const;
+  bool relationIndices(std::vector<int>& relsOut, const EntityPtr ent, ArrangementKind k) const;
 
   /// A helper to extract the relationship from an arrangement that stores only an index.
   template <bool (Arrangement::*M)(int&) const>
   struct IndexHelper
   {
     bool operator()(
-      smtk::common::UUIDArray& rels, const Entity* entity, const Arrangement& arr) const
+      smtk::common::UUIDArray& rels, const EntityPtr entity, const Arrangement& arr) const
     {
       if (entity)
       {
@@ -117,7 +106,7 @@ public:
       }
       return rels.empty() ? false : true;
     }
-    bool operator()(std::vector<int>& relIdxs, const Entity* entity, const Arrangement& arr) const
+    bool operator()(std::vector<int>& relIdxs, const EntityPtr entity, const Arrangement& arr) const
     {
       if (entity)
       {
@@ -135,7 +124,7 @@ public:
   struct IndexAndSenseHelper
   {
     bool operator()(
-      smtk::common::UUIDArray& rels, const Entity* entity, const Arrangement& arr) const
+      smtk::common::UUIDArray& rels, const EntityPtr entity, const Arrangement& arr) const
     {
       if (entity)
       {
@@ -146,7 +135,7 @@ public:
       }
       return rels.empty() ? false : true;
     }
-    bool operator()(std::vector<int>& relIdxs, const Entity* entity, const Arrangement& arr) const
+    bool operator()(std::vector<int>& relIdxs, const EntityPtr entity, const Arrangement& arr) const
     {
       if (entity)
       {
@@ -164,7 +153,7 @@ public:
   struct IndexRangeHelper
   {
     bool operator()(
-      smtk::common::UUIDArray& rels, const Entity* entity, const Arrangement& arr) const
+      smtk::common::UUIDArray& rels, const EntityPtr entity, const Arrangement& arr) const
     {
       if (entity)
       {
@@ -176,7 +165,7 @@ public:
       }
       return rels.empty() ? false : true;
     }
-    bool operator()(std::vector<int>& relIdxs, const Entity* entity, const Arrangement& arr) const
+    bool operator()(std::vector<int>& relIdxs, const EntityPtr entity, const Arrangement& arr) const
     {
       if (entity)
       {
@@ -195,7 +184,7 @@ public:
   struct IndexSenseAndOrientationHelper
   {
     bool operator()(
-      smtk::common::UUIDArray& rels, const Entity* entity, const Arrangement& arr) const
+      smtk::common::UUIDArray& rels, const EntityPtr entity, const Arrangement& arr) const
     {
       if (entity)
       {
@@ -207,7 +196,7 @@ public:
       }
       return rels.empty() ? false : true;
     }
-    bool operator()(std::vector<int>& relIdxs, const Entity* entity, const Arrangement& arr) const
+    bool operator()(std::vector<int>& relIdxs, const EntityPtr entity, const Arrangement& arr) const
     {
       if (entity)
       {
@@ -286,18 +275,10 @@ public:
 typedef std::vector<Arrangement> Arrangements;
 /// A map holding Arrangements of different ArrangementKinds.
 typedef std::map<ArrangementKind, Arrangements> KindsToArrangements;
-#ifdef SMTK_HASH_STORAGE
-/// Each Manager entity's UUID is mapped to a vector of Arrangment instances.
-typedef google::sparse_hash_map<smtk::common::UUID, KindsToArrangements> UUIDsToArrangements;
-/// An iterator referencing a (UUID,KindsToArrangements)-tuple.
-typedef google::sparse_hash_map<smtk::common::UUID, KindsToArrangements>::iterator
-  UUIDWithArrangementDictionary;
-#else
 /// Each Manager entity's UUID is mapped to a vector of Arrangment instances.
 typedef std::map<smtk::common::UUID, KindsToArrangements> UUIDsToArrangements;
 /// An iterator referencing a (UUID,KindsToArrangements)-tuple.
 typedef std::map<smtk::common::UUID, KindsToArrangements>::iterator UUIDWithArrangementDictionary;
-#endif // SMTK_HASH_STORAGE
 /// An iterator referencing an (ArrangementKind,Arrangements)-tuple.
 typedef std::map<ArrangementKind, Arrangements>::iterator ArrangementKindWithArrangements;
 /// An array of ArrangementReference objects used, for instance, to enumerate inverse relations.

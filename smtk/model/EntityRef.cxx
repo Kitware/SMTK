@@ -100,7 +100,7 @@ int EntityRef::dimension() const
   ManagerPtr mgr = this->m_manager.lock();
   if (mgr && !this->m_entity.isNull())
   {
-    Entity* entRec = mgr->findEntity(this->m_entity);
+    EntityPtr entRec = mgr->findEntity(this->m_entity);
     if (entRec)
     {
       return entRec->dimension();
@@ -120,7 +120,7 @@ int EntityRef::dimensionBits() const
   ManagerPtr mgr = this->m_manager.lock();
   if (mgr && !this->m_entity.isNull())
   {
-    Entity* entRec = mgr->findEntity(this->m_entity);
+    EntityPtr entRec = mgr->findEntity(this->m_entity);
     if (entRec)
     {
       return entRec->dimensionBits();
@@ -139,7 +139,7 @@ void EntityRef::setDimensionBits(BitFlags dimBits)
   ManagerPtr mgr = this->m_manager.lock();
   if (mgr && !this->m_entity.isNull())
   {
-    Entity* entRec = mgr->findEntity(this->m_entity);
+    EntityPtr entRec = mgr->findEntity(this->m_entity);
     if (entRec)
     {
       BitFlags old = entRec->entityFlags() & ~ANY_DIMENSION;
@@ -201,7 +201,7 @@ BitFlags EntityRef::entityFlags() const
   ManagerPtr mgr = this->m_manager.lock();
   if (mgr && !this->m_entity.isNull())
   {
-    Entity* entRec = mgr->findEntity(this->m_entity);
+    EntityPtr entRec = mgr->findEntity(this->m_entity);
     if (entRec)
     {
       return entRec->entityFlags();
@@ -219,7 +219,7 @@ std::string EntityRef::flagSummary(int form) const
   ManagerPtr mgr = this->m_manager.lock();
   if (mgr)
   {
-    Entity* ent = mgr->findEntity(this->m_entity);
+    EntityPtr ent = mgr->findEntity(this->m_entity);
     if (ent)
     {
       std::ostringstream summary;
@@ -402,13 +402,13 @@ bool EntityRef::isValid() const
   * The optional \a entityRecord will be set when a non-NULL value is passed
   * and the entity is valid.
   */
-bool EntityRef::isValid(Entity** entityRecord) const
+bool EntityRef::isValid(EntityPtr* entityRecord) const
 {
   ManagerPtr mgr = this->m_manager.lock();
   bool status = mgr && !this->m_entity.isNull();
   if (status)
   {
-    Entity* rec = mgr->findEntity(this->m_entity, false);
+    EntityPtr rec = mgr->findEntity(this->m_entity, false);
     status = rec ? true : false;
     if (status && entityRecord)
     {
@@ -421,7 +421,7 @@ bool EntityRef::isValid(Entity** entityRecord) const
 /**\brief A wrapper around EntityRef::isValid() which also verifies an arrangement exists.
   *
   */
-bool EntityRef::checkForArrangements(ArrangementKind k, Entity*& entRec, Arrangements*& arr) const
+bool EntityRef::checkForArrangements(ArrangementKind k, EntityPtr& entRec, Arrangements*& arr) const
 {
   ManagerPtr mgr = this->m_manager.lock();
   if (this->isValid(&entRec))
@@ -616,7 +616,7 @@ EntityRef& EntityRef::addRawRelation(const EntityRef& ent)
   if (mgr && !this->m_entity.isNull() && mgr == ent.manager() && !ent.entity().isNull() &&
     ent.entity() != this->m_entity)
   {
-    Entity* entRec = mgr->findEntity(this->m_entity);
+    EntityPtr entRec = mgr->findEntity(this->m_entity);
     if (entRec)
       entRec->appendRelation(ent.entity());
   }
@@ -636,7 +636,7 @@ EntityRef& EntityRef::findOrAddRawRelation(const EntityRef& ent)
   if (mgr && !this->m_entity.isNull() && mgr == ent.manager() && !ent.entity().isNull() &&
     ent.entity() != this->m_entity)
   {
-    Entity* entRec = mgr->findEntity(this->m_entity);
+    EntityPtr entRec = mgr->findEntity(this->m_entity);
     if (entRec &&
       std::find(entRec->relations().begin(), entRec->relations().end(), ent.entity()) ==
         entRec->relations().end())
@@ -664,7 +664,7 @@ EntityRef& EntityRef::elideRawRelation(const EntityRef& ent)
   if (mgr && !this->m_entity.isNull() && mgr == ent.manager() && !ent.entity().isNull() &&
     ent.entity() != this->m_entity)
   {
-    UUIDWithEntity entRec = mgr->topology().find(this->m_entity);
+    UUIDWithEntityPtr entRec = mgr->topology().find(this->m_entity);
     if (entRec != mgr->topology().end())
     {
       mgr->elideOneEntityReference(entRec, ent.entity());
@@ -1267,7 +1267,7 @@ EntityRef EntityRef::relationFromArrangement(
   ArrangementKind k, int arrangementIndex, int offset) const
 {
   ManagerPtr mgr = this->m_manager.lock();
-  const Entity* ent = mgr->findEntity(this->m_entity);
+  EntityPtr ent = mgr->findEntity(this->m_entity);
   if (ent)
   {
     const Arrangement* arr = this->findArrangement(k, arrangementIndex);

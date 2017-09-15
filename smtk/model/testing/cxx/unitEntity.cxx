@@ -182,23 +182,23 @@ int TestEntitySummary()
   std::ostringstream summaries;
 
   // test default constructor
-  Entity blank;
+  EntityPtr blank = Entity::create();
 
   // Test setting flags on invalid entity
-  blank.setEntityFlags(GROUP_ENTITY | PARTITION);
-  assert((blank.entityFlags() & (GROUP_ENTITY | PARTITION)) == (GROUP_ENTITY | PARTITION));
+  blank->setEntityFlags(GROUP_ENTITY | PARTITION);
+  assert((blank->entityFlags() & (GROUP_ENTITY | PARTITION)) == (GROUP_ENTITY | PARTITION));
 
   // Test setting flags on valid entity (disallowed, so no effect)
-  blank.setEntityFlags(CELL_2D);
-  assert((blank.entityFlags() & (GROUP_ENTITY | PARTITION)) == (GROUP_ENTITY | PARTITION));
+  blank->setEntityFlags(CELL_2D);
+  assert((blank->entityFlags() & (GROUP_ENTITY | PARTITION)) == (GROUP_ENTITY | PARTITION));
 
   // Test changing only property bits on valid entity (should succeed)
-  blank.setEntityFlags(GROUP_ENTITY);
-  assert(!(blank.entityFlags() & PARTITION));
+  blank->setEntityFlags(GROUP_ENTITY);
+  assert(!(blank->entityFlags() & PARTITION));
 
   // Test Entity::dimensionBits()
-  Entity shellEnt(SHELL_ENTITY | DIMENSION_1 | DIMENSION_2, -1);
-  assert(shellEnt.dimensionBits() == 6);
+  EntityPtr shellEnt = Entity::create(SHELL_ENTITY | DIMENSION_1 | DIMENSION_2, -1);
+  assert(shellEnt->dimensionBits() == 6);
 
   // Test Entity::flagDescription() and model/instance bit flags
   assert(Entity::flagDescription(MODEL_ENTITY, 1) == "models");

@@ -11,7 +11,6 @@
 #define __smtk_model_Manager_h
 /*!\file */
 
-#include "smtk/Options.h" // for SMTK_HASH_STORAGE
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 #include "smtk/SharedPtr.h"
@@ -30,23 +29,13 @@
 #include "smtk/model/StringData.h"
 #include "smtk/model/Tessellation.h"
 
+#include "smtk/common/Resource.h"
 #include "smtk/common/UUID.h"
 #include "smtk/common/UUIDGenerator.h"
 
 #include "smtk/io/Logger.h"
 
-#ifdef SMTK_HASH_STORAGE
-#if defined(_MSC_VER) // Visual studio
-#pragma warning(push)
-#pragma warning(disable : 4996) // Overeager "unsafe" parameter check
-#endif
-#include "sparsehash/sparse_hash_map"
-#if defined(_MSC_VER) // Visual studio
-#pragma warning(pop)
-#endif
-#else
 #include <map>
-#endif
 
 #include <algorithm>
 #include <map>
@@ -85,30 +74,27 @@ namespace smtk
 namespace model
 {
 
-#ifdef SMTK_HASH_STORAGE
 /// Store information mapping IDs to Entity records. This is the primary storage for SMTK models.
-typedef google::sparse_hash_map<smtk::common::UUID, Entity> UUIDsToEntities;
-#else
-/// Store information mapping IDs to Entity records. This is the primary storage for SMTK models.
-typedef std::map<smtk::common::UUID, Entity> UUIDsToEntities;
-#endif
+typedef std::map<smtk::common::UUID, EntityPtr> UUIDsToEntities;
 
 /// An abbreviation for an iterator into primary model storage.
-typedef UUIDsToEntities::iterator UUIDWithEntity;
+typedef UUIDsToEntities::iterator UUIDWithEntityPtr;
+typedef UUIDsToEntities::const_iterator UUIDWithConstEntityPtr;
 /**\brief Store information about solid models.
   *
   * This adds information about arrangements and tessellations
   * of entities to its Manager base class.
   */
-class SMTKCORE_EXPORT Manager : smtkEnableSharedPtr(Manager)
+class SMTKCORE_EXPORT Manager : public smtk::common::Resource
 {
 public:
   typedef UUIDsToEntities storage_type;
   typedef storage_type::iterator iter_type;
   typedef UUIDsToTessellations::iterator tess_iter_type;
 
-  smtkTypeMacroBase(Manager);
-  smtkCreateMacro(Manager);
+  smtkTypeMacro(Manager);
+  smtkSharedPtrCreateMacro(smtk::common::Resource);
+
   Manager();
   Manager(shared_ptr<UUIDsToEntities> topology, shared_ptr<UUIDsToArrangements> arrangements,
     shared_ptr<UUIDsToTessellations> tess, shared_ptr<UUIDsToTessellations> analysismesh,
@@ -144,8 +130,10 @@ public:
   int dimension(const smtk::common::UUID& ofEntity) const;
   std::string name(const smtk::common::UUID& ofEntity) const;
 
-  const Entity* findEntity(const smtk::common::UUID& uid, bool trySessions = true) const;
-  Entity* findEntity(const smtk::common::UUID& uid, bool trySessions = true);
+  EntityPtr findEntity(const smtk::common::UUID& uid, bool trySessions = true) const;
+
+  smtk::common::ResourceComponentPtr find(const smtk::common::UUID& uid) const override;
+  Resource::Type resourceType() const override { return Resource::MODEL; }
 
   virtual SessionInfoBits erase(
     const smtk::common::UUID& uid, SessionInfoBits flags = smtk::model::SESSION_EVERYTHING);
@@ -176,26 +164,26 @@ public:
 
   smtk::common::UUID unusedUUID();
   iter_type insertEntityOfTypeAndDimension(BitFlags entityFlags, int dim);
-  iter_type insertEntity(Entity& cell);
+  iter_type insertEntity(EntityPtr cell);
   iter_type setEntityOfTypeAndDimension(
     const smtk::common::UUID& uid, BitFlags entityFlags, int dim);
-  iter_type setEntity(const smtk::common::UUID& uid, Entity& cell);
+  iter_type setEntity(EntityPtr cell);
 
   smtk::common::UUID addEntityOfTypeAndDimension(BitFlags entityFlags, int dim);
-  smtk::common::UUID addEntity(Entity& cell);
+  smtk::common::UUID addEntity(EntityPtr cell);
   smtk::common::UUID addEntityOfTypeAndDimensionWithUUID(
     const smtk::common::UUID& uid, BitFlags entityFlags, int dim);
-  smtk::common::UUID addEntityWithUUID(const smtk::common::UUID& uid, Entity& cell);
+  smtk::common::UUID addEntityWithUUID(const smtk::common::UUID& uid, EntityPtr cell);
 
   iter_type insertCellOfDimension(int dim);
   iter_type setCellOfDimension(const smtk::common::UUID& uid, int dim);
   smtk::common::UUID addCellOfDimension(int dim);
   smtk::common::UUID addCellOfDimensionWithUUID(const smtk::common::UUID& uid, int dim);
 
-  void insertEntityReferences(const UUIDWithEntity& c);
-  bool elideOneEntityReference(const UUIDWithEntity& c, const smtk::common::UUID& r);
-  void elideEntityReferences(const UUIDWithEntity& c);
-  void removeEntityReferences(const UUIDWithEntity& c);
+  void insertEntityReferences(const UUIDWithEntityPtr& c);
+  bool elideOneEntityReference(const UUIDWithEntityPtr& c, const smtk::common::UUID& r);
+  void elideEntityReferences(const UUIDWithEntityPtr& c);
+  void removeEntityReferences(const UUIDWithEntityPtr& c);
 
   virtual void addToGroup(const smtk::common::UUID& groupId, const smtk::common::UUIDs& uids);
 
@@ -456,11 +444,11 @@ public:
 protected:
   friend class smtk::attribute::Collection;
 
-  void assignDefaultNamesWithOwner(const UUIDWithEntity& irec, const smtk::common::UUID& owner,
+  void assignDefaultNamesWithOwner(const UUIDWithEntityPtr& irec, const smtk::common::UUID& owner,
     const std::string& ownersName, std::set<smtk::common::UUID>& remaining, bool nokids);
   std::string assignDefaultName(const smtk::common::UUID& uid, BitFlags entityFlags);
   IntegerList& entityCounts(const smtk::common::UUID& modelId, BitFlags entityFlags);
-  void prepareForEntity(std::pair<smtk::common::UUID, Entity>& entry);
+  void prepareForEntity(std::pair<smtk::common::UUID, EntityPtr>& entry);
   void computeResources();
 
   smtk::common::UUID modelOwningEntityRecursive(

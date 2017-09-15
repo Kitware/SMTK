@@ -127,9 +127,6 @@ if (SMTK_ENABLE_MULTISCALE_SESSION)
 endif()
 
 option(SMTK_USE_SYSTEM_MOAB "Use the system-installed moab?" OFF)
-option(SMTK_USE_SYSTEM_SPARSEHASH "Use the system-installed sparsehash?" OFF)
-option(SMTK_HASH_STORAGE "Use sparsehash library for primary storage?" OFF)
-mark_as_advanced(SMTK_USE_SYSTEM_SPARSEHASH SMTK_HASH_STORAGE)
 
 option(SMTK_ENABLE_DOCUMENTATION
   "Include targets for Doxygen- and Sphinx-generated documentation" OFF)
@@ -316,21 +313,6 @@ endif(SMTK_ENABLE_CGM_SESSION)
 
 if (SMTK_ENABLE_REMUS_SUPPORT)
   find_package(Remus REQUIRED)
-endif()
-
-################################################################################
-# Sparsehash Related Settings
-################################################################################
-
-if (SMTK_USE_SYSTEM_SPARSEHASH)
-  # A system sparsehash implementation must be detected with pkgconfig:
-  set(SYSTEM_SPARSEHASH_REQUIRED "REQUIRED")
-  include(FindPkgConfig)
-  pkg_check_modules(SPARSEHASH ${SYSTEM_SPARSEHASH_REQUIRED} libsparsehash)
-else()
-  set(SPARSEHASH_INCLUDE_DIRS
-    "${SMTK_SOURCE_DIR}/thirdparty"
-    "${SMTK_BINARY_DIR}/thirdparty")
 endif()
 
 ################################################################################
@@ -608,7 +590,8 @@ include_directories(
 )
 include_directories(
   SYSTEM
-  "${SPARSEHASH_INCLUDE_DIRS}"
+  "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty"
+  "${CMAKE_CURRENT_BINARY_DIR}/thirdparty"
   "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cJSON"
   "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/pugixml"
   "${Boost_INCLUDE_DIRS}"

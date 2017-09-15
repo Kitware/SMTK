@@ -1609,9 +1609,7 @@ SEARCH_INCLUDES        = YES
 
 INCLUDE_PATH           = \
         "@SMTK_SOURCE_DIR@/thirdparty/cJSON" \
-        "@SMTK_SOURCE_DIR@/thirdparty/sparsehash" \
-        "@SMTK_BINARY_DIR@/thirdparty/cJSON" \
-        "@SMTK_BINARY_DIR@/thirdparty/sparsehash"
+        "@SMTK_BINARY_DIR@/thirdparty/cJSON"
 
 # You can use the INCLUDE_FILE_PATTERNS tag to specify one or more wildcard
 # patterns (like *.h and *.hpp) to filter out the header-files in the
@@ -1738,9 +1736,6 @@ SKIP_FUNCTION_MACROS   = YES
 
 TAGFILES               = \
   "@SMTK_BINARY_DIR@/doc/reference/cjson.tags = @SMTK_BINARY_DIR@/doc/reference/cjson/html"
-
-# This causes segfaults in doxygen 1.8.8:
-#  "@SMTK_BINARY_DIR@/doc/reference/sparsehash.tags = @SMTK_BINARY_DIR@/doc/reference/sparsehash/html"
 
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create
 # a tag file that is based on the input files it reads.

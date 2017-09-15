@@ -32,6 +32,7 @@ namespace common
 class SMTKCORE_EXPORT ResourceComponent : smtkEnableSharedPtr(ResourceComponent)
 {
   friend class Resource;
+  friend class smtk::model::Manager;
 
 public:
   smtkTypeMacroBase(ResourceComponent);

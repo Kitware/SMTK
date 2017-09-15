@@ -17,19 +17,7 @@
 
 #include "smtk/common/UUID.h"
 
-#ifdef SMTK_HASH_STORAGE
-#if defined(_MSC_VER) // Visual studio
-#pragma warning(push)
-#pragma warning(disable : 4996) // Overeager "unsafe" parameter check
-#endif
-#include "sparsehash/sparse_hash_map"
-#if defined(_MSC_VER) // Visual studio
-#pragma warning(pop)
-#endif
-#else // SMTK_HASH_STORAGE
 #include <map>
-#endif // SMTK_HASH_STORAGE
-
 #include <string>
 #include <vector>
 
@@ -42,18 +30,10 @@ namespace model
 typedef std::string String;
 /// Use vectors of String objects for holding string properties on model entities.
 typedef std::vector<String> StringList;
-#ifdef SMTK_HASH_STORAGE
-/// A dictionary of property names mapped to their values (string vectors)
-typedef google::sparse_hash_map<std::string, StringList> StringData;
-/// A dictionary of model entities mapped to all the string properties defined on them.
-typedef google::sparse_hash_map<smtk::common::UUID, StringData> UUIDsToStringData;
-#else  // SMTK_HASH_STORAGE
 /// A dictionary of property names mapped to their values (string vectors)
 typedef std::map<std::string, StringList> StringData;
 /// A dictionary of model entities mapped to all the string properties defined on them.
 typedef std::map<smtk::common::UUID, StringData> UUIDsToStringData;
-#endif // SMTK_HASH_STORAGE
-
 /// A convenient typedef that describes how an iterator to model-entity string properties is used.
 typedef UUIDsToStringData::iterator UUIDWithStringProperties;
 /// A convenient typedef that describes how the iterator to one string property is used.

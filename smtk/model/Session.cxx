@@ -311,7 +311,7 @@ SessionInfoBits Session::transcribeInternal(
 {
   (void)depth;
   SessionInfoBits actual = SESSION_NOTHING;
-  Entity* entRec = this->m_manager->findEntity(entRef.entity(), false);
+  EntityPtr entRec = this->m_manager->findEntity(entRef.entity(), false);
   if (!entRec)
     entRec = this->addEntityRecord(entRef);
 
@@ -683,7 +683,7 @@ std::string Session::defaultFileExtension(const Model& model) const
 }
 
 /// Subclasses implement this; it should add a record for \a entRef to the manager.
-Entity* Session::addEntityRecord(const EntityRef& entRef)
+EntityPtr Session::addEntityRecord(const EntityRef& entRef)
 {
   (void)entRef;
   return NULL;
@@ -912,7 +912,7 @@ int Session::findOrAddRelatedInstances(
   *
   */
 SessionInfoBits Session::findOrAddArrangements(
-  const EntityRef& entRef, Entity* entRec, SessionInfoBits flags, ArrangementHelper* helper)
+  const EntityRef& entRef, EntityPtr entRec, SessionInfoBits flags, ArrangementHelper* helper)
 {
   (void)entRef;
   (void)entRec;
@@ -925,7 +925,7 @@ SessionInfoBits Session::findOrAddArrangements(
   *
   */
 SessionInfoBits Session::updateProperties(
-  const EntityRef& entRef, Entity* entRec, SessionInfoBits flags, ArrangementHelper* helper)
+  const EntityRef& entRef, EntityPtr entRec, SessionInfoBits flags, ArrangementHelper* helper)
 {
   (void)entRef;
   (void)entRec;

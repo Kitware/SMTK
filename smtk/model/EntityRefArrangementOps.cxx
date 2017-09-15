@@ -46,7 +46,7 @@ int EntityRefArrangementOps::findOrAddSimpleRelationship(
   int relidx = EntityRefArrangementOps::findSimpleRelationship(a, k, b);
   if (relidx < 0)
   {
-    Entity* ent = a.manager()->findEntity(a.entity());
+    EntityPtr ent = a.manager()->findEntity(a.entity());
     if (ent)
     {
       int offset = ent->findOrAppendRelation(b.entity());

@@ -8,7 +8,9 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/model/Entity.h"
+#include "smtk/model/Manager.h"
 
+#include "smtk/common/Resource.h"
 #include "smtk/common/StringUtil.h"
 
 #include <algorithm>
@@ -56,11 +58,29 @@ Entity::Entity()
 {
 }
 
-/// Construct a link with the given \a dimension with a type specified by \a entityFlags.
-Entity::Entity(BitFlags entFlags, int dim)
-  : m_entityFlags(entFlags)
-  , m_firstInvalid(-1)
+Entity::~Entity()
 {
+}
+
+/// Create and set up an entity object in a single call.
+EntityPtr Entity::create(BitFlags entityFlags, int dimension, ManagerPtr resource)
+{
+  EntityPtr result = Entity::create();
+  result->setup(entityFlags, dimension, resource);
+  return result;
+}
+
+/**\brief Populate an object with the given \a dimension with a type specified by \a entityFlags.
+  *
+  * By default, this does resets the array of relations,
+  * since changing the type or dimension of an object would usually
+  * invalidate relations; if it does not, you should
+  * pass \a resetRelations = false.
+  */
+EntityPtr Entity::setup(BitFlags entFlags, int dim, Manager::Ptr resource, bool resetRelations)
+{
+  this->m_entityFlags = entFlags;
+  this->m_resource = resource;
   // Override the dimension bits if the dimension is specified
   if (dim >= 0 && dim <= 4)
   {
@@ -69,6 +89,17 @@ Entity::Entity(BitFlags entFlags, int dim)
     // Now add in the *proper* dimension bit to match m_dimension:
     this->m_entityFlags |= (1 << dim);
   }
+  if (resetRelations)
+  {
+    this->m_firstInvalid = -1;
+    this->m_relations.clear();
+  }
+  return shared_from_this();
+}
+
+ResourcePtr Entity::resource() const
+{
+  return std::dynamic_pointer_cast<smtk::common::Resource>(this->m_resource.lock());
 }
 
 /**\brief Return the bit vector describing the type and attributes of the associated entity.
@@ -176,10 +207,10 @@ int Entity::appendRelation(const UUID& b, bool useHoles)
   return idx;
 }
 
-Entity& Entity::pushRelation(const UUID& b)
+EntityPtr Entity::pushRelation(const UUID& b)
 {
   this->m_relations.push_back(b);
-  return *this;
+  return shared_from_this();
 }
 
 /**\brief Remove the relation from the entity. Do not use this unless you know what you are doing.
@@ -193,7 +224,7 @@ Entity& Entity::pushRelation(const UUID& b)
   * Since arrangements store indices into this list of relations, you should only
   * call removeRelation when you also update all of the Entity's arrangements.
   */
-Entity& Entity::removeRelation(const UUID& b)
+EntityPtr Entity::removeRelation(const UUID& b)
 {
   UUIDArray& arr(this->m_relations);
   UUIDArray::size_type size = arr.size();
@@ -207,7 +238,7 @@ Entity& Entity::removeRelation(const UUID& b)
       --size;
     }
   }
-  return *this;
+  return shared_from_this();
 }
 
 /**\brief Completely clear the entire list of related entities.

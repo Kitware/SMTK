@@ -87,8 +87,6 @@ if readTheDocs or localReadTheDocs:
         '@SMTK_VERSION@': '1.1.0'})
     # Run doxygen ourselves on ReadTheDocs.org so that doxylinks will work.
     if not localSkipDoxygen:
-        runDoxygen(sourcedir, builddir, 'sparsehash.doxyfile.in',
-                   'sparsehash.doxyfile')
         runDoxygen(sourcedir, builddir, 'cjson.doxyfile.in', 'cjson.doxyfile')
         runDoxygen(sourcedir, builddir, 'smtk.doxyfile.in', 'smtk.doxyfile')
 
@@ -240,10 +238,7 @@ doxylink = {
         os.path.join(refbase, 'smtk', 'html')),
     'cjson': (
         os.path.join(tagbase, 'cjson.tags'),
-        os.path.join(refbase, 'cjson', 'html')),
-    'sparsehash': (
-        os.path.join(tagbase, 'sparsehash.tags'),
-        os.path.join(refbase, 'sparsehash', 'html'))
+        os.path.join(refbase, 'cjson', 'html'))
 }
 
 # A boolean that decides whether parentheses are appended to

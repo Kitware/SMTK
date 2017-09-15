@@ -99,7 +99,7 @@ public:
   static int forManager(cJSON* body, cJSON* sess, cJSON* mesh, smtk::model::ManagerPtr modelMgr,
     JSONFlags sections = JSON_DEFAULT);
   static int forManagerEntity(
-    smtk::model::UUIDWithEntity& entry, cJSON*, smtk::model::ManagerPtr modelMgr);
+    smtk::model::UUIDWithEntityPtr& entry, cJSON*, smtk::model::ManagerPtr modelMgr);
   static int forManagerArrangement(const smtk::model::UUIDWithArrangementDictionary& entry, cJSON*,
     smtk::model::ManagerPtr modelMgr);
   static int forManagerTessellation(

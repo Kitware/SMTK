@@ -71,7 +71,7 @@ void ArrangementHelper::reset(const smtk::model::EntityRef& ent)
 {
   EntityRef mutableEnt(ent);
 
-  Entity* erec;
+  EntityPtr erec;
   if (ent.isValid(&erec))
     erec->resetRelations();
 

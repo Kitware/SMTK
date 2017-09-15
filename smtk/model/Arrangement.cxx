@@ -420,7 +420,7 @@ bool Arrangement::IndexFromSimple(int& relationIdx) const
   * specific circumstances where the context is known.)
   */
 bool Arrangement::relations(
-  smtk::common::UUIDArray& relsOut, const Entity* ent, ArrangementKind k) const
+  smtk::common::UUIDArray& relsOut, const EntityPtr ent, ArrangementKind k) const
 {
   if (!ent)
     return false;
@@ -594,7 +594,7 @@ bool Arrangement::relations(
   * for later processing.
   */
 bool Arrangement::relationIndices(
-  std::vector<int>& idxsOut, const Entity* ent, ArrangementKind k) const
+  std::vector<int>& idxsOut, const EntityPtr ent, ArrangementKind k) const
 {
   if (!ent)
     return false;
