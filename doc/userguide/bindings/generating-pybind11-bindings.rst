@@ -14,11 +14,13 @@ the module.
 To generate a C++ header file for a new SMTK class, use
 ``[smtk-root-directory]/utilities/python/cpp_to_pybind11.py`` with the
 appropriate arguments for the header file, project root directory,
-include directories and generated file prefix; the module's binding
-source file (also located in in the ``pybind`` subdirectory of the
-module) must then be updated to call the functions defined in the
-generated header file. To generate all of the C++ headers and the module C++
-source file for a namespace at once, use
+include directories (e.g. ``-I "[smtk-build-directory]
+[smtk-root-directory]/thirdparty/cJSON path/to/vtk/include"``) and
+generated file prefix; the module's binding source file (also located
+in the ``pybind`` subdirectory of the module) must then be updated to
+call the functions defined in the generated header file. To generate
+all of the C++ headers and the module C++ source file for a namespace
+at once, use
 ``[smtk-root-directory]/utilities/python/generate_pybind11_module.py``
 with the appropriate arguments for the module directory, project root
 directory and include directories.
