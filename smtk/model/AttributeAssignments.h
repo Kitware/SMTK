@@ -10,23 +10,11 @@
 #ifndef __smtk_model_AttributeAssignments_h
 #define __smtk_model_AttributeAssignments_h
 
-#include "smtk/Options.h" // for SMTK_HASH_STORAGE
 #include "smtk/PublicPointerDefs.h"
 
 #include "smtk/common/UUID.h"
 
-#ifdef SMTK_HASH_STORAGE
-#if defined(_MSC_VER) // Visual studio
-#pragma warning(push)
-#pragma warning(disable : 4996) // Overeager "unsafe" parameter check
-#endif
-#include "sparsehash/sparse_hash_map"
-#if defined(_MSC_VER) // Visual studio
-#pragma warning(pop)
-#endif
-#else
 #include <map>
-#endif
 #include <set>
 
 namespace smtk
@@ -51,19 +39,10 @@ protected:
   smtk::common::UUIDs m_attributes; // IDs of attributes assigned to an entity.
 };
 
-#ifdef SMTK_HASH_STORAGE
-/// Each Manager entity's UUID is mapped to a set of assigned attribute IDs.
-typedef google::sparse_hash_map<smtk::common::UUID, AttributeAssignments>
-  UUIDsToAttributeAssignments;
-/// An iterator referencing a (UUID,AttributeAssignments)-tuple.
-typedef google::sparse_hash_map<smtk::common::UUID, AttributeAssignments>::iterator
-  UUIDWithAttributeAssignments;
-#else
 /// Each Manager entity's UUID is mapped to a set of assigned attribute IDs.
 typedef std::map<smtk::common::UUID, AttributeAssignments> UUIDsToAttributeAssignments;
 /// An iterator referencing a (UUID,AttributeAssignments)-tuple.
 typedef std::map<smtk::common::UUID, AttributeAssignments>::iterator UUIDWithAttributeAssignments;
-#endif
 
 } // model namespace
 } // smtk namespace

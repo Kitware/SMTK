@@ -50,7 +50,6 @@ With that in mind:
 
   * cJSON — used to serialize geometric model information
   * pugiXML — used to serialize attribute collections
-  * sparsehash — an alternative to using :cxx:`std::map` to store maps from UUIDs to entity and property records in SMTK models.
 
 * utilities — scripts to aid in the development of SMTK
 

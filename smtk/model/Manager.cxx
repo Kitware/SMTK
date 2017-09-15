@@ -2775,8 +2775,7 @@ UUID Manager::createIncludedShell(const UUID& useOrShell)
   UUIDWithEntityPtr shell = this->insertEntityOfTypeAndDimension(SHELL_ENTITY | shellDim, -1);
   this->arrangeEntity(
     useOrShell, INCLUDES, Arrangement::UseOrShellIncludesShellWithIndex(indexOfNewShell));
-  // We must re-find the entity record since insertEntityOfTypeAndDimension
-  // invalidates entity when SMTK_HASH_STORAGE is true:
+  // We must re-find the entity record since insertEntityOfTypeAndDimension:
   this->findEntity(useOrShell)->appendRelation(shell->first);
   this->arrangeEntity(
     shell->first, EMBEDDED_IN, Arrangement::ShellEmbeddedInUseOrShellWithIndex(
@@ -3055,15 +3054,11 @@ bool Manager::disassociateAttribute(
   }
   if ((didRemove = ref->second.disassociateAttribute(attribId)))
   {
-// If the AttributeAssignments instance is now empty, remove it.
-// (Only do this for std::map storage, as it triggers assertion
-// failures in sparsehash for no discernable reason.)
-#ifndef SMTK_HASH_STORAGE
+    // If the AttributeAssignments instance is now empty, remove it.
     if (ref->second.attributes().empty())
     {
       this->m_attributeAssignments->erase(ref);
     }
-#endif
     // Notify the Attribute of the removal
     if (reverse && sys)
     {

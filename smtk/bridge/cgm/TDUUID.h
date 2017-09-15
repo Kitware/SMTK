@@ -19,18 +19,7 @@
 #include "smtk/bridge/cgm/Exports.h"
 #include "smtk/common/UUIDGenerator.h"
 
-#ifdef SMTK_HASH_STORAGE
-#if defined(_MSC_VER) // Visual studio
-#pragma warning(push)
-#pragma warning(disable : 4996) // Overeager "unsafe" parameter check
-#endif
-#include "sparsehash/sparse_hash_map"
-#if defined(_MSC_VER) // Visual studio
-#pragma warning(pop)
-#endif
-#else
 #include <map>
-#endif // SMTK_HASH_STORAGE
 
 namespace smtk
 {
@@ -39,13 +28,8 @@ namespace bridge
 namespace cgm
 {
 
-#ifdef SMTK_HASH_STORAGE
-/// Map UUIDs to CGM entity pointers
-typedef google::sparse_hash_map<smtk::common::UUID, ToolDataUser*> UUIDToCGMRef;
-#else
 /// Map UUIDs to CGM entity pointers
 typedef std::map<smtk::common::UUID, ToolDataUser*> UUIDToCGMRef;
-#endif // SMTK_HASH_STORAGE
 
 class SMTKCGMSESSION_EXPORT TDUUID : public ToolData
 {
