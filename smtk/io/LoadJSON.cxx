@@ -1156,12 +1156,28 @@ int LoadJSON::ofMeshesOfModel(
       std::string file_path;
       cJSON_GetStringValue(fLocationNode, file_path);
       path absPath(file_path);
-      if (!refPath.empty() && !absPath.is_absolute())
+      if (!absPath.is_absolute())
       {
-        path tryme = refPath / absPath;
-        if (exists(tryme))
+        std::string RefPath = refPath;
+        if (RefPath.empty())
         {
-          absPath = canonical(tryme, refPath);
+          // Attempt to grab the reference path from the URL of the collection's associated model
+          std::string smtkURL = modelMgr->stringProperty(associatedModelId, "smtk_url")[0];
+          boost::filesystem::path containingDirectory =
+            boost::filesystem::path(smtkURL).parent_path();
+          if (boost::filesystem::is_directory(containingDirectory))
+          {
+            RefPath = containingDirectory.string();
+          }
+        }
+
+        if (!RefPath.empty())
+        {
+          path tryme = RefPath / absPath;
+          if (exists(tryme))
+          {
+            absPath = canonical(tryme, RefPath);
+          }
         }
       }
       importedCollection = smtk::io::importMesh(absPath.string(), meshMgr);
