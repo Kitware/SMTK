@@ -854,6 +854,33 @@ int LoadJSON::ofLocalSession(
   if (!sref.isValid())
     return status;
 
+  // Verify that none of the models are already present in the session.
+  // If they are, then fail rather than allow ambiguous state afterwards.
+  bool alreadyLoaded = false;
+  cJSON* jmodels = cJSON_GetObjectItem(node, "models");
+  if (jmodels)
+  {
+    for (cJSON* jmrec = jmodels->child; jmrec; jmrec = jmrec->next)
+    {
+      smtk::common::UUID muid;
+      if (jmrec && jmrec->string && !(muid = smtk::common::UUID(jmrec->string)).isNull())
+      {
+        if (context->findEntity(muid))
+        {
+          smtk::model::Model oops(context, muid);
+          smtkErrorMacro(context->log(), "Model \"" << oops.name() << "\" is already loaded.");
+          alreadyLoaded = true;
+        }
+      }
+    }
+  }
+  if (alreadyLoaded)
+  {
+    smtkErrorMacro(context->log(),
+      "Cannot load models when they are already loaded. Close data before reloading.");
+    return false;
+  }
+
   // Ignore the XML definitions of the serialized session;
   // recreating the session will recreate the attribute definitions.
   (void)opsObj;
