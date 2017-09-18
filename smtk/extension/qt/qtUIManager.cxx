@@ -623,6 +623,11 @@ void qtUIManager::onViewUIModified(
   emit this->viewUIChanged(bview, item);
 }
 
+void qtUIManager::onOperationFinished()
+{
+  emit this->refreshEntityItems();
+}
+
 int qtUIManager::getWidthOfAttributeMaxLabel(smtk::attribute::DefinitionPtr def, const QFont& font)
 {
   std::string text;
