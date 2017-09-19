@@ -72,7 +72,7 @@ public slots:
   void showAdvanceLevelOverlay(bool show) override;
 
 signals:
-  void numOfAttriubtesChanged();
+  void numOfAttributesChanged();
   void attColorChanged();
   void attAssociationChanged();
   void relaySelectionToAssiocationWidget(const smtk::model::EntityRefs& selEntities,

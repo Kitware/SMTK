@@ -721,7 +721,7 @@ void qtAttributeView::createNewAttribute(smtk::attribute::DefinitionPtr attDef)
   {
     this->Internals->ListTable->selectRow(item->row());
   }
-  emit this->numOfAttriubtesChanged();
+  emit this->numOfAttributesChanged();
   this->updateSelectionOfEntities();
 }
 
@@ -742,7 +742,7 @@ void qtAttributeView::onCopySelected()
     {
       this->Internals->ListTable->selectRow(item->row());
     }
-    emit this->numOfAttriubtesChanged();
+    emit this->numOfAttributesChanged();
     this->updateSelectionOfEntities();
   }
 }
@@ -761,7 +761,7 @@ void qtAttributeView::onDeleteSelected()
 
     QTableWidgetItem* selItem = this->getSelectedItem();
     this->Internals->ListTable->removeRow(selItem->row());
-    emit this->numOfAttriubtesChanged();
+    emit this->numOfAttributesChanged();
   }
 }
 
