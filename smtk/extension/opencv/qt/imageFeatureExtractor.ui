@@ -41,7 +41,7 @@
       <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Line Thickness</string>
+         <string>Line Thickness (pixels)</string>
         </property>
        </widget>
       </item>
