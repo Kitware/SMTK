@@ -15,14 +15,14 @@ set (unit_tests)
 set (unit_tests_which_require_data
   UnitTestEulerRatio.cxx
   UnitTestImportFromExodus.cxx
-  UnitTestImportFromVTK.cxx
   UnitTestTopology.cxx
   UnitTestReadWrite.cxx)
 
 set(external_libs ${Boost_LIBRARIES})
 
 if (SMTK_ENABLE_VTK_SUPPORT)
-list (APPEND external_libs ${VTK_LIBRARIES} vtkSMTKSourceExt smtkIOVTK)
+  list (APPEND unit_tests_which_require_data UnitTestImportFromVTK.cxx)
+  list (APPEND external_libs ${VTK_LIBRARIES} vtkSMTKSourceExt smtkIOVTK)
 endif()
 
 smtk_unit_tests(
