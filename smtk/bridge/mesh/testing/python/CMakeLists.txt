@@ -1,9 +1,11 @@
 
 
 # tests that require SMTK_DATA_DIR
-set(smtkMeshPythonDataTests
-  eulerRatio
-)
+set(smtkMeshPythonDataTests)
+
+if (SMTK_ENABLE_VTK_SUPPORT)
+  list (APPEND smtkMeshPythonDataTests eulerRatio)
+endif()
 
 #only run these tests if we have a valid data directory and we have a moab
 #built with hdf5
