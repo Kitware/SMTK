@@ -81,8 +81,6 @@ vtkStandardNewMacro(vtkModelMultiBlockSource);
 vtkInformationKeyMacro(vtkModelMultiBlockSource, ENTITYID, String);
 smtkImplementTracksAllInstances(vtkModelMultiBlockSource);
 
-smtk::common::UUIDGenerator vtkModelMultiBlockSource::UUIDGenerator;
-
 vtkModelMultiBlockSource::vtkModelMultiBlockSource()
 {
   this->SetNumberOfInputPorts(0);

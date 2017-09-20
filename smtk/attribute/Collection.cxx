@@ -16,7 +16,6 @@
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/common/UUID.h"
-#include "smtk/common/UUIDGenerator.h"
 #include "smtk/common/View.h"
 #include "smtk/model/Manager.h"
 

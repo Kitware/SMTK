@@ -20,6 +20,9 @@ namespace common
 class SMTKCORE_EXPORT UUIDGenerator
 {
 public:
+  /// Returns a static instance of a UUID Generator
+  static UUIDGenerator& instance();
+
   UUIDGenerator();
   virtual ~UUIDGenerator();
 

@@ -13,6 +13,7 @@
 
 #include "smtk/mesh/moab/Interface.h"
 
+#include "smtk/common/UUIDGenerator.h"
 #include "smtk/model/EntityIterator.h"
 
 namespace smtk
@@ -221,7 +222,7 @@ bool Collection::reparent(smtk::mesh::ManagerPtr newParent)
   //if we currently don't have a uuid get one
   if (this->m_entity.isNull())
   {
-    this->m_entity = currentManager->nextEntityId();
+    this->m_entity = smtk::common::UUIDGenerator::instance().random();
   }
 
   //add us to the new manager

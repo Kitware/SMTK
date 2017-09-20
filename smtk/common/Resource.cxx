@@ -28,8 +28,7 @@ Resource::Resource(const UUID& myID, ResourceManager* manager)
 Resource::Resource(ResourceManager* manager)
   : m_manager(manager)
 {
-  smtk::common::UUIDGenerator gen;
-  this->m_id = gen.random();
+  this->m_id = smtk::common::UUIDGenerator::instance().random();
 }
 
 Resource::~Resource()

@@ -17,7 +17,7 @@
 
 #include "smtk/Options.h"
 #include "smtk/bridge/cgm/Exports.h"
-#include "smtk/common/UUIDGenerator.h"
+#include "smtk/common/UUID.h"
 
 #include <map>
 
@@ -49,7 +49,6 @@ public:
 protected:
   smtk::common::UUID m_entityId;
   static UUIDToCGMRef s_reverseLookup;
-  static smtk::common::UUIDGenerator s_uuidGenerator;
 
   static void checkForCollision(ToolDataUser* entity, const smtk::common::UUID& uid);
 };

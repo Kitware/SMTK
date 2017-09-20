@@ -23,7 +23,7 @@
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
-
+#include "smtk/common/UUIDGenerator.h"
 #include "smtk/model/DefaultSession.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
@@ -361,10 +361,9 @@ int main()
 
     // Test transferring remote dangling entity list to local session.
     // (As a preentityref to a full implementation of TestForwardingSession::transcribeInternal)
-    UUIDGenerator ugen;
     UUIDs danglers;
     for (int i = 0; i < 8; ++i)
-      danglers.insert(ugen.random());
+      danglers.insert(UUIDGenerator::instance().random());
     localSession->addSomeRemoteDanglers(danglers);
     cJSON* jsonDanglers = cJSON_CreateObject();
     smtk::io::SaveJSON::forDanglingEntities(remoteSession->sessionId(), jsonDanglers, remoteMgr);

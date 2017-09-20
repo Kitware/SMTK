@@ -16,7 +16,6 @@
 #include "smtk/model/Session.h"
 
 #include "smtk/common/UUID.h"
-#include "smtk/common/UUIDGenerator.h"
 
 #include "vtkSmartPointer.h"
 #include "vtkWeakPointer.h"
@@ -244,7 +243,6 @@ protected:
   void retranscribeModel(const smtk::model::Model& inModel);
 
   vtkItemWatcherCommand* m_itemWatcher;
-  smtk::common::UUIDGenerator m_idGenerator;
   std::map<smtk::common::UUID, vtkWeakPointer<vtkModelItem> > m_itemsToRefs;
 
   /// Track which models are tracked by which sessions.

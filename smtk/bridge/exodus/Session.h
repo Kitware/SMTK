@@ -16,7 +16,6 @@
 #include "smtk/model/Session.h"
 
 #include "smtk/common/UUID.h"
-#include "smtk/common/UUIDGenerator.h"
 
 #include "vtkDataObjectTreeIterator.h"
 #include "vtkInformation.h"
@@ -171,7 +170,6 @@ protected:
   SessionInfoBits transcribeInternal(
     const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth = -1) override;
 
-  smtk::common::UUIDGenerator m_uuidGen;
   ModelVector_t m_models;
   ReverseIdMap_t m_revIdMap;
   ChildParentMap_t
