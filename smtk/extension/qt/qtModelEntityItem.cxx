@@ -184,6 +184,11 @@ void qtModelEntityItem::updateItemData()
   this->qtItem::updateItemData();
 }
 
+void qtModelEntityItem::refreshEntityItems()
+{
+  this->Internals->EntityItemCombo->init();
+}
+
 void qtModelEntityItem::addEntityAssociationWidget()
 {
   smtk::attribute::ModelEntityItemPtr item =
@@ -211,6 +216,8 @@ void qtModelEntityItem::addEntityAssociationWidget()
   editBox->setToolTip("Associate model entities");
   editBox->setModel(new QStandardItemModel());
   editBox->setItemDelegate(new qtCheckableComboItemDelegate(editBox));
+  connect(
+    this->baseView()->uiManager(), SIGNAL(refreshEntityItems()), this, SLOT(refreshEntityItems()));
 
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QBoxLayout* editorLayout = new QHBoxLayout;

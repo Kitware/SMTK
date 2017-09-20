@@ -353,6 +353,8 @@ bool qtModelOperationWidget::initOperatorUI(const smtk::model::OperatorPtr& brOp
   QObject::connect(uiManager,
     SIGNAL(meshSelectionItemCreated(smtk::extension::qtMeshSelectionItem*)), this,
     SLOT(onMeshSelectionItemCreated(smtk::extension::qtMeshSelectionItem*)));
+  QObject::connect(this, SIGNAL(operationFinished(const smtk::model::OperatorResult&)), uiManager,
+    SLOT(onOperationFinished()));
 
   qtModelOperationWidgetInternals::OperatorInfo opInfo;
   opInfo.opPtr = brOp;

@@ -57,6 +57,7 @@ public slots:
   void updateSelection(const smtk::model::EntityRefs& selEntities,
     const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& DesPhrases,
     const std::string& incomingSelectionSource);
+  void refreshEntityItems();
 
 signals:
   void requestEntityAssociation();

@@ -45,6 +45,7 @@ public:
 
 public slots:
   void setOutputOptional(int);
+  void refreshEntityItems();
 
 protected slots:
   void updateItemData() override;
