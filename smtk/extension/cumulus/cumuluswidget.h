@@ -14,7 +14,8 @@
 #ifndef __smtk_extension_cumulus_cumuluswidget_h
 #define __smtk_extension_cumulus_cumuluswidget_h
 
-#include "logindialog.h"
+#include "smtk/extension/cumulus/Exports.h"
+#include "smtk/extension/cumulus/logindialog.h"
 
 #include <QString>
 
@@ -35,7 +36,7 @@ class JobTableModel;
 class CumulusProxy;
 class Job;
 
-class CumulusWidget : public QWidget
+class SMTKCUMULUSEXT_EXPORT CumulusWidget : public QWidget
 {
   Q_OBJECT
 

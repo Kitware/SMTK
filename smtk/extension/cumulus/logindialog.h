@@ -14,6 +14,8 @@
 #ifndef __smtk_extension_cumulus_logindialog_h
 #define __smtk_extension_cumulus_logindialog_h
 
+#include "smtk/extension/cumulus/Exports.h"
+
 #include <QDialog>
 
 namespace Ui
@@ -24,7 +26,7 @@ class LoginDialog;
 namespace cumulus
 {
 
-class LoginDialog : public QDialog
+class SMTKCUMULUSEXT_EXPORT LoginDialog : public QDialog
 {
   Q_OBJECT
 

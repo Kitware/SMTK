@@ -14,10 +14,12 @@
 #ifndef __smtk_extension_cumulus_girderrequest_h
 #define __smtk_extension_cumulus_girderrequest_h
 
-#include <QtCore/QList>
-#include <QtCore/QMap>
-#include <QtCore/QObject>
-#include <QtNetwork/QNetworkReply>
+#include "smtk/extension/cumulus/Exports.h"
+
+#include <QList>
+#include <QMap>
+#include <QNetworkReply>
+#include <QObject>
 
 class QNetworkAccessManager;
 class QNetworkCookieJar;
@@ -26,7 +28,7 @@ class QNetworkReply;
 namespace cumulus
 {
 
-class GirderRequest : public QObject
+class SMTKCUMULUSEXT_EXPORT GirderRequest : public QObject
 {
   Q_OBJECT
 

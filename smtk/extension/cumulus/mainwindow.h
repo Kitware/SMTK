@@ -14,6 +14,8 @@
 #ifndef __smtk_extension_cumulus_mainwindow_h
 #define __smtk_extension_cumulus_mainwindow_h
 
+#include "smtk/extension/cumulus/Exports.h"
+
 #include <QMainWindow>
 
 class QAction;
@@ -31,7 +33,7 @@ namespace cumulus
 class JobTableModel;
 class CumulusProxy;
 
-class MainWindow : public QMainWindow
+class SMTKCUMULUSEXT_EXPORT MainWindow : public QMainWindow
 {
   Q_OBJECT
 

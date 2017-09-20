@@ -14,9 +14,11 @@
 #ifndef __smtk_extension_cumulus_jobtablewidget_h
 #define __smtk_extension_cumulus_jobtablewidget_h
 
-#include <QWidget>
+#include "smtk/extension/cumulus/Exports.h"
 
 #include <QString>
+#include <QWidget>
+
 class QAbstractItemModel;
 class QAction;
 class QSortFilterProxyModel;
@@ -31,7 +33,7 @@ namespace cumulus
 class JobTableModel;
 class CumulusProxy;
 
-class JobTableWidget : public QWidget
+class SMTKCUMULUSEXT_EXPORT JobTableWidget : public QWidget
 {
   Q_OBJECT
 
