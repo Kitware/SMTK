@@ -67,6 +67,7 @@ public slots:
 signals:
   void operationRequested(const smtk::model::OperatorPtr& brOp);
   void operationCancelled(const smtk::model::OperatorPtr& brOp);
+  void operationFinished(const smtk::model::OperatorResult&);
   void fileItemCreated(smtk::extension::qtFileItem* fileItem);
   void modelEntityItemCreated(smtk::extension::qtModelEntityItem* entItem);
   void meshSelectionItemCreated(smtk::extension::qtMeshSelectionItem* meshItem,

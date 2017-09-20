@@ -1063,6 +1063,8 @@ qtOperatorDockWidget* qtModelView::operatorsDock()
                                const std::string&, const smtk::common::UUID&)),
     this, SIGNAL(meshSelectionItemCreated(
             smtk::extension::qtMeshSelectionItem*, const std::string&, const smtk::common::UUID&)));
+  QObject::connect(this, SIGNAL(operationFinished(const smtk::model::OperatorResult&)), opWidget,
+    SIGNAL(operationFinished(const smtk::model::OperatorResult&)));
 
   QWidget* dockP = NULL;
   foreach (QWidget* widget, QApplication::topLevelWidgets())

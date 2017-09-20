@@ -64,6 +64,11 @@ smtk::attribute::MeshItemPtr qtMeshItem::meshItem()
   return dynamic_pointer_cast<MeshItem>(this->getObject());
 }
 
+void qtMeshItem::refreshEntityItems()
+{
+  this->Internals->MeshItemCombo->init();
+}
+
 bool qtMeshItem::add(const smtk::mesh::MeshSet& val)
 {
   if (this->meshItem()->appendValue(val))
@@ -255,6 +260,8 @@ void qtMeshItem::loadAssociatedEntities()
   editBox->setToolTip("Associate meshes");
   editBox->setModel(new QStandardItemModel());
   editBox->setItemDelegate(new qtCheckableComboItemDelegate(editBox));
+  connect(
+    this->baseView()->uiManager(), SIGNAL(refreshEntityItems()), this, SLOT(refreshEntityItems()));
 
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QBoxLayout* editorLayout = new QHBoxLayout;

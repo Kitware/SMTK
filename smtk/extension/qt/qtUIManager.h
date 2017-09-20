@@ -153,6 +153,7 @@ public slots:
   void updateModelViews();
   void onViewUIModified(smtk::extension::qtBaseView*, smtk::attribute::ItemPtr);
   void setAdvanceLevel(int b);
+  void onOperationFinished();
 
 signals:
   void fileItemCreated(smtk::extension::qtFileItem* fileItem);
@@ -163,6 +164,7 @@ signals:
     const smtk::model::EntityRefs& selEntities, const smtk::mesh::MeshSets& selMeshes,
     const smtk::model::DescriptivePhrases& DesPhrases,
     const smtk::extension::SelectionModifier modifierFlag, const std::string& selectionSource);
+  void refreshEntityItems();
 
   friend class qtRootView;
   friend class qtAssociationWidget;
