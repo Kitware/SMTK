@@ -14,19 +14,20 @@
 #ifndef __smtk_extension_cumulus_cumulusproxy_h
 #define __smtk_extension_cumulus_cumulusproxy_h
 
-#include "job.h"
+#include "smtk/extension/cumulus/Exports.h"
+#include "smtk/extension/cumulus/job.h"
 
-#include <QtCore/QList>
-#include <QtCore/QObject>
+#include <QList>
+#include <QObject>
 
+class QNetworkCookieJar;
 class QNetworkReply;
 class QSslError;
-class QNetworkCookieJar;
 
 namespace cumulus
 {
 
-class CumulusProxy : public QObject
+class SMTKCUMULUSEXT_EXPORT CumulusProxy : public QObject
 {
   Q_OBJECT
 

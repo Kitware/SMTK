@@ -14,15 +14,16 @@
 #ifndef __smtk_extension_cumulus_jobtablemodel_h
 #define __smtk_extension_cumulus_jobtablemodel_h
 
-#include <QtCore/QAbstractTableModel>
-#include <QtCore/QList>
+#include "smtk/extension/cumulus/Exports.h"
+#include "smtk/extension/cumulus/job.h"
 
-#include "job.h"
+#include <QAbstractTableModel>
+#include <QList>
 
 namespace cumulus
 {
 
-class JobTableModel : public QAbstractTableModel
+class SMTKCUMULUSEXT_EXPORT JobTableModel : public QAbstractTableModel
 {
   Q_OBJECT
 

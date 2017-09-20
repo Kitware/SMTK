@@ -14,16 +14,18 @@
 #ifndef __smtk_extension_cumulus_job_h
 #define __smtk_extension_cumulus_job_h
 
-#include <QtCore/QList>
-#include <QtCore/QMetaType>
-#include <QtCore/QString>
+#include "smtk/extension/cumulus/Exports.h"
+
+#include <QList>
+#include <QMetaType>
+#include <QString>
 
 struct cJSON;
 
 namespace cumulus
 {
 
-class Job
+class SMTKCUMULUSEXT_EXPORT Job
 {
 public:
   Job();

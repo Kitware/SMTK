@@ -14,7 +14,8 @@
 #ifndef __smtk_extension_cumulus_jobview_h
 #define __smtk_extension_cumulus_jobview_h
 
-#include "job.h"
+#include "smtk/extension/cumulus/Exports.h"
+#include "smtk/extension/cumulus/job.h"
 
 #include <QMap>
 #include <QString>
@@ -26,7 +27,7 @@ namespace cumulus
 {
 class CumulusProxy;
 
-class JobView : public QTableView
+class SMTKCUMULUSEXT_EXPORT JobView : public QTableView
 {
   Q_OBJECT
 

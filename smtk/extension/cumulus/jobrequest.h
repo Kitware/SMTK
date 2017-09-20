@@ -14,19 +14,20 @@
 #ifndef __smtk_extension_cumulus_jobrequest_h
 #define __smtk_extension_cumulus_jobrequest_h
 
-#include "girderrequest.h"
-#include "job.h"
+#include "smtk/extension/cumulus/Exports.h"
+#include "smtk/extension/cumulus/girderrequest.h"
+#include "smtk/extension/cumulus/job.h"
 
-#include <QtCore/QList>
-#include <QtCore/QSet>
+#include <QList>
+#include <QSet>
 
-class cJSON;
 class QNetworkReply;
+struct cJSON;
 
 namespace cumulus
 {
 
-class JobRequest : public GirderRequest
+class SMTKCUMULUSEXT_EXPORT JobRequest : public GirderRequest
 {
   Q_OBJECT
 
