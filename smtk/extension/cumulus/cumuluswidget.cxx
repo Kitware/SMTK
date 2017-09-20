@@ -68,6 +68,11 @@ void CumulusWidget::showLoginDialog()
   m_loginDialog.show();
 }
 
+void CumulusWidget::addContextMenuAction(const QString& status, QAction* action)
+{
+  this->m_ui->jobTableWidget->addContextMenuAction(status, action);
+}
+
 void CumulusWidget::createJobTable()
 {
   this->m_ui->jobTableWidget->setModel(this->m_jobTableModel);

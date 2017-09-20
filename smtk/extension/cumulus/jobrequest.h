@@ -20,6 +20,7 @@
 #include <QtCore/QList>
 #include <QtCore/QSet>
 
+class cJSON;
 class QNetworkReply;
 
 namespace cumulus
@@ -91,6 +92,24 @@ private:
   QNetworkCookieJar* m_cookieJar;
 };
 
-} // end namespace
+// For updating job status to reflect download status
+class PatchJobRequest : public JobRequest
+{
+  Q_OBJECT
+public:
+  PatchJobRequest(const QString& girderUrl, const QString& girderToken, Job job, cJSON* body,
+    QObject* parent = 0);
+  ~PatchJobRequest();
+
+  void send();
+
+private slots:
+  void finished(QNetworkReply* reply);
+
+private:
+  cJSON* m_body;
+};
+
+} // end namespace cumulus
 
 #endif

@@ -9,10 +9,17 @@
 //=========================================================================
 
 #include "mainwindow.h"
+#include "job.h"
 #include "ui_mainwindow.h"
 
+#include <QAction>
 #include <QDesktopWidget>
+#include <QMessageBox>
 #include <QStatusBar>
+#include <QString>
+#include <QTextStream>
+
+//#define TEST_CUSTOM_MENU 1
 
 namespace cumulus
 {
@@ -30,6 +37,12 @@ MainWindow::MainWindow()
   this->createMainMenu();
 
   connect(this->m_ui->cumulusWidget, SIGNAL(info(QString)), this, SLOT(displayInfo(QString)));
+
+#ifdef TEST_CUSTOM_MENU
+  QAction* action = new QAction("Custom/Complete", this);
+  m_ui->cumulusWidget->addContextMenuAction("complete", action);
+  QObject::connect(action, &QAction::triggered, this, &MainWindow::test);
+#endif
 
   m_ui->cumulusWidget->showLoginDialog();
 }
@@ -57,6 +70,22 @@ void MainWindow::closeEvent(QCloseEvent* theEvent)
 void MainWindow::displayInfo(const QString& msg)
 {
   this->statusBar()->showMessage(msg);
+}
+
+void MainWindow::test()
+{
+  QAction* action = qobject_cast<QAction*>(sender());
+  if (!action)
+  {
+    QMessageBox::critical(this, "Test", "Not connected to QAction?");
+    return;
+  }
+
+  Job job = action->data().value<Job>();
+  QString message;
+  QTextStream qs(&message);
+  qs << "The slot named test() was called for job " << job.id();
+  QMessageBox::information(this, "Test", message);
 }
 
 } // end namespace

@@ -15,7 +15,10 @@
 #define __smtk_extension_cumulus_jobtablewidget_h
 
 #include <QWidget>
+
+#include <QString>
 class QAbstractItemModel;
+class QAction;
 class QSortFilterProxyModel;
 
 namespace Ui
@@ -38,6 +41,7 @@ public:
 
   void setModel(QAbstractItemModel* model);
   void setCumulusProxy(CumulusProxy* cumulusProxy);
+  void addContextMenuAction(const QString& status, QAction* action);
 
 protected:
   Ui::JobTableWidget* ui;

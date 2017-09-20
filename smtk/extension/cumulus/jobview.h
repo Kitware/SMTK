@@ -16,8 +16,11 @@
 
 #include "job.h"
 
-#include <QtCore/QSet>
-#include <QtWidgets/QTableView>
+#include <QMap>
+#include <QString>
+#include <QTableView>
+
+class QAction;
 
 namespace cumulus
 {
@@ -33,6 +36,7 @@ public:
 
   void contextMenuEvent(QContextMenuEvent* e);
   void setCumulusProxy(CumulusProxy* cumulusProxy);
+  void addContextMenuAction(const QString& status, QAction* action);
 
 private slots:
   void deleteJob();
@@ -41,6 +45,11 @@ private slots:
 
 private:
   CumulusProxy* m_cumulusProxy;
+
+  // Context-menu actions added by application
+  // QMap key is the Job status.
+  // Application is responsible for deleting the action
+  QMap<QString, QAction*> m_customActions;
 };
 
 } // end of namespace

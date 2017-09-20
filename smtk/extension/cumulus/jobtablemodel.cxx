@@ -110,9 +110,78 @@ bool JobTableModel::insertRows(int row, int count, const QModelIndex&)
 
 void JobTableModel::jobsUpdated(QList<Job> jobs)
 {
-  beginResetModel();
-  m_jobs = jobs;
-  endResetModel();
+  QList<int> rowsToRemove;
+
+  // Load map with input jobs
+  QMap<QString, Job> inputMap;
+  Job inputJob;
+  foreach (inputJob, jobs)
+  {
+    inputMap.insert(inputJob.id(), inputJob);
+  }
+
+  // Traverse current jobs and update those found in inputMap
+  for (int row = 0; row < m_jobs.size(); ++row)
+  {
+    Job modelJob = m_jobs[row];
+    QString modelJobId = modelJob.id();
+
+    // If row is not in the input, remember to remove it from the model
+    if (!inputMap.contains(modelJobId))
+    {
+      rowsToRemove.push_back(row);
+      continue;
+    }
+
+    // Get the input job; also remove it from the input map
+    inputJob = inputMap[modelJobId];
+    inputMap.remove(modelJobId);
+
+    if (inputJob.status() == modelJob.status())
+    {
+      continue;
+    }
+
+    // Update status
+    //qDebug() << "update status " << modelJobId << "to" << inputJob.status();
+    modelJob.setStatus(inputJob.status());
+    m_jobs[row] = modelJob;
+    QModelIndex index = this->index(row, JOB_STATUS);
+    emit this->dataChanged(index, index);
+  } // for (row)
+
+  // Remove any rows not in the input
+  // (Do this in reverse order so that row numbers remain consistent)
+  QListIterator<int> rowIter(rowsToRemove);
+  rowIter.toBack();
+  while (rowIter.hasPrevious())
+  {
+    int row = rowIter.previous();
+    this->beginRemoveRows(QModelIndex(), row, row);
+    m_jobs.removeAt(row);
+    this->endRemoveRows();
+  }
+
+  // If inputMap is empty, then we are done
+  if (inputMap.isEmpty())
+  {
+    return;
+  }
+
+  // (else) Insert new input jobs
+  int first = m_jobs.size();
+  int last = first + inputMap.size() - 1;
+  this->beginInsertRows(QModelIndex(), first, last);
+
+  QMap<QString, Job>::const_iterator iter = inputMap.constBegin();
+  for (; iter != inputMap.constEnd(); ++iter)
+  {
+    Job newJob(iter.value());
+    //qDebug() << "insert job:" << newJob.id();
+    m_jobs.push_back(newJob);
+  }
+
+  this->endInsertRows();
 }
 
 } // end namespace

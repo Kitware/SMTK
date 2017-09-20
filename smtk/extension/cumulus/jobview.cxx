@@ -12,6 +12,7 @@
 #include "cumulusproxy.h"
 #include "jobtablemodel.h"
 
+#include <QAction>
 #include <QContextMenuEvent>
 #include <QFileDialog>
 #include <QMenu>
@@ -64,7 +65,22 @@ void JobView::contextMenuEvent(QContextMenuEvent* e)
   connect(download, SIGNAL(triggered()), this, SLOT(downloadJob()));
   menu->addAction(download);
 
+  // Custom menu item
+  QAction* customAction = this->m_customActions.value(job.status(), nullptr);
+  if (customAction)
+  {
+    // Create menu action with same text as custom action, and connect trigger signals
+    QAction* menuAction = menu->addAction(customAction->text());
+    customAction->setData(jobVariant);
+    QObject::connect(menuAction, &QAction::triggered, customAction, &QAction::triggered);
+  }
+
   menu->exec(QCursor::pos());
+}
+
+void JobView::addContextMenuAction(const QString& status, QAction* action)
+{
+  this->m_customActions.insert(status, action);
 }
 
 void JobView::deleteJob()

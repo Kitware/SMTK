@@ -366,6 +366,19 @@ void CumulusProxy::downloadJobFinished()
   emit jobDownloaded(request->job(), request->path());
   emit info("Job download complete.");
   request->deleteLater();
+
+  // Update status to "downloaded"
+  cJSON* body = cJSON_CreateObject();
+  cJSON_AddStringToObject(body, "status", "downloaded");
+
+  PatchJobRequest* updateRequest =
+    new PatchJobRequest(this->m_girderUrl, this->m_girderToken, request->job(), body);
+
+  connect(updateRequest, SIGNAL(error(const QString, QNetworkReply*)), this,
+    SIGNAL(error(const QString, QNetworkReply*)));
+  connect(updateRequest, SIGNAL(info(const QString)), this, SIGNAL(info(const QString)));
+  updateRequest->send();
+  cJSON_Delete(body);
 }
 
 } // end namespace

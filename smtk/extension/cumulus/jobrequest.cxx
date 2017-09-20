@@ -152,4 +152,48 @@ void DownloadJobRequest::downloadFolderFinished()
 
   request->deleteLater();
 }
+
+PatchJobRequest::PatchJobRequest(
+  const QString& girderUrl, const QString& girderToken, Job job, cJSON* body, QObject* parent)
+  : JobRequest(girderUrl, girderToken, job, parent)
+  , m_body(body)
+{
 }
+
+PatchJobRequest::~PatchJobRequest()
+{
+}
+
+void PatchJobRequest::send()
+{
+  QString girderAuthUrl = QString("%1/jobs/%2").arg(this->m_girderUrl).arg(this->m_job.id());
+
+  QNetworkRequest request(girderAuthUrl);
+  request.setRawHeader(QByteArray("Girder-Token"), this->m_girderToken.toUtf8());
+
+  char* jsonString = cJSON_PrintUnformatted(m_body);
+  QByteArray data(jsonString);
+
+  QObject::connect(
+    this->m_networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(finished(QNetworkReply*)));
+
+  // Qt doesn't have native patch method; must use custom request
+  this->m_networkManager->sendCustomRequest(request, "PATCH", data);
+
+  delete jsonString;
+}
+
+void PatchJobRequest::finished(QNetworkReply* reply)
+{
+  QByteArray bytes = reply->readAll();
+  if (reply->error())
+  {
+    emit error(handleGirderError(reply, bytes), reply);
+  }
+  else
+  {
+    emit complete();
+  }
+}
+
+} // namespace cumulus
