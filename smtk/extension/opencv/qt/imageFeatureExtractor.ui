@@ -124,7 +124,7 @@
         </item>
         <item>
          <property name="text">
-          <string>Delete</string>
+          <string>Erase</string>
          </property>
         </item>
        </widget>
