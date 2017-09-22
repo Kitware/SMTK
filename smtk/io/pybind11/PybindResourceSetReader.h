@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef pybind_smtk_io_ResourceSetReader_h
-#define pybind_smtk_io_ResourceSetReader_h
+#ifndef pybind_smtk_io_SetReader_h
+#define pybind_smtk_io_SetReader_h
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -28,8 +28,8 @@ PySharedPtrClass< smtk::io::ResourceSetReader > pybind11_init_smtk_io_ResourceSe
     .def("deepcopy", (smtk::io::ResourceSetReader & (smtk::io::ResourceSetReader::*)(::smtk::io::ResourceSetReader const &)) &smtk::io::ResourceSetReader::operator=)
     .def("readFile", &smtk::io::ResourceSetReader::readFile, py::arg("filename"), py::arg("resources"), py::arg("logger"), py::arg("loadLinkedFiles") = true)
     .def("readString", &smtk::io::ResourceSetReader::readString, py::arg("content"), py::arg("resources"), py::arg("logger"), py::arg("loadLinkedFiles"), py::arg("resourceMap"))
-    .def("readString", [](smtk::io::ResourceSetReader& reader, const std::string& content, smtk::common::ResourceSet& resources, smtk::io::Logger& logger, bool loadLinkedFiles){ return reader.readString(content, resources, logger, loadLinkedFiles); })
-    .def("readString", [](smtk::io::ResourceSetReader& reader, const std::string& content, smtk::common::ResourceSet& resources, smtk::io::Logger& logger){ return reader.readString(content, resources, logger); })
+    .def("readString", [](smtk::io::ResourceSetReader& reader, const std::string& content, smtk::resource::Set& resources, smtk::io::Logger& logger, bool loadLinkedFiles){ return reader.readString(content, resources, logger, loadLinkedFiles); })
+    .def("readString", [](smtk::io::ResourceSetReader& reader, const std::string& content, smtk::resource::Set& resources, smtk::io::Logger& logger){ return reader.readString(content, resources, logger); })
     ;
   return instance;
 }

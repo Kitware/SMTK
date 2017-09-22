@@ -14,6 +14,7 @@ import sys
 #=============================================================================
 import smtk
 import smtk.common
+import smtk.resource
 import smtk.io
 
 
@@ -29,7 +30,7 @@ def TestResourceSetReader(readFromFile):
 
     status = 0  # return value
 
-    resources = smtk.common.ResourceSet()
+    resources = smtk.resource.Set()
     print 'resources', resources
     reader = smtk.io.ResourceSetReader()
     logger = smtk.io.Logger()

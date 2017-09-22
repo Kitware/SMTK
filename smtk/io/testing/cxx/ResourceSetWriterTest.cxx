@@ -14,7 +14,7 @@
 
 #include "smtk/attribute/Collection.h"
 
-#include "smtk/common/ResourceSet.h"
+#include "smtk/resource/Set.h"
 
 #include <boost/filesystem.hpp>
 
@@ -43,13 +43,13 @@ int main(int argc, const char* argv[])
     return 1;
   }
 
-  smtk::common::ResourceSet resources;
+  smtk::resource::Set resources;
 
-  // Build ResourceSet from input filenames
+  // Build Set from input filenames
   // This version presumes all attribute collections
   smtk::io::Logger logger;
   std::string link;
-  smtk::common::ResourceSet::ResourceRole role;
+  smtk::resource::Set::Role role;
 
   for (int i = 1; i < argc - 1; ++i)
   {
@@ -65,7 +65,7 @@ int main(int argc, const char* argv[])
     }
 
     // Initialize ResourcePtr
-    smtk::common::ResourcePtr resource(collection);
+    smtk::resource::ResourcePtr resource(collection);
 
     // Generate id from index
     // Switch to std::to_string() once c++11 arrives
@@ -75,18 +75,18 @@ int main(int argc, const char* argv[])
 
     // Make every other input an included link
     link = "";
-    role = smtk::common::ResourceSet::TEMPLATE;
+    role = smtk::resource::Set::TEMPLATE;
     if (i % 2 == 0)
     {
       // Strip off path to just get the filename
       //link  = vtksys::SystemTools::GetFilenameName(input_paths[i]);
       boost::filesystem::path p(input_path);
       link = p.filename().string<std::string>();
-      role = smtk::common::ResourceSet::INSTANCE;
+      role = smtk::resource::Set::INSTANCE;
     }
 
     // Add resource to set
-    bool ok = resources.addResource(resource, id, link, role);
+    bool ok = resources.add(resource, id, link, role);
     if (!ok)
     {
       std::cerr << "Error adding " << id << " to resource set\n";

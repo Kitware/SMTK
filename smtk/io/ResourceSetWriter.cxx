@@ -23,14 +23,15 @@
 #include <sstream>
 
 using namespace smtk::common;
+using namespace smtk::resource;
 
 namespace smtk
 {
 namespace io
 {
 
-bool ResourceSetWriter::writeFile(std::string filename, const ResourceSet& resources,
-  smtk::io::Logger& logger, LinkedFilesOption option)
+bool ResourceSetWriter::writeFile(
+  std::string filename, const Set& resources, smtk::io::Logger& logger, LinkedFilesOption option)
 {
   logger.reset();
   std::string content;
@@ -46,8 +47,8 @@ bool ResourceSetWriter::writeFile(std::string filename, const ResourceSet& resou
   return logger.hasErrors();
 }
 
-bool ResourceSetWriter::writeString(std::string& content, const ResourceSet& resources,
-  smtk::io::Logger& logger, LinkedFilesOption option)
+bool ResourceSetWriter::writeString(
+  std::string& content, const Set& resources, smtk::io::Logger& logger, LinkedFilesOption option)
 {
   logger.reset();
 
@@ -56,10 +57,10 @@ bool ResourceSetWriter::writeString(std::string& content, const ResourceSet& res
 
   // Construct xml element for each resource
   std::vector<std::string> resourceIds = resources.resourceIds();
-  smtk::common::Resource::Type rtype;
+  smtk::resource::Resource::Type rtype;
   std::string rtypeString;
-  ResourceSet::ResourceState state;
-  ResourceSet::ResourceRole role;
+  Set::State state;
+  Set::Role role;
   std::string link;
   bool ok = true;
   for (unsigned i = 0; i < resourceIds.size() && ok; ++i)
@@ -72,20 +73,20 @@ bool ResourceSetWriter::writeString(std::string& content, const ResourceSet& res
       continue;
     }
 
-    rtypeString = smtk::common::Resource::type2String(rtype);
+    rtypeString = smtk::resource::Resource::type2String(rtype);
     pugi::xml_node resourceElement = rootElement.append_child(rtypeString.c_str());
     resourceElement.append_attribute("id").set_value(id.c_str());
 
-    if (role != ResourceSet::NOT_DEFINED)
+    if (role != Set::NOT_DEFINED)
     {
-      std::string rstring = ResourceSet::role2String(role);
+      std::string rstring = Set::role2String(role);
       resourceElement.append_attribute("role").set_value(rstring.c_str());
     }
 
-    if ((("" == link) || (EXPAND_LINKED_FILES == option)) && ResourceSet::LOADED == state)
+    if ((("" == link) || (EXPAND_LINKED_FILES == option)) && Set::LOADED == state)
     {
       // Use XmlStringWriter to generate xml for this attribute collection
-      smtk::common::ResourcePtr resource;
+      smtk::resource::ResourcePtr resource;
       ok = resources.get(id, resource);
       smtk::attribute::CollectionPtr collection =
         dynamic_pointer_cast<smtk::attribute::Collection>(resource);
@@ -106,7 +107,7 @@ bool ResourceSetWriter::writeString(std::string& content, const ResourceSet& res
       // Save linked resources if option selected
       if (option == WRITE_LINKED_FILES)
       {
-        smtk::common::ResourcePtr resource;
+        smtk::resource::ResourcePtr resource;
         ok = resources.get(id, resource);
         smtk::attribute::CollectionPtr collection =
           dynamic_pointer_cast<smtk::attribute::Collection>(resource);

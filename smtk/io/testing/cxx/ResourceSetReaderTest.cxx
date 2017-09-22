@@ -10,14 +10,14 @@
 
 #include "smtk/io/ResourceSetReader.h"
 
-#include "smtk/common/ResourceSet.h"
+#include "smtk/resource/Set.h"
 
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
 
-// Test-example for CMBResourceSetWriter
+// Test-example for CMBSetWriter
 
 int main(int argc, const char* argv[])
 {
@@ -33,7 +33,7 @@ int main(int argc, const char* argv[])
   int status = 0; // return value
 
   // Instantiate empty resource set and reader
-  smtk::common::ResourceSet resources;
+  smtk::resource::Set resources;
   smtk::io::ResourceSetReader reader;
   smtk::io::Logger logger;
 
@@ -77,10 +77,10 @@ int main(int argc, const char* argv[])
       }
     } // else
 
-    smtk::common::ResourcePtr resource;
+    smtk::resource::ResourcePtr resource;
     resources.get("att0", resource);
-    smtk::common::Resource::Type resType = resource->resourceType();
-    std::cout << "att0 type: " << smtk::common::Resource::type2String(resType) << std::endl;
+    smtk::resource::Resource::Type resType = resource->resourceType();
+    std::cout << "att0 type: " << smtk::resource::Resource::type2String(resType) << std::endl;
   } // if (argc > 2)
 
   return status;

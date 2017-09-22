@@ -29,8 +29,9 @@
 #include "smtk/model/StringData.h"
 #include "smtk/model/Tessellation.h"
 
-#include "smtk/common/Resource.h"
 #include "smtk/common/UUID.h"
+
+#include "smtk/resource/Resource.h"
 
 #include "smtk/io/Logger.h"
 
@@ -82,7 +83,7 @@ typedef UUIDsToEntities::const_iterator UUIDWithConstEntityPtr;
 /**\brief Store information about solid models.
   *
   */
-class SMTKCORE_EXPORT Manager : public smtk::common::Resource
+class SMTKCORE_EXPORT Manager : public smtk::resource::Resource
 {
 public:
   typedef UUIDsToEntities storage_type;
@@ -90,7 +91,7 @@ public:
   typedef UUIDsToTessellations::iterator tess_iter_type;
 
   smtkTypeMacro(Manager);
-  smtkSharedPtrCreateMacro(smtk::common::Resource);
+  smtkSharedPtrCreateMacro(smtk::resource::Resource);
 
   Manager();
   Manager(shared_ptr<UUIDsToEntities> topology, shared_ptr<UUIDsToTessellations> tess,
@@ -109,7 +110,7 @@ public:
 
   smtk::mesh::ManagerPtr meshes() const;
 
-  smtk::common::ResourceSetPtr resources(bool skipUpdate = false)
+  smtk::resource::SetPtr resources(bool skipUpdate = false)
   {
     if (!skipUpdate)
     {
@@ -126,7 +127,7 @@ public:
 
   EntityPtr findEntity(const smtk::common::UUID& uid, bool trySessions = true) const;
 
-  smtk::common::ResourceComponentPtr find(const smtk::common::UUID& uid) const override;
+  smtk::resource::ComponentPtr find(const smtk::common::UUID& uid) const override;
   Resource::Type resourceType() const override { return Resource::MODEL; }
 
   virtual SessionInfoBits erase(
@@ -460,7 +461,7 @@ protected:
   smtk::shared_ptr<smtk::mesh::Manager> m_meshes;
   smtk::shared_ptr<UUIDsToAttributeAssignments> m_attributeAssignments;
   smtk::shared_ptr<UUIDsToSessions> m_sessions;
-  smtk::shared_ptr<common::ResourceSet> m_resources;
+  smtk::shared_ptr<resource::Set> m_resources;
   typedef std::owner_less<smtk::attribute::WeakCollectionPtr> CollectionLessThan;
   typedef std::set<smtk::attribute::WeakCollectionPtr, CollectionLessThan> WeakCollectionSet;
   WeakCollectionSet m_attributeCollections; // weak references to attribute collections

@@ -16,9 +16,6 @@
 #include "smtk/model/Manager.h"
 
 #include "smtk/attribute/Collection.h"
-#include "smtk/common/Resource.h"
-#include "smtk/common/ResourceComponent.h"
-#include "smtk/common/ResourceSet.h"
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/io/Logger.h"
@@ -47,12 +44,15 @@
 #include "smtk/model/VertexUse.h"
 #include "smtk/model/Volume.h"
 #include "smtk/model/VolumeUse.h"
+#include "smtk/resource/Resource.h"
+#include "smtk/resource/Component.h"
+#include "smtk/resource/Set.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::model::Manager, smtk::common::Resource > pybind11_init_smtk_model_Manager(py::module &m)
+PySharedPtrClass< smtk::model::Manager, smtk::resource::Resource > pybind11_init_smtk_model_Manager(py::module &m)
 {
-  PySharedPtrClass< smtk::model::Manager, smtk::common::Resource > instance(m, "Manager");
+  PySharedPtrClass< smtk::model::Manager, smtk::resource::Resource > instance(m, "Manager");
   instance
     .def(py::init<::smtk::model::Manager const &>())
     .def(py::init<>())

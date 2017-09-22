@@ -20,7 +20,7 @@
 
 #include "smtk/io/Logger.h"
 
-#include "smtk/common/ResourceSet.h"
+#include "smtk/resource/Set.h"
 
 #include <iostream>
 #include <string>
@@ -37,24 +37,23 @@ namespace io
 
 class SMTKCORE_EXPORT ResourceSetReader
 {
-  typedef std::map<std::string, smtk::common::ResourcePtr> ResourceMapType;
+  typedef std::map<std::string, smtk::resource::ResourcePtr> ResourceMapType;
 
 public:
   ResourceSetReader();
   ResourceSetReader(smtk::model::ManagerPtr mgr);
 
-  bool readFile(std::string filename, smtk::common::ResourceSet& resources,
-    smtk::io::Logger& logger, bool loadLinkedFiles = true);
-  bool readString(const std::string& content, smtk::common::ResourceSet& resources,
+  bool readFile(std::string filename, smtk::resource::Set& resources, smtk::io::Logger& logger,
+    bool loadLinkedFiles = true);
+  bool readString(const std::string& content, smtk::resource::Set& resources,
     smtk::io::Logger& logger, bool loadLinkedFiles = true, ResourceMapType* resourceMap = NULL);
 
 protected:
-  bool readEmbeddedAttCollection(pugi::xml_node& element, smtk::common::ResourcePtr& resource,
+  bool readEmbeddedAttCollection(pugi::xml_node& element, smtk::resource::ResourcePtr& resource,
     std::string& linkStartPath, smtk::io::Logger& logger);
-  bool readIncludedManager(const pugi::xml_node& element, smtk::common::ResourcePtr& resource,
+  bool readIncludedManager(const pugi::xml_node& element, smtk::resource::ResourcePtr& resource,
     std::string& path, smtk::io::Logger& logger);
-  std::string buildIncludePath(
-    const smtk::common::ResourceSet& resources, const std::string link) const;
+  std::string buildIncludePath(const smtk::resource::Set& resources, const std::string link) const;
 
   smtk::model::ManagerPtr m_modelManager;
 };

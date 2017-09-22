@@ -29,6 +29,7 @@ SMTK_THIRDPARTY_POST_INCLUDE
 #include <sstream>
 
 using namespace smtk::common;
+using namespace smtk::resource;
 
 namespace smtk
 {
@@ -45,7 +46,7 @@ ResourceSetReader::ResourceSetReader(smtk::model::ManagerPtr mgr)
 }
 
 bool ResourceSetReader::readFile(
-  std::string filename, ResourceSet& resources, smtk::io::Logger& logger, bool loadLinkedFiles)
+  std::string filename, Set& resources, smtk::io::Logger& logger, bool loadLinkedFiles)
 {
   // Load filename into string and call readString()
   std::ifstream in(filename.c_str(), std::ios::in);
@@ -77,7 +78,7 @@ bool ResourceSetReader::readFile(
   return this->readString(content, resources, logger, loadLinkedFiles);
 }
 
-bool ResourceSetReader::readString(const std::string& content, ResourceSet& resources,
+bool ResourceSetReader::readString(const std::string& content, Set& resources,
   smtk::io::Logger& logger, bool loadLinkedFiles, ResourceMapType* resourceMap)
 {
   std::stringstream ss; // for log messages
@@ -124,14 +125,14 @@ bool ResourceSetReader::readString(const std::string& content, ResourceSet& reso
     }
     //std::cout << "Element " << tagName << " id " << id << "\n";
 
-    ResourceSet::ResourceRole role = ResourceSet::NOT_DEFINED;
+    Set::Role role = Set::NOT_DEFINED;
     std::string srole = resourceElement.attribute("role").value();
     if (srole.length() > 0)
     {
-      role = ResourceSet::string2Role(srole);
+      role = Set::string2Role(srole);
     }
 
-    if ((tagName == "attribute") && (role == ResourceSet::NOT_DEFINED))
+    if ((tagName == "attribute") && (role == Set::NOT_DEFINED))
     {
       ss.str("");
       ss << "No role defined for attribute " << id;
@@ -172,19 +173,19 @@ bool ResourceSetReader::readString(const std::string& content, ResourceSet& reso
         std::cout << "Load include path \"" << path << "\"" << std::endl;
         if (readIncludedManager(childElement, r, path, logger))
         {
-          resources.addResource(r, id, link, role);
+          resources.add(r, id, link, role);
         }
         else
         {
-          smtk::common::Resource::Type type = smtk::common::Resource::string2Type(tagName);
-          resources.addResourceInfo(id, type, role, ResourceSet::LOAD_ERROR, link);
+          smtk::resource::Resource::Type type = smtk::resource::Resource::string2Type(tagName);
+          resources.addInfo(id, type, role, Set::LOAD_ERROR, link);
           break;
         }
       }
       else
       {
-        smtk::common::Resource::Type type = smtk::common::Resource::string2Type(tagName);
-        resources.addResourceInfo(id, type, role, ResourceSet::NOT_LOADED, link);
+        smtk::resource::Resource::Type type = smtk::resource::Resource::string2Type(tagName);
+        resources.addInfo(id, type, role, Set::NOT_LOADED, link);
       }
     }
     else if (childTagName == "SMTK_AttributeManager" || childTagName == "SMTK_AttributeSystem")
@@ -193,12 +194,12 @@ bool ResourceSetReader::readString(const std::string& content, ResourceSet& reso
       std::string path = resources.linkStartPath();
       if (readEmbeddedAttCollection(childElement, r, path, logger))
       {
-        resources.addResource(r, id, "", role);
+        resources.add(r, id, "", role);
       }
       else
       {
-        smtk::common::Resource::Type type = smtk::common::Resource::string2Type(tagName);
-        resources.addResourceInfo(id, type, role, ResourceSet::LOAD_ERROR);
+        smtk::resource::Resource::Type type = smtk::resource::Resource::string2Type(tagName);
+        resources.addInfo(id, type, role, Set::LOAD_ERROR);
         break;
       }
     }
@@ -215,7 +216,7 @@ bool ResourceSetReader::readString(const std::string& content, ResourceSet& reso
 }
 
 bool ResourceSetReader::readEmbeddedAttCollection(pugi::xml_node& element,
-  smtk::common::ResourcePtr& resource, std::string& linkStartPath, smtk::io::Logger& logger)
+  smtk::resource::ResourcePtr& resource, std::string& linkStartPath, smtk::io::Logger& logger)
 {
   // Initialize attribute collection
   smtk::attribute::CollectionPtr collection;
@@ -227,7 +228,7 @@ bool ResourceSetReader::readEmbeddedAttCollection(pugi::xml_node& element,
   else
   {
     collection = smtk::attribute::Collection::create();
-    resource = smtk::common::ResourcePtr(collection);
+    resource = smtk::resource::ResourcePtr(collection);
   }
 
   if (!collection)
@@ -254,7 +255,7 @@ bool ResourceSetReader::readEmbeddedAttCollection(pugi::xml_node& element,
 }
 
 bool ResourceSetReader::readIncludedManager(const pugi::xml_node& element,
-  smtk::common::ResourcePtr& resource, std::string& path, smtk::io::Logger& logger)
+  smtk::resource::ResourcePtr& resource, std::string& path, smtk::io::Logger& logger)
 {
   (void)element;
   // // Make sure path exists
@@ -276,7 +277,7 @@ bool ResourceSetReader::readIncludedManager(const pugi::xml_node& element,
   else
   {
     collection = smtk::attribute::Collection::create();
-    resource = smtk::common::ResourcePtr(collection);
+    resource = smtk::resource::ResourcePtr(collection);
   }
 
   if (!collection)
@@ -295,8 +296,7 @@ bool ResourceSetReader::readIncludedManager(const pugi::xml_node& element,
   return true;
 }
 
-std::string ResourceSetReader::buildIncludePath(
-  const ResourceSet& resources, const std::string link) const
+std::string ResourceSetReader::buildIncludePath(const Set& resources, const std::string link) const
 {
   std::string path = link; // return value
 

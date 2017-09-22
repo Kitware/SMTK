@@ -7,9 +7,6 @@ set(commonSrcs
   Extension.cxx
   FileLocation.cxx
   Paths.cxx
-  Resource.cxx
-  ResourceComponent.cxx
-  ResourceSet.cxx
   StringUtil.cxx
   TimeZone.cxx
   UUID.cxx
@@ -28,9 +25,6 @@ set(commonHeaders
   GeometryUtilities.h
   Paths.h
   RangeDetector.h
-  Resource.h
-  ResourceComponent.h
-  ResourceSet.h
   StringUtil.h
   TimeZone.h
   UUID.h

@@ -16,7 +16,7 @@
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/common/ResourceComponent.h"
+#include "smtk/resource/Component.h"
 
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
@@ -43,7 +43,7 @@ class Collection;
 /**\brief Represent a (possibly composite) value according to a definition.
       *
       */
-class SMTKCORE_EXPORT Attribute : public common::ResourceComponent
+class SMTKCORE_EXPORT Attribute : public resource::Component
 {
   friend class smtk::attribute::Definition;
   friend class smtk::attribute::Collection;
@@ -66,7 +66,7 @@ public:
 
   AttributePtr shared_from_this()
   {
-    return static_pointer_cast<Attribute>(ResourceComponent::shared_from_this());
+    return static_pointer_cast<Attribute>(Component::shared_from_this());
   }
 
   // NOTE: To rename an attribute use the collection!
@@ -211,7 +211,7 @@ public:
   bool isValid() const;
 
   smtk::attribute::CollectionPtr collection() const;
-  smtk::common::ResourcePtr resource() const override;
+  smtk::resource::ResourcePtr resource() const override;
   smtk::model::ManagerPtr modelManager() const;
 
   void setUserData(const std::string& key, smtk::simulation::UserDataPtr value)

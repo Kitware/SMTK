@@ -15,7 +15,7 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/URLDisposition.h"
 
-#include "smtk/common/Resource.h"
+#include "smtk/resource/Resource.h"
 
 #include <vector>
 
@@ -24,12 +24,12 @@ namespace smtk
 namespace model
 {
 
-class SMTKCORE_EXPORT StoredResource : public smtk::common::Resource
+class SMTKCORE_EXPORT StoredResource : public smtk::resource::Resource
 {
 public:
   smtkTypeMacro(StoredResource);
   smtkCreateMacro(StoredResource);
-  smtkSharedFromThisMacro(smtk::common::Resource);
+  smtkSharedFromThisMacro(smtk::resource::Resource);
 
   virtual ~StoredResource();
 
@@ -43,7 +43,7 @@ public:
   bool exists(const std::string& prefix = "") const;
 
   Resource::Type resourceType() const override { return MODEL; }
-  smtk::common::ResourceComponentPtr find(const smtk::common::UUID& compId) const override;
+  smtk::resource::ComponentPtr find(const smtk::common::UUID& compId) const override;
 
   bool addEntity(const EntityRef& ent);
   bool removeEntity(const EntityRef& ent);

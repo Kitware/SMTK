@@ -15,17 +15,17 @@
 
 #include "smtk/model/Entity.h"
 
-#include "smtk/common/ResourceComponent.h"
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/Manager.h"
+#include "smtk/resource/Component.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::model::Entity, smtk::common::ResourceComponent > pybind11_init_smtk_model_Entity(py::module &m)
+PySharedPtrClass< smtk::model::Entity, smtk::resource::Component > pybind11_init_smtk_model_Entity(py::module &m)
 {
-  PySharedPtrClass< smtk::model::Entity, smtk::common::ResourceComponent > instance(m, "Entity");
+  PySharedPtrClass< smtk::model::Entity, smtk::resource::Component > instance(m, "Entity");
   instance
     .def(py::init<::smtk::model::Entity const &>())
     .def("deepcopy", (smtk::model::Entity & (smtk::model::Entity::*)(::smtk::model::Entity const &)) &smtk::model::Entity::operator=)

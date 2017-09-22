@@ -27,48 +27,48 @@ def RSTest():
     status = 0
     result = False
     n = 0
-    resourceSet = smtk.common.ResourceSet()
+    resourceSet = smtk.resource.Set()
 
     collection1 = smtk.attribute.Collection.New()
     print collection1
     print collection1.resourceType()
-    result = resourceSet.addResource(
-        collection1, "collection1", "", smtk.common.ResourceSet.TEMPLATE)
+    result = resourceSet.add(
+        collection1, "collection1", "", smtk.resource.Set.TEMPLATE)
 
     n = resourceSet.numberOfResources()
     if result == False:
-        print("addResource() call failed")
+        print("add() call failed")
         status = status + 1
     elif n != 1:
         print("Wrong number of resources: %i, should be 1" % n)
         status = status + 1
 
     collection2 = smtk.attribute.Collection.New()
-    result = resourceSet.addResource(
-        collection2, "collection2", "path2", smtk.common.ResourceSet.INSTANCE)
+    result = resourceSet.add(
+        collection2, "collection2", "path2", smtk.resource.Set.INSTANCE)
 
     n = resourceSet.numberOfResources()
     if result == False:
-        print("addResource() call failed")
+        print("add() call failed")
         status = status + 1
     elif n != 2:
         print("Wrong number of resources: %i, should be 2" % n)
         status = status + 1
 
-    result = resourceSet.addResource(
-        collection1, "collection1-different-id", "", smtk.common.ResourceSet.SCENARIO)
+    result = resourceSet.add(
+        collection1, "collection1-different-id", "", smtk.resource.Set.SCENARIO)
     n = resourceSet.numberOfResources()
     if result == False:
-        print("addResource() call failed")
+        print("add() call failed")
         status = status + 1
     elif n != 3:
         print("Wrong number of resources: %i, should be 3" % n)
         status = status + 1
 
-    result = resourceSet.addResource(collection2, "collection2")
+    result = resourceSet.add(collection2, "collection2")
     n = resourceSet.numberOfResources()
     if result == True:
-        print("addResource() call didn't fail failed")
+        print("add() call didn't fail failed")
         status = status + 1
     elif n != 3:
         print("Wrong number of resources: %i, should be 3" % n)
@@ -95,9 +95,9 @@ def RSTest():
         print("get() failed")
         status = status + 1
     rtype = resource.resourceType()
-    if rtype != smtk.common.Resource.ATTRIBUTE:
+    if rtype != smtk.resource.Resource.ATTRIBUTE:
         print(
-            "Incorrect resource type %s, should be smtk.common.Resource.ATTRIBUTE" % rtype)
+            "Incorrect resource type %s, should be smtk.resource.Resource.ATTRIBUTE" % rtype)
         status = status + 1
 
     print("Number of errors: %i" % status)

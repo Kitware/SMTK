@@ -6,6 +6,9 @@
 add_subdirectory(common)
 smtk_source_group(common)
 
+add_subdirectory(resource)
+smtk_source_group(resource)
+
 add_subdirectory(attribute)
 smtk_source_group(attribute)
 
@@ -26,6 +29,7 @@ smtk_source_group(io)
 
 set(smtk_headers
   ${commonHeaders}
+  ${resourceHeaders}
   ${attributeHeaders}
   ${meshHeaders}
   ${modelHeaders}
@@ -34,6 +38,7 @@ set(smtk_headers
 )
 set(smtk_srcs
   ${commonSrcs}
+  ${resourceSrcs}
   ${attributeSrcs}
   ${meshSrcs}
   ${modelSrcs}

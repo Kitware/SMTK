@@ -68,7 +68,7 @@ public:
   /**\brief Save a resource file owned by the session for which this object delegates.
     */
   virtual int saveResource(
-    const EntityRef& ent, smtk::common::ResourceSetPtr rset, StoredResourcePtr rsrc);
+    const EntityRef& ent, smtk::resource::SetPtr rset, StoredResourcePtr rsrc);
 
 protected:
   std::string m_referencePath;

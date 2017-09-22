@@ -45,7 +45,7 @@ using namespace smtk::common;
 
 Attribute::Attribute(const std::string& myName, smtk::attribute::DefinitionPtr myDefinition,
   const smtk::common::UUID& myId)
-  : ResourceComponent(myId)
+  : Component(myId)
   , m_name(myName)
   , m_definition(myDefinition)
   , m_appliesToBoundaryNodes(false)
@@ -57,7 +57,7 @@ Attribute::Attribute(const std::string& myName, smtk::attribute::DefinitionPtr m
 }
 
 Attribute::Attribute(const std::string& myName, smtk::attribute::DefinitionPtr myDefinition)
-  : ResourceComponent()
+  : Component()
   , m_name(myName)
   , m_definition(myDefinition)
   , m_appliesToBoundaryNodes(false)
@@ -262,7 +262,7 @@ CollectionPtr Attribute::collection() const
   return this->m_definition->collection();
 }
 
-smtk::common::ResourcePtr Attribute::resource() const
+smtk::resource::ResourcePtr Attribute::resource() const
 {
   return this->collection();
 }

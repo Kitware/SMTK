@@ -38,9 +38,6 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindDateTime.h"
 #include "PybindDateTimeZonePair.h"
 #include "PybindRangeDetector.h"
-#include "PybindResource.h"
-#include "PybindResourceComponent.h"
-#include "PybindResourceSet.h"
 #include "PybindStringUtil.h"
 #include "PybindTimeZone.h"
 #include "PybindUUID.h"
@@ -71,9 +68,6 @@ PYBIND11_MODULE(_smtkPybindCommon, common)
 #else
   py::class_< smtk::common::PathsHelperWindows > smtk_common_PathsHelperWindows = pybind11_init_smtk_common_PathsHelperWindows(common);
 #endif
-  py::class_< smtk::common::Resource > smtk_common_Resource = pybind11_init_smtk_common_Resource(common);
-  py::class_< smtk::common::ResourceComponent > smtk_common_ResourceComponent = pybind11_init_smtk_common_ResourceComponent(common);
-  py::class_< smtk::common::ResourceSet > smtk_common_ResourceSet = pybind11_init_smtk_common_ResourceSet(common);
   py::class_< smtk::common::StringUtil > smtk_common_StringUtil = pybind11_init_smtk_common_StringUtil(common);
   py::class_< smtk::common::TimeZone > smtk_common_TimeZone = pybind11_init_smtk_common_TimeZone(common);
   py::class_< smtk::common::UUID > smtk_common_UUID = pybind11_init_smtk_common_UUID(common);

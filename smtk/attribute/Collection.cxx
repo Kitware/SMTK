@@ -25,12 +25,12 @@
 
 using namespace smtk::attribute;
 
-Collection::Collection(const smtk::common::UUID& myID, smtk::common::ResourceManager* manager)
+Collection::Collection(const smtk::common::UUID& myID, smtk::resource::Manager* manager)
   : Resource(myID, manager)
 {
 }
 
-Collection::Collection(smtk::common::ResourceManager* manager)
+Collection::Collection(smtk::resource::Manager* manager)
   : Resource(manager)
 {
 }
@@ -45,9 +45,9 @@ Collection::~Collection()
   }
 }
 
-smtk::common::Resource::Type Collection::resourceType() const
+smtk::resource::Resource::Type Collection::resourceType() const
 {
-  return smtk::common::Resource::ATTRIBUTE;
+  return smtk::resource::Resource::ATTRIBUTE;
 }
 
 smtk::attribute::DefinitionPtr Collection::createDefinition(
@@ -857,7 +857,7 @@ std::vector<smtk::common::ViewPtr> Collection::findTopLevelViews() const
   return topViews;
 }
 
-smtk::common::ResourceComponentPtr Collection::find(const smtk::common::UUID& attId) const
+smtk::resource::ComponentPtr Collection::find(const smtk::common::UUID& attId) const
 {
   return this->findAttribute(attId);
 }

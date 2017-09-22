@@ -9,7 +9,7 @@
 //=========================================================================
 #include "smtk/model/SessionIO.h"
 
-#include "smtk/common/ResourceSet.h"
+#include "smtk/resource/Set.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
@@ -34,7 +34,7 @@ namespace model
 {
 
 int SessionIO::saveResource(
-  const EntityRef& ent, smtk::common::ResourceSetPtr rset, StoredResourcePtr rsrc)
+  const EntityRef& ent, smtk::resource::SetPtr rset, StoredResourcePtr rsrc)
 {
   if (!rsrc || !ent.isValid())
   {

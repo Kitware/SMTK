@@ -31,7 +31,8 @@
 #include "smtk/model/Session.h"
 
 #include "smtk/common/CompilerInformation.h"
-#include "smtk/common/ResourceSet.h"
+
+#include "smtk/resource/Set.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"

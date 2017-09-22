@@ -24,7 +24,7 @@ namespace smtk
 namespace io
 {
 class Logger;
-class ResourceSetWriter;
+class SetWriter;
 class XmlStringWriter;
 class SMTKCORE_EXPORT AttributeWriter
 {

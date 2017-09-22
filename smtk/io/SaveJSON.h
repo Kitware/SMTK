@@ -66,8 +66,8 @@ public:
     smtk::model::ManagerPtr modelMgr, JSONFlags sections = JSON_DEFAULT);
   static bool fromModelManagerToFile(smtk::model::ManagerPtr modelMgr, const char* filename);
 
-  // Serialize a ResourceSet (for now, only smtk::model::StoredModel entries are handled). For debug use only.
-  static int fromResourceSet(cJSON* pnode, smtk::common::ResourceSetPtr& rset);
+  // Serialize a Set (for now, only smtk::model::StoredModel entries are handled). For debug use only.
+  static int fromSet(cJSON* pnode, smtk::resource::SetPtr& rset);
 
   /// Returns true if all models have URLs; false otherwise.
   static bool canSaveModels(const smtk::model::Models& modelsToSave);
