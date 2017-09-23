@@ -14,6 +14,7 @@
 #include "smtk/model/ArrangementKind.h"
 
 #include <map>
+#include <memory>
 #include <vector>
 
 namespace smtk
