@@ -54,6 +54,10 @@ if(MOAB_FOUND)
       #found an install version of moab
       include(${MOAB_ROOT_DIR}/lib/cmake/MOAB/MOABConfig.cmake)
       include(${MOAB_ROOT_DIR}/lib/cmake/MOAB/MOABTargets.cmake)
+    elseif(EXISTS ${MOAB_ROOT_DIR}/lib64/cmake/MOAB/MOABConfig.cmake)
+      #found an install version of moab
+      include(${MOAB_ROOT_DIR}/lib64/cmake/MOAB/MOABConfig.cmake)
+      include(${MOAB_ROOT_DIR}/lib64/cmake/MOAB/MOABTargets.cmake)
     endif()
   else()
       #Use the config files provided by the third-party version of moab
