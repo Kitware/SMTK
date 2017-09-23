@@ -81,8 +81,6 @@ typedef UUIDsToEntities::iterator UUIDWithEntityPtr;
 typedef UUIDsToEntities::const_iterator UUIDWithConstEntityPtr;
 /**\brief Store information about solid models.
   *
-  * This adds information about arrangements and tessellations
-  * of entities to its Manager base class.
   */
 class SMTKCORE_EXPORT Manager : public smtk::common::Resource
 {
@@ -95,16 +93,13 @@ public:
   smtkSharedPtrCreateMacro(smtk::common::Resource);
 
   Manager();
-  Manager(shared_ptr<UUIDsToEntities> topology, shared_ptr<UUIDsToArrangements> arrangements,
-    shared_ptr<UUIDsToTessellations> tess, shared_ptr<UUIDsToTessellations> analysismesh,
-    shared_ptr<smtk::mesh::Manager> meshes, shared_ptr<UUIDsToAttributeAssignments> attribs);
+  Manager(shared_ptr<UUIDsToEntities> topology, shared_ptr<UUIDsToTessellations> tess,
+    shared_ptr<UUIDsToTessellations> analysismesh, shared_ptr<smtk::mesh::Manager> meshes,
+    shared_ptr<UUIDsToAttributeAssignments> attribs);
   virtual ~Manager();
 
   UUIDsToEntities& topology();
   const UUIDsToEntities& topology() const;
-
-  UUIDsToArrangements& arrangements();
-  const UUIDsToArrangements& arrangements() const;
 
   UUIDsToTessellations& tessellations();
   const UUIDsToTessellations& tessellations() const;
@@ -460,7 +455,6 @@ protected:
   smtk::shared_ptr<UUIDsToFloatData> m_floatData;
   smtk::shared_ptr<UUIDsToStringData> m_stringData;
   smtk::shared_ptr<UUIDsToIntegerData> m_integerData;
-  smtk::shared_ptr<UUIDsToArrangements> m_arrangements;
   smtk::shared_ptr<UUIDsToTessellations> m_tessellations;
   smtk::shared_ptr<UUIDsToTessellations> m_analysisMesh;
   smtk::shared_ptr<smtk::mesh::Manager> m_meshes;

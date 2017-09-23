@@ -58,7 +58,6 @@ PySharedPtrClass< smtk::io::SaveJSON > pybind11_init_smtk_io_SaveJSON(py::module
     .def_static("forLog", &smtk::io::SaveJSON::forLog, py::arg("logrecordarray"), py::arg("log"), py::arg("start") = 0, py::arg("end") = static_cast<unsigned long>(-1))
     .def_static("forManager", &smtk::io::SaveJSON::forManager, py::arg("body"), py::arg("sess"), py::arg("mesh"), py::arg("modelMgr"), py::arg("sections") = ::smtk::io::JSONFlags::JSON_DEFAULT)
     .def_static("forManagerAnalysis", &smtk::io::SaveJSON::forManagerAnalysis, py::arg("uid"), py::arg("arg1"), py::arg("modelMgr"))
-    .def_static("forManagerArrangement", &smtk::io::SaveJSON::forManagerArrangement, py::arg("entry"), py::arg("arg1"), py::arg("modelMgr"))
     .def_static("forManagerEntity", &smtk::io::SaveJSON::forManagerEntity, py::arg("entry"), py::arg("arg1"), py::arg("modelMgr"))
     .def_static("forManagerFloatProperties", &smtk::io::SaveJSON::forManagerFloatProperties, py::arg("uid"), py::arg("arg1"), py::arg("modelMgr"))
     .def_static("forManagerIntegerProperties", &smtk::io::SaveJSON::forManagerIntegerProperties, py::arg("uid"), py::arg("arg1"), py::arg("modelMgr"))

@@ -72,7 +72,6 @@ Manager::Manager()
   , m_floatData(new UUIDsToFloatData)
   , m_stringData(new UUIDsToStringData)
   , m_integerData(new UUIDsToIntegerData)
-  , m_arrangements(new UUIDsToArrangements)
   , m_tessellations(new UUIDsToTessellations)
   , m_analysisMesh(new UUIDsToTessellations)
   , m_meshes(smtk::mesh::Manager::create())
@@ -86,8 +85,7 @@ Manager::Manager()
 }
 
 /// Create a model manager using the given storage instances.
-Manager::Manager(shared_ptr<UUIDsToEntities> inTopology,
-  shared_ptr<UUIDsToArrangements> inArrangements, shared_ptr<UUIDsToTessellations> tess,
+Manager::Manager(shared_ptr<UUIDsToEntities> inTopology, shared_ptr<UUIDsToTessellations> tess,
   shared_ptr<UUIDsToTessellations> analysismesh, shared_ptr<smtk::mesh::Manager> meshes,
   shared_ptr<UUIDsToAttributeAssignments> attribs)
   : smtk::common::Resource(nullptr)
@@ -95,7 +93,6 @@ Manager::Manager(shared_ptr<UUIDsToEntities> inTopology,
   , m_floatData(new UUIDsToFloatData)
   , m_stringData(new UUIDsToStringData)
   , m_integerData(new UUIDsToIntegerData)
-  , m_arrangements(inArrangements)
   , m_tessellations(tess)
   , m_analysisMesh(analysismesh)
   , m_meshes(meshes)
@@ -135,16 +132,6 @@ UUIDsToEntities& Manager::topology()
 const UUIDsToEntities& Manager::topology() const
 {
   return *this->m_topology.get();
-}
-
-UUIDsToArrangements& Manager::arrangements()
-{
-  return *this->m_arrangements.get();
-}
-
-const UUIDsToArrangements& Manager::arrangements() const
-{
-  return *this->m_arrangements.get();
 }
 
 UUIDsToTessellations& Manager::tessellations()
@@ -218,29 +205,22 @@ SessionInfoBits Manager::erase(const UUID& uid, SessionInfoBits flags)
     }
     else
     { // without an Entity record, we cannot erase these things:
-      actual &= ~(SESSION_ENTITY_TYPE | SESSION_ENTITY_RELATIONS);
+      actual &= ~(SESSION_ENTITY_TYPE | SESSION_ENTITY_RELATIONS | SESSION_ARRANGEMENTS);
     }
   }
 
-  if (flags & SESSION_ARRANGEMENTS)
+  if (haveEnt && (flags & SESSION_ARRANGEMENTS))
   {
-    UUIDWithArrangementDictionary ad = this->arrangements().find(uid);
-    if (ad != this->arrangements().end())
+    auto ad(ent->second->arrangementMap());
+    for (auto ak = ad.begin(); !ad.empty();)
     {
-      ArrangementKindWithArrangements ak;
-      do
+      ak = ad.begin();
+      Arrangements::size_type aidx = ak->second.size();
+      for (; aidx > 0; --aidx)
       {
-        ak = ad->second.begin();
-        if (ak == ad->second.end())
-          break;
-        Arrangements::size_type aidx = ak->second.size();
-        if (aidx == 0)
-          ad->second.erase(ak);
-        else
-          for (; aidx > 0; --aidx)
-            this->unarrangeEntity(uid, ak->first, static_cast<int>(aidx - 1), false);
-        ad = this->arrangements().find(uid); // iterator may be invalidated by unarrangeEntity.
-      } while (ad != this->arrangements().end());
+        ent->second->unarrange(ak->first, static_cast<int>(aidx - 1), false);
+      }
+      ad.erase(ak);
     }
   }
 
@@ -328,19 +308,11 @@ SessionInfoBits Manager::hardErase(const EntityRef& eref, SessionInfoBits flags)
     actual |= SESSION_ARRANGEMENTS;
 
   UUIDWithEntityPtr ent;
-  if (actual & (SESSION_ENTITY_TYPE | SESSION_ENTITY_RELATIONS))
+  if (actual & (SESSION_ENTITY_TYPE | SESSION_ENTITY_RELATIONS | SESSION_ARRANGEMENTS))
   {
     if (!this->m_topology->erase(uid))
     { // without an Entity record, we cannot erase these things:
-      actual &= ~(SESSION_ENTITY_TYPE | SESSION_ENTITY_RELATIONS);
-    }
-  }
-
-  if (flags & SESSION_ARRANGEMENTS)
-  {
-    if (!this->arrangements().erase(uid))
-    {
-      actual &= ~SESSION_ARRANGEMENTS;
+      actual &= ~(SESSION_ENTITY_TYPE | SESSION_ENTITY_RELATIONS | SESSION_ARRANGEMENTS);
     }
   }
 
@@ -532,6 +504,7 @@ Manager::iter_type Manager::setEntityOfTypeAndDimension(
 Manager::iter_type Manager::setEntity(EntityPtr c)
 {
   UUIDWithEntityPtr it;
+  c->reparent(shared_from_this());
   if (c->id().isNull())
   {
     std::ostringstream msg;
@@ -1666,7 +1639,6 @@ bool Manager::unregisterSession(SessionPtr session, bool expungeSession)
     this->m_floatData->erase(sessId);
     this->m_stringData->erase(sessId);
     this->m_integerData->erase(sessId);
-    this->m_arrangements->erase(sessId);
     this->m_tessellations->erase(sessId);
     this->m_attributeAssignments->erase(sessId);
   }
@@ -1716,21 +1688,21 @@ void Manager::prepareForEntity(std::pair<UUID, EntityPtr>& entry)
 {
   if ((entry.second->entityFlags() & CELL_2D) == CELL_2D)
   {
-    if (!this->hasArrangementsOfKindForEntity(entry.first, HAS_USE))
+    if (!entry.second->hasArrangementsOfKind(HAS_USE))
     {
       // Create arrangements to hold face-uses:
-      this->arrangeEntity(
-        entry.first, HAS_USE, Arrangement::CellHasUseWithIndexSenseAndOrientation(-1, 0, NEGATIVE));
-      this->arrangeEntity(
-        entry.first, HAS_USE, Arrangement::CellHasUseWithIndexSenseAndOrientation(-1, 0, POSITIVE));
+      entry.second->arrange(
+        HAS_USE, Arrangement::CellHasUseWithIndexSenseAndOrientation(-1, 0, NEGATIVE));
+      entry.second->arrange(
+        HAS_USE, Arrangement::CellHasUseWithIndexSenseAndOrientation(-1, 0, POSITIVE));
     }
   }
   else if (entry.second->entityFlags() & USE_ENTITY)
   {
-    if (!this->hasArrangementsOfKindForEntity(entry.first, HAS_SHELL))
+    if (!entry.second->hasArrangementsOfKind(HAS_SHELL))
     {
       // Create arrangement to hold parent shell:
-      this->arrangeEntity(entry.first, HAS_SHELL, Arrangement::UseHasShellWithIndex(-1));
+      entry.second->arrange(HAS_SHELL, Arrangement::UseHasShellWithIndex(-1));
     }
   }
   else if ((entry.second->entityFlags() & MODEL_ENTITY) == MODEL_ENTITY)
@@ -2018,41 +1990,12 @@ bool Manager::removeTessellation(const smtk::common::UUID& entityId, bool remove
 int Manager::arrangeEntity(
   const UUID& entityId, ArrangementKind kind, const Arrangement& arr, int index)
 {
-  UUIDsToArrangements::iterator cit = this->m_arrangements->find(entityId);
-  if (cit == this->m_arrangements->end())
+  UUIDsToEntities::iterator eit = this->m_topology->find(entityId);
+  if (eit == this->m_topology->end())
   {
-    if (index >= 0)
-    { // failure: can't replace information that doesn't exist.
-      return -1;
-    }
-    KindsToArrangements blank;
-    cit = this->m_arrangements->insert(std::pair<UUID, KindsToArrangements>(entityId, blank)).first;
+    return -1;
   }
-  KindsToArrangements::iterator kit = cit->second.find(kind);
-  if (kit == cit->second.end())
-  {
-    if (index >= 0)
-    { // failure: can't replace information that doesn't exist.
-      return -1;
-    }
-    Arrangements blank;
-    kit = cit->second.insert(std::pair<ArrangementKind, Arrangements>(kind, blank)).first;
-  }
-
-  if (index >= 0)
-  {
-    if (index >= static_cast<int>(kit->second.size()))
-    { // failure: can't replace information that doesn't exist.
-      return -1;
-    }
-    kit->second[index] = arr;
-  }
-  else
-  {
-    index = static_cast<int>(kit->second.size());
-    kit->second.push_back(arr);
-  }
-  return index;
+  return eit->second->arrange(kind, arr, index);
 }
 
 /**\brief Remove an arrangement from an entity, and optionally the entity itself.
@@ -2071,71 +2014,21 @@ int Manager::arrangeEntity(
   */
 int Manager::unarrangeEntity(const UUID& entityId, ArrangementKind k, int index, bool removeIfLast)
 {
-  int result = 0;
-  bool canRemoveEntity = false;
-  if (index < 0)
-    return result;
-  UUIDWithArrangementDictionary ad = this->m_arrangements->find(entityId);
-  if (ad == this->m_arrangements->end())
-    return result;
-  ArrangementKindWithArrangements ak = ad->second.find(k);
-  if (ak == ad->second.end() || index >= static_cast<int>(ak->second.size()))
-    return result;
-
-  ArrangementReferences duals;
-  bool hasDuals = this->findDualArrangements(entityId, k, index, duals);
-
-  // TODO: notify relation + entity (or their delegates) of imminent removal?
-  std::vector<int> relIdxs;
-  EntityPtr erec;
-  if ((ak->second.begin() + index)
-        ->relationIndices(relIdxs, (erec = this->findEntity(entityId, false)), k))
+  auto eit = this->m_topology->find(entityId);
+  if (eit == this->m_topology->end())
   {
-    for (std::vector<int>::iterator rit = relIdxs.begin(); rit != relIdxs.end(); ++rit)
-    {
-      erec->invalidateRelationByIndex(*rit);
-    }
+    return 0;
   }
-  ak->second.erase(ak->second.begin() + index);
-  ++result;
-
-  // Now, if we removed the last arrangement of this kind, kill the kind-dictionary entry
-  if (ak->second.empty())
-  {
-    ad->second.erase(ak);
-    // Now if we removed the last kind with arrangements in ad, kill the uuid-dictionary entry
-    if (ad->second.empty())
-    {
-      this->m_arrangements->erase(ad);
-      canRemoveEntity = true;
-    }
-  }
-
-  // Now find and remove the dual arrangement (if one exists)
-  // This branch should not be taken if we are inside the inner unarrangeEntity call below.
-  if (hasDuals)
-  {
-    // Unarrange every dual to this arrangement.
-    bool canIncrement = false;
-    for (ArrangementReferences::iterator dit = duals.begin(); dit != duals.end(); ++dit)
-    {
-      if (this->unarrangeEntity(dit->entityId, dit->kind, dit->index, removeIfLast) == 2)
-        canIncrement =
-          true; // Only increment result when dualEntity is remove, not the dual arrangement.
-    }
-    // Only increment once if other entities were removed; we do not indicate how many were removed.
-    if (canIncrement)
-      ++result;
-  }
+  int result = eit->second->unarrange(k, index);
 
   // If we removed the last arrangement relating this entity to others,
   // and if the caller has requested it: remove the entity itself.
-  if (removeIfLast && canRemoveEntity)
+  if (removeIfLast && eit->second->arrangementMap().empty())
   {
-    // TODO: notify entity of removal.
-    this->m_topology->erase(entityId);
+    this->m_topology->erase(eit);
     ++result;
   }
+
   return result;
 }
 
@@ -2155,11 +2048,12 @@ int Manager::unarrangeEntity(const UUID& entityId, ArrangementKind k, int index,
   */
 bool Manager::clearArrangements(const smtk::common::UUID& entityId)
 {
-  UUIDWithArrangementDictionary iter = this->m_arrangements->find(entityId);
-  bool didRemove = (iter != this->m_arrangements->end()) && (!iter->second.empty());
-  if (didRemove)
-    iter->second.clear();
-  return didRemove;
+  auto eit = this->m_topology->find(entityId);
+  if (eit == this->m_topology->end())
+  {
+    return false;
+  }
+  return eit->second->clearArrangements();
 }
 
 /**\brief Returns true when the given \a entity has any arrangements of the given \a kind (otherwise false).
@@ -2170,16 +2064,12 @@ bool Manager::clearArrangements(const smtk::common::UUID& entityId)
   */
 Arrangements* Manager::hasArrangementsOfKindForEntity(const UUID& entity, ArrangementKind kind)
 {
-  UUIDWithArrangementDictionary cellEntry = this->m_arrangements->find(entity);
-  if (cellEntry != this->m_arrangements->end())
+  auto eit = this->m_topology->find(entity);
+  if (eit == this->m_topology->end())
   {
-    ArrangementKindWithArrangements useIt = cellEntry->second.find(kind);
-    if (useIt != cellEntry->second.end())
-    {
-      return &useIt->second;
-    }
+    return nullptr;
   }
-  return NULL;
+  return eit->second->hasArrangementsOfKind(kind);
 }
 
 /**\brief This is a const version of hasArrangementsOfKindForEntity().
@@ -2187,16 +2077,12 @@ Arrangements* Manager::hasArrangementsOfKindForEntity(const UUID& entity, Arrang
 const Arrangements* Manager::hasArrangementsOfKindForEntity(
   const UUID& entity, ArrangementKind kind) const
 {
-  UUIDWithArrangementDictionary cellEntry = this->m_arrangements->find(entity);
-  if (cellEntry != this->m_arrangements->end())
+  auto eit = this->m_topology->find(entity);
+  if (eit == this->m_topology->end())
   {
-    ArrangementKindWithArrangements useIt = cellEntry->second.find(kind);
-    if (useIt != cellEntry->second.end())
-    {
-      return &useIt->second;
-    }
+    return nullptr;
   }
-  return NULL;
+  return eit->second->hasArrangementsOfKind(kind);
 }
 
 /**\brief Return an array of arrangements of the given \a kind for the given \a entity.
@@ -2208,7 +2094,8 @@ const Arrangements* Manager::hasArrangementsOfKindForEntity(
   */
 Arrangements& Manager::arrangementsOfKindForEntity(const UUID& entity, ArrangementKind kind)
 {
-  return (*this->m_arrangements)[entity][kind];
+  auto eit = this->m_topology->find(entity);
+  return eit->second->arrangementsOfKind(kind);
 }
 
 /**\brief Retrieve arrangement information for a cell.
@@ -2216,60 +2103,40 @@ Arrangements& Manager::arrangementsOfKindForEntity(const UUID& entity, Arrangeme
   * This version does not allow the arrangement to be altered.
   */
 const Arrangement* Manager::findArrangement(
-  const UUID& cellId, ArrangementKind kind, int index) const
+  const UUID& entityId, ArrangementKind kind, int index) const
 {
-  if (cellId.isNull() || index < 0)
+  if (!entityId || index < 0)
   {
-    return NULL;
+    return nullptr;
   }
 
-  UUIDsToArrangements::iterator cit = this->m_arrangements->find(cellId);
-  if (cit == this->m_arrangements->end())
+  auto eit = this->m_topology->find(entityId);
+  if (eit == this->m_topology->end())
   {
-    return NULL;
+    return nullptr;
   }
 
-  KindsToArrangements::iterator kit = cit->second.find(kind);
-  if (kit == cit->second.end())
-  {
-    return NULL;
-  }
-
-  if (index >= static_cast<int>(kit->second.size()))
-  { // failure: can't replace information that doesn't exist.
-    return NULL;
-  }
-  return &kit->second[index];
+  return eit->second->findArrangement(kind, index);
 }
 
-/**\brief Retrieve arrangement information for a cell.
+/**\brief Retrieve arrangement information for an entity.
   *
   * This version allows the arrangement to be altered.
   */
-Arrangement* Manager::findArrangement(const UUID& cellId, ArrangementKind kind, int index)
+Arrangement* Manager::findArrangement(const UUID& entityId, ArrangementKind kind, int index)
 {
-  if (cellId.isNull() || index < 0)
+  if (!entityId || index < 0)
   {
-    return NULL;
+    return nullptr;
   }
 
-  UUIDsToArrangements::iterator cit = this->m_arrangements->find(cellId);
-  if (cit == this->m_arrangements->end())
+  auto eit = this->m_topology->find(entityId);
+  if (eit == this->m_topology->end())
   {
-    return NULL;
+    return nullptr;
   }
 
-  KindsToArrangements::iterator kit = cit->second.find(kind);
-  if (kit == cit->second.end())
-  {
-    return NULL;
-  }
-
-  if (index >= static_cast<int>(kit->second.size()))
-  { // failure: can't replace information that doesn't exist.
-    return NULL;
-  }
-  return &kit->second[index];
+  return eit->second->findArrangement(kind, index);
 }
 
 /**\brief Find an arrangement of type \a kind that relates \a entityId to \a involvedEntity.
@@ -2283,20 +2150,7 @@ int Manager::findArrangementInvolvingEntity(
   if (!src)
     return -1;
 
-  const Arrangements* arr = this->hasArrangementsOfKindForEntity(entityId, kind);
-  if (!arr)
-    return -1;
-
-  Arrangements::const_iterator it;
-  int idx = 0;
-  UUIDArray rels;
-  for (it = arr->begin(); it != arr->end(); ++it, ++idx, rels.clear())
-    if (it->relations(rels, src, kind))
-      for (UUIDArray::iterator rit = rels.begin(); rit != rels.end(); ++rit)
-        if (*rit == involvedEntity)
-          return idx;
-
-  return -1;
+  return src->findArrangementInvolvingEntity(kind, involvedEntity);
 }
 
 /**\brief Find the inverse of the given arrangement, if it exists.
@@ -2333,156 +2187,7 @@ bool Manager::findDualArrangements(
   if (!src)
     return false;
 
-  const Arrangements* arr = this->hasArrangementsOfKindForEntity(entityId, kind);
-  if (!arr || index >= static_cast<int>(arr->size()))
-    return false;
-
-  int relationIdx;
-  int sense;
-  Orientation orient;
-
-  UUID dualEntityId;
-  ArrangementKind dualKind;
-  int dualIndex;
-  int relStart, relEnd;
-
-  switch (kind)
-  {
-    case HAS_USE:
-      switch (src->entityFlags() & ENTITY_MASK)
-      {
-        case CELL_ENTITY:
-          if ((*arr)[index].IndexSenseAndOrientationFromCellHasUse(relationIdx, sense, orient))
-          { // OK, find use's reference to this cell.
-            if (relationIdx < 0 || static_cast<int>(src->relations().size()) <= relationIdx)
-              return false;
-            dualEntityId = src->relations()[relationIdx];
-            dualKind = HAS_CELL;
-            if ((dualIndex =
-                    this->findArrangementInvolvingEntity(dualEntityId, dualKind, entityId)) >= 0)
-            {
-              duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
-              return true;
-            }
-          }
-          break;
-        case SHELL_ENTITY:
-          if ((*arr)[index].IndexRangeFromShellHasUse(relStart, relEnd))
-          { // Find the use's reference to this shell.
-            dualKind = HAS_SHELL;
-            for (; relStart != relEnd; ++relStart)
-            {
-              dualEntityId = src->relations()[relStart];
-              if ((dualIndex =
-                      this->findArrangementInvolvingEntity(dualEntityId, dualKind, entityId)) >= 0)
-                duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
-            }
-            if (!duals.empty())
-              return true;
-          }
-          break;
-        /*
-      bool IndexFromCellEmbeddedInEntity(int& relationIdx) const;
-      bool IndexFromCellIncludesEntity(int& relationIdx) const;
-      bool IndexFromCellHasShell(int& relationIdx) const;
-      bool IndexAndSenseFromUseHasCell(int& relationIdx, int& sense) const;
-      bool IndexFromUseHasShell(int& relationIdx) const;
-      bool IndexFromUseOrShellIncludesShell(int& relationIdx) const;
-      bool IndexFromShellHasCell(int& relationIdx) const;
-      bool IndexRangeFromShellHasUse(int& relationBegin, int& relationEnd) const;
-      bool IndexFromShellEmbeddedInUseOrShell(int& relationIdx) const;
-      bool IndexFromInstanceInstanceOf(int& relationIdx) const;
-      bool IndexFromEntityInstancedBy(int& relationIdx) const;
-      */
-        case USE_ENTITY:
-        case GROUP_ENTITY:
-        case MODEL_ENTITY:
-        case INSTANCE_ENTITY:
-          break;
-      }
-      break;
-    case INCLUDES: // INCLUDES/EMBEDDED_IN are always simple and duals; entity type doesn't matter.
-    case EMBEDDED_IN:
-      if ((*arr)[index].IndexFromSimple(relationIdx))
-      { // OK, find use's reference to this cell.
-        if (relationIdx < 0 || static_cast<int>(src->relations().size()) <= relationIdx)
-          return false;
-        dualEntityId = src->relations()[relationIdx];
-        dualKind = kind == INCLUDES ? EMBEDDED_IN : INCLUDES;
-        if ((dualIndex = this->findArrangementInvolvingEntity(dualEntityId, dualKind, entityId)) >=
-          0)
-        {
-          duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
-          return true;
-        }
-      }
-      break;
-    case SUPERSET_OF:
-    case SUBSET_OF:
-      if ((*arr)[index].IndexFromSimple(relationIdx))
-      { // OK, find the related entity's reference to this one.
-        if (relationIdx < 0 || static_cast<int>(src->relations().size()) <= relationIdx)
-        {
-          return false;
-        }
-        dualEntityId = src->relations()[relationIdx];
-        dualKind = (kind == SUPERSET_OF ? SUBSET_OF : SUPERSET_OF);
-        if ((dualIndex = this->findArrangementInvolvingEntity(dualEntityId, dualKind, entityId)) >=
-          0)
-        {
-          duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
-          return true;
-        }
-      }
-      break;
-    case INSTANCE_OF:
-    case INSTANCED_BY:
-      if ((*arr)[index].IndexFromSimple(relationIdx))
-      { // OK, find the related entity's reference to this one.
-        if (relationIdx < 0 || static_cast<int>(src->relations().size()) <= relationIdx)
-        {
-          return false;
-        }
-        dualEntityId = src->relations()[relationIdx];
-        dualKind = (kind == INSTANCED_BY ? INSTANCE_OF : INSTANCED_BY);
-        if ((dualIndex = this->findArrangementInvolvingEntity(dualEntityId, dualKind, entityId)) >=
-          0)
-        {
-          duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
-          return true;
-        }
-      }
-      break;
-    case HAS_CELL:
-    case HAS_SHELL:
-      // These (HAS_CELL, HAS_SHELL) are not duals of each other.
-      // Instead, they are the easier half of HAS_USE relations,
-      // and is only defined when the source is a use-record.
-      if ((src->entityFlags() & ENTITY_MASK) == USE_ENTITY)
-      {
-        if ((*arr)[index].IndexFromSimple(relationIdx))
-        { // OK, find the related entity's reference to this one.
-          if (relationIdx < 0 || static_cast<int>(src->relations().size()) <= relationIdx)
-          {
-            return false;
-          }
-          dualEntityId = src->relations()[relationIdx];
-          dualKind = HAS_USE;
-          if ((dualIndex =
-                  this->findArrangementInvolvingEntity(dualEntityId, dualKind, entityId)) >= 0)
-          {
-            duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
-            return true;
-          }
-        }
-      }
-      break;
-    default:
-      smtkErrorMacro(const_cast<Manager*>(this)->log(),
-        "Asked to find dual of unknown kind of arrangement: " << kind << ".");
-      break;
-  }
-  return false;
+  return src->findDualArrangements(kind, index, duals);
 }
 
 /**\brief A method to add bidirectional arrangements between a parent and child.
@@ -2491,27 +2196,27 @@ bool Manager::findDualArrangements(
 bool Manager::addDualArrangement(const smtk::common::UUID& parent, const smtk::common::UUID& child,
   ArrangementKind kind, int sense, Orientation orientation)
 {
-  EntityPtr erec;
-  erec = this->findEntity(parent, false);
-  if (!erec)
+  EntityPtr prec;
+  EntityPtr crec;
+  prec = this->findEntity(parent, false);
+  if (!prec)
     return false;
-  EntityTypeBits parentType = static_cast<EntityTypeBits>(erec->entityFlags() & ENTITY_MASK);
-  int childIndex = erec->findOrAppendRelation(child);
+  EntityTypeBits parentType = static_cast<EntityTypeBits>(prec->entityFlags() & ENTITY_MASK);
+  int childIndex = prec->findOrAppendRelation(child);
 
-  erec = this->findEntity(child, false);
-  if (!erec)
+  crec = this->findEntity(child, false);
+  if (!crec)
     return false;
-  EntityTypeBits childType = static_cast<EntityTypeBits>(erec->entityFlags() & ENTITY_MASK);
-  int parentIndex = erec->findOrAppendRelation(parent);
+  EntityTypeBits childType = static_cast<EntityTypeBits>(crec->entityFlags() & ENTITY_MASK);
+  int parentIndex = crec->findOrAppendRelation(parent);
 
   ArrangementKind dualKind = Dual(parentType, kind);
   if (dualKind == KINDS_OF_ARRANGEMENTS)
     return false;
 
-  this->arrangeEntity(
-    parent, kind, Arrangement::Construct(parentType, kind, childIndex, sense, orientation));
-  this->arrangeEntity(
-    child, dualKind, Arrangement::Construct(childType, dualKind, parentIndex, sense, orientation));
+  prec->arrange(kind, Arrangement::Construct(parentType, kind, childIndex, sense, orientation));
+  crec->arrange(
+    dualKind, Arrangement::Construct(childType, dualKind, parentIndex, sense, orientation));
   return true;
 }
 

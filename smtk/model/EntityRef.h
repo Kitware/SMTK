@@ -19,6 +19,7 @@
 
 #include "smtk/model/Arrangement.h"          // for ArrangementKind and Arrangements types
 #include "smtk/model/AttributeAssignments.h" // for BitFlags type
+#include "smtk/model/Entity.h"               // for isValid() method
 #include "smtk/model/EntityTypeBits.h"       // for BitFlags type
 #include "smtk/model/Events.h"               // for ManagerEventRelationType type
 #include "smtk/model/FloatData.h"            // for Float, FloatData, ...

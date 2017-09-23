@@ -86,8 +86,7 @@ int main(int argc, char* argv[])
   std::string json = SaveJSON::fromModelManager(sm);
   deltaT = t.elapsed();
   std::cout << deltaT << " seconds to export " << sm->topology().size() << " entity records, "
-            << sm->arrangements().size() << " arrangements, " << sm->tessellations().size()
-            << " tessellations, and "
+            << sm->tessellations().size() << " tessellations, and "
             << (sm->floatProperties().size() + sm->stringProperties().size() +
                  sm->integerProperties().size())
             << " properties.\n";

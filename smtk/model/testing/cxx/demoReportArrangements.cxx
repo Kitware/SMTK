@@ -33,12 +33,11 @@ smtk::model::BitFlags maskOrder[] = { MODEL_ENTITY, INSTANCE_ENTITY, GROUP_ENTIT
 
 void ReportEntity(ManagerPtr sm, UUIDWithEntityPtr& eit)
 {
-  UUIDWithArrangementDictionary ait;
+  const KindsToArrangements& kwa(eit->second->arrangementMap());
   UUIDWithFloatProperties fpit;
   UUIDWithStringProperties spit;
   UUIDWithIntegerProperties ipit;
-  ait = sm->arrangements().find(eit->first);
-  if (ait != sm->arrangements().end())
+  if (!kwa.empty())
   {
     std::cout << sm->name(eit->first) << " (" << eit->second->flagSummary();
     if (eit->second->dimension() >= 0)
@@ -46,8 +45,7 @@ void ReportEntity(ManagerPtr sm, UUIDWithEntityPtr& eit)
       std::cout << ", dim " << eit->second->dimension();
     }
     std::cout << ")\n";
-    ArrangementKindWithArrangements kit;
-    for (kit = ait->second.begin(); kit != ait->second.end(); ++kit)
+    for (auto kit = kwa.begin(); kit != kwa.end(); ++kit)
     {
       if (!kit->second.empty())
       {

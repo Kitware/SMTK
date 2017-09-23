@@ -62,7 +62,17 @@ Entity::~Entity()
 {
 }
 
-/// Create and set up an entity object in a single call.
+/// Create and set up an entity object in a single call. This version sets the Entity's UUID.
+EntityPtr Entity::create(const UUID& uid, BitFlags entityFlags, ManagerPtr resource)
+{
+  EntityPtr result = Entity::create();
+  int dim = Entity::dimensionBitsToDimension(entityFlags & EntityTypeBits::ANY_DIMENSION);
+  result->setId(uid);
+  result->setup(entityFlags, dim, resource);
+  return result;
+}
+
+/// Create and set up an entity object in a single call. This version does not set the UUID.
 EntityPtr Entity::create(BitFlags entityFlags, int dimension, ManagerPtr resource)
 {
   EntityPtr result = Entity::create();
@@ -100,6 +110,22 @@ EntityPtr Entity::setup(BitFlags entFlags, int dim, Manager::Ptr resource, bool 
 ResourcePtr Entity::resource() const
 {
   return std::dynamic_pointer_cast<smtk::common::Resource>(this->m_resource.lock());
+}
+
+ManagerPtr Entity::modelResource() const
+{
+  return std::dynamic_pointer_cast<smtk::model::Manager>(this->m_resource.lock());
+}
+
+bool Entity::reparent(ManagerPtr newParent)
+{
+  ManagerPtr oldParent = this->m_resource.lock();
+  if (oldParent == newParent)
+  {
+    return false;
+  }
+  this->m_resource = newParent;
+  return true;
 }
 
 /**\brief Return the bit vector describing the type and attributes of the associated entity.
@@ -1059,6 +1085,374 @@ BitFlags Entity::dimensionToDimensionBits(int dim)
       break;
   }
   return 0;
+}
+
+int Entity::dimensionBitsToDimension(BitFlags dimBits)
+{
+  switch (dimBits)
+  {
+    case DIMENSION_0:
+      return 0;
+    case DIMENSION_1:
+      return 1;
+    case DIMENSION_2:
+      return 2;
+    case DIMENSION_3:
+      return 3;
+    case DIMENSION_4:
+      return 4;
+    default:
+      break;
+  }
+  return -1;
+}
+
+int Entity::arrange(ArrangementKind kind, const Arrangement& arr, int index)
+{
+  KindsToArrangements::iterator kit = this->m_arrangements.find(kind);
+  if (kit == this->m_arrangements.end())
+  {
+    if (index >= 0)
+    { // failure: can't replace information that doesn't exist.
+      return -1;
+    }
+    Arrangements blank;
+    kit = this->m_arrangements.insert(std::pair<ArrangementKind, Arrangements>(kind, blank)).first;
+  }
+
+  if (index >= 0)
+  {
+    if (index >= static_cast<int>(kit->second.size()))
+    { // failure: can't replace information that doesn't exist.
+      return -1;
+    }
+    kit->second[index] = arr;
+  }
+  else
+  {
+    index = static_cast<int>(kit->second.size());
+    kit->second.push_back(arr);
+  }
+  return index;
+}
+
+int Entity::unarrange(ArrangementKind kind, int index, bool removeIfLast)
+{
+  int result = 0;
+  if (index < 0 || this->m_arrangements.empty())
+  {
+    return result;
+  }
+  ArrangementKindWithArrangements ak = this->m_arrangements.find(kind);
+  if (ak == this->m_arrangements.end() || index >= static_cast<int>(ak->second.size()))
+  {
+    return result;
+  }
+
+  ArrangementReferences duals;
+  bool hasDuals = this->modelResource()->findDualArrangements(this->id(), kind, index, duals);
+
+  // TODO: notify someone of imminent removal? Rewrite relations?
+  std::vector<int> relIdxs;
+
+  if ((ak->second.begin() + index)->relationIndices(relIdxs, shared_from_this(), kind))
+  {
+    for (std::vector<int>::iterator rit = relIdxs.begin(); rit != relIdxs.end(); ++rit)
+    {
+      this->invalidateRelationByIndex(*rit);
+    }
+  }
+  ak->second.erase(ak->second.begin() + index);
+  ++result;
+
+  // Now, if we removed the last arrangement of this kind, kill the kind-dictionary entry
+  if (ak->second.empty())
+  {
+    this->m_arrangements.erase(ak);
+  }
+
+  // Now find and remove the dual arrangement (if one exists)
+  // This branch should not be taken if we are inside the inner unarrangeEntity call below.
+  if (hasDuals)
+  {
+    // Unarrange every dual to this arrangement.
+    bool canIncrement = false;
+    for (ArrangementReferences::iterator dit = duals.begin(); dit != duals.end(); ++dit)
+    {
+      if (this->modelResource()->unarrangeEntity(
+            dit->entityId, dit->kind, dit->index, removeIfLast) == 2)
+      {
+        // Only increment result when dualEntity is removed, not the dual arrangement.
+        canIncrement = true;
+      }
+    }
+    // Only increment once if other entities were removed; we do not indicate how many were removed.
+    if (canIncrement)
+    {
+      ++result;
+    }
+  }
+
+  return result;
+}
+
+bool Entity::clearArrangements()
+{
+  bool didRemove = !this->m_arrangements.empty();
+  if (didRemove)
+    this->m_arrangements.clear();
+  return didRemove;
+}
+
+const Arrangements* Entity::hasArrangementsOfKind(ArrangementKind kind) const
+{
+  auto ait = this->m_arrangements.find(kind);
+  if (ait != this->m_arrangements.end())
+  {
+    return &ait->second;
+  }
+  return nullptr;
+}
+
+Arrangements* Entity::hasArrangementsOfKind(ArrangementKind kind)
+{
+  ArrangementKindWithArrangements ait = this->m_arrangements.find(kind);
+  if (ait != this->m_arrangements.end())
+  {
+    return &ait->second;
+  }
+  return nullptr;
+}
+
+Arrangements& Entity::arrangementsOfKind(ArrangementKind kind)
+{
+  return this->m_arrangements[kind];
+}
+
+const Arrangement* Entity::findArrangement(ArrangementKind kind, int index) const
+{
+  if (index < 0)
+  {
+    return nullptr;
+  }
+
+  auto kit = this->m_arrangements.find(kind);
+  if (kit == this->m_arrangements.end())
+  {
+    return nullptr;
+  }
+
+  if (index >= static_cast<int>(kit->second.size()))
+  { // failure: can't replace information that doesn't exist.
+    return nullptr;
+  }
+
+  return &kit->second[index];
+}
+
+Arrangement* Entity::findArrangement(ArrangementKind kind, int index)
+{
+  if (index < 0)
+  {
+    return nullptr;
+  }
+
+  KindsToArrangements::iterator kit = this->m_arrangements.find(kind);
+  if (kit == this->m_arrangements.end())
+  {
+    return nullptr;
+  }
+
+  if (index >= static_cast<int>(kit->second.size()))
+  { // failure: can't replace information that doesn't exist.
+    return nullptr;
+  }
+
+  return &kit->second[index];
+}
+
+int Entity::findArrangementInvolvingEntity(
+  ArrangementKind kind, const smtk::common::UUID& involved) const
+{
+  const Arrangements* arr = this->hasArrangementsOfKind(kind);
+  if (!arr)
+    return -1;
+
+  Arrangements::const_iterator it;
+  int idx = 0;
+  UUIDArray rels;
+  for (it = arr->begin(); it != arr->end(); ++it, ++idx, rels.clear())
+  {
+    if (it->relations(rels, const_cast<Entity*>(this)->shared_from_this(), kind))
+    {
+      for (UUIDArray::iterator rit = rels.begin(); rit != rels.end(); ++rit)
+      {
+        if (*rit == involved)
+        {
+          return idx;
+        }
+      }
+    }
+  }
+
+  return -1;
+}
+
+bool Entity::findDualArrangements(
+  ArrangementKind kind, int index, ArrangementReferences& duals) const
+{
+  const Arrangements* arr = this->hasArrangementsOfKind(kind);
+  if (!arr || index < 0 || index >= static_cast<int>(arr->size()))
+  {
+    return false;
+  }
+
+  int relationIdx;
+  int sense;
+  Orientation orient;
+
+  UUID dualEntityId;
+  ArrangementKind dualKind;
+  int dualIndex;
+  int relStart, relEnd;
+
+  switch (kind)
+  {
+    case HAS_USE:
+      switch (this->entityFlags() & ENTITY_MASK)
+      {
+        case CELL_ENTITY:
+          if ((*arr)[index].IndexSenseAndOrientationFromCellHasUse(relationIdx, sense, orient))
+          { // OK, find use's reference to this cell.
+            if (relationIdx < 0 || static_cast<int>(this->relations().size()) <= relationIdx)
+              return false;
+            dualEntityId = this->m_relations[relationIdx];
+            dualKind = HAS_CELL;
+            if ((dualIndex = this->modelResource()->findArrangementInvolvingEntity(
+                   dualEntityId, dualKind, this->id())) >= 0)
+            {
+              duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
+              return true;
+            }
+          }
+          break;
+        case SHELL_ENTITY:
+          if ((*arr)[index].IndexRangeFromShellHasUse(relStart, relEnd))
+          { // Find the use's reference to this shell.
+            dualKind = HAS_SHELL;
+            for (; relStart != relEnd; ++relStart)
+            {
+              dualEntityId = this->m_relations[relStart];
+              if ((dualIndex = this->modelResource()->findArrangementInvolvingEntity(
+                     dualEntityId, dualKind, this->id())) >= 0)
+                duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
+            }
+            if (!duals.empty())
+              return true;
+          }
+          break;
+        /*
+      bool IndexFromCellEmbeddedInEntity(int& relationIdx) const;
+      bool IndexFromCellIncludesEntity(int& relationIdx) const;
+      bool IndexFromCellHasShell(int& relationIdx) const;
+      bool IndexAndSenseFromUseHasCell(int& relationIdx, int& sense) const;
+      bool IndexFromUseHasShell(int& relationIdx) const;
+      bool IndexFromUseOrShellIncludesShell(int& relationIdx) const;
+      bool IndexFromShellHasCell(int& relationIdx) const;
+      bool IndexRangeFromShellHasUse(int& relationBegin, int& relationEnd) const;
+      bool IndexFromShellEmbeddedInUseOrShell(int& relationIdx) const;
+      bool IndexFromInstanceInstanceOf(int& relationIdx) const;
+      bool IndexFromEntityInstancedBy(int& relationIdx) const;
+      */
+        case USE_ENTITY:
+        case GROUP_ENTITY:
+        case MODEL_ENTITY:
+        case INSTANCE_ENTITY:
+          break;
+      }
+      break;
+    case INCLUDES: // INCLUDES/EMBEDDED_IN are always simple and duals; entity type doesn't matter.
+    case EMBEDDED_IN:
+      if ((*arr)[index].IndexFromSimple(relationIdx))
+      { // OK, find use's reference to this cell.
+        if (relationIdx < 0 || static_cast<int>(this->m_relations.size()) <= relationIdx)
+          return false;
+        dualEntityId = this->m_relations[relationIdx];
+        dualKind = kind == INCLUDES ? EMBEDDED_IN : INCLUDES;
+        if ((dualIndex = this->modelResource()->findArrangementInvolvingEntity(
+               dualEntityId, dualKind, this->id())) >= 0)
+        {
+          duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
+          return true;
+        }
+      }
+      break;
+    case SUPERSET_OF:
+    case SUBSET_OF:
+      if ((*arr)[index].IndexFromSimple(relationIdx))
+      { // OK, find the related entity's reference to this one.
+        if (relationIdx < 0 || static_cast<int>(this->m_relations.size()) <= relationIdx)
+        {
+          return false;
+        }
+        dualEntityId = this->m_relations[relationIdx];
+        dualKind = (kind == SUPERSET_OF ? SUBSET_OF : SUPERSET_OF);
+        if ((dualIndex = this->modelResource()->findArrangementInvolvingEntity(
+               dualEntityId, dualKind, this->id())) >= 0)
+        {
+          duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
+          return true;
+        }
+      }
+      break;
+    case INSTANCE_OF:
+    case INSTANCED_BY:
+      if ((*arr)[index].IndexFromSimple(relationIdx))
+      { // OK, find the related entity's reference to this one.
+        if (relationIdx < 0 || static_cast<int>(this->m_relations.size()) <= relationIdx)
+        {
+          return false;
+        }
+        dualEntityId = this->m_relations[relationIdx];
+        dualKind = (kind == INSTANCED_BY ? INSTANCE_OF : INSTANCED_BY);
+        if ((dualIndex = this->modelResource()->findArrangementInvolvingEntity(
+               dualEntityId, dualKind, this->id())) >= 0)
+        {
+          duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
+          return true;
+        }
+      }
+      break;
+    case HAS_CELL:
+    case HAS_SHELL:
+      // These (HAS_CELL, HAS_SHELL) are not duals of each other.
+      // Instead, they are the easier half of HAS_USE relations,
+      // and is only defined when the source is a use-record.
+      if ((this->entityFlags() & ENTITY_MASK) == USE_ENTITY)
+      {
+        if ((*arr)[index].IndexFromSimple(relationIdx))
+        { // OK, find the related entity's reference to this one.
+          if (relationIdx < 0 || static_cast<int>(this->m_relations.size()) <= relationIdx)
+          {
+            return false;
+          }
+          dualEntityId = this->m_relations[relationIdx];
+          dualKind = HAS_USE;
+          if ((dualIndex = this->modelResource()->findArrangementInvolvingEntity(
+                 dualEntityId, dualKind, this->id())) >= 0)
+          {
+            duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
+            return true;
+          }
+        }
+      }
+      break;
+    default:
+      smtkErrorMacro(this->modelResource()->log(),
+        "Asked to find dual of unknown kind of arrangement: " << kind << ".");
+      break;
+  }
+  return false;
 }
 
 int Entity::consumeInvalidIndex(const smtk::common::UUID& uid)

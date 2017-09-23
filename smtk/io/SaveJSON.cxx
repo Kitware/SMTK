@@ -447,8 +447,6 @@ int SaveJSON::forManager(
     if (sections & JSON_ENTITIES)
     {
       status &= SaveJSON::forManagerEntity(it, curChild, modelMgr);
-      status &= SaveJSON::forManagerArrangement(
-        modelMgr->arrangements().find(it->first), curChild, modelMgr);
     }
     if (sections & JSON_TESSELLATIONS)
       status &= SaveJSON::forManagerTessellation(it->first, curChild, modelMgr);
@@ -496,28 +494,18 @@ int SaveJSON::forManagerEntity(UUIDWithEntityPtr& entry, cJSON* entRec, ManagerP
   if (entry->second->entityFlags() & MODEL_ENTITY)
     SaveJSON::forModelOperators(entry->first, entRec, model);
     */
-  return 1;
-}
-
-int SaveJSON::forManagerArrangement(
-  const UUIDWithArrangementDictionary& entry, cJSON* dict, ManagerPtr model)
-{
-  if (entry == model->arrangements().end())
-  {
-    return 0;
-  }
-  ArrangementKindWithArrangements it;
   cJSON* arrNode = cJSON_CreateObject();
-  cJSON_AddItemToObject(dict, "a", arrNode);
-  for (it = entry->second.begin(); it != entry->second.end(); ++it)
+  cJSON_AddItemToObject(entRec, "a", arrNode);
+  for (auto it = entry->second->arrangementMap().begin();
+       it != entry->second->arrangementMap().end(); ++it)
   {
-    Arrangements& arr(it->second);
+    const Arrangements& arr(it->second);
     if (!arr.empty())
     {
       cJSON* kindNode = cJSON_CreateArray();
       cJSON_AddItemToObject(
         arrNode, smtk::model::AbbreviationForArrangementKind(it->first).c_str(), kindNode);
-      Arrangements::iterator ait;
+      Arrangements::const_iterator ait;
       for (ait = arr.begin(); ait != arr.end(); ++ait)
       {
         if (!ait->details().empty())
