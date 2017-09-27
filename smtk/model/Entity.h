@@ -15,6 +15,7 @@
 
 #include "smtk/common/ResourceComponent.h"
 
+#include "smtk/model/Arrangement.h"    // for Arrangement, ArrangementKind
 #include "smtk/model/EntityTypeBits.h" // for entityFlags values
 #include "smtk/model/IntegerData.h"    // for IntegerList
 #include "smtk/model/StringData.h"     // for StringList
@@ -46,16 +47,22 @@ class SMTKCORE_EXPORT Entity : public smtk::common::ResourceComponent
 {
 public:
   using ResourcePtr = smtk::common::ResourcePtr;
+  using UUID = smtk::common::UUID;
 
   smtkTypeMacro(Entity);
   smtkSharedPtrCreateMacro(smtk::common::ResourceComponent);
   virtual ~Entity();
 
+  static EntityPtr create(
+    const UUID& uid, BitFlags entityFlags = EntityTypeBits::INVALID, ManagerPtr resource = nullptr);
   static EntityPtr create(BitFlags entityFlags, int dimension, ManagerPtr resource = nullptr);
   EntityPtr setup(
     BitFlags entityFlags, int dimension, ManagerPtr resource = nullptr, bool resetRelations = true);
 
   ResourcePtr resource() const override;
+  ManagerPtr modelResource() const;
+
+  bool reparent(ManagerPtr newParent);
 
   int dimension() const;
   BitFlags dimensionBits() const;
@@ -93,6 +100,23 @@ public:
   static std::string flagToSpecifierString(BitFlags flagsOrMask, bool textual = true);
   static BitFlags specifierStringToFlag(const std::string& spec);
   static BitFlags dimensionToDimensionBits(int dim);
+  static int dimensionBitsToDimension(BitFlags dimBits);
+
+  int arrange(ArrangementKind, const Arrangement& arr, int index = -1);
+  int unarrange(ArrangementKind, int index, bool removeIfLast = false);
+  bool clearArrangements();
+
+  const Arrangements* hasArrangementsOfKind(ArrangementKind) const;
+  Arrangements* hasArrangementsOfKind(ArrangementKind);
+
+  Arrangements& arrangementsOfKind(ArrangementKind);
+
+  const Arrangement* findArrangement(ArrangementKind kind, int index) const;
+  Arrangement* findArrangement(ArrangementKind kind, int index);
+  int findArrangementInvolvingEntity(ArrangementKind k, const smtk::common::UUID& involved) const;
+  bool findDualArrangements(ArrangementKind kind, int index, ArrangementReferences& duals) const;
+
+  const KindsToArrangements& arrangementMap() const { return this->m_arrangements; }
 
 protected:
   Entity();
@@ -101,6 +125,7 @@ protected:
   BitFlags m_entityFlags;
   smtk::common::UUIDArray m_relations;
   smtk::model::WeakManagerPtr m_resource;
+  KindsToArrangements m_arrangements;
   int m_firstInvalid;
 };
 

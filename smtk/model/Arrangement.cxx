@@ -8,6 +8,9 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/model/Arrangement.h"
+#include "smtk/model/Entity.h"
+
+#include "smtk/model/Arrangement.txx"
 
 namespace smtk
 {

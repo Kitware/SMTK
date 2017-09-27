@@ -97,8 +97,6 @@ PySharedPtrClass< smtk::model::Manager, smtk::common::Resource > pybind11_init_s
     .def("analysisMesh", (smtk::model::UUIDsToTessellations & (smtk::model::Manager::*)()) &smtk::model::Manager::analysisMesh)
     .def("analysisMesh", (smtk::model::UUIDsToTessellations const & (smtk::model::Manager::*)() const) &smtk::model::Manager::analysisMesh)
     .def("arrangeEntity", &smtk::model::Manager::arrangeEntity, py::arg("entityId"), py::arg("arg1"), py::arg("arr"), py::arg("index") = -1)
-    .def("arrangements", (smtk::model::UUIDsToArrangements & (smtk::model::Manager::*)()) &smtk::model::Manager::arrangements)
-    .def("arrangements", (smtk::model::UUIDsToArrangements const & (smtk::model::Manager::*)() const) &smtk::model::Manager::arrangements)
     .def("arrangementsOfKindForEntity", &smtk::model::Manager::arrangementsOfKindForEntity, py::arg("cellId"), py::arg("arg1"))
     .def("assignDefaultName", (std::string (smtk::model::Manager::*)(::smtk::common::UUID const &)) &smtk::model::Manager::assignDefaultName, py::arg("uid"))
     .def("assignDefaultNameIfMissing", &smtk::model::Manager::assignDefaultNameIfMissing, py::arg("uid"))

@@ -100,8 +100,6 @@ public:
     JSONFlags sections = JSON_DEFAULT);
   static int forManagerEntity(
     smtk::model::UUIDWithEntityPtr& entry, cJSON*, smtk::model::ManagerPtr modelMgr);
-  static int forManagerArrangement(const smtk::model::UUIDWithArrangementDictionary& entry, cJSON*,
-    smtk::model::ManagerPtr modelMgr);
   static int forManagerTessellation(
     const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
   static int forManagerAnalysis(

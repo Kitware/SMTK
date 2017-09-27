@@ -116,7 +116,7 @@ smtkComponentInitMacro(smtk_extension_vtk_io_MeshIOVTK)
       {
         count[entity.dimension()]++;
         float r = static_cast<float>(entity.dimension()) / 3;
-        float b = 1. - r;
+        float b = static_cast<float>(1. - r);
         const_cast<smtk::model::EntityRef&>(entity).setColor(
           (r < 1. ? r : 1.), 0., (b < 1. ? b : 1.), 1.);
       }

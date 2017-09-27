@@ -10,6 +10,8 @@
 
 #include "Import.h"
 
+#include "smtk/Options.h" // for SMTK_ENABLE_REMUS_SUPPORT
+
 #include "smtk/bridge/polygon/Session.h"
 #include "smtk/bridge/polygon/internal/Model.h"
 #include "smtk/bridge/polygon/operators/CreateEdgeFromPoints.h"

@@ -338,8 +338,6 @@ int SaveJSON::forEntities(
     if (sections & JSON_ENTITIES)
     {
       status &= SaveJSON::forManagerEntity(it, curChild, modelMgr);
-      status &= SaveJSON::forManagerArrangement(
-        modelMgr->arrangements().find(it->first), curChild, modelMgr);
     }
     if (sections & JSON_TESSELLATIONS)
       status &= SaveJSON::forManagerTessellation(it->first, curChild, modelMgr);
