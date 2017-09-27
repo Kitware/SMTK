@@ -117,6 +117,7 @@ smtk::model::OperatorResult WriteMesh::operateInternal()
   // be properly updated.
   smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
   smtk::attribute::MeshItem::Ptr modifiedMeshes = result->findMesh("mesh_modified");
+  modifiedMeshes->setNumberOfValues(written.size());
   for (auto& mesh : written)
   {
     modifiedMeshes->appendValue(mesh);
