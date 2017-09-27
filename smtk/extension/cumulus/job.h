@@ -16,6 +16,7 @@
 
 #include "smtk/extension/cumulus/Exports.h"
 
+#include <QDateTime>
 #include <QList>
 #include <QMetaType>
 #include <QString>
@@ -39,6 +40,10 @@ public:
   QString status() const { return this->m_status; };
   QString machine() const { return this->m_machine; };
   QList<QString> outputFolderIds() const { return this->m_outputFolderIds; };
+  QString notes() const { return this->m_notes; };
+  QDateTime started() const { return this->m_start; };
+  QDateTime finished() const { return this->m_finish; };
+
   bool isValid() const { return !this->m_id.isEmpty(); };
   void setStatus(const QString& status) { this->m_status = status; }
 
@@ -50,6 +55,9 @@ private:
   QString m_status;
   QString m_machine;
   QList<QString> m_outputFolderIds;
+  QString m_notes;
+  QDateTime m_start;
+  QDateTime m_finish;
 };
 
 }; // end namespace

@@ -53,6 +53,12 @@ QVariant JobTableModel::headerData(int section, Qt::Orientation orientation, int
         return QVariant("Job Name");
       case JOB_STATUS:
         return QVariant("Status");
+      case JOB_STARTED:
+        return QVariant("Started");
+      case JOB_FINISHED:
+        return QVariant("Finished");
+      case JOB_NOTES:
+        return QVariant("Notes");
       default:
         return QVariant();
     }
@@ -80,6 +86,12 @@ QVariant JobTableModel::data(const QModelIndex& modelIndex, int role) const
         return QVariant(job.name());
       case JOB_STATUS:
         return QVariant(job.status());
+      case JOB_STARTED:
+        return QVariant(job.started());
+      case JOB_FINISHED:
+        return QVariant(job.finished());
+      case JOB_NOTES:
+        return QVariant(job.notes());
       default:
         return QVariant();
     }
@@ -143,7 +155,7 @@ void JobTableModel::jobsUpdated(QList<Job> jobs)
     }
 
     // Update status
-    //qDebug() << "update status " << modelJobId << "to" << inputJob.status();
+    // qDebug() << "update status " << modelJobId << "to" << inputJob.status();
     modelJob.setStatus(inputJob.status());
     m_jobs[row] = modelJob;
     QModelIndex index = this->index(row, JOB_STATUS);
@@ -177,7 +189,7 @@ void JobTableModel::jobsUpdated(QList<Job> jobs)
   for (; iter != inputMap.constEnd(); ++iter)
   {
     Job newJob(iter.value());
-    //qDebug() << "insert job:" << newJob.id();
+    // qDebug() << "insert job:" << newJob.id();
     m_jobs.push_back(newJob);
   }
 

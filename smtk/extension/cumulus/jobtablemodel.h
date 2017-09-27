@@ -34,6 +34,9 @@ public:
     MACHINE,
     JOB_NAME,
     JOB_STATUS,
+    JOB_STARTED,
+    JOB_FINISHED,
+    JOB_NOTES,
     COLUMN_COUNT
   };
 
