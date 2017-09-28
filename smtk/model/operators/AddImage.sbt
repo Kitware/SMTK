@@ -12,13 +12,12 @@
         to a model or to another auxiliary geometry instance.
       </BriefDescription>
       <DetailedDescription>
-        &lt;p&gt;Add an image as auxiliary geometry (scene geometry not part of the model domain)
+        &lt;p&gt;Add an image as auxiliary geometry (scene geometry not part of a model's domain)
         to a model or to another auxiliary geometry instance.
-        &lt;p&gt;Auxiliary geometry may be made hierarchical, by adding an auxiliary
-        geometry instance with no URL to a model and then adding 1 or more
-        auxiliary geometry instances to the first instance above.
-        This is useful when you wish to instance multiple files into the
-        scene as if they were a single file.
+
+        &lt;p&gt;Images with geographic metadata (such as GeoTIFFs) will use the coordinate
+        system specified in the image, so if you do not immediately see the image after adding
+        it, you may need to change the viewport zoom or pan settings.
       </DetailedDescription>
       <ItemDefinitions>
         <File Name="url" Label="Image File Name" Optional="true" NumberOfRequiredValues="1"
@@ -27,7 +26,7 @@
           <BriefDescription>The file containing the image.</BriefDescription>
         </File>
 
-        <Void Name="separate representation" AdvanceLevel="1" Optional="true" IsEnabledByDefault="true"
+        <Void Name="separate representation" AdvanceLevel="11" Optional="true" IsEnabledByDefault="true"
           Label="Display as separate representation from model">
           <BriefDescription>
             Should the auxiliary geometry's representation be separate from its owning model's?
