@@ -47,6 +47,24 @@ Job::~Job()
 {
 }
 
+void Job::setStatus(const QString& status)
+{
+  this->m_status = status;
+
+  // Return if finish time already set
+  if (this->m_finish.isValid())
+  {
+    return;
+  }
+
+  // Check if status is terminal
+  if ((status == "terminated") || (status == "unexpectederror") || (status == "error") ||
+    (status == "complete"))
+  {
+    this->m_finish = QDateTime::currentDateTime();
+  }
+}
+
 Job Job::fromJSON(cJSON* obj)
 {
   cJSON* idItem = cJSON_GetObjectItem(obj, "_id");
@@ -118,7 +136,7 @@ Job Job::fromJSON(cJSON* obj)
         double startTimestamp = startItem->valuedouble;
         qint64 startInt = static_cast<qint64>(startTimestamp);
         newJob.m_start.setSecsSinceEpoch(startInt);
-        qDebug() << "started:" << newJob.m_start;
+        //qDebug() << "started:" << newJob.m_start;
       } // end if (startItem)
 
       cJSON* finishedItem = cJSON_GetObjectItem(cmbItem, "finishTimeStamp");
@@ -127,7 +145,7 @@ Job Job::fromJSON(cJSON* obj)
         double finishedTimestamp = finishedItem->valuedouble;
         qint64 finishedInt = static_cast<qint64>(finishedTimestamp);
         newJob.m_finish.setSecsSinceEpoch(finishedInt);
-        qDebug() << "finished:" << newJob.m_finish;
+        //qDebug() << "finished:" << newJob.m_finish;
       } // end if (finishedItem)
     }
   } // if (paramsItem)

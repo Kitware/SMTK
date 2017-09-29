@@ -45,7 +45,7 @@ public:
   QDateTime finished() const { return this->m_finish; };
 
   bool isValid() const { return !this->m_id.isEmpty(); };
-  void setStatus(const QString& status) { this->m_status = status; }
+  void setStatus(const QString& status);
 
   static Job fromJSON(cJSON* obj);
 

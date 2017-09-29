@@ -12,7 +12,8 @@
 
 #include "job.h"
 
-#include <QtCore/QDebug>
+#include <QDebug>
+#include <QListIterator>
 
 #include <cstddef> // defines size_t for cJSON.h
 
@@ -122,7 +123,8 @@ bool JobTableModel::insertRows(int row, int count, const QModelIndex&)
 
 void JobTableModel::jobsUpdated(QList<Job> jobs)
 {
-  QList<int> rowsToRemove;
+  QList<int> rowsToRemove;    // row numbers of jobs not in input
+  QList<Job> jobsToPatchList; // jobs with changes to write back to cumulus
 
   // Load map with input jobs
   QMap<QString, Job> inputMap;
@@ -156,10 +158,17 @@ void JobTableModel::jobsUpdated(QList<Job> jobs)
 
     // Update status
     // qDebug() << "update status " << modelJobId << "to" << inputJob.status();
+    bool notFinished = modelJob.finished().isNull();
     modelJob.setStatus(inputJob.status());
     m_jobs[row] = modelJob;
     QModelIndex index = this->index(row, JOB_STATUS);
     emit this->dataChanged(index, index);
+
+    // Check if job just finished (finished datetime now valid)
+    if (notFinished && modelJob.finished().isValid())
+    {
+      jobsToPatchList.push_back(modelJob);
+    }
   } // for (row)
 
   // Remove any rows not in the input
@@ -194,6 +203,11 @@ void JobTableModel::jobsUpdated(QList<Job> jobs)
   }
 
   this->endInsertRows();
+
+  if (!jobsToPatchList.empty())
+  {
+    emit finishedTimeChanged(jobsToPatchList);
+  }
 }
 
 } // end namespace
