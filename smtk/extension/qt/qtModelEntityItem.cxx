@@ -186,7 +186,10 @@ void qtModelEntityItem::updateItemData()
 
 void qtModelEntityItem::refreshEntityItems()
 {
-  this->Internals->EntityItemCombo->init();
+  if(this->Internals->EntityItemCombo)
+  {
+    this->Internals->EntityItemCombo->init();
+  }
 }
 
 void qtModelEntityItem::addEntityAssociationWidget()
