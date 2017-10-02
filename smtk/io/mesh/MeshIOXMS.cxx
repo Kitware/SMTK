@@ -215,7 +215,8 @@ public:
       this->m_Stream << cardType << " \t " << this->m_CellId++ << " ";
       for (int j = 0; j < nVerts; ++j)
       {
-        this->m_Stream << std::setw(8) << conn[nVerts * i + j] << " ";
+        //We add 1, since the points are written out starting with index 1
+        this->m_Stream << std::setw(8) << 1 + conn[nVerts * i + j] << " ";
       }
       this->m_Stream << std::setw(8) << regionId << std::endl;
     }
@@ -256,10 +257,10 @@ public:
       }
 
       //now that the connectivity is the correct order we can write it out
-      //We add 1, since the points are written out in
       this->m_Stream << cardType << " \t " << this->m_CellId++ << " ";
       for (int j = 0; j < nVerts; ++j)
       {
+        //We add 1, since the points are written out starting with index 1
         this->m_Stream << std::setw(8) << 1 + conn[cIndex + j] << " ";
       }
       this->m_Stream << std::setw(8) << regionId << std::endl;
