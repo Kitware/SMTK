@@ -214,6 +214,9 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
           this->Internals->fileExtCombo->addItem(extractFileTypeName(it->str()));
           this->Internals->fileExtensions.push_back(extractFileTypeExtension(it->str()));
         }
+        this->Internals->fileExtCombo->setMinimumContentsLength(8);
+        this->Internals->fileExtCombo->setSizeAdjustPolicy(
+          QComboBox::AdjustToMinimumContentsLength);
       }
     }
   }
@@ -227,7 +230,11 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
   // As a file input, if the name is too long lets favor
   // the file name over the path
   if (lineEdit)
+  {
     lineEdit->setAlignment(Qt::AlignRight);
+    lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    lineEdit->setMinimumWidth(5);
+  }
   else if (fileCombo)
   {
     fileCombo->lineEdit()->setAlignment(Qt::AlignRight);

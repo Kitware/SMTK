@@ -158,9 +158,13 @@ void qtModelOperationWidget::showLogInfo(bool visibilityMode)
 
 QSize qtModelOperationWidget::sizeHint() const
 {
-  if (this->Internals->OperationsLayout->currentWidget())
+  auto operatorWidget = this->Internals->OperationsLayout->currentWidget();
+  if (operatorWidget)
   {
-    QSize newSize(this->width(), 0);
+    // Compute the new width as the operator's widget width plus an offset
+    // to account for the side margins (~50)
+    const int operWidth = operatorWidget->width() + 50;
+    QSize newSize(std::max(operWidth, this->width()), 0);
     int height = 20;
     for (int i = 0; i < this->Internals->WidgetLayout->count(); ++i)
     {
@@ -294,6 +298,11 @@ bool qtModelOperationWidget::initOperatorUI(const smtk::model::OperatorPtr& brOp
   SessionRef bs(brOp->manager(), brOp->session()->sessionId());
   this->setSession(bs.session());
   QFrame* opParent = new QFrame(this);
+
+  // Since the parent widget currently is a QScrollArea, it is necessary
+  // to ensure the widget provides a suitable sizeHint, so a minimum is set.
+  // http://doc.qt.io/qt-5/qscrollarea.html#details
+  opParent->setMinimumSize(500, 0);
   opParent->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
   QVBoxLayout* opLayout = new QVBoxLayout(opParent);
   opLayout->setMargin(0);

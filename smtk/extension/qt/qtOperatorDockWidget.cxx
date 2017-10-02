@@ -46,10 +46,12 @@ void qtOperatorDockWidget::reset()
     this->setWindowTitle("Operator Window");
     this->hide();
   }
-  QScrollArea* s = dynamic_cast<QScrollArea*>(this->widget());
-  if (s && s->widget())
+
+  auto scroll = qobject_cast<QScrollArea*>(this->widget());
+  if (scroll && scroll->widget())
   {
-    qtModelOperationWidget* operationWidget = static_cast<qtModelOperationWidget*>(s->widget());
+    scroll->setWidgetResizable(true);
+    auto operationWidget = qobject_cast<qtModelOperationWidget*>(scroll->widget());
     operationWidget->resetUI();
   }
 }

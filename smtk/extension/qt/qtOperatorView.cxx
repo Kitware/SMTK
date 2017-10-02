@@ -23,7 +23,6 @@
 #include <QMessageBox>
 #include <QPointer>
 #include <QPushButton>
-#include <QScrollArea>
 #include <QTableWidget>
 #include <QVBoxLayout>
 #include <memory>
