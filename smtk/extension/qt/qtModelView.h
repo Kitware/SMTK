@@ -90,7 +90,7 @@ public slots:
   bool requestOperation(
     const std::string& opName, const smtk::common::UUID& sessionId, bool launchOp);
   virtual void onOperationPanelClosing();
-  virtual bool showPreviousOpOrHide();
+  virtual bool showPreviousOpOrHide(bool alwaysHide = true);
 
 signals:
   void sendSelectionsFromModelViewToSelectionManager(const smtk::model::EntityRefs& selEntities,
