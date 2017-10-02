@@ -1644,6 +1644,18 @@ void qtModelView::changeEntityName(const QModelIndex& idx)
 {
   DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
   smtk::model::EntityRef ent = dp->relatedEntity();
+  // If there is no related entity, we may have either a meshset or mesh
+  // collection. We can pull an associated entity ref from either type, which
+  // will give us access to the underlying session.
+  if (!ent.isValid())
+  {
+    auto collection =
+      dp->relatedMeshCollection() ? dp->relatedMeshCollection() : dp->relatedMesh().collection();
+    if (collection)
+    {
+      ent = smtk::model::EntityRef(collection->modelManager(), collection->associatedModel());
+    }
+  }
   smtk::model::SessionRef sref = ent.owningSession();
   OperatorPtr brOp = this->getOp(sref.session(), "set property");
   if (!brOp || !brOp->specification())
