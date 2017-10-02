@@ -32,7 +32,9 @@
     </AttDef>
     <!-- Result -->
     <AttDef Type="result(write mesh)" BaseType="result">
-      <MeshEntity Name="mesh_modified" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>
+      <ItemDefinitions>
+        <MeshEntity Name="mesh_modified" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>
+      </ItemDefinitions>
     </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>
