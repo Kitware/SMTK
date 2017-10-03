@@ -71,29 +71,43 @@ void verify_write_null_collection()
   test(result == false, "Can't save null collection to disk");
 }
 
-void verify_write_valid_collection()
+void verify_read_write_valid_collection()
 {
+  bool result = false;
+
   std::string file_path(data_root);
   file_path += "/mesh/3d/twoassm_out.h5m";
 
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".2dm";
 
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = smtk::io::importMesh(file_path, manager);
-  test(c->isValid(), "collection should be valid");
-  test(!c->isModified(), "loaded collection should be marked as not modifed");
-
-  //extract a surface mesh, and write that out
-  c->meshes(smtk::mesh::Dims3).extractShell();
-  test(c->isModified(), "extractShell should mark the collection as modified");
-
-  const bool result = smtk::io::exportMesh(write_path, c);
-  cleanup(write_path);
-
-  if (!result)
   {
-    test(result == true, "failed to properly write out a valid 2dm file");
+    smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+    smtk::mesh::CollectionPtr c = smtk::io::importMesh(file_path, manager);
+    test(c->isValid(), "collection should be valid");
+    test(!c->isModified(), "loaded collection should be marked as not modifed");
+
+    //extract a surface mesh, and write that out
+    c->meshes(smtk::mesh::Dims3).extractShell();
+    test(c->isModified(), "extractShell should mark the collection as modified");
+
+    if (!smtk::io::exportMesh(write_path, c))
+    {
+      test(result == true, "failed to properly write out a valid 2dm file");
+    }
+  }
+
+  {
+    smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+    smtk::mesh::CollectionPtr c = smtk::io::importMesh(write_path, manager);
+    cleanup(write_path);
+
+    test(c && c->isValid(), "collection should be valid");
+    test(!c->isModified(), "loaded collection should be marked as not modifed");
+
+    test(c->meshes().size() == 1, "collection should have 1 mesh");
+    test(c->cells().size() == 660, "collection should have 660 cells");
+    test(c->points().size() == 662, "collection should have 662 points");
   }
 }
 }
@@ -102,7 +116,7 @@ int UnitTestExportMesh2DM(int, char** const)
 {
   verify_write_empty_collection();
   verify_write_null_collection();
-  verify_write_valid_collection();
+  verify_read_write_valid_collection();
 
   return 0;
 }
