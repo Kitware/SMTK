@@ -215,6 +215,13 @@ void qtModelEntityItemCombo::init()
       }
     }
     itemModel->sort(0);
+
+    // the internal item model for our combo box has changed. For some reason,
+    // the appropriate signals do not fire to trigger the view to update unless
+    // we remove and add the item model to the view.
+    this->view()->setModel(nullptr);
+    this->view()->setModel(itemModel);
+    this->view()->viewport()->update();
   }
   connect(this->model(), SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this,
     SLOT(itemCheckChanged(const QModelIndex&, const QModelIndex&)));
