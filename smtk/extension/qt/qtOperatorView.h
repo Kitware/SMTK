@@ -19,7 +19,6 @@
 #include "smtk/extension/qt/qtBaseView.h"
 
 class qtOperatorViewInternals;
-class QScrollArea;
 
 namespace smtk
 {
