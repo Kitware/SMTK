@@ -16,18 +16,43 @@
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/DimensionTypes.h"
 #include "smtk/mesh/ExtractTessellation.h"
+#include "smtk/mesh/Manager.h"
 #include "smtk/mesh/MeshSet.h"
 
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Manager.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
+#define BOOST_FILESYSTEM_VERSION 3
 #include "boost/filesystem.hpp"
 #include "boost/system/error_code.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
 
+// We use either STL regex or Boost regex, depending on support. These flags
+// correspond to the equivalent logic used to determine the inclusion of Boost's
+// regex library.
+#if defined(SMTK_CLANG) ||                                                                         \
+  (defined(SMTK_GCC) && __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)) ||                 \
+  defined(SMTK_MSVC)
+#include <regex>
+using std::regex;
+using std::sregex_token_iterator;
+using std::regex_replace;
+using std::regex_search;
+using std::regex_match;
+#else
+#include <boost/regex.hpp>
+using boost::regex;
+using boost::sregex_token_iterator;
+using boost::regex_replace;
+using boost::regex_search;
+using boost::regex_match;
+#endif
+
 #include <fstream>
 #include <iomanip>
+#include <iostream>
+#include <iterator>
 
 namespace smtk
 {
@@ -462,12 +487,295 @@ bool write_dm(smtk::mesh::CollectionPtr collection, smtk::model::ManagerPtr mana
 
   return write_dm(meshes, stream, type);
 }
+
+std::size_t computeNumberOfPoints(std::istream& stream)
+{
+  std::size_t nPts = 0;
+  std::size_t counter = 0;
+  bool fromComment = false;
+
+  regex re("\\s+");
+
+  std::string line;
+  while (std::getline(stream, line))
+  {
+    // .*dm files often have a commented out "NNODE" field. Other readers seem
+    // to key off of this commented value, so we do the same (even though we
+    // could just count nodes instead of depending on comment strings).
+
+    // passing -1 as the submatch index parameter performs splitting
+    sregex_token_iterator first{ line.begin(), line.end(), re, -1 };
+    if (*first == "#NNODE")
+    {
+      fromComment = true;
+      nPts = std::stoul(*(++first));
+      break;
+    }
+    else if (*first == "ND")
+    {
+      ++counter;
+      std::size_t tmp = std::stoul(*(++first));
+      nPts = (nPts < tmp ? tmp : nPts);
+    }
+  }
+
+  // reset the stream to the beginning of the file
+  stream.clear();
+  stream.seekg(0, stream.beg);
+
+  assert(fromComment || counter == nPts);
+
+  return nPts;
+}
+
+bool readPoints(std::istream& stream, const smtk::mesh::BufferedCellAllocatorPtr& bcAllocator)
+{
+  std::string line;
+
+  std::size_t nPts = computeNumberOfPoints(stream);
+
+  bcAllocator->reserveNumberOfCoordinates(nPts);
+
+  regex re("\\s+");
+
+  std::size_t index;
+  double xyz[3];
+  while (std::getline(stream, line))
+  {
+    // passing -1 as the submatch index parameter performs splitting
+    sregex_token_iterator first{ line.begin(), line.end(), re, -1 }, last;
+    if (*first == "ND")
+    {
+      // ensure that the file format is at least as long as we expect
+      // (ND <index> <x> <y> <z>)
+      if (std::distance(first, last) < 5)
+      {
+        std::cout << "ERROR: points should have at least 5 fields." << std::endl;
+        return false;
+      }
+
+      // access the point index and shift it from 1-based to 0-based indexing
+      index = std::stoul(*(++first)) - 1;
+
+      // ensure that the index falls within the precomputed range of points
+      assert(index < nPts);
+
+      // access the x, y and z coordiantes
+      for (std::size_t i = 0; i < 3; i++)
+      {
+        xyz[i] = std::stod(*(++first));
+      }
+
+      // set the coordinates
+      bcAllocator->setCoordinate(index, xyz);
+    }
+  }
+
+  // reset the stream to the beginning of the file
+  stream.clear();
+  stream.seekg(0, stream.beg);
+
+  return true;
+}
+
+smtk::mesh::CellType to_CellType(const std::string& type)
+{
+
+  if (type == "E2L")
+  {
+    return smtk::mesh::Line;
+  }
+  if (type == "E3T")
+  {
+    return smtk::mesh::Triangle;
+  }
+  if (type == "E4Q")
+  {
+    return smtk::mesh::Quad;
+  }
+  if (type == "E4T")
+  {
+    return smtk::mesh::Tetrahedron;
+  }
+  if (type == "E5P")
+  {
+    return smtk::mesh::Pyramid;
+  }
+  if (type == "E6W")
+  {
+    return smtk::mesh::Wedge;
+  }
+  if (type == "E8H")
+  {
+    return smtk::mesh::Hexahedron;
+  }
+  return smtk::mesh::CellType_MAX;
+}
+
+bool readCells(std::istream& stream, const smtk::mesh::BufferedCellAllocatorPtr& bcAllocator,
+  smtk::mesh::CollectionPtr& collection)
+{
+  regex re("\\s+");
+
+  std::string line;
+  std::vector<long long int> connectivity;
+  smtk::mesh::HandleRange cellsWithMaterials = bcAllocator->cells();
+  int currentMaterialId = -1;
+  int materialId;
+
+  while (std::getline(stream, line))
+  {
+    // passing -1 as the submatch index parameter performs splitting
+    sregex_token_iterator first{ line.begin(), line.end(), re, -1 }, last;
+    if (std::string(*first)[0] == 'E')
+    {
+      smtk::mesh::CellType type = to_CellType(*first);
+      if (type == smtk::mesh::CellType_MAX)
+      {
+        std::cout << "ERROR: Unsupported cell type \"" << *first << "\"." << std::endl;
+        return false;
+      }
+
+      std::size_t nVerticesPerCell = smtk::mesh::verticesPerCell(type);
+
+      // ensure that the file format is at least as long as we expect
+      // (E#X <index> <conn_1> <conn_2> ... <conn_n> <group>)
+      typedef std::iterator_traits<sregex_token_iterator>::difference_type diff_type;
+      if (std::distance(first, last) < static_cast<diff_type>(nVerticesPerCell + 3))
+      {
+        std::cout << "ERROR: cell type \"" << *first << "\" should have at least "
+                  << nVerticesPerCell + 3 << " fields." << std::endl;
+        return false;
+      }
+
+      connectivity.resize(nVerticesPerCell);
+
+      // skip the cell index.
+      ++first;
+
+      // access the x, y and z coordiantes
+      for (std::size_t i = 0; i < nVerticesPerCell; i++)
+      {
+        // access the point index and shift it from 1-based to 0-based indexing
+        connectivity[i] = std::stol(*(++first)) - 1;
+      }
+
+      // access the cell's material id
+      materialId = std::stoi(*(++first));
+
+      // if it differs from the current material being parsed...
+      if (materialId != currentMaterialId)
+      {
+        // ...and this is not the first material encountered...
+        if (!cellsWithMaterials.empty())
+        {
+          // ...flush the allocator
+          bcAllocator->flush();
+
+          // construct a cell set containing only the cells of this material type
+          smtk::mesh::CellSet cellsForMaterial(
+            collection, subtract(bcAllocator->cells(), cellsWithMaterials));
+
+          // construct a mesh set from these cells
+          smtk::mesh::MeshSet meshForMaterial = collection->createMesh(cellsForMaterial);
+
+          // set the domain on the mesh set
+          collection->setDomainOnMeshes(meshForMaterial, smtk::mesh::Domain(currentMaterialId));
+        }
+
+        // update the material id
+        currentMaterialId = materialId;
+
+        // update the set of currently processed cells
+        cellsWithMaterials = bcAllocator->cells();
+      }
+
+      // add the cell
+      bcAllocator->addCell(type, &connectivity[0]);
+    }
+  }
+
+  // flush the allocator
+  bcAllocator->flush();
+
+  if (bcAllocator->cells().empty())
+  {
+    std::cout << "ERROR: no cells." << std::endl;
+    return false;
+  }
+
+  {
+    // for the last material, construct a cell set containing only the cells of
+    // this material type
+    smtk::mesh::CellSet cellsForMaterial(
+      collection, subtract(bcAllocator->cells(), cellsWithMaterials));
+
+    // construct a mesh set from these cells
+    smtk::mesh::MeshSet meshForMaterial = collection->createMesh(cellsForMaterial);
+
+    // set the domain on the mesh set
+    collection->setDomainOnMeshes(meshForMaterial, smtk::mesh::Domain(currentMaterialId));
+  }
+
+  return true;
+}
+
+bool read_dm(std::istream& stream, smtk::mesh::CollectionPtr& collection)
+{
+  bool success = false;
+
+  if (!collection)
+  {
+    return success;
+  }
+
+  smtk::mesh::BufferedCellAllocatorPtr bcAllocator =
+    collection->interface()->bufferedCellAllocator();
+
+  success = readPoints(stream, bcAllocator);
+  if (!success)
+  {
+    return success;
+  }
+
+  success = readCells(stream, bcAllocator, collection);
+
+  return success;
+}
 }
 MeshIOXMS::MeshIOXMS()
   : MeshIO()
 {
-  this->Formats.push_back(Format("xms 2d", std::vector<std::string>({ ".2dm" }), Format::Export));
-  this->Formats.push_back(Format("xms 3d", std::vector<std::string>({ ".3dm" }), Format::Export));
+  this->Formats.push_back(
+    Format("xms 2d", std::vector<std::string>({ ".2dm" }), Format::Import | Format::Export));
+  this->Formats.push_back(
+    Format("xms 3d", std::vector<std::string>({ ".3dm" }), Format::Import | Format::Export));
+}
+
+smtk::mesh::CollectionPtr MeshIOXMS::importMesh(
+  const std::string& filePath, smtk::mesh::ManagerPtr& manager, const std::string& str) const
+{
+  smtk::mesh::CollectionPtr collection = manager->makeCollection();
+  if (MeshIOXMS::importMesh(filePath, collection, str))
+  {
+    return collection;
+  }
+
+  return smtk::mesh::CollectionPtr();
+}
+
+bool MeshIOXMS::importMesh(
+  const std::string& filePath, smtk::mesh::CollectionPtr collection, const std::string&) const
+{
+  ::boost::filesystem::path path(filePath);
+  if (!::boost::filesystem::is_regular_file(path))
+  {
+    return false;
+  }
+  std::ifstream ifs(filePath.c_str(), std::ifstream::in);
+  bool success = read_dm(ifs, collection);
+  collection->interface()->setModifiedState(false);
+  return success;
 }
 
 bool MeshIOXMS::exportMesh(

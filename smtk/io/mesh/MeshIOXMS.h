@@ -37,6 +37,11 @@ class SMTKCORE_EXPORT MeshIOXMS : public MeshIO
 public:
   MeshIOXMS();
 
+  smtk::mesh::CollectionPtr importMesh(
+    const std::string&, smtk::mesh::ManagerPtr&, const std::string&) const override;
+
+  bool importMesh(const std::string&, smtk::mesh::CollectionPtr, const std::string&) const override;
+
   //Returns True if and only if a file has been written to disk.
   //Occurrences that can cause write to fail:
   // Collection is empty
