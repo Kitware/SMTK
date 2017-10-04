@@ -17,7 +17,7 @@ set(headers
 add_library(smtkIOVTK ${srcs})
 
 target_link_libraries(smtkIOVTK
-  LINK_PUBLIC smtkCore vtkCommonCore vtkCommonDataModel vtkIOCore vtkIOXML vtksys vtkFiltersCore)
+  LINK_PUBLIC smtkCore vtkCommonCore vtkCommonDataModel vtkIOCore vtkIOLegacy vtkIOXML vtksys vtkFiltersCore)
 
 smtk_export_header(smtkIOVTK IOVTKExports.h)
 

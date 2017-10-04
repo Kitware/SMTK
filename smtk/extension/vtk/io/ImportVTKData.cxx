@@ -26,6 +26,7 @@
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
 #include "vtkDataArray.h"
+#include "vtkDataSetReader.h"
 #include "vtkDoubleArray.h"
 #include "vtkIdTypeArray.h"
 #include "vtkIntArray.h"
@@ -138,7 +139,7 @@ smtk::mesh::HandleRange convertVTKDataSet(
 }
 
 template <typename TReader>
-vtkDataSet* readXMLFile(const std::string& fileName)
+vtkDataSet* readFile(const std::string& fileName)
 {
   vtkSmartPointer<TReader> reader = vtkSmartPointer<TReader>::New();
   reader->SetFileName(fileName.c_str());
@@ -221,14 +222,26 @@ bool ImportVTKData::operator()(const std::string& filename, smtk::mesh::Collecti
   vtkDataSet* data;
   if (extension == ".vtu")
   {
-    data = readXMLFile<vtkXMLUnstructuredGridReader>(filename);
+    data = readFile<vtkXMLUnstructuredGridReader>(filename);
     return this->operator()(
       vtkUnstructuredGrid::SafeDownCast(data), collection, materialPropertyName);
   }
   else if (extension == ".vtp")
   {
-    data = readXMLFile<vtkXMLPolyDataReader>(filename);
+    data = readFile<vtkXMLPolyDataReader>(filename);
     return this->operator()(vtkPolyData::SafeDownCast(data), collection, materialPropertyName);
+  }
+  else if (extension == ".vtk")
+  {
+    data = readFile<vtkDataSetReader>(filename);
+    if (vtkUnstructuredGrid* ugrid = vtkUnstructuredGrid::SafeDownCast(data))
+    {
+      return this->operator()(ugrid, collection, materialPropertyName);
+    }
+    else if (vtkPolyData* polydata = vtkPolyData::SafeDownCast(data))
+    {
+      return this->operator()(polydata, collection, materialPropertyName);
+    }
   }
 
   return false;
@@ -256,6 +269,7 @@ smtk::mesh::MeshSet ImportVTKData::operator()(
 
   smtk::mesh::MeshSet meshset = collection->createMesh(smtk::mesh::CellSet(collection, cells));
 
+  collection->interface()->setModifiedState(false);
   return meshset;
 }
 
@@ -325,6 +339,7 @@ bool ImportVTKData::operator()(vtkPolyData* polydata, smtk::mesh::CollectionPtr 
       }
     }
   }
+  iface->setModifiedState(false);
   return !mesh.is_empty();
 }
 
@@ -397,6 +412,7 @@ bool ImportVTKData::operator()(vtkUnstructuredGrid* ugrid, smtk::mesh::Collectio
       }
     }
   }
+  iface->setModifiedState(false);
   return !mesh.is_empty();
 }
 

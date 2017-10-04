@@ -95,8 +95,6 @@ smtk::mesh::CollectionPtr ImportMesh::operator()(
   std::string ext = boost::filesystem::extension(filePath);
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
-  smtk::mesh::CollectionPtr collection;
-
   // Search for an appropriate importer
   for (auto&& importer : smtk::io::ImportMesh::SupportedIOTypes())
   {
@@ -107,13 +105,12 @@ smtk::mesh::CollectionPtr ImportMesh::operator()(
           format.Extensions.end())
       {
         // import the collection
-        collection = importer->importMesh(filePath, manager, domainPropertyName);
-        break;
+        return importer->importMesh(filePath, manager, domainPropertyName);
       }
     }
   }
 
-  return collection;
+  return smtk::mesh::CollectionPtr();
 }
 
 bool ImportMesh::operator()(const std::string& filePath, smtk::mesh::CollectionPtr collection,
