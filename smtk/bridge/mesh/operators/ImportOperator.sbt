@@ -15,7 +15,7 @@
       <ItemDefinitions>
         <File Name="filename" NumberOfRequiredValues="1"
           ShouldExist="true"
-          FileFilters="Supported Formats (*.h5m *.e *.exo *.ex2 *.g *.gen *.vtu *.vtp *.vtk *.gmv *.ans *.msh *.gmsh *.stl);;Moab files (*.h5m);;Exodus II Datasets (*.e *.exo *.ex2);;Genesis files (*.g *.gen);;VTK files (*.vtu *.vtp *.vtk);;General Mesh Viewer (*.gmv);;Ansys (*.ans);;Gmsh (*.msh *.gmsh);;STL (*.stl);;All files (*.*)">
+          FileFilters="Supported Formats (*.h5m *.e *.exo *.ex2 *.g *.gen *.vtu *.vtp *.vtk *.gmv *.ans *.msh *.gmsh *.stl *.2dm *.3dm);;Moab files (*.h5m);;Exodus II Datasets (*.e *.exo *.ex2);;Genesis files (*.g *.gen);;VTK files (*.vtu *.vtp *.vtk);;General Mesh Viewer (*.gmv);;Ansys (*.ans);;Gmsh (*.msh *.gmsh);;STL (*.stl);;AdH 2D Mesh file (*.2dm);;AdH 3D Mesh file (*.3dm);;All files (*.*)">
         </File>
         <String Name="label" Label="Domain Property" NumberOfRequiredValues="1" AdvanceLevel="1">
 	  <DefaultValue></DefaultValue>
