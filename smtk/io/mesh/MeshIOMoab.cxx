@@ -33,8 +33,6 @@ MeshIOMoab::MeshIOMoab()
     Format("exodus", std::vector<std::string>({ ".exo", ".exoII", ".exo2", ".g", ".gen" }),
       Format::Import | Format::Export | Format::Read | Format::Write));
   this->Formats.push_back(
-    Format("vtk", std::vector<std::string>({ ".vtk" }), Format::Import | Format::Export));
-  this->Formats.push_back(
     Format("slac", std::vector<std::string>({ ".slac" }), Format::Import | Format::Export));
   this->Formats.push_back(Format(
     "general mesh viewer", std::vector<std::string>({ ".gmv" }), Format::Import | Format::Export));

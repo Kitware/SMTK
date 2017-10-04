@@ -46,15 +46,15 @@ class SMTKIOVTK_EXPORT ImportVTKData
 public:
   explicit ImportVTKData();
 
-  //Import a VTK xml polydata or xml unstructured grid file as a collection.
-  //Optionally specify the cell property name to be used to split
+  //Import a VTK polydata unstructured grid file (legacy or xml) as a
+  //collection. Optionally specify the cell property name to be used to split
   //the mesh into muliple domains.
   smtk::mesh::CollectionPtr operator()(const std::string& filename, smtk::mesh::ManagerPtr& manager,
     std::string domainPropertyName) const;
 
-  //Import a VTK xml polydata or xml unstructured grid file into an existing
-  //collection. Optionally specify the cell property name to be used to split
-  //the mesh into muliple domains.
+  //Import a VTK polydata or unstructured grid file (legacy or xml) into an
+  //existing collection. Optionally specify the cell property name to be used to
+  //split the mesh into muliple domains.
   bool operator()(const std::string& filename, smtk::mesh::CollectionPtr collection,
     std::string domainPropertyName) const;
 

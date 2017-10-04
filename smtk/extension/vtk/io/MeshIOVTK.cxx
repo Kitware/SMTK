@@ -41,6 +41,8 @@ MeshIOVTK::MeshIOVTK()
   this->Formats.push_back(
     smtk::io::mesh::Format("vtk polydata", std::vector<std::string>({ ".vtp" }),
       smtk::io::mesh::Format::Import | smtk::io::mesh::Format::Export));
+  this->Formats.push_back(smtk::io::mesh::Format("vtk legacy", std::vector<std::string>({ ".vtk" }),
+    smtk::io::mesh::Format::Import | smtk::io::mesh::Format::Export));
 }
 
 smtk::mesh::CollectionPtr MeshIOVTK::importMesh(const std::string& filePath,

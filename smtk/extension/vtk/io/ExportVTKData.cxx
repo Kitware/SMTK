@@ -37,6 +37,7 @@
 #include "vtkSmartPointer.h"
 #include "vtkUnsignedCharArray.h"
 #include "vtkUnstructuredGrid.h"
+#include "vtkUnstructuredGridWriter.h"
 #include "vtkXMLPolyDataReader.h"
 #include "vtkXMLPolyDataWriter.h"
 #include "vtkXMLUnstructuredGridReader.h"
@@ -65,6 +66,12 @@ ExportVTKData::ExportVTKData()
 bool ExportVTKData::operator()(const std::string& filename, smtk::mesh::CollectionPtr collection,
   std::string domainPropertyName) const
 {
+  // fail if the collection is empty
+  if (!collection || !collection->isValid() || collection->meshes().is_empty())
+  {
+    return false;
+  }
+
   std::string extension = vtksys::SystemTools::GetFilenameLastExtension(filename.c_str());
 
   // Dispatch based on the file extension
@@ -85,6 +92,16 @@ bool ExportVTKData::operator()(const std::string& filename, smtk::mesh::Collecti
     vtkNew<vtkXMLPolyDataWriter> writer;
     writer->SetFileName(filename.c_str());
     writer->SetInputData(pd);
+    writer->Write();
+    return true;
+  }
+  else if (extension == ".vtk")
+  {
+    vtkSmartPointer<vtkUnstructuredGrid> ug = vtkSmartPointer<vtkUnstructuredGrid>::New();
+    this->operator()(collection->meshes(), ug, domainPropertyName);
+    vtkNew<vtkUnstructuredGridWriter> writer;
+    writer->SetFileName(filename.c_str());
+    writer->SetInputData(ug);
     writer->Write();
     return true;
   }
