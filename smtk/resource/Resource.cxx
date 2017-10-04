@@ -11,21 +11,22 @@
 // .SECTION Description
 // .SECTION See Also
 
-#include "smtk/common/Resource.h"
+#include "smtk/resource/Resource.h"
+
 #include "smtk/common/UUIDGenerator.h"
 
 namespace smtk
 {
-namespace common
+namespace resource
 {
 
-Resource::Resource(const UUID& myID, ResourceManager* manager)
+Resource::Resource(const common::UUID& myID, Manager* manager)
   : m_id(myID)
   , m_manager(manager)
 {
 }
 
-Resource::Resource(ResourceManager* manager)
+Resource::Resource(Manager* manager)
   : m_manager(manager)
 {
   this->m_id = smtk::common::UUIDGenerator::instance().random();
@@ -68,5 +69,5 @@ Resource::Type Resource::string2Type(const std::string& s)
   return NUMBER_OF_TYPES;
 }
 
-} // namespace common
+} // namespace resource
 } // namespace smtk

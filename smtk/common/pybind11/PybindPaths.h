@@ -12,6 +12,7 @@
 #define pybind_smtk_common_Paths_h
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "smtk/common/Paths.h"
 

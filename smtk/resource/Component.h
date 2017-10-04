@@ -7,49 +7,50 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME smtkResourceComponent.h - Abstract base class for SMTK ResourceComponents
+// .NAME Component.h - Abstract base class for SMTK Resource Components
 // .SECTION Description
-//   A SMTK ResourceComponent is a peice of a Resource such as an Attribute, ModelEntity,
+//   A SMTK Component is a peice of a Resource such as an Attribute, ModelEntity,
 //  or MeshEntity
 // .SECTION See Also
 
-#ifndef smtk_common_ResourceComponent_h
-#define smtk_common_ResourceComponent_h
+#ifndef smtk_resource_Component_h
+#define smtk_resource_Component_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 #include "smtk/SystemConfig.h"
+
 #include "smtk/common/UUID.h"
 
 #include <string>
 
 namespace smtk
 {
-namespace common
+namespace resource
 {
 
-class SMTKCORE_EXPORT ResourceComponent : smtkEnableSharedPtr(ResourceComponent)
+class SMTKCORE_EXPORT Component : smtkEnableSharedPtr(Component)
 {
   friend class Resource;
   friend class smtk::model::Manager;
 
 public:
-  smtkTypeMacroBase(ResourceComponent);
-  virtual ~ResourceComponent();
+  smtkTypeMacroBase(Component);
+  virtual ~Component();
   virtual ResourcePtr resource() const = 0;
 
-  const UUID& id() const { return this->m_id; }
+  const common::UUID& id() const { return this->m_id; }
 
 protected:
-  ResourceComponent(const UUID& myID);
-  ResourceComponent();
-  void setId(const UUID& myID) { this->m_id = myID; }
+  Component(const common::UUID& myID);
+  Component();
+  void setId(const common::UUID& myID) { this->m_id = myID; }
 
 private:
-  UUID m_id;
+  common::UUID m_id;
 };
 }
 }
 
-#endif // smtk_common_ResourceComponent_h
+#endif // smtk_resource_Component_h

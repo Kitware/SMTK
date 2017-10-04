@@ -17,7 +17,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/common/Resource.h"
+#include "smtk/resource/Resource.h"
 #include "smtk/common/UUID.h"
 #include "smtk/common/View.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
@@ -25,9 +25,9 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::attribute::Collection, smtk::common::Resource > pybind11_init_smtk_attribute_Collection(py::module &m)
+PySharedPtrClass< smtk::attribute::Collection, smtk::resource::Resource > pybind11_init_smtk_attribute_Collection(py::module &m)
 {
-  PySharedPtrClass< smtk::attribute::Collection, smtk::common::Resource > instance(m, "Collection");
+  PySharedPtrClass< smtk::attribute::Collection, smtk::resource::Resource > instance(m, "Collection");
   instance
     .def("deepcopy", (smtk::attribute::Collection & (smtk::attribute::Collection::*)(::smtk::attribute::Collection const &)) &smtk::attribute::Collection::operator=)
     .def("addAdvanceLevel", &smtk::attribute::Collection::addAdvanceLevel, py::arg("level"), py::arg("label"), py::arg("l_color") = 0)

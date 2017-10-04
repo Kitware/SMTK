@@ -14,8 +14,9 @@
 #ifndef __smtk_attribute_Collection_h
 #define __smtk_attribute_Collection_h
 
-#include "smtk/common/Resource.h" // base class
 #include "smtk/common/UUID.h"
+
+#include "smtk/resource/Resource.h" // base class
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -34,12 +35,12 @@ namespace attribute
 {
 class Attribute;
 class Definition;
-class SMTKCORE_EXPORT Collection : public smtk::common::Resource
+class SMTKCORE_EXPORT Collection : public smtk::resource::Resource
 {
 public:
   smtkTypeMacro(Collection);
   smtkCreateMacro(Collection);
-  smtkSharedFromThisMacro(smtk::common::Resource);
+  smtkSharedFromThisMacro(smtk::resource::Resource);
 
   enum CopyOptions
   {
@@ -51,7 +52,7 @@ public:
 
   ~Collection() override;
 
-  smtk::common::Resource::Type resourceType() const override;
+  smtk::resource::Resource::Type resourceType() const override;
 
   smtk::attribute::DefinitionPtr createDefinition(
     const std::string& typeName, const std::string& baseTypeName = "");
@@ -70,7 +71,7 @@ public:
   bool removeAttribute(smtk::attribute::AttributePtr att);
   smtk::attribute::AttributePtr findAttribute(const std::string& name) const;
   smtk::attribute::AttributePtr findAttribute(const smtk::common::UUID& id) const;
-  smtk::common::ResourceComponentPtr find(const smtk::common::UUID& id) const override;
+  smtk::resource::ComponentPtr find(const smtk::common::UUID& id) const override;
   void findAttributes(
     const std::string& type, std::vector<smtk::attribute::AttributePtr>& result) const;
   std::vector<smtk::attribute::AttributePtr> findAttributes(const std::string& type) const;
@@ -151,8 +152,8 @@ public:
   void attributes(std::vector<smtk::attribute::AttributePtr>& result) const;
 
 protected:
-  Collection(const smtk::common::UUID& myID, smtk::common::ResourceManager* manager);
-  Collection(smtk::common::ResourceManager* manager = nullptr);
+  Collection(const smtk::common::UUID& myID, smtk::resource::Manager* manager);
+  Collection(smtk::resource::Manager* manager = nullptr);
   void internalFindAllDerivedDefinitions(smtk::attribute::DefinitionPtr def, bool onlyConcrete,
     std::vector<smtk::attribute::DefinitionPtr>& result) const;
   void internalFindAttributes(

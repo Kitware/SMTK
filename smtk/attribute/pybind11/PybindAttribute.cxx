@@ -84,7 +84,7 @@ PYBIND11_MODULE(_smtkPybindAttribute, attribute)
   PySharedPtrClass< smtk::attribute::ModelEntityItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_ModelEntityItemDefinition = pybind11_init_smtk_attribute_ModelEntityItemDefinition(attribute);
   PySharedPtrClass< smtk::attribute::RefItem, smtk::attribute::Item > smtk_attribute_RefItem = pybind11_init_smtk_attribute_RefItem(attribute);
   PySharedPtrClass< smtk::attribute::RefItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_RefItemDefinition = pybind11_init_smtk_attribute_RefItemDefinition(attribute);
-  PySharedPtrClass< smtk::attribute::Collection, smtk::common::Resource > smtk_attribute_Collection = pybind11_init_smtk_attribute_Collection(attribute);
+  PySharedPtrClass< smtk::attribute::Collection, smtk::resource::Resource > smtk_attribute_Collection = pybind11_init_smtk_attribute_Collection(attribute);
   PySharedPtrClass< smtk::attribute::ValueItem, smtk::attribute::Item > smtk_attribute_ValueItem = pybind11_init_smtk_attribute_ValueItem(attribute);
   PySharedPtrClass< smtk::attribute::ValueItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_ValueItemDefinition = pybind11_init_smtk_attribute_ValueItemDefinition(attribute);
   PySharedPtrClass< smtk::attribute::VoidItem, smtk::attribute::Item > smtk_attribute_VoidItem = pybind11_init_smtk_attribute_VoidItem(attribute);

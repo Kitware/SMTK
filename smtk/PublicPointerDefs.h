@@ -25,15 +25,19 @@ namespace smtk
 {
 namespace common
 {
-class Resource;
-class ResourceComponent;
-class ResourceManager;
-class ResourceSet;
 class UUID;
 class UUIDGenerator;
 class View;
 typedef std::set<UUID> UUIDs;
 typedef std::vector<UUID> UUIDArray;
+}
+
+namespace resource
+{
+class Resource;
+class Component;
+class Manager;
+class Set;
 }
 
 namespace attribute
@@ -212,12 +216,16 @@ typedef smtk::shared_ptr<smtk::io::Logger> LoggerPtr;
 
 namespace common
 {
-typedef smtk::shared_ptr<smtk::common::Resource> ResourcePtr;
-typedef smtk::shared_ptr<smtk::common::ResourceComponent> ResourceComponentPtr;
-typedef smtk::shared_ptr<smtk::common::ResourceSet> ResourceSetPtr;
-typedef smtk::shared_ptr<const smtk::common::Resource> ConstResourcePtr;
-typedef smtk::shared_ptr<const smtk::common::ResourceSet> ConstResourceSetPtr;
 typedef smtk::shared_ptr<smtk::common::View> ViewPtr;
+}
+
+namespace resource
+{
+typedef smtk::shared_ptr<smtk::resource::Resource> ResourcePtr;
+typedef smtk::shared_ptr<smtk::resource::Component> ComponentPtr;
+typedef smtk::shared_ptr<smtk::resource::Set> SetPtr;
+typedef smtk::shared_ptr<const smtk::resource::Resource> ConstResourcePtr;
+typedef smtk::shared_ptr<const smtk::resource::Set> ConstSetPtr;
 }
 
 namespace mesh

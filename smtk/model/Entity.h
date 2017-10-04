@@ -13,7 +13,7 @@
 #include "smtk/CoreExports.h" // for SMTKCORE_EXPORT macro
 #include "smtk/SystemConfig.h"
 
-#include "smtk/common/ResourceComponent.h"
+#include "smtk/resource/Component.h"
 
 #include "smtk/model/Arrangement.h"    // for Arrangement, ArrangementKind
 #include "smtk/model/EntityTypeBits.h" // for entityFlags values
@@ -43,14 +43,14 @@ namespace model
   * This also encodes the parametric dimension (or dimensions) associated
   * with the entity.
   */
-class SMTKCORE_EXPORT Entity : public smtk::common::ResourceComponent
+class SMTKCORE_EXPORT Entity : public smtk::resource::Component
 {
 public:
-  using ResourcePtr = smtk::common::ResourcePtr;
   using UUID = smtk::common::UUID;
+  using ResourcePtr = smtk::resource::ResourcePtr;
 
   smtkTypeMacro(Entity);
-  smtkSharedPtrCreateMacro(smtk::common::ResourceComponent);
+  smtkSharedPtrCreateMacro(smtk::resource::Component);
   virtual ~Entity();
 
   static EntityPtr create(

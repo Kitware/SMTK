@@ -7,29 +7,29 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_common_ResourceWrapper_h
-#define smtk_common_ResourceWrapper_h
+#ifndef smtk_resource_Wrapper_h
+#define smtk_resource_Wrapper_h
 
-#include "smtk/common/Resource.h"
-#include "smtk/common/ResourceSet.h"
+#include "smtk/resource/Resource.h"
+#include "smtk/resource/Set.h"
 
 namespace smtk
 {
-namespace common
+namespace resource
 {
 
 // Simple container for single Resource plus meta data
-struct SMTKCORE_EXPORT ResourceWrapper
+struct SMTKCORE_EXPORT Wrapper
 {
   ResourcePtr resource;
   Resource::Type type;
-  ResourceSet::ResourceRole role;
-  ResourceSet::ResourceState state;
+  Set::Role role;
+  Set::State state;
   std::string id;
   std::string link;
 };
 
-} // namespace common
+} // namespace resource
 } // namespace smtk
 
-#endif // smtk_common_ResourceWrapper_h
+#endif // smtk_resource_Wrapper_h

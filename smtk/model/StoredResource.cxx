@@ -158,9 +158,9 @@ void StoredResource::setGeneration(int gen)
 }
 
 /// Thi method needs to be filled out to support find
-smtk::common::ResourceComponentPtr StoredResource::find(const smtk::common::UUID&) const
+smtk::resource::ComponentPtr StoredResource::find(const smtk::common::UUID&) const
 {
-  return smtk::common::ResourceComponentPtr();
+  return smtk::resource::ComponentPtr();
 }
 
 } // namespace model

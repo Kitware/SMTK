@@ -7,32 +7,32 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME smtkResourceComponent.cxx - Abstract base class for CMB ResourceComponents
+// .NAME Component.cxx - Abstract base class for CMB Resource Components
 // .SECTION Description
 // .SECTION See Also
 
-#include "smtk/common/ResourceComponent.h"
+#include "smtk/resource/Component.h"
+
 #include "smtk/common/UUIDGenerator.h"
 
 namespace smtk
 {
-namespace common
+namespace resource
 {
 
-ResourceComponent::ResourceComponent(const UUID& myID)
+Component::Component(const common::UUID& myID)
   : m_id(myID)
 {
 }
 
-ResourceComponent::ResourceComponent()
+Component::Component()
 {
-  smtk::common::UUIDGenerator gen;
   this->m_id = smtk::common::UUIDGenerator::instance().random();
 }
 
-ResourceComponent::~ResourceComponent()
+Component::~Component()
 {
 }
 
-} // namespace common
+} // namespace resource
 } // namespace smtk

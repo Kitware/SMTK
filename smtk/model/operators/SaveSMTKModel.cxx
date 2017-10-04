@@ -31,7 +31,8 @@
 #include "smtk/model/Session.h"
 
 #include "smtk/common/CompilerInformation.h"
-#include "smtk/common/ResourceSet.h"
+
+#include "smtk/resource/Set.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
@@ -265,8 +266,8 @@ OperatorResult SaveSMTKModel::operateInternal()
     ok = true;
   }
 
-  smtk::common::ResourceSetPtr rset = this->manager()->resources();
-  smtk::io::SaveJSON::fromResourceSet(top, rset);
+  smtk::resource::SetPtr rset = this->manager()->resources();
+  smtk::io::SaveJSON::fromSet(top, rset);
 
   if (ok)
   {

@@ -10,8 +10,9 @@
 #include "smtk/io/SaveJSON.h"
 #include "smtk/io/SaveJSON.txx"
 
-#include "smtk/common/ResourceSet.h"
 #include "smtk/common/Version.h"
+
+#include "smtk/resource/Set.h"
 
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/Entity.h"
@@ -228,7 +229,7 @@ bool SaveJSON::fromModelManagerToFile(smtk::model::ManagerPtr modelMgr, const ch
   return true;
 }
 
-int SaveJSON::fromResourceSet(cJSON* pnode, smtk::common::ResourceSetPtr& rset)
+int SaveJSON::fromSet(cJSON* pnode, smtk::resource::SetPtr& rset)
 {
   if (!pnode || pnode->type != cJSON_Object || !rset)
   {
@@ -244,25 +245,25 @@ int SaveJSON::fromResourceSet(cJSON* pnode, smtk::common::ResourceSetPtr& rset)
   std::vector<std::string> rids = rset->resourceIds();
   for (auto rid : rids)
   {
-    smtk::common::ResourcePtr rsrc;
+    smtk::resource::ResourcePtr rsrc;
     smtk::model::StoredResourcePtr srsrc;
     if (rset->get(rid, rsrc))
     {
-      smtk::common::Resource::Type rsrcType;
-      smtk::common::ResourceSet::ResourceRole rsrcRole;
-      smtk::common::ResourceSet::ResourceState rsrcState;
+      smtk::resource::Resource::Type rsrcType;
+      smtk::resource::Set::Role rsrcRole;
+      smtk::resource::Set::State rsrcState;
       std::string rsrcLink;
 
       cJSON* jsrc = cJSON_CreateObject();
       cJSON_AddItemToObject(jset, rid.c_str(), jsrc);
       if (rset->resourceInfo(rid, rsrcType, rsrcRole, rsrcState, rsrcLink))
       {
+        cJSON_AddItemToObject(jsrc, "type",
+          cJSON_CreateString(smtk::resource::Resource::type2String(rsrcType).c_str()));
         cJSON_AddItemToObject(
-          jsrc, "type", cJSON_CreateString(smtk::common::Resource::type2String(rsrcType).c_str()));
-        cJSON_AddItemToObject(jsrc, "role",
-          cJSON_CreateString(smtk::common::ResourceSet::role2String(rsrcRole).c_str()));
-        cJSON_AddItemToObject(jsrc, "state",
-          cJSON_CreateString(smtk::common::ResourceSet::state2String(rsrcState).c_str()));
+          jsrc, "role", cJSON_CreateString(smtk::resource::Set::role2String(rsrcRole).c_str()));
+        cJSON_AddItemToObject(
+          jsrc, "state", cJSON_CreateString(smtk::resource::Set::state2String(rsrcState).c_str()));
 
         if ((srsrc = smtk::dynamic_pointer_cast<smtk::model::StoredResource>(rsrc)))
         {
@@ -327,7 +328,7 @@ int SaveJSON::save(
     // models in this manager that have been requested:
     if (mgrs.find(model.manager()) == mgrs.end())
     {
-      smtk::common::ResourceSetPtr rset = model.manager()->resources();
+      smtk::resource::SetPtr rset = model.manager()->resources();
       if (!embedDir.empty())
       {
         rset->setLinkStartPath(embedDir);
@@ -335,7 +336,7 @@ int SaveJSON::save(
       std::vector<std::string> rids = rset->resourceIds();
       for (auto rsrcId : rids)
       {
-        smtk::common::ResourcePtr rsrc;
+        smtk::resource::ResourcePtr rsrc;
         smtk::model::StoredResourcePtr srsrc;
         smtk::model::SessionRef sref;
         if (rset->get(rsrcId, rsrc) && (srsrc = smtk::dynamic_pointer_cast<StoredResource>(rsrc)) &&

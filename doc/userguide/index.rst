@@ -35,6 +35,7 @@ simulation domain.
 
    obtain-build-install.rst
    overview.rst
+   resource/index.rst
    attribute/index.rst
    model/index.rst
    mesh/index.rst

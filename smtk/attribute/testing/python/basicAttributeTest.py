@@ -28,10 +28,10 @@ if __name__ == '__main__':
     collection = smtk.attribute.Collection.create()
     print 'Collection created'
     t = collection.resourceType()
-    if t != smtk.common.Resource.ATTRIBUTE:
+    if t != smtk.resource.Resource.ATTRIBUTE:
         print 'ERROR: Returned wrong resource type'
         status = -1
-    print 'Resource type:', smtk.common.Resource.type2String(t)
+    print 'Resource type:', smtk.resource.Resource.type2String(t)
     def_ = collection.createDefinition('testDef')
     if def_ is not None:
         print 'Definition testDef created'

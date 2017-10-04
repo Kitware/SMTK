@@ -8,6 +8,10 @@ SMTK's core library contains several subsystems,
 each of which is covered in depth in sections that follow this one.
 These subsystems are:
 
+* The **resource** system holds a set of base classes used by the systems below to provide
+  basic provenance information about versions of data on disk.
+  Each file is a *resource*, which may hold a collection of *resource components*;
+  the *resource manager* assembles resources together for processing into a simulation input.
 * The **attribute** system, which provides a way to specify how information should be
   organized for scientific and engineering workflows, accept that information from users,
   and ensure that it is consistent with the specification.
@@ -18,8 +22,8 @@ These subsystems are:
   to propagate simulation attribute information from model entities onto meshes.
   It also provides a way to run external mesh creation tools on the model.
 * The **simulation** (also known as the **export**) system, which is a set of utilities
-  that lets you convert an attribute collection, model, and mesh into an input deck for a simulation
-  using Python scripts (or C++ if you wish).
+  that lets you convert resources (e.g., attribute, model, and mesh collections) into
+  an input deck for a simulation using Python scripts (or C++ if you wish).
 * A **common** system holding utility classes.
 * Python **bindings** that enable SMTK to
   be used *by* python scripts *and* SMTK to run python scripts as part of its normal operations.

@@ -37,8 +37,9 @@
 
 #include "smtk/mesh/Manager.h"
 
-#include "smtk/common/ResourceSet.h"
 #include "smtk/common/UUIDGenerator.h"
+
+#include "smtk/resource/Set.h"
 
 #include <float.h>
 
@@ -54,6 +55,7 @@
 
 using namespace std;
 using namespace smtk::common;
+using namespace smtk::resource;
 
 namespace smtk
 {
@@ -67,7 +69,7 @@ namespace model
 //@{
 /// Create a default, empty model manager.
 Manager::Manager()
-  : smtk::common::Resource(nullptr)
+  : smtk::resource::Resource(nullptr)
   , m_topology(new UUIDsToEntities)
   , m_floatData(new UUIDsToFloatData)
   , m_stringData(new UUIDsToStringData)
@@ -77,7 +79,7 @@ Manager::Manager()
   , m_meshes(smtk::mesh::Manager::create())
   , m_attributeAssignments(new UUIDsToAttributeAssignments)
   , m_sessions(new UUIDsToSessions)
-  , m_resources(new ResourceSet)
+  , m_resources(new Set)
   , m_globalCounters(2, 1) // first entry is session counter, second is model counter
 {
   // TODO: throw() when topology == NULL?
@@ -88,7 +90,7 @@ Manager::Manager()
 Manager::Manager(shared_ptr<UUIDsToEntities> inTopology, shared_ptr<UUIDsToTessellations> tess,
   shared_ptr<UUIDsToTessellations> analysismesh, shared_ptr<smtk::mesh::Manager> meshes,
   shared_ptr<UUIDsToAttributeAssignments> attribs)
-  : smtk::common::Resource(nullptr)
+  : smtk::resource::Resource(nullptr)
   , m_topology(inTopology)
   , m_floatData(new UUIDsToFloatData)
   , m_stringData(new UUIDsToStringData)
@@ -98,7 +100,7 @@ Manager::Manager(shared_ptr<UUIDsToEntities> inTopology, shared_ptr<UUIDsToTesse
   , m_meshes(meshes)
   , m_attributeAssignments(attribs)
   , m_sessions(new UUIDsToSessions)
-  , m_resources(new ResourceSet)
+  , m_resources(new Set)
   , m_globalCounters(2, 1) // first entry is session counter, second is model counter
 {
   this->m_log.setFlushToStdout(false);
@@ -929,9 +931,9 @@ EntityPtr Manager::findEntity(const UUID& uid, bool trySessions) const
   return it->second;
 }
 
-smtk::common::ResourceComponentPtr Manager::find(const smtk::common::UUID& uid) const
+smtk::resource::ComponentPtr Manager::find(const smtk::common::UUID& uid) const
 {
-  return std::dynamic_pointer_cast<smtk::common::ResourceComponent>(this->findEntity(uid));
+  return std::dynamic_pointer_cast<smtk::resource::Component>(this->findEntity(uid));
 }
 
 /// Given an entity \a c, ensure that all of its references contain a reference to it.
@@ -3640,8 +3642,8 @@ void Manager::computeResources()
         { // Assume it's modified if not on disk, otherwise unmodified
           srsrc->markModified(srsrc->exists(this->m_resources->linkStartPath()));
         }
-        this->m_resources->addResource(srsrc, newResourceName, "",
-          ent.isAuxiliaryGeometry() ? ResourceSet::AUX_GEOM_RESOURCE : ResourceSet::MODEL_RESOURCE);
+        this->m_resources->add(srsrc, newResourceName, "",
+          ent.isAuxiliaryGeometry() ? Set::AUX_GEOM_RESOURCE : Set::MODEL_RESOURCE);
         urlsToResourceNames[url] = newResourceName;
       }
       std::string rsrcName = urlsToResourceNames[url];
@@ -3671,7 +3673,7 @@ void Manager::computeResources()
         { // Assume it's modified if not on disk, otherwise unmodified
           srsrc->markModified(srsrc->exists(this->m_resources->linkStartPath()));
         }
-        this->m_resources->addResource(srsrc, newResourceName, "", ResourceSet::MODEL_RESOURCE);
+        this->m_resources->add(srsrc, newResourceName, "", Set::MODEL_RESOURCE);
         urlsToResourceNames[url] = newResourceName;
       }
       std::string rsrcName = urlsToResourceNames[url];
@@ -3694,7 +3696,7 @@ void Manager::computeResources()
     for (auto unused : preexistingIds)
     {
       smtkDebugMacro(this->log(), "Erasing unused resource \"" << unused << "\"");
-      this->m_resources->removeResource(unused);
+      this->m_resources->remove(unused);
     }
   }
 }

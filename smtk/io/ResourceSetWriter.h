@@ -20,7 +20,7 @@
 
 #include "smtk/io/Logger.h"
 
-#include "smtk/common/ResourceSet.h"
+#include "smtk/resource/Set.h"
 
 #include <string>
 
@@ -39,9 +39,9 @@ public:
     WRITE_LINKED_FILES
   };
 
-  bool writeFile(std::string filename, const smtk::common::ResourceSet& resources,
+  bool writeFile(std::string filename, const smtk::resource::Set& resources,
     smtk::io::Logger& logger, LinkedFilesOption option = WRITE_LINKED_FILES);
-  bool writeString(std::string& content, const smtk::common::ResourceSet& resources,
+  bool writeString(std::string& content, const smtk::resource::Set& resources,
     smtk::io::Logger& logger, LinkedFilesOption option = WRITE_LINKED_FILES);
 
 protected:

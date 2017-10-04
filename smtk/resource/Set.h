@@ -7,14 +7,14 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_common_ResourceSet_h
-#define __smtk_common_ResourceSet_h
+#ifndef __smtk_resource_Set_h
+#define __smtk_resource_Set_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SystemConfig.h"
 
-#include "smtk/common/Resource.h"
+#include "smtk/resource/Resource.h"
 
 #include <map>
 #include <string>
@@ -22,10 +22,10 @@
 
 namespace smtk
 {
-namespace common
+namespace resource
 {
 
-struct ResourceWrapper; // defined in ResourceSet.cxx
+struct Wrapper; // defined in Set.cxx
 
 /**\brief A container for SMTK resources.
   *
@@ -34,11 +34,11 @@ struct ResourceWrapper; // defined in ResourceSet.cxx
   * simulation input deck; and for loading the resources
   * as required when the input deck is being processed.
   */
-class SMTKCORE_EXPORT ResourceSet
+class SMTKCORE_EXPORT Set
 {
 public:
   /// Identifies load-state of Resource
-  enum ResourceState
+  enum State
   {
     NOT_LOADED = 0, // have link to file/uri, but resource not instantiated
     LOADED,         // resource instantiated and contents loaded
@@ -46,7 +46,7 @@ public:
   };
 
   /// Identifies resource role, used with attribute resources
-  enum ResourceRole
+  enum Role
   {
     NOT_DEFINED = 0, //!< for non-attribute, non-model resources
     TEMPLATE,        //!< resources storing attributes serving as templates
@@ -56,42 +56,41 @@ public:
     AUX_GEOM_RESOURCE, //!< resources storing auxiliary model geometry
   };
 
-  ResourceSet();
-  virtual ~ResourceSet();
+  Set();
+  virtual ~Set();
 
-  bool addResource(
-    ResourcePtr resource, std::string id, std::string link = "", ResourceRole = NOT_DEFINED);
+  bool add(ResourcePtr resource, std::string id, std::string link = "", Role = NOT_DEFINED);
 
-  bool addResourceInfo(const std::string id, Resource::Type type, ResourceRole role,
-    ResourceState state, std::string link = "");
+  bool addInfo(
+    const std::string id, Resource::Type type, Role role, State state, std::string link = "");
 
-  bool removeResource(const std::string& id);
+  bool remove(const std::string& id);
 
   std::size_t numberOfResources() const;
 
   const std::vector<std::string> resourceIds() const;
 
-  bool resourceInfo(std::string id, Resource::Type& type, ResourceRole& role, ResourceState& state,
-    std::string& link) const;
+  bool resourceInfo(
+    std::string id, Resource::Type& type, Role& role, State& state, std::string& link) const;
 
   bool get(std::string id, ResourcePtr& resource) const;
 
-  static std::string state2String(ResourceState state);
-  static std::string role2String(ResourceRole role);
-  static ResourceRole string2Role(const std::string s);
+  static std::string state2String(State state);
+  static std::string role2String(Role role);
+  static Role string2Role(const std::string s);
 
   std::string linkStartPath() const;
   void setLinkStartPath(const std::string path);
 
 protected:
   std::vector<std::string> m_resourceIds;
-  std::map<std::string, ResourceWrapper*> m_resourceMap;
+  std::map<std::string, Wrapper*> m_resourceMap;
   std::string m_linkStartPath;
 
-  ResourceWrapper* getWrapper(std::string id) const;
+  Wrapper* getWrapper(std::string id) const;
 };
 
-} // namespace common
+} // namespace resource
 } // namespace smtk
 
-#endif // __smtk_common_ResourceSet_h
+#endif // __smtk_resource_Set_h

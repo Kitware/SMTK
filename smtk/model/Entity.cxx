@@ -10,8 +10,9 @@
 #include "smtk/model/Entity.h"
 #include "smtk/model/Manager.h"
 
-#include "smtk/common/Resource.h"
 #include "smtk/common/StringUtil.h"
+
+#include "smtk/resource/Resource.h"
 
 #include <algorithm>
 #include <cctype>
@@ -25,6 +26,7 @@
 
 using namespace std;
 using namespace smtk::common;
+using namespace smtk::resource;
 
 namespace smtk
 {
@@ -109,7 +111,7 @@ EntityPtr Entity::setup(BitFlags entFlags, int dim, Manager::Ptr resource, bool 
 
 ResourcePtr Entity::resource() const
 {
-  return std::dynamic_pointer_cast<smtk::common::Resource>(this->m_resource.lock());
+  return std::dynamic_pointer_cast<smtk::resource::Resource>(this->m_resource.lock());
 }
 
 ManagerPtr Entity::modelResource() const
