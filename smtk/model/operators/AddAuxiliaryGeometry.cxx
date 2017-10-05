@@ -44,7 +44,7 @@ smtk::model::OperatorResult AddAuxiliaryGeometry::operateInternal()
   if (entities.empty())
   {
     smtkErrorMacro(this->log(), "No parent specified.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   EntityRef parent = entities[0];
@@ -142,10 +142,11 @@ smtk::model::OperatorResult AddAuxiliaryGeometry::operateInternal()
     EntityRefArray expunged;
     parent.manager()->deleteEntities(del, modified, expunged, /*log*/ false);
     smtkErrorMacro(this->log(), "The url \"" << urlStr << "\" is invalid or unhandled.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   this->addEntityToResult(result, parent, MODIFIED);
   this->addEntityToResult(result, auxGeom, CREATED);

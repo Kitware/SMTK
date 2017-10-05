@@ -58,7 +58,7 @@ smtk::model::OperatorResult Copy::operateInternal()
   {
     smtkInfoMacro(
       log(), "Expected a single entity to copy but was given " << entitiesIn.size() << ".");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   EntityRef entity = entitiesIn[0];
@@ -69,13 +69,13 @@ smtk::model::OperatorResult Copy::operateInternal()
     if (!refBody)
     {
       smtkInfoMacro(log(), "Unable obtain CGM body from " << entity.name() << ".");
-      return this->createResult(smtk::model::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
     }
     Body* newBody = GeometryModifyTool::instance()->copy_body(refBody);
     if (!newBody)
     {
       smtkInfoMacro(log(), "Unable to copy body " << refBody << " (" << entity.name() << ").");
-      return this->createResult(smtk::model::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
     }
     cgmOut = newBody;
   }
@@ -85,13 +85,13 @@ smtk::model::OperatorResult Copy::operateInternal()
     if (!refEntity)
     {
       smtkInfoMacro(log(), "Unable obtain CGM entity from " << entity.name() << ".");
-      return this->createResult(smtk::model::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
     }
     RefEntity* newEntity = GeometryModifyTool::instance()->copy_refentity(refEntity);
     if (!newEntity)
     {
       smtkInfoMacro(log(), "Unable to copy entity " << refEntity << " (" << entity.name() << ").");
-      return this->createResult(smtk::model::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
     }
     cgmOut = newEntity;
   }
@@ -99,10 +99,11 @@ smtk::model::OperatorResult Copy::operateInternal()
   {
     smtkInfoMacro(log(), "Expected a cell (vertex, edge, face, volume) or model but was given "
         << entity.flagSummary(0) << " (named " << entity.name() << ").");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   DLIList<RefEntity*> cgmEntitiesOut;
   cgmEntitiesOut.push(cgmOut);

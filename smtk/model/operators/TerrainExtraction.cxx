@@ -32,13 +32,14 @@ smtk::model::OperatorResult TerrainExtraction::operateInternal()
   if (entities.empty())
   {
     smtkErrorMacro(this->log(), "No parent specified.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   // Hide the visibilty of input aux_geom
   EntityRef parent = entities[0];
   parent.setVisible(false);
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   this->addEntityToResult(result, parent, MODIFIED);
   return result;

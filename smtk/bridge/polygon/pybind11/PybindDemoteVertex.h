@@ -24,7 +24,6 @@ PySharedPtrClass< smtk::bridge::polygon::DemoteVertex > pybind11_init_smtk_bridg
     .def(py::init<>())
     .def(py::init<::smtk::bridge::polygon::DemoteVertex const &>())
     .def("deepcopy", (smtk::bridge::polygon::DemoteVertex & (smtk::bridge::polygon::DemoteVertex::*)(::smtk::bridge::polygon::DemoteVertex const &)) &smtk::bridge::polygon::DemoteVertex::operator=)
-    .def_static("baseCreate", &smtk::bridge::polygon::DemoteVertex::baseCreate)
     .def("className", &smtk::bridge::polygon::DemoteVertex::className)
     .def("classname", &smtk::bridge::polygon::DemoteVertex::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::DemoteVertex> (*)()) &smtk::bridge::polygon::DemoteVertex::create)

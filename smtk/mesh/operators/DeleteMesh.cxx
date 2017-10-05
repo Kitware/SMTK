@@ -56,7 +56,8 @@ smtk::model::OperatorResult DeleteMesh::operateInternal()
   }
 
   smtk::model::OperatorResult result =
-    this->createResult(success ? smtk::model::OPERATION_SUCCEEDED : smtk::model::OPERATION_FAILED);
+    this->createResult(success ? smtk::operation::Operator::OPERATION_SUCCEEDED
+                               : smtk::operation::Operator::OPERATION_FAILED);
 
   if (success)
   {

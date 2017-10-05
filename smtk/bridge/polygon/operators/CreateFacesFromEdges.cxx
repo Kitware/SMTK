@@ -73,7 +73,7 @@ bool CreateFacesFromEdges::populateEdgeMap()
         {
           smtkErrorMacro(this->log(), "Edges from different models ("
               << model.name() << " and " << edgeIn.owningModel().name() << ") selected.");
-          this->m_result = this->createResult(smtk::model::OPERATION_FAILED);
+          this->m_result = this->createResult(smtk::operation::Operator::OPERATION_FAILED);
           return false;
         }
       }
@@ -87,7 +87,7 @@ bool CreateFacesFromEdges::populateEdgeMap()
   if (this->m_edgeMap.empty() || !model.isValid())
   {
     smtkErrorMacro(this->log(), "No edges selected or invalid model specified.");
-    this->m_result = this->createResult(smtk::model::OPERATION_FAILED);
+    this->m_result = this->createResult(smtk::operation::Operator::OPERATION_FAILED);
     return false;
   }
   this->m_model = model;

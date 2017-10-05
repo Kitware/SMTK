@@ -37,7 +37,7 @@ smtk::model::OperatorResult SplitEdge::operateInternal()
   smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
   smtk::model::Manager::Ptr mgr;
   if (!sess)
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
 
   mgr = sess->manager();
 
@@ -48,7 +48,7 @@ smtk::model::OperatorResult SplitEdge::operateInternal()
   if (!edgeToSplit.isValid())
   {
     smtkErrorMacro(this->log(), "The input edge (" << edgeToSplit.entity() << ") is invalid.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   internal::edge::Ptr storage = this->findStorage<internal::edge>(edgeToSplit.entity());
@@ -56,7 +56,7 @@ smtk::model::OperatorResult SplitEdge::operateInternal()
   if (!storage || !mod)
   {
     smtkErrorMacro(this->log(), "The input edge has no storage or no parent model set.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   std::vector<double> point;
@@ -76,14 +76,14 @@ smtk::model::OperatorResult SplitEdge::operateInternal()
   smtk::model::OperatorResult opResult;
   if (ok)
   {
-    opResult = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+    opResult = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
     this->addEntitiesToResult(opResult, created, CREATED);
     this->addEntityToResult(opResult, edgeToSplit, EXPUNGED);
   }
   else
   {
     smtkErrorMacro(this->log(), "Failed to split edge.");
-    opResult = this->createResult(smtk::model::OPERATION_FAILED);
+    opResult = this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   return opResult;

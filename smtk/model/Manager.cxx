@@ -26,6 +26,7 @@
 #include "smtk/model/Instance.h"
 #include "smtk/model/Loop.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Operator.h"
 #include "smtk/model/SessionRef.h"
 #include "smtk/model/Shell.h"
 #include "smtk/model/ShellEntity.txx"
@@ -3450,7 +3451,7 @@ void Manager::observe(ManagerEventType event, OneToManyCallback functionHandle, 
 /// Request notification from this manager instance when \a event occurs.
 void Manager::observe(OperatorEventType event, BareOperatorCallback functionHandle, void* callData)
 {
-  if (event != CREATED_OPERATOR)
+  if (event != smtk::operation::Operator::CREATED_OPERATOR)
   {
     smtkWarningMacro(this->m_log,
       "The model manager only allows observation of CREATED_OPERATOR, not " << event << ".");

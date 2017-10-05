@@ -27,7 +27,6 @@ PySharedPtrClass< smtk::mesh::InterpolateMesh, smtk::model::Operator > pybind11_
     .def(py::init<::smtk::mesh::InterpolateMesh const &>())
     .def("deepcopy", (smtk::mesh::InterpolateMesh & (smtk::mesh::InterpolateMesh::*)(::smtk::mesh::InterpolateMesh const &)) &smtk::mesh::InterpolateMesh::operator=)
     .def("ableToOperate", &smtk::mesh::InterpolateMesh::ableToOperate)
-    .def_static("baseCreate", &smtk::mesh::InterpolateMesh::baseCreate)
     .def("className", &smtk::mesh::InterpolateMesh::className)
     .def("classname", &smtk::mesh::InterpolateMesh::classname)
     .def_static("create", (std::shared_ptr<smtk::mesh::InterpolateMesh> (*)()) &smtk::mesh::InterpolateMesh::create)

@@ -140,7 +140,8 @@ smtk::model::OperatorResult PythonScript::executePythonScript(
   vtkPythonInterpreter::RunSimpleString(pipeline.str().c_str());
   vtkPythonInterpreter::Finalize();
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
   return result;
 }
 

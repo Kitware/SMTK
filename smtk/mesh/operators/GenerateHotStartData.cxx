@@ -221,7 +221,7 @@ smtk::model::OperatorResult GenerateHotStartData::operateInternal()
     if (!success)
     {
       smtkErrorMacro(this->log(), "Could not read CSV file.");
-      return this->createResult(smtk::model::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
     }
   }
 
@@ -269,7 +269,8 @@ smtk::model::OperatorResult GenerateHotStartData::operateInternal()
   smtk::mesh::InverseDistanceWeighting interpolator(pointcloud, powerItem->value());
 
   // Access the attribute associated with the modified meshes
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
   smtk::attribute::MeshItem::Ptr modifiedMeshes = result->findMesh("mesh_modified");
   modifiedMeshes->setNumberOfValues(meshItem->numberOfValues());
 
@@ -298,7 +299,7 @@ smtk::model::OperatorResult GenerateHotStartData::operateInternal()
   else
   {
     smtkErrorMacro(this->log(), "Unsupported data type.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   // apply the interpolator to the meshes and populate the result attributes

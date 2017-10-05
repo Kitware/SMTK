@@ -25,7 +25,6 @@ PySharedPtrClass< smtk::bridge::cgm::BooleanIntersection > pybind11_init_smtk_br
     .def(py::init<::smtk::bridge::cgm::BooleanIntersection const &>())
     .def("deepcopy", (smtk::bridge::cgm::BooleanIntersection & (smtk::bridge::cgm::BooleanIntersection::*)(::smtk::bridge::cgm::BooleanIntersection const &)) &smtk::bridge::cgm::BooleanIntersection::operator=)
     .def("ableToOperate", &smtk::bridge::cgm::BooleanIntersection::ableToOperate)
-    .def_static("baseCreate", &smtk::bridge::cgm::BooleanIntersection::baseCreate)
     .def("className", &smtk::bridge::cgm::BooleanIntersection::className)
     .def("classname", &smtk::bridge::cgm::BooleanIntersection::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::cgm::BooleanIntersection> (*)()) &smtk::bridge::cgm::BooleanIntersection::create)

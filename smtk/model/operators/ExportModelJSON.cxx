@@ -44,21 +44,21 @@ smtk::model::OperatorResult ExportModelJSON::operateInternal()
   if (entities.empty())
   {
     smtkErrorMacro(this->log(), "No valid models selected for export.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   std::string filename = filenameItem->value();
   if (filename.empty())
   {
     smtkErrorMacro(this->log(), "A filename must be provided.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   std::ofstream jsonFile(filename.c_str(), std::ios::trunc);
   if (!jsonFile.good())
   {
     smtkErrorMacro(this->log(), "Could not open file \"" << filename << "\".");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   JSONFlags flags = static_cast<JSONFlags>(flagsItem->value(0));
@@ -68,7 +68,7 @@ smtk::model::OperatorResult ExportModelJSON::operateInternal()
   jsonFile << jsonStr;
   jsonFile.close();
 
-  return this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  return this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 }
 
 } //namespace model

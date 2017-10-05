@@ -95,10 +95,11 @@ smtk::model::OperatorResult Scale::operateInternal()
     smtkInfoMacro(log(), "Failed to scale bodies or wrong number"
         << " (" << cgmEntitiesOut.size() << " != " << nb << ")"
         << " of resulting bodies.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmEntitiesOut, result, MODIFIED);
   // Nothing expunged.

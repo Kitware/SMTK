@@ -427,7 +427,7 @@ smtk::model::OperatorResult Delete::operateInternal()
       smtkErrorMacro(this->log(), "... and " << (this->m_numWarnings - MAX_WARNINGS)
                                              << " more entities with dependents.");
     }
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   smtkOpDebug("Given " << entities.size() << ", found " << faces.size() << " faces, "
@@ -445,7 +445,8 @@ smtk::model::OperatorResult Delete::operateInternal()
   this->polygonSession()->consistentInternalDelete(
     other, this->m_modified, this->m_expunged, this->m_debugLevel > 0);
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
   this->addEntitiesToResult(result, this->m_expunged, EXPUNGED);
   smtk::model::EntityRefArray modray(this->m_modified.begin(), this->m_modified.end());
   this->addEntitiesToResult(result, modray, MODIFIED);

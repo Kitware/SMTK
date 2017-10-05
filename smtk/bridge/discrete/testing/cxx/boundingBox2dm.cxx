@@ -75,7 +75,7 @@ int main(int argc, char* argv[])
   readOp->specification()->findFile("filename")->setValue(std::string(argv[1]));
   std::cout << "Importing " << argv[1] << "\n";
   smtk::model::OperatorResult opresult = readOp->operate();
-  if (opresult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (opresult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     std::cerr << "Read operator failed\n";
     return 1;

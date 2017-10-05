@@ -37,7 +37,7 @@ smtk::model::OperatorResult DemoteVertex::operateInternal()
   smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
   smtk::model::Manager::Ptr mgr;
   if (!sess)
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
 
   mgr = sess->manager();
 
@@ -46,7 +46,7 @@ smtk::model::OperatorResult DemoteVertex::operateInternal()
   if (!vertexToDemote.isValid())
   {
     smtkErrorMacro(this->log(), "The input vertex (" << vertexToDemote.entity() << ") is invalid.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   internal::vertex::Ptr storage = this->findStorage<internal::vertex>(vertexToDemote.entity());
@@ -54,7 +54,7 @@ smtk::model::OperatorResult DemoteVertex::operateInternal()
   if (!storage || !mod)
   {
     smtkErrorMacro(this->log(), "The input vertex has no storage or no parent model set.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   smtk::model::EntityRefs created;
@@ -64,7 +64,7 @@ smtk::model::OperatorResult DemoteVertex::operateInternal()
   smtk::model::OperatorResult opResult;
   if (ok)
   {
-    opResult = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+    opResult = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
     this->addEntitiesToResult(
       opResult, smtk::model::EntityRefArray(created.begin(), created.end()), CREATED);
     this->addEntitiesToResult(
@@ -74,7 +74,7 @@ smtk::model::OperatorResult DemoteVertex::operateInternal()
   }
   else
   {
-    opResult = this->createResult(smtk::model::OPERATION_FAILED);
+    opResult = this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   return opResult;

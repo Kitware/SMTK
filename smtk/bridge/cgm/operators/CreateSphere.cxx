@@ -69,7 +69,7 @@ smtk::model::OperatorResult CreateSphere::operateInternal()
   if (!cgmBody)
   {
     smtkInfoMacro(log(), "Failed to create body.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   // Do this separately because CGM's sphere() method is broken (for OCC at a minimum).
@@ -84,10 +84,11 @@ smtk::model::OperatorResult CreateSphere::operateInternal()
   if (status != CUBIT_SUCCESS)
   {
     smtkInfoMacro(log(), "Failed to translate body.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   DLIList<Body*> cgmEntitiesOut;
   cgmEntitiesOut.push(cgmBody);

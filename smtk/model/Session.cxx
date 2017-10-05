@@ -201,7 +201,7 @@ OperatorPtr Session::op(const std::string& opName) const
 
   // Notify observers that an operator was created.
   if (this->m_manager)
-    this->m_manager->trigger(CREATED_OPERATOR, *oper.get());
+    this->m_manager->trigger(OperatorEventType::CREATED_OPERATOR, *oper.get());
 
   return oper;
 }

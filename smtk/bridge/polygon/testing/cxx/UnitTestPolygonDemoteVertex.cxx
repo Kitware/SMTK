@@ -71,7 +71,7 @@ int UnitTestPolygonDemoteVertex(int argc, char* argv[])
   }
 
   res = myOp->operate();
-  test(res->findInt("outcome")->value() == smtk::model::OPERATION_SUCCEEDED,
+  test(res->findInt("outcome")->value() == smtk::operation::Operator::OPERATION_SUCCEEDED,
     "Create vertices operator failed");
 
   smtk::model::Model modelCreated = static_cast<smtk::model::Model>(myModel);
@@ -96,7 +96,7 @@ int UnitTestPolygonDemoteVertex(int argc, char* argv[])
     test(myOp->specification()->associateEntity(verts[i]), "Could not associate vertex");
     test(myOp->specification()->associateEntity(verts[endVert[i]]), "Could not associate vertex");
     res = myOp->operate();
-    test(res->findInt("outcome")->value() == smtk::model::OPERATION_SUCCEEDED,
+    test(res->findInt("outcome")->value() == smtk::operation::Operator::OPERATION_SUCCEEDED,
       "Create edge from vertices operator failed");
   }
 
@@ -118,7 +118,7 @@ int UnitTestPolygonDemoteVertex(int argc, char* argv[])
     test(myOp->specification()->associateEntity(edges[i]), "Could not associate edge");
   }
   res = myOp->operate();
-  test(res->findInt("outcome")->value() == smtk::model::OPERATION_SUCCEEDED,
+  test(res->findInt("outcome")->value() == smtk::operation::Operator::OPERATION_SUCCEEDED,
     "Create faces from edges operator failed");
 
   int numberOfFaces = 0;
@@ -137,7 +137,7 @@ int UnitTestPolygonDemoteVertex(int argc, char* argv[])
   test(
     myOp->specification()->associateEntity(verts[numVertices - 1]), "Could not associate vertex");
   res = myOp->operate();
-  test(res->findInt("outcome")->value() == smtk::model::OPERATION_SUCCEEDED,
+  test(res->findInt("outcome")->value() == smtk::operation::Operator::OPERATION_SUCCEEDED,
     "Demote vertex operator failed");
 
   // Check the state of the model after operation

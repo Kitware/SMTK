@@ -27,7 +27,6 @@ PySharedPtrClass< smtk::bridge::multiscale::PartitionBoundaries, smtk::bridge::m
     .def(py::init<>())
     .def(py::init<::smtk::bridge::multiscale::PartitionBoundaries const &>())
     .def("deepcopy", (smtk::bridge::multiscale::PartitionBoundaries & (smtk::bridge::multiscale::PartitionBoundaries::*)(::smtk::bridge::multiscale::PartitionBoundaries const &)) &smtk::bridge::multiscale::PartitionBoundaries::operator=)
-    .def_static("baseCreate", &smtk::bridge::multiscale::PartitionBoundaries::baseCreate)
     .def("className", &smtk::bridge::multiscale::PartitionBoundaries::className)
     .def("classname", &smtk::bridge::multiscale::PartitionBoundaries::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::multiscale::PartitionBoundaries> (*)()) &smtk::bridge::multiscale::PartitionBoundaries::create)

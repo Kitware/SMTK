@@ -75,7 +75,8 @@ smtkComponentInitMacro(smtk_extension_vtk_io_MeshIOVTK)
 
       model = importOpResult->findModelEntity("model")->value();
 
-      if (importOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+      if (importOpResult->findInt("outcome")->value() !=
+        smtk::operation::Operator::OPERATION_SUCCEEDED)
       {
         std::cerr << "Import operator failed\n";
         return 1;

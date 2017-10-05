@@ -57,7 +57,7 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
   smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
   smtk::model::Manager::Ptr mgr;
   if (!sess)
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
 
   mgr = sess->manager();
   // Discover how the user wants to specify scaling.
@@ -83,7 +83,7 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
     {
       smtkErrorMacro(this->log(),
         "A model (or vertices with a valid parent model) must be associated with the operator.");
-      return this->createResult(smtk::model::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
     }
   }
   if (method == 1 && (!modelItem->value(0).isVertex() || modelItem->numberOfValues() < 2))
@@ -91,7 +91,7 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
     smtkErrorMacro(this->log(), "When constructing an edge from vertices,"
                                 " all associated model entities must be vertices"
                                 " and there must be at least 2 vertices");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   internal::pmodel::Ptr storage = this->findStorage<internal::pmodel>(parentModel.entity());
@@ -102,7 +102,7 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
   {
     smtkErrorMacro(this->log(), "When constructing an edge from points or interactive widget,"
                                 "the number of coordinates per point must be specified!");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   // numPts is the number of points total (across all edges)
@@ -214,7 +214,7 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
       if (result.empty())
       {
         smtkErrorMacro(this->log(), "Self-intersection of edge segments was empty set.");
-        return this->createResult(smtk::model::OPERATION_FAILED);
+        return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
       }
 
       // I. Pre-process the intersected segments
@@ -390,13 +390,13 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
   smtk::model::OperatorResult opResult;
   if (ok)
   {
-    opResult = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+    opResult = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
     this->addEntitiesToResult(opResult, created, CREATED);
     this->addEntitiesToResult(opResult, modified, MODIFIED);
   }
   else
   {
-    opResult = this->createResult(smtk::model::OPERATION_FAILED);
+    opResult = this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   return opResult;

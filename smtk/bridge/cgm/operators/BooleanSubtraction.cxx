@@ -70,14 +70,14 @@ smtk::model::OperatorResult BooleanSubtraction::operateInternal()
   if (!ok)
   {
     smtkInfoMacro(log(), "Need at least 1 workpiece, none of the associated entities were valid.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   ok &= this->cgmEntities(*this->findModelEntity("tools").get(), cgmToolsIn, keepInputs, expunged);
   if (!ok)
   {
     smtkInfoMacro(log(), "Need at least 1 tool; none of the specified entities were valid.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   DLIList<RefEntity*> imported;
@@ -86,10 +86,11 @@ smtk::model::OperatorResult BooleanSubtraction::operateInternal()
   if (s != CUBIT_SUCCESS)
   {
     smtkInfoMacro(log(), "Failed to perform subtraction (status " << s << ").");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmBodiesOut, result, MODIFIED);
   result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());

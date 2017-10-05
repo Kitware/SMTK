@@ -98,7 +98,8 @@ smtk::model::OperatorResult CreateInstances::operateInternal()
 
   std::string rule = this->findString("placement rule")->value(0);
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
   for (auto prototype : prototypes)
   {
     ManagerPtr mgr = prototype.manager();

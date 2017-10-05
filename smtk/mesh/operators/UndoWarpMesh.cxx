@@ -53,7 +53,8 @@ smtk::model::OperatorResult UndoWarpMesh::operateInternal()
   smtk::attribute::MeshItem::Ptr meshItem = this->specification()->findMesh("mesh");
 
   // Access the attribute associated with the modified meshes
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
   smtk::attribute::MeshItem::Ptr modifiedMeshes = result->findMesh("mesh_modified");
   modifiedMeshes->setNumberOfValues(meshItem->numberOfValues());
 
@@ -71,7 +72,7 @@ smtk::model::OperatorResult UndoWarpMesh::operateInternal()
     if (!success)
     {
       smtkErrorMacro(this->log(), "Undo warp failed.");
-      return this->createResult(smtk::model::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
     }
 
     modifiedMeshes->appendValue(mesh);

@@ -271,7 +271,8 @@ int main(int argc, char* argv[])
   }
 
   // ...and test the results for success.
-  if (generateHotStartDataOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (generateHotStartDataOpResult->findInt("outcome")->value() !=
+    smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     std::cerr << "\"interpolate mesh\" operator failed\n";
     return 1;

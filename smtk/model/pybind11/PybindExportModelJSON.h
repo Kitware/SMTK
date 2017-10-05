@@ -26,7 +26,6 @@ PySharedPtrClass< smtk::model::ExportModelJSON, smtk::model::Operator > pybind11
     .def(py::init<>())
     .def(py::init<::smtk::model::ExportModelJSON const &>())
     .def("deepcopy", (smtk::model::ExportModelJSON & (smtk::model::ExportModelJSON::*)(::smtk::model::ExportModelJSON const &)) &smtk::model::ExportModelJSON::operator=)
-    .def_static("baseCreate", &smtk::model::ExportModelJSON::baseCreate)
     .def("className", &smtk::model::ExportModelJSON::className)
     .def("classname", &smtk::model::ExportModelJSON::classname)
     .def_static("create", (std::shared_ptr<smtk::model::ExportModelJSON> (*)()) &smtk::model::ExportModelJSON::create)

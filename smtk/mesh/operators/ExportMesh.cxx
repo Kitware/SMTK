@@ -106,11 +106,11 @@ smtk::model::OperatorResult ExportMesh::operateInternal()
       {
         cleanup(file);
       }
-      return this->createResult(smtk::model::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
     }
   }
 
-  return this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  return this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 }
 }
 }

@@ -96,7 +96,8 @@ int UnitTestReadWrite(int argc, char* argv[])
 
     model = importOpResult->findModelEntity("model")->value();
 
-    if (importOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+    if (importOpResult->findInt("outcome")->value() !=
+      smtk::operation::Operator::OPERATION_SUCCEEDED)
     {
       std::cerr << "Import operator failed\n";
       return 1;
@@ -118,7 +119,8 @@ int UnitTestReadWrite(int argc, char* argv[])
     writeOp->specification()->associateEntity(model);
 
     smtk::model::OperatorResult writeOpResult = writeOp->operate();
-    if (writeOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+    if (writeOpResult->findInt("outcome")->value() !=
+      smtk::operation::Operator::OPERATION_SUCCEEDED)
     {
       std::cerr << "Write operator failed\n";
       return 1;

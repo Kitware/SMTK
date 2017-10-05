@@ -139,7 +139,7 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
   if (!auxGeo.isValid())
   {
     smtkErrorMacro(this->log(), "Invalid auxiliary geometry.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   // Convert the auxiliary geometry from a file name to a vtkDataset
@@ -153,7 +153,7 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
   if (!externalData)
   {
     smtkErrorMacro(this->log(), "Could not read auxiliary geometry.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   // Construct a function that takes an input point and returns a value
@@ -213,7 +213,8 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
   }
 
   // Access the attribute associated with the modified meshes
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
   smtk::attribute::MeshItem::Ptr modifiedMeshes = result->findMesh("mesh_modified");
   modifiedMeshes->setNumberOfValues(meshItem->numberOfValues());
 

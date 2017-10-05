@@ -63,7 +63,7 @@ smtk::model::OperatorResult CreateFace::operateInternal()
       break;
     default:
       smtkInfoMacro(log(), "Bad surf type " << surfType << ".");
-      return this->createResult(smtk::model::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
   DLIList<RefEdge*> edgeList;
   smtk::model::EntityRefArray expunged;
@@ -71,7 +71,7 @@ smtk::model::OperatorResult CreateFace::operateInternal()
         *this->specification()->associations().get(), edgeList, keepInputs, expunged))
   {
     smtkInfoMacro(log(), "One or more edges were invalid.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   bool isFree = true;
@@ -81,13 +81,14 @@ smtk::model::OperatorResult CreateFace::operateInternal()
   if (!cgmFace)
   {
     smtkInfoMacro(log(), "Failed to create face.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   // Assign color to match vertex API that requires a color.
   cgmFace->color(color);
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   DLIList<RefFace*> cgmFacesOut;
   cgmFacesOut.push(cgmFace);

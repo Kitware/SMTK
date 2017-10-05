@@ -21,6 +21,9 @@ These subsystems are:
 * The **mesh** system, which can manipulate meshes of geometric models; it provides a way
   to propagate simulation attribute information from model entities onto meshes.
   It also provides a way to run external mesh creation tools on the model.
+* The **operation** system, which provides an interface to
+  constructing and executing *operators*, which create, modify and delete
+  resources.
 * The **simulation** (also known as the **export**) system, which is a set of utilities
   that lets you convert resources (e.g., attribute, model, and mesh collections) into
   an input deck for a simulation using Python scripts (or C++ if you wish).

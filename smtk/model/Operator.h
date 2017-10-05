@@ -24,7 +24,8 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Collection.h"
 
-#include <string>
+#include "smtk/operation/Manager.h"
+#include "smtk/operation/Operator.h"
 
 namespace smtk
 {
@@ -34,20 +35,6 @@ class Logger;
 }
 namespace model
 {
-
-/**\brief An enumeration of operation outcomes (or lacks thereof).
-  *
-  * These values are taken on by the "outcome" item of every OperatorResult.
-  */
-enum OperatorOutcome
-{
-  UNABLE_TO_OPERATE,   //!< The operator was misconfigured.
-  OPERATION_CANCELED,  //!< An observer requested the operation be canceled. And it was.
-  OPERATION_FAILED,    //!< The operator attempted to execute but encountered a problem.
-  OPERATION_SUCCEEDED, //!< The operator succeeded.
-  OUTCOME_UNKNOWN = -1 //!< The operator has not been run or the outcome is uninitialized.
-};
-
 /**\brief Boilerplate for classes that provide a solid modeling operator.
   *
   * Invoke this macro inside every class definition inheriting smtk::model::Operator.
@@ -55,11 +42,7 @@ enum OperatorOutcome
   *
   * You must also use the smtkImplementsModelOperator macro in your operator's implementation.
   */
-#define smtkDeclareModelOperator()                                                                 \
-  static std::string operatorName;                                                                 \
-  std::string name() const override { return operatorName; }                                       \
-  std::string className() const override;                                                          \
-  static smtk::model::OperatorPtr baseCreate()
+#define smtkDeclareModelOperator() smtkDeclareOperator()
 
 /**\brief Declare that a class implements an operator for solid models.
   *
@@ -89,24 +72,18 @@ enum OperatorOutcome
   *                loaded).
   */
 #define smtkImplementsModelOperator(ExportSym, Cls, Comp, Nick, ParamSpec, Brdg)                   \
-  /***\brief Adapt create() to return a base-class pointer (for register[Static]Operator). */      \
-  smtk::model::OperatorPtr Cls::baseCreate() { return Cls::create(); }                             \
-  /* Implement autoinit methods */                                                                 \
-  void ExportSym smtk_##Comp##_operator_AutoInit_Construct()                                       \
+  smtkImplementsOperator(ExportSym, Cls, Comp, Nick, ParamSpec);                                   \
+  void ExportSym smtk_##Comp##_model_operator_AutoInit_Construct()                                 \
   {                                                                                                \
-    Brdg::registerStaticOperator(Nick, /* Can't rely on operatorName to be initialized yet */      \
-      ParamSpec, Cls::baseCreate);                                                                 \
+    Brdg::registerStaticOperator(Nick, ParamSpec, []() -> smtk::model::OperatorPtr {               \
+      return std::static_pointer_cast<smtk::model::Operator>(Cls::create());                       \
+    });                                                                                            \
   }                                                                                                \
-  void ExportSym smtk_##Comp##_operator_AutoInit_Destruct()                                        \
+  void ExportSym smtk_##Comp##_model_operator_AutoInit_Destruct()                                  \
   {                                                                                                \
     Brdg::registerStaticOperator(Cls::operatorName, SMTK_FUNCTION_INIT, SMTK_FUNCTION_INIT);       \
   }                                                                                                \
-  /* Declare the component name */                                                                 \
-  std::string Cls::operatorName(Nick);                                                             \
-  /**\brief Provide a method to obtain the class name */                                           \
-  std::string Cls::className() const { return #Cls; }                                              \
-  /* Force the registration methods above to be run on load */                                     \
-  smtkComponentInitMacro(smtk_##Comp##_operator);
+  smtkComponentInitMacro(smtk_##Comp##_model_operator);
 
 /**\brief A base class for solid modeling operations.
   *
@@ -139,25 +116,13 @@ enum OperatorOutcome
   * Every operator's specification() Attribute is managed by the
   * Session's operatorCollection().
   */
-class SMTKCORE_EXPORT Operator : smtkEnableSharedPtr(Operator)
+class SMTKCORE_EXPORT Operator : public smtk::operation::Operator
 {
 public:
-  smtkTypeMacroBase(Operator);
+  smtkTypeMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::Operator);
 
-  virtual std::string name() const = 0;
-  virtual std::string className() const = 0;
-  virtual bool ableToOperate();
-  virtual OperatorResult operate();
-
-  void observe(OperatorEventType event, BareOperatorCallback functionHandle, void* callData);
-  void observe(OperatorEventType event, OperatorWithResultCallback functionHandle, void* callData);
-
-  void unobserve(OperatorEventType event, BareOperatorCallback functionHandle, void* callData);
-  void unobserve(
-    OperatorEventType event, OperatorWithResultCallback functionHandle, void* callData);
-
-  int trigger(OperatorEventType event);
-  int trigger(OperatorEventType event, const OperatorResult& result);
+  OperatorResult operate() override;
 
   ManagerPtr manager() const;
   Ptr setManager(ManagerPtr s);
@@ -168,13 +133,11 @@ public:
   SessionPtr session() const;
   Ptr setSession(SessionPtr b);
 
-  smtk::io::Logger& log();
+  smtk::io::Logger& log() override;
 
-  OperatorDefinition definition() const;
+  Definition definition() const override;
 
-  smtk::attribute::AttributePtr specification() const;
-  bool setSpecification(smtk::attribute::AttributePtr spec);
-  bool ensureSpecification() const;
+  bool ensureSpecification() const override;
 
   /// Convenience method for finding a operator parameter of a known type.
   template <typename T>
@@ -213,12 +176,6 @@ public:
   template <typename T>
   T associatedEntitiesAs() const;
 
-  OperatorResult createResult(OperatorOutcome outcome = UNABLE_TO_OPERATE);
-  void setResultOutcome(OperatorResult res, OperatorOutcome outcome);
-  void eraseResult(OperatorResult res);
-
-  bool operator<(const Operator& other) const;
-
   enum ResultEntityOrigin
   {
     CREATED,  //!< This operation is the origin of the entities in question.
@@ -229,13 +186,13 @@ public:
 
   virtual ~Operator();
 
+  OperatorResult createResult(OperatorOutcome outcome = UNABLE_TO_OPERATE);
+  void eraseResult(Result res) override;
+
 protected:
   friend class DefaultSession;
 
   Operator();
-
-  virtual OperatorResult operateInternal() = 0;
-  virtual void generateSummary(OperatorResult& res);
 
   void addEntityToResult(
     OperatorResult res, const EntityRef& ent, ResultEntityOrigin gen = UNKNOWN);
@@ -246,14 +203,10 @@ protected:
   ManagerPtr m_manager; // Model manager, not the attribute manager for the operator.
   smtk::mesh::ManagerPtr m_meshmanager;
   WeakSessionPtr m_session;
-  OperatorSpecification m_specification;
   std::set<BareOperatorObserver> m_willOperateTriggers;
   std::set<OperatorWithResultObserver> m_didOperateTriggers;
   int m_debugLevel;
 };
-
-SMTKCORE_EXPORT std::string outcomeAsString(int oc);
-SMTKCORE_EXPORT OperatorOutcome stringToOutcome(const std::string& oc);
 
 template <typename T>
 T Operator::associatedEntitiesAs() const

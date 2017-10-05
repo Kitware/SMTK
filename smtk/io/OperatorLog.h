@@ -44,7 +44,7 @@ protected:
     * all operators if a filter is in place.
     */
   virtual int recordInvocation(
-    smtk::model::OperatorEventType event, const smtk::model::Operator& op) = 0;
+    smtk::operation::Operator::EventType event, const smtk::operation::Operator& op) = 0;
 
   /**\brief Log the result of an operator.
     *
@@ -52,17 +52,17 @@ protected:
     * Be aware that this method may not be called for
     * all operators if a filter is in place.
     */
-  virtual int recordResult(smtk::model::OperatorEventType event, const smtk::model::Operator& op,
-    smtk::model::OperatorResult r) = 0;
+  virtual int recordResult(smtk::operation::Operator::EventType event,
+    const smtk::operation::Operator& op, smtk::operation::Operator::Result r) = 0;
 
   static int operatorCreated(
-    smtk::model::OperatorEventType event, const smtk::model::Operator& op, void* user);
+    smtk::operation::Operator::EventType event, const smtk::operation::Operator& op, void* user);
   static int operatorInvoked(
-    smtk::model::OperatorEventType event, const smtk::model::Operator& op, void* user);
-  static int operatorReturned(smtk::model::OperatorEventType event, const smtk::model::Operator& op,
-    smtk::model::OperatorResult r, void* user);
+    smtk::operation::Operator::EventType event, const smtk::operation::Operator& op, void* user);
+  static int operatorReturned(smtk::operation::Operator::EventType event,
+    const smtk::operation::Operator& op, smtk::operation::Operator::Result r, void* user);
 
-  typedef std::vector<smtk::model::WeakOperatorPtr> WeakOpArray;
+  typedef std::vector<smtk::operation::WeakOperatorPtr> WeakOpArray;
 
   bool m_hasFailures;
   smtk::model::WeakManagerPtr m_manager;

@@ -100,7 +100,7 @@ int PartitionBoundariesOp(int argc, char* argv[])
 
   smtk::model::OperatorResult importOpResult = importOp->operate();
 
-  if (importOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (importOpResult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     std::cerr << "Import operator failed\n";
     return 1;
@@ -132,7 +132,8 @@ int PartitionBoundariesOp(int argc, char* argv[])
   revolveOp->specification()->findDouble("axis-position")->setValue(2, 0.);
 
   smtk::model::OperatorResult revolveOpResult = revolveOp->operate();
-  if (revolveOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (revolveOpResult->findInt("outcome")->value() !=
+    smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     std::cerr << "Revolve operator failed\n";
     return 1;
@@ -155,7 +156,8 @@ int PartitionBoundariesOp(int argc, char* argv[])
 
   smtk::model::OperatorResult partitionBoundariesOpResult = partitionBoundariesOp->operate();
 
-  if (partitionBoundariesOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (partitionBoundariesOpResult->findInt("outcome")->value() !=
+    smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     std::cerr << "partition boundaries operator failed\n";
     return 1;

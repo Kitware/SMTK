@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
   readOp->specification()->findFile("filename")->setValue(std::string(argv[1]));
   std::cout << "Importing " << argv[1] << "\n";
   smtk::model::OperatorResult ismopResult = readOp->operate();
-  if (ismopResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (ismopResult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     std::cerr << "Read operator failed\n";
     return 1;
@@ -138,7 +138,7 @@ int main(int argc, char* argv[])
   deleteOp->specification()->findVoid("delete lower-dimensional neighbors")->setIsEnabled(true);
 
   smtk::model::OperatorResult deleteOpResult = deleteOp->operate();
-  if (deleteOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (deleteOpResult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     std::cerr << "Delete operator failed!\n";
     return 1;

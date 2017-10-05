@@ -24,7 +24,6 @@ PySharedPtrClass< smtk::bridge::mesh::ImportOperator > pybind11_init_smtk_bridge
     .def(py::init<>())
     .def(py::init<::smtk::bridge::mesh::ImportOperator const &>())
     .def("deepcopy", (smtk::bridge::mesh::ImportOperator & (smtk::bridge::mesh::ImportOperator::*)(::smtk::bridge::mesh::ImportOperator const &)) &smtk::bridge::mesh::ImportOperator::operator=)
-    .def_static("baseCreate", &smtk::bridge::mesh::ImportOperator::baseCreate)
     .def("className", &smtk::bridge::mesh::ImportOperator::className)
     .def("classname", &smtk::bridge::mesh::ImportOperator::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::mesh::ImportOperator> (*)()) &smtk::bridge::mesh::ImportOperator::create)

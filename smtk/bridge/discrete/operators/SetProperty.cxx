@@ -144,7 +144,7 @@ smtk::model::OperatorResult SetProperty::operateInternal()
   smtk::model::EntityRefArray entities = this->associatedEntitiesAs<smtk::model::EntityRefArray>();
 
   if (nameItem->value(0).empty())
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
 
   std::string propName = nameItem->value(0);
   this->setPropertyValue<String, StringList, StringData, StringItem>(
@@ -189,7 +189,8 @@ smtk::model::OperatorResult SetProperty::operateInternal()
     }
   }
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   // if a model is in the changed entities and it is a submodel, we
   // want to label its parent model to be modified too.

@@ -153,7 +153,7 @@ smtk::model::OperatorResult LoadSMTKModel::operateInternal()
   if (filename.empty())
   {
     smtkErrorMacro(this->log(), "A filename must be provided.\n");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   //  smtkDebugMacro("Reading a JSON file.");
@@ -161,7 +161,7 @@ smtk::model::OperatorResult LoadSMTKModel::operateInternal()
   if (!file.good())
   {
     smtkErrorMacro(this->log(), "Could not open file \"" << filename << "\".\n");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   std::string data((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
@@ -169,7 +169,7 @@ smtk::model::OperatorResult LoadSMTKModel::operateInternal()
   if (data.empty())
   {
     smtkErrorMacro(this->log(), "No JSON objects in file\"" << filename << "\".\n");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   // cache number of models and meshes

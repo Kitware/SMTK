@@ -233,7 +233,7 @@ protected:
   {
     printParams(this->specification(), "actual input");
 
-    OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
+    OperatorResult result = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
     this->s_state += this->specification()->findInt("addToCount")->value();
     result->findInt("state")->setValue(this->s_state);
 
@@ -329,7 +329,7 @@ int main()
       "Setting a valid parameter had no effect.");
     OperatorResult localResult = localOp->operate();
 
-    test(localResult->findInt("outcome")->value() == OPERATION_SUCCEEDED,
+    test(localResult->findInt("outcome")->value() == smtk::operation::Operator::OPERATION_SUCCEEDED,
       "Operation should have succeeded.");
     test(localResult->findInt("state")->value() == 3, "Operation should have yielded state == 3.");
     localOp->eraseResult(localResult);
@@ -340,7 +340,7 @@ int main()
     localOp->specification()->findInt("addToCount")->setValue(8);
     localResult = localOp->operate();
 
-    test(localResult->findInt("outcome")->value() == OPERATION_SUCCEEDED,
+    test(localResult->findInt("outcome")->value() == smtk::operation::Operator::OPERATION_SUCCEEDED,
       "Operation should have succeeded.");
     test(
       localResult->findInt("state")->value() == 11, "Operation should have yielded state == 11.");
@@ -356,7 +356,7 @@ int main()
       "Did not disable \"addToCount\".");
     localResult = localOp->operate();
 
-    test(localResult->findInt("outcome")->value() == UNABLE_TO_OPERATE,
+    test(localResult->findInt("outcome")->value() == smtk::operation::Operator::UNABLE_TO_OPERATE,
       "Operator should have been unable to execute.");
 
     // Test transferring remote dangling entity list to local session.

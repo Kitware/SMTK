@@ -24,7 +24,6 @@ PySharedPtrClass< smtk::bridge::polygon::CreateEdgeFromPoints > pybind11_init_sm
     .def(py::init<>())
     .def(py::init<::smtk::bridge::polygon::CreateEdgeFromPoints const &>())
     .def("deepcopy", (smtk::bridge::polygon::CreateEdgeFromPoints & (smtk::bridge::polygon::CreateEdgeFromPoints::*)(::smtk::bridge::polygon::CreateEdgeFromPoints const &)) &smtk::bridge::polygon::CreateEdgeFromPoints::operator=)
-    .def_static("baseCreate", &smtk::bridge::polygon::CreateEdgeFromPoints::baseCreate)
     .def("className", &smtk::bridge::polygon::CreateEdgeFromPoints::className)
     .def("classname", &smtk::bridge::polygon::CreateEdgeFromPoints::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::CreateEdgeFromPoints> (*)()) &smtk::bridge::polygon::CreateEdgeFromPoints::create)

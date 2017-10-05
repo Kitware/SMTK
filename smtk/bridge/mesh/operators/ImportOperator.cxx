@@ -67,7 +67,7 @@ smtk::model::OperatorResult ImportOperator::operateInternal()
   if (!collection || !collection->isValid())
   {
     // The file was not correctly read.
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   auto format = smtk::io::meshFileFormat(filePath);
@@ -109,7 +109,8 @@ smtk::model::OperatorResult ImportOperator::operateInternal()
   // If we don't call "transcribe" ourselves, it never gets called.
   this->activeSession()->transcribe(model, smtk::model::SESSION_EVERYTHING, false);
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   smtk::attribute::ModelEntityItem::Ptr resultModels = result->findModelEntity("model");
   resultModels->setValue(model);

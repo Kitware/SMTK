@@ -68,7 +68,8 @@ smtk::model::OperatorResult TriangulateFaces::operateInternal()
   collection->setModelManager(faces[0].manager());
   collection->associateToModel(faces[0].model().entity());
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   for (auto& face : faces)
   {
@@ -81,7 +82,7 @@ smtk::model::OperatorResult TriangulateFaces::operateInternal()
     {
       // if we don't have loops, there is nothing to mesh
       smtkErrorMacro(this->log(), "No loops associated with this face.");
-      return this->createResult(smtk::model::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
     }
 
     // the first loop is the exterior loop
@@ -105,7 +106,7 @@ smtk::model::OperatorResult TriangulateFaces::operateInternal()
     {
       // the polygon is invalid, so we exit with failure
       smtkErrorMacro(this->log(), "Outer boundary polygon is invalid.");
-      return this->createResult(smtk::model::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
     }
 
     // discretize the polygon
@@ -129,7 +130,7 @@ smtk::model::OperatorResult TriangulateFaces::operateInternal()
       {
         // the polygon is invalid, so we exit with failure
         smtkErrorMacro(this->log(), "Inner boundary polygon is invalid.");
-        return this->createResult(smtk::model::OPERATION_FAILED);
+        return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
       }
 
       excise(p_sub, mesh);

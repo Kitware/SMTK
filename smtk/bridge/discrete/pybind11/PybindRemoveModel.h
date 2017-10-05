@@ -33,7 +33,6 @@ PySharedPtrClass< smtk::bridge::discrete::RemoveModel, smtk::model::Operator > p
     .def("shared_from_this", (std::shared_ptr<const smtk::bridge::discrete::RemoveModel> (smtk::bridge::discrete::RemoveModel::*)() const) &smtk::bridge::discrete::RemoveModel::shared_from_this)
     .def("name", &smtk::bridge::discrete::RemoveModel::name)
     .def("className", &smtk::bridge::discrete::RemoveModel::className)
-    .def_static("baseCreate", &smtk::bridge::discrete::RemoveModel::baseCreate)
     .def("ableToOperate", &smtk::bridge::discrete::RemoveModel::ableToOperate)
     ;
   return instance;

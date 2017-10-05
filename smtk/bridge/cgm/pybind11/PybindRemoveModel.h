@@ -25,7 +25,6 @@ PySharedPtrClass< smtk::bridge::cgm::RemoveModel > pybind11_init_smtk_bridge_cgm
     .def(py::init<::smtk::bridge::cgm::RemoveModel const &>())
     .def("deepcopy", (smtk::bridge::cgm::RemoveModel & (smtk::bridge::cgm::RemoveModel::*)(::smtk::bridge::cgm::RemoveModel const &)) &smtk::bridge::cgm::RemoveModel::operator=)
     .def("ableToOperate", &smtk::bridge::cgm::RemoveModel::ableToOperate)
-    .def_static("baseCreate", &smtk::bridge::cgm::RemoveModel::baseCreate)
     .def("className", &smtk::bridge::cgm::RemoveModel::className)
     .def("classname", &smtk::bridge::cgm::RemoveModel::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::cgm::RemoveModel> (*)()) &smtk::bridge::cgm::RemoveModel::create)

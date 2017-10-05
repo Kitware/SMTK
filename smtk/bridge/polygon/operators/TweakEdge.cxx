@@ -40,7 +40,7 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
   if (!sess)
   {
     smtkErrorMacro(this->log(), "Invalid session.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   mgr = sess->manager();
@@ -54,7 +54,7 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
   if (!src.isValid())
   {
     smtkErrorMacro(this->log(), "Input edge was invalid.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   internal::edge::Ptr storage = this->findStorage<internal::edge>(src.entity());
@@ -63,7 +63,7 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
   {
     smtkErrorMacro(
       this->log(), "Input edge was not part of its parent model (or not a polygon-session edge).");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   bool ok = true;
@@ -75,7 +75,7 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
     smtkErrorMacro(this->log(), "Not enough points to form an edge ("
         << pointsItem->numberOfValues() << " coordinates at " << numCoordsPerPt << " per point => "
         << npts << " points)");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   if (!splits.empty())
@@ -174,7 +174,7 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
   smtk::model::OperatorResult opResult;
   if (ok)
   {
-    opResult = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+    opResult = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
     this->addEntitiesToResult(opResult, expunged, EXPUNGED);
     this->addEntitiesToResult(opResult, created, CREATED);
     this->addEntitiesToResult(opResult, modified, MODIFIED);
@@ -186,7 +186,7 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
   }
   else
   {
-    opResult = this->createResult(smtk::model::OPERATION_FAILED);
+    opResult = this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   return opResult;

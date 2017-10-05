@@ -86,7 +86,8 @@ int SessionIO::saveResource(
     }
     filenameItem->setValue(fname.string());
     OperatorResult result = exportOp->operate();
-    if (result && result->findInt("outcome")->value(0) == OPERATION_SUCCEEDED)
+    if (result &&
+      result->findInt("outcome")->value(0) == smtk::operation::Operator::OPERATION_SUCCEEDED)
     {
       return 1;
     }

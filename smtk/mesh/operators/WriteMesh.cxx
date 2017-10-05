@@ -109,13 +109,14 @@ smtk::model::OperatorResult WriteMesh::operateInternal()
       {
         cleanup(file);
       }
-      return this->createResult(smtk::model::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
     }
   }
 
   // We mark the written meshes as "modified" so that the containing collection's URL can
   // be properly updated.
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
   smtk::attribute::MeshItem::Ptr modifiedMeshes = result->findMesh("mesh_modified");
   modifiedMeshes->setNumberOfValues(written.size());
   for (auto& mesh : written)

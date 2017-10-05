@@ -111,19 +111,19 @@ int main(int argc, char* argv[])
   std::string strout;
   switch (readResult->findInt("outcome")->value())
   {
-    case smtk::model::UNABLE_TO_OPERATE:
+    case smtk::operation::Operator::UNABLE_TO_OPERATE:
       strout = "unable to operate";
       break;
-    case smtk::model::OPERATION_CANCELED:
+    case smtk::operation::Operator::OPERATION_CANCELED:
       strout = "canceled";
       break;
-    case smtk::model::OPERATION_FAILED:
+    case smtk::operation::Operator::OPERATION_FAILED:
       strout = "failed";
       break;
-    case smtk::model::OPERATION_SUCCEEDED:
+    case smtk::operation::Operator::OPERATION_SUCCEEDED:
       strout = "succeeded";
       break;
-    case smtk::model::OUTCOME_UNKNOWN:
+    case smtk::operation::Operator::OUTCOME_UNKNOWN:
     default:
       strout = "unknown";
       break;

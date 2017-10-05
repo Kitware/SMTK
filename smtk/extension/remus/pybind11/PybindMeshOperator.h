@@ -26,7 +26,6 @@ PySharedPtrClass< smtk::model::MeshOperator, smtk::model::Operator > pybind11_in
     .def("shared_from_this", (std::shared_ptr<const smtk::model::MeshOperator> (smtk::model::MeshOperator::*)() const) &smtk::model::MeshOperator::shared_from_this)
     .def("name", &smtk::model::MeshOperator::name)
     .def("className", &smtk::model::MeshOperator::className)
-    .def_static("baseCreate", &smtk::model::MeshOperator::baseCreate)
     .def("ableToOperate", &smtk::model::MeshOperator::ableToOperate)
     ;
   return instance;

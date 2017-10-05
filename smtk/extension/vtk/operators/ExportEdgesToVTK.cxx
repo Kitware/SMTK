@@ -143,14 +143,14 @@ smtk::model::OperatorResult ExportEdgesToVTK::operateInternal()
   if (entities.empty())
   {
     smtkErrorMacro(this->log(), "No valid models selected for export.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   std::string filename = filenameItem->value();
   if (filename.empty())
   {
     smtkErrorMacro(this->log(), "A filename must be provided.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   vtkNew<vtkPolyData> pdt;

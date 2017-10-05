@@ -66,7 +66,7 @@ int UnitTestPolygonCreateFacesFromEdges(int argc, char* argv[])
 
   // Apply the create edge from ponits operation
   res = myOp->operate();
-  test(res->findInt("outcome")->value() == smtk::model::OPERATION_SUCCEEDED,
+  test(res->findInt("outcome")->value() == smtk::operation::Operator::OPERATION_SUCCEEDED,
     "Create edge from points operator failed");
 
   // Check the created edge and vertices
@@ -89,7 +89,7 @@ int UnitTestPolygonCreateFacesFromEdges(int argc, char* argv[])
   test(myOp != nullptr, "No create faces from edgs operator");
   test(myOp->specification()->associateEntity(edges[0]), "Could not associate edge");
   res = myOp->operate();
-  test(res->findInt("outcome")->value() == smtk::model::OPERATION_SUCCEEDED,
+  test(res->findInt("outcome")->value() == smtk::operation::Operator::OPERATION_SUCCEEDED,
     "Create faces from edges operator failed");
 
   // Verify that face has been created

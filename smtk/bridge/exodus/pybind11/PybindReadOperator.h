@@ -24,7 +24,6 @@ PySharedPtrClass< smtk::bridge::exodus::ReadOperator > pybind11_init_smtk_bridge
     .def(py::init<>())
     .def(py::init<::smtk::bridge::exodus::ReadOperator const &>())
     .def("deepcopy", (smtk::bridge::exodus::ReadOperator & (smtk::bridge::exodus::ReadOperator::*)(::smtk::bridge::exodus::ReadOperator const &)) &smtk::bridge::exodus::ReadOperator::operator=)
-    .def_static("baseCreate", &smtk::bridge::exodus::ReadOperator::baseCreate)
     .def("className", &smtk::bridge::exodus::ReadOperator::className)
     .def("classname", &smtk::bridge::exodus::ReadOperator::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::exodus::ReadOperator> (*)()) &smtk::bridge::exodus::ReadOperator::create)

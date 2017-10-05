@@ -116,7 +116,7 @@ bool CreateFaces::populateEdgeMap()
   {
     smtkErrorMacro(
       this->log(), "Invalid model (or non-model entity) specified when a model was expected.");
-    this->m_result = this->createResult(smtk::model::OPERATION_FAILED);
+    this->m_result = this->createResult(smtk::operation::Operator::OPERATION_FAILED);
     return false;
   }
   this->m_model = model;
@@ -147,20 +147,21 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
   if (!sess || !(mgr = sess->manager()))
   {
     // error logging requires mgr...
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   // First, collect the edges to process:
   if (!this->populateEdgeMap())
   {
-    return this->m_result ? this->m_result : this->createResult(smtk::model::OPERATION_FAILED);
+    return this->m_result ? this->m_result
+                          : this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
   model = this->m_model; // should have been set by populateEdgeMap()
 
   if (this->m_edgeMap.empty())
   {
     smtkErrorMacro(this->log(), "No edges selected.");
-    this->m_result = this->createResult(smtk::model::OPERATION_FAILED);
+    this->m_result = this->createResult(smtk::operation::Operator::OPERATION_FAILED);
     return this->m_result;
   }
 
@@ -284,7 +285,7 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
 
   // Now we have loops for each region; iterate over them and
   // create SMTK topology records:
-  this->m_status = smtk::model::OPERATION_SUCCEEDED;
+  this->m_status = smtk::operation::Operator::OPERATION_SUCCEEDED;
   this->m_result = this->createResult(this->m_status);
   this->m_model = model;
   neighborhood.getLoops(this);
@@ -373,7 +374,7 @@ void CreateFaces::evaluateLoop(
     if (!mgr->insertModelFaceWithOrientedOuterLoop(modelFaceId, modelFaceUseId, outerLoopId, loop))
     {
       smtkErrorMacro(this->log(), "Could not create SMTK outer loop of face.");
-      this->m_status = smtk::model::OPERATION_FAILED;
+      this->m_status = smtk::operation::Operator::OPERATION_FAILED;
       return;
     }
     // Update vertex neighborhoods to include new face adjacency.
@@ -401,7 +402,7 @@ void CreateFaces::evaluateLoop(
     if (!mgr->insertModelFaceOrientedInnerLoop(innerLoopId, parentLoopId, loop))
     {
       smtkErrorMacro(this->log(), "Could not create SMTK inner loop of face.");
-      this->m_status = smtk::model::OPERATION_FAILED;
+      this->m_status = smtk::operation::Operator::OPERATION_FAILED;
       return;
     }
     smtk::model::Loop tmp(mgr, innerLoopId);

@@ -58,7 +58,7 @@ smtk::model::OperatorResult vtkPolygonContourOperator::Operate()
   // ONLY for create-edge-with-widget and edit-edge operations,
   if (!this->AbleToOperate())
   {
-    return this->m_smtkOp.lock()->createResult(smtk::model::OPERATION_FAILED);
+    return this->m_smtkOp.lock()->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   smtk::model::OperatorResult edgeResult;

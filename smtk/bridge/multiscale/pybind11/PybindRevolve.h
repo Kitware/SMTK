@@ -27,7 +27,6 @@ PySharedPtrClass< smtk::bridge::multiscale::Revolve, smtk::bridge::multiscale::O
     .def(py::init<>())
     .def(py::init<::smtk::bridge::multiscale::Revolve const &>())
     .def("deepcopy", (smtk::bridge::multiscale::Revolve & (smtk::bridge::multiscale::Revolve::*)(::smtk::bridge::multiscale::Revolve const &)) &smtk::bridge::multiscale::Revolve::operator=)
-    .def_static("baseCreate", &smtk::bridge::multiscale::Revolve::baseCreate)
     .def("className", &smtk::bridge::multiscale::Revolve::className)
     .def("classname", &smtk::bridge::multiscale::Revolve::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::multiscale::Revolve> (*)()) &smtk::bridge::multiscale::Revolve::create)

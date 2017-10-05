@@ -30,7 +30,6 @@ PySharedPtrClass< smtk::bridge::discrete::ReadOperator, smtk::model::Operator > 
     .def("shared_from_this", (std::shared_ptr<const smtk::bridge::discrete::ReadOperator> (smtk::bridge::discrete::ReadOperator::*)() const) &smtk::bridge::discrete::ReadOperator::shared_from_this)
     .def("name", &smtk::bridge::discrete::ReadOperator::name)
     .def("className", &smtk::bridge::discrete::ReadOperator::className)
-    .def_static("baseCreate", &smtk::bridge::discrete::ReadOperator::baseCreate)
     .def("ableToOperate", &smtk::bridge::discrete::ReadOperator::ableToOperate)
     ;
   return instance;

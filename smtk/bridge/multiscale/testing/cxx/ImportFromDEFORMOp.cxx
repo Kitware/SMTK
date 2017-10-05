@@ -104,7 +104,8 @@ int ImportFromDEFORMOp(int argc, char* argv[])
   }
 
   smtk::model::OperatorResult importFromDeformOpResult = importFromDeformOp->operate();
-  if (importFromDeformOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (importFromDeformOpResult->findInt("outcome")->value() !=
+    smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     std::cerr << "import from deform operator failed\n";
     return 1;

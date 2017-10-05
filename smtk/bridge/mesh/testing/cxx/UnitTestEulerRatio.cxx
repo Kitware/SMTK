@@ -72,7 +72,8 @@ int UnitTestEulerRatio(int argc, char* argv[])
 
     model = importOpResult->findModelEntity("model")->value();
 
-    if (importOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+    if (importOpResult->findInt("outcome")->value() !=
+      smtk::operation::Operator::OPERATION_SUCCEEDED)
     {
       std::cerr << "Import operator failed\n";
       return 1;
@@ -90,7 +91,8 @@ int UnitTestEulerRatio(int argc, char* argv[])
     eulerOp->specification()->associateEntity(model);
 
     smtk::model::OperatorResult eulerOpResult = eulerOp->operate();
-    if (eulerOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+    if (eulerOpResult->findInt("outcome")->value() !=
+      smtk::operation::Operator::OPERATION_SUCCEEDED)
     {
       std::cerr << "\"Euler characteristic ratio\" operator failed\n";
       return 1;

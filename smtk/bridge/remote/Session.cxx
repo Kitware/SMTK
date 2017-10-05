@@ -132,7 +132,7 @@ smtk::model::OperatorResult Session::operateDelegate(smtk::model::RemoteOperator
     !(res = cJSON_GetObjectItem(resp, "result")) ||
     !smtk::io::LoadJSON::ofOperatorResult(res, result, op))
   {
-    return op->createResult(smtk::model::OPERATION_FAILED);
+    return op->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
   smtk::attribute::ModelEntityItem::Ptr models = result->findModelEntity("model");
   if (models)

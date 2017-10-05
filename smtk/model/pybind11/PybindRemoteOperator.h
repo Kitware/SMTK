@@ -27,7 +27,6 @@ PySharedPtrClass< smtk::model::RemoteOperator, smtk::model::Operator > pybind11_
     .def(py::init<::smtk::model::RemoteOperator const &>())
     .def("deepcopy", (smtk::model::RemoteOperator & (smtk::model::RemoteOperator::*)(::smtk::model::RemoteOperator const &)) &smtk::model::RemoteOperator::operator=)
     .def("ableToOperate", &smtk::model::RemoteOperator::ableToOperate)
-    .def_static("baseCreate", &smtk::model::RemoteOperator::baseCreate)
     .def("className", &smtk::model::RemoteOperator::className)
     .def("classname", &smtk::model::RemoteOperator::classname)
     .def_static("create", (std::shared_ptr<smtk::model::RemoteOperator> (*)()) &smtk::model::RemoteOperator::create)

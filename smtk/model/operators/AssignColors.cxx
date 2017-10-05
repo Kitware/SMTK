@@ -53,7 +53,7 @@ smtk::model::OperatorResult AssignColors::operateInternal()
   if (numColors > 0 && colors.empty())
   { // someone tried to specify colors, but failed.
     smtkErrorMacro(this->log(), "No valid colors to assign.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   EntityRefArray entities = this->associatedEntitiesAs<EntityRefArray>();
@@ -90,7 +90,8 @@ smtk::model::OperatorResult AssignColors::operateInternal()
     }
   }
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(result, modified, MODIFIED);
   return result;

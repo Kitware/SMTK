@@ -41,7 +41,7 @@ smtk::model::OperatorResult EulerCharacteristicRatio::operateInternal()
   if (!model.isValid())
   {
     smtkErrorMacro(this->log(), "Invalid model.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   // Access the underlying mesh collection for the model.
@@ -50,7 +50,7 @@ smtk::model::OperatorResult EulerCharacteristicRatio::operateInternal()
   if (!collection->isValid())
   {
     smtkErrorMacro(this->log(), "No collection associated with this model.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   // Access the meshes from the collection.
@@ -63,7 +63,8 @@ smtk::model::OperatorResult EulerCharacteristicRatio::operateInternal()
   // Compute the ratio of these two values.
   double eulerRatio = ((double)(eulerBoundary)) / ((double)(eulerVolume));
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   // Set the double item that will hold the euler ratio.
   smtk::attribute::DoubleItemPtr eulerItem = result->findDouble("value");

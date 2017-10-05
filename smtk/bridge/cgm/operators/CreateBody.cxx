@@ -63,7 +63,7 @@ smtk::model::OperatorResult CreateBody::operateInternal()
         *this->specification()->associations().get(), entList, keepInputs, expunged))
   {
     smtkInfoMacro(log(), "Could not find CGM entities for input cells.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   DLIList<RefEdge*> edgeList;
@@ -90,7 +90,7 @@ smtk::model::OperatorResult CreateBody::operateInternal()
     else
     {
       smtkInfoMacro(log(), "An input entity was not an edge, face, or volume.");
-      return this->createResult(smtk::model::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
     }
   }
 
@@ -104,7 +104,7 @@ smtk::model::OperatorResult CreateBody::operateInternal()
     {
       smtkInfoMacro(
         log(), "Could not create planar sheet-body from " << edgeList.size() << " edge(s).");
-      return this->createResult(smtk::model::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
     }
     bod->color(color);
     cgmBodies.push(bod);
@@ -121,7 +121,7 @@ smtk::model::OperatorResult CreateBody::operateInternal()
     {
       smtkInfoMacro(log(), "Could not create planar sheet-body from face "
           << (i + 1) << " of " << edgeList.size() << ".");
-      return this->createResult(smtk::model::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
     }
     bod->color(color);
     cgmBodies.push(bod);
@@ -132,13 +132,14 @@ smtk::model::OperatorResult CreateBody::operateInternal()
     if (!bod)
     {
       smtkInfoMacro(log(), "Could not create body from " << volumeList.size() << " volume(s).");
-      return this->createResult(smtk::model::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
     }
     bod->color(color);
     cgmBodies.push(bod);
   }
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmBodies, result, CREATED);
   result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());

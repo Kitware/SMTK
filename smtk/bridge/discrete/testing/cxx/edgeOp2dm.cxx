@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
     op = brg->op("import");
     op->findFile("filename")->setValue(argv[1]);
     result = op->operate();
-    if (result->findInt("outcome")->value() != OPERATION_SUCCEEDED)
+    if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
     {
       std::cerr << "Import 2dm Failed: " << argv[1] << std::endl;
       return 1;
@@ -152,7 +152,7 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
       meshItem->setValues(edge1, pids);
       meshItem->setModifyMode(smtk::attribute::ACCEPT);
       result = edgeop->operate();
-      if (result->findInt("outcome")->value() != OPERATION_SUCCEEDED)
+      if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
       {
         std::cerr << "Split Edge 1 Failed!\n";
         return 1;
@@ -185,7 +185,7 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
       meshItem->setValues(edge10, pids);
       meshItem->setModifyMode(smtk::attribute::ACCEPT);
       result = edgeop->operate();
-      if (result->findInt("outcome")->value() != OPERATION_SUCCEEDED)
+      if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
       {
         std::cerr << "Split Edge 10 Failed!\n";
         return 1;
@@ -205,7 +205,7 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
       meshItem->setValues(vertex4, pids);
       meshItem->setModifyMode(smtk::attribute::ACCEPT);
       result = edgeop->operate();
-      if (result->findInt("outcome")->value() != OPERATION_SUCCEEDED)
+      if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
       {
         std::cerr << "Demote Vertex 4 on Edge 10 Failed!\n";
         return 1;
@@ -217,7 +217,7 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
       test((mc->meshes(smtk::mesh::Dims1)).size() == 11, "Expecting 11 edge mesh");
       test((mc->meshes(smtk::mesh::Dims0)).size() == 8, "Expecting 8 vertex mesh");
       /*
-      // demote new vertex from first split on Edge1, then split Edge1 again on point 15, 
+      // demote new vertex from first split on Edge1, then split Edge1 again on point 15,
       if(!newVertId.isNull())
         {
         pids.clear();
@@ -226,7 +226,7 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
         meshItem->setValues(newVertId, pids);
         meshItem->setModifyMode(smtk::attribute::ACCEPT);
         result = edgeop->operate();
-        if (result->findInt("outcome")->value() != OPERATION_SUCCEEDED)
+        if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
           {
           std::cerr << "Demote new Vertex from first Split on Edge1 Failed!\n";
           return 1;
@@ -238,7 +238,7 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
         meshItem->setValues(edge1, pids);
         meshItem->setModifyMode(smtk::attribute::ACCEPT);
         result = edgeop->operate();
-        if (result->findInt("outcome")->value() != OPERATION_SUCCEEDED)
+        if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
           {
           std::cerr << "Second Split Edge 1 Failed!\n";
           return 1;
@@ -249,7 +249,7 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
         test(verts.size() == 8, "Expecting 8 vertices");
         test((mc->meshes(smtk::mesh::Dims1)).size() == 11, "Expecting 11 edge mesh");
         test((mc->meshes(smtk::mesh::Dims0)).size() == 8, "Expecting 8 vertex mesh");
-          
+
         }
 */
 

@@ -127,7 +127,7 @@ OperatorResult DefaultSession::operateDelegate(RemoteOperatorPtr oper)
   if (!oper)
     return OperatorResult();
 
-  return oper->createResult(OPERATION_FAILED);
+  return oper->createResult(smtk::operation::Operator::OPERATION_FAILED);
 }
 ///@}
 

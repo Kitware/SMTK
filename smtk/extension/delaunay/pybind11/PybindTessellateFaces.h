@@ -26,7 +26,6 @@ PySharedPtrClass< smtk::mesh::TessellateFaces, smtk::model::Operator > pybind11_
     .def("shared_from_this", (std::shared_ptr<const smtk::mesh::TessellateFaces> (smtk::mesh::TessellateFaces::*)() const) &smtk::mesh::TessellateFaces::shared_from_this)
     .def("name", &smtk::mesh::TessellateFaces::name)
     .def("className", &smtk::mesh::TessellateFaces::className)
-    .def_static("baseCreate", &smtk::mesh::TessellateFaces::baseCreate)
     .def("ableToOperate", &smtk::mesh::TessellateFaces::ableToOperate)
     ;
   return instance;

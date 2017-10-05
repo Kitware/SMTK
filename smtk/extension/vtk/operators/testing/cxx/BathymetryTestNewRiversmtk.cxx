@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
   readOp->specification()->findFile("filename")->setValue(std::string(argv[1]));
   std::cout << "Importing " << argv[1] << "\n";
   smtk::model::OperatorResult ismopResult = readOp->operate();
-  if (ismopResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (ismopResult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     std::cerr << "Read operator failed\n";
     return 1;
@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
   aux_geOp->specification()->findFile("url")->setValue(std::string(argv[2]));
   aux_geOp->associateEntity(modelNewRiver);
   smtk::model::OperatorResult aux_geOpresult = aux_geOp->operate();
-  if (aux_geOpresult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (aux_geOpresult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     std::cerr << "Add auxiliary geometry failed!\n";
     return 1;
@@ -138,7 +138,7 @@ int main(int argc, char* argv[])
   bathyOperator->specification()->findDouble("averaging elevation radius")->setValue(0.05);
 
   smtk::model::OperatorResult bathyResult = bathyOperator->operate();
-  if (bathyResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (bathyResult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     std::cerr << "Apply bathymetry operator failed\n";
     return 1;
@@ -152,7 +152,7 @@ int main(int argc, char* argv[])
   bathyOperator->specification()->findModelEntity("model")->setValue(modelNewRiver);
   smtk::model::OperatorResult RmBathyResult = bathyOperator->operate();
 
-  if (RmBathyResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (RmBathyResult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     std::cerr << "Remove Bathymetry operator failed\n";
     return 1;

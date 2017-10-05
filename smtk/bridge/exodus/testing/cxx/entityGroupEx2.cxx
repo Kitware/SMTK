@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
   readOp->specification()->findFile("filename")->setValue(std::string(argv[1]));
   std::cout << "Importing " << argv[1] << "\n";
   smtk::model::OperatorResult opresult = readOp->operate();
-  if (opresult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (opresult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     std::cerr << "Read operator failed\n";
     return 1;
@@ -126,7 +126,7 @@ int main(int argc, char* argv[])
   egOp->specification()->findModelEntity("cell to add")->appendValue(item2);
 
   smtk::model::OperatorResult egResult = egOp->operate();
-  if (egResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (egResult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     std::cerr << "Entity group operator failed!\n";
     return 1;
@@ -153,7 +153,7 @@ int main(int argc, char* argv[])
   egOp->specification()->findModelEntity("cell to add")->setValue(item3);
 
   egResult = egOp->operate();
-  if (egResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (egResult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     std::cerr << "Entity group operator failed!\n";
     return 1;
@@ -179,7 +179,7 @@ int main(int argc, char* argv[])
   egOp->specification()->findModelEntity("remove cell group")->setValue(modifyGroup);
 
   egResult = egOp->operate();
-  test(egResult->findInt("outcome")->value() == smtk::model::OPERATION_SUCCEEDED,
+  test(egResult->findInt("outcome")->value() == smtk::operation::Operator::OPERATION_SUCCEEDED,
     "Entity group operator failed!");
 
   // Print out the elements in the group

@@ -105,7 +105,8 @@ int UnitTestPolygonCreateModel(int argc, char* argv[])
 
   // Apply the operation and check the result
   smtk::model::OperatorResult createOpResult = createOp->operate();
-  test(createOpResult->findInt("outcome")->value() == smtk::model::OPERATION_SUCCEEDED,
+  test(
+    createOpResult->findInt("outcome")->value() == smtk::operation::Operator::OPERATION_SUCCEEDED,
     "Create operator failed");
 
   smtk::attribute::ModelEntityItemPtr modelptr = createOpResult->findModelEntity("created");

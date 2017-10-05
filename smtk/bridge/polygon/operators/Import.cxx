@@ -80,7 +80,7 @@ int polyLines2modelEdges(vtkPolyData* mesh, smtk::model::Operator::Ptr edgeOp,
     }
   }
   OperatorResult edgeResult = edgeOp->operate();
-  if (edgeResult->findInt("outcome")->value() != OPERATION_SUCCEEDED)
+  if (edgeResult->findInt("outcome")->value() != Import::OPERATION_SUCCEEDED)
   {
     smtkDebugMacro(logger, "\"create edge\" op failed to creat edge with given line cells.");
     return 0;
@@ -318,7 +318,7 @@ int polyLines2modelEdgesAndFaces(vtkPolyData* mesh, smtk::model::Model& model,
         countsArr->setValues(counts.begin(), counts.end());
 
         OperatorResult faceResult = faceOp->operate();
-        if (faceResult->findInt("outcome")->value() != OPERATION_SUCCEEDED)
+        if (faceResult->findInt("outcome")->value() != Import::OPERATION_SUCCEEDED)
         {
           smtkDebugMacro(logger, "\"force create face\" op failed to creat face with given edges.");
         }
@@ -364,13 +364,13 @@ OperatorResult Import::operateInternal()
   if (!sess)
   {
     smtkErrorMacro(log(), "Invalid polygon session.");
-    result = this->createResult(OPERATION_FAILED);
+    result = this->createResult(Import::OPERATION_FAILED);
   }
   std::string filename = this->specification()->findFile("filename")->value();
   if (filename.empty())
   {
     smtkErrorMacro(log(), "File name is empty!");
-    return this->createResult(OPERATION_FAILED);
+    return this->createResult(Import::OPERATION_FAILED);
   }
 
   vtkPolyData* polyOutput = vtkPolyData::New();
@@ -427,7 +427,7 @@ OperatorResult Import::operateInternal()
   {
     smtkErrorMacro(log(), "Unhandled file extension " << ext << ".");
     polyOutput->Delete();
-    return this->createResult(OPERATION_FAILED);
+    return this->createResult(Import::OPERATION_FAILED);
   }
 
   // First create a model with CreateModel op, then use line cells from reader's
@@ -436,7 +436,7 @@ OperatorResult Import::operateInternal()
   if (!modOp)
   {
     smtkErrorMacro(log(), "Failed to create CreateModel op.");
-    result = this->createResult(OPERATION_FAILED);
+    result = this->createResult(Import::OPERATION_FAILED);
   }
   //modOp->findInt("model scale")->setValue(1);
 
@@ -463,10 +463,10 @@ OperatorResult Import::operateInternal()
   modOp->findDouble("feature size")->setValue(diam / 1000.0);
 
   OperatorResult modResult = modOp->operate();
-  if (modResult->findInt("outcome")->value() != OPERATION_SUCCEEDED)
+  if (modResult->findInt("outcome")->value() != Import::OPERATION_SUCCEEDED)
   {
     smtkInfoMacro(log(), "CreateModel operator failed.");
-    result = this->createResult(OPERATION_FAILED);
+    result = this->createResult(Import::OPERATION_FAILED);
   }
 
   smtk::model::Model model = modResult->findModelEntity("created")->value();
@@ -491,8 +491,8 @@ OperatorResult Import::operateInternal()
   }
   smtkDebugMacro(log(), "Number of entities: " << numEntities << "\n");
 
-  result = this->createResult(OPERATION_SUCCEEDED);
-  this->addEntityToResult(result, model, CREATED);
+  result = this->createResult(Import::OPERATION_SUCCEEDED);
+  this->addEntityToResult(result, model, Import::CREATED);
 
   polyOutput->Delete();
   return result;
