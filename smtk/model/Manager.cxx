@@ -83,7 +83,7 @@ Manager::Manager()
   , m_globalCounters(2, 1) // first entry is session counter, second is model counter
 {
   // TODO: throw() when topology == NULL?
-  this->m_log.setFlushToStdout(false);
+  this->log().setFlushToStdout(false);
 }
 
 /// Create a model manager using the given storage instances.
@@ -103,7 +103,7 @@ Manager::Manager(shared_ptr<UUIDsToEntities> inTopology, shared_ptr<UUIDsToTesse
   , m_resources(new Set)
   , m_globalCounters(2, 1) // first entry is session counter, second is model counter
 {
-  this->m_log.setFlushToStdout(false);
+  this->log().setFlushToStdout(false);
 }
 
 /// Destroying a model manager requires us to release the default attribute manager..
@@ -1373,7 +1373,7 @@ void Manager::assignDefaultNamesToModelChildren(const smtk::common::UUID& modelI
   }
   if (oops)
   {
-    smtkWarningMacro(this->m_log, "Tried to assign default names to a non-model entity: "
+    smtkWarningMacro(this->log(), "Tried to assign default names to a non-model entity: "
         << EntityRef(shared_from_this(), modelId).name() << ".");
   }
 }
@@ -1595,7 +1595,7 @@ SessionRef Manager::createSession(
     return this->registerSession(result); // will call result->setManager(this);
   }
 
-  smtkInfoMacro(this->m_log, "Could not create \"" << bname << "\" session.");
+  smtkInfoMacro(this->log(), "Could not create \"" << bname << "\" session.");
   return SessionRef();
 }
 
@@ -3452,7 +3452,7 @@ void Manager::observe(OperatorEventType event, BareOperatorCallback functionHand
 {
   if (event != CREATED_OPERATOR)
   {
-    smtkWarningMacro(this->m_log,
+    smtkWarningMacro(this->log(),
       "The model manager only allows observation of CREATED_OPERATOR, not " << event << ".");
     return;
   }
