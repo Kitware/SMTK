@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
     collection = smtk.attribute.Collection.create()
     print 'Collection created'
-    t = collection.resourceType()
+    t = collection.type()
     if t != smtk.resource.Resource.ATTRIBUTE:
         print 'ERROR: Returned wrong resource type'
         status = -1

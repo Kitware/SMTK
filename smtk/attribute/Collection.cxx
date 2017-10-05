@@ -45,7 +45,7 @@ Collection::~Collection()
   }
 }
 
-smtk::resource::Resource::Type Collection::resourceType() const
+smtk::resource::Resource::Type Collection::type() const
 {
   return smtk::resource::Resource::ATTRIBUTE;
 }

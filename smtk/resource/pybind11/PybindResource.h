@@ -21,10 +21,14 @@ PySharedPtrClass< smtk::resource::Resource > pybind11_init_smtk_resource_Resourc
 {
   PySharedPtrClass< smtk::resource::Resource > instance(m, "Resource");
   instance
-    .def("deepcopy", (smtk::resource::Resource & (smtk::resource::Resource::*)(::smtk::resource::Resource const &)) &smtk::resource::Resource::operator=)
-    .def("resourceType", &smtk::resource::Resource::resourceType)
     .def_static("type2String", &smtk::resource::Resource::type2String, py::arg("t"))
     .def_static("string2Type", &smtk::resource::Resource::string2Type, py::arg("s"))
+    .def("type", &smtk::resource::Resource::type)
+    .def("index", &smtk::resource::Resource::index)
+    .def("id", &smtk::resource::Resource::id)
+    .def("location", &smtk::resource::Resource::location)
+    .def("setId", &smtk::resource::Resource::setId)
+    .def("setLocation", &smtk::resource::Resource::setLocation)
     ;
   py::enum_<smtk::resource::Resource::Type>(instance, "Type")
     .value("ATTRIBUTE", smtk::resource::Resource::Type::ATTRIBUTE)

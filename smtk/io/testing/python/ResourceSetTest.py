@@ -31,7 +31,7 @@ def RSTest():
 
     collection1 = smtk.attribute.Collection.New()
     print collection1
-    print collection1.resourceType()
+    print collection1.type()
     result = resourceSet.add(
         collection1, "collection1", "", smtk.resource.Set.TEMPLATE)
 
@@ -94,7 +94,7 @@ def RSTest():
     if resource == None:
         print("get() failed")
         status = status + 1
-    rtype = resource.resourceType()
+    rtype = resource.type()
     if rtype != smtk.resource.Resource.ATTRIBUTE:
         print(
             "Incorrect resource type %s, should be smtk.resource.Resource.ATTRIBUTE" % rtype)

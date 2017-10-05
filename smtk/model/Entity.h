@@ -59,7 +59,7 @@ public:
   EntityPtr setup(
     BitFlags entityFlags, int dimension, ManagerPtr resource = nullptr, bool resetRelations = true);
 
-  ResourcePtr resource() const override;
+  const ResourcePtr resource() const override;
   ManagerPtr modelResource() const;
 
   /// Return the templated object (usually EntityRef or a subclass) that points to this component.

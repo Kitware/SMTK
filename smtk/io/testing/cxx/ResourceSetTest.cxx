@@ -149,7 +149,7 @@ int main(int /* argc */, const char* /* argv */ [])
     std::cerr << "get() failed" << std::endl;
     status += 1;
   }
-  rtype = resource->resourceType();
+  rtype = resource->type();
   if (rtype != smtk::resource::Resource::ATTRIBUTE)
   {
     std::cerr << "Incorrect resource type " << rtype << ", should be "
