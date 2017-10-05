@@ -46,6 +46,12 @@ void Logger::addRecord(
 
 void Logger::append(const Logger& l)
 {
+  // do not append a logger to itself
+  if (&l == this)
+  {
+    return;
+  }
+
   this->m_records.insert(this->m_records.end(), l.m_records.begin(), l.m_records.end());
   if (l.m_hasErrors)
   {
