@@ -94,6 +94,12 @@ bool View::Component::contentsAsVector(std::vector<double>& vec) const
   return (vec.size() > 0);
 }
 
+bool View::Component::attribute(const std::string& attname) const
+{
+  std::string dummy;
+  return this->attribute(attname, dummy);
+}
+
 bool View::Component::attribute(const std::string& attname, std::string& value) const
 {
   std::map<std::string, std::string>::const_iterator it;

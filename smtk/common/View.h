@@ -55,6 +55,9 @@ public:
     // Returns true if the component has an attribute called name and will
     // set value to the attribute's values.  Else it returns false
     bool attribute(const std::string& attname, std::string& value) const;
+    // Description:
+    // Simply tests to see if the attribute exists
+    bool attribute(const std::string& attname) const;
     //Description:
     // Returns true if the component has an attribute called name and if it has the
     // string value of true, t, false, or f (ignoring case). Value will be true if the attribute
