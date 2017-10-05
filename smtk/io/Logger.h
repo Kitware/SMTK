@@ -76,11 +76,15 @@ namespace io
 {
 
 /**\brief Log messages for later presentation to a user or a file.
-      *
-      */
+ *
+ * Logger has a singleton interface to a global logger, but is also
+ * constructible as a non-singleton object.
+ */
 class SMTKCORE_EXPORT Logger
 {
 public:
+  static Logger& instance();
+
   enum Severity
   {
     DEBUG,
@@ -157,6 +161,7 @@ protected:
   std::function<void()> m_callback;
 
 private:
+  static Logger m_instance;
 };
 }
 }

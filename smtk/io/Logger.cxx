@@ -16,6 +16,12 @@ namespace smtk
 {
 namespace io
 {
+Logger Logger::m_instance;
+
+Logger& Logger::instance()
+{
+  return Logger::m_instance;
+}
 
 Logger::~Logger()
 {
