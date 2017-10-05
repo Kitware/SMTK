@@ -222,6 +222,7 @@ public:
   vtkSmartPointer<vtkCleanPolylines> cleanPolyLines;
 
   QPushButton* Run;
+  QLabel* WarningLabel;
 
   bool leftMousePressed;
   bool shiftButtonPressed;
@@ -331,6 +332,7 @@ public:
     if (internal->drawForeground)
     {
       internal->Run->setEnabled(true);
+      internal->WarningLabel->setVisible(false);
     }
     style->OnLeftButtonUp();
     internal->leftMousePressed = false;
@@ -422,6 +424,7 @@ public:
     if (internal->drawForeground)
     {
       internal->Run->setEnabled(true);
+      internal->WarningLabel->setVisible(false);
     }
     internal->LastPt[0] = image_coordinate[0];
     internal->LastPt[1] = image_coordinate[1];
@@ -526,6 +529,7 @@ public:
     if (internal->drawForeground)
     {
       internal->Run->setEnabled(true);
+      internal->WarningLabel->setVisible(false);
     }
 
     interactor->Render();
@@ -541,11 +545,15 @@ imageFeatureExtractorWidget::imageFeatureExtractorWidget()
 {
   this->ui = new Ui_imageFeatureExtractor;
   this->ui->setupUi(this);
+  this->showAdvance(0);
   connect(this->ui->Accept, SIGNAL(clicked()), this, SLOT(accept()));
   connect(this->ui->Cancel, SIGNAL(clicked()), this, SLOT(reject()));
   connect(this->ui->SaveMask, SIGNAL(clicked()), this, SLOT(saveMask()));
   connect(this->ui->clear, SIGNAL(clicked()), this, SLOT(clear()));
   connect(this->ui->Run, SIGNAL(clicked()), this, SLOT(run()));
+  connect(this->ui->ShowAdvance, SIGNAL(stateChanged(int)), this, SLOT(showAdvance(int)));
+  connect(this->ui->UseMinWaterArea, SIGNAL(stateChanged(int)), this, SLOT(useMinWaterArea(int)));
+  connect(this->ui->UseMinLandArea, SIGNAL(stateChanged(int)), this, SLOT(useMinLandArea(int)));
 
   connect(this->ui->NumberOfIter, SIGNAL(valueChanged(int)), this, SLOT(numberOfIterations(int)));
   connect(this->ui->DrawSize, SIGNAL(valueChanged(int)), this, SLOT(pointSize(int)));
@@ -572,7 +580,13 @@ imageFeatureExtractorWidget::imageFeatureExtractorWidget()
   this->ui->LoadLines->setEnabled(false);
   this->ui->SaveMask->setEnabled(false);
   this->ui->Run->setEnabled(false);
+  this->ui->WarningLabel->setVisible(true);
+
+  this->ui->UseMinWaterArea->setEnabled(false);
+  this->ui->UseMinLandArea->setEnabled(false);
+
   this->internal->Run = this->ui->Run;
+  this->internal->WarningLabel = this->ui->WarningLabel;
 
   this->ui->qvtkWidget->SetRenderWindow(this->internal->imageViewer->GetRenderWindow());
   this->internal->imageViewer->SetupInteractor(
@@ -649,6 +663,7 @@ void imageFeatureExtractorWidget::setImage(std::string imagefile)
   this->ui->LoadLines->setEnabled(true);
   this->ui->SaveMask->setEnabled(true);
   this->ui->Run->setEnabled(false);
+  this->ui->WarningLabel->setVisible(true);
 
   this->internal->imageViewer->SetInputData(inputImage);
   internal->filterGrabCuts->SetInputData(0, inputImage);
@@ -741,8 +756,8 @@ void imageFeatureExtractorWidget::run()
       }
     }
   }
-  this->ui->MinLandSize->setEnabled(true);
-  this->ui->MinWaterSize->setEnabled(true);
+  this->ui->UseMinWaterArea->setEnabled(true);
+  this->ui->UseMinLandArea->setEnabled(true);
   internal->drawing->SetDrawColor(color);
   vtkRenderWindowInteractor* interactor =
     this->internal->imageViewer->GetRenderWindow()->GetInteractor();
@@ -773,6 +788,9 @@ void imageFeatureExtractorWidget::clear()
   this->ui->MinWaterSize->setText("0");
   this->ui->MinLandSize->setEnabled(false);
   this->ui->MinWaterSize->setEnabled(false);
+  this->ui->UseMinWaterArea->setEnabled(false);
+  this->ui->UseMinLandArea->setEnabled(false);
+  this->ui->WarningLabel->setVisible(true);
 
   this->ui->Run->setEnabled(false);
   this->internal->Run = this->ui->Run;
@@ -954,4 +972,41 @@ void imageFeatureExtractorWidget::loadLines()
   internal->drawing->SetDrawColor(color);
   internal->updateAlphas();
   internal->Run->setEnabled(colors.size() > 1);
+  this->ui->WarningLabel->setVisible(colors.size() == 0);
+}
+
+void imageFeatureExtractorWidget::showAdvance(int mode)
+{
+  this->ui->AlgorithmLabel->setVisible(mode);
+  this->ui->Algorithm->setVisible(mode);
+  this->ui->NumInterationsLabel->setVisible(mode);
+  this->ui->NumberOfIter->setVisible(mode);
+  this->ui->DrawPossible->setVisible(mode);
+  this->ui->ClassificationOpacityLabel->setVisible(mode);
+  this->ui->LabelTrans->setVisible(mode);
+  this->ui->SaveMask->setVisible(mode);
+}
+
+void imageFeatureExtractorWidget::useMinWaterArea(int mode)
+{
+  if (mode)
+  {
+    this->setFGFilterSize(this->ui->MinWaterSize->text());
+  }
+  else
+  {
+    this->setFGFilterSize("0");
+  }
+}
+
+void imageFeatureExtractorWidget::useMinLandArea(int mode)
+{
+  if (mode)
+  {
+    this->setBGFilterSize(this->ui->MinLandSize->text());
+  }
+  else
+  {
+    this->setBGFilterSize("0");
+  }
 }
