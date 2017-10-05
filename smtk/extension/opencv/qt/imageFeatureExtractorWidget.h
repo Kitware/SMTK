@@ -49,6 +49,9 @@ protected slots:
   void setAlgorithm(int a);
   void setFGFilterSize(QString const& f);
   void setBGFilterSize(QString const& b);
+  void showAdvance(int mode);
+  void useMinWaterArea(int mode);
+  void useMinLandArea(int mode);
   //void accept();
 
 private:
