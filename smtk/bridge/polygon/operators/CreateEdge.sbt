@@ -113,7 +113,7 @@
         VIEW_NAME smtkPolygonEdgeView
         )
       -->
-    <View Type="smtkPolygonEdgeView" Title="Create Polygon Edge">
+    <View Type="smtkPolygonEdgeView" Title="Create Polygon Edge" FilterByCategory="false">
       <AttributeTypes>
         <Att Type="create edge" />
       </AttributeTypes>

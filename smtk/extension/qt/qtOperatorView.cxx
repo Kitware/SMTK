@@ -71,6 +71,16 @@ qtOperatorView::qtOperatorView(const OperatorViewInfo& info)
     this->Internals->m_instancedViewDef->copyContents(*view);
     // We need to remove the TopLevel attribute (if there is one)
     this->Internals->m_instancedViewDef->details().unsetAttribute("TopLevel");
+    // The default top-level behavior is that filter by category and advance level is on by default.
+    // For Operator View they need to be explicilty set to turn them on
+    if (!view->details().attribute("FilterByAdvanceLevel"))
+    {
+      view->details().setAttribute("FilterByAdvanceLevel", "false");
+    }
+    if (!view->details().attribute("FilterByCategory"))
+    {
+      view->details().setAttribute("FilterByCategory", "false");
+    }
   }
 }
 
