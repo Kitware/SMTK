@@ -20,6 +20,17 @@
 /// Integer-valued patch version number
 #define SMTK_VERSION_PATCH @SMTK_VERSION_PATCH@
 
+// On some systems, major and minor are defined as macros. If this is one of
+// those systems, undefine these macros before defining the static methods
+// of smtk::common::Version.
+#ifdef major
+#undef major
+#endif
+
+#ifdef minor
+#undef minor
+#endif
+
 namespace smtk {
   namespace common {
 
