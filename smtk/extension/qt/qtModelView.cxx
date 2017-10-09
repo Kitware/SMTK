@@ -1798,11 +1798,11 @@ void qtModelView::onOperationPanelClosing()
   }
 }
 
-bool qtModelView::showPreviousOpOrHide()
+bool qtModelView::showPreviousOpOrHide(bool alwaysHide)
 {
   if (this->m_OperatorsWidget)
   {
-    if (this->m_OperatorsWidget->showPreviousOp())
+    if (this->m_OperatorsWidget->showPreviousOp() && !alwaysHide)
     {
       return true;
     }
