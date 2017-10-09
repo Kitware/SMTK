@@ -34,6 +34,7 @@ py::class_< smtk::mesh::MeshServerLauncher > pybind11_init_smtk_extension_remus_
     .def("workerHost", &smtk::mesh::MeshServerLauncher::workerHost)
     .def("workerScheme", &smtk::mesh::MeshServerLauncher::workerScheme)
     .def("workerPort", &smtk::mesh::MeshServerLauncher::workerPort)
+    .def("numberOfSupportedMeshTypes", &smtk::mesh::MeshServerLauncher::numberOfSupportedMeshTypes)
     ;
   return instance;
 }

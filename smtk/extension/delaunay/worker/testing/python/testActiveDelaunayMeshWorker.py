@@ -21,6 +21,7 @@ launching its own worker.
 
 import os
 import sys
+import time
 import unittest
 import smtk
 import smtk.attribute
@@ -89,11 +90,24 @@ class TestActiveDelaunayMeshWorker(smtk.testing.TestCase):
         writer = smtk.io.AttributeWriter()
         meshingAttributesStr = writer.writeContents(meshingAttributes, logger)
 
+        # record the number of supported mesh types before launching the worker.
+        # We will compare this value to the number of supported mesh types after
+        # launching the worker in order to confirm that our server has completed
+        # its registration of the mesh worker.
+        numberOfMeshTypes = \
+            self.meshServerLauncher.numberOfSupportedMeshTypes()
+
         # launch our mesh worker, given the worker endpoint expected by our mesh
         # server.
         p = multiprocessing.Process(
-            target=smtk.mesh.delaunay.worker.start_worker, args=(self.meshServerLauncher.workerEndpoint(),))
+            target=smtk.mesh.delaunay.worker.start_worker,
+            args=(self.meshServerLauncher.workerEndpoint(),))
         p.start()
+
+        # wait for the server to register the mesh worker and increase the
+        # number of mesh types it can accept.
+        while numberOfMeshTypes == self.meshServerLauncher.numberOfSupportedMeshTypes():
+            time.sleep(1)
 
         # create a mesh operator
         mesher = self.sess.op('mesh')

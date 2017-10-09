@@ -61,6 +61,9 @@ public:
   const std::string& workerScheme() const;
   int workerPort() const;
 
+  //returns the number of mesh types currently receivable through the server
+  std::size_t numberOfSupportedMeshTypes();
+
 private:
   bool m_alive;
   struct Implementation;

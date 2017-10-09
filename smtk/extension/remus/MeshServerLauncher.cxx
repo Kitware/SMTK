@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include <remus/client/Client.h>
 #include <remus/common/LocateFile.h>
 #include <remus/server/Server.h>
 #include <remus/server/WorkerFactory.h>
@@ -104,6 +105,16 @@ void MeshServerLauncher::terminate()
 void MeshServerLauncher::addWorkerSearchDirectory(const std::string& directory)
 {
   this->m_implementation->m_factory->addWorkerSearchDirectory(directory);
+}
+
+std::size_t MeshServerLauncher::numberOfSupportedMeshTypes()
+{
+  const remus::client::ServerConnection conn =
+    remus::client::make_ServerConnection(this->clientEndpoint());
+
+  remus::client::Client client(conn);
+
+  return client.supportedIOTypes().size();
 }
 
 const std::string& MeshServerLauncher::clientEndpoint() const
