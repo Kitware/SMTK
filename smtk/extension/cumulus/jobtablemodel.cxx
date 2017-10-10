@@ -88,9 +88,9 @@ QVariant JobTableModel::data(const QModelIndex& modelIndex, int role) const
       case JOB_STATUS:
         return QVariant(job.status());
       case JOB_STARTED:
-        return QVariant(job.started());
+        return this->formattedDateTime(job.started());
       case JOB_FINISHED:
-        return QVariant(job.finished());
+        return this->formattedDateTime(job.finished());
       case JOB_NOTES:
         return QVariant(job.notes());
       default:
@@ -208,6 +208,11 @@ void JobTableModel::jobsUpdated(QList<Job> jobs)
   {
     emit finishedTimeChanged(jobsToPatchList);
   }
+}
+
+QVariant JobTableModel::formattedDateTime(const QDateTime& dt) const
+{
+  return QVariant(dt.toString("dd-MMM-yyyy, hh:mm"));
 }
 
 } // end namespace
