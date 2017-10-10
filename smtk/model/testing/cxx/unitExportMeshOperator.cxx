@@ -132,7 +132,8 @@ int main(int argc, char* argv[])
   // Execute "export mesh" operator...
   smtk::model::OperatorResult exportMeshOpResult = exportMeshOp->operate();
   // ...and test the results for success.
-  if (exportMeshOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (exportMeshOpResult->findInt("outcome")->value() !=
+    smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     std::cerr << "Export mesh operator failed\n";
     return 1;

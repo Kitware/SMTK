@@ -272,7 +272,8 @@ smtk::model::OperatorResult ReadOperator::readExodus()
   smtkModelOut.setStringProperty("type", "exodus");
 
   // Now set model for session and transcribe everything.
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
   smtk::attribute::ModelEntityItem::Ptr resultModels = result->findModelEntity("model");
   resultModels->setValue(smtkModelOut);
   smtk::attribute::ModelEntityItem::Ptr created = result->findModelEntity("created");
@@ -330,7 +331,8 @@ smtk::model::OperatorResult ReadOperator::readSLAC()
   smtkModelOut.setStringProperty("type", "slac");
 
   // Now set model for session and transcribe everything.
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
   smtk::attribute::ModelEntityItem::Ptr resultModels = result->findModelEntity("model");
   resultModels->setValue(smtkModelOut);
   smtk::attribute::ModelEntityItem::Ptr created = result->findModelEntity("created");
@@ -413,7 +415,7 @@ smtk::model::OperatorResult ReadOperator::readLabelMap()
 
     smtkErrorMacro(this->log(), "Label map is needed to indicate which "
                                 "segment each cell belongs to.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
   else
   {
@@ -485,7 +487,8 @@ smtk::model::OperatorResult ReadOperator::readLabelMap()
   smtkModelOut.setStringProperty("label array", labelname);
 
   // Now set model for session and transcribe everything.
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
   smtk::attribute::ModelEntityItem::Ptr resultModels = result->findModelEntity("model");
   resultModels->setValue(smtkModelOut);
   smtk::attribute::ModelEntityItem::Ptr created = result->findModelEntity("created");

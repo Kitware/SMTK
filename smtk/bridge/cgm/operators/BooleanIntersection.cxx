@@ -88,7 +88,7 @@ smtk::model::OperatorResult BooleanIntersection::operateInternal()
   if (!ok)
   {
     smtkInfoMacro(log(), "One or more workpiece inputs had no matching CGM entity.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   if (toolIn->numberOfValues() > 0)
@@ -101,7 +101,7 @@ smtk::model::OperatorResult BooleanIntersection::operateInternal()
       smtkInfoMacro(log(), "Tool body specified as " << toolIn->value().name() << " ("
                                                      << toolIn->value().flagSummary() << ")"
                                                      << " but no matching CGM entity exists.");
-      return this->createResult(smtk::model::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
     }
     cgmToolBody = cgmToolBodies[0];
   }
@@ -127,10 +127,11 @@ smtk::model::OperatorResult BooleanIntersection::operateInternal()
   if (s != CUBIT_SUCCESS)
   {
     smtkInfoMacro(log(), "Failed to perform intersection (status " << s << ").");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmBodiesOut, result, MODIFIED);
   result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());

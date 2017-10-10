@@ -96,7 +96,7 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
   if (!sess || !(mgr = sess->manager()))
   {
     // error logging requires mgr...
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   // Obtain the SMTK and polygon models we will work with:
@@ -111,7 +111,7 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
     default:
     {
       smtkErrorMacro(this->log(), "Unknown construction method " << method << ".");
-      return this->createResult(smtk::model::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
     }
     break;
   }
@@ -119,7 +119,7 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
   if (!pmodel)
   {
     smtkErrorMacro(this->log(), "The associated model is not a polygon-session model.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   // Sanity-check point coordinates array size:
@@ -128,7 +128,7 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
     smtkErrorMacro(this->log(), "Number of point-coordinates ("
         << pointsItem->numberOfValues() << ") "
         << "not a multiple of the number of coordinates per pt (" << numCoordsPerPt << ")");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   // I. While the counts array indicates we have faces to process:
@@ -234,7 +234,7 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
           modelFaceId, modelFaceUseId, outerLoopId, outerLoopEdges))
     {
       smtkErrorMacro(this->log(), "Could not create SMTK outer loop of face.");
-      return this->createResult(smtk::model::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
     }
     smtk::model::Face modelFace(mgr, modelFaceId);
     smodel.addCell(modelFace);
@@ -249,7 +249,7 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
       if (!mgr->insertModelFaceOrientedInnerLoop(innerLoopId, outerLoopId, innerLoopsEdges[inner]))
       {
         smtkErrorMacro(this->log(), "Could not create SMTK inner loop of face.");
-        return this->createResult(smtk::model::OPERATION_FAILED);
+        return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
       }
     }
 
@@ -293,7 +293,8 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
     modelFace.setBoundingBox(&bbox[0]);
   }
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
   this->addEntitiesToResult(result, created, CREATED);
   return result;
 }

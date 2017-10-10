@@ -124,7 +124,7 @@ int main(int argc, char* argv[])
   readOp->specification()->findFile("filename")->setValue(std::string(argv[1]));
   std::cout << "Importing " << argv[1] << "\n";
   smtk::model::OperatorResult opresult = readOp->operate();
-  if (opresult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (opresult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     std::cerr << "Read operator failed\n";
     return 1;
@@ -158,7 +158,7 @@ int main(int argc, char* argv[])
   aux_geOp->specification()->findFile("url")->setValue(std::string(argv[2]));
   aux_geOp->associateEntity(model2dm);
   smtk::model::OperatorResult aux_geOpresult = aux_geOp->operate();
-  if (aux_geOpresult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (aux_geOpresult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     std::cerr << "Add auxiliary geometry failed!\n";
     return 1;
@@ -192,7 +192,7 @@ int main(int argc, char* argv[])
     elevateMesh->specification()->findVoid("invert scalars")->setIsEnabled(false);
 
     smtk::model::OperatorResult bathyResult = elevateMesh->operate();
-    if (bathyResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+    if (bathyResult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
     {
       std::cerr << "Elevate mesh operator failed\n";
       return 1;
@@ -224,7 +224,7 @@ int main(int argc, char* argv[])
     undoWarpMesh->specification()->findMesh("mesh")->appendValue(mesh);
 
     smtk::model::OperatorResult result = undoWarpMesh->operate();
-    if (result->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+    if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
     {
       std::cerr << "Undo warp mesh operator failed\n";
       return 1;

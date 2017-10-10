@@ -97,7 +97,7 @@ int main(int argc, char** const argv)
 
   op->findFile("filename")->setValue(file_path.c_str());
   smtk::model::OperatorResult result = op->operate();
-  if (result->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     std::cerr << "Could not load smtk model!\n";
     return 1;
@@ -191,7 +191,7 @@ int main(int argc, char** const argv)
   meshServerLauncher.terminate();
 
   // Check the outcome of the operation
-  if (result->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     std::cerr << "Mesh operator failed\n";
     return 1;

@@ -80,7 +80,7 @@ smtk::model::OperatorResult Rotate::operateInternal()
   if (axis.normalize() == 0)
   {
     smtkInfoMacro(log(), "Ill-defined rotation: given axis of rotation is a zero-length vector.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
   double angle = angleItem->value(0);
   GeometryQueryTool::instance()->rotate(cgmEntitiesIn, center, axis, angle,
@@ -91,10 +91,11 @@ smtk::model::OperatorResult Rotate::operateInternal()
     smtkInfoMacro(log(), "Failed to rotate bodies or wrong number"
         << " (" << cgmEntitiesOut.size() << " != " << nb << ")"
         << " of resulting bodies.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmEntitiesOut, result, MODIFIED);
   // Nothing expunged.

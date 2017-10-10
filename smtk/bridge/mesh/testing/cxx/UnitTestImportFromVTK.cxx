@@ -75,7 +75,7 @@ int UnitTestImportFromVTK(int argc, char* argv[])
 
   smtk::model::OperatorResult importOpResult = importOp->operate();
 
-  if (importOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (importOpResult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     std::cerr << "Import operator failed\n";
     return 1;

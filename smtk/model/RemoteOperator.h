@@ -47,7 +47,6 @@ public:
   smtkSharedFromThisMacro(Operator);
   // NB. We do not call smtkDeclareModelOperator() because we override name():
   static std::string operatorName;
-  static smtk::model::OperatorPtr baseCreate();
 
   std::string name() const override;
   std::string className() const override;

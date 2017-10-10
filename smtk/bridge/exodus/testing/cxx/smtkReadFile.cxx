@@ -49,7 +49,7 @@ smtkComponentInitMacro(smtk_exodus_session)
   readOp->specification()->findFile("filename")->setValue(modelPath);
   std::cout << "Importing " << modelPath << "\n";
   smtk::model::OperatorResult opresult = readOp->operate();
-  test(opresult->findInt("outcome")->value() == smtk::model::OPERATION_SUCCEEDED,
+  test(opresult->findInt("outcome")->value() == smtk::operation::Operator::OPERATION_SUCCEEDED,
     "Read operator failed");
   smtk::model::EntityRef entRef = opresult->findModelEntity("created")->value();
   smtk::model::Model model(entRef);

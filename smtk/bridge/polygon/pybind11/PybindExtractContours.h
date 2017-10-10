@@ -25,7 +25,6 @@ PySharedPtrClass< smtk::bridge::polygon::ExtractContours > pybind11_init_smtk_br
     .def(py::init<::smtk::bridge::polygon::ExtractContours const &>())
     .def("deepcopy", (smtk::bridge::polygon::ExtractContours & (smtk::bridge::polygon::ExtractContours::*)(::smtk::bridge::polygon::ExtractContours const &)) &smtk::bridge::polygon::ExtractContours::operator=)
     .def("ableToOperate", &smtk::bridge::polygon::ExtractContours::ableToOperate)
-    .def_static("baseCreate", &smtk::bridge::polygon::ExtractContours::baseCreate)
     .def("className", &smtk::bridge::polygon::ExtractContours::className)
     .def("classname", &smtk::bridge::polygon::ExtractContours::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::ExtractContours> (*)()) &smtk::bridge::polygon::ExtractContours::create)

@@ -26,7 +26,6 @@ PySharedPtrClass< smtk::mesh::TriangulateFaces, smtk::model::Operator > pybind11
     .def("shared_from_this", (std::shared_ptr<const smtk::mesh::TriangulateFaces> (smtk::mesh::TriangulateFaces::*)() const) &smtk::mesh::TriangulateFaces::shared_from_this)
     .def("name", &smtk::mesh::TriangulateFaces::name)
     .def("className", &smtk::mesh::TriangulateFaces::className)
-    .def_static("baseCreate", &smtk::mesh::TriangulateFaces::baseCreate)
     .def("ableToOperate", &smtk::mesh::TriangulateFaces::ableToOperate)
     ;
   return instance;

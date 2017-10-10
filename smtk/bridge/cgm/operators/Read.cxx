@@ -114,10 +114,11 @@ smtk::model::OperatorResult Read::operateInternal()
   if (s != CUBIT_SUCCESS)
   {
     smtkInfoMacro(this->manager()->log(), "Failed to import CGM model, status " << s);
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(imported, result, CREATED);
 

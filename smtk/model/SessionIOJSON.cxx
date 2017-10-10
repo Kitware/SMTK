@@ -290,7 +290,7 @@ int SessionIOJSON::writeNativeModel(smtk::model::ManagerPtr modelMgr,
   writeOp->specification()->associateEntity(model);
 
   smtk::model::OperatorResult opresult = writeOp->operate();
-  if (opresult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (opresult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     smtkInfoMacro(modelMgr->log(), "Failed to write the model for native kernel!");
     return 0;
@@ -374,7 +374,7 @@ int SessionIOJSON::loadNativeModel(smtk::model::ManagerPtr modelMgr,
     }
     readOp->specification()->findFile("filename")->setValue(actualFilename.string());
     smtk::model::OperatorResult opresult = readOp->operate();
-    if (opresult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+    if (opresult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
     {
       smtkInfoMacro(modelMgr->log(), "Failed to read the model for native kernel!");
       return 0;

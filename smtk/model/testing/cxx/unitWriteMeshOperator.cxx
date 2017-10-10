@@ -135,7 +135,8 @@ int main(int argc, char* argv[])
       // Execute "write mesh" operator...
       smtk::model::OperatorResult writeMeshOpResult = writeMeshOp->operate();
       // ...and test the results for success.
-      if (writeMeshOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+      if (writeMeshOpResult->findInt("outcome")->value() !=
+        smtk::operation::Operator::OPERATION_SUCCEEDED)
       {
         std::cerr << "Write mesh operator failed\n";
         return 1;

@@ -89,7 +89,7 @@ int internal_createEdge(smtk::model::Operator::Ptr edgeOp, smtk::attribute::Attr
   numCoords->assign(sourceItem); // number of elements in coordinates
 
   OperatorResult edgeResult = edgeOp->operate();
-  if (edgeResult->findInt("outcome")->value() != OPERATION_SUCCEEDED)
+  if (edgeResult->findInt("outcome")->value() != SurfaceExtractContours::OPERATION_SUCCEEDED)
   {
     smtkDebugMacro(logger, "\"create edge\" op failed to creat edge with given line cells.");
     return 0;
@@ -119,10 +119,12 @@ OperatorResult SurfaceExtractContours::operateInternal()
   if (!edgeOp)
   {
     smtkInfoMacro(log(), "Failed to create CreateEdge op.");
-    return this->createResult(OPERATION_FAILED);
+    return this->createResult(SurfaceExtractContours::OPERATION_FAILED);
   }
   int numEdges = internal_createEdge(edgeOp, this->specification(), newEdges, model, log());
-  OperatorResult result = this->createResult(numEdges > 0 ? OPERATION_SUCCEEDED : OPERATION_FAILED);
+  OperatorResult result =
+    this->createResult(numEdges > 0 ? SurfaceExtractContours::OPERATION_SUCCEEDED
+                                    : SurfaceExtractContours::OPERATION_FAILED);
 
   if (numEdges > 0)
   {

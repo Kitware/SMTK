@@ -35,7 +35,8 @@ smtk::model::OperatorResult EulerCharacteristic::operateInternal()
   int euler = eulerCharacteristic(meshItem->value());
 
   // Create a result object to store the output.
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   // Set the int item that will hold the euler characteristic.
   smtk::attribute::IntItemPtr eulerItem = result->findInt("value");

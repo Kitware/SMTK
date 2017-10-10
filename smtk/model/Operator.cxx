@@ -71,20 +71,6 @@ Operator::~Operator()
   }
 }
 
-/**\brief Return whether the operator's inputs are well-defined.
-  *
-  * This returns true when the Operator considers its inputs to
-  * be valid and false otherwise.
-  *
-  * Subclasses may override this method.
-  * By default, it returns true when this->specification()->isValid()
-  * returns true.
-  */
-bool Operator::ableToOperate()
-{
-  return this->specification()->isValid();
-}
-
 static void markResultModels(
   smtk::attribute::ModelEntityItem::Ptr itm, std::set<smtk::model::Model>& visited, int clean)
 {
@@ -141,7 +127,7 @@ OperatorResult Operator::operate()
     smtk::attribute::IntItem::Ptr debugItem = this->specification()->findInt("debug level");
     this->m_debugLevel = (debugItem->isEnabled() ? debugItem->value() : 0);
     // Run the operation if possible:
-    if (!this->trigger(WILL_OPERATE))
+    if (!this->trigger(OperatorEventType::WILL_OPERATE))
       result = this->operateInternal();
     else
       result = this->createResult(OPERATION_CANCELED);
@@ -177,7 +163,7 @@ OperatorResult Operator::operate()
       free(logstr);
     }
     // Inform observers that the operation completed.
-    this->trigger(DID_OPERATE, result);
+    this->trigger(OperatorEventType::DID_OPERATE, result);
 
     smtk::attribute::ModelEntityItem::Ptr tess_changed = result->findModelEntity("tess_changed");
     if (tess_changed)
@@ -214,63 +200,6 @@ OperatorResult Operator::operate()
     }
   }
   return result;
-}
-
-/// Add an observer of WILL_OPERATE events on this operator.
-void Operator::observe(OperatorEventType event, BareOperatorCallback functionHandle, void* callData)
-{
-  (void)event;
-  this->m_willOperateTriggers.insert(std::make_pair(functionHandle, callData));
-}
-
-/// Add an observer of DID_OPERATE events on this operator.
-void Operator::observe(
-  OperatorEventType event, OperatorWithResultCallback functionHandle, void* callData)
-{
-  (void)event;
-  this->m_didOperateTriggers.insert(std::make_pair(functionHandle, callData));
-}
-
-/// Remove an existing WILL_OPERATE observer. The \a callData must match the value passed to Operator::observe().
-void Operator::unobserve(
-  OperatorEventType event, BareOperatorCallback functionHandle, void* callData)
-{
-  (void)event;
-  this->m_willOperateTriggers.erase(std::make_pair(functionHandle, callData));
-}
-
-/// Remove an existing DID_OPERATE observer. The \a callData must match the value passed to Operator::observe().
-void Operator::unobserve(
-  OperatorEventType event, OperatorWithResultCallback functionHandle, void* callData)
-{
-  (void)event;
-  this->m_didOperateTriggers.erase(std::make_pair(functionHandle, callData));
-}
-
-/**\brief Invoke all WILL_OPERATE observer callbacks.
-  *
-  * The return value is non-zero if the operation was canceled and zero otherwise.
-  * Note that all observers will be called even if one requests the operation be
-  * canceled. This is useful since all DID_OPERATE observers are called whether
-  * the operation was canceled or not -- and observers of both will expect them
-  * to be called in pairs.
-  */
-int Operator::trigger(OperatorEventType event)
-{
-  int status = 0;
-  std::set<BareOperatorObserver>::const_iterator it;
-  for (it = this->m_willOperateTriggers.begin(); it != this->m_willOperateTriggers.end(); ++it)
-    status |= (*it->first)(event, *this, it->second);
-  return status;
-}
-
-/// Invoke all DID_OPERATE observer callbacks. The return value is always 0 (this may change in future releases).
-int Operator::trigger(OperatorEventType event, const OperatorResult& result)
-{
-  std::set<OperatorWithResultObserver>::const_iterator it;
-  for (it = this->m_didOperateTriggers.begin(); it != this->m_didOperateTriggers.end(); ++it)
-    (*it->first)(event, *this, result, it->second);
-  return 0;
 }
 
 /// Return the manager associated with this operator (or a "null"/invalid shared-pointer).
@@ -360,46 +289,6 @@ OperatorDefinition Operator::definition() const
     return attribute::DefinitionPtr();
 
   return brg->operatorCollection()->findDefinition(this->name());
-}
-
-/**\brief Return the specification of this operator (creating one if none exists).
-  *
-  * The specification of an operator includes values for each of
-  * the operator's parameters as necessary to carry out the operation.
-  * These values are encoded in an attribute whose definition is
-  * provided by the operator (see smtk::model::Operator::definition()).
-  * Note that OperatorSpecification is a typedef of
-  * smtk::attribute::AttributePtr.
-  *
-  * The specification is initially a null attribute pointer
-  * but is initialized when calling this method or
-  * by calling ensureSpecification().
-  *
-  * If the operator is invoked without a specification, one
-  * is created (holding default values).
-  */
-OperatorSpecification Operator::specification() const
-{
-  this->ensureSpecification();
-  return this->m_specification;
-}
-
-/**\brief Set the specification of the operator's parameters.
-  *
-  * The attribute, if non-NULL, should match the definition()
-  * of the operator.
-  */
-bool Operator::setSpecification(attribute::AttributePtr spec)
-{
-  if (spec == this->m_specification)
-    return false;
-
-  if (spec)
-    if (!spec->isA(this->definition()))
-      return false;
-
-  this->m_specification = spec;
-  return true;
 }
 
 /**\brief Ensure that a specification exists for this operator.
@@ -541,16 +430,6 @@ OperatorResult Operator::createResult(OperatorOutcome outcome)
   return result;
 }
 
-/**\brief Set the outcome of the given result.
-  *
-  * This is a convenience method.
-  */
-void Operator::setResultOutcome(OperatorResult res, OperatorOutcome outcome)
-{
-  IntItemPtr outcomeItem = smtk::dynamic_pointer_cast<IntItem>(res->find("outcome"));
-  outcomeItem->setValue(outcome);
-}
-
 /**\brief Remove an attribute from the operator's manager.
   *
   * This is a convenience method to remove an operator's result
@@ -568,61 +447,6 @@ void Operator::eraseResult(OperatorResult res)
   if (!res || !(brdg = this->session()) || !(sys = brdg->operatorCollection()))
     return;
   sys->removeAttribute(res);
-}
-
-/// A comparator so that Operators may be placed in ordered sets.
-bool Operator::operator<(const Operator& other) const
-{
-  return this->name() < other.name();
-}
-
-void Operator::generateSummary(OperatorResult& res)
-{
-  std::ostringstream msg;
-  int outcome = res->findInt("outcome")->value();
-  msg << this->specification()->definition()->label() << ": " << outcomeAsString(outcome);
-  if (outcome == static_cast<int>(OPERATION_SUCCEEDED))
-  {
-    smtkInfoMacro(this->log(), msg.str());
-  }
-  else
-  {
-    smtkErrorMacro(this->log(), msg.str());
-  }
-}
-
-/// Return a string summarizing the outcome of an operation.
-std::string outcomeAsString(int oc)
-{
-  switch (oc)
-  {
-    case UNABLE_TO_OPERATE:
-      return "unable to operate";
-    case OPERATION_CANCELED:
-      return "operation canceled";
-    case OPERATION_FAILED:
-      return "operation failed";
-    case OPERATION_SUCCEEDED:
-      return "operation succeeded";
-    case OUTCOME_UNKNOWN:
-      break;
-  }
-  return "outcome unknown";
-}
-
-/// Given a string summarizing the outcome of an operation, return an enumerant.
-OperatorOutcome stringToOutcome(const std::string& oc)
-{
-  if (oc == "unable to operate")
-    return UNABLE_TO_OPERATE;
-  if (oc == "operation canceled")
-    return OPERATION_CANCELED;
-  if (oc == "operation failed")
-    return OPERATION_FAILED;
-  if (oc == "operation succeeded")
-    return OPERATION_SUCCEEDED;
-
-  return OUTCOME_UNKNOWN;
 }
 
 /*! \fn Operator::operateInternal()

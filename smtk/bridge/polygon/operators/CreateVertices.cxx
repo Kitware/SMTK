@@ -70,7 +70,7 @@ smtk::model::OperatorResult CreateVertices::operateInternal()
     }
 
     smtk::model::Vertices verts = storage->findOrAddModelVertices(mgr, pcoords, numCoordsPerPt);
-    result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+    result = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
     this->addEntitiesToResult(result, verts, CREATED);
     for (smtk::model::Vertices::const_iterator it = verts.begin(); it != verts.end(); ++it)
     { // Add raw relationships from model to/from vertex:
@@ -80,7 +80,7 @@ smtk::model::OperatorResult CreateVertices::operateInternal()
   }
   if (!result)
   {
-    result = this->createResult(smtk::model::OPERATION_FAILED);
+    result = this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   return result;

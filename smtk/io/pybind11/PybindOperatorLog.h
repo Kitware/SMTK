@@ -26,13 +26,13 @@ public:
   virtual ~OperatorLog_() {}
 
   int recordInvocation(
-    smtk::model::OperatorEventType event,
-    const smtk::model::Operator& op) override = 0;
+    smtk::operation::Operator::EventType event,
+    const smtk::operation::Operator& op) override = 0;
 
   int recordResult(
-    smtk::model::OperatorEventType event,
-    const smtk::model::Operator& op,
-    smtk::model::OperatorResult r) override = 0;
+    smtk::operation::Operator::EventType event,
+    const smtk::operation::Operator& op,
+    smtk::operation::Operator::Result r) override = 0;
 };
 }
 }
@@ -43,16 +43,16 @@ public:
   using smtk::io::OperatorLog_::OperatorLog_;
 
   int recordInvocation(
-    smtk::model::OperatorEventType event,
-    const smtk::model::Operator& op) override
+    smtk::operation::Operator::EventType event,
+    const smtk::operation::Operator& op) override
   {
     PYBIND11_OVERLOAD_PURE(int, smtk::io::OperatorLog_, recordInvocation, event, op);
   }
 
   int recordResult(
-    smtk::model::OperatorEventType event,
-    const smtk::model::Operator& op,
-    smtk::model::OperatorResult r) override
+    smtk::operation::Operator::EventType event,
+    const smtk::operation::Operator& op,
+    smtk::operation::Operator::Result r) override
   {
     PYBIND11_OVERLOAD_PURE(int, smtk::io::OperatorLog_, recordResult, event, op, r);
   }

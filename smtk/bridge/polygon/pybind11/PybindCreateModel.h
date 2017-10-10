@@ -24,7 +24,6 @@ PySharedPtrClass< smtk::bridge::polygon::CreateModel > pybind11_init_smtk_bridge
     .def(py::init<>())
     .def(py::init<::smtk::bridge::polygon::CreateModel const &>())
     .def("deepcopy", (smtk::bridge::polygon::CreateModel & (smtk::bridge::polygon::CreateModel::*)(::smtk::bridge::polygon::CreateModel const &)) &smtk::bridge::polygon::CreateModel::operator=)
-    .def_static("baseCreate", &smtk::bridge::polygon::CreateModel::baseCreate)
     .def("className", &smtk::bridge::polygon::CreateModel::className)
     .def("classname", &smtk::bridge::polygon::CreateModel::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::CreateModel> (*)()) &smtk::bridge::polygon::CreateModel::create)

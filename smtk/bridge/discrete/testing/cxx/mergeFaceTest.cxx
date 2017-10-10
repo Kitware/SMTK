@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
     op = brg->op("read");
     op->findFile("filename")->setValue(argv[1]);
     result = op->operate();
-    if (result->findInt("outcome")->value() != OPERATION_SUCCEEDED)
+    if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
     {
       std::cerr << "Import cmb Failed: " << argv[1] << std::endl;
       return 1;
@@ -87,7 +87,8 @@ int main(int argc, char* argv[])
       modelPtr = op->specification()->findModelEntity("target cell");
       test(modelPtr != nullptr && modelPtr->appendValue(faces[5]), "Could not set target cell");
       result = op->operate();
-      test(result->findInt("outcome")->value() == OPERATION_SUCCEEDED, "Merge face failed");
+      test(result->findInt("outcome")->value() == smtk::operation::Operator::OPERATION_SUCCEEDED,
+        "Merge face failed");
       // Check the number of faces after merge face operation
       test(modelCmb.cells().size() == 1 && isVolume(modelCmb.cells()[0].entityFlags()),
         "Expecting 1 volume");

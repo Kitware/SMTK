@@ -30,7 +30,6 @@ PySharedPtrClass< smtk::bridge::discrete::SplitFaceOperator, smtk::model::Operat
     .def("shared_from_this", (std::shared_ptr<const smtk::bridge::discrete::SplitFaceOperator> (smtk::bridge::discrete::SplitFaceOperator::*)() const) &smtk::bridge::discrete::SplitFaceOperator::shared_from_this)
     .def("name", &smtk::bridge::discrete::SplitFaceOperator::name)
     .def("className", &smtk::bridge::discrete::SplitFaceOperator::className)
-    .def_static("baseCreate", &smtk::bridge::discrete::SplitFaceOperator::baseCreate)
     .def("ableToOperate", &smtk::bridge::discrete::SplitFaceOperator::ableToOperate)
     ;
   return instance;

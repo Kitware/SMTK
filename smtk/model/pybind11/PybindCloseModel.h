@@ -27,7 +27,6 @@ PySharedPtrClass< smtk::model::CloseModel, smtk::model::Operator > pybind11_init
     .def(py::init<::smtk::model::CloseModel const &>())
     .def("deepcopy", (smtk::model::CloseModel & (smtk::model::CloseModel::*)(::smtk::model::CloseModel const &)) &smtk::model::CloseModel::operator=)
     .def("ableToOperate", &smtk::model::CloseModel::ableToOperate)
-    .def_static("baseCreate", &smtk::model::CloseModel::baseCreate)
     .def("className", &smtk::model::CloseModel::className)
     .def("classname", &smtk::model::CloseModel::classname)
     .def_static("create", (std::shared_ptr<smtk::model::CloseModel> (*)()) &smtk::model::CloseModel::create)

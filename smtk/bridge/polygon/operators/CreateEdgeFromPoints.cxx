@@ -58,7 +58,7 @@ smtk::model::OperatorResult CreateEdgeFromPoints::operateInternal()
   smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
   smtk::model::Manager::Ptr mgr;
   if (!sess)
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
 
   mgr = sess->manager();
 
@@ -81,7 +81,7 @@ smtk::model::OperatorResult CreateEdgeFromPoints::operateInternal()
   if (!parentModel.isValid())
   {
     smtkErrorMacro(this->log(), "A model must be associated with the operator.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   std::vector<double> pnts(numPts * numCoordsPerPt);
@@ -104,7 +104,7 @@ smtk::model::OperatorResult CreateEdgeFromPoints::process(
   smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
   smtk::model::Manager::Ptr mgr;
   if (!sess)
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
 
   mgr = sess->manager();
   bool ok = true;
@@ -164,7 +164,7 @@ smtk::model::OperatorResult CreateEdgeFromPoints::process(
     if (result.empty())
     {
       smtkErrorMacro(this->log(), "Self-intersection of edge segments was empty set.");
-      return this->createResult(smtk::model::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
     }
 
     // I. Pre-process the intersected segments
@@ -341,13 +341,13 @@ smtk::model::OperatorResult CreateEdgeFromPoints::process(
   smtk::model::OperatorResult opResult;
   if (ok)
   {
-    opResult = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+    opResult = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
     this->addEntitiesToResult(opResult, created, CREATED);
     this->addEntitiesToResult(opResult, modified, MODIFIED);
   }
   else
   {
-    opResult = this->createResult(smtk::model::OPERATION_FAILED);
+    opResult = this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   return opResult;

@@ -92,13 +92,15 @@ smtk::model::OperatorResult WriteOperator::operateInternal()
 
 smtk::model::OperatorResult WriteOperator::writeExodus()
 {
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_FAILED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   return result;
 }
 
 smtk::model::OperatorResult WriteOperator::writeSLAC()
 {
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_FAILED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   return result;
 }
 
@@ -172,7 +174,7 @@ smtk::model::OperatorResult WriteOperator::writeLabelMap()
   if (datasets.empty())
   {
     smtkErrorMacro(this->log(), "No models to save.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   smtk::model::Model dataset = datasets[0];
@@ -184,7 +186,7 @@ smtk::model::OperatorResult WriteOperator::writeLabelMap()
     sit->second.empty() || (labelStr = sit->second[0]).empty())
   {
     smtkErrorMacro(this->log(), "Model is not a label map or has no label array.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   EntityHandle handle = this->exodusHandle(dataset);
@@ -196,7 +198,7 @@ smtk::model::OperatorResult WriteOperator::writeLabelMap()
     !(lbl = img->GetPointData()->GetArray(labelStr.c_str())))
   {
     smtkErrorMacro(this->log(), "Model does not have image data with labels attached.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   vtkVector3d scenter(&(*noseSphereItem->begin()));
@@ -244,7 +246,8 @@ smtk::model::OperatorResult WriteOperator::writeLabelMap()
   wri->SetFileTypeToBinary();
   wri->Write();
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
   return result;
 }
 

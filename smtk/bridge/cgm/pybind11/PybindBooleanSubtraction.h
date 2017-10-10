@@ -24,7 +24,6 @@ PySharedPtrClass< smtk::bridge::cgm::BooleanSubtraction > pybind11_init_smtk_bri
     .def(py::init<>())
     .def(py::init<::smtk::bridge::cgm::BooleanSubtraction const &>())
     .def("deepcopy", (smtk::bridge::cgm::BooleanSubtraction & (smtk::bridge::cgm::BooleanSubtraction::*)(::smtk::bridge::cgm::BooleanSubtraction const &)) &smtk::bridge::cgm::BooleanSubtraction::operator=)
-    .def_static("baseCreate", &smtk::bridge::cgm::BooleanSubtraction::baseCreate)
     .def("className", &smtk::bridge::cgm::BooleanSubtraction::className)
     .def("classname", &smtk::bridge::cgm::BooleanSubtraction::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::cgm::BooleanSubtraction> (*)()) &smtk::bridge::cgm::BooleanSubtraction::create)

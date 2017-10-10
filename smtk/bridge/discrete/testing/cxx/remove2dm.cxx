@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
     op = brg->op("import");
     op->findFile("filename")->setValue(argv[1]);
     result = op->operate();
-    if (result->findInt("outcome")->value() != OPERATION_SUCCEEDED)
+    if (result->findInt("outcome")->value() != Operator::OPERATION_SUCCEEDED)
     {
       std::cerr << "Import 2dm Failed: " << argv[1] << std::endl;
       return 1;
@@ -55,7 +55,8 @@ int main(int argc, char* argv[])
       test(op != nullptr, "No remove model operator.");
       test(op->specification()->associateEntity(model2dm), "Could not associate model.");
       result = op->operate();
-      test(result->findInt("outcome")->value() == OPERATION_SUCCEEDED, "close model failed.");
+      test(result->findInt("outcome")->value() == Operator::OPERATION_SUCCEEDED,
+        "close model failed.");
       // Make sure the model is removed
       SessionRef session(mgr, brg->sessionId());
       test(session.models<Models>().empty(), "Expecting no models after close.");

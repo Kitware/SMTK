@@ -83,7 +83,7 @@ int UnitTestTriangulateFaces(int, char** const)
 
       op->findFile("filename")->setValue(file_path.c_str());
       smtk::model::OperatorResult result = op->operate();
-      if (result->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+      if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
       {
         std::cerr << "Could not load smtk model!\n";
         return 1;
@@ -128,7 +128,7 @@ int UnitTestTriangulateFaces(int, char** const)
     }
 
     smtk::model::OperatorResult result = triangulateFace->operate();
-    if (result->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+    if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
     {
       std::cerr << "Triangulate face operator failed\n";
       return 1;

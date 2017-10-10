@@ -189,7 +189,8 @@ OperatorResult BathymetryOperator::operateInternal()
 
       smtk::model::OperatorResult undoWarpMeshResult = undoWarpMesh->operate();
 
-      if (undoWarpMeshResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+      if (undoWarpMeshResult->findInt("outcome")->value() !=
+        smtk::operation::Operator::OPERATION_SUCCEEDED)
       {
         return this->createResult(OPERATION_FAILED);
       }
@@ -207,7 +208,8 @@ OperatorResult BathymetryOperator::operateInternal()
 
       smtk::model::OperatorResult elevateMeshResult = elevateMesh->operate();
 
-      if (elevateMeshResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+      if (elevateMeshResult->findInt("outcome")->value() !=
+        smtk::operation::Operator::OPERATION_SUCCEEDED)
       {
         return this->createResult(OPERATION_FAILED);
       }

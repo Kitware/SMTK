@@ -70,7 +70,7 @@ smtk::model::OperatorResult Sweep::operateInternal()
       *this->findModelEntity("sweep path").get(), cgmSweepPath, keepInputs, expunged);
 
   if (!ok)
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
 
   DLIList<Body*> cgmResults;
   CubitStatus s;
@@ -172,10 +172,11 @@ smtk::model::OperatorResult Sweep::operateInternal()
   if (s != CUBIT_SUCCESS)
   {
     smtkInfoMacro(log(), "Failed to perform sweep (status " << s << ").");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmResults, result, CREATED);
   result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());

@@ -24,7 +24,6 @@ PySharedPtrClass< smtk::bridge::exodus::WriteOperator > pybind11_init_smtk_bridg
     .def(py::init<>())
     .def(py::init<::smtk::bridge::exodus::WriteOperator const &>())
     .def("deepcopy", (smtk::bridge::exodus::WriteOperator & (smtk::bridge::exodus::WriteOperator::*)(::smtk::bridge::exodus::WriteOperator const &)) &smtk::bridge::exodus::WriteOperator::operator=)
-    .def_static("baseCreate", &smtk::bridge::exodus::WriteOperator::baseCreate)
     .def("className", &smtk::bridge::exodus::WriteOperator::className)
     .def("classname", &smtk::bridge::exodus::WriteOperator::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::exodus::WriteOperator> (*)()) &smtk::bridge::exodus::WriteOperator::create)

@@ -58,10 +58,11 @@ smtk::model::OperatorResult CreateVertex::operateInternal()
   if (!cgmVert)
   {
     smtkInfoMacro(log(), "Failed to create vertex.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   DLIList<RefVertex*> cgmEntitiesOut;
   cgmEntitiesOut.push(cgmVert);

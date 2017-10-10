@@ -24,7 +24,6 @@ PySharedPtrClass< smtk::bridge::polygon::CreateVertices > pybind11_init_smtk_bri
     .def(py::init<>())
     .def(py::init<::smtk::bridge::polygon::CreateVertices const &>())
     .def("deepcopy", (smtk::bridge::polygon::CreateVertices & (smtk::bridge::polygon::CreateVertices::*)(::smtk::bridge::polygon::CreateVertices const &)) &smtk::bridge::polygon::CreateVertices::operator=)
-    .def_static("baseCreate", &smtk::bridge::polygon::CreateVertices::baseCreate)
     .def("className", &smtk::bridge::polygon::CreateVertices::className)
     .def("classname", &smtk::bridge::polygon::CreateVertices::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::CreateVertices> (*)()) &smtk::bridge::polygon::CreateVertices::create)

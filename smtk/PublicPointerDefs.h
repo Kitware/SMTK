@@ -77,6 +77,12 @@ class VoidItem;
 class VoidItemDefinition;
 }
 
+namespace operation
+{
+class Manager;
+class Operator;
+}
+
 namespace extension
 {
 class qtSelectionManager;
@@ -226,6 +232,12 @@ typedef smtk::shared_ptr<smtk::resource::Component> ComponentPtr;
 typedef smtk::shared_ptr<smtk::resource::Set> SetPtr;
 typedef smtk::shared_ptr<const smtk::resource::Resource> ConstResourcePtr;
 typedef smtk::shared_ptr<const smtk::resource::Set> ConstSetPtr;
+}
+
+namespace operation
+{
+typedef smtk::shared_ptr<smtk::operation::Operator> OperatorPtr;
+typedef smtk::weak_ptr<smtk::operation::Operator> WeakOperatorPtr;
 }
 
 namespace mesh

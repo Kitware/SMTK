@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
     op = brg->op("import");
     op->findFile("filename")->setValue(argv[1]);
     result = op->operate();
-    if (result->findInt("outcome")->value() != OPERATION_SUCCEEDED)
+    if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
     {
       std::cerr << "Import 2dm Failed: " << argv[1] << std::endl;
       return 1;

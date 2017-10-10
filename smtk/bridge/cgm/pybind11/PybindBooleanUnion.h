@@ -24,7 +24,6 @@ PySharedPtrClass< smtk::bridge::cgm::BooleanUnion > pybind11_init_smtk_bridge_cg
     .def(py::init<>())
     .def(py::init<::smtk::bridge::cgm::BooleanUnion const &>())
     .def("deepcopy", (smtk::bridge::cgm::BooleanUnion & (smtk::bridge::cgm::BooleanUnion::*)(::smtk::bridge::cgm::BooleanUnion const &)) &smtk::bridge::cgm::BooleanUnion::operator=)
-    .def_static("baseCreate", &smtk::bridge::cgm::BooleanUnion::baseCreate)
     .def("className", &smtk::bridge::cgm::BooleanUnion::className)
     .def("classname", &smtk::bridge::cgm::BooleanUnion::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::cgm::BooleanUnion> (*)()) &smtk::bridge::cgm::BooleanUnion::create)

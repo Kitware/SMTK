@@ -124,7 +124,7 @@ int main(int argc, char* argv[])
   smtk::model::OperatorResult result = op->operate();
 
   // Confirm that the operator succeeded
-  if (result->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     std::cerr << "render mesh operator failed\n";
     return 1;

@@ -129,7 +129,7 @@ int main(int argc, char* argv[])
     op = brg->op("import");
     op->findFile("filename")->setValue(argv[1]);
     result = op->operate();
-    if (result->findInt("outcome")->value() != OPERATION_SUCCEEDED)
+    if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
     {
       std::cerr << "Import 2dm Failed: " << argv[1] << std::endl;
       return 1;
@@ -177,7 +177,7 @@ int main(int argc, char* argv[])
       op->associateEntity(model2dm);
       //write out the smtk model.
       result = op->operate();
-      if (result->findInt("outcome")->value() != OPERATION_SUCCEEDED)
+      if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
       {
         std::cerr << "Export 2dm smtk model Failed: " << write_path << std::endl;
         return 1;
@@ -189,7 +189,7 @@ int main(int argc, char* argv[])
       op = brg->op("load smtk model");
       op->findFile("filename")->setValue(write_path);
       result = op->operate();
-      if (result->findInt("outcome")->value() != OPERATION_SUCCEEDED)
+      if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
       {
         cleanupsmtkfiles(write_path, mc->name());
         std::cerr << "Import 2dm smtk model Failed: " << write_path << std::endl;
@@ -252,7 +252,7 @@ int main(int argc, char* argv[])
         meshItem->setValues(edge1, pids);
         meshItem->setModifyMode(smtk::attribute::ACCEPT);
         result = edgeop->operate();
-        if (result->findInt("outcome")->value() != OPERATION_SUCCEEDED)
+        if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
         {
           std::cerr << "Split Edge 1 Failed!\n";
           return 1;
@@ -271,7 +271,7 @@ int main(int argc, char* argv[])
         meshItem->setValues(edge10, pids);
         meshItem->setModifyMode(smtk::attribute::ACCEPT);
         result = edgeop->operate();
-        if (result->findInt("outcome")->value() != OPERATION_SUCCEEDED)
+        if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
         {
           std::cerr << "Split Edge 10 Failed!\n";
           return 1;
@@ -290,7 +290,7 @@ int main(int argc, char* argv[])
         meshItem->setValues(vertex4, pids);
         meshItem->setModifyMode(smtk::attribute::ACCEPT);
         result = edgeop->operate();
-        if (result->findInt("outcome")->value() != OPERATION_SUCCEEDED)
+        if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
         {
           std::cerr << "Demote Vertex 4 on Edge 10 Failed!\n";
           return 1;

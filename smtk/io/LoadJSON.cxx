@@ -743,7 +743,10 @@ int LoadJSON::ofRemoteSession(
   StringList opNames = destSession->operatorNames();
   for (StringList::iterator it = opNames.begin(); it != opNames.end(); ++it)
   {
-    destSession->registerOperator(*it, NULL, RemoteOperator::baseCreate);
+    auto create = []() -> smtk::model::OperatorPtr {
+      return std::static_pointer_cast<smtk::model::Operator>(RemoteOperator::create());
+    };
+    destSession->registerOperator(*it, NULL, create);
   }
 
   // Import additional state if the session can accept it.

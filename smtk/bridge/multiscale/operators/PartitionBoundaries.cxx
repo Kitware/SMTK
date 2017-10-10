@@ -176,7 +176,7 @@ smtk::model::OperatorResult PartitionBoundaries::operateInternal()
   if (datasets.empty())
   {
     smtkErrorMacro(this->log(), "No models on which to partition boundaries.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
   smtk::model::Model dataset = datasets[0];
 
@@ -188,7 +188,7 @@ smtk::model::OperatorResult PartitionBoundaries::operateInternal()
   if (!collection->isValid())
   {
     smtkErrorMacro(this->log(), "No collection associated with this model.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   smtk::bridge::mesh::Topology* topology = this->activeSession()->topology(dataset);
@@ -196,14 +196,14 @@ smtk::model::OperatorResult PartitionBoundaries::operateInternal()
   if (!topology)
   {
     smtkErrorMacro(this->log(), "No topology associated with this model.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   smtk::bridge::multiscale::SessionPtr sess = this->activeSession();
   if (!sess)
   {
     smtkErrorMacro(this->log(), "No session associated with this model.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   // Set the origin from the values held in the specification
@@ -243,7 +243,7 @@ smtk::model::OperatorResult PartitionBoundaries::operateInternal()
     labelIntersection(collection, shell, filter, created, *topology);
   }
 
-  result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  result = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
   result->findModelEntity("created")->setIsEnabled(true);
   this->addEntitiesToResult(result, created, CREATED);
   for (auto entity : created)

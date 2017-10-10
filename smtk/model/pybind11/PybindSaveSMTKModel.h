@@ -24,7 +24,6 @@ PySharedPtrClass< smtk::model::SaveSMTKModel, smtk::model::Operator > pybind11_i
   PySharedPtrClass< smtk::model::SaveSMTKModel, smtk::model::Operator > instance(m, "SaveSMTKModel");
   instance
     .def("deepcopy", (smtk::model::SaveSMTKModel & (smtk::model::SaveSMTKModel::*)(::smtk::model::SaveSMTKModel const &)) &smtk::model::SaveSMTKModel::operator=)
-    .def_static("baseCreate", &smtk::model::SaveSMTKModel::baseCreate)
     .def("className", &smtk::model::SaveSMTKModel::className)
     .def("classname", &smtk::model::SaveSMTKModel::classname)
     .def_static("create", (std::shared_ptr<smtk::model::SaveSMTKModel> (*)()) &smtk::model::SaveSMTKModel::create)

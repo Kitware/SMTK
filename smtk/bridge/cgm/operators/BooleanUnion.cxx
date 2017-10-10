@@ -69,7 +69,7 @@ smtk::model::OperatorResult BooleanUnion::operateInternal()
   if (cgmBodiesIn.size() < 2)
   {
     smtkInfoMacro(log(), "Need multiple bodies to union, given " << cgmBodiesIn.size() << ".");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   DLIList<RefEntity*> imported;
@@ -77,10 +77,11 @@ smtk::model::OperatorResult BooleanUnion::operateInternal()
   if (s != CUBIT_SUCCESS)
   {
     smtkInfoMacro(log(), "Failed to perform union (status " << s << ").");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmBodiesOut, result, MODIFIED);
   result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());

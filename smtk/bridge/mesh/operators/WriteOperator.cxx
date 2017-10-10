@@ -61,7 +61,7 @@ smtk::model::OperatorResult WriteOperator::operateInternal()
   if (datasets.empty())
   {
     smtkErrorMacro(this->log(), "No models to save.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   smtk::model::Model dataset = datasets[0];
@@ -72,7 +72,7 @@ smtk::model::OperatorResult WriteOperator::operateInternal()
   if (!collection->isValid())
   {
     smtkErrorMacro(this->log(), "No collection associated with this model.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   breakMaterialsByAssociation(collection);
@@ -82,10 +82,11 @@ smtk::model::OperatorResult WriteOperator::operateInternal()
   if (!writeSuccess)
   {
     smtkErrorMacro(this->log(), "Collection failed to write.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
   return result;
 }
 

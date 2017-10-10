@@ -102,7 +102,7 @@ int SessionIOJSON::loadExodusFileWithUUIDs(
     pu->setValue(i, model::EntityRef(sref.manager(), *uit));
   }
   smtk::model::OperatorResult opresult = readOp->operate();
-  if (opresult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (opresult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     smtkWarningMacro(sref.manager()->log(), "Failed to read the model for native kernel!");
     return 0;

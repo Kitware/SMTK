@@ -24,7 +24,6 @@ PySharedPtrClass< smtk::bridge::cgm::Copy > pybind11_init_smtk_bridge_cgm_Copy(p
     .def(py::init<>())
     .def(py::init<::smtk::bridge::cgm::Copy const &>())
     .def("deepcopy", (smtk::bridge::cgm::Copy & (smtk::bridge::cgm::Copy::*)(::smtk::bridge::cgm::Copy const &)) &smtk::bridge::cgm::Copy::operator=)
-    .def_static("baseCreate", &smtk::bridge::cgm::Copy::baseCreate)
     .def("className", &smtk::bridge::cgm::Copy::className)
     .def("classname", &smtk::bridge::cgm::Copy::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::cgm::Copy> (*)()) &smtk::bridge::cgm::Copy::create)

@@ -40,8 +40,8 @@ int UnitTestPolygonImport(int argc, char* argv[])
   myOp->specification()->findFile("filename")->setValue(readFilePath);
   std::cout << "Importing " << readFilePath << std::endl;
   smtk::model::OperatorResult res = myOp->operate();
-  test(
-    res->findInt("outcome")->value() == smtk::model::OPERATION_SUCCEEDED, "Import operator failed");
+  test(res->findInt("outcome")->value() == smtk::operation::Operator::OPERATION_SUCCEEDED,
+    "Import operator failed");
   smtk::model::Model modelCreated =
     static_cast<smtk::model::Model>(res->findModelEntity("created")->value());
   std::set<smtk::model::Edge> edges;

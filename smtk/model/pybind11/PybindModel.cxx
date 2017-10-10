@@ -149,8 +149,6 @@ PYBIND11_MODULE(_smtkPybindModel, model)
   pybind11_init_smtk_model_isVertexUse(model);
   pybind11_init_smtk_model_isVolume(model);
   pybind11_init_smtk_model_isVolumeUse(model);
-  pybind11_init_smtk_model_outcomeAsString(model);
-  pybind11_init_smtk_model_stringToOutcome(model);
   PySharedPtrClass< smtk::model::AttributeListPhrase, smtk::model::DescriptivePhrase > smtk_model_AttributeListPhrase = pybind11_init_smtk_model_AttributeListPhrase(model);
   py::class_< smtk::model::AuxiliaryGeometry, smtk::model::EntityRef > smtk_model_AuxiliaryGeometry = pybind11_init_smtk_model_AuxiliaryGeometry(model);
   py::class_< smtk::model::CellEntity, smtk::model::EntityRef > smtk_model_CellEntity = pybind11_init_smtk_model_CellEntity(model);

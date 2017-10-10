@@ -109,7 +109,7 @@ smtk::model::OperatorResult CreateModel::operateInternal()
         model.assignDefaultName();
       }
 
-      result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+      result = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
       this->addEntityToResult(result, model, CREATED);
       model.setFloatProperty(
         "x axis", smtk::model::FloatList(storage->xAxis(), storage->xAxis() + 3));
@@ -135,7 +135,7 @@ smtk::model::OperatorResult CreateModel::operateInternal()
 
   if (!result)
   {
-    result = this->createResult(smtk::model::OPERATION_FAILED);
+    result = this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   return result;

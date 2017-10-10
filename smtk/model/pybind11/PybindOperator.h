@@ -142,14 +142,4 @@ PySharedPtrClass< smtk::model::Operator, smtk::model::PyOperator > pybind11_init
   return instance;
 }
 
-void pybind11_init_smtk_model_outcomeAsString(py::module &m)
-{
-  m.def("outcomeAsString", &smtk::model::outcomeAsString, "", py::arg("oc"));
-}
-
-void pybind11_init_smtk_model_stringToOutcome(py::module &m)
-{
-  m.def("stringToOutcome", &smtk::model::stringToOutcome, "", py::arg("oc"));
-}
-
 #endif

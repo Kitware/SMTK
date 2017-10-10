@@ -84,7 +84,8 @@ void verify_eulerCharacteristicOp()
   smtk::model::OperatorResult eulerCharacteristicOpResult = eulerCharacteristicOp->operate();
 
   // ...and test the results for success.
-  test(eulerCharacteristicOpResult->findInt("outcome")->value() == smtk::model::OPERATION_SUCCEEDED,
+  test(eulerCharacteristicOpResult->findInt("outcome")->value() ==
+      smtk::operation::Operator::OPERATION_SUCCEEDED,
     "\"euler characteristic\" operator failed\n");
 
   // Finally, confirm that the Euler characteristic is correct.

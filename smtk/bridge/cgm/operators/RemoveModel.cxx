@@ -43,18 +43,18 @@ smtk::model::OperatorResult RemoveModel::operateInternal()
 {
   GeometryQueryTool* gqt = GeometryQueryTool::instance();
   if (!gqt)
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
 
   // ableToOperate should have verified that model(s) are set
   DLIList<Body*> bodies;
   EntityRefArray expunged;
   if (!this->cgmEntities(this->associatedEntitiesAs<Models>(), bodies, false, expunged))
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
 
   // This does not return an error code; assume success.
   gqt->delete_Body(bodies);
 
-  OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  OperatorResult result = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
   return result;

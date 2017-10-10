@@ -112,7 +112,7 @@ smtk::model::ManagerPtr create_polygon_model(const std::string file_path)
 
     op->findFile("filename")->setValue(file_path.c_str());
     smtk::model::OperatorResult result = op->operate();
-    if (result->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+    if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
     {
       std::cout << "Import polygon Failed!" << std::endl;
     }

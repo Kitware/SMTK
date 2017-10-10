@@ -69,7 +69,7 @@ int UnitTestPolygonCreateEdgeFromVerts(int argc, char* argv[])
 
   // Apply the create vertices operation
   res = myOp->operate();
-  test(res->findInt("outcome")->value() == smtk::model::OPERATION_SUCCEEDED,
+  test(res->findInt("outcome")->value() == smtk::operation::Operator::OPERATION_SUCCEEDED,
     "Create vertices operator failed");
 
   // Verify the vertices are correctly created
@@ -105,7 +105,7 @@ int UnitTestPolygonCreateEdgeFromVerts(int argc, char* argv[])
 
   // Apply the create edge from vertices operation
   res = myOp->operate();
-  test(res->findInt("outcome")->value() == smtk::model::OPERATION_SUCCEEDED,
+  test(res->findInt("outcome")->value() == smtk::operation::Operator::OPERATION_SUCCEEDED,
     "Create edge from vertices operator failed");
 
   // Vertify that the edge is created

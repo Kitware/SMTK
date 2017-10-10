@@ -12,8 +12,6 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/model/Operator.h"
 
-using namespace smtk::model;
-
 namespace smtk
 {
 namespace io
@@ -23,23 +21,25 @@ OperatorLog::OperatorLog(smtk::model::ManagerPtr mgr)
   : m_hasFailures(false)
   , m_manager(mgr)
 {
-  mgr->observe(smtk::model::CREATED_OPERATOR, OperatorLog::operatorCreated, this);
+  mgr->observe(smtk::operation::Operator::CREATED_OPERATOR, OperatorLog::operatorCreated, this);
 }
 
 OperatorLog::~OperatorLog()
 {
   smtk::model::ManagerPtr mgr = this->m_manager.lock();
   if (mgr)
-    mgr->unobserve(smtk::model::CREATED_OPERATOR, OperatorLog::operatorCreated, this);
+    mgr->unobserve(smtk::operation::Operator::CREATED_OPERATOR, OperatorLog::operatorCreated, this);
 
-  smtk::model::OperatorPtr watched;
+  smtk::operation::OperatorPtr watched;
   WeakOpArray::iterator it;
   for (it = this->m_watching.begin(); it != this->m_watching.end(); ++it)
   {
     if ((watched = it->lock()))
     {
-      watched->unobserve(smtk::model::WILL_OPERATE, OperatorLog::operatorInvoked, this);
-      watched->unobserve(smtk::model::DID_OPERATE, OperatorLog::operatorReturned, this);
+      watched->unobserve(
+        smtk::operation::Operator::WILL_OPERATE, OperatorLog::operatorInvoked, this);
+      watched->unobserve(
+        smtk::operation::Operator::DID_OPERATE, OperatorLog::operatorReturned, this);
     }
   }
 }
@@ -55,21 +55,22 @@ void OperatorLog::resetFailures()
 }
 
 int OperatorLog::operatorCreated(
-  smtk::model::OperatorEventType event, const smtk::model::Operator& op, void* data)
+  smtk::operation::Operator::EventType event, const smtk::operation::Operator& op, void* data)
 {
   OperatorLog* self = reinterpret_cast<OperatorLog*>(data);
-  if (!self || event != CREATED_OPERATOR)
+  if (!self || event != smtk::operation::Operator::CREATED_OPERATOR)
     return 0; // Don't stop an operation just because the recorder is unhappy.
 
-  OperatorPtr oper = smtk::const_pointer_cast<Operator>(op.shared_from_this());
+  smtk::operation::OperatorPtr oper =
+    smtk::const_pointer_cast<smtk::operation::Operator>(op.shared_from_this());
   self->m_watching.push_back(oper);
-  oper->observe(smtk::model::WILL_OPERATE, OperatorLog::operatorInvoked, self);
-  oper->observe(smtk::model::DID_OPERATE, OperatorLog::operatorReturned, self);
+  oper->observe(smtk::operation::Operator::WILL_OPERATE, OperatorLog::operatorInvoked, self);
+  oper->observe(smtk::operation::Operator::DID_OPERATE, OperatorLog::operatorReturned, self);
   return 0;
 }
 
 int OperatorLog::operatorInvoked(
-  smtk::model::OperatorEventType event, const smtk::model::Operator& op, void* data)
+  smtk::operation::Operator::EventType event, const smtk::operation::Operator& op, void* data)
 {
   OperatorLog* self = reinterpret_cast<OperatorLog*>(data);
   if (!self)
@@ -78,14 +79,15 @@ int OperatorLog::operatorInvoked(
   return self->recordInvocation(event, op);
 }
 
-int OperatorLog::operatorReturned(smtk::model::OperatorEventType event,
-  const smtk::model::Operator& op, smtk::model::OperatorResult r, void* data)
+int OperatorLog::operatorReturned(smtk::operation::Operator::EventType event,
+  const smtk::operation::Operator& op, smtk::operation::Operator::Result r, void* data)
 {
   OperatorLog* self = reinterpret_cast<OperatorLog*>(data);
   if (!self)
     return 0; // Don't stop an operation just because the recorder is unhappy.
 
-  self->m_hasFailures |= (r->findInt("outcome")->value(0) == smtk::model::OPERATION_FAILED);
+  self->m_hasFailures |=
+    (r->findInt("outcome")->value(0) == smtk::operation::Operator::OPERATION_FAILED);
   return self->recordResult(event, op, r);
 }
 

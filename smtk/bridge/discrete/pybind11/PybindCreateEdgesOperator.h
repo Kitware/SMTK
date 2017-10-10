@@ -30,7 +30,6 @@ PySharedPtrClass< smtk::bridge::discrete::CreateEdgesOperator, smtk::model::Oper
     .def("shared_from_this", (std::shared_ptr<const smtk::bridge::discrete::CreateEdgesOperator> (smtk::bridge::discrete::CreateEdgesOperator::*)() const) &smtk::bridge::discrete::CreateEdgesOperator::shared_from_this)
     .def("name", &smtk::bridge::discrete::CreateEdgesOperator::name)
     .def("className", &smtk::bridge::discrete::CreateEdgesOperator::className)
-    .def_static("baseCreate", &smtk::bridge::discrete::CreateEdgesOperator::baseCreate)
     .def("ableToOperate", &smtk::bridge::discrete::CreateEdgesOperator::ableToOperate)
     ;
   return instance;

@@ -37,7 +37,7 @@ smtk::model::OperatorResult GroupAuxiliaryGeometry::operateInternal()
   if (entities.empty())
   {
     smtkErrorMacro(this->log(), "No children specified.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   Model parent = entities[0].owningModel();
@@ -95,7 +95,8 @@ smtk::model::OperatorResult GroupAuxiliaryGeometry::operateInternal()
 
   auxGeom.setStringProperty("type", "group");
 
-  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result =
+    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   this->addEntityToResult(result, parent, MODIFIED);
   this->addEntitiesToResult(result, entities, MODIFIED);
