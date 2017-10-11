@@ -19,6 +19,7 @@
 #include "vtkXMLPolyDataWriter.h"
 #include <vtkAssemblyPath.h>
 #include <vtkContourFilter.h>
+#include <vtkGenericOpenGLRenderWindow.h>
 #include <vtkImageActor.h>
 #include <vtkImageBlend.h>
 #include <vtkImageCanvasSource2D.h>
@@ -149,6 +150,8 @@ public:
     maskRender->SetLayer(1);
     maskRender->AddActor(maskActor);
     maskRender->SetActiveCamera(camera);
+    vtkNew<vtkGenericOpenGLRenderWindow> renderWindow;
+    imageViewer->SetRenderWindow(renderWindow.GetPointer());
     imageViewer->GetRenderWindow()->AddRenderer(maskRender);
 
     imageViewer->GetRenderWindow()->SetNumberOfLayers(3);

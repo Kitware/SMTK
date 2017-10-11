@@ -85,8 +85,6 @@ SET(ModelFiles
   Serialize/vtkCommonSerializationHelper.cxx
   Serialize/vtkInformationKeyMap.cxx
   Serialize/vtkRenderingSerializationHelper.cxx
-  Serialize/vtkXMLArchiveReader.cxx
-  Serialize/vtkXMLArchiveWriter.cxx
   Serialize/vtkXMLElement.cxx
   Model/vtkModelItem.cxx
   Model/vtkModelItemIterator.cxx
@@ -162,8 +160,6 @@ SET(DiscreteModelHeaders
   Serialize/vtkCommonSerializationHelper.h
   Serialize/vtkInformationKeyMap.h
   Serialize/vtkRenderingSerializationHelper.h
-  Serialize/vtkXMLArchiveReader.h
-  Serialize/vtkXMLArchiveWriter.h
   Serialize/vtkXMLElement.h
   Model/vtkModelItem.h
   Model/vtkModelItemIterator.h
