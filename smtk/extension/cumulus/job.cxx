@@ -41,6 +41,7 @@ Job::Job(const Job& job)
   this->m_notes = job.notes();
   this->m_start = job.started();
   this->m_finish = job.finished();
+  this->m_downloadFolder = job.downloadFolder();
 }
 
 Job::~Job()
@@ -63,6 +64,11 @@ void Job::setStatus(const QString& status)
   {
     this->m_finish = QDateTime::currentDateTime();
   }
+}
+
+void Job::setDownloadFolder(const QString& path)
+{
+  this->m_downloadFolder = path;
 }
 
 Job Job::fromJSON(cJSON* obj)

@@ -362,6 +362,8 @@ void CumulusProxy::downloadJob(const QString& downloadDirectory, Job job)
 void CumulusProxy::downloadJobFinished()
 {
   DownloadJobRequest* request = qobject_cast<DownloadJobRequest*>(sender());
+  Job job = request->job();
+  job.setDownloadFolder(request->path());
 
   emit jobDownloaded(request->job(), request->path());
   emit info("Job download complete.");

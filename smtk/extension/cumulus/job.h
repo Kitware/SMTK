@@ -43,9 +43,11 @@ public:
   QString notes() const { return this->m_notes; };
   QDateTime started() const { return this->m_start; };
   QDateTime finished() const { return this->m_finish; };
+  QString downloadFolder() const { return this->m_downloadFolder; }
 
   bool isValid() const { return !this->m_id.isEmpty(); };
   void setStatus(const QString& status);
+  void setDownloadFolder(const QString& path);
 
   static Job fromJSON(cJSON* obj);
 
@@ -58,6 +60,7 @@ private:
   QString m_notes;
   QDateTime m_start;
   QDateTime m_finish;
+  QString m_downloadFolder;
 };
 
 }; // end namespace
