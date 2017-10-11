@@ -1,0 +1,97 @@
+<ServerManagerConfiguration>
+  <ProxyGroup name="representations">
+    <SMTKModelRepresentationProxy name="SMTKModelRepresentation"
+      class="vtkSMTKModelRepresentation"
+      processes="client|renderserver|dataserver"
+      base_proxygroup="internal_representations"
+      base_proxyname="SurfaceRepresentationBase">
+      <Documentation>
+        This specialized representation uses extended functionality of the
+        composite mapper to better integrate with SMTKModel. Handles selection
+        of SMTK Model entities.
+      </Documentation>
+
+      <InputProperty command="SetInputConnection"
+                     name="Input">
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkDataSet"/>
+        </DataTypeDomain>
+          <Documentation>Model entity tessellations input. </Documentation>
+      </InputProperty>
+
+      <InputProperty command="SetInputConnection"
+                     label="Glyph prototypes"
+                     name="GlyphPrototypes"
+                     panel_visibility="advanced"
+                     port_index="1">
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkDataObjectTree"/>
+        </DataTypeDomain>
+          <Documentation>Glyph vertices.</Documentation>
+<!--
+        <ProxyListDomain name="proxy_list">
+          <Proxy group="sources" name="ArrowSource" />
+          <Proxy group="sources" name="ConeSource" />
+          <Proxy group="sources" name="CubeSource" />
+          <Proxy group="sources" name="CylinderSource" />
+          <Proxy group="sources" name="LineSource" />
+          <Proxy group="sources" name="SphereSource" />
+          <Proxy group="sources" name="GlyphSource2D" />
+          <Proxy group="internal_filters" name="PipelineConnection" />
+          <Proxy group="sources" name="SMTKModelReader" />
+        </ProxyListDomain>
+-->
+      </InputProperty>
+
+      <InputProperty command="SetInputConnection"
+                     label="Glyph points"
+                     name="GlyphPoints"
+                     panel_visibility="advanced"
+                     port_index="2">
+        <Documentation>Glyph source objects.</Documentation>
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkPolyData" />
+          <DataType value="vtkCompositeDataSet" />
+        </DataTypeDomain>
+        <Hints>
+          <ProxyPropertyWidget selected_proxy_panel_visibility="advanced" />
+          <!-- show the selected proxy's panel, only in advanced mode. -->
+        </Hints>
+      </InputProperty>
+
+    <!-- End of SMTKModelRepresentation -->
+    </SMTKModelRepresentationProxy>
+
+    <Extension name="GeometryRepresentation">
+      <Documentation>
+        Extends standard GeometryRepresentation to serve as a SMTK model
+        representation.
+      </Documentation>
+
+      <!-- This adds to what is already defined in PVRepresentationBase -->
+      <RepresentationType subproxy="SMTKModelRepresentation"
+        text="SMTK Model" subtype="Surface" />
+
+      <SubProxy>
+        <Proxy name="SMTKModelRepresentation"
+          proxygroup="representations" proxyname="SMTKModelRepresentation">
+        </Proxy>
+        <ExposedProperties>
+          <PropertyGroup label="SMTK Model Parameters"
+                         panel_visibility="always">
+            <Property name="GlyphPrototypes"
+                      panel_visibility="always"/>
+            <Property name="GlyphPoints"
+                      panel_visibility="always"/>
+          </PropertyGroup>
+        </ExposedProperties>
+
+        <ShareProperties subproxy="SurfaceRepresentation">
+          <Exception name="Input" />
+          <Exception name="Visibility" />
+        </ShareProperties>
+
+      </SubProxy>
+    </Extension>
+  </ProxyGroup>
+</ServerManagerConfiguration>
