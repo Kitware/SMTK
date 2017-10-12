@@ -57,6 +57,8 @@ PySharedPtrClass< smtk::model::Entity, smtk::resource::Component > pybind11_init
     .def_static("countForType", &smtk::model::Entity::countForType, py::arg("flags"), py::arg("counters"), py::arg("incr") = false)
     .def_static("defaultNameFromCounters", &smtk::model::Entity::defaultNameFromCounters, py::arg("entityFlags"), py::arg("counters"), py::arg("incr") = true)
     .def_static("flagToSpecifierString", &smtk::model::Entity::flagToSpecifierString, py::arg("flagsOrMask"), py::arg("textual") = true)
+    .def("modelResource", &smtk::model::Entity::modelResource)
+    .def("resource", &smtk::model::Entity::resource)
     .def_static("specifierStringToFlag", &smtk::model::Entity::specifierStringToFlag, py::arg("spec"))
     .def_static("dimensionToDimensionBits", &smtk::model::Entity::dimensionToDimensionBits, py::arg("dim"))
     ;

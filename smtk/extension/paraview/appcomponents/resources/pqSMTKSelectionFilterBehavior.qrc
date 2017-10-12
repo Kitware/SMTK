@@ -1,0 +1,16 @@
+<RCC>
+  <qresource prefix="/">
+    <file>Faces.png</file>
+    <file>Faces@2x_Blue.png</file>
+    <file>Meshes.png</file>
+    <file>Meshes@2x_Blue.png</file>
+    <file>Models.png</file>
+    <file>Models@2x.png</file>
+    <file>Vertices@2x_Blue.png</file>
+    <file>Volumes.png</file>
+    <file>Volumes@2x_Blue.png</file>
+    <file>Edges.png</file>
+    <file>Edges@2x_Blue.png</file>
+    <file>Vertices.png</file>
+  </qresource>
+</RCC>

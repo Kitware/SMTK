@@ -31,6 +31,10 @@ class QMenu;
 
 namespace smtk
 {
+namespace resource
+{
+enum class SelectionAction;
+}
 namespace extension
 {
 class qtFileItem;
@@ -38,7 +42,6 @@ class qtModelEntityItem;
 class qtMeshSelectionItem;
 class qtModelOperationWidget;
 class qtOperatorDockWidget;
-enum class SelectionModifier;
 
 class SMTKQTEXT_EXPORT qtModelView : public QTreeView
 {
@@ -95,7 +98,7 @@ public slots:
 signals:
   void sendSelectionsFromModelViewToSelectionManager(const smtk::model::EntityRefs& selEntities,
     const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& DesPhrases,
-    const smtk::extension::SelectionModifier modifierFlag, const std::string& selectionSource);
+    const smtk::resource::SelectionAction modifierFlag, const std::string& selectionSource);
 
   void operationRequested(const smtk::model::OperatorPtr& brOp);
   void operationCancelled(const smtk::model::OperatorPtr& brOp);

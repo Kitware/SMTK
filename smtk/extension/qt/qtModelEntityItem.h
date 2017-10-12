@@ -27,7 +27,7 @@ namespace smtk
 {
 namespace extension
 {
-enum class SelectionModifier;
+enum class SelectionAction;
 class SMTKQTEXT_EXPORT qtModelEntityItem : public qtItem
 {
   Q_OBJECT
@@ -64,7 +64,7 @@ signals:
   void entityListHighlighted(const smtk::common::UUIDs& uuids);
   void sendSelectionFromModelEntityToSelectionManager(const smtk::model::EntityRefs& selEntities,
     const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& DesPhrases,
-    const smtk::extension::SelectionModifier modifierFlag, const std::string& incomingSourceName);
+    const smtk::resource::SelectionAction modifierFlag, const std::string& incomingSourceName);
 
 protected slots:
   void updateItemData() override;

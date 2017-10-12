@@ -40,6 +40,20 @@ namespace common
 {
 }
 
+/**\brief A common base class for resources (data stored in files) and tools to manage them.
+  *
+  */
+namespace resource
+{
+}
+
+/**\brief A common base class for operators that act on resources and a manager to track subclasses.
+  *
+  */
+namespace operation
+{
+}
+
 /**\brief Define attributes describing simulation inputs.
   *
   */
