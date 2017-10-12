@@ -186,7 +186,7 @@ void qtModelEntityItem::updateItemData()
 
 void qtModelEntityItem::refreshEntityItems()
 {
-  if(this->Internals->EntityItemCombo)
+  if (this->Internals->EntityItemCombo)
   {
     this->Internals->EntityItemCombo->init();
   }
@@ -503,13 +503,16 @@ void qtModelEntityItem::onExpungeEntities(const smtk::model::EntityRefs& expunge
 {
   smtk::attribute::ModelEntityItemPtr modEntityItem =
     dynamic_pointer_cast<ModelEntityItem>(this->getObject());
-  for (smtk::model::EntityRefs::const_iterator bit = expungedEnts.begin();
-       bit != expungedEnts.end(); ++bit)
+  if (!!modEntityItem)
   {
-    std::ptrdiff_t idx = modEntityItem->find(*bit);
-    if (idx >= 0)
+    for (smtk::model::EntityRefs::const_iterator bit = expungedEnts.begin();
+         bit != expungedEnts.end(); ++bit)
     {
-      modEntityItem->removeValue(static_cast<std::size_t>(idx));
+      std::ptrdiff_t idx = modEntityItem->find(*bit);
+      if (idx >= 0)
+      {
+        modEntityItem->removeValue(static_cast<std::size_t>(idx));
+      }
     }
   }
 }
