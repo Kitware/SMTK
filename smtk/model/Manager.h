@@ -434,7 +434,7 @@ public:
     const smtk::model::EntityRefArray& related);
   void trigger(OperatorEventType event, const smtk::model::Operator& src);
 
-  smtk::io::Logger& log() { return this->m_log; }
+  smtk::io::Logger& log() { return smtk::io::Logger::instance(); }
 
 protected:
   friend class smtk::attribute::Collection;
@@ -474,8 +474,6 @@ protected:
   std::set<OneToOneTrigger> m_oneToOneTriggers;
   std::set<OneToManyTrigger> m_oneToManyTriggers;
   std::set<BareOperatorTrigger> m_operatorTriggers;
-
-  smtk::io::Logger m_log;
 };
 
 template <typename Collection>
