@@ -13,7 +13,6 @@
 #include "vtkDiscreteModelEntityGroup.h"
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelRegion.h"
-#include "vtkInstantiator.h"
 #include "vtkModelFaceUse.h"
 #include "vtkModelItemIterator.h"
 #include "vtkModelMaterial.h"
