@@ -31,7 +31,6 @@
 #include "vtkIdList.h"
 #include "vtkIdTypeArray.h"
 #include "vtkInformation.h"
-#include "vtkInstantiator.h"
 #include "vtkIntArray.h"
 #include "vtkMath.h"
 #include "vtkModel3dm2DGridRepresentation.h"

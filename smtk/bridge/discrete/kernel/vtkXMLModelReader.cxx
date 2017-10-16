@@ -25,7 +25,6 @@
 #include "vtkInformationKeyMap.h"
 #include "vtkInformationObjectBaseKey.h"
 #include "vtkInformationStringKey.h"
-#include "vtkInstantiator.h"
 #include "vtkModelMaterial.h"
 #include "vtkModelUserName.h"
 #include "vtkModelXMLParser.h"
@@ -641,9 +640,10 @@ vtkModelShellUse* vtkXMLModelReader::ConstructModelShellUse(int id)
     return 0;
   }
   vtkModelShellUse* shellUse = 0;
-  vtkModelItemIterator* iter = vtkDiscreteModelRegion::SafeDownCast(
-    this->Model->GetModelEntity(vtkModelRegionType,
-      associatedRegion[0]))->NewModelShellUseIterator();
+  vtkModelItemIterator* iter =
+    vtkDiscreteModelRegion::SafeDownCast(
+      this->Model->GetModelEntity(vtkModelRegionType, associatedRegion[0]))
+      ->NewModelShellUseIterator();
   for (iter->Begin(); !iter->IsAtEnd() && !shellUse; iter->Next())
   {
     if (id == vtkModelShellUse::SafeDownCast(iter->GetCurrentItem())->GetUniquePersistentId())

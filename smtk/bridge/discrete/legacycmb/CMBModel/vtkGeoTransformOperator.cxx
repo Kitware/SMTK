@@ -19,7 +19,6 @@
 #include "vtkFieldData.h"
 #include "vtkFloatArray.h"
 #include "vtkGeoSphereTransform.h"
-#include "vtkInstantiator.h"
 #include "vtkMath.h"
 #include "vtkObjectFactory.h"
 #include "vtkPointData.h"

@@ -29,7 +29,6 @@
 #include "vtkFloatArray.h"
 #include "vtkIdList.h"
 #include "vtkIdTypeArray.h"
-#include "vtkInstantiator.h"
 #include "vtkIntArray.h"
 #include "vtkLine.h"
 #include "vtkMath.h"
