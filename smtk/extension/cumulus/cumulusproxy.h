@@ -45,6 +45,7 @@ public slots:
   void fetchJobs();
   void fetchJob(const QString& id);
   void deleteJob(Job job);
+  void patchJobs(QList<Job> jobs);
   void terminateJob(Job job);
   void downloadJob(const QString& downloadDirectory, Job job);
 

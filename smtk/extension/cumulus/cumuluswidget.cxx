@@ -10,6 +10,7 @@
 
 #include "cumuluswidget.h"
 #include "cumulusproxy.h"
+#include "job.h"
 #include "jobtablemodel.h"
 #include "ui_cumuluswidget.h"
 
@@ -46,6 +47,8 @@ CumulusWidget::CumulusWidget(QWidget* parentObject)
   connect(this->m_cumulusProxy, SIGNAL(info(QString)), this, SIGNAL(info(QString)));
   connect(this->m_cumulusProxy, SIGNAL(jobDownloaded(cumulus::Job, const QString&)), this,
     SLOT(handleDownloadResult(cumulus::Job, const QString&)));
+  connect(this->m_jobTableModel, &JobTableModel::finishTimeChanged, this->m_cumulusProxy,
+    &CumulusProxy::patchJobs);
 }
 
 CumulusWidget::~CumulusWidget()

@@ -59,7 +59,7 @@ public:
 
 signals:
   void rowCountChanged();
-  void finishedTimeChanged(QList<Job>);
+  void finishTimeChanged(QList<Job>);
 
 public slots:
   void jobsUpdated(QList<Job> jobs);

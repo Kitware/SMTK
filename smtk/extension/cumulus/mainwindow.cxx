@@ -19,7 +19,7 @@
 #include <QString>
 #include <QTextStream>
 
-//#define TEST_CUSTOM_MENU 1
+#define TEST_CUSTOM_MENU 1
 
 namespace cumulus
 {
@@ -39,8 +39,8 @@ MainWindow::MainWindow()
   connect(this->m_ui->cumulusWidget, SIGNAL(info(QString)), this, SLOT(displayInfo(QString)));
 
 #ifdef TEST_CUSTOM_MENU
-  QAction* action = new QAction("Custom/Complete", this);
-  m_ui->cumulusWidget->addContextMenuAction("complete", action);
+  QAction* action = new QAction("Show Download Folder", this);
+  m_ui->cumulusWidget->addContextMenuAction("downloaded", action);
   QObject::connect(action, &QAction::triggered, this, &MainWindow::test);
 #endif
 
@@ -84,7 +84,8 @@ void MainWindow::test()
   Job job = action->data().value<Job>();
   QString message;
   QTextStream qs(&message);
-  qs << "The slot named test() was called for job " << job.id();
+  qs << "The slot named test() was called for job " << job.id() << ".\n\n"
+     << "Download folder: " << job.downloadFolder();
   QMessageBox::information(this, "Test", message);
 }
 

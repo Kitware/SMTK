@@ -151,6 +151,14 @@ void JobTableModel::jobsUpdated(QList<Job> jobs)
     inputJob = inputMap[modelJobId];
     inputMap.remove(modelJobId);
 
+    // Check for change to download folder
+    if (inputJob.downloadFolder() != modelJob.downloadFolder())
+    {
+      modelJob.setDownloadFolder(inputJob.downloadFolder());
+      m_jobs[row] = modelJob;
+    }
+
+    // Check for change to status
     if (inputJob.status() == modelJob.status())
     {
       continue;
@@ -206,7 +214,7 @@ void JobTableModel::jobsUpdated(QList<Job> jobs)
 
   if (!jobsToPatchList.empty())
   {
-    emit finishedTimeChanged(jobsToPatchList);
+    emit finishTimeChanged(jobsToPatchList);
   }
 }
 

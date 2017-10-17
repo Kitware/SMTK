@@ -51,6 +51,9 @@ public:
 
   static Job fromJSON(cJSON* obj);
 
+  // Copy cmb-specific data to json (for patch request)
+  cJSON* cmbDataToJSON() const;
+
 private:
   QString m_id;
   QString m_name;

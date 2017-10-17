@@ -63,11 +63,13 @@ void Job::setStatus(const QString& status)
     (status == "complete"))
   {
     this->m_finish = QDateTime::currentDateTime();
+    qDebug() << "Set finish, timestamp:" << this->m_finish.toSecsSinceEpoch();
   }
 }
 
 void Job::setDownloadFolder(const QString& path)
 {
+  //qDebug() << "Setting download folder:" << path;
   this->m_downloadFolder = path;
 }
 
@@ -124,39 +126,56 @@ Job Job::fromJSON(cJSON* obj)
 
   Job newJob(id, name, status, outputFolderIds, machine);
 
-  // Check for optional "cmb" items
-  if (paramsItem)
+  // Check for optional "cmb" items, which are stored as job "metadata"
+  cJSON* cmbItem = cJSON_GetObjectItem(obj, "metadata");
+  if (cmbItem && cmbItem->type == cJSON_Object)
   {
-    cJSON* cmbItem = cJSON_GetObjectItem(paramsItem, "cmb");
-    if (cmbItem && cmbItem->type == cJSON_Object)
+    cJSON* notesItem = cJSON_GetObjectItem(cmbItem, "notes");
+    if (notesItem && notesItem->type == cJSON_String)
     {
-      cJSON* notesItem = cJSON_GetObjectItem(cmbItem, "notes");
-      if (notesItem && notesItem->type == cJSON_String)
-      {
-        newJob.m_notes = QString(notesItem->valuestring);
-      } // end if (notesItem)
+      newJob.m_notes = QString(notesItem->valuestring);
+    } // end if (notesItem)
 
-      cJSON* startItem = cJSON_GetObjectItem(cmbItem, "startTimeStamp");
-      if (startItem && startItem->type == cJSON_Number)
-      {
-        double startTimestamp = startItem->valuedouble;
-        qint64 startInt = static_cast<qint64>(startTimestamp);
-        newJob.m_start.setSecsSinceEpoch(startInt);
-        //qDebug() << "started:" << newJob.m_start;
-      } // end if (startItem)
+    cJSON* startItem = cJSON_GetObjectItem(cmbItem, "startTimeStamp");
+    if (startItem && startItem->type == cJSON_Number)
+    {
+      double startTimestamp = startItem->valuedouble;
+      qint64 startInt = static_cast<qint64>(startTimestamp);
+      newJob.m_start.setSecsSinceEpoch(startInt);
+      //qDebug() << "started:" << newJob.m_start;
+    } // end if (startItem)
 
-      cJSON* finishedItem = cJSON_GetObjectItem(cmbItem, "finishTimeStamp");
-      if (finishedItem && finishedItem->type == cJSON_Number)
-      {
-        double finishedTimestamp = finishedItem->valuedouble;
-        qint64 finishedInt = static_cast<qint64>(finishedTimestamp);
-        newJob.m_finish.setSecsSinceEpoch(finishedInt);
-        //qDebug() << "finished:" << newJob.m_finish;
-      } // end if (finishedItem)
-    }
-  } // if (paramsItem)
+    cJSON* finishedItem = cJSON_GetObjectItem(cmbItem, "finishTimeStamp");
+    if (finishedItem && finishedItem->type == cJSON_Number)
+    {
+      double finishedTimestamp = finishedItem->valuedouble;
+      qint64 finishedInt = static_cast<qint64>(finishedTimestamp);
+      newJob.m_finish.setSecsSinceEpoch(finishedInt);
+      //qDebug() << "finished:" << newJob.m_finish;
+    } // end if (finishedItem)
+
+    cJSON* folderItem = cJSON_GetObjectItem(cmbItem, "downloadFolder");
+    if (folderItem && folderItem->type == cJSON_String)
+    {
+      //qDebug() << "Download folder:" << folderItem->valuestring;
+      newJob.m_downloadFolder = QString(folderItem->valuestring);
+    } // end if (notesItem)
+  }   // if (cmbItem)
 
   return newJob;
+}
+
+cJSON* Job::cmbDataToJSON() const
+{
+  cJSON* cmbObject = cJSON_CreateObject();
+  cJSON_AddStringToObject(cmbObject, "notes", m_notes.toLatin1().constData());
+  cJSON_AddNumberToObject(cmbObject, "startTimeStamp", m_start.toSecsSinceEpoch());
+  cJSON_AddNumberToObject(cmbObject, "finishTimeStamp", m_finish.toSecsSinceEpoch());
+  if (!m_downloadFolder.isEmpty())
+  {
+    cJSON_AddStringToObject(cmbObject, "downloadFolder", m_downloadFolder.toLatin1().constData());
+  }
+  return cmbObject;
 }
 
 } // end namespace
