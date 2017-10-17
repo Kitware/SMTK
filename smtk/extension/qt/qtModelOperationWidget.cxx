@@ -299,10 +299,13 @@ bool qtModelOperationWidget::initOperatorUI(const smtk::model::OperatorPtr& brOp
   this->setSession(bs.session());
   QFrame* opParent = new QFrame(this);
 
-  // Since the parent widget currently is a QScrollArea, it is necessary
-  // to ensure the widget provides a suitable sizeHint, so a minimum is set.
+  // Since the parent of `this` currently is a QScrollArea, it is necessary
+  // to ensure `this` and its children provide a suitable sizeHint, so a
+  // minimum is set in opParent.
   // http://doc.qt.io/qt-5/qscrollarea.html#details
-  opParent->setMinimumSize(500, 0);
+  // The minimum in opParent is small, such that it allows certain flexibility
+  // for the top parent (QDockWidget, QDialog, etc.) to resize `this` properly.
+  opParent->setMinimumSize(50, 0);
   opParent->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
   QVBoxLayout* opLayout = new QVBoxLayout(opParent);
   opLayout->setMargin(0);
