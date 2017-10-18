@@ -538,6 +538,15 @@ std::vector<double> EntityRef::boundingBox() const
     }
     return bBox;
   }
+  else if (this->isAuxiliaryGeometry())
+  {
+    if (this->hasFloatProperty(SMTK_BOUNDING_BOX_PROP))
+    {
+      smtk::model::FloatList currentBBox(this->floatProperty(SMTK_BOUNDING_BOX_PROP));
+      bBox = this->unionBoundingBox(bBox, currentBBox);
+      return bBox;
+    }
+  }
   else
   {
     return dummy;

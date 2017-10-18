@@ -73,7 +73,7 @@
   */
 #define SMTK_GEOM_STYLE_PROP "_geomstyle"
 
-/**\brief The name of an float property used to store the bounding box of a model entity
+/**\brief The name of a float property used to store the bounding box of a model entity or an auxiliary geometry
   *
   * \sa  SMTK_BOUNDING_BOX_PROP
   */
