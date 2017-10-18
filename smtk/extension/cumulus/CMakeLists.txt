@@ -48,6 +48,7 @@ add_library(smtkCumulusExt
 #install headers
 set(hdrs
   cumuluswidget.h
+  job.h
   logindialog.h
 )
 smtk_public_headers(${hdrs})
