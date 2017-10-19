@@ -24,16 +24,16 @@
             The operation determines which action to take on the group: create it, modify its membership, or remove it.
           </DetailedDescription>
           <ChildrenDefinitions>
-            <ModelEntity Name="modify cell group" NumberOfRequiredValues="1">
+            <ModelEntity Name="modify cell group" Label="modify entity group" NumberOfRequiredValues="1">
               <MembershipMask>group</MembershipMask>
             </ModelEntity>
-            <ModelEntity Name="remove cell group" Extensible="1" NumberOfRequiredValues="0">
+            <ModelEntity Name="remove cell group" Label="remove entity group" Extensible="1" NumberOfRequiredValues="0">
               <MembershipMask>group</MembershipMask>
             </ModelEntity>
-            <ModelEntity Name="cell to add" NumberOfRequiredValues="0" Extensible="1">
+            <ModelEntity Name="cell to add" Label="entity to add" NumberOfRequiredValues="0" Extensible="1">
               <MembershipMask>volume|face|edge</MembershipMask>
             </ModelEntity>
-            <ModelEntity Name="cell to remove" NumberOfRequiredValues="0" Extensible="1">
+            <ModelEntity Name="cell to remove" Label="entity to remove" NumberOfRequiredValues="0" Extensible="1">
               <MembershipMask>volume|face|edge</MembershipMask>
             </ModelEntity>
             <Void Name="Vertex" Label="Vertex" Version="0" NumberOfRequiredValues="1" Optional="true" AdvanceLevel = "1" Option = "true" IsEnabledByDefault = "true">
