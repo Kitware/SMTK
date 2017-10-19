@@ -58,6 +58,9 @@
       <ItemDefinitions>
         <MeshSelection Name="selection">
         </MeshSelection>
+        <Void Name= "show selection" AdvanceLevel="11">
+          <BriefDescription> Show selection when the operation is finished </BriefDescription>
+        </Void>
       </ItemDefinitions>
     </AttDef>
   </Definitions>
