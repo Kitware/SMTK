@@ -550,6 +550,7 @@ std::vector<double> EntityRef::boundingBox() const
       bBox = this->unionBoundingBox(bBox, currentBBox);
       return bBox;
     }
+    return dummy;
   }
   else
   {
