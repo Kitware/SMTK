@@ -385,7 +385,7 @@ void qtModelView::selectionChanged(const QItemSelection& selected, const QItemSe
 
   // update selection manager and skip model tree
   emit this->sendSelectionsFromModelViewToSelectionManager(selentityrefs, selmeshes, selproperties,
-    smtk::extension::SelectionModifier::SELECTION_REPLACE_UNFILTERED, this->m_selectionSourceName);
+    smtk::resource::SelectionAction::UNFILTERED_REPLACE, this->m_selectionSourceName);
 }
 
 // when the dataChanged is emitted from the model, we want to scroll to

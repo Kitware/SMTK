@@ -89,6 +89,17 @@ const smtk::common::UUID& EntityRef::entity() const
   return this->m_entity;
 }
 
+/// Return the resource component for this model entity.
+smtk::resource::ComponentPtr EntityRef::component() const
+{
+  auto mgr = this->manager();
+  if (!mgr)
+  {
+    return nullptr;
+  }
+  return mgr->find(this->m_entity);
+}
+
 /**\brief Return the nominal parametric dimension of the entity (or -1).
   *
   * A value of -1 is returned when the entityref is invalid, or the entity

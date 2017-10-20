@@ -16,10 +16,14 @@ set(serverXMLSrcs
 
 set(serverWrappedSrcs
   vtkPVModelSources.cxx
+  vtkSMTKModelReader.cxx
+  vtkSMTKResourceManagerWrapper.cxx
 )
 
 set(serverWrappedHdrs
   vtkPVModelSources.h
+  vtkSMTKModelReader.h
+  vtkSMTKResourceManagerWrapper.h
 )
 
 set(hdrs ${serverUnwrappedHdrs} ${serverWrappedHdrs})

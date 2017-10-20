@@ -102,6 +102,8 @@ public:
   bool setEntity(const smtk::common::UUID& entityId);
   const smtk::common::UUID& entity() const;
 
+  smtk::resource::ComponentPtr component() const;
+
   int dimension() const;
   int dimensionBits() const;
   void setDimensionBits(BitFlags dim);

@@ -38,7 +38,7 @@ add_library(smtkPolygonQtExt
   ${RCS_RESOURCES}
 )
 
-#we need to add the location of the moc files to the include dir for smtkPWWidgetExt
+# Need to add the location of the moc files to the include dirs:
 target_include_directories(smtkPolygonQtExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 #set smtkPolygonQtExt to publicly link to smtkCore

@@ -63,7 +63,7 @@ public:
   };
 
   vtkGetObjectMacro(CachedOutputMBDS, vtkMultiBlockDataSet);
-  vtkGetObjectMacro(CachedOutputPoly, vtkPolyData);
+  vtkGetObjectMacro(CachedOutputInst, vtkMultiBlockDataSet);
 
   smtk::model::ManagerPtr GetModelManager();
   void SetModelManager(smtk::model::ManagerPtr);
@@ -125,26 +125,25 @@ protected:
     std::map<smtk::model::EntityRef, vtkIdType>& instancePrototypes);
   void PreparePrototypeOutput(vtkMultiBlockDataSet* mbds, vtkMultiBlockDataSet* protoBlocks,
     std::map<smtk::model::EntityRef, vtkIdType>& instancePrototypes);
-  void PrepareInstanceOutput(vtkPolyData* instancePoly, vtkIdType numPoints, vtkIdType numInst);
+  void PrepareInstanceOutput(vtkMultiBlockDataSet* instanceBlocks, const smtk::model::InstanceSet&,
+    std::map<smtk::model::EntityRef, vtkIdType>&);
   void AddInstancePoints(vtkPolyData* instancePoly, const smtk::model::Instance& inst,
     std::map<smtk::model::EntityRef, vtkIdType>& instancePrototypes);
-  void GenerateRepresentationFromModel(vtkMultiBlockDataSet* mbds, vtkPolyData* instancePoly,
-    vtkMultiBlockDataSet* protoBlocks, smtk::model::ManagerPtr model);
+  void GenerateRepresentationFromModel(vtkMultiBlockDataSet* mbds,
+    vtkMultiBlockDataSet* instancePoly, vtkMultiBlockDataSet* protoBlocks,
+    smtk::model::ManagerPtr model);
   void GenerateRepresentationFromMeshTessellation(
     vtkPolyData* poly, const smtk::model::EntityRef& entity, bool genNormals);
   void GenerateRepresentationFromModel(vtkMultiBlockDataSet* mbds, smtk::model::ManagerPtr model);
 
-  //virtual int FillInputPortInformation(int port, vtkInformation* request);
-  int FillOutputPortInformation(int port, vtkInformation* request) override;
-
   int RequestData(
     vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
 
-  void SetCachedOutput(vtkMultiBlockDataSet*, vtkPolyData*, vtkMultiBlockDataSet*);
+  void SetCachedOutput(vtkMultiBlockDataSet*, vtkMultiBlockDataSet*, vtkMultiBlockDataSet*);
 
   smtk::model::ManagerPtr ModelMgr;
   vtkMultiBlockDataSet* CachedOutputMBDS;
-  vtkPolyData* CachedOutputPoly;
+  vtkMultiBlockDataSet* CachedOutputInst;
   vtkMultiBlockDataSet* CachedOutputProto;
   double DefaultColor[4];
   char* ModelEntityID; // Model Entity UUID

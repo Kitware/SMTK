@@ -683,6 +683,8 @@ INPUT                  = \
   "@SMTK_SOURCE_DIR@/smtk/mesh" \
   "@SMTK_SOURCE_DIR@/smtk/model" \
   "@SMTK_SOURCE_DIR@/smtk/model/testing/cxx" \
+  "@SMTK_SOURCE_DIR@/smtk/operation" \
+  "@SMTK_SOURCE_DIR@/smtk/resource" \
   "@SMTK_SOURCE_DIR@/smtk/extension/paraview" \
   "@SMTK_SOURCE_DIR@/smtk/extension/qt" \
   "@SMTK_SOURCE_DIR@/smtk/extension/vtk" \
@@ -703,6 +705,8 @@ INPUT                  = \
   "@SMTK_BINARY_DIR@/smtk/common" \
   "@SMTK_BINARY_DIR@/smtk/io" \
   "@SMTK_BINARY_DIR@/smtk/io/mesh" \
+  "@SMTK_BINARY_DIR@/smtk/operation" \
+  "@SMTK_BINARY_DIR@/smtk/resource" \
   "@SMTK_BINARY_DIR@/smtk/simulation" \
   "@SMTK_BINARY_DIR@/smtk/view" \
 

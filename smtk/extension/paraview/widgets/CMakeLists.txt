@@ -43,7 +43,7 @@ add_library(smtkPQWidgetsExt
   ${RCS_RESOURCES}
 )
 
-#we need to add the location of the moc files to the include dir for smtkPWWidgetExt
+# Need to add the location of the moc files to the include dirs:
 target_include_directories(smtkPQWidgetsExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 #set smtkPQWidgetsExt to publicly link to smtkCore

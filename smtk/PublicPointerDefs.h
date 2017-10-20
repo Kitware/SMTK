@@ -37,6 +37,7 @@ namespace resource
 class Resource;
 class Component;
 class Manager;
+class SelectionManager;
 class Set;
 }
 
@@ -229,6 +230,8 @@ namespace resource
 {
 typedef smtk::shared_ptr<smtk::resource::Resource> ResourcePtr;
 typedef smtk::shared_ptr<smtk::resource::Component> ComponentPtr;
+typedef std::set<smtk::resource::ComponentPtr> ComponentSet;
+typedef smtk::shared_ptr<smtk::resource::SelectionManager> SelectionManagerPtr;
 typedef smtk::shared_ptr<smtk::resource::Set> SetPtr;
 typedef smtk::shared_ptr<const smtk::resource::Resource> ConstResourcePtr;
 typedef smtk::shared_ptr<const smtk::resource::Set> ConstSetPtr;

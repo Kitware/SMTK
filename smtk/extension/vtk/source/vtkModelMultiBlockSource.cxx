@@ -86,7 +86,7 @@ vtkModelMultiBlockSource::vtkModelMultiBlockSource()
   this->SetNumberOfInputPorts(0);
   this->SetNumberOfOutputPorts(NUMBER_OF_OUTPUT_PORTS);
   this->CachedOutputMBDS = nullptr;
-  this->CachedOutputPoly = nullptr;
+  this->CachedOutputInst = nullptr;
   this->CachedOutputProto = nullptr;
   for (int i = 0; i < 4; ++i)
   {
@@ -111,7 +111,7 @@ void vtkModelMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
 
   os << indent << "Model: " << this->ModelMgr.get() << "\n";
   os << indent << "CachedOutputMBDS: " << this->CachedOutputMBDS << "\n";
-  os << indent << "CachedOutputPoly: " << this->CachedOutputPoly << "\n";
+  os << indent << "CachedOutputInst: " << this->CachedOutputInst << "\n";
   os << indent << "ModelEntityID: " << this->ModelEntityID << "\n";
   os << indent << "AllowNormalGeneration: " << (this->AllowNormalGeneration ? "ON" : "OFF") << "\n";
   os << indent << "ShowAnalysisTessellation: " << this->ShowAnalysisTessellation << "\n";
@@ -625,45 +625,56 @@ void vtkModelMultiBlockSource::PreparePrototypeOutput(vtkMultiBlockDataSet* mbds
   iter->Delete();
 }
 
-/// Called by GenerateRepresentationFromModel to create polydata arrays
-void vtkModelMultiBlockSource::PrepareInstanceOutput(
-  vtkPolyData* instancePoly, vtkIdType numPoints, vtkIdType numInst)
+/// Called by GenerateRepresentationFromModel to create a polydata per instance
+void vtkModelMultiBlockSource::PrepareInstanceOutput(vtkMultiBlockDataSet* instanceBlocks,
+  const smtk::model::InstanceSet& modelInstances,
+  std::map<smtk::model::EntityRef, vtkIdType>& instancePrototypes)
 {
-  (void)numInst;
+  instanceBlocks->SetNumberOfBlocks(static_cast<int>(modelInstances.size()));
+  int block = 0;
+  for (auto instance : modelInstances)
+  {
+    const smtk::model::Tessellation* tess = instance.hasTessellation();
+    vtkIdType numPoints = static_cast<vtkIdType>(tess->coords().size() / 3);
 
-  vtkNew<vtkPoints> instancePts;
-  instancePts->Allocate(numPoints);
-  instancePoly->SetPoints(instancePts.GetPointer());
+    vtkNew<vtkPolyData> instancePoly;
+    vtkNew<vtkPoints> instancePts;
+    instancePts->Allocate(numPoints);
+    instancePoly->SetPoints(instancePts.GetPointer());
+    instanceBlocks->SetBlock(block++, instancePoly.GetPointer());
 
-  vtkNew<vtkDoubleArray> instanceOrient;
-  vtkNew<vtkDoubleArray> instanceScale;
-  vtkNew<vtkIdTypeArray> instancePrototype;  // block ID of prototype object
-  vtkNew<vtkUnsignedCharArray> instanceMask; // visibility control
+    vtkNew<vtkDoubleArray> instanceOrient;
+    vtkNew<vtkDoubleArray> instanceScale;
+    vtkNew<vtkIdTypeArray> instancePrototype;  // block ID of prototype object
+    vtkNew<vtkUnsignedCharArray> instanceMask; // visibility control
 
-  instanceOrient->SetName("instance orientation");
-  instanceScale->SetName("instance scale");
-  instancePrototype->SetName("instance source");
-  instanceMask->SetName("instance visibility");
+    instanceOrient->SetName("instance orientation");
+    instanceScale->SetName("instance scale");
+    instancePrototype->SetName("instance source");
+    instanceMask->SetName("instance visibility");
 
-  instanceOrient->SetNumberOfComponents(3);
-  instanceScale->SetNumberOfComponents(3);
+    instanceOrient->SetNumberOfComponents(3);
+    instanceScale->SetNumberOfComponents(3);
 
-  //instanceOrient->SetNumberOfTuples(numPoints);
-  //instanceScale->SetNumberOfTuples(numPoints);
-  //instancePrototype->SetNumberOfTuples(numPoints);
-  //instanceMask->SetNumberOfTuples(numPoints);
+    //instanceOrient->SetNumberOfTuples(numPoints);
+    //instanceScale->SetNumberOfTuples(numPoints);
+    //instancePrototype->SetNumberOfTuples(numPoints);
+    //instanceMask->SetNumberOfTuples(numPoints);
 
-  instanceOrient->Allocate(numPoints);
-  instanceScale->Allocate(numPoints);
-  instancePrototype->Allocate(numPoints);
-  instanceMask->Allocate(numPoints);
+    instanceOrient->Allocate(numPoints);
+    instanceScale->Allocate(numPoints);
+    instancePrototype->Allocate(numPoints);
+    instanceMask->Allocate(numPoints);
 
-  // WARNING: Pointdata-array indices are used blindly in AddInstancePoints. Do not reorder:
-  auto pd = instancePoly->GetPointData();
-  pd->AddArray(instanceOrient.GetPointer());
-  pd->AddArray(instanceScale.GetPointer());
-  pd->AddArray(instancePrototype.GetPointer());
-  pd->AddArray(instanceMask.GetPointer());
+    // WARNING: Pointdata-array indices are used blindly in AddInstancePoints. Do not reorder:
+    auto pd = instancePoly->GetPointData();
+    pd->AddArray(instanceOrient.GetPointer());
+    pd->AddArray(instanceScale.GetPointer());
+    pd->AddArray(instancePrototype.GetPointer());
+    pd->AddArray(instanceMask.GetPointer());
+
+    this->AddInstancePoints(instancePoly.GetPointer(), instance, instancePrototypes);
+  }
 }
 
 /// Called by GenerateRepresentationFromModel to add a glyph point per instance location.
@@ -720,7 +731,8 @@ void vtkModelMultiBlockSource::AddInstancePoints(vtkPolyData* instancePoly,
 
 /// Create a multiblock with the right structure, find entities with tessellations, and add them.
 void vtkModelMultiBlockSource::GenerateRepresentationFromModel(vtkMultiBlockDataSet* mbds,
-  vtkPolyData* instancePts, vtkMultiBlockDataSet* protoBlocks, smtk::model::ManagerPtr manager)
+  vtkMultiBlockDataSet* instanceBlocks, vtkMultiBlockDataSet* protoBlocks,
+  smtk::model::ManagerPtr manager)
 {
   if (this->ModelEntityID && this->ModelEntityID[0])
   {
@@ -885,13 +897,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(vtkMultiBlockData
         this->PreparePrototypeOutput(mbds, protoBlocks, instancePrototypes);
         // Now that we have the UUID2BlockIdMap constructed, we can iterate
         // over our instances and add points for them to the polydata.
-        this->PrepareInstanceOutput(
-          instancePts, numInstancePts, static_cast<vtkIdType>(modelInstances.size()));
-        instancePts->GetPoints()->Allocate(numInstancePts);
-        for (auto instance : modelInstances)
-        {
-          this->AddInstancePoints(instancePts, instance, instancePrototypes);
-        }
+        this->PrepareInstanceOutput(instanceBlocks, modelInstances, instancePrototypes);
       }
     }
     else
@@ -927,32 +933,19 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(vtkMultiBlockData
   }
 }
 
-/// Indicate the dataset type for each output port.
-int vtkModelMultiBlockSource::FillOutputPortInformation(int port, vtkInformation* request)
-{
-  if (port == static_cast<int>(INSTANCE_PORT))
-  {
-    request->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkPolyData");
-    return 1;
-  }
-  return this->Superclass::FillOutputPortInformation(port, request);
-}
-
 /// Generate polydata from an smtk::model with tessellation information.
 int vtkModelMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
   vtkInformationVector** vtkNotUsed(inInfo), vtkInformationVector* outInfo)
 {
   this->UUID2BlockIdMap.clear();
-  vtkMultiBlockDataSet* output =
-    vtkMultiBlockDataSet::GetData(outInfo, static_cast<int>(MODEL_ENTITY_PORT));
-  vtkMultiBlockDataSet* instanceSource =
-    vtkMultiBlockDataSet::GetData(outInfo, static_cast<int>(PROTOTYPE_PORT));
+  auto output = vtkMultiBlockDataSet::GetData(outInfo, static_cast<int>(MODEL_ENTITY_PORT));
+  auto instanceSource = vtkMultiBlockDataSet::GetData(outInfo, static_cast<int>(PROTOTYPE_PORT));
   if (!output || !instanceSource)
   {
     vtkErrorMacro("No output dataset");
     return 0;
   }
-  vtkPolyData* instancePlacement = vtkPolyData::GetData(outInfo, static_cast<int>(INSTANCE_PORT));
+  auto instancePlacement = vtkMultiBlockDataSet::GetData(outInfo, static_cast<int>(INSTANCE_PORT));
   if (!instancePlacement)
   {
     vtkErrorMacro("No output instance-placement dataset");
@@ -973,21 +966,21 @@ int vtkModelMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
   { // Populate a polydata with tessellation information from the model.
     vtkNew<vtkMultiBlockDataSet> rep;
     vtkNew<vtkMultiBlockDataSet> proto;
-    vtkNew<vtkPolyData> inst;
+    vtkNew<vtkMultiBlockDataSet> inst;
     this->GenerateRepresentationFromModel(
       rep.GetPointer(), inst.GetPointer(), proto.GetPointer(), this->ModelMgr);
     this->SetCachedOutput(rep.GetPointer(), inst.GetPointer(), proto.GetPointer());
   }
   output->ShallowCopy(this->CachedOutputMBDS);
-  instancePlacement->ShallowCopy(this->CachedOutputPoly);
+  instancePlacement->ShallowCopy(this->CachedOutputInst);
   instanceSource->ShallowCopy(this->CachedOutputProto);
   return 1;
 }
 
-void vtkModelMultiBlockSource::SetCachedOutput(
-  vtkMultiBlockDataSet* entityTess, vtkPolyData* instancePoly, vtkMultiBlockDataSet* protoBlocks)
+void vtkModelMultiBlockSource::SetCachedOutput(vtkMultiBlockDataSet* entityTess,
+  vtkMultiBlockDataSet* instances, vtkMultiBlockDataSet* protoBlocks)
 {
-  if (this->CachedOutputMBDS == entityTess && this->CachedOutputPoly == instancePoly &&
+  if (this->CachedOutputMBDS == entityTess && this->CachedOutputInst == instances &&
     this->CachedOutputProto == protoBlocks)
   {
     return;
@@ -996,24 +989,24 @@ void vtkModelMultiBlockSource::SetCachedOutput(
   {
     this->CachedOutputMBDS->Delete();
   }
-  if (this->CachedOutputPoly && this->CachedOutputPoly != instancePoly)
+  if (this->CachedOutputInst && this->CachedOutputInst != instances)
   {
-    this->CachedOutputPoly->Delete();
+    this->CachedOutputInst->Delete();
   }
   if (this->CachedOutputProto && this->CachedOutputProto != protoBlocks)
   {
     this->CachedOutputProto->Delete();
   }
   this->CachedOutputMBDS = entityTess;
-  this->CachedOutputPoly = instancePoly;
+  this->CachedOutputInst = instances;
   this->CachedOutputProto = protoBlocks;
   if (this->CachedOutputMBDS)
   {
     this->CachedOutputMBDS->Register(this);
   }
-  if (this->CachedOutputPoly)
+  if (this->CachedOutputInst)
   {
-    this->CachedOutputPoly->Register(this);
+    this->CachedOutputInst->Register(this);
   }
   if (this->CachedOutputProto)
   {

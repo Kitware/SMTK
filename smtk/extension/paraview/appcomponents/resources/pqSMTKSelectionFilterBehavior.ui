@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>pqSMTKSelectionFilterBehavior</class>
+ <widget class="QWidget" name="pqSMTKSelectionFilterBehavior">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <action name="actionSelnAcceptMeshSets">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset><normalon>:/Meshes.png</normalon></iconset>
+   </property>
+   <property name="text">
+    <string>Select mesh sets</string>
+   </property>
+   <property name="toolTip">
+    <string>Should the selection be allowed to include mesh sets?</string>
+   </property>
+  </action>
+  <action name="actionSelnAcceptModels">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+     <iconset><normalon>:/Models.png</normalon></iconset>
+   </property>
+   <property name="text">
+    <string>Select Models</string>
+   </property>
+   <property name="toolTip">
+    <string>Should the selection be allowed to include models?</string>
+   </property>
+  </action>
+  <action name="actionSelnAcceptModelVolumes">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset><normalon>:/Volumes.png</normalon></iconset>
+   </property>
+   <property name="text">
+    <string>Select model volumes</string>
+   </property>
+   <property name="toolTip">
+    <string>Should the selection be allowed to include model volumes?</string>
+   </property>
+  </action>
+  <action name="actionSelnAcceptModelFaces">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset><normalon>:/Faces.png</normalon></iconset>
+   </property>
+   <property name="text">
+    <string>Select model faces</string>
+   </property>
+   <property name="toolTip">
+    <string>Should the selection be allowed to include model faces?</string>
+   </property>
+  </action>
+  <action name="actionSelnAcceptModelEdges">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset><normalon>:/Edges.png</normalon></iconset>
+   </property>
+   <property name="text">
+    <string>Select model edges</string>
+   </property>
+   <property name="toolTip">
+    <string>Should the selection be allowed to include model edges?</string>
+   </property>
+  </action>
+  <action name="actionSelnAcceptModelVertices">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset><normalon>:/Vertices.png</normalon></iconset>
+   </property>
+   <property name="text">
+    <string>Select model vertices</string>
+   </property>
+   <property name="toolTip">
+    <string>Should the selection be allowed to include model vertices?</string>
+   </property>
+  </action>
+  <action name="actionSelnAcceptModelAuxGeoms">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset><normalon>:/Models.png</normalon></iconset>
+   </property>
+   <property name="text">
+    <string>Select auxiliary geometry</string>
+   </property>
+   <property name="toolTip">
+    <string>Should the selection be allowed to include auxiliary geometry entities?</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="pqSMTKSelectionFilterBehavior.qrc"/>
+ </resources>
+ <connections/>
+</ui>

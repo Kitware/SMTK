@@ -12,6 +12,7 @@
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include <pybind11/pybind11.h>
+#include <pybind11/functional.h>
 SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <utility>
@@ -23,6 +24,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 #include "PybindResource.h"
 #include "PybindComponent.h"
+#include "PybindSelectionManager.h"
 #include "PybindSet.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
@@ -31,9 +33,11 @@ PYBIND11_MODULE(_smtkPybindResource, resource)
 {
   resource.doc() = "<description>";
 
+  pybind11_init_smtk_resource_SelectionAction(resource);
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
   py::class_< smtk::resource::Resource > smtk_resource_Resource = pybind11_init_smtk_resource_Resource(resource);
   py::class_< smtk::resource::Component > smtk_resource_Component = pybind11_init_smtk_resource_Component(resource);
+  py::class_< smtk::resource::SelectionManager > smtk_resource_SelectionManager = pybind11_init_smtk_resource_SelectionManager(resource);
   py::class_< smtk::resource::Set > smtk_resource_Set = pybind11_init_smtk_resource_Set(resource);
 }

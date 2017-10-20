@@ -7,59 +7,36 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-
-// .NAME qtSelectionManager - The selection manager for smtk
-// .SECTION Description
-// .SECTION See Also
-
-#ifndef __smtk__extension_qtSelectionManager_h
-#define __smtk__extension_qtSelectionManager_h
-
-#include "smtk/extension/qt/Exports.h"
-#include "smtk/extension/qt/qtItem.h"
-#include "smtk/model/EntityTypeBits.h"
+#pragma once
 
 #include "smtk/PublicPointerDefs.h"
+
+#include "smtk/extension/qt/Exports.h"
+
 #include "smtk/common/UUID.h"
-#include "smtk/mesh/MeshSet.h"
+
+#include "smtk/resource/SelectionManager.h"
+
 #include "smtk/model/DescriptivePhrase.h"
 #include "smtk/model/EntityRef.h"
+#include "smtk/model/EntityTypeBits.h"
 #include "smtk/model/SessionRef.h"
+
+#include "smtk/mesh/MeshSet.h"
+
+#include "smtk/extension/qt/qtItem.h"
 
 namespace smtk
 {
 namespace extension
 {
 
-enum class SelectionModifier
-{
-  SELECTION_REPLACE_FILTERED = 0,       /* !< Replace all the current selection
-                                    and filter it. Example user case: normal
-                                    selection from rendering window. */
-  SELECTION_REPLACE_UNFILTERED = 1,     /* !< Replace all the current selection
-                              and do not filter it. Example user case: selection
-                                from model tree and attribute panel. */
-  SELECTION_ADDITION_FILTERED = 2,      /* !< Filter the input selection and add it
-                              to the current selection. Example user case:
-                                addition from rendering window. */
-  SELECTION_ADDITION_UNFILTERED = 3,    /* !< Do not filter the input selection
-                                    and add it to the current selection.
-                          Example user case: addition from operator dialog. */
-  SELECTION_SUBTRACTION_FILTERED = 4,   /* !< Filter the input selection and
-                                      subtract it from the current selection.
-                      Example user case: substraction from rendering window. */
-  SELECTION_SUBTRACTION_UNFILTERED = 5, /* !< Do not filter the input
-                    selection and sbutract it from the current selection.
-                Example user case: subtraction from operator dialog. */
-  SELECTION_INQUIRY = 6                 /* !< Use the SelectionModifer defined in
-                        qtSelectionManager. Use it when SelectionModifer is
-                          decided by user input(Ex. different keybindings).
-    Example user case: rendering window selection addition and subtraction. */
-};
-
+/**\brief A Qt adaptor for the SMTK selection manager.
+  */
 class SMTKQTEXT_EXPORT qtSelectionManager : public QObject
 {
 public:
+  using SelectionAction = resource::SelectionAction;
   Q_OBJECT
 public:
   qtSelectionManager();
@@ -82,14 +59,11 @@ public:
     return (this->m_selectionSources.erase(name) > 0);
   }
 
-  void setSelectionModifierToAddition()
-  {
-    this->m_selectionModifier = SelectionModifier::SELECTION_ADDITION_FILTERED;
-  }
+  void setSelectionActionToAddition() { this->m_selectionAction = SelectionAction::FILTERED_ADD; }
 
-  void setSelectionModifierToSubtraction()
+  void setSelectionActionToSubtraction()
   {
-    this->m_selectionModifier = SelectionModifier::SELECTION_SUBTRACTION_FILTERED;
+    this->m_selectionAction = SelectionAction::FILTERED_SUBTRACT;
   }
 
 signals:
@@ -111,7 +85,7 @@ public slots:
   // Ex class. qtModelView, qtAssociationWidget and pqSmtkModelPanel
   void updateSelectedItems(const smtk::model::EntityRefs& selEntities,
     const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& DesPhrases,
-    const smtk::extension::SelectionModifier modifierFlag, const std::string& selectionSource);
+    const smtk::resource::SelectionAction actionFlag, const std::string& selectionSource);
 
   // Description
   // update mask for models
@@ -158,7 +132,7 @@ protected:
   smtk::model::EntityRefs m_selEntityRefs;
   bool m_filterMeshes;
   smtk::model::ManagerPtr m_modelMgr;
-  SelectionModifier m_selectionModifier;
+  SelectionAction m_selectionAction;
   // a set store the name of the selection sources so that we do not need to
   // update the sender when broadcasting.
   // format: ${senderClassName}+${memoryAddress}
@@ -168,5 +142,3 @@ protected:
 }; // namespace extension
 
 }; // namespace smtk
-
-#endif
