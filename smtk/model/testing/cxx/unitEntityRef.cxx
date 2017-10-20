@@ -210,6 +210,20 @@ void testModelMethods()
   test(m1.session() == m0.session(), "Expected sessions to match for model and its submodel.");
 }
 
+void testResourceComponentConversion()
+{
+  ManagerPtr sm = Manager::create();
+  SessionRef sess = sm->createSession("native");
+  Model m0 = sm->addModel();
+  smtk::model::EntityPtr mep = m0.entityRecord();
+  test(!!mep, "No component for Model entity-ref.");
+  test(mep->referenceAs<smtk::model::Model>() == m0, "Could not convert from component to ref.");
+  test(smtk::model::Model(mep) == m0, "Could not convert from ref to component.");
+  smtk::resource::ComponentPtr cmp = m0.component();
+  test(cmp == smtk::dynamic_pointer_cast<smtk::resource::Component>(mep),
+    "Component/Entity mismatch.");
+}
+
 int main(int argc, char* argv[])
 {
   (void)argc;
@@ -559,6 +573,7 @@ int main(int argc, char* argv[])
     testTemplatedPropertyMethods();
     testVolumeEntityRef();
     testModelMethods();
+    testResourceComponentConversion();
   }
   catch (const std::string& msg)
   {

@@ -62,6 +62,13 @@ public:
   ResourcePtr resource() const override;
   ManagerPtr modelResource() const;
 
+  /// Return the templated object (usually EntityRef or a subclass) that points to this component.
+  template <typename T>
+  T referenceAs() const
+  {
+    return T(this->modelResource(), this->id());
+  }
+
   bool reparent(ManagerPtr newParent);
 
   int dimension() const;

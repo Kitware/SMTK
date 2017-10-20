@@ -7,8 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_EntityRef_h
-#define __smtk_model_EntityRef_h
+#pragma once
 /*! \file */
 
 #include "smtk/CoreExports.h"       // For EXPORT macro.
@@ -50,6 +49,14 @@ class MeshSet;
   thisclass(ManagerPtr inManager, const smtk::common::UUID& entityId)                              \
     : superclass(inManager, entityId)                                                              \
   {                                                                                                \
+  }                                                                                                \
+  thisclass(EntityPtr src)                                                                         \
+  {                                                                                                \
+    if (src)                                                                                       \
+    {                                                                                              \
+      m_manager = src->modelResource();                                                            \
+      m_entity = src->id();                                                                        \
+    }                                                                                              \
   }                                                                                                \
   virtual ~thisclass() {} /* Avoid warnings about non-virtual destructor */                        \
   bool isValid() const { return this->EntityRef::isValid(); }                                      \
@@ -94,6 +101,7 @@ public:
   SMTK_BASE_TYPE(EntityRef);
   EntityRef();
   EntityRef(ManagerPtr manager, const smtk::common::UUID& entityId);
+  EntityRef(EntityPtr src);
 
   bool setManager(ManagerPtr manager);
   ManagerPtr manager();
@@ -102,6 +110,7 @@ public:
   bool setEntity(const smtk::common::UUID& entityId);
   const smtk::common::UUID& entity() const;
 
+  smtk::model::EntityPtr entityRecord() const;
   smtk::resource::ComponentPtr component() const;
 
   int dimension() const;
@@ -415,5 +424,3 @@ EntityRef& EntityRef::removeMemberEntities(T begin, T end)
 
 } // namespace model
 } // namespace smtk
-
-#endif // __smtk_model_EntityRef_h
