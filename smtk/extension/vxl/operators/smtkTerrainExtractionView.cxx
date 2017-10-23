@@ -264,6 +264,9 @@ void smtkTerrainExtractionView::createWidget()
 
   // Show help when the info button is clicked.
   QObject::connect(this->Internals->InfoButton, SIGNAL(released()), this, SLOT(onInfo()));
+
+  // Check if the user has already specified a point cloud
+  this->attributeModified();
 }
 
 void smtkTerrainExtractionView::updateAttributeData()
