@@ -4,7 +4,8 @@
   <Definitions>
     <!-- Operator -->
     <AttDef Type="add auxiliary geometry" BaseType="operator" Label="Model - Add Auxiliary Geometry">
-      <AssociationsDef Name="entities" NumberOfRequiredValues="1">
+      <!-- In the future Label shoud be removed when SMTK supports compound auxiliary geometry -->
+      <AssociationsDef Name="entities" Label="model" NumberOfRequiredValues="1">
         <MembershipMask>model</MembershipMask>
       </AssociationsDef>
       <BriefDescription>
