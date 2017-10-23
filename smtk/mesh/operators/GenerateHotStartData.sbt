@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the "gnerate hot start data" Operator -->
+<!-- Description of the "generate hot start data" Operator -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
