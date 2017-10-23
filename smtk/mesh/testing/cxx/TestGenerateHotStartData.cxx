@@ -86,30 +86,6 @@ protected:
   double m_max;
 };
 
-class HistogramCellFieldData : public smtk::mesh::CellForEach, public HistogramFieldData
-{
-public:
-  HistogramCellFieldData(std::size_t nBins, double min, double max, smtk::mesh::CellField& cf)
-    : smtk::mesh::CellForEach(false)
-    , HistogramFieldData(nBins, min, max)
-    , m_cellField(cf)
-  {
-  }
-
-  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType, int)
-  {
-    smtk::mesh::HandleRange range;
-    range.insert(cellId);
-    double value = 0.;
-    this->m_cellField.get(range, &value);
-    std::size_t bin = static_cast<std::size_t>((value - m_min) / (m_max - m_min) * m_hist.size());
-    ++m_hist[bin];
-  }
-
-protected:
-  smtk::mesh::CellField& m_cellField;
-};
-
 class HistogramPointFieldData : public smtk::mesh::PointForEach, public HistogramFieldData
 {
 public:
@@ -188,26 +164,27 @@ int main(int argc, char* argv[])
   smtk::io::ModelToMesh convert;
   smtk::mesh::CollectionPtr c = convert(meshManager, manager);
 
-  // Create an "Interpolate Mesh" operator
-  smtk::model::OperatorPtr interpolateMeshOp = sessRef.session()->op("interpolate mesh");
-  if (!interpolateMeshOp)
+  // Create a "Generate Hot Start Data" operator
+  smtk::model::OperatorPtr generateHotStartDataOp =
+    sessRef.session()->op("generate hot start data");
+  if (!generateHotStartDataOp)
   {
-    std::cerr << "No \"interpolate mesh\" operator\n";
+    std::cerr << "No \"generate hot start data\" operator\n";
     return 1;
   }
 
-  // Set the operator's data set name
-  bool valueSet = interpolateMeshOp->specification()->findString("dsname")->setValue("my field");
+  // Set the operator's data set type
+  bool valueSet = generateHotStartDataOp->specification()->findString("dstype")->setToDefault();
 
   if (!valueSet)
   {
-    std::cerr << "Failed to set data set name on operator\n";
+    std::cerr << "Failed to set data set type on operator\n";
     return 1;
   }
 
   // Set the operator's input mesh
   smtk::mesh::MeshSet mesh = meshManager->collectionBegin()->second->meshes();
-  valueSet = interpolateMeshOp->specification()->findMesh("mesh")->setValue(mesh);
+  valueSet = generateHotStartDataOp->specification()->findMesh("mesh")->setValue(mesh);
 
   if (!valueSet)
   {
@@ -216,7 +193,8 @@ int main(int argc, char* argv[])
   }
 
   // Set the operator's input power
-  smtk::attribute::DoubleItemPtr power = interpolateMeshOp->specification()->findDouble("power");
+  smtk::attribute::DoubleItemPtr power =
+    generateHotStartDataOp->specification()->findDouble("power");
 
   if (!power)
   {
@@ -226,32 +204,15 @@ int main(int argc, char* argv[])
 
   power->setValue(2.);
 
-  bool interpolateToPoints = false;
-  if (argc > 2)
-  {
-    interpolateToPoints = std::atoi(argv[2]) == 1;
-  }
-
-  smtk::attribute::IntItemPtr interpMode =
-    interpolateMeshOp->specification()->findInt("interpmode");
-
-  if (!interpMode)
-  {
-    std::cerr << "Failed to set interpolation mode on operator\n";
-    return 1;
-  }
-
-  interpMode->setValue(interpolateToPoints ? 1 : 0);
-
   // Set the operator's input points
   std::size_t numberOfPoints = 4;
-  double pointData[4][4] = { { -1., -1., 0., 0. }, { -1., 6., 0., 25. }, { 10., -1., 0., 50. },
-    { 10., 6., 0., 40. } };
+  double pointData[4][3] = { { -1., -1., 0. }, { -1., 6., 25. }, { 10., -1., 50. },
+    { 10., 6., 40. } };
 
   bool fromCSV = false;
-  if (argc > 3)
+  if (argc > 2)
   {
-    fromCSV = std::atoi(argv[3]) == 1;
+    fromCSV = std::atoi(argv[2]) == 1;
   }
 
   std::string write_path = "";
@@ -261,12 +222,12 @@ int main(int argc, char* argv[])
     std::ofstream outfile(write_path.c_str());
     for (std::size_t i = 0; i < 4; i++)
     {
-      outfile << pointData[i][0] << "," << pointData[i][1] << "," << pointData[i][2] << ","
-              << pointData[i][3] << std::endl;
+      outfile << pointData[i][0] << "," << pointData[i][1] << "," << pointData[i][2] << std::endl;
     }
     outfile.close();
 
-    smtk::attribute::FileItemPtr ptsFile = interpolateMeshOp->specification()->findFile("ptsfile");
+    smtk::attribute::FileItemPtr ptsFile =
+      generateHotStartDataOp->specification()->findFile("ptsfile");
     if (!ptsFile)
     {
       std::cerr << "No \"ptsfile\" item in specification\n";
@@ -280,7 +241,8 @@ int main(int argc, char* argv[])
   else
   {
     // Set the operator's input points
-    smtk::attribute::GroupItemPtr points = interpolateMeshOp->specification()->findGroup("points");
+    smtk::attribute::GroupItemPtr points =
+      generateHotStartDataOp->specification()->findGroup("points");
 
     if (!points)
     {
@@ -291,7 +253,7 @@ int main(int argc, char* argv[])
     points->setNumberOfGroups(numberOfPoints);
     for (std::size_t i = 0; i < numberOfPoints; i++)
     {
-      for (std::size_t j = 0; j < 4; j++)
+      for (std::size_t j = 0; j < 3; j++)
       {
         smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(points->item(i, 0))
           ->setValue(j, pointData[i][j]);
@@ -299,8 +261,8 @@ int main(int argc, char* argv[])
     }
   }
 
-  // Execute "Interpolate Mesh" operator...
-  smtk::model::OperatorResult interpolateMeshOpResult = interpolateMeshOp->operate();
+  // Execute "generate hot start data" operator...
+  smtk::model::OperatorResult generateHotStartDataOpResult = generateHotStartDataOp->operate();
 
   // ...delete the generated points file...
   if (fromCSV)
@@ -309,45 +271,30 @@ int main(int argc, char* argv[])
   }
 
   // ...and test the results for success.
-  if (interpolateMeshOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (generateHotStartDataOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
   {
-    std::cerr << "\"interpolate mesh\" operator failed\n";
+    std::cerr << "\"generate hot start data\" operator failed\n";
     return 1;
   }
 
   // Histogram the resulting points and compare against expected values.
   std::vector<std::size_t> histogram;
-  if (interpolateToPoints)
-  {
-    smtk::mesh::PointField pointField =
-      meshManager->collectionBegin()->second->meshes().pointField("my field");
-    HistogramPointFieldData histogramPointFieldData(10, -.01, 50.01, pointField);
-    smtk::mesh::for_each(mesh.points(), histogramPointFieldData);
-    histogram = histogramPointFieldData.histogram();
-  }
-  else
-  {
-    smtk::mesh::CellField cellField =
-      meshManager->collectionBegin()->second->meshes().cellField("my field");
-    HistogramCellFieldData histogramCellFieldData(10, -.01, 50.01, cellField);
-    smtk::mesh::for_each(mesh.cells(), histogramCellFieldData);
-    histogram = histogramCellFieldData.histogram();
-  }
+  smtk::mesh::PointField pointField =
+    meshManager->collectionBegin()->second->meshes().pointField("ioh");
+  HistogramPointFieldData histogramPointFieldData(10, -.01, 50.01, pointField);
+  smtk::mesh::for_each(mesh.points(), histogramPointFieldData);
+  histogram = histogramPointFieldData.histogram();
 
-  std::array<std::size_t, 10> expectedForCells = { { 0, 1, 4, 6, 9, 14, 20, 18, 9, 3 } };
-  std::array<std::size_t, 10> expectedForPoints = { { 21, 0, 2, 0, 1, 3, 0, 2, 2, 1 } };
-  std::array<std::size_t, 10>& expected =
-    interpolateToPoints ? expectedForPoints : expectedForCells;
+  std::array<std::size_t, 10> expected = { { 0, 1, 3, 1, 3, 4, 9, 5, 4, 2 } };
 
   std::size_t counter = 0;
   for (auto& bin : histogram)
   {
     if (bin != expected[counter++])
     {
-      std::cerr << "\"interpolate mesh\" operator produced unexpected results\n";
+      std::cerr << "\"generate hot start data\" operator produced unexpected results\n";
       return 1;
     }
   }
-
   return 0;
 }

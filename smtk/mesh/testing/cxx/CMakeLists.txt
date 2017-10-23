@@ -67,47 +67,47 @@ smtk_unit_tests(
   LIBRARIES smtkCore smtkCoreModelTesting ${extra_libs} ${Boost_LIBRARIES}
 )
 
-add_executable(UnitTestGenerateHotStartData UnitTestGenerateHotStartData.cxx)
-target_compile_definitions(UnitTestGenerateHotStartData PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
-target_link_libraries(UnitTestGenerateHotStartData smtkCore ${Boost_LIBRARIES})
+add_executable(TestGenerateHotStartData TestGenerateHotStartData.cxx)
+target_compile_definitions(TestGenerateHotStartData PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
+target_link_libraries(TestGenerateHotStartData smtkCore ${Boost_LIBRARIES})
 
-add_executable(UnitTestInterpolateMesh UnitTestInterpolateMesh.cxx)
-target_compile_definitions(UnitTestInterpolateMesh PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
-target_link_libraries(UnitTestInterpolateMesh smtkCore ${Boost_LIBRARIES})
+add_executable(TestInterpolateOntoMesh TestInterpolateOntoMesh.cxx)
+target_compile_definitions(TestInterpolateOntoMesh PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
+target_link_libraries(TestInterpolateOntoMesh smtkCore ${Boost_LIBRARIES})
 
-add_executable(UnitTestWarpMesh UnitTestWarpMesh.cxx)
-target_compile_definitions(UnitTestWarpMesh PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
-target_link_libraries(UnitTestWarpMesh smtkCore ${Boost_LIBRARIES})
+add_executable(TestWarpMesh TestWarpMesh.cxx)
+target_compile_definitions(TestWarpMesh PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
+target_link_libraries(TestWarpMesh smtkCore ${Boost_LIBRARIES})
 
 if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
-  add_test(NAME UnitTestGenerateHotStartData
-    COMMAND $<TARGET_FILE:UnitTestGenerateHotStartData>
+  add_test(NAME TestGenerateHotStartData
+    COMMAND $<TARGET_FILE:TestGenerateHotStartData>
     "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json")
-  set_tests_properties(UnitTestGenerateHotStartData PROPERTIES LABELS "Mesh")
-  add_test(NAME UnitTestGenerateHotStartDataCSV
-    COMMAND $<TARGET_FILE:UnitTestGenerateHotStartData>
+  set_tests_properties(TestGenerateHotStartData PROPERTIES LABELS "Mesh")
+  add_test(NAME TestGenerateHotStartDataCSV
+    COMMAND $<TARGET_FILE:TestGenerateHotStartData>
     "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json" 1)
-  set_tests_properties(UnitTestGenerateHotStartDataCSV PROPERTIES LABELS "Mesh")
-  add_test(NAME UnitTestInterpolateMeshToCells
-    COMMAND $<TARGET_FILE:UnitTestInterpolateMesh>
+  set_tests_properties(TestGenerateHotStartDataCSV PROPERTIES LABELS "Mesh")
+  add_test(NAME TestInterpolateOntoMeshCells
+    COMMAND $<TARGET_FILE:TestInterpolateOntoMesh>
     "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json")
-  set_tests_properties(UnitTestInterpolateMeshToCells PROPERTIES LABELS "Mesh")
-  add_test(NAME UnitTestInterpolateMeshToPoints
-    COMMAND $<TARGET_FILE:UnitTestInterpolateMesh>
+  set_tests_properties(TestInterpolateOntoMeshCells PROPERTIES LABELS "Mesh")
+  add_test(NAME TestInterpolateOntoMeshPoints
+    COMMAND $<TARGET_FILE:TestInterpolateOntoMesh>
     "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json" 0)
-  set_tests_properties(UnitTestInterpolateMeshToPoints PROPERTIES LABELS "Mesh")
-  add_test(NAME UnitTestInterpolateMeshToCellsCSV
-    COMMAND $<TARGET_FILE:UnitTestInterpolateMesh>
+  set_tests_properties(TestInterpolateOntoMeshPoints PROPERTIES LABELS "Mesh")
+  add_test(NAME TestInterpolateOntoMeshCellsCSV
+    COMMAND $<TARGET_FILE:TestInterpolateOntoMesh>
     "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json" 0 1)
-  set_tests_properties(UnitTestInterpolateMeshToCellsCSV PROPERTIES LABELS "Mesh")
-  add_test(NAME UnitTestInterpolateMeshToPointsCSV
-    COMMAND $<TARGET_FILE:UnitTestInterpolateMesh>
+  set_tests_properties(TestInterpolateOntoMeshCellsCSV PROPERTIES LABELS "Mesh")
+  add_test(NAME TestInterpolateOntoMeshPointsCSV
+    COMMAND $<TARGET_FILE:TestInterpolateOntoMesh>
     "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json" 1 1)
-  set_tests_properties(UnitTestInterpolateMeshToPointsCSV PROPERTIES LABELS "Mesh")
-  add_test(NAME UnitTestWarpMesh
-    COMMAND $<TARGET_FILE:UnitTestWarpMesh>
+  set_tests_properties(TestInterpolateOntoMeshPointsCSV PROPERTIES LABELS "Mesh")
+  add_test(NAME TestWarpMesh
+    COMMAND $<TARGET_FILE:TestWarpMesh>
     "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json" 0)
-  add_test(NAME UnitTestWarpMeshCSV
-    COMMAND $<TARGET_FILE:UnitTestWarpMesh>
+  add_test(NAME TestWarpMeshCSV
+    COMMAND $<TARGET_FILE:TestWarpMesh>
     "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json" 1)
 endif()
