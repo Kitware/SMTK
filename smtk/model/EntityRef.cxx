@@ -50,6 +50,16 @@ EntityRef::EntityRef(ManagerPtr mgr, const smtk::common::UUID& inEntity)
 {
 }
 
+/// Construct a entityref referencing a given \a entity residing in the given \a mgr.
+EntityRef::EntityRef(EntityPtr src)
+{
+  if (src)
+  {
+    m_manager = src->modelResource();
+    m_entity = src->id();
+  }
+}
+
 /// Change the underlying manager the entityref references.
 bool EntityRef::setManager(ManagerPtr mgr)
 {
@@ -87,6 +97,17 @@ bool EntityRef::setEntity(const smtk::common::UUID& inEntity)
 const smtk::common::UUID& EntityRef::entity() const
 {
   return this->m_entity;
+}
+
+/// Return the smtk::model::Entity record for this model entity.
+smtk::model::EntityPtr EntityRef::entityRecord() const
+{
+  auto mgr = this->manager();
+  if (!mgr)
+  {
+    return nullptr;
+  }
+  return mgr->findEntity(this->m_entity, true);
 }
 
 /// Return the resource component for this model entity.
