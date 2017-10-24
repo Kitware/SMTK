@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/mesh/operators/InterpolateMesh.h"
+#include "smtk/mesh/operators/InterpolateOntoMesh.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -104,7 +104,7 @@ namespace smtk
 namespace mesh
 {
 
-bool InterpolateMesh::ableToOperate()
+bool InterpolateOntoMesh::ableToOperate()
 {
   if (!this->ensureSpecification())
   {
@@ -120,7 +120,7 @@ bool InterpolateMesh::ableToOperate()
   return true;
 }
 
-smtk::model::OperatorResult InterpolateMesh::operateInternal()
+smtk::model::OperatorResult InterpolateOntoMesh::operateInternal()
 {
   // Access the mesh to elevate
   smtk::attribute::MeshItem::Ptr meshItem = this->specification()->findMesh("mesh");
@@ -212,7 +212,7 @@ smtk::model::OperatorResult InterpolateMesh::operateInternal()
 }
 }
 
-#include "smtk/mesh/InterpolateMesh_xml.h"
+#include "smtk/mesh/InterpolateOntoMesh_xml.h"
 
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::mesh::InterpolateMesh, interpolate_mesh,
-  "interpolate mesh", InterpolateMesh_xml, smtk::model::Session);
+smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::mesh::InterpolateOntoMesh, interpolate_onto_mesh,
+  "interpolate onto mesh", InterpolateOntoMesh_xml, smtk::model::Session);

@@ -261,7 +261,7 @@ int main(int argc, char* argv[])
     }
   }
 
-  // Execute "Interpolate Mesh" operator...
+  // Execute "generate hot start data" operator...
   smtk::model::OperatorResult generateHotStartDataOpResult = generateHotStartDataOp->operate();
 
   // ...delete the generated points file...
@@ -274,7 +274,7 @@ int main(int argc, char* argv[])
   if (generateHotStartDataOpResult->findInt("outcome")->value() !=
     smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
-    std::cerr << "\"interpolate mesh\" operator failed\n";
+    std::cerr << "\"generate hot start data\" operator failed\n";
     return 1;
   }
 

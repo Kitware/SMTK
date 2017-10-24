@@ -19,8 +19,8 @@ namespace mesh
 
 /**\brief A class for generating hot start data for AdH.
 
-   This class performs the same actions as InterpolateMesh, with the following
-   differences:
+   This class performs the same actions as InterpolateOntoMesh, with the
+   following differences:
    1) the API is tweaked to apply directly to AdH's use case
    2) only point data can be generated
    3) when computing initial water surface elevation, the z-coordinate of each
