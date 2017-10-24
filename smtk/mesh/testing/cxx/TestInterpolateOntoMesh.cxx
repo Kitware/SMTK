@@ -313,7 +313,7 @@ int main(int argc, char* argv[])
   }
 
   // ...and test the results for success.
-  if (interpolateMeshOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  if (interpolateOntoMeshOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
   {
     std::cerr << "\"interpolate onto mesh\" operator failed\n";
     return 1;
