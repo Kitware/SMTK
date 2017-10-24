@@ -110,7 +110,8 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
   }
 
   smtk::model::EntityRefArray modified; // includes edge and perhaps eventually faces.
-  smtk::model::Edges created;
+  smtk::model::Edges edgeCreated;
+  smtk::model::Vertices verticesCreated;
 
   // Done checking input. Perform operation.
   ok &= pmod->tweakEdge(src, numCoordsPerPt, pointsItem->begin(), pointsItem->end(), modified);
@@ -129,6 +130,8 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
       continue; // skip points that are already model vertices (should only happen at start/end)
     }
     smtk::model::Vertex pv = pmod->findOrAddModelVertex(mgr, *ptit);
+    verticesCreated.push_back(pv);
+
     promotedVerts.push_back(this->findStorage<internal::vertex>(pv.entity()));
     splitLocs.push_back(ptit);
     std::cout << "  " << ptit->x() << " " << ptit->y() << "\n";
@@ -148,14 +151,19 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
     {
       expunged.push_back(src);
     }
-    created.insert(created.end(), edgesAdded.begin(), edgesAdded.end());
+    edgeCreated.insert(edgeCreated.end(), edgesAdded.begin(), edgesAdded.end());
   }
 
   if (this->m_debugLevel > 0)
   {
-    for (smtk::model::Edges::iterator crit = created.begin(); crit != created.end(); ++crit)
+    for (smtk::model::Edges::iterator eCrit = edgeCreated.begin(); eCrit != edgeCreated.end();
+         ++eCrit)
     {
-      smtkOpDebug("Created " << crit->name() << ".");
+      smtkOpDebug("Created " << eCrit->name() << ".");
+    }
+    for (auto vCrit = verticesCreated.begin(); vCrit != verticesCreated.end(); ++vCrit)
+    {
+      smtkOpDebug("Created " << vCrit->name() << ".");
     }
 
     for (smtk::model::EntityRefArray::iterator moit = modified.begin(); moit != modified.end();
@@ -176,7 +184,8 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
   {
     opResult = this->createResult(smtk::model::OPERATION_SUCCEEDED);
     this->addEntitiesToResult(opResult, expunged, EXPUNGED);
-    this->addEntitiesToResult(opResult, created, CREATED);
+    this->addEntitiesToResult(opResult, edgeCreated, CREATED);
+    this->addEntitiesToResult(opResult, verticesCreated, CREATED);
     this->addEntitiesToResult(opResult, modified, MODIFIED);
 
     // Modified items will have new tessellations, which we must indicate
