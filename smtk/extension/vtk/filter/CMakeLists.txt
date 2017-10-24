@@ -18,7 +18,6 @@ if(SMTK_ENABLE_OPENCV)
 endif()
 
 set(srcs
-   vtkCMBApplyBathymetryFilter.cxx
    vtkCleanPolylines.cxx
    vtkDEMToMesh.cxx
    vtkExtractImageBlock.cxx
@@ -30,7 +29,6 @@ set(srcs
   )
 
 set(headers
-   vtkCMBApplyBathymetryFilter.h
    vtkCleanPolylines.h
    vtkDEMToMesh.h
    vtkExtractImageBlock.h

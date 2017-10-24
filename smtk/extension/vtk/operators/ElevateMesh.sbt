@@ -4,7 +4,7 @@
   <Definitions>
     <!-- Operator -->
     <AttDef Type="elevate mesh"
-            Label="Mesh - Elevate" BaseType="operator">
+            Label="Mesh - Apply Elevation" BaseType="operator">
       <BriefDescription>
         Modify the z-coordinates a mesh's nodes according to an
         external data set.

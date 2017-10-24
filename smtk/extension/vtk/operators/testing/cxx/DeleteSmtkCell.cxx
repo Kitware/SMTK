@@ -178,6 +178,3 @@ int main(int argc, char* argv[])
   }
   return !reVal;
 }
-
-// This macro ensures the vtk io library is loaded into the executable
-smtkComponentInitMacro(smtk_apply_bathymetry_operator)
