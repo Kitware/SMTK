@@ -919,8 +919,10 @@
     <modify-function signature="addItemDefinition(smtk::shared_ptr&lt; smtk::attribute::ItemDefinition &gt; )" remove="all"/>
     <modify-function signature="removeItemDefinition(smtk::shared_ptr&lt; smtk::attribute::ItemDefinition &gt; )" remove="all"/>
     <modify-function signature="setAdvanceLevel(int)" remove="all"/>
-    <modify-function signature="setAssociationRule(smtk::shared_ptr&lt;smtk::attribute::ModelEntityItemDefinition&gt;)" remove="all"/>
-    <modify-function signature="setAssociationMask(unsigned int)" remove="all"/>
+    <modify-function signature="setLocalAssociationRule(smtk::shared_ptr&lt;smtk::attribute::ModelEntityItemDefinition&gt;)" remove="all"/>
+    <modify-function signature="clearLocalAssociationRule()" remove="all"/>
+    <modify-function signature="createLocalAssociationRule()" remove="all"/>
+    <modify-function signature="setLocalAssociationMask(unsigned int)" remove="all"/>
     <modify-function signature="setDefaultColor(const double *)" remove="all"/>
     <modify-function signature="setDefaultColor(double, double, double, double)" remove="all"/>
     <modify-function signature="unsetNotApplicableColor()" remove="all"/>
