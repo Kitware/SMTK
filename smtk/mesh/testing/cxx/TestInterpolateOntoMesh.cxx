@@ -188,16 +188,17 @@ int main(int argc, char* argv[])
   smtk::io::ModelToMesh convert;
   smtk::mesh::CollectionPtr c = convert(meshManager, manager);
 
-  // Create an "Interpolate Mesh" operator
-  smtk::model::OperatorPtr interpolateMeshOp = sessRef.session()->op("interpolate mesh");
-  if (!interpolateMeshOp)
+  // Create an "Interpolate Onto Mesh" operator
+  smtk::model::OperatorPtr interpolateOntoMeshOp = sessRef.session()->op("interpolate onto mesh");
+  if (!interpolateOntoMeshOp)
   {
-    std::cerr << "No \"interpolate mesh\" operator\n";
+    std::cerr << "No \"interpolate onto mesh\" operator\n";
     return 1;
   }
 
   // Set the operator's data set name
-  bool valueSet = interpolateMeshOp->specification()->findString("dsname")->setValue("my field");
+  bool valueSet =
+    interpolateOntoMeshOp->specification()->findString("dsname")->setValue("my field");
 
   if (!valueSet)
   {
@@ -207,7 +208,7 @@ int main(int argc, char* argv[])
 
   // Set the operator's input mesh
   smtk::mesh::MeshSet mesh = meshManager->collectionBegin()->second->meshes();
-  valueSet = interpolateMeshOp->specification()->findMesh("mesh")->setValue(mesh);
+  valueSet = interpolateOntoMeshOp->specification()->findMesh("mesh")->setValue(mesh);
 
   if (!valueSet)
   {
@@ -216,7 +217,8 @@ int main(int argc, char* argv[])
   }
 
   // Set the operator's input power
-  smtk::attribute::DoubleItemPtr power = interpolateMeshOp->specification()->findDouble("power");
+  smtk::attribute::DoubleItemPtr power =
+    interpolateOntoMeshOp->specification()->findDouble("power");
 
   if (!power)
   {
@@ -233,7 +235,7 @@ int main(int argc, char* argv[])
   }
 
   smtk::attribute::IntItemPtr interpMode =
-    interpolateMeshOp->specification()->findInt("interpmode");
+    interpolateOntoMeshOp->specification()->findInt("interpmode");
 
   if (!interpMode)
   {
@@ -266,7 +268,8 @@ int main(int argc, char* argv[])
     }
     outfile.close();
 
-    smtk::attribute::FileItemPtr ptsFile = interpolateMeshOp->specification()->findFile("ptsfile");
+    smtk::attribute::FileItemPtr ptsFile =
+      interpolateOntoMeshOp->specification()->findFile("ptsfile");
     if (!ptsFile)
     {
       std::cerr << "No \"ptsfile\" item in specification\n";
@@ -280,7 +283,8 @@ int main(int argc, char* argv[])
   else
   {
     // Set the operator's input points
-    smtk::attribute::GroupItemPtr points = interpolateMeshOp->specification()->findGroup("points");
+    smtk::attribute::GroupItemPtr points =
+      interpolateOntoMeshOp->specification()->findGroup("points");
 
     if (!points)
     {
@@ -299,8 +303,8 @@ int main(int argc, char* argv[])
     }
   }
 
-  // Execute "Interpolate Mesh" operator...
-  smtk::model::OperatorResult interpolateMeshOpResult = interpolateMeshOp->operate();
+  // Execute "Interpolate Onto Mesh" operator...
+  smtk::model::OperatorResult interpolateOntoMeshOpResult = interpolateOntoMeshOp->operate();
 
   // ...delete the generated points file...
   if (fromCSV)
@@ -311,7 +315,7 @@ int main(int argc, char* argv[])
   // ...and test the results for success.
   if (interpolateMeshOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
   {
-    std::cerr << "\"interpolate mesh\" operator failed\n";
+    std::cerr << "\"interpolate onto mesh\" operator failed\n";
     return 1;
   }
 
@@ -344,7 +348,7 @@ int main(int argc, char* argv[])
   {
     if (bin != expected[counter++])
     {
-      std::cerr << "\"interpolate mesh\" operator produced unexpected results\n";
+      std::cerr << "\"interpolate onto mesh\" operator produced unexpected results\n";
       return 1;
     }
   }

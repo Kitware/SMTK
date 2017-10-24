@@ -1,0 +1,42 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
+
+#ifndef pybind_smtk_mesh_operators_InterpolateOntoMesh_h
+#define pybind_smtk_mesh_operators_InterpolateOntoMesh_h
+
+#include <pybind11/pybind11.h>
+
+#include "smtk/mesh/operators/InterpolateOntoMesh.h"
+
+#include "smtk/model/Operator.h"
+
+namespace py = pybind11;
+
+PySharedPtrClass< smtk::mesh::InterpolateOntoMesh, smtk::model::Operator > pybind11_init_smtk_mesh_InterpolateOntoMesh(py::module &m)
+{
+  PySharedPtrClass< smtk::mesh::InterpolateOntoMesh, smtk::model::Operator > instance(m, "InterpolateOntoMesh");
+  instance
+    .def(py::init<>())
+    .def(py::init<::smtk::mesh::InterpolateOntoMesh const &>())
+    .def("deepcopy", (smtk::mesh::InterpolateOntoMesh & (smtk::mesh::InterpolateOntoMesh::*)(::smtk::mesh::InterpolateOntoMesh const &)) &smtk::mesh::InterpolateOntoMesh::operator=)
+    .def("ableToOperate", &smtk::mesh::InterpolateOntoMesh::ableToOperate)
+    .def("className", &smtk::mesh::InterpolateOntoMesh::className)
+    .def("classname", &smtk::mesh::InterpolateOntoMesh::classname)
+    .def_static("create", (std::shared_ptr<smtk::mesh::InterpolateOntoMesh> (*)()) &smtk::mesh::InterpolateOntoMesh::create)
+    .def_static("create", (std::shared_ptr<smtk::mesh::InterpolateOntoMesh> (*)(::std::shared_ptr<smtk::mesh::InterpolateOntoMesh> &)) &smtk::mesh::InterpolateOntoMesh::create, py::arg("ref"))
+    .def("name", &smtk::mesh::InterpolateOntoMesh::name)
+    .def("shared_from_this", (std::shared_ptr<const smtk::mesh::InterpolateOntoMesh> (smtk::mesh::InterpolateOntoMesh::*)() const) &smtk::mesh::InterpolateOntoMesh::shared_from_this)
+    .def("shared_from_this", (std::shared_ptr<smtk::mesh::InterpolateOntoMesh> (smtk::mesh::InterpolateOntoMesh::*)()) &smtk::mesh::InterpolateOntoMesh::shared_from_this)
+    .def_readwrite_static("operatorName", &smtk::mesh::InterpolateOntoMesh::operatorName)
+    ;
+  return instance;
+}
+
+#endif

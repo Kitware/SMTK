@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_mesh_operators_InterpolateMesh_h
-#define __smtk_mesh_operators_InterpolateMesh_h
+#ifndef __smtk_mesh_operators_InterpolateOntoMesh_h
+#define __smtk_mesh_operators_InterpolateOntoMesh_h
 
 #include "smtk/model/Operator.h"
 
@@ -19,11 +19,11 @@ namespace mesh
 
 /**\brief A class for generating a mesh data set from interpolation points.
   */
-class SMTKCORE_EXPORT InterpolateMesh : public smtk::model::Operator
+class SMTKCORE_EXPORT InterpolateOntoMesh : public smtk::model::Operator
 {
 public:
-  smtkTypeMacro(InterpolateMesh);
-  smtkCreateMacro(InterpolateMesh);
+  smtkTypeMacro(InterpolateOntoMesh);
+  smtkCreateMacro(InterpolateOntoMesh);
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
@@ -35,4 +35,4 @@ protected:
 }
 }
 
-#endif // __smtk_mesh_operators_InterpolateMesh_h
+#endif // __smtk_mesh_operators_InterpolateOntoMesh_h
