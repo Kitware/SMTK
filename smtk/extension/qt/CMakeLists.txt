@@ -138,6 +138,7 @@ add_library(smtkQtExt
 target_include_directories(smtkQtExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 #set smtkQtExt to publicly link to smtkCore
+#set smtkQtExt to publicly link to smtkCore
 target_link_libraries(smtkQtExt LINK_PUBLIC
   smtkCore
   ${qt_targets}
