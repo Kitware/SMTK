@@ -216,6 +216,13 @@ public:
   bool setNeumann(
     const smtk::mesh::HandleRange& meshsets, const smtk::mesh::Neumann& neumann) const override;
 
+  bool setId(const smtk::mesh::Handle& meshset, const smtk::common::UUID& id) const override;
+
+  smtk::common::UUID getId(const smtk::mesh::Handle& meshset) const override;
+
+  bool findById(const smtk::mesh::Handle& root, const smtk::common::UUID& id,
+    smtk::mesh::Handle& meshset) const override;
+
   bool setAssociation(
     const smtk::common::UUID& modelUUID, const smtk::mesh::HandleRange& meshsets) const override;
 

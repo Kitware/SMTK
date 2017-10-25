@@ -404,6 +404,13 @@ public:
   virtual bool setNeumann(
     const smtk::mesh::HandleRange& meshsets, const smtk::mesh::Neumann& neumann) const = 0;
 
+  virtual bool setId(const smtk::mesh::Handle& meshset, const smtk::common::UUID& id) const = 0;
+
+  virtual smtk::common::UUID getId(const smtk::mesh::Handle& meshset) const = 0;
+
+  virtual bool findById(const smtk::mesh::Handle& root, const smtk::common::UUID& id,
+    smtk::mesh::Handle& meshset) const = 0;
+
   // Specify for a given sets of handles what the associated model entity is.
   // This allows for a model region, face, or edge to be associated with a
   // given set of meshes.

@@ -947,6 +947,61 @@ bool Interface::setNeumann(
   return tagged;
 }
 
+/**\brief Set the id for a meshset to \a id.
+  */
+bool Interface::setId(const smtk::mesh::Handle& meshset, const smtk::common::UUID& id) const
+{
+  if (!id)
+  {
+    return false;
+  }
+
+  tag::QueryIdTag mtag(id, this->moabInterface());
+
+  //Tag the meshsets
+  bool tagged = detail::setDenseOpaqueTagValue(mtag, meshset, this->moabInterface());
+  if (tagged)
+  {
+    this->m_modified = true;
+  }
+  return tagged;
+}
+
+/**\brief Get the id for a meshset.
+  */
+smtk::common::UUID Interface::getId(const smtk::mesh::Handle& meshset) const
+{
+  tag::QueryIdTag mtag(this->moabInterface());
+  return detail::computeDenseOpaqueTagValue<smtk::common::UUID>(
+    mtag, meshset, this->moabInterface());
+}
+
+/**\brief Find a mesh entity using its id.
+  *
+  */
+bool Interface::findById(
+  const smtk::mesh::Handle& root, const smtk::common::UUID& id, smtk::mesh::Handle& meshset) const
+{
+  if (!id)
+  {
+    return false;
+  }
+
+  smtk::mesh::HandleRange result;
+
+  tag::QueryIdTag mtag(id, this->moabInterface());
+
+  ::moab::ErrorCode rval;
+  rval = m_iface->get_entities_by_type_and_tag(
+    root, ::moab::MBENTITYSET, mtag.moabTagPtr(), mtag.moabTagValuePtr(), 1, result);
+  if (rval != ::moab::MB_SUCCESS || result.size() != 1)
+  {
+    return false;
+  }
+  meshset = *result.begin();
+  return true;
+}
+
 /**\brief Set the model entity assigned to each meshset member to \a ent.
   */
 bool Interface::setAssociation(

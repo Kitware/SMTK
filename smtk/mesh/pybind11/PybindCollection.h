@@ -15,6 +15,8 @@
 
 #include "smtk/mesh/Collection.h"
 
+#include "smtk/common/UUID.h"
+
 #include "smtk/mesh/Manager.h"
 #include "smtk/model/EntityIterator.h"
 
@@ -36,7 +38,7 @@ PySharedPtrClass< smtk::mesh::Collection > pybind11_init_smtk_mesh_Collection(py
     .def("clearReadWriteLocations", &smtk::mesh::Collection::clearReadWriteLocations)
     .def_static("create", (std::shared_ptr<smtk::mesh::Collection> (*)()) &smtk::mesh::Collection::create)
     .def_static("create", (std::shared_ptr<smtk::mesh::Collection> (*)(::std::shared_ptr<smtk::mesh::Collection> &)) &smtk::mesh::Collection::create, py::arg("ref"))
-    .def("createMesh", &smtk::mesh::Collection::createMesh, py::arg("cells"))
+    .def("createMesh", &smtk::mesh::Collection::createMesh, py::arg("cells"), py::arg("uuid") = smtk::common::UUID::null())
     .def("dirichletMeshes", &smtk::mesh::Collection::dirichletMeshes, py::arg("d"))
     .def("dirichlets", &smtk::mesh::Collection::dirichlets)
     .def("domainMeshes", &smtk::mesh::Collection::domainMeshes, py::arg("m"))

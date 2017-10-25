@@ -33,19 +33,18 @@ namespace resource
 class SMTKCORE_EXPORT Component : smtkEnableSharedPtr(Component)
 {
   friend class Resource;
-  friend class smtk::model::Manager;
 
 public:
   smtkTypeMacroBase(Component);
   virtual ~Component();
   virtual const ResourcePtr resource() const = 0;
 
-  const common::UUID& id() const { return this->m_id; }
+  virtual common::UUID id() const = 0;
 
 protected:
   Component(const common::UUID& myID);
   Component();
-  void setId(const common::UUID& myID) { this->m_id = myID; }
+  virtual void setId(const common::UUID& myID) = 0;
 
 private:
   common::UUID m_id;

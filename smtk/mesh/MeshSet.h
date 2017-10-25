@@ -103,6 +103,8 @@ public:
   bool setDirichlet(const smtk::mesh::Dirichlet& d);
   bool setNeumann(const smtk::mesh::Neumann& n);
 
+  smtk::common::UUID id() const;
+  void setId(const smtk::common::UUID&);
   smtk::common::UUIDArray modelEntityIds() const;
 
   //append the passed EntityRefArray with the model entities associated with

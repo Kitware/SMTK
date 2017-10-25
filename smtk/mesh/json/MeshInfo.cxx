@@ -22,6 +22,7 @@ namespace json
 
 MeshInfo::MeshInfo()
   : m_mesh()
+  , m_uuid()
   , m_cells()
   , m_points()
   , m_types()
@@ -32,9 +33,11 @@ MeshInfo::MeshInfo()
 {
 }
 
-MeshInfo::MeshInfo(smtk::mesh::Handle meshId, const smtk::mesh::HandleRange& cells,
-  const smtk::mesh::HandleRange& points, smtk::mesh::TypeSet types)
+MeshInfo::MeshInfo(smtk::mesh::Handle meshId, const smtk::common::UUID& uuid,
+  const smtk::mesh::HandleRange& cells, const smtk::mesh::HandleRange& points,
+  smtk::mesh::TypeSet types)
   : m_mesh(meshId)
+  , m_uuid(uuid)
   , m_cells(cells)
   , m_points(points)
   , m_types(types)

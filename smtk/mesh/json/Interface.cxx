@@ -482,6 +482,41 @@ bool Interface::setNeumann(const smtk::mesh::HandleRange&, const smtk::mesh::Neu
   return false;
 }
 
+bool Interface::setId(const smtk::mesh::Handle&, const smtk::common::UUID&) const
+{
+  return false;
+}
+
+smtk::common::UUID Interface::getId(const smtk::mesh::Handle& meshset) const
+{
+  smtk::mesh::HandleRange meshes;
+  MeshInfoVecType::const_iterator i;
+  for (i = this->m_meshInfo.begin(); i != this->m_meshInfo.end(); ++i)
+  {
+    if (i->mesh() == meshset)
+    {
+      return i->id();
+    }
+  }
+  return smtk::common::UUID::null();
+}
+
+bool Interface::findById(
+  const smtk::mesh::Handle&, const smtk::common::UUID& id, smtk::mesh::Handle& meshset) const
+{
+  smtk::mesh::HandleRange meshes;
+  MeshInfoVecType::const_iterator i;
+  for (i = this->m_meshInfo.begin(); i != this->m_meshInfo.end(); ++i)
+  {
+    if (i->id() == id)
+    {
+      meshset = i->mesh();
+      return true;
+    }
+  }
+  return false;
+}
+
 /**\brief Set the model entity assigned to each meshset member to \a ent.
   */
 bool Interface::setAssociation(const smtk::common::UUID&, const smtk::mesh::HandleRange&) const

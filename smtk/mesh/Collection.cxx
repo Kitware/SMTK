@@ -10,6 +10,7 @@
 
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
+#include "smtk/mesh/MeshComponent.h"
 
 #include "smtk/mesh/moab/Interface.h"
 
@@ -107,6 +108,18 @@ Collection::~Collection()
   {
     delete this->m_internals;
   }
+}
+
+smtk::resource::ComponentPtr Collection::find(const smtk::common::UUID& compId) const
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
+  smtk::mesh::moab::Handle handle;
+  if (iface->findById(this->m_internals->mesh_root_handle(), compId, handle))
+  {
+    return smtk::mesh::MeshComponent::create(this->shared_from_this(), handle);
+  }
+
+  return smtk::resource::ComponentPtr();
 }
 
 const smtk::mesh::InterfacePtr& Collection::interface() const
@@ -503,7 +516,8 @@ smtk::common::UUID Collection::associatedModel() const
   return iface->rootAssociation();
 }
 
-smtk::mesh::MeshSet Collection::createMesh(const smtk::mesh::CellSet& cells)
+smtk::mesh::MeshSet Collection::createMesh(
+  const smtk::mesh::CellSet& cells, const smtk::common::UUID& uuid)
 {
   const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
 
@@ -515,6 +529,14 @@ smtk::mesh::MeshSet Collection::createMesh(const smtk::mesh::CellSet& cells)
     if (meshCreated)
     {
       entities.insert(meshSetHandle);
+      if (uuid)
+      {
+        iface->setId(meshCreated, uuid);
+      }
+      else
+      {
+        iface->setId(meshCreated, smtk::common::UUIDGenerator::instance().random());
+      }
     }
   }
   return smtk::mesh::MeshSet(

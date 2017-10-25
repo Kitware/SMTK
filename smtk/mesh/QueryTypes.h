@@ -130,6 +130,15 @@ public:
   }
 };
 
+class SMTKCORE_EXPORT Id : public UUIDTag
+{
+public:
+  explicit Id(const smtk::common::UUID& value)
+    : UUIDTag(value)
+  {
+  }
+};
+
 class SMTKCORE_EXPORT Model : public UUIDTag
 {
 public:

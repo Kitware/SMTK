@@ -31,6 +31,8 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 
+#include "smtk/resource/Resource.h"
+
 #include <vector>
 
 namespace smtk
@@ -54,7 +56,7 @@ namespace mesh
 
 //Flyweight interface around a moab database of meshes. When constructed
 //becomes registered with a manager with a weak relationship.
-class SMTKCORE_EXPORT Collection : public smtk::enable_shared_from_this<Collection>
+class SMTKCORE_EXPORT Collection : public smtk::resource::Resource
 {
   //default constructor generates an invalid collection
   Collection();
@@ -70,11 +72,13 @@ class SMTKCORE_EXPORT Collection : public smtk::enable_shared_from_this<Collecti
     smtk::mesh::ManagerPtr mngr);
 
 public:
-  smtkTypeMacroBase(Collection);
-  //construct an invalid collection
-  smtkCreateMacro(Collection);
+  smtkTypeMacro(smtk::mesh::Collection);
+  smtkSharedPtrCreateMacro(smtk::resource::Resource);
 
   ~Collection();
+
+  resource::Resource::Type type() const override { return resource::Resource::MESH; }
+  resource::ComponentPtr find(const common::UUID& compId) const override;
 
   //determine if the given Collection is valid and is properly associated
   //to a manager.
@@ -220,7 +224,8 @@ public:
   //we will return an empty MeshSet.
   //Asking to create a MeshSet from a CellSet that is empty will fail, and
   //we will return an empty MeshSet.
-  smtk::mesh::MeshSet createMesh(const smtk::mesh::CellSet& cells);
+  smtk::mesh::MeshSet createMesh(
+    const smtk::mesh::CellSet& cells, const smtk::common::UUID& uuid = smtk::common::UUID::null());
 
   // Deletion of Items
   //given a collection of meshes this will delete all meshes and any cell or vert

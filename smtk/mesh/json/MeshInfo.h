@@ -32,8 +32,9 @@ class SMTKCORE_EXPORT MeshInfo
 public:
   MeshInfo();
 
-  MeshInfo(smtk::mesh::Handle meshId, const smtk::mesh::HandleRange& cells,
-    const smtk::mesh::HandleRange& points, smtk::mesh::TypeSet types);
+  MeshInfo(smtk::mesh::Handle meshId, const smtk::common::UUID& uuid,
+    const smtk::mesh::HandleRange& cells, const smtk::mesh::HandleRange& points,
+    smtk::mesh::TypeSet types);
 
   smtk::mesh::Handle mesh() const { return this->m_mesh; }
 
@@ -54,6 +55,7 @@ public:
   const std::vector<smtk::mesh::Dirichlet>& dirichlets() const { return this->m_dirichlets; }
   const std::vector<smtk::mesh::Neumann>& neumanns() const { return this->m_neumanns; }
   const smtk::common::UUIDArray& modelUUIDS() const { return this->m_uuids; }
+  const smtk::common::UUID& id() const { return this->m_uuid; }
 
   void set(const std::vector<smtk::mesh::Domain>& ds) { this->m_domains = ds; }
   void set(const std::vector<smtk::mesh::Dirichlet>& bcs) { this->m_dirichlets = bcs; }
@@ -64,6 +66,7 @@ public:
 
 private:
   smtk::mesh::Handle m_mesh;
+  smtk::common::UUID m_uuid;
   smtk::mesh::HandleRange m_cells;
   smtk::mesh::HandleRange m_points;
   smtk::mesh::TypeSet m_types;
