@@ -648,10 +648,10 @@ void vtkModelMultiBlockSource::PrepareInstanceOutput(vtkMultiBlockDataSet* insta
     vtkNew<vtkIdTypeArray> instancePrototype;  // block ID of prototype object
     vtkNew<vtkUnsignedCharArray> instanceMask; // visibility control
 
-    instanceOrient->SetName("instance orientation");
-    instanceScale->SetName("instance scale");
-    instancePrototype->SetName("instance source");
-    instanceMask->SetName("instance visibility");
+    instanceOrient->SetName(VTK_INSTANCE_ORIENTATION);
+    instanceScale->SetName(VTK_INSTANCE_SCALE);
+    instancePrototype->SetName(VTK_INSTANCE_SOURCE);
+    instanceMask->SetName(VTK_INSTANCE_VISIBILITY);
 
     instanceOrient->SetNumberOfComponents(3);
     instanceScale->SetNumberOfComponents(3);

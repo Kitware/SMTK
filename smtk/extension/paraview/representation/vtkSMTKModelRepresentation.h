@@ -37,15 +37,23 @@ public:
   vtkTypeMacro(vtkSMTKModelRepresentation, vtkGeometryRepresentation);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
+  //@{
+  /**
+   * \sa vtkPVDataRepresentation
+   */
   int ProcessViewRequest(vtkInformationRequestKey* request_type, vtkInformation* inInfo,
     vtkInformation* outInfo) override;
-
   int RequestData(
     vtkInformation* info, vtkInformationVector** inVec, vtkInformationVector* outVec) override;
-
   bool AddToView(vtkView* view) override;
   bool RemoveFromView(vtkView* view) override;
   void SetVisibility(bool val) override;
+  //@}
+
+  /**
+   * \sa vtkGeometryRepresentation
+   */
+  void SetMapScalars(int val) override;
 
 protected:
   vtkSMTKModelRepresentation();
@@ -54,6 +62,7 @@ protected:
   int FillInputPortInformation(int port, vtkInformation* info) override;
   void SetupDefaults() override;
   void SetOutputExtent(vtkAlgorithmOutput* output, vtkInformation* inInfo);
+  void ConfigureGlyphMapper(vtkGlyph3DMapper* mapper);
 
   vtkSmartPointer<vtkCompositePolyDataMapper2> EntityMapper;
   vtkSmartPointer<vtkCompositePolyDataMapper2> SelectedEntityMapper;
