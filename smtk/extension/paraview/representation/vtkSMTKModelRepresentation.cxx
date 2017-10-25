@@ -24,6 +24,7 @@
 #include <vtkPVRenderView.h>
 #include <vtkPVTrivialProducer.h>
 
+#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 #include "vtkSMTKModelRepresentation.h"
 
 vtkStandardNewMacro(vtkSMTKModelRepresentation);
@@ -71,7 +72,7 @@ int vtkSMTKModelRepresentation::RequestData(
     // Glyph points (2) and prototypes (1)
     this->GlyphMapper->SetInputConnection(this->GetInternalOutputPort(2));
     this->GlyphMapper->SetInputConnection(1, this->GetInternalOutputPort(1));
-    this->GlyphMapper->SetUseSourceTableTree(true);
+    this->ConfigureGlyphMapper(this->GlyphMapper.GetPointer());
   }
   this->CacheKeeper->Update();
 
@@ -238,4 +239,34 @@ int vtkSMTKModelRepresentation::FillInputPortInformation(int port, vtkInformatio
   }
 
   return 0;
+}
+
+void vtkSMTKModelRepresentation::ConfigureGlyphMapper(vtkGlyph3DMapper* mapper)
+{
+  mapper->SetUseSourceTableTree(true);
+
+  mapper->SetSourceIndexArray(VTK_INSTANCE_SOURCE);
+  mapper->SetSourceIndexing(true);
+
+  mapper->SetScaleArray(VTK_INSTANCE_SCALE);
+  mapper->SetScaling(true);
+
+  mapper->SetOrientationArray(VTK_INSTANCE_ORIENTATION);
+  mapper->SetOrientationMode(vtkGlyph3DMapper::ROTATION);
+
+  mapper->SetMaskArray(VTK_INSTANCE_VISIBILITY);
+  mapper->SetMasking(true);
+}
+
+void vtkSMTKModelRepresentation::SetMapScalars(int val)
+{
+  if (val < 0 || val > 1)
+  {
+    vtkWarningMacro(<< "Invalid parameter for vtkSMTKModelRepresentation::SetMapScalars: " << val);
+    val = 0;
+  }
+
+  int mapToColorMode[] = { VTK_COLOR_MODE_DIRECT_SCALARS, VTK_COLOR_MODE_MAP_SCALARS };
+  this->EntityMapper->SetColorMode(mapToColorMode[val]);
+  this->GlyphMapper->SetColorMode(mapToColorMode[val]);
 }
