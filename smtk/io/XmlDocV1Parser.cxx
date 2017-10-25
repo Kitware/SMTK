@@ -743,8 +743,8 @@ void XmlDocV1Parser::processDefinition(xml_node& defNode, smtk::attribute::Defin
   if (xatt)
   {
     model::BitFlags mask = this->decodeModelEntityMask(xatt.value());
-    def->setAssociationMask(mask);
-    def->associationRule()->setIsExtensible(true);
+    def->setLocalAssociationMask(mask);
+    def->localAssociationRule()->setIsExtensible(true);
   }
 
   double color[4];
@@ -784,7 +784,7 @@ void XmlDocV1Parser::processDefinition(xml_node& defNode, smtk::attribute::Defin
       smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItemDefinition>(
         smtk::attribute::ModelEntityItemDefinition::New(assocName));
     this->processModelEntityDef(node, assocDef);
-    def->setAssociationRule(assocDef);
+    def->setLocalAssociationRule(assocDef);
   }
 
   // Now lets process its items

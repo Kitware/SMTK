@@ -131,12 +131,26 @@ public:
   // By unsetting the color it is now inherited from the def's base definition
   void unsetDefaultColor() { this->m_isDefaultColorSet = false; }
   bool isDefaultColorSet() const { return this->m_isDefaultColorSet; }
-
-  ModelEntityItemDefinitionPtr associationRule() const;
-  virtual void setAssociationRule(ModelEntityItemDefinitionPtr);
-
+  // return the asscoiationRule that the definition will use when creating
+  // the attribute - Note that if the definition does not have a local
+  //association rule specified, its base definition  will be returned.  If the
+  // definition does not have a base definition then a local one is created
+  ConstModelEntityItemDefinitionPtr associationRule() const;
+  // sets an association rule that overides the base definition rule
+  ModelEntityItemDefinitionPtr localAssociationRule() const;
+  // Create a new local association rule (if needed) and returns it
+  ModelEntityItemDefinitionPtr createLocalAssociationRule();
+  // Local the local Assoicate Rule for the definition
+  virtual void setLocalAssociationRule(ModelEntityItemDefinitionPtr);
+  // Returns the association mask used by the definition for model association
+  //Note that this may come from the base definition if there is no local
+  //association rule
   smtk::model::BitFlags associationMask() const;
-  void setAssociationMask(smtk::model::BitFlags mask);
+  //Sets the association mask - note that this will always create a local
+  //association rule
+  void setLocalAssociationMask(smtk::model::BitFlags mask);
+  //Removes the local association rule
+  void clearLocalAssociationRule();
 
   bool associatesWithVertex() const;
   bool associatesWithEdge() const;
