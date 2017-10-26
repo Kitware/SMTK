@@ -262,7 +262,7 @@ CollectionPtr Attribute::collection() const
   return this->m_definition->collection();
 }
 
-smtk::resource::ResourcePtr Attribute::resource() const
+const smtk::resource::ResourcePtr Attribute::resource() const
 {
   return this->collection();
 }

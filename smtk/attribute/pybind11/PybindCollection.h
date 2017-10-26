@@ -29,7 +29,6 @@ PySharedPtrClass< smtk::attribute::Collection, smtk::resource::Resource > pybind
 {
   PySharedPtrClass< smtk::attribute::Collection, smtk::resource::Resource > instance(m, "Collection");
   instance
-    .def("deepcopy", (smtk::attribute::Collection & (smtk::attribute::Collection::*)(::smtk::attribute::Collection const &)) &smtk::attribute::Collection::operator=)
     .def("addAdvanceLevel", &smtk::attribute::Collection::addAdvanceLevel, py::arg("level"), py::arg("label"), py::arg("l_color") = 0)
     .def("addView", &smtk::attribute::Collection::addView, py::arg("arg0"))
     .def("advanceLevelColor", &smtk::attribute::Collection::advanceLevelColor, py::arg("level"))
@@ -76,7 +75,7 @@ PySharedPtrClass< smtk::attribute::Collection, smtk::resource::Resource > pybind
     .def("refModelManager", &smtk::attribute::Collection::refModelManager)
     .def("removeAttribute", &smtk::attribute::Collection::removeAttribute, py::arg("att"))
     .def("rename", &smtk::attribute::Collection::rename, py::arg("att"), py::arg("newName"))
-    .def("resourceType", &smtk::attribute::Collection::resourceType)
+    .def("type", &smtk::attribute::Collection::type)
     .def("setAdvanceLevelColor", &smtk::attribute::Collection::setAdvanceLevelColor, py::arg("level"), py::arg("l_color"))
     .def("setRefModelManager", &smtk::attribute::Collection::setRefModelManager, py::arg("refModelMgr"))
     .def("updateCategories", &smtk::attribute::Collection::updateCategories)

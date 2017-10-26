@@ -211,7 +211,7 @@ public:
   bool isValid() const;
 
   smtk::attribute::CollectionPtr collection() const;
-  smtk::resource::ResourcePtr resource() const override;
+  const smtk::resource::ResourcePtr resource() const override;
   smtk::model::ManagerPtr modelManager() const;
 
   void setUserData(const std::string& key, smtk::simulation::UserDataPtr value)

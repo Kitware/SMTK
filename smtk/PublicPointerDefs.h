@@ -19,6 +19,8 @@
 #include <functional>
 #include <map>
 #include <set>
+#include <string>
+#include <typeindex>
 #include <vector>
 
 namespace smtk
@@ -228,6 +230,7 @@ typedef smtk::shared_ptr<smtk::common::View> ViewPtr;
 
 namespace resource
 {
+typedef smtk::shared_ptr<smtk::resource::Manager> ManagerPtr;
 typedef smtk::shared_ptr<smtk::resource::Resource> ResourcePtr;
 typedef smtk::shared_ptr<smtk::resource::Component> ComponentPtr;
 typedef std::set<smtk::resource::ComponentPtr> ComponentSet;

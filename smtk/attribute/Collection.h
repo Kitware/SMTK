@@ -38,8 +38,8 @@ class Definition;
 class SMTKCORE_EXPORT Collection : public smtk::resource::Resource
 {
 public:
-  smtkTypeMacro(Collection);
-  smtkCreateMacro(Collection);
+  smtkTypeMacro(smtk::attribute::Collection);
+  smtkCreateMacro(smtk::attribute::Collection);
   smtkSharedFromThisMacro(smtk::resource::Resource);
 
   enum CopyOptions
@@ -52,7 +52,7 @@ public:
 
   ~Collection() override;
 
-  smtk::resource::Resource::Type resourceType() const override;
+  smtk::resource::Resource::Type type() const override;
 
   smtk::attribute::DefinitionPtr createDefinition(
     const std::string& typeName, const std::string& baseTypeName = "");

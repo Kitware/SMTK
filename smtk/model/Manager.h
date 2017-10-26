@@ -90,7 +90,7 @@ public:
   typedef storage_type::iterator iter_type;
   typedef UUIDsToTessellations::iterator tess_iter_type;
 
-  smtkTypeMacro(Manager);
+  smtkTypeMacro(smtk::model::Manager);
   smtkSharedPtrCreateMacro(smtk::resource::Resource);
 
   Manager();
@@ -128,7 +128,7 @@ public:
   EntityPtr findEntity(const smtk::common::UUID& uid, bool trySessions = true) const;
 
   smtk::resource::ComponentPtr find(const smtk::common::UUID& uid) const override;
-  Resource::Type resourceType() const override { return Resource::MODEL; }
+  Resource::Type type() const override { return smtk::resource::Resource::MODEL; }
 
   virtual SessionInfoBits erase(
     const smtk::common::UUID& uid, SessionInfoBits flags = smtk::model::SESSION_EVERYTHING);

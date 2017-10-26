@@ -1,4 +1,5 @@
 set(unit_tests
+  TestResourceManager.cxx
 )
 
 smtk_unit_tests(

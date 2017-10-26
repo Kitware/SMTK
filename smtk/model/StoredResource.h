@@ -27,8 +27,8 @@ namespace model
 class SMTKCORE_EXPORT StoredResource : public smtk::resource::Resource
 {
 public:
-  smtkTypeMacro(StoredResource);
-  smtkCreateMacro(StoredResource);
+  smtkTypeMacro(smtk::model::StoredResource);
+  smtkCreateMacro(smtk::model::StoredResource);
   smtkSharedFromThisMacro(smtk::resource::Resource);
 
   virtual ~StoredResource();
@@ -42,7 +42,7 @@ public:
 
   bool exists(const std::string& prefix = "") const;
 
-  Resource::Type resourceType() const override { return MODEL; }
+  Resource::Type type() const override { return smtk::resource::Resource::MODEL; }
   smtk::resource::ComponentPtr find(const smtk::common::UUID& compId) const override;
 
   bool addEntity(const EntityRef& ent);

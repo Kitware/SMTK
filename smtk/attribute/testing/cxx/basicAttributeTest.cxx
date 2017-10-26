@@ -20,7 +20,7 @@ int main()
   smtk::attribute::CollectionPtr sysptr = smtk::attribute::Collection::create();
   smtk::attribute::Collection& collection(*sysptr.get());
   std::cout << "Collection Created\n";
-  smtk::resource::Resource::Type t = collection.resourceType();
+  smtk::resource::Resource::Type t = collection.type();
   if (t != smtk::resource::Resource::ATTRIBUTE)
   {
     std::cout << "ERROR: Returned wrong resource type";

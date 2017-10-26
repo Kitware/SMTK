@@ -109,7 +109,7 @@ EntityPtr Entity::setup(BitFlags entFlags, int dim, Manager::Ptr resource, bool 
   return shared_from_this();
 }
 
-ResourcePtr Entity::resource() const
+const ResourcePtr Entity::resource() const
 {
   return std::dynamic_pointer_cast<smtk::resource::Resource>(this->m_resource.lock());
 }

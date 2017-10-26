@@ -38,7 +38,7 @@ class SMTKCORE_EXPORT Component : smtkEnableSharedPtr(Component)
 public:
   smtkTypeMacroBase(Component);
   virtual ~Component();
-  virtual ResourcePtr resource() const = 0;
+  virtual const ResourcePtr resource() const = 0;
 
   const common::UUID& id() const { return this->m_id; }
 

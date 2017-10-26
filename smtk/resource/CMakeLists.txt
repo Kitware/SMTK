@@ -1,6 +1,7 @@
 # set up sources to build
 set(resourceSrcs
   Component.cxx
+  Manager.cxx
   Resource.cxx
   SelectionManager.cxx
   Set.cxx
@@ -8,7 +9,11 @@ set(resourceSrcs
 
 set(resourceHeaders
   Component.h
+  Manager.h
+  Metadata.h
   Resource.h
+  Resource.h
+  Container.h
   SelectionManager.h
   Set.h
 )

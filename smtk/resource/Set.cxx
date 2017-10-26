@@ -44,14 +44,14 @@ bool Set::add(ResourcePtr resource, std::string id, std::string link, Role role)
   }
 
   // Require attribute resources to specify role
-  if (resource->resourceType() == Resource::ATTRIBUTE && (role == NOT_DEFINED || role > INSTANCE))
+  if (resource->type() == Resource::ATTRIBUTE && (role == NOT_DEFINED || role > INSTANCE))
   {
     std::cerr << "ERROR: Role not specified or improper for attribute resource " << id << std::endl;
     return false;
   }
 
   // Require model resources to specify role
-  if (resource->resourceType() == Resource::MODEL && role < MODEL_RESOURCE)
+  if (resource->type() == Resource::MODEL && role < MODEL_RESOURCE)
   {
     std::cerr << "ERROR: Role not specified or improper for model resource " << id << std::endl;
     return false;
@@ -60,7 +60,7 @@ bool Set::add(ResourcePtr resource, std::string id, std::string link, Role role)
   // Instantiate wrapper
   wrapper = new Wrapper();
   wrapper->resource = resource;
-  wrapper->type = resource->resourceType();
+  wrapper->type = resource->type();
   wrapper->role = role;
   wrapper->state = LOADED;
   wrapper->id = id;
