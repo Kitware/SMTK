@@ -224,6 +224,8 @@ public:
 
   bool isAboutToBeDeleted() const { return this->m_aboutToBeDeleted; }
 
+  common::UUID id() const override { return m_id; }
+
 protected:
   Attribute(const std::string& myName, smtk::attribute::DefinitionPtr myDefinition,
     const smtk::common::UUID& myId);
@@ -248,6 +250,8 @@ protected:
     this->m_references.erase(attRefItem);
   }
 
+  void setId(const common::UUID& myID) override { m_id = myID; }
+
   std::string m_name;
   std::vector<smtk::attribute::ItemPtr> m_items;
   ModelEntityItemPtr m_associations;
@@ -262,6 +266,7 @@ protected:
   // would need to be done otherwise
   bool m_aboutToBeDeleted;
   double m_color[4];
+  smtk::common::UUID m_id;
 };
 
 inline smtk::simulation::UserDataPtr Attribute::userData(const std::string& key) const

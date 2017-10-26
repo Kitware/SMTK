@@ -1098,6 +1098,10 @@ public:
     writeBoundaryConditions(parent, mesh);
 
     //list out the model associations that this mesheset contains
+    smtk::common::UUID id = mesh.id();
+    cJSON_AddItemToObject(parent, "id", cJSON_CreateString(id.toString().c_str()));
+
+    //list out the model associations that this mesheset contains
     smtk::common::UUIDArray modelEntityIds = mesh.modelEntityIds();
     writeUUIDValues(parent, modelEntityIds, std::string("modelEntityIds"));
   }

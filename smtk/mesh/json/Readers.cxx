@@ -91,6 +91,14 @@ bool parse_meshInfo(cJSON* info, std::vector<smtk::mesh::json::MeshInfo>& result
     smtk::mesh::HandleRange cells = smtk::mesh::from_json(cJSON_GetObjectItem(child, "cells"));
     smtk::mesh::HandleRange points = smtk::mesh::from_json(cJSON_GetObjectItem(child, "points"));
 
+    //get the uuid of the mesh
+    smtk::common::UUID id = smtk::common::UUID::null();
+    cJSON* uidRec = cJSON_GetObjectItem(child, "id");
+    if (uidRec && uidRec->type == cJSON_String && uidRec->valuestring && uidRec->valuestring[0])
+    {
+      id = smtk::common::UUID(uidRec->valuestring);
+    }
+
     //get any model entity ids that are associated to this mesh
     smtk::common::UUIDArray modelEnts;
     {
@@ -147,7 +155,7 @@ bool parse_meshInfo(cJSON* info, std::vector<smtk::mesh::json::MeshInfo>& result
     const bool valid = (!cells.empty() && !points.empty());
     if (valid)
     {
-      smtk::mesh::json::MeshInfo minfo(meshIds[meshIdIdx], cells, points, types);
+      smtk::mesh::json::MeshInfo minfo(meshIds[meshIdIdx], id, cells, points, types);
       //specify the optional parts of the mesh info
       if (!modelEnts.empty())
       {

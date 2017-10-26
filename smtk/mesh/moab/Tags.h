@@ -179,6 +179,24 @@ public:
   const char* value() const { return this->m_value; }
 };
 
+class QueryIdTag : public QueryOpaqueTag<smtk::common::UUID::SIZE>
+{
+public:
+  QueryIdTag(::moab::Interface* iface)
+    : QueryOpaqueTag("ID", reinterpret_cast<const char*>(smtk::common::UUID::null().begin()), iface)
+  {
+  }
+  QueryIdTag(const smtk::common::UUID& v, ::moab::Interface* iface)
+    : QueryOpaqueTag("ID", reinterpret_cast<const char*>(v.begin()), iface)
+  {
+  }
+  smtk::common::UUID uuid() const
+  {
+    return smtk::common::UUID(reinterpret_cast<const unsigned char*>(this->value()),
+      reinterpret_cast<const unsigned char*>(this->value()) + smtk::common::UUID::SIZE);
+  }
+};
+
 class QueryEntRefTag : public QueryOpaqueTag<smtk::common::UUID::SIZE>
 {
 public:

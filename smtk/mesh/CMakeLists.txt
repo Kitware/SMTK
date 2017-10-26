@@ -10,6 +10,7 @@ set(meshSrcs
   ForEachTypes.cxx
   Handle.cxx
   Manager.cxx
+  MeshComponent.cxx
   MeshSet.cxx
   Metrics.cxx
   PointConnectivity.cxx
@@ -62,6 +63,7 @@ set(meshHeaders
   Handle.h
   Interface.h
   Manager.h
+  MeshComponent.h
   MeshSet.h
   Metrics.h
   PointConnectivity.h

@@ -45,6 +45,8 @@ namespace model
   */
 class SMTKCORE_EXPORT Entity : public smtk::resource::Component
 {
+  friend class smtk::model::Manager;
+
 public:
   using UUID = smtk::common::UUID;
   using ResourcePtr = smtk::resource::ResourcePtr;
@@ -125,15 +127,19 @@ public:
 
   const KindsToArrangements& arrangementMap() const { return this->m_arrangements; }
 
+  common::UUID id() const override { return m_id; }
+
 protected:
   Entity();
   int consumeInvalidIndex(const smtk::common::UUID& uid);
+  void setId(const common::UUID& myID) override { m_id = myID; }
 
   BitFlags m_entityFlags;
   smtk::common::UUIDArray m_relations;
   smtk::model::WeakManagerPtr m_resource;
   KindsToArrangements m_arrangements;
   int m_firstInvalid;
+  smtk::common::UUID m_id;
 };
 
 /// An abbreviation for the record type used by maps of Entity records.

@@ -222,6 +222,24 @@ bool MeshSet::setNeumann(const smtk::mesh::Neumann& n)
   return iface->setNeumann(this->m_range, n);
 }
 
+/**\brief Return the meshset's UUID.
+  *
+  */
+smtk::common::UUID MeshSet::id() const
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  return iface->getId(this->m_handle);
+}
+
+/**\brief Set the meshset's UUID.
+  *
+  */
+void MeshSet::setId(const smtk::common::UUID& id)
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  iface->setId(this->m_handle, id);
+}
+
 /**\brief Return an array of model entity UUIDs associated with meshset members.
   *
   */
