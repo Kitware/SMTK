@@ -47,9 +47,13 @@ class SMTKIOVTK_EXPORT ReadVTKData
 {
 public:
   using smtk::common::Generator<std::pair<std::string, std::string>,
+    vtkSmartPointer<vtkDataObject> >::valid;
+  using smtk::common::Generator<std::pair<std::string, std::string>,
     vtkSmartPointer<vtkDataObject> >::operator();
 
   virtual ~ReadVTKData();
+
+  bool valid(const std::string& file) const;
 
   vtkSmartPointer<vtkDataObject> operator()(const std::string& file);
 };

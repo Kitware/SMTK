@@ -5,6 +5,8 @@ set(srcs
   mesh/ExportVTKData.cxx
   mesh/ImportVTKData.cxx
   mesh/MeshIOVTK.cxx
+  mesh/PointCloudFromVTKFile.cxx
+  mesh/StructuredGridFromVTKFile.cxx
   )
 
 set(headers
@@ -14,6 +16,8 @@ set(headers
   mesh/ExportVTKData.h
   mesh/ImportVTKData.h
   mesh/MeshIOVTK.h
+  mesh/PointCloudFromVTKFile.h
+  mesh/StructuredGridFromVTKFile.h
   )
 
 add_library(smtkIOVTK ${srcs})

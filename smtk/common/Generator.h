@@ -70,6 +70,8 @@ namespace common
 ///
 /// (GenerateFoo.cxx)
 ///
+/// template class Generator<std::string, Foo>;
+///
 /// GenerateFoo::~GenerateFoo()
 /// {
 /// }
@@ -132,18 +134,20 @@ public:
   Output operator()(const Input&) override;
 
 protected:
-  static std::set<GeneratorBase<Input, Output>*> s_generators;
+  static std::set<GeneratorBase<Input, Output>*>& generators();
 };
 
-#ifndef SMTK_MSVC
 template <class Input, class Output>
-std::set<GeneratorBase<Input, Output>*> Generator<Input, Output>::s_generators;
-#endif
+std::set<GeneratorBase<Input, Output>*>& Generator<Input, Output>::generators()
+{
+  static std::set<GeneratorBase<Input, Output>*> generators;
+  return generators;
+}
 
 template <class Input, class Output>
 bool Generator<Input, Output>::valid(const Input& input) const
 {
-  for (auto gen : s_generators)
+  for (auto gen : Generator<Input, Output>::generators())
   {
     if (gen->valid(input))
     {
@@ -157,7 +161,7 @@ template <class Input, class Output>
 Output Generator<Input, Output>::operator()(const Input& input)
 {
   Output output;
-  for (auto gen : s_generators)
+  for (auto gen : Generator<Input, Output>::generators())
   {
     if (!gen->valid(input))
     {
@@ -202,7 +206,7 @@ bool GeneratorType<Input, Output, Self>::registerClass()
   static bool registered = false;
   if (!registered)
   {
-    Generator<Input, Output>::s_generators.insert(new Self());
+    Generator<Input, Output>::generators().insert(new Self());
     registered = true;
   }
   return registered;

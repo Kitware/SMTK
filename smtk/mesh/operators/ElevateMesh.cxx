@@ -8,9 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/extension/vtk/operators/ElevateMesh.h"
-
-#include "smtk/extension/vtk/source/vtkAuxiliaryGeometryExtension.h"
+#include "smtk/mesh/operators/ElevateMesh.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -30,23 +28,14 @@
 #include "smtk/mesh/PointField.h"
 
 #include "smtk/mesh/interpolation/PointCloud.h"
+#include "smtk/mesh/interpolation/PointCloudGenerator.h"
 #include "smtk/mesh/interpolation/RadialAverage.h"
 #include "smtk/mesh/interpolation/StructuredGrid.h"
+#include "smtk/mesh/interpolation/StructuredGridGenerator.h"
 
 #include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Session.h"
-
-#include "vtkDoubleArray.h"
-#include "vtkFloatArray.h"
-#include "vtkImageData.h"
-#include "vtkMultiBlockDataSet.h"
-#include "vtkNew.h"
-#include "vtkPointData.h"
-#include "vtkPolyData.h"
-#include "vtkUniformGrid.h"
-
-#include <vtksys/SystemTools.hxx>
 
 #include <array>
 #include <cmath>
@@ -142,74 +131,35 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
     return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  // Convert the auxiliary geometry from a file name to a vtkDataset
-  vtkDataSet* externalData = nullptr;
-  auto loader = vtkAuxiliaryGeometryExtension::create();
-  std::vector<double> bbox(6);
-  if (loader && loader->canHandleAuxiliaryGeometry(auxGeo, bbox))
-  {
-    externalData = vtkDataSet::SafeDownCast(loader->fetchCachedGeometry(auxGeo));
-  }
-  if (!externalData)
-  {
-    smtkErrorMacro(this->log(), "Could not read auxiliary geometry.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
-  }
-
   // Construct a function that takes an input point and returns a value
   // according to the average of the locus of points in the external data that,
   // when projected onto the x-y plane, are within a radius of the input
   std::function<double(std::array<double, 3>)> radialAverage;
 
   {
-    if (vtkImageData* imageInput = vtkImageData::SafeDownCast(externalData))
+    smtk::mesh::StructuredGridGenerator sgg;
+    smtk::mesh::StructuredGrid structuredgrid = sgg(auxGeo);
+    if (structuredgrid.size() > 0)
     {
-      smtk::mesh::StructuredGrid structuredgrid(imageInput->GetExtent(), imageInput->GetOrigin(),
-        imageInput->GetSpacing(),
-        [=](int i, int j) { return imageInput->GetScalarComponentAsDouble(i, j, 0, 0); });
       radialAverage = smtk::mesh::RadialAverage(structuredgrid, radiusItem->value());
     }
-    else if (vtkUniformGrid* gridInput = vtkUniformGrid::SafeDownCast(externalData))
+  }
+
+  if (!radialAverage)
+  {
+    smtk::mesh::PointCloudGenerator pcg;
+    smtk::mesh::PointCloud pointcloud = pcg(auxGeo);
+    if (pointcloud.size() > 0)
     {
-      smtk::mesh::StructuredGrid structuredgrid(gridInput->GetExtent(), gridInput->GetOrigin(),
-        gridInput->GetSpacing(),
-        [=](int i, int j) { return gridInput->GetScalarComponentAsDouble(i, j, 0, 0); },
-        [=](int i, int j) {
-          int pos[3] = { i, j, 0 };
-          return gridInput->IsPointVisible(
-                   vtkStructuredData::ComputePointIdForExtent(gridInput->GetExtent(), pos)) != 0;
-        });
-      radialAverage = smtk::mesh::RadialAverage(structuredgrid, radiusItem->value());
-    }
-    else
-    {
-      std::function<std::array<double, 3>(std::size_t)> coordinates = [&](std::size_t i) {
-        double pt[3];
-        externalData->GetPoint(i, pt);
-        return std::array<double, 3>({ { pt[0], pt[1], 0. } });
-      };
-
-      std::function<double(std::size_t)> data;
-
-      // Check for elevation data. If it exists, use it. Otherwise, just use the z-coordinate of the data
-      vtkDataArray* elevationData = externalData->GetPointData()->GetScalars("Elevation");
-      if (elevationData)
-      {
-        data = [=](std::size_t i) { return elevationData->GetTuple1(i); };
-      }
-      else
-      {
-        data = [&](std::size_t i) {
-          double pt[3];
-          externalData->GetPoint(i, pt);
-          return pt[2];
-        };
-      }
-
-      smtk::mesh::PointCloud pointcloud(externalData->GetNumberOfPoints(), coordinates, data);
       radialAverage = smtk::mesh::RadialAverage(
         this->manager()->meshes()->makeCollection(), pointcloud, radiusItem->value());
     }
+  }
+
+  if (!radialAverage)
+  {
+    smtkErrorMacro(this->log(), "Could not convert auxiliary geometry.");
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   // Access the attribute associated with the modified meshes
@@ -250,7 +200,7 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
 }
 }
 
-#include "smtk/extension/vtk/operators/ElevateMesh_xml.h"
+#include "smtk/mesh/ElevateMesh_xml.h"
 
-smtkImplementsModelOperator(VTKSMTKOPERATORSEXT_EXPORT, smtk::mesh::ElevateMesh, elevate_mesh,
-  "elevate mesh", ElevateMesh_xml, smtk::model::Session);
+smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::mesh::ElevateMesh, elevate_mesh, "elevate mesh",
+  ElevateMesh_xml, smtk::model::Session);

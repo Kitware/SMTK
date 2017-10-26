@@ -37,9 +37,13 @@ set(meshSrcs
   moab/Writers.cxx
 
   interpolation/InverseDistanceWeighting.cxx
+  interpolation/PointCloudFromCSV.cxx
+  interpolation/PointCloudGenerator.cxx
   interpolation/RadialAverage.cxx
+  interpolation/StructuredGridGenerator.cxx
 
   operators/DeleteMesh.cxx
+  operators/ElevateMesh.cxx
   operators/EulerCharacteristic.cxx
   operators/ExportMesh.cxx
   operators/GenerateHotStartData.cxx
@@ -83,10 +87,14 @@ set(meshHeaders
 
   interpolation/InverseDistanceWeighting.h
   interpolation/PointCloud.h
+  interpolation/PointCloudFromCSV.h
+  interpolation/PointCloudGenerator.h
   interpolation/RadialAverage.h
   interpolation/StructuredGrid.h
+  interpolation/StructuredGridGenerator.h
 
   operators/DeleteMesh.h
+  operators/ElevateMesh.h
   operators/EulerCharacteristic.h
   operators/ExportMesh.h
   operators/GenerateHotStartData.h
@@ -97,8 +105,9 @@ set(meshHeaders
   )
 
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/DeleteMesh.sbt" defOpXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportMesh.sbt" defOpXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ElevateMesh.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EulerCharacteristic.sbt" defOpXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportMesh.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/GenerateHotStartData.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/InterpolateOntoMesh.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/UndoWarpMesh.sbt" defOpXML)

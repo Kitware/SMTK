@@ -10,7 +10,6 @@
 #ifndef __smtk_mesh_operators_ElevateMesh_h
 #define __smtk_mesh_operators_ElevateMesh_h
 
-#include "smtk/extension/vtk/operators/Exports.h" // For export macro
 #include "smtk/model/Operator.h"
 
 namespace smtk
@@ -29,7 +28,7 @@ namespace mesh
    applying the "Undo Warp" filter, returning the mesh nodes to their original
    position.
   */
-class VTKSMTKOPERATORSEXT_EXPORT ElevateMesh : public smtk::model::Operator
+class SMTKCORE_EXPORT ElevateMesh : public smtk::model::Operator
 {
 public:
   smtkTypeMacro(ElevateMesh);

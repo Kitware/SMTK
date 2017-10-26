@@ -165,7 +165,7 @@ smtk::model::OperatorResult InterpolateOntoMesh::operateInternal()
   }
 
   // Construct an instance of our interpolator and set its parameters
-  smtk::mesh::PointCloud pointcloud(sourceCoordinates, sourceValues);
+  smtk::mesh::PointCloud pointcloud(std::move(sourceCoordinates), std::move(sourceValues));
   smtk::mesh::InverseDistanceWeighting interpolator(pointcloud, powerItem->value());
 
   // Access the attribute associated with the modified meshes

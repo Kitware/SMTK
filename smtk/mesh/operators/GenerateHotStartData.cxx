@@ -238,7 +238,7 @@ smtk::model::OperatorResult GenerateHotStartData::operateInternal()
   }
 
   // Construct a point cloud from our source points
-  smtk::mesh::PointCloud pointcloud(sourceCoordinates, sourceValues);
+  smtk::mesh::PointCloud pointcloud(std::move(sourceCoordinates), std::move(sourceValues));
 
   // Check if any meshes extend beyond the bounds of our interpolation point cloud,
   // and warn if they do.

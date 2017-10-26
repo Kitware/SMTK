@@ -25,6 +25,7 @@
 
 #include "smtk/mesh/interpolation/InverseDistanceWeighting.h"
 #include "smtk/mesh/interpolation/PointCloud.h"
+#include "smtk/mesh/interpolation/PointCloudGenerator.h"
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/Session.h"
@@ -35,62 +36,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-
-// We use either STL regex or Boost regex, depending on support. These flags
-// correspond to the equivalent logic used to determine the inclusion of Boost's
-// regex library.
-#if defined(SMTK_CLANG) ||                                                                         \
-  (defined(SMTK_GCC) && __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)) ||                 \
-  defined(SMTK_MSVC)
-#include <regex>
-using std::regex;
-using std::sregex_token_iterator;
-using std::regex_replace;
-using std::regex_search;
-using std::regex_match;
-#else
-#include <boost/regex.hpp>
-using boost::regex;
-using boost::sregex_token_iterator;
-using boost::regex_replace;
-using boost::regex_search;
-using boost::regex_match;
-#endif
-
-namespace
-{
-bool readCSVFile(
-  const std::string& fileName, std::vector<double>& coordinates, std::vector<double>& values)
-{
-  std::ifstream infile(fileName.c_str());
-  if (!infile.good())
-  {
-    return false;
-  }
-  std::string line;
-  regex re(",");
-  while (std::getline(infile, line))
-  {
-    // passing -1 as the submatch index parameter performs splitting
-    sregex_token_iterator first{ line.begin(), line.end(), re, -1 }, last;
-
-    // Se are looking for (x, y, z, value). So, we must have at least 4
-    // components.
-    if (std::distance(first, last) < 4)
-    {
-      return false;
-    }
-
-    coordinates.push_back(std::stod(*(first++)));
-    coordinates.push_back(std::stod(*(first++)));
-    coordinates.push_back(std::stod(*(first++)));
-    values.push_back(std::stod(*(first++)));
-  }
-
-  infile.close();
-  return true;
-}
-}
 
 namespace smtk
 {
@@ -124,36 +69,43 @@ smtk::model::OperatorResult WarpMesh::operateInternal()
   // Access the interpolation power parameter
   smtk::attribute::DoubleItem::Ptr powerItem = this->findDouble("power");
 
-  // Construct containers for our source points
-  std::vector<double> sourceCoordinates;
-  std::vector<double> sourceValues;
-
-  // Access the points CSV file name, if it is enabled
+  // Read in the points file to create a point cloud
   smtk::attribute::FileItem::Ptr ptsFileItem = this->specification()->findFile("ptsfile");
+
+  smtk::mesh::PointCloud pointcloud;
+
   if (ptsFileItem->isEnabled())
   {
-    bool success = readCSVFile(ptsFileItem->value(0), sourceCoordinates, sourceValues);
-    if (!success)
-    {
-      smtkErrorMacro(this->log(), "Could not read CSV file.");
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
-    }
+    smtk::mesh::PointCloudGenerator pcg;
+    pointcloud = pcg(ptsFileItem->value());
   }
-
-  for (std::size_t i = 0; i < interpolationPointsItem->numberOfGroups(); i++)
+  else
   {
-    smtk::attribute::DoubleItemPtr pointItem =
-      smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(interpolationPointsItem->item(i, 0));
-    for (std::size_t j = 0; j < 3; j++)
+    // Construct containers for our source points
+    std::vector<double> sourceCoordinates;
+    std::vector<double> sourceValues;
+
+    for (std::size_t i = 0; i < interpolationPointsItem->numberOfGroups(); i++)
     {
-      sourceCoordinates.push_back(pointItem->value(j));
+      smtk::attribute::DoubleItemPtr pointItem =
+        smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(
+          interpolationPointsItem->item(i, 0));
+      for (std::size_t j = 0; j < 3; j++)
+      {
+        sourceCoordinates.push_back(pointItem->value(j));
+      }
+      sourceValues.push_back(pointItem->value(3));
     }
-    sourceValues.push_back(pointItem->value(3));
+
+    pointcloud = smtk::mesh::PointCloud(std::move(sourceCoordinates), std::move(sourceValues));
   }
 
   // Construct an instance of our interpolator and set its parameters
-  smtk::mesh::PointCloud pointcloud(sourceCoordinates, sourceValues);
   smtk::mesh::InverseDistanceWeighting interpolator(pointcloud, powerItem->value());
+
+  std::function<std::array<double, 3>(std::array<double, 3>)> fn = [&](std::array<double, 3> x) {
+    return std::array<double, 3>({ { x[0], x[1], interpolator(x) } });
+  };
 
   // Access the attribute associated with the modified meshes
   smtk::model::OperatorResult result =
@@ -164,10 +116,6 @@ smtk::model::OperatorResult WarpMesh::operateInternal()
   // Access the attribute associated with the changed tessellation
   smtk::attribute::ModelEntityItem::Ptr modifiedEntities = result->findModelEntity("tess_changed");
   modifiedEntities->setNumberOfValues(meshItem->numberOfValues());
-
-  std::function<std::array<double, 3>(std::array<double, 3>)> fn = [&](std::array<double, 3> x) {
-    return std::array<double, 3>({ { x[0], x[1], interpolator(x) } });
-  };
 
   // apply the interpolator to the meshes and populate the result attributes
   for (std::size_t i = 0; i < meshItem->numberOfValues(); i++)

@@ -36,6 +36,8 @@
 #include "smtk/mesh/Manager.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
 
+#include "smtk/extension/vtk/source/PointCloudFromVTKAuxiliaryGeometry.h"
+#include "smtk/extension/vtk/source/StructuredGridFromVTKAuxiliaryGeometry.h"
 #include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 #include "vtkActor.h"
 #include "vtkCamera.h"
@@ -58,6 +60,14 @@
 
 namespace
 {
+//SMTK_DATA_DIR is a define setup by cmake
+std::string data_root = SMTK_DATA_DIR;
+
+// Need to register the converters from auxiliary geometry to point clouds and structured grids.
+bool registered1 = smtk::extension::vtk::mesh::PointCloudFromVTKAuxiliaryGeometry::registerClass();
+bool registered2 =
+  smtk::extension::vtk::mesh::StructuredGridFromVTKAuxiliaryGeometry::registerClass();
+
 class ValidatePoints : public smtk::mesh::PointForEach
 {
 public:
@@ -92,10 +102,11 @@ private:
 
 using namespace smtk::model;
 
-int main(int argc, char* argv[])
+int TestElevateMesh(int argc, char* argv[])
 {
-  if (argc < 3)
-    return 1;
+  (void)argc;
+  (void)argv;
+
   smtk::model::ManagerPtr manager = smtk::model::Manager::create();
 
   std::cout << "Available sessions\n";
@@ -121,8 +132,13 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  readOp->specification()->findFile("filename")->setValue(std::string(argv[1]));
-  std::cout << "Importing " << argv[1] << "\n";
+  {
+    std::string file_path(data_root);
+    file_path += "/mesh/2d/Simple.2dm";
+    readOp->specification()->findFile("filename")->setValue(file_path);
+    std::cout << "Importing " << file_path << "\n";
+  }
+
   smtk::model::OperatorResult opresult = readOp->operate();
   if (opresult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
@@ -154,8 +170,12 @@ int main(int argc, char* argv[])
 
   // add auxiliary geometry
   smtk::model::OperatorPtr aux_geOp = session->op("add auxiliary geometry");
-  std::cout << "The url for auxiliary geometry is: " << argv[2] << std::endl;
-  aux_geOp->specification()->findFile("url")->setValue(std::string(argv[2]));
+  {
+    std::string file_path(data_root);
+    file_path += "/mesh/2d/SimpleBathy.2dm";
+    std::cout << "The url for auxiliary geometry is: " << file_path << std::endl;
+    aux_geOp->specification()->findFile("url")->setValue(file_path);
+  }
   aux_geOp->associateEntity(model2dm);
   smtk::model::OperatorResult aux_geOpresult = aux_geOp->operate();
   if (aux_geOpresult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)

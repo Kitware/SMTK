@@ -36,6 +36,20 @@ namespace mesh
 class StructuredGrid
 {
 public:
+  StructuredGrid()
+    : m_data([](int, int) { return std::numeric_limits<double>::quiet_NaN(); })
+    , m_valid([](int, int) { return false; })
+  {
+    for (int i = 0; i < 4; i++)
+    {
+      m_extent[i] = 0;
+    }
+    for (int i = 0; i < 2; i++)
+    {
+      m_origin[i] = m_spacing[i] = std::numeric_limits<double>::quiet_NaN();
+    }
+  }
+
   StructuredGrid(const int extent[4], const double origin[2], const double spacing[2],
     const std::function<double(int, int)>& data, const std::function<bool(int, int)>& valid)
     : m_data(data)
@@ -68,13 +82,15 @@ public:
 
   const std::function<double(int, int)>& data() const { return m_data; }
 
+  std::size_t size() const { return (m_extent[1] - m_extent[0]) * (m_extent[3] - m_extent[2]); }
+
   int m_extent[4];     // [istart, iend, jstart, jend]
   double m_origin[2];  // location of pixel index (0,0)
   double m_spacing[2]; // i, j pixel spacing
 
 private:
-  const std::function<double(int, int)> m_data;
-  const std::function<bool(int, int)> m_valid;
+  std::function<double(int, int)> m_data;
+  std::function<bool(int, int)> m_valid;
 };
 }
 }

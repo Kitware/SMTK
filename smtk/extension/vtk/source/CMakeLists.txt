@@ -1,4 +1,6 @@
 set(VTKLibSrcs
+  PointCloudFromVTKAuxiliaryGeometry.cxx
+  StructuredGridFromVTKAuxiliaryGeometry.cxx
   vtkAuxiliaryGeometryExtension.cxx
   vtkHydroModelPolySource.cxx
   vtkMeshMultiBlockSource.cxx
@@ -10,6 +12,8 @@ set(VTKLibSrcs
 )
 
 set(VTKLibHeaders
+  PointCloudFromVTKAuxiliaryGeometry.h
+  StructuredGridFromVTKAuxiliaryGeometry.h
   vtkAuxiliaryGeometryExtension.h
   vtkHydroModelPolySource.h
   vtkMeshMultiBlockSource.h
@@ -22,6 +26,8 @@ set(VTKLibHeaders
 )
 
 set_source_files_properties(
+  PointCloudFromVTKAuxiliaryGeometry.h
+  StructuredGridFromVTKAuxiliaryGeometry.h
   vtkAuxiliaryGeometryExtension.h
   PROPERTIES
     WRAP_EXCLUDE 1
