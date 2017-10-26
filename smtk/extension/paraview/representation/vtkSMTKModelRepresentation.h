@@ -17,7 +17,9 @@
 
 class vtkActor;
 class vtkCompositePolyDataMapper2;
+class vtkDataObject;
 class vtkGlyph3DMapper;
+class vtkMultiBlockDataSet;
 class vtkSelection;
 
 /**
@@ -64,6 +66,9 @@ protected:
   void SetOutputExtent(vtkAlgorithmOutput* output, vtkInformation* inInfo);
   void ConfigureGlyphMapper(vtkGlyph3DMapper* mapper);
 
+  void UpdateSelection(vtkMultiBlockDataSet* data);
+  vtkDataObject* FindNode(vtkMultiBlockDataSet* data, const std::string& uuid);
+
   vtkSmartPointer<vtkCompositePolyDataMapper2> EntityMapper;
   vtkSmartPointer<vtkCompositePolyDataMapper2> SelectedEntityMapper;
   vtkSmartPointer<vtkGlyph3DMapper> GlyphMapper;
@@ -73,6 +78,8 @@ protected:
   vtkSmartPointer<vtkActor> SelectedEntities;
   vtkSmartPointer<vtkActor> GlyphEntities;
   vtkSmartPointer<vtkActor> SelectedGlyphEntities;
+
+  double SelectionColor[3] = { 1., 0., 0. };
 
 private:
   vtkSMTKModelRepresentation(const vtkSMTKModelRepresentation&) = delete;

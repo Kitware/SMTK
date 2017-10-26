@@ -18,6 +18,8 @@ namespace smtk
 namespace resource
 {
 
+SelectionManagerPtr SelectionManager::m_instance = nullptr;
+
 static bool defaultFilter(
   ComponentPtr comp, int selectionValue, SelectionManager::SelectionMap& suggestions)
 {
@@ -340,6 +342,16 @@ bool SelectionManager::refilter(const std::string& source)
     this->notifyListeners(source);
   }
   return modified;
+}
+
+SelectionManagerPtr SelectionManager::instance()
+{
+  if (!m_instance)
+  {
+    m_instance = SelectionManager::create();
+  }
+
+  return m_instance;
 }
 }
 }

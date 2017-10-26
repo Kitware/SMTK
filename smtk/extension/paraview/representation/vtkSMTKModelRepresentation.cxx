@@ -10,12 +10,14 @@
 #include <vtkActor.h>
 #include <vtkAlgorithmOutput.h>
 #include <vtkCompositeDataDisplayAttributes.h>
+#include <vtkCompositeDataIterator.h>
 #include <vtkCompositePolyDataMapper2.h>
 #include <vtkGlyph3DMapper.h>
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
 #include <vtkMath.h>
 #include <vtkMatrix4x4.h>
+#include <vtkMultiBlockDataSet.h>
 #include <vtkObjectFactory.h>
 #include <vtkRenderer.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
@@ -25,6 +27,8 @@
 #include <vtkPVTrivialProducer.h>
 
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
+#include "smtk/resource/Component.h"
+#include "smtk/resource/SelectionManager.h"
 #include "vtkSMTKModelRepresentation.h"
 
 vtkStandardNewMacro(vtkSMTKModelRepresentation);
@@ -47,8 +51,11 @@ vtkSMTKModelRepresentation::~vtkSMTKModelRepresentation() = default;
 
 void vtkSMTKModelRepresentation::SetupDefaults()
 {
-  auto compAtt = vtkCompositeDataDisplayAttributes::New();
+  vtkNew<vtkCompositeDataDisplayAttributes> compAtt;
   this->EntityMapper->SetCompositeDataDisplayAttributes(compAtt);
+
+  vtkNew<vtkCompositeDataDisplayAttributes> selCompAtt;
+  this->SelectedEntityMapper->SetCompositeDataDisplayAttributes(selCompAtt);
 
   this->Entities->SetMapper(this->EntityMapper);
   this->SelectedEntities->SetMapper(this->SelectedEntityMapper);
@@ -140,7 +147,15 @@ int vtkSMTKModelRepresentation::ProcessViewRequest(
     auto producerPort = vtkPVRenderView::GetPieceProducer(inInfo, this, 0);
     this->EntityMapper->SetInputConnection(0, producerPort);
 
+    // Update selection
     auto data = producerPort->GetProducer()->GetOutputDataObject(0);
+    auto multiBlock = vtkMultiBlockDataSet::SafeDownCast(data);
+    if (multiBlock)
+    {
+      this->SelectedEntityMapper->SetInputConnection(0, producerPort);
+      this->UpdateSelection(multiBlock);
+    }
+
     if (this->BlockAttributeTime < data->GetMTime() || this->BlockAttrChanged)
     {
       this->UpdateBlockAttributes(this->EntityMapper.GetPointer());
@@ -176,11 +191,10 @@ bool vtkSMTKModelRepresentation::AddToView(vtkView* view)
   {
     rview->GetRenderer()->AddActor(this->Entities);
     rview->GetRenderer()->AddActor(this->GlyphEntities);
-
-    // Indicate that this is prop that we are rendering when hardware selection
-    // is enabled.
     rview->RegisterPropForHardwareSelection(this, this->Entities);
     rview->RegisterPropForHardwareSelection(this, this->GlyphEntities);
+
+    rview->GetRenderer()->AddActor(this->SelectedEntities);
     return this->vtkPVDataRepresentation::AddToView(view);
   }
   return false;
@@ -195,6 +209,9 @@ bool vtkSMTKModelRepresentation::RemoveFromView(vtkView* view)
     rview->GetRenderer()->RemoveActor(this->GlyphEntities);
     rview->UnRegisterPropForHardwareSelection(this, this->Entities);
     rview->UnRegisterPropForHardwareSelection(this, this->GlyphEntities);
+
+    rview->GetRenderer()->RemoveActor(this->SelectedEntities);
+
     return this->vtkPVDataRepresentation::RemoveFromView(view);
   }
   return false;
@@ -204,6 +221,8 @@ void vtkSMTKModelRepresentation::SetVisibility(bool val)
 {
   this->Entities->SetVisibility(val);
   this->GlyphEntities->SetVisibility(val);
+
+  this->SelectedEntities->SetVisibility(val);
   this->vtkPVDataRepresentation::SetVisibility(val);
 }
 
@@ -269,4 +288,59 @@ void vtkSMTKModelRepresentation::SetMapScalars(int val)
   int mapToColorMode[] = { VTK_COLOR_MODE_DIRECT_SCALARS, VTK_COLOR_MODE_MAP_SCALARS };
   this->EntityMapper->SetColorMode(mapToColorMode[val]);
   this->GlyphMapper->SetColorMode(mapToColorMode[val]);
+}
+
+void vtkSMTKModelRepresentation::UpdateSelection(vtkMultiBlockDataSet* data)
+{
+  auto sm = smtk::resource::SelectionManager::instance();
+  auto selection = sm->currentSelection();
+
+  // Set selection defaults (nothing selected)
+  auto selDisplayAttr = this->SelectedEntityMapper->GetCompositeDataDisplayAttributes();
+  selDisplayAttr->RemoveBlockVisibilities();
+  selDisplayAttr->RemoveBlockColors();
+  selDisplayAttr->SetBlockVisibility(data, false);
+
+  for (auto& item : selection)
+  {
+    auto matchedBlock = this->FindNode(data, item.first->id().toString());
+    if (matchedBlock)
+    {
+      selDisplayAttr->SetBlockVisibility(matchedBlock, true);
+      selDisplayAttr->SetBlockColor(matchedBlock, this->SelectionColor);
+    }
+  }
+
+  // TODO This is necessary to force an update in the mapper
+  this->SelectedEntityMapper->Modified();
+}
+
+vtkDataObject* vtkSMTKModelRepresentation::FindNode(
+  vtkMultiBlockDataSet* data, const std::string& uuid)
+{
+  const int numBlocks = data->GetNumberOfBlocks();
+  for (int index = 0; index < numBlocks; index++)
+  {
+    auto currentBlock = data->GetBlock(index);
+    if (data->HasMetaData(index))
+    {
+      auto currentId = data->GetMetaData(index)->Get(vtkModelMultiBlockSource::ENTITYID());
+      if (currentId)
+      {
+        const std::string currentIdStr = currentId;
+        if (currentIdStr.compare(uuid) == 0)
+        {
+          return currentBlock;
+        }
+      }
+    }
+
+    auto childBlock = vtkMultiBlockDataSet::SafeDownCast(data->GetBlock(index));
+    if (childBlock)
+    {
+      return this->FindNode(childBlock, uuid);
+    }
+  }
+
+  return nullptr;
 }

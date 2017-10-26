@@ -158,6 +158,8 @@ public:
   /// This is the underlying storage type that holds selections.
   using SelectionMap = std::map<smtk::resource::ComponentPtr, int>;
 
+  static SelectionManagerPtr instance();
+
   /**\brief Selection filters take functions of this form.
     *
     * Given a component and its selection "value", return true if
@@ -360,6 +362,8 @@ protected:
   SelectionMap m_selection;
   std::map<int, Listener> m_listeners;
   SelectionFilter m_filter;
+
+  static SelectionManagerPtr m_instance;
 
 private:
   SelectionManager(const SelectionManager&) = delete;
