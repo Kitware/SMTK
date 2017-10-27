@@ -75,8 +75,8 @@ class TestExodusSession(smtk.testing.TestCase):
                          'Cell should not have any attribute associations.')
         asys = smtk.attribute.Collection.create()
         adef = asys.createDefinition('testDef')
-        adef.setAssociationMask(int(smtk.model.CELL_ENTITY))
-        adef.associationRule().setNumberOfRequiredValues(1)
+        adef.setLocalAssociationMask(int(smtk.model.CELL_ENTITY))
+        adef.localAssociationRule().setNumberOfRequiredValues(1)
         self.assertEqual(adef.associationRule().numberOfRequiredValues(), 1)
         attr = asys.createAttribute(adef.type())
 

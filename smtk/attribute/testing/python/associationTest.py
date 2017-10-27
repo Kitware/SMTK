@@ -32,7 +32,7 @@ if __name__ == '__main__':
     collection = smtk.attribute.Collection.create()
     defn = collection.createDefinition('testdef')
     collection.setRefModelManager(mmgr)
-    defn.setAssociationMask(int(mask))
+    defn.setLocalAssociationMask(int(mask))
 
     # Create attribute and associate to group item
     att = collection.createAttribute('testatt', defn)

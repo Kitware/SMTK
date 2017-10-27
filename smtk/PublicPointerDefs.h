@@ -362,6 +362,8 @@ typedef smtk::shared_ptr<smtk::attribute::MeshSelectionItem> MeshSelectionItemPt
 typedef smtk::shared_ptr<smtk::attribute::MeshSelectionItemDefinition>
   MeshSelectionItemDefinitionPtr;
 typedef smtk::shared_ptr<smtk::attribute::ModelEntityItem> ModelEntityItemPtr;
+typedef smtk::shared_ptr<const smtk::attribute::ModelEntityItemDefinition>
+  ConstModelEntityItemDefinitionPtr;
 typedef smtk::shared_ptr<smtk::attribute::ModelEntityItemDefinition> ModelEntityItemDefinitionPtr;
 typedef smtk::shared_ptr<smtk::attribute::VoidItem> VoidItemPtr;
 typedef smtk::shared_ptr<smtk::attribute::VoidItemDefinition> VoidItemDefinitionPtr;
