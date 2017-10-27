@@ -14,8 +14,8 @@
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/extension/vtk/io/ExportVTKData.h"
-#include "smtk/extension/vtk/io/ImportVTKData.h"
+#include "smtk/extension/vtk/io/mesh/ExportVTKData.h"
+#include "smtk/extension/vtk/io/mesh/ImportVTKData.h"
 
 #include "smtk/io/ImportMesh.h"
 
@@ -167,7 +167,7 @@ int ImportExportMeshWithCellField(int argc, char* argv[])
     SetCellField setCellField(euclideanDistance, distanceCellField);
     smtk::mesh::for_each(mesh.cells(), setCellField);
 
-    smtk::extension::vtk::io::ExportVTKData exprt;
+    smtk::extension::vtk::io::mesh::ExportVTKData exprt;
     vtkSmartPointer<vtkPolyData> pd = vtkSmartPointer<vtkPolyData>::New();
     exprt(mesh, pd);
 
@@ -184,7 +184,7 @@ int ImportExportMeshWithCellField(int argc, char* argv[])
 
     cleanup(write_path);
 
-    smtk::extension::vtk::io::ImportVTKData imprt;
+    smtk::extension::vtk::io::mesh::ImportVTKData imprt;
     smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();
     smtk::mesh::CollectionPtr c = imprt(reader->GetOutput(), mngr);
     smtk::mesh::MeshSet mesh = c->meshes();

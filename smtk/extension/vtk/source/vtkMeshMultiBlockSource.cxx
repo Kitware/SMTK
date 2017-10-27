@@ -26,7 +26,7 @@
 #include "smtk/mesh/DimensionTypes.h"
 #include "smtk/mesh/Manager.h"
 
-#include "smtk/extension/vtk/io/ExportVTKData.h"
+#include "smtk/extension/vtk/io/mesh/ExportVTKData.h"
 
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
@@ -228,7 +228,7 @@ void vtkMeshMultiBlockSource::GenerateRepresentationForSingleMesh(const smtk::me
     toRender.append(oneD);
     toRender.append(zeroD);
 
-    smtk::extension::vtk::io::ExportVTKData exportVTKData;
+    smtk::extension::vtk::io::mesh::ExportVTKData exportVTKData;
     exportVTKData(toRender, pd);
 
     this->GenerateNormals(pd, entityref, genNormals);

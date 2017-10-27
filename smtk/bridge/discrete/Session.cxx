@@ -35,7 +35,7 @@
 #include "smtk/model/Volume.h"
 #include "smtk/model/VolumeUse.h"
 
-#include "smtk/extension/vtk/io/ImportVTKData.h"
+#include "smtk/extension/vtk/io/mesh/ImportVTKData.h"
 
 #include "vtkCMBModelReadOperator.h"
 #include "vtkCMBModelWriterV5.h"
@@ -1576,7 +1576,7 @@ bool Session::addTessellation(
         collection->removeMeshes(modified);
       }
 
-      smtk::extension::vtk::io::ImportVTKData importVTKData;
+      smtk::extension::vtk::io::mesh::ImportVTKData importVTKData;
 
       // Discrete models are multiblock data sets with a single set of points.
       // To prevent all of these points from being copied over for each element,

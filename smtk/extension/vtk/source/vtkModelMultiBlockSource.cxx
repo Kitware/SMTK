@@ -15,7 +15,7 @@
 
 #include "smtk/extension/vtk/filter/vtkImageSpacingFlip.h"
 
-#include "smtk/extension/vtk/io/ExportVTKData.h"
+#include "smtk/extension/vtk/io/mesh/ExportVTKData.h"
 
 #include "smtk/mesh/MeshSet.h"
 
@@ -451,7 +451,7 @@ vtkSmartPointer<vtkPolyData> vtkModelMultiBlockSource::GenerateRepresentationFro
   {
     return pd;
   }
-  smtk::extension::vtk::io::ExportVTKData exportVTKData;
+  smtk::extension::vtk::io::mesh::ExportVTKData exportVTKData;
   exportVTKData(entity.meshTessellation(), pd);
 
   // Only create the color array if there is a valid default:

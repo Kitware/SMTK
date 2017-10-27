@@ -9,8 +9,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //
 //=============================================================================
-#ifndef __smtk_extension_vtk_io_ImportVTKData_h
-#define __smtk_extension_vtk_io_ImportVTKData_h
+#ifndef __smtk_extension_vtk_io_mesh_ImportVTKData_h
+#define __smtk_extension_vtk_io_mesh_ImportVTKData_h
 
 #include "smtk/extension/vtk/io/IOVTKExports.h"
 //forward declarers for Manager and Collection
@@ -37,6 +37,8 @@ namespace extension
 namespace vtk
 {
 namespace io
+{
+namespace mesh
 {
 
 //Import a VTK data set to a smtk::mesh::collection.
@@ -94,5 +96,6 @@ private:
 }
 }
 }
+}
 
-#endif //__smtk_extension_vtkToMesh_ImportVTKData_h
+#endif //__smtk_extension_vtk_io_mesh_ImportVTKData_h
