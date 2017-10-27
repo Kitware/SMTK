@@ -89,8 +89,8 @@ int main(int argc, char* argv[])
     iitemdef->addCategory("Heat");
 
     smtk::attribute::DefinitionPtr def1 = system.createDefinition("Derived1", "BaseDef");
-    def1->setAssociationMask(smtk::model::MODEL_ENTITY); // belongs on model
-                                                         // Lets add some item definitions
+    def1->setLocalAssociationMask(smtk::model::MODEL_ENTITY); // belongs on model
+                                                              // Lets add some item definitions
     smtk::attribute::DoubleItemDefinitionPtr ditemdef =
       def1->addItemDefinition<smtk::attribute::DoubleItemDefinitionPtr>("DoubleItem1");
     // Allow this one to hold an expression
@@ -124,7 +124,7 @@ int main(int argc, char* argv[])
     vdef->setLabel("Option 1");
 
     smtk::attribute::DefinitionPtr def2 = system.createDefinition("Derived2", "Derived1");
-    def2->setAssociationMask(smtk::model::VOLUME);
+    def2->setLocalAssociationMask(smtk::model::VOLUME);
     // Lets add some item definitions
     smtk::attribute::StringItemDefinitionPtr sitemdef =
       def2->addItemDefinition<smtk::attribute::StringItemDefinitionPtr>("StringItem1");

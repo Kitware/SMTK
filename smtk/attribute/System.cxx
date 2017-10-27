@@ -690,11 +690,10 @@ bool System::copyDefinitionImpl(
   {
     newDef->setDefaultColor(sourceDef->defaultColor());
   }
-  if (sourceDef->associationRule())
+  if (sourceDef->localAssociationRule())
   {
-    newDef->setAssociationRule(sourceDef->associationRule());
+    newDef->setLocalAssociationRule(sourceDef->localAssociationRule());
   }
-  newDef->setAssociationMask(sourceDef->associationMask());
 
   // Copy new item definitions only (i.e., not inherited item defs)
   for (std::size_t i = sourceDef->itemOffset(); i < sourceDef->numberOfItemDefinitions(); ++i)

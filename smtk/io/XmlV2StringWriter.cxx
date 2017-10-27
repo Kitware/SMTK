@@ -508,11 +508,11 @@ void XmlV2StringWriter::processDefinition(
       node.append_child("DefaultColor").text().set(s.c_str());
     }
 
-    if (def->associationMask())
+    if (def->localAssociationRule())
     {
       // Create association element if we need to.
       xml_node assocDefNode = node.append_child("AssociationsDef");
-      ModelEntityItemDefinitionPtr assocRule = def->associationRule();
+      ModelEntityItemDefinitionPtr assocRule = def->localAssociationRule();
       this->processItemDefinition(assocDefNode, assocRule);
     }
 

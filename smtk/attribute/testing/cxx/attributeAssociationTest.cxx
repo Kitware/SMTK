@@ -33,9 +33,10 @@ int main()
   test(!sys.refModelManager(), "System should not have model storage by default.");
 
   DefinitionPtr def = sys.createDefinition("testDef");
-  def->associationRule()->setMembershipMask(smtk::model::VERTEX);
-  def->associationRule()->setIsExtensible(true);
-  def->associationRule()->setMaxNumberOfValues(2);
+  auto arule = def->createLocalAssociationRule();
+  arule->setMembershipMask(smtk::model::VERTEX);
+  arule->setIsExtensible(true);
+  arule->setMaxNumberOfValues(2);
   AttributePtr att = sys.createAttribute("testAtt", "testDef");
 
   UUID fakeEntityId = UUID::random();
