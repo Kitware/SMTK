@@ -31,20 +31,22 @@ class CGMTransforms(smtk.testing.TestCase):
 
         brick3 = Translate(brick2, [0.5, 0.0, 0.0])[0]
         if not brick3 or brick3.entity() != brick2.entity():
-            print "Expecting entities to match: %s != %s" % (brick2.entity(), brick3.entity())
+            print("Expecting entities to match: %s != %s" %
+                  (brick2.entity(), brick3.entity()))
             sys.exit(1)
 
         brick4 = Rotate(brick3, angle=60.0, center=[
                         0.5, 0.0, 0.0], axis=[0.3333, 0.6667, 0.6667])[0]
         if not brick4 or brick4.entity() != brick3.entity():
-            print "Expecting entities to match: %s != %s" % (brick3.entity(), brick4.entity())
+            print("Expecting entities to match: %s != %s" %
+                  (brick3.entity(), brick4.entity()))
             sys.exit(1)
 
         brick5 = Union([brick1, brick4])
-        print brick5, brick5.name(), brick5.flagSummary(0)
+        print(brick5, brick5.name(), brick5.flagSummary(0))
         # brick6 = Scale([brick5], [3.0, 2.0, 1.0])[0]
 
-        print self.haveVTK(), self.haveVTKExtension()
+        print(self.haveVTK(), self.haveVTKExtension())
         if self.haveVTK() and self.haveVTKExtension():
 
             colormap = {

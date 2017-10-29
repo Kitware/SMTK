@@ -72,8 +72,8 @@ def to_concrete(item):
                     concrete_item = class_[1].CastTo(i)
                     break
         if concrete_item is None:
-            print 'WARNING - unsupported type %s, item %s' % \
-                (i.type(), i.name())
+            print('WARNING - unsupported type %s, item %s' %
+                  (i.type(), i.name()))
         return concrete_item
     if isinstance(item, list):
         return [fun(x) for x in item]

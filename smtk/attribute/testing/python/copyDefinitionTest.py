@@ -24,10 +24,10 @@ try:
     from smtk import attribute
     from smtk import io
 except ImportError:
-    print
-    print 'Not able to import smtk library. You might need to:'
-    print '  - Use the PYTHONPATH variable to point to the smtk python lib'
-    print
+    print()
+    print('Not able to import smtk library. You might need to:')
+    print('  - Use the PYTHONPATH variable to point to the smtk python lib')
+    print()
     sys.exit(-1)
 
 
@@ -39,10 +39,10 @@ SBI_FILENAME = 'copyDefinitionTest.sbi'
 if __name__ == '__main__':
     # First (and) only argument is the path to the smtk data directory
     if len(sys.argv) < 2:
-        print
-        print 'Test smtk.attribute.Collection.copyDefinition()'
-        print 'Usage: python %s path-to-SMTKTestData'
-        print
+        print()
+        print('Test smtk.attribute.Collection.copyDefinition()')
+        print('Usage: python %s path-to-SMTKTestData')
+        print()
         sys.exit(-1)
 
     logging.debug('LD_LIBRARY_PATH = %s' % os.environ.get('LD_LIBRARY_PATH'))

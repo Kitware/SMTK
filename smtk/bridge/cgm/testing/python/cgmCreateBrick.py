@@ -24,11 +24,12 @@ brick = res.findModelEntity('created').value(0)
 
 
 def sumCond(itm, idx):
-    print itm.name(), '=', idx
+    print(itm.name(), '=', idx)
     itm.setDiscreteIndex(idx)
     for i in range(itm.numberOfActiveChildrenItems()):
         citm = smtk.attribute.to_concrete(itm.activeChildItem(i))
-        print '  ', citm.name(), '=', ' '.join([str(citm.value(j)) for j in range(citm.numberOfValues())])
+        print('  ', citm.name(), '=', ' '.join(
+            [str(citm.value(j)) for j in range(citm.numberOfValues())]))
 
 
 def setAxis(ax, v):

@@ -31,7 +31,7 @@ class MultiSessionDescriptivePhrase(unittest.TestCase):
         }
         for required in self.session_files.keys():
             if required not in smtk.model.Manager.sessionTypeNames():
-                print 'ERROR: %s not available.' % required
+                print('ERROR: %s not available.' % required)
 
         self.mgr = smtk.model.Manager.create()
         self.sessions = {}
@@ -43,7 +43,8 @@ class MultiSessionDescriptivePhrase(unittest.TestCase):
 
             filename = os.path.join(*([smtk.testing.DATA_DIR, ] + path))
             self.sessions[session_type]['entities'] = Read(filename)
-            print 'Session ', session_type, ' entities ', self.sessions[session_type]['entities']
+            print('Session ', session_type, ' entities ',
+                  self.sessions[session_type]['entities'])
         self.mgr.assignDefaultNames()
         self.models = []
         baseline = (
@@ -72,7 +73,7 @@ class MultiSessionDescriptivePhrase(unittest.TestCase):
     def printPhrases(self, indent, top):
         for entry in top:
             if type(entry) == str or type(entry) == unicode:
-                print indent + entry
+                print(indent + entry)
             else:
                 self.printPhrases(indent + '  ', entry)
 

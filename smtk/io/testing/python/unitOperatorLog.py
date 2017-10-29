@@ -41,7 +41,7 @@ class LogOperatorNames(smtk.io.OperatorLog):
     def recordInvocation(self, evt, op):
         """Add the current operation to the active stack when invoked."""
         self.active.append([op.name()])
-        # print 'Record Invocation of {nm}!'.format(nm=op.name())
+        # print('Record Invocation of {nm}!'.format(nm=op.name()))
         return 0
 
     def recordResult(self, evt, op, res):
@@ -49,7 +49,8 @@ class LogOperatorNames(smtk.io.OperatorLog):
            to the history upon completion."""
         outcome = smtk.model.OperatorOutcome(
             res.findInt('outcome').value(0))
-        # print 'Record Result of {nm} as {stat}'.format(nm=op.name(), outcome)
+        # print('Record Result of {nm} as {stat}'.format(nm=op.name(),
+        # outcome))
         if len(self.active) and self.active[-1][0] == op.name():
             self.history.append(self.active[-1] + [outcome, ])
             self.active = self.active[:-1]

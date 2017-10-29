@@ -25,12 +25,13 @@ class TestExportImport(smtk.testing.TestCase):
         self.mgr = smtk.model.Manager.create()
 
     def checkPillbox(self, original, imported):
-        print '    {:1} models imported'.format(len(imported))
+        print('    {:1} models imported'.format(len(imported)))
         self.assertEqual(len(original), len(imported),
                          'Expected number of models to match')
 
         for i in range(len(original)):
-            print '    Model {:1}: {:2}'.format(original[i].name(), original[i].entity())
+            print('    Model {:1}: {:2}'.format(
+                original[i].name(), original[i].entity()))
             self.assertEqual(original[i].entity(), imported[i].entity(),
                              'Entity IDs {:1} and {:2} differ'.format(original[i].entity(), imported[i].entity()))
 
@@ -38,18 +39,18 @@ class TestExportImport(smtk.testing.TestCase):
 
     def checkExportImport(self, sessionType, filename, **kwargs):
 
-        print 'Creating {:1} session'.format(sessionType)
+        print('Creating {:1} session'.format(sessionType))
         sess = self.mgr.createSession(sessionType)
         sess.assignDefaultName()
         SetActiveSession(sess)
 
-        print 'Loading test model {:1}'.format(filename)
+        print('Loading test model {:1}'.format(filename))
         models = Read(filename)
         numModels = len(models) if hasattr(
             models, '__iter__') else 0 if models == None else 1
         if numModels == 1 and not hasattr(models, '__iter__'):
             models = [models, ]
-        print '  Read {:1} top-level entities'.format(numModels)
+        print('  Read {:1} top-level entities'.format(numModels))
         self.assertGreater(
             numModels, 0, 'Must read at least one model to test.')
 
@@ -81,7 +82,7 @@ class TestExportImport(smtk.testing.TestCase):
 
         # Check the re-imported model against the original:
         if 'modelChecker' in kwargs:
-            print '  Checking model'
+            print('  Checking model')
             self.assertTrue(kwargs['modelChecker'](
                 models, imported), '    Model check failed.')
 
@@ -90,7 +91,7 @@ class TestExportImport(smtk.testing.TestCase):
         haveBaseline = 'baseline' in kwargs and os.path.isfile(
             kwargs['baseline'])
         if imported is not None and canRender and haveBaseline:
-            print '  Rendering exported-then-imported model'
+            print('  Rendering exported-then-imported model')
             self.startRenderTest()
             [self.addModelToScene(model) for model in imported]
             self.renderer.ResetCamera()

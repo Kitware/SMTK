@@ -33,7 +33,8 @@ class TestModelCloseModelOp(unittest.TestCase):
         SetActiveSession(actSession)
 
         models = None
-        print 'Reading {fname} into {sname}'.format(fname=filename, sname=sessionname)
+        print('Reading {fname} into {sname}'.format(
+            fname=filename, sname=sessionname))
         # The 'native' session does not have a "read" op
         if sessionname == 'native':
             json = None
@@ -52,7 +53,7 @@ class TestModelCloseModelOp(unittest.TestCase):
         else:
             models = Read(filename)
 
-        print 'Closing %d models.' % len(models)
+        print('Closing %d models.' % len(models))
 
         result = CloseModel(models)
         self.assertEqual(
@@ -61,7 +62,7 @@ class TestModelCloseModelOp(unittest.TestCase):
             'close model operator failed')
         remModels = GetVectorValue(result.findModelEntity('expunged'))
 
-        print '%d models closed.' % len(remModels)
+        print('%d models closed.' % len(remModels))
         self.assertEqual(len(models), len(remModels),
                          'Not all models marked as removed')
 
@@ -80,11 +81,11 @@ class TestModelCloseModelOp(unittest.TestCase):
                 if session_type == 'native' or session_type in dir(smtk.bridge):
                     filename = os.path.join(
                         *([smtk.testing.DATA_DIR, ] + path))
-                    print 'Testing load and close of %s' % filename
+                    print('Testing load and close of %s' % filename)
                     if self.loadThenCloseSessionModel(session_type, filename) == False:
                         status = 1
 
-        print 'Done'
+        print('Done')
 
 
 if __name__ == '__main__':

@@ -26,7 +26,7 @@ if __name__ == '__main__':
     status = 0
 
     collection = smtk.attribute.Collection.create()
-    print 'Collection created'
+    print('Collection created')
 
     # Lets create an attribute to represent an expression
     expDef = collection.createDefinition("ExpDef")
@@ -35,8 +35,8 @@ if __name__ == '__main__':
     eitemdef2 = smtk.attribute.StringItemDefinition.New("Aux String")
     expDef.addItemDefinition(eitemdef2)
     eitemdef.setDefaultValue("sample")
-    print eitemdef.name()
-    print eitemdef2.name()
+    print(eitemdef.name())
+    print(eitemdef2.name())
 
     base = collection.createDefinition("BaseDef")
 
@@ -60,42 +60,48 @@ if __name__ == '__main__':
 
     # Lets see what attributes are being referenced
     refs = expAtt1.references()
-    print "Number of Items referencing expAtt1: %d" % len(refs)
+    print("Number of Items referencing expAtt1: %d" % len(refs))
     for i in refs:
-        print "\tAtt: %s Item: %s " % (i.attribute().name(), i.owningItem().name())
+        print("\tAtt: %s Item: %s " %
+              (i.attribute().name(), i.owningItem().name()))
 
     refs = expAtt2.references()
-    print "Number of Items referencing expAtt2: %d" % len(refs)
+    print("Number of Items referencing expAtt2: %d" % len(refs))
     for i in refs:
-        print "\tAtt: %s Item: %s " % (i.attribute().name(), i.owningItem().name())
+        print("\tAtt: %s Item: %s " %
+              (i.attribute().name(), i.owningItem().name()))
 
     collection.removeAttribute(att1)
     del att1  # Should delete att1
-    print "testAtt1 deleted"
+    print("testAtt1 deleted")
     refs = expAtt1.references()
-    print "Number of Items referencing expAtt1: %d" % len(refs)
+    print("Number of Items referencing expAtt1: %d" % len(refs))
     for i in refs:
-        print "\tAtt: %s Item: %s " % (i.attribute().name(), i.owningItem().name())
+        print("\tAtt: %s Item: %s " %
+              (i.attribute().name(), i.owningItem().name()))
 
     refs = expAtt2.references()
-    print "Number of Items referencing expAtt2: %d" % len(refs)
+    print("Number of Items referencing expAtt2: %d" % len(refs))
     for i in refs:
-        print "\tAtt: %s Item: %s " % (i.attribute().name(), i.owningItem().name())
+        print("\tAtt: %s Item: %s " %
+              (i.attribute().name(), i.owningItem().name()))
 
     smtk.attribute.ValueItem.CastTo(att2.item(0)).setExpression(expAtt1)
-    print "testAtt3 now using Exp2"
+    print("testAtt3 now using Exp2")
 
     refs = expAtt1.references()
-    print "Number of Items referencing expAtt1: %d" % len(refs)
+    print("Number of Items referencing expAtt1: %d" % len(refs))
     for i in refs:
-        print "\tAtt: %s Item: %s " % (i.attribute().name(), i.owningItem().name())
+        print("\tAtt: %s Item: %s " %
+              (i.attribute().name(), i.owningItem().name()))
 
     refs = expAtt2.references()
-    print "Number of Items referencing expAtt2: %d" % len(refs)
+    print("Number of Items referencing expAtt2: %d" % len(refs))
     for i in refs:
-        print "\tAtt: %s Item: %s " % (i.attribute().name(), i.owningItem().name())
+        print("\tAtt: %s Item: %s " %
+              (i.attribute().name(), i.owningItem().name()))
 
     del collection
-    print 'Collection destroyed'
+    print('Collection destroyed')
 
     sys.exit(status)

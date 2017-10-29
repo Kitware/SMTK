@@ -23,7 +23,7 @@ def test_mesh_metrics():
     m = smtk.mesh.Manager.create()
 
     # Load the mesh file
-    print 'data_dir', smtk.testing.DATA_DIR
+    print('data_dir', smtk.testing.DATA_DIR)
     mesh_path = os.path.join(smtk.testing.DATA_DIR,
                              'mesh', '3d/cube_with_hole.exo')
     c = smtk.io.importMesh(mesh_path, m)

@@ -31,7 +31,7 @@ if __name__ == '__main__':
     status = 0
 
     collection = smtk.attribute.Collection.create()
-    print 'Collection created'
+    print('Collection created')
     base = collection.createDefinition("BaseDef")
 
     # Lets add some item definitions
@@ -85,12 +85,13 @@ if __name__ == '__main__':
     pstatus = 0
     for j in range(0, 6):
         if (def2.findItemPosition(itemNames[j]) != j):
-            print "Incorrect Position Returned for %s, position returned is %d, but it should be %d\n" % (itemNames[j], def2.findItemPosition(itemNames[j]), j)
+            print("Incorrect Position Returned for %s, position returned is %d, but it should be %d\n" %
+                  (itemNames[j], def2.findItemPosition(itemNames[j]), j))
             pstatus = -1
     if pstatus == 0:
-        print "Initial Position Test Passed!\n"
+        print("Initial Position Test Passed!\n")
     else:
-        print "Initial Position Test Failed!\n"
+        print("Initial Position Test Failed!\n")
         status = -1
 
     # Lets add a  component to the base def and verify that positions are
@@ -101,50 +102,51 @@ if __name__ == '__main__':
     pstatus = 0
     for j in range(2, 6):
         if def2.findItemPosition(itemNames[j]) != (j + 1):
-            print "Incorrect Position Returned for %s, position returned is %d, but it should be %d\n" % (itemNames[j], def2.findItemPosition(itemNames[j]), j + 1)
+            print("Incorrect Position Returned for %s, position returned is %d, but it should be %d\n" %
+                  (itemNames[j], def2.findItemPosition(itemNames[j]), j + 1))
             pstatus = -1
 
     if pstatus == 0:
-        print "Insertion Position Test Passed!\n"
+        print("Insertion Position Test Passed!\n")
     else:
-        print "Insertion Position Test Failed!\n"
+        print("Insertion Position Test Failed!\n")
         status = -1
 
     att = collection.createAttribute('testAtt', 'Derived2')
     if not att is None:
-        print 'Attribute testAtt created'
+        print('Attribute testAtt created')
     else:
-        print 'ERROR: Attribute testAtt not created'
+        print('ERROR: Attribute testAtt not created')
         status = -1
     comp = att.find("DoubleComp1")
     if not comp is None:
         vvcomp = smtk.attribute.ValueItem.CastTo(comp)
-        print " Value = %s" % vvcomp.valueAsString()
+        print(" Value = %s" % vvcomp.valueAsString())
     else:
-        print "ERROR: could not find the base's item"
+        print("ERROR: could not find the base's item")
         status = -1
 
     n = att.numberOfItems()
     for i in range(n):
         comp = att.item(i)
-        print '\t%s Type = %s, ' % (comp.name(),
+        print('\t%s Type = %s, ' % (comp.name(),
                                     smtk.attribute.Item.type2String(
-                                        comp.type())),
+                                        comp.type())))
         vcomp = smtk.attribute.ValueItem.CastTo(comp)
         if vcomp:
             if vcomp.type() == smtk.attribute.Item.DOUBLE:
-                print ' Value = %s' % vcomp.valueAsString()
+                print(' Value = %s' % vcomp.valueAsString())
             elif vcomp.type() == smtk.attribute.Item.INT:
-                print ' Value = %s' % vcomp.valueAsString()
+                print(' Value = %s' % vcomp.valueAsString())
             elif vcomp.type() == smtk.attribute.Item.STRING:
-                print 'String Val = %s' % vcomp.valueAsString()
+                print('String Val = %s' % vcomp.valueAsString())
         else:
             ecomp = smtk.attribute.ModelEntityItem.CastTo(comp)
             if ecomp:
                 if ecomp.type() == smtk.attribute.Item.MODEL_ENTITY:
-                    print ' Value = %s' % ecomp.valueAsString()
+                    print(' Value = %s' % ecomp.valueAsString())
             else:
-                print comp
+                print(comp)
 
     # ======
     # Now test setting entity-valued attribute-items
@@ -162,27 +164,27 @@ if __name__ == '__main__':
     # II. Have the attribute collection create an attribute with model-entity
     att = collection.createAttribute('testMEAtt', 'Derived3')
     if not att is None:
-        print 'Attribute testMEAtt created'
+        print('Attribute testMEAtt created')
     else:
-        print 'ERROR: Attribute testMEAtt not created'
+        print('ERROR: Attribute testMEAtt not created')
         status = -1
     # III. Find the face-only attribute item and try fuzzing its arguments a
     # bit
     comp = att.find("ModelComp1_FACE")
     if not comp is None:
-        print comp
+        print(comp)
         fcomp = smtk.attribute.ModelEntityItem.CastTo(comp)
-        print fcomp
-        print dir(fcomp)
+        print(fcomp)
+        print(dir(fcomp))
         if fcomp.appendValue(edg):
-            print 'ERROR: Face-only attribute value accepted an edge'
+            print('ERROR: Face-only attribute value accepted an edge')
             status = -1
         if not fcomp.appendValue(fac):
-            print 'ERROR: Face-only attribute value did not accept a face'
+            print('ERROR: Face-only attribute value did not accept a face')
             status = -1
-        print " Value = %s" % fcomp.valueAsString()
+        print(" Value = %s" % fcomp.valueAsString())
     else:
-        print "ERROR: could not find the base's item"
+        print("ERROR: could not find the base's item")
         status = -1
     # IV. Find the homogenous-group-only attribute item and try fuzzing its
     # arguments a bit
@@ -190,40 +192,42 @@ if __name__ == '__main__':
     if not comp is None:
         gcomp = smtk.attribute.ModelEntityItem.CastTo(comp)
         if not gcomp.appendValue(gr0):
-            print 'ERROR: Homogenous-group-only attribute value did not accept a homogenous group'
+            print(
+                'ERROR: Homogenous-group-only attribute value did not accept a homogenous group')
             status = -1
         if gcomp.appendValue(gr1):
-            print 'ERROR: Homogenous-group-only attribute value accepted a more relaxed group'
+            print(
+                'ERROR: Homogenous-group-only attribute value accepted a more relaxed group')
             status = -1
-        print " Value = %s" % gcomp.valueAsString()
+        print(" Value = %s" % gcomp.valueAsString())
     else:
-        print "ERROR: could not find the base's item"
+        print("ERROR: could not find the base's item")
         status = -1
 
     n = att.numberOfItems()
     for i in range(n):
         comp = att.item(i)
-        print '\t%s Type = %s, ' % (comp.name(),
+        print('\t%s Type = %s, ' % (comp.name(),
                                     smtk.attribute.Item.type2String(
-                                        comp.type())),
+                                        comp.type())))
         vcomp = smtk.attribute.ValueItem.CastTo(comp)
         if vcomp:
             if vcomp.type() == smtk.attribute.Item.DOUBLE:
-                print ' Value = %s' % vcomp.valueAsString()
+                print(' Value = %s' % vcomp.valueAsString())
             elif vcomp.type() == smtk.attribute.Item.INT:
-                print ' Value = %s' % vcomp.valueAsString()
+                print(' Value = %s' % vcomp.valueAsString())
             elif vcomp.type() == smtk.attribute.Item.STRING:
-                print 'String Val = %s' % vcomp.valueAsString()
+                print('String Val = %s' % vcomp.valueAsString())
         else:
             ecomp = smtk.attribute.ModelEntityItem.CastTo(comp)
             if ecomp:
                 if ecomp.type() == smtk.attribute.Item.MODEL_ENTITY:
-                    print ' Value = %s' % ecomp.valueAsString()
+                    print(' Value = %s' % ecomp.valueAsString())
             else:
-                print comp
+                print(comp)
     # ======
 
     del collection
-    print 'Collection destroyed'
+    print('Collection destroyed')
 
     sys.exit(status)

@@ -26,7 +26,7 @@ if __name__ == '__main__':
     status = 0
 
     collection = smtk.attribute.Collection.create()
-    print 'Collection created'
+    print('Collection created')
 
     expDef = collection.createDefinition("ExpDef")
     expDef.setBriefDescription("Sample Expression")
@@ -57,7 +57,7 @@ if __name__ == '__main__':
     ditemdef.setExpressionDefinition(expDef)
     # Check to make sure we can use expressions
     if not ditemdef.allowsExpressions():
-        print "ERROR - Item Def does not allow expressions"
+        print("ERROR - Item Def does not allow expressions")
         status = -1
     ditemdef = smtk.attribute.DoubleItemDefinition.New("DoubleItem2")
     def1.addItemDefinition(ditemdef)
@@ -79,26 +79,26 @@ if __name__ == '__main__':
     # Lets see what categories the attribute definitions think they are
     if expDef.numberOfCategories() != 0:
         categories = expDef.categories()
-        print "ERROR: ExpDef's categories: "
+        print("ERROR: ExpDef's categories: ")
         for it in categories:
-            print "\t \"%s\"" % it
+            print("\t \"%s\"" % it)
     else:
-        print "ExpDef has no categories"
+        print("ExpDef has no categories")
     if def2.numberOfCategories() != 0:
         categories = def2.categories()
-        print "Def2's categories: "
+        print("Def2's categories: ")
         for it in categories:
-            print "\t \"%s\"" % it
+            print("\t \"%s\"" % it)
     else:
-        print "ERROR: Def2 has no categories!"
+        print("ERROR: Def2 has no categories!")
     # Lets test creating an attribute by passing in the expression definition
     # explicitly
     expAtt = collection.createAttribute("Exp1", expDef)
     att = collection.createAttribute("testAtt", "Derived2")
     if att is not None:
-        print "Attribute testAtt created"
+        print("Attribute testAtt created")
     else:
-        print "ERROR: Attribute testAtt not created"
+        print("ERROR: Attribute testAtt not created")
         status = -1
 
     # Find the expression enabled item
@@ -106,26 +106,27 @@ if __name__ == '__main__':
     vitem = smtk.attribute.ValueItem.CastTo(item)
     if vitem.allowsExpressions():
         vitem.setExpression(expAtt)
-        print "Expression Set on %s" % vitem.name()
+        print("Expression Set on %s" % vitem.name())
     else:
-        print "ERROR: Can not set expression on %s" % vitem.name()
+        print("ERROR: Can not set expression on %s" % vitem.name())
         status = -1
 
     n = att.numberOfItems()
-    print "Items of testAtt:\n"
+    print("Items of testAtt:\n")
     for i in range(0, n, 1):
         item = att.item(i)
-        print "\t %s Type = %s" % (item.name(), smtk.attribute.Item.type2String(item.type()))
+        print("\t %s Type = %s" %
+              (item.name(), smtk.attribute.Item.type2String(item.type())))
         vitem = smtk.attribute.ValueItem.CastTo(item)
         if vitem is not None:
             if vitem.isExpression(0):
-                print "\t\tusing Expression: %s" % vitem.expression(0).name()
+                print("\t\tusing Expression: %s" % vitem.expression(0).name())
             else:
-                print "\t\tValue = %s" % vitem.valueAsString()
+                print("\t\tValue = %s" % vitem.valueAsString())
 #    writer = smtk.attribute.XmlV1StringWriter(collection)
-#    print writer.convertToString()
+#    print(writer.convertToString())
 
     del collection
-    print 'Collection destroyed'
+    print('Collection destroyed')
 
     sys.exit(status)

@@ -59,7 +59,7 @@ if __name__ == '__main__':
         model.addSubmodel(model3)
         # Does the model contain the cells we just added?
         enames = sorted([x.name() for x in model.cells()])
-        print '\n'.join(enames)
+        print('\n'.join(enames))
         status = status or len(enames) != 5 or \
             (enames[0] != 'face 0')
         # Does the model contain the group we added?
@@ -69,15 +69,15 @@ if __name__ == '__main__':
         status = status or len(model.submodels()) != 2 or \
             sorted([x.name() for x in model.submodels()])[0] != 'Submodel A'
     except Exception, ex:
-        print 'Exception:'
+        print('Exception:')
 
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        print
-        print 'Exception: ', exc_type, fname, 'line', exc_tb.tb_lineno
-        print
-        print ex
-        print
+        print()
+        print('Exception: ', exc_type, fname, 'line', exc_tb.tb_lineno)
+        print()
+        print(ex)
+        print()
         status = True
 
     sys.exit(0 if not status else 1)

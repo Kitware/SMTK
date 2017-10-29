@@ -42,8 +42,8 @@ for coord in ['x', 'y', 'z']:
 velocity = collection.createAttribute('velocity', vdef)
 inlet.associateAttribute(collection, velocity.id())
 
-print sm.entitiesOfDimension(2)
-print sm.entitiesOfDimension(3)
+print(sm.entitiesOfDimension(2))
+print(sm.entitiesOfDimension(3))
 
 try:
     # If the file isn't present, just skip loading geometry.

@@ -28,7 +28,7 @@ class TestModelSetPropertyOp(unittest.TestCase):
     def testSetPropertyOp(self):
         model_path = os.path.join(
             smtk.testing.DATA_DIR, 'model', '2d', 'smtk', 'pyramid.json')
-        print 'Loading %s' % model_path
+        print('Loading %s' % model_path)
 
         status = 0
         mgr = smtk.model.Manager.create()
@@ -45,7 +45,7 @@ class TestModelSetPropertyOp(unittest.TestCase):
         models = mgr.findEntitiesOfType(int(smtk.model.MODEL_ENTITY), True)
         # Assign imported models to current session so they have operators
         [smtk.model.Model(x).setSession(session) for x in models]
-        print 'Applying operator to %d model(s)' % len(models)
+        print('Applying operator to %d model(s)' % len(models))
 
         op = smtk.model.Model(models[0]).op('set property')
         op.findAsString('name').setValue('superduperness')
@@ -57,14 +57,14 @@ class TestModelSetPropertyOp(unittest.TestCase):
             result.findInt('outcome').value(0),
             smtk.model.OPERATION_SUCCEEDED,
             'Set property operator failed')
-        print 'Checking properties'
+        print('Checking properties')
         for x in mgr.findEntitiesOfType(int(smtk.model.ANY_ENTITY), False):
             sdness = x.integerProperty('superduperness')
             if not (not x.isModel()) ^ (len(sdness) == 1 and sdness[0] == 42):
-                print x.name(), ' has unexpected superduperness of ', sdness
+                print(x.name(), ' has unexpected superduperness of ', sdness)
                 status = 1
 
-        print 'Done'
+        print('Done')
 
 
 if __name__ == '__main__':

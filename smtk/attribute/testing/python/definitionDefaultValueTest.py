@@ -42,7 +42,7 @@ log = smtk.io.Logger()
 wri = smtk.io.AttributeWriter()
 res = wri.write(asys, sys.argv[1], log)
 # xml = ''
-# print wri.writeContents(asys, xml, log, False)
+# print(wri.writeContents(asys, xml, log, False))
 
 # Read in the generated XML
 from xml.dom import minidom
@@ -52,10 +52,10 @@ ddef = doc.getElementsByTagName(
 sdef = doc.getElementsByTagName(
     'String')[0].getElementsByTagName('DefaultValue')[0]
 if not ddef or 'Sep' in ddef.attributes.keys():
-    print 'Invalid default value in DoubleItemDefinition: %s' % ddef.toxml()
+    print('Invalid default value in DoubleItemDefinition: %s' % ddef.toxml())
     err |= 1
 if not sdef or 'Sep' not in sdef.attributes.keys() or sdef.attributes['Sep'].value != ';':
-    print 'Invalid default value in StringItemDefinition: %s' % sdef.toxml()
+    print('Invalid default value in StringItemDefinition: %s' % sdef.toxml())
     err |= 2
 
 asys = smtk.attribute.Collection.create()
@@ -65,12 +65,12 @@ att = asys.createAttribute('foobly', asys.findDefinition('foo'))
 baritem = att.findDouble('bar')
 xx = [baritem.value(i) for i in range(baritem.numberOfValues())]
 if xx != doubleTest:
-    print 'Unexpected double default value ', xx
+    print('Unexpected double default value ', xx)
     err |= 4
 bazitem = att.findString('baz')
 yy = [bazitem.value(i) for i in range(bazitem.numberOfValues())]
 if yy != stringTest:
-    print 'Unexpected string default value ', yy
+    print('Unexpected string default value ', yy)
     err |= 8
 
 sys.exit(err)

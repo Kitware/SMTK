@@ -133,11 +133,11 @@ def PrintResultLog(res, always=False):
         if slog.numberOfValues() < 1:
             return
         smtk.io.LoadJSON.ofLog(slog.value(0), tmplog)
-        print '\n'.join(
+        print('\n'.join(
             [
               tmplog.severityAsString(tmplog.record(i).severity) + ': ' +
-              tmplog.record(i).message for i in range(tmplog.numberOfRecords())])
-        # print '\n'.join([slog.value(i) for i in
+              tmplog.record(i).message for i in range(tmplog.numberOfRecords())]))
+        # print('\n'.join([slog.value(i) for i in)
         # range(slog.numberOfValues())])
 
 
@@ -177,12 +177,13 @@ def CreateModel(**args):
     modelScale = args['model_scale'] if 'model_scale' in args else None
     featureSize = args['feature_size'] if 'feature_size' in args else None
     if modelScale is not None and featureSize is not None:
-        print 'Specify either model_scale or feature_size but not both'
+        print('Specify either model_scale or feature_size but not both')
         return
     method = -1
     if modelScale is not None:
         if normal is not None:
-            print 'When specifying model_scale, you must specify x and y axes. Normal is ignored.'
+            print(
+                'When specifying model_scale, you must specify x and y axes. Normal is ignored.')
         method = 2
     if featureSize is not None:
         if normal is not None:
@@ -589,13 +590,13 @@ def CreateEdge(verts, curve_type=CurveType.LINE, **kwargs):
     # the model should be associated with the operator. Otherwise,
     # the model vertices should be associated with the operator.
     if len(verts) < 1:
-        print 'Error: No vertices specified.'
+        print('Error: No vertices specified.')
         return None
     if hasattr(verts[0], '__iter__'):
         # Verts is actually a list of tuples specifying point coordinates.
         # Look for a model to associate with the operator.
         if 'model' not in kwargs:
-            print 'Error: No model specified.'
+            print('Error: No model specified.')
             return None
         cre.associateEntity(kwargs['model'])
         # Pad and flatten point data

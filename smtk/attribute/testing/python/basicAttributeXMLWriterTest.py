@@ -29,11 +29,11 @@ if __name__ == '__main__':
     status = 0
 
     if len(sys.argv) != 2:
-        print 'Usage: %s filename' % sys.argv[0]
+        print('Usage: %s filename' % sys.argv[0])
         sys.exit(-1)
 
     collection = smtk.attribute.Collection.create()
-    print 'Collection created'
+    print('Collection created')
     # Let's add some analyses
     analysis = set()
     analysis.add('Flow')
@@ -98,7 +98,7 @@ if __name__ == '__main__':
     ditemdef.setExpressionDefinition(expDef)
     # Check to make sure we can use expressions
     if not ditemdef.allowsExpressions():
-        print 'ERROR - Item Def does not allow expressions'
+        print('ERROR - Item Def does not allow expressions')
         status = -1
     ditemdef = smtk.attribute.DoubleItemDefinition.New('DoubleItem2')
     def1.addItemDefinition(ditemdef)
@@ -164,7 +164,7 @@ if __name__ == '__main__':
     expAtt = collection.createAttribute('Exp1', expDef)
     att = collection.createAttribute('testAtt', 'Derived2')
     if att is None:
-        print 'ERROR: Attribute testAtt not created'
+        print('ERROR: Attribute testAtt not created')
         status = -1
 
     # Find the expression enabled item
@@ -179,6 +179,6 @@ if __name__ == '__main__':
         status = -1
 
     del collection
-    print 'Collection destroyed'
+    print('Collection destroyed')
 
     sys.exit(status)

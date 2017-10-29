@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from __future__ import print_function
 import sys
 #=============================================================================
 #
@@ -25,19 +26,19 @@ class TestCGMBooleans(smtk.testing.TestCase):
         self.mgr = smtk.model.Manager.create()
         sess = self.mgr.createSession('cgm')
         brg = sess.session()
-        print sess
-        print brg
+        print(sess)
+        print(brg)
         sess.assignDefaultName()
         SetActiveSession(sess)
-        print '\n\n%s: type "%s" %s %s' % \
-            (sess.name(), brg.name(), sess.flagSummary(0), brg.sessionId())
-        print '  Site: %s' % (sess.site() or 'local')
+        print('\n\n%s: type "%s" %s %s' %
+              (sess.name(), brg.name(), sess.flagSummary(0), brg.sessionId()))
+        print('  Site: %s' % (sess.site() or 'local'))
 
         # We could evaluate the session tag as JSON, but most of
         # the information is available through methods above that
         # we needed to test:
         sessiontag = sess.tag()
-        print '\n'
+        print('\n')
 
         opnames = sess.operatorNames()
 
@@ -90,7 +91,7 @@ class TestCGMBooleans(smtk.testing.TestCase):
         if self.writeJSON:
             json = smtk.io.SaveJSON.fromModelManager(self.mgr)
             sphFile = open('boolean.json', 'w')
-            print >> sphFile, json
+            print(json, file=sphFile)
             sphFile.close()
 
 

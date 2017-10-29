@@ -25,22 +25,22 @@ class TestPolygonImport(smtk.testing.TestCase):
         self.mgr = smtk.model.Manager.create()
         sess = self.mgr.createSession('polygon')
         brg = sess.session()
-        print sess
-        print brg
+        print(sess)
+        print(brg)
         sess.assignDefaultName()
         SetActiveSession(sess)
-        print '\n\n%s: type "%s" %s %s' % \
-            (sess.name(), brg.name(), sess.flagSummary(0), brg.sessionId())
-        print '  Site: %s' % (sess.site() or 'local')
+        print('\n\n%s: type "%s" %s %s' %
+              (sess.name(), brg.name(), sess.flagSummary(0), brg.sessionId()))
+        print('  Site: %s' % (sess.site() or 'local'))
 
         # We could evaluate the session tag as JSON, but most of
         # the information is available through methods above that
         # we needed to test:
         sessiontag = sess.tag()
-        print '\n'
+        print('\n')
 
         # opnames = sess.operatorNames()
-        # print opnames
+        # print(opnames)
 
     def color(self, i):
         # Brewer pastel1:
@@ -58,19 +58,19 @@ class TestPolygonImport(smtk.testing.TestCase):
         iop.findAsFile('filename').setValue(
             os.path.join(smtk.testing.DATA_DIR, 'gis', 'ne_110m_land', 'ne_110m_land.shp'))
         res = iop.operate()
-        print '----'
+        print('----')
         PrintResultLog(res, always=True)
 
         cre = res.findModelEntity('created')
-        print cre
-        print '----'
+        print(cre)
+        print('----')
         self.assertEqual(cre.numberOfValues(), 1,
                          'Import failed to create a single model')
         mod = smtk.model.Model(cre.value(0))
         if self.writeJSON:
             smtk.io.SaveJSON.fromModelManagerToFile(
                 self.mgr, '/tmp/shapefile.json')
-            print 'Wrote /tmp/shapefile.json'
+            print('Wrote /tmp/shapefile.json')
 
         if self.haveVTK() and self.haveVTKExtension():
 

@@ -26,7 +26,7 @@ if __name__ == '__main__':
     status = 0
 
     collection = smtk.attribute.Collection.create()
-    print 'Collection created'
+    print('Collection created')
 
     # Lets create an attribute to represent an expression
     expDef = collection.createDefinition("ExpDef")
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     ditemdef.setExpressionDefinition(expDef)
     # Check to make sure we can use expressions
     if not ditemdef.allowsExpressions():
-        print "ERROR - Item Def does not allow expressions"
+        print("ERROR - Item Def does not allow expressions")
         status = -1
     ditemdef = smtk.attribute.DoubleItemDefinition.New("DoubleItem2")
     def1.addItemDefinition(ditemdef)
@@ -71,22 +71,22 @@ if __name__ == '__main__':
     expAtt = collection.createAttribute("Exp1", expDef)
     att = collection.createAttribute("testAtt", "Derived2")
     if att is not None:
-        print "Attribute testAtt created"
+        print("Attribute testAtt created")
     else:
-        print "ERROR: Attribute testAtt not created"
+        print("ERROR: Attribute testAtt not created")
         status = -1
 
     # Find the expression enabled item
     vitem = smtk.attribute.ValueItem.CastTo(att.item(2))
     if vitem.allowsExpressions():
         vitem.setExpression(expAtt)
-        print "Expression Set on %s" % vitem.name()
+        print("Expression Set on %s" % vitem.name())
     else:
-        print "ERROR: Can not set expression on %s" % vitem.name()
+        print("ERROR: Can not set expression on %s" % vitem.name())
         status = -1
 
     n = att.numberOfItems()
-    print "Items of testAtt:"
+    print("Items of testAtt:")
     for i in range(0, n, 1):
         item = att.item(i)
         sys.stdout.write("\t%s Type = %s, " % (
@@ -94,11 +94,11 @@ if __name__ == '__main__':
         vitem = smtk.attribute.ValueItem.CastTo(item)
         if vitem is not None:
             if vitem.isExpression(0):
-                print " using Expression: %s" % vitem.expression(0).name()
+                print(" using Expression: %s" % vitem.expression(0).name())
             else:
-                print " Value = %s" % vitem.valueAsString()
+                print(" Value = %s" % vitem.valueAsString())
 
     del collection
-    print 'Collection destroyed'
+    print('Collection destroyed')
 
     sys.exit(status)

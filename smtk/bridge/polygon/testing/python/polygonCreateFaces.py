@@ -33,22 +33,22 @@ class TestPolygonCreation(smtk.testing.TestCase):
         self.mgr = smtk.model.Manager.create()
         sess = self.mgr.createSession('polygon')
         brg = sess.session()
-        print sess
-        print brg
+        print(sess)
+        print(brg)
         sess.assignDefaultName()
         SetActiveSession(sess)
-        print '\n\n%s: type "%s" %s %s' % \
-            (sess.name(), brg.name(), sess.flagSummary(0), brg.sessionId())
-        print '  Site: %s' % (sess.site() or 'local')
+        print('\n\n%s: type "%s" %s %s' %
+              (sess.name(), brg.name(), sess.flagSummary(0), brg.sessionId()))
+        print('  Site: %s' % (sess.site() or 'local'))
 
         # We could evaluate the session tag as JSON, but most of
         # the information is available through methods above that
         # we needed to test:
         sessiontag = sess.tag()
-        print '\n'
+        print('\n')
 
         # opnames = sess.operatorNames()
-        # print opnames
+        # print(opnames)
 
     def createModelA(self, mod, origin, x_axis, y_axis, normal, feature_size, model_scale):
 
@@ -60,16 +60,21 @@ class TestPolygonCreation(smtk.testing.TestCase):
         self.assertEqual(mod.floatProperty('feature size'), [feature_size, ], 'Bad feature size {:1} vs {:2}'.format(
             mod.floatProperty('feature size')[0], feature_size))
 
-        # print smtk.io.SaveJSON.fromModelManager(self.mgr,
-        # smtk.io.JSON_DEFAULT)
+        # print(smtk.io.SaveJSON.fromModelManager(self.mgr,
+        # smtk.io.JSON_DEFAULT))
 
         # Print a summary of the model:
-        print 'Model ', mod.entity()
-        print '  x axis  ', ('  {:.3g}' * 3).format(*mod.floatProperty('x axis'))
-        print '  y axis  ', ('  {:.3g}' * 3).format(*mod.floatProperty('y axis'))
-        print '  normal  ', ('  {:.3g}' * 3).format(*mod.floatProperty('normal'))
-        print '  feature size  {:14.3g}'.format(mod.floatProperty('feature size')[0])
-        print '  model scale   {:14.3g}'.format(mod.floatProperty('model scale')[0])
+        print('Model ', mod.entity())
+        print('  x axis  ', ('  {:.3g}' * 3).format(
+            *mod.floatProperty('x axis')))
+        print('  y axis  ', ('  {:.3g}' * 3).format(
+            *mod.floatProperty('y axis')))
+        print('  normal  ', ('  {:.3g}' * 3).format(
+            *mod.floatProperty('normal')))
+        print('  feature size  {:14.3g}'.format(
+            mod.floatProperty('feature size')[0]))
+        print('  model scale   {:14.3g}'.format(
+            mod.floatProperty('model scale')[0]))
 
         # Create vertices and test that they are correct
         # NB: 2.000000005 is chosen below since it is within 1e-8/231000 of 2.0
@@ -78,17 +83,18 @@ class TestPolygonCreation(smtk.testing.TestCase):
         testVerts = [[1, 1], [2, 1], [2, 2, 0],
                      [1, 2], [2.00000000000001, 2, 0]]
         vlist = CreateVertices(testVerts, mod)
-        print '  Created vertices\n   ', '\n    '.join([x.name() for x in vlist])
+        print('  Created vertices\n   ',
+              '\n    '.join([x.name() for x in vlist]))
 
         self.assertEqual(len(vlist), 5, 'Expected 5 model vertices reported.')
         for vi in range(len(testVerts)):
             vert = vlist[vi]
             vx = smtk.model.Vertex(vert).coordinates()
-            print '  {name} {x:.5f} {y:.5f} {z:.5f}'.format(
-                name=vert.name(), x=vx[0], y=vx[1], z=vx[2])
-            [self.assertAlmostEqual(vx[i], testVerts[vi][i],
-                                    msg='Bad vertex {vi} coordinate {i}'.format(vi=vi, i=i))
-             for i in range(2)]
+            print('  {name} {x:.5f} {y:.5f} {z:.5f}'.format(
+                name=vert.name(), x=vx[0], y=vx[1], z=vx[2]))
+            [self.assertAlmostEqual(
+                vx[i], testVerts[vi][i],
+                msg='Bad vertex {vi} coordinate {i}'.format(vi=vi, i=i)) for i in range(2)]
         self.assertEqual(vlist[2], vlist[4],
                          'Expected vertices with nearly-identical coordinates to be equivalent.')
 
@@ -134,11 +140,11 @@ class TestPolygonCreation(smtk.testing.TestCase):
         logStr = res.findString('log').value(0)
         log = smtk.io.Logger()
         smtk.io.LoadJSON.ofLog(logStr, log)
-        print log.convertToString()
+        print(log.convertToString())
         self.assertEqual(
             log.numberOfRecords(), 4,
             'Expected 4 messages due to 3 invalid offsets, got\n' + log.convertToString())
-        # print elist
+        # print(elist)
 
         # Test creation of periodic edge with no model vertices.
         # Verify that no model vertices are created.
@@ -232,7 +238,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
             self.createModelA(mod, p[0], p[1], p[2], p[3], p[4], p[5])
             res = GetLastResult()
             created = res.findModelEntity('created')
-            print 'created ', created.numberOfValues(), ' faces'
+            print('created ', created.numberOfValues(), ' faces')
             self.imageComparison(
                 mod, created, ['baseline', 'smtk', 'polygon', 'createFacesA.png'], False)
 
@@ -249,7 +255,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
             self.createModelB(mod, p[0], p[1], p[2], p[3], p[4], p[5])
             res = GetLastResult()
             created = res.findModelEntity('created')
-            print 'created ', created.numberOfValues(), ' faces'
+            print('created ', created.numberOfValues(), ' faces')
             self.imageComparison(mod, created, [
                                  'baseline', 'smtk', 'polygon', 'createFacesB{:1}.png'.format(t)], False)  # or p[6])
 

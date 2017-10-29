@@ -25,36 +25,36 @@ if __name__ == '__main__':
     status = 0
 
     collection = smtk.attribute.Collection.create()
-    print "Collection Created"
+    print('Collection Created')
     def_ = collection.createDefinition("testDef")
     if def_ is not None:
-        print "Definition testDef created"
+        print('Definition testDef created')
     else:
-        print "ERROR: Definition testDef not created"
+        print('ERROR: Definition testDef not created')
         status = -1
 
     att = collection.createAttribute("testDef")
     if att is not None:
-        print "Attribute %s created" % att.name()
+        print('Attribute %s created' % att.name())
     else:
-        print "ERROR: 1st Attribute not created"
+        print("ERROR: 1st Attribute not created")
         status = -1
 
     att = collection.createAttribute("testDef")
     if att is not None:
-        print "Attribute %s created" % att.name()
+        print("Attribute %s created" % att.name())
     else:
-        print "ERROR: 2nd Attribute not created"
+        print("ERROR: 2nd Attribute not created")
         status = -1
 
     att = collection.createAttribute("testDef")
     if att is not None:
-        print "Attribute %s created" % att.name()
+        print("Attribute %s created" % att.name())
     else:
-        print "ERROR: 3rd Attribute not created"
+        print("ERROR: 3rd Attribute not created")
         status = -1
 
     del collection
-    print 'Collection destroyed'
+    print('Collection destroyed')
 
     sys.exit(status)

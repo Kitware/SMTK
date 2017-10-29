@@ -91,8 +91,8 @@ class TestExodusSession(smtk.testing.TestCase):
                         'Some expected cell names not present.')
 
         # Count the number of each *type* of cell (node, face, volume)
-        # print '\n'.join([str((x.name(), x.flagSummary())) for x in
-        # allCells])
+        # print('\n'.join([str((x.name(), x.flagSummary())) for x in
+        # allCells]))
         cellTypes = [x.flagSummary() for x in allCells]
         gtc = {x: cellTypes.count(x) for x in cellTypes}
         expectedCellTypeCounts = {
@@ -101,7 +101,7 @@ class TestExodusSession(smtk.testing.TestCase):
             'volume': 1
         }
         for entry in gtc.items():
-            print '%40s: %d' % entry
+            print('%40s: %d' % entry)
         self.assertEqual(gtc, expectedCellTypeCounts,
                          'At least one cell was of the wrong type.')
 

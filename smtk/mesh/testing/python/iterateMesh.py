@@ -68,7 +68,7 @@ def test_file_load():
     m = smtk.mesh.Manager.create()
 
     # Load the mesh file
-    print 'data_dir', smtk.testing.DATA_DIR
+    print('data_dir', smtk.testing.DATA_DIR)
     mesh_path = os.path.join(smtk.testing.DATA_DIR,
                              'mesh', '3d/sixth_hexflatcore.h5m')
     c = smtk.io.importMesh(mesh_path, m)
