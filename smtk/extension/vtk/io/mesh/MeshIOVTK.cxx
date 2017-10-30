@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/extension/vtk/io/MeshIOVTK.h"
+#include "smtk/extension/vtk/io/mesh/MeshIOVTK.h"
 
 #include "smtk/io/ExportMesh.h"
 #include "smtk/io/ImportMesh.h"
@@ -18,8 +18,8 @@
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
 
-#include "smtk/extension/vtk/io/ExportVTKData.h"
-#include "smtk/extension/vtk/io/ImportVTKData.h"
+#include "smtk/extension/vtk/io/mesh/ExportVTKData.h"
+#include "smtk/extension/vtk/io/mesh/ImportVTKData.h"
 
 #include <string>
 
@@ -30,6 +30,8 @@ namespace extension
 namespace vtk
 {
 namespace io
+{
+namespace mesh
 {
 
 MeshIOVTK::MeshIOVTK()
@@ -48,37 +50,38 @@ MeshIOVTK::MeshIOVTK()
 smtk::mesh::CollectionPtr MeshIOVTK::importMesh(const std::string& filePath,
   smtk::mesh::ManagerPtr& manager, const std::string& domainPropertyName) const
 {
-  smtk::extension::vtk::io::ImportVTKData import;
+  smtk::extension::vtk::io::mesh::ImportVTKData import;
   return import(filePath, manager, domainPropertyName);
 }
 
 bool MeshIOVTK::importMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
   const std::string& domainPropertyName) const
 {
-  smtk::extension::vtk::io::ImportVTKData import;
+  smtk::extension::vtk::io::mesh::ImportVTKData import;
   return import(filePath, collection, domainPropertyName);
 }
 
 bool MeshIOVTK::exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection) const
 {
-  smtk::extension::vtk::io::ExportVTKData export_;
+  smtk::extension::vtk::io::mesh::ExportVTKData export_;
   return export_(filePath, collection, "");
 }
 }
 }
 }
 }
+}
 
-void smtk_extension_vtk_io_MeshIOVTK_AutoInit_Construct()
+void smtk_extension_vtk_io_mesh_MeshIOVTK_AutoInit_Construct()
 {
   smtk::io::ImportMesh::SupportedIOTypes().push_back(
-    smtk::io::mesh::MeshIOPtr(new smtk::extension::vtk::io::MeshIOVTK()));
+    smtk::io::mesh::MeshIOPtr(new smtk::extension::vtk::io::mesh::MeshIOVTK()));
   smtk::io::ExportMesh::SupportedIOTypes().push_back(
-    smtk::io::mesh::MeshIOPtr(new smtk::extension::vtk::io::MeshIOVTK()));
+    smtk::io::mesh::MeshIOPtr(new smtk::extension::vtk::io::mesh::MeshIOVTK()));
 }
 
-void smtk_extension_vtk_io_MeshIOVTK_AutoInit_Destruct()
+void smtk_extension_vtk_io_mesh_MeshIOVTK_AutoInit_Destruct()
 {
 }
 
-smtkComponentInitMacro(smtk_extension_vtk_io_MeshIOVTK);
+smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK);

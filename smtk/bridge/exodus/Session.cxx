@@ -23,7 +23,7 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/Tessellation.h"
 
-#include "smtk/extension/vtk/io/ImportVTKData.h"
+#include "smtk/extension/vtk/io/mesh/ImportVTKData.h"
 
 #include "vtkCellArray.h"
 #include "vtkGeometryFilter.h"
@@ -664,7 +664,7 @@ bool Session::addTessellation(const smtk::model::EntityRef& entityref, const Ent
       collection->removeMeshes(modified);
     }
 
-    smtk::extension::vtk::io::ImportVTKData importVTKData;
+    smtk::extension::vtk::io::mesh::ImportVTKData importVTKData;
     smtk::mesh::MeshSet meshForEntity = importVTKData(bdy, collection);
     if (!meshForEntity.is_empty())
     {

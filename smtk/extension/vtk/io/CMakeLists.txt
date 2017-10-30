@@ -1,17 +1,17 @@
 set(srcs
-  ExportVTKData.cxx
-  ImportVTKData.cxx
-  MeshIOVTK.cxx
   RedirectOutput.cxx
   vtkLIDARPtsWriter.cxx # For terrain extraction
+  mesh/ExportVTKData.cxx
+  mesh/ImportVTKData.cxx
+  mesh/MeshIOVTK.cxx
   )
 
 set(headers
-  ExportVTKData.h
-  ImportVTKData.h
-  MeshIOVTK.h
   RedirectOutput.h
   vtkLIDARPtsWriter.h # For terrain extraction
+  mesh/ExportVTKData.h
+  mesh/ImportVTKData.h
+  mesh/MeshIOVTK.h
   )
 
 add_library(smtkIOVTK ${srcs})

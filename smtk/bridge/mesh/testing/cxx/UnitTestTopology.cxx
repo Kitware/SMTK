@@ -49,7 +49,7 @@
 #include "vtkXMLMultiBlockDataWriter.h"
 
 // This macro ensures the vtk io library is loaded into the executable
-smtkComponentInitMacro(smtk_extension_vtk_io_MeshIOVTK)
+smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
 #endif
 
   namespace

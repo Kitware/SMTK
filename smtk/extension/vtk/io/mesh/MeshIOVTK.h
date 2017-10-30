@@ -31,6 +31,8 @@ namespace vtk
 {
 namespace io
 {
+namespace mesh
+{
 
 class SMTKIOVTK_EXPORT MeshIOVTK : public smtk::io::mesh::MeshIO
 {
@@ -55,8 +57,9 @@ public:
 }
 }
 }
+}
 
-void SMTKIOVTK_EXPORT smtk_extension_vtk_io_MeshIOVTK_AutoInit_Construct();
-void SMTKIOVTK_EXPORT smtk_extension_vtk_io_MeshIOVTK_AutoInit_Destruct();
+void SMTKIOVTK_EXPORT smtk_extension_vtk_io_mesh_MeshIOVTK_AutoInit_Construct();
+void SMTKIOVTK_EXPORT smtk_extension_vtk_io_mesh_MeshIOVTK_AutoInit_Destruct();
 
 #endif

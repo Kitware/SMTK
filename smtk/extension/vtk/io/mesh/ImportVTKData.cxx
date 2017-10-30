@@ -10,7 +10,7 @@
 //
 //=============================================================================
 
-#include "smtk/extension/vtk/io/ImportVTKData.h"
+#include "smtk/extension/vtk/io/mesh/ImportVTKData.h"
 
 #include "smtk/mesh/CellField.h"
 #include "smtk/mesh/CellSet.h"
@@ -57,7 +57,8 @@ namespace vtk
 {
 namespace io
 {
-
+namespace mesh
+{
 namespace
 {
 
@@ -421,6 +422,7 @@ smtk::mesh::CollectionPtr ImportVTKData::operator()(vtkUnstructuredGrid* ugrid,
 {
   smtk::mesh::CollectionPtr c = manager->makeCollection();
   return this->operator()(ugrid, c, materialPropertyName) ? c : smtk::mesh::CollectionPtr();
+}
 }
 }
 }

@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/extension/vtk/io/ExportVTKData.h"
-#include "smtk/extension/vtk/io/ImportVTKData.h"
+#include "smtk/extension/vtk/io/mesh/ExportVTKData.h"
+#include "smtk/extension/vtk/io/mesh/ImportVTKData.h"
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
@@ -144,7 +144,7 @@ void test_same_datasets(vtkDataSet* ds, vtkDataSet* ds2)
 void verify_null_polydata()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::extension::vtk::io::ImportVTKData imprt;
+  smtk::extension::vtk::io::mesh::ImportVTKData imprt;
 
   vtkPolyData* pd = NULL;
   smtk::mesh::CollectionPtr c = imprt(pd, manager);
@@ -154,7 +154,7 @@ void verify_null_polydata()
 void verify_empty_polydata()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::extension::vtk::io::ImportVTKData imprt;
+  smtk::extension::vtk::io::mesh::ImportVTKData imprt;
 
   smtk::mesh::CollectionPtr c = imprt(make_EmptyPolyData(), manager);
   test(!c, "collection should invalid for empty poly data");
@@ -163,7 +163,7 @@ void verify_empty_polydata()
 void verify_tri_polydata()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::extension::vtk::io::ImportVTKData imprt;
+  smtk::extension::vtk::io::mesh::ImportVTKData imprt;
 
   vtkSmartPointer<vtkPolyData> pd = make_TrianglePolyData();
   smtk::mesh::CollectionPtr c = imprt(pd, manager);
@@ -179,7 +179,7 @@ void verify_tri_polydata()
   smtk::mesh::MeshSet meshes1d = c->meshes(smtk::mesh::Dims1);
   test(meshes1d.size() == 0);
 
-  smtk::extension::vtk::io::ExportVTKData exprt;
+  smtk::extension::vtk::io::mesh::ExportVTKData exprt;
   vtkSmartPointer<vtkPolyData> pd2 = vtkSmartPointer<vtkPolyData>::New();
   exprt(meshes, pd2);
   test_same_datasets(pd, pd2);
@@ -188,7 +188,7 @@ void verify_tri_polydata()
 void verify_tri_ugrid()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::extension::vtk::io::ImportVTKData imprt;
+  smtk::extension::vtk::io::mesh::ImportVTKData imprt;
 
   vtkSmartPointer<vtkUnstructuredGrid> ug = make_TriangleUGrid();
   smtk::mesh::CollectionPtr c = imprt(ug, manager);
@@ -204,7 +204,7 @@ void verify_tri_ugrid()
   smtk::mesh::MeshSet meshes1d = c->meshes(smtk::mesh::Dims1);
   test(meshes1d.size() == 0);
 
-  smtk::extension::vtk::io::ExportVTKData exprt;
+  smtk::extension::vtk::io::mesh::ExportVTKData exprt;
   vtkSmartPointer<vtkUnstructuredGrid> ug2 = vtkSmartPointer<vtkUnstructuredGrid>::New();
   exprt(meshes, ug2);
   test_same_datasets(ug, ug2);
@@ -213,7 +213,7 @@ void verify_tri_ugrid()
 void verify_mixed_cell_ugrid()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::extension::vtk::io::ImportVTKData imprt;
+  smtk::extension::vtk::io::mesh::ImportVTKData imprt;
 
   vtkSmartPointer<vtkUnstructuredGrid> ug = make_MixedVolUGrid();
   smtk::mesh::CollectionPtr c = imprt(ug, manager);
@@ -231,7 +231,7 @@ void verify_mixed_cell_ugrid()
   test(meshes.size() == 1);
   test(meshes.cells() == c->cells());
 
-  smtk::extension::vtk::io::ExportVTKData exprt;
+  smtk::extension::vtk::io::mesh::ExportVTKData exprt;
   vtkSmartPointer<vtkUnstructuredGrid> ug2 = vtkSmartPointer<vtkUnstructuredGrid>::New();
   exprt(c->meshes(), ug2);
   test_same_datasets(ug, ug2);

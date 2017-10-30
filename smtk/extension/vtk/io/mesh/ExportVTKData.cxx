@@ -10,7 +10,7 @@
 //
 //=============================================================================
 
-#include "smtk/extension/vtk/io/ExportVTKData.h"
+#include "smtk/extension/vtk/io/mesh/ExportVTKData.h"
 
 #include "smtk/mesh/CellField.h"
 #include "smtk/mesh/CellSet.h"
@@ -57,6 +57,8 @@ namespace extension
 namespace vtk
 {
 namespace io
+{
+namespace mesh
 {
 
 ExportVTKData::ExportVTKData()
@@ -443,6 +445,7 @@ void ExportVTKData::operator()(
       ug->GetPointData()->AddArray(pointDataArray.GetPointer());
     }
   }
+}
 }
 }
 }

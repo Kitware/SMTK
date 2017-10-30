@@ -93,4 +93,4 @@ int UnitTestImportFromVTK(int argc, char* argv[])
 }
 
 // This macro ensures the vtk io library is loaded into the executable
-smtkComponentInitMacro(smtk_extension_vtk_io_MeshIOVTK)
+smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
