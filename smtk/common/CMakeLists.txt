@@ -22,6 +22,7 @@ set(commonHeaders
   Environment.h
   Extension.h
   FileLocation.h
+  Generator.h
   GeometryUtilities.h
   Paths.h
   RangeDetector.h

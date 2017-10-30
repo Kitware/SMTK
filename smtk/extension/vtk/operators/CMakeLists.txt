@@ -24,7 +24,7 @@ set(${vtk-module}_NO_HeaderTest 1)
 set(VTK_INSTALL_NO_HEADERS 1)
 vtk_module_library(${vtk-module} ${srcs})
 target_link_libraries(${vtk-module}
-      LINK_PUBLIC smtkCore vtksys)
+      LINK_PUBLIC smtkCore smtkIOVTK vtksys)
 
 target_include_directories(${vtk-module}
   PUBLIC

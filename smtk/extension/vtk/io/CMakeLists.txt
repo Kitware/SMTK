@@ -1,4 +1,5 @@
 set(srcs
+  ReadVTKData.cxx
   RedirectOutput.cxx
   vtkLIDARPtsWriter.cxx # For terrain extraction
   mesh/ExportVTKData.cxx
@@ -7,6 +8,7 @@ set(srcs
   )
 
 set(headers
+  ReadVTKData.h
   RedirectOutput.h
   vtkLIDARPtsWriter.h # For terrain extraction
   mesh/ExportVTKData.h
@@ -17,7 +19,7 @@ set(headers
 add_library(smtkIOVTK ${srcs})
 
 target_link_libraries(smtkIOVTK
-  LINK_PUBLIC smtkCore vtkCommonCore vtkCommonDataModel vtkIOCore vtkIOLegacy vtkIOXML vtksys vtkFiltersCore)
+  LINK_PUBLIC smtkCore vtkSMTKFilterExt vtkSMTKReaderExt vtkCommonCore vtkCommonDataModel vtkFiltersGeneral vtkIOCore vtkIOGDAL vtkIOGeometry vtkIOImage vtkIOLegacy vtkIOPLY vtkIOXML vtkImagingCore vtksys vtkFiltersCore)
 
 smtk_export_header(smtkIOVTK IOVTKExports.h)
 

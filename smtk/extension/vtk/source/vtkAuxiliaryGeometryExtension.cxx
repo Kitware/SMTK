@@ -12,8 +12,7 @@
 #include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.txx"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
-#include "smtk/extension/vtk/reader/vtkCMBGeometryReader.h"
-#include "smtk/extension/vtk/reader/vtkLASReader.h"
+#include "smtk/extension/vtk/io/ReadVTKData.h"
 
 #include "smtk/AutoInit.h"
 #include "smtk/PublicPointerDefs.h"
@@ -410,128 +409,11 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::readFromFile(
   vtkAuxiliaryGeometryExtension::ensureCache();
 
   (void)genNormals;
-  /*
-  smtkDebugMacro(
-    auxGeom.manager()->log(), "Need to load " << auxGeom.url() << " for " << auxGeom.name());
-    */
+
   std::string fileType = vtkAuxiliaryGeometryExtension::getAuxiliaryFileType(auxGeom);
-  if (fileType == "vtp")
-  {
-    auto data = vtkModelAuxiliaryGeometry::ReadData<vtkPolyData, vtkXMLPolyDataReader>(auxGeom);
-    vtkModelMultiBlockSource::AddPointsAsAttribute(data);
-    return data;
-  }
-  else if (fileType == "vtu")
-  {
-    return vtkModelAuxiliaryGeometry::ReadData<vtkUnstructuredGrid, vtkXMLUnstructuredGridReader>(
-      auxGeom);
-  }
-  else if (fileType == "vti")
-  {
-    return vtkModelAuxiliaryGeometry::ReadData<vtkImageData, vtkXMLImageDataReader>(auxGeom);
-  }
-  else if (fileType == "vtm")
-  {
-    return vtkModelAuxiliaryGeometry::ReadData<vtkMultiBlockDataSet, vtkXMLMultiBlockDataReader>(
-      auxGeom);
-  }
-  else if (fileType == "obj")
-  {
-    auto data = vtkModelAuxiliaryGeometry::ReadData<vtkPolyData, vtkOBJReader>(auxGeom);
-    vtkModelMultiBlockSource::AddPointsAsAttribute(data);
-    return data;
-  }
-  else if (fileType == "ply")
-  {
-    auto data = vtkModelAuxiliaryGeometry::ReadData<vtkPolyData, vtkPLYReader>(auxGeom);
-    vtkModelMultiBlockSource::AddPointsAsAttribute(data);
-    return data;
-  }
-  else if ((fileType == "pts") || (fileType == "xyz"))
-  {
-    auto data = vtkModelAuxiliaryGeometry::ReadData<vtkPolyData, vtkPTSReader>(auxGeom);
-    vtkModelMultiBlockSource::AddPointsAsAttribute(data);
-    return data;
-  }
-  else if (fileType == "dem" || fileType == "tif" || fileType == "tiff")
-  {
-    vtkSmartPointer<vtkImageData> outImage =
-      vtkModelAuxiliaryGeometry::ReadData<vtkImageData, vtkGDALRasterReader>(auxGeom);
-    if (outImage.GetPointer())
-    {
-      // When dealing with indexed data into a color map, vtkGDALRasterReader
-      // creates a point data named "Categories" and associates to it the
-      // appropriate lookup table to convert to RGB space. We key off of the
-      // existence of this scalar data to convert our data from indices to RGB.
-      if (outImage->GetPointData() && outImage->GetPointData()->GetScalars() &&
-        strcmp(outImage->GetPointData()->GetScalars()->GetName(), "Categories") == 0)
-      {
-        vtkNew<vtkImageMapToColors> imageMapToColors;
-        imageMapToColors->SetInputData(outImage);
-        imageMapToColors->SetLookupTable(outImage->GetPointData()->GetScalars()->GetLookupTable());
-        imageMapToColors->Update();
-        outImage->ShallowCopy(imageMapToColors->GetOutput());
-      }
-      vtkNew<vtkImageSpacingFlip> flipImage;
-      flipImage->SetInputData(outImage);
-      flipImage->Update();
-      vtkSmartPointer<vtkImageData> data = vtkSmartPointer<vtkImageData>::New();
-      data->ShallowCopy(flipImage->GetOutput());
-      return data;
-    }
-  }
-  else if (fileType == "png")
-  {
-    vtkSmartPointer<vtkImageData> outImage =
-      vtkModelAuxiliaryGeometry::ReadData<vtkImageData, vtkPNGReader>(auxGeom);
-    if (outImage.GetPointer())
-    {
-      return outImage;
-    }
-  }
-  else if (fileType == "bin" || fileType == "vtk" || fileType == "2dm" || fileType == "3dm" ||
-    fileType == "tin" || fileType == "poly" || fileType == "smesh" || fileType == "fac" ||
-    fileType == "sol" || fileType == "stl")
-  {
-    vtkNew<vtkCMBGeometryReader> reader;
-    reader->SetFileName(auxGeom.url().c_str());
-    reader->SetPrepNonClosedSurfaceForModelCreation(false);
-    reader->SetEnablePostProcessMesh(false);
-    reader->Update();
 
-    auto polyOutput = vtkSmartPointer<vtkPolyData>::New();
-    polyOutput->ShallowCopy(reader->GetOutput());
-    return polyOutput;
-  }
-  else if (fileType == ".las")
-  {
-    vtkNew<vtkLASReader> reader;
-    reader->SetFileName(auxGeom.url().c_str());
-    reader->Update();
-
-    vtkMultiBlockDataSet* readout = reader->GetOutput();
-    vtkNew<vtkAppendPoints> appendPoints;
-
-    vtkCompositeDataIterator* iter = readout->NewIterator();
-    for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem())
-    {
-      vtkPolyData* blockPoly = vtkPolyData::SafeDownCast(iter->GetCurrentDataObject());
-      if (!blockPoly)
-      {
-        vtkGenericWarningMacro(<< "This block from LAS reader is not a polydata!\n");
-        continue;
-      }
-      appendPoints->AddInputData(blockPoly);
-    }
-    iter->Delete();
-    appendPoints->Update();
-
-    auto polyOutput = vtkSmartPointer<vtkPolyData>::New();
-    polyOutput->ShallowCopy(appendPoints->GetOutput());
-    return polyOutput;
-  }
-
-  return vtkSmartPointer<vtkDataObject>();
+  smtk::extension::vtk::io::ReadVTKData readVTKData;
+  return readVTKData(std::make_pair(fileType, auxGeom.url()));
 }
 
 vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::createHierarchy(
