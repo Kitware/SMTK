@@ -7,7 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#pragma once
+#ifndef smtk_model_Arrangement_txx
+#define smtk_model_Arrangement_txx
 
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/Entity.h"
@@ -139,3 +140,5 @@ struct Arrangement::IndexSenseAndOrientationHelper
 
 } // model namespace
 } // smtk namespace
+
+#endif

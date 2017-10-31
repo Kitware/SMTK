@@ -7,7 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#pragma once
+#ifndef smtk_extension_paraview_appcomponents_pqSMTKAppComponentsAutoStart_h
+#define smtk_extension_paraview_appcomponents_pqSMTKAppComponentsAutoStart_h
 
 #include "smtk/extension/paraview/appcomponents/PluginExports.h"
 
@@ -28,3 +29,5 @@ public:
 private:
   Q_DISABLE_COPY(pqSMTKAppComponentsAutoStart);
 };
+
+#endif

@@ -22,6 +22,8 @@ template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 #include "PybindAttribute.h"
+#include "PybindComponentItem.h"
+#include "PybindComponentItemDefinition.h"
 #include "PybindDateTimeItem.h"
 #include "PybindDateTimeItemDefinition.h"
 #include "PybindDefinition.h"
@@ -108,4 +110,6 @@ PYBIND11_MODULE(_smtkPybindAttribute, attribute)
 
   PySharedPtrClass< smtk::attribute::DateTimeItem, smtk::attribute::Item > smtk_attribute_DateTimeItem = pybind11_init_smtk_attribute_DateTimeItem(attribute);
   PySharedPtrClass< smtk::attribute::DateTimeItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_DateTimeItemDefinition = pybind11_init_smtk_attribute_DateTimeItemDefinition(attribute);
+  PySharedPtrClass< smtk::attribute::ComponentItem, smtk::attribute::Item > smtk_attribute_ComponentItem = pybind11_init_smtk_attribute_ComponentItem(attribute);
+  PySharedPtrClass< smtk::attribute::ComponentItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_ComponentItemDefinition = pybind11_init_smtk_attribute_ComponentItemDefinition(attribute);
 }

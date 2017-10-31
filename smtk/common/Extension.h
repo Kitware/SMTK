@@ -7,7 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#pragma once
+#ifndef smtk_common_Extension_h
+#define smtk_common_Extension_h
 /*!\file */
 
 #include "smtk/CoreExports.h"
@@ -156,3 +157,5 @@ protected:
 };
 }
 }
+
+#endif

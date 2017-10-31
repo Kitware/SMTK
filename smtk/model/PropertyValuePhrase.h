@@ -30,7 +30,8 @@ public:
   smtkTypeMacro(PropertyValuePhrase);
   smtkCreateMacro(DescriptivePhrase);
   PropertyValuePhrase();
-  Ptr setup(PropertyType propType, const std::string& propName, DescriptivePhrase::Ptr parent);
+  Ptr setup(smtk::resource::PropertyType propType, const std::string& propName,
+    DescriptivePhrase::Ptr parent);
 
   std::string title() override;
   std::string subtitle() override;
@@ -38,12 +39,12 @@ public:
   smtk::common::UUID relatedEntityId() const override;
   EntityRef relatedEntity() const override;
   std::string relatedPropertyName() const override;
-  PropertyType relatedPropertyType() const override;
+  smtk::resource::PropertyType relatedPropertyType() const override;
 
-  static DescriptivePhraseType propertyToPhraseType(PropertyType p);
+  static DescriptivePhraseType propertyToPhraseType(smtk::resource::PropertyType p);
 
 protected:
-  PropertyType m_propertyType;
+  smtk::resource::PropertyType m_propertyType;
   std::string m_propertyName;
 };
 

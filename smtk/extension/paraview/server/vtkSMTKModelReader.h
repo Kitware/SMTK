@@ -7,7 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#pragma once
+#ifndef smtk_extension_paraview_server_vtkSMTKModelReader_h
+#define smtk_extension_paraview_server_vtkSMTKModelReader_h
 
 #include "smtk/extension/paraview/server/Exports.h"
 
@@ -47,3 +48,5 @@ private:
   vtkSMTKModelReader(const vtkSMTKModelReader&) = delete;
   void operator=(const vtkSMTKModelReader&) = delete;
 };
+
+#endif

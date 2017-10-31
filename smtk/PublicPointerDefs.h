@@ -47,6 +47,8 @@ namespace attribute
 {
 class Attribute;
 class Collection;
+class ComponentItem;
+class ComponentItemDefinition;
 class RefItem;
 class RefItemDefinition;
 class DateTimeItem;
@@ -192,6 +194,12 @@ class VolumeUse;
 typedef std::vector<smtk::model::VolumeUse> VolumeUses;
 }
 
+namespace view
+{
+class DescriptivePhrase;
+class SubphraseGenerator;
+}
+
 namespace bridge
 {
 // These classes are in the SMTKRemote library, which
@@ -236,8 +244,12 @@ typedef smtk::shared_ptr<smtk::resource::Component> ComponentPtr;
 typedef std::set<smtk::resource::ComponentPtr> ComponentSet;
 typedef smtk::shared_ptr<smtk::resource::SelectionManager> SelectionManagerPtr;
 typedef smtk::shared_ptr<smtk::resource::Set> SetPtr;
+typedef smtk::shared_ptr<const smtk::resource::Component> ConstComponentPtr;
 typedef smtk::shared_ptr<const smtk::resource::Resource> ConstResourcePtr;
 typedef smtk::shared_ptr<const smtk::resource::Set> ConstSetPtr;
+typedef std::vector<ResourcePtr> ResourceArray;
+typedef std::vector<ComponentPtr> ComponentArray;
+typedef std::set<ComponentPtr> ComponentSet;
 }
 
 namespace operation
@@ -301,6 +313,7 @@ typedef smtk::shared_ptr<smtk::model::StoredResource> StoredResourcePtr;
 typedef smtk::shared_ptr<const smtk::model::StoredResource> ConstStoredResourcePtr;
 typedef smtk::shared_ptr<smtk::model::Entity> EntityPtr;
 typedef smtk::weak_ptr<smtk::model::Entity> WeakEntityPtr;
+typedef std::vector<smtk::model::EntityPtr> EntityArray;
 typedef smtk::shared_ptr<smtk::model::Arrangement> ArrangementPtr;
 typedef smtk::weak_ptr<smtk::model::Arrangement> WeakArrangementPtr;
 typedef smtk::shared_ptr<smtk::model::Tessellation> TessellationPtr;
@@ -367,6 +380,8 @@ typedef smtk::shared_ptr<const smtk::attribute::ModelEntityItemDefinition>
 typedef smtk::shared_ptr<smtk::attribute::ModelEntityItemDefinition> ModelEntityItemDefinitionPtr;
 typedef smtk::shared_ptr<smtk::attribute::VoidItem> VoidItemPtr;
 typedef smtk::shared_ptr<smtk::attribute::VoidItemDefinition> VoidItemDefinitionPtr;
+typedef smtk::shared_ptr<smtk::attribute::ComponentItem> ComponentItemPtr;
+typedef smtk::shared_ptr<smtk::attribute::ComponentItemDefinition> ComponentItemDefinitionPtr;
 
 typedef smtk::shared_ptr<const smtk::attribute::DateTimeItem> ConstDateTimeItemPtr;
 typedef smtk::shared_ptr<const smtk::attribute::DateTimeItemDefinition>
@@ -395,6 +410,9 @@ typedef smtk::shared_ptr<const smtk::attribute::MeshSelectionItemDefinition>
 typedef smtk::shared_ptr<const smtk::attribute::ModelEntityItem> ConstModelEntityItemPtr;
 typedef smtk::shared_ptr<const smtk::attribute::ModelEntityItemDefinition>
   ConstModelEntityItemDefinitionPtr;
+typedef smtk::shared_ptr<const smtk::attribute::ComponentItem> ConstComponentItemPtr;
+typedef smtk::shared_ptr<const smtk::attribute::ComponentItemDefinition>
+  ConstComponentItemDefinitionPtr;
 typedef smtk::shared_ptr<const smtk::attribute::VoidItem> ConstVoidItemPtr;
 typedef smtk::shared_ptr<const smtk::attribute::VoidItemDefinition> ConstVoidItemDefinitionPtr;
 typedef smtk::shared_ptr<const smtk::attribute::RefItem> ConstRefItemPtr;
@@ -403,6 +421,15 @@ typedef smtk::shared_ptr<const smtk::attribute::RefItemDefinition> ConstRefItemD
 typedef smtk::shared_ptr<smtk::attribute::Collection> CollectionPtr;
 typedef smtk::shared_ptr<const smtk::attribute::Collection> ConstCollectionPtr;
 typedef smtk::weak_ptr<smtk::attribute::Collection> WeakCollectionPtr;
+}
+
+namespace view
+{
+typedef smtk::shared_ptr<smtk::view::DescriptivePhrase> DescriptivePhrasePtr;
+typedef smtk::weak_ptr<smtk::view::DescriptivePhrase> WeakDescriptivePhrasePtr;
+typedef std::vector<DescriptivePhrasePtr> DescriptivePhrases;
+typedef smtk::shared_ptr<smtk::view::SubphraseGenerator> SubphraseGeneratorPtr;
+typedef smtk::weak_ptr<smtk::view::SubphraseGenerator> WeakSubphraseGeneratorPtr;
 }
 
 namespace bridge

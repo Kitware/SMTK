@@ -21,8 +21,8 @@
 #include "smtk/mesh/MeshSet.h"
 #include "smtk/model/ArrangementKind.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/PropertyType.h"
 #include "smtk/model/SubphraseGenerator.h"
+#include "smtk/resource/PropertyType.h"
 
 namespace py = pybind11;
 
@@ -61,7 +61,7 @@ PySharedPtrClass< smtk::model::DescriptivePhrase > pybind11_init_smtk_model_Desc
     .def("argFindChild", (int (smtk::model::DescriptivePhrase::*)(::smtk::model::EntityRef const &) const) &smtk::model::DescriptivePhrase::argFindChild, py::arg("child"))
     .def("argFindChild", (int (smtk::model::DescriptivePhrase::*)(::smtk::mesh::MeshSet const &) const) &smtk::model::DescriptivePhrase::argFindChild, py::arg("child"))
     .def("argFindChild", (int (smtk::model::DescriptivePhrase::*)(::smtk::mesh::CollectionPtr const &) const) &smtk::model::DescriptivePhrase::argFindChild, py::arg("child"))
-    .def("argFindChild", (int (smtk::model::DescriptivePhrase::*)(::std::string const &, ::smtk::model::PropertyType) const) &smtk::model::DescriptivePhrase::argFindChild, py::arg("propName"), py::arg("propType"))
+    .def("argFindChild", (int (smtk::model::DescriptivePhrase::*)(::std::string const &, ::smtk::resource::PropertyType) const) &smtk::model::DescriptivePhrase::argFindChild, py::arg("propName"), py::arg("propType"))
     .def("classname", &smtk::model::DescriptivePhrase::classname)
     .def("findDelegate", &smtk::model::DescriptivePhrase::findDelegate)
     .def("indexInParent", &smtk::model::DescriptivePhrase::indexInParent)

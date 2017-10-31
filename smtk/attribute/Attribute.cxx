@@ -352,6 +352,16 @@ bool Attribute::removeExpungedEntities(const smtk::model::EntityRefs& expungedEn
   return associationChanged;
 }
 
+bool Attribute::isComponentAssociated(const smtk::common::UUID& entity) const
+{
+  return m_associatedComponents ? m_associatedComponents->has(entity) : false;
+}
+
+bool Attribute::isComponentAssociated(const smtk::resource::ComponentPtr& comp) const
+{
+  return m_associatedComponents ? m_associatedComponents->has(comp) : false;
+}
+
 /**\brief Is the model \a entity associated with this attribute?
   *
   */
@@ -651,4 +661,13 @@ smtk::attribute::DateTimeItemPtr Attribute::findDateTime(const std::string& name
 smtk::attribute::ConstDateTimeItemPtr Attribute::findDateTime(const std::string& nameStr) const
 {
   return smtk::dynamic_pointer_cast<const DateTimeItem>(this->find(nameStr));
+}
+
+smtk::attribute::ComponentItemPtr Attribute::findComponent(const std::string& nameStr)
+{
+  return smtk::dynamic_pointer_cast<ComponentItem>(this->find(nameStr));
+}
+smtk::attribute::ConstComponentItemPtr Attribute::findComponent(const std::string& nameStr) const
+{
+  return smtk::dynamic_pointer_cast<const ComponentItem>(this->find(nameStr));
 }

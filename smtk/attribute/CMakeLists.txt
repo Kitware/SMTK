@@ -1,5 +1,7 @@
 set(attributeHeaders
   Attribute.h
+  ComponentItem.h
+  ComponentItemDefinition.h
   Definition.h
   DateTimeItem.h
   DateTimeItemDefinition.h
@@ -39,6 +41,8 @@ set(attributeHeaders
 
 set(attributeSrcs
   Attribute.cxx
+  ComponentItem.cxx
+  ComponentItemDefinition.cxx
   DateTimeItem.cxx
   DateTimeItemDefinition.cxx
   Definition.cxx

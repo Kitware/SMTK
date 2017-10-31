@@ -72,21 +72,21 @@ DescriptivePhrases SimpleModelSubphrases::subphrases(DescriptivePhrase::Ptr src)
 }
 
 bool SimpleModelSubphrases::shouldOmitProperty(
-  DescriptivePhrase::Ptr parent, PropertyType ptype, const std::string& pname) const
+  DescriptivePhrase::Ptr parent, smtk::resource::PropertyType ptype, const std::string& pname) const
 {
-  if (ptype == STRING_PROPERTY)
+  if (ptype == smtk::resource::STRING_PROPERTY)
   {
     if (pname == "name")
       return true;
   }
 
-  if (ptype == FLOAT_PROPERTY)
+  if (ptype == smtk::resource::FLOAT_PROPERTY)
   {
     if (pname == "color")
       return true;
   }
 
-  if (ptype == INTEGER_PROPERTY)
+  if (ptype == smtk::resource::INTEGER_PROPERTY)
   {
     if (pname == "visible")
       return true;

@@ -47,6 +47,7 @@ public:
   BitFlags membershipMask() const;
 
 protected:
+  friend class smtk::attribute::ComponentItemDefinition;
   friend class smtk::attribute::ModelEntityItemDefinition;
 
   bool meetsMembershipConstraintsInternal(

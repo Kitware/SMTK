@@ -24,13 +24,13 @@ using namespace smtk::attribute;
 using namespace smtk::common;
 using namespace smtk;
 
-int main()
+int unitAttributeAssociation(int, char* [])
 {
   // ----
   // I. First see how things work when Collection is not yet set.
   attribute::CollectionPtr sysptr = attribute::Collection::create();
   attribute::Collection& sys(*sysptr.get());
-  test(!sys.refModelManager(), "Collection should not have model storage by default.");
+  smtkTest(!sys.refModelManager(), "Collection should not have model storage by default.");
 
   DefinitionPtr def = sys.createDefinition("testDef");
   auto arule = def->createLocalAssociationRule();
@@ -41,7 +41,7 @@ int main()
 
   UUID fakeEntityId = UUID::random();
   att->associateEntity(fakeEntityId);
-  test(att->associatedModelEntityIds().count(fakeEntityId) == 1,
+  smtkTest(att->associatedModelEntityIds().count(fakeEntityId) == 1,
     "Could not associate a \"fake\" entity with this attribute.");
 
   // Attempt to disassociate an entity that was never associated.
@@ -49,7 +49,7 @@ int main()
   att->disassociateEntity(anotherFakeId);
 
   att->disassociateEntity(fakeEntityId);
-  test(att->isEntityAssociated(fakeEntityId) == false,
+  smtkTest(att->isEntityAssociated(fakeEntityId) == false,
     "Could not disassociate a \"fake\" entity from this attribute.");
 
   // ----
@@ -57,43 +57,45 @@ int main()
   //     a valid model modelMgr pointer.
   model::Manager::Ptr modelMgr = model::Manager::create();
   sys.setRefModelManager(modelMgr);
-  test(sys.refModelManager() == modelMgr, "Could not set attribute collection's model-manager.");
+  smtkTest(
+    sys.refModelManager() == modelMgr, "Could not set attribute collection's model-manager.");
 
-  test(att->modelManager() == modelMgr, "Attribute's idea of model manager incorrect.");
+  smtkTest(att->modelManager() == modelMgr, "Attribute's idea of model manager incorrect.");
 
   smtk::model::Vertex v0 = modelMgr->addVertex();
   smtk::model::Vertex v1 = modelMgr->addVertex();
   v0.associateAttribute(att->collection(), att->id());
-  test(att->associatedModelEntityIds().count(v0.entity()) == 1,
+  smtkTest(att->associatedModelEntityIds().count(v0.entity()) == 1,
     "Could not associate a vertex to an attribute.");
 
   att->disassociateEntity(v0.entity());
-  test(!v0.hasAttributes(), "Disassociating an attribute did not notify the entity.");
+  smtkTest(!v0.hasAttributes(), "Disassociating an attribute did not notify the entity.");
 
   att->disassociateEntity(v1.entity());
-  test(!v1.hasAttributes(), "Disassociating a non-existent attribute appears to associate it.");
+  smtkTest(!v1.hasAttributes(), "Disassociating a non-existent attribute appears to associate it.");
 
   v1.associateAttribute(att->collection(), att->id());
   att->removeAllAssociations();
-  test(att->associatedModelEntityIds().empty(),
+  smtkTest(att->associatedModelEntityIds().empty(),
     "Removing all attribute associations did not empty association list.");
 
   smtk::model::Vertex v2 = modelMgr->addVertex();
   v0.associateAttribute(att->collection(), att->id());
   v1.associateAttribute(att->collection(), att->id());
-  test(v2.associateAttribute(att->collection(), att->id()) == false,
+  smtkTest(v2.associateAttribute(att->collection(), att->id()) == false,
     "Should not have been able to associate more than 2 entities.");
 
   att->removeAllAssociations();
   smtk::model::Edge e0 = modelMgr->addEdge();
-  test(e0.associateAttribute(att->collection(), att->id()) == false,
+  smtkTest(e0.associateAttribute(att->collection(), att->id()) == false,
     "Should not have been able to associate entity of wrong type.");
 
   // ----
   // III. Test corner cases when switch model managers on the attribute collection.
   model::Manager::Ptr auxModelManager = model::Manager::create();
   sys.setRefModelManager(auxModelManager);
-  test(sys.refModelManager() == auxModelManager, "Attribute collection's modelMgr not changed.");
+  smtkTest(
+    sys.refModelManager() == auxModelManager, "Attribute collection's modelMgr not changed.");
 
   return 0;
 }

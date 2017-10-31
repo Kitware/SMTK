@@ -2,7 +2,6 @@ add_executable(attributeReaderWriterTest attributeReaderWriterTest.cxx)
 target_link_libraries(attributeReaderWriterTest smtkCore)
 
 set(attributeTests
-  basicAttributeTest
   basicAttributeDefinitionTest
   basicAttributeDerivationTest
   basicAttributeXMLWriterTest
@@ -12,7 +11,6 @@ set(attributeTests
   expressionTest2
   extensibleAttributeCopyTest
   fileValidationTest
-  attributeAssociationTest
   attributeAutoNamingTest
   attributeReferencingTest
   categoryTest
@@ -54,7 +52,10 @@ endif()
 ################################################################################
 
 set(unit_tests
-  UnitTestDateTimeItem.cxx
+  unitAttributeBasics
+  unitAttributeAssociation
+  unitComponentItem.cxx
+  unitDateTimeItem.cxx
 )
 
 smtk_unit_tests(

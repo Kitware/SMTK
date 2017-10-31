@@ -7,7 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#pragma once
+#ifndef smtk_extension_qt_qtSelectionManager_h
+#define smtk_extension_qt_qtSelectionManager_h
 
 #include "smtk/PublicPointerDefs.h"
 
@@ -142,3 +143,5 @@ protected:
 }; // namespace extension
 
 }; // namespace smtk
+
+#endif

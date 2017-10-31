@@ -7,7 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#pragma once
+#ifndef smtk_io_jsonUUID_h
+#define smtk_io_jsonUUID_h
 
 #include "smtk/common/UUID.h"
 
@@ -47,3 +48,5 @@ struct adl_serializer<smtk::common::UUID>
   }
 };
 }
+
+#endif

@@ -6,7 +6,7 @@ set(plainTests
   attributeReferencingTest
   basicAttributeDefinitionTest
   basicAttributeDerivationTest
-  basicAttributeTest
+  unitAttributeBasics
   categoryTest
   datetimeitemTest
   expressionTest

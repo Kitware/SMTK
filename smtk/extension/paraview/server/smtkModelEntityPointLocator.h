@@ -7,7 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#pragma once
+#ifndef smtk_extension_paraview_server_smtkModelEntityPointLocator_h
+#define smtk_extension_paraview_server_smtkModelEntityPointLocator_h
 
 #include "smtk/extension/paraview/server/Exports.h"
 #include "smtk/model/PointLocatorExtension.h"
@@ -30,3 +31,5 @@ public:
 protected:
   smtkModelEntityPointLocator();
 };
+
+#endif

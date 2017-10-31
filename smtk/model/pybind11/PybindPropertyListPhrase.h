@@ -19,7 +19,8 @@
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/model/DescriptivePhrase.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/PropertyType.h"
+
+#include "smtk/resource/PropertyType.h"
 
 namespace py = pybind11;
 
@@ -38,8 +39,8 @@ PySharedPtrClass< smtk::model::PropertyListPhrase, smtk::model::DescriptivePhras
     .def("relatedEntity", &smtk::model::PropertyListPhrase::relatedEntity)
     .def("relatedEntityId", &smtk::model::PropertyListPhrase::relatedEntityId)
     .def("relatedPropertyType", &smtk::model::PropertyListPhrase::relatedPropertyType)
-    .def("setup", (smtk::model::PropertyListPhrase::Ptr (smtk::model::PropertyListPhrase::*)(::smtk::model::EntityRef const &, ::smtk::model::PropertyType, ::smtk::model::DescriptivePhrasePtr)) &smtk::model::PropertyListPhrase::setup, py::arg("entity"), py::arg("ptype"), py::arg("parent"))
-    .def("setup", (smtk::model::PropertyListPhrase::Ptr (smtk::model::PropertyListPhrase::*)(::smtk::model::EntityRef const &, ::smtk::model::PropertyType, ::std::set<std::basic_string<char>, std::less<std::basic_string<char> >, std::allocator<std::basic_string<char> > > const &, ::smtk::model::DescriptivePhrasePtr)) &smtk::model::PropertyListPhrase::setup, py::arg("entity"), py::arg("ptype"), py::arg("pnames"), py::arg("parent"))
+    .def("setup", (smtk::model::PropertyListPhrase::Ptr (smtk::model::PropertyListPhrase::*)(::smtk::model::EntityRef const &, ::smtk::resource::PropertyType, ::smtk::model::DescriptivePhrasePtr)) &smtk::model::PropertyListPhrase::setup, py::arg("entity"), py::arg("ptype"), py::arg("parent"))
+    .def("setup", (smtk::model::PropertyListPhrase::Ptr (smtk::model::PropertyListPhrase::*)(::smtk::model::EntityRef const &, ::smtk::resource::PropertyType, ::std::set<std::basic_string<char>, std::less<std::basic_string<char> >, std::allocator<std::basic_string<char> > > const &, ::smtk::model::DescriptivePhrasePtr)) &smtk::model::PropertyListPhrase::setup, py::arg("entity"), py::arg("ptype"), py::arg("pnames"), py::arg("parent"))
     .def("shared_from_this", (std::shared_ptr<const smtk::model::PropertyListPhrase> (smtk::model::PropertyListPhrase::*)() const) &smtk::model::PropertyListPhrase::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<smtk::model::PropertyListPhrase> (smtk::model::PropertyListPhrase::*)()) &smtk::model::PropertyListPhrase::shared_from_this)
     .def("subtitle", &smtk::model::PropertyListPhrase::subtitle)

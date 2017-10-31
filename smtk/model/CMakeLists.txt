@@ -110,7 +110,6 @@ set(modelHeaders
   Model.h
   Operator.h
   PointLocatorExtension.h
-  PropertyType.h
   PropertyListPhrase.h
   PropertyValuePhrase.h
   RemoteOperator.h

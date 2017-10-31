@@ -7,7 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#pragma once
+#ifndef smtk_extension_paraview_server_vtkSMTKResourceManagerWrapper_h
+#define smtk_extension_paraview_server_vtkSMTKResourceManagerWrapper_h
 
 #include "smtk/extension/paraview/server/Exports.h"
 
@@ -69,3 +70,5 @@ private:
   vtkSMTKResourceManagerWrapper(const vtkSMTKResourceManagerWrapper&) = delete;
   void operator=(const vtkSMTKResourceManagerWrapper&) = delete;
 };
+
+#endif

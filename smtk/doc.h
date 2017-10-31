@@ -42,6 +42,24 @@ namespace common
 
 /**\brief A common base class for resources (data stored in files) and tools to manage them.
   *
+  * A set of classes exist for presenting model information to users.
+  * DescriptivePhrase is an abstract base class with subclasses in
+  * other SMTK subsystems for presenting information about their
+  * components. ComponentListPhrase presents a "folder"-like item
+  * that holds an array of phrases describing components.
+  * Similarly, PropertyListPhrase and PropertyValuePhrase
+  * hold information about string, floating-point, and integer data
+  * indexed by resource and component UUIDs.
+  *
+  * These instances are placed into a hierarchy
+  * that describe the model in a context. Consider these examples
+  * specific to SMTK's modeling subsystem:  in a functional modeling
+  * context, perhaps only descriptions of models and their groups will
+  * be displayed. When assigning geometry to functional groups,
+  * perhaps only geometric cells of a particular dimension will be shown.
+  * The SubphraseGenerator class is what determines the particular
+  * hierarchy, and a subclass will generally be written for each
+  * context in which resource components should be presented.
   */
 namespace resource
 {
@@ -76,18 +94,6 @@ namespace attribute
   * Attributes may be defined on any record in storage by virtue of the
   * fact that all records in storage are named by their UUID.
   *
-  * A set of classes exist for presenting model information to users.
-  * DescriptivePhrase is an abstract base class with subclasses
-  * EntityPhrase, EntityListPhrase, PropertyValuePhrase, and
-  * PropertyListPhrase. These instances are placed into a hierarchy
-  * that describe the model in a context; in a functional modeling
-  * context, perhaps only descriptions of models and their groups will
-  * be displayed. When assigning geometry to functional groups,
-  * perhaps only geometric cells of a particular dimension will be shown.
-  * The SubphraseGenerator class is what determines the particular
-  * hierarchy, and a subclass will generally be written for each
-  * context in which model Manager should be presented.
-  *
   * If built with VTK, several classes beginning with "vtk" are available
   * for rendering and interacting with model entities which have
   * tessellation information.
@@ -111,6 +117,13 @@ namespace mesh
   *
   */
 namespace simulation
+{
+}
+
+/**\brief Classes for presenting resources and their components to users.
+  *
+  */
+namespace view
 {
 }
 

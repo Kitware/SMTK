@@ -23,7 +23,6 @@
 #include "smtk/model/Events.h"
 #include "smtk/model/FloatData.h"
 #include "smtk/model/IntegerData.h"
-#include "smtk/model/PropertyType.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/SessionRef.h"
 #include "smtk/model/StringData.h"

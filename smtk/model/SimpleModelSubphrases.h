@@ -33,8 +33,8 @@ public:
   virtual ~SimpleModelSubphrases() {}
 
   DescriptivePhrases subphrases(DescriptivePhrase::Ptr src) override;
-  bool shouldOmitProperty(
-    DescriptivePhrase::Ptr parent, PropertyType ptype, const std::string& pname) const override;
+  bool shouldOmitProperty(DescriptivePhrase::Ptr parent, smtk::resource::PropertyType ptype,
+    const std::string& pname) const override;
 
   virtual void setAbridgeUses(bool doAbridge);
   bool abridgeUses() const;

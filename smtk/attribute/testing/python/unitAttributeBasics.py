@@ -10,7 +10,7 @@
 #
 #=============================================================================
 """
-Manual port of SMTK/smtk/attribute/Testing/basicAttributeTest.cxx
+Manual port of smtk/attribute/testing/cxx/unitAttributeBasics.cxx
 For verifying python wrappers
 
 Requires smtkCorePython.so to be in module path
@@ -72,6 +72,9 @@ if __name__ == '__main__':
         status = -1
     if len(att.associatedModelEntityIds()) != 0:
         print "Should not have associated entities.\n"
+        status = -1
+    if att.associatedComponents():
+        print "Should not have associated components.\n"
         status = -1
     if att.appliesToBoundaryNodes():
         print "Should not be applies to boundry node.\n"

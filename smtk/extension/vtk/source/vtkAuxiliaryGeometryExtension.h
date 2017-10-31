@@ -7,7 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#pragma once
+#ifndef smtk_extension_vtk_source_vtkAuxiliaryGeometryExtension_h
+#define smtk_extension_vtk_source_vtkAuxiliaryGeometryExtension_h
 
 #include "smtk/PublicPointerDefs.h"
 
@@ -98,3 +99,5 @@ private:
   vtkAuxiliaryGeometryExtension(const vtkAuxiliaryGeometryExtension&); // Not implemented.
   void operator=(const vtkAuxiliaryGeometryExtension&);                // Not implemented.
 };
+
+#endif

@@ -15,8 +15,6 @@
 
 #include "smtk/model/SubphraseGenerator.h"
 
-#include "smtk/model/PropertyType.h"
-
 namespace py = pybind11;
 
 PySharedPtrClass< smtk::model::SubphraseGenerator > pybind11_init_smtk_model_SubphraseGenerator(py::module &m)
