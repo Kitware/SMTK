@@ -7,14 +7,16 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/qt/qtEntityItemModel.h"
+#include "smtk/extension/qt/qtDescriptivePhraseModel.h"
 
 #include "smtk/extension/qt/qtActiveObjects.h"
 
+#include "smtk/view/DescriptivePhrase.h"
 #include "smtk/view/SubphraseGenerator.h"
 
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityPhrase.h"
+#include "smtk/model/EntityRef.h"
 #include "smtk/model/FloatData.h"
 #include "smtk/model/IntegerData.h"
 #include "smtk/model/Manager.h"
@@ -25,8 +27,8 @@
 #include "smtk/mesh/core/Manager.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/MeshItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 
 #include <QtCore/QDir>
 #include <QtCore/QDirIterator>
@@ -46,20 +48,20 @@
 //   http://qt-project.org/doc/qt-5.0/qtcore/qdir.html#Q_INIT_RESOURCE
 static int resourceCounter = 0;
 
-inline void initIconResource()
+static void initIconResource()
 {
   if (resourceCounter <= 0)
   {
-    Q_INIT_RESOURCE(qtEntityItemModelIcons);
+    Q_INIT_RESOURCE(qtDescriptivePhraseModelIcons);
   }
   ++resourceCounter;
 }
 
-inline void cleanupIconResource()
+static void cleanupIconResource()
 {
   if (--resourceCounter == 0)
   {
-    Q_CLEANUP_RESOURCE(qtEntityItemModelIcons);
+    Q_CLEANUP_RESOURCE(qtDescriptivePhraseModelIcons);
   }
 }
 
@@ -69,15 +71,15 @@ namespace smtk
 {
 namespace extension
 {
-std::map<std::string, QColor> QComponentItemModel::s_defaultColors = {};
+std::map<std::string, QColor> qtDescriptivePhraseModel::s_defaultColors = {};
 
-/// Private storage for QComponentItemModel.
-class QComponentItemModel::Internal
+/// Private storage for qtDescriptivePhraseModel.
+class qtDescriptivePhraseModel::Internal
 {
 public:
   /**\brief Store a map of weak pointers to phrases by their phrase IDs.
     *
-    * We hold a strong pointer to the root phrase in QComponentItemModel::m_root.
+    * We hold a strong pointer to the root phrase in qtDescriptivePhraseModel::m_root.
     * This map is a reverse lookup of pointers to subphrases by integer handles
     * that Qt can associate with QModelIndex entries.
     *
@@ -87,37 +89,7 @@ public:
   std::map<unsigned int, view::WeakDescriptivePhrasePtr> ptrs;
 };
 
-// A visitor functor called by foreach_phrase() to let the view know when to redraw data.
-static bool UpdateSubphrases(
-  QComponentItemModel* qmodel, const QModelIndex& qidx, const EntityRef& ent)
-{
-  view::DescriptivePhrasePtr phrase = qmodel->getItem(qidx);
-  if (phrase)
-  {
-    if (phrase->relatedEntity() == ent)
-    {
-      qmodel->rebuildSubphrases(qidx);
-    }
-  }
-  return false; // Always visit every phrase, since \a ent may appear multiple times.
-}
-
-// Callback function, invoked when a new arrangement is added to an entity.
-static int entityModified(ManagerEventType, const smtk::model::EntityRef& ent,
-  const smtk::model::EntityRef&, void* callData)
-{
-  QComponentItemModel* qmodel = static_cast<QComponentItemModel*>(callData);
-  if (!qmodel)
-    return 1;
-
-  // Find EntityPhrase instances under the root node whose relatedEntity
-  // is \a ent and rerun the subphrase generator.
-  // This should in turn invoke callbacks on the QComponentItemModel
-  // to handle insertions/deletions.
-  return qmodel->foreach_phrase(UpdateSubphrases, ent) ? -1 : 0;
-}
-
-QComponentItemModel::QComponentItemModel(QObject* owner)
+qtDescriptivePhraseModel::qtDescriptivePhraseModel(QObject* owner)
   : QAbstractItemModel(owner)
 {
   this->m_deleteOnRemoval = true;
@@ -125,13 +97,13 @@ QComponentItemModel::QComponentItemModel(QObject* owner)
   initIconResource();
 }
 
-QComponentItemModel::~QComponentItemModel()
+qtDescriptivePhraseModel::~qtDescriptivePhraseModel()
 {
   cleanupIconResource();
   delete this->P;
 }
 
-QColor QComponentItemModel::defaultEntityColor(const std::string& entityType)
+QColor qtDescriptivePhraseModel::defaultPhraseColor(const std::string& entityType)
 {
   if (s_defaultColors.find(entityType) == s_defaultColors.end())
   {
@@ -142,7 +114,7 @@ QColor QComponentItemModel::defaultEntityColor(const std::string& entityType)
     return s_defaultColors[entityType];
   }
 }
-void QComponentItemModel::clear()
+void qtDescriptivePhraseModel::clear()
 {
   if (this->m_root && !this->m_root->subphrases().empty())
   {
@@ -153,7 +125,7 @@ void QComponentItemModel::clear()
   }
 }
 
-QModelIndex QComponentItemModel::index(int row, int column, const QModelIndex& owner) const
+QModelIndex qtDescriptivePhraseModel::index(int row, int column, const QModelIndex& owner) const
 {
   if (!this->m_root || this->m_root->subphrases().empty())
     return QModelIndex();
@@ -169,8 +141,8 @@ QModelIndex QComponentItemModel::index(int row, int column, const QModelIndex& o
   }
 
   view::DescriptivePhrasePtr ownerPhrase = this->getItem(owner);
-  std::string entName = ownerPhrase->relatedEntity().name();
-  //  std::cout << "Owner index for: " << entName << std::endl;
+  // std::string entName = ownerPhrase->relatedComponent().name();
+  // std::cout << "Owner index for: " << entName << std::endl;
   view::DescriptivePhrases& subphrases(ownerPhrase->subphrases());
   if (row >= 0 && row < static_cast<int>(subphrases.size()))
   {
@@ -185,7 +157,7 @@ QModelIndex QComponentItemModel::index(int row, int column, const QModelIndex& o
   return QModelIndex();
 }
 
-QModelIndex QComponentItemModel::parent(const QModelIndex& child) const
+QModelIndex qtDescriptivePhraseModel::parent(const QModelIndex& child) const
 {
   if (!child.isValid())
   {
@@ -210,7 +182,7 @@ QModelIndex QComponentItemModel::parent(const QModelIndex& child) const
 }
 
 /// Return true when \a owner has subphrases.
-bool QComponentItemModel::hasChildren(const QModelIndex& owner) const
+bool qtDescriptivePhraseModel::hasChildren(const QModelIndex& owner) const
 {
   // According to various Qt mailing-list posts, we might
   // speed things up by always returning true here.
@@ -227,14 +199,15 @@ bool QComponentItemModel::hasChildren(const QModelIndex& owner) const
 }
 
 /// The number of rows in the table "underneath" \a owner.
-int QComponentItemModel::rowCount(const QModelIndex& owner) const
+int qtDescriptivePhraseModel::rowCount(const QModelIndex& owner) const
 {
   view::DescriptivePhrasePtr ownerPhrase = this->getItem(owner);
   return static_cast<int>(ownerPhrase->subphrases().size());
 }
 
 /// Return something to display in the table header.
-QVariant QComponentItemModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant qtDescriptivePhraseModel::headerData(
+  int section, Qt::Orientation orientation, int role) const
 {
   if (role != Qt::DisplayRole)
   {
@@ -245,7 +218,7 @@ QVariant QComponentItemModel::headerData(int section, Qt::Orientation orientatio
     switch (section)
     {
       case 0:
-        return "Entity"; // "Type";
+        return "Resource";
       case 1:
         return "Dimension";
       case 2:
@@ -257,7 +230,7 @@ QVariant QComponentItemModel::headerData(int section, Qt::Orientation orientatio
 }
 
 /// Relate information, by its \a role, from a \a DescriptivePhrasePtr to the Qt model.
-QVariant QComponentItemModel::data(const QModelIndex& idx, int role) const
+QVariant qtDescriptivePhraseModel::data(const QModelIndex& idx, int role) const
 {
   if (idx.isValid())
   {
@@ -277,7 +250,7 @@ QVariant QComponentItemModel::data(const QModelIndex& idx, int role) const
       {
         return QVariant(item->subtitle().c_str());
       }
-      else if (role == EntityIconRole)
+      else if (role == PhraseIconRole)
       {
         // get luminance
         QColor color;
@@ -310,118 +283,46 @@ QVariant QComponentItemModel::data(const QModelIndex& idx, int role) const
               break;
           }
         }
-        return QVariant(this->lookupIconForEntityFlags(item, color));
+        return QVariant(this->lookupIconForPhraseFlags(item, color));
       }
-      else if (role == EntityVisibilityRole)
+      else if (role == PhraseVisibilityRole)
       {
         // by default, everything should be visible
         bool visible = true;
-
-        if (item->phraseType() == MESH_SUMMARY)
-        {
-          MeshPhrasePtr mphrase = smtk::dynamic_pointer_cast<MeshPhrase>(item);
-          smtk::mesh::MeshSet meshkey;
-          smtk::mesh::CollectionPtr c;
-          if (!mphrase->relatedMesh().is_empty())
-          {
-            meshkey = mphrase->relatedMesh();
-            c = meshkey.collection();
-          }
-          else
-          {
-            c = mphrase->relatedMeshCollection();
-            meshkey = c->meshes();
-          }
-          if (c && !meshkey.is_empty() && c->hasIntegerProperty(meshkey, "visible"))
-          {
-            const IntegerList& prop(c->integerProperty(meshkey, "visible"));
-            if (!prop.empty())
-            {
-              visible = (prop[0] != 0);
-            }
-            // check children of MESH_SUMMARY (Ex. mesh faces)
-            int childrenVisibile = -1;
-            bool reachEnd = true;
-            if (!mphrase->relatedMesh().is_empty())
-            {
-              for (std::size_t i = 0; i < mphrase->relatedMesh().size(); ++i)
-              {
-                const IntegerList& propSub(
-                  c->integerProperty(mphrase->relatedMesh().subset(i), "visible"));
-                if (!propSub.empty())
-                {
-                  if (childrenVisibile == -1)
-                  { // store first child visibility
-                    childrenVisibile = propSub[0];
-                  }
-                  else if (childrenVisibile != propSub[0])
-                  { // inconsistant visibility. Do nothing.
-                    reachEnd = false;
-                    break;
-                  }
-                }
-              }
-            }
-            // update visibility if children's are consistant
-            if (reachEnd && childrenVisibile != -1)
-            {
-              visible = childrenVisibile;
-            }
-          }
-        }
-        else if (item->phraseType() == ENTITY_LIST)
-        {
-          EntityListPhrasePtr lphrase = smtk::dynamic_pointer_cast<EntityListPhrase>(item);
-          // if all its children is off, then show as off
-          bool hasVisibleChild = false;
-          EntityRefArray::const_iterator it;
-          for (it = lphrase->relatedEntities().begin();
-               it != lphrase->relatedEntities().end() && !hasVisibleChild; ++it)
-          {
-            if (it->hasVisibility())
-            {
-              const IntegerList& prop(it->integerProperty("visible"));
-              if (!prop.empty() && prop[0] != 0)
-                hasVisibleChild = true;
-            }
-            else // default is visible
-              hasVisibleChild = true;
-          }
-          visible = hasVisibleChild;
-        }
-        else if (item->relatedEntity().isValid() && item->relatedEntity().hasVisibility())
-        {
-          const IntegerList& prop(item->relatedEntity().integerProperty("visible"));
-          if (!prop.empty())
-            visible = (prop[0] != 0);
-        }
-
         if (visible)
           return QVariant(QIcon(":/icons/display/eyeball.png"));
         else
           return QVariant(QIcon(":/icons/display/eyeballClosed.png"));
       }
-      else if (role == EntityColorRole &&
-        (item->phraseType() == MESH_SUMMARY || item->relatedEntity().isValid() ||
-                 item->phraseType() == ENTITY_LIST))
+      else if (role == PhraseColorRole &&
+        (item->relatedComponent() || item->phraseType() == smtk::view::DescriptivePhraseType::LIST))
       {
         QColor color;
         FloatList rgba = item->relatedColor();
+        bool gotColor = false;
         if (rgba.size() >= 4 && rgba[3] < 0)
         {
-          if (item->relatedEntity().isFace())
+          auto modelComp = dynamic_pointer_cast<smtk::model::Entity>(item->relatedComponent());
+          if (modelComp)
           {
-            color = QComponentItemModel::defaultEntityColor("Face");
+            smtk::model::EntityRef ent(modelComp);
+            if (ent.isFace())
+            {
+              color = qtDescriptivePhraseModel::defaultPhraseColor("Face");
+              gotColor = true;
+            }
+            else if (ent.isEdge())
+            {
+              color = qtDescriptivePhraseModel::defaultPhraseColor("Edge");
+              gotColor = true;
+            }
+            else if (ent.isVertex())
+            {
+              color = qtDescriptivePhraseModel::defaultPhraseColor("Vertex");
+              gotColor = true;
+            }
           }
-          else if (item->relatedEntity().isEdge())
-          {
-            color = QComponentItemModel::defaultEntityColor("Edge");
-          }
-          else if (item->relatedEntity().isVertex())
-          {
-            color = QComponentItemModel::defaultEntityColor("Vertex");
-          }
-          else
+          if (!gotColor)
           {
             // Assign an invalid color
             color = QColor(255, 255, 255, 0);
@@ -452,19 +353,22 @@ QVariant QComponentItemModel::data(const QModelIndex& idx, int role) const
         }
         return color;
       }
-      else if (role == EntityCleanRole)
+      else if (role == PhraseCleanRole)
       {
-        EntityRef ent = item->relatedEntity();
-        return QVariant(
-          static_cast<int>(ent.hasIntegerProperty("clean") ? ent.integerProperty("clean")[0] : -1));
+        int clean = -1;
+        auto modelComp = dynamic_pointer_cast<smtk::model::Entity>(item->relatedComponent());
+        if (modelComp)
+        {
+          auto ent = modelComp->referenceAs<smtk::model::EntityRef>();
+          clean = static_cast<int>(
+            ent.hasIntegerProperty("clean") ? ent.integerProperty("clean")[0] : -1);
+        }
+        return QVariant(clean);
       }
       else if (role == ModelActiveRole)
       {
-        // used to bold the active model's title
-        return (item->relatedEntity().entity() ==
-                 qtActiveObjects::instance().activeModel().entity())
-          ? QVariant(true)
-          : QVariant(false);
+        // used to bold the active resource's title
+        return QVariant(false);
       }
     }
   }
@@ -472,7 +376,7 @@ QVariant QComponentItemModel::data(const QModelIndex& idx, int role) const
 }
 
 /// Remove rows from the model.
-bool QComponentItemModel::removeRows(int position, int rows, const QModelIndex& parentIdx)
+bool qtDescriptivePhraseModel::removeRows(int position, int rows, const QModelIndex& parentIdx)
 {
   if (rows <= 0 || position < 0)
     return false;
@@ -488,7 +392,7 @@ bool QComponentItemModel::removeRows(int position, int rows, const QModelIndex& 
   return true;
 }
 
-bool QComponentItemModel::setData(const QModelIndex& idx, const QVariant& value, int role)
+bool qtDescriptivePhraseModel::setData(const QModelIndex& idx, const QVariant& value, int role)
 {
   bool didChange = false;
   view::DescriptivePhrasePtr phrase;
@@ -511,8 +415,8 @@ bool QComponentItemModel::setData(const QModelIndex& idx, const QVariant& value,
       std::string sval = value.value<QString>().toStdString();
       didChange = phrase->setSubtitle(sval);
     }
-    else if (role == EntityColorRole && phrase->isRelatedColorMutable() &&
-      phrase->relatedEntity().isValid())
+    else if (role == PhraseColorRole && phrase->isRelatedColorMutable() &&
+      phrase->relatedComponent())
     {
       QColor color = value.value<QColor>();
       FloatList rgba(4);
@@ -522,18 +426,21 @@ bool QComponentItemModel::setData(const QModelIndex& idx, const QVariant& value,
       rgba[3] = color.alphaF();
       didChange = phrase->setRelatedColor(rgba);
     }
-    else if (role == EntityVisibilityRole && phrase->relatedEntity().isValid())
+    else if (role == PhraseVisibilityRole && phrase->relatedComponent())
     {
+      /*
       int vis = value.toInt();
-      phrase->relatedEntity().setVisible(vis > 0 ? true : false);
+      phrase->relatedComponent().setVisible(vis > 0 ? true : false);
       didChange = true;
+      */
+      didChange = false;
     }
   }
   return didChange;
 }
 
 /*
-void QComponentItemModel::sort(int column, Qt::SortOrder order)
+void qtDescriptivePhraseModel::sort(int column, Qt::SortOrder order)
 {
   switch (column)
     {
@@ -585,7 +492,7 @@ void QComponentItemModel::sort(int column, Qt::SortOrder order)
 */
 
 /// Provide meta-information about a model entry.
-Qt::ItemFlags QComponentItemModel::flags(const QModelIndex& idx) const
+Qt::ItemFlags qtDescriptivePhraseModel::flags(const QModelIndex& idx) const
 {
   if (!idx.isValid())
     return Qt::ItemIsEnabled;
@@ -595,99 +502,76 @@ Qt::ItemFlags QComponentItemModel::flags(const QModelIndex& idx) const
   Qt::ItemFlags itemFlags = QAbstractItemModel::flags(idx) | Qt::ItemIsEditable |
     Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
   view::DescriptivePhrasePtr dp = this->getItem(idx);
-  if (dp && dp->relatedEntity().isGroup())
+  /* TODO:
+  if (dp && dp->relatedComponent().isGroup())
     itemFlags = itemFlags | Qt::ItemIsDropEnabled;
+    */
   return itemFlags;
 }
 
-static bool FindManager(
-  const QComponentItemModel* qmodel, const QModelIndex& qidx, ManagerPtr& manager)
+QIcon qtDescriptivePhraseModel::lookupIconForPhraseFlags(
+  view::DescriptivePhrasePtr item, QColor color)
 {
-  view::DescriptivePhrasePtr phrase = qmodel->getItem(qidx);
-  if (phrase)
-  {
-    EntityRef related = phrase->relatedEntity();
-    if (related.isValid())
-    {
-      manager = related.manager();
-      if (manager)
-        return true;
-    }
-  }
-  return false;
-}
-
-/**\brief Return the first smtk::model::Manager instance presented by this model.
-  *
-  * Note that it is possible for a QComponentItemModel to present information
-  * on entities from multiple Manager instances.
-  * However, in this case, external updates to the selection must either be
-  * made via EntityRef instances (which couple UUIDs with Manager instances) or
-  * there will be breakage.
-  */
-smtk::model::ManagerPtr QComponentItemModel::manager() const
-{
-  ManagerPtr store;
-  this->foreach_phrase(FindManager, store, QModelIndex(), false);
-  return store;
-}
-
-QIcon QComponentItemModel::lookupIconForEntityFlags(view::DescriptivePhrasePtr item, QColor color)
-{
-  //REFERENCE: https://stackoverflow.com/questions/3942878/how-to-decide-font-color-in-white-or-black-depending-on-background-color
+  // REFERENCE: https://stackoverflow.com/questions/3942878/how-to-decide-font-color-in-white-or-black-depending-on-background-color
   double lightness = 0.2126 * color.redF() + 0.7152 * color.greenF() + 0.0722 * color.blueF();
-  // phrase list(0) would use relatedBitFlags
-  smtk::model::BitFlags flags =
-    (item->phraseType()) ? item->relatedEntity().entityFlags() : item->relatedBitFlags();
+  auto modelComp = dynamic_pointer_cast<smtk::model::Entity>(item->relatedComponent());
   std::ostringstream resourceName;
   resourceName << ":/icons/entityTypes/";
-  bool dimBits = true;
-  switch (flags & ENTITY_MASK)
+  if (modelComp)
   {
-    case CELL_ENTITY:
-      resourceName << "cell";
-      break;
-    case USE_ENTITY:
-      resourceName << "use";
-      break;
-    case SHELL_ENTITY:
-      resourceName << "shell";
-      break;
-    case GROUP_ENTITY:
-      resourceName << "group";
-      break;
-    case MODEL_ENTITY:
-      resourceName << "model";
-      break;
-    case INSTANCE_ENTITY:
-      resourceName << "instance";
-      break;
-    case AUX_GEOM_ENTITY:
-      resourceName << "aux_geom";
-      break;
-    case SESSION:
-      resourceName << "model"; //  every session has an model
-      break;
-    default:
-      resourceName << "invalid";
-      dimBits = false;
-      break;
-  }
+    smtk::model::BitFlags flags = modelComp->entityFlags();
+    bool dimBits = true;
+    switch (flags & ENTITY_MASK)
+    {
+      case CELL_ENTITY:
+        resourceName << "cell";
+        break;
+      case USE_ENTITY:
+        resourceName << "use";
+        break;
+      case SHELL_ENTITY:
+        resourceName << "shell";
+        break;
+      case GROUP_ENTITY:
+        resourceName << "group";
+        break;
+      case MODEL_ENTITY:
+        resourceName << "model";
+        break;
+      case INSTANCE_ENTITY:
+        resourceName << "instance";
+        break;
+      case AUX_GEOM_ENTITY:
+        resourceName << "aux_geom";
+        break;
+      case SESSION:
+        resourceName << "model"; //  every session has an model
+        break;
+      default:
+        resourceName << "invalid";
+        dimBits = false;
+        break;
+    }
 
-  if (dimBits && ((flags & ENTITY_MASK) == CELL_ENTITY))
-  {
-    resourceName << "_" << std::setbase(16) << std::fixed << std::setw(2) << std::setfill('0')
-                 << (flags & ANY_DIMENSION);
-  }
+    if (dimBits && ((flags & ENTITY_MASK) == CELL_ENTITY))
+    {
+      resourceName << "_" << std::setbase(16) << std::fixed << std::setw(2) << std::setfill('0')
+                   << (flags & ANY_DIMENSION);
+    }
 
-  // lightness controls black/white ico
-  if (lightness >= 0.179 && ((flags & ENTITY_MASK) == CELL_ENTITY))
-  {
-    resourceName << "_b";
+    // lightness controls black/white ico
+    if (lightness >= 0.179 && ((flags & ENTITY_MASK) == CELL_ENTITY))
+    {
+      resourceName << "_b";
+    }
+    else if (lightness < 0.179 && ((flags & ENTITY_MASK) == CELL_ENTITY))
+    {
+      resourceName << "_w";
+    }
   }
-  else if (lightness < 0.179 && ((flags & ENTITY_MASK) == CELL_ENTITY))
+  else
   {
-    resourceName << "_w";
+    resourceName << "invalid";
   }
 
   resourceName << ".png";
@@ -706,7 +590,7 @@ QIcon QComponentItemModel::lookupIconForEntityFlags(view::DescriptivePhrasePtr i
   * displayed. Then, the \a order is used to either forward- or reverse-iterator
   * over the container to obtain a new ordering for the UUIDs.
 template<typename T>
-void QComponentItemModel::sortDataWithContainer(T& sorter, Qt::SortOrder order)
+void qtDescriptivePhraseModel::sortDataWithContainer(T& sorter, Qt::SortOrder order)
 {
   smtk::common::UUIDArray::iterator ai;
   // Insertion into the set sorts the UUIDs.
@@ -750,7 +634,7 @@ void QComponentItemModel::sortDataWithContainer(T& sorter, Qt::SortOrder order)
   */
 
 /// A utility function to retrieve the view::DescriptivePhrasePtr associated with a model index.
-view::DescriptivePhrasePtr QComponentItemModel::getItem(const QModelIndex& idx) const
+view::DescriptivePhrasePtr qtDescriptivePhraseModel::getItem(const QModelIndex& idx) const
 {
   if (idx.isValid())
   {
@@ -776,7 +660,7 @@ view::DescriptivePhrasePtr QComponentItemModel::getItem(const QModelIndex& idx) 
   return this->m_root;
 }
 
-void QComponentItemModel::rebuildSubphrases(const QModelIndex& qidx)
+void qtDescriptivePhraseModel::rebuildSubphrases(const QModelIndex& qidx)
 {
   int nrows = this->rowCount(qidx);
   view::DescriptivePhrasePtr phrase = this->getItem(qidx);
@@ -791,11 +675,12 @@ void QComponentItemModel::rebuildSubphrases(const QModelIndex& qidx)
   emit dataChanged(qidx, qidx);
 }
 
-void QComponentItemModel::updateWithOperatorResult(const OperatorResult& result)
+void qtDescriptivePhraseModel::updateWithOperatorResult(const OperatorResult& result)
 {
+  (void)result;
 }
 
-Qt::DropActions QComponentItemModel::supportedDropActions() const
+Qt::DropActions qtDescriptivePhraseModel::supportedDropActions() const
 {
   return Qt::CopyAction;
 }

@@ -1,20 +1,39 @@
+###
+# This directory contains 2 targets:
+# + smtkPQComponentsExt, containing non-Qt (unwrapped) classes and Qt classes
+# + smtkPQComponentsPlugin, a plugin exposing the above with an autostart object
+###
+
+set(PQComponentsUnwrappedSrcs
+)
+
+set(PQComponentsUnwrappedHdrs
+)
+
 find_package(Qt5 REQUIRED COMPONENTS Core)
 
 # set up sources to build
 set(PQComponentsSrcs
   pqPluginSMTKViewBehavior.cxx
+  pqSMTKResourceManagerBehavior.cxx
   pqSMTKSelectionFilterBehavior.cxx
-  pqSMTKSelectionSyncBehavior.cxx
+  pqSMTKResource.cxx
+  pqSMTKResourceManager.cxx
+  pqSMTKResourcePanel.cxx
 )
 
 set(PQComponentsHeaders
   pqPluginSMTKViewBehavior.h
+  pqSMTKResourceManagerBehavior.h
   pqSMTKSelectionFilterBehavior.h
-  pqSMTKSelectionSyncBehavior.h
+  pqSMTKResource.h
+  pqSMTKResourceManager.h
+  pqSMTKResourcePanel.h
 )
 
 set(PQComponentsUIs
   resources/pqSMTKSelectionFilterBehavior.ui
+  resources/pqSMTKResourcePanel.ui
 )
 
 set(PQComponentsResources
@@ -22,7 +41,10 @@ set(PQComponentsResources
 )
 
 #install the headers
-smtk_public_headers(${PQComponentsHeaders})
+smtk_public_headers(
+  ${PQComponentsHeaders}
+  ${PQComponentsUnwrappedHdrs}
+)
 
 pv_qt_wrap_cpp(MOC_BUILT_SOURCES ${PQComponentsHeaders})
 pv_qt_wrap_ui(UI_BUILT_SOURCES ${PQComponentsUIs})
@@ -35,6 +57,7 @@ source_group("Qt_Resources" FILES ${PQComponentsUIs})
 
 add_library(smtkPQComponentsExt
   ${PQComponentsSrcs}
+  ${PQComponentsUnwrappedSrcs}
   ${MOC_BUILT_SOURCES}
   ${UI_BUILT_SOURCES}
   ${RCS_SOURCES}
@@ -48,7 +71,7 @@ target_link_libraries(smtkPQComponentsExt LINK_PUBLIC
   pqApplicationComponents
   pqComponents
 
-  # Server-side stuff because pqSMTKSelectionSyncBehavior uses GetClientSideObject()
+  # Server-side stuff because some stuff uses GetClientSideObject()
   vtkPVVTKExtensionsDefault
   smtkPVServerExtPlugin
 
@@ -84,18 +107,41 @@ add_paraview_action_group(PLUGIN_ACTION_IFACES PLUGIN_ACTION_IFACE_SRCS
   GROUP_NAME "ToolBar/SMTKSelection"
 )
 
+add_pqproxy(PLUGIN_PROXY_IFACES PLUGIN_PROXY_IFACE_SRCS
+  TYPE pqSMTKResource
+  XML_GROUP sources
+  XML_NAME SMTKModelReader
+)
+
+add_pqproxy(PLUGIN_PROXY_IFACES PLUGIN_PROXY_IFACE_SRCS
+  TYPE pqSMTKResourceManager
+  XML_GROUP smtk
+  XML_NAME ResourceManager
+)
+
+add_paraview_dock_window(PLUGIN_DOCK_IFACES PLUGIN_DOCK_IFACES_SRCS
+  CLASS_NAME pqSMTKResourcePanel
+  DOCK_AREA Left
+)
+
 pv_qt_wrap_cpp(PLUGIN_MOC_SRCS ${PQComponentsPluginHdrs})
 add_paraview_plugin(
   smtkPQComponentsPlugin "1.0"
   GUI_INTERFACES
     ${PLUGIN_ACTION_IFACES}
     ${PLUGIN_AUTOSTART_IFACES}
+    ${PLUGIN_PROXY_IFACES}
+    ${PLUGIN_DOCK_IFACES}
   GUI_SOURCES
     ${PQComponentsPluginHdrs}
     ${PQComponentsPluginSrcs}
     ${PLUGIN_MOC_SRCS}
     ${PLUGIN_ACTION_IFACE_SRCS}
     ${PLUGIN_AUTOSTART_IFACE_SRCS}
+    ${PLUGIN_PROXY_IFACE_SRCS}
+    ${PLUGIN_DOCK_IFACES_SRCS}
+  REQUIRED_PLUGINS
+    smtkPVServerExtPlugin
 )
 target_link_libraries(smtkPQComponentsPlugin
   LINK_PUBLIC

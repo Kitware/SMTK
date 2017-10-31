@@ -94,6 +94,21 @@ class TestSelectionManager(smtk.testing.TestCase):
         self.assertFalse(mgr.unregisterSelectionSource(
             'foo'), 'Could unregister extinct selection.')
 
+    def testCreateAndInstance(self):
+        self.assertTrue(self.selnMgr, 'Unexpectedly null manager.')
+        self.assertEqual(
+            self.selnMgr, smtk.resource.SelectionManager.instance(),
+                        'Expected instance to match first selection manager.')
+        self.selnMgr = None
+        mgr = smtk.resource.SelectionManager.instance()
+        self.assertTrue(
+            mgr, 'Expected a default instance to be created as required.')
+        other = smtk.resource.SelectionManager.create()
+        self.assertNotEqual(
+            mgr, other, 'Selection manager should not be a singleton.')
+        self.assertEqual(mgr, smtk.resource.SelectionManager.instance(),
+                         'Selection manager reported by instance should survive creation of others.')
+
     def testSelectionModificationFilterListen(self):
         self.loadTestData()
         mgr = self.selnMgr

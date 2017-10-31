@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "vtkSMSMTKModelRepresentationProxy.h"
-#include "vtkSMTKModelRepresentation.h"
+#include "smtk/extension/paraview/representation/vtkSMSMTKModelRepresentationProxy.h"
+#include "smtk/extension/paraview/representation/vtkSMTKModelRepresentation.h"
 
 #include "vtkClientServerStream.h"
 #include "vtkObjectFactory.h"

@@ -17,14 +17,16 @@
 
 #include <QActionGroup>
 
+class vtkSMSMTKResourceManagerProxy;
+class pqServer;
+
 class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKSelectionFilterBehavior : public QActionGroup
 {
   Q_OBJECT
   using Superclass = QActionGroup;
 
 public:
-  pqSMTKSelectionFilterBehavior(
-    QObject* parent = nullptr, smtk::resource::SelectionManagerPtr mgr = nullptr);
+  pqSMTKSelectionFilterBehavior(QObject* parent = nullptr);
   ~pqSMTKSelectionFilterBehavior() override;
 
   static pqSMTKSelectionFilterBehavior* instance();
@@ -33,10 +35,16 @@ public:
 
 protected slots:
   virtual void onFilterChanged(QAction* a);
+  virtual void filterSelectionOnServer(vtkSMSMTKResourceManagerProxy* mgr, pqServer* server);
+  virtual void unfilterSelectionOnServer(vtkSMSMTKResourceManagerProxy* mgr, pqServer* server);
 
 protected:
+  /// Install a filter on the selection using current flags (m_modelFilterMask and m_acceptMeshes).
+  void installFilter();
+
   class pqInternal;
   pqInternal* m_p;
+  bool m_acceptMeshes;
   smtk::model::BitFlags m_modelFilterMask;
   smtk::resource::SelectionManagerPtr m_selectionManager;
 

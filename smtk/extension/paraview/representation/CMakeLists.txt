@@ -29,6 +29,7 @@ target_link_libraries(smtkRepresentationPlugin
   LINK_PUBLIC
     smtkCore
     vtkSMTKSourceExt
+    smtkPVServerExtPlugin
 )
 
 smtk_export_header(smtkRepresentationPlugin Exports.h)

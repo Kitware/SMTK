@@ -14,10 +14,14 @@
 
 #include <QObject>
 
+class vtkSMProxy;
+
 class SMTKPQCOMPONENTSPLUGIN_EXPORT pqSMTKAppComponentsAutoStart : public QObject
 {
   Q_OBJECT
   using Superclass = QObject;
+
+  static vtkSMProxy* resourceManager();
 
 public:
   pqSMTKAppComponentsAutoStart(QObject* parent = nullptr);
@@ -25,6 +29,9 @@ public:
 
   void startup();
   void shutdown();
+
+protected:
+  static vtkSMProxy* s_resourceManager;
 
 private:
   Q_DISABLE_COPY(pqSMTKAppComponentsAutoStart);

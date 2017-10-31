@@ -26,6 +26,8 @@
 #include <vtkPVRenderView.h>
 #include <vtkPVTrivialProducer.h>
 
+#include "smtk/extension/paraview/representation/vtkSMTKModelRepresentation.h"
+#include "smtk/extension/paraview/server/vtkSMTKResourceManagerWrapper.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 #include "smtk/resource/Component.h"
 #include "smtk/resource/SelectionManager.h"
@@ -69,6 +71,18 @@ void vtkSMTKModelRepresentation::SetupDefaults()
   this->SelectedGlyphEntities->SetMapper(this->SelectedGlyphMapper);
 }
 
+void vtkSMTKModelRepresentation::SetOutputExtent(vtkAlgorithmOutput* output, vtkInformation* inInfo)
+{
+  if (inInfo->Has(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT()))
+  {
+    vtkPVTrivialProducer* prod = vtkPVTrivialProducer::SafeDownCast(output->GetProducer());
+    if (prod)
+    {
+      prod->SetWholeExtent(inInfo->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT()));
+    }
+  }
+}
+
 int vtkSMTKModelRepresentation::RequestData(
   vtkInformation* request, vtkInformationVector** inVec, vtkInformationVector* outVec)
 {
@@ -96,9 +110,15 @@ int vtkSMTKModelRepresentation::RequestData(
   this->EntityMapper->Modified();
   this->GlyphMapper->Modified();
 
-  //  // Determine data bounds
-  //  this->GetBounds(this->GetOutputDataObject(0), this->DataBounds,
-  //    this->EntityMapper->GetCompositeDataDisplayAttributes());
+  // Determine data bounds
+  // TODO: Bounds should include not only instance placements but instance
+  //       placements offset by their glyph bounds. The bounds really should
+  //       be computed bt the Glyph3DMapper and CompositePolyDataMapper
+  //       and just unioned together here.
+  //       But... to a first approximation, the entity tessellation bounds
+  //       are good enough:
+  this->GetBounds(this->GetInternalOutputPort(0)->GetProducer()->GetOutputDataObject(0),
+    this->DataBounds, this->EntityMapper->GetCompositeDataDisplayAttributes());
 
   return vtkPVDataRepresentation::RequestData(request, inVec, outVec);
 }
@@ -193,18 +213,6 @@ int vtkSMTKModelRepresentation::ProcessViewRequest(
 void vtkSMTKModelRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->vtkPVDataRepresentation::PrintSelf(os, indent);
-}
-
-void vtkSMTKModelRepresentation::SetOutputExtent(vtkAlgorithmOutput* output, vtkInformation* inInfo)
-{
-  if (inInfo->Has(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT()))
-  {
-    vtkPVTrivialProducer* prod = vtkPVTrivialProducer::SafeDownCast(output->GetProducer());
-    if (prod)
-    {
-      prod->SetWholeExtent(inInfo->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT()));
-    }
-  }
 }
 
 bool vtkSMTKModelRepresentation::AddToView(vtkView* view)
@@ -321,8 +329,14 @@ void vtkSMTKModelRepresentation::SetMapScalars(int val)
 void vtkSMTKModelRepresentation::UpdateSelection(
   vtkMultiBlockDataSet* data, vtkCompositeDataDisplayAttributes* blockAttr, vtkMapper* mapper)
 {
-  auto sm = smtk::resource::SelectionManager::instance();
+  auto rm = vtkSMTKResourceManagerWrapper::Instance();
+  auto sm = rm ? rm->GetSelection() : nullptr;
+  if (!sm)
+  {
+    return;
+  }
   auto selection = sm->currentSelection();
+  // std::cout << "Updating rep selection from " << sm << ", have " << selection.size() << " entries in map\n";
 
   // Set selection defaults (nothing selected)
   blockAttr->RemoveBlockVisibilities();

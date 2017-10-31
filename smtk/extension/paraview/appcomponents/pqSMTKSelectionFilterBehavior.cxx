@@ -10,7 +10,17 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKSelectionFilterBehavior.h"
 
 // SMTK
+#include "smtk/extension/paraview/appcomponents/pqSMTKResourceManagerBehavior.h"
+
+#include "smtk/extension/paraview/server/vtkSMSMTKResourceManagerProxy.h"
+#include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
+#include "smtk/extension/paraview/server/vtkSMTKResourceManagerWrapper.h" // TODO: remove need for me
+
+#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
+
 #include "smtk/resource/SelectionManager.h"
+
+#include "smtk/io/Logger.h"
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/EntityRef.h"
@@ -18,9 +28,6 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/Vertex.h"
 #include "smtk/model/Volume.h"
-
-#include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
-#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
 // Client side
 #include "pqApplicationCore.h"
@@ -64,15 +71,10 @@ public:
   QWidget ActionsOwner;
 };
 
-pqSMTKSelectionFilterBehavior::pqSMTKSelectionFilterBehavior(
-  QObject* parent, smtk::resource::SelectionManagerPtr mgr)
+pqSMTKSelectionFilterBehavior::pqSMTKSelectionFilterBehavior(QObject* parent)
   : Superclass(parent)
-  , m_selectionManager(mgr)
+  , m_selectionManager(nullptr)
 {
-  if (!mgr)
-  {
-    m_selectionManager = smtk::resource::SelectionManager::create();
-  }
   m_p = new pqInternal;
   m_p->Actions.setupUi(&m_p->ActionsOwner);
 
@@ -103,6 +105,15 @@ pqSMTKSelectionFilterBehavior::pqSMTKSelectionFilterBehavior(
   this->onFilterChanged(m_p->Actions.actionSelnAcceptModelVertices);
 
   QObject::connect(this, SIGNAL(triggered(QAction*)), this, SLOT(onFilterChanged(QAction*)));
+
+  // Track server connects/disconnects
+  auto rsrcBehavior = pqSMTKResourceManagerBehavior::instance();
+  QObject::connect(rsrcBehavior,
+    SIGNAL(addedManagerOnServer(vtkSMSMTKResourceManagerProxy*, pqServer*)), this,
+    SLOT(filterSelectionOnServer(vtkSMSMTKResourceManagerProxy*, pqServer*)));
+  QObject::connect(rsrcBehavior,
+    SIGNAL(removingManagerFromServer(vtkSMSMTKResourceManagerProxy*, pqServer*)), this,
+    SLOT(unfilterSelectionOnServer(vtkSMSMTKResourceManagerProxy*, pqServer*)));
 }
 
 pqSMTKSelectionFilterBehavior::~pqSMTKSelectionFilterBehavior()
@@ -169,9 +180,79 @@ void pqSMTKSelectionFilterBehavior::onFilterChanged(QAction* a)
       (m_p->Actions.actionSelnAcceptModelAuxGeoms->isChecked() ? smtk::model::AUX_GEOM_ENTITY : 0);
   }
   // Rebuild the selection filter
-  m_selectionManager->setFilter([acceptMesh, modelFlags](smtk::resource::ComponentPtr comp,
+  m_modelFilterMask = modelFlags;
+  m_acceptMeshes = acceptMesh;
+  this->installFilter();
+}
+
+void pqSMTKSelectionFilterBehavior::filterSelectionOnServer(
+  vtkSMSMTKResourceManagerProxy* mgr, pqServer* server)
+{
+  (void)server;
+  if (!mgr)
+  {
+    std::cout << "  filterSelectionOnServer: no mgr\n";
+    return;
+  }
+  //auto seln = mgr->GetSelection();
+  auto seln = vtkSMTKResourceManagerWrapper::SafeDownCast(mgr->GetClientSideObject())
+                ->GetSelection(); // TODO: Only works on built-in server
+  if (!seln)
+  {
+    std::cout << "  filterSelectionOnServer: no seln\n";
+    return;
+  }
+
+  if (m_selectionManager)
+  {
+    smtkWarningMacro(smtk::io::Logger::instance(),
+      "pqSMTKSelectionFilterBehavior can currently only manage a single ParaView server. "
+      "No more updates will be provided for "
+        << m_selectionManager << " in favor of " << seln);
+  }
+
+  std::cout << "  filter on s " << seln << " m_ " << m_selectionManager << "\n";
+  m_selectionManager = seln;
+  this->installFilter();
+}
+
+void pqSMTKSelectionFilterBehavior::unfilterSelectionOnServer(
+  vtkSMSMTKResourceManagerProxy* mgr, pqServer* server)
+{
+  (void)server;
+  std::cout << "  unfilterSelectionOnServer: " << server << "\n\n";
+  if (!mgr)
+  {
+    return;
+  }
+  auto seln = mgr->GetSelection();
+  if (!seln && !m_selectionManager)
+  {
+    return;
+  }
+
+  if (!seln)
+  {
+    seln = m_selectionManager;
+  }
+
+  seln->setFilter(nullptr);
+}
+
+void pqSMTKSelectionFilterBehavior::installFilter()
+{
+  std::cout << "    Updating filter on " << m_selectionManager << " " << m_modelFilterMask << "\n";
+  if (!m_selectionManager)
+  {
+    return;
+  }
+
+  bool acceptMeshes = m_acceptMeshes;
+  smtk::model::BitFlags modelFlags = m_modelFilterMask;
+
+  m_selectionManager->setFilter([acceptMeshes, modelFlags](smtk::resource::ComponentPtr comp,
     int value, smtk::resource::SelectionManager::SelectionMap& suggestions) {
-    (void)acceptMesh; // meshes are not yet resource components.
+    (void)acceptMeshes; // meshes are not yet resource components.
     if (modelFlags)
     {
       auto modelEnt = dynamic_pointer_cast<smtk::model::Entity>(comp);

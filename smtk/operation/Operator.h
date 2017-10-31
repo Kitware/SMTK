@@ -194,6 +194,9 @@ public:
   virtual bool ableToOperate();
   virtual Result operate();
 
+  /// Return the type of the operator.
+  Index index() const { return typeid(*this); }
+
   void observe(EventType event, Callback functionHandle, void* callData);
   void observe(EventType event, CallbackWithResult functionHandle, void* callData);
 
@@ -213,6 +216,8 @@ public:
   Result createResult(Outcome outcome = UNABLE_TO_OPERATE);
   void setResultOutcome(Result res, Outcome outcome);
   virtual void eraseResult(Result res);
+
+  void setManager(ManagerPtr mgr);
 
   bool operator<(const Operator& other) const;
 

@@ -7,10 +7,12 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef vtkSMTKModelRepresentation_h
-#define vtkSMTKModelRepresentation_h
+#ifndef smtk_extension_paraview_representation_vtkSMTKModelRepresentation_h
+#define smtk_extension_paraview_representation_vtkSMTKModelRepresentation_h
 
 #include "smtk/extension/paraview/representation/Exports.h"
+
+#include "smtk/PublicPointerDefs.h"
 
 #include "vtkGeometryRepresentation.h"
 #include <vtkSmartPointer.h>
@@ -19,6 +21,7 @@ class vtkActor;
 class vtkCompositeDataDisplayAttributes;
 class vtkCompositePolyDataMapper2;
 class vtkDataObject;
+class vtkCompositeDataDisplayAttributes;
 class vtkGlyph3DMapper;
 class vtkMultiBlockDataSet;
 class vtkSelection;

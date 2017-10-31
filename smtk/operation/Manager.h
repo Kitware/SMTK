@@ -21,6 +21,7 @@
 
 #include "smtk/operation/Operator.h"
 
+#include <functional>
 #include <string>
 #include <typeinfo>
 #include <unordered_map>
@@ -32,6 +33,8 @@ namespace operation
 class SMTKCORE_EXPORT Manager : smtkEnableSharedPtr(Manager)
 {
   typedef std::unordered_map<Operator::Index, Operator::Info> Dictionary;
+  typedef std::function<int(Operator::Ptr, Operator::EventType, Operator::Result)> Observer;
+  typedef std::map<int, Observer> Observers;
 
 public:
   smtkTypeMacroBase(Manager);
@@ -76,16 +79,40 @@ public:
   template <class OperatorType>
   static bool unregisterStaticOperator();
 
+  /// Return information about an operator
+  static const Operator::Info& operatorInfo(Operator::Index);
+
+  /**\brief Ask to receive notification (and possibly a chance to cancel) events on all operations.
+    *
+    * The return value is a handle that can be used to unregister the observer.
+    */
+  static int observe(Observer fn);
+
+  /// Indicate that a function registered with observe() should no longer be called.
+  static bool unobserve(int handle);
+
+  /**\brief Trigger all observers for an event on \a op of type \a event, possibly with a \a result.
+    *
+    * Returns the bitwise-or of all observer return values.
+    */
+  static int trigger(Operator::Ptr op, Operator::EventType event, Operator::Result result);
+
 private:
+  friend class smtk::operation::Operator; // Allow operators access to m_operatorCollection.
+
   Manager();
 
   // Import XML describing an operator into the operator collection.
   bool importOperatorXML(
     const std::string& opClassName, const std::string& opNickName, const std::string& opDescrXML);
 
+  smtk::attribute::CollectionPtr operatorSpecifications() { return m_operatorCollection; }
+
   // A map between the Operator's type_index and its constructor.
   static Dictionary s_dictionary;
   smtk::attribute::CollectionPtr m_operatorCollection;
+
+  static Observers s_observers;
 };
 
 template <class OperatorType>

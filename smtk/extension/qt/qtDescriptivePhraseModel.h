@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_extension_qtEntityItemModel_h
-#define __smtk_extension_qtEntityItemModel_h
+#ifndef __smtk_extension_qtDescriptivePhraseModel_h
+#define __smtk_extension_qtDescriptivePhraseModel_h
 
 #include "QAbstractItemModel"
 #include "QIcon"
@@ -40,32 +40,32 @@ namespace extension
   * descriptive phrase for presentation. For instance, you may write a
   * filter that omits descriptions of attributes on model items.
   */
-class SMTKQTEXT_EXPORT QComponentItemModel : public QAbstractItemModel
+class SMTKQTEXT_EXPORT qtDescriptivePhraseModel : public QAbstractItemModel
 {
   Q_OBJECT
 public:
-  QComponentItemModel(QObject* parent = 0);
-  virtual ~QComponentItemModel();
+  qtDescriptivePhraseModel(QObject* parent = 0);
+  virtual ~qtDescriptivePhraseModel();
   // Set and get default entity color
-  static void setDefaultEntityColor(const std::string& entityType, const QColor& color)
+  static void setDefaultPhraseColor(const std::string& entityType, const QColor& color)
   {
     s_defaultColors[entityType] = color;
   }
 
-  static QColor defaultEntityColor(const std::string& entityType);
+  static QColor defaultPhraseColor(const std::string& entityType);
 
   void clear();
 
   /// Enumeration of model-specific data roles.
   enum DataRoles
   {
-    TitleTextRole = Qt::UserRole + 100,        //!< Entity name (user-editable)
-    SubtitleTextRole = Qt::UserRole + 101,     //!< Entity type description
-    EntityIconRole = Qt::UserRole + 102,       //!< Entity type icon
-    EntityColorRole = Qt::UserRole + 103,      //!< Per-entity color
-    EntityVisibilityRole = Qt::UserRole + 104, //!< Entity visibility
-    EntityCleanRole = Qt::UserRole + 105,      //!< Is entity clean (0), dirty (1), or N/A (-1)?
-    ModelActiveRole = Qt::UserRole + 106       //!< Is entity the active model?
+    TitleTextRole = Qt::UserRole + 100,        //!< Phrase title (usu. user-editable component name)
+    SubtitleTextRole = Qt::UserRole + 101,     //!< Phrase subtitle (usu. type of phrase)
+    PhraseIconRole = Qt::UserRole + 102,       //!< Phrase type icon
+    PhraseColorRole = Qt::UserRole + 103,      //!< Phrase-specific color (e.g., component color)
+    PhraseVisibilityRole = Qt::UserRole + 104, //!< Visibility of phrase's subject
+    PhraseCleanRole = Qt::UserRole + 105,      //!< Is resource clean (0), dirty (1), or N/A (-1)?
+    ModelActiveRole = Qt::UserRole + 106       //!< Is resource the active resource?
   };
 
   QModelIndex index(int row, int column, const QModelIndex& parent) const override;
@@ -86,17 +86,15 @@ public:
   bool removeRows(int position, int rows, const QModelIndex& parent = QModelIndex()) override;
   bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
 
-  //void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) override;
+  // void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) override;
 
   Qt::ItemFlags flags(const QModelIndex& index) const override;
 
   void setRoot(view::DescriptivePhrasePtr root) { this->m_root = root; }
 
-  smtk::model::ManagerPtr manager() const;
-
   void setDeleteOnRemoval(bool del) { this->m_deleteOnRemoval = del; }
 
-  static QIcon lookupIconForEntityFlags(view::DescriptivePhrasePtr item, QColor color);
+  static QIcon lookupIconForPhraseFlags(view::DescriptivePhrasePtr item, QColor color);
 
   view::DescriptivePhrasePtr getItem(const QModelIndex& idx) const;
 
@@ -144,7 +142,7 @@ protected:
   *
   */
 template <typename T, typename C>
-bool QComponentItemModel::foreach_phrase(
+bool qtDescriptivePhraseModel::foreach_phrase(
   T& visitor, C& collector, const QModelIndex& top, bool onlyBuilt)
 {
   // visit parent, then children if we aren't told to terminate:
@@ -152,7 +150,7 @@ bool QComponentItemModel::foreach_phrase(
   {
     view::DescriptivePhrasePtr phrase = this->getItem(top);
     // Do not descend if top's corresponding phrase would have to invoke
-    // the subphrase generator to obtain the list of children... some models
+    // the subphrase generator to obtain the list of children... some phrases
     // are cyclic graphs. In these cases, only descend if "onlyBuilt" is false.
     if (phrase && (!onlyBuilt || phrase->areSubphrasesBuilt()))
     {
@@ -168,7 +166,7 @@ bool QComponentItemModel::foreach_phrase(
 
 /// A const version of foreach_phrase. See the non-const version for documentation.
 template <typename T, typename C>
-bool QComponentItemModel::foreach_phrase(
+bool qtDescriptivePhraseModel::foreach_phrase(
   T& visitor, C& collector, const QModelIndex& top, bool onlyBuilt) const
 {
   // visit parent, then children if we aren't told to terminate:
@@ -193,4 +191,4 @@ bool QComponentItemModel::foreach_phrase(
 } // namespace model
 } // namespace smtk
 
-#endif // __smtk_extension_qtEntityItemModel_h
+#endif // __smtk_extension_qtDescriptivePhraseModel_h

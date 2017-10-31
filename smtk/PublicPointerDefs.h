@@ -243,6 +243,7 @@ typedef smtk::shared_ptr<smtk::resource::Resource> ResourcePtr;
 typedef smtk::shared_ptr<smtk::resource::Component> ComponentPtr;
 typedef std::set<smtk::resource::ComponentPtr> ComponentSet;
 typedef smtk::shared_ptr<smtk::resource::SelectionManager> SelectionManagerPtr;
+typedef smtk::weak_ptr<smtk::resource::SelectionManager> WeakSelectionManagerPtr;
 typedef smtk::shared_ptr<smtk::resource::Set> SetPtr;
 typedef smtk::shared_ptr<const smtk::resource::Component> ConstComponentPtr;
 typedef smtk::shared_ptr<const smtk::resource::Resource> ConstResourcePtr;
@@ -254,6 +255,8 @@ typedef std::set<ComponentPtr> ComponentSet;
 
 namespace operation
 {
+typedef smtk::shared_ptr<smtk::operation::Manager> ManagerPtr;
+typedef smtk::weak_ptr<smtk::operation::Manager> WeakManagerPtr;
 typedef smtk::shared_ptr<smtk::operation::Operator> OperatorPtr;
 typedef smtk::weak_ptr<smtk::operation::Operator> WeakOperatorPtr;
 }

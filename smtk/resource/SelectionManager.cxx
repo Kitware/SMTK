@@ -18,8 +18,6 @@ namespace smtk
 namespace resource
 {
 
-SelectionManagerPtr SelectionManager::m_instance = nullptr;
-
 static bool defaultFilter(
   ComponentPtr comp, int selectionValue, SelectionManager::SelectionMap& suggestions)
 {
@@ -29,17 +27,41 @@ static bool defaultFilter(
   return true;
 }
 
+static SelectionManager* g_instance = nullptr;
+
 SelectionManager::SelectionManager()
   : m_defaultAction(SelectionAction::FILTERED_REPLACE)
   , m_filter(defaultFilter)
 {
+  if (!g_instance)
+  {
+    g_instance = this;
+  }
 }
 
 SelectionManager::~SelectionManager()
 {
+  if (g_instance == this)
+  {
+    g_instance = nullptr;
+  }
   // We would like to notify remaining listeners if the selection
   // is non-empty here, but cannot since shared_from_this() doesn't
   // work inside the destructor.
+}
+
+SelectionManager::Ptr SelectionManager::instance()
+{
+  SelectionManager::Ptr result;
+  if (!g_instance)
+  {
+    result = SelectionManager::create();
+  }
+  else
+  {
+    result = g_instance->shared_from_this();
+  }
+  return result;
 }
 
 bool SelectionManager::registerSelectionValue(
@@ -342,16 +364,6 @@ bool SelectionManager::refilter(const std::string& source)
     this->notifyListeners(source);
   }
   return modified;
-}
-
-SelectionManagerPtr SelectionManager::instance()
-{
-  if (!m_instance)
-  {
-    m_instance = SelectionManager::create();
-  }
-
-  return m_instance;
 }
 }
 }

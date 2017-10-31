@@ -17,12 +17,14 @@ set(serverXMLSrcs
 set(serverWrappedSrcs
   vtkPVModelSources.cxx
   vtkSMTKModelReader.cxx
+  vtkSMSMTKResourceManagerProxy.cxx
   vtkSMTKResourceManagerWrapper.cxx
 )
 
 set(serverWrappedHdrs
   vtkPVModelSources.h
   vtkSMTKModelReader.h
+  vtkSMSMTKResourceManagerProxy.h
   vtkSMTKResourceManagerWrapper.h
 )
 
@@ -37,6 +39,7 @@ smtk_public_headers(${hdrs})
 add_paraview_plugin(
   smtkPVServerExtPlugin "1.0"
   REQUIRED_ON_SERVER
+  REQUIRED_ON_CLIENT
   SERVER_SOURCES ${serverUnwrappedSrcs}
   SERVER_MANAGER_SOURCES ${serverWrappedSrcs}
   SERVER_MANAGER_XML ${serverXMLSrcs}

@@ -25,6 +25,7 @@ namespace smtk
 namespace operation
 {
 Manager::Dictionary Manager::s_dictionary;
+Manager::Observers Manager::s_observers;
 
 Manager::Manager()
 {
@@ -117,8 +118,14 @@ bool Manager::importOperatorXML(
 smtk::operation::OperatorPtr Manager::create(Operator::Index index)
 {
   auto info = this->s_dictionary.find(index);
-  return info != this->s_dictionary.end() ? info->second.constructor()
-                                          : smtk::operation::OperatorPtr();
+  smtk::operation::OperatorPtr op;
+  if (info != this->s_dictionary.end())
+  {
+    op = info->second.constructor();
+    op->setManager(shared_from_this());
+    this->trigger(op, smtk::operation::Operator::CREATED_OPERATOR, nullptr);
+  }
+  return op;
 }
 
 bool Manager::registerOperator(Operator::Index index, const std::string& opClassName,
@@ -152,6 +159,44 @@ bool Manager::registerStaticOperator(Operator::Index index, const std::string& o
 bool Manager::unregisterStaticOperator(Operator::Index index)
 {
   return s_dictionary.erase(index) != 0;
+}
+
+const Operator::Info& Manager::operatorInfo(Operator::Index index)
+{
+  auto it = s_dictionary.find(index);
+  if (it == s_dictionary.end())
+  {
+    static Operator::Info dummy("", "", "", []() { return Operator::Ptr(); });
+    return dummy;
+  }
+  return it->second;
+}
+
+int Manager::observe(Observer fn)
+{
+  int handle = s_observers.empty() ? 0 : s_observers.rbegin()->first + 1;
+  return s_observers.insert(std::make_pair(handle, fn)).second ? handle : -1;
+}
+
+bool Manager::unobserve(int handle)
+{
+  return s_observers.erase(handle) > 0;
+}
+
+int Manager::trigger(Operator::Ptr op, Operator::EventType event, Operator::Result opres)
+{
+  int result = 0;
+  if (!op || (!opres && event == smtk::operation::Operator::DID_OPERATE))
+  {
+    std::cerr << "Error: operation events must have an operator (and sometimes a result).\n";
+    return result;
+  }
+
+  for (auto entry : s_observers)
+  {
+    result |= entry.second(op, event, opres);
+  }
+  return result;
 }
 }
 }

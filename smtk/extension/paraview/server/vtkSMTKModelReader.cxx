@@ -24,6 +24,8 @@
 #include "smtk/model/Operator.h"
 #include "smtk/model/SessionRef.h"
 
+#include "smtk/resource/Manager.h"
+
 #include "vtkCompositeDataIterator.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
@@ -39,10 +41,9 @@ vtkSMTKModelReader::vtkSMTKModelReader()
 {
   //std::cout << "Create reader " << this << "\n";
   this->FileName = nullptr;
+  this->ResourceObserver = nullptr;
   this->SetNumberOfInputPorts(0);
   this->SetNumberOfOutputPorts(vtkModelMultiBlockSource::NUMBER_OF_OUTPUT_PORTS);
-  auto mgr = model::Manager::create();
-  this->ModelSource->SetModelManager(mgr);
 
   // Ensure this object's MTime > this->ModelSource's MTime so first RequestData() call
   // results in the filter being updated:
@@ -59,6 +60,13 @@ void vtkSMTKModelReader::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   os << indent << "FileName: " << this->FileName << "\n";
+  os << indent << "ModelSource: " << this->ModelSource << "\n";
+  os << indent << "ResourceObserver: " << (this->ResourceObserver ? "Y" : "N") << "\n";
+}
+
+smtk::model::ManagerPtr vtkSMTKModelReader::GetSMTKResource() const
+{
+  return this->ModelSource->GetModelManager();
 }
 
 /// Generate polydata from an smtk::model with tessellation information.
@@ -124,7 +132,16 @@ int vtkSMTKModelReader::RequestData(vtkInformation* vtkNotUsed(request),
 
 bool vtkSMTKModelReader::LoadFile()
 {
-  auto mgr = this->ModelSource->GetModelManager();
+  std::cout << "  Reading " << this->FileName << "\n";
+  auto oldMgr = this->ModelSource->GetModelManager();
+  if (oldMgr && this->ResourceObserver)
+  {
+    this->ResourceObserver(oldMgr, false);
+  }
+  auto mgr = model::Manager::create();
+  this->ModelSource->SetModelManager(mgr);
+  mgr->setLocation(this->FileName);
+
   auto ssn = mgr->createSession("native");
   auto rdr = ssn.op("load smtk model"); // smtk::model::LoadSMTKModel::create();
   if (!rdr)
@@ -147,6 +164,11 @@ bool vtkSMTKModelReader::LoadFile()
   if (cre->numberOfValues() > 0)
   {
     this->ModelSource->SetModelEntityID(cre->value().entity().toString().c_str());
+  }
+
+  if (this->ResourceObserver)
+  {
+    this->ResourceObserver(mgr, true);
   }
 
   return true;

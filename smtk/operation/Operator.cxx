@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/operation/Operator.h"
+#include "smtk/operation/Manager.h"
 
 #include "smtk/io/Logger.h"
 #include "smtk/io/SaveJSON.h"
@@ -179,6 +180,9 @@ void Operator::unobserve(EventType event, CallbackWithResult functionHandle, voi
 int Operator::trigger(EventType event)
 {
   int status = 0;
+  // Trigger new-style (C++11) observers of **all** operators:
+  status |= smtk::operation::Manager::trigger(shared_from_this(), event, nullptr);
+  // Now trigger old-style observers of individual operator instances:
   std::set<Observer>::const_iterator it;
   for (it = this->m_willOperateTriggers.begin(); it != this->m_willOperateTriggers.end(); ++it)
     status |= (*it->first)(event, *this, it->second);
@@ -188,6 +192,9 @@ int Operator::trigger(EventType event)
 /// Invoke all DID_OPERATE observer callbacks. The return value is always 0 (this may change in future releases).
 int Operator::trigger(EventType event, const Operator::Result& result)
 {
+  // Trigger new-style (C++11) observers of **all** operators:
+  smtk::operation::Manager::trigger(shared_from_this(), event, result);
+  // Now trigger old-style observers of individual operator instances:
   std::set<ObserverWithResult>::const_iterator it;
   for (it = this->m_didOperateTriggers.begin(); it != this->m_didOperateTriggers.end(); ++it)
     (*it->first)(event, *this, result, it->second);
@@ -209,13 +216,15 @@ int Operator::trigger(EventType event, const Operator::Result& result)
   */
 Operator::Definition Operator::definition() const
 {
-  // Manager::Ptr mgr = this->manager();
-  // SessionPtr brg = this->session();
-  // if (!mgr || !brg)
-  //   return attribute::DefinitionPtr();
+  Manager::Ptr opMgr = m_manager.lock();
+  if (!opMgr)
+  {
+    return Operator::Definition();
+  }
 
-  // return brg->operatorCollection()->findDefinition(this->name());
-  return Operator::Definition();
+  std::string opname = opMgr->operatorInfo(this->index()).classname;
+  Operator::Definition defn = opMgr->operatorSpecifications()->findDefinition(opname);
+  return defn;
 }
 
 /**\brief Return the specification of this operator (creating one if none exists).
@@ -273,9 +282,23 @@ bool Operator::setSpecification(attribute::AttributePtr spec)
 bool Operator::ensureSpecification() const
 {
   if (this->m_specification)
+  {
     return true;
+  }
 
-  return false;
+  Manager::Ptr opMgr = m_manager.lock();
+  if (!opMgr)
+  {
+    return false;
+  }
+
+  std::string opname = opMgr->operatorInfo(this->index()).classname;
+  smtk::attribute::AttributePtr spec = opMgr->operatorSpecifications()->createAttribute(opname);
+  if (!spec)
+  {
+    return false;
+  }
+  return const_cast<Operator*>(this)->setSpecification(spec);
 }
 
 /**\brief Create an attribute representing this operator's result type.
@@ -284,8 +307,21 @@ bool Operator::ensureSpecification() const
   */
 Operator::Result Operator::createResult(Operator::Outcome outcome)
 {
-  (void)outcome;
-  return Operator::Result();
+  Manager::Ptr opMgr = m_manager.lock();
+  if (!opMgr)
+  {
+    return Operator::Result();
+  }
+
+  std::string opname = opMgr->operatorInfo(this->index()).classname;
+  std::ostringstream resname;
+  resname << "result(" << opname << ")";
+  Operator::Result result = opMgr->operatorSpecifications()->createAttribute(resname.str());
+  if (result)
+  {
+    result->findInt("outcome")->setValue(0, static_cast<int>(outcome));
+  }
+  return result;
 }
 
 /**\brief Set the outcome of the given result.
@@ -316,6 +352,11 @@ bool Operator::operator<(const Operator& other) const
   */
 void Operator::eraseResult(Operator::Result)
 {
+}
+
+void Operator::setManager(ManagerPtr mgr)
+{
+  m_manager = mgr;
 }
 
 void Operator::generateSummary(Operator::Result& res)
