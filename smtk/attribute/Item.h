@@ -55,6 +55,8 @@ public:
     MESH_SELECTION,
     MESH_ENTITY,
     DATE_TIME,
+    COMPONENT,
+    RESOURCE,
     NUMBER_OF_TYPES
   };
 
@@ -63,7 +65,8 @@ public:
     IGNORE_EXPRESSIONS = 0x001,         //!< Don't assign source value item's expressions
     IGNORE_MODEL_ENTITIES = 0x002,      //!< Don't assign source model entity items
     IGNORE_ATTRIBUTE_REF_ITEMS = 0x004, //!< Don't assign source attribute reference items
-    COPY_MODEL_ASSOCIATIONS = 0x008     //!< If creating attributes, copy their model associations
+    IGNORE_RESOURCE_COMPONENTS = 0x008, //!< Don't assign source component items
+    COPY_MODEL_ASSOCIATIONS = 0x010     //!< If creating attributes, copy their model associations
   };
 
   virtual ~Item();

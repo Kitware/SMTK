@@ -7,7 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#pragma once
+#ifndef smtk_extension_vtk_source_vtkModelAuxiliaryGeometry_txx
+#define smtk_extension_vtk_source_vtkModelAuxiliaryGeometry_txx
 
 #include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.h"
 #include "smtk/model/AuxiliaryGeometry.h"
@@ -65,3 +66,5 @@ vtkSmartPointer<T> vtkModelAuxiliaryGeometry::ReadData(
   data->ShallowCopy(rdr->GetOutput());
   return data;
 }
+
+#endif

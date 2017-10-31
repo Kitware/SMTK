@@ -27,6 +27,10 @@ These subsystems are:
 * The **simulation** (also known as the **export**) system, which is a set of utilities
   that lets you convert resources (e.g., attribute, model, and mesh collections) into
   an input deck for a simulation using Python scripts (or C++ if you wish).
+* The **view** system provides user interface functionality that is independent of any
+  particular operating system or platform. It serves as a layer between the resource
+  system and the visual layout of resources so that multiple views of the same resources
+  can exist in the same application.
 * A **common** system holding utility classes.
 * Python **bindings** that enable SMTK to
   be used *by* python scripts *and* SMTK to run python scripts as part of its normal operations.

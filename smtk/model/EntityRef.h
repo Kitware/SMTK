@@ -7,7 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#pragma once
+#ifndef smtk_model_EntityRef_h
+#define smtk_model_EntityRef_h
 /*! \file */
 
 #include "smtk/CoreExports.h"       // For EXPORT macro.
@@ -23,7 +24,6 @@
 #include "smtk/model/Events.h"               // for ManagerEventRelationType type
 #include "smtk/model/FloatData.h"            // for Float, FloatData, ...
 #include "smtk/model/IntegerData.h"          // for Integer, IntegerData, ...
-#include "smtk/model/PropertyType.h"         // for PropertyType
 #include "smtk/model/StringData.h"           // for String, StringData, ...
 
 #include <iostream>
@@ -424,3 +424,5 @@ EntityRef& EntityRef::removeMemberEntities(T begin, T end)
 
 } // namespace model
 } // namespace smtk
+
+#endif

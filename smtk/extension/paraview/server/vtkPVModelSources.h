@@ -7,7 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#pragma once
+#ifndef smtk_extension_paraview_server_vtkPVModelSources_h
+#define smtk_extension_paraview_server_vtkPVModelSources_h
 
 #include "smtk/extension/paraview/server/Exports.h"
 
@@ -66,3 +67,5 @@ protected:
   static void destroySingleton();
   static vtkPVModelSources* s_instance;
 };
+
+#endif

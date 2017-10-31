@@ -11,6 +11,7 @@ set(resourceHeaders
   Component.h
   Manager.h
   Metadata.h
+  PropertyType.h
   Resource.h
   Resource.h
   Container.h

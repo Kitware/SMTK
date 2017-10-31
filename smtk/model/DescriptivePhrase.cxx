@@ -117,7 +117,7 @@ int DescriptivePhrase::argFindChild(const smtk::mesh::CollectionPtr& child) cons
 
 /// Return the index of the given property (name, type) in this instance's subphrases (or -1).
 int DescriptivePhrase::argFindChild(
-  const std::string& propName, smtk::model::PropertyType propType) const
+  const std::string& propName, smtk::resource::PropertyType propType) const
 {
   (void)propType;
   int i = 0;

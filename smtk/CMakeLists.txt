@@ -27,8 +27,8 @@ smtk_source_group(simulation)
 add_subdirectory(io)
 smtk_source_group(io)
 
-#add_subdirectory(view)
-#smtk_source_group(view)
+add_subdirectory(view)
+smtk_source_group(view)
 
 set(smtk_headers
   ${commonHeaders}
@@ -37,6 +37,7 @@ set(smtk_headers
   ${operationHeaders}
   ${meshHeaders}
   ${modelHeaders}
+  ${viewHeaders}
   ${simulationHeaders}
   ${ioHeaders}
 )
@@ -47,6 +48,7 @@ set(smtk_srcs
   ${operationSrcs}
   ${meshSrcs}
   ${modelSrcs}
+  ${viewSrcs}
   ${simulationSrcs}
   ${ioSrcs}
 )

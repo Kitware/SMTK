@@ -18,6 +18,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/resource/Component.h"
 
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/SearchStyle.h"
@@ -70,12 +71,12 @@ public:
   }
 
   // NOTE: To rename an attribute use the collection!
-  const std::string& name() const { return this->m_name; }
+  const std::string& name() const { return m_name; }
 
   const std::string& type() const;
   std::vector<std::string> types() const;
   bool isA(smtk::attribute::DefinitionPtr def) const;
-  smtk::attribute::DefinitionPtr definition() const { return this->m_definition; }
+  smtk::attribute::DefinitionPtr definition() const { return m_definition; }
 
   const double* color() const;
   void setColor(double r, double g, double b, double alpha);
@@ -83,18 +84,18 @@ public:
   {
     this->setColor(l_color[0], l_color[1], l_color[2], l_color[3]);
   }
-  bool isColorSet() const { return this->m_isColorSet; }
-  void unsetColor() { this->m_isColorSet = false; }
+  bool isColorSet() const { return m_isColorSet; }
+  void unsetColor() { m_isColorSet = false; }
 
   bool isMemberOf(const std::string& category) const;
   bool isMemberOf(const std::vector<std::string>& categories) const;
 
   smtk::attribute::ItemPtr item(int ith) const
   {
-    return (ith < 0) ? smtk::attribute::ItemPtr()
-                     : (static_cast<unsigned int>(ith) >= this->m_items.size()
-                           ? smtk::attribute::ItemPtr()
-                           : this->m_items[static_cast<std::size_t>(ith)]);
+    return (ith < 0)
+      ? smtk::attribute::ItemPtr()
+      : (static_cast<unsigned int>(ith) >= m_items.size() ? smtk::attribute::ItemPtr()
+                                                          : m_items[static_cast<std::size_t>(ith)]);
   }
 
   smtk::attribute::ConstItemPtr itemAtPath(
@@ -109,7 +110,7 @@ public:
   smtk::attribute::ItemPtr find(const std::string& name, SearchStyle style = ACTIVE_CHILDREN);
   smtk::attribute::ConstItemPtr find(
     const std::string& name, SearchStyle style = ACTIVE_CHILDREN) const;
-  std::size_t numberOfItems() const { return this->m_items.size(); }
+  std::size_t numberOfItems() const { return m_items.size(); }
 
   template <typename T>
   typename T::Ptr findAs(const std::string& name, SearchStyle style = ACTIVE_CHILDREN);
@@ -163,10 +164,19 @@ public:
   DateTimeItemPtr findDateTime(const std::string& name);
   ConstDateTimeItemPtr findDateTime(const std::string& name) const;
 
+  ComponentItemPtr findComponent(const std::string& name);
+  ConstComponentItemPtr findComponent(const std::string& name) const;
+
   void references(std::vector<smtk::attribute::ItemPtr>& list) const;
 
-  ConstModelEntityItemPtr associations() const { return this->m_associations; }
-  ModelEntityItemPtr associations() { return this->m_associations; }
+  ConstComponentItemPtr associatedComponents() const { return m_associatedComponents; }
+  ComponentItemPtr associatedComponents() { return m_associatedComponents; }
+
+  bool isComponentAssociated(const smtk::common::UUID& uid) const;
+  bool isComponentAssociated(const smtk::resource::ComponentPtr& componentPtr) const;
+
+  ConstModelEntityItemPtr associations() const { return m_associations; }
+  ModelEntityItemPtr associations() { return m_associations; }
 
   bool isEntityAssociated(const smtk::common::UUID& entity) const;
   bool isEntityAssociated(const smtk::model::EntityRef& entityref) const;
@@ -197,16 +207,10 @@ public:
 
   // These methods only applies to Attributes whose
   // definition returns true for isNodal()
-  bool appliesToBoundaryNodes() const { return this->m_appliesToBoundaryNodes; }
-  void setAppliesToBoundaryNodes(bool appliesValue)
-  {
-    this->m_appliesToBoundaryNodes = appliesValue;
-  }
-  bool appliesToInteriorNodes() const { return this->m_appliesToInteriorNodes; }
-  void setAppliesToInteriorNodes(bool appliesValue)
-  {
-    this->m_appliesToInteriorNodes = appliesValue;
-  }
+  bool appliesToBoundaryNodes() const { return m_appliesToBoundaryNodes; }
+  void setAppliesToBoundaryNodes(bool appliesValue) { m_appliesToBoundaryNodes = appliesValue; }
+  bool appliesToInteriorNodes() const { return m_appliesToInteriorNodes; }
+  void setAppliesToInteriorNodes(bool appliesValue) { m_appliesToInteriorNodes = appliesValue; }
 
   bool isValid() const;
 
@@ -216,13 +220,13 @@ public:
 
   void setUserData(const std::string& key, smtk::simulation::UserDataPtr value)
   {
-    this->m_userData[key] = value;
+    m_userData[key] = value;
   }
   smtk::simulation::UserDataPtr userData(const std::string& key) const;
-  void clearUserData(const std::string& key) { this->m_userData.erase(key); }
-  void clearAllUserData() { this->m_userData.clear(); }
+  void clearUserData(const std::string& key) { m_userData.erase(key); }
+  void clearAllUserData() { m_userData.clear(); }
 
-  bool isAboutToBeDeleted() const { return this->m_aboutToBeDeleted; }
+  bool isAboutToBeDeleted() const { return m_aboutToBeDeleted; }
 
   common::UUID id() const override { return m_id; }
 
@@ -232,29 +236,27 @@ protected:
   Attribute(const std::string& myName, smtk::attribute::DefinitionPtr myDefinition);
 
   void removeAllItems();
-  void addItem(smtk::attribute::ItemPtr iPtr) { this->m_items.push_back(iPtr); }
-  void setName(const std::string& newname) { this->m_name = newname; }
+  void addItem(smtk::attribute::ItemPtr iPtr) { m_items.push_back(iPtr); }
+  void setName(const std::string& newname) { m_name = newname; }
 
   void addReference(smtk::attribute::RefItem* attRefItem, std::size_t pos)
   {
-    this->m_references[attRefItem].insert(pos);
+    m_references[attRefItem].insert(pos);
   }
   // This removes a specific ref item
   void removeReference(smtk::attribute::RefItem* attRefItem, std::size_t pos)
   {
-    this->m_references[attRefItem].erase(pos);
+    m_references[attRefItem].erase(pos);
   }
   // This removes all references to a specific Ref Item
-  void removeReference(smtk::attribute::RefItem* attRefItem)
-  {
-    this->m_references.erase(attRefItem);
-  }
+  void removeReference(smtk::attribute::RefItem* attRefItem) { m_references.erase(attRefItem); }
 
   void setId(const common::UUID& myID) override { m_id = myID; }
 
   std::string m_name;
   std::vector<smtk::attribute::ItemPtr> m_items;
   ModelEntityItemPtr m_associations;
+  ComponentItemPtr m_associatedComponents;
   smtk::attribute::DefinitionPtr m_definition;
   std::map<smtk::attribute::RefItem*, std::set<std::size_t> > m_references;
   bool m_appliesToBoundaryNodes;
@@ -271,18 +273,17 @@ protected:
 
 inline smtk::simulation::UserDataPtr Attribute::userData(const std::string& key) const
 {
-  std::map<std::string, smtk::simulation::UserDataPtr>::const_iterator it =
-    this->m_userData.find(key);
-  return ((it == this->m_userData.end()) ? smtk::simulation::UserDataPtr() : it->second);
+  std::map<std::string, smtk::simulation::UserDataPtr>::const_iterator it = m_userData.find(key);
+  return ((it == m_userData.end()) ? smtk::simulation::UserDataPtr() : it->second);
 }
 
 inline void Attribute::setColor(double r, double g, double b, double a)
 {
-  this->m_isColorSet = true;
-  this->m_color[0] = r;
-  this->m_color[1] = g;
-  this->m_color[2] = b;
-  this->m_color[3] = a;
+  m_isColorSet = true;
+  m_color[0] = r;
+  m_color[1] = g;
+  m_color[2] = b;
+  m_color[3] = a;
 }
 
 template <typename T>
@@ -311,13 +312,13 @@ template <typename T>
 T Attribute::associatedModelEntities() const
 {
   T result;
-  if (!this->m_associations)
+  if (!m_associations)
   {
     return result;
   }
 
   smtk::model::EntityRefArray::const_iterator it;
-  for (it = this->m_associations->begin(); it != this->m_associations->end(); ++it)
+  for (it = m_associations->begin(); it != m_associations->end(); ++it)
   {
     typename T::value_type entry(*it);
     if (entry.isValid())

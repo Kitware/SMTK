@@ -7,10 +7,11 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_common_testing_helpers_h
-#define __smtk_common_testing_helpers_h
+#ifndef smtk_common_testing_cxx_helpers_h
+#define smtk_common_testing_cxx_helpers_h
 
 #include <iostream>
+#include <sstream>
 #include <string>
 
 /**\brief A function for unit tests that behaves like assert.
@@ -37,4 +38,12 @@ inline int test(int condition, const std::string& explanation = std::string())
   return condition;
 }
 
-#endif // __smtk_common_testing_helpers_h
+/// A macro for running tests with more verbose output messages.
+#define smtkTest(condition, msg)                                                                   \
+  {                                                                                                \
+    std::ostringstream explanation;                                                                \
+    explanation << msg;                                                                            \
+    test(condition, explanation.str());                                                            \
+  }
+
+#endif

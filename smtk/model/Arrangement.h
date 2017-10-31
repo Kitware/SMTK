@@ -7,7 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#pragma once
+#ifndef smtk_model_Arrangement_h
+#define smtk_model_Arrangement_h
 
 #include "smtk/common/UUID.h"
 
@@ -183,3 +184,5 @@ typedef std::vector<ArrangementReference> ArrangementReferences;
 
 } // model namespace
 } // smtk namespace
+
+#endif

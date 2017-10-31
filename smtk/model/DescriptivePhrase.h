@@ -14,6 +14,7 @@
 #include "smtk/mesh/MeshSet.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/EntityTypeBits.h"
+#include "smtk/resource/PropertyType.h"
 
 #include <string>
 #include <vector>
@@ -63,16 +64,9 @@ typedef std::vector<DescriptivePhrasePtr> DescriptivePhrases;
   * to be used for list item text (title and subtitle) and icon
   * (phraseType).
   *
-  * Subphrases are built on demand (and subclasses must implement
-  * buildSubphrasesInternal() to do so) so that portions of the model
-  * may be presented without loading the full model.
-  *
-  * An external (yet-to-be-designed) filter is given the chance to
-  * modify each phrase's list of subphrases prior to its presentation.
-  * This can be used to limit presentation; inject additional information
-  * or functional components; or even modify the phrases (e.g., to
-  * eliminate vacuous phrases like "0 attributes associated" or to
-  * compact verbose phrases).
+  * Subphrases are built on demand using a SubphraseGenerator
+  * so that portions of the model may be presented without showing
+  * the full model.
   */
 class SMTKCORE_EXPORT DescriptivePhrase : smtkEnableSharedPtr(DescriptivePhrase)
 {
@@ -110,7 +104,8 @@ public:
   virtual int argFindChild(const EntityRef& child) const;
   virtual int argFindChild(const smtk::mesh::MeshSet& child) const;
   virtual int argFindChild(const smtk::mesh::CollectionPtr& child) const;
-  virtual int argFindChild(const std::string& propName, smtk::model::PropertyType propType) const;
+  virtual int argFindChild(
+    const std::string& propName, smtk::resource::PropertyType propType) const;
   int indexInParent() const;
 
   virtual EntityRef relatedEntity() const { return EntityRef(); }
@@ -122,7 +117,10 @@ public:
   virtual ArrangementKind relatedArrangementKind() const { return KINDS_OF_ARRANGEMENTS; }
   virtual smtk::common::UUID relatedAttributeId() const { return smtk::common::UUID::null(); }
   virtual std::string relatedPropertyName() const { return std::string(); }
-  virtual PropertyType relatedPropertyType() const { return INVALID_PROPERTY; }
+  virtual smtk::resource::PropertyType relatedPropertyType() const
+  {
+    return smtk::resource::INVALID_PROPERTY;
+  }
 
   virtual FloatList relatedColor() const { return FloatList(4, -1.); }
   virtual bool isRelatedColorMutable() const { return false; }

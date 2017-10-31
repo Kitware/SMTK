@@ -23,6 +23,7 @@ template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 #include "PybindResource.h"
+#include "PybindPropertyType.h"
 #include "PybindComponent.h"
 #include "PybindSelectionManager.h"
 #include "PybindSet.h"
@@ -34,6 +35,8 @@ PYBIND11_MODULE(_smtkPybindResource, resource)
   resource.doc() = "<description>";
 
   pybind11_init_smtk_resource_SelectionAction(resource);
+  pybind11_init_smtk_resource_PropertyType(resource);
+
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
   py::class_< smtk::resource::Resource > smtk_resource_Resource = pybind11_init_smtk_resource_Resource(resource);

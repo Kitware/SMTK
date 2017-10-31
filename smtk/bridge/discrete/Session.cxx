@@ -14,6 +14,8 @@
 #include "smtk/AutoInit.h"
 #include "smtk/common/UUIDGenerator.h"
 
+#include "smtk/resource/PropertyType.h"
+
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
 #include "smtk/mesh/MeshSet.h"
@@ -1608,7 +1610,7 @@ bool Session::addProperties(
   vtkModelEntity* erec;
   if (cellIn && (erec = vtkModelEntity::SafeDownCast(cellIn)))
   {
-    if (props & smtk::model::FLOAT_PROPERTY)
+    if (props & smtk::resource::FLOAT_PROPERTY)
     {
       double rgba[4];
       erec->GetColor(rgba);
@@ -1622,13 +1624,13 @@ bool Session::addProperties(
         cellOut.setFloatProperty("warehouse id", smtk::model::FloatList(wid, wid + 2));
       }
     }
-    if (props & smtk::model::INTEGER_PROPERTY)
+    if (props & smtk::resource::INTEGER_PROPERTY)
     {
       cellOut.setIntegerProperty("visible", erec->GetVisibility());
       // TODO: Should probably remove "cmb id" before merging branch:
       cellOut.setIntegerProperty("cmb id", erec->GetUniquePersistentId());
     }
-    if (props & smtk::model::STRING_PROPERTY)
+    if (props & smtk::resource::STRING_PROPERTY)
     {
       const char* uname = vtkModelUserName::GetUserName(erec);
       if (uname)

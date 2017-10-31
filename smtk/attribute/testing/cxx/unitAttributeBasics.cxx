@@ -1,0 +1,100 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
+
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Definition.h"
+#include "smtk/attribute/StringItemDefinition.h"
+
+#include <iostream>
+
+#include "smtk/common/testing/cxx/helpers.h"
+
+int unitAttributeBasics(int, char* [])
+{
+  int status = 0;
+  smtk::attribute::CollectionPtr sysptr = smtk::attribute::Collection::create();
+  smtk::attribute::Collection& collection(*sysptr.get());
+  std::cout << "Collection Created\n";
+  smtk::resource::Resource::Type t = collection.type();
+  smtkTest(t == smtk::resource::Resource::ATTRIBUTE, "Returned wrong resource type (" << t << ").");
+  std::cout << "Resource type: " << smtk::resource::Resource::type2String(t) << "\n";
+
+  smtk::attribute::DefinitionPtr def = collection.createDefinition("testDef");
+  smtkTest(!!def, "Definition testDef not created.");
+  std::cout << "Definition testDef created\n";
+
+  smtk::attribute::DefinitionPtr def1 = collection.createDefinition("testDef");
+  smtkTest(!def1, "Duplicated definition testDef created");
+  std::cout << "Duplicated definition testDef not created\n";
+
+  smtk::attribute::AttributePtr att = collection.createAttribute("testAtt", "testDef");
+  smtkTest(!!att, "Attribute testAtt not created.");
+  std::cout << "Attribute testAtt created\n";
+
+  smtk::attribute::AttributePtr att1 = collection.createAttribute("testAtt", "testDef");
+  smtkTest(!att1, "Duplicate Attribute testAtt created.");
+  std::cout << "Duplicate Attribute testAtt not created\n";
+
+  std::vector<smtk::attribute::AttributePtr> atts;
+  std::vector<smtk::attribute::DefinitionPtr> defs;
+
+  // Check to see how many atts and defs are in the collection
+  collection.definitions(defs);
+  collection.attributes(atts);
+
+  smtkTest(defs.size() == 1, "Incorrect number of definitions reported - definitions returned: "
+      << defs.size() << " but should have returned 1.");
+  // Is testDef in the list?
+  smtkTest(defs[0] == def, "testDef is not in the list!");
+
+  smtkTest(atts.size() == 1, "Incorrect number of attributes reported - attributes returned: "
+      << atts.size() << " but should have returned 1.");
+  // Is testAtt in the list?
+  smtkTest(atts[0] == att, "testAtt is not in the list!");
+
+  smtkTest(!att->isColorSet(), "Color should not be set.");
+  double const* tcol = att->color();
+  smtkTest(tcol[0] == 1 && tcol[1] == 1 && tcol[2] == 1 && tcol[3] == 1,
+    "wrong default color values: " << tcol[0] << " " << tcol[1] << " " << tcol[2] << ' '
+                                   << tcol[3]);
+
+  double color[] = { 3, 24, 12, 6 };
+  att->setColor(color);
+  tcol = att->color();
+  smtkTest(tcol[0] == color[0] && tcol[1] == color[1] && tcol[2] == color[2] && tcol[3] == color[3],
+    "Wrong set color values: " << tcol[0] << " " << tcol[1] << " " << tcol[2] << ' ' << tcol[3]);
+
+  smtkTest(att->isColorSet(), "Color should be set.");
+  att->unsetColor();
+  smtkTest(!att->isColorSet(), "Color should not be set.");
+  tcol = att->color();
+  smtkTest(tcol[0] == 1 && tcol[1] == 1 && tcol[2] == 1 && tcol[3] == 1,
+    "Wrong default color values: " << tcol[0] << " " << tcol[1] << " " << tcol[2] << ' '
+                                   << tcol[3]);
+
+  smtkTest(att->associatedModelEntityIds().size() == 0, "Should not have associated entity IDs.");
+  smtkTest(!att->associatedComponents(), "Should not have associated components.");
+
+  smtkTest(!att->appliesToBoundaryNodes(), "Should not be applied to boundry node.");
+  att->setAppliesToBoundaryNodes(true);
+  smtkTest(att->appliesToBoundaryNodes(), "Should be applied to boundry node.");
+  att->setAppliesToBoundaryNodes(false);
+  smtkTest(!att->appliesToBoundaryNodes(), "Should not be applied to boundry node.");
+  smtkTest(!att->appliesToInteriorNodes(), "Should not be applied to interior node.");
+  att->setAppliesToInteriorNodes(true);
+  smtkTest(att->appliesToInteriorNodes(), "Should be applied to interior node.");
+  att->setAppliesToInteriorNodes(false);
+  smtkTest(!att->appliesToInteriorNodes(), "Should not applied to interior node.");
+  smtkTest(att->collection() == sysptr, "Should be this collection.");
+
+  std::cout << "Collection destroyed\n";
+  return status;
+}

@@ -11,7 +11,6 @@
 #define __smtk_model_PropertyListPhrase_h
 
 #include "smtk/model/DescriptivePhrase.h"
-#include "smtk/model/Manager.h" // For PropertyType enum.
 
 #include <string>
 #include <vector>
@@ -33,27 +32,28 @@ class SMTKCORE_EXPORT PropertyListPhrase : public DescriptivePhrase
 public:
   smtkTypeMacro(PropertyListPhrase);
   smtkSharedPtrCreateMacro(DescriptivePhrase);
-  Ptr setup(const EntityRef& entity, PropertyType ptype, DescriptivePhrasePtr parent);
-  Ptr setup(const EntityRef& entity, PropertyType ptype, const std::set<std::string>& pnames,
-    DescriptivePhrasePtr parent);
+  Ptr setup(
+    const EntityRef& entity, smtk::resource::PropertyType ptype, DescriptivePhrasePtr parent);
+  Ptr setup(const EntityRef& entity, smtk::resource::PropertyType ptype,
+    const std::set<std::string>& pnames, DescriptivePhrasePtr parent);
 
   std::string title() override;
   std::string subtitle() override;
 
   smtk::common::UUID relatedEntityId() const override;
   EntityRef relatedEntity() const override;
-  PropertyType relatedPropertyType() const override;
+  smtk::resource::PropertyType relatedPropertyType() const override;
 
   std::set<std::string>& propertyNames() { return this->m_propertyNames; }
   const std::set<std::string>& propertyNames() const { return this->m_propertyNames; }
 
-  static DescriptivePhraseType propertyToPhraseType(PropertyType p);
+  static DescriptivePhraseType propertyToPhraseType(smtk::resource::PropertyType p);
 
 protected:
   PropertyListPhrase();
 
   EntityRef m_entity;
-  PropertyType m_propertyType;
+  smtk::resource::PropertyType m_propertyType;
   std::set<std::string> m_propertyNames; // an optional subset of m_entity's properties
 };
 

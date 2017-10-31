@@ -20,13 +20,13 @@ namespace model
 {
 
 PropertyListPhrase::PropertyListPhrase()
-  : m_propertyType(INVALID_PROPERTY)
+  : m_propertyType(smtk::resource::INVALID_PROPERTY)
 {
 }
 
 /// Initialize the list with information required to generate subphrases.
 PropertyListPhrase::Ptr PropertyListPhrase::setup(
-  const EntityRef& entity, PropertyType ptype, DescriptivePhrasePtr parnt)
+  const EntityRef& entity, smtk::resource::PropertyType ptype, DescriptivePhrasePtr parnt)
 {
   this->m_entity = entity;
   this->m_propertyType = ptype;
@@ -35,8 +35,9 @@ PropertyListPhrase::Ptr PropertyListPhrase::setup(
 }
 
 /// Initialize the list with a subset \a pnames of the \a entity's properties.
-PropertyListPhrase::Ptr PropertyListPhrase::setup(const EntityRef& entity, PropertyType ptype,
-  const std::set<std::string>& pnames, DescriptivePhrasePtr parnt)
+PropertyListPhrase::Ptr PropertyListPhrase::setup(const EntityRef& entity,
+  smtk::resource::PropertyType ptype, const std::set<std::string>& pnames,
+  DescriptivePhrasePtr parnt)
 {
   this->m_entity = entity;
   this->m_propertyType = ptype;
@@ -49,11 +50,12 @@ std::string PropertyListPhrase::title()
   std::ostringstream message;
   DescriptivePhrases::size_type sz = this->subphrases().size();
   message << sz << " "
-          << (this->m_propertyType == FLOAT_PROPERTY
+          << (this->m_propertyType == smtk::resource::FLOAT_PROPERTY
                  ? "floating-point"
-                 : (this->m_propertyType == STRING_PROPERTY
+                 : (this->m_propertyType == smtk::resource::STRING_PROPERTY
                        ? "string"
-                       : (this->m_propertyType == INTEGER_PROPERTY ? "integer" : "invalid")))
+                       : (this->m_propertyType == smtk::resource::INTEGER_PROPERTY ? "integer"
+                                                                                   : "invalid")))
           << " " << (sz == 1 ? "property" : "properties");
   return message.str();
 }
@@ -73,22 +75,22 @@ EntityRef PropertyListPhrase::relatedEntity() const
   return this->m_entity;
 }
 
-PropertyType PropertyListPhrase::relatedPropertyType() const
+smtk::resource::PropertyType PropertyListPhrase::relatedPropertyType() const
 {
   return this->m_propertyType;
 }
 
-DescriptivePhraseType PropertyListPhrase::propertyToPhraseType(PropertyType p)
+DescriptivePhraseType PropertyListPhrase::propertyToPhraseType(smtk::resource::PropertyType p)
 {
   switch (p)
   {
-    case FLOAT_PROPERTY:
+    case smtk::resource::FLOAT_PROPERTY:
       return FLOAT_PROPERTY_LIST;
-    case STRING_PROPERTY:
+    case smtk::resource::STRING_PROPERTY:
       return STRING_PROPERTY_LIST;
-    case INTEGER_PROPERTY:
+    case smtk::resource::INTEGER_PROPERTY:
       return INTEGER_PROPERTY_LIST;
-    case INVALID_PROPERTY:
+    case smtk::resource::INVALID_PROPERTY:
     default:
       break;
   }

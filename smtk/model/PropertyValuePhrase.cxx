@@ -24,7 +24,7 @@ PropertyValuePhrase::PropertyValuePhrase()
 }
 
 PropertyValuePhrase::Ptr PropertyValuePhrase::setup(
-  PropertyType propType, const std::string& propName, DescriptivePhrase::Ptr parnt)
+  smtk::resource::PropertyType propType, const std::string& propName, DescriptivePhrase::Ptr parnt)
 {
   this->DescriptivePhrase::setup(PropertyValuePhrase::propertyToPhraseType(propType), parnt);
   this->m_propertyType = propType;
@@ -48,7 +48,7 @@ std::string PropertyValuePhrase::subtitle()
     EntityRef ent = p->relatedEntity();
     switch (this->m_propertyType)
     {
-      case FLOAT_PROPERTY:
+      case smtk::resource::FLOAT_PROPERTY:
         if (ent.hasFloatProperty(this->m_propertyName))
         {
           FloatList const& prop(ent.floatProperty(this->m_propertyName));
@@ -64,7 +64,7 @@ std::string PropertyValuePhrase::subtitle()
           }
         }
         break;
-      case STRING_PROPERTY:
+      case smtk::resource::STRING_PROPERTY:
         if (ent.hasStringProperty(this->m_propertyName))
         {
           StringList const& prop(ent.stringProperty(this->m_propertyName));
@@ -80,7 +80,7 @@ std::string PropertyValuePhrase::subtitle()
           }
         }
         break;
-      case INTEGER_PROPERTY:
+      case smtk::resource::INTEGER_PROPERTY:
         if (ent.hasIntegerProperty(this->m_propertyName))
         {
           IntegerList const& prop(ent.integerProperty(this->m_propertyName));
@@ -96,7 +96,7 @@ std::string PropertyValuePhrase::subtitle()
           }
         }
         break;
-      case INVALID_PROPERTY:
+      case smtk::resource::INVALID_PROPERTY:
         message << "Invalid property type";
         break;
     }
@@ -123,22 +123,22 @@ std::string PropertyValuePhrase::relatedPropertyName() const
   return this->m_propertyName;
 }
 
-PropertyType PropertyValuePhrase::relatedPropertyType() const
+smtk::resource::PropertyType PropertyValuePhrase::relatedPropertyType() const
 {
   return this->m_propertyType;
 }
 
-DescriptivePhraseType PropertyValuePhrase::propertyToPhraseType(PropertyType p)
+DescriptivePhraseType PropertyValuePhrase::propertyToPhraseType(smtk::resource::PropertyType p)
 {
   switch (p)
   {
-    case FLOAT_PROPERTY:
+    case smtk::resource::FLOAT_PROPERTY:
       return FLOAT_PROPERTY_VALUE;
-    case STRING_PROPERTY:
+    case smtk::resource::STRING_PROPERTY:
       return STRING_PROPERTY_VALUE;
-    case INTEGER_PROPERTY:
+    case smtk::resource::INTEGER_PROPERTY:
       return INTEGER_PROPERTY_VALUE;
-    case INVALID_PROPERTY:
+    case smtk::resource::INVALID_PROPERTY:
     default:
       break;
   }

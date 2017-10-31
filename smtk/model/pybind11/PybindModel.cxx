@@ -55,7 +55,6 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindModel.h"
 #include "PybindOperator.h"
 #include "PybindPropertyListPhrase.h"
-#include "PybindPropertyType.h"
 #include "PybindPropertyValuePhrase.h"
 #include "PybindRemoteOperator.h"
 #include "PybindSession.h"
@@ -117,7 +116,6 @@ PYBIND11_MODULE(_smtkPybindModel, model)
   pybind11_init_smtk_model_ModelGeometryStyle(model);
   pybind11_init_smtk_model_OperatorEventType(model);
   pybind11_init_smtk_model_Orientation(model);
-  pybind11_init_smtk_model_PropertyType(model);
   pybind11_init_smtk_model_SessionInformation(model);
   pybind11_init_smtk_model_TessellationCellType(model);
   pybind11_init_smtk_model_AbbreviationForArrangementKind(model);

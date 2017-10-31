@@ -128,7 +128,7 @@ if __name__ == '__main__':
         stream("")
         stream("PYBIND11_MODULE(%s, m)" % args.module)
         stream("{")
-        stream("  m.doc() = \"<description>\";" % args.module)
+        stream("  m.doc() = \"<description of %s>\";" % args.module)
 
         modules = set()
         for obj in wrapped_objects:

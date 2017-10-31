@@ -7,7 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#pragma once
+#ifndef smtk_resource_SelectionManager_h
+#define smtk_resource_SelectionManager_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -393,3 +394,5 @@ bool SelectionManager::modifySelection(
 
 } // namespace resource
 } // namespace smtk
+
+#endif

@@ -7,7 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#pragma once
+#ifndef smtk_extension_vtk_source_vtkTracksAllInstances_h
+#define smtk_extension_vtk_source_vtkTracksAllInstances_h
 /// !file
 
 #ifndef __VTK_WRAP__
@@ -83,3 +84,5 @@ public:                                                                         
       }                                                                                            \
     }                                                                                              \
   }
+
+#endif

@@ -19,7 +19,6 @@
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/model/DescriptivePhrase.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/PropertyType.h"
 
 namespace py = pybind11;
 

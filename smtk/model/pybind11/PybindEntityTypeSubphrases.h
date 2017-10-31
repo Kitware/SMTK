@@ -15,7 +15,6 @@
 
 #include "smtk/model/EntityTypeSubphrases.h"
 
-#include "smtk/model/PropertyType.h"
 #include "smtk/model/SubphraseGenerator.h"
 
 namespace py = pybind11;

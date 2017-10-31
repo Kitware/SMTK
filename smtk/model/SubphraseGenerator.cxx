@@ -99,7 +99,7 @@ bool SubphraseGenerator::setDirectLimit(int val)
   * Subclasses should override this method.
   */
 bool SubphraseGenerator::shouldOmitProperty(
-  DescriptivePhrase::Ptr parent, PropertyType ptype, const std::string& pname) const
+  DescriptivePhrase::Ptr parent, smtk::resource::PropertyType ptype, const std::string& pname) const
 {
   (void)parent;
   (void)ptype;
@@ -177,7 +177,7 @@ void SubphraseGenerator::floatPropertiesOfEntity(
   std::set<std::string> pnames = ent.floatPropertyNames();
   if (!pnames.empty())
   {
-    this->addEntityProperties(FLOAT_PROPERTY, pnames, src, result);
+    this->addEntityProperties(smtk::resource::FLOAT_PROPERTY, pnames, src, result);
   }
 }
 
@@ -187,7 +187,7 @@ void SubphraseGenerator::stringPropertiesOfEntity(
   std::set<std::string> pnames = ent.stringPropertyNames();
   if (!pnames.empty())
   {
-    this->addEntityProperties(STRING_PROPERTY, pnames, src, result);
+    this->addEntityProperties(smtk::resource::STRING_PROPERTY, pnames, src, result);
   }
 }
 
@@ -197,7 +197,7 @@ void SubphraseGenerator::integerPropertiesOfEntity(
   std::set<std::string> pnames = ent.integerPropertyNames();
   if (!pnames.empty())
   {
-    this->addEntityProperties(INTEGER_PROPERTY, pnames, src, result);
+    this->addEntityProperties(smtk::resource::INTEGER_PROPERTY, pnames, src, result);
   }
 }
 
@@ -351,7 +351,7 @@ void SubphraseGenerator::entitiesOfEntityList(
 }
 
 void SubphraseGenerator::propertiesOfPropertyList(
-  PropertyListPhrase::Ptr src, PropertyType p, DescriptivePhrases& result)
+  PropertyListPhrase::Ptr src, smtk::resource::PropertyType p, DescriptivePhrases& result)
 {
   if (src && !src->propertyNames().empty())
   { // We already have a filtered subset of names; use it.
@@ -363,16 +363,16 @@ void SubphraseGenerator::propertiesOfPropertyList(
   EntityRef ent = src->relatedEntity();
   switch (p)
   {
-    case FLOAT_PROPERTY:
+    case smtk::resource::FLOAT_PROPERTY:
       pnames = ent.floatPropertyNames();
       break;
-    case STRING_PROPERTY:
+    case smtk::resource::STRING_PROPERTY:
       pnames = ent.stringPropertyNames();
       break;
-    case INTEGER_PROPERTY:
+    case smtk::resource::INTEGER_PROPERTY:
       pnames = ent.integerPropertyNames();
       break;
-    case INVALID_PROPERTY:
+    case smtk::resource::INVALID_PROPERTY:
     default:
       break;
   }
@@ -383,8 +383,8 @@ void SubphraseGenerator::propertiesOfPropertyList(
 }
 
 /// Add subphrases (or a list of them) to \a result for the specified properties.
-void SubphraseGenerator::addEntityProperties(PropertyType ptype, std::set<std::string>& props,
-  DescriptivePhrase::Ptr parnt, DescriptivePhrases& result)
+void SubphraseGenerator::addEntityProperties(smtk::resource::PropertyType ptype,
+  std::set<std::string>& props, DescriptivePhrase::Ptr parnt, DescriptivePhrases& result)
 {
   std::set<std::string>::const_iterator it;
   for (it = props.begin(); it != props.end();)

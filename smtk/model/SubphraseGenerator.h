@@ -48,8 +48,8 @@ public:
   virtual DescriptivePhrases subphrases(DescriptivePhrase::Ptr src);
   virtual int directLimit() const;
   virtual bool setDirectLimit(int val);
-  virtual bool shouldOmitProperty(
-    DescriptivePhrase::Ptr parent, PropertyType ptype, const std::string& pname) const;
+  virtual bool shouldOmitProperty(DescriptivePhrase::Ptr parent, smtk::resource::PropertyType ptype,
+    const std::string& pname) const;
 
   virtual void setSkipProperties(bool val);
   virtual bool skipProperties() const;
@@ -113,7 +113,7 @@ protected:
   void entitiesOfEntityList(
     EntityListPhrase::Ptr src, const EntityRefArray& ents, DescriptivePhrases& result);
   void propertiesOfPropertyList(
-    PropertyListPhrase::Ptr src, PropertyType p, DescriptivePhrases& result);
+    PropertyListPhrase::Ptr src, smtk::resource::PropertyType p, DescriptivePhrases& result);
 
   void meshesOfModel(DescriptivePhrase::Ptr src, const Model& mod, DescriptivePhrases& result);
   void meshsetsOfMesh(MeshPhrase::Ptr meshphr, DescriptivePhrases& result);
@@ -121,7 +121,7 @@ protected:
   void meshsetsOfCollectionByDim(
     MeshPhrase::Ptr meshphr, smtk::mesh::DimensionType dim, DescriptivePhrases& result);
 
-  void addEntityProperties(PropertyType ptype, std::set<std::string>& props,
+  void addEntityProperties(smtk::resource::PropertyType ptype, std::set<std::string>& props,
     DescriptivePhrase::Ptr parent, DescriptivePhrases& result);
 
   template <typename T>
