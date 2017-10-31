@@ -10,6 +10,7 @@
 #pragma once
 /// !file
 
+#ifndef __VTK_WRAP__
 /**\brief Declare that a class will track all instances of itself.
   *
   * Invoke this macro in a public section of your class declaration.
@@ -33,6 +34,9 @@ public:                                                                         
   void linkInstance();                                                                             \
   void unlinkInstance();                                                                           \
   static void visitInstances(std::function<bool(cls*)>);
+#else
+#define smtkDeclareTracksAllInstances(cls)
+#endif
 
 /**\brief Implement methods for tracking all instances of a class.
   *
