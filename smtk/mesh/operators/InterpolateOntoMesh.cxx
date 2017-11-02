@@ -20,12 +20,18 @@
 
 #include "smtk/mesh/ApplyToMesh.h"
 #include "smtk/mesh/CellField.h"
+#include "smtk/mesh/Manager.h"
 #include "smtk/mesh/MeshSet.h"
 #include "smtk/mesh/PointField.h"
 
 #include "smtk/mesh/interpolation/InverseDistanceWeighting.h"
 #include "smtk/mesh/interpolation/PointCloud.h"
+#include "smtk/mesh/interpolation/PointCloudGenerator.h"
+#include "smtk/mesh/interpolation/RadialAverage.h"
+#include "smtk/mesh/interpolation/StructuredGrid.h"
+#include "smtk/mesh/interpolation/StructuredGridGenerator.h"
 
+#include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Session.h"
 
@@ -36,27 +42,6 @@
 #include <string>
 #include <vector>
 
-// We use either STL regex or Boost regex, depending on support. These flags
-// correspond to the equivalent logic used to determine the inclusion of Boost's
-// regex library.
-#if defined(SMTK_CLANG) ||                                                                         \
-  (defined(SMTK_GCC) && __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)) ||                 \
-  defined(SMTK_MSVC)
-#include <regex>
-using std::regex;
-using std::sregex_token_iterator;
-using std::regex_replace;
-using std::regex_search;
-using std::regex_match;
-#else
-#include <boost/regex.hpp>
-using boost::regex;
-using boost::sregex_token_iterator;
-using boost::regex_replace;
-using boost::regex_search;
-using boost::regex_match;
-#endif
-
 namespace
 {
 // A key that corresponds to the .sbt file's values for output field type.
@@ -66,36 +51,64 @@ enum
   POINT_FIELD = 1
 };
 
-bool readCSVFile(
-  const std::string& fileName, std::vector<double>& coordinates, std::vector<double>& values)
+template <typename InputType>
+std::function<double(std::array<double, 3>)> radialAverageFrom(
+  const InputType& input, double radius, smtk::mesh::Manager& meshManager)
 {
-  std::ifstream infile(fileName.c_str());
-  if (!infile.good())
+  std::function<double(std::array<double, 3>)> radialAverage;
   {
-    return false;
-  }
-  std::string line;
-  regex re(",");
-  while (std::getline(infile, line))
-  {
-    // passing -1 as the submatch index parameter performs splitting
-    sregex_token_iterator first{ line.begin(), line.end(), re, -1 }, last;
-
-    // Se are looking for (x, y, z, value). So, we must have at least 4
-    // components.
-    if (std::distance(first, last) < 4)
+    // Let's start by trying to make a structured grid, since they can be a
+    // subset of point clouds.
+    smtk::mesh::StructuredGridGenerator sgg;
+    smtk::mesh::StructuredGrid structuredgrid = sgg(input);
+    if (structuredgrid.size() > 0)
     {
-      return false;
+      radialAverage = smtk::mesh::RadialAverage(structuredgrid, radius);
     }
-
-    coordinates.push_back(std::stod(*(first++)));
-    coordinates.push_back(std::stod(*(first++)));
-    coordinates.push_back(std::stod(*(first++)));
-    values.push_back(std::stod(*(first++)));
   }
 
-  infile.close();
-  return true;
+  if (!radialAverage)
+  {
+    // Next, we try to make a point cloud from our data.
+    smtk::mesh::PointCloudGenerator pcg;
+    smtk::mesh::PointCloud pointcloud = pcg(input);
+    if (pointcloud.size() > 0)
+    {
+      radialAverage = smtk::mesh::RadialAverage(meshManager.makeCollection(), pointcloud, radius);
+    }
+  }
+
+  return radialAverage;
+}
+
+template <typename InputType>
+std::function<double(std::array<double, 3>)> inverseDistanceWeightingFrom(
+  const InputType& input, double power)
+{
+  std::function<double(std::array<double, 3>)> idw;
+  {
+    // Let's start by trying to make a structured grid, since they can be a
+    // subset of point clouds.
+    smtk::mesh::StructuredGridGenerator sgg;
+    smtk::mesh::StructuredGrid structuredgrid = sgg(input);
+    if (structuredgrid.size() > 0)
+    {
+      idw = smtk::mesh::InverseDistanceWeighting(structuredgrid, power);
+    }
+  }
+
+  if (!idw)
+  {
+    // Next, we try to make a point cloud from our data.
+    smtk::mesh::PointCloudGenerator pcg;
+    smtk::mesh::PointCloud pointcloud = pcg(input);
+    if (pointcloud.size() > 0)
+    {
+      idw = smtk::mesh::InverseDistanceWeighting(pointcloud, power);
+    }
+  }
+
+  return idw;
 }
 }
 
@@ -122,8 +135,21 @@ bool InterpolateOntoMesh::ableToOperate()
 
 smtk::model::OperatorResult InterpolateOntoMesh::operateInternal()
 {
+  // Access the string describing the input data type
+  smtk::attribute::StringItem::Ptr inputDataItem = this->specification()->findString("input data");
+
   // Access the mesh to elevate
   smtk::attribute::MeshItem::Ptr meshItem = this->specification()->findMesh("mesh");
+
+  // Access the string describing the interpolation scheme
+  smtk::attribute::StringItem::Ptr interpolationSchemeItem =
+    this->specification()->findString("interpolation scheme");
+
+  // Access the radius parameter
+  smtk::attribute::DoubleItem::Ptr radiusItem = this->findDouble("radius");
+
+  // Access the power parameter
+  smtk::attribute::DoubleItem::Ptr powerItem = this->findDouble("power");
 
   // Access the data set name
   smtk::attribute::StringItem::Ptr nameItem = this->specification()->findString("dsname");
@@ -131,42 +157,107 @@ smtk::model::OperatorResult InterpolateOntoMesh::operateInternal()
   // Access the output interpolation Field type
   smtk::attribute::IntItem::Ptr modeItem = this->specification()->findInt("interpmode");
 
-  // Access the interpolation points
-  smtk::attribute::GroupItem::Ptr interpolationPointsItem = this->findGroup("points");
+  // Construct a function that takes an input point and returns a value
+  // according to the average of the locus of points in the external data that,
+  // when projected onto the x-y plane, are within a radius of the input
+  std::function<double(std::array<double, 3>)> interpolation;
 
-  // Access the interpolation power parameter
-  smtk::attribute::DoubleItem::Ptr powerItem = this->findDouble("power");
-
-  // Construct containers for our source points
-  std::vector<double> sourceCoordinates;
-  std::vector<double> sourceValues;
-
-  // Access the points CSV file name, if it is enabled
-  smtk::attribute::FileItem::Ptr ptsFileItem = this->specification()->findFile("ptsfile");
-  if (ptsFileItem->isEnabled())
+  if (inputDataItem->value() == "auxiliary geometry")
   {
-    bool success = readCSVFile(ptsFileItem->value(0), sourceCoordinates, sourceValues);
-    if (!success)
+    // Access the external data to use in determining elevation values
+    smtk::attribute::ModelEntityItem::Ptr auxGeoItem =
+      this->specification()->findModelEntity("auxiliary geometry");
+
+    // Get the auxiliary geometry
+    smtk::model::AuxiliaryGeometry auxGeo = auxGeoItem->value();
+
+    if (interpolationSchemeItem->value() == "radial average")
     {
-      smtkErrorMacro(this->log(), "Could not read CSV file.");
+      // Compute the radial average function
+      interpolation = radialAverageFrom<smtk::model::AuxiliaryGeometry>(
+        auxGeo, radiusItem->value(), *this->manager()->meshes());
+    }
+    else if (interpolationSchemeItem->value() == "inverse distance weighting")
+    {
+      // Compute the inverse distance weighting function
+      interpolation =
+        inverseDistanceWeightingFrom<smtk::model::AuxiliaryGeometry>(auxGeo, powerItem->value());
+    }
+
+    if (!interpolation)
+    {
+      smtkErrorMacro(this->log(), "Could not convert auxiliary geometry.");
       return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
     }
   }
-
-  for (std::size_t i = 0; i < interpolationPointsItem->numberOfGroups(); i++)
+  else if (inputDataItem->value() == "ptsfile")
   {
-    smtk::attribute::DoubleItemPtr pointItem =
-      smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(interpolationPointsItem->item(i, 0));
-    for (std::size_t j = 0; j < 3; j++)
-    {
-      sourceCoordinates.push_back(pointItem->value(j));
-    }
-    sourceValues.push_back(pointItem->value(3));
-  }
+    // Get the file name
+    std::string fileName = this->specification()->findFile("ptsfile")->value();
 
-  // Construct an instance of our interpolator and set its parameters
-  smtk::mesh::PointCloud pointcloud(std::move(sourceCoordinates), std::move(sourceValues));
-  smtk::mesh::InverseDistanceWeighting interpolator(pointcloud, powerItem->value());
+    if (interpolationSchemeItem->value() == "radial average")
+    {
+      // Compute the radial average function
+      interpolation =
+        radialAverageFrom<std::string>(fileName, radiusItem->value(), *this->manager()->meshes());
+    }
+    else if (interpolationSchemeItem->value() == "inverse distance weighting")
+    {
+      // Compute the inverse distance weighting function
+      interpolation = inverseDistanceWeightingFrom<std::string>(fileName, powerItem->value());
+    }
+
+    if (!interpolation)
+    {
+      smtkErrorMacro(this->log(), "Could not read file.");
+      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    }
+  }
+  else if (inputDataItem->value() == "points")
+  {
+    // Access the interpolation points
+    smtk::attribute::GroupItem::Ptr interpolationPointsItem = this->findGroup("points");
+
+    // Construct containers for our source points
+    std::vector<double> sourceCoordinates;
+    std::vector<double> sourceValues;
+
+    for (std::size_t i = 0; i < interpolationPointsItem->numberOfGroups(); i++)
+    {
+      smtk::attribute::DoubleItemPtr pointItem =
+        smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(
+          interpolationPointsItem->item(i, 0));
+      for (std::size_t j = 0; j < 3; j++)
+      {
+        sourceCoordinates.push_back(pointItem->value(j));
+      }
+      sourceValues.push_back(pointItem->value(3));
+    }
+
+    smtk::mesh::PointCloud pointcloud(std::move(sourceCoordinates), std::move(sourceValues));
+
+    if (interpolationSchemeItem->value() == "radial average")
+    {
+      interpolation = smtk::mesh::RadialAverage(
+        this->manager()->meshes()->makeCollection(), pointcloud, radiusItem->value());
+    }
+    else if (interpolationSchemeItem->value() == "inverse distance weighting")
+    {
+      // Compute the inverse distance weighting function
+      interpolation = smtk::mesh::InverseDistanceWeighting(pointcloud, powerItem->value());
+    }
+
+    if (!interpolation)
+    {
+      smtkErrorMacro(this->log(), "Could not read points.");
+      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    }
+  }
+  else
+  {
+    smtkErrorMacro(this->log(), "Unrecognized input type.");
+    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+  }
 
   // Access the attribute associated with the modified meshes
   smtk::model::OperatorResult result =
@@ -179,7 +270,7 @@ smtk::model::OperatorResult InterpolateOntoMesh::operateInternal()
   modifiedEntities->setNumberOfValues(meshItem->numberOfValues());
 
   std::function<double(std::array<double, 3>)> fn = [&](
-    std::array<double, 3> x) { return interpolator(x); };
+    std::array<double, 3> x) { return interpolation(x); };
 
   // apply the interpolator to the meshes and populate the result attributes
   for (std::size_t i = 0; i < meshItem->numberOfValues(); i++)

@@ -24,6 +24,8 @@ namespace smtk
 namespace mesh
 {
 
+/// A GeneratorType for creating PointClouds from CSV files. This class extends
+/// smtk::mesh::PointCloudGenerator.
 class SMTKCORE_EXPORT PointCloudFromCSV
   : public smtk::common::GeneratorType<std::string, PointCloud, PointCloudFromCSV>
 {

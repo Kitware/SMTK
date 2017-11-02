@@ -83,13 +83,6 @@ namespace common
 /// GenerateFoo generateFoo;
 /// Foo foo = generateFoo(foo_string);
 /// ...
-///
-/// NOTE: if different instances of GeneratorType are described across
-/// compilation units, care must be taken to (a) explicitly declare
-/// Generator<Input, Output> in the compilation unit that contains the class
-/// that is derived from Generator<Input, Output>, and (b) extern declare it
-/// in subsequent compilation units that contain the derived instances of
-/// GeneratorType.
 
 /// Base for all generators. Describes the two methods used for generator
 /// selection and object generation.
@@ -107,14 +100,14 @@ public:
   virtual bool valid(const Input&) const = 0;
 
   /// Function call operator for generating Output-s. Implementations of this
-  /// method may throw std::exception-s, facilitating the use of valid() as a
+  /// method may throw exceptions, facilitating the use of valid() as a
   /// quick check for input validity without necessarily guaranteeing the
   /// class's success.
   virtual Output operator()(const Input&) = 0;
 };
 
 /// Interface generator class. Implements the base methods valid() and the
-/// function call operator as a loop over the registered GeneratorType-s. Also
+/// function call operator as a loop over the registered GeneratorTypes. Also
 /// contains the static set of generator types.
 template <class Input, class Output>
 class Generator : public GeneratorBase<Input, Output>

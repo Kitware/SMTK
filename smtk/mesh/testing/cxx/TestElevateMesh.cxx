@@ -39,6 +39,7 @@
 #include "smtk/extension/vtk/source/PointCloudFromVTKAuxiliaryGeometry.h"
 #include "smtk/extension/vtk/source/StructuredGridFromVTKAuxiliaryGeometry.h"
 #include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
+
 #include "vtkActor.h"
 #include "vtkCamera.h"
 #include "vtkCommand.h"
@@ -63,9 +64,9 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-// Need to register the converters from auxiliary geometry to point clouds and structured grids.
-bool registered1 = smtk::extension::vtk::mesh::PointCloudFromVTKAuxiliaryGeometry::registerClass();
-bool registered2 =
+static bool pcRegistered =
+  smtk::extension::vtk::mesh::PointCloudFromVTKAuxiliaryGeometry::registerClass();
+static bool sgRegistered =
   smtk::extension::vtk::mesh::StructuredGridFromVTKAuxiliaryGeometry::registerClass();
 
 class ValidatePoints : public smtk::mesh::PointForEach
@@ -173,7 +174,6 @@ int TestElevateMesh(int argc, char* argv[])
   {
     std::string file_path(data_root);
     file_path += "/mesh/2d/SimpleBathy.2dm";
-    std::cout << "The url for auxiliary geometry is: " << file_path << std::endl;
     aux_geOp->specification()->findFile("url")->setValue(file_path);
   }
   aux_geOp->associateEntity(model2dm);
@@ -185,7 +185,6 @@ int TestElevateMesh(int argc, char* argv[])
   }
 
   smtk::model::AuxiliaryGeometry auxGo2dm = aux_geOpresult->findModelEntity("created")->value();
-  std::cout << "After aux_geo op, the url inside is: " << auxGo2dm.url() << std::endl;
   if (!auxGo2dm.isValid())
   {
     std::cerr << "Auxiliary geometry is not valid!\n";
@@ -202,12 +201,11 @@ int TestElevateMesh(int argc, char* argv[])
       return 1;
     }
 
-    // set input values for bathymetry filter
+    // set input values for the elevate mesh operator
+    elevateMesh->specification()->findString("input data")->setToDefault();
     elevateMesh->specification()->findModelEntity("auxiliary geometry")->setValue(auxGo2dm);
-
-    double radius = 7.;
-
-    elevateMesh->specification()->findDouble("radius")->setValue(radius);
+    elevateMesh->specification()->findString("interpolation scheme")->setToDefault();
+    elevateMesh->specification()->findDouble("radius")->setValue(7.);
     elevateMesh->specification()->findMesh("mesh")->appendValue(mesh);
     elevateMesh->specification()->findVoid("invert scalars")->setIsEnabled(false);
 
@@ -232,21 +230,21 @@ int TestElevateMesh(int argc, char* argv[])
   }
 
   {
-    // create the undo warp mesh operator
-    std::cout << "Creating undo warp mesh operator\n";
-    smtk::model::OperatorPtr undoWarpMesh = session->op("undo warp mesh");
-    if (!undoWarpMesh)
+    // create the undo elevate mesh operator
+    std::cout << "Creating undo elevate mesh operator\n";
+    smtk::model::OperatorPtr undoElevateMesh = session->op("undo elevate mesh");
+    if (!undoElevateMesh)
     {
-      std::cerr << "No Undo Warp Mesh operator!\n";
+      std::cerr << "No Undo Elevate Mesh operator!\n";
       return 1;
     }
 
-    undoWarpMesh->specification()->findMesh("mesh")->appendValue(mesh);
+    undoElevateMesh->specification()->findMesh("mesh")->appendValue(mesh);
 
-    smtk::model::OperatorResult result = undoWarpMesh->operate();
+    smtk::model::OperatorResult result = undoElevateMesh->operate();
     if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
     {
-      std::cerr << "Undo warp mesh operator failed\n";
+      std::cerr << "Undo elevate mesh operator failed\n";
       return 1;
     }
   }
@@ -268,4 +266,4 @@ int TestElevateMesh(int argc, char* argv[])
 
 // This macro ensures the vtk io library is loaded into the executable
 smtkComponentInitMacro(smtk_elevate_mesh_operator)
-  smtkComponentInitMacro(smtk_undo_warp_mesh_operator)
+  smtkComponentInitMacro(smtk_undo_elevate_mesh_operator)

@@ -59,7 +59,6 @@ smtk::mesh::StructuredGrid StructuredGridFromVTKAuxiliaryGeometry::operator()(
   auto loader = vtkAuxiliaryGeometryExtension::create();
   std::vector<double> bbox(6);
 
-  // TODO: why does canHandleAuxiliaryGeometry not take a const AuxiliaryGeometry?
   smtk::model::AuxiliaryGeometry nonConstAuxGeom(auxGeom);
 
   if (loader && loader->canHandleAuxiliaryGeometry(nonConstAuxGeom, bbox))

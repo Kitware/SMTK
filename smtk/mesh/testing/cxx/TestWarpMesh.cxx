@@ -149,17 +149,17 @@ int main(int argc, char* argv[])
   smtk::io::ModelToMesh convert;
   smtk::mesh::CollectionPtr c = convert(meshManager, manager);
 
-  // Create an "Warp Mesh" operator
-  smtk::model::OperatorPtr warpMeshOp = sessRef.session()->op("warp mesh");
-  if (!warpMeshOp)
+  // Create an "Elevate Mesh" operator
+  smtk::model::OperatorPtr elevateMeshOp = sessRef.session()->op("elevate mesh");
+  if (!elevateMeshOp)
   {
-    std::cerr << "No \"warp mesh\" operator\n";
+    std::cerr << "No \"elevate mesh\" operator\n";
     return 1;
   }
 
   // Set the operator's input mesh
   smtk::mesh::MeshSet mesh = meshManager->collectionBegin()->second->meshes();
-  bool valueSet = warpMeshOp->specification()->findMesh("mesh")->setValue(mesh);
+  bool valueSet = elevateMeshOp->specification()->findMesh("mesh")->appendValue(mesh);
 
   if (!valueSet)
   {
@@ -167,8 +167,12 @@ int main(int argc, char* argv[])
     return 1;
   }
 
+  elevateMeshOp->specification()
+    ->findString("interpolation scheme")
+    ->setValue("inverse distance weighting");
+
   // Set the operator's input power
-  smtk::attribute::DoubleItemPtr power = warpMeshOp->specification()->findDouble("power");
+  smtk::attribute::DoubleItemPtr power = elevateMeshOp->specification()->findDouble("power");
 
   if (!power)
   {
@@ -201,7 +205,8 @@ int main(int argc, char* argv[])
     }
     outfile.close();
 
-    smtk::attribute::FileItemPtr ptsFile = warpMeshOp->specification()->findFile("ptsfile");
+    elevateMeshOp->specification()->findString("input data")->setValue("ptsfile");
+    smtk::attribute::FileItemPtr ptsFile = elevateMeshOp->specification()->findFile("ptsfile");
     if (!ptsFile)
     {
       std::cerr << "No \"ptsfile\" item in specification\n";
@@ -214,8 +219,10 @@ int main(int argc, char* argv[])
   }
   else
   {
+    elevateMeshOp->specification()->findString("input data")->setValue("points");
+
     // Set the operator's input points
-    smtk::attribute::GroupItemPtr points = warpMeshOp->specification()->findGroup("points");
+    smtk::attribute::GroupItemPtr points = elevateMeshOp->specification()->findGroup("points");
 
     if (!points)
     {
@@ -234,8 +241,8 @@ int main(int argc, char* argv[])
     }
   }
 
-  // Execute "Warp Mesh" operator...
-  smtk::model::OperatorResult warpMeshOpResult = warpMeshOp->operate();
+  // Execute "Elevate Mesh" operator...
+  smtk::model::OperatorResult elevateMeshOpResult = elevateMeshOp->operate();
 
   // ...delete the generated points file...
   if (fromCSV)
@@ -244,10 +251,10 @@ int main(int argc, char* argv[])
   }
 
   // ...and test the results for success.
-  if (warpMeshOpResult->findInt("outcome")->value() !=
+  if (elevateMeshOpResult->findInt("outcome")->value() !=
     smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
-    std::cerr << "\"warp mesh\" operator failed\n";
+    std::cerr << "\"elevate mesh\" operator failed\n";
     return 1;
   }
 
@@ -264,7 +271,7 @@ int main(int argc, char* argv[])
   {
     if (bin != expected[counter++])
     {
-      std::cerr << "\"warp mesh\" operator produced unexpected results\n";
+      std::cerr << "\"elevate mesh\" operator produced unexpected results\n";
       return 1;
     }
   }

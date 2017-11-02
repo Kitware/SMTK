@@ -71,16 +71,17 @@ smtk::mesh::PointCloud PointCloudFromCSV::operator()(const std::string& fileName
     // Passing -1 as the submatch index parameter performs splitting
     sregex_token_iterator first{ line.begin(), line.end(), re, -1 }, last;
 
-    // We are looking for (x, y, z, value). So, we must have at least 4
-    // components.
-    if (std::distance(first, last) < 4)
+    // We are looking for (x, y, z, value), but we will also accept
+    // (x, y, value). So, we must have at least 3 components.
+    std::size_t dist = std::distance(first, last);
+    if (dist < 3)
     {
       throw std::invalid_argument("File does not contain enough parameters.");
     }
 
     coordinates.push_back(std::stod(*(first++)));
     coordinates.push_back(std::stod(*(first++)));
-    coordinates.push_back(std::stod(*(first++)));
+    coordinates.push_back(dist == 4 ? std::stod(*(first++)) : 0.);
     values.push_back(std::stod(*(first++)));
   }
 

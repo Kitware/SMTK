@@ -18,15 +18,13 @@ namespace mesh
 {
 
 /**\brief A class for modifying the z-coordinates of a mesh's nodes according
-   to a VTK data set.
+   to an interpolated data set.
 
-   Given a VTK-compatible data set of either structured or unstructured data and
-   an input mesh, the z-coordinate of each point in the input mesh is set to the
-   average of the values in the external data set whose spatial coordinates lie
-   within a user-defined radius of the projection of the mesh point onto the
-   dataset. The resulting mesh deformation can be undone by subsequently
-   applying the "Undo Warp" filter, returning the mesh nodes to their original
-   position.
+   Given a data set of either structured or unstructured data, an interpolation
+   scheme and input mesh, the z-coordinate of each point in the input mesh is
+   set to the interpolated values in the external data set. The resulting mesh
+   deformation can be undone by subsequently applying the "Undo Elevate" filter,
+   returning the mesh nodes to their original positions.
   */
 class SMTKCORE_EXPORT ElevateMesh : public smtk::model::Operator
 {

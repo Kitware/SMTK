@@ -35,6 +35,10 @@ namespace model
 class AuxiliaryGeometry;
 }
 
+/// A generator for StructuredGrids. StructuredGridGenerator accepts as input
+/// (a) a  string describing a data file or (b) an auxiliary geometry instance.
+/// This  class is extended by classes that inherit from GeneratorType (see
+/// smtk::common::Generator).
 namespace mesh
 {
 

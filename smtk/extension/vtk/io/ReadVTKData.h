@@ -40,7 +40,8 @@ namespace io
 /// A functor that accepts as input (a) a pair of strings describing the file
 /// type and file url or (b) a string describing the file url and returns a
 /// vtkSmartPointer to the data described by the file. This class is extensible
-/// via the registration of additional reader types.
+/// via the registration of additional reader types (see
+/// smtk::common::Generator).
 class SMTKIOVTK_EXPORT ReadVTKData
   : public smtk::common::Generator<std::pair<std::string, std::string>,
       vtkSmartPointer<vtkDataObject> >

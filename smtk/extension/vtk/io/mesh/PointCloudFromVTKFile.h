@@ -31,6 +31,8 @@ namespace vtk
 namespace mesh
 {
 
+/// A GeneratorType for creating PointClouds from VTK files. This class extends
+/// smtk::mesh::PointCloudGenerator.
 class SMTKIOVTK_EXPORT PointCloudFromVTKFile
   : public smtk::common::GeneratorType<std::string, smtk::mesh::PointCloud, PointCloudFromVTKFile>
 {

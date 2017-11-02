@@ -31,6 +31,8 @@ namespace vtk
 namespace mesh
 {
 
+/// A GeneratorType for creating StructuredGrids from VTK files. This class
+/// extends smtk::mesh::StructuredGridGenerator.
 class SMTKIOVTK_EXPORT StructuredGridFromVTKFile
   : public smtk::common::GeneratorType<std::string, smtk::mesh::StructuredGrid,
       StructuredGridFromVTKFile>

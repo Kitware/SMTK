@@ -22,16 +22,6 @@ set(unit_tests_which_require_data
 
 set(unit_test_libs)
 
-if(SMTK_ENABLE_DISCRETE_SESSION)
-  list(APPEND unit_tests_which_require_data
-    TestElevateMesh.cxx
-    )
-  list(APPEND unit_test_libs
-    smtkDiscreteSession
-    vtkSMTKSourceExt
-    )
-endif()
-
 smtk_unit_tests(LABEL "vtk/io"
                 SOURCES ${unit_tests}
                 SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
