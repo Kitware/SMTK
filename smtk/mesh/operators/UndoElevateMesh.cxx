@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/mesh/operators/UndoWarpMesh.h"
+#include "smtk/mesh/operators/UndoElevateMesh.h"
 
 #include "smtk/attribute/MeshItem.h"
 
@@ -21,7 +21,7 @@ namespace smtk
 namespace mesh
 {
 
-bool UndoWarpMesh::ableToOperate()
+bool UndoElevateMesh::ableToOperate()
 {
   if (!this->ensureSpecification())
   {
@@ -47,7 +47,7 @@ bool UndoWarpMesh::ableToOperate()
   return true;
 }
 
-smtk::model::OperatorResult UndoWarpMesh::operateInternal()
+smtk::model::OperatorResult UndoElevateMesh::operateInternal()
 {
   // Access the mesh
   smtk::attribute::MeshItem::Ptr meshItem = this->specification()->findMesh("mesh");
@@ -71,7 +71,7 @@ smtk::model::OperatorResult UndoWarpMesh::operateInternal()
 
     if (!success)
     {
-      smtkErrorMacro(this->log(), "Undo warp failed.");
+      smtkErrorMacro(this->log(), "Undo elevate failed.");
       return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
     }
 
@@ -92,7 +92,7 @@ smtk::model::OperatorResult UndoWarpMesh::operateInternal()
 }
 }
 
-#include "smtk/mesh/UndoWarpMesh_xml.h"
+#include "smtk/mesh/UndoElevateMesh_xml.h"
 
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::mesh::UndoWarpMesh, undo_warp_mesh,
-  "undo warp mesh", UndoWarpMesh_xml, smtk::model::Session);
+smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::mesh::UndoElevateMesh, undo_elevate_mesh,
+  "undo elevate mesh", UndoElevateMesh_xml, smtk::model::Session);

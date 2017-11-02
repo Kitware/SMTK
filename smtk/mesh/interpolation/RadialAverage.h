@@ -30,8 +30,8 @@ class StructuredGrid;
 
    Given an external data set of either structured or unstructured data, this
    functor is a continuous function from R^3->R whose values are computed as the
-   average of the points in the data set within a sphere of radius <radius>
-   centered at the input point.
+   average of the points in the data set within a cylinder of radius <radius>
+   axis-aligned with the z axis and centered at the input point.
   */
 class SMTKCORE_EXPORT RadialAverage
 {

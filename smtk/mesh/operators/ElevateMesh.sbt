@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the "interpolate onto mesh" Operator -->
+<!-- Description of the "elevate mesh" Operator -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="interpolate onto mesh"
-            Label="Mesh - Interpolate data onto mesh" BaseType="operator">
+    <AttDef Type="elevate mesh"
+            Label="Mesh - Apply Elevation" BaseType="operator">
       <BriefDescription>
-        Create a field on mesh nodes/elements from interpolated 3-dimensional data.
+        Modify the z-coordinates a mesh's nodes according to an external data set.
       </BriefDescription>
       <DetailedDescription>
-        &lt;p&gt;Create a field on mesh nodes/elements from interpolated 3-dimensional data.
-        &lt;p&gt;This operator accepts as input three-dimensional points
-        with associated scalar values; it interpolates these values
-        onto either the points or the cells of the mesh using
-        Shepard's method for interpolation. The input points can be
-        inserted manually or read from a CSV file.
+        &lt;p&gt;Modify the z-coordinates a mesh's nodes according to an
+        external data set.
+        &lt;p&gt;This operator accepts as input a mesh and an external
+        data set, and it computes new z-coordinates at each mesh node
+        as a radial average of the scalar values in the external data set.
       </DetailedDescription>
       <ItemDefinitions>
 
@@ -85,7 +84,7 @@
         </String>
 
         <MeshEntity Name="mesh" Label="Mesh" NumberOfRequiredValues="1" Extensible="true" >
-          <BriefDescription>The mesh onto which the data is interpolated.</BriefDescription>
+          <BriefDescription>The mesh to elevate.</BriefDescription>
         </MeshEntity>
 
         <String Name="interpolation scheme" Label="Interpolation Scheme">
@@ -146,22 +145,28 @@
 
         </String>
 
-        <String Name="dsname" Label="Field Name" NumberOfRequiredValues="1">
-          <BriefDescription>The name of the generated data set.</BriefDescription>
-        </String>
+        <Double Name="max elevation" Label="Maximum Elevation"
+                NumberOfRequiredValues="1" Extensible="false" Optional="true">
+          <BriefDescription>Upper limit to the resulting mesh's elevation range.</BriefDescription>
+          <DefaultValue>0.0</DefaultValue>
+        </Double>
 
-        <Int Name="interpmode" Label="Output Field Type" NumberOfRequiredValues="1" Extensible="false">
-          <BriefDescription>Interpolate the data as cell-centered or point-centered on the mesh.</BriefDescription>
-          <DiscreteInfo DefaultIndex="0">
-            <Value Enum="Cell Fields">0</Value>
-            <Value Enum="Point Fields">1</Value>
-          </DiscreteInfo>
-        </Int>
+        <Double Name="min elevation" Label="Minimum Elevation"
+                NumberOfRequiredValues="1" Extensible="false" Optional="true">
+          <BriefDescription>Lower limit to the resulting mesh's elevation range.</BriefDescription>
+          <DefaultValue>0.0</DefaultValue>
+        </Double>
+
+        <Void Name="invert scalars" Label="Invert Scalar Values" Version="0"
+              Optional="true" IsEnabledByDefault="false" AdvanceLevel="1">
+          <BriefDescription>This toggle adds a prefactor of -1 to the
+          values in the external data set prior to averaging.</BriefDescription>
+        </Void>
 
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
-    <AttDef Type="result(interpolate onto mesh)" BaseType="result">
+    <AttDef Type="result(elevate mesh)" BaseType="result">
       <ItemDefinitions>
         <MeshEntity Name="mesh_modified" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>
         <ModelEntity Name="tess_changed" NumberOfRequiredValues="0"

@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/mesh/operators/InterpolateOntoMesh.h"
+#include "smtk/mesh/operators/ElevateMesh.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -16,10 +16,13 @@
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshItem.h"
+#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/VoidItem.h"
 
 #include "smtk/mesh/ApplyToMesh.h"
 #include "smtk/mesh/CellField.h"
+#include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
 #include "smtk/mesh/MeshSet.h"
 #include "smtk/mesh/PointField.h"
@@ -44,13 +47,6 @@
 
 namespace
 {
-// A key that corresponds to the .sbt file's values for output field type.
-enum
-{
-  CELL_FIELD = 0,
-  POINT_FIELD = 1
-};
-
 template <typename InputType>
 std::function<double(std::array<double, 3>)> radialAverageFrom(
   const InputType& input, double radius, smtk::mesh::Manager& meshManager)
@@ -117,7 +113,7 @@ namespace smtk
 namespace mesh
 {
 
-bool InterpolateOntoMesh::ableToOperate()
+bool ElevateMesh::ableToOperate()
 {
   if (!this->ensureSpecification())
   {
@@ -133,7 +129,7 @@ bool InterpolateOntoMesh::ableToOperate()
   return true;
 }
 
-smtk::model::OperatorResult InterpolateOntoMesh::operateInternal()
+smtk::model::OperatorResult ElevateMesh::operateInternal()
 {
   // Access the string describing the input data type
   smtk::attribute::StringItem::Ptr inputDataItem = this->specification()->findString("input data");
@@ -151,11 +147,14 @@ smtk::model::OperatorResult InterpolateOntoMesh::operateInternal()
   // Access the power parameter
   smtk::attribute::DoubleItem::Ptr powerItem = this->findDouble("power");
 
-  // Access the data set name
-  smtk::attribute::StringItem::Ptr nameItem = this->specification()->findString("dsname");
+  // Access the min elevation parameter
+  smtk::attribute::DoubleItem::Ptr minElevationItem = this->findDouble("min elevation");
 
-  // Access the output interpolation Field type
-  smtk::attribute::IntItem::Ptr modeItem = this->specification()->findInt("interpmode");
+  // Access the max elevation parameter
+  smtk::attribute::DoubleItem::Ptr maxElevationItem = this->findDouble("max elevation");
+
+  // Access the invert scalars parameter
+  smtk::attribute::VoidItem::Ptr invertScalarsItem = this->findVoid("invert scalars");
 
   // Construct a function that takes an input point and returns a value
   // according to the average of the locus of points in the external data that,
@@ -259,6 +258,49 @@ smtk::model::OperatorResult InterpolateOntoMesh::operateInternal()
     return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
+  // Construct a function that inverts and clips its input, according to the
+  // input parameters
+  std::function<double(double)> postProcess;
+  {
+    double prefactor = invertScalarsItem->isEnabled() ? -1. : 1.;
+
+    if (minElevationItem->isEnabled() && maxElevationItem->isEnabled())
+    {
+      double minElevation = minElevationItem->value();
+      double maxElevation = maxElevationItem->value();
+      postProcess = [=](double input) {
+        double output = prefactor * input;
+        return (
+          output < minElevation ? minElevation : (output > maxElevation ? maxElevation : output));
+      };
+    }
+    else if (minElevationItem->isEnabled())
+    {
+      double minElevation = minElevationItem->value();
+      postProcess = [=](double input) {
+        double output = prefactor * input;
+        return (output < minElevation ? minElevation : output);
+      };
+    }
+    else if (maxElevationItem->isEnabled())
+    {
+      double maxElevation = maxElevationItem->value();
+      postProcess = [=](double input) {
+        double output = prefactor * input;
+        return (output > maxElevation ? maxElevation : output);
+      };
+    }
+    else
+    {
+      postProcess = [=](double input) { return prefactor * input; };
+    }
+  }
+
+  // Combine the radial average function with the elevation clipping/inverting function.
+  std::function<std::array<double, 3>(std::array<double, 3>)> fn = [&](std::array<double, 3> x) {
+    return std::array<double, 3>({ { x[0], x[1], postProcess(interpolation(x)) } });
+  };
+
   // Access the attribute associated with the modified meshes
   smtk::model::OperatorResult result =
     this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
@@ -269,22 +311,12 @@ smtk::model::OperatorResult InterpolateOntoMesh::operateInternal()
   smtk::attribute::ModelEntityItem::Ptr modifiedEntities = result->findModelEntity("tess_changed");
   modifiedEntities->setNumberOfValues(meshItem->numberOfValues());
 
-  std::function<double(std::array<double, 3>)> fn = [&](
-    std::array<double, 3> x) { return interpolation(x); };
-
   // apply the interpolator to the meshes and populate the result attributes
   for (std::size_t i = 0; i < meshItem->numberOfValues(); i++)
   {
     smtk::mesh::MeshSet mesh = meshItem->value(i);
 
-    if (modeItem->value(0) == CELL_FIELD)
-    {
-      smtk::mesh::applyScalarCellField(fn, nameItem->value(), mesh);
-    }
-    else
-    {
-      smtk::mesh::applyScalarPointField(fn, nameItem->value(), mesh);
-    }
+    smtk::mesh::applyWarp(fn, mesh, true);
 
     modifiedMeshes->appendValue(mesh);
 
@@ -303,7 +335,7 @@ smtk::model::OperatorResult InterpolateOntoMesh::operateInternal()
 }
 }
 
-#include "smtk/mesh/InterpolateOntoMesh_xml.h"
+#include "smtk/mesh/ElevateMesh_xml.h"
 
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::mesh::InterpolateOntoMesh, interpolate_onto_mesh,
-  "interpolate onto mesh", InterpolateOntoMesh_xml, smtk::model::Session);
+smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::mesh::ElevateMesh, elevate_mesh, "elevate mesh",
+  ElevateMesh_xml, smtk::model::Session);

@@ -37,15 +37,17 @@ set(meshSrcs
   moab/Writers.cxx
 
   interpolation/InverseDistanceWeighting.cxx
+  interpolation/PointCloudFromCSV.cxx
+  interpolation/PointCloudGenerator.cxx
   interpolation/RadialAverage.cxx
+  interpolation/StructuredGridGenerator.cxx
 
   operators/DeleteMesh.cxx
-  operators/EulerCharacteristic.cxx
+  operators/ElevateMesh.cxx
   operators/ExportMesh.cxx
   operators/GenerateHotStartData.cxx
   operators/InterpolateOntoMesh.cxx
-  operators/UndoWarpMesh.cxx
-  operators/WarpMesh.cxx
+  operators/UndoElevateMesh.cxx
   operators/WriteMesh.cxx
   )
 
@@ -83,26 +85,27 @@ set(meshHeaders
 
   interpolation/InverseDistanceWeighting.h
   interpolation/PointCloud.h
+  interpolation/PointCloudFromCSV.h
+  interpolation/PointCloudGenerator.h
   interpolation/RadialAverage.h
   interpolation/StructuredGrid.h
+  interpolation/StructuredGridGenerator.h
 
   operators/DeleteMesh.h
-  operators/EulerCharacteristic.h
+  operators/ElevateMesh.h
   operators/ExportMesh.h
   operators/GenerateHotStartData.h
   operators/InterpolateOntoMesh.h
-  operators/UndoWarpMesh.h
-  operators/WarpMesh.h
+  operators/UndoElevateMesh.h
   operators/WriteMesh.h
   )
 
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/DeleteMesh.sbt" defOpXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ElevateMesh.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportMesh.sbt" defOpXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EulerCharacteristic.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/GenerateHotStartData.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/InterpolateOntoMesh.sbt" defOpXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/UndoWarpMesh.sbt" defOpXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WarpMesh.sbt" defOpXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/UndoElevateMesh.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteMesh.sbt" defOpXML)
 
 #install the headers

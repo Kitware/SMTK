@@ -55,49 +55,12 @@ void verify_eulerCharacteristic_cubeWithHole()
 
   test(eulerCharacteristic(c->meshes().extractShell()) == 0);
 }
-
-void verify_eulerCharacteristicOp()
-{
-  // Create a model manager
-  smtk::model::ManagerPtr manager = smtk::model::Manager::create();
-
-  // Create a new default session
-  smtk::model::SessionRef sessRef = manager->createSession("native");
-
-  std::string file_path(data_root);
-  file_path += "/mesh/3d/cube.exo";
-
-  smtk::mesh::CollectionPtr c = smtk::io::importMesh(file_path, manager->meshes());
-  test(c->isValid(), "collection should be valid");
-
-  // Create an "Euler characteristic" operator
-  smtk::model::OperatorPtr eulerCharacteristicOp = sessRef.session()->op("euler characteristic");
-  test(eulerCharacteristicOp != nullptr, "No \"euler characteristic\" operator\n");
-
-  // Set the operator's input mesh
-  bool valueSet =
-    eulerCharacteristicOp->specification()->findMesh("mesh")->setValue(c->meshes().extractShell());
-
-  test(valueSet, "Failed to set mesh value on operator\n");
-
-  // Execute "Euler characteristic" operator...
-  smtk::model::OperatorResult eulerCharacteristicOpResult = eulerCharacteristicOp->operate();
-
-  // ...and test the results for success.
-  test(eulerCharacteristicOpResult->findInt("outcome")->value() ==
-      smtk::operation::Operator::OPERATION_SUCCEEDED,
-    "\"euler characteristic\" operator failed\n");
-
-  // Finally, confirm that the Euler characteristic is correct.
-  test(eulerCharacteristicOpResult->findInt("value")->value() == 2);
-}
 }
 
 int UnitTestMeshMetrics(int, char** const)
 {
   verify_eulerCharacteristic_cube();
   verify_eulerCharacteristic_cubeWithHole();
-  verify_eulerCharacteristicOp();
 
   return 0;
 }

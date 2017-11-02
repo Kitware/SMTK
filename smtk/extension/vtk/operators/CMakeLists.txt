@@ -1,21 +1,17 @@
 
 set(srcs
   vtkSMTKOperator.cxx
-  ElevateMesh.cxx
   ExportEdgesToVTK.cxx
   )
 
 set(headers
   vtkSMTKOperator.h
-  ElevateMesh.h
   ExportEdgesToVTK.h
 )
 
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ElevateMesh.sbt" smtkVTKOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ExportEdgesToVTK.sbt" smtkVTKOperatorXML)
 
 set_source_files_properties(
-  ElevateMesh.cxx
   ExportEdgesToVTK.cxx
   PROPERTIES
     WRAP_EXCLUDE 1)
@@ -24,7 +20,7 @@ set(${vtk-module}_NO_HeaderTest 1)
 set(VTK_INSTALL_NO_HEADERS 1)
 vtk_module_library(${vtk-module} ${srcs})
 target_link_libraries(${vtk-module}
-      LINK_PUBLIC smtkCore vtksys)
+      LINK_PUBLIC smtkCore smtkIOVTK vtksys)
 
 target_include_directories(${vtk-module}
   PUBLIC

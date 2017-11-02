@@ -71,6 +71,10 @@ public:
   static std::string getAuxiliaryFileType(const smtk::model::AuxiliaryGeometry&);
   static std::string inferFileTypeFromFileName(const std::string& fname);
 
+  /// Read a data object of a given type from a URL.
+  static vtkSmartPointer<vtkDataObject> readFromFile(
+    const std::string& url, const std::string& fileType, bool genNormals = false);
+
 protected:
   vtkAuxiliaryGeometryExtension();
 

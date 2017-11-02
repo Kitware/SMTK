@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_mesh_operators_WarpMesh_h
-#define __smtk_mesh_operators_WarpMesh_h
+#ifndef __smtk_mesh_operators_ElevateMesh_h
+#define __smtk_mesh_operators_ElevateMesh_h
 
 #include "smtk/model/Operator.h"
 
@@ -18,19 +18,19 @@ namespace mesh
 {
 
 /**\brief A class for modifying the z-coordinates of a mesh's nodes according
-   to an external data set.
+   to an interpolated data set.
 
-   Given an external data set of either structured or unstructured data and an
-   input mesh, the z-coordinate of each point in the input mesh is set to the
-   inverse distance weighted average of the values in the external data. The
-   resulting mesh deformation can be undone by subsequently applying the "Undo
-   Warp" filter, returning the mesh nodes to their original position.
+   Given a data set of either structured or unstructured data, an interpolation
+   scheme and input mesh, the z-coordinate of each point in the input mesh is
+   set to the interpolated values in the external data set. The resulting mesh
+   deformation can be undone by subsequently applying the "Undo Elevate" filter,
+   returning the mesh nodes to their original positions.
   */
-class SMTKCORE_EXPORT WarpMesh : public smtk::model::Operator
+class SMTKCORE_EXPORT ElevateMesh : public smtk::model::Operator
 {
 public:
-  smtkTypeMacro(WarpMesh);
-  smtkCreateMacro(WarpMesh);
+  smtkTypeMacro(ElevateMesh);
+  smtkCreateMacro(ElevateMesh);
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
@@ -42,4 +42,4 @@ protected:
 }
 }
 
-#endif // __smtk_mesh_operators_WarpMesh_h
+#endif // __smtk_mesh_operators_ElevateMesh_h

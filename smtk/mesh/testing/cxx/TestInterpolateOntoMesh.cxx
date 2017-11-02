@@ -216,6 +216,10 @@ int main(int argc, char* argv[])
     return 1;
   }
 
+  interpolateOntoMeshOp->specification()
+    ->findString("interpolation scheme")
+    ->setValue("inverse distance weighting");
+
   // Set the operator's input power
   smtk::attribute::DoubleItemPtr power =
     interpolateOntoMeshOp->specification()->findDouble("power");
@@ -268,6 +272,7 @@ int main(int argc, char* argv[])
     }
     outfile.close();
 
+    interpolateOntoMeshOp->specification()->findString("input data")->setValue("ptsfile");
     smtk::attribute::FileItemPtr ptsFile =
       interpolateOntoMeshOp->specification()->findFile("ptsfile");
     if (!ptsFile)
@@ -282,6 +287,8 @@ int main(int argc, char* argv[])
   }
   else
   {
+    interpolateOntoMeshOp->specification()->findString("input data")->setValue("points");
+
     // Set the operator's input points
     smtk::attribute::GroupItemPtr points =
       interpolateOntoMeshOp->specification()->findGroup("points");

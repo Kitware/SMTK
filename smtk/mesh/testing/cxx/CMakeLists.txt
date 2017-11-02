@@ -54,10 +54,13 @@ set(unit_tests_which_require_data
 set(extra_libs)
 if(SMTK_ENABLE_DISCRETE_SESSION)
   list(APPEND unit_tests_which_require_data
+       TestElevateMesh.cxx
        UnitTestExtractOrderedTessellation.cxx
        )
   list(APPEND extra_libs
        smtkDiscreteSession
+       smtkIOVTK
+       vtkSMTKSourceExt
        )
 endif()
 

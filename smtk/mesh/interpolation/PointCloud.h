@@ -17,6 +17,7 @@
 #include <array>
 #include <cassert>
 #include <functional>
+#include <limits>
 
 namespace smtk
 {
@@ -45,6 +46,19 @@ public:
   {
   }
 
+  // Returns an invalid PointCloud.
+  PointCloud()
+    : PointCloud(0,
+        [](std::size_t) {
+          double nan = std::numeric_limits<double>::quiet_NaN();
+          return std::array<double, 3>({ { nan, nan, nan } });
+        },
+        [](std::size_t) { return std::numeric_limits<double>::quiet_NaN(); })
+  {
+  }
+
+  // Constructs a PointCloud from arrays of coordinates and data. The arrays
+  // must remain in scope for the lifetime of the PointCloud.
   PointCloud(std::size_t nPoints, const double* const coordinates, const double* const data)
     : PointCloud(nPoints,
         [=](std::size_t i) {
@@ -55,6 +69,8 @@ public:
   {
   }
 
+  // Constructs a PointCloud from arrays of coordinates and data. The arrays
+  // must remain in scope for the lifetime of the PointCloud.
   PointCloud(std::size_t nPoints, const float* const coordinates, const float* const data)
     : PointCloud(nPoints,
         [=](std::size_t i) {
@@ -65,10 +81,40 @@ public:
   {
   }
 
-  PointCloud(const std::vector<double>& coordinates, const std::vector<double>& data)
-    : PointCloud(data.size(), coordinates.data(), data.data())
+private:
+  struct Coordinates
   {
-    assert(coordinates.size() == 3 * data.size());
+    Coordinates(std::vector<double> coords)
+      : m_coordinates(std::move(coords))
+    {
+    }
+
+    std::array<double, 3> operator()(std::size_t i) const
+    {
+      return std::array<double, 3>(
+        { { m_coordinates[3 * i], m_coordinates[3 * i + 1], m_coordinates[3 * i + 2] } });
+    }
+
+    const std::vector<double> m_coordinates;
+  };
+
+  struct Data
+  {
+    Data(std::vector<double> data)
+      : m_data(std::move(data))
+    {
+    }
+
+    double operator()(std::size_t i) const { return m_data[i]; }
+
+    const std::vector<double> m_data;
+  };
+
+public:
+  // Constructs a PointCloud from vectors of coordinates and data.
+  PointCloud(std::vector<double>&& coordinates, std::vector<double>&& data)
+    : PointCloud(data.size(), Coordinates(coordinates), Data(data))
+  {
   }
 
   virtual ~PointCloud() {}
@@ -83,8 +129,8 @@ public:
 
 protected:
   std::size_t m_size;
-  const std::function<std::array<double, 3>(std::size_t)> m_coordinates;
-  const std::function<double(std::size_t)> m_data;
+  std::function<std::array<double, 3>(std::size_t)> m_coordinates;
+  std::function<double(std::size_t)> m_data;
 };
 }
 }
