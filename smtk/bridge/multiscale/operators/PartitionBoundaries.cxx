@@ -12,9 +12,9 @@
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/bridge/multiscale/Session.h"
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/Manager.h"
-#include "smtk/mesh/Metrics.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Manager.h"
+#include "smtk/mesh/utility/Metrics.h"
 #include "smtk/model/Vertex.h"
 
 using namespace smtk::model;

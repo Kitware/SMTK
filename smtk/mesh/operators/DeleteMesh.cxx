@@ -9,9 +9,10 @@
 //=========================================================================
 #include "smtk/mesh/operators/DeleteMesh.h"
 
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/Manager.h"
-#include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Manager.h"
+#include "smtk/mesh/core/MeshSet.h"
+
 #include "smtk/model/Manager.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/Session.h"

@@ -19,7 +19,7 @@
 #include "smtk/extension/qt/Exports.h"
 #include <QWidget>
 
-#include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/core/MeshSet.h"
 
 #include "smtk/model/DescriptivePhrase.h"
 #include "smtk/model/EntityRef.h"

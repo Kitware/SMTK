@@ -16,9 +16,9 @@
 
 #include "smtk/resource/PropertyType.h"
 
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/Manager.h"
-#include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Manager.h"
+#include "smtk/mesh/core/MeshSet.h"
 
 #include "smtk/model/Chain.h"
 #include "smtk/model/Edge.h"

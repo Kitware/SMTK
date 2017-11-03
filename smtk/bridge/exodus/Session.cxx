@@ -13,8 +13,9 @@
 #include "smtk/bridge/exodus/SessionExodusIOJSON.h"
 
 #include "smtk/common/UUIDGenerator.h"
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/Manager.h"
+
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityRef.h"

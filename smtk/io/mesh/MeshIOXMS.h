@@ -16,7 +16,7 @@
 
 #include "smtk/io/mesh/MeshIO.h"
 
-#include "smtk/mesh/DimensionTypes.h"
+#include "smtk/mesh/core/DimensionTypes.h"
 
 #include <ostream>
 #include <string>

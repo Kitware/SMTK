@@ -18,7 +18,7 @@
 #include "smtk/PublicPointerDefs.h"
 
 #include "smtk/attribute/ItemDefinition.h"
-#include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/core/MeshSet.h"
 
 namespace smtk
 {

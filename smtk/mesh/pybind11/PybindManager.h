@@ -13,7 +13,7 @@
 
 #include <pybind11/pybind11.h>
 
-#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/core/Manager.h"
 
 namespace py = pybind11;
 

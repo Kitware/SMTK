@@ -7,8 +7,8 @@
 
 #include "smtk/io/Helpers.h"
 
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/model/EntityIterator.h"
 

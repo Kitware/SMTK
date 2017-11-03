@@ -11,8 +11,8 @@
 #include "smtk/extension/qt/qtActiveObjects.h"
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/MeshSet.h"
 
 #include "smtk/model/DescriptivePhrase.h"
 #include "smtk/model/Entity.h"
@@ -53,8 +53,8 @@
 #include "smtk/extension/qt/qtSMTKUtilities.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Manager.h"
 
 #include <QAction>
 #include <QApplication>

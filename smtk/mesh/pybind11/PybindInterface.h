@@ -13,14 +13,14 @@
 
 #include <pybind11/pybind11.h>
 
-#include "smtk/mesh/Interface.h"
+#include "smtk/mesh/core/Interface.h"
 
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
-#include "smtk/mesh/CellTypes.h"
-#include "smtk/mesh/Handle.h"
-#include "smtk/mesh/PointConnectivity.h"
-#include "smtk/mesh/TypeSet.h"
+#include "smtk/mesh/core/CellTypes.h"
+#include "smtk/mesh/core/Handle.h"
+#include "smtk/mesh/core/PointConnectivity.h"
+#include "smtk/mesh/core/TypeSet.h"
 
 namespace py = pybind11;
 

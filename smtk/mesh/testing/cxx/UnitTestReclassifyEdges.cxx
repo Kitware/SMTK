@@ -11,9 +11,10 @@
 #include "smtk/io/LoadJSON.h"
 #include "smtk/io/ModelToMesh.h"
 
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/Manager.h"
-#include "smtk/mesh/Reclassify.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Manager.h"
+
+#include "smtk/mesh/utility/Reclassify.h"
 
 #include "smtk/model/EntityIterator.h"
 #include "smtk/model/Face.h"
@@ -189,7 +190,7 @@ void verify_split()
   smtk::model::Vertex promotedVertex;
   add_model_edge_and_vert(modelManager, originalEdge, newEdge, promotedVertex);
 
-  bool valid = smtk::mesh::split(c, originalEdge, newEdge, promotedVertex);
+  bool valid = smtk::mesh::utility::split(c, originalEdge, newEdge, promotedVertex);
   test(valid, "split should pass");
 
   all_points_are_valid(c);
@@ -221,9 +222,9 @@ void verify_merge()
   smtk::model::Vertex promotedVertex;
   add_model_edge_and_vert(modelManager, originalEdge, newEdge, promotedVertex);
 
-  bool svalid = smtk::mesh::split(c, originalEdge, newEdge, promotedVertex);
+  bool svalid = smtk::mesh::utility::split(c, originalEdge, newEdge, promotedVertex);
   test(svalid, "split should pass");
-  bool mvalid = smtk::mesh::merge(c, promotedVertex, newEdge, originalEdge);
+  bool mvalid = smtk::mesh::utility::merge(c, promotedVertex, newEdge, originalEdge);
   test(mvalid, "merge should pass");
 
   all_points_are_valid(c);

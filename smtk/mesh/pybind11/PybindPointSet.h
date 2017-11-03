@@ -14,7 +14,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include "smtk/mesh/PointSet.h"
+#include "smtk/mesh/core/PointSet.h"
 
 namespace py = pybind11;
 

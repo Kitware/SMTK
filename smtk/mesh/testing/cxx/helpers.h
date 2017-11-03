@@ -13,7 +13,7 @@
 #ifndef __smtk_mesh_testing_cxx_helpers_h
 #define __smtk_mesh_testing_cxx_helpers_h
 
-#include "smtk/mesh/CellTraits.h"
+#include "smtk/mesh/core/CellTraits.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 #include <iostream>

@@ -9,8 +9,9 @@
 //=========================================================================
 
 #include "smtk/io/ModelToMesh.h"
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/Manager.h"
+
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/model/EntityIterator.h"
 #include "smtk/model/Manager.h"

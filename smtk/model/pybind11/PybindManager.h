@@ -19,7 +19,7 @@
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/io/Logger.h"
-#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/core/Manager.h"
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/ArrangementKind.h"
 #include "smtk/model/AuxiliaryGeometry.h"

@@ -23,10 +23,10 @@
 
 #include "smtk/model/DefaultSession.h"
 
-#include "smtk/mesh/CellField.h"
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/ForEachTypes.h"
-#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/core/CellField.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/ForEachTypes.h"
+#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/Operator.h"

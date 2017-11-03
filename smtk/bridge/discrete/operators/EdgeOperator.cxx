@@ -19,10 +19,11 @@
 #include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/Manager.h"
-#include "smtk/mesh/MeshSet.h"
-#include "smtk/mesh/Reclassify.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Manager.h"
+#include "smtk/mesh/core/MeshSet.h"
+
+#include "smtk/mesh/utility/Reclassify.h"
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/Face.h"
@@ -70,7 +71,7 @@ inline bool internal_mergeAssociatedMeshes(const smtk::model::Vertex& remVert,
   std::vector<smtk::mesh::CollectionPtr>::iterator it;
   for (it = meshCollections.begin(); it != meshCollections.end(); ++it)
   {
-    ok &= smtk::mesh::merge(*it, remVert, toRemove, toAddTo);
+    ok &= smtk::mesh::utility::merge(*it, remVert, toRemove, toAddTo);
     if (ok)
     {
       smtk::mesh::MeshSet toMeshes = (*it)->findAssociatedMeshes(toAddTo);
@@ -90,7 +91,7 @@ bool internal_splitAssociatedMeshes(const smtk::model::Edge& srcEdge,
   std::vector<smtk::mesh::CollectionPtr>::iterator it;
   for (it = meshCollections.begin(); it != meshCollections.end(); ++it)
   {
-    ok &= smtk::mesh::split(*it, srcEdge, newEdge, newVert);
+    ok &= smtk::mesh::utility::split(*it, srcEdge, newEdge, newVert);
     if (ok)
     {
       smtk::mesh::MeshSet srcMeshes = (*it)->findAssociatedMeshes(srcEdge);

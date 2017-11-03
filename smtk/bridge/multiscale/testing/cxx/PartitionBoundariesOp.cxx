@@ -20,7 +20,7 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/io/SaveJSON.h"
 #include "smtk/model/EntityPhrase.h"

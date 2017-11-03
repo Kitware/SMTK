@@ -12,9 +12,10 @@
 
 #include "smtk/attribute/MeshItem.h"
 
-#include "smtk/mesh/ApplyToMesh.h"
-#include "smtk/mesh/MeshSet.h"
-#include "smtk/mesh/PointField.h"
+#include "smtk/mesh/core/MeshSet.h"
+#include "smtk/mesh/core/PointField.h"
+
+#include "smtk/mesh/utility/ApplyToMesh.h"
 
 namespace smtk
 {
@@ -67,7 +68,7 @@ smtk::model::OperatorResult UndoElevateMesh::operateInternal()
   {
     smtk::mesh::MeshSet mesh = meshItem->value(i);
 
-    bool success = smtk::mesh::undoWarp(mesh);
+    bool success = smtk::mesh::utility::undoWarp(mesh);
 
     if (!success)
     {

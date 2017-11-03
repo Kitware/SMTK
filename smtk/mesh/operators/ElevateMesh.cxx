@@ -20,12 +20,11 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/mesh/ApplyToMesh.h"
-#include "smtk/mesh/CellField.h"
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/Manager.h"
-#include "smtk/mesh/MeshSet.h"
-#include "smtk/mesh/PointField.h"
+#include "smtk/mesh/core/CellField.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Manager.h"
+#include "smtk/mesh/core/MeshSet.h"
+#include "smtk/mesh/core/PointField.h"
 
 #include "smtk/mesh/interpolation/InverseDistanceWeighting.h"
 #include "smtk/mesh/interpolation/PointCloud.h"
@@ -33,6 +32,8 @@
 #include "smtk/mesh/interpolation/RadialAverage.h"
 #include "smtk/mesh/interpolation/StructuredGrid.h"
 #include "smtk/mesh/interpolation/StructuredGridGenerator.h"
+
+#include "smtk/mesh/utility/ApplyToMesh.h"
 
 #include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/Manager.h"
@@ -316,7 +317,7 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
   {
     smtk::mesh::MeshSet mesh = meshItem->value(i);
 
-    smtk::mesh::applyWarp(fn, mesh, true);
+    smtk::mesh::utility::applyWarp(fn, mesh, true);
 
     modifiedMeshes->appendValue(mesh);
 

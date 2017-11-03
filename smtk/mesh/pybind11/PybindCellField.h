@@ -13,10 +13,10 @@
 
 #include <pybind11/pybind11.h>
 
-#include "smtk/mesh/CellField.h"
+#include "smtk/mesh/core/CellField.h"
 
-#include "smtk/mesh/CellSet.h"
-#include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/core/CellSet.h"
+#include "smtk/mesh/core/MeshSet.h"
 
 namespace py = pybind11;
 

@@ -13,7 +13,7 @@
 
 #include <pybind11/pybind11.h>
 
-#include "smtk/mesh/PointLocator.h"
+#include "smtk/mesh/core/PointLocator.h"
 
 namespace py = pybind11;
 

@@ -11,13 +11,14 @@
 #include "smtk/io/mesh/MeshIOXMS.h"
 #include "smtk/io/mesh/MeshIO.h"
 
-#include "smtk/mesh/CellSet.h"
-#include "smtk/mesh/CellTypes.h"
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/DimensionTypes.h"
-#include "smtk/mesh/ExtractTessellation.h"
-#include "smtk/mesh/Manager.h"
-#include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/core/CellSet.h"
+#include "smtk/mesh/core/CellTypes.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/DimensionTypes.h"
+#include "smtk/mesh/core/Manager.h"
+#include "smtk/mesh/core/MeshSet.h"
+
+#include "smtk/mesh/utility/ExtractTessellation.h"
 
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Manager.h"
@@ -229,9 +230,9 @@ public:
     std::int64_t connectivityLen = cells.pointConnectivity().size();
     std::vector<std::int64_t> conn(connectivityLen);
 
-    smtk::mesh::PreAllocatedTessellation connectivityInfo(&conn[0]);
+    smtk::mesh::utility::PreAllocatedTessellation connectivityInfo(&conn[0]);
     connectivityInfo.disableVTKStyleConnectivity(true);
-    smtk::mesh::extractTessellation(cells, this->m_PointSet, connectivityInfo);
+    smtk::mesh::utility::extractTessellation(cells, this->m_PointSet, connectivityInfo);
 
     //now we just need to write out the cells
     std::size_t nCells = cells.size();
@@ -259,9 +260,9 @@ public:
     std::vector<std::int64_t> conn(connectivityLen);
     std::vector<double> points(pointLen);
 
-    smtk::mesh::PreAllocatedTessellation connectivityInfo(&conn[0], &points[0]);
+    smtk::mesh::utility::PreAllocatedTessellation connectivityInfo(&conn[0], &points[0]);
     connectivityInfo.disableVTKStyleConnectivity(true);
-    smtk::mesh::extractTessellation(cells, this->m_PointSet, connectivityInfo);
+    smtk::mesh::utility::extractTessellation(cells, this->m_PointSet, connectivityInfo);
 
     //when writing out a triangle or quad region the cell must be written
     //in counter clockwise orientation. We are presuming that for 2d meshes

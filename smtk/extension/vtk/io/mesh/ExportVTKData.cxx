@@ -12,15 +12,16 @@
 
 #include "smtk/extension/vtk/io/mesh/ExportVTKData.h"
 
-#include "smtk/mesh/CellField.h"
-#include "smtk/mesh/CellSet.h"
-#include "smtk/mesh/CellTraits.h"
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/ExtractMeshConstants.h"
-#include "smtk/mesh/ExtractTessellation.h"
-#include "smtk/mesh/Manager.h"
-#include "smtk/mesh/MeshSet.h"
-#include "smtk/mesh/PointField.h"
+#include "smtk/mesh/core/CellField.h"
+#include "smtk/mesh/core/CellSet.h"
+#include "smtk/mesh/core/CellTraits.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Manager.h"
+#include "smtk/mesh/core/MeshSet.h"
+#include "smtk/mesh/core/PointField.h"
+
+#include "smtk/mesh/utility/ExtractMeshConstants.h"
+#include "smtk/mesh/utility/ExtractTessellation.h"
 
 #include "vtkAOSDataArrayTemplate.h"
 #include "vtkCell.h"
@@ -174,7 +175,7 @@ void ExportVTKData::operator()(
   std::int64_t numberOfPoints = -1;
 
   //determine the allocation lengths
-  smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(
+  smtk::mesh::utility::PreAllocatedTessellation::determineAllocationLengths(
     cellset, connectivityLength, numberOfCells, numberOfPoints);
 
   // add the number of cells to the connectivity length to get the length of
@@ -188,9 +189,9 @@ void ExportVTKData::operator()(
   std::int64_t* connectivityData_ = new std::int64_t[connectivityLength];
 
   //extract tessellation information
-  smtk::mesh::PreAllocatedTessellation tess(
+  smtk::mesh::utility::PreAllocatedTessellation tess(
     connectivityData_, cellLocationsData_, cellTypesData, pointsData);
-  smtk::mesh::extractTessellation(cellset, tess);
+  smtk::mesh::utility::extractTessellation(cellset, tess);
 
   vtkIdType* cellLocationsData;
   {
@@ -249,8 +250,8 @@ void ExportVTKData::operator()(
     std::int64_t* pointData_ = new std::int64_t[numberOfPoints];
 
     //extract mesh constant information
-    smtk::mesh::PreAllocatedMeshConstants meshConstants(cellData_, pointData_);
-    smtk::mesh::extractDomainMeshConstants(meshset, meshConstants);
+    smtk::mesh::utility::PreAllocatedMeshConstants meshConstants(cellData_, pointData_);
+    smtk::mesh::utility::extractDomainMeshConstants(meshset, meshConstants);
 
     vtkIdType* cellData;
     {
@@ -321,7 +322,7 @@ void ExportVTKData::operator()(
   std::int64_t numberOfPoints = -1;
 
   //determine the allocation lengths
-  smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(
+  smtk::mesh::utility::PreAllocatedTessellation::determineAllocationLengths(
     meshset, connectivityLength, numberOfCells, numberOfPoints);
 
   // add the number of cells to the connectivity length to get the length of
@@ -335,9 +336,9 @@ void ExportVTKData::operator()(
   std::int64_t* connectivityData_ = new std::int64_t[connectivityLength];
 
   //extract tessellation information
-  smtk::mesh::PreAllocatedTessellation tess(
+  smtk::mesh::utility::PreAllocatedTessellation tess(
     connectivityData_, cellLocationsData_, cellTypesData, pointsData);
-  smtk::mesh::extractTessellation(meshset, tess);
+  smtk::mesh::utility::extractTessellation(meshset, tess);
 
   vtkIdType* cellLocationsData;
   {
@@ -385,8 +386,8 @@ void ExportVTKData::operator()(
     std::int64_t* pointData_ = new std::int64_t[numberOfPoints];
 
     //extract field information
-    smtk::mesh::PreAllocatedMeshConstants meshConstants(cellData_, pointData_);
-    smtk::mesh::extractDomainMeshConstants(meshset, meshConstants);
+    smtk::mesh::utility::PreAllocatedMeshConstants meshConstants(cellData_, pointData_);
+    smtk::mesh::utility::extractDomainMeshConstants(meshset, meshConstants);
 
     vtkIdType* cellData;
     {

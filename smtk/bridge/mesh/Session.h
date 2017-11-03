@@ -14,7 +14,7 @@
 #include "smtk/bridge/mesh/Facade.h"
 #include "smtk/bridge/mesh/Topology.h"
 
-#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/core/Collection.h"
 
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Session.h"

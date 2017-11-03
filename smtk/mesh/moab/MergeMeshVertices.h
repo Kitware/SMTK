@@ -19,7 +19,7 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include "moab/AdaptiveKDTree.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
 
-#include "smtk/mesh/Handle.h"
+#include "smtk/mesh/core/Handle.h"
 
 #include <map>
 

@@ -20,7 +20,7 @@
 
 #include "smtk/io/WriteMesh.h"
 
-#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"

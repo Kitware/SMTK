@@ -22,7 +22,7 @@ SMTK_THIRDPARTY_POST_INCLUDE
 #include "smtk/extension/vtk/pybind11/PybindVTKTypeCaster.h"
 #include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
-#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/core/Manager.h"
 #include "smtk/model/Manager.h"
 
 namespace py = pybind11;

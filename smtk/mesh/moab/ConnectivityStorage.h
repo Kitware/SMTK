@@ -12,7 +12,7 @@
 #define __smtk_mesh_moab_ConnectivityStorage_h
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/mesh/Handle.h"
+#include "smtk/mesh/core/Handle.h"
 
 #include "smtk/mesh/moab/Interface.h"
 

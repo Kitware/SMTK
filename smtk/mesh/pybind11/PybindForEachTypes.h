@@ -14,10 +14,10 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include "smtk/mesh/ForEachTypes.h"
+#include "smtk/mesh/core/ForEachTypes.h"
 
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/MeshSet.h"
 
 namespace py = pybind11;
 

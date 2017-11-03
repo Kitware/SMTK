@@ -12,8 +12,8 @@
 
 #include "smtk/extension/delaunay/io/ImportDelaunayMesh.h"
 
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/MeshSet.h"
 
 #include "Mesh/Mesh.hh"
 #include "Shape/Point.hh"

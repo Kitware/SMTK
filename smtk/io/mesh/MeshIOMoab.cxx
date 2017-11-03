@@ -11,8 +11,8 @@
 #include "smtk/io/mesh/MeshIOMoab.h"
 #include "smtk/io/mesh/MeshIO.h"
 
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/mesh/moab/Readers.h"
 #include "smtk/mesh/moab/Writers.h"

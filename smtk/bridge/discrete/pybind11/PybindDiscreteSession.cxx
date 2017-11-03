@@ -38,7 +38,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindSplitFaceOperator.h"
 #include "PybindWriteOperator.h"
 
-#include "smtk/mesh/ForEachTypes.h"
+#include "smtk/mesh/core/ForEachTypes.h"
 
 #include "smtk/model/ArrangementHelper.h"
 #include "smtk/model/Operator.h"
