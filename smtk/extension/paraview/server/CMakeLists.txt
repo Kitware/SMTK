@@ -60,3 +60,4 @@ smtk_install_library(smtkPVServerExtPlugin)
 #  )
 #endif()
 
+add_subdirectory(testing)
