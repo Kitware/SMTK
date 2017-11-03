@@ -17,7 +17,7 @@
 
 #include "smtk/extension/vtk/io/mesh/ExportVTKData.h"
 
-#include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/core/MeshSet.h"
 
 #include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/Edge.h"

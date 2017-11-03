@@ -13,7 +13,7 @@
 
 #include <pybind11/pybind11.h>
 
-#include "smtk/mesh/QueryTypes.h"
+#include "smtk/mesh/core/QueryTypes.h"
 
 namespace py = pybind11;
 

@@ -17,7 +17,7 @@
 #include "smtk/common/UUID.h"
 #include "smtk/extension/qt/qtMeshItem.h"
 #include "smtk/extension/qt/qtModelEntityItem.h"
-#include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/core/MeshSet.h"
 #include "smtk/model/DescriptivePhrase.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/EntityRef.h"

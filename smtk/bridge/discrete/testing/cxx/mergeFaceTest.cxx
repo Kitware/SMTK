@@ -12,7 +12,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/bridge/discrete/Session.h"
 #include "smtk/common/UUID.h"
-#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/Manager.h"

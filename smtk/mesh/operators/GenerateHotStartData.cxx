@@ -18,13 +18,14 @@
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/mesh/ApplyToMesh.h"
-#include "smtk/mesh/CellField.h"
-#include "smtk/mesh/MeshSet.h"
-#include "smtk/mesh/PointField.h"
+#include "smtk/mesh/core/CellField.h"
+#include "smtk/mesh/core/MeshSet.h"
+#include "smtk/mesh/core/PointField.h"
 
 #include "smtk/mesh/interpolation/InverseDistanceWeighting.h"
 #include "smtk/mesh/interpolation/PointCloud.h"
+
+#include "smtk/mesh/utility/ApplyToMesh.h"
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/Session.h"
@@ -307,7 +308,7 @@ smtk::model::OperatorResult GenerateHotStartData::operateInternal()
   {
     smtk::mesh::MeshSet mesh = meshItem->value(i);
 
-    smtk::mesh::applyScalarPointField(fn, name, mesh);
+    smtk::mesh::utility::applyScalarPointField(fn, name, mesh);
 
     modifiedMeshes->appendValue(mesh);
 

@@ -8,9 +8,10 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/ExtractMeshConstants.h"
-#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Manager.h"
+
+#include "smtk/mesh/utility/ExtractMeshConstants.h"
 
 #include "smtk/io/ReadMesh.h"
 
@@ -156,14 +157,14 @@ void verify_extract_domain()
   std::int64_t numberOfCells;
   std::int64_t numberOfPoints;
 
-  smtk::mesh::PreAllocatedMeshConstants::determineAllocationLengths(
+  smtk::mesh::utility::PreAllocatedMeshConstants::determineAllocationLengths(
     meshes, numberOfCells, numberOfPoints);
 
   std::int64_t* cells = new std::int64_t[numberOfCells];
   std::int64_t* points = new std::int64_t[numberOfPoints];
 
-  smtk::mesh::PreAllocatedMeshConstants meshConstants(cells, points);
-  smtk::mesh::extractDomainMeshConstants(meshes, meshConstants);
+  smtk::mesh::utility::PreAllocatedMeshConstants meshConstants(cells, points);
+  smtk::mesh::utility::extractDomainMeshConstants(meshes, meshConstants);
 
   std::vector<smtk::mesh::Domain> domains = meshes.domains();
   std::vector<smtk::mesh::CellSet> cellsByDomain;

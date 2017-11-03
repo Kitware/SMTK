@@ -76,7 +76,7 @@ PYBIND11_MODULE(_smtkPybindMesh, mesh)
   PySharedPtrClass< smtk::mesh::ContainsFunctor > smtk_mesh_ContainsFunctor = pybind11_init_smtk_mesh_ContainsFunctor(mesh);
   PySharedPtrClass< smtk::mesh::CellField > smtk_mesh_CellField = pybind11_init_smtk_mesh_CellField(mesh);
   PySharedPtrClass< smtk::mesh::CellField > smtk_mesh_PointField = pybind11_init_smtk_mesh_PointField(mesh);
-  PySharedPtrClass< smtk::mesh::MeshConstants > smtk_mesh_MeshConstants = pybind11_init_smtk_mesh_MeshConstants(mesh);
+  PySharedPtrClass< smtk::mesh::utility::MeshConstants > smtk_mesh_MeshConstants = pybind11_init_smtk_mesh_MeshConstants(mesh);
   PySharedPtrClass< smtk::mesh::IntegerTag > smtk_mesh_IntegerTag = pybind11_init_smtk_mesh_IntegerTag(mesh);
   PySharedPtrClass< smtk::mesh::Interface > smtk_mesh_Interface = pybind11_init_smtk_mesh_Interface(mesh);
   PySharedPtrClass< smtk::mesh::Manager > smtk_mesh_Manager = pybind11_init_smtk_mesh_Manager(mesh);
@@ -88,9 +88,9 @@ PYBIND11_MODULE(_smtkPybindMesh, mesh)
   PySharedPtrClass< smtk::mesh::PointLocator > smtk_mesh_PointLocator = pybind11_init_smtk_mesh_PointLocator(mesh);
   PySharedPtrClass< smtk::mesh::PointLocatorImpl > smtk_mesh_PointLocatorImpl = pybind11_init_smtk_mesh_PointLocatorImpl(mesh);
   PySharedPtrClass< smtk::mesh::PointSet > smtk_mesh_PointSet = pybind11_init_smtk_mesh_PointSet(mesh);
-  PySharedPtrClass< smtk::mesh::PreAllocatedMeshConstants > smtk_mesh_PreAllocatedMeshConstants = pybind11_init_smtk_mesh_PreAllocatedMeshConstants(mesh);
-  PySharedPtrClass< smtk::mesh::PreAllocatedTessellation > smtk_mesh_PreAllocatedTessellation = pybind11_init_smtk_mesh_PreAllocatedTessellation(mesh);
-  PySharedPtrClass< smtk::mesh::Tessellation > smtk_mesh_Tessellation = pybind11_init_smtk_mesh_Tessellation(mesh);
+  PySharedPtrClass< smtk::mesh::utility::PreAllocatedMeshConstants > smtk_mesh_PreAllocatedMeshConstants = pybind11_init_smtk_mesh_PreAllocatedMeshConstants(mesh);
+  PySharedPtrClass< smtk::mesh::utility::PreAllocatedTessellation > smtk_mesh_PreAllocatedTessellation = pybind11_init_smtk_mesh_PreAllocatedTessellation(mesh);
+  PySharedPtrClass< smtk::mesh::utility::Tessellation > smtk_mesh_Tessellation = pybind11_init_smtk_mesh_Tessellation(mesh);
   PySharedPtrClass< smtk::mesh::TypeSet > smtk_mesh_TypeSet = pybind11_init_smtk_mesh_TypeSet(mesh);
   pybind11_init_smtk_mesh_CellType(mesh);
   pybind11_init_smtk_mesh_ContainmentType(mesh);

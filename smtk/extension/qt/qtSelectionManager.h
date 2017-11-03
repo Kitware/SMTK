@@ -23,7 +23,7 @@
 #include "smtk/model/EntityTypeBits.h"
 #include "smtk/model/SessionRef.h"
 
-#include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/core/MeshSet.h"
 
 #include "smtk/extension/qt/qtItem.h"
 

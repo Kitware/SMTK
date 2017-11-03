@@ -13,7 +13,7 @@
 
 #include <pybind11/pybind11.h>
 
-#include "smtk/mesh/ContainsFunctors.h"
+#include "smtk/mesh/core/ContainsFunctors.h"
 
 namespace py = pybind11;
 

@@ -8,9 +8,9 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/Handle.h"
-#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Handle.h"
+#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 

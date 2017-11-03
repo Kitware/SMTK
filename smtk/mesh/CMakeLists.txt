@@ -1,25 +1,25 @@
 # set up sources to build
 set(meshSrcs
-  ApplyToMesh.cxx
-  CellSet.cxx
-  CellField.cxx
-  CellTypes.cxx
-  Collection.cxx
-  ExtractMeshConstants.cxx
-  ExtractTessellation.cxx
-  ForEachTypes.cxx
-  Handle.cxx
-  Manager.cxx
-  MeshComponent.cxx
-  MeshSet.cxx
-  Metrics.cxx
-  PointConnectivity.cxx
-  PointField.cxx
-  PointLocator.cxx
-  PointSet.cxx
-  QueryTypes.cxx
-  Reclassify.cxx
-  TypeSet.cxx
+  core/CellSet.cxx
+  core/CellField.cxx
+  core/CellTypes.cxx
+  core/Collection.cxx
+  core/ForEachTypes.cxx
+  core/Handle.cxx
+  core/Manager.cxx
+  core/MeshSet.cxx
+  core/PointConnectivity.cxx
+  core/PointField.cxx
+  core/PointLocator.cxx
+  core/PointSet.cxx
+  core/QueryTypes.cxx
+  core/TypeSet.cxx
+
+  interpolation/InverseDistanceWeighting.cxx
+  interpolation/PointCloudFromCSV.cxx
+  interpolation/PointCloudGenerator.cxx
+  interpolation/RadialAverage.cxx
+  interpolation/StructuredGridGenerator.cxx
 
   json/Interface.cxx
   json/MeshInfo.cxx
@@ -36,12 +36,6 @@ set(meshSrcs
   moab/Readers.cxx
   moab/Writers.cxx
 
-  interpolation/InverseDistanceWeighting.cxx
-  interpolation/PointCloudFromCSV.cxx
-  interpolation/PointCloudGenerator.cxx
-  interpolation/RadialAverage.cxx
-  interpolation/StructuredGridGenerator.cxx
-
   operators/DeleteMesh.cxx
   operators/ElevateMesh.cxx
   operators/ExportMesh.cxx
@@ -49,39 +43,33 @@ set(meshSrcs
   operators/InterpolateOntoMesh.cxx
   operators/UndoElevateMesh.cxx
   operators/WriteMesh.cxx
+
+  resource/MeshComponent.cxx
+
+  utility/ApplyToMesh.cxx
+  utility/ExtractMeshConstants.cxx
+  utility/ExtractTessellation.cxx
+  utility/Metrics.cxx
+  utility/Reclassify.cxx
   )
 
 set(meshHeaders
-  ApplyToMesh.h
-  CellSet.h
-  CellField.h
-  CellTraits.h
-  CellTypes.h
-  Collection.h
-  DimensionTypes.h
-  ExtractMeshConstants.h
-  ExtractTessellation.h
-  ForEachTypes.h
-  Handle.h
-  Interface.h
-  Manager.h
-  MeshComponent.h
-  MeshSet.h
-  Metrics.h
-  PointConnectivity.h
-  PointField.h
-  PointSet.h
-  PropertyData.h
-  QueryTypes.h
-  Reclassify.h
-  TypeSet.h
-
-  #Limit the amount of headers for each backend we install. These should be
-  #implementation details users of smtk don't get access to ( outside the interface )
-  json/Interface.h
-  json/MeshInfo.h
-  moab/Interface.h
-  moab/HandleRange.h
+  core/CellSet.h
+  core/CellField.h
+  core/CellTraits.h
+  core/CellTypes.h
+  core/Collection.h
+  core/DimensionTypes.h
+  core/ForEachTypes.h
+  core/Handle.h
+  core/Interface.h
+  core/Manager.h
+  core/MeshSet.h
+  core/PointConnectivity.h
+  core/PointField.h
+  core/PointSet.h
+  core/QueryTypes.h
+  core/TypeSet.h
 
   interpolation/InverseDistanceWeighting.h
   interpolation/PointCloud.h
@@ -91,6 +79,14 @@ set(meshHeaders
   interpolation/StructuredGrid.h
   interpolation/StructuredGridGenerator.h
 
+  #Limit the amount of headers for each backend we install. These should be
+  #implementation details users of smtk don't get access to ( outside the interface )
+  json/Interface.h
+  json/MeshInfo.h
+
+  moab/Interface.h
+  moab/HandleRange.h
+
   operators/DeleteMesh.h
   operators/ElevateMesh.h
   operators/ExportMesh.h
@@ -98,6 +94,15 @@ set(meshHeaders
   operators/InterpolateOntoMesh.h
   operators/UndoElevateMesh.h
   operators/WriteMesh.h
+
+  resource/MeshComponent.h
+  resource/PropertyData.h
+
+  utility/ApplyToMesh.h
+  utility/ExtractMeshConstants.h
+  utility/ExtractTessellation.h
+  utility/Metrics.h
+  utility/Reclassify.h
   )
 
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/DeleteMesh.sbt" defOpXML)

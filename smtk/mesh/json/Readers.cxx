@@ -15,8 +15,8 @@
 
 #include "smtk/io/LoadJSON.h"
 
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Manager.h"
 
 #include <stdio.h>
 #include <string.h>

@@ -12,8 +12,8 @@
 
 #include "smtk/extension/vtk/source/Exports.h"
 #include "smtk/extension/vtk/source/vtkTracksAllInstances.h"
-#include "smtk/mesh/MeshSet.h"     // for MeshSet
-#include "smtk/model/CellEntity.h" // for CellEntities
+#include "smtk/mesh/core/MeshSet.h" // for MeshSet
+#include "smtk/model/CellEntity.h"  // for CellEntities
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/common/UUID.h"

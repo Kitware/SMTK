@@ -11,7 +11,7 @@
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/bridge/discrete/Session.h"
-#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Operator.h"

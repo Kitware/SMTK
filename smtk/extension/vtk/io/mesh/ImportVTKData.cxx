@@ -12,14 +12,15 @@
 
 #include "smtk/extension/vtk/io/mesh/ImportVTKData.h"
 
-#include "smtk/mesh/CellField.h"
-#include "smtk/mesh/CellSet.h"
-#include "smtk/mesh/CellTraits.h"
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/ExtractTessellation.h"
-#include "smtk/mesh/Manager.h"
-#include "smtk/mesh/MeshSet.h"
-#include "smtk/mesh/PointField.h"
+#include "smtk/mesh/core/CellField.h"
+#include "smtk/mesh/core/CellSet.h"
+#include "smtk/mesh/core/CellTraits.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Manager.h"
+#include "smtk/mesh/core/MeshSet.h"
+#include "smtk/mesh/core/PointField.h"
+
+#include "smtk/mesh/utility/ExtractTessellation.h"
 
 #include "vtkAOSDataArrayTemplate.h"
 #include "vtkCell.h"

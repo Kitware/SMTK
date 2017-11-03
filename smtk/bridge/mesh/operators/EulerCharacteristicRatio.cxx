@@ -17,9 +17,9 @@
 
 #include "smtk/common/CompilerInformation.h"
 
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/Manager.h"
-#include "smtk/mesh/Metrics.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Manager.h"
+#include "smtk/mesh/utility/Metrics.h"
 
 #include "smtk/model/Model.h"
 
@@ -57,8 +57,8 @@ smtk::model::OperatorResult EulerCharacteristicRatio::operateInternal()
   smtk::mesh::MeshSet mesh = collection->meshes();
 
   // Compute the Euler characteristics for the model's boundary and volume.
-  int eulerBoundary = eulerCharacteristic(mesh.extractShell());
-  int eulerVolume = eulerCharacteristic(mesh);
+  int eulerBoundary = smtk::mesh::utility::eulerCharacteristic(mesh.extractShell());
+  int eulerVolume = smtk::mesh::utility::eulerCharacteristic(mesh);
 
   // Compute the ratio of these two values.
   double eulerRatio = ((double)(eulerBoundary)) / ((double)(eulerVolume));

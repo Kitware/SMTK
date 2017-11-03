@@ -11,9 +11,9 @@
 #include "smtk/io/ImportMesh.h"
 #include "smtk/io/ReadMesh.h"
 #include "smtk/io/WriteMesh.h"
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/Manager.h"
-#include "smtk/mesh/PointField.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Manager.h"
+#include "smtk/mesh/core/PointField.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 

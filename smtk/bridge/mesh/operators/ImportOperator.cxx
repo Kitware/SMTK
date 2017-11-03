@@ -22,7 +22,7 @@
 
 #include "smtk/io/ImportMesh.h"
 
-#include "smtk/mesh/Metrics.h"
+#include "smtk/mesh/utility/Metrics.h"
 
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
@@ -85,7 +85,7 @@ smtk::model::OperatorResult ImportOperator::operateInternal()
   this->activeSession()->addTopology(Topology(collection, constructHierarchy));
 
   // Determine the model's dimension
-  int dimension = int(smtk::mesh::highestDimension(collection->meshes()));
+  int dimension = int(smtk::mesh::utility::highestDimension(collection->meshes()));
 
   // Our collections will already have a UUID, so here we create a model given
   // the model manager and uuid

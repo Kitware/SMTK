@@ -12,7 +12,7 @@
 #include "smtk/mesh/moab/IncrementalAllocator.h"
 #include "smtk/mesh/moab/CellTypeToType.h"
 
-#include "smtk/mesh/CellTypes.h"
+#include "smtk/mesh/core/CellTypes.h"
 
 #include "smtk/common/CompilerInformation.h"
 

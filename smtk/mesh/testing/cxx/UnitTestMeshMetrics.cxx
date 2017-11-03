@@ -15,9 +15,10 @@
 #include "smtk/io/ExportMesh.h"
 #include "smtk/io/ImportMesh.h"
 
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/Manager.h"
-#include "smtk/mesh/Metrics.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Manager.h"
+
+#include "smtk/mesh/utility/Metrics.h"
 
 #include "smtk/model/Operator.h"
 
@@ -39,8 +40,8 @@ void verify_eulerCharacteristic_cube()
   smtk::mesh::CollectionPtr c = smtk::io::importMesh(file_path, manager);
   test(c->isValid(), "collection should be valid");
 
-  test(eulerCharacteristic(c->meshes().extractShell()) == 2);
-  test(eulerCharacteristic(c->meshes()) == 1);
+  test(smtk::mesh::utility::eulerCharacteristic(c->meshes().extractShell()) == 2);
+  test(smtk::mesh::utility::eulerCharacteristic(c->meshes()) == 1);
 }
 
 void verify_eulerCharacteristic_cubeWithHole()
@@ -53,7 +54,7 @@ void verify_eulerCharacteristic_cubeWithHole()
   smtk::mesh::CollectionPtr c = smtk::io::importMesh(file_path, manager);
   test(c->isValid(), "collection should be valid");
 
-  test(eulerCharacteristic(c->meshes().extractShell()) == 0);
+  test(smtk::mesh::utility::eulerCharacteristic(c->meshes().extractShell()) == 0);
 }
 }
 

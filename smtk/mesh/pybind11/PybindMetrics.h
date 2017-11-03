@@ -14,16 +14,16 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include "smtk/mesh/Metrics.h"
+#include "smtk/mesh/utility/Metrics.h"
 
 namespace py = pybind11;
 
 
 void pybind11_init_smtk_mesh_metrics(py::module &m)
 {
-  m.def("extent", &smtk::mesh::extent);
-  m.def("highestDimension", &smtk::mesh::highestDimension);
-  m.def("eulerCharacteristic", &smtk::mesh::eulerCharacteristic);
+  m.def("extent", &smtk::mesh::utility::extent);
+  m.def("highestDimension", &smtk::mesh::utility::highestDimension);
+  m.def("eulerCharacteristic", &smtk::mesh::utility::eulerCharacteristic);
 }
 
 #endif

@@ -36,7 +36,7 @@
 #include "smtk/model/Volume.h"
 #include "smtk/model/VolumeUse.h"
 
-#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/common/UUIDGenerator.h"
 

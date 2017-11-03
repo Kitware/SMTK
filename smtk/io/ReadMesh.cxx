@@ -14,7 +14,7 @@
 
 #include "smtk/common/CompilerInformation.h"
 
-#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/core/Collection.h"
 
 #include <algorithm>
 

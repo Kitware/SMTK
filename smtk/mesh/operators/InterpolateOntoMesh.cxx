@@ -18,11 +18,10 @@
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/mesh/ApplyToMesh.h"
-#include "smtk/mesh/CellField.h"
-#include "smtk/mesh/Manager.h"
-#include "smtk/mesh/MeshSet.h"
-#include "smtk/mesh/PointField.h"
+#include "smtk/mesh/core/CellField.h"
+#include "smtk/mesh/core/Manager.h"
+#include "smtk/mesh/core/MeshSet.h"
+#include "smtk/mesh/core/PointField.h"
 
 #include "smtk/mesh/interpolation/InverseDistanceWeighting.h"
 #include "smtk/mesh/interpolation/PointCloud.h"
@@ -30,6 +29,8 @@
 #include "smtk/mesh/interpolation/RadialAverage.h"
 #include "smtk/mesh/interpolation/StructuredGrid.h"
 #include "smtk/mesh/interpolation/StructuredGridGenerator.h"
+
+#include "smtk/mesh/utility/ApplyToMesh.h"
 
 #include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/Manager.h"
@@ -279,11 +280,11 @@ smtk::model::OperatorResult InterpolateOntoMesh::operateInternal()
 
     if (modeItem->value(0) == CELL_FIELD)
     {
-      smtk::mesh::applyScalarCellField(fn, nameItem->value(), mesh);
+      smtk::mesh::utility::applyScalarCellField(fn, nameItem->value(), mesh);
     }
     else
     {
-      smtk::mesh::applyScalarPointField(fn, nameItem->value(), mesh);
+      smtk::mesh::utility::applyScalarPointField(fn, nameItem->value(), mesh);
     }
 
     modifiedMeshes->appendValue(mesh);

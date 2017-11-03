@@ -15,11 +15,11 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
-#include "smtk/mesh/CellTypes.h"
-#include "smtk/mesh/DimensionTypes.h"
-#include "smtk/mesh/Handle.h"
-#include "smtk/mesh/Interface.h"
-#include "smtk/mesh/TypeSet.h"
+#include "smtk/mesh/core/CellTypes.h"
+#include "smtk/mesh/core/DimensionTypes.h"
+#include "smtk/mesh/core/Handle.h"
+#include "smtk/mesh/core/Interface.h"
+#include "smtk/mesh/core/TypeSet.h"
 
 #include "smtk/mesh/json/MeshInfo.h"
 

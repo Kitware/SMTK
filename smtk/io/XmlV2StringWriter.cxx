@@ -41,7 +41,8 @@
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/common/View.h"
 
-#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/core/Collection.h"
+
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"

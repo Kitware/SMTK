@@ -19,8 +19,8 @@
 #include "smtk/model/ShellEntity.h"
 #include "smtk/model/UseEntity.h"
 
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/MeshSet.h"
 
 #include <sstream>
 

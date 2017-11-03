@@ -21,7 +21,7 @@
 #include "smtk/model/ShellEntity.h"
 #include "smtk/model/UseEntity.h"
 
-#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Collection.h"

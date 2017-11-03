@@ -11,7 +11,8 @@
 
 #include "smtk/model/Session.h"
 
-#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/core/Manager.h"
+
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"

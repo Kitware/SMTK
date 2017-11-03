@@ -13,7 +13,7 @@
 
 #include <pybind11/pybind11.h>
 
-#include "smtk/mesh/PointConnectivity.h"
+#include "smtk/mesh/core/PointConnectivity.h"
 
 namespace py = pybind11;
 

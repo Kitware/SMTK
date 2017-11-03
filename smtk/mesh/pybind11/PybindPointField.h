@@ -13,10 +13,10 @@
 
 #include <pybind11/pybind11.h>
 
-#include "smtk/mesh/PointField.h"
+#include "smtk/mesh/core/PointField.h"
 
-#include "smtk/mesh/PointSet.h"
-#include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/core/PointSet.h"
+#include "smtk/mesh/core/MeshSet.h"
 
 namespace py = pybind11;
 

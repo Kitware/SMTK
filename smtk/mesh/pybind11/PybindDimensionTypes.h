@@ -13,7 +13,7 @@
 
 #include <pybind11/pybind11.h>
 
-#include "smtk/mesh/DimensionTypes.h"
+#include "smtk/mesh/core/DimensionTypes.h"
 
 namespace py = pybind11;
 

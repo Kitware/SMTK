@@ -12,7 +12,7 @@
 #include "smtk/mesh/moab/Writers.h"
 #include "smtk/mesh/moab/Interface.h"
 
-#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/core/Collection.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "moab/Interface.hpp"

@@ -17,8 +17,8 @@
 
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/MeshSet.h"
 #include "smtk/model/ArrangementKind.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/SubphraseGenerator.h"

@@ -13,19 +13,19 @@
 
 #include <pybind11/pybind11.h>
 
-#include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/core/MeshSet.h"
 
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
-#include "smtk/mesh/CellField.h"
-#include "smtk/mesh/CellSet.h"
-#include "smtk/mesh/CellTypes.h"
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/Handle.h"
-#include "smtk/mesh/PointField.h"
-#include "smtk/mesh/PointConnectivity.h"
-#include "smtk/mesh/PointSet.h"
-#include "smtk/mesh/TypeSet.h"
+#include "smtk/mesh/core/CellField.h"
+#include "smtk/mesh/core/CellSet.h"
+#include "smtk/mesh/core/CellTypes.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Handle.h"
+#include "smtk/mesh/core/PointField.h"
+#include "smtk/mesh/core/PointConnectivity.h"
+#include "smtk/mesh/core/PointSet.h"
+#include "smtk/mesh/core/TypeSet.h"
 #include "smtk/model/EntityRef.h"
 
 namespace py = pybind11;

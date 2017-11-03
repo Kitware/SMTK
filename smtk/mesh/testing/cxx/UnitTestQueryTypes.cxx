@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/mesh/QueryTypes.h"
+#include "smtk/mesh/core/QueryTypes.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 

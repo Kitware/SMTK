@@ -13,7 +13,7 @@
 
 #include <pybind11/pybind11.h>
 
-#include "smtk/mesh/TypeSet.h"
+#include "smtk/mesh/core/TypeSet.h"
 
 namespace py = pybind11;
 

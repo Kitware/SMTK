@@ -13,8 +13,8 @@
 
 #include <pybind11/pybind11.h>
 
-#include "smtk/mesh/CellTraits.h"
-#include "smtk/mesh/CellTypes.h"
+#include "smtk/mesh/core/CellTraits.h"
+#include "smtk/mesh/core/CellTypes.h"
 
 namespace py = pybind11;
 

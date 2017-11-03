@@ -11,10 +11,10 @@
 //=============================================================================
 #include "smtk/bridge/mesh/Topology.h"
 
-#include "smtk/mesh/CellSet.h"
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/ForEachTypes.h"
-#include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/core/CellSet.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/ForEachTypes.h"
+#include "smtk/mesh/core/MeshSet.h"
 
 #include <numeric>
 

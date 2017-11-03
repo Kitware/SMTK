@@ -28,9 +28,9 @@
 #include "smtk/model/PropertyListPhrase.h"
 #include "smtk/model/PropertyValuePhrase.h"
 
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/Manager.h"
-#include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Manager.h"
+#include "smtk/mesh/core/MeshSet.h"
 
 #include <algorithm>
 //required for insert_iterator on VS2010+

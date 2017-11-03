@@ -29,8 +29,8 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/MeshItem.h"
 
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"

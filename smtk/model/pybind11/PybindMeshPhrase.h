@@ -15,8 +15,8 @@
 
 #include "smtk/model/MeshPhrase.h"
 
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/MeshSet.h"
 #include "smtk/model/DescriptivePhrase.h"
 
 namespace py = pybind11;

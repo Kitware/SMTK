@@ -8,9 +8,10 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/ExtractTessellation.h"
-#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Manager.h"
+
+#include "smtk/mesh/utility/ExtractTessellation.h"
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/EntityIterator.h"
@@ -158,18 +159,18 @@ int UnitTestExtractOrderedTessellation(int, char** const)
     std::int64_t numberOfPoints = -1;
 
     //query for all cells
-    smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(
+    smtk::mesh::utility::PreAllocatedTessellation::determineAllocationLengths(
       exteriorLoop, c, connectivityLength, numberOfCells, numberOfPoints);
 
     std::vector<std::int64_t> conn(connectivityLength);
     std::vector<float> fpoints(numberOfPoints * 3);
 
-    smtk::mesh::PreAllocatedTessellation ftess(&conn[0], &fpoints[0]);
+    smtk::mesh::utility::PreAllocatedTessellation ftess(&conn[0], &fpoints[0]);
 
     ftess.disableVTKStyleConnectivity(true);
     ftess.disableVTKCellTypes(true);
 
-    smtk::mesh::extractOrderedTessellation(exteriorLoop, c, ftess);
+    smtk::mesh::utility::extractOrderedTessellation(exteriorLoop, c, ftess);
   }
 
   {
@@ -182,18 +183,18 @@ int UnitTestExtractOrderedTessellation(int, char** const)
       std::int64_t numberOfPoints = -1;
 
       //query for all cells
-      smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(
+      smtk::mesh::utility::PreAllocatedTessellation::determineAllocationLengths(
         edge, c, connectivityLength, numberOfCells, numberOfPoints);
 
       std::vector<std::int64_t> conn(connectivityLength);
       std::vector<float> fpoints(numberOfPoints * 3);
 
-      smtk::mesh::PreAllocatedTessellation ftess(&conn[0], &fpoints[0]);
+      smtk::mesh::utility::PreAllocatedTessellation ftess(&conn[0], &fpoints[0]);
 
       ftess.disableVTKStyleConnectivity(true);
       ftess.disableVTKCellTypes(true);
 
-      smtk::mesh::extractOrderedTessellation(edge, c, ftess);
+      smtk::mesh::utility::extractOrderedTessellation(edge, c, ftess);
     }
   }
 
