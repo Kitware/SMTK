@@ -27,12 +27,12 @@ if __name__ == '__main__':
 
     attribSys = smtk.attribute.Collection.create()
     modelMgr = smtk.model.Manager()
-    print 'Collections created'
+    print('Collections created')
     def_ = attribSys.createDefinition('testDef')
     if def_ is not None:
-        print 'Definition testDef created'
+        print('Definition testDef created')
     else:
-        print 'ERROR: Definition testDef not created'
+        print('ERROR: Definition testDef not created')
         status = -1
 
     me_e_def = smtk.attribute.ModelEntityItemDefinition.New('Edges')

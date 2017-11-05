@@ -26,10 +26,10 @@ try:
     from smtk import io
     from smtk import model
 except ImportError:
-    print
-    print 'Not able to import smtk library. You might need to:'
-    print '  - Use the PYTHONPATH variable to point to the smtk python lib'
-    print
+    print()
+    print('Not able to import smtk library. You might need to:')
+    print('  - Use the PYTHONPATH variable to point to the smtk python lib')
+    print()
     sys.exit(-1)
 
 
@@ -42,10 +42,10 @@ OUTPUT_FILENAME = 'copyAttributeOut.sbi'
 if __name__ == '__main__':
     # First (and) only argument is the path to the smtk data directory
     if len(sys.argv) < 2:
-        print
-        print 'Test smtk.attribute.Collection.copyAttribute()'
-        print 'Usage: python %s path-to-SMTKTestData'
-        print
+        print()
+        print('Test smtk.attribute.Collection.copyAttribute()')
+        print('Usage: python %s path-to-SMTKTestData')
+        print()
         sys.exit(-1)
 
     # To help with debugging, write some environment vars

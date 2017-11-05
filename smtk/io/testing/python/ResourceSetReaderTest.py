@@ -23,15 +23,15 @@ def TestResourceSetReader(readFromFile):
     It is a direct port of the Cxx version"""
 
     if len(sys.argv) < 2:
-        print "Reads resource with 1 or more attribute managers"
-        print "Usage: ResourceSetReaderTest resource_file"
-        print "  [expect_number_of_resources]"
+        print("Reads resource with 1 or more attribute managers")
+        print("Usage: ResourceSetReaderTest resource_file")
+        print("  [expect_number_of_resources]")
         return 1
 
     status = 0  # return value
 
     resources = smtk.resource.Set()
-    print 'resources', resources
+    print('resources', resources)
     reader = smtk.io.ResourceSetReader()
     logger = smtk.io.Logger()
 
@@ -47,8 +47,8 @@ def TestResourceSetReader(readFromFile):
         hasErrors = reader.readString(data, resources, logger, True)
 
     if hasErrors:
-        print "Reader has errors"
-        print logger.convertToString()
+        print("Reader has errors")
+        print(logger.convertToString())
         status = status + 1
 
     expectedNumber = 0
@@ -60,27 +60,27 @@ def TestResourceSetReader(readFromFile):
         status = status + 1
     finally:
         if expectedNumber < 0:
-            print "ERROR: argv[2] not an unsigned integer"
+            print("ERROR: argv[2] not an unsigned integer")
             status = status + 1
         else:
             numResources = resources.numberOfResources()
             if numResources != expectedNumber:
-                print "ERROR: Expecting ", expectedNumber, \
-                    " resources, loaded ", numResources
+                print("ERROR: Expecting ", expectedNumber,
+                      " resources, loaded ", numResources)
                 status = status + 1
             else:
-                print "Number of resources loaded:", numResources
+                print("Number of resources loaded:", numResources)
 
             # dump out resource ids for info only
             resourceIds = resources.resourceIds()
             for id in resourceIds:
-                print id
+                print(id)
 
-    # print ('dir'), dir(resources)
-    # print help(resources.get)
+    # print(('dir'), dir(resources))
+    # print(help(resources.get))
     res0 = resources.get('att0')
-    print 'type', res0.type()
-    # print dir(res0)
+    print('type', res0.type())
+    # print(dir(res0))
 
     return status
 

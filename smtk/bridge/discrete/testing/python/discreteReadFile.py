@@ -10,6 +10,7 @@
 #  PURPOSE.  See the above copyright notice for more information.
 #
 #=============================================================================
+from __future__ import print_function
 import os
 import sys
 import smtk
@@ -154,16 +155,16 @@ class TestDiscreteSession(smtk.testing.TestCase):
 
     def testFileTypes(self):
         sref = GetActiveSession()
-        print '\n\n%s: type "%s" %s %s' % \
-            (sref.name(), sref.session().name(),
-             sref.flagSummary(0), sref.session().sessionId())
-        print '  Site: %s' % (sref.site() or 'local')
+        print('\n\n%s: type "%s" %s %s' %
+              (sref.name(), sref.session().name(),
+               sref.flagSummary(0), sref.session().sessionId()))
+        print('  Site: %s' % (sref.site() or 'local'))
         for eng in sref.engines():
-            print '  Engine %s filetypes:\n    %s' % \
-                (eng, '\n    '.join(sref.fileTypes(eng)))
-        print 'Operators:\n  '
-        print '\n  '.join(sref.operatorNames())
-        print '\n'
+            print('  Engine %s filetypes:\n    %s' %
+                  (eng, '\n    '.join(sref.fileTypes(eng))))
+        print('Operators:\n  ')
+        print('\n  '.join(sref.operatorNames()))
+        print('\n')
 
     def verifyRead(self, filename, numCells, numGroups, validator):
         """Read a single file and validate that the reader worked.
@@ -171,15 +172,18 @@ class TestDiscreteSession(smtk.testing.TestCase):
         reported by the output model as well as running an optional
         function on the model to do further model-specific testing."""
 
-        print '\n\nFile: {fname}'.format(fname=filename)
+        print('\n\nFile: {fname}'.format(fname=filename))
 
         mod = smtk.model.Model(Read(filename)[0])
 
-        print '  {mt} model'.format(mt=smtk.model.ModelGeometryStyleName(mod.geometryStyle()))
-        print '\nFree cells:\n  %s' % '\n  '.join([x.name() for x in mod.cells()])
-        print '\nGroups:\n  %s\n' % '\n  '.join([x.name() for x in mod.groups()])
+        print('  {mt} model'.format(
+            mt=smtk.model.ModelGeometryStyleName(mod.geometryStyle())))
+        print('\nFree cells:\n  %s' %
+              '\n  '.join([x.name() for x in mod.cells()]))
+        print('\nGroups:\n  %s\n' %
+              '\n  '.join([x.name() for x in mod.groups()]))
         if (numCells >= 0 and len(mod.cells()) != numCells) or (numGroups >= 0 and len(mod.groups()) != numGroups):
-            print smtk.io.SaveJSON.fromModelManager(self.mgr)
+            print(smtk.io.SaveJSON.fromModelManager(self.mgr))
 
         self.assertEqual(
             mod.geometryStyle(), smtk.model.DISCRETE,
@@ -202,7 +206,7 @@ class TestDiscreteSession(smtk.testing.TestCase):
 
         if self.shouldSave:
             out = file('test.json', 'w')
-            print >>out, smtk.io.SaveJSON.fromModelManager(self.mgr)
+            print(smtk.io.SaveJSON.fromModelManager(self.mgr), file=out)
             out.close()
 
 

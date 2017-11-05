@@ -109,7 +109,7 @@ if __name__ == '__main__':
             uids[4]).pushRelation(uids[3])
 
         store.assignDefaultNames()
-        print smtk.io.SaveJSON.fromModelManager(store)
+        print(smtk.io.SaveJSON.fromModelManager(store))
 
         status = \
             len(vert1.edges()) != 2 or \
@@ -122,15 +122,15 @@ if __name__ == '__main__':
             loop2.face().entity() != face2.entity()
 
     except Exception, ex:
-        print 'Exception:'
+        print('Exception:')
 
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        print
-        print 'Exception: ', exc_type, fname, 'line', exc_tb.tb_lineno
-        print
-        print ex
-        print
+        print()
+        print('Exception: ', exc_type, fname, 'line', exc_tb.tb_lineno)
+        print()
+        print(ex)
+        print()
         status = True
 
     sys.exit(0 if not status else 1)

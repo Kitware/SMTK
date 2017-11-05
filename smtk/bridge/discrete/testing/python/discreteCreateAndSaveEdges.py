@@ -10,6 +10,7 @@
 #  PURPOSE.  See the above copyright notice for more information.
 #
 #=============================================================================
+from __future__ import print_function
 import os
 import sys
 import smtk
@@ -75,7 +76,7 @@ class TestDiscreteCreateAndSaveEdges(smtk.testing.TestCase):
         reported by the output model as well as running an optional
         function on the model to do further model-specific testing."""
 
-        print '\n\nFile: {fname}'.format(fname=filename)
+        print('\n\nFile: {fname}'.format(fname=filename))
 
         mod = smtk.model.Model(Read(filename)[0])
         self.assertEqual(len(mod.cells()), 2,
@@ -110,7 +111,7 @@ class TestDiscreteCreateAndSaveEdges(smtk.testing.TestCase):
         if validator:
             validator(mod)
 
-        print '  Success'
+        print('  Success')
         os.remove(outfilename)
 
     def testCreateAndSaveEdges(self):
@@ -120,7 +121,7 @@ class TestDiscreteCreateAndSaveEdges(smtk.testing.TestCase):
 
         if self.shouldSave:
             out = file('testcreateandsaveedges.json', 'w')
-            print >>out, smtk.io.SaveJSON.fromModelManager(self.mgr)
+            print(smtk.io.SaveJSON.fromModelManager(self.mgr), file=out)
             out.close()
 
 

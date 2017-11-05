@@ -10,6 +10,7 @@
 #  PURPOSE.  See the above copyright notice for more information.
 #
 #=============================================================================
+from __future__ import print_function
 import sys
 import smtk
 import smtk.bridge.discrete
@@ -140,7 +141,7 @@ class TestDiscreteSplitEdge(smtk.testing.TestCase):
         reported by the output model as well as running an optional
         function on the model to do further model-specific testing."""
 
-        print '\n\nFile: {fname}'.format(fname=filename)
+        print('\n\nFile: {fname}'.format(fname=filename))
 
         mod = smtk.model.Model(Read(filename)[0])
 
@@ -161,7 +162,7 @@ class TestDiscreteSplitEdge(smtk.testing.TestCase):
         if validator:
             validator(mod)
 
-        print '  Success'
+        print('  Success')
 
     def testSplitEdge(self):
         "Read each file named in setUp and validate the reader worked."
@@ -171,7 +172,7 @@ class TestDiscreteSplitEdge(smtk.testing.TestCase):
 
         if self.shouldSave:
             out = file('test.json', 'w')
-            print >>out, smtk.io.SaveJSON.fromModelManager(self.mgr)
+            print(smtk.io.SaveJSON.fromModelManager(self.mgr), file=out)
             out.close()
 
 

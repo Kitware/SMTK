@@ -30,10 +30,10 @@ try:
     import smtk.model
     import smtk.testing
 except ImportError:
-    print
-    print 'Not able to import smtk library. You might need to:'
-    print '  - Use the PYTHONPATH variable to point to the smtk python lib'
-    print
+    print()
+    print('Not able to import smtk library. You might need to:')
+    print('  - Use the PYTHONPATH variable to point to the smtk python lib')
+    print()
     sys.exit(-1)
 
 
@@ -74,9 +74,9 @@ class TestModelAttributes(unittest.TestCase):
                 if line.startswith('Reading'):
                     continue
 
-                # print line
+                # print(line)
                 parts = line.split()
-                # print parts[2], parts[-1]
+                # print(parts[2], parts[-1])
                 entity_type = parts[2]
                 uuid = parts[-1]
                 entity_list = list_map.get(entity_type)

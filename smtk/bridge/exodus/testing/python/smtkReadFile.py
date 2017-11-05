@@ -24,7 +24,7 @@ class TestExodusSession(smtk.testing.TestCase):
         import os
         smtk_file = os.path.join(
             smtk.testing.DATA_DIR, 'model', '3d', 'exodus', 'disk_out_ref.smtk')
-        print 'smtk_file', smtk_file
+        print('smtk_file', smtk_file)
 
         model_manager = smtk.model.Manager.create()
         sess = model_manager.createSession('exodus')

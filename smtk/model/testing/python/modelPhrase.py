@@ -29,7 +29,7 @@ class TestModelPhrases(unittest.TestCase):
     def setUp(self):
         model_path = os.path.join(
             smtk.testing.DATA_DIR, 'model', '2d', 'smtk', 'pyramid.json')
-        print 'Loading %s' % model_path
+        print('Loading %s' % model_path)
 
         status = 0
         self.mgr = smtk.model.Manager.create()
@@ -54,7 +54,7 @@ class TestModelPhrases(unittest.TestCase):
 
     def testPhrases(self):
 
-        print 'Subphrases of {n} model(s)'.format(n=len(self.models))
+        print('Subphrases of {n} model(s)'.format(n=len(self.models)))
 
         self.elist = smtk.model.EntityListPhrase.create().setup(self.models)
         self.spg = smtk.model.SimpleModelSubphrases.create()
@@ -122,7 +122,7 @@ class TestModelPhrases(unittest.TestCase):
             ['face 0', 'face 1', 'face 2', 'face 3', 'face 4', 'pedigree id'],
             'Expected 6 model-face phrases, got {s}.'.format(s=[x.title() for x in s3]))
 
-    print 'Done'
+    print('Done')
 
 
 if __name__ == '__main__':

@@ -41,7 +41,11 @@ public:
       throw reference_cast_error();
     }
 
+#if (PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION >= 3) || PY_MAJOR_VERSION > 3
+    char* ustr = uuidBytes ? PyBytes_AS_STRING(uuidBytes) : NULL;
+#else
     char* ustr = uuidBytes ? PyString_AsString(uuidBytes) : NULL;
+#endif
     if (ustr)
     {
       for (int i = 0; i < 16; ++i)

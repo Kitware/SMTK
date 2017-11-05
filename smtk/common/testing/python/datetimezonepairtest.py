@@ -35,7 +35,7 @@ if __name__ == '__main__':
     # Convert to python datetime - should be "None"
     dt1 = sp.to_python_datetime()
     if not dt1 is None:
-        print 'Empty DateTimeZonePair should convert to None'
+        print('Empty DateTimeZonePair should convert to None')
         errcode = -1
 
     # Set datetime with time zone
@@ -47,8 +47,8 @@ if __name__ == '__main__':
     dt_string2 = dt2.strftime('%Y-%m-%d %H:%M:%S .%f')
     expected2 = '2016-11-16 16:46:22 .033000'
     if dt_string2 != expected2:
-        print 'Wrong local datetime, should be %s not %s' % \
-            (expected2, dt_string2)
+        print('Wrong local datetime, should be %s not %s' %
+              (expected2, dt_string2))
         errcode = -1
 
     # Check python datetime with utc option
@@ -56,8 +56,8 @@ if __name__ == '__main__':
     dt_string3 = dt3.strftime('%Y-%m-%d %H:%M:%S .%f')
     expected3 = '2016-11-16 21:46:22 .033000'
     if dt_string3 != expected3:
-        print 'Wrong UTC datetime, should be %s not %s' % \
-            (expected3, dt_string3)
+        print('Wrong UTC datetime, should be %s not %s' %
+              (expected3, dt_string3))
         errcode = -1
 
     sys.exit(errcode)

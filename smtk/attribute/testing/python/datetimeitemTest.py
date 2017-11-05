@@ -51,37 +51,37 @@ if __name__ == '__main__':
     # logger = smtk.io.Logger()
     # filename = 'datetime-example.sbi'
     # if writer.write(collection, filename, logger):
-    #   print 'Error writing file', filename
+    #   print('Error writing file', filename)
     # else:
-    #   print 'Wrote', filename
+    #   print('Wrote', filename)
 
     item1 = att.findDateTime('dt1')
     if not item1:
-        print 'First DateTimeItem not found'
+        print('First DateTimeItem not found')
         errcode = -1
     elif item1.isSet(0):
-        print 'First DateTimeItem should NOT be set'
+        print('First DateTimeItem should NOT be set')
         errcode = -1
 
     item2 = att.findDateTime('dt2')
     if not item2:
-        print 'Second DateTimeItem not found'
+        print('Second DateTimeItem not found')
         errcode = -1
     else:
         if not item2.isSet(0):
-            print 'Second DateTimeItem NOT set'
+            print('Second DateTimeItem NOT set')
             errcode = -1
 
         dtz2 = item2.value(0)
         py_dt = dtz2.to_python_datetime()
-        print 'py_dt', py_dt
+        print('py_dt', py_dt)
 
         dt_string = py_dt.strftime('%Y-%m-%d %H:%M')
         expected = '1991-08-06 12:00'
         if dt_string != expected:
-            print 'Wrong local datetime, should be %s not %s' % \
-                (expected, dt_string)
+            print('Wrong local datetime, should be %s not %s' %
+                  (expected, dt_string))
             errcode = -1
 
-    print 'errcode', errcode
+    print('errcode', errcode)
     sys.exit(errcode)

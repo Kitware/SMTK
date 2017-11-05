@@ -30,8 +30,8 @@ def RSTest():
     resourceSet = smtk.resource.Set()
 
     collection1 = smtk.attribute.Collection.New()
-    print collection1
-    print collection1.type()
+    print(collection1)
+    print(collection1.type())
     result = resourceSet.add(
         collection1, "collection1", "", smtk.resource.Set.TEMPLATE)
 

@@ -25,26 +25,26 @@ class TestPolygonCreation(smtk.testing.TestCase):
         self.mgr = smtk.model.Manager.create()
         sess = self.mgr.createSession('polygon')
         brg = sess.session()
-        print sess
-        print brg
+        print(sess)
+        print(brg)
         sess.assignDefaultName()
         SetActiveSession(sess)
-        print '\n\n%s: type "%s" %s %s' % \
-            (sess.name(), brg.name(), sess.flagSummary(0), brg.sessionId())
-        print '  Site: %s' % (sess.site() or 'local')
+        print('\n\n%s: type "%s" %s %s' %
+              (sess.name(), brg.name(), sess.flagSummary(0), brg.sessionId()))
+        print('  Site: %s' % (sess.site() or 'local'))
 
         # We could evaluate the session tag as JSON, but most of
         # the information is available through methods above that
         # we needed to test:
         sessiontag = sess.tag()
-        print '\n'
+        print('\n')
 
         # opnames = sess.operatorNames()
-        # print opnames
+        # print(opnames)
 
     def createTestEdges(self, mod):
 
-        # print smtk.io.SaveJSON.fromModelManager(self.mgr,
+        # print(smtk.io.SaveJSON.fromModelManager(self.mgr,)
         # smtk.io.JSON_DEFAULT)
 
         openEdgeTestVerts = [[4, 3.5], [3, 3.5]]
@@ -75,7 +75,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
         edges += [smtk.model.Edge(edge)]
         edges[5].setName('Square')
 
-        print 'Created a total of {:1} edges'.format(len(edges))
+        print('Created a total of {:1} edges'.format(len(edges)))
 
         return edges
 
@@ -84,29 +84,30 @@ class TestPolygonCreation(smtk.testing.TestCase):
         tinkered = []
         edges = self.createTestEdges(mod)
         flist = CreateFaces(mod)
-        print '{:1} faces'.format(len(flist))
+        print('{:1} faces'.format(len(flist)))
         for ff in range(len(flist)):
-            print 'Face {:1} edges {:2}'.format(ff, ';'.join([x.name() for x in smtk.model.Face(flist[ff]).edges()]))
+            print('Face {:1} edges {:2}'.format(
+                ff, ';'.join([x.name() for x in smtk.model.Face(flist[ff]).edges()])))
         # Test the easy case: an isolated, non-periodic edge is reshaped:
-        print 'Tweaking {:1} {:2}'.format(edges[0].name(), edges[0].entity())
+        print('Tweaking {:1} {:2}'.format(edges[0].name(), edges[0].entity()))
         mods = TweakEdge(edges[0], [[0, 0], [1, 0], [2, 3], [3, 3]])
         tinkered += mods
         # Test that when an edge is tweaked whose endpoint is connected to a second edge,
         # the second edge's point-sequence and tessellation are also updated:
-        print 'Tweaking {:1} {:2}'.format(edges[1].name(), edges[1].entity())
+        print('Tweaking {:1} {:2}'.format(edges[1].name(), edges[1].entity()))
         mods = TweakEdge(edges[1], [[0, 1], [1, 1]])
         tinkered += mods
 
-        print 'Tweaking {:1} {:2}'.format(edges[4].name(), edges[4].entity())
+        print('Tweaking {:1} {:2}'.format(edges[4].name(), edges[4].entity()))
         mods = TweakEdge(edges[4], [[4, 1.5], [5, 3], [
                          4.5, 3.25], [4, 3], [4, 1.5]])
         tinkered += mods
 
-        print 'Tweaking {:1} {:2}'.format(edges[3].name(), edges[3].entity())
+        print('Tweaking {:1} {:2}'.format(edges[3].name(), edges[3].entity()))
         mods = TweakEdge(edges[3], [[4, 1.5], [3, 0], [
                          3.5, -0.25], [4, 0], [4, 1.5]])
         tinkered += mods
-        print 'Tinkered with ', tinkered
+        print('Tinkered with ', tinkered)
         self.imageComparison(
             mod, tinkered, ['baseline', 'smtk', 'polygon', 'tweakEdge-caseA.png'], False)
 
@@ -129,7 +130,8 @@ class TestPolygonCreation(smtk.testing.TestCase):
             for ei in range(len(ents)):
                 ents[ei].setFloatProperty(
                     'color', edgeColors[ei % len(edgeColors)])
-                print ents[ei].name(), ' color ', edgeColors[ei % len(edgeColors)]
+                print(ents[ei].name(), ' color ',
+                      edgeColors[ei % len(edgeColors)])
             #[v.setFloatProperty('color', [0,0,0,1]) for v in self.mgr.findEntitiesOfType(smtk.model.VERTEX, True)]
             #[e.setFloatProperty('color', [0,0,0,1]) for e in self.mgr.findEntitiesOfType(smtk.model.EDGE, True)]
 

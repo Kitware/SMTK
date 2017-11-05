@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from __future__ import print_function
 import sys
 #=============================================================================
 #
@@ -24,18 +25,18 @@ class TestCGMSolidModeling(smtk.testing.TestCase):
         self.sref = self.mgr.createSession('cgm', smtk.model.SessionRef())
         sess = self.sref.session()
         self.sref.assignDefaultName()
-        print '\n\n%s: type "%s" %s %s' % \
-            (self.sref.name(), sess.name(),
-             self.sref.flagSummary(0), sess.sessionId())
-        print '  Site: %s' % (self.sref.site() or 'local')
+        print('\n\n%s: type "%s" %s %s' %
+              (self.sref.name(), sess.name(),
+               self.sref.flagSummary(0), sess.sessionId()))
+        print('  Site: %s' % (self.sref.site() or 'local'))
         for eng in self.sref.engines():
-            print '  Engine %s filetypes:\n    %s' % \
-                (eng, '\n    '.join(self.sref.fileTypes(eng)))
+            print('  Engine %s filetypes:\n    %s' %
+                  (eng, '\n    '.join(self.sref.fileTypes(eng))))
         # We could evaluate the session tag as JSON, but most of
         # the information is available through methods above that
         # we needed to test:
         sessiontag = self.sref.tag()
-        print '\n'
+        print('\n')
 
         opnames = self.sref.operatorNames()
 
@@ -61,8 +62,8 @@ class TestCGMSolidModeling(smtk.testing.TestCase):
         res2 = cs2.operate()
         sph2 = res2.findModelEntity('created').value(0)
 
-        print 'Operators that can associate with ' + sph2.flagSummary(1) + ' include\n  %s' % \
-            '\n  '.join(self.sref.operatorsForAssociation(sph2.entityFlags()))
+        print('Operators that can associate with ' + sph2.flagSummary(1) + ' include\n  %s' %
+              '\n  '.join(self.sref.operatorsForAssociation(sph2.entityFlags())))
 
         u1 = self.sref.op('union')
         u1.associateEntity(sph)
@@ -81,7 +82,7 @@ class TestCGMSolidModeling(smtk.testing.TestCase):
 
         # json = smtk.io.SaveJSON.fromModelManager(self.mgr)
         # cylFile = open('cyl.json', 'w')
-        # print >> cylFile, json
+        # print(json, file=cylFile)
         # cylFile.close()
 
         # Now verify that self.mgr.closeSession removes the entity record for

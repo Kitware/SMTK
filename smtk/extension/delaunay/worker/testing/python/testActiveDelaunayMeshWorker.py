@@ -59,7 +59,8 @@ class TestActiveDelaunayMeshWorker(smtk.testing.TestCase):
         try:
             import multiprocessing
         except:
-            print "Cannot find necessary modules for delaunay mesh worker. Skipping test."
+            print(
+                "Cannot find necessary modules for delaunay mesh worker. Skipping test.")
             return
 
         # if we cannot load the delaunay and delaunay.worker modules, then the

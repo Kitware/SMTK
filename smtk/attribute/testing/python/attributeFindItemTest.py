@@ -36,31 +36,31 @@ if __name__ == '__main__':
         # Retrieve GroupItem from attribute
         item = att.item(0)
         group_item = smtk.attribute.GroupItem.CastTo(item)
-        print 'group_item:', group_item
+        print('group_item:', group_item)
 
         find_item = att.find('groupdef')
         find_group_item = smtk.attribute.GroupItem.CastTo(item)
-        print 'find_group_item:', find_group_item
+        print('find_group_item:', find_group_item)
 
         # Retieve IntItem from GroupItem
         subitem = group_item.item(0)
         int_subitem = smtk.attribute.ValueItem.CastTo(subitem)
-        print 'subitem:', int_subitem.valueAsString()
+        print('subitem:', int_subitem.valueAsString())
 
         find_subitem = find_group_item.find('intdef')
         find_int_subitem = smtk.attribute.ValueItem.CastTo(find_subitem)
-        print 'find_int_subitem:', find_int_subitem.valueAsString()
+        print('find_int_subitem:', find_int_subitem.valueAsString())
     except Exception, ex:
-        print 'Exception:'
+        print('Exception:')
 
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        print
-        print 'Exception: ', exc_type, fname, 'line', exc_tb.tb_lineno
-        print
+        print()
+        print('Exception: ', exc_type, fname, 'line', exc_tb.tb_lineno)
+        print()
 
-        print ex
-        print
+        print(ex)
+        print()
         status = -1
 
     sys.exit(status)

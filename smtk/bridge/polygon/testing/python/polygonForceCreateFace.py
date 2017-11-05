@@ -34,22 +34,22 @@ class TestPolygonCreation(smtk.testing.TestCase):
         self.mgr = smtk.model.Manager.create()
         sess = self.mgr.createSession('polygon')
         brg = sess.session()
-        print sess
-        print brg
+        print(sess)
+        print(brg)
         sess.assignDefaultName()
         SetActiveSession(sess)
-        print '\n\n%s: type "%s" %s %s' % \
-            (sess.name(), brg.name(), sess.flagSummary(0), brg.sessionId())
-        print '  Site: %s' % (sess.site() or 'local')
+        print('\n\n%s: type "%s" %s %s' %
+              (sess.name(), brg.name(), sess.flagSummary(0), brg.sessionId()))
+        print('  Site: %s' % (sess.site() or 'local'))
 
         # We could evaluate the session tag as JSON, but most of
         # the information is available through methods above that
         # we needed to test:
         sessiontag = sess.tag()
-        print '\n'
+        print('\n')
 
         # opnames = sess.operatorNames()
-        # print opnames
+        # print(opnames)
 
     def renderTestModel(self, mod, baselinePath):
 
@@ -93,7 +93,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
                 'Could not import vtk. Python path is {pp}'.format(pp=sys.path))
 
     def testCreationFromPoints(self):
-        print 'testCreationFromPoints'
+        print('testCreationFromPoints')
         # Create a default model (in the x-y plane)
         mod = CreateModel()
 
@@ -120,7 +120,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
         created = res.findModelEntity('created')
         faceColors = [[0.9, 1.0, 0.9, 1.0], [0.9, 0.9, 1.0, 1.0]]
         for i in range(created.numberOfValues()):
-            print '  face: ', created.value(i).name()
+            print('  face: ', created.value(i).name())
             created.value(i).setFloatProperty('color', faceColors[i])
 
         self.renderTestModel(
@@ -131,7 +131,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
         return CreateEdge(point_seq, offsets=point_offsets, model=mod)
 
     def testCreationFromEdges(self):
-        print 'testCreationFromEdges'
+        print('testCreationFromEdges')
         # Create a default model (in the x-y plane)
         mod = CreateModel()
 
@@ -170,11 +170,11 @@ class TestPolygonCreation(smtk.testing.TestCase):
         SetVectorValue(fop.findAsInt('orientations'), forint)
         res = fop.operate()
         PrintResultLog(res)
-        print '  outcome: ', res.findInt('outcome').value(0)
+        print('  outcome: ', res.findInt('outcome').value(0))
         created = res.findModelEntity('created')
         faceColors = [[0.9, 1.0, 0.9, 1.0], [0.9, 0.9, 1.0, 1.0]]
         for i in range(created.numberOfValues()):
-            print '  face: ', created.value(i).name()
+            print('  face: ', created.value(i).name())
             created.value(i).setFloatProperty('color', faceColors[i])
 
         self.renderTestModel(

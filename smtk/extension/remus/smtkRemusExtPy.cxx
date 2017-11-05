@@ -32,7 +32,17 @@ static PyMethodDef methods[] = { { NULL, NULL, 0, NULL } };
 
 PyMODINIT_FUNC initsmtkRemusExtPy()
 {
+#if (PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION >= 3) || PY_MAJOR_VERSION > 3
+  static struct PyModuleDef remusModule = {
+    PyModuleDef_HEAD_INIT, "smtkRemusExtPy", /* name of module */
+    nullptr,                                 /* module documentation */
+    -1,     /* size of per-interpreter module state or -1 if in globals */
+    methods /* method pointers from above */
+  };
+  PyModule_Create(&remusModule);
+#else
   Py_InitModule("smtkRemusExtPy", methods);
+#endif
   (void)smtk_remus_mesh_operator_ComponentInit_Instance;
 }
 

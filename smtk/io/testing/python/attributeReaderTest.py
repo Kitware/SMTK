@@ -23,10 +23,10 @@ class TestAttributeReader():
 
     def setUp(self):
         if len(sys.argv) < 2:
-            print "Reads attribute collection file"
-            print "Usage: AttributeReaderTest attribute_file"
-            print "  [expect_number_of_definitions]"
-            print "  [expect_number_of_attributes]"
+            print("Reads attribute collection file")
+            print("Usage: AttributeReaderTest attribute_file")
+            print("  [expect_number_of_definitions]")
+            print("  [expect_number_of_attributes]")
             return 1
 
         self.status = 0  # return value
@@ -39,8 +39,8 @@ class TestAttributeReader():
 
         hasErrors = self.reader.read(self.attsys, input_path, self.logger)
         if hasErrors:
-            print "Reader has errors"
-            print self.logger.convertToString()
+            print("Reader has errors")
+            print(self.logger.convertToString())
             self.status = self.status + 1
 
     def testSimpleRead(self):
@@ -57,18 +57,18 @@ class TestAttributeReader():
             self.status = self.status + 1
         finally:
             if expectedDefinitionCount < 0:
-                print "ERROR: argv[2] not an unsigned integer"
+                print("ERROR: argv[2] not an unsigned integer")
                 self.status = self.status + 1
             else:
                 definitionList = self.attsys.definitions()
                 if len(definitionList) != expectedDefinitionCount:
-                    print "ERROR: Expecting ", expectedDefinitionCount, \
-                        " definitions, loaded ", len(definitionList)
+                    print("ERROR: Expecting ", expectedDefinitionCount,
+                          " definitions, loaded ", len(definitionList))
                     self.status = self.status + 1
                 else:
-                    print "Number of definitions loaded:", len(definitionList)
+                    print("Number of definitions loaded:", len(definitionList))
                     # for i,defn in enumerate(definitionList):
-                    #    print i, defn.type(), defn.isAbstract()
+                    #    print(i, defn.type(), defn.isAbstract())
 
         # Test attribute count
         if len(sys.argv) <= 3:
@@ -83,18 +83,18 @@ class TestAttributeReader():
             self.status = self.status + 1
         finally:
             if expectedAttributeCount < 0:
-                print "ERROR: argv[2] not an unsigned integer"
+                print("ERROR: argv[2] not an unsigned integer")
                 self.status = self.status + 1
             else:
                 attributeList = self.attsys.attributes()
                 if len(attributeList) != expectedAttributeCount:
-                    print "ERROR: Expecting ", expectedAttributeCount, \
-                        " attributes, loaded ", len(attributeList)
+                    print("ERROR: Expecting ", expectedAttributeCount,
+                          " attributes, loaded ", len(attributeList))
                     self.status = self.status + 1
                 else:
-                    print "Number of attributes loaded:", len(attributeList)
+                    print("Number of attributes loaded:", len(attributeList))
                     # for i,att in enumerate(attributeList):
-                    #    print i, att.name()
+                    #    print(i, att.name())
 
         return self.status
 

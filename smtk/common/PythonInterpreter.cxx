@@ -99,7 +99,15 @@ void PythonInterpreter::initialize()
   // Locate the directory containing the python library in use, and set
   // PYTHONHOME to this path.
   static std::string pythonLibraryLocation = Paths::pathToLibraryContainingFunction(Py_Initialize);
+#if (PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION >= 3) || PY_MAJOR_VERSION > 3
+  // Python 3.3 switched to wchar_t.
+  static std::vector<wchar_t> loc;
+  loc.resize(pythonLibraryLocation.size() + 1);
+  mbstowcs(&loc[0], pythonLibraryLocation.c_str(), static_cast<size_t>(loc.size()));
+  Py_SetProgramName(&loc[0]);
+#else
   Py_SetProgramName(const_cast<char*>(pythonLibraryLocation.c_str()));
+#endif
 
   // Initialize the embedded interpreter.
   Py_NoSiteFlag = 1;
