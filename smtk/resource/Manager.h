@@ -80,6 +80,18 @@ public:
   template <typename ResourceType>
   smtk::shared_ptr<const ResourceType> get(const smtk::common::UUID&) const;
 
+  /// Returns the resource that relates to the given url.  If no association exists
+  /// this will return a null pointer
+  ResourcePtr get(const std::string&);
+  ConstResourcePtr get(const std::string&) const;
+
+  /// Returns the resource that relates to the given url.  If no association
+  /// exists of this type, this will return a null pointer.
+  template <typename ResourceType>
+  smtk::shared_ptr<ResourceType> get(const std::string&);
+  template <typename ResourceType>
+  smtk::shared_ptr<const ResourceType> get(const std::string&) const;
+
   /// Returns a set of resources that have a given unique name <uniqueName>.
   std::set<ResourcePtr> find(const std::string&);
 
@@ -171,6 +183,18 @@ template <typename ResourceType>
 smtk::shared_ptr<const ResourceType> Manager::get(const smtk::common::UUID& id) const
 {
   return smtk::static_pointer_cast<const ResourceType>(this->get(id));
+}
+
+template <typename ResourceType>
+smtk::shared_ptr<ResourceType> Manager::get(const std::string& url)
+{
+  return smtk::static_pointer_cast<ResourceType>(this->get(url));
+}
+
+template <typename ResourceType>
+smtk::shared_ptr<const ResourceType> Manager::get(const std::string& url) const
+{
+  return smtk::static_pointer_cast<const ResourceType>(this->get(url));
 }
 
 template <typename ResourceType>

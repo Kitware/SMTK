@@ -131,6 +131,36 @@ smtk::resource::ConstResourcePtr Manager::get(const smtk::common::UUID& id) cons
   return smtk::resource::ConstResourcePtr();
 }
 
+smtk::resource::ResourcePtr Manager::get(const std::string& url)
+{
+  // No type casting is required, so we simply find and return the resource by
+  // key.
+  typedef Container::index<LocationTag>::type ResourcesByLocation;
+  ResourcesByLocation& resources = m_resources.get<LocationTag>();
+  ResourcesByLocation::iterator resourceIt = resources.find(url);
+  if (resourceIt != resources.end())
+  {
+    return (*resourceIt)->shared_from_this();
+  }
+
+  return smtk::resource::ResourcePtr();
+}
+
+smtk::resource::ConstResourcePtr Manager::get(const std::string& url) const
+{
+  // No type casting is required, so we simply find and return the resource by
+  // key.
+  typedef Container::index<LocationTag>::type ResourcesByLocation;
+  const ResourcesByLocation& resources = m_resources.get<LocationTag>();
+  ResourcesByLocation::const_iterator resourceIt = resources.find(url);
+  if (resourceIt != resources.end())
+  {
+    return (*resourceIt)->shared_from_this();
+  }
+
+  return smtk::resource::ConstResourcePtr();
+}
+
 std::set<smtk::resource::ResourcePtr> Manager::find(const std::string& uniqueName)
 {
   std::set<smtk::resource::ResourcePtr> values;
