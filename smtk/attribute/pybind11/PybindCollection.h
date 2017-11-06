@@ -75,7 +75,6 @@ PySharedPtrClass< smtk::attribute::Collection, smtk::resource::Resource > pybind
     .def("refModelManager", &smtk::attribute::Collection::refModelManager)
     .def("removeAttribute", &smtk::attribute::Collection::removeAttribute, py::arg("att"))
     .def("rename", &smtk::attribute::Collection::rename, py::arg("att"), py::arg("newName"))
-    .def("type", &smtk::attribute::Collection::type)
     .def("setAdvanceLevelColor", &smtk::attribute::Collection::setAdvanceLevelColor, py::arg("level"), py::arg("l_color"))
     .def("setRefModelManager", &smtk::attribute::Collection::setRefModelManager, py::arg("refModelMgr"))
     .def("updateCategories", &smtk::attribute::Collection::updateCategories)

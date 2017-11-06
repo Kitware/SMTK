@@ -104,11 +104,10 @@ int main(int /* argc */, const char* /* argv */ [])
   }
 
   // Check resource info
-  smtk::resource::Resource::Type rtype;
   smtk::resource::Set::Role role;
   smtk::resource::Set::State state;
   std::string link;
-  result = resourceSet.resourceInfo("collection2", rtype, role, state, link);
+  result = resourceSet.resourceInfo("collection2", role, state, link);
   if (!result)
   {
     std::cerr << "info() call failed" << std::endl;
@@ -116,12 +115,6 @@ int main(int /* argc */, const char* /* argv */ [])
   }
   else
   {
-    if (rtype != smtk::resource::Resource::ATTRIBUTE)
-    {
-      std::cerr << "Incorrect resource type " << rtype << ", should be "
-                << smtk::resource::Resource::ATTRIBUTE << std::endl;
-      status += 1;
-    }
     if (role != smtk::resource::Set::INSTANCE)
     {
       std::cerr << "Incorrect resource role " << role << ", should be "
@@ -147,13 +140,6 @@ int main(int /* argc */, const char* /* argv */ [])
   if (!result)
   {
     std::cerr << "get() failed" << std::endl;
-    status += 1;
-  }
-  rtype = resource->type();
-  if (rtype != smtk::resource::Resource::ATTRIBUTE)
-  {
-    std::cerr << "Incorrect resource type " << rtype << ", should be "
-              << smtk::resource::Resource::ATTRIBUTE << std::endl;
     status += 1;
   }
 

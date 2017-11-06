@@ -61,8 +61,7 @@ public:
 
   bool add(ResourcePtr resource, std::string id, std::string link = "", Role = NOT_DEFINED);
 
-  bool addInfo(
-    const std::string id, Resource::Type type, Role role, State state, std::string link = "");
+  bool addInfo(const std::string id, Role role, State state, std::string link = "");
 
   bool remove(const std::string& id);
 
@@ -70,8 +69,7 @@ public:
 
   const std::vector<std::string> resourceIds() const;
 
-  bool resourceInfo(
-    std::string id, Resource::Type& type, Role& role, State& state, std::string& link) const;
+  bool resourceInfo(std::string id, Role& role, State& state, std::string& link) const;
 
   bool get(std::string id, ResourcePtr& resource) const;
 

@@ -22,7 +22,6 @@ namespace resource
 struct SMTKCORE_EXPORT Wrapper
 {
   ResourcePtr resource;
-  Resource::Type type;
   Set::Role role;
   Set::State state;
   std::string id;

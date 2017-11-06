@@ -23,9 +23,6 @@ int unitAttributeBasics(int, char* [])
   smtk::attribute::CollectionPtr sysptr = smtk::attribute::Collection::create();
   smtk::attribute::Collection& collection(*sysptr.get());
   std::cout << "Collection Created\n";
-  smtk::resource::Resource::Type t = collection.type();
-  smtkTest(t == smtk::resource::Resource::ATTRIBUTE, "Returned wrong resource type (" << t << ").");
-  std::cout << "Resource type: " << smtk::resource::Resource::type2String(t) << "\n";
 
   smtk::attribute::DefinitionPtr def = collection.createDefinition("testDef");
   smtkTest(!!def, "Definition testDef not created.");

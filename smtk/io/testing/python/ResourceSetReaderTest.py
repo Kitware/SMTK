@@ -79,7 +79,6 @@ def TestResourceSetReader(readFromFile):
     # print(('dir'), dir(resources))
     # print(help(resources.get))
     res0 = resources.get('att0')
-    print('type', res0.type())
     # print(dir(res0))
 
     return status

@@ -200,7 +200,6 @@ PySharedPtrClass< smtk::model::Manager, smtk::resource::Resource > pybind11_init
     .def("removeStringProperty", &smtk::model::Manager::removeStringProperty, py::arg("entity"), py::arg("propName"))
     .def("removeTessellation", &smtk::model::Manager::removeTessellation, py::arg("cellId"), py::arg("removeGen") = false)
     .def("index", (std::type_index (smtk::model::Manager::*)() const) &smtk::model::Manager::index)
-    .def("type", (::smtk::resource::Resource::Type (smtk::model::Manager::*)() const) &smtk::model::Manager::type)
     .def("resources", &smtk::model::Manager::resources, py::arg("skipUpdate") = false)
     .def("sessionData", &smtk::model::Manager::sessionData, py::arg("sessRef"))
     .def_static("sessionFileTypes", &smtk::model::Manager::sessionFileTypes, py::arg("sname"), py::arg("engine") = std::string())

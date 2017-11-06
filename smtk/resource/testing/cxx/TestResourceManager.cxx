@@ -18,8 +18,6 @@ public:
   smtkCreateMacro(ResourceA);
   smtkSharedFromThisMacro(smtk::resource::Resource);
 
-  Type type() const override { return Type::ATTRIBUTE; }
-
   smtk::resource::ComponentPtr find(const smtk::common::UUID&) const override
   {
     return smtk::resource::ComponentPtr();
@@ -43,8 +41,6 @@ public:
   // resource is to be returned by both queries for resources of type <derived>
   // and <base>.
   typedef ResourceA ParentResource;
-
-  Type type() const override { return Type::ATTRIBUTE; }
 
   smtk::resource::ComponentPtr find(const smtk::common::UUID&) const override
   {

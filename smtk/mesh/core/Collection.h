@@ -78,7 +78,6 @@ public:
 
   ~Collection();
 
-  resource::Resource::Type type() const override { return resource::Resource::MESH; }
   resource::ComponentPtr find(const common::UUID& compId) const override;
 
   //determine if the given Collection is valid and is properly associated

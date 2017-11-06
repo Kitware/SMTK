@@ -127,7 +127,6 @@ public:
   EntityPtr findEntity(const smtk::common::UUID& uid, bool trySessions = true) const;
 
   smtk::resource::ComponentPtr find(const smtk::common::UUID& uid) const override;
-  Resource::Type type() const override { return smtk::resource::Resource::MODEL; }
 
   virtual SessionInfoBits erase(
     const smtk::common::UUID& uid, SessionInfoBits flags = smtk::model::SESSION_EVERYTHING);

@@ -79,8 +79,6 @@ int main(int argc, const char* argv[])
 
     smtk::resource::ResourcePtr resource;
     resources.get("att0", resource);
-    smtk::resource::Resource::Type resType = resource->type();
-    std::cout << "att0 type: " << smtk::resource::Resource::type2String(resType) << std::endl;
   } // if (argc > 2)
 
   return status;

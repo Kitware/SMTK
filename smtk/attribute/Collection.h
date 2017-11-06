@@ -52,8 +52,6 @@ public:
 
   ~Collection() override;
 
-  smtk::resource::Resource::Type type() const override;
-
   smtk::attribute::DefinitionPtr createDefinition(
     const std::string& typeName, const std::string& baseTypeName = "");
   smtk::attribute::DefinitionPtr createDefinition(

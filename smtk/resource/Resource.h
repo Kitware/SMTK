@@ -35,15 +35,6 @@ public:
   typedef std::type_index Index;
   typedef smtk::resource::Metadata Metadata;
 
-  /// Identifies resource type
-  enum Type
-  {
-    ATTRIBUTE = 0,
-    MODEL,
-    MESH,
-    NUMBER_OF_TYPES
-  };
-
   smtkTypeMacroBase(smtk::resource::Resource);
   virtual ~Resource();
 
@@ -53,9 +44,8 @@ public:
 
   std::string uniqueName() const;
 
-  // type and index are compile-time intrinsics of the derived resource; as such,
-  // they cannot be set.
-  virtual Type type() const = 0;
+  // index is a compile-time intrinsic of the derived resource; as such, it
+  // cannot be set.
   Index index() const { return typeid(*this); }
 
   // id and location are run-time intrinsics of the derived resource; we need to
@@ -68,9 +58,6 @@ public:
 
   // Resources that are managed have a non-null pointer to their manager.
   Manager* manager() const { return this->m_manager; }
-
-  static std::string type2String(Resource::Type t);
-  static Resource::Type string2Type(const std::string& s);
 
 protected:
   Resource(const smtk::common::UUID&, Manager* manager = nullptr);

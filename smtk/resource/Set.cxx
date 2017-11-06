@@ -43,24 +43,9 @@ bool Set::add(ResourcePtr resource, std::string id, std::string link, Role role)
     return false;
   }
 
-  // Require attribute resources to specify role
-  if (resource->type() == Resource::ATTRIBUTE && (role == NOT_DEFINED || role > INSTANCE))
-  {
-    std::cerr << "ERROR: Role not specified or improper for attribute resource " << id << std::endl;
-    return false;
-  }
-
-  // Require model resources to specify role
-  if (resource->type() == Resource::MODEL && role < MODEL_RESOURCE)
-  {
-    std::cerr << "ERROR: Role not specified or improper for model resource " << id << std::endl;
-    return false;
-  }
-
   // Instantiate wrapper
   wrapper = new Wrapper();
   wrapper->resource = resource;
-  wrapper->type = resource->type();
   wrapper->role = role;
   wrapper->state = LOADED;
   wrapper->id = id;
@@ -73,8 +58,7 @@ bool Set::add(ResourcePtr resource, std::string id, std::string link, Role role)
 
 // Add resource info but *not* the resource itself
 // For links and error-loading cases
-bool Set::addInfo(
-  const std::string id, Resource::Type type, Role role, State state, std::string link)
+bool Set::addInfo(const std::string id, Role role, State state, std::string link)
 {
   // Check that id not already in use
   Wrapper* wrapper = this->getWrapper(id);
@@ -84,22 +68,7 @@ bool Set::addInfo(
     return false;
   }
 
-  // Require attribute resources to specify role
-  if (type == Resource::ATTRIBUTE && (role == NOT_DEFINED || role > INSTANCE))
-  {
-    std::cerr << "ERROR: Role not specified or improper for attribute resource " << id << std::endl;
-    return false;
-  }
-
-  // Require model resources to specify role
-  if (type == Resource::MODEL && role < MODEL_RESOURCE)
-  {
-    std::cerr << "ERROR: Role not specified or improper for model resource " << id << std::endl;
-    return false;
-  }
-
   wrapper = new Wrapper();
-  wrapper->type = type;
   wrapper->role = role;
   wrapper->state = state;
   wrapper->id = id;
@@ -144,8 +113,7 @@ const std::vector<std::string> Set::resourceIds() const
   return m_resourceIds;
 }
 
-bool Set::resourceInfo(
-  std::string id, Resource::Type& type, Role& role, State& state, std::string& link) const
+bool Set::resourceInfo(std::string id, Role& role, State& state, std::string& link) const
 {
   // Get wrapper from resource map
   Wrapper* wrapper = this->getWrapper(id);
@@ -155,7 +123,6 @@ bool Set::resourceInfo(
     return false;
   }
 
-  type = wrapper->type;
   role = wrapper->role;
   state = wrapper->state;
   link = wrapper->link;
