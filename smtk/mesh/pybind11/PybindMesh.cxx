@@ -22,6 +22,7 @@ namespace py = pybind11;
 template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
+#include "PybindApplyToMesh.h"
 #include "PybindCellField.h"
 #include "PybindCellSet.h"
 #include "PybindCellTypes.h"
@@ -44,6 +45,8 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindQueryTypes.h"
 #include "PybindReclassify.h"
 #include "PybindTypeSet.h"
+
+
 
 #include "PybindDeleteMesh.h"
 #include "PybindExportMesh.h"
@@ -113,6 +116,12 @@ PYBIND11_MODULE(_smtkPybindMesh, mesh)
   pybind11_init__ZN4smtk4mesh19extractTessellationERNS0_17PointConnectivityERKNS0_8PointSetERNS0_24PreAllocatedTessellationE(mesh);
   pybind11_init__ZN4smtk4mesh19extractTessellationERKNS_5model9EntityRefERKNSt3__110shared_ptrINS0_10CollectionEEERKNS0_8PointSetERNS0_24PreAllocatedTessellationE(mesh);
   pybind11_init_smtk_mesh_metrics(mesh);
+  pybind11_init_smtk_mesh_utility_applyScalarCellField(mesh);
+  pybind11_init_smtk_mesh_utility_applyScalarPointField(mesh);
+  pybind11_init_smtk_mesh_utility_applyVectorCellField(mesh);
+  pybind11_init_smtk_mesh_utility_applyVectorPointField(mesh);
+  pybind11_init_smtk_mesh_utility_applyWarp(mesh);
+  pybind11_init_smtk_mesh_utility_undoWarp(mesh);
   pybind11_init_smtk_mesh_cell_for_each(mesh);
   pybind11_init_smtk_mesh_mesh_for_each(mesh);
   pybind11_init_smtk_mesh_point_for_each(mesh);
