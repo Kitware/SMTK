@@ -284,6 +284,10 @@ int vtkCMBMeshReader::RequestData(vtkInformation* vtkNotUsed(request),
     {
       this->ReadCell(VTK_QUADRATIC_EDGE, 3, output, cellMaterialArray, cellIdArray);
     }
+    else if (card == "END")
+    {
+      break;
+    }
     this->Internals->ReadLine();
     // Check Abort
     if (!(line % ABORT_FREQ) && this->GetAbortExecute())

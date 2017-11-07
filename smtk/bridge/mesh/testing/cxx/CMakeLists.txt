@@ -14,6 +14,7 @@ set (unit_tests)
 
 set (unit_tests_which_require_data
   UnitTestEulerRatio.cxx
+  UnitTestImportFrom3dm.cxx
   UnitTestImportFromExodus.cxx
   UnitTestTopology.cxx
   UnitTestReadWrite.cxx)

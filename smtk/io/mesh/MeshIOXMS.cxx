@@ -633,6 +633,11 @@ bool readCells(std::istream& stream, const smtk::mesh::BufferedCellAllocatorPtr&
       smtk::mesh::CellType type = to_CellType(*first);
       if (type == smtk::mesh::CellType_MAX)
       {
+        // Have we reached an "END" string?
+        if (*first == "END")
+        {
+          break;
+        }
         std::cout << "ERROR: Unsupported cell type \"" << *first << "\"." << std::endl;
         return false;
       }
