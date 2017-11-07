@@ -226,5 +226,4 @@ smtk::model::OperatorResult GenerateHotStartData::operateInternal()
 #include "smtk/mesh/GenerateHotStartData_xml.h"
 
 smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::mesh::GenerateHotStartData,
-  generate_hot_start_data, "generate hot start data", GenerateHotStartData_xml,
-  smtk::model::Session);
+  generate_hotstart_data, "generate hotstart data", GenerateHotStartData_xml, smtk::model::Session);
