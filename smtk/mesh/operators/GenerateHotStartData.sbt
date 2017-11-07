@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the "generate hot start data" Operator -->
+<!-- Description of the "generate hotstart data" Operator -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="generate hot start data"
-            Label="AdH - Generate Hot Start Data" BaseType="operator">
+    <AttDef Type="generate hotstart data"
+            Label="AdH - Generate Hotstart Data" BaseType="operator">
       <BriefDescription>
         Create a field on mesh nodes/elements from
         interpolated 2-dimensional data.
@@ -53,7 +53,7 @@
           </ItemDefinitions>
         </Group>
 
-        <Double Name="power" NumberOfRequiredValues="1" Extensible="no">
+        <Double Name="power" Label="Power" NumberOfRequiredValues="1" Extensible="no">
           <BriefDescription>The weighting power used to interpolate
           source points.</BriefDescription>
           <DetailedDescription>
@@ -68,7 +68,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
-    <AttDef Type="result(generate hot start data)" BaseType="result">
+    <AttDef Type="result(generate hotstart data)" BaseType="result">
       <ItemDefinitions>
         <MeshEntity Name="mesh_modified" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>
         <ModelEntity Name="tess_changed" NumberOfRequiredValues="0"

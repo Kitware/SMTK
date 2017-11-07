@@ -164,12 +164,11 @@ int main(int argc, char* argv[])
   smtk::io::ModelToMesh convert;
   smtk::mesh::CollectionPtr c = convert(meshManager, manager);
 
-  // Create a "Generate Hot Start Data" operator
-  smtk::model::OperatorPtr generateHotStartDataOp =
-    sessRef.session()->op("generate hot start data");
+  // Create a "Generate Hotstart Data" operator
+  smtk::model::OperatorPtr generateHotStartDataOp = sessRef.session()->op("generate hotstart data");
   if (!generateHotStartDataOp)
   {
-    std::cerr << "No \"generate hot start data\" operator\n";
+    std::cerr << "No \"generate hotstart data\" operator\n";
     return 1;
   }
 
@@ -261,7 +260,7 @@ int main(int argc, char* argv[])
     }
   }
 
-  // Execute "generate hot start data" operator...
+  // Execute "generate hotstart data" operator...
   smtk::model::OperatorResult generateHotStartDataOpResult = generateHotStartDataOp->operate();
 
   // ...delete the generated points file...
@@ -273,7 +272,7 @@ int main(int argc, char* argv[])
   // ...and test the results for success.
   if (generateHotStartDataOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
   {
-    std::cerr << "\"generate hot start data\" operator failed\n";
+    std::cerr << "\"generate hotstart data\" operator failed\n";
     return 1;
   }
 
@@ -292,7 +291,7 @@ int main(int argc, char* argv[])
   {
     if (bin != expected[counter++])
     {
-      std::cerr << "\"generate hot start data\" operator produced unexpected results\n";
+      std::cerr << "\"generate hotstart data\" operator produced unexpected results\n";
       return 1;
     }
   }
