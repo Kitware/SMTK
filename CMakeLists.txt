@@ -376,7 +376,8 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
       list(APPEND required_python_modules
         paraview)
       set(paraview_PYTHONPATH
-        "${PARAVIEW_PYTHONPATH}")
+        "${PARAVIEW_PYTHONPATH}"
+        "${PARAVIEW_PYTHONPATH}/vtk")
       set(paraview_libpath
         "${PARAVIEW_RUNTIME_DIRS}")
     elseif (SMTK_ENABLE_VTK_SUPPORT)
@@ -497,6 +498,16 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
       add_test(
         NAME    "${name}"
         COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/${file}"
+                ${ARGN})
+      set_tests_properties("${name}"
+        PROPERTIES
+          ENVIRONMENT "${smtk_python_test_environment}")
+    endfunction ()
+
+    function (smtk_add_test_python_full_path name file)
+      add_test(
+        NAME    "${name}"
+        COMMAND "${PYTHON_EXECUTABLE}" "${file}"
                 ${ARGN})
       set_tests_properties("${name}"
         PROPERTIES
