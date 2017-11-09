@@ -52,7 +52,7 @@ set(unit_tests_which_require_data
 )
 
 set(extra_libs)
-if(SMTK_ENABLE_DISCRETE_SESSION)
+if(SMTK_ENABLE_DISCRETE_SESSION AND SMTK_ENABLE_VTK_SUPPORT)
   list(APPEND unit_tests_which_require_data
        TestElevateMesh.cxx
        UnitTestExtractOrderedTessellation.cxx
@@ -63,6 +63,19 @@ if(SMTK_ENABLE_DISCRETE_SESSION)
        vtkSMTKSourceExt
        )
 endif()
+
+if(SMTK_ENABLE_MESH_SESSION AND SMTK_ENABLE_VTK_SUPPORT)
+  list(APPEND unit_tests_which_require_data
+       TestElevateMeshOnStructuredGrid.cxx
+       )
+  list(APPEND extra_libs
+       smtkMeshSession
+       smtkIOVTK
+       vtkSMTKSourceExt
+       )
+endif()
+
+list(REMOVE_DUPLICATES extra_libs)
 
 smtk_unit_tests(
   LABEL "Mesh"
