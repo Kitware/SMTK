@@ -248,6 +248,7 @@ vtkSmartPointer<vtkDataObject> ReadVTKData_tif::operator()(
   rdr->Update();
 
   vtkSmartPointer<vtkImageData> outImage = vtkSmartPointer<vtkImageData>::New();
+  outImage->ShallowCopy(rdr->GetOutput());
 
   vtkSmartPointer<vtkImageData> data = vtkSmartPointer<vtkImageData>::New();
   if (outImage.GetPointer())

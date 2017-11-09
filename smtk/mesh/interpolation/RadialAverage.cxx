@@ -88,72 +88,6 @@ struct RadialAverageForStructuredGrid
     }
   }
 
-  void find(double x, double y, std::vector<Coord>& results) const
-  {
-    // (ix,iy) represents the closest point in the grid to the query point
-    int ix = static_cast<int>(std::round(m_structuredgrid.m_extent[0] +
-      ((x - m_structuredgrid.m_origin[0]) / m_structuredgrid.m_spacing[0])));
-    int iy = static_cast<int>(std::round(m_structuredgrid.m_extent[2] +
-      ((y - m_structuredgrid.m_origin[1]) / m_structuredgrid.m_spacing[1])));
-
-    if (m_discreteRadius[0] == 0 || m_discreteRadius[1] == 0)
-    {
-      if (m_structuredgrid.containsIndex(ix, iy))
-      {
-        results.push_back(std::make_pair(ix, iy));
-      }
-    }
-    else
-    {
-      for (int i = ix - m_discreteRadius[0]; i < ix + m_discreteRadius[0]; i++)
-      {
-        if (i < m_structuredgrid.m_extent[0] || i > m_structuredgrid.m_extent[1])
-        {
-          continue;
-        }
-
-        // We find the extrema in the y dimension. Every point in between the
-        // two extrema will also be in the circle of interest.
-        int j_extrema[2] = { iy - m_discreteRadius[1], iy + m_discreteRadius[1] };
-        bool extremaFound[2] = { false, false };
-        while ((!extremaFound[0] || !extremaFound[1]) && j_extrema[0] != j_extrema[1])
-        {
-          for (int jdx = 0; jdx < 2; jdx++)
-          {
-            if (!extremaFound[jdx])
-            {
-              double x_ = m_structuredgrid.m_origin[0] +
-                (i - m_structuredgrid.m_extent[0]) * m_structuredgrid.m_spacing[0];
-              double y_ = m_structuredgrid.m_origin[1] +
-                (j_extrema[0] - m_structuredgrid.m_extent[2]) * m_structuredgrid.m_spacing[1];
-
-              if (m_limits[0] <= x_ && x_ <= m_limits[1] && m_limits[2] <= y_ && y_ <= m_limits[3])
-              {
-                double r2 = (x - x_) * (x - x_) + (y - y_) * (y - y_);
-                if (r2 < m_radius2)
-                {
-                  extremaFound[jdx] = true;
-                }
-              }
-
-              if (!extremaFound[jdx])
-              {
-                j_extrema[jdx]++;
-              }
-            }
-          }
-        }
-        for (int j = j_extrema[0]; j < j_extrema[1]; j++)
-        {
-          if (m_structuredgrid.containsIndex(i, j))
-          {
-            results.push_back(std::make_pair(i, j));
-          }
-        }
-      }
-    }
-  }
-
   double operator()(std::array<double, 3> x)
   {
     if (x[0] < m_limits[0] || x[0] > m_limits[1] || x[1] < m_limits[2] || x[1] > m_limits[3])
@@ -162,24 +96,68 @@ struct RadialAverageForStructuredGrid
       return std::numeric_limits<double>::quiet_NaN();
     }
 
-    // Grab the indices of the points that are within the radius of the
-    // point
-    std::vector<Coord> results;
-    find(x[0], x[1], results);
+    // (ix,iy) represents the closest point in the grid to the query point
+    int ix = static_cast<int>(std::round(m_structuredgrid.m_extent[0] +
+      ((x[0] - m_structuredgrid.m_origin[0]) / m_structuredgrid.m_spacing[0])));
+    int iy = static_cast<int>(std::round(m_structuredgrid.m_extent[2] +
+      ((x[1] - m_structuredgrid.m_origin[1]) / m_structuredgrid.m_spacing[1])));
 
-    if (results.size() == 0)
-    {
-      return std::numeric_limits<double>::quiet_NaN();
-    }
-
-    // We perform an unweighted average to maintain parity with the
-    // unstructured grid version of this operator
+    // Since we allow for different spacing in x and y, our circle maps to an
+    // ellipse with axes in the x and y dimensions of m_discreteRadius[0] and
+    // m_discreteRadius[1], respectively, in discrete space. To integrate this
+    // ellipse, we sweep across the y dimension; for each discrete step in y,
+    // we compute the extrema in x and sum the results at each coordinate.
     double sum = 0.;
-    for (std::size_t j = 0; j < results.size(); j++)
+    std::size_t nCoords = 0;
+    int i_extrema[2];
+    for (int j = iy - m_discreteRadius[1]; j < iy + m_discreteRadius[1]; j++)
     {
-      sum += m_structuredgrid.data()(results[j].first, results[j].second);
+      if (j < m_structuredgrid.m_extent[2] || j > m_structuredgrid.m_extent[3])
+      {
+        continue;
+      }
+
+      int halfChord = m_discreteRadius[0] * sin(acos(double(j - iy) / m_discreteRadius[1]));
+      i_extrema[0] = ix - halfChord;
+      i_extrema[1] = ix + halfChord;
+
+      if (i_extrema[0] < m_structuredgrid.m_extent[0])
+      {
+        i_extrema[0] = m_structuredgrid.m_extent[0];
+      }
+      if (i_extrema[1] > m_structuredgrid.m_extent[1])
+      {
+        i_extrema[1] = m_structuredgrid.m_extent[1];
+      }
+
+      // We perform an unweighted average to maintain parity with the
+      // unstructured grid version of this operator
+      for (int i = i_extrema[0]; i < i_extrema[1]; i++)
+      {
+        if (m_structuredgrid.containsIndex(i, j))
+        {
+          sum += m_structuredgrid.data()(i, j);
+          nCoords++;
+        }
+      }
     }
-    return sum / results.size();
+    if (nCoords == 0)
+    {
+      if (m_structuredgrid.containsIndex(ix, iy))
+      {
+        sum = m_structuredgrid.data()(ix, iy);
+      }
+      else
+      {
+        sum = std::numeric_limits<double>::quiet_NaN();
+      }
+    }
+    else
+    {
+      sum /= nCoords;
+    }
+
+    return sum;
   }
 
   const smtk::mesh::StructuredGrid m_structuredgrid;
