@@ -41,28 +41,15 @@ class OpenSMTKFileInParaView(smtk.testing.TestCase):
         pvsimple.OpenDataFile(os.path.join(smtk.testing.DATA_DIR,
                                            'model', '2d', 'smtk', 'epic-trex-drummer.smtk'))
         pvsimple.Show()
-        pvsimple.Render()
-        self.outFile = os.path.join(smtk.testing.TEMP_DIR, str(smtk.common.UUID.random()) + '.png')
-        pvsimple.SaveScreenshot(self.outFile, ImageResolution = (200,200))
 
         if self.haveVTK() and self.haveVTKExtension():
             import vtk
             self.startRenderTest()
-            reader = vtk.vtkPNGReader()
-            reader.SetFileName(self.outFile)
-            reader.Update()
-            self.addImageToScene(reader)
-            cam = self.renderer.GetActiveCamera()
-            self.renderer.ResetCamera()
-            self.renderWindow.Render()
             cmpFile = os.path.join(smtk.testing.DATA_DIR,
                                    'baseline', 'smtk', 'paraview', 'epic-trex-drummer.png')
-            smtk.testing.compare_image(self.renderer.GetVTKWindow(), cmpFile)
+            smtk.testing.compare_image(pvsimple.Render().GetRenderer().GetVTKWindow(), cmpFile)
             if self.interactive():
                 self.interact()
-
-    def tearDown(self):
-        os.remove(self.outFile)
 
 
 if __name__ == '__main__':
