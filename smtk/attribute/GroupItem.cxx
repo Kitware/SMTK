@@ -49,7 +49,7 @@ void GroupItem::detachAllItems()
 
 Item::Type GroupItem::type() const
 {
-  return GROUP;
+  return GroupType;
 }
 
 bool GroupItem::isValid() const

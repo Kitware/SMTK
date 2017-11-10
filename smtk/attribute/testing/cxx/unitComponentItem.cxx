@@ -33,7 +33,7 @@ int unitComponentItem(int, char** const)
   // Instantiate definition
   auto compDef = ComponentItemDefinition::New("comp-def");
   smtkTest(!!compDef, "Failed to instantiate ComponentItemDefinition");
-  smtkTest(compDef->type() == Item::COMPONENT, "Failed to return COMPONENT as definition type");
+  smtkTest(compDef->type() == Item::ComponentType, "Failed to return COMPONENT as definition type");
 
   // Instantiate att collection, attdef, & attribute
   CollectionPtr collection = Collection::create();
@@ -43,11 +43,12 @@ int unitComponentItem(int, char** const)
 
   ItemPtr item = att->find("comp-def");
   smtkTest(!!item, "Failed to find Item");
-  smtkTest(item->type() == Item::COMPONENT, "Failed to return COMPONENT as item type");
+  smtkTest(item->type() == Item::ComponentType, "Failed to return COMPONENT as item type");
 
   ComponentItemPtr compItem = att->findComponent("comp-def");
   smtkTest(!!compItem, "Failed to find ComponentItem");
-  smtkTest(compItem->type() == Item::COMPONENT, "Failed to return COMPONENT as ComponentItem type");
+  smtkTest(
+    compItem->type() == Item::ComponentType, "Failed to return COMPONENT as ComponentItem type");
   smtkTest(!compItem->isSet(), "isSet() failed to return false for default item");
 
   return 0;

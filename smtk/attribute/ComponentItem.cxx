@@ -31,7 +31,7 @@ ComponentItem::~ComponentItem()
 
 Item::Type ComponentItem::type() const
 {
-  return COMPONENT;
+  return ComponentType;
 }
 
 bool ComponentItem::isValid() const

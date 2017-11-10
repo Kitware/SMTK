@@ -197,31 +197,31 @@ std::string Item::type2String(Item::Type t)
 {
   switch (t)
   {
-    case ATTRIBUTE_REF:
+    case AttributeRefType:
       return "AttributeRef";
-    case COLOR:
+    case ColorType:
       return "Color";
-    case DIRECTORY:
+    case DirectoryType:
       return "Directory";
-    case DOUBLE:
+    case DoubleType:
       return "Double";
-    case FILE:
+    case FileType:
       return "File";
-    case GROUP:
+    case GroupType:
       return "Group";
-    case INT:
+    case IntType:
       return "Int";
-    case STRING:
+    case StringType:
       return "String";
-    case VOID:
+    case VoidType:
       return "Void";
-    case MODEL_ENTITY:
+    case ModelEntityType:
       return "ModelEntity";
-    case MESH_SELECTION:
+    case MeshSelectionType:
       return "MeshSelection";
-    case MESH_ENTITY:
+    case MeshEntityType:
       return "MeshEntity";
-    case DATE_TIME:
+    case DateTimeType:
       return "DateTime";
     default:
       return "";
@@ -233,55 +233,55 @@ Item::Type Item::string2Type(const std::string& s)
 {
   if (s == "AttributeRef")
   {
-    return ATTRIBUTE_REF;
+    return AttributeRefType;
   }
   if (s == "Color")
   {
-    return COLOR;
+    return ColorType;
   }
   if (s == "Directory")
   {
-    return DIRECTORY;
+    return DirectoryType;
   }
   if (s == "Double")
   {
-    return DOUBLE;
+    return DoubleType;
   }
   if (s == "File")
   {
-    return FILE;
+    return FileType;
   }
   if (s == "Group")
   {
-    return GROUP;
+    return GroupType;
   }
   if (s == "Int")
   {
-    return INT;
+    return IntType;
   }
   if (s == "String")
   {
-    return STRING;
+    return StringType;
   }
   if (s == "Void")
   {
-    return VOID;
+    return VoidType;
   }
   if (s == "ModelEntity")
   {
-    return MODEL_ENTITY;
+    return ModelEntityType;
   }
   if (s == "MeshSelection")
   {
-    return MESH_SELECTION;
+    return MeshSelectionType;
   }
   if (s == "MeshEntity")
   {
-    return MESH_ENTITY;
+    return MeshEntityType;
   }
   if (s == "DateTime")
   {
-    return DATE_TIME;
+    return DateTimeType;
   }
   return NUMBER_OF_TYPES;
 }

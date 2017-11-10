@@ -45,7 +45,7 @@ FileItem::~FileItem()
 
 Item::Type FileItem::type() const
 {
-  return FILE;
+  return FileType;
 }
 
 void FileItem::addRecentValue(const std::string& val)

@@ -50,7 +50,7 @@ void ItemDefDataModel::appendBranchToRoot(smtk::attribute::DefinitionPtr def)
     item->setData(2, Qt::DisplayRole, attDefType);
     item->setReferencedData(itemDef);
 
-    if (itemDef->type() == smtk::attribute::Item::GROUP)
+    if (itemDef->type() == smtk::attribute::Item::GroupType)
     {
       this->appendRecursively(itemDef, item, attDefType);
     }
@@ -73,7 +73,7 @@ void ItemDefDataModel::appendRecursively(smtk::attribute::ItemDefinitionPtr pare
     item->setData(2, Qt::DisplayRole, attDefType);
     item->setReferencedData(itemDef);
 
-    if (itemDef->type() == smtk::attribute::Item::GROUP)
+    if (itemDef->type() == smtk::attribute::Item::GroupType)
     {
       this->appendRecursively(itemDef, item, attDefType);
     }
@@ -88,7 +88,7 @@ void ItemDefDataModel::insert(const Container& props)
   const auto itemDef = props.ItemDefinition;
   const auto parentElement = static_cast<ItemDefElement*>(this->getItem(props.ParentIndex));
   const auto& parentItemDef = parentElement->getReferencedDataConst();
-  if (parentItemDef && parentItemDef->type() == smtk::attribute::Item::GROUP)
+  if (parentItemDef && parentItemDef->type() == smtk::attribute::Item::GroupType)
   {
     auto group = std::static_pointer_cast<smtk::attribute::GroupItemDefinition>(parentItemDef);
     group->addItemDefinition(itemDef);
@@ -128,7 +128,7 @@ void ItemDefDataModel::remove(const QModelIndex& itemIndex, smtk::attribute::Def
   const auto& parentItemDef = parentElem->getReferencedDataConst();
   const auto item = static_cast<ItemDefElement*>(this->getItem(itemIndex));
   auto itemDef = item->getReferencedDataConst();
-  if (parentItemDef && parentItemDef->type() == smtk::attribute::Item::GROUP)
+  if (parentItemDef && parentItemDef->type() == smtk::attribute::Item::GroupType)
   {
     auto group = std::static_pointer_cast<smtk::attribute::GroupItemDefinition>(parentItemDef);
     group->removeItemDefinition(itemDef);

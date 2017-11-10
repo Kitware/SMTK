@@ -37,7 +37,7 @@ ModelEntityItem::~ModelEntityItem()
 /// Return the type of storage used by the item.
 Item::Type ModelEntityItem::type() const
 {
-  return MODEL_ENTITY;
+  return ModelEntityType;
 }
 
 bool ModelEntityItem::isValid() const

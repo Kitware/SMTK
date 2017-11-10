@@ -603,7 +603,7 @@ void XmlV2StringWriter::processItemDefinitionAttributes(
       }
     }
   }
-  if (idef->numberOfCategories() && (idef->type() != Item::GROUP))
+  if (idef->numberOfCategories() && (idef->type() != Item::GroupType))
   {
     xml_node cnode, catNodes = node.append_child("Categories");
     std::set<std::string>::const_iterator it;
@@ -628,39 +628,39 @@ void XmlV2StringWriter::processItemDefinitionType(
 {
   switch (idef->type())
   {
-    case Item::ATTRIBUTE_REF:
+    case Item::AttributeRefType:
       this->processRefDef(node, smtk::dynamic_pointer_cast<RefItemDefinition>(idef));
       break;
-    case Item::DOUBLE:
+    case Item::DoubleType:
       this->processDoubleDef(node, smtk::dynamic_pointer_cast<DoubleItemDefinition>(idef));
       break;
-    case Item::DIRECTORY:
+    case Item::DirectoryType:
       this->processDirectoryDef(node, smtk::dynamic_pointer_cast<DirectoryItemDefinition>(idef));
       break;
-    case Item::FILE:
+    case Item::FileType:
       this->processFileDef(node, smtk::dynamic_pointer_cast<FileItemDefinition>(idef));
       break;
-    case Item::GROUP:
+    case Item::GroupType:
       this->processGroupDef(node, smtk::dynamic_pointer_cast<GroupItemDefinition>(idef));
       break;
-    case Item::INT:
+    case Item::IntType:
       this->processIntDef(node, smtk::dynamic_pointer_cast<IntItemDefinition>(idef));
       break;
-    case Item::STRING:
+    case Item::StringType:
       this->processStringDef(node, smtk::dynamic_pointer_cast<StringItemDefinition>(idef));
       break;
-    case Item::MODEL_ENTITY:
+    case Item::ModelEntityType:
       this->processModelEntityDef(
         node, smtk::dynamic_pointer_cast<ModelEntityItemDefinition>(idef));
       break;
-    case Item::MESH_SELECTION:
+    case Item::MeshSelectionType:
       this->processMeshSelectionItemDef(
         node, smtk::dynamic_pointer_cast<MeshSelectionItemDefinition>(idef));
       break;
-    case Item::MESH_ENTITY:
+    case Item::MeshEntityType:
       this->processMeshEntityDef(node, smtk::dynamic_pointer_cast<MeshItemDefinition>(idef));
       break;
-    case Item::VOID:
+    case Item::VoidType:
       // Nothing to do!
       break;
       break;
@@ -1055,37 +1055,37 @@ void XmlV2StringWriter::processItemType(xml_node& node, smtk::attribute::ItemPtr
 {
   switch (item->type())
   {
-    case Item::ATTRIBUTE_REF:
+    case Item::AttributeRefType:
       this->processRefItem(node, smtk::dynamic_pointer_cast<RefItem>(item));
       break;
-    case Item::DOUBLE:
+    case Item::DoubleType:
       this->processDoubleItem(node, smtk::dynamic_pointer_cast<DoubleItem>(item));
       break;
-    case Item::DIRECTORY:
+    case Item::DirectoryType:
       this->processDirectoryItem(node, smtk::dynamic_pointer_cast<DirectoryItem>(item));
       break;
-    case Item::FILE:
+    case Item::FileType:
       this->processFileItem(node, smtk::dynamic_pointer_cast<FileItem>(item));
       break;
-    case Item::GROUP:
+    case Item::GroupType:
       this->processGroupItem(node, smtk::dynamic_pointer_cast<GroupItem>(item));
       break;
-    case Item::INT:
+    case Item::IntType:
       this->processIntItem(node, smtk::dynamic_pointer_cast<IntItem>(item));
       break;
-    case Item::STRING:
+    case Item::StringType:
       this->processStringItem(node, smtk::dynamic_pointer_cast<StringItem>(item));
       break;
-    case Item::MODEL_ENTITY:
+    case Item::ModelEntityType:
       this->processModelEntityItem(node, smtk::dynamic_pointer_cast<ModelEntityItem>(item));
       break;
-    case Item::VOID:
+    case Item::VoidType:
       // Nothing to do!
       break;
-    case Item::MESH_SELECTION:
+    case Item::MeshSelectionType:
       this->processMeshSelectionItem(node, smtk::dynamic_pointer_cast<MeshSelectionItem>(item));
       break;
-    case Item::MESH_ENTITY:
+    case Item::MeshEntityType:
       this->processMeshEntityItem(node, smtk::dynamic_pointer_cast<MeshItem>(item));
       break;
     default:

@@ -48,7 +48,7 @@ FileItemDefinition::~FileItemDefinition()
 
 Item::Type FileItemDefinition::type() const
 {
-  return Item::FILE;
+  return Item::FileType;
 }
 
 int FileItemDefinition::filterId(const std::string& val) const

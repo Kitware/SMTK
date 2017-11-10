@@ -23,7 +23,7 @@ IntItemDefinition::~IntItemDefinition()
 
 Item::Type IntItemDefinition::type() const
 {
-  return Item::INT;
+  return Item::IntType;
 }
 
 smtk::attribute::ItemPtr IntItemDefinition::buildItem(

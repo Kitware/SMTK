@@ -104,7 +104,7 @@ qtFileItem::qtFileItem(smtk::attribute::FileSystemItemPtr dataObj, QWidget* p, q
   : qtItem(dataObj, p, bview)
 {
   this->Internals = new qtFileItemInternals;
-  this->Internals->IsDirectory = (dataObj->type() == smtk::attribute::Item::DIRECTORY);
+  this->Internals->IsDirectory = (dataObj->type() == smtk::attribute::Item::DirectoryType);
   this->Internals->SignalMapper = new QSignalMapper();
   this->IsLeafItem = true;
   this->Internals->VectorItemOrient = enVectorItemOrient;
@@ -185,7 +185,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
   QFrame* frame = new QFrame(this->parentWidget());
   //frame->setStyleSheet("QFrame { background-color: yellow; }");
   QString defaultText;
-  if (item->type() == smtk::attribute::Item::FILE)
+  if (item->type() == smtk::attribute::Item::FileType)
   {
     const smtk::attribute::FileItemDefinition* fDef =
       dynamic_cast<const attribute::FileItemDefinition*>(item->definition().get());

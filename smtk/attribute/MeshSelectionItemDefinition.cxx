@@ -26,7 +26,7 @@ MeshSelectionItemDefinition::~MeshSelectionItemDefinition()
 
 Item::Type MeshSelectionItemDefinition::type() const
 {
-  return Item::MESH_SELECTION;
+  return Item::MeshSelectionType;
 }
 
 smtk::model::BitFlags MeshSelectionItemDefinition::membershipMask() const

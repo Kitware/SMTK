@@ -31,30 +31,30 @@ std::shared_ptr<HandlerItemDef> HandlerItemDef::create(const int type)
   using namespace smtk::attribute;
   switch (type)
   {
-    case Item::DOUBLE:
+    case Item::DoubleType:
       return std::make_shared<HandlerDouble>();
-    case Item::GROUP:
+    case Item::GroupType:
       return std::make_shared<HandlerGroup>();
-    case Item::INT:
+    case Item::IntType:
       return std::make_shared<HandlerInt>();
-    case Item::STRING:
+    case Item::StringType:
       return std::make_shared<HandlerString>();
-    case Item::COLOR:
-    case Item::VOID:
+    case Item::ColorType:
+    case Item::VoidType:
       return std::make_shared<HandlerVoid>();
-    case Item::FILE:
+    case Item::FileType:
       return std::make_shared<HandlerFile>();
-    case Item::DIRECTORY:
+    case Item::DirectoryType:
       return std::make_shared<HandlerDirectory>();
-    case Item::MODEL_ENTITY:
+    case Item::ModelEntityType:
       return std::make_shared<HandlerModelEntity>();
-    case Item::MESH_SELECTION:
+    case Item::MeshSelectionType:
       return std::make_shared<HandlerMeshSelection>();
-    case Item::MESH_ENTITY:
+    case Item::MeshEntityType:
       return std::make_shared<HandlerMeshEntity>();
-    case Item::DATE_TIME:
+    case Item::DateTimeType:
       return std::make_shared<HandlerDateTime>();
-    case Item::ATTRIBUTE_REF:
+    case Item::AttributeRefType:
       return std::make_shared<HandlerRef>();
     default:
       std::cerr << "Error: Unknown type!\n";

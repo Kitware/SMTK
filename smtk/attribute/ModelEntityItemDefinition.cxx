@@ -40,7 +40,7 @@ ModelEntityItemDefinition::~ModelEntityItemDefinition()
 /// Return the type of storage used by items defined by this class.
 Item::Type ModelEntityItemDefinition::type() const
 {
-  return Item::MODEL_ENTITY;
+  return Item::ModelEntityType;
 }
 
 /// Return the mask used to accept or reject entities as attribute values.

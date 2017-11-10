@@ -32,5 +32,5 @@ DirectoryItem::~DirectoryItem()
 
 Item::Type DirectoryItem::type() const
 {
-  return DIRECTORY;
+  return DirectoryType;
 }

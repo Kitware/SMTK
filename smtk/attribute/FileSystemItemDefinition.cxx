@@ -36,7 +36,7 @@ FileSystemItemDefinition::~FileSystemItemDefinition()
 
 Item::Type FileSystemItemDefinition::type() const
 {
-  return Item::DIRECTORY;
+  return Item::DirectoryType;
 }
 
 bool FileSystemItemDefinition::isValueValid(const std::string& val) const

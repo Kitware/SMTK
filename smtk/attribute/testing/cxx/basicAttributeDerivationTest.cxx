@@ -136,11 +136,11 @@ int main()
       {
         switch (vcomp->type())
         {
-          case AttComp::DOUBLE:
-          case AttComp::INT:
+          case AttComp::DoubleType:
+          case AttComp::IntType:
             std::cout << " Value = " << vcomp->valueAsString() << std::endl;
             break;
-          case AttComp::STRING:
+          case AttComp::StringType:
             std::cout << " String Val = " << vcomp->valueAsString() << std::endl;
             break;
           default:

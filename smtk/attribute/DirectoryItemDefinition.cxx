@@ -24,7 +24,7 @@ DirectoryItemDefinition::~DirectoryItemDefinition()
 }
 Item::Type DirectoryItemDefinition::type() const
 {
-  return Item::DIRECTORY;
+  return Item::DirectoryType;
 }
 
 smtk::attribute::ItemPtr DirectoryItemDefinition::buildItem(

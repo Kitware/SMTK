@@ -37,7 +37,7 @@ smtk::attribute::ItemPtr VoidItemDefinition::buildItem(
 
 Item::Type VoidItemDefinition::type() const
 {
-  return Item::VOID;
+  return Item::VoidType;
 }
 
 smtk::attribute::ItemDefinitionPtr smtk::attribute::VoidItemDefinition::createCopy(

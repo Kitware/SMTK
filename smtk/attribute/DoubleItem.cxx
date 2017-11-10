@@ -29,7 +29,7 @@ DoubleItem::~DoubleItem()
 
 Item::Type DoubleItem::type() const
 {
-  return DOUBLE;
+  return DoubleType;
 }
 
 bool DoubleItem::assign(ConstItemPtr& sourceItem, unsigned int options)

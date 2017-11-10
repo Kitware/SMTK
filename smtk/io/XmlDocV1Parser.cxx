@@ -798,61 +798,61 @@ void XmlDocV1Parser::processDefinition(xml_node& defNode, smtk::attribute::Defin
     itemName = node.attribute("Name").value();
     switch (itype)
     {
-      case smtk::attribute::Item::ATTRIBUTE_REF:
+      case smtk::attribute::Item::AttributeRefType:
         idef = def->addItemDefinition<smtk::attribute::RefItemDefinition>(itemName);
         this->processRefDef(
           node, smtk::dynamic_pointer_cast<smtk::attribute::RefItemDefinition>(idef));
         break;
-      case smtk::attribute::Item::DOUBLE:
+      case smtk::attribute::Item::DoubleType:
         idef = def->addItemDefinition<smtk::attribute::DoubleItemDefinition>(itemName);
         this->processDoubleDef(
           node, smtk::dynamic_pointer_cast<smtk::attribute::DoubleItemDefinition>(idef));
         break;
-      case smtk::attribute::Item::DIRECTORY:
+      case smtk::attribute::Item::DirectoryType:
         idef = def->addItemDefinition<smtk::attribute::DirectoryItemDefinition>(itemName);
         this->processDirectoryDef(
           node, smtk::dynamic_pointer_cast<smtk::attribute::DirectoryItemDefinition>(idef));
         break;
-      case smtk::attribute::Item::FILE:
+      case smtk::attribute::Item::FileType:
         idef = def->addItemDefinition<smtk::attribute::FileItemDefinition>(itemName);
         this->processFileDef(
           node, smtk::dynamic_pointer_cast<smtk::attribute::FileItemDefinition>(idef));
         break;
-      case smtk::attribute::Item::GROUP:
+      case smtk::attribute::Item::GroupType:
         idef = def->addItemDefinition<smtk::attribute::GroupItemDefinition>(itemName);
         this->processGroupDef(
           node, smtk::dynamic_pointer_cast<smtk::attribute::GroupItemDefinition>(idef));
         break;
-      case smtk::attribute::Item::INT:
+      case smtk::attribute::Item::IntType:
         idef = def->addItemDefinition<smtk::attribute::IntItemDefinition>(itemName);
         this->processIntDef(
           node, smtk::dynamic_pointer_cast<smtk::attribute::IntItemDefinition>(idef));
         break;
-      case smtk::attribute::Item::STRING:
+      case smtk::attribute::Item::StringType:
         idef = def->addItemDefinition<smtk::attribute::StringItemDefinition>(itemName);
         this->processStringDef(
           node, smtk::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(idef));
         break;
-      case smtk::attribute::Item::MODEL_ENTITY:
+      case smtk::attribute::Item::ModelEntityType:
         idef = def->addItemDefinition<smtk::attribute::ModelEntityItemDefinition>(itemName);
         this->processModelEntityDef(
           node, smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItemDefinition>(idef));
         break;
-      case smtk::attribute::Item::VOID:
+      case smtk::attribute::Item::VoidType:
         idef = def->addItemDefinition<smtk::attribute::VoidItemDefinition>(itemName);
         this->processItemDef(node, idef);
         break;
-      case smtk::attribute::Item::MESH_SELECTION:
+      case smtk::attribute::Item::MeshSelectionType:
         idef = def->addItemDefinition<smtk::attribute::MeshSelectionItemDefinition>(itemName);
         this->processMeshSelectionDef(
           node, smtk::dynamic_pointer_cast<smtk::attribute::MeshSelectionItemDefinition>(idef));
         break;
-      case smtk::attribute::Item::MESH_ENTITY:
+      case smtk::attribute::Item::MeshEntityType:
         idef = def->addItemDefinition<smtk::attribute::MeshItemDefinition>(itemName);
         this->processMeshEntityDef(
           node, smtk::dynamic_pointer_cast<smtk::attribute::MeshItemDefinition>(idef));
         break;
-      case smtk::attribute::Item::DATE_TIME:
+      case smtk::attribute::Item::DateTimeType:
         idef = def->addItemDefinition<smtk::attribute::DateTimeItemDefinition>(itemName);
         this->processDateTimeDef(
           node, smtk::dynamic_pointer_cast<smtk::attribute::DateTimeItemDefinition>(idef));
@@ -1140,7 +1140,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
     citemName = cinode.attribute("Name").value();
     switch (citype)
     {
-      case smtk::attribute::Item::ATTRIBUTE_REF:
+      case smtk::attribute::Item::AttributeRefType:
         if ((cidef = idef->addItemDefinition<smtk::attribute::RefItemDefinition>(citemName)))
         {
           this->processRefDef(
@@ -1151,7 +1151,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
           smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
         }
         break;
-      case smtk::attribute::Item::DOUBLE:
+      case smtk::attribute::Item::DoubleType:
         if ((cidef = idef->addItemDefinition<smtk::attribute::DoubleItemDefinition>(citemName)))
         {
           this->processDoubleDef(
@@ -1162,7 +1162,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
           smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
         }
         break;
-      case smtk::attribute::Item::DIRECTORY:
+      case smtk::attribute::Item::DirectoryType:
         if ((cidef = idef->addItemDefinition<smtk::attribute::DirectoryItemDefinition>(citemName)))
         {
           this->processDirectoryDef(
@@ -1173,7 +1173,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
           smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
         }
         break;
-      case smtk::attribute::Item::FILE:
+      case smtk::attribute::Item::FileType:
         if ((cidef = idef->addItemDefinition<smtk::attribute::FileItemDefinition>(citemName)))
         {
           this->processFileDef(
@@ -1184,7 +1184,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
           smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
         }
         break;
-      case smtk::attribute::Item::GROUP:
+      case smtk::attribute::Item::GroupType:
         if ((cidef = idef->addItemDefinition<smtk::attribute::GroupItemDefinition>(citemName)))
         {
           this->processGroupDef(
@@ -1195,7 +1195,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
           smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
         }
         break;
-      case smtk::attribute::Item::INT:
+      case smtk::attribute::Item::IntType:
         if ((cidef = idef->addItemDefinition<smtk::attribute::IntItemDefinition>(citemName)))
         {
           this->processIntDef(
@@ -1206,7 +1206,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
           smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
         }
         break;
-      case smtk::attribute::Item::STRING:
+      case smtk::attribute::Item::StringType:
         if ((cidef = idef->addItemDefinition<smtk::attribute::StringItemDefinition>(citemName)))
         {
           this->processStringDef(
@@ -1217,7 +1217,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
           smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
         }
         break;
-      case smtk::attribute::Item::MODEL_ENTITY:
+      case smtk::attribute::Item::ModelEntityType:
         if ((cidef =
                 idef->addItemDefinition<smtk::attribute::ModelEntityItemDefinition>(citemName)))
         {
@@ -1229,7 +1229,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
           smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
         }
         break;
-      case smtk::attribute::Item::VOID:
+      case smtk::attribute::Item::VoidType:
         if ((cidef = idef->addItemDefinition<smtk::attribute::VoidItemDefinition>(citemName)))
         {
           this->processItemDef(cinode, cidef);
@@ -1239,7 +1239,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
           smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
         }
         break;
-      case smtk::attribute::Item::MESH_SELECTION:
+      case smtk::attribute::Item::MeshSelectionType:
         if ((cidef =
                 idef->addItemDefinition<smtk::attribute::MeshSelectionItemDefinition>(citemName)))
         {
@@ -1250,7 +1250,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
           smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
         }
         break;
-      case smtk::attribute::Item::MESH_ENTITY:
+      case smtk::attribute::Item::MeshEntityType:
         if ((cidef = idef->addItemDefinition<smtk::attribute::MeshItemDefinition>(citemName)))
         {
           this->processMeshEntityDef(
@@ -1261,7 +1261,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
           smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
         }
         break;
-      case smtk::attribute::Item::DATE_TIME:
+      case smtk::attribute::Item::DateTimeType:
         if ((cidef = idef->addItemDefinition<smtk::attribute::DateTimeItemDefinition>(citemName)))
         {
           this->processDateTimeDef(
@@ -1498,7 +1498,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
     itemName = child.attribute("Name").value();
     switch (itype)
     {
-      case smtk::attribute::Item::ATTRIBUTE_REF:
+      case smtk::attribute::Item::AttributeRefType:
         idef = def->addItemDefinition<smtk::attribute::RefItemDefinition>(itemName);
         if (!idef)
         {
@@ -1509,7 +1509,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         this->processRefDef(
           child, smtk::dynamic_pointer_cast<smtk::attribute::RefItemDefinition>(idef));
         break;
-      case smtk::attribute::Item::DOUBLE:
+      case smtk::attribute::Item::DoubleType:
         idef = def->addItemDefinition<smtk::attribute::DoubleItemDefinition>(itemName);
         if (!idef)
         {
@@ -1520,7 +1520,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         this->processDoubleDef(
           child, smtk::dynamic_pointer_cast<smtk::attribute::DoubleItemDefinition>(idef));
         break;
-      case smtk::attribute::Item::DIRECTORY:
+      case smtk::attribute::Item::DirectoryType:
         idef = def->addItemDefinition<smtk::attribute::DirectoryItemDefinition>(itemName);
         if (!idef)
         {
@@ -1531,7 +1531,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         this->processDirectoryDef(
           child, smtk::dynamic_pointer_cast<smtk::attribute::DirectoryItemDefinition>(idef));
         break;
-      case smtk::attribute::Item::FILE:
+      case smtk::attribute::Item::FileType:
         idef = def->addItemDefinition<smtk::attribute::FileItemDefinition>(itemName);
         if (!idef)
         {
@@ -1542,7 +1542,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         this->processFileDef(
           child, smtk::dynamic_pointer_cast<smtk::attribute::FileItemDefinition>(idef));
         break;
-      case smtk::attribute::Item::GROUP:
+      case smtk::attribute::Item::GroupType:
         idef = def->addItemDefinition<smtk::attribute::GroupItemDefinition>(itemName);
         if (!idef)
         {
@@ -1553,7 +1553,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         this->processGroupDef(
           child, smtk::dynamic_pointer_cast<smtk::attribute::GroupItemDefinition>(idef));
         break;
-      case smtk::attribute::Item::INT:
+      case smtk::attribute::Item::IntType:
         idef = def->addItemDefinition<smtk::attribute::IntItemDefinition>(itemName);
         if (!idef)
         {
@@ -1564,7 +1564,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         this->processIntDef(
           child, smtk::dynamic_pointer_cast<smtk::attribute::IntItemDefinition>(idef));
         break;
-      case smtk::attribute::Item::STRING:
+      case smtk::attribute::Item::StringType:
         idef = def->addItemDefinition<smtk::attribute::StringItemDefinition>(itemName);
         if (!idef)
         {
@@ -1575,7 +1575,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         this->processStringDef(
           child, smtk::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(idef));
         break;
-      case smtk::attribute::Item::MODEL_ENTITY:
+      case smtk::attribute::Item::ModelEntityType:
         idef = def->addItemDefinition<smtk::attribute::ModelEntityItemDefinition>(itemName);
         if (!idef)
         {
@@ -1586,7 +1586,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         this->processModelEntityDef(
           child, smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItemDefinition>(idef));
         break;
-      case smtk::attribute::Item::VOID:
+      case smtk::attribute::Item::VoidType:
         idef = def->addItemDefinition<smtk::attribute::VoidItemDefinition>(itemName);
         if (!idef)
         {
@@ -1596,7 +1596,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         }
         this->processItemDef(child, idef);
         break;
-      case smtk::attribute::Item::MESH_SELECTION:
+      case smtk::attribute::Item::MeshSelectionType:
         idef = def->addItemDefinition<smtk::attribute::MeshSelectionItemDefinition>(itemName);
         if (!idef)
         {
@@ -1606,7 +1606,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         }
         this->processItemDef(child, idef);
         break;
-      case smtk::attribute::Item::MESH_ENTITY:
+      case smtk::attribute::Item::MeshEntityType:
         idef = def->addItemDefinition<smtk::attribute::MeshItemDefinition>(itemName);
         if (!idef)
         {
@@ -1617,7 +1617,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         this->processMeshEntityDef(
           child, smtk::dynamic_pointer_cast<smtk::attribute::MeshItemDefinition>(idef));
         break;
-      case smtk::attribute::Item::DATE_TIME:
+      case smtk::attribute::Item::DateTimeType:
         idef = def->addItemDefinition<smtk::attribute::DateTimeItemDefinition>(itemName);
         if (!idef)
         {
@@ -1836,45 +1836,45 @@ void XmlDocV1Parser::processItem(xml_node& node, smtk::attribute::ItemPtr item)
 
   switch (item->type())
   {
-    case smtk::attribute::Item::ATTRIBUTE_REF:
+    case smtk::attribute::Item::AttributeRefType:
       this->processRefItem(node, smtk::dynamic_pointer_cast<smtk::attribute::RefItem>(item));
       break;
-    case smtk::attribute::Item::DOUBLE:
+    case smtk::attribute::Item::DoubleType:
       this->processDoubleItem(node, smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(item));
       break;
-    case smtk::attribute::Item::DIRECTORY:
+    case smtk::attribute::Item::DirectoryType:
       this->processDirectoryItem(
         node, smtk::dynamic_pointer_cast<smtk::attribute::DirectoryItem>(item));
       break;
-    case smtk::attribute::Item::FILE:
+    case smtk::attribute::Item::FileType:
       this->processFileItem(node, smtk::dynamic_pointer_cast<smtk::attribute::FileItem>(item));
       break;
-    case smtk::attribute::Item::GROUP:
+    case smtk::attribute::Item::GroupType:
       this->processGroupItem(node, smtk::dynamic_pointer_cast<smtk::attribute::GroupItem>(item));
       break;
-    case smtk::attribute::Item::INT:
+    case smtk::attribute::Item::IntType:
       this->processIntItem(node, smtk::dynamic_pointer_cast<smtk::attribute::IntItem>(item));
       break;
-    case smtk::attribute::Item::STRING:
+    case smtk::attribute::Item::StringType:
       this->processStringItem(node, smtk::dynamic_pointer_cast<smtk::attribute::StringItem>(item));
       break;
-    case smtk::attribute::Item::MODEL_ENTITY:
+    case smtk::attribute::Item::ModelEntityType:
       this->processModelEntityItem(
         node, smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItem>(item));
       break;
-    case smtk::attribute::Item::MESH_SELECTION:
+    case smtk::attribute::Item::MeshSelectionType:
       this->processMeshSelectionItem(
         node, smtk::dynamic_pointer_cast<smtk::attribute::MeshSelectionItem>(item));
       break;
-    case smtk::attribute::Item::MESH_ENTITY:
+    case smtk::attribute::Item::MeshEntityType:
       this->processMeshEntityItem(
         node, smtk::dynamic_pointer_cast<smtk::attribute::MeshItem>(item));
       break;
-    case smtk::attribute::Item::DATE_TIME:
+    case smtk::attribute::Item::DateTimeType:
       this->processDateTimeItem(
         node, smtk::dynamic_pointer_cast<smtk::attribute::DateTimeItem>(item));
       break;
-    case smtk::attribute::Item::VOID:
+    case smtk::attribute::Item::VoidType:
       // Nothing to do!
       break;
     default:

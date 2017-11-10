@@ -32,7 +32,7 @@ GroupItemDefinition::~GroupItemDefinition()
 
 Item::Type GroupItemDefinition::type() const
 {
-  return Item::GROUP;
+  return Item::GroupType;
 }
 
 smtk::attribute::ItemPtr GroupItemDefinition::buildItem(
