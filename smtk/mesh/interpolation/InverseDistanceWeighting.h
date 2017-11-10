@@ -31,13 +31,16 @@ class StructuredGrid;
    Given an external data set of either structured or unstructured data, this
    functor is a continuous function from R^3->R whose values are computed as the
    inverse distance weights of the data set. Shepard's method is used to perform
-   the computation.
+   the computation. Values from the input data set can be masked using the
+   prefilter functor.
   */
 class SMTKCORE_EXPORT InverseDistanceWeighting
 {
 public:
-  InverseDistanceWeighting(const PointCloud& pointcloud, double power = 1.);
-  InverseDistanceWeighting(const StructuredGrid& structuredgrid, double power = 1.);
+  InverseDistanceWeighting(const PointCloud& pointcloud, double power = 1.,
+    std::function<bool(double)> prefilter = [](double) { return true; });
+  InverseDistanceWeighting(const StructuredGrid& structuredgrid, double power = 1.,
+    std::function<bool(double)> prefilter = [](double) { return true; });
 
   double operator()(std::array<double, 3> x) const { return m_function(x); }
 

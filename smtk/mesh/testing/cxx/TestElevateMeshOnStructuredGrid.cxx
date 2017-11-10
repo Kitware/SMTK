@@ -73,8 +73,9 @@ static bool sgRegistered =
 class ValidatePoints : public smtk::mesh::PointForEach
 {
 public:
-  ValidatePoints(std::size_t nBins, double min, double max)
-    : m_min(min)
+  ValidatePoints(std::size_t nBins, int coord, double min, double max)
+    : m_coord(coord)
+    , m_min(min)
     , m_max(max)
   {
     m_hist.resize(nBins, 0);
@@ -86,9 +87,10 @@ public:
     int counter = 0;
     for (c_it i = pointIds.begin(); i != pointIds.end(); ++i, counter += 3)
     {
-      std::size_t bin = xyz[counter + 2] < m_min ? 0 : xyz[counter + 2] >= m_max
+      std::size_t bin = xyz[counter + m_coord] < m_min ? 0 : xyz[counter + m_coord] >= m_max
           ? m_hist.size() - 1
-          : static_cast<std::size_t>((xyz[counter + 2] - m_min) / (m_max - m_min) * m_hist.size());
+          : static_cast<std::size_t>(
+              (xyz[counter + m_coord] - m_min) / (m_max - m_min) * m_hist.size());
       ++m_hist[bin];
     }
   }
@@ -97,6 +99,7 @@ public:
 
 private:
   std::vector<std::size_t> m_hist;
+  int m_coord;
   double m_min;
   double m_max;
 };
@@ -196,8 +199,9 @@ int TestElevateMeshOnStructuredGrid(int argc, char* argv[])
     elevateMesh->specification()->findModelEntity("auxiliary geometry")->setValue(auxGo2dm);
     elevateMesh->specification()->findString("interpolation scheme")->setToDefault();
     elevateMesh->specification()->findDouble("radius")->setValue(7.);
+    elevateMesh->specification()->findString("external point values")->setValue("set to value");
+    elevateMesh->specification()->findDouble("external point value")->setValue(-1.);
     elevateMesh->specification()->findMesh("mesh")->appendValue(mesh);
-    elevateMesh->specification()->findVoid("invert scalars")->setIsEnabled(false);
 
     smtk::model::OperatorResult bathyResult = elevateMesh->operate();
     if (bathyResult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
@@ -207,16 +211,18 @@ int TestElevateMeshOnStructuredGrid(int argc, char* argv[])
     }
   }
 
+  ValidatePoints validatePointsX(10, 0, 0., 250.);
+  smtk::mesh::for_each(mesh.points(), validatePointsX);
+
   // histogram elevated coordinate values
-  auto extent = smtk::mesh::utility::extent(mesh);
   {
-    ValidatePoints validatePoints(10, extent[4], extent[5]);
-    smtk::mesh::for_each(mesh.points(), validatePoints);
-    std::size_t valid[10] = { 116, 19, 11, 12, 24, 23, 29, 12, 28, 520 };
+    ValidatePoints validatePointsZ(10, 2, 190., 250.);
+    smtk::mesh::for_each(mesh.points(), validatePointsZ);
+    std::size_t valid[10] = { 127, 13, 8, 17, 27, 18, 24, 12, 24, 524 };
 
     for (std::size_t bin = 0; bin < 10; bin++)
     {
-      test(validatePoints.histogram()[bin] == valid[bin]);
+      test(validatePointsZ.histogram()[bin] == valid[bin]);
     }
   }
 
@@ -240,15 +246,22 @@ int TestElevateMeshOnStructuredGrid(int argc, char* argv[])
     }
   }
 
+  ValidatePoints validatePointsXFlat(10, 0, 0., 250.);
+  smtk::mesh::for_each(mesh.points(), validatePointsXFlat);
+  for (std::size_t bin = 0; bin < 10; bin++)
+  {
+    test(validatePointsX.histogram()[bin] == validatePointsXFlat.histogram()[bin]);
+  }
+
   // histogram unelevated coordinate values
   {
-    ValidatePoints validatePoints(10, extent[4], extent[5]);
-    smtk::mesh::for_each(mesh.points(), validatePoints);
+    ValidatePoints validatePointsZ(10, 2, 190., 250.);
+    smtk::mesh::for_each(mesh.points(), validatePointsZ);
 
     std::size_t nNonzeroBins = 0;
     for (std::size_t bin = 0; bin < 10; bin++)
     {
-      if (validatePoints.histogram()[bin] != 0)
+      if (validatePointsZ.histogram()[bin] != 0)
       {
         nNonzeroBins++;
       }

@@ -14,8 +14,7 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
-#include "smtk/mesh/core/MeshSet.h"
-
+#include <array>
 #include <functional>
 #include <limits>
 
@@ -72,7 +71,7 @@ public:
   {
   }
 
-  // Given indices int othe structured data, determine whether or not the cell
+  // Given indices into the structured data, determine whether or not the cell
   // is valid.
   bool containsIndex(int ix, int iy) const
   {
@@ -81,12 +80,13 @@ public:
   }
 
   const std::function<double(int, int)>& data() const { return m_data; }
+  const std::function<bool(int, int)>& valid() const { return m_valid; }
 
   std::size_t size() const { return (m_extent[1] - m_extent[0]) * (m_extent[3] - m_extent[2]); }
 
-  int m_extent[4];     // [istart, iend, jstart, jend]
-  double m_origin[2];  // location of pixel index (0,0)
-  double m_spacing[2]; // i, j pixel spacing
+  std::array<int, 4> m_extent;     // [istart, iend, jstart, jend]
+  std::array<double, 2> m_origin;  // location of pixel index (0,0)
+  std::array<double, 2> m_spacing; // i, j pixel spacing
 
 private:
   std::function<double(int, int)> m_data;

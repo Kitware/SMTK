@@ -48,7 +48,9 @@ class SMTKCORE_EXPORT StructuredGridGenerator
 {
 public:
   using smtk::common::Generator<std::string, StructuredGrid>::operator();
+  using smtk::common::Generator<std::string, StructuredGrid>::valid;
   using smtk::common::Generator<smtk::model::AuxiliaryGeometry, StructuredGrid>::operator();
+  using smtk::common::Generator<smtk::model::AuxiliaryGeometry, StructuredGrid>::valid;
 
   virtual ~StructuredGridGenerator();
 };

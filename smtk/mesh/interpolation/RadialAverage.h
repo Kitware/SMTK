@@ -31,13 +31,16 @@ class StructuredGrid;
    Given an external data set of either structured or unstructured data, this
    functor is a continuous function from R^3->R whose values are computed as the
    average of the points in the data set within a cylinder of radius <radius>
-   axis-aligned with the z axis and centered at the input point.
+   axis-aligned with the z axis and centered at the input point. Values from the
+   input data set can be masked using the prefilter functor.
   */
 class SMTKCORE_EXPORT RadialAverage
 {
 public:
-  RadialAverage(CollectionPtr collection, const PointCloud&, double radius);
-  RadialAverage(const StructuredGrid&, double radius);
+  RadialAverage(CollectionPtr collection, const PointCloud&, double radius,
+    std::function<bool(double)> prefilter = [](double) { return true; });
+  RadialAverage(const StructuredGrid&, double radius,
+    std::function<bool(double)> prefilter = [](double) { return true; });
 
   double operator()(std::array<double, 3> x) const { return m_function(x); }
 

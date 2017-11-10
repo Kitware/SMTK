@@ -17,6 +17,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/VoidItem.h"
 
 #include "smtk/mesh/core/CellField.h"
 #include "smtk/mesh/core/Manager.h"
@@ -53,8 +54,8 @@ enum
 };
 
 template <typename InputType>
-std::function<double(std::array<double, 3>)> radialAverageFrom(
-  const InputType& input, double radius, smtk::mesh::Manager& meshManager)
+std::function<double(std::array<double, 3>)> radialAverageFrom(const InputType& input,
+  double radius, const std::function<bool(double)>& prefilter, smtk::mesh::Manager& meshManager)
 {
   std::function<double(std::array<double, 3>)> radialAverage;
   {
@@ -64,7 +65,7 @@ std::function<double(std::array<double, 3>)> radialAverageFrom(
     smtk::mesh::StructuredGrid structuredgrid = sgg(input);
     if (structuredgrid.size() > 0)
     {
-      radialAverage = smtk::mesh::RadialAverage(structuredgrid, radius);
+      radialAverage = smtk::mesh::RadialAverage(structuredgrid, radius, prefilter);
     }
   }
 
@@ -75,7 +76,8 @@ std::function<double(std::array<double, 3>)> radialAverageFrom(
     smtk::mesh::PointCloud pointcloud = pcg(input);
     if (pointcloud.size() > 0)
     {
-      radialAverage = smtk::mesh::RadialAverage(meshManager.makeCollection(), pointcloud, radius);
+      radialAverage =
+        smtk::mesh::RadialAverage(meshManager.makeCollection(), pointcloud, radius, prefilter);
     }
   }
 
@@ -84,7 +86,7 @@ std::function<double(std::array<double, 3>)> radialAverageFrom(
 
 template <typename InputType>
 std::function<double(std::array<double, 3>)> inverseDistanceWeightingFrom(
-  const InputType& input, double power)
+  const InputType& input, double power, const std::function<bool(double)>& prefilter)
 {
   std::function<double(std::array<double, 3>)> idw;
   {
@@ -94,7 +96,7 @@ std::function<double(std::array<double, 3>)> inverseDistanceWeightingFrom(
     smtk::mesh::StructuredGrid structuredgrid = sgg(input);
     if (structuredgrid.size() > 0)
     {
-      idw = smtk::mesh::InverseDistanceWeighting(structuredgrid, power);
+      idw = smtk::mesh::InverseDistanceWeighting(structuredgrid, power, prefilter);
     }
   }
 
@@ -105,7 +107,7 @@ std::function<double(std::array<double, 3>)> inverseDistanceWeightingFrom(
     smtk::mesh::PointCloud pointcloud = pcg(input);
     if (pointcloud.size() > 0)
     {
-      idw = smtk::mesh::InverseDistanceWeighting(pointcloud, power);
+      idw = smtk::mesh::InverseDistanceWeighting(pointcloud, power, prefilter);
     }
   }
 
@@ -149,14 +151,53 @@ smtk::model::OperatorResult InterpolateOntoMesh::operateInternal()
   // Access the radius parameter
   smtk::attribute::DoubleItem::Ptr radiusItem = this->findDouble("radius");
 
+  // Access the string describing external point treatment
+  smtk::attribute::StringItem::Ptr externalPointItem =
+    this->specification()->findString("external point values");
+
   // Access the power parameter
   smtk::attribute::DoubleItem::Ptr powerItem = this->findDouble("power");
+
+  // Access the min value parameter
+  smtk::attribute::DoubleItem::Ptr minValueItem = this->findDouble("min value");
+
+  // Access the max value parameter
+  smtk::attribute::DoubleItem::Ptr maxValueItem = this->findDouble("max value");
+
+  // Access the invert scalars parameter
+  smtk::attribute::VoidItem::Ptr invertScalarsItem = this->findVoid("invert scalars");
 
   // Access the data set name
   smtk::attribute::StringItem::Ptr nameItem = this->specification()->findString("dsname");
 
   // Access the output interpolation Field type
   smtk::attribute::IntItem::Ptr modeItem = this->specification()->findInt("interpmode");
+
+  // Access the min threshold parameter
+  smtk::attribute::DoubleItem::Ptr minThresholdItem = this->findDouble("min threshold");
+
+  // Access the max threshold parameter
+  smtk::attribute::DoubleItem::Ptr maxThresholdItem = this->findDouble("max threshold");
+
+  // Construct a prefilter for the input data
+  std::function<bool(double)> prefilter = [](double) { return true; };
+  if (minThresholdItem && minThresholdItem->isEnabled() && maxThresholdItem &&
+    maxThresholdItem->isEnabled())
+  {
+    double minThreshold = minThresholdItem->value();
+    double maxThreshold = maxThresholdItem->value();
+    prefilter = [=](double d) { return d >= minThreshold && d <= maxThreshold; };
+  }
+  else if (minThresholdItem && minThresholdItem->isEnabled())
+  {
+    double minThreshold = minThresholdItem->value();
+    prefilter = [=](double d) { return d >= minThreshold; };
+  }
+  else if (maxThresholdItem && maxThresholdItem->isEnabled())
+  {
+    double maxThreshold = maxThresholdItem->value();
+    prefilter = [=](double d) { return d <= maxThreshold; };
+  }
 
   // Construct a function that takes an input point and returns a value
   // according to the average of the locus of points in the external data that,
@@ -165,7 +206,7 @@ smtk::model::OperatorResult InterpolateOntoMesh::operateInternal()
 
   if (inputDataItem->value() == "auxiliary geometry")
   {
-    // Access the external data to use in determining elevation values
+    // Access the external data to use in determining value values
     smtk::attribute::ModelEntityItem::Ptr auxGeoItem =
       this->specification()->findModelEntity("auxiliary geometry");
 
@@ -176,13 +217,13 @@ smtk::model::OperatorResult InterpolateOntoMesh::operateInternal()
     {
       // Compute the radial average function
       interpolation = radialAverageFrom<smtk::model::AuxiliaryGeometry>(
-        auxGeo, radiusItem->value(), *this->manager()->meshes());
+        auxGeo, radiusItem->value(), prefilter, *this->manager()->meshes());
     }
     else if (interpolationSchemeItem->value() == "inverse distance weighting")
     {
       // Compute the inverse distance weighting function
-      interpolation =
-        inverseDistanceWeightingFrom<smtk::model::AuxiliaryGeometry>(auxGeo, powerItem->value());
+      interpolation = inverseDistanceWeightingFrom<smtk::model::AuxiliaryGeometry>(
+        auxGeo, powerItem->value(), prefilter);
     }
 
     if (!interpolation)
@@ -199,13 +240,14 @@ smtk::model::OperatorResult InterpolateOntoMesh::operateInternal()
     if (interpolationSchemeItem->value() == "radial average")
     {
       // Compute the radial average function
-      interpolation =
-        radialAverageFrom<std::string>(fileName, radiusItem->value(), *this->manager()->meshes());
+      interpolation = radialAverageFrom<std::string>(
+        fileName, radiusItem->value(), prefilter, *this->manager()->meshes());
     }
     else if (interpolationSchemeItem->value() == "inverse distance weighting")
     {
       // Compute the inverse distance weighting function
-      interpolation = inverseDistanceWeightingFrom<std::string>(fileName, powerItem->value());
+      interpolation =
+        inverseDistanceWeightingFrom<std::string>(fileName, powerItem->value(), prefilter);
     }
 
     if (!interpolation)
@@ -260,6 +302,60 @@ smtk::model::OperatorResult InterpolateOntoMesh::operateInternal()
     return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
+  // Construct a function that inverts and clips its input, according to the
+  // input parameters
+  std::function<double(double)> postProcess;
+  {
+    double prefactor = invertScalarsItem && invertScalarsItem->isEnabled() ? -1. : 1.;
+
+    if (minValueItem && minValueItem->isEnabled() && maxValueItem && maxValueItem->isEnabled())
+    {
+      double minValue = minValueItem->value();
+      double maxValue = maxValueItem->value();
+      postProcess = [=](double input) {
+        double output = prefactor * input;
+        return (output < minValue ? minValue : (output > maxValue ? maxValue : output));
+      };
+    }
+    else if (minValueItem && minValueItem->isEnabled())
+    {
+      double minValue = minValueItem->value();
+      postProcess = [=](double input) {
+        double output = prefactor * input;
+        return (output < minValue ? minValue : output);
+      };
+    }
+    else if (maxValueItem && maxValueItem->isEnabled())
+    {
+      double maxValue = maxValueItem->value();
+      postProcess = [=](double input) {
+        double output = prefactor * input;
+        return (output > maxValue ? maxValue : output);
+      };
+    }
+    else
+    {
+      postProcess = [=](double input) { return prefactor * input; };
+    }
+  }
+
+  // Add a conditional function for dealing with points that were rejected by the interpolator.
+  std::function<double(std::array<double, 3>)> externalDataPoint = [](
+    std::array<double, 3> xyz) { return xyz[2]; };
+  if (interpolationSchemeItem->value() == "radial average")
+  {
+    if (externalPointItem->value() == "set to NaN")
+    {
+      externalDataPoint = [](
+        std::array<double, 3>) { return std::numeric_limits<double>::quiet_NaN(); };
+    }
+    else if (externalPointItem->value() == "set to value")
+    {
+      double externalPointValue = this->findDouble("external point value")->value();
+      externalDataPoint = [=](std::array<double, 3>) { return externalPointValue; };
+    }
+  }
+
   // Access the attribute associated with the modified meshes
   smtk::model::OperatorResult result =
     this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
@@ -270,8 +366,16 @@ smtk::model::OperatorResult InterpolateOntoMesh::operateInternal()
   smtk::attribute::ModelEntityItem::Ptr modifiedEntities = result->findModelEntity("tess_changed");
   modifiedEntities->setNumberOfValues(meshItem->numberOfValues());
 
-  std::function<double(std::array<double, 3>)> fn = [&](
-    std::array<double, 3> x) { return interpolation(x); };
+  std::function<double(std::array<double, 3>)> fn = [&](std::array<double, 3> x) {
+
+    double f_x = postProcess(interpolation(x));
+    if (std::isnan(f_x))
+    {
+      f_x = externalDataPoint(x);
+    }
+
+    return f_x;
+  };
 
   // apply the interpolator to the meshes and populate the result attributes
   for (std::size_t i = 0; i < meshItem->numberOfValues(); i++)

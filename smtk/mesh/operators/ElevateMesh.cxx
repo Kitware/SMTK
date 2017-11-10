@@ -49,8 +49,8 @@
 namespace
 {
 template <typename InputType>
-std::function<double(std::array<double, 3>)> radialAverageFrom(
-  const InputType& input, double radius, smtk::mesh::Manager& meshManager)
+std::function<double(std::array<double, 3>)> radialAverageFrom(const InputType& input,
+  double radius, const std::function<bool(double)>& prefilter, smtk::mesh::Manager& meshManager)
 {
   std::function<double(std::array<double, 3>)> radialAverage;
   {
@@ -60,7 +60,7 @@ std::function<double(std::array<double, 3>)> radialAverageFrom(
     smtk::mesh::StructuredGrid structuredgrid = sgg(input);
     if (structuredgrid.size() > 0)
     {
-      radialAverage = smtk::mesh::RadialAverage(structuredgrid, radius);
+      radialAverage = smtk::mesh::RadialAverage(structuredgrid, radius, prefilter);
     }
   }
 
@@ -71,7 +71,8 @@ std::function<double(std::array<double, 3>)> radialAverageFrom(
     smtk::mesh::PointCloud pointcloud = pcg(input);
     if (pointcloud.size() > 0)
     {
-      radialAverage = smtk::mesh::RadialAverage(meshManager.makeCollection(), pointcloud, radius);
+      radialAverage =
+        smtk::mesh::RadialAverage(meshManager.makeCollection(), pointcloud, radius, prefilter);
     }
   }
 
@@ -80,7 +81,7 @@ std::function<double(std::array<double, 3>)> radialAverageFrom(
 
 template <typename InputType>
 std::function<double(std::array<double, 3>)> inverseDistanceWeightingFrom(
-  const InputType& input, double power)
+  const InputType& input, double power, const std::function<bool(double)>& prefilter)
 {
   std::function<double(std::array<double, 3>)> idw;
   {
@@ -90,7 +91,7 @@ std::function<double(std::array<double, 3>)> inverseDistanceWeightingFrom(
     smtk::mesh::StructuredGrid structuredgrid = sgg(input);
     if (structuredgrid.size() > 0)
     {
-      idw = smtk::mesh::InverseDistanceWeighting(structuredgrid, power);
+      idw = smtk::mesh::InverseDistanceWeighting(structuredgrid, power, prefilter);
     }
   }
 
@@ -101,7 +102,7 @@ std::function<double(std::array<double, 3>)> inverseDistanceWeightingFrom(
     smtk::mesh::PointCloud pointcloud = pcg(input);
     if (pointcloud.size() > 0)
     {
-      idw = smtk::mesh::InverseDistanceWeighting(pointcloud, power);
+      idw = smtk::mesh::InverseDistanceWeighting(pointcloud, power, prefilter);
     }
   }
 
@@ -145,6 +146,10 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
   // Access the radius parameter
   smtk::attribute::DoubleItem::Ptr radiusItem = this->findDouble("radius");
 
+  // Access the string describing external point treatment
+  smtk::attribute::StringItem::Ptr externalPointItem =
+    this->specification()->findString("external point values");
+
   // Access the power parameter
   smtk::attribute::DoubleItem::Ptr powerItem = this->findDouble("power");
 
@@ -156,6 +161,32 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
 
   // Access the invert scalars parameter
   smtk::attribute::VoidItem::Ptr invertScalarsItem = this->findVoid("invert scalars");
+
+  // Access the min threshold parameter
+  smtk::attribute::DoubleItem::Ptr minThresholdItem = this->findDouble("min threshold");
+
+  // Access the max threshold parameter
+  smtk::attribute::DoubleItem::Ptr maxThresholdItem = this->findDouble("max threshold");
+
+  // Construct a prefilter for the input data
+  std::function<bool(double)> prefilter = [](double) { return true; };
+  if (minThresholdItem && minThresholdItem->isEnabled() && maxThresholdItem &&
+    maxThresholdItem->isEnabled())
+  {
+    double minThreshold = minThresholdItem->value();
+    double maxThreshold = maxThresholdItem->value();
+    prefilter = [=](double d) { return d >= minThreshold && d <= maxThreshold; };
+  }
+  else if (minThresholdItem && minThresholdItem->isEnabled())
+  {
+    double minThreshold = minThresholdItem->value();
+    prefilter = [=](double d) { return d >= minThreshold; };
+  }
+  else if (maxThresholdItem && maxThresholdItem->isEnabled())
+  {
+    double maxThreshold = maxThresholdItem->value();
+    prefilter = [=](double d) { return d <= maxThreshold; };
+  }
 
   // Construct a function that takes an input point and returns a value
   // according to the average of the locus of points in the external data that,
@@ -175,13 +206,13 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
     {
       // Compute the radial average function
       interpolation = radialAverageFrom<smtk::model::AuxiliaryGeometry>(
-        auxGeo, radiusItem->value(), *this->manager()->meshes());
+        auxGeo, radiusItem->value(), prefilter, *this->manager()->meshes());
     }
     else if (interpolationSchemeItem->value() == "inverse distance weighting")
     {
       // Compute the inverse distance weighting function
-      interpolation =
-        inverseDistanceWeightingFrom<smtk::model::AuxiliaryGeometry>(auxGeo, powerItem->value());
+      interpolation = inverseDistanceWeightingFrom<smtk::model::AuxiliaryGeometry>(
+        auxGeo, powerItem->value(), prefilter);
     }
 
     if (!interpolation)
@@ -198,13 +229,14 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
     if (interpolationSchemeItem->value() == "radial average")
     {
       // Compute the radial average function
-      interpolation =
-        radialAverageFrom<std::string>(fileName, radiusItem->value(), *this->manager()->meshes());
+      interpolation = radialAverageFrom<std::string>(
+        fileName, radiusItem->value(), prefilter, *this->manager()->meshes());
     }
     else if (interpolationSchemeItem->value() == "inverse distance weighting")
     {
       // Compute the inverse distance weighting function
-      interpolation = inverseDistanceWeightingFrom<std::string>(fileName, powerItem->value());
+      interpolation =
+        inverseDistanceWeightingFrom<std::string>(fileName, powerItem->value(), prefilter);
     }
 
     if (!interpolation)
@@ -263,9 +295,10 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
   // input parameters
   std::function<double(double)> postProcess;
   {
-    double prefactor = invertScalarsItem->isEnabled() ? -1. : 1.;
+    double prefactor = invertScalarsItem && invertScalarsItem->isEnabled() ? -1. : 1.;
 
-    if (minElevationItem->isEnabled() && maxElevationItem->isEnabled())
+    if (minElevationItem && minElevationItem->isEnabled() && maxElevationItem &&
+      maxElevationItem->isEnabled())
     {
       double minElevation = minElevationItem->value();
       double maxElevation = maxElevationItem->value();
@@ -275,7 +308,7 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
           output < minElevation ? minElevation : (output > maxElevation ? maxElevation : output));
       };
     }
-    else if (minElevationItem->isEnabled())
+    else if (minElevationItem && minElevationItem->isEnabled())
     {
       double minElevation = minElevationItem->value();
       postProcess = [=](double input) {
@@ -283,7 +316,7 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
         return (output < minElevation ? minElevation : output);
       };
     }
-    else if (maxElevationItem->isEnabled())
+    else if (maxElevationItem && maxElevationItem->isEnabled())
     {
       double maxElevation = maxElevationItem->value();
       postProcess = [=](double input) {
@@ -297,9 +330,32 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
     }
   }
 
+  // Add a conditional function for dealing with points that were rejected by the interpolator.
+  std::function<double(std::array<double, 3>)> externalDataPoint = [](
+    std::array<double, 3> xyz) { return xyz[2]; };
+  if (interpolationSchemeItem->value() == "radial average")
+  {
+    if (externalPointItem->value() == "set to NaN")
+    {
+      externalDataPoint = [](
+        std::array<double, 3>) { return std::numeric_limits<double>::quiet_NaN(); };
+    }
+    else if (externalPointItem->value() == "set to value")
+    {
+      double externalPointValue = this->findDouble("external point value")->value();
+      externalDataPoint = [=](std::array<double, 3>) { return externalPointValue; };
+    }
+  }
+
   // Combine the radial average function with the elevation clipping/inverting function.
   std::function<std::array<double, 3>(std::array<double, 3>)> fn = [&](std::array<double, 3> x) {
-    return std::array<double, 3>({ { x[0], x[1], postProcess(interpolation(x)) } });
+    double z = postProcess(interpolation(x));
+    if (std::isnan(z))
+    {
+      z = externalDataPoint(x);
+    }
+
+    return std::array<double, 3>({ { x[0], x[1], z } });
   };
 
   // Access the attribute associated with the modified meshes

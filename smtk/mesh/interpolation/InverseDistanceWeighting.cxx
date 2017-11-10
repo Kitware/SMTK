@@ -35,9 +35,11 @@ double euclideanDistance(const std::array<double, 3>& p1, const std::array<doubl
 class InverseDistanceWeightingForPointCloud
 {
 public:
-  InverseDistanceWeightingForPointCloud(const smtk::mesh::PointCloud& pointcloud, double power)
+  InverseDistanceWeightingForPointCloud(
+    const smtk::mesh::PointCloud& pointcloud, double power, std::function<bool(double)> prefilter)
     : m_pointcloud(pointcloud)
     , m_power(power)
+    , m_prefilter(prefilter)
   {
   }
 
@@ -47,16 +49,19 @@ public:
     double d = 0., w = 0., num = 0., denom = 0.;
     for (std::size_t i = 0; i < m_pointcloud.size(); i++)
     {
-      d = euclideanDistance(p, m_pointcloud.coordinates()(i));
-      // If d is zero, then return the value associated with the source point.
-      if (d < EPSILON)
+      if (m_pointcloud.containsIndex(i))
       {
-        return m_pointcloud.data()(i);
+        d = euclideanDistance(p, m_pointcloud.coordinates()(i));
+        // If d is zero, then return the value associated with the source point.
+        if (d < EPSILON)
+        {
+          return m_pointcloud.data()(i);
+        }
+        // Otherwise, sum the contribution from each point.
+        w = std::pow(d, -1. * this->m_power);
+        num += w * m_pointcloud.data()(i);
+        denom += w;
       }
-      // Otherwise, sum the contribution from each point.
-      w = std::pow(d, -1. * this->m_power);
-      num += w * m_pointcloud.data()(i);
-      denom += w;
     }
 
     return num / denom;
@@ -65,15 +70,17 @@ public:
 private:
   const smtk::mesh::PointCloud m_pointcloud;
   double m_power;
+  std::function<bool(double)> m_prefilter;
 };
 
 class InverseDistanceWeightingForStructuredGrid
 {
 public:
-  InverseDistanceWeightingForStructuredGrid(
-    const smtk::mesh::StructuredGrid& structuredgrid, double power)
+  InverseDistanceWeightingForStructuredGrid(const smtk::mesh::StructuredGrid& structuredgrid,
+    double power, std::function<bool(double)> prefilter)
     : m_structuredgrid(structuredgrid)
     , m_power(power)
+    , m_prefilter(prefilter)
   {
   }
 
@@ -85,24 +92,31 @@ public:
     {
       for (int j = m_structuredgrid.m_extent[2]; j < m_structuredgrid.m_extent[3]; j++)
       {
-        std::array<double, 3> pij = {
-          { (m_structuredgrid.m_origin[0] +
-              (i - m_structuredgrid.m_extent[0]) * m_structuredgrid.m_spacing[0]),
-            (m_structuredgrid.m_origin[1] +
-              (j - m_structuredgrid.m_extent[2]) * m_structuredgrid.m_spacing[1]),
-            0. }
-        };
-
-        d = euclideanDistance(p, pij);
-        // If d is zero, then return the value associated with the source point.
-        if (d < EPSILON)
+        if (m_structuredgrid.containsIndex(i, j))
         {
-          return m_structuredgrid.data()(i, j);
+          std::array<double, 3> pij = {
+            { (m_structuredgrid.m_origin[0] +
+                (i - m_structuredgrid.m_extent[0]) * m_structuredgrid.m_spacing[0]),
+              (m_structuredgrid.m_origin[1] +
+                (j - m_structuredgrid.m_extent[2]) * m_structuredgrid.m_spacing[1]),
+              0. }
+          };
+
+          double value = m_structuredgrid.data()(i, j);
+          if (m_prefilter(value))
+          {
+            d = euclideanDistance(p, pij);
+            // If d is zero, then return the value associated with the source point.
+            if (d < EPSILON)
+            {
+              return value;
+            }
+            // Otherwise, sum the contribution from each point.
+            w = std::pow(d, -1. * this->m_power);
+            num += w * value;
+            denom += w;
+          }
         }
-        // Otherwise, sum the contribution from each point.
-        w = std::pow(d, -1. * this->m_power);
-        num += w * m_structuredgrid.data()(i, j);
-        denom += w;
       }
     }
 
@@ -112,6 +126,7 @@ public:
 private:
   const smtk::mesh::StructuredGrid m_structuredgrid;
   double m_power;
+  std::function<bool(double)> m_prefilter;
 };
 }
 
@@ -120,14 +135,15 @@ namespace smtk
 namespace mesh
 {
 
-InverseDistanceWeighting::InverseDistanceWeighting(const PointCloud& pointcloud, double power)
-  : m_function(InverseDistanceWeightingForPointCloud(pointcloud, power))
+InverseDistanceWeighting::InverseDistanceWeighting(
+  const PointCloud& pointcloud, double power, std::function<bool(double)> prefilter)
+  : m_function(InverseDistanceWeightingForPointCloud(pointcloud, power, prefilter))
 {
 }
 
 InverseDistanceWeighting::InverseDistanceWeighting(
-  const StructuredGrid& structuredgrid, double power)
-  : m_function(InverseDistanceWeightingForStructuredGrid(structuredgrid, power))
+  const StructuredGrid& structuredgrid, double power, std::function<bool(double)> prefilter)
+  : m_function(InverseDistanceWeightingForStructuredGrid(structuredgrid, power, prefilter))
 {
 }
 }

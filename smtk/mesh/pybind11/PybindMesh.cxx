@@ -46,12 +46,17 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindReclassify.h"
 #include "PybindTypeSet.h"
 
-
+#include "PybindPointCloud.h"
+#include "PybindPointCloudGenerator.h"
+#include "PybindStructuredGrid.h"
+#include "PybindStructuredGridGenerator.h"
 
 #include "PybindDeleteMesh.h"
 #include "PybindExportMesh.h"
 #include "PybindInterpolateOntoMesh.h"
 #include "PybindWriteMesh.h"
+
+#include "smtk/mesh/interpolation/PointCloudFromCSV.h"
 
 #include "smtk/model/Operator.h"
 
@@ -155,4 +160,12 @@ PYBIND11_MODULE(_smtkPybindMesh, mesh)
   PySharedPtrClass< smtk::mesh::ExportMesh, smtk::model::Operator > smtk_mesh_ExportMesh = pybind11_init_smtk_mesh_ExportMesh(mesh);
   PySharedPtrClass< smtk::mesh::InterpolateOntoMesh, smtk::model::Operator > smtk_mesh_InterpolateOntoMesh = pybind11_init_smtk_mesh_InterpolateOntoMesh(mesh);
   PySharedPtrClass< smtk::mesh::WriteMesh, smtk::model::Operator > smtk_mesh_WriteMesh = pybind11_init_smtk_mesh_WriteMesh(mesh);
+
+  py::class_< smtk::mesh::PointCloud > smtk_mesh_PointCloud = pybind11_init_smtk_mesh_PointCloud(mesh);
+  py::class_< smtk::mesh::StructuredGrid > smtk_mesh_StructuredGrid = pybind11_init_smtk_mesh_StructuredGrid(mesh);
+  py::class_< smtk::mesh::PointCloudGenerator > smtk_mesh_PointCloudGenerator = pybind11_init_smtk_mesh_PointCloudGenerator(mesh);
+  py::class_< smtk::mesh::StructuredGridGenerator > smtk_mesh_StructuredGridGenerator = pybind11_init_smtk_mesh_StructuredGridGenerator(mesh);
+
+  bool pcRegistered = smtk::mesh::PointCloudFromCSV::registerClass();
+  (void)pcRegistered;
 }

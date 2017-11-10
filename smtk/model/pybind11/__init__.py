@@ -10,7 +10,7 @@
 #
 #=============================================================================
 
-from smtk.attribute import SearchStyle
+from smtk.attribute import SearchStyle, get_wrapped_func
 from _smtkPybindModel import *
 
 """
@@ -101,3 +101,10 @@ def _findEntitiesOfType(self, flags, exactMatch=True):
 Manager.findEntitiesOfType = _findEntitiesOfType
 
 del _findEntitiesOfType
+
+"""
+smtk.model.Operator._find() returns a base item when queried. We wrap this
+method in a python <to_concrete> function that returns the most derived version
+of that item (see smtk/attribute/pybind11/__init__.py).
+"""
+setattr(Operator, "find", get_wrapped_func(Operator._find))

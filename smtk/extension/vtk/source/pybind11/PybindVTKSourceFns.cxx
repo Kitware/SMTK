@@ -25,6 +25,9 @@ SMTK_THIRDPARTY_POST_INCLUDE
 #include "smtk/mesh/core/Manager.h"
 #include "smtk/model/Manager.h"
 
+#include "smtk/extension/vtk/source/PointCloudFromVTKAuxiliaryGeometry.h"
+#include "smtk/extension/vtk/source/StructuredGridFromVTKAuxiliaryGeometry.h"
+
 namespace py = pybind11;
 
 PYBIND11_VTK_TYPECASTER(vtkModelMultiBlockSource)
@@ -41,4 +44,11 @@ PYBIND11_MODULE(_smtkPybindVTKSourceFns, source)
   source.def("_vtkMeshMultiBlockSource_SetModelManager",[&](vtkMeshMultiBlockSource* obj, smtk::model::ManagerPtr manager){ return obj->SetModelManager(manager); });
   source.def("_vtkMeshMultiBlockSource_GetMeshManager",[&](vtkMeshMultiBlockSource* obj){ obj->GetMeshManager(); });
   source.def("_vtkMeshMultiBlockSource_SetMeshManager",[&](vtkMeshMultiBlockSource* obj, smtk::mesh::ManagerPtr manager){ return obj->SetMeshManager(manager); });
+
+  bool pcRegistered =
+    smtk::extension::vtk::mesh::PointCloudFromVTKAuxiliaryGeometry::registerClass();
+  (void)pcRegistered;
+  bool sgRegistered =
+    smtk::extension::vtk::mesh::StructuredGridFromVTKAuxiliaryGeometry::registerClass();
+  (void)sgRegistered;
 }

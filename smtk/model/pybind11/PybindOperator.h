@@ -71,6 +71,8 @@ PySharedPtrClass< smtk::model::Operator, smtk::model::PyOperator > pybind11_init
     .def("disassociateEntity", &smtk::model::Operator::disassociateEntity, py::arg("entity"))
     .def("ensureSpecification", &smtk::model::Operator::ensureSpecification)
     .def("eraseResult", &smtk::model::Operator::eraseResult, py::arg("res"))
+    .def("_find", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findAs<smtk::attribute::Item>(s, ::smtk::attribute::SearchStyle(i)); },
+         py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
     .def("findDirectory", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findDirectory(s, ::smtk::attribute::SearchStyle(i)); },
          py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
     .def("findDouble", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findDouble(s, ::smtk::attribute::SearchStyle(i)); },
