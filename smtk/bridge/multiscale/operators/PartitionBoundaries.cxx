@@ -221,7 +221,7 @@ smtk::model::OperatorResult PartitionBoundaries::operateInternal()
   smtk::mesh::MeshSet shell = collection->meshes().extractShell();
 
   // compute the shell's bounds
-  std::array<double, 6> bounds = smtk::mesh::extent(shell);
+  std::array<double, 6> bounds = smtk::mesh::utility::extent(shell);
 
   // we're going to generate vertices, so we need to keep track of them
   smtk::model::EntityRefArray created;
