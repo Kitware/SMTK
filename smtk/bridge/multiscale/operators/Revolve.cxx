@@ -13,8 +13,8 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/bridge/multiscale/Session.h"
 #include "smtk/common/UUID.h"
-#include "smtk/extension/vtk/io/ExportVTKData.h"
-#include "smtk/extension/vtk/io/ImportVTKData.h"
+#include "smtk/extension/vtk/io/mesh/ExportVTKData.h"
+#include "smtk/extension/vtk/io/mesh/ImportVTKData.h"
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
 
@@ -90,7 +90,7 @@ smtk::model::OperatorResult Revolve::operateInternal()
   // revolved. Label the domain partitioning "ZoneIds" so that the partitioning
   // will be persistent through the revolution operation.
   vtkNew<vtkUnstructuredGrid> ug;
-  smtk::extension::vtk::io::ExportVTKData exportVTKData;
+  smtk::extension::vtk::io::mesh::ExportVTKData exportVTKData;
   exportVTKData(collection->meshes(smtk::mesh::DimensionType(2)), ug.GetPointer(), "ZoneIds");
 
   // Create a VolumeOfRevolution filter
@@ -121,43 +121,12 @@ smtk::model::OperatorResult Revolve::operateInternal()
   // Run the filter
   revolve->Update();
 
-  // This hack is in place because vtkVolumeOfRevolutionFilter has a bug in it
-  // where the output unstructured grid has bad values for its cell locations.
-  // Once the VTK bundled in the CMB superbuild catches up, this hack should go
-  // away.
-  bool hack = true;
-
-  if (hack)
-  {
-    std::stringstream s;
-    s << write_root << "/" << smtk::common::UUID::random().toString() << ".vtu";
-    std::string fileName = s.str();
-
-    vtkNew<vtkXMLUnstructuredGridWriter> writer;
-    writer->SetFileName(fileName.c_str());
-    writer->SetInputConnection(revolve->GetOutputPort());
-    writer->Write();
-
-    vtkNew<vtkXMLUnstructuredGridReader> reader;
-    reader->SetFileName(fileName.c_str());
-    reader->Update();
-
-    cleanup(fileName);
-
-    smtk::extension::vtk::io::ImportVTKData importVTKData;
-    smtk::mesh::ManagerPtr meshManager = this->activeSession()->meshManager();
-    collection =
-      importVTKData(vtkUnstructuredGrid::SafeDownCast(reader->GetOutput()), meshManager, "ZoneIds");
-  }
-  else
-  {
-    // Convert the vtkUnstructuredGrid back into an smtk mesh, preserving the
-    // domain partitioning.
-    smtk::extension::vtk::io::ImportVTKData importVTKData;
-    smtk::mesh::ManagerPtr meshManager = this->activeSession()->meshManager();
-    collection = importVTKData(
-      vtkUnstructuredGrid::SafeDownCast(revolve->GetOutput()), meshManager, "ZoneIds");
-  }
+  // Convert the vtkUnstructuredGrid back into an smtk mesh, preserving the
+  // domain partitioning.
+  smtk::extension::vtk::io::mesh::ImportVTKData importVTKData;
+  smtk::mesh::ManagerPtr meshManager = this->activeSession()->meshManager();
+  collection =
+    importVTKData(vtkUnstructuredGrid::SafeDownCast(revolve->GetOutput()), meshManager, "ZoneIds");
 
   if (!collection || !collection->isValid())
   {
