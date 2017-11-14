@@ -41,6 +41,8 @@ class OpenSMTKFileInParaView(smtk.testing.TestCase):
         pvsimple.OpenDataFile(os.path.join(smtk.testing.DATA_DIR,
                                            'model', '2d', 'smtk', 'epic-trex-drummer.smtk'))
         pvsimple.Show()
+        displayProperties = pvsimple.GetDisplayProperties()
+        displayProperties.MapScalars = 0
 
         if self.haveVTK() and self.haveVTKExtension():
             import vtk
