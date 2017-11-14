@@ -57,8 +57,6 @@ bool ResourceSetWriter::writeString(
 
   // Construct xml element for each resource
   std::vector<std::string> resourceIds = resources.resourceIds();
-  smtk::resource::Resource::Type rtype;
-  std::string rtypeString;
   Set::State state;
   Set::Role role;
   std::string link;
@@ -66,15 +64,18 @@ bool ResourceSetWriter::writeString(
   for (unsigned i = 0; i < resourceIds.size() && ok; ++i)
   {
     std::string id = resourceIds[i];
-    ok = resources.resourceInfo(id, rtype, role, state, link);
+    ok = resources.resourceInfo(id, role, state, link);
     if (!ok)
     {
       std::cerr << "Error retrieving" << std::endl;
       continue;
     }
 
-    rtypeString = smtk::resource::Resource::type2String(rtype);
-    pugi::xml_node resourceElement = rootElement.append_child(rtypeString.c_str());
+    // Use XmlStringWriter to generate xml for this attribute collection
+    smtk::resource::ResourcePtr resource;
+    ok = resources.get(id, resource);
+
+    pugi::xml_node resourceElement = rootElement.append_child(resource->uniqueName().c_str());
     resourceElement.append_attribute("id").set_value(id.c_str());
 
     if (role != Set::NOT_DEFINED)
@@ -85,9 +86,6 @@ bool ResourceSetWriter::writeString(
 
     if ((("" == link) || (EXPAND_LINKED_FILES == option)) && Set::LOADED == state)
     {
-      // Use XmlStringWriter to generate xml for this attribute collection
-      smtk::resource::ResourcePtr resource;
-      ok = resources.get(id, resource);
       smtk::attribute::CollectionPtr collection =
         dynamic_pointer_cast<smtk::attribute::Collection>(resource);
 
@@ -107,8 +105,6 @@ bool ResourceSetWriter::writeString(
       // Save linked resources if option selected
       if (option == WRITE_LINKED_FILES)
       {
-        smtk::resource::ResourcePtr resource;
-        ok = resources.get(id, resource);
         smtk::attribute::CollectionPtr collection =
           dynamic_pointer_cast<smtk::attribute::Collection>(resource);
         AttributeWriter attWriter;

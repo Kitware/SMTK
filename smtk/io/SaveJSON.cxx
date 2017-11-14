@@ -249,17 +249,15 @@ int SaveJSON::fromSet(cJSON* pnode, smtk::resource::SetPtr& rset)
     smtk::model::StoredResourcePtr srsrc;
     if (rset->get(rid, rsrc))
     {
-      smtk::resource::Resource::Type rsrcType;
       smtk::resource::Set::Role rsrcRole;
       smtk::resource::Set::State rsrcState;
       std::string rsrcLink;
 
       cJSON* jsrc = cJSON_CreateObject();
       cJSON_AddItemToObject(jset, rid.c_str(), jsrc);
-      if (rset->resourceInfo(rid, rsrcType, rsrcRole, rsrcState, rsrcLink))
+      if (rset->resourceInfo(rid, rsrcRole, rsrcState, rsrcLink))
       {
-        cJSON_AddItemToObject(jsrc, "type",
-          cJSON_CreateString(smtk::resource::Resource::type2String(rsrcType).c_str()));
+        cJSON_AddItemToObject(jsrc, "type", cJSON_CreateString(rsrc->uniqueName().c_str()));
         cJSON_AddItemToObject(
           jsrc, "role", cJSON_CreateString(smtk::resource::Set::role2String(rsrcRole).c_str()));
         cJSON_AddItemToObject(

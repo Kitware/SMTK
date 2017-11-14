@@ -177,15 +177,13 @@ bool ResourceSetReader::readString(const std::string& content, Set& resources,
         }
         else
         {
-          smtk::resource::Resource::Type type = smtk::resource::Resource::string2Type(tagName);
-          resources.addInfo(id, type, role, Set::LOAD_ERROR, link);
+          resources.addInfo(id, role, Set::LOAD_ERROR, link);
           break;
         }
       }
       else
       {
-        smtk::resource::Resource::Type type = smtk::resource::Resource::string2Type(tagName);
-        resources.addInfo(id, type, role, Set::NOT_LOADED, link);
+        resources.addInfo(id, role, Set::NOT_LOADED, link);
       }
     }
     else if (childTagName == "SMTK_AttributeManager" || childTagName == "SMTK_AttributeSystem")
@@ -198,8 +196,7 @@ bool ResourceSetReader::readString(const std::string& content, Set& resources,
       }
       else
       {
-        smtk::resource::Resource::Type type = smtk::resource::Resource::string2Type(tagName);
-        resources.addInfo(id, type, role, Set::LOAD_ERROR);
+        resources.addInfo(id, role, Set::LOAD_ERROR);
         break;
       }
     }

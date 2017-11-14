@@ -131,38 +131,5 @@ bool Resource::setLocation(const std::string& myLocation)
   return myLocation == this->m_location;
 }
 
-std::string Resource::type2String(Resource::Type t)
-{
-  switch (t)
-  {
-    case ATTRIBUTE:
-      return "attribute";
-    case MODEL:
-      return "model";
-    case MESH:
-      return "mesh";
-    default:
-      return "";
-  }
-  return "Error!";
-}
-
-Resource::Type Resource::string2Type(const std::string& s)
-{
-  if (s == "attribute")
-  {
-    return ATTRIBUTE;
-  }
-  if (s == "model")
-  {
-    return MODEL;
-  }
-  if (s == "mesh")
-  {
-    return MESH;
-  }
-  return NUMBER_OF_TYPES;
-}
-
 } // namespace resource
 } // namespace smtk

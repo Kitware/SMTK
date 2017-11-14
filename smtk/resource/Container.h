@@ -28,9 +28,6 @@ namespace resource
 struct IdTag
 {
 };
-struct TypeTag
-{
-};
 struct IndexTag
 {
 };
@@ -47,10 +44,6 @@ namespace detail
 inline const smtk::common::UUID& id(const ResourcePtr& r)
 {
   return r->id();
-}
-inline Resource::Type type(const ResourcePtr& r)
-{
-  return r->type();
 }
 inline std::type_index index(const ResourcePtr& r)
 {
@@ -70,8 +63,6 @@ typedef boost::multi_index_container<
   ResourcePtr,
   indexed_by<ordered_unique<tag<IdTag>,
                global_fun<const ResourcePtr&, const smtk::common::UUID&, &detail::id> >,
-    ordered_non_unique<tag<TypeTag>,
-               global_fun<const ResourcePtr&, Resource::Type, &detail::type> >,
     ordered_non_unique<tag<IndexTag>,
                global_fun<const ResourcePtr&, std::type_index, &detail::index> >,
     ordered_non_unique<tag<LocationTag>,

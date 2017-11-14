@@ -45,11 +45,6 @@ Collection::~Collection()
   }
 }
 
-smtk::resource::Resource::Type Collection::type() const
-{
-  return smtk::resource::Resource::ATTRIBUTE;
-}
-
 smtk::attribute::DefinitionPtr Collection::createDefinition(
   const std::string& typeName, const std::string& baseTypeName)
 {

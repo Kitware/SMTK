@@ -42,7 +42,6 @@ public:
 
   bool exists(const std::string& prefix = "") const;
 
-  Resource::Type type() const override { return smtk::resource::Resource::MODEL; }
   smtk::resource::ComponentPtr find(const smtk::common::UUID& compId) const override;
 
   bool addEntity(const EntityRef& ent);
