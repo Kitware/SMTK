@@ -73,6 +73,9 @@ public:
   // Returns true if the embedded python session has been initialized.
   bool isEmbedded() const { return m_embedded; }
 
+  // Load a .py file given its absolute path.
+  bool loadPythonSourceFile(const std::string& fileName);
+
 private:
   PythonInterpreter();
   virtual ~PythonInterpreter();

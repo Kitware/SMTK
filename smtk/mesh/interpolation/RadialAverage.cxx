@@ -117,7 +117,7 @@ struct RadialAverageForStructuredGrid
         continue;
       }
 
-      int halfChord = m_discreteRadius[0] * sin(acos(double(j - iy) / m_discreteRadius[1]));
+      int halfChord = int(m_discreteRadius[0] * sin(acos(double(j - iy) / m_discreteRadius[1])));
       i_extrema[0] = ix - halfChord;
       i_extrema[1] = ix + halfChord;
 

@@ -292,5 +292,38 @@ bool PythonInterpreter::addPathToBuildTree(
   }
   return false;
 }
+
+bool PythonInterpreter::loadPythonSourceFile(const std::string& fileName)
+{
+  bool loaded = true;
+  pybind11::dict locals;
+  std::stringstream testCmd;
+
+  std::string module = smtk::common::Paths::stem(fileName);
+
+  testCmd << "loaded = True\n"
+          << "try:\n"
+#if PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION >= 5
+          << "    import importlib.util\n"
+          << "    spec = importlib.util.spec_from_file_location('" << module << "', '" << fileName
+          << "')\n"
+          << "    tmp = importlib.util.module_from_spec(spec)\n"
+          << "    spec.loader.exec_module(tmp)\n"
+#elif PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION >= 3 && PY_MINOR_VERSION <= 4
+          << "    from importlib.machinery import SourceFileLoader\n"
+          << "    tmp = SourceFileLoader('" << module << "', '" << fileName << "').load_module()\n"
+#else /* PY_MAJOR_VERSION == 2 */
+          << "    import imp\n"
+          << "    tmp = imp.load_source('" << module << "', '" << fileName << "')\n"
+#endif
+          << "except:\n"
+          << "    loaded = False";
+
+  pybind11::exec(testCmd.str().c_str(), pybind11::globals(), locals);
+
+  loaded = locals["loaded"].cast<bool>();
+
+  return loaded;
+}
 }
 }
