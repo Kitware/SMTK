@@ -30,7 +30,6 @@ set(unit_tests_which_require_data
   UnitTestCellField.cxx
   UnitTestExportMesh2DM.cxx
   UnitTestExportMesh3DM.cxx
-  UnitTestExportMeshVTK.cxx
   UnitTestExtractMeshConstants.cxx
   UnitTestExtractTessellation.cxx
   UnitTestExtractTessellationOfModel.cxx
@@ -52,6 +51,12 @@ set(unit_tests_which_require_data
 )
 
 set(extra_libs)
+if(SMTK_ENABLE_VTK_SUPPORT)
+  list(APPEND unit_tests_which_require_data
+       UnitTestExportMeshVTK.cxx
+       )
+endif()
+
 if(SMTK_ENABLE_DISCRETE_SESSION AND SMTK_ENABLE_VTK_SUPPORT)
   list(APPEND unit_tests_which_require_data
        TestElevateMesh.cxx
@@ -75,7 +80,9 @@ if(SMTK_ENABLE_MESH_SESSION AND SMTK_ENABLE_VTK_SUPPORT)
        )
 endif()
 
-list(REMOVE_DUPLICATES extra_libs)
+if (extra_libs)
+  list(REMOVE_DUPLICATES extra_libs)
+endif()
 
 smtk_unit_tests(
   LABEL "Mesh"
