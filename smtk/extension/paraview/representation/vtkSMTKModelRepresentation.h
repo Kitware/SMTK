@@ -16,8 +16,11 @@
 #include <vtkSmartPointer.h>
 
 class vtkActor;
+class vtkCompositeDataDisplayAttributes;
 class vtkCompositePolyDataMapper2;
+class vtkDataObject;
 class vtkGlyph3DMapper;
+class vtkMultiBlockDataSet;
 class vtkSelection;
 
 /**
@@ -55,6 +58,12 @@ public:
    */
   void SetMapScalars(int val) override;
 
+  vtkSetVector3Macro(SelectionColor, double);
+  vtkGetVector3Macro(SelectionColor, double);
+
+  /// TODO
+  /// Override block attribute setters to modify the glyph mapper's
+
 protected:
   vtkSMTKModelRepresentation();
   ~vtkSMTKModelRepresentation();
@@ -63,6 +72,10 @@ protected:
   void SetupDefaults() override;
   void SetOutputExtent(vtkAlgorithmOutput* output, vtkInformation* inInfo);
   void ConfigureGlyphMapper(vtkGlyph3DMapper* mapper);
+
+  void UpdateSelection(
+    vtkMultiBlockDataSet* data, vtkCompositeDataDisplayAttributes* blockAttr, vtkMapper* mapper);
+  vtkDataObject* FindNode(vtkMultiBlockDataSet* data, const std::string& uuid);
 
   vtkSmartPointer<vtkCompositePolyDataMapper2> EntityMapper;
   vtkSmartPointer<vtkCompositePolyDataMapper2> SelectedEntityMapper;
@@ -73,6 +86,8 @@ protected:
   vtkSmartPointer<vtkActor> SelectedEntities;
   vtkSmartPointer<vtkActor> GlyphEntities;
   vtkSmartPointer<vtkActor> SelectedGlyphEntities;
+
+  double SelectionColor[3] = { 1., 0., 1. };
 
 private:
   vtkSMTKModelRepresentation(const vtkSMTKModelRepresentation&) = delete;

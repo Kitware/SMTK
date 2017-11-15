@@ -27,7 +27,7 @@ pqSMTKAppComponentsAutoStart::~pqSMTKAppComponentsAutoStart()
 
 void pqSMTKAppComponentsAutoStart::startup()
 {
-  auto selnMgr = smtk::resource::SelectionManager::create();
+  auto selnMgr = smtk::resource::SelectionManager::instance();
   auto selnSync = new pqSMTKSelectionSyncBehavior(this, selnMgr);
   auto selnFilter = pqSMTKSelectionFilterBehavior::instance();
   if (!selnFilter)

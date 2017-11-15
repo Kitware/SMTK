@@ -53,9 +53,7 @@
 
       <Hints>
         <ReaderFactory extensions="smtk" file_description="SMTK Model Geometry Files"/>
-        <!--
-        <RepresentationType view="RenderView" type="FancyNewSMTKRepresentation" />
-          -->
+        <Representation view="RenderView" type="SMTKModelRepresentation" />
       </Hints>
     </SourceProxy>
 

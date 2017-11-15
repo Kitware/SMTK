@@ -28,19 +28,6 @@
           <DataType value="vtkDataObjectTree"/>
         </DataTypeDomain>
           <Documentation>Glyph vertices.</Documentation>
-<!--
-        <ProxyListDomain name="proxy_list">
-          <Proxy group="sources" name="ArrowSource" />
-          <Proxy group="sources" name="ConeSource" />
-          <Proxy group="sources" name="CubeSource" />
-          <Proxy group="sources" name="CylinderSource" />
-          <Proxy group="sources" name="LineSource" />
-          <Proxy group="sources" name="SphereSource" />
-          <Proxy group="sources" name="GlyphSource2D" />
-          <Proxy group="internal_filters" name="PipelineConnection" />
-          <Proxy group="sources" name="SMTKModelReader" />
-        </ProxyListDomain>
--->
       </InputProperty>
 
       <InputProperty command="SetInputConnection"
@@ -58,6 +45,16 @@
           <!-- show the selected proxy's panel, only in advanced mode. -->
         </Hints>
       </InputProperty>
+
+      <DoubleVectorProperty command="SetSelectionColor"
+                            default_values="1.0 1.0 0.0"
+                            name="Color"
+                            number_of_elements="3"
+                            panel_visibility="never">
+        <DoubleRangeDomain max="1 1 1"
+                           min="0 0 0"
+                           name="range" />
+      </DoubleVectorProperty>
 
     <!-- End of SMTKModelRepresentation -->
     </SMTKModelRepresentationProxy>
