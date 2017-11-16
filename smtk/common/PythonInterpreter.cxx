@@ -131,13 +131,13 @@ void PythonInterpreter::initialize()
   // If we don't find it, then we look for SMTK as an installed module.
   if (!smtkFound)
   {
-    this->addPathToInstalledModule(smtkLibDir.string(), "smtk");
+    smtkFound = this->addPathToInstalledModule(smtkLibDir.string(), "smtk");
   }
 
   // If we don't find it, then we look for SMTK as a packaged module.
   if (!smtkFound)
   {
-    this->addPathToPackagedModule(smtkLibDir.string(), "smtk");
+    smtkFound = this->addPathToPackagedModule(smtkLibDir.string(), "smtk");
   }
 
   // If we still don't find it, we don't do anyting special. Consuming projects
