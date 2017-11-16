@@ -295,26 +295,31 @@ bool PythonInterpreter::addPathToBuildTree(
 
 bool PythonInterpreter::loadPythonSourceFile(const std::string& fileName)
 {
+  return this->loadPythonSourceFile(fileName, smtk::common::Paths::stem(fileName));
+}
+
+bool PythonInterpreter::loadPythonSourceFile(
+  const std::string& fileName, const std::string& moduleName)
+{
   bool loaded = true;
   pybind11::dict locals;
   std::stringstream testCmd;
-
-  std::string module = smtk::common::Paths::stem(fileName);
 
   testCmd << "loaded = True\n"
           << "try:\n"
 #if PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION >= 5
           << "    import importlib.util\n"
-          << "    spec = importlib.util.spec_from_file_location('" << module << "', '" << fileName
-          << "')\n"
+          << "    spec = importlib.util.spec_from_file_location('" << moduleName << "', '"
+          << fileName << "')\n"
           << "    tmp = importlib.util.module_from_spec(spec)\n"
           << "    spec.loader.exec_module(tmp)\n"
 #elif PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION >= 3 && PY_MINOR_VERSION <= 4
           << "    from importlib.machinery import SourceFileLoader\n"
-          << "    tmp = SourceFileLoader('" << module << "', '" << fileName << "').load_module()\n"
+          << "    tmp = SourceFileLoader('" << moduleName << "', '" << fileName
+          << "').load_module()\n"
 #else /* PY_MAJOR_VERSION == 2 */
           << "    import imp\n"
-          << "    tmp = imp.load_source('" << module << "', '" << fileName << "')\n"
+          << "    tmp = imp.load_source('" << moduleName << "', '" << fileName << "')\n"
 #endif
           << "except:\n"
           << "    loaded = False";

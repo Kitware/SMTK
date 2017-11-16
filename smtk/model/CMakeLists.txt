@@ -9,6 +9,7 @@ set(modelOps
   ExportModelJSON
   ExportSMTKModel
   GroupAuxiliaryGeometry
+  ImportPythonOperator
   LoadSMTKModel
   SaveSMTKModel
   SetProperty

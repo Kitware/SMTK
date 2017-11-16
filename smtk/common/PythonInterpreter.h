@@ -75,6 +75,7 @@ public:
 
   // Load a .py file given its absolute path.
   bool loadPythonSourceFile(const std::string& fileName);
+  bool loadPythonSourceFile(const std::string& fileName, const std::string& moduleName);
 
 private:
   PythonInterpreter();

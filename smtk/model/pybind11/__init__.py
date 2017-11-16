@@ -57,8 +57,6 @@ def operator(nickname, opsession):
 
         setattr(opclass, 'activeSession', activeSession)
 
-        from functools import partial
-
         # register this operator with the session
         opsession.registerStaticPyOperator(
             nickname, opclass.description(), opclass.__module__, opclass.__name__)

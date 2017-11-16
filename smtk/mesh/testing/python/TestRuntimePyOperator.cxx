@@ -117,9 +117,6 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  smtk::common::PythonInterpreter::instance().loadPythonSourceFile(
-    ::boost::filesystem::absolute(path).string());
-
   smtk::model::ManagerPtr manager = smtk::model::Manager::create();
   smtk::mesh::ManagerPtr meshManager = manager->meshes();
 
@@ -137,6 +134,19 @@ int main(int argc, char* argv[])
   for (smtk::model::StringList::iterator it = opnames.begin(); it != opnames.end(); ++it)
     std::cout << "  " << *it << "\n";
   std::cout << "\n";
+
+  {
+    smtk::model::Operator::Ptr op = session->op("import python operator");
+
+    op->findFile("filename")->setValue(::boost::filesystem::absolute(path).string().c_str());
+
+    smtk::model::OperatorResult result = op->operate();
+    if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
+    {
+      std::cerr << "Could not load smtk model!\n";
+      return 1;
+    }
+  }
 
   smtk::model::Model model;
   {
