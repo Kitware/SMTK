@@ -3,7 +3,8 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="import python operator" Label="Operator - Import from Python" BaseType="operator">
+    <AttDef Type="import python operator" Label="Operator - Import from Python"
+            BaseType="operator" AdvanceLevel="10">
       <BriefDescription>
         Import a python operator.
       </BriefDescription>
