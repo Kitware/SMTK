@@ -61,6 +61,9 @@ public:
   vtkSetVector3Macro(SelectionColor, double);
   vtkGetVector3Macro(SelectionColor, double);
 
+  void SetSelectionPointSize(double val);
+  void SetPointSize(double val) override;
+
   /// TODO
   /// Override block attribute setters to modify the glyph mapper's
 
