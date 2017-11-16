@@ -39,10 +39,11 @@ class SMTKCORE_EXPORT PointCloud
 public:
   PointCloud(std::size_t nPoints,
     const std::function<std::array<double, 3>(std::size_t)>& coordinates,
-    const std::function<double(std::size_t)>& data)
+    const std::function<double(std::size_t)>& data, const std::function<bool(std::size_t)>& valid)
     : m_size(nPoints)
     , m_coordinates(coordinates)
     , m_data(data)
+    , m_valid(valid)
   {
   }
 
@@ -53,7 +54,19 @@ public:
           double nan = std::numeric_limits<double>::quiet_NaN();
           return std::array<double, 3>({ { nan, nan, nan } });
         },
-        [](std::size_t) { return std::numeric_limits<double>::quiet_NaN(); })
+        [](std::size_t) { return std::numeric_limits<double>::quiet_NaN(); },
+        [](std::size_t) { return false; })
+  {
+  }
+
+  // Constructs a PointCloud with no blanking (all points are considered valid).
+  PointCloud(std::size_t nPoints,
+    const std::function<std::array<double, 3>(std::size_t)>& coordinates,
+    const std::function<double(std::size_t)>& data)
+    : m_size(nPoints)
+    , m_coordinates(coordinates)
+    , m_data(data)
+    , m_valid([](std::size_t) { return true; })
   {
   }
 
@@ -65,7 +78,7 @@ public:
           return std::array<double, 3>(
             { { coordinates[3 * i], coordinates[3 * i + 1], coordinates[3 * i + 2] } });
         },
-        [=](std::size_t i) { return data[i]; })
+        [=](std::size_t i) { return data[i]; }, [](std::size_t) { return true; })
   {
   }
 
@@ -77,7 +90,7 @@ public:
           return std::array<double, 3>(
             { { coordinates[3 * i], coordinates[3 * i + 1], coordinates[3 * i + 2] } });
         },
-        [=](std::size_t i) { return data[i]; })
+        [=](std::size_t i) { return data[i]; }, [](std::size_t) { return true; })
   {
   }
 
@@ -113,7 +126,8 @@ private:
 public:
   // Constructs a PointCloud from vectors of coordinates and data.
   PointCloud(std::vector<double>&& coordinates, std::vector<double>&& data)
-    : PointCloud(data.size(), Coordinates(coordinates), Data(data))
+    : PointCloud(
+        data.size(), Coordinates(coordinates), Data(data), [](std::size_t) { return true; })
   {
   }
 
@@ -127,10 +141,15 @@ public:
   }
   const std::function<double(std::size_t)>& data() const { return m_data; }
 
+  // Given an index into the structured data, determine whether or not the point
+  // is valid.
+  bool containsIndex(std::size_t i) const { return m_valid(i); }
+
 protected:
   std::size_t m_size;
   std::function<std::array<double, 3>(std::size_t)> m_coordinates;
   std::function<double(std::size_t)> m_data;
+  std::function<bool(std::size_t)> m_valid;
 };
 }
 }

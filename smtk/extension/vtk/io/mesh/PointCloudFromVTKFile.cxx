@@ -80,7 +80,9 @@ smtk::mesh::PointCloud PointCloudFromVTKFile::operator()(const std::string& file
     };
   }
 
-  return smtk::mesh::PointCloud(externalData->GetNumberOfPoints(), coordinates, data);
+  std::function<bool(std::size_t)> valid = [](std::size_t) { return true; };
+
+  return smtk::mesh::PointCloud(externalData->GetNumberOfPoints(), coordinates, data, valid);
 }
 }
 }

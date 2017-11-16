@@ -57,7 +57,7 @@ type_dict = \
      }
 
 
-def to_concrete(item):
+def _to_concrete(item):
     '''
       Returns concrete (leaf) object for input, which is smtk.Item
     '''
@@ -86,7 +86,7 @@ def to_concrete(item):
 
 def get_wrapped_func(meth):
     def wrapped_func(*args, **kwargs):
-        return to_concrete(meth(*args, **kwargs))
+        return _to_concrete(meth(*args, **kwargs))
     return wrapped_func
 
 for (cls, meth, new_func_name) in func_list:
@@ -94,9 +94,11 @@ for (cls, meth, new_func_name) in func_list:
 
 
 def to_concrete_passthrough(item):
+    from inspect import getframeinfo, stack
     import warnings
+    caller = getframeinfo(stack()[1][0])
     warnings.warn(
-        "Call to deprecated function \"to_concrete()\". As of 1.1, smtk.attribute methods return derived item types.")
+        "%s:%d: Call to deprecated function \"to_concrete()\". As of 1.1, smtk.attribute methods return derived item types." % (caller.filename, caller.lineno))
     return item
 
 to_concrete = to_concrete_passthrough

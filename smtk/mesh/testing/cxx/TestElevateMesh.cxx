@@ -207,7 +207,6 @@ int TestElevateMesh(int argc, char* argv[])
     elevateMesh->specification()->findString("interpolation scheme")->setToDefault();
     elevateMesh->specification()->findDouble("radius")->setValue(7.);
     elevateMesh->specification()->findMesh("mesh")->appendValue(mesh);
-    elevateMesh->specification()->findVoid("invert scalars")->setIsEnabled(false);
 
     smtk::model::OperatorResult bathyResult = elevateMesh->operate();
     if (bathyResult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)

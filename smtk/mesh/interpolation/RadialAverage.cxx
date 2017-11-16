@@ -25,10 +25,11 @@ namespace
 {
 struct RadialAverageForPointCloud
 {
-  RadialAverageForPointCloud(
-    smtk::mesh::CollectionPtr collection, const smtk::mesh::PointCloud& pointcloud, double radius)
+  RadialAverageForPointCloud(smtk::mesh::CollectionPtr collection,
+    const smtk::mesh::PointCloud& pointcloud, double radius, std::function<bool(double)> prefilter)
     : m_pointcloud(pointcloud)
     , m_radius(radius)
+    , m_prefilter(prefilter)
     , m_locator(collection, pointcloud.size(), pointcloud.coordinates())
   {
   }
@@ -38,24 +39,34 @@ struct RadialAverageForPointCloud
     smtk::mesh::PointLocator::LocatorResults results;
     m_locator.find(x[0], x[1], 0.0, m_radius, results);
 
-    if (results.pointIds.empty())
-    {
-      return std::numeric_limits<double>::quiet_NaN();
-    }
-
-    //otherwise we need to average the z values
     double sum = 0;
     std::size_t numPointsInRadius = 0;
     for (auto i : results.pointIds)
     {
-      sum += m_pointcloud.data()(i);
-      ++numPointsInRadius;
+      if (m_pointcloud.containsIndex(i))
+      {
+        double value = m_pointcloud.data()(i);
+        if (m_prefilter(value))
+        {
+          sum += value;
+          ++numPointsInRadius;
+        }
+      }
     }
-    return sum / numPointsInRadius;
+
+    if (numPointsInRadius == 0)
+    {
+      return std::numeric_limits<double>::quiet_NaN();
+    }
+    else
+    {
+      return sum / numPointsInRadius;
+    }
   }
 
   const smtk::mesh::PointCloud m_pointcloud;
   double m_radius;
+  std::function<bool(double)> m_prefilter;
   smtk::mesh::PointLocator m_locator;
 };
 
@@ -63,9 +74,11 @@ struct RadialAverageForStructuredGrid
 {
   typedef std::pair<int, int> Coord;
 
-  RadialAverageForStructuredGrid(const smtk::mesh::StructuredGrid& structuredgrid, double radius)
+  RadialAverageForStructuredGrid(const smtk::mesh::StructuredGrid& structuredgrid, double radius,
+    std::function<bool(double)> prefilter)
     : m_structuredgrid(structuredgrid)
     , m_radius2(radius * radius)
+    , m_prefilter(prefilter)
   {
     m_discreteRadius[0] =
       std::abs(static_cast<int>(std::round(radius / m_structuredgrid.m_spacing[0])));
@@ -136,8 +149,12 @@ struct RadialAverageForStructuredGrid
       {
         if (m_structuredgrid.containsIndex(i, j))
         {
-          sum += m_structuredgrid.data()(i, j);
-          nCoords++;
+          double value = m_structuredgrid.data()(i, j);
+          if (m_prefilter(value))
+          {
+            sum += value;
+            nCoords++;
+          }
         }
       }
     }
@@ -162,6 +179,7 @@ struct RadialAverageForStructuredGrid
 
   const smtk::mesh::StructuredGrid m_structuredgrid;
   double m_radius2;
+  std::function<bool(double)> m_prefilter;
   int m_discreteRadius[2];
   double m_limits[4];
 };
@@ -172,14 +190,15 @@ namespace smtk
 namespace mesh
 {
 
-RadialAverage::RadialAverage(
-  smtk::mesh::CollectionPtr collection, const PointCloud& pointcloud, double radius)
-  : m_function(RadialAverageForPointCloud(collection, pointcloud, radius))
+RadialAverage::RadialAverage(smtk::mesh::CollectionPtr collection, const PointCloud& pointcloud,
+  double radius, std::function<bool(double)> prefilter)
+  : m_function(RadialAverageForPointCloud(collection, pointcloud, radius, prefilter))
 {
 }
 
-RadialAverage::RadialAverage(const StructuredGrid& structuredgrid, double radius)
-  : m_function(RadialAverageForStructuredGrid(structuredgrid, radius))
+RadialAverage::RadialAverage(
+  const StructuredGrid& structuredgrid, double radius, std::function<bool(double)> prefilter)
+  : m_function(RadialAverageForStructuredGrid(structuredgrid, radius, prefilter))
 {
 }
 }

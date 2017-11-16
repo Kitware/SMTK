@@ -47,7 +47,9 @@ class SMTKCORE_EXPORT PointCloudGenerator
 {
 public:
   using smtk::common::Generator<std::string, PointCloud>::operator();
+  using smtk::common::Generator<std::string, PointCloud>::valid;
   using smtk::common::Generator<smtk::model::AuxiliaryGeometry, PointCloud>::operator();
+  using smtk::common::Generator<smtk::model::AuxiliaryGeometry, PointCloud>::valid;
 
   virtual ~PointCloudGenerator();
 };

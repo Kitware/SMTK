@@ -9,6 +9,12 @@ set(smtkMeshPythonDataTests
   iterateMesh
 )
 
+if(SMTK_ENABLE_MESH_SESSION AND SMTK_ENABLE_VTK_SUPPORT)
+list(APPEND smtkMeshPythonDataTests
+  elevateMeshOnStructuredGrid
+  )
+endif()
+
 #only run these tests if we have a valid data directory and we have a moab
 #built with hdf5
 if (SMTK_DATA_DIR)
