@@ -683,6 +683,37 @@ int LoadJSON::ofManagerIntegerProperties(
   return status ? 0 : 1;
 }
 
+/**\brief Import JSON holding operator definitions into a local session.
+  *
+  * The operator definitions described by \a node will be mirrored in the
+  * \a destSession you specify.
+  *
+  * You are responsible for providing the \a destSession instance
+  * into which the \a node's operator definitions will be placed.
+  * The \a destSession must be of a proper type for your application
+  * (i.e., be able to forward requests for data and operations).
+  */
+int LoadJSON::ofOperatorDefinitions(cJSON* node, DefaultSessionPtr destSession)
+{
+  // Import the XML definitions of the serialized session
+  // into the destination session's operatorCollection():
+  int status = 0;
+  smtk::io::Logger log;
+  smtk::io::AttributeReader rdr;
+  rdr.setReportDuplicateDefinitionsAsErrors(false);
+  if (rdr.readContents(
+        destSession->operatorCollection(), node->valuestring, strlen(node->valuestring), log))
+  {
+    std::cerr << "Error. Log follows:\n---\n" << log.convertToString() << "\n---\n";
+    throw std::string("Could not parse operator XML.");
+  }
+  if (log.numberOfRecords())
+  {
+    std::cout << "  " << log.convertToString() << "\n";
+  }
+  return status;
+}
+
 /**\brief Import JSON holding a session into a local session.
   *
   * The session described by \a node will be mirrored by the
@@ -714,21 +745,7 @@ int LoadJSON::ofRemoteSession(
 
   destSession->backsRemoteSession(nameObj->valuestring, smtk::common::UUID(node->string));
 
-  // Import the XML definitions of the serialized session
-  // into the destination session's operatorCollection():
-  smtk::io::Logger log;
-  smtk::io::AttributeReader rdr;
-  rdr.setReportDuplicateDefinitionsAsErrors(false);
-  if (rdr.readContents(
-        destSession->operatorCollection(), opsObj->valuestring, strlen(opsObj->valuestring), log))
-  {
-    std::cerr << "Error. Log follows:\n---\n" << log.convertToString() << "\n---\n";
-    throw std::string("Could not parse operator XML.");
-  }
-  if (log.numberOfRecords())
-  {
-    std::cout << "  " << log.convertToString() << "\n";
-  }
+  LoadJSON::ofOperatorDefinitions(opsObj, destSession);
 
   // Register the session with the model manager:
   context->registerSession(destSession);

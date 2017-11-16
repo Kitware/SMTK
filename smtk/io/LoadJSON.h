@@ -58,6 +58,7 @@ public:
   // This function has no implementation!
   static int forManagerMeshes(
     smtk::mesh::ManagerPtr meshes, cJSON*, smtk::model::ManagerPtr modelMgr);
+  static int ofOperatorDefinitions(cJSON*, smtk::model::DefaultSessionPtr destSession);
   static int ofRemoteSession(cJSON*, smtk::model::DefaultSessionPtr destSession,
     smtk::model::ManagerPtr context, const std::string& refPath = std::string());
   static int ofLocalSession(cJSON*, smtk::model::ManagerPtr context, bool loadNativeModels = false,
