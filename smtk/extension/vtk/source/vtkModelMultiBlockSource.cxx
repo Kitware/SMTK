@@ -641,7 +641,12 @@ void vtkModelMultiBlockSource::PrepareInstanceOutput(vtkMultiBlockDataSet* insta
     vtkNew<vtkPoints> instancePts;
     instancePts->Allocate(numPoints);
     instancePoly->SetPoints(instancePts.GetPointer());
-    instanceBlocks->SetBlock(block++, instancePoly.GetPointer());
+    instanceBlocks->SetBlock(block, instancePoly.GetPointer());
+
+    const smtk::model::EntityRef entRef = instance.prototype();
+    instanceBlocks->GetMetaData(block)->Set(
+      vtkModelMultiBlockSource::ENTITYID(), entRef.entity().toString().c_str());
+    block++;
 
     vtkNew<vtkDoubleArray> instanceOrient;
     vtkNew<vtkDoubleArray> instanceScale;
@@ -867,10 +872,6 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(vtkMultiBlockData
               vtkCompositeDataSet::NAME(), blockEntities[bb][lb].name().c_str());
             topBlocks[bb]->GetMetaData(lb)->Set(vtkModelMultiBlockSource::ENTITYID(),
               blockEntities[bb][lb].entity().toString().c_str());
-            /*
-            topBlocks[bb]->GetMetaData(lb)->Set(
-              vtkModelMultiBlockSource::ENTITYID(), blockEntities[lb].entity().toString().c_str());
-              */
           }
         }
 
