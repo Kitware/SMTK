@@ -2,9 +2,11 @@ set(smtkResourcePythonTests
 )
 
 # Additional tests that require SMTK_DATA_DIR
-set(smtkResourcePythonDataTests
-  unitSelectionManager
-)
+if (SMTK_ENABLE_POLYGON_SESSION)
+  set(smtkResourcePythonDataTests
+    unitSelectionManager
+  )
+endif()
 
 foreach (test ${smtkResourcePythonTests})
   smtk_add_test_python(${test}Py ${test}.py --src-dir=${SMTK_SOURCE_DIR})
