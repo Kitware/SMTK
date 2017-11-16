@@ -131,13 +131,13 @@ void PythonInterpreter::initialize()
   // If we don't find it, then we look for SMTK as an installed module.
   if (!smtkFound)
   {
-    this->addPathToInstalledModule(smtkLibDir.string(), "smtk");
+    smtkFound = this->addPathToInstalledModule(smtkLibDir.string(), "smtk");
   }
 
   // If we don't find it, then we look for SMTK as a packaged module.
   if (!smtkFound)
   {
-    this->addPathToPackagedModule(smtkLibDir.string(), "smtk");
+    smtkFound = this->addPathToPackagedModule(smtkLibDir.string(), "smtk");
   }
 
   // If we still don't find it, we don't do anyting special. Consuming projects
@@ -200,7 +200,7 @@ bool PythonInterpreter::addToPythonPath(const std::string& path_list, std::strin
   sregex_token_iterator it(path_list.begin(), path_list.end(), re, -1), last;
   for (; it != last; ++it)
   {
-    sys.attr("path").attr("append")(it->str().c_str());
+    sys.attr("path").attr("insert")(0, it->str().c_str());
   }
 
   return true;
