@@ -119,9 +119,10 @@ std::string Paths::pathToLibraryContainingFunction(void (*func)(void))
   return boost::dll::symbol_location(*func).parent_path().string();
 }
 
-// A do-nothing function whose signature matches pathToLibraryContainingFunction
-void Paths::findMe()
+// Return the directory containing this library.
+std::string Paths::pathToThisLibrary()
 {
+  return boost::dll::symbol_location(smtk::common::Paths::pathToThisLibrary).parent_path().string();
 }
 
 /// Return the file name, given a path to the file.
