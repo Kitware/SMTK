@@ -119,6 +119,11 @@ std::string Paths::pathToLibraryContainingFunction(void (*func)(void))
   return boost::dll::symbol_location(*func).parent_path().string();
 }
 
+// A do-nothing function whose signature matches pathToLibraryContainingFunction
+void Paths::findMe()
+{
+}
+
 /// Return the file name, given a path to the file.
 std::string Paths::filename(const std::string& path)
 {
