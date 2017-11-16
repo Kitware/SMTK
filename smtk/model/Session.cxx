@@ -135,6 +135,25 @@ SessionInfoBits Session::allSupportedInformation() const
   return SESSION_EVERYTHING;
 }
 
+/// Return the number of solid-model operators available.
+std::size_t Session::numberOfOperators(bool includeAdvanced) const
+{
+  std::vector<smtk::attribute::DefinitionPtr> ops;
+  this->m_operatorCollection->derivedDefinitions(
+    this->m_operatorCollection->findDefinition("operator"), ops);
+
+  std::size_t nOps = 0;
+  std::vector<smtk::attribute::DefinitionPtr>::iterator it;
+  for (it = ops.begin(); it != ops.end(); ++it)
+  {
+    // only show operators that are not advanced
+    if (!includeAdvanced && (*it)->advanceLevel() > 0)
+      continue;
+    ++nOps;
+  }
+  return nOps;
+}
+
 /// Return a list of names of solid-model operators available.
 StringList Session::operatorNames(bool includeAdvanced) const
 {
