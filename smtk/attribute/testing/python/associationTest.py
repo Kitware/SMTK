@@ -32,7 +32,7 @@ if __name__ == '__main__':
     system = smtk.attribute.System.create()
     defn = system.createDefinition('testdef')
     system.setRefModelManager(mmgr)
-    defn.setAssociationMask(int(mask))
+    defn.setLocalAssociationMask(int(mask))
 
     # Create attribute and associate to group item
     att = system.createAttribute('testatt', defn)
