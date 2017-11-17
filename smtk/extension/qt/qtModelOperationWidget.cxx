@@ -338,7 +338,17 @@ bool qtModelOperationWidget::initOperatorUI(const smtk::model::OperatorPtr& brOp
   std::map<std::string, smtk::common::ViewPtr>::const_iterator it;
   for (it = att->collection()->views().begin(); it != att->collection()->views().end(); ++it)
   {
-    int i = it->second->details().findChild("AttributeTypes");
+    //If  this is an Operator View we need to check its InstancedAttributes child else
+    // we need to check AttributeTypes
+    int i; // View Component index we need to check
+    if (it->second->type() == "Operator")
+    {
+      i = it->second->details().findChild("InstancedAttributes");
+    }
+    else
+    {
+      i = it->second->details().findChild("AttributeTypes");
+    }
     if (i < 0)
     {
       continue;
