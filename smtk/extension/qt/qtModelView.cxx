@@ -901,8 +901,11 @@ void qtModelView::showContextMenu(const QModelIndex& idx, const QPoint& p)
     return;
   }
   std::string sessionString = brSession.entity().toString();
-  // Have we already processed this session previously?
-  if (this->m_sessionInfo.find(sessionString) == this->m_sessionInfo.end())
+  // Have we already processed this session previously? Have the number of
+  // operators changed?
+  auto sinfoIt = this->m_sessionInfo.find(sessionString);
+  if (sinfoIt == this->m_sessionInfo.end() ||
+    (*sinfoIt).first.size() != brSession.session()->numberOfOperators(false))
   {
     // This is the first time seeing this session
     // First we need to get the mapping between operator labels and their names

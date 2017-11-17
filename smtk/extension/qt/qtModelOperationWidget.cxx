@@ -183,8 +183,8 @@ QSize qtModelOperationWidget::sizeHint() const
 void qtModelOperationWidget::setSession(smtk::model::SessionPtr session)
 {
   // if it's current session and we've already constructed operators for it
-  if (this->Internals->CurrentSession.lock() == session &&
-    this->Internals->OperationCombo->count() != 0)
+  if (this->Internals->CurrentSession.lock() == session && session &&
+    std::size_t(this->Internals->OperationCombo->count()) == session->numberOfOperators(false))
   {
     return;
   }
@@ -220,6 +220,19 @@ void qtModelOperationWidget::setSession(smtk::model::SessionPtr session)
   }
   this->Internals->OperationCombo->blockSignals(false);
   this->Internals->OperatorMap.clear();
+}
+
+void qtModelOperationWidget::refreshOperatorList()
+{
+  auto session = this->Internals->CurrentSession.lock();
+  if (!session)
+  {
+    return;
+  }
+
+  auto selection = this->Internals->OperationCombo->currentText();
+  this->setSession(session);
+  this->Internals->OperationCombo->setCurrentText(selection);
 }
 
 void qtModelOperationWidget::setModelView(qtModelView* mv)
