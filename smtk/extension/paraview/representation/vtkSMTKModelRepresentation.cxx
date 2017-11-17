@@ -64,12 +64,7 @@ void vtkSMTKModelRepresentation::SetupDefaults()
   this->SelectedGlyphMapper->SetBlockAttributes(selGlyphAtt);
 
   this->Entities->SetMapper(this->EntityMapper);
-
   this->SelectedEntities->SetMapper(this->SelectedEntityMapper);
-  ///TODO Emphasize vertices when selected
-  //auto prop = this->SelectedEntities->GetProperty();
-  //prop->SetVertexVisibility(1);
-
   this->GlyphEntities->SetMapper(this->GlyphMapper);
   this->SelectedGlyphEntities->SetMapper(this->SelectedGlyphMapper);
 }
@@ -380,4 +375,16 @@ vtkDataObject* vtkSMTKModelRepresentation::FindNode(
   }
 
   return nullptr;
+}
+
+void vtkSMTKModelRepresentation::SetSelectionPointSize(double val)
+{
+  this->SelectedEntities->GetProperty()->SetPointSize(val);
+  this->SelectedGlyphEntities->GetProperty()->SetPointSize(val);
+}
+
+void vtkSMTKModelRepresentation::SetPointSize(double val)
+{
+  this->Entities->GetProperty()->SetPointSize(val);
+  this->GlyphEntities->GetProperty()->SetPointSize(val);
 }
