@@ -73,6 +73,12 @@ public:
   // Returns true if the embedded python session has been initialized.
   bool isEmbedded() const { return m_embedded; }
 
+  // Toggle the generation of byte code when loading source files.
+  void dontWriteByteCode(bool choice);
+
+  // Return the state of Python's dont_write_bytecode variable.
+  bool dontWriteByteCode();
+
   // Load a .py file given its absolute path.
   bool loadPythonSourceFile(const std::string& fileName);
   bool loadPythonSourceFile(const std::string& fileName, const std::string& moduleName);

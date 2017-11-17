@@ -293,6 +293,32 @@ bool PythonInterpreter::addPathToBuildTree(
   return false;
 }
 
+void PythonInterpreter::dontWriteByteCode(bool choice)
+{
+  // Access the embedded python's sys.dont_write_byte_code from the python
+  // instance itself.
+  pybind11::dict locals;
+  std::stringstream testCmd;
+  testCmd << "import sys\n"
+          << "sys.dont_write_bytecode = " << (choice ? "True" : "False");
+  pybind11::exec(testCmd.str().c_str(), pybind11::globals(), locals);
+}
+
+bool PythonInterpreter::dontWriteByteCode()
+{
+  // Access the embedded python's sys.dont_write_byte_code from the python
+  // instance itself.
+  pybind11::dict locals;
+  std::stringstream testCmd;
+  testCmd << "import sys\n"
+          << "choice = sys.dont_write_bytecode";
+  pybind11::exec(testCmd.str().c_str(), pybind11::globals(), locals);
+
+  bool choice = locals["choice"].cast<bool>();
+
+  return choice;
+}
+
 bool PythonInterpreter::loadPythonSourceFile(const std::string& fileName)
 {
   return this->loadPythonSourceFile(fileName, smtk::common::Paths::stem(fileName));
@@ -301,6 +327,10 @@ bool PythonInterpreter::loadPythonSourceFile(const std::string& fileName)
 bool PythonInterpreter::loadPythonSourceFile(
   const std::string& fileName, const std::string& moduleName)
 {
+  // For user-submitted source files, disable the generation of byte code
+  bool dontWriteByteCode = this->dontWriteByteCode();
+  this->dontWriteByteCode(true);
+
   bool loaded = true;
   pybind11::dict locals;
   std::stringstream testCmd;
@@ -327,6 +357,8 @@ bool PythonInterpreter::loadPythonSourceFile(
   pybind11::exec(testCmd.str().c_str(), pybind11::globals(), locals);
 
   loaded = locals["loaded"].cast<bool>();
+
+  this->dontWriteByteCode(dontWriteByteCode);
 
   return loaded;
 }
