@@ -80,4 +80,12 @@
       </ItemDefinitions>
     </AttDef>
   </Definitions>
+    <Views>
+    <View Type="Operator" Title="Add Aux Geometry" FilterByAdvanceLevel="true">
+      <InstancedAttributes>
+        <Att Type="add auxiliary geometry" Name="add auxiliary geometry"/>
+      </InstancedAttributes>
+    </View>
+  </Views>
+
 </SMTK_AttributeSystem>
