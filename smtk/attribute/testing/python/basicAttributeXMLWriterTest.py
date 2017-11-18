@@ -99,7 +99,8 @@ if __name__ == '__main__':
     iitemdef.addCategory('Heat')
 
     def1 = system.createDefinition('Derived1', 'BaseDef')
-    def1.setAssociationMask(int(smtk.model.MODEL_DOMAIN))  # belongs on model
+    def1.setLocalAssociationMask(
+        int(smtk.model.MODEL_DOMAIN))  # belongs on model
     # Lets add some item definitions
     ditemdef = smtk.attribute.DoubleItemDefinition.New('DoubleItem1')
     def1.addItemDefinition(ditemdef)
@@ -122,7 +123,7 @@ if __name__ == '__main__':
     vdef.setLabel('Option 1')
 
     def2 = system.createDefinition('Derived2', 'Derived1')
-    def2.setAssociationMask(int(smtk.model.VOLUME))
+    def2.setLocalAssociationMask(int(smtk.model.VOLUME))
     # Lets add some item definitions
     sitemdef = smtk.attribute.StringItemDefinition.New('StringItem1')
     def2.addItemDefinition(sitemdef)
