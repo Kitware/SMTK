@@ -103,7 +103,7 @@
       The customized view "Type" needs to match the plugin's VIEW_NAME:
       add_smtk_ui_view(...  VIEW_NAME smtkSaveModelView ...)
       -->
-    <View Type="smtkSaveModelView" Title="Save Model">
+    <View Type="smtkSaveModelView" Title="Save Model"  FilterByCategory="false"  FilterByAdvanceLevel="false">
       <Description>
         Click the "Save" button to save the associated models, their meshes, and their auxiliary
         geometry/images to their pre-existing files. This will overwrite the files with new data.
