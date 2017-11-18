@@ -32,4 +32,11 @@
       </ItemDefinitions>
     </AttDef>
   </Definitions>
+  <Views>
+    <View Type="Operator" Title="Triangulate Face" FilterByAdvanceLevel="true">
+      <InstancedAttributes>
+        <Att Type="triangulate face" Name="triangulate face"/>
+      </InstancedAttributes>
+    </View>
+  </Views>
 </SMTK_AttributeSystem>

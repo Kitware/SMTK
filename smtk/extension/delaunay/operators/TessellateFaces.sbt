@@ -31,4 +31,11 @@
       </ItemDefinitions>
     </AttDef>
   </Definitions>
+  <Views>
+    <View Type="Operator" Title="Tessellate Face" FilterByAdvanceLevel="true">
+      <InstancedAttributes>
+        <Att Type="tessellate face" Name="tessellate face"/>
+      </InstancedAttributes>
+    </View>
+  </Views>
 </SMTK_AttributeSystem>
