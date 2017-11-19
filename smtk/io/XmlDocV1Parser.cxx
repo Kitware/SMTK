@@ -51,7 +51,7 @@
 #include "smtk/model/Manager.h"
 
 #include "smtk/common/StringUtil.h"
-#include "smtk/common/View.h"
+#include "smtk/view/View.h"
 
 #include <algorithm>
 #include <iostream>
@@ -2369,7 +2369,7 @@ void XmlDocV1Parser::processViews(xml_node& root)
   {
     return;
   }
-  smtk::common::ViewPtr rootView = this->createView(views, "Group");
+  smtk::view::ViewPtr rootView = this->createView(views, "Group");
   rootView->details().setAttribute("TopLevel", "true");
 
   if (!rootView)
@@ -2394,7 +2394,7 @@ void XmlDocV1Parser::processViews(xml_node& root)
   node = views.child("AdvancedFontEffects");
   if (node)
   {
-    smtk::common::View::Component comp = rootView->details().addChild("AdvancedFontEffects");
+    smtk::view::View::Component comp = rootView->details().addChild("AdvancedFontEffects");
     if (node.attribute("Bold"))
     {
       comp.setAttribute("Bold", "t");
@@ -2418,7 +2418,7 @@ void XmlDocV1Parser::processViews(xml_node& root)
   this->processGroupView(views, rootView);
 }
 
-void XmlDocV1Parser::processAttributeView(xml_node& node, smtk::common::ViewPtr view)
+void XmlDocV1Parser::processAttributeView(xml_node& node, smtk::view::ViewPtr view)
 {
   xml_attribute xatt;
   attribute::DefinitionPtr def;
@@ -2440,7 +2440,7 @@ void XmlDocV1Parser::processAttributeView(xml_node& node, smtk::common::ViewPtr 
   {
     return;
   }
-  smtk::common::View::Component& comp = view->details().addChild("AttributeTypes");
+  smtk::view::View::Component& comp = view->details().addChild("AttributeTypes");
 
   for (child = attTypes.child("Type"); child; child = child.next_sibling("Type"))
   {
@@ -2448,7 +2448,7 @@ void XmlDocV1Parser::processAttributeView(xml_node& node, smtk::common::ViewPtr 
   }
 }
 
-void XmlDocV1Parser::processInstancedView(xml_node& node, smtk::common::ViewPtr view)
+void XmlDocV1Parser::processInstancedView(xml_node& node, smtk::view::ViewPtr view)
 {
   xml_attribute xatt;
   xml_node child, instances = node.child("InstancedAttributes");
@@ -2457,7 +2457,7 @@ void XmlDocV1Parser::processInstancedView(xml_node& node, smtk::common::ViewPtr 
   {
     return; // No instances are in the view
   }
-  smtk::common::View::Component& comp = view->details().addChild("InstancedAttributes");
+  smtk::view::View::Component& comp = view->details().addChild("InstancedAttributes");
   for (child = instances.child("Att"); child; child = child.next_sibling("Att"))
   {
     xatt = child.attribute("Type");
@@ -2475,7 +2475,7 @@ void XmlDocV1Parser::processInstancedView(xml_node& node, smtk::common::ViewPtr 
   }
 }
 
-void XmlDocV1Parser::processModelEntityView(xml_node& node, smtk::common::ViewPtr view)
+void XmlDocV1Parser::processModelEntityView(xml_node& node, smtk::view::ViewPtr view)
 {
   xml_attribute xatt = node.attribute("ModelEntityFilter");
   xml_node child = node.child("Definition");
@@ -2490,7 +2490,7 @@ void XmlDocV1Parser::processModelEntityView(xml_node& node, smtk::common::ViewPt
   }
 }
 
-void XmlDocV1Parser::processSimpleExpressionView(xml_node& node, smtk::common::ViewPtr view)
+void XmlDocV1Parser::processSimpleExpressionView(xml_node& node, smtk::view::ViewPtr view)
 {
   xml_node child = node.child("Definition");
   if (child)
@@ -2499,7 +2499,7 @@ void XmlDocV1Parser::processSimpleExpressionView(xml_node& node, smtk::common::V
   }
 }
 
-void XmlDocV1Parser::processGroupView(xml_node& node, smtk::common::ViewPtr group)
+void XmlDocV1Parser::processGroupView(xml_node& node, smtk::view::ViewPtr group)
 {
   // Group style (Optional), Tabbed (default) or Tiled
   xml_attribute xatt;
@@ -2510,9 +2510,9 @@ void XmlDocV1Parser::processGroupView(xml_node& node, smtk::common::ViewPtr grou
   }
 
   // Add Views Component
-  smtk::common::View::Component& vcomp = group->details().addChild("Views");
+  smtk::view::View::Component& vcomp = group->details().addChild("Views");
   xml_node child;
-  smtk::common::ViewPtr childView;
+  smtk::view::ViewPtr childView;
   std::string childName;
   for (child = node.first_child(); child; child = child.next_sibling())
   {
@@ -2574,7 +2574,7 @@ void XmlDocV1Parser::processGroupView(xml_node& node, smtk::common::ViewPtr grou
   }
 }
 
-smtk::common::ViewPtr XmlDocV1Parser::createView(xml_node& node, const std::string& viewType)
+smtk::view::ViewPtr XmlDocV1Parser::createView(xml_node& node, const std::string& viewType)
 {
   xml_attribute xatt;
   std::string val;
@@ -2582,11 +2582,11 @@ smtk::common::ViewPtr XmlDocV1Parser::createView(xml_node& node, const std::stri
   if (!xatt)
   {
     smtkErrorMacro(this->m_logger, "View is missing XML Attribute Title");
-    smtk::common::ViewPtr dummy;
+    smtk::view::ViewPtr dummy;
     return dummy;
   }
   val = xatt.value();
-  smtk::common::ViewPtr view = smtk::common::View::New(viewType, val);
+  smtk::view::ViewPtr view = smtk::view::View::New(viewType, val);
 
   xatt = node.attribute("Icon"); // optional
   if (xatt)

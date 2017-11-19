@@ -24,13 +24,13 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/common/View.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/io/Logger.h"
+#include "smtk/view/View.h"
 
 #include <QtCore/QDebug>
 #include <QtCore/QDir>
@@ -202,7 +202,7 @@ void smtkTerrainExtractionView::onNumPointsCalculationFinshed(long numPoints)
 
 void smtkTerrainExtractionView::createWidget()
 {
-  smtk::common::ViewPtr view = this->getObject();
+  smtk::view::ViewPtr view = this->getObject();
   if (!view)
   {
     return;
@@ -271,7 +271,7 @@ void smtkTerrainExtractionView::createWidget()
 
 void smtkTerrainExtractionView::updateAttributeData()
 {
-  smtk::common::ViewPtr view = this->getObject();
+  smtk::view::ViewPtr view = this->getObject();
   if (!view || !this->Widget)
   {
     return;
@@ -287,11 +287,11 @@ void smtkTerrainExtractionView::updateAttributeData()
   {
     return;
   }
-  smtk::common::View::Component& comp = view->details().child(i);
+  smtk::view::View::Component& comp = view->details().child(i);
   std::string defName;
   for (std::size_t ci = 0; ci < comp.numberOfChildren(); ++ci)
   {
-    smtk::common::View::Component& attComp = comp.child(ci);
+    smtk::view::View::Component& attComp = comp.child(ci);
     if (attComp.name() != "Att")
     {
       continue;

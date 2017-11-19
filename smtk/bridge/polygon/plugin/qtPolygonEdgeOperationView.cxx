@@ -16,7 +16,6 @@
 #include "smtk/bridge/polygon/qt/pqArcWidgetManager.h"
 #include "smtk/bridge/polygon/qt/pqPolygonArc.h"
 #include "smtk/bridge/polygon/qt/pqSplitEdgeWidget.h"
-#include "smtk/common/View.h"
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtModelOperationWidget.h"
@@ -24,6 +23,7 @@
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Operator.h"
+#include "smtk/view/View.h"
 
 #include "pqActiveObjects.h"
 #include "pqApplicationCore.h"
@@ -128,7 +128,7 @@ qtPolygonEdgeOperationView::~qtPolygonEdgeOperationView()
 
 void qtPolygonEdgeOperationView::createWidget()
 {
-  smtk::common::ViewPtr view = this->getObject();
+  smtk::view::ViewPtr view = this->getObject();
   if (!view)
   {
     return;
@@ -164,7 +164,7 @@ void qtPolygonEdgeOperationView::createWidget()
 
 void qtPolygonEdgeOperationView::updateAttributeData()
 {
-  smtk::common::ViewPtr view = this->getObject();
+  smtk::view::ViewPtr view = this->getObject();
   if (!view || !this->Widget)
   {
     return;
@@ -180,14 +180,14 @@ void qtPolygonEdgeOperationView::updateAttributeData()
   {
     return;
   }
-  smtk::common::View::Component& comp = view->details().child(i);
+  smtk::view::View::Component& comp = view->details().child(i);
   // for now, we only handle "tweak edge" operator; later we could use a list
   // to show all operators (attributes), and a panel underneath to edit current
   // selected operator.
   std::string defName;
   for (std::size_t ci = 0; ci < comp.numberOfChildren(); ++ci)
   {
-    smtk::common::View::Component& attComp = comp.child(ci);
+    smtk::view::View::Component& attComp = comp.child(ci);
     if (attComp.name() != "Att")
     {
       continue;

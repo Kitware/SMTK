@@ -29,7 +29,6 @@ namespace common
 {
 class UUID;
 class UUIDGenerator;
-class View;
 typedef std::set<UUID> UUIDs;
 typedef std::vector<UUID> UUIDArray;
 }
@@ -198,6 +197,7 @@ namespace view
 {
 class DescriptivePhrase;
 class SubphraseGenerator;
+class View;
 }
 
 namespace bridge
@@ -229,11 +229,6 @@ class LoadJSON;
 class OperatorLog;
 class Logger;
 typedef smtk::shared_ptr<smtk::io::Logger> LoggerPtr;
-}
-
-namespace common
-{
-typedef smtk::shared_ptr<smtk::common::View> ViewPtr;
 }
 
 namespace resource
@@ -433,6 +428,7 @@ typedef smtk::weak_ptr<smtk::view::DescriptivePhrase> WeakDescriptivePhrasePtr;
 typedef std::vector<DescriptivePhrasePtr> DescriptivePhrases;
 typedef smtk::shared_ptr<smtk::view::SubphraseGenerator> SubphraseGeneratorPtr;
 typedef smtk::weak_ptr<smtk::view::SubphraseGenerator> WeakSubphraseGeneratorPtr;
+typedef smtk::shared_ptr<smtk::view::View> ViewPtr;
 }
 
 namespace bridge

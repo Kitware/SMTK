@@ -39,7 +39,7 @@
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
-#include "smtk/common/View.h"
+#include "smtk/view/View.h"
 
 #include "smtk/mesh/core/Collection.h"
 
@@ -1433,7 +1433,7 @@ void XmlV2StringWriter::processViews()
   // probably like all the toplevel views clustered together
 
   xml_node views = this->m_pugi->root.append_child("Views");
-  std::map<std::string, smtk::common::ViewPtr>::const_iterator iter;
+  std::map<std::string, smtk::view::ViewPtr>::const_iterator iter;
   bool isTop;
   for (iter = this->m_collection->views().begin(); iter != this->m_collection->views().end();
        iter++)
@@ -1473,7 +1473,7 @@ void XmlV2StringWriter::processViews()
   }
 }
 
-void XmlV2StringWriter::processViewComponent(smtk::common::View::Component& comp, xml_node& node)
+void XmlV2StringWriter::processViewComponent(smtk::view::View::Component& comp, xml_node& node)
 {
   // Add the attributes of the component to the node
   std::map<std::string, std::string>::const_iterator iter;

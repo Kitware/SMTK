@@ -37,14 +37,14 @@ class qtViewInfoDialog;
 class SMTKQTEXT_EXPORT ViewInfo
 {
 public:
-  ViewInfo(smtk::common::ViewPtr view, QWidget* parent, qtUIManager* uiman)
+  ViewInfo(smtk::view::ViewPtr view, QWidget* parent, qtUIManager* uiman)
     : m_view(view)
     , m_parent(parent)
     , m_UIManager(uiman)
   {
   }
 
-  ViewInfo(smtk::common::ViewPtr view, QWidget* parent, qtUIManager* uiman,
+  ViewInfo(smtk::view::ViewPtr view, QWidget* parent, qtUIManager* uiman,
     const std::map<std::string, QLayout*>& layoutDict)
     : m_view(view)
     , m_parent(parent)
@@ -56,7 +56,7 @@ public:
   ViewInfo() {}
   virtual ~ViewInfo() {}
 
-  smtk::common::ViewPtr m_view;                 // View Definition
+  smtk::view::ViewPtr m_view;                   // View Definition
   QWidget* m_parent;                            // Parent Widget of the View
   qtUIManager* m_UIManager;                     // UI Manager
   std::map<std::string, QLayout*> m_layoutDict; // Widget Layout Dictionary
@@ -70,7 +70,7 @@ public:
   qtBaseView(const ViewInfo& info);
   ~qtBaseView() override;
 
-  smtk::common::ViewPtr getObject() const { return this->m_viewInfo.m_view; }
+  smtk::view::ViewPtr getObject() const { return this->m_viewInfo.m_view; }
   QWidget* widget() const { return this->Widget; }
   QWidget* parentWidget() const { return this->m_viewInfo.m_parent; }
   qtUIManager* uiManager() const { return this->m_viewInfo.m_UIManager; }

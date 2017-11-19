@@ -18,7 +18,7 @@
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
 
-#include "smtk/common/View.h"
+#include "smtk/view/View.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Collection.h"
@@ -74,20 +74,20 @@ int main(int argc, char* argv[])
 
   // If collection contains no views, create InstancedView by default
   // assume there is at most one root type view
-  smtk::common::ViewPtr root = collection->findTopLevelView();
+  smtk::view::ViewPtr root = collection->findTopLevelView();
 
   if (!root)
   {
-    root = smtk::common::View::New("Group", "RootView");
+    root = smtk::view::View::New("Group", "RootView");
     root->details().setAttribute("TopLevel", "true");
     collection->addView(root);
-    smtk::common::View::Component& temp = root->details().addChild("Views");
+    smtk::view::View::Component& temp = root->details().addChild("Views");
     (void)temp;
     int viewsIndex = root->details().findChild("Views");
 
     //  Lets add instances of all
     // non-abstract attributE definitions
-    smtk::common::View::Component& viewsComp = root->details().child(viewsIndex);
+    smtk::view::View::Component& viewsComp = root->details().child(viewsIndex);
     std::vector<smtk::attribute::DefinitionPtr> defs;
     std::vector<smtk::attribute::DefinitionPtr> baseDefinitions;
     collection->findBaseDefinitions(baseDefinitions);
@@ -110,9 +110,9 @@ int main(int argc, char* argv[])
     std::vector<smtk::attribute::DefinitionPtr>::const_iterator defIter;
     for (defIter = defs.begin(); defIter != defs.end(); defIter++)
     {
-      smtk::common::ViewPtr instanced = smtk::common::View::New("Instanced", (*defIter)->type());
+      smtk::view::ViewPtr instanced = smtk::view::View::New("Instanced", (*defIter)->type());
 
-      smtk::common::View::Component& comp =
+      smtk::view::View::Component& comp =
         instanced->details().addChild("InstancedAttributes").addChild("Att");
       comp.setAttribute("Type", (*defIter)->type());
       comp.setAttribute("Name", (*defIter)->type());
@@ -138,7 +138,7 @@ int main(int argc, char* argv[])
 
   bool useInternalFileBrowser = true;
 
-  smtk::common::ViewPtr view;
+  smtk::view::ViewPtr view;
 
   // Check for input "view" argument
   if (argc <= 3)

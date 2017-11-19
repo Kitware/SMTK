@@ -20,8 +20,8 @@
 #include "smtk/io/Logger.h"
 
 #include "smtk/attribute/Collection.h"
-#include "smtk/common/View.h"
 #include "smtk/model/EntityTypeBits.h"
+#include "smtk/view/View.h"
 
 #include <sstream>
 #include <string>
@@ -100,7 +100,7 @@ protected:
   void processDateTimeItem(pugi::xml_node& node, smtk::attribute::DateTimeItemPtr item);
   void processValueDef(pugi::xml_node& node, smtk::attribute::ValueItemDefinitionPtr idef);
 
-  virtual void processViewComponent(smtk::common::View::Component& comp, pugi::xml_node& node);
+  virtual void processViewComponent(smtk::view::View::Component& comp, pugi::xml_node& node);
   static std::string encodeModelEntityMask(smtk::model::BitFlags m);
   static std::string encodeColor(const double* color);
 

@@ -15,11 +15,11 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
-#include "smtk/common/View.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtAttributeView.h"
 #include "smtk/extension/qt/qtNewAttributeWidget.h"
 #include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/view/View.h"
 
 #include <QCheckBox>
 #include <QDialogButtonBox>
@@ -203,7 +203,7 @@ void qtAttributeRefItem::onLaunchAttributeView()
   {
     return;
   }
-  smtk::common::ViewPtr newAttView(new smtk::common::View("Attribute", "Attribute View"));
+  smtk::view::ViewPtr newAttView(new smtk::view::View("Attribute", "Attribute View"));
   smtk::attribute::RefItemPtr item = smtk::dynamic_pointer_cast<RefItem>(this->getObject());
   const RefItemDefinition* itemDef =
     dynamic_cast<const RefItemDefinition*>(item->definition().get());

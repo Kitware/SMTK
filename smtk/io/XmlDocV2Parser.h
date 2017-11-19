@@ -14,8 +14,8 @@
 #ifndef __smtk_io_XmlDocV2Parser_h
 #define __smtk_io_XmlDocV2Parser_h
 
-#include "smtk/common/View.h"
 #include "smtk/io/XmlDocV1Parser.h"
+#include "smtk/view/View.h"
 
 namespace smtk
 {
@@ -54,7 +54,7 @@ protected:
     pugi::xml_node& node, smtk::attribute::StringItemDefinitionPtr idef) override;
   void processViews(pugi::xml_node& root) override;
   void processViewComponent(
-    smtk::common::View::Component& comp, pugi::xml_node& node, bool isTopComp);
+    smtk::view::View::Component& comp, pugi::xml_node& node, bool isTopComp);
 
   smtk::common::UUID getAttributeID(pugi::xml_node& attNode) override;
 

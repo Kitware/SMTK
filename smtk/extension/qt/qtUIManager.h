@@ -55,11 +55,11 @@ public:
 
   void initializeUI(QWidget* pWidget, bool useInternalFileBrowser = false);
   void initializeUI(const smtk::extension::ViewInfo& v, bool useInternalFileBrowser = false);
-  qtBaseView* setSMTKView(smtk::common::ViewPtr v);
+  qtBaseView* setSMTKView(smtk::view::ViewPtr v);
   qtBaseView* setSMTKView(
-    smtk::common::ViewPtr v, QWidget* pWidget, bool useInternalFileBrowser = false);
+    smtk::view::ViewPtr v, QWidget* pWidget, bool useInternalFileBrowser = false);
   qtBaseView* setSMTKView(const smtk::extension::ViewInfo& v, bool useInternalFileBrowser = false);
-  smtk::common::ViewPtr smtkView() const { return this->m_smtkView; }
+  smtk::view::ViewPtr smtkView() const { return this->m_smtkView; }
 
   smtk::attribute::CollectionPtr attCollection() const { return this->m_AttCollection; }
 
@@ -178,7 +178,7 @@ protected:
 
 private:
   qtBaseView* m_topView;
-  smtk::common::ViewPtr m_smtkView;
+  smtk::view::ViewPtr m_smtkView;
   QWidget* m_parentWidget;
   qtModelView* m_activeModelView;
 

@@ -13,8 +13,8 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/common/View.h"
 #include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/view/View.h"
 
 #include "AttDefDataModel.h"
 
@@ -30,7 +30,7 @@ PreviewPanel::PreviewPanel(QWidget* parent, smtk::attribute::CollectionPtr colle
 PreviewPanel::~PreviewPanel() = default;
 
 // -----------------------------------------------------------------------------
-smtk::common::ViewPtr PreviewPanel::createView(const smtk::attribute::DefinitionPtr& def)
+smtk::view::ViewPtr PreviewPanel::createView(const smtk::attribute::DefinitionPtr& def)
 {
   const bool isInvalid = def == nullptr || def->isAbstract();
   if (isInvalid)
@@ -40,10 +40,10 @@ smtk::common::ViewPtr PreviewPanel::createView(const smtk::attribute::Definition
 
   const std::string title = def->type();
   const std::string type = "Instanced";
-  smtk::common::ViewPtr view = smtk::common::View::New(type, title);
+  smtk::view::ViewPtr view = smtk::view::View::New(type, title);
   this->AttributeCollection->addView(view);
 
-  smtk::common::View::Component& comp =
+  smtk::view::View::Component& comp =
     view->details().addChild("InstancedAttributes").addChild("Att");
   comp.setAttribute("Type", title);
   comp.setAttribute("Name", title);
@@ -63,9 +63,9 @@ smtk::common::ViewPtr PreviewPanel::createView(const smtk::attribute::Definition
 }
 
 // -----------------------------------------------------------------------------
-void PreviewPanel::createViewForAllAttributes(smtk::common::ViewPtr& root)
+void PreviewPanel::createViewForAllAttributes(smtk::view::ViewPtr& root)
 {
-  root = smtk::common::View::New("Group", "RootView");
+  root = smtk::view::View::New("Group", "RootView");
   root->details().setAttribute("TopLevel", "true");
   this->AttributeCollection->addView(root);
 
@@ -73,7 +73,7 @@ void PreviewPanel::createViewForAllAttributes(smtk::common::ViewPtr& root)
   int viewsIndex = root->details().findChild("Views");
 
   // Add instances of all non-abstract attribute definitions
-  smtk::common::View::Component& viewsComp = root->details().child(viewsIndex);
+  smtk::view::View::Component& viewsComp = root->details().child(viewsIndex);
 
   using DefinitionPtrVec = std::vector<smtk::attribute::DefinitionPtr>;
   using DefinitionVecIter = DefinitionPtrVec::const_iterator;
@@ -98,10 +98,10 @@ void PreviewPanel::createViewForAllAttributes(smtk::common::ViewPtr& root)
   // Instantiate attribute for each concrete definition
   for (DefinitionVecIter defIt = defs.begin(); defIt != defs.end(); defIt++)
   {
-    smtk::common::ViewPtr instView = smtk::common::View::New("Instanced", (*defIt)->type());
+    smtk::view::ViewPtr instView = smtk::view::View::New("Instanced", (*defIt)->type());
     this->AttributeCollection->addView(instView);
 
-    smtk::common::View::Component& comp =
+    smtk::view::View::Component& comp =
       instView->details().addChild("InstancedAttributes").addChild("Att");
     comp.setAttribute("Type", (*defIt)->type());
     comp.setAttribute("Name", (*defIt)->type());
@@ -136,7 +136,7 @@ void PreviewPanel::updateCurrentView(const QModelIndex& current, const QModelInd
 }
 
 // -----------------------------------------------------------------------------
-void PreviewPanel::createViewWidget(const smtk::common::ViewPtr& view)
+void PreviewPanel::createViewWidget(const smtk::view::ViewPtr& view)
 {
   if (!view)
   {

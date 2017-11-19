@@ -12,8 +12,8 @@
 //   A SMTK view is used to describe workflows
 // .SECTION See Also
 
-#ifndef __smtk_common_View_h
-#define __smtk_common_View_h
+#ifndef __smtk_view_View_h
+#define __smtk_view_View_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -21,7 +21,7 @@
 
 namespace smtk
 {
-namespace common
+namespace view
 {
 class SMTKCORE_EXPORT View
 {
@@ -89,9 +89,9 @@ public:
   };
 
   View(const std::string& myType, const std::string& myTitle);
-  static smtk::common::ViewPtr New(const std::string& myType, const std::string& myTitle)
+  static smtk::view::ViewPtr New(const std::string& myType, const std::string& myTitle)
   {
-    return smtk::common::ViewPtr(new smtk::common::View(myType, myTitle));
+    return smtk::view::ViewPtr(new smtk::view::View(myType, myTitle));
   }
 
   ~View();
@@ -117,4 +117,4 @@ protected:
 }
 }
 
-#endif /* __smtk_common_View_h */
+#endif /* __smtk_view_View_h */

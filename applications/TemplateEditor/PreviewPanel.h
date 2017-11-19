@@ -36,7 +36,7 @@ class PreviewPanel;
 class QModelIndex;
 
 /**
- * \brief Panel widget to display smtk::common::View previews.
+ * \brief Panel widget to display smtk::view::View previews.
  *
  * Receives a signal from AttributeBrowser on an Att. Definition selection
  * change. This creates an Attribute to render a View for the current
@@ -66,21 +66,21 @@ private:
  * Sample code to create a View for each AttDef (taken form qtAttributePreview).
  * \note TODO This is deprecated and will be deleted after finishing this class.
  */
-  void createViewForAllAttributes(smtk::common::ViewPtr& root);
+  void createViewForAllAttributes(smtk::view::ViewPtr& root);
 
   /**
- * Instances a smtk::common::View for the input AttDef. Returns a nullptr if the
+ * Instances a smtk::view::View for the input AttDef. Returns a nullptr if the
  * Definition is invalid. Make sure SMTK's specific View "types" are used on
  * View construction for it to construct/display correctly.
  *
  * \sa smtk::extension::qtUIManager qtUIManager::registerViewConstructor
  */
-  smtk::common::ViewPtr createView(const smtk::attribute::DefinitionPtr& def);
+  smtk::view::ViewPtr createView(const smtk::attribute::DefinitionPtr& def);
 
   /**
  * Populate widget with SMTK-generated attribute widgets.
  */
-  void createViewWidget(const smtk::common::ViewPtr& view);
+  void createViewWidget(const smtk::view::ViewPtr& view);
 
   std::unique_ptr<Ui::PreviewPanel> Ui;
   QWidget* PreviewWidget = nullptr;

@@ -15,12 +15,12 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/MeshItemDefinition.h"
-#include "smtk/common/View.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtAttributeView.h"
 #include "smtk/extension/qt/qtCheckItemComboBox.h"
 #include "smtk/extension/qt/qtNewAttributeWidget.h"
 #include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/view/View.h"
 
 #include <QAbstractItemView>
 #include <QCheckBox>

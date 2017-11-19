@@ -11,13 +11,13 @@
 // .SECTION Description
 // .SECTION See Also
 
-#include "smtk/common/View.h"
+#include "smtk/view/View.h"
 #include <algorithm>
 #include <sstream> // std::istringstream
 
 namespace smtk
 {
-namespace common
+namespace view
 {
 
 View::Component& View::Component::setContents(const std::string& c)
@@ -171,5 +171,5 @@ void View::copyContents(const View& view)
   this->m_iconName = view.m_iconName;
   this->m_details.copyContents(view.m_details);
 }
-} // namespace common
+} // namespace view
 } // namespace smtk

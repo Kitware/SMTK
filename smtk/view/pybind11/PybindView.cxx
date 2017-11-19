@@ -23,6 +23,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 #include "PybindDescriptivePhrase.h"
 #include "PybindSubphraseGenerator.h"
+#include "PybindView.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
@@ -37,4 +38,6 @@ PYBIND11_MODULE(view, m)
   PySharedPtrClass< smtk::view::DescriptivePhrase > smtk_view_DescriptivePhrase = pybind11_init_smtk_view_DescriptivePhrase(view);
   PySharedPtrClass< smtk::view::SubphraseGenerator > smtk_view_SubphraseGenerator = pybind11_init_smtk_view_SubphraseGenerator(view);
   pybind11_init_smtk_view_DescriptivePhraseType(view);
+
+  py::class_< smtk::view::View > smtk_view_View = pybind11_init_smtk_view_View(view);
 }

@@ -16,8 +16,8 @@
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/common/UUID.h"
-#include "smtk/common/View.h"
 #include "smtk/model/Manager.h"
+#include "smtk/view/View.h"
 
 #include <iostream>
 #include <queue>
@@ -804,14 +804,14 @@ smtk::attribute::AttributePtr Collection::copyAttribute(
   return newAtt;
 }
 
-void Collection::addView(smtk::common::ViewPtr v)
+void Collection::addView(smtk::view::ViewPtr v)
 {
   this->m_views[v->title()] = v;
 }
 
-smtk::common::ViewPtr Collection::findViewByType(const std::string& vtype) const
+smtk::view::ViewPtr Collection::findViewByType(const std::string& vtype) const
 {
-  std::map<std::string, smtk::common::ViewPtr>::const_iterator it;
+  std::map<std::string, smtk::view::ViewPtr>::const_iterator it;
   for (it = this->m_views.begin(); it != this->m_views.end(); ++it)
   {
     if (it->second->type() == vtype)
@@ -819,12 +819,12 @@ smtk::common::ViewPtr Collection::findViewByType(const std::string& vtype) const
       return it->second;
     }
   }
-  return smtk::common::ViewPtr();
+  return smtk::view::ViewPtr();
 }
 
-smtk::common::ViewPtr Collection::findTopLevelView() const
+smtk::view::ViewPtr Collection::findTopLevelView() const
 {
-  std::map<std::string, smtk::common::ViewPtr>::const_iterator it;
+  std::map<std::string, smtk::view::ViewPtr>::const_iterator it;
   bool isTopLevel;
   for (it = this->m_views.begin(); it != this->m_views.end(); ++it)
   {
@@ -833,14 +833,14 @@ smtk::common::ViewPtr Collection::findTopLevelView() const
       return it->second;
     }
   }
-  return smtk::common::ViewPtr();
+  return smtk::view::ViewPtr();
 }
 
-std::vector<smtk::common::ViewPtr> Collection::findTopLevelViews() const
+std::vector<smtk::view::ViewPtr> Collection::findTopLevelViews() const
 {
-  std::map<std::string, smtk::common::ViewPtr>::const_iterator it;
+  std::map<std::string, smtk::view::ViewPtr>::const_iterator it;
   bool isTopLevel;
-  std::vector<smtk::common::ViewPtr> topViews;
+  std::vector<smtk::view::ViewPtr> topViews;
   for (it = this->m_views.begin(); it != this->m_views.end(); ++it)
   {
     if (it->second->details().attributeAsBool("TopLevel", isTopLevel) && isTopLevel)

@@ -15,7 +15,7 @@
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
 
-#include "smtk/common/View.h"
+#include "smtk/view/View.h"
 
 #include <QApplication>
 #include <QFile>
@@ -49,7 +49,7 @@ public:
   }
   QList<smtk::extension::qtBaseView*> ChildViews;
   qtGroupViewInternals::Style m_style;
-  std::vector<smtk::common::ViewPtr> m_views;
+  std::vector<smtk::view::ViewPtr> m_views;
   int m_currentTabSelected;
   QTabWidget::TabPosition m_tabPosition;
 };
@@ -85,7 +85,7 @@ void qtGroupView::updateCurrentTab(int ithTab)
 
 void qtGroupView::createWidget()
 {
-  smtk::common::ViewPtr view = this->getObject();
+  smtk::view::ViewPtr view = this->getObject();
   if (!view)
   {
     return;
@@ -154,9 +154,9 @@ void qtGroupView::createWidget()
     // there are no children views
     return;
   }
-  smtk::common::View::Component& viewsComp = view->details().child(viewsIndex);
+  smtk::view::View::Component& viewsComp = view->details().child(viewsIndex);
   std::size_t i, n = viewsComp.numberOfChildren();
-  smtk::common::ViewPtr v;
+  smtk::view::ViewPtr v;
   smtk::attribute::CollectionPtr sys = this->uiManager()->attCollection();
   qtBaseView* qtView;
 

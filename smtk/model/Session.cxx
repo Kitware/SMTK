@@ -1087,8 +1087,8 @@ void Session::initializeOperatorCollection(const OperatorConstructors* opList)
       }
 
       // Copy views that do not already exist
-      const std::map<std::string, smtk::common::ViewPtr>& otherViews(other->views());
-      std::map<std::string, smtk::common::ViewPtr>::const_iterator vit;
+      const std::map<std::string, smtk::view::ViewPtr>& otherViews(other->views());
+      std::map<std::string, smtk::view::ViewPtr>::const_iterator vit;
       for (vit = otherViews.begin(); vit != otherViews.end(); ++vit)
       {
         if (!this->m_operatorCollection->findView(vit->first))

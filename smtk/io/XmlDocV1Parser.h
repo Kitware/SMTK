@@ -117,17 +117,17 @@ protected:
   void processValueItem(pugi::xml_node& node, smtk::attribute::ValueItemPtr item);
   void processValueDef(pugi::xml_node& node, smtk::attribute::ValueItemDefinitionPtr idef);
 
-  void processAttributeView(pugi::xml_node& node, smtk::common::ViewPtr v);
+  void processAttributeView(pugi::xml_node& node, smtk::view::ViewPtr v);
 
-  void processInstancedView(pugi::xml_node& node, smtk::common::ViewPtr v);
+  void processInstancedView(pugi::xml_node& node, smtk::view::ViewPtr v);
 
-  void processModelEntityView(pugi::xml_node& node, smtk::common::ViewPtr v);
+  void processModelEntityView(pugi::xml_node& node, smtk::view::ViewPtr v);
 
-  void processSimpleExpressionView(pugi::xml_node& node, smtk::common::ViewPtr v);
+  void processSimpleExpressionView(pugi::xml_node& node, smtk::view::ViewPtr v);
 
-  void processGroupView(pugi::xml_node& node, smtk::common::ViewPtr v);
+  void processGroupView(pugi::xml_node& node, smtk::view::ViewPtr v);
 
-  smtk::common::ViewPtr createView(pugi::xml_node& node, const std::string& viewType);
+  smtk::view::ViewPtr createView(pugi::xml_node& node, const std::string& viewType);
 
   bool getColor(pugi::xml_node& node, double color[3], const std::string& colorName);
 
