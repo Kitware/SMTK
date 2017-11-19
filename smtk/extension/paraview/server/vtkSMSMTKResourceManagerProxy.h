@@ -7,12 +7,19 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_extension_paraview_appcomponents_vtkSMResourceManagerProxy_h
-#define smtk_extension_paraview_appcomponents_vtkSMResourceManagerProxy_h
+#ifndef smtk_extension_paraview_appcomponents_vtkSMSMTKResourceManagerProxy_h
+#define smtk_extension_paraview_appcomponents_vtkSMSMTKResourceManagerProxy_h
 
-#include "smtk/extension/paraview/appcomponents/Exports.h"
+#include "smtk/extension/paraview/server/Exports.h"
+
+#include "smtk/resource/Manager.h"
+#include "smtk/resource/SelectionManager.h"
+
+#include "vtkSMProxy.h"
 
 #include "nlohmann/json.hpp"
+
+class vtkSMSourceProxy;
 
 /**\brief Proxy for SMTK's resource manager.
  *
@@ -30,18 +37,31 @@
  * and the client asks the server for the selection when it is
  * notified that a selection event occurred on the server.
  */
-class SMTKPQCOMPONENTSEXT_EXPORT vtkSMResourceManagerProxy : public vtkSMProxy
+class SMTKPVSERVEREXTPLUGIN_EXPORT vtkSMSMTKResourceManagerProxy : public vtkSMProxy
 {
   using json = nlohmann::json;
 
 public:
-  static vtkSMResourceManagerProxy* New();
-  vtkTypeMacro(vtkSMResourceManagerProxy, vtkSMProxy);
+  static vtkSMSMTKResourceManagerProxy* New();
+  static vtkSMSMTKResourceManagerProxy* Instance();
+  vtkTypeMacro(vtkSMSMTKResourceManagerProxy, vtkSMProxy);
   void PrintSelf(ostream& os, vtkIndent indent) override;
+
+  /// Return the client-side resource manager (mirrored on the server via this proxy).
+  smtk::resource::ManagerPtr GetManager() const { return this->Manager; }
+
+  /// Return the client-side selection manager (mirrored on the server via this proxy).
+  smtk::resource::SelectionManagerPtr GetSelection() const { return this->Selection; }
+
+  /// Call this to indicate which PV data has the active PV selection.
+  void SetSelectedPortProxy(vtkSMSourceProxy* pxy);
+
+  /// Call this to pass the PV selection specification to the wrapper.
+  void SetSelectionObjProxy(vtkSMSourceProxy* pxy);
 
   /// Method called by client-side selection manager to send selection to server.
   template <typename T>
-  void sendClientSelectionToServer(
+  void SendClientSelectionToServer(
     const T& seln, const T& added, const T& removed, const std::string& sender);
 
   /**\brief Fetch the selection from the server.
@@ -56,19 +76,32 @@ public:
     * based on values obtained from the source proxies.
     */
   template <typename T>
-  void recvClientSelectionFromServer(
+  void RecvClientSelectionFromServer(
     vtkSMSourceProxy* dataSource, vtkSMSourceProxy* selnSource, T& seln, T& added, T& removed);
 
-protected:
-  vtkSMResourceManagerProxy();
-  ~vtkSMResourceManagerProxy() override;
+  void FetchHardwareSelection();
 
-  void send(const json& selnInfo);
-  void recv(vtkSMSourceProxy* dataSource, vtkSMSourceProxy* selnSource, json& selnInfo);
+  void AddResourceProxy(vtkSMSourceProxy* rsrc);
+  void RemoveResourceProxy(vtkSMSourceProxy* rsrc);
+
+protected:
+  vtkSMSMTKResourceManagerProxy();
+  ~vtkSMSMTKResourceManagerProxy() override;
+
+  void Send(const json& selnInfo);
+  void Recv(vtkSMSourceProxy* dataSource, vtkSMSourceProxy* selnSource, json& selnInfo);
+
+  json JSONRPCRequest(const json& request);
+  json JSONRPCRequest(const std::string& request);
+  void JSONRPCNotification(const json& note);
+  void JSONRPCNotification(const std::string& note);
+
+  smtk::resource::ManagerPtr Manager;
+  smtk::resource::SelectionManagerPtr Selection;
 
 private:
-  vtkSMResourceManagerProxy(const vtkSMResourceManagerProxy&) = delete;
-  void operator=(const vtkSMResourceManagerProxy&) = delete;
+  vtkSMSMTKResourceManagerProxy(const vtkSMSMTKResourceManagerProxy&) = delete;
+  void operator=(const vtkSMSMTKResourceManagerProxy&) = delete;
 };
 
 #endif

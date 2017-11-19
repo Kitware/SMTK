@@ -11,6 +11,9 @@ set(QAttrLibSrcs
   qtBaseView.cxx
   qtCheckItemComboBox.cxx
   qtCollapsibleGroupWidget.cxx
+  qtDescriptivePhraseDelegate.cxx
+  qtDescriptivePhraseEditor.cxx
+  qtDescriptivePhraseModel.cxx
   qtEntityItemDelegate.cxx
   qtEntityItemEditor.cxx
   qtEntityItemModel.cxx
@@ -70,6 +73,9 @@ set(QAttrLibMocHeaders
   qtCheckItemComboBox.h
   qtCollapsibleGroupWidget.h
   qtEmittingStringBuffer.h
+  qtDescriptivePhraseDelegate.h
+  qtDescriptivePhraseEditor.h
+  qtDescriptivePhraseModel.h
   qtEntityItemDelegate.h
   qtEntityItemEditor.h
   qtEntityItemModel.h
@@ -119,7 +125,11 @@ smtk_public_headers(${QAttrLibHeaders})
 
 qt5_wrap_cpp(MOC_BUILT_SOURCES ${QAttrLibMocHeaders})
 qt5_wrap_ui(SMTKQTEXT_UI_BUILT_SOURCES ${QAttrLibUIs})
-qt5_add_resources(RCS_RESOURCES qtEntityItemModelIcons.qrc qtAttributeIcons.qrc)
+qt5_add_resources(RCS_RESOURCES
+  qtDescriptivePhraseModelIcons.qrc
+  qtEntityItemModelIcons.qrc
+  qtAttributeIcons.qrc
+)
 
 source_group("Qt_Source" FILES ${QAttrLibSrcs} ${QAttrLibUIs})
 source_group("Qt_Generated" FILES ${MOC_BUILT_SOURCES} ${SMTKQTEXT_UI_BUILT_SOURCES} ${RCS_RESOURCES})

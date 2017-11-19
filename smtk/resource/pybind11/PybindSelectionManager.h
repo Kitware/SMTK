@@ -37,6 +37,7 @@ PySharedPtrClass< smtk::resource::SelectionManager > pybind11_init_smtk_resource
     .def("classname", &smtk::resource::SelectionManager::classname)
     .def_static("create", (std::shared_ptr<smtk::resource::SelectionManager> (*)()) &smtk::resource::SelectionManager::create)
     .def_static("create", (std::shared_ptr<smtk::resource::SelectionManager> (*)(::std::shared_ptr<smtk::resource::SelectionManager> &)) &smtk::resource::SelectionManager::create, py::arg("ref"))
+    .def_static("instance", (std::shared_ptr<smtk::resource::SelectionManager> (*)()) &smtk::resource::SelectionManager::instance)
     .def("registerSelectionSource", &smtk::resource::SelectionManager::registerSelectionSource, py::arg("name"))
     .def("unregisterSelectionSource", &smtk::resource::SelectionManager::unregisterSelectionSource, py::arg("name"))
     .def("getSelectionSources", (std::set<std::basic_string<char>, std::less<std::basic_string<char> >, std::allocator<std::basic_string<char> > > const & (smtk::resource::SelectionManager::*)() const) &smtk::resource::SelectionManager::getSelectionSources)

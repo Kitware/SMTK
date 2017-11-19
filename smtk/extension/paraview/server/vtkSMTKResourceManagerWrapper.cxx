@@ -9,12 +9,47 @@
 //=========================================================================
 #include "smtk/extension/paraview/server/vtkSMTKResourceManagerWrapper.h"
 
+#include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
+#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
+
+#include "smtk/model/Manager.h"
+
+#include "smtk/resource/Component.h"
+#include "smtk/resource/Manager.h"
+#include "smtk/resource/Resource.h"
+#include "smtk/resource/SelectionManager.h"
+
+#include "smtk/io/jsonComponentSet.h"
+#include "smtk/io/jsonSelectionMap.h"
 #include "smtk/io/jsonUUID.h"
 
-#include "nlohmann/json.hpp"
+#include "vtkCompositeDataIterator.h"
+#include "vtkMultiBlockDataSet.h"
+#include "vtkPVSelectionSource.h"
+#include "vtkSelectionNode.h"
+#include "vtkUnsignedIntArray.h"
+
+// SMTK-specific errors:
+
+#define JSONRPC_INVALID_RESOURCE_CODE 4201
+#define JSONRPC_INVALID_RESOURCE_MESSAGE "Could not obtain resource from proxy"
+
+// Note that -32000 to -32099 are reserver for "Server error"
+
+#define JSONRPC_INVALID_REQUEST_CODE -32600
+#define JSONRPC_INVALID_REQUEST_MESSAGE "Invalid Request"
 
 #define JSONRPC_METHOD_NOT_FOUND_CODE -32601
 #define JSONRPC_METHOD_NOT_FOUND_MESSAGE "Method not found"
+
+#define JSONRPC_INVALID_PARAMS_CODE -32602
+#define JSONRPC_INVALID_PARAMS_MESSAGE "Invalid parameters"
+
+#define JSONRPC_INTERNAL_ERROR_CODE -32603
+#define JSONRPC_INTERNAL_ERROR_MESSAGE "Internal error"
+
+#define JSONRPC_PARSE_ERROR_CODE -32700
+#define JSONRPC_PARSE_ERROR_MESSAGE "Parse error"
 
 using namespace nlohmann;
 
@@ -34,45 +69,76 @@ vtkSMTKResourceManagerWrapper* vtkSMTKResourceManagerWrapper::New()
   if (!s_instance)
   {
     s_instance = new vtkSMTKResourceManagerWrapper;
+    s_instance->Register(nullptr);
     atexit(destroyInstance);
   }
   return s_instance;
 }
 
-vtkSMTKResourceManagerWrapper::vtkSMTKResourceManagerWrapper()
-  : JSONRequest(nullptr)
-  , JSONResponse(nullptr)
+vtkSMTKResourceManagerWrapper* vtkSMTKResourceManagerWrapper::Instance()
 {
+  return s_instance;
+}
+
+vtkSMTKResourceManagerWrapper::vtkSMTKResourceManagerWrapper()
+  : ActiveResource(nullptr)
+  , SelectedPort(nullptr)
+  , SelectionObj(nullptr)
+  , JSONRequest(nullptr)
+  , JSONResponse(nullptr)
+  , SelectionSource("paraview")
+{
+  this->ResourceManager = smtk::resource::Manager::create();
+  this->SelectionManager = smtk::resource::SelectionManager::create();
+  this->SelectionManager->setDefaultAction(smtk::resource::SelectionAction::FILTERED_REPLACE);
+  this->SelectedValue = this->SelectionManager->findOrCreateLabeledValue("selected");
+  this->HoveredValue = this->SelectionManager->findOrCreateLabeledValue("hovered");
+  this->SelectionListener = this->SelectionManager->listenToSelectionEvents(
+    [](const std::string& src, smtk::resource::SelectionManager::Ptr selnMgr) {
+      std::cout << "--- RsrcManagerWrapper " << selnMgr << " src \"" << src << "\":\n";
+      selnMgr->visitSelection([](smtk::resource::ComponentPtr comp, int value) {
+        auto modelComp = smtk::dynamic_pointer_cast<smtk::model::Entity>(comp);
+        if (modelComp)
+        {
+          smtk::model::EntityRef ent(modelComp->modelResource(), modelComp->id());
+          std::cout << "  " << comp->id() << ": " << value << ",  " << ent.flagSummary() << ": "
+                    << ent.name() << "\n";
+        }
+        else
+        {
+          std::cout << "  " << comp->id() << ":  " << value << "\n";
+        }
+      });
+      std::cout << "----\n";
+      std::cout.flush();
+    },
+    true);
 }
 
 vtkSMTKResourceManagerWrapper::~vtkSMTKResourceManagerWrapper()
 {
+  this->SelectionManager->unlisten(this->SelectionListener);
   this->SetJSONRequest(nullptr);
   this->SetJSONResponse(nullptr);
+  this->SetActiveResource(nullptr);
+  this->SetSelectionObj(nullptr);
+  this->SetSelectedPort(nullptr);
 }
 
 void vtkSMTKResourceManagerWrapper::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   indent = indent.GetNextIndent();
-  os << indent << "JSONRequest: " << (this->JSONRequest ? this->JSONRequest : "null") << "\n";
-  os << indent << "JSONResponse: " << (this->JSONResponse ? this->JSONResponse : "null") << "\n";
-  os << indent << "SelectionListeners: " << this->SelectionListeners.size() << "\n";
-}
-
-int vtkSMTKResourceManagerWrapper::Listen(SelectionChangedFunction fn, bool sendImmediately)
-{
-  if (!fn)
-  {
-    return -1;
-  }
-  int handle = this->SelectionListeners.empty() ? 0 : this->SelectionListeners.rbegin()->first + 1;
-  this->SelectionListeners[handle] = fn;
-  if (sendImmediately)
-  {
-    fn(this->Selection, this->Selection, UUIDs(), "");
-  }
-  return handle;
+  os << indent << "JSONRequest: " << (this->JSONRequest ? this->JSONRequest : "null") << "\n"
+     << indent << "JSONResponse: " << (this->JSONResponse ? this->JSONResponse : "null") << "\n"
+     << indent << "ResourceManager: " << this->ResourceManager.get() << "\n"
+     << indent << "SelectionManager: " << this->SelectionManager.get() << "\n"
+     << indent << "SelectedPort: " << this->SelectedPort << "\n"
+     << indent << "SelectionObj: " << this->SelectionObj << "\n"
+     << indent << "ActiveResource: " << this->ActiveResource << "\n"
+     << indent << "SelectionSource: " << this->SelectionSource << "\n"
+     << indent << "SelectedValue: " << this->SelectedValue << "\n"
+     << indent << "HoveredValue: " << this->HoveredValue << "\n";
 }
 
 void vtkSMTKResourceManagerWrapper::ProcessJSON()
@@ -90,52 +156,17 @@ void vtkSMTKResourceManagerWrapper::ProcessJSON()
   json response = { { "jsonRPC", "2.0" }, { "id", j["id"].get<int>() } };
 
   auto method = j["method"].get<std::string>();
-  if (method == "set selection")
+  if (method == "fetch hw selection")
   {
-    json params = j["params"];
-    UUIDs selnAdd;
-    UUIDs selnDel;
-    // Either the entire selection will be sent or +/- changes, but never both:
-    if (params.find("selection") != params.end())
-    {                            // Entire set sent. Deserialize and compute deltas.
-      selnDel = this->Selection; // Copy the current selection into the list of deleted entries.
-      this->Selection =
-        params["selection"].get<UUIDs>(); // Copy the new selection into our storage.
-      for (auto uid : this->Selection)
-      {
-        auto dit = selnDel.find(uid);
-        if (dit == selnDel.end())
-        { // We didn't have it before: it's new.
-          selnAdd.insert(uid);
-        }
-        else
-        { // We had it before and it's still here: it's not being removed. So erase it from selnDel:
-          selnDel.erase(dit);
-        }
-      }
-    }
-    else
-    { // Deltas sent. Update local storage to match.
-      selnAdd = params["added"].get<UUIDs>();
-      selnDel = params["removed"].get<UUIDs>();
-      for (auto uid : selnAdd)
-      {
-        this->Selection.insert(uid);
-      }
-      for (auto uid : selnDel)
-      {
-        this->Selection.erase(uid);
-      }
-    }
-    for (auto listener : this->SelectionListeners)
-    {
-      listener.second(this->Selection, selnAdd, selnDel, params["origin"].get<std::string>());
-    }
-    response["result"] = 0;
+    this->FetchHardwareSelection(response);
   }
-  else if (method == "get selection")
+  else if (method == "add resource")
   {
-    response["result"] = { { "selection", this->Selection } };
+    this->AddResource(response);
+  }
+  else if (method == "remove resource")
+  {
+    this->RemoveResource(response);
   }
   else
   {
@@ -146,7 +177,145 @@ void vtkSMTKResourceManagerWrapper::ProcessJSON()
   this->SetJSONResponse(response.dump().c_str());
 }
 
-bool vtkSMTKResourceManagerWrapper::Unlisten(int handle)
+void vtkSMTKResourceManagerWrapper::FetchHardwareSelection(json& response)
 {
-  return this->SelectionListeners.erase(handle) > 0;
+  // This is different than expected because there appears to be a vtkPVPostFilter
+  // in between each "actual" algorithm on the client and what we get passed as
+  // the port on the server side.
+  std::set<smtk::resource::ComponentPtr> seln;
+  //auto smtkThing = dynamic_cast<vtkSMTKModelReader*>(this->SelectedPort->GetProducer());
+  auto smtkThing = this->SelectedPort->GetProducer();
+  auto mbdsThing =
+    smtkThing ? dynamic_cast<vtkMultiBlockDataSet*>(smtkThing->GetOutputDataObject(0)) : nullptr;
+  auto selnThing = this->SelectionObj->GetProducer();
+  if (selnThing)
+  {
+    selnThing->Update();
+  }
+  auto selnBlock =
+    selnThing ? dynamic_cast<vtkSelection*>(selnThing->GetOutputDataObject(0)) : nullptr;
+  unsigned nn = selnBlock ? selnBlock->GetNumberOfNodes() : 0;
+  for (unsigned ii = 0; ii < nn; ++ii)
+  {
+    auto selnNode = selnBlock->GetNode(ii);
+    if (selnNode->GetContentType() == vtkSelectionNode::BLOCKS)
+    {
+      auto selnList = dynamic_cast<vtkUnsignedIntArray*>(selnNode->GetSelectionList());
+      unsigned mm = selnList->GetNumberOfValues();
+      std::set<unsigned> blockIds;
+      for (unsigned jj = 0; jj < mm; ++jj)
+      {
+        blockIds.insert(selnList->GetValue(jj));
+      }
+      if (mbdsThing)
+      {
+        // Go up the pipeline until we get to something that has an smtk resource:
+        vtkAlgorithm* alg = smtkThing;
+        while (alg && !vtkSMTKModelReader::SafeDownCast(alg))
+        { // TODO: Also stop when we get to a mesh source...
+          alg = alg->GetInputAlgorithm(0, 0);
+        }
+        // Now we have a resource:
+        smtk::model::ManagerPtr mgr = alg
+          ? dynamic_cast<vtkSMTKModelReader*>(alg)->GetModelSource()->GetModelManager()
+          : nullptr;
+        auto mit = mbdsThing->NewIterator();
+        for (mit->InitTraversal(); !mit->IsDoneWithTraversal(); mit->GoToNextItem())
+        {
+          if (blockIds.find(mit->GetCurrentFlatIndex()) != blockIds.end())
+          {
+            auto ent = vtkModelMultiBlockSource::GetDataObjectEntityAs<smtk::model::EntityRef>(
+              mgr, mit->GetCurrentMetaData());
+            auto cmp = ent.component();
+            if (cmp)
+            {
+              seln.insert(seln.end(), cmp);
+            }
+          }
+        }
+        this->SelectionManager->modifySelection(seln, "paraview", 1);
+        response["selection"] = seln; // this->SelectionManager->currentSelection();
+      }
+    }
+  }
+  std::cout << "Hardware selection!!!\n\n"
+            << "  Port " << this->SelectedPort << "\n"
+            << "  Seln " << this->SelectionObj << "\n"
+            << "  # " << seln.size() << "  from " << this->SelectionManager << "\n\n";
+}
+
+void vtkSMTKResourceManagerWrapper::AddResource(json& response)
+{
+  // this->ActiveResource has been set. Add it to our resource manager.
+  bool found = false;
+  auto rsrcThing = this->ActiveResource->GetProducer();
+  if (rsrcThing)
+  {
+    vtkAlgorithm* alg = rsrcThing;
+    while (alg && !vtkSMTKModelReader::SafeDownCast(alg))
+    { // TODO: Also stop when we get to a mesh/attrib/etc source...
+      alg = alg->GetInputAlgorithm(0, 0);
+    }
+    auto src = vtkSMTKModelReader::SafeDownCast(alg);
+    if (src)
+    {
+      src->ObserveResourceChanges([this](smtk::model::ManagerPtr rsrc, bool adding) {
+        if (rsrc)
+        {
+          if (adding)
+          {
+            std::cout << "  Adding resource   " << rsrc->id() << " loc " << rsrc->location()
+                      << "\n";
+            this->ResourceManager->add(rsrc);
+          }
+          else
+          {
+            std::cout << "  Removing resource " << rsrc->id() << " loc " << rsrc->location()
+                      << "\n";
+            this->ResourceManager->remove(rsrc);
+          }
+        }
+      });
+      found = true;
+      response["result"] = {
+        { "success", true },
+      };
+    }
+  }
+  if (!found)
+  {
+    response["error"] = { { "code", JSONRPC_INVALID_RESOURCE_CODE },
+      { "message", JSONRPC_INVALID_RESOURCE_MESSAGE } };
+  }
+}
+
+void vtkSMTKResourceManagerWrapper::RemoveResource(json& response)
+{
+  // this->ActiveResource has been set. Add it to our resource manager.
+  bool found = false;
+  auto rsrcThing = this->ActiveResource->GetProducer();
+  if (rsrcThing)
+  {
+    vtkAlgorithm* alg = rsrcThing;
+    while (alg && !vtkSMTKModelReader::SafeDownCast(alg))
+    { // TODO: Also stop when we get to a mesh/attrib/etc source...
+      alg = alg->GetInputAlgorithm(0, 0);
+    }
+    auto src = vtkSMTKModelReader::SafeDownCast(alg);
+    if (src)
+    {
+      src->UnobserveResourceChanges();
+      auto rsrc = src->GetSMTKResource();
+      this->ResourceManager->remove(rsrc);
+      response["result"] = {
+        { "success", true },
+      };
+      found = true;
+    }
+  }
+  if (!found)
+  {
+    response["error"] = { { "code", JSONRPC_INVALID_RESOURCE_CODE },
+      { "message", JSONRPC_INVALID_RESOURCE_MESSAGE } };
+  }
 }

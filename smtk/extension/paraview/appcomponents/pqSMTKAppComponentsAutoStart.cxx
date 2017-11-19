@@ -11,10 +11,14 @@
 
 #include "smtk/resource/SelectionManager.h"
 
-#include "smtk/extension/paraview/appcomponents/pqSMTKSelectionFilterBehavior.h"
-#include "smtk/extension/paraview/appcomponents/pqSMTKSelectionSyncBehavior.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKResourceManagerBehavior.h"
+//#include "smtk/extension/paraview/appcomponents/pqSMTKSelectionFilterBehavior.h"
+#include "smtk/extension/paraview/server/vtkSMSMTKResourceManagerProxy.h"
 
 #include "pqApplicationCore.h"
+#include "pqObjectBuilder.h"
+
+vtkSMProxy* pqSMTKAppComponentsAutoStart::s_resourceManager = nullptr;
 
 pqSMTKAppComponentsAutoStart::pqSMTKAppComponentsAutoStart(QObject* parent)
   : Superclass(parent)
@@ -27,23 +31,14 @@ pqSMTKAppComponentsAutoStart::~pqSMTKAppComponentsAutoStart()
 
 void pqSMTKAppComponentsAutoStart::startup()
 {
-  auto selnMgr = smtk::resource::SelectionManager::instance();
-  auto selnSync = new pqSMTKSelectionSyncBehavior(this, selnMgr);
-  auto selnFilter = pqSMTKSelectionFilterBehavior::instance();
-  if (!selnFilter)
-  {
-    selnFilter = new pqSMTKSelectionFilterBehavior(this, selnMgr);
-  }
-  else
-  {
-    selnFilter->setSelectionManager(selnMgr);
-  }
+  auto rsrcMgr = pqSMTKResourceManagerBehavior::instance(this);
+  std::cout << "Startup seln mgr behavior" << rsrcMgr << "\n";
   auto pqCore = pqApplicationCore::instance();
   if (pqCore)
   {
-    pqCore->registerManager("smtk selection sync", selnSync);
-    pqCore->registerManager("smtk selection filter", selnFilter);
+    pqCore->registerManager("smtk resource", rsrcMgr);
   }
+  (void)rsrcMgr;
 }
 
 void pqSMTKAppComponentsAutoStart::shutdown()
@@ -51,7 +46,6 @@ void pqSMTKAppComponentsAutoStart::shutdown()
   auto pqCore = pqApplicationCore::instance();
   if (pqCore)
   {
-    pqCore->unRegisterManager("smtk selection sync");
-    pqCore->unRegisterManager("smtk selection filter");
+    pqCore->unRegisterManager("smtk resource");
   }
 }

@@ -1,8 +1,8 @@
 .. _smtk-resource-sys:
 
-----------------------
-SMTK's Resource System
-----------------------
+-----------------------
+SMTK's Operation System
+-----------------------
 
 Actions that create, modify and destroy resources and resource
 components are encapsulated within *operators*.

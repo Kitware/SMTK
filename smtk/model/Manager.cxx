@@ -162,6 +162,24 @@ smtk::mesh::ManagerPtr Manager::meshes() const
   return this->m_meshes;
 }
 
+void Manager::clear()
+{
+  m_topology->clear();
+  m_floatData->clear();
+  m_stringData->clear();
+  m_integerData->clear();
+  m_tessellations->clear();
+  m_analysisMesh->clear();
+  // m_meshes->clear(); TODO
+  m_attributeAssignments->clear();
+  m_sessions->clear();
+  // m_resources->clear(); TODO
+  m_attributeCollections.clear();
+  m_defaultSession = nullptr;
+  m_globalCounters.clear();
+  // TODO: remove triggers?
+}
+
 const UUIDsToAttributeAssignments& Manager::attributeAssignments() const
 {
   return *this->m_attributeAssignments;

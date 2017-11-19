@@ -1,0 +1,23 @@
+<RCC>
+  <qresource prefix="/icons/entityTypes">
+    <file>cell_01_b.png</file>
+    <file>cell_01_w.png</file>
+    <file>cell_02_b.png</file>
+    <file>cell_02_w.png</file>
+    <file>cell_04_b.png</file>
+    <file>cell_04_w.png</file>
+    <file>cell_08_b.png</file>
+    <file>cell_08_w.png</file>
+    <file>generic_entity.png</file>
+    <file>cell_04.png</file>
+    <file>model.png</file>
+    <file>group.png</file>
+    <file>aux_geom.png</file>
+  </qresource>
+
+  <qresource prefix="/icons/display">
+    <file>eyeball.png</file>
+    <file>eyeballClosed.png</file>
+  </qresource>
+
+</RCC>

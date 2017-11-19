@@ -152,13 +152,13 @@ public:
   smtkTypeMacroBase(SelectionManager);
   smtkCreateMacro(SelectionManager);
 
+  static Ptr instance();
+
   /// This is the type of function used to notify observers when the selection is modified.
   using Listener = std::function<void(const std::string, SelectionManager::Ptr)>;
 
   /// This is the underlying storage type that holds selections.
   using SelectionMap = std::map<smtk::resource::ComponentPtr, int>;
-
-  static SelectionManagerPtr instance();
 
   /**\brief Selection filters take functions of this form.
     *
@@ -362,8 +362,6 @@ protected:
   SelectionMap m_selection;
   std::map<int, Listener> m_listeners;
   SelectionFilter m_filter;
-
-  static SelectionManagerPtr m_instance;
 
 private:
   SelectionManager(const SelectionManager&) = delete;

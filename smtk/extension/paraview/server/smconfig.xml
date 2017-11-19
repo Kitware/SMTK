@@ -1,8 +1,52 @@
 <ServerManagerConfiguration>
 
   <ProxyGroup name="smtk">
-    <ResourceManagerProxy name="ResourceManager" class="vtkSMTKResourceManagerWrapper">
+    <SMTKResourceManagerProxy name="ResourceManager" class="vtkSMTKResourceManagerWrapper">
 
+      <InputProperty command="SetActiveResource" label="Active Resource" name="ActiveResource">
+        <Documentation>
+          This property specifies which algorithm generates the active resource's
+          visualization data.
+          This is used to register resources on the server and synchronize data
+          between the client and server.
+        </Documentation>
+        <ProxyGroupDomain name="groups">
+          <Group name="sources" />
+          <Group name="filters" />
+        </ProxyGroupDomain>
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkDataObject" />
+        </DataTypeDomain>
+      </InputProperty>
+      <InputProperty command="SetSelectedPort" label="Selected Port" name="SelectedPort">
+        <Documentation>
+          This property specifies the dataset which has most
+					recently had a user specify a selection.
+          When a JSON request is issued to transfer the ParaView selection
+					to SMTK, it is this data that the vtkSelection refers to.
+        </Documentation>
+        <ProxyGroupDomain name="groups">
+          <Group name="sources" />
+          <Group name="filters" />
+        </ProxyGroupDomain>
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkDataObject" />
+        </DataTypeDomain>
+      </InputProperty>
+      <InputProperty command="SetSelectionObj" label="Selection Object" name="SelectionObj">
+        <Documentation>
+          This property specifies the selection a user most recently made.
+          When a JSON request is issued to transfer the ParaView selection
+					to SMTK, it is this vtkSelection that is used.
+        </Documentation>
+        <ProxyGroupDomain name="groups">
+          <Group name="sources" />
+          <Group name="filters" />
+        </ProxyGroupDomain>
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkDataObject" />
+        </DataTypeDomain>
+      </InputProperty>
       <StringVectorProperty
         name="JSONRequest"
         command="SetJSONRequest"
@@ -21,7 +65,7 @@
         <SimpleStringInformationHelper />
       </StringVectorProperty>
 
-    </ResourceManagerProxy>
+    </SMTKResourceManagerProxy>
   </ProxyGroup>
 
   <ProxyGroup name="sources">

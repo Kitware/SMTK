@@ -7,115 +7,111 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/appcomponents/pqSMTKSelectionSyncBehavior.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKResourceManager.h"
 
 // SMTK
-#include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
-#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
-#include "smtk/model/EntityRef.h"
-#include "smtk/resource/SelectionManager.h"
+#include "smtk/extension/paraview/server/vtkSMSMTKResourceManagerProxy.h"
+#include "smtk/extension/paraview/server/vtkSMTKModelReader.h" // TODO: remove need for me
+#include "smtk/extension/paraview/server/vtkSMTKResourceManagerWrapper.h"
 
-// Client side
+#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h" // TODO: remove need for me
+
+#include "smtk/io/Logger.h"
+
+#include "smtk/resource/Component.h"
+#include "smtk/resource/Manager.h"
+#include "smtk/resource/Resource.h"
+
+#include "smtk/model/Entity.h"
+#include "smtk/model/EntityRef.h"
+
+// PV Client side
 #include "pqApplicationCore.h"
 #include "pqOutputPort.h"
-#include "pqPVApplicationCore.h"
 #include "pqSelectionManager.h"
-#include "pqServerManagerModel.h"
 
-// Server side
-#include "vtkPVSelectionSource.h"
 #include "vtkSMSourceProxy.h"
 
-// VTK
-#include "vtkAbstractArray.h"
+// Server side (TODO: Remove need for me)
 #include "vtkCompositeDataIterator.h"
-#include "vtkInformation.h"
-#include "vtkInformationVector.h"
 #include "vtkMultiBlockDataSet.h"
+#include "vtkPVSelectionSource.h"
 #include "vtkSelection.h"
 #include "vtkSelectionNode.h"
 #include "vtkUnsignedIntArray.h"
 
-using namespace smtk;
+#include <iostream>
 
-pqSMTKSelectionSyncBehavior::pqSMTKSelectionSyncBehavior(
-  QObject* parent, smtk::resource::SelectionManagerPtr mgr)
-  : Superclass(parent)
-  , m_connected(false)
-  , m_selectionManager(mgr)
+pqSMTKResourceManager::pqSMTKResourceManager(const QString& regGroup, const QString& regName,
+  vtkSMProxy* proxy, pqServer* server, QObject* parent)
+  : Superclass(regGroup, regName, proxy, server, parent)
 {
-  // Configure the selection manager:
-  m_selectionManager->setDefaultAction(smtk::resource::SelectionAction::FILTERED_REPLACE);
-  m_selectedValue = m_selectionManager->findOrCreateLabeledValue("selected");
-  m_hoveredValue = m_selectionManager->findOrCreateLabeledValue("hovered");
-  m_selectionSource = "paraview";
-  while (!m_selectionManager->registerSelectionSource(m_selectionSource))
+  std::cout << "pqResourceManager ctor " << parent << "\n";
+  bool listening = false;
+  auto app = pqApplicationCore::instance();
+  if (app)
   {
-    m_selectionSource += "X";
-  }
-  m_selectionListener = m_selectionManager->listenToSelectionEvents(
-    [](const std::string& src, smtk::resource::SelectionManager::Ptr selnMgr) {
-      std::cout << "Selection modified by: \"" << src << "\"\n";
-      selnMgr->visitSelection([](smtk::resource::ComponentPtr comp, int value) {
-        auto modelComp = dynamic_pointer_cast<smtk::model::Entity>(comp);
-        if (modelComp)
-        {
-          smtk::model::EntityRef ent(modelComp->modelResource(), modelComp->id());
-          std::cout << "  " << comp->id() << ": " << value << ",  " << ent.flagSummary() << ": "
-                    << ent.name() << "\n";
-        }
-        else
-        {
-          std::cout << "  " << comp->id() << ":  " << value << "\n";
-        }
-      });
-      std::cout.flush();
-    },
-    true);
-
-  // Blech: pqApplicationCore doesn't have the selection manager yet,
-  // so wait until we hear that the server is ready to make the connection.
-  // We can't have a selection before the first connection, anyway.
-  auto pqCore = pqApplicationCore::instance();
-  if (pqCore)
-  {
-    QObject::connect(pqCore->getServerManagerModel(), SIGNAL(serverReady(pqServer*)), this,
-      SLOT(connectSelectionManagers()));
-  }
-}
-
-pqSMTKSelectionSyncBehavior::~pqSMTKSelectionSyncBehavior()
-{
-}
-
-void pqSMTKSelectionSyncBehavior::connectSelectionManagers()
-{
-  if (m_connected)
-  {
-    return;
-  }
-
-  auto pqCore = pqApplicationCore::instance();
-  if (pqCore)
-  {
-    auto smgr =
-      qobject_cast<pqSelectionManager*>(pqApplicationCore::instance()->manager("SelectionManager"));
-    if (smgr)
+    auto pvSelnMgr = qobject_cast<pqSelectionManager*>(app->manager("SelectionManager"));
+    if (pvSelnMgr)
     {
-      m_connected = true;
-      QObject::connect(smgr, SIGNAL(selectionChanged(pqOutputPort*)), this,
-        SLOT(paraviewSelectionChanged(pqOutputPort*)));
+      if (QObject::connect(pvSelnMgr, SIGNAL(selectionChanged(pqOutputPort*)), this,
+            SLOT(paraviewSelectionChanged(pqOutputPort*))))
+      {
+        listening = true;
+      }
     }
   }
+  if (!listening)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(),
+      "Could not connect SMTK resource manager to ParaView selection manager.");
+  }
 }
 
-void pqSMTKSelectionSyncBehavior::paraviewSelectionChanged(pqOutputPort* port)
+pqSMTKResourceManager::~pqSMTKResourceManager()
 {
+  std::cout << "pqResourceManager dtor\n";
+}
+
+void pqSMTKResourceManager::paraviewSelectionChanged(pqOutputPort* port)
+{
+  std::cout << "PV selection change, port " << port << "\n";
+  /* TODO: This needs to be completed to work with separate server processes.
+  auto pxy = this->wrapperProxy();
+  (void)pxy;
+  if (!port)
+  {
+    pxy->modifySelection(seln, m_selectionSource, m_selectedValue);
+    std::cout << "FIXME: Reset selection when port is null\n";
+    return;
+  }
+  // I. Get vtkSelection source proxy ID
+  auto dataInput = port->getSourceProxy();
+  auto selnInput = port->getSelectionInput();
+  // II. Set it as an input on the vtkSMTKResourceManagerWrapper's SelectionPort
+  pxy->SetSelectedPortProxy(dataInput);
+  pxy->SetSelectionObjProxy(selnInput);
+  // III. Send a JSON request to the vtkSMTKResourceManagerWrapper telling it to grab the selection.
+  pxy->FetchHardwareSelection();
+  // IV. Update the client-side selection.
+  // TODO
+  */
+  // TODO: This only works in built-in mode.
+  auto wrapper =
+    vtkSMTKResourceManagerWrapper::SafeDownCast(this->getProxy()->GetClientSideObject());
+  auto selnMgr = wrapper ? wrapper->GetSelection() : nullptr;
+  if (!selnMgr)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), "No selection manager!");
+    return;
+  }
+  std::string selnSrc = wrapper->GetSelectionSource();
+  int selnVal = wrapper->GetSelectedValue();
   std::set<smtk::resource::ComponentPtr> seln;
   if (!port)
   {
     //std::cout << "Selection empty\n";
-    m_selectionManager->modifySelection(seln, m_selectionSource, m_selectedValue);
+    selnMgr->modifySelection(seln, selnSrc, selnVal);
   }
   else
   {
@@ -173,14 +169,14 @@ void pqSMTKSelectionSyncBehavior::paraviewSelectionChanged(pqOutputPort* port)
         //std::cout << " )\n";
         if (mbdsThing)
         {
-          model::ManagerPtr mgr = smtkThing->GetModelSource()->GetModelManager();
+          smtk::model::ManagerPtr mgr = smtkThing->GetModelSource()->GetModelManager();
           //std::cout << "  selected model entities:";
           auto mit = mbdsThing->NewIterator();
           for (mit->InitTraversal(); !mit->IsDoneWithTraversal(); mit->GoToNextItem())
           {
             if (blockIds.find(mit->GetCurrentFlatIndex()) != blockIds.end())
             {
-              auto ent = vtkModelMultiBlockSource::GetDataObjectEntityAs<model::EntityRef>(
+              auto ent = vtkModelMultiBlockSource::GetDataObjectEntityAs<smtk::model::EntityRef>(
                 mgr, mit->GetCurrentMetaData());
               auto cmp = ent.component();
               if (cmp)
@@ -191,7 +187,7 @@ void pqSMTKSelectionSyncBehavior::paraviewSelectionChanged(pqOutputPort* port)
             }
           }
           //std::cout << "\n";
-          m_selectionManager->modifySelection(seln, m_selectionSource, m_selectedValue);
+          selnMgr->modifySelection(seln, selnSrc, selnVal);
         }
       }
     }

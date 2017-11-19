@@ -13,9 +13,8 @@
  * Updates additional input properties of the representation
  * (GlyphPrototypes and GlyphPoints).
  */
-
-#ifndef vtkSMSMTKModelRepresentationProxy_h
-#define vtkSMSMTKModelRepresentationProxy_h
+#ifndef smtk_extension_paraview_representation_vtkSMSMTKModelRepresentationProxy_h
+#define smtk_extension_paraview_representation_vtkSMSMTKModelRepresentationProxy_h
 
 #include "smtk/extension/paraview/representation/Exports.h" //needed for exports
 #include "vtkSMRepresentationProxy.h"

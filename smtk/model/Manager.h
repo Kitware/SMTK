@@ -109,6 +109,9 @@ public:
 
   smtk::mesh::ManagerPtr meshes() const;
 
+  /// Remove all entities and properties from this object. Does not change id or emit signals.
+  void clear();
+
   smtk::resource::SetPtr resources(bool skipUpdate = false)
   {
     if (!skipUpdate)
