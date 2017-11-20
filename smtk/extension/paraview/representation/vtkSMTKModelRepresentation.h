@@ -83,6 +83,12 @@ protected:
     vtkMultiBlockDataSet* data, vtkCompositeDataDisplayAttributes* blockAttr, vtkMapper* mapper);
   vtkDataObject* FindNode(vtkMultiBlockDataSet* data, const std::string& uuid);
 
+  /**
+   * Compute bounds of the input model taking into account instance placements
+   * (and corresponding glyph offsets) and entity tessellation bounds.
+   */
+  bool GetModelBounds();
+
   vtkSmartPointer<vtkCompositePolyDataMapper2> EntityMapper;
   vtkSmartPointer<vtkCompositePolyDataMapper2> SelectedEntityMapper;
   vtkSmartPointer<vtkGlyph3DMapper> GlyphMapper;

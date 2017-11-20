@@ -83,11 +83,42 @@ void vtkSMTKModelRepresentation::SetOutputExtent(vtkAlgorithmOutput* output, vtk
   }
 }
 
+bool vtkSMTKModelRepresentation::GetModelBounds()
+{
+  // Entity tessellation bounds
+  double entityBounds[6];
+  this->GetBounds(this->GetInternalOutputPort(0)->GetProducer()->GetOutputDataObject(0),
+    entityBounds, this->EntityMapper->GetCompositeDataDisplayAttributes());
+
+  // Instance placement bounds
+  double* instanceBounds = this->GlyphMapper->GetBounds();
+
+  vtkBoundingBox bbox;
+  if (vtkBoundingBox::IsValid(entityBounds))
+  {
+    bbox.AddPoint(entityBounds[0], entityBounds[2], entityBounds[4]);
+    bbox.AddPoint(entityBounds[1], entityBounds[3], entityBounds[5]);
+  }
+
+  if (vtkBoundingBox::IsValid(instanceBounds))
+  {
+    bbox.AddPoint(instanceBounds[0], instanceBounds[2], instanceBounds[4]);
+    bbox.AddPoint(instanceBounds[1], instanceBounds[3], instanceBounds[5]);
+  }
+
+  if (bbox.IsValid())
+  {
+    bbox.GetBounds(this->DataBounds);
+    return true;
+  }
+
+  vtkMath::UninitializeBounds(this->DataBounds);
+  return false;
+}
+
 int vtkSMTKModelRepresentation::RequestData(
   vtkInformation* request, vtkInformationVector** inVec, vtkInformationVector* outVec)
 {
-  vtkMath::UninitializeBounds(this->DataBounds);
-
   if (inVec[0]->GetNumberOfInformationObjects() == 1)
   {
     vtkInformation* inInfo = inVec[0]->GetInformationObject(0);
@@ -110,16 +141,7 @@ int vtkSMTKModelRepresentation::RequestData(
   this->EntityMapper->Modified();
   this->GlyphMapper->Modified();
 
-  // Determine data bounds
-  // TODO: Bounds should include not only instance placements but instance
-  //       placements offset by their glyph bounds. The bounds really should
-  //       be computed bt the Glyph3DMapper and CompositePolyDataMapper
-  //       and just unioned together here.
-  //       But... to a first approximation, the entity tessellation bounds
-  //       are good enough:
-  this->GetBounds(this->GetInternalOutputPort(0)->GetProducer()->GetOutputDataObject(0),
-    this->DataBounds, this->EntityMapper->GetCompositeDataDisplayAttributes());
-
+  this->GetModelBounds();
   return vtkPVDataRepresentation::RequestData(request, inVec, outVec);
 }
 
@@ -353,7 +375,7 @@ void vtkSMTKModelRepresentation::UpdateSelection(
     }
   }
 
-  // TODO This is necessary to force an update in the mapper
+  // This is necessary to force an update in the mapper
   mapper->Modified();
 }
 
