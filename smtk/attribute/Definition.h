@@ -52,7 +52,7 @@ public:
   // attribute definition through the Collection. It should never change.
   const std::string& type() const { return this->m_type; }
 
-  smtk::attribute::CollectionPtr collection() const { return this->m_collection; }
+  smtk::attribute::CollectionPtr collection() const { return this->m_collection.lock(); }
 
   // The label is what can be displayed in an application.  Unlike the type
   // which is constant w/r to the definition, an application can change the label
@@ -245,7 +245,7 @@ protected:
   Definition(const std::string& myType, smtk::attribute::DefinitionPtr myBaseDef,
     smtk::attribute::CollectionPtr myCollection);
 
-  void clearCollection() { this->m_collection = NULL; }
+  void clearCollection() { this->m_collection.reset(); }
 
   void setCategories();
 
@@ -253,7 +253,7 @@ protected:
   // definition's items have been changed
   void updateDerivedDefinitions();
 
-  smtk::attribute::CollectionPtr m_collection;
+  smtk::attribute::WeakCollectionPtr m_collection;
   int m_version;
   bool m_isAbstract;
   smtk::attribute::DefinitionPtr m_baseDefinition;
