@@ -72,4 +72,11 @@
       </ItemDefinitions>
     </AttDef>
   </Definitions>
+  <Views>
+    <View Type="Operator" Title="Elevate Mesh" FilterByAdvanceLevel="true">
+      <InstancedAttributes>
+        <Att Type="elevate mesh" Name="elevate mesh"/>
+      </InstancedAttributes>
+    </View>
+  </Views>
 </SMTK_AttributeSystem>
