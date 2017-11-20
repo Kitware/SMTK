@@ -31,7 +31,7 @@
     <Views>
     <View Type="Operator" Title="Load Model" FilterByAdvanceLevel="true">
       <InstancedAttributes>
-        <Att Type="load smtk model" Name="load smtk model"/>
+        <Att Type="load smtk model"/>
       </InstancedAttributes>
     </View>
   </Views>
