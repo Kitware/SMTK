@@ -117,7 +117,7 @@
     <Views>
     <View Type="Operator" Title="Add Aux Geometry" FilterByAdvanceLevel="true">
       <InstancedAttributes>
-        <Att Type="add auxiliary geometry" Name="add auxiliary geometry"/>
+        <Att Type="add auxiliary geometry"/>
       </InstancedAttributes>
     </View>
   </Views>

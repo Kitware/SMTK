@@ -34,7 +34,7 @@
   <Views>
     <View Type="Operator" Title="Tessellate Face" FilterByAdvanceLevel="true">
       <InstancedAttributes>
-        <Att Type="tessellate face" Name="tessellate face"/>
+        <Att Type="tessellate face"/>
       </InstancedAttributes>
     </View>
   </Views>
