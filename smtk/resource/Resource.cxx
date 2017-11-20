@@ -22,14 +22,14 @@ namespace smtk
 namespace resource
 {
 
-Resource::Resource(const smtk::common::UUID& myID, Manager* manager)
+Resource::Resource(const smtk::common::UUID& myID, ManagerPtr manager)
   : m_id(myID)
   , m_location()
   , m_manager(manager)
 {
 }
 
-Resource::Resource(Manager* manager)
+Resource::Resource(ManagerPtr manager)
   : m_id(smtk::common::UUIDGenerator::instance().random())
   , m_location()
   , m_manager(manager)
@@ -42,13 +42,14 @@ Resource::~Resource()
 
 std::string Resource::uniqueName() const
 {
-  if (m_manager)
+  Manager::Ptr mgr = m_manager.lock();
+  if (mgr)
   {
     // if the resource's manager is set, then the resource is registered to a
     // manager. The resource metadata has a unique name for this resource type,
     // so we return this name.
-    auto metadata = m_manager->metadata().get<IndexTag>().find(this->index());
-    if (metadata != m_manager->metadata().get<IndexTag>().end())
+    auto metadata = mgr->metadata().get<IndexTag>().find(this->index());
+    if (metadata != mgr->metadata().get<IndexTag>().end())
     {
       return metadata->uniqueName();
     }
@@ -61,7 +62,8 @@ std::string Resource::uniqueName() const
 
 bool Resource::setId(const smtk::common::UUID& myId)
 {
-  if (m_manager)
+  Manager::Ptr mgr = m_manager.lock();
+  if (mgr)
   {
     // if the resource's manager is set, then the resource is registered to a
     // manager. We need to change the resource's Id while ensuring we do not
@@ -79,7 +81,7 @@ bool Resource::setId(const smtk::common::UUID& myId)
     };
 
     typedef Container::index<IdTag>::type ResourcesById;
-    ResourcesById& resources = m_manager->resources().get<IdTag>();
+    ResourcesById& resources = mgr->resources().get<IdTag>();
     ResourcesById::iterator resourceIt = resources.find(this->m_id);
 
     // try to modify the id, restore it in case of collisions
@@ -97,7 +99,8 @@ bool Resource::setId(const smtk::common::UUID& myId)
 
 bool Resource::setLocation(const std::string& myLocation)
 {
-  if (m_manager)
+  Manager::Ptr mgr = m_manager.lock();
+  if (mgr)
   {
     // if the resource's manager is set, then the resource is registered to a
     // manager. We need to change the resource's location while ensuring we do
@@ -115,9 +118,9 @@ bool Resource::setLocation(const std::string& myLocation)
     };
 
     typedef Container::index<LocationTag>::type ResourcesByLocation;
-    ResourcesByLocation& resources = m_manager->resources().get<LocationTag>();
+    ResourcesByLocation& resources = mgr->resources().get<LocationTag>();
     ResourcesByLocation::iterator resourceIt =
-      m_manager->resources().get<LocationTag>().find(this->m_location);
+      mgr->resources().get<LocationTag>().find(this->m_location);
 
     // modify the location
     resources.modify(resourceIt, SetLocation(myLocation));

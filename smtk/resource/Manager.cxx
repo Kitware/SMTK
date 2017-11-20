@@ -21,10 +21,12 @@ MetadataContainer Manager::s_metadata;
 
 Manager::Manager()
 {
+  std::cout << "Create rsrc mgr " << this << "\n";
 }
 
 Manager::~Manager()
 {
+  std::cout << "Destroy rsrc mgr " << this << "\n";
 }
 
 smtk::resource::ResourcePtr Manager::create(const std::string& uniqueName)
@@ -299,8 +301,9 @@ bool Manager::add(const Resource::Index& index, const smtk::resource::ResourcePt
 
   // Assign the resource's manager and insert it into the manager's set of
   // resources
-  resource->m_manager = this;
+  resource->m_manager = this->shared_from_this();
   m_resources.insert(resource);
+  this->trigger(Event::RESOURCE_ADDED, resource);
   return true;
 }
 
@@ -312,16 +315,48 @@ bool Manager::remove(const smtk::resource::ResourcePtr& resource)
   auto resourceIt = resources.find(resource->id());
   if (resourceIt != resources.end())
   {
+    Resource::Ptr rsrc = *resourceIt;
+
+    // Tell observers we're about to yoink it:
+    this->trigger(Event::RESOURCE_REMOVED, rsrc);
+
     // Remove it from the manager's set of resources
     m_resources.erase(resourceIt);
 
     // Unsert the resource's manager
-    (*resourceIt)->m_manager = nullptr;
+    rsrc->m_manager = Ptr();
 
     return true;
   }
 
   return false;
+}
+
+int Manager::observe(const Observer& fn, bool notifyOfCurrentState)
+{
+  int handle = m_observers.empty() ? 0 : m_observers.rbegin()->first + 1;
+  m_observers[handle] = fn;
+  if (notifyOfCurrentState)
+  {
+    for (auto rsrc : m_resources)
+    {
+      fn(Event::RESOURCE_ADDED, rsrc);
+    }
+  }
+  return handle;
+}
+
+bool Manager::unobserve(int handle)
+{
+  return m_observers.erase(handle) > 0;
+}
+
+void Manager::trigger(Event evt, const ResourcePtr& rsrc)
+{
+  for (auto observer : m_observers)
+  {
+    observer.second(evt, rsrc);
+  }
 }
 }
 }

@@ -9,6 +9,8 @@
 //=========================================================================
 #include "smtk/extension/paraview/server/vtkSMSMTKResourceManagerProxy.h"
 
+#include "smtk/extension/paraview/server/vtkSMTKResourceManagerWrapper.h" // TODO: Remove the need for me
+
 #include "vtkObjectFactory.h"
 
 #include "vtkClientServerStream.h"
@@ -48,6 +50,36 @@ vtkSMSMTKResourceManagerProxy::~vtkSMSMTKResourceManagerProxy()
 void vtkSMSMTKResourceManagerProxy::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
+}
+
+smtk::resource::ManagerPtr vtkSMSMTKResourceManagerProxy::GetManager() const
+{
+  // TODO: This should just "return this->Manager;" but we are getting things
+  //       working in built-in mode first, so just directly fetch the version
+  //       on the server and return it.
+  auto self = const_cast<vtkSMSMTKResourceManagerProxy*>(this); // VTK is not const-correct
+  auto wrapper = vtkSMTKResourceManagerWrapper::SafeDownCast(self->GetClientSideObject());
+  return wrapper ? wrapper->GetManager() : nullptr;
+}
+
+smtk::resource::SelectionManagerPtr vtkSMSMTKResourceManagerProxy::GetSelection() const
+{
+  // TODO: This should just "return this->Selection;" but we are getting things
+  //       working in built-in mode first, so just directly fetch the version
+  //       on the server and return it.
+  auto self = const_cast<vtkSMSMTKResourceManagerProxy*>(this); // VTK is not const-correct
+  auto wrapper = vtkSMTKResourceManagerWrapper::SafeDownCast(self->GetClientSideObject());
+  return wrapper ? wrapper->GetSelection() : nullptr;
+}
+
+smtk::operation::ManagerPtr vtkSMSMTKResourceManagerProxy::GetOperationManager() const
+{
+  // TODO: This should just "return this->OperationManager;" but we are getting things
+  //       working in built-in mode first, so just directly fetch the version
+  //       on the server and return it.
+  auto self = const_cast<vtkSMSMTKResourceManagerProxy*>(this); // VTK is not const-correct
+  auto wrapper = vtkSMTKResourceManagerWrapper::SafeDownCast(self->GetClientSideObject());
+  return wrapper ? wrapper->GetOperationManager() : nullptr;
 }
 
 void vtkSMSMTKResourceManagerProxy::SetSelectedPortProxy(vtkSMSourceProxy* pxy)

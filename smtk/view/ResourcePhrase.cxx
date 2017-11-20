@@ -16,6 +16,8 @@
 
 #include "smtk/resource/Resource.h"
 
+#include "smtk/common/Paths.h"
+
 namespace smtk
 {
 namespace view
@@ -46,7 +48,10 @@ std::string ResourcePhrase::title()
     return std::string();
   }
 
-  return m_resource->location();
+  std::string locn = m_resource->location();
+  std::string file = smtk::common::Paths::filename(locn);
+  std::string dir = smtk::common::Paths::directory(locn);
+  return dir.empty() ? file : (file + " (" + dir + ")");
 }
 
 bool ResourcePhrase::isTitleMutable() const

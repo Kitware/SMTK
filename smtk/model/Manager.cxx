@@ -40,6 +40,8 @@
 
 #include "smtk/common/UUIDGenerator.h"
 
+#include "smtk/resource/Manager.h"
+#include "smtk/resource/Metadata.h"
 #include "smtk/resource/Set.h"
 
 #include <float.h>
@@ -58,6 +60,12 @@ using namespace std;
 using namespace smtk::common;
 using namespace smtk::resource;
 
+static void registerModelResource()
+{
+  smtk::model::Manager::Metadata metadata("model");
+  smtk::resource::Manager::registerResource<smtk::model::Manager>(metadata);
+}
+
 namespace smtk
 {
 namespace model
@@ -69,8 +77,8 @@ namespace model
   */
 //@{
 /// Create a default, empty model manager.
-Manager::Manager()
-  : smtk::resource::Resource(nullptr)
+Manager::Manager(smtk::resource::ManagerPtr mgr)
+  : smtk::resource::Resource(mgr)
   , m_topology(new UUIDsToEntities)
   , m_floatData(new UUIDsToFloatData)
   , m_stringData(new UUIDsToStringData)
@@ -85,13 +93,34 @@ Manager::Manager()
 {
   // TODO: throw() when topology == NULL?
   this->log().setFlushToStdout(false);
+  registerModelResource();
+}
+
+Manager::Manager(const smtk::common::UUID& uid, smtk::resource::ManagerPtr mgr)
+  : smtk::resource::Resource(uid, mgr)
+  , m_topology(new UUIDsToEntities)
+  , m_floatData(new UUIDsToFloatData)
+  , m_stringData(new UUIDsToStringData)
+  , m_integerData(new UUIDsToIntegerData)
+  , m_tessellations(new UUIDsToTessellations)
+  , m_analysisMesh(new UUIDsToTessellations)
+  , m_meshes(smtk::mesh::Manager::create())
+  , m_attributeAssignments(new UUIDsToAttributeAssignments)
+  , m_sessions(new UUIDsToSessions)
+  , m_resources(new Set)
+  , m_globalCounters(2, 1) // first entry is session counter, second is model counter
+{
+  // TODO: throw() when topology == NULL?
+  this->log().setFlushToStdout(false);
+  registerModelResource();
 }
 
 /// Create a model manager using the given storage instances.
 Manager::Manager(shared_ptr<UUIDsToEntities> inTopology, shared_ptr<UUIDsToTessellations> tess,
   shared_ptr<UUIDsToTessellations> analysismesh, shared_ptr<smtk::mesh::Manager> meshes,
-  shared_ptr<UUIDsToAttributeAssignments> attribs)
-  : smtk::resource::Resource(nullptr)
+  shared_ptr<UUIDsToAttributeAssignments> attribs, const smtk::common::UUID& uid,
+  smtk::resource::ManagerPtr mgr)
+  : smtk::resource::Resource(uid, mgr)
   , m_topology(inTopology)
   , m_floatData(new UUIDsToFloatData)
   , m_stringData(new UUIDsToStringData)
@@ -105,6 +134,7 @@ Manager::Manager(shared_ptr<UUIDsToEntities> inTopology, shared_ptr<UUIDsToTesse
   , m_globalCounters(2, 1) // first entry is session counter, second is model counter
 {
   this->log().setFlushToStdout(false);
+  registerModelResource();
 }
 
 /// Destroying a model manager requires us to release the default attribute manager..

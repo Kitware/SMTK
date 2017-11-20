@@ -10,7 +10,7 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKSelectionFilterBehavior.h"
 
 // SMTK
-#include "smtk/extension/paraview/appcomponents/pqSMTKResourceManagerBehavior.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 
 #include "smtk/extension/paraview/server/vtkSMSMTKResourceManagerProxy.h"
 #include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
@@ -107,7 +107,7 @@ pqSMTKSelectionFilterBehavior::pqSMTKSelectionFilterBehavior(QObject* parent)
   QObject::connect(this, SIGNAL(triggered(QAction*)), this, SLOT(onFilterChanged(QAction*)));
 
   // Track server connects/disconnects
-  auto rsrcBehavior = pqSMTKResourceManagerBehavior::instance();
+  auto rsrcBehavior = pqSMTKBehavior::instance();
   QObject::connect(rsrcBehavior,
     SIGNAL(addedManagerOnServer(vtkSMSMTKResourceManagerProxy*, pqServer*)), this,
     SLOT(filterSelectionOnServer(vtkSMSMTKResourceManagerProxy*, pqServer*)));

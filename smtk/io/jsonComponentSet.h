@@ -12,6 +12,8 @@
 
 #include "smtk/io/jsonUUID.h"
 
+#include "smtk/resource/Resource.h"
+
 #include "nlohmann/json.hpp"
 
 #include <string>

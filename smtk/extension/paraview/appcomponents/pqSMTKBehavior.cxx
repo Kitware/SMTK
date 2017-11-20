@@ -7,9 +7,11 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/appcomponents/pqSMTKResourceManagerBehavior.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 
 // SMTK
+#include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKResourceManager.h"
 #include "smtk/extension/paraview/server/vtkSMSMTKResourceManagerProxy.h"
 
 // Client side
@@ -22,15 +24,15 @@
 
 #include <QObject>
 
-class pqSMTKResourceManagerBehavior::Internal
+class pqSMTKBehavior::Internal
 {
 public:
-  std::map<pqServer*, vtkSMSMTKResourceManagerProxy*> Remotes;
+  std::map<pqServer*, std::pair<vtkSMSMTKResourceManagerProxy*, pqSMTKResourceManager*> > Remotes;
 };
 
-static pqSMTKResourceManagerBehavior* g_instance = nullptr;
+static pqSMTKBehavior* g_instance = nullptr;
 
-pqSMTKResourceManagerBehavior::pqSMTKResourceManagerBehavior(QObject* parent)
+pqSMTKBehavior::pqSMTKBehavior(QObject* parent)
   : Superclass(parent)
 {
   m_p = new Internal;
@@ -40,6 +42,14 @@ pqSMTKResourceManagerBehavior::pqSMTKResourceManagerBehavior(QObject* parent)
   auto pqCore = pqApplicationCore::instance();
   if (pqCore)
   {
+    std::cout << "\nHave core at construction\n\n";
+
+    auto builder = pqCore->getObjectBuilder();
+    QObject::connect(
+      builder, SIGNAL(proxyCreated(pqProxy*)), this, SLOT(handleNewSMTKProxies(pqProxy*)));
+    QObject::connect(
+      builder, SIGNAL(destroying(pqProxy*)), this, SLOT(handleOldSMTKProxies(pqProxy*)));
+
     QObject::connect(pqCore->getServerManagerModel(), SIGNAL(serverReady(pqServer*)), this,
       SLOT(addManagerOnServer(pqServer*)));
     QObject::connect(pqCore->getServerManagerModel(), SIGNAL(aboutToRemoveServer(pqServer*)), this,
@@ -48,11 +58,11 @@ pqSMTKResourceManagerBehavior::pqSMTKResourceManagerBehavior(QObject* parent)
   }
 }
 
-pqSMTKResourceManagerBehavior* pqSMTKResourceManagerBehavior::instance(QObject* parent)
+pqSMTKBehavior* pqSMTKBehavior::instance(QObject* parent)
 {
   if (!g_instance)
   {
-    g_instance = new pqSMTKResourceManagerBehavior(parent);
+    g_instance = new pqSMTKBehavior(parent);
   }
 
   if (g_instance->parent() == nullptr && parent)
@@ -63,7 +73,7 @@ pqSMTKResourceManagerBehavior* pqSMTKResourceManagerBehavior::instance(QObject* 
   return g_instance;
 }
 
-pqSMTKResourceManagerBehavior::~pqSMTKResourceManagerBehavior()
+pqSMTKBehavior::~pqSMTKBehavior()
 {
   if (g_instance == this)
   {
@@ -78,17 +88,57 @@ pqSMTKResourceManagerBehavior::~pqSMTKResourceManagerBehavior()
   delete m_p;
 }
 
-vtkSMSMTKResourceManagerProxy* pqSMTKResourceManagerBehavior::wrapperProxy(pqServer* remote)
+vtkSMSMTKResourceManagerProxy* pqSMTKBehavior::wrapperProxy(pqServer* remote)
 {
   auto entry = remote ? m_p->Remotes.find(remote) : m_p->Remotes.begin();
   if (entry == m_p->Remotes.end())
   {
     return nullptr;
   }
-  return entry->second;
+  return entry->second.first;
 }
 
-void pqSMTKResourceManagerBehavior::addManagerOnServer(pqServer* server)
+pqSMTKResourceManager* pqSMTKBehavior::resourceManagerForServer(pqServer* remote)
+{
+  auto entry = remote ? m_p->Remotes.find(remote) : m_p->Remotes.begin();
+  if (entry == m_p->Remotes.end())
+  {
+    return nullptr;
+  }
+  return entry->second.second;
+}
+
+void pqSMTKBehavior::addPQProxy(pqSMTKResourceManager* rsrcMgr)
+{
+  if (!rsrcMgr)
+  {
+    return;
+  }
+
+  auto server = rsrcMgr->getServer();
+  auto it = m_p->Remotes.find(server);
+  if (it == m_p->Remotes.end())
+  {
+    m_p->Remotes[server] = std::pair<vtkSMSMTKResourceManagerProxy*, pqSMTKResourceManager*>(
+      vtkSMSMTKResourceManagerProxy::SafeDownCast(rsrcMgr->getProxy()), rsrcMgr);
+  }
+  else
+  {
+    it->second.second = rsrcMgr;
+  }
+  emit addedManagerOnServer(rsrcMgr, server);
+}
+
+void pqSMTKBehavior::visitResourceManagersOnServers(
+  const std::function<void(pqSMTKResourceManager*, pqServer*)>& fn) const
+{
+  for (auto remote : m_p->Remotes)
+  {
+    fn(remote.second.second, remote.first);
+  }
+}
+
+void pqSMTKBehavior::addManagerOnServer(pqServer* server)
 {
   auto app = pqApplicationCore::instance();
   if (!app)
@@ -110,12 +160,12 @@ void pqSMTKResourceManagerBehavior::addManagerOnServer(pqServer* server)
   // changes) can trigger SMTK events.
   vtkSMProxy* pxy = builder->createProxy("smtk", "ResourceManager", server, "smtk resources");
   auto rmpxy = dynamic_cast<vtkSMSMTKResourceManagerProxy*>(pxy);
-  m_p->Remotes[server] = rmpxy;
+  m_p->Remotes[server].first = rmpxy;
 
   emit addedManagerOnServer(rmpxy, server);
 }
 
-void pqSMTKResourceManagerBehavior::removeManagerFromServer(pqServer* remote)
+void pqSMTKBehavior::removeManagerFromServer(pqServer* remote)
 {
   std::cout << "Removing rsrc mgr from server: " << remote << "\n\n";
   auto entry = m_p->Remotes.find(remote);
@@ -123,6 +173,40 @@ void pqSMTKResourceManagerBehavior::removeManagerFromServer(pqServer* remote)
   {
     return;
   }
-  emit removingManagerFromServer(entry->second, entry->first);
+  emit removingManagerFromServer(entry->second.first, entry->first);
+  emit removingManagerFromServer(entry->second.second, entry->first);
   m_p->Remotes.erase(entry);
+}
+
+void pqSMTKBehavior::handleNewSMTKProxies(pqProxy* pxy)
+{
+  std::cout << "  Behavior has new " << typeid(*pxy).name() << " @ " << pxy << "\n";
+  auto rsrc = dynamic_cast<pqSMTKResource*>(pxy);
+  if (rsrc)
+  {
+    auto it = m_p->Remotes.find(rsrc->getServer());
+    if (it == m_p->Remotes.end())
+    {
+      std::cout << "Behavior didn't have rsrcMgr\n";
+    }
+    if (it != m_p->Remotes.end() && it->second.second)
+    {
+      it->second.second->addResource(rsrc);
+    }
+    return;
+  }
+}
+
+void pqSMTKBehavior::handleOldSMTKProxies(pqProxy* pxy)
+{
+  auto rsrc = dynamic_cast<pqSMTKResource*>(pxy);
+  if (rsrc)
+  {
+    auto it = m_p->Remotes.find(rsrc->getServer());
+    if (it != m_p->Remotes.end())
+    {
+      it->second.second->removeResource(rsrc);
+    }
+    return;
+  }
 }

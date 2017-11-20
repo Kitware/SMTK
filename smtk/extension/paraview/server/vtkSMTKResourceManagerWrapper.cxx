@@ -12,16 +12,18 @@
 #include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
+#include "smtk/io/jsonComponentSet.h"
+#include "smtk/io/jsonSelectionMap.h"
+#include "smtk/io/jsonUUID.h"
+
 #include "smtk/model/Manager.h"
+
+#include "smtk/operation/Manager.h"
 
 #include "smtk/resource/Component.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
 #include "smtk/resource/SelectionManager.h"
-
-#include "smtk/io/jsonComponentSet.h"
-#include "smtk/io/jsonSelectionMap.h"
-#include "smtk/io/jsonUUID.h"
 
 #include "vtkCompositeDataIterator.h"
 #include "vtkMultiBlockDataSet.h"
@@ -88,6 +90,7 @@ vtkSMTKResourceManagerWrapper::vtkSMTKResourceManagerWrapper()
   , JSONResponse(nullptr)
   , SelectionSource("paraview")
 {
+  this->OperationManager = smtk::operation::Manager::create();
   this->ResourceManager = smtk::resource::Manager::create();
   this->SelectionManager = smtk::resource::SelectionManager::create();
   this->SelectionManager->setDefaultAction(smtk::resource::SelectionAction::FILTERED_REPLACE);

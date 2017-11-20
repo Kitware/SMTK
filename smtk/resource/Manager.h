@@ -19,9 +19,11 @@
 #include "smtk/common/UUID.h"
 
 #include "smtk/resource/Container.h"
+#include "smtk/resource/Event.h"
 #include "smtk/resource/Metadata.h"
 #include "smtk/resource/Resource.h"
 
+#include <functional>
 #include <string>
 #include <typeinfo>
 #include <unordered_map>
@@ -39,6 +41,9 @@ class Manager;
 class SMTKCORE_EXPORT Manager : smtkEnableSharedPtr(Manager)
 {
 public:
+  /// Resource manager events result in function calls of this type.
+  using Observer = std::function<void(Event, const Resource::Ptr&)>;
+
   smtkTypeMacroBase(Manager);
   smtkCreateMacro(Manager);
 
@@ -145,6 +150,23 @@ public:
   /// Return the map of metadata.
   static MetadataContainer& metadata() { return s_metadata; }
 
+  /**\brief Observe events related to this resource manager.
+    *
+    * Returns a handle that can be used to stop observations.
+    *
+    * If \a notifyOfCurrentState is true, then \a fn will be
+    * immediately invoked with each registered resource type
+    * and each registered resource.
+    */
+  int observe(const Observer& fn, bool notifyOfCurrentState = true);
+
+  /// Stop observing events related to this resource manager.
+  bool unobserve(int handle);
+
+protected:
+  /// Trigger an event (call all registered observers)
+  void trigger(Event evt, const ResourcePtr& rsrc);
+
 private:
   Manager();
 
@@ -154,6 +176,8 @@ private:
   /// All resources are tracked using a map between the resource's UUID and a
   /// shared pointer to the resource itself.
   Container m_resources;
+
+  std::map<int, Observer> m_observers;
 
   /// A container for all registered resource metadata.
   static MetadataContainer s_metadata;

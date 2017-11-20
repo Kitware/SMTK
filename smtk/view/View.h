@@ -75,11 +75,19 @@ public:
 
     void copyContents(const Component& comp);
 
+    const std::vector<Component>& children() const { return m_children; }
+
     std::size_t numberOfChildren() const { return this->m_children.size(); }
 
     Component& child(std::size_t i) { return this->m_children[i]; }
 
     int findChild(const std::string& compName) const;
+
+    bool operator==(const Component& other) const
+    {
+      return m_name == other.m_name && m_contents == other.m_contents &&
+        m_attributes == other.m_attributes && m_children == other.m_children;
+    }
 
   protected:
     std::string m_name;
@@ -107,6 +115,12 @@ public:
   void setIconName(const std::string& name) { this->m_iconName = name; }
 
   Component& details() { return this->m_details; }
+
+  bool operator==(const View& other) const
+  {
+    return m_title == other.m_title && m_type == other.m_type && m_iconName == other.m_iconName &&
+      m_details == other.m_details;
+  }
 
 protected:
   std::string m_title;

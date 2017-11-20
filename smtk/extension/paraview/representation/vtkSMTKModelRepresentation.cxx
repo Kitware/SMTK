@@ -360,7 +360,7 @@ void vtkSMTKModelRepresentation::SetMapScalars(int val)
 void vtkSMTKModelRepresentation::UpdateSelection(
   vtkMultiBlockDataSet* data, vtkCompositeDataDisplayAttributes* blockAttr, vtkActor* actor)
 {
-  auto rm = vtkSMTKResourceManagerWrapper::Instance();
+  auto rm = vtkSMTKResourceManagerWrapper::Instance(); // TODO: Remove the need for this.
   auto sm = rm ? rm->GetSelection() : nullptr;
   if (!sm)
   {

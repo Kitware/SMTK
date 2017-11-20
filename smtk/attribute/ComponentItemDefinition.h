@@ -42,6 +42,11 @@ public:
 
   bool acceptsResourceComponents(const std::string& uniqueName) const;
   bool acceptsResourceComponents(smtk::resource::Resource::Index resourceIndex) const;
+  const std::unordered_set<smtk::resource::Resource::Index>& acceptableResourceComponents() const
+  {
+    return m_acceptable;
+  }
+  std::set<std::string> acceptableResourceComponentsByName() const;
 
   bool setAcceptsResourceComponents(const std::string& uniqueName, bool accept);
   bool setAcceptsResourceComponents(smtk::resource::Resource::Index resourceIndex, bool accept);

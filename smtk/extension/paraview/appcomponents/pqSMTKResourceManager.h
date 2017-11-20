@@ -12,10 +12,34 @@
 
 #include "smtk/extension/paraview/appcomponents/Exports.h"
 
+#include "smtk/operation/Operator.h"
+
+#include "smtk/PublicPointerDefs.h"
+
 #include "pqProxy.h"
 
 class pqOutputPort;
+class pqSMTKResource;
+class vtkSMSMTKResourceManagerProxy;
 
+/**\brief A proxy for SMTK resource managers created when connecting to a new server.
+  *
+  * Each time ParaView connects to a new server, the pqSMTKBehavior
+  * will direct the pqObjectBuilder to create a new vtkSMTKResourceManagerWrapper
+  * instance on each of that server's processes, plus a proxy on the client.
+  * This class exists to expose signals and slots related to these objects.
+  *
+  * Note that ParaView itself does not allow multiple simultaneous server connections
+  * but the framework does not prevent it, so custom applications built on
+  * ParaView's libraries may choose to allow it.
+  * Thus it is possible for multiple SMTK resource managers to coexist.
+  *
+  * Finally, note that pqSMTKResource instances do not have a 1-to-1 relationship
+  * with smtk::resource::Resource instances; a pqSMTKResource may exist before there
+  * is a valid SMTK resource and may change which SMTK resource it refers to during
+  * its lifetime. (A pqSMTKResource is a pipeline source object whose filename property
+  * may change while SMTK resources are tied to the contents of a particular file.)
+  */
 class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKResourceManager : public pqProxy
 {
   Q_OBJECT
@@ -25,6 +49,32 @@ public:
   pqSMTKResourceManager(const QString& regGroup, const QString& regName, vtkSMProxy* proxy,
     pqServer* server, QObject* parent = nullptr);
   ~pqSMTKResourceManager() override;
+
+  /// Return the proxy for the resource manager cast to its proper type.
+  vtkSMSMTKResourceManagerProxy* smtkProxy() const;
+  /// Return the client-side resource manager which mirrors the server version.
+  smtk::resource::ManagerPtr smtkResourceManager() const;
+  /// Return the client-side operation manager which mirrors the server version.
+  smtk::operation::ManagerPtr smtkOperationManager() const;
+  /// Return the client-side selection which mirrors the server version.
+  smtk::resource::SelectionManagerPtr smtkSelection() const;
+
+public slots:
+  /// Called by pqSMTKBehavior to add resources as they are created.
+  virtual void addResource(pqSMTKResource* rsrc);
+  /// Called by pqSMTKBehavior to remove resources as they are destroyed.
+  virtual void removeResource(pqSMTKResource* rsrc);
+
+signals:
+  /// Emitted when a new resource is added to the manager.
+  void resourceAdded(pqSMTKResource* rsrc);
+  /// Emitted when a resource is removed from the manager.
+  void resourceRemoved(pqSMTKResource* rsrc);
+  /**\brief Signal that an operator \a op has been created, is about to run,
+    *       or has run with the included \a result.
+    */
+  void operationEvent(smtk::operation::Operator::Ptr op, smtk::operation::Operator::EventType event,
+    smtk::operation::Operator::Result result);
 
 protected slots:
   virtual void paraviewSelectionChanged(pqOutputPort* port);

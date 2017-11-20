@@ -12,10 +12,16 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Collection.h"
 #include "smtk/attribute/ComponentItem.h"
-#include "smtk/common/UUID.h"
+
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
+
+#include "smtk/resource/Container.h"
+#include "smtk/resource/Manager.h"
+#include "smtk/resource/Metadata.h"
+
+#include "smtk/common/UUID.h"
 
 #include <cassert>
 
@@ -45,9 +51,17 @@ Item::Type ComponentItemDefinition::type() const
 
 bool ComponentItemDefinition::acceptsResourceComponents(const std::string& uniqueName) const
 {
-  (void)uniqueName;
-  std::cerr << "FIXME\n";
-  return false;
+  using smtk::resource::NameTag;
+  auto metacontainer = smtk::resource::Manager::metadata();
+  auto metadata = metacontainer.get<NameTag>().find(uniqueName);
+  if (metadata == metacontainer.get<NameTag>().end())
+  {
+    smtkErrorMacro(
+      smtk::io::Logger::instance(), "No metadata registered for \"" << uniqueName << "\"");
+    return false;
+  }
+
+  return m_acceptable.find(metadata->index()) != m_acceptable.end();
 }
 
 bool ComponentItemDefinition::acceptsResourceComponents(
@@ -59,10 +73,43 @@ bool ComponentItemDefinition::acceptsResourceComponents(
 bool ComponentItemDefinition::setAcceptsResourceComponents(
   const std::string& uniqueName, bool accept)
 {
-  (void)uniqueName;
-  (void)accept;
-  std::cerr << "FIXME\n";
-  return false;
+  using smtk::resource::NameTag;
+  auto metacontainer = smtk::resource::Manager::metadata();
+  auto metadata = metacontainer.get<NameTag>().find(uniqueName);
+  if (metadata == metacontainer.get<NameTag>().end())
+  {
+    smtkErrorMacro(
+      smtk::io::Logger::instance(), "No metadata registered for \"" << uniqueName << "\"");
+    return false;
+  }
+
+  if (accept)
+  {
+    return m_acceptable.insert(metadata->index()).second;
+  }
+  else
+  {
+    return m_acceptable.erase(metadata->index()) > 0;
+  }
+}
+
+std::set<std::string> ComponentItemDefinition::acceptableResourceComponentsByName() const
+{
+  using smtk::resource::IndexTag;
+  auto metacontainer = smtk::resource::Manager::metadata();
+  std::set<std::string> result;
+  for (auto idx : m_acceptable)
+  {
+    auto metadata = metacontainer.get<IndexTag>().find(idx);
+    if (metadata == metacontainer.get<IndexTag>().end())
+    {
+      smtkWarningMacro(smtk::io::Logger::instance(),
+        "Component item accepts an unknown resource type " << idx << ". Skipping.");
+      continue;
+    }
+    result.insert(metadata->uniqueName());
+  }
+  return result;
 }
 
 bool ComponentItemDefinition::setAcceptsResourceComponents(
@@ -70,11 +117,11 @@ bool ComponentItemDefinition::setAcceptsResourceComponents(
 {
   if (accept)
   {
-    return m_acceptable.erase(resourceIndex) > 0;
+    return m_acceptable.insert(resourceIndex).second;
   }
   else
   {
-    return m_acceptable.insert(resourceIndex).second;
+    return m_acceptable.erase(resourceIndex) > 0;
   }
 }
 

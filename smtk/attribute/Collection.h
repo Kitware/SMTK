@@ -151,8 +151,8 @@ public:
   void attributes(std::vector<smtk::attribute::AttributePtr>& result) const;
 
 protected:
-  Collection(const smtk::common::UUID& myID, smtk::resource::Manager* manager);
-  Collection(smtk::resource::Manager* manager = nullptr);
+  Collection(const smtk::common::UUID& myID, smtk::resource::ManagerPtr manager);
+  Collection(smtk::resource::ManagerPtr manager = nullptr);
   void internalFindAllDerivedDefinitions(smtk::attribute::DefinitionPtr def, bool onlyConcrete,
     std::vector<smtk::attribute::DefinitionPtr>& result) const;
   void internalFindAttributes(

@@ -12,6 +12,7 @@
 #include "smtk/extension/qt/qtActiveObjects.h"
 
 #include "smtk/view/DescriptivePhrase.h"
+#include "smtk/view/PhraseModel.h"
 #include "smtk/view/SubphraseGenerator.h"
 
 #include "smtk/model/Entity.h"
@@ -79,7 +80,8 @@ class qtDescriptivePhraseModel::Internal
 public:
   /**\brief Store a map of weak pointers to phrases by their phrase IDs.
     *
-    * We hold a strong pointer to the root phrase in qtDescriptivePhraseModel::m_root.
+    * We hold a strong pointer to the phrase-model in qtDescriptivePhraseModel::m_model.
+    * The phrase-model owns the root of the descriptive phrase hierarchy.
     * This map is a reverse lookup of pointers to subphrases by integer handles
     * that Qt can associate with QModelIndex entries.
     *
@@ -91,6 +93,7 @@ public:
 
 qtDescriptivePhraseModel::qtDescriptivePhraseModel(QObject* owner)
   : QAbstractItemModel(owner)
+  , m_modelObserver(-1)
 {
   this->m_deleteOnRemoval = true;
   this->P = new Internal;
@@ -114,20 +117,38 @@ QColor qtDescriptivePhraseModel::defaultPhraseColor(const std::string& entityTyp
     return s_defaultColors[entityType];
   }
 }
-void qtDescriptivePhraseModel::clear()
+
+void qtDescriptivePhraseModel::setPhraseModel(smtk::view::PhraseModelPtr model)
 {
-  if (this->m_root && !this->m_root->subphrases().empty())
+  // Get rid of old phrases
+  if (m_model)
   {
-    // provide an invalid parent since you want to clear all
-    this->beginRemoveRows(QModelIndex(), 0, static_cast<int>(this->m_root->subphrases().size()));
-    this->m_root = view::DescriptivePhrasePtr();
-    this->endRemoveRows();
+    m_model->unobserve(m_modelObserver);
+    if (!this->m_model->root()->subphrases().empty())
+    {
+      // Provide an invalid parent since you want to clear all
+      this->beginRemoveRows(
+        QModelIndex(), 0, static_cast<int>(this->m_model->root()->subphrases().size()));
+      this->m_model = smtk::view::PhraseModelPtr();
+      this->endRemoveRows();
+    }
+  }
+  m_model = model;
+  if (m_model)
+  {
+    // Observe all changes to the model, which includes calling the observer on all
+    // existing top-level phrases.
+    m_modelObserver = m_model->observe(
+      [this](smtk::view::DescriptivePhrasePtr phrase, smtk::view::PhraseModelEvent event,
+        const std::vector<int>& src, const std::vector<int>& dst,
+        const std::vector<int>& range) { this->updateObserver(phrase, event, src, dst, range); },
+      true);
   }
 }
 
 QModelIndex qtDescriptivePhraseModel::index(int row, int column, const QModelIndex& owner) const
 {
-  if (!this->m_root || this->m_root->subphrases().empty())
+  if (!this->m_model || this->m_model->root()->subphrases().empty())
     return QModelIndex();
 
   if (owner.isValid() && owner.column() != 0)
@@ -166,7 +187,7 @@ QModelIndex qtDescriptivePhraseModel::parent(const QModelIndex& child) const
 
   view::DescriptivePhrasePtr childPhrase = this->getItem(child);
   view::DescriptivePhrasePtr parentPhrase = childPhrase->parent();
-  if (parentPhrase == this->m_root)
+  if (parentPhrase == this->m_model->root())
   {
     return QModelIndex();
   }
@@ -195,7 +216,7 @@ bool qtDescriptivePhraseModel::hasChildren(const QModelIndex& owner) const
     }
   }
   // Return whether the toplevel m_phrases list is empty.
-  return (this->m_root ? (this->m_root->subphrases().empty() ? false : true) : false);
+  return (this->m_model ? (this->m_model->root()->subphrases().empty() ? false : true) : false);
 }
 
 /// The number of rows in the table "underneath" \a owner.
@@ -439,58 +460,6 @@ bool qtDescriptivePhraseModel::setData(const QModelIndex& idx, const QVariant& v
   return didChange;
 }
 
-/*
-void qtDescriptivePhraseModel::sort(int column, Qt::SortOrder order)
-{
-  switch (column)
-    {
-  case -1:
-      { // Sort by UUID.
-      std::multiset<smtk::common::UUID> sorter;
-      this->sortDataWithContainer(sorter, order);
-      }
-    break;
-  case 1:
-      {
-      smtk::model::SortByEntityFlags comparator(this->m_manager);
-      std::multiset<smtk::common::UUID,smtk::model::SortByEntityFlags>
-        sorter(comparator);
-      this->sortDataWithContainer(sorter, order);
-      }
-    break;
-  case 0:
-  case 2:
-      {
-      smtk::model::SortByEntityProperty<
-        smtk::model::Manager,
-        smtk::model::StringList,
-        &smtk::model::Manager::stringProperty,
-        &smtk::model::Manager::hasStringProperty> comparator(
-          this->m_manager, "name");
-      std::multiset<
-        smtk::common::UUID,
-        smtk::model::SortByEntityProperty<
-          smtk::model::Manager,
-          smtk::model::StringList,
-          &smtk::model::Manager::stringProperty,
-          &smtk::model::Manager::hasStringProperty> >
-        sorter(comparator);
-      this->sortDataWithContainer(sorter, order);
-      }
-    break;
-  default:
-    std::cerr << "Bad column " << column << " for sorting\n";
-    break;
-    }
-  emit dataChanged(
-    this->index(0, 0, QModelIndex()),
-    this->index(
-      static_cast<int>(this->m_phrases.size()),
-      this->columnCount(),
-      QModelIndex()));
-}
-*/
-
 /// Provide meta-information about a model entry.
 Qt::ItemFlags qtDescriptivePhraseModel::flags(const QModelIndex& idx) const
 {
@@ -644,7 +613,7 @@ view::DescriptivePhrasePtr qtDescriptivePhraseModel::getItem(const QModelIndex& 
     {
       //std::cout << "  Missing index " << phraseIdx << "\n";
       std::cout.flush();
-      return this->m_root;
+      return this->m_model->root();
     }
     view::WeakDescriptivePhrasePtr weakPhrase = it->second;
     view::DescriptivePhrasePtr phrase;
@@ -657,7 +626,17 @@ view::DescriptivePhrasePtr qtDescriptivePhraseModel::getItem(const QModelIndex& 
       this->P->ptrs.erase(phraseIdx);
     }
   }
-  return this->m_root;
+  return this->m_model->root();
+}
+
+QModelIndex qtDescriptivePhraseModel::indexFromPath(const std::vector<int>& path) const
+{
+  QModelIndex result;
+  for (auto entry : path)
+  {
+    result = this->index(entry, 0, result);
+  }
+  return result;
 }
 
 void qtDescriptivePhraseModel::rebuildSubphrases(const QModelIndex& qidx)
@@ -675,14 +654,44 @@ void qtDescriptivePhraseModel::rebuildSubphrases(const QModelIndex& qidx)
   emit dataChanged(qidx, qidx);
 }
 
-void qtDescriptivePhraseModel::updateWithOperatorResult(const OperatorResult& result)
-{
-  (void)result;
-}
-
 Qt::DropActions qtDescriptivePhraseModel::supportedDropActions() const
 {
   return Qt::CopyAction;
+}
+
+void qtDescriptivePhraseModel::updateObserver(smtk::view::DescriptivePhrasePtr phrase,
+  smtk::view::PhraseModelEvent event, const std::vector<int>& src, const std::vector<int>& dst,
+  const std::vector<int>& range)
+{
+  (void)phrase;
+
+  using smtk::view::PhraseModelEvent;
+
+  switch (event)
+  {
+    case PhraseModelEvent::ABOUT_TO_INSERT:
+      this->beginInsertRows(this->indexFromPath(src), range[0], range[1]);
+      break;
+    case PhraseModelEvent::INSERT_FINISHED:
+      this->endInsertRows();
+      break;
+    case PhraseModelEvent::ABOUT_TO_REMOVE:
+      this->beginRemoveRows(this->indexFromPath(src), range[0], range[1]);
+      break;
+    case PhraseModelEvent::REMOVE_FINISHED:
+      this->endRemoveRows();
+      break;
+    case PhraseModelEvent::ABOUT_TO_MOVE:
+      this->beginMoveRows(
+        this->indexFromPath(src), range[0], range[1], this->indexFromPath(dst), range[2]);
+      break;
+    case PhraseModelEvent::MOVE_FINISHED:
+      this->endMoveRows();
+      break;
+    case PhraseModelEvent::PHRASE_MODIFIED:
+      this->dataChanged(this->indexFromPath(src), this->indexFromPath(dst));
+      break;
+  }
 }
 
 } // namespace extension

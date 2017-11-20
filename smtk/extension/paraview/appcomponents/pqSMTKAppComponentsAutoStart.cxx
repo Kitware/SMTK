@@ -11,7 +11,7 @@
 
 #include "smtk/resource/SelectionManager.h"
 
-#include "smtk/extension/paraview/appcomponents/pqSMTKResourceManagerBehavior.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 //#include "smtk/extension/paraview/appcomponents/pqSMTKSelectionFilterBehavior.h"
 #include "smtk/extension/paraview/server/vtkSMSMTKResourceManagerProxy.h"
 
@@ -31,7 +31,7 @@ pqSMTKAppComponentsAutoStart::~pqSMTKAppComponentsAutoStart()
 
 void pqSMTKAppComponentsAutoStart::startup()
 {
-  auto rsrcMgr = pqSMTKResourceManagerBehavior::instance(this);
+  auto rsrcMgr = pqSMTKBehavior::instance(this);
   std::cout << "Startup seln mgr behavior" << rsrcMgr << "\n";
   auto pqCore = pqApplicationCore::instance();
   if (pqCore)

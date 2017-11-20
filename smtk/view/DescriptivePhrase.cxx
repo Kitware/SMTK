@@ -145,6 +145,12 @@ bool DescriptivePhrase::isPropertyValueType() const
     phType == DescriptivePhraseType::STRING_PROPERTY_VALUE;
 }
 
+void DescriptivePhrase::visitChildren(Visitor fn)
+{
+  std::vector<int> indices;
+  this->visitChildrenInternal(fn, indices);
+}
+
 bool DescriptivePhrase::compareByTypeThenTitle(
   const DescriptivePhrasePtr& a, const DescriptivePhrasePtr& b)
 {
@@ -245,6 +251,35 @@ void DescriptivePhrase::buildSubphrases()
     if (delegate)
       this->m_subphrases = delegate->subphrases(shared_from_this());
   }
+}
+
+int DescriptivePhrase::visitChildrenInternal(Visitor fn, std::vector<int>& indices)
+{
+  int traverse = 0;
+  if (this->areSubphrasesBuilt())
+  {
+    DescriptivePhrases list = this->subphrases();
+    indices.insert(indices.end(), 0);
+    for (auto entry : list)
+    {
+      if (entry)
+      {
+        traverse = fn(entry, indices); // Only call fn when entry is non-null?
+        if (traverse == 0)
+        {
+          traverse = entry->visitChildrenInternal(fn, indices);
+        }
+        if (traverse > 1)
+        {
+          break;
+        }
+        // Increment counter
+        ++indices.back();
+      }
+    }
+    indices.pop_back();
+  }
+  return traverse;
 }
 
 } // view namespace

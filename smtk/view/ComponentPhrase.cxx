@@ -115,6 +115,12 @@ smtk::resource::ComponentPtr ComponentPhrase::relatedComponent() const
 
 smtk::resource::FloatList ComponentPhrase::relatedColor() const
 {
+  auto ent = std::dynamic_pointer_cast<smtk::model::Entity>(m_component);
+  if (ent)
+  {
+    return ent->referenceAs<smtk::model::EntityRef>().color();
+  }
+
   smtk::resource::FloatList rgba(4, -1);
   return rgba;
 }

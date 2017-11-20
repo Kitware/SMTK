@@ -213,7 +213,7 @@ public:
   virtual bool setSpecification(Specification spec);
   virtual bool ensureSpecification() const;
 
-  Result createResult(Outcome outcome = UNABLE_TO_OPERATE);
+  virtual Result createResult(Outcome outcome = UNABLE_TO_OPERATE);
   void setResultOutcome(Result res, Outcome outcome);
   virtual void eraseResult(Result res);
 
@@ -226,7 +226,22 @@ public:
 protected:
   Operator();
 
+  /// Perform the operation. Subclasses must implement this method.
   virtual Operator::Result operateInternal() = 0;
+  /** \brief Post-process result entities. Called from within operate(), after operateInternal().
+    *
+    * Perform tasks that affect only the SMTK model manager's storage.
+    *
+    * This method mirrors created/expunged/modified/tess_changed model entity items to
+    * component items as a temporary measure until operators move away from using
+    * ModelEntityItem.
+    */
+  virtual void postProcessResult(Operator::Result& res);
+
+  void copyModelEntityItemToComponentItem(
+    Operator::Result& res, const std::string& meItem, const std::string& compItem);
+
+  /// Add a summary log-entry of the result. Called from within operate(), after prettifyResult().
   virtual void generateSummary(Operator::Result& res);
 
   Specification m_specification;

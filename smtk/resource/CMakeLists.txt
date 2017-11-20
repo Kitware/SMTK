@@ -9,6 +9,7 @@ set(resourceSrcs
 
 set(resourceHeaders
   Component.h
+  Event.h
   Manager.h
   Metadata.h
   PropertyType.h

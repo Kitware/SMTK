@@ -13,6 +13,8 @@
 #define PUGIXML_HEADER_ONLY
 #include "pugixml/src/pugixml.cpp"
 
+#include "smtk/attribute/ComponentItem.h"
+#include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/DateTimeItemDefinition.h"
 #include "smtk/io/Logger.h"
@@ -52,6 +54,10 @@ void XmlV3StringWriter::processItemDefinitionType(
   {
     case Item::DateTimeType:
       this->processDateTimeDef(node, smtk::dynamic_pointer_cast<DateTimeItemDefinition>(idef));
+      break;
+
+    case Item::ComponentType:
+      this->processComponentDef(node, std::dynamic_pointer_cast<ComponentItemDefinition>(idef));
       break;
 
     default:
@@ -111,6 +117,10 @@ void XmlV3StringWriter::processItemType(xml_node& node, smtk::attribute::ItemPtr
       this->processDateTimeItem(node, smtk::dynamic_pointer_cast<DateTimeItem>(item));
       break;
 
+    case Item::ComponentType:
+      this->processComponentItem(node, smtk::dynamic_pointer_cast<ComponentItem>(item));
+      break;
+
     default:
       XmlV2StringWriter::processItemType(node, item);
       break;
@@ -151,6 +161,109 @@ void XmlV3StringWriter::processDateTimeItem(pugi::xml_node& node, attribute::Dat
       val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       ::smtk::common::DateTimeZonePair dtz = item->value();
       val.text().set(dtz.serialize().c_str());
+    }
+    else
+    {
+      val = values.append_child("UnsetVal");
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
+    }
+  }
+}
+
+void XmlV3StringWriter::processComponentDef(
+  pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef)
+{
+  auto acceptableResources = idef->acceptableResourceComponentsByName();
+  xml_node accnode = node.append_child("Accepts");
+  for (auto name : acceptableResources)
+  {
+    xml_node rsrcnode = accnode.append_child("Resource");
+    rsrcnode.text().set(name.c_str());
+  }
+
+  smtk::model::BitFlags membershipMask = idef->membershipMask();
+  std::string membershipMaskStr = this->encodeModelEntityMask(membershipMask);
+  xml_node menode;
+  menode = node.append_child("MembershipMask");
+  menode.text().set(membershipMaskStr.c_str());
+
+  node.append_attribute("NumberOfRequiredValues") =
+    static_cast<unsigned int>(idef->numberOfRequiredValues());
+  if (idef->isExtensible())
+  {
+    node.append_attribute("Extensible") = true;
+
+    if (idef->maxNumberOfValues())
+      node.append_attribute("MaxNumberOfValues") =
+        static_cast<unsigned int>(idef->maxNumberOfValues());
+  }
+
+  if (idef->hasValueLabels())
+  {
+    xml_node lnode = node.append_child();
+    lnode.set_name("ComponentLabels");
+    if (idef->usingCommonLabel())
+    {
+      lnode.append_attribute("CommonLabel") = idef->valueLabel(0).c_str();
+    }
+    else
+    {
+      size_t i, n = idef->numberOfRequiredValues();
+      xml_node ln;
+      for (i = 0; i < n; i++)
+      {
+        ln = lnode.append_child();
+        ln.set_name("Label");
+        ln.set_value(idef->valueLabel(i).c_str());
+      }
+    }
+  }
+}
+
+void XmlV3StringWriter::processComponentItem(pugi::xml_node& node, attribute::ComponentItemPtr item)
+{
+  size_t i = 0, n = item->numberOfValues();
+  std::size_t numRequiredVals = item->numberOfRequiredValues();
+  // we should always have "NumberOfValues" set
+  node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
+
+  xml_node val;
+  if (!n)
+  {
+    return;
+  }
+
+  if ((numRequiredVals == 1) && (!item->isExtensible()))
+  {
+    if (item->isSet())
+    {
+      val = node.append_child("Val");
+      auto rsrcPtr = item->value(i)->resource();
+      if (rsrcPtr)
+      {
+        xml_node rsrc = val.append_child("Resource");
+        rsrc.text().set(rsrcPtr->id().toString().c_str());
+      }
+      xml_node comp = val.append_child("Component");
+      comp.text().set(item->value(i)->id().toString().c_str());
+    }
+    return;
+  }
+  xml_node values = node.append_child("Values");
+  for (i = 0; i < n; i++)
+  {
+    if (item->isSet(i))
+    {
+      val = values.append_child("Val");
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
+      auto rsrcPtr = item->value(i)->resource();
+      if (rsrcPtr)
+      {
+        xml_node rsrc = val.append_child("Resource");
+        rsrc.text().set(rsrcPtr->id().toString().c_str());
+      }
+      xml_node comp = val.append_child("Component");
+      comp.text().set(item->value(i)->id().toString().c_str());
     }
     else
     {

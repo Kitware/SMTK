@@ -120,9 +120,8 @@ class SMTKCORE_EXPORT Operator : public smtk::operation::Operator
 {
 public:
   smtkTypeMacro(Operator);
+  smtkSuperclassMacro(smtk::operation::Operator);
   smtkSharedFromThisMacro(smtk::operation::Operator);
-
-  OperatorResult operate() override;
 
   ManagerPtr manager() const;
   Ptr setManager(ManagerPtr s);
@@ -186,13 +185,21 @@ public:
 
   virtual ~Operator();
 
-  OperatorResult createResult(OperatorOutcome outcome = UNABLE_TO_OPERATE);
+  OperatorResult createResult(OperatorOutcome outcome = UNABLE_TO_OPERATE) override;
   void eraseResult(Result res) override;
 
 protected:
   friend class DefaultSession;
 
   Operator();
+
+  /** \brief Perform tasks that affect only the SMTK model manager's storage.
+    *
+    * This is called from within Superclass::operate().
+    * It assigns names to entities if the operator subclass requests it.
+    * It invokes its superclass's implementation.
+    */
+  void postProcessResult(OperatorResult& result) override;
 
   void addEntityToResult(
     OperatorResult res, const EntityRef& ent, ResultEntityOrigin gen = UNKNOWN);

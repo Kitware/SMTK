@@ -48,10 +48,13 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Return the client-side resource manager (mirrored on the server via this proxy).
-  smtk::resource::ManagerPtr GetManager() const { return this->Manager; }
+  smtk::resource::ManagerPtr GetManager() const;
 
   /// Return the client-side selection manager (mirrored on the server via this proxy).
-  smtk::resource::SelectionManagerPtr GetSelection() const { return this->Selection; }
+  smtk::resource::SelectionManagerPtr GetSelection() const;
+
+  /// Return the client-side operation manager (mirrored on the server via this proxy).
+  smtk::operation::ManagerPtr GetOperationManager() const;
 
   /// Call this to indicate which PV data has the active PV selection.
   void SetSelectedPortProxy(vtkSMSourceProxy* pxy);
@@ -98,6 +101,7 @@ protected:
 
   smtk::resource::ManagerPtr Manager;
   smtk::resource::SelectionManagerPtr Selection;
+  smtk::operation::ManagerPtr OperationManager;
 
 private:
   vtkSMSMTKResourceManagerProxy(const vtkSMSMTKResourceManagerProxy&) = delete;
