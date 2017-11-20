@@ -347,6 +347,13 @@ bool qtModelOperationWidget::initOperatorUI(const smtk::model::OperatorPtr& brOp
       if (comp.child(ci).attribute("Type", optype) && optype == att->type())
       {
         opView = it->second;
+        // If we are dealing with an Operator View - The Name attribute needs to be
+        // set to the same of the attribute the operator is using - so in practice
+        // the Name attribute does not have to be set in the operator's sbt info
+        if (opView->type() == "Operator")
+        {
+          comp.child(ci).setAttribute("Name", att->name());
+        }
         break;
       }
     }
