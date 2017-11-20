@@ -18,6 +18,7 @@ int main()
 {
   int status = 0;
   smtk::attribute::SystemPtr sysptr = smtk::attribute::System::create();
+  smtk::attribute::WeakSystemPtr wsysptr = sysptr;
   smtk::attribute::System& system(*sysptr.get());
   std::cout << "System Created\n";
   smtk::common::Resource::Type t = system.resourceType();
@@ -187,6 +188,15 @@ int main()
     }
   }
 
-  std::cout << "System destroyed\n";
+  sysptr = nullptr; // Release the attribute system
+  if (wsysptr.lock() != nullptr)
+  {
+    std::cout << "System was not destroyed!\n";
+    status++;
+  }
+  else
+  {
+    std::cout << "System destroyed\n";
+  }
   return status;
 }
