@@ -20,8 +20,9 @@
 int unitAttributeBasics(int, char* [])
 {
   int status = 0;
-  smtk::attribute::CollectionPtr sysptr = smtk::attribute::Collection::create();
-  smtk::attribute::Collection& collection(*sysptr.get());
+  smtk::attribute::CollectionPtr collptr = smtk::attribute::Collection::create();
+  smtk::attribute::WeakCollectionPtr wcollptr = collptr;
+  smtk::attribute::Collection& collection(*collptr.get());
   std::cout << "Collection Created\n";
 
   smtk::attribute::DefinitionPtr def = collection.createDefinition("testDef");
@@ -90,8 +91,7 @@ int unitAttributeBasics(int, char* [])
   smtkTest(att->appliesToInteriorNodes(), "Should be applied to interior node.");
   att->setAppliesToInteriorNodes(false);
   smtkTest(!att->appliesToInteriorNodes(), "Should not applied to interior node.");
-  smtkTest(att->collection() == sysptr, "Should be this collection.");
-
-  std::cout << "Collection destroyed\n";
-  return status;
+  smtkTest(att->collection() == collptr, "Should be this collection.");
+  collptr = nullptr;
+  smtkTest(wcollptr.lock() == nullptr, "Collection was not destroyed") return status;
 }

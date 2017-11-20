@@ -88,7 +88,12 @@ bool Definition::conflicts(smtk::attribute::DefinitionPtr def) const
   }
 
   // Get the most "basic" definition that is unique
-  smtk::attribute::ConstDefinitionPtr baseDef = this->m_collection->findIsUniqueBaseClass(def);
+  auto attresource = this->collection();
+  if (attresource == nullptr)
+  {
+    return false; // there is no derived info
+  }
+  smtk::attribute::ConstDefinitionPtr baseDef = attresource->findIsUniqueBaseClass(def);
   // See if the other definition is derived from this base definition.
   // If it is not then we know there is no conflict
   return def->isA(baseDef);
@@ -340,7 +345,11 @@ void Definition::updateDerivedDefinitions()
   DefinitionPtr def = this->shared_from_this();
   if (def)
   {
-    this->m_collection->updateDerivedDefinitionIndexOffsets(def);
+    auto attresource = this->collection();
+    if (attresource != nullptr)
+    {
+      attresource->updateDerivedDefinitionIndexOffsets(def);
+    }
   }
 }
 
