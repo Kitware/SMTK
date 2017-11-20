@@ -26,11 +26,11 @@
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/common/View.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Operator.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/StringData.h"
+#include "smtk/view/View.h"
 
 #include "smtk/io/Logger.h"
 
@@ -333,9 +333,9 @@ bool qtModelOperationWidget::initOperatorUI(const smtk::model::OperatorPtr& brOp
   // ( meaning if there is no "AttributeTypes" specified in view components' children,
   // or the att->type() is not included in any view "AttributeTypes" ),
   // use "Operator" view by default
-  smtk::common::ViewPtr opView;
+  smtk::view::ViewPtr opView;
 
-  std::map<std::string, smtk::common::ViewPtr>::const_iterator it;
+  std::map<std::string, smtk::view::ViewPtr>::const_iterator it;
   for (it = att->collection()->views().begin(); it != att->collection()->views().end(); ++it)
   {
     //If  this is an Operator View we need to check its InstancedAttributes child else
@@ -353,7 +353,7 @@ bool qtModelOperationWidget::initOperatorUI(const smtk::model::OperatorPtr& brOp
     {
       continue;
     }
-    smtk::common::View::Component& comp = it->second->details().child(i);
+    smtk::view::View::Component& comp = it->second->details().child(i);
     for (std::size_t ci = 0; ci < comp.numberOfChildren(); ++ci)
     {
       std::string optype;
@@ -370,8 +370,8 @@ bool qtModelOperationWidget::initOperatorUI(const smtk::model::OperatorPtr& brOp
   if (!opView || !uiManager->hasViewConstructor(opView->type()))
   {
     //Lets create a default view for the operator itself
-    opView = smtk::common::View::New("Operator", brOp->name());
-    smtk::common::View::Component& comp =
+    opView = smtk::view::View::New("Operator", brOp->name());
+    smtk::view::View::Component& comp =
       opView->details().addChild("InstancedAttributes").addChild("Att");
     comp.setAttribute("Type", att->type()).setAttribute("Name", att->name());
     att->collection()->addView(opView);

@@ -22,7 +22,7 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/common/View.h"
+#include "smtk/view/View.h"
 
 #include "smtk/io/SaveJSON.h"
 #include "smtk/io/SaveJSON.txx"
@@ -256,7 +256,7 @@ void smtkExportModelView::widgetDestroyed(QObject* w)
 
 void smtkExportModelView::updateAttributeData()
 {
-  smtk::common::ViewPtr view = this->getObject();
+  smtk::view::ViewPtr view = this->getObject();
   if (!view || !this->Widget)
   {
     return;
@@ -267,11 +267,11 @@ void smtkExportModelView::updateAttributeData()
   {
     return;
   }
-  smtk::common::View::Component& comp = view->details().child(i);
+  smtk::view::View::Component& comp = view->details().child(i);
   std::string defName;
   for (std::size_t ci = 0; ci < comp.numberOfChildren(); ++ci)
   {
-    smtk::common::View::Component& attComp = comp.child(ci);
+    smtk::view::View::Component& attComp = comp.child(ci);
     if (attComp.name() != "Att")
     {
       continue;
@@ -302,7 +302,7 @@ void smtkExportModelView::updateAttributeData()
 
 void smtkExportModelView::createWidget()
 {
-  smtk::common::ViewPtr view = this->getObject();
+  smtk::view::ViewPtr view = this->getObject();
   if (!view)
   {
     return;

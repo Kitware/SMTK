@@ -17,12 +17,12 @@
 #include "smtk/bridge/polygon/qt/pqArcWidgetManager.h"
 #include "smtk/bridge/polygon/qt/pqPolygonArc.h"
 #include "smtk/bridge/polygon/qt/pqSplitEdgeWidget.h"
-#include "smtk/common/View.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/model/Operator.h"
+#include "smtk/view/View.h"
 
 #include "pqActiveObjects.h"
 #include "pqApplicationCore.h"
@@ -232,7 +232,7 @@ void smtkAssignColorsView::attributeModified()
 
 void smtkAssignColorsView::createWidget()
 {
-  smtk::common::ViewPtr view = this->getObject();
+  smtk::view::ViewPtr view = this->getObject();
   if (!view)
   {
     return;
@@ -320,7 +320,7 @@ void smtkAssignColorsView::createWidget()
 
 void smtkAssignColorsView::updateAttributeData()
 {
-  smtk::common::ViewPtr view = this->getObject();
+  smtk::view::ViewPtr view = this->getObject();
   if (!view || !this->Widget)
   {
     return;
@@ -336,11 +336,11 @@ void smtkAssignColorsView::updateAttributeData()
   {
     return;
   }
-  smtk::common::View::Component& comp = view->details().child(i);
+  smtk::view::View::Component& comp = view->details().child(i);
   std::string defName;
   for (std::size_t ci = 0; ci < comp.numberOfChildren(); ++ci)
   {
-    smtk::common::View::Component& attComp = comp.child(ci);
+    smtk::view::View::Component& attComp = comp.child(ci);
     //std::cout << "  component " << attComp.name() << "\n";
     if (attComp.name() != "Att")
     {

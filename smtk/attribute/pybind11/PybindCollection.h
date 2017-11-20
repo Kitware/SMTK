@@ -19,8 +19,8 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/resource/Resource.h"
 #include "smtk/common/UUID.h"
-#include "smtk/common/View.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
+#include "smtk/view/View.h"
 #include "smtk/model/Manager.h"
 
 namespace py = pybind11;

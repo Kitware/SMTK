@@ -19,7 +19,7 @@
 #include "smtk/attribute/ItemDefinition.h"
 #include "ui_qtViewInfoDialog.h"
 
-#include "smtk/common/View.h"
+#include "smtk/view/View.h"
 
 using namespace smtk::extension;
 
@@ -36,7 +36,7 @@ qtViewInfoDialog::~qtViewInfoDialog()
   delete this->m_dialog;
 }
 
-void qtViewInfoDialog::displayInfo(smtk::common::ViewPtr view)
+void qtViewInfoDialog::displayInfo(smtk::view::ViewPtr view)
 {
   std::string s;
   this->m_view = view;

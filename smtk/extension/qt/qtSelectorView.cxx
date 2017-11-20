@@ -18,7 +18,7 @@
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
 
-#include "smtk/common/View.h"
+#include "smtk/view/View.h"
 
 #include <QApplication>
 #include <QFile>
@@ -41,7 +41,7 @@ class qtSelectorViewInternals
 {
 public:
   QList<smtk::extension::qtBaseView*> ChildViews;
-  std::vector<smtk::common::ViewPtr> m_views;
+  std::vector<smtk::view::ViewPtr> m_views;
   QList<int> m_viewEnumIdices;
   smtk::attribute::AttributePtr m_selectorAttribute;
   smtk::attribute::ValueItemPtr m_selectorItem;
@@ -68,7 +68,7 @@ qtSelectorView::~qtSelectorView()
 
 void qtSelectorView::createWidget()
 {
-  smtk::common::ViewPtr view = this->getObject();
+  smtk::view::ViewPtr view = this->getObject();
   if (!view)
   {
     return;
@@ -90,7 +90,7 @@ void qtSelectorView::createWidget()
 bool qtSelectorView::createSelector()
 {
   //create the layout for the frame area
-  smtk::common::ViewPtr view = this->getObject();
+  smtk::view::ViewPtr view = this->getObject();
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
   layout->setMargin(0);
   this->Widget->setLayout(layout);
@@ -148,7 +148,7 @@ bool qtSelectorView::createSelector()
 
 bool qtSelectorView::createChildren()
 {
-  smtk::common::ViewPtr view = this->getObject();
+  smtk::view::ViewPtr view = this->getObject();
   smtk::attribute::CollectionPtr sys = this->uiManager()->attCollection();
 
   // We need the selector item's definition in order to get the enumeration info
@@ -162,9 +162,9 @@ bool qtSelectorView::createChildren()
     // there are no children views
     return false;
   }
-  smtk::common::View::Component& viewsComp = view->details().child(viewsIndex);
+  smtk::view::View::Component& viewsComp = view->details().child(viewsIndex);
   std::size_t i, n = viewsComp.numberOfChildren();
-  smtk::common::ViewPtr v;
+  smtk::view::ViewPtr v;
   bool hasDefaultIndex = selItemDef->hasDefault();
   int defaultIndex = (hasDefaultIndex ? selItemDef->defaultDiscreteIndex() : -1);
   qtBaseView* qtView;

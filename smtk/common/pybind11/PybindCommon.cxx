@@ -44,7 +44,6 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindUUIDGenerator.h"
 #include "PybindUnionFind.h"
 #include "PybindVersion.h"
-#include "PybindView.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
@@ -73,5 +72,4 @@ PYBIND11_MODULE(_smtkPybindCommon, common)
   py::class_< smtk::common::UUID > smtk_common_UUID = pybind11_init_smtk_common_UUID(common);
   py::class_< smtk::common::UUIDGenerator > smtk_common_UUIDGenerator = pybind11_init_smtk_common_UUIDGenerator(common);
   py::class_< smtk::common::Version > smtk_common_Version = pybind11_init_smtk_common_Version(common);
-  py::class_< smtk::common::View > smtk_common_View = pybind11_init_smtk_common_View(common);
 }

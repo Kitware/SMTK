@@ -61,7 +61,7 @@
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 
-#include "smtk/common/View.h"
+#include "smtk/view/View.h"
 
 #include <math.h>
 
@@ -177,7 +177,7 @@ qtBaseView* qtUIManager::setSMTKView(
   return this->m_topView;
 }
 
-qtBaseView* qtUIManager::setSMTKView(smtk::common::ViewPtr v)
+qtBaseView* qtUIManager::setSMTKView(smtk::view::ViewPtr v)
 {
   if (this->m_smtkView != v)
   {
@@ -188,7 +188,7 @@ qtBaseView* qtUIManager::setSMTKView(smtk::common::ViewPtr v)
 }
 
 qtBaseView* qtUIManager::setSMTKView(
-  smtk::common::ViewPtr v, QWidget* pWidget, bool useInternalFileBrowser)
+  smtk::view::ViewPtr v, QWidget* pWidget, bool useInternalFileBrowser)
 {
   if ((this->m_smtkView != v) || (this->m_parentWidget != pWidget) ||
     (this->m_useInternalFileBrowser != useInternalFileBrowser))

@@ -12,10 +12,10 @@
 #include "smtk/extension/qt/qtInstancedView.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/common/View.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/model/Operator.h"
+#include "smtk/view/View.h"
 
 #include <QDialogButtonBox>
 #include <QHBoxLayout>
@@ -39,7 +39,7 @@ public:
   }
   smtk::model::OperatorPtr m_operator;
   std::unique_ptr<qtInstancedView> m_instancedView;
-  smtk::common::ViewPtr m_instancedViewDef;
+  smtk::view::ViewPtr m_instancedViewDef;
   QPointer<QPushButton> m_applyButton;
   QPointer<QPushButton> m_infoButton;
 };
@@ -64,8 +64,8 @@ qtOperatorView::qtOperatorView(const OperatorViewInfo& info)
   this->Internals = new qtOperatorViewInternals;
   this->Internals->m_operator = info.m_operator;
   // We need to create a new View for the internal instanced View
-  this->Internals->m_instancedViewDef = smtk::common::View::New("Instanced", "Parameters");
-  smtk::common::ViewPtr view = this->getObject();
+  this->Internals->m_instancedViewDef = smtk::view::View::New("Instanced", "Parameters");
+  smtk::view::ViewPtr view = this->getObject();
   if (view)
   {
     this->Internals->m_instancedViewDef->copyContents(*view);

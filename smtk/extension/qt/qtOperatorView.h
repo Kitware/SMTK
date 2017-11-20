@@ -27,14 +27,14 @@ namespace extension
 class SMTKQTEXT_EXPORT OperatorViewInfo : public ViewInfo
 {
 public:
-  OperatorViewInfo(smtk::common::ViewPtr view, smtk::model::OperatorPtr targetOperator,
+  OperatorViewInfo(smtk::view::ViewPtr view, smtk::model::OperatorPtr targetOperator,
     QWidget* parent, qtUIManager* uiman)
     : ViewInfo(view, parent, uiman)
     , m_operator(targetOperator)
   {
   }
 
-  OperatorViewInfo(smtk::common::ViewPtr view, smtk::model::OperatorPtr targetOperator,
+  OperatorViewInfo(smtk::view::ViewPtr view, smtk::model::OperatorPtr targetOperator,
     QWidget* parent, qtUIManager* uiman, const std::map<std::string, QLayout*>& layoutDict)
     : ViewInfo(view, parent, uiman, layoutDict)
     , m_operator(targetOperator)

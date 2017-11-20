@@ -24,13 +24,13 @@
 #include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
-#include "smtk/common/View.h"
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/json/Interface.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
+#include "smtk/view/View.h"
 #include <algorithm>
 #include <iostream>
 
@@ -586,7 +586,7 @@ void XmlDocV2Parser::processViews(xml_node& root)
   {
     xml_attribute xatt;
     std::string title, vtype, icon;
-    smtk::common::ViewPtr view;
+    smtk::view::ViewPtr view;
     xatt = child.attribute("Title");
     if (xatt)
     {
@@ -609,7 +609,7 @@ void XmlDocV2Parser::processViews(xml_node& root)
       continue;
     }
 
-    view = smtk::common::View::New(vtype, title);
+    view = smtk::view::View::New(vtype, title);
     xatt = child.attribute("Icon");
     if (xatt)
     {
@@ -622,7 +622,7 @@ void XmlDocV2Parser::processViews(xml_node& root)
 }
 
 void XmlDocV2Parser::processViewComponent(
-  smtk::common::View::Component& comp, xml_node& node, bool isTopComp)
+  smtk::view::View::Component& comp, xml_node& node, bool isTopComp)
 {
   // Add the attributes of the node to the component
   xml_attribute xatt;

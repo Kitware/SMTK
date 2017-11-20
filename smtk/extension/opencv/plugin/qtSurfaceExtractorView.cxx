@@ -13,13 +13,13 @@
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
-#include "smtk/common/View.h"
 #include "smtk/extension/opencv/qt/imageFeatureExtractorWidget.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/model/Operator.h"
+#include "smtk/view/View.h"
 
 #include "pqActiveObjects.h"
 #include "pqApplicationCore.h"
@@ -96,7 +96,7 @@ qtSurfaceExtractorView::~qtSurfaceExtractorView()
 
 void qtSurfaceExtractorView::createWidget()
 {
-  smtk::common::ViewPtr view = this->getObject();
+  smtk::view::ViewPtr view = this->getObject();
   if (!view)
   {
     return;
@@ -131,7 +131,7 @@ void qtSurfaceExtractorView::createWidget()
 
 void qtSurfaceExtractorView::updateAttributeData()
 {
-  smtk::common::ViewPtr view = this->getObject();
+  smtk::view::ViewPtr view = this->getObject();
   if (!view || !this->Widget)
   {
     return;
@@ -147,14 +147,14 @@ void qtSurfaceExtractorView::updateAttributeData()
   {
     return;
   }
-  smtk::common::View::Component& comp = view->details().child(i);
+  smtk::view::View::Component& comp = view->details().child(i);
   // for now, we only handle "edit edge" operator; later we could use a list
   // to show all operators (attributes), and a panel underneath to edit current
   // selected operator.
   std::string defName;
   for (std::size_t ci = 0; ci < comp.numberOfChildren(); ++ci)
   {
-    smtk::common::View::Component& attComp = comp.child(ci);
+    smtk::view::View::Component& attComp = comp.child(ci);
     if (attComp.name() != "Att")
     {
       continue;

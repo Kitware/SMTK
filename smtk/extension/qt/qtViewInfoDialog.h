@@ -38,11 +38,11 @@ public:
   qtViewInfoDialog& operator=(const qtViewInfoDialog&) = delete;
 
   void displayInfo(smtk::attribute::AttributePtr att);
-  void displayInfo(smtk::common::ViewPtr view);
+  void displayInfo(smtk::view::ViewPtr view);
 
 private:
   Ui::qtViewInfoDialog* m_dialog;
-  smtk::common::ViewPtr m_view;
+  smtk::view::ViewPtr m_view;
   smtk::attribute::AttributePtr m_attribute;
 };
 }

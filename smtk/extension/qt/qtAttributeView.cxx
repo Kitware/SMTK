@@ -33,7 +33,7 @@
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/common/View.h"
+#include "smtk/view/View.h"
 
 #include <QBrush>
 #include <QColorDialog>
@@ -1349,7 +1349,7 @@ int qtAttributeView::currentViewBy()
 
 void qtAttributeView::getAllDefinitions()
 {
-  smtk::common::ViewPtr view = this->getObject();
+  smtk::view::ViewPtr view = this->getObject();
   if (!view)
   {
     return;
@@ -1390,7 +1390,7 @@ void qtAttributeView::getAllDefinitions()
   }
 
   std::vector<smtk::attribute::AttributePtr> atts;
-  smtk::common::View::Component& attsComp = view->details().child(0);
+  smtk::view::View::Component& attsComp = view->details().child(0);
   std::size_t i, n = attsComp.numberOfChildren();
   for (i = 0; i < n; i++)
   {

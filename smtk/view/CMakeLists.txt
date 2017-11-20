@@ -5,6 +5,7 @@ set(viewSrcs
   PhraseList.cxx
   ResourcePhrase.cxx
   SubphraseGenerator.cxx
+  View.cxx
 )
 
 set(viewHeaders
@@ -15,6 +16,7 @@ set(viewHeaders
   ResourcePhrase.h
   SubphraseGenerator.h
   SubphraseGenerator.txx
+  View.h
 )
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

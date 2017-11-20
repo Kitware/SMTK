@@ -13,7 +13,7 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
-#include "smtk/common/View.h"
+#include "smtk/view/View.h"
 
 #include <QApplication>
 #include <QCheckBox>
@@ -180,7 +180,7 @@ void qtBaseView::buildUI()
 void qtBaseView::makeTopLevel()
 {
 
-  smtk::common::ViewPtr view = this->getObject();
+  smtk::view::ViewPtr view = this->getObject();
   if (!view)
   {
     return;
@@ -332,7 +332,7 @@ void qtBaseView::showAdvanceLevel(int level)
     return;
   }
 
-  smtk::common::ViewPtr view = this->getObject();
+  smtk::view::ViewPtr view = this->getObject();
   if (!view)
   {
     return;

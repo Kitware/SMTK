@@ -118,12 +118,12 @@ public:
   std::size_t numberOfCategories() const { return this->m_categories.size(); }
   const std::set<std::string>& categories() const { return this->m_categories; }
 
-  void addView(smtk::common::ViewPtr);
-  smtk::common::ViewPtr findView(const std::string& title) const;
-  smtk::common::ViewPtr findViewByType(const std::string& vtype) const;
-  smtk::common::ViewPtr findTopLevelView() const;
-  std::vector<smtk::common::ViewPtr> findTopLevelViews() const;
-  const std::map<std::string, smtk::common::ViewPtr>& views() const { return this->m_views; }
+  void addView(smtk::view::ViewPtr);
+  smtk::view::ViewPtr findView(const std::string& title) const;
+  smtk::view::ViewPtr findViewByType(const std::string& vtype) const;
+  smtk::view::ViewPtr findTopLevelView() const;
+  std::vector<smtk::view::ViewPtr> findTopLevelViews() const;
+  const std::map<std::string, smtk::view::ViewPtr>& views() const { return this->m_views; }
 
   smtk::model::ManagerPtr refModelManager() const { return this->m_refModelMgr.lock(); }
   void setRefModelManager(smtk::model::ManagerPtr refModelMgr);
@@ -166,7 +166,7 @@ protected:
   std::map<smtk::attribute::DefinitionPtr, smtk::attribute::WeakDefinitionPtrSet> m_derivedDefInfo;
   std::set<std::string> m_categories;
   std::map<std::string, std::set<std::string> > m_analyses;
-  std::map<std::string, smtk::common::ViewPtr> m_views;
+  std::map<std::string, smtk::view::ViewPtr> m_views;
 
   smtk::model::WeakManagerPtr m_refModelMgr;
   // Advance levels, <int-level, <string-label, color[4]>
@@ -177,11 +177,11 @@ protected:
 private:
 };
 
-inline smtk::common::ViewPtr Collection::findView(const std::string& name) const
+inline smtk::view::ViewPtr Collection::findView(const std::string& name) const
 {
-  std::map<std::string, smtk::common::ViewPtr>::const_iterator it;
+  std::map<std::string, smtk::view::ViewPtr>::const_iterator it;
   it = this->m_views.find(name);
-  return (it == this->m_views.end()) ? smtk::common::ViewPtr() : it->second;
+  return (it == this->m_views.end()) ? smtk::view::ViewPtr() : it->second;
 }
 
 inline smtk::attribute::AttributePtr Collection::findAttribute(const std::string& name) const

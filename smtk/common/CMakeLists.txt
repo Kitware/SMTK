@@ -11,7 +11,6 @@ set(commonSrcs
   TimeZone.cxx
   UUID.cxx
   UUIDGenerator.cxx
-  View.cxx
 )
 
 set(commonHeaders
@@ -30,7 +29,6 @@ set(commonHeaders
   TimeZone.h
   UUID.h
   UUIDGenerator.h
-  View.h
   ${CMAKE_CURRENT_BINARY_DIR}/Version.h
 )
 

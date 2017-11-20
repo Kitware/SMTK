@@ -11,9 +11,9 @@
 #include "smtk/extension/qt/qtInstancedView.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/common/View.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/view/View.h"
 
 #include <QCheckBox>
 #include <QHBoxLayout>
@@ -80,7 +80,7 @@ void qtInstancedView::createWidget()
 
 void qtInstancedView::updateAttributeData()
 {
-  smtk::common::ViewPtr view = this->getObject();
+  smtk::view::ViewPtr view = this->getObject();
   if (!view)
   {
     return;
@@ -106,11 +106,11 @@ void qtInstancedView::updateAttributeData()
     return;
   }
 
-  smtk::common::View::Component& comp = view->details().child(index);
+  smtk::view::View::Component& comp = view->details().child(index);
   std::size_t i, n = comp.numberOfChildren();
   for (i = 0; i < n; i++)
   {
-    smtk::common::View::Component& attComp = comp.child(i);
+    smtk::view::View::Component& attComp = comp.child(i);
     if (attComp.name() != "Att")
     {
       continue;
