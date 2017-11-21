@@ -143,12 +143,35 @@
             locus whose positions projected onto the x-y plane are
             within a radius of the node is used to compute a new
             elevation value.
+
+            When the interpolating data is unstructured, then
+            it is possible to find a point within the bounding box of the
+            interpolating data where there are no data points within the search
+            circle. In that case, the algorithm will return the
+            External Point Value.
+
+            When the interpolating data is a grid, the query point
+            is first snapped to the nearest grid point, and the radius is then
+            used to acquire additional points for averaging. If there are no
+            points within the search circle, the value associated with the
+            original point to which the query point was snapped is returned.
           </DetailedDescription>
         </Double>
 
         <String Name="external point values" Label="External Points:">
 
           <BriefDescription>Treatment for points in the mesh that fall outside of the range of the dataset.</BriefDescription>
+
+          <DetailedDescription>
+            Treatment for points in the mesh that fall outside of the
+            range of the dataset.
+
+            When the interpolating data is unstructured, then
+            it is possible to find a point within the bounding box of the
+            interpolating data where there are no data points within the search
+            circle. In that case, the algorithm will return a value
+            according to this condition.
+          </DetailedDescription>
 
           <ChildrenDefinitions>
             <Double Name="external point value" Label="External Point Value" NumberOfRequiredValues="1" Extensible="false">
