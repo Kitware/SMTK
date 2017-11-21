@@ -354,20 +354,23 @@ void vtkSMTKModelRepresentation::UpdateSelection(
 {
   auto rm = vtkSMTKResourceManagerWrapper::Instance();
   auto sm = rm ? rm->GetSelection() : nullptr;
-  int propVis = 0;
   if (!sm)
   {
-    actor->SetVisibility(propVis);
+    actor->SetVisibility(0);
     return;
   }
+
   auto selection = sm->currentSelection();
+  if (selection.empty())
+  {
+    actor->SetVisibility(0);
+    return;
+  }
+
   // std::cout << "Updating rep selection from " << sm << ", have " << selection.size() << " entries in map\n";
 
-  // Set selection defaults (nothing selected)
-  blockAttr->RemoveBlockVisibilities();
-  blockAttr->RemoveBlockColors();
-  blockAttr->SetBlockVisibility(data, false);
-
+  int propVis = 0;
+  this->ClearSelection(actor->GetMapper());
   for (auto& item : selection)
   {
     auto matchedBlock = this->FindNode(data, item.first->id().toString());
@@ -416,6 +419,49 @@ vtkDataObject* vtkSMTKModelRepresentation::FindNode(
   }
 
   return nullptr;
+}
+
+void vtkSMTKModelRepresentation::ClearSelection(vtkMapper* mapper)
+{
+  auto clearAttributes = [](vtkCompositeDataDisplayAttributes* attr) {
+    attr->RemoveBlockVisibilities();
+    attr->RemoveBlockColors();
+  };
+
+  auto cpdm = vtkCompositePolyDataMapper2::SafeDownCast(mapper);
+  if (cpdm)
+  {
+    auto blockAttr = cpdm->GetCompositeDataDisplayAttributes();
+    clearAttributes(blockAttr);
+    auto data = cpdm->GetInputDataObject(0, 0);
+
+    // For vtkCompositePolyDataMapper2, setting the top node as false is enough
+    // since the state of the top node will stream down to its nodes.
+    blockAttr->SetBlockVisibility(data, false);
+    return;
+  }
+
+  auto gm = vtkGlyph3DMapper::SafeDownCast(mapper);
+  if (gm)
+  {
+    auto blockAttr = gm->GetBlockAttributes();
+    clearAttributes(blockAttr);
+
+    // Glyph3DMapper does not behave as vtkCompositePolyDataMapper2, hence it is
+    // necessary to update the block visibility of each node directly.
+    auto mbds = vtkMultiBlockDataSet::SafeDownCast(gm->GetInputDataObject(0, 0));
+    vtkCompositeDataIterator* iter = mbds->NewIterator();
+
+    iter->GoToFirstItem();
+    while (!iter->IsDoneWithTraversal())
+    {
+      auto dataObj = iter->GetCurrentDataObject();
+      blockAttr->SetBlockVisibility(dataObj, false);
+      iter->GoToNextItem();
+    }
+    iter->Delete();
+    return;
+  }
 }
 
 void vtkSMTKModelRepresentation::SetSelectionPointSize(double val)

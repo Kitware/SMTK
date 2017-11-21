@@ -84,6 +84,16 @@ protected:
   vtkDataObject* FindNode(vtkMultiBlockDataSet* data, const std::string& uuid);
 
   /**
+   * Clear the current selection stored in the mapper's
+   * vtkCompositeDisplayDataAttributes. For vtkCompositePolyDataMapper2,
+   * setting the top node as false is enough since the state of the top
+   * node will stream down to its nodes.  Glyph3DMapper does not behave as
+   * vtkCompositePolyDataMapper2, hence it is necessary to update the block
+   * visibility of each node directly.
+   */
+  void ClearSelection(vtkMapper* mapper);
+
+  /**
    * Update block attributes on entities and instance placements.
    */
   void UpdateGlyphBlockAttributes(vtkGlyph3DMapper* mapper);
