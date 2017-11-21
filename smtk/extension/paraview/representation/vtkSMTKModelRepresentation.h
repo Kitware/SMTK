@@ -80,8 +80,13 @@ protected:
   void ConfigureGlyphMapper(vtkGlyph3DMapper* mapper);
 
   void UpdateSelection(
-    vtkMultiBlockDataSet* data, vtkCompositeDataDisplayAttributes* blockAttr, vtkMapper* mapper);
+    vtkMultiBlockDataSet* data, vtkCompositeDataDisplayAttributes* blockAttr, vtkActor* actor);
   vtkDataObject* FindNode(vtkMultiBlockDataSet* data, const std::string& uuid);
+
+  /**
+   * Update block attributes on entities and instance placements.
+   */
+  void UpdateGlyphBlockAttributes(vtkGlyph3DMapper* mapper);
 
   /**
    * Compute bounds of the input model taking into account instance placements

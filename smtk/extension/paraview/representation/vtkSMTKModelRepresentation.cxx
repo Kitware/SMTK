@@ -205,6 +205,7 @@ int vtkSMTKModelRepresentation::ProcessViewRequest(
     if (this->BlockAttributeTime < data->GetMTime() || this->BlockAttrChanged)
     {
       this->UpdateBlockAttributes(this->EntityMapper.GetPointer());
+      this->UpdateGlyphBlockAttributes(this->GlyphMapper.GetPointer());
       this->BlockAttributeTime.Modified();
       this->BlockAttrChanged = false;
     }
@@ -216,7 +217,7 @@ int vtkSMTKModelRepresentation::ProcessViewRequest(
     {
       this->SelectedEntityMapper->SetInputConnection(0, producerPort);
       auto attr = this->SelectedEntityMapper->GetCompositeDataDisplayAttributes();
-      this->UpdateSelection(multiBlock, attr, this->SelectedEntityMapper);
+      this->UpdateSelection(multiBlock, attr, this->SelectedEntities);
     }
 
     // Update selected glyphs
@@ -225,7 +226,7 @@ int vtkSMTKModelRepresentation::ProcessViewRequest(
     if (multiBlock)
     {
       auto attr = this->SelectedGlyphMapper->GetBlockAttributes();
-      this->UpdateSelection(multiBlock, attr, this->SelectedGlyphMapper);
+      this->UpdateSelection(multiBlock, attr, this->SelectedGlyphEntities);
     }
   }
 
@@ -349,12 +350,14 @@ void vtkSMTKModelRepresentation::SetMapScalars(int val)
 }
 
 void vtkSMTKModelRepresentation::UpdateSelection(
-  vtkMultiBlockDataSet* data, vtkCompositeDataDisplayAttributes* blockAttr, vtkMapper* mapper)
+  vtkMultiBlockDataSet* data, vtkCompositeDataDisplayAttributes* blockAttr, vtkActor* actor)
 {
   auto rm = vtkSMTKResourceManagerWrapper::Instance();
   auto sm = rm ? rm->GetSelection() : nullptr;
+  int propVis = 0;
   if (!sm)
   {
+    actor->SetVisibility(propVis);
     return;
   }
   auto selection = sm->currentSelection();
@@ -370,13 +373,15 @@ void vtkSMTKModelRepresentation::UpdateSelection(
     auto matchedBlock = this->FindNode(data, item.first->id().toString());
     if (matchedBlock)
     {
+      propVis = 1;
       blockAttr->SetBlockVisibility(matchedBlock, true);
       blockAttr->SetBlockColor(matchedBlock, this->SelectionColor);
     }
   }
+  actor->SetVisibility(propVis);
 
   // This is necessary to force an update in the mapper
-  mapper->Modified();
+  actor->GetMapper()->Modified();
 }
 
 vtkDataObject* vtkSMTKModelRepresentation::FindNode(
@@ -423,4 +428,41 @@ void vtkSMTKModelRepresentation::SetPointSize(double val)
 {
   this->Entities->GetProperty()->SetPointSize(val);
   this->GlyphEntities->GetProperty()->SetPointSize(val);
+}
+
+void vtkSMTKModelRepresentation::UpdateGlyphBlockAttributes(vtkGlyph3DMapper* mapper)
+{
+  auto instanceData = mapper->GetInputDataObject(0, 0);
+  if (mapper)
+  {
+    auto blockAttr = mapper->GetBlockAttributes();
+    blockAttr->RemoveBlockVisibilities();
+    for (auto const& item : this->BlockVisibilities)
+    {
+      unsigned int currentIdx = 0;
+      auto dob = blockAttr->DataObjectFromIndex(item.first, instanceData, currentIdx);
+
+      if (dob)
+      {
+        blockAttr->SetBlockVisibility(dob, item.second);
+      }
+    }
+
+    blockAttr->RemoveBlockColors();
+    for (auto const& item : this->BlockColors)
+    {
+      unsigned int currentIdx = 0;
+      auto dob = blockAttr->DataObjectFromIndex(item.first, instanceData, currentIdx);
+
+      if (dob)
+      {
+        auto& arr = item.second;
+        double color[3] = { arr[0], arr[1], arr[2] };
+        blockAttr->SetBlockColor(dob, color);
+      }
+    }
+    // Opacity currently not supported by vtkGlyph3DMapper
+
+    mapper->Modified();
+  }
 }
