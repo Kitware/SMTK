@@ -43,6 +43,7 @@ class OpenSMTKFileInParaView(smtk.testing.TestCase):
         pvsimple.Show()
         displayProperties = pvsimple.GetDisplayProperties()
         displayProperties.MapScalars = 0
+        displayProperties.PointSize = 6
 
         if self.haveVTK() and self.haveVTKExtension():
             import vtk

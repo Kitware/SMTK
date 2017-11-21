@@ -205,13 +205,12 @@ int vtkSMTKModelRepresentation::ProcessViewRequest(
     if (this->BlockAttributeTime < data->GetMTime() || this->BlockAttrChanged)
     {
       this->UpdateBlockAttributes(this->EntityMapper.GetPointer());
-      this->UpdateGlyphBlockAttributes(this->GlyphMapper.GetPointer());
       this->BlockAttributeTime.Modified();
       this->BlockAttrChanged = false;
     }
 
-    /// TODO Selection should only updated after a change
     // Update selected entities
+    /// TODO Selection should only updated after a change
     auto multiBlock = vtkMultiBlockDataSet::SafeDownCast(data);
     if (multiBlock)
     {
@@ -220,8 +219,17 @@ int vtkSMTKModelRepresentation::ProcessViewRequest(
       this->UpdateSelection(multiBlock, attr, this->SelectedEntities);
     }
 
-    // Update selected glyphs
+    // Update glyph attributes
     data = this->GetInternalOutputPort(2)->GetProducer()->GetOutputDataObject(0);
+    if (this->InstanceAttributeTime < data->GetMTime() || this->InstanceAttrChanged)
+    {
+      this->UpdateGlyphBlockAttributes(this->GlyphMapper.GetPointer());
+      this->InstanceAttributeTime.Modified();
+      this->InstanceAttrChanged = false;
+    }
+
+    // Update selected glyphs
+    /// TODO Selection should only updated after a change
     multiBlock = vtkMultiBlockDataSet::SafeDownCast(data);
     if (multiBlock)
     {
@@ -479,36 +487,109 @@ void vtkSMTKModelRepresentation::SetPointSize(double val)
 void vtkSMTKModelRepresentation::UpdateGlyphBlockAttributes(vtkGlyph3DMapper* mapper)
 {
   auto instanceData = mapper->GetInputDataObject(0, 0);
-  if (mapper)
+  auto blockAttr = mapper->GetBlockAttributes();
+
+  blockAttr->RemoveBlockVisibilities();
+  for (auto const& item : this->InstanceVisibilities)
   {
-    auto blockAttr = mapper->GetBlockAttributes();
-    blockAttr->RemoveBlockVisibilities();
-    for (auto const& item : this->BlockVisibilities)
+    unsigned int currentIdx = 0;
+    auto dob = blockAttr->DataObjectFromIndex(item.first, instanceData, currentIdx);
+
+    if (dob)
     {
-      unsigned int currentIdx = 0;
-      auto dob = blockAttr->DataObjectFromIndex(item.first, instanceData, currentIdx);
-
-      if (dob)
-      {
-        blockAttr->SetBlockVisibility(dob, item.second);
-      }
+      blockAttr->SetBlockVisibility(dob, item.second);
     }
-
-    blockAttr->RemoveBlockColors();
-    for (auto const& item : this->BlockColors)
-    {
-      unsigned int currentIdx = 0;
-      auto dob = blockAttr->DataObjectFromIndex(item.first, instanceData, currentIdx);
-
-      if (dob)
-      {
-        auto& arr = item.second;
-        double color[3] = { arr[0], arr[1], arr[2] };
-        blockAttr->SetBlockColor(dob, color);
-      }
-    }
-    // Opacity currently not supported by vtkGlyph3DMapper
-
-    mapper->Modified();
   }
+
+  blockAttr->RemoveBlockColors();
+  for (auto const& item : this->InstanceColors)
+  {
+    unsigned int currentIdx = 0;
+    auto dob = blockAttr->DataObjectFromIndex(item.first, instanceData, currentIdx);
+
+    if (dob)
+    {
+      auto& arr = item.second;
+      double color[3] = { arr[0], arr[1], arr[2] };
+      blockAttr->SetBlockColor(dob, color);
+    }
+  }
+  // Opacity currently not supported by vtkGlyph3DMapper
+
+  mapper->Modified();
+}
+
+void vtkSMTKModelRepresentation::SetInstanceVisibility(unsigned int index, bool visible)
+{
+  this->InstanceVisibilities[index] = visible;
+  this->InstanceAttrChanged = true;
+}
+
+bool vtkSMTKModelRepresentation::GetInstanceVisibility(unsigned int index) const
+{
+  auto it = this->InstanceVisibilities.find(index);
+  if (it == this->InstanceVisibilities.cend())
+  {
+    return true;
+  }
+  return it->second;
+}
+
+void vtkSMTKModelRepresentation::RemoveInstanceVisibility(unsigned int index, bool)
+{
+  auto it = this->InstanceVisibilities.find(index);
+  if (it == this->InstanceVisibilities.cend())
+  {
+    return;
+  }
+  this->InstanceVisibilities.erase(it);
+  this->InstanceAttrChanged = true;
+}
+
+void vtkSMTKModelRepresentation::RemoveInstanceVisibilities()
+{
+  this->InstanceVisibilities.clear();
+  this->InstanceAttrChanged = true;
+}
+
+void vtkSMTKModelRepresentation::SetInstanceColor(unsigned int index, double r, double g, double b)
+{
+  std::array<double, 3> color = { { r, g, b } };
+  this->InstanceColors[index] = color;
+  this->InstanceAttrChanged = true;
+}
+
+void vtkSMTKModelRepresentation::SetInstanceColor(unsigned int index, double* color)
+{
+  if (color)
+  {
+    this->SetInstanceColor(index, color[0], color[1], color[2]);
+  }
+}
+
+double* vtkSMTKModelRepresentation::GetInstanceColor(unsigned int index)
+{
+  auto it = this->InstanceColors.find(index);
+  if (it == this->InstanceColors.cend())
+  {
+    return nullptr;
+  }
+  return it->second.data();
+}
+
+void vtkSMTKModelRepresentation::RemoveInstanceColor(unsigned int index)
+{
+  auto it = this->InstanceColors.find(index);
+  if (it == this->InstanceColors.cend())
+  {
+    return;
+  }
+  this->InstanceColors.erase(it);
+  this->InstanceAttrChanged = true;
+}
+
+void vtkSMTKModelRepresentation::RemoveInstanceColors()
+{
+  this->InstanceColors.clear();
+  this->InstanceAttrChanged = true;
 }
