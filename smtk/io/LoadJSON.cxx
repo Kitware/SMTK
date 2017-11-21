@@ -865,7 +865,7 @@ int LoadJSON::ofLocalSession(
       smtk::common::UUID muid;
       if (jmrec && jmrec->string && !(muid = smtk::common::UUID(jmrec->string)).isNull())
       {
-        if (context->findEntity(muid))
+        if (context->findEntity(muid, false))
         {
           smtk::model::Model oops(context, muid);
           smtkErrorMacro(context->log(), "Model \"" << oops.name() << "\" is already loaded.");
