@@ -29,12 +29,23 @@ class vtkSelection;
 /**
  *  \brief Representation of an SMTK Model.
  *  Renders the outputs of vtkSMTKModelReader.
- *   - Port 0: Model entities
- *   - Port 1: Glyph prototypes
- *   - Port 2: Glyph points
+ *
+ *         Input                      Mapper        Actor
+ *   - Port 0: Model entities    |  EntityMapper | Entities
+ *   - Port 1: Glyph prototypes  |  GlyphMapper  | GlyphEntities
+ *   - Port 2: Glyph points      |  GlyphMapper  | GlyphEntities
  *
  *  vtkSMSMTKModelRepresentationProxy sets certain properties used as
  *  mapper inputs (GlyphPrototypes and GlyphPoints).
+ *
+ *  Each of the model mappers has a selection counterpart (SelectedEntityMapper
+ *  and SelectedGlyphMapper) which renders only selected entities.
+ *
+ *  EntityMapper (tessellation entities) use some of the vtkGeometryRepresentation
+ *  infrastructure to track block properties. GlyphMapper tracks its block attributes
+ *  thorugh the Instance* members in this class.
+ *
+ *  \sa vtkSMSMTKModelRepresentationProxy
  */
 class SMTKREPRESENTATIONPLUGIN_EXPORT vtkSMTKModelRepresentation : public vtkGeometryRepresentation
 {
@@ -67,8 +78,20 @@ public:
   void SetSelectionPointSize(double val);
   void SetPointSize(double val) override;
 
-  /// TODO
-  /// Override block attribute setters to modify the glyph mapper's
+  //@{
+  /**
+   * Block properties for instance placements (Port 2: Glyph Points).
+   */
+  void SetInstanceVisibility(unsigned int index, bool visible);
+  bool GetInstanceVisibility(unsigned int index) const;
+  void RemoveInstanceVisibility(unsigned int index, bool);
+  void RemoveInstanceVisibilities();
+  void SetInstanceColor(unsigned int index, double r, double g, double b);
+  void SetInstanceColor(unsigned int index, double* color);
+  double* GetInstanceColor(unsigned int index);
+  void RemoveInstanceColor(unsigned int index);
+  void RemoveInstanceColors();
+  //@}
 
 protected:
   vtkSMTKModelRepresentation();
@@ -80,8 +103,29 @@ protected:
   void ConfigureGlyphMapper(vtkGlyph3DMapper* mapper);
 
   void UpdateSelection(
-    vtkMultiBlockDataSet* data, vtkCompositeDataDisplayAttributes* blockAttr, vtkMapper* mapper);
+    vtkMultiBlockDataSet* data, vtkCompositeDataDisplayAttributes* blockAttr, vtkActor* actor);
   vtkDataObject* FindNode(vtkMultiBlockDataSet* data, const std::string& uuid);
+
+  /**
+   * Clear the current selection stored in the mapper's
+   * vtkCompositeDisplayDataAttributes. For vtkCompositePolyDataMapper2,
+   * setting the top node as false is enough since the state of the top
+   * node will stream down to its nodes.  Glyph3DMapper does not behave as
+   * vtkCompositePolyDataMapper2, hence it is necessary to update the block
+   * visibility of each node directly.
+   */
+  void ClearSelection(vtkMapper* mapper);
+
+  /**
+   * Update block attributes on entities and instance placements.
+   */
+  void UpdateGlyphBlockAttributes(vtkGlyph3DMapper* mapper);
+
+  /**
+   * Compute bounds of the input model taking into account instance placements
+   * (and corresponding glyph offsets) and entity tessellation bounds.
+   */
+  bool GetModelBounds();
 
   vtkSmartPointer<vtkCompositePolyDataMapper2> EntityMapper;
   vtkSmartPointer<vtkCompositePolyDataMapper2> SelectedEntityMapper;
@@ -94,6 +138,16 @@ protected:
   vtkSmartPointer<vtkActor> SelectedGlyphEntities;
 
   double SelectionColor[3] = { 1., 0., 1. };
+
+  //@{
+  /**
+   * Block attributes for instance points (GlyphPoints).
+   */
+  bool InstanceAttrChanged = false;
+  vtkTimeStamp InstanceAttributeTime;
+  std::unordered_map<unsigned int, bool> InstanceVisibilities;
+  std::unordered_map<unsigned int, std::array<double, 3> > InstanceColors;
+  //@}
 
 private:
   vtkSMTKModelRepresentation(const vtkSMTKModelRepresentation&) = delete;

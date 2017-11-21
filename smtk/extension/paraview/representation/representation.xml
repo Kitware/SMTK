@@ -58,6 +58,25 @@
         <DoubleRangeDomain min="0"
                            name="range" />
       </DoubleVectorProperty>
+      <IntVectorProperty name="InstanceVisibility"
+                         command="SetInstanceVisibility"
+                         clean_command="RemoveInstanceVisibilities"
+                         number_of_elements_per_command="2"
+                         repeatable="1">
+        <Documentation>
+          Set the visibility for an instance point block (glyph). Value is
+          (property, visibility).
+        </Documentation>
+      </IntVectorProperty>
+      <DoubleMapProperty name="InstanceColor"
+                         command="SetInstanceColor"
+                         clean_command="RemoveInstanceColors"
+                         number_of_components="3"
+                         repeatable="1">
+        <Documentation>
+          Set the color for an instance point block (glyph). Value is (index, r, g, b).
+        </Documentation>
+      </DoubleMapProperty>
 
     <!-- End of SMTKModelRepresentation -->
     </SMTKModelRepresentationProxy>

@@ -83,11 +83,42 @@ void vtkSMTKModelRepresentation::SetOutputExtent(vtkAlgorithmOutput* output, vtk
   }
 }
 
+bool vtkSMTKModelRepresentation::GetModelBounds()
+{
+  // Entity tessellation bounds
+  double entityBounds[6];
+  this->GetBounds(this->GetInternalOutputPort(0)->GetProducer()->GetOutputDataObject(0),
+    entityBounds, this->EntityMapper->GetCompositeDataDisplayAttributes());
+
+  // Instance placement bounds
+  double* instanceBounds = this->GlyphMapper->GetBounds();
+
+  vtkBoundingBox bbox;
+  if (vtkBoundingBox::IsValid(entityBounds))
+  {
+    bbox.AddPoint(entityBounds[0], entityBounds[2], entityBounds[4]);
+    bbox.AddPoint(entityBounds[1], entityBounds[3], entityBounds[5]);
+  }
+
+  if (vtkBoundingBox::IsValid(instanceBounds))
+  {
+    bbox.AddPoint(instanceBounds[0], instanceBounds[2], instanceBounds[4]);
+    bbox.AddPoint(instanceBounds[1], instanceBounds[3], instanceBounds[5]);
+  }
+
+  if (bbox.IsValid())
+  {
+    bbox.GetBounds(this->DataBounds);
+    return true;
+  }
+
+  vtkMath::UninitializeBounds(this->DataBounds);
+  return false;
+}
+
 int vtkSMTKModelRepresentation::RequestData(
   vtkInformation* request, vtkInformationVector** inVec, vtkInformationVector* outVec)
 {
-  vtkMath::UninitializeBounds(this->DataBounds);
-
   if (inVec[0]->GetNumberOfInformationObjects() == 1)
   {
     vtkInformation* inInfo = inVec[0]->GetInformationObject(0);
@@ -110,16 +141,7 @@ int vtkSMTKModelRepresentation::RequestData(
   this->EntityMapper->Modified();
   this->GlyphMapper->Modified();
 
-  // Determine data bounds
-  // TODO: Bounds should include not only instance placements but instance
-  //       placements offset by their glyph bounds. The bounds really should
-  //       be computed bt the Glyph3DMapper and CompositePolyDataMapper
-  //       and just unioned together here.
-  //       But... to a first approximation, the entity tessellation bounds
-  //       are good enough:
-  this->GetBounds(this->GetInternalOutputPort(0)->GetProducer()->GetOutputDataObject(0),
-    this->DataBounds, this->EntityMapper->GetCompositeDataDisplayAttributes());
-
+  this->GetModelBounds();
   return vtkPVDataRepresentation::RequestData(request, inVec, outVec);
 }
 
@@ -187,23 +209,32 @@ int vtkSMTKModelRepresentation::ProcessViewRequest(
       this->BlockAttrChanged = false;
     }
 
-    /// TODO Selection should only updated after a change
     // Update selected entities
+    /// TODO Selection should only updated after a change
     auto multiBlock = vtkMultiBlockDataSet::SafeDownCast(data);
     if (multiBlock)
     {
       this->SelectedEntityMapper->SetInputConnection(0, producerPort);
       auto attr = this->SelectedEntityMapper->GetCompositeDataDisplayAttributes();
-      this->UpdateSelection(multiBlock, attr, this->SelectedEntityMapper);
+      this->UpdateSelection(multiBlock, attr, this->SelectedEntities);
+    }
+
+    // Update glyph attributes
+    data = this->GetInternalOutputPort(2)->GetProducer()->GetOutputDataObject(0);
+    if (this->InstanceAttributeTime < data->GetMTime() || this->InstanceAttrChanged)
+    {
+      this->UpdateGlyphBlockAttributes(this->GlyphMapper.GetPointer());
+      this->InstanceAttributeTime.Modified();
+      this->InstanceAttrChanged = false;
     }
 
     // Update selected glyphs
-    data = this->GetInternalOutputPort(2)->GetProducer()->GetOutputDataObject(0);
+    /// TODO Selection should only updated after a change
     multiBlock = vtkMultiBlockDataSet::SafeDownCast(data);
     if (multiBlock)
     {
       auto attr = this->SelectedGlyphMapper->GetBlockAttributes();
-      this->UpdateSelection(multiBlock, attr, this->SelectedGlyphMapper);
+      this->UpdateSelection(multiBlock, attr, this->SelectedGlyphEntities);
     }
   }
 
@@ -327,34 +358,41 @@ void vtkSMTKModelRepresentation::SetMapScalars(int val)
 }
 
 void vtkSMTKModelRepresentation::UpdateSelection(
-  vtkMultiBlockDataSet* data, vtkCompositeDataDisplayAttributes* blockAttr, vtkMapper* mapper)
+  vtkMultiBlockDataSet* data, vtkCompositeDataDisplayAttributes* blockAttr, vtkActor* actor)
 {
   auto rm = vtkSMTKResourceManagerWrapper::Instance();
   auto sm = rm ? rm->GetSelection() : nullptr;
   if (!sm)
   {
+    actor->SetVisibility(0);
     return;
   }
+
   auto selection = sm->currentSelection();
+  if (selection.empty())
+  {
+    actor->SetVisibility(0);
+    return;
+  }
+
   // std::cout << "Updating rep selection from " << sm << ", have " << selection.size() << " entries in map\n";
 
-  // Set selection defaults (nothing selected)
-  blockAttr->RemoveBlockVisibilities();
-  blockAttr->RemoveBlockColors();
-  blockAttr->SetBlockVisibility(data, false);
-
+  int propVis = 0;
+  this->ClearSelection(actor->GetMapper());
   for (auto& item : selection)
   {
     auto matchedBlock = this->FindNode(data, item.first->id().toString());
     if (matchedBlock)
     {
+      propVis = 1;
       blockAttr->SetBlockVisibility(matchedBlock, true);
       blockAttr->SetBlockColor(matchedBlock, this->SelectionColor);
     }
   }
+  actor->SetVisibility(propVis);
 
-  // TODO This is necessary to force an update in the mapper
-  mapper->Modified();
+  // This is necessary to force an update in the mapper
+  actor->GetMapper()->Modified();
 }
 
 vtkDataObject* vtkSMTKModelRepresentation::FindNode(
@@ -391,6 +429,49 @@ vtkDataObject* vtkSMTKModelRepresentation::FindNode(
   return nullptr;
 }
 
+void vtkSMTKModelRepresentation::ClearSelection(vtkMapper* mapper)
+{
+  auto clearAttributes = [](vtkCompositeDataDisplayAttributes* attr) {
+    attr->RemoveBlockVisibilities();
+    attr->RemoveBlockColors();
+  };
+
+  auto cpdm = vtkCompositePolyDataMapper2::SafeDownCast(mapper);
+  if (cpdm)
+  {
+    auto blockAttr = cpdm->GetCompositeDataDisplayAttributes();
+    clearAttributes(blockAttr);
+    auto data = cpdm->GetInputDataObject(0, 0);
+
+    // For vtkCompositePolyDataMapper2, setting the top node as false is enough
+    // since the state of the top node will stream down to its nodes.
+    blockAttr->SetBlockVisibility(data, false);
+    return;
+  }
+
+  auto gm = vtkGlyph3DMapper::SafeDownCast(mapper);
+  if (gm)
+  {
+    auto blockAttr = gm->GetBlockAttributes();
+    clearAttributes(blockAttr);
+
+    // Glyph3DMapper does not behave as vtkCompositePolyDataMapper2, hence it is
+    // necessary to update the block visibility of each node directly.
+    auto mbds = vtkMultiBlockDataSet::SafeDownCast(gm->GetInputDataObject(0, 0));
+    vtkCompositeDataIterator* iter = mbds->NewIterator();
+
+    iter->GoToFirstItem();
+    while (!iter->IsDoneWithTraversal())
+    {
+      auto dataObj = iter->GetCurrentDataObject();
+      blockAttr->SetBlockVisibility(dataObj, false);
+      iter->GoToNextItem();
+    }
+    iter->Delete();
+    return;
+  }
+}
+
 void vtkSMTKModelRepresentation::SetSelectionPointSize(double val)
 {
   this->SelectedEntities->GetProperty()->SetPointSize(val);
@@ -401,4 +482,114 @@ void vtkSMTKModelRepresentation::SetPointSize(double val)
 {
   this->Entities->GetProperty()->SetPointSize(val);
   this->GlyphEntities->GetProperty()->SetPointSize(val);
+}
+
+void vtkSMTKModelRepresentation::UpdateGlyphBlockAttributes(vtkGlyph3DMapper* mapper)
+{
+  auto instanceData = mapper->GetInputDataObject(0, 0);
+  auto blockAttr = mapper->GetBlockAttributes();
+
+  blockAttr->RemoveBlockVisibilities();
+  for (auto const& item : this->InstanceVisibilities)
+  {
+    unsigned int currentIdx = 0;
+    auto dob = blockAttr->DataObjectFromIndex(item.first, instanceData, currentIdx);
+
+    if (dob)
+    {
+      blockAttr->SetBlockVisibility(dob, item.second);
+    }
+  }
+
+  blockAttr->RemoveBlockColors();
+  for (auto const& item : this->InstanceColors)
+  {
+    unsigned int currentIdx = 0;
+    auto dob = blockAttr->DataObjectFromIndex(item.first, instanceData, currentIdx);
+
+    if (dob)
+    {
+      auto& arr = item.second;
+      double color[3] = { arr[0], arr[1], arr[2] };
+      blockAttr->SetBlockColor(dob, color);
+    }
+  }
+  // Opacity currently not supported by vtkGlyph3DMapper
+
+  mapper->Modified();
+}
+
+void vtkSMTKModelRepresentation::SetInstanceVisibility(unsigned int index, bool visible)
+{
+  this->InstanceVisibilities[index] = visible;
+  this->InstanceAttrChanged = true;
+}
+
+bool vtkSMTKModelRepresentation::GetInstanceVisibility(unsigned int index) const
+{
+  auto it = this->InstanceVisibilities.find(index);
+  if (it == this->InstanceVisibilities.cend())
+  {
+    return true;
+  }
+  return it->second;
+}
+
+void vtkSMTKModelRepresentation::RemoveInstanceVisibility(unsigned int index, bool)
+{
+  auto it = this->InstanceVisibilities.find(index);
+  if (it == this->InstanceVisibilities.cend())
+  {
+    return;
+  }
+  this->InstanceVisibilities.erase(it);
+  this->InstanceAttrChanged = true;
+}
+
+void vtkSMTKModelRepresentation::RemoveInstanceVisibilities()
+{
+  this->InstanceVisibilities.clear();
+  this->InstanceAttrChanged = true;
+}
+
+void vtkSMTKModelRepresentation::SetInstanceColor(unsigned int index, double r, double g, double b)
+{
+  std::array<double, 3> color = { { r, g, b } };
+  this->InstanceColors[index] = color;
+  this->InstanceAttrChanged = true;
+}
+
+void vtkSMTKModelRepresentation::SetInstanceColor(unsigned int index, double* color)
+{
+  if (color)
+  {
+    this->SetInstanceColor(index, color[0], color[1], color[2]);
+  }
+}
+
+double* vtkSMTKModelRepresentation::GetInstanceColor(unsigned int index)
+{
+  auto it = this->InstanceColors.find(index);
+  if (it == this->InstanceColors.cend())
+  {
+    return nullptr;
+  }
+  return it->second.data();
+}
+
+void vtkSMTKModelRepresentation::RemoveInstanceColor(unsigned int index)
+{
+  auto it = this->InstanceColors.find(index);
+  if (it == this->InstanceColors.cend())
+  {
+    return;
+  }
+  this->InstanceColors.erase(it);
+  this->InstanceAttrChanged = true;
+}
+
+void vtkSMTKModelRepresentation::RemoveInstanceColors()
+{
+  this->InstanceColors.clear();
+  this->InstanceAttrChanged = true;
 }
