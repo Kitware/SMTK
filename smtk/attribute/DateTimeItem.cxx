@@ -33,7 +33,7 @@ DateTimeItem::~DateTimeItem()
 
 Item::Type DateTimeItem::type() const
 {
-  return Item::DATE_TIME;
+  return Item::DateTimeType;
 }
 
 bool DateTimeItem::isValid() const

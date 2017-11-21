@@ -38,7 +38,7 @@ void verifyDefault()
   // Instantiate item definition
   sa::DateTimeItemDefinitionPtr dtDef = sa::DateTimeItemDefinition::New("dt-def");
   test(!!dtDef, "Failed to instantiate DateTimeItemDefinition");
-  test(dtDef->type() == sa::Item::DATE_TIME, "Failed to return DATE_TIME as definition type");
+  test(dtDef->type() == sa::Item::DateTimeType, "Failed to return DATE_TIME as definition type");
 
   // Instantiate att collection, attdef, & attribute
   sa::CollectionPtr sysptr = sa::Collection::create();
@@ -49,11 +49,11 @@ void verifyDefault()
 
   sa::ItemPtr item = att->find("dt-def");
   test(!!item, "Failed to find Item");
-  test(item->type() == sa::Item::DATE_TIME, "Failed to return DATE_TIME as item type");
+  test(item->type() == sa::Item::DateTimeType, "Failed to return DATE_TIME as item type");
 
   sa::DateTimeItemPtr dtItem = att->findDateTime("dt-def");
   test(!!dtItem, "Failed to find DateTimeItem");
-  test(dtItem->type() == sa::Item::DATE_TIME, "Failed to return DATE_TIME as DateTimeItem type");
+  test(dtItem->type() == sa::Item::DateTimeType, "Failed to return DATE_TIME as DateTimeItem type");
   test(!dtItem->isSet(), "isSet() failed to return false for default item");
 
   // Set default value
@@ -243,7 +243,7 @@ void verifySerialize()
   test(discreteItemInput->numberOfActiveChildrenItems() == 1,
     "Wrong number of active children; should be 1");
   sa::ItemPtr activeChild = discreteItemInput->activeChildItem(0);
-  test(activeChild->type() == sa::Item::DATE_TIME, "Active child not DateTime");
+  test(activeChild->type() == sa::Item::DateTimeType, "Active child not DateTime");
 }
 
 } // end namespace

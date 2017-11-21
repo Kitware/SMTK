@@ -29,6 +29,7 @@ if __name__ == '__main__':
 
     # SMTK DateTimeZonePair
     sp = smtk.common.DateTimeZonePair()
+    print "smtk_dt", smtk_dt
     sp.setDateTime(smtk_dt)
     sp.setTimeZone(smtk_zone)
 

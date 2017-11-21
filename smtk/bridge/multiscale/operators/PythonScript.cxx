@@ -66,9 +66,9 @@ std::string PythonScript::specToArgList(
 
       switch (item->type())
       {
-        case smtk::attribute::Item::DOUBLE:
-        case smtk::attribute::Item::INT:
-        case smtk::attribute::Item::STRING:
+        case smtk::attribute::Item::DoubleType:
+        case smtk::attribute::Item::IntType:
+        case smtk::attribute::Item::StringType:
         {
           smtk::attribute::ValueItemPtr valueItem =
             smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(item);
@@ -83,7 +83,7 @@ std::string PythonScript::specToArgList(
           }
         }
         break;
-        case smtk::attribute::Item::FILE:
+        case smtk::attribute::Item::FileType:
         {
           smtk::attribute::FileItemPtr fileItem =
             smtk::dynamic_pointer_cast<smtk::attribute::FileItem>(item);
@@ -98,7 +98,7 @@ std::string PythonScript::specToArgList(
           }
         }
         break;
-        case smtk::attribute::Item::VOID:
+        case smtk::attribute::Item::VoidType:
         {
           smtk::attribute::VoidItemPtr voidItem =
             smtk::dynamic_pointer_cast<smtk::attribute::VoidItem>(item);

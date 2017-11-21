@@ -65,7 +65,7 @@ Item::Type MeshItem::type() const
   {
     return def->type();
   }
-  return Item::MESH_ENTITY;
+  return Item::MeshEntityType;
 }
 
 std::size_t MeshItem::numberOfValues() const

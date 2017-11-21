@@ -32,7 +32,7 @@ RefItemDefinition::~RefItemDefinition()
 
 Item::Type RefItemDefinition::type() const
 {
-  return Item::ATTRIBUTE_REF;
+  return Item::AttributeRefType;
 }
 
 bool RefItemDefinition::isValueValid(smtk::attribute::AttributePtr att) const

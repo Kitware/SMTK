@@ -68,7 +68,7 @@ void RefItem::clearAllReferences()
 
 Item::Type RefItem::type() const
 {
-  return ATTRIBUTE_REF;
+  return AttributeRefType;
 }
 
 bool RefItem::isValid() const

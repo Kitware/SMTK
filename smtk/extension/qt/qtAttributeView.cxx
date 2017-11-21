@@ -624,7 +624,7 @@ void qtAttributeView::updateChildWidgetsEnableState(
   bool bEnabled = attItem->isEnabled();
   int startRow = item->row();
 
-  if (attItem->type() == smtk::attribute::Item::GROUP)
+  if (attItem->type() == smtk::attribute::Item::GroupType)
   {
     smtk::attribute::GroupItemPtr grpItem = dynamic_pointer_cast<GroupItem>(attItem);
     if (grpItem)
@@ -646,7 +646,7 @@ void qtAttributeView::updateItemWidgetsEnableState(
   smtk::attribute::ItemPtr inData, int& startRow, bool enabled)
 {
   QTableWidget* tableWidget = this->Internals->ValuesTable;
-  if (inData->type() == smtk::attribute::Item::ATTRIBUTE_REF)
+  if (inData->type() == smtk::attribute::Item::AttributeRefType)
   {
     QWidget* cellWidget = tableWidget->cellWidget(startRow, 1);
     if (cellWidget)
@@ -654,7 +654,7 @@ void qtAttributeView::updateItemWidgetsEnableState(
       cellWidget->setEnabled(enabled);
     }
   }
-  else if (inData->type() == smtk::attribute::Item::VOID)
+  else if (inData->type() == smtk::attribute::Item::VoidType)
   {
     QWidget* cellWidget = tableWidget->cellWidget(startRow, 0);
     if (cellWidget)

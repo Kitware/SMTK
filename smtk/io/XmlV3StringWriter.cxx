@@ -50,7 +50,7 @@ void XmlV3StringWriter::processItemDefinitionType(
 {
   switch (idef->type())
   {
-    case Item::DATE_TIME:
+    case Item::DateTimeType:
       this->processDateTimeDef(node, smtk::dynamic_pointer_cast<DateTimeItemDefinition>(idef));
       break;
 
@@ -107,7 +107,7 @@ void XmlV3StringWriter::processItemType(xml_node& node, smtk::attribute::ItemPtr
 {
   switch (item->type())
   {
-    case Item::DATE_TIME:
+    case Item::DateTimeType:
       this->processDateTimeItem(node, smtk::dynamic_pointer_cast<DateTimeItem>(item));
       break;
 

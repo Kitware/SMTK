@@ -543,17 +543,17 @@ void qtInputsItem::onRemoveValue()
 
   switch (item->type())
   {
-    case smtk::attribute::Item::DOUBLE:
+    case smtk::attribute::Item::DoubleType:
     {
       dynamic_pointer_cast<DoubleItem>(item)->removeValue(gIdx);
       break;
     }
-    case smtk::attribute::Item::INT:
+    case smtk::attribute::Item::IntType:
     {
       dynamic_pointer_cast<IntItem>(item)->removeValue(gIdx);
       break;
     }
-    case smtk::attribute::Item::STRING:
+    case smtk::attribute::Item::StringType:
     {
       dynamic_pointer_cast<StringItem>(item)->removeValue(gIdx);
       break;
@@ -884,7 +884,7 @@ QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
 
   switch (item->type())
   {
-    case smtk::attribute::Item::DOUBLE:
+    case smtk::attribute::Item::DoubleType:
     {
       QLineEdit* editBox = new QLineEdit(pWidget);
       const DoubleItemDefinition* dDef =
@@ -945,7 +945,7 @@ QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
       inputWidget = editBox;
       break;
     }
-    case smtk::attribute::Item::INT:
+    case smtk::attribute::Item::IntType:
     {
       QLineEdit* editBox = new QLineEdit(pWidget);
       const IntItemDefinition* iDef =
@@ -990,7 +990,7 @@ QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
       inputWidget = editBox;
       break;
     }
-    case smtk::attribute::Item::STRING:
+    case smtk::attribute::Item::StringType:
     {
       const StringItemDefinition* sDef =
         dynamic_cast<const StringItemDefinition*>(item->definition().get());
@@ -1129,7 +1129,7 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
   bool isInvalid = false;
   if (editBox && !editBox->text().isEmpty())
   {
-    if (rawitem->type() == smtk::attribute::Item::DOUBLE)
+    if (rawitem->type() == smtk::attribute::Item::DoubleType)
     {
       auto ditem = dynamic_pointer_cast<DoubleItem>(rawitem);
       double val = ditem->value(elementIdx);
@@ -1140,7 +1140,7 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
         valChanged = true;
       }
     }
-    else if (rawitem->type() == smtk::attribute::Item::INT)
+    else if (rawitem->type() == smtk::attribute::Item::IntType)
     {
       auto iitem = dynamic_pointer_cast<IntItem>(rawitem);
       int val = iitem->value(elementIdx);
@@ -1151,7 +1151,7 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
         valChanged = true;
       }
     }
-    else if (rawitem->type() == smtk::attribute::Item::STRING)
+    else if (rawitem->type() == smtk::attribute::Item::StringType)
     {
       auto sitem = dynamic_pointer_cast<StringItem>(rawitem);
       std::string val = sitem->value(elementIdx);
@@ -1169,7 +1169,7 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
     }
   }
   else if (textBox && !textBox->toPlainText().isEmpty() &&
-    rawitem->type() == smtk::attribute::Item::STRING)
+    rawitem->type() == smtk::attribute::Item::StringType)
   {
     auto sitem = dynamic_pointer_cast<StringItem>(rawitem);
     std::string val = sitem->value(elementIdx);

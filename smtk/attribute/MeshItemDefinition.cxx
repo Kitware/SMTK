@@ -28,7 +28,7 @@ MeshItemDefinition::~MeshItemDefinition()
 
 Item::Type MeshItemDefinition::type() const
 {
-  return Item::MESH_ENTITY;
+  return Item::MeshEntityType;
 }
 /// Return the number of values (mesh entities) required by this definition.
 std::size_t MeshItemDefinition::numberOfRequiredValues() const

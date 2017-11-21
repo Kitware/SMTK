@@ -175,11 +175,11 @@ int main()
         {
           switch (vitem->type())
           {
-            case AttItem::DOUBLE:
-            case AttItem::INT:
+            case AttItem::DoubleType:
+            case AttItem::IntType:
               std::cout << " Value = " << vitem->valueAsString() << std::endl;
               break;
-            case AttItem::STRING:
+            case AttItem::StringType:
               std::cout << " String Val = " << vitem->valueAsString() << std::endl;
               break;
             default:

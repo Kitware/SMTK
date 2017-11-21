@@ -21,7 +21,7 @@
 //   </RootObjects>
 //   <Object type="vtkvtkCMBShell" id="1">
 //     <Properties type="vtkInformation">
-//       <vtkConceptualModelItem::COLOR values="0 0 0 0" length="4"/>
+//       <vtkConceptualModelItem::ColorType values="0 0 0 0" length="4"/>
 //     </Properties>
 //     <Associations type="vtkSerializableObjectVectorMap">
 //       <Key_1 type="vtkSerializableObjectVector">
@@ -31,7 +31,7 @@
 //   </Object>
 //   <Object type="vtkvtkDiscreteModelFaceUse" id="2">
 //     <Properties type="vtkInformation">
-//       <vtkConceptualModelItem::COLOR values="1 0 0 0" length="4"/>
+//       <vtkConceptualModelItem::ColorType values="1 0 0 0" length="4"/>
 //     </Properties>
 //     <Associations type="vtkSerializableObjectVectorMap">
 //       <Key_0 type="vtkSerializableObjectVector">

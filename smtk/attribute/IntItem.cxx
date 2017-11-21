@@ -29,7 +29,7 @@ IntItem::~IntItem()
 
 Item::Type IntItem::type() const
 {
-  return INT;
+  return IntType;
 }
 
 bool IntItem::assign(ConstItemPtr& sourceItem, unsigned int options)

@@ -25,7 +25,7 @@ StringItemDefinition::~StringItemDefinition()
 
 Item::Type StringItemDefinition::type() const
 {
-  return Item::STRING;
+  return Item::StringType;
 }
 
 smtk::attribute::ItemPtr StringItemDefinition::buildItem(

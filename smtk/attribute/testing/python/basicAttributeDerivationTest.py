@@ -134,16 +134,16 @@ if __name__ == '__main__':
                                         comp.type())))
         vcomp = smtk.attribute.ValueItem.CastTo(comp)
         if vcomp:
-            if vcomp.type() == smtk.attribute.Item.DOUBLE:
+            if vcomp.type() == smtk.attribute.Item.DoubleType:
                 print(' Value = %s' % vcomp.valueAsString())
-            elif vcomp.type() == smtk.attribute.Item.INT:
+            elif vcomp.type() == smtk.attribute.Item.IntType:
                 print(' Value = %s' % vcomp.valueAsString())
-            elif vcomp.type() == smtk.attribute.Item.STRING:
+            elif vcomp.type() == smtk.attribute.Item.StringType:
                 print('String Val = %s' % vcomp.valueAsString())
         else:
             ecomp = smtk.attribute.ModelEntityItem.CastTo(comp)
             if ecomp:
-                if ecomp.type() == smtk.attribute.Item.MODEL_ENTITY:
+                if ecomp.type() == smtk.attribute.Item.ModelEntityType:
                     print(' Value = %s' % ecomp.valueAsString())
             else:
                 print(comp)
@@ -212,16 +212,16 @@ if __name__ == '__main__':
                                         comp.type())))
         vcomp = smtk.attribute.ValueItem.CastTo(comp)
         if vcomp:
-            if vcomp.type() == smtk.attribute.Item.DOUBLE:
+            if vcomp.type() == smtk.attribute.Item.DoubleType:
                 print(' Value = %s' % vcomp.valueAsString())
-            elif vcomp.type() == smtk.attribute.Item.INT:
+            elif vcomp.type() == smtk.attribute.Item.IntType:
                 print(' Value = %s' % vcomp.valueAsString())
-            elif vcomp.type() == smtk.attribute.Item.STRING:
+            elif vcomp.type() == smtk.attribute.Item.StringType:
                 print('String Val = %s' % vcomp.valueAsString())
         else:
             ecomp = smtk.attribute.ModelEntityItem.CastTo(comp)
             if ecomp:
-                if ecomp.type() == smtk.attribute.Item.MODEL_ENTITY:
+                if ecomp.type() == smtk.attribute.Item.ModelEntityType:
                     print(' Value = %s' % ecomp.valueAsString())
             else:
                 print(comp)

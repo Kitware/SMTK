@@ -666,7 +666,7 @@ void qtUIManager::getItemsLongLabel(
   {
     smtk::attribute::Item::Type itType = itDef->type();
     // GROUP and VOID type uses their own label length
-    if (itType == Item::GROUP || itType == Item::VOID)
+    if (itType == Item::GroupType || itType == Item::VoidType)
     {
       continue;
     }

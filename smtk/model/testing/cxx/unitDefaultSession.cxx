@@ -94,15 +94,15 @@ void printItem<smtk::attribute::VoidItem>(
   break
 
 #define smtkAttributeItemTypeSwitch(CODE)                                                          \
-  smtkAttributeItemTypeCase(INT, IntItem, int, item, CODE);                                        \
-  smtkAttributeItemTypeCase(DOUBLE, DoubleItem, double, item, CODE);                               \
-  smtkAttributeItemTypeCase(STRING, StringItem, std::string, item, CODE);                          \
-  smtkAttributeItemTypeCase(FILE, StringItem, std::string, item, CODE);                            \
-  smtkAttributeItemTypeCase(DIRECTORY, StringItem, std::string, item, CODE);                       \
-  smtkAttributeItemTypeCase(ATTRIBUTE_REF, RefItem, smtk::attribute::AttributePtr, item, CODE);    \
-  smtkAttributeItemTypeCase(MODEL_ENTITY, ModelEntityItem, smtk::model::EntityRef, item, CODE);    \
-  smtkAttributeItemTypeCase(GROUP, GroupItem, smtk::attribute::ItemPtr, item, CODE);               \
-  smtkAttributeItemTypeCase(VOID, VoidItem, void, item, CODE);                                     \
+  smtkAttributeItemTypeCase(IntType, IntItem, int, item, CODE);                                    \
+  smtkAttributeItemTypeCase(DoubleType, DoubleItem, double, item, CODE);                           \
+  smtkAttributeItemTypeCase(StringType, StringItem, std::string, item, CODE);                      \
+  smtkAttributeItemTypeCase(FileType, StringItem, std::string, item, CODE);                        \
+  smtkAttributeItemTypeCase(DirectoryType, StringItem, std::string, item, CODE);                   \
+  smtkAttributeItemTypeCase(AttributeRefType, RefItem, smtk::attribute::AttributePtr, item, CODE); \
+  smtkAttributeItemTypeCase(ModelEntityType, ModelEntityItem, smtk::model::EntityRef, item, CODE); \
+  smtkAttributeItemTypeCase(GroupType, GroupItem, smtk::attribute::ItemPtr, item, CODE);           \
+  smtkAttributeItemTypeCase(VoidType, VoidItem, void, item, CODE);                                 \
   default:                                                                                         \
     break;
 

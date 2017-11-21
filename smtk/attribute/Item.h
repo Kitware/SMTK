@@ -42,21 +42,21 @@ public:
   smtkTypeMacroBase(Item);
   enum Type
   {
-    ATTRIBUTE_REF,
-    DOUBLE,
-    GROUP,
-    INT,
-    STRING,
-    VOID,
-    FILE,
-    DIRECTORY,
-    COLOR,
-    MODEL_ENTITY,
-    MESH_SELECTION,
-    MESH_ENTITY,
-    DATE_TIME,
-    COMPONENT,
-    RESOURCE,
+    AttributeRefType,
+    DoubleType,
+    GroupType,
+    IntType,
+    StringType,
+    VoidType,
+    FileType,
+    DirectoryType,
+    ColorType,
+    ModelEntityType,
+    MeshSelectionType,
+    MeshEntityType,
+    DateTimeType,
+    ComponentType,
+    ResourceType,
     NUMBER_OF_TYPES
   };
 

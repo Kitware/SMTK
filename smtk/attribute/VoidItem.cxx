@@ -46,7 +46,7 @@ VoidItem::~VoidItem()
 
 Item::Type VoidItem::type() const
 {
-  return VOID;
+  return VoidType;
 }
 
 bool VoidItem::isValid() const

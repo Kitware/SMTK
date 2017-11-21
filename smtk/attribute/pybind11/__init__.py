@@ -28,31 +28,31 @@ func_list = \
      (ValueItem, ValueItem._findChild, "findChild")]
 
 type_dict = \
-    {Item.ATTRIBUTE_REF:
+    {Item.AttributeRefType:
      (RefItem, RefItemDefinition),
-     Item.DOUBLE:
+     Item.DoubleType:
      (DoubleItem, DoubleItemDefinition),
-     Item.GROUP:
+     Item.GroupType:
      (GroupItem, GroupItemDefinition),
-     Item.INT:
+     Item.IntType:
      (IntItem, IntItemDefinition),
-     Item.STRING:
+     Item.StringType:
      (StringItem, StringItemDefinition),
-     Item.VOID:
+     Item.VoidType:
      (VoidItem, VoidItemDefinition),
-     Item.FILE:
+     Item.FileType:
      (FileItem, FileItemDefinition),
-     Item.DIRECTORY:
+     Item.DirectoryType:
      (DirectoryItem, DirectoryItemDefinition),
-     Item.COLOR:
+     Item.ColorType:
      (None, None),
-     Item.MODEL_ENTITY:
+     Item.ModelEntityType:
      (ModelEntityItem, ModelEntityItemDefinition),
-     Item.MESH_ENTITY:
+     Item.MeshEntityType:
      (MeshItem, MeshItemDefinition),
-     Item.MESH_SELECTION:
+     Item.MeshSelectionType:
      (MeshSelectionItem, MeshSelectionItemDefinition),
-     Item.DATE_TIME:
+     Item.DateTimeType:
      (DateTimeItem, DateTimeItemDefinition)
      }
 

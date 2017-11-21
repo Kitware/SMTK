@@ -59,7 +59,7 @@ Item::Type MeshSelectionItem::type() const
   {
     return def->type();
   }
-  return Item::MESH_SELECTION;
+  return Item::MeshEntityType;
 }
 
 bool MeshSelectionItem::isValid() const

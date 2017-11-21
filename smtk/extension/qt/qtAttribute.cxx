@@ -247,45 +247,45 @@ qtItem* qtAttribute::createItem(
   qtItem* aItem = NULL;
   switch (item->type())
   {
-    case smtk::attribute::Item::ATTRIBUTE_REF: // This is always inside valueItem ???
+    case smtk::attribute::Item::AttributeRefType: // This is always inside valueItem ???
       aItem = qtAttribute::s_factory->createRefItemWidget(
         smtk::dynamic_pointer_cast<RefItem>(item), pW, bview, enVectorItemOrient);
       break;
-    case smtk::attribute::Item::DOUBLE:
-    case smtk::attribute::Item::INT:
-    case smtk::attribute::Item::STRING:
+    case smtk::attribute::Item::DoubleType:
+    case smtk::attribute::Item::IntType:
+    case smtk::attribute::Item::StringType:
       aItem = qtAttribute::s_factory->createValueItemWidget(
         smtk::dynamic_pointer_cast<ValueItem>(item), pW, bview, enVectorItemOrient);
       break;
-    case smtk::attribute::Item::DIRECTORY:
+    case smtk::attribute::Item::DirectoryType:
       aItem = qtAttribute::s_factory->createDirectoryItemWidget(
         smtk::dynamic_pointer_cast<DirectoryItem>(item), pW, bview, enVectorItemOrient);
       break;
-    case smtk::attribute::Item::FILE:
+    case smtk::attribute::Item::FileType:
       aItem = qtAttribute::s_factory->createFileItemWidget(
         smtk::dynamic_pointer_cast<FileItem>(item), pW, bview, enVectorItemOrient);
       break;
-    case smtk::attribute::Item::GROUP:
+    case smtk::attribute::Item::GroupType:
       aItem = qtAttribute::s_factory->createGroupItemWidget(
         smtk::dynamic_pointer_cast<GroupItem>(item), pW, bview, enVectorItemOrient);
       break;
-    case smtk::attribute::Item::VOID:
+    case smtk::attribute::Item::VoidType:
       aItem = qtAttribute::s_factory->createVoidItemWidget(
         smtk::dynamic_pointer_cast<VoidItem>(item), pW, bview, enVectorItemOrient);
       break;
-    case smtk::attribute::Item::MODEL_ENTITY:
+    case smtk::attribute::Item::ModelEntityType:
       aItem = qtAttribute::s_factory->createModelEntityItemWidget(
         smtk::dynamic_pointer_cast<ModelEntityItem>(item), pW, bview, enVectorItemOrient);
       break;
-    case smtk::attribute::Item::MESH_SELECTION:
+    case smtk::attribute::Item::MeshSelectionType:
       aItem = qtAttribute::s_factory->createMeshSelectionItemWidget(
         smtk::dynamic_pointer_cast<MeshSelectionItem>(item), pW, bview, enVectorItemOrient);
       break;
-    case smtk::attribute::Item::MESH_ENTITY:
+    case smtk::attribute::Item::MeshEntityType:
       aItem = qtAttribute::s_factory->createMeshItemWidget(
         smtk::dynamic_pointer_cast<MeshItem>(item), pW, bview, enVectorItemOrient);
       break;
-    case smtk::attribute::Item::DATE_TIME:
+    case smtk::attribute::Item::DateTimeType:
       aItem = qtAttribute::s_factory->createDateTimeItemWidget(
         smtk::dynamic_pointer_cast<DateTimeItem>(item), pW, bview, enVectorItemOrient);
     default:

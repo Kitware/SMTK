@@ -93,9 +93,9 @@ if __name__ == '__main__':
                 print(" using Expression: %s" % vitem.expression(0).name())
             else:
                 t = vitem.type()
-                if t == smtk.attribute.Item.DOUBLE or t == smtk.attribute.Item.INT:
+                if t == smtk.attribute.Item.DoubleType or t == smtk.attribute.Item.IntType:
                     print(" Value = %s" % vitem.valueAsString())
-                elif t == smtk.attribute.Item.STRING:
+                elif t == smtk.attribute.Item.StringType:
                     print(" String Val = %s" % vitem.valueAsString())
 
     del collection

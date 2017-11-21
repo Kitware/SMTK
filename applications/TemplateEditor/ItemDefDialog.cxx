@@ -61,7 +61,7 @@ void ItemDefDialog::setItemDef(smtk::attribute::ItemDefinitionPtr def)
 void ItemDefDialog::setValidationInstances(
   smtk::attribute::ItemDefinitionPtr itemDef, smtk::attribute::DefinitionPtr def)
 {
-  if (itemDef && itemDef->type() == smtk::attribute::Item::GROUP)
+  if (itemDef && itemDef->type() == smtk::attribute::Item::GroupType)
   {
     this->ParentGroup = std::static_pointer_cast<smtk::attribute::GroupItemDefinition>(itemDef);
   }

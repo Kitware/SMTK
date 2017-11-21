@@ -23,7 +23,7 @@ DoubleItemDefinition::~DoubleItemDefinition()
 
 Item::Type DoubleItemDefinition::type() const
 {
-  return Item::DOUBLE;
+  return Item::DoubleType;
 }
 
 smtk::attribute::ItemPtr DoubleItemDefinition::buildItem(

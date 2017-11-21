@@ -29,7 +29,7 @@ DateTimeItemDefinition::~DateTimeItemDefinition()
 
 Item::Type DateTimeItemDefinition::type() const
 {
-  return Item::DATE_TIME;
+  return Item::DateTimeType;
 }
 
 bool DateTimeItemDefinition::setDefaultValue(const sc::DateTimeZonePair& value)

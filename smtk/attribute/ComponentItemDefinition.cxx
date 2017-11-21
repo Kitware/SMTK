@@ -40,7 +40,7 @@ ComponentItemDefinition::~ComponentItemDefinition()
 /// Return the type of storage used by items defined by this class.
 Item::Type ComponentItemDefinition::type() const
 {
-  return Item::COMPONENT;
+  return Item::ComponentType;
 }
 
 bool ComponentItemDefinition::acceptsResourceComponents(const std::string& uniqueName) const

@@ -29,7 +29,7 @@ StringItem::~StringItem()
 
 Item::Type StringItem::type() const
 {
-  return STRING;
+  return StringType;
 }
 
 bool StringItem::assign(ConstItemPtr& sourceItem, unsigned int options)

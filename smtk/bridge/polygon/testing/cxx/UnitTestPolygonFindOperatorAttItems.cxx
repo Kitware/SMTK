@@ -41,7 +41,7 @@ int UnitTestPolygonFindOperatorAttItems(int argc, char* argv[])
     DoubleItemPtr) { return true; };
   std::function<bool(smtk::attribute::IntItemPtr)> intFilter = [](IntItemPtr) { return true; };
   std::function<bool(smtk::attribute::ItemPtr)> intDoubleFilter = [](
-    ItemPtr item) { return item->type() == Item::DOUBLE || item->type() == Item::INT; };
+    ItemPtr item) { return item->type() == Item::DoubleType || item->type() == Item::IntType; };
   std::function<bool(smtk::attribute::ModelEntityItemPtr)> modelEntityFilter = [](
     ModelEntityItemPtr) { return true; };
   std::function<bool(smtk::attribute::VoidItemPtr)> voidFilter = [](VoidItemPtr) { return true; };
