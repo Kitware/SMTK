@@ -32,7 +32,7 @@ class Metadata;
 class SMTKCORE_EXPORT Resource : smtkEnableSharedPtr(Resource)
 {
 public:
-  typedef std::type_index Index;
+  typedef std::size_t Index;
   typedef smtk::resource::Metadata Metadata;
 
   smtkTypeMacroBase(smtk::resource::Resource);
@@ -46,7 +46,7 @@ public:
 
   // index is a compile-time intrinsic of the derived resource; as such, it
   // cannot be set.
-  Index index() const { return typeid(*this); }
+  virtual Index index() const { return std::type_index(typeid(*this)).hash_code(); }
 
   // id and location are run-time intrinsics of the derived resource; we need to
   // allow the user to reset these values.

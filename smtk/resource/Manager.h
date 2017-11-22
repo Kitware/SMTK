@@ -163,14 +163,14 @@ template <typename ResourceType>
 smtk::shared_ptr<ResourceType> Manager::create()
 {
   return smtk::static_pointer_cast<ResourceType>(
-    this->create(Resource::Index(typeid(ResourceType))));
+    this->create(std::type_index(typeid(ResourceType)).hash_code()));
 }
 
 template <typename ResourceType>
 smtk::shared_ptr<ResourceType> Manager::create(const smtk::common::UUID& id)
 {
   return smtk::static_pointer_cast<ResourceType>(
-    this->create(Resource::Index(typeid(ResourceType)), id));
+    this->create(std::type_index(typeid(ResourceType)).hash_code(), id));
 }
 
 template <typename ResourceType>
@@ -200,7 +200,7 @@ smtk::shared_ptr<const ResourceType> Manager::get(const std::string& url) const
 template <typename ResourceType>
 std::set<smtk::shared_ptr<ResourceType> > Manager::find()
 {
-  Resource::Index index(typeid(ResourceType));
+  Resource::Index index(typeid(ResourceType).hash_code());
   std::set<Resource::Index> validIndices;
   for (auto& metadatum : s_metadata)
   {
@@ -230,13 +230,13 @@ template <typename ResourceType>
 smtk::shared_ptr<ResourceType> Manager::read(const std::string& url)
 {
   return smtk::static_pointer_cast<ResourceType>(
-    this->read(Resource::Index(typeid(ResourceType)), url));
+    this->read(std::type_index(typeid(ResourceType)).hash_code(), url));
 }
 
 template <typename ResourceType>
 bool Manager::add(const smtk::shared_ptr<ResourceType>& resource)
 {
-  return this->add(Resource::Index(typeid(ResourceType)), resource);
+  return this->add(std::type_index(typeid(ResourceType)).hash_code(), resource);
 }
 
 namespace detail
@@ -288,7 +288,7 @@ struct resource_index_set_generator<ResourceType, false>
   static std::set<Resource::Index> indices()
   {
     std::set<Resource::Index> indices;
-    indices.insert(typeid(ResourceType));
+    indices.insert(typeid(ResourceType).hash_code());
 
     return indices;
   }
@@ -304,7 +304,7 @@ struct resource_index_set_generator<ResourceType, true>
   static std::set<Resource::Index> indices()
   {
     std::set<Resource::Index> indices;
-    indices.insert(typeid(ResourceType));
+    indices.insert(std::type_index(typeid(ResourceType)).hash_code());
 
     std::set<Resource::Index> parentIndices =
       resource_index_set_generator<typename ResourceType::ParentResource,
@@ -319,7 +319,7 @@ struct resource_index_set_generator<ResourceType, true>
 template <typename ResourceType>
 bool Manager::registerResource(typename ResourceType::Metadata& metadata)
 {
-  metadata.m_index = typeid(ResourceType);
+  metadata.m_index = std::type_index(typeid(ResourceType)).hash_code();
   metadata.m_associatedIndices = detail::resource_index_set_generator<ResourceType,
     detail::is_derived_resource<ResourceType>::value>::indices();
   return Manager::registerResource(metadata);

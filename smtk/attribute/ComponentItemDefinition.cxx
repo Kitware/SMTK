@@ -50,7 +50,8 @@ bool ComponentItemDefinition::acceptsResourceComponents(const std::string& uniqu
   return false;
 }
 
-bool ComponentItemDefinition::acceptsResourceComponents(std::type_index resourceIndex) const
+bool ComponentItemDefinition::acceptsResourceComponents(
+  smtk::resource::Resource::Index resourceIndex) const
 {
   return m_acceptable.find(resourceIndex) != m_acceptable.end();
 }
@@ -65,7 +66,7 @@ bool ComponentItemDefinition::setAcceptsResourceComponents(
 }
 
 bool ComponentItemDefinition::setAcceptsResourceComponents(
-  std::type_index resourceIndex, bool accept)
+  smtk::resource::Resource::Index resourceIndex, bool accept)
 {
   if (accept)
   {
