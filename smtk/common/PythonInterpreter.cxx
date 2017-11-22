@@ -238,6 +238,20 @@ bool PythonInterpreter::canFindModule(const std::string& module) const
 bool PythonInterpreter::addPathToPackagedModule(
   const std::string& libPackageDir, const std::string& module)
 {
+#ifdef SMTK_MSVC
+  // If <module> is run out of a package, we expect that the directory that
+  // contains its libraries to contain "Lib/site-packages/<module>", so we
+  // attempt to add this directory to the PYTHONPATH.
+
+  boost::filesystem::path bundledPyInit =
+    boost::filesystem::path(libPackageDir) / "Lib" / "site-packages" / module / "__init__.py";
+
+  if (boost::filesystem::is_regular_file(bundledPyInit))
+  {
+    this->addToPythonPath(bundledPyInit.parent_path().parent_path().string());
+    return true;
+  }
+#else
   // If <module> is run out of a package, we expect that the directory that
   // contains its libraries is at the same level as "Python/<module>", so we
   // attempt to add this directory to the PYTHONPATH.
@@ -250,6 +264,7 @@ bool PythonInterpreter::addPathToPackagedModule(
     this->addToPythonPath(bundledPyInit.parent_path().parent_path().string());
     return true;
   }
+#endif
   return false;
 }
 
@@ -325,8 +340,11 @@ bool PythonInterpreter::loadPythonSourceFile(const std::string& fileName)
 }
 
 bool PythonInterpreter::loadPythonSourceFile(
-  const std::string& fileName, const std::string& moduleName)
+  const std::string& fName, const std::string& moduleName)
 {
+  // Convert to boost's generic format to avoid complications with Windows slashes
+  std::string fileName = boost::filesystem::path(fName).generic_string();
+
   // For user-submitted source files, disable the generation of byte code
   bool dontWriteByteCode = this->dontWriteByteCode();
   this->dontWriteByteCode(true);
