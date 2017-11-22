@@ -30,7 +30,7 @@ smtk_public_headers(${REP_HEADER})
 add_pqproxy(REP_PXY_IFACES REP_PXY_IFACE_SRCS
   TYPE pqSMTKModelRepresentation
   XML_GROUP representations
-  XML_NAME SMTKModelRepresentation
+  XML_NAME SMTKModelCompositeRepresentation
 )
 
 pv_qt_wrap_cpp(MOC_BUILT_SRCS ${REP_PXY_HDRS})

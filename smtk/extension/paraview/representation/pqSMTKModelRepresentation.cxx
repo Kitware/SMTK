@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/extension/paraview/representation/pqSMTKModelRepresentation.h"
+#include "smtk/extension/paraview/representation/vtkSMSMTKModelRepresentationProxy.h"
 
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourceManager.h"
@@ -27,8 +28,15 @@ pqSMTKModelRepresentation::pqSMTKModelRepresentation(
   }
 }
 
-pqSMTKModelRepresentation::~pqSMTKModelRepresentation()
+pqSMTKModelRepresentation::~pqSMTKModelRepresentation() = default;
+
+void pqSMTKModelRepresentation::initialize()
 {
+  auto proxy = vtkSMSMTKModelRepresentationProxy::SafeDownCast(this->getProxy());
+  if (proxy)
+    proxy->ConnectAdditionalPorts();
+
+  pqPipelineRepresentation::initialize();
 }
 
 void pqSMTKModelRepresentation::handleSMTKSelectionChange(

@@ -34,15 +34,15 @@ public:
    */
   vtkSMTKModelRepresentation* GetRepresentation();
 
+  /**
+   * Connects additional input ports required by the representation (instance
+   * placement inputs).
+   */
+  void ConnectAdditionalPorts();
+
 protected:
   vtkSMSMTKModelRepresentationProxy();
   ~vtkSMSMTKModelRepresentationProxy() override;
-
-  /**
-   * Overridden to ensure that whenever "Input" property changes, other input
-   * properties are updated (glyph mapper inputs).
-   */
-  void SetPropertyModifiedFlag(const char* name, int flag) override;
 
 private:
   vtkSMSMTKModelRepresentationProxy(const vtkSMSMTKModelRepresentationProxy&) = delete;

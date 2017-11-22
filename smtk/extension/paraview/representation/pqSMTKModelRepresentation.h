@@ -29,6 +29,8 @@ public:
 protected:
   virtual void handleSMTKSelectionChange(
     const std::string& src, smtk::resource::SelectionManagerPtr seln);
+
+  void initialize() override;
 };
 
 #endif

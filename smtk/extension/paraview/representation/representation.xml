@@ -320,7 +320,6 @@
                           optional="1"></InputArrayDomain>
         <Documentation>Set the input to the representation.</Documentation>
       </InputProperty>
-
       <IntVectorProperty command="SetVisibility"
                          default_values="1"
                          name="Visibility"
@@ -409,6 +408,16 @@
           </RequiredProperties>
         </ArrayListDomain>
       </StringVectorProperty>
+      <ProxyProperty name="DataAxesGrid"
+                     command="SetGridAxesRepresentation"
+                     panel_widget="proxy_editor">
+        <ProxyListDomain name="proxy_list">
+          <Proxy group="representations" name="GridAxesRepresentation" />
+        </ProxyListDomain>
+        <Hints>
+          <ProxyEditorPropertyWidget property="GridAxesVisibility" />
+        </Hints>
+      </ProxyProperty>
 
       <SubProxy>
         <Proxy name="SMTKModelRepresentation"
@@ -485,17 +494,6 @@
         </ShareProperties>
       </SubProxy>
 -->
-      <ProxyProperty name="DataAxesGrid"
-                     command="SetGridAxesRepresentation"
-                     panel_widget="proxy_editor">
-        <ProxyListDomain name="proxy_list">
-          <Proxy group="representations" name="GridAxesRepresentation" />
-        </ProxyListDomain>
-        <Hints>
-          <ProxyEditorPropertyWidget property="GridAxesVisibility" />
-        </Hints>
-      </ProxyProperty>
-
     </SMTKModelRepresentationProxy>
   </ProxyGroup>
 </ServerManagerConfiguration>
