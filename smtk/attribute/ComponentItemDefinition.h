@@ -14,6 +14,7 @@
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/common/UUID.h"
 #include "smtk/model/EntityTypeBits.h" // for smtk::model::BitFlags
+#include "smtk/resource/Resource.h"
 
 #include <typeindex>
 #include <unordered_set>
@@ -40,10 +41,10 @@ public:
   Item::Type type() const override;
 
   bool acceptsResourceComponents(const std::string& uniqueName) const;
-  bool acceptsResourceComponents(std::type_index resourceIndex) const;
+  bool acceptsResourceComponents(smtk::resource::Resource::Index resourceIndex) const;
 
   bool setAcceptsResourceComponents(const std::string& uniqueName, bool accept);
-  bool setAcceptsResourceComponents(std::type_index resourceIndex, bool accept);
+  bool setAcceptsResourceComponents(smtk::resource::Resource::Index resourceIndex, bool accept);
 
   /// Return the mask used to accept or reject model entities as attribute values.
   smtk::model::BitFlags membershipMask() const;
@@ -87,7 +88,7 @@ protected:
   bool m_isExtensible;
   std::size_t m_numberOfRequiredValues;
   std::size_t m_maxNumberOfValues;
-  std::unordered_set<std::type_index> m_acceptable;
+  std::unordered_set<smtk::resource::Resource::Index> m_acceptable;
 };
 
 } // namespace attribute

@@ -39,7 +39,7 @@ class Metadata
 public:
   Metadata(const std::string& uniqueName)
     : m_uniqueName(uniqueName)
-    , m_index(typeid(smtk::resource::Resource))
+    , m_index(std::type_index(typeid(smtk::resource::Resource)).hash_code())
   {
   }
 
