@@ -9,12 +9,17 @@ set(modelOps
   ExportModelJSON
   ExportSMTKModel
   GroupAuxiliaryGeometry
-  ImportPythonOperator
   LoadSMTKModel
   SaveSMTKModel
   SetProperty
   TerrainExtraction
 )
+
+if(SMTK_ENABLE_PYTHON_WRAPPING)
+  list(APPEND modelOps
+    ImportPythonOperator
+    )
+endif()
 
 set(modelSrcs
   Arrangement.cxx
