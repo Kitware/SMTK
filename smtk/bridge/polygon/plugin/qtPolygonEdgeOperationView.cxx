@@ -45,7 +45,10 @@ using namespace smtk::extension;
 class qtPolygonEdgeOperationViewInternals
 {
 public:
-  qtPolygonEdgeOperationViewInternals() {}
+  qtPolygonEdgeOperationViewInternals(bool selectionManagerMode)
+    : m_useSelectionManager(selectionManagerMode)
+  {
+  }
   ~qtPolygonEdgeOperationViewInternals()
   {
     if (ArcManager)
@@ -79,6 +82,7 @@ public:
     if (att && att->numberOfItems() > 0)
     {
       qtAttribute* attInstance = new qtAttribute(att, pw, view);
+      attInstance->setUseSelectionManager(this->m_useSelectionManager);
       if (attInstance && attInstance->widget())
       {
         //Without any additional info lets use a basic layout with model associations
@@ -100,6 +104,7 @@ public:
   QPointer<pqSplitEdgeWidget> SplitEdgeWidget;
   smtk::weak_ptr<smtk::model::Operator> CurrentOp;
   std::map<smtk::common::UUID, int> EntitiesToVisibility;
+  bool m_useSelectionManager;
 };
 
 qtBaseView* qtPolygonEdgeOperationView::createViewWidget(const ViewInfo& info)
@@ -118,7 +123,7 @@ void qtPolygonEdgeOperationView::attributeModified()
 qtPolygonEdgeOperationView::qtPolygonEdgeOperationView(const ViewInfo& info)
   : qtBaseView(info)
 {
-  this->Internals = new qtPolygonEdgeOperationViewInternals;
+  this->Internals = new qtPolygonEdgeOperationViewInternals(this->m_useSelectionManager);
 }
 
 qtPolygonEdgeOperationView::~qtPolygonEdgeOperationView()

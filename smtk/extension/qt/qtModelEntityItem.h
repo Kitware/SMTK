@@ -44,8 +44,6 @@ public:
 
   bool add(const smtk::model::EntityRef& val);
   bool remove(const smtk::model::EntityRef& val);
-  /// Automatically update the item when the selection is changed via the Manager
-  void useSelectionManager();
 
 public slots:
   void setOutputOptional(int);
@@ -59,6 +57,8 @@ public slots:
     const std::string& incomingSelectionSource);
   void refreshEntityItems();
 
+  /// Automatically update the item when the selection is changed via the Manager
+  void setUseSelectionManager(bool mode) override;
 signals:
   void requestEntityAssociation();
   void entityListHighlighted(const smtk::common::UUIDs& uuids);

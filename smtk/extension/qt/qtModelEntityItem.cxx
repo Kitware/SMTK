@@ -88,8 +88,12 @@ qtModelEntityItem::~qtModelEntityItem()
 
 // This method will tie the object to the Selection Manager in terms of both
 // initializing based on the current selection as well as future selections
-void qtModelEntityItem::useSelectionManager()
+void qtModelEntityItem::setUseSelectionManager(bool mode)
 {
+  qtItem::setUseSelectionManager(mode);
+  this->Internals->LinkSelectionButton->setVisible(!mode);
+  this->Internals->ClearButton->setVisible(!mode);
+
   // If there is a selection manager then lets see if we can set the checkbox widget to
   // match the current selection state
 
@@ -98,16 +102,25 @@ void qtModelEntityItem::useSelectionManager()
     return; // There is no selection manager available
   }
 
-  smtk::model::EntityRefs selEntities;
-  qtActiveObjects::instance().smtkSelectionManager()->getSelectedEntitiesAsEntityRefs(selEntities);
-  this->associateEntities(selEntities, false);
-  connect(qtActiveObjects::instance().smtkSelectionManager().get(),
-    SIGNAL(broadcastToReceivers(const smtk::model::EntityRefs&, const smtk::mesh::MeshSets&,
-      const smtk::model::DescriptivePhrases&, const std::string&)),
-    this, SLOT(updateSelection(const smtk::model::EntityRefs&, const smtk::mesh::MeshSets&,
-            const smtk::model::DescriptivePhrases&, const std::string&)));
-  this->Internals->LinkSelectionButton->hide();
-  this->Internals->ClearButton->hide();
+  if (mode)
+  {
+    smtk::model::EntityRefs selEntities;
+    qtActiveObjects::instance().smtkSelectionManager()->getSelectedEntitiesAsEntityRefs(
+      selEntities);
+    this->associateEntities(selEntities, false);
+    connect(qtActiveObjects::instance().smtkSelectionManager().get(),
+      SIGNAL(broadcastToReceivers(const smtk::model::EntityRefs&, const smtk::mesh::MeshSets&,
+        const smtk::model::DescriptivePhrases&, const std::string&)),
+      this, SLOT(updateSelection(const smtk::model::EntityRefs&, const smtk::mesh::MeshSets&,
+              const smtk::model::DescriptivePhrases&, const std::string&)));
+  }
+  else
+  {
+    disconnect(qtActiveObjects::instance().smtkSelectionManager().get(),
+      SIGNAL(broadcastToReceivers(const smtk::model::EntityRefs&, const smtk::mesh::MeshSets&,
+        const smtk::model::DescriptivePhrases&, const std::string&)),
+      0, 0);
+  }
 }
 
 smtk::attribute::ModelEntityItemPtr qtModelEntityItem::modelEntityItem()
@@ -492,7 +505,6 @@ void qtModelEntityItem::onRequestEntityAssociation()
   {
     return;
   }
-
   emit this->requestEntityAssociation();
   emit this->modified();
 }

@@ -52,6 +52,7 @@ public slots:
   void onLineEditChanged();
   void onLineEditFinished();
   void onInputValueChanged(QObject*);
+  void setUseSelectionManager(bool mode) override;
 
 protected slots:
   void updateItemData() override;

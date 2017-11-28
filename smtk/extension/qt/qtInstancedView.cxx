@@ -160,6 +160,9 @@ void qtInstancedView::updateAttributeData()
       qtAttribute* attInstance = new qtAttribute(atts[i], this->widget(), this);
       if (attInstance)
       {
+        // Base on the View's use of the selection manager set the attribute
+        // accordingly
+        attInstance->setUseSelectionManager(this->m_useSelectionManager);
         //Without any additional info lets use a basic layout with model associations
         // if any exists
         attInstance->createBasicLayout(true);

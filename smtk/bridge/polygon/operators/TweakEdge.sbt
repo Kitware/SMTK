@@ -84,7 +84,7 @@
         VIEW_NAME smtkPolygonEdgeView
         )
       -->
-    <View Type="smtkPolygonEdgeView" Title="Tweeak Polygon Edge">
+    <View Type="smtkPolygonEdgeView" Title="Tweeak Polygon Edge" UseSelectionManager="true">
       <AttributeTypes>
         <Att Type="tweak edge" />
       </AttributeTypes>

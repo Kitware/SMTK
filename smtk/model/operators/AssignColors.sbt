@@ -40,7 +40,7 @@
       The customized view "Type" needs to match the plugin's VIEW_NAME:
       add_smtk_ui_view(...  VIEW_NAME smtkAssignColorsView ...)
       -->
-    <View Type="smtkAssignColorsView" Title="Choose Colors"  FilterByCategory="false"  FilterByAdvanceLevel="false">
+    <View Type="smtkAssignColorsView" Title="Choose Colors"  FilterByCategory="false"  FilterByAdvanceLevel="false" UseSelectionManager="true">
       <Description>
         Click either the single-color swatch or the palette
         swatch to assign a color to each associated entity.

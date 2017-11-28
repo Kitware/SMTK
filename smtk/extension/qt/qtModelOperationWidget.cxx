@@ -378,6 +378,7 @@ bool qtModelOperationWidget::initOperatorUI(const smtk::model::OperatorPtr& brOp
   {
     //Lets create a default view for the operator itself
     opView = smtk::view::View::New("Operator", brOp->name());
+    opView->details().setAttribute("UseSelectionManager", "true");
     smtk::view::View::Component& comp =
       opView->details().addChild("InstancedAttributes").addChild("Att");
     comp.setAttribute("Type", att->type()).setAttribute("Name", att->name());

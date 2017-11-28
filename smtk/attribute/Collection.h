@@ -35,6 +35,7 @@ namespace attribute
 {
 class Attribute;
 class Definition;
+
 class SMTKCORE_EXPORT Collection : public smtk::resource::Resource
 {
 public:

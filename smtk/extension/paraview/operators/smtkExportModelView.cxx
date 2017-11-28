@@ -333,6 +333,7 @@ void smtkExportModelView::createWidget()
   this->Internals->AssocModels =
     new qtModelEntityItem(this->Internals->CurrentOp.lock()->specification()->associations(),
       nullptr, this, Qt::Horizontal);
+  this->Internals->AssocModels->setUseSelectionManager(this->useSelectionManager());
   QObject::connect(&qtActiveObjects::instance(), SIGNAL(activeModelChanged()),
     this->Internals->AssocModels, SLOT(clearEntityAssociations()));
   layout->addWidget(this->Internals->AssocModels->widget());
