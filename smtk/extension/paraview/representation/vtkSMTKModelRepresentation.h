@@ -9,13 +9,15 @@
 //=========================================================================
 #ifndef smtk_extension_paraview_representation_vtkSMTKModelRepresentation_h
 #define smtk_extension_paraview_representation_vtkSMTKModelRepresentation_h
+#include <unordered_map>
 
-#include "smtk/extension/paraview/representation/Exports.h"
+#include <vtkProperty.h> // for VTK_POINTS etc.
+#include <vtkSmartPointer.h>
+
+#include <vtkPVDataRepresentation.h>
 
 #include "smtk/PublicPointerDefs.h"
-
-#include "vtkGeometryRepresentation.h"
-#include <vtkSmartPointer.h>
+#include "smtk/extension/paraview/representation/Exports.h"
 
 class vtkActor;
 class vtkPVCacheKeeper;
@@ -23,8 +25,10 @@ class vtkCompositeDataDisplayAttributes;
 class vtkCompositePolyDataMapper2;
 class vtkDataObject;
 class vtkGlyph3DMapper;
+class vtkMapper;
 class vtkMultiBlockDataSet;
 class vtkSelection;
+class vtkTexture;
 
 /**
  *  \brief Representation of an SMTK Model.
@@ -82,6 +86,17 @@ public:
   vtkGetVector3Macro(SelectionColor, double);
   void SetSelectionPointSize(double val);
   void SetSelectionLineWidth(double val);
+  void SetOpacity(double val);
+  void SetPosition(double x, double y, double z);
+  void SetScale(double x, double y, double z);
+  void SetOrientation(double x, double y, double z);
+  void SetOrigin(double x, double y, double z);
+  void SetUserTransform(const double matrix[16]);
+  void SetSpecularPower(double val);
+  void SetDiffuse(double val);
+  void SetAmbient(double val);
+  void SetPickable(int val);
+  void SetTexture(vtkTexture* val);
   //@}
 
   //@{
@@ -117,6 +132,28 @@ public:
   double* GetInstanceColor(unsigned int index);
   void RemoveInstanceColor(unsigned int index);
   void RemoveInstanceColors();
+  //@}
+
+  //@{
+  /**
+   * Set the representation type. This adds VTK_SURFACE_WITH_EDGES to those
+   * defined in vtkProperty.
+   */
+  enum RepresentationTypes
+  {
+    POINTS = VTK_POINTS,
+    WIREFRAME = VTK_WIREFRAME,
+    SURFACE = VTK_SURFACE,
+    SURFACE_WITH_EDGES = 3
+  };
+
+  vtkSetClampMacro(Representation, int, POINTS, SURFACE_WITH_EDGES);
+  vtkGetMacro(Representation, int);
+  /**
+   * Overload to set representation type using string. Accepted strings are:
+   * "Points", "Wireframe", "Surface" and "Surface With Edges".
+   */
+  void SetRepresentation(const char* type);
   //@}
 
 protected:
@@ -161,6 +198,7 @@ protected:
   //@}
 
   double DataBounds[6];
+  int Representation = SURFACE;
 
   vtkSmartPointer<vtkCompositePolyDataMapper2> EntityMapper;
   vtkSmartPointer<vtkCompositePolyDataMapper2> SelectedEntityMapper;
