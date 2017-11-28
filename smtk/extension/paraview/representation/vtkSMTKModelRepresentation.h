@@ -18,10 +18,10 @@
 #include <vtkSmartPointer.h>
 
 class vtkActor;
+class vtkPVCacheKeeper;
 class vtkCompositeDataDisplayAttributes;
 class vtkCompositePolyDataMapper2;
 class vtkDataObject;
-class vtkCompositeDataDisplayAttributes;
 class vtkGlyph3DMapper;
 class vtkMultiBlockDataSet;
 class vtkSelection;
@@ -47,11 +47,11 @@ class vtkSelection;
  *
  *  \sa vtkSMSMTKModelRepresentationProxy
  */
-class SMTKREPRESENTATIONPLUGIN_EXPORT vtkSMTKModelRepresentation : public vtkGeometryRepresentation
+class SMTKREPRESENTATIONPLUGIN_EXPORT vtkSMTKModelRepresentation : public vtkPVDataRepresentation
 {
 public:
   static vtkSMTKModelRepresentation* New();
-  vtkTypeMacro(vtkSMTKModelRepresentation, vtkGeometryRepresentation);
+  vtkTypeMacro(vtkSMTKModelRepresentation, vtkPVDataRepresentation);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
   //@{
@@ -68,15 +68,41 @@ public:
   //@}
 
   /**
-   * \sa vtkGeometryRepresentation
+   * Model rendering properties. Forwarded to the relevant vtkProperty instances.
    */
-  void SetMapScalars(int val) override;
+  void SetMapScalars(int val);
+  void SetPointSize(double val);
+  void SetLineWidth(double val);
 
+  //@{
+  /**
+   * Selection properties. Forwarded to the relevant vtkProperty instances.
+   */
   vtkSetVector3Macro(SelectionColor, double);
   vtkGetVector3Macro(SelectionColor, double);
-
   void SetSelectionPointSize(double val);
-  void SetPointSize(double val) override;
+  void SetSelectionLineWidth(double val);
+  //@}
+
+  //@{
+  /**
+   * Block properties for tessellation entities (Port 0: Model Entities).
+   */
+  void SetBlockVisibility(unsigned int index, bool visible);
+  bool GetBlockVisibility(unsigned int index) const;
+  void RemoveBlockVisibility(unsigned int index, bool = true);
+  void RemoveBlockVisibilities();
+  void SetBlockColor(unsigned int index, double r, double g, double b);
+  void SetBlockColor(unsigned int index, double* color);
+  double* GetBlockColor(unsigned int index);
+  void RemoveBlockColor(unsigned int index);
+  void RemoveBlockColors();
+  void SetBlockOpacity(unsigned int index, double opacity);
+  void SetBlockOpacity(unsigned int index, double* opacity);
+  double GetBlockOpacity(unsigned int index);
+  void RemoveBlockOpacity(unsigned int index);
+  void RemoveBlockOpacities();
+  //@}
 
   //@{
   /**
@@ -98,7 +124,7 @@ protected:
   ~vtkSMTKModelRepresentation();
 
   int FillInputPortInformation(int port, vtkInformation* info) override;
-  void SetupDefaults() override;
+  void SetupDefaults();
   void SetOutputExtent(vtkAlgorithmOutput* output, vtkInformation* inInfo);
   void ConfigureGlyphMapper(vtkGlyph3DMapper* mapper);
 
@@ -116,19 +142,30 @@ protected:
    */
   void ClearSelection(vtkMapper* mapper);
 
+  //@{
   /**
    * Update block attributes on entities and instance placements.
    */
+  void UpdateBlockAttributes(vtkMapper* mapper);
   void UpdateGlyphBlockAttributes(vtkGlyph3DMapper* mapper);
+  //@}
 
+  //@{
   /**
    * Compute bounds of the input model taking into account instance placements
    * (and corresponding glyph offsets) and entity tessellation bounds.
    */
   bool GetModelBounds();
+  bool GetEntityBounds(
+    vtkDataObject* dataObject, double bounds[6], vtkCompositeDataDisplayAttributes* cdAttributes);
+  //@}
+
+  double DataBounds[6];
 
   vtkSmartPointer<vtkCompositePolyDataMapper2> EntityMapper;
   vtkSmartPointer<vtkCompositePolyDataMapper2> SelectedEntityMapper;
+  vtkSmartPointer<vtkPVCacheKeeper> EntityCacheKeeper;
+
   vtkSmartPointer<vtkGlyph3DMapper> GlyphMapper;
   vtkSmartPointer<vtkGlyph3DMapper> SelectedGlyphMapper;
 
@@ -138,6 +175,17 @@ protected:
   vtkSmartPointer<vtkActor> SelectedGlyphEntities;
 
   double SelectionColor[3] = { 1., 0., 1. };
+
+  //@{
+  /**
+   * Block attributes for model entities.
+   */
+  bool BlockAttrChanged = false;
+  vtkTimeStamp BlockAttributeTime;
+  std::unordered_map<unsigned int, bool> BlockVisibilities;
+  std::unordered_map<unsigned int, double> BlockOpacities;
+  std::unordered_map<unsigned int, std::array<double, 3> > BlockColors;
+  //@}
 
   //@{
   /**

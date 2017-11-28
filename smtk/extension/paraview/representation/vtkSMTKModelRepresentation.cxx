@@ -38,6 +38,7 @@ vtkStandardNewMacro(vtkSMTKModelRepresentation);
 vtkSMTKModelRepresentation::vtkSMTKModelRepresentation()
   : EntityMapper(vtkSmartPointer<vtkCompositePolyDataMapper2>::New())
   , SelectedEntityMapper(vtkSmartPointer<vtkCompositePolyDataMapper2>::New())
+  , EntityCacheKeeper(vtkSmartPointer<vtkPVCacheKeeper>::New())
   , GlyphMapper(vtkSmartPointer<vtkGlyph3DMapper>::New())
   , SelectedGlyphMapper(vtkSmartPointer<vtkGlyph3DMapper>::New())
   , Entities(vtkSmartPointer<vtkActor>::New())
@@ -87,7 +88,7 @@ bool vtkSMTKModelRepresentation::GetModelBounds()
 {
   // Entity tessellation bounds
   double entityBounds[6];
-  this->GetBounds(this->GetInternalOutputPort(0)->GetProducer()->GetOutputDataObject(0),
+  this->GetEntityBounds(this->GetInternalOutputPort(0)->GetProducer()->GetOutputDataObject(0),
     entityBounds, this->EntityMapper->GetCompositeDataDisplayAttributes());
 
   // Instance placement bounds
@@ -116,6 +117,22 @@ bool vtkSMTKModelRepresentation::GetModelBounds()
   return false;
 }
 
+bool vtkSMTKModelRepresentation::GetEntityBounds(
+  vtkDataObject* dataObject, double bounds[6], vtkCompositeDataDisplayAttributes* cdAttributes)
+{
+  vtkMath::UninitializeBounds(bounds);
+  if (vtkCompositeDataSet* cd = vtkCompositeDataSet::SafeDownCast(dataObject))
+  {
+    // computing bounds with only visible blocks
+    vtkCompositeDataDisplayAttributes::ComputeVisibleBounds(cdAttributes, cd, bounds);
+    if (vtkBoundingBox::IsValid(bounds))
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
 int vtkSMTKModelRepresentation::RequestData(
   vtkInformation* request, vtkInformationVector** inVec, vtkInformationVector* outVec)
 {
@@ -125,7 +142,7 @@ int vtkSMTKModelRepresentation::RequestData(
     this->SetOutputExtent(this->GetInternalOutputPort(0), inInfo);
 
     // Model entities
-    this->CacheKeeper->SetInputConnection(this->GetInternalOutputPort(0));
+    this->EntityCacheKeeper->SetInputConnection(this->GetInternalOutputPort(0));
 
     // Glyph points (2) and prototypes (1)
     this->GlyphMapper->SetInputConnection(this->GetInternalOutputPort(2));
@@ -136,7 +153,7 @@ int vtkSMTKModelRepresentation::RequestData(
     this->SelectedGlyphMapper->SetInputConnection(1, this->GetInternalOutputPort(1));
     this->ConfigureGlyphMapper(this->SelectedGlyphMapper.GetPointer());
   }
-  this->CacheKeeper->Update();
+  this->EntityCacheKeeper->Update();
 
   this->EntityMapper->Modified();
   this->GlyphMapper->Modified();
@@ -162,7 +179,7 @@ int vtkSMTKModelRepresentation::ProcessViewRequest(
     // to provide a place-holder dataset of the right type. This is essential
     // since the vtkPVRenderView uses the type specified to decide on the
     // delivery mechanism, among other things.
-    vtkPVRenderView::SetPiece(inInfo, this, this->CacheKeeper->GetOutputDataObject(0), 0, 0);
+    vtkPVRenderView::SetPiece(inInfo, this, this->EntityCacheKeeper->GetOutputDataObject(0), 0, 0);
 
     // Since we are rendering polydata, it can be redistributed when ordered
     // compositing is needed. So let the view know that it can feel free to
@@ -176,11 +193,6 @@ int vtkSMTKModelRepresentation::ProcessViewRequest(
       this->GlyphEntities->HasTranslucentPolygonalGeometry())
     {
       outInfo->Set(vtkPVRenderView::NEED_ORDERED_COMPOSITING(), 1);
-      // Pass partitioning information to the render view.
-      if (this->UseDataPartitions == true)
-      {
-        vtkPVRenderView::SetOrderedCompositingInformation(inInfo, this->DataBounds);
-      }
     }
 
     // Finally, let the view know about the geometry bounds. The view uses this
@@ -478,10 +490,52 @@ void vtkSMTKModelRepresentation::SetSelectionPointSize(double val)
   this->SelectedGlyphEntities->GetProperty()->SetPointSize(val);
 }
 
+void vtkSMTKModelRepresentation::SetSelectionLineWidth(double val)
+{
+  this->SelectedEntities->GetProperty()->SetLineWidth(val);
+  this->SelectedGlyphEntities->GetProperty()->SetLineWidth(val);
+}
+
 void vtkSMTKModelRepresentation::SetPointSize(double val)
 {
   this->Entities->GetProperty()->SetPointSize(val);
   this->GlyphEntities->GetProperty()->SetPointSize(val);
+}
+
+void vtkSMTKModelRepresentation::SetLineWidth(double val)
+{
+  this->Entities->GetProperty()->SetLineWidth(val);
+  this->GlyphEntities->GetProperty()->SetLineWidth(val);
+}
+
+void vtkSMTKModelRepresentation::UpdateBlockAttributes(vtkMapper* mapper)
+{
+  auto cpm = vtkCompositePolyDataMapper2::SafeDownCast(mapper);
+  if (!cpm)
+  {
+    vtkErrorMacro(<< "Invalid mapper!");
+    return;
+  }
+
+  cpm->RemoveBlockVisibilities();
+  for (auto const& item : this->BlockVisibilities)
+  {
+    cpm->SetBlockVisibility(item.first, item.second);
+  }
+
+  cpm->RemoveBlockColors();
+  for (auto const& item : this->BlockColors)
+  {
+    auto& arr = item.second;
+    double color[3] = { arr[0], arr[1], arr[2] };
+    cpm->SetBlockColor(item.first, color);
+  }
+
+  cpm->RemoveBlockOpacities();
+  for (auto const& item : this->BlockOpacities)
+  {
+    cpm->SetBlockOpacity(item.first, item.second);
+  }
 }
 
 void vtkSMTKModelRepresentation::UpdateGlyphBlockAttributes(vtkGlyph3DMapper* mapper)
@@ -517,6 +571,122 @@ void vtkSMTKModelRepresentation::UpdateGlyphBlockAttributes(vtkGlyph3DMapper* ma
   // Opacity currently not supported by vtkGlyph3DMapper
 
   mapper->Modified();
+}
+
+void vtkSMTKModelRepresentation::SetBlockVisibility(unsigned int index, bool visible)
+{
+  this->BlockVisibilities[index] = visible;
+  this->BlockAttrChanged = true;
+}
+
+bool vtkSMTKModelRepresentation::GetBlockVisibility(unsigned int index) const
+{
+  auto it = this->BlockVisibilities.find(index);
+  if (it == this->BlockVisibilities.cend())
+  {
+    return true;
+  }
+  return it->second;
+}
+
+void vtkSMTKModelRepresentation::RemoveBlockVisibility(unsigned int index, bool)
+{
+  auto it = this->BlockVisibilities.find(index);
+  if (it == this->BlockVisibilities.cend())
+  {
+    return;
+  }
+  this->BlockVisibilities.erase(it);
+  this->BlockAttrChanged = true;
+}
+
+void vtkSMTKModelRepresentation::RemoveBlockVisibilities()
+{
+  this->BlockVisibilities.clear();
+  this->BlockAttrChanged = true;
+}
+
+void vtkSMTKModelRepresentation::SetBlockColor(unsigned int index, double r, double g, double b)
+{
+  std::array<double, 3> color = { { r, g, b } };
+  this->BlockColors[index] = color;
+  this->BlockAttrChanged = true;
+}
+
+void vtkSMTKModelRepresentation::SetBlockColor(unsigned int index, double* color)
+{
+  if (color)
+  {
+    this->SetBlockColor(index, color[0], color[1], color[2]);
+  }
+}
+
+double* vtkSMTKModelRepresentation::GetBlockColor(unsigned int index)
+{
+  auto it = this->BlockColors.find(index);
+  if (it == this->BlockColors.cend())
+  {
+    return nullptr;
+  }
+  return it->second.data();
+}
+
+void vtkSMTKModelRepresentation::RemoveBlockColor(unsigned int index)
+{
+  auto it = this->BlockColors.find(index);
+  if (it == this->BlockColors.cend())
+  {
+    return;
+  }
+  this->BlockColors.erase(it);
+  this->BlockAttrChanged = true;
+}
+
+void vtkSMTKModelRepresentation::RemoveBlockColors()
+{
+  this->BlockColors.clear();
+  this->BlockAttrChanged = true;
+}
+
+void vtkSMTKModelRepresentation::SetBlockOpacity(unsigned int index, double opacity)
+{
+  this->BlockOpacities[index] = opacity;
+  this->BlockAttrChanged = true;
+}
+
+void vtkSMTKModelRepresentation::SetBlockOpacity(unsigned int index, double* opacity)
+{
+  if (opacity)
+  {
+    this->SetBlockOpacity(index, *opacity);
+  }
+}
+
+double vtkSMTKModelRepresentation::GetBlockOpacity(unsigned int index)
+{
+  auto it = this->BlockOpacities.find(index);
+  if (it == this->BlockOpacities.cend())
+  {
+    return 0.0;
+  }
+  return it->second;
+}
+
+void vtkSMTKModelRepresentation::RemoveBlockOpacity(unsigned int index)
+{
+  auto it = this->BlockOpacities.find(index);
+  if (it == this->BlockOpacities.cend())
+  {
+    return;
+  }
+  this->BlockOpacities.erase(it);
+  this->BlockAttrChanged = true;
+}
+
+void vtkSMTKModelRepresentation::RemoveBlockOpacities()
+{
+  this->BlockOpacities.clear();
+  this->BlockAttrChanged = true;
 }
 
 void vtkSMTKModelRepresentation::SetInstanceVisibility(unsigned int index, bool visible)
