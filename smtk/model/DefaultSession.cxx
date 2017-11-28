@@ -10,7 +10,6 @@
 #include "smtk/model/DefaultSession.h"
 
 #include "smtk/model/Manager.h"
-#include "smtk/model/RemoteOperator.h"
 #include "smtk/model/SessionRegistrar.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -77,59 +76,11 @@ std::string DefaultSession::remoteName() const
   * 3. A friend class (such as LoadJSON) has called setImportingOperators(true)
   *    and not subsequently called setImportingOperators(false).
   */
-OperatorPtr DefaultSession::op(const std::string& opName) const
-{
-  OperatorPtr oper = this->Session::op(opName);
-  if (!oper && !this->m_remoteSessionName.empty())
-  { // we are a remote session... create any operator our friend classes ask for.
-    RemoteOperatorPtr rop = RemoteOperator::create();
-    rop->setName(opName);
-    rop->setManager(this->manager());
-    rop->setMeshManager(this->meshManager());
-
-    // Naughty, but necessary so we can pretend that the
-    // operator existed all along.
-    DefaultSession* self = const_cast<DefaultSession*>(this);
-    rop->setSession(self->shared_from_this());
-    oper = rop;
-  }
-  return oper;
-}
-
-/**@name RemoteOperator delegate methods.
-  *
-  * If this session has any operators derived from RemoteOperator,
-  * those operators will call these methods when their ableToOperate()
-  * or operate() members are invoked.
-  * It is the session's responsibility to forward
-  * the requests to the appropriate, non-virtual session for
-  * execution and return the results.
-  */
-///@{
-/**\brief A delegate for the RemoteOperator::ableToOperate() method.
-  *
-  * The DefaultSession implementation does nothing.
-  * Subclasses must override this method.
-  */
-bool DefaultSession::ableToOperateDelegate(RemoteOperatorPtr oper)
-{
-  (void)oper;
-  return false;
-}
-
-/**\brief A delegate for the RemoteOperator::operate() method.
-  *
-  * The DefaultSession implementation does nothing.
-  * Subclasses must override this method.
-  */
-OperatorResult DefaultSession::operateDelegate(RemoteOperatorPtr oper)
-{
-  if (!oper)
-    return OperatorResult();
-
-  return oper->createResult(smtk::operation::Operator::OPERATION_FAILED);
-}
-///@}
+// OperatorPtr DefaultSession::op(const std::string& opName) const
+// {
+//   OperatorPtr oper = this->Session::op(opName);
+//   return oper;
+// }
 
 } // namespace model
 } // namespace smtk

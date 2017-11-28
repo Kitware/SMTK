@@ -10,7 +10,7 @@
 #ifndef __smtk_mesh_operators_GenerateHotStartData_h
 #define __smtk_mesh_operators_GenerateHotStartData_h
 
-#include "smtk/model/Operator.h"
+#include "smtk/operation/XMLOperator.h"
 
 namespace smtk
 {
@@ -27,18 +27,19 @@ namespace mesh
       point is subtracted from the interpolated data, resulting in a value that
       represents the water level above ground (as opposed to a baseline value)
   */
-class SMTKCORE_EXPORT GenerateHotStartData : public smtk::model::Operator
+class SMTKCORE_EXPORT GenerateHotStartData : public smtk::operation::XMLOperator
 {
 public:
   smtkTypeMacro(GenerateHotStartData);
   smtkCreateMacro(GenerateHotStartData);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSuperclassMacro(smtk::operation::XMLOperator);
 
   bool ableToOperate() override;
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  virtual const char* xmlDescription() const override;
 };
 }
 }

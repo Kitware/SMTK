@@ -1,9 +1,14 @@
 set(unit_tests
-  unitOperator
+  TestAsyncOperator
+  TestAvailableOperators
+  TestMutexedOperator
+  unitNewOp
 )
+
+find_package(Threads REQUIRED)
 
 smtk_unit_tests(
   Label "operation"
   SOURCES ${unit_tests}
-  LIBRARIES smtkCore
+  LIBRARIES smtkCore Threads::Threads
 )

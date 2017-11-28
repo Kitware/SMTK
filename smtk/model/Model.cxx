@@ -269,11 +269,13 @@ Model& Model::removeAuxiliaryGeometry(const AuxiliaryGeometry& ag)
   return *this;
 }
 
+/*
 /// Return an operator of the given \a opname with its Manager set to this model's.
 OperatorPtr Model::op(const std::string& opname) const
 {
   return this->session().op(opname);
 }
+*/
 
 /*
 /// Return a set of the operators available for this model.

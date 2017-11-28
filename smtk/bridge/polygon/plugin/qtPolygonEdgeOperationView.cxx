@@ -314,7 +314,7 @@ void qtPolygonEdgeOperationView::onHideAllFaces(bool status)
   }
 
   smtk::model::SessionRef activeSession = qtActiveObjects::instance().activeModel().session();
-  smtk::model::OperatorPtr setPropertyOp = activeSession.op("set property");
+  smtk::model::OperatorPtr setPropertyOp; // = activeSession.op("set property");
 
   if (setPropertyOp && setPropertyOp->specification())
   {

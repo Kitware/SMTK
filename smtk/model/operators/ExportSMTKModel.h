@@ -17,17 +17,19 @@ namespace smtk
 namespace model
 {
 
-/// Export an SMTK model (identical server-side operation to saving; we override nothing).
+/// Export an SMTK model (identical server-side operation to saving; we only
+/// override the XML description).
 class SMTKCORE_EXPORT ExportSMTKModel : public SaveSMTKModel
 {
 public:
   smtkTypeMacro(ExportSMTKModel);
   smtkCreateMacro(ExportSMTKModel);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
 
 protected:
   ExportSMTKModel();
+
+  virtual const char* xmlDescription() const override;
 };
 
 } //namespace model

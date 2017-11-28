@@ -7,6 +7,18 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/VoidItem.h"
+
+#include "smtk/bridge/discrete/Resource.h"
+#include "smtk/bridge/discrete/operators/ImportOperator.h"
+
+#include "smtk/common/UUID.h"
+
 #include "smtk/io/LoadJSON.h"
 #include "smtk/io/ModelToMesh.h"
 
@@ -21,14 +33,6 @@
 #include "smtk/model/Operator.h"
 #include "smtk/model/Vertex.h"
 
-#include "smtk/attribute/FileItem.h"
-#include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/StringItem.h"
-#include "smtk/attribute/VoidItem.h"
-#include "smtk/common/UUID.h"
-
-#include "smtk/bridge/discrete/Session.h"
-
 using namespace smtk::model;
 
 int main(int argc, char* argv[])
@@ -40,60 +44,52 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  // Create a model manager
-  smtk::model::ManagerPtr manager = smtk::model::Manager::create();
-
-  // Identify available sessions
-  std::cout << "Available sessions\n";
-  typedef smtk::model::StringList StringList;
-  StringList sessions = manager->sessionTypeNames();
-  for (StringList::iterator it = sessions.begin(); it != sessions.end(); ++it)
-    std::cout << "  " << *it << "\n";
-  std::cout << "\n";
-
-  // Create a new discrete session
-  smtk::bridge::discrete::Session::Ptr session = smtk::bridge::discrete::Session::create();
-  manager->registerSession(session);
-
-  // Identify available operators
-  std::cout << "Available cmb operators in discrete session\n";
-  StringList opnames = session->operatorNames();
-  for (StringList::iterator it = opnames.begin(); it != opnames.end(); ++it)
-  {
-    std::cout << "  " << *it << "\n";
-  }
-  std::cout << "\n";
-
-  // read the data
-  smtk::model::OperatorPtr readOp = session->op("import");
-  if (!readOp)
+  // Create an import operator
+  smtk::bridge::discrete::ImportOperator::Ptr importOp =
+    smtk::bridge::discrete::ImportOperator::create();
+  if (!importOp)
   {
     std::cerr << "No import operator\n";
     return 1;
   }
 
-  // read the file
-  readOp->specification()->findFile("filename")->setValue(std::string(argv[1]));
-  std::cout << "Importing " << argv[1] << "\n";
-  smtk::model::OperatorResult opresult = readOp->operate();
-  if (opresult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
+  // Set the file path
+  importOp->parameters()->findFile("filename")->setValue(std::string(argv[1]));
+
+  // Execute the operation
+  smtk::operation::NewOp::Result importOpResult = importOp->operate();
+
+  // Retrieve the resulting model
+  smtk::attribute::ComponentItemPtr componentItem =
+    std::dynamic_pointer_cast<smtk::attribute::ComponentItem>(
+      importOpResult->findComponent("model"));
+
+  // Access the generated model
+  smtk::model::Entity::Ptr model =
+    std::dynamic_pointer_cast<smtk::model::Entity>(componentItem->value());
+
+  // Test for success
+  if (importOpResult->findInt("outcome")->value() !=
+    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
   {
-    std::cerr << "Read operator failed\n";
+    std::cerr << "Import operator failed\n";
     return 1;
   }
 
-  smtk::model::Model modelSimple2dm = opresult->findModelEntity("created")->value();
+  smtk::model::Manager::Ptr resource =
+    std::static_pointer_cast<smtk::model::Manager>(model->resource());
+  smtk::model::Model modelSimple2dm = model->referenceAs<smtk::model::Model>();
 
   if (!modelSimple2dm.isValid())
   {
-    std::cerr << "Reading simple 2dm file failed!\n";
+    std::cerr << "Importing 2dm file failed!\n";
     return 1;
   }
 
   // get edge/face info
-  EntityRefs groups = manager->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::GROUP_ENTITY);
+  EntityRefs groups = resource->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::GROUP_ENTITY);
   std::cout << "Before creation, group size is: " << groups.size() << endl;
-  EntityRefs edges = manager->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::EDGE);
+  EntityRefs edges = resource->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::EDGE);
   std::cout << "Edges inside the model is:\n";
   for (EntityRefs::iterator it = edges.begin(); it != edges.end(); ++it)
   {

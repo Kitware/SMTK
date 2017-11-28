@@ -15,9 +15,11 @@
 
 #include "smtk/bridge/polygon/operators/ExtractContours.h"
 
+#include "smtk/bridge/polygon/Operator.h"
+
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::polygon::ExtractContours > pybind11_init_smtk_bridge_polygon_ExtractContours(py::module &m, PySharedPtrClass< smtk::bridge::polygon::Operator, smtk::model::Operator >& parent)
+PySharedPtrClass< smtk::bridge::polygon::ExtractContours > pybind11_init_smtk_bridge_polygon_ExtractContours(py::module &m, PySharedPtrClass< smtk::bridge::polygon::Operator, smtk::operation::XMLOperator >& parent)
 {
   PySharedPtrClass< smtk::bridge::polygon::ExtractContours > instance(m, "ExtractContours", parent);
   instance
@@ -25,11 +27,9 @@ PySharedPtrClass< smtk::bridge::polygon::ExtractContours > pybind11_init_smtk_br
     .def(py::init<::smtk::bridge::polygon::ExtractContours const &>())
     .def("deepcopy", (smtk::bridge::polygon::ExtractContours & (smtk::bridge::polygon::ExtractContours::*)(::smtk::bridge::polygon::ExtractContours const &)) &smtk::bridge::polygon::ExtractContours::operator=)
     .def("ableToOperate", &smtk::bridge::polygon::ExtractContours::ableToOperate)
-    .def("className", &smtk::bridge::polygon::ExtractContours::className)
     .def("classname", &smtk::bridge::polygon::ExtractContours::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::ExtractContours> (*)()) &smtk::bridge::polygon::ExtractContours::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::ExtractContours> (*)(::std::shared_ptr<smtk::bridge::polygon::ExtractContours> &)) &smtk::bridge::polygon::ExtractContours::create, py::arg("ref"))
-    .def("name", &smtk::bridge::polygon::ExtractContours::name)
     .def("shared_from_this", (std::shared_ptr<const smtk::bridge::polygon::ExtractContours> (smtk::bridge::polygon::ExtractContours::*)() const) &smtk::bridge::polygon::ExtractContours::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<smtk::bridge::polygon::ExtractContours> (smtk::bridge::polygon::ExtractContours::*)()) &smtk::bridge::polygon::ExtractContours::shared_from_this)
     ;

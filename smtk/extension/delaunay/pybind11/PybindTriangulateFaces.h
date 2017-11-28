@@ -15,18 +15,18 @@
 
 #include "smtk/extension/delaunay/operators/TriangulateFaces.h"
 
-PySharedPtrClass< smtk::mesh::TriangulateFaces, smtk::model::Operator > pybind11_init_smtk_extension_delaunay_TriangulateFaces(py::module &m)
+#include "smtk/operation/XMLOperator.h"
+
+PySharedPtrClass< smtk::extension::delaunay::TriangulateFaces, smtk::operation::XMLOperator > pybind11_init_smtk_extension_delaunay_TriangulateFaces(py::module &m)
 {
-  PySharedPtrClass< smtk::mesh::TriangulateFaces, smtk::model::Operator > instance(m, "TriangulateFaces");
+  PySharedPtrClass< smtk::extension::delaunay::TriangulateFaces, smtk::operation::XMLOperator > instance(m, "TriangulateFaces");
   instance
-    .def("classname", &smtk::mesh::TriangulateFaces::classname)
-    .def_static("create", (std::shared_ptr<smtk::mesh::TriangulateFaces> (*)()) &smtk::mesh::TriangulateFaces::create)
-    .def_static("create", (std::shared_ptr<smtk::mesh::TriangulateFaces> (*)(::std::shared_ptr<smtk::mesh::TriangulateFaces> &)) &smtk::mesh::TriangulateFaces::create, py::arg("ref"))
-    .def("shared_from_this", (std::shared_ptr<smtk::mesh::TriangulateFaces> (smtk::mesh::TriangulateFaces::*)()) &smtk::mesh::TriangulateFaces::shared_from_this)
-    .def("shared_from_this", (std::shared_ptr<const smtk::mesh::TriangulateFaces> (smtk::mesh::TriangulateFaces::*)() const) &smtk::mesh::TriangulateFaces::shared_from_this)
-    .def("name", &smtk::mesh::TriangulateFaces::name)
-    .def("className", &smtk::mesh::TriangulateFaces::className)
-    .def("ableToOperate", &smtk::mesh::TriangulateFaces::ableToOperate)
+    .def("classname", &smtk::extension::delaunay::TriangulateFaces::classname)
+    .def_static("create", (std::shared_ptr<smtk::extension::delaunay::TriangulateFaces> (*)()) &smtk::extension::delaunay::TriangulateFaces::create)
+    .def_static("create", (std::shared_ptr<smtk::extension::delaunay::TriangulateFaces> (*)(::std::shared_ptr<smtk::extension::delaunay::TriangulateFaces> &)) &smtk::extension::delaunay::TriangulateFaces::create, py::arg("ref"))
+    .def("shared_from_this", (std::shared_ptr<smtk::extension::delaunay::TriangulateFaces> (smtk::extension::delaunay::TriangulateFaces::*)()) &smtk::extension::delaunay::TriangulateFaces::shared_from_this)
+    .def("shared_from_this", (std::shared_ptr<const smtk::extension::delaunay::TriangulateFaces> (smtk::extension::delaunay::TriangulateFaces::*)() const) &smtk::extension::delaunay::TriangulateFaces::shared_from_this)
+    .def("ableToOperate", &smtk::extension::delaunay::TriangulateFaces::ableToOperate)
     ;
   return instance;
 }

@@ -24,6 +24,8 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/model/SetProperty_xml.h"
+
 using namespace smtk::model;
 using smtk::attribute::StringItem;
 using smtk::attribute::DoubleItem;
@@ -43,7 +45,9 @@ void SetPropertyValue(const std::string& name, typename VI::Ptr item, EntityRefA
     // Erase the property of this type from these entities,
     // if they had the property in the first place.
     for (it = entities.begin(); it != entities.end(); ++it)
+    {
       it->removeProperty<VD>(name);
+    }
   }
   else
   {
@@ -51,11 +55,15 @@ void SetPropertyValue(const std::string& name, typename VI::Ptr item, EntityRefA
     VL values;
     values.reserve(item->numberOfValues());
     for (std::size_t i = 0; i < item->numberOfValues(); ++i)
+    {
       values.push_back(item->value(i));
+    }
 
     // Add or overwrite the property with the values.
     for (it = entities.begin(); it != entities.end(); ++it)
+    {
       (*it->properties<VD>())[name] = values;
+    }
   }
 }
 
@@ -76,7 +84,9 @@ void SetMeshPropertyValue(const std::string& name, typename VI::Ptr item,
     VL values;
     values.reserve(item->numberOfValues());
     for (std::size_t i = 0; i < item->numberOfValues(); ++i)
+    {
       values.push_back(item->value(i));
+    }
 
     // Add or overwrite the property with the values.
     (*c->meshProperties<VD>(mesh))[name] = values;
@@ -85,15 +95,21 @@ void SetMeshPropertyValue(const std::string& name, typename VI::Ptr item,
 
 smtk::model::OperatorResult SetProperty::operateInternal()
 {
-  smtk::attribute::StringItemPtr nameItem = this->findString("name");
-  smtk::attribute::StringItemPtr stringItem = this->findString("string value");
-  smtk::attribute::DoubleItemPtr floatItem = this->findDouble("float value");
-  smtk::attribute::IntItemPtr integerItem = this->findInt("integer value");
+  smtk::attribute::StringItemPtr nameItem = this->parameters()->findString("name");
+  smtk::attribute::StringItemPtr stringItem = this->parameters()->findString("string value");
+  smtk::attribute::DoubleItemPtr floatItem = this->parameters()->findDouble("float value");
+  smtk::attribute::IntItemPtr integerItem = this->parameters()->findInt("integer value");
 
-  EntityRefArray entities = this->associatedEntitiesAs<EntityRefArray>();
+  auto associations = this->parameters()->associations();
+  EntityRefArray entities(associations->begin(), associations->end());
 
   if (nameItem->value(0).empty())
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+  {
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+  }
+
+  smtk::model::Manager::Ptr resource =
+    std::static_pointer_cast<smtk::model::Manager>(entities[0].component()->resource());
 
   SetPropertyValue<String, StringList, StringData, StringItem>(
     nameItem->value(0), stringItem, entities);
@@ -103,7 +119,7 @@ smtk::model::OperatorResult SetProperty::operateInternal()
     nameItem->value(0), integerItem, entities);
 
   // check whether there are mesh entities's properties need to be changed
-  smtk::attribute::MeshItemPtr meshItem = this->findMesh("meshes");
+  smtk::attribute::MeshItemPtr meshItem = this->parameters()->findMesh("meshes");
   smtk::mesh::MeshSets modifiedMeshes;
   smtk::model::EntityRefs extraModifiedModels;
   if (meshItem)
@@ -113,7 +129,9 @@ smtk::model::OperatorResult SetProperty::operateInternal()
     {
       smtk::mesh::CollectionPtr c = it->collection();
       if (!c)
+      {
         continue;
+      }
       SetMeshPropertyValue<String, StringList, StringData, StringItem>(
         nameItem->value(0), stringItem, c, *it);
       SetMeshPropertyValue<Float, FloatList, FloatData, DoubleItem>(
@@ -125,12 +143,11 @@ smtk::model::OperatorResult SetProperty::operateInternal()
       // label the associated model as modified
       smtk::common::UUID modid = c->associatedModel();
       if (!modid.isNull())
-        extraModifiedModels.insert(smtk::model::Model(this->manager(), modid));
+        extraModifiedModels.insert(smtk::model::Model(resource, modid));
     }
   }
 
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
 
   // if a model is in the changed entities and it is a submodel, we
   // want to label its parent model to be modified too.
@@ -149,8 +166,11 @@ smtk::model::OperatorResult SetProperty::operateInternal()
   // Return the list of entities that were potentially
   // modified so that remote sessions can track what records
   // need to be re-fetched.
-  smtk::attribute::ModelEntityItem::Ptr resultEntities = result->findModelEntity("modified");
-  resultEntities->setValues(entities.begin(), entities.end());
+  smtk::attribute::ComponentItem::Ptr modifiedItem = result->findComponent("modified");
+  for (auto& m : entities)
+  {
+    modifiedItem->appendValue(m.component());
+  }
 
   // Return the list of meshes that were potentially modified.
   if (modifiedMeshes.size() > 0)
@@ -163,10 +183,10 @@ smtk::model::OperatorResult SetProperty::operateInternal()
   return result;
 }
 
+const char* SetProperty::xmlDescription() const
+{
+  return SetProperty_xml;
+}
+
 } //namespace model
 } // namespace smtk
-
-#include "smtk/model/SetProperty_xml.h"
-
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::model::SetProperty, set_property, "set property",
-  SetProperty_xml, smtk::model::Session);

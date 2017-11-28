@@ -15,6 +15,7 @@
 
 #include "smtk/common/UUIDGenerator.h"
 
+#include "smtk/resource/Component.h"
 #include "smtk/resource/Manager.h"
 
 namespace smtk
@@ -40,24 +41,45 @@ Resource::~Resource()
 {
 }
 
-std::string Resource::uniqueName() const
+ComponentSet Resource::find(const std::string& queryString) const
+{
+  // Construct a query operation from the query string
+  auto queryOp = this->queryOperation(queryString);
+
+  // Construct a component set to fill
+  ComponentSet componentSet;
+
+  // Visit each component and add it to the set if it satisfies the query
+  smtk::resource::Component::Visitor visitor = [&](const ComponentPtr& component) {
+    if (queryOp(component))
+    {
+      componentSet.insert(component);
+    }
+  };
+
+  this->visit(visitor);
+
+  return componentSet;
+}
+
+bool Resource::isOfType(const Resource::Index& index) const
 {
   Manager::Ptr mgr = m_manager.lock();
   if (mgr)
   {
     // if the resource's manager is set, then the resource is registered to a
-    // manager. The resource metadata has a unique name for this resource type,
-    // so we return this name.
+    // manager. The resource metadata has the resource's inheritence
+    // information, so we can query it.
     auto metadata = mgr->metadata().get<IndexTag>().find(this->index());
     if (metadata != mgr->metadata().get<IndexTag>().end())
     {
-      return metadata->uniqueName();
+      return metadata->isOfType(index);
     }
   }
 
-  // either this resource is not registered to a manager or it does not have a
-  // unique name registered to it. Simply return the class name.
-  return this->classname();
+  // this resource is not registered to a manager. Simply check if the resource
+  // index matches the resource's index.
+  return this->index() == index;
 }
 
 bool Resource::setId(const smtk::common::UUID& myId)

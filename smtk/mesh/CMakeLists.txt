@@ -24,6 +24,7 @@ set(meshSrcs
   json/Interface.cxx
   json/MeshInfo.cxx
   json/Readers.cxx
+  json/jsonHandleRange.cxx
 
   moab/Allocator.cxx
   moab/CellTypeToType.cxx
@@ -41,10 +42,12 @@ set(meshSrcs
   operators/ExportMesh.cxx
   operators/GenerateHotStartData.cxx
   operators/InterpolateOntoMesh.cxx
+  operators/RegisterOperations.cxx
   operators/UndoElevateMesh.cxx
   operators/WriteMesh.cxx
 
   resource/MeshComponent.cxx
+  resource/RegisterResources.cxx
 
   utility/ApplyToMesh.cxx
   utility/ExtractMeshConstants.cxx
@@ -84,6 +87,7 @@ set(meshHeaders
   #implementation details users of smtk don't get access to ( outside the interface )
   json/Interface.h
   json/MeshInfo.h
+  json/jsonHandleRange.h
 
   moab/Interface.h
   moab/HandleRange.h
@@ -93,11 +97,13 @@ set(meshHeaders
   operators/ExportMesh.h
   operators/GenerateHotStartData.h
   operators/InterpolateOntoMesh.h
+  operators/RegisterOperations.h
   operators/UndoElevateMesh.h
   operators/WriteMesh.h
 
   resource/MeshComponent.h
   resource/PropertyData.h
+  resource/RegisterResources.h
 
   utility/ApplyToMesh.h
   utility/ExtractMeshConstants.h
@@ -117,10 +123,15 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteMesh.sbt" defOpXML
 #install the headers
 smtk_public_headers(${meshHeaders})
 
+add_subdirectory(environment)
+
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)
 endif()
 
 if(SMTK_ENABLE_TESTING)
+  target_link_libraries(TestBuild_smtk_mesh
+    PUBLIC
+    nlohmann_json)
   add_subdirectory(testing)
 endif()

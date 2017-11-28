@@ -13,6 +13,7 @@
 #include "smtk/bridge/polygon/Operator.h"
 
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/ModelEntityItem.h"
 
 #include "smtk/model/Edge.h"
 
@@ -45,6 +46,9 @@ template <typename T, typename U, typename V, typename W>
 void Operator::pointsForLoop(T& polypts, int numEdgesToUse, U& curEdge, U edgesFinish,
   V& curEdgeDir, V edgeDirFinish, W& outerLoopEdges)
 {
+  auto resource =
+    std::static_pointer_cast<smtk::bridge::polygon::Resource>(curEdge->component()->resource());
+
   smtk::attribute::ModelEntityItem::const_iterator edgesStop = curEdge + numEdgesToUse;
   smtk::attribute::IntItem::value_type::const_iterator edgeDirStop = curEdgeDir + numEdgesToUse;
   //model::Orientation lastOrient = model::UNKNOWN;
@@ -63,7 +67,7 @@ void Operator::pointsForLoop(T& polypts, int numEdgesToUse, U& curEdge, U edgesF
     { // Don't double-include endpoints.
       polypts.erase(polypts.end() - 1);
     }
-    internal::EdgePtr edgeRec = this->findStorage<internal::edge>(curEdge->entity());
+    internal::EdgePtr edgeRec = resource->template findStorage<internal::edge>(curEdge->entity());
     if (!edgeRec)
     {
       std::cerr << "Skipping missing edge record " << curEdge->name() << "\n";
@@ -85,6 +89,9 @@ template <typename T, typename U>
 void Operator::pointsInLoopOrderFromOrientedEdges(
   T& polypts, U begin, U end, smtk::shared_ptr<internal::pmodel> pmodel)
 {
+  auto resource =
+    std::static_pointer_cast<smtk::bridge::polygon::Resource>(begin->first.component()->resource());
+
   (void)pmodel;
   U oit; // Oriented-edges-of-loop iterator
   bool firstInLoop = true;
@@ -100,7 +107,7 @@ void Operator::pointsInLoopOrderFromOrientedEdges(
     { // Don't double-include endpoints.
       polypts.erase(polypts.end() - 1);
     }
-    internal::EdgePtr edgeRec = this->findStorage<internal::edge>(oit->first.entity());
+    internal::EdgePtr edgeRec = resource->template findStorage<internal::edge>(oit->first.entity());
     if (!edgeRec)
     {
       std::cerr << "Skipping missing edge record " << oit->first.name() << "\n";

@@ -16,12 +16,6 @@ set(modelOps
   TerrainExtraction
 )
 
-if(SMTK_ENABLE_PYTHON_WRAPPING)
-  list(APPEND modelOps
-    ImportPythonOperator
-    )
-endif()
-
 set(modelSrcs
   Arrangement.cxx
   ArrangementHelper.cxx
@@ -61,12 +55,12 @@ set(modelSrcs
   PointLocatorExtension.cxx
   PropertyListPhrase.cxx
   PropertyValuePhrase.cxx
-  RemoteOperator.cxx
+  RegisterResources.cxx
+  RegisterOperations.cxx
   Shell.cxx
   ShellEntity.cxx
   SimpleModelSubphrases.cxx
   Manager.cxx
-  StoredResource.cxx
   SubphraseGenerator.cxx
   Tessellation.cxx
   UseEntity.cxx
@@ -74,6 +68,11 @@ set(modelSrcs
   VertexUse.cxx
   Volume.cxx
   VolumeUse.cxx
+  json/jsonArrangement.cxx
+  json/jsonEntity.cxx
+  json/jsonEntityIterator.cxx
+  json/jsonResource.cxx
+  json/jsonTessellation.cxx
 )
 
 set(modelHeaders
@@ -119,12 +118,12 @@ set(modelHeaders
   PointLocatorExtension.h
   PropertyListPhrase.h
   PropertyValuePhrase.h
-  RemoteOperator.h
+  RegisterResources.h
+  RegisterOperations.h
   Shell.h
   ShellEntity.h
   SimpleModelSubphrases.h
   Manager.h
-  StoredResource.h
   SubphraseGenerator.h
   StringData.h
   Tessellation.h
@@ -133,6 +132,11 @@ set(modelHeaders
   VertexUse.h
   Volume.h
   VolumeUse.h
+  json/jsonArrangement.h
+  json/jsonEntity.h
+  json/jsonEntityIterator.h
+  json/jsonResource.h
+  json/jsonTessellation.h
 )
 
 smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/DefaultSession.json" defSessionJSON)
@@ -145,10 +149,15 @@ endforeach()
 #install the headers
 smtk_public_headers(${modelHeaders})
 
+add_subdirectory(environment)
+
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)
 endif()
 
 if (SMTK_ENABLE_TESTING)
+  target_link_libraries(TestBuild_smtk_model
+    PUBLIC
+    nlohmann_json)
   add_subdirectory(testing)
 endif()

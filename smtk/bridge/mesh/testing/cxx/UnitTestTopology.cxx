@@ -8,13 +8,16 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/bridge/mesh/Session.h"
+#include "smtk/bridge/mesh/Resource.h"
+#include "smtk/bridge/mesh/operators/ImportOperator.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/VoidItem.h"
 
 #include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
@@ -25,7 +28,8 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Operator.h"
 
-#include <chrono>
+#include "smtk/operation/Manager.h"
+#include "smtk/resource/Manager.h"
 
 #ifdef SMTK_ENABLE_VTK_SUPPORT
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
@@ -57,23 +61,30 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
   std::string dataRoot = SMTK_DATA_DIR;
   std::string writeRoot = SMTK_SCRATCH_DIR;
 
-  int ImportModel(smtk::model::Model & model, smtk::model::SessionRef & session,
-    const std::string& filename, std::string label = std::string())
+  int ImportModel(smtk::model::Entity::Ptr & model,
+    smtk::operation::Manager::Ptr & operationManager, const std::string& filename,
+    std::string label = std::string())
   {
     {
-      smtk::model::OperatorPtr importOp = session.op("import");
+      smtk::bridge::mesh::ImportOperator::Ptr importOp =
+        operationManager->create<smtk::bridge::mesh::ImportOperator>();
       if (!importOp)
       {
         std::cerr << "No import operator\n";
         return 1;
       }
 
-      importOp->specification()->findFile("filename")->setValue(filename);
-      importOp->specification()->findString("label")->setValue(label);
+      importOp->parameters()->findFile("filename")->setValue(filename);
+      importOp->parameters()->findString("label")->setValue(label);
+      importOp->parameters()->findVoid("construct hierarchy")->setIsEnabled(true);
 
-      smtk::model::OperatorResult importOpResult = importOp->operate();
+      smtk::bridge::mesh::ImportOperator::Result importOpResult = importOp->operate();
 
-      model = importOpResult->findModelEntity("model")->value();
+      smtk::attribute::ComponentItemPtr componentItem =
+        std::dynamic_pointer_cast<smtk::attribute::ComponentItem>(
+          importOpResult->findComponent("model"));
+
+      model = std::dynamic_pointer_cast<smtk::model::Entity>(componentItem->value());
 
       if (importOpResult->findInt("outcome")->value() !=
         smtk::operation::Operator::OPERATION_SUCCEEDED)
@@ -106,7 +117,7 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
     }
   }
 
-  void ParseModelTopology(smtk::model::Model & model, std::size_t * count)
+  void ParseModelTopology(smtk::model::Model model, std::size_t * count)
   {
     std::set<smtk::model::EntityRef> unique;
     UniqueEntities(model, unique);
@@ -124,7 +135,7 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
     }
   }
 
-  void VisualizeModel(smtk::model::Model & model)
+  void VisualizeModel(smtk::model::Model model)
   {
 #ifdef SMTK_ENABLE_VTK_SUPPORT
     vtkNew<vtkActor> act;
@@ -169,20 +180,38 @@ int UnitTestTopology(int argc, char* argv[])
   (void)argc;
   (void)argv;
 
-  smtk::model::ManagerPtr manager = smtk::model::Manager::create();
+  // Create a resource manager
+  smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
-  smtk::model::SessionRef session = manager->createSession("mesh");
+  // Register the mesh resource to the resource manager
+  {
+    resourceManager->registerResource<smtk::bridge::mesh::Resource>();
+  }
+
+  // Create an operation manager
+  smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
+
+  // Register import operator to the operation manager
+  {
+    operationManager->registerOperator<smtk::bridge::mesh::ImportOperator>(
+      "smtk::bridge::mesh::ImportOperator");
+  }
+
+  // Register the resource manager to the operation manager (newly created
+  // resources will be automatically registered to the resource manager).
+  operationManager->registerResourceManager(resourceManager);
 
   {
-    smtk::model::Model model;
+    smtk::model::Entity::Ptr model;
 
     std::string readFilePath(dataRoot);
     readFilePath += "/model/3d/exodus/SimpleReactorCore/SimpleReactorCore.exo";
 
-    test(ImportModel(model, session, readFilePath) == 0, "Could not import model " + readFilePath);
+    test(ImportModel(model, operationManager, readFilePath) == 0,
+      "Could not import model " + readFilePath);
 
     std::size_t count[4] = { 0, 0, 0, 0 };
-    ParseModelTopology(model, count);
+    ParseModelTopology(model->referenceAs<smtk::model::Model>(), count);
 
     std::cout << count[3] << " volumes" << std::endl;
     test(count[3] == 3, "There should be three volumes");
@@ -196,20 +225,21 @@ int UnitTestTopology(int argc, char* argv[])
     bool debug = false;
     if (debug)
     {
-      VisualizeModel(model);
+      VisualizeModel(model->referenceAs<smtk::model::Model>());
     }
   }
 
   {
-    smtk::model::Model model;
+    smtk::model::Entity::Ptr model;
 
     std::string readFilePath(dataRoot);
     readFilePath += "/model/3d/genesis/gun-1fourth.gen";
 
-    test(ImportModel(model, session, readFilePath) == 0, "Could not import model " + readFilePath);
+    test(ImportModel(model, operationManager, readFilePath) == 0,
+      "Could not import model " + readFilePath);
 
     std::size_t count[4] = { 0, 0, 0, 0 };
-    ParseModelTopology(model, count);
+    ParseModelTopology(model->referenceAs<smtk::model::Model>(), count);
 
     std::cout << count[3] << " volumes" << std::endl;
     test(count[3] == 1, "There should be one volume");
@@ -223,22 +253,22 @@ int UnitTestTopology(int argc, char* argv[])
     bool debug = false;
     if (debug)
     {
-      VisualizeModel(model);
+      VisualizeModel(model->referenceAs<smtk::model::Model>());
     }
   }
 
 #ifdef SMTK_ENABLE_VTK_SUPPORT
   {
-    smtk::model::Model model;
+    smtk::model::Entity::Ptr model;
 
     std::string readFilePath(dataRoot);
     readFilePath += "/mesh/3d/nickel_superalloy.vtu";
 
-    test(ImportModel(model, session, readFilePath, "ZoneIds") == 0,
+    test(ImportModel(model, operationManager, readFilePath, "ZoneIds") == 0,
       "Could not import model " + readFilePath);
 
     std::size_t count[4] = { 0, 0, 0, 0 };
-    ParseModelTopology(model, count);
+    ParseModelTopology(model->referenceAs<smtk::model::Model>(), count);
 
     std::cout << count[3] << " volumes" << std::endl;
     test(count[3] == 5, "There should be five volumes");
@@ -252,7 +282,7 @@ int UnitTestTopology(int argc, char* argv[])
     bool debug = false;
     if (debug)
     {
-      VisualizeModel(model);
+      VisualizeModel(model->referenceAs<smtk::model::Model>());
     }
   }
 #endif

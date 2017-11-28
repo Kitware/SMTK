@@ -15,6 +15,7 @@
 
 #include "smtk/bridge/polygon/SessionIOJSON.h"
 
+#include "smtk/model/Manager.h"
 #include "smtk/model/SessionIOJSON.h"
 
 #include "cJSON.h"
@@ -31,9 +32,6 @@ py::class_< smtk::bridge::polygon::SessionIOJSON, smtk::model::SessionIOJSON > p
     .def("classname", &smtk::bridge::polygon::SessionIOJSON::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::SessionIOJSON> (*)()) &smtk::bridge::polygon::SessionIOJSON::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::SessionIOJSON> (*)(::std::shared_ptr<smtk::bridge::polygon::SessionIOJSON> &)) &smtk::bridge::polygon::SessionIOJSON::create, py::arg("ref"))
-    .def("importJSON", &smtk::bridge::polygon::SessionIOJSON::importJSON, py::arg("mgr"), py::arg("session"), py::arg("sessionRec"), py::arg("loadNativeModels") = false)
-    .def("exportJSON", (int (smtk::bridge::polygon::SessionIOJSON::*)(::smtk::model::ManagerPtr, ::smtk::model::SessionPtr const &, ::cJSON *, bool)) &smtk::bridge::polygon::SessionIOJSON::exportJSON, py::arg("mgr"), py::arg("sessPtr"), py::arg("sessionRec"), py::arg("writeNativeModels") = false)
-    .def("exportJSON", (int (smtk::bridge::polygon::SessionIOJSON::*)(::smtk::model::ManagerPtr, ::smtk::model::SessionPtr const &, ::smtk::common::UUIDs const &, ::cJSON *, bool)) &smtk::bridge::polygon::SessionIOJSON::exportJSON, py::arg("mgr"), py::arg("session"), py::arg("modelIds"), py::arg("sessionRec"), py::arg("writeNativeModels") = false)
     ;
   return instance;
 }

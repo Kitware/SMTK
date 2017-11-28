@@ -28,12 +28,12 @@ class SMTKPOLYGONSESSION_EXPORT CleanGeometry : public Operator
 public:
   smtkTypeMacro(CleanGeometry);
   smtkCreateMacro(CleanGeometry);
-  smtkSharedFromThisMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
   smtkSuperclassMacro(Operator);
-  smtkDeclareModelOperator();
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  virtual const char* xmlDescription() const override;
 
   template <typename T, typename U, typename V, typename W, typename X>
   bool splitEdgeAsNeeded(const smtk::model::Edge& curEdge, internal::EdgePtr storage, T& result,

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the polygon "ForceCreateFace" operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
     <!-- Operator -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="force create face" AdvanceLevel="11"  BaseType="operator">
       <BriefDescription>Create a model face without sanity checks.</BriefDescription>
       <DetailedDescription>
@@ -103,6 +104,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(force create face)" BaseType="result">
       <ItemDefinitions>
         <!-- The faces created are reported in the base result's "created" item. -->

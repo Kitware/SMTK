@@ -30,6 +30,8 @@
 #include "vtkPolyData.h"
 #include "vtkXMLPolyDataWriter.h"
 
+#include "smtk/extension/vtk/operators/ExportEdgesToVTK_xml.h"
+
 using namespace smtk::model;
 using smtk::attribute::FileItem;
 
@@ -49,7 +51,6 @@ void collectVertices(EntityRef& model, vtkPoints* pts, std::map<EntityRef, vtkId
       double* posn = eit->as<Vertex>().coordinates();
       vtkIdType pid = pts->InsertNextPoint(posn);
       pointMap[*eit] = pid;
-      //std::cout << eit->name() << ": " << pid << " " << posn[0] << " " << posn[1] << " " << posn[2] << "\n";
     }
   }
 }
@@ -87,10 +88,12 @@ void insertEdges(
         //   start of edge (not tess cell) and no model vertices
         //   all interior points
         // Don't insert:
-        //   start of edge (not tess cell) and model vertices bound edge (it's a model vertex point ID)
+        //   start of edge (not tess cell) and model vertices bound edge (it's a model vertex point
+        //     ID)
         //   end of edge (not tess cell) (it's repeated connectivity or a model vertex point ID)
 
-        // Loop over tessellation cells. It could be many single-segment lines or one polyline or anywhere between.
+        // Loop over tessellation cells. It could be many single-segment lines or one polyline or
+        // anywhere between.
         for (i = tess->begin(); i != tess->end(); i = tess->nextCellOffset(i))
         {
           std::vector<int> conn;
@@ -118,7 +121,8 @@ void insertEdges(
           vconn.push_back(pointMap[*verts.rbegin()]);
         }
         else if (!vconn.empty())
-        { // no model vertices; repeat the first point to close loop since we skipped inserting a duplicate point above.
+        { // no model vertices; repeat the first point to close loop since we skipped inserting a
+          // duplicate point above.
           vconn.push_back(vconn[0]);
         }
         //std::cout << edge.name() << ": " << vconn.size() << "\n";
@@ -135,22 +139,23 @@ void insertEdges(
   }
 }
 
-smtk::model::OperatorResult ExportEdgesToVTK::operateInternal()
+ExportEdgesToVTK::Result ExportEdgesToVTK::operateInternal()
 {
-  smtk::attribute::FileItemPtr filenameItem = this->findFile("filename");
+  smtk::attribute::FileItemPtr filenameItem = this->parameters()->findFile("filename");
 
-  Models entities = this->associatedEntitiesAs<Models>();
+  auto associations = this->parameters()->associations();
+  Models entities(associations->begin(), associations->end());
   if (entities.empty())
   {
     smtkErrorMacro(this->log(), "No valid models selected for export.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   std::string filename = filenameItem->value();
   if (filename.empty())
   {
     smtkErrorMacro(this->log(), "A filename must be provided.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   vtkNew<vtkPolyData> pdt;
@@ -166,13 +171,14 @@ smtk::model::OperatorResult ExportEdgesToVTK::operateInternal()
   wri->SetFileName(filename.c_str());
   bool ok = (wri->Write() != 0);
 
-  return this->createResult(ok ? OPERATION_SUCCEEDED : OPERATION_FAILED);
+  return this->createResult(
+    ok ? smtk::operation::NewOp::Outcome::SUCCEEDED : smtk::operation::NewOp::Outcome::FAILED);
+}
+
+const char* ExportEdgesToVTK::xmlDescription() const
+{
+  return ExportEdgesToVTK_xml;
 }
 
 } //namespace model
 } // namespace smtk
-
-#include "smtk/extension/vtk/operators/ExportEdgesToVTK_xml.h"
-
-smtkImplementsModelOperator(VTKSMTKOPERATORSEXT_EXPORT, smtk::model::ExportEdgesToVTK,
-  export_edges_to_vtk, "export edges to vtk", ExportEdgesToVTK_xml, smtk::model::Session);

@@ -331,7 +331,7 @@ public:
   std::size_t numberOfOperators(bool includeAdvanced = true) const;
   StringList operatorNames(bool includeAdvanced = true) const;
   std::map<std::string, std::string> operatorLabelsMap(bool includeAdvanced = true) const;
-  virtual OperatorPtr op(const std::string& opName) const;
+  // virtual OperatorPtr op(const std::string& opName) const;
 
   const DanglingEntities& danglingEntities() const;
   void declareDanglingEntity(const EntityRef& ent, SessionInfoBits present = 0);

@@ -31,6 +31,9 @@ set(commonHeaders
   TimeZone.h
   UUID.h
   UUIDGenerator.h
+
+  json/jsonUUID.h
+
   ${CMAKE_CURRENT_BINARY_DIR}/Version.h
 )
 

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the CMB Discrete Model "grow" Operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
     <!-- Operator -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="grow" BaseType="operator" Label="Face - Grow">
       <BriefDescription>
         Create a new face by a group of mesh faces selected by user or a group of mesh faces grown from
@@ -54,6 +55,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(grow)" BaseType="result">
       <ItemDefinitions>
         <MeshSelection Name="selection">

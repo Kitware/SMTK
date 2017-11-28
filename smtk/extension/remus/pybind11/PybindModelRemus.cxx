@@ -21,7 +21,7 @@ namespace py = pybind11;
 template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
-#include "PybindMeshOperator.h"
+// #include "PybindMeshOperator.h"
 #include "PybindMeshServerLauncher.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
@@ -30,6 +30,6 @@ PYBIND11_MODULE(_smtkPybindModelRemus, remus)
 {
   remus.doc() = "<description>";
 
-  PySharedPtrClass< smtk::model::MeshOperator, smtk::model::Operator > smtk_extension_remus_MeshOperator = pybind11_init_smtk_extension_remus_MeshOperator(remus);
+  // PySharedPtrClass< smtk::model::MeshOperator, smtk::model::Operator > smtk_extension_remus_MeshOperator = pybind11_init_smtk_extension_remus_MeshOperator(remus);
   py::class_< smtk::mesh::MeshServerLauncher > smtk_extension_remus_MeshServerLauncher = pybind11_init_smtk_extension_remus_MeshServerLauncher(remus);
 }

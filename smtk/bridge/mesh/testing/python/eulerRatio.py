@@ -24,10 +24,6 @@ from smtk.simple import *
 class EulerRatio(smtk.testing.TestCase):
 
     def setUp(self):
-        self.mgr = smtk.model.Manager.create()
-        self.meshmgr = self.mgr.meshes()
-        self.sess = self.mgr.createSession('mesh')
-        SetActiveSession(self.sess)
         self.modelFiles = [
             os.path.join(
                 smtk.testing.DATA_DIR, 'mesh', '3d', 'nickel_superalloy.vtu'),
@@ -44,20 +40,20 @@ class EulerRatio(smtk.testing.TestCase):
 
     def testMeshing2D(self):
         for modelFile in self.modelFiles:
-            op = self.sess.op('import')
-            fname = op.findFile('filename', int(smtk.attribute.ALL_CHILDREN))
+            op = smtk.bridge.mesh.ImportOperator.create()
+            fname = op.parameters().findFile('filename')
             fname.setValue(modelFile)
-            op.findVoid('construct hierarchy', int(
-                smtk.attribute.ALL_CHILDREN)).setIsEnabled(False)
             res = op.operate()
-            if res.findInt('outcome').value(0) != smtk.model.OPERATION_SUCCEEDED:
+            if res.findInt('outcome').value(0) != int(smtk.operation.NewOp.SUCCEEDED):
                 raise ImportError
-            self.model = res.findModelEntity('created').value(0)
+            modelEntity = res.find('created').value(0)
+            self.model = smtk.model.Model(
+                modelEntity.modelResource(), modelEntity.id())
 
-            op = self.sess.op('euler characteristic ratio')
-            op.specification().associateEntity(self.model)
+            op = smtk.bridge.mesh.EulerCharacteristicRatio.create()
+            op.parameters().associateEntity(self.model)
             res = op.operate()
-            if res.findInt('outcome').value(0) != smtk.model.OPERATION_SUCCEEDED:
+            if res.findInt('outcome').value(0) != int(smtk.operation.NewOp.SUCCEEDED):
                 raise RuntimeError
             value = res.findDouble('value').value(0)
             self.assertAlmostEqual(value, 2.)

@@ -31,9 +31,6 @@ py::class_< smtk::model::SessionIOJSON, smtk::model::SessionIO > pybind11_init_s
     .def("classname", &smtk::model::SessionIOJSON::classname)
     .def_static("create", (std::shared_ptr<smtk::model::SessionIOJSON> (*)()) &smtk::model::SessionIOJSON::create)
     .def_static("create", (std::shared_ptr<smtk::model::SessionIOJSON> (*)(::std::shared_ptr<smtk::model::SessionIOJSON> &)) &smtk::model::SessionIOJSON::create, py::arg("ref"))
-    .def("exportJSON", (int (smtk::model::SessionIOJSON::*)(::smtk::model::ManagerPtr, ::smtk::model::SessionPtr const &, ::cJSON *, bool)) &smtk::model::SessionIOJSON::exportJSON, py::arg("modelMgr"), py::arg("sessPtr"), py::arg("sessionRec"), py::arg("writeNativeModels") = false)
-    .def("exportJSON", (int (smtk::model::SessionIOJSON::*)(::smtk::model::ManagerPtr, ::smtk::model::SessionPtr const &, ::smtk::common::UUIDs const &, ::cJSON *, bool)) &smtk::model::SessionIOJSON::exportJSON, py::arg("modelMgr"), py::arg("session"), py::arg("modelIds"), py::arg("sessionRec"), py::arg("writeNativeModels") = false)
-    .def("importJSON", &smtk::model::SessionIOJSON::importJSON, py::arg("modelMgr"), py::arg("session"), py::arg("sessionRec"), py::arg("loadNativeModels") = false)
     ;
   return instance;
 }

@@ -15,25 +15,22 @@
 
 #include "smtk/model/operators/AddAuxiliaryGeometry.h"
 
-#include "smtk/model/Operator.h"
+#include "smtk/operation/XMLOperator.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::model::AddAuxiliaryGeometry, smtk::model::Operator > pybind11_init_smtk_model_AddAuxiliaryGeometry(py::module &m)
+PySharedPtrClass< smtk::model::AddAuxiliaryGeometry, smtk::operation::XMLOperator > pybind11_init_smtk_model_AddAuxiliaryGeometry(py::module &m)
 {
-  PySharedPtrClass< smtk::model::AddAuxiliaryGeometry, smtk::model::Operator > instance(m, "AddAuxiliaryGeometry");
+  PySharedPtrClass< smtk::model::AddAuxiliaryGeometry, smtk::operation::XMLOperator > instance(m, "AddAuxiliaryGeometry");
   instance
     .def(py::init<>())
     .def(py::init<::smtk::model::AddAuxiliaryGeometry const &>())
     .def("deepcopy", (smtk::model::AddAuxiliaryGeometry & (smtk::model::AddAuxiliaryGeometry::*)(::smtk::model::AddAuxiliaryGeometry const &)) &smtk::model::AddAuxiliaryGeometry::operator=)
-    .def("className", &smtk::model::AddAuxiliaryGeometry::className)
     .def("classname", &smtk::model::AddAuxiliaryGeometry::classname)
     .def_static("create", (std::shared_ptr<smtk::model::AddAuxiliaryGeometry> (*)()) &smtk::model::AddAuxiliaryGeometry::create)
     .def_static("create", (std::shared_ptr<smtk::model::AddAuxiliaryGeometry> (*)(::std::shared_ptr<smtk::model::AddAuxiliaryGeometry> &)) &smtk::model::AddAuxiliaryGeometry::create, py::arg("ref"))
-    .def("name", &smtk::model::AddAuxiliaryGeometry::name)
     .def("shared_from_this", (std::shared_ptr<const smtk::model::AddAuxiliaryGeometry> (smtk::model::AddAuxiliaryGeometry::*)() const) &smtk::model::AddAuxiliaryGeometry::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<smtk::model::AddAuxiliaryGeometry> (smtk::model::AddAuxiliaryGeometry::*)()) &smtk::model::AddAuxiliaryGeometry::shared_from_this)
-    .def_readwrite_static("operatorName", &smtk::model::AddAuxiliaryGeometry::operatorName)
     ;
   return instance;
 }

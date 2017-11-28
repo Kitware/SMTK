@@ -30,18 +30,15 @@ py::class_< smtk::bridge::polygon::ModelEdgeInfo > pybind11_init_smtk_bridge_pol
   return instance;
 }
 
-PySharedPtrClass< smtk::bridge::polygon::CreateFaces > pybind11_init_smtk_bridge_polygon_CreateFaces(py::module &m, PySharedPtrClass< smtk::bridge::polygon::Operator, smtk::model::Operator >& parent)
+PySharedPtrClass< smtk::bridge::polygon::CreateFaces > pybind11_init_smtk_bridge_polygon_CreateFaces(py::module &m, PySharedPtrClass< smtk::bridge::polygon::Operator, smtk::operation::XMLOperator >& parent)
 {
   PySharedPtrClass< smtk::bridge::polygon::CreateFaces > instance(m, "CreateFaces", parent);
   instance
-    .def(py::init<>())
     .def(py::init<::smtk::bridge::polygon::CreateFaces const &>())
     .def("deepcopy", (smtk::bridge::polygon::CreateFaces & (smtk::bridge::polygon::CreateFaces::*)(::smtk::bridge::polygon::CreateFaces const &)) &smtk::bridge::polygon::CreateFaces::operator=)
-    .def("className", &smtk::bridge::polygon::CreateFaces::className)
     .def("classname", &smtk::bridge::polygon::CreateFaces::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::CreateFaces> (*)()) &smtk::bridge::polygon::CreateFaces::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::CreateFaces> (*)(::std::shared_ptr<smtk::bridge::polygon::CreateFaces> &)) &smtk::bridge::polygon::CreateFaces::create, py::arg("ref"))
-    .def("name", &smtk::bridge::polygon::CreateFaces::name)
     .def("shared_from_this", (std::shared_ptr<const smtk::bridge::polygon::CreateFaces> (smtk::bridge::polygon::CreateFaces::*)() const) &smtk::bridge::polygon::CreateFaces::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<smtk::bridge::polygon::CreateFaces> (smtk::bridge::polygon::CreateFaces::*)()) &smtk::bridge::polygon::CreateFaces::shared_from_this)
     ;

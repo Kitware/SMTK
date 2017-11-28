@@ -1,7 +1,8 @@
 set(polygonSrcs
   Session.cxx
   SessionIOJSON.cxx
-  Operator.cxx
+  RegisterSession.cxx
+  Resource.cxx
   internal/ActiveFragmentTree.cxx
   internal/Fragment.cxx
   internal/Model.cxx
@@ -9,6 +10,10 @@ set(polygonSrcs
   internal/Region.cxx
   internal/SweepEvent.cxx
   internal/Vertex.cxx
+  json/jsonEdge.cxx
+  json/jsonModel.cxx
+  json/jsonResource.cxx
+  json/jsonVertex.cxx
   operators/CleanGeometry.cxx
   operators/CreateModel.cxx
   operators/CreateVertices.cxx
@@ -36,6 +41,8 @@ set(polygonHeaders
   Session.h
   SessionIOJSON.h
   Operator.h
+  RegisterSession.h
+  Resource.h
   internal/ActiveFragmentTree.h
   internal/Config.h
   internal/Entity.h
@@ -61,10 +68,16 @@ set(polygonHeaders
   operators/SplitEdge.h
   operators/TweakEdge.h
   operators/ExtractContours.h
+
+  json/jsonEdge.h
+  json/jsonModel.h
+  json/jsonResource.h
+  json/jsonVertex.h
 )
 
 smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" polygonSessionJSON)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CleanGeometry.sbt" polygonOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/NewCreateModel.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateModel.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateVertices.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdge.sbt" polygonOperatorXML)
@@ -150,6 +163,8 @@ target_include_directories(smtkPolygonSession
     $<BUILD_INTERFACE:${SMTK_SOURCE_DIR}/smtk/extension/vtk/meshing>
 )
 
+add_subdirectory(environment)
+
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_subdirectory(qt)
   add_subdirectory(plugin)
@@ -160,5 +175,10 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
 endif()
 
 if (SMTK_ENABLE_TESTING)
+  target_link_libraries(TestBuild_smtk_bridge_polygon
+    PUBLIC
+    nlohmann_json)
   add_subdirectory(testing)
+  target_link_libraries(TestBuild_smtk_bridge_polygon
+    PUBLIC nlohmann_json)
 endif()

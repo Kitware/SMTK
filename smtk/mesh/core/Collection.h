@@ -38,7 +38,6 @@
 
 namespace smtk
 {
-
 //forward declare friends
 namespace io
 {
@@ -84,6 +83,10 @@ class SMTKCORE_EXPORT Collection : public smtk::resource::Resource
 public:
   smtkTypeMacro(smtk::mesh::Collection);
   smtkSharedPtrCreateMacro(smtk::resource::Resource);
+  smtkResourceTypeNameMacro("mesh");
+
+  // typedef referring to the parent resource.
+  typedef smtk::resource::Resource ParentResource;
 
   static smtk::shared_ptr<Collection> create(const smtk::common::UUID& collectionID)
   {
@@ -101,6 +104,11 @@ public:
   ~Collection();
 
   resource::ComponentPtr find(const common::UUID& compId) const override;
+  std::function<bool(const resource::ComponentPtr&)> queryOperation(
+    const std::string&) const override;
+
+  // visit all components in a resource.
+  void visit(resource::Component::Visitor& v) const override;
 
   //determine if the given Collection is valid and is properly associated
   //to a manager.
@@ -117,6 +125,8 @@ public:
   //get the name of a mesh collection
   const std::string& name() const;
   void name(const std::string& n);
+
+  std::shared_ptr<smtk::mesh::Manager> manager() const;
 
   //assign the collection a unique name, given the current manager.
   //Note:

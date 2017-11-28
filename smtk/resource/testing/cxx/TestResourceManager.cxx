@@ -9,6 +9,7 @@
 //=========================================================================
 
 #include "smtk/common/UUIDGenerator.h"
+#include "smtk/resource/Component.h"
 #include "smtk/resource/Manager.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
@@ -19,11 +20,20 @@ public:
   smtkTypeMacro(ResourceA);
   smtkCreateMacro(ResourceA);
   smtkSharedFromThisMacro(smtk::resource::Resource);
+  smtkResourceTypeNameMacro("ResourceA");
 
   smtk::resource::ComponentPtr find(const smtk::common::UUID&) const override
   {
     return smtk::resource::ComponentPtr();
   }
+
+  std::function<bool(const smtk::resource::ComponentPtr&)> queryOperation(
+    const std::string&) const override
+  {
+    return [](const smtk::resource::ComponentPtr&) { return true; };
+  }
+
+  void visit(smtk::resource::Component::Visitor&) const override {}
 
 protected:
   ResourceA()
@@ -38,16 +48,12 @@ public:
   smtkTypeMacro(ResourceB);
   smtkCreateMacro(ResourceA);
   smtkSharedFromThisMacro(smtk::resource::Resource);
+  smtkResourceTypeNameMacro("ResourceB");
 
   // typedef referring to the parent resource. This is necessary if the derived
   // resource is to be returned by both queries for resources of type <derived>
   // and <base>.
   typedef ResourceA ParentResource;
-
-  smtk::resource::ComponentPtr find(const smtk::common::UUID&) const override
-  {
-    return smtk::resource::ComponentPtr();
-  }
 
 protected:
   ResourceB()
@@ -65,14 +71,8 @@ int TestResourceManager(int, char** const)
   smtkTest(resourceManager->metadata().empty(), "New resource manager should have no types.");
   smtkTest(resourceManager->resources().empty(), "New resource manager should have no resources.");
 
-  // Create a metadata descriptor for ResourceA and assign it a unique name
-  ResourceA::Metadata metadataForResourceA("ResourceA");
-
-  // Assign a create function to the descriptor
-  metadataForResourceA.create = [](const smtk::common::UUID&) { return ResourceA::create(); };
-
   // Register ResourceA
-  resourceManager->registerResource<ResourceA>(metadataForResourceA);
+  resourceManager->registerResource<ResourceA>();
   smtkTest(
     resourceManager->metadata().size() == 1, "Resource manager should have registered a type.");
 
@@ -120,31 +120,8 @@ int TestResourceManager(int, char** const)
   smtkTest(resourceA2->id() == newUUID, "Resource ID not properly set.");
 
   {
-    // Create a metadata descriptor for ResourceB and it the same unique name as
-    // the prior descriptor (bad idea!)
-    ResourceB::Metadata metadataForResourceB("ResourceA");
-
-    // Assign a create function to the descriptor
-    metadataForResourceB.create = [](const smtk::common::UUID&) { return ResourceB::create(); };
-
     // Try to register ResourceB
-    bool success = resourceManager->registerResource<ResourceB>(metadataForResourceB);
-    smtkTest(!success, "Two resource types with the same unique name were registered.");
-
-    // Ensure that the faulty descriptor was not registered
-    smtkTest(resourceManager->metadata().size() == 1,
-      "Resource manager should still have a single resource type.");
-  }
-
-  {
-    // Create a metadata descriptor for ResourceB and give it a unique name
-    ResourceB::Metadata metadataForResourceB("ResourceB");
-
-    // Assign a create function to the descriptor
-    metadataForResourceB.create = [](const smtk::common::UUID&) { return ResourceB::create(); };
-
-    // Try to register ResourceB
-    bool success = resourceManager->registerResource<ResourceB>(metadataForResourceB);
+    bool success = resourceManager->registerResource<ResourceB>();
     smtkTest(success, "Resource type B should have been registered.");
 
     // Ensure that the latest descriptor was registered

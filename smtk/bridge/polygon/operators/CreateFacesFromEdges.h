@@ -30,12 +30,12 @@ class SMTKPOLYGONSESSION_EXPORT CreateFacesFromEdges : public CreateFaces
 public:
   smtkTypeMacro(CreateFacesFromEdges);
   smtkCreateMacro(CreateFacesFromEdges);
-  smtkSharedFromThisMacro(CreateFaces);
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
   smtkSuperclassMacro(CreateFaces);
-  smtkDeclareModelOperator();
 
 protected:
   bool populateEdgeMap() override;
+  virtual const char* xmlDescription() const override;
 };
 
 } // namespace polygon

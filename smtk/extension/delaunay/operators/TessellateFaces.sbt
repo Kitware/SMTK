@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the model "Tessellate Face" Operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
     <!-- Operator -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="tessellate faces" Label="Faces - Tessellate" BaseType="operator">
       <BriefDescription>Tessellate model faces.</BriefDescription>
       <DetailedDescription>
@@ -25,6 +26,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(tessellate faces)" BaseType="result">
       <ItemDefinitions>
         <ModelEntity Name="tess_changed" NumberOfRequiredValues="1" Extensible="true"/>

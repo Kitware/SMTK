@@ -15,25 +15,22 @@
 
 #include "smtk/model/operators/ExportModelJSON.h"
 
-#include "smtk/model/Operator.h"
+#include "smtk/operation/XMLOperator.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::model::ExportModelJSON, smtk::model::Operator > pybind11_init_smtk_model_ExportModelJSON(py::module &m)
+PySharedPtrClass< smtk::model::ExportModelJSON, smtk::operation::XMLOperator > pybind11_init_smtk_model_ExportModelJSON(py::module &m)
 {
-  PySharedPtrClass< smtk::model::ExportModelJSON, smtk::model::Operator > instance(m, "ExportModelJSON");
+  PySharedPtrClass< smtk::model::ExportModelJSON, smtk::operation::XMLOperator > instance(m, "ExportModelJSON");
   instance
     .def(py::init<>())
     .def(py::init<::smtk::model::ExportModelJSON const &>())
     .def("deepcopy", (smtk::model::ExportModelJSON & (smtk::model::ExportModelJSON::*)(::smtk::model::ExportModelJSON const &)) &smtk::model::ExportModelJSON::operator=)
-    .def("className", &smtk::model::ExportModelJSON::className)
     .def("classname", &smtk::model::ExportModelJSON::classname)
     .def_static("create", (std::shared_ptr<smtk::model::ExportModelJSON> (*)()) &smtk::model::ExportModelJSON::create)
     .def_static("create", (std::shared_ptr<smtk::model::ExportModelJSON> (*)(::std::shared_ptr<smtk::model::ExportModelJSON> &)) &smtk::model::ExportModelJSON::create, py::arg("ref"))
-    .def("name", &smtk::model::ExportModelJSON::name)
     .def("shared_from_this", (std::shared_ptr<const smtk::model::ExportModelJSON> (smtk::model::ExportModelJSON::*)() const) &smtk::model::ExportModelJSON::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<smtk::model::ExportModelJSON> (smtk::model::ExportModelJSON::*)()) &smtk::model::ExportModelJSON::shared_from_this)
-    .def_readwrite_static("operatorName", &smtk::model::ExportModelJSON::operatorName)
     ;
   return instance;
 }

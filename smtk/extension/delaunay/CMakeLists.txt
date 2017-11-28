@@ -1,11 +1,13 @@
 set(source
   io/ImportDelaunayMesh.cxx
   io/ExportDelaunayMesh.cxx
+  operators/RegisterOperations.cxx
   operators/TessellateFaces.cxx
   operators/TriangulateFaces.cxx)
 set(headers
   io/ImportDelaunayMesh.h
   io/ExportDelaunayMesh.h
+  operators/RegisterOperations.h
   operators/TessellateFaces.h
   operators/TriangulateFaces.h)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/TriangulateFaces.sbt" delaunayOperatorXML)

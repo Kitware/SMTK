@@ -24,6 +24,8 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
+#include "smtk/model/AddAuxiliaryGeometry_xml.h"
+
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
@@ -38,24 +40,28 @@ namespace smtk
 namespace model
 {
 
-smtk::model::OperatorResult AddAuxiliaryGeometry::operateInternal()
+AddAuxiliaryGeometry::Result AddAuxiliaryGeometry::operateInternal()
 {
-  EntityRefArray entities = this->associatedEntitiesAs<EntityRefArray>();
-  smtk::attribute::FileItemPtr urlItem = this->findFile("url");
+  auto associations = this->parameters()->associations();
+  EntityRefArray entities(associations->begin(), associations->end());
+  smtk::attribute::FileItemPtr urlItem = this->parameters()->findFile("url");
   if (entities.empty())
   {
     smtkErrorMacro(this->log(), "No " << (urlItem ? "parent" : "children") << " specified.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   EntityRef parent = entities[0];
-  smtk::attribute::StringItemPtr dtypeItem = this->findString("type");
-  smtk::attribute::IntItemPtr dimItem = this->findInt("dimension");
+  smtk::model::Manager::Ptr resource =
+    std::static_pointer_cast<smtk::model::Manager>(parent.component()->resource());
+
+  smtk::attribute::StringItemPtr dtypeItem = this->parameters()->findString("type");
+  smtk::attribute::IntItemPtr dimItem = this->parameters()->findInt("dimension");
   int dim = dimItem != nullptr ? dimItem->value(0) : 2;
 
   // Transform
-  smtk::attribute::DoubleItemPtr transformItems[3] = { this->findDouble("scale"),
-    this->findDouble("rotate"), this->findDouble("translate") };
+  smtk::attribute::DoubleItemPtr transformItems[3] = { this->parameters()->findDouble("scale"),
+    this->parameters()->findDouble("rotate"), this->parameters()->findDouble("translate") };
   bool transformIsDefault[3] = { true, true, true };
   for (int ii = 0; ii < 3; ++ii)
   {
@@ -69,21 +75,22 @@ smtk::model::OperatorResult AddAuxiliaryGeometry::operateInternal()
     }
   }
 
-  smtk::attribute::VoidItem::Ptr separateRepOption = this->findVoid("separate representation");
+  smtk::attribute::VoidItem::Ptr separateRepOption =
+    this->parameters()->findVoid("separate representation");
   bool bSeparateRep = separateRepOption->isEnabled();
 
   AuxiliaryGeometry auxGeom;
   std::vector<EntityRef> reparented;
   if (parent.isModel())
   { // We are in "add auxiliary geometry" and parent is our owning model.
-    auxGeom = parent.manager()->addAuxiliaryGeometry(parent.as<Model>(), dim);
+    auxGeom = resource->addAuxiliaryGeometry(parent.as<Model>(), dim);
   }
   else
   { // We are in "composite auxiliary geometry" and should create an aux geom that owns entities.
     parent = parent.owningModel();
     if (parent.isValid())
     {
-      auxGeom = parent.manager()->addAuxiliaryGeometry(parent.as<AuxiliaryGeometry>(), dim);
+      auxGeom = resource->addAuxiliaryGeometry(parent.as<AuxiliaryGeometry>(), dim);
       for (auto child : entities)
       {
         if (child.as<smtk::model::AuxiliaryGeometry>().reparent(auxGeom))
@@ -152,17 +159,28 @@ smtk::model::OperatorResult AddAuxiliaryGeometry::operateInternal()
     del.push_back(auxGeom);
     EntityRefArray modified;
     EntityRefArray expunged;
-    parent.manager()->deleteEntities(del, modified, expunged, /*log*/ false);
+    resource->deleteEntities(del, modified, expunged, /*log*/ false);
     smtkErrorMacro(this->log(), "The url \"" << urlStr << "\" is invalid or unhandled.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
 
-  this->addEntityToResult(result, parent, MODIFIED);
-  this->addEntityToResult(result, auxGeom, CREATED);
-  this->addEntitiesToResult(result, reparented, MODIFIED);
+  smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");
+  created->appendValue(auxGeom.component());
+  smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
+  modified->appendValue(parent.component());
+
+  smtk::attribute::ComponentItem::Ptr modifiedItem = result->findComponent("modified");
+  modifiedItem->appendValue(parent.component());
+  for (auto& m : reparented)
+  {
+    modifiedItem->appendValue(m.component());
+  }
+
+  smtk::attribute::ComponentItem::Ptr createdItem = result->findComponent("created");
+  createdItem->appendValue(auxGeom.component());
+
   if (auxGeom.hasURL())
   {
     auto tessItem = result->findModelEntity("tess_changed");
@@ -173,10 +191,10 @@ smtk::model::OperatorResult AddAuxiliaryGeometry::operateInternal()
   return result;
 }
 
+const char* AddAuxiliaryGeometry::xmlDescription() const
+{
+  return AddAuxiliaryGeometry_xml;
+}
+
 } //namespace model
 } // namespace smtk
-
-#include "smtk/model/AddAuxiliaryGeometry_xml.h"
-
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::model::AddAuxiliaryGeometry,
-  add_auxiliary_geometry, "add auxiliary geometry", AddAuxiliaryGeometry_xml, smtk::model::Session);

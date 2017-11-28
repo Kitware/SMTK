@@ -17,6 +17,10 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/io/Logger.h"
+
+#include "smtk/model/AssignColors_xml.h"
+
 #include <cstddef> // for size_t
 
 using smtk::attribute::StringItem;
@@ -26,10 +30,10 @@ namespace smtk
 namespace model
 {
 
-smtk::model::OperatorResult AssignColors::operateInternal()
+AssignColors::Result AssignColors::operateInternal()
 {
   std::vector<FloatList> colors;
-  StringItem::Ptr colorSpec = this->findString("colors");
+  StringItem::Ptr colorSpec = this->parameters()->findString("colors");
   size_t numColors = colorSpec->numberOfValues();
 
   if (numColors > 0)
@@ -53,10 +57,11 @@ smtk::model::OperatorResult AssignColors::operateInternal()
   if (numColors > 0 && colors.empty())
   { // someone tried to specify colors, but failed.
     smtkErrorMacro(this->log(), "No valid colors to assign.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
-  EntityRefArray entities = this->associatedEntitiesAs<EntityRefArray>();
+  auto associations = this->parameters()->associations();
+  EntityRefArray entities(associations->begin(), associations->end());
   EntityRefArray modified;
   if (numColors > 0)
   {
@@ -90,17 +95,21 @@ smtk::model::OperatorResult AssignColors::operateInternal()
     }
   }
 
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
 
-  this->addEntitiesToResult(result, modified, MODIFIED);
+  smtk::attribute::ComponentItem::Ptr modifiedItem = result->findComponent("modified");
+  for (auto& m : modified)
+  {
+    modifiedItem->appendValue(m.component());
+  }
+
   return result;
+}
+
+const char* AssignColors::xmlDescription() const
+{
+  return AssignColors_xml;
 }
 
 } //namespace model
 } // namespace smtk
-
-#include "smtk/model/AssignColors_xml.h"
-
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::model::AssignColors, assign_colors,
-  "assign colors", AssignColors_xml, smtk::model::Session);

@@ -40,7 +40,7 @@ py::class_< smtk::model::Group, smtk::model::EntityRef > pybind11_init_smtk_mode
     .def("findFirstNonGroupMember", &smtk::model::Group::findFirstNonGroupMember)
     .def("isValid", (bool (smtk::model::Group::*)() const) &smtk::model::Group::isValid)
     // .def("isValid", (bool (smtk::model::Group::*)(::smtk::model::Entity * *) const) &smtk::model::Group::isValid, py::arg("entRec"))
-    .def("meetsMembershipConstraints", &smtk::model::Group::meetsMembershipConstraints, py::arg("prospectiveMember"))
+    .def("meetsMembershipConstraints", (bool (smtk::model::Group::*)(const smtk::model::EntityRef&)) &smtk::model::Group::meetsMembershipConstraints, py::arg("prospectiveMember"))
     .def("membershipMask", &smtk::model::Group::membershipMask)
     .def("parent", &smtk::model::Group::parent)
     .def("removeEntity", &smtk::model::Group::removeEntity, py::arg("entity"))

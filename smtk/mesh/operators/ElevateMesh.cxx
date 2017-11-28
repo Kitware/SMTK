@@ -33,6 +33,7 @@
 #include "smtk/mesh/interpolation/StructuredGrid.h"
 #include "smtk/mesh/interpolation/StructuredGridGenerator.h"
 
+#include "smtk/mesh/ElevateMesh_xml.h"
 #include "smtk/mesh/utility/ApplyToMesh.h"
 
 #include "smtk/model/AuxiliaryGeometry.h"
@@ -117,12 +118,12 @@ namespace mesh
 
 bool ElevateMesh::ableToOperate()
 {
-  if (!this->ensureSpecification())
+  if (!this->Superclass::ableToOperate())
   {
     return false;
   }
 
-  smtk::attribute::MeshItem::Ptr meshItem = this->specification()->findMesh("mesh");
+  smtk::attribute::MeshItem::Ptr meshItem = this->parameters()->findMesh("mesh");
   if (!meshItem || meshItem->numberOfValues() == 0)
   {
     return false;
@@ -131,58 +132,61 @@ bool ElevateMesh::ableToOperate()
   return true;
 }
 
-smtk::model::OperatorResult ElevateMesh::operateInternal()
+ElevateMesh::Result ElevateMesh::operateInternal()
 {
   // Access the string describing the input data type
-  smtk::attribute::StringItem::Ptr inputDataItem = this->specification()->findString("input data");
+  smtk::attribute::StringItem::Ptr inputDataItem = this->parameters()->findString("input data");
 
   // Access the mesh to elevate
-  smtk::attribute::MeshItem::Ptr meshItem = this->specification()->findMesh("mesh");
+  smtk::attribute::MeshItem::Ptr meshItem = this->parameters()->findMesh("mesh");
 
   // Access the string describing the interpolation scheme
   smtk::attribute::StringItem::Ptr interpolationSchemeItem =
-    this->specification()->findString("interpolation scheme");
+    this->parameters()->findString("interpolation scheme");
 
   // Access the radius parameter
-  smtk::attribute::DoubleItem::Ptr radiusItem = this->findDouble("radius");
+  smtk::attribute::DoubleItem::Ptr radiusItem = this->parameters()->findDouble("radius");
 
   // Access the string describing external point treatment
   smtk::attribute::StringItem::Ptr externalPointItem =
-    this->specification()->findString("external point values");
+    this->parameters()->findString("external point values");
 
   // Access the power parameter
-  smtk::attribute::DoubleItem::Ptr powerItem = this->findDouble("power");
+  smtk::attribute::DoubleItem::Ptr powerItem = this->parameters()->findDouble("power");
 
   // Construct a prefilter for the input data
   std::function<bool(double)> prefilter = [](double) { return true; };
   {
     // Access the input filter parameter group
-    smtk::attribute::GroupItem::Ptr inputFilterItem = this->findGroup("input filter");
+    smtk::attribute::GroupItem::Ptr inputFilterItem = this->parameters()->findGroup("input filter");
 
-    // Access the min threshold parameter
-    smtk::attribute::DoubleItem::Ptr minThresholdItem =
-      inputFilterItem->findAs<smtk::attribute::DoubleItem>("min threshold");
+    if (inputFilterItem)
+    {
+      // Access the min threshold parameter
+      smtk::attribute::DoubleItem::Ptr minThresholdItem =
+        inputFilterItem->findAs<smtk::attribute::DoubleItem>("min threshold");
 
-    // Access the max threshold parameter
-    smtk::attribute::DoubleItem::Ptr maxThresholdItem =
-      inputFilterItem->findAs<smtk::attribute::DoubleItem>("max threshold");
+      // Access the max threshold parameter
+      smtk::attribute::DoubleItem::Ptr maxThresholdItem =
+        inputFilterItem->findAs<smtk::attribute::DoubleItem>("max threshold");
 
-    if (minThresholdItem && minThresholdItem->isEnabled() && maxThresholdItem &&
-      maxThresholdItem->isEnabled())
-    {
-      double minThreshold = minThresholdItem->value();
-      double maxThreshold = maxThresholdItem->value();
-      prefilter = [=](double d) { return d >= minThreshold && d <= maxThreshold; };
-    }
-    else if (minThresholdItem && minThresholdItem->isEnabled())
-    {
-      double minThreshold = minThresholdItem->value();
-      prefilter = [=](double d) { return d >= minThreshold; };
-    }
-    else if (maxThresholdItem && maxThresholdItem->isEnabled())
-    {
-      double maxThreshold = maxThresholdItem->value();
-      prefilter = [=](double d) { return d <= maxThreshold; };
+      if (minThresholdItem && minThresholdItem->isEnabled() && maxThresholdItem &&
+        maxThresholdItem->isEnabled())
+      {
+        double minThreshold = minThresholdItem->value();
+        double maxThreshold = maxThresholdItem->value();
+        prefilter = [=](double d) { return d >= minThreshold && d <= maxThreshold; };
+      }
+      else if (minThresholdItem && minThresholdItem->isEnabled())
+      {
+        double minThreshold = minThresholdItem->value();
+        prefilter = [=](double d) { return d >= minThreshold; };
+      }
+      else if (maxThresholdItem && maxThresholdItem->isEnabled())
+      {
+        double maxThreshold = maxThresholdItem->value();
+        prefilter = [=](double d) { return d <= maxThreshold; };
+      }
     }
   }
 
@@ -195,7 +199,7 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
   {
     // Access the external data to use in determining elevation values
     smtk::attribute::ModelEntityItem::Ptr auxGeoItem =
-      this->specification()->findModelEntity("auxiliary geometry");
+      this->parameters()->findModelEntity("auxiliary geometry");
 
     // Get the auxiliary geometry
     smtk::model::AuxiliaryGeometry auxGeo = auxGeoItem->value();
@@ -204,7 +208,7 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
     {
       // Compute the radial average function
       interpolation = radialAverageFrom<smtk::model::AuxiliaryGeometry>(
-        auxGeo, radiusItem->value(), prefilter, *this->manager()->meshes());
+        auxGeo, radiusItem->value(), prefilter, *meshItem->value().collection()->manager());
     }
     else if (interpolationSchemeItem->value() == "inverse distance weighting")
     {
@@ -216,19 +220,19 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
     if (!interpolation)
     {
       smtkErrorMacro(this->log(), "Could not convert auxiliary geometry.");
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
     }
   }
   else if (inputDataItem->value() == "ptsfile")
   {
     // Get the file name
-    std::string fileName = this->specification()->findFile("ptsfile")->value();
+    std::string fileName = this->parameters()->findFile("ptsfile")->value();
 
     if (interpolationSchemeItem->value() == "radial average")
     {
       // Compute the radial average function
       interpolation = radialAverageFrom<std::string>(
-        fileName, radiusItem->value(), prefilter, *this->manager()->meshes());
+        fileName, radiusItem->value(), prefilter, *meshItem->value().collection()->manager());
     }
     else if (interpolationSchemeItem->value() == "inverse distance weighting")
     {
@@ -240,13 +244,14 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
     if (!interpolation)
     {
       smtkErrorMacro(this->log(), "Could not read file.");
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
     }
   }
   else if (inputDataItem->value() == "points")
   {
     // Access the interpolation points
-    smtk::attribute::GroupItem::Ptr interpolationPointsItem = this->findGroup("points");
+    smtk::attribute::GroupItem::Ptr interpolationPointsItem =
+      this->parameters()->findGroup("points");
 
     // Construct containers for our source points
     std::vector<double> sourceCoordinates;
@@ -268,8 +273,9 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
 
     if (interpolationSchemeItem->value() == "radial average")
     {
-      interpolation = smtk::mesh::RadialAverage(
-        this->manager()->meshes()->makeCollection(), pointcloud, radiusItem->value());
+      interpolation =
+        smtk::mesh::RadialAverage(meshItem->value().collection()->manager()->makeCollection(),
+          pointcloud, radiusItem->value());
     }
     else if (interpolationSchemeItem->value() == "inverse distance weighting")
     {
@@ -280,52 +286,52 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
     if (!interpolation)
     {
       smtkErrorMacro(this->log(), "Could not read points.");
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
     }
   }
   else
   {
     smtkErrorMacro(this->log(), "Unrecognized input type.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   // Construct a function that clips its input according to the input parameters
-  std::function<double(double)> postProcess;
+  std::function<double(double)> postProcess = [](double input) { return input; };
   {
     // Access the output filter parameter group
-    smtk::attribute::GroupItem::Ptr outputFilterItem = this->findGroup("output filter");
+    smtk::attribute::GroupItem::Ptr outputFilterItem =
+      this->parameters()->findGroup("output filter");
 
-    // Access the min elevation parameter
-    smtk::attribute::DoubleItem::Ptr minElevationItem =
-      outputFilterItem->findAs<smtk::attribute::DoubleItem>("min elevation");
+    if (outputFilterItem)
+    {
+      // Access the min elevation parameter
+      smtk::attribute::DoubleItem::Ptr minElevationItem =
+        outputFilterItem->findAs<smtk::attribute::DoubleItem>("min elevation");
 
-    // Access the max elevation parameter
-    smtk::attribute::DoubleItem::Ptr maxElevationItem =
-      outputFilterItem->findAs<smtk::attribute::DoubleItem>("max elevation");
+      // Access the max elevation parameter
+      smtk::attribute::DoubleItem::Ptr maxElevationItem =
+        outputFilterItem->findAs<smtk::attribute::DoubleItem>("max elevation");
 
-    if (minElevationItem && minElevationItem->isEnabled() && maxElevationItem &&
-      maxElevationItem->isEnabled())
-    {
-      double minElevation = minElevationItem->value();
-      double maxElevation = maxElevationItem->value();
-      postProcess = [=](double input) {
-        return (
-          input < minElevation ? minElevation : (input > maxElevation ? maxElevation : input));
-      };
-    }
-    else if (minElevationItem && minElevationItem->isEnabled())
-    {
-      double minElevation = minElevationItem->value();
-      postProcess = [=](double input) { return (input < minElevation ? minElevation : input); };
-    }
-    else if (maxElevationItem && maxElevationItem->isEnabled())
-    {
-      double maxElevation = maxElevationItem->value();
-      postProcess = [=](double input) { return (input > maxElevation ? maxElevation : input); };
-    }
-    else
-    {
-      postProcess = [=](double input) { return input; };
+      if (minElevationItem && minElevationItem->isEnabled() && maxElevationItem &&
+        maxElevationItem->isEnabled())
+      {
+        double minElevation = minElevationItem->value();
+        double maxElevation = maxElevationItem->value();
+        postProcess = [=](double input) {
+          return (
+            input < minElevation ? minElevation : (input > maxElevation ? maxElevation : input));
+        };
+      }
+      else if (minElevationItem && minElevationItem->isEnabled())
+      {
+        double minElevation = minElevationItem->value();
+        postProcess = [=](double input) { return (input < minElevation ? minElevation : input); };
+      }
+      else if (maxElevationItem && maxElevationItem->isEnabled())
+      {
+        double maxElevation = maxElevationItem->value();
+        postProcess = [=](double input) { return (input > maxElevation ? maxElevation : input); };
+      }
     }
   }
 
@@ -341,7 +347,7 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
     }
     else if (externalPointItem->value() == "set to value")
     {
-      double externalPointValue = this->findDouble("external point value")->value();
+      double externalPointValue = this->parameters()->findDouble("external point value")->value();
       externalDataPoint = [=](std::array<double, 3>) { return externalPointValue; };
     }
   }
@@ -358,10 +364,12 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
   };
 
   // Access the attribute associated with the modified meshes
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
   smtk::attribute::MeshItem::Ptr modifiedMeshes = result->findMesh("mesh_modified");
   modifiedMeshes->setNumberOfValues(meshItem->numberOfValues());
+
+  // Access the attribute associated with the modified model
+  smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
 
   // Access the attribute associated with the changed tessellation
   smtk::attribute::ModelEntityItem::Ptr modifiedEntities = result->findModelEntity("tess_changed");
@@ -381,17 +389,17 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
     if (entitiesAreValid && !entities.empty())
     {
       smtk::model::Model model = entities[0].owningModel();
-      this->addEntityToResult(result, model, MODIFIED);
+      modified->appendValue(model.component());
       modifiedEntities->appendValue(model);
     }
   }
 
   return result;
 }
+
+const char* ElevateMesh::xmlDescription() const
+{
+  return ElevateMesh_xml;
 }
 }
-
-#include "smtk/mesh/ElevateMesh_xml.h"
-
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::mesh::ElevateMesh, elevate_mesh, "elevate mesh",
-  ElevateMesh_xml, smtk::model::Session);
+}

@@ -87,10 +87,11 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
       })
     : -1;
   int operHandle = operMgr
-    ? operMgr->observe([this](Operator::Ptr op, Operator::EventType event, Operator::Result res) {
-        this->handleOperatorEvent(op, event, res);
-        return 0;
-      })
+    ? operMgr->observers().insert(
+        [this](Operator::Ptr op, operation::EventType event, Operator::Result res) {
+          this->handleOperatorEvent(op, event, res);
+          return 0;
+        })
     : -1;
   m_sources.push_back(Source(rsrcMgr, operMgr, rsrcHandle, operHandle));
   return true;
@@ -109,7 +110,7 @@ bool PhraseModel::removeSource(
       }
       if (it->m_operHandle >= 0)
       {
-        it->m_operMgr->unobserve(it->m_operHandle);
+        it->m_operMgr->observers().erase(it->m_operHandle);
       }
       m_sources.erase(it);
       return true;
@@ -197,10 +198,11 @@ void PhraseModel::handleResourceEvent(Resource::Ptr rsrc, smtk::resource::Event 
 }
 
 int PhraseModel::handleOperatorEvent(
-  Operator::Ptr op, Operator::EventType event, Operator::Result res)
+  Operator::Ptr op, operation::EventType event, Operator::Result res)
 {
-  std::cout << "      phrase op " << (event == Operator::EventType::DID_OPERATE ? "ran" : "cre/pre")
-            << " " << op << "\n";
+  std::cout << "      phrase op "
+            << (event == operation::EventType::DID_OPERATE ? "ran" : "cre/pre") << " " << op
+            << "\n";
 
   if (!op)
   {
@@ -210,7 +212,7 @@ int PhraseModel::handleOperatorEvent(
   {
     return 0;
   } // Ignore operator creation and about-to-operate events.
-  if (event != Operator::DID_OPERATE)
+  if (event != operation::EventType::DID_OPERATE)
   {
     return 0;
   }

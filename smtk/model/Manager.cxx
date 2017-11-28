@@ -30,7 +30,6 @@
 #include "smtk/model/SessionRef.h"
 #include "smtk/model/Shell.h"
 #include "smtk/model/ShellEntity.txx"
-#include "smtk/model/StoredResource.h"
 #include "smtk/model/Vertex.h"
 #include "smtk/model/VertexUse.h"
 #include "smtk/model/Volume.h"
@@ -47,9 +46,12 @@
 #include <float.h>
 
 #include <algorithm>
+#include <functional>
 #include <iterator>
 #include <map>
+#include <numeric>
 #include <set>
+#include <string>
 #include <vector>
 
 #include <sstream>
@@ -59,12 +61,6 @@
 using namespace std;
 using namespace smtk::common;
 using namespace smtk::resource;
-
-static void registerModelResource()
-{
-  smtk::model::Manager::Metadata metadata("model");
-  smtk::resource::Manager::registerResource<smtk::model::Manager>(metadata);
-}
 
 namespace smtk
 {
@@ -93,7 +89,6 @@ Manager::Manager(smtk::resource::ManagerPtr mgr)
 {
   // TODO: throw() when topology == NULL?
   this->log().setFlushToStdout(false);
-  registerModelResource();
 }
 
 Manager::Manager(const smtk::common::UUID& uid, smtk::resource::ManagerPtr mgr)
@@ -112,7 +107,6 @@ Manager::Manager(const smtk::common::UUID& uid, smtk::resource::ManagerPtr mgr)
 {
   // TODO: throw() when topology == NULL?
   this->log().setFlushToStdout(false);
-  registerModelResource();
 }
 
 /// Create a model manager using the given storage instances.
@@ -134,7 +128,6 @@ Manager::Manager(shared_ptr<UUIDsToEntities> inTopology, shared_ptr<UUIDsToTesse
   , m_globalCounters(2, 1) // first entry is session counter, second is model counter
 {
   this->log().setFlushToStdout(false);
-  registerModelResource();
 }
 
 /// Destroying a model manager requires us to release the default attribute manager..
@@ -569,6 +562,7 @@ Manager::iter_type Manager::setEntity(EntityPtr c)
       std::ostringstream msg;
       msg << "Duplicate UUID '" << c->id() << "' of different dimension " << it->second->dimension()
           << " != " << c->dimension();
+      std::cout << msg.str() << std::endl;
       throw msg.str();
     }
     this->removeEntityReferences(it);
@@ -983,6 +977,82 @@ EntityPtr Manager::findEntity(const UUID& uid, bool trySessions) const
 smtk::resource::ComponentPtr Manager::find(const smtk::common::UUID& uid) const
 {
   return std::dynamic_pointer_cast<smtk::resource::Component>(this->findEntity(uid));
+}
+
+namespace
+{
+/// Given an entity and a mask, determine if the entity is accepted by the mask.
+bool IsValueValid(const smtk::resource::ComponentPtr& comp, smtk::model::BitFlags mask)
+{
+  auto modelEnt = dynamic_pointer_cast<const smtk::model::Entity>(comp);
+  if (modelEnt)
+  {
+    smtk::model::EntityRef c = modelEnt->referenceAs<smtk::model::EntityRef>();
+
+    if (!mask)
+    {
+      return false; // Nothing can possibly match.
+    }
+    if (mask == smtk::model::ANY_ENTITY)
+    {
+      return true; // Fast-track the trivial case.
+    }
+
+    smtk::model::BitFlags itemType = c.entityFlags();
+    // The m_membershipMask must match the entity type, the dimension, and (if the
+    // item is a group) group constraint flags separately;
+    // In other words, we require the entity type, the dimension, and the
+    // group constraints to be acceptable independently.
+    if (((mask & smtk::model::ENTITY_MASK) && !(itemType & mask & smtk::model::ENTITY_MASK) &&
+          (itemType & smtk::model::ENTITY_MASK) != smtk::model::GROUP_ENTITY) ||
+      ((mask & smtk::model::ANY_DIMENSION) && !(itemType & mask & smtk::model::ANY_DIMENSION)) ||
+      ((itemType & smtk::model::GROUP_ENTITY) && (mask & smtk::model::GROUP_CONSTRAINT_MASK) &&
+          !(itemType & mask & smtk::model::GROUP_CONSTRAINT_MASK)))
+      return false;
+    if (itemType != mask && itemType & smtk::model::GROUP_ENTITY &&
+      // if the mask is only defined as "group", don't have to check further for members
+      mask != smtk::model::GROUP_ENTITY)
+    {
+      // If the the membershipMask is the same as itemType, we don't need to check, else
+      // if the item is a group: recursively check that its members
+      // all match the criteria. Also, if the HOMOGENOUS_GROUP bit is set,
+      // require all entries to have the same entity type flag as the first.
+      smtk::model::BitFlags typeMask = mask;
+      bool mustBeHomogenous = (typeMask & smtk::model::HOMOGENOUS_GROUP) ? true : false;
+      if (!(typeMask & smtk::model::NO_SUBGROUPS) && !(typeMask & smtk::model::GROUP_ENTITY))
+      {
+        typeMask |= smtk::model::GROUP_ENTITY; // if groups aren't banned, allow them.
+      }
+      if (!c.as<model::Group>().meetsMembershipConstraints(c, typeMask, mustBeHomogenous))
+      {
+        return false;
+      }
+    }
+  }
+  return false;
+}
+}
+
+/// Given a query string, return a functor that determines if a component is
+/// accepted by the query.
+std::function<bool(const ComponentPtr&)> Manager::queryOperation(
+  const std::string& queryString) const
+{
+  smtk::model::BitFlags bitflags =
+    queryString.empty() ? smtk::model::ANY_ENTITY : std::stoul(queryString, nullptr, 0);
+  return std::bind(IsValueValid, std::placeholders::_1, bitflags);
+}
+
+// visit all components in the resource.
+void Manager::visit(smtk::resource::Component::Visitor& visitor) const
+{
+  auto convertedVisitor = [&](
+    const std::pair<const smtk::common::UUID, const smtk::model::EntityPtr>& entityPair) {
+    const smtk::resource::ComponentPtr resource =
+      std::static_pointer_cast<smtk::resource::Component>(entityPair.second);
+    visitor(resource);
+  };
+  std::for_each(m_topology->begin(), m_topology->end(), convertedVisitor);
 }
 
 /// Given an entity \a c, ensure that all of its references contain a reference to it.
@@ -3634,7 +3704,7 @@ void Manager::trigger(OperatorEventType event, const smtk::model::Operator& src)
 template <typename T>
 std::string uniqueResourceName(EntityRef ent, const T& preexisting, int& counter)
 {
-  std::string prefix = ent.isModel() ? "model" : "aux-geom";
+  std::string prefix = ent.isModel() ? "model" : "auxgeo";
   std::string result;
   do
   {
@@ -3643,111 +3713,6 @@ std::string uniqueResourceName(EntityRef ent, const T& preexisting, int& counter
     result = ns.str();
   } while (preexisting.find(result) != preexisting.end());
   return result;
-}
-
-/// An internal method that iterates over entities discovering resources.
-void Manager::computeResources()
-{
-  int counter = 0;
-  EntityRefArray subresources;
-  subresources = this->findEntitiesOfType(MODEL_ENTITY | AUX_GEOM_ENTITY | SESSION,
-    /* exactMatch */ false);
-
-  std::vector<std::string> vpre = this->m_resources->resourceIds();
-  std::set<std::string> preexistingIds(vpre.begin(), vpre.end());
-  std::map<std::string, std::string> urlsToResourceNames;
-  ResourcePtr rsrc;
-  StoredResourcePtr srsrc;
-  for (auto preId : preexistingIds)
-  {
-    if (this->m_resources->get(preId, rsrc) &&
-      (srsrc = smtk::dynamic_pointer_cast<StoredResource>(rsrc)))
-    {
-      urlsToResourceNames[srsrc->url()] = preId;
-    }
-  }
-
-  std::set<std::string> usedResources;
-  std::map<std::string, std::string>::iterator lookup;
-  std::string url;
-  for (auto ent : subresources)
-  {
-    if (ent.hasStringProperty("url") && !(url = ent.stringProperty("url")[0]).empty())
-    {
-      if ((lookup = urlsToResourceNames.find(url)) == urlsToResourceNames.end())
-      { // Insert resource:
-        std::string newResourceName = uniqueResourceName(ent, preexistingIds, counter);
-        srsrc = StoredResource::create();
-        srsrc->setURL(url);
-        if (ent.isModel())
-        {
-          srsrc->markModified(ent.as<Model>().isModified());
-        }
-        else if (ent.isAuxiliaryGeometry())
-        {
-          srsrc->markModified(ent.as<AuxiliaryGeometry>().isModified());
-        }
-        else
-        { // Assume it's modified if not on disk, otherwise unmodified
-          srsrc->markModified(srsrc->exists(this->m_resources->linkStartPath()));
-        }
-        this->m_resources->add(srsrc, newResourceName, "",
-          ent.isAuxiliaryGeometry() ? Set::AUX_GEOM_RESOURCE : Set::MODEL_RESOURCE);
-        urlsToResourceNames[url] = newResourceName;
-      }
-      std::string rsrcName = urlsToResourceNames[url];
-      usedResources.insert(rsrcName);
-      if (this->m_resources->get(rsrcName, rsrc) &&
-        (srsrc = std::dynamic_pointer_cast<StoredResource>(rsrc)))
-      {
-        srsrc->addEntity(ent);
-      }
-    }
-    if (ent.hasStringProperty("smtk_url") && !(url = ent.stringProperty("smtk_url")[0]).empty())
-    {
-      if ((lookup = urlsToResourceNames.find(url)) == urlsToResourceNames.end())
-      { // Insert resource:
-        std::string newResourceName = uniqueResourceName(ent, preexistingIds, counter);
-        srsrc = StoredResource::create();
-        srsrc->setURL(url);
-        if (ent.isModel())
-        {
-          srsrc->markModified(ent.as<Model>().isModified());
-        }
-        else if (ent.isAuxiliaryGeometry())
-        {
-          srsrc->markModified(ent.as<AuxiliaryGeometry>().isModified());
-        }
-        else
-        { // Assume it's modified if not on disk, otherwise unmodified
-          srsrc->markModified(srsrc->exists(this->m_resources->linkStartPath()));
-        }
-        this->m_resources->add(srsrc, newResourceName, "", Set::MODEL_RESOURCE);
-        urlsToResourceNames[url] = newResourceName;
-      }
-      std::string rsrcName = urlsToResourceNames[url];
-      usedResources.insert(rsrcName);
-      if (this->m_resources->get(rsrcName, rsrc) &&
-        (srsrc = std::dynamic_pointer_cast<StoredResource>(rsrc)))
-      {
-        srsrc->addEntity(ent);
-      }
-    }
-  }
-
-  // Remove resources no longer present
-  for (auto used : usedResources)
-  {
-    preexistingIds.erase(used);
-  }
-  if (!preexistingIds.empty())
-  {
-    for (auto unused : preexistingIds)
-    {
-      smtkDebugMacro(this->log(), "Erasing unused resource \"" << unused << "\"");
-      this->m_resources->remove(unused);
-    }
-  }
 }
 
 /// Internal method used by modelOwningEntity to prevent infinite recursion

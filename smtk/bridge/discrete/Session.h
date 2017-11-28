@@ -130,6 +130,7 @@ protected:
   friend class ArrangementHelper;
   friend class EdgeOperator;
   friend class Operator;
+  friend class Resource;
 
   Session();
 

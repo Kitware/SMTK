@@ -12,6 +12,7 @@
 #define __smtk_session_discrete_GrowOperator_h
 
 #include "smtk/bridge/discrete/Operator.h"
+#include "smtk/bridge/discrete/Resource.h"
 #include "vtkNew.h"
 #include "vtkSeedGrowSelectionFilter.h"
 #include "vtkSelection.h"
@@ -35,21 +36,23 @@ class SMTKDISCRETESESSION_EXPORT GrowOperator : public Operator
 public:
   smtkTypeMacro(GrowOperator);
   smtkCreateMacro(GrowOperator);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSuperclassMacro(Operator);
 
   bool ableToOperate() override;
 
 protected:
   GrowOperator();
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  const char* xmlDescription() const override;
+
   void findVisibleModelFaces(
     const smtk::model::CellEntity& cellent, std::set<vtkIdType>& ModelFaceIds, Session* opsession);
 
   bool writeSelectionResult(const std::map<smtk::common::UUID, std::set<int> >& cachedSelection,
     smtk::model::OperatorResult& result);
   void writeSplitResult(vtkSelectionSplitOperator* splitOp, vtkDiscreteModelWrapper* modelWrapper,
-    Session* opsession, smtk::model::OperatorResult& result);
+    smtk::bridge::discrete::Resource::Ptr& resource, Session* opsession, Result& result);
   // This grow_selection is a list of cell ids from master polydata,
   // so we need to convert that to the format of
   // <FaceUUID, 'set' of cellIds on that face>

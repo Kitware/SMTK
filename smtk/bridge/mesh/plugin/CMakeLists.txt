@@ -10,14 +10,12 @@ if (SMTK_ENABLE_MESH_SESSION)
   list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 
   add_paraview_plugin(smtkMeshSessionPlugin "1.0"
-      SERVER_SOURCES
-        sessionInit.cxx
+    SERVER_SOURCES sessionInit.cxx
     )
 
   target_link_libraries(smtkMeshSessionPlugin
     LINK_PUBLIC
-      smtkCore
-      smtkMeshSession
+      smtkMeshSessionEnvironment
       vtkPVServerManagerApplication
     LINK_PRIVATE
       vtkPVServerManagerApplicationCS

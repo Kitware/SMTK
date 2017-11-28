@@ -30,13 +30,20 @@ class TestSelection(smtk.testing.TestCase):
     def loadTestData(self):
         import os
         self.mgr = smtk.model.Manager.create()
-        SetActiveSession(self.mgr.createSession('polygon'))
-        self.assertIsNotNone(
-            GetActiveSession(), 'Could not create polygon session.')
+#        SetActiveSession(self.mgr.createSession('polygon'))
+#        self.assertIsNotNone(
+#            GetActiveSession(), 'Could not create polygon session.')
         fpath = [smtk.testing.DATA_DIR, 'model',
                  '2d', 'smtk', 'epic-trex-drummer.smtk']
-        self.models = LoadSMTKModel(os.path.join(*fpath))
-        self.model = smtk.model.Model(self.models[0])
+        op = smtk.operation.LoadResource.create()
+        print 'here', os.path.join(*fpath)
+        op.parameters().find('filename').setValue(os.path.join(*fpath))
+        res = op.operate()
+        if res.findInt('outcome').value(0) != int(smtk.operation.NewOp.SUCCEEDED):
+            raise ImportError
+        modelEntity = res.find('created').value(0)
+        self.model = smtk.model.Model(
+            modelEntity.modelResource(), modelEntity.id())
 
     def testSelectionValues(self):
         mgr = self.selnMgr

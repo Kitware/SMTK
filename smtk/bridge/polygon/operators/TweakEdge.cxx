@@ -9,7 +9,7 @@
 //=============================================================================
 #include "smtk/bridge/polygon/operators/TweakEdge.h"
 
-#include "smtk/bridge/polygon/Session.h"
+#include "smtk/bridge/polygon/Resource.h"
 #include "smtk/bridge/polygon/internal/Model.h"
 #include "smtk/bridge/polygon/internal/Model.txx"
 
@@ -33,37 +33,32 @@ namespace bridge
 namespace polygon
 {
 
-smtk::model::OperatorResult TweakEdge::operateInternal()
+TweakEdge::Result TweakEdge::operateInternal()
 {
-  smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
-  smtk::model::Manager::Ptr mgr;
-  if (!sess)
-  {
-    smtkErrorMacro(this->log(), "Invalid session.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
-  }
-
-  mgr = sess->manager();
-
-  smtk::attribute::ModelEntityItem::Ptr edgeItem = this->specification()->associations();
-  smtk::attribute::DoubleItem::Ptr pointsItem = this->findDouble("points");
-  smtk::attribute::IntItem::Ptr coordinatesItem = this->findInt("coordinates");
-  smtk::attribute::IntItem::Ptr promoteItem = this->findInt("promote");
+  smtk::attribute::ModelEntityItem::Ptr edgeItem = this->parameters()->associations();
+  smtk::attribute::DoubleItem::Ptr pointsItem = this->parameters()->findDouble("points");
+  smtk::attribute::IntItem::Ptr coordinatesItem = this->parameters()->findInt("coordinates");
+  smtk::attribute::IntItem::Ptr promoteItem = this->parameters()->findInt("promote");
 
   smtk::model::Edge src(edgeItem->value(0));
   if (!src.isValid())
   {
     smtkErrorMacro(this->log(), "Input edge was invalid.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
-  internal::edge::Ptr storage = this->findStorage<internal::edge>(src.entity());
+  smtk::bridge::polygon::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::polygon::Resource>(src.component()->resource());
+  if (!resource)
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+
+  internal::edge::Ptr storage = resource->findStorage<internal::edge>(src.entity());
   internal::pmodel* pmod = storage->parentAs<internal::pmodel>();
   if (!storage || !pmod)
   {
     smtkErrorMacro(
       this->log(), "Input edge was not part of its parent model (or not a polygon-session edge).");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   bool ok = true;
@@ -75,7 +70,7 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
     smtkErrorMacro(this->log(), "Not enough points to form an edge ("
         << pointsItem->numberOfValues() << " coordinates at " << numCoordsPerPt << " per point => "
         << npts << " points)");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   if (!splits.empty())
@@ -129,10 +124,10 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
     {
       continue; // skip points that are already model vertices (should only happen at start/end)
     }
-    smtk::model::Vertex pv = pmod->findOrAddModelVertex(mgr, *ptit);
+    smtk::model::Vertex pv = pmod->findOrAddModelVertex(resource, *ptit);
     verticesCreated.push_back(pv);
 
-    promotedVerts.push_back(this->findStorage<internal::vertex>(pv.entity()));
+    promotedVerts.push_back(resource->findStorage<internal::vertex>(pv.entity()));
     splitLocs.push_back(ptit);
     std::cout << "  " << ptit->x() << " " << ptit->y() << "\n";
   }
@@ -142,7 +137,7 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
   {
     smtkInfoMacro(this->log(), "Splitting tweaked edge at " << splitLocs.size() << " places.");
     if (!pmod->splitModelEdgeAtModelVertices(
-          mgr, storage, promotedVerts, splitLocs, edgesAdded, this->m_debugLevel))
+          resource, storage, promotedVerts, splitLocs, edgesAdded, this->m_debugLevel))
     {
       smtkErrorMacro(this->log(), "Could not split edge.");
       ok = false;
@@ -182,11 +177,29 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
   smtk::model::OperatorResult opResult;
   if (ok)
   {
-    opResult = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
-    this->addEntitiesToResult(opResult, expunged, EXPUNGED);
-    this->addEntitiesToResult(opResult, edgeCreated, CREATED);
-    this->addEntitiesToResult(opResult, verticesCreated, CREATED);
-    this->addEntitiesToResult(opResult, modified, MODIFIED);
+    opResult = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+
+    smtk::attribute::ComponentItem::Ptr createdItem = opResult->findComponent("created");
+    for (auto& c : verticesCreated)
+    {
+      createdItem->appendValue(c.component());
+    }
+    for (auto& c : edgeCreated)
+    {
+      createdItem->appendValue(c.component());
+    }
+
+    smtk::attribute::ComponentItem::Ptr modifiedItem = opResult->findComponent("modified");
+    for (auto& m : modified)
+    {
+      modifiedItem->appendValue(m.component());
+    }
+
+    smtk::attribute::ComponentItem::Ptr expungedItem = opResult->findComponent("expunged");
+    for (auto& e : expunged)
+    {
+      expungedItem->appendValue(e.component());
+    }
 
     // Modified items will have new tessellations, which we must indicate
     // separately for the time being.
@@ -195,15 +208,17 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
   }
   else
   {
-    opResult = this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    opResult = this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   return opResult;
 }
 
+const char* TweakEdge::xmlDescription() const
+{
+  return TweakEdge_xml;
+}
+
 } // namespace polygon
 } //namespace bridge
 } // namespace smtk
-
-smtkImplementsModelOperator(SMTKPOLYGONSESSION_EXPORT, smtk::bridge::polygon::TweakEdge,
-  polygon_tweak_edge, "tweak edge", TweakEdge_xml, smtk::bridge::polygon::Session);

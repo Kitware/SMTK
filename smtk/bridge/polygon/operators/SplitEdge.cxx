@@ -9,7 +9,7 @@
 //=============================================================================
 #include "smtk/bridge/polygon/operators/SplitEdge.h"
 
-#include "smtk/bridge/polygon/Session.h"
+#include "smtk/bridge/polygon/Resource.h"
 #include "smtk/bridge/polygon/internal/Model.h"
 #include "smtk/bridge/polygon/internal/Model.txx"
 
@@ -32,31 +32,29 @@ namespace bridge
 namespace polygon
 {
 
-smtk::model::OperatorResult SplitEdge::operateInternal()
+SplitEdge::Result SplitEdge::operateInternal()
 {
-  smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
-  smtk::model::Manager::Ptr mgr;
-  if (!sess)
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
-
-  mgr = sess->manager();
-
-  smtk::attribute::IntItem::Ptr pointIdItem = this->findInt("point id");
-  smtk::attribute::DoubleItem::Ptr pointItem = this->findDouble("point");
-  smtk::attribute::ModelEntityItem::Ptr edgeItem = this->specification()->associations();
+  smtk::attribute::IntItem::Ptr pointIdItem = this->parameters()->findInt("point id");
+  smtk::attribute::DoubleItem::Ptr pointItem = this->parameters()->findDouble("point");
+  smtk::attribute::ModelEntityItem::Ptr edgeItem = this->parameters()->associations();
   smtk::model::Edge edgeToSplit(edgeItem->value(0));
   if (!edgeToSplit.isValid())
   {
     smtkErrorMacro(this->log(), "The input edge (" << edgeToSplit.entity() << ") is invalid.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
-  internal::edge::Ptr storage = this->findStorage<internal::edge>(edgeToSplit.entity());
+  smtk::bridge::polygon::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::polygon::Resource>(edgeToSplit.component()->resource());
+  if (!resource)
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+
+  internal::edge::Ptr storage = resource->findStorage<internal::edge>(edgeToSplit.entity());
   internal::pmodel* mod = storage->parentAs<internal::pmodel>();
   if (!storage || !mod)
   {
     smtkErrorMacro(this->log(), "The input edge has no storage or no parent model set.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   std::vector<double> point;
@@ -66,32 +64,42 @@ smtk::model::OperatorResult SplitEdge::operateInternal()
     pointIdItem->value(0) < static_cast<int>(storage->pointsSize()))
   {
     ok = mod->splitModelEdgeAtIndex(
-      mgr, edgeToSplit.entity(), pointIdItem->value(0), created, this->m_debugLevel);
+      resource, edgeToSplit.entity(), pointIdItem->value(0), created, this->m_debugLevel);
   }
   else
   {
     point = std::vector<double>(pointItem->begin(), pointItem->end());
-    ok = mod->splitModelEdgeAtPoint(mgr, edgeToSplit.entity(), point, created, this->m_debugLevel);
+    ok = mod->splitModelEdgeAtPoint(
+      resource, edgeToSplit.entity(), point, created, this->m_debugLevel);
   }
-  smtk::model::OperatorResult opResult;
+  Result opResult;
   if (ok)
   {
-    opResult = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
-    this->addEntitiesToResult(opResult, created, CREATED);
-    this->addEntityToResult(opResult, edgeToSplit, EXPUNGED);
+    opResult = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+
+    smtk::attribute::ComponentItem::Ptr createdItem = opResult->findComponent("created");
+    for (auto& c : created)
+    {
+      createdItem->appendValue(c.component());
+    }
+
+    smtk::attribute::ComponentItem::Ptr expungedItem = opResult->findComponent("expunged");
+    expungedItem->appendValue(edgeToSplit.component());
   }
   else
   {
     smtkErrorMacro(this->log(), "Failed to split edge.");
-    opResult = this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    opResult = this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   return opResult;
 }
 
+const char* SplitEdge::xmlDescription() const
+{
+  return SplitEdge_xml;
+}
+
 } // namespace polygon
 } //namespace bridge
 } // namespace smtk
-
-smtkImplementsModelOperator(SMTKPOLYGONSESSION_EXPORT, smtk::bridge::polygon::SplitEdge,
-  polygon_split_edge, "split edge", SplitEdge_xml, smtk::bridge::polygon::Session);

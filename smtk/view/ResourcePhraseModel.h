@@ -24,7 +24,7 @@ class SMTKCORE_EXPORT ResourcePhraseModel : public PhraseModel
 {
 public:
   using Observer = std::function<void(DescriptivePhrasePtr, PhraseModelEvent, int, int)>;
-  using Operator = smtk::operation::Operator;
+  using Operator = smtk::operation::NewOp;
 
   smtkTypeMacro(ResourcePhraseModel);
   smtkSuperclassMacro(PhraseModel);

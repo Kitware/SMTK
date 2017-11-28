@@ -40,7 +40,7 @@ public:
   StringList operatorNames(bool includeAdvanced = true) const;
   smtk::attribute::CollectionPtr opSys() const;
   OperatorDefinition opDef(const std::string& opName) const;
-  OperatorPtr op(const std::string& opName) const;
+  // OperatorPtr op(const std::string& opName) const;
 
   StringList operatorsForAssociation(BitFlags assocMask) const;
   template <typename T>

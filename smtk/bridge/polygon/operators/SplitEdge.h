@@ -28,12 +28,12 @@ class SMTKPOLYGONSESSION_EXPORT SplitEdge : public Operator
 public:
   smtkTypeMacro(SplitEdge);
   smtkCreateMacro(SplitEdge);
-  smtkSharedFromThisMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
   smtkSuperclassMacro(Operator);
-  smtkDeclareModelOperator();
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  virtual const char* xmlDescription() const override;
 };
 
 } // namespace polygon

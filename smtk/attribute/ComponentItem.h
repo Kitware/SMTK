@@ -153,6 +153,9 @@ public:
     */
   std::ptrdiff_t find(smtk::resource::ComponentPtr component) const;
 
+  // Returns true if the component can be modified.
+  bool isWritable() const;
+
 protected:
   friend class ComponentItemDefinition;
   friend class Definition;

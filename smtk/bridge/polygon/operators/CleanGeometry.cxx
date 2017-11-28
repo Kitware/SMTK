@@ -9,7 +9,7 @@
 //=============================================================================
 #include "smtk/bridge/polygon/operators/CleanGeometry.h"
 
-#include "smtk/bridge/polygon/Session.h"
+#include "smtk/bridge/polygon/Resource.h"
 #include "smtk/bridge/polygon/internal/Model.h"
 
 #include "smtk/bridge/polygon/Session.txx"
@@ -83,7 +83,9 @@ bool CleanGeometry::splitEdgeAsNeeded(const smtk::model::Edge& curEdge, internal
   (void)lkup;
   (void)revlkup;
 
-  smtk::model::Manager::Ptr mgr = curEdge.manager();
+  smtk::bridge::polygon::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::polygon::Resource>(curEdge.component()->resource());
+
   internal::pmodel* mod = storage->parentAs<internal::pmodel>();
   const std::pair<size_t, size_t> range = reslkup[curEdge];
 
@@ -171,8 +173,8 @@ bool CleanGeometry::splitEdgeAsNeeded(const smtk::model::Edge& curEdge, internal
         // model vertex, use it. Otherwise, do **not** use a pre-existing model vertex
         // (instead, create a new one).
         smtk::model::Vertex splitVert =
-          findOrAddInputModelVertex(mgr, *rit, endpoints, mod, created);
-        splitVerts.push_back(this->findStorage<internal::vertex>(splitVert.entity()));
+          findOrAddInputModelVertex(resource, *rit, endpoints, mod, created);
+        splitVerts.push_back(resource->findStorage<internal::vertex>(splitVert.entity()));
       }
       ++rit;
       ++tmp;
@@ -204,7 +206,7 @@ bool CleanGeometry::splitEdgeAsNeeded(const smtk::model::Edge& curEdge, internal
       curEdge); // The source edge is going away, to be replaced by multiple pieces:
 
     if (!mod->splitModelEdgeAtModelVertices(
-          mgr, storage, splitVerts, splitPts, created, this->m_debugLevel))
+          resource, storage, splitVerts, splitPts, created, this->m_debugLevel))
     {
       smtkOpDebug("Could not split " << curEdge.name() << " at " << splitPts.size()
                                      << " intersection points.");
@@ -219,7 +221,7 @@ bool CleanGeometry::splitEdgeAsNeeded(const smtk::model::Edge& curEdge, internal
         internal::vertex::Ptr vv;
         for (int vi = 0; vi < 2; ++vi)
         {
-          vv = this->findStorage<internal::vertex>(
+          vv = resource->findStorage<internal::vertex>(
             vi == 0 ? verts.begin()->entity() : verts.rbegin()->entity());
           internal::Point vpt = vv->point();
           endpoints[vpt].insert(*verts.begin());
@@ -234,7 +236,9 @@ bool CleanGeometry::splitEdgeAsNeeded(const smtk::model::Edge& curEdge, internal
 template <typename T>
 void CleanGeometry::addVertex(const smtk::model::Vertex& vertex, T& pointMap)
 {
-  internal::vertex::Ptr storage = this->findStorage<internal::vertex>(vertex.entity());
+  smtk::bridge::polygon::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::polygon::Resource>(vertex.component()->resource());
+  internal::vertex::Ptr storage = resource->findStorage<internal::vertex>(vertex.entity());
   if (!storage)
   {
     smtkErrorMacro(this->log(), "Input vertex " << vertex.name() << " has no storage.");
@@ -246,7 +250,9 @@ void CleanGeometry::addVertex(const smtk::model::Vertex& vertex, T& pointMap)
 template <typename T>
 void CleanGeometry::addEdgePoints(const smtk::model::Edge& edge, T& pointMap)
 {
-  internal::edge::Ptr storage = this->findStorage<internal::edge>(edge.entity());
+  smtk::bridge::polygon::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::polygon::Resource>(edge.component()->resource());
+  internal::edge::Ptr storage = resource->findStorage<internal::edge>(edge.entity());
   if (!storage)
   {
     smtkErrorMacro(this->log(), "Input edge " << edge.name() << " has no storage.");
@@ -262,10 +268,12 @@ void CleanGeometry::addEdgePoints(const smtk::model::Edge& edge, T& pointMap)
 template <typename T>
 void CleanGeometry::addEdgeEndpoints(const smtk::model::Edge& edge, T& pointMap)
 {
+  smtk::bridge::polygon::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::polygon::Resource>(edge.component()->resource());
   smtk::model::Vertices verts = edge.vertices();
   for (auto vit = verts.begin(); vit != verts.end(); ++vit)
   {
-    internal::vertex::Ptr storage = this->findStorage<internal::vertex>(vit->entity());
+    internal::vertex::Ptr storage = resource->findStorage<internal::vertex>(vit->entity());
     if (!storage)
     {
       smtkErrorMacro(
@@ -302,8 +310,9 @@ template <typename T, typename U, typename V>
 void CleanGeometry::addDeferredSplits(
   const smtk::model::Edge& edge, T& actions, U& allpoints, U& endpoints, V& created)
 {
-  smtk::model::Manager::Ptr mgr = edge.manager();
-  internal::edge::Ptr storage = this->findStorage<internal::edge>(edge.entity());
+  smtk::bridge::polygon::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::polygon::Resource>(edge.component()->resource());
+  internal::edge::Ptr storage = resource->findStorage<internal::edge>(edge.entity());
   if (!storage)
   {
     smtkErrorMacro(this->log(), "Input edge " << edge.name() << " has no storage.");
@@ -333,16 +342,16 @@ void CleanGeometry::addDeferredSplits(
     {
       if (splitPrev && !alreadySplit)
       {
-        vins = findOrAddInputModelVertex(mgr, *prevIt, endpoints, mod, created);
+        vins = findOrAddInputModelVertex(resource, *prevIt, endpoints, mod, created);
         action.m_splitPts.push_back(prevIt);
-        action.m_splitVerts.push_back(this->findStorage<internal::vertex>(vins.entity()));
+        action.m_splitVerts.push_back(resource->findStorage<internal::vertex>(vins.entity()));
         allpoints[*prevIt].insert(vins);
       }
       if (splitNext)
       {
-        vins = findOrAddInputModelVertex(mgr, *pit, endpoints, mod, created);
+        vins = findOrAddInputModelVertex(resource, *pit, endpoints, mod, created);
         action.m_splitPts.push_back(pit);
-        action.m_splitVerts.push_back(this->findStorage<internal::vertex>(vins.entity()));
+        action.m_splitVerts.push_back(resource->findStorage<internal::vertex>(vins.entity()));
         allpoints[*pit].insert(vins);
       }
     }
@@ -359,9 +368,10 @@ void CleanGeometry::addDeferredSplits(
 }
 
 template <typename T, typename U, typename V, typename W>
-bool CleanGeometry::applyDeferredSplit(T mgr, U& action, V& allpoints, W& created)
+bool CleanGeometry::applyDeferredSplit(T resource, U& action, V& allpoints, W& created)
 {
-  internal::edge::Ptr storage = this->findStorage<internal::edge>(action.m_edge.entity());
+  internal::edge::Ptr storage =
+    resource->template findStorage<internal::edge>(action.m_edge.entity());
   if (!storage)
   {
     smtkErrorMacro(this->log(), "Input edge " << action.m_edge.name() << " has no storage.");
@@ -377,7 +387,7 @@ bool CleanGeometry::applyDeferredSplit(T mgr, U& action, V& allpoints, W& create
   // Split the edge
   std::size_t crepre = created.size();
   if (!mod->splitModelEdgeAtModelVertices(
-        mgr, storage, action.m_splitVerts, action.m_splitPts, created, this->m_debugLevel))
+        resource, storage, action.m_splitVerts, action.m_splitPts, created, this->m_debugLevel))
   {
     smtkOpDebug("Could not split " << action.m_edge.name() << " at " << action.m_splitPts.size()
                                    << " intersection points.");
@@ -475,6 +485,10 @@ bool CleanGeometry::deleteIfDuplicates(T& edgePair, U& modified, U& expunged)
     return false;
   }
 
+  smtk::bridge::polygon::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::polygon::Resource>(
+      edgePair.first.component()->resource());
+
   smtk::model::Vertices verts;
 
   verts = edgePair.first.vertices();
@@ -490,13 +504,13 @@ bool CleanGeometry::deleteIfDuplicates(T& edgePair, U& modified, U& expunged)
     return false;
   }
 
-  internal::edge::Ptr e0 = this->findStorage<internal::edge>(edgePair.first.entity());
+  internal::edge::Ptr e0 = resource->findStorage<internal::edge>(edgePair.first.entity());
   if (!e0)
   {
     return false;
   }
 
-  internal::edge::Ptr e1 = this->findStorage<internal::edge>(edgePair.second.entity());
+  internal::edge::Ptr e1 = resource->findStorage<internal::edge>(edgePair.second.entity());
   if (!e1)
   {
     return false;
@@ -586,7 +600,7 @@ bool CleanGeometry::deleteIfDuplicates(T& edgePair, U& modified, U& expunged)
     smtk::model::EntityRefs mergeset(delset.begin(), delset.end());
     smtk::model::EntityRef preserve(
       delset.find(edgePair.first) == delset.end() ? edgePair.first : edgePair.second);
-    this->session()->mergeProperties(mergeset, preserve);
+    resource->polygonSession()->mergeProperties(mergeset, preserve);
     std::cout << "Deleting " << delset.begin()->name() << "...\n"
               << "  preserving " << preserve.name() << " pedigree ";
     model::IntegerList ped(preserve.integerProperty("pedigree id"));
@@ -596,7 +610,7 @@ bool CleanGeometry::deleteIfDuplicates(T& edgePair, U& modified, U& expunged)
     }
     std::cout << "\n";
     // FIXME: Handle face attached to duplicate edge...
-    this->polygonSession()->consistentInternalDelete(
+    resource->polygonSession()->consistentInternalDelete(
       delset, modified, expunged, this->m_debugLevel > 0);
     return true;
   }
@@ -619,17 +633,16 @@ bool CleanGeometry::deleteIfDuplicates(T& edgePair, U& modified, U& expunged)
   *              + This must fix any vertex uses/vertices referred to by edges,
   *                delete old vertices, and mark edges/uses modified.
   */
-smtk::model::OperatorResult CleanGeometry::operateInternal()
+CleanGeometry::Result CleanGeometry::operateInternal()
 {
-  smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
-  smtk::model::Manager::Ptr mgr;
-  if (!sess)
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
-
-  mgr = sess->manager();
-
-  smtk::attribute::ModelEntityItem::Ptr cleanItems = this->specification()->associations();
+  smtk::attribute::ModelEntityItem::Ptr cleanItems = this->parameters()->associations();
   smtk::model::CellSet inputs(cleanItems->begin(), cleanItems->end());
+
+  smtk::bridge::polygon::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::polygon::Resource>(
+      cleanItems->begin()->component()->resource());
+  if (!resource)
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
 
   smtk::model::CellSet::iterator iit;
   smtk::model::CellSet::iterator tmp;
@@ -649,7 +662,7 @@ smtk::model::OperatorResult CleanGeometry::operateInternal()
   if (inputs.empty())
   {
     smtkErrorMacro(this->log(), "No valid input cells.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   std::map<internal::Point, std::set<smtk::model::EntityRef> > endpoints;
@@ -667,11 +680,11 @@ smtk::model::OperatorResult CleanGeometry::operateInternal()
   {
     if (iit->isEdge())
     {
-      internal::edge::Ptr storage = this->findStorage<internal::edge>(iit->entity());
+      internal::edge::Ptr storage = resource->findStorage<internal::edge>(iit->entity());
       if (!storage)
       {
         smtkErrorMacro(this->log(), "Input edge " << iit->name() << " has no storage.");
-        return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+        return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
       }
       mod = storage->parentAs<internal::pmodel>();
       if (!mod || (pp && pp != mod))
@@ -679,7 +692,7 @@ smtk::model::OperatorResult CleanGeometry::operateInternal()
         smtkErrorMacro(this->log(), "Input edge " << iit->name() << " has no parent model (" << mod
                                                   << ") or a different parent (" << pp
                                                   << ") from other inputs.");
-        return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+        return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
       }
       else if (!pp)
       {
@@ -705,11 +718,11 @@ smtk::model::OperatorResult CleanGeometry::operateInternal()
       // This way if there are several coincident model vertices we can
       // suggest one we would prefer to be used for edges being split
       // (as well as which vertices should be merged).
-      internal::vertex::Ptr vv = this->findStorage<internal::vertex>(iit->entity());
+      internal::vertex::Ptr vv = resource->findStorage<internal::vertex>(iit->entity());
       if (!vv)
       {
         smtkErrorMacro(this->log(), "Input vertex " << iit->name() << " has no storage.");
-        return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+        return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
       }
       else
       {
@@ -718,7 +731,7 @@ smtk::model::OperatorResult CleanGeometry::operateInternal()
           smtkErrorMacro(this->log(), "Input vertex " << iit->name() << " has no parent model ("
                                                       << mod << ") or a different parent (" << pp
                                                       << ") from other inputs.");
-          return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+          return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
         }
         else if (!pp)
         {
@@ -773,7 +786,7 @@ smtk::model::OperatorResult CleanGeometry::operateInternal()
          esit != edgesToSplit.end(); ++esit)
     {
       smtk::model::Edge curEdge = *esit;
-      internal::edge::Ptr storage = this->findStorage<internal::edge>(curEdge.entity());
+      internal::edge::Ptr storage = resource->findStorage<internal::edge>(curEdge.entity());
       if (storage)
       {
         this->splitEdgeAsNeeded(
@@ -830,7 +843,7 @@ smtk::model::OperatorResult CleanGeometry::operateInternal()
 
   for (auto action : deferredActions)
   {
-    if (this->applyDeferredSplit(mgr, action, allpoints, created))
+    if (this->applyDeferredSplit(resource, action, allpoints, created))
     {
       expunged.push_back(action.m_edge);
     }
@@ -883,16 +896,33 @@ smtk::model::OperatorResult CleanGeometry::operateInternal()
   }
 
   smtk::model::OperatorResult opResult;
-  opResult = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
-  this->addEntitiesToResult(opResult, created, CREATED);
-  this->addEntitiesToResult(opResult, modified, MODIFIED);
-  this->addEntitiesToResult(opResult, expunged, EXPUNGED);
+  opResult = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  smtk::attribute::ComponentItem::Ptr createdItem = opResult->findComponent("created");
+  for (auto& c : created)
+  {
+    createdItem->appendValue(c.component());
+  }
+
+  smtk::attribute::ComponentItem::Ptr modifiedItem = opResult->findComponent("modified");
+  for (auto& m : modified)
+  {
+    modifiedItem->appendValue(m.component());
+  }
+
+  smtk::attribute::ComponentItem::Ptr expungedItem = opResult->findComponent("expunged");
+  for (auto& e : expunged)
+  {
+    expungedItem->appendValue(e.component());
+  }
+
   return opResult;
+}
+
+const char* CleanGeometry::xmlDescription() const
+{
+  return CleanGeometry_xml;
 }
 
 } // namespace polygon
 } //namespace bridge
 } // namespace smtk
-
-smtkImplementsModelOperator(SMTKPOLYGONSESSION_EXPORT, smtk::bridge::polygon::CleanGeometry,
-  polygon_clean_geometry, "clean geometry", CleanGeometry_xml, smtk::bridge::polygon::Session);

@@ -29,14 +29,15 @@ class SMTKDISCRETESESSION_EXPORT CreateEdgesOperator : public Operator
 public:
   smtkTypeMacro(CreateEdgesOperator);
   smtkCreateMacro(CreateEdgesOperator);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSuperclassMacro(Operator);
 
   bool ableToOperate() override;
 
 protected:
   CreateEdgesOperator();
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  virtual const char* xmlDescription() const override;
 
   vtkNew<vtkCreateModelEdgesOperator> m_op;
 };

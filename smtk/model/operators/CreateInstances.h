@@ -10,23 +10,24 @@
 #ifndef smtk_model_operators_CreateInstances_h
 #define smtk_model_operators_CreateInstances_h
 
-#include "smtk/model/Operator.h"
+#include "smtk/operation/XMLOperator.h"
 
 namespace smtk
 {
 namespace model
 {
 
-class SMTKCORE_EXPORT CreateInstances : public Operator
+class SMTKCORE_EXPORT CreateInstances : public smtk::operation::XMLOperator
 {
 public:
   smtkTypeMacro(CreateInstances);
   smtkCreateMacro(CreateInstances);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSuperclassMacro(smtk::operation::XMLOperator);
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  virtual const char* xmlDescription() const override;
 
   void addTabularRule(Instance& instance, const EntityRef& prototype);
   void addUniformRandomRule(Instance& instance, const EntityRef& prototype);

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the "undo elevate mesh" Operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
     <!-- Operator -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="undo elevate mesh"
             Label="Mesh - Undo Elevate" BaseType="operator">
       <BriefDescription>
@@ -21,6 +22,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(undo elevate mesh)" BaseType="result">
       <ItemDefinitions>
         <MeshEntity Name="mesh_modified" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>

@@ -26,12 +26,12 @@ class SMTKPOLYGONSESSION_EXPORT TweakEdge : public Operator
 public:
   smtkTypeMacro(TweakEdge);
   smtkCreateMacro(TweakEdge);
-  smtkSharedFromThisMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
   smtkSuperclassMacro(Operator);
-  smtkDeclareModelOperator();
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  virtual const char* xmlDescription() const override;
 };
 
 } // namespace polygon

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the Exodus "EulerCharacteristicRatio" Operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="euler characteristic ratio" Label="Model - Compute Euler Characteristic Ratio" BaseType="operator">
       <BriefDescription>
         Compute the ratio of the Euler characteristics for a model's
@@ -13,6 +13,7 @@
       </AssociationsDef>
     </AttDef>
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(euler characteristic ratio)" BaseType="result">
       <ItemDefinitions>
         <Double Name="value" Label="Euler Characteristic Ratio" NumberOfRequiredValues="1" Extensible="false"/>

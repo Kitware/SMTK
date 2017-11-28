@@ -23,6 +23,8 @@
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 
+#include "smtk/model/CloseModel_xml.h"
+
 using namespace smtk::model;
 
 namespace smtk
@@ -32,24 +34,21 @@ namespace model
 
 bool CloseModel::ableToOperate()
 {
-  if (!this->ensureSpecification())
+  if (!this->Superclass::ableToOperate())
+  {
     return false;
-  smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->findModelEntity("model");
+  }
+  smtk::attribute::ModelEntityItem::Ptr modelItem = this->parameters()->findModelEntity("model");
   return modelItem && modelItem->numberOfValues() > 0;
 }
 
 smtk::model::OperatorResult CloseModel::operateInternal()
 {
   // ableToOperate should have verified that model(s) are set
-  smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->findModelEntity("model");
+  smtk::attribute::ModelEntityItem::Ptr modelItem = this->parameters()->findModelEntity("model");
 
-  smtk::model::OperatorPtr removeModel = this->session()->op("remove model");
-  if (removeModel)
-  {
-    for (EntityRefArray::const_iterator mit = modelItem->begin(); mit != modelItem->end(); ++mit)
-      removeModel->specification()->associateEntity(*mit);
-    return removeModel->operate();
-  }
+  smtk::model::Manager::Ptr resource =
+    std::static_pointer_cast<smtk::model::Manager>(modelItem->value().component()->resource());
 
   EntityRefArray expunged;
   smtk::mesh::MeshSets expungedMeshes;
@@ -66,12 +65,12 @@ smtk::model::OperatorResult CloseModel::operateInternal()
     }
 
     // Similarly, meshes must be added to the "mesh_expunged" attribute.
-    for (auto cit : this->manager()->meshes()->associatedCollections(mit->as<smtk::model::Model>()))
+    for (auto cit : resource->meshes()->associatedCollections(mit->as<smtk::model::Model>()))
     {
       expungedMeshes.insert(cit->meshes());
     }
 
-    if (!this->manager()->eraseModel(*mit))
+    if (!resource->eraseModel(*mit))
     {
       success = false;
       break;
@@ -79,20 +78,26 @@ smtk::model::OperatorResult CloseModel::operateInternal()
     expunged.push_back(*mit);
   }
 
-  OperatorResult result = this->createResult(success ? OPERATION_SUCCEEDED : OPERATION_FAILED);
+  OperatorResult result = this->createResult(
+    success ? smtk::operation::NewOp::Outcome::SUCCEEDED : smtk::operation::NewOp::Outcome::FAILED);
 
   if (success)
   {
-    result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
+    smtk::attribute::ComponentItem::Ptr expungedItem = result->findComponent("expunged");
+    for (auto& e : expunged)
+    {
+      expungedItem->appendValue(e.component());
+    }
+
     result->findMesh("mesh_expunged")->appendValues(expungedMeshes);
   }
   return result;
 }
 
+const char* CloseModel::xmlDescription() const
+{
+  return CloseModel_xml;
+}
+
 } //namespace model
 } // namespace smtk
-
-#include "smtk/model/CloseModel_xml.h"
-
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::model::CloseModel, close_model, "close model",
-  CloseModel_xml, smtk::model::Session);

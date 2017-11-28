@@ -10,7 +10,9 @@
 #ifndef __smtk_bridge_mesh_EulerCharacteristicRatio_h
 #define __smtk_bridge_mesh_EulerCharacteristicRatio_h
 
-#include "smtk/bridge/mesh/Operator.h"
+#include "smtk/bridge/mesh/Exports.h"
+
+#include "smtk/operation/XMLOperator.h"
 
 namespace smtk
 {
@@ -22,16 +24,16 @@ namespace mesh
 /**\brief Compute and return the ratio of Euler characteristic surface to volume
    for a model's mesh tessellation.
   */
-class SMTKMESHSESSION_EXPORT EulerCharacteristicRatio : public Operator
+class SMTKMESHSESSION_EXPORT EulerCharacteristicRatio : public smtk::operation::XMLOperator
 {
 public:
   smtkTypeMacro(EulerCharacteristicRatio);
   smtkCreateMacro(EulerCharacteristicRatio);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  virtual const char* xmlDescription() const override;
 };
 
 } // namespace mesh

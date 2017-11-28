@@ -1,14 +1,33 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the CMB Discrete Model "Builder" Operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
     <!-- Operator -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="import" BaseType="operator" Label="Model - Import">
       <ItemDefinitions>
         <File Name="filename" Label="File Name" NumberOfRequiredValues="1"
           ShouldExist="true"
           FileFilters="Supported Discrete Formats (*.vtk *.2dm *.3dm *.stl *.sol *.tin *.obj *.map *.poly *.smesh *.shp);;Legacy VTK files (*.vtk);;Solids (*.2dm *.3dm *.stl *.sol *.tin *.obj);;Map files (*.map);;Poly files (*.poly *.smesh);;Shape files (*.shp);;All files (*.*)">
         </File>
+
+        <Resource Name="resource" Label="Import into" Optional="true" IsEnabledByDefault="false">
+          <Accepts>
+            <Resource Name="discrete model"/>
+          </Accepts>
+          <ChildrenDefinitions>
+            <String Name="session only" Label="session" Advanced="1">
+              <DiscreteInfo DefaultIndex="0">
+                <Structure>
+                  <Value Enum="this file">import into this file </Value>
+                </Structure>
+                <Structure>
+                  <Value Enum="this session">import into a new file using this file's session</Value>
+                </Structure>
+              </DiscreteInfo>
+            </String>
+          </ChildrenDefinitions>
+        </Resource>
 
         <String Name="ShapeBoundaryStyle" Label="Specify Shape File Boundary" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1" Optional="true">
           <BriefDescription>This is required for shape file </BriefDescription>
@@ -63,8 +82,23 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(import)" BaseType="result">
       <ItemDefinitions>
+
+        <!-- The model imported from the file. -->
+        <Resource Name="resource">
+          <Accepts>
+            <Resource Name="discrete model"/>
+          </Accepts>
+        </Resource>
+
+        <Component Name="model">
+          <Accepts>
+            <Resource Name="discrete model" Filter=""/>
+          </Accepts>
+        </Component>
+
         <ModelEntity Name="mesh_created" NumberOfRequiredValues="1"/>
         <Void Name="allow camera reset" IsEnabledByDefault="true" AdvanceLevel="11"/>
       </ItemDefinitions>

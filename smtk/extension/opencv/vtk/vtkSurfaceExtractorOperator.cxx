@@ -34,8 +34,8 @@ vtkSurfaceExtractorOperator::~vtkSurfaceExtractorOperator()
 bool vtkSurfaceExtractorOperator::AbleToOperate()
 {
   bool able2Op = this->m_smtkOp.lock() &&
-    this->m_smtkOp.lock()->name() == "extract surface contour" &&
-    this->m_smtkOp.lock()->ensureSpecification();
+    this->m_smtkOp.lock()->uniqueName() == "smtk::bridge::polygon::SurfaceExtractContours" &&
+    this->m_smtkOp.lock()->ableToOperate();
 
   return able2Op;
 }
@@ -45,7 +45,7 @@ smtk::model::OperatorResult vtkSurfaceExtractorOperator::Operate()
   // ONLY for create-edge-with-widget and edit-edge operations,
   if (!this->AbleToOperate())
   {
-    return this->m_smtkOp.lock()->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->m_smtkOp.lock()->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   smtk::model::OperatorResult edgeResult;

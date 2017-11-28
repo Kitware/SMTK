@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the polygon "TweakEdge" operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
     <!-- Operator -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="tweak edge" Label="Edge - Reshape" BaseType="operator">
       <BriefDescription>Tweak the shape of a model edge.</BriefDescription>
       <DetailedDescription>
@@ -69,6 +70,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(tweak edge)" BaseType="result">
       <ItemDefinitions>
         <ModelEntity Name="tess_changed" NumberOfRequiredValues="0" Extensible="yes"/>

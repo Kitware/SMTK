@@ -9,7 +9,7 @@
 //=============================================================================
 #include "smtk/bridge/polygon/operators/CreateFaces.h"
 
-#include "smtk/bridge/polygon/Session.h"
+#include "smtk/bridge/polygon/Resource.h"
 #include "smtk/bridge/polygon/internal/ActiveFragmentTree.h"
 #include "smtk/bridge/polygon/internal/Config.h"
 #include "smtk/bridge/polygon/internal/Edge.h"
@@ -109,21 +109,20 @@ static void DumpEventQueue(const char* msg, SweepEventSet& eventQueue)
   */
 bool CreateFaces::populateEdgeMap()
 {
-  smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->associations();
-  smtk::model::Model model;
-  model = modelItem->value(0);
+  smtk::attribute::ModelEntityItem::Ptr modelItem = this->parameters()->associations();
+  smtk::model::Model model = modelItem->value(0);
   if (!model.isValid())
   {
     smtkErrorMacro(
       this->log(), "Invalid model (or non-model entity) specified when a model was expected.");
-    this->m_result = this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    this->m_result = this->createResult(smtk::operation::NewOp::Outcome::FAILED);
     return false;
   }
   this->m_model = model;
 
   // Collect all the edges in this model, not just the free cells:
   smtk::model::Edges allEdges =
-    model.manager()->entitiesMatchingFlagsAs<smtk::model::Edges>(smtk::model::EDGE, true);
+    this->m_resource->entitiesMatchingFlagsAs<smtk::model::Edges>(smtk::model::EDGE, true);
   for (smtk::model::Edges::const_iterator it = allEdges.begin(); it != allEdges.end(); ++it)
   {
     if (it->owningModel() == model)
@@ -136,32 +135,33 @@ bool CreateFaces::populateEdgeMap()
 
 smtk::model::OperatorResult CreateFaces::operateInternal()
 {
-  this->m_debugLevel = 1000;
-  smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->associations();
-  smtk::model::Model model;
+  smtk::attribute::ModelEntityItem::Ptr modelItem = this->parameters()->associations();
 
-  internal::pmodel::Ptr storage; // Look up from session = internal::pmodel::create();
+  smtk::model::Model model = modelItem->value(0);
 
-  SessionPtr sess = this->polygonSession();
-  smtk::model::ManagerPtr mgr;
-  if (!sess || !(mgr = sess->manager()))
+  this->m_resource =
+    std::static_pointer_cast<smtk::bridge::polygon::Resource>(model.component()->resource());
+
+  if (!this->m_resource)
   {
     // error logging requires mgr...
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
+
+  internal::pmodel::Ptr storage; // Look up from session = internal::pmodel::create();
 
   // First, collect the edges to process:
   if (!this->populateEdgeMap())
   {
     return this->m_result ? this->m_result
-                          : this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+                          : this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
   model = this->m_model; // should have been set by populateEdgeMap()
 
   if (this->m_edgeMap.empty())
   {
     smtkErrorMacro(this->log(), "No edges selected.");
-    this->m_result = this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    this->m_result = this->createResult(smtk::operation::NewOp::Outcome::FAILED);
     return this->m_result;
   }
 
@@ -194,7 +194,8 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
     {
       std::cout << "Considering input edge: " << modelEdgeIt->first.name() << "\n";
     }
-    internal::EdgePtr erec = this->findStorage<internal::edge>(modelEdgeIt->first.entity());
+    internal::EdgePtr erec =
+      this->m_resource->findStorage<internal::edge>(modelEdgeIt->first.entity());
 
     if (erec->pointsSize() < 2)
       continue; // Do not handle edges with < 2 points.
@@ -274,7 +275,7 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
   SweeplinePosition sweepPosn(startPoint);
   ActiveFragmentTree activeEdges(fragments, sweepPosn); // (IT)
   Neighborhood neighborhood(
-    sweepPosn, fragments, eventQueue, activeEdges, this->polygonSession()); // N(x)
+    sweepPosn, fragments, eventQueue, activeEdges, this->m_resource->polygonSession()); // N(x)
   neighborhood.setDebugLevel(this->m_debugLevel);
 
   neighborhood.sweep(); // Run through events in the queue
@@ -285,15 +286,14 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
 
   // Now we have loops for each region; iterate over them and
   // create SMTK topology records:
-  this->m_status = smtk::operation::Operator::OPERATION_SUCCEEDED;
+  this->m_status = smtk::operation::NewOp::Outcome::SUCCEEDED;
   this->m_result = this->createResult(this->m_status);
   this->m_model = model;
   neighborhood.getLoops(this);
 
-  // Make sure the application knows the model has new faces.
-  if (this->m_result->findModelEntity("created")->numberOfValues() > 0)
   {
-    this->addEntityToResult(this->m_result, model, MODIFIED);
+    smtk::attribute::ComponentItem::Ptr modified = this->m_result->findComponent("modified");
+    modified->setValue(model.component());
   }
 
   // Finally, tessellate each face using Boost::polygon
@@ -301,9 +301,9 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
   this->addTessellations();
 
   smtk::attribute::IntItem::Ptr outcome = this->m_result->findInt("outcome");
-  if (this->m_status != outcome->value())
+  if (static_cast<int>(this->m_status) != outcome->value())
   {
-    outcome->setValue(0, this->m_status);
+    outcome->setValue(0, static_cast<int>(this->m_status));
   }
 
   return this->m_result;
@@ -356,33 +356,40 @@ void CreateFaces::evaluateLoop(
     this->m_model.removeCell(oit->first);
   }
 
-  smtk::model::Manager::Ptr mgr = this->manager();
   // Now transcribe SMTK loop-use from edges referenced by fragments in loop
   // ** OR **
   // if loop edges have "faceNumber" material on both sides, add as included edge
+
   if (fit == this->m_regionFaces.end())
   { // this is the first (and thus outer) loop for the face
-    smtk::common::UUID modelFaceId = mgr->unusedUUID();
-    smtk::common::UUID modelFaceUseId = mgr->unusedUUID();
-    smtk::common::UUID outerLoopId = mgr->unusedUUID();
+    smtk::common::UUID modelFaceId = this->m_resource->unusedUUID();
+    smtk::common::UUID modelFaceUseId = this->m_resource->unusedUUID();
+    smtk::common::UUID outerLoopId = this->m_resource->unusedUUID();
     if (this->m_debugLevel > 0)
     {
       std::cout << "Face " << faceNumber << " " << modelFaceId << " with outer loop " << outerLoopId
                 << "\n";
     }
     // Transcribe the outer loop, face use, and face:
-    if (!mgr->insertModelFaceWithOrientedOuterLoop(modelFaceId, modelFaceUseId, outerLoopId, loop))
+    if (!this->m_resource->insertModelFaceWithOrientedOuterLoop(
+          modelFaceId, modelFaceUseId, outerLoopId, loop))
     {
       smtkErrorMacro(this->log(), "Could not create SMTK outer loop of face.");
-      this->m_status = smtk::operation::Operator::OPERATION_FAILED;
+      this->m_status = smtk::operation::NewOp::Outcome::FAILED;
       return;
     }
     // Update vertex neighborhoods to include new face adjacency.
-    smtk::model::Face modelFace(mgr, modelFaceId);
+    smtk::model::Face modelFace(this->m_resource, modelFaceId);
     this->m_model.addCell(modelFace);
     modelFace.assignDefaultName();
-    this->updateLoopVertices(smtk::model::Loop(mgr, outerLoopId), modelFace, /* isCCW */ true);
-    this->addEntityToResult(this->m_result, modelFace, CREATED);
+    this->updateLoopVertices(
+      smtk::model::Loop(this->m_resource, outerLoopId), modelFace, /* isCCW */ true);
+
+    {
+      smtk::attribute::ComponentItem::Ptr created = m_result->findComponent("created");
+      created->appendValue(modelFace.component());
+    }
+
     if (this->m_debugLevel > 0)
     {
       std::cout << "Adding " << faceNumber << " as model face "
@@ -392,22 +399,23 @@ void CreateFaces::evaluateLoop(
   }
   else
   {
-    smtk::common::UUID innerLoopId = mgr->unusedUUID();
+    smtk::common::UUID innerLoopId = this->m_resource->unusedUUID();
     smtk::common::UUID parentLoopId = fit->second.positiveUse().loops()[0].entity();
     if (this->m_debugLevel > 0)
     {
       std::cout << "Face " << faceNumber << " parent loop " << parentLoopId << " with inner loop "
                 << innerLoopId << "\n";
     }
-    if (!mgr->insertModelFaceOrientedInnerLoop(innerLoopId, parentLoopId, loop))
+    if (!this->m_resource->insertModelFaceOrientedInnerLoop(innerLoopId, parentLoopId, loop))
     {
       smtkErrorMacro(this->log(), "Could not create SMTK inner loop of face.");
-      this->m_status = smtk::operation::Operator::OPERATION_FAILED;
+      this->m_status = smtk::operation::NewOp::Outcome::FAILED;
       return;
     }
-    smtk::model::Loop tmp(mgr, innerLoopId);
+    smtk::model::Loop tmp(this->m_resource, innerLoopId);
     smtk::model::EdgeUses leus = tmp.edgeUses();
-    this->updateLoopVertices(smtk::model::Loop(mgr, innerLoopId), fit->second, /* isCCW */ false);
+    this->updateLoopVertices(
+      smtk::model::Loop(this->m_resource, innerLoopId), fit->second, /* isCCW */ false);
   }
 }
 
@@ -468,12 +476,13 @@ void CreateFaces::updateLoopVertices(
     if (verts.size() > 1) { std::cout << " " << verts[1].name(); }
     std::cout << "\n";
     */
+
     // FIXME: Handle case when the same edge is incident to the same model vertex at both ends.
     //        In this case, the face-adjacency could be accidentally reversed because the
     //        wrong incident_edge_data struct of the vertex might be found first and modified.
     for (smtk::model::Vertices::iterator vit = verts.begin(); vit != verts.end(); ++vit)
     {
-      internal::vertex::Ptr vrec = this->findStorage<internal::vertex>(vit->entity());
+      internal::vertex::Ptr vrec = this->m_resource->findStorage<internal::vertex>(vit->entity());
       if (!vrec)
       {
         smtkWarningMacro(
@@ -503,24 +512,34 @@ void printPts(const std::string& msg, T begin, T end)
 
 void CreateFaces::removeFacesFromResult(const smtk::model::EntityRefs& faces)
 {
-  smtk::attribute::ModelEntityItemPtr cre = this->m_result->findModelEntity("created");
-  smtk::model::EntityRefs cremod(cre->begin(), cre->end());
+  smtk::attribute::ComponentItem::Ptr cre = this->m_result->findComponent("created");
+  // std::set<smtk::model::Entity::Ptr> cremod(cre->begin(), cre->end());
+  std::set<smtk::model::Entity::Ptr> cremod;
+  for (auto c = cre->begin(); c != cre->end(); ++c)
+  {
+    cremod.insert(std::dynamic_pointer_cast<smtk::model::Entity>(*c));
+  }
+
   for (smtk::model::EntityRefs::const_iterator fit = faces.begin(); fit != faces.end(); ++fit)
   {
-    cremod.erase(*fit);
+    cremod.erase(fit->entityRecord());
   }
   smtkErrorMacro(
     this->log(), faces.size() << " faces had an empty tessellation; removing them from the model.");
 
   smtk::model::EntityRefArray modified;
   smtk::model::EntityRefArray expunged;
-  this->polygonSession()->consistentInternalDelete(
+  this->m_resource->polygonSession()->consistentInternalDelete(
     faces, modified, expunged, this->m_debugLevel > 0);
 
   // Rewrite result, excluding the delete faces.
   smtk::model::EntityRefArray crevec(cremod.begin(), cremod.end());
   cre->setNumberOfValues(crevec.size());
-  cre->setValues(crevec.begin(), crevec.end());
+  int i = 0;
+  for (auto c = crevec.begin(); c != crevec.end(); ++c, ++i)
+  {
+    cre->setValue(i, c->entityRecord());
+  }
 }
 
 void CreateFaces::addTessellations()
@@ -558,7 +577,7 @@ void CreateFaces::addTessellations()
       continue;
     }
     smtk::model::Model model = modelFace.owningModel();
-    internal::pmodel::Ptr pmodel = this->findStorage<internal::pmodel>(model.entity());
+    internal::pmodel::Ptr pmodel = this->m_resource->findStorage<internal::pmodel>(model.entity());
 
     // Now traverse loops of face to create boost::poly tessellation:
     std::vector<OrientedEdges>::iterator lit; // Loops-of-face iterator
@@ -621,7 +640,7 @@ void CreateFaces::addTessellations()
     std::vector<poly::polygon_data<internal::Coord> >::const_iterator pit;
     smtk::model::Tessellation blank;
     smtk::model::UUIDsToTessellations::iterator smtkTess =
-      this->manager()->setTessellationAndBoundingBox(modelFace.entity(), blank);
+      this->m_resource->setTessellationAndBoundingBox(modelFace.entity(), blank);
     double smtkPt[3];
     for (pit = tess.begin(); pit != tess.end(); ++pit)
     {
@@ -667,9 +686,11 @@ void CreateFaces::addTessellations()
   }
 }
 
+const char* CreateFaces::xmlDescription() const
+{
+  return CreateFaces_xml;
+}
+
 } // namespace polygon
 } //namespace bridge
 } // namespace smtk
-
-smtkImplementsModelOperator(SMTKPOLYGONSESSION_EXPORT, smtk::bridge::polygon::CreateFaces,
-  polygon_create_faces, "create faces", CreateFaces_xml, smtk::bridge::polygon::Session);

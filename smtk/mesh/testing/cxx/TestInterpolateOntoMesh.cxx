@@ -28,6 +28,7 @@
 #include "smtk/mesh/core/ForEachTypes.h"
 #include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/core/PointField.h"
+#include "smtk/mesh/operators/InterpolateOntoMesh.h"
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/Operator.h"
@@ -160,26 +161,8 @@ int main(int argc, char* argv[])
   // Create a model manager
   smtk::model::ManagerPtr manager = smtk::model::Manager::create();
 
-  // Identify available sessions
-  std::cout << "Available sessions\n";
-  typedef smtk::model::StringList StringList;
-  StringList sessions = manager->sessionTypeNames();
+  // Access the mesh manager
   smtk::mesh::ManagerPtr meshManager = manager->meshes();
-  for (StringList::iterator it = sessions.begin(); it != sessions.end(); ++it)
-    std::cout << "  " << *it << "\n";
-  std::cout << "\n";
-
-  // Create a new default session
-  smtk::model::SessionRef sessRef = manager->createSession("native");
-
-  // Identify available operators
-  std::cout << "Available cmb operators\n";
-  StringList opnames = sessRef.session()->operatorNames();
-  for (StringList::iterator it = opnames.begin(); it != opnames.end(); ++it)
-  {
-    std::cout << "  " << *it << "\n";
-  }
-  std::cout << "\n";
 
   // Load in the model
   create_simple_mesh_model(manager, std::string(argv[1]));
@@ -189,7 +172,7 @@ int main(int argc, char* argv[])
   smtk::mesh::CollectionPtr c = convert(meshManager, manager);
 
   // Create an "Interpolate Onto Mesh" operator
-  smtk::model::OperatorPtr interpolateOntoMeshOp = sessRef.session()->op("interpolate onto mesh");
+  smtk::operation::NewOp::Ptr interpolateOntoMeshOp = smtk::mesh::InterpolateOntoMesh::create();
   if (!interpolateOntoMeshOp)
   {
     std::cerr << "No \"interpolate onto mesh\" operator\n";
@@ -197,8 +180,7 @@ int main(int argc, char* argv[])
   }
 
   // Set the operator's data set name
-  bool valueSet =
-    interpolateOntoMeshOp->specification()->findString("dsname")->setValue("my field");
+  bool valueSet = interpolateOntoMeshOp->parameters()->findString("dsname")->setValue("my field");
 
   if (!valueSet)
   {
@@ -208,7 +190,7 @@ int main(int argc, char* argv[])
 
   // Set the operator's input mesh
   smtk::mesh::MeshSet mesh = meshManager->collectionBegin()->second->meshes();
-  valueSet = interpolateOntoMeshOp->specification()->findMesh("mesh")->setValue(mesh);
+  valueSet = interpolateOntoMeshOp->parameters()->findMesh("mesh")->setValue(mesh);
 
   if (!valueSet)
   {
@@ -216,13 +198,12 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  interpolateOntoMeshOp->specification()
+  interpolateOntoMeshOp->parameters()
     ->findString("interpolation scheme")
     ->setValue("inverse distance weighting");
 
   // Set the operator's input power
-  smtk::attribute::DoubleItemPtr power =
-    interpolateOntoMeshOp->specification()->findDouble("power");
+  smtk::attribute::DoubleItemPtr power = interpolateOntoMeshOp->parameters()->findDouble("power");
 
   if (!power)
   {
@@ -239,7 +220,7 @@ int main(int argc, char* argv[])
   }
 
   smtk::attribute::IntItemPtr interpMode =
-    interpolateOntoMeshOp->specification()->findInt("interpmode");
+    interpolateOntoMeshOp->parameters()->findInt("interpmode");
 
   if (!interpMode)
   {
@@ -272,12 +253,11 @@ int main(int argc, char* argv[])
     }
     outfile.close();
 
-    interpolateOntoMeshOp->specification()->findString("input data")->setValue("ptsfile");
-    smtk::attribute::FileItemPtr ptsFile =
-      interpolateOntoMeshOp->specification()->findFile("ptsfile");
+    interpolateOntoMeshOp->parameters()->findString("input data")->setValue("ptsfile");
+    smtk::attribute::FileItemPtr ptsFile = interpolateOntoMeshOp->parameters()->findFile("ptsfile");
     if (!ptsFile)
     {
-      std::cerr << "No \"ptsfile\" item in specification\n";
+      std::cerr << "No \"ptsfile\" item in parameters\n";
       cleanup(write_path);
       return 1;
     }
@@ -287,15 +267,14 @@ int main(int argc, char* argv[])
   }
   else
   {
-    interpolateOntoMeshOp->specification()->findString("input data")->setValue("points");
+    interpolateOntoMeshOp->parameters()->findString("input data")->setValue("points");
 
     // Set the operator's input points
-    smtk::attribute::GroupItemPtr points =
-      interpolateOntoMeshOp->specification()->findGroup("points");
+    smtk::attribute::GroupItemPtr points = interpolateOntoMeshOp->parameters()->findGroup("points");
 
     if (!points)
     {
-      std::cerr << "No \"points\" item in specification\n";
+      std::cerr << "No \"points\" item in parameters\n";
       return 1;
     }
 
@@ -311,7 +290,7 @@ int main(int argc, char* argv[])
   }
 
   // Execute "Interpolate Onto Mesh" operator...
-  smtk::model::OperatorResult interpolateOntoMeshOpResult = interpolateOntoMeshOp->operate();
+  smtk::operation::NewOp::Result interpolateOntoMeshOpResult = interpolateOntoMeshOp->operate();
 
   // ...delete the generated points file...
   if (fromCSV)

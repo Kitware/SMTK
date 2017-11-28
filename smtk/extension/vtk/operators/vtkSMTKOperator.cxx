@@ -23,7 +23,7 @@ vtkSMTKOperator::~vtkSMTKOperator()
 {
 }
 
-void vtkSMTKOperator::SetSMTKOperator(smtk::model::OperatorPtr op)
+void vtkSMTKOperator::SetSMTKOperator(smtk::operation::NewOp::Ptr op)
 {
   if (this->m_smtkOp.lock() != op)
   {
@@ -32,7 +32,7 @@ void vtkSMTKOperator::SetSMTKOperator(smtk::model::OperatorPtr op)
   }
 }
 
-smtk::model::OperatorPtr vtkSMTKOperator::GetSMTKOperator()
+smtk::operation::NewOp::Ptr vtkSMTKOperator::GetSMTKOperator()
 {
   return this->m_smtkOp.lock();
 }
@@ -44,12 +44,14 @@ bool vtkSMTKOperator::AbleToOperate()
 
 smtk::model::OperatorResult vtkSMTKOperator::Operate()
 {
-  return this->m_smtkOp.lock() ? this->m_smtkOp.lock()->operate() : smtk::model::OperatorResult();
+  return this->m_smtkOp.lock() ? this->m_smtkOp.lock()->operate()
+                               : smtk::operation::NewOp::Result();
 }
 
 void vtkSMTKOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  os << indent << "smtk op: " << (this->m_smtkOp.lock() ? this->m_smtkOp.lock()->name() : "(none)")
+  os << indent
+     << "smtk op: " << (this->m_smtkOp.lock() ? this->m_smtkOp.lock()->uniqueName() : "(none)")
      << endl;
 
   this->Superclass::PrintSelf(os, indent);

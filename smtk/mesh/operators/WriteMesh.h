@@ -10,7 +10,7 @@
 #ifndef __smtk_mesh_WriteMesh_h
 #define __smtk_mesh_WriteMesh_h
 
-#include "smtk/model/Operator.h"
+#include "smtk/operation/XMLOperator.h"
 
 namespace smtk
 {
@@ -19,18 +19,19 @@ namespace mesh
 
 /**\brief A class for writing meshes to file.
   */
-class SMTKCORE_EXPORT WriteMesh : public smtk::model::Operator
+class SMTKCORE_EXPORT WriteMesh : public smtk::operation::XMLOperator
 {
 public:
   smtkTypeMacro(WriteMesh);
   smtkCreateMacro(WriteMesh);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSuperclassMacro(smtk::operation::XMLOperator);
 
   bool ableToOperate() override;
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  virtual const char* xmlDescription() const override;
 };
 
 } // mesh namespace

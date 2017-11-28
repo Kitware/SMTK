@@ -54,7 +54,6 @@ PySharedPtrClass< smtk::model::Manager, smtk::resource::Resource > pybind11_init
 {
   PySharedPtrClass< smtk::model::Manager, smtk::resource::Resource > instance(m, "Manager");
   instance
-    .def(py::init<::smtk::model::Manager const &>())
     .def(py::init<>())
     .def("addAuxiliaryGeometry", (smtk::model::AuxiliaryGeometry (smtk::model::Manager::*)(int)) &smtk::model::Manager::addAuxiliaryGeometry, py::arg("dim") = -1)
     .def("addAuxiliaryGeometry", (smtk::model::AuxiliaryGeometry (smtk::model::Manager::*)(::smtk::model::Model const &, int)) &smtk::model::Manager::addAuxiliaryGeometry, py::arg("parent"), py::arg("dim") = -1)
@@ -126,7 +125,9 @@ PySharedPtrClass< smtk::model::Manager, smtk::resource::Resource > pybind11_init
     .def("erase", (smtk::model::SessionInfoBits (smtk::model::Manager::*)(::smtk::common::UUID const &, ::smtk::model::SessionInfoBits)) &smtk::model::Manager::erase, py::arg("uid"), py::arg("flags") = ::smtk::model::SessionInfoBits(::smtk::model::SessionInformation::SESSION_EVERYTHING))
     .def("erase", (smtk::model::SessionInfoBits (smtk::model::Manager::*)(::smtk::model::EntityRef const &, ::smtk::model::SessionInfoBits)) &smtk::model::Manager::erase, py::arg("entityref"), py::arg("flags") = ::smtk::model::SessionInfoBits(::smtk::model::SessionInformation::SESSION_EVERYTHING))
     .def("eraseModel", &smtk::model::Manager::eraseModel, py::arg("entityref"), py::arg("flags") = ::smtk::model::SessionInfoBits(::smtk::model::SessionInformation::SESSION_EVERYTHING))
-    .def("find", &smtk::model::Manager::find, py::arg("uid"))
+    .def("find", (smtk::resource::ComponentPtr (smtk::model::Manager::*)(const smtk::common::UUID&) const) &smtk::model::Manager::find)
+    .def("queryOperation", &smtk::model::Manager::queryOperation)
+    .def("visit", (void (smtk::model::Manager::*)(std::function<void(const smtk::resource::ComponentPtr&)>) const) &smtk::model::Manager::visit)
     .def("findArrangement", (smtk::model::Arrangement const * (smtk::model::Manager::*)(::smtk::common::UUID const &, ::smtk::model::ArrangementKind, int) const) &smtk::model::Manager::findArrangement, py::arg("entityId"), py::arg("kind"), py::arg("index"))
     .def("findArrangement", (smtk::model::Arrangement * (smtk::model::Manager::*)(::smtk::common::UUID const &, ::smtk::model::ArrangementKind, int)) &smtk::model::Manager::findArrangement, py::arg("entityId"), py::arg("kind"), py::arg("index"))
     .def("findArrangementInvolvingEntity", &smtk::model::Manager::findArrangementInvolvingEntity, py::arg("entityId"), py::arg("kind"), py::arg("involved"))
@@ -253,10 +254,8 @@ PySharedPtrClass< smtk::model::Manager, smtk::resource::Resource > pybind11_init
     .def("unregisterSession", &smtk::model::Manager::unregisterSession, py::arg("session"), py::arg("expungeSession") = true)
     .def("unusedUUID", &smtk::model::Manager::unusedUUID)
     .def("useOrShellIncludesShells", &smtk::model::Manager::useOrShellIncludesShells, py::arg("cellUseOrShell"))
-    .def("pointerAsString", [](smtk::model::Manager &m){
-        std::ostringstream result;
-        result << std::hex << &m;
-        return result.str();
+    .def_static("CastTo", [](const std::shared_ptr<smtk::resource::Resource> i) {
+        return std::dynamic_pointer_cast<smtk::model::Manager>(i);
       })
     ;
   return instance;

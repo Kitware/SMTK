@@ -16,6 +16,7 @@
 
 #include "smtk/common/UUID.h"
 
+#include "smtk/resource/Component.h"
 #include "smtk/resource/Resource.h" // base class
 
 #include "smtk/CoreExports.h"
@@ -42,6 +43,10 @@ public:
   smtkTypeMacro(smtk::attribute::Collection);
   smtkCreateMacro(smtk::attribute::Collection);
   smtkSharedFromThisMacro(smtk::resource::Resource);
+  smtkResourceTypeNameMacro("attribute");
+
+  // typedef referring to the parent resource.
+  typedef smtk::resource::Resource ParentResource;
 
   enum CopyOptions
   {
@@ -70,7 +75,18 @@ public:
   bool removeAttribute(smtk::attribute::AttributePtr att);
   smtk::attribute::AttributePtr findAttribute(const std::string& name) const;
   smtk::attribute::AttributePtr findAttribute(const smtk::common::UUID& id) const;
+
+  // given a resource component's UUID, return the resource component.
   smtk::resource::ComponentPtr find(const smtk::common::UUID& id) const override;
+
+  // given a std::string describing a query, return a functor for performing the
+  // query.
+  std::function<bool(const smtk::resource::ComponentPtr&)> queryOperation(
+    const std::string&) const override;
+
+  // visit all components in the resource.
+  void visit(smtk::resource::Component::Visitor&) const override;
+
   void findAttributes(
     const std::string& type, std::vector<smtk::attribute::AttributePtr>& result) const;
   std::vector<smtk::attribute::AttributePtr> findAttributes(const std::string& type) const;

@@ -8,10 +8,12 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "ExtractContours.h"
+#include "smtk/bridge/polygon/operators/ExtractContours.h"
 
+#include "smtk/bridge/polygon/Resource.h"
 #include "smtk/bridge/polygon/Session.h"
 #include "smtk/bridge/polygon/internal/Model.h"
+#include "smtk/bridge/polygon/operators/CreateEdge.h"
 
 #include "smtk/io/Logger.h"
 
@@ -47,13 +49,13 @@ namespace polygon
 
 bool ExtractContours::ableToOperate()
 {
-  if (!this->ensureSpecification())
+  if (!smtk::operation::NewOp::ableToOperate())
   {
     return false;
   }
 
   smtk::model::AuxiliaryGeometry aux =
-    this->specification()->associations()->value().as<smtk::model::AuxiliaryGeometry>();
+    this->parameters()->associations()->value().as<smtk::model::AuxiliaryGeometry>();
   if (!aux.isValid())
   {
     return false;
@@ -67,47 +69,57 @@ bool ExtractContours::ableToOperate()
   return true;
 }
 
-int internal_createEdge(smtk::model::Operator::Ptr edgeOp, smtk::attribute::AttributePtr opSpec,
-  smtk::model::EntityRefArray& createdEds, const smtk::model::Model& model,
-  smtk::io::Logger& logger)
+int internal_createEdge(smtk::bridge::polygon::CreateEdge::Ptr edgeOp,
+  smtk::attribute::AttributePtr opParams, smtk::model::EntityRefArray& createdEds,
+  const smtk::model::Model& model, smtk::io::Logger& logger)
 {
-  smtk::attribute::AttributePtr spec = edgeOp->specification();
-  spec->associateEntity(model);
-  smtk::attribute::IntItem::Ptr constructMethod = spec->findInt("construction method");
+  smtk::attribute::AttributePtr params = edgeOp->parameters();
+  params->associateEntity(model);
+  smtk::attribute::IntItem::Ptr constructMethod = params->findInt("construction method");
   constructMethod->setDiscreteIndex(0); // "points coornidates"
-  smtk::attribute::IntItem::Ptr numCoords = spec->findInt("coordinates");
-  smtk::attribute::DoubleItem::Ptr pointsItem = spec->findDouble("points");
-  smtk::attribute::ConstItemPtr sourceItem = opSpec->find("points", smtk::attribute::ALL_CHILDREN);
+  smtk::attribute::IntItem::Ptr numCoords = params->findInt("coordinates");
+  smtk::attribute::DoubleItem::Ptr pointsItem = params->findDouble("points");
+  smtk::attribute::ConstItemPtr sourceItem =
+    opParams->find("points", smtk::attribute::ALL_CHILDREN);
   pointsItem->assign(sourceItem);
-  smtk::attribute::IntItem::Ptr offsetsItem = spec->findInt("offsets");
-  sourceItem = opSpec->find("offsets", smtk::attribute::ALL_CHILDREN);
+  smtk::attribute::IntItem::Ptr offsetsItem = params->findInt("offsets");
+  sourceItem = opParams->find("offsets", smtk::attribute::ALL_CHILDREN);
   offsetsItem->assign(sourceItem);
-  sourceItem = opSpec->find("coordinates", smtk::attribute::ALL_CHILDREN);
+  sourceItem = opParams->find("coordinates", smtk::attribute::ALL_CHILDREN);
   numCoords->assign(sourceItem); // number of elements in coordinates
 
-  OperatorResult edgeResult = edgeOp->operate();
-  if (edgeResult->findInt("outcome")->value() != ExtractContours::OPERATION_SUCCEEDED)
+  smtk::operation::NewOp::Result edgeResult = edgeOp->operate();
+  if (edgeResult->findInt("outcome")->value() !=
+    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
   {
     smtkDebugMacro(logger, "\"create edge\" op failed to creat edge with given line cells.");
     return 0;
   }
-  smtk::attribute::ModelEntityItem::Ptr newEdges = edgeResult->findModelEntity("created");
-  createdEds.insert(createdEds.end(), newEdges->begin(), newEdges->end());
+  smtk::attribute::ComponentItem::Ptr newEdges = edgeResult->findComponent("created");
+  for (auto it = newEdges->begin(); it != newEdges->end(); ++it)
+  {
+    createdEds.push_back(
+      std::dynamic_pointer_cast<smtk::model::Entity>(*it)->referenceAs<smtk::model::Edge>());
+  }
   return static_cast<int>(createdEds.size());
 }
 
-OperatorResult ExtractContours::operateInternal()
+ExtractContours::Result ExtractContours::operateInternal()
 {
-  SessionPtr opsession = this->polygonSession();
   // ableToOperate should have verified that aux is valid
   smtk::model::AuxiliaryGeometry aux =
-    this->specification()->associations()->value().as<smtk::model::AuxiliaryGeometry>();
+    this->parameters()->associations()->value().as<smtk::model::AuxiliaryGeometry>();
   smtk::model::Model model = aux.owningModel();
 
+  smtk::bridge::polygon::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::polygon::Resource>(model.component()->resource());
+
+  SessionPtr opsession = resource->polygonSession();
+
   bool noExistingTess = model.entitiesWithTessellation().size() == 0;
-  internal::pmodel::Ptr storage = this->findStorage<internal::pmodel>(model.entity());
+  internal::pmodel::Ptr storage = resource->findStorage<internal::pmodel>(model.entity());
   smtk::attribute::DoubleItem::Ptr boundsItem =
-    this->specification()->findAs<smtk::attribute::DoubleItem>(
+    this->parameters()->findAs<smtk::attribute::DoubleItem>(
       "image bounds", smtk::attribute::ALL_CHILDREN);
   // if there is no entities with tessellation in the model before this op,
   // we will try to set the origin of the model to be center of the image bounds
@@ -137,36 +149,40 @@ OperatorResult ExtractContours::operateInternal()
   smtk::model::EntityRefArray newEdges;
 
   smtk::attribute::DoubleItem::Ptr pointsItem =
-    this->specification()->findAs<smtk::attribute::DoubleItem>(
+    this->parameters()->findAs<smtk::attribute::DoubleItem>(
       "points", smtk::attribute::ALL_CHILDREN);
 
-  smtk::model::Operator::Ptr edgeOp = opsession->op("create edge");
+  smtk::bridge::polygon::CreateEdge::Ptr edgeOp = smtk::bridge::polygon::CreateEdge::create();
   if (!edgeOp)
   {
     smtkInfoMacro(log(), "Failed to create CreateEdge op.");
-    return this->createResult(ExtractContours::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
   int numEdges =
-    internal_createEdge(edgeOp, this->specification(), newEdges, aux.owningModel(), log());
+    internal_createEdge(edgeOp, this->parameters(), newEdges, aux.owningModel(), log());
 
-  OperatorResult result = this->createResult(
-    numEdges > 0 ? ExtractContours::OPERATION_SUCCEEDED : ExtractContours::OPERATION_FAILED);
+  Result result = this->createResult(numEdges > 0 ? smtk::operation::NewOp::Outcome::SUCCEEDED
+                                                  : smtk::operation::NewOp::Outcome::FAILED);
 
   if (numEdges > 0)
   {
-
-    this->addEntitiesToResult(result, newEdges, CREATED);
-    this->addEntityToResult(result, aux.owningModel(), MODIFIED);
+    smtk::attribute::ComponentItem::Ptr createdItem = result->findComponent("created");
+    for (auto it = newEdges.begin(); it != newEdges.end(); ++it)
+    {
+      createdItem->appendValue(it->component());
+    }
+    smtk::attribute::ComponentItem::Ptr modifiedItem = result->findComponent("modified");
+    modifiedItem->appendValue(aux.owningModel().component());
   }
 
   return result;
 }
 
+const char* ExtractContours::xmlDescription() const
+{
+  return ExtractContours_xml;
+}
+
 } // namespace polygon
 } // namespace bridge
-
 } // namespace smtk
-
-smtkImplementsModelOperator(SMTKPOLYGONSESSION_EXPORT, smtk::bridge::polygon::ExtractContours,
-  polygon_extract_contours, "extract contours", ExtractContours_xml,
-  smtk::bridge::polygon::Session);

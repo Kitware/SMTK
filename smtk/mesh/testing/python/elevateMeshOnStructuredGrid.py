@@ -19,7 +19,6 @@ import smtk.model
 import smtk.bridge.mesh
 import smtk.testing
 import smtk.io.vtk
-from smtk.simple import *
 
 import math
 
@@ -54,35 +53,34 @@ class ElevateMeshOnStructuredGrid(smtk.testing.TestCase):
 
     def setUp(self):
 
-        # Construct a model manager
-        self.mgr = smtk.model.Manager.create()
+        # Construct an import operator
+        op = smtk.bridge.mesh.ImportOperator.create()
 
-        # Access the mesh manager
-        self.meshmgr = self.mgr.meshes()
-
-        # Create a mesh session
-        self.sess = self.mgr.createSession('mesh')
-        SetActiveSession(self.sess)
-
-        # Construct a model from a moab native mesh file
-        op = self.sess.op('import')
-        fname = op.find('filename')
+        # Set the import operators parameters
+        fname = op.parameters().find('filename')
         fname.setValue(os.path.join(
             smtk.testing.DATA_DIR, 'mesh', '2d', 'atchafalaya_hydraulic_Mesh_18.h5m'))
 
         # We don't need to construct the BREP hierarchy for this model
-        op.find('construct hierarchy').setIsEnabled(False)
+        op.parameters().find('construct hierarchy').setIsEnabled(False)
 
         # Execute the operator and check its results
         res = op.operate()
-        if res.find('outcome').value(0) != smtk.model.OPERATION_SUCCEEDED:
+        if res.find('outcome').value(0) != int(smtk.operation.NewOp.SUCCEEDED):
             raise ImportError
 
-        # Access the resulting model
-        self.model = res.find('created').value(0)
+        # Access the resulting resource and model
+        self.resource = res.find('resource').value(0)
+        modelEntity = res.find('created').value(0)
+        self.model = smtk.model.Model(
+            modelEntity.modelResource(), modelEntity.id())
+
+        #//////////////////
 
         # Access the mesh collections associated with the model
-        associatedCollections = self.meshmgr.associatedCollections(self.model)
+        associatedCollections = \
+            modelEntity.modelResource().meshes().associatedCollections(
+                self.model)
 
         # There should be only one, so let's just grab it from the list
         collection = associatedCollections[0]
@@ -91,19 +89,19 @@ class ElevateMeshOnStructuredGrid(smtk.testing.TestCase):
         self.mesh = collection.meshes()
 
         # Import auxiliary geometry describing the demographic data of the mesh
-        op = self.sess.op('add auxiliary geometry')
+        op = smtk.model.AddAuxiliaryGeometry.create()
 
         # Auxiliary geometry requires a model association
-        op.associateEntity(self.model)
+        op.parameters().associateEntity(self.model)
 
         # Set the location of the auxiliary data file
-        fname = op.find('url')
+        fname = op.parameters().find('url')
         fname.setValue(os.path.join(
             smtk.testing.DATA_DIR, 'dem', 'atchafalaya.dem'))
 
         # Execute the operator and check its results
         res = op.operate()
-        if res.find('outcome').value(0) != smtk.model.OPERATION_SUCCEEDED:
+        if res.find('outcome').value(0) != int(smtk.operation.NewOp.SUCCEEDED):
             raise ImportError
 
         # Access the resulting auxiliary geometry
@@ -112,36 +110,37 @@ class ElevateMeshOnStructuredGrid(smtk.testing.TestCase):
     def testMeshing2D(self):
 
         # Create an "elevate mesh" operator
-        op = self.sess.op('elevate mesh')
+        op = smtk.mesh.ElevateMesh.create()
 
         # Set the input data to look for auxiliary geometry
-        op.specification().find("input data").setToDefault()
+        op.parameters().find("input data").setToDefault()
 
         # Set the auxiliary geometry
-        op.specification().find("auxiliary geometry").setValue(self.auxGeo)
+        op.parameters().find("auxiliary geometry").setValue(
+            smtk.model.AuxiliaryGeometry(self.auxGeo.modelResource(), self.auxGeo.id()))
 
         # Set a threshold range for the input data
-        inputFilter = op.specification().find("input filter")
+        inputFilter = op.parameters().find("input filter")
         inputFilter.find("min threshold").setIsEnabled(True)
         inputFilter.find("min threshold").setValue(-5.)
         inputFilter.find("max threshold").setIsEnabled(True)
         inputFilter.find("max threshold").setValue(2.)
 
         # Set the interpolation scheme to be radial average
-        op.specification().find("interpolation scheme").setToDefault()
+        op.parameters().find("interpolation scheme").setToDefault()
 
         # Set the radial average
-        op.specification().find("radius").setValue(100.)
+        op.parameters().find("radius").setValue(100.)
 
         # For points that fall outside of our dataset, do not change their
         # z-coordinates
-        op.specification().find("external point values").setToDefault()
+        op.parameters().find("external point values").setToDefault()
 
         # Set the mesh
-        op.specification().find("mesh").appendValue(self.mesh)
+        op.parameters().find("mesh").appendValue(self.mesh)
 
         # Clamp the elevation values between -/+ 2
-        outputFilter = op.specification().find("output filter")
+        outputFilter = op.parameters().find("output filter")
         outputFilter.find("min elevation").setIsEnabled(True)
         outputFilter.find("min elevation").setValue(-2.)
         outputFilter.find("max elevation").setIsEnabled(True)
@@ -149,7 +148,7 @@ class ElevateMeshOnStructuredGrid(smtk.testing.TestCase):
 
         # Execute the operator and check its results
         res = op.operate()
-        if res.find('outcome').value(0) != smtk.model.OPERATION_SUCCEEDED:
+        if res.find('outcome').value(0) != int(smtk.operation.NewOp.SUCCEEDED):
             raise RuntimeError
 
         # check the z bounds of the mesh to confirm that clamping was

@@ -36,7 +36,7 @@ PySharedPtrClass< smtk::model::DefaultSession, smtk::model::Session > pybind11_i
     .def("findOperatorXML", &smtk::model::DefaultSession::findOperatorXML, py::arg("opName"))
     .def("inheritsOperators", &smtk::model::DefaultSession::inheritsOperators)
     .def("name", &smtk::model::DefaultSession::name)
-    .def("op", &smtk::model::DefaultSession::op, py::arg("opName"))
+    // .def("op", &smtk::model::DefaultSession::op, py::arg("opName"))
     .def("registerOperator", &smtk::model::DefaultSession::registerOperator, py::arg("opName"), py::arg("opDescrXML"), py::arg("opCtor"))
     .def_static("registerStaticOperator", &smtk::model::DefaultSession::registerStaticOperator, py::arg("opName"), py::arg("opDescrXML"), py::arg("opCtor"))
     .def("remoteName", &smtk::model::DefaultSession::remoteName)

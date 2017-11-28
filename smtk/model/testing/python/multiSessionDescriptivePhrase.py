@@ -15,7 +15,6 @@ import unittest
 import smtk
 import smtk.bridge.cgm
 import smtk.bridge.discrete
-import smtk.bridge.exodus
 import smtk.model
 import smtk.testing
 from smtk.simple import *
@@ -27,7 +26,6 @@ class MultiSessionDescriptivePhrase(unittest.TestCase):
         self.session_files = {
             'cgm': ['model', '3d', 'solidmodel', 'occ', 'pyramid.brep'],
             'discrete': ['model', '2d', 'cmb', 'test2D.cmb'],
-            'exodus': ['model', '3d', 'exodus', 'disk_out_ref.ex2']
         }
         for required in self.session_files.keys():
             if required not in smtk.model.Manager.sessionTypeNames():

@@ -8,7 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/bridge/mesh/Session.h"
+#include "smtk/bridge/mesh/Resource.h"
+#include "smtk/bridge/mesh/operators/ImportOperator.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -36,6 +37,8 @@
 #include "smtk/model/SimpleModelSubphrases.h"
 #include "smtk/model/Tessellation.h"
 
+#include "smtk/operation/Manager.h"
+
 namespace
 {
 std::string dataRoot = SMTK_DATA_DIR;
@@ -60,7 +63,7 @@ void UniqueEntities(const smtk::model::EntityRef& root, std::set<smtk::model::En
   }
 }
 
-void ParseModelTopology(smtk::model::Model& model, std::size_t* count)
+void ParseModelTopology(smtk::model::Model model, std::size_t* count)
 {
   std::set<smtk::model::EntityRef> unique;
   UniqueEntities(model, unique);
@@ -84,54 +87,67 @@ int UnitTestImportFromExodus(int argc, char* argv[])
   (void)argc;
   (void)argv;
 
-  smtk::model::ManagerPtr manager = smtk::model::Manager::create();
+  // Create a resource manager
+  smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
-  std::cout << "Available sessions\n";
-  smtk::model::StringList sessions = manager->sessionTypeNames();
-  for (smtk::model::StringList::iterator it = sessions.begin(); it != sessions.end(); ++it)
-    std::cout << "  " << *it << "\n";
-  std::cout << "\n";
-
-  smtk::bridge::mesh::Session::Ptr session = smtk::bridge::mesh::Session::create();
-  manager->registerSession(session);
-
-  std::cout << "Available cmb operators\n";
-  smtk::model::StringList opnames = session->operatorNames();
-  for (smtk::model::StringList::iterator it = opnames.begin(); it != opnames.end(); ++it)
-    std::cout << "  " << *it << "\n";
-  std::cout << "\n";
-
-  smtk::model::OperatorPtr importOp = session->op("import");
-  if (!importOp)
+  // Register the mesh resource to the resource manager
   {
-    std::cerr << "No import operator\n";
-    return 1;
+    resourceManager->registerResource<smtk::bridge::mesh::Resource>();
   }
 
-  std::string importFilePath(dataRoot);
-  importFilePath += "/model/3d/genesis/gun-1fourth.gen";
+  // Create an operation manager
+  smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
 
-  importOp->specification()->findFile("filename")->setValue(importFilePath);
-  importOp->specification()->findVoid("construct hierarchy")->setIsEnabled(false);
-
-  smtk::model::OperatorResult importOpResult = importOp->operate();
-
-  if (importOpResult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
+  // Register import operator to the operation manager
   {
-    std::cerr << "Import operator failed\n";
-    return 1;
+    operationManager->registerOperator<smtk::bridge::mesh::ImportOperator>(
+      "smtk::bridge::mesh::ImportOperator");
   }
 
-  smtk::model::Model model = importOpResult->findModelEntity("model")->value();
+  // Register the resource manager to the operation manager (newly created
+  // resources will be automatically registered to the resource manager).
+  operationManager->registerResourceManager(resourceManager);
 
-  if (!model.isValid())
+  smtk::model::Entity::Ptr model;
+
   {
-    std::cerr << "Import operator returned an invalid model\n";
-    return 1;
+    // Create an import operator
+    smtk::bridge::mesh::ImportOperator::Ptr importOp =
+      operationManager->create<smtk::bridge::mesh::ImportOperator>();
+    if (!importOp)
+    {
+      std::cerr << "No import operator\n";
+      return 1;
+    }
+
+    // Set the file path
+    std::string importFilePath(dataRoot);
+    importFilePath += "/model/3d/genesis/gun-1fourth.gen";
+    importOp->parameters()->findFile("filename")->setValue(importFilePath);
+    importOp->parameters()->findVoid("construct hierarchy")->setIsEnabled(false);
+
+    // Execute the operation
+    smtk::operation::NewOp::Result importOpResult = importOp->operate();
+
+    // Retrieve the resulting model
+    smtk::attribute::ComponentItemPtr componentItem =
+      std::dynamic_pointer_cast<smtk::attribute::ComponentItem>(
+        importOpResult->findComponent("model"));
+
+    // Access the generated model
+    model = std::dynamic_pointer_cast<smtk::model::Entity>(componentItem->value());
+
+    // Test for success
+    if (importOpResult->findInt("outcome")->value() !=
+      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    {
+      std::cerr << "Import operator failed\n";
+      return 1;
+    }
   }
 
   std::size_t count[4] = { 0, 0, 0, 0 };
-  ParseModelTopology(model, count);
+  ParseModelTopology(model->referenceAs<smtk::model::Model>(), count);
 
   std::cout << count[3] << " volumes" << std::endl;
   test(count[3] == 1, "There should be one volume");

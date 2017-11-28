@@ -10,7 +10,7 @@
 #ifndef __smtk_mesh_operators_InterpolateOntoMesh_h
 #define __smtk_mesh_operators_InterpolateOntoMesh_h
 
-#include "smtk/model/Operator.h"
+#include "smtk/operation/XMLOperator.h"
 
 namespace smtk
 {
@@ -19,18 +19,19 @@ namespace mesh
 
 /**\brief A class for generating a mesh data set from interpolation points.
   */
-class SMTKCORE_EXPORT InterpolateOntoMesh : public smtk::model::Operator
+class SMTKCORE_EXPORT InterpolateOntoMesh : public smtk::operation::XMLOperator
 {
 public:
   smtkTypeMacro(InterpolateOntoMesh);
   smtkCreateMacro(InterpolateOntoMesh);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSuperclassMacro(smtk::operation::XMLOperator);
 
   bool ableToOperate() override;
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  virtual const char* xmlDescription() const override;
 };
 }
 }

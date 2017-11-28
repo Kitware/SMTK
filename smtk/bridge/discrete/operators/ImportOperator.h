@@ -12,13 +12,13 @@
 #define __smtk_session_discrete_ImportOperator_h
 
 #include "smtk/bridge/discrete/Operator.h"
-#include "vtkCMBModelBuilder.h"
+#include "smtk/bridge/discrete/operation/vtkCMBModelBuilder.h"
 
 #include "smtk/Options.h" // for SMTK_ENABLE_REMUS_SUPPORT
 // for .map file
 #ifdef SMTK_ENABLE_REMUS_SUPPORT
-#include "vtkCMBMapToCMBModel.h"
-#include "vtkGenerateSimpleModelOperator.h"
+#include "smtk/bridge/discrete/operation/vtkCMBMapToCMBModel.h"
+#include "smtk/bridge/discrete/operation/vtkGenerateSimpleModelOperator.h"
 #endif
 
 #include "vtkNew.h"
@@ -50,14 +50,15 @@ class SMTKDISCRETESESSION_EXPORT ImportOperator : public Operator
 public:
   smtkTypeMacro(ImportOperator);
   smtkCreateMacro(ImportOperator);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSuperclassMacro(Operator);
 
   bool ableToOperate() override;
 
 protected:
   ImportOperator();
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  const char* xmlDescription() const override;
 
   vtkNew<vtkCMBModelBuilder> m_op;
 #ifdef SMTK_ENABLE_REMUS_SUPPORT

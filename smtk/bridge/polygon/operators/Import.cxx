@@ -14,7 +14,10 @@
 
 #include "smtk/bridge/polygon/Session.h"
 #include "smtk/bridge/polygon/internal/Model.h"
+#include "smtk/bridge/polygon/operators/CreateEdge.h"
 #include "smtk/bridge/polygon/operators/CreateEdgeFromPoints.h"
+#include "smtk/bridge/polygon/operators/CreateModel.h"
+#include "smtk/bridge/polygon/operators/ForceCreateFace.h"
 
 #include "smtk/io/Logger.h"
 
@@ -23,11 +26,11 @@
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/SessionRef.h"
 
 #include "smtk/extension/vtk/reader/vtkCMBGeometryReader.h"
@@ -64,7 +67,7 @@ namespace bridge
 namespace polygon
 {
 
-int polyLines2modelEdges(vtkPolyData* mesh, smtk::model::Operator::Ptr edgeOp,
+int polyLines2modelEdges(vtkPolyData* mesh, smtk::operation::NewOp::Ptr edgeOp,
   smtk::model::EntityRefArray& createdEds, smtk::attribute::DoubleItem::Ptr pointsItem,
   vtkIdType* pts, vtkIdType npts, smtk::io::Logger& logger)
 {
@@ -80,7 +83,8 @@ int polyLines2modelEdges(vtkPolyData* mesh, smtk::model::Operator::Ptr edgeOp,
     }
   }
   OperatorResult edgeResult = edgeOp->operate();
-  if (edgeResult->findInt("outcome")->value() != Import::OPERATION_SUCCEEDED)
+  if (edgeResult->findInt("outcome")->value() !=
+    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
   {
     smtkDebugMacro(logger, "\"create edge\" op failed to creat edge with given line cells.");
     return 0;
@@ -90,12 +94,12 @@ int polyLines2modelEdges(vtkPolyData* mesh, smtk::model::Operator::Ptr edgeOp,
   return static_cast<int>(newEdges->numberOfValues());
 }
 
-int Import::taggedPolyData2PolygonModelEntities(
+int Import::taggedPolyData2PolygonModelEntities(smtk::bridge::polygon::Resource::Ptr& resource,
   vtkIdTypeArray* tagInfo, vtkPolyData* pdata, smtk::model::Model& model)
 {
-  smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
+  smtk::bridge::polygon::SessionPtr sess = resource->polygonSession();
   smtk::model::Manager::Ptr mgr = sess->manager();
-  internal::pmodel::Ptr storage = this->findStorage<internal::pmodel>(model.entity());
+  internal::pmodel::Ptr storage = resource->findStorage<internal::pmodel>(model.entity());
   vtkPoints* points = pdata->GetPoints();
   vtkCellArray* verts = pdata->GetVerts();
   std::vector<double> pcoords;
@@ -135,7 +139,7 @@ int Import::taggedPolyData2PolygonModelEntities(
   linesOffset = n;
   vtkCellArray* lines = pdata->GetLines();
   vtkIdType currentEdgeTag, lastPointId, cellId;
-  smtk::model::Operator::Ptr edgeOp = sess->op("create edge from points");
+  smtk::operation::NewOp::Ptr edgeOp = CreateEdgeFromPoints::create();
   auto createEdgeOp = std::dynamic_pointer_cast<CreateEdgeFromPoints>(edgeOp);
   if (!lines)
   {
@@ -194,9 +198,10 @@ int Import::taggedPolyData2PolygonModelEntities(
   return numEnts;
 }
 
-int Import::basicPolyData2PolygonModelEntities(vtkPolyData* polyLines, smtk::model::Model& model)
+int Import::basicPolyData2PolygonModelEntities(
+  smtk::bridge::polygon::Resource::Ptr& resource, vtkPolyData* polyLines, smtk::model::Model& model)
 {
-  smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
+  smtk::bridge::polygon::SessionPtr sess = resource->polygonSession();
   // First lets strip the original polydata into polylines
   vtkNew<vtkPolyData> pdata;
   vtkNew<vtkStripper> stripper;
@@ -204,7 +209,7 @@ int Import::basicPolyData2PolygonModelEntities(vtkPolyData* polyLines, smtk::mod
   stripper->Update();
   pdata->ShallowCopy(stripper->GetOutput());
   smtk::model::Manager::Ptr mgr = sess->manager();
-  internal::pmodel::Ptr storage = this->findStorage<internal::pmodel>(model.entity());
+  internal::pmodel::Ptr storage = resource->findStorage<internal::pmodel>(model.entity());
   vtkPoints* points = pdata->GetPoints();
   std::vector<double> pcoords;
   vtkIdType *pts, npts;
@@ -213,7 +218,7 @@ int Import::basicPolyData2PolygonModelEntities(vtkPolyData* polyLines, smtk::mod
   vtkIdType n, i, j;
   vtkCellArray* lines = pdata->GetLines();
   vtkIdType cellId;
-  smtk::model::Operator::Ptr edgeOp = sess->op("create edge from points");
+  smtk::operation::NewOp::Ptr edgeOp = CreateEdgeFromPoints::create();
   auto createEdgeOp = std::dynamic_pointer_cast<CreateEdgeFromPoints>(edgeOp);
   if (!lines)
   {
@@ -238,15 +243,15 @@ int Import::basicPolyData2PolygonModelEntities(vtkPolyData* polyLines, smtk::mod
   return numEnts;
 }
 
-int polyLines2modelEdgesAndFaces(vtkPolyData* mesh, smtk::model::Model& model,
-  smtk::bridge::polygon::SessionPtr sess, smtk::io::Logger& logger)
+int polyLines2modelEdgesAndFaces(
+  vtkPolyData* mesh, smtk::model::Model& model, smtk::io::Logger& logger)
 {
   int numEdges = 0;
   vtkCellArray* lines = mesh->GetLines();
   if (lines)
   {
-    smtk::model::Operator::Ptr edgeOp = sess->op("create edge");
-    smtk::attribute::AttributePtr spec = edgeOp->specification();
+    smtk::operation::NewOp::Ptr edgeOp = CreateEdge::create();
+    smtk::attribute::AttributePtr spec = edgeOp->parameters();
     spec->associateEntity(model);
     smtk::attribute::IntItem::Ptr constructMethod = spec->findInt("construction method");
     constructMethod->setDiscreteIndex(0); // "points coornidates"
@@ -254,8 +259,8 @@ int polyLines2modelEdgesAndFaces(vtkPolyData* mesh, smtk::model::Model& model,
     numCoords->setValue(3); // number of elements in coordinates
     smtk::attribute::DoubleItem::Ptr pointsItem = spec->findDouble("points");
 
-    smtk::model::Operator::Ptr faceOp = sess->op("force create face");
-    smtk::attribute::AttributePtr faceSpec = faceOp->specification();
+    smtk::operation::NewOp::Ptr faceOp = ForceCreateFace::create();
+    smtk::attribute::AttributePtr faceSpec = faceOp->parameters();
     faceSpec->findInt("construction method")->setDiscreteIndex(1); // "edges"
 
     vtkIdTypeArray* pedigreeIds =
@@ -318,7 +323,8 @@ int polyLines2modelEdgesAndFaces(vtkPolyData* mesh, smtk::model::Model& model,
         countsArr->setValues(counts.begin(), counts.end());
 
         OperatorResult faceResult = faceOp->operate();
-        if (faceResult->findInt("outcome")->value() != Import::OPERATION_SUCCEEDED)
+        if (faceResult->findInt("outcome")->value() !=
+          static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
         {
           smtkDebugMacro(logger, "\"force create face\" op failed to creat face with given edges.");
         }
@@ -336,10 +342,10 @@ Import::Import()
 
 bool Import::ableToOperate()
 {
-  if (!this->specification()->isValid())
+  if (!this->parameters()->isValid())
     return false;
 
-  std::string filename = this->specification()->findFile("filename")->value();
+  std::string filename = this->parameters()->findFile("filename")->value();
   if (filename.empty())
     return false;
   // support 2d models by vtkCMBGeometryReader
@@ -360,17 +366,11 @@ bool Import::ableToOperate()
 OperatorResult Import::operateInternal()
 {
   OperatorResult result;
-  smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
-  if (!sess)
-  {
-    smtkErrorMacro(log(), "Invalid polygon session.");
-    result = this->createResult(Import::OPERATION_FAILED);
-  }
-  std::string filename = this->specification()->findFile("filename")->value();
+  std::string filename = this->parameters()->findFile("filename")->value();
   if (filename.empty())
   {
     smtkErrorMacro(log(), "File name is empty!");
-    return this->createResult(Import::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   vtkPolyData* polyOutput = vtkPolyData::New();
@@ -427,16 +427,16 @@ OperatorResult Import::operateInternal()
   {
     smtkErrorMacro(log(), "Unhandled file extension " << ext << ".");
     polyOutput->Delete();
-    return this->createResult(Import::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   // First create a model with CreateModel op, then use line cells from reader's
   // output polydata to create edges
-  smtk::model::Operator::Ptr modOp = sess->op("create model");
+  smtk::operation::NewOp::Ptr modOp = smtk::bridge::polygon::CreateModel::create();
   if (!modOp)
   {
     smtkErrorMacro(log(), "Failed to create CreateModel op.");
-    result = this->createResult(Import::OPERATION_FAILED);
+    result = this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
   //modOp->findInt("model scale")->setValue(1);
 
@@ -457,19 +457,47 @@ OperatorResult Import::operateInternal()
   // plane will not share coordinates exactly.
   for (int i = 0; i < 3; ++i)
   {
-    modOp->findDouble("origin")->setValue(i, bds[2 * i]);
+    modOp->parameters()->findDouble("origin")->setValue(i, bds[2 * i]);
   }
   // Infer a feature size from the bounds:
-  modOp->findDouble("feature size")->setValue(diam / 1000.0);
+  modOp->parameters()->findDouble("feature size")->setValue(diam / 1000.0);
 
-  OperatorResult modResult = modOp->operate();
-  if (modResult->findInt("outcome")->value() != Import::OPERATION_SUCCEEDED)
   {
-    smtkInfoMacro(log(), "CreateModel operator failed.");
-    result = this->createResult(Import::OPERATION_FAILED);
+    smtk::attribute::ResourceItem::Ptr existingResourceItem =
+      this->parameters()->findResource("resource");
+
+    if (existingResourceItem && existingResourceItem->isEnabled())
+    {
+      modOp->parameters()->findResource("resource")->setIsEnabled(true);
+      modOp->parameters()->findResource("resource")->setValue(existingResourceItem->value());
+      smtk::attribute::StringItem::Ptr sessionOnlyItem =
+        this->parameters()->findString("session only");
+      modOp->parameters()->findString("session only")->setValue(sessionOnlyItem->value());
+    }
   }
 
-  smtk::model::Model model = modResult->findModelEntity("created")->value();
+  OperatorResult modResult = modOp->operate();
+  if (modResult->findInt("outcome")->value() !=
+    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+  {
+    smtkInfoMacro(log(), "CreateModel operator failed.");
+    result = this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+  }
+
+  // Retrieve the resulting resource
+  smtk::attribute::ResourceItemPtr resourceItem =
+    std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(modResult->findResource("resource"));
+
+  smtk::bridge::polygon::Resource::Ptr resource =
+    std::dynamic_pointer_cast<smtk::bridge::polygon::Resource>(resourceItem->value());
+
+  // Retrieve the resulting model
+  smtk::attribute::ComponentItemPtr componentItem =
+    std::dynamic_pointer_cast<smtk::attribute::ComponentItem>(modResult->findComponent("model"));
+
+  // Access the generated model
+  smtk::model::Model model = std::dynamic_pointer_cast<smtk::model::Entity>(componentItem->value());
+
   int numEntities;
   // Are we dealing with tagged polydata or polydata with pedigrre info?
   vtkIdTypeArray* tagInfo =
@@ -479,29 +507,44 @@ OperatorResult Import::operateInternal()
 
   if (tagInfo)
   {
-    numEntities = this->taggedPolyData2PolygonModelEntities(tagInfo, polyOutput, model);
+    numEntities = this->taggedPolyData2PolygonModelEntities(resource, tagInfo, polyOutput, model);
   }
   else if (!pedigreeIds)
   {
-    numEntities = this->basicPolyData2PolygonModelEntities(polyOutput, model);
+    numEntities = this->basicPolyData2PolygonModelEntities(resource, polyOutput, model);
   }
   else
   {
-    numEntities = polyLines2modelEdgesAndFaces(polyOutput, model, sess, log());
+    numEntities = polyLines2modelEdgesAndFaces(polyOutput, model, log());
   }
   smtkDebugMacro(log(), "Number of entities: " << numEntities << "\n");
 
-  result = this->createResult(Import::OPERATION_SUCCEEDED);
-  this->addEntityToResult(result, model, Import::CREATED);
+  result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+
+  {
+    smtk::attribute::ComponentItem::Ptr resultModels = result->findComponent("model");
+    resultModels->setValue(model.component());
+  }
+
+  {
+    smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
+    created->setValue(resource);
+  }
+
+  {
+    smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");
+    created->setValue(model.component());
+  }
 
   polyOutput->Delete();
   return result;
 }
 
+const char* Import::xmlDescription() const
+{
+  return Import_xml;
+}
+
 } // namespace polygon
 } // namespace bridge
-
 } // namespace smtk
-
-smtkImplementsModelOperator(SMTKPOLYGONSESSION_EXPORT, smtk::bridge::polygon::Import,
-  polygon_import, "import", Import_xml, smtk::bridge::polygon::Session);

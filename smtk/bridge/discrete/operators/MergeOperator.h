@@ -12,6 +12,7 @@
 #define __smtk_session_discrete_MergeOperator_h
 
 #include "smtk/bridge/discrete/Operator.h"
+#include "smtk/bridge/discrete/Resource.h"
 #include "vtkMergeOperator.h"
 #include "vtkNew.h"
 
@@ -36,16 +37,19 @@ class SMTKDISCRETESESSION_EXPORT MergeOperator : public Operator
 public:
   smtkTypeMacro(MergeOperator);
   smtkCreateMacro(MergeOperator);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSuperclassMacro(Operator);
 
   bool ableToOperate() override;
 
 protected:
   MergeOperator();
-  smtk::model::OperatorResult operateInternal() override;
-  int fetchCMBCellId(const std::string& parameterName) const;
-  int fetchCMBCellId(const smtk::attribute::ModelEntityItemPtr& entItem, int idx) const;
+  Result operateInternal() override;
+  const char* xmlDescription() const override;
+  int fetchCMBCellId(
+    smtk::bridge::discrete::Resource::Ptr& resource, const std::string& parameterName) const;
+  int fetchCMBCellId(smtk::bridge::discrete::Resource::Ptr& resource,
+    const smtk::attribute::ModelEntityItemPtr& entItem, int idx) const;
 
   vtkNew<vtkMergeOperator> m_op;
 };

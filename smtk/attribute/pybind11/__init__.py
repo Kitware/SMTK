@@ -53,7 +53,11 @@ type_dict = \
      Item.MeshSelectionType:
      (MeshSelectionItem, MeshSelectionItemDefinition),
      Item.DateTimeType:
-     (DateTimeItem, DateTimeItemDefinition)
+     (DateTimeItem, DateTimeItemDefinition),
+     Item.ResourceType:
+     (ResourceItem, ResourceItemDefinition),
+     Item.ComponentType:
+     (ComponentItem, ComponentItemDefinition)
      }
 
 

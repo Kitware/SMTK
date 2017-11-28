@@ -12,6 +12,7 @@
 #define __smtk_session_polygon_Import_h
 
 #include "smtk/bridge/polygon/Operator.h"
+#include "smtk/bridge/polygon/Resource.h"
 
 class vtkIdTypeArray;
 class vtkPolyData;
@@ -41,17 +42,19 @@ class SMTKPOLYGONSESSION_EXPORT Import : public Operator
 public:
   smtkTypeMacro(Import);
   smtkCreateMacro(Import);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSuperclassMacro(Operator);
 
   bool ableToOperate() override;
 
 protected:
   Import();
   smtk::model::OperatorResult operateInternal() override;
-  int taggedPolyData2PolygonModelEntities(
+  virtual const char* xmlDescription() const override;
+  int taggedPolyData2PolygonModelEntities(smtk::bridge::polygon::Resource::Ptr& resource,
     vtkIdTypeArray* tagInfo, vtkPolyData* mesh, smtk::model::Model& model);
-  int basicPolyData2PolygonModelEntities(vtkPolyData* mesh, smtk::model::Model& model);
+  int basicPolyData2PolygonModelEntities(
+    smtk::bridge::polygon::Resource::Ptr& resource, vtkPolyData* mesh, smtk::model::Model& model);
 };
 
 } // namespace polygon

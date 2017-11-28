@@ -28,8 +28,13 @@ SMTKCORE_EXPORT void to_json(
   nlohmann::json& j, const smtk::attribute::ComponentItemDefinitionPtr& defPtr)
 {
   smtk::attribute::to_json(j, smtk::dynamic_pointer_cast<ItemDefinition>(defPtr));
-  std::string maskStr = smtk::model::Entity::flagToSpecifierString(defPtr->membershipMask());
-  j["MembershipMask"] = maskStr;
+  nlohmann::json accept;
+  for (auto& acceptable : defPtr->acceptableResourceComponents())
+  {
+    accept.push_back(acceptable.first);
+    accept.push_back(acceptable.second);
+  }
+  j["acceptable"] = accept;
   j["NumberOfRequiredValues"] = defPtr->numberOfRequiredValues();
   if (defPtr->isExtensible())
   {
@@ -69,11 +74,13 @@ SMTKCORE_EXPORT void from_json(
   smtk::attribute::from_json(j, temp);
   try
   {
-    std::string mmask = j.at("MembershipMask");
-    if (!mmask.empty())
+    nlohmann::json accept = j.at("acceptable");
+    for (auto iterator = accept.begin(); iterator != accept.end(); ++iterator)
     {
-      smtk::model::BitFlags flags = smtk::model::Entity::specifierStringToFlag(mmask);
-      defPtr->setMembershipMask(flags);
+      auto acc1 = (*iterator).get<std::string>();
+      ++iterator;
+      auto acc2 = (*iterator).get<std::string>();
+      defPtr->setAcceptsResourceComponents(acc1, acc2, true);
     }
   }
   catch (std::exception& /*e*/)

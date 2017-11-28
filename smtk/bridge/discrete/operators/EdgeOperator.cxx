@@ -108,21 +108,38 @@ EdgeOperator::EdgeOperator()
 
 bool EdgeOperator::ableToOperate()
 {
-  smtk::model::Model model;
-  return
-    // The SMTK model must be valid
-    (model = this->specification()->findModelEntity("model")->value().as<smtk::model::Model>())
-      .isValid() &&
-    // The CMB model must exist:
-    this->discreteSession()->findModelEntity(model.entity()) &&
-    // There must be a MeshEntity for input selection
-    this->specification()->findMeshSelection("selection");
+  smtk::model::Model model =
+    this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
+
+  // The SMTK model must be valid
+  if (!model.isValid())
+  {
+    return false;
+  }
+
+  smtk::bridge::discrete::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::discrete::Resource>(model.component()->resource());
+
+  // The CMB model must exist:
+  if (!resource->discreteSession()->findModelEntity(model.entity()))
+  {
+    return false;
+  }
+
+  // There must be a MeshEntity for input selection
+  if (!this->parameters()->findMeshSelection("selection"))
+  {
+    return false;
+  }
+
+  return true;
 }
 
-int EdgeOperator::convertToGlobalPointId(int localPid, vtkDiscreteModelEdge* cmbModelEdge)
+int EdgeOperator::convertToGlobalPointId(
+  smtk::bridge::discrete::Resource::Ptr& resource, int localPid, vtkDiscreteModelEdge* cmbModelEdge)
 {
   int globalPid = -1;
-  SessionPtr opsession = this->discreteSession();
+  SessionPtr opsession = resource->discreteSession();
   smtk::common::UUID edgeid = opsession->findOrSetEntityUUID(cmbModelEdge);
   smtk::model::Edge edge(opsession->manager(), edgeid);
 
@@ -158,7 +175,7 @@ int EdgeOperator::convertToGlobalPointId(int localPid, vtkDiscreteModelEdge* cmb
   return globalPid;
 }
 
-void EdgeOperator::getSelectedVertsAndEdges(
+void EdgeOperator::getSelectedVertsAndEdges(smtk::bridge::discrete::Resource::Ptr& resource,
   std::map<smtk::common::UUID, vtkDiscreteModelVertex*>& selVTXs,
   std::map<smtk::common::UUID, std::pair<vtkDiscreteModelEdge*, std::set<int> > >& selArcs,
   const smtk::attribute::MeshSelectionItemPtr& inSelectionItem,
@@ -192,7 +209,7 @@ void EdgeOperator::getSelectedVertsAndEdges(
       for (std::set<int>::const_iterator sit = mapIt->second.begin(); sit != mapIt->second.end();
            ++sit)
       {
-        vtkIdType pId = this->convertToGlobalPointId(*sit, selEdge);
+        vtkIdType pId = this->convertToGlobalPointId(resource, *sit, selEdge);
         if (pId < 0)
         {
           continue;
@@ -219,15 +236,20 @@ void EdgeOperator::getSelectedVertsAndEdges(
   }
 }
 
-smtk::model::OperatorResult EdgeOperator::operateInternal()
+EdgeOperator::Result EdgeOperator::operateInternal()
 {
-  SessionPtr opsession = this->discreteSession();
   smtk::model::Model model =
-    this->specification()->findModelEntity("model")->value().as<smtk::model::Model>();
+    this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
+
+  smtk::bridge::discrete::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::discrete::Resource>(model.component()->resource());
+
+  SessionPtr opsession = resource->discreteSession();
+
   vtkDiscreteModelWrapper* modelWrapper = opsession->findModelEntity(model.entity());
   bool ok = false;
   smtk::attribute::MeshSelectionItem::Ptr inSelectionItem =
-    this->specification()->findMeshSelection("selection");
+    this->parameters()->findMeshSelection("selection");
 
   std::map<smtk::common::UUID, vtkDiscreteModelVertex*> selVTXs;
   std::map<smtk::common::UUID, std::pair<vtkDiscreteModelEdge*, std::set<int> > > selArcs;
@@ -240,7 +262,7 @@ smtk::model::OperatorResult EdgeOperator::operateInternal()
   switch (opType)
   {
     case ACCEPT:
-      this->getSelectedVertsAndEdges(selVTXs, selArcs, inSelectionItem, opsession);
+      this->getSelectedVertsAndEdges(resource, selVTXs, selArcs, inSelectionItem, opsession);
 
       // We do either merge or split, not both in same operation,
       // and merge is always being processed before split
@@ -256,7 +278,7 @@ smtk::model::OperatorResult EdgeOperator::operateInternal()
     case RESET:
     case MERGE:
     case SUBTRACT:
-      // don't know what to do, will return OPERATION_FAILED
+      // don't know what to do, will return smtk::operation::NewOp::Outcome::FAILED
       break;
     case NONE:
       ok = true; // stop
@@ -266,7 +288,8 @@ smtk::model::OperatorResult EdgeOperator::operateInternal()
       break;
   }
 
-  OperatorResult result = this->createResult(ok ? OPERATION_SUCCEEDED : OPERATION_FAILED);
+  OperatorResult result = this->createResult(
+    ok ? smtk::operation::NewOp::Outcome::SUCCEEDED : smtk::operation::NewOp::Outcome::FAILED);
 
   if (ok)
   {
@@ -276,16 +299,34 @@ smtk::model::OperatorResult EdgeOperator::operateInternal()
         if (selVTXs.size() > 0)
         {
           if (srcsRemoved.size() > 0)
-            result->findModelEntity("expunged")->setValues(srcsRemoved.begin(), srcsRemoved.end());
+          {
+            smtk::attribute::ComponentItem::Ptr expunged = result->findComponent("expunged");
+            for (auto e : srcsRemoved)
+            {
+              expunged->appendValue(e.component());
+            }
+          }
         }
         else if (selArcs.size() > 0)
         {
           if (srcsCreated.size() > 0)
-            this->addEntitiesToResult(result, srcsCreated, CREATED);
+          {
+            smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");
+            for (auto c : srcsCreated)
+            {
+              created->appendValue(c.component());
+            }
+          }
         }
 
         if (srcsModified.size() > 0)
-          this->addEntitiesToResult(result, srcsModified, MODIFIED);
+        {
+          smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
+          for (auto m : srcsModified)
+          {
+            modified->appendValue(m.component());
+          }
+        }
         if (modifiedMeshes.size() > 0)
         {
           smtk::attribute::MeshItemPtr resultMeshes = result->findMesh("mesh_modified");
@@ -317,7 +358,10 @@ bool EdgeOperator::splitSelectedEdgeNodes(
     return false;
   }
   smtk::model::Model model =
-    this->specification()->findModelEntity("model")->value().as<smtk::model::Model>();
+    this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
+
+  smtk::bridge::discrete::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::discrete::Resource>(model.component()->resource());
 
   vtkIdType selEdgeId;
   bool success = false;
@@ -349,20 +393,20 @@ bool EdgeOperator::splitSelectedEdgeNodes(
     if (success)
     {
       smtk::common::UUID modelid = opsession->findOrSetEntityUUID(modelWrapper->GetModel());
-      smtk::model::Model inModel(this->manager(), modelid);
+      smtk::model::Model inModel(resource, modelid);
 
       opsession->retranscribeModel(inModel);
 
       vtkModelVertex* newvtx = vtkModelVertex::SafeDownCast(
         modelWrapper->GetModelEntity(vtkModelVertexType, splitOp->GetCreatedModelVertexId()));
       smtk::common::UUID newVid = opsession->findOrSetEntityUUID(newvtx);
-      smtk::model::Vertex newVert(this->manager(), newVid);
+      smtk::model::Vertex newVert(resource, newVid);
       srcsCreated.push_back(newVert);
 
       vtkModelEdge* newedge = vtkModelEdge::SafeDownCast(
         modelWrapper->GetModelEntity(vtkModelEdgeType, splitOp->GetCreatedModelEdgeId()));
       smtk::common::UUID newEid = opsession->findOrSetEntityUUID(newedge);
-      smtk::model::Edge newEdge(this->manager(), newEid);
+      smtk::model::Edge newEdge(resource, newEid);
       srcsCreated.push_back(newEdge);
 
       // for the modifed edge, add it to "modified" item in op result;
@@ -372,7 +416,7 @@ bool EdgeOperator::splitSelectedEdgeNodes(
 
       // update associated meshes
       if (!internal_splitAssociatedMeshes(
-            srced, newEdge, newVert, this->manager()->meshes(), modifiedMeshes))
+            srced, newEdge, newVert, resource->meshes(), modifiedMeshes))
       {
         std::cout << "ERROR: Associated edge meshes failed to split properly." << std::endl;
       }
@@ -461,7 +505,8 @@ bool EdgeOperator::convertSelectedEndNodes(
 
       // update associated mesh first before removing the edge
       if (!internal_mergeAssociatedMeshes(remVert, toRemove,
-            smtk::model::Edge(this->manager(), toEid), this->manager()->meshes(), modifiedMeshes))
+            smtk::model::Edge(opsession->manager(), toEid), opsession->manager()->meshes(),
+            modifiedMeshes))
       {
         std::cout << "ERROR: Associated edge meshes failed to merge properly." << std::endl;
       }
@@ -497,9 +542,11 @@ bool EdgeOperator::convertSelectedEndNodes(
   return success;
 }
 
+const char* EdgeOperator::xmlDescription() const
+{
+  return EdgeOperator_xml;
+}
+
 } // namespace discrete
 } // namespace bridge
 } // namespace smtk
-
-smtkImplementsModelOperator(SMTKDISCRETESESSION_EXPORT, smtk::bridge::discrete::EdgeOperator,
-  discrete_split_edge, "modify edge", EdgeOperator_xml, smtk::bridge::discrete::Session);

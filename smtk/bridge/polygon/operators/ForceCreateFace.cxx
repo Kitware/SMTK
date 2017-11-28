@@ -9,7 +9,7 @@
 //=============================================================================
 #include "smtk/bridge/polygon/operators/ForceCreateFace.h"
 
-#include "smtk/bridge/polygon/Session.h"
+#include "smtk/bridge/polygon/Resource.h"
 #include "smtk/bridge/polygon/internal/Config.h"
 #include "smtk/bridge/polygon/internal/Edge.h"
 #include "smtk/bridge/polygon/internal/Model.h"
@@ -65,39 +65,37 @@ bool ForceCreateFace::ableToOperate()
 {
   // TODO: This should probably also verify that the "counts" item
   //       matches the number of points or edges provided:
-  int method = this->findInt("construction method")->discreteIndex();
-  smtk::attribute::IntItem::Ptr edgeDirItem = this->findInt("orientations");
+  int method = this->parameters()->findInt("construction method")->discreteIndex();
+  smtk::attribute::IntItem::Ptr edgeDirItem = this->parameters()->findInt("orientations");
   int numOrient = static_cast<int>(edgeDirItem->numberOfValues());
   return this->Superclass::ableToOperate() &&
     (method == ForceCreateFace::POINTS ||
            (method == ForceCreateFace::EDGES &&
              (numOrient == -1 ||
                numOrient ==
-                 static_cast<int>(this->specification()->associations()->numberOfValues()))));
+                 static_cast<int>(this->parameters()->associations()->numberOfValues()))));
 }
 
 /// Create one or more polygonal faces without sanity checks.
 smtk::model::OperatorResult ForceCreateFace::operateInternal()
 {
-  int method = this->findInt("construction method")->discreteIndex();
+  int method = this->parameters()->findInt("construction method")->discreteIndex();
 
-  smtk::attribute::DoubleItem::Ptr pointsItem = this->findDouble("points");
-  smtk::attribute::IntItem::Ptr coordinatesItem = this->findInt("coordinates");
-  smtk::attribute::IntItem::Ptr countsItem = this->findInt("counts");
-  smtk::attribute::IntItem::Ptr edgeDirItem = this->findInt("orientations");
+  smtk::attribute::DoubleItem::Ptr pointsItem = this->parameters()->findDouble("points");
+  smtk::attribute::IntItem::Ptr coordinatesItem = this->parameters()->findInt("coordinates");
+  smtk::attribute::IntItem::Ptr countsItem = this->parameters()->findInt("counts");
+  smtk::attribute::IntItem::Ptr edgeDirItem = this->parameters()->findInt("orientations");
 
   int numCoordsPerPt = coordinatesItem->value(0);
 
-  smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->associations();
-  smtk::model::Model smodel;
+  smtk::attribute::ModelEntityItem::Ptr modelItem = this->parameters()->associations();
+  smtk::bridge::polygon::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::polygon::Resource>(
+      modelItem->value(0).component()->resource());
+  if (!resource)
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
 
-  SessionPtr sess = this->polygonSession();
-  smtk::model::ManagerPtr mgr;
-  if (!sess || !(mgr = sess->manager()))
-  {
-    // error logging requires mgr...
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
-  }
+  smtk::model::Model smodel;
 
   // Obtain the SMTK and polygon models we will work with:
   switch (method)
@@ -111,15 +109,15 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
     default:
     {
       smtkErrorMacro(this->log(), "Unknown construction method " << method << ".");
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
     }
     break;
   }
-  internal::pmodel::Ptr pmodel = this->findStorage<internal::pmodel>(smodel.entity());
+  internal::pmodel::Ptr pmodel = resource->findStorage<internal::pmodel>(smodel.entity());
   if (!pmodel)
   {
     smtkErrorMacro(this->log(), "The associated model is not a polygon-session model.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   // Sanity-check point coordinates array size:
@@ -128,7 +126,7 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
     smtkErrorMacro(this->log(), "Number of point-coordinates ("
         << pointsItem->numberOfValues() << ") "
         << "not a multiple of the number of coordinates per pt (" << numCoordsPerPt << ")");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   // I. While the counts array indicates we have faces to process:
@@ -172,7 +170,7 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
         this->pointsForLoop(polypts, *countIt, coordIt, pointsItem->end(), numCoordsPerPt, pmodel);
         // Now create the matching SMTK edge
         smtk::model::Edge modelEdge =
-          pmodel->createModelEdgeFromPoints(mgr, polypts.begin(), polypts.end(), false);
+          pmodel->createModelEdgeFromPoints(resource, polypts.begin(), polypts.end(), false);
         outerLoopEdges.push_back(std::make_pair(modelEdge, true));
       }
       else
@@ -180,7 +178,6 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
         this->pointsForLoop(polypts, *countIt, edgeIt, modelItem->end(), edgeDirIt,
           edgeDirItem->end(), outerLoopEdges);
       }
-      //printPointSeq("outer loop", polypts.begin(), polypts.end());
       pface.set(polypts.begin(), polypts.end());
     }
 
@@ -203,7 +200,7 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
         this->pointsForLoop(polypts, *countIt, coordIt, pointsItem->end(), numCoordsPerPt, pmodel);
         // Now create the matching SMTK edge
         smtk::model::Edge modelEdge =
-          pmodel->createModelEdgeFromPoints(mgr, polypts.begin(), polypts.end(), false);
+          pmodel->createModelEdgeFromPoints(resource, polypts.begin(), polypts.end(), false);
         innerLoopsEdges.back().push_back(std::make_pair(modelEdge, true));
       }
       else
@@ -211,11 +208,6 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
         this->pointsForLoop(polypts, *countIt, edgeIt, modelItem->end(), edgeDirIt,
           edgeDirItem->end(), innerLoopsEdges.back());
       }
-      /*
-       char holemsg[512];
-       sprintf(holemsg, "  inner loop %d ", h);
-       printPointSeq(holemsg, polypts.begin(), polypts.end());
-       */
       // Add to polygon_set_data
       poly::polygon_data<internal::Coord> loop;
       loop.set(polypts.begin(), polypts.end());
@@ -226,17 +218,17 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
     // IV. Transcribe face (uses, loops, face) to smtk
     //
     // Make up some UUIDs for the new entities.
-    smtk::common::UUID modelFaceId = mgr->unusedUUID();
-    smtk::common::UUID modelFaceUseId = mgr->unusedUUID();
-    smtk::common::UUID outerLoopId = mgr->unusedUUID();
+    smtk::common::UUID modelFaceId = resource->unusedUUID();
+    smtk::common::UUID modelFaceUseId = resource->unusedUUID();
+    smtk::common::UUID outerLoopId = resource->unusedUUID();
     // Transcribe the outer loop, face use, and face:
-    if (!mgr->insertModelFaceWithOrientedOuterLoop(
+    if (!resource->insertModelFaceWithOrientedOuterLoop(
           modelFaceId, modelFaceUseId, outerLoopId, outerLoopEdges))
     {
       smtkErrorMacro(this->log(), "Could not create SMTK outer loop of face.");
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
     }
-    smtk::model::Face modelFace(mgr, modelFaceId);
+    smtk::model::Face modelFace(resource, modelFaceId);
     smodel.addCell(modelFace);
     modelFace.assignDefaultName();
     created.push_back(modelFace);
@@ -245,11 +237,12 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
     std::size_t numInner = innerLoopsEdges.size();
     for (std::size_t inner = 0; inner < numInner; ++inner)
     {
-      smtk::common::UUID innerLoopId = mgr->unusedUUID();
-      if (!mgr->insertModelFaceOrientedInnerLoop(innerLoopId, outerLoopId, innerLoopsEdges[inner]))
+      smtk::common::UUID innerLoopId = resource->unusedUUID();
+      if (!resource->insertModelFaceOrientedInnerLoop(
+            innerLoopId, outerLoopId, innerLoopsEdges[inner]))
       {
         smtkErrorMacro(this->log(), "Could not create SMTK inner loop of face.");
-        return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+        return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
       }
     }
 
@@ -271,18 +264,15 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
       triConn[0] = smtk::model::TESS_TRIANGLE;
       pmodel->liftPoint(*pcit, &smtkPt[0]);
       triConn[1] = smtkTess->addCoords(&smtkPt[0]);
-      //std::cout << "  " << triConn[1] << "  " << smtkPt[0] << " " << smtkPt[1] << " " << smtkPt[2] << "\n";
       ++pcit;
       pmodel->liftPoint(*pcit, &smtkPt[0]);
       triConn[3] = smtkTess->addCoords(&smtkPt[0]);
       ++pcit;
-      //std::cout << "  " << triConn[3] << "  " << smtkPt[0] << " " << smtkPt[1] << " " << smtkPt[2] << "\n";
       for (; pcit != poly::end_points(*pit); ++pcit)
       {
         triConn[2] = triConn[3];
         pmodel->liftPoint(*pcit, &smtkPt[0]);
         triConn[3] = smtkTess->addCoords(&smtkPt[0]);
-        //std::cout << "  " << triConn[3] << "  " << smtkPt[0] << " " << smtkPt[1] << " " << smtkPt[2] << "\n";
         smtkTess->insertNextCell(triConn);
       }
       //std::cout << "\n";
@@ -294,15 +284,22 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
   }
 
   smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
-  this->addEntitiesToResult(result, created, CREATED);
+    this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+
+  smtk::attribute::ComponentItem::Ptr createdItem = result->findComponent("created");
+  for (auto& c : created)
+  {
+    createdItem->appendValue(c.component());
+  }
+
   return result;
+}
+
+const char* ForceCreateFace::xmlDescription() const
+{
+  return ForceCreateFace_xml;
 }
 
 } // namespace polygon
 } //namespace bridge
 } // namespace smtk
-
-smtkImplementsModelOperator(SMTKPOLYGONSESSION_EXPORT, smtk::bridge::polygon::ForceCreateFace,
-  polygon_force_create_face, "force create face", ForceCreateFace_xml,
-  smtk::bridge::polygon::Session);

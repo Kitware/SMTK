@@ -17,23 +17,19 @@ namespace smtk
 namespace resource
 {
 
-MetadataContainer Manager::s_metadata;
-
 Manager::Manager()
 {
-  std::cout << "Create rsrc mgr " << this << "\n";
 }
 
 Manager::~Manager()
 {
-  std::cout << "Destroy rsrc mgr " << this << "\n";
 }
 
 smtk::resource::ResourcePtr Manager::create(const std::string& uniqueName)
 {
   // Locate the metadata associated with this resource type
-  auto metadata = s_metadata.get<NameTag>().find(uniqueName);
-  if (metadata != s_metadata.get<NameTag>().end())
+  auto metadata = m_metadata.get<NameTag>().find(uniqueName);
+  if (metadata != m_metadata.get<NameTag>().end())
   {
     // Create the resource using its index
     return this->create(metadata->index());
@@ -62,8 +58,8 @@ smtk::resource::ResourcePtr Manager::create(
   smtk::resource::ResourcePtr resource;
 
   // Locate the metadata associated with this resource type
-  auto metadata = s_metadata.get<NameTag>().find(uniqueName);
-  if (metadata != s_metadata.get<NameTag>().end())
+  auto metadata = m_metadata.get<NameTag>().find(uniqueName);
+  if (metadata != m_metadata.get<NameTag>().end())
   {
     // Create the resource using its index
     resource = metadata->create(uuid);
@@ -79,8 +75,8 @@ smtk::resource::ResourcePtr Manager::create(
   smtk::resource::ResourcePtr resource;
 
   // Locate the metadata associated with this resource type
-  auto metadata = s_metadata.get<IndexTag>().find(index);
-  if (metadata != s_metadata.get<IndexTag>().end())
+  auto metadata = m_metadata.get<IndexTag>().find(index);
+  if (metadata != m_metadata.get<IndexTag>().end())
   {
     // Create the resource with the appropriate UUID
     resource = metadata->create(uuid);
@@ -90,14 +86,14 @@ smtk::resource::ResourcePtr Manager::create(
   return resource;
 }
 
-bool Manager::registerResource(Metadata& metadata)
+bool Manager::registerResource(Metadata&& metadata)
 {
-  auto alreadyRegisteredMetadata = s_metadata.get<IndexTag>().find(metadata.index());
-  if (alreadyRegisteredMetadata == s_metadata.get<IndexTag>().end())
+  auto alreadyRegisteredMetadata = m_metadata.get<IndexTag>().find(metadata.index());
+  if (alreadyRegisteredMetadata == m_metadata.get<IndexTag>().end())
   {
-    auto size = s_metadata.get<IndexTag>().size();
-    s_metadata.get<IndexTag>().insert(metadata);
-    return s_metadata.get<IndexTag>().size() > size;
+    auto size = m_metadata.get<IndexTag>().size();
+    m_metadata.get<IndexTag>().insert(metadata);
+    return m_metadata.get<IndexTag>().size() > size;
   }
 
   return false;
@@ -168,16 +164,15 @@ std::set<smtk::resource::ResourcePtr> Manager::find(const std::string& uniqueNam
   std::set<smtk::resource::ResourcePtr> values;
   std::set<Resource::Index> validIndices;
 
-  auto metadata = s_metadata.get<NameTag>().find(uniqueName);
-  if (metadata == s_metadata.get<NameTag>().end())
+  auto metadata = m_metadata.get<NameTag>().find(uniqueName);
+  if (metadata == m_metadata.get<NameTag>().end())
   {
     return values;
   }
 
-  for (auto& metadatum : s_metadata)
+  for (auto& metadatum : m_metadata)
   {
-    if (metadatum.m_associatedIndices.find(metadata->index()) !=
-      metadatum.m_associatedIndices.end())
+    if (metadatum.isOfType(metadata->index()))
     {
       validIndices.insert(metadatum.index());
     }
@@ -197,9 +192,9 @@ std::set<smtk::resource::ResourcePtr> Manager::find(const std::string& uniqueNam
 std::set<smtk::resource::ResourcePtr> Manager::find(const Resource::Index& index)
 {
   std::set<Resource::Index> validIndices;
-  for (auto& metadatum : s_metadata)
+  for (auto& metadatum : m_metadata)
   {
-    if (metadatum.m_associatedIndices.find(index) != metadatum.m_associatedIndices.end())
+    if (metadatum.isOfType(index))
     {
       validIndices.insert(metadatum.index());
     }
@@ -218,22 +213,58 @@ std::set<smtk::resource::ResourcePtr> Manager::find(const Resource::Index& index
   return values;
 }
 
+smtk::resource::ResourcePtr Manager::read(const std::string& uniqueName, const std::string& url)
+{
+  smtk::resource::ResourcePtr resource;
+
+  // Locate the metadata associated with this resource type
+  auto metadata = m_metadata.get<NameTag>().find(uniqueName);
+  if (metadata != m_metadata.get<NameTag>().end())
+  {
+    // Read in the resource using the provided url
+    resource = metadata->read(url);
+  }
+
+  // If a resource type is not identified using this unique name, we check the
+  // map of legacy readers to see if this name is a legacy name for a resource type.
+  auto search = m_legacyReaders.find(uniqueName);
+  if (search != m_legacyReaders.end())
+  {
+    // Read in the resource using the provided url
+    resource = search->second(url);
+  }
+
+  if (resource)
+  {
+    // Add the resource to be tracked by this manager
+    this->add(resource);
+
+    // Assign the resource's location
+    resource->setLocation(url);
+  }
+
+  return resource;
+}
+
 smtk::resource::ResourcePtr Manager::read(const Resource::Index& index, const std::string& url)
 {
   smtk::resource::ResourcePtr resource;
 
   // Locate the metadata associated with this resource type
-  auto metadata = s_metadata.get<IndexTag>().find(index);
-  if (metadata != s_metadata.get<IndexTag>().end())
+  auto metadata = m_metadata.get<IndexTag>().find(index);
+  if (metadata != m_metadata.get<IndexTag>().end())
   {
     // Read in the resource using the provided url
-    this->add(index, metadata->read(url));
+    resource = metadata->read(url);
+  }
 
-    if (resource)
-    {
-      // Assign the resource's location
-      resource->setLocation(url);
-    }
+  if (resource)
+  {
+    // Add the resource to be tracked by this manager
+    this->add(index, resource);
+
+    // Assign the resource's location
+    resource->setLocation(url);
   }
 
   return resource;
@@ -254,8 +285,8 @@ bool Manager::write(const smtk::resource::ResourcePtr& resource)
   }
 
   // Locate the metadata associated with this resource type
-  auto metadata = s_metadata.get<IndexTag>().find(resource->index());
-  if (metadata != s_metadata.get<IndexTag>().end())
+  auto metadata = m_metadata.get<IndexTag>().find(resource->index());
+  if (metadata != m_metadata.get<IndexTag>().end() && metadata->write != nullptr)
   {
     // Write out the resource to its url
     return metadata->write(resource);
@@ -284,8 +315,8 @@ bool Manager::add(const Resource::Index& index, const smtk::resource::ResourcePt
   }
 
   // If the manager cannot manage a resource of this type, do not add
-  auto metadata = s_metadata.get<IndexTag>().find(index);
-  if (metadata == s_metadata.get<IndexTag>().end())
+  auto metadata = m_metadata.get<IndexTag>().find(index);
+  if (metadata == m_metadata.get<IndexTag>().end())
   {
     return false;
   }
@@ -323,13 +354,31 @@ bool Manager::remove(const smtk::resource::ResourcePtr& resource)
     // Remove it from the manager's set of resources
     m_resources.erase(resourceIt);
 
-    // Unsert the resource's manager
+    // Insert the resource's manager
     rsrc->m_manager = Ptr();
 
     return true;
   }
 
   return false;
+}
+
+bool Manager::addLegacyReader(
+  const std::string& alias, const std::function<ResourcePtr(const std::string&)>& read)
+{
+  if (m_legacyReaders.find(alias) != m_legacyReaders.end())
+  {
+    // This alias is already registered to a resource type.
+    return false;
+  }
+
+  m_legacyReaders[alias] = read;
+  return true;
+}
+
+void Manager::visit(const smtk::resource::Resource::Visitor& visitor) const
+{
+  std::for_each(m_resources.begin(), m_resources.end(), visitor);
 }
 
 int Manager::observe(const Observer& fn, bool notifyOfCurrentState)

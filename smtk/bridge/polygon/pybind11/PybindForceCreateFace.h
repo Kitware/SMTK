@@ -15,9 +15,11 @@
 
 #include "smtk/bridge/polygon/operators/ForceCreateFace.h"
 
+#include "smtk/bridge/polygon/Operator.h"
+
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::polygon::ForceCreateFace > pybind11_init_smtk_bridge_polygon_ForceCreateFace(py::module &m, PySharedPtrClass< smtk::bridge::polygon::Operator, smtk::model::Operator >& parent)
+PySharedPtrClass< smtk::bridge::polygon::ForceCreateFace > pybind11_init_smtk_bridge_polygon_ForceCreateFace(py::module &m, PySharedPtrClass< smtk::bridge::polygon::Operator, smtk::operation::XMLOperator >& parent)
 {
   PySharedPtrClass< smtk::bridge::polygon::ForceCreateFace > instance(m, "ForceCreateFace", parent);
   instance
@@ -25,11 +27,9 @@ PySharedPtrClass< smtk::bridge::polygon::ForceCreateFace > pybind11_init_smtk_br
     .def(py::init<::smtk::bridge::polygon::ForceCreateFace const &>())
     .def("deepcopy", (smtk::bridge::polygon::ForceCreateFace & (smtk::bridge::polygon::ForceCreateFace::*)(::smtk::bridge::polygon::ForceCreateFace const &)) &smtk::bridge::polygon::ForceCreateFace::operator=)
     .def("ableToOperate", &smtk::bridge::polygon::ForceCreateFace::ableToOperate)
-    .def("className", &smtk::bridge::polygon::ForceCreateFace::className)
     .def("classname", &smtk::bridge::polygon::ForceCreateFace::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::ForceCreateFace> (*)()) &smtk::bridge::polygon::ForceCreateFace::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::ForceCreateFace> (*)(::std::shared_ptr<smtk::bridge::polygon::ForceCreateFace> &)) &smtk::bridge::polygon::ForceCreateFace::create, py::arg("ref"))
-    .def("name", &smtk::bridge::polygon::ForceCreateFace::name)
     .def("shared_from_this", (std::shared_ptr<const smtk::bridge::polygon::ForceCreateFace> (smtk::bridge::polygon::ForceCreateFace::*)() const) &smtk::bridge::polygon::ForceCreateFace::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<smtk::bridge::polygon::ForceCreateFace> (smtk::bridge::polygon::ForceCreateFace::*)()) &smtk::bridge::polygon::ForceCreateFace::shared_from_this)
     ;

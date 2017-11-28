@@ -11,6 +11,9 @@ endif()
 if (POLICY CMP0046)
   cmake_policy(SET CMP0046 NEW)
 endif()
+if (POLICY CMP0071)
+  cmake_policy(SET CMP0071 NEW)
+endif()
 
 #If the user/superbuild hasn't explicitly stated what c++ standard to use
 #require C++11
@@ -114,10 +117,6 @@ cmake_dependent_option(SMTK_ENABLE_MOAB_DISCRETE_READER "Build moab reader for d
   "SMTK_ENABLE_DISCRETE_SESSION" OFF)
 cmake_dependent_option(SMTK_ENABLE_POLYGON_SESSION "Build Boost.polygon model session." ON
   SMTK_ENABLE_VTK_SUPPORT OFF)
-cmake_dependent_option(SMTK_ENABLE_EXODUS_SESSION "Build a session to Exodus-II side sets" ON
-  SMTK_ENABLE_VTK_SUPPORT OFF)
-cmake_dependent_option(SMTK_ENABLE_REMOTE_SESSION "Build a session that allows modeling in a remote process" ON
-  SMTK_ENABLE_REMUS_SUPPORT OFF)
 option(SMTK_ENABLE_MESH_SESSION
   "Build a session that uses smtk::mesh as its backing" ON)
 cmake_dependent_option(SMTK_ENABLE_MULTISCALE_SESSION "Build a session to Multiscale data" OFF
@@ -590,8 +589,7 @@ install (FILES ${PROJECT_BINARY_DIR}/smtk/Options.h
 # Install rules for SMTK macros usable by external packages:
 install(
   FILES
-    ${PROJECT_SOURCE_DIR}/CMake/EncodeCStringFunctions.cmake
-    ${PROJECT_SOURCE_DIR}/CMake/EncodePyStringFunctions.cmake
+    ${PROJECT_SOURCE_DIR}/CMake/EncodeStringFunctions.cmake
     ${PROJECT_SOURCE_DIR}/CMake/SMTKOperatorXML.cmake
     ${PROJECT_SOURCE_DIR}/CMake/SMTKSessionJSON.cmake
   DESTINATION

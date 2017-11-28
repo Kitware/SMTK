@@ -37,6 +37,9 @@ struct LocationTag
 struct NameTag
 {
 };
+struct AliasTag
+{
+};
 
 /// Global access methods used to sort Container data.
 namespace detail

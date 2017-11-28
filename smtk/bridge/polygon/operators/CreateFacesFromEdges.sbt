@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the polygon "CreateFacesFromEdges" operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
     <!-- Operator -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="create faces from edges" Label="Faces - Create from Edges" BaseType="operator">
       <BriefDescription>Create model faces.</BriefDescription>
       <DetailedDescription>
@@ -22,6 +23,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(create faces from edges)" BaseType="result">
       <ItemDefinitions>
         <!-- The faces created are reported in the base result's "created" item. -->

@@ -8,8 +8,22 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/ResourceItem.h"
+
+#include "smtk/bridge/polygon/Operator.h"
+#include "smtk/bridge/polygon/RegisterSession.h"
+#include "smtk/bridge/polygon/Resource.h"
+
+#include "smtk/extension/delaunay/operators/TriangulateFaces.h"
+
+#include "smtk/io/ExportMesh.h"
+
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
+#include "smtk/mesh/testing/cxx/helpers.h"
 #include "smtk/mesh/utility/ExtractTessellation.h"
 
 #include "smtk/model/Edge.h"
@@ -19,15 +33,11 @@
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Loop.h"
 
-#include "smtk/io/ExportMesh.h"
+#include "smtk/operation/LoadResource.h"
 
-#include "smtk/mesh/testing/cxx/helpers.h"
+#include "smtk/resource/Manager.h"
 
-#include "smtk/attribute/FileItem.h"
-#include "smtk/attribute/IntItem.h"
-
-#include "smtk/bridge/polygon/Operator.h"
-#include "smtk/bridge/polygon/Session.h"
+#include "smtk/operation/Manager.h"
 
 #include <fstream>
 
@@ -61,16 +71,40 @@ void removeRefsWithoutTess(smtk::model::EntityRefs& ents)
 
 int UnitTestTriangulateFaces(int, char** const)
 {
-  // Somehow grab an EntityRef with an associated tessellation
-  smtk::model::EntityRef eRef;
-  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
-  smtk::mesh::ManagerPtr meshManager = modelManager->meshes();
+  // Create a resource manager
+  smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
-  smtk::bridge::polygon::Session::Ptr session = smtk::bridge::polygon::Session::create();
-  modelManager->registerSession(session);
-
-  smtk::model::Model model;
   {
+    smtk::bridge::polygon::registerResources(resourceManager);
+  }
+
+  // Create an operation manager
+  smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
+
+  // Register import and write operators to the operation manager
+  {
+    operationManager->registerOperator<smtk::operation::LoadResource>(
+      "smtk::operation::LoadResource");
+    operationManager->registerOperator<smtk::extension::delaunay::TriangulateFaces>(
+      "smtk::extension::delaunay::TriangulateFaces");
+  }
+
+  // Register the resource manager to the operation manager (newly created
+  // resources will be automatically registered to the resource manager).
+  operationManager->registerResourceManager(resourceManager);
+
+  smtk::bridge::polygon::Resource::Ptr resource;
+
+  {
+    // Create an import operator
+    smtk::operation::LoadResource::Ptr loadOp =
+      operationManager->create<smtk::operation::LoadResource>();
+    if (!loadOp)
+    {
+      std::cerr << "No load operator\n";
+      return 1;
+    }
+
     std::string file_path(data_root);
     file_path += "/mesh/2d/boxWithHole.smtk";
 
@@ -79,22 +113,23 @@ int UnitTestTriangulateFaces(int, char** const)
     { //just make sure the file exists
       file.close();
 
-      smtk::model::Operator::Ptr op = session->op("load smtk model");
-
-      op->findFile("filename")->setValue(file_path.c_str());
-      smtk::model::OperatorResult result = op->operate();
-      if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
+      loadOp->parameters()->findFile("filename")->setValue(file_path.c_str());
+      smtk::operation::LoadResource::Result result = loadOp->operate();
+      if (result->findInt("outcome")->value() !=
+        static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
       {
         std::cerr << "Could not load smtk model!\n";
         return 1;
       }
-      model = result->findModelEntity("mesh_created")->value();
+
+      resource = smtk::dynamic_pointer_cast<smtk::bridge::polygon::Resource>(
+        result->findResource("resource")->value(0));
     }
   }
 
   {
     smtk::model::EntityRefs currentEnts =
-      modelManager->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(smtk::model::FACE);
+      resource->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(smtk::model::FACE);
     removeRefsWithoutTess(currentEnts);
     if (currentEnts.empty())
     {
@@ -103,7 +138,7 @@ int UnitTestTriangulateFaces(int, char** const)
     }
 
     // We only extract the first face
-    eRef = *currentEnts.begin();
+    auto eRef = *currentEnts.begin();
 
     const smtk::model::Face& face = eRef.as<smtk::model::Face>();
 
@@ -113,22 +148,25 @@ int UnitTestTriangulateFaces(int, char** const)
       return 1;
     }
 
-    smtk::model::OperatorPtr triangulateFace = session->op("triangulate faces");
-    if (!triangulateFace)
+    smtk::extension::delaunay::TriangulateFaces::Ptr triangulateFacesOp =
+      operationManager->create<smtk::extension::delaunay::TriangulateFaces>();
+    if (!triangulateFacesOp)
     {
-      std::cerr << "No triangulate face operator\n";
+      std::cerr << "No triangulate faces operator\n";
       return 1;
     }
-    triangulateFace->specification()->associateEntity(face);
 
-    if (!triangulateFace->ableToOperate())
+    triangulateFacesOp->parameters()->associateEntity(face);
+
+    if (!triangulateFacesOp->ableToOperate())
     {
       std::cerr << "Triangulate face operator cannot operate\n";
       return 1;
     }
 
-    smtk::model::OperatorResult result = triangulateFace->operate();
-    if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
+    smtk::extension::delaunay::TriangulateFaces::Result result = triangulateFacesOp->operate();
+    if (result->findInt("outcome")->value() !=
+      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
     {
       std::cerr << "Triangulate face operator failed\n";
       return 1;
@@ -142,7 +180,7 @@ int UnitTestTriangulateFaces(int, char** const)
       return 1;
     }
 
-    auto associatedCollections = meshManager->associatedCollections(face);
+    auto associatedCollections = face.manager()->meshes()->associatedCollections(face);
     smtk::mesh::CollectionPtr triangulatedFace = associatedCollections[0];
 
     if (triangulatedFace->points().size() != 8 || triangulatedFace->cells().size() != 8)
@@ -162,5 +200,3 @@ int UnitTestTriangulateFaces(int, char** const)
 
   return 0;
 }
-
-smtkComponentInitMacro(smtk_delaunay_triangulate_faces_operator);

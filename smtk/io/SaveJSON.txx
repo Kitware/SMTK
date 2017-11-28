@@ -115,7 +115,7 @@ bool SaveJSON::prepareToSave(const smtk::model::Models& modelsToSave,
             preExistingFilenames, smtkStem, defaultFileExtension, obj.m_embedDir);
           obj.m_saveModels[modelURL] = embeddedURL;
           smtk::model::SessionRef sref = model.owningSession();
-          if (!sref.op("write") && !sref.op("export") && !sref.op("save"))
+          // if (!sref.op("write") && !sref.op("export") && !sref.op("save"))
           {
             // We don't have an operator to save the model, so
             // assume it hasn't changed and copy the file to its

@@ -12,6 +12,7 @@
 #define __smtk_session_discrete_SplitFaceOperator_h
 
 #include "smtk/bridge/discrete/Operator.h"
+#include "smtk/bridge/discrete/Resource.h"
 #include "vtkNew.h"
 #include "vtkSplitOperator.h"
 
@@ -27,16 +28,18 @@ class SMTKDISCRETESESSION_EXPORT SplitFaceOperator : public Operator
 public:
   smtkTypeMacro(SplitFaceOperator);
   smtkCreateMacro(SplitFaceOperator);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSuperclassMacro(Operator);
 
   bool ableToOperate() override;
 
 protected:
   SplitFaceOperator();
-  smtk::model::OperatorResult operateInternal() override;
-  int fetchCMBFaceId() const;
-  int fetchCMBCellId(const smtk::attribute::ModelEntityItemPtr& entItem, int idx) const;
+  Result operateInternal() override;
+  const char* xmlDescription() const override;
+  int fetchCMBFaceId(smtk::bridge::discrete::Resource::Ptr& resource) const;
+  int fetchCMBCellId(smtk::bridge::discrete::Resource::Ptr& resource,
+    const smtk::attribute::ModelEntityItemPtr& entItem, int idx) const;
 
   vtkNew<vtkSplitOperator> m_op;
 };

@@ -232,17 +232,17 @@ int main(int argc, char* argv[])
       std::cout << "Json matches? " << toFromMatchFlag << std::endl;
     }
     // write json result into a file
-    std::ofstream outfile;
-    outfile.open(argv[1], std::ofstream::out | std::ofstream::trunc);
-    if (!outfile)
-    {
-      std::cerr << "Error opening file for writing: " << argv[1] << std::endl;
-    }
-    else
-    {
-      outfile << j.dump(2);
-    }
-    outfile.close();
+    // std::ofstream outfile;
+    // outfile.open(argv[1], std::ofstream::out | std::ofstream::trunc);
+    // if (!outfile)
+    // {
+    //   std::cerr << "Error opening file for writing: " << argv[1] << std::endl;
+    // }
+    // else
+    // {
+    //   outfile << j.dump(2);
+    // }
+    // outfile.close();
     // Read a json file and do comparson
   }
   return status;

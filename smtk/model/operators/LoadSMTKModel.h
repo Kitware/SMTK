@@ -7,29 +7,35 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_LoadSMTKModel_h
-#define __smtk_model_LoadSMTKModel_h
+#ifndef smtk_model_operators_LoadSMTKModel_h
+#define smtk_model_operators_LoadSMTKModel_h
 
-#include "smtk/model/Operator.h"
+#include "smtk/operation/XMLOperator.h"
 
 namespace smtk
 {
 namespace model
 {
 
-class SMTKCORE_EXPORT LoadSMTKModel : public Operator
+/**\brief Load an SMTK resource from a file.
+  */
+class SMTKCORE_EXPORT LoadSMTKModel : public smtk::operation::XMLOperator
 {
 public:
   smtkTypeMacro(LoadSMTKModel);
-  smtkCreateMacro(LoadSMTKModel);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedPtrCreateMacro(smtk::operation::NewOp);
+  smtkSuperclassMacro(smtk::operation::XMLOperator);
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  LoadSMTKModel();
+
+  Result operateInternal() override;
+
+  virtual const char* xmlDescription() const override;
+  void generateSummary(Result&) override;
 };
 
 } //namespace model
 } // namespace smtk
 
-#endif // __smtk_model_LoadSMTKModel_h
+#endif

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the model "AddAuxiliaryGeometry" Operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
     <!-- Operator -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="add auxiliary geometry" BaseType="operator" Label="Model - Add Auxiliary Geometry">
       <!-- In the future Label shoud be removed when SMTK supports compound auxiliary geometry -->
       <AssociationsDef Name="entities" Label="model" NumberOfRequiredValues="1">
@@ -106,6 +107,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(add auxiliary geometry)" BaseType="result">
       <ItemDefinitions>
         <!-- The modified entities are stored in the base result's "modified" item. -->

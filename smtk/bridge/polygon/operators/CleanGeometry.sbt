@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the polygon "CleanGeometry" operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
     <!-- Operator -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="clean geometry" Label="Geometry - Clean" BaseType="operator">
       <BriefDescription>Make geometric entities consistent with modeling assumptions.</BriefDescription>
       <DetailedDescription>
@@ -24,6 +25,7 @@
       </AssociationsDef>
     </AttDef>
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(clean geometry)" BaseType="result">
     </AttDef>
   </Definitions>

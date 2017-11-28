@@ -16,6 +16,7 @@
 #include "smtk/model/EntityTypeBits.h" // for smtk::model::BitFlags
 #include "smtk/resource/Resource.h"
 
+#include <map>
 #include <typeindex>
 #include <unordered_set>
 
@@ -25,7 +26,6 @@ namespace attribute
 {
 
 /**\brief A definition for attribute items that store component UUIDs as values.
-  *
   */
 class SMTKCORE_EXPORT ComponentItemDefinition : public ItemDefinition
 {
@@ -40,25 +40,13 @@ public:
 
   Item::Type type() const override;
 
-  bool acceptsResourceComponents(const std::string& uniqueName) const;
-  bool acceptsResourceComponents(smtk::resource::Resource::Index resourceIndex) const;
-  const std::unordered_set<smtk::resource::Resource::Index>& acceptableResourceComponents() const
+  std::multimap<std::string, std::string> acceptableResourceComponents() const
   {
     return m_acceptable;
   }
-  std::set<std::string> acceptableResourceComponentsByName() const;
 
-  bool setAcceptsResourceComponents(const std::string& uniqueName, bool accept);
-  bool setAcceptsResourceComponents(smtk::resource::Resource::Index resourceIndex, bool accept);
-
-  /// Return the mask used to accept or reject model entities as attribute values.
-  smtk::model::BitFlags membershipMask() const;
-  /**\brief Set the mask used to accept or reject entities as attribute values.
-    *
-    * This mask should include at least one dimension bit and at least one
-    * entity-type bit. See smtk::model::EntityTypeBits for valid bits.
-    */
-  void setMembershipMask(smtk::model::BitFlags entMask);
+  bool setAcceptsResourceComponents(
+    const std::string& uniqueName, const std::string& queryString, bool accept);
 
   bool isValueValid(smtk::resource::ComponentPtr entity) const;
 
@@ -81,19 +69,24 @@ public:
   void setCommonValueLabel(const std::string& elabel);
   bool usingCommonLabel() const;
 
+  // Set/Get the writable (vs read-only) property of the item defintiion.
+  // The default is true.
+  void setIsWritable(bool val) { this->m_isWritable = val; }
+  bool isWritable() const { return this->m_isWritable; }
+
   smtk::attribute::ItemDefinitionPtr createCopy(
     smtk::attribute::ItemDefinition::CopyInfo& info) const override;
 
 protected:
   ComponentItemDefinition(const std::string& myName);
 
-  smtk::model::BitFlags m_membershipMask;
   bool m_useCommonLabel;
   std::vector<std::string> m_valueLabels;
   bool m_isExtensible;
   std::size_t m_numberOfRequiredValues;
   std::size_t m_maxNumberOfValues;
-  std::unordered_set<smtk::resource::Resource::Index> m_acceptable;
+  std::multimap<std::string, std::string> m_acceptable;
+  bool m_isWritable;
 };
 
 } // namespace attribute

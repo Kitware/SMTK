@@ -67,7 +67,7 @@ if __name__ == '__main__':
 
         def write_verbose(string):
             write(string)
-            print string.replace('>>', '> >')
+            print(string.replace('>>', '> >'))
         if args.verbose:
             return write_verbose
         else:

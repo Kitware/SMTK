@@ -35,6 +35,8 @@ class SMTKCORE_EXPORT Component : smtkEnableSharedPtr(Component)
   friend class Resource;
 
 public:
+  typedef std::function<void(const ComponentPtr&)> Visitor;
+
   smtkTypeMacroBase(Component);
   virtual ~Component();
   virtual const ResourcePtr resource() const = 0;

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the CMB Discrete Model "ModelGroup" Operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
     <!-- Operation -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="entity group" BaseType="operator" Label="Model - Create Group">
       <BriefDescription>
         Create a group of cell entities. User can modify and remove the created group afterwards.
@@ -85,6 +86,7 @@
     </AttDef>
 
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(entity group)" BaseType="result">
       <ItemDefinitions>
       </ItemDefinitions>

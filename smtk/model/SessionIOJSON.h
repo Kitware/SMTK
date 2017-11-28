@@ -12,6 +12,12 @@
 
 #include "smtk/model/SessionIO.h"
 
+#include "smtk/common/CompilerInformation.h"
+
+SMTK_THIRDPARTY_PRE_INCLUDE
+#include "nlohmann/json.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
+
 struct cJSON;
 
 namespace smtk
@@ -27,33 +33,31 @@ namespace model
 class SMTKCORE_EXPORT SessionIOJSON : public SessionIO
 {
 public:
+  using json = nlohmann::json;
+
   smtkTypeMacro(SessionIOJSON);
   smtkCreateMacro(SessionIOJSON);
 
   virtual ~SessionIOJSON() {}
 
-  // New-style API
-  virtual int saveJSON(cJSON* node, const SessionRef& sref, const Models& models);
+  /**\brief Serialize a resource into a set of JSON records.
+    */
+  static json saveJSON(const smtk::model::ManagerPtr& rsrc);
 
-  // Deprecated API
-  virtual int importJSON(ManagerPtr modelMgr, const SessionPtr& session, cJSON* sessionRec,
-    bool loadNativeModels = false);
-  virtual int exportJSON(ManagerPtr modelMgr, const SessionPtr& sessPtr, cJSON* sessionRec,
-    bool writeNativeModels = false);
-  virtual int exportJSON(ManagerPtr modelMgr, const SessionPtr& session,
-    const common::UUIDs& modelIds, cJSON* sessionRec, bool writeNativeModels = false);
+  /**\brief Write a set of JSON records to the given location.
+    */
+  static bool saveModelRecords(const json& j, const std::string& url);
 
-protected:
-  virtual int writeNativeModel(smtk::model::ManagerPtr modelMgr,
-    const smtk::model::SessionPtr& sess, const smtk::model::Model& model,
-    std::string& outNativeFile);
-  virtual int loadNativeModel(smtk::model::ManagerPtr modelMgr, const smtk::model::SessionPtr& sess,
-    const std::string& inNativeFile, std::string& loadedURL);
-  virtual std::string getOutputFileNameForNativeModel(smtk::model::ManagerPtr modelMgr,
-    const smtk::model::SessionPtr& sess, const smtk::model::Model& model) const;
+  /**\brief Load JSON from a file and parse it, but do nothing more.
+    */
+  static json loadJSON(const std::string& filename);
 
-  virtual int loadModelsRecord(smtk::model::ManagerPtr modelMgr, cJSON* sessionRec);
-  virtual int loadMeshesRecord(smtk::model::ManagerPtr modelMgr, cJSON* sessionRec);
+  /**\brief Given JSON data, attempt to deserialize SMTK model records from it.
+    *
+    * If the JSON object represents model data, it is added to the
+    * given resource.
+    */
+  static bool loadModelRecords(const json& j, smtk::model::ManagerPtr rsrc);
 };
 
 } // namespace model

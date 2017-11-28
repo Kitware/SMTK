@@ -19,16 +19,17 @@ namespace bridge
 namespace discrete
 {
 
-class SMTKDISCRETESESSION_EXPORT SetProperty : public smtk::bridge::discrete::Operator
+class SMTKDISCRETESESSION_EXPORT SetProperty : public Operator
 {
 public:
   smtkTypeMacro(SetProperty);
   smtkCreateMacro(SetProperty);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSuperclassMacro(Operator);
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  const char* xmlDescription() const override;
 
   template <typename V, typename VL, typename VD, typename VI>
   void setPropertyValue(

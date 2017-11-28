@@ -23,6 +23,8 @@
 #include "smtk/io/SaveJSON.h"
 #include "smtk/io/SaveJSON.txx"
 
+#include "smtk/model/ExportModelJSON_xml.h"
+
 #include <fstream>
 
 using namespace smtk::model;
@@ -35,30 +37,31 @@ namespace smtk
 namespace model
 {
 
-smtk::model::OperatorResult ExportModelJSON::operateInternal()
+ExportModelJSON::Result ExportModelJSON::operateInternal()
 {
-  smtk::attribute::FileItemPtr filenameItem = this->findFile("filename");
-  smtk::attribute::IntItemPtr flagsItem = this->findInt("flags");
+  smtk::attribute::FileItemPtr filenameItem = this->parameters()->findFile("filename");
+  smtk::attribute::IntItemPtr flagsItem = this->parameters()->findInt("flags");
 
-  Models entities = this->associatedEntitiesAs<Models>();
+  auto associations = this->parameters()->associations();
+  Models entities(associations->begin(), associations->end());
   if (entities.empty())
   {
     smtkErrorMacro(this->log(), "No valid models selected for export.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   std::string filename = filenameItem->value();
   if (filename.empty())
   {
     smtkErrorMacro(this->log(), "A filename must be provided.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   std::ofstream jsonFile(filename.c_str(), std::ios::trunc);
   if (!jsonFile.good())
   {
     smtkErrorMacro(this->log(), "Could not open file \"" << filename << "\".");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   JSONFlags flags = static_cast<JSONFlags>(flagsItem->value(0));
@@ -68,13 +71,13 @@ smtk::model::OperatorResult ExportModelJSON::operateInternal()
   jsonFile << jsonStr;
   jsonFile.close();
 
-  return this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  return this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+}
+
+const char* ExportModelJSON::xmlDescription() const
+{
+  return ExportModelJSON_xml;
 }
 
 } //namespace model
 } // namespace smtk
-
-#include "smtk/model/ExportModelJSON_xml.h"
-
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::model::ExportModelJSON, export_model_json,
-  "export model json", ExportModelJSON_xml, smtk::model::Session);

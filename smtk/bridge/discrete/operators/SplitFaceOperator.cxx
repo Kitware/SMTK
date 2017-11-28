@@ -50,26 +50,47 @@ SplitFaceOperator::SplitFaceOperator()
 
 bool SplitFaceOperator::ableToOperate()
 {
-  smtk::model::Model model;
-  return
-    // The SMTK model must be valid
-    (model = this->specification()->findModelEntity("model")->value().as<smtk::model::Model>())
-      .isValid() &&
-    // The CMB model must exist:
-    this->discreteSession()->findModelEntity(model.entity()) &&
-    // The CMB face to split must be valid
-    this->fetchCMBFaceId() >= 0;
+  smtk::model::Model model =
+    this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
+
+  // The SMTK model must be valid
+  if (!model.isValid())
+  {
+    return false;
+  }
+
+  smtk::bridge::discrete::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::discrete::Resource>(model.component()->resource());
+
+  // The CMB model must exist:
+  if (!resource->discreteSession()->findModelEntity(model.entity()))
+  {
+    return false;
+  }
+
+  // The CMB face to split must be valid
+  if (this->fetchCMBFaceId(resource) < 0)
+  {
+    return false;
+  }
+
+  return true;
 }
 
 OperatorResult SplitFaceOperator::operateInternal()
 {
-  SessionPtr opsession = this->discreteSession();
+  smtk::model::Model model =
+    this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
+
+  smtk::bridge::discrete::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::discrete::Resource>(model.component()->resource());
+
+  SessionPtr opsession = resource->discreteSession();
+
+  vtkDiscreteModelWrapper* modelWrapper = opsession->findModelEntity(model.entity());
 
   // Translate SMTK inputs into CMB inputs
-  this->m_op->SetFeatureAngle(this->specification()->findDouble("feature angle")->value());
-  vtkDiscreteModelWrapper* modelWrapper =
-    opsession->findModelEntity(this->specification()->findModelEntity("model")->value().entity());
-  smtk::model::ManagerPtr store = this->manager();
+  this->m_op->SetFeatureAngle(this->parameters()->findDouble("feature angle")->value());
 
   bool ok = false;
   std::map<smtk::common::UUID, smtk::common::UUIDs> splitfacemaps;
@@ -78,10 +99,10 @@ OperatorResult SplitFaceOperator::operateInternal()
 
   // Translate SMTK inputs into CMB inputs
   smtk::attribute::ModelEntityItemPtr sourceItem =
-    this->specification()->findModelEntity("face to split");
+    this->parameters()->findModelEntity("face to split");
   for (std::size_t idx = 0; idx < sourceItem->numberOfValues(); idx++)
   {
-    int srcid = this->fetchCMBCellId(sourceItem, static_cast<int>(idx));
+    int srcid = this->fetchCMBCellId(resource, sourceItem, static_cast<int>(idx));
     if (srcid >= 0)
     {
       this->m_op->SetId(srcid); // "face to split"
@@ -108,7 +129,8 @@ OperatorResult SplitFaceOperator::operateInternal()
     }
   }
 
-  OperatorResult result = this->createResult(ok ? OPERATION_SUCCEEDED : OPERATION_FAILED);
+  OperatorResult result = this->createResult(
+    ok ? smtk::operation::NewOp::Outcome::SUCCEEDED : smtk::operation::NewOp::Outcome::FAILED);
 
   if (ok)
   {
@@ -119,7 +141,7 @@ OperatorResult SplitFaceOperator::operateInternal()
     // Adding new faces to the "created" item, as a convenient method
     // to get newly created faces from result.
     smtk::common::UUID modelid = opsession->findOrSetEntityUUID(modelWrapper->GetModel());
-    smtk::model::Model inModel(store, modelid);
+    smtk::model::Model inModel(resource, modelid);
     // this will remove and re-add the model so that the model topology and all
     // relationships will be reset properly.
     opsession->retranscribeModel(inModel);
@@ -133,29 +155,45 @@ OperatorResult SplitFaceOperator::operateInternal()
       vtkModelFace* origFace = vtkModelFace::SafeDownCast(opsession->entityForUUID(it->first));
       inFaceUID = opsession->findOrSetEntityUUID(origFace);
 
-      modEnts.push_back(smtk::model::EntityRef(store, inFaceUID));
+      modEnts.push_back(smtk::model::EntityRef(resource, inFaceUID));
       for (nit = it->second.begin(); nit != it->second.end(); ++nit)
       {
         vtkModelFace* newFace = vtkModelFace::SafeDownCast(opsession->entityForUUID(*nit));
         faceUUID = opsession->findOrSetEntityUUID(newFace);
-        newEnts.push_back(smtk::model::EntityRef(store, faceUUID));
+        newEnts.push_back(smtk::model::EntityRef(resource, faceUUID));
       }
     }
 
     // Return the created and/or modified faces.
     if (newEnts.size() > 0)
-      this->addEntitiesToResult(result, newEnts, CREATED);
+    {
+      smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");
+      for (auto c : newEnts)
+      {
+        created->appendValue(c.component());
+      }
+    }
     if (modEnts.size() > 0)
-      this->addEntitiesToResult(result, modEnts, MODIFIED);
+    {
+      smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
+      for (auto m : modEnts)
+      {
+        modified->appendValue(m.component());
+      }
+    }
   }
 
   return result;
 }
 
-int SplitFaceOperator::fetchCMBFaceId() const
+int SplitFaceOperator::fetchCMBFaceId(smtk::bridge::discrete::Resource::Ptr& resource) const
 {
-  vtkModelItem* item = this->discreteSession()->entityForUUID(
-    this->specification()->findModelEntity("face to split")->value().entity());
+  vtkModelItem* item =
+    resource->discreteSession()->entityForUUID(const_cast<SplitFaceOperator*>(this)
+                                                 ->parameters()
+                                                 ->findModelEntity("face to split")
+                                                 ->value()
+                                                 .entity());
   vtkModelEntity* face = dynamic_cast<vtkModelEntity*>(item);
   if (face)
     return face->GetUniquePersistentId();
@@ -163,10 +201,10 @@ int SplitFaceOperator::fetchCMBFaceId() const
   return -1;
 }
 
-int SplitFaceOperator::fetchCMBCellId(
+int SplitFaceOperator::fetchCMBCellId(smtk::bridge::discrete::Resource::Ptr& resource,
   const smtk::attribute::ModelEntityItemPtr& entItem, int idx) const
 {
-  vtkModelItem* item = this->discreteSession()->entityForUUID(entItem->value(idx).entity());
+  vtkModelItem* item = resource->discreteSession()->entityForUUID(entItem->value(idx).entity());
 
   vtkModelEntity* cell = dynamic_cast<vtkModelEntity*>(item);
   if (cell)
@@ -175,10 +213,11 @@ int SplitFaceOperator::fetchCMBCellId(
   return -1;
 }
 
+const char* SplitFaceOperator::xmlDescription() const
+{
+  return SplitFaceOperator_xml;
+}
+
 } // namespace discrete
 } // namespace bridge
-
 } // namespace smtk
-
-smtkImplementsModelOperator(SMTKDISCRETESESSION_EXPORT, smtk::bridge::discrete::SplitFaceOperator,
-  discrete_split_face, "split face", SplitFaceOperator_xml, smtk::bridge::discrete::Session);

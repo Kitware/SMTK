@@ -13,6 +13,7 @@
 #include "smtk/attribute/Collection.h"
 #include "smtk/attribute/json/jsonDefinition.h"
 #include "smtk/io/Logger.h"
+#include "smtk/resource/json/jsonResource.h"
 #include "smtk/view/json/jsonView.h"
 
 #include "smtk/CoreExports.h"
@@ -35,6 +36,7 @@ using json = nlohmann::json;
 /// Convert a SelectionManager's currentSelection() to JSON.
 SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::CollectionPtr& col)
 {
+  smtk::resource::to_json(j, smtk::static_pointer_cast<smtk::resource::Resource>(col));
   //TODO: write some meta data?
   // Write out the category and analysis information
   if (col->numberOfCategories())
@@ -115,6 +117,9 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::CollectionPtr& co
     // Create a valid collectionPtr so we can assign it to someone else
     col = smtk::attribute::Collection::create();
   }
+
+  auto temp = std::static_pointer_cast<smtk::resource::Resource>(col);
+  smtk::resource::from_json(j, temp);
 
   // Process Analysis Info
   // nlohmman's get function does not support nested map, so iterator is used

@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/bridge/mesh/operators/EulerCharacteristicRatio.h"
 
+#include "smtk/bridge/mesh/Resource.h"
 #include "smtk/bridge/mesh/Session.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -23,6 +24,8 @@
 
 #include "smtk/model/Model.h"
 
+#include "smtk/bridge/mesh/EulerCharacteristicRatio_xml.h"
+
 using namespace smtk::model;
 using namespace smtk::common;
 
@@ -36,21 +39,24 @@ namespace mesh
 smtk::model::OperatorResult EulerCharacteristicRatio::operateInternal()
 {
   // Access the associated model.
-  smtk::model::Model model =
-    this->specification()->associatedModelEntities<smtk::model::Models>()[0];
+  smtk::model::Model model = this->parameters()->associatedModelEntities<smtk::model::Models>()[0];
   if (!model.isValid())
   {
     smtkErrorMacro(this->log(), "Invalid model.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
+
+  smtk::bridge::mesh::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::mesh::Resource>(model.component()->resource());
+  smtk::bridge::mesh::Session::Ptr session = resource->session();
 
   // Access the underlying mesh collection for the model.
   smtk::mesh::CollectionPtr collection =
-    this->session()->meshManager()->findCollection(model.entity())->second;
+    session->meshManager()->findCollection(model.entity())->second;
   if (!collection->isValid())
   {
     smtkErrorMacro(this->log(), "No collection associated with this model.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   // Access the meshes from the collection.
@@ -64,7 +70,7 @@ smtk::model::OperatorResult EulerCharacteristicRatio::operateInternal()
   double eulerRatio = ((double)(eulerBoundary)) / ((double)(eulerVolume));
 
   smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+    this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
 
   // Set the double item that will hold the euler ratio.
   smtk::attribute::DoubleItemPtr eulerItem = result->findDouble("value");
@@ -78,12 +84,11 @@ smtk::model::OperatorResult EulerCharacteristicRatio::operateInternal()
   return result;
 }
 
+const char* EulerCharacteristicRatio::xmlDescription() const
+{
+  return EulerCharacteristicRatio_xml;
+}
+
 } // namespace mesh
 } // namespace bridge
 } // namespace smtk
-
-#include "smtk/bridge/mesh/EulerCharacteristicRatio_xml.h"
-
-smtkImplementsModelOperator(SMTKMESHSESSION_EXPORT, smtk::bridge::mesh::EulerCharacteristicRatio,
-  euler_characteristic_ratio, "euler characteristic ratio", EulerCharacteristicRatio_xml,
-  smtk::bridge::mesh::Session);

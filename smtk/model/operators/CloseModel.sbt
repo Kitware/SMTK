@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the model "CloseModel" Operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
     <!-- Operator -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="close model" Label="Model - Close" BaseType="operator">
       <BriefDescription>
         Close the associated models.
@@ -23,6 +24,7 @@
     </AttDef>
 
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(close model)" BaseType="result">
       <!-- The close models are stored in the base result's "expunged" item. -->
       <ItemDefinitions>

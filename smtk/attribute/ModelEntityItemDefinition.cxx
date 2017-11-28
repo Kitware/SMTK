@@ -112,7 +112,7 @@ bool ModelEntityItemDefinition::isValueValid(const smtk::model::EntityRef& c) co
     {
       typeMask |= smtk::model::GROUP_ENTITY; // if groups aren't banned, allow them.
     }
-    if (!c.as<model::Group>().meetsMembershipConstraintsInternal(c, typeMask, mustBeHomogenous))
+    if (!c.as<model::Group>().meetsMembershipConstraints(c, typeMask, mustBeHomogenous))
     {
       return false;
     }

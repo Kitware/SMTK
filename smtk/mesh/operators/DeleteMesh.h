@@ -10,23 +10,26 @@
 #ifndef __smtk_mesh_DeleteMesh_h
 #define __smtk_mesh_DeleteMesh_h
 
-#include "smtk/model/Operator.h"
+#include "smtk/operation/XMLOperator.h"
 
 namespace smtk
 {
 namespace mesh
 {
 
-class SMTKCORE_EXPORT DeleteMesh : public smtk::model::Operator
+/**\brief Delete a mesh.
+  */
+class SMTKCORE_EXPORT DeleteMesh : public smtk::operation::XMLOperator
 {
 public:
   smtkTypeMacro(DeleteMesh);
   smtkCreateMacro(DeleteMesh);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSuperclassMacro(smtk::operation::XMLOperator);
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  virtual const char* xmlDescription() const override;
 };
 
 } //namespace mesh

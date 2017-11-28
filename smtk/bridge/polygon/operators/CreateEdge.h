@@ -28,12 +28,12 @@ class SMTKPOLYGONSESSION_EXPORT CreateEdge : public Operator
 public:
   smtkTypeMacro(CreateEdge);
   smtkCreateMacro(CreateEdge);
-  smtkSharedFromThisMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
   smtkSuperclassMacro(Operator);
-  smtkDeclareModelOperator();
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  virtual const char* xmlDescription() const override;
 };
 
 } // namespace polygon

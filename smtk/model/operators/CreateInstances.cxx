@@ -23,6 +23,8 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
+#include "smtk/model/CreateInstances_xml.h"
+
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
@@ -41,7 +43,7 @@ void CreateInstances::addTabularRule(Instance& instance, const EntityRef& protot
 {
   (void)prototype;
   instance.setRule("tabular");
-  smtk::attribute::GroupItem::Ptr placements = this->findGroup("placements");
+  smtk::attribute::GroupItem::Ptr placements = this->parameters()->findGroup("placements");
   int numPlace = static_cast<int>(placements->numberOfGroups());
   FloatList pprop;
   pprop.reserve(3 * numPlace);
@@ -58,7 +60,7 @@ void CreateInstances::addUniformRandomRule(Instance& instance, const EntityRef& 
 {
   (void)prototype;
   instance.setRule("uniform random");
-  smtk::attribute::GroupItem::Ptr voi = this->findGroup("volume of interest");
+  smtk::attribute::GroupItem::Ptr voi = this->parameters()->findGroup("volume of interest");
   FloatList vprop;
   vprop.reserve(6);
   for (int axis = 0; axis < 3; ++axis)
@@ -68,14 +70,14 @@ void CreateInstances::addUniformRandomRule(Instance& instance, const EntityRef& 
     vprop.insert(vprop.end(), pt->begin(), pt->end());
   }
   instance.setFloatProperty("voi", vprop);
-  instance.setIntegerProperty("sample size", this->findInt("sample size")->value(0));
+  instance.setIntegerProperty("sample size", this->parameters()->findInt("sample size")->value(0));
   // TODO: Should we accept a seed here as a super-advanced option?
 }
 
 void CreateInstances::addSnappingConstraints(Instance& instance, const EntityRef& prototype)
 {
   (void)prototype;
-  auto snapItem = this->findModelEntity("snap to entity");
+  auto snapItem = this->parameters()->findModelEntity("snap to entity");
   if (snapItem->isEnabled())
   {
     // TODO? Check whether extension is available?
@@ -94,21 +96,26 @@ void CreateInstances::addSnappingConstraints(Instance& instance, const EntityRef
 
 smtk::model::OperatorResult CreateInstances::operateInternal()
 {
-  EntityRefArray prototypes = this->associatedEntitiesAs<EntityRefArray>();
+  auto associations = this->parameters()->associations();
+  EntityRefArray prototypes(associations->begin(), associations->end());
 
-  std::string rule = this->findString("placement rule")->value(0);
+  std::string rule = this->parameters()->findString("placement rule")->value(0);
 
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  smtk::attribute::ComponentItem::Ptr createdItem = result->findComponent("created");
+  smtk::attribute::ComponentItem::Ptr modifiedItem = result->findComponent("modified");
+
   for (auto prototype : prototypes)
   {
-    ManagerPtr mgr = prototype.manager();
-    if (mgr)
+    smtk::model::Manager::Ptr resource =
+      std::static_pointer_cast<smtk::model::Manager>(prototype.component()->resource());
+
+    if (resource)
     {
-      Instance instance = mgr->addInstance(prototype);
+      Instance instance = resource->addInstance(prototype);
       instance.assignDefaultName();
-      this->addEntityToResult(result, prototype, MODIFIED);
-      this->addEntityToResult(result, instance, CREATED);
+      createdItem->appendValue(prototype.component());
+      modifiedItem->appendValue(instance.component());
       result->findModelEntity("tess_changed")->appendValue(instance);
       if (rule == "tabular")
       {
@@ -128,10 +135,10 @@ smtk::model::OperatorResult CreateInstances::operateInternal()
   return result;
 }
 
+const char* CreateInstances::xmlDescription() const
+{
+  return CreateInstances_xml;
+}
+
 } //namespace model
 } // namespace smtk
-
-#include "smtk/model/CreateInstances_xml.h"
-
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::model::CreateInstances, create_instances,
-  "create instances", CreateInstances_xml, smtk::model::Session);

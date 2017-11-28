@@ -43,15 +43,11 @@ public:
 
   virtual bool meetsMembershipConstraints(const EntityRef& prospectiveMember);
 
+  bool meetsMembershipConstraints(
+    const EntityRef& prospectiveMember, BitFlags& typeMask, bool mustBeHomogenous);
+
   virtual void setMembershipMask(BitFlags mask);
   BitFlags membershipMask() const;
-
-protected:
-  friend class smtk::attribute::ComponentItemDefinition;
-  friend class smtk::attribute::ModelEntityItemDefinition;
-
-  bool meetsMembershipConstraintsInternal(
-    const EntityRef& prospectiveMember, BitFlags& typeMask, bool mustBeHomogenous);
 };
 
 template <typename T>

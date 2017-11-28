@@ -65,8 +65,8 @@ public:
     const std::string& referencePath = std::string());
 
   static int ofOperator(cJSON* node, smtk::model::OperatorPtr& op, smtk::model::ManagerPtr context);
-  static int ofOperatorResult(
-    cJSON* node, smtk::model::OperatorResult& resOut, smtk::model::RemoteOperatorPtr op);
+  // static int ofOperatorResult(
+  //   cJSON* node, smtk::model::OperatorResult& resOut, smtk::model::RemoteOperatorPtr op);
   static int ofDanglingEntities(cJSON* node, smtk::model::ManagerPtr context);
 
   static int ofLog(const char* jsonStr, smtk::io::Logger& log);

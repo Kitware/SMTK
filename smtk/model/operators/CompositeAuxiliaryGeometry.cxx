@@ -24,12 +24,16 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
-using namespace smtk::model;
-using smtk::attribute::FileItem;
-using smtk::attribute::StringItem;
-
 #include "smtk/model/CompositeAuxiliaryGeometry_xml.h"
 
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::model::CompositeAuxiliaryGeometry,
-  composite_auxiliary_geometry, "composite auxiliary geometry", CompositeAuxiliaryGeometry_xml,
-  smtk::model::Session);
+namespace smtk
+{
+namespace model
+{
+
+const char* CompositeAuxiliaryGeometry::xmlDescription() const
+{
+  return CompositeAuxiliaryGeometry_xml;
+}
+}
+}

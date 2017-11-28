@@ -11,10 +11,13 @@
 #define __smtk_session_polygon_internal_Neighborhood_h
 
 #include "smtk/bridge/polygon/Operator.h"
+#include "smtk/bridge/polygon/Resource.h"
+#include "smtk/bridge/polygon/Session.h"
 #include "smtk/bridge/polygon/internal/ActiveFragmentTree.h"
 
 #include "smtk/common/UnionFind.h"
 #include "smtk/model/Edge.h"
+#include "smtk/model/Manager.h"
 
 #include <list>
 #include <map>

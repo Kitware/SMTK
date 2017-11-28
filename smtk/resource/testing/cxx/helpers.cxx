@@ -11,6 +11,7 @@
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/Operator.h"
+#include "smtk/model/RegisterResources.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/SessionRef.h"
 
@@ -28,12 +29,10 @@ namespace resource
 namespace testing
 {
 
-ResourceArray loadTestResources(ManagerPtr rsrcMgr, int argc, char* argv[])
+ResourceArray loadTestResources(
+  smtk::resource::Manager::Ptr& resourceManager, int argc, char* argv[])
 {
-  smtk::model::Manager::Metadata modelResourceMetadata("model");
-  modelResourceMetadata.create = [](
-    const smtk::common::UUID&) { return smtk::model::Manager::create(); };
-  rsrcMgr->registerResource<smtk::model::Manager>(modelResourceMetadata);
+  smtk::model::registerResources(resourceManager);
 
   ResourceArray result;
   if (argc < 2)
@@ -42,14 +41,8 @@ ResourceArray loadTestResources(ManagerPtr rsrcMgr, int argc, char* argv[])
     return result;
   }
 
-  auto modelMgr = smtk::model::Manager::create();
-  auto nativeSess = modelMgr->createSession("native");
-  auto loadOp = nativeSess.op("load smtk model");
-  auto fname = loadOp->findFile("filename");
-  fname->setValue(0, argv[1]);
-  auto loadRes = loadOp->operate();
-  modelMgr->setLocation(argv[1]);
-  result.push_back(dynamic_pointer_cast<Resource>(modelMgr));
+  auto resource = resourceManager->read<smtk::model::Manager>(argv[1]);
+  result.push_back(resource);
 
   return result;
 }
