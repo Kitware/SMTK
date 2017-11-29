@@ -46,6 +46,7 @@ public:
   virtual void addItem(qtItem*);
   QList<qtItem*>& items() const;
   virtual void showAdvanceLevelOverlay(bool show);
+  bool useSelectionManager() const { return this->m_useSelectionManager; }
 
   // A basic layout for an attribute
   void createBasicLayout(bool includeAssociations);
@@ -59,6 +60,10 @@ public:
 
 public slots:
   virtual void onRequestEntityAssociation();
+  // Controls whether the Selection Manager should be used for setting model
+  // and mesh entity items - Note that this is just a hint and could be ignored
+  // due to other criteria
+  virtual void setUseSelectionManager(bool mode) { this->m_useSelectionManager = mode; }
 
 signals:
   // Signal indicates that the underlying item has been modified
@@ -76,6 +81,7 @@ protected slots:
 
 private:
   qtAttributeInternals* m_internals;
+  bool m_useSelectionManager;
 };
 
 } // namespace attribute

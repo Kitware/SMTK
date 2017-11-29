@@ -84,6 +84,8 @@ public:
 
   bool setFixedLabelWidth(int w);
   bool advanceLevelVisible() { return m_advOverlayVisible; }
+  bool useSelectionManager() const { return this->m_useSelectionManager; }
+
   virtual int advanceLevel();
   virtual bool categoryEnabled();
   virtual std::string currentCategory();
@@ -139,6 +141,7 @@ protected:
   QScrollArea* m_ScrollArea;
   bool m_isTopLevel;
   bool m_topLevelInitialized;
+  bool m_useSelectionManager;
   ViewInfo m_viewInfo;
   QPointer<qtViewInfoDialog> m_infoDialog;
 

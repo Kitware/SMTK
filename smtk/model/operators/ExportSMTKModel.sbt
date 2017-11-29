@@ -101,7 +101,7 @@
 
   <Views>
      <!-- Keep Type attribute in sync with VIEW_NAME param in CMake add_smtk_ui_view() macro: -->
-    <View Type="smtkExportModelView" Title="Export Model"  FilterByCategory="false"  FilterByAdvanceLevel="false">
+    <View Type="smtkExportModelView" Title="Export Model"  FilterByCategory="false"  FilterByAdvanceLevel="false" UseSelectionManager="true">
       <Description>
         Click the "Export" button to save the associated models to
         the ".smtk" file you specify in the "filename" widget.

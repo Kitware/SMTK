@@ -150,6 +150,7 @@ public:
   QMap<QToolButton*, QPair<QPointer<QLayout>, QPointer<QWidget> > > ExtensibleMap;
   QList<QToolButton*> MinusButtonIndices;
   QPointer<QToolButton> AddItemButton;
+  QList<QPointer<qtDiscreteValueEditor> > DiscreteEditors;
 };
 
 qtInputsItem::qtInputsItem(smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview,
@@ -623,6 +624,7 @@ void qtInputsItem::clearChildWidgets()
     delete cwidget;
   }
   this->Internals->ChildrenMap.clear();
+  this->Internals->DiscreteEditors.clear();
 }
 
 QWidget* qtInputsItem::createInputWidget(int elementIdx, QLayout* childLayout)
@@ -633,10 +635,19 @@ QWidget* qtInputsItem::createInputWidget(int elementIdx, QLayout* childLayout)
     return NULL;
   }
 
-  return (item->allowsExpressions()
-      ? this->createExpressionRefWidget(elementIdx)
-      : (item->isDiscrete() ? (new qtDiscreteValueEditor(this, elementIdx, childLayout))
-                            : this->createEditBox(elementIdx, this->Widget)));
+  if (item->allowsExpressions())
+  {
+    return this->createExpressionRefWidget(elementIdx);
+  }
+
+  if (item->isDiscrete())
+  {
+    auto editor = new qtDiscreteValueEditor(this, elementIdx, childLayout);
+    editor->setUseSelectionManager(this->m_useSelectionManager);
+    this->Internals->DiscreteEditors.append(editor);
+    return editor;
+  }
+  return this->createEditBox(elementIdx, this->Widget);
 }
 
 QWidget* qtInputsItem::createExpressionRefWidget(int elementIdx)
@@ -1214,4 +1225,18 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
 void qtInputsItem::onChildItemModified()
 {
   emit this->modified();
+}
+
+void qtInputsItem::setUseSelectionManager(bool mode)
+{
+  if (mode == this->m_useSelectionManager)
+  {
+    return;
+  }
+  this->m_useSelectionManager = mode;
+  if (mode && (this->Internals->DiscreteEditors.count() == 1))
+  {
+    this->Internals->DiscreteEditors.at(0)->setUseSelectionManager(true);
+    this->Internals->DiscreteEditors.at(0)->onInputValueChanged();
+  }
 }

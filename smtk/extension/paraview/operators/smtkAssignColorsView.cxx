@@ -65,6 +65,7 @@ public:
     if (att && att->numberOfItems() > 0)
     {
       qtAttribute* attInstance = new qtAttribute(att, pw, view);
+      attInstance->setUseSelectionManager(view->useSelectionManager());
       if (attInstance && attInstance->widget())
       {
         //Without any additional info lets use a basic layout with model associations

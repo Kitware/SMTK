@@ -284,7 +284,7 @@
     </AttDef>
   </Definitions>
   <Views>
-    <View Type="Operator" Title="Interpolate onto Mesh" FilterByAdvanceLevel="true">
+    <View Type="Operator" Title="Interpolate onto Mesh" FilterByAdvanceLevel="true" UseSelectionManager="true">
       <InstancedAttributes>
         <Att Type="interpolate onto mesh" Name="interpolate onto mesh"/>
       </InstancedAttributes>

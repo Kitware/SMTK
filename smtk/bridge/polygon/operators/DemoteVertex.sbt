@@ -44,7 +44,7 @@
         VIEW_NAME smtkPolygonVertexView
         )
       -->
-    <View Type="smtkPolygonVertexView" Title="Demote Polygon Vertex">
+    <View Type="smtkPolygonVertexView" Title="Demote Polygon Vertex"  UseSelectionManager="true">
       <AttributeTypes>
         <Att Type="demote vertex" />
       </AttributeTypes>

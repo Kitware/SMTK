@@ -271,7 +271,7 @@
     </AttDef>
   </Definitions>
   <Views>
-    <View Type="Operator" Title="Elevation Mesh" FilterByAdvanceLevel="true">
+    <View Type="Operator" Title="Elevation Mesh" FilterByAdvanceLevel="true" UseSelectionManager="true">
       <InstancedAttributes>
         <Att Type="elevate mesh" Name="elevate mesh"/>
       </InstancedAttributes>

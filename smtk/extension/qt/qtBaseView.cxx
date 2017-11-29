@@ -73,10 +73,13 @@ qtBaseView::qtBaseView(const ViewInfo& info)
   this->m_advOverlayVisible = false;
   this->m_ScrollArea = NULL;
   this->m_isTopLevel = false;
+  this->m_useSelectionManager = false;
   this->m_topLevelInitialized = false;
   if (this->m_viewInfo.m_view)
   {
     this->m_isTopLevel = this->m_viewInfo.m_view->details().attributeAsBool("TopLevel");
+    this->m_useSelectionManager =
+      this->m_viewInfo.m_view->details().attributeAsBool("UseSelectionManager");
   }
 }
 

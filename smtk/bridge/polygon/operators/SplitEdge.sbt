@@ -61,7 +61,7 @@
         VIEW_NAME smtkPolygonEdgeView
         )
       -->
-    <View Type="smtkPolygonEdgeView" Title="Split Polygon Edge">
+    <View Type="smtkPolygonEdgeView" Title="Split Polygon Edge" UseSelectionManager="true">
       <AttributeTypes>
         <Att Type="split edge" />
       </AttributeTypes>

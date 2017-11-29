@@ -45,7 +45,7 @@
       The customized view "Type" needs to match the plugin's VIEW_NAME:
       add_smtk_ui_view(...  VIEW_NAME smtkTerrainExtractionView ...)
       -->
-    <View Type="smtkTerrainExtractionView" Title="Terrain Extraction">
+    <View Type="smtkTerrainExtractionView" Title="Terrain Extraction" UseSelectionManager="true">
       <Description>
         Extract a terrain from a point cloud.
         In advanced mode, user can pick an auxiliary geomtry to view after the

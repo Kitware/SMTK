@@ -59,6 +59,7 @@ qtAttribute::qtAttribute(smtk::attribute::AttributePtr myAttribute, QWidget* p, 
 {
   this->m_internals = new qtAttributeInternals(myAttribute, p, myView);
   this->m_widget = NULL;
+  this->m_useSelectionManager = false;
   this->createWidget();
 }
 
@@ -158,7 +159,6 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
   {
     return;
   }
-
   QLayout* layout = this->m_widget->layout();
   qtItem* qItem = NULL;
   smtk::attribute::AttributePtr att = this->attribute();
@@ -196,6 +196,10 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
       {
         mitems.push_back(mitem);
       }
+      else
+      {
+        qItem->setUseSelectionManager(this->m_useSelectionManager);
+      }
     }
   }
   // if we found no model entities then there is nothing to do
@@ -210,10 +214,10 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
   // compare the bit masks of the underlying item to determine if we would have a problem using the
   // Selection Manager.  Note that there is a potential issue of multiple model entity items owned
   // by internal items. This check would not catch it.
-  if (mitems.size() == 1)
+  if ((mitems.size() == 1) && this->m_useSelectionManager)
   {
     // Simple case - there is only 1 - go ahead and set it to use the new selection manager support
-    mitems.at(0)->useSelectionManager();
+    mitems.at(0)->setUseSelectionManager(true);
   }
 }
 

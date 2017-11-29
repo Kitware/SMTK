@@ -30,7 +30,7 @@
     </AttDef>
   </Definitions>
     <Views>
-    <View Type="Operator" Title="Load Model" FilterByAdvanceLevel="true">
+    <View Type="Operator" Title="Load Model" FilterByAdvanceLevel="true" UseSelectionManager="true">
       <InstancedAttributes>
         <Att Type="load smtk model"/>
       </InstancedAttributes>

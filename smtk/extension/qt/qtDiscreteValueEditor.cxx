@@ -64,6 +64,7 @@ public:
 qtDiscreteValueEditor::qtDiscreteValueEditor(
   qtInputsItem* item, int elementIdx, QLayout* childLayout)
   : QWidget(item->widget())
+  , m_useSelectionManager(false)
 {
   this->Internals = new qtDiscreteValueEditorInternals(item, elementIdx, childLayout);
   this->createWidget();
@@ -262,12 +263,13 @@ void qtDiscreteValueEditor::onInputValueChanged()
         }
       }
     }
-    if (mitems.size() == 1)
+    if (this->m_useSelectionManager && (mitems.size() == 1))
     {
       // Simple case - there is only 1
       // model entity item - go ahead and set it to use the new selection manager support
-      mitems.at(0)->useSelectionManager();
+      mitems.at(0)->setUseSelectionManager(true);
     }
+
     this->Internals->m_inputItem->baseView()->setFixedLabelWidth(currentLen);
     this->Internals->m_hintChildWidth = this->Internals->m_childrenFrame->width();
     this->Internals->m_hintChildHeight = this->Internals->m_childrenFrame->height();

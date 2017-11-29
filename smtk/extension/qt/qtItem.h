@@ -73,6 +73,13 @@ public:
 
   bool passAdvancedCheck();
   void showAdvanceLevelOverlay(bool);
+  bool useSelectionManager() const { return this->m_useSelectionManager; }
+
+public slots:
+  // Controls whether the Selection Manager should be used for setting model
+  // and mesh entity items - Note that this is just a hint and could be ignored
+  // due to other criteria
+  virtual void setUseSelectionManager(bool mode) { this->m_useSelectionManager = mode; }
 
 signals:
   void widgetSizeChanged();
@@ -91,6 +98,7 @@ protected:
 
   QWidget* Widget;
   bool IsLeafItem;
+  bool m_useSelectionManager;
 
 private:
   qtItemInternals* Internals;

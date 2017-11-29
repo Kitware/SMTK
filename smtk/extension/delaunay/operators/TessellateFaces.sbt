@@ -32,7 +32,7 @@
     </AttDef>
   </Definitions>
   <Views>
-    <View Type="Operator" Title="Tessellate Face" FilterByAdvanceLevel="true">
+    <View Type="Operator" Title="Tessellate Face" FilterByAdvanceLevel="true" UseSelectionManager="true">
       <InstancedAttributes>
         <Att Type="tessellate face"/>
       </InstancedAttributes>
