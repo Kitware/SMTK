@@ -20,6 +20,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <regex>
 #include <sstream>
 
 using namespace smtk::common;
@@ -75,7 +76,12 @@ bool ResourceSetWriter::writeString(
     smtk::resource::ResourcePtr resource;
     ok = resources.get(id, resource);
 
-    pugi::xml_node resourceElement = rootElement.append_child(resource->uniqueName().c_str());
+    // Create valid tag from classname, replacing "::" with "_",
+    // since colon char not valid in xml tags
+    std::regex re("::");
+    std::string tag = std::regex_replace(resource->classname(), re, "_");
+
+    pugi::xml_node resourceElement = rootElement.append_child(tag.c_str());
     resourceElement.append_attribute("id").set_value(id.c_str());
 
     if (role != Set::NOT_DEFINED)
