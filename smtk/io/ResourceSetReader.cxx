@@ -107,7 +107,10 @@ bool ResourceSetReader::readString(const std::string& content, Set& resources,
        resourceElement = resourceElement.next_sibling())
   {
     std::string tagName = resourceElement.name();
-    if (tagName != "attribute")
+
+    // Currently we only read attributes in resource sets
+    bool isAttribute = tagName == "attribute" || tagName == "smtk_attribute_Collection";
+    if (!isAttribute)
     {
       ss.str("");
       ss << "Unrecognized tag " << tagName;
@@ -132,7 +135,7 @@ bool ResourceSetReader::readString(const std::string& content, Set& resources,
       role = Set::string2Role(srole);
     }
 
-    if ((tagName == "attribute") && (role == Set::NOT_DEFINED))
+    if (isAttribute && (role == Set::NOT_DEFINED))
     {
       ss.str("");
       ss << "No role defined for attribute " << id;

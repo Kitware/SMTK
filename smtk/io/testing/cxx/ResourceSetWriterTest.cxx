@@ -11,6 +11,7 @@
 #include "smtk/io/ResourceSetWriter.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
+#include "smtk/io/ResourceSetReader.h"
 
 #include "smtk/attribute/Collection.h"
 
@@ -108,6 +109,24 @@ int main(int argc, const char* argv[])
   else
   {
     std::cout << "Wrote " << output_path << "\n";
+  }
+
+  // Verify readback
+  smtk::resource::Set readback_resources;
+  smtk::io::ResourceSetReader reader;
+  bool hasErrors = reader.readFile(output_path, readback_resources, logger);
+  if (hasErrors)
+  {
+    std::cerr << "Readback had errors\n" << logger.convertToString() << std::endl;
+    status += 1;
+  }
+  std::cout << "Read back " << output_path << std::endl;
+
+  auto numResources = readback_resources.numberOfResources();
+  if (numResources != 2)
+  {
+    std::cerr << "ERROR: Expected to read back 2 resources, got " << numResources << std::endl;
+    status += 1;
   }
 
   return status;
