@@ -27,13 +27,10 @@ py::class_< smtk::extension::vtk::io::mesh::ImportVTKData > pybind11_init_smtk_e
     .def(py::init<>())
     .def("__call__", (smtk::mesh::CollectionPtr (smtk::extension::vtk::io::mesh::ImportVTKData::*)(::std::string const &, ::smtk::mesh::ManagerPtr &, ::std::string) const) &smtk::extension::vtk::io::mesh::ImportVTKData::operator())
     .def("__call__", (bool (smtk::extension::vtk::io::mesh::ImportVTKData::*)(::std::string const &, ::smtk::mesh::CollectionPtr, ::std::string) const) &smtk::extension::vtk::io::mesh::ImportVTKData::operator())
-    .def("__call__", (smtk::mesh::MeshSet (smtk::extension::vtk::io::mesh::ImportVTKData::*)(::vtkPolyData *, ::smtk::mesh::CollectionPtr) const) &smtk::extension::vtk::io::mesh::ImportVTKData::operator())
-    .def("__call__", (bool (smtk::extension::vtk::io::mesh::ImportVTKData::*)(::vtkPolyData *, ::smtk::mesh::CollectionPtr, ::std::string) const) &smtk::extension::vtk::io::mesh::ImportVTKData::operator())
-    .def("__call__", (smtk::mesh::CollectionPtr (smtk::extension::vtk::io::mesh::ImportVTKData::*)(::vtkPolyData *, ::smtk::mesh::ManagerPtr &, ::std::string) const) &smtk::extension::vtk::io::mesh::ImportVTKData::operator())
-    .def("__call__", [&](const smtk::extension::vtk::io::mesh::ImportVTKData& importData, vtkPolyData *pd, ::smtk::mesh::ManagerPtr & manager){ return importData(pd, manager); })
-    .def("__call__", (bool (smtk::extension::vtk::io::mesh::ImportVTKData::*)(::vtkUnstructuredGrid *, ::smtk::mesh::CollectionPtr, ::std::string) const) &smtk::extension::vtk::io::mesh::ImportVTKData::operator())
-    .def("__call__", (smtk::mesh::CollectionPtr (smtk::extension::vtk::io::mesh::ImportVTKData::*)(::vtkUnstructuredGrid *, ::smtk::mesh::ManagerPtr &, ::std::string) const) &smtk::extension::vtk::io::mesh::ImportVTKData::operator())
-    .def("__call__", [&](const smtk::extension::vtk::io::mesh::ImportVTKData& importData, vtkUnstructuredGrid *ug, ::smtk::mesh::ManagerPtr & manager){ return importData(ug, manager); })
+    .def("__call__", (smtk::mesh::MeshSet (smtk::extension::vtk::io::mesh::ImportVTKData::*)(::vtkDataSet *, ::smtk::mesh::CollectionPtr) const) &smtk::extension::vtk::io::mesh::ImportVTKData::operator())
+    .def("__call__", (bool (smtk::extension::vtk::io::mesh::ImportVTKData::*)(::vtkDataSet *, ::smtk::mesh::CollectionPtr, ::std::string) const) &smtk::extension::vtk::io::mesh::ImportVTKData::operator())
+    .def("__call__", (smtk::mesh::CollectionPtr (smtk::extension::vtk::io::mesh::ImportVTKData::*)(::vtkDataSet *, ::smtk::mesh::ManagerPtr &, ::std::string) const) &smtk::extension::vtk::io::mesh::ImportVTKData::operator())
+    .def("__call__", [&](const smtk::extension::vtk::io::mesh::ImportVTKData& importData, vtkDataSet *pd, ::smtk::mesh::ManagerPtr & manager){ return importData(pd, manager); })
     ;
   return instance;
 }
