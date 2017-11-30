@@ -97,7 +97,7 @@
 
       <Hints>
         <ReaderFactory extensions="smtk" file_description="SMTK Model Geometry Files"/>
-        <Representation view="RenderView" type="SMTKModelRepresentation" />
+        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
       </Hints>
     </SourceProxy>
 

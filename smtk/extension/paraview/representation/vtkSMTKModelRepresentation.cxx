@@ -212,14 +212,20 @@ int vtkSMTKModelRepresentation::ProcessViewRequest(
   }
   else if (request_type == vtkPVView::REQUEST_RENDER())
   {
-    // Update model entity attributes
+    // Update model entity and glyph attributes
+    // vtkDataObject* (blocks) in the multi-block may have changed after
+    // updating the pipeline, so UpdateEntityAttributes and UpdateInstanceAttributes
+    // are called here to ensure the block attributes are updated with the current
+    // block pointers. To do this, it uses the flat-index mapped attributes stored in
+    // this class.
     auto producerPort = vtkPVRenderView::GetPieceProducer(inInfo, this, 0);
     this->EntityMapper->SetInputConnection(0, producerPort);
     auto data = producerPort->GetProducer()->GetOutputDataObject(0);
+    this->UpdateColoringParameters();
 
     if (this->BlockAttributeTime < data->GetMTime() || this->BlockAttrChanged)
     {
-      this->UpdateBlockAttributes(this->EntityMapper.GetPointer());
+      this->UpdateEntityAttributes(this->EntityMapper.GetPointer());
       this->BlockAttributeTime.Modified();
       this->BlockAttrChanged = false;
     }
@@ -372,6 +378,12 @@ void vtkSMTKModelRepresentation::SetMapScalars(int val)
   this->GlyphMapper->SetColorMode(mapToColorMode[val]);
 }
 
+void vtkSMTKModelRepresentation::SetInterpolateScalarsBeforeMapping(int val)
+{
+  this->EntityMapper->SetInterpolateScalarsBeforeMapping(val);
+  this->GlyphMapper->SetInterpolateScalarsBeforeMapping(val);
+}
+
 void vtkSMTKModelRepresentation::UpdateSelection(
   vtkMultiBlockDataSet* data, vtkCompositeDataDisplayAttributes* blockAttr, vtkActor* actor)
 {
@@ -517,6 +529,12 @@ void vtkSMTKModelRepresentation::SetSelectionPointSize(double val)
   this->SelectedGlyphEntities->GetProperty()->SetPointSize(val);
 }
 
+void vtkSMTKModelRepresentation::SetLookupTable(vtkScalarsToColors* val)
+{
+  this->EntityMapper->SetLookupTable(val);
+  this->GlyphMapper->SetLookupTable(val);
+}
+
 void vtkSMTKModelRepresentation::SetSelectionLineWidth(double val)
 {
   this->SelectedEntities->GetProperty()->SetLineWidth(val);
@@ -591,6 +609,12 @@ void vtkSMTKModelRepresentation::SetSpecularPower(double val)
   this->GlyphEntities->GetProperty()->SetSpecularPower(val);
 }
 
+void vtkSMTKModelRepresentation::SetSpecular(double val)
+{
+  this->Entities->GetProperty()->SetSpecular(val);
+  this->GlyphEntities->GetProperty()->SetSpecular(val);
+}
+
 void vtkSMTKModelRepresentation::SetAmbient(double val)
 {
   this->Entities->GetProperty()->SetAmbient(val);
@@ -603,7 +627,58 @@ void vtkSMTKModelRepresentation::SetDiffuse(double val)
   this->GlyphEntities->GetProperty()->SetDiffuse(val);
 }
 
-void vtkSMTKModelRepresentation::UpdateBlockAttributes(vtkMapper* mapper)
+void vtkSMTKModelRepresentation::UpdateColoringParameters()
+{
+  bool using_scalar_coloring = false;
+  vtkInformation* info = this->GetInputArrayInformation(0);
+  if (info && info->Has(vtkDataObject::FIELD_ASSOCIATION()) &&
+    info->Has(vtkDataObject::FIELD_NAME()))
+  {
+    const char* colorArrayName = info->Get(vtkDataObject::FIELD_NAME());
+    int fieldAssociation = info->Get(vtkDataObject::FIELD_ASSOCIATION());
+    if (colorArrayName && colorArrayName[0])
+    {
+      this->EntityMapper->SetScalarVisibility(1);
+      this->EntityMapper->SelectColorArray(colorArrayName);
+      this->EntityMapper->SetUseLookupTableScalarRange(1);
+      this->GlyphMapper->SetScalarVisibility(1);
+      this->GlyphMapper->SelectColorArray(colorArrayName);
+      this->GlyphMapper->SetUseLookupTableScalarRange(1);
+      switch (fieldAssociation)
+      {
+        case vtkDataObject::FIELD_ASSOCIATION_CELLS:
+          this->EntityMapper->SetScalarMode(VTK_SCALAR_MODE_USE_CELL_FIELD_DATA);
+          this->GlyphMapper->SetScalarMode(VTK_SCALAR_MODE_USE_CELL_FIELD_DATA);
+          break;
+
+        case vtkDataObject::FIELD_ASSOCIATION_NONE:
+          this->EntityMapper->SetScalarMode(VTK_SCALAR_MODE_USE_FIELD_DATA);
+          this->GlyphMapper->SetScalarMode(VTK_SCALAR_MODE_USE_FIELD_DATA);
+          // Color entire block by zeroth tuple in the field data
+          this->EntityMapper->SetFieldDataTupleId(0);
+          this->GlyphMapper->SetFieldDataTupleId(0);
+          break;
+
+        case vtkDataObject::FIELD_ASSOCIATION_POINTS:
+        default:
+          this->EntityMapper->SetScalarMode(VTK_SCALAR_MODE_USE_POINT_FIELD_DATA);
+          this->GlyphMapper->SetScalarMode(VTK_SCALAR_MODE_USE_POINT_FIELD_DATA);
+          break;
+      }
+      using_scalar_coloring = true;
+    }
+  }
+
+  if (!using_scalar_coloring)
+  {
+    this->EntityMapper->SetScalarVisibility(0);
+    this->EntityMapper->SelectColorArray(nullptr);
+    this->GlyphMapper->SetScalarVisibility(0);
+    this->GlyphMapper->SelectColorArray(nullptr);
+  }
+}
+
+void vtkSMTKModelRepresentation::UpdateEntityAttributes(vtkMapper* mapper)
 {
   auto cpm = vtkCompositePolyDataMapper2::SafeDownCast(mapper);
   if (!cpm)

@@ -17,16 +17,16 @@
 #define smtk_extension_paraview_representation_vtkSMSMTKModelRepresentationProxy_h
 
 #include "smtk/extension/paraview/representation/Exports.h" //needed for exports
-#include "vtkSMRepresentationProxy.h"
+#include "vtkSMPVRepresentationProxy.h"
 
 class vtkSMTKModelRepresentation;
 
 class SMTKREPRESENTATIONPLUGIN_EXPORT vtkSMSMTKModelRepresentationProxy
-  : public vtkSMRepresentationProxy
+  : public vtkSMPVRepresentationProxy
 {
 public:
   static vtkSMSMTKModelRepresentationProxy* New();
-  vtkTypeMacro(vtkSMSMTKModelRepresentationProxy, vtkSMRepresentationProxy);
+  vtkTypeMacro(vtkSMSMTKModelRepresentationProxy, vtkSMPVRepresentationProxy);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /**

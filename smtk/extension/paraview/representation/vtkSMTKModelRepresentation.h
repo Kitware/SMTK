@@ -27,6 +27,7 @@ class vtkDataObject;
 class vtkGlyph3DMapper;
 class vtkMapper;
 class vtkMultiBlockDataSet;
+class vtkScalarsToColors;
 class vtkSelection;
 class vtkTexture;
 
@@ -75,8 +76,10 @@ public:
    * Model rendering properties. Forwarded to the relevant vtkProperty instances.
    */
   void SetMapScalars(int val);
+  void SetInterpolateScalarsBeforeMapping(int val);
   void SetPointSize(double val);
   void SetLineWidth(double val);
+  void SetLookupTable(vtkScalarsToColors* val);
 
   //@{
   /**
@@ -93,6 +96,7 @@ public:
   void SetOrigin(double x, double y, double z);
   void SetUserTransform(const double matrix[16]);
   void SetSpecularPower(double val);
+  void SetSpecular(double val);
   void SetDiffuse(double val);
   void SetAmbient(double val);
   void SetPickable(int val);
@@ -179,11 +183,22 @@ protected:
    */
   void ClearSelection(vtkMapper* mapper);
 
+  /**
+   * Update the active coloring mode (scalar coloring, etc.).
+   */
+  void UpdateColoringParameters();
+
   //@{
   /**
-   * Update block attributes on entities and instance placements.
+   * Block attributes in a mapper are referenced to each block through DataObject
+   * pointers. Since DataObjects may change after updating the pipeline, this class
+   * maintains an additional map using the flat-index as a key.  This method updates
+   * the mapper's attributes with those cached in this representation; This is done
+   * after the data has updated (multi-block nodes change after an update).
+   *
+   * \sa vtkGeometryRepresentation
    */
-  void UpdateBlockAttributes(vtkMapper* mapper);
+  void UpdateEntityAttributes(vtkMapper* mapper);
   void UpdateGlyphBlockAttributes(vtkGlyph3DMapper* mapper);
   //@}
 
