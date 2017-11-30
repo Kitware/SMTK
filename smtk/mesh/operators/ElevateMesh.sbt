@@ -61,11 +61,6 @@
                   <BriefDescription>Input data greater than this value will be ignored.</BriefDescription>
                 </Double>
 
-                <Void Name="invert scalars" Label="Invert Scalar Values"
-                      Optional="true" IsEnabledByDefault="false">
-                  <BriefDescription>This toggle adds a prefactor of -1 to the values in the external data set prior to averaging.</BriefDescription>
-                </Void>
-
               </ItemDefinitions>
 
             </Group>

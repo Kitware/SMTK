@@ -153,39 +153,37 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
   // Access the power parameter
   smtk::attribute::DoubleItem::Ptr powerItem = this->findDouble("power");
 
-  // Access the min elevation parameter
-  smtk::attribute::DoubleItem::Ptr minElevationItem = this->findDouble("min elevation");
-
-  // Access the max elevation parameter
-  smtk::attribute::DoubleItem::Ptr maxElevationItem = this->findDouble("max elevation");
-
-  // Access the invert scalars parameter
-  smtk::attribute::VoidItem::Ptr invertScalarsItem = this->findVoid("invert scalars");
-
-  // Access the min threshold parameter
-  smtk::attribute::DoubleItem::Ptr minThresholdItem = this->findDouble("min threshold");
-
-  // Access the max threshold parameter
-  smtk::attribute::DoubleItem::Ptr maxThresholdItem = this->findDouble("max threshold");
-
   // Construct a prefilter for the input data
   std::function<bool(double)> prefilter = [](double) { return true; };
-  if (minThresholdItem && minThresholdItem->isEnabled() && maxThresholdItem &&
-    maxThresholdItem->isEnabled())
   {
-    double minThreshold = minThresholdItem->value();
-    double maxThreshold = maxThresholdItem->value();
-    prefilter = [=](double d) { return d >= minThreshold && d <= maxThreshold; };
-  }
-  else if (minThresholdItem && minThresholdItem->isEnabled())
-  {
-    double minThreshold = minThresholdItem->value();
-    prefilter = [=](double d) { return d >= minThreshold; };
-  }
-  else if (maxThresholdItem && maxThresholdItem->isEnabled())
-  {
-    double maxThreshold = maxThresholdItem->value();
-    prefilter = [=](double d) { return d <= maxThreshold; };
+    // Access the input filter parameter group
+    smtk::attribute::GroupItem::Ptr inputFilterItem = this->findGroup("input filter");
+
+    // Access the min threshold parameter
+    smtk::attribute::DoubleItem::Ptr minThresholdItem =
+      inputFilterItem->findAs<smtk::attribute::DoubleItem>("min threshold");
+
+    // Access the max threshold parameter
+    smtk::attribute::DoubleItem::Ptr maxThresholdItem =
+      inputFilterItem->findAs<smtk::attribute::DoubleItem>("max threshold");
+
+    if (minThresholdItem && minThresholdItem->isEnabled() && maxThresholdItem &&
+      maxThresholdItem->isEnabled())
+    {
+      double minThreshold = minThresholdItem->value();
+      double maxThreshold = maxThresholdItem->value();
+      prefilter = [=](double d) { return d >= minThreshold && d <= maxThreshold; };
+    }
+    else if (minThresholdItem && minThresholdItem->isEnabled())
+    {
+      double minThreshold = minThresholdItem->value();
+      prefilter = [=](double d) { return d >= minThreshold; };
+    }
+    else if (maxThresholdItem && maxThresholdItem->isEnabled())
+    {
+      double maxThreshold = maxThresholdItem->value();
+      prefilter = [=](double d) { return d <= maxThreshold; };
+    }
   }
 
   // Construct a function that takes an input point and returns a value
@@ -291,11 +289,19 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
     return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  // Construct a function that inverts and clips its input, according to the
-  // input parameters
+  // Construct a function that clips its input according to the input parameters
   std::function<double(double)> postProcess;
   {
-    double prefactor = invertScalarsItem && invertScalarsItem->isEnabled() ? -1. : 1.;
+    // Access the output filter parameter group
+    smtk::attribute::GroupItem::Ptr outputFilterItem = this->findGroup("output filter");
+
+    // Access the min elevation parameter
+    smtk::attribute::DoubleItem::Ptr minElevationItem =
+      outputFilterItem->findAs<smtk::attribute::DoubleItem>("min elevation");
+
+    // Access the max elevation parameter
+    smtk::attribute::DoubleItem::Ptr maxElevationItem =
+      outputFilterItem->findAs<smtk::attribute::DoubleItem>("max elevation");
 
     if (minElevationItem && minElevationItem->isEnabled() && maxElevationItem &&
       maxElevationItem->isEnabled())
@@ -303,30 +309,23 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
       double minElevation = minElevationItem->value();
       double maxElevation = maxElevationItem->value();
       postProcess = [=](double input) {
-        double output = prefactor * input;
         return (
-          output < minElevation ? minElevation : (output > maxElevation ? maxElevation : output));
+          input < minElevation ? minElevation : (input > maxElevation ? maxElevation : input));
       };
     }
     else if (minElevationItem && minElevationItem->isEnabled())
     {
       double minElevation = minElevationItem->value();
-      postProcess = [=](double input) {
-        double output = prefactor * input;
-        return (output < minElevation ? minElevation : output);
-      };
+      postProcess = [=](double input) { return (input < minElevation ? minElevation : input); };
     }
     else if (maxElevationItem && maxElevationItem->isEnabled())
     {
       double maxElevation = maxElevationItem->value();
-      postProcess = [=](double input) {
-        double output = prefactor * input;
-        return (output > maxElevation ? maxElevation : output);
-      };
+      postProcess = [=](double input) { return (input > maxElevation ? maxElevation : input); };
     }
     else
     {
-      postProcess = [=](double input) { return prefactor * input; };
+      postProcess = [=](double input) { return input; };
     }
   }
 
@@ -347,7 +346,7 @@ smtk::model::OperatorResult ElevateMesh::operateInternal()
     }
   }
 
-  // Combine the radial average function with the elevation clipping/inverting function.
+  // Combine the radial average function with the elevation clipping function.
   std::function<std::array<double, 3>(std::array<double, 3>)> fn = [&](std::array<double, 3> x) {
     double z = postProcess(interpolation(x));
     if (std::isnan(z))
