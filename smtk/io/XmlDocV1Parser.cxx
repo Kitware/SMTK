@@ -15,6 +15,8 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Collection.h"
+#include "smtk/attribute/ComponentItem.h"
+#include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/DateTimeItemDefinition.h"
 #include "smtk/attribute/Definition.h"
@@ -857,6 +859,11 @@ void XmlDocV1Parser::processDefinition(xml_node& defNode, smtk::attribute::Defin
         this->processDateTimeDef(
           node, smtk::dynamic_pointer_cast<smtk::attribute::DateTimeItemDefinition>(idef));
         break;
+      case smtk::attribute::Item::ComponentType:
+        idef = def->addItemDefinition<smtk::attribute::ComponentItemDefinition>(itemName);
+        this->processComponentDef(
+          node, smtk::dynamic_pointer_cast<smtk::attribute::ComponentItemDefinition>(idef));
+        break;
 
       default:
         smtkErrorMacro(this->m_logger, "Unsupported Item definition Type: "
@@ -1039,6 +1046,14 @@ void XmlDocV1Parser::processDateTimeDef(
   (void)node;
   smtkWarningMacro(this->m_logger,
     "DateTime item defs only supported starting Attribute Version 3 Format" << idef->name());
+}
+
+void XmlDocV1Parser::processComponentDef(
+  pugi::xml_node& node, attribute::ComponentItemDefinitionPtr idef)
+{
+  (void)node;
+  smtkWarningMacro(this->m_logger,
+    "Component item defs only supported starting Attribute Version 3 Format" << idef->name());
 }
 
 void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemDefinitionPtr idef)
@@ -1266,6 +1281,17 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
         {
           this->processDateTimeDef(
             cinode, smtk::dynamic_pointer_cast<smtk::attribute::DateTimeItemDefinition>(cidef));
+        }
+        else
+        {
+          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+        }
+        break;
+      case smtk::attribute::Item::ComponentType:
+        if ((cidef = idef->addItemDefinition<smtk::attribute::ComponentItemDefinition>(citemName)))
+        {
+          this->processComponentDef(
+            cinode, smtk::dynamic_pointer_cast<smtk::attribute::ComponentItemDefinition>(cidef));
         }
         else
         {
@@ -1628,6 +1654,17 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         this->processDateTimeDef(
           child, smtk::dynamic_pointer_cast<smtk::attribute::DateTimeItemDefinition>(idef));
         break;
+      case smtk::attribute::Item::ComponentType:
+        idef = def->addItemDefinition<smtk::attribute::ComponentItemDefinition>(itemName);
+        if (!idef)
+        {
+          smtkErrorMacro(this->m_logger, "Failed to create Component Item definition Type: "
+              << child.name() << " needed to create Group Definition: " << def->name());
+          continue;
+        }
+        this->processComponentDef(
+          child, smtk::dynamic_pointer_cast<smtk::attribute::ComponentItemDefinition>(idef));
+        break;
       default:
         smtkErrorMacro(this->m_logger, "Unsupported Item definition Type: "
             << child.name() << " needed to create Group Definition: " << def->name());
@@ -1873,6 +1910,10 @@ void XmlDocV1Parser::processItem(xml_node& node, smtk::attribute::ItemPtr item)
     case smtk::attribute::Item::DateTimeType:
       this->processDateTimeItem(
         node, smtk::dynamic_pointer_cast<smtk::attribute::DateTimeItem>(item));
+      break;
+    case smtk::attribute::Item::ComponentType:
+      this->processComponentItem(
+        node, smtk::dynamic_pointer_cast<smtk::attribute::ComponentItem>(item));
       break;
     case smtk::attribute::Item::VoidType:
       // Nothing to do!
@@ -2199,6 +2240,13 @@ void XmlDocV1Parser::processDateTimeItem(pugi::xml_node& node, attribute::DateTi
   (void)node;
   smtkWarningMacro(this->m_logger,
     "DateTime items only supported starting Attribute Version 3 Format" << item->name());
+}
+
+void XmlDocV1Parser::processComponentItem(pugi::xml_node& node, attribute::ComponentItemPtr item)
+{
+  (void)node;
+  smtkWarningMacro(this->m_logger,
+    "Component items only supported starting Attribute Version 3 Format" << item->name());
 }
 
 void XmlDocV1Parser::processFileItem(pugi::xml_node& node, attribute::FileItemPtr item)

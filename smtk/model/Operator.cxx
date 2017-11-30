@@ -104,104 +104,6 @@ static void markResultModels(OperatorResult result)
   markResultModels(result->findModelEntity("tess_changed"), visited, clean);
 }
 
-/**\brief Perform the solid modeling operation the subclass implements.
-  *
-  * This method first tests whether the operation is well-defined by
-  * invoking ableToOperate(). If it returns true, then the
-  * operateInternal() method (implemented by subclasses) is invoked.
-  *
-  * You may register callbacks to observe how the operation is
-  * proceeding: you can be signaled when the operation is about
-  * to be executed and just after it does execute. Neither will
-  * be called if the ableToOperate method returns false.
-  */
-OperatorResult Operator::operate()
-{
-  // Remember where the log was so we only serialize messages for this operation:
-  std::size_t logStart = this->log().numberOfRecords();
-
-  OperatorResult result;
-  if (this->ableToOperate())
-  {
-    // Set the debug level if specified as a convenience for subclasses:
-    smtk::attribute::IntItem::Ptr debugItem = this->specification()->findInt("debug level");
-    this->m_debugLevel = (debugItem->isEnabled() ? debugItem->value() : 0);
-    // Run the operation if possible:
-    if (!this->trigger(OperatorEventType::WILL_OPERATE))
-      result = this->operateInternal();
-    else
-      result = this->createResult(OPERATION_CANCELED);
-    // Assign names if requested:
-    smtk::attribute::IntItem::Ptr assignNamesItem;
-    int outcome = result->findInt("outcome")->value();
-    if (outcome == OPERATION_SUCCEEDED)
-    {
-      markResultModels(result);
-      if ((assignNamesItem = this->specification()->findInt("assign names")) &&
-        assignNamesItem->isEnabled() && assignNamesItem->value() != 0)
-      {
-        ModelEntityItem::Ptr thingsToName = result->findModelEntity("created");
-        EntityRefArray::const_iterator it;
-        for (it = thingsToName->begin(); it != thingsToName->end(); ++it)
-        {
-          Model model(*it);
-          if (model.isValid())
-            model.assignDefaultNames();
-        }
-      }
-    }
-    this->generateSummary(result);
-    // Now grab all log messages and serialize them into the result attribute.
-    std::size_t logEnd = this->log().numberOfRecords();
-    if (logEnd > logStart)
-    { // Serialize relevant log records to JSON.
-      cJSON* array = cJSON_CreateArray();
-      smtk::io::SaveJSON::forLog(array, this->log(), logStart, logEnd);
-      char* logstr = cJSON_Print(array);
-      cJSON_Delete(array);
-      result->findString("log")->appendValue(logstr);
-      free(logstr);
-    }
-    // Inform observers that the operation completed.
-    this->trigger(OperatorEventType::DID_OPERATE, result);
-
-    smtk::attribute::ModelEntityItem::Ptr tess_changed = result->findModelEntity("tess_changed");
-    if (tess_changed)
-    {
-      for (auto it = tess_changed->begin(); it != tess_changed->end(); ++it)
-      {
-        smtk::mesh::CollectionPtr collection =
-          this->manager()->meshes()->collection(it->owningModel().entity());
-        if (collection && collection->isValid())
-        {
-          smtk::mesh::MeshSet modified = collection->findAssociatedMeshes(*it);
-          if (!modified.is_empty())
-          {
-            collection->removeMeshes(modified);
-          }
-        }
-      }
-    }
-  }
-  else
-  {
-    // Do not inform observers since this is currently a non-event.
-    result = this->createResult(UNABLE_TO_OPERATE);
-    // Now grab all log messages and serialize them into the result attribute.
-    std::size_t logEnd = this->log().numberOfRecords();
-    if (logEnd > logStart)
-    { // Serialize relevant log records to JSON.
-      cJSON* array = cJSON_CreateArray();
-      smtk::io::SaveJSON::forLog(array, this->log(), logStart, logEnd);
-      char* logstr = cJSON_Print(array);
-      cJSON_Delete(array);
-      result->findString("log")->appendValue(logstr);
-      free(logstr);
-    }
-  }
-  return result;
-}
-
 /// Return the manager associated with this operator (or a "null"/invalid shared-pointer).
 ManagerPtr Operator::manager() const
 {
@@ -463,6 +365,54 @@ void Operator::addEntityToResult(OperatorResult res, const EntityRef& ent, Resul
 {
   EntityRefArray tmp(1, ent);
   this->addEntitiesToResult(res, tmp, gen);
+}
+
+void Operator::postProcessResult(OperatorResult& result)
+{
+  if (!result)
+  {
+    return;
+  }
+
+  // Assign names if requested:
+  smtk::attribute::IntItem::Ptr assignNamesItem;
+  int outcome = result->findInt("outcome")->value();
+  if (outcome == OPERATION_SUCCEEDED)
+  {
+    markResultModels(result);
+    if ((assignNamesItem = this->specification()->findInt("assign names")) &&
+      assignNamesItem->isEnabled() && assignNamesItem->value() != 0)
+    {
+      ModelEntityItem::Ptr thingsToName = result->findModelEntity("created");
+      EntityRefArray::const_iterator it;
+      for (it = thingsToName->begin(); it != thingsToName->end(); ++it)
+      {
+        Model model(*it);
+        if (model.isValid())
+          model.assignDefaultNames();
+      }
+    }
+  }
+
+  smtk::attribute::ModelEntityItem::Ptr tess_changed = result->findModelEntity("tess_changed");
+  if (tess_changed)
+  {
+    for (auto it = tess_changed->begin(); it != tess_changed->end(); ++it)
+    {
+      smtk::mesh::CollectionPtr collection =
+        this->manager()->meshes()->collection(it->owningModel().entity());
+      if (collection && collection->isValid())
+      {
+        smtk::mesh::MeshSet modified = collection->findAssociatedMeshes(*it);
+        if (!modified.is_empty())
+        {
+          collection->removeMeshes(modified);
+        }
+      }
+    }
+  }
+
+  this->Superclass::postProcessResult(result);
 }
 
 } // model namespace

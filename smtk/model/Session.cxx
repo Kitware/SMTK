@@ -25,6 +25,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Collection.h"
+#include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
@@ -37,6 +38,7 @@ using smtk::attribute::Definition;
 using smtk::attribute::DefinitionPtr;
 using smtk::attribute::IntItemDefinition;
 using smtk::attribute::ModelEntityItemDefinition;
+using smtk::attribute::ComponentItemDefinition;
 using smtk::attribute::StringItemDefinition;
 
 namespace smtk
@@ -1008,6 +1010,10 @@ void Session::initializeOperatorCollection(const OperatorConstructors* opList)
   ModelEntityItemDefinition::Ptr entcreDefn = ModelEntityItemDefinition::New("created");
   ModelEntityItemDefinition::Ptr entmodDefn = ModelEntityItemDefinition::New("modified");
   ModelEntityItemDefinition::Ptr entremDefn = ModelEntityItemDefinition::New("expunged");
+  ComponentItemDefinition::Ptr cmpcreDefn = ComponentItemDefinition::New("created components");
+  ComponentItemDefinition::Ptr cmpmodDefn = ComponentItemDefinition::New("modified components");
+  ComponentItemDefinition::Ptr cmpremDefn = ComponentItemDefinition::New("expunged components");
+  ComponentItemDefinition::Ptr cmptssDefn = ComponentItemDefinition::New("tessellated components");
 
   StringItemDefinition::Ptr logDefn = StringItemDefinition::New("log");
   outcomeDefn->setNumberOfRequiredValues(1);
@@ -1021,6 +1027,23 @@ void Session::initializeOperatorCollection(const OperatorConstructors* opList)
   entremDefn->setNumberOfRequiredValues(0);
   entremDefn->setIsOptional(true);
   entremDefn->setIsExtensible(true);
+  cmpcreDefn->setNumberOfRequiredValues(0);
+  cmpcreDefn->setIsOptional(true);
+  cmpcreDefn->setIsExtensible(true);
+  cmpmodDefn->setNumberOfRequiredValues(0);
+  cmpmodDefn->setIsOptional(true);
+  cmpmodDefn->setIsExtensible(true);
+  cmpremDefn->setNumberOfRequiredValues(0);
+  cmpremDefn->setIsOptional(true);
+  cmpremDefn->setIsExtensible(true);
+  cmptssDefn->setNumberOfRequiredValues(0);
+  cmptssDefn->setIsOptional(true);
+  cmptssDefn->setIsExtensible(true);
+
+  cmpcreDefn->setAcceptsResourceComponents("model", true);
+  cmpmodDefn->setAcceptsResourceComponents("model", true);
+  cmpremDefn->setAcceptsResourceComponents("model", true);
+  cmptssDefn->setAcceptsResourceComponents("model", true);
 
   logDefn->setNumberOfRequiredValues(0);
   logDefn->setIsExtensible(1);
@@ -1030,6 +1053,10 @@ void Session::initializeOperatorCollection(const OperatorConstructors* opList)
   resultdefn->addItemDefinition(entcreDefn);
   resultdefn->addItemDefinition(entmodDefn);
   resultdefn->addItemDefinition(entremDefn);
+  resultdefn->addItemDefinition(cmpcreDefn);
+  resultdefn->addItemDefinition(cmpmodDefn);
+  resultdefn->addItemDefinition(cmpremDefn);
+  resultdefn->addItemDefinition(cmptssDefn);
   resultdefn->addItemDefinition(logDefn);
 
   if (!opList && this->inheritsOperators())

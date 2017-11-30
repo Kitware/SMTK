@@ -129,8 +129,10 @@ int main(int argc, char* argv[])
     if (f.isValid() && f.hasTessellation()->conn().size() > 8)
     {
       std::cout << "Attempting face split\n";
-      smtk::model::OperatorPtr splitFace = model.op("split face");
-      splitFace->specification()->findModelEntity("face to split")->setValue(f);
+      smtk::model::OperatorPtr splitFace = session->op("split face");
+      auto faceToSplit = splitFace->specification()->findModelEntity("face to split");
+      faceToSplit->setNumberOfValues(1);
+      faceToSplit->setValue(f);
       splitFace->specification()->findModelEntity("model")->setValue(
         *manager->entitiesMatchingFlagsAs<Models>(smtk::model::MODEL_ENTITY).begin());
       splitFace->specification()->findDouble("feature angle")->setValue(15.0);

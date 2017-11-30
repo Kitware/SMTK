@@ -67,6 +67,7 @@ cJSON* cJSON_AddAttributeSpec(cJSON* opEntry,
       spec, static_cast<bool>(smtk::attribute::Collection::FORCE_COPY_ASSOCIATIONS));
     smtk::io::Logger log;
     smtk::io::AttributeWriter wri;
+    wri.setFileVersion(3); // Why isn't this the default? Is setMaxFileVersion bad?
     wri.includeDefinitions(false);
     wri.includeInstances(true);
     wri.includeModelInformation(false);
@@ -734,6 +735,7 @@ int SaveJSON::forOperatorDefinitions(smtk::attribute::CollectionPtr opSys, cJSON
 {
   smtk::io::Logger log;
   smtk::io::AttributeWriter wri;
+  wri.setFileVersion(3); // Why isn't this the default? Is setMaxFileVersion bad?
   wri.includeDefinitions(true);
   wri.includeInstances(false);
   wri.includeModelInformation(false);

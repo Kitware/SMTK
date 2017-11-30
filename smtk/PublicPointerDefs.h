@@ -195,7 +195,11 @@ typedef std::vector<smtk::model::VolumeUse> VolumeUses;
 
 namespace view
 {
+class ComponentPhrase;
 class DescriptivePhrase;
+class PhraseList;
+class PhraseModel;
+class ResourcePhrase;
 class SubphraseGenerator;
 class View;
 }
@@ -234,10 +238,12 @@ typedef smtk::shared_ptr<smtk::io::Logger> LoggerPtr;
 namespace resource
 {
 typedef smtk::shared_ptr<smtk::resource::Manager> ManagerPtr;
+typedef smtk::weak_ptr<smtk::resource::Manager> WeakManagerPtr;
 typedef smtk::shared_ptr<smtk::resource::Resource> ResourcePtr;
 typedef smtk::shared_ptr<smtk::resource::Component> ComponentPtr;
 typedef std::set<smtk::resource::ComponentPtr> ComponentSet;
 typedef smtk::shared_ptr<smtk::resource::SelectionManager> SelectionManagerPtr;
+typedef smtk::weak_ptr<smtk::resource::Resource> WeakResourcePtr;
 typedef smtk::weak_ptr<smtk::resource::SelectionManager> WeakSelectionManagerPtr;
 typedef smtk::shared_ptr<smtk::resource::Set> SetPtr;
 typedef smtk::shared_ptr<const smtk::resource::Component> ConstComponentPtr;
@@ -423,12 +429,19 @@ typedef smtk::weak_ptr<smtk::attribute::Collection> WeakCollectionPtr;
 
 namespace view
 {
+typedef smtk::shared_ptr<smtk::view::ComponentPhrase> ComponentPhrasePtr;
+typedef smtk::weak_ptr<smtk::view::ComponentPhrase> WeakComponentPhrasePtr;
 typedef smtk::shared_ptr<smtk::view::DescriptivePhrase> DescriptivePhrasePtr;
 typedef smtk::weak_ptr<smtk::view::DescriptivePhrase> WeakDescriptivePhrasePtr;
-typedef std::vector<DescriptivePhrasePtr> DescriptivePhrases;
+typedef std::vector<smtk::view::DescriptivePhrasePtr> DescriptivePhrases;
+typedef smtk::shared_ptr<smtk::view::PhraseList> PhraseListPtr;
+typedef smtk::shared_ptr<smtk::view::PhraseModel> PhraseModelPtr;
+typedef smtk::shared_ptr<smtk::view::ResourcePhrase> ResourcePhrasePtr;
+typedef smtk::weak_ptr<smtk::view::ResourcePhrase> WeakResourcePhrasePtr;
 typedef smtk::shared_ptr<smtk::view::SubphraseGenerator> SubphraseGeneratorPtr;
 typedef smtk::weak_ptr<smtk::view::SubphraseGenerator> WeakSubphraseGeneratorPtr;
 typedef smtk::shared_ptr<smtk::view::View> ViewPtr;
+typedef smtk::weak_ptr<smtk::view::View> WeakViewPtr;
 }
 
 namespace bridge

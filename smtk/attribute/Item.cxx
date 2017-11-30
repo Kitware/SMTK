@@ -223,6 +223,10 @@ std::string Item::type2String(Item::Type t)
       return "MeshEntity";
     case DateTimeType:
       return "DateTime";
+    case ComponentType:
+      return "Component";
+    case ResourceType:
+      return "Resource";
     default:
       return "";
   }
@@ -282,6 +286,14 @@ Item::Type Item::string2Type(const std::string& s)
   if (s == "DateTime")
   {
     return DateTimeType;
+  }
+  if (s == "Component")
+  {
+    return ComponentType;
+  }
+  if (s == "Resource")
+  {
+    return ResourceType;
   }
   return NUMBER_OF_TYPES;
 }

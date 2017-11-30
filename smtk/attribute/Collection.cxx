@@ -9,15 +9,22 @@
 //=========================================================================
 
 #include "smtk/attribute/Collection.h"
+
+#include "smtk/view/View.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
-#include "smtk/common/UUID.h"
+
 #include "smtk/model/Manager.h"
-#include "smtk/view/View.h"
+
+#include "smtk/resource/Manager.h"
+#include "smtk/resource/Metadata.h"
+
+#include "smtk/common/UUID.h"
 
 #include <iostream>
 #include <queue>
@@ -25,14 +32,22 @@
 
 using namespace smtk::attribute;
 
-Collection::Collection(const smtk::common::UUID& myID, smtk::resource::Manager* manager)
-  : Resource(myID, manager)
+static void registerAttributeResource()
 {
+  smtk::attribute::Collection::Metadata metadata("attribute");
+  smtk::resource::Manager::registerResource<smtk::attribute::Collection>(metadata);
 }
 
-Collection::Collection(smtk::resource::Manager* manager)
+Collection::Collection(const smtk::common::UUID& myID, smtk::resource::ManagerPtr manager)
+  : Resource(myID, manager)
+{
+  registerAttributeResource();
+}
+
+Collection::Collection(smtk::resource::ManagerPtr manager)
   : Resource(manager)
 {
+  registerAttributeResource();
 }
 
 Collection::~Collection()

@@ -3,7 +3,9 @@ set(viewSrcs
   ComponentPhrase.cxx
   DescriptivePhrase.cxx
   PhraseList.cxx
+  PhraseModel.cxx
   ResourcePhrase.cxx
+  ResourcePhraseModel.cxx
   SubphraseGenerator.cxx
   View.cxx
 )
@@ -13,7 +15,9 @@ set(viewHeaders
   DescriptivePhrase.h
   PhraseList.h
   PhraseList.txx
+  PhraseModel.h
   ResourcePhrase.h
+  ResourcePhraseModel.h
   SubphraseGenerator.h
   SubphraseGenerator.txx
   View.h

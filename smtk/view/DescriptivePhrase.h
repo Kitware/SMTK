@@ -80,6 +80,19 @@ enum DescriptivePhraseMutability
 class SMTKCORE_EXPORT DescriptivePhrase : smtkEnableSharedPtr(DescriptivePhrase)
 {
 public:
+  /** \brief The signature of a function used to visit all or part of a phrase hierarchy.
+    *
+    * The second argument is a vector of integers specifying the indices of the phrase in
+    * its parent phrases (or empty if it has no parent). The back of the vector is the
+    * index in its immediate parent while the front holds the index of the top-level phrase
+    * to choose in order to descent the hierarchy to the current phrase, as if argFindChild()
+    * was called on each phrase during descent.
+    *
+    * The return value indicates how the hiearchy traversal should continue:
+    * return 0 to continue iterating, 1 to skip children of this phrase, or 2 to terminate immediately.
+    */
+  using Visitor = std::function<int(DescriptivePhrasePtr, std::vector<int>&)>;
+
   smtkTypeMacroBase(DescriptivePhrase);
   virtual ~DescriptivePhrase() {}
 
@@ -184,6 +197,17 @@ public:
   /// Return true if this phrase's type is any of: {STRING, FLOAT, INTEGER}_PROPERTY_VALUE
   virtual bool isPropertyValueType() const;
 
+  /**\brief Invoke \a fn on all of this phrase's **existing** children recursively.
+    *
+    * This method will not descend any phrase if areSubphrasesBuilt() returns false.
+    *
+    * The visitor \a fn should **never** modify any parents of the element
+    * in the phrase hierarchy it is called upon or the indices it is passed
+    * may become invalid. It is possible to modify the current element,
+    * including methods that will cause its children to change.
+    */
+  virtual void visitChildren(Visitor fn);
+
   /**\brief Phrase-type-based comparison method for DescriptivePhrases
     *
     * This sorts DescriptivePhrases based first on their type and then by their
@@ -203,6 +227,9 @@ protected:
 
   /// Build (if required) the cached subphrases of this phrase.
   void buildSubphrases();
+
+  /// Actual implementation of the public visitChildren() method.
+  int visitChildrenInternal(Visitor fn, std::vector<int>& indices);
 
   WeakDescriptivePhrasePtr m_parent;
   DescriptivePhraseType m_type;

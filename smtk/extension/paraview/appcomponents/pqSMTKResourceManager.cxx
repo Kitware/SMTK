@@ -10,6 +10,8 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourceManager.h"
 
 // SMTK
+#include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
 #include "smtk/extension/paraview/server/vtkSMSMTKResourceManagerProxy.h"
 #include "smtk/extension/paraview/server/vtkSMTKModelReader.h" // TODO: remove need for me
 #include "smtk/extension/paraview/server/vtkSMTKResourceManagerWrapper.h"
@@ -21,6 +23,9 @@
 #include "smtk/resource/Component.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
+
+#include "smtk/operation/Manager.h"
+#include "smtk/operation/Operator.h"
 
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
@@ -46,6 +51,7 @@ pqSMTKResourceManager::pqSMTKResourceManager(const QString& regGroup, const QStr
   vtkSMProxy* proxy, pqServer* server, QObject* parent)
   : Superclass(regGroup, regName, proxy, server, parent)
 {
+  // I. Listen for PV selections and convert them to SMTK selections
   std::cout << "pqResourceManager ctor " << parent << "\n";
   bool listening = false;
   auto app = pqApplicationCore::instance();
@@ -66,11 +72,82 @@ pqSMTKResourceManager::pqSMTKResourceManager(const QString& regGroup, const QStr
     smtkErrorMacro(smtk::io::Logger::instance(),
       "Could not connect SMTK resource manager to ParaView selection manager.");
   }
+
+  // II. Listen for operation events and signal them.
+  //     Note that what we **should** be doing is listening for these
+  //     events on a client-side operation manager used to forward
+  //     operations to the server. What we in fact do only works for
+  //     the built-in mode. TODO: Fix this.
+  auto pxy = vtkSMSMTKResourceManagerProxy::SafeDownCast(this->getProxy());
+  auto wrapper = vtkSMTKResourceManagerWrapper::SafeDownCast(pxy->GetClientSideObject());
+  if (wrapper)
+  {
+    /*
+    wrapper->GetManager()->observe([this](
+        smtk::resource::Event event,
+        const smtk::resource::ResourcePtr& rsrc)
+      {
+        switch (event)
+        {
+        case smtk::resource::Event::RESOURCE_ADDED: emit resourceAdded(rsrc); break;
+        case smtk::resource::Event::RESOURCE_REMOVED: emit resourceRemoved(rsrc); break;
+        }
+      }
+    );
+    */
+    wrapper->GetOperationManager()->observe(
+      [this](smtk::operation::Operator::Ptr oper, smtk::operation::Operator::EventType event,
+        smtk::operation::Operator::Result result) -> int {
+        emit operationEvent(oper, event, result);
+        return 0;
+      });
+  }
+  pqSMTKBehavior::instance()->addPQProxy(this);
 }
 
 pqSMTKResourceManager::~pqSMTKResourceManager()
 {
   std::cout << "pqResourceManager dtor\n";
+}
+
+vtkSMSMTKResourceManagerProxy* pqSMTKResourceManager::smtkProxy() const
+{
+  return vtkSMSMTKResourceManagerProxy::SafeDownCast(this->getProxy());
+}
+
+smtk::resource::ManagerPtr pqSMTKResourceManager::smtkResourceManager() const
+{
+  return this->smtkProxy()->GetManager();
+}
+
+smtk::operation::ManagerPtr pqSMTKResourceManager::smtkOperationManager() const
+{
+  return this->smtkProxy()->GetOperationManager();
+}
+
+smtk::resource::SelectionManagerPtr pqSMTKResourceManager::smtkSelection() const
+{
+  return this->smtkProxy()->GetSelection();
+}
+
+void pqSMTKResourceManager::addResource(pqSMTKResource* rsrc)
+{
+  auto pxy = this->smtkProxy();
+  if (pxy)
+  {
+    pxy->AddResourceProxy(rsrc->getSourceProxy());
+    emit resourceAdded(rsrc);
+  }
+}
+
+void pqSMTKResourceManager::removeResource(pqSMTKResource* rsrc)
+{
+  auto pxy = this->smtkProxy();
+  if (pxy)
+  {
+    emit resourceRemoved(rsrc);
+    pxy->RemoveResourceProxy(rsrc->getSourceProxy());
+  }
 }
 
 void pqSMTKResourceManager::paraviewSelectionChanged(pqOutputPort* port)

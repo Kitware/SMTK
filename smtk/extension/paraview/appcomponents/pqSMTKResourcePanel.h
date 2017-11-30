@@ -13,6 +13,10 @@
 
 #include <QDockWidget>
 
+class pqServer;
+class pqSMTKResource;
+class pqSMTKResourceManager;
+
 class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKResourcePanel : public QDockWidget
 {
   Q_OBJECT
@@ -22,6 +26,8 @@ public:
   pqSMTKResourcePanel(QWidget* parent = nullptr);
   ~pqSMTKResourcePanel() override;
 
+  smtk::view::PhraseModelPtr model() const;
+
   smtk::view::SubphraseGeneratorPtr phraseGenerator() const;
   void setPhraseGenerator(smtk::view::SubphraseGeneratorPtr spg);
 
@@ -30,6 +36,9 @@ public slots:
 
 protected slots:
   virtual void searchTextChanged(const QString& searchText);
+
+  virtual void resourceManagerAdded(pqSMTKResourceManager* mgr, pqServer* server);
+  virtual void resourceManagerRemoved(pqSMTKResourceManager* mgr, pqServer* server);
 
 protected:
   class Internal;

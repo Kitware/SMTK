@@ -57,17 +57,17 @@ public:
   bool setLocation(const std::string& location);
 
   // Resources that are managed have a non-null pointer to their manager.
-  Manager* manager() const { return this->m_manager; }
+  ManagerPtr manager() const { return this->m_manager.lock(); }
 
 protected:
-  Resource(const smtk::common::UUID&, Manager* manager = nullptr);
-  Resource(Manager* manager = nullptr);
+  Resource(const smtk::common::UUID&, ManagerPtr manager = nullptr);
+  Resource(ManagerPtr manager = nullptr);
 
 private:
   smtk::common::UUID m_id;
   std::string m_location;
 
-  Manager* m_manager;
+  WeakManagerPtr m_manager;
 };
 }
 }

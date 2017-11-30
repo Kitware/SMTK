@@ -66,6 +66,8 @@ public:
   smtk::resource::ManagerPtr GetManager() const { return this->ResourceManager; }
   /// Return the server's application-wide selection handler.
   smtk::resource::SelectionManagerPtr GetSelection() const { return this->SelectionManager; }
+  /// Return the server's application-wide operation manager
+  smtk::operation::ManagerPtr GetOperationManager() const { return this->OperationManager; }
 
   /// Return the SMTK selection source used by this class to indicate a hardware selection was made.
   const std::string& GetSelectionSource() const { return this->SelectionSource; }
@@ -110,6 +112,7 @@ protected:
   char* JSONResponse;
   smtk::resource::ManagerPtr ResourceManager;
   smtk::resource::SelectionManagerPtr SelectionManager;
+  smtk::operation::ManagerPtr OperationManager;
   std::string SelectionSource;
   int SelectionListener;
   int HoveredValue;

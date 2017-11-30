@@ -11,12 +11,14 @@
 #ifndef __smtk_extension_qtDescriptivePhraseModel_h
 #define __smtk_extension_qtDescriptivePhraseModel_h
 
-#include "QAbstractItemModel"
-#include "QIcon"
-
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/qt/Exports.h" // For EXPORT macro.
 #include "smtk/view/DescriptivePhrase.h"
+#include "smtk/view/PhraseModel.h"
+
+#include <QAbstractItemModel>
+#include <QIcon>
+
 #include <map>
 
 namespace smtk
@@ -24,21 +26,15 @@ namespace smtk
 namespace extension
 {
 
-/**\brief Adapt an smtk::model::Manager instance into a hierarchical Qt model.
+/**\brief Adapt an smtk::view::PhraseModel instance into a hierarchical Qt model.
   *
-  * This is done by generating instances of smtk::view::DescriptivePhrase
-  * subclasses to portray the entities in the model manager both in terms of
-  * their inherent attributes and their relations to other entities.
+  * By calling setPhraseModel(), you identify the toplevel
+  * description you wish to present; it may cover any set
+  * of model, mesh, and attribute resources.
   *
-  * By calling setPhrases() on the model, you identify the toplevel
-  * description you wish to present; it may cover any subset of
-  * an underlying model manager and may even describe entities from different
-  * model managers.
-  *
-  * You may also call setPhraseFilter() on the model with a filter.
-  * The filter is used to alter the available subphrases of each
-  * descriptive phrase for presentation. For instance, you may write a
-  * filter that omits descriptions of attributes on model items.
+  * The smtk::view::PhraseModel uses an smtk::view::SubphraseGenerator
+  * instance to create a hierarchy of smtk::view::DescriptivePhrase
+  * instances which portray the components in a set of resources.
   */
 class SMTKQTEXT_EXPORT qtDescriptivePhraseModel : public QAbstractItemModel
 {
@@ -54,8 +50,6 @@ public:
 
   static QColor defaultPhraseColor(const std::string& entityType);
 
-  void clear();
-
   /// Enumeration of model-specific data roles.
   enum DataRoles
   {
@@ -67,6 +61,8 @@ public:
     PhraseCleanRole = Qt::UserRole + 105,      //!< Is resource clean (0), dirty (1), or N/A (-1)?
     ModelActiveRole = Qt::UserRole + 106       //!< Is resource the active resource?
   };
+
+  void setPhraseModel(smtk::view::PhraseModelPtr model);
 
   QModelIndex index(int row, int column, const QModelIndex& parent) const override;
   QModelIndex parent(const QModelIndex& child) const override;
@@ -90,13 +86,12 @@ public:
 
   Qt::ItemFlags flags(const QModelIndex& index) const override;
 
-  void setRoot(view::DescriptivePhrasePtr root) { this->m_root = root; }
-
   void setDeleteOnRemoval(bool del) { this->m_deleteOnRemoval = del; }
 
   static QIcon lookupIconForPhraseFlags(view::DescriptivePhrasePtr item, QColor color);
 
   view::DescriptivePhrasePtr getItem(const QModelIndex& idx) const;
+  QModelIndex indexFromPath(const std::vector<int>& path) const;
 
   template <typename T, typename C>
   bool foreach_phrase(
@@ -109,29 +104,15 @@ public:
 
   Qt::DropActions supportedDropActions() const override;
 
-public slots:
-  /**\brief Update the model given an operator's \a result.
-    *
-    * It will always rebuild the root model index's children
-    * if the root node has a subphrase generator attached;
-    * only the differences will be emitted to the Qt model.
-    * If no subphrase generator is attached, then any
-    * expunged entities will have their corresponding phrases
-    * removed (whether they are direct children of the root
-    * node or not).
-    *
-    * All QModelIndex values currently in existence will be
-    * visited to validate that their extant children match
-    * and that they themselves have not been modified.
-    */
-  virtual void updateWithOperatorResult(const model::OperatorResult& result);
-
 signals:
   void phraseTitleChanged(const QModelIndex&);
-  void newIndexAdded(const QModelIndex& newidx);
 
 protected:
-  smtk::view::DescriptivePhrasePtr m_root;
+  void updateObserver(smtk::view::DescriptivePhrasePtr phrase, smtk::view::PhraseModelEvent event,
+    const std::vector<int>& src, const std::vector<int>& dst, const std::vector<int>& range);
+
+  smtk::view::PhraseModelPtr m_model;
+  int m_modelObserver;
   bool m_deleteOnRemoval; // remove UUIDs from mesh when they are removed from the list?
   static std::map<std::string, QColor> s_defaultColors;
   class Internal;

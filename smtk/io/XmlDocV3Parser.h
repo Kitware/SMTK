@@ -37,6 +37,13 @@ protected:
   void processDateTimeDef(
     pugi::xml_node& node, smtk::attribute::DateTimeItemDefinitionPtr idef) override;
 
+  void processComponentItem(pugi::xml_node& node, smtk::attribute::ComponentItemPtr item) override;
+  void processComponentDef(
+    pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef) override;
+
+  smtk::resource::ComponentPtr processComponentItemValue(
+    const pugi::xml_node& val, smtk::resource::ManagerPtr mgr);
+
 private:
 };
 }

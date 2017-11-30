@@ -30,6 +30,8 @@
 #include "smtk/mesh/json/Readers.h"
 #include "smtk/mesh/moab/Interface.h"
 
+#include "smtk/resource/Manager.h"
+
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/ImportMesh.h"
 #include "smtk/io/Logger.h"
@@ -312,6 +314,29 @@ int cJSON_GetRealArray(cJSON* arrayNode, std::vector<double>& values)
   }
   return count;
 }
+
+// This is a hack until we can get rid of the model manager
+smtk::resource::ManagerPtr ensureResourceManager(smtk::attribute::CollectionPtr collection)
+{
+  if (!collection)
+  {
+    return nullptr;
+  }
+
+  auto result = collection->manager();
+  if (!result)
+  {
+    result = smtk::resource::Manager::create();
+    // Ensure that both attribute and model are registered.
+    result->add(collection);
+    result->add(collection->refModelManager());
+  }
+  else
+  {
+    result->add(collection->refModelManager());
+  }
+  return result;
+}
 }
 
 namespace smtk
@@ -328,6 +353,7 @@ int cJSON_GetObjectParameters(
   if (params && params->type == cJSON_String && params->valuestring && params->valuestring[0] &&
     opspec && opspec->type == cJSON_String && opspec->valuestring && opspec->valuestring[0])
   {
+    smtk::resource::ManagerPtr rsrcMgr = ensureResourceManager(sys);
     smtk::io::Logger log;
     smtk::io::AttributeReader rdr;
     rdr.setReportDuplicateDefinitionsAsErrors(false);
@@ -701,6 +727,7 @@ int LoadJSON::ofOperatorDefinitions(cJSON* node, DefaultSessionPtr destSession)
   smtk::io::Logger log;
   smtk::io::AttributeReader rdr;
   rdr.setReportDuplicateDefinitionsAsErrors(false);
+  smtk::resource::ManagerPtr rsrcMgr = ensureResourceManager(destSession->operatorCollection());
   if (rdr.readContents(
         destSession->operatorCollection(), node->valuestring, strlen(node->valuestring), log))
   {

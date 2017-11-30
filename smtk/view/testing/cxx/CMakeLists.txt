@@ -1,5 +1,6 @@
 set(unit_tests
   unitDescriptivePhrase.cxx
+  unitJSONView.cxx
 )
 
 if (SMTK_ENABLE_POLYGON_SESSION)
@@ -12,4 +13,4 @@ if (SMTK_ENABLE_POLYGON_SESSION)
       smtkPolygonSession
       ${Boost_LIBRARIES}
   )
- endif()
+endif()

@@ -106,6 +106,7 @@ Operator::Result Operator::operate()
       result = this->createResult(OPERATION_CANCELED);
     }
 
+    this->postProcessResult(result);
     this->generateSummary(result);
 
     // Now grab all log messages and serialize them into the result attribute.
@@ -357,6 +358,54 @@ void Operator::eraseResult(Operator::Result)
 void Operator::setManager(ManagerPtr mgr)
 {
   m_manager = mgr;
+}
+
+void Operator::postProcessResult(Operator::Result& result)
+{
+  if (!result)
+  {
+    return;
+  }
+
+  this->copyModelEntityItemToComponentItem(result, "created", "created components");
+  this->copyModelEntityItemToComponentItem(result, "expunged", "expunged components");
+  this->copyModelEntityItemToComponentItem(result, "modified", "modified components");
+  this->copyModelEntityItemToComponentItem(result, "tess_changed", "tessellated components");
+}
+
+void Operator::copyModelEntityItemToComponentItem(
+  Operator::Result& res, const std::string& meItemName, const std::string& compItemName)
+{
+  smtk::attribute::ModelEntityItemPtr meItem;
+  smtk::attribute::ComponentItemPtr compItem;
+  if (!res || !(meItem = res->findModelEntity(meItemName)) ||
+    !(compItem = res->findComponent(compItemName)))
+  {
+    /* Since "tess_changed" is not in all results, allow silent failure.
+    smtkErrorMacro(smtk::io::Logger::instance(),
+      "Could not copy \"" << meItemName << "\" (" << meItem << ")"
+      " to \"" << compItemName << "\" (" << compItem << ")"
+      " for result " << res << ". At least one null pointer.");
+      */
+    return;
+  }
+
+  int nv = static_cast<int>(meItem->numberOfValues());
+  if (!compItem->setNumberOfValues(nv))
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), "Could not set \""
+        << compItemName << "\" number of values to " << nv);
+  }
+  for (int ii = 0; ii < nv; ++ii)
+  {
+    smtk::model::EntityRef item = meItem->value(ii);
+    smtk::model::EntityPtr ent;
+    if (!item.isValid(&ent))
+    {
+      ent = smtk::model::Entity::create(item.entity());
+    }
+    compItem->setValue(ii, ent);
+  }
 }
 
 void Operator::generateSummary(Operator::Result& res)

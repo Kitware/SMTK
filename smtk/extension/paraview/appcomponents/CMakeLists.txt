@@ -15,7 +15,7 @@ find_package(Qt5 REQUIRED COMPONENTS Core)
 # set up sources to build
 set(PQComponentsSrcs
   pqPluginSMTKViewBehavior.cxx
-  pqSMTKResourceManagerBehavior.cxx
+  pqSMTKBehavior.cxx
   pqSMTKSelectionFilterBehavior.cxx
   pqSMTKResource.cxx
   pqSMTKResourceManager.cxx
@@ -24,7 +24,7 @@ set(PQComponentsSrcs
 
 set(PQComponentsHeaders
   pqPluginSMTKViewBehavior.h
-  pqSMTKResourceManagerBehavior.h
+  pqSMTKBehavior.h
   pqSMTKSelectionFilterBehavior.h
   pqSMTKResource.h
   pqSMTKResourceManager.h

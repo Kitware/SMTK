@@ -92,10 +92,12 @@ public:
   smtkTypeMacro(smtk::model::Manager);
   smtkSharedPtrCreateMacro(smtk::resource::Resource);
 
-  Manager();
+  Manager(smtk::resource::ManagerPtr = smtk::resource::ManagerPtr());
+  Manager(const smtk::common::UUID& uid, smtk::resource::ManagerPtr = smtk::resource::ManagerPtr());
   Manager(shared_ptr<UUIDsToEntities> topology, shared_ptr<UUIDsToTessellations> tess,
     shared_ptr<UUIDsToTessellations> analysismesh, shared_ptr<smtk::mesh::Manager> meshes,
-    shared_ptr<UUIDsToAttributeAssignments> attribs);
+    shared_ptr<UUIDsToAttributeAssignments> attribs, const smtk::common::UUID& uid,
+    smtk::resource::ManagerPtr = smtk::resource::ManagerPtr());
   virtual ~Manager();
 
   UUIDsToEntities& topology();

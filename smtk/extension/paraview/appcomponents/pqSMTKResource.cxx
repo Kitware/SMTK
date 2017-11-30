@@ -9,7 +9,13 @@
 //=========================================================================
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
 
+#include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKResourceManager.h"
+
 #include "smtk/extension/paraview/server/vtkSMSMTKResourceManagerProxy.h"
+#include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
+
+#include "smtk/model/Manager.h"
 
 #include <iostream>
 
@@ -19,28 +25,68 @@ pqSMTKResource::pqSMTKResource(
 {
   (void)grp;
   std::cout << "SMTKResource is born!\n";
-  auto mgr = vtkSMSMTKResourceManagerProxy::Instance();
-  if (mgr)
+  auto behavior = pqSMTKBehavior::instance();
+  auto rsrcMgr = behavior->resourceManagerForServer(server);
+  auto rsrc = this->getResource();
+  if (rsrc && rsrcMgr)
   {
-    mgr->AddResourceProxy(this->getSourceProxy());
+    rsrcMgr->smtkResourceManager()->add(rsrc);
+    m_lastResource = rsrc;
   }
   QObject::connect(this, SIGNAL(dataUpdated(pqPipelineSource*)), this, SLOT(synchronizeResource()));
 }
 
 pqSMTKResource::~pqSMTKResource()
 {
-  auto mgr = vtkSMSMTKResourceManagerProxy::Instance();
-  if (mgr)
-  {
-    mgr->RemoveResourceProxy(this->getSourceProxy());
-  }
   QObject::disconnect(
     this, SIGNAL(dataUpdated(pqPipelineSource*)), this, SLOT(synchronizeResource()));
+
+  auto lastRsrc = m_lastResource.lock();
+  if (lastRsrc)
+  {
+    auto behavior = pqSMTKBehavior::instance();
+    auto rsrcMgrPxy = behavior->resourceManagerForServer(this->getServer());
+    if (rsrcMgrPxy)
+    {
+      auto rsrcMgr = rsrcMgrPxy->smtkResourceManager();
+      std::cout << "  Removing " << lastRsrc << " from mgr " << rsrcMgr << "\n";
+      rsrcMgr->remove(lastRsrc);
+    }
+  }
   std::cout << "Killing a resource and frowning at a small kitten\n";
+}
+
+smtk::resource::ResourcePtr pqSMTKResource::getResource() const
+{
+  // TODO: Actually this currently returns the server's copy and only
+  //       works in built-in mode.
+  smtk::resource::ResourcePtr rsrc;
+  auto pxy = this->getProxy()->GetClientSideObject();
+  std::cout << "get resource from " << pxy->GetClassName() << "\n";
+  auto smtkModelRdr = vtkSMTKModelReader::SafeDownCast(pxy);
+  rsrc = smtkModelRdr ? smtkModelRdr->GetSMTKResource() : nullptr;
+  return rsrc;
 }
 
 void pqSMTKResource::synchronizeResource()
 {
   std::cout << "Re-send resource\n";
-  //vtkSMSMTKResourceManagerProxy::Instance()->
+  auto lastRsrc = m_lastResource.lock();
+  auto smtkRsrc = this->getResource();
+  if (smtkRsrc != lastRsrc)
+  {
+    auto behavior = pqSMTKBehavior::instance();
+    auto rsrcMgrPxy = behavior->resourceManagerForServer(this->getServer());
+    auto rsrcMgr = rsrcMgrPxy->smtkResourceManager();
+    if (lastRsrc)
+    {
+      rsrcMgr->remove(lastRsrc);
+    }
+    m_lastResource = smtkRsrc;
+    if (smtkRsrc)
+    {
+      rsrcMgr->add(smtkRsrc);
+    }
+    emit resourceModified(smtkRsrc);
+  }
 }

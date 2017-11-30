@@ -11,8 +11,21 @@
 #include "smtk/io/XmlDocV3Parser.h"
 #define PUGIXML_HEADER_ONLY
 #include "pugixml/src/pugixml.cpp"
+
+#include "smtk/resource/Component.h"
+#include "smtk/resource/Manager.h"
+#include "smtk/resource/Resource.h"
+
+#include "smtk/model/Entity.h"
+#include "smtk/model/EntityRef.h"
+#include "smtk/model/Manager.h"
+
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
+#include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/DateTimeItemDefinition.h"
+
 #include "smtk/common/DateTimeZonePair.h"
 
 using namespace pugi;
@@ -198,4 +211,163 @@ void XmlDocV3Parser::processDateTimeItem(pugi::xml_node& node, attribute::DateTi
       }   // for (val)
     }     // if (valsNode)
   }       // else
+}
+
+void XmlDocV3Parser::processComponentItem(
+  pugi::xml_node& node, smtk::attribute::ComponentItemPtr item)
+{
+  xml_attribute xatt;
+  xml_node valsNode;
+  std::size_t i, n = item->numberOfValues();
+  smtk::common::UUID uid;
+  xml_node val;
+  std::size_t numRequiredVals = item->numberOfRequiredValues();
+  std::string attName;
+  AttRefInfo info;
+  if (!numRequiredVals || item->isExtensible())
+  {
+    // The node should have an attribute indicating how many values are
+    // associated with the item
+    xatt = node.attribute("NumberOfValues");
+    if (!xatt)
+    {
+      smtkErrorMacro(
+        this->m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
+      return;
+    }
+    n = xatt.as_uint();
+    item->setNumberOfValues(n);
+  }
+  if (!n)
+  {
+    return;
+  }
+
+  auto rsrcMgr = this->m_collection->manager();
+  if (!rsrcMgr && item->numberOfValues() > 0)
+  {
+    static bool once = true;
+    if (once)
+    {
+      smtkErrorMacro(
+        this->m_logger, "The resource manager for the attribute collection being read is "
+                        "not set but the ComponentItem \""
+          << item->name() << "\" "
+                             "of \""
+          << item->attribute()->name() << "\" has entries"
+                                          "that need to find resources using a resource manager.");
+      once = false;
+    }
+    return;
+  }
+
+  valsNode = node.child("Values");
+  if (valsNode)
+  {
+    for (val = valsNode.child("Val"); val; val = val.next_sibling("Val"))
+    {
+      xatt = val.attribute("Ith");
+      if (!xatt)
+      {
+        smtkErrorMacro(this->m_logger, "XML Attribute Ith is missing for Item: " << item->name());
+        continue;
+      }
+      i = xatt.as_uint();
+      if (i >= n)
+      {
+        smtkErrorMacro(this->m_logger,
+          "XML Attribute Ith = " << i << " is out of range for Item: " << item->name());
+        continue;
+      }
+      item->setValue(static_cast<int>(i), this->processComponentItemValue(val, rsrcMgr));
+    }
+  }
+  else if (numRequiredVals == 1)
+  {
+    val = node.child("Val");
+    if (val)
+    {
+      item->setValue(0, this->processComponentItemValue(val, rsrcMgr));
+    }
+  }
+  else
+  {
+    smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
+  }
+}
+
+void XmlDocV3Parser::processComponentDef(
+  pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef)
+{
+  xml_node labels, mmask, child;
+  xml_attribute xatt;
+  int i;
+  this->processItemDef(node, idef);
+  mmask = node.child("MembershipMask");
+  if (mmask)
+  {
+    idef->setMembershipMask(this->decodeModelEntityMask(mmask.text().as_string()));
+  }
+
+  xatt = node.attribute("NumberOfRequiredValues");
+  if (xatt)
+  {
+    idef->setNumberOfRequiredValues(xatt.as_int());
+  }
+
+  xatt = node.attribute("Extensible");
+  if (xatt)
+  {
+    idef->setIsExtensible(xatt.as_bool());
+    xatt = node.attribute("MaxNumberOfValues");
+    if (xatt)
+    {
+      idef->setMaxNumberOfValues(xatt.as_uint());
+    }
+  }
+
+  // Lets see if there are labels
+  if (node.child("Labels"))
+  {
+    smtkErrorMacro(this->m_logger, "Labels has been changed to ComponentLabels : " << idef->name());
+  }
+  labels = node.child("ComponentLabels");
+  if (labels)
+  {
+    // Are we using a common label?
+    xatt = labels.attribute("CommonLabel");
+    if (xatt)
+    {
+      idef->setCommonValueLabel(xatt.value());
+    }
+    else
+    {
+      for (child = labels.first_child(), i = 0; child; child = child.next_sibling(), i++)
+      {
+        idef->setValueLabel(i, child.value());
+      }
+    }
+  }
+}
+
+smtk::resource::ComponentPtr XmlDocV3Parser::processComponentItemValue(
+  const pugi::xml_node& val, smtk::resource::ManagerPtr rsrcMgr)
+{
+  auto rsrcNode = val.child("Resource");
+  auto compNode = val.child("Component");
+  if (!rsrcNode || !compNode)
+  {
+    smtkErrorMacro(this->m_logger,
+      "ComponentItem Val node does not have both a Resource and Component as required.");
+    return smtk::resource::ComponentPtr();
+  }
+  auto ruid = smtk::common::UUID(rsrcNode.text().get());
+  auto rsrc = rsrcMgr->get(ruid);
+  if (!rsrc)
+  {
+    smtkWarningMacro(this->m_logger, "Resource " << ruid << " is not loaded. Ignoring.");
+    return smtk::resource::ComponentPtr();
+  }
+  auto cuid = smtk::common::UUID(compNode.text().get());
+  return rsrc->find(cuid);
 }

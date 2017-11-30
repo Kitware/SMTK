@@ -79,7 +79,8 @@ Collection::Collection()
 }
 
 Collection::Collection(const smtk::common::UUID& collectionID, smtk::mesh::ManagerPtr mngr)
-  : m_entity(collectionID)
+  : smtk::resource::Resource(collectionID)
+  , m_entity(collectionID)
   , m_name()
   , m_readLocation()
   , m_writeLocation()
@@ -92,7 +93,8 @@ Collection::Collection(const smtk::common::UUID& collectionID, smtk::mesh::Manag
 
 Collection::Collection(const smtk::common::UUID& collectionID, smtk::mesh::InterfacePtr interface,
   smtk::mesh::ManagerPtr mngr)
-  : m_entity(collectionID)
+  : smtk::resource::Resource(collectionID)
+  , m_entity(collectionID)
   , m_name()
   , m_readLocation()
   , m_writeLocation()
