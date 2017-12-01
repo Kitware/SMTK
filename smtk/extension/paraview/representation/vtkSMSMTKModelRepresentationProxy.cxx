@@ -50,8 +50,19 @@ void vtkSMSMTKModelRepresentationProxy::ConnectAdditionalPorts()
       {
         vtkSMPropertyHelper(repProxy, "GlyphPrototypes", true).Set(source, 1);
         vtkSMPropertyHelper(repProxy, "GlyphPoints", true).Set(source, 2);
+        this->InitializedInputs = true;
         repProxy->UpdateVTKObjects();
       }
     }
   }
+}
+
+void vtkSMSMTKModelRepresentationProxy::SetPropertyModifiedFlag(const char* name, int flag)
+{
+  if (!this->InitializedInputs && strcmp(name, "Input"))
+  {
+    this->ConnectAdditionalPorts();
+  }
+
+  this->Superclass::SetPropertyModifiedFlag(name, flag);
 }

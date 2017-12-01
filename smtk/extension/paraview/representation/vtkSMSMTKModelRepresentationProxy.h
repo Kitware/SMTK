@@ -34,15 +34,26 @@ public:
    */
   vtkSMTKModelRepresentation* GetRepresentation();
 
+protected:
+  vtkSMSMTKModelRepresentationProxy();
+  ~vtkSMSMTKModelRepresentationProxy() override;
+
+  friend class pqSMTKModelRepresentation;
+
   /**
    * Connects additional input ports required by the representation (instance
    * placement inputs).
    */
   void ConnectAdditionalPorts();
 
-protected:
-  vtkSMSMTKModelRepresentationProxy();
-  ~vtkSMSMTKModelRepresentationProxy() override;
+  /**
+   * Ensures that whenever the "Input" property changes, ConnectAdditionalPorts
+   * is called. This is critical in cases when pqSMTKModelRepresentation has not
+   * been constructed (e.g. Python invocations of SMTKModelRepresentation).
+   */
+  void SetPropertyModifiedFlag(const char* name, int flag) override;
+
+  bool InitializedInputs = false;
 
 private:
   vtkSMSMTKModelRepresentationProxy(const vtkSMSMTKModelRepresentationProxy&) = delete;

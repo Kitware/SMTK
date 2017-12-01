@@ -274,11 +274,13 @@ bool vtkSMTKModelRepresentation::AddToView(vtkView* view)
   {
     rview->GetRenderer()->AddActor(this->Entities);
     rview->GetRenderer()->AddActor(this->GlyphEntities);
-    rview->RegisterPropForHardwareSelection(this, this->Entities);
-    rview->RegisterPropForHardwareSelection(this, this->GlyphEntities);
-
     rview->GetRenderer()->AddActor(this->SelectedEntities);
     rview->GetRenderer()->AddActor(this->SelectedGlyphEntities);
+
+    rview->RegisterPropForHardwareSelection(this, this->Entities);
+    rview->RegisterPropForHardwareSelection(this, this->GlyphEntities);
+    rview->RegisterPropForHardwareSelection(this, this->SelectedEntities);
+    rview->RegisterPropForHardwareSelection(this, this->SelectedGlyphEntities);
 
     return Superclass::AddToView(view);
   }
@@ -292,11 +294,13 @@ bool vtkSMTKModelRepresentation::RemoveFromView(vtkView* view)
   {
     rview->GetRenderer()->RemoveActor(this->Entities);
     rview->GetRenderer()->RemoveActor(this->GlyphEntities);
-    rview->UnRegisterPropForHardwareSelection(this, this->Entities);
-    rview->UnRegisterPropForHardwareSelection(this, this->GlyphEntities);
-
     rview->GetRenderer()->RemoveActor(this->SelectedEntities);
     rview->GetRenderer()->RemoveActor(this->SelectedGlyphEntities);
+
+    rview->UnRegisterPropForHardwareSelection(this, this->Entities);
+    rview->UnRegisterPropForHardwareSelection(this, this->GlyphEntities);
+    rview->UnRegisterPropForHardwareSelection(this, this->SelectedEntities);
+    rview->UnRegisterPropForHardwareSelection(this, this->SelectedGlyphEntities);
 
     return Superclass::RemoveFromView(view);
   }
