@@ -11,6 +11,7 @@
 #include "smtk/model/Manager.h"
 
 #include "smtk/common/StringUtil.h"
+#include "smtk/common/UUIDGenerator.h"
 
 #include "smtk/resource/Resource.h"
 
@@ -57,6 +58,7 @@ static const char* entityTypeNames[] = { "cell", "use", "shell", "group", "model
 Entity::Entity()
   : m_entityFlags(INVALID)
   , m_firstInvalid(-1)
+  , m_id(smtk::common::UUIDGenerator::instance().random())
 {
 }
 

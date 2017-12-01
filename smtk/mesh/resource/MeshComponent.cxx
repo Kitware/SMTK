@@ -24,9 +24,10 @@ MeshComponent::MeshComponent(smtk::mesh::MeshSet meshset)
 }
 
 MeshComponent::MeshComponent(const smtk::common::UUID& id, smtk::mesh::MeshSet meshset)
-  : smtk::resource::Component(id)
+  : smtk::resource::Component()
   , m_meshset(meshset)
 {
+  this->setId(id);
 }
 
 const smtk::resource::ResourcePtr MeshComponent::resource() const
