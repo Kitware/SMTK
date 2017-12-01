@@ -19,8 +19,11 @@
 #include <vtkMatrix4x4.h>
 #include <vtkMultiBlockDataSet.h>
 #include <vtkObjectFactory.h>
+#include <vtkProperty.h>
 #include <vtkRenderer.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
+#include <vtkTransform.h>
+#include <vtksys/SystemTools.hxx>
 
 #include <vtkPVCacheKeeper.h>
 #include <vtkPVRenderView.h>
@@ -31,13 +34,14 @@
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 #include "smtk/resource/Component.h"
 #include "smtk/resource/SelectionManager.h"
-#include "vtkSMTKModelRepresentation.h"
 
 vtkStandardNewMacro(vtkSMTKModelRepresentation);
 
 vtkSMTKModelRepresentation::vtkSMTKModelRepresentation()
-  : EntityMapper(vtkSmartPointer<vtkCompositePolyDataMapper2>::New())
+  : Superclass()
+  , EntityMapper(vtkSmartPointer<vtkCompositePolyDataMapper2>::New())
   , SelectedEntityMapper(vtkSmartPointer<vtkCompositePolyDataMapper2>::New())
+  , EntityCacheKeeper(vtkSmartPointer<vtkPVCacheKeeper>::New())
   , GlyphMapper(vtkSmartPointer<vtkGlyph3DMapper>::New())
   , SelectedGlyphMapper(vtkSmartPointer<vtkGlyph3DMapper>::New())
   , Entities(vtkSmartPointer<vtkActor>::New())
@@ -87,7 +91,7 @@ bool vtkSMTKModelRepresentation::GetModelBounds()
 {
   // Entity tessellation bounds
   double entityBounds[6];
-  this->GetBounds(this->GetInternalOutputPort(0)->GetProducer()->GetOutputDataObject(0),
+  this->GetEntityBounds(this->GetInternalOutputPort(0)->GetProducer()->GetOutputDataObject(0),
     entityBounds, this->EntityMapper->GetCompositeDataDisplayAttributes());
 
   // Instance placement bounds
@@ -116,6 +120,22 @@ bool vtkSMTKModelRepresentation::GetModelBounds()
   return false;
 }
 
+bool vtkSMTKModelRepresentation::GetEntityBounds(
+  vtkDataObject* dataObject, double bounds[6], vtkCompositeDataDisplayAttributes* cdAttributes)
+{
+  vtkMath::UninitializeBounds(bounds);
+  if (vtkCompositeDataSet* cd = vtkCompositeDataSet::SafeDownCast(dataObject))
+  {
+    // computing bounds with only visible blocks
+    vtkCompositeDataDisplayAttributes::ComputeVisibleBounds(cdAttributes, cd, bounds);
+    if (vtkBoundingBox::IsValid(bounds))
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
 int vtkSMTKModelRepresentation::RequestData(
   vtkInformation* request, vtkInformationVector** inVec, vtkInformationVector* outVec)
 {
@@ -125,7 +145,7 @@ int vtkSMTKModelRepresentation::RequestData(
     this->SetOutputExtent(this->GetInternalOutputPort(0), inInfo);
 
     // Model entities
-    this->CacheKeeper->SetInputConnection(this->GetInternalOutputPort(0));
+    this->EntityCacheKeeper->SetInputConnection(this->GetInternalOutputPort(0));
 
     // Glyph points (2) and prototypes (1)
     this->GlyphMapper->SetInputConnection(this->GetInternalOutputPort(2));
@@ -136,19 +156,19 @@ int vtkSMTKModelRepresentation::RequestData(
     this->SelectedGlyphMapper->SetInputConnection(1, this->GetInternalOutputPort(1));
     this->ConfigureGlyphMapper(this->SelectedGlyphMapper.GetPointer());
   }
-  this->CacheKeeper->Update();
+  this->EntityCacheKeeper->Update();
 
   this->EntityMapper->Modified();
   this->GlyphMapper->Modified();
 
   this->GetModelBounds();
-  return vtkPVDataRepresentation::RequestData(request, inVec, outVec);
+  return Superclass::RequestData(request, inVec, outVec);
 }
 
 int vtkSMTKModelRepresentation::ProcessViewRequest(
   vtkInformationRequestKey* request_type, vtkInformation* inInfo, vtkInformation* outInfo)
 {
-  if (!vtkPVDataRepresentation::ProcessViewRequest(request_type, inInfo, outInfo))
+  if (!Superclass::ProcessViewRequest(request_type, inInfo, outInfo))
   {
     // i.e. this->GetVisibility() == false, hence nothing to do.
     return 0;
@@ -162,7 +182,7 @@ int vtkSMTKModelRepresentation::ProcessViewRequest(
     // to provide a place-holder dataset of the right type. This is essential
     // since the vtkPVRenderView uses the type specified to decide on the
     // delivery mechanism, among other things.
-    vtkPVRenderView::SetPiece(inInfo, this, this->CacheKeeper->GetOutputDataObject(0), 0, 0);
+    vtkPVRenderView::SetPiece(inInfo, this, this->EntityCacheKeeper->GetOutputDataObject(0), 0, 0);
 
     // Since we are rendering polydata, it can be redistributed when ordered
     // compositing is needed. So let the view know that it can feel free to
@@ -176,11 +196,6 @@ int vtkSMTKModelRepresentation::ProcessViewRequest(
       this->GlyphEntities->HasTranslucentPolygonalGeometry())
     {
       outInfo->Set(vtkPVRenderView::NEED_ORDERED_COMPOSITING(), 1);
-      // Pass partitioning information to the render view.
-      if (this->UseDataPartitions == true)
-      {
-        vtkPVRenderView::SetOrderedCompositingInformation(inInfo, this->DataBounds);
-      }
     }
 
     // Finally, let the view know about the geometry bounds. The view uses this
@@ -197,14 +212,20 @@ int vtkSMTKModelRepresentation::ProcessViewRequest(
   }
   else if (request_type == vtkPVView::REQUEST_RENDER())
   {
-    // Update model entity attributes
+    // Update model entity and glyph attributes
+    // vtkDataObject* (blocks) in the multi-block may have changed after
+    // updating the pipeline, so UpdateEntityAttributes and UpdateInstanceAttributes
+    // are called here to ensure the block attributes are updated with the current
+    // block pointers. To do this, it uses the flat-index mapped attributes stored in
+    // this class.
     auto producerPort = vtkPVRenderView::GetPieceProducer(inInfo, this, 0);
     this->EntityMapper->SetInputConnection(0, producerPort);
     auto data = producerPort->GetProducer()->GetOutputDataObject(0);
+    this->UpdateColoringParameters();
 
     if (this->BlockAttributeTime < data->GetMTime() || this->BlockAttrChanged)
     {
-      this->UpdateBlockAttributes(this->EntityMapper.GetPointer());
+      this->UpdateEntityAttributes(this->EntityMapper.GetPointer());
       this->BlockAttributeTime.Modified();
       this->BlockAttrChanged = false;
     }
@@ -243,7 +264,7 @@ int vtkSMTKModelRepresentation::ProcessViewRequest(
 
 void vtkSMTKModelRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->vtkPVDataRepresentation::PrintSelf(os, indent);
+  Superclass::PrintSelf(os, indent);
 }
 
 bool vtkSMTKModelRepresentation::AddToView(vtkView* view)
@@ -259,7 +280,7 @@ bool vtkSMTKModelRepresentation::AddToView(vtkView* view)
     rview->GetRenderer()->AddActor(this->SelectedEntities);
     rview->GetRenderer()->AddActor(this->SelectedGlyphEntities);
 
-    return this->vtkPVDataRepresentation::AddToView(view);
+    return Superclass::AddToView(view);
   }
   return false;
 }
@@ -277,7 +298,7 @@ bool vtkSMTKModelRepresentation::RemoveFromView(vtkView* view)
     rview->GetRenderer()->RemoveActor(this->SelectedEntities);
     rview->GetRenderer()->RemoveActor(this->SelectedGlyphEntities);
 
-    return this->vtkPVDataRepresentation::RemoveFromView(view);
+    return Superclass::RemoveFromView(view);
   }
   return false;
 }
@@ -290,7 +311,7 @@ void vtkSMTKModelRepresentation::SetVisibility(bool val)
   this->SelectedEntities->SetVisibility(val);
   this->SelectedGlyphEntities->SetVisibility(val);
 
-  this->vtkPVDataRepresentation::SetVisibility(val);
+  Superclass::SetVisibility(val);
 }
 
 int vtkSMTKModelRepresentation::FillInputPortInformation(int port, vtkInformation* info)
@@ -355,6 +376,12 @@ void vtkSMTKModelRepresentation::SetMapScalars(int val)
   int mapToColorMode[] = { VTK_COLOR_MODE_DIRECT_SCALARS, VTK_COLOR_MODE_MAP_SCALARS };
   this->EntityMapper->SetColorMode(mapToColorMode[val]);
   this->GlyphMapper->SetColorMode(mapToColorMode[val]);
+}
+
+void vtkSMTKModelRepresentation::SetInterpolateScalarsBeforeMapping(int val)
+{
+  this->EntityMapper->SetInterpolateScalarsBeforeMapping(val);
+  this->GlyphMapper->SetInterpolateScalarsBeforeMapping(val);
 }
 
 void vtkSMTKModelRepresentation::UpdateSelection(
@@ -472,16 +499,213 @@ void vtkSMTKModelRepresentation::ClearSelection(vtkMapper* mapper)
   }
 }
 
+void vtkSMTKModelRepresentation::SetRepresentation(const char* type)
+{
+  if (vtksys::SystemTools::Strucmp(type, "Points") == 0)
+  {
+    this->SetRepresentation(POINTS);
+  }
+  else if (vtksys::SystemTools::Strucmp(type, "Wireframe") == 0)
+  {
+    this->SetRepresentation(WIREFRAME);
+  }
+  else if (vtksys::SystemTools::Strucmp(type, "Surface") == 0)
+  {
+    this->SetRepresentation(SURFACE);
+  }
+  else if (vtksys::SystemTools::Strucmp(type, "Surface With Edges") == 0)
+  {
+    this->SetRepresentation(SURFACE_WITH_EDGES);
+  }
+  else
+  {
+    vtkErrorMacro("Invalid type: " << type);
+  }
+}
+
 void vtkSMTKModelRepresentation::SetSelectionPointSize(double val)
 {
   this->SelectedEntities->GetProperty()->SetPointSize(val);
   this->SelectedGlyphEntities->GetProperty()->SetPointSize(val);
 }
 
+void vtkSMTKModelRepresentation::SetLookupTable(vtkScalarsToColors* val)
+{
+  this->EntityMapper->SetLookupTable(val);
+  this->GlyphMapper->SetLookupTable(val);
+}
+
+void vtkSMTKModelRepresentation::SetSelectionLineWidth(double val)
+{
+  this->SelectedEntities->GetProperty()->SetLineWidth(val);
+  this->SelectedGlyphEntities->GetProperty()->SetLineWidth(val);
+}
+
 void vtkSMTKModelRepresentation::SetPointSize(double val)
 {
   this->Entities->GetProperty()->SetPointSize(val);
   this->GlyphEntities->GetProperty()->SetPointSize(val);
+}
+
+void vtkSMTKModelRepresentation::SetLineWidth(double val)
+{
+  this->Entities->GetProperty()->SetLineWidth(val);
+  this->GlyphEntities->GetProperty()->SetLineWidth(val);
+}
+
+void vtkSMTKModelRepresentation::SetOpacity(double val)
+{
+  this->Entities->GetProperty()->SetOpacity(val);
+  this->GlyphEntities->GetProperty()->SetOpacity(val);
+}
+
+void vtkSMTKModelRepresentation::SetPosition(double x, double y, double z)
+{
+  this->Entities->SetPosition(x, y, z);
+  this->GlyphEntities->SetPosition(x, y, z);
+}
+
+void vtkSMTKModelRepresentation::SetScale(double x, double y, double z)
+{
+  this->Entities->SetScale(x, y, z);
+  this->GlyphEntities->SetScale(x, y, z);
+}
+
+void vtkSMTKModelRepresentation::SetOrientation(double x, double y, double z)
+{
+  this->Entities->SetOrientation(x, y, z);
+  this->GlyphEntities->SetOrientation(x, y, z);
+}
+
+void vtkSMTKModelRepresentation::SetOrigin(double x, double y, double z)
+{
+  this->Entities->SetOrigin(x, y, z);
+  this->GlyphEntities->SetOrigin(x, y, z);
+}
+
+void vtkSMTKModelRepresentation::SetUserTransform(const double matrix[16])
+{
+  vtkNew<vtkTransform> transform;
+  transform->SetMatrix(matrix);
+  this->Entities->SetUserTransform(transform.GetPointer());
+  this->GlyphEntities->SetUserTransform(transform.GetPointer());
+}
+
+void vtkSMTKModelRepresentation::SetPickable(int val)
+{
+  this->Entities->SetPickable(val);
+  this->GlyphEntities->SetPickable(val);
+}
+
+void vtkSMTKModelRepresentation::SetTexture(vtkTexture* val)
+{
+  this->Entities->SetTexture(val);
+  this->GlyphEntities->SetTexture(val);
+}
+
+void vtkSMTKModelRepresentation::SetSpecularPower(double val)
+{
+  this->Entities->GetProperty()->SetSpecularPower(val);
+  this->GlyphEntities->GetProperty()->SetSpecularPower(val);
+}
+
+void vtkSMTKModelRepresentation::SetSpecular(double val)
+{
+  this->Entities->GetProperty()->SetSpecular(val);
+  this->GlyphEntities->GetProperty()->SetSpecular(val);
+}
+
+void vtkSMTKModelRepresentation::SetAmbient(double val)
+{
+  this->Entities->GetProperty()->SetAmbient(val);
+  this->GlyphEntities->GetProperty()->SetAmbient(val);
+}
+
+void vtkSMTKModelRepresentation::SetDiffuse(double val)
+{
+  this->Entities->GetProperty()->SetDiffuse(val);
+  this->GlyphEntities->GetProperty()->SetDiffuse(val);
+}
+
+void vtkSMTKModelRepresentation::UpdateColoringParameters()
+{
+  bool using_scalar_coloring = false;
+  vtkInformation* info = this->GetInputArrayInformation(0);
+  if (info && info->Has(vtkDataObject::FIELD_ASSOCIATION()) &&
+    info->Has(vtkDataObject::FIELD_NAME()))
+  {
+    const char* colorArrayName = info->Get(vtkDataObject::FIELD_NAME());
+    int fieldAssociation = info->Get(vtkDataObject::FIELD_ASSOCIATION());
+    if (colorArrayName && colorArrayName[0])
+    {
+      this->EntityMapper->SetScalarVisibility(1);
+      this->EntityMapper->SelectColorArray(colorArrayName);
+      this->EntityMapper->SetUseLookupTableScalarRange(1);
+      this->GlyphMapper->SetScalarVisibility(1);
+      this->GlyphMapper->SelectColorArray(colorArrayName);
+      this->GlyphMapper->SetUseLookupTableScalarRange(1);
+      switch (fieldAssociation)
+      {
+        case vtkDataObject::FIELD_ASSOCIATION_CELLS:
+          this->EntityMapper->SetScalarMode(VTK_SCALAR_MODE_USE_CELL_FIELD_DATA);
+          this->GlyphMapper->SetScalarMode(VTK_SCALAR_MODE_USE_CELL_FIELD_DATA);
+          break;
+
+        case vtkDataObject::FIELD_ASSOCIATION_NONE:
+          this->EntityMapper->SetScalarMode(VTK_SCALAR_MODE_USE_FIELD_DATA);
+          this->GlyphMapper->SetScalarMode(VTK_SCALAR_MODE_USE_FIELD_DATA);
+          // Color entire block by zeroth tuple in the field data
+          this->EntityMapper->SetFieldDataTupleId(0);
+          this->GlyphMapper->SetFieldDataTupleId(0);
+          break;
+
+        case vtkDataObject::FIELD_ASSOCIATION_POINTS:
+        default:
+          this->EntityMapper->SetScalarMode(VTK_SCALAR_MODE_USE_POINT_FIELD_DATA);
+          this->GlyphMapper->SetScalarMode(VTK_SCALAR_MODE_USE_POINT_FIELD_DATA);
+          break;
+      }
+      using_scalar_coloring = true;
+    }
+  }
+
+  if (!using_scalar_coloring)
+  {
+    this->EntityMapper->SetScalarVisibility(0);
+    this->EntityMapper->SelectColorArray(nullptr);
+    this->GlyphMapper->SetScalarVisibility(0);
+    this->GlyphMapper->SelectColorArray(nullptr);
+  }
+}
+
+void vtkSMTKModelRepresentation::UpdateEntityAttributes(vtkMapper* mapper)
+{
+  auto cpm = vtkCompositePolyDataMapper2::SafeDownCast(mapper);
+  if (!cpm)
+  {
+    vtkErrorMacro(<< "Invalid mapper!");
+    return;
+  }
+
+  cpm->RemoveBlockVisibilities();
+  for (auto const& item : this->BlockVisibilities)
+  {
+    cpm->SetBlockVisibility(item.first, item.second);
+  }
+
+  cpm->RemoveBlockColors();
+  for (auto const& item : this->BlockColors)
+  {
+    auto& arr = item.second;
+    double color[3] = { arr[0], arr[1], arr[2] };
+    cpm->SetBlockColor(item.first, color);
+  }
+
+  cpm->RemoveBlockOpacities();
+  for (auto const& item : this->BlockOpacities)
+  {
+    cpm->SetBlockOpacity(item.first, item.second);
+  }
 }
 
 void vtkSMTKModelRepresentation::UpdateGlyphBlockAttributes(vtkGlyph3DMapper* mapper)
@@ -517,6 +741,122 @@ void vtkSMTKModelRepresentation::UpdateGlyphBlockAttributes(vtkGlyph3DMapper* ma
   // Opacity currently not supported by vtkGlyph3DMapper
 
   mapper->Modified();
+}
+
+void vtkSMTKModelRepresentation::SetBlockVisibility(unsigned int index, bool visible)
+{
+  this->BlockVisibilities[index] = visible;
+  this->BlockAttrChanged = true;
+}
+
+bool vtkSMTKModelRepresentation::GetBlockVisibility(unsigned int index) const
+{
+  auto it = this->BlockVisibilities.find(index);
+  if (it == this->BlockVisibilities.cend())
+  {
+    return true;
+  }
+  return it->second;
+}
+
+void vtkSMTKModelRepresentation::RemoveBlockVisibility(unsigned int index, bool)
+{
+  auto it = this->BlockVisibilities.find(index);
+  if (it == this->BlockVisibilities.cend())
+  {
+    return;
+  }
+  this->BlockVisibilities.erase(it);
+  this->BlockAttrChanged = true;
+}
+
+void vtkSMTKModelRepresentation::RemoveBlockVisibilities()
+{
+  this->BlockVisibilities.clear();
+  this->BlockAttrChanged = true;
+}
+
+void vtkSMTKModelRepresentation::SetBlockColor(unsigned int index, double r, double g, double b)
+{
+  std::array<double, 3> color = { { r, g, b } };
+  this->BlockColors[index] = color;
+  this->BlockAttrChanged = true;
+}
+
+void vtkSMTKModelRepresentation::SetBlockColor(unsigned int index, double* color)
+{
+  if (color)
+  {
+    this->SetBlockColor(index, color[0], color[1], color[2]);
+  }
+}
+
+double* vtkSMTKModelRepresentation::GetBlockColor(unsigned int index)
+{
+  auto it = this->BlockColors.find(index);
+  if (it == this->BlockColors.cend())
+  {
+    return nullptr;
+  }
+  return it->second.data();
+}
+
+void vtkSMTKModelRepresentation::RemoveBlockColor(unsigned int index)
+{
+  auto it = this->BlockColors.find(index);
+  if (it == this->BlockColors.cend())
+  {
+    return;
+  }
+  this->BlockColors.erase(it);
+  this->BlockAttrChanged = true;
+}
+
+void vtkSMTKModelRepresentation::RemoveBlockColors()
+{
+  this->BlockColors.clear();
+  this->BlockAttrChanged = true;
+}
+
+void vtkSMTKModelRepresentation::SetBlockOpacity(unsigned int index, double opacity)
+{
+  this->BlockOpacities[index] = opacity;
+  this->BlockAttrChanged = true;
+}
+
+void vtkSMTKModelRepresentation::SetBlockOpacity(unsigned int index, double* opacity)
+{
+  if (opacity)
+  {
+    this->SetBlockOpacity(index, *opacity);
+  }
+}
+
+double vtkSMTKModelRepresentation::GetBlockOpacity(unsigned int index)
+{
+  auto it = this->BlockOpacities.find(index);
+  if (it == this->BlockOpacities.cend())
+  {
+    return 0.0;
+  }
+  return it->second;
+}
+
+void vtkSMTKModelRepresentation::RemoveBlockOpacity(unsigned int index)
+{
+  auto it = this->BlockOpacities.find(index);
+  if (it == this->BlockOpacities.cend())
+  {
+    return;
+  }
+  this->BlockOpacities.erase(it);
+  this->BlockAttrChanged = true;
+}
+
+void vtkSMTKModelRepresentation::RemoveBlockOpacities()
+{
+  this->BlockOpacities.clear();
+  this->BlockAttrChanged = true;
 }
 
 void vtkSMTKModelRepresentation::SetInstanceVisibility(unsigned int index, bool visible)

@@ -52,9 +52,13 @@ void vtkSMSMTKModelRepresentationProxy::SetPropertyModifiedFlag(const char* name
       auto source = vtkSMSourceProxy::SafeDownCast(input->GetTrueParentProxy());
       if (source)
       {
-        vtkSMPropertyHelper(this, "GlyphPrototypes", true).Set(source, 1);
-        vtkSMPropertyHelper(this, "GlyphPoints", true).Set(source, 2);
-        this->UpdateVTKObjects();
+        vtkSMProxy* repProxy = this->GetSubProxy("SMTKModelRepresentation");
+        if (repProxy)
+        {
+          vtkSMPropertyHelper(repProxy, "GlyphPrototypes", true).Set(source, 1);
+          vtkSMPropertyHelper(repProxy, "GlyphPoints", true).Set(source, 2);
+          repProxy->UpdateVTKObjects();
+        }
       }
     }
   }
