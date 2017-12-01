@@ -12,6 +12,8 @@
 
 #include "smtk/model/EntityRef.h"
 
+#include "smtk/resource/Resource.h"
+
 namespace smtk
 {
 namespace view
@@ -87,7 +89,70 @@ void PhraseList::generateTitle()
   //       the way its counterpart in smtk::model does.
   std::ostringstream message;
   smtk::resource::ComponentArray::size_type sz = this->subphrases().size();
-  message << sz << " items";
+  std::map<std::string, smtk::model::BitFlags> flagUnion;
+  std::map<std::string, smtk::model::BitFlags> flagCommon;
+  for (auto phr : this->subphrases())
+  {
+    if (!phr)
+    {
+      continue;
+    }
+
+    std::string rsrcType;
+    smtk::model::BitFlags entry = 0;
+    auto rsrc = phr->relatedResource();
+    if (rsrc)
+    {
+      rsrcType = rsrc->uniqueName();
+      auto comp = phr->relatedComponent();
+      auto modelComp = std::dynamic_pointer_cast<smtk::model::Entity>(comp);
+      //auto modelRsrc = std::dynamic_pointer_cast<smtk::model::Manager>(rsrc);
+      if (modelComp)
+      {
+        entry = modelComp->entityFlags();
+      }
+    }
+    if (entry && !rsrcType.empty())
+    {
+      auto it = flagCommon.find(rsrcType);
+      if (it == flagCommon.end())
+      {
+        flagUnion[rsrcType] = entry;
+        flagCommon[rsrcType] = entry;
+      }
+      else
+      {
+        flagUnion[rsrcType] |= entry;
+        flagCommon[rsrcType] &= entry;
+      }
+    }
+  }
+
+  if (flagUnion.size() > 1)
+  {
+    message << sz << " items";
+  }
+  else
+  {
+    smtk::model::BitFlags fCommon = flagCommon.begin()->second;
+    smtk::model::BitFlags fUnion = flagUnion.begin()->second;
+    if (fCommon == fUnion)
+    {
+      message << sz << " " << smtk::model::Entity::flagSummary(fCommon, sz == 1 ? 0 : 1);
+    }
+    else
+    {
+      smtk::model::BitFlags etype = this->m_commonFlags & smtk::model::ENTITY_MASK;
+      smtk::model::BitFlags edims = this->m_commonFlags & smtk::model::ANY_DIMENSION;
+      bool pluralDims;
+      std::string dimPhrase = smtk::model::Entity::flagDimensionList(
+        edims ? edims : this->m_unionFlags & smtk::model::ANY_DIMENSION, pluralDims);
+      std::string name =
+        etype ? smtk::model::Entity::flagSummary(etype, sz == 1 ? 0 : 1) : "entities";
+      message << sz << " " << name << " of " << (pluralDims ? "dimensions" : "dimension")
+              << dimPhrase;
+    }
+  }
 
   m_title = message.str();
 }

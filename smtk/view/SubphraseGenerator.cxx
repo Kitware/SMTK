@@ -35,7 +35,7 @@ namespace view
 
 SubphraseGenerator::SubphraseGenerator()
 {
-  m_directlimit = 4;
+  m_directLimit = 4;
   m_skipAttributes = false;
   m_skipProperties = false;
 }
@@ -78,14 +78,14 @@ DescriptivePhrases SubphraseGenerator::subphrases(DescriptivePhrase::Ptr src)
 
 int SubphraseGenerator::directLimit() const
 {
-  return m_directlimit;
+  return m_directLimit;
 }
 
 bool SubphraseGenerator::setDirectLimit(int val)
 {
   if (val != 0)
   {
-    this->m_directlimit = val;
+    this->m_directLimit = val;
     return true;
   }
   return false;

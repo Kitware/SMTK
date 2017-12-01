@@ -144,7 +144,12 @@ int PhraseModel::observe(Observer obs, bool immediatelyNotify)
   std::vector<int> parents;
   if (immediatelyNotify)
   {
-    obs(this->root(), PhraseModelEvent::PHRASE_MODIFIED, parents, parents, std::vector<int>());
+    //obs(this->root(), PhraseModelEvent::PHRASE_MODIFIED, parents, parents, std::vector<int>());
+    std::vector<int> range(2);
+    range[0] = 0;
+    range[1] = static_cast<int>(this->root()->subphrases().size());
+    obs(this->root(), PhraseModelEvent::ABOUT_TO_INSERT, parents, parents, range);
+    obs(this->root(), PhraseModelEvent::INSERT_FINISHED, parents, parents, range);
   }
   return handle;
 }
@@ -247,7 +252,7 @@ void PhraseModel::handleCreated(Operator::Ptr op, Operator::Result res, Componen
 }
 
 void PhraseModel::updateChildren(
-  smtk::view::PhraseListPtr plist, const DescriptivePhrases& next, const std::vector<int>& idx)
+  smtk::view::PhraseListPtr plist, DescriptivePhrases& next, const std::vector<int>& idx)
 {
   if (!plist)
   {
@@ -266,14 +271,29 @@ void PhraseModel::updateChildren(
   }
 
   // Find mapping and subtract out the still-in-use phrases from unused.
-  for (auto it = next.begin(); it != next.end(); ++it)
+  for (DescriptivePhrases::iterator it = next.begin(); it != next.end(); ++it)
   {
     auto oit = lkup.find(*it);
     if (oit != lkup.end())
     {
       unused.erase(oit->second);
     }
+    else
+    {
+      // Run through the entire array to see if there are different instances
+      // of the phrase that nonetheless behave identically.
+      for (auto it2 = orig.begin(); it2 != orig.end(); ++it2)
+      {
+        if (it->get() == it2->get())
+        {
+          *it = *it2;
+          unused.erase(lkup[*it2]);
+        }
+      }
+    }
   }
+  // But wait, we might have phrases that are different instances
+  // but identical in that they refer to the same component/resource/etc.
 
   // Now delete unused from model, starting at the back so we don't invalidate indices.
   std::vector<int> removalRange(2);
@@ -309,6 +329,10 @@ void PhraseModel::updateChildren(
     if (entry != lkup.end())
     { // row used... update as needed
       entry->second -= delta;
+    }
+    else
+    {
+      break;
     }
   }
 
@@ -346,7 +370,7 @@ void PhraseModel::updateChildren(
       batch.push_back(ie->second);
     }
     insertRange[0] = ib->first;
-    insertRange[1] = ie->first;
+    insertRange[1] = prev->first;
     this->trigger(plist, PhraseModelEvent::ABOUT_TO_INSERT, idx, idx, insertRange);
     orig.insert(orig.begin() + insertRange[0], batch.begin(), batch.end());
     this->trigger(plist, PhraseModelEvent::INSERT_FINISHED, idx, idx, insertRange);

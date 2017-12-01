@@ -13,7 +13,8 @@
 #include "smtk/extension/paraview/server/Exports.h"
 
 #include "smtk/resource/Manager.h"
-#include "smtk/resource/SelectionManager.h"
+
+#include "smtk/view/Selection.h"
 
 #include "vtkSMProxy.h"
 
@@ -51,7 +52,7 @@ public:
   smtk::resource::ManagerPtr GetManager() const;
 
   /// Return the client-side selection manager (mirrored on the server via this proxy).
-  smtk::resource::SelectionManagerPtr GetSelection() const;
+  smtk::view::SelectionPtr GetSelection() const;
 
   /// Return the client-side operation manager (mirrored on the server via this proxy).
   smtk::operation::ManagerPtr GetOperationManager() const;
@@ -100,7 +101,7 @@ protected:
   void JSONRPCNotification(const std::string& note);
 
   smtk::resource::ManagerPtr Manager;
-  smtk::resource::SelectionManagerPtr Selection;
+  smtk::view::SelectionPtr Selection;
   smtk::operation::ManagerPtr OperationManager;
 
 private:

@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/resource/SelectionManager.h"
+#include "smtk/view/Selection.h"
 
 #include "smtk/resource/Component.h"
 
@@ -15,11 +15,11 @@
 
 namespace smtk
 {
-namespace resource
+namespace view
 {
 
-static bool defaultFilter(
-  ComponentPtr comp, int selectionValue, SelectionManager::SelectionMap& suggestions)
+static bool defaultFilter(smtk::view::Selection::Component::Ptr comp, int selectionValue,
+  Selection::SelectionMap& suggestions)
 {
   (void)comp;
   (void)selectionValue;
@@ -27,9 +27,9 @@ static bool defaultFilter(
   return true;
 }
 
-static SelectionManager* g_instance = nullptr;
+static Selection* g_instance = nullptr;
 
-SelectionManager::SelectionManager()
+Selection::Selection()
   : m_defaultAction(SelectionAction::FILTERED_REPLACE)
   , m_filter(defaultFilter)
 {
@@ -39,7 +39,7 @@ SelectionManager::SelectionManager()
   }
 }
 
-SelectionManager::~SelectionManager()
+Selection::~Selection()
 {
   if (g_instance == this)
   {
@@ -50,12 +50,12 @@ SelectionManager::~SelectionManager()
   // work inside the destructor.
 }
 
-SelectionManager::Ptr SelectionManager::instance()
+Selection::Ptr Selection::instance()
 {
-  SelectionManager::Ptr result;
+  Selection::Ptr result;
   if (!g_instance)
   {
-    result = SelectionManager::create();
+    result = Selection::create();
   }
   else
   {
@@ -64,7 +64,7 @@ SelectionManager::Ptr SelectionManager::instance()
   return result;
 }
 
-bool SelectionManager::registerSelectionValue(
+bool Selection::registerSelectionValue(
   const std::string& valueLabel, int value, bool valueMustBeUnique)
 {
   if (value == 0)
@@ -86,7 +86,7 @@ bool SelectionManager::registerSelectionValue(
   return this->m_selectionValueLabels.insert(std::make_pair(valueLabel, value)).second;
 }
 
-bool SelectionManager::unregisterSelectionValue(int value)
+bool Selection::unregisterSelectionValue(int value)
 {
   bool didErase = false;
   for (auto it = this->m_selectionValueLabels.begin(); it != this->m_selectionValueLabels.end();)
@@ -102,7 +102,7 @@ bool SelectionManager::unregisterSelectionValue(int value)
   return didErase;
 }
 
-int SelectionManager::selectionValueFromLabel(const std::string& label) const
+int Selection::selectionValueFromLabel(const std::string& label) const
 {
   auto it = this->m_selectionValueLabels.find(label);
   if (it == this->m_selectionValueLabels.end())
@@ -112,7 +112,7 @@ int SelectionManager::selectionValueFromLabel(const std::string& label) const
   return it->second;
 }
 
-int SelectionManager::findOrCreateLabeledValue(const std::string& label)
+int Selection::findOrCreateLabeledValue(const std::string& label)
 {
   auto it = this->m_selectionValueLabels.find(label);
   if (it == this->m_selectionValueLabels.end())
@@ -128,7 +128,7 @@ int SelectionManager::findOrCreateLabeledValue(const std::string& label)
   return it->second;
 }
 
-bool SelectionManager::setDefaultAction(const SelectionAction& action)
+bool Selection::setDefaultAction(const SelectionAction& action)
 {
   switch (action)
   {
@@ -146,13 +146,13 @@ bool SelectionManager::setDefaultAction(const SelectionAction& action)
   return false;
 }
 
-SelectionManager::SelectionMap& SelectionManager::currentSelection(SelectionMap& selection) const
+Selection::SelectionMap& Selection::currentSelection(SelectionMap& selection) const
 {
   selection = m_selection;
   return selection;
 }
 
-int SelectionManager::listenToSelectionEvents(Listener fn, bool immediatelyNotify)
+int Selection::observe(Observer fn, bool immediatelyNotify)
 {
   if (!fn)
   {
@@ -168,7 +168,7 @@ int SelectionManager::listenToSelectionEvents(Listener fn, bool immediatelyNotif
   return handle;
 }
 
-void SelectionManager::setFilter(const SelectionFilter& fn, bool refilter)
+void Selection::setFilter(const SelectionFilter& fn, bool refilter)
 {
   if (!fn)
   {
@@ -190,8 +190,8 @@ void SelectionManager::setFilter(const SelectionFilter& fn, bool refilter)
 }
 
 /// Perform the action (IGNORING m_defaultAction!!!), returning true if it had an effect
-bool SelectionManager::performAction(
-  smtk::resource::ComponentPtr comp, int value, SelectionAction action, SelectionMap& suggestions)
+bool Selection::performAction(
+  smtk::resource::Component::Ptr comp, int value, SelectionAction action, SelectionMap& suggestions)
 {
   bool modified = false;
   // Filter out irrelevant components:
@@ -306,7 +306,7 @@ bool SelectionManager::performAction(
   return modified;
 }
 
-void SelectionManager::notifyListeners(const std::string& source)
+void Selection::notifyListeners(const std::string& source)
 {
   Ptr self = this->shared_from_this();
   for (auto ll : m_listeners)
@@ -315,7 +315,7 @@ void SelectionManager::notifyListeners(const std::string& source)
   }
 }
 
-bool SelectionManager::refilter(const std::string& source)
+bool Selection::refilter(const std::string& source)
 {
   SelectionMap suggestions;
   bool modified = false;

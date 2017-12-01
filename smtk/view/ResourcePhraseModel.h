@@ -47,7 +47,10 @@ protected:
   virtual void handleExpunged(Operator::Ptr op, Operator::Result res, ComponentItemPtr data);
   virtual void handleModified(Operator::Ptr op, Operator::Result res, ComponentItemPtr data);
   */
+  void handleResourceEvent(Resource::Ptr rsrc, smtk::resource::Event event) override;
   void handleCreated(Operator::Ptr op, Operator::Result res, ComponentItemPtr data) override;
+
+  virtual void processResource(Resource::Ptr rsrc, bool adding);
 
   smtk::view::PhraseListPtr m_root;
   std::set<smtk::resource::ResourcePtr> m_resources;

@@ -204,7 +204,7 @@ protected:
     const T& ents, DescriptivePhrase::Ptr parent, int limit, DescriptivePhrases& result);
 #endif // 0
 
-  int m_directlimit;
+  int m_directLimit;
   bool m_skipAttributes;
   bool m_skipProperties;
 };

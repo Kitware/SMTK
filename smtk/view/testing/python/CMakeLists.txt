@@ -2,8 +2,11 @@ set(smtkViewPythonTests
 )
 
 # Additional tests that require SMTK_DATA_DIR
-set(smtkViewPythonDataTests
-)
+if (SMTK_ENABLE_POLYGON_SESSION)
+  set(smtkViewPythonDataTests
+    unitSelection
+  )
+endif()
 
 foreach (test ${smtkViewPythonTests})
   smtk_add_test_python(${test}Py ${test}.py --temp-dir=${CMAKE_BINARY_DIR}/Testing/Temporary)

@@ -31,7 +31,7 @@ class QMenu;
 
 namespace smtk
 {
-namespace resource
+namespace view
 {
 enum class SelectionAction;
 }
@@ -98,7 +98,7 @@ public slots:
 signals:
   void sendSelectionsFromModelViewToSelectionManager(const smtk::model::EntityRefs& selEntities,
     const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& DesPhrases,
-    const smtk::resource::SelectionAction modifierFlag, const std::string& selectionSource);
+    const smtk::view::SelectionAction modifierFlag, const std::string& selectionSource);
 
   void operationRequested(const smtk::model::OperatorPtr& brOp);
   void operationCancelled(const smtk::model::OperatorPtr& brOp);

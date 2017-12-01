@@ -26,7 +26,7 @@ namespace nlohmann
 template <>
 struct adl_serializer<std::map<smtk::resource::ComponentPtr, int> >
 {
-  /// Convert a SelectionManager's currentSelection() to JSON.
+  /// Convert a Selection's currentSelection() to JSON.
   static void to_json(json& j, const std::map<smtk::resource::ComponentPtr, int>& seln)
   {
     if (seln.empty())

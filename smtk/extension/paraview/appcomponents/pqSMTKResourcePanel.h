@@ -13,6 +13,8 @@
 
 #include <QDockWidget>
 
+class QItemSelection;
+
 class pqServer;
 class pqSMTKResource;
 class pqSMTKResourceManager;
@@ -32,7 +34,9 @@ public:
   void setPhraseGenerator(smtk::view::SubphraseGeneratorPtr spg);
 
 public slots:
-  virtual void updateTopLevel();
+  virtual void sendPanelSelectionToSMTK(
+    const QItemSelection& selected, const QItemSelection& deselected);
+  virtual void sendSMTKSelectionToPanel(const std::string& src, smtk::view::SelectionPtr seln);
 
 protected slots:
   virtual void searchTextChanged(const QString& searchText);

@@ -73,14 +73,14 @@ void qtSelectionManager::getSelectionSources(std::set<std::string>& selectionSou
 
 void qtSelectionManager::updateSelectedItems(const smtk::model::EntityRefs& selEntities,
   const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& /*DesPhrases*/,
-  const smtk::resource::SelectionAction actionFlag, const std::string& incomingSelectionSource)
+  const smtk::view::SelectionAction actionFlag, const std::string& incomingSelectionSource)
 {
-  if (actionFlag == smtk::resource::SelectionAction::UNFILTERED_ADD)
+  if (actionFlag == smtk::view::SelectionAction::UNFILTERED_ADD)
   { // \b selection from qtModelItem/operator dialog
     this->m_selEntityRefs.insert(selEntities.begin(), selEntities.end());
     this->m_selMeshes.insert(selMeshes.begin(), selMeshes.end());
   }
-  else if (actionFlag == smtk::resource::SelectionAction::UNFILTERED_SUBTRACT)
+  else if (actionFlag == smtk::view::SelectionAction::UNFILTERED_SUBTRACT)
   { // \b selection from qtModelItem/operator dialog
     for (auto selEntity : selEntities)
     {
@@ -91,7 +91,7 @@ void qtSelectionManager::updateSelectedItems(const smtk::model::EntityRefs& selE
     }
     this->m_selMeshes.erase(selMeshes.begin(), selMeshes.end());
   }
-  else if (actionFlag == smtk::resource::SelectionAction::UNFILTERED_REPLACE)
+  else if (actionFlag == smtk::view::SelectionAction::UNFILTERED_REPLACE)
   {
     // \b clear selection in qtModelItem/opeartor dialog
     // \b selection from model tree
@@ -114,7 +114,7 @@ void qtSelectionManager::updateSelectedItems(const smtk::model::EntityRefs& selE
     this->m_selEntityRefs.insert(filteredSelEnts.begin(), filteredSelEnts.end());
     this->m_selMeshes.insert(selMeshes.begin(), selMeshes.end());
   }
-  else if (actionFlag == smtk::resource::SelectionAction::DEFAULT)
+  else if (actionFlag == smtk::view::SelectionAction::DEFAULT)
   { // \b selection from render window
     if (this->m_selectionAction == SelectionAction::FILTERED_REPLACE)
     { // clear and select
@@ -207,7 +207,7 @@ void qtSelectionManager::filterMeshes(bool checked)
 void qtSelectionManager::clearAllSelections()
 {
   this->updateSelectedItems(smtk::model::EntityRefs(), smtk::mesh::MeshSets(),
-    smtk::model::DescriptivePhrases(), smtk::resource::SelectionAction::UNFILTERED_REPLACE,
+    smtk::model::DescriptivePhrases(), smtk::view::SelectionAction::UNFILTERED_REPLACE,
     std::string());
 }
 

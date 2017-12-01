@@ -13,22 +13,35 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourceManager.h"
 
-#include "smtk/resource/SelectionManager.h"
+#include "smtk/view/Selection.h"
 
 pqSMTKModelRepresentation::pqSMTKModelRepresentation(
   const QString& group, const QString& name, vtkSMProxy* repr, pqServer* server, QObject* parent)
   : Superclass(group, name, repr, server, parent)
+  , m_selnObserver(-1)
 {
   auto smtk = pqSMTKBehavior::instance();
   auto rsrcMgrPxy = smtk->resourceManagerForServer(server);
   if (rsrcMgrPxy)
   {
-    rsrcMgrPxy->smtkSelection()->listenToSelectionEvents([this](const std::string src,
-      smtk::resource::SelectionManagerPtr seln) { this->handleSMTKSelectionChange(src, seln); });
+    m_selnObserver = rsrcMgrPxy->smtkSelection()->observe([this](const std::string src,
+      smtk::view::SelectionPtr seln) { this->handleSMTKSelectionChange(src, seln); });
   }
 }
 
-pqSMTKModelRepresentation::~pqSMTKModelRepresentation() = default;
+pqSMTKModelRepresentation::~pqSMTKModelRepresentation()
+{
+  // Avoid getting observations after we are dead.
+  if (m_selnObserver >= 0)
+  {
+    auto smtk = pqSMTKBehavior::instance();
+    auto rsrcMgrPxy = smtk->resourceManagerForServer(this->getServer());
+    if (rsrcMgrPxy)
+    {
+      rsrcMgrPxy->smtkSelection()->unobserve(m_selnObserver);
+    }
+  }
+}
 
 void pqSMTKModelRepresentation::initialize()
 {
@@ -40,7 +53,7 @@ void pqSMTKModelRepresentation::initialize()
 }
 
 void pqSMTKModelRepresentation::handleSMTKSelectionChange(
-  const std::string& src, smtk::resource::SelectionManagerPtr seln)
+  const std::string& src, smtk::view::SelectionPtr seln)
 {
   (void)src;
   (void)seln;

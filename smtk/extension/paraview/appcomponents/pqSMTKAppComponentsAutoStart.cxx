@@ -9,7 +9,7 @@
 //=========================================================================
 #include "smtk/extension/paraview/appcomponents/pqSMTKAppComponentsAutoStart.h"
 
-#include "smtk/resource/SelectionManager.h"
+#include "smtk/view/Selection.h"
 
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 //#include "smtk/extension/paraview/appcomponents/pqSMTKSelectionFilterBehavior.h"

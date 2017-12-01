@@ -132,10 +132,17 @@ QSize qtDescriptivePhraseDelegate::sizeHint(
 void qtDescriptivePhraseDelegate::paint(
   QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& idx) const
 {
-  QStyledItemDelegate::paint(painter, option, idx);
+  // If selected, draw the highlight color over entire rectangle
+  if (option.state & QStyle::State_Selected)
+  {
+    painter->save();
+    painter->setBrush(QBrush(option.palette.highlight().color()));
+    painter->setPen(Qt::NoPen);
+    painter->drawRect(option.rect);
+    painter->restore();
+  }
 
   painter->save();
-
   QIcon icon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseIconRole));
   QSize iconsize = icon.actualSize(option.decorationSize);
   QFont titleFont = QApplication::font();

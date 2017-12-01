@@ -18,6 +18,8 @@
 
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h" // TODO: remove need for me
 
+#include "smtk/view/Selection.h"
+
 #include "smtk/io/Logger.h"
 
 #include "smtk/resource/Component.h"
@@ -125,7 +127,7 @@ smtk::operation::ManagerPtr pqSMTKResourceManager::smtkOperationManager() const
   return this->smtkProxy()->GetOperationManager();
 }
 
-smtk::resource::SelectionManagerPtr pqSMTKResourceManager::smtkSelection() const
+smtk::view::SelectionPtr pqSMTKResourceManager::smtkSelection() const
 {
   return this->smtkProxy()->GetSelection();
 }
