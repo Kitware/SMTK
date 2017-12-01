@@ -14,6 +14,8 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourceManager.h"
 #include "smtk/extension/paraview/server/vtkSMSMTKResourceManagerProxy.h"
 
+#include "smtk/io/Logger.h"
+
 // Client side
 #include "pqApplicationCore.h"
 #include "pqObjectBuilder.h"
@@ -42,8 +44,6 @@ pqSMTKBehavior::pqSMTKBehavior(QObject* parent)
   auto pqCore = pqApplicationCore::instance();
   if (pqCore)
   {
-    std::cout << "\nHave core at construction\n\n";
-
     auto builder = pqCore->getObjectBuilder();
     QObject::connect(
       builder, SIGNAL(proxyCreated(pqProxy*)), this, SLOT(handleNewSMTKProxies(pqProxy*)));
@@ -180,14 +180,14 @@ void pqSMTKBehavior::removeManagerFromServer(pqServer* remote)
 
 void pqSMTKBehavior::handleNewSMTKProxies(pqProxy* pxy)
 {
-  std::cout << "  Behavior has new " << typeid(*pxy).name() << " @ " << pxy << "\n";
   auto rsrc = dynamic_cast<pqSMTKResource*>(pxy);
   if (rsrc)
   {
     auto it = m_p->Remotes.find(rsrc->getServer());
     if (it == m_p->Remotes.end())
     {
-      std::cout << "Behavior didn't have rsrcMgr\n";
+      smtkErrorMacro(
+        smtk::io::Logger::instance(), "Behavior didn't have resource manager for proxy's server.");
     }
     if (it != m_p->Remotes.end() && it->second.second)
     {
