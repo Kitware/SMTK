@@ -61,6 +61,9 @@ def _to_concrete(item):
     '''
       Returns concrete (leaf) object for input, which is smtk.Item
     '''
+    if item is None:
+        return None
+
     def fun(i):
         concrete_item = None
         for item_type, class_ in type_dict.items():
