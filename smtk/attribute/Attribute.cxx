@@ -31,6 +31,7 @@
 #include "smtk/model/Manager.h"
 
 #include "smtk/common/CompilerInformation.h"
+#include "smtk/common/UUIDGenerator.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/algorithm/string.hpp"
@@ -45,13 +46,14 @@ using namespace smtk::common;
 
 Attribute::Attribute(const std::string& myName, smtk::attribute::DefinitionPtr myDefinition,
   const smtk::common::UUID& myId)
-  : Component(myId)
+  : Component()
   , m_name(myName)
   , m_definition(myDefinition)
   , m_appliesToBoundaryNodes(false)
   , m_appliesToInteriorNodes(false)
   , m_isColorSet(false)
   , m_aboutToBeDeleted(false)
+  , m_id(myId)
 {
   this->m_definition->buildAttribute(this);
 }
@@ -64,6 +66,7 @@ Attribute::Attribute(const std::string& myName, smtk::attribute::DefinitionPtr m
   , m_appliesToInteriorNodes(false)
   , m_isColorSet(false)
   , m_aboutToBeDeleted(false)
+  , m_id(smtk::common::UUIDGenerator::instance().random())
 {
   this->m_definition->buildAttribute(this);
 }

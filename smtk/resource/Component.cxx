@@ -13,21 +13,13 @@
 
 #include "smtk/resource/Component.h"
 
-#include "smtk/common/UUIDGenerator.h"
-
 namespace smtk
 {
 namespace resource
 {
 
-Component::Component(const common::UUID& myID)
-  : m_id(myID)
-{
-}
-
 Component::Component()
 {
-  this->m_id = smtk::common::UUIDGenerator::instance().random();
 }
 
 Component::~Component()

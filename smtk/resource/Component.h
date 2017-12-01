@@ -42,12 +42,8 @@ public:
   virtual common::UUID id() const = 0;
 
 protected:
-  Component(const common::UUID& myID);
   Component();
   virtual void setId(const common::UUID& myID) = 0;
-
-private:
-  common::UUID m_id;
 };
 }
 }
