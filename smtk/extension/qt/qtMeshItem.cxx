@@ -66,7 +66,10 @@ smtk::attribute::MeshItemPtr qtMeshItem::meshItem()
 
 void qtMeshItem::refreshEntityItems()
 {
-  this->Internals->MeshItemCombo->init();
+  if (!this->Internals->MeshItemCombo.isNull())
+  {
+    this->Internals->MeshItemCombo->init();
+  }
 }
 
 bool qtMeshItem::add(const smtk::mesh::MeshSet& val)
