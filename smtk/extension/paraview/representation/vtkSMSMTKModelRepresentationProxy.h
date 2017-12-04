@@ -38,11 +38,22 @@ protected:
   vtkSMSMTKModelRepresentationProxy();
   ~vtkSMSMTKModelRepresentationProxy() override;
 
+  friend class pqSMTKModelRepresentation;
+
   /**
-   * Overridden to ensure that whenever "Input" property changes, other input
-   * properties are updated (glyph mapper inputs).
+   * Connects additional input ports required by the representation (instance
+   * placement inputs).
+   */
+  void ConnectAdditionalPorts();
+
+  /**
+   * Ensures that whenever the "Input" property changes, ConnectAdditionalPorts
+   * is called. This is critical in cases when pqSMTKModelRepresentation has not
+   * been constructed (e.g. Python invocations of SMTKModelRepresentation).
    */
   void SetPropertyModifiedFlag(const char* name, int flag) override;
+
+  bool InitializedInputs = false;
 
 private:
   vtkSMSMTKModelRepresentationProxy(const vtkSMSMTKModelRepresentationProxy&) = delete;

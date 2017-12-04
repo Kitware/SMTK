@@ -36,31 +36,32 @@ void vtkSMSMTKModelRepresentationProxy::PrintSelf(ostream& os, vtkIndent indent)
   this->Superclass::PrintSelf(os, indent);
 }
 
-void vtkSMSMTKModelRepresentationProxy::SetPropertyModifiedFlag(const char* name, int flag)
+void vtkSMSMTKModelRepresentationProxy::ConnectAdditionalPorts()
 {
-  if (!name)
+  vtkSMPropertyHelper helper(this, "Input");
+  vtkSMSourceProxy* input = vtkSMSourceProxy::SafeDownCast(helper.GetAsProxy(0));
+  if (input)
   {
-    return;
-  }
-
-  if (strcmp(name, "Input") == 0)
-  {
-    vtkSMPropertyHelper helper(this, name);
-    vtkSMSourceProxy* input = vtkSMSourceProxy::SafeDownCast(helper.GetAsProxy(0));
-    if (input)
+    auto source = vtkSMSourceProxy::SafeDownCast(input->GetTrueParentProxy());
+    if (source)
     {
-      auto source = vtkSMSourceProxy::SafeDownCast(input->GetTrueParentProxy());
-      if (source)
+      vtkSMProxy* repProxy = this->GetSubProxy("SMTKModelRepresentation");
+      if (repProxy)
       {
-        vtkSMProxy* repProxy = this->GetSubProxy("SMTKModelRepresentation");
-        if (repProxy)
-        {
-          vtkSMPropertyHelper(repProxy, "GlyphPrototypes", true).Set(source, 1);
-          vtkSMPropertyHelper(repProxy, "GlyphPoints", true).Set(source, 2);
-          repProxy->UpdateVTKObjects();
-        }
+        vtkSMPropertyHelper(repProxy, "GlyphPrototypes", true).Set(source, 1);
+        vtkSMPropertyHelper(repProxy, "GlyphPoints", true).Set(source, 2);
+        this->InitializedInputs = true;
+        repProxy->UpdateVTKObjects();
       }
     }
+  }
+}
+
+void vtkSMSMTKModelRepresentationProxy::SetPropertyModifiedFlag(const char* name, int flag)
+{
+  if (!this->InitializedInputs && strcmp(name, "Input"))
+  {
+    this->ConnectAdditionalPorts();
   }
 
   this->Superclass::SetPropertyModifiedFlag(name, flag);
