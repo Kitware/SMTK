@@ -69,11 +69,6 @@
   </ProxyGroup>
 
   <ProxyGroup name="sources">
-    <DataSourceProxy name="HydroModelPolySource"
-      class="vtkHydroModelPolySource">
-      <!-- End of HydroModelPolySource -->
-    </DataSourceProxy>
-
     <SourceProxy name="SMTKModelReader" class="vtkSMTKModelReader" label="SMTK Model Reader">
       <Documentation
         short_help="Read an SMTK Geometry file."
