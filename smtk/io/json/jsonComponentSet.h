@@ -10,7 +10,7 @@
 #ifndef smtk_io_jsonComponentSet_h
 #define smtk_io_jsonComponentSet_h
 
-#include "smtk/io/jsonUUID.h"
+#include "smtk/common/json/jsonUUID.h"
 
 #include "smtk/resource/Resource.h"
 

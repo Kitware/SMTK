@@ -10,7 +10,7 @@
 #ifndef smtk_io_jsonSelectionMap_h
 #define smtk_io_jsonSelectionMap_h
 
-#include "smtk/io/jsonUUID.h"
+#include "smtk/common/json/jsonUUID.h"
 
 #include "nlohmann/json.hpp"
 
