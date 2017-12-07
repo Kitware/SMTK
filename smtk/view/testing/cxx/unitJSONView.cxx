@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/view/View.h"
-#include "smtk/view/jsonView.h"
+#include "smtk/view/json/jsonView.h"
 
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
@@ -42,10 +42,11 @@ int unitJSONView(int argc, char* argv[])
   std::string data((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
   json j = json::parse(data);
   int numJSONViews = 0;
-  for (auto view : j["views"])
+  for (auto view : j["Views"])
   {
     smtk::view::ViewPtr test = view;
     json jtmp = test;
+    std::cout << "jtemp:\n" << jtmp.dump(2) << std::endl;
     auto xit = rsrc->views().find(test->title());
     if (xit == rsrc->views().end())
     {

@@ -13,6 +13,8 @@
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
 
+#include "json.hpp"
+#include "smtk/attribute/json/jsonCollection.h"
 #include <iostream>
 
 int main(int argc, char* argv[])
@@ -36,6 +38,8 @@ int main(int argc, char* argv[])
     {
       std::cout << logger.convertToString();
     }
+    nlohmann::json json = collection;
+    std::cout << json.dump(2) << std::endl;
     return 0;
   }
 }

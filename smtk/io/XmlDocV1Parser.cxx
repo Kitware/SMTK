@@ -343,7 +343,7 @@ void processDerivedValue(pugi::xml_node& node, ItemType item, attribute::Collect
     noVal = node.child("UnsetVal");
     if (!noVal)
     {
-      // Is this an exapression?
+      // Is this an expression?
       xatt = node.attribute("Expression");
       if (allowsExpressions && xatt)
       {

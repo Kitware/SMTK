@@ -14,7 +14,8 @@
 
 #include "smtk/resource/Resource.h"
 
-#include "nlohmann/json.hpp"
+#include "json.hpp"
+using json = nlohmann::json;
 
 #include <string>
 
@@ -23,51 +24,17 @@
   * Deserialization requires a resource manager from which to fetch
   * pointers to resources and their components given only UUIDs.
   */
-namespace nlohmann
+namespace smtk
 {
-template <>
-struct adl_serializer<smtk::resource::ComponentSet>
+namespace resource
 {
-  /// Convert a set of resource components to JSON.
-  static void to_json(json& j, const smtk::resource::ComponentSet& cset)
-  {
-    if (cset.empty())
-    {
-      j = nullptr;
-    }
-    else
-    {
-      // Group components by resource IDs:
-      std::map<smtk::common::UUID, std::set<smtk::common::UUID> > rcset;
-      for (auto entry : cset)
-      {
-        auto rset = rcset.find(entry->resource()->id());
-        if (rset == rcset.end())
-        {
-          smtk::common::UUIDs blank;
-          rset = rcset.insert(std::make_pair(entry->resource()->id(), blank)).first;
-        }
-        rset->second.insert(entry->id());
-      }
+/// Convert a set of resource components to JSON.
+SMTKCORE_EXPORT void to_json(json& j, const smtk::resource::ComponentSet& cset);
 
-      // Now output arrays of resources that list component-id members.
-      j = json::array();
-      for (auto rsrc : rcset)
-      {
-        json ra = json::array();
-        ra.push_back(rsrc.first);
-        ra.push_back(rsrc.second);
-        j.push_back(ra);
-      }
-    }
-  }
-
-  /// Conversion from JSON requires a resource manager to look up pointers from UUIDs.
-  static void from_json(
-    const json&, std::set<smtk::resource::ComponentPtr>&, smtk::resource::ManagerPtr)
-  {
-  }
-};
+/// Conversion from JSON requires a resource manager to look up pointers from UUIDs.
+SMTKCORE_EXPORT void from_json(
+  const json&, std::set<smtk::resource::ComponentPtr>&, smtk::resource::ManagerPtr);
+}
 }
 
 #endif

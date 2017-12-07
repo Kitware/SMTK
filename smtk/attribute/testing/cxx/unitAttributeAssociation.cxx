@@ -11,7 +11,6 @@
 #include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
-#include "smtk/attribute/StringItemDefinition.h"
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/EntityRef.h"

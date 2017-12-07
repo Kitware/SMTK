@@ -30,6 +30,7 @@ endforeach()
 ################################################################################
 if (SMTK_DATA_DIR)
   set(attributeDataTests
+    attributeJsonWriterTest
     attributeReaderTest
     extensibleAttributeTest
   )
@@ -40,6 +41,9 @@ if (SMTK_DATA_DIR)
     "${SMTK_DATA_DIR}/attribute/attribute_collection/ExtensibleTemplateTest.xml"
     "${CMAKE_BINARY_DIR}/Testing/Temporary/ExtensibleTemplateTestResult.xml"
   )
+  set(attributeJsonWriterTest_ARGS
+    "${SMTK_DATA_DIR}/attribute/attribute_collection/attributeJsonWriterTest.json"
+    )
   foreach(tst ${attributeDataTests})
     add_executable(${tst} ${tst}.cxx)
     target_link_libraries(${tst} smtkCore ${Boost_LIBRARIES})
@@ -56,6 +60,8 @@ set(unit_tests
   unitAttributeAssociation
   unitComponentItem.cxx
   unitDateTimeItem.cxx
+  unitJsonItemDefinitions.cxx
+  unitJsonItems.cxx
 )
 
 smtk_unit_tests(

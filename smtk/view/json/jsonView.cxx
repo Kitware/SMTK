@@ -7,12 +7,11 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_view_jsonView_h
-#define smtk_view_jsonView_h
-
+#include "jsonView.h"
+#include "smtk/CoreExports.h"
 #include "smtk/view/View.h"
 
-#include "nlohmann/json.hpp"
+#include "json.hpp"
 
 #include <sstream>
 
@@ -21,32 +20,34 @@ namespace smtk
 namespace view
 {
 
-inline void to_json(nlohmann::json& j, const smtk::view::View::Component& comp)
+SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::view::View::Component& comp)
 {
-  j = { { "name", comp.name() } };
-  if (!comp.contents().empty())
-  {
-    j["contents"] = comp.contents();
-  }
+  j = { { "Name", comp.name() } };
   if (!comp.attributes().empty())
   {
-    j["attributes"] = comp.attributes();
+    j["Attributes"] = comp.attributes();
   }
-  if (!comp.children().empty())
+  // if the comp has contents then save it in the node's text
+  // else process the comp's children
+  if (!comp.contents().empty())
   {
-    j["children"] = comp.children();
+    j["Contents"] = comp.contents();
+  }
+  else if (!comp.children().empty())
+  {
+    j["Children"] = comp.children();
   }
 }
 
-inline void from_json(const nlohmann::json& j, View::Component& comp)
+SMTKCORE_EXPORT void from_json(const nlohmann::json& j, View::Component& comp)
 {
-  comp = smtk::view::View::Component(j.at("name").get<std::string>());
+  comp = smtk::view::View::Component(j.at("Name").get<std::string>());
   nlohmann::json::const_iterator it;
-  if ((it = j.find("contents")) != j.end())
+  if ((it = j.find("Contents")) != j.end())
   {
     comp.setContents(it->get<std::string>());
   }
-  if ((it = j.find("attributes")) != j.end())
+  if ((it = j.find("Attributes")) != j.end())
   {
     for (auto attribute = it->begin(); attribute != it->end(); ++attribute)
     {
@@ -65,7 +66,7 @@ inline void from_json(const nlohmann::json& j, View::Component& comp)
       comp.setAttribute(attribute.key(), val);
     }
   }
-  if ((it = j.find("children")) != j.end())
+  if ((it = j.find("Children")) != j.end())
   {
     for (auto child = it->begin(); child != it->end(); ++child)
     {
@@ -75,29 +76,27 @@ inline void from_json(const nlohmann::json& j, View::Component& comp)
   }
 }
 
-inline void to_json(nlohmann::json& j, const ViewPtr& view)
+SMTKCORE_EXPORT void to_json(nlohmann::json& j, const ViewPtr& view)
 {
-  j = { { "type", view->type() }, { "title", view->title() }, { "component", view->details() } };
+  j = { { "Type", view->type() }, { "Title", view->title() }, { "Component", view->details() } };
   if (!view->iconName().empty())
   {
-    j["icon"] = view->iconName();
+    j["Icon"] = view->iconName();
   }
 }
 
-inline void from_json(const nlohmann::json& j, smtk::view::ViewPtr& view)
+SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::view::ViewPtr& view)
 {
-  view = smtk::view::View::New(j["type"].get<std::string>(), j["title"].get<std::string>());
+  view = smtk::view::View::New(j["Type"].get<std::string>(), j["Title"].get<std::string>());
   nlohmann::json::const_iterator it;
-  if ((it = j.find("icon")) != j.end())
+  if ((it = j.find("Icon")) != j.end())
   {
     view->setIconName(it->get<std::string>());
   }
-  if ((it = j.find("component")) != j.end())
+  if ((it = j.find("Component")) != j.end())
   {
     view->details() = *it;
   }
 }
 }
 }
-
-#endif

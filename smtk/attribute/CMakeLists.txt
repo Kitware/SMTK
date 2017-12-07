@@ -1,3 +1,76 @@
+set (jsonAttributeHeaders
+  json/jsonAttribute.h
+  json/jsonComponentItem.h
+  json/jsonComponentItemDefinition.h
+  json/jsonCollection.h
+  json/jsonDateTimeItem.h
+  json/jsonDateTimeItemDefinition.h
+  json/jsonDirectoryItem.h
+  json/jsonDirectoryItemDefinition.h
+  json/jsonDoubleItem.h
+  json/jsonDoubleItemDefinition.h
+  json/jsonDefinition.h
+  json/jsonFileItem.h
+  json/jsonFileItemDefinition.h
+  json/jsonFileSystemItem.h
+  json/jsonFileSystemItemDefinition.h
+  json/jsonGroupItem.h
+  json/jsonGroupItemDefinition.h
+  json/jsonHelperFunction.h
+  json/jsonIntItem.h
+  json/jsonIntItemDefinition.h
+  json/jsonItem.h
+  json/jsonItemDefinition.h
+  json/jsonMeshItem.h
+  json/jsonMeshItemDefinition.h
+  json/jsonMeshSelectionItem.h
+  json/jsonMeshSelectionItemDefinition.h
+  json/jsonModelEntityItem.h
+  json/jsonModelEntityItemDefinition.h
+  json/jsonStringItem.h
+  json/jsonStringItemDefinition.h
+  json/jsonRefItem.h
+  json/jsonRefItemDefinition.h
+  json/jsonValueItem.h
+  json/jsonValueItemDefinition.h
+  )
+set (jsonAttributeSrcs
+  json/jsonAttribute.cxx
+  json/jsonComponentItem.cxx
+  json/jsonComponentItemDefinition.cxx
+  json/jsonCollection.cxx
+  json/jsonDateTimeItem.cxx
+  json/jsonDateTimeItemDefinition.cxx
+  json/jsonDirectoryItem.cxx
+  json/jsonDirectoryItemDefinition.cxx
+  json/jsonDoubleItem.cxx
+  json/jsonDoubleItemDefinition.cxx
+  json/jsonDefinition.cxx
+  json/jsonFileItem.cxx
+  json/jsonFileItemDefinition.cxx
+  json/jsonFileSystemItem.cxx
+  json/jsonFileSystemItemDefinition.cxx
+  json/jsonGroupItem.cxx
+  json/jsonGroupItemDefinition.cxx
+  json/jsonHelperFunction.cxx
+  json/jsonIntItem.cxx
+  json/jsonIntItemDefinition.cxx
+  json/jsonItem.cxx
+  json/jsonItemDefinition.cxx
+  json/jsonMeshItem.cxx
+  json/jsonMeshItemDefinition.cxx
+  json/jsonMeshSelectionItem.cxx
+  json/jsonMeshSelectionItemDefinition.cxx
+  json/jsonModelEntityItem.cxx
+  json/jsonModelEntityItemDefinition.cxx
+  json/jsonStringItem.cxx
+  json/jsonStringItemDefinition.cxx
+  json/jsonRefItem.cxx
+  json/jsonRefItemDefinition.cxx
+  json/jsonValueItem.cxx
+  json/jsonValueItemDefinition.cxx
+  )
+
 set(attributeHeaders
   Attribute.h
   ComponentItem.h
@@ -37,9 +110,11 @@ set(attributeHeaders
   ValueItemTemplate.h
   VoidItem.h
   VoidItemDefinition.h
+  ${jsonAttributeHeaders}
   )
 
 set(attributeSrcs
+  ${jsonAttributeSrcs}
   Attribute.cxx
   ComponentItem.cxx
   ComponentItemDefinition.cxx
@@ -86,4 +161,6 @@ endif()
 
 if(SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
+  target_link_libraries(TestBuild_smtk_attribute
+    PUBLIC nlohmann_json)
 endif(SMTK_ENABLE_TESTING)
