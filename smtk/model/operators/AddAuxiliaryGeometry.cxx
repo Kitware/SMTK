@@ -41,14 +41,14 @@ namespace model
 smtk::model::OperatorResult AddAuxiliaryGeometry::operateInternal()
 {
   EntityRefArray entities = this->associatedEntitiesAs<EntityRefArray>();
+  smtk::attribute::FileItemPtr urlItem = this->findFile("url");
   if (entities.empty())
   {
-    smtkErrorMacro(this->log(), "No parent specified.");
+    smtkErrorMacro(this->log(), "No " << (urlItem ? "parent" : "children") << " specified.");
     return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
   EntityRef parent = entities[0];
-  smtk::attribute::FileItemPtr urlItem = this->findFile("url");
   smtk::attribute::StringItemPtr dtypeItem = this->findString("type");
   smtk::attribute::IntItemPtr dimItem = this->findInt("dimension");
   int dim = dimItem != nullptr ? dimItem->value(0) : 2;
@@ -73,13 +73,25 @@ smtk::model::OperatorResult AddAuxiliaryGeometry::operateInternal()
   bool bSeparateRep = separateRepOption->isEnabled();
 
   AuxiliaryGeometry auxGeom;
+  std::vector<EntityRef> reparented;
   if (parent.isModel())
-  {
+  { // We are in "add auxiliary geometry" and parent is our owning model.
     auxGeom = parent.manager()->addAuxiliaryGeometry(parent.as<Model>(), dim);
   }
   else
-  {
-    auxGeom = parent.manager()->addAuxiliaryGeometry(parent.as<AuxiliaryGeometry>(), dim);
+  { // We are in "composite auxiliary geometry" and should create an aux geom that owns entities.
+    parent = parent.owningModel();
+    if (parent.isValid())
+    {
+      auxGeom = parent.manager()->addAuxiliaryGeometry(parent.as<AuxiliaryGeometry>(), dim);
+      for (auto child : entities)
+      {
+        if (child.as<smtk::model::AuxiliaryGeometry>().reparent(auxGeom))
+        {
+          reparented.push_back(child);
+        }
+      }
+    }
   }
   auxGeom.assignDefaultName();
   auxGeom.setIntegerProperty("display as separate representation", bSeparateRep ? 1 : 0);
@@ -93,7 +105,7 @@ smtk::model::OperatorResult AddAuxiliaryGeometry::operateInternal()
     }
   }
 
-  if (!urlItem->value().empty())
+  if (urlItem && !urlItem->value().empty())
   {
     path filePath(urlItem->value());
     auxGeom.setURL(filePath.string());
@@ -150,6 +162,7 @@ smtk::model::OperatorResult AddAuxiliaryGeometry::operateInternal()
 
   this->addEntityToResult(result, parent, MODIFIED);
   this->addEntityToResult(result, auxGeom, CREATED);
+  this->addEntitiesToResult(result, reparented, MODIFIED);
   if (auxGeom.hasURL())
   {
     auto tessItem = result->findModelEntity("tess_changed");
