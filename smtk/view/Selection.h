@@ -7,12 +7,14 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_resource_SelectionManager_h
-#define smtk_resource_SelectionManager_h
+#ifndef smtk_resource_Selection_h
+#define smtk_resource_Selection_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
+
+#include "smtk/resource/Component.h"
 
 #include <functional>
 #include <map>
@@ -20,7 +22,7 @@
 
 namespace smtk
 {
-namespace resource
+namespace view
 {
 
 /// Descriptors for how lists passed to the manager should modify the selection.
@@ -57,10 +59,10 @@ enum class SelectionAction
     * Example use case: subtraction from operator dialog where a pre-filtered list is provided.
     */
   UNFILTERED_SUBTRACT = 5,
-  /**\brief Use the default SelectionAction provided by the SelectionManager.
+  /**\brief Use the default SelectionAction provided by the Selection.
     *
     * Use it when SelectionAction should be decided by previous user input
-    * that resulted in a mode being set on the SelectionManager.
+    * that resulted in a mode being set on the Selection.
     *
     * An example is when a user presses a modifier key while in a selection mode
     * to switch between addition, subtraction, or replacement. In this case,
@@ -120,7 +122,7 @@ enum class SelectionAction
   * Similarly, each UI element of your application that will (a) share
   * the selection and (b) present the selection or otherwise need to
   * be informed of changes to the selection should register as a
-  * listener by providing a callback to listenToSelectionEvents().
+  * listener by providing a callback to observe().
   *
   * ## Selection Events
   *
@@ -146,19 +148,21 @@ enum class SelectionAction
   * to get called when the selection is entirely replaced with
   * an identical selection.
   */
-class SMTKCORE_EXPORT SelectionManager : smtkEnableSharedPtr(SelectionManager)
+class SMTKCORE_EXPORT Selection : smtkEnableSharedPtr(Selection)
 {
 public:
-  smtkTypeMacroBase(SelectionManager);
-  smtkCreateMacro(SelectionManager);
+  using Component = smtk::resource::Component;
+
+  smtkTypeMacroBase(Selection);
+  smtkCreateMacro(Selection);
 
   static Ptr instance();
 
   /// This is the type of function used to notify observers when the selection is modified.
-  using Listener = std::function<void(const std::string, SelectionManager::Ptr)>;
+  using Observer = std::function<void(const std::string&, Selection::Ptr)>;
 
   /// This is the underlying storage type that holds selections.
-  using SelectionMap = std::map<smtk::resource::ComponentPtr, int>;
+  using SelectionMap = std::map<Component::Ptr, int>;
 
   /**\brief Selection filters take functions of this form.
     *
@@ -175,9 +179,9 @@ public:
     * the edge, face, or vertex should not be considered) but add the related
     * entities (the volume or model) to the map for action.
     */
-  using SelectionFilter = std::function<bool(ComponentPtr, int, SelectionMap&)>;
+  using SelectionFilter = std::function<bool(Component::Ptr, int, SelectionMap&)>;
 
-  virtual ~SelectionManager();
+  virtual ~Selection();
 
   /**\brief Selection sources.
     *
@@ -297,7 +301,7 @@ public:
     */
   //@{
   /// Visit every selected component with the given functor.
-  void visitSelection(std::function<void(ComponentPtr, int)> visitor)
+  void visitSelection(std::function<void(Component::Ptr, int)> visitor)
   {
     for (auto entry : m_selection)
     {
@@ -331,11 +335,11 @@ public:
     *
     */
   //@{
-  /// Call \a fn whenever the selection is modified. Returns a handle you can pass to unlisten().
-  int listenToSelectionEvents(Listener fn, bool immediatelyNotify = false);
+  /// Call \a fn whenever the selection is modified. Returns a handle you can pass to unobserve().
+  int observe(Observer fn, bool immediatelyNotify = false);
 
   /// Stop listening to selection events.
-  bool unlisten(int handle) { return this->m_listeners.erase(handle) > 0; }
+  bool unobserve(int handle) { return this->m_listeners.erase(handle) > 0; }
   //@}
 
   /** \brief Selection filtering.
@@ -347,7 +351,7 @@ public:
   //@}
 
 protected:
-  SelectionManager();
+  Selection();
 
   bool performAction(
     smtk::resource::ComponentPtr comp, int value, SelectionAction action, SelectionMap& suggested);
@@ -360,16 +364,16 @@ protected:
   std::set<std::string> m_selectionSources;
   std::map<std::string, int> m_selectionValueLabels;
   SelectionMap m_selection;
-  std::map<int, Listener> m_listeners;
+  std::map<int, Observer> m_listeners;
   SelectionFilter m_filter;
 
 private:
-  SelectionManager(const SelectionManager&) = delete;
-  void operator=(const SelectionManager&) = delete;
+  Selection(const Selection&) = delete;
+  void operator=(const Selection&) = delete;
 };
 
 template <typename T>
-bool SelectionManager::modifySelection(
+bool Selection::modifySelection(
   const T& components, const std::string& source, int value, SelectionAction action)
 {
   bool modified = false;
@@ -394,7 +398,7 @@ bool SelectionManager::modifySelection(
   return modified;
 }
 
-} // namespace resource
+} // namespace view
 } // namespace smtk
 
 #endif

@@ -31,7 +31,7 @@ public:
 
   static pqSMTKSelectionFilterBehavior* instance();
 
-  void setSelectionManager(smtk::resource::SelectionManagerPtr selnMgr);
+  void setSelection(smtk::view::SelectionPtr selnMgr);
 
 protected slots:
   virtual void onFilterChanged(QAction* a);
@@ -46,7 +46,7 @@ protected:
   pqInternal* m_p;
   bool m_acceptMeshes;
   smtk::model::BitFlags m_modelFilterMask;
-  smtk::resource::SelectionManagerPtr m_selectionManager;
+  smtk::view::SelectionPtr m_selection;
 
 private:
   Q_DISABLE_COPY(pqSMTKSelectionFilterBehavior);

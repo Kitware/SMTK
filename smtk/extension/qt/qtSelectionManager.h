@@ -16,7 +16,7 @@
 
 #include "smtk/common/UUID.h"
 
-#include "smtk/resource/SelectionManager.h"
+#include "smtk/view/Selection.h"
 
 #include "smtk/model/DescriptivePhrase.h"
 #include "smtk/model/EntityRef.h"
@@ -37,7 +37,7 @@ namespace extension
 class SMTKQTEXT_EXPORT qtSelectionManager : public QObject
 {
 public:
-  using SelectionAction = resource::SelectionAction;
+  using SelectionAction = smtk::view::SelectionAction;
   Q_OBJECT
 public:
   qtSelectionManager();
@@ -86,7 +86,7 @@ public slots:
   // Ex class. qtModelView, qtAssociationWidget and pqSmtkModelPanel
   void updateSelectedItems(const smtk::model::EntityRefs& selEntities,
     const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& DesPhrases,
-    const smtk::resource::SelectionAction actionFlag, const std::string& selectionSource);
+    const smtk::view::SelectionAction actionFlag, const std::string& selectionSource);
 
   // Description
   // update mask for models

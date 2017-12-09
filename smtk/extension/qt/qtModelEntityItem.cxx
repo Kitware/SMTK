@@ -155,7 +155,7 @@ bool qtModelEntityItem::add(const smtk::model::EntityRef& val)
     addEntityRefs.insert(val);
 
     emit this->sendSelectionFromModelEntityToSelectionManager(addEntityRefs, smtk::mesh::MeshSets(),
-      smtk::model::DescriptivePhrases(), smtk::resource::SelectionAction::UNFILTERED_ADD,
+      smtk::model::DescriptivePhrases(), smtk::view::SelectionAction::UNFILTERED_ADD,
       this->m_selectionSourceName);
     return true;
   }
@@ -185,7 +185,7 @@ bool qtModelEntityItem::remove(const smtk::model::EntityRef& val)
 
   emit this->sendSelectionFromModelEntityToSelectionManager(removeEntityRefs,
     smtk::mesh::MeshSets(), smtk::model::DescriptivePhrases(),
-    smtk::resource::SelectionAction::UNFILTERED_SUBTRACT, this->m_selectionSourceName);
+    smtk::view::SelectionAction::UNFILTERED_SUBTRACT, this->m_selectionSourceName);
   return true;
 }
 
@@ -495,7 +495,7 @@ void qtModelEntityItem::clearEntityAssociations()
 
   emit this->sendSelectionFromModelEntityToSelectionManager(smtk::model::EntityRefs(),
     smtk::mesh::MeshSets(), smtk::model::DescriptivePhrases(),
-    smtk::resource::SelectionAction::UNFILTERED_REPLACE, this->m_selectionSourceName);
+    smtk::view::SelectionAction::UNFILTERED_REPLACE, this->m_selectionSourceName);
 }
 
 void qtModelEntityItem::onRequestEntityAssociation()

@@ -27,10 +27,11 @@ public:
   ~pqSMTKModelRepresentation() override;
 
 protected:
-  virtual void handleSMTKSelectionChange(
-    const std::string& src, smtk::resource::SelectionManagerPtr seln);
+  virtual void handleSMTKSelectionChange(const std::string& src, smtk::view::SelectionPtr seln);
 
   void initialize() override;
+
+  int m_selnObserver;
 };
 
 #endif

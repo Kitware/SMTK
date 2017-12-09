@@ -3,7 +3,6 @@ set(resourceSrcs
   Component.cxx
   Manager.cxx
   Resource.cxx
-  SelectionManager.cxx
   Set.cxx
 )
 
@@ -16,7 +15,6 @@ set(resourceHeaders
   Resource.h
   Resource.h
   Container.h
-  SelectionManager.h
   Set.h
 )
 

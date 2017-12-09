@@ -57,7 +57,7 @@ public:
   /// Return the client-side operation manager which mirrors the server version.
   smtk::operation::ManagerPtr smtkOperationManager() const;
   /// Return the client-side selection which mirrors the server version.
-  smtk::resource::SelectionManagerPtr smtkSelection() const;
+  smtk::view::SelectionPtr smtkSelection() const;
 
 public slots:
   /// Called by pqSMTKBehavior to add resources as they are created.

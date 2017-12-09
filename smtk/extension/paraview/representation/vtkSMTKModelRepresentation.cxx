@@ -33,7 +33,7 @@
 #include "smtk/extension/paraview/server/vtkSMTKResourceManagerWrapper.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 #include "smtk/resource/Component.h"
-#include "smtk/resource/SelectionManager.h"
+#include "smtk/view/Selection.h"
 
 vtkStandardNewMacro(vtkSMTKModelRepresentation);
 

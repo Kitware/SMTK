@@ -242,6 +242,19 @@ bool DescriptivePhrase::compareByTitle(const DescriptivePhrasePtr& a, const Desc
   return na < nb;
 }
 
+bool DescriptivePhrase::operator==(const DescriptivePhrase& other) const
+{
+  return
+    // You wouldn't think typeid(baseClassReference) would work, but it does virtual lookup:
+    typeid(*this) == typeid(other) && this->m_parent.lock() == other.m_parent.lock() &&
+    this->m_type == other.m_type && this->m_delegate == other.m_delegate;
+}
+
+bool DescriptivePhrase::operator!=(const DescriptivePhrase& other) const
+{
+  return !(*this == other);
+}
+
 void DescriptivePhrase::buildSubphrases()
 {
   if (!this->m_subphrasesBuilt)

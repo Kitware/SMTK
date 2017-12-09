@@ -18,7 +18,7 @@
 
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
-#include "smtk/resource/SelectionManager.h"
+#include "smtk/view/Selection.h"
 
 #include "smtk/io/Logger.h"
 
@@ -73,7 +73,7 @@ public:
 
 pqSMTKSelectionFilterBehavior::pqSMTKSelectionFilterBehavior(QObject* parent)
   : Superclass(parent)
-  , m_selectionManager(nullptr)
+  , m_selection(nullptr)
 {
   m_p = new pqInternal;
   m_p->Actions.setupUi(&m_p->ActionsOwner);
@@ -129,9 +129,9 @@ pqSMTKSelectionFilterBehavior* pqSMTKSelectionFilterBehavior::instance()
   return s_selectionFilter;
 }
 
-void pqSMTKSelectionFilterBehavior::setSelectionManager(smtk::resource::SelectionManagerPtr selnMgr)
+void pqSMTKSelectionFilterBehavior::setSelection(smtk::view::SelectionPtr selnMgr)
 {
-  m_selectionManager = selnMgr;
+  m_selection = selnMgr;
 }
 
 void pqSMTKSelectionFilterBehavior::onFilterChanged(QAction* a)
@@ -203,16 +203,16 @@ void pqSMTKSelectionFilterBehavior::filterSelectionOnServer(
     return;
   }
 
-  if (m_selectionManager)
+  if (m_selection)
   {
     smtkWarningMacro(smtk::io::Logger::instance(),
       "pqSMTKSelectionFilterBehavior can currently only manage a single ParaView server. "
       "No more updates will be provided for "
-        << m_selectionManager << " in favor of " << seln);
+        << m_selection << " in favor of " << seln);
   }
 
-  std::cout << "  filter on s " << seln << " m_ " << m_selectionManager << "\n";
-  m_selectionManager = seln;
+  std::cout << "  filter on s " << seln << " m_ " << m_selection << "\n";
+  m_selection = seln;
   this->installFilter();
 }
 
@@ -226,14 +226,14 @@ void pqSMTKSelectionFilterBehavior::unfilterSelectionOnServer(
     return;
   }
   auto seln = mgr->GetSelection();
-  if (!seln && !m_selectionManager)
+  if (!seln && !m_selection)
   {
     return;
   }
 
   if (!seln)
   {
-    seln = m_selectionManager;
+    seln = m_selection;
   }
 
   seln->setFilter(nullptr);
@@ -241,8 +241,8 @@ void pqSMTKSelectionFilterBehavior::unfilterSelectionOnServer(
 
 void pqSMTKSelectionFilterBehavior::installFilter()
 {
-  std::cout << "    Updating filter on " << m_selectionManager << " " << m_modelFilterMask << "\n";
-  if (!m_selectionManager)
+  std::cout << "    Updating filter on " << m_selection << " " << m_modelFilterMask << "\n";
+  if (!m_selection)
   {
     return;
   }
@@ -250,8 +250,8 @@ void pqSMTKSelectionFilterBehavior::installFilter()
   bool acceptMeshes = m_acceptMeshes;
   smtk::model::BitFlags modelFlags = m_modelFilterMask;
 
-  m_selectionManager->setFilter([acceptMeshes, modelFlags](smtk::resource::ComponentPtr comp,
-    int value, smtk::resource::SelectionManager::SelectionMap& suggestions) {
+  m_selection->setFilter([acceptMeshes, modelFlags](smtk::resource::ComponentPtr comp, int value,
+    smtk::view::Selection::SelectionMap& suggestions) {
     (void)acceptMeshes; // meshes are not yet resource components.
     if (modelFlags)
     {

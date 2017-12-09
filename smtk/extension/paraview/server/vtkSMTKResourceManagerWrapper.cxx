@@ -12,6 +12,8 @@
 #include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
+#include "smtk/view/Selection.h"
+
 #include "smtk/io/jsonComponentSet.h"
 #include "smtk/io/jsonSelectionMap.h"
 #include "smtk/io/jsonUUID.h"
@@ -23,7 +25,6 @@
 #include "smtk/resource/Component.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
-#include "smtk/resource/SelectionManager.h"
 
 #include "vtkCompositeDataIterator.h"
 #include "vtkMultiBlockDataSet.h"
@@ -92,12 +93,13 @@ vtkSMTKResourceManagerWrapper::vtkSMTKResourceManagerWrapper()
 {
   this->OperationManager = smtk::operation::Manager::create();
   this->ResourceManager = smtk::resource::Manager::create();
-  this->SelectionManager = smtk::resource::SelectionManager::create();
-  this->SelectionManager->setDefaultAction(smtk::resource::SelectionAction::FILTERED_REPLACE);
-  this->SelectedValue = this->SelectionManager->findOrCreateLabeledValue("selected");
-  this->HoveredValue = this->SelectionManager->findOrCreateLabeledValue("hovered");
-  this->SelectionListener = this->SelectionManager->listenToSelectionEvents(
-    [](const std::string& src, smtk::resource::SelectionManager::Ptr selnMgr) {
+  this->Selection = smtk::view::Selection::create();
+  this->Selection->setDefaultAction(smtk::view::SelectionAction::FILTERED_REPLACE);
+  this->SelectedValue = this->Selection->findOrCreateLabeledValue("selected");
+  this->HoveredValue = this->Selection->findOrCreateLabeledValue("hovered");
+  this->SelectionListener = this->Selection->observe(
+    [](const std::string& src, smtk::view::Selection::Ptr selnMgr) {
+      /*
       std::cout << "--- RsrcManagerWrapper " << selnMgr << " src \"" << src << "\":\n";
       selnMgr->visitSelection([](smtk::resource::ComponentPtr comp, int value) {
         auto modelComp = smtk::dynamic_pointer_cast<smtk::model::Entity>(comp);
@@ -114,13 +116,16 @@ vtkSMTKResourceManagerWrapper::vtkSMTKResourceManagerWrapper()
       });
       std::cout << "----\n";
       std::cout.flush();
+      */
+      (void)src;
+      (void)selnMgr;
     },
     true);
 }
 
 vtkSMTKResourceManagerWrapper::~vtkSMTKResourceManagerWrapper()
 {
-  this->SelectionManager->unlisten(this->SelectionListener);
+  this->Selection->unobserve(this->SelectionListener);
   this->SetJSONRequest(nullptr);
   this->SetJSONResponse(nullptr);
   this->SetActiveResource(nullptr);
@@ -135,7 +140,7 @@ void vtkSMTKResourceManagerWrapper::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "JSONRequest: " << (this->JSONRequest ? this->JSONRequest : "null") << "\n"
      << indent << "JSONResponse: " << (this->JSONResponse ? this->JSONResponse : "null") << "\n"
      << indent << "ResourceManager: " << this->ResourceManager.get() << "\n"
-     << indent << "SelectionManager: " << this->SelectionManager.get() << "\n"
+     << indent << "Selection: " << this->Selection.get() << "\n"
      << indent << "SelectedPort: " << this->SelectedPort << "\n"
      << indent << "SelectionObj: " << this->SelectionObj << "\n"
      << indent << "ActiveResource: " << this->ActiveResource << "\n"
@@ -236,15 +241,15 @@ void vtkSMTKResourceManagerWrapper::FetchHardwareSelection(json& response)
             }
           }
         }
-        this->SelectionManager->modifySelection(seln, "paraview", 1);
-        response["selection"] = seln; // this->SelectionManager->currentSelection();
+        this->Selection->modifySelection(seln, "paraview", 1);
+        response["selection"] = seln; // this->Selection->currentSelection();
       }
     }
   }
   std::cout << "Hardware selection!!!\n\n"
             << "  Port " << this->SelectedPort << "\n"
             << "  Seln " << this->SelectionObj << "\n"
-            << "  # " << seln.size() << "  from " << this->SelectionManager << "\n\n";
+            << "  # " << seln.size() << "  from " << this->Selection << "\n\n";
 }
 
 void vtkSMTKResourceManagerWrapper::AddResource(json& response)

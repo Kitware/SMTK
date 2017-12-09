@@ -62,7 +62,7 @@ smtk::resource::ManagerPtr vtkSMSMTKResourceManagerProxy::GetManager() const
   return wrapper ? wrapper->GetManager() : nullptr;
 }
 
-smtk::resource::SelectionManagerPtr vtkSMSMTKResourceManagerProxy::GetSelection() const
+smtk::view::SelectionPtr vtkSMSMTKResourceManagerProxy::GetSelection() const
 {
   // TODO: This should just "return this->Selection;" but we are getting things
   //       working in built-in mode first, so just directly fetch the version

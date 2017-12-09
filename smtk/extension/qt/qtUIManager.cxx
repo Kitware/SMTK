@@ -722,6 +722,6 @@ void qtUIManager::invokeEntitiesSelected(
   // select entities in attribute panel
   // skip attribute panel
   emit this->sendSelectionsFromAttributePanelToSelectionManager(selEnts, smtk::mesh::MeshSets(),
-    smtk::model::DescriptivePhrases(), smtk::resource::SelectionAction::UNFILTERED_REPLACE,
+    smtk::model::DescriptivePhrases(), smtk::view::SelectionAction::UNFILTERED_REPLACE,
     selectionSource);
 }

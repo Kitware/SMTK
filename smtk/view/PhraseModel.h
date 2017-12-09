@@ -14,10 +14,11 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
+#include "smtk/view/Selection.h"
+
 #include "smtk/resource/Event.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
-#include "smtk/resource/SelectionManager.h"
 
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Operator.h"
@@ -82,7 +83,7 @@ public:
   using ComponentItemPtr = smtk::attribute::ComponentItemPtr;
 
   using Resource = smtk::resource::Resource;
-  using Selection = smtk::resource::SelectionManager;
+  using Selection = smtk::view::Selection;
 
   static bool registerModelType(const std::string& typeName, ModelConstructor);
   static bool unregisterModelType(const std::string& typeName);
@@ -118,14 +119,14 @@ public:
     * changes to the descriptive phrase hierarchy.
     */
   ///@{
-  /// Add a listener to respond to changes this model makes to the descriptive phrase hierarchy.
+  /// Add a listener to respond to changes this model makes to the descriptive phrase hierarchy. This may call subphrases().
   int observe(Observer obs, bool immediatelyNotify = true);
   /// Remove a listener added with observe() by passing the integer handle observe() returned.
   bool unobserve(int);
   ///@}
 
   virtual void updateChildren(
-    smtk::view::PhraseListPtr plist, const DescriptivePhrases& next, const std::vector<int>& idx);
+    smtk::view::PhraseListPtr plist, DescriptivePhrases& next, const std::vector<int>& idx);
 
 protected:
   PhraseModel();

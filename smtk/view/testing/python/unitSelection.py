@@ -11,9 +11,9 @@
 #=============================================================================
 import smtk
 import smtk.attribute
-import smtk.model
 import smtk.bridge.polygon
 import smtk.testing
+import smtk.view
 from smtk.simple import GetActiveSession, SetActiveSession, LoadSMTKModel
 
 import sys
@@ -22,10 +22,10 @@ import uuid
 eventCount = 0
 
 
-class TestSelectionManager(smtk.testing.TestCase):
+class TestSelection(smtk.testing.TestCase):
 
     def setUp(self):
-        self.selnMgr = smtk.resource.SelectionManager.create()
+        self.selnMgr = smtk.view.Selection.create()
 
     def loadTestData(self):
         import os
@@ -97,16 +97,16 @@ class TestSelectionManager(smtk.testing.TestCase):
     def testCreateAndInstance(self):
         self.assertTrue(self.selnMgr, 'Unexpectedly null manager.')
         self.assertEqual(
-            self.selnMgr, smtk.resource.SelectionManager.instance(),
+            self.selnMgr, smtk.view.Selection.instance(),
                         'Expected instance to match first selection manager.')
         self.selnMgr = None
-        mgr = smtk.resource.SelectionManager.instance()
+        mgr = smtk.view.Selection.instance()
         self.assertTrue(
             mgr, 'Expected a default instance to be created as required.')
-        other = smtk.resource.SelectionManager.create()
+        other = smtk.view.Selection.create()
         self.assertNotEqual(
             mgr, other, 'Selection manager should not be a singleton.')
-        self.assertEqual(mgr, smtk.resource.SelectionManager.instance(),
+        self.assertEqual(mgr, smtk.view.Selection.instance(),
                          'Selection manager reported by instance should survive creation of others.')
 
     def testSelectionModificationFilterListen(self):
@@ -119,7 +119,7 @@ class TestSelectionManager(smtk.testing.TestCase):
             eventCount += 1
 
         # Test that listener is called at proper times:
-        handle = mgr.listenToSelectionEvents(listener, True)
+        handle = mgr.observe(listener, True)
         print('Selection event listener-handle %d' % handle)
         self.assertGreaterEqual(
             handle, 0, 'Failed to register selection listener.')
@@ -134,16 +134,16 @@ class TestSelectionManager(smtk.testing.TestCase):
 
         # Test selection modification and insure listener is called properly:
         mgr.modifySelection(
-            [comp, ], selnSrc, selnVal, smtk.resource.SelectionAction.DEFAULT)
+            [comp, ], selnSrc, selnVal, smtk.view.SelectionAction.DEFAULT)
         expectedEventCount += 1
         self.assertEqual(eventCount, expectedEventCount,
                          'Selection listener was not called upon change.')
         mgr.modifySelection(
-            [comp, ], selnSrc, selnVal, smtk.resource.SelectionAction.FILTERED_ADD)
+            [comp, ], selnSrc, selnVal, smtk.view.SelectionAction.FILTERED_ADD)
         self.assertEqual(eventCount, expectedEventCount,
                          'Selection listener was called when there should be no event.')
         mgr.modifySelection(
-            [], selnSrc, selnVal, smtk.resource.SelectionAction.DEFAULT)
+            [], selnSrc, selnVal, smtk.view.SelectionAction.DEFAULT)
         expectedEventCount += 1
         self.assertEqual(eventCount, expectedEventCount,
                          'Selection listener was not called upon modification.')
@@ -152,7 +152,7 @@ class TestSelectionManager(smtk.testing.TestCase):
         def allPassFilter(comp, lvl, sugg):
             return True
         mgr.modifySelection(
-            [comp, ], selnSrc, selnVal, smtk.resource.SelectionAction.DEFAULT)
+            [comp, ], selnSrc, selnVal, smtk.view.SelectionAction.DEFAULT)
         expectedEventCount += 1
         mgr.setFilter(allPassFilter)
         self.assertEqual(eventCount, expectedEventCount,
@@ -174,22 +174,22 @@ class TestSelectionManager(smtk.testing.TestCase):
         #         sugg[cell] = lvl
         #     return False
         # mgr.setFilter(suggestFilter)
-        # mgr.modifySelection([comp,], selnSrc, selnVal, smtk.resource.SelectionAction.DEFAULT)
+        # mgr.modifySelection([comp,], selnSrc, selnVal, smtk.view.SelectionAction.DEFAULT)
         # expectedEventCount += 1
         # print(mgr.currentSelection())
         # self.assertEqual(eventCount, expectedEventCount, 'Selection listener
         # was not called upon suggestion pass.')
 
-        self.assertTrue(mgr.unlisten(handle), 'Could not unregister listener')
+        self.assertTrue(mgr.unobserve(handle), 'Could not unregister listener')
         self.assertFalse(
-            mgr.unlisten(handle), 'Could double-unregister listener')
+            mgr.unobserve(handle), 'Could double-unregister listener')
 
         # Test enumeration of selection
         model = smtk.model.Model(comp.modelResource(), comp.id())
         cellComps = [self.mgr.find(cell.entity()) for cell in model.cells()]
         mgr.setFilter(None)
         mgr.modifySelection(
-            cellComps, selnSrc, selnVal, smtk.resource.SelectionAction.DEFAULT)
+            cellComps, selnSrc, selnVal, smtk.view.SelectionAction.DEFAULT)
         dd = {kk.id(): vv for kk, vv in mgr.currentSelection().items()}
         print(
             ''.join(['  ', '\n  '.join(['%s: %d' % (str(kk), vv) for kk, vv in dd.items()])]))

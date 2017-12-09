@@ -263,7 +263,7 @@ QVariant qtDescriptivePhraseModel::data(const QModelIndex& idx, int role) const
     view::DescriptivePhrasePtr item = this->getItem(idx);
     if (item)
     {
-      if (role == TitleTextRole)
+      if (role == TitleTextRole || role == Qt::DisplayRole)
       {
         return QVariant(item->title().c_str());
       }

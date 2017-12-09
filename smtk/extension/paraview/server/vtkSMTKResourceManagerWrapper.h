@@ -65,7 +65,7 @@ public:
   /// Return the server's application-wide resource manager.
   smtk::resource::ManagerPtr GetManager() const { return this->ResourceManager; }
   /// Return the server's application-wide selection handler.
-  smtk::resource::SelectionManagerPtr GetSelection() const { return this->SelectionManager; }
+  smtk::view::SelectionPtr GetSelection() const { return this->Selection; }
   /// Return the server's application-wide operation manager
   smtk::operation::ManagerPtr GetOperationManager() const { return this->OperationManager; }
 
@@ -111,7 +111,7 @@ protected:
   char* JSONRequest;
   char* JSONResponse;
   smtk::resource::ManagerPtr ResourceManager;
-  smtk::resource::SelectionManagerPtr SelectionManager;
+  smtk::view::SelectionPtr Selection;
   smtk::operation::ManagerPtr OperationManager;
   std::string SelectionSource;
   int SelectionListener;

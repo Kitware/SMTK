@@ -137,7 +137,7 @@ qtBaseView* qtAttributeView::createViewWidget(const ViewInfo& info)
     selMgr->getSelectedEntitiesAsEntityRefs(selEntities);
     //qt 4 signals are private. Just use the slot for update
     selMgr->updateSelectedItems(selEntities, smtk::mesh::MeshSets(),
-      smtk::model::DescriptivePhrases(), smtk::resource::SelectionAction::UNFILTERED_REPLACE,
+      smtk::model::DescriptivePhrases(), smtk::view::SelectionAction::UNFILTERED_REPLACE,
       std::string());
   }
   else
@@ -598,7 +598,7 @@ void qtAttributeView::updateSelectionOfEntities()
     selMgr->getSelectedEntitiesAsEntityRefs(selEntities);
     //qt 4 signals are private. Just use the slot for update
     selMgr->updateSelectedItems(selEntities, smtk::mesh::MeshSets(),
-      smtk::model::DescriptivePhrases(), smtk::resource::SelectionAction::UNFILTERED_REPLACE,
+      smtk::model::DescriptivePhrases(), smtk::view::SelectionAction::UNFILTERED_REPLACE,
       std::string());
   }
 }

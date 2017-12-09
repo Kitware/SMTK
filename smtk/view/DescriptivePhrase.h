@@ -222,6 +222,19 @@ public:
     */
   static bool compareByTitle(const DescriptivePhrasePtr& a, const DescriptivePhrasePtr& b);
 
+  /** \brief Provide contents-based comparison for phrases.
+    *
+    * This allows unordered sets and maps to hold phrases.
+    * Also, it supports comparisons done by PhraseModel::updateChildren().
+    *
+    * These compare m_parent, m_type, and m_delegate but do not
+    * examine subphrases or phrase ID. Comparing these 3 values
+    * should be enough to prove that they will behave the same
+    * if given the chance to prepare themselves.
+    */
+  bool operator==(const DescriptivePhrase& other) const;
+  bool operator!=(const DescriptivePhrase& other) const;
+
 protected:
   DescriptivePhrase();
 

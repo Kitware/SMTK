@@ -38,7 +38,6 @@ namespace resource
 class Resource;
 class Component;
 class Manager;
-class SelectionManager;
 class Set;
 }
 
@@ -200,6 +199,7 @@ class DescriptivePhrase;
 class PhraseList;
 class PhraseModel;
 class ResourcePhrase;
+class Selection;
 class SubphraseGenerator;
 class View;
 }
@@ -242,9 +242,7 @@ typedef smtk::weak_ptr<smtk::resource::Manager> WeakManagerPtr;
 typedef smtk::shared_ptr<smtk::resource::Resource> ResourcePtr;
 typedef smtk::shared_ptr<smtk::resource::Component> ComponentPtr;
 typedef std::set<smtk::resource::ComponentPtr> ComponentSet;
-typedef smtk::shared_ptr<smtk::resource::SelectionManager> SelectionManagerPtr;
 typedef smtk::weak_ptr<smtk::resource::Resource> WeakResourcePtr;
-typedef smtk::weak_ptr<smtk::resource::SelectionManager> WeakSelectionManagerPtr;
 typedef smtk::shared_ptr<smtk::resource::Set> SetPtr;
 typedef smtk::shared_ptr<const smtk::resource::Component> ConstComponentPtr;
 typedef smtk::shared_ptr<const smtk::resource::Resource> ConstResourcePtr;
@@ -438,6 +436,8 @@ typedef smtk::shared_ptr<smtk::view::PhraseList> PhraseListPtr;
 typedef smtk::shared_ptr<smtk::view::PhraseModel> PhraseModelPtr;
 typedef smtk::shared_ptr<smtk::view::ResourcePhrase> ResourcePhrasePtr;
 typedef smtk::weak_ptr<smtk::view::ResourcePhrase> WeakResourcePhrasePtr;
+typedef smtk::shared_ptr<smtk::view::Selection> SelectionPtr;
+typedef smtk::weak_ptr<smtk::view::Selection> WeakSelectionPtr;
 typedef smtk::shared_ptr<smtk::view::SubphraseGenerator> SubphraseGeneratorPtr;
 typedef smtk::weak_ptr<smtk::view::SubphraseGenerator> WeakSubphraseGeneratorPtr;
 typedef smtk::shared_ptr<smtk::view::View> ViewPtr;
