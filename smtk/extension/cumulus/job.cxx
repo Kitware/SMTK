@@ -29,6 +29,8 @@ Job::Job(const QString& id, const QString& name, const QString& status,
   this->m_status = status;
   this->m_outputFolderIds = outputFolderIds;
   this->m_machine = machine;
+  this->m_numberOfNodes = 0;
+  this->m_numberOfCores = 0;
 }
 
 Job::Job(const Job& job)
@@ -39,6 +41,8 @@ Job::Job(const Job& job)
   this->m_outputFolderIds = job.outputFolderIds();
   this->m_machine = job.machine();
   this->m_notes = job.notes();
+  this->m_numberOfNodes = job.numberOfNodes();
+  this->m_numberOfCores = job.numberOfCores();
   this->m_start = job.started();
   this->m_finish = job.finished();
   this->m_downloadFolder = job.downloadFolder();
@@ -136,6 +140,18 @@ Job Job::fromJSON(cJSON* obj)
       newJob.m_notes = QString(notesItem->valuestring);
     } // end if (notesItem)
 
+    cJSON* nodesItem = cJSON_GetObjectItem(cmbItem, "numberOfNodes");
+    if (nodesItem && nodesItem->type == cJSON_Number)
+    {
+      newJob.m_numberOfNodes = nodesItem->valueint;
+    } // end if (nodesItem)
+
+    cJSON* coresItem = cJSON_GetObjectItem(cmbItem, "numberOfCores");
+    if (coresItem && coresItem->type == cJSON_Number)
+    {
+      newJob.m_numberOfCores = nodesItem->valueint;
+    } // end if (nodesItem)
+
     cJSON* startItem = cJSON_GetObjectItem(cmbItem, "startTimeStamp");
     if (startItem && startItem->type == cJSON_Number)
     {
@@ -169,6 +185,8 @@ cJSON* Job::cmbDataToJSON() const
 {
   cJSON* cmbObject = cJSON_CreateObject();
   cJSON_AddStringToObject(cmbObject, "notes", m_notes.toLatin1().constData());
+  cJSON_AddNumberToObject(cmbObject, "numberOfNodes", m_numberOfNodes);
+  cJSON_AddNumberToObject(cmbObject, "numberOfCores", m_numberOfCores);
   cJSON_AddNumberToObject(cmbObject, "startTimeStamp", m_start.toSecsSinceEpoch());
   cJSON_AddNumberToObject(cmbObject, "finishTimeStamp", m_finish.toSecsSinceEpoch());
   if (!m_downloadFolder.isEmpty())

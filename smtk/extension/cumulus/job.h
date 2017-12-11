@@ -41,6 +41,8 @@ public:
   QString machine() const { return this->m_machine; };
   QList<QString> outputFolderIds() const { return this->m_outputFolderIds; };
   QString notes() const { return this->m_notes; };
+  int numberOfNodes() const { return this->m_numberOfNodes; }
+  int numberOfCores() const { return this->m_numberOfCores; }
   QDateTime started() const { return this->m_start; };
   QDateTime finished() const { return this->m_finish; };
   QString downloadFolder() const { return this->m_downloadFolder; }
@@ -61,6 +63,8 @@ private:
   QString m_machine;
   QList<QString> m_outputFolderIds;
   QString m_notes;
+  int m_numberOfNodes;
+  int m_numberOfCores;
   QDateTime m_start;
   QDateTime m_finish;
   QString m_downloadFolder;

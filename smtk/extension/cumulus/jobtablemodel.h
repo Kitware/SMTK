@@ -35,6 +35,8 @@ public:
     JOB_ID = 0,
     MACHINE,
     JOB_NAME,
+    JOB_NODES,
+    JOB_CORES,
     JOB_STATUS,
     JOB_STARTED,
     JOB_FINISHED,

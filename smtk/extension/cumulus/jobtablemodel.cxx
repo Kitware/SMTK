@@ -52,6 +52,10 @@ QVariant JobTableModel::headerData(int section, Qt::Orientation orientation, int
         return QVariant("Machine");
       case JOB_NAME:
         return QVariant("Job Name");
+      case JOB_NODES:
+        return QVariant("Nodes");
+      case JOB_CORES:
+        return QVariant("Cores");
       case JOB_STATUS:
         return QVariant("Status");
       case JOB_STARTED:
@@ -85,6 +89,20 @@ QVariant JobTableModel::data(const QModelIndex& modelIndex, int role) const
         return QVariant(job.machine());
       case JOB_NAME:
         return QVariant(job.name());
+      case JOB_NODES:
+        if (job.numberOfNodes() > 0)
+        {
+          return QVariant(job.numberOfNodes());
+        }
+        // (else)
+        return QVariant("--");
+      case JOB_CORES:
+        if (job.numberOfCores() > 0)
+        {
+          return QVariant(job.numberOfCores());
+        }
+        // (else)
+        return QVariant("--");
       case JOB_STATUS:
         return QVariant(job.status());
       case JOB_STARTED:
@@ -96,6 +114,36 @@ QVariant JobTableModel::data(const QModelIndex& modelIndex, int role) const
       default:
         return QVariant();
     }
+  }
+  else if (role == Qt::TextAlignmentRole)
+  {
+    switch (modelIndex.column())
+    {
+      case JOB_ID:
+      case MACHINE:
+      case JOB_NAME:
+      case JOB_STARTED:
+      case JOB_FINISHED:
+      case JOB_NOTES:
+        return Qt::AlignLeft;
+        break;
+
+      case JOB_NODES:
+        return job.numberOfNodes() > 0 ? Qt::AlignRight : Qt::AlignCenter;
+        break;
+
+      case JOB_CORES:
+        return job.numberOfCores() > 0 ? Qt::AlignRight : Qt::AlignCenter;
+
+      case JOB_STATUS:
+        return Qt::AlignCenter;
+
+      case COLUMN_COUNT:
+      default:
+        qWarning() << "Unrecognized column" << modelIndex.column();
+        break;
+    }
+    return QVariant();
   }
   else if (role == Qt::UserRole)
   {
