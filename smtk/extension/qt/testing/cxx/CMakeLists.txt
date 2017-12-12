@@ -10,29 +10,31 @@
 #
 #=============================================================================
 
-set(unit_tests_headers
-  qtPrintLog.h
-)
+if (SMTK_ENABLE_POLYGON_SESSION)
+  set(unit_tests_headers
+    qtPrintLog.h
+  )
 
-set(unit_tests
-  UnitTestEmittingStringBuffer.cxx
-)
+  set(unit_tests
+    UnitTestEmittingStringBuffer.cxx
+  )
 
-set(unit_tests_which_require_data
-  #unitQtComponentItem.cxx
-)
+  set(unit_tests_which_require_data
+    #unitQtComponentItem.cxx
+  )
 
-qt5_wrap_cpp(unit_tests_headers_moc ${unit_tests_headers})
+  qt5_wrap_cpp(unit_tests_headers_moc ${unit_tests_headers})
 
-smtk_unit_tests(LABEL "qt"
-  SOURCES ${unit_tests}
-  SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
-  EXTRA_SOURCES ${unit_tests_headers_moc}
-  LIBRARIES
-    smtkQtExt
-    smtkCore
-    smtkCoreModelTesting
-    smtkCoreResourceTesting
-    smtkPolygonSession
-    ${Boost_LIBRARIES}
-)
+  smtk_unit_tests(LABEL "qt"
+    SOURCES ${unit_tests}
+    SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
+    EXTRA_SOURCES ${unit_tests_headers_moc}
+    LIBRARIES
+      smtkQtExt
+      smtkCore
+      smtkCoreModelTesting
+      smtkCoreResourceTesting
+      smtkPolygonSession
+      ${Boost_LIBRARIES}
+  )
+endif()
