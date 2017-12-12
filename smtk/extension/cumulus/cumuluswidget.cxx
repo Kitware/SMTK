@@ -20,6 +20,11 @@
 #include <QNetworkReply>
 #include <QTimer>
 
+namespace
+{
+static constexpr int timer_period_msec = 10 * 1000;
+}
+
 namespace cumulus
 {
 
@@ -49,6 +54,12 @@ CumulusWidget::CumulusWidget(QWidget* parentObject)
     SLOT(handleDownloadResult(cumulus::Job, const QString&)));
   connect(this->m_jobTableModel, &JobTableModel::finishTimeChanged, this->m_cumulusProxy,
     &CumulusProxy::patchJobs);
+
+  // Instantiate polling timer (but don't start)
+  this->m_timer = new QTimer(this);
+  this->m_timer->setInterval(timer_period_msec);
+  connect(m_timer, SIGNAL(timeout()), this->m_cumulusProxy, SLOT(fetchJobs()));
+  this->m_ui->jobTableWidget->setEnabled(false);
 }
 
 CumulusWidget::~CumulusWidget()
@@ -84,10 +95,9 @@ void CumulusWidget::createJobTable()
 
 void CumulusWidget::startJobFetchLoop()
 {
+  this->m_ui->jobTableWidget->setEnabled(true);
   this->m_cumulusProxy->fetchJobs();
-  this->m_timer = new QTimer(this);
-  connect(m_timer, SIGNAL(timeout()), this->m_cumulusProxy, SLOT(fetchJobs()));
-  this->m_timer->start(10000);
+  this->m_timer->start();
 }
 
 void CumulusWidget::displayAuthError(const QString& msg)
@@ -105,10 +115,14 @@ void CumulusWidget::handleError(const QString& msg, QNetworkReply* networkReply)
     // Forbidden, ask the user to authenticate again
     if (statusCode == 403)
     {
+      this->m_timer->stop();
+      this->m_ui->jobTableWidget->setEnabled(false);
       this->m_loginDialog.show();
     }
     else if (networkReply->error() == QNetworkReply::ConnectionRefusedError)
     {
+      this->m_timer->stop();
+      this->m_ui->jobTableWidget->setEnabled(false);
       QMessageBox::critical(NULL, QObject::tr("Connection refused"),
         QObject::tr("Unable to connect to server at %1:%2, please ensure server is running.")
           .arg(networkReply->url().host())

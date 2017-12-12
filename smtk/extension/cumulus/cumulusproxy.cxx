@@ -18,7 +18,6 @@
 #include <QtCore/QDebug>
 #include <QtCore/QList>
 #include <QtCore/QThread>
-#include <QtCore/QTimer>
 #include <QtCore/QUrlQuery>
 #include <QtCore/QVariant>
 #include <QtNetwork/QNetworkAccessManager>
