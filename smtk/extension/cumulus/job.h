@@ -16,6 +16,7 @@
 
 #include "smtk/extension/cumulus/Exports.h"
 
+#include <QDateTime>
 #include <QList>
 #include <QMetaType>
 #include <QString>
@@ -39,10 +40,21 @@ public:
   QString status() const { return this->m_status; };
   QString machine() const { return this->m_machine; };
   QList<QString> outputFolderIds() const { return this->m_outputFolderIds; };
+  QString notes() const { return this->m_notes; };
+  int numberOfNodes() const { return this->m_numberOfNodes; }
+  int numberOfCores() const { return this->m_numberOfCores; }
+  QDateTime started() const { return this->m_start; };
+  QDateTime finished() const { return this->m_finish; };
+  QString downloadFolder() const { return this->m_downloadFolder; }
+
   bool isValid() const { return !this->m_id.isEmpty(); };
-  void setStatus(const QString& status) { this->m_status = status; }
+  void setStatus(const QString& status);
+  void setDownloadFolder(const QString& path);
 
   static Job fromJSON(cJSON* obj);
+
+  // Copy cmb-specific data to json (for patch request)
+  cJSON* cmbDataToJSON() const;
 
 private:
   QString m_id;
@@ -50,6 +62,12 @@ private:
   QString m_status;
   QString m_machine;
   QList<QString> m_outputFolderIds;
+  QString m_notes;
+  int m_numberOfNodes;
+  int m_numberOfCores;
+  QDateTime m_start;
+  QDateTime m_finish;
+  QString m_downloadFolder;
 };
 
 }; // end namespace

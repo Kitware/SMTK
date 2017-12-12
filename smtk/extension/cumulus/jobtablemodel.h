@@ -18,7 +18,9 @@
 #include "smtk/extension/cumulus/job.h"
 
 #include <QAbstractTableModel>
+#include <QDateTime>
 #include <QList>
+#include <QVariant>
 
 namespace cumulus
 {
@@ -33,7 +35,12 @@ public:
     JOB_ID = 0,
     MACHINE,
     JOB_NAME,
+    JOB_NODES,
+    JOB_CORES,
     JOB_STATUS,
+    JOB_STARTED,
+    JOB_FINISHED,
+    JOB_NOTES,
     COLUMN_COUNT
   };
 
@@ -54,9 +61,13 @@ public:
 
 signals:
   void rowCountChanged();
+  void finishTimeChanged(QList<Job>);
 
 public slots:
   void jobsUpdated(QList<Job> jobs);
+
+protected:
+  QVariant formattedDateTime(const QDateTime& dt) const;
 
 private:
   QList<Job> m_jobs;

@@ -12,7 +12,8 @@
 
 #include "job.h"
 
-#include <QtCore/QDebug>
+#include <QDebug>
+#include <QListIterator>
 
 #include <cstddef> // defines size_t for cJSON.h
 
@@ -51,8 +52,18 @@ QVariant JobTableModel::headerData(int section, Qt::Orientation orientation, int
         return QVariant("Machine");
       case JOB_NAME:
         return QVariant("Job Name");
+      case JOB_NODES:
+        return QVariant("Nodes");
+      case JOB_CORES:
+        return QVariant("Cores");
       case JOB_STATUS:
         return QVariant("Status");
+      case JOB_STARTED:
+        return QVariant("Started");
+      case JOB_FINISHED:
+        return QVariant("Finished");
+      case JOB_NOTES:
+        return QVariant("Notes");
       default:
         return QVariant();
     }
@@ -78,11 +89,61 @@ QVariant JobTableModel::data(const QModelIndex& modelIndex, int role) const
         return QVariant(job.machine());
       case JOB_NAME:
         return QVariant(job.name());
+      case JOB_NODES:
+        if (job.numberOfNodes() > 0)
+        {
+          return QVariant(job.numberOfNodes());
+        }
+        // (else)
+        return QVariant("--");
+      case JOB_CORES:
+        if (job.numberOfCores() > 0)
+        {
+          return QVariant(job.numberOfCores());
+        }
+        // (else)
+        return QVariant("--");
       case JOB_STATUS:
         return QVariant(job.status());
+      case JOB_STARTED:
+        return this->formattedDateTime(job.started());
+      case JOB_FINISHED:
+        return this->formattedDateTime(job.finished());
+      case JOB_NOTES:
+        return QVariant(job.notes());
       default:
         return QVariant();
     }
+  }
+  else if (role == Qt::TextAlignmentRole)
+  {
+    switch (modelIndex.column())
+    {
+      case JOB_ID:
+      case MACHINE:
+      case JOB_NAME:
+      case JOB_STARTED:
+      case JOB_FINISHED:
+      case JOB_NOTES:
+        return Qt::AlignLeft;
+        break;
+
+      case JOB_NODES:
+        return job.numberOfNodes() > 0 ? Qt::AlignRight : Qt::AlignCenter;
+        break;
+
+      case JOB_CORES:
+        return job.numberOfCores() > 0 ? Qt::AlignRight : Qt::AlignCenter;
+
+      case JOB_STATUS:
+        return Qt::AlignCenter;
+
+      case COLUMN_COUNT:
+      default:
+        qWarning() << "Unrecognized column" << modelIndex.column();
+        break;
+    }
+    return QVariant();
   }
   else if (role == Qt::UserRole)
   {
@@ -110,7 +171,8 @@ bool JobTableModel::insertRows(int row, int count, const QModelIndex&)
 
 void JobTableModel::jobsUpdated(QList<Job> jobs)
 {
-  QList<int> rowsToRemove;
+  QList<int> rowsToRemove;    // row numbers of jobs not in input
+  QList<Job> jobsToPatchList; // jobs with changes to write back to cumulus
 
   // Load map with input jobs
   QMap<QString, Job> inputMap;
@@ -137,17 +199,32 @@ void JobTableModel::jobsUpdated(QList<Job> jobs)
     inputJob = inputMap[modelJobId];
     inputMap.remove(modelJobId);
 
+    // Check for change to download folder
+    if (inputJob.downloadFolder() != modelJob.downloadFolder())
+    {
+      modelJob.setDownloadFolder(inputJob.downloadFolder());
+      m_jobs[row] = modelJob;
+    }
+
+    // Check for change to status
     if (inputJob.status() == modelJob.status())
     {
       continue;
     }
 
     // Update status
-    //qDebug() << "update status " << modelJobId << "to" << inputJob.status();
+    // qDebug() << "update status " << modelJobId << "to" << inputJob.status();
+    bool notFinished = modelJob.finished().isNull();
     modelJob.setStatus(inputJob.status());
     m_jobs[row] = modelJob;
     QModelIndex index = this->index(row, JOB_STATUS);
     emit this->dataChanged(index, index);
+
+    // Check if job just finished (finished datetime now valid)
+    if (notFinished && modelJob.finished().isValid())
+    {
+      jobsToPatchList.push_back(modelJob);
+    }
   } // for (row)
 
   // Remove any rows not in the input
@@ -177,11 +254,21 @@ void JobTableModel::jobsUpdated(QList<Job> jobs)
   for (; iter != inputMap.constEnd(); ++iter)
   {
     Job newJob(iter.value());
-    //qDebug() << "insert job:" << newJob.id();
+    // qDebug() << "insert job:" << newJob.id();
     m_jobs.push_back(newJob);
   }
 
   this->endInsertRows();
+
+  if (!jobsToPatchList.empty())
+  {
+    emit finishTimeChanged(jobsToPatchList);
+  }
+}
+
+QVariant JobTableModel::formattedDateTime(const QDateTime& dt) const
+{
+  return QVariant(dt.toString("dd-MMM-yyyy, hh:mm"));
 }
 
 } // end namespace

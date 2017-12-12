@@ -18,7 +18,6 @@
 #include <QtCore/QDebug>
 #include <QtCore/QList>
 #include <QtCore/QThread>
-#include <QtCore/QTimer>
 #include <QtCore/QUrlQuery>
 #include <QtCore/QVariant>
 #include <QtNetwork/QNetworkAccessManager>
@@ -217,6 +216,7 @@ void CumulusProxy::fetchJobsFinished(QNetworkReply* reply)
   }
   else
   {
+    //qDebug() << "fetchJobsReply:" << bytes.constData();
     cJSON* jsonResponse = cJSON_Parse(bytes.constData());
 
     if (jsonResponse && jsonResponse->type == cJSON_Array)
@@ -322,6 +322,28 @@ void CumulusProxy::deleteJobFinished()
   this->fetchJobs();
 }
 
+void CumulusProxy::patchJobs(QList<Job> jobs)
+{
+  // Patch only applies to cmb-specific data, stored as job metadata
+  foreach (Job job, jobs)
+  {
+    //qDebug() << "Patching job" << job.id();
+    cJSON* body = cJSON_CreateObject();
+
+    cJSON* cmbData = job.cmbDataToJSON();
+    cJSON_AddItemToObject(body, "metadata", cmbData);
+
+    PatchJobRequest* updateRequest =
+      new PatchJobRequest(this->m_girderUrl, this->m_girderToken, job, body);
+
+    connect(updateRequest, SIGNAL(error(const QString, QNetworkReply*)), this,
+      SIGNAL(error(const QString, QNetworkReply*)));
+    connect(updateRequest, SIGNAL(info(const QString)), this, SIGNAL(info(const QString)));
+    updateRequest->send();
+    cJSON_Delete(body);
+  }
+}
+
 void CumulusProxy::terminateJob(Job job)
 {
   TerminateJobRequest* request =
@@ -362,6 +384,8 @@ void CumulusProxy::downloadJob(const QString& downloadDirectory, Job job)
 void CumulusProxy::downloadJobFinished()
 {
   DownloadJobRequest* request = qobject_cast<DownloadJobRequest*>(sender());
+  Job job = request->job();
+  job.setDownloadFolder(request->path());
 
   emit jobDownloaded(request->job(), request->path());
   emit info("Job download complete.");
@@ -370,6 +394,10 @@ void CumulusProxy::downloadJobFinished()
   // Update status to "downloaded"
   cJSON* body = cJSON_CreateObject();
   cJSON_AddStringToObject(body, "status", "downloaded");
+
+  // Update cmb-specific data
+  cJSON* cmbData = job.cmbDataToJSON();
+  cJSON_AddItemToObject(body, "metadata", cmbData);
 
   PatchJobRequest* updateRequest =
     new PatchJobRequest(this->m_girderUrl, this->m_girderToken, request->job(), body);

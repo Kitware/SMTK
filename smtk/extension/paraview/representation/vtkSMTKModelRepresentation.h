@@ -19,6 +19,10 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/paraview/representation/Exports.h"
 
+#include <array>
+#include <string>
+#include <unordered_map>
+
 class vtkActor;
 class vtkPVCacheKeeper;
 class vtkCompositeDataDisplayAttributes;

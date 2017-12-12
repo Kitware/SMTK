@@ -24,6 +24,7 @@ namespace cumulus
 JobView::JobView(QWidget* parent)
   : QTableView(parent)
 {
+  this->setWordWrap(true);
 }
 
 JobView::~JobView()
