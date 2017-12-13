@@ -23,7 +23,7 @@ set(headers
 add_library(smtkIOVTK ${srcs})
 
 target_link_libraries(smtkIOVTK
-  LINK_PUBLIC smtkCore vtkSMTKFilterExt vtkSMTKReaderExt vtkCommonCore vtkCommonDataModel vtkFiltersGeneral vtkIOCore vtkIOGDAL vtkIOGeometry vtkIOImage vtkIOLegacy vtkIOPLY vtkIOXML vtkImagingCore vtksys vtkFiltersCore)
+  LINK_PUBLIC smtkCore vtkSMTKFilterExt vtkSMTKReaderExt vtkCommonCore vtkCommonDataModel vtkFiltersGeneral vtkIOCore vtkIOGDAL vtkInteractionStyle vtkIOGeometry vtkIOImage vtkIOLegacy vtkIOPLY vtkIOXML vtkImagingCore vtkRenderingFreeType vtkRenderingOpenGL2 vtksys vtkFiltersCore)
 
 smtk_export_header(smtkIOVTK IOVTKExports.h)
 
