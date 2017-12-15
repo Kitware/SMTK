@@ -26,11 +26,12 @@
 namespace cumulus
 {
 
-GirderRequest::GirderRequest(const QString& girderUrl, const QString& girderToken, QObject* parent)
+GirderRequest::GirderRequest(QNetworkAccessManager* networkManager, const QString& girderUrl,
+  const QString& girderToken, QObject* parent)
   : QObject(parent)
   , m_girderUrl(girderUrl)
   , m_girderToken(girderToken)
-  , m_networkManager(new QNetworkAccessManager(this))
+  , m_networkManager(networkManager)
 {
 }
 
@@ -38,9 +39,9 @@ GirderRequest::~GirderRequest()
 {
 }
 
-ListItemsRequest::ListItemsRequest(
-  const QString& girderUrl, const QString& girderToken, const QString folderId, QObject* parent)
-  : GirderRequest(girderUrl, girderToken, parent)
+ListItemsRequest::ListItemsRequest(QNetworkAccessManager* networkManager, const QString& girderUrl,
+  const QString& girderToken, const QString folderId, QObject* parent)
+  : GirderRequest(networkManager, girderUrl, girderToken, parent)
   , m_folderId(folderId)
 {
 }
@@ -51,8 +52,9 @@ ListItemsRequest::~ListItemsRequest()
 
 void ListItemsRequest::send()
 {
-  QUrlQuery urlQuery(QString("%1/item").arg(this->m_girderUrl));
+  QUrlQuery urlQuery;
   urlQuery.addQueryItem("folderId", this->m_folderId);
+  urlQuery.addQueryItem("limit", "0");
 
   QUrl url(QString("%1/item").arg(this->m_girderUrl));
   url.setQuery(urlQuery); // reconstructs the query string from the QUrlQuery
@@ -60,14 +62,13 @@ void ListItemsRequest::send()
   QNetworkRequest request(url);
   request.setRawHeader(QByteArray("Girder-Token"), this->m_girderToken.toUtf8());
 
-  QObject::connect(
-    this->m_networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(finished(QNetworkReply*)));
-
-  this->m_networkManager->get(request);
+  auto reply = this->m_networkManager->get(request);
+  QObject::connect(reply, SIGNAL(finished()), this, SLOT(finished()));
 }
 
-void ListItemsRequest::finished(QNetworkReply* reply)
+void ListItemsRequest::finished()
 {
+  auto reply = qobject_cast<QNetworkReply*>(this->sender());
   QByteArray bytes = reply->readAll();
   if (reply->error())
   {
@@ -94,7 +95,6 @@ void ListItemsRequest::finished(QNetworkReply* reply)
         emit error(QString("Unable to extract item id."));
         break;
       }
-
       itemList.append(QString((idItem->valuestring)));
     }
 
@@ -103,12 +103,12 @@ void ListItemsRequest::finished(QNetworkReply* reply)
     cJSON_Delete(jsonResponse);
   }
 
-  this->sender()->deleteLater();
+  reply->deleteLater();
 }
 
-ListFilesRequest::ListFilesRequest(
-  const QString& girderUrl, const QString& girderToken, const QString itemId, QObject* parent)
-  : GirderRequest(girderUrl, girderToken, parent)
+ListFilesRequest::ListFilesRequest(QNetworkAccessManager* networkManager, const QString& girderUrl,
+  const QString& girderToken, const QString itemId, QObject* parent)
+  : GirderRequest(networkManager, girderUrl, girderToken, parent)
   , m_itemId(itemId)
 {
 }
@@ -119,19 +119,21 @@ ListFilesRequest::~ListFilesRequest()
 
 void ListFilesRequest::send()
 {
-  QString girderAuthUrl = QString("%1/item/%2/files").arg(this->m_girderUrl).arg(this->m_itemId);
+  QUrl url = QUrl(QString("%1/item/%2/files").arg(this->m_girderUrl).arg(this->m_itemId));
+  QUrlQuery urlQuery;
+  urlQuery.addQueryItem("limit", "0");
+  url.setQuery(urlQuery);
 
-  QNetworkRequest request(girderAuthUrl);
+  QNetworkRequest request(url);
   request.setRawHeader(QByteArray("Girder-Token"), this->m_girderToken.toUtf8());
 
-  QObject::connect(
-    this->m_networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(finished(QNetworkReply*)));
-
-  this->m_networkManager->get(request);
+  auto reply = this->m_networkManager->get(request);
+  QObject::connect(reply, SIGNAL(finished()), this, SLOT(finished()));
 }
 
-void ListFilesRequest::finished(QNetworkReply* reply)
+void ListFilesRequest::finished()
 {
+  auto reply = qobject_cast<QNetworkReply*>(this->sender());
   QByteArray bytes = reply->readAll();
   if (reply->error())
   {
@@ -175,11 +177,12 @@ void ListFilesRequest::finished(QNetworkReply* reply)
 
     cJSON_Delete(jsonResponse);
   }
+  reply->deleteLater();
 }
 
-ListFoldersRequest::ListFoldersRequest(
+ListFoldersRequest::ListFoldersRequest(QNetworkAccessManager* networkManager,
   const QString& girderUrl, const QString& girderToken, const QString folderId, QObject* parent)
-  : GirderRequest(girderUrl, girderToken, parent)
+  : GirderRequest(networkManager, girderUrl, girderToken, parent)
   , m_folderId(folderId)
 {
 }
@@ -190,9 +193,10 @@ ListFoldersRequest::~ListFoldersRequest()
 
 void ListFoldersRequest::send()
 {
-  QUrlQuery urlQuery(QString("%1/item").arg(this->m_girderUrl));
+  QUrlQuery urlQuery;
   urlQuery.addQueryItem("parentId", this->m_folderId);
   urlQuery.addQueryItem("parentType", "folder");
+  urlQuery.addQueryItem("limit", "0");
 
   QUrl url(QString("%1/folder").arg(this->m_girderUrl));
   url.setQuery(urlQuery); // reconstructs the query string from the QUrlQuery
@@ -200,14 +204,13 @@ void ListFoldersRequest::send()
   QNetworkRequest request(url);
   request.setRawHeader(QByteArray("Girder-Token"), this->m_girderToken.toUtf8());
 
-  QObject::connect(
-    this->m_networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(finished(QNetworkReply*)));
-
-  this->m_networkManager->get(request);
+  auto reply = this->m_networkManager->get(request);
+  QObject::connect(reply, SIGNAL(finished()), this, SLOT(finished()));
 }
 
-void ListFoldersRequest::finished(QNetworkReply* reply)
+void ListFoldersRequest::finished()
 {
+  auto reply = qobject_cast<QNetworkReply*>(this->sender());
   QByteArray bytes = reply->readAll();
   if (reply->error())
   {
@@ -251,16 +254,17 @@ void ListFoldersRequest::finished(QNetworkReply* reply)
 
     cJSON_Delete(jsonResponse);
   }
+  reply->deleteLater();
 }
 
-DownloadFolderRequest::DownloadFolderRequest(QNetworkCookieJar* cookieJar, const QString& girderUrl,
-  const QString& girderToken, const QString& downloadPath, const QString& folderId, QObject* parent)
-  : GirderRequest(girderUrl, girderToken, parent)
+DownloadFolderRequest::DownloadFolderRequest(QNetworkAccessManager* networkManager,
+  const QString& girderUrl, const QString& girderToken, const QString& downloadPath,
+  const QString& folderId, QObject* parent)
+  : GirderRequest(networkManager, girderUrl, girderToken, parent)
   , m_folderId(folderId)
   , m_downloadPath(downloadPath)
   , m_itemsToDownload(NULL)
   , m_foldersToDownload(NULL)
-  , m_cookieJar(cookieJar)
 {
   QDir(this->m_downloadPath).mkpath(".");
 }
@@ -273,8 +277,8 @@ DownloadFolderRequest::~DownloadFolderRequest()
 
 void DownloadFolderRequest::send()
 {
-  ListItemsRequest* itemsRequest =
-    new ListItemsRequest(this->m_girderUrl, this->m_girderToken, this->m_folderId, this);
+  ListItemsRequest* itemsRequest = new ListItemsRequest(
+    this->m_networkManager, this->m_girderUrl, this->m_girderToken, this->m_folderId, this);
 
   connect(
     itemsRequest, SIGNAL(items(const QList<QString>)), this, SLOT(items(const QList<QString>)));
@@ -283,8 +287,8 @@ void DownloadFolderRequest::send()
 
   itemsRequest->send();
 
-  ListFoldersRequest* foldersRequest =
-    new ListFoldersRequest(this->m_girderUrl, this->m_girderToken, this->m_folderId, this);
+  ListFoldersRequest* foldersRequest = new ListFoldersRequest(
+    this->m_networkManager, this->m_girderUrl, this->m_girderToken, this->m_folderId, this);
 
   connect(foldersRequest, SIGNAL(folders(const QMap<QString, QString>)), this,
     SLOT(folders(const QMap<QString, QString>)));
@@ -300,8 +304,8 @@ void DownloadFolderRequest::items(const QList<QString>& itemIds)
 
   foreach (QString itemId, itemIds)
   {
-    DownloadItemRequest* request = new DownloadItemRequest(this->m_cookieJar, this->m_girderUrl,
-      this->m_girderToken, this->m_downloadPath, itemId, this);
+    DownloadItemRequest* request = new DownloadItemRequest(this->m_networkManager,
+      this->m_girderUrl, this->m_girderToken, this->m_downloadPath, itemId, this);
 
     connect(request, SIGNAL(complete()), this, SLOT(downloadItemFinished()));
     connect(request, SIGNAL(error(const QString, QNetworkReply*)), this,
@@ -337,7 +341,7 @@ void DownloadFolderRequest::folders(const QMap<QString, QString>& folders)
     QString name = i.value();
     QString path = QDir(this->m_downloadPath).filePath(name);
     DownloadFolderRequest* request = new DownloadFolderRequest(
-      this->m_cookieJar, this->m_girderUrl, this->m_girderToken, path, id, this);
+      this->m_networkManager, this->m_girderUrl, this->m_girderToken, path, id, this);
 
     connect(request, SIGNAL(complete()), this, SLOT(downloadFolderFinished()));
     connect(request, SIGNAL(error(const QString, QNetworkReply*)), this,
@@ -368,12 +372,12 @@ bool DownloadFolderRequest::isComplete()
     this->m_foldersToDownload && this->m_foldersToDownload->isEmpty());
 }
 
-DownloadItemRequest::DownloadItemRequest(QNetworkCookieJar* cookieJar, const QString& girderUrl,
-  const QString& girderToken, const QString& path, const QString& itemId, QObject* parent)
-  : GirderRequest(girderUrl, girderToken, parent)
+DownloadItemRequest::DownloadItemRequest(QNetworkAccessManager* networkManager,
+  const QString& girderUrl, const QString& girderToken, const QString& path, const QString& itemId,
+  QObject* parent)
+  : GirderRequest(networkManager, girderUrl, girderToken, parent)
   , m_itemId(itemId)
   , m_downloadPath(path)
-  , m_cookieJar(cookieJar)
 {
 }
 
@@ -383,8 +387,8 @@ DownloadItemRequest::~DownloadItemRequest()
 
 void DownloadItemRequest::send()
 {
-  ListFilesRequest* request =
-    new ListFilesRequest(this->m_girderUrl, this->m_girderToken, this->m_itemId, this);
+  ListFilesRequest* request = new ListFilesRequest(
+    this->m_networkManager, this->m_girderUrl, this->m_girderToken, this->m_itemId, this);
 
   connect(request, SIGNAL(files(const QMap<QString, QString>)), this,
     SLOT(files(const QMap<QString, QString>)));
@@ -405,8 +409,8 @@ void DownloadItemRequest::files(const QMap<QString, QString>& files)
     i.next();
     QString id = i.key();
     QString name = i.value();
-    DownloadFileRequest* request = new DownloadFileRequest(this->m_cookieJar, this->m_girderUrl,
-      this->m_girderToken, this->m_downloadPath, name, id, this);
+    DownloadFileRequest* request = new DownloadFileRequest(this->m_networkManager,
+      this->m_girderUrl, this->m_girderToken, this->m_downloadPath, name, id, this);
 
     connect(request, SIGNAL(complete()), this, SLOT(fileDownloadFinish()));
     connect(request, SIGNAL(error(const QString, QNetworkReply*)), this,
@@ -432,18 +436,16 @@ void DownloadItemRequest::fileDownloadFinish()
   request->deleteLater();
 }
 
-DownloadFileRequest::DownloadFileRequest(QNetworkCookieJar* cookieJar, const QString& girderUrl,
-  const QString& girderToken, const QString& path, const QString& fileName, const QString& fileId,
-  QObject* parent)
-  : GirderRequest(girderUrl, girderToken, parent)
+DownloadFileRequest::DownloadFileRequest(QNetworkAccessManager* networkManager,
+  const QString& girderUrl, const QString& girderToken, const QString& path,
+  const QString& fileName, const QString& fileId, QObject* parent)
+  : GirderRequest(networkManager, girderUrl, girderToken, parent)
   , m_fileName(fileName)
   , m_fileId(fileId)
   , m_downloadPath(path)
-  , m_cookieJar(cookieJar)
+
   , m_retryCount(0)
 {
-  this->m_networkManager->setCookieJar(this->m_cookieJar);
-  this->m_cookieJar->setParent(NULL);
 }
 
 DownloadFileRequest::~DownloadFileRequest()
@@ -457,14 +459,13 @@ void DownloadFileRequest::send()
   QNetworkRequest request(girderAuthUrl);
   request.setRawHeader(QByteArray("Girder-Token"), this->m_girderToken.toUtf8());
 
-  QObject::connect(
-    this->m_networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(finished(QNetworkReply*)));
-
-  this->m_networkManager->get(request);
+  auto reply = this->m_networkManager->get(request);
+  QObject::connect(reply, SIGNAL(finished()), this, SLOT(finished()));
 }
 
-void DownloadFileRequest::finished(QNetworkReply* reply)
+void DownloadFileRequest::finished()
 {
+  auto reply = qobject_cast<QNetworkReply*>(this->sender());
   if (reply->error())
   {
     QByteArray bytes = reply->readAll();
@@ -508,7 +509,7 @@ void DownloadFileRequest::finished(QNetworkReply* reply)
 
     file.close();
   }
-
+  reply->deleteLater();
   emit complete();
 }
 }

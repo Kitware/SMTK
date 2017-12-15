@@ -25,9 +25,9 @@
 namespace cumulus
 {
 
-JobRequest::JobRequest(
-  const QString& girderUrl, const QString& girderToken, Job job, QObject* parent)
-  : GirderRequest(girderUrl, girderToken, parent)
+JobRequest::JobRequest(QNetworkAccessManager* networkManager, const QString& girderUrl,
+  const QString& girderToken, Job job, QObject* parent)
+  : GirderRequest(networkManager, girderUrl, girderToken, parent)
   , m_job(job)
 {
 }
@@ -36,9 +36,9 @@ JobRequest::~JobRequest()
 {
 }
 
-DeleteJobRequest::DeleteJobRequest(
-  const QString& girderUrl, const QString& girderToken, Job job, QObject* parent)
-  : JobRequest(girderUrl, girderToken, job, parent)
+DeleteJobRequest::DeleteJobRequest(QNetworkAccessManager* networkManager, const QString& girderUrl,
+  const QString& girderToken, Job job, QObject* parent)
+  : JobRequest(networkManager, girderUrl, girderToken, job, parent)
 {
 }
 
@@ -59,8 +59,9 @@ void DeleteJobRequest::send()
   this->m_networkManager->deleteResource(request);
 }
 
-void DeleteJobRequest::finished(QNetworkReply* reply)
+void DeleteJobRequest::finished()
 {
+  auto reply = qobject_cast<QNetworkReply*>(this->sender());
   QByteArray bytes = reply->readAll();
   if (reply->error())
   {
@@ -70,11 +71,12 @@ void DeleteJobRequest::finished(QNetworkReply* reply)
   {
     emit complete();
   }
+  reply->deleteLater();
 }
 
-TerminateJobRequest::TerminateJobRequest(
+TerminateJobRequest::TerminateJobRequest(QNetworkAccessManager* networkManager,
   const QString& girderUrl, const QString& girderToken, Job job, QObject* parent)
-  : JobRequest(girderUrl, girderToken, job, parent)
+  : JobRequest(networkManager, girderUrl, girderToken, job, parent)
 {
 }
 
@@ -97,8 +99,9 @@ void TerminateJobRequest::send()
   this->m_networkManager->put(request, empty);
 }
 
-void TerminateJobRequest::finished(QNetworkReply* reply)
+void TerminateJobRequest::finished()
 {
+  auto reply = qobject_cast<QNetworkReply*>(this->sender());
   QByteArray bytes = reply->readAll();
   if (reply->error())
   {
@@ -108,13 +111,14 @@ void TerminateJobRequest::finished(QNetworkReply* reply)
   {
     emit complete();
   }
+  reply->deleteLater();
 }
 
-DownloadJobRequest::DownloadJobRequest(QNetworkCookieJar* cookieJar, const QString& girderUrl,
-  const QString& girderToken, const QString& downloadPath, Job job, QObject* parent)
-  : JobRequest(girderUrl, girderToken, job, parent)
+DownloadJobRequest::DownloadJobRequest(QNetworkAccessManager* networkManager,
+  const QString& girderUrl, const QString& girderToken, const QString& downloadPath, Job job,
+  QObject* parent)
+  : JobRequest(networkManager, girderUrl, girderToken, job, parent)
   , m_downloadPath(downloadPath)
-  , m_cookieJar(cookieJar)
 {
 }
 
@@ -128,8 +132,8 @@ void DownloadJobRequest::send()
   {
     this->m_foldersToDownload << folderId;
 
-    DownloadFolderRequest* request = new DownloadFolderRequest(this->m_cookieJar, this->m_girderUrl,
-      this->m_girderToken, this->m_downloadPath, folderId, this);
+    DownloadFolderRequest* request = new DownloadFolderRequest(this->m_networkManager,
+      this->m_girderUrl, this->m_girderToken, this->m_downloadPath, folderId, this);
     connect(request, SIGNAL(complete()), this, SLOT(downloadFolderFinished()));
     connect(request, SIGNAL(error(const QString, QNetworkReply*)), this,
       SIGNAL(error(const QString, QNetworkReply*)));
@@ -153,9 +157,9 @@ void DownloadJobRequest::downloadFolderFinished()
   request->deleteLater();
 }
 
-PatchJobRequest::PatchJobRequest(
-  const QString& girderUrl, const QString& girderToken, Job job, cJSON* body, QObject* parent)
-  : JobRequest(girderUrl, girderToken, job, parent)
+PatchJobRequest::PatchJobRequest(QNetworkAccessManager* networkManager, const QString& girderUrl,
+  const QString& girderToken, Job job, cJSON* body, QObject* parent)
+  : JobRequest(networkManager, girderUrl, girderToken, job, parent)
   , m_body(body)
 {
 }
@@ -174,17 +178,16 @@ void PatchJobRequest::send()
   char* jsonString = cJSON_PrintUnformatted(m_body);
   QByteArray data(jsonString);
 
-  QObject::connect(
-    this->m_networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(finished(QNetworkReply*)));
-
   // Qt doesn't have native patch method; must use custom request
-  this->m_networkManager->sendCustomRequest(request, "PATCH", data);
+  auto reply = this->m_networkManager->sendCustomRequest(request, "PATCH", data);
+  QObject::connect(reply, SIGNAL(finished()), this, SLOT(finished()));
 
   delete jsonString;
 }
 
-void PatchJobRequest::finished(QNetworkReply* reply)
+void PatchJobRequest::finished()
 {
+  auto reply = qobject_cast<QNetworkReply*>(this->sender());
   QByteArray bytes = reply->readAll();
   if (reply->error())
   {
@@ -194,6 +197,8 @@ void PatchJobRequest::finished(QNetworkReply* reply)
   {
     emit complete();
   }
+
+  reply->deleteLater();
 }
 
 } // namespace cumulus
