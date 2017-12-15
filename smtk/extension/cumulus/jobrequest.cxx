@@ -180,7 +180,7 @@ void PatchJobRequest::send()
   // Qt doesn't have native patch method; must use custom request
   this->m_networkManager->sendCustomRequest(request, "PATCH", data);
 
-  delete jsonString;
+  free(jsonString);
 }
 
 void PatchJobRequest::finished(QNetworkReply* reply)
