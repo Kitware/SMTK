@@ -122,7 +122,9 @@ class ElevateMeshOnStructuredGrid(smtk.testing.TestCase):
 
         # Set a threshold range for the input data
         inputFilter = op.specification().find("input filter")
+        inputFilter.find("min threshold").setIsEnabled(True)
         inputFilter.find("min threshold").setValue(-5.)
+        inputFilter.find("max threshold").setIsEnabled(True)
         inputFilter.find("max threshold").setValue(2.)
 
         # Set the interpolation scheme to be radial average
@@ -140,7 +142,9 @@ class ElevateMeshOnStructuredGrid(smtk.testing.TestCase):
 
         # Clamp the elevation values between -/+ 2
         outputFilter = op.specification().find("output filter")
+        outputFilter.find("min elevation").setIsEnabled(True)
         outputFilter.find("min elevation").setValue(-2.)
+        outputFilter.find("max elevation").setIsEnabled(True)
         outputFilter.find("max elevation").setValue(2.)
 
         # Execute the operator and check its results
@@ -148,15 +152,21 @@ class ElevateMeshOnStructuredGrid(smtk.testing.TestCase):
         if res.find('outcome').value(0) != smtk.model.OPERATION_SUCCEEDED:
             raise RuntimeError
 
+        # check the z bounds of the mesh to confirm that clamping was
+        # successful
+        extent = smtk.mesh.extent(self.mesh)
+        if extent[4] < -2. or extent[5] > 2.:
+            raise RuntimeError
+
         # Construct a histogram of the z-coordinates of the mesh points and
         # compare it to an expected set of values
         validatePoints = ValidatePoints(20, -2., 2.)
         smtk.mesh.for_each(self.mesh.points(), validatePoints)
 
-        expected = [8, 0, 0, 0, 0,
-                    5115, 2236, 1992, 2694, 2693,
-                    4103, 1739, 523, 177, 58,
-                    9, 4, 6, 1, 0]
+        expected = [0, 0, 0, 0, 0,
+                    5115, 2236, 1993, 2694, 2694,
+                    4105, 1746, 523, 176, 57,
+                    10, 4, 4, 1, 0]
 
         for i in range(20):
             if validatePoints.hist[i] != expected[i]:

@@ -41,7 +41,7 @@
               </BriefDescription>
             </File>
 
-            <Group Name="input filter" Label="Filter Input" AdvanceLevel="1">
+            <Group Name="input filter" Label="Filter Input" AdvanceLevel="0">
 
               <BriefDescription>Input data filter options.</BriefDescription>
 
@@ -60,11 +60,6 @@
                         IsEnabledByDefault="false" NumberOfRequiredValues="1" Extensible="false">
                   <BriefDescription>Input data greater than this value will be ignored.</BriefDescription>
                 </Double>
-
-                <Void Name="invert scalars" Label="Invert Scalar Values"
-                      Optional="true" IsEnabledByDefault="false">
-                  <BriefDescription>This toggle adds a prefactor of -1 to the values in the external data set prior to averaging.</BriefDescription>
-                </Void>
 
               </ItemDefinitions>
 
@@ -229,7 +224,7 @@
 
         </String>
 
-        <Group Name="output filter" Label="Clamp Output to Range" AdvanceLevel="1">
+        <Group Name="output filter" Label="Filter Output" AdvanceLevel="0">
 
           <BriefDescription>Ignore input data that falls outside of a given range.</BriefDescription>
 

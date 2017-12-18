@@ -158,45 +158,43 @@ smtk::model::OperatorResult InterpolateOntoMesh::operateInternal()
   // Access the power parameter
   smtk::attribute::DoubleItem::Ptr powerItem = this->findDouble("power");
 
-  // Access the min value parameter
-  smtk::attribute::DoubleItem::Ptr minValueItem = this->findDouble("min value");
-
-  // Access the max value parameter
-  smtk::attribute::DoubleItem::Ptr maxValueItem = this->findDouble("max value");
-
-  // Access the invert scalars parameter
-  smtk::attribute::VoidItem::Ptr invertScalarsItem = this->findVoid("invert scalars");
-
   // Access the data set name
   smtk::attribute::StringItem::Ptr nameItem = this->specification()->findString("dsname");
 
   // Access the output interpolation Field type
   smtk::attribute::IntItem::Ptr modeItem = this->specification()->findInt("interpmode");
 
-  // Access the min threshold parameter
-  smtk::attribute::DoubleItem::Ptr minThresholdItem = this->findDouble("min threshold");
-
-  // Access the max threshold parameter
-  smtk::attribute::DoubleItem::Ptr maxThresholdItem = this->findDouble("max threshold");
-
   // Construct a prefilter for the input data
   std::function<bool(double)> prefilter = [](double) { return true; };
-  if (minThresholdItem && minThresholdItem->isEnabled() && maxThresholdItem &&
-    maxThresholdItem->isEnabled())
   {
-    double minThreshold = minThresholdItem->value();
-    double maxThreshold = maxThresholdItem->value();
-    prefilter = [=](double d) { return d >= minThreshold && d <= maxThreshold; };
-  }
-  else if (minThresholdItem && minThresholdItem->isEnabled())
-  {
-    double minThreshold = minThresholdItem->value();
-    prefilter = [=](double d) { return d >= minThreshold; };
-  }
-  else if (maxThresholdItem && maxThresholdItem->isEnabled())
-  {
-    double maxThreshold = maxThresholdItem->value();
-    prefilter = [=](double d) { return d <= maxThreshold; };
+    // Access the input filter parameter group
+    smtk::attribute::GroupItem::Ptr inputFilterItem = this->findGroup("input filter");
+
+    // Access the min threshold parameter
+    smtk::attribute::DoubleItem::Ptr minThresholdItem =
+      inputFilterItem->findAs<smtk::attribute::DoubleItem>("min threshold");
+
+    // Access the max threshold parameter
+    smtk::attribute::DoubleItem::Ptr maxThresholdItem =
+      inputFilterItem->findAs<smtk::attribute::DoubleItem>("max threshold");
+
+    if (minThresholdItem && minThresholdItem->isEnabled() && maxThresholdItem &&
+      maxThresholdItem->isEnabled())
+    {
+      double minThreshold = minThresholdItem->value();
+      double maxThreshold = maxThresholdItem->value();
+      prefilter = [=](double d) { return d >= minThreshold && d <= maxThreshold; };
+    }
+    else if (minThresholdItem && minThresholdItem->isEnabled())
+    {
+      double minThreshold = minThresholdItem->value();
+      prefilter = [=](double d) { return d >= minThreshold; };
+    }
+    else if (maxThresholdItem && maxThresholdItem->isEnabled())
+    {
+      double maxThreshold = maxThresholdItem->value();
+      prefilter = [=](double d) { return d <= maxThreshold; };
+    }
   }
 
   // Construct a function that takes an input point and returns a value
@@ -302,40 +300,41 @@ smtk::model::OperatorResult InterpolateOntoMesh::operateInternal()
     return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  // Construct a function that inverts and clips its input, according to the
-  // input parameters
+  // Construct a function that clips its input according to the input parameters
   std::function<double(double)> postProcess;
   {
-    double prefactor = invertScalarsItem && invertScalarsItem->isEnabled() ? -1. : 1.;
+    // Access the output filter parameter group
+    smtk::attribute::GroupItem::Ptr outputFilterItem = this->findGroup("output filter");
+
+    // Access the min value parameter
+    smtk::attribute::DoubleItem::Ptr minValueItem =
+      outputFilterItem->findAs<smtk::attribute::DoubleItem>("min value");
+
+    // Access the max value parameter
+    smtk::attribute::DoubleItem::Ptr maxValueItem =
+      outputFilterItem->findAs<smtk::attribute::DoubleItem>("max value");
 
     if (minValueItem && minValueItem->isEnabled() && maxValueItem && maxValueItem->isEnabled())
     {
       double minValue = minValueItem->value();
       double maxValue = maxValueItem->value();
       postProcess = [=](double input) {
-        double output = prefactor * input;
-        return (output < minValue ? minValue : (output > maxValue ? maxValue : output));
+        return (input < minValue ? minValue : (input > maxValue ? maxValue : input));
       };
     }
     else if (minValueItem && minValueItem->isEnabled())
     {
       double minValue = minValueItem->value();
-      postProcess = [=](double input) {
-        double output = prefactor * input;
-        return (output < minValue ? minValue : output);
-      };
+      postProcess = [=](double input) { return (input < minValue ? minValue : input); };
     }
     else if (maxValueItem && maxValueItem->isEnabled())
     {
       double maxValue = maxValueItem->value();
-      postProcess = [=](double input) {
-        double output = prefactor * input;
-        return (output > maxValue ? maxValue : output);
-      };
+      postProcess = [=](double input) { return (input > maxValue ? maxValue : input); };
     }
     else
     {
-      postProcess = [=](double input) { return prefactor * input; };
+      postProcess = [=](double input) { return input; };
     }
   }
 
