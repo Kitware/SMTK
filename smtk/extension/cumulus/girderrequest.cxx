@@ -490,7 +490,8 @@ void DownloadFileRequest::finished()
     {
       QNetworkRequest request;
       request.setUrl(redirectUrl);
-      this->m_networkManager->get(request);
+      auto reply = this->m_networkManager->get(request);
+      QObject::connect(reply, SIGNAL(finished()), this, SLOT(finished()));
       return;
     }
 
