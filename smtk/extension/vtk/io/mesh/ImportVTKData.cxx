@@ -27,9 +27,11 @@
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
 #include "vtkDataArray.h"
+#include "vtkDataSet.h"
 #include "vtkDataSetReader.h"
 #include "vtkDoubleArray.h"
 #include "vtkIdTypeArray.h"
+#include "vtkImageData.h"
 #include "vtkIntArray.h"
 #include "vtkNew.h"
 #include "vtkPointData.h"
@@ -78,6 +80,7 @@ smtk::mesh::CellType vtkToSMTKCell(int t)
       ctype = smtk::mesh::Triangle;
       break;
     case VTK_QUAD:
+    case VTK_PIXEL:
       ctype = smtk::mesh::Quad;
       break;
     case VTK_POLYGON:
@@ -93,6 +96,7 @@ smtk::mesh::CellType vtkToSMTKCell(int t)
       ctype = smtk::mesh::Wedge;
       break;
     case VTK_HEXAHEDRON:
+    case VTK_VOXEL:
       ctype = smtk::mesh::Hexahedron;
       break;
     default:
@@ -102,16 +106,15 @@ smtk::mesh::CellType vtkToSMTKCell(int t)
   return ctype;
 }
 
-template <typename VTKDataSetType>
 smtk::mesh::HandleRange convertVTKDataSet(
-  VTKDataSetType* dataset, smtk::mesh::CollectionPtr& collection)
+  vtkDataSet* dataset, smtk::mesh::CollectionPtr& collection)
 {
   smtk::mesh::InterfacePtr iface = collection->interface();
   smtk::mesh::BufferedCellAllocatorPtr alloc = iface->bufferedCellAllocator();
 
   smtk::mesh::HandleRange initRange = collection->cells().range();
 
-  if (!alloc->reserveNumberOfCoordinates(dataset->GetPoints()->GetNumberOfPoints()))
+  if (!alloc->reserveNumberOfCoordinates(dataset->GetNumberOfPoints()))
   {
     return smtk::mesh::HandleRange();
   }
@@ -120,17 +123,34 @@ smtk::mesh::HandleRange convertVTKDataSet(
   //we will need to move to a template dispatch solution to handle floats,
   //doubles, and vtk Mapped Arrays
   double point[3];
-  for (vtkIdType i = 0; i < dataset->GetPoints()->GetNumberOfPoints(); ++i)
+  for (vtkIdType i = 0; i < dataset->GetNumberOfPoints(); ++i)
   {
-    dataset->GetPoints()->GetPoint(i, point);
+    dataset->GetPoint(i, point);
     alloc->setCoordinate(i, point);
   }
 
-  vtkIdType npts, *pts;
+  vtkNew<vtkIdList> pts;
   for (vtkIdType i = 0; i < dataset->GetNumberOfCells(); ++i)
   {
-    dataset->GetCellPoints(i, npts, pts);
-    alloc->addCell(vtkToSMTKCell(dataset->GetCellType(i)), pts, npts);
+    dataset->GetCellPoints(i, pts);
+    vtkIdType* ptPtr = pts->GetPointer(0);
+    auto cellType = dataset->GetCellType(i);
+    {
+      vtkIdType tmp;
+      if (cellType == VTK_PIXEL || cellType == VTK_VOXEL)
+      {
+        tmp = ptPtr[2];
+        ptPtr[2] = ptPtr[3];
+        ptPtr[3] = tmp;
+        if (cellType == VTK_VOXEL)
+        {
+          tmp = ptPtr[6];
+          ptPtr[6] = ptPtr[7];
+          ptPtr[7] = tmp;
+        }
+      }
+    }
+    alloc->addCell(vtkToSMTKCell(cellType), ptPtr, pts->GetNumberOfIds());
   }
   if (!alloc->flush())
   {
@@ -250,24 +270,25 @@ bool ImportVTKData::operator()(const std::string& filename, smtk::mesh::Collecti
 }
 
 smtk::mesh::MeshSet ImportVTKData::operator()(
-  vtkPolyData* polydata, smtk::mesh::CollectionPtr collection) const
+  vtkDataSet* dataset, smtk::mesh::CollectionPtr collection) const
 {
-  //make sure we have a valid poly data
-  if (!polydata)
+  //make sure we have a valid dataset
+  if (!dataset)
   {
     return smtk::mesh::MeshSet();
   }
-  else if (polydata->GetNumberOfPoints() == 0 || polydata->GetNumberOfCells() == 0)
+  else if (dataset->GetNumberOfPoints() == 0 || dataset->GetNumberOfCells() == 0)
   {
-    //early terminate if the polydata is empty.
+    //early terminate if the dataset is empty.
     return smtk::mesh::MeshSet();
   }
 
-  if (polydata->NeedToBuildCells())
+  vtkPolyData* polydata = vtkPolyData::SafeDownCast(dataset);
+  if (polydata && polydata->NeedToBuildCells())
   {
     polydata->BuildCells();
   }
-  smtk::mesh::HandleRange cells = convertVTKDataSet(polydata, collection);
+  smtk::mesh::HandleRange cells = convertVTKDataSet(dataset, collection);
 
   smtk::mesh::MeshSet meshset = collection->createMesh(smtk::mesh::CellSet(collection, cells));
 
@@ -275,28 +296,29 @@ smtk::mesh::MeshSet ImportVTKData::operator()(
   return meshset;
 }
 
-bool ImportVTKData::operator()(vtkPolyData* polydata, smtk::mesh::CollectionPtr collection,
-  std::string materialPropertyName) const
+bool ImportVTKData::operator()(
+  vtkDataSet* dataset, smtk::mesh::CollectionPtr collection, std::string materialPropertyName) const
 {
   //make sure we have valid data
-  if (!polydata)
+  if (!dataset)
   {
     return false;
   }
-  else if (polydata->GetNumberOfPoints() == 0 || polydata->GetNumberOfCells() == 0)
+  else if (dataset->GetNumberOfPoints() == 0 || dataset->GetNumberOfCells() == 0)
   {
-    //early terminate if the polydata is empty.
+    //early terminate if the dataset is empty.
     return false;
   }
 
   smtk::mesh::InterfacePtr iface = collection->interface();
   smtk::mesh::BufferedCellAllocatorPtr alloc = iface->bufferedCellAllocator();
 
-  if (polydata->NeedToBuildCells())
+  vtkPolyData* polydata = vtkPolyData::SafeDownCast(dataset);
+  if (polydata && polydata->NeedToBuildCells())
   {
     polydata->BuildCells();
   }
-  smtk::mesh::HandleRange cells = convertVTKDataSet(polydata, collection);
+  smtk::mesh::HandleRange cells = convertVTKDataSet(dataset, collection);
 
   smtk::mesh::MeshSet mesh;
 
@@ -314,16 +336,16 @@ bool ImportVTKData::operator()(vtkPolyData* polydata, smtk::mesh::CollectionPtr 
   else
   { //make multiple meshes each one assigned a material value
     smtk::mesh::HandleRange entities =
-      convertDomain(polydata->GetCellData(), iface, cells, materialPropertyName);
+      convertDomain(dataset->GetCellData(), iface, cells, materialPropertyName);
     mesh = smtk::mesh::MeshSet(collection->shared_from_this(), iface->getRoot(), entities);
   }
 
   // Now that we have a valid meshset, we add double-valued vtk cell & point data to it.
   if (!mesh.is_empty())
   {
-    for (vtkIdType i = 0; i < polydata->GetCellData()->GetNumberOfArrays(); i++)
+    for (vtkIdType i = 0; i < dataset->GetCellData()->GetNumberOfArrays(); i++)
     {
-      vtkDoubleArray* array = vtkDoubleArray::SafeDownCast(polydata->GetCellData()->GetArray(i));
+      vtkDoubleArray* array = vtkDoubleArray::SafeDownCast(dataset->GetCellData()->GetArray(i));
       if (array != nullptr)
       {
         mesh.createCellField(array->GetName(), array->GetNumberOfComponents(),
@@ -331,9 +353,9 @@ bool ImportVTKData::operator()(vtkPolyData* polydata, smtk::mesh::CollectionPtr 
       }
     }
 
-    for (vtkIdType i = 0; i < polydata->GetPointData()->GetNumberOfArrays(); i++)
+    for (vtkIdType i = 0; i < dataset->GetPointData()->GetNumberOfArrays(); i++)
     {
-      vtkDoubleArray* array = vtkDoubleArray::SafeDownCast(polydata->GetPointData()->GetArray(i));
+      vtkDoubleArray* array = vtkDoubleArray::SafeDownCast(dataset->GetPointData()->GetArray(i));
       if (array != nullptr)
       {
         mesh.createPointField(array->GetName(), array->GetNumberOfComponents(),
@@ -346,83 +368,10 @@ bool ImportVTKData::operator()(vtkPolyData* polydata, smtk::mesh::CollectionPtr 
 }
 
 smtk::mesh::CollectionPtr ImportVTKData::operator()(
-  vtkPolyData* polydata, smtk::mesh::ManagerPtr& manager, std::string materialPropertyName) const
+  vtkDataSet* dataset, smtk::mesh::ManagerPtr& manager, std::string materialPropertyName) const
 {
   smtk::mesh::CollectionPtr c = manager->makeCollection();
-  return this->operator()(polydata, c, materialPropertyName) ? c : smtk::mesh::CollectionPtr();
-}
-
-bool ImportVTKData::operator()(vtkUnstructuredGrid* ugrid, smtk::mesh::CollectionPtr collection,
-  std::string materialPropertyName) const
-{
-  //make sure we have valid data
-  if (!ugrid)
-  {
-    return false;
-  }
-  else if (ugrid->GetNumberOfPoints() == 0 || ugrid->GetNumberOfCells() == 0)
-  {
-    //early terminate if the ugrid is empty.
-    return false;
-  }
-
-  smtk::mesh::InterfacePtr iface = collection->interface();
-  smtk::mesh::BufferedCellAllocatorPtr alloc = iface->bufferedCellAllocator();
-
-  smtk::mesh::HandleRange cells = convertVTKDataSet(ugrid, collection);
-
-  smtk::mesh::MeshSet mesh;
-
-  if (materialPropertyName.empty())
-  { //if we don't have a material we create a single mesh
-    smtk::mesh::Handle vtkMeshHandle;
-    bool created = iface->createMesh(cells, vtkMeshHandle);
-    if (created)
-    {
-      smtk::mesh::HandleRange entities;
-      entities.insert(vtkMeshHandle);
-      mesh = smtk::mesh::MeshSet(collection->shared_from_this(), iface->getRoot(), entities);
-    }
-  }
-  else
-  { //make multiple meshes each one assigned a material value
-    smtk::mesh::HandleRange entities =
-      convertDomain(ugrid->GetCellData(), iface, cells, materialPropertyName);
-    mesh = smtk::mesh::MeshSet(collection->shared_from_this(), iface->getRoot(), entities);
-  }
-
-  // Now that we have a valid meshset, we add double-valued vtk cell & point data to it.
-  if (!mesh.is_empty())
-  {
-    for (vtkIdType i = 0; i < ugrid->GetCellData()->GetNumberOfArrays(); i++)
-    {
-      vtkDoubleArray* array = vtkDoubleArray::SafeDownCast(ugrid->GetCellData()->GetArray(i));
-      if (array != nullptr)
-      {
-        mesh.createCellField(array->GetName(), array->GetNumberOfComponents(),
-          static_cast<const double*>(array->GetVoidPointer(0)));
-      }
-    }
-
-    for (vtkIdType i = 0; i < ugrid->GetPointData()->GetNumberOfArrays(); i++)
-    {
-      vtkDoubleArray* array = vtkDoubleArray::SafeDownCast(ugrid->GetPointData()->GetArray(i));
-      if (array != nullptr)
-      {
-        mesh.createPointField(array->GetName(), array->GetNumberOfComponents(),
-          static_cast<const double*>(array->GetVoidPointer(0)));
-      }
-    }
-  }
-  iface->setModifiedState(false);
-  return !mesh.is_empty();
-}
-
-smtk::mesh::CollectionPtr ImportVTKData::operator()(vtkUnstructuredGrid* ugrid,
-  smtk::mesh::ManagerPtr& manager, std::string materialPropertyName) const
-{
-  smtk::mesh::CollectionPtr c = manager->makeCollection();
-  return this->operator()(ugrid, c, materialPropertyName) ? c : smtk::mesh::CollectionPtr();
+  return this->operator()(dataset, c, materialPropertyName) ? c : smtk::mesh::CollectionPtr();
 }
 }
 }

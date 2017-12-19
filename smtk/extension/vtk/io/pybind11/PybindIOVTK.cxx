@@ -38,6 +38,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 PYBIND11_VTK_TYPECASTER(vtkPolyData)
 PYBIND11_VTK_TYPECASTER(vtkUnstructuredGrid)
+PYBIND11_VTK_TYPECASTER(vtkDataSet)
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 

@@ -184,21 +184,11 @@ void ExportVTKData::operator()(
 
   //create raw data buffers to hold our data
   double* pointsData = new double[3 * numberOfPoints];
-  unsigned char* cellTypesData = new unsigned char[numberOfCells];
-  std::int64_t* cellLocationsData_ = new std::int64_t[numberOfCells];
   std::int64_t* connectivityData_ = new std::int64_t[connectivityLength];
 
   //extract tessellation information
-  smtk::mesh::utility::PreAllocatedTessellation tess(
-    connectivityData_, cellLocationsData_, cellTypesData, pointsData);
+  smtk::mesh::utility::PreAllocatedTessellation tess(connectivityData_, pointsData);
   smtk::mesh::utility::extractTessellation(cellset, tess);
-
-  vtkIdType* cellLocationsData;
-  {
-    constructNewArrayIfNecessary(cellLocationsData_, cellLocationsData, numberOfCells);
-    transferDataIfNecessary(cellLocationsData_, cellLocationsData, numberOfCells);
-    deleteOldArrayIfNecessary(cellLocationsData_, cellLocationsData);
-  }
 
   vtkIdType* connectivityData;
   {
@@ -209,18 +199,12 @@ void ExportVTKData::operator()(
 
   // create vtk data arrays to hold our data
   vtkNew<vtkDoubleArray> pointsArray;
-  vtkNew<vtkUnsignedCharArray> cellTypes;
-  vtkNew<vtkIdTypeArray> cellLocations;
   vtkNew<vtkIdTypeArray> connectivity;
 
   // transfer ownership of our raw data arrays to the vtk data arrays
   pointsArray->SetNumberOfComponents(3);
   pointsArray->SetArray(
     pointsData, 3 * numberOfPoints, false, vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
-  cellTypes->SetArray(
-    cellTypesData, numberOfCells, false, vtkUnsignedCharArray::VTK_DATA_ARRAY_DELETE);
-  cellLocations->SetArray(
-    cellLocationsData, numberOfCells, false, vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
   connectivity->SetArray(
     connectivityData, connectivityLength, false, vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
 
