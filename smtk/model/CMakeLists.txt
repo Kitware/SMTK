@@ -4,6 +4,7 @@ set(modelOps
   AddImage
   AssignColors
   CloseModel
+  CompositeAuxiliaryGeometry
   CreateInstances
   EntityGroupOperator
   ExportModelJSON
