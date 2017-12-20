@@ -239,22 +239,17 @@ void qtGroupItem::addSubGroup(int i)
 
   const std::size_t numItems = item->numberOfItemsPerGroup();
   QBoxLayout* frameLayout = qobject_cast<QBoxLayout*>(this->Internals->ChildrensFrame->layout());
-
-  // Layout differs for 1 group versus more than 1
-  QBoxLayout* subGroupLayout = nullptr;
-  QFrame* subGroupFrame = nullptr; // only used for > 1 subgroups
+  QFrame* subGroupFrame = new QFrame(this->Internals->ChildrensFrame);
+  QBoxLayout* subGroupLayout = new QVBoxLayout(subGroupFrame);
   if (item->numberOfGroups() == 1)
   {
-    // For single subgroup, use layout
-    subGroupLayout = new QVBoxLayout();
     subGroupLayout->setMargin(0);
+    subGroupFrame->setFrameStyle(QFrame::NoFrame);
   }
   else
   {
-    // For multiple subgroups, use frame
-    subGroupFrame = new QFrame(this->Internals->ChildrensFrame);
+    frameLayout->setMargin(0);
     subGroupFrame->setFrameStyle(QFrame::Panel);
-    subGroupLayout = new QVBoxLayout(subGroupFrame);
   }
   subGroupLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   QList<qtItem*> itemList;
@@ -262,7 +257,7 @@ void qtGroupItem::addSubGroup(int i)
   const smtk::attribute::GroupItemDefinition* groupDef =
     dynamic_cast<const smtk::attribute::GroupItemDefinition*>(item->definition().get());
   QString subGroupString;
-  if (!!subGroupFrame && groupDef->hasSubGroupLabels())
+  if (groupDef->hasSubGroupLabels())
   {
     subGroupString = QString::fromStdString(groupDef->subGroupLabel(i));
     QLabel* subGroupLabel = new QLabel(subGroupString, subGroupFrame);
@@ -293,14 +288,7 @@ void qtGroupItem::addSubGroup(int i)
     }
   }
   this->baseView()->setFixedLabelWidth(currentLen);
-  if (subGroupFrame)
-  {
-    frameLayout->addWidget(subGroupFrame);
-  }
-  else
-  {
-    frameLayout->addLayout(subGroupLayout);
-  }
+  frameLayout->addWidget(subGroupFrame);
   this->onChildWidgetSizeChanged();
 }
 
