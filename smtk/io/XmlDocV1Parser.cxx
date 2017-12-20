@@ -1510,7 +1510,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
     {
       for (child = labels.first_child(), i = 0; child; child = child.next_sibling(), i++)
       {
-        def->setSubGroupLabel(i, child.value());
+        def->setSubGroupLabel(i, child.text().get());
       }
     }
   }
