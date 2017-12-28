@@ -460,6 +460,7 @@ void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node& node, attribute::Mesh
       return;
     }
     n = xatt.as_uint();
+    // QUESTION: Should we set numberOfRequired value here?
   }
 
   if (!n)

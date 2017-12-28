@@ -4,6 +4,8 @@ set(ioSrcs
   AttributeWriter.cxx
   Helpers.cxx
   SaveJSON.cxx
+  json/jsonComponentSet.cxx
+  json/jsonSelectionMap.cxx
   LoadJSON.cxx
   Logger.cxx
   ModelToMesh.cxx
@@ -21,6 +23,8 @@ set(ioHeaders
   AttributeReader.h
   AttributeWriter.h
   Helpers.h
+  json/jsonComponentSet.h
+  json/jsonSelectionMap.h
   SaveJSON.h
   LoadJSON.h
   Logger.h
@@ -66,4 +70,7 @@ endif()
 
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
+  target_link_libraries(TestBuild_smtk_io
+    PUBLIC
+    nlohmann_json)
 endif()

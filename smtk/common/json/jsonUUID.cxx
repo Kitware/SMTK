@@ -7,46 +7,42 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_io_jsonUUID_h
-#define smtk_io_jsonUUID_h
-
+#include "jsonUUID.h"
 #include "smtk/common/UUID.h"
 
-#include "nlohmann/json.hpp"
+#include "json.hpp"
 
 #include <string>
 
+using json = nlohmann::json;
 // Override how UUIDs are serialized.
 // Without this, they appear as JSON arrays of unsigned integers.
-namespace nlohmann
+namespace smtk
 {
-template <>
-struct adl_serializer<smtk::common::UUID>
+namespace common
 {
-  static void to_json(json& j, const smtk::common::UUID& opt)
+SMTKCORE_EXPORT void to_json(json& j, const smtk::common::UUID& opt)
+{
+  if (opt.isNull())
   {
-    if (opt.isNull())
-    {
-      j = nullptr;
-    }
-    else
-    {
-      j = opt.toString();
-    }
+    j = nullptr;
   }
-
-  static void from_json(const json& j, smtk::common::UUID& opt)
+  else
   {
-    if (j.is_null())
-    {
-      opt = smtk::common::UUID::null();
-    }
-    else
-    {
-      opt = j.get<std::string>();
-    }
+    j = opt.toString();
   }
-};
 }
 
-#endif
+SMTKCORE_EXPORT void from_json(const json& j, smtk::common::UUID& opt)
+{
+  if (j.is_null())
+  {
+    opt = smtk::common::UUID::null();
+  }
+  else
+  {
+    opt = j.get<std::string>();
+  }
+}
+}
+}

@@ -29,6 +29,7 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/ItemDefinition.h"
+#include "smtk/attribute/VoidItemDefinition.h"
 
 namespace smtk
 {

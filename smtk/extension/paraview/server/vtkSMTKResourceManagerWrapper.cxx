@@ -14,9 +14,9 @@
 
 #include "smtk/view/Selection.h"
 
-#include "smtk/io/jsonComponentSet.h"
-#include "smtk/io/jsonSelectionMap.h"
-#include "smtk/io/jsonUUID.h"
+#include "smtk/common/json/jsonUUID.h"
+#include "smtk/io/json/jsonComponentSet.h"
+#include "smtk/io/json/jsonSelectionMap.h"
 
 #include "smtk/model/Manager.h"
 

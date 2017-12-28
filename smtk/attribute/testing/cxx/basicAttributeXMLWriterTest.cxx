@@ -218,9 +218,6 @@ int main(int argc, char* argv[])
     }
 
     std::cout << "Collection destroyed\n";
-
-    cleanup(argv[1]);
-    cleanup(argv[2]);
   }
 
   return status;

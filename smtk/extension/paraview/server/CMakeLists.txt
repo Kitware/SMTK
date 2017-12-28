@@ -58,11 +58,13 @@ smtk_export_header(smtkPVServerExtPlugin Exports.h)
 #install the library and exports the library when used from a build tree
 smtk_install_library(smtkPVServerExtPlugin)
 
-#if (SMTK_ENABLE_TESTING)
-#  target_link_libraries(TestBuild_smtk_extension_paraview_operators
-#    LINK_PUBLIC
-#      smtkPVServerExtPlugin
-#  )
-#endif()
+if (SMTK_ENABLE_TESTING)
+  target_link_libraries(TestBuild_smtk_extension_paraview_server
+    PUBLIC
+      smtkPVServerExtPlugin
+    INTERFACE
+      nlohmann_json
+  )
+endif()
 
 add_subdirectory(testing)

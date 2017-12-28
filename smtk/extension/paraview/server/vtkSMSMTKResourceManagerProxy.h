@@ -18,7 +18,7 @@
 
 #include "vtkSMProxy.h"
 
-#include "nlohmann/json.hpp"
+#include "json.hpp"
 
 class vtkSMSourceProxy;
 

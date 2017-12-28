@@ -6,6 +6,7 @@ set(commonSrcs
   Environment.cxx
   Extension.cxx
   FileLocation.cxx
+  json/jsonUUID.cxx
   Paths.cxx
   StringUtil.cxx
   TimeZone.cxx
@@ -23,6 +24,7 @@ set(commonHeaders
   FileLocation.h
   Generator.h
   GeometryUtilities.h
+  json/jsonUUID.h
   Paths.h
   RangeDetector.h
   StringUtil.h
@@ -68,4 +70,7 @@ smtk_public_headers(${commonHeaders})
 
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
+  target_link_libraries(TestBuild_smtk_common
+    PUBLIC
+    nlohmann_json)
 endif()

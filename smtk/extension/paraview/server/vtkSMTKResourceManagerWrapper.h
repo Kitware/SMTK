@@ -20,7 +20,7 @@
 #include "vtkAlgorithmOutput.h"
 #include "vtkObject.h"
 
-#include "nlohmann/json.hpp"
+#include "json.hpp"
 
 #include <functional>
 #include <map>
