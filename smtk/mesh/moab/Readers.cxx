@@ -37,8 +37,10 @@ smtk::mesh::CollectionPtr verifyAndMake(
 {
   if (!interface)
   {
-    //create an invalid collection which isn't part of a manager
-    return smtk::mesh::Collection::create();
+    //create an invalid colection (i.e. one with an invalid id)
+    smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create();
+    collection->setId(smtk::common::UUID::null());
+    return collection;
   }
   //make a moab specific mesh collection
   return manager->makeCollection(interface);

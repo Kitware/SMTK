@@ -94,7 +94,9 @@ smtk::mesh::CollectionPtr ReadMesh::operator()(
 
   if (!collection)
   {
+    // create an invalid colection (i.e. one with an invalid id)
     collection = smtk::mesh::Collection::create();
+    collection->setId(smtk::common::UUID::null());
     collection->readLocation(filePath);
   }
   else
