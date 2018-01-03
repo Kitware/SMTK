@@ -62,6 +62,15 @@ class SMTKCORE_EXPORT Collection : public smtk::resource::Resource
   //default constructor generates an invalid collection
   Collection();
 
+  //Construct a collection with the default interface.
+  Collection(const smtk::common::UUID& collectionID);
+
+  //Construct a valid collection that has an associated interface
+  Collection(const smtk::common::UUID& collectionID, smtk::mesh::InterfacePtr interface);
+
+  // The following two constructors will be removed when smtk::mesh::Manager
+  // is deprecated.
+
   //Construct a valid collection that is associated with a manager
   //but has an empty interface that can be populated
   Collection(const smtk::common::UUID& collectionID, smtk::mesh::ManagerPtr mngr);
@@ -75,6 +84,19 @@ class SMTKCORE_EXPORT Collection : public smtk::resource::Resource
 public:
   smtkTypeMacro(smtk::mesh::Collection);
   smtkSharedPtrCreateMacro(smtk::resource::Resource);
+
+  static smtk::shared_ptr<Collection> create(const smtk::common::UUID& collectionID)
+  {
+    smtk::shared_ptr<smtk::resource::Resource> shared(new Collection(collectionID));
+    return smtk::static_pointer_cast<Collection>(shared);
+  }
+
+  static smtk::shared_ptr<Collection> create(
+    const smtk::common::UUID& collectionID, smtk::mesh::InterfacePtr interface)
+  {
+    smtk::shared_ptr<smtk::resource::Resource> shared(new Collection(collectionID, interface));
+    return smtk::static_pointer_cast<Collection>(shared);
+  }
 
   ~Collection();
 
@@ -344,7 +366,6 @@ private:
   //has requested us to be removed from a collection
   void removeManagerConnection();
 
-  smtk::common::UUID m_entity;
   std::string m_name;
   smtk::common::FileLocation m_readLocation;
   smtk::common::FileLocation m_writeLocation;

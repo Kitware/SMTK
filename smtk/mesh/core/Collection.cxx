@@ -46,8 +46,6 @@ public:
 
   void resetManger() { this->WeakManager.reset(); }
 
-  bool valid() const { return !this->WeakManager.expired(); }
-
   smtk::shared_ptr<smtk::mesh::Manager> manager() { return this->WeakManager.lock(); }
 
   bool reparent(smtk::mesh::ManagerPtr newMngr)
@@ -67,7 +65,7 @@ private:
 };
 
 Collection::Collection()
-  : m_entity(smtk::common::UUID::null())
+  : smtk::resource::Resource(smtk::common::UUIDGenerator::instance().random())
   , m_name()
   , m_readLocation()
   , m_writeLocation()
@@ -78,9 +76,32 @@ Collection::Collection()
 {
 }
 
+Collection::Collection(const smtk::common::UUID& collectionID)
+  : smtk::resource::Resource(collectionID)
+  , m_name()
+  , m_readLocation()
+  , m_writeLocation()
+  , m_floatData(new MeshFloatData)
+  , m_stringData(new MeshStringData)
+  , m_integerData(new MeshIntegerData)
+  , m_internals(new InternalImpl())
+{
+}
+
+Collection::Collection(const smtk::common::UUID& collectionID, smtk::mesh::InterfacePtr interface)
+  : smtk::resource::Resource(collectionID)
+  , m_name()
+  , m_readLocation()
+  , m_writeLocation()
+  , m_floatData(new MeshFloatData)
+  , m_stringData(new MeshStringData)
+  , m_integerData(new MeshIntegerData)
+  , m_internals(new InternalImpl(nullptr, interface))
+{
+}
+
 Collection::Collection(const smtk::common::UUID& collectionID, smtk::mesh::ManagerPtr mngr)
   : smtk::resource::Resource(collectionID)
-  , m_entity(collectionID)
   , m_name()
   , m_readLocation()
   , m_writeLocation()
@@ -94,7 +115,6 @@ Collection::Collection(const smtk::common::UUID& collectionID, smtk::mesh::Manag
 Collection::Collection(const smtk::common::UUID& collectionID, smtk::mesh::InterfacePtr interface,
   smtk::mesh::ManagerPtr mngr)
   : smtk::resource::Resource(collectionID)
-  , m_entity(collectionID)
   , m_name()
   , m_readLocation()
   , m_writeLocation()
@@ -145,7 +165,7 @@ void Collection::removeManagerConnection()
 bool Collection::isValid() const
 {
   //make sure we have a valid uuid, and that our internals are valid
-  return (this->m_entity.isNull() != true) && (this->m_internals->valid());
+  return (this->id().isNull() != true);
 }
 
 bool Collection::isModified() const
@@ -212,7 +232,7 @@ std::string Collection::interfaceName() const
 
 const smtk::common::UUID Collection::entity() const
 {
-  return this->m_entity;
+  return this->id();
 }
 
 bool Collection::reparent(smtk::mesh::ManagerPtr newParent)
@@ -236,9 +256,9 @@ bool Collection::reparent(smtk::mesh::ManagerPtr newParent)
   }
 
   //if we currently don't have a uuid get one
-  if (this->m_entity.isNull())
+  if (this->id().isNull())
   {
-    this->m_entity = smtk::common::UUIDGenerator::instance().random();
+    this->setId(smtk::common::UUIDGenerator::instance().random());
   }
 
   //add us to the new manager
