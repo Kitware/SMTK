@@ -17,14 +17,14 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::view::View > pybind11_init_smtk_view_View(py::module &m)
+PySharedPtrClass< smtk::view::View > pybind11_init_smtk_view_View(py::module &m)
 {
-  py::class_< smtk::view::View > instance(m, "View");
+  PySharedPtrClass< smtk::view::View > instance(m, "View");
   instance
     .def(py::init<::std::string const &, ::std::string const &>())
     .def(py::init<::smtk::view::View const &>())
     .def("deepcopy", (smtk::view::View & (smtk::view::View::*)(::smtk::view::View const &)) &smtk::view::View::operator=)
-    .def_static("New", &smtk::view::View::New, py::arg("myType"), py::arg("myTitle"))
+    .def_static("New", &smtk::view::View::New, py::arg("myType"), py::arg("myTitle"), py::return_value_policy::take_ownership)
     .def("title", &smtk::view::View::title)
     .def("type", &smtk::view::View::type)
     .def("iconName", &smtk::view::View::iconName)
