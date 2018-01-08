@@ -150,6 +150,10 @@ ImportOperator::Result ImportOperator::operateInternal()
     model.setName(name);
   }
 
+  // Set the url and type of the model
+  model.setStringProperty("url", filePath);
+  model.setStringProperty("type", format.Name);
+
   // Declare the model as "dangling" so it will be transcribed
   session->declareDanglingEntity(model);
 
