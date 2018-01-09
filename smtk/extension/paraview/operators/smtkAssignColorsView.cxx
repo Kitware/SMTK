@@ -14,7 +14,6 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
-#include "smtk/bridge/polygon/qt/pqArcWidgetManager.h"
 #include "smtk/bridge/polygon/qt/pqPolygonArc.h"
 #include "smtk/bridge/polygon/qt/pqSplitEdgeWidget.h"
 #include "smtk/extension/qt/qtAttribute.h"

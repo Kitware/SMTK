@@ -30,6 +30,10 @@
 // the SMTKMeshSession library will exist.
 #cmakedefine SMTK_ENABLE_MESH_SESSION
 
+// Was SMTK built with rgg session? If true,
+// the SMTKRGGSession library will exist.
+#cmakedefine SMTK_ENABLE_RGG_SESSION
+
 // Was SMTK built with moab reader? If true, the vtkDiscreteMoabReader
 // library will exist and smtkDiscreteSession library will link against it.
 #cmakedefine SMTK_ENABLE_MOAB_DISCRETE_READER

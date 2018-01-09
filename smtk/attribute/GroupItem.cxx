@@ -272,6 +272,7 @@ bool GroupItem::setNumberOfGroups(std::size_t newSize)
         items[j]->detachOwningItem();
       }
     }
+    this->m_items.resize(newSize);
   }
   else
   {

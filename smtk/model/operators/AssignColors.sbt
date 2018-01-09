@@ -5,7 +5,7 @@
     <!-- Operator -->
     <AttDef Type="assign colors" Label="Model Entities - Assign Colors" BaseType="operator">
       <AssociationsDef Name="entities" NumberOfRequiredValues="1" Extensible="true">
-        <MembershipMask>model|group|cell|anydim</MembershipMask>
+        <MembershipMask>model|group|cell|anydim|aux_geom</MembershipMask>
       </AssociationsDef>
       <BriefDescription>
         Assign one or more colors to one or more entities using a color palette.

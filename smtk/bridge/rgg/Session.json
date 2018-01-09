@@ -1,0 +1,11 @@
+{
+  "kernel": "RGG",
+  "engines": [
+    {
+      "name": "default",
+      "filetypes": [
+        ".rxf (rxf file)",
+      ]
+    }
+  ]
+}

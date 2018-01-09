@@ -6,12 +6,18 @@ include(ParaViewPlugins)
 # set up sources to build
 set(srcs
   smtkAssignColorsView.cxx
+  smtkRGGEditPinView.cxx
   smtkSaveModelView.cxx
   smtkExportModelView.cxx
+)
+set(non_ui_srcs
+  smtkRGGViewHelper.cxx
 )
 
 set(hdrs
   smtkAssignColorsView.h
+  smtkRGGEditPinView.h
+  smtkRGGViewHelper.h
   smtkModelIOView.h
   smtkSaveModelView.h
   smtkExportModelView.h
@@ -19,6 +25,7 @@ set(hdrs
 
 set(qtui
   smtkAssignColorsParameters.ui
+  smtkRGGEditPinParameters.ui
   smtkSaveModelParameters.ui
   smtkExportModelParameters.ui
 )
@@ -35,6 +42,7 @@ source_group("Qt_Header" FILES ${hdrs})
 
 add_library(smtkPQOperatorViewsExt
   ${srcs}
+  ${non_ui_srcs}
   ${mocs}
   ${uisrc}
 )
