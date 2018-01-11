@@ -12,6 +12,7 @@
 #define pybind_smtk_mesh_CellField_h
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "smtk/mesh/core/CellField.h"
 
@@ -33,17 +34,18 @@ PySharedPtrClass< smtk::mesh::CellField > pybind11_init_smtk_mesh_CellField(py::
     .def("__eq__", (bool (smtk::mesh::CellField::*)(::smtk::mesh::CellField const &) const) &smtk::mesh::CellField::operator==)
     .def("cells", &smtk::mesh::CellField::cells)
     .def("dimension", &smtk::mesh::CellField::dimension)
-    .def("get", (::std::vector<double, std::allocator<double> > (smtk::mesh::CellField::*)(::smtk::mesh::HandleRange const &) const) &smtk::mesh::CellField::get, py::arg("cellIds"))
-    .def("get", (::std::vector<double, std::allocator<double> > (smtk::mesh::CellField::*)() const) &smtk::mesh::CellField::get)
-    .def("get", (bool (smtk::mesh::CellField::*)(::smtk::mesh::HandleRange const &, double *) const) &smtk::mesh::CellField::get, py::arg("cellIds"), py::arg("values"))
-    .def("get", (bool (smtk::mesh::CellField::*)(double *) const) &smtk::mesh::CellField::get, py::arg("values"))
+    .def("type", &smtk::mesh::CellField::type)
+    .def("_get_double", [](smtk::mesh::CellField& cf) { std::vector<double> tmp(cf.size() * cf.dimension()); cf.get(&tmp[0]); return tmp; })
+    .def("_get_double", [](smtk::mesh::CellField& cf, const smtk::mesh::HandleRange& cellIds){ std::vector<double> tmp(cellIds.size() * cf.dimension()); cf.get(cellIds, &tmp[0]); return tmp; })
+    .def("_get_int", [](smtk::mesh::CellField& cf) { std::vector<int> tmp(cf.size() * cf.dimension()); cf.get(&tmp[0]); return tmp; })
+    .def("_get_int", [](smtk::mesh::CellField& cf, const smtk::mesh::HandleRange& cellIds) { std::vector<int> tmp(cellIds.size() * cf.dimension()); cf.get(cellIds, &tmp[0]); return tmp; })
     .def("isValid", &smtk::mesh::CellField::isValid)
     .def("meshset", &smtk::mesh::CellField::meshset)
     .def("name", &smtk::mesh::CellField::name)
-    .def("set", (bool (smtk::mesh::CellField::*)(::smtk::mesh::HandleRange const &, ::std::vector<double, std::allocator<double> > const &)) &smtk::mesh::CellField::set, py::arg("cellIds"), py::arg("values"))
-    .def("set", (bool (smtk::mesh::CellField::*)(::std::vector<double, std::allocator<double> > const &)) &smtk::mesh::CellField::set, py::arg("values"))
-    .def("set", (bool (smtk::mesh::CellField::*)(::smtk::mesh::HandleRange const &, double const * const)) &smtk::mesh::CellField::set, py::arg("cellIds"), py::arg("values"))
-    .def("set", (bool (smtk::mesh::CellField::*)(double const * const)) &smtk::mesh::CellField::set, py::arg("values"))
+    .def("set", [](smtk::mesh::CellField& cf, const std::vector<double>& data) { return cf.set(&data[0]); })
+    .def("set", [](smtk::mesh::CellField& cf, const smtk::mesh::HandleRange& cellIds, const std::vector<double>& data) { return cf.set(cellIds, &data[0]); })
+    .def("set", [](smtk::mesh::CellField& cf, const std::vector<int>& data) { return cf.set(&data[0]); })
+    .def("set", [](smtk::mesh::CellField& cf, const smtk::mesh::HandleRange& cellIds, const std::vector<int>& data) { return cf.set(cellIds, &data[0]); })
     .def("size", &smtk::mesh::CellField::size)
     ;
   return instance;

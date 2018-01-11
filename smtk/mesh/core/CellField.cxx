@@ -103,40 +103,26 @@ std::size_t CellField::dimension() const
     iface->hasCellField(this->m_meshset.range(), dsTag) ? iface->getCellFieldDimension(dsTag) : 0);
 }
 
+smtk::mesh::FieldType CellField::type() const
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_meshset.collection()->interface();
+  if (!iface)
+  {
+    return smtk::mesh::FieldType::MaxFieldType;
+  }
+
+  smtk::mesh::CellFieldTag dsTag(this->m_name);
+  return (iface->hasCellField(this->m_meshset.range(), dsTag)
+      ? iface->getCellFieldType(dsTag)
+      : smtk::mesh::FieldType::MaxFieldType);
+}
+
 smtk::mesh::CellSet CellField::cells() const
 {
   return this->m_meshset.cells();
 }
 
-std::vector<double> CellField::get(const smtk::mesh::HandleRange& cellIds) const
-{
-  std::vector<double> values;
-  values.resize(cellIds.size() * this->dimension());
-  this->get(cellIds, &values[0]);
-  return values;
-}
-
-bool CellField::set(const smtk::mesh::HandleRange& cellIds, const std::vector<double>& values)
-{
-  assert(values.size() >= cellIds.size() * this->dimension());
-  return this->set(cellIds, &values[0]);
-}
-
-std::vector<double> CellField::get() const
-{
-  std::vector<double> values;
-  values.resize(this->size() * this->dimension());
-  this->get(&values[0]);
-  return values;
-}
-
-bool CellField::set(const std::vector<double>& values)
-{
-  assert(values.size() >= this->size() * this->dimension());
-  return this->set(&values[0]);
-}
-
-bool CellField::get(const smtk::mesh::HandleRange& cellIds, double* values) const
+bool CellField::get(const smtk::mesh::HandleRange& cellIds, void* values) const
 {
   const smtk::mesh::InterfacePtr& iface = this->m_meshset.collection()->interface();
   if (!iface)
@@ -152,7 +138,7 @@ bool CellField::get(const smtk::mesh::HandleRange& cellIds, double* values) cons
   return iface->getField(cellIds, smtk::mesh::CellFieldTag(this->m_name), values);
 }
 
-bool CellField::set(const smtk::mesh::HandleRange& cellIds, const double* const values)
+bool CellField::set(const smtk::mesh::HandleRange& cellIds, const void* const values)
 {
   const smtk::mesh::InterfacePtr& iface = this->m_meshset.collection()->interface();
   if (!iface)
@@ -168,7 +154,7 @@ bool CellField::set(const smtk::mesh::HandleRange& cellIds, const double* const 
   return iface->setField(cellIds, smtk::mesh::CellFieldTag(this->m_name), values);
 }
 
-bool CellField::get(double* values) const
+bool CellField::get(void* values) const
 {
   const smtk::mesh::InterfacePtr& iface = this->m_meshset.collection()->interface();
   if (!iface)
@@ -180,7 +166,7 @@ bool CellField::get(double* values) const
     this->m_meshset.range(), smtk::mesh::CellFieldTag(this->m_name), values);
 }
 
-bool CellField::set(const double* const values)
+bool CellField::set(const void* const values)
 {
   const smtk::mesh::InterfacePtr& iface = this->m_meshset.collection()->interface();
   if (!iface)

@@ -31,6 +31,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindDimensionTypes.h"
 #include "PybindExtractMeshConstants.h"
 #include "PybindExtractTessellation.h"
+#include "PybindFieldTypes.h"
 #include "PybindForEachTypes.h"
 #include "PybindHandle.h"
 #include "PybindHandleRange.h"
@@ -77,6 +78,7 @@ PYBIND11_MODULE(_smtkPybindMesh, mesh)
   pybind11_init_std_bidirectional_iterator_tag(moab);
   PySharedPtrClass< smtk::mesh::Allocator > smtk_mesh_Allocator = pybind11_init_smtk_mesh_Allocator(mesh);
   pybind11_init_smtk_mesh_DimensionType(mesh);
+  pybind11_init_smtk_mesh_FieldType(mesh);
   PySharedPtrClass< smtk::mesh::CellForEach > smtk_mesh_CellForEach = pybind11_init_smtk_mesh_CellForEach(mesh);
   PySharedPtrClass< smtk::mesh::CellSet > smtk_mesh_CellSet = pybind11_init_smtk_mesh_CellSet(mesh);
   PySharedPtrClass< smtk::mesh::Collection > smtk_mesh_Collection = pybind11_init_smtk_mesh_Collection(mesh);

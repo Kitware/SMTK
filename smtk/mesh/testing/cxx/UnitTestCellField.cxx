@@ -68,21 +68,23 @@ void verify_partial_cellfields()
   {
     fieldValues[i] = static_cast<double>(i);
   }
-  mesh.createCellField("field data", 1, &fieldValues[0]);
+  mesh.createCellField("field data", 1, smtk::mesh::FieldType::Double, &fieldValues[0]);
 
   std::vector<double> fieldValuesForCellField1(one.cells().size() * 2);
   for (std::size_t i = 0; i < fieldValuesForCellField1.size(); i++)
   {
     fieldValuesForCellField1[i] = static_cast<double>(i);
   }
-  one.createCellField("field data for set 1", 2, &fieldValuesForCellField1[0]);
+  one.createCellField(
+    "field data for set 1", 2, smtk::mesh::FieldType::Double, &fieldValuesForCellField1[0]);
 
   std::vector<double> fieldValuesForCellField2(two.cells().size() * 3);
   for (std::size_t i = 0; i < fieldValuesForCellField2.size(); i++)
   {
     fieldValuesForCellField2[i] = static_cast<double>(i);
   }
-  two.createCellField("field data for set 2", 3, &fieldValuesForCellField2[0]);
+  two.createCellField(
+    "field data for set 2", 3, smtk::mesh::FieldType::Double, &fieldValuesForCellField2[0]);
 
   {
     std::set<smtk::mesh::CellField> cellfields = mesh.cellFields();
@@ -154,7 +156,7 @@ void verify_duplicate_cellfields()
   {
     fieldValues[i] = static_cast<double>(i);
   }
-  auto cf = mesh.createCellField("field data", 1, &fieldValues[0]);
+  auto cf = mesh.createCellField("field data", 1, smtk::mesh::FieldType::Double, &fieldValues[0]);
   test(cf.isValid());
 
   // Try to construct a cell field with the same dimension and name for a subset
@@ -165,7 +167,8 @@ void verify_duplicate_cellfields()
   {
     fieldValuesForCellField1[i] = static_cast<double>(i) * 2;
   }
-  auto cf1 = one.createCellField("field data", 1, &fieldValuesForCellField1[0]);
+  auto cf1 = one.createCellField(
+    "field data", 1, smtk::mesh::FieldType::Double, &fieldValuesForCellField1[0]);
   test(cf1.isValid());
 
   // Verify that the field values have been updated to the new values.
@@ -198,11 +201,13 @@ void verify_duplicate_cellfields()
   {
     fieldValuesForCellField2[i] = static_cast<double>(i);
   }
-  auto cf2 = two.createCellField("field data", 3, &fieldValuesForCellField2[0]);
+  auto cf2 = two.createCellField(
+    "field data", 3, smtk::mesh::FieldType::Double, &fieldValuesForCellField2[0]);
   test(!cf2.isValid());
 
   // Try again, but change the name (should succeed).
-  cf2 = two.createCellField("field data 2", 3, &fieldValuesForCellField2[0]);
+  cf2 = two.createCellField(
+    "field data 2", 3, smtk::mesh::FieldType::Double, &fieldValuesForCellField2[0]);
   test(cf2.isValid());
 }
 
@@ -287,7 +292,8 @@ void verify_incremental_data_assignment()
   smtk::mesh::MeshSet mesh = c->meshes();
   std::function<double(double, double, double)> euclideanDistance = [](
     double x, double y, double z) { return std::sqrt(x * x + y * y + z * z); };
-  smtk::mesh::CellField distanceCellField = mesh.createCellField("euclidean distance", 1);
+  smtk::mesh::CellField distanceCellField =
+    mesh.createCellField("euclidean distance", 1, smtk::mesh::FieldType::Double);
 
   {
     SetCellData setCellData(euclideanDistance, distanceCellField);
@@ -318,7 +324,7 @@ void verify_cellfield_persistency()
     {
       fieldValues[i] = static_cast<double>(i);
     }
-    one.createCellField("field data", 1, &fieldValues[0]);
+    one.createCellField("field data", 1, smtk::mesh::FieldType::Double, &fieldValues[0]);
 
     //write out the mesh.
     smtk::io::WriteMesh write;

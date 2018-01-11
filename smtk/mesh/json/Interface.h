@@ -234,9 +234,10 @@ public:
   smtk::common::UUID rootAssociation() const override;
 
   bool createCellField(const smtk::mesh::HandleRange& meshsets, const std::string& name,
-    std::size_t dimension, const double* data) override;
+    std::size_t dimension, const smtk::mesh::FieldType& type, const void* data) override;
 
   int getCellFieldDimension(const smtk::mesh::CellFieldTag& cfTag) const override;
+  smtk::mesh::FieldType getCellFieldType(const smtk::mesh::CellFieldTag& pfTag) const override;
 
   smtk::mesh::HandleRange getMeshsets(
     smtk::mesh::Handle handle, const smtk::mesh::CellFieldTag& cfTag) const override;
@@ -245,16 +246,16 @@ public:
     const smtk::mesh::HandleRange& meshsets, const smtk::mesh::CellFieldTag& cfTag) const override;
 
   bool getCellField(const smtk::mesh::HandleRange& meshsets, const smtk::mesh::CellFieldTag& cfTag,
-    double* data) const override;
+    void* data) const override;
 
   bool setCellField(const smtk::mesh::HandleRange& meshsets, const smtk::mesh::CellFieldTag& cfTag,
-    const double* const data) override;
+    const void* const data) override;
 
   bool getField(const smtk::mesh::HandleRange& cells, const smtk::mesh::CellFieldTag& cfTag,
-    double* data) const override;
+    void* data) const override;
 
   bool setField(const smtk::mesh::HandleRange& cells, const smtk::mesh::CellFieldTag& cfTag,
-    const double* const data) override;
+    const void* const data) override;
 
   std::set<smtk::mesh::CellFieldTag> computeCellFieldTags(
     const smtk::mesh::Handle& handle) const override;
@@ -263,9 +264,10 @@ public:
     const smtk::mesh::CellFieldTag& cfTag, const smtk::mesh::HandleRange& meshsets) override;
 
   bool createPointField(const smtk::mesh::HandleRange& meshsets, const std::string& name,
-    std::size_t dimension, const double* data) override;
+    std::size_t dimension, const smtk::mesh::FieldType& type, const void* data) override;
 
   int getPointFieldDimension(const smtk::mesh::PointFieldTag& pfTag) const override;
+  smtk::mesh::FieldType getPointFieldType(const smtk::mesh::PointFieldTag& pfTag) const override;
 
   smtk::mesh::HandleRange getMeshsets(
     smtk::mesh::Handle handle, const smtk::mesh::PointFieldTag& pfTag) const override;
@@ -274,16 +276,16 @@ public:
     const smtk::mesh::HandleRange& meshsets, const smtk::mesh::PointFieldTag& pfTag) const override;
 
   bool getPointField(const smtk::mesh::HandleRange& meshsets,
-    const smtk::mesh::PointFieldTag& pfTag, double* data) const override;
+    const smtk::mesh::PointFieldTag& pfTag, void* data) const override;
 
   bool setPointField(const smtk::mesh::HandleRange& meshsets,
-    const smtk::mesh::PointFieldTag& pfTag, const double* const data) override;
+    const smtk::mesh::PointFieldTag& pfTag, const void* const data) override;
 
   bool getField(const smtk::mesh::HandleRange& points, const smtk::mesh::PointFieldTag& pfTag,
-    double* data) const override;
+    void* data) const override;
 
   bool setField(const smtk::mesh::HandleRange& points, const smtk::mesh::PointFieldTag& pfTag,
-    const double* const data) override;
+    const void* const data) override;
 
   std::set<smtk::mesh::PointFieldTag> computePointFieldTags(
     const smtk::mesh::Handle& handle) const override;

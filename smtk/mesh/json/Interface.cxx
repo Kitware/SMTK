@@ -563,8 +563,8 @@ smtk::common::UUID Interface::rootAssociation() const
   return this->m_associated_model;
 }
 
-bool Interface::createCellField(
-  const smtk::mesh::HandleRange&, const std::string&, std::size_t, const double*)
+bool Interface::createCellField(const smtk::mesh::HandleRange&, const std::string&, std::size_t,
+  const smtk::mesh::FieldType&, const void*)
 {
   return false;
 }
@@ -572,6 +572,11 @@ bool Interface::createCellField(
 int Interface::getCellFieldDimension(const smtk::mesh::CellFieldTag&) const
 {
   return 0;
+}
+
+smtk::mesh::FieldType Interface::getCellFieldType(const smtk::mesh::CellFieldTag&) const
+{
+  return smtk::mesh::FieldType::MaxFieldType;
 }
 
 smtk::mesh::HandleRange Interface::getMeshsets(
@@ -586,25 +591,25 @@ bool Interface::hasCellField(const smtk::mesh::HandleRange&, const smtk::mesh::C
 }
 
 bool Interface::getCellField(
-  const smtk::mesh::HandleRange&, const smtk::mesh::CellFieldTag&, double*) const
+  const smtk::mesh::HandleRange&, const smtk::mesh::CellFieldTag&, void*) const
 {
   return false;
 }
 
 bool Interface::setCellField(
-  const smtk::mesh::HandleRange&, const smtk::mesh::CellFieldTag&, const double* const)
+  const smtk::mesh::HandleRange&, const smtk::mesh::CellFieldTag&, const void* const)
 {
   return false;
 }
 
 bool Interface::getField(
-  const smtk::mesh::HandleRange&, const smtk::mesh::CellFieldTag&, double*) const
+  const smtk::mesh::HandleRange&, const smtk::mesh::CellFieldTag&, void*) const
 {
   return false;
 }
 
 bool Interface::setField(
-  const smtk::mesh::HandleRange&, const smtk::mesh::CellFieldTag&, const double* const)
+  const smtk::mesh::HandleRange&, const smtk::mesh::CellFieldTag&, const void* const)
 {
   return false;
 }
@@ -619,8 +624,8 @@ bool Interface::deleteCellField(const smtk::mesh::CellFieldTag&, const smtk::mes
   return false;
 }
 
-bool Interface::createPointField(
-  const smtk::mesh::HandleRange&, const std::string&, std::size_t, const double*)
+bool Interface::createPointField(const smtk::mesh::HandleRange&, const std::string&, std::size_t,
+  const smtk::mesh::FieldType&, const void*)
 {
   return false;
 }
@@ -628,6 +633,11 @@ bool Interface::createPointField(
 int Interface::getPointFieldDimension(const smtk::mesh::PointFieldTag&) const
 {
   return 0;
+}
+
+smtk::mesh::FieldType Interface::getPointFieldType(const smtk::mesh::PointFieldTag&) const
+{
+  return smtk::mesh::FieldType::MaxFieldType;
 }
 
 smtk::mesh::HandleRange Interface::getMeshsets(
@@ -643,25 +653,25 @@ bool Interface::hasPointField(
 }
 
 bool Interface::getPointField(
-  const smtk::mesh::HandleRange&, const smtk::mesh::PointFieldTag&, double*) const
+  const smtk::mesh::HandleRange&, const smtk::mesh::PointFieldTag&, void*) const
 {
   return false;
 }
 
 bool Interface::setPointField(
-  const smtk::mesh::HandleRange&, const smtk::mesh::PointFieldTag&, const double* const)
+  const smtk::mesh::HandleRange&, const smtk::mesh::PointFieldTag&, const void* const)
 {
   return false;
 }
 
 bool Interface::getField(
-  const smtk::mesh::HandleRange&, const smtk::mesh::PointFieldTag&, double*) const
+  const smtk::mesh::HandleRange&, const smtk::mesh::PointFieldTag&, void*) const
 {
   return false;
 }
 
 bool Interface::setField(
-  const smtk::mesh::HandleRange&, const smtk::mesh::PointFieldTag&, const double* const)
+  const smtk::mesh::HandleRange&, const smtk::mesh::PointFieldTag&, const void* const)
 {
   return false;
 }

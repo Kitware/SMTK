@@ -280,25 +280,27 @@ public:
   }
 };
 
-class QueryDoubleTag
+class QueryFieldTag
 {
   ::moab::Interface* m_iface;
   ::moab::TagInfo* m_tag;
   ::moab::ErrorCode m_state;
   std::string m_tag_name;
   int m_size;
+  ::moab::DataType m_type;
 
 public:
-  QueryDoubleTag(const char* name, int size, ::moab::Interface* iface)
+  QueryFieldTag(const char* name, int size, ::moab::DataType type, ::moab::Interface* iface)
   {
     this->m_iface = iface;
     this->m_tag_name = std::string(name) + std::string("_");
     this->m_size = size;
+    this->m_type = type;
 
     //populate our tag
     ::moab::Tag moab_tag;
     this->m_state = this->m_iface->tag_get_handle(this->m_tag_name.c_str(), this->m_size,
-      ::moab::MB_TYPE_DOUBLE, moab_tag, ::moab::MB_TAG_CREAT | ::moab::MB_TAG_DENSE);
+      this->m_type, moab_tag, ::moab::MB_TAG_CREAT | ::moab::MB_TAG_DENSE);
     this->m_tag = moab_tag;
   }
 
@@ -309,6 +311,8 @@ public:
   ::moab::ErrorCode state() { return this->m_state; }
 
   int size() const { return this->m_size; }
+
+  ::moab::DataType type() const { return this->m_type; }
 };
 
 } // namespace tag
