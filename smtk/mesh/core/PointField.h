@@ -92,6 +92,60 @@ public:
   //sizeof(type()) * cellIds.size() * dimension() in size.
   bool set(const void* const values);
 
+  //Convenience method for accessing field data.
+  template <typename T>
+  std::vector<T> get() const
+  {
+    if (type() != FieldTypeFor<T>::type)
+    {
+      return std::vector<T>();
+    }
+    std::vector<T> values(size() * dimension());
+    if (!get(&values[0]))
+    {
+      return std::vector<T>();
+    }
+    return values;
+  }
+
+  //Convenience method for accessing field data.
+  template <typename T>
+  std::vector<T> get(const smtk::mesh::HandleRange& cellIds) const
+  {
+    if (type() != FieldTypeFor<T>::type)
+    {
+      return std::vector<T>();
+    }
+    std::vector<T> values(cellIds.size() * dimension());
+    if (!get(cellIds, &values[0]))
+    {
+      return std::vector<T>();
+    }
+    return values;
+  }
+
+  //Convenience method for setting field data.
+  template <typename T>
+  bool set(const std::vector<T>& values)
+  {
+    if (type() != FieldTypeFor<T>::type)
+    {
+      return false;
+    }
+    return set(&values[0]);
+  }
+
+  //Convenience method for setting field data.
+  template <typename T>
+  bool set(const smtk::mesh::HandleRange& cellIds, const std::vector<T>& values)
+  {
+    if (type() != FieldTypeFor<T>::type)
+    {
+      return false;
+    }
+    return set(cellIds, &values[0]);
+  }
+
 private:
   std::string m_name;
   smtk::mesh::MeshSet m_meshset;
