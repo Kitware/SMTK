@@ -60,6 +60,7 @@ set(meshHeaders
   core/CellTypes.h
   core/Collection.h
   core/DimensionTypes.h
+  core/FieldTypes.h
   core/ForEachTypes.h
   core/Handle.h
   core/Interface.h

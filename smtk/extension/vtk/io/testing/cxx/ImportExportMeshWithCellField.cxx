@@ -162,7 +162,8 @@ int ImportExportMeshWithCellField(int argc, char* argv[])
     smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();
     smtk::mesh::CollectionPtr c = load_mesh(mngr);
     smtk::mesh::MeshSet mesh = c->meshes();
-    smtk::mesh::CellField distanceCellField = mesh.createCellField("euclidean distance", 1);
+    smtk::mesh::CellField distanceCellField =
+      mesh.createCellField("euclidean distance", 1, smtk::mesh::FieldType::Double);
 
     SetCellField setCellField(euclideanDistance, distanceCellField);
     smtk::mesh::for_each(mesh.cells(), setCellField);

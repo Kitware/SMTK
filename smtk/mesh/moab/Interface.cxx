@@ -1089,7 +1089,7 @@ smtk::common::UUID Interface::rootAssociation() const
 //create a data set named <name> with <dimension> doubles for each cell in
 //<meshsets>, and populate it with <data>
 bool Interface::createCellField(const smtk::mesh::HandleRange& meshsets, const std::string& name,
-  std::size_t dimension, const double* data)
+  std::size_t dimension, const smtk::mesh::FieldType& type, const void* data)
 {
   if (meshsets.empty())
   {
@@ -1105,14 +1105,15 @@ bool Interface::createCellField(const smtk::mesh::HandleRange& meshsets, const s
     return false;
   }
   // The double tag is used to associate double-valued data with the cells
-  tag::QueryDoubleTag dtag(name.c_str(), static_cast<int>(dimension), this->moabInterface());
+  tag::QueryFieldTag dtag(name.c_str(), static_cast<int>(dimension),
+    (type == smtk::mesh::FieldType::Integer ? ::moab::MB_TYPE_INTEGER : ::moab::MB_TYPE_DOUBLE),
+    this->moabInterface());
   if (dtag.state() != ::moab::MB_SUCCESS && dtag.state() != ::moab::MB_ALREADY_ALLOCATED)
   {
     return false;
   }
 
-  const double* tag_values = data;
-  ::moab::ErrorCode rval = m_iface->tag_set_data(dtag.moabTag(), cells, tag_values);
+  ::moab::ErrorCode rval = m_iface->tag_set_data(dtag.moabTag(), cells, data);
   bool tagged = (rval == ::moab::MB_SUCCESS);
 
   if (tagged)
@@ -1149,6 +1150,33 @@ int Interface::getCellFieldDimension(const smtk::mesh::CellFieldTag& cfTag) cons
   m_iface->tag_get_length(tag, dimension);
 
   return dimension;
+}
+
+//get the type of a dataset.
+smtk::mesh::FieldType Interface::getCellFieldType(const smtk::mesh::CellFieldTag& cfTag) const
+{
+  ::moab::Tag tag;
+  std::string dTagName = cfTag.name() + std::string("_");
+  ::moab::ErrorCode rval = m_iface->tag_get_handle(dTagName.c_str(), tag);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    return smtk::mesh::FieldType::MaxFieldType;
+  }
+  ::moab::DataType type;
+  m_iface->tag_get_data_type(tag, type);
+
+  if (type == ::moab::MB_TYPE_DOUBLE)
+  {
+    return smtk::mesh::FieldType::Double;
+  }
+  else if (type == ::moab::MB_TYPE_INTEGER)
+  {
+    return smtk::mesh::FieldType::Integer;
+  }
+  else
+  {
+    return smtk::mesh::FieldType::MaxFieldType;
+  }
 }
 
 //find all mesh sets that have this data set
@@ -1201,8 +1229,8 @@ bool Interface::hasCellField(
   return ::moab::intersect(entitiesWithTag, meshsets) == meshsets;
 }
 
-bool Interface::getCellField(const smtk::mesh::HandleRange& meshsets,
-  const smtk::mesh::CellFieldTag& cfTag, double* field) const
+bool Interface::getCellField(
+  const smtk::mesh::HandleRange& meshsets, const smtk::mesh::CellFieldTag& cfTag, void* field) const
 {
   if (meshsets.empty())
   {
@@ -1214,7 +1242,7 @@ bool Interface::getCellField(const smtk::mesh::HandleRange& meshsets,
 }
 
 bool Interface::setCellField(const smtk::mesh::HandleRange& meshsets,
-  const smtk::mesh::CellFieldTag& cfTag, const double* const field)
+  const smtk::mesh::CellFieldTag& cfTag, const void* const field)
 {
   if (meshsets.empty())
   {
@@ -1226,7 +1254,7 @@ bool Interface::setCellField(const smtk::mesh::HandleRange& meshsets,
 }
 
 bool Interface::getField(
-  const smtk::mesh::HandleRange& cells, const smtk::mesh::CellFieldTag& cfTag, double* field) const
+  const smtk::mesh::HandleRange& cells, const smtk::mesh::CellFieldTag& cfTag, void* field) const
 {
   if (cells.empty())
   {
@@ -1248,7 +1276,7 @@ bool Interface::getField(
 }
 
 bool Interface::setField(const smtk::mesh::HandleRange& cells,
-  const smtk::mesh::CellFieldTag& cfTag, const double* const field)
+  const smtk::mesh::CellFieldTag& cfTag, const void* const field)
 {
   if (cells.empty())
   {
@@ -1356,7 +1384,7 @@ bool Interface::deleteCellField(
 //create a data set named <name> with <dimension> doubles for each point in
 //<meshsets>, and populate it with <data>
 bool Interface::createPointField(const smtk::mesh::HandleRange& meshsets, const std::string& name,
-  std::size_t dimension, const double* data)
+  std::size_t dimension, const smtk::mesh::FieldType& type, const void* data)
 {
   if (meshsets.empty())
   {
@@ -1372,14 +1400,15 @@ bool Interface::createPointField(const smtk::mesh::HandleRange& meshsets, const 
     return false;
   }
   // The double tag is used to associate double-valued data with the points
-  tag::QueryDoubleTag dtag(name.c_str(), static_cast<int>(dimension), this->moabInterface());
+  tag::QueryFieldTag dtag(name.c_str(), static_cast<int>(dimension),
+    (type == smtk::mesh::FieldType::Integer ? ::moab::MB_TYPE_INTEGER : ::moab::MB_TYPE_DOUBLE),
+    this->moabInterface());
   if (dtag.state() != ::moab::MB_SUCCESS && dtag.state() != ::moab::MB_ALREADY_ALLOCATED)
   {
     return false;
   }
 
-  const double* tag_values = data;
-  ::moab::ErrorCode rval = m_iface->tag_set_data(dtag.moabTag(), points, tag_values);
+  ::moab::ErrorCode rval = m_iface->tag_set_data(dtag.moabTag(), points, data);
   bool tagged = (rval == ::moab::MB_SUCCESS);
 
   if (tagged)
@@ -1416,6 +1445,33 @@ int Interface::getPointFieldDimension(const smtk::mesh::PointFieldTag& pfTag) co
   m_iface->tag_get_length(tag, dimension);
 
   return dimension;
+}
+
+//get the type of a dataset.
+smtk::mesh::FieldType Interface::getPointFieldType(const smtk::mesh::PointFieldTag& pfTag) const
+{
+  ::moab::Tag tag;
+  std::string dTagName = pfTag.name() + std::string("_");
+  ::moab::ErrorCode rval = m_iface->tag_get_handle(dTagName.c_str(), tag);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    return smtk::mesh::FieldType::MaxFieldType;
+  }
+  ::moab::DataType type;
+  m_iface->tag_get_data_type(tag, type);
+
+  if (type == ::moab::MB_TYPE_DOUBLE)
+  {
+    return smtk::mesh::FieldType::Double;
+  }
+  else if (type == ::moab::MB_TYPE_INTEGER)
+  {
+    return smtk::mesh::FieldType::Integer;
+  }
+  else
+  {
+    return smtk::mesh::FieldType::MaxFieldType;
+  }
 }
 
 //find all mesh sets that have this data set
@@ -1469,7 +1525,7 @@ bool Interface::hasPointField(
 }
 
 bool Interface::getPointField(const smtk::mesh::HandleRange& meshsets,
-  const smtk::mesh::PointFieldTag& pfTag, double* field) const
+  const smtk::mesh::PointFieldTag& pfTag, void* field) const
 {
   if (meshsets.empty())
   {
@@ -1481,7 +1537,7 @@ bool Interface::getPointField(const smtk::mesh::HandleRange& meshsets,
 }
 
 bool Interface::setPointField(const smtk::mesh::HandleRange& meshsets,
-  const smtk::mesh::PointFieldTag& pfTag, const double* const field)
+  const smtk::mesh::PointFieldTag& pfTag, const void* const field)
 {
   if (meshsets.empty())
   {
@@ -1492,8 +1548,8 @@ bool Interface::setPointField(const smtk::mesh::HandleRange& meshsets,
   return this->setField(this->getPoints(this->getCells(meshsets)), pfTag, field);
 }
 
-bool Interface::getField(const smtk::mesh::HandleRange& points,
-  const smtk::mesh::PointFieldTag& pfTag, double* field) const
+bool Interface::getField(
+  const smtk::mesh::HandleRange& points, const smtk::mesh::PointFieldTag& pfTag, void* field) const
 {
   if (points.empty())
   {
@@ -1515,7 +1571,7 @@ bool Interface::getField(const smtk::mesh::HandleRange& points,
 }
 
 bool Interface::setField(const smtk::mesh::HandleRange& points,
-  const smtk::mesh::PointFieldTag& pfTag, const double* const field)
+  const smtk::mesh::PointFieldTag& pfTag, const void* const field)
 {
   if (points.empty())
   {

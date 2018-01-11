@@ -104,40 +104,26 @@ std::size_t PointField::dimension() const
       : 0);
 }
 
+smtk::mesh::FieldType PointField::type() const
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_meshset.collection()->interface();
+  if (!iface)
+  {
+    return smtk::mesh::FieldType::MaxFieldType;
+  }
+
+  smtk::mesh::PointFieldTag dsTag(this->m_name);
+  return (iface->hasPointField(this->m_meshset.range(), dsTag)
+      ? iface->getPointFieldType(dsTag)
+      : smtk::mesh::FieldType::MaxFieldType);
+}
+
 smtk::mesh::PointSet PointField::points() const
 {
   return this->m_meshset.points();
 }
 
-std::vector<double> PointField::get(const smtk::mesh::HandleRange& pointIds) const
-{
-  std::vector<double> values;
-  values.resize(pointIds.size() * this->dimension());
-  this->get(pointIds, &values[0]);
-  return values;
-}
-
-bool PointField::set(const smtk::mesh::HandleRange& pointIds, const std::vector<double>& values)
-{
-  assert(values.size() >= pointIds.size() * this->dimension());
-  return this->set(pointIds, &values[0]);
-}
-
-std::vector<double> PointField::get() const
-{
-  std::vector<double> values;
-  values.resize(this->size() * this->dimension());
-  this->get(&values[0]);
-  return values;
-}
-
-bool PointField::set(const std::vector<double>& values)
-{
-  assert(values.size() >= this->size() * this->dimension());
-  return this->set(&values[0]);
-}
-
-bool PointField::get(const smtk::mesh::HandleRange& pointIds, double* values) const
+bool PointField::get(const smtk::mesh::HandleRange& pointIds, void* values) const
 {
   const smtk::mesh::InterfacePtr& iface = this->m_meshset.collection()->interface();
   if (!iface)
@@ -153,7 +139,7 @@ bool PointField::get(const smtk::mesh::HandleRange& pointIds, double* values) co
   return iface->getField(pointIds, smtk::mesh::PointFieldTag(this->m_name), values);
 }
 
-bool PointField::set(const smtk::mesh::HandleRange& pointIds, const double* const values)
+bool PointField::set(const smtk::mesh::HandleRange& pointIds, const void* const values)
 {
   const smtk::mesh::InterfacePtr& iface = this->m_meshset.collection()->interface();
   if (!iface)
@@ -169,7 +155,7 @@ bool PointField::set(const smtk::mesh::HandleRange& pointIds, const double* cons
   return iface->setField(pointIds, smtk::mesh::PointFieldTag(this->m_name), values);
 }
 
-bool PointField::get(double* values) const
+bool PointField::get(void* values) const
 {
   const smtk::mesh::InterfacePtr& iface = this->m_meshset.collection()->interface();
   if (!iface)
@@ -181,7 +167,7 @@ bool PointField::get(double* values) const
     this->m_meshset.range(), smtk::mesh::PointFieldTag(this->m_name), values);
 }
 
-bool PointField::set(const double* const values)
+bool PointField::set(const void* const values)
 {
   const smtk::mesh::InterfacePtr& iface = this->m_meshset.collection()->interface();
   if (!iface)

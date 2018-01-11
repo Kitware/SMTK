@@ -457,14 +457,7 @@ bool MeshSet::mergeCoincidentContactPoints(double tolerance)
 }
 
 smtk::mesh::CellField MeshSet::createCellField(
-  const std::string& name, int dimension, const std::vector<double>& data)
-{
-  assert(data.size() == this->cells().size() * dimension);
-  return this->createCellField(name, dimension, &data[0]);
-}
-
-smtk::mesh::CellField MeshSet::createCellField(
-  const std::string& name, int dimension, const double* const data)
+  const std::string& name, int dimension, const smtk::mesh::FieldType& type, const void* const data)
 {
   if (name.empty() || dimension <= 0)
   {
@@ -481,12 +474,12 @@ smtk::mesh::CellField MeshSet::createCellField(
   bool success;
   if (data != nullptr)
   {
-    success = iface->createCellField(m_range, name, dimension, data);
+    success = iface->createCellField(m_range, name, dimension, type, data);
   }
   else
   {
     std::vector<double> tmp(this->cells().size() * dimension, 0.);
-    success = iface->createCellField(m_range, name, dimension, &tmp[0]);
+    success = iface->createCellField(m_range, name, dimension, type, &tmp[0]);
   }
   return success ? CellField(*this, name) : CellField();
 }
@@ -526,14 +519,7 @@ bool MeshSet::removeCellField(smtk::mesh::CellField cellfield)
 }
 
 smtk::mesh::PointField MeshSet::createPointField(
-  const std::string& name, int dimension, const std::vector<double>& data)
-{
-  assert(data.size() == this->points().size() * dimension);
-  return this->createPointField(name, dimension, &data[0]);
-}
-
-smtk::mesh::PointField MeshSet::createPointField(
-  const std::string& name, int dimension, const double* const data)
+  const std::string& name, int dimension, const smtk::mesh::FieldType& type, const void* const data)
 {
   if (name.empty() || dimension <= 0)
   {
@@ -550,12 +536,12 @@ smtk::mesh::PointField MeshSet::createPointField(
   bool success;
   if (data != nullptr)
   {
-    success = iface->createPointField(m_range, name, dimension, data);
+    success = iface->createPointField(m_range, name, dimension, type, data);
   }
   else
   {
     std::vector<double> tmp(this->points().size() * dimension, 0.);
-    success = iface->createPointField(m_range, name, dimension, &tmp[0]);
+    success = iface->createPointField(m_range, name, dimension, type, &tmp[0]);
   }
   return success ? PointField(*this, name) : PointField();
 }

@@ -16,6 +16,7 @@
 #include "smtk/mesh/core/CellSet.h"
 #include "smtk/mesh/core/CellTraits.h"
 #include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/FieldTypes.h"
 #include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/mesh/core/PointField.h"
@@ -340,26 +341,46 @@ bool ImportVTKData::operator()(
     mesh = smtk::mesh::MeshSet(collection->shared_from_this(), iface->getRoot(), entities);
   }
 
-  // Now that we have a valid meshset, we add double-valued vtk cell & point data to it.
+  // Now that we have a valid meshset, we add vtk cell & point data to it.
   if (!mesh.is_empty())
   {
     for (vtkIdType i = 0; i < dataset->GetCellData()->GetNumberOfArrays(); i++)
     {
-      vtkDoubleArray* array = vtkDoubleArray::SafeDownCast(dataset->GetCellData()->GetArray(i));
-      if (array != nullptr)
       {
-        mesh.createCellField(array->GetName(), array->GetNumberOfComponents(),
-          static_cast<const double*>(array->GetVoidPointer(0)));
+        vtkDoubleArray* array = vtkDoubleArray::SafeDownCast(dataset->GetCellData()->GetArray(i));
+        if (array != nullptr)
+        {
+          mesh.createCellField(array->GetName(), array->GetNumberOfComponents(),
+            smtk::mesh::FieldType::Double, static_cast<const void*>(array->GetVoidPointer(0)));
+        }
+      }
+      {
+        vtkIntArray* array = vtkIntArray::SafeDownCast(dataset->GetCellData()->GetArray(i));
+        if (array != nullptr)
+        {
+          mesh.createCellField(array->GetName(), array->GetNumberOfComponents(),
+            smtk::mesh::FieldType::Integer, static_cast<const void*>(array->GetVoidPointer(0)));
+        }
       }
     }
 
     for (vtkIdType i = 0; i < dataset->GetPointData()->GetNumberOfArrays(); i++)
     {
-      vtkDoubleArray* array = vtkDoubleArray::SafeDownCast(dataset->GetPointData()->GetArray(i));
-      if (array != nullptr)
       {
-        mesh.createPointField(array->GetName(), array->GetNumberOfComponents(),
-          static_cast<const double*>(array->GetVoidPointer(0)));
+        vtkDoubleArray* array = vtkDoubleArray::SafeDownCast(dataset->GetPointData()->GetArray(i));
+        if (array != nullptr)
+        {
+          mesh.createPointField(array->GetName(), array->GetNumberOfComponents(),
+            smtk::mesh::FieldType::Double, static_cast<const void*>(array->GetVoidPointer(0)));
+        }
+      }
+      {
+        vtkIntArray* array = vtkIntArray::SafeDownCast(dataset->GetPointData()->GetArray(i));
+        if (array != nullptr)
+        {
+          mesh.createPointField(array->GetName(), array->GetNumberOfComponents(),
+            smtk::mesh::FieldType::Integer, static_cast<const void*>(array->GetVoidPointer(0)));
+        }
       }
     }
   }

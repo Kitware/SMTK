@@ -12,6 +12,7 @@
 
 #include "smtk/mesh/core/CellField.h"
 #include "smtk/mesh/core/CellSet.h"
+#include "smtk/mesh/core/FieldTypes.h"
 #include "smtk/mesh/core/ForEachTypes.h"
 #include "smtk/mesh/core/PointField.h"
 #include "smtk/mesh/core/PointSet.h"
@@ -115,7 +116,8 @@ bool applyWarp(const std::function<std::array<double, 3>(std::array<double, 3>)>
   {
     StoreAndWarpPoints warp(f, ms.points().size());
     smtk::mesh::for_each(ms.points(), warp);
-    return ms.createPointField("_prior", 3, &warp.data()[0]).isValid();
+    return ms.createPointField("_prior", 3, smtk::mesh::FieldType::Double, &warp.data()[0])
+      .isValid();
   }
   else
   {
@@ -182,7 +184,8 @@ bool applyScalarPointField(const std::function<double(std::array<double, 3>)>& f
 {
   ScalarPointField scalarPointField(f, ms.points().size());
   smtk::mesh::for_each(ms.points(), scalarPointField);
-  return ms.createPointField(name, 1, &scalarPointField.data()[0]).isValid();
+  return ms.createPointField(name, 1, smtk::mesh::FieldType::Double, &scalarPointField.data()[0])
+    .isValid();
 }
 
 namespace
@@ -229,7 +232,8 @@ bool applyScalarCellField(const std::function<double(std::array<double, 3>)>& f,
 {
   ScalarCellField scalarCellField(f, ms.cells().size());
   smtk::mesh::for_each(ms.cells(), scalarCellField);
-  return ms.createCellField(name, 1, &scalarCellField.data()[0]).isValid();
+  return ms.createCellField(name, 1, smtk::mesh::FieldType::Double, &scalarCellField.data()[0])
+    .isValid();
 }
 
 namespace
@@ -278,7 +282,8 @@ bool applyVectorPointField(const std::function<std::array<double, 3>(std::array<
 {
   VectorPointField vectorPointField(f, ms.points().size());
   smtk::mesh::for_each(ms.points(), vectorPointField);
-  return ms.createPointField(name, 3, &vectorPointField.data()[0]).isValid();
+  return ms.createPointField(name, 3, smtk::mesh::FieldType::Double, &vectorPointField.data()[0])
+    .isValid();
 }
 
 namespace
@@ -327,7 +332,8 @@ bool applyVectorCellField(const std::function<std::array<double, 3>(std::array<d
 {
   VectorCellField vectorCellField(f, ms.cells().size());
   smtk::mesh::for_each(ms.cells(), vectorCellField);
-  return ms.createCellField(name, 3, &vectorCellField.data()[0]).isValid();
+  return ms.createCellField(name, 3, smtk::mesh::FieldType::Double, &vectorCellField.data()[0])
+    .isValid();
 }
 }
 }

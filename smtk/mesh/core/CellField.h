@@ -14,6 +14,7 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
+#include "smtk/mesh/core/FieldTypes.h"
 #include "smtk/mesh/core/Handle.h"
 #include "smtk/mesh/core/MeshSet.h"
 
@@ -63,44 +64,88 @@ public:
   //Return the number of components in each data tuple
   std::size_t dimension() const;
 
+  //Return the field type
+  smtk::mesh::FieldType type() const;
+
   //Return the meshset associated with the dataset
   const smtk::mesh::MeshSet& meshset() const { return this->m_meshset; }
 
   //Return the cells associated with the dataset
   smtk::mesh::CellSet cells() const;
 
-  //Given a range of cells, get the data associated with the cells.
-  std::vector<double> get(const smtk::mesh::HandleRange& cellIds) const;
-
-  //Given a range of cells, set the data associated with the cells and return
-  //a success flag. <values> must be at least cellIds.size() * dimension() in
-  //length.
-  bool set(const smtk::mesh::HandleRange& cellIds, const std::vector<double>& values);
-
-  //Get the data associated with all of the cells in the meshset.
-  std::vector<double> get() const;
+  //Get the data associated with all of the cells in the meshset and return
+  //a success flag. <values> must be at least
+  //sizeof(type()) * cellIds.size() * dimension() in size.
+  bool get(const smtk::mesh::HandleRange& cellIds, void* values) const;
 
   //Set the data associated with all of the cells in the meshset and return
-  //a success flag. <values> must be at least size() * dimension() in length.
-  bool set(const std::vector<double>& values);
+  //a success flag. <values> must be at least
+  //sizeof(type()) * cellIds.size() * dimension() in size.
+  bool set(const smtk::mesh::HandleRange& cellIds, const void* const values);
 
   //Get the data associated with all of the cells in the meshset and return
-  //a success flag. <values> must be at least cellIds.size() * dimension() in
-  //length.
-  bool get(const smtk::mesh::HandleRange& cellIds, double* values) const;
+  //a success flag. <values> must be at least
+  //sizeof(type()) * cellIds.size() * dimension() in size.
+  bool get(void* values) const;
 
   //Set the data associated with all of the cells in the meshset and return
-  //a success flag. <values> must be at least cellIds.size() * dimension() in
-  //length.
-  bool set(const smtk::mesh::HandleRange& cellIds, const double* const values);
+  //a success flag. <values> must be at least
+  //sizeof(type()) * cellIds.size() * dimension() in size.
+  bool set(const void* const values);
 
-  //Get the data associated with all of the cells in the meshset and return
-  //a success flag. <values> must be at least size() * dimension() in length.
-  bool get(double* values) const;
+  //Convenience method for accessing field data.
+  template <typename T>
+  std::vector<T> get() const
+  {
+    if (type() != FieldTypeFor<T>::type)
+    {
+      return std::vector<T>();
+    }
+    std::vector<T> values(size() * dimension());
+    if (!get(&values[0]))
+    {
+      return std::vector<T>();
+    }
+    return values;
+  }
 
-  //Set the data associated with all of the cells in the meshset and return
-  //a success flag. <values> must be at least size() * dimension() in length.
-  bool set(const double* const values);
+  //Convenience method for accessing field data.
+  template <typename T>
+  std::vector<T> get(const smtk::mesh::HandleRange& cellIds) const
+  {
+    if (type() != FieldTypeFor<T>::type)
+    {
+      return std::vector<T>();
+    }
+    std::vector<T> values(cellIds.size() * dimension());
+    if (!get(cellIds, &values[0]))
+    {
+      return std::vector<T>();
+    }
+    return values;
+  }
+
+  //Convenience method for setting field data.
+  template <typename T>
+  bool set(const std::vector<T>& values)
+  {
+    if (type() != FieldTypeFor<T>::type)
+    {
+      return false;
+    }
+    return set(&values[0]);
+  }
+
+  //Convenience method for setting field data.
+  template <typename T>
+  bool set(const smtk::mesh::HandleRange& cellIds, const std::vector<T>& values)
+  {
+    if (type() != FieldTypeFor<T>::type)
+    {
+      return false;
+    }
+    return set(cellIds, &values[0]);
+  }
 
 private:
   std::string m_name;

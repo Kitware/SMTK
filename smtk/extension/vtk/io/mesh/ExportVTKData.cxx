@@ -270,30 +270,60 @@ void ExportVTKData::operator()(
       meshset.subset(static_cast<smtk::mesh::DimensionType>(dimension)).cellFields();
     for (auto& cellfield : cellfields)
     {
-      double* cellData = new double[cellfield.size() * cellfield.dimension()];
-      cellfield.get(cellData);
+      if (cellfield.type() == smtk::mesh::FieldType::Double)
+      {
+        double* cellData = new double[cellfield.size() * cellfield.dimension()];
+        cellfield.get(cellData);
 
-      vtkNew<vtkDoubleArray> cellDataArray;
-      cellDataArray->SetName(cellfield.name().c_str());
-      cellDataArray->SetArray(cellData, cellfield.size() * cellfield.dimension(), false,
-        vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
-      cellDataArray->SetNumberOfComponents(static_cast<int>(cellfield.dimension()));
-      pd->GetCellData()->AddArray(cellDataArray.GetPointer());
+        vtkNew<vtkDoubleArray> cellDataArray;
+        cellDataArray->SetName(cellfield.name().c_str());
+        cellDataArray->SetArray(cellData, cellfield.size() * cellfield.dimension(), false,
+          vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
+        cellDataArray->SetNumberOfComponents(static_cast<int>(cellfield.dimension()));
+        pd->GetCellData()->AddArray(cellDataArray.GetPointer());
+      }
+      else if (cellfield.type() == smtk::mesh::FieldType::Integer)
+      {
+        int* cellData = new int[cellfield.size() * cellfield.dimension()];
+        cellfield.get(cellData);
+
+        vtkNew<vtkIntArray> cellDataArray;
+        cellDataArray->SetName(cellfield.name().c_str());
+        cellDataArray->SetArray(cellData, cellfield.size() * cellfield.dimension(), false,
+          vtkIntArray::VTK_DATA_ARRAY_DELETE);
+        cellDataArray->SetNumberOfComponents(static_cast<int>(cellfield.dimension()));
+        pd->GetCellData()->AddArray(cellDataArray.GetPointer());
+      }
     }
 
     std::set<smtk::mesh::PointField> pointfields =
       meshset.subset(static_cast<smtk::mesh::DimensionType>(dimension)).pointFields();
     for (auto& pointfield : pointfields)
     {
-      double* pointData = new double[pointfield.size() * pointfield.dimension()];
-      pointfield.get(pointData);
+      if (pointfield.type() == smtk::mesh::FieldType::Double)
+      {
+        double* pointData = new double[pointfield.size() * pointfield.dimension()];
+        pointfield.get(pointData);
 
-      vtkNew<vtkDoubleArray> pointDataArray;
-      pointDataArray->SetName(pointfield.name().c_str());
-      pointDataArray->SetArray(pointData, pointfield.size() * pointfield.dimension(), false,
-        vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
-      pointDataArray->SetNumberOfComponents(static_cast<int>(pointfield.dimension()));
-      pd->GetPointData()->AddArray(pointDataArray.GetPointer());
+        vtkNew<vtkDoubleArray> pointDataArray;
+        pointDataArray->SetName(pointfield.name().c_str());
+        pointDataArray->SetArray(pointData, pointfield.size() * pointfield.dimension(), false,
+          vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
+        pointDataArray->SetNumberOfComponents(static_cast<int>(pointfield.dimension()));
+        pd->GetPointData()->AddArray(pointDataArray.GetPointer());
+      }
+      else if (pointfield.type() == smtk::mesh::FieldType::Integer)
+      {
+        int* pointData = new int[pointfield.size() * pointfield.dimension()];
+        pointfield.get(pointData);
+
+        vtkNew<vtkIntArray> pointDataArray;
+        pointDataArray->SetName(pointfield.name().c_str());
+        pointDataArray->SetArray(pointData, pointfield.size() * pointfield.dimension(), false,
+          vtkIntArray::VTK_DATA_ARRAY_DELETE);
+        pointDataArray->SetNumberOfComponents(static_cast<int>(pointfield.dimension()));
+        pd->GetPointData()->AddArray(pointDataArray.GetPointer());
+      }
     }
   }
 }

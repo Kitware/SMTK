@@ -176,10 +176,8 @@ public:
   //Create a new cell field with the given name, dimension and data. The number
   //of values in <data> must be the # of cells in the meshset multiplied by the
   //dimension of the cell field.
-  smtk::mesh::CellField createCellField(
-    const std::string& name, int dimension, const std::vector<double>& field);
-  smtk::mesh::CellField createCellField(
-    const std::string& name, int dimension, const double* const field = nullptr);
+  smtk::mesh::CellField createCellField(const std::string& name, int dimension,
+    const smtk::mesh::FieldType& type, const void* const field = nullptr);
   smtk::mesh::CellField cellField(const std::string& name) const;
   std::set<smtk::mesh::CellField> cellFields() const;
   //Remove the dataset from this meshset.
@@ -188,10 +186,8 @@ public:
   //Create a new point field with the given name, dimension and data. The number
   //of values in <data> must be the # of points in the meshset multiplied by the
   //dimension of the point field.
-  smtk::mesh::PointField createPointField(
-    const std::string& name, int dimension, const std::vector<double>& field);
-  smtk::mesh::PointField createPointField(
-    const std::string& name, int dimension, const double* const field = nullptr);
+  smtk::mesh::PointField createPointField(const std::string& name, int dimension,
+    const smtk::mesh::FieldType& type, const void* const field = nullptr);
   smtk::mesh::PointField pointField(const std::string& name) const;
   std::set<smtk::mesh::PointField> pointFields() const;
   //Remove the dataset from this meshset.

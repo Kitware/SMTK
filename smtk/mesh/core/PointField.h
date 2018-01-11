@@ -63,44 +63,34 @@ public:
   //Return the number of components in each data tuple
   std::size_t dimension() const;
 
+  //Return the field type
+  smtk::mesh::FieldType type() const;
+
   //Return the meshset associated with the dataset
   const smtk::mesh::MeshSet& meshset() const { return this->m_meshset; }
 
   //Return the points associated with the dataset
   smtk::mesh::PointSet points() const;
 
-  //Given a range of points, get the data associated with the points.
-  std::vector<double> get(const smtk::mesh::HandleRange& pointIds) const;
+  //Get the data associated with all of the cells in the meshset and return
+  //a success flag. <values> must be at least
+  //sizeof(type()) * cellIds.size() * dimension() in size.
+  bool get(const smtk::mesh::HandleRange& cellIds, void* values) const;
 
-  //Given a range of points, set the data associated with the points and return
-  //a success flag. <values> must be at least pointIds.size() * dimension() in
-  //length.
-  bool set(const smtk::mesh::HandleRange& pointIds, const std::vector<double>& values);
+  //Set the data associated with all of the cells in the meshset and return
+  //a success flag. <values> must be at least
+  //sizeof(type()) * cellIds.size() * dimension() in size.
+  bool set(const smtk::mesh::HandleRange& cellIds, const void* const values);
 
-  //Get the data associated with all of the points in the meshset.
-  std::vector<double> get() const;
+  //Get the data associated with all of the cells in the meshset and return
+  //a success flag. <values> must be at least
+  //sizeof(type()) * cellIds.size() * dimension() in size.
+  bool get(void* values) const;
 
-  //Set the data associated with all of the points in the meshset and return
-  //a success flag. <values> must be at least size() * dimension() in length.
-  bool set(const std::vector<double>& values);
-
-  //Get the data associated with all of the points in the meshset and return
-  //a success flag. <values> must be at least pointIds.size() * dimension() in
-  //length.
-  bool get(const smtk::mesh::HandleRange& pointIds, double* values) const;
-
-  //Set the data associated with all of the points in the meshset and return
-  //a success flag. <values> must be at least pointIds.size() * dimension() in
-  //length.
-  bool set(const smtk::mesh::HandleRange& pointIds, const double* const values);
-
-  //Get the data associated with all of the points in the meshset and return
-  //a success flag. <values> must be at least size() * dimension() in length.
-  bool get(double* values) const;
-
-  //Set the data associated with all of the points in the meshset and return
-  //a success flag. <values> must be at least size() * dimension() in length.
-  bool set(const double* const values);
+  //Set the data associated with all of the cells in the meshset and return
+  //a success flag. <values> must be at least
+  //sizeof(type()) * cellIds.size() * dimension() in size.
+  bool set(const void* const values);
 
 private:
   std::string m_name;

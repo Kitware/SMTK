@@ -67,21 +67,23 @@ void verify_partial_pointfields()
   {
     fieldValues[i] = static_cast<double>(i);
   }
-  mesh.createPointField("field data", 1, &fieldValues[0]);
+  mesh.createPointField("field data", 1, smtk::mesh::FieldType::Double, &fieldValues[0]);
 
   std::vector<double> fieldValuesForPointField1(one.points().size() * 2);
   for (std::size_t i = 0; i < fieldValuesForPointField1.size(); i++)
   {
     fieldValuesForPointField1[i] = static_cast<double>(i);
   }
-  one.createPointField("field data for set 1", 2, &fieldValuesForPointField1[0]);
+  one.createPointField(
+    "field data for set 1", 2, smtk::mesh::FieldType::Double, &fieldValuesForPointField1[0]);
 
   std::vector<double> fieldValuesForPointField2(two.points().size() * 3);
   for (std::size_t i = 0; i < fieldValuesForPointField2.size(); i++)
   {
     fieldValuesForPointField2[i] = static_cast<double>(i);
   }
-  two.createPointField("field data for set 2", 3, &fieldValuesForPointField2[0]);
+  two.createPointField(
+    "field data for set 2", 3, smtk::mesh::FieldType::Double, &fieldValuesForPointField2[0]);
 
   {
     std::set<smtk::mesh::PointField> pointfields = mesh.pointFields();
@@ -153,7 +155,7 @@ void verify_duplicate_pointfields()
   {
     fieldValues[i] = static_cast<double>(i);
   }
-  auto cf = mesh.createPointField("field data", 1, &fieldValues[0]);
+  auto cf = mesh.createPointField("field data", 1, smtk::mesh::FieldType::Double, &fieldValues[0]);
   test(cf.isValid());
 
   // Try to construct a point field with the same dimension and name for a
@@ -164,7 +166,8 @@ void verify_duplicate_pointfields()
   {
     fieldValuesForPointField1[i] = static_cast<double>(i) * 2;
   }
-  auto cf1 = one.createPointField("field data", 1, &fieldValuesForPointField1[0]);
+  auto cf1 = one.createPointField(
+    "field data", 1, smtk::mesh::FieldType::Double, &fieldValuesForPointField1[0]);
   test(cf1.isValid());
 
   // Verify that the field values have been updated to the new values.
@@ -197,11 +200,13 @@ void verify_duplicate_pointfields()
   {
     fieldValuesForPointField2[i] = static_cast<double>(i);
   }
-  auto cf2 = two.createPointField("field data", 3, &fieldValuesForPointField2[0]);
+  auto cf2 = two.createPointField(
+    "field data", 3, smtk::mesh::FieldType::Double, &fieldValuesForPointField2[0]);
   test(!cf2.isValid());
 
   // Try again, but change the name (should succeed).
-  cf2 = two.createPointField("field data 2", 3, &fieldValuesForPointField2[0]);
+  cf2 = two.createPointField(
+    "field data 2", 3, smtk::mesh::FieldType::Double, &fieldValuesForPointField2[0]);
   test(cf2.isValid());
 }
 
@@ -277,7 +282,8 @@ void verify_incremental_data_assignment()
   smtk::mesh::MeshSet mesh = c->meshes();
   std::function<double(double, double, double)> euclideanDistance = [](
     double x, double y, double z) { return std::sqrt(x * x + y * y + z * z); };
-  smtk::mesh::PointField distancePointField = mesh.createPointField("euclidean distance", 1);
+  smtk::mesh::PointField distancePointField =
+    mesh.createPointField("euclidean distance", 1, smtk::mesh::FieldType::Double);
 
   {
     SetPointData setPointData(euclideanDistance, distancePointField);
@@ -308,7 +314,7 @@ void verify_pointfield_persistency()
     {
       fieldValues[i] = static_cast<double>(i);
     }
-    one.createPointField("field data", 1, &fieldValues[0]);
+    one.createPointField("field data", 1, smtk::mesh::FieldType::Double, &fieldValues[0]);
 
     //write out the mesh.
     smtk::io::WriteMesh write;
