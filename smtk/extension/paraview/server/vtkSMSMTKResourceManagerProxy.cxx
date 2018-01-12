@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/extension/paraview/server/vtkSMSMTKResourceManagerProxy.h"
+#include "smtk/extension/paraview/server/vtkSMSMTKModelRepresentationProxy.h"
 
 #include "smtk/extension/paraview/server/vtkSMTKResourceManagerWrapper.h" // TODO: Remove the need for me
 
@@ -15,6 +16,7 @@
 
 #include "vtkClientServerStream.h"
 #include "vtkSMPropertyHelper.h"
+#include "vtkSMRepresentationProxy.h"
 #include "vtkSMSourceProxy.h"
 
 using nlohmann::json;
@@ -180,4 +182,24 @@ void vtkSMSMTKResourceManagerProxy::JSONRPCNotification(const std::string& note)
   stream << vtkClientServerStream::Invoke << VTKOBJECT(this) << "ProcessJSON"
          << vtkClientServerStream::End;
   this->ExecuteStream(stream);
+}
+
+void vtkSMSMTKResourceManagerProxy::SetRepresentation(vtkSMRepresentationProxy* pxy)
+{
+  auto smtkProxy = vtkSMSMTKModelRepresentationProxy::SafeDownCast(pxy);
+  auto repProxy = smtkProxy->GetModelRepresentationSubProxy();
+
+  vtkSMPropertyHelper(this, "Representation").Set(vtkSMProxy::SafeDownCast(repProxy));
+  this->UpdateVTKObjects();
+}
+
+void vtkSMSMTKResourceManagerProxy::SetResourceForRepresentation(
+  smtk::resource::ResourcePtr clientSideResource, vtkSMRepresentationProxy* pxy)
+{
+  this->SetRepresentation(pxy);
+  json request = { { "method", "set resource for representation" }, { "id", 1 },
+    { "params", { { "resource", clientSideResource->id().toString() } } } };
+
+  json response = this->JSONRPCRequest(request);
+  std::cout << response.dump(2) << "\n"; // for debugging
 }

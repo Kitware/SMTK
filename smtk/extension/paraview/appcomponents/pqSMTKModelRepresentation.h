@@ -7,16 +7,16 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_extension_paraview_representation_pqSMTKModelRepresentation_h
-#define smtk_extension_paraview_representation_pqSMTKModelRepresentation_h
+#ifndef smtk_extension_paraview_appcomponents_pqSMTKModelRepresentation_h
+#define smtk_extension_paraview_appcomponents_pqSMTKModelRepresentation_h
 
 #include "pqPipelineRepresentation.h"
 
-#include "smtk/extension/paraview/representation/Exports.h"
+#include "smtk/extension/paraview/appcomponents/Exports.h"
 
 #include "smtk/PublicPointerDefs.h"
 
-class SMTKREPRESENTATIONPLUGIN_EXPORT pqSMTKModelRepresentation : public pqPipelineRepresentation
+class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKModelRepresentation : public pqPipelineRepresentation
 {
   Q_OBJECT
   typedef pqPipelineRepresentation Superclass;
@@ -26,11 +26,16 @@ public:
     pqServer* server, QObject* parent = nullptr);
   ~pqSMTKModelRepresentation() override;
 
+  void onInputChanged() override;
+
+  bool setVisibility(smtk::resource::ComponentPtr comp, bool visible);
+
 protected:
   virtual void handleSMTKSelectionChange(const std::string& src, smtk::view::SelectionPtr seln);
 
   void initialize() override;
 
+  smtk::view::WeakSelectionPtr m_seln;
   int m_selnObserver;
 };
 

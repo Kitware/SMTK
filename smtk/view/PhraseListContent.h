@@ -7,10 +7,10 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_view_PhraseList_h
-#define smtk_view_PhraseList_h
+#ifndef smtk_view_PhraseListContent_h
+#define smtk_view_PhraseListContent_h
 
-#include "smtk/view/DescriptivePhrase.h"
+#include "smtk/view/PhraseContent.h"
 
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityTypeBits.h"
@@ -28,14 +28,14 @@ namespace view
   *
   * Instances of this class generate their own titles by default
   * based on the number and type of their children.
-  * For example, if a PhraseList has 3 children and they are all
+  * For example, if a PhraseListContent has 3 children and they are all
   * SMTK model faces, its default title will be "3 faces".
   */
-class SMTKCORE_EXPORT PhraseList : public DescriptivePhrase
+class SMTKCORE_EXPORT PhraseListContent : public PhraseContent
 {
 public:
-  smtkTypeMacro(PhraseList);
-  smtkSharedPtrCreateMacro(DescriptivePhrase);
+  smtkTypeMacro(PhraseListContent);
+  smtkSharedPtrCreateMacro(PhraseContent);
 
   /**\brief Initialize this list with an iterable container of subphrases.
     *
@@ -43,17 +43,27 @@ public:
     * to **subclasses** of DescriptivePhrase are also accepted.
     * It is mostly intended for use by SubphraseGenerator and its subclasses.
     */
-  template <typename T>
-  Ptr setup(const T& entities, DescriptivePhrase::Ptr parent = DescriptivePhrasePtr(),
-    DescriptivePhraseType listType = DescriptivePhraseType::LIST);
+  Ptr setup(DescriptivePhrasePtr parent, int mutability = 0);
 
-  virtual ~PhraseList() {}
+  virtual ~PhraseListContent() {}
 
-  std::string title() override;
-  std::string subtitle() override;
+  bool displayable(ContentType attr) const override;
+  bool editable(ContentType attr) const override
+  {
+    return (m_mutability & static_cast<int>(attr)) ? true : false;
+  }
+
+  std::string stringValue(ContentType attr) const override;
+  int flagValue(ContentType attr) const override;
+  resource::FloatList colorValue(ContentType attr) const override;
+
+  bool editStringValue(ContentType attr, const std::string& val) override;
+  bool editFlagValue(ContentType attr, int val) override;
+  bool editColorValue(ContentType attr, const resource::FloatList& val) override;
 
   /// A convenience method for obtaining related components for each of the phrases in the list.
   smtk::resource::ComponentArray relatedComponents() const;
+
   /** \brief A convenience method for obtaining related components in a user-specified container.
     *
     * This method dynamically casts each phrase's relatedComponent() to the given container's
@@ -76,7 +86,7 @@ public:
 
   /**\brief Allow subphrase generators to set summary information for model components in the list.
     *
-    * If an instance of PhraseList contains model entities, the SubphraseGenerator
+    * If an instance of PhraseListContent contains model entities, the SubphraseGenerator
     * subclass (or other code) which populates the list of components should call this
     * method.
     *
@@ -85,8 +95,7 @@ public:
     */
   virtual void setModelFlags(smtk::model::BitFlags commonFlags, smtk::model::BitFlags unionFlags);
 
-  bool isRelatedColorMutable() const override;
-  smtk::resource::FloatList relatedColor() const override;
+  void setMutability(int whatsMutable);
 
   /**\brief This method is for subphrase generators that wish to customize the list title.
     *
@@ -96,14 +105,18 @@ public:
     */
   void setCustomTitle(const std::string& title) { m_title = title; }
 
-protected:
-  PhraseList();
+  bool operator==(const PhraseContent& other) const override;
 
-  void generateTitle();
+protected:
+  PhraseListContent();
+
+  void generateTitle() const;
 
   smtk::model::BitFlags m_commonFlags;
   smtk::model::BitFlags m_unionFlags;
-  std::string m_title;
+  int m_mutability;
+  mutable std::string m_title;
+  smtk::view::WeakDescriptivePhrasePtr m_parent;
 };
 
 } // view namespace

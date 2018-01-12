@@ -15,10 +15,15 @@
 
 class QItemSelection;
 
-class pqServer;
 class pqSMTKResource;
 class pqSMTKResourceManager;
 
+class pqServer;
+class pqView;
+
+/**\brief A panel that displays SMTK resources available to the application/user.
+  *
+  */
 class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKResourcePanel : public QDockWidget
 {
   Q_OBJECT
@@ -43,6 +48,9 @@ protected slots:
 
   virtual void resourceManagerAdded(pqSMTKResourceManager* mgr, pqServer* server);
   virtual void resourceManagerRemoved(pqSMTKResourceManager* mgr, pqServer* server);
+
+  /// Used to update phrase model with new visibility info for the active view.
+  virtual void activeViewChanged(pqView*);
 
 protected:
   class Internal;

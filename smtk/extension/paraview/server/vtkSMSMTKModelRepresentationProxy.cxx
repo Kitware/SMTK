@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/representation/vtkSMSMTKModelRepresentationProxy.h"
-#include "smtk/extension/paraview/representation/vtkSMTKModelRepresentation.h"
+#include "smtk/extension/paraview/server/vtkSMSMTKModelRepresentationProxy.h"
+#include "smtk/extension/paraview/server/vtkSMTKModelRepresentation.h"
 
 #include "vtkClientServerStream.h"
 #include "vtkObjectFactory.h"
@@ -24,12 +24,6 @@ vtkStandardNewMacro(vtkSMSMTKModelRepresentationProxy);
 vtkSMSMTKModelRepresentationProxy::vtkSMSMTKModelRepresentationProxy() = default;
 
 vtkSMSMTKModelRepresentationProxy::~vtkSMSMTKModelRepresentationProxy() = default;
-
-vtkSMTKModelRepresentation* vtkSMSMTKModelRepresentationProxy::GetRepresentation()
-{
-  this->CreateVTKObjects();
-  return vtkSMTKModelRepresentation::SafeDownCast(this->GetClientSideObject());
-}
 
 void vtkSMSMTKModelRepresentationProxy::PrintSelf(ostream& os, vtkIndent indent)
 {
@@ -55,6 +49,11 @@ void vtkSMSMTKModelRepresentationProxy::ConnectAdditionalPorts()
       }
     }
   }
+}
+
+vtkSMProxy* vtkSMSMTKModelRepresentationProxy::GetModelRepresentationSubProxy()
+{
+  return this->GetSubProxy("SMTKModelRepresentation");
 }
 
 void vtkSMSMTKModelRepresentationProxy::SetPropertyModifiedFlag(const char* name, int flag)

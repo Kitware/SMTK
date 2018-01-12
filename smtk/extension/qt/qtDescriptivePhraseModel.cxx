@@ -308,8 +308,13 @@ QVariant qtDescriptivePhraseModel::data(const QModelIndex& idx, int role) const
       }
       else if (role == PhraseVisibilityRole)
       {
+        bool drawVisibility = item->displayVisibility();
+        if (!drawVisibility)
+        {
+          return QVariant();
+        }
         // by default, everything should be visible
-        bool visible = true;
+        bool visible = item->relatedVisibility();
         if (visible)
           return QVariant(QIcon(":/icons/display/eyeball.png"));
         else
@@ -657,6 +662,34 @@ void qtDescriptivePhraseModel::rebuildSubphrases(const QModelIndex& qidx)
 Qt::DropActions qtDescriptivePhraseModel::supportedDropActions() const
 {
   return Qt::CopyAction;
+}
+
+void qtDescriptivePhraseModel::toggleVisibility(const QModelIndex& idx)
+{
+  auto phrase = this->getItem(idx);
+  if (!phrase)
+  {
+    smtkErrorMacro(
+      smtk::io::Logger::instance(), "Asked to toggle visibility for item unrelated to SMTK.");
+    return;
+  }
+  if (!phrase->setRelatedVisibility(!phrase->relatedVisibility()))
+  {
+    smtkErrorMacro(
+      smtk::io::Logger::instance(), "Could not toggle visibility of \"" << phrase->title() << "\"");
+  }
+}
+
+void qtDescriptivePhraseModel::editColor(const QModelIndex& idx)
+{
+  auto phrase = this->getItem(idx);
+  if (!phrase)
+  {
+    smtkErrorMacro(
+      smtk::io::Logger::instance(), "Asked to toggle visibility for item unrelated to SMTK.");
+    return;
+  }
+  smtkWarningMacro(smtk::io::Logger::instance(), "Color editing not implemented yet.");
 }
 
 void qtDescriptivePhraseModel::updateObserver(smtk::view::DescriptivePhrasePtr phrase,

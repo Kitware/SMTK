@@ -22,7 +22,9 @@ class pqOutputPort;
 class pqProxy;
 class pqSelectionManager;
 class pqServer;
+class pqSMTKResource;
 class pqSMTKResourceManager;
+class pqView;
 class vtkSMSMTKResourceManagerProxy;
 
 /** \brief Create and synchronize smtk manager instances on the client and server.
@@ -60,15 +62,28 @@ public:
 
   virtual void addPQProxy(pqSMTKResourceManager* rsrcMgr);
 
+  /// Return the pqSMTKResourceManager for a given smtk::resource::ManagerPtr.
+  pqSMTKResourceManager* getPVResourceManager(smtk::resource::ManagerPtr rsrcMgr);
+
+  /// Return the pqSMTKResource for a given smtk::resource::ResourcePtr.
+  pqSMTKResource* getPVResource(smtk::resource::ResourcePtr rsrc);
+
   /**\brief Call a visitor function \a fn on each existing resource manager/server pair.
     *
     * This method has the same signature as the addedManagerOnServer signal, so you
     * can pass a simple lambda that invokes your class's slot to the signal.
     * This way, you can attach signals to resource managers already in existence
     * in addition to those created after your class's initialization.
+    *
+    * If the function returns true, then iteration should terminate.
     */
   virtual void visitResourceManagersOnServers(
-    const std::function<void(pqSMTKResourceManager*, pqServer*)>& fn) const;
+    const std::function<bool(pqSMTKResourceManager*, pqServer*)>& fn) const;
+
+  /**
+   * Create a pqDataRepresentation and set its default visibility value.
+   */
+  bool createRepresentation(pqSMTKResource* pvr, pqView* view);
 
 signals:
   /// Called from within addManagerOnServer (in response to server becoming ready)
@@ -82,6 +97,11 @@ protected:
   pqSMTKBehavior(QObject* parent = nullptr);
 
   void setupSelectionManager();
+
+  /**
+   * Make a representation visible through a ControllerWithRendering instance.
+   */
+  void setDefaultRepresentationVisibility(pqOutputPort* pqPort, pqView* view);
 
   class Internal;
   Internal* m_p;

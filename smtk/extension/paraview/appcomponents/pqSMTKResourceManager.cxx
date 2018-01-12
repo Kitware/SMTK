@@ -79,7 +79,7 @@ pqSMTKResourceManager::pqSMTKResourceManager(const QString& regGroup, const QStr
   //     Note that what we **should** be doing is listening for these
   //     events on a client-side operation manager used to forward
   //     operations to the server. What we in fact do only works for
-  //     the built-in mode. TODO: Fix this.
+  //     the built-in mode. TODO: Fix this. Remove the need for me.
   auto pxy = vtkSMSMTKResourceManagerProxy::SafeDownCast(this->getProxy());
   auto wrapper = vtkSMTKResourceManagerWrapper::SafeDownCast(pxy->GetClientSideObject());
   if (wrapper)
@@ -119,21 +119,50 @@ vtkSMSMTKResourceManagerProxy* pqSMTKResourceManager::smtkProxy() const
 
 smtk::resource::ManagerPtr pqSMTKResourceManager::smtkResourceManager() const
 {
-  return this->smtkProxy()->GetManager();
+  return this->smtkProxy() ? this->smtkProxy()->GetManager() : nullptr;
 }
 
 smtk::operation::ManagerPtr pqSMTKResourceManager::smtkOperationManager() const
 {
-  return this->smtkProxy()->GetOperationManager();
+  return this->smtkProxy() ? this->smtkProxy()->GetOperationManager() : nullptr;
 }
 
 smtk::view::SelectionPtr pqSMTKResourceManager::smtkSelection() const
 {
-  return this->smtkProxy()->GetSelection();
+  return this->smtkProxy() ? this->smtkProxy()->GetSelection() : nullptr;
+}
+
+pqSMTKResource* pqSMTKResourceManager::getPVResource(smtk::resource::ResourcePtr rsrc) const
+{
+  pqSMTKResource* result = nullptr;
+  this->visitResources([&result, &rsrc](pqSMTKResource* pvrsrc) {
+    if (pvrsrc && pvrsrc->getResource() == rsrc)
+    {
+      result = pvrsrc;
+      return true;
+    }
+    return false;
+  });
+  return result;
+}
+
+void pqSMTKResourceManager::visitResources(std::function<bool(pqSMTKResource*)> visitor) const
+{
+  for (auto rsrc : m_resources)
+  {
+    if (rsrc)
+    {
+      if (visitor(rsrc))
+      {
+        break;
+      }
+    }
+  }
 }
 
 void pqSMTKResourceManager::addResource(pqSMTKResource* rsrc)
 {
+  m_resources.insert(rsrc);
   auto pxy = this->smtkProxy();
   if (pxy)
   {
@@ -144,6 +173,7 @@ void pqSMTKResourceManager::addResource(pqSMTKResource* rsrc)
 
 void pqSMTKResourceManager::removeResource(pqSMTKResource* rsrc)
 {
+  m_resources.erase(rsrc);
   auto pxy = this->smtkProxy();
   if (pxy)
   {

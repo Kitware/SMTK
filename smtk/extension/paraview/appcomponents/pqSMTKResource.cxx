@@ -24,7 +24,7 @@ pqSMTKResource::pqSMTKResource(
   : pqPipelineSource(name, proxy, server, parent)
 {
   (void)grp;
-  std::cout << "SMTKResource is born!\n";
+  std::cout << "SMTKResource is born! " << this << "\n";
   auto behavior = pqSMTKBehavior::instance();
   auto rsrcMgr = behavior->resourceManagerForServer(server);
   auto rsrc = this->getResource();
@@ -49,8 +49,11 @@ pqSMTKResource::~pqSMTKResource()
     if (rsrcMgrPxy)
     {
       auto rsrcMgr = rsrcMgrPxy->smtkResourceManager();
-      std::cout << "  Removing " << lastRsrc << " from mgr " << rsrcMgr << "\n";
-      rsrcMgr->remove(lastRsrc);
+      if (rsrcMgr)
+      {
+        std::cout << "  Removing " << lastRsrc << " from mgr " << rsrcMgr << "\n";
+        rsrcMgr->remove(lastRsrc);
+      }
     }
   }
   std::cout << "Killing a resource and frowning at a small kitten\n";
@@ -62,7 +65,7 @@ smtk::resource::ResourcePtr pqSMTKResource::getResource() const
   //       works in built-in mode.
   smtk::resource::ResourcePtr rsrc;
   auto pxy = this->getProxy()->GetClientSideObject();
-  std::cout << "get resource from " << pxy->GetClassName() << "\n";
+  // std::cout << "get resource from " << pxy->GetClassName() << "\n";
   auto smtkModelRdr = vtkSMTKModelReader::SafeDownCast(pxy);
   rsrc = smtkModelRdr ? smtkModelRdr->GetSMTKResource() : nullptr;
   return rsrc;
@@ -70,7 +73,7 @@ smtk::resource::ResourcePtr pqSMTKResource::getResource() const
 
 void pqSMTKResource::synchronizeResource()
 {
-  std::cout << "Re-send resource\n";
+  // std::cout << "Re-send resource\n";
   auto lastRsrc = m_lastResource.lock();
   auto smtkRsrc = this->getResource();
   if (smtkRsrc != lastRsrc)

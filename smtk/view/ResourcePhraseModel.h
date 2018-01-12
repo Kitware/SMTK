@@ -52,7 +52,7 @@ protected:
 
   virtual void processResource(Resource::Ptr rsrc, bool adding);
 
-  smtk::view::PhraseListPtr m_root;
+  smtk::view::DescriptivePhrasePtr m_root;
   std::set<smtk::resource::ResourcePtr> m_resources;
 };
 }

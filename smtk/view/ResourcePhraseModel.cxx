@@ -10,8 +10,8 @@
 #include "smtk/view/ResourcePhraseModel.h"
 
 #include "smtk/view/DescriptivePhrase.h"
-#include "smtk/view/PhraseList.h"
-#include "smtk/view/ResourcePhrase.h"
+#include "smtk/view/PhraseListContent.h"
+#include "smtk/view/ResourcePhraseContent.h"
 #include "smtk/view/SubphraseGenerator.h"
 #include "smtk/view/View.h"
 
@@ -35,7 +35,7 @@ PhraseModelPtr ResourcePhraseModel::create(const smtk::view::ViewPtr& viewSpec)
 }
 
 ResourcePhraseModel::ResourcePhraseModel()
-  : m_root(PhraseList::create())
+  : m_root(DescriptivePhrase::create())
 {
   auto generator = smtk::view::SubphraseGenerator::create();
   m_root->setDelegate(generator);
@@ -95,7 +95,7 @@ void ResourcePhraseModel::processResource(Resource::Ptr rsrc, bool adding)
     {
       m_resources.insert(rsrc);
       DescriptivePhrases children(m_root->subphrases());
-      children.push_back(smtk::view::ResourcePhrase::create()->setup(rsrc, 0, m_root));
+      children.push_back(smtk::view::ResourcePhraseContent::createPhrase(rsrc, 0, m_root));
       std::sort(children.begin(), children.end(), DescriptivePhrase::compareByTypeThenTitle);
       this->updateChildren(m_root, children, std::vector<int>());
     }

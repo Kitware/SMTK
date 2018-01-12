@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/extension/paraview/server/vtkSMTKResourceManagerWrapper.h"
-
 #include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
+#include "smtk/extension/paraview/server/vtkSMTKModelRepresentation.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
 #include "smtk/view/Selection.h"
@@ -28,6 +28,7 @@
 
 #include "vtkCompositeDataIterator.h"
 #include "vtkMultiBlockDataSet.h"
+#include "vtkPVCompositeRepresentation.h"
 #include "vtkPVSelectionSource.h"
 #include "vtkSelectionNode.h"
 #include "vtkUnsignedIntArray.h"
@@ -175,6 +176,20 @@ void vtkSMTKResourceManagerWrapper::ProcessJSON()
   else if (method == "remove resource")
   {
     this->RemoveResource(response);
+  }
+  else if (method == "set resource for representation")
+  {
+    auto uid = j["params"]["resource"].get<smtk::common::UUID>();
+    auto rsrc = this->ResourceManager->get(uid);
+    auto repr = vtkSMTKModelRepresentation::SafeDownCast(this->Representation);
+    if (repr)
+    {
+      repr->SetResource(rsrc);
+    }
+    else
+      vtkErrorMacro(<< "Invalid representation!")
+
+        response["success"] = true;
   }
   else
   {
@@ -326,4 +341,11 @@ void vtkSMTKResourceManagerWrapper::RemoveResource(json& response)
     response["error"] = { { "code", JSONRPC_INVALID_RESOURCE_CODE },
       { "message", JSONRPC_INVALID_RESOURCE_MESSAGE } };
   }
+}
+
+vtkCxxSetObjectMacro(vtkSMTKResourceManagerWrapper, Representation, vtkPVDataRepresentation)
+
+  vtkPVDataRepresentation* vtkSMTKResourceManagerWrapper::GetRepresentation()
+{
+  return this->Representation;
 }

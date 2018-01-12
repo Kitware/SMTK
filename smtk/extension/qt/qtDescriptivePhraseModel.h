@@ -104,6 +104,10 @@ public:
 
   Qt::DropActions supportedDropActions() const override;
 
+public slots:
+  virtual void toggleVisibility(const QModelIndex& idx);
+  virtual void editColor(const QModelIndex& idx);
+
 signals:
   void phraseTitleChanged(const QModelIndex&);
 

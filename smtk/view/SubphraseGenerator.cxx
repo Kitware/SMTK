@@ -9,7 +9,9 @@
 //=========================================================================
 #include "smtk/view/SubphraseGenerator.h"
 
-#include "smtk/view/ComponentPhrase.h"
+#include "smtk/view/ComponentPhraseContent.h"
+#include "smtk/view/PhraseModel.h"
+#include "smtk/view/ResourcePhraseContent.h"
 
 #include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/CellEntity.h"
@@ -73,7 +75,34 @@ DescriptivePhrases SubphraseGenerator::subphrases(DescriptivePhrase::Ptr src)
       // }
     }
   }
+  this->decoratePhrases(result);
   return result;
+}
+
+bool SubphraseGenerator::setModel(PhraseModelPtr model)
+{
+  auto existing = m_model.lock();
+  if (model == existing)
+  {
+    return false;
+  }
+
+  m_model = model;
+  return true;
+}
+
+void SubphraseGenerator::decoratePhrases(DescriptivePhrases& phrases)
+{
+  PhraseModelPtr mod = this->model();
+  if (!mod)
+  {
+    return;
+  }
+
+  for (auto phrase : phrases)
+  {
+    mod->decoratePhrase(phrase);
+  }
 }
 
 int SubphraseGenerator::directLimit() const
@@ -130,7 +159,7 @@ void SubphraseGenerator::componentsOfResource(
       modelRsrc->entitiesMatchingFlagsAs<smtk::model::Models>(smtk::model::MODEL_ENTITY, false);
     for (auto model : models)
     {
-      result.push_back(ComponentPhrase::create()->setup(model.component(), 0, src));
+      result.push_back(ComponentPhraseContent::createPhrase(model.component(), 0, src));
     }
   }
   else if (attrRsrc)
@@ -139,7 +168,7 @@ void SubphraseGenerator::componentsOfResource(
     attrRsrc->attributes(attrs);
     for (auto attr : attrs)
     {
-      result.push_back(ComponentPhrase::create()->setup(attr, 0, src));
+      result.push_back(ComponentPhraseContent::createPhrase(attr, 0, src));
     }
   }
   // else if (meshRsrc)
@@ -233,7 +262,7 @@ void SubphraseGenerator::cellOfModelUse(
   auto parentCell = ent.cell();
   if (parentCell.isValid())
   {
-    result.push_back(ComponentPhrase::create()->setup(parentCell.component(), 0, src));
+    result.push_back(ComponentPhraseContent::createPhrase(parentCell.component(), 0, src));
   }
 }
 
@@ -298,7 +327,7 @@ void SubphraseGenerator::childrenOfModelAuxiliaryGeometry(
   auto children = aux.embeddedEntities<smtk::model::AuxiliaryGeometries>();
   for (auto child : children)
   {
-    result.push_back(ComponentPhrase::create()->setup(child.component(), 0, src));
+    result.push_back(ComponentPhraseContent::createPhrase(child.component(), 0, src));
   }
 }
 
@@ -308,7 +337,7 @@ void SubphraseGenerator::prototypeOfModelInstance(
   auto instanceOf = ent.prototype();
   if (instanceOf.isValid())
   {
-    result.push_back(ComponentPhrase::create()->setup(instanceOf.component(), 0, src));
+    result.push_back(ComponentPhraseContent::createPhrase(instanceOf.component(), 0, src));
   }
 }
 
@@ -326,7 +355,7 @@ void SubphraseGenerator::attributesOfModelEntity(
 {
   if (!m_skipAttributes && ent.hasAttributes())
   {
-    result.push_back(AttributeListPhrase::create()->setup(ent, ent.attributes(), src));
+    result.push_back(AttributeListPhraseContent::createPhrase(ent, ent.attributes(), src));
   }
 }
 
@@ -423,7 +452,7 @@ void SubphraseGenerator::meshsetsOfMesh(MeshPhrase::Ptr meshphr, DescriptivePhra
     // each subset, otherwise the meshphr will represent the relatedMesh.
     for (std::size_t i = 0; i < meshes.size(); ++i)
     {
-      result.push_back(MeshPhrase::create()->setup(meshes.subset(i), meshphr));
+      result.push_back(MeshPhraseContent::createPhrase(meshes.subset(i), meshphr));
     }
   }
 }
@@ -437,7 +466,7 @@ void SubphraseGenerator::meshsetsOfCollectionByDim(
     smtk::mesh::MeshSet dimMeshes = meshcollection->meshes(dim);
     if (!dimMeshes.is_empty())
     {
-      result.push_back(MeshPhrase::create()->setup(dimMeshes, meshphr));
+      result.push_back(MeshPhraseContent::createPhrase(dimMeshes, meshphr));
     }
   }
 }
@@ -473,13 +502,13 @@ void SubphraseGenerator::addEntityProperties(
   {
     for (it = props.begin(); it != props.end(); ++it)
     {
-      result.push_back(PropertyValuePhrase::create()->setup(ptype, *it, parnt));
+      result.push_back(PropertyValuePhraseContent::createPhrase(ptype, *it, parnt));
     }
   }
   else
   {
     result.push_back(
-      PropertyListPhrase::create()->setup(parnt->relatedEntity(), ptype, props, parnt));
+      PropertyListPhraseContent::createPhrase(parnt->relatedEntity(), ptype, props, parnt));
   }
 }
 

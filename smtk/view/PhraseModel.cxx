@@ -10,7 +10,7 @@
 #include "smtk/view/PhraseModel.h"
 
 #include "smtk/view/DescriptivePhrase.h"
-#include "smtk/view/PhraseList.h"
+#include "smtk/view/PhraseListContent.h"
 #include "smtk/view/View.h"
 
 #include "smtk/operation/Manager.h"
@@ -22,6 +22,8 @@
 #include "smtk/resource/Component.h"
 
 #include "smtk/io/Logger.h"
+
+#undef SMTK_PHRASE_DEBUG
 
 namespace smtk
 {
@@ -61,6 +63,7 @@ PhraseModelPtr PhraseModel::create(const smtk::view::ViewPtr& viewSpec)
 
 PhraseModel::PhraseModel()
 {
+  m_decorator = [](smtk::view::DescriptivePhrasePtr) {};
 }
 
 PhraseModel::~PhraseModel()
@@ -133,6 +136,28 @@ bool PhraseModel::resetSources()
   return removedAny;
 }
 
+static void notifyRecursive(
+  PhraseModel::Observer obs, DescriptivePhrasePtr parent, std::vector<int>& parentIdx)
+{
+  if (!parent || !parent->areSubphrasesBuilt())
+  {
+    return;
+  }
+  std::vector<int> range(2);
+  DescriptivePhrases& children(parent->subphrases());
+  range[0] = 0;
+  range[1] = static_cast<int>(children.size());
+  obs(parent, PhraseModelEvent::ABOUT_TO_INSERT, parentIdx, parentIdx, range);
+  obs(parent, PhraseModelEvent::INSERT_FINISHED, parentIdx, parentIdx, range);
+  parentIdx.push_back(0);
+  for (auto child : children)
+  {
+    notifyRecursive(obs, child, parentIdx);
+    ++parentIdx.back();
+  }
+  parentIdx.pop_back();
+}
+
 int PhraseModel::observe(Observer obs, bool immediatelyNotify)
 {
   if (!obs)
@@ -144,12 +169,7 @@ int PhraseModel::observe(Observer obs, bool immediatelyNotify)
   std::vector<int> parents;
   if (immediatelyNotify)
   {
-    //obs(this->root(), PhraseModelEvent::PHRASE_MODIFIED, parents, parents, std::vector<int>());
-    std::vector<int> range(2);
-    range[0] = 0;
-    range[1] = static_cast<int>(this->root()->subphrases().size());
-    obs(this->root(), PhraseModelEvent::ABOUT_TO_INSERT, parents, parents, range);
-    obs(this->root(), PhraseModelEvent::INSERT_FINISHED, parents, parents, range);
+    notifyRecursive(obs, this->root(), parents);
   }
   return handle;
 }
@@ -252,9 +272,9 @@ void PhraseModel::handleCreated(Operator::Ptr op, Operator::Result res, Componen
 }
 
 void PhraseModel::updateChildren(
-  smtk::view::PhraseListPtr plist, DescriptivePhrases& next, const std::vector<int>& idx)
+  smtk::view::DescriptivePhrasePtr src, DescriptivePhrases& next, const std::vector<int>& idx)
 {
-  if (!plist)
+  if (!src)
   {
     smtkErrorMacro(smtk::io::Logger::instance(), "Null phrase list.");
     return;
@@ -263,7 +283,7 @@ void PhraseModel::updateChildren(
   std::map<DescriptivePhrasePtr, int> lkup;
   int ii = 0;
   std::set<int> unused;
-  DescriptivePhrases& orig(plist->subphrases());
+  DescriptivePhrases& orig(src->subphrases());
   for (auto it = orig.begin(); it != orig.end(); ++it, ++ii)
   {
     unused.insert(ii);
@@ -307,9 +327,9 @@ void PhraseModel::updateChildren(
     }
     removalRange[0] = *ug;
     removalRange[1] = *uu;
-    this->trigger(plist, PhraseModelEvent::ABOUT_TO_REMOVE, idx, idx, removalRange);
+    this->trigger(src, PhraseModelEvent::ABOUT_TO_REMOVE, idx, idx, removalRange);
     orig.erase(orig.begin() + removalRange[0], orig.begin() + removalRange[1] + 1);
-    this->trigger(plist, PhraseModelEvent::REMOVE_FINISHED, idx, idx, removalRange);
+    this->trigger(src, PhraseModelEvent::REMOVE_FINISHED, idx, idx, removalRange);
     uu = ug;
   }
 
@@ -359,8 +379,6 @@ void PhraseModel::updateChildren(
   std::map<int, DescriptivePhrasePtr>::iterator ib;
   for (ib = insert.begin(); ib != insert.end();)
   {
-    std::cout << "ib valid\n";
-    std::cout << "  " << ib->first << " " << ib->second << "\n";
     batch.clear();
     batch.push_back(ib->second);
     auto ie = ib;
@@ -371,9 +389,9 @@ void PhraseModel::updateChildren(
     }
     insertRange[0] = ib->first;
     insertRange[1] = prev->first;
-    this->trigger(plist, PhraseModelEvent::ABOUT_TO_INSERT, idx, idx, insertRange);
+    this->trigger(src, PhraseModelEvent::ABOUT_TO_INSERT, idx, idx, insertRange);
     orig.insert(orig.begin() + insertRange[0], batch.begin(), batch.end());
-    this->trigger(plist, PhraseModelEvent::INSERT_FINISHED, idx, idx, insertRange);
+    this->trigger(src, PhraseModelEvent::INSERT_FINISHED, idx, idx, insertRange);
     ib = ie;
     if (ib != insert.end())
     {
@@ -382,12 +400,87 @@ void PhraseModel::updateChildren(
   }
 }
 
+void PhraseModel::decoratePhrase(smtk::view::DescriptivePhrasePtr phr) const
+{
+  m_decorator(phr);
+}
+
+bool PhraseModel::setDecorator(const PhraseDecorator& phraseDecorator)
+{
+  if (!phraseDecorator)
+  {
+    return false;
+  }
+
+  // TODO: Add warning if we already have phrases? Un-decorate and re-decorate?
+
+  m_decorator = phraseDecorator;
+  return true;
+}
+
+int depth(DescriptivePhrasePtr phr)
+{
+  int dd = -1;
+  while (phr)
+  {
+    ++dd;
+    phr = phr->parent();
+  }
+  return dd;
+}
+
 void PhraseModel::trigger(DescriptivePhrasePtr phr, PhraseModelEvent event,
   const std::vector<int>& src, const std::vector<int>& dst, const std::vector<int>& arg)
 {
+#ifdef SMTK_PHRASE_DEBUG
+  std::cout << "Phrase model update " << phr << " pdepth " << depth(phr) << " event "
+            << static_cast<int>(event) << " src";
+  for (auto ent : src)
+  {
+    std::cout << " " << ent;
+  }
+  std::cout << " dst";
+  for (auto ent : dst)
+  {
+    std::cout << " " << ent;
+  }
+  std::cout << " arg";
+  for (auto ent : arg)
+  {
+    std::cout << " " << ent;
+  }
+  std::cout << "\n";
+  std::cout.flush();
+#endif
+
   for (auto observer : m_observers)
   {
     observer.second(phr, event, src, dst, arg);
+  }
+  // Check to see if phrases we just inserted have pre-existing children. If so, trigger them.
+  if (event == PhraseModelEvent::INSERT_FINISHED && phr && phr->areSubphrasesBuilt())
+  {
+    std::vector<int> range(2);
+    DescriptivePhrases& children(phr->subphrases());
+    range[0] = 0;
+    for (int ci = arg[0]; ci <= arg[1]; ++ci)
+    {
+      if (!children[ci] || !children[ci]->areSubphrasesBuilt())
+      {
+        continue;
+      }
+      range[1] = static_cast<int>(children[ci]->subphrases().size());
+      // Qt expects range to be closed, not half-open like the STL.
+      // But it is possible to have subphrases built but be empty (size() == 0), so:
+      if (range[1] == 0)
+      {
+        continue;
+      }
+      --range[1];
+      std::vector<int> cpath = children[ci]->index();
+      this->trigger(children[ci], PhraseModelEvent::ABOUT_TO_INSERT, cpath, cpath, range);
+      this->trigger(children[ci], PhraseModelEvent::INSERT_FINISHED, cpath, cpath, range);
+    }
   }
 }
 }

@@ -18,10 +18,14 @@
 
 // Client side
 #include "pqApplicationCore.h"
+#include "pqDataRepresentation.h"
 #include "pqObjectBuilder.h"
 #include "pqOutputPort.h"
 #include "pqSelectionManager.h"
 #include "pqServerManagerModel.h"
+#include "pqView.h"
+#include "vtkNew.h"
+#include "vtkSMParaViewPipelineControllerWithRendering.h"
 #include "vtkSMSourceProxy.h"
 
 #include <QObject>
@@ -129,12 +133,44 @@ void pqSMTKBehavior::addPQProxy(pqSMTKResourceManager* rsrcMgr)
   emit addedManagerOnServer(rsrcMgr, server);
 }
 
+pqSMTKResourceManager* pqSMTKBehavior::getPVResourceManager(smtk::resource::ManagerPtr mgr)
+{
+  pqSMTKResourceManager* result = nullptr;
+  this->visitResourceManagersOnServers([&result, &mgr](pqSMTKResourceManager* mos, pqServer*) {
+    if (mos && mos->smtkResourceManager() == mgr)
+    {
+      result = mos;
+      return true;
+    }
+    return false;
+  });
+  return result;
+}
+
+pqSMTKResource* pqSMTKBehavior::getPVResource(smtk::resource::ResourcePtr mgr)
+{
+  pqSMTKResource* result = nullptr;
+  this->visitResourceManagersOnServers([&result, &mgr](pqSMTKResourceManager* mos, pqServer*) {
+    pqSMTKResource* pvr;
+    if (mos && (pvr = mos->getPVResource(mgr)))
+    {
+      result = pvr;
+      return true;
+    }
+    return false;
+  });
+  return result;
+}
+
 void pqSMTKBehavior::visitResourceManagersOnServers(
-  const std::function<void(pqSMTKResourceManager*, pqServer*)>& fn) const
+  const std::function<bool(pqSMTKResourceManager*, pqServer*)>& fn) const
 {
   for (auto remote : m_p->Remotes)
   {
-    fn(remote.second.second, remote.first);
+    if (fn(remote.second.second, remote.first))
+    {
+      break;
+    }
   }
 }
 
@@ -209,4 +245,33 @@ void pqSMTKBehavior::handleOldSMTKProxies(pqProxy* pxy)
     }
     return;
   }
+}
+
+bool pqSMTKBehavior::createRepresentation(pqSMTKResource* pvr, pqView* view)
+{
+  auto source = qobject_cast<pqPipelineSource*>(pvr);
+  auto pqPort = source ? source->getOutputPort(0) : nullptr;
+  if (!pqPort || !view)
+    return false;
+
+  auto pqCore = pqApplicationCore::instance();
+  if (!pqCore)
+    return false;
+
+  auto builder = pqCore->getObjectBuilder();
+  pqDataRepresentation* pqRep = builder->createDataRepresentation(pqPort, view);
+  if (pqRep)
+  {
+    this->setDefaultRepresentationVisibility(pqPort, view);
+    pqRep->renderViewEventually();
+    return true;
+  }
+  return false;
+}
+
+void pqSMTKBehavior::setDefaultRepresentationVisibility(pqOutputPort* pqPort, pqView* view)
+{
+  // ControllerWithRendering finds and uses the appropriate vtkSMRepresentationProxy
+  vtkNew<vtkSMParaViewPipelineControllerWithRendering> controller;
+  controller->Show(pqPort->getSourceProxy(), pqPort->getPortNumber(), view->getViewProxy());
 }
