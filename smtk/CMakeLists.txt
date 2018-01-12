@@ -156,6 +156,10 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
 	FILES ${SMTK_PYTHON_MODULEFILES}
 	DESTINATION "${SMTK_PYTHON_MODULEDIR}/smtk"
 	)
+
+  # This variable needs to be set for vtk_module to find its python module
+  # output dir
+  set(VTK_BUILD_PYTHON_MODULES_DIR ${SMTK_PYTHON_MODULEDIR})
 endif()
 
 ################################################################################

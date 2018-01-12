@@ -44,6 +44,9 @@
   * This is necessary because of the difference between ParaView/VTK's pipeline
   * model and SMTK's in-place operation model.
   */
+
+class vtkPVDataRepresentation;
+
 class SMTKPVSERVEREXTPLUGIN_EXPORT vtkSMTKResourceManagerWrapper : public vtkObject
 {
 public:
@@ -97,6 +100,9 @@ public:
   /// Processes the current JSONRequest and overwrites JSONResponse with a result.
   void ProcessJSON();
 
+  void SetRepresentation(vtkPVDataRepresentation* rep);
+  vtkPVDataRepresentation* GetRepresentation();
+
 protected:
   vtkSMTKResourceManagerWrapper();
   ~vtkSMTKResourceManagerWrapper() override;
@@ -105,6 +111,7 @@ protected:
   void AddResource(json& response);
   void RemoveResource(json& response);
 
+  vtkPVDataRepresentation* Representation = nullptr;
   vtkAlgorithmOutput* ActiveResource;
   vtkAlgorithmOutput* SelectedPort;
   vtkAlgorithmOutput* SelectionObj;
@@ -113,6 +120,7 @@ protected:
   smtk::resource::ManagerPtr ResourceManager;
   smtk::view::SelectionPtr Selection;
   smtk::operation::ManagerPtr OperationManager;
+  smtk::model::ManagerPtr ModelManager;
   std::string SelectionSource;
   int SelectionListener;
   int HoveredValue;

@@ -196,12 +196,17 @@ namespace view
 {
 class ComponentPhrase;
 class DescriptivePhrase;
+class PhraseContent;
+class PhraseListContent;
+class ComponentPhraseContent;
+class ResourcePhraseContent;
 class PhraseList;
 class PhraseModel;
 class ResourcePhrase;
 class Selection;
 class SubphraseGenerator;
 class View;
+class VisibilityContent;
 }
 
 namespace bridge
@@ -434,6 +439,7 @@ typedef smtk::weak_ptr<smtk::view::DescriptivePhrase> WeakDescriptivePhrasePtr;
 typedef std::vector<smtk::view::DescriptivePhrasePtr> DescriptivePhrases;
 typedef smtk::shared_ptr<smtk::view::PhraseList> PhraseListPtr;
 typedef smtk::shared_ptr<smtk::view::PhraseModel> PhraseModelPtr;
+typedef smtk::weak_ptr<smtk::view::PhraseModel> WeakPhraseModelPtr;
 typedef smtk::shared_ptr<smtk::view::ResourcePhrase> ResourcePhrasePtr;
 typedef smtk::weak_ptr<smtk::view::ResourcePhrase> WeakResourcePhrasePtr;
 typedef smtk::shared_ptr<smtk::view::Selection> SelectionPtr;
@@ -442,6 +448,12 @@ typedef smtk::shared_ptr<smtk::view::SubphraseGenerator> SubphraseGeneratorPtr;
 typedef smtk::weak_ptr<smtk::view::SubphraseGenerator> WeakSubphraseGeneratorPtr;
 typedef smtk::shared_ptr<smtk::view::View> ViewPtr;
 typedef smtk::weak_ptr<smtk::view::View> WeakViewPtr;
+typedef smtk::shared_ptr<smtk::view::PhraseContent> PhraseContentPtr;
+typedef smtk::shared_ptr<const smtk::view::PhraseContent> ConstPhraseContentPtr;
+typedef smtk::shared_ptr<smtk::view::PhraseListContent> PhraseListContentPtr;
+typedef smtk::shared_ptr<smtk::view::ComponentPhraseContent> ComponentPhraseContentPtr;
+typedef smtk::shared_ptr<smtk::view::ResourcePhraseContent> ResourcePhraseContentPtr;
+typedef smtk::shared_ptr<smtk::view::VisibilityContent> VisibilityContentPtr;
 }
 
 namespace bridge

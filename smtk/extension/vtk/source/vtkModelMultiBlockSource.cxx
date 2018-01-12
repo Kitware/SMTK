@@ -150,13 +150,16 @@ void vtkModelMultiBlockSource::Dirty()
   this->SetCachedOutput(nullptr, nullptr, nullptr);
 }
 
-/**\brief Return a UUID for the data object, adding one if it was not present.
-  *
-  * UUIDs are stored in the vtkInformation object associated with each
-  * data object.
-  */
+void vtkModelMultiBlockSource::SetDataObjectUUID(
+  vtkInformation* info, const smtk::common::UUID& uid)
+{
+  // FIXME: Eventually this should encode the UUID without string conversion
+  info->Set(vtkModelMultiBlockSource::ENTITYID(), uid.toString().c_str());
+}
+
 smtk::common::UUID vtkModelMultiBlockSource::GetDataObjectUUID(vtkInformation* datainfo)
 {
+  // FIXME: Eventually this should decode the UUID without string conversion
   smtk::common::UUID uid;
   if (!datainfo)
   {
@@ -567,6 +570,7 @@ static smtk::model::Volume volumeOfEntity(const smtk::model::EntityRef& ein)
   {
     cent = ent.as<smtk::model::UseEntity>().cell();
   }
+
   while (cent.isValid() && !cent.isVolume())
   {
     EntityRefs bord = cent.bordantEntities();
@@ -574,7 +578,11 @@ static smtk::model::Volume volumeOfEntity(const smtk::model::EntityRef& ein)
     {
       return smtk::model::Volume();
     }
-    cent = bord.begin()->as<smtk::model::CellEntity>();
+
+    auto it =
+      std::find_if(bord.cbegin(), bord.cend(), [](EntityRef const& ent) { return ent.isVolume(); });
+    cent = it == bord.cend() ? bord.cbegin()->as<smtk::model::CellEntity>()
+                             : it->as<smtk::model::Volume>();
   }
   return cent.as<smtk::model::Volume>();
 }
@@ -643,9 +651,9 @@ void vtkModelMultiBlockSource::PrepareInstanceOutput(vtkMultiBlockDataSet* insta
     instancePoly->SetPoints(instancePts.GetPointer());
     instanceBlocks->SetBlock(block, instancePoly.GetPointer());
 
-    const smtk::model::EntityRef entRef = instance.prototype();
-    instanceBlocks->GetMetaData(block)->Set(
-      vtkModelMultiBlockSource::ENTITYID(), entRef.entity().toString().c_str());
+    // const smtk::model::EntityRef entRef = instance.prototype();
+    this->SetDataObjectUUID(instanceBlocks->GetMetaData(block), instance.entity());
+    this->SetDataObjectUUID(instancePoly->GetInformation(), instance.entity());
     block++;
 
     vtkNew<vtkDoubleArray> instanceOrient;
@@ -870,8 +878,9 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(vtkMultiBlockData
             topBlocks[bb]->SetBlock(lb, blockDatasets[bb][lb].GetPointer());
             topBlocks[bb]->GetMetaData(lb)->Set(
               vtkCompositeDataSet::NAME(), blockEntities[bb][lb].name().c_str());
-            topBlocks[bb]->GetMetaData(lb)->Set(vtkModelMultiBlockSource::ENTITYID(),
-              blockEntities[bb][lb].entity().toString().c_str());
+            this->SetDataObjectUUID(topBlocks[bb]->GetMetaData(lb), blockEntities[bb][lb].entity());
+            this->SetDataObjectUUID(
+              blockDatasets[bb][lb]->GetInformation(), blockEntities[bb][lb].entity());
           }
         }
 
@@ -922,8 +931,9 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(vtkMultiBlockData
       smtk::model::EntityRef entityref(manager, it->first);
       // Set the block name to the entity UUID.
       mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), entityref.name().c_str());
-      mbds->GetMetaData(i)->Set(
-        vtkModelMultiBlockSource::ENTITYID(), entityref.entity().toString().c_str());
+      this->SetDataObjectUUID(mbds->GetMetaData(i), entityref.entity());
+      this->SetDataObjectUUID(poly->GetInformation(), entityref.entity());
+      //mbds->GetMetaData(i)->Set(vtkModelMultiBlockSource::ENTITYID(), entityref.entity().toString().c_str());
       this->GenerateRepresentationFromModel(
         poly.GetPointer(), entityref, this->AllowNormalGeneration != 0);
 

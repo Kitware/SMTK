@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/view/ComponentsByTypeSubphrases.h"
+#include "smtk/view/ComponentsByTypeGenerator.h"
 
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityListPhrase.h"

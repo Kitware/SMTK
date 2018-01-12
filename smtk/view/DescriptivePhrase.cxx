@@ -9,10 +9,11 @@
 //=========================================================================
 #include "smtk/view/DescriptivePhrase.h"
 
+#include "smtk/view/PhraseModel.h"
+#include "smtk/view/SubphraseGenerator.h"
+
 #include "smtk/resource/Component.h"
 #include "smtk/resource/Resource.h"
-
-#include "smtk/view/SubphraseGenerator.h"
 
 using smtk::resource::Component;
 using smtk::resource::ComponentPtr;
@@ -43,6 +44,31 @@ DescriptivePhrasePtr DescriptivePhrase::setDelegate(SubphraseGeneratorPtr delega
 {
   this->m_delegate = delegate;
   return shared_from_this();
+}
+
+bool DescriptivePhrase::setContent(PhraseContentPtr content)
+{
+  if (!content ^ !m_content)
+  { // Only one is non-null
+    m_content = content;
+    return true;
+  }
+  // Now either both are null or both are non-null. If non-null, compare them by value:
+  if (content)
+  {
+    if (*content == *m_content)
+    {
+      return false;
+    }
+  }
+  m_content = content;
+  // TODO: should we fetch the PhraseModel and call "modified"?
+  return true;
+}
+
+PhraseContentPtr DescriptivePhrase::content() const
+{
+  return m_content;
 }
 
 DescriptivePhrases& DescriptivePhrase::subphrases()
@@ -113,7 +139,6 @@ int DescriptivePhrase::argFindChild(
   return -1;
 }
 
-/// Return the index of this phrase in its parent instance's subphrases (or -1).
 int DescriptivePhrase::indexInParent() const
 {
   const DescriptivePhrasePtr prnt = this->parent();
@@ -122,6 +147,21 @@ int DescriptivePhrase::indexInParent() const
     return prnt->argFindChild(this);
   }
   return 0;
+}
+
+void DescriptivePhrase::index(std::vector<int>& idx) const
+{
+  idx.clear();
+  auto self = this;
+  while (self)
+  {
+    DescriptivePhrasePtr prnt = self->parent();
+    if (prnt)
+    {
+      idx.push_back(self->indexInParent());
+    }
+    self = prnt.get();
+  }
 }
 
 smtk::common::UUID DescriptivePhrase::relatedComponentId() const
@@ -244,7 +284,7 @@ bool DescriptivePhrase::compareByTitle(const DescriptivePhrasePtr& a, const Desc
 
 bool DescriptivePhrase::operator==(const DescriptivePhrase& other) const
 {
-  return
+  return *m_content.get() == *other.m_content.get() &&
     // You wouldn't think typeid(baseClassReference) would work, but it does virtual lookup:
     typeid(*this) == typeid(other) && this->m_parent.lock() == other.m_parent.lock() &&
     this->m_type == other.m_type && this->m_delegate == other.m_delegate;
@@ -262,7 +302,43 @@ void DescriptivePhrase::buildSubphrases()
     this->m_subphrasesBuilt = true;
     SubphraseGeneratorPtr delegate = this->findDelegate();
     if (delegate)
-      this->m_subphrases = delegate->subphrases(shared_from_this());
+    {
+      auto next = delegate->subphrases(shared_from_this());
+      auto phraseModel = delegate->model();
+      if (phraseModel)
+      {
+        phraseModel->updateChildren(shared_from_this(), next, this->index());
+      }
+      else
+      {
+        m_subphrases = next;
+      }
+    }
+  }
+}
+
+void DescriptivePhrase::manuallySetSubphrases(const DescriptivePhrases& children, bool notify)
+{
+  bool didNotify = false;
+  if (notify)
+  {
+    auto delegate = this->findDelegate();
+    if (delegate)
+    {
+      auto model = delegate->model();
+      if (model)
+      {
+        m_subphrasesBuilt = true; // Prevent the generator from running inside updateChildren().
+        auto mutableChildren = children;
+        model->updateChildren(shared_from_this(), mutableChildren, this->index());
+        didNotify = true;
+      }
+    }
+  }
+  if (!didNotify)
+  {
+    m_subphrases = children;
+    m_subphrasesBuilt = true;
   }
 }
 

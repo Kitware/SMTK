@@ -1,0 +1,101 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
+#include "smtk/extension/paraview/appcomponents/pqSMTKModelRepresentation.h"
+#include "smtk/extension/paraview/server/vtkSMSMTKModelRepresentationProxy.h"
+#include "smtk/extension/paraview/server/vtkSMSMTKResourceManagerProxy.h"
+#include "smtk/extension/paraview/server/vtkSMTKModelRepresentation.h" // TODO Remove the need for me.
+
+#include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKResourceManager.h"
+
+#include "smtk/model/Manager.h"
+
+#include "smtk/view/Selection.h"
+
+#include "vtkPVCompositeRepresentation.h"
+
+pqSMTKModelRepresentation::pqSMTKModelRepresentation(
+  const QString& group, const QString& name, vtkSMProxy* repr, pqServer* server, QObject* parent)
+  : Superclass(group, name, repr, server, parent)
+  , m_selnObserver(-1)
+{
+  auto smtk = pqSMTKBehavior::instance();
+  auto rsrcMgrPxy = smtk->resourceManagerForServer(server);
+  if (rsrcMgrPxy)
+  {
+    auto seln = rsrcMgrPxy->smtkSelection();
+    m_seln = seln;
+    m_selnObserver = seln->observe([this](const std::string src, smtk::view::SelectionPtr seln) {
+      this->handleSMTKSelectionChange(src, seln);
+    });
+  }
+}
+
+pqSMTKModelRepresentation::~pqSMTKModelRepresentation()
+{
+  // Avoid getting observations after we are dead.
+  smtk::view::SelectionPtr seln = m_seln.lock();
+  if (seln)
+  {
+    seln->unobserve(m_selnObserver);
+  }
+}
+
+void pqSMTKModelRepresentation::initialize()
+{
+  auto proxy = vtkSMSMTKModelRepresentationProxy::SafeDownCast(this->getProxy());
+  if (proxy)
+    proxy->ConnectAdditionalPorts();
+
+  pqPipelineRepresentation::initialize();
+}
+
+void pqSMTKModelRepresentation::handleSMTKSelectionChange(
+  const std::string& src, smtk::view::SelectionPtr seln)
+{
+  (void)src;
+  (void)seln;
+  this->renderViewEventually();
+}
+
+void pqSMTKModelRepresentation::onInputChanged()
+{
+  pqPipelineRepresentation::onInputChanged();
+
+  auto smtk = pqSMTKBehavior::instance();
+  auto rsrcMgrPxy = smtk->resourceManagerForServer(this->getServer());
+  if (rsrcMgrPxy)
+  {
+    // The representation needs some entity information (for color-by-volume for
+    // instance), so here we set the manager resource.
+    auto input = qobject_cast<pqSMTKResource*>(this->getInput());
+    if (input)
+    {
+      rsrcMgrPxy->smtkProxy()->SetResourceForRepresentation(
+        std::static_pointer_cast<smtk::resource::Resource>(input->getResource()),
+        vtkSMSMTKModelRepresentationProxy::SafeDownCast(this->getProxy()));
+    }
+  }
+}
+
+bool pqSMTKModelRepresentation::setVisibility(smtk::resource::ComponentPtr comp, bool visible)
+{
+  auto pxy = this->getProxy();
+  auto mpr = pxy->GetClientSideObject(); // TODO: Remove the need for me.
+  auto cmp = vtkPVCompositeRepresentation::SafeDownCast(mpr);
+  auto spx =
+    cmp ? vtkSMTKModelRepresentation::SafeDownCast(cmp->GetActiveRepresentation()) : nullptr;
+  if (spx)
+  {
+    return spx->SetEntityVisibility(std::dynamic_pointer_cast<smtk::model::Entity>(comp), visible);
+  }
+  return false;
+}

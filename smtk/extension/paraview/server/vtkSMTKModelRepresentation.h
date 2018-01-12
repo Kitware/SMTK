@@ -17,7 +17,7 @@
 #include <vtkPVDataRepresentation.h>
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/extension/paraview/representation/Exports.h"
+#include "smtk/extension/paraview/server/Exports.h"
 
 #include <array>
 #include <string>
@@ -25,6 +25,7 @@
 
 class vtkActor;
 class vtkPVCacheKeeper;
+class vtkCompositeDataSet;
 class vtkCompositeDataDisplayAttributes;
 class vtkCompositePolyDataMapper2;
 class vtkDataObject;
@@ -36,27 +37,54 @@ class vtkSelection;
 class vtkTexture;
 
 /**
- *  \brief Representation of an SMTK Model.
- *  Renders the outputs of vtkSMTKModelReader.
+ *  \brief Representation of an SMTK Model. Renders the outputs of
+ *  vtkSMTKModelReader.
  *
- *         Input                      Mapper        Actor
- *   - Port 0: Model entities    |  EntityMapper | Entities
- *   - Port 1: Glyph prototypes  |  GlyphMapper  | GlyphEntities
- *   - Port 2: Glyph points      |  GlyphMapper  | GlyphEntities
+ *  Input data arrives through 3 ports:
  *
- *  vtkSMSMTKModelRepresentationProxy sets certain properties used as
- *  mapper inputs (GlyphPrototypes and GlyphPoints).
+ *          Input                      Mapper        Actor
+ *    - Port 0: Model entities    |  EntityMapper | Entities
+ *    - Port 1: Glyph prototypes  |  GlyphMapper  | GlyphEntities
+ *    - Port 2: Glyph points      |  GlyphMapper  | GlyphEntities
+ *
+ *  vtkSMSMTKModelRepresentationProxy sets certain properties used as mapper
+ *  inputs (GlyphPrototypes and GlyphPoints).
  *
  *  Each of the model mappers has a selection counterpart (SelectedEntityMapper
  *  and SelectedGlyphMapper) which renders only selected entities.
  *
- *  EntityMapper (tessellation entities) use some of the vtkGeometryRepresentation
- *  infrastructure to track block properties. GlyphMapper tracks its block attributes
- *  thorugh the Instance* members in this class.
+ *  The representation supports different coloring modes (ColorBy):
  *
- *  \sa vtkSMSMTKModelRepresentationProxy
+ *    - SCALARS: Maps scalars (or not) through the color LUT. This is the regular
+ *      behavior in ParaView's vtkGeometryRepresentation. Properties under the
+ *      PropertyGroup "Scalar Coloring" have effect only when this mode is active.
+ *
+ *    - ENTITY: Coloring through block attributes (vtkCompositeDataDisplayAttributes)
+ *      using the smtk::model::EntityRef color.
+ *
+ *    - VOLUME: Coloring through block attributes using the smtk::model::EntityRef
+ *      color corresponding to the 0th volume bounded by a given entity (if any).
+ *
+ *  And different representation subtypes:
+ *
+ *    - POINTS
+ *    - WIREFRAME
+ *    - SURFACE
+ *    - SURFACE_WITH_EDGES
+ *
+ *  \note
+ *  Additionally, block attributes can be set through ParaView's block inspector
+ *  widget. Because block attributes in a mapper are referenced to each block by
+ *  DataObject pointers and since DataObjects may change after updating the pipeline,
+ *  this class maintains map members (Block* and Instance*) using flat-index as a key.
+ *  ApplyEntityAttributes and ApplyGlyphBlockAttributes update the mapper's actual
+ *  attributes with those cached in the maps. This is done after the data has updated
+ *  (multi-block node pointers change after an update). Coloring using these internal
+ *  attributes can be enabled/disabled through UseInternalAttributes.
+ *
+ *  \sa vtkSMSMTKModelRepresentationProxy vtkCompositeDataDisplayAttributes
  */
-class SMTKREPRESENTATIONPLUGIN_EXPORT vtkSMTKModelRepresentation : public vtkPVDataRepresentation
+class SMTKPVSERVEREXTPLUGIN_EXPORT vtkSMTKModelRepresentation : public vtkPVDataRepresentation
 {
 public:
   static vtkSMTKModelRepresentation* New();
@@ -83,6 +111,7 @@ public:
   void SetInterpolateScalarsBeforeMapping(int val);
   void SetPointSize(double val);
   void SetLineWidth(double val);
+  void SetLineColor(double r, double g, double b);
   void SetLookupTable(vtkScalarsToColors* val);
 
   //@{
@@ -144,7 +173,7 @@ public:
 
   //@{
   /**
-   * Set the representation type. This adds VTK_SURFACE_WITH_EDGES to those
+   * Set the representation Subtype. This adds VTK_SURFACE_WITH_EDGES to those
    * defined in vtkProperty.
    */
   enum RepresentationTypes
@@ -163,6 +192,36 @@ public:
    */
   void SetRepresentation(const char* type);
   //@}
+
+  //@{
+  /**
+   * Set color-by mode.
+   */
+  enum ColorByType
+  {
+    SCALARS = 0,
+    ENTITY,
+    VOLUME
+  };
+
+  vtkSetClampMacro(ColorBy, int, SCALARS, VOLUME);
+  vtkGetMacro(ColorBy, int);
+  /**
+   * Overload to set color mode using a string. Accepted strings are:
+   * "Entity", "Volume" (and soon "Group").
+   */
+  void SetColorBy(const char* type);
+
+  /**
+   * Internal attributes are set through color block proxy properties.
+   */
+  void SetUseInternalAttributes(bool enable);
+  //@}
+
+  void SetResource(smtk::resource::ResourcePtr res);
+
+  void GetEntityVisibilities(std::map<smtk::common::UUID, int>& visdata);
+  bool SetEntityVisibility(smtk::model::EntityPtr ent, bool visible);
 
 protected:
   vtkSMTKModelRepresentation();
@@ -190,7 +249,20 @@ protected:
   /**
    * Update the active coloring mode (scalar coloring, etc.).
    */
-  void UpdateColoringParameters();
+  void UpdateColoringParameters(vtkDataObject* data);
+
+  /**
+   * Update the active representation subtype.
+   */
+  void UpdateRepresentationSubtype();
+
+  /**
+   * Entities bounding a volume entity (if any), use the color defined by
+   * the bounded entity.  Currently uses only volume 0.
+   */
+  void ColorByVolume(vtkCompositeDataSet* data);
+  void ColorByEntity(vtkMultiBlockDataSet* data);
+  void ColorByScalars();
 
   //@{
   /**
@@ -202,8 +274,9 @@ protected:
    *
    * \sa vtkGeometryRepresentation
    */
-  void UpdateEntityAttributes(vtkMapper* mapper);
-  void UpdateGlyphBlockAttributes(vtkGlyph3DMapper* mapper);
+  void ApplyInternalBlockAttributes();
+  void ApplyEntityAttributes(vtkMapper* mapper);
+  void ApplyGlyphBlockAttributes(vtkGlyph3DMapper* mapper);
   //@}
 
   //@{
@@ -216,8 +289,17 @@ protected:
     vtkDataObject* dataObject, double bounds[6], vtkCompositeDataDisplayAttributes* cdAttributes);
   //@}
 
+  /**
+   * Provides access to entities in the model. This is useful when coloring by
+   * certain modes (e.g. in order to query the color of a volume with a given UUID).
+   */
+  smtk::resource::ResourcePtr Resource;
+
   double DataBounds[6];
   int Representation = SURFACE;
+  int ColorBy = SCALARS;
+  bool UpdateColorBy = false;
+  bool UseInternalAttributes = false;
 
   vtkSmartPointer<vtkCompositePolyDataMapper2> EntityMapper;
   vtkSmartPointer<vtkCompositePolyDataMapper2> SelectedEntityMapper;
@@ -230,6 +312,14 @@ protected:
   vtkSmartPointer<vtkActor> SelectedEntities;
   vtkSmartPointer<vtkActor> GlyphEntities;
   vtkSmartPointer<vtkActor> SelectedGlyphEntities;
+
+  /**
+   * Rendering properties shared between Entities and GlyphEntities
+   */
+  vtkSmartPointer<vtkProperty> Property;
+  double Ambient = 0.;
+  double Diffuse = 1.;
+  double Specular = 0.;
 
   double SelectionColor[3] = { 1., 0., 1. };
 

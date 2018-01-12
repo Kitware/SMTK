@@ -16,6 +16,15 @@
 
 #include "smtk/PublicPointerDefs.h"
 
+/**\brief A pqPipelineSource subclass for VTK algorithms that own SMTK resources.
+  *
+  * A single pqSMTKResource may hold **different** SMTK resources over its lifetime,
+  * so there is **not** a permanent, one-to-one correspondence between a
+  * pqSMTKResource and an smtk::resource::Resource.
+  * Indeed, a pqSMTKResource may exist with a null SMTK resource pointer.
+  * In general, a user-facing SMTK resource should never exist without
+  * a pqSMTKResource counterpart, though.
+  */
 class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKResource : public pqPipelineSource
 {
   Q_OBJECT

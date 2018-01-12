@@ -16,6 +16,7 @@ find_package(Qt5 REQUIRED COMPONENTS Core)
 set(PQComponentsSrcs
   pqPluginSMTKViewBehavior.cxx
   pqSMTKBehavior.cxx
+  pqSMTKModelRepresentation.cxx
   pqSMTKSelectionFilterBehavior.cxx
   pqSMTKResource.cxx
   pqSMTKResourceManager.cxx
@@ -25,6 +26,7 @@ set(PQComponentsSrcs
 set(PQComponentsHeaders
   pqPluginSMTKViewBehavior.h
   pqSMTKBehavior.h
+  pqSMTKModelRepresentation.h
   pqSMTKSelectionFilterBehavior.h
   pqSMTKResource.h
   pqSMTKResourceManager.h
@@ -105,6 +107,12 @@ add_paraview_auto_start(PLUGIN_AUTOSTART_IFACES PLUGIN_AUTOSTART_IFACE_SRCS
 add_paraview_action_group(PLUGIN_ACTION_IFACES PLUGIN_ACTION_IFACE_SRCS
   CLASS_NAME pqSMTKSelectionFilterBehavior
   GROUP_NAME "ToolBar/SMTKSelection"
+)
+
+add_pqproxy(PLUGIN_PROXY_IFACES PLUGIN_PROXY_IFACE_SRCS
+  TYPE pqSMTKModelRepresentation
+  XML_GROUP representations
+  XML_NAME SMTKModelCompositeRepresentation
 )
 
 add_pqproxy(PLUGIN_PROXY_IFACES PLUGIN_PROXY_IFACE_SRCS

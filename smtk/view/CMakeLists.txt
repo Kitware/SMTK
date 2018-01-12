@@ -1,32 +1,36 @@
 # set up sources to build
 set(viewSrcs
-  ComponentPhrase.cxx
+  ComponentPhraseContent.cxx
+  #ComponentsByTypeGenerator.cxx
   DescriptivePhrase.cxx
   json/jsonView.cxx
-  PhraseList.cxx
+  PhraseListContent.cxx
   PhraseModel.cxx
-  ResourcePhrase.cxx
+  ResourcePhraseContent.cxx
   ResourcePhraseModel.cxx
   Selection.cxx
   SubphraseGenerator.cxx
   View.cxx
+  VisibilityContent.cxx
 )
 
 set (jsonViewHeaders
   json/jsonView.h
   )
 set(viewHeaders
-  ComponentPhrase.h
+  ComponentPhraseContent.h
+  #ComponentsByTypeGenerator.h
   DescriptivePhrase.h
-  PhraseList.h
-  PhraseList.txx
+  PhraseListContent.h
+  PhraseContent.h
   PhraseModel.h
-  ResourcePhrase.h
+  ResourcePhraseContent.h
   ResourcePhraseModel.h
   Selection.h
   SubphraseGenerator.h
   SubphraseGenerator.txx
   View.h
+  VisibilityContent.h
   ${jsonViewHeaders}
 )
 

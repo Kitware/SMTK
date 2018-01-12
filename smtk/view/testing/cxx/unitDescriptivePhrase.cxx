@@ -8,8 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/view/DescriptivePhrase.h"
-#include "smtk/view/PhraseList.txx"
-#include "smtk/view/ResourcePhrase.h"
 #include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/SubphraseGenerator.h"
 
@@ -58,8 +56,7 @@ void testUpdateChildren(smtk::view::ResourcePhraseModel::Ptr phraseModel)
   idx.push_back(0);
   idx.push_back(0);
   idx.push_back(1);
-  phraseModel->updateChildren(
-    std::dynamic_pointer_cast<smtk::view::PhraseList>(phrModelSummary[1]), phrFaces, idx);
+  phraseModel->updateChildren(phrModelSummary[1], phrFaces, idx);
   std::cout << "There are " << phrModelSummary[1]->subphrases().size() << " faces\n";
 }
 
@@ -81,14 +78,6 @@ int unitDescriptivePhrase(int argc, char* argv[])
   auto phraseModel = smtk::view::ResourcePhraseModel::create();
   phraseModel->addSource(rsrcMgr, operMgr);
   auto rsrcs = smtk::resource::testing::loadTestResources(rsrcMgr, argc, argv);
-  smtk::view::ResourcePhraseArray loaded;
-  for (auto rsrc : rsrcs)
-  {
-    loaded.push_back(smtk::view::ResourcePhrase::create()->setup(rsrc));
-  }
-  auto topLevel = smtk::view::PhraseList::create()->setup(loaded);
-  auto generator = smtk::view::SubphraseGenerator::create();
-  topLevel->setDelegate(generator);
 
   phraseModel->root()->visitChildren(
     [](DescriptivePhrasePtr p, const std::vector<int>& idx) -> int {

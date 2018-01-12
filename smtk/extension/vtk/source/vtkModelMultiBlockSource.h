@@ -99,10 +99,17 @@ public:
   static const char* GetVolumeTagName() { return "Volume"; }
   static const char* GetAttributeTagName() { return "Attribute"; }
 
-  // Description:
-  // Key used to put entity UUID in the meta-data associated with a block.
+  /// Key used to put entity UUID in the meta-data associated with a block.
   static vtkInformationStringKey* ENTITYID();
 
+  /// Set the ENTITYID key on the given \a information object to \a uid.
+  static void SetDataObjectUUID(vtkInformation* information, const smtk::common::UUID& uid);
+
+  /**\brief Return a UUID for the data object, adding one if it was not present.
+    *
+    * UUIDs are stored in the vtkInformation object associated with each
+    * data object.
+    */
   static smtk::common::UUID GetDataObjectUUID(vtkInformation*);
   template <typename T>
   static T GetDataObjectEntityAs(smtk::model::ManagerPtr mgr, vtkInformation* info)

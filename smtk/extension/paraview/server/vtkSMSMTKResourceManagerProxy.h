@@ -21,6 +21,7 @@
 #include "json.hpp"
 
 class vtkSMSourceProxy;
+class vtkSMRepresentationProxy;
 
 /**\brief Proxy for SMTK's resource manager.
  *
@@ -87,6 +88,10 @@ public:
 
   void AddResourceProxy(vtkSMSourceProxy* rsrc);
   void RemoveResourceProxy(vtkSMSourceProxy* rsrc);
+
+  void SetRepresentation(vtkSMRepresentationProxy* pxy);
+  void SetResourceForRepresentation(
+    smtk::resource::ResourcePtr clientSideResource, vtkSMRepresentationProxy* pxy);
 
 protected:
   vtkSMSMTKResourceManagerProxy();

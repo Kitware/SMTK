@@ -156,7 +156,7 @@ bool vtkSMTKModelReader::LoadFile()
 
   if (res->findInt("outcome")->value() != operation::Operator::OPERATION_SUCCEEDED)
   {
-    vtkErrorMacro("Could not read \"" << this->FileName << "\"");
+    smtkErrorMacro(smtk::io::Logger::instance(), "Could not read \"" << this->FileName << "\"");
     return false;
   }
 

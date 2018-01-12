@@ -14,6 +14,7 @@
 
 #ifndef __smtk_vtk_cmbFaceMeshHelper_h
 #define __smtk_vtk_cmbFaceMeshHelper_h
+#ifndef __VTK_WRAP__
 
 #include "smtk/common/CompilerInformation.h"
 #include "smtk/extension/vtk/meshing/Exports.h" // For export macro
@@ -276,5 +277,5 @@ protected:
   Internals* Internal;
 };
 }
-
+#endif
 #endif

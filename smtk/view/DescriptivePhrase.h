@@ -13,6 +13,8 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
+#include "smtk/view/PhraseContent.h"
+
 #include "smtk/common/UUID.h"
 
 #include "smtk/resource/PropertyType.h"
@@ -43,13 +45,6 @@ enum class DescriptivePhraseType
   INTEGER_PROPERTY_VALUE, //!< Show integer values for a named property.
   LIST,                   //!< A list of descriptive phrases with no constraint on their type.
   INVALID_DESCRIPTION     //!< This is used to indicate an invalid or empty descriptive phrase.
-};
-
-enum DescriptivePhraseMutability
-{
-  TITLE = 0x01,    //!< The user should be allowed to change the title
-  SUBTITLE = 0x02, //!< The user should be allowed to change the subtitle
-  COLOR = 0x04     //!< The user should be allowed to change the color
 };
 
 /**\brief A base class for phrases describing an SMTK model.
@@ -94,34 +89,115 @@ public:
   using Visitor = std::function<int(DescriptivePhrasePtr, std::vector<int>&)>;
 
   smtkTypeMacroBase(DescriptivePhrase);
+  smtkCreateMacro(DescriptivePhrase);
   virtual ~DescriptivePhrase() {}
 
   /// Populate a phrase with its type and parent in the hierarchy of phrases.
   Ptr setup(DescriptivePhraseType phraseType, Ptr parent = Ptr());
   /// Set the subphrase generator used to populate the children of this phrase.
   Ptr setDelegate(SubphraseGeneratorPtr delegate);
+  /// Set the content (state) of the phrase
+  bool setContent(PhraseContentPtr content);
+  /// Return the content (state) of the phrase.
+  PhraseContentPtr content() const;
+
+  /**\brief Convenience functions to fetch and modify content.
+    */
+  ///@{
 
   /// Return the title text that should be displayed.
-  virtual std::string title() { return std::string(); }
+  virtual std::string title()
+  {
+    return m_content ? m_content->stringValue(PhraseContent::TITLE) : std::string();
+  }
   /// Indicate whether users should be allowed to edit the title text.
-  virtual bool isTitleMutable() const { return false; }
+  virtual bool isTitleMutable() const
+  {
+    return m_content ? m_content->editable(PhraseContent::TITLE) : false;
+  }
   /// A method called by user interface code to change the title text, returning true on success.
   virtual bool setTitle(const std::string& newTitle)
   {
-    (void)newTitle;
-    return false;
+    return m_content ? m_content->editStringValue(PhraseContent::TITLE, newTitle) : false;
   }
 
   /// Return supplementary text that should be displayed with less emphasis than the title.
-  virtual std::string subtitle() { return std::string(); }
+  virtual std::string subtitle()
+  {
+    return m_content ? m_content->stringValue(PhraseContent::SUBTITLE) : std::string();
+  }
   /// Indicate whether users should be allowed to edit the subtitle text.
-  virtual bool isSubtitleMutable() const { return false; }
+  virtual bool isSubtitleMutable() const
+  {
+    return m_content ? m_content->editable(PhraseContent::SUBTITLE) : false;
+  }
   /// A method called by user interfaces to change the subtitle text, returning true on success.
   virtual bool setSubtitle(const std::string& newSubtitle)
   {
-    (void)newSubtitle;
-    return false;
+    return m_content ? m_content->editStringValue(PhraseContent::SUBTITLE, newSubtitle) : false;
   }
+
+  /// Return the resource related to this phrase (or nullptr if not well defined).
+  virtual smtk::resource::ResourcePtr relatedResource() const
+  {
+    return m_content ? m_content->relatedResource() : smtk::resource::ResourcePtr();
+  }
+  /// Return the resource component related to this phrase (or nullptr if not well defined).
+  virtual smtk::resource::ComponentPtr relatedComponent() const
+  {
+    return m_content ? m_content->relatedComponent() : smtk::resource::ComponentPtr();
+  }
+  /// A convenience function that returns the related component's UUID if one exists.
+  virtual smtk::common::UUID relatedComponentId() const;
+
+  /// If this phrase describes a property attached to a component, return the property name.
+  virtual std::string relatedPropertyName() const
+  {
+    return std::string();
+  } // TODO: Not exposed in content yet.
+  /// If this phrase describes a property attached to a component, return the property's type.
+  virtual smtk::resource::PropertyType relatedPropertyType() const
+  {
+    return smtk::resource::INVALID_PROPERTY;
+  }
+
+  /// Returns true if the visibility value should be illustrated; false otherwise.
+  bool displayRelatedColor() const
+  {
+    return m_content ? m_content->displayable(PhraseContent::COLOR) : false;
+  }
+  /// If this phrase has a related color, return it; otherwise return an array with -1 for opacity.
+  virtual resource::FloatList relatedColor() const
+  {
+    return m_content->colorValue(PhraseContent::COLOR);
+  }
+  /// Return true if users should be allowed to change the color of the phrase.
+  virtual bool isRelatedColorMutable() const { return m_content->editable(PhraseContent::COLOR); }
+  /// A method user interfaces may call to change the color (if it was marked mutable).
+  virtual bool setRelatedColor(const resource::FloatList& rgba)
+  {
+    return m_content->editColorValue(PhraseContent::COLOR, rgba);
+  }
+
+  /// Returns true if the visibility value should be illustrated; false otherwise.
+  bool displayVisibility() const
+  {
+    return m_content ? m_content->displayable(PhraseContent::VISIBILITY) : false;
+  }
+  /// If this phrase has a related visibility value, return it; otherwise return -1.
+  int relatedVisibility() const { return m_content->flagValue(PhraseContent::VISIBILITY); }
+  /// Return true if users should be allowed to change the visibility; false otherwise.
+  virtual bool isRelatedVisibilityMutable() const
+  {
+    return m_content->editable(PhraseContent::VISIBILITY);
+  }
+  /// A method user interfaces may call to change the visibility.
+  virtual bool setRelatedVisibility(int visibility)
+  {
+    return m_content->editFlagValue(PhraseContent::VISIBILITY, visibility);
+  }
+
+  ///@}
 
   /// Return the role that the phrase plays in the description.
   virtual DescriptivePhraseType phraseType() const { return this->m_type; }
@@ -163,30 +239,13 @@ public:
   /// Return the location of this phrase in its parent's array of children or -1 (if no parent).
   int indexInParent() const;
 
-  /// Return the resource related to this phrase (or nullptr if not well defined).
-  virtual smtk::resource::ResourcePtr relatedResource() const { return nullptr; }
-  /// Return the resource component related to this phrase (or nullptr if not well defined).
-  virtual smtk::resource::ComponentPtr relatedComponent() const { return nullptr; }
-  /// A convenience function that returns the related component's UUID if one exists.
-  virtual smtk::common::UUID relatedComponentId() const;
-
-  /// If this phrase describes a property attached to a component, return the property name.
-  virtual std::string relatedPropertyName() const { return std::string(); }
-  /// If this phrase describes a property attached to a component, return the property's type.
-  virtual smtk::resource::PropertyType relatedPropertyType() const
+  /// Return a vector of integers specifying this phrase's location relative to the root of the tree.
+  void index(std::vector<int>& idx) const;
+  std::vector<int> index() const
   {
-    return smtk::resource::INVALID_PROPERTY;
-  }
-
-  /// If this phrase has a related color, return it; otherwise return an array with -1 for opacity.
-  virtual resource::FloatList relatedColor() const { return resource::FloatList(4, -1.); }
-  /// Return true if users should be allowed to change the color of the phrase.
-  virtual bool isRelatedColorMutable() const { return false; }
-  /// A method user interfaces may call to change the color (if it was marked mutable).
-  virtual bool setRelatedColor(const resource::FloatList& rgba)
-  {
-    (void)rgba;
-    return false;
+    std::vector<int> idx;
+    this->index(idx);
+    return idx;
   }
 
   /// Return a unique integer ID of this phrase.
@@ -236,10 +295,35 @@ public:
   bool operator!=(const DescriptivePhrase& other) const;
 
 protected:
+  friend class SubphraseGenerator;
+
   DescriptivePhrase();
 
   /// Build (if required) the cached subphrases of this phrase.
   void buildSubphrases();
+
+  /**\brief A special method for dealing with explicitly-specified lists.
+    *
+    * This method exists to be called by PhraseListContent::setup() in
+    * order to populate the subphrases with a developer-specified list
+    * of phrases instead of having a subphrase generator create them.
+    *
+    * This pattern is used indirectly by the SubphraseGenerator when
+    * creating subphrases that should themselves be grouped into multiple
+    * phrases rather than directly becoming children of a parent.
+    * A concrete example is when a model's cells should be split into
+    * a phrase listing faces and another listing edges.
+    *
+    * Ordinarily the subphrase generator should not be bypassed, but
+    * here that creates problems because the subphrase generator may
+    * not be able to construct the list of phrases. Also, it may not
+    * be possible at this point to invoke methods on the PhraseModel
+    * to register new child phrases because the grandchildren are inserted
+    * into the child lists before the children are inserted into the
+    * parent... this means that the insertion would be provided a
+    * non-existent parent index.
+    */
+  void manuallySetSubphrases(const DescriptivePhrases& children, bool notify = false);
 
   /// Actual implementation of the public visitChildren() method.
   int visitChildrenInternal(Visitor fn, std::vector<int>& indices);
@@ -247,6 +331,7 @@ protected:
   WeakDescriptivePhrasePtr m_parent;
   DescriptivePhraseType m_type;
   SubphraseGeneratorPtr m_delegate;
+  PhraseContentPtr m_content;
   unsigned int m_phraseId;
   mutable DescriptivePhrases m_subphrases;
   mutable bool m_subphrasesBuilt;

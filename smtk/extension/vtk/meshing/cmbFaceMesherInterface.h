@@ -14,6 +14,7 @@
 
 #ifndef __smtk_vtk_cmbFaceMesherInterface_h
 #define __smtk_vtk_cmbFaceMesherInterface_h
+#ifndef __VTK_WRAP__
 
 #include "smtk/extension/vtk/meshing/Exports.h" // For export macro
 #include "vtkABI.h"
@@ -99,4 +100,5 @@ private:
   TriangleInput* Ti;
 };
 
+#endif
 #endif

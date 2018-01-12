@@ -10,18 +10,21 @@
 /**
  * @class   vtkSMSMTKModelRepresentationProxy
  *
+ * This is a proxy for a vtkPVCompositeRepresentation which parents a
+ * vtkSMTKModelRepresentation.
+ *
  * Updates additional input properties of the representation
  * (GlyphPrototypes and GlyphPoints).
  */
 #ifndef smtk_extension_paraview_representation_vtkSMSMTKModelRepresentationProxy_h
 #define smtk_extension_paraview_representation_vtkSMSMTKModelRepresentationProxy_h
 
-#include "smtk/extension/paraview/representation/Exports.h" //needed for exports
+#include "smtk/extension/paraview/server/Exports.h" //needed for exports
 #include "vtkSMPVRepresentationProxy.h"
 
 class vtkSMTKModelRepresentation;
 
-class SMTKREPRESENTATIONPLUGIN_EXPORT vtkSMSMTKModelRepresentationProxy
+class SMTKPVSERVEREXTPLUGIN_EXPORT vtkSMSMTKModelRepresentationProxy
   : public vtkSMPVRepresentationProxy
 {
 public:
@@ -29,10 +32,7 @@ public:
   vtkTypeMacro(vtkSMSMTKModelRepresentationProxy, vtkSMPVRepresentationProxy);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  /**
-   * Returns client side representation object.
-   */
-  vtkSMTKModelRepresentation* GetRepresentation();
+  vtkSMProxy* GetModelRepresentationSubProxy();
 
 protected:
   vtkSMSMTKModelRepresentationProxy();

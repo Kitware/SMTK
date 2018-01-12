@@ -18,6 +18,9 @@
 
 #include "pqProxy.h"
 
+#include <functional>
+#include <set>
+
 class pqOutputPort;
 class pqSMTKResource;
 class vtkSMSMTKResourceManagerProxy;
@@ -59,6 +62,15 @@ public:
   /// Return the client-side selection which mirrors the server version.
   smtk::view::SelectionPtr smtkSelection() const;
 
+  /// Return the pqSMTKResource which owns the given smtk::resource::ResourcePtr.
+  pqSMTKResource* getPVResource(smtk::resource::ResourcePtr rsrc) const;
+
+  /**\brief Invoke the \a visitor function on each pqSMTKResource attached to this manager.
+    *
+    * If the \a visitor returns true, then iteration will terminate early.
+    */
+  void visitResources(std::function<bool(pqSMTKResource*)> visitor) const;
+
 public slots:
   /// Called by pqSMTKBehavior to add resources as they are created.
   virtual void addResource(pqSMTKResource* rsrc);
@@ -78,6 +90,9 @@ signals:
 
 protected slots:
   virtual void paraviewSelectionChanged(pqOutputPort* port);
+
+protected:
+  std::set<QPointer<pqSMTKResource> > m_resources;
 
 private:
   Q_DISABLE_COPY(pqSMTKResourceManager);

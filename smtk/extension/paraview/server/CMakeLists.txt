@@ -20,6 +20,8 @@ set(serverWrappedSrcs
   vtkSMTKModelReader.cxx
   vtkSMSMTKResourceManagerProxy.cxx
   vtkSMTKResourceManagerWrapper.cxx
+  vtkSMSMTKModelRepresentationProxy.cxx
+  vtkSMTKModelRepresentation.cxx
 )
 
 set(serverWrappedHdrs
@@ -28,6 +30,8 @@ set(serverWrappedHdrs
   vtkSMTKModelReader.h
   vtkSMSMTKResourceManagerProxy.h
   vtkSMTKResourceManagerWrapper.h
+  vtkSMSMTKModelRepresentationProxy.h
+  vtkSMTKModelRepresentation.h
 )
 
 set(hdrs ${serverUnwrappedHdrs} ${serverWrappedHdrs})

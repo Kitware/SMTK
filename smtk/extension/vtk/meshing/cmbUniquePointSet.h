@@ -15,6 +15,7 @@
 
 #ifndef __smtk_vtk_cmbUniquePointSet_
 #define __smtk_vtk_cmbUniquePointSet_
+#ifndef __VTK_WRAP__
 
 #include "smtk/common/CompilerInformation.h"    //needed for SMTK_MSVC flag
 #include "smtk/extension/vtk/meshing/Exports.h" // For export macro
@@ -62,4 +63,5 @@ private:
   Internals* Internal;
 };
 
+#endif
 #endif

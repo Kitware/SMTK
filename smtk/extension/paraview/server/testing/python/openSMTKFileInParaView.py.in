@@ -33,7 +33,6 @@ class OpenSMTKFileInParaView(smtk.testing.TestCase):
 
     def setUp(self):
         pvsimple.LoadPlugin("$<TARGET_FILE:smtkPVServerExtPlugin>", True)
-        pvsimple.LoadPlugin("$<TARGET_FILE:smtkRepresentationPlugin>", True)
         pvsimple.LoadPlugin("$<TARGET_FILE:smtkPQComponentsPlugin>", True)
         pvsimple.LoadPlugin("$<TARGET_FILE:smtkPolygonSessionPlugin>", True)
 

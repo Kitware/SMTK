@@ -27,6 +27,18 @@ namespace view
   * returns an ordered array of child phrases.
   * If the input phrase is null, then the generator should return
   * an array of top-level phrases.
+  *
+  * A phrase _generator_ may hold a weak reference to a phrase _model_.
+  * The generator's purpose is to compute a list of child phrases
+  * while a model's purpose is to interface a phrase hierarchy to a
+  * concrete user interface. This involves notifying observers of changes
+  * to phrases (including insertions, deletions, moves, and modifications).
+  * A model may also need to decorate phrase content produced by the generator
+  * to accommodate different UI affordances.
+  * For this reason, when using a phrase model, it should be set on
+  * each subphrase generator in the hierarchy. Then, when a descriptive
+  * phrase uses the generator to build a portion of the hierarchy, the model
+  * can be informed of the changes.
   */
 class SMTKCORE_EXPORT SubphraseGenerator : smtkEnableSharedPtr(SubphraseGenerator)
 {
@@ -40,6 +52,15 @@ public:
     * Subclasses must override this method.
     */
   virtual DescriptivePhrases subphrases(DescriptivePhrase::Ptr src);
+
+  /// Set the phrase model used to adapt phrases to a user interface.
+  bool setModel(PhraseModelPtr model);
+
+  /// Return the phrase model (if any) used to adapt phrases to a user interface.
+  PhraseModelPtr model() const { return m_model.lock(); }
+
+  /// If model() is non-null, ask it to decorate each phrase
+  void decoratePhrases(DescriptivePhrases& phrases);
 
   /**\brief The maximum number of subphrases to directly include before turning into a list.
     *
@@ -207,6 +228,7 @@ protected:
   int m_directLimit;
   bool m_skipAttributes;
   bool m_skipProperties;
+  WeakPhraseModelPtr m_model;
 };
 
 } // namespace view
