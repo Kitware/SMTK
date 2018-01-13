@@ -21,9 +21,9 @@ namespace view
 {
 
 PhraseListContent::PhraseListContent()
-  : m_commonFlags(smtk::model::INVALID)
+  : m_mutability(0)
+  , m_commonFlags(smtk::model::INVALID)
   , m_unionFlags(0)
-  , m_mutability(0)
 {
   // only color is mutable
 }
@@ -57,7 +57,7 @@ std::string PhraseListContent::stringValue(ContentType attr) const
     case PhraseContent::TITLE:
       if (m_title.empty())
       {
-        this->generateTitle();
+        m_title = this->generateTitle(m_commonFlags, m_unionFlags);
       }
       return m_title;
       break;
@@ -183,12 +183,13 @@ bool PhraseListContent::operator==(const PhraseContent& other) const
     m_commonFlags == otherList.m_commonFlags && m_unionFlags == otherList.m_unionFlags;
 }
 
-void PhraseListContent::generateTitle() const
+std::string PhraseListContent::generateTitle(
+  smtk::model::BitFlags& fCommon, smtk::model::BitFlags& fUnion) const
 {
   auto phrase = m_parent.lock();
   if (!phrase)
   {
-    return;
+    return std::string();
   }
 
   // TODO: Handle homogenous and heterogenous subphrase lists
@@ -240,27 +241,26 @@ void PhraseListContent::generateTitle() const
   }
   else
   {
-    smtk::model::BitFlags fCommon = flagCommon.begin()->second;
-    smtk::model::BitFlags fUnion = flagUnion.begin()->second;
+    fCommon = flagCommon.begin()->second;
+    fUnion = flagUnion.begin()->second;
     if (fCommon == fUnion)
     {
       message << sz << " " << smtk::model::Entity::flagSummary(fCommon, sz == 1 ? 0 : 1);
     }
     else
     {
-      smtk::model::BitFlags etype = this->m_commonFlags & smtk::model::ENTITY_MASK;
-      smtk::model::BitFlags edims = this->m_commonFlags & smtk::model::ANY_DIMENSION;
+      smtk::model::BitFlags etype = fCommon & smtk::model::ENTITY_MASK;
+      smtk::model::BitFlags edims = fCommon & smtk::model::ANY_DIMENSION;
       bool pluralDims;
       std::string dimPhrase = smtk::model::Entity::flagDimensionList(
-        edims ? edims : this->m_unionFlags & smtk::model::ANY_DIMENSION, pluralDims);
+        edims ? edims : fUnion & smtk::model::ANY_DIMENSION, pluralDims);
       std::string name =
         etype ? smtk::model::Entity::flagSummary(etype, sz == 1 ? 0 : 1) : "entities";
       message << sz << " " << name << " of " << (pluralDims ? "dimensions" : "dimension") << " "
               << dimPhrase;
     }
   }
-
-  m_title = message.str();
+  return message.str();
 }
 
 } // view namespace

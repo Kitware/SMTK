@@ -9,11 +9,14 @@
 //=========================================================================
 #include "smtk/view/DescriptivePhrase.h"
 
+#include "smtk/view/PhraseListContent.h"
 #include "smtk/view/PhraseModel.h"
 #include "smtk/view/SubphraseGenerator.h"
 
 #include "smtk/resource/Component.h"
 #include "smtk/resource/Resource.h"
+
+#include <algorithm>
 
 using smtk::resource::Component;
 using smtk::resource::ComponentPtr;
@@ -162,6 +165,60 @@ void DescriptivePhrase::index(std::vector<int>& idx) const
     }
     self = prnt.get();
   }
+  // Now flip the path so that the root is at the beginning and
+  // indexInParent() is a the end.
+  std::reverse(idx.begin(), idx.end());
+}
+
+DescriptivePhrasePtr DescriptivePhrase::root() const
+{
+  Ptr self = const_cast<DescriptivePhrase*>(this)->shared_from_this();
+  Ptr prnt;
+  while ((prnt = self->parent()))
+  {
+    self = prnt;
+  }
+  return self;
+}
+
+DescriptivePhrasePtr DescriptivePhrase::relative(const std::vector<int>& relativePath) const
+{
+  Ptr result = const_cast<DescriptivePhrase*>(this)->shared_from_this();
+  for (auto entry : relativePath)
+  {
+    if (entry < 0)
+    {
+      for (; entry < 0 && result; ++entry)
+      {
+        result = result->parent();
+      }
+      if (!result)
+      {
+        return result;
+      }
+    }
+    else
+    {
+      DescriptivePhrases children = result->subphrases();
+      if (entry >= static_cast<int>(children.size()))
+      {
+        result = Ptr();
+        return result;
+      }
+      result = children[entry];
+    }
+  }
+  return result;
+}
+
+DescriptivePhrasePtr DescriptivePhrase::at(const std::vector<int>& absolutePath) const
+{
+  auto rr = this->root();
+  if (rr)
+  {
+    return rr->relative(absolutePath);
+  }
+  return rr;
 }
 
 smtk::common::UUID DescriptivePhrase::relatedComponentId() const
@@ -188,6 +245,7 @@ bool DescriptivePhrase::isPropertyValueType() const
 void DescriptivePhrase::visitChildren(Visitor fn)
 {
   std::vector<int> indices;
+  this->index(indices); // Initialize the starting index for traversal.
   this->visitChildrenInternal(fn, indices);
 }
 
@@ -319,6 +377,7 @@ void DescriptivePhrase::buildSubphrases()
 
 void DescriptivePhrase::manuallySetSubphrases(const DescriptivePhrases& children, bool notify)
 {
+  m_content = PhraseListContent::create()->setup(shared_from_this());
   bool didNotify = false;
   if (notify)
   {

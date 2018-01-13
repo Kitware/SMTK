@@ -109,13 +109,13 @@ resource::FloatList ResourcePhraseContent::colorValue(ContentType attr) const
 {
   if (!m_resource)
   {
-    return resource::FloatList(4, -1.);
+    return resource::FloatList({ 0., 0., 0., -1. });
   }
 
   switch (attr)
   {
     case PhraseContent::COLOR:
-      return smtk::resource::FloatList(4, 0.0);
+      return smtk::resource::FloatList({ 0., 0., 0., -1. });
       break;
     case PhraseContent::TITLE:
     case PhraseContent::SUBTITLE:
@@ -124,7 +124,7 @@ resource::FloatList ResourcePhraseContent::colorValue(ContentType attr) const
     default:
       break;
   }
-  smtk::resource::FloatList rgba(4, -1);
+  smtk::resource::FloatList rgba({ 0., 0., 0., -1. });
   return rgba;
 }
 

@@ -40,6 +40,9 @@ public:
     */
   smtk::resource::ResourcePtr getResource() const;
 
+  /// Drop the resource in preparation for server/application exit.
+  void dropResource();
+
 signals:
   /// This is called when the pqSMTKResource is assigned a new smtk::resource::ResourcePtr.
   void resourceModified(smtk::resource::ResourcePtr);

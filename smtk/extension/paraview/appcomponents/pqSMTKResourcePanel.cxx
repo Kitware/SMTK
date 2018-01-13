@@ -108,8 +108,6 @@ public:
               auto smap = dynamic_cast<pqSMTKModelRepresentation*>(mapr);
               if (smap)
               {
-                auto valIt = m_visibleThings.find(ent->id());
-                // bool oldVis = (valIt == m_visibleThings.end() ? true : valIt->second);
                 return smap->setVisibility(ent, val ? true : false) ? 1 : 0;
               }
             }
@@ -127,12 +125,8 @@ public:
             }
             return 0;
         }
+        return 0;
       });
-      /*
-      std::cout
-        << "Decorate " << phr->title()
-        << " vis displayable "<< (phr->relatedVisibility() ?  "Y" : "N") << "\n";
-        */
     });
     m_model = new smtk::extension::qtDescriptivePhraseModel;
     m_model->setPhraseModel(m_phraseModel);
@@ -232,17 +226,33 @@ void pqSMTKResourcePanel::sendPanelSelectionToSMTK(const QItemSelection&, const 
   //smtk::view::Selection::SelectionMap selnMap;
   std::set<smtk::resource::Component::Ptr> selnSet;
   auto selected = m_p->m_view->selectionModel()->selection();
+  smtk::resource::Resource::Ptr selectedResource;
   for (auto qslist : selected.indexes())
   {
     auto phrase = m_p->m_model->getItem(qslist);
     smtk::resource::Component::Ptr comp;
+    smtk::resource::Resource::Ptr rsrc;
     if (phrase && (comp = phrase->relatedComponent()))
     {
       selnSet.insert(comp);
     }
+    else if (phrase && (rsrc = phrase->relatedResource()) && !selectedResource)
+    { // Pick only the first resource selected
+      selectedResource = rsrc;
+    }
   }
   m_p->m_seln->modifySelection(
     selnSet, m_p->m_selnSource, selnValue, smtk::view::SelectionAction::UNFILTERED_REPLACE);
+  if (selectedResource)
+  {
+    // Make the reader owning the first selected resource the active PV pipeline source:
+    auto behavior = pqSMTKBehavior::instance();
+    auto rsrcSrc = behavior->getPVResource(selectedResource);
+    if (rsrcSrc)
+    {
+      pqActiveObjects::instance().setActiveSource(rsrcSrc);
+    }
+  }
 }
 
 // FIXME: Doesn't most of this belong in PhraseModel and/or qtDescriptivePhraseModel?
@@ -334,7 +344,9 @@ void pqSMTKResourcePanel::resourceManagerRemoved(pqSMTKResourceManager* mgr, pqS
 
 void pqSMTKResourcePanel::activeViewChanged(pqView* view)
 {
+#ifndef NDEBUG
   std::cout << "-- Reset resource panel visibilities " << view << " --\n";
+#endif
   auto rsrcPhrases = m_p->m_phraseModel->root()->subphrases();
   auto behavior = pqSMTKBehavior::instance();
   for (auto rsrcPhrase : rsrcPhrases)
@@ -342,7 +354,9 @@ void pqSMTKResourcePanel::activeViewChanged(pqView* view)
     auto rsrc = rsrcPhrase->relatedResource();
     auto pvr = behavior->getPVResource(rsrc);
     auto rep = pvr ? pvr->getRepresentation(view) : nullptr;
+#ifndef NDEBUG
     std::cout << "--  Fetch vis for " << pvr << " " << rep << "\n";
+#endif
     // TODO: At a minimum, we can update the representation's visibility now
     //       since if rep is null it is invisible and if not null, we can ask
     //       for its visibility.
@@ -363,5 +377,7 @@ void pqSMTKResourcePanel::activeViewChanged(pqView* view)
       m_p->m_visibleThings[rsrc->id()] = behavior->createRepresentation(pvr, view) ? 1 : 0;
     }
   }
+#ifndef NDEBUG
   std::cout << "Visible things has " << m_p->m_visibleThings.size() << " entries.\n";
+#endif
 }

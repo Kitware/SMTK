@@ -13,7 +13,6 @@
 #include "smtk/view/PhraseContent.h"
 
 #include "smtk/model/Entity.h"
-#include "smtk/model/EntityTypeBits.h"
 
 namespace smtk
 {
@@ -110,11 +109,12 @@ public:
 protected:
   PhraseListContent();
 
-  void generateTitle() const;
+  std::string generateTitle(
+    smtk::model::BitFlags& flagCommon, smtk::model::BitFlags& flagUnion) const;
 
-  smtk::model::BitFlags m_commonFlags;
-  smtk::model::BitFlags m_unionFlags;
   int m_mutability;
+  mutable smtk::model::BitFlags m_commonFlags;
+  mutable smtk::model::BitFlags m_unionFlags;
   mutable std::string m_title;
   smtk::view::WeakDescriptivePhrasePtr m_parent;
 };

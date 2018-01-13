@@ -133,7 +133,7 @@ resource::FloatList ComponentPhraseContent::colorValue(ContentType attr) const
 {
   if (!m_component)
   {
-    return resource::FloatList(4, -1.);
+    return resource::FloatList({ 0., 0., 0., -1.0 });
   }
 
   switch (attr)
@@ -154,7 +154,7 @@ resource::FloatList ComponentPhraseContent::colorValue(ContentType attr) const
     default:
       break;
   }
-  smtk::resource::FloatList rgba(4, -1);
+  smtk::resource::FloatList rgba({ 0., 0., 0., -1.0 });
   return rgba;
 }
 
