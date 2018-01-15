@@ -33,7 +33,8 @@ class SMTKCUMULUSEXT_EXPORT GirderRequest : public QObject
   Q_OBJECT
 
 public:
-  GirderRequest(const QString& girderUrl, const QString& girderToken, QObject* parent = 0);
+  GirderRequest(QNetworkAccessManager* networkManager, const QString& girderUrl,
+    const QString& girderToken, QObject* parent = 0);
   ~GirderRequest();
 
   void virtual send() = 0;
@@ -54,8 +55,8 @@ class ListItemsRequest : public GirderRequest
   Q_OBJECT
 
 public:
-  ListItemsRequest(const QString& girderUrl, const QString& girderToken, const QString folderId,
-    QObject* parent = 0);
+  ListItemsRequest(QNetworkAccessManager* networkManager, const QString& girderUrl,
+    const QString& girderToken, const QString folderId, QObject* parent = 0);
   ~ListItemsRequest();
 
   void send();
@@ -64,7 +65,7 @@ signals:
   void items(const QList<QString>& itemIds);
 
 private slots:
-  void finished(QNetworkReply* reply);
+  void finished();
   QString folderId() const { return m_folderId; };
 
 private:
@@ -76,8 +77,8 @@ class ListFoldersRequest : public GirderRequest
   Q_OBJECT
 
 public:
-  ListFoldersRequest(const QString& girderUrl, const QString& girderToken, const QString folderId,
-    QObject* parent = 0);
+  ListFoldersRequest(QNetworkAccessManager* networkManager, const QString& girderUrl,
+    const QString& girderToken, const QString folderId, QObject* parent = 0);
   ~ListFoldersRequest();
 
   void send();
@@ -86,7 +87,7 @@ signals:
   void folders(const QMap<QString, QString>& folders);
 
 private slots:
-  void finished(QNetworkReply* reply);
+  void finished();
 
 private:
   QString m_folderId;
@@ -97,8 +98,8 @@ class ListFilesRequest : public GirderRequest
   Q_OBJECT
 
 public:
-  ListFilesRequest(const QString& girderUrl, const QString& girderToken, const QString itemId,
-    QObject* parent = 0);
+  ListFilesRequest(QNetworkAccessManager* networkManager, const QString& girderUrl,
+    const QString& girderToken, const QString itemId, QObject* parent = 0);
   ~ListFilesRequest();
 
   void send();
@@ -109,7 +110,7 @@ signals:
   void files(const QMap<QString, QString>& files);
 
 private slots:
-  void finished(QNetworkReply* reply);
+  void finished();
 
 private:
   QString m_itemId;
@@ -121,7 +122,7 @@ class DownloadFolderRequest : public GirderRequest
   Q_OBJECT
 
 public:
-  DownloadFolderRequest(QNetworkCookieJar* cookieJar, const QString& girderUrl,
+  DownloadFolderRequest(QNetworkAccessManager* networkManager, const QString& girderUrl,
     const QString& girderToken, const QString& downloadPath, const QString& folderId,
     QObject* parent = 0);
   ~DownloadFolderRequest();
@@ -141,7 +142,6 @@ private:
   QString m_downloadPath;
   QList<QString>* m_itemsToDownload;
   QMap<QString, QString>* m_foldersToDownload;
-  QNetworkCookieJar* m_cookieJar;
 
   bool isComplete();
 };
@@ -151,7 +151,7 @@ class DownloadFileRequest : public GirderRequest
   Q_OBJECT
 
 public:
-  DownloadFileRequest(QNetworkCookieJar* cookieJar, const QString& girderUrl,
+  DownloadFileRequest(QNetworkAccessManager* networkManager, const QString& girderUrl,
     const QString& girderToken, const QString& path, const QString& fileName, const QString& fileId,
     QObject* parent = 0);
   ~DownloadFileRequest();
@@ -162,13 +162,12 @@ public:
   QString downloadPath() const { return m_downloadPath; };
 
 private slots:
-  void finished(QNetworkReply* reply);
+  void finished();
 
 private:
   QString m_fileName;
   QString m_fileId;
   QString m_downloadPath;
-  QNetworkCookieJar* m_cookieJar;
   int m_retryCount;
 };
 
@@ -177,7 +176,7 @@ class DownloadItemRequest : public GirderRequest
   Q_OBJECT
 
 public:
-  DownloadItemRequest(QNetworkCookieJar* cookieJar, const QString& girderUrl,
+  DownloadItemRequest(QNetworkAccessManager* networkManager, const QString& girderUrl,
     const QString& girderToken, const QString& path, const QString& itemId, QObject* parent = 0);
   ~DownloadItemRequest();
 
@@ -194,7 +193,6 @@ private:
   QString m_downloadPath;
   // <fileId => fileName>
   QMap<QString, QString> m_filesToDownload;
-  QNetworkCookieJar* m_cookieJar;
 };
 }
 

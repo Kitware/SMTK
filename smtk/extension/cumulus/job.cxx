@@ -149,7 +149,7 @@ Job Job::fromJSON(cJSON* obj)
     cJSON* coresItem = cJSON_GetObjectItem(cmbItem, "numberOfCores");
     if (coresItem && coresItem->type == cJSON_Number)
     {
-      newJob.m_numberOfCores = nodesItem->valueint;
+      newJob.m_numberOfCores = coresItem->valueint;
     } // end if (nodesItem)
 
     cJSON* startItem = cJSON_GetObjectItem(cmbItem, "startTimeStamp");

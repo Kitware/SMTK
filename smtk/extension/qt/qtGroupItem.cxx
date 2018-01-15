@@ -24,6 +24,7 @@
 #include <QCoreApplication>
 #include <QGroupBox>
 #include <QHeaderView>
+#include <QLabel>
 #include <QMap>
 #include <QPointer>
 #include <QTableWidget>
@@ -238,18 +239,36 @@ void qtGroupItem::addSubGroup(int i)
 
   const std::size_t numItems = item->numberOfItemsPerGroup();
   QBoxLayout* frameLayout = qobject_cast<QBoxLayout*>(this->Internals->ChildrensFrame->layout());
-  QBoxLayout* subGrouplayout = new QVBoxLayout();
-  subGrouplayout->setMargin(0);
-  subGrouplayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+  QFrame* subGroupFrame = new QFrame(this->Internals->ChildrensFrame);
+  QBoxLayout* subGroupLayout = new QVBoxLayout(subGroupFrame);
+  if (item->numberOfGroups() == 1)
+  {
+    subGroupLayout->setMargin(0);
+    subGroupFrame->setFrameStyle(QFrame::NoFrame);
+  }
+  else
+  {
+    frameLayout->setMargin(0);
+    subGroupFrame->setFrameStyle(QFrame::Panel);
+  }
+  subGroupLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   QList<qtItem*> itemList;
+
+  const smtk::attribute::GroupItemDefinition* groupDef =
+    dynamic_cast<const smtk::attribute::GroupItemDefinition*>(item->definition().get());
+  QString subGroupString;
+  if (groupDef->hasSubGroupLabels())
+  {
+    subGroupString = QString::fromStdString(groupDef->subGroupLabel(i));
+    QLabel* subGroupLabel = new QLabel(subGroupString, subGroupFrame);
+    subGroupLayout->addWidget(subGroupLabel);
+  }
 
   QList<smtk::attribute::ItemDefinitionPtr> childDefs;
   for (std::size_t j = 0; j < numItems; j++)
   {
     smtk::attribute::ConstItemDefinitionPtr itDef =
       item->item(i, static_cast<int>(j))->definition();
-    //smtk::attribute::ItemDefinitionPtr childDef(
-    //  smtk::const_pointer_cast<ItemDefinition>(itDef));
     childDefs.push_back(smtk::const_pointer_cast<attribute::ItemDefinition>(itDef));
   }
   const int tmpLen = this->baseView()->uiManager()->getWidthOfItemsMaxLabel(
@@ -263,13 +282,13 @@ void qtGroupItem::addSubGroup(int i)
       this->baseView(), this->Internals->VectorItemOrient);
     if (childItem)
     {
-      subGrouplayout->addWidget(childItem->widget());
+      subGroupLayout->addWidget(childItem->widget());
       itemList.push_back(childItem);
       connect(childItem, SIGNAL(modified()), this, SLOT(onChildItemModified()));
     }
   }
   this->baseView()->setFixedLabelWidth(currentLen);
-  frameLayout->addLayout(subGrouplayout);
+  frameLayout->addWidget(subGroupFrame);
   this->onChildWidgetSizeChanged();
 }
 

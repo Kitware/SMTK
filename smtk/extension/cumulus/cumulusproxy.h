@@ -23,6 +23,7 @@
 class QNetworkCookieJar;
 class QNetworkReply;
 class QSslError;
+class QNetworkAccessManager;
 
 namespace cumulus
 {
@@ -61,20 +62,20 @@ signals:
   void info(const QString& msg);
 
 private slots:
-  void authenticationNewtFinished(QNetworkReply* reply);
-  void authenticationGirderFinished(QNetworkReply* reply);
-  void fetchJobsFinished(QNetworkReply* reply);
-  void fetchJobFinished(QNetworkReply* reply);
+  void authenticationNewtFinished();
+  void authenticationGirderFinished();
+  void fetchJobsFinished();
+  void fetchJobFinished();
   void deleteJobFinished();
   void terminateJobFinished();
-  void sslErrors(QNetworkReply* reply, const QList<QSslError>& errors);
+  void sslErrors(const QList<QSslError>& errors);
   void downloadJobFinished();
 
 private:
   QString m_girderUrl;
   QString m_newtSessionId;
   QString m_girderToken;
-  QNetworkCookieJar* m_cookieJar;
+  QNetworkAccessManager* m_networkManager;
 };
 
 } // end namespace
