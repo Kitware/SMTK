@@ -256,7 +256,19 @@ std::string Session::defaultFileExtension(const smtk::model::Model& model) const
       if (result == "slac")
         return ".ncdf";
       else if (result == "exodus")
-        return ".exo";
+      {
+        result = ".exo"; // exodus default
+        // Check model url's extension
+        if (model.hasStringProperty("url"))
+        {
+          const std::string url = model.stringProperty("url")[0];
+          std::size_t index = url.rfind('.');
+          if (index != std::string::npos)
+          {
+            return url.substr(index);
+          }
+        }
+      } // if (exodus)
     }
   }
   return result;
