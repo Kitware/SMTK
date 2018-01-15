@@ -378,6 +378,11 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     set(required_python_modules)
 
     if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+
+      # find PARAVIEW_PYTHONPATH by querying pvpython, rather than relying on it
+      # to be set by ParaView.
+      include(CMake/FindPVPythonEnvironment.cmake)
+
       list(APPEND required_python_modules
         paraview)
       set(paraview_PYTHONPATH
