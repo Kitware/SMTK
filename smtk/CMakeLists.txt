@@ -159,7 +159,12 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
 
   # This variable needs to be set for vtk_module to find its python module
   # output dir
+  #
+  # TODO: these variables must be treated differently when building with
+  # VisualStudio; see VTK's treatment of these variables for the correct
+  # handling of that case.
   set(VTK_BUILD_PYTHON_MODULES_DIR ${SMTK_PYTHON_MODULEDIR})
+  set(VTK_INSTALL_PYTHON_MODULES_DIR ${SMTK_PYTHON_MODULEDIR})
 endif()
 
 ################################################################################
