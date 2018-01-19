@@ -37,6 +37,8 @@ elseif(SMTK_ENABLE_VTK_SUPPORT)
     vtkViewsCore
     vtkViewsInfovis
     vtkIOGDAL
+    vtkIOGeometry
+    vtkIOPLY
     vtkIOXML
     vtkIOLegacy
     vtkInteractionStyle
