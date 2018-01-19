@@ -169,7 +169,8 @@ public:
   /// If this phrase has a related color, return it; otherwise return an array with -1 for opacity.
   virtual resource::FloatList relatedColor() const
   {
-    return m_content->colorValue(PhraseContent::COLOR);
+    return m_content ? m_content->colorValue(PhraseContent::COLOR)
+                     : resource::FloatList({ 0, 0, 0, -1 });
   }
   /// Return true if users should be allowed to change the color of the phrase.
   virtual bool isRelatedColorMutable() const { return m_content->editable(PhraseContent::COLOR); }
@@ -239,14 +240,53 @@ public:
   /// Return the location of this phrase in its parent's array of children or -1 (if no parent).
   int indexInParent() const;
 
-  /// Return a vector of integers specifying this phrase's location relative to the root of the tree.
+  /**\brief Populate the index \a idx, from the top of the hierarchy, that will select this phrase.
+    *
+    * Descriptive phrases form a hierarchy, i.e., a tree.
+    * Every phrase thus has an index \a p, specified as a vector
+    * of integers that select the children from the root of the
+    * hierarchy down to itself.
+    * This method populates \a idx with the selector for this phrase.
+    *
+    * An empty \a idx indicates the current phrase is the
+    * root of the hierarchy.
+    *
+    * When not empty, the first entry in the vector corresponds to the
+    * immediate child of the root phrase to descend to reach this phrase.
+    * The final entry in the returned vector \a p is
+    * identical to the value of indexInParent() (which is also
+    * identical to parent()->argFindChild(shared_from_this())).
+    */
   void index(std::vector<int>& idx) const;
+  /// A convenience method that returns the index for the phrase.
   std::vector<int> index() const
   {
     std::vector<int> idx;
     this->index(idx);
     return idx;
   }
+
+  /// Return the root phrase of the tree containing this item.
+  DescriptivePhrasePtr root() const;
+
+  /**\brief Descend children of this phrase along the \a relativePath, returning the child or null.
+    *
+    * Negative entries in \a relativePath indicate that parents, rather than
+    * children should be visited.
+    * For example, a -2 indicates that the grandparent of the current phrase
+    * should be visited.
+    *
+    * If a parent or child does not exist, a null pointer is returned.
+    */
+  DescriptivePhrasePtr relative(const std::vector<int>& relativePath) const;
+
+  /**\brief Descend the root of the current phrase given the absolute path, returning the child or null.
+    *
+    * This is equivalent to this->root()->relative(absolutePath).
+    * Negative entries may exist in \a absolutePath, but the first
+    * entry must be non-negative.
+    */
+  DescriptivePhrasePtr at(const std::vector<int>& absolutePath) const;
 
   /// Return a unique integer ID of this phrase.
   unsigned int phraseId() const { return this->m_phraseId; }
@@ -264,6 +304,11 @@ public:
     * in the phrase hierarchy it is called upon or the indices it is passed
     * may become invalid. It is possible to modify the current element,
     * including methods that will cause its children to change.
+    * In this case, the modified children will be visited since children
+    * are visited after their parents.
+    *
+    * It is possible in the future that this method may execute in parallel.
+    * If so, it will also accept a c++17 execution policy.
     */
   virtual void visitChildren(Visitor fn);
 

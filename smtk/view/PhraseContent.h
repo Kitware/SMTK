@@ -16,6 +16,8 @@
 
 #include "smtk/resource/PropertyType.h"
 
+#include "smtk/model/EntityTypeBits.h"
+
 namespace smtk
 {
 namespace view
@@ -91,7 +93,7 @@ public:
   /// Return a color vector that reflects the given \a attr value.
   virtual resource::FloatList colorValue(ContentType attr) const
   {
-    return m_decorator ? m_decorator->colorValue(attr) : resource::FloatList(4, -1.);
+    return m_decorator ? m_decorator->colorValue(attr) : resource::FloatList({ 0., 0., 0., -1. });
   }
 
   /// Edit the \a attr value to become the given string (or returns false if no-change/invalid).

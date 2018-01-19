@@ -79,6 +79,8 @@ int unitDescriptivePhrase(int argc, char* argv[])
   phraseModel->addSource(rsrcMgr, operMgr);
   auto rsrcs = smtk::resource::testing::loadTestResources(rsrcMgr, argc, argv);
 
+  test(phraseModel->root()->root() == phraseModel->root(),
+    "Model's root phrase was not root of tree.");
   phraseModel->root()->visitChildren(
     [](DescriptivePhrasePtr p, const std::vector<int>& idx) -> int {
       int indent = static_cast<int>(idx.size()) * 2;
@@ -94,6 +96,13 @@ int unitDescriptivePhrase(int argc, char* argv[])
         auto sub = p->subphrases(); // force subphrases to get built, though we may not visit them
         (void)sub;
         std::cout << "\n";
+        std::ostringstream idxStr;
+        for (int ii : idx)
+        {
+          idxStr << " " << ii;
+        }
+        smtkTest(p->at(idx) == p, "Index " << idxStr.str()
+                                           << " passed to visitor did not produce phrase!");
       }
       return indent > maxIndent ? 1 : 0;
     });

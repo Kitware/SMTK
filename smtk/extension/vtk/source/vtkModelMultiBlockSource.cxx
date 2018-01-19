@@ -580,7 +580,7 @@ static smtk::model::Volume volumeOfEntity(const smtk::model::EntityRef& ein)
     }
 
     auto it =
-      std::find_if(bord.cbegin(), bord.cend(), [](EntityRef const& ent) { return ent.isVolume(); });
+      std::find_if(bord.cbegin(), bord.cend(), [](EntityRef const& tst) { return tst.isVolume(); });
     cent = it == bord.cend() ? bord.cbegin()->as<smtk::model::CellEntity>()
                              : it->as<smtk::model::Volume>();
   }

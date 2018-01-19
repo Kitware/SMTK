@@ -201,5 +201,5 @@ void vtkSMSMTKResourceManagerProxy::SetResourceForRepresentation(
     { "params", { { "resource", clientSideResource->id().toString() } } } };
 
   json response = this->JSONRPCRequest(request);
-  std::cout << response.dump(2) << "\n"; // for debugging
+  // std::cout << response.dump(2) << "\n"; // for debugging
 }

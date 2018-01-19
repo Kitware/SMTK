@@ -1,0 +1,90 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
+#ifndef smtk_extension_paraview_appcomponents_pqSMTKColorByWidget_h
+#define smtk_extension_paraview_appcomponents_pqSMTKColorByWidget_h
+
+#include "pqPropertyWidget.h"
+#include <QWidget>
+
+class pqDataRepresentation;
+class vtkSMProxy;
+
+/**\brief A widget that allows users to choose an SMTK representation's color-by mode.
+  *
+  * This widget works with a vtkSMSMTKModelRepresentationProxy, setting its
+  * "ColorBy" property.
+  *
+  * In the future, when we support coloring by attribute or group, it will
+  * provide an additional drop-down so users can select the attribute
+  * definition or parent group as well.
+  */
+class pqSMTKColorByWidget : public QWidget
+{
+  Q_OBJECT;
+  Q_PROPERTY(QString colorByText READ colorByText WRITE setColorByText NOTIFY colorByTextChanged);
+  typedef QWidget Superclass;
+
+public:
+  pqSMTKColorByWidget(QWidget* parent = 0);
+  ~pqSMTKColorByWidget() override;
+
+  /**
+  * Returns the selected representation as a string.
+  */
+  QString colorByText() const;
+
+public slots:
+  /**
+  * set the representation proxy or pqDataRepresentation instance.
+  */
+  void setRepresentation(pqDataRepresentation* display);
+  void setRepresentation(vtkSMProxy* proxy);
+
+  /**
+  * set representation type.
+  */
+  void setColorByText(const QString&);
+
+private slots:
+  /**
+  * Slot called when the combo-box is changed. If this change was due to
+  * a UI interaction, we need to prompt the user if he really intended to make
+  * that change (BUG #0015117).
+  */
+  void comboBoxChanged(const QString&);
+
+signals:
+  void colorByTextChanged(const QString&);
+
+private:
+  Q_DISABLE_COPY(pqSMTKColorByWidget)
+
+  class pqInternals;
+  pqInternals* Internal;
+
+  class PropertyLinksConnection;
+};
+
+/**
+* A property widget for selecting the display representation.
+*/
+class pqSMTKColorByPropertyWidget : public pqPropertyWidget
+{
+  Q_OBJECT
+
+public:
+  pqSMTKColorByPropertyWidget(vtkSMProxy* proxy, QWidget* parent = 0);
+  ~pqSMTKColorByPropertyWidget() override;
+
+private:
+  pqSMTKColorByWidget* Widget;
+};
+
+#endif

@@ -109,7 +109,22 @@ pqSMTKResourceManager::pqSMTKResourceManager(const QString& regGroup, const QStr
 
 pqSMTKResourceManager::~pqSMTKResourceManager()
 {
+#ifndef NDEBUG
   std::cout << "pqResourceManager dtor\n";
+#endif
+  if (!this->getServer())
+  {
+    for (auto rsrc : m_resources)
+    {
+      if (rsrc)
+      {
+#ifndef NDEBUG
+        std::cout << "  finalize " << rsrc << "\n";
+#endif
+        rsrc->dropResource();
+      }
+    }
+  }
 }
 
 vtkSMSMTKResourceManagerProxy* pqSMTKResourceManager::smtkProxy() const

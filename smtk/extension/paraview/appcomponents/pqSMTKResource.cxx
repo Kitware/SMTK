@@ -71,6 +71,11 @@ smtk::resource::ResourcePtr pqSMTKResource::getResource() const
   return rsrc;
 }
 
+void pqSMTKResource::dropResource()
+{
+  m_lastResource = smtk::resource::ResourcePtr();
+}
+
 void pqSMTKResource::synchronizeResource()
 {
   // std::cout << "Re-send resource\n";

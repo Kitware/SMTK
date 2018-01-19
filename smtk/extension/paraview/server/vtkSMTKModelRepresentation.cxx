@@ -171,6 +171,7 @@ bool vtkSMTKModelRepresentation::GetEntityBounds(
 int vtkSMTKModelRepresentation::RequestData(
   vtkInformation* request, vtkInformationVector** inVec, vtkInformationVector* outVec)
 {
+  this->EntityCacheKeeper->RemoveAllCaches();
   if (inVec[0]->GetNumberOfInformationObjects() == 1)
   {
     vtkInformation* inInfo = inVec[0]->GetInformationObject(0);
@@ -208,7 +209,7 @@ int vtkSMTKModelRepresentation::ProcessViewRequest(
 
   if (request_type == vtkPVView::REQUEST_UPDATE())
   {
-    // provide the "geometry" to the view so the view can delivery it to the
+    // provide the "geometry" to the view so the view can deliver it to the
     // rendering nodes as and when needed.
     // When this process doesn't have any valid input, the cache-keeper is setup
     // to provide a place-holder dataset of the right type. This is essential

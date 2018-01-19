@@ -47,13 +47,13 @@ DescriptivePhrasePtr VisibilityContent::decoratePhrase(DescriptivePhrasePtr src,
 
 bool VisibilityContent::displayable(ContentType attr) const
 {
-  return attr == VISIBILITY ? static_cast<bool>(m_delegate(DISPLAYABLE, -1, shared_from_this()))
+  return attr == VISIBILITY ? !!m_delegate(DISPLAYABLE, -1, shared_from_this())
                             : this->Superclass::displayable(attr);
 }
 
 bool VisibilityContent::editable(ContentType attr) const
 {
-  return attr == VISIBILITY ? static_cast<bool>(m_delegate(EDITABLE, -1, shared_from_this()))
+  return attr == VISIBILITY ? !!m_delegate(EDITABLE, -1, shared_from_this())
                             : this->Superclass::editable(attr);
 }
 
@@ -65,7 +65,7 @@ int VisibilityContent::flagValue(ContentType attr) const
 
 bool VisibilityContent::editFlagValue(ContentType attr, int val)
 {
-  return attr == VISIBILITY ? m_delegate(SET_VALUE, val, shared_from_this())
+  return attr == VISIBILITY ? !!m_delegate(SET_VALUE, val, shared_from_this())
                             : this->Superclass::editFlagValue(attr, val);
 }
 
