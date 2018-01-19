@@ -17,23 +17,7 @@ function(smtk_unit_tests)
     )
 
   set(have_testing_data OFF)
-  set(using_hdf OFF)
-  if(MOAB_USE_HDF)
-    set(using_hdf ON)
-  elseif(ENABLE_HDF5)
-    set(using_hdf ON)
-  endif()
-
   if (SMTK_DATA_DIR)
-    if(SMTK_ENABLE_TESTING AND NOT using_hdf AND NOT ENABLE_HDF5)
-      message(WARNING
-	"SMTK_DATA_DIR has been set, but hdf5 is not enabled. Skipping tests that use data.")
-    endif ()
-  endif()
-
-  if (using_hdf)
-    #we check moab for hdf support since that is the file format
-    #for all our test data
     set(have_testing_data ON)
     list(APPEND SMTK_ut_SOURCES ${SMTK_ut_SOURCES_REQUIRE_DATA})
   endif()
