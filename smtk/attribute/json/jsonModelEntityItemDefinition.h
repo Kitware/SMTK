@@ -17,7 +17,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/Entity.h"
 
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 #include <string>
 using json = nlohmann::json;

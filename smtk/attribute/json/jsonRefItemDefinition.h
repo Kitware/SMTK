@@ -17,7 +17,7 @@
 
 #include "smtk/attribute/json/jsonItemDefinition.h"
 
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 #include "smtk/PublicPointerDefs.h"
 
 #include <string>

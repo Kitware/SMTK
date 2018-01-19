@@ -33,7 +33,7 @@
 
 #include "smtk/common/testing/cxx/helpers.h"
 
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 using namespace smtk::attribute;
 using json = nlohmann::json;

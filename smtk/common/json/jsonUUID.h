@@ -12,7 +12,7 @@
 
 #include "smtk/common/UUID.h"
 
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 #include <string>
 

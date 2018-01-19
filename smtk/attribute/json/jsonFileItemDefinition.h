@@ -14,7 +14,7 @@
 #include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/json/jsonFileSystemItemDefinition.h"
 
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 #include <string>
 

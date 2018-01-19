@@ -13,7 +13,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/common/json/jsonUUID.h"
 
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 #include <string>
 

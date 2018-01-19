@@ -18,7 +18,7 @@
 #include "smtk/attribute/json/jsonItem.h"
 #include "smtk/attribute/json/jsonItemDefinition.h"
 
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 #include <string>
 /**\brief Provide a way to serialize itemPtr

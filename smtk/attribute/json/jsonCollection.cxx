@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "jsonCollection.h"
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Collection.h"
 #include "smtk/attribute/json/jsonDefinition.h"

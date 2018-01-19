@@ -13,7 +13,7 @@
 #include "smtk/resource/Component.h"
 #include "smtk/resource/Resource.h"
 
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 #include <string>
 

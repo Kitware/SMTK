@@ -13,7 +13,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/StringItemDefinition.h"
 
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 #include "smtk/attribute/json/jsonValueItemDefinition.h"
 
 #include <string>
