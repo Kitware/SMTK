@@ -55,15 +55,15 @@ class vtkTexture;
  *
  *  The representation supports different coloring modes (ColorBy):
  *
- *    - SCALARS: Maps scalars (or not) through the color LUT. This is the regular
- *      behavior in ParaView's vtkGeometryRepresentation. Properties under the
- *      PropertyGroup "Scalar Coloring" have effect only when this mode is active.
- *
  *    - ENTITY: Coloring through block attributes (vtkCompositeDataDisplayAttributes)
  *      using the smtk::model::EntityRef color.
  *
  *    - VOLUME: Coloring through block attributes using the smtk::model::EntityRef
  *      color corresponding to the 0th volume bounded by a given entity (if any).
+ *
+ *    - FIELD: Maps field scalars (or not) through the color LUT. This is the regular
+ *      behavior in ParaView's vtkGeometryRepresentation. Properties under the
+ *      PropertyGroup "Scalar Coloring" have effect only when this mode is active.
  *
  *  And different representation subtypes:
  *
@@ -199,12 +199,12 @@ public:
    */
   enum ColorByType
   {
-    SCALARS = 0,
-    ENTITY,
-    VOLUME
+    ENTITY = 0,
+    VOLUME,
+    FIELD,
   };
 
-  vtkSetClampMacro(ColorBy, int, SCALARS, VOLUME);
+  vtkSetClampMacro(ColorBy, int, ENTITY, FIELD);
   vtkGetMacro(ColorBy, int);
   /**
    * Overload to set color mode using a string. Accepted strings are:
@@ -247,7 +247,7 @@ protected:
   void ClearSelection(vtkMapper* mapper);
 
   /**
-   * Update the active coloring mode (scalar coloring, etc.).
+   * Update the active coloring mode (field coloring, etc.).
    */
   void UpdateColoringParameters(vtkDataObject* data);
 
@@ -262,7 +262,7 @@ protected:
    */
   void ColorByVolume(vtkCompositeDataSet* data);
   void ColorByEntity(vtkMultiBlockDataSet* data);
-  void ColorByScalars();
+  void ColorByField();
 
   //@{
   /**
@@ -297,7 +297,7 @@ protected:
 
   double DataBounds[6];
   int Representation = SURFACE;
-  int ColorBy = SCALARS;
+  int ColorBy = FIELD;
   bool UpdateColorBy = false;
   bool UseInternalAttributes = false;
 

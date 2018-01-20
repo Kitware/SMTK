@@ -16,7 +16,7 @@ find_package(Qt5 REQUIRED COMPONENTS Core)
 set(PQComponentsSrcs
   pqPluginSMTKViewBehavior.cxx
   pqSMTKBehavior.cxx
-  pqSMTKColorByBehavior.cxx
+  pqSMTKColorByToolBar.cxx
   pqSMTKColorByWidget.cxx
   pqSMTKModelRepresentation.cxx
   pqSMTKSelectionFilterBehavior.cxx
@@ -28,7 +28,7 @@ set(PQComponentsSrcs
 set(PQComponentsHeaders
   pqPluginSMTKViewBehavior.h
   pqSMTKBehavior.h
-  pqSMTKColorByBehavior.h
+  pqSMTKColorByToolBar.h
   pqSMTKColorByWidget.h
   pqSMTKModelRepresentation.h
   pqSMTKSelectionFilterBehavior.h
@@ -116,9 +116,8 @@ add_paraview_action_group(selectionFilterIfaces selectionFilterIfaceSrcs
 list(APPEND PLUGIN_ACTION_IFACES "${selectionFilterIfaces}")
 list(APPEND PLUGIN_ACTION_IFACE_SRCS "${selectionFilterIfaceSrcs}")
 
-add_paraview_action_group(colorByToolBarIfaces colorByToolBarIfaceSrcs
-  CLASS_NAME pqSMTKColorByBehavior
-  GROUP_NAME "ToolBar/SMTK Representation Mode"
+add_paraview_toolbar(colorByToolBarIfaces colorByToolBarIfaceSrcs
+  CLASS_NAME pqSMTKColorByToolBar
 )
 list(APPEND PLUGIN_ACTION_IFACES "${colorByToolBarIfaces}")
 list(APPEND PLUGIN_ACTION_IFACE_SRCS "${colorByToolBarIfaceSrcs}")

@@ -89,6 +89,7 @@ pqSMTKColorByWidget::pqSMTKColorByWidget(QWidget* _p)
 {
   this->Internal = new pqSMTKColorByWidget::pqInternals();
   this->Internal->setupUi(this);
+  this->setToolTip("Choose colors used to draw SMTK model entities.");
   this->connect(this->Internal->comboBox, SIGNAL(currentIndexChanged(const QString&)),
     SLOT(comboBoxChanged(const QString&)));
 }
@@ -130,9 +131,11 @@ void pqSMTKColorByWidget::setRepresentation(vtkSMProxy* proxy)
   {
     this->Internal->comboBox->addItem("Color Model By");
     this->Internal->comboBox->blockSignals(prev);
+    emit this->colorByFieldActive(true);
     return;
   }
 
+  emit this->colorByFieldActive(false);
   this->Internal->Domain = new pqComboBoxDomain(this->Internal->comboBox, smproperty);
   this->Internal->Links.addPropertyLink<PropertyLinksConnection>(
     this, "colorByText", SIGNAL(colorByTextChanged(const QString&)), proxy, smproperty);
@@ -156,8 +159,14 @@ void pqSMTKColorByWidget::comboBoxChanged(const QString& text)
 {
   // NOTE: this method doesn't get called when
   // pqSMTKColorByWidget::setColorByText() is called.
+  bool wasField = (this->Internal->colorByText() == "Field");
   this->Internal->setColorByText(text);
   emit this->colorByTextChanged(text);
+  bool fieldActive = (text == "Field");
+  if (wasField ^ fieldActive)
+  {
+    emit this->colorByFieldActive(fieldActive);
+  }
 }
 
 //=============================================================================
