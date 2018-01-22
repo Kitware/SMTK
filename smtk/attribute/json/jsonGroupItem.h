@@ -15,7 +15,7 @@
 #include "smtk/attribute/json/jsonHelperFunction.h"
 #include "smtk/attribute/json/jsonItem.h"
 
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 #include <exception>
 #include <string>

@@ -14,7 +14,7 @@
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/json/jsonValueItem.h"
 
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 #include <exception>
 #include <string>

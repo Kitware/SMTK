@@ -14,7 +14,7 @@
 #include "smtk/attribute/DateTimeItemDefinition.h"
 #include "smtk/attribute/json/jsonItemDefinition.h"
 
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 #include <string>
 

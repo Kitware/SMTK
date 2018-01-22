@@ -12,7 +12,7 @@
 
 #include "smtk/PublicPointerDefs.h"
 
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 #include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"

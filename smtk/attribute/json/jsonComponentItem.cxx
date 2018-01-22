@@ -15,7 +15,7 @@
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
 
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 #include <exception>
 #include <string>

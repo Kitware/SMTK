@@ -10,7 +10,7 @@
 #ifndef smtk_attribute_jsonCollection_h
 #define smtk_attribute_jsonCollection_h
 
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Collection.h"
 #include "smtk/attribute/json/jsonDefinition.h"

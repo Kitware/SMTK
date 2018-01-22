@@ -16,7 +16,7 @@
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
 
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 #include <exception>
 #include <string>

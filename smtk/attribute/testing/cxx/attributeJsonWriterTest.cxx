@@ -30,7 +30,7 @@
 #include "smtk/io/Logger.h"
 
 // nlohmann json related files
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 #include "smtk/attribute/json/jsonAttribute.h"
 #include "smtk/attribute/json/jsonCollection.h"
 #include "smtk/attribute/json/jsonDefinition.h"

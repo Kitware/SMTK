@@ -13,7 +13,7 @@
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
 
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 #include "smtk/attribute/json/jsonCollection.h"
 #include <iostream>
 

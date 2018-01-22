@@ -14,7 +14,7 @@
 #include "smtk/attribute/Collection.h"
 #include "smtk/attribute/ComponentItem.h"
 
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 #include <exception>
 #include <string>

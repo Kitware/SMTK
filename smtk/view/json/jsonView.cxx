@@ -11,7 +11,7 @@
 #include "smtk/CoreExports.h"
 #include "smtk/view/View.h"
 
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 #include <sstream>
 
