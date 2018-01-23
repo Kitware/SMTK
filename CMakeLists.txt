@@ -125,8 +125,6 @@ if (SMTK_ENABLE_MULTISCALE_SESSION)
   set(AFRL_DIR "" CACHE PATH "Path to a directory of AFRL data.")
 endif()
 
-option(SMTK_USE_SYSTEM_MOAB "Use the system-installed moab?" OFF)
-
 option(SMTK_ENABLE_DOCUMENTATION
   "Include targets for Doxygen- and Sphinx-generated documentation" OFF)
 if (SMTK_ENABLE_DOCUMENTATION)
@@ -258,13 +256,9 @@ find_package(nlohmann_json REQUIRED)
 # Moab Related Settings
 ################################################################################
 
-#if we are not using system moab we will build our own version through
-#the thirdparty folder
-if (SMTK_USE_SYSTEM_MOAB)
-  # Moab is required for building smtk::mesh, as it is the default storage
-  # format for meshes.
-  find_package(MOAB REQUIRED)
-endif()
+# Moab is required for building smtk::mesh, as it is the default storage
+# format for meshes.
+find_package(MOAB REQUIRED)
 
 
 ################################################################################
