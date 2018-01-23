@@ -10,10 +10,11 @@ set(SMTK_MULTISCALE_SESSION_ENABLED "False")
 ################################################################################
 # Build cgm session
 ################################################################################
-if (SMTK_ENABLE_CGM_SESSION AND CGM_FOUND)
-  set(SMTK_CGM_SESSION_ENABLED "True")
-  add_subdirectory(cgm)
-endif()
+# Temporarily disable CGM session until it is updated to the new operator system
+#if (SMTK_ENABLE_CGM_SESSION AND CGM_FOUND)
+#  set(SMTK_CGM_SESSION_ENABLED "True")
+#  add_subdirectory(cgm)
+#endif()
 
 ################################################################################
 # Build Discrete session
