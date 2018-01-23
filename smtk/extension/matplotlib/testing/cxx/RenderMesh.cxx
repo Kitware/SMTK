@@ -23,9 +23,6 @@
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
 
-#include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
-
 #include <fstream>
 #include <streambuf>
 
@@ -44,6 +41,7 @@
 #include <vtkTesting.h>
 #endif
 
+/*
 namespace
 {
 std::string data_root = SMTK_DATA_DIR;
@@ -60,6 +58,7 @@ void cleanup(const std::string& file_path)
   }
 }
 }
+*/
 
 // Demonstrate/test the ability to call python SMTK operators within the C++
 // environment.
@@ -68,6 +67,12 @@ int main(int argc, char* argv[])
   (void)argc;
   (void)argv;
 
+  std::cout << "This test is disabled until the matplotlib python operator is converted to use the "
+               "new python operator code."
+            << std::endl;
+  return 1;
+
+  /*
   // Create a model manager
   smtk::model::ManagerPtr manager = smtk::model::Manager::create();
 
@@ -157,6 +162,7 @@ int main(int argc, char* argv[])
   cleanup(write_path);
 
   return 0;
+*/
 }
 
-smtkPythonInitMacro(render_mesh, smtk.extension.matplotlib.render_mesh, true);
+// smtkPythonInitMacro(render_mesh, smtk.extension.matplotlib.render_mesh, true);
