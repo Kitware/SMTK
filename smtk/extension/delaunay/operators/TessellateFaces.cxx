@@ -11,6 +11,7 @@
 //=============================================================================
 #include "smtk/extension/delaunay/operators/TessellateFaces.h"
 
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/VoidItem.h"
 
 #include "smtk/extension/delaunay/io/ExportDelaunayMesh.h"
@@ -31,11 +32,15 @@
 #include "Shape/PolygonUtilities.hh"
 #include "Validation/IsValidPolygon.hh"
 
+#include "smtk/extension/delaunay/TessellateFaces_xml.h"
+
 #include <algorithm>
 
 namespace smtk
 {
-namespace mesh
+namespace extension
+{
+namespace delaunay
 {
 
 TessellateFaces::TessellateFaces()
@@ -44,7 +49,8 @@ TessellateFaces::TessellateFaces()
 
 bool TessellateFaces::ableToOperate()
 {
-  smtk::model::EntityRefArray entities = this->associatedEntitiesAs<smtk::model::EntityRefArray>();
+  auto associations = this->parameters()->associations();
+  smtk::model::EntityRefArray entities(associations->begin(), associations->end());
 
   for (auto& eRef : entities)
   {
@@ -57,14 +63,14 @@ bool TessellateFaces::ableToOperate()
   return this->Superclass::ableToOperate();
 }
 
-smtk::model::OperatorResult TessellateFaces::operateInternal()
+TessellateFaces::Result TessellateFaces::operateInternal()
 {
-  smtk::model::Faces faces = this->associatedEntitiesAs<smtk::model::Faces>();
+  auto associations = this->parameters()->associations();
+  smtk::model::Faces faces(associations->begin(), associations->end());
 
-  bool validatePolygons = this->findVoid("validate polygons")->isEnabled();
+  bool validatePolygons = this->parameters()->findVoid("validate polygons")->isEnabled();
 
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
 
   for (auto& face : faces)
   {
@@ -77,7 +83,7 @@ smtk::model::OperatorResult TessellateFaces::operateInternal()
     {
       // if we don't have loops, there is nothing to mesh
       smtkErrorMacro(this->log(), "No loops associated with this face.");
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
     }
 
     // the first loop is the exterior loop
@@ -101,7 +107,7 @@ smtk::model::OperatorResult TessellateFaces::operateInternal()
     {
       // the polygon is invalid, so we exit with failure
       smtkErrorMacro(this->log(), "Outer boundary polygon is invalid.");
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
     }
 
     // discretize the polygon
@@ -125,7 +131,7 @@ smtk::model::OperatorResult TessellateFaces::operateInternal()
       {
         // the polygon is invalid, so we exit with failure
         smtkErrorMacro(this->log(), "Inner boundary polygon is invalid.");
-        return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+        return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
       }
 
       excise(p_sub, mesh);
@@ -135,18 +141,19 @@ smtk::model::OperatorResult TessellateFaces::operateInternal()
     smtk::extension::delaunay::io::ImportDelaunayMesh importFromDelaunayMesh;
     importFromDelaunayMesh(mesh, face);
 
-    this->addEntityToResult(result, face, MODIFIED);
+    smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
+    modified->setValue(face.component());
+
     result->findModelEntity("tess_changed")->appendValue(face);
   }
 
   return result;
 }
 
-} // namespace model
-} // namespace smtk
-
-#include "smtk/extension/delaunay/Exports.h"
-#include "smtk/extension/delaunay/TessellateFaces_xml.h"
-
-smtkImplementsModelOperator(SMTKDELAUNAYEXT_EXPORT, smtk::mesh::TessellateFaces,
-  delaunay_tessellate_faces, "tessellate faces", TessellateFaces_xml, smtk::model::Session);
+const char* TessellateFaces::xmlDescription() const
+{
+  return TessellateFaces_xml;
+}
+}
+}
+}

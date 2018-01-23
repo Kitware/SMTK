@@ -43,6 +43,12 @@
 
 #include <sstream>
 
+/**\brief The name of the model resource used to filter resources of this type.
+  *
+  * \sa  SMTK_MODEL_RESOURCE_NAME
+  */
+#define SMTK_MODEL_RESOURCE_NAME "model"
+
 /**\brief The name of an integer property used to store display Tessellation generation numbers.
   *
   * Starting with "_" indicates internal-use-only.
@@ -91,6 +97,10 @@ public:
 
   smtkTypeMacro(smtk::model::Manager);
   smtkSharedPtrCreateMacro(smtk::resource::Resource);
+  smtkResourceTypeNameMacro("model");
+
+  // typedef referring to the parent resource.
+  typedef smtk::resource::Resource ParentResource;
 
   Manager(smtk::resource::ManagerPtr = smtk::resource::ManagerPtr());
   Manager(const smtk::common::UUID& uid, smtk::resource::ManagerPtr = smtk::resource::ManagerPtr());
@@ -116,10 +126,7 @@ public:
 
   smtk::resource::SetPtr resources(bool skipUpdate = false)
   {
-    if (!skipUpdate)
-    {
-      this->computeResources();
-    }
+    (void)skipUpdate;
     return this->m_resources;
   }
 
@@ -132,6 +139,9 @@ public:
   EntityPtr findEntity(const smtk::common::UUID& uid, bool trySessions = true) const;
 
   smtk::resource::ComponentPtr find(const smtk::common::UUID& uid) const override;
+  std::function<bool(const smtk::resource::ComponentPtr&)> queryOperation(
+    const std::string&) const override;
+  void visit(smtk::resource::Component::Visitor&) const override;
 
   virtual SessionInfoBits erase(
     const smtk::common::UUID& uid, SessionInfoBits flags = smtk::model::SESSION_EVERYTHING);
@@ -447,7 +457,6 @@ protected:
   std::string assignDefaultName(const smtk::common::UUID& uid, BitFlags entityFlags);
   IntegerList& entityCounts(const smtk::common::UUID& modelId, BitFlags entityFlags);
   void prepareForEntity(std::pair<smtk::common::UUID, EntityPtr>& entry);
-  void computeResources();
 
   smtk::common::UUID modelOwningEntityRecursive(
     const smtk::common::UUID& uid, std::set<smtk::common::UUID>& visited) const;

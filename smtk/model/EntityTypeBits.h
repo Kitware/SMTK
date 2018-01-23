@@ -13,6 +13,7 @@
 #include "smtk/CoreExports.h" // for SMTKCORE_EXPORT macro
 #include "smtk/SystemConfig.h"
 
+#include <iostream>
 #include <string>
 
 namespace smtk

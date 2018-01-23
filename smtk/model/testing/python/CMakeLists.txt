@@ -12,14 +12,6 @@ set(smtkModelPythonDataTests
   modelPhrase
 )
 
-# Additional tests that require specific bridges
-if (SMTK_ENABLE_EXODUS_SESSION)
-  set(smtkModelPythonDataTests
-    ${smtkModelPythonDataTests}
-    importExport
-  )
-endif()
-
 if (SMTK_ENABLE_POLYGON_SESSION)
   set(smtkModelPythonDataTests
     ${smtkModelPythonDataTests}
@@ -27,7 +19,7 @@ if (SMTK_ENABLE_POLYGON_SESSION)
   )
 endif()
 
-if (SMTK_ENABLE_EXODUS_SESSION AND SMTK_ENABLE_DISCRETE_SESSION AND SMTK_ENABLE_CGM_SESSION)
+if (SMTK_ENABLE_DISCRETE_SESSION AND SMTK_ENABLE_CGM_SESSION)
   set(smtkModelPythonDataTests
     ${smtkModelPythonDataTests}
     multiSessionDescriptivePhrase

@@ -20,26 +20,28 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/MeshItem.h"
 
+#include "smtk/mesh/DeleteMesh_xml.h"
+
 namespace smtk
 {
 namespace mesh
 {
 
-smtk::model::OperatorResult DeleteMesh::operateInternal()
+smtk::mesh::DeleteMesh::Result DeleteMesh::operateInternal()
 {
   // ableToOperate should have verified that mesh(s) are set
-  smtk::attribute::MeshItem::Ptr meshItem = this->specification()->findMesh("mesh");
+  smtk::attribute::MeshItem::Ptr meshItem = this->parameters()->findMesh("mesh");
 
   smtk::mesh::MeshSets expunged;
   bool success = true;
-  smtk::mesh::ManagerPtr meshMgr = this->manager()->meshes();
-  if (meshMgr)
+  for (attribute::MeshItem::const_mesh_it mit = meshItem->begin(); mit != meshItem->end(); ++mit)
   {
-    for (attribute::MeshItem::const_mesh_it mit = meshItem->begin(); mit != meshItem->end(); ++mit)
-    {
-      // all mesh items are guaranteed to have a valid associated collection by ableToOperate
-      smtk::mesh::CollectionPtr collec = mit->collection();
+    // all mesh items are guaranteed to have a valid associated collection by ableToOperate
+    smtk::mesh::CollectionPtr collec = mit->collection();
+    smtk::mesh::ManagerPtr meshMgr = collec->manager();
 
+    if (meshMgr)
+    {
       //remove the mesh from its collection
       success = collec->removeMeshes(smtk::mesh::MeshSet(*mit));
       if (success)
@@ -56,9 +58,8 @@ smtk::model::OperatorResult DeleteMesh::operateInternal()
     }
   }
 
-  smtk::model::OperatorResult result =
-    this->createResult(success ? smtk::operation::Operator::OPERATION_SUCCEEDED
-                               : smtk::operation::Operator::OPERATION_FAILED);
+  Result result = this->createResult(
+    success ? smtk::operation::NewOp::Outcome::SUCCEEDED : smtk::operation::NewOp::Outcome::FAILED);
 
   if (success)
   {
@@ -67,10 +68,10 @@ smtk::model::OperatorResult DeleteMesh::operateInternal()
   return result;
 }
 
+const char* DeleteMesh::xmlDescription() const
+{
+  return DeleteMesh_xml;
+}
+
 } //namespace mesh
 } // namespace smtk
-
-#include "smtk/mesh/DeleteMesh_xml.h"
-
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::mesh::DeleteMesh, delete_mesh, "delete mesh",
-  DeleteMesh_xml, smtk::model::Session);

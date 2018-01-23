@@ -14,13 +14,15 @@
 #include "remus/server/WorkerFactory.h"
 #include "remus/worker/Worker.h"
 
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/ResourceItem.h"
 #include "smtk/bridge/polygon/Session.h"
 #include "smtk/io/LoadJSON.h"
 #include "smtk/io/SaveJSON.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
+#include "smtk/model/operators/LoadSMTKModel.h"
 
 #include <fstream>
 #include <iostream>
@@ -97,31 +99,24 @@ namespace
 //into the manager
 smtk::model::ManagerPtr create_polygon_model(const std::string file_path)
 {
-  std::cout << "create_polygon_model of file: " << file_path << std::endl;
-
-  std::ifstream file(file_path.c_str());
-  if (file.good())
-  { //just make sure the file exists
-    file.close();
-
-    smtk::model::ManagerPtr mgr = smtk::model::Manager::create();
-    smtk::bridge::polygon::Session::Ptr brg = smtk::bridge::polygon::Session::create();
-    mgr->registerSession(brg);
-
-    smtk::model::Operator::Ptr op = brg->op("load smtk model");
-
-    op->findFile("filename")->setValue(file_path.c_str());
-    smtk::model::OperatorResult result = op->operate();
-    if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
-    {
-      std::cout << "Import polygon Failed!" << std::endl;
-    }
-    else
-    {
-      return mgr;
-    }
+  // Create an import operator
+  smtk::model::LoadSMTKModel::Ptr loadOp = smtk::model::LoadSMTKModel::create();
+  if (!loadOp)
+  {
+    std::cerr << "No load operator\n";
+    return smtk::model::ManagerPtr();
   }
-  return smtk::model::ManagerPtr();
+
+  loadOp->parameters()->findFile("filename")->setValue(file_path.c_str());
+  smtk::model::LoadSMTKModel::Result result = loadOp->operate();
+  if (result->findInt("outcome")->value() !=
+    static_cast<int>(smtk::model::LoadSMTKModel::Outcome::SUCCEEDED))
+  {
+    std::cerr << "Could not load smtk model!\n";
+    return smtk::model::ManagerPtr();
+  }
+
+  return std::dynamic_pointer_cast<smtk::model::Manager>(result->findResource("resource")->value());
 }
 
 //------------------------------------------------------------------------------

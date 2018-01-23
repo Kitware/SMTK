@@ -31,11 +31,11 @@ using namespace smtk::attribute;
 ComponentItemDefinition::ComponentItemDefinition(const std::string& sname)
   : ItemDefinition(sname)
 {
-  this->m_membershipMask = smtk::model::ANY_ENTITY;
-  this->m_numberOfRequiredValues = 0;
+  this->m_numberOfRequiredValues = 1;
   this->m_useCommonLabel = false;
   this->m_isExtensible = false;
   this->m_maxNumberOfValues = 0;
+  this->m_isWritable = true;
 }
 
 /// Destructor.
@@ -49,170 +49,102 @@ Item::Type ComponentItemDefinition::type() const
   return Item::ComponentType;
 }
 
-bool ComponentItemDefinition::acceptsResourceComponents(const std::string& uniqueName) const
-{
-  using smtk::resource::NameTag;
-  auto metacontainer = smtk::resource::Manager::metadata();
-  auto metadata = metacontainer.get<NameTag>().find(uniqueName);
-  if (metadata == metacontainer.get<NameTag>().end())
-  {
-    smtkErrorMacro(
-      smtk::io::Logger::instance(), "No metadata registered for \"" << uniqueName << "\"");
-    return false;
-  }
-
-  return m_acceptable.find(metadata->index()) != m_acceptable.end();
-}
-
-bool ComponentItemDefinition::acceptsResourceComponents(
-  smtk::resource::Resource::Index resourceIndex) const
-{
-  return m_acceptable.find(resourceIndex) != m_acceptable.end();
-}
-
 bool ComponentItemDefinition::setAcceptsResourceComponents(
-  const std::string& uniqueName, bool accept)
+  const std::string& uniqueName, const std::string& filter, bool accept)
 {
-  using smtk::resource::NameTag;
-  auto metacontainer = smtk::resource::Manager::metadata();
-  auto metadata = metacontainer.get<NameTag>().find(uniqueName);
-  if (metadata == metacontainer.get<NameTag>().end())
-  {
-    smtkErrorMacro(
-      smtk::io::Logger::instance(), "No metadata registered for \"" << uniqueName << "\"");
-    return false;
-  }
-
   if (accept)
   {
-    return m_acceptable.insert(metadata->index()).second;
+    m_acceptable.insert(std::make_pair(uniqueName, filter));
+    return true;
   }
   else
   {
-    return m_acceptable.erase(metadata->index()) > 0;
-  }
-}
+    auto range = m_acceptable.equal_range(uniqueName);
+    auto found = std::find_if(
+      range.first, range.second, [&](decltype(*range.first) it) { return it.second == filter; });
 
-std::set<std::string> ComponentItemDefinition::acceptableResourceComponentsByName() const
-{
-  using smtk::resource::IndexTag;
-  auto metacontainer = smtk::resource::Manager::metadata();
-  std::set<std::string> result;
-  for (auto idx : m_acceptable)
-  {
-    auto metadata = metacontainer.get<IndexTag>().find(idx);
-    if (metadata == metacontainer.get<IndexTag>().end())
+    if (found != m_acceptable.end())
     {
-      smtkWarningMacro(smtk::io::Logger::instance(),
-        "Component item accepts an unknown resource type " << idx << ". Skipping.");
-      continue;
+      m_acceptable.erase(found);
+      return true;
     }
-    result.insert(metadata->uniqueName());
-  }
-  return result;
-}
-
-bool ComponentItemDefinition::setAcceptsResourceComponents(
-  smtk::resource::Resource::Index resourceIndex, bool accept)
-{
-  if (accept)
-  {
-    return m_acceptable.insert(resourceIndex).second;
-  }
-  else
-  {
-    return m_acceptable.erase(resourceIndex) > 0;
+    else
+    {
+      return false;
+    }
   }
 }
 
-smtk::model::BitFlags ComponentItemDefinition::membershipMask() const
-{
-  return this->m_membershipMask;
-}
-
-void ComponentItemDefinition::setMembershipMask(smtk::model::BitFlags entMask)
-{
-  // FIXME: Should we enforce constraints?
-  // FIXME: Should we add/remove typeid(smtk::model::Resource) to m_acceptable if entMask non-0/0?
-  this->m_membershipMask = entMask;
-}
-
-/**\brief Is an attribute's value consistent with its definition?
-  *
-  * This returns false when the definition has an item bitmask
-  * that does not include entities of the matching type.
-  * However, if the model entity's type cannot be determined
-  * because the model manager is NULL or it is not in the model
-  * manager's storage, we silently assume that the value is valid.
-  * Note that only UUIDs are stored
-  */
+/// Is an attribute's value consistent with its definition?
 bool ComponentItemDefinition::isValueValid(smtk::resource::ComponentPtr comp) const
 {
+  // If the component is invalid, then no filtering is needed.
   if (!comp)
   {
     return false;
   }
 
+  // All components are required to have resources in order to be valid.
   auto rsrc = comp->resource();
   if (!rsrc)
   {
     return false;
   }
 
-  auto rsrcId = rsrc->index();
-  if (!this->acceptsResourceComponents(rsrcId))
+  // If there are no filter values, then we accept all components.
+  if (m_acceptable.empty())
   {
+    return true;
+  }
+
+  // Search for the resource index in the resource metdata.
+  const smtk::resource::Metadata* metadata = nullptr;
+
+  auto manager = rsrc->manager();
+  if (manager)
+  {
+    auto& container = manager->metadata().get<smtk::resource::IndexTag>();
+    auto metadataIt = container.find(rsrc->index());
+    if (metadataIt != container.end())
+    {
+      metadata = &(*metadataIt);
+    }
+  }
+
+  if (metadata == nullptr)
+  {
+    // If we can't find the resource's metadata, that's ok. It just means we do
+    // not have the ability to accept derived resources from base resource
+    // indices. We can still check if the resource is explicitly accepted.
+    auto range = m_acceptable.equal_range(rsrc->uniqueName());
+    for (auto& it = range.first; it != range.second; ++it)
+    {
+      if (rsrc->queryOperation(it->second)(comp))
+      {
+        return true;
+      }
+    }
     return false;
   }
 
-  auto modelEnt = dynamic_pointer_cast<smtk::model::Entity>(comp);
-  if (modelEnt)
-  {
-    smtk::model::EntityRef c(modelEnt);
-    if (!this->m_membershipMask)
-    {
-      return false; // Nothing can possibly match.
-    }
-    if (this->m_membershipMask == smtk::model::ANY_ENTITY)
-    {
-      return true; // Fast-track the trivial case.
-    }
+  // With the resource's metadata, we can resolve queries for derived resources.
+  auto& container = manager->metadata().get<smtk::resource::NameTag>();
 
-    smtk::model::BitFlags itemType = c.entityFlags();
-    // The m_membershipMask must match the entity type, the dimension, and (if the
-    // item is a group) group constraint flags separately;
-    // In other words, we require the entity type, the dimension, and the
-    // group constraints to be acceptable independently.
-    if (((this->m_membershipMask & smtk::model::ENTITY_MASK) &&
-          !(itemType & this->m_membershipMask & smtk::model::ENTITY_MASK) &&
-          (itemType & smtk::model::ENTITY_MASK) != smtk::model::GROUP_ENTITY) ||
-      ((this->m_membershipMask & smtk::model::ANY_DIMENSION) &&
-          !(itemType & this->m_membershipMask & smtk::model::ANY_DIMENSION)) ||
-      ((itemType & smtk::model::GROUP_ENTITY) &&
-          (this->m_membershipMask & smtk::model::GROUP_CONSTRAINT_MASK) &&
-          !(itemType & this->m_membershipMask & smtk::model::GROUP_CONSTRAINT_MASK)))
-      return false;
-    if (itemType != this->membershipMask() && itemType & smtk::model::GROUP_ENTITY &&
-      // if the mask is only defined as "group", don't have to check further for members
-      this->m_membershipMask != smtk::model::GROUP_ENTITY)
+  // For every element in the filter map...
+  for (auto& acceptable : m_acceptable)
+  {
+    // ...we access the metadata for that resource type...
+    auto md = container.find(acceptable.first);
+    // ...and ask (a) if our resource is of that type, and (b) if its associated
+    // filter accepts the component.
+    if (md != container.end() && metadata->isOfType(md->index()) &&
+      rsrc->queryOperation(acceptable.second)(comp))
     {
-      // If the the membershipMask is the same as itemType, we don't need to check, else
-      // if the item is a group: recursively check that its members
-      // all match the criteria. Also, if the HOMOGENOUS_GROUP bit is set,
-      // require all entries to have the same entity type flag as the first.
-      smtk::model::BitFlags typeMask = this->m_membershipMask;
-      bool mustBeHomogenous = (typeMask & smtk::model::HOMOGENOUS_GROUP) ? true : false;
-      if (!(typeMask & smtk::model::NO_SUBGROUPS) && !(typeMask & smtk::model::GROUP_ENTITY))
-      {
-        typeMask |= smtk::model::GROUP_ENTITY; // if groups aren't banned, allow them.
-      }
-      if (!c.as<model::Group>().meetsMembershipConstraintsInternal(c, typeMask, mustBeHomogenous))
-      {
-        return false;
-      }
+      return true;
     }
   }
-  return true;
+
+  return false;
 }
 
 //// Construct an item from the definition given its owning attribute and position.
@@ -316,10 +248,13 @@ ItemDefinitionPtr ComponentItemDefinition::createCopy(ItemDefinition::CopyInfo& 
     smtk::attribute::ComponentItemDefinition::New(this->name());
   ItemDefinition::copyTo(newDef);
 
-  newDef->setMembershipMask(m_membershipMask);
   newDef->setNumberOfRequiredValues(m_numberOfRequiredValues);
   newDef->setMaxNumberOfValues(m_maxNumberOfValues);
   newDef->setIsExtensible(m_isExtensible);
+  for (auto& acceptable : m_acceptable)
+  {
+    newDef->setAcceptsResourceComponents(acceptable.first, acceptable.second, true);
+  }
   if (m_useCommonLabel)
   {
     newDef->setCommonValueLabel(m_valueLabels[0]);

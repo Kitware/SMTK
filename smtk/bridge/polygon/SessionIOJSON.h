@@ -12,11 +12,8 @@
 
 #include "smtk/model/SessionIOJSON.h"
 
-#include "smtk/model/Face.h"
-
 #include "smtk/bridge/polygon/Exports.h"
-#include "smtk/bridge/polygon/internal/Config.h"
-#include "smtk/bridge/polygon/internal/Vertex.h"
+#include "smtk/bridge/polygon/Resource.h"
 
 struct cJSON;
 
@@ -40,29 +37,20 @@ public:
 
   virtual ~SessionIOJSON() {}
 
-  virtual int saveJSON(
-    cJSON* node, const smtk::model::SessionRef& sref, const smtk::model::Models& models) override;
+  /**\brief Serialize a resource into a set of JSON records.
+    */
+  static json saveJSON(const smtk::bridge::polygon::Resource::Ptr& rsrc);
 
-  int importJSON(smtk::model::ManagerPtr mgr, const smtk::model::SessionPtr& session,
-    cJSON* sessionRec, bool loadNativeModels = false) override;
-  int exportJSON(smtk::model::ManagerPtr mgr, const smtk::model::SessionPtr& sessPtr,
-    cJSON* sessionRec, bool writeNativeModels = false) override;
-  int exportJSON(smtk::model::ManagerPtr mgr, const smtk::model::SessionPtr& session,
-    const common::UUIDs& modelIds, cJSON* sessionRec, bool writeNativeModels = false) override;
+  /**\brief Load JSON from a file and parse it, but do nothing more.
+    */
+  static json loadJSON(const std::string& filename);
 
-protected:
-  cJSON* serializeModel(internal::ModelPtr pmodel, const smtk::model::Model& mod);
-  cJSON* serializeFace(const smtk::model::Face& face);
-  cJSON* serializeEdge(internal::EdgePtr edge, const smtk::model::Edge& e);
-  cJSON* serializeVertex(internal::VertexPtr vert, const smtk::model::Vertex& v);
-  cJSON* serializeIncidentEdgeRecord(const internal::vertex::incident_edge_data& rec);
-  void serializeEntityBase(cJSON* inout, internal::EntityPtr ent);
-
-  internal::ModelPtr deserializeModel(cJSON* record, const smtk::model::Model& m);
-  void deserializeFace(cJSON* record, const smtk::model::Face& f);
-  internal::EdgePtr deserializeEdge(cJSON* record, const smtk::model::Edge& e);
-  internal::VertexPtr deserializeVertex(cJSON* record, const smtk::model::Vertex& v);
-  internal::vertex::incident_edge_data deserializeIncidentEdgeRecord(cJSON* record);
+  /**\brief Given JSON data, attempt to deserialize SMTK model records from it.
+    *
+    * If the JSON object represents model data, it is added to the
+    * given resource.
+    */
+  static bool loadModelRecords(const json& j, smtk::bridge::polygon::Resource::Ptr& rsrc);
 };
 
 } // namespace polygon

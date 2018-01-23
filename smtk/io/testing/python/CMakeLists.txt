@@ -12,14 +12,6 @@ endif()
 set(smtkIOPythonDataTests
 )
 
-# Additional tests that require specific bridges
-if (SMTK_ENABLE_EXODUS_SESSION)
-  set(smtkIOPythonDataTests
-    ${smtkIOPythonDataTests}
-  readSMTKFile
-  )
-endif()
-
 foreach (test ${smtkIOPythonTests})
   smtk_add_test_python(${test}Py ${test}.py)
 endforeach()

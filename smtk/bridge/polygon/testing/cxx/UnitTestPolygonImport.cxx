@@ -19,6 +19,11 @@
 #include "smtk/model/Session.h"
 #include "smtk/model/Vertex.h"
 
+#include "smtk/bridge/polygon/Resource.h"
+#include "smtk/bridge/polygon/operators/Import.h"
+
+#include "smtk/operation/Manager.h"
+
 namespace
 {
 std::string readFilePath(SMTK_DATA_DIR);
@@ -32,18 +37,51 @@ int UnitTestPolygonImport(int argc, char* argv[])
   (void)argc;
   (void)argv;
 
-  smtk::model::ManagerPtr manager = smtk::model::Manager::create();
-  smtk::model::SessionRef session = manager->createSession("polygon");
-  smtk::model::OperatorPtr myOp = session.op("import");
-  test(myOp != nullptr, "No import operator");
+  // Create a resource manager
+  smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
+
+  // Register the mesh resource to the resource manager
+  {
+    resourceManager->registerResource<smtk::bridge::polygon::Resource>();
+  }
+
+  // Create an operation manager
+  smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
+
+  // Register import and write operators to the operation manager
+  {
+    operationManager->registerOperator<smtk::bridge::polygon::Import>(
+      "smtk::bridge::polygon::Import");
+  }
+
+  // Register the resource manager to the operation manager (newly created
+  // resources will be automatically registered to the resource manager).
+  operationManager->registerResourceManager(resourceManager);
+
+  smtk::model::Entity::Ptr model;
+
+  // Create an "import" operator
+  smtk::bridge::polygon::Import::Ptr importOp =
+    operationManager->create<smtk::bridge::polygon::Import>();
+
+  test(importOp != nullptr, "No import operator");
   readFilePath += filename;
-  myOp->specification()->findFile("filename")->setValue(readFilePath);
+  importOp->parameters()->findFile("filename")->setValue(readFilePath);
   std::cout << "Importing " << readFilePath << std::endl;
-  smtk::model::OperatorResult res = myOp->operate();
-  test(res->findInt("outcome")->value() == smtk::operation::Operator::OPERATION_SUCCEEDED,
+
+  smtk::operation::NewOp::Result importOpResult = importOp->operate();
+  test(importOpResult->findInt("outcome")->value() ==
+      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
     "Import operator failed");
+  // Retrieve the resulting model
+  smtk::attribute::ComponentItemPtr componentItem =
+    std::dynamic_pointer_cast<smtk::attribute::ComponentItem>(
+      importOpResult->findComponent("model"));
+
+  // Access the generated model
   smtk::model::Model modelCreated =
-    static_cast<smtk::model::Model>(res->findModelEntity("created")->value());
+    std::dynamic_pointer_cast<smtk::model::Entity>(componentItem->value());
+
   std::set<smtk::model::Edge> edges;
   std::set<smtk::model::Vertex> vertices;
   for (auto& cell : modelCreated.cells())

@@ -84,7 +84,7 @@ public:
   template <typename T>
   Model& removeAuxiliaryGeometries(const T& container);
 
-  OperatorPtr op(const std::string& operatorName) const;
+  // OperatorPtr op(const std::string& operatorName) const;
   StringList operatorNames() const;
 
   void assignDefaultNames();

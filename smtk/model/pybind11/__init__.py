@@ -11,58 +11,8 @@
 #=============================================================================
 
 from smtk.attribute import SearchStyle, get_wrapped_func
+import smtk.operation
 from _smtkPybindModel import *
-
-"""
-operator: a decorator for adding a python-defined operator to a specific
-session.
-
-Use:
-
-import smtk
-import smtk.model
-
-@smtk.operator(smtk.model.Session)
-class MyOperator(smtk.model.Operator):
-    ...
-"""
-
-
-def operator(nickname, opsession):
-    def decorator(opclass):
-        # check if a description function exists
-        try:
-            opclass.description()
-        except AttributeError:
-            # if the description function does not exist, next try to import
-            # the compile-time generated description that resides in
-            # <opclass_xml.py>
-            import importlib
-            try:
-                desc_module = importlib.import_module(
-                    opclass.__module__ + '_xml')
-
-                def desc():
-                    return desc_module.description
-
-                opclass.description = staticmethod(desc)
-            except:
-                module = opclass.__module__.split(".")[-1]
-                raise ImportError(
-                    'Class "%s" has no description method and no "%s.sbt" file found.' % (module, module))
-
-        # add a method that accesses the derived session
-        def activeSession(self):
-            return opsession.CastTo(self.session())
-
-        setattr(opclass, 'activeSession', activeSession)
-
-        # register this operator with the session
-        opsession.registerStaticPyOperator(
-            nickname, opclass.description(), opclass.__module__, opclass.__name__)
-
-        return opclass
-    return decorator
 
 """
 smtk.model.Manager.findEntitiesOfType: a method that returns a list of queried
@@ -99,10 +49,3 @@ def _findEntitiesOfType(self, flags, exactMatch=True):
 Manager.findEntitiesOfType = _findEntitiesOfType
 
 del _findEntitiesOfType
-
-"""
-smtk.model.Operator._find() returns a base item when queried. We wrap this
-method in a python <to_concrete> function that returns the most derived version
-of that item (see smtk/attribute/pybind11/__init__.py).
-"""
-setattr(Operator, "find", get_wrapped_func(Operator._find))

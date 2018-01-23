@@ -11,7 +11,6 @@
 
 #include "smtk/model/ArrangementHelper.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/RemoteOperator.h"
 #include "smtk/model/SessionIOJSON.h"
 
 #include "smtk/model/CellEntity.h"
@@ -198,34 +197,30 @@ std::map<std::string, std::string> Session::operatorLabelsMap(bool includeAdvanc
   return result;
 }
 
-OperatorPtr Session::op(const std::string& opName) const
-{
-  OperatorPtr oper;
-  if (opName.empty())
-    return oper;
+// OperatorPtr Session::op(const std::string& opName) const
+// {
+//   OperatorPtr oper;
+//   if (opName.empty())
+//     return oper;
 
-  OperatorConstructor ctor = this->findOperatorConstructor(opName);
-  if (!ctor)
-    return oper;
+//   OperatorConstructor ctor = this->findOperatorConstructor(opName);
+//   if (!ctor)
+//     return oper;
 
-  oper = ctor();
-  if (!oper)
-    return oper;
+//   oper = ctor();
+//   if (!oper)
+//     return oper;
 
-  oper->setSession(const_cast<Session*>(this)->shared_from_this());
-  oper->setManager(this->manager());
-  oper->setMeshManager(this->meshManager());
+//   oper->setSession(const_cast<Session*>(this)->shared_from_this());
+//   oper->setManager(this->manager());
+//   oper->setMeshManager(this->meshManager());
 
-  RemoteOperator::Ptr remoteOp = smtk::dynamic_pointer_cast<RemoteOperator>(oper);
-  if (remoteOp)
-    remoteOp->setName(opName);
+//   // Notify observers that an operator was created.
+//   if (this->m_manager)
+//     this->m_manager->trigger(OperatorEventType::CREATED_OPERATOR, *oper.get());
 
-  // Notify observers that an operator was created.
-  if (this->m_manager)
-    this->m_manager->trigger(OperatorEventType::CREATED_OPERATOR, *oper.get());
-
-  return oper;
-}
+//   return oper;
+// }
 
 /// Return the map from dangling entityrefs to bits describing their partial transcription state.
 const DanglingEntities& Session::danglingEntities() const
@@ -1040,10 +1035,14 @@ void Session::initializeOperatorCollection(const OperatorConstructors* opList)
   cmptssDefn->setIsOptional(true);
   cmptssDefn->setIsExtensible(true);
 
-  cmpcreDefn->setAcceptsResourceComponents("model", true);
-  cmpmodDefn->setAcceptsResourceComponents("model", true);
-  cmpremDefn->setAcceptsResourceComponents("model", true);
-  cmptssDefn->setAcceptsResourceComponents("model", true);
+  cmpcreDefn->setAcceptsResourceComponents(
+    smtk::model::Manager::type_name, std::to_string(smtk::model::ANY_ENTITY), true);
+  cmpmodDefn->setAcceptsResourceComponents(
+    smtk::model::Manager::type_name, std::to_string(smtk::model::ANY_ENTITY), true);
+  cmpremDefn->setAcceptsResourceComponents(
+    smtk::model::Manager::type_name, std::to_string(smtk::model::ANY_ENTITY), true);
+  cmptssDefn->setAcceptsResourceComponents(
+    smtk::model::Manager::type_name, std::to_string(smtk::model::ANY_ENTITY), true);
 
   logDefn->setNumberOfRequiredValues(0);
   logDefn->setIsExtensible(1);

@@ -14,13 +14,18 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/VoidItem.h"
+
+#include "smtk/bridge/polygon/operators/CreateEdge.h"
+#include "smtk/bridge/polygon/operators/CreateModel.h"
+
 #include "smtk/common/testing/cxx/helpers.h"
+
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
-#include "smtk/model/Session.h"
 #include "smtk/model/StringData.h"
+#include "smtk/model/operators/EntityGroupOperator.h"
+
 #include <complex>
 
 using namespace smtk::model;
@@ -30,9 +35,6 @@ int UnitTestPolygonFindOperatorAttItems(int argc, char* argv[])
 {
   (void)argc;
   (void)argv;
-
-  smtk::model::ManagerPtr manager = smtk::model::Manager::create();
-  smtk::model::SessionRef session = manager->createSession("polygon");
 
   // Explicitly instantiate item filters for gcc4.8
   std::function<bool(smtk::attribute::ItemPtr)> itemFilter = [](
@@ -48,17 +50,17 @@ int UnitTestPolygonFindOperatorAttItems(int argc, char* argv[])
 
   std::cout << "Use create model operator to test filterItems function in attribute." << std::endl;
   /// Use "create model" operator to valid valueItem
-  smtk::model::OperatorPtr createModelOp = session.op("create model");
+  smtk::bridge::polygon::Operator::Ptr createModelOp = smtk::bridge::polygon::CreateModel::create();
   std::vector<ItemPtr> cmItems, intDoubleItems;
-  createModelOp->specification()->filterItems(cmItems, itemFilter, false);
+  createModelOp->parameters()->filterItems(cmItems, itemFilter, false);
   test(cmItems.size() == 10, "  Number of items including all children does not equal 10");
   // Find int and double items in all children
-  createModelOp->specification()->filterItems(intDoubleItems, intDoubleFilter, false);
-  test(intDoubleItems.size() == 9,
-    "  Number of int and double items including all children does not equal 9");
+  createModelOp->parameters()->filterItems(intDoubleItems, intDoubleFilter, false);
+  test(intDoubleItems.size() == 8,
+    "  Number of int and double items including all children does not equal 8");
   // Find items in active children
   std::vector<DoubleItemPtr> cmDoubleItems;
-  createModelOp->specification()->filterItems(cmDoubleItems, doubleFilter);
+  createModelOp->parameters()->filterItems(cmDoubleItems, doubleFilter);
   test(cmDoubleItems.size() == 4,
     "  Number of double items only including active child does not equal 4");
   test(cmDoubleItems[0]->name() == std::string("origin"), "  Double item origin is missing");
@@ -68,7 +70,7 @@ int UnitTestPolygonFindOperatorAttItems(int argc, char* argv[])
 
   // Find items in all children
   cmDoubleItems.clear();
-  createModelOp->specification()->filterItems(cmDoubleItems, doubleFilter, false);
+  createModelOp->parameters()->filterItems(cmDoubleItems, doubleFilter, false);
   test(
     cmDoubleItems.size() == 5, "  Number of double items include all children does not equal five");
   test(cmDoubleItems[0]->name() == "feature size", "  Double item feature size is missing");
@@ -80,16 +82,16 @@ int UnitTestPolygonFindOperatorAttItems(int argc, char* argv[])
 
   std::cout << "Use entity group operator to test filterItems function in attribute." << std::endl;
   /// use "entity group" operator to valid valueItem
-  smtk::model::OperatorPtr groupOp = session.op("entity group");
+  smtk::operation::NewOp::Ptr groupOp = smtk::model::EntityGroupOperator::create();
   std::vector<ItemPtr> groupItems, allGroupItems;
   std::vector<VoidItemPtr> voidGroupItems;
   std::vector<ModelEntityItemPtr> modelEntityGroupItems;
-  groupOp->specification()->filterItems(groupItems, itemFilter);
-  groupOp->specification()->filterItems(allGroupItems, itemFilter, false);
-  groupOp->specification()->filterItems(voidGroupItems, voidFilter);
+  groupOp->parameters()->filterItems(groupItems, itemFilter);
+  groupOp->parameters()->filterItems(allGroupItems, itemFilter, false);
+  groupOp->parameters()->filterItems(voidGroupItems, voidFilter);
 
-  test(groupItems.size() == 10, "Number of items only including active child does not equal 10");
-  test(allGroupItems.size() == 13, "Number of items including all children does not equal 13");
+  test(groupItems.size() == 9, "Number of items only including active child does not equal 9");
+  test(allGroupItems.size() == 12, "Number of items including all children does not equal 12");
   test(voidGroupItems.size() == 4,
     "Number of void items only including active child does not equal 4");
   test(voidGroupItems[0]->name() == std::string("Vertex"), "void item Vertex is missing");
@@ -97,35 +99,34 @@ int UnitTestPolygonFindOperatorAttItems(int argc, char* argv[])
   test(voidGroupItems[2]->name() == std::string("Face"), "void item Face is missing");
   test(voidGroupItems[3]->name() == std::string("Volume"), "void item Volume is missing");
 
-  groupOp->specification()->filterItems(modelEntityGroupItems, modelEntityFilter);
+  groupOp->parameters()->filterItems(modelEntityGroupItems, modelEntityFilter);
   test(modelEntityGroupItems.size() == 2,
     "Number of modelEntity items only including active child does not equal 2");
   modelEntityGroupItems.clear();
-  groupOp->specification()->filterItems(modelEntityGroupItems, modelEntityFilter, false);
+  groupOp->parameters()->filterItems(modelEntityGroupItems, modelEntityFilter, false);
   test(modelEntityGroupItems.size() == 5,
     "Number of modelEntity items including childern does not equal 5");
   std::cout << "  All passed" << std::endl;
 
   std::cout << "Use entity group operator to test filterItems function in attribute." << std::endl;
   /// use "entity group" operator to valid valueItem
-  smtk::model::OperatorPtr createEdge = session.op("create edge");
+  smtk::bridge::polygon::Operator::Ptr createEdge = smtk::bridge::polygon::CreateEdge::create();
   std::vector<ItemPtr> CEItems, allCEItems;
   std::vector<IntItemPtr> CEIntItems;
   std::vector<DoubleItemPtr> CEDoubleItems;
-  createEdge->specification()->filterItems(CEItems, itemFilter);
-  createEdge->specification()->filterItems(CEIntItems, intFilter);
-  createEdge->specification()->filterItems(CEDoubleItems, doubleFilter, false);
-  createEdge->specification()->filterItems(allCEItems, itemFilter, false);
+  createEdge->parameters()->filterItems(CEItems, itemFilter);
+  createEdge->parameters()->filterItems(CEIntItems, intFilter);
+  createEdge->parameters()->filterItems(CEDoubleItems, doubleFilter, false);
+  createEdge->parameters()->filterItems(allCEItems, itemFilter, false);
 
-  test(CEItems.size() == 4, "Number of items only including active child does not equal 4");
-  test(allCEItems.size() == 7, "Number of items including all children does not equal 7");
-  test(CEIntItems.size() == 4, "Number of int items including all children does not equal 4");
-  test(CEIntItems[0]->name() == std::string("assign names"), "Int item assign names is missing");
-  test(CEIntItems[1]->name() == std::string("debug level"), "Int item debug level is missing");
-  test(CEIntItems[2]->name() == std::string("construction method"),
+  test(CEItems.size() == 3, "Number of items only including active child does not equal 3");
+  test(allCEItems.size() == 6, "Number of items including all children does not equal 6");
+  test(CEIntItems.size() == 3, "Number of int items including all children does not equal 3");
+  test(CEIntItems[0]->name() == std::string("debug level"), "Int item debug level is missing");
+  test(CEIntItems[1]->name() == std::string("construction method"),
     "Int item construction method is missing");
   test(
-    CEIntItems[3]->name() == std::string("HelperGlobalID"), "Int item HelperGlobalID is missing");
+    CEIntItems[2]->name() == std::string("HelperGlobalID"), "Int item HelperGlobalID is missing");
   test(CEDoubleItems.size() == 1, "Number of double items including all children does not equal 1");
   test(CEDoubleItems[0]->name() == std::string("points"), "double item points is missing");
 
@@ -133,6 +134,3 @@ int UnitTestPolygonFindOperatorAttItems(int argc, char* argv[])
 
   return 0;
 }
-
-// This macro ensures the polygon session library is loaded into the executable
-smtkComponentInitMacro(smtk_polygon_session)

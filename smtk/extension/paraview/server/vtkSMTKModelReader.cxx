@@ -132,44 +132,45 @@ int vtkSMTKModelReader::RequestData(vtkInformation* vtkNotUsed(request),
 
 bool vtkSMTKModelReader::LoadFile()
 {
-  std::cout << "  Reading " << this->FileName << "\n";
-  auto oldMgr = this->ModelSource->GetModelManager();
-  if (oldMgr && this->ResourceObserver)
-  {
-    this->ResourceObserver(oldMgr, false);
-  }
-  auto mgr = model::Manager::create();
-  this->ModelSource->SetModelManager(mgr);
-  mgr->setLocation(this->FileName);
+  // std::cout << "  Reading " << this->FileName << "\n";
+  // auto oldMgr = this->ModelSource->GetModelManager();
+  // if (oldMgr && this->ResourceObserver)
+  // {
+  //   this->ResourceObserver(oldMgr, false);
+  // }
+  // auto mgr = model::Manager::create();
+  // this->ModelSource->SetModelManager(mgr);
+  // mgr->setLocation(this->FileName);
 
-  auto ssn = mgr->createSession("native");
-  auto rdr = ssn.op("load smtk model"); // smtk::model::LoadSMTKModel::create();
-  if (!rdr)
-  {
-    return false;
-  }
+  // auto ssn = mgr->createSession("native");
+  // auto rdr = ssn.op("load smtk model"); // smtk::model::LoadSMTKModel::create();
+  // if (!rdr)
+  // {
+  //   return false;
+  // }
 
-  auto filenameItem = rdr->specification()->findFile("filename");
-  filenameItem->setNumberOfValues(1);
-  filenameItem->setValue(0, this->FileName);
-  auto res = rdr->operate();
+  // auto filenameItem = rdr->specification()->findFile("filename");
+  // filenameItem->setNumberOfValues(1);
+  // filenameItem->setValue(0, this->FileName);
+  // auto res = rdr->operate();
 
-  if (res->findInt("outcome")->value() != operation::Operator::OPERATION_SUCCEEDED)
-  {
-    smtkErrorMacro(smtk::io::Logger::instance(), "Could not read \"" << this->FileName << "\"");
-    return false;
-  }
+  // if (res->findInt("outcome")->value() != operation::Operator::OPERATION_SUCCEEDED)
+  // {
+  //   smtkErrorMacro(smtk::io::Logger::instance(), "Could not read \"" << this->FileName << "\"");
+  //   return false;
+  // }
 
-  auto cre = res->findModelEntity("created");
-  if (cre->numberOfValues() > 0)
-  {
-    this->ModelSource->SetModelEntityID(cre->value().entity().toString().c_str());
-  }
+  // auto cre = res->findModelEntity("created");
+  // if (cre->numberOfValues() > 0)
+  // {
+  //   this->ModelSource->SetModelEntityID(cre->value().entity().toString().c_str());
+  // }
 
-  if (this->ResourceObserver)
-  {
-    this->ResourceObserver(mgr, true);
-  }
+  // if (this->ResourceObserver)
+  // {
+  //   this->ResourceObserver(mgr, true);
+  // }
 
-  return true;
+  // return true;
+  return false;
 }

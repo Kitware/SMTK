@@ -245,7 +245,7 @@ bool Definition::associatesWithGroup() const
 /// Return whether this attribute can be associated with entities that have the given \a flag value.
 bool Definition::canBeAssociated(smtk::model::BitFlags flag) const
 {
-  // This is a simpler version of Group::meetsMembershipConstraintsInternal().
+  // This is a simpler version of Group::meetsMembershipConstraints().
   smtk::model::BitFlags mask = this->associationMask();
   smtk::model::BitFlags memberTest = flag & mask;
   if (!(memberTest & smtk::model::ANY_DIMENSION) && (mask & smtk::model::ANY_DIMENSION))

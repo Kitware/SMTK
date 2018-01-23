@@ -11,6 +11,7 @@
 //=============================================================================
 #include "smtk/extension/delaunay/operators/TriangulateFaces.h"
 
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/VoidItem.h"
 
 #include "smtk/extension/delaunay/io/ExportDelaunayMesh.h"
@@ -31,11 +32,15 @@
 #include "Shape/PolygonUtilities.hh"
 #include "Validation/IsValidPolygon.hh"
 
+#include "smtk/extension/delaunay/TriangulateFaces_xml.h"
+
 #include <algorithm>
 
 namespace smtk
 {
-namespace mesh
+namespace extension
+{
+namespace delaunay
 {
 
 TriangulateFaces::TriangulateFaces()
@@ -44,7 +49,8 @@ TriangulateFaces::TriangulateFaces()
 
 bool TriangulateFaces::ableToOperate()
 {
-  smtk::model::EntityRefArray entities = this->associatedEntitiesAs<smtk::model::EntityRefArray>();
+  auto associations = this->parameters()->associations();
+  smtk::model::EntityRefArray entities(associations->begin(), associations->end());
 
   for (auto& eRef : entities)
   {
@@ -57,19 +63,22 @@ bool TriangulateFaces::ableToOperate()
   return this->Superclass::ableToOperate();
 }
 
-smtk::model::OperatorResult TriangulateFaces::operateInternal()
+TriangulateFaces::Result TriangulateFaces::operateInternal()
 {
-  smtk::model::Faces faces = this->associatedEntitiesAs<smtk::model::Faces>();
-  bool validatePolygons = this->findVoid("validate polygons")->isEnabled();
+  auto associations = this->parameters()->associations();
+  smtk::model::Faces faces(associations->begin(), associations->end());
+
+  bool validatePolygons = this->parameters()->findVoid("validate polygons")->isEnabled();
 
   // construct a collection and associate it with the face's model
-  smtk::mesh::CollectionPtr collection = this->session()->meshManager()->makeCollection();
+  smtk::model::Manager::Ptr resource =
+    std::dynamic_pointer_cast<smtk::model::Manager>(faces[0].component()->resource());
+  smtk::mesh::CollectionPtr collection = resource->meshes()->makeCollection();
   collection->assignUniqueNameIfNotAlready();
   collection->setModelManager(faces[0].manager());
   collection->associateToModel(faces[0].model().entity());
 
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
 
   for (auto& face : faces)
   {
@@ -82,7 +91,7 @@ smtk::model::OperatorResult TriangulateFaces::operateInternal()
     {
       // if we don't have loops, there is nothing to mesh
       smtkErrorMacro(this->log(), "No loops associated with this face.");
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
     }
 
     // the first loop is the exterior loop
@@ -106,7 +115,7 @@ smtk::model::OperatorResult TriangulateFaces::operateInternal()
     {
       // the polygon is invalid, so we exit with failure
       smtkErrorMacro(this->log(), "Outer boundary polygon is invalid.");
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
     }
 
     // discretize the polygon
@@ -130,7 +139,7 @@ smtk::model::OperatorResult TriangulateFaces::operateInternal()
       {
         // the polygon is invalid, so we exit with failure
         smtkErrorMacro(this->log(), "Inner boundary polygon is invalid.");
-        return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+        return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
       }
 
       excise(p_sub, mesh);
@@ -149,18 +158,18 @@ smtk::model::OperatorResult TriangulateFaces::operateInternal()
     // collection for the entire model is placed in ModelBuilder's model
     // tree. In the future, ModelBuilder should be able to handle meshes
     // on model entities (rather than entire models).
-    this->addEntityToResult(result, face.owningModel(), MODIFIED);
+    smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
+    modified->setValue(face.component());
     result->findModelEntity("mesh_created")->appendValue(face.owningModel());
   }
 
   return result;
 }
 
-} // namespace model
-} // namespace smtk
-
-#include "smtk/extension/delaunay/Exports.h"
-#include "smtk/extension/delaunay/TriangulateFaces_xml.h"
-
-smtkImplementsModelOperator(SMTKDELAUNAYEXT_EXPORT, smtk::mesh::TriangulateFaces,
-  delaunay_triangulate_faces, "triangulate faces", TriangulateFaces_xml, smtk::model::Session);
+const char* TriangulateFaces::xmlDescription() const
+{
+  return TriangulateFaces_xml;
+}
+}
+}
+}

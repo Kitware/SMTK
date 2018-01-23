@@ -27,6 +27,7 @@
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/ForEachTypes.h"
 #include "smtk/mesh/core/Manager.h"
+#include "smtk/mesh/operators/ElevateMesh.h"
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/Operator.h"
@@ -121,26 +122,8 @@ int main(int argc, char* argv[])
   // Create a model manager
   smtk::model::ManagerPtr manager = smtk::model::Manager::create();
 
-  // Identify available sessions
-  std::cout << "Available sessions\n";
-  typedef smtk::model::StringList StringList;
-  StringList sessions = manager->sessionTypeNames();
+  // Access the mesh manager
   smtk::mesh::ManagerPtr meshManager = manager->meshes();
-  for (StringList::iterator it = sessions.begin(); it != sessions.end(); ++it)
-    std::cout << "  " << *it << "\n";
-  std::cout << "\n";
-
-  // Create a new default session
-  smtk::model::SessionRef sessRef = manager->createSession("native");
-
-  // Identify available operators
-  std::cout << "Available cmb operators\n";
-  StringList opnames = sessRef.session()->operatorNames();
-  for (StringList::iterator it = opnames.begin(); it != opnames.end(); ++it)
-  {
-    std::cout << "  " << *it << "\n";
-  }
-  std::cout << "\n";
 
   // Load in the model
   create_simple_mesh_model(manager, std::string(argv[1]));
@@ -150,7 +133,7 @@ int main(int argc, char* argv[])
   smtk::mesh::CollectionPtr c = convert(meshManager, manager);
 
   // Create an "Elevate Mesh" operator
-  smtk::model::OperatorPtr elevateMeshOp = sessRef.session()->op("elevate mesh");
+  smtk::operation::NewOp::Ptr elevateMeshOp = smtk::mesh::ElevateMesh::create();
   if (!elevateMeshOp)
   {
     std::cerr << "No \"elevate mesh\" operator\n";
@@ -159,7 +142,7 @@ int main(int argc, char* argv[])
 
   // Set the operator's input mesh
   smtk::mesh::MeshSet mesh = meshManager->collectionBegin()->second->meshes();
-  bool valueSet = elevateMeshOp->specification()->findMesh("mesh")->appendValue(mesh);
+  bool valueSet = elevateMeshOp->parameters()->findMesh("mesh")->appendValue(mesh);
 
   if (!valueSet)
   {
@@ -167,12 +150,12 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  elevateMeshOp->specification()
+  elevateMeshOp->parameters()
     ->findString("interpolation scheme")
     ->setValue("inverse distance weighting");
 
   // Set the operator's input power
-  smtk::attribute::DoubleItemPtr power = elevateMeshOp->specification()->findDouble("power");
+  smtk::attribute::DoubleItemPtr power = elevateMeshOp->parameters()->findDouble("power");
 
   if (!power)
   {
@@ -205,11 +188,11 @@ int main(int argc, char* argv[])
     }
     outfile.close();
 
-    elevateMeshOp->specification()->findString("input data")->setValue("ptsfile");
-    smtk::attribute::FileItemPtr ptsFile = elevateMeshOp->specification()->findFile("ptsfile");
+    elevateMeshOp->parameters()->findString("input data")->setValue("ptsfile");
+    smtk::attribute::FileItemPtr ptsFile = elevateMeshOp->parameters()->findFile("ptsfile");
     if (!ptsFile)
     {
-      std::cerr << "No \"ptsfile\" item in specification\n";
+      std::cerr << "No \"ptsfile\" item in parameters\n";
       cleanup(write_path);
       return 1;
     }
@@ -219,14 +202,14 @@ int main(int argc, char* argv[])
   }
   else
   {
-    elevateMeshOp->specification()->findString("input data")->setValue("points");
+    elevateMeshOp->parameters()->findString("input data")->setValue("points");
 
     // Set the operator's input points
-    smtk::attribute::GroupItemPtr points = elevateMeshOp->specification()->findGroup("points");
+    smtk::attribute::GroupItemPtr points = elevateMeshOp->parameters()->findGroup("points");
 
     if (!points)
     {
-      std::cerr << "No \"points\" item in specification\n";
+      std::cerr << "No \"points\" item in parameters\n";
       return 1;
     }
 
@@ -242,7 +225,7 @@ int main(int argc, char* argv[])
   }
 
   // Execute "Elevate Mesh" operator...
-  smtk::model::OperatorResult elevateMeshOpResult = elevateMeshOp->operate();
+  smtk::operation::NewOp::Result elevateMeshOpResult = elevateMeshOp->operate();
 
   // ...delete the generated points file...
   if (fromCSV)
@@ -252,7 +235,7 @@ int main(int argc, char* argv[])
 
   // ...and test the results for success.
   if (elevateMeshOpResult->findInt("outcome")->value() !=
-    smtk::operation::Operator::OPERATION_SUCCEEDED)
+    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
   {
     std::cerr << "\"elevate mesh\" operator failed\n";
     return 1;

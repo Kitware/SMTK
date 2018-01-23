@@ -19,16 +19,8 @@ namespace bridge
 namespace discrete
 {
 
-/// Return a shared pointer to the session backing a discrete operator.
-SessionPtr Operator::discreteSession() const
+Operator::~Operator()
 {
-  return smtk::dynamic_pointer_cast<smtk::bridge::discrete::Session>(this->session());
-}
-
-/// A helper to return the CGM entity associated with \a smtkEntity.
-vtkModelItem* Operator::discreteEntity(const smtk::model::EntityRef& smtkEntity)
-{
-  return this->discreteSession()->entityForUUID(smtkEntity.entity());
 }
 
 } // namespace discrete

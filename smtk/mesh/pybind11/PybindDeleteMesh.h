@@ -15,26 +15,23 @@
 
 #include "smtk/mesh/operators/DeleteMesh.h"
 
-#include "smtk/model/Operator.h"
+#include "smtk/operation/XMLOperator.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::mesh::DeleteMesh, smtk::model::Operator > pybind11_init_smtk_mesh_DeleteMesh(py::module &m)
+PySharedPtrClass< smtk::mesh::DeleteMesh, smtk::operation::XMLOperator > pybind11_init_smtk_mesh_DeleteMesh(py::module &m)
 {
-  PySharedPtrClass< smtk::mesh::DeleteMesh, smtk::model::Operator > instance(m, "DeleteMesh");
+  PySharedPtrClass< smtk::mesh::DeleteMesh, smtk::operation::XMLOperator > instance(m, "DeleteMesh");
   instance
     .def(py::init<>())
     .def(py::init<::smtk::mesh::DeleteMesh const &>())
     .def("deepcopy", (smtk::mesh::DeleteMesh & (smtk::mesh::DeleteMesh::*)(::smtk::mesh::DeleteMesh const &)) &smtk::mesh::DeleteMesh::operator=)
     .def("ableToOperate", &smtk::mesh::DeleteMesh::ableToOperate)
-    .def("className", &smtk::mesh::DeleteMesh::className)
     .def("classname", &smtk::mesh::DeleteMesh::classname)
     .def_static("create", (std::shared_ptr<smtk::mesh::DeleteMesh> (*)()) &smtk::mesh::DeleteMesh::create)
     .def_static("create", (std::shared_ptr<smtk::mesh::DeleteMesh> (*)(::std::shared_ptr<smtk::mesh::DeleteMesh> &)) &smtk::mesh::DeleteMesh::create, py::arg("ref"))
-    .def("name", &smtk::mesh::DeleteMesh::name)
     .def("shared_from_this", (std::shared_ptr<const smtk::mesh::DeleteMesh> (smtk::mesh::DeleteMesh::*)() const) &smtk::mesh::DeleteMesh::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<smtk::mesh::DeleteMesh> (smtk::mesh::DeleteMesh::*)()) &smtk::mesh::DeleteMesh::shared_from_this)
-    .def_readwrite_static("operatorName", &smtk::mesh::DeleteMesh::operatorName)
     ;
   return instance;
 }

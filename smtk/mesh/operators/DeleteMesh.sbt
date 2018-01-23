@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the mesh "DeleteMesh" Operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="delete mesh" BaseType="operator" Label="Mesh - Delete">
       <ItemDefinitions>
         <MeshEntity Name="mesh" NumberOfRequiredValues="1" Extensible="true" />
@@ -17,6 +17,7 @@
       </DetailedDescription>
     </AttDef>
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(delete mesh)" BaseType="result">
       <ItemDefinitions>
         <MeshEntity Name="mesh_expunged" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>

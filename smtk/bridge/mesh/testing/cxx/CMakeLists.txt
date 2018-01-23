@@ -17,6 +17,7 @@ set (unit_tests_which_require_data
   UnitTestImportFrom3dm.cxx
   UnitTestImportFromExodus.cxx
   UnitTestTopology.cxx
+  UnitTestImportExport.cxx
   UnitTestReadWrite.cxx)
 
 set(external_libs ${Boost_LIBRARIES})

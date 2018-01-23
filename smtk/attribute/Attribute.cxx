@@ -23,6 +23,7 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/RefItem.h"
+#include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/VoidItem.h"
@@ -664,6 +665,15 @@ smtk::attribute::DateTimeItemPtr Attribute::findDateTime(const std::string& name
 smtk::attribute::ConstDateTimeItemPtr Attribute::findDateTime(const std::string& nameStr) const
 {
   return smtk::dynamic_pointer_cast<const DateTimeItem>(this->find(nameStr));
+}
+
+smtk::attribute::ResourceItemPtr Attribute::findResource(const std::string& nameStr)
+{
+  return smtk::dynamic_pointer_cast<ResourceItem>(this->find(nameStr));
+}
+smtk::attribute::ConstResourceItemPtr Attribute::findResource(const std::string& nameStr) const
+{
+  return smtk::dynamic_pointer_cast<const ResourceItem>(this->find(nameStr));
 }
 
 smtk::attribute::ComponentItemPtr Attribute::findComponent(const std::string& nameStr)

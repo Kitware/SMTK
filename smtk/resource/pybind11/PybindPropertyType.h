@@ -7,8 +7,9 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_resource_pybind11_PybindPropertyType_h
-#define smtk_resource_pybind11_PybindPropertyType_h
+
+#ifndef pybind_smtk_resource_PropertyType_h
+#define pybind_smtk_resource_PropertyType_h
 
 #include <pybind11/pybind11.h>
 

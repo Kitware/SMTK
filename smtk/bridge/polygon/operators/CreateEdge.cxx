@@ -9,6 +9,7 @@
 //=============================================================================
 #include "smtk/bridge/polygon/operators/CreateEdge.h"
 
+#include "smtk/bridge/polygon/Resource.h"
 #include "smtk/bridge/polygon/Session.h"
 #include "smtk/bridge/polygon/internal/Model.h"
 #include "smtk/bridge/polygon/internal/Model.txx"
@@ -52,24 +53,25 @@ void printSegment(internal::pmodel::Ptr storage, const std::string& msg, T& seg)
 }
 */
 
-smtk::model::OperatorResult CreateEdge::operateInternal()
+CreateEdge::Result CreateEdge::operateInternal()
 {
-  smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
-  smtk::model::Manager::Ptr mgr;
-  if (!sess)
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
-
-  mgr = sess->manager();
   // Discover how the user wants to specify scaling.
-  smtk::attribute::IntItem::Ptr constructionMethodItem = this->findInt("construction method");
+  smtk::attribute::IntItem::Ptr constructionMethodItem =
+    this->parameters()->findInt("construction method");
   // This value matches CreateEdge.sbt index (and enum value):
   int method = constructionMethodItem->discreteIndex(0);
 
-  smtk::attribute::DoubleItem::Ptr pointsItem = this->findDouble("points");
-  smtk::attribute::IntItem::Ptr coordinatesItem = this->findInt("coordinates");
-  smtk::attribute::IntItem::Ptr offsetsItem = this->findInt("offsets");
+  smtk::attribute::DoubleItem::Ptr pointsItem = this->parameters()->findDouble("points");
+  smtk::attribute::IntItem::Ptr coordinatesItem = this->parameters()->findInt("coordinates");
+  smtk::attribute::IntItem::Ptr offsetsItem = this->parameters()->findInt("offsets");
 
-  smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->associations();
+  smtk::attribute::ModelEntityItem::Ptr modelItem = this->parameters()->associations();
+  smtk::bridge::polygon::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::polygon::Resource>(
+      modelItem->value(0).component()->resource());
+  if (!resource)
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+
   // Either modelItem contains a single Model or 2+ Vertex entities.
   // If method == 0 (points), use the owningModel of any Vertex or complain
   // If method == 1 (vertices), complain if the entities are not vertices or there are too few.
@@ -83,7 +85,7 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
     {
       smtkErrorMacro(this->log(),
         "A model (or vertices with a valid parent model) must be associated with the operator.");
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
     }
   }
   if (method == 1 && (!modelItem->value(0).isVertex() || modelItem->numberOfValues() < 2))
@@ -91,10 +93,10 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
     smtkErrorMacro(this->log(), "When constructing an edge from vertices,"
                                 " all associated model entities must be vertices"
                                 " and there must be at least 2 vertices");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
-  internal::pmodel::Ptr storage = this->findStorage<internal::pmodel>(parentModel.entity());
+  internal::pmodel::Ptr storage = resource->findStorage<internal::pmodel>(parentModel.entity());
   bool ok = true;
   int numEdges = static_cast<int>(offsetsItem->numberOfValues());
   int numCoordsPerPt = coordinatesItem->value(0);
@@ -102,7 +104,7 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
   {
     smtkErrorMacro(this->log(), "When constructing an edge from points or interactive widget,"
                                 "the number of coordinates per point must be specified!");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   // numPts is the number of points total (across all edges)
@@ -156,8 +158,8 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
         }
         if (!first && orig != curr)
         { // non-periodic edge forces endpts to be model vertices
-          smtk::model::Vertex vs = storage->findOrAddModelVertex(mgr, orig);
-          smtk::model::Vertex ve = storage->findOrAddModelVertex(mgr, curr);
+          smtk::model::Vertex vs = storage->findOrAddModelVertex(resource, orig);
+          smtk::model::Vertex ve = storage->findOrAddModelVertex(resource, curr);
           edgeIsPeriodic = false;
         }
       }
@@ -171,11 +173,11 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
         for (; edgeOffset < edgeEnd; ++edgeOffset, prev = curr)
         {
           internal::vertex::Ptr vert =
-            this->findStorage<internal::vertex>(modelItem->value(edgeOffset).entity());
+            resource->findStorage<internal::vertex>(modelItem->value(edgeOffset).entity());
           if (!vert)
           {
             ok = false;
-            smtkErrorMacro(sess->log(), "vertices item " << edgeOffset << " not a valid vertex.");
+            smtkErrorMacro(this->log(), "vertices item " << edgeOffset << " not a valid vertex.");
           }
           curr = vert->point();
           if (!first)
@@ -214,7 +216,7 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
       if (result.empty())
       {
         smtkErrorMacro(this->log(), "Self-intersection of edge segments was empty set.");
-        return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+        return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
       }
 
       // I. Pre-process the intersected segments
@@ -308,7 +310,7 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
         // Promote each of those points to model vertices.
         for (std::size_t i = 1; i < numSegsPerSrc; ++i)
         {
-          smtk::model::Vertex vs = storage->findOrAddModelVertex(mgr, sit->second.high());
+          smtk::model::Vertex vs = storage->findOrAddModelVertex(resource, sit->second.high());
           ++sit;
           if (edgeIsPeriodic && !haveFirstModelVertex)
           {
@@ -347,7 +349,7 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
         {
           // Generate an edge. segStart->second.low() is guaranteed to be a model vertex.
           smtk::model::Edge edge = storage->createModelEdgeFromSegments(
-            mgr, segStart, sit, true, std::pair<UUID, UUID>(), false, newVerts);
+            resource, segStart, sit, true, std::pair<UUID, UUID>(), false, newVerts);
           if (edge.isValid())
             created.push_back(edge);
           segStart = sit;
@@ -357,7 +359,7 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
       if (segStart != result.end())
       {
         smtk::model::Edge edge = storage->createModelEdgeFromSegments(
-          mgr, segStart, result.end(), true, std::pair<UUID, UUID>(), false, newVerts);
+          resource, segStart, result.end(), true, std::pair<UUID, UUID>(), false, newVerts);
         created.push_back(edge);
       }
       created.insert(created.end(), newVerts.begin(), newVerts.end());
@@ -390,21 +392,33 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
   smtk::model::OperatorResult opResult;
   if (ok)
   {
-    opResult = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
-    this->addEntitiesToResult(opResult, created, CREATED);
-    this->addEntitiesToResult(opResult, modified, MODIFIED);
+    opResult = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+
+    smtk::attribute::ComponentItem::Ptr createdItem = opResult->findComponent("created");
+    for (auto& c : created)
+    {
+      createdItem->appendValue(c.component());
+    }
+
+    smtk::attribute::ComponentItem::Ptr modifiedItem = opResult->findComponent("modified");
+    for (auto& m : modified)
+    {
+      modifiedItem->appendValue(m.component());
+    }
   }
   else
   {
-    opResult = this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    opResult = this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   return opResult;
 }
 
+const char* CreateEdge::xmlDescription() const
+{
+  return CreateEdge_xml;
+}
+
 } // namespace polygon
 } //namespace bridge
 } // namespace smtk
-
-smtkImplementsModelOperator(SMTKPOLYGONSESSION_EXPORT, smtk::bridge::polygon::CreateEdge,
-  polygon_create_edge, "create edge", CreateEdge_xml, smtk::bridge::polygon::Session);

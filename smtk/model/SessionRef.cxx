@@ -93,16 +93,16 @@ OperatorDefinition SessionRef::opDef(const std::string& opName) const
   return sys->findDefinition(opName);
 }
 
-/**\brief Return an instance of an operator given its name.
-  *
-  */
-Operator::Ptr SessionRef::op(const std::string& opName) const
-{
-  Session::Ptr brdg = this->session();
-  if (!brdg)
-    return Operator::Ptr();
-  return brdg->op(opName);
-}
+// /**\brief Return an instance of an operator given its name.
+//   *
+//   */
+// Operator::Ptr SessionRef::op(const std::string& opName) const
+// {
+//   Session::Ptr brdg = this->session();
+//   if (!brdg)
+//     return Operator::Ptr();
+//   return brdg->op(opName);
+// }
 
 /**\brief Return operators that can be associated with the given entity flags.
   *

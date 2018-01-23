@@ -9,6 +9,7 @@
 //=============================================================================
 #include "smtk/bridge/polygon/operators/Delete.h"
 
+#include "smtk/bridge/polygon/Resource.h"
 #include "smtk/bridge/polygon/Session.h"
 #include "smtk/bridge/polygon/Session.txx"
 #include "smtk/bridge/polygon/internal/Model.h"
@@ -301,23 +302,27 @@ void Delete::addBoundaryCells(
   }
 }
 
-smtk::model::OperatorResult Delete::operateInternal()
+Delete::Result Delete::operateInternal()
 {
-  this->m_debugLevel = 100;
-
   smtk::attribute::VoidItem::Ptr deleteHigherDimen =
-    this->findVoid("delete higher-dimensional neighbors");
+    this->parameters()->findVoid("delete higher-dimensional neighbors");
   smtk::attribute::VoidItem::Ptr deleteLowerDimen =
-    this->findVoid("delete lower-dimensional neighbors");
+    this->parameters()->findVoid("delete lower-dimensional neighbors");
   bool deleteBoundingCells = deleteHigherDimen->isEnabled();
   bool deleteBoundaryCells = deleteLowerDimen->isEnabled();
 
-  smtkOpDebug("associations: " << this->specification()->associations()->numberOfValues());
+  smtkOpDebug("associations: " << this->parameters()->associations()->numberOfValues());
 
   smtk::model::EntityRefArray entities, oArray, fArray, eArray, vArray;
 
   // sort the input entities and go from high to low dimension
-  smtk::model::EntityRefs entitySet = this->associatedEntitiesAs<smtk::model::EntityRefs>();
+  smtk::model::EntityRefs entitySet =
+    this->parameters()->associatedModelEntities<smtk::model::EntityRefs>();
+
+  smtk::bridge::polygon::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::polygon::Resource>(
+      entitySet.begin()->component()->resource());
+
   smtk::model::EntityRefs::iterator eSit;
   for (eSit = entitySet.begin(); eSit != entitySet.end(); ++eSit)
   {
@@ -395,9 +400,12 @@ smtk::model::OperatorResult Delete::operateInternal()
     else
     {
       // go over the entities provided by user
-      smtk::model::VertexSet vertsAsso = this->associatedEntitiesAs<smtk::model::VertexSet>();
-      smtk::model::EdgeSet edgesAsso = this->associatedEntitiesAs<smtk::model::EdgeSet>();
-      smtk::model::FaceSet facesAsso = this->associatedEntitiesAs<smtk::model::FaceSet>();
+      smtk::model::VertexSet vertsAsso =
+        this->parameters()->associatedModelEntities<smtk::model::VertexSet>();
+      smtk::model::EdgeSet edgesAsso =
+        this->parameters()->associatedModelEntities<smtk::model::EdgeSet>();
+      smtk::model::FaceSet facesAsso =
+        this->parameters()->associatedModelEntities<smtk::model::FaceSet>();
       for (auto&& face : facesAsso)
       {
         smtk::model::EntityRef entity = face.as<smtk::model::EntityRef>();
@@ -427,7 +435,7 @@ smtk::model::OperatorResult Delete::operateInternal()
       smtkErrorMacro(this->log(), "... and " << (this->m_numWarnings - MAX_WARNINGS)
                                              << " more entities with dependents.");
     }
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   smtkOpDebug("Given " << entities.size() << ", found " << faces.size() << " faces, "
@@ -436,20 +444,28 @@ smtk::model::OperatorResult Delete::operateInternal()
                        << (deleteBoundingCells ? " (including bounding cells) " : " ")
                        << (deleteBoundaryCells ? " (including boundary cells)." : "."));
 
-  this->polygonSession()->consistentInternalDelete(
+  resource->polygonSession()->consistentInternalDelete(
     faces, this->m_modified, this->m_expunged, this->m_debugLevel > 0);
-  this->polygonSession()->consistentInternalDelete(
+  resource->polygonSession()->consistentInternalDelete(
     edges, this->m_modified, this->m_expunged, this->m_debugLevel > 0);
-  this->polygonSession()->consistentInternalDelete(
+  resource->polygonSession()->consistentInternalDelete(
     verts, this->m_modified, this->m_expunged, this->m_debugLevel > 0);
-  this->polygonSession()->consistentInternalDelete(
+  resource->polygonSession()->consistentInternalDelete(
     other, this->m_modified, this->m_expunged, this->m_debugLevel > 0);
 
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
-  this->addEntitiesToResult(result, this->m_expunged, EXPUNGED);
-  smtk::model::EntityRefArray modray(this->m_modified.begin(), this->m_modified.end());
-  this->addEntitiesToResult(result, modray, MODIFIED);
+  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+
+  smtk::attribute::ComponentItem::Ptr expunged = result->findComponent("expunged");
+  for (auto e = this->m_expunged.begin(); e != this->m_expunged.end(); ++e)
+  {
+    expunged->appendValue(e->component());
+  }
+
+  smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
+  for (auto m = this->m_modified.begin(); m != this->m_modified.end(); ++m)
+  {
+    modified->appendValue(m->component());
+  }
 
   smtkInfoMacro(this->log(), "Deleted " << this->m_expunged.size() << " of " << entities.size()
                                         << " requested entities");
@@ -457,9 +473,11 @@ smtk::model::OperatorResult Delete::operateInternal()
   return result;
 }
 
+const char* Delete::xmlDescription() const
+{
+  return Delete_xml;
+}
+
 } // namespace polygon
 } //namespace bridge
 } // namespace smtk
-
-smtkImplementsModelOperator(SMTKPOLYGONSESSION_EXPORT, smtk::bridge::polygon::Delete,
-  polygon_delete, "delete", Delete_xml, smtk::bridge::polygon::Session);

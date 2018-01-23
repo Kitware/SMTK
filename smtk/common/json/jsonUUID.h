@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_io_jsonUUID_h
-#define smtk_io_jsonUUID_h
+#ifndef smtk_common_json_jsonUUID_h
+#define smtk_common_json_jsonUUID_h
 
 #include "smtk/common/UUID.h"
 

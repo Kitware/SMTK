@@ -21,7 +21,7 @@
 #include "smtk/resource/Resource.h"
 
 #include "smtk/operation/Manager.h"
-#include "smtk/operation/Operator.h"
+#include "smtk/operation/NewOp.h"
 
 #include <functional>
 #include <list>
@@ -80,8 +80,8 @@ public:
   /// Applications may have a model decorate its phrases by providing a method with this signature.
   using PhraseDecorator = std::function<void(smtk::view::DescriptivePhrasePtr)>;
 
-  using Operator = smtk::operation::Operator;
-  using OperatorPtr = smtk::operation::OperatorPtr;
+  using Operator = smtk::operation::NewOp;
+  using OperatorPtr = smtk::operation::NewOp::Ptr;
   using ComponentItemPtr = smtk::attribute::ComponentItemPtr;
 
   using Resource = smtk::resource::Resource;
@@ -181,7 +181,7 @@ protected:
     * The only case where overriding this method is required (as opposed to those listed above)
     * is when you wish to respond to events other than Operator::DID_OPERATE.
     */
-  virtual int handleOperatorEvent(Operator::Ptr op, Operator::EventType e, Operator::Result res);
+  virtual int handleOperatorEvent(Operator::Ptr op, operation::EventType e, Operator::Result res);
 
   /// Called to deal with resources/components being removed as a result of an operation.
   virtual void handleExpunged(Operator::Ptr op, Operator::Result res, ComponentItemPtr data);

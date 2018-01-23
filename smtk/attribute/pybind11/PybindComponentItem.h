@@ -53,6 +53,9 @@ PySharedPtrClass< smtk::attribute::ComponentItem, smtk::attribute::Item > pybind
     .def("value", &smtk::attribute::ComponentItem::value, py::arg("i") = 0)
     .def("valueAsString", (std::string (smtk::attribute::ComponentItem::*)() const) &smtk::attribute::ComponentItem::valueAsString)
     .def("valueAsString", (std::string (smtk::attribute::ComponentItem::*)(::size_t) const) &smtk::attribute::ComponentItem::valueAsString, py::arg("i"))
+    .def_static("CastTo", [](const std::shared_ptr<smtk::attribute::Item> i) {
+        return std::dynamic_pointer_cast<smtk::attribute::ComponentItem>(i);
+      })
     ;
   return instance;
 }

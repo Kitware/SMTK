@@ -3,6 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="delete" BaseType="operator" Label="Model Entities - Delete">
       <BriefDescription>Delete model entities.</BriefDescription>
       <DetailedDescription>
@@ -50,6 +51,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(delete)" BaseType="result">
       <ItemDefinitions>
         <!-- The expunged entities are returned in the base result's "expunged" item. -->

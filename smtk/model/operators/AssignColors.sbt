@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the model "AssignColors" Operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
     <!-- Operator -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="assign colors" Label="Model Entities - Assign Colors" BaseType="operator">
       <AssociationsDef Name="entities" NumberOfRequiredValues="1" Extensible="true">
         <MembershipMask>model|group|cell|anydim</MembershipMask>
@@ -32,6 +33,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(assign colors)" BaseType="result"/>
   </Definitions>
 

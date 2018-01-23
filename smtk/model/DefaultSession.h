@@ -63,7 +63,7 @@ public:
   void backsRemoteSession(
     const std::string& remoteSessionName, const smtk::common::UUID& sessionId);
   virtual std::string remoteName() const;
-  OperatorPtr op(const std::string& opName) const override;
+  // OperatorPtr op(const std::string& opName) const override;
 
   /// Return an empty string. Subclasses should override this.
   std::string defaultFileExtension(const Model&) const override { return ""; }
@@ -76,9 +76,6 @@ protected:
 
   SessionInfoBits transcribeInternal(
     const EntityRef& entity, SessionInfoBits flags, int depth = -1) override;
-
-  virtual bool ableToOperateDelegate(RemoteOperatorPtr op);
-  virtual OperatorResult operateDelegate(RemoteOperatorPtr op);
 
   void setImportingOperators(bool isImporting);
 

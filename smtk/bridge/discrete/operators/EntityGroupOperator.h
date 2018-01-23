@@ -12,6 +12,7 @@
 #define __smtk_session_discrete_EntityGroupOperator_h
 
 #include "smtk/bridge/discrete/Operator.h"
+#include "smtk/bridge/discrete/Resource.h"
 #include "smtk/model/operators/EntityGroupOperator.h"
 #include "vtkMaterialOperator.h"
 #include "vtkModelEntityGroupOperator.h"
@@ -36,21 +37,25 @@ class SMTKDISCRETESESSION_EXPORT EntityGroupOperator : public smtk::model::Entit
 public:
   smtkTypeMacro(smtk::bridge::discrete::EntityGroupOperator);
   smtkCreateMacro(smtk::bridge::discrete::EntityGroupOperator);
-  smtkSharedFromThisMacro(smtk::model::EntityGroupOperator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSuperclassMacro(smtk::model::EntityGroupOperator);
 
   bool ableToOperate() override;
 
 protected:
   EntityGroupOperator();
-  smtk::model::OperatorResult operateInternal() override;
-  SessionPtr discreteSession() const;
-  vtkModelEntity* fetchCMBCell(const std::string& parameterName) const;
-  vtkModelEntity* fetchCMBCell(const smtk::attribute::ModelEntityItemPtr&, int idx) const;
+  Result operateInternal() override;
+
+  const char* xmlDescription() const override;
+  vtkModelEntity* fetchCMBCell(
+    smtk::bridge::discrete::Resource::Ptr& resource, const std::string& parameterName) const;
+  vtkModelEntity* fetchCMBCell(smtk::bridge::discrete::Resource::Ptr& resource,
+    const smtk::attribute::ModelEntityItemPtr&, int idx) const;
   int createBoundaryGroup(vtkDiscreteModelWrapper* modelWrapper);
   int createDomainSet(vtkDiscreteModelWrapper* modelWrapper);
 
-  bool modifyGroup(vtkDiscreteModelWrapper* modelWrapper, vtkModelEntity* cmbgroup, bool newGroup,
+  bool modifyGroup(smtk::bridge::discrete::Resource::Ptr& resource,
+    vtkDiscreteModelWrapper* modelWrapper, vtkModelEntity* cmbgroup, bool newGroup,
     smtk::model::EntityRefArray& modGrps);
 
   vtkNew<vtkModelEntityGroupOperator> m_opBoundary;

@@ -369,7 +369,8 @@ bool PythonInterpreter::loadPythonSourceFile(
           << "    import imp\n"
           << "    tmp = imp.load_source('" << moduleName << "', '" << fileName << "')\n"
 #endif
-          << "except:\n"
+          << "except Exception as e:\n"
+          << "    print(e)\n"
           << "    loaded = False";
 
   pybind11::exec(testCmd.str().c_str(), pybind11::globals(), locals);

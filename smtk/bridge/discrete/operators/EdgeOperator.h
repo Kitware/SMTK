@@ -12,8 +12,9 @@
 #define __smtk_session_discrete_EdgeOperator_h
 
 #include "smtk/bridge/discrete/Operator.h"
-#include "vtkEdgeSplitOperator.h"
-#include "vtkMergeOperator.h"
+#include "smtk/bridge/discrete/Resource.h"
+#include "smtk/bridge/discrete/operation/vtkEdgeSplitOperator.h"
+#include "smtk/bridge/discrete/operation/vtkMergeOperator.h"
 #include "vtkNew.h"
 #include <map>
 #include <set>
@@ -45,17 +46,19 @@ class SMTKDISCRETESESSION_EXPORT EdgeOperator : public Operator
 public:
   smtkTypeMacro(EdgeOperator);
   smtkCreateMacro(EdgeOperator);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSuperclassMacro(Operator);
 
   bool ableToOperate() override;
 
 protected:
   EdgeOperator();
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  const char* xmlDescription() const override;
 
   // some internal methods
-  void getSelectedVertsAndEdges(std::map<smtk::common::UUID, vtkDiscreteModelVertex*>& selVTXs,
+  void getSelectedVertsAndEdges(smtk::bridge::discrete::Resource::Ptr& resource,
+    std::map<smtk::common::UUID, vtkDiscreteModelVertex*>& selVTXs,
     std::map<smtk::common::UUID, std::pair<vtkDiscreteModelEdge*, std::set<int> > >& selArcs,
     const smtk::attribute::MeshSelectionItemPtr& inSelectionItem,
     smtk::bridge::discrete::SessionPtr opsession);
@@ -68,7 +71,8 @@ protected:
     vtkDiscreteModelWrapper* modelWrapper, smtk::bridge::discrete::SessionPtr opsession,
     smtk::model::EntityRefArray& srcsCreated, smtk::model::EntityRefArray& srcsModified,
     smtk::mesh::MeshSets& modifiedMeshes, vtkEdgeSplitOperator* splitOp);
-  int convertToGlobalPointId(int localPid, vtkDiscreteModelEdge* cmbModelEdge);
+  int convertToGlobalPointId(smtk::bridge::discrete::Resource::Ptr& resource, int localPid,
+    vtkDiscreteModelEdge* cmbModelEdge);
 
   vtkNew<vtkEdgeSplitOperator> m_splitOp;
   vtkNew<vtkMergeOperator> m_mergeOp;

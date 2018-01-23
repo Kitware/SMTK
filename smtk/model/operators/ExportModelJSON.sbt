@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the model "ExportModelJSON" Operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
     <!-- Operator -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="export model json" Label="Model - Export JSON" BaseType="operator" AdvanceLevel="10">
       <AssociationsDef Name="models" NumberOfRequiredValues="1" Extensible="true">
         <MembershipMask>model</MembershipMask>
@@ -24,6 +25,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(export model json)" BaseType="result">
       <!-- The modified entities are stored in the base result's "modified" item. -->
     </AttDef>

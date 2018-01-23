@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the polygon "SplitEdge" operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
     <!-- Operator -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="split edge" Label="Edge - Split" BaseType="operator">
       <BriefDescription>Split a model edge at the given point.</BriefDescription>
       <DetailedDescription>
@@ -44,6 +45,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(split edge)" BaseType="result">
       <ItemDefinitions>
         <!-- The edge(s) created are reported in the base result's "created" item. -->

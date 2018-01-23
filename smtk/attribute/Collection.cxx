@@ -27,27 +27,20 @@
 #include "smtk/common/UUID.h"
 
 #include <iostream>
+#include <numeric>
 #include <queue>
 #include <sstream>
 
 using namespace smtk::attribute;
 
-static void registerAttributeResource()
-{
-  smtk::attribute::Collection::Metadata metadata("attribute");
-  smtk::resource::Manager::registerResource<smtk::attribute::Collection>(metadata);
-}
-
 Collection::Collection(const smtk::common::UUID& myID, smtk::resource::ManagerPtr manager)
   : Resource(myID, manager)
 {
-  registerAttributeResource();
 }
 
 Collection::Collection(smtk::resource::ManagerPtr manager)
   : Resource(manager)
 {
-  registerAttributeResource();
 }
 
 Collection::~Collection()
@@ -869,4 +862,22 @@ std::vector<smtk::view::ViewPtr> Collection::findTopLevelViews() const
 smtk::resource::ComponentPtr Collection::find(const smtk::common::UUID& attId) const
 {
   return this->findAttribute(attId);
+}
+
+std::function<bool(const smtk::resource::ComponentPtr&)> Collection::queryOperation(
+  const std::string&) const
+{
+  // TODO: fill me in!
+  return [](const smtk::resource::ComponentPtr&) { return true; };
+}
+
+// visit all components in the resource.
+void Collection::visit(smtk::resource::Component::Visitor& visitor) const
+{
+  auto convertedVisitor = [&](const std::pair<std::string, const AttributePtr>& attributePair) {
+    const smtk::resource::ComponentPtr resource =
+      std::static_pointer_cast<smtk::resource::Component>(attributePair.second);
+    visitor(resource);
+  };
+  std::for_each(m_attributes.begin(), m_attributes.end(), convertedVisitor);
 }

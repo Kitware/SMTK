@@ -48,6 +48,9 @@ protected:
   void processDateTimeDef(pugi::xml_node& node, smtk::attribute::DateTimeItemDefinitionPtr idef);
   void processDateTimeItem(pugi::xml_node& node, smtk::attribute::DateTimeItemPtr item);
 
+  void processResourceDef(pugi::xml_node& node, smtk::attribute::ResourceItemDefinitionPtr idef);
+  void processResourceItem(pugi::xml_node& node, smtk::attribute::ResourceItemPtr item);
+
   void processComponentDef(pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef);
   void processComponentItem(pugi::xml_node& node, smtk::attribute::ComponentItemPtr item);
 

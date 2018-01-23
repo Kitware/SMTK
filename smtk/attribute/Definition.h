@@ -23,6 +23,7 @@
 #include "smtk/model/EntityRef.h"      //for EntityRef version of canBeAssociated
 #include "smtk/model/EntityTypeBits.h" // for BitFlags type
 
+#include <algorithm>
 #include <map>
 #include <set>
 #include <string>
@@ -84,6 +85,18 @@ public:
   bool isMemberOf(const std::vector<std::string>& categories) const;
 
   const std::set<std::string>& categories() const { return this->m_categories; }
+
+  /**
+   * @brief Given a container, filter item definitions in the definition by a lambda function
+   * @param values a container which holds definitions
+   * @param test a lambda function which would be applied on children item definitions
+   * Example filter double and int item definitions
+   *  [](Item::Ptr item) { return item->type() == DOUBLE || item->type() == INT; }
+   * Example filter modelEntity item definitions
+   *  [](ModelEntity::Ptr item) { return true; }
+   */
+  template <typename T>
+  void filterItemDefinitions(T& values, std::function<bool(typename T::value_type)> test);
 
   // Description:
   // The attributes advance level. 0 is the simplest.
@@ -339,6 +352,24 @@ inline void Definition::setDefaultColor(double r, double g, double b, double a)
   this->m_defaultColor[1] = g;
   this->m_defaultColor[2] = b;
   this->m_defaultColor[3] = a;
+}
+
+template <typename T>
+void Definition::filterItemDefinitions(
+  T& filtered, std::function<bool(typename T::value_type)> test)
+{
+
+  auto conditionalAdd = [&](smtk::attribute::ItemDefinitionPtr item) {
+    typename T::value_type testItem =
+      smtk::dynamic_pointer_cast<typename T::value_type::element_type>(item);
+
+    if (testItem && test(testItem))
+    {
+      filtered.insert(filtered.end(), testItem);
+    }
+  };
+
+  std::for_each(m_itemDefs.begin(), m_itemDefs.end(), conditionalAdd);
 }
 }
 }

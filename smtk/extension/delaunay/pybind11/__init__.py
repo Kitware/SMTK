@@ -10,4 +10,4 @@
 #
 #=============================================================================
 
-from _smtkPybindMeshDelaunay import *
+from _smtkPybindExtensionDelaunay import *

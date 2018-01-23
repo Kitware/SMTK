@@ -49,6 +49,8 @@ class ComponentItem;
 class ComponentItemDefinition;
 class RefItem;
 class RefItemDefinition;
+class ResourceItem;
+class ResourceItemDefinition;
 class DateTimeItem;
 class DateTimeItemDefinition;
 class Definition;
@@ -176,7 +178,6 @@ class ShellEntity;
 typedef std::vector<smtk::model::ShellEntity> ShellEntities;
 class Manager;
 class SimpleModelSubphrases;
-class StoredResource;
 class SubphraseGenerator;
 class Tessellation;
 class UseEntity;
@@ -316,8 +317,6 @@ typedef smtk::shared_ptr<smtk::model::RemoteOperator> RemoteOperatorPtr;
 typedef std::function<smtk::model::OperatorPtr()> OperatorConstructor;
 typedef std::pair<std::string, OperatorConstructor> StaticOperatorInfo;
 typedef std::map<std::string, StaticOperatorInfo> OperatorConstructors;
-typedef smtk::shared_ptr<smtk::model::StoredResource> StoredResourcePtr;
-typedef smtk::shared_ptr<const smtk::model::StoredResource> ConstStoredResourcePtr;
 typedef smtk::shared_ptr<smtk::model::Entity> EntityPtr;
 typedef smtk::weak_ptr<smtk::model::Entity> WeakEntityPtr;
 typedef std::vector<smtk::model::EntityPtr> EntityArray;
@@ -387,6 +386,8 @@ typedef smtk::shared_ptr<const smtk::attribute::ModelEntityItemDefinition>
 typedef smtk::shared_ptr<smtk::attribute::ModelEntityItemDefinition> ModelEntityItemDefinitionPtr;
 typedef smtk::shared_ptr<smtk::attribute::VoidItem> VoidItemPtr;
 typedef smtk::shared_ptr<smtk::attribute::VoidItemDefinition> VoidItemDefinitionPtr;
+typedef smtk::shared_ptr<smtk::attribute::ResourceItem> ResourceItemPtr;
+typedef smtk::shared_ptr<smtk::attribute::ResourceItemDefinition> ResourceItemDefinitionPtr;
 typedef smtk::shared_ptr<smtk::attribute::ComponentItem> ComponentItemPtr;
 typedef smtk::shared_ptr<smtk::attribute::ComponentItemDefinition> ComponentItemDefinitionPtr;
 
@@ -417,6 +418,9 @@ typedef smtk::shared_ptr<const smtk::attribute::MeshSelectionItemDefinition>
 typedef smtk::shared_ptr<const smtk::attribute::ModelEntityItem> ConstModelEntityItemPtr;
 typedef smtk::shared_ptr<const smtk::attribute::ModelEntityItemDefinition>
   ConstModelEntityItemDefinitionPtr;
+typedef smtk::shared_ptr<const smtk::attribute::ResourceItem> ConstResourceItemPtr;
+typedef smtk::shared_ptr<const smtk::attribute::ResourceItemDefinition>
+  ConstResourceItemDefinitionPtr;
 typedef smtk::shared_ptr<const smtk::attribute::ComponentItem> ConstComponentItemPtr;
 typedef smtk::shared_ptr<const smtk::attribute::ComponentItemDefinition>
   ConstComponentItemDefinitionPtr;

@@ -19,6 +19,8 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/vtk/operators/Exports.h" // For export macro
 
+#include "smtk/operation/NewOp.h"
+
 #include "vtkObject.h"
 
 class VTKSMTKOPERATORSEXT_EXPORT vtkSMTKOperator : public vtkObject
@@ -34,18 +36,18 @@ public:
   //the m_smtkOp. The default implementation will just use m_smtkOp's corresponding
   //methods.
   virtual bool AbleToOperate();
-  virtual smtk::model::OperatorResult Operate();
+  virtual smtk::operation::NewOp::Result Operate();
 
   //Description:
   //Set/Get related smtk operator
-  virtual void SetSMTKOperator(smtk::model::OperatorPtr op);
-  virtual smtk::model::OperatorPtr GetSMTKOperator();
+  virtual void SetSMTKOperator(smtk::operation::NewOp::Ptr op);
+  virtual smtk::operation::NewOp::Ptr GetSMTKOperator();
 
 protected:
   vtkSMTKOperator();
   virtual ~vtkSMTKOperator();
 
-  smtk::model::WeakOperatorPtr m_smtkOp;
+  std::weak_ptr<smtk::operation::NewOp> m_smtkOp;
 
 private:
   vtkSMTKOperator(const vtkSMTKOperator&); // Not implemented.

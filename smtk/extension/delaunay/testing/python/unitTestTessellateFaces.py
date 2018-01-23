@@ -15,7 +15,7 @@ import unittest
 import smtk
 import smtk.mesh
 import smtk.model
-import smtk.mesh.delaunay
+import smtk.extension.delaunay
 import smtk.bridge.polygon
 import smtk.testing
 from smtk.simple import *
@@ -24,18 +24,44 @@ from smtk.simple import *
 class UnitTessellateFaces(smtk.testing.TestCase):
 
     def setUp(self):
-        self.mgr = smtk.model.Manager.create()
-        self.meshmgr = self.mgr.meshes()
-        self.sess = self.mgr.createSession('polygon')
-        SetActiveSession(self.sess)
-        self.modelFile = os.path.join(
+        # Construct a resource manager
+        self.resourceManager = smtk.resource.Manager.create()
+
+        # Register polygon resource to the resource manager (this allows the
+        # resource manager to track polygon resources)
+        smtk.bridge.polygon.registerResources(self.resourceManager)
+
+        # Construct an operation manager
+        self.operationManager = smtk.operation.Manager.create()
+
+        # Register operation and delaunay operations to the operation manager
+        # (the former provides us with resource I/O, and the latter provides
+        # us with the TriangulateFaces operator we wish to test.
+        smtk.operation.registerOperations(self.operationManager)
+        smtk.extension.delaunay.registerOperations(self.operationManager)
+
+        # Register resource manager to the operation manager
+        self.operationManager.registerResourceManager(self.resourceManager)
+
+        # Set up the path to the test's input file
+        modelFile = os.path.join(
             smtk.testing.DATA_DIR, 'mesh', '2d', 'boxWithHole.smtk')
-        self.model = LoadSMTKModel(self.modelFile)[0]
+
+        # Load the input file
+        loadOp = self.operationManager.createOperator(
+            'smtk::operation::LoadResource')
+        loadOp.parameters().find('filename').setValue(modelFile)
+        loadRes = loadOp.operate()
+
+        # Access the resource
+        self.resource = smtk.model.Manager.CastTo(
+            loadRes.find('resource').value())
 
     def testMeshing2D(self):
-        face = self.mgr.findEntitiesOfType(int(smtk.model.FACE))[0]
-        tessellateFace = self.sess.op('tessellate faces')
-        tessellateFace.specification().associateEntity(face)
+        face = self.resource.findEntitiesOfType(int(smtk.model.FACE))[0]
+        tessellateFace = self.operationManager.createOperator(
+            'smtk::extension::delaunay::TessellateFaces')
+        tessellateFace.parameters().associateEntity(face)
         result = tessellateFace.operate()
         tessellatedFace = face.hasTessellation()
         assert(len(tessellatedFace.coords()) == 8 * 3)

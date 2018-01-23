@@ -126,7 +126,7 @@ bool Group::meetsMembershipConstraints(const EntityRef& prospectiveMember)
 {
   BitFlags typeMask = 0;
   bool mustBeHomogenous = this->entityFlags() & HOMOGENOUS_GROUP ? true : false;
-  return this->meetsMembershipConstraintsInternal(prospectiveMember, typeMask, mustBeHomogenous);
+  return this->meetsMembershipConstraints(prospectiveMember, typeMask, mustBeHomogenous);
 }
 
 /**\brief Set constraints on what may be added as a member of the group.
@@ -163,7 +163,7 @@ BitFlags Group::membershipMask() const
   return result;
 }
 
-/**\brief A protected method used by the public version to handle recursive group tests.
+/**\brief A method used by the public version to handle recursive group tests.
   *
   * The \a typeMask flag is used to pass information about entities contained
   * in \a prospectiveMember to its child groups (if any).
@@ -171,7 +171,7 @@ BitFlags Group::membershipMask() const
   * mustBeHomogenous. If true, then the first non-group member encountered will
   * be used to update the bitmask of acceptable entries.
   */
-bool Group::meetsMembershipConstraintsInternal(
+bool Group::meetsMembershipConstraints(
   const EntityRef& prospectiveMember, BitFlags& typeMask, bool mustBeHomogenous)
 {
   BitFlags groupFlags = this->entityFlags();
@@ -277,7 +277,7 @@ bool Group::meetsMembershipConstraintsInternal(
     EntityRefs entries = prospectiveMember.as<Group>().members<EntityRefs>();
     for (EntityRefs::iterator it = entries.begin(); it != entries.end(); ++it)
     {
-      if (!this->meetsMembershipConstraintsInternal(*it, memberMask, mustBeHomogenous))
+      if (!this->meetsMembershipConstraints(*it, memberMask, mustBeHomogenous))
         return false;
       // Update the mask if we find a non-group entity.
       if (mustBeHomogenous && it->isValid() && !it->isGroup())

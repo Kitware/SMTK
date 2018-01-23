@@ -15,13 +15,13 @@
 
 #include "smtk/bridge/polygon/Operator.h"
 
-#include "smtk/model/Operator.h"
+#include "smtk/operation/XMLOperator.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::polygon::Operator, smtk::model::Operator > pybind11_init_smtk_bridge_polygon_Operator(py::module &m)
+PySharedPtrClass< smtk::bridge::polygon::Operator, smtk::operation::XMLOperator > pybind11_init_smtk_bridge_polygon_Operator(py::module &m)
 {
-  PySharedPtrClass< smtk::bridge::polygon::Operator, smtk::model::Operator > instance(m, "Operator");
+  PySharedPtrClass< smtk::bridge::polygon::Operator, smtk::operation::XMLOperator > instance(m, "Operator");
   instance
     .def("deepcopy", (smtk::bridge::polygon::Operator & (smtk::bridge::polygon::Operator::*)(::smtk::bridge::polygon::Operator const &)) &smtk::bridge::polygon::Operator::operator=)
     ;

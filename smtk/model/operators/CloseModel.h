@@ -10,25 +10,26 @@
 #ifndef __smtk_model_CloseModel_h
 #define __smtk_model_CloseModel_h
 
-#include "smtk/model/Operator.h"
+#include "smtk/operation/XMLOperator.h"
 
 namespace smtk
 {
 namespace model
 {
 
-class SMTKCORE_EXPORT CloseModel : public Operator
+class SMTKCORE_EXPORT CloseModel : public smtk::operation::XMLOperator
 {
 public:
   smtkTypeMacro(CloseModel);
   smtkCreateMacro(CloseModel);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSuperclassMacro(smtk::operation::XMLOperator);
 
   bool ableToOperate() override;
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  virtual const char* xmlDescription() const override;
 };
 
 } //namespace model

@@ -1,0 +1,11 @@
+<AttDef Type="result" Abstract="True">
+  <ItemDefinitions>
+    <Int Name="outcome" Label="outcome" Optional="False" NumberOfRequiredValues="1">
+    </Int>
+    <String Name="log" Optional="True" NumberOfRequiredValues="0" Extensible="True">
+    </String>
+    <Component Name="created"  NumberOfRequiredValues="0" Extensible="1"/>
+    <Component Name="modified"  NumberOfRequiredValues="0" Extensible="1"/>
+    <Component Name="expunged"  NumberOfRequiredValues="0" Extensible="1"/>
+  </ItemDefinitions>
+</AttDef>

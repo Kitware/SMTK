@@ -123,7 +123,7 @@ public:
    * @param values a container which holds items
    * @param test a lambda function which would be applied on children items
    * Example filter double and int items
-   *  [](Item::Ptr item) { return item->type() == DOUBLE || item->type() == INT; }
+   *  [](Item::Ptr item) { return item->type() == DoubleType || item->type() == IntType; }
    * Example filter modelEntity items
    *  [](ModelEntity::Ptr item) { return true; }
    * @param activeChildren a flag indicates whether it should be applied to active children only or not
@@ -163,6 +163,9 @@ public:
 
   DateTimeItemPtr findDateTime(const std::string& name);
   ConstDateTimeItemPtr findDateTime(const std::string& name) const;
+
+  ResourceItemPtr findResource(const std::string& name);
+  ConstResourceItemPtr findResource(const std::string& name) const;
 
   ComponentItemPtr findComponent(const std::string& name);
   ConstComponentItemPtr findComponent(const std::string& name) const;

@@ -11,14 +11,14 @@
 #define __smtk_extension_remus_MeshOperator_h
 
 #include "smtk/extension/remus/smtkRemusExtExports.h"
-#include "smtk/model/Operator.h"
+#include "smtk/operation/XMLOperator.h"
 
 namespace smtk
 {
-namespace model
+namespace extension
 {
-
-class Session;
+namespace remus
+{
 
 /**\brief Mesh a model using remus.
   *
@@ -60,23 +60,23 @@ class Session;
   *   the models in the manager
   *
   */
-class SMTKREMUSEXT_EXPORT MeshOperator : public Operator
+class SMTKREMUSEXT_EXPORT MeshOperator : public smtk::operation::XMLOperator
 {
 public:
   smtkTypeMacro(MeshOperator);
-  smtkSuperclassMacro(Operator);
   smtkCreateMacro(MeshOperator);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSuperclassMacro(smtk::operation::XMLOperator);
 
   bool ableToOperate() override;
 
 protected:
   MeshOperator();
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  const char* xmlDescription() const override;
 };
+}
+}
+}
 
-} // namespace model
-} // namespace smtk
-
-#endif // __smtk_extension_remus_MeshOperator_h
+#endif

@@ -11,6 +11,7 @@
 #define __smtk_session_polygon_CreateFaces_h
 
 #include "smtk/bridge/polygon/Operator.h"
+#include "smtk/bridge/polygon/Resource.h"
 #include "smtk/bridge/polygon/internal/Fragment.h" // for various internal types help by CreateFaces
 #include "smtk/bridge/polygon/internal/Neighborhood.h" // for various internal types help by CreateFaces
 
@@ -68,15 +69,15 @@ class SMTKPOLYGONSESSION_EXPORT CreateFaces : public Operator
 public:
   smtkTypeMacro(CreateFaces);
   smtkCreateMacro(CreateFaces);
-  smtkSharedFromThisMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
   smtkSuperclassMacro(Operator);
-  smtkDeclareModelOperator();
 
 protected:
   friend class Neighborhood;
 
   virtual bool populateEdgeMap();
   smtk::model::OperatorResult operateInternal() override;
+  virtual const char* xmlDescription() const override;
 
   void evaluateLoop(RegionId faceNumber, OrientedEdges& loop, std::set<RegionId>& borders);
   void updateLoopVertices(const smtk::model::Loop& loop, const smtk::model::Face& brd, bool isCCW);
@@ -85,9 +86,10 @@ protected:
 
   std::map<RegionId, smtk::model::Face> m_regionFaces;
   std::map<RegionId, std::vector<OrientedEdges> > m_regionLoops;
-  smtk::model::OperatorResult m_result;
+  Result m_result;
   smtk::model::Model m_model;
-  smtk::model::OperatorOutcome m_status;
+  smtk::bridge::polygon::Resource::Ptr m_resource;
+  Outcome m_status;
   ModelEdgeMap m_edgeMap;
   internal::Point m_bdsLo;
   internal::Point m_bdsHi;

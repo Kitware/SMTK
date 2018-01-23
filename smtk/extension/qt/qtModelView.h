@@ -111,11 +111,11 @@ signals:
     const smtk::common::UUID& uuid);
 
 protected slots:
-  virtual void removeEntityGroup(const smtk::model::Model& modelEnt,
-    const smtk::model::SessionRef& session, const QList<smtk::model::Group>& groups);
-  virtual void removeFromEntityGroup(const smtk::model::Model& modelEnt,
-    const smtk::model::SessionRef& session, const smtk::model::Group& grp,
-    const smtk::model::EntityRefs& entities);
+  // virtual void removeEntityGroup(const smtk::model::Model& modelEnt,
+  // const smtk::model::SessionRef& session, const QList<smtk::model::Group>& groups);
+  // virtual void removeFromEntityGroup(const smtk::model::Model& modelEnt,
+  //   const smtk::model::SessionRef& session, const smtk::model::Group& grp,
+  //   const smtk::model::EntityRefs& entities);
   virtual void newIndexAdded(const QModelIndex& newidx);
 
 protected:
@@ -133,11 +133,11 @@ protected:
   void owningEntitiesByMask(smtk::model::DescriptivePhrasePtr inDp,
     smtk::model::EntityRefs& selentityrefs, smtk::model::BitFlags entityFlags);
 
-  bool hasSessionOp(const smtk::model::SessionRef& brSession, const std::string& opname);
-  bool hasSessionOp(const QModelIndex& idx, const std::string& opname);
-  smtk::model::OperatorPtr getOp(const QModelIndex& idx, const std::string& opname);
-  smtk::model::OperatorPtr getOp(
-    const smtk::model::SessionPtr& brSession, const std::string& opname);
+  // bool hasSessionOp(const smtk::model::SessionRef& brSession, const std::string& opname);
+  // bool hasSessionOp(const QModelIndex& idx, const std::string& opname);
+  // smtk::model::OperatorPtr getOp(const QModelIndex& idx, const std::string& opname);
+  // smtk::model::OperatorPtr getOp(
+  //   const smtk::model::SessionPtr& brSession, const std::string& opname);
 
   //Description:
   // Support for customized drag-n-drop events
@@ -145,7 +145,7 @@ protected:
   void dragEnterEvent(QDragEnterEvent* event) override;
   void dragMoveEvent(QDragMoveEvent* event) override;
   void startDrag(Qt::DropActions supportedActions) override;
-  void dropEvent(QDropEvent* event) override;
+  // void dropEvent(QDropEvent* event) override;
 
   // Description:
   // Customized selection related methods

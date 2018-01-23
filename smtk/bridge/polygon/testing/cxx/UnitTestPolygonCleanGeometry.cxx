@@ -23,6 +23,16 @@
 #include <complex>
 #include <set>
 
+#include "smtk/bridge/polygon/Resource.h"
+#include "smtk/bridge/polygon/operators/CleanGeometry.h"
+#include "smtk/bridge/polygon/operators/CreateEdgeFromPoints.h"
+#include "smtk/bridge/polygon/operators/CreateFacesFromEdges.h"
+#include "smtk/bridge/polygon/operators/CreateModel.h"
+
+#include "smtk/mesh/core/Manager.h"
+
+#include "smtk/operation/Manager.h"
+
 void findEdgesAndVertices(const smtk::model::Model& model, std::set<smtk::model::Edge>& edges,
   std::set<smtk::model::Vertex>& vertices)
 {
@@ -53,25 +63,67 @@ int UnitTestPolygonCleanGeometry(int argc, char* argv[])
   const std::vector<double> points{ -1., -1., 1., 1., 1., -1., -1., 1. };
   const int numPointsPerEdge = static_cast<int>(points.size()) / numCoordsPerPoint / numEdges;
 
-  smtk::model::ManagerPtr manager = smtk::model::Manager::create();
-  smtk::model::SessionRef session = manager->createSession("polygon");
-  smtk::model::OperatorPtr myOp = session.op("create model");
-  smtk::model::OperatorResult res = myOp->operate();
-  smtk::model::EntityRef myModel = res->findModelEntity("created")->value();
+  // Create a resource manager
+  smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
+
+  // Register the mesh resource to the resource manager
+  {
+    resourceManager->registerResource<smtk::bridge::polygon::Resource>();
+  }
+
+  // Create an operation manager
+  smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
+
+  // Register operators to the operation manager
+  {
+    operationManager->registerOperator<smtk::bridge::polygon::CleanGeometry>(
+      "smtk::bridge::polygon::CleanGeometry");
+    operationManager->registerOperator<smtk::bridge::polygon::CreateModel>(
+      "smtk::bridge::polygon::CreateModel");
+    operationManager->registerOperator<smtk::bridge::polygon::CreateEdgeFromPoints>(
+      "smtk::bridge::polygon::CreateEdgeFromPoints");
+    operationManager->registerOperator<smtk::bridge::polygon::CreateFacesFromEdges>(
+      "smtk::bridge::polygon::CreateFacesFromEdges");
+  }
+
+  // Register the resource manager to the operation manager (newly created
+  // resources will be automatically registered to the resource manager).
+  operationManager->registerResourceManager(resourceManager);
+
+  // Create an "create model" operator
+  smtk::bridge::polygon::CreateModel::Ptr createOp =
+    operationManager->create<smtk::bridge::polygon::CreateModel>();
+
+  // Apply the operation and check the result
+  smtk::operation::NewOp::Result createOpResult = createOp->operate();
+
+  // Retrieve the resulting model item
+  smtk::attribute::ComponentItemPtr componentItem =
+    std::dynamic_pointer_cast<smtk::attribute::ComponentItem>(
+      createOpResult->findComponent("model"));
+
+  // Access the generated model
+  smtk::model::Entity::Ptr model =
+    std::dynamic_pointer_cast<smtk::model::Entity>(componentItem->value());
 
   // Create two intersecting edges
   std::cout << "Creating two intersecting edges" << std::endl;
-  // Associate model with operation
-  myOp = session.op("create edge from points");
-  test(myOp != nullptr, "No create edge from points operator");
-  test(myOp->specification()->associateEntity(myModel), "Could not associate model");
+
+  // Create a "create edge from points" operator
+  smtk::bridge::polygon::CreateEdgeFromPoints::Ptr createEdgeFromPointsOp =
+    operationManager->create<smtk::bridge::polygon::CreateEdgeFromPoints>();
+
+  createEdgeFromPointsOp->parameters()->associateEntity(model->referenceAs<smtk::model::Model>());
+
   for (int i = 0; i < numEdges; ++i)
   {
     // Specify the points
-    smtk::attribute::IntItemPtr pointGeometry = myOp->specification()->findInt("pointGeometry");
+    smtk::attribute::IntItemPtr pointGeometry =
+      createEdgeFromPointsOp->parameters()->findInt("pointGeometry");
     test(pointGeometry != nullptr, "Could not find pointGeometry");
     test(pointGeometry->setValue(numCoordsPerPoint), "Could not set pointGeometry");
-    smtk::attribute::GroupItem::Ptr pointsInfo = myOp->specification()->findGroup("2DPoints");
+    smtk::attribute::GroupItem::Ptr pointsInfo =
+      createEdgeFromPointsOp->parameters()->findGroup("2DPoints");
     test(pointsInfo->setNumberOfGroups(numPointsPerEdge), "Could not set number of points");
     for (int j = 0; j < numPointsPerEdge; ++j)
     {
@@ -85,15 +137,16 @@ int UnitTestPolygonCleanGeometry(int argc, char* argv[])
       }
     }
     // Apply the operation
-    res = myOp->operate();
-    test(res->findInt("outcome")->value() == smtk::operation::Operator::OPERATION_SUCCEEDED,
+    smtk::operation::NewOp::Result res = createEdgeFromPointsOp->operate();
+    test(res->findInt("outcome")->value() ==
+        static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
       "Create edge from points operator failed");
   }
 
-  smtk::model::Model modelCreated = static_cast<smtk::model::Model>(myModel);
+  smtk::model::Model modelCreated = model->referenceAs<smtk::model::Model>();
   std::set<smtk::model::Edge> edges;
   std::set<smtk::model::Vertex> vertices;
-  findEdgesAndVertices(myModel, edges, vertices);
+  findEdgesAndVertices(modelCreated, edges, vertices);
   std::cout << "Before clean geometry operation, number of edges: " << edges.size()
             << ", number of vertices: " << vertices.size() << std::endl;
   test(static_cast<int>(edges.size()) == numEdges, "Incorrect number of edges");
@@ -101,19 +154,21 @@ int UnitTestPolygonCleanGeometry(int argc, char* argv[])
     "Incorrect number of vertices");
 
   // Clean geometry
-  myOp = session.op("clean geometry");
-  test(myOp != nullptr, "No clean geometry operator");
+  smtk::bridge::polygon::CleanGeometry::Ptr cleanGeometryOp =
+    operationManager->create<smtk::bridge::polygon::CleanGeometry>();
+  test(cleanGeometryOp != nullptr, "No clean geometry operator");
   for (const auto& e : edges)
   {
-    test(myOp->specification()->associateEntity(e), "Could not associate model");
+    test(cleanGeometryOp->parameters()->associateEntity(e), "Could not associate model");
   }
 
-  res = myOp->operate();
-  test(res->findInt("outcome")->value() == smtk::operation::Operator::OPERATION_SUCCEEDED,
+  smtk::operation::NewOp::Result res = cleanGeometryOp->operate();
+  test(res->findInt("outcome")->value() ==
+      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
     "Clean geometry operator failed");
 
   // Verify the result
-  findEdgesAndVertices(myModel, edges, vertices);
+  findEdgesAndVertices(modelCreated, edges, vertices);
   std::cout << "After clean geometry operation, number of edges: " << edges.size()
             << ", number of vertices: " << vertices.size() << std::endl;
   test(static_cast<int>(edges.size()) == numEdges * 2, "Incorrect number of edges");
@@ -122,6 +177,3 @@ int UnitTestPolygonCleanGeometry(int argc, char* argv[])
 
   return 0;
 }
-
-// This macro ensures the polygon session library is loaded into the executable
-smtkComponentInitMacro(smtk_polygon_session)

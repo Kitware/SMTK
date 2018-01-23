@@ -22,30 +22,11 @@ class TestPolygonCreation(smtk.testing.TestCase):
 
     def setUp(self):
         self.writeJSON = False
-        self.mgr = smtk.model.Manager.create()
-        sess = self.mgr.createSession('polygon')
-        brg = sess.session()
-        print(sess)
-        print(brg)
-        sess.assignDefaultName()
-        SetActiveSession(sess)
-        print('\n\n%s: type "%s" %s %s' %
-              (sess.name(), brg.name(), sess.flagSummary(0), brg.sessionId()))
-        print('  Site: %s' % (sess.site() or 'local'))
-
-        # We could evaluate the session tag as JSON, but most of
-        # the information is available through methods above that
-        # we needed to test:
-        sessiontag = sess.tag()
-        print('\n')
 
         # opnames = sess.operatorNames()
         # print(opnames)
 
     def createTestEdges(self, mod):
-
-        # print(smtk.io.SaveJSON.fromModelManager(self.mgr,)
-        # smtk.io.JSON_DEFAULT)
 
         openEdgeTestVerts = [[4, 3.5], [3, 3.5]]
         elist = CreateEdge(openEdgeTestVerts, model=mod)

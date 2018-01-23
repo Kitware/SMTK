@@ -15,16 +15,12 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include <Python.h>
 SMTK_THIRDPARTY_POST_INCLUDE
 
-#include "smtk/AutoInit.h"
-
 /**!\file smtkRemusExtPy.cxx
   *\brief Provide a library to force registration of the mesh operator from Python.
   *
   * From python, just "import smtkRemusExtPy" before you import smtk;
   * then, the mesh operator should be available to any session.
   */
-
-smtkComponentInitMacro(smtk_remus_mesh_operator);
 
 extern "C" {
 
@@ -43,7 +39,6 @@ PyMODINIT_FUNC initsmtkRemusExtPy()
 #else
   Py_InitModule("smtkRemusExtPy", methods);
 #endif
-  (void)smtk_remus_mesh_operator_ComponentInit_Instance;
 }
 
 } // extern "C"

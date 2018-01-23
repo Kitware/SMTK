@@ -8,9 +8,21 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/ResourceItem.h"
+
+#include "smtk/bridge/discrete/Resource.h"
+#include "smtk/bridge/discrete/Session.h"
+#include "smtk/bridge/discrete/operators/ImportOperator.h"
+
+#include "smtk/io/LoadJSON.h"
+#include "smtk/io/ModelToMesh.h"
+
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
-
+#include "smtk/mesh/testing/cxx/helpers.h"
 #include "smtk/mesh/utility/ExtractTessellation.h"
 
 #include "smtk/model/Edge.h"
@@ -20,17 +32,6 @@
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Loop.h"
 
-#include "smtk/io/LoadJSON.h"
-#include "smtk/io/ModelToMesh.h"
-
-#include "smtk/mesh/testing/cxx/helpers.h"
-
-#include "smtk/attribute/FileItem.h"
-#include "smtk/attribute/IntItem.h"
-
-#include "smtk/bridge/discrete/Operator.h"
-#include "smtk/bridge/discrete/Session.h"
-
 #include <fstream>
 
 namespace
@@ -39,45 +40,31 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-void create_simple_mesh_model(smtk::model::ManagerPtr mgr)
-{
-  std::string file_path(data_root);
-  file_path += "/model/2d/smtk/test2D.json";
-
-  std::ifstream file(file_path.c_str());
-
-  std::string json((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
-
-  //we should load in the test2D.json file as an smtk to model
-  smtk::io::LoadJSON::intoModelManager(json.c_str(), mgr);
-  mgr->assignDefaultNames();
-
-  file.close();
-}
-
-void create_discrete_mesh_model(smtk::model::ManagerPtr mgr)
+smtk::bridge::discrete::Resource::Ptr create_discrete_mesh_model()
 {
   std::string file_path(data_root);
   file_path += "/mesh/2d/test2D.2dm";
   std::cout << "create_discrete_mesh_model of file: " << file_path << std::endl;
 
   std::ifstream file(file_path.c_str());
-  if (file.good())
-  { //just make sure the file exists
-    file.close();
-
-    smtk::bridge::discrete::Session::Ptr brg = smtk::bridge::discrete::Session::create();
-    mgr->registerSession(brg);
-
-    smtk::model::Operator::Ptr op = brg->op("import");
-
-    op->findFile("filename")->setValue(file_path.c_str());
-    smtk::model::OperatorResult result = op->operate();
-    if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
-    {
-      std::cout << "Import 2dm Failed!" << std::endl;
-    }
+  if (!file.good())
+  {
+    return smtk::bridge::discrete::Resource::Ptr();
   }
+
+  file.close();
+
+  smtk::bridge::discrete::ImportOperator::Ptr op = smtk::bridge::discrete::ImportOperator::create();
+
+  op->parameters()->findFile("filename")->setValue(file_path.c_str());
+  smtk::model::OperatorResult result = op->operate();
+  if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
+  {
+    std::cout << "Import 2dm Failed!" << std::endl;
+  }
+
+  return std::dynamic_pointer_cast<smtk::bridge::discrete::Resource>(
+    result->findResource("resource")->value());
 }
 
 void removeOnesWithoutTess(smtk::model::EntityRefs& ents)
@@ -103,29 +90,17 @@ void removeOnesWithoutTess(smtk::model::EntityRefs& ents)
 
 int UnitTestExtractOrderedTessellation(int, char** const)
 {
-  // Somehow grab an EntityRef with an associated tessellation
   smtk::model::EntityRef eRef;
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
-  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
-
-  // rather than remove this code path, I will simply shunt it to satisfy
-  // warnings about unused functions.
-  if (false)
-  {
-    create_simple_mesh_model(modelManager);
-  }
-  else
-  {
-    create_discrete_mesh_model(modelManager);
-  }
+  smtk::bridge::discrete::Resource::Ptr resource = create_discrete_mesh_model();
 
   smtk::io::ModelToMesh convert;
   convert.setIsMerging(false);
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelManager);
+  smtk::mesh::CollectionPtr c = convert(meshManager, resource);
 
   typedef smtk::model::EntityRefs EntityRefs;
 
-  EntityRefs currentEnts = modelManager->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::FACE);
+  EntityRefs currentEnts = resource->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::FACE);
   removeOnesWithoutTess(currentEnts);
   if (currentEnts.empty())
   {

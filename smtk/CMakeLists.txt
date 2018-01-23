@@ -168,6 +168,13 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
 endif()
 
 ################################################################################
+# Build smtk environment
+# Construct an interface for applications that require a singleton
+# representation of SMTK that uses auto-registration.
+################################################################################
+add_subdirectory(environment)
+
+################################################################################
 # Build smtk extensions
 # Add libraries that extend other projects to have support for SMTK.
 # For example extension/vtk allows you to show smtk models in VTK.

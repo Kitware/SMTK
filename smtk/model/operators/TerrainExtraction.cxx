@@ -14,41 +14,42 @@
 #include "smtk/common/Color.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/ModelEntityItem.h"
-#include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/ComponentItem.h"
 
-#include <cstddef> // for size_t
+#include "smtk/io/Logger.h"
 
-using smtk::attribute::StringItem;
+#include "smtk/model/TerrainExtraction_xml.h"
 
 namespace smtk
 {
 namespace model
 {
 
-smtk::model::OperatorResult TerrainExtraction::operateInternal()
+TerrainExtraction::Result TerrainExtraction::operateInternal()
 {
-  EntityRefArray entities = this->associatedEntitiesAs<EntityRefArray>();
-  if (entities.empty())
+  auto associations = this->parameters()->associations();
+
+  if (!associations || associations->numberOfValues() == 0)
   {
     smtkErrorMacro(this->log(), "No parent specified.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   // Hide the visibilty of input aux_geom
-  EntityRef parent = entities[0];
+  EntityRef parent = associations->value();
   parent.setVisible(false);
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
 
-  this->addEntityToResult(result, parent, MODIFIED);
+  smtk::attribute::ComponentItem::Ptr modifiedItem = result->findComponent("modified");
+  modifiedItem->appendValue(parent.component());
+
   return result;
+}
+
+const char* TerrainExtraction::xmlDescription() const
+{
+  return TerrainExtraction_xml;
 }
 
 } //namespace model
 } // namespace smtk
-
-#include "smtk/model/TerrainExtraction_xml.h"
-
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::model::TerrainExtraction, terrain_extraction,
-  "terrain extraction", TerrainExtraction_xml, smtk::model::Session);

@@ -27,19 +27,20 @@ namespace discrete
   * This requires the file to be of type/extension "cmb" (which
   * is really just a VTK XML polydata file).
   */
-class SMTKDISCRETESESSION_EXPORT ReadOperator : public smtk::bridge::discrete::Operator
+class SMTKDISCRETESESSION_EXPORT ReadOperator : public Operator
 {
 public:
   smtkTypeMacro(ReadOperator);
   smtkCreateMacro(ReadOperator);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSuperclassMacro(Operator);
 
   bool ableToOperate() override;
 
 protected:
   ReadOperator();
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  const char* xmlDescription() const override;
 
   vtkNew<vtkCMBModelReadOperator> m_op;
 };

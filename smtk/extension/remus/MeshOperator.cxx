@@ -69,7 +69,9 @@ std::string extractModelUUIDSAsJSON(smtk::model::Models const& models)
 
 namespace smtk
 {
-namespace model
+namespace extension
+{
+namespace remus
 {
 
 MeshOperator::MeshOperator()
@@ -79,17 +81,19 @@ MeshOperator::MeshOperator()
 bool MeshOperator::ableToOperate()
 {
   return this->Superclass::ableToOperate() &&
-    this->specification()->findModelEntity("model")->value().isValid();
+    this->parameters()->findModelEntity("model")->value().isValid();
   // TODO: Add tests to verify that model dimension matches job requirements.
 }
 
-OperatorResult MeshOperator::operateInternal()
+MeshOperator::Result MeshOperator::operateInternal()
 {
-  smtk::attribute::ModelEntityItemPtr mspec = this->specification()->findModelEntity("model");
+  smtk::attribute::ModelEntityItemPtr mspec = this->parameters()->findModelEntity("model");
   smtk::model::Models models(mspec->begin(), mspec->end());
-  smtk::attribute::StringItemPtr endpointItem = this->findString("endpoint");
-  smtk::attribute::StringItemPtr requirementsItem = this->findString("remusRequirements");
-  smtk::attribute::StringItemPtr attributeItem = this->findString("meshingControlAttributes");
+  smtk::attribute::StringItemPtr endpointItem = this->parameters()->findString("endpoint");
+  smtk::attribute::StringItemPtr requirementsItem =
+    this->parameters()->findString("remusRequirements");
+  smtk::attribute::StringItemPtr attributeItem =
+    this->parameters()->findString("meshingControlAttributes");
 
   //warn if the models to mesh are empty
   {
@@ -107,44 +111,48 @@ OperatorResult MeshOperator::operateInternal()
     }
   }
 
-  //convert the model and uuids to to mesh to a string representation
-  std::string modelSerialized = smtk::io::SaveJSON::fromModelManager(this->manager());
+  //convert the model and uuids to mesh into a string representation
+  smtk::model::Manager::Ptr resource =
+    std::dynamic_pointer_cast<smtk::model::Manager>(models[0].component()->resource());
+
+  std::string modelSerialized = smtk::io::SaveJSON::fromModelManager(resource);
   std::string modelUUIDSSerialized = extractModelUUIDSAsJSON(models);
 
   //deserialize the reqs from the string
   std::istringstream buffer(requirementsItem->value());
-  remus::proto::JobRequirements reqs;
+  ::remus::proto::JobRequirements reqs;
   buffer >> reqs;
 
-  remus::proto::SMTKMeshSubmission submission(reqs);
-  submission.model(modelSerialized, remus::common::ContentFormat::JSON);
-  submission.attributes(attributeItem->value(), remus::common::ContentFormat::XML);
-  submission.modelItemsToMesh(modelUUIDSSerialized, remus::common::ContentFormat::JSON);
+  ::remus::proto::SMTKMeshSubmission submission(reqs);
+  submission.model(modelSerialized, ::remus::common::ContentFormat::JSON);
+  submission.attributes(attributeItem->value(), ::remus::common::ContentFormat::XML);
+  submission.modelItemsToMesh(modelUUIDSSerialized, ::remus::common::ContentFormat::JSON);
 
   //now that we have the submission, construct a remus client to submit it
-  const remus::client::ServerConnection conn =
-    remus::client::make_ServerConnection(endpointItem->value());
+  const ::remus::client::ServerConnection conn =
+    ::remus::client::make_ServerConnection(endpointItem->value());
 
-  remus::client::Client client(conn);
+  ::remus::client::Client client(conn);
 
   //the worker could have gone away while this operator was invoked, or maybe somebody submitted
   //the job using stale data from an older server
 
   smtkInfoMacro(this->log(), "[remus] Asking Server if it supports job reqs");
-  remus::proto::Job job = remus::proto::make_invalidJob();
+  ::remus::proto::Job job = ::remus::proto::make_invalidJob();
   if (client.canMesh(reqs))
   {
     job = client.submitJob(submission);
-    smtkInfoMacro(this->log(), "[remus] Submitted Job to Server: " << remus::proto::to_string(job));
+    smtkInfoMacro(
+      this->log(), "[remus] Submitted Job to Server: " << ::remus::proto::to_string(job));
   }
 
   //once the job is submitted, we wait for the results to come back
   bool haveResultFromWorker = false;
   if (job.valid())
   {
-    smtkInfoMacro(this->log(), "[remus] Querying Status of: " << remus::proto::to_string(job));
-    remus::proto::JobStatus currentWorkerStatus = client.jobStatus(job);
-    remus::proto::JobProgress lastProgress;
+    smtkInfoMacro(this->log(), "[remus] Querying Status of: " << ::remus::proto::to_string(job));
+    ::remus::proto::JobStatus currentWorkerStatus = client.jobStatus(job);
+    ::remus::proto::JobProgress lastProgress;
     while (currentWorkerStatus.good())
     { //we need this to not be a busy wait
       //for now lets call sleep to make this less 'heavy'
@@ -158,20 +166,21 @@ OperatorResult MeshOperator::operateInternal()
       }
     }
     smtkInfoMacro(this->log(),
-      "[remus] Final Status of: " << remus::proto::to_string(job)
-                                  << "is: " << remus::to_string(currentWorkerStatus.status()));
+      "[remus] Final Status of: " << ::remus::proto::to_string(job)
+                                  << "is: " << ::remus::to_string(currentWorkerStatus.status()));
     haveResultFromWorker = currentWorkerStatus.finished();
   }
 
   //the results are the model which we accept
-  OperatorResult result =
-    this->createResult(haveResultFromWorker ? OPERATION_SUCCEEDED : OPERATION_FAILED);
+  Result result =
+    this->createResult(haveResultFromWorker ? smtk::operation::NewOp::Outcome::SUCCEEDED
+                                            : smtk::operation::NewOp::Outcome::FAILED);
   if (haveResultFromWorker)
   {
     //now fetch the latest results from the server
-    remus::proto::JobResult meshMetaData = client.retrieveResults(job);
+    ::remus::proto::JobResult meshMetaData = client.retrieveResults(job);
 
-    smtk::mesh::ManagerPtr meshManager = this->manager()->meshes();
+    smtk::mesh::ManagerPtr meshManager = resource->meshes();
 
     //determine all existing collection
     typedef std::map<smtk::common::UUID, smtk::mesh::CollectionPtr> CollectionStorage;
@@ -180,7 +189,7 @@ OperatorResult MeshOperator::operateInternal()
 
     //parse the job result as json mesh data
     cJSON* root = cJSON_Parse(meshMetaData.data());
-    smtk::io::LoadJSON::ofMeshesOfModel(root, this->manager());
+    smtk::io::LoadJSON::ofMeshesOfModel(root, resource);
     cJSON_Delete(root);
 
     //
@@ -225,16 +234,21 @@ OperatorResult MeshOperator::operateInternal()
       smtk::model::Models submodels = m->submodels();
       allModels.insert(allModels.end(), submodels.begin(), submodels.end());
     }
-    this->addEntitiesToResult(result, allModels, MODIFIED);
+    smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
+    for (auto model : allModels)
+    {
+      modified->setValue(model.component());
+    }
 
     result->findModelEntity("mesh_created")->setValues(models.begin(), models.end());
   }
   return result;
 }
 
-} // namespace model
-} // namespace smtk
-
-smtkImplementsModelOperator(SMTKREMUSEXT_EXPORT, smtk::model::MeshOperator, remus_mesh,
-
-  "mesh", MeshOperator_xml, smtk::model::Session);
+const char* MeshOperator::xmlDescription() const
+{
+  return MeshOperator_xml;
+}
+}
+}
+}

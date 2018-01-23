@@ -185,32 +185,32 @@ void qtModelView::keyPressEvent(QKeyEvent* keyEvent)
       {
         // this call will change dPhrase
         sref = this->owningEntityAs<smtk::model::SessionRef>(dPhrase);
-        if (this->hasSessionOp(sref, pEntityGroupOpName))
-        {
-          grpModel = this->owningEntityAs<smtk::model::Model>(idx);
-          if (grpModel.isValid())
-          {
-            mapGroup2Ents.remove(grp);
-            remGroups.push_back(grp);
-            grpModels[grpModel].push_back(grp);
-            modelSessions[grpModel] = sref;
-          }
-        }
+        // if (this->hasSessionOp(sref, pEntityGroupOpName))
+        // {
+        //   grpModel = this->owningEntityAs<smtk::model::Model>(idx);
+        //   if (grpModel.isValid())
+        //   {
+        //     mapGroup2Ents.remove(grp);
+        //     remGroups.push_back(grp);
+        //     grpModels[grpModel].push_back(grp);
+        //     modelSessions[grpModel] = sref;
+        //   }
+        // }
       }
       else if ((grp = this->groupParent(dPhrase)).isValid() && !remGroups.contains(grp))
       {
         // this call will change dPhrase
         sref = this->owningEntityAs<smtk::model::SessionRef>(dPhrase);
-        if (this->hasSessionOp(sref, pEntityGroupOpName))
-        {
-          grpModel = this->owningEntityAs<smtk::model::Model>(idx);
-          if (grpModel.isValid())
-          {
-            mapGroup2Ents[grp].insert(dPhrase->relatedEntity());
-            grpModels[grpModel].push_back(grp);
-            modelSessions[grpModel] = sref;
-          }
-        }
+        // if (this->hasSessionOp(sref, pEntityGroupOpName))
+        // {
+        //   grpModel = this->owningEntityAs<smtk::model::Model>(idx);
+        //   if (grpModel.isValid())
+        //   {
+        //     mapGroup2Ents[grp].insert(dPhrase->relatedEntity());
+        //     grpModels[grpModel].push_back(grp);
+        //     modelSessions[grpModel] = sref;
+        //   }
+        // }
       }
     }
 
@@ -231,12 +231,12 @@ void qtModelView::keyPressEvent(QKeyEvent* keyEvent)
         }
         else if (mapGroup2Ents.contains(agrp))
         {
-          // we have to do the operation one group at a time.
-          this->removeFromEntityGroup(
-            mit.key(), modelSessions[mit.key()], agrp, mapGroup2Ents[agrp]);
+          // // we have to do the operation one group at a time.
+          // this->removeFromEntityGroup(
+          //   mit.key(), modelSessions[mit.key()], agrp, mapGroup2Ents[agrp]);
         }
       }
-      this->removeEntityGroup(mit.key(), modelSessions[mit.key()], remSessGroups);
+      // this->removeEntityGroup(mit.key(), modelSessions[mit.key()], remSessGroups);
     }
   }
 }
@@ -252,101 +252,101 @@ void qtModelView::mouseReleaseEvent(QMouseEvent* mouseEvent)
   QTreeView::mouseReleaseEvent(mouseEvent);
 }
 
-void qtModelView::dropEvent(QDropEvent* dEvent)
-{
-  // The related session has to have a "entity group" operator to process the
-  // entities dropped.
-  // Currenly, only "discrete" session has this operator, so only
-  // drags between entities within the same "discrete" session
-  // will be processed.
+// void qtModelView::dropEvent(QDropEvent* dEvent)
+// {
+//   // The related session has to have a "entity group" operator to process the
+//   // entities dropped.
+//   // Currenly, only "discrete" session has this operator, so only
+//   // drags between entities within the same "discrete" session
+//   // will be processed.
 
-  // Depends on the QModelIndex we dropped on, the selected
-  // entities will be filtered accordingly based on what type of entities
-  // the recieving group can take.
+//   // Depends on the QModelIndex we dropped on, the selected
+//   // entities will be filtered accordingly based on what type of entities
+//   // the recieving group can take.
 
-  QModelIndex dropIdx = this->indexAt(dEvent->pos());
-  if (!this->hasSessionOp(dropIdx, pEntityGroupOpName))
-    return;
+//   QModelIndex dropIdx = this->indexAt(dEvent->pos());
+//   // if (!this->hasSessionOp(dropIdx, pEntityGroupOpName))
+//   //   return;
 
-  OperatorPtr brOp = this->getOp(dropIdx, pEntityGroupOpName);
-  if (!brOp || !brOp->specification())
-  {
-    std::cout << "No entity group operator to handle the drop!\n";
-    return;
-  }
+//   // OperatorPtr brOp = this->getOp(dropIdx, pEntityGroupOpName);
+//   // if (!brOp || !brOp->specification())
+//   // {
+//   //   std::cout << "No entity group operator to handle the drop!\n";
+//   //   return;
+//   // }
 
-  smtk::extension::QEntityItemModel* qmodel = this->getModel();
-  DescriptivePhrasePtr dp = qmodel->getItem(dropIdx);
-  smtk::model::Group group;
-  if (dp && (group = dp->relatedEntity().as<smtk::model::Group>()).isValid())
-  {
-    smtk::model::Model modelEnt = this->owningEntityAs<smtk::model::Model>(dropIdx);
-    if (!modelEnt.isValid())
-    {
-      std::cerr << "No owning model found for the entity group!\n";
-      return;
-    }
+//   smtk::extension::QEntityItemModel* qmodel = this->getModel();
+//   DescriptivePhrasePtr dp = qmodel->getItem(dropIdx);
+//   smtk::model::Group group;
+//   if (dp && (group = dp->relatedEntity().as<smtk::model::Group>()).isValid())
+//   {
+//     smtk::model::Model modelEnt = this->owningEntityAs<smtk::model::Model>(dropIdx);
+//     if (!modelEnt.isValid())
+//     {
+//       std::cerr << "No owning model found for the entity group!\n";
+//       return;
+//     }
 
-    /*
-    BitFlags ef = (dp->relatedEntity().entityFlags() & DIMENSION_2) ?
-      CELL_2D : CELL_3D;
-*/
-    smtk::model::EntityRefs selentityrefs;
-    smtk::model::DescriptivePhrases selproperties;
-    BitFlags ef = group.membershipMask();
-    foreach (QModelIndex sel, this->selectedIndexes())
-    {
-      // skip entities that are not part of the same model (not supported in discrete session)
-      // In the future, when other type sessions also have group ops, we will revisit here.
-      smtk::model::Model selmodel = this->owningEntityAs<smtk::model::Model>(sel);
-      if (selmodel == modelEnt)
-        this->recursiveSelect(qmodel->getItem(sel), selentityrefs, ef, selproperties, true);
-    }
-    std::cout << selentityrefs.size() << " selentityrefs, " << selentityrefs.size()
-              << " entities\n";
-    if (selentityrefs.size() == 0)
-      return;
+//     /*
+//     BitFlags ef = (dp->relatedEntity().entityFlags() & DIMENSION_2) ?
+//       CELL_2D : CELL_3D;
+// */
+//     smtk::model::EntityRefs selentityrefs;
+//     smtk::model::DescriptivePhrases selproperties;
+//     BitFlags ef = group.membershipMask();
+//     foreach (QModelIndex sel, this->selectedIndexes())
+//     {
+//       // skip entities that are not part of the same model (not supported in discrete session)
+//       // In the future, when other type sessions also have group ops, we will revisit here.
+//       smtk::model::Model selmodel = this->owningEntityAs<smtk::model::Model>(sel);
+//       if (selmodel == modelEnt)
+//         this->recursiveSelect(qmodel->getItem(sel), selentityrefs, ef, selproperties, true);
+//     }
+//     std::cout << selentityrefs.size() << " selentityrefs, " << selentityrefs.size()
+//               << " entities\n";
+//     if (selentityrefs.size() == 0)
+//       return;
 
-    // prepare the 'entity group' operation
-    smtk::attribute::AttributePtr attrib = brOp->specification();
-    smtk::attribute::ModelEntityItemPtr modelItem = attrib->findModelEntity("model");
-    smtk::attribute::StringItem::Ptr optypeItem = attrib->findString("Operation");
-    smtk::attribute::ModelEntityItemPtr grpItem = attrib->findAs<smtk::attribute::ModelEntityItem>(
-      "modify cell group", attribute::ALL_CHILDREN);
-    smtk::attribute::ModelEntityItemPtr addItem =
-      attrib->findAs<smtk::attribute::ModelEntityItem>("cell to add", attribute::ALL_CHILDREN);
-    if (!modelItem || !optypeItem || !grpItem || !addItem)
-    {
-      std::cerr << "The entity group operator's specification is missing items!\n";
-      return;
-    }
+//     // prepare the 'entity group' operation
+//     smtk::attribute::AttributePtr attrib = brOp->specification();
+//     smtk::attribute::ModelEntityItemPtr modelItem = attrib->findModelEntity("model");
+//     smtk::attribute::StringItem::Ptr optypeItem = attrib->findString("Operation");
+//     smtk::attribute::ModelEntityItemPtr grpItem = attrib->findAs<smtk::attribute::ModelEntityItem>(
+//       "modify cell group", attribute::ALL_CHILDREN);
+//     smtk::attribute::ModelEntityItemPtr addItem =
+//       attrib->findAs<smtk::attribute::ModelEntityItem>("cell to add", attribute::ALL_CHILDREN);
+//     if (!modelItem || !optypeItem || !grpItem || !addItem)
+//     {
+//       std::cerr << "The entity group operator's specification is missing items!\n";
+//       return;
+//     }
 
-    modelItem->setValue(modelEnt);
-    grpItem->setValue(group);
-    optypeItem->setValue("Modify");
-    if (!addItem->setNumberOfValues(selentityrefs.size()))
-    {
-      std::cerr << "setNumberOfValues failed for \"cell to add\" item!\n";
-      return;
-    }
-    int i = 0;
-    smtk::model::EntityRefs::const_iterator it;
-    for (it = selentityrefs.begin(); it != selentityrefs.end(); ++it)
-      addItem->setValue(i++, *it);
+//     modelItem->setValue(modelEnt);
+//     grpItem->setValue(group);
+//     optypeItem->setValue("Modify");
+//     if (!addItem->setNumberOfValues(selentityrefs.size()))
+//     {
+//       std::cerr << "setNumberOfValues failed for \"cell to add\" item!\n";
+//       return;
+//     }
+//     int i = 0;
+//     smtk::model::EntityRefs::const_iterator it;
+//     for (it = selentityrefs.begin(); it != selentityrefs.end(); ++it)
+//       addItem->setValue(i++, *it);
 
-    //    group.addEntities(selentityrefs);
-    //    this->getModel()->subphrasesUpdated(dropIdx);
-    //    this->setExpanded(dropIdx, true);
-    if (dEvent->proposedAction() == Qt::MoveAction)
-    {
-      //move events break the way we handle drops, convert it to a copy
-      dEvent->setDropAction(Qt::CopyAction);
-    }
-    dEvent->accept();
+//     //    group.addEntities(selentityrefs);
+//     //    this->getModel()->subphrasesUpdated(dropIdx);
+//     //    this->setExpanded(dropIdx, true);
+//     if (dEvent->proposedAction() == Qt::MoveAction)
+//     {
+//       //move events break the way we handle drops, convert it to a copy
+//       dEvent->setDropAction(Qt::CopyAction);
+//     }
+//     dEvent->accept();
 
-    emit this->operationRequested(brOp);
-  }
-}
+//     emit this->operationRequested(brOp);
+//   }
+// }
 
 Qt::DropActions qtModelView::supportedDropActions() const
 {
@@ -753,88 +753,88 @@ DescriptivePhrasePtr qtModelView::currentItem() const
   return DescriptivePhrasePtr();
 }
 
-void qtModelView::removeEntityGroup(const smtk::model::Model& modelEnt,
-  const smtk::model::SessionRef& sessionRef, const QList<smtk::model::Group>& groups)
-{
-  if (groups.count() == 0)
-    return;
+// void qtModelView::removeEntityGroup(const smtk::model::Model& modelEnt,
+//   const smtk::model::SessionRef& sessionRef, const QList<smtk::model::Group>& groups)
+// {
+//   if (groups.count() == 0)
+//     return;
 
-  OperatorPtr brOp = this->getOp(sessionRef.session(), pEntityGroupOpName);
-  if (!brOp || !brOp->specification())
-  {
-    std::cout << "No entity group operator to handle the key press!\n";
-    return;
-  }
+//   OperatorPtr brOp = this->getOp(sessionRef.session(), pEntityGroupOpName);
+//   if (!brOp || !brOp->specification())
+//   {
+//     std::cout << "No entity group operator to handle the key press!\n";
+//     return;
+//   }
 
-  // prepare the 'entity group' operation
-  smtk::attribute::AttributePtr attrib = brOp->specification();
-  smtk::attribute::ModelEntityItemPtr modelItem = attrib->findModelEntity("model");
-  smtk::attribute::StringItem::Ptr optypeItem = attrib->findString("Operation");
-  smtk::attribute::ModelEntityItemPtr grpItem =
-    attrib->findAs<smtk::attribute::ModelEntityItem>("remove cell group", attribute::ALL_CHILDREN);
-  if (!modelItem || !optypeItem || !grpItem)
-  {
-    std::cerr << "The entity group operator's specification is missing items!\n";
-    return;
-  }
+//   // prepare the 'entity group' operation
+//   smtk::attribute::AttributePtr attrib = brOp->specification();
+//   smtk::attribute::ModelEntityItemPtr modelItem = attrib->findModelEntity("model");
+//   smtk::attribute::StringItem::Ptr optypeItem = attrib->findString("Operation");
+//   smtk::attribute::ModelEntityItemPtr grpItem =
+//     attrib->findAs<smtk::attribute::ModelEntityItem>("remove cell group", attribute::ALL_CHILDREN);
+//   if (!modelItem || !optypeItem || !grpItem)
+//   {
+//     std::cerr << "The entity group operator's specification is missing items!\n";
+//     return;
+//   }
 
-  modelItem->setValue(modelEnt);
-  optypeItem->setValue("Remove");
-  grpItem->setNumberOfValues(groups.count());
-  for (int i = 0; i < groups.count(); ++i)
-  {
-    grpItem->setValue(i, groups[i]);
-  }
+//   modelItem->setValue(modelEnt);
+//   optypeItem->setValue("Remove");
+//   grpItem->setNumberOfValues(groups.count());
+//   for (int i = 0; i < groups.count(); ++i)
+//   {
+//     grpItem->setValue(i, groups[i]);
+//   }
 
-  emit this->operationRequested(brOp);
-}
+//   emit this->operationRequested(brOp);
+// }
 
-void qtModelView::removeFromEntityGroup(const smtk::model::Model& modelEnt,
-  const smtk::model::SessionRef& sessionRef, const smtk::model::Group& grp,
-  const smtk::model::EntityRefs& rementities)
-{
-  if (rementities.size() == 0)
-    return;
+// void qtModelView::removeFromEntityGroup(const smtk::model::Model& modelEnt,
+//   const smtk::model::SessionRef& sessionRef, const smtk::model::Group& grp,
+//   const smtk::model::EntityRefs& rementities)
+// {
+//   if (rementities.size() == 0)
+//     return;
 
-  OperatorPtr brOp = this->getOp(sessionRef.session(), pEntityGroupOpName);
-  if (!brOp || !brOp->specification())
-  {
-    std::cout << "No entity group operator to handle the key press!\n";
-    return;
-  }
+//   OperatorPtr brOp = this->getOp(sessionRef.session(), pEntityGroupOpName);
+//   if (!brOp || !brOp->specification())
+//   {
+//     std::cout << "No entity group operator to handle the key press!\n";
+//     return;
+//   }
 
-  // prepare the 'entity group' operation
-  smtk::attribute::AttributePtr attrib = brOp->specification();
-  smtk::attribute::ModelEntityItemPtr modelItem = attrib->findModelEntity("model");
-  smtk::attribute::StringItem::Ptr optypeItem = attrib->findString("Operation");
-  smtk::attribute::ModelEntityItemPtr grpItem =
-    attrib->findAs<smtk::attribute::ModelEntityItem>("modify cell group", attribute::ALL_CHILDREN);
-  smtk::attribute::ModelEntityItemPtr remItem =
-    attrib->findAs<smtk::attribute::ModelEntityItem>("cell to remove", attribute::ALL_CHILDREN);
-  if (!modelItem || !optypeItem || !grpItem || !remItem)
-  {
-    std::cerr << "The entity group operator's specification is missing items!\n";
-    return;
-  }
+//   // prepare the 'entity group' operation
+//   smtk::attribute::AttributePtr attrib = brOp->specification();
+//   smtk::attribute::ModelEntityItemPtr modelItem = attrib->findModelEntity("model");
+//   smtk::attribute::StringItem::Ptr optypeItem = attrib->findString("Operation");
+//   smtk::attribute::ModelEntityItemPtr grpItem =
+//     attrib->findAs<smtk::attribute::ModelEntityItem>("modify cell group", attribute::ALL_CHILDREN);
+//   smtk::attribute::ModelEntityItemPtr remItem =
+//     attrib->findAs<smtk::attribute::ModelEntityItem>("cell to remove", attribute::ALL_CHILDREN);
+//   if (!modelItem || !optypeItem || !grpItem || !remItem)
+//   {
+//     std::cerr << "The entity group operator's specification is missing items!\n";
+//     return;
+//   }
 
-  modelItem->setValue(modelEnt);
-  grpItem->setValue(grp);
-  optypeItem->setValue("Modify");
+//   modelItem->setValue(modelEnt);
+//   grpItem->setValue(grp);
+//   optypeItem->setValue("Modify");
 
-  if (!remItem->setNumberOfValues(rementities.size()))
-  {
-    std::cerr << "setNumberOfValues failed for \"cell to remove\" item!\n";
-    return;
-  }
-  int i = 0;
-  smtk::model::EntityRefs::const_iterator it;
-  for (it = rementities.begin(); it != rementities.end(); ++it)
-    remItem->setValue(i++, *it);
+//   if (!remItem->setNumberOfValues(rementities.size()))
+//   {
+//     std::cerr << "setNumberOfValues failed for \"cell to remove\" item!\n";
+//     return;
+//   }
+//   int i = 0;
+//   smtk::model::EntityRefs::const_iterator it;
+//   for (it = rementities.begin(); it != rementities.end(); ++it)
+//     remItem->setValue(i++, *it);
 
-  //  grp.removeEntities(rementities);
+//   //  grp.removeEntities(rementities);
 
-  emit this->operationRequested(brOp);
-}
+//   emit this->operationRequested(brOp);
+// }
 
 /**\brief Does \a qidx refer to an entity that is displayed as the child of a group?
   *
@@ -1173,180 +1173,180 @@ bool qtModelView::requestOperation(
   return true;
 }
 
-bool qtModelView::hasSessionOp(const QModelIndex& idx, const std::string& opname)
+// bool qtModelView::hasSessionOp(const QModelIndex& idx, const std::string& opname)
+// {
+//   smtk::model::SessionRef sref = this->owningEntityAs<smtk::model::SessionRef>(idx);
+//   return this->hasSessionOp(sref, opname);
+// }
+
+// bool qtModelView::hasSessionOp(const smtk::model::SessionRef& brSession, const std::string& opname)
+// {
+//   if (brSession.isValid())
+//   {
+//     StringList opNames = brSession.operatorNames();
+//     return std::find(opNames.begin(), opNames.end(), opname) != opNames.end();
+//   }
+//   return false;
+// }
+
+// OperatorPtr qtModelView::getOp(const QModelIndex& idx, const std::string& opname)
+// {
+//   smtk::model::SessionRef sref = this->owningEntityAs<smtk::model::SessionRef>(idx);
+//   if (!sref.isValid())
+//   {
+//     std::cerr << "Could not find session!\n";
+//     return OperatorPtr();
+//   }
+
+//   if (!this->hasSessionOp(sref, opname))
+//   {
+//     std::cout << "The requested operator: \"" << opname << "\" for session"
+//               << " \"" << (sref.session() ? sref.session()->name() : "(invalid)") << "\""
+//               << " is not part of session operators.\n";
+//     return OperatorPtr();
+//   }
+
+//   smtk::model::SessionPtr session = sref.session();
+//   return this->getOp(session, opname);
+// }
+
+// OperatorPtr qtModelView::getOp(const smtk::model::SessionPtr& brSession, const std::string& opname)
+// {
+//   OperatorPtr brOp;
+//   if (!brSession || !(brOp = brSession->op(opname)))
+//   {
+//     std::cerr << "Could not create operator: \"" << opname << "\" for session"
+//               << " \"" << (brSession ? brSession->name() : "(null)") << "\""
+//               << " (" << (brSession ? brSession->sessionId().toString() : "--") << ")\n";
+//     return OperatorPtr();
+//   }
+
+//   smtk::attribute::AttributePtr attrib = brOp->specification();
+//   if (!attrib)
+//   {
+//     std::cerr << "Invalid spec for the op: " << brOp->name() << "\n";
+//     return OperatorPtr();
+//   }
+
+//   attrib->collection()->setRefModelManager(brSession->manager());
+
+//   return brOp;
+// }
+
+void qtModelView::toggleEntityVisibility(const QModelIndex& /*idx*/)
 {
-  smtk::model::SessionRef sref = this->owningEntityAs<smtk::model::SessionRef>(idx);
-  return this->hasSessionOp(sref, opname);
+  // OperatorPtr brOp = this->getOp(idx, "set property");
+  // if (!brOp || !brOp->specification())
+  //   return;
+
+  // DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
+
+  // // if the DescriptivePhrase is for a property, skip.
+  // if (dp->phraseType() == FLOAT_PROPERTY_VALUE || dp->phraseType() == INTEGER_PROPERTY_VALUE ||
+  //   dp->phraseType() == STRING_PROPERTY_VALUE)
+  // {
+  //   return;
+  // }
+
+  // smtk::model::EntityRefs selentityrefs;
+  // smtk::mesh::MeshSets selmeshes;
+  // // filter selection by entity instead of DesriptivePhrase
+  // this->filterSelectionByEntity(dp, selentityrefs, &selmeshes);
+
+  // bool visible = true;
+  // if (dp->phraseType() == MESH_LIST || dp->phraseType() == MESH_SUMMARY)
+  // {
+  //   if (selmeshes.size() == 0)
+  //   {
+  //     return; // nothing to do
+  //   }
+  //   smtk::mesh::CollectionPtr c;
+  //   if (dp->phraseType() == MESH_SUMMARY)
+  //   {
+  //     MeshPhrasePtr mphrase = smtk::dynamic_pointer_cast<MeshPhrase>(dp);
+  //     smtk::mesh::MeshSet meshkey;
+  //     if (!mphrase->relatedMesh().is_empty())
+  //     {
+  //       meshkey = mphrase->relatedMesh();
+  //       c = meshkey.collection();
+  //     }
+  //     else
+  //     {
+  //       c = mphrase->relatedMeshCollection();
+  //       meshkey = c->meshes();
+  //     }
+  //     if (c && !meshkey.is_empty() && c->hasIntegerProperty(meshkey, "visible"))
+  //     {
+  //       const IntegerList& prop(c->integerProperty(meshkey, "visible"));
+  //       if (!prop.empty())
+  //         visible = (prop[0] != 0);
+  //     }
+  //   }
+  // }
+  // else if (dp->phraseType() == ENTITY_LIST)
+  // {
+  //   EntityListPhrasePtr lphrase = smtk::dynamic_pointer_cast<EntityListPhrase>(dp);
+  //   // if all its children is off, then show as off
+  //   bool hasVisibleChild = false;
+  //   EntityRefArray::const_iterator it;
+  //   for (it = lphrase->relatedEntities().begin();
+  //        it != lphrase->relatedEntities().end() && !hasVisibleChild; ++it)
+  //   {
+  //     hasVisibleChild = it->visible();
+  //   }
+  //   visible = hasVisibleChild;
+  // }
+  // else
+  // {
+  //   visible = dp->relatedEntity().visible();
+  // }
+
+  // int newVis = visible ? 0 : 1;
+  // if (this->setEntityVisibility(selentityrefs, selmeshes, newVis, brOp))
+  //   this->dataChanged(idx, idx);
+  // this->update();
 }
 
-bool qtModelView::hasSessionOp(const smtk::model::SessionRef& brSession, const std::string& opname)
+bool qtModelView::setEntityVisibility(const smtk::model::EntityRefs& /*selentityrefs*/,
+  const smtk::mesh::MeshSets& /*selmeshes*/, int /*vis*/, OperatorPtr /*brOp*/)
 {
-  if (brSession.isValid())
-  {
-    StringList opNames = brSession.operatorNames();
-    return std::find(opNames.begin(), opNames.end(), opname) != opNames.end();
-  }
-  return false;
-}
+  // smtk::attribute::AttributePtr attrib = brOp->specification();
+  // smtk::attribute::StringItemPtr nameItem = attrib->findString("name");
+  // smtk::attribute::IntItemPtr visItem = attrib->findInt("integer value");
+  // if (!nameItem || !visItem)
+  // {
+  //   std::cerr << "The set-property op is missing item(s): name or integer value\n";
+  //   return false;
+  // }
+  // nameItem->setNumberOfValues(1);
+  // nameItem->setValue("visible");
+  // visItem->setNumberOfValues(1);
+  // visItem->setValue(vis);
 
-OperatorPtr qtModelView::getOp(const QModelIndex& idx, const std::string& opname)
-{
-  smtk::model::SessionRef sref = this->owningEntityAs<smtk::model::SessionRef>(idx);
-  if (!sref.isValid())
-  {
-    std::cerr << "Could not find session!\n";
-    return OperatorPtr();
-  }
+  // EntityRefs::const_iterator it;
+  // int numChangingEnts = 0;
+  // // for model entities
+  // for (it = selentityrefs.begin(); it != selentityrefs.end(); it++)
+  // {
+  //   numChangingEnts++;
+  //   attrib->associateEntity(*it);
+  // }
+  // // for meshes
+  // if (selmeshes.size())
+  // {
+  //   smtk::attribute::MeshItemPtr meshItem = attrib->findMesh("meshes");
+  //   if (meshItem)
+  //   {
+  //     meshItem->appendValues(selmeshes);
+  //     numChangingEnts += static_cast<int>(selmeshes.size());
+  //   }
+  // }
 
-  if (!this->hasSessionOp(sref, opname))
-  {
-    std::cout << "The requested operator: \"" << opname << "\" for session"
-              << " \"" << (sref.session() ? sref.session()->name() : "(invalid)") << "\""
-              << " is not part of session operators.\n";
-    return OperatorPtr();
-  }
-
-  smtk::model::SessionPtr session = sref.session();
-  return this->getOp(session, opname);
-}
-
-OperatorPtr qtModelView::getOp(const smtk::model::SessionPtr& brSession, const std::string& opname)
-{
-  OperatorPtr brOp;
-  if (!brSession || !(brOp = brSession->op(opname)))
-  {
-    std::cerr << "Could not create operator: \"" << opname << "\" for session"
-              << " \"" << (brSession ? brSession->name() : "(null)") << "\""
-              << " (" << (brSession ? brSession->sessionId().toString() : "--") << ")\n";
-    return OperatorPtr();
-  }
-
-  smtk::attribute::AttributePtr attrib = brOp->specification();
-  if (!attrib)
-  {
-    std::cerr << "Invalid spec for the op: " << brOp->name() << "\n";
-    return OperatorPtr();
-  }
-
-  attrib->collection()->setRefModelManager(brSession->manager());
-
-  return brOp;
-}
-
-void qtModelView::toggleEntityVisibility(const QModelIndex& idx)
-{
-  OperatorPtr brOp = this->getOp(idx, "set property");
-  if (!brOp || !brOp->specification())
-    return;
-
-  DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
-
-  // if the DescriptivePhrase is for a property, skip.
-  if (dp->phraseType() == FLOAT_PROPERTY_VALUE || dp->phraseType() == INTEGER_PROPERTY_VALUE ||
-    dp->phraseType() == STRING_PROPERTY_VALUE)
-  {
-    return;
-  }
-
-  smtk::model::EntityRefs selentityrefs;
-  smtk::mesh::MeshSets selmeshes;
-  // filter selection by entity instead of DesriptivePhrase
-  this->filterSelectionByEntity(dp, selentityrefs, &selmeshes);
-
-  bool visible = true;
-  if (dp->phraseType() == MESH_LIST || dp->phraseType() == MESH_SUMMARY)
-  {
-    if (selmeshes.size() == 0)
-    {
-      return; // nothing to do
-    }
-    smtk::mesh::CollectionPtr c;
-    if (dp->phraseType() == MESH_SUMMARY)
-    {
-      MeshPhrasePtr mphrase = smtk::dynamic_pointer_cast<MeshPhrase>(dp);
-      smtk::mesh::MeshSet meshkey;
-      if (!mphrase->relatedMesh().is_empty())
-      {
-        meshkey = mphrase->relatedMesh();
-        c = meshkey.collection();
-      }
-      else
-      {
-        c = mphrase->relatedMeshCollection();
-        meshkey = c->meshes();
-      }
-      if (c && !meshkey.is_empty() && c->hasIntegerProperty(meshkey, "visible"))
-      {
-        const IntegerList& prop(c->integerProperty(meshkey, "visible"));
-        if (!prop.empty())
-          visible = (prop[0] != 0);
-      }
-    }
-  }
-  else if (dp->phraseType() == ENTITY_LIST)
-  {
-    EntityListPhrasePtr lphrase = smtk::dynamic_pointer_cast<EntityListPhrase>(dp);
-    // if all its children is off, then show as off
-    bool hasVisibleChild = false;
-    EntityRefArray::const_iterator it;
-    for (it = lphrase->relatedEntities().begin();
-         it != lphrase->relatedEntities().end() && !hasVisibleChild; ++it)
-    {
-      hasVisibleChild = it->visible();
-    }
-    visible = hasVisibleChild;
-  }
-  else
-  {
-    visible = dp->relatedEntity().visible();
-  }
-
-  int newVis = visible ? 0 : 1;
-  if (this->setEntityVisibility(selentityrefs, selmeshes, newVis, brOp))
-    this->dataChanged(idx, idx);
-  this->update();
-}
-
-bool qtModelView::setEntityVisibility(const smtk::model::EntityRefs& selentityrefs,
-  const smtk::mesh::MeshSets& selmeshes, int vis, OperatorPtr brOp)
-{
-  smtk::attribute::AttributePtr attrib = brOp->specification();
-  smtk::attribute::StringItemPtr nameItem = attrib->findString("name");
-  smtk::attribute::IntItemPtr visItem = attrib->findInt("integer value");
-  if (!nameItem || !visItem)
-  {
-    std::cerr << "The set-property op is missing item(s): name or integer value\n";
-    return false;
-  }
-  nameItem->setNumberOfValues(1);
-  nameItem->setValue("visible");
-  visItem->setNumberOfValues(1);
-  visItem->setValue(vis);
-
-  EntityRefs::const_iterator it;
-  int numChangingEnts = 0;
-  // for model entities
-  for (it = selentityrefs.begin(); it != selentityrefs.end(); it++)
-  {
-    numChangingEnts++;
-    attrib->associateEntity(*it);
-  }
-  // for meshes
-  if (selmeshes.size())
-  {
-    smtk::attribute::MeshItemPtr meshItem = attrib->findMesh("meshes");
-    if (meshItem)
-    {
-      meshItem->appendValues(selmeshes);
-      numChangingEnts += static_cast<int>(selmeshes.size());
-    }
-  }
-
-  if (numChangingEnts)
-  {
-    emit this->operationRequested(brOp);
-    return true;
-  }
+  // if (numChangingEnts)
+  // {
+  //   emit this->operationRequested(brOp);
+  //   return true;
+  // }
   return false;
 }
 
@@ -1359,216 +1359,216 @@ QColor internal_convertColor(const FloatList& rgba)
   return ncomp >= 3 ? QColor::fromRgbF(rgba[0], rgba[1], rgba[2], alpha) : QColor();
 }
 
-void qtModelView::changeEntityColor(const QModelIndex& idx)
+void qtModelView::changeEntityColor(const QModelIndex& /*idx*/)
 {
-  OperatorPtr brOp = this->getOp(idx, "set property");
-  if (!brOp || !brOp->specification())
-    return;
+  // OperatorPtr brOp = this->getOp(idx, "set property");
+  // if (!brOp || !brOp->specification())
+  //   return;
 
-  DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
-  if (!dp)
-    return;
+  // DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
+  // if (!dp)
+  //   return;
 
-  smtk::model::EntityRefs selentityrefs;
-  smtk::mesh::MeshSets selmeshes;
-  QColor currentColor = Qt::white;
-  if (dp->phraseType() == ENTITY_LIST)
-  {
-    EntityListPhrasePtr elp = smtk::dynamic_pointer_cast<EntityListPhrase>(dp);
-    std::string colorName;
-    // Currently only handle model's entity list
-    if (elp && elp->parent()->relatedEntity().isModel())
-    {
-      colorName = Entity::flagSummary(elp->relatedBitFlags());
-      colorName += " color";
-      // get the color for the list
-      QColor newColor =
-        QColorDialog::getColor(currentColor, this, "Choose"
-                                                   " Entity Color (Click Cancel to remove color)",
-          QColorDialog::DontUseNativeDialog | QColorDialog::ShowAlphaChannel);
+  // smtk::model::EntityRefs selentityrefs;
+  // smtk::mesh::MeshSets selmeshes;
+  // QColor currentColor = Qt::white;
+  // if (dp->phraseType() == ENTITY_LIST)
+  // {
+  //   EntityListPhrasePtr elp = smtk::dynamic_pointer_cast<EntityListPhrase>(dp);
+  //   std::string colorName;
+  //   // Currently only handle model's entity list
+  //   if (elp && elp->parent()->relatedEntity().isModel())
+  //   {
+  //     colorName = Entity::flagSummary(elp->relatedBitFlags());
+  //     colorName += " color";
+  //     // get the color for the list
+  //     QColor newColor =
+  //       QColorDialog::getColor(currentColor, this, "Choose"
+  //                                                  " Entity Color (Click Cancel to remove color)",
+  //         QColorDialog::DontUseNativeDialog | QColorDialog::ShowAlphaChannel);
 
-      // store color property on the model
-      // use set property operator to store color
-      smtk::model::EntityRef model = elp->parent()->relatedEntity();
-      smtk::attribute::AttributePtr attrib = brOp->specification();
-      smtk::attribute::StringItemPtr nameItem = attrib->findString("name");
-      smtk::attribute::DoubleItemPtr colorItem = attrib->findDouble("float value");
-      if (!nameItem || !colorItem)
-      {
-        std::cerr << "The set-property op is missing item(s): name or double value\n";
-      }
-      nameItem->setValue(colorName);
-      if (newColor.isValid())
-      {
-        colorItem->setNumberOfValues(4);
-        colorItem->setValue(0, newColor.redF());
-        colorItem->setValue(1, newColor.greenF());
-        colorItem->setValue(2, newColor.blueF());
-        colorItem->setValue(3, newColor.alphaF());
-      }
-      else
-      { // User invalidates the color
-        colorItem->setNumberOfValues(4);
-        std::vector<double> nullColor(4, -2.);
-        colorItem->setValues(nullColor.begin(), nullColor.end());
-      }
-      attrib->associateEntity(model);
+  //     // store color property on the model
+  //     // use set property operator to store color
+  //     smtk::model::EntityRef model = elp->parent()->relatedEntity();
+  //     smtk::attribute::AttributePtr attrib = brOp->specification();
+  //     smtk::attribute::StringItemPtr nameItem = attrib->findString("name");
+  //     smtk::attribute::DoubleItemPtr colorItem = attrib->findDouble("float value");
+  //     if (!nameItem || !colorItem)
+  //     {
+  //       std::cerr << "The set-property op is missing item(s): name or double value\n";
+  //     }
+  //     nameItem->setValue(colorName);
+  //     if (newColor.isValid())
+  //     {
+  //       colorItem->setNumberOfValues(4);
+  //       colorItem->setValue(0, newColor.redF());
+  //       colorItem->setValue(1, newColor.greenF());
+  //       colorItem->setValue(2, newColor.blueF());
+  //       colorItem->setValue(3, newColor.alphaF());
+  //     }
+  //     else
+  //     { // User invalidates the color
+  //       colorItem->setNumberOfValues(4);
+  //       std::vector<double> nullColor(4, -2.);
+  //       colorItem->setValues(nullColor.begin(), nullColor.end());
+  //     }
+  //     attrib->associateEntity(model);
 
-      emit this->operationRequested(brOp);
+  //     emit this->operationRequested(brOp);
 
-      // invalid color of elp's children entities to be (0, 0, 0, -1)
-      OperatorPtr acOp = this->getOp(idx, "assign colors");
-      EntityRefArray relatedEntities = elp->relatedEntities();
-      for (auto& relatedEntity : relatedEntities)
-      {
-        acOp->associateEntity(relatedEntity);
-      }
+  //     // invalid color of elp's children entities to be (0, 0, 0, -1)
+  //     OperatorPtr acOp = this->getOp(idx, "assign colors");
+  //     EntityRefArray relatedEntities = elp->relatedEntities();
+  //     for (auto& relatedEntity : relatedEntities)
+  //     {
+  //       acOp->associateEntity(relatedEntity);
+  //     }
 
-      emit this->operationRequested(acOp);
+  //     emit this->operationRequested(acOp);
 
-      if (newColor.isValid())
-      {
-        this->dataChanged(idx, idx);
-      }
-    }
-  }
-  else
-  {
-    if (dp->phraseType() == MESH_SUMMARY)
-    {
-      MeshPhrasePtr mphrase = smtk::dynamic_pointer_cast<MeshPhrase>(dp);
-      smtk::mesh::CollectionPtr c;
-      smtk::mesh::MeshSet meshkey;
-      if (!mphrase->relatedMesh().is_empty())
-      {
-        meshkey = mphrase->relatedMesh();
-        c = meshkey.collection();
-      }
-      else
-      {
-        c = mphrase->relatedMeshCollection();
-        meshkey = c->meshes();
-      }
+  //     if (newColor.isValid())
+  //     {
+  //       this->dataChanged(idx, idx);
+  //     }
+  //   }
+  // }
+  // else
+  // {
+  //   if (dp->phraseType() == MESH_SUMMARY)
+  //   {
+  //     MeshPhrasePtr mphrase = smtk::dynamic_pointer_cast<MeshPhrase>(dp);
+  //     smtk::mesh::CollectionPtr c;
+  //     smtk::mesh::MeshSet meshkey;
+  //     if (!mphrase->relatedMesh().is_empty())
+  //     {
+  //       meshkey = mphrase->relatedMesh();
+  //       c = meshkey.collection();
+  //     }
+  //     else
+  //     {
+  //       c = mphrase->relatedMeshCollection();
+  //       meshkey = c->meshes();
+  //     }
 
-      if (c && !meshkey.is_empty())
-      {
-        const FloatList& rgba(c->floatProperty(meshkey, "color"));
-        currentColor = internal_convertColor(rgba);
-        selmeshes.insert(meshkey);
-      }
-    }
-    else if (!dp->isPropertyValueType() && dp->relatedEntity().isValid())
-    {
-      selentityrefs.insert(dp->relatedEntity());
+  //     if (c && !meshkey.is_empty())
+  //     {
+  //       const FloatList& rgba(c->floatProperty(meshkey, "color"));
+  //       currentColor = internal_convertColor(rgba);
+  //       selmeshes.insert(meshkey);
+  //     }
+  //   }
+  //   else if (!dp->isPropertyValueType() && dp->relatedEntity().isValid())
+  //   {
+  //     selentityrefs.insert(dp->relatedEntity());
 
-      smtk::model::FloatList rgba(4);
-      rgba = dp->relatedEntity().color();
-      currentColor = internal_convertColor(rgba);
-    }
+  //     smtk::model::FloatList rgba(4);
+  //     rgba = dp->relatedEntity().color();
+  //     currentColor = internal_convertColor(rgba);
+  //   }
 
-    if (selentityrefs.size() > 0 || selmeshes.size() > 0)
-    {
-      QColor newColor = QColorDialog::getColor(currentColor, this, "Choose Entity Color",
-        QColorDialog::DontUseNativeDialog | QColorDialog::ShowAlphaChannel);
-      if (newColor.isValid() && newColor != currentColor)
-      {
-        if (this->setEntityColor(selentityrefs, selmeshes, newColor, brOp))
-          this->dataChanged(idx, idx);
-      }
-    }
-  }
+  //   if (selentityrefs.size() > 0 || selmeshes.size() > 0)
+  //   {
+  //     QColor newColor = QColorDialog::getColor(currentColor, this, "Choose Entity Color",
+  //       QColorDialog::DontUseNativeDialog | QColorDialog::ShowAlphaChannel);
+  //     if (newColor.isValid() && newColor != currentColor)
+  //     {
+  //       if (this->setEntityColor(selentityrefs, selmeshes, newColor, brOp))
+  //         this->dataChanged(idx, idx);
+  //     }
+  //   }
+  // }
 }
 
-bool qtModelView::setEntityColor(const smtk::model::EntityRefs& selentityrefs,
-  const smtk::mesh::MeshSets& selmeshes, const QColor& newColor, OperatorPtr brOp)
+bool qtModelView::setEntityColor(const smtk::model::EntityRefs& /*selentityrefs*/,
+  const smtk::mesh::MeshSets& /*selmeshes*/, const QColor& /*newColor*/, OperatorPtr /*brOp*/)
 {
-  smtk::attribute::AttributePtr attrib = brOp->specification();
-  smtk::attribute::StringItemPtr nameItem = attrib->findString("name");
-  smtk::attribute::DoubleItemPtr colorItem = attrib->findDouble("float value");
-  if (!nameItem || !colorItem)
-  {
-    std::cerr << "The set-property op is missing item(s): name or integer value\n";
-    return false;
-  }
-  nameItem->setNumberOfValues(1);
-  nameItem->setValue("color");
-  if (newColor.isValid())
-  {
-    colorItem->setNumberOfValues(4);
-    colorItem->setValue(0, newColor.redF());
-    colorItem->setValue(1, newColor.greenF());
-    colorItem->setValue(2, newColor.blueF());
-    colorItem->setValue(3, newColor.alphaF());
-  }
-  else
-  {
-    colorItem->setNumberOfValues(4);
-    std::vector<double> nullColor(4, -1.);
-    colorItem->setValues(nullColor.begin(), nullColor.end());
-  }
+  // smtk::attribute::AttributePtr attrib = brOp->specification();
+  // smtk::attribute::StringItemPtr nameItem = attrib->findString("name");
+  // smtk::attribute::DoubleItemPtr colorItem = attrib->findDouble("float value");
+  // if (!nameItem || !colorItem)
+  // {
+  //   std::cerr << "The set-property op is missing item(s): name or integer value\n";
+  //   return false;
+  // }
+  // nameItem->setNumberOfValues(1);
+  // nameItem->setValue("color");
+  // if (newColor.isValid())
+  // {
+  //   colorItem->setNumberOfValues(4);
+  //   colorItem->setValue(0, newColor.redF());
+  //   colorItem->setValue(1, newColor.greenF());
+  //   colorItem->setValue(2, newColor.blueF());
+  //   colorItem->setValue(3, newColor.alphaF());
+  // }
+  // else
+  // {
+  //   colorItem->setNumberOfValues(4);
+  //   std::vector<double> nullColor(4, -1.);
+  //   colorItem->setValues(nullColor.begin(), nullColor.end());
+  // }
 
-  int numChangingEnts = 0;
-  smtk::model::FloatList rgba(4);
-  // for model entities
-  EntityRefs::const_iterator it;
-  for (it = selentityrefs.begin(); it != selentityrefs.end(); it++)
-  {
-    // if entity self is a summary of group(exodus session)
-    smtk::model::Group groupSelRefs;
-    smtk::model::EntityRefs groupItems = smtk::model::EntityRefs();
-    if (it->isGroup())
-    {
-      groupSelRefs = it->as<smtk::model::Group>();
-      groupItems = groupSelRefs.members<smtk::model::EntityRefs>();
-    }
+  // int numChangingEnts = 0;
+  // smtk::model::FloatList rgba(4);
+  // // for model entities
+  // EntityRefs::const_iterator it;
+  // for (it = selentityrefs.begin(); it != selentityrefs.end(); it++)
+  // {
+  //   // if entity self is a summary of group(exodus session)
+  //   smtk::model::Group groupSelRefs;
+  //   smtk::model::EntityRefs groupItems = smtk::model::EntityRefs();
+  //   if (it->isGroup())
+  //   {
+  //     groupSelRefs = it->as<smtk::model::Group>();
+  //     groupItems = groupSelRefs.members<smtk::model::EntityRefs>();
+  //   }
 
-    if (newColor.isValid())
-    {
-      QColor currentColor = Qt::white;
-      if ((*it).hasColor())
-      {
-        rgba = (*it).color();
-        currentColor = internal_convertColor(rgba);
-      }
-      if (newColor != currentColor)
-      {
-        numChangingEnts++;
-        attrib->associateEntity(*it);
-        for (const auto& groupItem : groupItems)
-        {
-          numChangingEnts++;
-          attrib->associateEntity(groupItem);
-        }
-      }
-    }
-    else if ((*it).hasColor()) // remove "color" property
-    {
-      numChangingEnts++;
-      attrib->associateEntity(*it);
-      for (const auto& groupItem : groupItems)
-      {
-        numChangingEnts++;
-        attrib->associateEntity(groupItem);
-      }
-    }
-  }
+  //   if (newColor.isValid())
+  //   {
+  //     QColor currentColor = Qt::white;
+  //     if ((*it).hasColor())
+  //     {
+  //       rgba = (*it).color();
+  //       currentColor = internal_convertColor(rgba);
+  //     }
+  //     if (newColor != currentColor)
+  //     {
+  //       numChangingEnts++;
+  //       attrib->associateEntity(*it);
+  //       for (const auto& groupItem : groupItems)
+  //       {
+  //         numChangingEnts++;
+  //         attrib->associateEntity(groupItem);
+  //       }
+  //     }
+  //   }
+  //   else if ((*it).hasColor()) // remove "color" property
+  //   {
+  //     numChangingEnts++;
+  //     attrib->associateEntity(*it);
+  //     for (const auto& groupItem : groupItems)
+  //     {
+  //       numChangingEnts++;
+  //       attrib->associateEntity(groupItem);
+  //     }
+  //   }
+  // }
 
-  // for meshes
-  if (selmeshes.size())
-  {
-    smtk::attribute::MeshItemPtr meshItem = attrib->findMesh("meshes");
-    if (meshItem)
-    {
-      meshItem->appendValues(selmeshes);
-      numChangingEnts += static_cast<int>(selmeshes.size());
-    }
-  }
+  // // for meshes
+  // if (selmeshes.size())
+  // {
+  //   smtk::attribute::MeshItemPtr meshItem = attrib->findMesh("meshes");
+  //   if (meshItem)
+  //   {
+  //     meshItem->appendValues(selmeshes);
+  //     numChangingEnts += static_cast<int>(selmeshes.size());
+  //   }
+  // }
 
-  if (numChangingEnts)
-  {
-    emit this->operationRequested(brOp);
-    return true;
-  }
+  // if (numChangingEnts)
+  // {
+  //   emit this->operationRequested(brOp);
+  //   return true;
+  // }
 
   return false;
 }
@@ -1595,180 +1595,181 @@ void qtModelView::findIndexes(
 }
 */
 
-void qtModelView::syncEntityVisibility(const smtk::model::SessionPtr& session,
-  const smtk::common::UUIDs& entuids, const smtk::mesh::MeshSets& meshes, int vis)
+void qtModelView::syncEntityVisibility(const smtk::model::SessionPtr& /*session*/,
+  const smtk::common::UUIDs& /*entuids*/, const smtk::mesh::MeshSets& /*meshes*/, int /*vis*/)
 {
-  if (!session)
-  {
-    std::cerr << "Input session in null, no op can be created\n";
-    return;
-  }
-  OperatorPtr brOp = this->getOp(session, "set property");
-  if (!brOp || !brOp->specification())
-    return;
-  EntityRefs entities;
-  smtk::extension::QEntityItemModel* qmodel =
-    dynamic_cast<smtk::extension::QEntityItemModel*>(this->model());
-  EntityRef::EntityRefsFromUUIDs(entities, qmodel->manager(), entuids);
-  this->setEntityVisibility(entities, meshes, vis, brOp);
+  // if (!session)
+  // {
+  //   std::cerr << "Input session in null, no op can be created\n";
+  //   return;
+  // }
+  // OperatorPtr brOp = this->getOp(session, "set property");
+  // if (!brOp || !brOp->specification())
+  //   return;
+  // EntityRefs entities;
+  // smtk::extension::QEntityItemModel* qmodel =
+  //   dynamic_cast<smtk::extension::QEntityItemModel*>(this->model());
+  // EntityRef::EntityRefsFromUUIDs(entities, qmodel->manager(), entuids);
+  // this->setEntityVisibility(entities, meshes, vis, brOp);
 
-  // signal qmodel index data changed
-  foreach (QModelIndex idx, this->selectedIndexes())
-  {
-    this->dataChanged(idx, idx);
-  }
+  // // signal qmodel index data changed
+  // foreach (QModelIndex idx, this->selectedIndexes())
+  // {
+  //   this->dataChanged(idx, idx);
+  // }
 }
 
-void qtModelView::syncEntityColor(const smtk::model::SessionPtr& session,
-  const smtk::common::UUIDs& entuids, const smtk::mesh::MeshSets& meshes, const QColor& clr)
+void qtModelView::syncEntityColor(const smtk::model::SessionPtr& /*session*/,
+  const smtk::common::UUIDs& /*entuids*/, const smtk::mesh::MeshSets& /*meshes*/,
+  const QColor& /*clr*/)
 {
-  if (!session)
-  {
-    std::cerr << "Input session in null, no op can be created\n";
-    return;
-  }
-  OperatorPtr brOp = this->getOp(session, "set property");
-  if (!brOp || !brOp->specification())
-    return;
-  EntityRefs entities;
-  smtk::extension::QEntityItemModel* qmodel =
-    dynamic_cast<smtk::extension::QEntityItemModel*>(this->model());
-  EntityRef::EntityRefsFromUUIDs(entities, qmodel->manager(), entuids);
-  this->setEntityColor(entities, meshes, clr, brOp);
+  // if (!session)
+  // {
+  //   std::cerr << "Input session in null, no op can be created\n";
+  //   return;
+  // }
+  // OperatorPtr brOp = this->getOp(session, "set property");
+  // if (!brOp || !brOp->specification())
+  //   return;
+  // EntityRefs entities;
+  // smtk::extension::QEntityItemModel* qmodel =
+  //   dynamic_cast<smtk::extension::QEntityItemModel*>(this->model());
+  // EntityRef::EntityRefsFromUUIDs(entities, qmodel->manager(), entuids);
+  // this->setEntityColor(entities, meshes, clr, brOp);
 
-  // update index to redraw
-  foreach (QModelIndex idx, this->selectedIndexes())
-  {
-    this->dataChanged(idx, idx);
-  }
+  // // update index to redraw
+  // foreach (QModelIndex idx, this->selectedIndexes())
+  // {
+  //   this->dataChanged(idx, idx);
+  // }
 }
 
-void qtModelView::changeEntityName(const QModelIndex& idx)
+void qtModelView::changeEntityName(const QModelIndex& /*idx*/)
 {
-  DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
-  smtk::model::EntityRef ent = dp->relatedEntity();
-  // If there is no related entity, we may have either a meshset or mesh
-  // collection. We can pull an associated entity ref from either type, which
-  // will give us access to the underlying session.
-  if (!ent.isValid())
-  {
-    auto collection =
-      dp->relatedMeshCollection() ? dp->relatedMeshCollection() : dp->relatedMesh().collection();
-    if (collection)
-    {
-      ent = smtk::model::EntityRef(collection->modelManager(), collection->associatedModel());
-    }
-  }
-  smtk::model::SessionRef sref = ent.owningSession();
-  OperatorPtr brOp = this->getOp(sref.session(), "set property");
-  if (!brOp || !brOp->specification())
-    return;
-  smtk::attribute::AttributePtr attrib = brOp->specification();
-  smtk::attribute::StringItemPtr nameItem = attrib->findString("name");
-  smtk::attribute::StringItemPtr titleItem = attrib->findString("string value");
-  if (!nameItem || !titleItem)
-  {
-    std::cerr << "The set-property op is missing item(s): name or string value\n";
-    return;
-  }
-  // change the entity "name" property to its descriptive phrase's new title
-  nameItem->setNumberOfValues(1);
-  nameItem->setValue("name");
-  titleItem->setNumberOfValues(1);
-  titleItem->setValue(dp->title());
+  // DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
+  // smtk::model::EntityRef ent = dp->relatedEntity();
+  // // If there is no related entity, we may have either a meshset or mesh
+  // // collection. We can pull an associated entity ref from either type, which
+  // // will give us access to the underlying session.
+  // if (!ent.isValid())
+  // {
+  //   auto collection =
+  //     dp->relatedMeshCollection() ? dp->relatedMeshCollection() : dp->relatedMesh().collection();
+  //   if (collection)
+  //   {
+  //     ent = smtk::model::EntityRef(collection->modelManager(), collection->associatedModel());
+  //   }
+  // }
+  // smtk::model::SessionRef sref = ent.owningSession();
+  // OperatorPtr brOp = this->getOp(sref.session(), "set property");
+  // if (!brOp || !brOp->specification())
+  //   return;
+  // smtk::attribute::AttributePtr attrib = brOp->specification();
+  // smtk::attribute::StringItemPtr nameItem = attrib->findString("name");
+  // smtk::attribute::StringItemPtr titleItem = attrib->findString("string value");
+  // if (!nameItem || !titleItem)
+  // {
+  //   std::cerr << "The set-property op is missing item(s): name or string value\n";
+  //   return;
+  // }
+  // // change the entity "name" property to its descriptive phrase's new title
+  // nameItem->setNumberOfValues(1);
+  // nameItem->setValue("name");
+  // titleItem->setNumberOfValues(1);
+  // titleItem->setValue(dp->title());
 
-  if (dp->phraseType() == MESH_SUMMARY)
-  {
-    MeshPhrasePtr mphrase = smtk::dynamic_pointer_cast<MeshPhrase>(dp);
-    smtk::mesh::MeshSet meshkey;
-    if (!mphrase->relatedMesh().is_empty())
-    {
-      meshkey = mphrase->relatedMesh();
-    }
-    else
-    {
-      smtk::mesh::CollectionPtr c = mphrase->relatedMeshCollection();
-      meshkey = c->meshes();
-    }
-    smtk::attribute::MeshItemPtr meshItem = attrib->findMesh("meshes");
-    if (meshItem && !meshkey.is_empty())
-    {
-      meshItem->appendValue(meshkey);
-      emit this->operationRequested(brOp);
-    }
-  }
-  else if (dp->relatedEntity().isValid())
-  {
-    attrib->associateEntity(dp->relatedEntity());
-    emit this->operationRequested(brOp);
-  }
+  // if (dp->phraseType() == MESH_SUMMARY)
+  // {
+  //   MeshPhrasePtr mphrase = smtk::dynamic_pointer_cast<MeshPhrase>(dp);
+  //   smtk::mesh::MeshSet meshkey;
+  //   if (!mphrase->relatedMesh().is_empty())
+  //   {
+  //     meshkey = mphrase->relatedMesh();
+  //   }
+  //   else
+  //   {
+  //     smtk::mesh::CollectionPtr c = mphrase->relatedMeshCollection();
+  //     meshkey = c->meshes();
+  //   }
+  //   smtk::attribute::MeshItemPtr meshItem = attrib->findMesh("meshes");
+  //   if (meshItem && !meshkey.is_empty())
+  //   {
+  //     meshItem->appendValue(meshkey);
+  //     emit this->operationRequested(brOp);
+  //   }
+  // }
+  // else if (dp->relatedEntity().isValid())
+  // {
+  //   attrib->associateEntity(dp->relatedEntity());
+  //   emit this->operationRequested(brOp);
+  // }
 }
 
 void qtModelView::updateWithOperatorResult(
-  const smtk::model::SessionRef& sref, const OperatorResult& result)
+  const smtk::model::SessionRef& /*sref*/, const OperatorResult& /*result*/)
 {
-  smtk::extension::QEntityItemModel* qmodel =
-    dynamic_cast<smtk::extension::QEntityItemModel*>(this->model());
-  // udpate active model in subphraseGenerator. Get the m_root
-  qmodel->getItem(QModelIndex())
-    ->findDelegate()
-    ->setActiveModel(qtActiveObjects::instance().activeModel());
+  // smtk::extension::QEntityItemModel* qmodel =
+  //   dynamic_cast<smtk::extension::QEntityItemModel*>(this->model());
+  // // udpate active model in subphraseGenerator. Get the m_root
+  // qmodel->getItem(QModelIndex())
+  //   ->findDelegate()
+  //   ->setActiveModel(qtActiveObjects::instance().activeModel());
 
-  QModelIndex top = this->rootIndex();
-  for (int row = 0; row < qmodel->rowCount(top); ++row)
-  {
-    QModelIndex sessIdx = qmodel->index(row, 0, top);
-    DescriptivePhrasePtr dp = qmodel->getItem(sessIdx);
-    if (dp && (dp->relatedEntity() == sref))
-    {
-      qmodel->updateWithOperatorResult(sessIdx, result);
-      this->setExpanded(sessIdx, true);
+  // QModelIndex top = this->rootIndex();
+  // for (int row = 0; row < qmodel->rowCount(top); ++row)
+  // {
+  //   QModelIndex sessIdx = qmodel->index(row, 0, top);
+  //   DescriptivePhrasePtr dp = qmodel->getItem(sessIdx);
+  //   if (dp && (dp->relatedEntity() == sref))
+  //   {
+  //     qmodel->updateWithOperatorResult(sessIdx, result);
+  //     this->setExpanded(sessIdx, true);
 
-      // if entities get
-      smtk::attribute::ModelEntityItem::Ptr remEnts = result->findModelEntity("expunged");
-      if (remEnts && remEnts->numberOfValues() > 0)
-      {
-        smtk::model::EntityRefs expungedEnts;
-        expungedEnts.insert(remEnts->begin(), remEnts->end());
-        this->onEntitiesExpunged(expungedEnts);
-      }
+  //     // if entities get
+  //     smtk::attribute::ModelEntityItem::Ptr remEnts = result->findModelEntity("expunged");
+  //     if (remEnts && remEnts->numberOfValues() > 0)
+  //     {
+  //       smtk::model::EntityRefs expungedEnts;
+  //       expungedEnts.insert(remEnts->begin(), remEnts->end());
+  //       this->onEntitiesExpunged(expungedEnts);
+  //     }
 
-      // find and expand the new model
-      smtk::attribute::ModelEntityItem::Ptr newEntities = result->findModelEntity("created");
-      if (!newEntities)
-        return;
-      for (int mrow = 0; mrow < qmodel->rowCount(sessIdx); ++mrow)
-      {
-        QModelIndex modelIdx(qmodel->index(mrow, 0, sessIdx));
-        DescriptivePhrasePtr modp = qmodel->getItem(modelIdx);
-        // all phrases should be for models in the session
-        if (modp && newEntities->has(modp->relatedEntity()))
-        {
-          this->setExpanded(modelIdx, true);
-        }
-      }
+  //     // find and expand the new model
+  //     smtk::attribute::ModelEntityItem::Ptr newEntities = result->findModelEntity("created");
+  //     if (!newEntities)
+  //       return;
+  //     for (int mrow = 0; mrow < qmodel->rowCount(sessIdx); ++mrow)
+  //     {
+  //       QModelIndex modelIdx(qmodel->index(mrow, 0, sessIdx));
+  //       DescriptivePhrasePtr modp = qmodel->getItem(modelIdx);
+  //       // all phrases should be for models in the session
+  //       if (modp && newEntities->has(modp->relatedEntity()))
+  //       {
+  //         this->setExpanded(modelIdx, true);
+  //       }
+  //     }
 
-      return;
-    }
-  }
-  // this is a new session, mostly from a read operator of a new session
-  qmodel->newSessionOperatorResult(sref, result);
-  // expand the models inside the new session
-  for (int row = 0; row < qmodel->rowCount(top); ++row)
-  {
-    QModelIndex sessIdx = qmodel->index(row, 0, top);
-    DescriptivePhrasePtr dp = qmodel->getItem(sessIdx);
-    if (dp && (dp->relatedEntity() == sref))
-    {
-      this->setExpanded(sessIdx, true);
-      for (int mrow = 0; mrow < qmodel->rowCount(sessIdx); ++mrow)
-      {
-        QModelIndex modelIdx(qmodel->index(mrow, 0, sessIdx));
-        this->setExpanded(modelIdx, true);
-      }
-      break;
-    }
-  }
+  //     return;
+  //   }
+  // }
+  // // this is a new session, mostly from a read operator of a new session
+  // qmodel->newSessionOperatorResult(sref, result);
+  // // expand the models inside the new session
+  // for (int row = 0; row < qmodel->rowCount(top); ++row)
+  // {
+  //   QModelIndex sessIdx = qmodel->index(row, 0, top);
+  //   DescriptivePhrasePtr dp = qmodel->getItem(sessIdx);
+  //   if (dp && (dp->relatedEntity() == sref))
+  //   {
+  //     this->setExpanded(sessIdx, true);
+  //     for (int mrow = 0; mrow < qmodel->rowCount(sessIdx); ++mrow)
+  //     {
+  //       QModelIndex modelIdx(qmodel->index(mrow, 0, sessIdx));
+  //       this->setExpanded(modelIdx, true);
+  //     }
+  //     break;
+  //   }
+  // }
 }
 
 void qtModelView::onEntitiesExpunged(const smtk::model::EntityRefs& expungedEnts)

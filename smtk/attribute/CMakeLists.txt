@@ -101,6 +101,10 @@ set(attributeHeaders
   ModelEntityItemDefinition.h
   RefItem.h
   RefItemDefinition.h
+  RegisterOperations.h
+  RegisterResources.h
+  ResourceItem.h
+  ResourceItemDefinition.h
   SearchStyle.h
   StringItem.h
   StringItemDefinition.h
@@ -144,6 +148,10 @@ set(attributeSrcs
   ModelEntityItemDefinition.cxx
   RefItem.cxx
   RefItemDefinition.cxx
+  RegisterOperations.cxx
+  RegisterResources.cxx
+  ResourceItem.cxx
+  ResourceItemDefinition.cxx
   StringItem.cxx
   StringItemDefinition.cxx
   ValueItem.cxx
@@ -154,6 +162,8 @@ set(attributeSrcs
 
 #install the headers
 smtk_public_headers(${attributeHeaders})
+
+add_subdirectory(environment)
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)

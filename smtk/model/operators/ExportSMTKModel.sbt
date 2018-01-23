@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the model "ExportModelJSON" Operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
     <!-- Operator -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="export smtk model" Label="Model - Export" BaseType="operator">
       <AssociationsDef Name="models" NumberOfRequiredValues="1" Extensible="true">
         <MembershipMask>model</MembershipMask>
@@ -92,6 +93,7 @@
     </AttDef>
 
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(export smtk model)" BaseType="result">
       <ItemDefinitions>
         <Void Name="cleanse entities" IsEnabledByDefault="true"></Void>

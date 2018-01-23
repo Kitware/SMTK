@@ -17,6 +17,8 @@
 #include "smtk/model/Edge.h"
 #include "smtk/model/Vertex.h"
 
+#include <array>
+
 namespace smtk
 {
 namespace bridge
@@ -104,23 +106,23 @@ public:
   void addEdgeMeshTessellation(smtk::model::Edge& edgeRec, internal::EdgePtr edgeData);
   void addVertMeshTessellation(smtk::model::Vertex& vertRec, internal::VertexPtr vertData);
 
-  double* origin() { return this->m_origin; }
-  const double* origin() const { return this->m_origin; }
+  double* origin() { return &(this->m_origin[0]); }
+  const double* origin() const { return &(this->m_origin[0]); }
 
-  double* xAxis() { return this->m_xAxis; }
-  const double* xAxis() const { return this->m_xAxis; }
+  double* xAxis() { return &(this->m_xAxis[0]); }
+  const double* xAxis() const { return &(this->m_xAxis[0]); }
 
-  double* yAxis() { return this->m_yAxis; }
-  const double* yAxis() const { return this->m_yAxis; }
+  double* yAxis() { return &(this->m_yAxis[0]); }
+  const double* yAxis() const { return &(this->m_yAxis[0]); }
 
-  double* zAxis() { return this->m_zAxis; }
-  const double* zAxis() const { return this->m_zAxis; }
+  double* zAxis() { return &(this->m_zAxis[0]); }
+  const double* zAxis() const { return &(this->m_zAxis[0]); }
 
-  double* iAxis() { return this->m_iAxis; }
-  const double* iAxis() const { return this->m_iAxis; }
+  double* iAxis() { return &(this->m_iAxis[0]); }
+  const double* iAxis() const { return &(this->m_iAxis[0]); }
 
-  double* jAxis() { return this->m_jAxis; }
-  const double* jAxis() const { return this->m_jAxis; }
+  double* jAxis() { return &(this->m_jAxis[0]); }
+  const double* jAxis() const { return &(this->m_jAxis[0]); }
 
   double featureSize() const { return this->m_featureSize; }
   double modelScale() const { return static_cast<double>(this->m_scale); }

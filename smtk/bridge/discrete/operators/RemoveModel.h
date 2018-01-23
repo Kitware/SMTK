@@ -24,13 +24,14 @@ class SMTKDISCRETESESSION_EXPORT RemoveModel : public Operator
 public:
   smtkTypeMacro(RemoveModel);
   smtkCreateMacro(RemoveModel);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSuperclassMacro(Operator);
 
   bool ableToOperate() override;
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  const char* xmlDescription() const override;
 };
 
 } // namespace discrete

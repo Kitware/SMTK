@@ -9,12 +9,14 @@
 //=========================================================================
 #include "smtk/bridge/mesh/operators/ImportOperator.h"
 
+#include "smtk/bridge/mesh/Resource.h"
 #include "smtk/bridge/mesh/Session.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
@@ -28,7 +30,9 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 
-#include "smtk/common/CompilerInformation.h"
+#include "smtk/resource/Manager.h"
+
+#include "smtk/bridge/mesh/ImportOperator_xml.h"
 
 using namespace smtk::model;
 using namespace smtk::common;
@@ -40,22 +44,71 @@ namespace bridge
 namespace mesh
 {
 
-smtk::model::OperatorResult ImportOperator::operateInternal()
+ImportOperator::Result ImportOperator::operateInternal()
 {
   // Get the read file name
-  smtk::attribute::FileItem::Ptr filePathItem = this->specification()->findFile("filename");
+  smtk::attribute::FileItem::Ptr filePathItem = this->parameters()->findFile("filename");
   std::string filePath = filePathItem->value();
 
-  smtk::attribute::StringItem::Ptr labelItem = this->specification()->findString("label");
+  // Get the label item
+  smtk::attribute::StringItem::Ptr labelItem = this->parameters()->findString("label");
   std::string label = labelItem->value();
 
+  // Check whether or not a model hierarchy should be constructed
   smtk::attribute::VoidItem::Ptr hierarchyItem =
-    this->specification()->findVoid("construct hierarchy");
+    this->parameters()->findVoid("construct hierarchy");
   bool constructHierarchy = hierarchyItem->isEnabled();
 
+  // There are three possible import modes
+  //
+  // 1. Import a mesh into an existing resource
+  // 2. Import a mesh as a new model, but using the session of an existing resource
+  // 3. Import a mesh into a new resource
+
+  smtk::bridge::mesh::Resource::Ptr resource = nullptr;
+  smtk::bridge::mesh::Session::Ptr session = nullptr;
+
+  // Modes 2 and 3 requre an existing resource for input
+  smtk::attribute::ResourceItem::Ptr existingResourceItem =
+    this->parameters()->findResource("resource");
+
+  if (existingResourceItem && existingResourceItem->isEnabled())
+  {
+    smtk::bridge::mesh::Resource::Ptr existingResource =
+      std::static_pointer_cast<smtk::bridge::mesh::Resource>(existingResourceItem->value());
+
+    session = existingResource->session();
+
+    smtk::attribute::StringItem::Ptr sessionOnlyItem =
+      this->parameters()->findString("session only");
+    if (sessionOnlyItem->value() == "this file")
+    {
+      // If the "session only" value is set to "this file", then we use the
+      // existing resource
+      resource = existingResource;
+    }
+    else
+    {
+      // If the "session only" value is set to "this session", then we create a
+      // new resource with the session from the exisiting resource
+      resource = smtk::bridge::mesh::Resource::create();
+      resource->setSession(session);
+    }
+  }
+  else
+  {
+    // If no existing resource is provided, then we create a new session and
+    // resource.
+    resource = smtk::bridge::mesh::Resource::create();
+    session = smtk::bridge::mesh::Session::create();
+
+    // Create a new resource for the import
+    resource->setLocation(filePath);
+    resource->setSession(session);
+  }
+
   // Get the collection from the file
-  smtk::mesh::CollectionPtr collection =
-    smtk::io::importMesh(filePath, this->activeSession()->meshManager(), label);
+  smtk::mesh::CollectionPtr collection = smtk::io::importMesh(filePath, resource->meshes(), label);
 
   // Name the mesh according to the stem of the file
   std::string name = smtk::common::Paths::stem(filePath);
@@ -67,30 +120,29 @@ smtk::model::OperatorResult ImportOperator::operateInternal()
   if (!collection || !collection->isValid())
   {
     // The file was not correctly read.
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   auto format = smtk::io::meshFileFormat(filePath);
   if (format.Name == "exodus")
   {
-    this->activeSession()->facade()["domain"] = "Element Block";
-    this->activeSession()->facade()["dirichlet"] = "Node Set";
-    this->activeSession()->facade()["neumann"] = "Side Set";
+    session->facade()["domain"] = "Element Block";
+    session->facade()["dirichlet"] = "Node Set";
+    session->facade()["neumann"] = "Side Set";
   }
 
   // Assign its model manager to the one associated with this session
-  collection->setModelManager(this->manager());
+  collection->setModelManager(resource);
 
   // Construct the topology
-  this->activeSession()->addTopology(Topology(collection, constructHierarchy));
+  session->addTopology(Topology(collection, constructHierarchy));
 
   // Determine the model's dimension
   int dimension = int(smtk::mesh::utility::highestDimension(collection->meshes()));
 
   // Our collections will already have a UUID, so here we create a model given
   // the model manager and uuid
-  smtk::model::Model model =
-    this->manager()->insertModel(collection->entity(), dimension, dimension);
+  smtk::model::Model model = resource->insertModel(collection->entity(), dimension, dimension);
 
   // Name the model according to the stem of the file
   if (!name.empty())
@@ -99,38 +151,41 @@ smtk::model::OperatorResult ImportOperator::operateInternal()
   }
 
   // Declare the model as "dangling" so it will be transcribed
-  this->session()->declareDanglingEntity(model);
+  session->declareDanglingEntity(model);
 
   collection->associateToModel(model.entity());
 
   // Set the model's session to point to the current session
-  model.setSession(smtk::model::SessionRef(this->manager(), this->activeSession()->sessionId()));
+  model.setSession(smtk::model::SessionRef(resource, resource->session()->sessionId()));
 
   // If we don't call "transcribe" ourselves, it never gets called.
-  this->activeSession()->transcribe(model, smtk::model::SESSION_EVERYTHING, false);
+  resource->session()->transcribe(model, smtk::model::SESSION_EVERYTHING, false);
 
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
 
-  smtk::attribute::ModelEntityItem::Ptr resultModels = result->findModelEntity("model");
-  resultModels->setValue(model);
+  smtk::attribute::ComponentItem::Ptr resultModels = result->findComponent("model");
+  resultModels->setValue(model.component());
 
-  smtk::attribute::ModelEntityItem::Ptr created = result->findModelEntity("created");
-  created->setNumberOfValues(1);
-  created->setValue(model);
-  created->setIsEnabled(true);
+  {
+    smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
+    created->setValue(resource);
+  }
 
-  result->findModelEntity("mesh_created")->setValue(model);
+  {
+    smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");
+    created->appendValue(model.component());
+  }
+
+  result->findComponent("mesh_created")->setValue(model.component());
 
   return result;
+}
+
+const char* ImportOperator::xmlDescription() const
+{
+  return ImportOperator_xml;
 }
 
 } // namespace mesh
 } //namespace bridge
 } // namespace smtk
-
-#include "smtk/bridge/mesh/Exports.h"
-#include "smtk/bridge/mesh/ImportOperator_xml.h"
-
-smtkImplementsModelOperator(SMTKMESHSESSION_EXPORT, smtk::bridge::mesh::ImportOperator, mesh_import,
-  "import", ImportOperator_xml, smtk::bridge::mesh::Session);

@@ -25,7 +25,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindSession.h"
 #include "PybindSessionIOJSON.h"
 
-#include "smtk/model/Operator.h"
+#include "smtk/operation/NewOp.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/SessionIOJSON.h"
 
@@ -33,8 +33,6 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindCreateEdgeFromPoints.h"
 #include "PybindCreateEdgeFromVertices.h"
 #include "PybindCreateFaces.h"
-#include "PybindCreateFacesFromEdges.h"
-#include "PybindCreateModel.h"
 #include "PybindCreateVertices.h"
 #include "PybindDelete.h"
 #include "PybindDemoteVertex.h"
@@ -44,6 +42,8 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindSplitEdge.h"
 #include "PybindTweakEdge.h"
 
+#include "PybindRegisterSession.h"
+
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
 PYBIND11_MODULE(_smtkPybindPolygonSession, polygon)
@@ -52,7 +52,7 @@ PYBIND11_MODULE(_smtkPybindPolygonSession, polygon)
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
-  PySharedPtrClass< smtk::bridge::polygon::Operator, smtk::model::Operator > smtk_bridge_polygon_Operator = pybind11_init_smtk_bridge_polygon_Operator(polygon);
+  PySharedPtrClass< smtk::bridge::polygon::Operator, smtk::operation::XMLOperator > smtk_bridge_polygon_Operator = pybind11_init_smtk_bridge_polygon_Operator(polygon);
   PySharedPtrClass< smtk::bridge::polygon::Session, smtk::model::Session > smtk_bridge_polygon_Session = pybind11_init_smtk_bridge_polygon_Session(polygon);
   py::class_< smtk::bridge::polygon::SessionIOJSON, smtk::model::SessionIOJSON > smtk_bridge_polygon_SessionIOJSON = pybind11_init_smtk_bridge_polygon_SessionIOJSON(polygon);
 
@@ -61,7 +61,6 @@ PYBIND11_MODULE(_smtkPybindPolygonSession, polygon)
   PySharedPtrClass< smtk::bridge::polygon::CreateEdgeFromPoints > smtk_bridge_polygon_CreateEdgeFromPoints = pybind11_init_smtk_bridge_polygon_CreateEdgeFromPoints(polygon, smtk_bridge_polygon_Operator);
   PySharedPtrClass< smtk::bridge::polygon::CreateEdgeFromVertices > smtk_bridge_polygon_CreateEdgeFromVertices = pybind11_init_smtk_bridge_polygon_CreateEdgeFromVertices(polygon, smtk_bridge_polygon_Operator);
   PySharedPtrClass< smtk::bridge::polygon::CreateFaces > smtk_bridge_polygon_CreateFaces = pybind11_init_smtk_bridge_polygon_CreateFaces(polygon, smtk_bridge_polygon_Operator);
-  PySharedPtrClass< smtk::bridge::polygon::CreateModel > smtk_bridge_polygon_CreateModel = pybind11_init_smtk_bridge_polygon_CreateModel(polygon, smtk_bridge_polygon_Operator);
   PySharedPtrClass< smtk::bridge::polygon::CreateVertices > smtk_bridge_polygon_CreateVertices = pybind11_init_smtk_bridge_polygon_CreateVertices(polygon, smtk_bridge_polygon_Operator);
   PySharedPtrClass< smtk::bridge::polygon::Delete > smtk_bridge_polygon_Delete = pybind11_init_smtk_bridge_polygon_Delete(polygon, smtk_bridge_polygon_Operator);
   PySharedPtrClass< smtk::bridge::polygon::DemoteVertex > smtk_bridge_polygon_DemoteVertex = pybind11_init_smtk_bridge_polygon_DemoteVertex(polygon, smtk_bridge_polygon_Operator);
@@ -70,5 +69,7 @@ PYBIND11_MODULE(_smtkPybindPolygonSession, polygon)
   PySharedPtrClass< smtk::bridge::polygon::Import > smtk_bridge_polygon_Import = pybind11_init_smtk_bridge_polygon_Import(polygon, smtk_bridge_polygon_Operator);
   PySharedPtrClass< smtk::bridge::polygon::SplitEdge > smtk_bridge_polygon_SplitEdge = pybind11_init_smtk_bridge_polygon_SplitEdge(polygon, smtk_bridge_polygon_Operator);
   PySharedPtrClass< smtk::bridge::polygon::TweakEdge > smtk_bridge_polygon_TweakEdge = pybind11_init_smtk_bridge_polygon_TweakEdge(polygon, smtk_bridge_polygon_Operator);
-  PySharedPtrClass< smtk::bridge::polygon::CreateFacesFromEdges > smtk_bridge_polygon_CreateFacesFromEdges = pybind11_init_smtk_bridge_polygon_CreateFacesFromEdges(polygon, smtk_bridge_polygon_CreateFaces);
+
+  pybind11_init__bridge_polygon_registerResources(polygon);
+  pybind11_init__bridge_polygon_registerOperations(polygon);
 }

@@ -12,7 +12,7 @@
 
 #include "smtk/bridge/polygon/Operator.h"
 
-//#include "smtk/EntityRef.h"
+#include "smtk/model/EntityRef.h"
 
 namespace smtk
 {
@@ -40,12 +40,12 @@ class SMTKPOLYGONSESSION_EXPORT Delete : public Operator
 public:
   smtkTypeMacro(Delete);
   smtkCreateMacro(Delete);
-  smtkSharedFromThisMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
   smtkSuperclassMacro(Operator);
-  smtkDeclareModelOperator();
 
 protected:
   smtk::model::OperatorResult operateInternal() override;
+  virtual const char* xmlDescription() const override;
 
   template <typename U, typename V, typename W, typename X>
   bool checkAndAddBoundingCells(const smtk::model::EntityRef& ent, bool deleteBoundingCells,

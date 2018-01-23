@@ -10,12 +10,17 @@
 
 #include "smtk/mesh/operators/UndoElevateMesh.h"
 
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/MeshItem.h"
 
+#include "smtk/io/Logger.h"
+
+#include "smtk/mesh/UndoElevateMesh_xml.h"
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/mesh/core/PointField.h"
-
 #include "smtk/mesh/utility/ApplyToMesh.h"
+
+#include "smtk/model/Model.h"
 
 namespace smtk
 {
@@ -24,12 +29,12 @@ namespace mesh
 
 bool UndoElevateMesh::ableToOperate()
 {
-  if (!this->ensureSpecification())
+  if (!this->Superclass::ableToOperate())
   {
     return false;
   }
 
-  smtk::attribute::MeshItem::Ptr meshItem = this->specification()->findMesh("mesh");
+  smtk::attribute::MeshItem::Ptr meshItem = this->parameters()->findMesh("mesh");
   if (!meshItem || meshItem->numberOfValues() == 0)
   {
     return false;
@@ -48,16 +53,19 @@ bool UndoElevateMesh::ableToOperate()
   return true;
 }
 
-smtk::model::OperatorResult UndoElevateMesh::operateInternal()
+UndoElevateMesh::Result UndoElevateMesh::operateInternal()
 {
   // Access the mesh
-  smtk::attribute::MeshItem::Ptr meshItem = this->specification()->findMesh("mesh");
+  smtk::attribute::MeshItem::Ptr meshItem = this->parameters()->findMesh("mesh");
 
   // Access the attribute associated with the modified meshes
   smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+    this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
   smtk::attribute::MeshItem::Ptr modifiedMeshes = result->findMesh("mesh_modified");
   modifiedMeshes->setNumberOfValues(meshItem->numberOfValues());
+
+  // Access the attribute associated with the modified model
+  smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
 
   // Access the attribute associated with the changed tessellation
   smtk::attribute::ModelEntityItem::Ptr modifiedEntities = result->findModelEntity("tess_changed");
@@ -73,7 +81,7 @@ smtk::model::OperatorResult UndoElevateMesh::operateInternal()
     if (!success)
     {
       smtkErrorMacro(this->log(), "Undo elevate failed.");
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
     }
 
     modifiedMeshes->appendValue(mesh);
@@ -83,17 +91,17 @@ smtk::model::OperatorResult UndoElevateMesh::operateInternal()
     if (entitiesAreValid && !entities.empty())
     {
       smtk::model::Model model = entities[0].owningModel();
-      this->addEntityToResult(result, model, MODIFIED);
+      modified->appendValue(model.component());
       modifiedEntities->appendValue(model);
     }
   }
 
   return result;
 }
+
+const char* UndoElevateMesh::xmlDescription() const
+{
+  return UndoElevateMesh_xml;
 }
 }
-
-#include "smtk/mesh/UndoElevateMesh_xml.h"
-
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::mesh::UndoElevateMesh, undo_elevate_mesh,
-  "undo elevate mesh", UndoElevateMesh_xml, smtk::model::Session);
+}

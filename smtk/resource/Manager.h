@@ -51,7 +51,9 @@ public:
 
   /// Register a resource identified by its class type.
   template <typename ResourceType>
-  static bool registerResource(typename ResourceType::Metadata&);
+  bool registerResource(const std::function<ResourcePtr(const std::string&)>& read = nullptr,
+    const std::function<bool(const ResourcePtr&)> write = nullptr,
+    const std::function<ResourcePtr(const smtk::common::UUID&)>& create = nullptr);
 
   /// Construct a resource identified by its unique name.
   ResourcePtr create(const std::string&);
@@ -107,7 +109,10 @@ public:
   template <typename ResourceType>
   std::set<smtk::shared_ptr<ResourceType> > find();
 
-  /// Read resource identified by its type index in from file.
+  /// Read resource identified by its unique index from file.
+  ResourcePtr read(const std::string&, const std::string&);
+
+  /// Read resource identified by its type index from file.
   ResourcePtr read(const Resource::Index&, const std::string&);
 
   /// Read resource from file.
@@ -132,13 +137,22 @@ public:
   template <typename ResourceType>
   bool add(const smtk::shared_ptr<ResourceType>&);
 
-  /// Returns true if the resource was added or already is part of this manager
+  /// Returns true if the resource was added or already is part of this manager.
   bool add(const ResourcePtr&);
 
   /// Removes a resource from a given Manager. This doesn't explicitly release
   /// the memory of the resource, it only stops the tracking of the resource
   /// by the manager.
   bool remove(const ResourcePtr&);
+
+  /// To maintain backwards compatibility, this method provides a means of
+  /// registering an alias, or additional unique name, to a resource type.
+  /// There can be multiple aliases for each resource type, but an alias can
+  /// only refer to a single resource type.
+  bool addLegacyReader(const std::string&, const std::function<ResourcePtr(const std::string&)>&);
+
+  /// Visit each managed resource.
+  void visit(const Resource::Visitor&) const;
 
   // We expose the underlying containers for both resources and metadata; this
   // means of access should not be necessary for most use cases.
@@ -148,7 +162,7 @@ public:
   const Container& resources() const { return m_resources; }
 
   /// Return the map of metadata.
-  static MetadataContainer& metadata() { return s_metadata; }
+  MetadataContainer& metadata() { return m_metadata; }
 
   /**\brief Observe events related to this resource manager.
     *
@@ -171,7 +185,7 @@ private:
   Manager();
 
   /// Register a resource identified by its type index.
-  static bool registerResource(Metadata&);
+  bool registerResource(Metadata&&);
 
   /// All resources are tracked using a map between the resource's UUID and a
   /// shared pointer to the resource itself.
@@ -180,7 +194,10 @@ private:
   std::map<int, Observer> m_observers;
 
   /// A container for all registered resource metadata.
-  static MetadataContainer s_metadata;
+  MetadataContainer m_metadata;
+
+  /// A map connecting legacy resource names to legacy readers.
+  std::map<std::string, std::function<ResourcePtr(const std::string&)> > m_legacyReaders;
 };
 
 template <typename ResourceType>
@@ -226,9 +243,9 @@ std::set<smtk::shared_ptr<ResourceType> > Manager::find()
 {
   Resource::Index index(typeid(ResourceType).hash_code());
   std::set<Resource::Index> validIndices;
-  for (auto& metadatum : s_metadata)
+  for (auto& metadatum : m_metadata)
   {
-    if (metadatum.m_associatedIndices.find(index) != metadatum.m_associatedIndices.end())
+    if (metadatum.m_parentIndices.find(index) != metadatum.m_parentIndices.end())
     {
       validIndices.insert(metadatum.index());
     }
@@ -295,7 +312,7 @@ class is_derived_resource
 public:
   enum
   {
-    value = sizeof(Test<T>(0)) == sizeof(Yes)
+    value = sizeof(Test<T>(nullptr)) == sizeof(Yes)
   };
 };
 
@@ -338,15 +355,85 @@ struct resource_index_set_generator<ResourceType, true>
     return indices;
   }
 };
+
+// A compile-time test to check whether or not a class has a type_name defined.
+template <typename T>
+class is_named_resource
+{
+  class No
+  {
+  };
+  class Yes
+  {
+    No no[2];
+  };
+
+  template <typename C>
+  static Yes Test(typename C::type_name*);
+  template <typename C>
+  static No Test(...);
+
+public:
+  enum
+  {
+    value = sizeof(Test<T>(0)) == sizeof(Yes)
+  };
+};
+
+// The signature for our resource name-finding struct has two template
+// parameters.
+template <typename ResourceType, bool is_named>
+struct resource_name;
+
+// This partial template specialization deals with the case where
+// <ResourceType> does not have a type_name. In this case, we create a temporary
+/// resource and ask for its uniqueName.
+template <typename ResourceType>
+struct resource_name<ResourceType, false>
+{
+  static std::string name() { return ResourceType::create()->uniqueName(); }
+};
+
+// This partial template specialization deals with the case where
+// <ResourceType> has a type_name. In this case, we can return the resource type
+// name without instantiating the resource.
+template <typename ResourceType>
+struct resource_name<ResourceType, true>
+{
+  static std::string name() { return ResourceType::type_name; }
+};
 }
 
 template <typename ResourceType>
-bool Manager::registerResource(typename ResourceType::Metadata& metadata)
+bool Manager::registerResource(const std::function<ResourcePtr(const std::string&)>& read,
+  const std::function<bool(const ResourcePtr&)> write,
+  const std::function<ResourcePtr(const smtk::common::UUID&)>& create)
 {
-  metadata.m_index = std::type_index(typeid(ResourceType)).hash_code();
-  metadata.m_associatedIndices = detail::resource_index_set_generator<ResourceType,
-    detail::is_derived_resource<ResourceType>::value>::indices();
-  return Manager::registerResource(metadata);
+  // For standard Resources, the metadata is comprised of the following:
+  // Unique Name: either the "type_name" field or (if the former does not exist)
+  //              the uniqueName() value
+  // Index: the hash of the type_index
+  // Parent Indices: a set of indices constructed by traversing parent resources
+  //                 (defined using the typedef "ParentResource")
+  // Create Functor: either a user-defined functor or the default
+  //                 ResourceType::create method
+  // Read Functor: either a user-defined functor or nothing
+  // Write Functor: either a user-defined functor or nothing
+
+  return Manager::registerResource(
+    Metadata((detail::resource_name<ResourceType,
+              detail::is_named_resource<ResourceType>::value>::name()),
+             std::type_index(typeid(ResourceType)).hash_code(),
+             (detail::resource_index_set_generator<ResourceType,
+              detail::is_derived_resource<ResourceType>::value>::indices()),
+             (create ? create :
+              [](const smtk::common::UUID& id)
+              {
+                Resource::Ptr resource = ResourceType::create();
+                resource->setId(id);
+                return resource;
+              }),
+             read, write));
 }
 }
 }

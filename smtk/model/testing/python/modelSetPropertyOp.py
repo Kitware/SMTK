@@ -47,15 +47,15 @@ class TestModelSetPropertyOp(unittest.TestCase):
         [smtk.model.Model(x).setSession(session) for x in models]
         print('Applying operator to %d model(s)' % len(models))
 
-        op = smtk.model.Model(models[0]).op('set property')
-        op.findAsString('name').setValue('superduperness')
-        op.findAsInt('integer value').setNumberOfValues(1)
-        op.findAsInt('integer value').setValue(42)
-        [op.associateEntity(x) for x in models]
+        op = smtk.model.SetProperty.create()
+        op.parameters().find('name').setValue('superduperness')
+        op.parameters().find('integer value').setNumberOfValues(1)
+        op.parameters().find('integer value').setValue(42)
+        [op.parameters().associateEntity(x) for x in models]
         result = op.operate()
         self.assertEqual(
-            result.findInt('outcome').value(0),
-            smtk.model.OPERATION_SUCCEEDED,
+            result.find('outcome').value(0),
+            int(smtk.operation.NewOp.SUCCEEDED),
             'Set property operator failed')
         print('Checking properties')
         for x in mgr.findEntitiesOfType(int(smtk.model.ANY_ENTITY), False):

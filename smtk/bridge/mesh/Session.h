@@ -19,10 +19,6 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Session.h"
 
-class vtkInformationDoubleKey;
-class vtkInformationIntegerKey;
-class vtkInformationStringKey;
-
 namespace smtk
 {
 namespace bridge

@@ -47,9 +47,23 @@ public:
   {
     // Each free mesh is an element. It gets a unique id and has the model as
     // its parent.
-    smtk::common::UUID id = (this->m_topology->m_collection->modelManager()->unusedUUID());
-    // Assign the unique id to the mesh
-    singleMesh.setModelEntityId(id);
+
+    // First, check if the mesh has an associated element already. If it does,
+    // use this value (facilitating persistency across multiple calls to the
+    // construction of Topologies).
+    smtk::common::UUIDArray ids = singleMesh.modelEntityIds();
+    smtk::common::UUID id;
+    if (ids.empty())
+    {
+      id = (this->m_topology->m_collection->modelManager()->unusedUUID());
+      // Assign the unique id to the mesh
+      singleMesh.setModelEntityId(id);
+    }
+    else
+    {
+      id = ids[0];
+    }
+
     // add the unique id as a child of the model
     this->m_root->m_children.push_back(id);
     // construct an element for the mesh, insert it into the topology's map
@@ -148,7 +162,18 @@ struct AddBoundElements
         {
           // We have an intersection, so we must now process it. We start by
           // creating a new id for it.
-          smtk::common::UUID id = (this->m_topology->m_collection->modelManager()->unusedUUID());
+          smtk::common::UUIDArray ids = m.modelEntityIds();
+          smtk::common::UUID id;
+          if (ids.empty())
+          {
+            id = (this->m_topology->m_collection->modelManager()->unusedUUID());
+            // Assign the unique id to the mesh
+            m.setModelEntityId(id);
+          }
+          else
+          {
+            id = ids[0];
+          }
 
           // Next, we remove the intersection from the contributing mesh sets
           // and add the new id as a child of these sets.
@@ -164,8 +189,6 @@ struct AddBoundElements
             shell->second->m_children.push_back(id);
           }
 
-          // We then register the intersection witih the new id
-          m.setModelEntityId(id);
           // finally, we insert it as an element into the topology. If
           // necessary, we store its shell for the bound element calculation of
           // lower dimension

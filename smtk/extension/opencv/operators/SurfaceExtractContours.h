@@ -34,14 +34,14 @@ class SMTKOPENCVEXT_EXPORT SurfaceExtractContours : public Operator
 public:
   smtkTypeMacro(SurfaceExtractContours);
   smtkCreateMacro(SurfaceExtractContours);
-  smtkSharedFromThisMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
   smtkSuperclassMacro(Operator);
-  smtkDeclareModelOperator();
 
   bool ableToOperate() override;
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  const char* xmlDescription() const override;
 };
 
 } // namespace polygon

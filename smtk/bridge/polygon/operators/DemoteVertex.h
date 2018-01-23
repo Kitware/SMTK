@@ -28,12 +28,12 @@ class SMTKPOLYGONSESSION_EXPORT DemoteVertex : public Operator
 public:
   smtkTypeMacro(DemoteVertex);
   smtkCreateMacro(DemoteVertex);
-  smtkSharedFromThisMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
   smtkSuperclassMacro(Operator);
-  smtkDeclareModelOperator();
 
 protected:
   smtk::model::OperatorResult operateInternal() override;
+  virtual const char* xmlDescription() const override;
 };
 
 } // namespace polygon

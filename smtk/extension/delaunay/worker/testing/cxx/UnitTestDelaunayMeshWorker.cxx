@@ -15,17 +15,24 @@
 
 #include "smtk/AutoInit.h"
 
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Collection.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/bridge/polygon/Operator.h"
-#include "smtk/bridge/polygon/Session.h"
+#include "smtk/bridge/polygon/Resource.h"
 
 #include "smtk/common/Paths.h"
 
+#include "smtk/extension/remus/MeshOperator.h"
 #include "smtk/extension/remus/MeshServerLauncher.h"
+
+#include "smtk/io/AttributeReader.h"
+#include "smtk/io/AttributeWriter.h"
+#include "smtk/io/ExportMesh.h"
+#include "smtk/io/Logger.h"
 
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
@@ -38,10 +45,11 @@
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Loop.h"
 
-#include "smtk/io/AttributeReader.h"
-#include "smtk/io/AttributeWriter.h"
-#include "smtk/io/ExportMesh.h"
-#include "smtk/io/Logger.h"
+#include "smtk/model/operators/LoadSMTKModel.h"
+
+#include "smtk/resource/Manager.h"
+
+#include "smtk/operation/Manager.h"
 
 #include <fstream>
 
@@ -69,16 +77,6 @@ int main(int argc, char** const argv)
     return 0;
   }
 
-  // Create model manager
-  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
-
-  // Access mesh manager
-  smtk::mesh::ManagerPtr meshManager = modelManager->meshes();
-
-  // Create a polygon session and set it as the active session
-  smtk::bridge::polygon::Session::Ptr session = smtk::bridge::polygon::Session::create();
-  modelManager->registerSession(session);
-
   // Locate our input file from the input
   std::string file_path(argv[1]);
 
@@ -92,23 +90,50 @@ int main(int argc, char** const argv)
   }
   file.close();
 
-  // Import the file and access the resulting model
-  smtk::model::Operator::Ptr op = session->op("load smtk model");
+  // Create a resource manager
+  smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
-  op->findFile("filename")->setValue(file_path.c_str());
-  smtk::model::OperatorResult result = op->operate();
-  if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
+  // Register the resources to the resource manager
   {
-    std::cerr << "Could not load smtk model!\n";
-    return 1;
+    resourceManager->registerResource<smtk::model::Manager>();
+    resourceManager->registerResource<smtk::bridge::polygon::Resource>();
   }
-  smtk::model::Model model = result->findModelEntity("created")->value();
 
-  // Ensure that the model is valid
-  if (!model.isValid())
+  // Create an operation manager
+  smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
+
+  // Register the operators to the operation manager
   {
-    std::cerr << "Model is invalid!" << std::endl;
-    return 1;
+    operationManager->registerOperator<smtk::model::LoadSMTKModel>("smtk::model::LoadSMTKModel");
+    operationManager->registerOperator<smtk::extension::remus::MeshOperator>(
+      "smtk::extension::remus::MeshOperator");
+  }
+
+  // Register the resource manager to the operation manager (newly created
+  // resources will be automatically registered to the resource manager).
+  operationManager->registerResourceManager(resourceManager);
+
+  smtk::model::Entity::Ptr model;
+
+  {
+    // Create an import operator
+    smtk::model::LoadSMTKModel::Ptr loadOp = operationManager->create<smtk::model::LoadSMTKModel>();
+    if (!loadOp)
+    {
+      std::cerr << "No load operator\n";
+      return 1;
+    }
+
+    loadOp->parameters()->findFile("filename")->setValue(file_path.c_str());
+    smtk::model::LoadSMTKModel::Result result = loadOp->operate();
+    if (result->findInt("outcome")->value() !=
+      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    {
+      std::cerr << "Could not load smtk model!\n";
+      return 1;
+    }
+    model =
+      std::dynamic_pointer_cast<smtk::model::Entity>(result->findComponent("created")->value());
   }
 
   // Start an instance of our mesh server
@@ -123,7 +148,8 @@ int main(int argc, char** const argv)
   }
 
   // Construct a mesh operator
-  smtk::model::OperatorPtr mesher = session->op("mesh");
+  smtk::extension::remus::MeshOperator::Ptr mesher =
+    operationManager->create<smtk::extension::remus::MeshOperator>();
   if (!mesher)
   {
     std::cerr << "No mesh operator\n";
@@ -133,10 +159,10 @@ int main(int argc, char** const argv)
   // Set the input model to be meshed
   //
   // TODO: make this an association, not an item
-  mesher->specification()->findModelEntity("model")->setValue(model);
+  mesher->parameters()->findModelEntity("model")->setValue(model);
 
   // Set the client endpoint for the operator
-  mesher->specification()->findString("endpoint")->setValue(meshServerLauncher.clientEndpoint());
+  mesher->parameters()->findString("endpoint")->setValue(meshServerLauncher.clientEndpoint());
 
   // Set the job requirements for the operator
   {
@@ -147,7 +173,7 @@ int main(int argc, char** const argv)
       remus::common::ContentFormat::XML);
     std::stringstream s;
     s << reqs;
-    mesher->specification()->findString("remusRequirements")->setValue(s.str());
+    mesher->parameters()->findString("remusRequirements")->setValue(s.str());
   }
 
   // Set the meshing attributes for the operator
@@ -173,7 +199,7 @@ int main(int argc, char** const argv)
     smtk::io::AttributeWriter writer;
     writer.writeContents(meshingAttributes, meshingAttributesStr, logger);
 
-    mesher->specification()->findString("meshingControlAttributes")->setValue(meshingAttributesStr);
+    mesher->parameters()->findString("meshingControlAttributes")->setValue(meshingAttributesStr);
   }
 
   // Confirm the state of the operator
@@ -185,7 +211,7 @@ int main(int argc, char** const argv)
   }
 
   // Execute the mesh operator
-  result = mesher->operate();
+  smtk::extension::remus::MeshOperator::Result result = mesher->operate();
 
   // We no longer need the mesh server, so we terminate it
   meshServerLauncher.terminate();
@@ -198,10 +224,11 @@ int main(int argc, char** const argv)
   }
 
   // Access the face that was meshed
-  smtk::model::Face face = modelManager->findEntitiesOfType(smtk::model::FACE)[0];
+  smtk::model::Face face = model->modelResource()->findEntitiesOfType(smtk::model::FACE)[0];
 
   // Access the mesh collection associated with the model
-  smtk::mesh::CollectionPtr triangulatedFace = meshManager->associatedCollections(face)[0];
+  smtk::mesh::CollectionPtr triangulatedFace =
+    model->modelResource()->meshes()->associatedCollections(face)[0];
 
   // confirm that the number of points and cells match our expectations
   if (triangulatedFace->points().size() != 12)
@@ -218,6 +245,3 @@ int main(int argc, char** const argv)
 
   return 0;
 }
-
-smtkComponentInitMacro(smtk_remus_mesh_operator);
-smtkComponentInitMacro(smtk_polygon_session);

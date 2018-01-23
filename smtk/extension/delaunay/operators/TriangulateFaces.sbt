@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the model "Triangulate Face" Operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
     <!-- Operator -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="triangulate faces" Label="Faces - Triangulate" BaseType="operator">
       <BriefDescription>Triangulate model faces.</BriefDescription>
       <DetailedDescription>
@@ -26,6 +27,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(triangulate faces)" BaseType="result">
       <ItemDefinitions>
         <ModelEntity Name="mesh_created" NumberOfRequiredValues="1" Extensible="true"/>

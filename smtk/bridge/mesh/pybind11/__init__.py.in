@@ -11,5 +11,6 @@
 #=============================================================================
 
 if @SMTK_MESH_SESSION_ENABLED@:
+  import smtk.operation
   import smtk.model
   from _smtkPybindMeshSession import *

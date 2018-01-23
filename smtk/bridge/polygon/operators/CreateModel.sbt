@@ -1,14 +1,33 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the Polygon "CreateModel" Operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="create model" Label="Model - Create" BaseType="operator">
       <BriefDescription>Create a planar model.</BriefDescription>
       <DetailedDescription>
         Create a model given a set of coordinate axes in 3D and a minimum feature size.
       </DetailedDescription>
       <ItemDefinitions>
+
+        <Resource Name="resource" Label="Import into" Optional="true" IsEnabledByDefault="false">
+          <Accepts>
+            <Resource Name="polygon model"/>
+          </Accepts>
+          <ChildrenDefinitions>
+            <String Name="session only" Label="session" Advanced="1">
+              <DiscreteInfo DefaultIndex="0">
+                <Structure>
+                  <Value Enum="this file">import into this file </Value>
+                </Structure>
+                <Structure>
+                  <Value Enum="this session">import into a new file using this file's session</Value>
+                </Structure>
+              </DiscreteInfo>
+            </String>
+          </ChildrenDefinitions>
+        </Resource>
+
         <String Name="name" NumberOfValuesRequired="1" Optional="true">
           <BriefDescription>A user-assigned name for the model.</BriefDescription>
           <DetailedDescription>
@@ -128,9 +147,23 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(create model)" BaseType="result">
       <ItemDefinitions>
-        <!-- The created model is returned in the base result's "created" item. -->
+
+        <!-- The model imported from the file. -->
+        <Resource Name="resource">
+          <Accepts>
+            <Resource Name="polygon model"/>
+          </Accepts>
+        </Resource>
+
+        <Component Name="model">
+          <Accepts>
+            <Resource Name="polygon model" Filter=""/>
+          </Accepts>
+        </Component>
+
       </ItemDefinitions>
     </AttDef>
   </Definitions>

@@ -9,7 +9,7 @@
 //=============================================================================
 #include "smtk/bridge/polygon/operators/CreateVertices.h"
 
-#include "smtk/bridge/polygon/Session.h"
+#include "smtk/bridge/polygon/Resource.h"
 #include "smtk/bridge/polygon/internal/Model.h"
 
 #include "smtk/io/Logger.h"
@@ -32,28 +32,31 @@ namespace bridge
 namespace polygon
 {
 
-smtk::model::OperatorResult CreateVertices::operateInternal()
+CreateVertices::Result CreateVertices::operateInternal()
 {
   smtk::attribute::GroupItem::Ptr pointsInfo;
-  smtk::attribute::IntItem::Ptr coordinatesItem = this->findInt("point dimension");
+  smtk::attribute::IntItem::Ptr coordinatesItem = this->parameters()->findInt("point dimension");
   int numCoordsPerPt = coordinatesItem->value();
   if (numCoordsPerPt == 2)
   {
-    pointsInfo = this->findGroup("2d points");
+    pointsInfo = this->parameters()->findGroup("2d points");
   }
   else
   {
-    pointsInfo = this->findGroup("3d points");
+    pointsInfo = this->parameters()->findGroup("3d points");
   }
-  smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->associations();
+  smtk::attribute::ModelEntityItem::Ptr modelItem = this->parameters()->associations();
 
-  smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
-  smtk::model::OperatorResult result;
-  if (sess)
+  smtk::model::Model model = modelItem->value(0);
+
+  smtk::bridge::polygon::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::polygon::Resource>(model.component()->resource());
+
+  Result result;
+  if (resource)
   {
-    smtk::model::Manager::Ptr mgr = sess->manager();
-    smtk::model::Model model = modelItem->value(0);
-    internal::pmodel::Ptr storage = this->findStorage<internal::pmodel>(model.entity());
+    smtk::model::Manager::Ptr mgr = std::static_pointer_cast<smtk::model::Manager>(resource);
+    internal::pmodel::Ptr storage = resource->findStorage<internal::pmodel>(model.entity());
     std::vector<double> pcoords;
     int npnts = static_cast<int>(pointsInfo->numberOfGroups());
     pcoords.reserve(npnts * numCoordsPerPt);
@@ -70,25 +73,32 @@ smtk::model::OperatorResult CreateVertices::operateInternal()
     }
 
     smtk::model::Vertices verts = storage->findOrAddModelVertices(mgr, pcoords, numCoordsPerPt);
-    result = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
-    this->addEntitiesToResult(result, verts, CREATED);
+    result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+
+    smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");
+
     for (smtk::model::Vertices::const_iterator it = verts.begin(); it != verts.end(); ++it)
-    { // Add raw relationships from model to/from vertex:
+    {
+      created->appendValue(it->component());
       model.addCell(*it);
     }
-    this->addEntityToResult(result, model, MODIFIED);
+
+    smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
+    modified->setValue(model.component());
   }
   if (!result)
   {
-    result = this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    result = this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   return result;
 }
 
+const char* CreateVertices::xmlDescription() const
+{
+  return CreateVertices_xml;
+}
+
 } // namespace polygon
 } //namespace bridge
 } // namespace smtk
-
-smtkImplementsModelOperator(SMTKPOLYGONSESSION_EXPORT, smtk::bridge::polygon::CreateVertices,
-  polygon_create_vertices, "create vertices", CreateVertices_xml, smtk::bridge::polygon::Session);

@@ -1,39 +1,33 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the model "LoadSMTKModel" Operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
+
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="load smtk model" Label="Model - Load File" BaseType="operator">
-      <BriefDescription>
-        Import a JSON description of smtk model(s).
-      </BriefDescription>
-      <DetailedDescription>
-        Import models in SMTK's native JSON format.
-      </DetailedDescription>
+    <include href="smtk/operation/NewOp.xml"/>
+    <AttDef Type="load smtk model" Label="Model - Load" BaseType="operator">
+      <BriefDecscription>
+        Load one or more SMTK model resources from disk
+      </BriefDecscription>
+      <DetailedDecscription>
+        Load models saved in SMTK's native JSON format.
+      </DetailedDecscription>
       <ItemDefinitions>
-        <File Name="filename" NumberOfRequiredValues="1"
-          ShouldExist="true"
-          FileFilters="SMTK JSON Model (*.smtk *.json);;All files (*.*)">
+        <File Name="filename" NumberOfRequiredValues="1" Extensible="true"
+          FileFilters="SMTK Model (*.smtk)" Label="SMTK Model File Name " ShouldExist="false">
+          <BriefDescription>The filename to load.</BriefDescription>
         </File>
-        <Void Name="loadmesh" Label="Load Analysis Mesh" AdvanceLevel="1" Optional="true" IsEnabledByDefault="true" NumberOfRequiredValues="0">
-          <BriefDescription>Specify whether related analysis meshes (if exist) should be loaded with model </BriefDescription>
-        </Void>
       </ItemDefinitions>
     </AttDef>
+
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(load smtk model)" BaseType="result">
       <ItemDefinitions>
-        <ModelEntity Name="mesh_created" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>
-        <Void Name="cleanse entities" IsEnabledByDefault="true"></Void>
-        <Void Name="allow camera reset" IsEnabledByDefault="true" AdvanceLevel="11"/>
+        <Resource Name="resource" IsEnabledByDefault="true"></Resource>
+        <Component Name="model" IsEnabledByDefault="true"></Component>
       </ItemDefinitions>
     </AttDef>
   </Definitions>
-    <Views>
-    <View Type="Operator" Title="Load Model" FilterByAdvanceLevel="true" UseSelectionManager="true">
-      <InstancedAttributes>
-        <Att Type="load smtk model"/>
-      </InstancedAttributes>
-    </View>
-  </Views>
+
 </SMTK_AttributeSystem>

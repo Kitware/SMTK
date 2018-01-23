@@ -9,6 +9,7 @@
 //=============================================================================
 #include "smtk/bridge/polygon/operators/CreateEdgeFromPoints.h"
 
+#include "smtk/bridge/polygon/Resource.h"
 #include "smtk/bridge/polygon/Session.h"
 #include "smtk/bridge/polygon/internal/Model.h"
 #include "smtk/bridge/polygon/internal/Model.txx"
@@ -37,51 +38,38 @@ namespace polygon
 
 typedef std::vector<std::pair<size_t, internal::Segment> > SegmentSplitsT;
 
-/*
-template<typename T>
-void printSegment(internal::pmodel::Ptr storage, const std::string& msg, T& seg)
+CreateEdgeFromPoints::Result CreateEdgeFromPoints::operateInternal()
 {
-  std::vector<double> lo(3);
-  std::vector<double> hi(3);
-  storage->liftPoint(seg.low(), lo.begin());
-  storage->liftPoint(seg.high(), hi.begin());
-  std::cout
-    << msg
-    << "    " << lo[0] << " " << lo[1] << " " << lo[2]
-    << " -> " << hi[0] << " " << hi[1] << " " << hi[2]
-    << "\n";
-}
-*/
+  smtk::attribute::ModelEntityItem::Ptr modelItem = this->parameters()->associations();
 
-smtk::model::OperatorResult CreateEdgeFromPoints::operateInternal()
-{
-  smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
-  smtk::model::Manager::Ptr mgr;
-  if (!sess)
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+  smtk::model::Model model = modelItem->value(0);
 
-  mgr = sess->manager();
+  smtk::bridge::polygon::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::polygon::Resource>(model.component()->resource());
+
+  if (!resource)
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
 
   smtk::attribute::GroupItem::Ptr pointsInfo;
-  smtk::attribute::IntItem::Ptr coordinatesItem = this->findInt("pointGeometry");
+  smtk::attribute::IntItem::Ptr coordinatesItem = this->parameters()->findInt("pointGeometry");
   int numCoordsPerPt = coordinatesItem->value();
   if (numCoordsPerPt == 2)
   {
-    pointsInfo = this->findGroup("2DPoints");
+    pointsInfo = this->parameters()->findGroup("2DPoints");
   }
   else
   {
-    pointsInfo = this->findGroup("3DPoints");
+    pointsInfo = this->parameters()->findGroup("3DPoints");
   }
 
   // numPts is the number of points total (across all edges)
   long long numPts = pointsInfo->numberOfGroups();
-  smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->associations();
+
   smtk::model::Model parentModel(modelItem->value(0));
   if (!parentModel.isValid())
   {
     smtkErrorMacro(this->log(), "A model must be associated with the operator.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   std::vector<double> pnts(numPts * numCoordsPerPt);
@@ -95,21 +83,22 @@ smtk::model::OperatorResult CreateEdgeFromPoints::operateInternal()
           ->value(i);
     }
   }
-  return this->process(pnts, numCoordsPerPt, parentModel);
+  return this->process(pnts, numCoordsPerPt, model);
 }
 
-smtk::model::OperatorResult CreateEdgeFromPoints::process(
+CreateEdgeFromPoints::Result CreateEdgeFromPoints::process(
   std::vector<double>& pnts, int numCoordsPerPoint, smtk::model::Model& parentModel)
 {
-  smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
-  smtk::model::Manager::Ptr mgr;
-  if (!sess)
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+  smtk::bridge::polygon::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::polygon::Resource>(parentModel.component()->resource());
 
-  mgr = sess->manager();
+  smtk::bridge::polygon::SessionPtr sess = resource->polygonSession();
+  if (!sess)
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+
   bool ok = true;
 
-  internal::pmodel::Ptr storage = this->findStorage<internal::pmodel>(parentModel.entity());
+  internal::pmodel::Ptr storage = resource->findStorage<internal::pmodel>(parentModel.entity());
 
   smtk::model::Edges created;
 
@@ -141,8 +130,8 @@ smtk::model::OperatorResult CreateEdgeFromPoints::process(
   }
   if (!first && orig != curr)
   { // non-periodic edge forces endpts to be model vertices
-    smtk::model::Vertex vs = storage->findOrAddModelVertex(mgr, orig);
-    smtk::model::Vertex ve = storage->findOrAddModelVertex(mgr, curr);
+    smtk::model::Vertex vs = storage->findOrAddModelVertex(resource, orig);
+    smtk::model::Vertex ve = storage->findOrAddModelVertex(resource, curr);
     edgeIsPeriodic = false;
   }
 
@@ -164,7 +153,7 @@ smtk::model::OperatorResult CreateEdgeFromPoints::process(
     if (result.empty())
     {
       smtkErrorMacro(this->log(), "Self-intersection of edge segments was empty set.");
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
     }
 
     // I. Pre-process the intersected segments
@@ -258,7 +247,7 @@ smtk::model::OperatorResult CreateEdgeFromPoints::process(
       // Promote each of those points to model vertices.
       for (std::size_t i = 1; i < numSegsPerSrc; ++i)
       {
-        smtk::model::Vertex vs = storage->findOrAddModelVertex(mgr, sit->second.high());
+        smtk::model::Vertex vs = storage->findOrAddModelVertex(resource, sit->second.high());
         ++sit;
         if (edgeIsPeriodic && !haveFirstModelVertex)
         {
@@ -296,7 +285,7 @@ smtk::model::OperatorResult CreateEdgeFromPoints::process(
       if (generateEdge)
       { // Generate an edge. segStart->second.low() is guaranteed to be a model vertex.
         smtk::model::Edge edge = storage->createModelEdgeFromSegments(
-          mgr, segStart, sit, true, std::pair<UUID, UUID>(), false, newVerts);
+          resource, segStart, sit, true, std::pair<UUID, UUID>(), false, newVerts);
         if (edge.isValid())
         {
           created.push_back(edge);
@@ -308,7 +297,7 @@ smtk::model::OperatorResult CreateEdgeFromPoints::process(
     if (segStart != result.end())
     {
       smtk::model::Edge edge = storage->createModelEdgeFromSegments(
-        mgr, segStart, result.end(), true, std::pair<UUID, UUID>(), false, newVerts);
+        resource, segStart, result.end(), true, std::pair<UUID, UUID>(), false, newVerts);
       created.push_back(edge);
     }
 
@@ -331,32 +320,41 @@ smtk::model::OperatorResult CreateEdgeFromPoints::process(
       }
     }
   }
-  smtk::model::EntityRefArray modified;
   if (!freeVerts.empty())
   {
     parentModel.removeCells(dead);
-    modified.push_back(parentModel);
   }
 
-  smtk::model::OperatorResult opResult;
+  Result opResult;
   if (ok)
   {
-    opResult = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
-    this->addEntitiesToResult(opResult, created, CREATED);
-    this->addEntitiesToResult(opResult, modified, MODIFIED);
+    opResult = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+
+    smtk::attribute::ComponentItem::Ptr createdItem = opResult->findComponent("created");
+    for (auto& c : created)
+    {
+      createdItem->appendValue(c.component());
+    }
+
+    if (!freeVerts.empty())
+    {
+      smtk::attribute::ComponentItem::Ptr modified = opResult->findComponent("modified");
+      modified->setValue(parentModel.component());
+    }
   }
   else
   {
-    opResult = this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    opResult = this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   return opResult;
 }
 
+const char* CreateEdgeFromPoints::xmlDescription() const
+{
+  return CreateEdgeFromPoints_xml;
+}
+
 } // namespace polygon
 } //namespace bridge
 } // namespace smtk
-
-smtkImplementsModelOperator(SMTKPOLYGONSESSION_EXPORT, smtk::bridge::polygon::CreateEdgeFromPoints,
-  polygon_create_edge_from_points, "create edge from points", CreateEdgeFromPoints_xml,
-  smtk::bridge::polygon::Session);

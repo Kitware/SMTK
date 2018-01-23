@@ -13,7 +13,7 @@
 #include "smtk/model/DefaultSession.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/RemoteOperator.h"
+// #include "smtk/model/RemoteOperator.h"
 #include "smtk/model/SessionIOJSON.h"
 #include "smtk/model/SessionRegistrar.h"
 #include "smtk/model/StringData.h"
@@ -786,13 +786,13 @@ int LoadJSON::ofRemoteSession(
   //     constructors with RemoteOperator constructors for operators
   //     of the same name.
   StringList opNames = destSession->operatorNames();
-  for (StringList::iterator it = opNames.begin(); it != opNames.end(); ++it)
-  {
-    auto create = []() -> smtk::model::OperatorPtr {
-      return std::static_pointer_cast<smtk::model::Operator>(RemoteOperator::create());
-    };
-    destSession->registerOperator(*it, NULL, create);
-  }
+  // for (StringList::iterator it = opNames.begin(); it != opNames.end(); ++it)
+  // {
+  //   auto create = []() -> smtk::model::OperatorPtr {
+  //     return std::static_pointer_cast<smtk::model::Operator>(RemoteOperator::create());
+  //   };
+  //   destSession->registerOperator(*it, NULL, create);
+  // }
 
   // Import additional state if the session can accept it.
   // Note that this is tricky because createIODelegate is
@@ -806,7 +806,7 @@ int LoadJSON::ofRemoteSession(
   if (delegate)
   {
     delegate->setReferencePath(refPath);
-    delegate->importJSON(context, destSession, node);
+    // delegate->importJSON(context, destSession, node);
   }
   return status;
 }
@@ -845,7 +845,7 @@ int LoadJSON::ofRemoteSession(
   * a session.
   */
 int LoadJSON::ofLocalSession(
-  cJSON* node, ManagerPtr context, bool loadNativeModels, const std::string& refPath)
+  cJSON* node, ManagerPtr context, bool /*loadNativeModels*/, const std::string& refPath)
 {
   int status = 0;
   cJSON* opsObj;
@@ -942,7 +942,7 @@ int LoadJSON::ofLocalSession(
   if (delegate)
   {
     delegate->setReferencePath(refPath);
-    status = delegate->importJSON(context, sref.session(), node, loadNativeModels);
+    // status = delegate->importJSON(context, sref.session(), node, loadNativeModels);
   }
   return status;
 }
@@ -991,74 +991,74 @@ int LoadJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
   if (!pnode || cJSON_GetStringValue(pnode, oname))
     return 0;
 
-  op = session->op(oname);
+  // op = session->op(oname);
   if (!op)
     return 0;
 
   // If the operator has a specification, use it.
   // It is not an error to pass an unspecified operator.
   OperatorSpecification spec;
-  if (cJSON_GetObjectParameters(node, spec, op->session()->operatorCollection(), "spec", "specXML"))
-  {
-    op->setSpecification(spec);
-  }
+  // if (cJSON_GetObjectParameters(node, spec, op->session()->operatorCollection(), "spec", "specXML"))
+  // {
+  //   op->setSpecification(spec);
+  // }
   return 1;
 }
 
-int LoadJSON::ofOperatorResult(
-  cJSON* node, OperatorResult& resOut, smtk::model::RemoteOperatorPtr op)
-{
-  smtk::attribute::CollectionPtr opSys = op->session()->operatorCollection();
-  // Deserialize the OperatorResult into \a resOut:
-  int status = cJSON_GetObjectParameters(node, resOut, opSys, "result", "resultXML");
+// int LoadJSON::ofOperatorResult(
+//   cJSON* node, OperatorResult& resOut, smtk::model::RemoteOperatorPtr op)
+// {
+//   smtk::attribute::CollectionPtr opSys = op->session()->operatorCollection();
+//   // Deserialize the OperatorResult into \a resOut:
+//   int status = cJSON_GetObjectParameters(node, resOut, opSys, "result", "resultXML");
 
-  // Remove entities that the operator result reports as expunged:
-  smtk::attribute::ModelEntityItemPtr expunged = resOut->findModelEntity("expunged");
-  std::size_t num = expunged->numberOfValues();
-  for (std::size_t i = 0; i < num; ++i)
-  {
-    // if this is a removed model, the children of the model should also be removed.
-    if (expunged->value(i).isModel())
-    {
-      expunged->value(i).manager()->eraseModel(expunged->value(i).as<smtk::model::Model>());
-    }
-    else
-    {
-      expunged->value(i).manager()->erase(expunged->value(i));
-    }
-  }
+//   // Remove entities that the operator result reports as expunged:
+//   smtk::attribute::ModelEntityItemPtr expunged = resOut->findModelEntity("expunged");
+//   std::size_t num = expunged->numberOfValues();
+//   for (std::size_t i = 0; i < num; ++i)
+//   {
+//     // if this is a removed model, the children of the model should also be removed.
+//     if (expunged->value(i).isModel())
+//     {
+//       expunged->value(i).manager()->eraseModel(expunged->value(i).as<smtk::model::Model>());
+//     }
+//     else
+//     {
+//       expunged->value(i).manager()->erase(expunged->value(i));
+//     }
+//   }
 
-  // Deserialize the relevant transcribed entities into the
-  // remote operator's model manager:
-  smtk::model::ManagerPtr mgr = op->manager();
-  cJSON* records = cJSON_GetObjectItem(node, "records");
-  cJSON* mesh_records = cJSON_GetObjectItem(node, "mesh_records");
-  if (mgr)
-  {
-    if (records)
-    {
-      //      std::cout << "records: \n" << cJSON_Print(records) << "\n";
-      for (cJSON* c = records->child; c; c = c->next)
-      {
-        smtk::common::UUID uid(c->string);
-        // we can't erase a session
-        smtk::model::SessionRef sref(mgr, uid);
-        if (sref.isValid())
-        {
-          continue;
-        }
-        mgr->erase(uid);
-      }
-      status = LoadJSON::ofManager(records, mgr);
-    }
+//   // Deserialize the relevant transcribed entities into the
+//   // remote operator's model manager:
+//   smtk::model::ManagerPtr mgr = op->manager();
+//   cJSON* records = cJSON_GetObjectItem(node, "records");
+//   cJSON* mesh_records = cJSON_GetObjectItem(node, "mesh_records");
+//   if (mgr)
+//   {
+//     if (records)
+//     {
+//       //      std::cout << "records: \n" << cJSON_Print(records) << "\n";
+//       for (cJSON* c = records->child; c; c = c->next)
+//       {
+//         smtk::common::UUID uid(c->string);
+//         // we can't erase a session
+//         smtk::model::SessionRef sref(mgr, uid);
+//         if (sref.isValid())
+//         {
+//           continue;
+//         }
+//         mgr->erase(uid);
+//       }
+//       status = LoadJSON::ofManager(records, mgr);
+//     }
 
-    if (mesh_records)
-    {
-      status &= LoadJSON::ofMeshesOfModel(mesh_records, mgr);
-    }
-  }
-  return status;
-}
+//     if (mesh_records)
+//     {
+//       status &= LoadJSON::ofMeshesOfModel(mesh_records, mgr);
+//     }
+//   }
+//   return status;
+// }
 
 int LoadJSON::ofDanglingEntities(cJSON* node, ManagerPtr context)
 {

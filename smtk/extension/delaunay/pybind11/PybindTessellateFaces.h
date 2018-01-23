@@ -15,18 +15,16 @@
 
 #include "smtk/extension/delaunay/operators/TessellateFaces.h"
 
-PySharedPtrClass< smtk::mesh::TessellateFaces, smtk::model::Operator > pybind11_init_smtk_extension_delaunay_TessellateFaces(py::module &m)
+PySharedPtrClass< smtk::extension::delaunay::TessellateFaces, smtk::operation::XMLOperator > pybind11_init_smtk_extension_delaunay_TessellateFaces(py::module &m)
 {
-  PySharedPtrClass< smtk::mesh::TessellateFaces, smtk::model::Operator > instance(m, "TessellateFaces");
+  PySharedPtrClass< smtk::extension::delaunay::TessellateFaces, smtk::operation::XMLOperator > instance(m, "TessellateFaces");
   instance
-    .def("classname", &smtk::mesh::TessellateFaces::classname)
-    .def_static("create", (std::shared_ptr<smtk::mesh::TessellateFaces> (*)()) &smtk::mesh::TessellateFaces::create)
-    .def_static("create", (std::shared_ptr<smtk::mesh::TessellateFaces> (*)(::std::shared_ptr<smtk::mesh::TessellateFaces> &)) &smtk::mesh::TessellateFaces::create, py::arg("ref"))
-    .def("shared_from_this", (std::shared_ptr<smtk::mesh::TessellateFaces> (smtk::mesh::TessellateFaces::*)()) &smtk::mesh::TessellateFaces::shared_from_this)
-    .def("shared_from_this", (std::shared_ptr<const smtk::mesh::TessellateFaces> (smtk::mesh::TessellateFaces::*)() const) &smtk::mesh::TessellateFaces::shared_from_this)
-    .def("name", &smtk::mesh::TessellateFaces::name)
-    .def("className", &smtk::mesh::TessellateFaces::className)
-    .def("ableToOperate", &smtk::mesh::TessellateFaces::ableToOperate)
+    .def("classname", &smtk::extension::delaunay::TessellateFaces::classname)
+    .def_static("create", (std::shared_ptr<smtk::extension::delaunay::TessellateFaces> (*)()) &smtk::extension::delaunay::TessellateFaces::create)
+    .def_static("create", (std::shared_ptr<smtk::extension::delaunay::TessellateFaces> (*)(::std::shared_ptr<smtk::extension::delaunay::TessellateFaces> &)) &smtk::extension::delaunay::TessellateFaces::create, py::arg("ref"))
+    .def("shared_from_this", (std::shared_ptr<smtk::extension::delaunay::TessellateFaces> (smtk::extension::delaunay::TessellateFaces::*)()) &smtk::extension::delaunay::TessellateFaces::shared_from_this)
+    .def("shared_from_this", (std::shared_ptr<const smtk::extension::delaunay::TessellateFaces> (smtk::extension::delaunay::TessellateFaces::*)() const) &smtk::extension::delaunay::TessellateFaces::shared_from_this)
+    .def("ableToOperate", &smtk::extension::delaunay::TessellateFaces::ableToOperate)
     ;
   return instance;
 }

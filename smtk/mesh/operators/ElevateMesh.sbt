@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the "elevate mesh" Operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
     <!-- Operator -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="elevate mesh"
             Label="Mesh - Apply Elevation" BaseType="operator">
       <BriefDescription>
@@ -256,7 +257,7 @@
 
       </ItemDefinitions>
     </AttDef>
-    <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(elevate mesh)" BaseType="result">
       <ItemDefinitions>
         <MeshEntity Name="mesh_modified" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>

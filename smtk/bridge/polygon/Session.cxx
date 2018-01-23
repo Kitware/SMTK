@@ -35,6 +35,7 @@
 #include "smtk/Options.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/bridge/polygon/internal/Model.h"
+#include "smtk/bridge/polygon/internal/Vertex.h"
 
 #include <string.h> // for strcmp
 
@@ -218,4 +219,3 @@ smtkImplementsModelingKernel(
   SMTKPOLYGONSESSION_EXPORT, polygon, Session_json, smtk::model::SessionHasNoStaticSetup,
   smtk::bridge::polygon::Session, true /* inherit "universal" operators */
   );
-smtkComponentInitMacro(smtk_polygon_create_model_operator);

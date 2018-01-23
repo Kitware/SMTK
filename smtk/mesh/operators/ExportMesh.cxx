@@ -18,6 +18,7 @@
 #include "smtk/io/ExportMesh.h"
 #include "smtk/io/mesh/MeshIO.h"
 
+#include "smtk/mesh/ExportMesh_xml.h"
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/core/MeshSet.h"
@@ -54,18 +55,20 @@ namespace mesh
 
 bool ExportMesh::ableToOperate()
 {
-  if (!this->ensureSpecification())
+  if (!this->Superclass::ableToOperate())
+  {
     return false;
-  smtk::attribute::MeshItem::Ptr meshItem = this->specification()->findMesh("mesh");
+  }
+  smtk::attribute::MeshItem::Ptr meshItem = this->parameters()->findMesh("mesh");
   return meshItem && meshItem->numberOfValues() > 0;
 }
 
-smtk::model::OperatorResult ExportMesh::operateInternal()
+ExportMesh::Result ExportMesh::operateInternal()
 {
-  std::string outputfile = this->specification()->findFile("filename")->value();
+  std::string outputfile = this->parameters()->findFile("filename")->value();
 
   // ableToOperate should have verified that mesh(s) are set
-  smtk::attribute::MeshItem::Ptr meshItem = this->specification()->findMesh("mesh");
+  smtk::attribute::MeshItem::Ptr meshItem = this->parameters()->findMesh("mesh");
 
   // for multiple meshes, we suffix the file name root with ascending integers
   std::string root = outputfile.substr(0, outputfile.find_last_of("."));
@@ -106,16 +109,16 @@ smtk::model::OperatorResult ExportMesh::operateInternal()
       {
         cleanup(file);
       }
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
     }
   }
 
-  return this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
-}
-}
+  return this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
 }
 
-#include "smtk/mesh/ExportMesh_xml.h"
-
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::mesh::ExportMesh, export_mesh, "export mesh",
-  ExportMesh_xml, smtk::model::Session);
+const char* ExportMesh::xmlDescription() const
+{
+  return ExportMesh_xml;
+}
+}
+}

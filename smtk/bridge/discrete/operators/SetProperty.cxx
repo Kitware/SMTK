@@ -9,7 +9,9 @@
 //=========================================================================
 #include "smtk/bridge/discrete/operators/SetProperty.h"
 
+#include "smtk/bridge/discrete/Resource.h"
 #include "smtk/bridge/discrete/Session.h"
+#include "smtk/bridge/discrete/SetProperty_xml.h"
 
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Manager.h"
@@ -97,7 +99,10 @@ void SetProperty::setName(const std::string& pname, smtk::model::EntityRefArray&
   smtk::model::EntityRefArray::iterator it;
   for (it = entities.begin(); it != entities.end(); ++it)
   {
-    vtkModelEntity* discEnt = this->discreteEntityAs<vtkModelEntity*>(*it);
+    smtk::bridge::discrete::Resource::Ptr resource =
+      std::static_pointer_cast<smtk::bridge::discrete::Resource>(it->component()->resource());
+
+    vtkModelEntity* discEnt = resource->discreteEntityAs<vtkModelEntity*>(*it);
     if (discEnt)
       vtkModelUserName::SetUserName(discEnt, pname.empty() ? NULL : pname.c_str());
   }
@@ -117,7 +122,10 @@ void SetProperty::setColor(
   smtk::model::EntityRefArray::iterator it;
   for (it = entities.begin(); it != entities.end(); ++it)
   {
-    vtkModelEntity* discEnt = this->discreteEntityAs<vtkModelEntity*>(*it);
+    smtk::bridge::discrete::Resource::Ptr resource =
+      std::static_pointer_cast<smtk::bridge::discrete::Resource>(it->component()->resource());
+
+    vtkModelEntity* discEnt = resource->discreteEntityAs<vtkModelEntity*>(*it);
     if (discEnt)
       discEnt->SetColor(rgba[0], rgba[1], rgba[2], rgba[3]);
   }
@@ -128,23 +136,27 @@ void SetProperty::setVisibility(int visibility, smtk::model::EntityRefArray& ent
   smtk::model::EntityRefArray::iterator it;
   for (it = entities.begin(); it != entities.end(); ++it)
   {
-    vtkModelEntity* discEnt = this->discreteEntityAs<vtkModelEntity*>(*it);
+    smtk::bridge::discrete::Resource::Ptr resource =
+      std::static_pointer_cast<smtk::bridge::discrete::Resource>(it->component()->resource());
+
+    vtkModelEntity* discEnt = resource->discreteEntityAs<vtkModelEntity*>(*it);
     if (discEnt)
       discEnt->SetVisibility(visibility);
   }
 }
 
-smtk::model::OperatorResult SetProperty::operateInternal()
+SetProperty::Result SetProperty::operateInternal()
 {
-  smtk::attribute::StringItemPtr nameItem = this->findString("name");
-  smtk::attribute::StringItemPtr stringItem = this->findString("string value");
-  smtk::attribute::DoubleItemPtr floatItem = this->findDouble("float value");
-  smtk::attribute::IntItemPtr integerItem = this->findInt("integer value");
+  smtk::attribute::StringItemPtr nameItem = this->parameters()->findString("name");
+  smtk::attribute::StringItemPtr stringItem = this->parameters()->findString("string value");
+  smtk::attribute::DoubleItemPtr floatItem = this->parameters()->findDouble("float value");
+  smtk::attribute::IntItemPtr integerItem = this->parameters()->findInt("integer value");
 
-  smtk::model::EntityRefArray entities = this->associatedEntitiesAs<smtk::model::EntityRefArray>();
+  auto associations = this->parameters()->associations();
+  smtk::model::EntityRefArray entities(associations->begin(), associations->end());
 
   if (nameItem->value(0).empty())
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
 
   std::string propName = nameItem->value(0);
   this->setPropertyValue<String, StringList, StringData, StringItem>(
@@ -161,13 +173,13 @@ smtk::model::OperatorResult SetProperty::operateInternal()
     this->setVisibility(integerItem->value(0), entities);
 
   // check whether there are mesh entities's properties need to be changed
-  smtk::attribute::MeshItemPtr meshItem = this->findMesh("meshes");
+  smtk::attribute::MeshItemPtr meshItem = this->parameters()->findMesh("meshes");
   smtk::mesh::MeshSets modifiedMeshes;
   smtk::model::EntityRefs extraModifiedModels;
   if (meshItem)
   {
-    smtk::model::ManagerPtr modelmgr = this->manager();
-    smtk::mesh::ManagerPtr meshmgr = modelmgr->meshes();
+    smtk::model::ManagerPtr modelMgr = meshItem->value().collection()->modelManager();
+    smtk::mesh::ManagerPtr meshMgr = modelMgr->meshes();
     smtk::attribute::MeshItem::const_mesh_it it;
     for (it = meshItem->begin(); it != meshItem->end(); ++it)
     {
@@ -185,12 +197,12 @@ smtk::model::OperatorResult SetProperty::operateInternal()
       // label the associated model as modified
       smtk::common::UUID modid = c->associatedModel();
       if (!modid.isNull())
-        extraModifiedModels.insert(smtk::model::Model(this->manager(), modid));
+        extraModifiedModels.insert(smtk::model::Model(modelMgr, modid));
     }
   }
 
   smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+    this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
 
   // if a model is in the changed entities and it is a submodel, we
   // want to label its parent model to be modified too.
@@ -209,8 +221,11 @@ smtk::model::OperatorResult SetProperty::operateInternal()
   // Return the list of entities that were potentially
   // modified so that remote sessions can track what records
   // need to be re-fetched.
-  smtk::attribute::ModelEntityItem::Ptr resultEntities = result->findModelEntity("modified");
-  resultEntities->setValues(entities.begin(), entities.end());
+  smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
+  for (auto m : entities)
+  {
+    modified->appendValue(m.component());
+  }
 
   // Return the list of meshes that were potentially modified.
   if (modifiedMeshes.size() > 0)
@@ -223,11 +238,11 @@ smtk::model::OperatorResult SetProperty::operateInternal()
   return result;
 }
 
+const char* SetProperty::xmlDescription() const
+{
+  return SetProperty_xml;
+}
+
 } //namespace discrete
 } //namespace bridge
 } // namespace smtk
-
-#include "smtk/model/SetProperty_xml.h"
-
-smtkImplementsModelOperator(SMTKDISCRETESESSION_EXPORT, smtk::bridge::discrete::SetProperty,
-  discrete_set_property, "set property", SetProperty_xml, smtk::bridge::discrete::Session);

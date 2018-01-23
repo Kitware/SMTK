@@ -48,47 +48,79 @@ MergeOperator::MergeOperator()
 
 bool MergeOperator::ableToOperate()
 {
-  smtk::model::Model model;
-  int tgtid = this->fetchCMBCellId("target cell");
-  int srcid = this->fetchCMBCellId("source cell");
-  smtk::attribute::ModelEntityItemPtr sourceItem =
-    this->specification()->findModelEntity("source cell");
-  smtk::model::Face tgtFace =
-    this->specification()->findModelEntity("target cell")->value().as<smtk::model::Face>();
+  smtk::model::Model model =
+    this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
 
-  return
-    // The SMTK model must be valid
-    (model = this->specification()->findModelEntity("model")->value().as<smtk::model::Model>())
-      .isValid() &&
-    // The CMB model must exist:
-    this->discreteSession()->findModelEntity(model.entity()) &&
-    // The source and target cells must be valid,
-    srcid >= 0 && tgtid >= 0 &&
-    // The source and target cells should not be the same
-    (sourceItem->numberOfValues() > 1 || srcid != tgtid) &&
-    // Currently the discrete kernel can't merge face with edges becasue the
-    // operation does not update edge relationships after face-merge
-    (tgtFace.isValid() && tgtFace.edges().size() == 0);
+  // The SMTK model must be valid
+  if (!model.isValid())
+  {
+    return false;
+  }
+
+  smtk::bridge::discrete::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::discrete::Resource>(model.component()->resource());
+
+  // The CMB model must exist:
+  if (!resource->discreteSession()->findModelEntity(model.entity()))
+  {
+    return false;
+  }
+
+  int tgtid = this->fetchCMBCellId(resource, "target cell");
+  int srcid = this->fetchCMBCellId(resource, "source cell");
+
+  // The source and target cells must be valid,
+  if (srcid < 0 || tgtid < 0)
+  {
+    return false;
+  }
+
+  smtk::attribute::ModelEntityItemPtr sourceItem =
+    this->parameters()->findModelEntity("source cell");
+
+  // The source and target cells should not be the same
+  if (sourceItem->numberOfValues() == 1 && srcid == tgtid)
+  {
+    return false;
+  }
+
+  smtk::model::Face tgtFace =
+    this->parameters()->findModelEntity("target cell")->value().as<smtk::model::Face>();
+
+  // Currently the discrete kernel can't merge face with edges becasue the
+  // operation does not update edge relationships after face-merge
+  if (!tgtFace.isValid() || tgtFace.edges().size() != 0)
+  {
+    return false;
+  }
+
+  return true;
 }
 
-OperatorResult MergeOperator::operateInternal()
+MergeOperator::Result MergeOperator::operateInternal()
 {
-  SessionPtr opsession = this->discreteSession();
   smtk::model::Model model =
-    this->specification()->findModelEntity("model")->value().as<smtk::model::Model>();
+    this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
+
+  smtk::bridge::discrete::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::discrete::Resource>(model.component()->resource());
+
+  SessionPtr opsession = resource->discreteSession();
+
   vtkDiscreteModelWrapper* modelWrapper = opsession->findModelEntity(model.entity());
-  int tgtid = this->fetchCMBCellId("target cell");
+
+  int tgtid = this->fetchCMBCellId(resource, "target cell");
   this->m_op->SetTargetId(tgtid);
-  smtk::model::ManagerPtr store = this->manager();
+  smtk::model::ManagerPtr store = std::static_pointer_cast<smtk::model::Manager>(resource);
   smtk::model::EntityRefs srcsRemoved;
 
   bool ok = false;
   // Translate SMTK inputs into CMB inputs
   smtk::attribute::ModelEntityItemPtr sourceItem =
-    this->specification()->findModelEntity("source cell");
+    this->parameters()->findModelEntity("source cell");
   for (std::size_t idx = 0; idx < sourceItem->numberOfValues(); idx++)
   {
-    int srcid = this->fetchCMBCellId(sourceItem, static_cast<int>(idx));
+    int srcid = this->fetchCMBCellId(resource, sourceItem, static_cast<int>(idx));
     if (srcid >= 0 && srcid != tgtid)
     {
       this->m_op->SetSourceId(srcid);
@@ -103,11 +135,12 @@ OperatorResult MergeOperator::operateInternal()
     }
   }
 
-  OperatorResult result = this->createResult(ok ? OPERATION_SUCCEEDED : OPERATION_FAILED);
+  OperatorResult result = this->createResult(
+    ok ? smtk::operation::NewOp::Outcome::SUCCEEDED : smtk::operation::NewOp::Outcome::FAILED);
 
   if (ok)
   {
-    smtk::model::EntityRef tgtEnt = this->specification()->findModelEntity("target cell")->value();
+    smtk::model::EntityRef tgtEnt = this->parameters()->findModelEntity("target cell")->value();
     smtk::common::UUID eid = tgtEnt.entity();
     vtkModelItem* origItem = opsession->entityForUUID(eid);
 
@@ -122,25 +155,27 @@ OperatorResult MergeOperator::operateInternal()
     // Return the list of entities that were created
     // so that remote sessions can track what records
     // need to be re-fetched.
-    this->addEntityToResult(result, smtk::model::EntityRef(store, eid), MODIFIED);
+    smtk::attribute::ComponentItem::Ptr modifiedEntities = result->findComponent("modified");
+    modifiedEntities->appendValue(smtk::model::EntityRef(store, eid).component());
 
-    smtk::attribute::ModelEntityItem::Ptr removedEntities = result->findModelEntity("expunged");
+    smtk::attribute::ComponentItem::Ptr removedEntities = result->findComponent("expunged");
     removedEntities->setIsEnabled(true);
     removedEntities->setNumberOfValues(srcsRemoved.size());
 
     smtk::model::EntityRefs::const_iterator it;
     int rid = 0;
     for (it = srcsRemoved.begin(); it != srcsRemoved.end(); it++)
-      removedEntities->setValue(rid++, *it);
+      removedEntities->setValue(rid++, it->component());
   }
 
   return result;
 }
 
-int MergeOperator::fetchCMBCellId(const std::string& pname) const
+int MergeOperator::fetchCMBCellId(
+  smtk::bridge::discrete::Resource::Ptr& resource, const std::string& pname) const
 {
-  vtkModelItem* item = this->discreteSession()->entityForUUID(
-    this->specification()->findModelEntity(pname)->value().entity());
+  vtkModelItem* item = resource->discreteSession()->entityForUUID(
+    const_cast<MergeOperator*>(this)->parameters()->findModelEntity(pname)->value().entity());
 
   vtkModelEntity* cell = dynamic_cast<vtkModelEntity*>(item);
   if (cell)
@@ -149,21 +184,24 @@ int MergeOperator::fetchCMBCellId(const std::string& pname) const
   return -1;
 }
 
-int MergeOperator::fetchCMBCellId(const smtk::attribute::ModelEntityItemPtr& entItem, int idx) const
+int MergeOperator::fetchCMBCellId(smtk::bridge::discrete::Resource::Ptr& resource,
+  const smtk::attribute::ModelEntityItemPtr& entItem, int idx) const
 {
-  vtkModelItem* item = this->discreteSession()->entityForUUID(entItem->value(idx).entity());
+  vtkModelItem* item = resource->discreteSession()->entityForUUID(entItem->value(idx).entity());
 
   vtkModelEntity* cell = dynamic_cast<vtkModelEntity*>(item);
   if (cell)
     return cell->GetUniquePersistentId();
 
   return -1;
+}
+
+const char* MergeOperator::xmlDescription() const
+{
+  return MergeOperator_xml;
 }
 
 } // namespace discrete
 } // namespace bridge
 
 } // namespace smtk
-
-smtkImplementsModelOperator(SMTKDISCRETESESSION_EXPORT, smtk::bridge::discrete::MergeOperator,
-  discrete_merge, "merge face", MergeOperator_xml, smtk::bridge::discrete::Session);

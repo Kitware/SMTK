@@ -31,14 +31,15 @@ class SMTKDISCRETESESSION_EXPORT WriteOperator : public Operator
 public:
   smtkTypeMacro(WriteOperator);
   smtkCreateMacro(WriteOperator);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSuperclassMacro(Operator);
 
   bool ableToOperate() override;
 
 protected:
   WriteOperator();
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  const char* xmlDescription() const override;
 
   vtkNew<vtkCMBModelWriterBase> m_op;
   int m_currentversion;

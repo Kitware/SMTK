@@ -64,9 +64,19 @@ public:
 
   std::string defaultFileExtension(const smtk::model::Model&) const override;
 
+  internal::EntityIdToPtr::iterator beginStorage();
+  internal::EntityIdToPtr::iterator endStorage();
+  internal::EntityIdToPtr::const_iterator beginStorage() const;
+  internal::EntityIdToPtr::const_iterator endStorage() const;
+
+  void addStorage(
+    const smtk::common::UUID& uid, smtk::bridge::polygon::internal::entity::Ptr storage);
+  bool removeStorage(const smtk::common::UUID& uid);
+
 protected:
   friend class Neighborhood;
   friend class Operator;
+  friend class Resource;
   friend class internal::pmodel;
   friend class SessionIOJSON;
 
@@ -74,10 +84,6 @@ protected:
 
   smtk::model::SessionInfoBits transcribeInternal(
     const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth = -1) override;
-
-  void addStorage(
-    const smtk::common::UUID& uid, smtk::bridge::polygon::internal::entity::Ptr storage);
-  bool removeStorage(const smtk::common::UUID& uid);
 
   bool removeFaceReferences(const smtk::model::Face& f);
   bool removeEdgeReferences(const smtk::model::Edge& e);
@@ -111,10 +117,6 @@ protected:
   smtk::model::SessionIOPtr createIODelegate(const std::string& format) override;
 
   internal::EntityIdToPtr::iterator findStorageIterator(const smtk::common::UUID& uid);
-  internal::EntityIdToPtr::iterator beginStorage();
-  internal::EntityIdToPtr::iterator endStorage();
-  internal::EntityIdToPtr::const_iterator beginStorage() const;
-  internal::EntityIdToPtr::const_iterator endStorage() const;
 
   internal::EntityIdToPtr m_storage;
   int m_nextModelNumber;

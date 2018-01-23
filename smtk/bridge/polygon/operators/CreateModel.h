@@ -38,12 +38,12 @@ class SMTKPOLYGONSESSION_EXPORT CreateModel : public Operator
 public:
   smtkTypeMacro(CreateModel);
   smtkCreateMacro(CreateModel);
-  smtkSharedFromThisMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
   smtkSuperclassMacro(Operator);
-  smtkDeclareModelOperator();
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  virtual const char* xmlDescription() const override;
 };
 
 } // namespace polygon

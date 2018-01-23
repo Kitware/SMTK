@@ -69,6 +69,10 @@ void ResourcePhraseModel::handleCreated(
   for (auto it = data->begin(); it != data->end(); ++it)
   {
     smtk::resource::ComponentPtr comp = *it;
+    if (comp == nullptr)
+    {
+      continue;
+    }
     smtk::resource::ResourcePtr rsrc = comp->resource();
     this->processResource(rsrc, true);
   }

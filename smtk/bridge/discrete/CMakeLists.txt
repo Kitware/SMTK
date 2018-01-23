@@ -134,6 +134,8 @@ set(_module_src
 )
 
 set(discreteSessionSrcs
+  RegisterSession.cxx
+  Resource.cxx
   Session.cxx
   Operator.cxx
   ArrangementHelper.cxx
@@ -151,6 +153,8 @@ set(discreteSessionSrcs
 )
 
 set(discreteSessionHeaders
+  RegisterSession.h
+  Resource.h
   Session.h
   Operator.h
   ArrangementHelper.h
@@ -186,8 +190,7 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/GrowOperator.sbt" unitO
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteOperator.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/RemoveModel.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EdgeOperator.sbt" unitOperatorXML)
-
-# NB: SetProperty operator reuses smtk::model::SetProperty's XML
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SetProperty.sbt" unitOperatorXML)
 
 add_library(smtkDiscreteSession ${_module_src} ${discreteSessionSrcs})
 
@@ -207,6 +210,7 @@ target_link_libraries(smtkDiscreteSession
     smtkCore
     smtkIOVTK
   LINK_PRIVATE
+  ${Boost_LIBRARIES}
     vtkCommonExecutionModel
     vtkFiltersCore
     vtkFiltersGeometry
@@ -240,6 +244,8 @@ smtk_public_headers(${discreteSessionHeaders} ${DiscreteModelHeaders})
 
 #install the library and exports the library when used from a build tree
 smtk_install_library(smtkDiscreteSession)
+
+add_subdirectory(environment)
 
 if(SMTK_ENABLE_PARAVIEW_SUPPORT AND SMTK_ENABLE_DISCRETE_SESSION)
   add_subdirectory(plugin)

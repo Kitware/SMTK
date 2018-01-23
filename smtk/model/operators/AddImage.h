@@ -22,11 +22,12 @@ class SMTKCORE_EXPORT AddImage : public AddAuxiliaryGeometry
 public:
   smtkTypeMacro(AddImage);
   smtkCreateMacro(AddImage);
-  smtkSharedFromThisMacro(AddAuxiliaryGeometry);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSuperclassMacro(AddAuxiliaryGeometry);
 
 private:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  virtual const char* xmlDescription() const override;
 };
 
 } //namespace model

@@ -59,15 +59,31 @@ GrowOperator::GrowOperator()
 
 bool GrowOperator::ableToOperate()
 {
-  smtk::model::Model model;
-  return
-    // The SMTK model must be valid
-    (model = this->specification()->findModelEntity("model")->value().as<smtk::model::Model>())
-      .isValid() &&
-    // The CMB model must exist:
-    this->discreteSession()->findModelEntity(model.entity()) &&
-    // There must be a MeshEntity for input selection
-    this->specification()->findMeshSelection("selection");
+  smtk::model::Model model =
+    this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
+
+  // The SMTK model must be valid
+  if (!model.isValid())
+  {
+    return false;
+  }
+
+  smtk::bridge::discrete::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::discrete::Resource>(model.component()->resource());
+
+  // The CMB model must exist:
+  if (!resource->discreteSession()->findModelEntity(model.entity()))
+  {
+    return false;
+  }
+
+  // There must be a MeshEntity for input selection
+  if (!this->parameters()->findMeshSelection("selection"))
+  {
+    return false;
+  }
+
+  return true;
 }
 
 bool GrowOperator::writeSelectionResult(
@@ -89,7 +105,8 @@ bool GrowOperator::writeSelectionResult(
 }
 
 void GrowOperator::writeSplitResult(vtkSelectionSplitOperator* splitOp,
-  vtkDiscreteModelWrapper* modelWrapper, Session* opsession, OperatorResult& result)
+  vtkDiscreteModelWrapper* modelWrapper, smtk::bridge::discrete::Resource::Ptr& resource,
+  Session* opsession, GrowOperator::Result& result)
 {
   // Two comoponents array [sourceFaceId, newFaceId],
   // One sourceFace could have been split into multiple new faces
@@ -102,7 +119,7 @@ void GrowOperator::writeSplitResult(vtkSelectionSplitOperator* splitOp,
     splitFaces[origId].insert(splitPairArray->GetValue(2 * i + 1));
   }
 
-  smtk::model::ManagerPtr store = this->manager();
+  smtk::model::ManagerPtr store = std::static_pointer_cast<smtk::model::Manager>(resource);
   // Adding "created" to the "created" item, as a convenient method
   // to get newly created faces from result.
   // The faces have been split will be in the "modified" item.
@@ -139,9 +156,21 @@ void GrowOperator::writeSplitResult(vtkSelectionSplitOperator* splitOp,
 
   // Return the created and/or modified faces.
   if (newEnts.size() > 0)
-    this->addEntitiesToResult(result, newEnts, CREATED);
+  {
+    smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");
+    for (auto c : newEnts)
+    {
+      created->appendValue(c.component());
+    }
+  }
   if (modEnts.size() > 0)
-    this->addEntitiesToResult(result, modEnts, MODIFIED);
+  {
+    smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
+    for (auto m : modEnts)
+    {
+      modified->appendValue(m.component());
+    }
+  }
 }
 
 void GrowOperator::convertToGrowSelection(
@@ -264,16 +293,21 @@ void GrowOperator::findVisibleModelFaces(
 
 smtk::model::OperatorResult GrowOperator::operateInternal()
 {
-  SessionPtr opsession = this->discreteSession();
   smtk::model::Model model =
-    this->specification()->findModelEntity("model")->value().as<smtk::model::Model>();
+    this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
+
+  smtk::bridge::discrete::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::discrete::Resource>(model.component()->resource());
+
+  SessionPtr opsession = resource->discreteSession();
+
   vtkDiscreteModelWrapper* modelWrapper = opsession->findModelEntity(model.entity());
   bool ok = false;
   smtk::attribute::MeshSelectionItem::Ptr inSelectionItem =
-    this->specification()->findMeshSelection("selection");
+    this->parameters()->findMeshSelection("selection");
   MeshModifyMode opType = inSelectionItem->modifyMode();
   int numSelValues = static_cast<int>(inSelectionItem->numberOfValues());
-  double featureAngle = this->specification()->findDouble("feature angle")->value();
+  double featureAngle = this->parameters()->findDouble("feature angle")->value();
 
   switch (opType)
   {
@@ -352,20 +386,23 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
       break;
   }
 
-  OperatorResult result = this->createResult(ok ? OPERATION_SUCCEEDED : OPERATION_FAILED);
+  OperatorResult result = this->createResult(
+    ok ? smtk::operation::NewOp::Outcome::SUCCEEDED : smtk::operation::NewOp::Outcome::FAILED);
 
   if (ok)
   {
     switch (opType)
     {
       case ACCEPT:
-        this->writeSplitResult(m_splitOp.GetPointer(), modelWrapper, opsession.get(), result);
+        this->writeSplitResult(
+          m_splitOp.GetPointer(), modelWrapper, resource, opsession.get(), result);
         break;
       case RESET:
       case MERGE:
       case SUBTRACT:
       {
-        this->addEntityToResult(result, model, MODIFIED);
+        smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
+        modified->appendValue(model.component());
 
         this->writeSelectionResult(m_outSelection, result);
         break;
@@ -378,9 +415,11 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
   return result;
 }
 
+const char* GrowOperator::xmlDescription() const
+{
+  return GrowOperator_xml;
+}
+
 } // namespace discrete
 } // namespace bridge
 } // namespace smtk
-
-smtkImplementsModelOperator(SMTKDISCRETESESSION_EXPORT, smtk::bridge::discrete::GrowOperator,
-  discrete_grow, "grow", GrowOperator_xml, smtk::bridge::discrete::Session);

@@ -425,57 +425,58 @@ bool qtModelOperationWidget::initOperatorUI(const smtk::model::OperatorPtr& brOp
 }
 
 bool qtModelOperationWidget::setCurrentOperator(
-  const std::string& opName, smtk::model::SessionPtr session)
+  const std::string& /*opName*/, smtk::model::SessionPtr /*session*/)
 {
-  smtk::model::Session::WeakPtr prevSession = this->Internals->CurrentSession;
-  std::string currOpName = this->Internals->CurrentOpName;
-  QMap<std::string, qtModelOperationWidgetInternals::OperatorInfo>::Iterator opIt;
-  // Do not set the previous operator to be an "advanced" operator or the "Model - Save" operator:
-  std::string prevOpName =
-    (opIt = this->Internals->OperatorMap.find(currOpName)) != this->Internals->OperatorMap.end() &&
-      opIt->opPtr && opIt->opPtr->specification()->definition()->advanceLevel() < 1 &&
-      currOpName != "save smtk model"
-    ? currOpName
-    : std::string();
-  this->setSession(session);
-  if (!session)
-  {
-    return false;
-  }
+  // smtk::model::Session::WeakPtr prevSession = this->Internals->CurrentSession;
+  // std::string currOpName = this->Internals->CurrentOpName;
+  // QMap<std::string, qtModelOperationWidgetInternals::OperatorInfo>::Iterator opIt;
+  // // Do not set the previous operator to be an "advanced" operator or the "Model - Save" operator:
+  // std::string prevOpName =
+  //   (opIt = this->Internals->OperatorMap.find(currOpName)) != this->Internals->OperatorMap.end() &&
+  //     opIt->opPtr && opIt->opPtr->specification()->definition()->advanceLevel() < 1 &&
+  //     currOpName != "save smtk model"
+  //   ? currOpName
+  //   : std::string();
+  // this->setSession(session);
+  // if (!session)
+  // {
+  //   return false;
+  // }
 
-  std::string opLabel = this->Internals->m_operatorNameMap[opName];
-  int idx = this->Internals->findLabelPosition(opLabel);
-  if (this->Internals->OperationCombo->currentIndex() != idx)
-  {
-    if (prevSession.lock() && !prevOpName.empty())
-    {
-      this->Internals->PreviousSession = prevSession;
-      this->Internals->PreviousOpName = prevOpName;
-    }
-    this->Internals->OperationCombo->setCurrentIndex(idx);
-    return true;
-  }
-  OperatorPtr brOp = this->Internals->OperatorMap.contains(opName)
-    ? this->Internals->OperatorMap[opName].opPtr
-    : session->op(opName); // create the operator
+  // std::string opLabel = this->Internals->m_operatorNameMap[opName];
+  // int idx = this->Internals->findLabelPosition(opLabel);
+  // if (this->Internals->OperationCombo->currentIndex() != idx)
+  // {
+  //   if (prevSession.lock() && !prevOpName.empty())
+  //   {
+  //     this->Internals->PreviousSession = prevSession;
+  //     this->Internals->PreviousOpName = prevOpName;
+  //   }
+  //   this->Internals->OperationCombo->setCurrentIndex(idx);
+  //   return true;
+  // }
+  // OperatorPtr brOp = this->Internals->OperatorMap.contains(opName)
+  //   ? this->Internals->OperatorMap[opName].opPtr
+  //   : session->op(opName); // create the operator
 
-  if (!brOp)
-  {
-    std::cerr << "Could not create operator: \"" << opName << "\" for session"
-              << " \"" << session->name() << "\""
-              << " (" << session->sessionId() << ")\n";
-    return false;
-  }
-  emit operatorSet(brOp);
-  // We cannot rely on initOperatorUI to set PreviousSession since we may have
-  // changed the session above.
-  bool didChange = this->initOperatorUI(brOp);
-  if (didChange && !prevOpName.empty())
-  {
-    this->Internals->PreviousSession = prevSession;
-    this->Internals->PreviousOpName = prevOpName;
-  }
-  return didChange;
+  // if (!brOp)
+  // {
+  //   std::cerr << "Could not create operator: \"" << opName << "\" for session"
+  //             << " \"" << session->name() << "\""
+  //             << " (" << session->sessionId() << ")\n";
+  //   return false;
+  // }
+  // emit operatorSet(brOp);
+  // // We cannot rely on initOperatorUI to set PreviousSession since we may have
+  // // changed the session above.
+  // bool didChange = this->initOperatorUI(brOp);
+  // if (didChange && !prevOpName.empty())
+  // {
+  //   this->Internals->PreviousSession = prevSession;
+  //   this->Internals->PreviousOpName = prevOpName;
+  // }
+  // return didChange;
+  return false;
 }
 
 smtk::model::OperatorPtr qtModelOperationWidget::existingOperator(const std::string& opName)

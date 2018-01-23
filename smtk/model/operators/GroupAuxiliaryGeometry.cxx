@@ -22,6 +22,8 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
+#include "smtk/model/GroupAuxiliaryGeometry_xml.h"
+
 using namespace smtk::model;
 using smtk::attribute::FileItem;
 using smtk::attribute::StringItem;
@@ -33,16 +35,17 @@ namespace model
 
 smtk::model::OperatorResult GroupAuxiliaryGeometry::operateInternal()
 {
-  auto entities = this->associatedEntitiesAs<AuxiliaryGeometries>();
+  auto associations = this->parameters()->associations();
+  AuxiliaryGeometries entities(associations->begin(), associations->end());
   if (entities.empty())
   {
     smtkErrorMacro(this->log(), "No children specified.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   Model parent = entities[0].owningModel();
-  smtk::attribute::StringItemPtr nameItem = this->findString("name");
-  smtk::attribute::IntItemPtr dimItem = this->findInt("dimension");
+  smtk::attribute::StringItemPtr nameItem = this->parameters()->findString("name");
+  smtk::attribute::IntItemPtr dimItem = this->parameters()->findInt("dimension");
   int dim = dimItem != nullptr ? dimItem->value(0) : -1;
   if (dim < 0)
   { // Find dimension from children
@@ -57,8 +60,8 @@ smtk::model::OperatorResult GroupAuxiliaryGeometry::operateInternal()
   }
 
   // Transform
-  smtk::attribute::DoubleItemPtr transformItems[3] = { this->findDouble("scale"),
-    this->findDouble("rotate"), this->findDouble("translate") };
+  smtk::attribute::DoubleItemPtr transformItems[3] = { this->parameters()->findDouble("scale"),
+    this->parameters()->findDouble("rotate"), this->parameters()->findDouble("translate") };
   bool transformIsDefault[3] = { true, true, true };
   for (int ii = 0; ii < 3; ++ii)
   {
@@ -96,11 +99,16 @@ smtk::model::OperatorResult GroupAuxiliaryGeometry::operateInternal()
   auxGeom.setStringProperty("type", "group");
 
   smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+    this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
 
-  this->addEntityToResult(result, parent, MODIFIED);
-  this->addEntitiesToResult(result, entities, MODIFIED);
-  this->addEntityToResult(result, auxGeom, CREATED);
+  smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");
+  created->setValue(auxGeom.component());
+  smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
+  modified->appendValue(parent.component());
+  for (auto m : entities)
+  {
+    modified->appendValue(m.component());
+  }
   /*
    * In theory, we might need to set tess_changed on children
    * if their new parent has a non-default transform applied.
@@ -113,11 +121,10 @@ smtk::model::OperatorResult GroupAuxiliaryGeometry::operateInternal()
   return result;
 }
 
+const char* GroupAuxiliaryGeometry::xmlDescription() const
+{
+  return GroupAuxiliaryGeometry_xml;
+}
+
 } //namespace model
 } // namespace smtk
-
-#include "smtk/model/GroupAuxiliaryGeometry_xml.h"
-
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::model::GroupAuxiliaryGeometry,
-  group_auxiliary_geometry, "group auxiliary geometry", GroupAuxiliaryGeometry_xml,
-  smtk::model::Session);

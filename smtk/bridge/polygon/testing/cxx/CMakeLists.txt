@@ -19,7 +19,8 @@ set (unit_tests
   UnitTestPolygonFindOperatorAttItems.cxx
   UnitTestPolygonCleanGeometry.cxx)
 
-set (unit_tests_which_require_data)
+set (unit_tests_which_require_data
+  UnitTestPolygonReadWrite.cxx)
 
 if (SMTK_ENABLE_REMUS_SUPPORT)
   list(APPEND unit_tests_which_require_data UnitTestPolygonImport.cxx)

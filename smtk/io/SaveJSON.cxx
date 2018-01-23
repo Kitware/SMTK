@@ -21,7 +21,6 @@
 #include "smtk/model/Operator.h"
 #include "smtk/model/SessionIOJSON.h"
 #include "smtk/model/SessionRegistrar.h"
-#include "smtk/model/StoredResource.h"
 #include "smtk/model/Tessellation.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -247,7 +246,6 @@ int SaveJSON::fromSet(cJSON* pnode, smtk::resource::SetPtr& rset)
   for (auto rid : rids)
   {
     smtk::resource::ResourcePtr rsrc;
-    smtk::model::StoredResourcePtr srsrc;
     if (rset->get(rid, rsrc))
     {
       smtk::resource::Set::Role rsrcRole;
@@ -263,23 +261,6 @@ int SaveJSON::fromSet(cJSON* pnode, smtk::resource::SetPtr& rset)
           jsrc, "role", cJSON_CreateString(smtk::resource::Set::role2String(rsrcRole).c_str()));
         cJSON_AddItemToObject(
           jsrc, "state", cJSON_CreateString(smtk::resource::Set::state2String(rsrcState).c_str()));
-
-        if ((srsrc = smtk::dynamic_pointer_cast<smtk::model::StoredResource>(rsrc)))
-        {
-          cJSON_AddItemToObject(jsrc, "url", cJSON_CreateString(srsrc->url().c_str()));
-          const smtk::model::EntityRefs& children(srsrc->entities());
-          if (!children.empty())
-          { // Append entities contained in the file to the resource description:
-            cJSON* jents = cJSON_CreateArray();
-            cJSON_AddItemToObject(jsrc, "entities", jents);
-            cJSON** jchild = &(jents->child);
-            for (auto child : children)
-            {
-              *jchild = cJSON_CreateString(child.entity().toString().c_str());
-              jchild = &((*jchild)->next);
-            }
-          }
-        }
       }
     }
   }
@@ -336,11 +317,8 @@ int SaveJSON::save(
       for (auto rsrcId : rids)
       {
         smtk::resource::ResourcePtr rsrc;
-        smtk::model::StoredResourcePtr srsrc;
         smtk::model::SessionRef sref;
-        if (rset->get(rsrcId, rsrc) && (srsrc = smtk::dynamic_pointer_cast<StoredResource>(rsrc)) &&
-          (srsrc->entities().find(model) != srsrc->entities().end()) &&
-          (sref = srsrc->session()).isValid())
+        if (rset->get(rsrcId, rsrc))
         {
           // Get an I/O delegate for this session
           delegateIter = delegates.find(sref);
@@ -359,7 +337,7 @@ int SaveJSON::save(
           if (delegate)
           {
             //delegate->saveResource(pnode, model, srsrc);
-            delegate->saveResource(model, rset, srsrc);
+            // delegate->saveResource(model, rset, srsrc);
           }
         }
       }
@@ -379,7 +357,7 @@ int SaveJSON::save(
     delegate = delegateIter->second;
     if (delegate)
     {
-      status &= delegate->saveJSON(sess, delegateIter->first, models);
+      // status &= delegate->saveJSON(sess, delegateIter->first, models);
     }
 
     // Add mesh info to the session JSON node for models in this session:
@@ -667,7 +645,7 @@ int SaveJSON::forManagerIntegerProperties(
 }
 
 int SaveJSON::forManagerSession(const smtk::common::UUID& uid, cJSON* node, ManagerPtr modelMgr,
-  bool writeNativeModels, const std::string& refPath)
+  bool /*writeNativeModels*/, const std::string& refPath)
 {
   int status = 1;
   SessionPtr session = SessionRef(modelMgr, uid).session();
@@ -683,7 +661,7 @@ int SaveJSON::forManagerSession(const smtk::common::UUID& uid, cJSON* node, Mana
   if (delegate)
   {
     delegate->setReferencePath(refPath);
-    status &= delegate->exportJSON(modelMgr, session, sess, writeNativeModels);
+    // status &= delegate->exportJSON(modelMgr, session, sess, writeNativeModels);
   }
 
   smtk::model::Models modelsOfSession = SessionRef(modelMgr, session).models<smtk::model::Models>();
@@ -695,7 +673,7 @@ int SaveJSON::forManagerSession(const smtk::common::UUID& uid, cJSON* node, Mana
 }
 
 int SaveJSON::forManagerSessionPartial(const smtk::common::UUID& sessionid,
-  const smtk::common::UUIDs& modelIds, cJSON* node, ManagerPtr modelMgr, bool writeNativeModels,
+  const smtk::common::UUIDs& modelIds, cJSON* node, ManagerPtr modelMgr, bool /*writeNativeModels*/,
   const std::string& refPath)
 {
   int status = 1;
@@ -713,7 +691,7 @@ int SaveJSON::forManagerSessionPartial(const smtk::common::UUID& sessionid,
   if (delegate)
   {
     delegate->setReferencePath(refPath);
-    status &= delegate->exportJSON(modelMgr, session, modelIds, sess, writeNativeModels);
+    // status &= delegate->exportJSON(modelMgr, session, modelIds, sess, writeNativeModels);
   }
   SaveJSON::addModelsRecord(modelMgr, modelIds, sess);
   SaveJSON::addMeshesRecord(modelMgr, modelIds, sess);

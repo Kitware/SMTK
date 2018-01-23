@@ -19,7 +19,7 @@
 #include "smtk/model/DefaultSession.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/RemoteOperator.h"
+// #include "smtk/model/RemoteOperator.h"
 #include "smtk/model/SessionIOJSON.h"
 #include "smtk/model/SessionRegistrar.h"
 #include "smtk/model/StringData.h"
@@ -62,7 +62,6 @@ PySharedPtrClass< smtk::io::LoadJSON > pybind11_init_smtk_io_LoadJSON(py::module
     .def_static("ofRemoteSession", &smtk::io::LoadJSON::ofRemoteSession, py::arg("arg0"), py::arg("destSession"), py::arg("context"), py::arg("refPath") = std::string())
     .def_static("ofLocalSession", &smtk::io::LoadJSON::ofLocalSession, py::arg("arg0"), py::arg("context"), py::arg("loadNativeModels") = false, py::arg("referencePath") = std::string())
     .def_static("ofOperator", &smtk::io::LoadJSON::ofOperator, py::arg("node"), py::arg("op"), py::arg("context"))
-    .def_static("ofOperatorResult", &smtk::io::LoadJSON::ofOperatorResult, py::arg("node"), py::arg("resOut"), py::arg("op"))
     .def_static("ofDanglingEntities", &smtk::io::LoadJSON::ofDanglingEntities, py::arg("node"), py::arg("context"))
     .def_static("ofLog", (int (*)(char const *, ::smtk::io::Logger &)) &smtk::io::LoadJSON::ofLog, py::arg("jsonStr"), py::arg("log"))
     .def_static("ofLog", (int (*)(::cJSON *, ::smtk::io::Logger &)) &smtk::io::LoadJSON::ofLog, py::arg("logrecordarray"), py::arg("log"))

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the polygon "CreateVertices" operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="create vertices" Label="Vertex - Create" BaseType="operator">
       <BriefDescription>Create model vertices.</BriefDescription>
       <DetailedDescription>
@@ -69,8 +69,8 @@
         </Int>
       </ItemDefinitions>
     </AttDef>
-    <!-- Result -->
-        <AttDef Type="result(create vertices)" BaseType="result">
+    <include href="smtk/operation/Result.xml"/>
+    <AttDef Type="result(create vertices)" BaseType="result">
       <ItemDefinitions>
         <!-- The vertices created are reported in the base result's "created" item. -->
       </ItemDefinitions>

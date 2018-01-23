@@ -33,9 +33,8 @@ class SMTKPOLYGONSESSION_EXPORT ForceCreateFace : public Operator
 public:
   smtkTypeMacro(ForceCreateFace);
   smtkCreateMacro(ForceCreateFace);
-  smtkSharedFromThisMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
   smtkSuperclassMacro(Operator);
-  smtkDeclareModelOperator();
 
   // NB: These must match discrete indices of "construction method" in ForceCreateFace.sbt:
   enum ConstructionMethod
@@ -47,7 +46,8 @@ public:
   bool ableToOperate() override;
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  virtual const char* xmlDescription() const override;
 };
 
 } // namespace polygon

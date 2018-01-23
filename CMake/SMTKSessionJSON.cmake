@@ -1,8 +1,9 @@
+include("${CMAKE_CURRENT_LIST_DIR}/EncodeStringFunctions.cmake")
+
 # Given a list of filenames (opSpecs) containing JSON descriptions of
 # a session, configure C++ source that encodes the JSON as a string.
 # The resulting files are placed in the current binary directory and
 # appended to genFiles.
-include("${CMAKE_CURRENT_LIST_DIR}/EncodeCStringFunctions.cmake")
 function(smtk_session_json opSpecs genFiles)
   foreach (opSpec ${opSpecs})
     get_filename_component(genFileBase "${opSpec}" NAME_WE)

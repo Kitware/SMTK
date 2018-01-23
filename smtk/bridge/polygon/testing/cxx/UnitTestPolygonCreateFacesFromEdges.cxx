@@ -23,6 +23,15 @@
 #include "smtk/model/Vertex.h"
 #include <complex>
 
+#include "smtk/bridge/polygon/Resource.h"
+#include "smtk/bridge/polygon/operators/CreateEdgeFromPoints.h"
+#include "smtk/bridge/polygon/operators/CreateFacesFromEdges.h"
+#include "smtk/bridge/polygon/operators/CreateModel.h"
+
+#include "smtk/mesh/core/Manager.h"
+
+#include "smtk/operation/Manager.h"
+
 int UnitTestPolygonCreateFacesFromEdges(int argc, char* argv[])
 {
   (void)argc;
@@ -33,24 +42,61 @@ int UnitTestPolygonCreateFacesFromEdges(int argc, char* argv[])
   const std::vector<double> points{ -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5 };
   const int numPoints = static_cast<int>(points.size()) / numCoordsPerPoint;
 
-  smtk::model::ManagerPtr manager = smtk::model::Manager::create();
-  smtk::model::SessionRef session = manager->createSession("polygon");
-  smtk::model::OperatorPtr myOp = session.op("create model");
-  smtk::model::OperatorResult res = myOp->operate();
-  smtk::model::EntityRef myModel = res->findModelEntity("created")->value();
+  // Create a resource manager
+  smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
-  // Create a closed loop
-  // Associate model with operation
-  myOp = session.op("create edge from points");
-  test(myOp != nullptr, "No create edge from points operator");
-  test(myOp->specification()->associateEntity(myModel), "Could not associate model");
+  // Register the mesh resource to the resource manager
+  {
+    resourceManager->registerResource<smtk::bridge::polygon::Resource>();
+  }
+
+  // Create an operation manager
+  smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
+
+  // Register operators to the operation manager
+  {
+    operationManager->registerOperator<smtk::bridge::polygon::CreateModel>(
+      "smtk::bridge::polygon::CreateModel");
+    operationManager->registerOperator<smtk::bridge::polygon::CreateEdgeFromPoints>(
+      "smtk::bridge::polygon::CreateEdgeFromPoints");
+    operationManager->registerOperator<smtk::bridge::polygon::CreateFacesFromEdges>(
+      "smtk::bridge::polygon::CreateFacesFromEdges");
+  }
+
+  // Register the resource manager to the operation manager (newly created
+  // resources will be automatically registered to the resource manager).
+  operationManager->registerResourceManager(resourceManager);
+
+  // Create an "create model" operator
+  smtk::bridge::polygon::CreateModel::Ptr createOp =
+    operationManager->create<smtk::bridge::polygon::CreateModel>();
+
+  // Apply the operation and check the result
+  smtk::operation::NewOp::Result createOpResult = createOp->operate();
+
+  // Retrieve the resulting model item
+  smtk::attribute::ComponentItemPtr componentItem =
+    std::dynamic_pointer_cast<smtk::attribute::ComponentItem>(
+      createOpResult->findComponent("model"));
+
+  // Access the generated model
+  smtk::model::Entity::Ptr model =
+    std::dynamic_pointer_cast<smtk::model::Entity>(componentItem->value());
+
+  // Create a "create edge from points" operator
+  smtk::bridge::polygon::CreateEdgeFromPoints::Ptr createEdgeFromPointsOp =
+    operationManager->create<smtk::bridge::polygon::CreateEdgeFromPoints>();
+
+  createEdgeFromPointsOp->parameters()->associateEntity(model->referenceAs<smtk::model::Model>());
 
   // Specify the points
   std::cout << "Creating a unit square centering at the origin" << std::endl;
-  smtk::attribute::IntItemPtr pointGeometry = myOp->specification()->findInt("pointGeometry");
+  smtk::attribute::IntItemPtr pointGeometry =
+    createEdgeFromPointsOp->parameters()->findInt("pointGeometry");
   test(pointGeometry != nullptr, "Could not find pointGeometry");
   test(pointGeometry->setValue(numCoordsPerPoint), "Could not set pointGeometry");
-  smtk::attribute::GroupItem::Ptr pointsInfo = myOp->specification()->findGroup("2DPoints");
+  smtk::attribute::GroupItem::Ptr pointsInfo =
+    createEdgeFromPointsOp->parameters()->findGroup("2DPoints");
   test(pointsInfo->setNumberOfGroups(numPoints), "Could not set number of points");
   for (int i = 0; i < numPoints; ++i)
   {
@@ -65,12 +111,13 @@ int UnitTestPolygonCreateFacesFromEdges(int argc, char* argv[])
   }
 
   // Apply the create edge from ponits operation
-  res = myOp->operate();
-  test(res->findInt("outcome")->value() == smtk::operation::Operator::OPERATION_SUCCEEDED,
+  smtk::operation::NewOp::Result res = createEdgeFromPointsOp->operate();
+  test(res->findInt("outcome")->value() ==
+      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
     "Create edge from points operator failed");
 
   // Check the created edge and vertices
-  smtk::model::Model modelCreated = static_cast<smtk::model::Model>(myModel);
+  smtk::model::Model modelCreated = model->referenceAs<smtk::model::Model>();
   smtk::model::Edges edges;
   for (auto& cell : modelCreated.cells())
   {
@@ -85,11 +132,16 @@ int UnitTestPolygonCreateFacesFromEdges(int argc, char* argv[])
   test(static_cast<int>(edges.size()) == 1, "Incorrect number of edges");
 
   // Create a face from the loop
-  myOp = session.op("create faces from edges");
-  test(myOp != nullptr, "No create faces from edgs operator");
-  test(myOp->specification()->associateEntity(edges[0]), "Could not associate edge");
-  res = myOp->operate();
-  test(res->findInt("outcome")->value() == smtk::operation::Operator::OPERATION_SUCCEEDED,
+
+  // Create a "create face from edges" operator
+  smtk::bridge::polygon::CreateFacesFromEdges::Ptr createFacesFromEdgesOp =
+    operationManager->create<smtk::bridge::polygon::CreateFacesFromEdges>();
+
+  test(createFacesFromEdgesOp != nullptr, "No create faces from edges operator");
+  test(createFacesFromEdgesOp->parameters()->associateEntity(edges[0]), "Could not associate edge");
+  res = createFacesFromEdgesOp->operate();
+  test(res->findInt("outcome")->value() ==
+      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
     "Create faces from edges operator failed");
 
   // Verify that face has been created
@@ -102,6 +154,3 @@ int UnitTestPolygonCreateFacesFromEdges(int argc, char* argv[])
 
   return 0;
 }
-
-// This macro ensures the polygon session library is loaded into the executable
-smtkComponentInitMacro(smtk_polygon_session)

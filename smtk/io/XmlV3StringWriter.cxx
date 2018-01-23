@@ -17,6 +17,8 @@
 #include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/DateTimeItemDefinition.h"
+#include "smtk/attribute/ResourceItem.h"
+#include "smtk/attribute/ResourceItemDefinition.h"
 #include "smtk/io/Logger.h"
 
 using namespace pugi;
@@ -170,22 +172,120 @@ void XmlV3StringWriter::processDateTimeItem(pugi::xml_node& node, attribute::Dat
   }
 }
 
-void XmlV3StringWriter::processComponentDef(
-  pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef)
+void XmlV3StringWriter::processResourceDef(
+  pugi::xml_node& node, smtk::attribute::ResourceItemDefinitionPtr idef)
 {
-  auto acceptableResources = idef->acceptableResourceComponentsByName();
+  auto acceptableResources = idef->acceptableResources();
   xml_node accnode = node.append_child("Accepts");
   for (auto name : acceptableResources)
   {
     xml_node rsrcnode = accnode.append_child("Resource");
-    rsrcnode.text().set(name.c_str());
+    rsrcnode.append_attribute("Name").set_value(name.c_str());
   }
 
-  smtk::model::BitFlags membershipMask = idef->membershipMask();
-  std::string membershipMaskStr = this->encodeModelEntityMask(membershipMask);
-  xml_node menode;
-  menode = node.append_child("MembershipMask");
-  menode.text().set(membershipMaskStr.c_str());
+  if (idef->isWritable())
+  {
+    node.append_attribute("Writable").set_value(true);
+  }
+
+  node.append_attribute("NumberOfRequiredValues") =
+    static_cast<unsigned int>(idef->numberOfRequiredValues());
+  if (idef->isExtensible())
+  {
+    node.append_attribute("Extensible") = true;
+
+    if (idef->maxNumberOfValues())
+      node.append_attribute("MaxNumberOfValues") =
+        static_cast<unsigned int>(idef->maxNumberOfValues());
+  }
+
+  if (idef->hasValueLabels())
+  {
+    xml_node lnode = node.append_child();
+    lnode.set_name("ResourceLabels");
+    if (idef->usingCommonLabel())
+    {
+      lnode.append_attribute("CommonLabel") = idef->valueLabel(0).c_str();
+    }
+    else
+    {
+      size_t i, n = idef->numberOfRequiredValues();
+      xml_node ln;
+      for (i = 0; i < n; i++)
+      {
+        ln = lnode.append_child();
+        ln.set_name("Label");
+        ln.set_value(idef->valueLabel(i).c_str());
+      }
+    }
+  }
+}
+
+void XmlV3StringWriter::processResourceItem(pugi::xml_node& node, attribute::ResourceItemPtr item)
+{
+  size_t i = 0, n = item->numberOfValues();
+  std::size_t numRequiredVals = item->numberOfRequiredValues();
+  // we should always have "NumberOfValues" set
+  node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
+
+  xml_node val;
+  if (!n)
+  {
+    return;
+  }
+
+  if ((numRequiredVals == 1) && (!item->isExtensible()))
+  {
+    if (item->isSet())
+    {
+      val = node.append_child("Val");
+      auto rsrcPtr = item->value(i);
+      if (rsrcPtr)
+      {
+        xml_node rsrc = val.append_child("Resource");
+        rsrc.text().set(rsrcPtr->id().toString().c_str());
+      }
+    }
+    return;
+  }
+  xml_node values = node.append_child("Values");
+  for (i = 0; i < n; i++)
+  {
+    if (item->isSet(i))
+    {
+      val = values.append_child("Val");
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
+      auto rsrcPtr = item->value(i);
+      if (rsrcPtr)
+      {
+        xml_node rsrc = val.append_child("Resource");
+        rsrc.text().set(rsrcPtr->id().toString().c_str());
+      }
+    }
+    else
+    {
+      val = values.append_child("UnsetVal");
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
+    }
+  }
+}
+
+void XmlV3StringWriter::processComponentDef(
+  pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef)
+{
+  auto acceptableResources = idef->acceptableResourceComponents();
+  xml_node accnode = node.append_child("Accepts");
+  for (auto name : acceptableResources)
+  {
+    xml_node rsrcnode = accnode.append_child("Resource");
+    rsrcnode.append_attribute("Name").set_value(name.first.c_str());
+    rsrcnode.append_attribute("Filter").set_value(name.second.c_str());
+  }
+
+  if (idef->isWritable())
+  {
+    node.append_attribute("Writable").set_value(true);
+  }
 
   node.append_attribute("NumberOfRequiredValues") =
     static_cast<unsigned int>(idef->numberOfRequiredValues());

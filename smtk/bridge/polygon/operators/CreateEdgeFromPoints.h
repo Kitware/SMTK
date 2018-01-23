@@ -28,20 +28,19 @@ class SMTKPOLYGONSESSION_EXPORT CreateEdgeFromPoints : public Operator
 public:
   smtkTypeMacro(CreateEdgeFromPoints);
   smtkCreateMacro(CreateEdgeFromPoints);
-  smtkSharedFromThisMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
   smtkSuperclassMacro(Operator);
-  smtkDeclareModelOperator();
 
   /**\brief Create one edge given a set of point coordinates.
   *
-  * This is the main c++ method that can be used without the 
+  * This is the main c++ method that can be used without the
   * smtk attribute interface.
   */
-  smtk::model::OperatorResult process(
-    std::vector<double>& pnts, int numCoordsPerPoint, smtk::model::Model& parentModel);
+  Result process(std::vector<double>& pnts, int numCoordsPerPoint, smtk::model::Model& parentModel);
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  virtual const char* xmlDescription() const override;
 };
 
 } // namespace polygon

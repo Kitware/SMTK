@@ -27,12 +27,12 @@ class SMTKPOLYGONSESSION_EXPORT CreateVertices : public Operator
 public:
   smtkTypeMacro(CreateVertices);
   smtkCreateMacro(CreateVertices);
-  smtkSharedFromThisMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
   smtkSuperclassMacro(Operator);
-  smtkDeclareModelOperator();
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  virtual const char* xmlDescription() const override;
 };
 
 } // namespace polygon

@@ -15,20 +15,19 @@
 
 #include "smtk/bridge/polygon/operators/DemoteVertex.h"
 
+#include "smtk/bridge/polygon/Operator.h"
+
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::polygon::DemoteVertex > pybind11_init_smtk_bridge_polygon_DemoteVertex(py::module &m, PySharedPtrClass< smtk::bridge::polygon::Operator, smtk::model::Operator >& parent)
+PySharedPtrClass< smtk::bridge::polygon::DemoteVertex > pybind11_init_smtk_bridge_polygon_DemoteVertex(py::module &m, PySharedPtrClass< smtk::bridge::polygon::Operator, smtk::operation::XMLOperator >& parent)
 {
   PySharedPtrClass< smtk::bridge::polygon::DemoteVertex > instance(m, "DemoteVertex", parent);
   instance
-    .def(py::init<>())
     .def(py::init<::smtk::bridge::polygon::DemoteVertex const &>())
     .def("deepcopy", (smtk::bridge::polygon::DemoteVertex & (smtk::bridge::polygon::DemoteVertex::*)(::smtk::bridge::polygon::DemoteVertex const &)) &smtk::bridge::polygon::DemoteVertex::operator=)
-    .def("className", &smtk::bridge::polygon::DemoteVertex::className)
     .def("classname", &smtk::bridge::polygon::DemoteVertex::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::DemoteVertex> (*)()) &smtk::bridge::polygon::DemoteVertex::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::DemoteVertex> (*)(::std::shared_ptr<smtk::bridge::polygon::DemoteVertex> &)) &smtk::bridge::polygon::DemoteVertex::create, py::arg("ref"))
-    .def("name", &smtk::bridge::polygon::DemoteVertex::name)
     .def("shared_from_this", (std::shared_ptr<const smtk::bridge::polygon::DemoteVertex> (smtk::bridge::polygon::DemoteVertex::*)() const) &smtk::bridge::polygon::DemoteVertex::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<smtk::bridge::polygon::DemoteVertex> (smtk::bridge::polygon::DemoteVertex::*)()) &smtk::bridge::polygon::DemoteVertex::shared_from_this)
     ;

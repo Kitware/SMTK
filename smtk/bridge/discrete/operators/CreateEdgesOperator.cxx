@@ -10,6 +10,7 @@
 
 #include "CreateEdgesOperator.h"
 
+#include "smtk/bridge/discrete/Resource.h"
 #include "smtk/bridge/discrete/Session.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -45,12 +46,15 @@ CreateEdgesOperator::CreateEdgesOperator()
 bool CreateEdgesOperator::ableToOperate()
 {
   smtk::model::Model model =
-    this->specification()->findModelEntity("model")->value().as<smtk::model::Model>();
+    this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
   if (!model.isValid())
   {
     return false;
   }
-  vtkDiscreteModelWrapper* modelWrapper = this->discreteSession()->findModelEntity(model.entity());
+  smtk::bridge::discrete::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::discrete::Resource>(model.component()->resource());
+  vtkDiscreteModelWrapper* modelWrapper =
+    resource->discreteSession()->findModelEntity(model.entity());
   if (!modelWrapper)
   {
     return false;
@@ -73,28 +77,31 @@ bool CreateEdgesOperator::ableToOperate()
   return operable;
 }
 
-OperatorResult CreateEdgesOperator::operateInternal()
+CreateEdgesOperator::Result CreateEdgesOperator::operateInternal()
 {
-  SessionPtr opsession = this->discreteSession();
+  smtk::model::EntityRef inModel = this->parameters()->findModelEntity("model")->value();
 
-  smtk::model::EntityRef inModel = this->specification()->findModelEntity("model")->value();
+  smtk::bridge::discrete::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::discrete::Resource>(inModel.component()->resource());
 
-  vtkDiscreteModelWrapper* modelWrapper = opsession->findModelEntity(inModel.entity());
+  vtkDiscreteModelWrapper* modelWrapper =
+    resource->discreteSession()->findModelEntity(inModel.entity());
   if (!modelWrapper)
   {
-    return this->createResult(OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   this->m_op->SetShowEdges(1);
   this->m_op->Operate(modelWrapper);
   bool ok = this->m_op->GetOperateSucceeded() != 0;
-  OperatorResult result = this->createResult(ok ? OPERATION_SUCCEEDED : OPERATION_FAILED);
+  OperatorResult result = this->createResult(
+    ok ? smtk::operation::NewOp::Outcome::SUCCEEDED : smtk::operation::NewOp::Outcome::FAILED);
 
   if (ok)
   {
     // this will remove and re-add the model so that the model topology and all
     // relationships will be reset properly.
-    opsession->retranscribeModel(inModel);
+    resource->discreteSession()->retranscribeModel(inModel);
     smtk::model::EntityRefArray modEnts;
     modEnts.push_back(inModel);
 
@@ -104,22 +111,27 @@ OperatorResult CreateEdgesOperator::operateInternal()
     for (iter->Begin(); !iter->IsAtEnd(); iter->Next())
     {
       vtkModelFace* face = vtkModelFace::SafeDownCast(iter->GetCurrentItem());
-      faceUID = opsession->findOrSetEntityUUID(face);
-      modEnts.push_back(smtk::model::EntityRef(opsession->manager(), faceUID));
+      faceUID = resource->discreteSession()->findOrSetEntityUUID(face);
+      modEnts.push_back(smtk::model::EntityRef(resource, faceUID));
     }
     iter->Delete();
 
     result->findModelEntity("tess_changed")->setValue(inModel);
-    this->addEntitiesToResult(result, modEnts, MODIFIED);
+    smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
+    for (auto m : modEnts)
+    {
+      modified->appendValue(m.component());
+    }
   }
 
   return result;
 }
 
+const char* CreateEdgesOperator::xmlDescription() const
+{
+  return CreateEdgesOperator_xml;
+}
+
 } // namespace discrete
 } // namespace bridge
-
 } // namespace smtk
-
-smtkImplementsModelOperator(SMTKDISCRETESESSION_EXPORT, smtk::bridge::discrete::CreateEdgesOperator,
-  discrete_create_edges, "create edges", CreateEdgesOperator_xml, smtk::bridge::discrete::Session);

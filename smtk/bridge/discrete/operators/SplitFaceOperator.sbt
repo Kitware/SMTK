@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the CMB Discrete Model "Split Face" Operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
     <!-- Operator -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="split face" BaseType="operator" Label="Face - Split">
       <BriefDescription>
         Split a face/faces into several small faces. Feature angle is used to decide whether split the
@@ -44,6 +45,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(split face)" BaseType="result">
       <ItemDefinitions>
       </ItemDefinitions>

@@ -9,6 +9,7 @@
 //=============================================================================
 #include "smtk/bridge/polygon/operators/CreateModel.h"
 
+#include "smtk/bridge/polygon/Resource.h"
 #include "smtk/bridge/polygon/Session.h"
 #include "smtk/bridge/polygon/internal/Model.h"
 
@@ -18,6 +19,7 @@
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/mesh/core/Collection.h"
@@ -32,18 +34,19 @@ namespace bridge
 namespace polygon
 {
 
-smtk::model::OperatorResult CreateModel::operateInternal()
+CreateModel::Result CreateModel::operateInternal()
 {
   // Discover how the user wants to specify scaling.
-  smtk::attribute::IntItem::Ptr constructionMethodItem = this->findInt("construction method");
+  smtk::attribute::IntItem::Ptr constructionMethodItem =
+    this->parameters()->findInt("construction method");
   int method = constructionMethodItem->discreteIndex(0);
 
-  smtk::attribute::DoubleItem::Ptr originItem = this->findDouble("origin");
-  smtk::attribute::DoubleItem::Ptr xAxisItem = this->findDouble("x axis");
-  smtk::attribute::DoubleItem::Ptr yAxisItem = this->findDouble("y axis");
-  smtk::attribute::DoubleItem::Ptr zAxisItem = this->findDouble("z axis");
-  smtk::attribute::DoubleItem::Ptr featureSizeItem = this->findDouble("feature size");
-  smtk::attribute::IntItem::Ptr modelScaleItem = this->findInt("model scale");
+  smtk::attribute::DoubleItem::Ptr originItem = this->parameters()->findDouble("origin");
+  smtk::attribute::DoubleItem::Ptr xAxisItem = this->parameters()->findDouble("x axis");
+  smtk::attribute::DoubleItem::Ptr yAxisItem = this->parameters()->findDouble("y axis");
+  smtk::attribute::DoubleItem::Ptr zAxisItem = this->parameters()->findDouble("z axis");
+  smtk::attribute::DoubleItem::Ptr featureSizeItem = this->parameters()->findDouble("feature size");
+  smtk::attribute::IntItem::Ptr modelScaleItem = this->parameters()->findInt("model scale");
 
   internal::pmodel::Ptr storage = internal::pmodel::create();
   bool ok = true;
@@ -83,34 +86,94 @@ smtk::model::OperatorResult CreateModel::operateInternal()
       break;
   }
 
-  smtk::model::OperatorResult result;
+  Result result;
   if (ok)
   {
-    smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
-    smtk::model::Manager::Ptr mgr;
-    if (sess)
+    // There are three possible import modes
+    //
+    // 1. Import a mesh into an existing resource
+    // 2. Import a mesh as a new model, but using the session of an existing resource
+    // 3. Import a mesh into a new resource
+
+    smtk::bridge::polygon::Resource::Ptr resource = nullptr;
+    smtk::bridge::polygon::Session::Ptr session = nullptr;
+
+    // Modes 2 and 3 requre an existing resource for input
+    smtk::attribute::ResourceItem::Ptr existingResourceItem =
+      this->parameters()->findResource("resource");
+
+    if (existingResourceItem && existingResourceItem->isEnabled())
+    {
+      smtk::bridge::polygon::Resource::Ptr existingResource =
+        std::static_pointer_cast<smtk::bridge::polygon::Resource>(existingResourceItem->value());
+
+      session = existingResource->polygonSession();
+
+      smtk::attribute::StringItem::Ptr sessionOnlyItem =
+        this->parameters()->findString("session only");
+      if (sessionOnlyItem->value() == "this file")
+      {
+        // If the "session only" value is set to "this file", then we use the
+        // existing resource
+        resource = existingResource;
+      }
+      else
+      {
+        // If the "session only" value is set to "this session", then we create a
+        // new resource with the session from the exisiting resource
+        resource = smtk::bridge::polygon::Resource::create();
+        resource->setSession(session);
+      }
+    }
+    else
+    {
+      // If no existing resource is provided, then we create a new session and
+      // resource.
+      resource = smtk::bridge::polygon::Resource::create();
+      session = smtk::bridge::polygon::Session::create();
+
+      // Create a new resource for the import
+      resource->setSession(session);
+    }
+
+    if (session)
     {
       // If a name was specified, use it. Or make one up.
-      smtk::attribute::StringItem::Ptr nameItem = this->findString("name");
+      smtk::attribute::StringItem::Ptr nameItem = this->parameters()->findString("name");
       std::string modelName;
       if (nameItem && nameItem->isEnabled())
       {
         modelName = nameItem->value(0);
       }
 
-      mgr = sess->manager();
-      smtk::model::Model model = mgr->addModel(/* par. dim. */ 2, /* emb. dim. */ 3, modelName);
+      smtk::model::Model model =
+        resource->addModel(/* par. dim. */ 2, /* emb. dim. */ 3, modelName);
       storage->setId(model.entity());
-      storage->setSession(sess);
-      this->addStorage(model.entity(), storage);
-      model.setSession(smtk::model::SessionRef(mgr, sess->sessionId()));
+      storage->setSession(session);
+      resource->addStorage(model.entity(), storage);
+      model.setSession(smtk::model::SessionRef(resource, session->sessionId()));
       if (modelName.empty())
       {
         model.assignDefaultName();
       }
 
-      result = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
-      this->addEntityToResult(result, model, CREATED);
+      result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+
+      {
+        smtk::attribute::ComponentItem::Ptr resultModels = result->findComponent("model");
+        resultModels->setValue(model.component());
+      }
+
+      {
+        smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
+        created->setValue(resource);
+      }
+
+      {
+        smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");
+        created->setValue(model.component());
+      }
+
       model.setFloatProperty(
         "x axis", smtk::model::FloatList(storage->xAxis(), storage->xAxis() + 3));
       model.setFloatProperty(
@@ -125,7 +188,7 @@ smtk::model::OperatorResult CreateModel::operateInternal()
 
       if (result)
       {
-        sess->manager()
+        session->manager()
           ->meshes()
           ->makeCollection(model.entity())
           ->name(model.name() + "_tessellation");
@@ -135,15 +198,17 @@ smtk::model::OperatorResult CreateModel::operateInternal()
 
   if (!result)
   {
-    result = this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    result = this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   return result;
 }
 
+const char* CreateModel::xmlDescription() const
+{
+  return CreateModel_xml;
+}
+
 } // namespace polygon
 } //namespace bridge
 } // namespace smtk
-
-smtkImplementsModelOperator(SMTKPOLYGONSESSION_EXPORT, smtk::bridge::polygon::CreateModel,
-  polygon_create_model, "create model", CreateModel_xml, smtk::bridge::polygon::Session);

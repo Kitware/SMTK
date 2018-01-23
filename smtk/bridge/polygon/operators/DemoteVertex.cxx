@@ -9,6 +9,7 @@
 //=============================================================================
 #include "smtk/bridge/polygon/operators/DemoteVertex.h"
 
+#include "smtk/bridge/polygon/Resource.h"
 #include "smtk/bridge/polygon/Session.h"
 #include "smtk/bridge/polygon/internal/Model.h"
 #include "smtk/bridge/polygon/internal/Model.txx"
@@ -32,57 +33,69 @@ namespace bridge
 namespace polygon
 {
 
-smtk::model::OperatorResult DemoteVertex::operateInternal()
+DemoteVertex::Result DemoteVertex::operateInternal()
 {
-  smtk::bridge::polygon::SessionPtr sess = this->polygonSession();
-  smtk::model::Manager::Ptr mgr;
-  if (!sess)
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
-
-  mgr = sess->manager();
-
-  smtk::attribute::ModelEntityItem::Ptr vertItem = this->specification()->associations();
+  smtk::attribute::ModelEntityItem::Ptr vertItem = this->parameters()->associations();
   smtk::model::Vertex vertexToDemote(vertItem->value(0));
+
   if (!vertexToDemote.isValid())
   {
     smtkErrorMacro(this->log(), "The input vertex (" << vertexToDemote.entity() << ") is invalid.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
-  internal::vertex::Ptr storage = this->findStorage<internal::vertex>(vertexToDemote.entity());
+  smtk::bridge::polygon::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::polygon::Resource>(
+      vertexToDemote.component()->resource());
+
+  internal::vertex::Ptr storage = resource->findStorage<internal::vertex>(vertexToDemote.entity());
   internal::pmodel* mod = storage->parentAs<internal::pmodel>();
   if (!storage || !mod)
   {
     smtkErrorMacro(this->log(), "The input vertex has no storage or no parent model set.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   smtk::model::EntityRefs created;
   smtk::model::EntityRefs modified;
   smtk::model::EntityRefs expunged;
-  bool ok = mod->demoteModelVertex(mgr, storage, created, modified, expunged);
+  bool ok = mod->demoteModelVertex(resource, storage, created, modified, expunged);
   smtk::model::OperatorResult opResult;
   if (ok)
   {
-    opResult = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
-    this->addEntitiesToResult(
-      opResult, smtk::model::EntityRefArray(created.begin(), created.end()), CREATED);
-    this->addEntitiesToResult(
-      opResult, smtk::model::EntityRefArray(modified.begin(), modified.end()), MODIFIED);
-    this->addEntitiesToResult(
-      opResult, smtk::model::EntityRefArray(expunged.begin(), expunged.end()), EXPUNGED);
+    opResult = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+
+    smtk::attribute::ComponentItem::Ptr createdItem = opResult->findComponent("created");
+    for (auto it = created.begin(); it != created.end(); ++it)
+    {
+      createdItem->appendValue(it->component());
+    }
+
+    smtk::attribute::ComponentItem::Ptr modifiedItem = opResult->findComponent("modified");
+    for (auto it = modified.begin(); it != modified.end(); ++it)
+    {
+      modifiedItem->appendValue(it->component());
+    }
+
+    smtk::attribute::ComponentItem::Ptr expungedItem = opResult->findComponent("expunged");
+    for (auto it = expunged.begin(); it != expunged.end(); ++it)
+    {
+      expungedItem->appendValue(it->component());
+    }
   }
   else
   {
-    opResult = this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    opResult = this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   return opResult;
 }
 
+const char* DemoteVertex::xmlDescription() const
+{
+  return DemoteVertex_xml;
+}
+
 } // namespace polygon
 } //namespace bridge
 } // namespace smtk
-
-smtkImplementsModelOperator(SMTKPOLYGONSESSION_EXPORT, smtk::bridge::polygon::DemoteVertex,
-  polygon_demote_vertex, "demote vertex", DemoteVertex_xml, smtk::bridge::polygon::Session);

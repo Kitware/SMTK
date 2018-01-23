@@ -114,6 +114,9 @@ protected:
   virtual void processDateTimeItem(pugi::xml_node& node, smtk::attribute::DateTimeItemPtr item);
   virtual void processDateTimeDef(
     pugi::xml_node& node, smtk::attribute::DateTimeItemDefinitionPtr idef);
+  virtual void processResourceItem(pugi::xml_node& node, smtk::attribute::ResourceItemPtr item);
+  virtual void processResourceDef(
+    pugi::xml_node& node, smtk::attribute::ResourceItemDefinitionPtr idef);
   virtual void processComponentItem(pugi::xml_node& node, smtk::attribute::ComponentItemPtr item);
   virtual void processComponentDef(
     pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef);

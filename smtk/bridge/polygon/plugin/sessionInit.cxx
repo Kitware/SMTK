@@ -7,8 +7,3 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-
-#include "smtk/AutoInit.h"
-#include "smtk/Options.h"
-
-smtkComponentInitMacro(smtk_polygon_session);

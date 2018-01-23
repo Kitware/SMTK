@@ -36,27 +36,27 @@ namespace model
 bool EntityGroupOperator::ableToOperate()
 {
   smtk::model::Model model;
-  bool ableToOperate = (this->ensureSpecification() &&
-    (model = this->specification()->findModelEntity("model")->value().as<Model>()).isValid());
+  bool ableToOperate = (this->Superclass::ableToOperate() &&
+    (model = this->parameters()->findModelEntity("model")->value().as<Model>()).isValid());
 
   if (!ableToOperate)
     return ableToOperate;
   // check data for create, edit and remove operation
-  std::string optype = this->specification()->findString("Operation")->value();
+  std::string optype = this->parameters()->findString("Operation")->value();
   if (optype == "Modify")
   {
     smtk::attribute::ModelEntityItemPtr modgrpItem =
-      this->specification()->findModelEntity("modify cell group");
+      this->parameters()->findModelEntity("modify cell group");
     smtk::attribute::ModelEntityItemPtr addItem =
-      this->specification()->findModelEntity("cell to add");
+      this->parameters()->findModelEntity("cell to add");
     smtk::attribute::ModelEntityItemPtr removeItem =
-      this->specification()->findModelEntity("cell to remove");
+      this->parameters()->findModelEntity("cell to remove");
     ableToOperate = (modgrpItem->isValid() && (addItem || removeItem));
   }
   else if (optype == "Remove")
   {
     smtk::attribute::ModelEntityItemPtr remgrpItem =
-      this->specification()->findModelEntity("remove cell group");
+      this->parameters()->findModelEntity("remove cell group");
     ableToOperate = (remgrpItem->isValid());
   }
   return ableToOperate;
@@ -65,31 +65,33 @@ bool EntityGroupOperator::ableToOperate()
 smtk::model::OperatorResult EntityGroupOperator::operateInternal()
 {
   // pre processing the data
-  smtk::model::ManagerPtr manager = this->manager();
+  auto modelItem = this->parameters()->findModelEntity("model");
+  smtk::model::Manager::Ptr resource =
+    std::static_pointer_cast<smtk::model::Manager>(modelItem->value().component()->resource());
   // ableToOperate should have verified that model(s) are set
-  smtk::attribute::StringItem::Ptr optypeItem = this->specification()->findString("Operation");
+  smtk::attribute::StringItem::Ptr optypeItem = this->parameters()->findString("Operation");
   std::string optype = optypeItem->value();
   smtk::model::Model model =
-    this->specification()->findModelEntity("model")->value().as<smtk::model::Model>();
+    this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
 
   smtk::model::Group bGroup;
   smtk::model::EntityRefArray modGroups;
   smtk::model::EntityRefArray remGroups;
-  bGroup.setManager(manager);
+  bGroup.setManager(resource);
   bool ok = false;
   BitFlags mask(0);
 
   if (optype == "Create")
   {
-    std::string gName = this->specification()->findString("group name")->value();
+    std::string gName = this->parameters()->findString("group name")->value();
     // initialize the group
-    bGroup = manager->addGroup(0, gName);
+    bGroup = resource->addGroup(0, gName);
 
     // check vertex, edge, face and volumes are enabled or not
-    bool vertexFlag = this->findVoid("Vertex")->isEnabled();
-    bool edgeFlag = this->findVoid("Edge")->isEnabled();
-    bool faceFlag = this->findVoid("Face")->isEnabled();
-    bool volumeFlag = this->findVoid("Volume")->isEnabled();
+    bool vertexFlag = this->parameters()->findVoid("Vertex")->isEnabled();
+    bool edgeFlag = this->parameters()->findVoid("Edge")->isEnabled();
+    bool faceFlag = this->parameters()->findVoid("Face")->isEnabled();
+    bool volumeFlag = this->parameters()->findVoid("Volume")->isEnabled();
     if (vertexFlag)
       mask |= smtk::model::VERTEX;
     if (edgeFlag)
@@ -101,7 +103,7 @@ smtk::model::OperatorResult EntityGroupOperator::operateInternal()
     bGroup.setMembershipMask(mask);
 
     smtk::attribute::ModelEntityItemPtr addItem =
-      this->specification()->findModelEntity("cell to add");
+      this->parameters()->findModelEntity("cell to add");
     if (addItem)
     {
       for (std::size_t idx = 0; idx < addItem->numberOfValues(); ++idx)
@@ -118,13 +120,13 @@ smtk::model::OperatorResult EntityGroupOperator::operateInternal()
   else if (optype == "Remove")
   {
     smtk::attribute::ModelEntityItemPtr remgrpItem =
-      this->specification()->findModelEntity("remove cell group");
+      this->parameters()->findModelEntity("remove cell group");
     for (std::size_t idx = 0; idx < remgrpItem->numberOfValues(); idx++)
     {
-      // get rid of the group from manager
+      // get rid of the group from resource
       smtk::model::EntityRef grpRem = remgrpItem->value(idx);
       model.removeGroup(grpRem.as<smtk::model::Group>());
-      manager->erase(grpRem);
+      resource->erase(grpRem);
       std::cout << "Removed " << grpRem.name() << " to " << model.name() << "\n";
       remGroups.push_back(grpRem);
     }
@@ -134,14 +136,14 @@ smtk::model::OperatorResult EntityGroupOperator::operateInternal()
   else if (optype == "Modify")
   {
     smtk::model::EntityRef modifyEntity =
-      this->specification()->findModelEntity("modify cell group")->value();
+      this->parameters()->findModelEntity("modify cell group")->value();
     smtk::model::Group modifyGroup = modifyEntity.as<smtk::model::Group>();
 
     // check vertex, edge, face and volumes are enabled or not
-    bool vertexFlag = this->findVoid("Vertex")->isEnabled();
-    bool edgeFlag = this->findVoid("Edge")->isEnabled();
-    bool faceFlag = this->findVoid("Face")->isEnabled();
-    bool volumeFlag = this->findVoid("Volume")->isEnabled();
+    bool vertexFlag = this->parameters()->findVoid("Vertex")->isEnabled();
+    bool edgeFlag = this->parameters()->findVoid("Edge")->isEnabled();
+    bool faceFlag = this->parameters()->findVoid("Face")->isEnabled();
+    bool volumeFlag = this->parameters()->findVoid("Volume")->isEnabled();
 
     if (vertexFlag)
       mask |= smtk::model::VERTEX;
@@ -155,7 +157,7 @@ smtk::model::OperatorResult EntityGroupOperator::operateInternal()
 
     // start to process cell to add
     smtk::attribute::ModelEntityItemPtr addItem =
-      this->specification()->findModelEntity("cell to add");
+      this->parameters()->findModelEntity("cell to add");
     if (addItem)
     {
       for (std::size_t idx = 0; idx < addItem->numberOfValues(); idx++)
@@ -167,7 +169,7 @@ smtk::model::OperatorResult EntityGroupOperator::operateInternal()
 
     // start to process cell to remove
     smtk::attribute::ModelEntityItemPtr removeItem =
-      this->specification()->findModelEntity("cell to remove");
+      this->parameters()->findModelEntity("cell to remove");
     if (removeItem)
     {
       for (std::size_t idx = 0; idx < removeItem->numberOfValues(); idx++)
@@ -180,7 +182,8 @@ smtk::model::OperatorResult EntityGroupOperator::operateInternal()
     ok = modGroups.size() == 0 ? false : true;
   }
 
-  OperatorResult result = this->createResult(ok ? OPERATION_SUCCEEDED : OPERATION_FAILED);
+  OperatorResult result = this->createResult(
+    ok ? smtk::operation::NewOp::Outcome::SUCCEEDED : smtk::operation::NewOp::Outcome::FAILED);
   if (ok)
   {
     //create and modify
@@ -189,23 +192,34 @@ smtk::model::OperatorResult EntityGroupOperator::operateInternal()
       // Return the created or modified group
       if (optype == "Create")
       {
-        this->addEntityToResult(result, bGroup, CREATED);
+        smtk::attribute::ComponentItem::Ptr createdItem = result->findComponent("created");
+        createdItem->appendValue(bGroup.component());
       }
     }
     else if (optype == "Modify")
     {
-      this->addEntitiesToResult(result, modGroups, MODIFIED);
+      smtk::attribute::ComponentItem::Ptr modifiedItem = result->findComponent("modified");
+      for (auto& m : modGroups)
+      {
+        modifiedItem->appendValue(m.component());
+      }
     }
     else if (optype == "Remove")
     {
-      this->addEntitiesToResult(result, remGroups, EXPUNGED);
+      smtk::attribute::ComponentItem::Ptr expungedItem = result->findComponent("expunged");
+      for (auto& e : remGroups)
+      {
+        expungedItem->appendValue(e.component());
+      }
     }
   }
   return result;
 }
 
+const char* EntityGroupOperator::xmlDescription() const
+{
+  return EntityGroupOperator_xml;
+}
+
 } //namespace model
 } // namespace smtk
-
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::model::EntityGroupOperator, entity_group,
-  "entity group", EntityGroupOperator_xml, smtk::model::Session);

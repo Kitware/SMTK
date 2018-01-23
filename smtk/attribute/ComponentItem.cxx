@@ -309,6 +309,17 @@ std::ptrdiff_t ComponentItem::find(smtk::resource::ComponentPtr comp) const
   return -1;
 }
 
+bool ComponentItem::isWritable() const
+{
+  const ComponentItemDefinition* def =
+    static_cast<const ComponentItemDefinition*>(this->definition().get());
+  if (!def)
+  {
+    return true;
+  }
+  return def->isWritable();
+}
+
 bool ComponentItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 {
   // Note that we do a dynamic cast here since we don't

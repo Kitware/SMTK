@@ -13,22 +13,21 @@
 
 #include <pybind11/pybind11.h>
 
+#include "smtk/attribute/Attribute.h"
+
 #include "smtk/bridge/polygon/operators/CreateEdgeFromPoints.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::polygon::CreateEdgeFromPoints > pybind11_init_smtk_bridge_polygon_CreateEdgeFromPoints(py::module &m, PySharedPtrClass< smtk::bridge::polygon::Operator, smtk::model::Operator >& parent)
+PySharedPtrClass< smtk::bridge::polygon::CreateEdgeFromPoints > pybind11_init_smtk_bridge_polygon_CreateEdgeFromPoints(py::module &m, PySharedPtrClass< smtk::bridge::polygon::Operator, smtk::operation::XMLOperator >& parent)
 {
   PySharedPtrClass< smtk::bridge::polygon::CreateEdgeFromPoints > instance(m, "CreateEdgeFromPoints", parent);
   instance
-    .def(py::init<>())
     .def(py::init<::smtk::bridge::polygon::CreateEdgeFromPoints const &>())
     .def("deepcopy", (smtk::bridge::polygon::CreateEdgeFromPoints & (smtk::bridge::polygon::CreateEdgeFromPoints::*)(::smtk::bridge::polygon::CreateEdgeFromPoints const &)) &smtk::bridge::polygon::CreateEdgeFromPoints::operator=)
-    .def("className", &smtk::bridge::polygon::CreateEdgeFromPoints::className)
     .def("classname", &smtk::bridge::polygon::CreateEdgeFromPoints::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::CreateEdgeFromPoints> (*)()) &smtk::bridge::polygon::CreateEdgeFromPoints::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::CreateEdgeFromPoints> (*)(::std::shared_ptr<smtk::bridge::polygon::CreateEdgeFromPoints> &)) &smtk::bridge::polygon::CreateEdgeFromPoints::create, py::arg("ref"))
-    .def("name", &smtk::bridge::polygon::CreateEdgeFromPoints::name)
     .def("process", &smtk::bridge::polygon::CreateEdgeFromPoints::process, py::arg("pnts"), py::arg("numCoordsPerPoint"), py::arg("parentModel"))
     .def("shared_from_this", (std::shared_ptr<const smtk::bridge::polygon::CreateEdgeFromPoints> (smtk::bridge::polygon::CreateEdgeFromPoints::*)() const) &smtk::bridge::polygon::CreateEdgeFromPoints::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<smtk::bridge::polygon::CreateEdgeFromPoints> (smtk::bridge::polygon::CreateEdgeFromPoints::*)()) &smtk::bridge::polygon::CreateEdgeFromPoints::shared_from_this)

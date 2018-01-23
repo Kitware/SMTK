@@ -145,6 +145,21 @@ smtk::resource::ComponentPtr Collection::find(const smtk::common::UUID& compId) 
   return smtk::resource::ComponentPtr();
 }
 
+std::function<bool(const resource::ComponentPtr&)> Collection::queryOperation(
+  const std::string& queryString) const
+{
+  // TODO
+  (void)queryString;
+  return [](const resource::ComponentPtr&) { return true; };
+}
+
+// visit all components in the resource.
+void Collection::visit(smtk::resource::Component::Visitor& visitor) const
+{
+  // TODO
+  (void)visitor;
+}
+
 const smtk::mesh::InterfacePtr& Collection::interface() const
 {
   return this->m_internals->mesh_iface();
@@ -182,6 +197,11 @@ const std::string& Collection::name() const
 void Collection::name(const std::string& n)
 {
   this->m_name = n;
+}
+
+std::shared_ptr<smtk::mesh::Manager> Collection::manager() const
+{
+  return this->m_internals->manager();
 }
 
 bool Collection::assignUniqueNameIfNotAlready()

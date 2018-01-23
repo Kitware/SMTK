@@ -39,6 +39,8 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/ResourceItem.h"
+#include "smtk/attribute/ResourceItemDefinition.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
@@ -859,6 +861,11 @@ void XmlDocV1Parser::processDefinition(xml_node& defNode, smtk::attribute::Defin
         this->processDateTimeDef(
           node, smtk::dynamic_pointer_cast<smtk::attribute::DateTimeItemDefinition>(idef));
         break;
+      case smtk::attribute::Item::ResourceType:
+        idef = def->addItemDefinition<smtk::attribute::ResourceItemDefinition>(itemName);
+        this->processResourceDef(
+          node, smtk::dynamic_pointer_cast<smtk::attribute::ResourceItemDefinition>(idef));
+        break;
       case smtk::attribute::Item::ComponentType:
         idef = def->addItemDefinition<smtk::attribute::ComponentItemDefinition>(itemName);
         this->processComponentDef(
@@ -1046,6 +1053,14 @@ void XmlDocV1Parser::processDateTimeDef(
   (void)node;
   smtkWarningMacro(this->m_logger,
     "DateTime item defs only supported starting Attribute Version 3 Format" << idef->name());
+}
+
+void XmlDocV1Parser::processResourceDef(
+  pugi::xml_node& node, attribute::ResourceItemDefinitionPtr idef)
+{
+  (void)node;
+  smtkWarningMacro(this->m_logger,
+    "Resource item defs only supported starting Attribute Version 3 Format" << idef->name());
 }
 
 void XmlDocV1Parser::processComponentDef(
@@ -2240,6 +2255,13 @@ void XmlDocV1Parser::processDateTimeItem(pugi::xml_node& node, attribute::DateTi
   (void)node;
   smtkWarningMacro(this->m_logger,
     "DateTime items only supported starting Attribute Version 3 Format" << item->name());
+}
+
+void XmlDocV1Parser::processResourceItem(pugi::xml_node& node, attribute::ResourceItemPtr item)
+{
+  (void)node;
+  smtkWarningMacro(this->m_logger,
+    "Resource items only supported starting Attribute Version 3 Format" << item->name());
 }
 
 void XmlDocV1Parser::processComponentItem(pugi::xml_node& node, attribute::ComponentItemPtr item)

@@ -12,10 +12,10 @@
 #include "smtk/view/SubphraseGenerator.h"
 
 #include "smtk/resource/Manager.h"
-#include "smtk/resource/testing/cxx/helpers.h"
 
 #include "smtk/operation/Manager.h"
 
+#include "smtk/model/RegisterResources.h"
 #include "smtk/model/SessionRef.h"
 
 #include "smtk/io/LoadJSON.h"
@@ -45,6 +45,7 @@ void testUpdateChildren(smtk::view::ResourcePhraseModel::Ptr phraseModel)
   (void)phraseModel;
   auto root = phraseModel->root();
   auto phrResources = root->subphrases();
+  test(!phrResources.empty(), "Expected a phrase resource.");
   std::cout << "rsrc " << phrResources[0]->title() << "\n";
   auto phrModels = phrResources[0]->subphrases();
   std::cout << "modl " << phrModels[0]->title() << "\n";
@@ -62,6 +63,12 @@ void testUpdateChildren(smtk::view::ResourcePhraseModel::Ptr phraseModel)
 
 int unitDescriptivePhrase(int argc, char* argv[])
 {
+  // std::cerr << "\nThis test is broken because the operators \"LoadSMTKModel\" and\n"
+  //           << "\"SaveSMTKModel\" are broken. They will not be fixed until the\n"
+  //           << "new json bindings are in place. Until then, may the dashboard\n"
+  //           << "gods have mercy on my soul.\n\n";
+  // return 1;
+
   if (argc < 2)
   {
     std::string testFile;
@@ -77,7 +84,12 @@ int unitDescriptivePhrase(int argc, char* argv[])
   auto operMgr = smtk::operation::Manager::create();
   auto phraseModel = smtk::view::ResourcePhraseModel::create();
   phraseModel->addSource(rsrcMgr, operMgr);
-  auto rsrcs = smtk::resource::testing::loadTestResources(rsrcMgr, argc, argv);
+  smtk::model::registerResources(rsrcMgr);
+  smtk::resource::ResourceArray rsrcs;
+  for (int i = 1; i < argc; i++)
+  {
+    rsrcs.push_back(rsrcMgr->read<smtk::model::Manager>(argv[1]));
+  }
 
   test(phraseModel->root()->root() == phraseModel->root(),
     "Model's root phrase was not root of tree.");

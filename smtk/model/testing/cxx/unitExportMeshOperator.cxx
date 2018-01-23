@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshItem.h"
@@ -22,8 +23,8 @@
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
 
+#include "smtk/mesh/operators/ExportMesh.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
 
 #include <fstream>
 
@@ -78,38 +79,21 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  std::vector<std::string> files_to_delete;
-
   // Create a model manager
   smtk::model::ManagerPtr manager = smtk::model::Manager::create();
 
-  // Identify available sessions
-  std::cout << "Available sessions\n";
-  typedef smtk::model::StringList StringList;
-  StringList sessions = manager->sessionTypeNames();
+  // Access the mesh manager
   smtk::mesh::ManagerPtr meshManager = manager->meshes();
-  for (StringList::iterator it = sessions.begin(); it != sessions.end(); ++it)
-    std::cout << "  " << *it << "\n";
-  std::cout << "\n";
 
-  // Create a new default session
-  smtk::model::SessionRef sessRef = manager->createSession("native");
-
-  // Identify available operators
-  std::cout << "Available cmb operators\n";
-  StringList opnames = sessRef.session()->operatorNames();
-  for (StringList::iterator it = opnames.begin(); it != opnames.end(); ++it)
-  {
-    std::cout << "  " << *it << "\n";
-  }
-  std::cout << "\n";
-
+  // Load in the model
   create_simple_mesh_model(manager, std::string(argv[1]));
+
+  // Convert it to a mesh
   smtk::io::ModelToMesh convert;
   smtk::mesh::CollectionPtr c = convert(meshManager, manager);
 
   // Create a new "export mesh" operator
-  smtk::model::OperatorPtr exportMeshOp = sessRef.session()->op("export mesh");
+  smtk::operation::NewOp::Ptr exportMeshOp = smtk::mesh::ExportMesh::create();
   if (!exportMeshOp)
   {
     std::cerr << "No \"export mesh\" operator\n";
@@ -118,9 +102,9 @@ int main(int argc, char* argv[])
 
   // Set "export mesh" operator's file
   std::string export_path = std::string(write_root + "/testmesh.2dm");
-  exportMeshOp->specification()->findFile("filename")->setValue(export_path);
+  exportMeshOp->parameters()->findFile("filename")->setValue(export_path);
 
-  bool valueSet = exportMeshOp->specification()->findMesh("mesh")->setValue(
+  bool valueSet = exportMeshOp->parameters()->findMesh("mesh")->setValue(
     meshManager->collectionBegin()->second->meshes());
 
   if (!valueSet)
@@ -129,18 +113,24 @@ int main(int argc, char* argv[])
     return 1;
   }
 
+  if (!exportMeshOp->parameters()->isValid())
+  {
+    std::cerr << "Invalid parameters\n";
+    return 1;
+  }
+
   // Execute "export mesh" operator...
   smtk::model::OperatorResult exportMeshOpResult = exportMeshOp->operate();
   // ...and test the results for success.
   if (exportMeshOpResult->findInt("outcome")->value() !=
-    smtk::operation::Operator::OPERATION_SUCCEEDED)
+    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
   {
     std::cerr << "Export mesh operator failed\n";
     return 1;
   }
 
   // Grab the original mesh collection
-  c = sessRef.session()->meshManager()->collectionBegin()->second;
+  c = meshManager->collectionBegin()->second;
   if (!c->isModified())
   {
     std::cerr << "collection should be marked as modified" << std::endl;

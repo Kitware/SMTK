@@ -16,6 +16,7 @@
 #include "smtk/model/SessionRef.h"
 
 #include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Definition.h"
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/model/Entity.h"
@@ -47,7 +48,6 @@ py::class_< smtk::model::SessionRef, smtk::model::EntityRef > pybind11_init_smtk
     .def("fileTypes", &smtk::model::SessionRef::fileTypes, py::arg("engine") = std::string())
     .def("isValid", (bool (smtk::model::SessionRef::*)() const) &smtk::model::SessionRef::isValid)
     // .def("isValid", (bool (smtk::model::SessionRef::*)(::smtk::model::Entity * *) const) &smtk::model::SessionRef::isValid, py::arg("entRec"))
-    .def("op", &smtk::model::SessionRef::op, py::arg("opName"))
     .def("opDef", &smtk::model::SessionRef::opDef, py::arg("opName"))
     .def("opSys", &smtk::model::SessionRef::opSys)
     .def("operatorNames", &smtk::model::SessionRef::operatorNames, py::arg("includeAdvanced") = true)

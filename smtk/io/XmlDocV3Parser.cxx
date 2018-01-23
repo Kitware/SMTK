@@ -25,6 +25,8 @@
 #include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/DateTimeItemDefinition.h"
+#include "smtk/attribute/ResourceItem.h"
+#include "smtk/attribute/ResourceItemDefinition.h"
 
 #include "smtk/common/DateTimeZonePair.h"
 
@@ -213,6 +215,176 @@ void XmlDocV3Parser::processDateTimeItem(pugi::xml_node& node, attribute::DateTi
   }       // else
 }
 
+void XmlDocV3Parser::processResourceItem(
+  pugi::xml_node& node, smtk::attribute::ResourceItemPtr item)
+{
+  xml_attribute xatt;
+  xml_node valsNode;
+  std::size_t i, n = item->numberOfValues();
+  smtk::common::UUID uid;
+  xml_node val;
+  std::size_t numRequiredVals = item->numberOfRequiredValues();
+  std::string attName;
+  AttRefInfo info;
+  if (!numRequiredVals || item->isExtensible())
+  {
+    // The node should have an attribute indicating how many values are
+    // associated with the item
+    xatt = node.attribute("NumberOfValues");
+    if (!xatt)
+    {
+      smtkErrorMacro(
+        this->m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
+      return;
+    }
+    n = xatt.as_uint();
+    item->setNumberOfValues(n);
+  }
+  if (!n)
+  {
+    return;
+  }
+
+  auto rsrcMgr = this->m_collection->manager();
+  if (!rsrcMgr && item->numberOfValues() > 0)
+  {
+    static bool once = true;
+    if (once)
+    {
+      smtkErrorMacro(
+        this->m_logger, "The resource manager for the attribute collection being read is "
+                        "not set but the ResourceItem \""
+          << item->name() << "\" "
+                             "of \""
+          << item->attribute()->name() << "\" has entries"
+                                          "that need to find resources using a resource manager.");
+      once = false;
+    }
+    return;
+  }
+
+  valsNode = node.child("Values");
+  if (valsNode)
+  {
+    for (val = valsNode.child("Val"); val; val = val.next_sibling("Val"))
+    {
+      xatt = val.attribute("Ith");
+      if (!xatt)
+      {
+        smtkErrorMacro(this->m_logger, "XML Attribute Ith is missing for Item: " << item->name());
+        continue;
+      }
+      i = xatt.as_uint();
+      if (i >= n)
+      {
+        smtkErrorMacro(this->m_logger,
+          "XML Attribute Ith = " << i << " is out of range for Item: " << item->name());
+        continue;
+      }
+      item->setValue(static_cast<int>(i), this->processResourceItemValue(val, rsrcMgr));
+    }
+  }
+  else if (numRequiredVals == 1)
+  {
+    val = node.child("Val");
+    if (val)
+    {
+      item->setValue(0, this->processResourceItemValue(val, rsrcMgr));
+    }
+  }
+  else
+  {
+    smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
+  }
+}
+
+void XmlDocV3Parser::processResourceDef(
+  pugi::xml_node& node, smtk::attribute::ResourceItemDefinitionPtr idef)
+{
+  xml_node accepts, labels, child;
+  xml_attribute watt, xatt;
+  int i;
+  this->processItemDef(node, idef);
+
+  accepts = node.child("Accepts");
+  if (accepts)
+  {
+    std::string resourceName("Resource");
+    for (child = accepts.first_child(); child; child = child.next_sibling())
+    {
+      if (child.name() == resourceName)
+      {
+        idef->setAcceptsResources(child.attribute("Name").value(), true);
+      }
+    }
+  }
+
+  watt = node.attribute("Writable");
+  if (watt)
+  {
+    idef->setIsWritable(watt.as_bool());
+  }
+
+  xatt = node.attribute("NumberOfRequiredValues");
+  if (xatt)
+  {
+    idef->setNumberOfRequiredValues(xatt.as_int());
+  }
+
+  xatt = node.attribute("Extensible");
+  if (xatt)
+  {
+    idef->setIsExtensible(xatt.as_bool());
+    xatt = node.attribute("MaxNumberOfValues");
+    if (xatt)
+    {
+      idef->setMaxNumberOfValues(xatt.as_uint());
+    }
+  }
+
+  // Lets see if there are labels
+  if (node.child("Labels"))
+  {
+    smtkErrorMacro(this->m_logger, "Labels has been changed to ResourceLabels : " << idef->name());
+  }
+  labels = node.child("ResourceLabels");
+  if (labels)
+  {
+    // Are we using a common label?
+    xatt = labels.attribute("CommonLabel");
+    if (xatt)
+    {
+      idef->setCommonValueLabel(xatt.value());
+    }
+    else
+    {
+      for (child = labels.first_child(), i = 0; child; child = child.next_sibling(), i++)
+      {
+        idef->setValueLabel(i, child.value());
+      }
+    }
+  }
+}
+
+smtk::resource::ResourcePtr XmlDocV3Parser::processResourceItemValue(
+  const pugi::xml_node& val, smtk::resource::ManagerPtr rsrcMgr)
+{
+  auto rsrcNode = val.child("Resource");
+  if (!rsrcNode)
+  {
+    smtkErrorMacro(this->m_logger, "ResourceItem Val node does not have a Resource as required.");
+    return smtk::resource::ResourcePtr();
+  }
+  auto ruid = smtk::common::UUID(rsrcNode.text().get());
+  auto rsrc = rsrcMgr->get(ruid);
+  if (!rsrc)
+  {
+    smtkWarningMacro(this->m_logger, "Resource " << ruid << " is not loaded. Ignoring.");
+    return smtk::resource::ResourcePtr();
+  }
+  return rsrc;
+}
+
 void XmlDocV3Parser::processComponentItem(
   pugi::xml_node& node, smtk::attribute::ComponentItemPtr item)
 {
@@ -299,14 +471,29 @@ void XmlDocV3Parser::processComponentItem(
 void XmlDocV3Parser::processComponentDef(
   pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef)
 {
-  xml_node labels, mmask, child;
-  xml_attribute xatt;
+  xml_node accepts, labels, child;
+  xml_attribute watt, xatt;
   int i;
   this->processItemDef(node, idef);
-  mmask = node.child("MembershipMask");
-  if (mmask)
+
+  accepts = node.child("Accepts");
+  if (accepts)
   {
-    idef->setMembershipMask(this->decodeModelEntityMask(mmask.text().as_string()));
+    std::string resourceName("Resource");
+    for (child = accepts.first_child(); child; child = child.next_sibling())
+    {
+      if (child.name() == resourceName)
+      {
+        idef->setAcceptsResourceComponents(
+          child.attribute("Name").value(), child.attribute("Filter").value(), true);
+      }
+    }
+  }
+
+  watt = node.attribute("Writable");
+  if (watt)
+  {
+    idef->setIsWritable(watt.as_bool());
   }
 
   xatt = node.attribute("NumberOfRequiredValues");

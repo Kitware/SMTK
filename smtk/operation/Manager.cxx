@@ -8,195 +8,201 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/PublicPointerDefs.h"
-
 #include "smtk/operation/Manager.h"
+#include "smtk/operation/ResourceManagerOperator.h"
 
-#include "smtk/attribute/Collection.h"
-#include "smtk/attribute/Definition.h"
-#include "smtk/attribute/IntItemDefinition.h"
-#include "smtk/attribute/StringItemDefinition.h"
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Item.h"
+#include "smtk/attribute/ResourceItem.h"
 
-#include "smtk/io/AttributeReader.h"
-#include "smtk/io/Logger.h"
+#include "smtk/resource/Manager.h"
 
 namespace smtk
 {
 namespace operation
 {
-Manager::Dictionary Manager::s_dictionary;
-Manager::Observers Manager::s_observers;
 
 Manager::Manager()
+  : m_observers()
+  , m_resourceObserver(-1)
+  , m_resourceMetadataObserver(-1)
 {
-  this->m_operatorCollection = smtk::attribute::Collection::create();
-
-  // Create the "base" definitions that all operators and results will inherit.
-  smtk::attribute::Definition::Ptr opdefn =
-    this->m_operatorCollection->createDefinition("operator");
-
-  smtk::attribute::IntItemDefinition::Ptr debugLevelDefn =
-    smtk::attribute::IntItemDefinition::New("debug level");
-  debugLevelDefn->setIsOptional(true);
-  debugLevelDefn->setDefaultValue(0);
-  debugLevelDefn->setAdvanceLevel(10);
-
-  opdefn->addItemDefinition(debugLevelDefn);
-
-  smtk::attribute::Definition::Ptr resultdefn =
-    this->m_operatorCollection->createDefinition("result");
-
-  smtk::attribute::IntItemDefinition::Ptr outcomeDefn =
-    smtk::attribute::IntItemDefinition::New("outcome");
-  outcomeDefn->setNumberOfRequiredValues(1);
-  outcomeDefn->setIsOptional(false);
-  resultdefn->addItemDefinition(outcomeDefn);
-
-  smtk::attribute::StringItemDefinition::Ptr logDefn =
-    smtk::attribute::StringItemDefinition::New("log");
-  logDefn->setNumberOfRequiredValues(0);
-  logDefn->setIsExtensible(1);
-  logDefn->setIsOptional(true);
-  resultdefn->addItemDefinition(logDefn);
-
-  for (auto it = this->s_dictionary.begin(); it != this->s_dictionary.end(); ++it)
-  {
-    Operator::Info& info = it->second;
-    if (info.xml.empty())
-      continue;
-
-    this->importOperatorXML(info.classname, info.nickname, info.xml);
-  }
 }
 
 Manager::~Manager()
 {
 }
 
-namespace
+bool Manager::registerOperator(Metadata&& metadata)
 {
-void replace(std::string& str, const std::string& from, const std::string& to)
-{
-  if (from.empty())
+  auto alreadyRegisteredMetadata = m_metadata.get<IndexTag>().find(metadata.index());
+  if (alreadyRegisteredMetadata == m_metadata.get<IndexTag>().end())
   {
-    return;
-  }
-  std::size_t start_pos = 0;
-  while ((start_pos = str.find(from, start_pos)) != std::string::npos)
-  {
-    str.replace(start_pos, from.length(), to);
-    start_pos += to.length();
-  }
-}
-}
-
-bool Manager::importOperatorXML(
-  const std::string& opClassName, const std::string& opNickName, const std::string& opDescrXML)
-{
-  // For now, we replace all instances of <opNickName> in <opDescrXML> with
-  // <opClassName>. This is a nefarious kludge that must go away with a
-  // refactoring of the registration system, but doing so may require that
-  // every operator's XML template be updated.
-
-  std::string xml(opDescrXML);
-  replace(xml, opNickName, opClassName);
-
-  smtk::io::Logger tmpLog;
-  smtk::io::AttributeReader rdr;
-  bool ok = true;
-
-  ok &= !rdr.readContents(this->m_operatorCollection, xml.c_str(), xml.size(), tmpLog);
-
-  if (!ok)
-  {
-    std::cerr << "Error. Log follows:\n---\n" << tmpLog.convertToString() << "\n---\n";
-  }
-
-  return ok;
-}
-
-smtk::operation::OperatorPtr Manager::create(Operator::Index index)
-{
-  auto info = this->s_dictionary.find(index);
-  smtk::operation::OperatorPtr op;
-  if (info != this->s_dictionary.end())
-  {
-    op = info->second.constructor();
-    op->setManager(shared_from_this());
-    this->trigger(op, smtk::operation::Operator::CREATED_OPERATOR, nullptr);
-  }
-  return op;
-}
-
-bool Manager::registerOperator(Operator::Index index, const std::string& opClassName,
-  const std::string& opNickName, const char* opDescrXML, const Operator::Constructor& constructor)
-{
-  bool registered =
-    Manager::registerStaticOperator(index, opClassName, opNickName, opDescrXML, constructor);
-
-  if (registered && opDescrXML)
-  {
-    this->importOperatorXML(opClassName, opNickName, opDescrXML);
-  }
-
-  return registered;
-}
-
-bool Manager::registerStaticOperator(Operator::Index index, const std::string& opClassName,
-  const std::string& opNickName, const char* opDescrXML, const Operator::Constructor& constructor)
-{
-  if (s_dictionary.find(index) == s_dictionary.end())
-  {
-    s_dictionary.insert(
-      std::make_pair(index, Operator::Info(opClassName, opNickName,
-                              (opDescrXML ? std::string(opDescrXML) : ""), constructor)));
-    return true;
+    auto size = m_metadata.get<IndexTag>().size();
+    m_metadata.get<IndexTag>().insert(metadata);
+    if (m_metadata.get<IndexTag>().size() > size)
+    {
+      m_metadataObservers(metadata);
+      return true;
+    }
   }
 
   return false;
 }
 
-bool Manager::unregisterStaticOperator(Operator::Index index)
+std::shared_ptr<NewOp> Manager::create(const std::string& uniqueName)
 {
-  return s_dictionary.erase(index) != 0;
-}
+  std::shared_ptr<NewOp> op;
 
-const Operator::Info& Manager::operatorInfo(Operator::Index index)
-{
-  auto it = s_dictionary.find(index);
-  if (it == s_dictionary.end())
+  // Locate the metadata associated with this resource type
+  auto metadata = m_metadata.get<NameTag>().find(uniqueName);
+  if (metadata != m_metadata.get<NameTag>().end())
   {
-    static Operator::Info dummy("", "", "", []() { return Operator::Ptr(); });
-    return dummy;
-  }
-  return it->second;
-}
-
-int Manager::observe(Observer fn)
-{
-  int handle = s_observers.empty() ? 0 : s_observers.rbegin()->first + 1;
-  return s_observers.insert(std::make_pair(handle, fn)).second ? handle : -1;
-}
-
-bool Manager::unobserve(int handle)
-{
-  return s_observers.erase(handle) > 0;
-}
-
-int Manager::trigger(Operator::Ptr op, Operator::EventType event, Operator::Result opres)
-{
-  int result = 0;
-  if (!op || (!opres && event == smtk::operation::Operator::DID_OPERATE))
-  {
-    std::cerr << "Error: operation events must have an operator (and sometimes a result).\n";
-    return result;
+    // Create the resource using its index
+    op = metadata->create();
+    op->m_manager = this;
+    m_observers(op, smtk::operation::EventType::CREATED, nullptr);
   }
 
-  for (auto entry : s_observers)
+  return op;
+}
+
+std::shared_ptr<NewOp> Manager::create(const NewOp::Index& index)
+{
+  std::shared_ptr<NewOp> op;
+
+  // Locate the metadata associated with this resource type
+  auto metadata = m_metadata.get<IndexTag>().find(index);
+  if (metadata != m_metadata.get<IndexTag>().end())
   {
-    result |= entry.second(op, event, opres);
+    // Create the resource with the appropriate UUID
+    op = metadata->create();
+    op->m_manager = this;
+    m_observers(op, smtk::operation::EventType::CREATED, nullptr);
   }
-  return result;
+
+  return op;
+}
+
+bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManager)
+{
+  // Only allow one resource manager to manage created resources.
+  if (m_resourceObserver != -1)
+  {
+    this->observers().erase(m_resourceObserver);
+  }
+
+  // Use this resource manager to conduct resource manager-related operations
+  // (e.g. SaveResource, LoadResource, CreateResource).
+  if (m_resourceMetadataObserver != -1)
+  {
+    this->metadataObservers().erase(m_resourceMetadataObserver);
+  }
+
+  std::weak_ptr<smtk::resource::Manager> weakRMPtr = resourceManager;
+
+  // Define a metadata observer that appends the assignment of the resource
+  // manager to the create functor for operators that inherit from
+  // ResourceManagerOperator.
+  auto resourceMetadataObserver = [&, weakRMPtr](const smtk::operation::Metadata& md) {
+    auto rsrcManager = weakRMPtr.lock();
+    if (!rsrcManager)
+    {
+      // The underlying resource manager has expired, so we can remove this
+      // metadata observer.
+      m_metadataObservers.erase(m_resourceMetadataObserver);
+      m_resourceMetadataObserver = -1;
+      return;
+    }
+
+    // We are only interested in operators that inherit from
+    // ResourceManagerOperator.
+    if (std::dynamic_pointer_cast<ResourceManagerOperator>(md.create()) == nullptr)
+    {
+      return;
+    }
+
+    // This metadata observer actually manipulates the metadata, so we need a
+    // const cast. This is an exception to the rule of metadata observers.
+    smtk::operation::Metadata& metadata = const_cast<smtk::operation::Metadata&>(md);
+
+    auto create = metadata.create;
+    metadata.create = [=]() {
+      auto op = create();
+      std::dynamic_pointer_cast<ResourceManagerOperator>(op)->setResourceManager(weakRMPtr);
+      return op;
+    };
+  };
+
+  // Apply the metadata observer to extant operator metadata.
+  for (auto& md : m_metadata)
+  {
+    resourceMetadataObserver(md);
+  }
+
+  // Add this metadata observer to the set of metadata observers.
+  m_resourceMetadataObserver = this->metadataObservers().insert(resourceMetadataObserver);
+
+  // Define an observer that adds all created resources to the resource manager.
+  m_resourceObserver =
+    this->observers().insert([&, weakRMPtr](std::shared_ptr<smtk::operation::NewOp>,
+      smtk::operation::EventType event, smtk::operation::NewOp::Result result) {
+      auto rsrcManager = weakRMPtr.lock();
+      if (!rsrcManager)
+      {
+        // The underlying resource manager has expired, so we can remove this
+        // observer.
+        m_observers.erase(m_resourceObserver);
+        m_resourceObserver = -1;
+        return 0;
+      }
+
+      // We are only interested in collecting resources post-operation
+      if (event != smtk::operation::EventType::DID_OPERATE)
+      {
+        return 0;
+      }
+
+      // Gather all resource items
+      std::vector<smtk::attribute::ResourceItemPtr> resourceItems;
+      std::function<bool(smtk::attribute::ResourceItemPtr)> filter = [](
+        smtk::attribute::ResourceItemPtr) { return true; };
+      result->filterItems(resourceItems, filter);
+
+      // For each resource item found...
+      for (auto& resourceItem : resourceItems)
+      {
+        // ...for each resource in a resource item...
+        for (std::size_t i = 0; i < resourceItem->numberOfValues(); i++)
+        {
+          // (no need to look at resources that cannot be resolved)
+          if (!resourceItem->isValid() || resourceItem->value(i) == nullptr)
+          {
+            continue;
+          }
+
+          // ...add the resource to the manager.
+          rsrcManager->add(resourceItem->value(i));
+        }
+      }
+      return 0;
+    });
+
+  return m_resourceObserver != -1;
+}
+
+std::set<NewOp::Index> Manager::availableOperators(
+  const smtk::resource::ComponentPtr& component) const
+{
+  std::set<NewOp::Index> availableOperators;
+  for (auto& md : m_metadata)
+  {
+    if (md.acceptsComponent(component))
+    {
+      availableOperators.insert(md.index());
+    }
+  }
+  return availableOperators;
 }
 }
 }

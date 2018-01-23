@@ -97,9 +97,9 @@ pqSMTKResourceManager::pqSMTKResourceManager(const QString& regGroup, const QStr
       }
     );
     */
-    wrapper->GetOperationManager()->observe(
-      [this](smtk::operation::Operator::Ptr oper, smtk::operation::Operator::EventType event,
-        smtk::operation::Operator::Result result) -> int {
+    wrapper->GetOperationManager()->observers().insert(
+      [this](smtk::operation::NewOp::Ptr oper, smtk::operation::EventType event,
+        smtk::operation::NewOp::Result result) -> int {
         emit operationEvent(oper, event, result);
         return 0;
       });

@@ -18,6 +18,7 @@
 #include "smtk/io/WriteMesh.h"
 #include "smtk/io/mesh/MeshIO.h"
 
+#include "smtk/mesh/WriteMesh_xml.h"
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/core/MeshSet.h"
@@ -54,21 +55,23 @@ namespace mesh
 
 bool WriteMesh::ableToOperate()
 {
-  if (!this->ensureSpecification())
+  if (!this->Superclass::ableToOperate())
+  {
     return false;
-  smtk::attribute::MeshItem::Ptr meshItem = this->specification()->findMesh("mesh");
+  }
+  smtk::attribute::MeshItem::Ptr meshItem = this->parameters()->findMesh("mesh");
   return meshItem && meshItem->numberOfValues() > 0;
 }
 
-smtk::model::OperatorResult WriteMesh::operateInternal()
+WriteMesh::Result WriteMesh::operateInternal()
 {
-  std::string outputfile = this->specification()->findFile("filename")->value();
+  std::string outputfile = this->parameters()->findFile("filename")->value();
 
   smtk::io::mesh::Subset componentToWrite =
-    static_cast<smtk::io::mesh::Subset>(this->specification()->findInt("write-component")->value());
+    static_cast<smtk::io::mesh::Subset>(this->parameters()->findInt("write-component")->value());
 
   // ableToOperate should have verified that mesh(s) are set
-  smtk::attribute::MeshItem::Ptr meshItem = this->specification()->findMesh("mesh");
+  smtk::attribute::MeshItem::Ptr meshItem = this->parameters()->findMesh("mesh");
 
   // for multiple meshes, we suffix the file name root with ascending integers
   std::string root = outputfile.substr(0, outputfile.find_last_of("."));
@@ -109,14 +112,13 @@ smtk::model::OperatorResult WriteMesh::operateInternal()
       {
         cleanup(file);
       }
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
     }
   }
 
   // We mark the written meshes as "modified" so that the containing collection's URL can
   // be properly updated.
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
   smtk::attribute::MeshItem::Ptr modifiedMeshes = result->findMesh("mesh_modified");
   modifiedMeshes->setNumberOfValues(written.size());
   for (auto& mesh : written)
@@ -126,10 +128,10 @@ smtk::model::OperatorResult WriteMesh::operateInternal()
 
   return result;
 }
+
+const char* WriteMesh::xmlDescription() const
+{
+  return WriteMesh_xml;
 }
 }
-
-#include "smtk/mesh/WriteMesh_xml.h"
-
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::mesh::WriteMesh, write_mesh, "write mesh",
-  WriteMesh_xml, smtk::model::Session);
+}

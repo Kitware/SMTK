@@ -8,18 +8,32 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/bridge/discrete/Session.h"
-
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
+#include "smtk/bridge/discrete/Resource.h"
+#include "smtk/bridge/discrete/operators/ImportOperator.h"
+
+#include "smtk/extension/vtk/source/PointCloudFromVTKAuxiliaryGeometry.h"
+#include "smtk/extension/vtk/source/StructuredGridFromVTKAuxiliaryGeometry.h"
+#include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
+
 #include "smtk/io/ExportMesh.h"
+
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/ForEachTypes.h"
+#include "smtk/mesh/core/Manager.h"
+#include "smtk/mesh/operators/ElevateMesh.h"
+#include "smtk/mesh/operators/UndoElevateMesh.h"
+#include "smtk/mesh/testing/cxx/helpers.h"
 
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityRef.h"
@@ -27,18 +41,9 @@
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/SimpleModelSubphrases.h"
 #include "smtk/model/Tessellation.h"
-
-#include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/ForEachTypes.h"
-#include "smtk/mesh/core/Manager.h"
-#include "smtk/mesh/testing/cxx/helpers.h"
-
-#include "smtk/extension/vtk/source/PointCloudFromVTKAuxiliaryGeometry.h"
-#include "smtk/extension/vtk/source/StructuredGridFromVTKAuxiliaryGeometry.h"
-#include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
+#include "smtk/model/operators/AddAuxiliaryGeometry.h"
 
 #include "vtkActor.h"
 #include "vtkCamera.h"
@@ -108,26 +113,9 @@ int TestElevateMesh(int argc, char* argv[])
   (void)argc;
   (void)argv;
 
-  smtk::model::ManagerPtr manager = smtk::model::Manager::create();
+  smtk::operation::NewOp::Ptr importOp = smtk::bridge::discrete::ImportOperator::create();
 
-  std::cout << "Available sessions\n";
-  StringList sessions = manager->sessionTypeNames();
-  for (StringList::iterator it = sessions.begin(); it != sessions.end(); ++it)
-    std::cout << "  " << *it << "\n";
-  std::cout << "\n";
-
-  smtk::bridge::discrete::Session::Ptr session = smtk::bridge::discrete::Session::create();
-  manager->registerSession(session);
-
-  std::cout << "Available operators\n";
-  StringList opnames = session->operatorNames();
-  for (StringList::iterator it = opnames.begin(); it != opnames.end(); ++it)
-    std::cout << "  " << *it << "\n";
-  std::cout << "\n";
-
-  // read the data
-  smtk::model::OperatorPtr readOp = session->op("import");
-  if (!readOp)
+  if (!importOp)
   {
     std::cerr << "No import operator\n";
     return 1;
@@ -136,21 +124,40 @@ int TestElevateMesh(int argc, char* argv[])
   {
     std::string file_path(data_root);
     file_path += "/mesh/2d/Simple.2dm";
-    readOp->specification()->findFile("filename")->setValue(file_path);
+    importOp->parameters()->findFile("filename")->setValue(file_path);
     std::cout << "Importing " << file_path << "\n";
   }
 
-  smtk::model::OperatorResult opresult = readOp->operate();
-  if (opresult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
+  smtk::operation::NewOp::Result importOpResult = importOp->operate();
+  if (importOpResult->findInt("outcome")->value() !=
+    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
   {
-    std::cerr << "Read operator failed\n";
+    std::cerr << "Import operator failed\n";
     return 1;
   }
-  // assign model value
-  smtk::model::Model model2dm = opresult->findModelEntity("created")->value();
-  manager->assignDefaultNames(); // should force transcription of every entity, but doesn't yet.
 
-  smtk::attribute::ModelEntityItemPtr meshedFaceItem = opresult->findModelEntity("mesh_created");
+  // Retrieve the resulting resource
+  smtk::attribute::ResourceItemPtr resourceItem =
+    std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(
+      importOpResult->findResource("resource"));
+
+  // Access the generated resource
+  smtk::bridge::discrete::Resource::Ptr resource =
+    std::dynamic_pointer_cast<smtk::bridge::discrete::Resource>(resourceItem->value());
+
+  // Retrieve the resulting model
+  smtk::attribute::ComponentItemPtr componentItem =
+    std::dynamic_pointer_cast<smtk::attribute::ComponentItem>(
+      importOpResult->findComponent("model"));
+
+  // Access the generated model
+  smtk::model::Entity::Ptr model =
+    std::dynamic_pointer_cast<smtk::model::Entity>(componentItem->value());
+
+  smtk::model::Model model2dm = model->referenceAs<smtk::model::Model>();
+
+  smtk::attribute::ModelEntityItemPtr meshedFaceItem =
+    importOpResult->findModelEntity("mesh_created");
 
   if (!meshedFaceItem || !meshedFaceItem->isValid())
   {
@@ -159,7 +166,7 @@ int TestElevateMesh(int argc, char* argv[])
   }
 
   const smtk::model::Face& meshedFace = meshedFaceItem->value();
-  auto associatedCollections = manager->meshes()->associatedCollections(meshedFace);
+  auto associatedCollections = resource->meshes()->associatedCollections(meshedFace);
   smtk::mesh::CollectionPtr collection = associatedCollections[0];
   smtk::mesh::MeshSet mesh = collection->meshes();
 
@@ -170,22 +177,34 @@ int TestElevateMesh(int argc, char* argv[])
   }
 
   // add auxiliary geometry
-  smtk::model::OperatorPtr aux_geOp = session->op("add auxiliary geometry");
+  smtk::operation::NewOp::Ptr auxGeoOp = smtk::model::AddAuxiliaryGeometry::create();
+
   {
     std::string file_path(data_root);
     file_path += "/mesh/2d/SimpleBathy.2dm";
-    aux_geOp->specification()->findFile("url")->setValue(file_path);
+    auxGeoOp->parameters()->findFile("url")->setValue(file_path);
   }
-  aux_geOp->associateEntity(model2dm);
-  smtk::model::OperatorResult aux_geOpresult = aux_geOp->operate();
-  if (aux_geOpresult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
+
+  auxGeoOp->parameters()->associateEntity(model2dm);
+  smtk::operation::NewOp::Result auxGeoOpResult = auxGeoOp->operate();
+  if (auxGeoOpResult->findInt("outcome")->value() !=
+    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
   {
     std::cerr << "Add auxiliary geometry failed!\n";
     return 1;
   }
 
-  smtk::model::AuxiliaryGeometry auxGo2dm = aux_geOpresult->findModelEntity("created")->value();
-  if (!auxGo2dm.isValid())
+  // Retrieve the resulting auxiliary geometry item
+  smtk::attribute::ComponentItemPtr auxGeoItem =
+    std::dynamic_pointer_cast<smtk::attribute::ComponentItem>(
+      auxGeoOpResult->findComponent("created"));
+
+  // Access the generated auxiliary geometry
+  smtk::model::Entity::Ptr auxGeo =
+    std::dynamic_pointer_cast<smtk::model::Entity>(auxGeoItem->value());
+
+  smtk::model::AuxiliaryGeometry auxGeo2dm = auxGeo->referenceAs<smtk::model::AuxiliaryGeometry>();
+  if (!auxGeo2dm.isValid())
   {
     std::cerr << "Auxiliary geometry is not valid!\n";
     return 1;
@@ -194,7 +213,7 @@ int TestElevateMesh(int argc, char* argv[])
   {
     // create the elevate mesh operator
     std::cout << "Creating elevate mesh operator\n";
-    smtk::model::OperatorPtr elevateMesh = session->op("elevate mesh");
+    smtk::operation::NewOp::Ptr elevateMesh = smtk::mesh::ElevateMesh::create();
     if (!elevateMesh)
     {
       std::cerr << "No Elevate Mesh operator!\n";
@@ -202,14 +221,15 @@ int TestElevateMesh(int argc, char* argv[])
     }
 
     // set input values for the elevate mesh operator
-    elevateMesh->specification()->findString("input data")->setToDefault();
-    elevateMesh->specification()->findModelEntity("auxiliary geometry")->setValue(auxGo2dm);
-    elevateMesh->specification()->findString("interpolation scheme")->setToDefault();
-    elevateMesh->specification()->findDouble("radius")->setValue(7.);
-    elevateMesh->specification()->findMesh("mesh")->appendValue(mesh);
+    elevateMesh->parameters()->findString("input data")->setToDefault();
+    elevateMesh->parameters()->findModelEntity("auxiliary geometry")->setValue(auxGeo2dm);
+    elevateMesh->parameters()->findString("interpolation scheme")->setToDefault();
+    elevateMesh->parameters()->findDouble("radius")->setValue(7.);
+    elevateMesh->parameters()->findMesh("mesh")->appendValue(mesh);
 
-    smtk::model::OperatorResult bathyResult = elevateMesh->operate();
-    if (bathyResult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
+    smtk::operation::NewOp::Result bathyResult = elevateMesh->operate();
+    if (bathyResult->findInt("outcome")->value() !=
+      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
     {
       std::cerr << "Elevate mesh operator failed\n";
       return 1;
@@ -231,17 +251,18 @@ int TestElevateMesh(int argc, char* argv[])
   {
     // create the undo elevate mesh operator
     std::cout << "Creating undo elevate mesh operator\n";
-    smtk::model::OperatorPtr undoElevateMesh = session->op("undo elevate mesh");
+    smtk::operation::NewOp::Ptr undoElevateMesh = smtk::mesh::UndoElevateMesh::create();
     if (!undoElevateMesh)
     {
       std::cerr << "No Undo Elevate Mesh operator!\n";
       return 1;
     }
 
-    undoElevateMesh->specification()->findMesh("mesh")->appendValue(mesh);
+    undoElevateMesh->parameters()->findMesh("mesh")->appendValue(mesh);
 
-    smtk::model::OperatorResult result = undoElevateMesh->operate();
-    if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
+    smtk::operation::NewOp::Result result = undoElevateMesh->operate();
+    if (result->findInt("outcome")->value() !=
+      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
     {
       std::cerr << "Undo elevate mesh operator failed\n";
       return 1;
@@ -262,7 +283,3 @@ int TestElevateMesh(int argc, char* argv[])
 
   return 0;
 }
-
-// This macro ensures the vtk io library is loaded into the executable
-smtkComponentInitMacro(smtk_elevate_mesh_operator)
-  smtkComponentInitMacro(smtk_undo_elevate_mesh_operator)

@@ -15,6 +15,7 @@
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/attribute/VoidItem.h"
@@ -26,11 +27,21 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Operator.h"
+#include "smtk/model/RegisterOperations.h"
 #include "smtk/model/SimpleModelSubphrases.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/operators/AddAuxiliaryGeometry.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
+
+#include "smtk/operation/LoadResource.h"
+#include "smtk/operation/RegisterOperations.h"
+#include "smtk/operation/SaveResource.h"
+
+#include "smtk/bridge/polygon/RegisterSession.h"
+#include "smtk/bridge/polygon/Resource.h"
+#include "smtk/bridge/polygon/operators/Delete.h"
+#include "smtk/bridge/polygon/operators/Import.h"
 
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 #include "vtkActor.h"
@@ -58,42 +69,50 @@ int main(int argc, char* argv[])
 {
   if (argc < 2)
     return 1;
-  smtk::model::ManagerPtr manager = smtk::model::Manager::create();
 
-  std::cout << "Available sessions\n";
-  StringList sessions = manager->sessionTypeNames();
-  for (StringList::iterator it = sessions.begin(); it != sessions.end(); ++it)
-    std::cout << "  " << *it << "\n";
-  std::cout << "\n";
+  // Create a resource manager
+  smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
-  smtk::bridge::polygon::Session::Ptr session = smtk::bridge::polygon::Session::create();
-  manager->registerSession(session);
-
-  std::cout << "Available cmb operators in polygon session\n";
-  StringList opnames = session->operatorNames();
-  for (StringList::iterator it = opnames.begin(); it != opnames.end(); ++it)
-    std::cout << "  " << *it << "\n";
-  std::cout << "\n";
-
-  // read the data
-  smtk::model::OperatorPtr readOp = session->op("load smtk model");
-  if (!readOp)
   {
-    std::cerr << "No load smtk model operator\n";
-    return 1;
+    smtk::bridge::polygon::registerResources(resourceManager);
   }
 
-  readOp->specification()->findFile("filename")->setValue(std::string(argv[1]));
+  // Create an operation manager
+  smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
+
+  {
+    smtk::operation::registerOperations(operationManager);
+    smtk::model::registerOperations(operationManager);
+    smtk::bridge::polygon::registerOperations(operationManager);
+  }
+
+  // Register the resource manager to the operation manager (newly created
+  // resources will be automatically registered to the resource manager).
+  operationManager->registerResourceManager(resourceManager);
+
+  smtk::operation::LoadResource::Ptr loadOp =
+    operationManager->create<smtk::operation::LoadResource>();
+
+  loadOp->parameters()->findFile("filename")->setValue(std::string(argv[1]));
+
   std::cout << "Importing " << argv[1] << "\n";
-  smtk::model::OperatorResult ismopResult = readOp->operate();
-  if (ismopResult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
-  {
-    std::cerr << "Read operator failed\n";
+
+  smtk::operation::NewOp::Result loadOpResult = loadOp->operate();
+  test(loadOpResult->findInt("outcome")->value() ==
+      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
+    "Load operator failed");
+
+  smtk::bridge::polygon::Resource::Ptr manager =
+    smtk::dynamic_pointer_cast<smtk::bridge::polygon::Resource>(
+      loadOpResult->findResource("resource")->value(0));
+
+  smtk::model::Models models =
+    manager->entitiesMatchingFlagsAs<smtk::model::Models>(smtk::model::MODEL_ENTITY, false);
+
+  if (models.size() < 1)
     return 1;
-  }
-  // assign model value
-  smtk::model::Model simpleSMTK = ismopResult->findModelEntity("created")->value();
-  manager->assignDefaultNames(); // should force transcription of every entity, but doesn't yet.
+
+  smtk::model::Model simpleSMTK = models[0];
 
   if (!simpleSMTK.isValid())
   {
@@ -117,7 +136,8 @@ int main(int argc, char* argv[])
 
   // start delete operator
   std::cout << "Create the delete operator\n";
-  smtk::model::OperatorPtr deleteOp = session->op("delete");
+  smtk::bridge::polygon::Delete::Ptr deleteOp =
+    operationManager->create<smtk::bridge::polygon::Delete>();
   if (!deleteOp)
   {
     std::cout << "No delete operator\n";
@@ -130,15 +150,16 @@ int main(int argc, char* argv[])
   test(edge1.isValid());
 
   bool result(0);
-  result = deleteOp->specification()->associateEntity(face1);
+  result = deleteOp->parameters()->associateEntity(face1);
   test(result == 1);
-  result = deleteOp->specification()->associateEntity(edge1);
+  result = deleteOp->parameters()->associateEntity(edge1);
   test(result == 1);
-  deleteOp->specification()->findVoid("delete higher-dimensional neighbors")->setIsEnabled(true);
-  deleteOp->specification()->findVoid("delete lower-dimensional neighbors")->setIsEnabled(true);
+  deleteOp->parameters()->findVoid("delete higher-dimensional neighbors")->setIsEnabled(true);
+  deleteOp->parameters()->findVoid("delete lower-dimensional neighbors")->setIsEnabled(true);
 
-  smtk::model::OperatorResult deleteOpResult = deleteOp->operate();
-  if (deleteOpResult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
+  smtk::bridge::polygon::Delete::Result deleteOpResult = deleteOp->operate();
+  if (deleteOpResult->findInt("outcome")->value() !=
+    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
   {
     std::cerr << "Delete operator failed!\n";
     return 1;

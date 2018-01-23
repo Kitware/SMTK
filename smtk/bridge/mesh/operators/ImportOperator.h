@@ -10,7 +10,9 @@
 #ifndef __smtk_session_mesh_ImportOperator_h
 #define __smtk_session_mesh_ImportOperator_h
 
-#include "smtk/bridge/mesh/Operator.h"
+#include "smtk/bridge/mesh/Exports.h"
+
+#include "smtk/operation/XMLOperator.h"
 
 namespace smtk
 {
@@ -19,16 +21,16 @@ namespace bridge
 namespace mesh
 {
 
-class SMTKMESHSESSION_EXPORT ImportOperator : public Operator
+class SMTKMESHSESSION_EXPORT ImportOperator : public smtk::operation::XMLOperator
 {
 public:
   smtkTypeMacro(ImportOperator);
   smtkCreateMacro(ImportOperator);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  virtual const char* xmlDescription() const override;
 };
 
 } // namespace mesh

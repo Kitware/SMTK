@@ -37,20 +37,31 @@ class Metadata
   friend class Manager;
 
 public:
-  Metadata(const std::string& uniqueName)
-    : m_uniqueName(uniqueName)
-    , m_index(std::type_index(typeid(smtk::resource::Resource)).hash_code())
-  {
-  }
+  typedef std::function<void(const Metadata&)> Visitor;
 
-  Metadata(const std::string& uniqueName, Resource::Index index)
-    : m_uniqueName(uniqueName)
+  Metadata(const std::string& uniqueName, Resource::Index index,
+    std::set<Resource::Index> parentIndices,
+    std::function<ResourcePtr(const smtk::common::UUID&)> createFunctor,
+    std::function<ResourcePtr(const std::string&)> readFunctor,
+    std::function<bool(const ResourcePtr&)> writeFunctor)
+    : create(createFunctor)
+    , read(readFunctor)
+    , write(writeFunctor)
+    , m_uniqueName(uniqueName)
     , m_index(index)
+    , m_parentIndices(parentIndices)
   {
   }
 
   const std::string& uniqueName() const { return m_uniqueName; }
   const Resource::Index& index() const { return m_index; }
+
+  // Resource metadata holds inheritence information for its resource as a set
+  // of parent indices.
+  bool isOfType(const Resource::Index& index) const
+  {
+    return m_parentIndices.find(index) != m_parentIndices.end();
+  }
 
   std::function<ResourcePtr(const smtk::common::UUID&)> create = [](
     const smtk::common::UUID&) { return ResourcePtr(); };
@@ -61,7 +72,7 @@ public:
 private:
   std::string m_uniqueName;
   Resource::Index m_index;
-  std::set<Resource::Index> m_associatedIndices;
+  std::set<Resource::Index> m_parentIndices;
 };
 }
 }

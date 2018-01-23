@@ -56,7 +56,7 @@ namespace polygon
 
 bool CreateFacesFromEdges::populateEdgeMap()
 {
-  smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->associations();
+  smtk::attribute::ModelEntityItem::Ptr modelItem = this->parameters()->associations();
   smtk::model::Model model;
 
   internal::pmodel::Ptr storage; // Look up from session = internal::pmodel::create();
@@ -73,7 +73,7 @@ bool CreateFacesFromEdges::populateEdgeMap()
         {
           smtkErrorMacro(this->log(), "Edges from different models ("
               << model.name() << " and " << edgeIn.owningModel().name() << ") selected.");
-          this->m_result = this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+          this->m_result = this->createResult(smtk::operation::NewOp::Outcome::FAILED);
           return false;
         }
       }
@@ -87,17 +87,18 @@ bool CreateFacesFromEdges::populateEdgeMap()
   if (this->m_edgeMap.empty() || !model.isValid())
   {
     smtkErrorMacro(this->log(), "No edges selected or invalid model specified.");
-    this->m_result = this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    this->m_result = this->createResult(smtk::operation::NewOp::Outcome::FAILED);
     return false;
   }
   this->m_model = model;
   return true;
 }
 
+const char* CreateFacesFromEdges::xmlDescription() const
+{
+  return CreateFacesFromEdges_xml;
+}
+
 } // namespace polygon
 } //namespace bridge
 } // namespace smtk
-
-smtkImplementsModelOperator(SMTKPOLYGONSESSION_EXPORT, smtk::bridge::polygon::CreateFacesFromEdges,
-  polygon_create_faces_from_edges, "create faces from edges", CreateFacesFromEdges_xml,
-  smtk::bridge::polygon::Session);

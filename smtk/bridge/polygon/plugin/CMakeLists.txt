@@ -42,6 +42,7 @@ target_link_libraries(smtkPolygonSessionPlugin
     smtkCore
     smtkPolygonQtExt
     smtkPolygonSession
+    smtkPolygonSessionEnvironment
     smtkQtExt
     smtkPQWidgetsExt
     vtkPVServerManagerApplication

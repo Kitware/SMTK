@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the CMB Model "ModelGroup" Operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
     <!-- Operation -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="entity group" Label="Model - Create Group" BaseType="operator">
       <BriefDescription>
         Create a group of cell entities. User can modify and remove the created group afterwards.
@@ -44,7 +45,7 @@
               <BriefDescription>Allow edges to be added to the group.</BriefDescription>
               <DetailedDescription>Allow edges to be added to the group.</DetailedDescription>
             </Void>
-            <Void Name="Face" Label="Face" Version="0" NumberOfRequiredValues="1" Optional="true" AdvanceLevel = "1" Option = "true" IsEnabledByDefault = "true"> 
+            <Void Name="Face" Label="Face" Version="0" NumberOfRequiredValues="1" Optional="true" AdvanceLevel = "1" Option = "true" IsEnabledByDefault = "true">
               <BriefDescription>Allow faces to be added to the group.</BriefDescription>
               <DetailedDescription>Allow faces to be added to the group.</DetailedDescription>
             </Void>
@@ -93,10 +94,10 @@
     </AttDef>
 
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(entity group)" BaseType="result">
       <ItemDefinitions>
       </ItemDefinitions>
     </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>
-

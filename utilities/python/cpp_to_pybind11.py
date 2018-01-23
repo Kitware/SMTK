@@ -451,7 +451,7 @@ def parse_class(class_, stream, top_level=True):
                                for arg in operator.arguments]),
                     const, full_class_name_, operator.symbol))
         else:
-            print "WARNING: no built-in type for operator", operator.name
+            print("WARNING: no built-in type for operator", operator.name)
 
     all_methods = set()
     overloaded_methods = set()
@@ -472,7 +472,8 @@ def parse_class(class_, stream, top_level=True):
     property_set_methods = set()
     property_get_methods = set()
     if use_properties:
-        def uncapitalize(s): return s[:1].lower() + s[1:] if s else ''
+        def uncapitalize(s):
+            return s[:1].lower() + s[1:] if s else ''
         property_set_methods = set(
             [m for m in class_.public_members if m.name[:3] == "set" and
              m.name not in overloaded_methods and
@@ -591,7 +592,7 @@ if __name__ == '__main__':
 
         def write_verbose(string):
             write(string)
-            print string.replace('>>', '> >')
+            print(string.replace('>>', '> >'))
         if args.verbose:
             return write_verbose
         else:
@@ -605,4 +606,4 @@ if __name__ == '__main__':
             parse_file(args.input, args.project_source_dir, args.include_dirs,
                        args.declaration_name, stream))
 
-    print wrapped_objects
+    print(wrapped_objects)

@@ -33,14 +33,14 @@ class SMTKPOLYGONSESSION_EXPORT ExtractContours : public Operator
 public:
   smtkTypeMacro(ExtractContours);
   smtkCreateMacro(ExtractContours);
-  smtkSharedFromThisMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
   smtkSuperclassMacro(Operator);
-  smtkDeclareModelOperator();
 
   bool ableToOperate() override;
 
 protected:
   smtk::model::OperatorResult operateInternal() override;
+  virtual const char* xmlDescription() const override;
 };
 
 } // namespace polygon

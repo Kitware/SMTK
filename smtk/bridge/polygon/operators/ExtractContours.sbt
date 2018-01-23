@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the smtk polygon Model "extract contours" Operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
     <!-- Operator -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="extract contours" Label="Edge - Create from Contours" BaseType="operator">
       <AssociationsDef Name="auxiliary geometry" NumberOfRequiredValues="1" AdvanceLevel="0">
         <MembershipMask>aux_geom</MembershipMask>
@@ -63,6 +64,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(extract contours)" BaseType="result"/>
   </Definitions>
 

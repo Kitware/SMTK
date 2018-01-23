@@ -1,0 +1,7 @@
+<AttDef Type="operator" Label="operator" Abstract="True">
+<ItemDefinitions>
+  <Int Name="debug level" Optional="True">
+    <DefaultValue>0</DefaultValue>
+  </Int>
+</ItemDefinitions>
+</AttDef>

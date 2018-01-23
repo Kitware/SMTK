@@ -18,6 +18,7 @@
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/mesh/GenerateHotStartData_xml.h"
 #include "smtk/mesh/core/CellField.h"
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/mesh/core/PointField.h"
@@ -182,12 +183,12 @@ namespace mesh
 
 bool GenerateHotStartData::ableToOperate()
 {
-  if (!this->ensureSpecification())
+  if (!this->Superclass::ableToOperate())
   {
     return false;
   }
 
-  smtk::attribute::MeshItem::Ptr meshItem = this->specification()->findMesh("mesh");
+  smtk::attribute::MeshItem::Ptr meshItem = this->parameters()->findMesh("mesh");
   if (!meshItem || meshItem->numberOfValues() == 0)
   {
     return false;
@@ -196,33 +197,33 @@ bool GenerateHotStartData::ableToOperate()
   return true;
 }
 
-smtk::model::OperatorResult GenerateHotStartData::operateInternal()
+GenerateHotStartData::Result GenerateHotStartData::operateInternal()
 {
   // Access the mesh to elevate
-  smtk::attribute::MeshItem::Ptr meshItem = this->specification()->findMesh("mesh");
+  smtk::attribute::MeshItem::Ptr meshItem = this->parameters()->findMesh("mesh");
 
   // Access the data set type
-  smtk::attribute::StringItem::Ptr typeItem = this->specification()->findString("dstype");
+  smtk::attribute::StringItem::Ptr typeItem = this->parameters()->findString("dstype");
 
   // Access the interpolation points
-  smtk::attribute::GroupItem::Ptr interpolationPointsItem = this->findGroup("points");
+  smtk::attribute::GroupItem::Ptr interpolationPointsItem = this->parameters()->findGroup("points");
 
   // Access the interpolation power parameter
-  smtk::attribute::DoubleItem::Ptr powerItem = this->findDouble("power");
+  smtk::attribute::DoubleItem::Ptr powerItem = this->parameters()->findDouble("power");
 
   // Construct containers for our source points
   std::vector<double> sourceCoordinates;
   std::vector<double> sourceValues;
 
   // Access the points CSV file name, if it is enabled
-  smtk::attribute::FileItem::Ptr ptsFileItem = this->specification()->findFile("ptsfile");
+  smtk::attribute::FileItem::Ptr ptsFileItem = this->parameters()->findFile("ptsfile");
   if (ptsFileItem->isEnabled())
   {
     bool success = readCSVFile(ptsFileItem->value(0), sourceCoordinates, sourceValues);
     if (!success)
     {
       smtkErrorMacro(this->log(), "Could not read CSV file.");
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
     }
   }
 
@@ -271,9 +272,12 @@ smtk::model::OperatorResult GenerateHotStartData::operateInternal()
 
   // Access the attribute associated with the modified meshes
   smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+    this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
   smtk::attribute::MeshItem::Ptr modifiedMeshes = result->findMesh("mesh_modified");
   modifiedMeshes->setNumberOfValues(meshItem->numberOfValues());
+
+  // Access the attribute associated with the modified model
+  smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
 
   // Access the attribute associated with the changed tessellation
   smtk::attribute::ModelEntityItem::Ptr modifiedEntities = result->findModelEntity("tess_changed");
@@ -300,7 +304,7 @@ smtk::model::OperatorResult GenerateHotStartData::operateInternal()
   else
   {
     smtkErrorMacro(this->log(), "Unsupported data type.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
   // apply the interpolator to the meshes and populate the result attributes
@@ -317,17 +321,17 @@ smtk::model::OperatorResult GenerateHotStartData::operateInternal()
     if (entitiesAreValid && !entities.empty())
     {
       smtk::model::Model model = entities[0].owningModel();
-      this->addEntityToResult(result, model, MODIFIED);
+      modified->appendValue(model.component());
       modifiedEntities->appendValue(model);
     }
   }
 
   return result;
 }
+
+const char* GenerateHotStartData::xmlDescription() const
+{
+  return GenerateHotStartData_xml;
 }
 }
-
-#include "smtk/mesh/GenerateHotStartData_xml.h"
-
-smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::mesh::GenerateHotStartData,
-  generate_hotstart_data, "generate hotstart data", GenerateHotStartData_xml, smtk::model::Session);
+}
