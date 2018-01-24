@@ -12,9 +12,9 @@
 // SMTK
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 
-#include "smtk/extension/paraview/server/vtkSMSMTKResourceManagerProxy.h"
+#include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
 #include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
-#include "smtk/extension/paraview/server/vtkSMTKResourceManagerWrapper.h" // TODO: remove need for me
+#include "smtk/extension/paraview/server/vtkSMTKWrapper.h" // TODO: remove need for me
 
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
@@ -108,12 +108,11 @@ pqSMTKSelectionFilterBehavior::pqSMTKSelectionFilterBehavior(QObject* parent)
 
   // Track server connects/disconnects
   auto rsrcBehavior = pqSMTKBehavior::instance();
+  QObject::connect(rsrcBehavior, SIGNAL(addedManagerOnServer(vtkSMSMTKWrapperProxy*, pqServer*)),
+    this, SLOT(filterSelectionOnServer(vtkSMSMTKWrapperProxy*, pqServer*)));
   QObject::connect(rsrcBehavior,
-    SIGNAL(addedManagerOnServer(vtkSMSMTKResourceManagerProxy*, pqServer*)), this,
-    SLOT(filterSelectionOnServer(vtkSMSMTKResourceManagerProxy*, pqServer*)));
-  QObject::connect(rsrcBehavior,
-    SIGNAL(removingManagerFromServer(vtkSMSMTKResourceManagerProxy*, pqServer*)), this,
-    SLOT(unfilterSelectionOnServer(vtkSMSMTKResourceManagerProxy*, pqServer*)));
+    SIGNAL(removingManagerFromServer(vtkSMSMTKWrapperProxy*, pqServer*)), this,
+    SLOT(unfilterSelectionOnServer(vtkSMSMTKWrapperProxy*, pqServer*)));
 }
 
 pqSMTKSelectionFilterBehavior::~pqSMTKSelectionFilterBehavior()
@@ -186,7 +185,7 @@ void pqSMTKSelectionFilterBehavior::onFilterChanged(QAction* a)
 }
 
 void pqSMTKSelectionFilterBehavior::filterSelectionOnServer(
-  vtkSMSMTKResourceManagerProxy* mgr, pqServer* server)
+  vtkSMSMTKWrapperProxy* mgr, pqServer* server)
 {
   (void)server;
   if (!mgr)
@@ -195,7 +194,7 @@ void pqSMTKSelectionFilterBehavior::filterSelectionOnServer(
     return;
   }
   //auto seln = mgr->GetSelection();
-  auto seln = vtkSMTKResourceManagerWrapper::SafeDownCast(mgr->GetClientSideObject())
+  auto seln = vtkSMTKWrapper::SafeDownCast(mgr->GetClientSideObject())
                 ->GetSelection(); // TODO: Only works on built-in server
   if (!seln)
   {
@@ -217,7 +216,7 @@ void pqSMTKSelectionFilterBehavior::filterSelectionOnServer(
 }
 
 void pqSMTKSelectionFilterBehavior::unfilterSelectionOnServer(
-  vtkSMSMTKResourceManagerProxy* mgr, pqServer* server)
+  vtkSMSMTKWrapperProxy* mgr, pqServer* server)
 {
   (void)server;
   std::cout << "  unfilterSelectionOnServer: " << server << "\n\n";

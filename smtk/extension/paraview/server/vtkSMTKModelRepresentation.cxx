@@ -35,7 +35,7 @@
 
 #include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
 #include "smtk/extension/paraview/server/vtkSMTKModelRepresentation.h"
-#include "smtk/extension/paraview/server/vtkSMTKResourceManagerWrapper.h"
+#include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/Manager.h"
@@ -64,9 +64,11 @@ void ColorBlockAsEntity(vtkCompositePolyDataMapper2* mapper, vtkDataObject* bloc
 
 ///////////////////////////////////////////////////////////////////////////////
 vtkStandardNewMacro(vtkSMTKModelRepresentation);
+vtkCxxSetObjectMacro(vtkSMTKModelRepresentation, Wrapper, vtkSMTKWrapper);
 
 vtkSMTKModelRepresentation::vtkSMTKModelRepresentation()
   : Superclass()
+  , Wrapper(nullptr)
   , EntityMapper(vtkSmartPointer<vtkCompositePolyDataMapper2>::New())
   , SelectedEntityMapper(vtkSmartPointer<vtkCompositePolyDataMapper2>::New())
   , EntityCacheKeeper(vtkSmartPointer<vtkPVCacheKeeper>::New())
@@ -499,8 +501,9 @@ void vtkSMTKModelRepresentation::SetInterpolateScalarsBeforeMapping(int val)
 void vtkSMTKModelRepresentation::UpdateSelection(
   vtkMultiBlockDataSet* data, vtkCompositeDataDisplayAttributes* blockAttr, vtkActor* actor)
 {
-  auto rm = vtkSMTKResourceManagerWrapper::Instance(); // TODO: Remove the need for this.
+  auto rm = this->GetWrapper(); // vtkSMTKWrapper::Instance(); // TODO: Remove the need for this.
   auto sm = rm ? rm->GetSelection() : nullptr;
+  // std::cout << "rep " << this << " wrapper " << rm << " seln " << sm << "\n";
   if (!sm)
   {
     actor->SetVisibility(0);

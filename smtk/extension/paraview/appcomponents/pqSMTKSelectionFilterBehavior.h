@@ -17,7 +17,7 @@
 
 #include <QActionGroup>
 
-class vtkSMSMTKResourceManagerProxy;
+class vtkSMSMTKWrapperProxy;
 class pqServer;
 
 class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKSelectionFilterBehavior : public QActionGroup
@@ -35,8 +35,8 @@ public:
 
 protected slots:
   virtual void onFilterChanged(QAction* a);
-  virtual void filterSelectionOnServer(vtkSMSMTKResourceManagerProxy* mgr, pqServer* server);
-  virtual void unfilterSelectionOnServer(vtkSMSMTKResourceManagerProxy* mgr, pqServer* server);
+  virtual void filterSelectionOnServer(vtkSMSMTKWrapperProxy* mgr, pqServer* server);
+  virtual void unfilterSelectionOnServer(vtkSMSMTKWrapperProxy* mgr, pqServer* server);
 
 protected:
   /// Install a filter on the selection using current flags (m_modelFilterMask and m_acceptMeshes).

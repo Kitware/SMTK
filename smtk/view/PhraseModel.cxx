@@ -200,9 +200,11 @@ void PhraseModel::handleResourceEvent(Resource::Ptr rsrc, smtk::resource::Event 
 int PhraseModel::handleOperatorEvent(
   Operator::Ptr op, operation::EventType event, Operator::Result res)
 {
+  /*
   std::cout << "      phrase op "
             << (event == operation::EventType::DID_OPERATE ? "ran" : "cre/pre") << " " << op
             << "\n";
+   */
 
   if (!op)
   {

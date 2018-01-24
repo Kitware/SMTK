@@ -7,10 +7,10 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/server/vtkSMSMTKResourceManagerProxy.h"
+#include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
 #include "smtk/extension/paraview/server/vtkSMSMTKModelRepresentationProxy.h"
 
-#include "smtk/extension/paraview/server/vtkSMTKResourceManagerWrapper.h" // TODO: Remove the need for me
+#include "smtk/extension/paraview/server/vtkSMTKWrapper.h" // TODO: Remove the need for me
 
 #include "vtkObjectFactory.h"
 
@@ -21,27 +21,27 @@
 
 using nlohmann::json;
 
-vtkSMSMTKResourceManagerProxy* g_instance = nullptr;
+vtkSMSMTKWrapperProxy* g_instance = nullptr;
 
-vtkSMSMTKResourceManagerProxy* vtkSMSMTKResourceManagerProxy::New()
+vtkSMSMTKWrapperProxy* vtkSMSMTKWrapperProxy::New()
 {
   if (!g_instance)
   {
-    g_instance = new vtkSMSMTKResourceManagerProxy;
+    g_instance = new vtkSMSMTKWrapperProxy;
   }
   return g_instance;
 }
 
-vtkSMSMTKResourceManagerProxy* vtkSMSMTKResourceManagerProxy::Instance()
+vtkSMSMTKWrapperProxy* vtkSMSMTKWrapperProxy::Instance()
 {
   return g_instance;
 }
 
-vtkSMSMTKResourceManagerProxy::vtkSMSMTKResourceManagerProxy()
+vtkSMSMTKWrapperProxy::vtkSMSMTKWrapperProxy()
 {
 }
 
-vtkSMSMTKResourceManagerProxy::~vtkSMSMTKResourceManagerProxy()
+vtkSMSMTKWrapperProxy::~vtkSMSMTKWrapperProxy()
 {
   if (this == g_instance)
   {
@@ -49,54 +49,54 @@ vtkSMSMTKResourceManagerProxy::~vtkSMSMTKResourceManagerProxy()
   }
 }
 
-void vtkSMSMTKResourceManagerProxy::PrintSelf(ostream& os, vtkIndent indent)
+void vtkSMSMTKWrapperProxy::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 }
 
-smtk::resource::ManagerPtr vtkSMSMTKResourceManagerProxy::GetManager() const
+smtk::resource::ManagerPtr vtkSMSMTKWrapperProxy::GetResourceManager() const
 {
   // TODO: This should just "return this->Manager;" but we are getting things
   //       working in built-in mode first, so just directly fetch the version
   //       on the server and return it.
-  auto self = const_cast<vtkSMSMTKResourceManagerProxy*>(this); // VTK is not const-correct
-  auto wrapper = vtkSMTKResourceManagerWrapper::SafeDownCast(self->GetClientSideObject());
-  return wrapper ? wrapper->GetManager() : nullptr;
+  auto self = const_cast<vtkSMSMTKWrapperProxy*>(this); // VTK is not const-correct
+  auto wrapper = vtkSMTKWrapper::SafeDownCast(self->GetClientSideObject());
+  return wrapper ? wrapper->GetResourceManager() : nullptr;
 }
 
-smtk::view::SelectionPtr vtkSMSMTKResourceManagerProxy::GetSelection() const
+smtk::view::SelectionPtr vtkSMSMTKWrapperProxy::GetSelection() const
 {
   // TODO: This should just "return this->Selection;" but we are getting things
   //       working in built-in mode first, so just directly fetch the version
   //       on the server and return it.
-  auto self = const_cast<vtkSMSMTKResourceManagerProxy*>(this); // VTK is not const-correct
-  auto wrapper = vtkSMTKResourceManagerWrapper::SafeDownCast(self->GetClientSideObject());
+  auto self = const_cast<vtkSMSMTKWrapperProxy*>(this); // VTK is not const-correct
+  auto wrapper = vtkSMTKWrapper::SafeDownCast(self->GetClientSideObject());
   return wrapper ? wrapper->GetSelection() : nullptr;
 }
 
-smtk::operation::ManagerPtr vtkSMSMTKResourceManagerProxy::GetOperationManager() const
+smtk::operation::ManagerPtr vtkSMSMTKWrapperProxy::GetOperationManager() const
 {
   // TODO: This should just "return this->OperationManager;" but we are getting things
   //       working in built-in mode first, so just directly fetch the version
   //       on the server and return it.
-  auto self = const_cast<vtkSMSMTKResourceManagerProxy*>(this); // VTK is not const-correct
-  auto wrapper = vtkSMTKResourceManagerWrapper::SafeDownCast(self->GetClientSideObject());
+  auto self = const_cast<vtkSMSMTKWrapperProxy*>(this); // VTK is not const-correct
+  auto wrapper = vtkSMTKWrapper::SafeDownCast(self->GetClientSideObject());
   return wrapper ? wrapper->GetOperationManager() : nullptr;
 }
 
-void vtkSMSMTKResourceManagerProxy::SetSelectedPortProxy(vtkSMSourceProxy* pxy)
+void vtkSMSMTKWrapperProxy::SetSelectedPortProxy(vtkSMSourceProxy* pxy)
 {
   vtkSMPropertyHelper(this, "SelectedPort").Set(pxy);
   this->UpdateVTKObjects();
 }
 
-void vtkSMSMTKResourceManagerProxy::SetSelectionObjProxy(vtkSMSourceProxy* pxy)
+void vtkSMSMTKWrapperProxy::SetSelectionObjProxy(vtkSMSourceProxy* pxy)
 {
   vtkSMPropertyHelper(this, "SelectionObj").Set(pxy);
   this->UpdateVTKObjects();
 }
 
-void vtkSMSMTKResourceManagerProxy::FetchHardwareSelection()
+void vtkSMSMTKWrapperProxy::FetchHardwareSelection()
 {
   json request = {
     { "method", "fetch hw selection" }, { "id", 1 },
@@ -105,36 +105,36 @@ void vtkSMSMTKResourceManagerProxy::FetchHardwareSelection()
   std::cout << response.dump(2) << "\n";
 }
 
-void vtkSMSMTKResourceManagerProxy::AddResourceProxy(vtkSMSourceProxy* rsrc)
+void vtkSMSMTKWrapperProxy::AddResourceProxy(vtkSMSourceProxy* rsrc)
 {
   vtkSMPropertyHelper(this, "ActiveResource").Set(rsrc);
   this->UpdateVTKObjects();
 
   json request = {
-    { "method", "add resource" }, { "id", 1 },
+    { "method", "add resource filter" }, { "id", 1 },
   };
   json response = this->JSONRPCRequest(request);
   std::cout << response.dump(2) << "\n";
 }
 
-void vtkSMSMTKResourceManagerProxy::RemoveResourceProxy(vtkSMSourceProxy* rsrc)
+void vtkSMSMTKWrapperProxy::RemoveResourceProxy(vtkSMSourceProxy* rsrc)
 {
   vtkSMPropertyHelper(this, "ActiveResource").Set(rsrc);
   this->UpdateVTKObjects();
 
   json request = {
-    { "method", "remove resource" }, { "id", 1 },
+    { "method", "remove resource filter" }, { "id", 1 },
   };
   json response = this->JSONRPCRequest(request);
-  std::cout << response.dump(2) << "\n";
+  // std::cout << response.dump(2) << "\n";
 }
 
-void vtkSMSMTKResourceManagerProxy::Send(const json& selnInfo)
+void vtkSMSMTKWrapperProxy::Send(const json& selnInfo)
 {
   (void)selnInfo;
 }
 
-void vtkSMSMTKResourceManagerProxy::Recv(
+void vtkSMSMTKWrapperProxy::Recv(
   vtkSMSourceProxy* dataSource, vtkSMSourceProxy* selnSource, json& selnInfo)
 {
   (void)dataSource;
@@ -142,12 +142,12 @@ void vtkSMSMTKResourceManagerProxy::Recv(
   (void)selnInfo;
 }
 
-json vtkSMSMTKResourceManagerProxy::JSONRPCRequest(const json& request)
+json vtkSMSMTKWrapperProxy::JSONRPCRequest(const json& request)
 {
   return this->JSONRPCRequest(request.dump());
 }
 
-json vtkSMSMTKResourceManagerProxy::JSONRPCRequest(const std::string& request)
+json vtkSMSMTKWrapperProxy::JSONRPCRequest(const std::string& request)
 {
   json result;
   if (request.empty())
@@ -164,12 +164,12 @@ json vtkSMSMTKResourceManagerProxy::JSONRPCRequest(const std::string& request)
   return json::parse(response);
 }
 
-void vtkSMSMTKResourceManagerProxy::JSONRPCNotification(const json& note)
+void vtkSMSMTKWrapperProxy::JSONRPCNotification(const json& note)
 {
   this->JSONRPCNotification(note.dump());
 }
 
-void vtkSMSMTKResourceManagerProxy::JSONRPCNotification(const std::string& note)
+void vtkSMSMTKWrapperProxy::JSONRPCNotification(const std::string& note)
 {
   if (note.empty())
   {
@@ -184,7 +184,7 @@ void vtkSMSMTKResourceManagerProxy::JSONRPCNotification(const std::string& note)
   this->ExecuteStream(stream);
 }
 
-void vtkSMSMTKResourceManagerProxy::SetRepresentation(vtkSMRepresentationProxy* pxy)
+void vtkSMSMTKWrapperProxy::SetRepresentation(vtkSMRepresentationProxy* pxy)
 {
   auto smtkProxy = vtkSMSMTKModelRepresentationProxy::SafeDownCast(pxy);
   auto repProxy = smtkProxy->GetModelRepresentationSubProxy();
@@ -193,11 +193,11 @@ void vtkSMSMTKResourceManagerProxy::SetRepresentation(vtkSMRepresentationProxy* 
   this->UpdateVTKObjects();
 }
 
-void vtkSMSMTKResourceManagerProxy::SetResourceForRepresentation(
+void vtkSMSMTKWrapperProxy::SetResourceForRepresentation(
   smtk::resource::ResourcePtr clientSideResource, vtkSMRepresentationProxy* pxy)
 {
   this->SetRepresentation(pxy);
-  json request = { { "method", "set resource for representation" }, { "id", 1 },
+  json request = { { "method", "setup representation" }, { "id", 1 },
     { "params", { { "resource", clientSideResource->id().toString() } } } };
 
   json response = this->JSONRPCRequest(request);

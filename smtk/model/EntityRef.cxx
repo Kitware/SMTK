@@ -989,14 +989,16 @@ void EntityRef::setFloatProperty(
 
 smtk::model::FloatList const& EntityRef::floatProperty(const std::string& propName) const
 {
+  static smtk::model::FloatList dummy;
   ManagerPtr mgr = this->m_manager.lock();
-  return mgr->floatProperty(this->m_entity, propName);
+  return mgr ? mgr->floatProperty(this->m_entity, propName) : dummy;
 }
 
 smtk::model::FloatList& EntityRef::floatProperty(const std::string& propName)
 {
+  static smtk::model::FloatList dummy;
   ManagerPtr mgr = this->m_manager.lock();
-  return mgr->floatProperty(this->m_entity, propName);
+  return mgr ? mgr->floatProperty(this->m_entity, propName) : dummy;
 }
 
 bool EntityRef::hasFloatProperty(const std::string& propName) const
@@ -1090,14 +1092,16 @@ void EntityRef::setStringProperty(
 
 smtk::model::StringList const& EntityRef::stringProperty(const std::string& propName) const
 {
+  static smtk::model::StringList dummy;
   ManagerPtr mgr = this->m_manager.lock();
-  return mgr->stringProperty(this->m_entity, propName);
+  return mgr ? mgr->stringProperty(this->m_entity, propName) : dummy;
 }
 
 smtk::model::StringList& EntityRef::stringProperty(const std::string& propName)
 {
+  static smtk::model::StringList dummy;
   ManagerPtr mgr = this->m_manager.lock();
-  return mgr->stringProperty(this->m_entity, propName);
+  return mgr ? mgr->stringProperty(this->m_entity, propName) : dummy;
 }
 
 bool EntityRef::hasStringProperty(const std::string& propName) const
@@ -1192,14 +1196,16 @@ void EntityRef::setIntegerProperty(
 
 smtk::model::IntegerList const& EntityRef::integerProperty(const std::string& propName) const
 {
+  static smtk::model::IntegerList dummy;
   ManagerPtr mgr = this->m_manager.lock();
-  return mgr->integerProperty(this->m_entity, propName);
+  return mgr ? mgr->integerProperty(this->m_entity, propName) : dummy;
 }
 
 smtk::model::IntegerList& EntityRef::integerProperty(const std::string& propName)
 {
+  static smtk::model::IntegerList dummy;
   ManagerPtr mgr = this->m_manager.lock();
-  return mgr->integerProperty(this->m_entity, propName);
+  return mgr ? mgr->integerProperty(this->m_entity, propName) : dummy;
 }
 
 bool EntityRef::hasIntegerProperty(const std::string& propName) const

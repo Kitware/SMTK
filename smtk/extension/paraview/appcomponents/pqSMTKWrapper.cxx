@@ -7,14 +7,14 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/appcomponents/pqSMTKResourceManager.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 
 // SMTK
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
-#include "smtk/extension/paraview/server/vtkSMSMTKResourceManagerProxy.h"
+#include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
 #include "smtk/extension/paraview/server/vtkSMTKModelReader.h" // TODO: remove need for me
-#include "smtk/extension/paraview/server/vtkSMTKResourceManagerWrapper.h"
+#include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h" // TODO: remove need for me
 
@@ -49,8 +49,8 @@
 
 #include <iostream>
 
-pqSMTKResourceManager::pqSMTKResourceManager(const QString& regGroup, const QString& regName,
-  vtkSMProxy* proxy, pqServer* server, QObject* parent)
+pqSMTKWrapper::pqSMTKWrapper(const QString& regGroup, const QString& regName, vtkSMProxy* proxy,
+  pqServer* server, QObject* parent)
   : Superclass(regGroup, regName, proxy, server, parent)
 {
   // I. Listen for PV selections and convert them to SMTK selections
@@ -80,8 +80,8 @@ pqSMTKResourceManager::pqSMTKResourceManager(const QString& regGroup, const QStr
   //     events on a client-side operation manager used to forward
   //     operations to the server. What we in fact do only works for
   //     the built-in mode. TODO: Fix this. Remove the need for me.
-  auto pxy = vtkSMSMTKResourceManagerProxy::SafeDownCast(this->getProxy());
-  auto wrapper = vtkSMTKResourceManagerWrapper::SafeDownCast(pxy->GetClientSideObject());
+  auto pxy = vtkSMSMTKWrapperProxy::SafeDownCast(this->getProxy());
+  auto wrapper = vtkSMTKWrapper::SafeDownCast(pxy->GetClientSideObject());
   if (wrapper)
   {
     /*
@@ -107,7 +107,7 @@ pqSMTKResourceManager::pqSMTKResourceManager(const QString& regGroup, const QStr
   pqSMTKBehavior::instance()->addPQProxy(this);
 }
 
-pqSMTKResourceManager::~pqSMTKResourceManager()
+pqSMTKWrapper::~pqSMTKWrapper()
 {
 #ifndef NDEBUG
   std::cout << "pqResourceManager dtor\n";
@@ -127,27 +127,27 @@ pqSMTKResourceManager::~pqSMTKResourceManager()
   }
 }
 
-vtkSMSMTKResourceManagerProxy* pqSMTKResourceManager::smtkProxy() const
+vtkSMSMTKWrapperProxy* pqSMTKWrapper::smtkProxy() const
 {
-  return vtkSMSMTKResourceManagerProxy::SafeDownCast(this->getProxy());
+  return vtkSMSMTKWrapperProxy::SafeDownCast(this->getProxy());
 }
 
-smtk::resource::ManagerPtr pqSMTKResourceManager::smtkResourceManager() const
+smtk::resource::ManagerPtr pqSMTKWrapper::smtkResourceManager() const
 {
-  return this->smtkProxy() ? this->smtkProxy()->GetManager() : nullptr;
+  return this->smtkProxy() ? this->smtkProxy()->GetResourceManager() : nullptr;
 }
 
-smtk::operation::ManagerPtr pqSMTKResourceManager::smtkOperationManager() const
+smtk::operation::ManagerPtr pqSMTKWrapper::smtkOperationManager() const
 {
   return this->smtkProxy() ? this->smtkProxy()->GetOperationManager() : nullptr;
 }
 
-smtk::view::SelectionPtr pqSMTKResourceManager::smtkSelection() const
+smtk::view::SelectionPtr pqSMTKWrapper::smtkSelection() const
 {
   return this->smtkProxy() ? this->smtkProxy()->GetSelection() : nullptr;
 }
 
-pqSMTKResource* pqSMTKResourceManager::getPVResource(smtk::resource::ResourcePtr rsrc) const
+pqSMTKResource* pqSMTKWrapper::getPVResource(smtk::resource::ResourcePtr rsrc) const
 {
   pqSMTKResource* result = nullptr;
   this->visitResources([&result, &rsrc](pqSMTKResource* pvrsrc) {
@@ -161,7 +161,7 @@ pqSMTKResource* pqSMTKResourceManager::getPVResource(smtk::resource::ResourcePtr
   return result;
 }
 
-void pqSMTKResourceManager::visitResources(std::function<bool(pqSMTKResource*)> visitor) const
+void pqSMTKWrapper::visitResources(std::function<bool(pqSMTKResource*)> visitor) const
 {
   for (auto rsrc : m_resources)
   {
@@ -175,7 +175,7 @@ void pqSMTKResourceManager::visitResources(std::function<bool(pqSMTKResource*)> 
   }
 }
 
-void pqSMTKResourceManager::addResource(pqSMTKResource* rsrc)
+void pqSMTKWrapper::addResource(pqSMTKResource* rsrc)
 {
   m_resources.insert(rsrc);
   auto pxy = this->smtkProxy();
@@ -186,7 +186,7 @@ void pqSMTKResourceManager::addResource(pqSMTKResource* rsrc)
   }
 }
 
-void pqSMTKResourceManager::removeResource(pqSMTKResource* rsrc)
+void pqSMTKWrapper::removeResource(pqSMTKResource* rsrc)
 {
   m_resources.erase(rsrc);
   auto pxy = this->smtkProxy();
@@ -197,9 +197,8 @@ void pqSMTKResourceManager::removeResource(pqSMTKResource* rsrc)
   }
 }
 
-void pqSMTKResourceManager::paraviewSelectionChanged(pqOutputPort* port)
+void pqSMTKWrapper::paraviewSelectionChanged(pqOutputPort* port)
 {
-  std::cout << "PV selection change, port " << port << "\n";
   /* TODO: This needs to be completed to work with separate server processes.
   auto pxy = this->wrapperProxy();
   (void)pxy;
@@ -212,17 +211,16 @@ void pqSMTKResourceManager::paraviewSelectionChanged(pqOutputPort* port)
   // I. Get vtkSelection source proxy ID
   auto dataInput = port->getSourceProxy();
   auto selnInput = port->getSelectionInput();
-  // II. Set it as an input on the vtkSMTKResourceManagerWrapper's SelectionPort
+  // II. Set it as an input on the vtkSMTKWrapper's SelectionPort
   pxy->SetSelectedPortProxy(dataInput);
   pxy->SetSelectionObjProxy(selnInput);
-  // III. Send a JSON request to the vtkSMTKResourceManagerWrapper telling it to grab the selection.
+  // III. Send a JSON request to the vtkSMTKWrapper telling it to grab the selection.
   pxy->FetchHardwareSelection();
   // IV. Update the client-side selection.
   // TODO
   */
   // TODO: This only works in built-in mode.
-  auto wrapper =
-    vtkSMTKResourceManagerWrapper::SafeDownCast(this->getProxy()->GetClientSideObject());
+  auto wrapper = vtkSMTKWrapper::SafeDownCast(this->getProxy()->GetClientSideObject());
   auto selnMgr = wrapper ? wrapper->GetSelection() : nullptr;
   if (!selnMgr)
   {

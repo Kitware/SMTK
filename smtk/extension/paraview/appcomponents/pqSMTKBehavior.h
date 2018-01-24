@@ -23,9 +23,9 @@ class pqProxy;
 class pqSelectionManager;
 class pqServer;
 class pqSMTKResource;
-class pqSMTKResourceManager;
+class pqSMTKWrapper;
 class pqView;
-class vtkSMSMTKResourceManagerProxy;
+class vtkSMSMTKWrapperProxy;
 
 /** \brief Create and synchronize smtk manager instances on the client and server.
   *
@@ -55,15 +55,15 @@ public:
     */
   ///@{
   ///
-  vtkSMSMTKResourceManagerProxy* wrapperProxy(pqServer* server = nullptr);
+  vtkSMSMTKWrapperProxy* wrapperProxy(pqServer* server = nullptr);
   ///
-  pqSMTKResourceManager* resourceManagerForServer(pqServer* server = nullptr);
+  pqSMTKWrapper* resourceManagerForServer(pqServer* server = nullptr);
   ///@}
 
-  virtual void addPQProxy(pqSMTKResourceManager* rsrcMgr);
+  virtual void addPQProxy(pqSMTKWrapper* rsrcMgr);
 
-  /// Return the pqSMTKResourceManager for a given smtk::resource::ManagerPtr.
-  pqSMTKResourceManager* getPVResourceManager(smtk::resource::ManagerPtr rsrcMgr);
+  /// Return the pqSMTKWrapper for a given smtk::resource::ManagerPtr.
+  pqSMTKWrapper* getPVResourceManager(smtk::resource::ManagerPtr rsrcMgr);
 
   /// Return the pqSMTKResource for a given smtk::resource::ResourcePtr.
   pqSMTKResource* getPVResource(smtk::resource::ResourcePtr rsrc);
@@ -78,7 +78,7 @@ public:
     * If the function returns true, then iteration should terminate.
     */
   virtual void visitResourceManagersOnServers(
-    const std::function<bool(pqSMTKResourceManager*, pqServer*)>& fn) const;
+    const std::function<bool(pqSMTKWrapper*, pqServer*)>& fn) const;
 
   /**
    * Create a pqDataRepresentation and set its default visibility value.
@@ -87,11 +87,11 @@ public:
 
 signals:
   /// Called from within addManagerOnServer (in response to server becoming ready)
-  void addedManagerOnServer(vtkSMSMTKResourceManagerProxy* mgr, pqServer* server);
-  void addedManagerOnServer(pqSMTKResourceManager* mgr, pqServer* server);
+  void addedManagerOnServer(vtkSMSMTKWrapperProxy* mgr, pqServer* server);
+  void addedManagerOnServer(pqSMTKWrapper* mgr, pqServer* server);
   /// Called from within removeManagerFromServer (in response to server disconnect prep)
-  void removingManagerFromServer(vtkSMSMTKResourceManagerProxy* mgr, pqServer* server);
-  void removingManagerFromServer(pqSMTKResourceManager* mgr, pqServer* server);
+  void removingManagerFromServer(vtkSMSMTKWrapperProxy* mgr, pqServer* server);
+  void removingManagerFromServer(pqSMTKWrapper* mgr, pqServer* server);
 
 protected:
   pqSMTKBehavior(QObject* parent = nullptr);

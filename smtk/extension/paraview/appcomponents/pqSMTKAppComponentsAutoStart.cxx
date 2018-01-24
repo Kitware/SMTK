@@ -13,7 +13,7 @@
 
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 //#include "smtk/extension/paraview/appcomponents/pqSMTKSelectionFilterBehavior.h"
-#include "smtk/extension/paraview/server/vtkSMSMTKResourceManagerProxy.h"
+#include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
 
 #include "pqApplicationCore.h"
 #include "pqObjectBuilder.h"

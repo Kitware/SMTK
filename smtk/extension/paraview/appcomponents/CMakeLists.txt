@@ -21,7 +21,7 @@ set(PQComponentsSrcs
   pqSMTKModelRepresentation.cxx
   pqSMTKSelectionFilterBehavior.cxx
   pqSMTKResource.cxx
-  pqSMTKResourceManager.cxx
+  pqSMTKWrapper.cxx
   pqSMTKResourcePanel.cxx
 )
 
@@ -33,7 +33,7 @@ set(PQComponentsHeaders
   pqSMTKModelRepresentation.h
   pqSMTKSelectionFilterBehavior.h
   pqSMTKResource.h
-  pqSMTKResourceManager.h
+  pqSMTKWrapper.h
   pqSMTKResourcePanel.h
 )
 
@@ -83,6 +83,8 @@ target_link_libraries(smtkPQComponentsExt LINK_PUBLIC
   smtkPVServerExtPlugin
 
   smtkQtExt
+  smtkOperationEnvironment
+  smtkEnvironment
   Qt5::Core
 )
 
@@ -122,23 +124,29 @@ add_paraview_toolbar(colorByToolBarIfaces colorByToolBarIfaceSrcs
 list(APPEND PLUGIN_ACTION_IFACES "${colorByToolBarIfaces}")
 list(APPEND PLUGIN_ACTION_IFACE_SRCS "${colorByToolBarIfaceSrcs}")
 
-add_pqproxy(PLUGIN_PROXY_IFACES PLUGIN_PROXY_IFACE_SRCS
+add_pqproxy(modelRepIfaces modelRepIfaceSrcs
   TYPE pqSMTKModelRepresentation
   XML_GROUP representations
   XML_NAME SMTKModelCompositeRepresentation
 )
+list(APPEND PLUGIN_PROXY_IFACES ${modelRepIfaces})
+list(APPEND PLUGIN_PROXY_IFACE_SRCS ${modelRepIfaceSrcs})
 
-add_pqproxy(PLUGIN_PROXY_IFACES PLUGIN_PROXY_IFACE_SRCS
+add_pqproxy(rsrcIfaces rsrcIfaceSrcs
   TYPE pqSMTKResource
   XML_GROUP sources
   XML_NAME SMTKModelReader
 )
+list(APPEND PLUGIN_PROXY_IFACES ${rsrcIfaces})
+list(APPEND PLUGIN_PROXY_IFACE_SRCS ${rsrcIfaceSrcs})
 
-add_pqproxy(PLUGIN_PROXY_IFACES PLUGIN_PROXY_IFACE_SRCS
-  TYPE pqSMTKResourceManager
+add_pqproxy(wrapperIfaces wrapperIfaceSrcs
+  TYPE pqSMTKWrapper
   XML_GROUP smtk
-  XML_NAME ResourceManager
+  XML_NAME SMTKWrapper
 )
+list(APPEND PLUGIN_PROXY_IFACES ${wrapperIfaces})
+list(APPEND PLUGIN_PROXY_IFACE_SRCS ${wrapperIfaceSrcs})
 
 add_paraview_dock_window(PLUGIN_DOCK_IFACES PLUGIN_DOCK_IFACES_SRCS
   CLASS_NAME pqSMTKResourcePanel

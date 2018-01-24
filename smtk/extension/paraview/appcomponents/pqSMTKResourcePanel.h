@@ -16,7 +16,7 @@
 class QItemSelection;
 
 class pqSMTKResource;
-class pqSMTKResourceManager;
+class pqSMTKWrapper;
 
 class pqServer;
 class pqView;
@@ -46,8 +46,8 @@ public slots:
 protected slots:
   virtual void searchTextChanged(const QString& searchText);
 
-  virtual void resourceManagerAdded(pqSMTKResourceManager* mgr, pqServer* server);
-  virtual void resourceManagerRemoved(pqSMTKResourceManager* mgr, pqServer* server);
+  virtual void resourceManagerAdded(pqSMTKWrapper* mgr, pqServer* server);
+  virtual void resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer* server);
 
   /// Used to update phrase model with new visibility info for the active view.
   virtual void activeViewChanged(pqView*);
