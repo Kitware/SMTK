@@ -17,6 +17,7 @@ if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   target_link_libraries(smtkMatplotlibPlugin
     LINK_PUBLIC
       smtkCore
+      smtkMatplotlibExtEnvironment
     LINK_PRIVATE
       vtkPVServerManagerApplicationCS
   )

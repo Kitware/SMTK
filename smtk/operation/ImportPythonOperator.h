@@ -34,6 +34,11 @@ public:
 
   virtual bool ableToOperate() override;
 
+  static std::vector<std::string> importOperatorsFromModule(const std::string&, Manager&);
+
+  static bool importOperator(
+    smtk::operation::Manager& manager, const std::string& moduleName, const std::string& opName);
+
 protected:
   Result operateInternal() override;
   Specification createSpecification() override;

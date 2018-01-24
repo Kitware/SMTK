@@ -1,3 +1,9 @@
+set(source
+  RegisterOperations.cxx
+  )
+set(headers
+  RegisterOperations.h
+  )
 set(matplotlibPySrcs
   __init__.py
   render_mesh.py
@@ -20,7 +26,21 @@ install(
   DESTINATION "${SMTK_PYTHON_MODULEDIR}/smtk/extension/matplotlib"
   )
 
-add_subdirectory(plugin)
+add_library(smtkMatplotlibExt ${source})
+target_link_libraries(smtkMatplotlibExt
+  PRIVATE
+    smtkCore
+)
+
+smtk_export_header(smtkMatplotlibExt Exports.h)
+smtk_public_headers(${headers})
+smtk_install_library(smtkMatplotlibExt)
+
+add_subdirectory(environment)
+
+if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+  add_subdirectory(plugin)
+endif()
 
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
