@@ -51,7 +51,7 @@ if (SMTK_ENABLE_VTK_SUPPORT)
     )
 endif()
 
-target_link_libraries(RenderMesh smtkCore smtkCoreModelTesting ${additional_libraries})
+target_link_libraries(RenderMesh smtkCore smtkMatplotlibExt smtkCoreModelTesting ${additional_libraries})
 
 if (SMTK_DATA_DIR)
   add_test(NAME RenderMesh COMMAND $<TARGET_FILE:RenderMesh>)

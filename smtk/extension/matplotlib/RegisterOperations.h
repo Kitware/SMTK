@@ -7,3 +7,22 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+#ifndef __smtk_extension_matplotlib_RegisterOperations_h
+#define __smtk_extension_matplotlib_RegisterOperations_h
+
+#include "smtk/extension/matplotlib/Exports.h"
+
+#include "smtk/operation/Manager.h"
+
+namespace smtk
+{
+namespace extension
+{
+namespace matplotlib
+{
+SMTKMATPLOTLIBEXT_EXPORT void registerOperations(smtk::operation::Manager::Ptr&);
+}
+}
+}
+
+#endif

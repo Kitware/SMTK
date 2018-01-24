@@ -17,27 +17,28 @@ Render a 2-dmensional mesh using matplotlib.
 """
 import matplotlib.pyplot as plt
 import matplotlib.tri as tri
+
+import render_mesh_xml
+
 import smtk
+import smtk.attribute
+import smtk.io
 import smtk.mesh
-import smtk.model
+import smtk.operation
 
 
-@smtk.model.operator("render mesh", smtk.model.Session)
-class RenderMesh(smtk.model.Operator):
+class RenderMesh(smtk.operation.NewOp):
 
     def __init__(self):
-        smtk.model.Operator.__init__(self)
+        smtk.operation.NewOp.__init__(self)
 
     def name(self):
         return "render mesh"
 
-    def className(self):
-        return self.__name__
-
     def operateInternal(self):
-        # Access the mesh and filename from the specification
-        mesh = self.specification().findMesh('mesh').value(0)
-        filename = self.specification().findFile('filename').value(0)
+        # Access the mesh and filename from the parameters
+        mesh = self.parameters().find('mesh').value(0)
+        filename = self.parameters().find('filename').value(0)
 
         # Collect point coordinates
         coords = []
@@ -84,5 +85,11 @@ class RenderMesh(smtk.model.Operator):
         plt.savefig(filename, bbox_inches='tight')
 
         # Return with success
-        result = self.createResult(smtk.model.OPERATION_SUCCEEDED)
+        result = self.createResult(smtk.operation.NewOp.Outcome.SUCCEEDED)
         return result
+
+    def createSpecification(self):
+        spec = smtk.attribute.Collection.create()
+        reader = smtk.io.AttributeReader()
+        reader.readContents(spec, render_mesh_xml.description, self.log())
+        return spec

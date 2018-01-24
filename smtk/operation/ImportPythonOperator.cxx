@@ -76,6 +76,64 @@ bool ImportPythonOperator::ableToOperate()
   return true;
 }
 
+std::vector<std::string> ImportPythonOperator::importOperatorsFromModule(
+  const std::string& moduleName, smtk::operation::Manager& manager)
+{
+  // Query the module for SMTK operators
+  std::stringstream cmd;
+  cmd << "import sys, inspect, smtk, smtk.operation, " << moduleName << "\n"
+      << "ops = set()\n"
+      << "for name, obj in inspect.getmembers(" << moduleName << "):\n"
+      << "    if inspect.isclass(obj) and issubclass(obj, smtk.operation.NewOp):\n"
+      << "        ops.add(obj.__name__)\n"
+      << "opstring = ';;'.join(str(op) for op in ops)\n";
+
+  pybind11::dict locals;
+  pybind11::exec(cmd.str().c_str(), pybind11::globals(), locals);
+
+  std::string opNames = locals["opstring"].cast<std::string>();
+
+  if (opNames.empty())
+  {
+    // There were no operators in the module
+    return std::vector<std::string>();
+  }
+
+  // As per the above python snippet, the output is a string of all of the
+  // operator names defined in the input file, separated by ";;". We parse this
+  // string to loop over each python operator.
+  regex re(";;");
+  sregex_token_iterator first{ opNames.begin(), opNames.end(), re, -1 }, last;
+
+  std::vector<std::string> uniqueNames;
+
+  // For each operator name in the imported module...
+  while (first != last)
+  {
+    const std::string& opName = *first++;
+
+    bool registered = importOperator(manager, moduleName, opName);
+
+    if (registered)
+    {
+      uniqueNames.push_back(std::string(moduleName + "." + opName));
+    }
+  }
+
+  return uniqueNames;
+}
+
+bool ImportPythonOperator::importOperator(
+  smtk::operation::Manager& manager, const std::string& moduleName, const std::string& opName)
+{
+  std::string uniqueName = moduleName + "." + opName;
+  smtk::operation::NewOp::Index index = std::hash<std::string>{}(uniqueName);
+  auto create = std::bind(smtk::operation::PyOperator::create, moduleName, opName, index);
+
+  return manager.registerOperator(
+    Metadata(uniqueName, index, create()->createSpecification(), create));
+}
+
 ImportPythonOperator::Result ImportPythonOperator::operateInternal()
 {
   // Access the python operator's file name
@@ -93,58 +151,20 @@ ImportPythonOperator::Result ImportPythonOperator::operateInternal()
     return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
-  // Query the newly constructed module for SMTK operators
-  std::stringstream cmd;
-  cmd << "import sys, inspect, smtk, smtk.model, " << moduleName << "\n"
-      << "ops = set()\n"
-      << "for name, obj in inspect.getmembers(" << moduleName << "):\n"
-      << "    if inspect.isclass(obj) and issubclass(obj, smtk.operation.NewOp):\n"
-      << "        ops.add(obj.__name__)\n"
-      << "opstring = ';;'.join(str(op) for op in ops)\n";
-
-  pybind11::dict locals;
-  pybind11::exec(cmd.str().c_str(), pybind11::globals(), locals);
-
-  std::string opNames = locals["opstring"].cast<std::string>();
-
-  // As per the above python snippet, the output is a string of all of the
-  // operator names defined in the input file, separated by ";;". We parse this
-  // string to loop over each python operator.
-  regex re(";;");
-  sregex_token_iterator first{ opNames.begin(), opNames.end(), re, -1 }, last;
-
-  // If there were no operators in the module, then we failed to import a python
-  // operator
-  if (first == last)
-  {
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
-  }
+  std::vector<std::string> uniqueNames =
+    this->importOperatorsFromModule(moduleName, *(this->m_manager));
 
   Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
 
-  smtk::attribute::StringItemPtr uniqueNames = result->findString("unique_name");
+  smtk::attribute::StringItemPtr uniqueNameItem = result->findString("unique_name");
 
-  // For each operator name in the imported module...
-  while (first != last)
+  for (auto& uniqueName : uniqueNames)
   {
-    const std::string& opName = *first++;
-
-    std::string uniqueName = moduleName + "." + opName;
-    smtk::operation::NewOp::Index index = std::hash<std::string>{}(uniqueName);
-    auto create = std::bind(smtk::operation::PyOperator::create, moduleName, opName, index);
-
-    // We have already confirmed the existence of the manager in ableToOperate().
-    bool registered = this->m_manager->registerOperator(
-      Metadata(uniqueName, index, create()->createSpecification(), create));
-
-    if (registered)
-    {
-      uniqueNames->appendValue(uniqueName);
-    }
+    uniqueNameItem->appendValue(uniqueName);
   }
 
-  return uniqueNames->numberOfValues() > 0 ? result : this->createResult(
-                                                        smtk::operation::NewOp::Outcome::FAILED);
+  return uniqueNameItem->numberOfValues() > 0 ? result : this->createResult(
+                                                           smtk::operation::NewOp::Outcome::FAILED);
 }
 
 ImportPythonOperator::Specification ImportPythonOperator::createSpecification()

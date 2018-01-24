@@ -16,7 +16,13 @@
 
 #include "smtk/operation/Manager.h"
 
+#include "smtk/operation/ImportPythonOperator.h"
+#include "smtk/operation/Metadata.h"
 #include "smtk/operation/MetadataContainer.h"
+#include "smtk/operation/NewOp.h"
+
+#include "smtk/operation/pybind11/PyOperator.h"
+
 #include "smtk/resource/Component.h"
 #include "smtk/resource/Manager.h"
 
@@ -42,6 +48,9 @@ PySharedPtrClass< smtk::operation::Manager > pybind11_init_smtk_operation_Manage
     .def("observers", (smtk::operation::Observers & (smtk::operation::Manager::*)()) &smtk::operation::Manager::observers)
     .def("observers", (smtk::operation::Observers const & (smtk::operation::Manager::*)() const) &smtk::operation::Manager::observers)
     .def("registerResourceManager", &smtk::operation::Manager::registerResourceManager, py::arg("arg0"))
+    .def("registerOperator", [](smtk::operation::Manager& manager, const std::string& moduleName, const std::string& opName){
+        return smtk::operation::ImportPythonOperator::importOperator(manager, moduleName, opName);
+      })
     ;
   return instance;
 }
