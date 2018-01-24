@@ -988,17 +988,19 @@
         </StringListDomain>
       </StringVectorProperty>
       <StringVectorProperty command="SetColorBy"
-                            default_values="Scalars"
+                            default_values="Entity"
                             name="ColorBy"
                             number_of_elements="1">
         <StringListDomain name="string_list">
-          <String value="Scalars" />
           <String value="Entity" />
           <String value="Volume" />
+          <String value="Field" />
         </StringListDomain>
-        <Documentation>Models can be colored by differnt modes. Mapping scalars
-        through a color LUT (Scalars), using the color defined by its entity
-        (Entity) or using the color defined by a bounded volume (Volume).
+        <Documentation>
+          Model entities can be colored in different ways:
+          using the color defined on the entity (Entity); or
+          using the color defined by the volume bounded by the entity (Volume); or
+          mapping field values (scalars) defined on points or cells through a color lookup table (Field),
         </Documentation>
       </StringVectorProperty>
       <DoubleVectorProperty command="SetOpacity"

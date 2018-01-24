@@ -63,6 +63,13 @@ private slots:
 signals:
   void colorByTextChanged(const QString&);
 
+  /**\brief Called when the colorByTextChanged argument moves to or from "Field".
+    *
+    * This is used by the pqSMTKColorByToolBar to enable/disable the "Active
+    * Variable Controls" toolbar so it is only visible when it will have an effect.
+    */
+  void colorByFieldActive(bool active);
+
 private:
   Q_DISABLE_COPY(pqSMTKColorByWidget)
 

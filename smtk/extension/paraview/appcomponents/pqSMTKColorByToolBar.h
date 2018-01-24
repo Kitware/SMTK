@@ -7,43 +7,31 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_extension_paraview_appcomponents_pqSMTKColorByBehavior_h
-#define smtk_extension_paraview_appcomponents_pqSMTKColorByBehavior_h
+#ifndef smtk_extension_paraview_appcomponents_pqSMTKColorByToolBar_h
+#define smtk_extension_paraview_appcomponents_pqSMTKColorByToolBar_h
 
 #include "smtk/extension/paraview/appcomponents/Exports.h"
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/EntityTypeBits.h"
 
-#include <QActionGroup>
+#include <QToolBar>
 
 class pqServer;
-class QToolBar;
+class QAction;
 class vtkSMSMTKResourceManagerProxy;
 
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKColorByBehavior : public QActionGroup
+class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKColorByToolBar : public QToolBar
 {
   Q_OBJECT
-  using Superclass = QActionGroup;
+  using Superclass = QToolBar;
 
 public:
-  pqSMTKColorByBehavior(QObject* parent = nullptr);
-  ~pqSMTKColorByBehavior() override;
-
-  static pqSMTKColorByBehavior* instance();
-
-public slots:
-  virtual void customizeToolBar(QToolBar* tb);
-
-protected slots:
-  virtual void onFilterChanged(QAction* a);
-
-protected:
-  class pqInternal;
-  pqInternal* m_p;
+  pqSMTKColorByToolBar(QWidget* parent = nullptr);
+  ~pqSMTKColorByToolBar() override;
 
 private:
-  Q_DISABLE_COPY(pqSMTKColorByBehavior);
+  Q_DISABLE_COPY(pqSMTKColorByToolBar);
 };
 
 #endif

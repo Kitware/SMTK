@@ -626,9 +626,9 @@ void vtkSMTKModelRepresentation::SetColorBy(const char* type)
   {
     this->SetColorBy(VOLUME);
   }
-  else if (vtksys::SystemTools::Strucmp(type, "Scalars") == 0)
+  else if (vtksys::SystemTools::Strucmp(type, "Field") == 0)
   {
-    this->SetColorBy(SCALARS);
+    this->SetColorBy(FIELD);
   }
   else
   {
@@ -810,11 +810,11 @@ void vtkSMTKModelRepresentation::UpdateColoringParameters(vtkDataObject* data)
     case ENTITY:
       this->ColorByEntity(multiBlock);
       break;
-    case SCALARS:
-      this->ColorByScalars();
+    case FIELD:
+      this->ColorByField();
       break;
     default:
-      this->ColorByScalars();
+      this->ColorByEntity(multiBlock);
       break;
   }
 
@@ -824,7 +824,7 @@ void vtkSMTKModelRepresentation::UpdateColoringParameters(vtkDataObject* data)
   }
 }
 
-void vtkSMTKModelRepresentation::ColorByScalars()
+void vtkSMTKModelRepresentation::ColorByField()
 {
   this->EntityMapper->GetCompositeDataDisplayAttributes()->RemoveBlockColors();
 
