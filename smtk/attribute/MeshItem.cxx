@@ -120,14 +120,6 @@ bool MeshItem::isValid() const
     {
       return false;
     }
-
-    // If the mesh belongs to a collection that the mesh manager is not tracking return false
-    // smtk::mesh::Manager::Ptr mgr = this->attribute()->collection()->refModelManager()->meshes();
-    smtk::mesh::Manager::Ptr mgr = it->collection()->manager();
-    if (!mgr->hasCollection((*it).collection()))
-    {
-      return false;
-    }
   }
   return true;
 }
