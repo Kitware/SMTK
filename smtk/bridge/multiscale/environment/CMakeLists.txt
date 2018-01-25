@@ -1,0 +1,8 @@
+set(environmentSrcs
+  Environment.cxx
+)
+
+add_library(smtkMultiscaleSessionEnvironment ${environmentSrcs})
+target_link_libraries(smtkMultiscaleSessionEnvironment PUBLIC smtkEnvironment smtkMultiscaleSession)
+smtk_export_header(smtkMultiscaleSessionEnvironment Exports.h)
+smtk_install_library(smtkMultiscaleSessionEnvironment)

@@ -7,8 +7,12 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/bridge/multiscale/Operator.h"
-#include "smtk/bridge/multiscale/Session.h"
+#ifndef __smtk_session_multiscale_RegisterSession_h
+#define __smtk_session_multiscale_RegisterSession_h
+
+#include "smtk/bridge/multiscale/Exports.h"
+#include "smtk/operation/Manager.h"
+#include "smtk/resource/Manager.h"
 
 namespace smtk
 {
@@ -17,12 +21,10 @@ namespace bridge
 namespace multiscale
 {
 
-/// Return a shared pointer to the session backing a multiscale operator.
-SessionPtr Operator::activeSession()
-{
-  return smtk::dynamic_pointer_cast<smtk::bridge::multiscale::Session>(this->session());
+SMTKMULTISCALESESSION_EXPORT void registerOperations(smtk::operation::Manager::Ptr&);
+SMTKMULTISCALESESSION_EXPORT void registerResources(smtk::resource::Manager::Ptr&);
+}
+}
 }
 
-} // namespace multiscale
-} //namespace bridge
-} // namespace smtk
+#endif

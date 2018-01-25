@@ -34,50 +34,50 @@ if afrlDir not in sys.path:
 
 import Dream3DPipeline
 
+import import_from_deform_xml
+
 import os
 import smtk
+import smtk.attribute
+import smtk.bridge.mesh
+import smtk.bridge.multiscale
+import smtk.io
 import smtk.io.vtk
 import smtk.mesh
 import smtk.model
-import smtk.bridge.mesh
-import smtk.bridge.multiscale
+import smtk.operation
 import subprocess
 import vtk
 
 
-@smtk.model.operator("import from deform", smtk.bridge.multiscale.Session)
-class import_from_deform(smtk.model.Operator):
+class import_from_deform(smtk.operation.NewOp):
 
     def __init__(self):
-        smtk.model.Operator.__init__(self)
+        smtk.operation.NewOp.__init__(self)
 
     def name(self):
         return "import from deform"
 
-    def className(self):
-        return self.__name__
-
     def operateInternal(self):
-
         # Access the DEFORM point and element files
-        point_file = self.specification().findFile('point-file').value(0)
-        element_file = self.specification().findFile('element-file').value(0)
+        point_file = self.parameters().find('point-file').value(0)
+        element_file = self.parameters().find('element-file').value(0)
 
         # Access the timestep to process
-        timestep = self.specification().findInt('timestep').value(0)
+        timestep = self.parameters().find('timestep').value(0)
 
         # Access the Dream3D PipelineRunner exectuable
-        pipeline_executable = self.specification().findFile(
+        pipeline_executable = self.parameters().find(
             'pipeline-executable').value(0)
 
         # Access the name of the attribute to use for zoning
-        attribute = self.specification().findString('attribute').value(0)
+        attribute = self.parameters().find('attribute').value(0)
 
         # Access the microscale statistics parameters
-        stats = self.specification().findGroup('stats')
+        stats = self.parameters().find('stats')
 
         # Access the Dream3D ouptut file
-        output_file = self.specification().findFile('output-file').value(0)
+        output_file = self.parameters().find('output-file').value(0)
 
         # The location of the template pipeline is hard-coded w.r.t. the AFRL
         # directory
@@ -92,17 +92,17 @@ class import_from_deform(smtk.model.Operator):
 
         for i in range(stats.numberOfGroups()):
             for p in ['mu', 'sigma', 'min_cutoff', 'max_cutoff']:
-                eval(p).append(
-                    smtk.attribute.to_concrete(stats.find(i, p)).value(0))
+                eval(p).append(stats.find(i, p).value(0))
 
         # Access the Dream3D output file
-        output_file = self.specification().findFile('output-file').value(0)
+        output_file = self.parameters().find('output-file').value(0)
 
         # Ensure that the executable is, in fact, an executable
         pipeline = Dream3DPipeline.which(pipeline_executable)
         if pipeline is None:
-            print('Cannot find PipelineRunner')
-            return self.createResult(smtk.model.OPERATION_FAILED)
+            print('Cannot find PipelineRunner at \'',
+                  pipeline_executable, '\'')
+            return self.createResult(smtk.operation.NewOp.Outcome.FAILED)
 
         # Generate the Dream3D pipeline for this operation
         pipeline_file = \
@@ -117,7 +117,7 @@ class import_from_deform(smtk.model.Operator):
         subprocess.call(pipelineargs)
 
         # Remove the pipeline file
-        os.remove(pipeline_file)
+#        os.remove(pipeline_file)
 
         # Read DREAM3D Xdmf file as a VTK data object
         xdmfReader = vtk.vtkXdmfReader()
@@ -138,14 +138,15 @@ class import_from_deform(smtk.model.Operator):
 
         # Ensure that the import succeeded
         if not collection or not collection.isValid():
-            return self.createResult(smtk.model.OPERATION_FAILED)
+            return self.createResult(smtk.operation.NewOp.Outcome.FAILED)
 
         # Assign its model manager to the one associated with this session
         collection.modelManager = self.manager()
         collection.name("DEFORM mesh")
 
         # Construct the topology
-        self.activeSession().addTopology(smtk.bridge.mesh.Topology(collection))
+        activeSession = smtk.bridge.multiscale.Session.CastTo(self.session())
+        activeSession.addTopology(smtk.bridge.mesh.Topology(collection))
 
         # Our collections will already have a UUID, so here we create a model
         # given the model manager and UUID
@@ -165,7 +166,7 @@ class import_from_deform(smtk.model.Operator):
         self.activeSession().transcribe(
             model, smtk.model.SESSION_EVERYTHING, False)
 
-        result = self.createResult(smtk.model.OPERATION_SUCCEEDED)
+        result = self.createResult(smtk.operation.NewOp.Outcome.SUCCEEDED)
 
         resultModels = result.findModelEntity("model")
         resultModels.setValue(model)
@@ -179,3 +180,10 @@ class import_from_deform(smtk.model.Operator):
 
         # Return with success
         return result
+
+    def createSpecification(self):
+        spec = smtk.attribute.Collection.create()
+        reader = smtk.io.AttributeReader()
+        reader.readContents(
+            spec, import_from_deform_xml.description, self.log())
+        return spec

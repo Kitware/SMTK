@@ -7,14 +7,19 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+#ifndef __smtk_model_RegisterPythonOperators_h
+#define __smtk_model_RegisterPythonOperators_h
 
-#ifndef pybind_smtk_bridge_multiscale_PointerDefs_h
-#define pybind_smtk_bridge_multiscale_PointerDefs_h
+#include "smtk/operation/Manager.h"
 
-#include <pybind11/pybind11.h>
+namespace smtk
+{
+namespace operation
+{
 
-#include "smtk/bridge/multiscale/PointerDefs.h"
-
-namespace py = pybind11;
+bool registerPythonOperators(
+  smtk::operation::Manager::Ptr& operationManager, const std::string& moduleName);
+}
+}
 
 #endif

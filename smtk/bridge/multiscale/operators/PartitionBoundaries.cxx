@@ -9,13 +9,21 @@
 //=========================================================================
 #include "smtk/bridge/multiscale/operators/PartitionBoundaries.h"
 
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
+
+#include "smtk/bridge/multiscale/PartitionBoundaries_xml.h"
+#include "smtk/bridge/multiscale/Resource.h"
 #include "smtk/bridge/multiscale/Session.h"
+
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/utility/Metrics.h"
+
 #include "smtk/model/Vertex.h"
+
+#include <cmath>
 
 using namespace smtk::model;
 using namespace smtk::common;
@@ -166,56 +174,58 @@ namespace bridge
 namespace multiscale
 {
 
-smtk::model::OperatorResult PartitionBoundaries::operateInternal()
+PartitionBoundaries::Result PartitionBoundaries::operateInternal()
 {
-  smtk::model::OperatorResult result;
+  Result result;
 
   // Grab the datasets associated with the operator
-  smtk::model::Models datasets =
-    this->specification()->associatedModelEntities<smtk::model::Models>();
+  smtk::model::Models datasets = this->parameters()->associatedModelEntities<smtk::model::Models>();
   if (datasets.empty())
   {
     smtkErrorMacro(this->log(), "No models on which to partition boundaries.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
   smtk::model::Model dataset = datasets[0];
+
+  smtk::bridge::multiscale::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::bridge::multiscale::Resource>(dataset.component()->resource());
+  smtk::bridge::multiscale::Session::Ptr session = resource->session();
+
+  if (!session)
+  {
+    smtkErrorMacro(this->log(), "No session associated with this model.");
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+  }
 
   // The collection for this model has the same UUID as the model, so we can
   // access it using the model's UUID
   smtk::mesh::CollectionPtr collection =
-    this->activeSession()->meshManager()->findCollection(dataset.entity())->second;
+    session->meshManager()->findCollection(dataset.entity())->second;
 
   if (!collection->isValid())
   {
     smtkErrorMacro(this->log(), "No collection associated with this model.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
-  smtk::bridge::mesh::Topology* topology = this->activeSession()->topology(dataset);
+  smtk::bridge::mesh::Topology* topology = session->topology(dataset);
 
   if (!topology)
   {
     smtkErrorMacro(this->log(), "No topology associated with this model.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
-  smtk::bridge::multiscale::SessionPtr sess = this->activeSession();
-  if (!sess)
-  {
-    smtkErrorMacro(this->log(), "No session associated with this model.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
-  }
-
-  // Set the origin from the values held in the specification
+  // Set the origin from the values held in the parameters
   double origin[3];
-  smtk::attribute::DoubleItemPtr originItem = this->specification()->findDouble("origin");
+  smtk::attribute::DoubleItemPtr originItem = this->parameters()->findDouble("origin");
   for (int i = 0; i < 3; i++)
   {
     origin[i] = originItem->value(i);
   }
 
-  // Set the radius from the values held in the specification
-  double radius = this->specification()->findDouble("radius")->value();
+  // Set the radius from the values held in the parameters
+  double radius = this->parameters()->findDouble("radius")->value();
 
   //extract the exterior-shell for all meshes.
   smtk::mesh::MeshSet shell = collection->meshes().extractShell();
@@ -243,29 +253,29 @@ smtk::model::OperatorResult PartitionBoundaries::operateInternal()
     labelIntersection(collection, shell, filter, created, *topology);
   }
 
-  result = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
-  result->findModelEntity("created")->setIsEnabled(true);
-  this->addEntitiesToResult(result, created, CREATED);
+  result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  smtk::attribute::ComponentItem::Ptr createdItem = result->findComponent("created");
+  createdItem->setIsEnabled(true);
   for (auto entity : created)
   {
-    this->session()->declareDanglingEntity(entity);
+    createdItem->appendValue(entity.component());
+    session->declareDanglingEntity(entity);
   }
 
-  smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->associations();
+  smtk::attribute::ModelEntityItem::Ptr modelItem = this->parameters()->associations();
   smtk::model::Model model = modelItem->value(0);
   model.addCells(created);
-  this->addEntityToResult(result, model, MODIFIED);
+
+  smtk::attribute::ComponentItem::Ptr modifiedItem = result->findComponent("modified");
+  modifiedItem->appendValue(model.component());
 
   return result;
 }
 
-} // namespace multiscale
-} //namespace bridge
-} // namespace smtk
-
-#include "smtk/bridge/multiscale/Exports.h"
-#include "smtk/bridge/multiscale/PartitionBoundaries_xml.h"
-
-smtkImplementsModelOperator(SMTKMULTISCALESESSION_EXPORT,
-  smtk::bridge::multiscale::PartitionBoundaries, multiscale_partition_boundaries,
-  "partition boundaries", PartitionBoundaries_xml, smtk::bridge::multiscale::Session);
+const char* PartitionBoundaries::xmlDescription() const
+{
+  return PartitionBoundaries_xml;
+}
+}
+}
+}

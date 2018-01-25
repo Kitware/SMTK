@@ -41,6 +41,8 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
 
   list (APPEND operationSrcs ImportPythonOperator.cxx)
   list (APPEND operationHeaders ImportPythonOperator.h)
+  list (APPEND operationSrcs RegisterPythonOperators.cxx)
+  list (APPEND operationHeaders RegisterPythonOperators.h)
 
   add_subdirectory(pybind11)
 
