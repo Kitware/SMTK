@@ -8,15 +8,15 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/bridge/mesh/environment/Exports.h"
-
 #include "smtk/environment/Environment.h"
 
 #include "smtk/bridge/mesh/RegisterSession.h"
 
+#include "smtk/bridge/mesh/environment/Exports.h"
+
 namespace
 {
-static bool registerToEnvironment()
+bool registerToEnvironment()
 {
   smtk::bridge::mesh::registerOperations(smtk::environment::OperationManager::instance());
   smtk::bridge::mesh::registerResources(smtk::environment::ResourceManager::instance());

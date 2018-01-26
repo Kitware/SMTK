@@ -8,15 +8,15 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/extension/matplotlib/environment/Exports.h"
-
 #include "smtk/environment/Environment.h"
 
 #include "smtk/extension/matplotlib/RegisterOperations.h"
 
+#include "smtk/extension/matplotlib/environment/Exports.h"
+
 namespace
 {
-static bool registerToEnvironment()
+bool registerToEnvironment()
 {
   smtk::extension::matplotlib::registerOperations(smtk::environment::OperationManager::instance());
   return true;

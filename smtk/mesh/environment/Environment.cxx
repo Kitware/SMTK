@@ -13,9 +13,11 @@
 #include "smtk/mesh/operators/RegisterOperations.h"
 #include "smtk/mesh/resource/RegisterResources.h"
 
+#include "smtk/mesh/environment/Exports.h"
+
 namespace
 {
-static bool registerToEnvironment()
+bool registerToEnvironment()
 {
   smtk::mesh::registerOperations(smtk::environment::OperationManager::instance());
   smtk::mesh::registerResources(smtk::environment::ResourceManager::instance());
@@ -29,7 +31,7 @@ namespace mesh
 {
 namespace environment
 {
-bool registered = registerToEnvironment();
+SMTKMESHENVIRONMENT_EXPORT bool registered = registerToEnvironment();
 }
 }
 }

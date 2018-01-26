@@ -4,4 +4,5 @@ set(environmentSrcs
 
 add_library(smtkResourceEnvironment ${environmentSrcs})
 target_link_libraries(smtkResourceEnvironment PUBLIC smtkCore smtkEnvironment)
+smtk_export_header(smtkResourceEnvironment Exports.h)
 smtk_install_library(smtkResourceEnvironment)

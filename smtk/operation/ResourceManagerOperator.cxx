@@ -39,7 +39,6 @@ bool ResourceManagerOperator::ableToOperate()
   {
     return false;
   }
-
   return true;
 }
 }

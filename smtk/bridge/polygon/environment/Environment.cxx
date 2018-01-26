@@ -8,15 +8,15 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/bridge/polygon/environment/Exports.h"
-
 #include "smtk/environment/Environment.h"
 
 #include "smtk/bridge/polygon/RegisterSession.h"
 
+#include "smtk/bridge/polygon/environment/Exports.h"
+
 namespace
 {
-static bool registerToEnvironment()
+bool registerToEnvironment()
 {
   smtk::bridge::polygon::registerOperations(smtk::environment::OperationManager::instance());
   smtk::bridge::polygon::registerResources(smtk::environment::ResourceManager::instance());
