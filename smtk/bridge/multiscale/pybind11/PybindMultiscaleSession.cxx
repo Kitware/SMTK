@@ -21,13 +21,9 @@ namespace py = pybind11;
 template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
-#include "PybindOperator.h"
-#include "PybindPointerDefs.h"
-#include "PybindSession.h"
-
 #include "PybindPartitionBoundaries.h"
-#include "PybindPythonScript.h"
 #include "PybindRevolve.h"
+#include "PybindSession.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
@@ -37,10 +33,8 @@ PYBIND11_MODULE(_smtkPybindMultiscaleSession, multiscale)
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
-  PySharedPtrClass< smtk::bridge::multiscale::Operator, smtk::model::Operator > smtk_bridge_multiscale_Operator = pybind11_init_smtk_bridge_multiscale_Operator(multiscale);
   PySharedPtrClass< smtk::bridge::multiscale::Session, smtk::bridge::mesh::Session > smtk_bridge_multiscale_Session = pybind11_init_smtk_bridge_multiscale_Session(multiscale);
 
-  PySharedPtrClass< smtk::bridge::multiscale::PythonScript, smtk::bridge::multiscale::Operator > smtk_bridge_multiscale_PythonScript = pybind11_init_smtk_bridge_multiscale_PythonScript(multiscale);
-  PySharedPtrClass< smtk::bridge::multiscale::Revolve, smtk::bridge::multiscale::Operator > smtk_bridge_multiscale_Revolve = pybind11_init_smtk_bridge_multiscale_Revolve(multiscale);
-  PySharedPtrClass< smtk::bridge::multiscale::PartitionBoundaries, smtk::bridge::multiscale::Operator > smtk_bridge_multiscale_PartitionBoundaries = pybind11_init_smtk_bridge_multiscale_PartitionBoundaries(multiscale);
+  PySharedPtrClass< smtk::bridge::multiscale::Revolve, smtk::operation::XMLOperator > smtk_bridge_multiscale_Revolve = pybind11_init_smtk_bridge_multiscale_Revolve(multiscale);
+  PySharedPtrClass< smtk::bridge::multiscale::PartitionBoundaries, smtk::operation::XMLOperator > smtk_bridge_multiscale_PartitionBoundaries = pybind11_init_smtk_bridge_multiscale_PartitionBoundaries(multiscale);
 }

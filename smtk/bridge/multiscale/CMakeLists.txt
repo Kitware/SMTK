@@ -5,18 +5,18 @@ include("${VTK_USE_FILE}")
 list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 
 set(multiscaleSrcs
+  RegisterSession.cxx
+  Resource.cxx
   Session.cxx
-  Operator.cxx
   operators/PartitionBoundaries.cxx
-  operators/PythonScript.cxx
   operators/Revolve.cxx
 )
 
 set(multiscaleHeaders
+  RegisterSession.h
+  Resource.h
   Session.h
-  Operator.h
   operators/PartitionBoundaries.h
-  operators/PythonScript.h
   operators/Revolve.h
 )
 
@@ -62,6 +62,8 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Revolve.sbt" multiscale
 
 # Install the headers
 smtk_public_headers(${multiscaleHeaders})
+
+add_subdirectory(environment)
 
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_subdirectory(plugin)

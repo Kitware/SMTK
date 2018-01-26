@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the Multiscale "import_from_deform" Operator -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
     <!-- Operator -->
+    <include href="smtk/operation/NewOp.xml"/>
     <AttDef Type="import from deform" Label="Model - Import" BaseType="operator">
       <BriefDescription>
         Import and partition a DEFORM-2D model using Dream3D
@@ -76,6 +77,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(import from deform)" BaseType="result">
       <ItemDefinitions>
         <!-- The model read from the file. -->

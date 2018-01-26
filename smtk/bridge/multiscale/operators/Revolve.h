@@ -10,8 +10,9 @@
 #ifndef __smtk_session_multiscale_Revolve_h
 #define __smtk_session_multiscale_Revolve_h
 
-#include "smtk/bridge/multiscale/Operator.h"
-#include "vtkObject.h"
+#include "smtk/bridge/multiscale/Exports.h"
+
+#include "smtk/operation/XMLOperator.h"
 
 namespace smtk
 {
@@ -26,16 +27,16 @@ namespace multiscale
  * revolves it about an axis, generating a 3-dimensional mesh.
  */
 
-class SMTKMULTISCALESESSION_EXPORT Revolve : public Operator
+class SMTKMULTISCALESESSION_EXPORT Revolve : public smtk::operation::XMLOperator
 {
 public:
   smtkTypeMacro(Revolve);
   smtkCreateMacro(Revolve);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  virtual const char* xmlDescription() const override;
 };
 
 } // namespace multiscale

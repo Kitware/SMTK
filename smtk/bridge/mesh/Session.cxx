@@ -202,8 +202,3 @@ smtk::model::SessionInfoBits Session::transcribeInternal(
 }
 
 #include "smtk/bridge/mesh/Session_json.h"
-
-smtkImplementsModelingKernel(
-  SMTKMESHSESSION_EXPORT, mesh, Session_json, smtk::model::SessionHasNoStaticSetup,
-  smtk::bridge::mesh::Session, true /* inherit "universal" operators */
-  );

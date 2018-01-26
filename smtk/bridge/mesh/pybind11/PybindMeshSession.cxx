@@ -28,7 +28,6 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindExportOperator.h"
 #include "PybindEulerCharacteristicRatio.h"
 
-#include "smtk/model/Operator.h"
 #include "smtk/model/Session.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);

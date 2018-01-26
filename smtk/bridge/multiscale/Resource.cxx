@@ -9,21 +9,23 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //
 //=============================================================================
-#include "smtk/extension/matplotlib/RegisterOperations.h"
-
-#include "smtk/operation/RegisterPythonOperators.h"
+#include "smtk/bridge/multiscale/Resource.h"
 
 namespace smtk
 {
-namespace extension
+namespace bridge
 {
-namespace matplotlib
+namespace multiscale
 {
 
-void registerOperations(smtk::operation::Manager::Ptr& operationManager)
+Resource::Resource(const smtk::common::UUID& id, resource::Manager::Ptr manager)
+  : smtk::bridge::mesh::Resource(id, manager)
 {
-  smtk::operation::registerPythonOperators(
-    operationManager, "smtk.extension.matplotlib.render_mesh");
+}
+
+Resource::Resource(resource::Manager::Ptr manager)
+  : smtk::bridge::mesh::Resource(manager)
+{
 }
 }
 }

@@ -8,8 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/PythonAutoInit.h"
-
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/FileItem.h"
@@ -18,6 +16,7 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/bridge/multiscale/RegisterSession.h"
 #include "smtk/bridge/multiscale/Session.h"
 
 #include "smtk/io/ExportMesh.h"
@@ -35,6 +34,10 @@
 #include "smtk/model/SimpleModelSubphrases.h"
 #include "smtk/model/Tessellation.h"
 
+#include "smtk/resource/Manager.h"
+
+#include "smtk/operation/Manager.h"
+
 namespace
 {
 std::string afrlRoot = std::string(AFRL_DIR);
@@ -42,48 +45,57 @@ std::string afrlRoot = std::string(AFRL_DIR);
 
 int ImportFromDEFORMOp(int argc, char* argv[])
 {
+  (void)argc;
+  (void)argv;
+
   if (afrlRoot.empty())
   {
     std::cerr << "AFRL directory not defined\n";
     return 1;
   }
 
-  smtk::model::ManagerPtr manager = smtk::model::Manager::create();
+  // Create a resource manager
+  smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
-  std::cout << "Available sessions\n";
-  smtk::model::StringList sessions = manager->sessionTypeNames();
-  for (smtk::model::StringList::iterator it = sessions.begin(); it != sessions.end(); ++it)
-    std::cout << "  " << *it << "\n";
-  std::cout << "\n";
+  // Register multiscale resources to the resource manager
+  {
+    smtk::bridge::multiscale::registerResources(resourceManager);
+  }
 
-  smtk::bridge::multiscale::Session::Ptr session = smtk::bridge::multiscale::Session::create();
-  manager->registerSession(session);
+  // Create an operation manager
+  smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
 
-  std::cout << "Available cmb operators\n";
-  smtk::model::StringList opnames = session->operatorNames();
-  for (smtk::model::StringList::iterator it = opnames.begin(); it != opnames.end(); ++it)
-    std::cout << "  " << *it << "\n";
-  std::cout << "\n";
+  // Register multiscale operators to the operation manager
+  {
+    smtk::bridge::multiscale::registerOperations(operationManager);
+  }
 
-  smtk::model::OperatorPtr importFromDeformOp = session->op("import from deform");
+  // Register the resource manager to the operation manager (newly created
+  // resources will be automatically registered to the resource manager).
+  operationManager->registerResourceManager(resourceManager);
+
+  // Create an import operator
+  smtk::operation::NewOp::Ptr importFromDeformOp =
+    operationManager->create("smtk.bridge.multiscale.import_from_deform.import_from_deform");
+
   if (!importFromDeformOp)
   {
-    std::cerr << "No import from deform operator\n";
+    std::cerr << "Couldn't create \"import from deform\" operator" << std::endl;
     return 1;
   }
 
-  importFromDeformOp->specification()
+  importFromDeformOp->parameters()
     ->findFile("point-file")
     ->setValue(afrlRoot + "/Data/afrl_test_forging/ti6242_ptrak_fg.csv");
-  importFromDeformOp->specification()->findInt("timestep")->setValue(66);
-  importFromDeformOp->specification()
+  importFromDeformOp->parameters()->findInt("timestep")->setValue(66);
+  importFromDeformOp->parameters()
     ->findFile("element-file")
     ->setValue(afrlRoot + "/Data/afrl_test_forging/ti6242_node_elem_fg.dat");
-  importFromDeformOp->specification()
+  importFromDeformOp->parameters()
     ->findFile("pipeline-executable")
-    ->setValue(afrlRoot + "/../dream3d/install/DREAM3D.app/Contents/bin/PipelineRunner");
-  importFromDeformOp->specification()->findString("attribute")->setToDefault();
-  importFromDeformOp->specification()
+    ->setValue(afrlRoot + "/../dream3d/build/Bin/PipelineRunner");
+  importFromDeformOp->parameters()->findString("attribute")->setToDefault();
+  importFromDeformOp->parameters()
     ->findFile("output-file")
     ->setValue(afrlRoot + "/tmp/out.dream3d");
 
@@ -92,7 +104,7 @@ int ImportFromDEFORMOp(int argc, char* argv[])
   std::vector<double> min_cutoff = { { 5, 5, 5, 5, 4 } };
   std::vector<double> max_cutoff = { { 5, 5, 5, 5, 6 } };
 
-  smtk::attribute::GroupItem::Ptr stats = importFromDeformOp->specification()->findGroup("stats");
+  smtk::attribute::GroupItem::Ptr stats = importFromDeformOp->parameters()->findGroup("stats");
   stats->setNumberOfGroups(mu.size());
 
   for (std::size_t i = 0; i < mu.size(); i++)
@@ -103,9 +115,9 @@ int ImportFromDEFORMOp(int argc, char* argv[])
     stats->findAs<smtk::attribute::DoubleItem>(i, "max_cutoff")->setValue(max_cutoff.at(i));
   }
 
-  smtk::model::OperatorResult importFromDeformOpResult = importFromDeformOp->operate();
+  smtk::operation::NewOp::Result importFromDeformOpResult = importFromDeformOp->operate();
   if (importFromDeformOpResult->findInt("outcome")->value() !=
-    smtk::operation::Operator::OPERATION_SUCCEEDED)
+    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
   {
     std::cerr << "import from deform operator failed\n";
     return 1;
@@ -120,5 +132,3 @@ int ImportFromDEFORMOp(int argc, char* argv[])
 
   return 0;
 }
-
-smtkPythonInitMacro(import_from_deform, smtk.bridge.multiscale.import_from_deform, true);

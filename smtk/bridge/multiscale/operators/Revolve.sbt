@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <AttDef Type="revolve" BaseType="operator">
-      <AssociationsDef Name="Model(s)" NumberOfRequiredValues="1" Extensible="true">
+    <include href="smtk/operation/NewOp.xml"/>
+    <AttDef Type="revolve" Label="Model - Revolve" BaseType="operator">
+      <AssociationsDef Name="Model" NumberOfRequiredValues="1" Extensible="false">
         <MembershipMask>model</MembershipMask>
       </AssociationsDef>
       <ItemDefinitions>
@@ -24,6 +24,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(revolve)" BaseType="result">
       <ItemDefinitions>
         <ModelEntity Name="model" NumberOfRequiredValues="1" Extensible="1" MembershipMask="4096"/>

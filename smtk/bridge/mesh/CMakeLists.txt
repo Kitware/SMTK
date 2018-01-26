@@ -31,10 +31,6 @@ target_link_libraries(smtkMeshSession
 
 smtk_export_header(smtkMeshSession Exports.h)
 
-# Add compile definitions and include directories
-#set_property(TARGET smtkMeshSession APPEND PROPERTY COMPILE_FLAGS ${MESH_DEFINES})
-#set_property(TARGET smtkMeshSession APPEND PROPERTY INCLUDE_DIRECTORIES ${MESH_INCLUDE_DIRS})
-
 #install the library and exports the library when used from a build tree
 smtk_install_library(smtkMeshSession)
 
@@ -46,7 +42,6 @@ smtk_install_library(smtkMeshSession)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EulerCharacteristicRatio.sbt" meshOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ImportOperator.sbt" meshOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportOperator.sbt" meshOperatorXML)
-smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" meshSessionJSON)
 
 # Install the headers
 smtk_public_headers(${meshHeaders})

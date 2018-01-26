@@ -24,19 +24,11 @@ PySharedPtrClass< smtk::bridge::multiscale::Session, smtk::bridge::mesh::Session
 {
   PySharedPtrClass< smtk::bridge::multiscale::Session, smtk::bridge::mesh::Session > instance(m, "Session");
   instance
-    .def("classname", &smtk::bridge::multiscale::Session::classname)
     .def("shared_from_this", (std::shared_ptr<smtk::bridge::multiscale::Session> (smtk::bridge::multiscale::Session::*)()) &smtk::bridge::multiscale::Session::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<const smtk::bridge::multiscale::Session> (smtk::bridge::multiscale::Session::*)() const) &smtk::bridge::multiscale::Session::shared_from_this)
     .def_static("create", (std::shared_ptr<smtk::bridge::multiscale::Session> (*)()) &smtk::bridge::multiscale::Session::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::multiscale::Session> (*)(::std::shared_ptr<smtk::bridge::multiscale::Session> &)) &smtk::bridge::multiscale::Session::create, py::arg("ref"))
-    .def_static("staticClassName", &smtk::bridge::multiscale::Session::staticClassName)
     .def("name", &smtk::bridge::multiscale::Session::name)
-    .def("className", &smtk::bridge::multiscale::Session::className)
-    .def("registerOperator", &smtk::bridge::multiscale::Session::registerOperator, py::arg("opName"), py::arg("opDescrXML"), py::arg("opCtor"))
-    .def_static("registerStaticOperator", &smtk::bridge::multiscale::Session::registerStaticOperator, py::arg("opName"), py::arg("opDescrXML"), py::arg("opCtor"))
-    .def("findOperatorXML", &smtk::bridge::multiscale::Session::findOperatorXML, py::arg("opName"))
-    .def("findOperatorConstructor", &smtk::bridge::multiscale::Session::findOperatorConstructor, py::arg("opName"))
-    .def("inheritsOperators", &smtk::bridge::multiscale::Session::inheritsOperators)
     .def_readwrite_static("sessionName", &smtk::bridge::multiscale::Session::sessionName)
     .def_static("CastTo", [](const std::shared_ptr<smtk::model::Session> i) {
         return std::dynamic_pointer_cast<smtk::bridge::multiscale::Session>(i);

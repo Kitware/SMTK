@@ -10,8 +10,9 @@
 #ifndef __smtk_session_multiscale_PartitionBoundaries_h
 #define __smtk_session_multiscale_PartitionBoundaries_h
 
-#include "smtk/bridge/multiscale/Operator.h"
-#include "vtkObject.h"
+#include "smtk/bridge/multiscale/Exports.h"
+
+#include "smtk/operation/XMLOperator.h"
 
 namespace smtk
 {
@@ -26,16 +27,16 @@ namespace multiscale
  * cooling plate and ambient air Dirichlet boundaries.
 */
 
-class SMTKMULTISCALESESSION_EXPORT PartitionBoundaries : public Operator
+class SMTKMULTISCALESESSION_EXPORT PartitionBoundaries : public smtk::operation::XMLOperator
 {
 public:
   smtkTypeMacro(PartitionBoundaries);
   smtkCreateMacro(PartitionBoundaries);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(smtk::operation::NewOp);
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
+  virtual const char* xmlDescription() const override;
 };
 
 } // namespace multiscale

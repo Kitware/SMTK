@@ -20,6 +20,12 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/bridge/mesh/RegisterSession.h"
+#include "smtk/bridge/mesh/operators/ImportOperator.h"
+#include "smtk/bridge/multiscale/RegisterSession.h"
+#include "smtk/bridge/multiscale/Session.h"
+#include "smtk/bridge/multiscale/operators/Revolve.h"
+
 #include "smtk/io/ExportMesh.h"
 #include "smtk/io/SaveJSON.h"
 
@@ -36,6 +42,10 @@
 #include "smtk/model/SimpleModelSubphrases.h"
 #include "smtk/model/Tessellation.h"
 
+#include "smtk/resource/Manager.h"
+
+#include "smtk/operation/Manager.h"
+
 namespace
 {
 
@@ -45,30 +55,39 @@ std::string dataRoot = SMTK_DATA_DIR;
 
 int RevolveOp(int argc, char* argv[])
 {
+  (void)argc;
+  (void)argv;
+
   if (afrlRoot.empty())
   {
     std::cerr << "AFRL directory not defined\n";
     return 1;
   }
 
-  smtk::model::ManagerPtr manager = smtk::model::Manager::create();
+  // Create a resource manager
+  smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
-  std::cout << "Available sessions\n";
-  smtk::model::StringList sessions = manager->sessionTypeNames();
-  for (smtk::model::StringList::iterator it = sessions.begin(); it != sessions.end(); ++it)
-    std::cout << "  " << *it << "\n";
-  std::cout << "\n";
+  // Register multiscale resources to the resource manager
+  {
+    smtk::bridge::multiscale::registerResources(resourceManager);
+  }
 
-  smtk::bridge::multiscale::Session::Ptr session = smtk::bridge::multiscale::Session::create();
-  manager->registerSession(session);
+  // Create an operation manager
+  smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
 
-  std::cout << "Available cmb operators\n";
-  smtk::model::StringList opnames = session->operatorNames();
-  for (smtk::model::StringList::iterator it = opnames.begin(); it != opnames.end(); ++it)
-    std::cout << "  " << *it << "\n";
-  std::cout << "\n";
+  // Register mesh and multiscale operators to the operation manager
+  {
+    smtk::bridge::mesh::registerOperations(operationManager);
+    smtk::bridge::multiscale::registerOperations(operationManager);
+  }
 
-  smtk::model::OperatorPtr importOp = session->op("import");
+  // Register the resource manager to the operation manager (newly created
+  // resources will be automatically registered to the resource manager).
+  operationManager->registerResourceManager(resourceManager);
+
+  // Create an import operator
+  smtk::operation::NewOp::Ptr importOp =
+    operationManager->create<smtk::bridge::mesh::ImportOperator>();
   if (!importOp)
   {
     std::cerr << "No import operator\n";
@@ -78,44 +97,47 @@ int RevolveOp(int argc, char* argv[])
   std::string importFilePath(dataRoot);
   importFilePath += "/mesh/2d/ImportFromDEFORM.h5m";
 
-  importOp->specification()->findFile("filename")->setValue(importFilePath);
+  importOp->parameters()->findFile("filename")->setValue(importFilePath);
 
-  smtk::model::OperatorResult importOpResult = importOp->operate();
+  smtk::operation::NewOp::Result importOpResult = importOp->operate();
 
-  if (importOpResult->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
+  if (importOpResult->findInt("outcome")->value() !=
+    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
   {
     std::cerr << "Import operator failed\n";
     return 1;
   }
 
-  smtk::model::Model model = importOpResult->findModelEntity("model")->value();
+  // Retrieve the resulting model
+  smtk::attribute::ComponentItemPtr componentItem =
+    std::dynamic_pointer_cast<smtk::attribute::ComponentItem>(
+      importOpResult->findComponent("model"));
 
-  if (!model.isValid())
-  {
-    std::cerr << "Import operator returned an invalid model\n";
-    return 1;
-  }
+  // Access the generated model
+  smtk::model::Entity::Ptr model =
+    std::dynamic_pointer_cast<smtk::model::Entity>(componentItem->value());
 
-  smtk::model::OperatorPtr revolveOp = session->op("revolve");
+  smtk::operation::NewOp::Ptr revolveOp =
+    operationManager->create<smtk::bridge::multiscale::Revolve>();
   if (!revolveOp)
   {
     std::cerr << "No revolve operator\n";
     return 1;
   }
 
-  revolveOp->specification()->associateEntity(model);
-  revolveOp->specification()->findDouble("sweep-angle")->setValue(30.);
-  revolveOp->specification()->findInt("resolution")->setValue(15);
-  revolveOp->specification()->findDouble("axis-direction")->setValue(0, 0.);
-  revolveOp->specification()->findDouble("axis-direction")->setValue(1, 1.);
-  revolveOp->specification()->findDouble("axis-direction")->setValue(2, 0.);
-  revolveOp->specification()->findDouble("axis-position")->setValue(0, -0.02);
-  revolveOp->specification()->findDouble("axis-position")->setValue(1, 0.);
-  revolveOp->specification()->findDouble("axis-position")->setValue(2, 0.);
+  revolveOp->parameters()->associateEntity(model);
+  revolveOp->parameters()->findDouble("sweep-angle")->setValue(30.);
+  revolveOp->parameters()->findInt("resolution")->setValue(15);
+  revolveOp->parameters()->findDouble("axis-direction")->setValue(0, 0.);
+  revolveOp->parameters()->findDouble("axis-direction")->setValue(1, 1.);
+  revolveOp->parameters()->findDouble("axis-direction")->setValue(2, 0.);
+  revolveOp->parameters()->findDouble("axis-position")->setValue(0, -0.02);
+  revolveOp->parameters()->findDouble("axis-position")->setValue(1, 0.);
+  revolveOp->parameters()->findDouble("axis-position")->setValue(2, 0.);
 
-  smtk::model::OperatorResult revolveOpResult = revolveOp->operate();
+  smtk::operation::NewOp::Result revolveOpResult = revolveOp->operate();
   if (revolveOpResult->findInt("outcome")->value() !=
-    smtk::operation::Operator::OPERATION_SUCCEEDED)
+    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
   {
     std::cerr << "Revolve operator failed\n";
     return 1;
