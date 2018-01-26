@@ -200,5 +200,3 @@ smtk::model::SessionInfoBits Session::transcribeInternal(
 }
 }
 }
-
-#include "smtk/bridge/mesh/Session_json.h"

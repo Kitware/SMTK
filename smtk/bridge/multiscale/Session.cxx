@@ -42,10 +42,3 @@ Session::~Session()
 } // namespace multiscale
 } // namespace bridge
 } // namespace smtk
-
-#include "smtk/bridge/multiscale/Session_json.h"
-
-smtkImplementsModelingKernel(
-  SMTKMULTISCALESESSION_EXPORT, multiscale, Session_json, SessionHasNoStaticSetup,
-  smtk::bridge::multiscale::Session, true /* inherit "universal" operators */
-  );
