@@ -13,9 +13,11 @@
 #include "smtk/model/RegisterOperations.h"
 #include "smtk/model/RegisterResources.h"
 
+#include "smtk/model/environment/Exports.h"
+
 namespace
 {
-static bool registerToEnvironment()
+bool registerToEnvironment()
 {
   smtk::model::registerOperations(smtk::environment::OperationManager::instance());
   smtk::model::registerResources(smtk::environment::ResourceManager::instance());
@@ -29,7 +31,7 @@ namespace model
 {
 namespace environment
 {
-bool registered = registerToEnvironment();
+SMTKMODELENVIRONMENT_EXPORT bool registered = registerToEnvironment();
 }
 }
 }

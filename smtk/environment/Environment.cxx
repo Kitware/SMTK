@@ -9,14 +9,22 @@
 //=========================================================================
 
 #include "smtk/environment/Environment.h"
+#include "smtk/environment/Exports.h"
 
 namespace
 {
-static bool linkManagers()
+bool linkManagers()
 {
   smtk::environment::OperationManager::instance()->registerResourceManager(
     smtk::environment::ResourceManager::instance());
   return true;
 }
-static bool link = linkManagers();
+}
+
+namespace smtk
+{
+namespace environment
+{
+SMTKENVIRONMENT_EXPORT bool registered = linkManagers();
+}
 }

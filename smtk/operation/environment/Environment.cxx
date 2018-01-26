@@ -13,6 +13,8 @@
 #include "smtk/operation/RegisterOperations.h"
 #include "smtk/operation/RegisterResources.h"
 
+#include "smtk/operation/environment/Exports.h"
+
 namespace
 {
 static bool registerToEnvironment()
@@ -29,7 +31,7 @@ namespace operation
 {
 namespace environment
 {
-bool registered = registerToEnvironment();
+SMTKOPERATIONENVIRONMENT_EXPORT bool registered = registerToEnvironment();
 }
 }
 }

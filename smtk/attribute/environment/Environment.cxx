@@ -13,9 +13,11 @@
 #include "smtk/attribute/RegisterOperations.h"
 #include "smtk/attribute/RegisterResources.h"
 
+#include "smtk/attribute/environment/Exports.h"
+
 namespace
 {
-static bool registerToEnvironment()
+bool registerToEnvironment()
 {
   smtk::attribute::registerOperations(smtk::environment::OperationManager::instance());
   smtk::attribute::registerResources(smtk::environment::ResourceManager::instance());
@@ -29,7 +31,7 @@ namespace attribute
 {
 namespace environment
 {
-bool registered = registerToEnvironment();
+SMTKATTRIBUTEENVIRONMENT_EXPORT bool registered = registerToEnvironment();
 }
 }
 }

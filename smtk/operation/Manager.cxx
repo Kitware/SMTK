@@ -38,11 +38,10 @@ bool Manager::registerOperator(Metadata&& metadata)
   auto alreadyRegisteredMetadata = m_metadata.get<IndexTag>().find(metadata.index());
   if (alreadyRegisteredMetadata == m_metadata.get<IndexTag>().end())
   {
-    auto size = m_metadata.get<IndexTag>().size();
-    m_metadata.get<IndexTag>().insert(metadata);
-    if (m_metadata.get<IndexTag>().size() > size)
+    auto inserted = m_metadata.get<IndexTag>().insert(metadata);
+    if (inserted.second)
     {
-      m_metadataObservers(metadata);
+      m_metadataObservers(*inserted.first);
       return true;
     }
   }
