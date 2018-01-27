@@ -9,4 +9,4 @@ paraview_init = os.path.realpath(paraview.__file__)
 paraview_pythonpath = os.path.abspath(
     os.path.dirname(os.path.dirname(paraview_init)))
 
-print paraview_pythonpath
+print 'PARAVIEW_PYTHONPATH=%s' % paraview_pythonpath
