@@ -17,12 +17,23 @@ execute_process(
   COMMAND ${PVPYTHON_EXE}
   ${PROJECT_SOURCE_DIR}/CMake/FindPVPythonEnvironment.py
   RESULT_VARIABLE rv
-  OUTPUT_VARIABLE PARAVIEW_PYTHONPATH
-  ERROR_VARIABLE PARAVIEW_PYTHONPATH
+  OUTPUT_VARIABLE out
+  ERROR_VARIABLE out
   OUTPUT_STRIP_TRAILING_WHITESPACE
   ERROR_STRIP_TRAILING_WHITESPACE
 )
 
 if (NOT rv EQUAL 0)
-  message(FATAL_ERROR "Could not determine ParaView's PYTHONPATH; return value was ${rv} and output was ${PARAVIEW_PYTHONPATH}.")
+  message(FATAL_ERROR "Could not determine ParaView's PYTHONPATH; return value was ${rv} and output was ${out}.")
 endif()
+
+# ParaView may have a verbose input. We search from the end of the output stream
+# for the keyword "PARAVIEW_PYTHONPATH=" and take the rest of the output as
+# ParaView's python path.
+set(marker "PARAVIEW_PYTHONPATH=")
+string(LENGTH ${marker} markerlen)
+string(FIND ${out} ${marker} start REVERSE)
+math(EXPR start "${start} + ${markerlen}")
+string(LENGTH ${out} len)
+math(EXPR len "${len} - ${start}")
+string(SUBSTRING ${out} ${start} ${len} PARAVIEW_PYTHONPATH)
