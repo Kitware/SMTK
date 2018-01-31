@@ -6,21 +6,22 @@
 //  This software is distributed WITHOUT ANY WARRANTY; without even
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME smtkRGGEditPinView - UI component for Edit RGG pins
+// .NAME smtkRGGEditDuctView - UI component for Edit RGG ducts
 // .SECTION Description
 // .SECTION See Also
 // qtSection
 
-#ifndef smtkRGGEditPinView_h
-#define smtkRGGEditPinView_h
+#ifndef smtkRGGEditDuctView_h
+#define smtkRGGEditDuctView_h
 
-#include "smtk/bridge/rgg/operators/CreatePin.h"
-#include "smtk/extension/paraview/operators/Exports.h"
+#include "smtk/bridge/rgg/operators/CreateDuct.h"
+#include "smtk/bridge/rgg/plugin/Exports.h"
 #include "smtk/extension/qt/qtBaseView.h"
 
 class QColor;
 class QComboBox;
 class QIcon;
+class QTableWidget;
 namespace smtk
 {
 namespace extension
@@ -28,15 +29,15 @@ namespace extension
 class qtItem;
 }
 }
-class smtkRGGEditPinViewInternals;
+class smtkRGGEditDuctViewInternals;
 
-class SMTKPQOPERATORVIEWSEXT_EXPORT smtkRGGEditPinView : public smtk::extension::qtBaseView
+class SMTKRGGSESSIONPLUGIN_EXPORT smtkRGGEditDuctView : public smtk::extension::qtBaseView
 {
   Q_OBJECT
 
 public:
-  smtkRGGEditPinView(const smtk::extension::ViewInfo& info);
-  virtual ~smtkRGGEditPinView();
+  smtkRGGEditDuctView(const smtk::extension::ViewInfo& info);
+  virtual ~smtkRGGEditDuctView();
 
   static smtk::extension::qtBaseView* createViewWidget(const smtk::extension::ViewInfo& info);
 
@@ -46,8 +47,6 @@ public slots:
   void updateUI() override {} // NB: Subclass implementation causes crashes.
   void requestModelEntityAssociation() override;
   void onShowCategory() override { this->updateAttributeData(); }
-  // This will be triggered by selecting different type
-  // of construction method in create-edge op.
   void valueChanged(smtk::attribute::ItemPtr optype) override;
 
 protected slots:
@@ -61,31 +60,33 @@ protected slots:
   void onAttItemModified(smtk::extension::qtItem* item);
   void apply();
 
-  // UI related slots
-  void pieceTypeChanged();
-
 protected:
   void updateAttributeData() override;
   void createWidget() override;
-  // When pin item has been modified, this function would populate the edit pin
+  // When duct item has been modified, this function would populate the edit duct
   // panel
-  void updateEditPinPanel();
+  void updateEditDuctPanel();
   virtual void setInfoToBeDisplayed() override;
   // Helper functions for createWidget
-  void createPiecesTable();
-  void addPieceToTable(
-    int row, smtk::bridge::rgg::RGGType type, double height, double baseR, double topR);
-  void createLayersTable();
-  void addlayerBefore();
-  void addlayerAfter();
-  void deletelayer();
+  void createDuctSegmentsTable();
+  void addSegmentToTable(int row, double z1, double z2);
+  void onSegmentSplit();
 
-  void addLayerToTable(int row, int subMaterial, double rN);
+  // Create a materialLayersTable and add it to the material stackedWidget
+  void createMaterialLayersTable(const size_t index, const size_t numberOfMaterials,
+    const size_t offSet, const smtk::model::IntegerList& materials,
+    const smtk::model::FloatList& thicknessesN);
+  void onAddMaterialLayerBefore();
+  void onAddMaterialLayerAfter();
+  void onDeleteMaterialLayer();
+  void addMaterialLayerToTable(
+    QTableWidget* table, int row, int subMaterial, double thick1, double thick2);
+
   void updateButtonStatus();
   void setupMaterialComboBox(QComboBox* box, bool isCell = false);
 
 private:
-  smtkRGGEditPinViewInternals* Internals;
+  smtkRGGEditDuctViewInternals* Internals;
 };
 
-#endif // smtkRGGEditPinView_h
+#endif // smtkRGGEditDuctView_h

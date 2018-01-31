@@ -25,7 +25,6 @@
           NumberOfRequiredValues = "1"
           IsEnabledByDefault = "false"
           AdvanceLevel = "1"
-          Option = "true"
           Optional = "true">
           <BriefDescription>Allow user to specify an auxiliary geomtry to view after the extraction
            when "View Output Upon Completion" is enabled.

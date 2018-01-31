@@ -7,9 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-
-#include "smtk/extension/paraview/operators/smtkRGGEditPinView.h"
-#include "smtk/extension/paraview/operators/ui_smtkRGGEditPinParameters.h"
+#include "smtk/bridge/rgg/plugin/smtkRGGEditPinView.h"
+#include "smtk/bridge/rgg/plugin/ui_smtkRGGEditPinParameters.h"
 
 #include "smtkRGGViewHelper.h"
 
@@ -150,7 +149,7 @@ void smtkRGGEditPinView::attributeModified()
 void smtkRGGEditPinView::onAttItemModified(smtk::extension::qtItem* item)
 {
   smtk::attribute::ItemPtr itemPtr = item->getObject();
-  // only change pin would update edit pin panel
+  // only changing pin would update edit pin panel
   if (itemPtr->name() == "pin" && itemPtr->type() == smtk::attribute::Item::Type::ModelEntityType)
   {
     this->updateEditPinPanel();
@@ -159,11 +158,8 @@ void smtkRGGEditPinView::onAttItemModified(smtk::extension::qtItem* item)
 
 void smtkRGGEditPinView::apply()
 {
-  // Fulfill the attributes - read all data from UI
+  // Fill the attribute - read all data from UI
   // It should only takes a pin as input
-  smtk::model::Model activeModel = qtActiveObjects::instance().activeModel();
-  this->Internals->CurrentAtt->attribute()->associateEntity(activeModel);
-
   smtk::attribute::StringItemPtr nameI =
     this->Internals->CurrentAtt->attribute()->findString("name");
   nameI->setValue(this->Internals->nameLineEdit->text().toStdString());
@@ -194,7 +190,7 @@ void smtkRGGEditPinView::apply()
   QTableWidget* pT = this->Internals->piecesTable;
   std::cout << "---Number of rows in pT table: " << pT->rowCount()
             << " and number of pieces in groupItem " << piecesI->numberOfGroups() << std::endl;
-  for (size_t i = 0; i < pT->rowCount(); i++)
+  for (int i = 0; i < pT->rowCount(); i++)
   { // segment part
     int segmentType = dynamic_cast<QComboBox*>(pT->cellWidget(i, 0))->currentIndex();
     if (i > 0)
@@ -664,7 +660,7 @@ void smtkRGGEditPinView::deletelayer()
 {
   this->Internals->layersTable->blockSignals(true);
   int row = this->Internals->layersTable->currentRow();
-  if (row = (this->Internals->layersTable->rowCount() - 1))
+  if (row == (this->Internals->layersTable->rowCount() - 1))
   { // Upper bound of normalized radius should always be 1
     this->Internals->layersTable->item(row - 1, 1)->setText(QString::number(1.0));
   }

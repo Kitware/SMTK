@@ -91,7 +91,7 @@
     <!-- Result -->
     <AttDef Type="result(edit pin)" BaseType="result">
       <ItemDefinitions>
-        <!-- The edit pin is returned in the base result's "edit" item. -->
+        <!-- The edited pin is returned in the base result's "edit" item. -->
       </ItemDefinitions>
     </AttDef>
   </Definitions>
@@ -101,9 +101,9 @@
       The customized view "Type" needs to match the plugin's VIEW_NAME:
       add_smtk_ui_view(...  VIEW_NAME smtkRGGEditPinView ...)
       -->
-    <View Type="smtkRGGEditPinView" Title="Edit pin"  FilterByCategory="false"  FilterByAdvanceLevel="false" UseSelectionManager="false">
+    <View Type="smtkRGGEditPinView" Title="Edit Din"  FilterByCategory="false"  FilterByAdvanceLevel="false" UseSelectionManager="false">
       <Description>
-        TODO: Add documentation for Edit pin operator.
+        TODO: Add documentation for edit pin operator.
       </Description>
       <AttributeTypes>
         <Att Type="edit pin"/>

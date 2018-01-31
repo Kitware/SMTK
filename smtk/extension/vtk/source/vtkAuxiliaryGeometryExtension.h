@@ -100,6 +100,9 @@ protected:
   // Helper function for generateRGGRepresentation
   static vtkSmartPointer<vtkDataObject> generateRGGPinRepresentation(
     const smtk::model::AuxiliaryGeometry& pin, bool genNormals);
+  // Helper function for generateRGGRepresentation
+  static vtkSmartPointer<vtkDataObject> generateRGGDuctRepresentation(
+    const smtk::model::AuxiliaryGeometry& duct, bool genNormals);
 
   class ClassInternal;
   static ClassInternal* s_p;

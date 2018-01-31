@@ -11,8 +11,4 @@
 #include "smtk/AutoInit.h"
 #include "smtk/Options.h"
 
-#ifdef SMTK_ENABLE_RGG_SESSION
-// If rgg-session is included in the build, ensure that it is loaded
-// (and thus registered with the model manager).
 smtkComponentInitMacro(smtk_rgg_session);
-#endif // SMTK_ENABLE_RGG_SESSION

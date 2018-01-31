@@ -97,7 +97,7 @@
     <!-- Result -->
     <AttDef Type="result(create pin)" BaseType="result">
       <ItemDefinitions>
-        <!-- The create pin is returned in the base result's "create" item. -->
+        <!-- The created pin is returned in the base result's "create" item. -->
       </ItemDefinitions>
     </AttDef>
   </Definitions>

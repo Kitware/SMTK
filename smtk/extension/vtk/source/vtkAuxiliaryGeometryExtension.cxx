@@ -22,6 +22,7 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 
+#include "smtk/bridge/rgg/operators/CreateDuct.h"
 #include "smtk/bridge/rgg/operators/CreatePin.h"
 
 #include "vtkAppendPoints.h"
@@ -140,7 +141,7 @@ class vtkAuxiliaryGeometryExtension::ClassInternal
 {
 public:
   double m_totalSize;
-  double m_maxSize;
+  double m_maxSize = 8196;
   enum TupleIndex
   {
     DATA = 0,
@@ -531,20 +532,30 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::createHierarchy(
 }
 
 vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGRepresentation(
-  const AuxiliaryGeometry& pin, bool genNormals)
+  const AuxiliaryGeometry& rggEntity, bool genNormals)
 {
   vtkAuxiliaryGeometryExtension::ensureCache();
-  if (pin.stringProperty("rggType")[0] == SMTK_BRIDGE_RGG_PIN)
+  if (rggEntity.stringProperty("rggType")[0] == SMTK_BRIDGE_RGG_PIN)
   {
-    if (pin.auxiliaryGeometries().size() == 0)
+    if (rggEntity.auxiliaryGeometries().size() == 0)
     {
-      std::cerr << "Cannot create a representation for a pin " << pin.name()
-                << "without any parts or layers. If itself is a part or layer,"
-                   "its parent should generate the rep for it"
-                << std::endl;
+      smtkErrorMacro(smtk::io::Logger::instance(), "Cannot create a representation for pin "
+          << rggEntity.name() << "without any parts or layers. If itself is a part or layer,"
+                                 "its parent should generate the rep for it");
       return vtkSmartPointer<vtkDataObject>();
     }
-    return vtkAuxiliaryGeometryExtension::generateRGGPinRepresentation(pin, genNormals);
+    return vtkAuxiliaryGeometryExtension::generateRGGPinRepresentation(rggEntity, genNormals);
+  }
+  else if (rggEntity.stringProperty("rggType")[0] == SMTK_BRIDGE_RGG_DUCT)
+  {
+    if (rggEntity.auxiliaryGeometries().size() == 0)
+    {
+      smtkErrorMacro(smtk::io::Logger::instance(), "Cannot create a representation for duct "
+          << rggEntity.name() << "without any segments or layers. If itself is a segment or layer,"
+                                 "its parent should generate the rep for it");
+      return vtkSmartPointer<vtkDataObject>();
+    }
+    return vtkAuxiliaryGeometryExtension::generateRGGDuctRepresentation(rggEntity, genNormals);
   }
   return vtkSmartPointer<vtkDataObject>();
 }
@@ -632,8 +643,8 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGPinRepr
   }
 
   // Follow logic in cmbNucRender::createGeo function. L249
-  AuxiliaryGeometries childrenAux = pin.auxiliaryGeometries();
   // Create a name-auxgeom map so that we can assign the right rep
+  AuxiliaryGeometries childrenAux = pin.auxiliaryGeometries();
   std::map<std::string, AuxiliaryGeometry*> nameToChildAux;
   for (auto aux : childrenAux)
   {
@@ -665,12 +676,11 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGPinRepr
     //  Add a material layer if needed
     coneSource->SetNumberOfLayers(numLayers + isMaterialSet);
     double height(typeParas[j * 3]), baseR(typeParas[j * 3 + 1]), topR(typeParas[j * 3 + 2]);
-    /****************************************************************/
-    double layer42 = numLayers + isMaterialSet;
-    std::cout << "Processing part " << j << " with base center as " << baseCenter << " ,height as "
-              << height << " and number of layers to be " << layer42 << " baseR=" << baseR
-              << " topR=" << topR << std::endl;
-    /****************************************************************/
+    //    double layer42 = numLayers + isMaterialSet;
+    //    std::cout << "Processing part " << j << " with base center as " <<
+    //                 baseCenter << " ,height as " << height <<
+    //                 " and number of layers to be " << layer42<<
+    //                 " baseR=" << baseR << " topR=" << topR<<std::endl;
     // baseCenter would be updated at the end of the loop
     coneSource->SetBaseCenter(0, 0, baseCenter);
     coneSource->SetHeight(height);
@@ -791,11 +801,255 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGPinRepr
     baseCenter += height;
   }
   return mbds.GetPointer();
-  // FIXME
-  //return vtkSmartPointer<vtkDataObject>();
+}
+
+vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGDuctRepresentation(
+  const AuxiliaryGeometry& duct, bool /*genNormals*/)
+{
+  vtkAuxiliaryGeometryExtension::ensureCache();
+  std::cout << "generateRGGDuctRpresentation. Checking input first " << std::endl;
+  //Extract info from duct
+  bool isHex(false);
+  if (duct.hasIntegerProperty("hex"))
+  {
+    isHex = duct.integerProperty("hex")[0];
+    std::cout << "  "
+              << "set hex to be " << isHex << std::endl;
+  }
+
+  bool isCrossSection(false);
+  if (duct.hasIntegerProperty("cross section"))
+  {
+    isCrossSection = duct.integerProperty("cross section")[0];
+    std::cout << "  "
+              << "set crossSection to be " << isCrossSection << std::endl;
+  }
+
+  smtk::model::FloatList pitch;
+  if (duct.hasFloatProperty("pitch"))
+  {
+    pitch = duct.floatProperty("pitch");
+    std::cout << "  pitch: ";
+    for (auto item : pitch)
+    {
+      std::cout << item << " ";
+    }
+    std::cout << std::endl;
+  }
+
+  smtk::model::FloatList ductHeight;
+  if (duct.hasFloatProperty("duct height"))
+  {
+    ductHeight = duct.floatProperty("duct height");
+    std::cout << "  height: ";
+    for (auto item : ductHeight)
+    {
+      std::cout << item << " ";
+    }
+    std::cout << std::endl;
+  }
+
+  smtk::model::IntegerList numMaterialsPerSeg;
+  if (duct.hasIntegerProperty("material nums per segment"))
+  {
+    numMaterialsPerSeg = duct.integerProperty("material nums per segment");
+    std::cout << "  num of materials per seg: ";
+    for (auto item : numMaterialsPerSeg)
+    {
+      std::cout << item << " ";
+    }
+    std::cout << std::endl;
+  }
+
+  smtk::model::FloatList zValues;
+  if (duct.hasFloatProperty("z values"))
+  {
+    zValues = duct.floatProperty("z values");
+    std::cout << "  z values: ";
+    for (auto item : zValues)
+    {
+      std::cout << item << " ";
+    }
+    std::cout << std::endl;
+  }
+
+  smtk::model::IntegerList materials;
+  if (duct.hasIntegerProperty("materials"))
+  {
+    materials = duct.integerProperty("materials");
+    std::cout << "  materials: ";
+    for (auto item : materials)
+    {
+      std::cout << item << " ";
+    }
+    std::cout << std::endl;
+  }
+
+  smtk::model::FloatList thicknessesN;
+  if (duct.hasFloatProperty("thicknesses(normalized)"))
+  {
+    thicknessesN = duct.floatProperty("thicknesses(normalized)");
+    std::cout << "  thicknesses(N): ";
+    for (auto item : thicknessesN)
+    {
+      std::cout << item << " ";
+    }
+    std::cout << std::endl;
+  }
+
+  // Follow logic in cmbNucRender::createGeo function. L168
+  // Create a name-auxgeom map so that we can assign the right rep
+  AuxiliaryGeometries childrenAux = duct.auxiliaryGeometries();
+  std::map<std::string, AuxiliaryGeometry*> nameToChildAux;
+  for (auto aux : childrenAux)
+  {
+    nameToChildAux[aux.name()] = &aux;
+  }
+
+  std::time_t mtime;
+  std::time(&mtime);
+
+  // Assemble all child polydatas into one for the pin
+  vtkNew<vtkMultiBlockDataSet> mbds;
+  int nblk = static_cast<int>(childrenAux.size());
+  mbds->SetNumberOfBlocks(nblk);
+
+  size_t numSegs = numMaterialsPerSeg.size();
+  size_t thicknessOffset = 0;
+  for (size_t i = 0; i < numSegs; i++)
+  {
+    // Create layer manager
+    // TODO: For now I just blindly follow the generation logic in RGG. It's not
+    // straightforward and if we have time, we should simplify it.
+    double z1 = zValues[2 * i];
+    double z2 = zValues[2 * i + 1];
+    double height = z2 - z1;
+    double deltaZ = height * 0.0005; // Magic number used in rgg
+    if (i == 0)
+    {
+      z1 = z1 + deltaZ;
+      // if more than one duct, first duct height need to be reduced by deltaZ
+      height = (numSegs > 1) ? height - deltaZ : height - 2 * deltaZ;
+    }
+    else if (i == (numSegs - 1)) //last duct
+    {
+      height -= 2 * deltaZ;
+    }
+    else
+    {
+      z1 += deltaZ;
+    }
+    size_t numLayers = numMaterialsPerSeg[i];
+    vtkSmartPointer<vtkCmbLayeredConeSource> coneSource =
+      vtkSmartPointer<vtkCmbLayeredConeSource>::New();
+    coneSource->SetNumberOfLayers(numLayers);
+    coneSource->SetBaseCenter(0, 0, z1);
+    double direction[] = { 0, 0, 1 };
+    coneSource->SetDirection(direction);
+    coneSource->SetHeight(height);
+    /**************************************************************************/
+    std::cout << "  i=" << i << " base z=" << z1 << " height=" << height
+              << " numLayers=" << numLayers << std::endl;
+    /**************************************************************************/
+
+    int res = 4;
+    double mult = 0.5;
+
+    if (isHex)
+    {
+      res = 6;
+      mult = 0.5 / cos30;
+    }
+
+    std::cout << "thicknessOffset: " << thicknessOffset << std::endl;
+    for (int k = 0; k < numLayers; k++)
+    { // For each layer based on is hex or not,
+      // it might have two different thicknesses
+      size_t tNIndex = thicknessOffset + k * 2;
+      double tx = thicknessesN[tNIndex] * pitch[0] - thicknessesN[tNIndex] * pitch[0] * 0.0005;
+      double ty =
+        thicknessesN[tNIndex + 1] * pitch[1] - thicknessesN[tNIndex + 1] * pitch[1] * 0.0005;
+      /********************************************************************/
+      std::cout << "  k=" << k << " tx=" << thicknessesN[tNIndex] * pitch[0]
+                << " ty=" << thicknessesN[tNIndex + 1] * pitch[1] << std::endl;
+      /********************************************************************/
+      coneSource->SetBaseRadius(k, tx * mult, ty * mult);
+      coneSource->SetTopRadius(k, tx * mult, ty * mult);
+      coneSource->SetResolution(k, res);
+    }
+    thicknessOffset += numMaterialsPerSeg[i] * 2; // each layer has two thicknesses
+
+    // Cache child auxgeom(layer and part) with their polydata
+    for (int k = 0; k < numLayers; k++)
+    {
+      std::string subName = duct.name() + SMTK_BRIDGE_RGG_DUCT_SEGMENT + std::to_string(i) +
+        SMTK_BRIDGE_RGG_DUCT_LAYER + std::to_string(k);
+
+      // Follow logic in L168 cmbNucRender
+      vtkSmartPointer<vtkPolyData> dataset = coneSource->CreateUnitLayer(k);
+      /****************************************************/
+      dataset->ComputeBounds();
+      double* bounds = dataset->GetBounds();
+      std::cout << "bounds for " << i << " segment "
+                << " " << k << " layer" << std::endl;
+      for (int i = 0; i < 6; i++)
+      {
+        std::cout << " " << bounds[i];
+      }
+      std::cout << std::endl;
+      /****************************************************/
+      // Since it's a unit layer, proper trasformation should be applied
+      vtkSmartPointer<vtkTransform> transform = vtkSmartPointer<vtkTransform>::New();
+      // Translate, rotate then scale
+      double xyz[3];
+      coneSource->GetBaseCenter(xyz);
+      transform->Translate(xyz[0], xyz[1], xyz[2]);
+      std::cout << "  translate: x=" << xyz[0] << " y=" << xyz[1] << " z=" << xyz[2] << std::endl;
+
+      if (k == 0)
+      { // Cylinder in the 0 layer should be handled differently(Following RGG's logic)
+        transform->Scale(coneSource->GetTopRadius(k, 0), coneSource->GetBaseRadius(k, 1), height);
+        std::cout << "  scale: x=" << coneSource->GetTopRadius(k)
+                  << " y=" << coneSource->GetBaseRadius(k) << " z=" << height << std::endl;
+      }
+      else
+      {
+        transform->Scale(1, 1, height);
+        std::cout << "  scale: x=" << 1 << " y=" << 1 << " z=" << height << std::endl;
+      }
+      vtkSmartPointer<vtkTransformPolyDataFilter> transformFilter =
+        vtkSmartPointer<vtkTransformPolyDataFilter>::New();
+      transformFilter->SetInputData(dataset);
+      transformFilter->SetTransform(transform);
+      transformFilter->Update();
+      vtkSmartPointer<vtkPolyData> transformed = transformFilter->GetOutput();
+
+      // Check cut away flag
+      if (isCrossSection)
+      {
+        double normal[] = { 0, 1, 0 };
+        clip(transformed, transformed, normal);
+      }
+      // Find the right auxgeom
+      // FIXME: use the nameToChildAux map. For now if I deference the pointer
+      // to a const ref, model builder would crash
+      for (const auto& childAux : childrenAux)
+      {
+        if (childAux.name() == subName)
+        {
+          std::cout << "  insert aux " << childAux.name() << " to s_p" << std::endl;
+          s_p->insert(childAux, ClassInternal::CacheValue(transformed, mtime), false);
+        }
+      }
+      int blockIndex = k + thicknessOffset;
+      vtkSmartPointer<vtkPolyData> pinSubDataset = vtkSmartPointer<vtkPolyData>::New();
+      pinSubDataset->DeepCopy(transformed);
+      mbds->SetBlock(blockIndex, pinSubDataset);
+    }
+  }
+  return mbds.GetPointer();
 }
 
 smtkDeclareExtension(
   VTKSMTKSOURCEEXT_EXPORT, vtk_auxiliary_geometry, vtkAuxiliaryGeometryExtension);
-
 smtkComponentInitMacro(smtk_vtk_auxiliary_geometry_extension);

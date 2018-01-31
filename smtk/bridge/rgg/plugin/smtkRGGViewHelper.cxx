@@ -7,8 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-
-#include "smtk/extension/paraview/operators/smtkRGGViewHelper.h"
+#include "smtk/bridge/rgg/plugin/smtkRGGViewHelper.h"
 
 #include <QComboBox>
 #include <QVariant>
@@ -151,18 +150,62 @@ void rangeItem::setData(int role, const QVariant& value)
     }
     if (row < (rowNum - 1))
     {
-      rangeItem* afterItem = dynamic_cast<rangeItem*>(widget->item(row - 1, col));
+      rangeItem* afterItem = dynamic_cast<rangeItem*>(widget->item(row + 1, col));
       if (afterItem)
       {
         ub = afterItem->text().toDouble();
       }
     }
     double dValue = value.toDouble();
-    // std::cout << "Test value=" <<dValue << " at row=" << row <<
-    // " col=" << col << " lb=" << lb << " ub=" << ub <<std::endl;
+    //     std::cout << "Test value=" <<dValue << " at row=" << row <<
+    //     " col=" << col << " lb=" << lb << " ub=" << ub <<std::endl;
     if (dValue <= lb || dValue >= ub)
     {
       return;
+    }
+  }
+  generalItem::setData(role, value);
+}
+
+void dSTableItem::setData(int role, const QVariant& value)
+{
+  if (this->tableWidget() != nullptr && role == Qt::EditRole)
+  {
+    QTableWidget* widget = this->tableWidget();
+    int rowCount = widget->rowCount(), columnCount = widget->columnCount();
+    int currentRow(this->row()), currentCol(this->column());
+    if (columnCount != 2)
+    { // The presumption is that the table has two columns
+      return;
+    }
+    if ((currentRow == 0 && currentCol == 0) || (currentRow == (rowCount - 1) && currentCol == 1))
+    { // These two values are decided by duct length
+      return;
+    }
+    double lb, ub;
+    if (currentCol == 0)
+    {
+      lb = widget->item(currentRow - 1, 0)->text().toDouble();
+      ub = widget->item(currentRow, 1)->text().toDouble();
+    }
+    else
+    {
+      lb = widget->item(currentRow, 0)->text().toDouble();
+      ub = widget->item(currentRow + 1, 1)->text().toDouble();
+    }
+    double dValue = value.toDouble();
+    if (dValue <= lb || dValue >= ub)
+    {
+      return;
+    }
+    // Update the neighbour item
+    if (currentCol == 0)
+    {
+      widget->item(currentRow - 1, 1)->setText(QString::number(dValue));
+    }
+    else
+    {
+      widget->item(currentRow + 1, 0)->setText(QString::number(dValue));
     }
   }
   generalItem::setData(role, value);

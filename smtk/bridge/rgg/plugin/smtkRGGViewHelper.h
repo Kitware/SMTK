@@ -16,7 +16,7 @@
 #define smtkRGGViewHelper_h
 
 #include "smtk/bridge/rgg/operators/CreatePin.h"
-#include "smtk/extension/paraview/operators/Exports.h"
+#include "smtk/bridge/rgg/plugin/Exports.h"
 
 #include <QTableWidgetItem>
 
@@ -32,7 +32,7 @@ enum DIRECTION
 };
 
 // Item data just needs to be greater than 0
-class SMTKPQOPERATORVIEWSEXT_EXPORT generalItem : public QTableWidgetItem
+class SMTKRGGSESSIONPLUGIN_EXPORT generalItem : public QTableWidgetItem
 {
 public:
   generalItem() {}
@@ -46,7 +46,7 @@ public:
 // Ex. If the pin consists of a cylinder a, frustum b and another cylinder c,
 // modifying the baseR of b would propogate the change to cylinder a. In nutsshell,
 // any two adjacent parts should have C0 continuity.
-class SMTKPQOPERATORVIEWSEXT_EXPORT radiusItem : public generalItem
+class SMTKRGGSESSIONPLUGIN_EXPORT radiusItem : public generalItem
 {
 public:
   radiusItem(RADIUSType type);
@@ -58,12 +58,26 @@ public:
 };
 
 // Item data can only stay within a certain range where the lower bound is defined
-// by the previous item and the upper bound is defined by the next item
-class SMTKPQOPERATORVIEWSEXT_EXPORT rangeItem : public generalItem
+// in the previous item and the upper bound is defined in the next item
+// PS: It only applies to items within one column
+class SMTKRGGSESSIONPLUGIN_EXPORT rangeItem : public generalItem
 {
 public:
   rangeItem() {}
   virtual ~rangeItem() {}
+
+  virtual void setData(int role, const QVariant& value);
+};
+
+// Item data can only stay within a certain range where the lower bound is defined
+// in the previous item and the upper bound is defined in the next item
+// PS: It's designed for duct segments table where in a 2*2 matrix, lb is stored
+// in (0, 0) and hb is stored in (1, 1)
+class SMTKRGGSESSIONPLUGIN_EXPORT dSTableItem : public generalItem
+{
+public:
+  dSTableItem() {}
+  virtual ~dSTableItem() {}
 
   virtual void setData(int role, const QVariant& value);
 };

@@ -98,7 +98,6 @@ smtk::model::OperatorResult EditPin::operateInternal()
   std::string pinName;
   if (nameItem != nullptr && !nameItem->value(0).empty())
   {
-    std::cout << "EditPin operator: set name" << std::endl;
     pinName = nameItem->value(0);
     auxGeom.setName(nameItem->value(0));
   }
@@ -106,7 +105,6 @@ smtk::model::OperatorResult EditPin::operateInternal()
   smtk::attribute::StringItemPtr labelItem = this->findString("label");
   if (labelItem != nullptr && !labelItem->value(0).empty())
   {
-    std::cout << "EditPin operator: set label" << std::endl;
     auxGeom.setStringProperty(labelItem->name(), labelItem->value(0));
   }
 
@@ -114,8 +112,6 @@ smtk::model::OperatorResult EditPin::operateInternal()
   bool isMaterialSet(false);
   if (pinMaterialItem != nullptr && pinMaterialItem->numberOfValues() == 1)
   {
-    std::cout << "EditPin operator: set cell material to be " << pinMaterialItem->value(0)
-              << std::endl;
     auxGeom.setIntegerProperty(pinMaterialItem->name(), pinMaterialItem->value(0));
     isMaterialSet = static_cast<bool>(pinMaterialItem->value(0) > 0);
   }
@@ -123,7 +119,6 @@ smtk::model::OperatorResult EditPin::operateInternal()
   smtk::attribute::DoubleItemPtr zOriginItem = this->findDouble("z origin");
   if (zOriginItem != nullptr && zOriginItem->numberOfValues() == 1)
   {
-    std::cout << "EditPin operator: set z origin" << std::endl;
     auxGeom.setFloatProperty(zOriginItem->name(), zOriginItem->value(0));
   }
 
@@ -134,7 +129,6 @@ smtk::model::OperatorResult EditPin::operateInternal()
     numParts = piecesGItem->numberOfGroups();
     IntegerList pieceSegType;
     FloatList typeParas;
-    std::cout << "EditPin operator: set pieces with " << numParts << " groups" << std::endl;
     for (std::size_t index = 0; index < numParts; index++)
     {
       smtk::attribute::IntItemPtr segmentType =
@@ -147,6 +141,13 @@ smtk::model::OperatorResult EditPin::operateInternal()
     }
     auxGeom.setIntegerProperty(piecesGItem->name(), pieceSegType);
     auxGeom.setFloatProperty(piecesGItem->name(), typeParas);
+    // Get the max radius and cache it for create assembly purpose
+    double maxRadius(-1);
+    for (size_t i = 0; i < typeParas.size() / 3; i++)
+    {
+      maxRadius = std::max(maxRadius, std::max(typeParas[i * 3 + 1], typeParas[i * 3 + 2]));
+    }
+    auxGeom.setFloatProperty("max radius", maxRadius);
   }
 
   smtk::attribute::GroupItemPtr layerMaterialsItem = this->findGroup("layer materials");
@@ -156,18 +157,12 @@ smtk::model::OperatorResult EditPin::operateInternal()
     numLayers = layerMaterialsItem->numberOfGroups();
     IntegerList subMaterials;
     FloatList radiusNs;
-    /****************************************************************/
-    std::cout << "EditPin operator: layer materials with " << numLayers << " groups" << std::endl;
-    /****************************************************************/
     for (std::size_t index = 0; index < numLayers; index++)
     {
       smtk::attribute::IntItemPtr subMaterial =
         layerMaterialsItem->findAs<smtk::attribute::IntItem>(index, "sub material");
       smtk::attribute::DoubleItemPtr radisuN =
         layerMaterialsItem->findAs<smtk::attribute::DoubleItem>(index, "radius(normalized)");
-      /***************************************************************/
-      std::cout << "  segType: " << subMaterial << " radisuN: " << radisuN << std::endl;
-      /***************************************************************/
       subMaterials.insert(subMaterials.end(), subMaterial->begin(), subMaterial->end());
       radiusNs.insert(radiusNs.end(), radisuN->begin(), radisuN->end());
     }
@@ -201,9 +196,6 @@ smtk::model::OperatorResult EditPin::operateInternal()
 
   result = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
-  /****************************************************************/
-  std::cout << "  Add " << subAuxGeoms.size() << " subAuxGeoms to the result" << std::endl;
-  /****************************************************************/
   this->addEntityToResult(result, auxGeom, MODIFIED);
   this->addEntitiesToResult(result, subAuxGeoms, CREATED);
   this->addEntitiesToResult(result, modified, MODIFIED);
