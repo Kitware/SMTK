@@ -270,14 +270,14 @@ void qtModelEntityItemCombo::itemCheckChanged(const QModelIndex& topLeft, const 
     if (item->checkState() == Qt::Checked)
     {
       // see if we can add it to the model item (base on size or if we are dealing with a simple item
-      // (one that is not existenible and has only 1 required value).  If that is the case
+      // (one that is not extensible and has only 1 required value).  If that is the case
       // then unslect the previous item and select the new one
       if (!this->m_ModelEntityItem->add(selentityref))
       {
         this->blockSignals(true);
         if ((def->numberOfRequiredValues() == 1) && (!def->isExtensible()))
         {
-          // We need tp turn off the item that was originally checked
+          // We need to turn off the item that was originally checked
           for (int row = 1; row < this->count(); row++)
           {
             if (itemModel->item(row)->checkState() == Qt::Checked)
@@ -293,12 +293,18 @@ void qtModelEntityItemCombo::itemCheckChanged(const QModelIndex& topLeft, const 
               }
             }
           }
+          // Then we should select the new item again
+          if (!this->m_ModelEntityItem->add(selentityref))
+          {
+            smtkErrorMacro(smtk::io::Logger::instance(), "Fail to add item "
+                << selentityref.name() << " to the check box");
+          }
         }
         else
         {
           item->setCheckState(Qt::Unchecked);
-          this->blockSignals(false);
         }
+        this->blockSignals(false);
       }
     }
     else
