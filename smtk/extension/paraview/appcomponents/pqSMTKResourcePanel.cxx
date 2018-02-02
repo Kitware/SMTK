@@ -12,9 +12,9 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKModelRepresentation.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
-#include "smtk/extension/paraview/appcomponents/pqSMTKResourceManager.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 
-#include "smtk/extension/paraview/server/vtkSMSMTKResourceManagerProxy.h"
+#include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
 
 #include "smtk/extension/paraview/server/vtkSMTKModelRepresentation.h" // FIXME: Remove the need for me
 
@@ -171,16 +171,15 @@ pqSMTKResourcePanel::pqSMTKResourcePanel(QWidget* parent)
 
   auto smtkBehavior = pqSMTKBehavior::instance();
   // Listen for resources on current connections:
-  smtkBehavior->visitResourceManagersOnServers([this](pqSMTKResourceManager* r, pqServer* s) {
+  smtkBehavior->visitResourceManagersOnServers([this](pqSMTKWrapper* r, pqServer* s) {
     this->resourceManagerAdded(r, s);
     return false;
   });
   // Now listen for future connections.
-  QObject::connect(smtkBehavior, SIGNAL(addedManagerOnServer(pqSMTKResourceManager*, pqServer*)),
-    this, SLOT(resourceManagerAdded(pqSMTKResourceManager*, pqServer*)));
-  QObject::connect(smtkBehavior,
-    SIGNAL(removingManagerFromServer(pqSMTKResourceManager*, pqServer*)), this,
-    SLOT(resourceManagerRemoved(pqSMTKResourceManager*, pqServer*)));
+  QObject::connect(smtkBehavior, SIGNAL(addedManagerOnServer(pqSMTKWrapper*, pqServer*)), this,
+    SLOT(resourceManagerAdded(pqSMTKWrapper*, pqServer*)));
+  QObject::connect(smtkBehavior, SIGNAL(removingManagerFromServer(pqSMTKWrapper*, pqServer*)), this,
+    SLOT(resourceManagerRemoved(pqSMTKWrapper*, pqServer*)));
 
   pqActiveObjects& act(pqActiveObjects::instance());
   QObject::connect(&act, SIGNAL(viewChanged(pqView*)), this, SLOT(activeViewChanged(pqView*)));
@@ -290,21 +289,24 @@ void pqSMTKResourcePanel::searchTextChanged(const QString& searchText)
   m_p->m_model->rebuildSubphrases(QModelIndex());
 }
 
-void pqSMTKResourcePanel::resourceManagerAdded(pqSMTKResourceManager* mgr, pqServer* server)
+void pqSMTKResourcePanel::resourceManagerAdded(pqSMTKWrapper* wrapper, pqServer* server)
 {
-  if (!mgr || !server)
+  if (!wrapper || !server)
   {
     return;
   }
 
-  // mgr->smtkProxy()->UpdateVTKObjects();
-  smtk::resource::ManagerPtr rsrcMgr = mgr->smtkResourceManager();
+  // wrapper->smtkProxy()->UpdateVTKObjects();
+  smtk::resource::ManagerPtr rsrcMgr = wrapper->smtkResourceManager();
+  /*
   std::cout << "Panel should watch " << rsrcMgr << " for resources\n";
+  std::cout << "      seln " << wrapper->smtkSelection() << "\n";
+  */
   if (!rsrcMgr)
   {
     return;
   }
-  m_p->m_seln = mgr->smtkSelection();
+  m_p->m_seln = wrapper->smtkSelection();
   if (m_p->m_seln)
   {
     QPointer<pqSMTKResourcePanel> self(this);
@@ -317,10 +319,10 @@ void pqSMTKResourcePanel::resourceManagerAdded(pqSMTKResourceManager* mgr, pqSer
         }
       });
   }
-  m_p->m_phraseModel->addSource(mgr->smtkResourceManager(), mgr->smtkOperationManager());
+  m_p->m_phraseModel->addSource(wrapper->smtkResourceManager(), wrapper->smtkOperationManager());
 }
 
-void pqSMTKResourcePanel::resourceManagerRemoved(pqSMTKResourceManager* mgr, pqServer* server)
+void pqSMTKResourcePanel::resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer* server)
 {
   if (!mgr || !server)
   {

@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/server/vtkSMTKResourceManagerWrapper.h"
+#include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 #include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
 #include "smtk/extension/paraview/server/vtkSMTKModelRepresentation.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
@@ -57,34 +57,9 @@
 
 using namespace nlohmann;
 
-static vtkSMTKResourceManagerWrapper* s_instance = nullptr;
+vtkStandardNewMacro(vtkSMTKWrapper);
 
-static void destroyInstance()
-{
-  if (s_instance)
-  {
-    s_instance->Delete();
-    s_instance = nullptr;
-  }
-}
-
-vtkSMTKResourceManagerWrapper* vtkSMTKResourceManagerWrapper::New()
-{
-  if (!s_instance)
-  {
-    s_instance = new vtkSMTKResourceManagerWrapper;
-    s_instance->Register(nullptr);
-    atexit(destroyInstance);
-  }
-  return s_instance;
-}
-
-vtkSMTKResourceManagerWrapper* vtkSMTKResourceManagerWrapper::Instance()
-{
-  return s_instance;
-}
-
-vtkSMTKResourceManagerWrapper::vtkSMTKResourceManagerWrapper()
+vtkSMTKWrapper::vtkSMTKWrapper()
   : ActiveResource(nullptr)
   , SelectedPort(nullptr)
   , SelectionObj(nullptr)
@@ -92,8 +67,6 @@ vtkSMTKResourceManagerWrapper::vtkSMTKResourceManagerWrapper()
   , JSONResponse(nullptr)
   , SelectionSource("paraview")
 {
-  this->OperationManager = smtk::operation::Manager::create();
-  this->ResourceManager = smtk::resource::Manager::create();
   this->Selection = smtk::view::Selection::create();
   this->Selection->setDefaultAction(smtk::view::SelectionAction::FILTERED_REPLACE);
   this->SelectedValue = this->Selection->findOrCreateLabeledValue("selected");
@@ -124,7 +97,7 @@ vtkSMTKResourceManagerWrapper::vtkSMTKResourceManagerWrapper()
     true);
 }
 
-vtkSMTKResourceManagerWrapper::~vtkSMTKResourceManagerWrapper()
+vtkSMTKWrapper::~vtkSMTKWrapper()
 {
   this->Selection->unobserve(this->SelectionListener);
   this->SetJSONRequest(nullptr);
@@ -134,13 +107,13 @@ vtkSMTKResourceManagerWrapper::~vtkSMTKResourceManagerWrapper()
   this->SetSelectedPort(nullptr);
 }
 
-void vtkSMTKResourceManagerWrapper::PrintSelf(ostream& os, vtkIndent indent)
+void vtkSMTKWrapper::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   indent = indent.GetNextIndent();
   os << indent << "JSONRequest: " << (this->JSONRequest ? this->JSONRequest : "null") << "\n"
      << indent << "JSONResponse: " << (this->JSONResponse ? this->JSONResponse : "null") << "\n"
-     << indent << "ResourceManager: " << this->ResourceManager.get() << "\n"
+     << indent << "ResourceManager: " << this->GetResourceManager() << "\n"
      << indent << "Selection: " << this->Selection.get() << "\n"
      << indent << "SelectedPort: " << this->SelectedPort << "\n"
      << indent << "SelectionObj: " << this->SelectionObj << "\n"
@@ -150,7 +123,7 @@ void vtkSMTKResourceManagerWrapper::PrintSelf(ostream& os, vtkIndent indent)
      << indent << "HoveredValue: " << this->HoveredValue << "\n";
 }
 
-void vtkSMTKResourceManagerWrapper::ProcessJSON()
+void vtkSMTKWrapper::ProcessJSON()
 {
   if (!this->JSONRequest || !this->JSONRequest[0])
   {
@@ -169,38 +142,42 @@ void vtkSMTKResourceManagerWrapper::ProcessJSON()
   {
     this->FetchHardwareSelection(response);
   }
-  else if (method == "add resource")
+  else if (method == "add resource filter")
   {
-    this->AddResource(response);
+    this->AddResourceFilter(response);
   }
-  else if (method == "remove resource")
+  else if (method == "remove resource filter")
   {
-    this->RemoveResource(response);
+    this->RemoveResourceFilter(response);
   }
-  else if (method == "set resource for representation")
+  else if (method == "setup representation")
   {
     auto uid = j["params"]["resource"].get<smtk::common::UUID>();
-    auto rsrc = this->ResourceManager->get(uid);
+    auto rsrc = this->GetResourceManager()->get(uid);
     auto repr = vtkSMTKModelRepresentation::SafeDownCast(this->Representation);
     if (repr)
     {
       repr->SetResource(rsrc);
+      repr->SetWrapper(this);
+      response["success"] = true;
     }
     else
-      vtkErrorMacro(<< "Invalid representation!")
-
-        response["success"] = true;
+    {
+      vtkErrorMacro("Invalid representation!");
+      response["error"] = { { "code", JSONRPC_METHOD_NOT_FOUND_CODE },
+        { "message", JSONRPC_METHOD_NOT_FOUND_MESSAGE } };
+    }
   }
   else
   {
-    response["error"] = { { "code", JSONRPC_METHOD_NOT_FOUND_CODE },
-      { "message", JSONRPC_METHOD_NOT_FOUND_MESSAGE } };
+    response["error"] = { { "code", JSONRPC_INVALID_PARAMS_CODE },
+      { "message", JSONRPC_INVALID_PARAMS_MESSAGE } };
   }
 
   this->SetJSONResponse(response.dump().c_str());
 }
 
-void vtkSMTKResourceManagerWrapper::FetchHardwareSelection(json& response)
+void vtkSMTKWrapper::FetchHardwareSelection(json& response)
 {
   // This is different than expected because there appears to be a vtkPVPostFilter
   // in between each "actual" algorithm on the client and what we get passed as
@@ -267,7 +244,7 @@ void vtkSMTKResourceManagerWrapper::FetchHardwareSelection(json& response)
             << "  # " << seln.size() << "  from " << this->Selection << "\n\n";
 }
 
-void vtkSMTKResourceManagerWrapper::AddResource(json& response)
+void vtkSMTKWrapper::AddResourceFilter(json& response)
 {
   // this->ActiveResource has been set. Add it to our resource manager.
   bool found = false;
@@ -282,6 +259,8 @@ void vtkSMTKResourceManagerWrapper::AddResource(json& response)
     auto src = vtkSMTKModelReader::SafeDownCast(alg);
     if (src)
     {
+      src->SetWrapper(this);
+      /*
       src->ObserveResourceChanges([this](smtk::model::ManagerPtr rsrc, bool adding) {
         if (rsrc)
         {
@@ -289,16 +268,17 @@ void vtkSMTKResourceManagerWrapper::AddResource(json& response)
           {
             std::cout << "  Adding resource   " << rsrc->id() << " loc " << rsrc->location()
                       << "\n";
-            this->ResourceManager->add(rsrc);
+            this->GetResourceManager()->add(rsrc);
           }
           else
           {
             std::cout << "  Removing resource " << rsrc->id() << " loc " << rsrc->location()
                       << "\n";
-            this->ResourceManager->remove(rsrc);
+            this->GetResourceManager()->remove(rsrc);
           }
         }
       });
+      */
       found = true;
       response["result"] = {
         { "success", true },
@@ -312,7 +292,7 @@ void vtkSMTKResourceManagerWrapper::AddResource(json& response)
   }
 }
 
-void vtkSMTKResourceManagerWrapper::RemoveResource(json& response)
+void vtkSMTKWrapper::RemoveResourceFilter(json& response)
 {
   // this->ActiveResource has been set. Add it to our resource manager.
   bool found = false;
@@ -327,9 +307,8 @@ void vtkSMTKResourceManagerWrapper::RemoveResource(json& response)
     auto src = vtkSMTKModelReader::SafeDownCast(alg);
     if (src)
     {
-      src->UnobserveResourceChanges();
-      auto rsrc = src->GetSMTKResource();
-      this->ResourceManager->remove(rsrc);
+      src->DropResource(); // Remove any resource src holds from the resource manager it uses.
+      src->SetWrapper(nullptr);
       response["result"] = {
         { "success", true },
       };
@@ -343,9 +322,9 @@ void vtkSMTKResourceManagerWrapper::RemoveResource(json& response)
   }
 }
 
-vtkCxxSetObjectMacro(vtkSMTKResourceManagerWrapper, Representation, vtkPVDataRepresentation)
+vtkCxxSetObjectMacro(vtkSMTKWrapper, Representation, vtkPVDataRepresentation)
 
-  vtkPVDataRepresentation* vtkSMTKResourceManagerWrapper::GetRepresentation()
+  vtkPVDataRepresentation* vtkSMTKWrapper::GetRepresentation()
 {
   return this->Representation;
 }

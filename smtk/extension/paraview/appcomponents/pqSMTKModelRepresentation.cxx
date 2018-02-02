@@ -9,12 +9,12 @@
 //=========================================================================
 #include "smtk/extension/paraview/appcomponents/pqSMTKModelRepresentation.h"
 #include "smtk/extension/paraview/server/vtkSMSMTKModelRepresentationProxy.h"
-#include "smtk/extension/paraview/server/vtkSMSMTKResourceManagerProxy.h"
+#include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
 #include "smtk/extension/paraview/server/vtkSMTKModelRepresentation.h" // TODO Remove the need for me.
 
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
-#include "smtk/extension/paraview/appcomponents/pqSMTKResourceManager.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 
 #include "smtk/model/Manager.h"
 

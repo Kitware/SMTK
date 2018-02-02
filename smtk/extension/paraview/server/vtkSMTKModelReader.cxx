@@ -13,16 +13,21 @@
 #include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
+#include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/Operator.h"
 #include "smtk/model/SessionRef.h"
+
+#include "smtk/operation/LoadResource.h"
 
 #include "smtk/resource/Manager.h"
 
@@ -36,12 +41,13 @@
 using namespace smtk;
 
 vtkStandardNewMacro(vtkSMTKModelReader);
+vtkCxxSetObjectMacro(vtkSMTKModelReader, Wrapper, vtkSMTKWrapper);
 
 vtkSMTKModelReader::vtkSMTKModelReader()
 {
   //std::cout << "Create reader " << this << "\n";
   this->FileName = nullptr;
-  this->ResourceObserver = nullptr;
+  this->Wrapper = nullptr;
   this->SetNumberOfInputPorts(0);
   this->SetNumberOfOutputPorts(vtkModelMultiBlockSource::NUMBER_OF_OUTPUT_PORTS);
 
@@ -53,6 +59,8 @@ vtkSMTKModelReader::vtkSMTKModelReader()
 vtkSMTKModelReader::~vtkSMTKModelReader()
 {
   //std::cout << "Delete reader " << this << "\n";
+  this->DropResource();
+  this->SetWrapper(nullptr);
   this->SetFileName(nullptr);
 }
 
@@ -61,12 +69,31 @@ void vtkSMTKModelReader::PrintSelf(ostream& os, vtkIndent indent)
   this->Superclass::PrintSelf(os, indent);
   os << indent << "FileName: " << this->FileName << "\n";
   os << indent << "ModelSource: " << this->ModelSource << "\n";
-  os << indent << "ResourceObserver: " << (this->ResourceObserver ? "Y" : "N") << "\n";
+  os << indent << "Wrapper: " << this->Wrapper << "\n";
 }
 
 smtk::model::ManagerPtr vtkSMTKModelReader::GetSMTKResource() const
 {
   return this->ModelSource->GetModelManager();
+}
+
+void vtkSMTKModelReader::DropResource()
+{
+  auto rsrc = this->GetSMTKResource();
+  if (!rsrc)
+  {
+    return;
+  }
+
+  smtk::resource::Manager::Ptr rsrcMgr = this->Wrapper
+    ? this->Wrapper->GetResourceManager()
+    : smtk::environment::ResourceManager::instance();
+  if (!rsrcMgr)
+  {
+    return;
+  }
+
+  rsrcMgr->remove(rsrc);
 }
 
 /// Generate polydata from an smtk::model with tessellation information.
@@ -132,45 +159,73 @@ int vtkSMTKModelReader::RequestData(vtkInformation* vtkNotUsed(request),
 
 bool vtkSMTKModelReader::LoadFile()
 {
-  // std::cout << "  Reading " << this->FileName << "\n";
-  // auto oldMgr = this->ModelSource->GetModelManager();
-  // if (oldMgr && this->ResourceObserver)
-  // {
-  //   this->ResourceObserver(oldMgr, false);
-  // }
-  // auto mgr = model::Manager::create();
-  // this->ModelSource->SetModelManager(mgr);
-  // mgr->setLocation(this->FileName);
+  if (!this->FileName)
+  {
+    return false;
+  }
 
-  // auto ssn = mgr->createSession("native");
-  // auto rdr = ssn.op("load smtk model"); // smtk::model::LoadSMTKModel::create();
-  // if (!rdr)
-  // {
-  //   return false;
-  // }
+  smtk::resource::Manager::Ptr rsrcMgr = this->Wrapper
+    ? this->Wrapper->GetResourceManager()
+    : smtk::environment::ResourceManager::instance();
 
-  // auto filenameItem = rdr->specification()->findFile("filename");
-  // filenameItem->setNumberOfValues(1);
-  // filenameItem->setValue(0, this->FileName);
-  // auto res = rdr->operate();
+  smtk::operation::Manager::Ptr operMgr = this->Wrapper
+    ? this->Wrapper->GetOperationManager()
+    : smtk::environment::OperationManager::instance();
+  if (!operMgr)
+  {
+    return false;
+  }
 
-  // if (res->findInt("outcome")->value() != operation::Operator::OPERATION_SUCCEEDED)
-  // {
-  //   smtkErrorMacro(smtk::io::Logger::instance(), "Could not read \"" << this->FileName << "\"");
-  //   return false;
-  // }
+  auto oper = operMgr->create<smtk::operation::LoadResource>();
+  if (!oper)
+  {
+    return false;
+  }
 
-  // auto cre = res->findModelEntity("created");
-  // if (cre->numberOfValues() > 0)
-  // {
-  //   this->ModelSource->SetModelEntityID(cre->value().entity().toString().c_str());
-  // }
+  // oper->setResourceManager(rsrcMgr); // TJ: uncomment me to get further.
+  oper->parameters()->findFile("filename")->setValue(this->FileName);
 
-  // if (this->ResourceObserver)
-  // {
-  //   this->ResourceObserver(mgr, true);
-  // }
+  auto result = oper->operate();
+  if (result->findInt("outcome")->value() !=
+    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+  {
+    return false;
+  }
 
-  // return true;
-  return false;
+  auto rsrc = result->findResource("resource")->value(0);
+  auto modelRsrc = std::dynamic_pointer_cast<smtk::model::Manager>(rsrc);
+  if (!modelRsrc)
+  {
+    return false;
+  }
+
+  // If we have a resouce manager...
+  if (rsrcMgr)
+  {
+    // ... remove the previous resource if we had one.
+    auto oldRsrc = this->ModelSource->GetModelManager();
+    if (oldRsrc)
+    {
+      rsrcMgr->remove(oldRsrc);
+    }
+    // Add the resource we just read.
+    rsrcMgr->add(rsrc);
+  }
+
+  // Tell our multiblock source to generate VTK polydata for model/mesh entities.
+  this->ModelSource->SetModelManager(modelRsrc);
+
+  // Also, find the first model and tell the multiblock source to render only it.
+  // TODO: Either we need a separate representation for each model (which is
+  //       IMNSHO a bad idea) or we need to change the multiblock source to work
+  //       without a model. It currently generates tessellations but not all the
+  //       metadata required for color-by modes.
+  auto models =
+    modelRsrc->entitiesMatchingFlagsAs<smtk::model::Models>(smtk::model::MODEL_ENTITY, false);
+  if (!models.empty())
+  {
+    this->ModelSource->SetModelEntityID(models.begin()->entity().toString().c_str());
+  }
+
+  return true;
 }

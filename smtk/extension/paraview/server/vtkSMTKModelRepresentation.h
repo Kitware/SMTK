@@ -23,6 +23,8 @@
 #include <string>
 #include <unordered_map>
 
+class vtkSMTKWrapper;
+
 class vtkActor;
 class vtkPVCacheKeeper;
 class vtkCompositeDataSet;
@@ -218,6 +220,9 @@ public:
   void SetUseInternalAttributes(bool enable);
   //@}
 
+  virtual void SetWrapper(vtkSMTKWrapper*);
+  vtkGetObjectMacro(Wrapper, vtkSMTKWrapper);
+
   void SetResource(smtk::resource::ResourcePtr res);
 
   void GetEntityVisibilities(std::map<smtk::common::UUID, int>& visdata);
@@ -289,6 +294,14 @@ protected:
     vtkDataObject* dataObject, double bounds[6], vtkCompositeDataDisplayAttributes* cdAttributes);
   //@}
 
+  /**\brief Provides access to the SMTK selection and to resource components.
+    *
+    * The selection is used to change the visual style of entities.
+    * Additionally, resource and component relationships are used
+    * + to determine the color for some non-visual entity types such as groups or models; and
+    * + in certain coloring modes, such as when coloring by volume.
+    */
+  vtkSMTKWrapper* Wrapper;
   /**
    * Provides access to entities in the model. This is useful when coloring by
    * certain modes (e.g. in order to query the color of a volume with a given UUID).

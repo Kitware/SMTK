@@ -19,15 +19,17 @@
 #include "vtkSmartPointer.h"
 
 class vtkModelMultiBlockSource;
+class vtkSMTKWrapper;
 
 /**\brief Use SMTK to provide a ParaView-friendly model source.
+  *
+  * If the SMTK wrapper object is set, then the wrapper's resource and operation
+  * manager are used to load the file (or perhaps in the future to create a new resource).
+  * Otherwise SMTK's default environment is used.
   */
 class SMTKPVSERVEREXTPLUGIN_EXPORT vtkSMTKModelReader : public vtkMultiBlockDataSetAlgorithm
 {
 public:
-  /// When the reader creates (true) and destroys (false) model resources, this function is called.
-  using Observer = std::function<void(smtk::model::ManagerPtr, bool)>;
-
   vtkTypeMacro(vtkSMTKModelReader, vtkMultiBlockDataSetAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent) override;
   static vtkSMTKModelReader* New();
@@ -42,8 +44,12 @@ public:
   /// Return the SMTK model resource that holds data read from \a FileName.
   smtk::model::ManagerPtr GetSMTKResource() const;
 
-  void ObserveResourceChanges(const Observer& fn) { this->ResourceObserver = fn; }
-  void UnobserveResourceChanges() { this->ResourceObserver = nullptr; }
+  /// Set/get the SMTK wrapper to which the resource is added (and whose operators are used to read)
+  virtual void SetWrapper(vtkSMTKWrapper*);
+  vtkGetObjectMacro(Wrapper, vtkSMTKWrapper);
+
+  /// Remove any loaded resource from the resource manager being used by the reader.
+  virtual void DropResource();
 
 protected:
   vtkSMTKModelReader();
@@ -56,7 +62,7 @@ protected:
 
   char* FileName;
   vtkNew<vtkModelMultiBlockSource> ModelSource;
-  Observer ResourceObserver;
+  vtkSMTKWrapper* Wrapper;
 
 private:
   vtkSMTKModelReader(const vtkSMTKModelReader&) = delete;

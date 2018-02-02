@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_extension_paraview_appcomponenets_pqSMTKResourceManager_h
-#define smtk_extension_paraview_appcomponenets_pqSMTKResourceManager_h
+#ifndef smtk_extension_paraview_appcomponenets_pqSMTKWrapper_h
+#define smtk_extension_paraview_appcomponenets_pqSMTKWrapper_h
 
 #include "smtk/extension/paraview/appcomponents/Exports.h"
 
@@ -24,12 +24,12 @@
 
 class pqOutputPort;
 class pqSMTKResource;
-class vtkSMSMTKResourceManagerProxy;
+class vtkSMSMTKWrapperProxy;
 
 /**\brief A proxy for SMTK resource managers created when connecting to a new server.
   *
   * Each time ParaView connects to a new server, the pqSMTKBehavior
-  * will direct the pqObjectBuilder to create a new vtkSMTKResourceManagerWrapper
+  * will direct the pqObjectBuilder to create a new vtkSMTKWrapper
   * instance on each of that server's processes, plus a proxy on the client.
   * This class exists to expose signals and slots related to these objects.
   *
@@ -44,18 +44,18 @@ class vtkSMSMTKResourceManagerProxy;
   * its lifetime. (A pqSMTKResource is a pipeline source object whose filename property
   * may change while SMTK resources are tied to the contents of a particular file.)
   */
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKResourceManager : public pqProxy
+class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKWrapper : public pqProxy
 {
   Q_OBJECT
   using Superclass = pqProxy;
 
 public:
-  pqSMTKResourceManager(const QString& regGroup, const QString& regName, vtkSMProxy* proxy,
+  pqSMTKWrapper(const QString& regGroup, const QString& regName, vtkSMProxy* proxy,
     pqServer* server, QObject* parent = nullptr);
-  ~pqSMTKResourceManager() override;
+  ~pqSMTKWrapper() override;
 
   /// Return the proxy for the resource manager cast to its proper type.
-  vtkSMSMTKResourceManagerProxy* smtkProxy() const;
+  vtkSMSMTKWrapperProxy* smtkProxy() const;
   /// Return the client-side resource manager which mirrors the server version.
   smtk::resource::ManagerPtr smtkResourceManager() const;
   /// Return the client-side operation manager which mirrors the server version.
@@ -96,7 +96,7 @@ protected:
   std::set<QPointer<pqSMTKResource> > m_resources;
 
 private:
-  Q_DISABLE_COPY(pqSMTKResourceManager);
+  Q_DISABLE_COPY(pqSMTKWrapper);
 };
 
 #endif

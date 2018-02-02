@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_extension_paraview_appcomponents_vtkSMSMTKResourceManagerProxy_h
-#define smtk_extension_paraview_appcomponents_vtkSMSMTKResourceManagerProxy_h
+#ifndef smtk_extension_paraview_appcomponents_vtkSMSMTKWrapperProxy_h
+#define smtk_extension_paraview_appcomponents_vtkSMSMTKWrapperProxy_h
 
 #include "smtk/extension/paraview/server/Exports.h"
 
@@ -39,18 +39,18 @@ class vtkSMRepresentationProxy;
  * and the client asks the server for the selection when it is
  * notified that a selection event occurred on the server.
  */
-class SMTKPVSERVEREXTPLUGIN_EXPORT vtkSMSMTKResourceManagerProxy : public vtkSMProxy
+class SMTKPVSERVEREXTPLUGIN_EXPORT vtkSMSMTKWrapperProxy : public vtkSMProxy
 {
   using json = nlohmann::json;
 
 public:
-  static vtkSMSMTKResourceManagerProxy* New();
-  static vtkSMSMTKResourceManagerProxy* Instance();
-  vtkTypeMacro(vtkSMSMTKResourceManagerProxy, vtkSMProxy);
+  static vtkSMSMTKWrapperProxy* New();
+  static vtkSMSMTKWrapperProxy* Instance();
+  vtkTypeMacro(vtkSMSMTKWrapperProxy, vtkSMProxy);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Return the client-side resource manager (mirrored on the server via this proxy).
-  smtk::resource::ManagerPtr GetManager() const;
+  smtk::resource::ManagerPtr GetResourceManager() const;
 
   /// Return the client-side selection manager (mirrored on the server via this proxy).
   smtk::view::SelectionPtr GetSelection() const;
@@ -94,8 +94,8 @@ public:
     smtk::resource::ResourcePtr clientSideResource, vtkSMRepresentationProxy* pxy);
 
 protected:
-  vtkSMSMTKResourceManagerProxy();
-  ~vtkSMSMTKResourceManagerProxy() override;
+  vtkSMSMTKWrapperProxy();
+  ~vtkSMSMTKWrapperProxy() override;
 
   void Send(const json& selnInfo);
   void Recv(vtkSMSourceProxy* dataSource, vtkSMSourceProxy* selnSource, json& selnInfo);
@@ -110,8 +110,8 @@ protected:
   smtk::operation::ManagerPtr OperationManager;
 
 private:
-  vtkSMSMTKResourceManagerProxy(const vtkSMSMTKResourceManagerProxy&) = delete;
-  void operator=(const vtkSMSMTKResourceManagerProxy&) = delete;
+  vtkSMSMTKWrapperProxy(const vtkSMSMTKWrapperProxy&) = delete;
+  void operator=(const vtkSMSMTKWrapperProxy&) = delete;
 };
 
 #endif

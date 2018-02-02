@@ -10,9 +10,9 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
 
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
-#include "smtk/extension/paraview/appcomponents/pqSMTKResourceManager.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 
-#include "smtk/extension/paraview/server/vtkSMSMTKResourceManagerProxy.h"
+#include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
 #include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
 
 #include "smtk/model/Manager.h"
@@ -85,7 +85,11 @@ void pqSMTKResource::synchronizeResource()
   {
     auto behavior = pqSMTKBehavior::instance();
     auto rsrcMgrPxy = behavior->resourceManagerForServer(this->getServer());
-    auto rsrcMgr = rsrcMgrPxy->smtkResourceManager();
+    auto rsrcMgr = rsrcMgrPxy ? rsrcMgrPxy->smtkResourceManager() : nullptr;
+    if (!rsrcMgr)
+    {
+      return;
+    }
     if (lastRsrc)
     {
       rsrcMgr->remove(lastRsrc);

@@ -917,8 +917,6 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(vtkMultiBlockData
   }
   else
   {
-    vtkGenericWarningMacro(
-      << "A valid model entity id was not set, so all tessellations are used.");
 
     mbds->SetNumberOfBlocks(static_cast<unsigned>(manager->tessellations().size()));
     vtkIdType i;

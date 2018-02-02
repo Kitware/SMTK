@@ -11,8 +11,8 @@
 
 // SMTK
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
-#include "smtk/extension/paraview/appcomponents/pqSMTKResourceManager.h"
-#include "smtk/extension/paraview/server/vtkSMSMTKResourceManagerProxy.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
+#include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
 
 #include "smtk/io/Logger.h"
 
@@ -33,7 +33,7 @@
 class pqSMTKBehavior::Internal
 {
 public:
-  std::map<pqServer*, std::pair<vtkSMSMTKResourceManagerProxy*, pqSMTKResourceManager*> > Remotes;
+  std::map<pqServer*, std::pair<vtkSMSMTKWrapperProxy*, pqSMTKWrapper*> > Remotes;
 };
 
 static pqSMTKBehavior* g_instance = nullptr;
@@ -92,7 +92,7 @@ pqSMTKBehavior::~pqSMTKBehavior()
   delete m_p;
 }
 
-vtkSMSMTKResourceManagerProxy* pqSMTKBehavior::wrapperProxy(pqServer* remote)
+vtkSMSMTKWrapperProxy* pqSMTKBehavior::wrapperProxy(pqServer* remote)
 {
   auto entry = remote ? m_p->Remotes.find(remote) : m_p->Remotes.begin();
   if (entry == m_p->Remotes.end())
@@ -102,7 +102,7 @@ vtkSMSMTKResourceManagerProxy* pqSMTKBehavior::wrapperProxy(pqServer* remote)
   return entry->second.first;
 }
 
-pqSMTKResourceManager* pqSMTKBehavior::resourceManagerForServer(pqServer* remote)
+pqSMTKWrapper* pqSMTKBehavior::resourceManagerForServer(pqServer* remote)
 {
   auto entry = remote ? m_p->Remotes.find(remote) : m_p->Remotes.begin();
   if (entry == m_p->Remotes.end())
@@ -112,7 +112,7 @@ pqSMTKResourceManager* pqSMTKBehavior::resourceManagerForServer(pqServer* remote
   return entry->second.second;
 }
 
-void pqSMTKBehavior::addPQProxy(pqSMTKResourceManager* rsrcMgr)
+void pqSMTKBehavior::addPQProxy(pqSMTKWrapper* rsrcMgr)
 {
   if (!rsrcMgr)
   {
@@ -123,8 +123,8 @@ void pqSMTKBehavior::addPQProxy(pqSMTKResourceManager* rsrcMgr)
   auto it = m_p->Remotes.find(server);
   if (it == m_p->Remotes.end())
   {
-    m_p->Remotes[server] = std::pair<vtkSMSMTKResourceManagerProxy*, pqSMTKResourceManager*>(
-      vtkSMSMTKResourceManagerProxy::SafeDownCast(rsrcMgr->getProxy()), rsrcMgr);
+    m_p->Remotes[server] = std::pair<vtkSMSMTKWrapperProxy*, pqSMTKWrapper*>(
+      vtkSMSMTKWrapperProxy::SafeDownCast(rsrcMgr->getProxy()), rsrcMgr);
   }
   else
   {
@@ -133,10 +133,10 @@ void pqSMTKBehavior::addPQProxy(pqSMTKResourceManager* rsrcMgr)
   emit addedManagerOnServer(rsrcMgr, server);
 }
 
-pqSMTKResourceManager* pqSMTKBehavior::getPVResourceManager(smtk::resource::ManagerPtr mgr)
+pqSMTKWrapper* pqSMTKBehavior::getPVResourceManager(smtk::resource::ManagerPtr mgr)
 {
-  pqSMTKResourceManager* result = nullptr;
-  this->visitResourceManagersOnServers([&result, &mgr](pqSMTKResourceManager* mos, pqServer*) {
+  pqSMTKWrapper* result = nullptr;
+  this->visitResourceManagersOnServers([&result, &mgr](pqSMTKWrapper* mos, pqServer*) {
     if (mos && mos->smtkResourceManager() == mgr)
     {
       result = mos;
@@ -150,7 +150,7 @@ pqSMTKResourceManager* pqSMTKBehavior::getPVResourceManager(smtk::resource::Mana
 pqSMTKResource* pqSMTKBehavior::getPVResource(smtk::resource::ResourcePtr mgr)
 {
   pqSMTKResource* result = nullptr;
-  this->visitResourceManagersOnServers([&result, &mgr](pqSMTKResourceManager* mos, pqServer*) {
+  this->visitResourceManagersOnServers([&result, &mgr](pqSMTKWrapper* mos, pqServer*) {
     pqSMTKResource* pvr;
     if (mos && (pvr = mos->getPVResource(mgr)))
     {
@@ -163,7 +163,7 @@ pqSMTKResource* pqSMTKBehavior::getPVResource(smtk::resource::ResourcePtr mgr)
 }
 
 void pqSMTKBehavior::visitResourceManagersOnServers(
-  const std::function<bool(pqSMTKResourceManager*, pqServer*)>& fn) const
+  const std::function<bool(pqSMTKWrapper*, pqServer*)>& fn) const
 {
   for (auto remote : m_p->Remotes)
   {
@@ -189,13 +189,13 @@ void pqSMTKBehavior::addManagerOnServer(pqServer* server)
   // TODO: Monitor app->getServerManagerModel()'s serverReady/serverRemoved events
   //       and add/remove resource managers as required.
 
-  // This creates a vtkSMSMTKResourceManagerProxy on the client and a
-  // vtkSMTKResourceManagerWrapper on the server. Because our plugin uses
+  // This creates a vtkSMSMTKWrapperProxy on the client and a
+  // vtkSMTKWrapper on the server. Because our plugin uses
   // the add_pqproxy() cmake macro, this also results in the creation of
-  // a pqSMTKResourceManager instance so that Qt events (notably selection
+  // a pqSMTKWrapper instance so that Qt events (notably selection
   // changes) can trigger SMTK events.
-  vtkSMProxy* pxy = builder->createProxy("smtk", "ResourceManager", server, "smtk resources");
-  auto rmpxy = dynamic_cast<vtkSMSMTKResourceManagerProxy*>(pxy);
+  vtkSMProxy* pxy = builder->createProxy("smtk", "SMTKWrapper", server, "smtk resources");
+  auto rmpxy = dynamic_cast<vtkSMSMTKWrapperProxy*>(pxy);
   m_p->Remotes[server].first = rmpxy;
 
   emit addedManagerOnServer(rmpxy, server);

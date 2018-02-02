@@ -1,7 +1,7 @@
 <ServerManagerConfiguration>
 
   <ProxyGroup name="smtk">
-    <SMTKResourceManagerProxy name="ResourceManager" class="vtkSMTKResourceManagerWrapper">
+    <SMTKWrapperProxy name="SMTKWrapper" class="vtkSMTKWrapper">
 
       <InputProperty command="SetActiveResource" label="Active Resource" name="ActiveResource">
         <Documentation>
@@ -75,7 +75,7 @@
           to invoke methods on representations.</Documentation>
       </ProxyProperty>
 
-    </SMTKResourceManagerProxy>
+    </SMTKWrapperProxy>
   </ProxyGroup>
 
   <ProxyGroup name="sources">

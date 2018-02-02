@@ -30,17 +30,15 @@ Plugins
 
 Some notes about the plugins:
 
-* the server plugin/directory is for code that can be built
-  without Qt and will reside — at least in part — on the server.
-  Some proxy classes whose counterparts reside on the server are
-  also included in this plugin.
-* the representation plugin is dependent on the server plugin
-  for the model (and eventually mesh) sources, for which it
-  exposes representations.
-  These representations display the *SMTK* selection, not
-  the *ParaView* selection.
-  The model representation is also useful because it uses
-  a glyph mapper to draw instance prototype geometry at all
+* the server directory (which holds source for the smtkPVServerExtPlugin plugin) is
+  for code that can be built without Qt and will reside — at least in part — on the server.
+  Some client-side proxy classes (that do not use Qt) whose counterparts
+  reside on the server are also included in this plugin.
+  This is where the model (and eventually mesh) sources and their representations reside.
+  Note that the representations display the *SMTK* selection, not the *ParaView* selection,
+  although the two selections are generally kept in sync.
+  Besides dealing with SMTK selections in a consistent way,
+  the model representation uses a glyph mapper to draw instance prototype geometry at all
   instance placement points.
 * the appcomponents plugin is dependent on the server plugin
   for the VTK-wrapped and CS-wrapped objects that it
@@ -48,13 +46,20 @@ Some notes about the plugins:
   Many of the components in this plugin are ParaView "behaviors."
   A behavior is a QObject subclass that customizes the user interface of
   ParaView. In this case:
-    * the :smtk:`pqSMTKBehavior` creates instances
-      of :smtk:`smtk::resource::Manager` and :smtk:`smtk::resource::SelectionManager`
-      on both the client and server and synchronizes them across the client-server connection.
+    * the :smtk:`pqSMTKBehavior` creates instances of :smtk:`vtkSMTKWrapper` objects
+      on the server and manages them via :smtk:`vtkSMSMTKWrapperProxy` objects on the client.
+      Each wrapper exposes an :smtk:`smtk::resource::Manager`, an :smtk:`smtk::operation::Manager`,
+      and an :smtk:`smtk::view::Selection` to server-side VTK classes (such as the resource
+      readers and representations).
     * the :smtk:`pqSMTKSelectionFilterBehavior` adds a toolbar to ParaView allowing users to
       specify what types of resource components they want to select.
       It then installs a filter onto an SMTK selection manager to force the selection to match
       the specification.
+    * the :smtk:`pqSMTKResourcePanel` class adds a panel to ParaView that shows the resources
+      and components available.
+    * the :smtk:`pqSMTKColorByToolBar` class adds a tool bar to ParaView that allows users
+      to choose how model entities should be colored (e.g., by their assigned color, by the
+      assigned color of the volume they bound, by field values such as simulation results).
 
 Lifecycle
 ---------
@@ -71,10 +76,9 @@ This makes some things difficult since events on the server cannot result in cli
    This plugin's startup method creates an instance of :smtk:`pqSMTKBehavior`
    which listens for ParaView servers attaching to/detaching from the client.
    When one attaches, it directs ParaView's pqObjectBuilder to create an instance of
-   :smtk:`vtkSMTKResourceManagerWrapper` on the server and
-   :smtk:`vtkSMSMTKResourceManagerProxy` on the client.
+   :smtk:`vtkSMTKWrapper` on the server and :smtk:`vtkSMSMTKWrapperProxy` on the client.
    The plugin also registers (again via CMake macros) a pqProxy subclass named
-   :smtk:`pqSMTKResourceManager` to be created whenever a vtkSMSMTKResourceManagerProxy
+   :smtk:`pqSMTKWrapper` to be created whenever a vtkSMSMTKWrapperProxy
    is instantiated.
 2. Reading an SMTK file.
    SMTK registers, via an XML configuration file, a VTK-based reader (:smtk:`vtkSMTKModelReader`)

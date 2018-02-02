@@ -18,8 +18,8 @@ set(serverWrappedSrcs
   vtkPVModelSources.cxx
   vtkSMTKAttributeReader.cxx
   vtkSMTKModelReader.cxx
-  vtkSMSMTKResourceManagerProxy.cxx
-  vtkSMTKResourceManagerWrapper.cxx
+  vtkSMSMTKWrapperProxy.cxx
+  vtkSMTKWrapper.cxx
   vtkSMSMTKModelRepresentationProxy.cxx
   vtkSMTKModelRepresentation.cxx
 )
@@ -28,8 +28,8 @@ set(serverWrappedHdrs
   vtkPVModelSources.h
   vtkSMTKAttributeReader.h
   vtkSMTKModelReader.h
-  vtkSMSMTKResourceManagerProxy.h
-  vtkSMTKResourceManagerWrapper.h
+  vtkSMSMTKWrapperProxy.h
+  vtkSMTKWrapper.h
   vtkSMSMTKModelRepresentationProxy.h
   vtkSMTKModelRepresentation.h
 )
@@ -53,6 +53,7 @@ add_paraview_plugin(
 target_link_libraries(smtkPVServerExtPlugin
   LINK_PUBLIC
     smtkCore
+    smtkEnvironment
     vtkSMTKSourceExt
     vtkSMTKReaderExt # vtkLIDARReader
     vtkSMTKFilterExt # vtkTerrainExtractionFilter, vtkLIDARElevationFilter
