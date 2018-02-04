@@ -30,7 +30,7 @@ PhraseListContent::PhraseListContent()
 
 PhraseListContent::Ptr PhraseListContent::setup(DescriptivePhrase::Ptr parent, int mutability)
 {
-  m_parent = parent;
+  this->setLocation(parent);
   m_mutability = mutability;
   return shared_from_this();
 }
@@ -141,7 +141,7 @@ smtk::resource::ComponentArray PhraseListContent::relatedComponents() const
 {
   smtk::resource::ComponentArray result;
 
-  auto parent = m_parent.lock();
+  auto parent = this->location();
   if (!parent)
   {
     return result;
@@ -179,14 +179,14 @@ void PhraseListContent::setMutability(int whatsMutable)
 bool PhraseListContent::operator==(const PhraseContent& other) const
 {
   auto otherList(static_cast<const PhraseListContent&>(other));
-  return this->equalTo(other) && (m_parent.lock() == otherList.m_parent.lock()) &&
+  return this->equalTo(other) && (this->location() == otherList.location()) &&
     m_commonFlags == otherList.m_commonFlags && m_unionFlags == otherList.m_unionFlags;
 }
 
 std::string PhraseListContent::generateTitle(
   smtk::model::BitFlags& fCommon, smtk::model::BitFlags& fUnion) const
 {
-  auto phrase = m_parent.lock();
+  auto phrase = this->location();
   if (!phrase)
   {
     return std::string();

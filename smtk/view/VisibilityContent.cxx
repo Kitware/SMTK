@@ -10,6 +10,7 @@
 #include "smtk/view/VisibilityContent.h"
 
 #include "smtk/view/DescriptivePhrase.h"
+#include "smtk/view/PhraseModel.h"
 
 #include "smtk/attribute/Attribute.h"
 
@@ -65,8 +66,23 @@ int VisibilityContent::flagValue(ContentType attr) const
 
 bool VisibilityContent::editFlagValue(ContentType attr, int val)
 {
-  return attr == VISIBILITY ? !!m_delegate(SET_VALUE, val, shared_from_this())
-                            : this->Superclass::editFlagValue(attr, val);
+  bool didChange = attr == VISIBILITY ? !!m_delegate(SET_VALUE, val, shared_from_this())
+                                      : this->Superclass::editFlagValue(attr, val);
+  if (didChange)
+  {
+    auto phr = this->location();
+    if (phr)
+    {
+      auto model = phr->phraseModel();
+      if (model)
+      {
+        auto idx = phr->index();
+        const std::vector<int> refs;
+        model->trigger(phr, PhraseModelEvent::PHRASE_MODIFIED, idx, idx, refs);
+      }
+    }
+  }
+  return didChange;
 }
 
 } // view namespace

@@ -17,9 +17,11 @@
 #include <vtkPVDataRepresentation.h>
 
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/common/UUID.h"
 #include "smtk/extension/paraview/server/Exports.h"
 
 #include <array>
+#include <map>
 #include <string>
 #include <unordered_map>
 
@@ -92,6 +94,13 @@ public:
   static vtkSMTKModelRepresentation* New();
   vtkTypeMacro(vtkSMTKModelRepresentation, vtkPVDataRepresentation);
   void PrintSelf(ostream& os, vtkIndent indent) override;
+
+  /// The visual state of a single component
+  struct State
+  {
+    int m_visibility;
+    vtkSmartPointer<vtkDataObject> m_data;
+  };
 
   //@{
   /**
@@ -294,6 +303,9 @@ protected:
     vtkDataObject* dataObject, double bounds[6], vtkCompositeDataDisplayAttributes* cdAttributes);
   //@}
 
+  /// Update ComponentState from the mapper per-block properties.
+  void UpdateState();
+
   /**\brief Provides access to the SMTK selection and to resource components.
     *
     * The selection is used to change the visual style of entities.
@@ -307,6 +319,9 @@ protected:
    * certain modes (e.g. in order to query the color of a volume with a given UUID).
    */
   smtk::resource::ResourcePtr Resource;
+
+  /// Map from component ids to their state (which is currently only visibility, but may be expanded)
+  std::map<smtk::common::UUID, State> ComponentState;
 
   double DataBounds[6];
   int Representation = SURFACE;
@@ -334,7 +349,7 @@ protected:
   double Diffuse = 1.;
   double Specular = 0.;
 
-  double SelectionColor[3] = { 1., 0., 1. };
+  double SelectionColor[3] = { 1., 0.6, 1. };
 
   //@{
   /**

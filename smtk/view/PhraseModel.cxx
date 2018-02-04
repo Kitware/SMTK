@@ -422,6 +422,30 @@ bool PhraseModel::setDecorator(const PhraseDecorator& phraseDecorator)
   return true;
 }
 
+void PhraseModel::triggerDataChanged()
+{
+  // It is possible the 2 lines below could work, but the feature is not well-documented in Qt:
+  //   auto idx = this->root()->index();
+  //   this->trigger(this->root(), PhraseModelEvent::PHRASE_MODIFIED, idx, idx, std::vector<int>());
+  // Just to be safe, do it the long way:
+  this->root()->visitChildren([this](DescriptivePhrasePtr phr, std::vector<int>& idx) -> int {
+    this->trigger(phr, PhraseModelEvent::PHRASE_MODIFIED, idx, idx, std::vector<int>());
+    return 0; // continue iterating.
+  });
+}
+
+void PhraseModel::triggerDataChangedFor(smtk::resource::ComponentPtr comp)
+{
+  this->root()->visitChildren(
+    [this, &comp](DescriptivePhrasePtr phr, std::vector<int>& idx) -> int {
+      if (phr->relatedComponent() == comp)
+      {
+        this->trigger(phr, PhraseModelEvent::PHRASE_MODIFIED, idx, idx, std::vector<int>());
+      }
+      return 0; // continue iterating.
+    });
+}
+
 int depth(DescriptivePhrasePtr phr)
 {
   int dd = -1;

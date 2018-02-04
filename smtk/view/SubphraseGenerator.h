@@ -182,8 +182,10 @@ protected:
 
   /// A templated helper for the model-related utility methods.
   template <typename T>
-  void addModelEntityPhrases(
-    const T& ents, DescriptivePhrase::Ptr parent, int limit, DescriptivePhrases& result);
+  void addModelEntityPhrases(const T& ents, DescriptivePhrase::Ptr parent, int limit,
+    DescriptivePhrases& result, bool decorate = true,
+    std::function<bool(const DescriptivePhrase::Ptr&, const DescriptivePhrase::Ptr&)> comparator =
+      DescriptivePhrase::compareByTypeThenTitle);
 
 #if 0
   /**\brief Property phrases.

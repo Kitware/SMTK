@@ -37,7 +37,7 @@ namespace view
 
 SubphraseGenerator::SubphraseGenerator()
 {
-  m_directLimit = 4;
+  m_directLimit = 20;
   m_skipAttributes = false;
   m_skipProperties = false;
 }

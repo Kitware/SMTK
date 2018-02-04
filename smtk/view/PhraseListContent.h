@@ -116,7 +116,6 @@ protected:
   mutable smtk::model::BitFlags m_commonFlags;
   mutable smtk::model::BitFlags m_unionFlags;
   mutable std::string m_title;
-  smtk::view::WeakDescriptivePhrasePtr m_parent;
 };
 
 } // view namespace

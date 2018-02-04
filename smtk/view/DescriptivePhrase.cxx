@@ -226,9 +226,9 @@ smtk::common::UUID DescriptivePhrase::relatedComponentId() const
   return this->relatedComponent() ? this->relatedComponent()->id() : smtk::common::UUID::null();
 }
 
-SubphraseGeneratorPtr DescriptivePhrase::findDelegate()
+SubphraseGeneratorPtr DescriptivePhrase::findDelegate() const
 {
-  DescriptivePhrasePtr phr;
+  ConstPtr phr = shared_from_this();
   for (phr = shared_from_this(); phr && !phr->m_delegate; phr = phr->parent())
     /* do nothing */;
   return phr ? phr->m_delegate : SubphraseGeneratorPtr();
@@ -247,6 +247,16 @@ void DescriptivePhrase::visitChildren(Visitor fn)
   std::vector<int> indices;
   this->index(indices); // Initialize the starting index for traversal.
   this->visitChildrenInternal(fn, indices);
+}
+
+PhraseModelPtr DescriptivePhrase::phraseModel() const
+{
+  auto delegate = this->findDelegate();
+  if (delegate)
+  {
+    return delegate->model();
+  }
+  return PhraseModelPtr();
 }
 
 bool DescriptivePhrase::compareByTypeThenTitle(

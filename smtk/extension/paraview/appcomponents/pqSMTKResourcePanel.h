@@ -18,6 +18,7 @@ class QItemSelection;
 class pqSMTKResource;
 class pqSMTKWrapper;
 
+class pqRepresentation;
 class pqServer;
 class pqView;
 
@@ -51,6 +52,13 @@ protected slots:
 
   /// Used to update phrase model with new visibility info for the active view.
   virtual void activeViewChanged(pqView*);
+
+  /// Used to keep list of resource representations in active view up-to-date.
+  virtual void representationAddedToActiveView(pqRepresentation*);
+  virtual void representationRemovedFromActiveView(pqRepresentation*);
+
+  /// Used to listen for self and others making changes to component visibilities in active view's representations.
+  virtual void componentVisibilityChanged(smtk::resource::ComponentPtr comp, bool visible);
 
 protected:
   class Internal;

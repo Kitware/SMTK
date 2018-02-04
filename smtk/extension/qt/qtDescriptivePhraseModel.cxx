@@ -703,26 +703,26 @@ void qtDescriptivePhraseModel::updateObserver(smtk::view::DescriptivePhrasePtr p
   switch (event)
   {
     case PhraseModelEvent::ABOUT_TO_INSERT:
-      this->beginInsertRows(this->indexFromPath(src), range[0], range[1]);
+      emit this->beginInsertRows(this->indexFromPath(src), range[0], range[1]);
       break;
     case PhraseModelEvent::INSERT_FINISHED:
-      this->endInsertRows();
+      emit this->endInsertRows();
       break;
     case PhraseModelEvent::ABOUT_TO_REMOVE:
-      this->beginRemoveRows(this->indexFromPath(src), range[0], range[1]);
+      emit this->beginRemoveRows(this->indexFromPath(src), range[0], range[1]);
       break;
     case PhraseModelEvent::REMOVE_FINISHED:
-      this->endRemoveRows();
+      emit this->endRemoveRows();
       break;
     case PhraseModelEvent::ABOUT_TO_MOVE:
-      this->beginMoveRows(
+      emit this->beginMoveRows(
         this->indexFromPath(src), range[0], range[1], this->indexFromPath(dst), range[2]);
       break;
     case PhraseModelEvent::MOVE_FINISHED:
-      this->endMoveRows();
+      emit this->endMoveRows();
       break;
     case PhraseModelEvent::PHRASE_MODIFIED:
-      this->dataChanged(this->indexFromPath(src), this->indexFromPath(dst));
+      emit this->dataChanged(this->indexFromPath(src), this->indexFromPath(dst));
       break;
   }
 }

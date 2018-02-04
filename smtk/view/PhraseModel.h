@@ -165,7 +165,14 @@ public:
   /// Provide access to the existing decorator. You may chain decorators if you are careful.
   PhraseDecorator decorator() const { return m_decorator; }
 
+  /// Manually specify that all rows should be updated (but to keep the expanded/collapsed state).
+  virtual void triggerDataChanged();
+
+  /// Manually specify that all rows with their relatedComponent() == \a comp should be updated.
+  virtual void triggerDataChangedFor(smtk::resource::ComponentPtr comp);
+
 protected:
+  friend class VisibilityContent;
   PhraseModel();
 
   /// A method called when a selection is modified.

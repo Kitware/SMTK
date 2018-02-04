@@ -292,7 +292,7 @@ public:
   unsigned int phraseId() const { return this->m_phraseId; }
 
   /// Find the subphrase generator for this phrase (held locally or by any parent) or return null.
-  SubphraseGeneratorPtr findDelegate();
+  SubphraseGeneratorPtr findDelegate() const;
   /// Return true if this phrase's type is any of: {STRING, FLOAT, INTEGER}_PROPERTY_VALUE
   virtual bool isPropertyValueType() const;
 
@@ -311,6 +311,9 @@ public:
     * If so, it will also accept a c++17 execution policy.
     */
   virtual void visitChildren(Visitor fn);
+
+  /// Return the PhraseModel (obtained via the subphrase generator) holding this phrase (or null).
+  PhraseModelPtr phraseModel() const;
 
   /**\brief Phrase-type-based comparison method for DescriptivePhrases
     *

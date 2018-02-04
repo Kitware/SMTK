@@ -16,20 +16,31 @@
 #include "smtk/view/PhraseListContent.h"
 #include "smtk/view/ResourcePhraseContent.h"
 
+#include <algorithm>
+
 namespace smtk
 {
 namespace view
 {
 
 template <typename T>
-void SubphraseGenerator::addModelEntityPhrases(
-  const T& ents, DescriptivePhrase::Ptr parent, int limit, DescriptivePhrases& result)
+void SubphraseGenerator::addModelEntityPhrases(const T& ents, DescriptivePhrase::Ptr parent,
+  int limit, DescriptivePhrases& result, bool decorate,
+  std::function<bool(const DescriptivePhrasePtr&, const DescriptivePhrasePtr&)> comparator)
 {
   if (limit < 0 || static_cast<int>(ents.size()) < limit)
   {
     for (typename T::const_iterator it = ents.begin(); it != ents.end(); ++it)
     {
       result.push_back(ComponentPhraseContent::createPhrase(it->component(), 0, parent));
+    }
+    if (comparator)
+    {
+      std::sort(result.begin(), result.end(), comparator);
+    }
+    if (decorate)
+    {
+      this->decoratePhrases(result);
     }
   }
   else
@@ -40,10 +51,17 @@ void SubphraseGenerator::addModelEntityPhrases(
     {
       phrases.push_back(ComponentPhraseContent::createPhrase(it->component(), 0, listEntry));
     }
+    if (comparator)
+    {
+      std::sort(phrases.begin(), phrases.end(), comparator);
+    }
     result.push_back(listEntry->setup(DescriptivePhraseType::COMPONENT_LIST, parent));
     auto content = PhraseListContent::create()->setup(parent, 0);
     listEntry->setContent(content);
-    this->decoratePhrases(phrases);
+    if (decorate)
+    {
+      this->decoratePhrases(phrases);
+    }
     listEntry->manuallySetSubphrases(phrases, /* notify model: */ false);
   }
 }

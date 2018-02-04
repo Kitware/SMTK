@@ -320,6 +320,27 @@ static void AddEntityTessToPolyData(const smtk::model::EntityRef& entityref, vtk
     pd->SetStrips(strip.GetPointer());
 }
 
+static bool AddColorWithDefault(
+  vtkPolyData* pd, const smtk::model::EntityRef& entity, const double defaultColor[4])
+{
+  // Only create the color array if there is a valid default:
+  if (defaultColor[3] >= 0.)
+  {
+    FloatList rgba = entity.color();
+    vtkNew<vtkUnsignedCharArray> cellColor;
+    cellColor->SetNumberOfComponents(4);
+    cellColor->SetNumberOfTuples(1);
+    cellColor->SetName("entity color");
+    for (int i = 0; i < 4; ++i)
+    {
+      cellColor->FillComponent(i, (rgba[3] >= 0 ? rgba[i] : defaultColor[i]) * 255.);
+    }
+    pd->GetFieldData()->AddArray(cellColor.GetPointer());
+    return true;
+  }
+  return false;
+}
+
 /// Add customized block info.
 /// Mapping from UUID to block id
 /// 'Volume' field array to color by volume
@@ -410,21 +431,7 @@ vtkSmartPointer<vtkPolyData> vtkModelMultiBlockSource::GenerateRepresentationFro
   if (entity.isValid(&entrec))
   {
     AddEntityTessToPolyData(entity, pts.GetPointer(), pd, this->ShowAnalysisTessellation);
-    // Only create the color array if there is a valid default:
-    if (this->DefaultColor[3] >= 0.)
-    {
-      FloatList rgba = entity.color();
-      vtkNew<vtkUnsignedCharArray> cellColor;
-      cellColor->SetNumberOfComponents(4);
-      cellColor->SetNumberOfTuples(pd->GetNumberOfCells());
-      cellColor->SetName("Entity");
-      for (int i = 0; i < 4; ++i)
-      {
-        cellColor->FillComponent(i, (rgba[3] >= 0 ? rgba[i] : this->DefaultColor[i]) * 255.);
-      }
-      pd->GetCellData()->AddArray(cellColor.GetPointer());
-      pd->GetCellData()->SetScalars(cellColor.GetPointer());
-    }
+    AddColorWithDefault(pd, entity, this->DefaultColor);
     if (this->AllowNormalGeneration && pd->GetPolys()->GetSize() > 0)
     {
       bool reallyNeedNormals = genNormals;
@@ -457,21 +464,7 @@ vtkSmartPointer<vtkPolyData> vtkModelMultiBlockSource::GenerateRepresentationFro
   smtk::extension::vtk::io::mesh::ExportVTKData exportVTKData;
   exportVTKData(entity.meshTessellation(), pd);
 
-  // Only create the color array if there is a valid default:
-  if (this->DefaultColor[3] >= 0.)
-  {
-    FloatList rgba = entity.color();
-    vtkNew<vtkUnsignedCharArray> cellColor;
-    cellColor->SetNumberOfComponents(4);
-    cellColor->SetNumberOfTuples(pd->GetNumberOfCells());
-    cellColor->SetName("Entity Color");
-    for (int i = 0; i < 4; ++i)
-    {
-      cellColor->FillComponent(i, (rgba[3] >= 0 ? rgba[i] : this->DefaultColor[i]) * 255.);
-    }
-    pd->GetCellData()->AddArray(cellColor.GetPointer());
-    pd->GetCellData()->SetScalars(cellColor.GetPointer());
-  }
+  AddColorWithDefault(pd, entity, this->DefaultColor);
   if (this->AllowNormalGeneration && pd->GetPolys()->GetSize() > 0)
   {
     bool reallyNeedNormals = genNormals;
@@ -510,21 +503,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
   if (entityref.isValid(&entity))
   {
     AddEntityTessToPolyData(entityref, pts.GetPointer(), pd, this->ShowAnalysisTessellation);
-    // Only create the color array if there is a valid default:
-    if (this->DefaultColor[3] >= 0.)
-    {
-      FloatList rgba = entityref.color();
-      vtkNew<vtkUnsignedCharArray> cellColor;
-      cellColor->SetNumberOfComponents(4);
-      cellColor->SetNumberOfTuples(pd->GetNumberOfCells());
-      cellColor->SetName("Entity");
-      for (int i = 0; i < 4; ++i)
-      {
-        cellColor->FillComponent(i, (rgba[3] >= 0 ? rgba[i] : this->DefaultColor[i]) * 255.);
-      }
-      pd->GetCellData()->AddArray(cellColor.GetPointer());
-      pd->GetCellData()->SetScalars(cellColor.GetPointer());
-    }
+    AddColorWithDefault(pd, entity, this->DefaultColor);
     if (this->AllowNormalGeneration && pd->GetPolys()->GetSize() > 0)
     {
       bool reallyNeedNormals = genNormals;
