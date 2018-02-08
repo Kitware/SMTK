@@ -1,4 +1,4 @@
-set(build_path "${PROJECT_BINARY_DIR}/smtk/extension")
+set(build_path "${CMAKE_BINARY_DIR}/smtk/extension")
 set(install_path "${SMTK_PYTHON_MODULEDIR}/smtk/extension")
 
 configure_file(

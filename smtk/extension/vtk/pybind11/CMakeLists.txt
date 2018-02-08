@@ -1,4 +1,4 @@
-set(build_path "${PROJECT_BINARY_DIR}/smtk/extension/vtk")
+set(build_path "${CMAKE_BINARY_DIR}/smtk/extension/vtk")
 set(install_path "${SMTK_PYTHON_MODULEDIR}/smtk/extension/vtk")
 
 configure_file(

@@ -1,5 +1,5 @@
 set(module_path "bridge")
-set(build_path "${PROJECT_BINARY_DIR}/smtk/${module_path}")
+set(build_path "${CMAKE_BINARY_DIR}/smtk/${module_path}")
 set(install_path "${SMTK_PYTHON_MODULEDIR}/smtk/${module_path}")
 
 configure_file(
