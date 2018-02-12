@@ -16,12 +16,10 @@
 #include "smtk/view/SubphraseGenerator.h"
 
 #include "smtk/model/Entity.h"
-#include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/FloatData.h"
 #include "smtk/model/IntegerData.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/MeshPhrase.h"
 #include "smtk/model/StringData.h"
 
 #include "smtk/mesh/core/Collection.h"

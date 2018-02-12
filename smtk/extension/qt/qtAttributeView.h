@@ -17,7 +17,6 @@
 
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtBaseView.h"
-#include "smtk/extension/qt/qtSelectionManager.h"
 
 #include <QMap>
 #include <QModelIndex>
@@ -75,9 +74,6 @@ signals:
   void numOfAttributesChanged();
   void attColorChanged();
   void attAssociationChanged();
-  void relaySelectionToAssiocationWidget(const smtk::model::EntityRefs& selEntities,
-    const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& selDPs,
-    const std::string& selectionSource);
 
 protected:
   void createWidget() override;
@@ -103,9 +99,6 @@ protected:
   void removeComparativeAttribute(smtk::attribute::AttributePtr att);
   void insertTableColumn(
     QTableWidget* wTable, int insertCol, const QString& title, int advancedlevel);
-
-  // update the selection based on qtSelectionManager
-  void updateSelectionOfEntities();
 
 private:
   qtAttributeViewInternals* Internals;

@@ -4,7 +4,6 @@ find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
 set(QAttrLibSrcs
   qtActiveObjects.cxx
   qtUIManager.cxx
-  qtSelectionManager.cxx
   qtAttribute.cxx
   qtAttributeDisplay.cxx
   qtAttributeItemWidgetFactory.cxx
@@ -14,9 +13,6 @@ set(QAttrLibSrcs
   qtDescriptivePhraseDelegate.cxx
   qtDescriptivePhraseEditor.cxx
   qtDescriptivePhraseModel.cxx
-  qtEntityItemDelegate.cxx
-  qtEntityItemEditor.cxx
-  qtEntityItemModel.cxx
   qtGroupView.cxx
   qtAttributeView.cxx
   qtInstancedView.cxx
@@ -41,9 +37,6 @@ set(QAttrLibSrcs
   qtModelPanel.cxx
   qtNewAttributeWidget.cxx
   qtOverlay.cxx
-  qtMeshItem.cxx
-  qtMeshSelectionItem.cxx
-  qtModelEntityItem.cxx
   qtModelOperationWidget.cxx
   qtOperatorDockWidget.cxx
   qtTimeZoneRegionModel.cxx
@@ -66,7 +59,6 @@ set(QAttrLibUIs
 set(QAttrLibMocHeaders
   qtActiveObjects.h
   qtUIManager.h
-  qtSelectionManager.h
   qtAttribute.h
   qtAttributeDisplay.h
   qtBaseView.h
@@ -76,9 +68,6 @@ set(QAttrLibMocHeaders
   qtDescriptivePhraseDelegate.h
   qtDescriptivePhraseEditor.h
   qtDescriptivePhraseModel.h
-  qtEntityItemDelegate.h
-  qtEntityItemEditor.h
-  qtEntityItemModel.h
   qtGroupView.h
   qtAttributeView.h
   qtInstancedView.h
@@ -103,9 +92,6 @@ set(QAttrLibMocHeaders
   qtModelPanel.h
   qtNewAttributeWidget.h
   qtOverlay.h
-  qtMeshItem.h
-  qtMeshSelectionItem.h
-  qtModelEntityItem.h
   qtModelOperationWidget.h
   qtOperatorDockWidget.h
   qtDateTimeItem.h

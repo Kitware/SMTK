@@ -49,9 +49,6 @@ protected:
   Internal* P;
 };
 
-/// A method to print DescriptivePhrase instances (recursively) to an ostream.
-void printPhrase(std::ostream& os, int indent, DescriptivePhrasePtr p);
-
 } // namespace testing
 } // namespace model
 } // namespace smtk

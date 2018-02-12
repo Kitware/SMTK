@@ -15,9 +15,9 @@
 #define __smtk_extension_qtModelView_h
 
 #include "smtk/extension/qt/Exports.h"
-#include "smtk/extension/qt/qtEntityItemModel.h"
 
 #include "smtk/common/UUID.h"
+#include "smtk/mesh/core/MeshSet.h"
 #include "smtk/model/SessionRef.h"
 
 #include <QMap>
@@ -38,8 +38,6 @@ enum class SelectionAction;
 namespace extension
 {
 class qtFileItem;
-class qtModelEntityItem;
-class qtMeshSelectionItem;
 class qtModelOperationWidget;
 class qtOperatorDockWidget;
 
@@ -52,42 +50,21 @@ public:
   ~qtModelView();
   virtual std::string selectionSourceName() { return this->m_selectionSourceName; }
 
-  smtk::extension::QEntityItemModel* getModel() const;
-  smtk::model::DescriptivePhrasePtr currentItem() const;
   qtOperatorDockWidget* operatorsDock();
-  void syncEntityVisibility(const smtk::model::SessionPtr& sessPtr,
-    const smtk::common::UUIDs& entids, const smtk::mesh::MeshSets& meshes, int vis);
-  void syncEntityColor(const smtk::model::SessionPtr&, const smtk::common::UUIDs& entids,
-    const smtk::mesh::MeshSets& meshes, const QColor& clr);
-  void syncEntityVisibility(const smtk::common::UUID& sessid, const smtk::common::UUIDs& entids,
-    const smtk::mesh::MeshSets& meshes, int vis);
-  void syncEntityColor(const smtk::common::UUID& sessid, const smtk::common::UUIDs& entids,
-    const smtk::mesh::MeshSets& meshes, const QColor& clr);
 
-  void currentSelectionByMask(smtk::model::EntityRefs& selentityrefs,
-    const smtk::model::BitFlags& entityFlags, smtk::model::DescriptivePhrases& selproperties,
-    bool searchUp = false, smtk::mesh::MeshSets* selmeshes = NULL);
-  virtual void updateWithOperatorResult(
-    const smtk::model::SessionRef& sref, const smtk::model::OperatorResult& result);
   std::string determineAction(const QPoint& pPos) const;
   qtModelOperationWidget* operatorsWidget();
-  void expandAllModels();
   bool setEntityVisibility(const smtk::model::EntityRefs& selentityrefs,
     const smtk::mesh::MeshSets& selmeshes, int vis, smtk::model::OperatorPtr op);
 
 public slots:
   void updateActiveModelByModelIndex();
   bool removeSession(const smtk::model::SessionRef& sref);
-  void onSelectionChangedUpdateModelTree(const smtk::model::EntityRefs& selEntities,
-    const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& selproperties,
-    const std::string& selectionSource);
 
   void showContextMenu(const QPoint& p);
   void showContextMenu(const QModelIndex& idx, const QPoint& p = QPoint());
   void operatorInvoked();
   void toggleEntityVisibility(const QModelIndex&);
-  void changeEntityColor(const QModelIndex&);
-  void changeEntityName(const QModelIndex& idx);
   void onEntitiesExpunged(const smtk::model::EntityRefs& expungedEnts);
   bool requestOperation(const smtk::model::OperatorPtr& brOp, bool launchUI);
   bool requestOperation(
@@ -96,19 +73,12 @@ public slots:
   virtual bool showPreviousOpOrHide(bool alwaysHide = true);
 
 signals:
-  void sendSelectionsFromModelViewToSelectionManager(const smtk::model::EntityRefs& selEntities,
-    const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& DesPhrases,
-    const smtk::view::SelectionAction modifierFlag, const std::string& selectionSource);
-
   void operationRequested(const smtk::model::OperatorPtr& brOp);
   void operationCancelled(const smtk::model::OperatorPtr& brOp);
   void operationFinished(const smtk::model::OperatorResult&);
   void fileItemCreated(smtk::extension::qtFileItem* fileItem);
-  void modelEntityItemCreated(smtk::extension::qtModelEntityItem* entItem);
   void visibilityChangeRequested(const QModelIndex&);
   void colorChangeRequested(const QModelIndex&);
-  void meshSelectionItemCreated(smtk::extension::qtMeshSelectionItem*, const std::string& opName,
-    const smtk::common::UUID& uuid);
 
 protected slots:
   // virtual void removeEntityGroup(const smtk::model::Model& modelEnt,
@@ -125,13 +95,6 @@ protected:
   void keyPressEvent(QKeyEvent*) override;
 
   void mouseReleaseEvent(QMouseEvent*) override;
-
-  template <typename T>
-  T owningEntityAs(const QModelIndex& idx) const;
-  template <typename T>
-  T owningEntityAs(const smtk::model::DescriptivePhrasePtr& dp) const;
-  void owningEntitiesByMask(smtk::model::DescriptivePhrasePtr inDp,
-    smtk::model::EntityRefs& selentityrefs, smtk::model::BitFlags entityFlags);
 
   // bool hasSessionOp(const smtk::model::SessionRef& brSession, const std::string& opname);
   // bool hasSessionOp(const QModelIndex& idx, const std::string& opname);
@@ -150,28 +113,7 @@ protected:
   // Description:
   // Customized selection related methods
   void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected) override;
-  virtual void selectionHelper(QEntityItemModel* qmodel, const QModelIndex& parent,
-    const smtk::common::UUIDs& selEntities, const smtk::mesh::MeshSets& selMeshes,
-    QItemSelection& selItems);
-  void expandToRoot(QEntityItemModel* qmodel, const QModelIndex& idx);
 
-  // Description:
-  // filter selection based on entity info.
-  // Ex. model and it's related entities.
-  void filterSelectionByEntity(const smtk::model::DescriptivePhrasePtr& dPhrase,
-    smtk::model::EntityRefs& selentityrefs, smtk::mesh::MeshSets* selmeshes);
-
-  // Description:
-  // do a recursive selection based on descriptive phrase.
-  void recursiveSelect(const smtk::model::DescriptivePhrasePtr& dPhrase,
-    smtk::model::EntityRefs& selentityrefs, smtk::model::BitFlags entityFlags,
-    smtk::model::DescriptivePhrases& selproperties, bool exactMatch,
-    smtk::mesh::MeshSets* selmeshes = NULL);
-  void selectMeshes(
-    const smtk::model::DescriptivePhrasePtr& dPhrase, smtk::mesh::MeshSets* selmeshes);
-
-  smtk::model::Group groupParentOfIndex(const QModelIndex& qidx);
-  smtk::model::Group groupParent(const smtk::model::DescriptivePhrasePtr& phrase);
   bool initOperator(smtk::model::OperatorPtr op);
   void initOperatorsDock(const std::string& opName, smtk::model::SessionPtr session);
 
@@ -182,8 +124,6 @@ protected:
     const smtk::common::UUIDs& selEntities,
     QModelIndexList& foundIndexes);
 */
-  bool setEntityColor(const smtk::model::EntityRefs& selentityrefs,
-    const smtk::mesh::MeshSets& selmeshes, const QColor& newcolor, smtk::model::OperatorPtr brOp);
 
   QMenu* m_ContextMenu;
   qtOperatorDockWidget* m_OperatorsDock;

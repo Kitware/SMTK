@@ -15,18 +15,12 @@
 #include "smtk/extension/qt/qtFileItem.h"
 #include "smtk/extension/qt/qtGroupItem.h"
 #include "smtk/extension/qt/qtInputsItem.h"
-#include "smtk/extension/qt/qtMeshItem.h"
-#include "smtk/extension/qt/qtMeshSelectionItem.h"
-#include "smtk/extension/qt/qtModelEntityItem.h"
 #include "smtk/extension/qt/qtVoidItem.h"
 
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/GroupItem.h"
-#include "smtk/attribute/MeshItem.h"
-#include "smtk/attribute/MeshSelectionItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/VoidItem.h"
@@ -91,37 +85,6 @@ qtItem* qtAttributeItemWidgetFactory::createVoidItemWidget(
 {
   (void)orient;
   return new qtVoidItem(smtk::dynamic_pointer_cast<VoidItem>(item), p, bview);
-}
-
-/**\brief Create a widget that illustrates an item whose value is a geometric model entity.
-  *
-  */
-qtItem* qtAttributeItemWidgetFactory::createModelEntityItemWidget(
-  ModelEntityItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient)
-{
-  qtItem* newItem = new qtModelEntityItem(item, p, bview, orient);
-  QObject::connect(&qtActiveObjects::instance(), SIGNAL(activeModelChanged()), newItem,
-    SLOT(clearEntityAssociations())); /// base class pointer?
-  return newItem;
-}
-
-/**\brief Create a widget that illustrates an item whose value is a set of model geometric selections.
-  *
-  */
-qtItem* qtAttributeItemWidgetFactory::createMeshSelectionItemWidget(
-  MeshSelectionItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient)
-{
-  return new qtMeshSelectionItem(
-    smtk::dynamic_pointer_cast<MeshSelectionItem>(item), p, bview, orient);
-}
-
-/**\brief Create a widget that illustrates an item whose value is a set of geometric mesh entities.
-  *
-  */
-qtItem* qtAttributeItemWidgetFactory::createMeshItemWidget(
-  MeshItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient)
-{
-  return new qtMeshItem(smtk::dynamic_pointer_cast<MeshItem>(item), p, bview, orient);
 }
 
 /**\brief Create a widget that illustrates an item whose value is a date-time

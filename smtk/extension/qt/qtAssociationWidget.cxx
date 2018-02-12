@@ -24,12 +24,9 @@
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 
-#include "smtk/extension/qt/qtEntityItemModel.h"
-#include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/SimpleModelSubphrases.h"
 
 #include <QComboBox>
 #include <QHBoxLayout>
@@ -91,22 +88,10 @@ qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
   std::ostringstream receiverSource;
   receiverSource << "qtAssociationWidget_" << this;
   this->m_selectionSourceName = receiverSource.str();
-  if (qtActiveObjects::instance().smtkSelectionManager() &&
-    !qtActiveObjects::instance().smtkSelectionManager()->registerSelectionSource(
-      this->m_selectionSourceName))
-  {
-    std::cerr << "register selection source " << this->m_selectionSourceName
-              << "failed. Already existed!" << std::endl;
-  }
 }
 
 qtAssociationWidget::~qtAssociationWidget()
 {
-  if (qtActiveObjects::instance().smtkSelectionManager())
-  {
-    qtActiveObjects::instance().smtkSelectionManager()->unregisterSelectionSource(
-      this->m_selectionSourceName);
-  }
   delete this->Internals;
 }
 
@@ -126,13 +111,6 @@ void qtAssociationWidget::initWidget()
     SLOT(onNodalOptionChanged(int)));
 
   // signals/slots
-  QObject::connect(
-    this->Internals->CurrentList, SIGNAL(itemSelectionChanged()), this, SLOT(onEntitySelected()));
-  QObject::connect(
-    this->Internals->AvailableList, SIGNAL(itemSelectionChanged()), this, SLOT(onEntitySelected()));
-  this->Internals->CurrentList->setSelectionMode(QAbstractItemView::ExtendedSelection);
-  this->Internals->AvailableList->setSelectionMode(QAbstractItemView::ExtendedSelection);
-
   QObject::connect(this->Internals->MoveToRight, SIGNAL(clicked()), this, SLOT(onRemoveAssigned()));
   QObject::connect(this->Internals->MoveToLeft, SIGNAL(clicked()), this, SLOT(onAddAvailable()));
   QObject::connect(this->Internals->ExchangeLeftRight, SIGNAL(clicked()), this, SLOT(onExchange()));
@@ -188,46 +166,6 @@ void qtAssociationWidget::showDomainsAssociation(
   }
 
   this->Internals->DomainMaterialTable->blockSignals(false);
-}
-
-void qtAssociationWidget::updateAvailableListBySelection(const smtk::model::EntityRefs& selEntities,
-  const smtk::mesh::MeshSets& /*selMeshes*/,
-  const smtk::model::DescriptivePhrases& /*selproperties*/, const std::string& senderSourceName)
-{
-  // check if the sender equals receiver
-  if (this->m_selectionSourceName != senderSourceName)
-  {
-    smtk::attribute::CollectionPtr attCollection =
-      this->Internals->View->uiManager()->attCollection();
-    smtk::model::ManagerPtr modelManager;
-    if (attCollection)
-    {
-      modelManager = attCollection->refModelManager();
-    }
-
-    this->Internals->AvailableList->blockSignals(true);
-
-    // unselect all items
-    for (int i = 0; i < this->Internals->AvailableList->count(); i++)
-    {
-      this->Internals->AvailableList->item(i)->setSelected(false);
-    }
-
-    for (const auto& selEntity : selEntities)
-    {
-      // map UUID into QString for search
-      QString selEntityName = QString::fromStdString(selEntity.name());
-      QList<QListWidgetItem*> findList =
-        this->Internals->AvailableList->findItems(selEntityName, Qt::MatchExactly);
-
-      // check with current available list item. If included mark it as highted
-      foreach (QListWidgetItem* findItem, findList)
-      {
-        findItem->setSelected(true);
-      }
-    }
-    this->Internals->AvailableList->blockSignals(false);
-  }
 }
 
 bool qtAssociationWidget::hasSelectedItem()
@@ -486,11 +424,6 @@ void qtAssociationWidget::onEntitySelected()
     {
       selents.insert(entref);
     }
-  }
-  if (selents.size() > 0)
-  {
-    this->Internals->View->uiManager()->invokeEntitiesSelected(
-      selents, this->m_selectionSourceName);
   }
 }
 

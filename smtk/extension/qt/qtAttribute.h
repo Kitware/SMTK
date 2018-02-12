@@ -58,13 +58,6 @@ public:
   static void setItemWidgetFactory(qtAttributeItemWidgetFactory* f);
   static qtAttributeItemWidgetFactory* itemWidgetFactory();
 
-public slots:
-  virtual void onRequestEntityAssociation();
-  // Controls whether the Selection Manager should be used for setting model
-  // and mesh entity items - Note that this is just a hint and could be ignored
-  // due to other criteria
-  virtual void setUseSelectionManager(bool mode) { this->m_useSelectionManager = mode; }
-
 signals:
   // Signal indicates that the underlying item has been modified
   void modified();

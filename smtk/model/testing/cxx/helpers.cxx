@@ -20,8 +20,6 @@
 #include "smtk/model/VertexUse.h"
 #include "smtk/model/Volume.h"
 
-#include "smtk/model/DescriptivePhrase.h"
-
 #include "smtk/model/testing/cxx/helpers.h"
 
 #include <iomanip>
@@ -302,26 +300,6 @@ double Timer::elapsed()
 }
 
 static int maxIndent = 20;
-
-void printPhrase(std::ostream& os, int indent, DescriptivePhrase::Ptr p)
-{
-  // Do not descend too far, as infinite recursion is possible,
-  // even with the SimpleSubphraseGenerator
-  if (indent > maxIndent)
-    return;
-
-  os << std::string(indent, ' ') << p->title() << "  (" << p->subtitle() << ")";
-  FloatList rgba = p->relatedColor();
-  if (rgba[3] >= 0.)
-    os << " rgba(" << rgba[0] << "," << rgba[1] << "," << rgba[2] << "," << rgba[3] << ")";
-  os << "\n";
-  DescriptivePhrases sub = p->subphrases();
-  indent += 2;
-  for (DescriptivePhrases::iterator it = sub.begin(); it != sub.end(); ++it)
-  {
-    printPhrase(os, indent, *it);
-  }
-}
 
 } // namespace testing
 } // namespace model

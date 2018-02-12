@@ -30,7 +30,6 @@
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtFileItem.h"
-#include "smtk/extension/qt/qtModelEntityItem.h"
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtOperatorView.h"
@@ -102,20 +101,14 @@ class smtkExportModelViewInternals : public Ui::smtkExportModelParameters
 {
 public:
   smtkExportModelViewInternals()
-    : AssocModels(nullptr)
-    , FileItem(nullptr)
+    : FileItem(nullptr)
     , SummaryMode("save")
     , Fini(false)
   {
   }
 
-  ~smtkExportModelViewInternals()
-  {
-    delete this->AssocModels;
-    delete this->FileItem;
-  }
+  ~smtkExportModelViewInternals() { delete this->FileItem; }
 
-  qtModelEntityItem* AssocModels;
   qtFileItem* FileItem;
   QString UserFilename;
   std::string SummaryMode;
@@ -141,12 +134,14 @@ bool smtkExportModelView::updateOperatorFromUI(const std::string& mode, const T&
     return false;
   }
 
+  /*
   smtk::attribute::ModelEntityItem::Ptr assocSrc = this->Internals->AssocModels->modelEntityItem();
   smtk::attribute::ModelEntityItem::Ptr assocDst = op->specification()->associations();
   if (assocSrc != assocDst)
   {
     assocDst->setValues(assocSrc->begin(), assocSrc->end(), 0);
   }
+  */
   path fullSMTKPath = action.m_embedDir.empty() ? path(action.m_smtkFilename)
                                                 : path(action.m_embedDir) / action.m_smtkFilename;
 
@@ -330,13 +325,15 @@ void smtkExportModelView::createWidget()
 
   this->updateAttributeData();
 
+  /*
   this->Internals->AssocModels =
     new qtModelEntityItem(this->Internals->CurrentOp.lock()->specification()->associations(),
       nullptr, this, Qt::Horizontal);
-  this->Internals->AssocModels->setUseSelectionManager(this->useSelectionManager());
+  //this->Internals->AssocModels->setUseSelectionManager(this->useSelectionManager());
   QObject::connect(&qtActiveObjects::instance(), SIGNAL(activeModelChanged()),
     this->Internals->AssocModels, SLOT(clearEntityAssociations()));
   layout->addWidget(this->Internals->AssocModels->widget());
+  */
 
   this->Internals->FileItem = new qtFileItem(
     this->Internals->CurrentOp.lock()->specification()->findAs<smtk::attribute::FileSystemItem>(
@@ -373,7 +370,7 @@ void smtkExportModelView::createWidget()
 
   // Ask the widget showing associations to fetch the
   // currently-selected models:
-  this->Internals->AssocModels->onRequestEntityAssociation();
+  // this->Internals->AssocModels->onRequestEntityAssociation();
   this->updateSummary("unhovered");
 
   // Connect the "info" button to display help
@@ -427,6 +424,7 @@ void smtkExportModelView::valueChanged(smtk::attribute::ItemPtr valItem)
 
 bool smtkExportModelView::canSave() const
 {
+  /*
   smtk::attribute::ModelEntityItem::Ptr assoc = this->Internals->AssocModels->modelEntityItem();
   bool ok = true;
   for (auto ait = assoc->begin(); ait != assoc->end(); ++ait)
@@ -438,6 +436,8 @@ bool smtkExportModelView::canSave() const
     }
   }
   return ok;
+  */
+  return true;
 }
 
 bool smtkExportModelView::onSave()
@@ -566,7 +566,7 @@ void smtkExportModelView::setModelToSave(const smtk::model::Model& model)
 {
   smtk::model::EntityRefs assoc;
   assoc.insert(model);
-  this->Internals->AssocModels->associateEntities(assoc, /*resetExisting*/ true);
+  // this->Internals->AssocModels->associateEntities(assoc, /*resetExisting*/ true);
   this->updateActions();
 }
 

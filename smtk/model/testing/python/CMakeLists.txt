@@ -9,20 +9,12 @@ set(smtkModelPythonDataTests
   modelAttributes
   modelSetPropertyOp
   modelCloseModelOp
-  modelPhrase
 )
 
 if (SMTK_ENABLE_POLYGON_SESSION)
   set(smtkModelPythonDataTests
     ${smtkModelPythonDataTests}
     modelInstance
-  )
-endif()
-
-if (SMTK_ENABLE_DISCRETE_SESSION AND SMTK_ENABLE_CGM_SESSION)
-  set(smtkModelPythonDataTests
-    ${smtkModelPythonDataTests}
-    multiSessionDescriptivePhrase
   )
 endif()
 

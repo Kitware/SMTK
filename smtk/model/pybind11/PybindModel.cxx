@@ -25,22 +25,17 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindArrangementHelper.h"
 #include "PybindArrangementKind.h"
 #include "PybindAttributeAssignments.h"
-#include "PybindAttributeListPhrase.h"
 #include "PybindAuxiliaryGeometry.h"
 #include "PybindCellEntity.h"
 #include "PybindChain.h"
 #include "PybindDefaultSession.h"
-#include "PybindDescriptivePhrase.h"
 #include "PybindEdge.h"
 #include "PybindEdgeUse.h"
 #include "PybindEntity.h"
 #include "PybindEntityIterator.h"
-#include "PybindEntityListPhrase.h"
-#include "PybindEntityPhrase.h"
 #include "PybindEntityRef.h"
 #include "PybindEntityRefArrangementOps.h"
 #include "PybindEntityTypeBits.h"
-#include "PybindEntityTypeSubphrases.h"
 #include "PybindEvents.h"
 #include "PybindFace.h"
 #include "PybindFaceUse.h"
@@ -50,11 +45,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindIntegerData.h"
 #include "PybindLoop.h"
 #include "PybindManager.h"
-#include "PybindMeshListPhrase.h"
-#include "PybindMeshPhrase.h"
 #include "PybindModel.h"
-#include "PybindPropertyListPhrase.h"
-#include "PybindPropertyValuePhrase.h"
 #include "PybindSession.h"
 #include "PybindSessionIO.h"
 #include "PybindSessionIOJSON.h"
@@ -62,9 +53,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindSessionRegistrar.h"
 #include "PybindShell.h"
 #include "PybindShellEntity.h"
-#include "PybindSimpleModelSubphrases.h"
 #include "PybindStringData.h"
-#include "PybindSubphraseGenerator.h"
 #include "PybindTessellation.h"
 #include "PybindUseEntity.h"
 #include "PybindVertex.h"
@@ -89,7 +78,6 @@ PYBIND11_MODULE(_smtkPybindModel, model)
   py::class_< smtk::model::ArrangementHelper > smtk_model_ArrangementHelper = pybind11_init_smtk_model_ArrangementHelper(model);
   py::class_< smtk::model::ArrangementReference > smtk_model_ArrangementReference = pybind11_init_smtk_model_ArrangementReference(model);
   py::class_< smtk::model::AttributeAssignments > smtk_model_AttributeAssignments = pybind11_init_smtk_model_AttributeAssignments(model);
-  PySharedPtrClass< smtk::model::DescriptivePhrase > smtk_model_DescriptivePhrase = pybind11_init_smtk_model_DescriptivePhrase(model);
   py::class_< smtk::model::Entity > smtk_model_Entity = pybind11_init_smtk_model_Entity(model);
   py::class_< smtk::model::EntityIterator > smtk_model_EntityIterator = pybind11_init_smtk_model_EntityIterator(model);
   py::class_< smtk::model::EntityRef > smtk_model_EntityRef = pybind11_init_smtk_model_EntityRef(model);
@@ -99,10 +87,8 @@ PYBIND11_MODULE(_smtkPybindModel, model)
   py::class_< smtk::model::SessionIO > smtk_model_SessionIO = pybind11_init_smtk_model_SessionIO(model);
   py::class_< smtk::model::SessionRegistrar > smtk_model_SessionRegistrar = pybind11_init_smtk_model_SessionRegistrar(model);
   py::class_< smtk::model::StaticSessionInfo > smtk_model_StaticSessionInfo = pybind11_init_smtk_model_StaticSessionInfo(model);
-  PySharedPtrClass< smtk::model::SubphraseGenerator > smtk_model_SubphraseGenerator = pybind11_init_smtk_model_SubphraseGenerator(model);
   py::class_< smtk::model::Tessellation > smtk_model_Tessellation = pybind11_init_smtk_model_Tessellation(model);
   pybind11_init_smtk_model_ArrangementKind(model);
-  pybind11_init_smtk_model_DescriptivePhraseType(model);
   pybind11_init_smtk_model_EntityTypeBits(model);
   pybind11_init_smtk_model_IteratorStyle(model);
   pybind11_init_smtk_model_ManagerEventChangeType(model);
@@ -140,24 +126,15 @@ PYBIND11_MODULE(_smtkPybindModel, model)
   pybind11_init_smtk_model_isVertexUse(model);
   pybind11_init_smtk_model_isVolume(model);
   pybind11_init_smtk_model_isVolumeUse(model);
-  PySharedPtrClass< smtk::model::AttributeListPhrase, smtk::model::DescriptivePhrase > smtk_model_AttributeListPhrase = pybind11_init_smtk_model_AttributeListPhrase(model);
   py::class_< smtk::model::AuxiliaryGeometry, smtk::model::EntityRef > smtk_model_AuxiliaryGeometry = pybind11_init_smtk_model_AuxiliaryGeometry(model);
   py::class_< smtk::model::CellEntity, smtk::model::EntityRef > smtk_model_CellEntity = pybind11_init_smtk_model_CellEntity(model);
   PySharedPtrClass< smtk::model::DefaultSession, smtk::model::Session > smtk_model_DefaultSession = pybind11_init_smtk_model_DefaultSession(model);
-  PySharedPtrClass< smtk::model::EntityListPhrase, smtk::model::DescriptivePhrase > smtk_model_EntityListPhrase = pybind11_init_smtk_model_EntityListPhrase(model);
-  PySharedPtrClass< smtk::model::EntityPhrase, smtk::model::DescriptivePhrase > smtk_model_EntityPhrase = pybind11_init_smtk_model_EntityPhrase(model);
-  PySharedPtrClass< smtk::model::EntityTypeSubphrases, smtk::model::SubphraseGenerator > smtk_model_EntityTypeSubphrases = pybind11_init_smtk_model_EntityTypeSubphrases(model);
   py::class_< smtk::model::Group, smtk::model::EntityRef > smtk_model_Group = pybind11_init_smtk_model_Group(model);
   py::class_< smtk::model::Instance, smtk::model::EntityRef > smtk_model_Instance = pybind11_init_smtk_model_Instance(model);
-  PySharedPtrClass< smtk::model::MeshListPhrase, smtk::model::DescriptivePhrase > smtk_model_MeshListPhrase = pybind11_init_smtk_model_MeshListPhrase(model);
-  PySharedPtrClass< smtk::model::MeshPhrase, smtk::model::DescriptivePhrase > smtk_model_MeshPhrase = pybind11_init_smtk_model_MeshPhrase(model);
   py::class_< smtk::model::Model, smtk::model::EntityRef > smtk_model_Model = pybind11_init_smtk_model_Model(model);
-  PySharedPtrClass< smtk::model::PropertyListPhrase, smtk::model::DescriptivePhrase > smtk_model_PropertyListPhrase = pybind11_init_smtk_model_PropertyListPhrase(model);
-  PySharedPtrClass< smtk::model::PropertyValuePhrase, smtk::model::DescriptivePhrase > smtk_model_PropertyValuePhrase = pybind11_init_smtk_model_PropertyValuePhrase(model);
   py::class_< smtk::model::SessionIOJSON, smtk::model::SessionIO > smtk_model_SessionIOJSON = pybind11_init_smtk_model_SessionIOJSON(model);
   py::class_< smtk::model::SessionRef, smtk::model::EntityRef > smtk_model_SessionRef = pybind11_init_smtk_model_SessionRef(model);
   py::class_< smtk::model::ShellEntity, smtk::model::EntityRef > smtk_model_ShellEntity = pybind11_init_smtk_model_ShellEntity(model);
-  PySharedPtrClass< smtk::model::SimpleModelSubphrases, smtk::model::SubphraseGenerator > smtk_model_SimpleModelSubphrases = pybind11_init_smtk_model_SimpleModelSubphrases(model);
   py::class_< smtk::model::UseEntity, smtk::model::EntityRef > smtk_model_UseEntity = pybind11_init_smtk_model_UseEntity(model);
   py::class_< smtk::model::Chain, smtk::model::ShellEntity > smtk_model_Chain = pybind11_init_smtk_model_Chain(model);
   py::class_< smtk::model::Edge, smtk::model::CellEntity > smtk_model_Edge = pybind11_init_smtk_model_Edge(model);

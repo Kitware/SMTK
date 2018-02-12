@@ -14,7 +14,6 @@
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtCollapsibleGroupWidget.h"
 #include "smtk/extension/qt/qtInstancedView.h"
-#include "smtk/extension/qt/qtModelEntityItem.h"
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtOperatorView.h"
 #include "smtk/extension/qt/qtUIManager.h"
@@ -389,13 +388,6 @@ bool qtModelOperationWidget::initOperatorUI(const smtk::model::OperatorPtr& brOp
 
   QObject::connect(uiManager, SIGNAL(fileItemCreated(smtk::extension::qtFileItem*)), this,
     SIGNAL(fileItemCreated(smtk::extension::qtFileItem*)));
-  QObject::connect(uiManager, SIGNAL(modelEntityItemCreated(smtk::extension::qtModelEntityItem*)),
-    this, SIGNAL(modelEntityItemCreated(smtk::extension::qtModelEntityItem*)));
-  QObject::connect(uiManager, SIGNAL(modelEntityItemCreated(smtk::extension::qtModelEntityItem*)),
-    this, SLOT(onModelEntityItemCreated(smtk::extension::qtModelEntityItem*)));
-  QObject::connect(uiManager,
-    SIGNAL(meshSelectionItemCreated(smtk::extension::qtMeshSelectionItem*)), this,
-    SLOT(onMeshSelectionItemCreated(smtk::extension::qtMeshSelectionItem*)));
   QObject::connect(this, SIGNAL(operationFinished(const smtk::model::OperatorResult&)), uiManager,
     SLOT(onOperationFinished()));
 
@@ -574,15 +566,6 @@ void qtModelOperationWidget::resetUI()
   }
 }
 
-void qtModelOperationWidget::onModelEntityItemCreated(smtk::extension::qtModelEntityItem* entItem)
-{
-  if (entItem)
-  {
-    QObject::connect(this, SIGNAL(broadcastExpungeEntities(const smtk::model::EntityRefs&)),
-      entItem, SLOT(onExpungeEntities(const smtk::model::EntityRefs&)));
-  }
-}
-
 bool qtModelOperationWidget::showPreviousOp()
 {
   smtk::model::Session::Ptr prevSess = this->Internals->PreviousSession.lock();
@@ -591,16 +574,4 @@ bool qtModelOperationWidget::showPreviousOp()
     return false;
   }
   return this->setCurrentOperator(this->Internals->PreviousOpName, prevSess);
-}
-
-void qtModelOperationWidget::onMeshSelectionItemCreated(
-  smtk::extension::qtMeshSelectionItem* meshItem)
-{
-  if (this->Internals->CurrentSession.lock())
-  {
-    std::string opLabel = this->Internals->OperationCombo->currentText().toStdString();
-    std::string opName = this->Internals->m_operatorLabelMap[opLabel];
-    smtk::common::UUID sessId = this->Internals->CurrentSession.lock()->sessionId();
-    emit this->meshSelectionItemCreated(meshItem, opName, sessId);
-  }
 }

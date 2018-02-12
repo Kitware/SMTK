@@ -39,7 +39,7 @@ public:
 public slots:
   void onInputValueChanged();
   // Indicates if it is possible use the Selection Manager
-  void setUseSelectionManager(bool mode) { this->m_useSelectionManager = mode; }
+  // void setUseSelectionManager(bool mode) { this->m_useSelectionManager = mode; }
 
 protected slots:
   virtual void updateItemData();
