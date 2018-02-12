@@ -31,7 +31,7 @@ PYBIND11_MODULE(_smtkPybindExtensionDelaunay, delaunay)
 {
   delaunay.doc() = "<description>";
 
-  py::class_< smtk::extension::delaunay::TessellateFaces, smtk::operation::XMLOperator > smtk_extension_delaunay_TessellateFaces = pybind11_init_smtk_extension_delaunay_TessellateFaces(delaunay);
-  py::class_< smtk::extension::delaunay::TriangulateFaces, smtk::operation::XMLOperator > smtk_extension_delaunay_TriangulateFaces = pybind11_init_smtk_extension_delaunay_TriangulateFaces(delaunay);
+  py::class_< smtk::extension::delaunay::TessellateFaces, smtk::operation::XMLOperation > smtk_extension_delaunay_TessellateFaces = pybind11_init_smtk_extension_delaunay_TessellateFaces(delaunay);
+  py::class_< smtk::extension::delaunay::TriangulateFaces, smtk::operation::XMLOperation > smtk_extension_delaunay_TriangulateFaces = pybind11_init_smtk_extension_delaunay_TriangulateFaces(delaunay);
   pybind11_init__extension_delaunay_registerOperations(delaunay);
 }

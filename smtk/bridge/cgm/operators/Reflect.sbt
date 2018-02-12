@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the CGM "Reflect" Operator -->
+<!-- Description of the CGM "Reflect" Operation -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
-    <!-- Operator -->
-    <AttDef Type="reflect" BaseType="operator">
+    <!-- Operation -->
+    <AttDef Type="reflect" BaseType="operation">
       <AssociationsDef Name="Workpiece(s)" NumberOfRequiredValues="1" Extensible="true">
         <MembershipMask>model|cell|anydim</MembershipMask>
       </AssociationsDef>

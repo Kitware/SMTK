@@ -18,9 +18,9 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::discrete::SetProperty, smtk::operation::NewOp > pybind11_init_smtk_bridge_discrete_SetProperty(py::module &m)
+PySharedPtrClass< smtk::bridge::discrete::SetProperty, smtk::operation::Operation > pybind11_init_smtk_bridge_discrete_SetProperty(py::module &m)
 {
-  PySharedPtrClass< smtk::bridge::discrete::SetProperty, smtk::operation::NewOp > instance(m, "SetProperty");
+  PySharedPtrClass< smtk::bridge::discrete::SetProperty, smtk::operation::Operation > instance(m, "SetProperty");
   instance
     .def(py::init<>())
     .def(py::init<::smtk::bridge::discrete::SetProperty const &>())

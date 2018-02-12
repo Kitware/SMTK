@@ -27,7 +27,7 @@
 #include "smtk/model/DefaultSession.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/RemoteOperator.h"
+#include "smtk/model/RemoteOperation.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/SessionRef.h"
 
@@ -36,7 +36,7 @@
 
 #include "cJSON.h"
 
-#include "unitForwardingOperator_xml.h"
+#include "unitForwardingOperation_xml.h"
 
 using namespace smtk::common;
 using namespace smtk::model;
@@ -164,7 +164,7 @@ public:
 protected:
   TestForwardingSession()
   {
-    this->initializeOperatorCollection(TestForwardingSession::s_operators);
+    this->initializeOperationCollection(TestForwardingSession::s_operators);
   }
 
   SessionInfoBits transcribeInternal(
@@ -173,22 +173,22 @@ protected:
     return remoteSession->transcribe(EntityRef(remoteModel, entity.entity()), flags, false, depth);
   }
 
-  bool ableToOperateDelegate(RemoteOperatorPtr oper) override
+  bool ableToOperateDelegate(RemoteOperationPtr oper) override
   {
-    OperatorPtr remOp = remoteSession->op(oper->name());
+    OperationPtr remOp = remoteSession->op(oper->name());
     remOp->setSpecification(
       remoteSession->operatorCollection()->copyAttribute(oper->specification()));
     return remOp->ableToOperate();
   }
 
-  OperatorResult operateDelegate(RemoteOperatorPtr localOp) override
+  OperationResult operateDelegate(RemoteOperationPtr localOp) override
   {
     printParams(localOp->specification(), "local input");
-    OperatorPtr remOp = remoteSession->op(localOp->name());
+    OperationPtr remOp = remoteSession->op(localOp->name());
     remOp->setSpecification(
       remoteSession->operatorCollection()->copyAttribute(localOp->specification()));
-    OperatorResult remResult = remOp->operate();
-    OperatorResult localResult = this->operatorCollection()->copyAttribute(remResult);
+    OperationResult remResult = remOp->operate();
+    OperationResult localResult = this->operatorCollection()->copyAttribute(remResult);
 
     // Kill remote operator and result.
     remOp->session()->operatorCollection()->removeAttribute(remOp->specification());
@@ -204,13 +204,13 @@ smtkImplementsModelingKernel(
   false /* forwarding session should not inherit local operators */
   );
 
-class TestForwardingOperator : public Operator
+class TestForwardingOperation : public Operation
 {
 public:
-  smtkTypeMacro(TestForwardingOperator);
-  smtkCreateMacro(TestForwardingOperator);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkTypeMacro(TestForwardingOperation);
+  smtkCreateMacro(TestForwardingOperation);
+  smtkSharedFromThisMacro(Operation);
+  smtkDeclareModelOperation();
 
   bool ableToOperate() override
   {
@@ -226,13 +226,13 @@ public:
   }
 
 protected:
-  TestForwardingOperator() {}
+  TestForwardingOperation() {}
 
-  OperatorResult operateInternal() override
+  OperationResult operateInternal() override
   {
     printParams(this->specification(), "actual input");
 
-    OperatorResult result = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+    OperationResult result = this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
     this->s_state += this->specification()->findInt("addToCount")->value();
     result->findInt("state")->setValue(this->s_state);
 
@@ -247,14 +247,14 @@ protected:
   // each time it is requested.
   static Integer s_state;
 };
-smtkImplementsModelOperator(
-  /* no export symbol */, TestForwardingOperator, forwarding, "forwarding operator",
-  unitForwardingOperator_xml,
+smtkImplementsModelOperation(
+  /* no export symbol */, TestForwardingOperation, forwarding, "forwarding operator",
+  unitForwardingOperation_xml,
   smtk::model::DefaultSession); //TestForwardingSession);
 
-Integer TestForwardingOperator::s_state = 1;
+Integer TestForwardingOperation::s_state = 1;
 
-void printSessionOperatorNames(const SessionRef& br, const std::string& msg)
+void printSessionOperationNames(const SessionRef& br, const std::string& msg)
 {
   StringList opNames = br.operatorNames();
   StringList::const_iterator it;
@@ -262,7 +262,7 @@ void printSessionOperatorNames(const SessionRef& br, const std::string& msg)
             << "] operators:\n";
   for (it = opNames.begin(); it != opNames.end(); ++it)
   {
-    smtk::operation::NewOpPtr op = br.op(*it);
+    smtk::operation::OperationPtr op = br.op(*it);
     std::cout << "  " << *it << " [" << op->className() << "]"
               << "\n";
   }
@@ -275,7 +275,7 @@ void printSessionOperatorNames(const SessionRef& br, const std::string& msg)
 // that backs it into manager B, and invoke the remote version
 // of the operator attached to the DefaultSession on manager B.
 // Check that the operation was invoked on manager A and that
-// the OperatorResult from both operations are identical (by
+// the OperationResult from both operations are identical (by
 // having the native operator cache its result parameters).
 int main()
 {
@@ -292,7 +292,7 @@ int main()
     SessionRef remoteSess = remoteMgr->createSession("native");
     Session::Ptr remoteSession = remoteSess.session();
     remoteSess.setName("remote session");
-    printSessionOperatorNames(remoteSess, "remote");
+    printSessionOperationNames(remoteSess, "remote");
 
     // Now we want to mirror the remote manager locally.
     // Serialize the "remote" session:
@@ -306,19 +306,19 @@ int main()
     SessionRef localSess(localMgr, localSession->sessionId());
     test(localSession->operatorNames().size() == 0,
       "Forwarding session should have no operators by default.");
-    printSessionOperatorNames(localSess, "local, pre-import");
+    printSessionOperationNames(localSess, "local, pre-import");
     LoadJSON::ofRemoteSession(sessJSON->child, localSession, localMgr);
-    printSessionOperatorNames(localSess, "local, post-import");
+    printSessionOperationNames(localSess, "local, post-import");
     test(localSession->operatorNames().size() == remoteSession->operatorNames().size(),
       "Forwarding session operator count should match remote session after import.");
 
     // Run the local operator.
     // Examine the remote version to verify the operation was forwarded.
-    OperatorPtr localOp = localSession->op("forwarding operator");
-    test(smtk::dynamic_pointer_cast<smtk::model::RemoteOperator>(localOp) ? true : false,
-      "Local forwarding operator was not an instance of RemoteOperator.");
-    test(localOp->className() == "smtk::model::RemoteOperator",
-      "Local operator did not return expected className() \"smtk::model::RemoteOperator\"");
+    OperationPtr localOp = localSession->op("forwarding operator");
+    test(smtk::dynamic_pointer_cast<smtk::model::RemoteOperation>(localOp) ? true : false,
+      "Local forwarding operator was not an instance of RemoteOperation.");
+    test(localOp->className() == "smtk::model::RemoteOperation",
+      "Local operator did not return expected className() \"smtk::model::RemoteOperation\"");
     localOp->ensureSpecification();
     test(!!localOp->specification(),
       "Local operator should have a default specification, not a null pointer.");
@@ -326,9 +326,10 @@ int main()
     localOp->findAs<IntItem>("addToCount")->setValue(2);
     test(localOp->specification()->findInt("addToCount")->value() == 2,
       "Setting a valid parameter had no effect.");
-    OperatorResult localResult = localOp->operate();
+    OperationResult localResult = localOp->operate();
 
-    test(localResult->findInt("outcome")->value() == smtk::operation::Operator::OPERATION_SUCCEEDED,
+    test(
+      localResult->findInt("outcome")->value() == smtk::operation::Operation::OPERATION_SUCCEEDED,
       "Operation should have succeeded.");
     test(localResult->findInt("state")->value() == 3, "Operation should have yielded state == 3.");
     localOp->eraseResult(localResult);
@@ -339,7 +340,8 @@ int main()
     localOp->specification()->findInt("addToCount")->setValue(8);
     localResult = localOp->operate();
 
-    test(localResult->findInt("outcome")->value() == smtk::operation::Operator::OPERATION_SUCCEEDED,
+    test(
+      localResult->findInt("outcome")->value() == smtk::operation::Operation::OPERATION_SUCCEEDED,
       "Operation should have succeeded.");
     test(
       localResult->findInt("state")->value() == 11, "Operation should have yielded state == 11.");
@@ -355,8 +357,8 @@ int main()
       "Did not disable \"addToCount\".");
     localResult = localOp->operate();
 
-    test(localResult->findInt("outcome")->value() == smtk::operation::Operator::UNABLE_TO_OPERATE,
-      "Operator should have been unable to execute.");
+    test(localResult->findInt("outcome")->value() == smtk::operation::Operation::UNABLE_TO_OPERATE,
+      "Operation should have been unable to execute.");
 
     // Test transferring remote dangling entity list to local session.
     // (As a preentityref to a full implementation of TestForwardingSession::transcribeInternal)

@@ -162,8 +162,8 @@ int main(int argc, char* argv[])
   brg->setup("tessellation maximum relative chord error", err);
   err[0] = opts.angleError();
   brg->setup("tessellation maximum angle error", err);
-  Operator::Ptr op;
-  OperatorResult result;
+  Operation::Ptr op;
+  OperationResult result;
 
   op = brg->op("create sphere");
   op->findDouble("radius")->setValue(opts.sphereRadius());
@@ -172,7 +172,7 @@ int main(int argc, char* argv[])
   op->findDouble("center")->setValue(2, opts.sphereCenter()[2]);
   op->findDouble("inner radius")->setValue(opts.sphereHollow());
   result = op->operate();
-  if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
+  if (result->findInt("outcome")->value() != smtk::operation::Operation::OPERATION_SUCCEEDED)
   {
     std::cerr << "Sphere Fail\n";
     return 1;
@@ -185,7 +185,7 @@ int main(int argc, char* argv[])
   op->findDouble("major radius")->setValue(opts.prismMajor());
   op->findDouble("minor radius")->setValue(opts.prismMinor());
   result = op->operate();
-  if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
+  if (result->findInt("outcome")->value() != smtk::operation::Operation::OPERATION_SUCCEEDED)
   {
     std::cerr << "Prism Fail\n";
     return 1;
@@ -206,7 +206,7 @@ int main(int argc, char* argv[])
   test(op->associateEntity(sphere), "Could not associate sphere to union operator");
   test(op->associateEntity(prism), "Could not associate prism to union operator");
   result = op->operate();
-  if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
+  if (result->findInt("outcome")->value() != smtk::operation::Operation::OPERATION_SUCCEEDED)
   {
     std::cerr << "Union Fail\n";
     return 1;

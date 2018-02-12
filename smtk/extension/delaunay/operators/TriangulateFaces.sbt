@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the model "Triangulate Face" Operator -->
+<!-- Description of the model "Triangulate Face" Operation -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="triangulate faces" Label="Faces - Triangulate" BaseType="operator">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="triangulate faces" Label="Faces - Triangulate" BaseType="operation">
       <BriefDescription>Triangulate model faces.</BriefDescription>
       <DetailedDescription>
         Triangulate model faces into a mesh using Delaunay.
@@ -35,7 +35,7 @@
     </AttDef>
   </Definitions>
   <Views>
-    <View Type="Operator" Title="Triangulate Face" FilterByAdvanceLevel="true" UseSelectionManager="true">
+    <View Type="Operation" Title="Triangulate Face" FilterByAdvanceLevel="true" UseSelectionManager="true">
       <InstancedAttributes>
         <Att Type="triangulate face"/>
       </InstancedAttributes>

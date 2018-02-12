@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="revolve" Label="Model - Revolve" BaseType="operator">
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="revolve" Label="Model - Revolve" BaseType="operation">
       <AssociationsDef Name="Model" NumberOfRequiredValues="1" Extensible="false">
         <MembershipMask>model</MembershipMask>
       </AssociationsDef>

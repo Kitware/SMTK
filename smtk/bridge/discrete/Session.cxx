@@ -39,7 +39,7 @@
 
 #include "smtk/extension/vtk/io/mesh/ImportVTKData.h"
 
-#include "vtkCMBModelReadOperator.h"
+#include "vtkCMBModelReadOperation.h"
 #include "vtkCMBModelWriterV5.h"
 
 #include "vtkDiscreteModel.h"

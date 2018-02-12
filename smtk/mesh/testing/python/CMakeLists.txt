@@ -26,11 +26,11 @@ if (SMTK_DATA_DIR)
 endif()
 
 #if (SMTK_ENABLE_POLYGON_SESSION)
-#  add_executable(testRuntimePyOperator TestRuntimePyOperator.cxx)
-#  target_compile_definitions(testRuntimePyOperator PRIVATE "SMTK_DATA_DIR=\"${SMTK_DATA_DIR}\"")
-#  target_link_libraries(testRuntimePyOperator smtkCore smtkDelaunayExt smtkPolygonSession ${Boost_LIBRARIES})
+#  add_executable(testRuntimePyOperation TestRuntimePyOperation.cxx)
+#  target_compile_definitions(testRuntimePyOperation PRIVATE "SMTK_DATA_DIR=\"${SMTK_DATA_DIR}\"")
+#  target_link_libraries(testRuntimePyOperation smtkCore smtkDelaunayExt smtkPolygonSession ${Boost_LIBRARIES})
 #    add_test(NAME testMyElevateMesh
-#      COMMAND $<TARGET_FILE:testRuntimePyOperator>
+#      COMMAND $<TARGET_FILE:testRuntimePyOperation>
 #      "${CMAKE_CURRENT_SOURCE_DIR}/my_elevate_mesh.py")
 #    set_tests_properties(testMyElevateMesh PROPERTIES LABELS "Mesh" ENVIRONMENT PYTHONDONTWRITEBYTECODE=1)
 #endif()

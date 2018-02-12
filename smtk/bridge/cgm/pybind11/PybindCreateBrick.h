@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::cgm::CreateBrick > pybind11_init_smtk_bridge_cgm_CreateBrick(py::module &m, PySharedPtrClass< smtk::bridge::cgm::Operator, smtk::operation::NewOp >& parent)
+PySharedPtrClass< smtk::bridge::cgm::CreateBrick > pybind11_init_smtk_bridge_cgm_CreateBrick(py::module &m, PySharedPtrClass< smtk::bridge::cgm::Operation, smtk::operation::Operation >& parent)
 {
   PySharedPtrClass< smtk::bridge::cgm::CreateBrick > instance(m, "CreateBrick", parent);
   instance

@@ -31,7 +31,7 @@ CreateResource::CreateResource()
 {
 }
 
-smtk::operation::NewOp::Result CreateResource::operateInternal()
+smtk::operation::Operation::Result CreateResource::operateInternal()
 {
   auto params = this->parameters();
   auto typeItem = params->findString("type");
@@ -40,10 +40,10 @@ smtk::operation::NewOp::Result CreateResource::operateInternal()
   if (!resourceManager)
   {
     smtkErrorMacro(smtk::io::Logger::instance(), "Cannot resolve resource manager.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  auto result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
   smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
 
   for (auto typeIt = typeItem->begin(); typeIt != typeItem->end(); ++typeIt)
@@ -55,7 +55,7 @@ smtk::operation::NewOp::Result CreateResource::operateInternal()
     {
       smtkErrorMacro(
         smtk::io::Logger::instance(), "Cannot create resource of type " << type << ".");
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
     created->appendValue(resource);
@@ -74,7 +74,7 @@ void CreateResource::generateSummary(CreateResource::Result& res)
   int outcome = res->findInt("outcome")->value();
   smtk::attribute::StringItemPtr sitem = this->parameters()->findString("type");
   std::string label = this->parameters()->definition()->label();
-  if (outcome == static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+  if (outcome == static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     smtkInfoMacro(this->log(), label << ": created \"" << sitem->value(0) << "\"");
   }

@@ -40,11 +40,11 @@ class EulerRatio(smtk.testing.TestCase):
 
     def testMeshing2D(self):
         for modelFile in self.modelFiles:
-            op = smtk.bridge.mesh.ImportOperator.create()
+            op = smtk.bridge.mesh.ImportOperation.create()
             fname = op.parameters().findFile('filename')
             fname.setValue(modelFile)
             res = op.operate()
-            if res.findInt('outcome').value(0) != int(smtk.operation.NewOp.SUCCEEDED):
+            if res.findInt('outcome').value(0) != int(smtk.operation.Operation.SUCCEEDED):
                 raise ImportError
             modelEntity = res.find('created').value(0)
             self.model = smtk.model.Model(
@@ -53,7 +53,7 @@ class EulerRatio(smtk.testing.TestCase):
             op = smtk.bridge.mesh.EulerCharacteristicRatio.create()
             op.parameters().associateEntity(self.model)
             res = op.operate()
-            if res.findInt('outcome').value(0) != int(smtk.operation.NewOp.SUCCEEDED):
+            if res.findInt('outcome').value(0) != int(smtk.operation.Operation.SUCCEEDED):
                 raise RuntimeError
             value = res.findDouble('value').value(0)
             self.assertAlmostEqual(value, 2.)

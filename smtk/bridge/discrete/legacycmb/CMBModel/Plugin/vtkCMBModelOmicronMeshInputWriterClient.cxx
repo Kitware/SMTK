@@ -14,7 +14,7 @@
 #include "vtkObjectFactory.h"
 #include "vtkSMDoubleVectorProperty.h"
 #include "vtkSMIntVectorProperty.h"
-#include "vtkSMOperatorProxy.h"
+#include "vtkSMOperationProxy.h"
 #include "vtkSMProxyManager.h"
 #include "vtkSMStringVectorProperty.h"
 #include "vtkSmartPointer.h"
@@ -52,7 +52,7 @@ bool vtkCMBModelOmicronMeshInputWriterClient::Operate(
   }
 
   vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
-  vtkSMOperatorProxy* operatorProxy = vtkSMOperatorProxy::SafeDownCast(
+  vtkSMOperationProxy* operatorProxy = vtkSMOperationProxy::SafeDownCast(
     manager->NewProxy("CMBModelGroup", "CMBModelOmicronMeshInputWriter"));
   if (!operatorProxy)
   {

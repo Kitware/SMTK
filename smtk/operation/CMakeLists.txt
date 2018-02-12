@@ -5,13 +5,13 @@ set(operationSrcs
   Metadata.cxx
   MetadataObserver.cxx
   Observer.cxx
-  NewOp.cxx
+  Operation.cxx
   RegisterOperations.cxx
   RegisterResources.cxx
-  ResourceManagerOperator.cxx
+  ResourceManagerOperation.cxx
   SaveResource.cxx
   SpecificationOps.cxx
-  XMLOperator.cxx
+  XMLOperation.cxx
 )
 
 set(operationHeaders
@@ -22,25 +22,25 @@ set(operationHeaders
   MetadataContainer.h
   MetadataObserver.h
   Observer.h
-  NewOp.h
+  Operation.h
   RegisterOperations.h
   RegisterResources.h
-  ResourceManagerOperator.h
+  ResourceManagerOperation.h
   SaveResource.h
-  XMLOperator.h
+  XMLOperation.h
 )
 
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/NewOp.sbt" defOpXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateResource.sbt" defOpXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/LoadResource.sbt" defOpXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/SaveResource.sbt" defOpXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/Operation.sbt" defOpXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateResource.sbt" defOpXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/LoadResource.sbt" defOpXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/SaveResource.sbt" defOpXML)
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
 
-  list (APPEND operationSrcs ImportPythonOperator.cxx)
-  list (APPEND operationHeaders ImportPythonOperator.h)
-  list (APPEND operationSrcs RegisterPythonOperators.cxx)
-  list (APPEND operationHeaders RegisterPythonOperators.h)
+  list (APPEND operationSrcs ImportPythonOperation.cxx)
+  list (APPEND operationHeaders ImportPythonOperation.h)
+  list (APPEND operationSrcs RegisterPythonOperations.cxx)
+  list (APPEND operationHeaders RegisterPythonOperations.h)
 
   add_subdirectory(pybind11)
 

@@ -15,13 +15,13 @@
 
 #include "smtk/mesh/operators/WriteMesh.h"
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::mesh::WriteMesh, smtk::operation::XMLOperator > pybind11_init_smtk_mesh_WriteMesh(py::module &m)
+PySharedPtrClass< smtk::mesh::WriteMesh, smtk::operation::XMLOperation > pybind11_init_smtk_mesh_WriteMesh(py::module &m)
 {
-  PySharedPtrClass< smtk::mesh::WriteMesh, smtk::operation::XMLOperator > instance(m, "WriteMesh");
+  PySharedPtrClass< smtk::mesh::WriteMesh, smtk::operation::XMLOperation > instance(m, "WriteMesh");
   instance
     .def(py::init<>())
     .def(py::init<::smtk::mesh::WriteMesh const &>())

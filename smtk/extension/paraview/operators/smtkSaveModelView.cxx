@@ -29,7 +29,7 @@
 #include "smtk/extension/qt/qtFileItem.h"
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtModelView.h"
-#include "smtk/extension/qt/qtOperatorView.h"
+#include "smtk/extension/qt/qtOperationView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/model/SessionRef.h"
@@ -113,18 +113,18 @@ public:
   smtkSaveActions SaveAsActions;
   smtkSaveActions ExportActions;
 
-  smtk::weak_ptr<smtk::operation::NewOp> CurrentOp;
+  smtk::weak_ptr<smtk::operation::Operation> CurrentOp;
 
   bool Fini; // Prevent access to child widgets after parent is destroyed.
 };
 
 template <typename T>
-bool smtkSaveModelView::updateOperatorFromUI(const std::string& mode, const T& action)
+bool smtkSaveModelView::updateOperationFromUI(const std::string& mode, const T& action)
 {
   using namespace ::boost::filesystem;
   using namespace smtk::model;
 
-  smtk::shared_ptr<smtk::operation::NewOp> op = this->Internals->CurrentOp.lock();
+  smtk::shared_ptr<smtk::operation::Operation> op = this->Internals->CurrentOp.lock();
   if (!op || (mode != "save" && mode != "save as" && mode != "save a copy"))
   {
     return false;
@@ -200,7 +200,7 @@ smtkSaveModelView::smtkSaveModelView(const ViewInfo& info)
   : smtkModelIOView(info)
 {
   this->Internals = new smtkSaveModelViewInternals;
-  auto opinfo = dynamic_cast<const smtk::extension::OperatorViewInfo*>(&info);
+  auto opinfo = dynamic_cast<const smtk::extension::OperationViewInfo*>(&info);
   if (opinfo)
   {
     this->Internals->CurrentOp = opinfo->m_operator;
@@ -282,8 +282,8 @@ void smtkSaveModelView::updateAttributeData()
     return;
   }
 
-  smtk::operation::NewOpPtr saveModelOp =
-    this->uiManager()->activeModelView()->operatorsWidget()->existingOperator(defName);
+  smtk::operation::OperationPtr saveModelOp =
+    this->uiManager()->activeModelView()->operatorsWidget()->existingOperation(defName);
   this->Internals->CurrentOp = saveModelOp;
 
   // expecting only 1 instance of the op?
@@ -401,7 +401,7 @@ bool smtkSaveModelView::eventFilter(QObject* obj, QEvent* evnt)
   return this->smtk::extension::qtBaseView::eventFilter(obj, evnt);
 }
 
-bool smtkSaveModelView::requestOperation(const smtk::operation::NewOpPtr& op)
+bool smtkSaveModelView::requestOperation(const smtk::operation::OperationPtr& op)
 {
   if (!op || !op->parameters())
   {
@@ -410,7 +410,7 @@ bool smtkSaveModelView::requestOperation(const smtk::operation::NewOpPtr& op)
   return this->uiManager()->activeModelView()->requestOperation(op, false);
 }
 
-void smtkSaveModelView::cancelOperation(const smtk::operation::NewOpPtr& op)
+void smtkSaveModelView::cancelOperation(const smtk::operation::OperationPtr& op)
 {
   if (!op || !this->Widget || !this->Internals->CurrentOp.lock())
   {
@@ -445,7 +445,7 @@ bool smtkSaveModelView::canSave() const
 
 bool smtkSaveModelView::onSave()
 {
-  if (this->updateOperatorFromUI("save as", this->Internals->SaveActions))
+  if (this->updateOperationFromUI("save as", this->Internals->SaveActions))
   {
     this->requestOperation(this->Internals->CurrentOp.lock());
     return true;
@@ -455,7 +455,7 @@ bool smtkSaveModelView::onSave()
 
 bool smtkSaveModelView::onSaveAs()
 {
-  if (this->updateOperatorFromUI("save as", this->Internals->SaveAsActions))
+  if (this->updateOperationFromUI("save as", this->Internals->SaveAsActions))
   {
     this->requestOperation(this->Internals->CurrentOp.lock());
     return true;
@@ -465,7 +465,7 @@ bool smtkSaveModelView::onSaveAs()
 
 bool smtkSaveModelView::onExport()
 {
-  if (this->updateOperatorFromUI("save a copy", this->Internals->ExportActions))
+  if (this->updateOperationFromUI("save a copy", this->Internals->ExportActions))
   {
     this->requestOperation(this->Internals->CurrentOp.lock());
     return true;
@@ -508,15 +508,15 @@ bool smtkSaveModelView::attemptSave(const std::string& mode)
   {
     if (mode == "save")
     {
-      shouldSave = this->updateOperatorFromUI("save", this->Internals->SaveActions);
+      shouldSave = this->updateOperationFromUI("save", this->Internals->SaveActions);
     }
     else if (mode == "save as")
     {
-      shouldSave = this->updateOperatorFromUI("save as", this->Internals->SaveAsActions);
+      shouldSave = this->updateOperationFromUI("save as", this->Internals->SaveAsActions);
     }
     else if (mode == "save a copy")
     {
-      shouldSave = this->updateOperatorFromUI("save a copy", this->Internals->ExportActions);
+      shouldSave = this->updateOperationFromUI("save a copy", this->Internals->ExportActions);
     }
     else
     {

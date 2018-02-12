@@ -33,7 +33,7 @@ SaveSMTKModel::SaveSMTKModel()
 {
 }
 
-smtk::operation::NewOp::Result SaveSMTKModel::operateInternal()
+smtk::operation::Operation::Result SaveSMTKModel::operateInternal()
 {
   auto params = this->parameters();
   auto fileItem = params->findFile("filename");
@@ -44,14 +44,14 @@ smtk::operation::NewOp::Result SaveSMTKModel::operateInternal()
   {
     smtkErrorMacro(
       smtk::io::Logger::instance(), "At least one resource must be selected for saving.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   if (setFilename && rsrcItem->numberOfValues() != fileItem->numberOfValues())
   {
     smtkErrorMacro(
       smtk::io::Logger::instance(), "Number of filenames must match number of resources.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   /*
@@ -60,7 +60,7 @@ smtk::operation::NewOp::Result SaveSMTKModel::operateInternal()
   {
     smtkErrorMacro(smtk::io::Logger::instance(),
       "Could not open file \"" << filename << "\" for writing.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
   */
 
@@ -75,7 +75,7 @@ smtk::operation::NewOp::Result SaveSMTKModel::operateInternal()
           << rsrc->uniqueName() << " \"" << rsrc->location()
           << "\" has no manager"
              " which is required in order to discern how it should be saved.");
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
     auto rsrcMetaMeta = rsrcMgr->metadata();
@@ -88,14 +88,14 @@ smtk::operation::NewOp::Result SaveSMTKModel::operateInternal()
           << "\" has no metadata"
              " registered with its manager, which is required in order to discern how it should be "
              "saved.");
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
     if (!meta->write)
     {
       smtkErrorMacro(smtk::io::Logger::instance(), "Resource metadata for "
           << rsrc->uniqueName() << " has a null write method.");
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
     if (rsrc->location().empty())
@@ -104,7 +104,7 @@ smtk::operation::NewOp::Result SaveSMTKModel::operateInternal()
       if (filename.empty())
       {
         smtkErrorMacro(smtk::io::Logger::instance(), "An empty filename is not allowed.");
-        return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+        return this->createResult(smtk::operation::Operation::Outcome::FAILED);
       }
       rsrc->setLocation(filename);
     }
@@ -112,10 +112,10 @@ smtk::operation::NewOp::Result SaveSMTKModel::operateInternal()
     if (!meta->write(rsrc))
     {
       // The writer will have logged an error message.
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
   }
-  return this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  return this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 }
 
 const char* SaveSMTKModel::xmlDescription() const
@@ -129,7 +129,7 @@ void SaveSMTKModel::generateSummary(SaveSMTKModel::Result& res)
   int outcome = res->findInt("outcome")->value();
   smtk::attribute::FileItemPtr fitem = this->parameters()->findFile("filename");
   msg << this->parameters()->definition()->label();
-  if (outcome == static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+  if (outcome == static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     msg << ": wrote \"" << fitem->value(0) << "\"";
     smtkInfoMacro(this->log(), msg.str());

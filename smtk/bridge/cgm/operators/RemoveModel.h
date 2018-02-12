@@ -10,7 +10,7 @@
 #ifndef __smtk_session_cgm_RemoveModel_h
 #define __smtk_session_cgm_RemoveModel_h
 
-#include "smtk/bridge/cgm/Operator.h"
+#include "smtk/bridge/cgm/Operation.h"
 
 namespace smtk
 {
@@ -19,13 +19,13 @@ namespace bridge
 namespace cgm
 {
 
-class SMTKCGMSESSION_EXPORT RemoveModel : public Operator
+class SMTKCGMSESSION_EXPORT RemoveModel : public Operation
 {
 public:
   smtkTypeMacro(RemoveModel);
   smtkCreateMacro(RemoveModel);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(Operation);
+  smtkDeclareModelOperation();
 
   bool ableToOperate() override;
 

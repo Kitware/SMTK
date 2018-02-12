@@ -183,7 +183,7 @@ PartitionBoundaries::Result PartitionBoundaries::operateInternal()
   if (datasets.empty())
   {
     smtkErrorMacro(this->log(), "No models on which to partition boundaries.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
   smtk::model::Model dataset = datasets[0];
 
@@ -194,7 +194,7 @@ PartitionBoundaries::Result PartitionBoundaries::operateInternal()
   if (!session)
   {
     smtkErrorMacro(this->log(), "No session associated with this model.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   // The collection for this model has the same UUID as the model, so we can
@@ -205,7 +205,7 @@ PartitionBoundaries::Result PartitionBoundaries::operateInternal()
   if (!collection->isValid())
   {
     smtkErrorMacro(this->log(), "No collection associated with this model.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   smtk::bridge::mesh::Topology* topology = session->topology(dataset);
@@ -213,7 +213,7 @@ PartitionBoundaries::Result PartitionBoundaries::operateInternal()
   if (!topology)
   {
     smtkErrorMacro(this->log(), "No topology associated with this model.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   // Set the origin from the values held in the parameters
@@ -253,7 +253,7 @@ PartitionBoundaries::Result PartitionBoundaries::operateInternal()
     labelIntersection(collection, shell, filter, created, *topology);
   }
 
-  result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
   smtk::attribute::ComponentItem::Ptr createdItem = result->findComponent("created");
   createdItem->setIsEnabled(true);
   for (auto entity : created)

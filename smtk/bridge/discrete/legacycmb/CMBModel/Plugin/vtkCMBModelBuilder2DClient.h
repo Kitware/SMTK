@@ -10,7 +10,7 @@
 
 // .NAME vtkCMBModelBuilder2DClient - The client side object of vtkCMBModelBuilder2D
 // .SECTION Description
-// This class is a client counter-part for a GenerateSimpleModelOperator
+// This class is a client counter-part for a GenerateSimpleModelOperation
 // which is used to generate a 2-D model from a set of triangles with
 // optional "modelfaceids" cell-data.
 //

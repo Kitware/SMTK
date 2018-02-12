@@ -51,14 +51,14 @@ namespace bridge
 namespace cgm
 {
 
-smtk::operation::NewOpResult Copy::operateInternal()
+smtk::operation::OperationResult Copy::operateInternal()
 {
   EntityRefArray entitiesIn = this->associatedEntitiesAs<EntityRefArray>();
   if (entitiesIn.size() != 1)
   {
     smtkInfoMacro(
       log(), "Expected a single entity to copy but was given " << entitiesIn.size() << ".");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
   EntityRef entity = entitiesIn[0];
@@ -69,13 +69,13 @@ smtk::operation::NewOpResult Copy::operateInternal()
     if (!refBody)
     {
       smtkInfoMacro(log(), "Unable obtain CGM body from " << entity.name() << ".");
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
     }
     Body* newBody = GeometryModifyTool::instance()->copy_body(refBody);
     if (!newBody)
     {
       smtkInfoMacro(log(), "Unable to copy body " << refBody << " (" << entity.name() << ").");
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
     }
     cgmOut = newBody;
   }
@@ -85,13 +85,13 @@ smtk::operation::NewOpResult Copy::operateInternal()
     if (!refEntity)
     {
       smtkInfoMacro(log(), "Unable obtain CGM entity from " << entity.name() << ".");
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
     }
     RefEntity* newEntity = GeometryModifyTool::instance()->copy_refentity(refEntity);
     if (!newEntity)
     {
       smtkInfoMacro(log(), "Unable to copy entity " << refEntity << " (" << entity.name() << ").");
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
     }
     cgmOut = newEntity;
   }
@@ -99,11 +99,11 @@ smtk::operation::NewOpResult Copy::operateInternal()
   {
     smtkInfoMacro(log(), "Expected a cell (vertex, edge, face, volume) or model but was given "
         << entity.flagSummary(0) << " (named " << entity.name() << ").");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
-  smtk::operation::NewOpResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  smtk::operation::OperationResult result =
+    this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
 
   DLIList<RefEntity*> cgmEntitiesOut;
   cgmEntitiesOut.push(cgmOut);
@@ -117,5 +117,5 @@ smtk::operation::NewOpResult Copy::operateInternal()
 } //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::Copy, cgm_copy, "copy",
+smtkImplementsModelOperation(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::Copy, cgm_copy, "copy",
   Copy_xml, smtk::bridge::cgm::Session);

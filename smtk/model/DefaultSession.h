@@ -36,9 +36,9 @@ namespace model
   * as OpenCascade, this makes them the place where requests must
   * be forwarded if they are going to be.
   *
-  * By default this session will create instances of RemoteOperator
-  * when asked for an Operator.
-  * The RemoteOperator class calls virtual methods on DefaultSession
+  * By default this session will create instances of RemoteOperation
+  * when asked for an Operation.
+  * The RemoteOperation class calls virtual methods on DefaultSession
   * in order to perform operations remotely (i.e., DefaultSession acts
   * as a delegate for operators.)
   * Subclasses which inherit DefaultSession in order to provide request
@@ -63,13 +63,13 @@ public:
   void backsRemoteSession(
     const std::string& remoteSessionName, const smtk::common::UUID& sessionId);
   virtual std::string remoteName() const;
-  // OperatorPtr op(const std::string& opName) const override;
+  // OperationPtr op(const std::string& opName) const override;
 
   /// Return an empty string. Subclasses should override this.
   std::string defaultFileExtension(const Model&) const override { return ""; }
 
 protected:
-  friend class RemoteOperator;
+  friend class RemoteOperation;
   friend class io::LoadJSON;
 
   DefaultSession();
@@ -77,7 +77,7 @@ protected:
   SessionInfoBits transcribeInternal(
     const EntityRef& entity, SessionInfoBits flags, int depth = -1) override;
 
-  void setImportingOperators(bool isImporting);
+  void setImportingOperations(bool isImporting);
 
   std::string m_remoteSessionName;
 };

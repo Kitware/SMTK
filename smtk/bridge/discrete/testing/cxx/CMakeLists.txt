@@ -63,7 +63,7 @@ if(SMTK_DATA_DIR)
   target_link_libraries(entityGroup2dmTest
     smtkCore
     smtkDiscreteSession
-    vtkSMTKOperatorsExt
+    vtkSMTKOperationsExt
     vtkSMTKSourceExt
     vtkRenderingGL2PSOpenGL2
     vtkTestingRendering
@@ -79,7 +79,7 @@ if(SMTK_DATA_DIR)
   target_link_libraries(boundingBox2dmTest
     smtkCore
     smtkDiscreteSession
-    vtkSMTKOperatorsExt
+    vtkSMTKOperationsExt
     vtkSMTKSourceExt
     )
   add_test(

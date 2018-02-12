@@ -49,7 +49,7 @@ public slots:
   // set aux_geom input then compute basic resolution and guess cache dir
   void setAuxGeom(smtk::model::AuxiliaryGeometry aux);
 
-  void setAuxGeomOperator(smtk::operation::NewOpPtr addAux_GeomOp)
+  void setAuxGeomOperation(smtk::operation::OperationPtr addAux_GeomOp)
   {
     this->AddAux_GeomOp = addAux_GeomOp;
   }
@@ -93,7 +93,7 @@ protected:
 
   QList<QVariant> DataTransform;
 
-  smtk::weak_ptr<smtk::operation::NewOp> AddAux_GeomOp;
+  smtk::weak_ptr<smtk::operation::Operation> AddAux_GeomOp;
 
   smtk::model::AuxiliaryGeometry Aux_geom;
 };

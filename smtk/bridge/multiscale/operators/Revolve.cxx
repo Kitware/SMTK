@@ -76,7 +76,7 @@ Revolve::Result Revolve::operateInternal()
   if (datasets.empty())
   {
     smtkErrorMacro(this->log(), "No models to revolve.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
   smtk::model::Model dataset = datasets[0];
 
@@ -87,7 +87,7 @@ Revolve::Result Revolve::operateInternal()
   if (!session)
   {
     smtkErrorMacro(this->log(), "No session associated with this model.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   // The collection for this model has the same UUID as the model, so we can
@@ -98,7 +98,7 @@ Revolve::Result Revolve::operateInternal()
   if (!collection->isValid())
   {
     smtkErrorMacro(this->log(), "No collection associated with this model.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   // Convert all of the 2-dimensional mesh elements into a vtkUnstructuredGrid.
@@ -147,7 +147,7 @@ Revolve::Result Revolve::operateInternal()
   if (!collection || !collection->isValid())
   {
     // The file was not correctly read.
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   // Assign its model manager to the one associated with this session
@@ -173,7 +173,7 @@ Revolve::Result Revolve::operateInternal()
   // If we don't call "transcribe" ourselves, it never gets called.
   session->transcribe(model, smtk::model::SESSION_EVERYTHING, false);
 
-  result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
   smtk::attribute::ModelEntityItem::Ptr resultModels = result->findModelEntity("model");
   resultModels->setValue(model);

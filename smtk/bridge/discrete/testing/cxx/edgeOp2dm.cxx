@@ -16,8 +16,8 @@
 
 #include "smtk/bridge/discrete/Resource.h"
 #include "smtk/bridge/discrete/Session.h"
-#include "smtk/bridge/discrete/operators/EdgeOperator.h"
-#include "smtk/bridge/discrete/operators/ImportOperator.h"
+#include "smtk/bridge/discrete/operators/EdgeOperation.h"
+#include "smtk/bridge/discrete/operators/ImportOperation.h"
 
 #include "smtk/common/UUID.h"
 
@@ -71,8 +71,8 @@ int main(int argc, char* argv[])
   }
 
   // Create an import operator
-  smtk::bridge::discrete::ImportOperator::Ptr importOp =
-    smtk::bridge::discrete::ImportOperator::create();
+  smtk::bridge::discrete::ImportOperation::Ptr importOp =
+    smtk::bridge::discrete::ImportOperation::create();
   if (!importOp)
   {
     std::cerr << "No import operator\n";
@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
   importOp->parameters()->findFile("filename")->setValue(std::string(argv[1]));
 
   // Execute the operation
-  smtk::operation::NewOp::Result importOpResult = importOp->operate();
+  smtk::operation::Operation::Result importOpResult = importOp->operate();
 
   // Retrieve the resulting model
   smtk::attribute::ComponentItemPtr componentItem =
@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
 
   // Test for success
   if (importOpResult->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "Import operator failed\n";
     return 1;
@@ -151,8 +151,8 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
     test((mc->meshes(smtk::mesh::Dims0)).size() == 7, "Expecting 7 vertex mesh");
 
     // edge op
-    smtk::bridge::discrete::EdgeOperator::Ptr edgeOp =
-      smtk::bridge::discrete::EdgeOperator::create();
+    smtk::bridge::discrete::EdgeOperation::Ptr edgeOp =
+      smtk::bridge::discrete::EdgeOperation::create();
 
     edgeOp->parameters()->findModelEntity("model")->setValue(model2dm);
 
@@ -178,9 +178,9 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
     meshItem->reset();
     meshItem->setValues(edge1, pids);
     meshItem->setModifyMode(smtk::attribute::ACCEPT);
-    smtk::bridge::discrete::EdgeOperator::Result result = edgeOp->operate();
+    smtk::bridge::discrete::EdgeOperation::Result result = edgeOp->operate();
     if (result->findInt("outcome")->value() !=
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Split Edge 1 Failed!\n";
       return 1;
@@ -214,7 +214,7 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
     meshItem->setModifyMode(smtk::attribute::ACCEPT);
     result = edgeOp->operate();
     if (result->findInt("outcome")->value() !=
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Split Edge 10 Failed!\n";
       return 1;
@@ -235,7 +235,7 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
     meshItem->setModifyMode(smtk::attribute::ACCEPT);
     result = edgeOp->operate();
     if (result->findInt("outcome")->value() !=
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Demote Vertex 4 on Edge 10 Failed!\n";
       return 1;
@@ -256,7 +256,7 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
     meshItem->setValues(newVertId, pids);
     meshItem->setModifyMode(smtk::attribute::ACCEPT);
     result = edgeOp->operate();
-    if (result->findInt("outcome")->value() != static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    if (result->findInt("outcome")->value() != static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
     std::cerr << "Demote new Vertex from first Split on Edge1 Failed!\n";
     return 1;
@@ -268,7 +268,7 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
     meshItem->setValues(edge1, pids);
     meshItem->setModifyMode(smtk::attribute::ACCEPT);
     result = edgeOp->operate();
-    if (result->findInt("outcome")->value() != static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    if (result->findInt("outcome")->value() != static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
     std::cerr << "Second Split Edge 1 Failed!\n";
     return 1;

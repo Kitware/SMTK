@@ -39,7 +39,7 @@ class TestSelection(smtk.testing.TestCase):
         print 'here', os.path.join(*fpath)
         op.parameters().find('filename').setValue(os.path.join(*fpath))
         res = op.operate()
-        if res.findInt('outcome').value(0) != int(smtk.operation.NewOp.SUCCEEDED):
+        if res.findInt('outcome').value(0) != int(smtk.operation.Operation.SUCCEEDED):
             raise ImportError
         modelEntity = res.find('created').value(0)
         self.model = smtk.model.Model(

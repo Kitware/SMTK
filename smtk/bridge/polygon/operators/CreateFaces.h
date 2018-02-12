@@ -10,7 +10,7 @@
 #ifndef __smtk_session_polygon_CreateFaces_h
 #define __smtk_session_polygon_CreateFaces_h
 
-#include "smtk/bridge/polygon/Operator.h"
+#include "smtk/bridge/polygon/Operation.h"
 #include "smtk/bridge/polygon/Resource.h"
 #include "smtk/bridge/polygon/internal/Fragment.h" // for various internal types help by CreateFaces
 #include "smtk/bridge/polygon/internal/Neighborhood.h" // for various internal types help by CreateFaces
@@ -64,13 +64,13 @@ typedef std::map<smtk::model::Edge, ModelEdgeInfo> ModelEdgeMap;
 /**\brief Create a face given a set of point coordinates or edges (but not both).
   *
   */
-class SMTKPOLYGONSESSION_EXPORT CreateFaces : public Operator
+class SMTKPOLYGONSESSION_EXPORT CreateFaces : public Operation
 {
 public:
   smtkTypeMacro(CreateFaces);
   smtkCreateMacro(CreateFaces);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
-  smtkSuperclassMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
+  smtkSuperclassMacro(Operation);
 
 protected:
   friend class Neighborhood;

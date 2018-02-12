@@ -54,7 +54,7 @@ class ElevateMeshOnStructuredGrid(smtk.testing.TestCase):
     def setUp(self):
 
         # Construct an import operator
-        op = smtk.bridge.mesh.ImportOperator.create()
+        op = smtk.bridge.mesh.ImportOperation.create()
 
         # Set the import operators parameters
         fname = op.parameters().find('filename')
@@ -66,7 +66,7 @@ class ElevateMeshOnStructuredGrid(smtk.testing.TestCase):
 
         # Execute the operator and check its results
         res = op.operate()
-        if res.find('outcome').value(0) != int(smtk.operation.NewOp.SUCCEEDED):
+        if res.find('outcome').value(0) != int(smtk.operation.Operation.SUCCEEDED):
             raise ImportError
 
         # Access the resulting resource and model
@@ -101,7 +101,7 @@ class ElevateMeshOnStructuredGrid(smtk.testing.TestCase):
 
         # Execute the operator and check its results
         res = op.operate()
-        if res.find('outcome').value(0) != int(smtk.operation.NewOp.SUCCEEDED):
+        if res.find('outcome').value(0) != int(smtk.operation.Operation.SUCCEEDED):
             raise ImportError
 
         # Access the resulting auxiliary geometry
@@ -148,7 +148,7 @@ class ElevateMeshOnStructuredGrid(smtk.testing.TestCase):
 
         # Execute the operator and check its results
         res = op.operate()
-        if res.find('outcome').value(0) != int(smtk.operation.NewOp.SUCCEEDED):
+        if res.find('outcome').value(0) != int(smtk.operation.Operation.SUCCEEDED):
             raise RuntimeError
 
         # check the z bounds of the mesh to confirm that clamping was

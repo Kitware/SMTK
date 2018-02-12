@@ -48,7 +48,7 @@ AddAuxiliaryGeometry::Result AddAuxiliaryGeometry::operateInternal()
   if (entities.empty())
   {
     smtkErrorMacro(this->log(), "No " << (urlItem ? "parent" : "children") << " specified.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   EntityRef parent = entities[0];
@@ -161,10 +161,10 @@ AddAuxiliaryGeometry::Result AddAuxiliaryGeometry::operateInternal()
     EntityRefArray expunged;
     resource->deleteEntities(del, modified, expunged, /*log*/ false);
     smtkErrorMacro(this->log(), "The url \"" << urlStr << "\" is invalid or unhandled.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
   smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");
   created->appendValue(auxGeom.component());

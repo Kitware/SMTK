@@ -23,7 +23,7 @@ public:
   smtkTypeMacro(CompositeAuxiliaryGeometry);
   smtkCreateMacro(CompositeAuxiliaryGeometry);
   smtkSuperclassMacro(AddAuxiliaryGeometry);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
 
 protected:
   virtual const char* xmlDescription() const override;

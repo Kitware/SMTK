@@ -17,7 +17,7 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/qt/Exports.h"
-#include "smtk/operation/NewOp.h"
+#include "smtk/operation/Operation.h"
 #include <QWidget>
 
 class qtModelOperationWidgetInternals;
@@ -43,15 +43,15 @@ public:
   qtModelOperationWidget(QWidget* p = NULL);
   virtual ~qtModelOperationWidget();
   virtual void setSession(smtk::model::SessionPtr session);
-  virtual void refreshOperatorList();
+  virtual void refreshOperationList();
   QSize sizeHint() const override;
   virtual qtModelView* modelView();
-  virtual smtk::operation::NewOpPtr existingOperator(const std::string& opname);
-  virtual qtBaseView* existingOperatorView(const std::string& opname);
+  virtual smtk::operation::OperationPtr existingOperation(const std::string& opname);
+  virtual qtBaseView* existingOperationView(const std::string& opname);
 
 public slots:
-  virtual bool setCurrentOperator(const std::string& opName, smtk::model::SessionPtr session);
-  virtual bool initOperatorUI(const smtk::operation::NewOpPtr& brOp);
+  virtual bool setCurrentOperation(const std::string& opName, smtk::model::SessionPtr session);
+  virtual bool initOperationUI(const smtk::operation::OperationPtr& brOp);
   virtual void expungeEntities(const smtk::model::EntityRefs& expungedEnts);
   virtual void onOperate();
   virtual void setOperationTargetActive(const smtk::common::UUID& eid)
@@ -64,21 +64,21 @@ public slots:
   virtual void showLogInfo(bool visibilityMode);
 
 signals:
-  void operationRequested(const smtk::operation::NewOpPtr& brOp);
-  void operationCancelled(const smtk::operation::NewOpPtr& brOp);
-  void operationFinished(const smtk::operation::NewOp::Result&);
+  void operationRequested(const smtk::operation::OperationPtr& brOp);
+  void operationCancelled(const smtk::operation::OperationPtr& brOp);
+  void operationFinished(const smtk::operation::Operation::Result&);
   void fileItemCreated(smtk::extension::qtFileItem* fileItem);
   void activateOperationTarget(const smtk::common::UUID&);
   void broadcastExpungeEntities(const smtk::model::EntityRefs& expungedEnts);
-  void operatorSet(const smtk::operation::NewOpPtr& brOp);
+  void operatorSet(const smtk::operation::OperationPtr& brOp);
 
   friend class qtModelView;
 
 protected slots:
   virtual void onOperationSelected();
-  virtual void cancelCurrentOperator();
-  virtual void cancelOperator(const std::string& opName);
-  virtual bool checkExistingOperator(const std::string& opName);
+  virtual void cancelCurrentOperation();
+  virtual void cancelOperation(const std::string& opName);
+  virtual bool checkExistingOperation(const std::string& opName);
 
 protected:
   virtual void initWidget();

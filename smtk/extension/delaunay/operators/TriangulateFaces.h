@@ -11,7 +11,7 @@
 #define __smtk_extension_delaunay_TriangulateFaces_h
 
 #include "smtk/extension/delaunay/Exports.h"
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace smtk
 {
@@ -30,13 +30,13 @@ class Session;
   * collection does not yet exist during the construction of the meshes, it is
   * created and populated with the MeshSets.
   */
-class SMTKDELAUNAYEXT_EXPORT TriangulateFaces : public smtk::operation::XMLOperator
+class SMTKDELAUNAYEXT_EXPORT TriangulateFaces : public smtk::operation::XMLOperation
 {
 public:
   smtkTypeMacro(TriangulateFaces);
   smtkCreateMacro(TriangulateFaces);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
-  smtkSuperclassMacro(smtk::operation::XMLOperator);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
+  smtkSuperclassMacro(smtk::operation::XMLOperation);
 
   bool ableToOperate() override;
 

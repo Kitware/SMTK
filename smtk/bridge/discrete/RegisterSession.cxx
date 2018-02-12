@@ -15,17 +15,17 @@
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 
-#include "smtk/bridge/discrete/operators/CreateEdgesOperator.h"
-#include "smtk/bridge/discrete/operators/EdgeOperator.h"
-#include "smtk/bridge/discrete/operators/EntityGroupOperator.h"
-#include "smtk/bridge/discrete/operators/GrowOperator.h"
-#include "smtk/bridge/discrete/operators/ImportOperator.h"
-#include "smtk/bridge/discrete/operators/MergeOperator.h"
-#include "smtk/bridge/discrete/operators/ReadOperator.h"
+#include "smtk/bridge/discrete/operators/CreateEdgesOperation.h"
+#include "smtk/bridge/discrete/operators/EdgeOperation.h"
+#include "smtk/bridge/discrete/operators/EntityGroupOperation.h"
+#include "smtk/bridge/discrete/operators/GrowOperation.h"
+#include "smtk/bridge/discrete/operators/ImportOperation.h"
+#include "smtk/bridge/discrete/operators/MergeOperation.h"
+#include "smtk/bridge/discrete/operators/ReadOperation.h"
 #include "smtk/bridge/discrete/operators/RemoveModel.h"
 #include "smtk/bridge/discrete/operators/SetProperty.h"
-#include "smtk/bridge/discrete/operators/SplitFaceOperator.h"
-#include "smtk/bridge/discrete/operators/WriteOperator.h"
+#include "smtk/bridge/discrete/operators/SplitFaceOperation.h"
+#include "smtk/bridge/discrete/operators/WriteOperation.h"
 
 #include "smtk/bridge/discrete/Resource.h"
 
@@ -46,28 +46,28 @@ namespace discrete
 
 void registerOperations(smtk::operation::Manager::Ptr& operationManager)
 {
-  operationManager->registerOperator<smtk::bridge::discrete::CreateEdgesOperator>(
-    "smtk::bridge::discrete::CreateEdgesOperator");
-  operationManager->registerOperator<smtk::bridge::discrete::EdgeOperator>(
-    "smtk::bridge::discrete::EdgeOperator");
-  operationManager->registerOperator<smtk::bridge::discrete::EntityGroupOperator>(
-    "smtk::bridge::discrete::EntityGroupOperator");
-  operationManager->registerOperator<smtk::bridge::discrete::GrowOperator>(
-    "smtk::bridge::discrete::GrowOperator");
-  operationManager->registerOperator<smtk::bridge::discrete::ImportOperator>(
-    "smtk::bridge::discrete::ImportOperator");
-  operationManager->registerOperator<smtk::bridge::discrete::MergeOperator>(
-    "smtk::bridge::discrete::MergeOperator");
-  operationManager->registerOperator<smtk::bridge::discrete::ReadOperator>(
-    "smtk::bridge::discrete::ReadOperator");
-  operationManager->registerOperator<smtk::bridge::discrete::RemoveModel>(
+  operationManager->registerOperation<smtk::bridge::discrete::CreateEdgesOperation>(
+    "smtk::bridge::discrete::CreateEdgesOperation");
+  operationManager->registerOperation<smtk::bridge::discrete::EdgeOperation>(
+    "smtk::bridge::discrete::EdgeOperation");
+  operationManager->registerOperation<smtk::bridge::discrete::EntityGroupOperation>(
+    "smtk::bridge::discrete::EntityGroupOperation");
+  operationManager->registerOperation<smtk::bridge::discrete::GrowOperation>(
+    "smtk::bridge::discrete::GrowOperation");
+  operationManager->registerOperation<smtk::bridge::discrete::ImportOperation>(
+    "smtk::bridge::discrete::ImportOperation");
+  operationManager->registerOperation<smtk::bridge::discrete::MergeOperation>(
+    "smtk::bridge::discrete::MergeOperation");
+  operationManager->registerOperation<smtk::bridge::discrete::ReadOperation>(
+    "smtk::bridge::discrete::ReadOperation");
+  operationManager->registerOperation<smtk::bridge::discrete::RemoveModel>(
     "smtk::bridge::discrete::RemoveModel");
-  operationManager->registerOperator<smtk::bridge::discrete::SetProperty>(
+  operationManager->registerOperation<smtk::bridge::discrete::SetProperty>(
     "smtk::bridge::discrete::SetProperty");
-  operationManager->registerOperator<smtk::bridge::discrete::SplitFaceOperator>(
-    "smtk::bridge::discrete::SplitFaceOperator");
-  operationManager->registerOperator<smtk::bridge::discrete::WriteOperator>(
-    "smtk::bridge::discrete::WriteOperator");
+  operationManager->registerOperation<smtk::bridge::discrete::SplitFaceOperation>(
+    "smtk::bridge::discrete::SplitFaceOperation");
+  operationManager->registerOperation<smtk::bridge::discrete::WriteOperation>(
+    "smtk::bridge::discrete::WriteOperation");
 }
 
 void registerResources(smtk::resource::Manager::Ptr& resourceManager)
@@ -106,8 +106,8 @@ void registerResources(smtk::resource::Manager::Ptr& resourceManager)
 
           if (!nativemodelfile.empty())
           {
-            smtk::bridge::discrete::ReadOperator::Ptr readOp =
-              smtk::bridge::discrete::ReadOperator::create();
+            smtk::bridge::discrete::ReadOperation::Ptr readOp =
+              smtk::bridge::discrete::ReadOperation::create();
 
             readOp->parameters()->findFile("filename")->setValue(nativemodelfile);
 
@@ -115,7 +115,7 @@ void registerResources(smtk::resource::Manager::Ptr& resourceManager)
             readOp->parameters()->associateEntity(model);
 
             // Execute the operation
-            smtk::operation::NewOp::Result readOpResult = readOp->operate();
+            smtk::operation::Operation::Result readOpResult = readOp->operate();
           }
         }
       }
@@ -159,8 +159,8 @@ void registerResources(smtk::resource::Manager::Ptr& resourceManager)
 
           if (!nativemodelfile.empty())
           {
-            smtk::bridge::discrete::WriteOperator::Ptr writeOp =
-              smtk::bridge::discrete::WriteOperator::create();
+            smtk::bridge::discrete::WriteOperation::Ptr writeOp =
+              smtk::bridge::discrete::WriteOperation::create();
 
             writeOp->parameters()->findFile("filename")->setValue(nativemodelfile);
 
@@ -168,11 +168,11 @@ void registerResources(smtk::resource::Manager::Ptr& resourceManager)
             writeOp->parameters()->associateEntity(model);
 
             // Execute the operation
-            smtk::operation::NewOp::Result writeOpResult = writeOp->operate();
+            smtk::operation::Operation::Result writeOpResult = writeOp->operate();
 
             // Test for success
             ok &= (writeOpResult->findInt("outcome")->value() ==
-              static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED));
+              static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED));
           }
         }
       }
@@ -212,8 +212,8 @@ void registerResources(smtk::resource::Manager::Ptr& resourceManager)
 
           if (!nativemodelfile.empty())
           {
-            smtk::bridge::discrete::ReadOperator::Ptr readOp =
-              smtk::bridge::discrete::ReadOperator::create();
+            smtk::bridge::discrete::ReadOperation::Ptr readOp =
+              smtk::bridge::discrete::ReadOperation::create();
 
             readOp->parameters()->findFile("filename")->setValue(nativemodelfile);
 
@@ -221,7 +221,7 @@ void registerResources(smtk::resource::Manager::Ptr& resourceManager)
             readOp->parameters()->associateEntity(model);
 
             // Execute the operation
-            smtk::operation::NewOp::Result readOpResult = readOp->operate();
+            smtk::operation::Operation::Result readOpResult = readOp->operate();
           }
         }
       }

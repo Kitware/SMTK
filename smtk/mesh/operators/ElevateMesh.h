@@ -10,7 +10,7 @@
 #ifndef __smtk_mesh_operators_ElevateMesh_h
 #define __smtk_mesh_operators_ElevateMesh_h
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace smtk
 {
@@ -26,13 +26,13 @@ namespace mesh
    deformation can be undone by subsequently applying the "Undo Elevate" filter,
    returning the mesh nodes to their original positions.
   */
-class SMTKCORE_EXPORT ElevateMesh : public smtk::operation::XMLOperator
+class SMTKCORE_EXPORT ElevateMesh : public smtk::operation::XMLOperation
 {
 public:
   smtkTypeMacro(ElevateMesh);
   smtkCreateMacro(ElevateMesh);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
-  smtkSuperclassMacro(smtk::operation::XMLOperator);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
+  smtkSuperclassMacro(smtk::operation::XMLOperation);
 
   bool ableToOperate() override;
 

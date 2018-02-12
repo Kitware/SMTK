@@ -55,8 +55,8 @@
 #include "smtk/bridge/discrete/RegisterSession.h"
 #include "smtk/bridge/discrete/Resource.h"
 #include "smtk/bridge/discrete/Session.h"
-#include "smtk/bridge/discrete/operators/EdgeOperator.h"
-#include "smtk/bridge/discrete/operators/ImportOperator.h"
+#include "smtk/bridge/discrete/operators/EdgeOperation.h"
+#include "smtk/bridge/discrete/operators/ImportOperation.h"
 #include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
@@ -157,8 +157,8 @@ int main(int argc, char* argv[])
   operationManager->registerResourceManager(resourceManager);
 
   // Create an import operator
-  smtk::bridge::discrete::ImportOperator::Ptr importOp =
-    operationManager->create<smtk::bridge::discrete::ImportOperator>();
+  smtk::bridge::discrete::ImportOperation::Ptr importOp =
+    operationManager->create<smtk::bridge::discrete::ImportOperation>();
   if (!importOp)
   {
     std::cerr << "No import operator\n";
@@ -169,7 +169,7 @@ int main(int argc, char* argv[])
   importOp->parameters()->findFile("filename")->setValue(std::string(argv[1]));
 
   // Execute the operation
-  smtk::operation::NewOp::Result importOpResult = importOp->operate();
+  smtk::operation::Operation::Result importOpResult = importOp->operate();
 
   // Retrieve the resulting model
   smtk::attribute::ComponentItemPtr componentItem =
@@ -182,7 +182,7 @@ int main(int argc, char* argv[])
 
   // Test for success
   if (importOpResult->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "Import operator failed\n";
     return 1;
@@ -240,7 +240,7 @@ int main(int argc, char* argv[])
   //write out the smtk model.
   auto result = saveOp->operate();
   if (result->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "Save resource failed: " << write_path << std::endl;
     return 1;
@@ -254,7 +254,7 @@ int main(int argc, char* argv[])
   loadOp->parameters()->findFile("filename")->setValue(write_path);
   result = loadOp->operate();
   if (result->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     cleanupsmtkfiles(write_path, mc->name());
     std::cerr << "Load resource failed: " << write_path << std::endl;
@@ -306,8 +306,8 @@ int main(int argc, char* argv[])
       "collection should have same verts");
 
     // edge op
-    smtk::bridge::discrete::EdgeOperator::Ptr edgeop =
-      smtk::bridge::discrete::EdgeOperator::create();
+    smtk::bridge::discrete::EdgeOperation::Ptr edgeop =
+      smtk::bridge::discrete::EdgeOperation::create();
     edgeop->parameters()->findModelEntity("model")->setValue(smtkmodel2dm);
 
     typedef std::vector<Edge> Edges;
@@ -334,7 +334,7 @@ int main(int argc, char* argv[])
     meshItem->setModifyMode(smtk::attribute::ACCEPT);
     result = edgeop->operate();
     if (result->findInt("outcome")->value() !=
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Split Edge 1 Failed!\n";
       return 1;
@@ -354,7 +354,7 @@ int main(int argc, char* argv[])
     meshItem->setModifyMode(smtk::attribute::ACCEPT);
     result = edgeop->operate();
     if (result->findInt("outcome")->value() !=
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Split Edge 10 Failed!\n";
       return 1;
@@ -374,7 +374,7 @@ int main(int argc, char* argv[])
     meshItem->setModifyMode(smtk::attribute::ACCEPT);
     result = edgeop->operate();
     if (result->findInt("outcome")->value() !=
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Demote Vertex 4 on Edge 10 Failed!\n";
       return 1;

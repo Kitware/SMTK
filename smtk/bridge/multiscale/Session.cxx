@@ -32,7 +32,7 @@ namespace multiscale
 
 Session::Session()
 {
-  this->initializeOperatorCollection(Session::s_operators);
+  this->initializeOperationCollection(Session::s_operators);
 }
 
 Session::~Session()

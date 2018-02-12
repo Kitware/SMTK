@@ -12,7 +12,7 @@
 #include "smtk/operation/RegisterOperations.h"
 
 #include "smtk/operation/CreateResource.h"
-#include "smtk/operation/ImportPythonOperator.h"
+#include "smtk/operation/ImportPythonOperation.h"
 #include "smtk/operation/LoadResource.h"
 #include "smtk/operation/SaveResource.h"
 
@@ -23,13 +23,13 @@ namespace operation
 
 void registerOperations(smtk::operation::Manager::Ptr& operationManager)
 {
-  operationManager->registerOperator<smtk::operation::ImportPythonOperator>(
-    "smtk::operation::ImportPythonOperator");
-  operationManager->registerOperator<smtk::operation::CreateResource>(
+  operationManager->registerOperation<smtk::operation::ImportPythonOperation>(
+    "smtk::operation::ImportPythonOperation");
+  operationManager->registerOperation<smtk::operation::CreateResource>(
     "smtk::operation::CreateResource");
-  operationManager->registerOperator<smtk::operation::LoadResource>(
+  operationManager->registerOperation<smtk::operation::LoadResource>(
     "smtk::operation::LoadResource");
-  operationManager->registerOperator<smtk::operation::SaveResource>(
+  operationManager->registerOperation<smtk::operation::SaveResource>(
     "smtk::operation::SaveResource");
 }
 }

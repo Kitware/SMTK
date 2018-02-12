@@ -1,7 +1,7 @@
-#ifndef __smtk_ex_CounterOperator_h
-#define __smtk_ex_CounterOperator_h
+#ifndef __smtk_ex_CounterOperation_h
+#define __smtk_ex_CounterOperation_h
 
-#include "smtk/model/Operator.h"
+#include "smtk/model/Operation.h"
 
 #include <string>
 
@@ -9,13 +9,13 @@
 namespace ex
 {
 
-class CounterOperator : public smtk::model::Operator
+class CounterOperation : public smtk::model::Operator
 {
 public:
-  smtkTypeMacro(CounterOperator);
-  smtkCreateMacro(CounterOperator);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkTypeMacro(CounterOperation);
+  smtkCreateMacro(CounterOperation);
+  smtkSharedFromThisMacro(Operation);
+  smtkDeclareModelOperation();
   // ...
   // -- 1 --
 
@@ -23,10 +23,10 @@ public:
   bool ableToOperate() override { return this->ensureSpecification(); }
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  smtk::model::OperationResult operateInternal() override;
   // -- 2 --
 };
 
 } // namespace ex
 
-#endif // __smtk_ex_CounterOperator_h
+#endif // __smtk_ex_CounterOperation_h

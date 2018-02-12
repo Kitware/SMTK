@@ -9,7 +9,7 @@
 //=========================================================================
 
 #include "smtk/operation/Manager.h"
-#include "smtk/operation/ResourceManagerOperator.h"
+#include "smtk/operation/ResourceManagerOperation.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Item.h"
@@ -33,7 +33,7 @@ Manager::~Manager()
 {
 }
 
-bool Manager::registerOperator(Metadata&& metadata)
+bool Manager::registerOperation(Metadata&& metadata)
 {
   auto alreadyRegisteredMetadata = m_metadata.get<IndexTag>().find(metadata.index());
   if (alreadyRegisteredMetadata == m_metadata.get<IndexTag>().end())
@@ -49,9 +49,9 @@ bool Manager::registerOperator(Metadata&& metadata)
   return false;
 }
 
-std::shared_ptr<NewOp> Manager::create(const std::string& uniqueName)
+std::shared_ptr<Operation> Manager::create(const std::string& uniqueName)
 {
-  std::shared_ptr<NewOp> op;
+  std::shared_ptr<Operation> op;
 
   // Locate the metadata associated with this resource type
   auto metadata = m_metadata.get<NameTag>().find(uniqueName);
@@ -66,9 +66,9 @@ std::shared_ptr<NewOp> Manager::create(const std::string& uniqueName)
   return op;
 }
 
-std::shared_ptr<NewOp> Manager::create(const NewOp::Index& index)
+std::shared_ptr<Operation> Manager::create(const Operation::Index& index)
 {
-  std::shared_ptr<NewOp> op;
+  std::shared_ptr<Operation> op;
 
   // Locate the metadata associated with this resource type
   auto metadata = m_metadata.get<IndexTag>().find(index);
@@ -101,8 +101,8 @@ bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManage
   std::weak_ptr<smtk::resource::Manager> weakRMPtr = resourceManager;
 
   // Define a metadata observer that appends the assignment of the resource
-  // manager to the create functor for operators that inherit from
-  // ResourceManagerOperator.
+  // manager to the create functor for operations that inherit from
+  // ResourceManagerOperation.
   auto resourceMetadataObserver = [&, weakRMPtr](const smtk::operation::Metadata& md) {
     auto rsrcManager = weakRMPtr.lock();
     if (!rsrcManager)
@@ -114,9 +114,9 @@ bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManage
       return;
     }
 
-    // We are only interested in operators that inherit from
-    // ResourceManagerOperator.
-    if (std::dynamic_pointer_cast<ResourceManagerOperator>(md.create()) == nullptr)
+    // We are only interested in operations that inherit from
+    // ResourceManagerOperation.
+    if (std::dynamic_pointer_cast<ResourceManagerOperation>(md.create()) == nullptr)
     {
       return;
     }
@@ -128,12 +128,12 @@ bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManage
     auto create = metadata.create;
     metadata.create = [=]() {
       auto op = create();
-      std::dynamic_pointer_cast<ResourceManagerOperator>(op)->setResourceManager(weakRMPtr);
+      std::dynamic_pointer_cast<ResourceManagerOperation>(op)->setResourceManager(weakRMPtr);
       return op;
     };
   };
 
-  // Apply the metadata observer to extant operator metadata.
+  // Apply the metadata observer to extant operation metadata.
   for (auto& md : m_metadata)
   {
     resourceMetadataObserver(md);
@@ -144,8 +144,8 @@ bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManage
 
   // Define an observer that adds all created resources to the resource manager.
   m_resourceObserver =
-    this->observers().insert([&, weakRMPtr](std::shared_ptr<smtk::operation::NewOp>,
-      smtk::operation::EventType event, smtk::operation::NewOp::Result result) {
+    this->observers().insert([&, weakRMPtr](std::shared_ptr<smtk::operation::Operation>,
+      smtk::operation::EventType event, smtk::operation::Operation::Result result) {
       auto rsrcManager = weakRMPtr.lock();
       if (!rsrcManager)
       {
@@ -190,18 +190,18 @@ bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManage
   return m_resourceObserver != -1;
 }
 
-std::set<NewOp::Index> Manager::availableOperators(
+std::set<Operation::Index> Manager::availableOperations(
   const smtk::resource::ComponentPtr& component) const
 {
-  std::set<NewOp::Index> availableOperators;
+  std::set<Operation::Index> availableOperations;
   for (auto& md : m_metadata)
   {
     if (md.acceptsComponent(component))
     {
-      availableOperators.insert(md.index());
+      availableOperations.insert(md.index());
     }
   }
-  return availableOperators;
+  return availableOperations;
 }
 }
 }

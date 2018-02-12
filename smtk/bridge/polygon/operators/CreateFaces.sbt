@@ -2,9 +2,9 @@
 <!-- Description of the polygon "CreateFaces" operator -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="create faces" Label="Faces - Create All" BaseType="operator">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="create faces" Label="Faces - Create All" BaseType="operation">
       <BriefDescription>Create model faces.</BriefDescription>
       <DetailedDescription>
         Create one or more faces in the given model.

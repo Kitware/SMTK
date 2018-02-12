@@ -50,34 +50,34 @@ SET(DiscreteModelFiles
 )
 
 SET(DiscreteOperationFiles
-  operation/vtkCMBModelPointsOperator.cxx
-  operation/vtkEdgeSplitOperator.cxx
-  operation/vtkEdgeSplitOperatorBase.cxx
-  operation/vtkMergeOperator.cxx
-  operation/vtkMergeOperatorBase.cxx
-  operation/vtkCMBModelReadOperator.cxx
-  operation/vtkCreateModelEdgesOperator.cxx
-  operation/vtkCreateModelEdgesOperatorBase.cxx
-  operation/vtkSplitOperator.cxx
-  operation/vtkSplitOperatorBase.cxx
+  operation/vtkCMBModelPointsOperation.cxx
+  operation/vtkEdgeSplitOperation.cxx
+  operation/vtkEdgeSplitOperationBase.cxx
+  operation/vtkMergeOperation.cxx
+  operation/vtkMergeOperationBase.cxx
+  operation/vtkCMBModelReadOperation.cxx
+  operation/vtkCreateModelEdgesOperation.cxx
+  operation/vtkCreateModelEdgesOperationBase.cxx
+  operation/vtkSplitOperation.cxx
+  operation/vtkSplitOperationBase.cxx
   operation/vtkMasterPolyDataNormals.cxx
-  operation/vtkMaterialOperator.cxx
-  operation/vtkMaterialOperatorBase.cxx
+  operation/vtkMaterialOperation.cxx
+  operation/vtkMaterialOperationBase.cxx
   operation/vtkMergeDuplicateCells.cxx
-  operation/vtkModelEntityGroupOperator.cxx
-  operation/vtkModelEntityGroupOperatorBase.cxx
-  operation/vtkModelEntityOperatorBase.cxx
-  operation/vtkGenerateSimpleModelOperator.cxx
+  operation/vtkModelEntityGroupOperation.cxx
+  operation/vtkModelEntityGroupOperationBase.cxx
+  operation/vtkModelEntityOperationBase.cxx
+  operation/vtkGenerateSimpleModelOperation.cxx
   operation/vtkSeedGrowSelectionFilter.cxx
-  operation/vtkSelectionSplitOperator.cxx
-  operation/vtkSelectionSplitOperatorBase.cxx
+  operation/vtkSelectionSplitOperation.cxx
+  operation/vtkSelectionSplitOperationBase.cxx
   operation/vtkCompleteShells.cxx
-  operation/vtkCMBIncorporateMeshOperator.cxx
-  operation/vtkEnclosingModelEntityOperator.cxx
+  operation/vtkCMBIncorporateMeshOperation.cxx
+  operation/vtkEnclosingModelEntityOperation.cxx
 )
 
 SET(DiscreteModelHeaders
-  operation/vtkCMBModelPointsOperator.h
+  operation/vtkCMBModelPointsOperation.h
   operation/vtkCMBMapToCMBModel.h
   operation/vtkCMBModelBuilder.h
   operation/vtkCMBModelWriterV2.h
@@ -90,29 +90,29 @@ SET(DiscreteModelHeaders
   operation/vtkCMBParserV5.h
   operation/vtkCMBModelReader.h
 
-  operation/vtkEdgeSplitOperator.h
-  operation/vtkEdgeSplitOperatorBase.h
-  operation/vtkMergeOperator.h
-  operation/vtkMergeOperatorBase.h
-  operation/vtkCMBModelReadOperator.h
-  operation/vtkCreateModelEdgesOperator.h
-  operation/vtkCreateModelEdgesOperatorBase.h
-  operation/vtkSplitOperator.h
-  operation/vtkSplitOperatorBase.h
+  operation/vtkEdgeSplitOperation.h
+  operation/vtkEdgeSplitOperationBase.h
+  operation/vtkMergeOperation.h
+  operation/vtkMergeOperationBase.h
+  operation/vtkCMBModelReadOperation.h
+  operation/vtkCreateModelEdgesOperation.h
+  operation/vtkCreateModelEdgesOperationBase.h
+  operation/vtkSplitOperation.h
+  operation/vtkSplitOperationBase.h
   operation/vtkMasterPolyDataNormals.h
-  operation/vtkMaterialOperator.h
-  operation/vtkMaterialOperatorBase.h
+  operation/vtkMaterialOperation.h
+  operation/vtkMaterialOperationBase.h
   operation/vtkMergeDuplicateCells.h
-  operation/vtkModelEntityGroupOperator.h
-  operation/vtkModelEntityGroupOperatorBase.h
-  operation/vtkModelEntityOperatorBase.h
-  operation/vtkGenerateSimpleModelOperator.h
+  operation/vtkModelEntityGroupOperation.h
+  operation/vtkModelEntityGroupOperationBase.h
+  operation/vtkModelEntityOperationBase.h
+  operation/vtkGenerateSimpleModelOperation.h
   operation/vtkSeedGrowSelectionFilter.h
-  operation/vtkSelectionSplitOperator.h
-  operation/vtkSelectionSplitOperatorBase.h
+  operation/vtkSelectionSplitOperation.h
+  operation/vtkSelectionSplitOperationBase.h
   operation/vtkCompleteShells.h
-  operation/vtkCMBIncorporateMeshOperator.h
-  operation/vtkEnclosingModelEntityOperator.h
+  operation/vtkCMBIncorporateMeshOperation.h
+  operation/vtkEnclosingModelEntityOperation.h
 )
 
 
@@ -137,18 +137,18 @@ set(discreteSessionSrcs
   RegisterSession.cxx
   Resource.cxx
   Session.cxx
-  Operator.cxx
+  Operation.cxx
   ArrangementHelper.cxx
-  operators/CreateEdgesOperator.cxx
-  operators/EntityGroupOperator.cxx
-  operators/ImportOperator.cxx
-  operators/MergeOperator.cxx
-  operators/ReadOperator.cxx
-  operators/SplitFaceOperator.cxx
-  operators/GrowOperator.cxx
-  operators/WriteOperator.cxx
+  operators/CreateEdgesOperation.cxx
+  operators/EntityGroupOperation.cxx
+  operators/ImportOperation.cxx
+  operators/MergeOperation.cxx
+  operators/ReadOperation.cxx
+  operators/SplitFaceOperation.cxx
+  operators/GrowOperation.cxx
+  operators/WriteOperation.cxx
   operators/RemoveModel.cxx
-  operators/EdgeOperator.cxx
+  operators/EdgeOperation.cxx
   operators/SetProperty.cxx
 )
 
@@ -156,18 +156,18 @@ set(discreteSessionHeaders
   RegisterSession.h
   Resource.h
   Session.h
-  Operator.h
+  Operation.h
   ArrangementHelper.h
-  operators/CreateEdgesOperator.h
-  operators/EntityGroupOperator.h
-  operators/ImportOperator.h
-  operators/MergeOperator.h
-  operators/ReadOperator.h
-  operators/SplitFaceOperator.h
-  operators/GrowOperator.h
-  operators/WriteOperator.h
+  operators/CreateEdgesOperation.h
+  operators/EntityGroupOperation.h
+  operators/ImportOperation.h
+  operators/MergeOperation.h
+  operators/ReadOperation.h
+  operators/SplitFaceOperation.h
+  operators/GrowOperation.h
+  operators/WriteOperation.h
   operators/RemoveModel.h
-  operators/EdgeOperator.h
+  operators/EdgeOperation.h
   operators/SetProperty.h
 )
 
@@ -179,18 +179,18 @@ set(discreteSessionHeaders
 # include(SMTKSessionJSON)
 # smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" discreteSessionJSON)
 
-include(SMTKOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdgesOperator.sbt" unitOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/MergeOperator.sbt" unitOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ReadOperator.sbt" unitOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SplitFaceOperator.sbt" unitOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ImportOperator.sbt" unitOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EntityGroupOperator.sbt" unitOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/GrowOperator.sbt" unitOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteOperator.sbt" unitOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/RemoveModel.sbt" unitOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EdgeOperator.sbt" unitOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SetProperty.sbt" unitOperatorXML)
+include(SMTKOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdgesOperation.sbt" unitOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/MergeOperation.sbt" unitOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ReadOperation.sbt" unitOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SplitFaceOperation.sbt" unitOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ImportOperation.sbt" unitOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EntityGroupOperation.sbt" unitOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/GrowOperation.sbt" unitOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteOperation.sbt" unitOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/RemoveModel.sbt" unitOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EdgeOperation.sbt" unitOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SetProperty.sbt" unitOperationXML)
 
 add_library(smtkDiscreteSession ${_module_src} ${discreteSessionSrcs})
 

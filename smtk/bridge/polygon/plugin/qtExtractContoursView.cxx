@@ -80,10 +80,10 @@ public:
     return NULL;
   }
 
-  vtkSMProxy* createVTKContourOperator(vtkSMProxy* sourceProxy)
+  vtkSMProxy* createVTKContourOperation(vtkSMProxy* sourceProxy)
   {
-    vtkSMProxy* smPolyEdgeOp =
-      vtkSMProxyManager::GetProxyManager()->NewProxy("polygon_operators", "PolygonContourOperator");
+    vtkSMProxy* smPolyEdgeOp = vtkSMProxyManager::GetProxyManager()->NewProxy(
+      "polygon_operators", "PolygonContourOperation");
     if (!smPolyEdgeOp)
       return NULL;
     smPolyEdgeOp->UpdateVTKObjects();
@@ -107,7 +107,7 @@ public:
   QPointer<qtAttribute> CurrentAtt;
   QPointer<QVBoxLayout> EditorLayout;
 
-  smtk::weak_ptr<smtk::operation::NewOp> CurrentOp;
+  smtk::weak_ptr<smtk::operation::Operation> CurrentOp;
   QPointer<pqPipelineSource> CurrentImage;
 };
 
@@ -206,8 +206,8 @@ void qtExtractContoursView::updateAttributeData()
     return;
   }
 
-  smtk::operation::NewOpPtr edgeOp =
-    this->uiManager()->activeModelView()->operatorsWidget()->existingOperator(defName);
+  smtk::operation::OperationPtr edgeOp =
+    this->uiManager()->activeModelView()->operatorsWidget()->existingOperation(defName);
   this->Internals->CurrentOp = edgeOp;
   // expecting only 1 instance of the op?
   smtk::attribute::AttributePtr att = edgeOp->parameters();
@@ -219,7 +219,7 @@ void qtExtractContoursView::startContourOperation()
   this->operationSelected(this->Internals->CurrentOp.lock());
 }
 
-void qtExtractContoursView::requestOperation(const smtk::operation::NewOpPtr& op)
+void qtExtractContoursView::requestOperation(const smtk::operation::OperationPtr& op)
 {
   if (!op || !op->parameters())
   {
@@ -228,7 +228,7 @@ void qtExtractContoursView::requestOperation(const smtk::operation::NewOpPtr& op
   this->uiManager()->activeModelView()->requestOperation(op, false);
 }
 
-void qtExtractContoursView::cancelOperation(const smtk::operation::NewOpPtr& op)
+void qtExtractContoursView::cancelOperation(const smtk::operation::OperationPtr& op)
 {
   if (!op || !this->Widget || !this->Internals->CurrentAtt)
     return;
@@ -252,7 +252,7 @@ void qtExtractContoursView::acceptContours(pqPipelineSource* contourSource)
   smtk::attribute::IntItem::Ptr opProxyIdItem = spec->findInt("HelperGlobalID");
   if (!opProxyIdItem)
     return;
-  vtkSMProxy* smPolyEdgeOp = this->Internals->createVTKContourOperator(contourSource->getProxy());
+  vtkSMProxy* smPolyEdgeOp = this->Internals->createVTKContourOperation(contourSource->getProxy());
   if (!smPolyEdgeOp)
     return;
   if (this->Internals->CurrentImage)
@@ -296,7 +296,7 @@ pqPipelineSource* internal_createImageSource(const std::string& imageurl)
   return source;
 }
 
-void qtExtractContoursView::operationSelected(const smtk::operation::NewOpPtr& op)
+void qtExtractContoursView::operationSelected(const smtk::operation::OperationPtr& op)
 {
   if (!this->Internals->CurrentAtt || !this->Widget || op->uniqueName() != "extract contours")
     return;

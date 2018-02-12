@@ -50,7 +50,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::operation::NewOpResult Translate::operateInternal()
+smtk::operation::OperationResult Translate::operateInternal()
 {
   smtk::attribute::DoubleItemPtr offset = this->findDouble("offset");
 
@@ -82,11 +82,11 @@ smtk::operation::NewOpResult Translate::operateInternal()
     smtkInfoMacro(log(), "Failed to translate bodies or wrong number"
         << " (" << cgmEntitiesOut.size() << " != " << nb << ")"
         << " of resulting bodies.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
-  smtk::operation::NewOpResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  smtk::operation::OperationResult result =
+    this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmEntitiesOut, result, MODIFIED);
   // Nothing expunged.
@@ -98,5 +98,5 @@ smtk::operation::NewOpResult Translate::operateInternal()
 } //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::Translate, cgm_translate,
+smtkImplementsModelOperation(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::Translate, cgm_translate,
   "translate", Translate_xml, smtk::bridge::cgm::Session);

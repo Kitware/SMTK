@@ -71,8 +71,8 @@ public:
   }
 
   QPointer<qtAttribute> TerrainExtractionAtt;
-  smtk::weak_ptr<smtk::operation::NewOp> terrainExtractionOp;
-  smtk::weak_ptr<smtk::operation::NewOp> addAux_GeomOp;
+  smtk::weak_ptr<smtk::operation::Operation> terrainExtractionOp;
+  smtk::weak_ptr<smtk::operation::Operation> addAux_GeomOp;
   QPointer<QWidget> terrainExtraction;
 };
 
@@ -159,10 +159,10 @@ void smtkTerrainExtractionView::attributeModified()
       std::string aux_GeomName("add auxiliary geometry");
 
       this->Internals->addAux_GeomOp =
-        this->uiManager()->activeModelView()->operatorsWidget()->existingOperator(aux_GeomName);
+        this->uiManager()->activeModelView()->operatorsWidget()->existingOperation(aux_GeomName);
 
-      this->TerrainExtractionManager->setAuxGeomOperator(
-        this->uiManager()->activeModelView()->operatorsWidget()->existingOperator(aux_GeomName));
+      this->TerrainExtractionManager->setAuxGeomOperation(
+        this->uiManager()->activeModelView()->operatorsWidget()->existingOperation(aux_GeomName));
     }
   }
 }
@@ -310,8 +310,8 @@ void smtkTerrainExtractionView::updateAttributeData()
     return;
   }
 
-  smtk::operation::NewOpPtr terrainExtractionOp =
-    this->uiManager()->activeModelView()->operatorsWidget()->existingOperator(defName);
+  smtk::operation::OperationPtr terrainExtractionOp =
+    this->uiManager()->activeModelView()->operatorsWidget()->existingOperation(defName);
   this->Internals->terrainExtractionOp = terrainExtractionOp;
 
   // expecting only 1 instance of the op?
@@ -324,7 +324,7 @@ void smtkTerrainExtractionView::updateAttributeData()
   }
 }
 
-void smtkTerrainExtractionView::requestOperation(const smtk::operation::NewOpPtr& op)
+void smtkTerrainExtractionView::requestOperation(const smtk::operation::OperationPtr& op)
 {
   if (!op || !op->parameters())
   {
@@ -333,7 +333,7 @@ void smtkTerrainExtractionView::requestOperation(const smtk::operation::NewOpPtr
   this->uiManager()->activeModelView()->requestOperation(op, false);
 }
 
-void smtkTerrainExtractionView::cancelOperation(const smtk::operation::NewOpPtr& op)
+void smtkTerrainExtractionView::cancelOperation(const smtk::operation::OperationPtr& op)
 {
   if (!op || !this->Widget || !this->Internals->TerrainExtractionAtt)
   {

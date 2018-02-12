@@ -43,7 +43,7 @@
 #include "smtk/extension/vtk/widgets/vtkSMTKArcRepresentation.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/Manager.h"
-#include "smtk/operation/NewOp.h"
+#include "smtk/operation/Operation.h"
 #include <QtDebug>
 
 namespace Ui
@@ -127,7 +127,7 @@ void ArcPicker::selectedInfo(pqOutputPort* port)
   this->Info->EdgeId = smtk::common::UUID::null();
   this->Info->port = NULL;
 
-  if (port && this->Arc->edgeOperator())
+  if (port && this->Arc->edgeOperation())
   {
     // This "IDs" only have three components [composite_index, processId, Index]
     // where composit_index is blockId and index is cellId
@@ -158,7 +158,7 @@ void ArcPicker::selectedInfo(pqOutputPort* port)
         {
           edgeId = smtk::common::UUID(arcInfo->GetModelEntityID());
           // TODO: cannot access manager through operator directly
-          // edge = smtk::model::Edge(this->Arc->edgeOperator()->manager(), edgeId);
+          // edge = smtk::model::Edge(this->Arc->edgeOperation()->manager(), edgeId);
           // if (edge.isValid())
           // {
           //   break;
@@ -302,13 +302,13 @@ void pqArcWidgetPanel::pickWholeArc()
 
 void pqArcWidgetPanel::arcPicked()
 {
-  if (this->Arc && this->Arc->edgeOperator())
+  if (this->Arc && this->Arc->edgeOperation())
   {
     // TODO: cannot access the manager directly through the operator
-    // smtk::model::Edge edge(this->Arc->edgeOperator()->manager(), this->ArcInfo.EdgeId);
+    // smtk::model::Edge edge(this->Arc->edgeOperation()->manager(), this->ArcInfo.EdgeId);
     // if (edge.isValid())
     // {
-    //   smtk::attribute::AttributePtr opSpec = this->Arc->edgeOperator()->specification();
+    //   smtk::attribute::AttributePtr opSpec = this->Arc->edgeOperation()->specification();
     //   edge.setIntegerProperty("block_index", this->ArcInfo.BlockIndex);
     //   if (!opSpec->isEntityAssociated(edge))
     //   {

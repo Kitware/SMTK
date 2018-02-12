@@ -10,7 +10,7 @@
 #ifndef __smtk_session_cgm_CreateBrick_h
 #define __smtk_session_cgm_CreateBrick_h
 
-#include "smtk/bridge/cgm/Operator.h"
+#include "smtk/bridge/cgm/Operation.h"
 
 namespace smtk
 {
@@ -38,13 +38,13 @@ namespace cgm
   * their corresponding axis (i.e., how far the cuboid
   * extends along the axis from the center point).
   */
-class SMTKCGMSESSION_EXPORT CreateBrick : public Operator
+class SMTKCGMSESSION_EXPORT CreateBrick : public Operation
 {
 public:
   smtkTypeMacro(CreateBrick);
   smtkCreateMacro(CreateBrick);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(Operation);
+  smtkDeclareModelOperation();
 
 protected:
   Result operateInternal() override;

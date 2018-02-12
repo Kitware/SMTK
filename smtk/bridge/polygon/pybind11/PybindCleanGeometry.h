@@ -15,13 +15,13 @@
 
 #include "smtk/bridge/polygon/operators/CleanGeometry.h"
 
-#include "smtk/bridge/polygon/Operator.h"
+#include "smtk/bridge/polygon/Operation.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::polygon::CleanGeometry, smtk::bridge::polygon::Operator > pybind11_init_smtk_bridge_polygon_CleanGeometry(py::module &m)
+PySharedPtrClass< smtk::bridge::polygon::CleanGeometry, smtk::bridge::polygon::Operation > pybind11_init_smtk_bridge_polygon_CleanGeometry(py::module &m)
 {
-  PySharedPtrClass< smtk::bridge::polygon::CleanGeometry, smtk::bridge::polygon::Operator > instance(m, "CleanGeometry");
+  PySharedPtrClass< smtk::bridge::polygon::CleanGeometry, smtk::bridge::polygon::Operation > instance(m, "CleanGeometry");
   instance
     .def(py::init<>())
     .def(py::init<::smtk::bridge::polygon::CleanGeometry const &>())

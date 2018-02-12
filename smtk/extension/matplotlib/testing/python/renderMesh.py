@@ -42,7 +42,7 @@ class RenderMesh(smtk.testing.TestCase):
     def testRenderMesh(self):
 
         # Create a "render mesh" operator
-        renderMesh = self.operationManager.createOperator(
+        renderMesh = self.operationManager.createOperation(
             'smtk.extension.matplotlib.render_mesh.RenderMesh')
 
         if not renderMesh:

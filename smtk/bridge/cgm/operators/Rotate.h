@@ -10,7 +10,7 @@
 #ifndef __smtk_session_cgm_Rotate_h
 #define __smtk_session_cgm_Rotate_h
 
-#include "smtk/bridge/cgm/Operator.h"
+#include "smtk/bridge/cgm/Operation.h"
 
 namespace smtk
 {
@@ -19,13 +19,13 @@ namespace bridge
 namespace cgm
 {
 
-class SMTKCGMSESSION_EXPORT Rotate : public Operator
+class SMTKCGMSESSION_EXPORT Rotate : public Operation
 {
 public:
   smtkTypeMacro(Rotate);
   smtkCreateMacro(Rotate);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(Operation);
+  smtkDeclareModelOperation();
 
 protected:
   Result operateInternal() override;

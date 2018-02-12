@@ -19,7 +19,7 @@
 #include "smtk/bridge/polygon/internal/SweepEvent.h"
 #include "smtk/bridge/polygon/internal/Util.h"
 
-#include "smtk/bridge/polygon/Operator.txx"
+#include "smtk/bridge/polygon/Operation.txx"
 #include "smtk/bridge/polygon/internal/Model.txx"
 #include "smtk/bridge/polygon/internal/Neighborhood.txx"
 
@@ -73,7 +73,7 @@ bool CreateFacesFromEdges::populateEdgeMap()
         {
           smtkErrorMacro(this->log(), "Edges from different models ("
               << model.name() << " and " << edgeIn.owningModel().name() << ") selected.");
-          this->m_result = this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+          this->m_result = this->createResult(smtk::operation::Operation::Outcome::FAILED);
           return false;
         }
       }
@@ -87,7 +87,7 @@ bool CreateFacesFromEdges::populateEdgeMap()
   if (this->m_edgeMap.empty() || !model.isValid())
   {
     smtkErrorMacro(this->log(), "No edges selected or invalid model specified.");
-    this->m_result = this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    this->m_result = this->createResult(smtk::operation::Operation::Outcome::FAILED);
     return false;
   }
   this->m_model = model;

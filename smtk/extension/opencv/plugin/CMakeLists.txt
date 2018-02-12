@@ -41,7 +41,7 @@ target_link_libraries(smtkOpenCVPlugin
   LINK_PRIVATE
     vtkPVServerManagerApplicationCS
     vtkSMTKWidgetsExtCS
-    vtkPolygonOperatorsExtCS
+    vtkPolygonOperationsExtCS
     vtkSMTKFilterExtCS
 )
 smtk_install_library(smtkOpenCVPlugin DEPENDS smtkOpenCVExt)

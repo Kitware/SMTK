@@ -98,12 +98,12 @@ protected:
   friend class vtkDiscreteModelFace;
   friend class vtkDiscreteModelWrapper;
   friend class vtkCMBMapToCMBModel;
-  friend class vtkCMBModelStateOperator;
+  friend class vtkCMBModelStateOperation;
   friend class vtkCMBModelBuilder;
   friend class vtkCMBMeshToModelWriter;
   friend class pqCMBGeologyBuilderMainWindowCore;
   friend class pqCMBSceneBuilderMainWindowCore;
-  friend class vtkCreateModelEdgesOperator;
+  friend class vtkCreateModelEdgesOperation;
 
   // Description:
   // Add cells to this geometric representation.  This should
@@ -129,7 +129,7 @@ protected:
   // if the model edge already contains a representation.
   bool ConstructRepresentation();
 
-  friend class vtkEdgeSplitOperatorClient;
+  friend class vtkEdgeSplitOperationClient;
   // Description:
   // Function to split a model edge if it is a loop (i.e. has
   // no beginning or end point)

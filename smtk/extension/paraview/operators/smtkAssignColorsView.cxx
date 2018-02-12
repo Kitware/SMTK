@@ -128,7 +128,7 @@ public:
   QPointer<QHBoxLayout> EditorLayout;
 
   QPointer<pqPresetDialog> PaletteChooser;
-  smtk::weak_ptr<smtk::operation::NewOp> CurrentOp;
+  smtk::weak_ptr<smtk::operation::Operation> CurrentOp;
 };
 
 smtkAssignColorsView::smtkAssignColorsView(const ViewInfo& info)
@@ -266,11 +266,11 @@ void smtkAssignColorsView::createWidget()
   // Fetch user preferences
   pqSettings* settings = pqApplicationCore::instance()->settings();
   QString defaultPalette =
-    settings->value("ModelBuilder/Operators/AssignColors/defaultPalette", SMTK_DEFAULT_PALETTE)
+    settings->value("ModelBuilder/Operations/AssignColors/defaultPalette", SMTK_DEFAULT_PALETTE)
       .toString();
   QColor defColor = Qt::white;
   QColor defaultColor =
-    settings->value("ModelBuilder/Operators/AssignColors/defaultColor", defColor).value<QColor>();
+    settings->value("ModelBuilder/Operations/AssignColors/defaultColor", defColor).value<QColor>();
 
   // Set up a preset dialog; display only categorical (indexed) colormaps.
   this->Internals->PaletteChooser =
@@ -311,8 +311,8 @@ void smtkAssignColorsView::createWidget()
 
   QObject::disconnect(this->uiManager()->activeModelView());
   QObject::connect(this->uiManager()->activeModelView(),
-    SIGNAL(operationCancelled(const smtk::operation::NewOpPtr&)), this,
-    SLOT(cancelOperation(const smtk::operation::NewOpPtr&)));
+    SIGNAL(operationCancelled(const smtk::operation::OperationPtr&)), this,
+    SLOT(cancelOperation(const smtk::operation::OperationPtr&)));
 
   // Show help when the info button is clicked.
   QObject::connect(this->Internals->InfoBtn, SIGNAL(released()), this, SLOT(onInfo()));
@@ -362,8 +362,8 @@ void smtkAssignColorsView::updateAttributeData()
     return;
   }
 
-  smtk::operation::NewOpPtr assignColorsOp =
-    this->uiManager()->activeModelView()->operatorsWidget()->existingOperator(defName);
+  smtk::operation::OperationPtr assignColorsOp =
+    this->uiManager()->activeModelView()->operatorsWidget()->existingOperation(defName);
   this->Internals->CurrentOp = assignColorsOp;
 
   // expecting only 1 instance of the op?
@@ -371,7 +371,7 @@ void smtkAssignColorsView::updateAttributeData()
   this->Internals->CurrentAtt = this->Internals->createAttUI(att, this->Widget, this);
 }
 
-void smtkAssignColorsView::requestOperation(const smtk::operation::NewOpPtr& op)
+void smtkAssignColorsView::requestOperation(const smtk::operation::OperationPtr& op)
 {
   if (!op || !op->parameters())
   {
@@ -380,7 +380,7 @@ void smtkAssignColorsView::requestOperation(const smtk::operation::NewOpPtr& op)
   this->uiManager()->activeModelView()->requestOperation(op, false);
 }
 
-void smtkAssignColorsView::cancelOperation(const smtk::operation::NewOpPtr& op)
+void smtkAssignColorsView::cancelOperation(const smtk::operation::OperationPtr& op)
 {
   if (!op || !this->Widget || !this->Internals->CurrentAtt)
   {
@@ -400,10 +400,10 @@ void smtkAssignColorsView::chooseDefaultColorAndApply()
 {
   pqSettings* settings = pqApplicationCore::instance()->settings();
   QColor nextDefault = QColorDialog::getColor(
-    settings->value("ModelBuilder/Operators/AssignColors/defaultColor", QColor(Qt::white))
+    settings->value("ModelBuilder/Operations/AssignColors/defaultColor", QColor(Qt::white))
       .value<QColor>(),
     nullptr, "Choose a default color for \"assign colors\"", QColorDialog::DontUseNativeDialog);
-  settings->setValue("ModelBuilder/Operators/AssignColors/defaultColor", nextDefault);
+  settings->setValue("ModelBuilder/Operations/AssignColors/defaultColor", nextDefault);
   this->Internals->ApplyDefaultColorBtn->setIcon(smtkAssignColorsView::renderColorSwatch(
     nextDefault, 0.75 * this->Internals->ApplyDefaultColorBtn->height()));
 
@@ -420,7 +420,7 @@ void smtkAssignColorsView::applyDefaultColor()
 
   pqSettings* settings = pqApplicationCore::instance()->settings();
   QColor color =
-    settings->value("ModelBuilder/Operators/AssignColors/defaultColor", QColor(Qt::white))
+    settings->value("ModelBuilder/Operations/AssignColors/defaultColor", QColor(Qt::white))
       .value<QColor>();
 
   //std::cout << "Apply default color\n";
@@ -439,7 +439,7 @@ void smtkAssignColorsView::setDefaultPaletteAndApply()
   std::string name(preset["Name"].asString().c_str());
   //std::cerr << "Change default palette to \"" << name << "\"" << std::endl;
   pqSettings* settings = pqApplicationCore::instance()->settings();
-  settings->setValue("ModelBuilder/Operators/AssignColors/defaultPalette", name.c_str());
+  settings->setValue("ModelBuilder/Operations/AssignColors/defaultPalette", name.c_str());
   this->Internals->PaletteChooser->hide();
   this->Internals->ApplyDefaultPaletteBtn->setText(QString::fromUtf8(name.c_str()));
   this->Internals->updatePaletteIcon(name);
@@ -457,7 +457,7 @@ void smtkAssignColorsView::applyDefaultPalette()
 
   pqSettings* settings = pqApplicationCore::instance()->settings();
   QString paletteName =
-    settings->value("ModelBuilder/Operators/AssignColors/defaultPalette", SMTK_DEFAULT_PALETTE)
+    settings->value("ModelBuilder/Operations/AssignColors/defaultPalette", SMTK_DEFAULT_PALETTE)
       .toString();
   //std::cout << "Apply default \"" << paletteName.toUtf8().constData()<< "\"\n";
 

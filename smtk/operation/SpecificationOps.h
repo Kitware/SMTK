@@ -15,7 +15,7 @@
 
 #include "smtk/attribute/ComponentItemDefinition.h"
 
-#include "smtk/operation/NewOp.h"
+#include "smtk/operation/Operation.h"
 
 #include "smtk/resource/Lock.h"
 #include "smtk/resource/Resource.h"
@@ -31,12 +31,12 @@ typedef std::vector<smtk::attribute::ComponentItemDefinition::Ptr> ComponentDefi
 /// Construct a map of all of the resources referenced in the specification,
 /// along with their permission levels (read/write).
 SMTKCORE_NO_EXPORT
-ResourceAccessMap extractResourcesAndPermissions(NewOp::Specification specification);
+ResourceAccessMap extractResourcesAndPermissions(Operation::Specification specification);
 
 /// Construct a vector of all of the resource component definitions referenced
 /// in the specification.
 SMTKCORE_NO_EXPORT
-ComponentDefinitionVector extractComponentDefinitions(NewOp::Specification specification);
+ComponentDefinitionVector extractComponentDefinitions(Operation::Specification specification);
 }
 }
 

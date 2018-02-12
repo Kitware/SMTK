@@ -10,7 +10,7 @@
 #ifndef __smtk_session_cgm_CreateBody_h
 #define __smtk_session_cgm_CreateBody_h
 
-#include "smtk/bridge/cgm/Operator.h"
+#include "smtk/bridge/cgm/Operation.h"
 
 namespace smtk
 {
@@ -23,13 +23,13 @@ namespace cgm
   *
   * The number of sides must be 3 or greater.
   */
-class SMTKCGMSESSION_EXPORT CreateBody : public Operator
+class SMTKCGMSESSION_EXPORT CreateBody : public Operation
 {
 public:
   smtkTypeMacro(CreateBody);
   smtkCreateMacro(CreateBody);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(Operation);
+  smtkDeclareModelOperation();
 
 protected:
   Result operateInternal() override;

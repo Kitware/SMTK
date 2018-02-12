@@ -18,9 +18,9 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::discrete::RemoveModel, smtk::operation::NewOp > pybind11_init_smtk_bridge_discrete_RemoveModel(py::module &m)
+PySharedPtrClass< smtk::bridge::discrete::RemoveModel, smtk::operation::Operation > pybind11_init_smtk_bridge_discrete_RemoveModel(py::module &m)
 {
-  PySharedPtrClass< smtk::bridge::discrete::RemoveModel, smtk::operation::NewOp > instance(m, "RemoveModel");
+  PySharedPtrClass< smtk::bridge::discrete::RemoveModel, smtk::operation::Operation > instance(m, "RemoveModel");
   instance
     .def(py::init<::smtk::bridge::discrete::RemoveModel const &>())
     .def(py::init<>())

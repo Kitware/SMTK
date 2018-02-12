@@ -31,12 +31,12 @@ set(vtkMeshFiles
 set(CMBProxyFiles
   vtkCMBMeshPolyDataProvider.cxx
   vtkCMBMeshWrapper.cxx
-  vtkCMBMeshGridRepresentationOperator.cxx
-  vtkCMBModelEdgeMeshOperator.cxx
-  vtkCMBModelFaceMeshOperator.cxx
+  vtkCMBMeshGridRepresentationOperation.cxx
+  vtkCMBModelEdgeMeshOperation.cxx
+  vtkCMBModelFaceMeshOperation.cxx
   vtkCMBMeshToModelWriter.cxx
   vtkCMBMeshToModelReader.cxx
-  vtkCMBMeshToModelReadOperator.cxx
+  vtkCMBMeshToModelReadOperation.cxx
 )
 set_source_files_properties(
   vtkCMBMesh

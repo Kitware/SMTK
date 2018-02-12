@@ -34,7 +34,7 @@ public:
   /// Iterate over the collection of observers and execute the observer functor.
   void operator()(const Metadata&);
 
-  /// Ask to receive notification when operators are added. The return value is
+  /// Ask to receive notification when operations are added. The return value is
   /// a handle that can be used to unregister the observer.
   Key insert(MetadataObserver);
 

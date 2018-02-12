@@ -19,7 +19,7 @@
 #include "smtk/common/UUID.h"
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/model/SessionRef.h"
-#include "smtk/operation/NewOp.h"
+#include "smtk/operation/Operation.h"
 
 #include <QMap>
 #include <QPoint>
@@ -40,7 +40,7 @@ namespace extension
 {
 class qtFileItem;
 class qtModelOperationWidget;
-class qtOperatorDockWidget;
+class qtOperationDockWidget;
 
 class SMTKQTEXT_EXPORT qtModelView : public QTreeView
 {
@@ -51,12 +51,12 @@ public:
   ~qtModelView();
   virtual std::string selectionSourceName() { return this->m_selectionSourceName; }
 
-  qtOperatorDockWidget* operatorsDock();
+  qtOperationDockWidget* operatorsDock();
 
   std::string determineAction(const QPoint& pPos) const;
   qtModelOperationWidget* operatorsWidget();
   bool setEntityVisibility(const smtk::model::EntityRefs& selentityrefs,
-    const smtk::mesh::MeshSets& selmeshes, int vis, smtk::operation::NewOpPtr op);
+    const smtk::mesh::MeshSets& selmeshes, int vis, smtk::operation::OperationPtr op);
 
 public slots:
   void updateActiveModelByModelIndex();
@@ -67,16 +67,16 @@ public slots:
   void operatorInvoked();
   void toggleEntityVisibility(const QModelIndex&);
   void onEntitiesExpunged(const smtk::model::EntityRefs& expungedEnts);
-  bool requestOperation(const smtk::operation::NewOpPtr& brOp, bool launchUI);
+  bool requestOperation(const smtk::operation::OperationPtr& brOp, bool launchUI);
   bool requestOperation(
     const std::string& opName, const smtk::common::UUID& sessionId, bool launchOp);
   virtual void onOperationPanelClosing();
   virtual bool showPreviousOpOrHide(bool alwaysHide = true);
 
 signals:
-  void operationRequested(const smtk::operation::NewOpPtr& brOp);
-  void operationCancelled(const smtk::operation::NewOpPtr& brOp);
-  void operationFinished(const smtk::operation::NewOp::Result&);
+  void operationRequested(const smtk::operation::OperationPtr& brOp);
+  void operationCancelled(const smtk::operation::OperationPtr& brOp);
+  void operationFinished(const smtk::operation::Operation::Result&);
   void fileItemCreated(smtk::extension::qtFileItem* fileItem);
   void visibilityChangeRequested(const QModelIndex&);
   void colorChangeRequested(const QModelIndex&);
@@ -99,8 +99,8 @@ protected:
 
   // bool hasSessionOp(const smtk::model::SessionRef& brSession, const std::string& opname);
   // bool hasSessionOp(const QModelIndex& idx, const std::string& opname);
-  // smtk::operation::NewOpPtr getOp(const QModelIndex& idx, const std::string& opname);
-  // smtk::operation::NewOpPtr getOp(
+  // smtk::operation::OperationPtr getOp(const QModelIndex& idx, const std::string& opname);
+  // smtk::operation::OperationPtr getOp(
   //   const smtk::model::SessionPtr& brSession, const std::string& opname);
 
   //Description:
@@ -115,8 +115,8 @@ protected:
   // Customized selection related methods
   void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected) override;
 
-  bool initOperator(smtk::operation::NewOpPtr op);
-  void initOperatorsDock(const std::string& opName, smtk::model::SessionPtr session);
+  bool initOperation(smtk::operation::OperationPtr op);
+  void initOperationsDock(const std::string& opName, smtk::model::SessionPtr session);
 
   /*
   void findIndexes(
@@ -127,8 +127,8 @@ protected:
 */
 
   QMenu* m_ContextMenu;
-  qtOperatorDockWidget* m_OperatorsDock;
-  qtModelOperationWidget* m_OperatorsWidget;
+  qtOperationDockWidget* m_OperationsDock;
+  qtModelOperationWidget* m_OperationsWidget;
   std::map<std::string, std::pair<std::vector<std::string>, std::map<std::string, std::string> > >
     m_sessionInfo;
   QModelIndex m_contextMenuIndex;

@@ -2,9 +2,9 @@
 <!-- Description of the polygon "SplitEdge" operator -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="split edge" Label="Edge - Split" BaseType="operator">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="split edge" Label="Edge - Split" BaseType="operation">
       <BriefDescription>Split a model edge at the given point.</BriefDescription>
       <DetailedDescription>
         Split a model edge in two at the given point.

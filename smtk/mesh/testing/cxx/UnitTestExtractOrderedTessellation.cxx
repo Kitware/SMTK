@@ -15,7 +15,7 @@
 
 #include "smtk/bridge/discrete/Resource.h"
 #include "smtk/bridge/discrete/Session.h"
-#include "smtk/bridge/discrete/operators/ImportOperator.h"
+#include "smtk/bridge/discrete/operators/ImportOperation.h"
 
 #include "smtk/io/LoadJSON.h"
 #include "smtk/io/ModelToMesh.h"
@@ -54,12 +54,13 @@ smtk::bridge::discrete::Resource::Ptr create_discrete_mesh_model()
 
   file.close();
 
-  smtk::bridge::discrete::ImportOperator::Ptr op = smtk::bridge::discrete::ImportOperator::create();
+  smtk::bridge::discrete::ImportOperation::Ptr op =
+    smtk::bridge::discrete::ImportOperation::create();
 
   op->parameters()->findFile("filename")->setValue(file_path.c_str());
-  smtk::bridge::discrete::ImportOperator::Result result = op->operate();
+  smtk::bridge::discrete::ImportOperation::Result result = op->operate();
   if (result->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cout << "Import 2dm Failed!" << std::endl;
   }

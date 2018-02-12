@@ -27,7 +27,7 @@ py::class_< smtk::operation::Metadata > pybind11_init_smtk_operation_Metadata(py
   py::class_< smtk::operation::Metadata > instance(m, "Metadata");
   instance
     .def(py::init<::smtk::operation::Metadata const &>())
-    .def(py::init<::std::string const &, ::smtk::operation::NewOp::Index, ::smtk::operation::NewOp::Specification, ::std::function<std::shared_ptr<smtk::operation::NewOp> ()> >())
+    .def(py::init<::std::string const &, ::smtk::operation::Operation::Index, ::smtk::operation::Operation::Specification, ::std::function<std::shared_ptr<smtk::operation::Operation> ()> >())
     .def("deepcopy", (smtk::operation::Metadata & (smtk::operation::Metadata::*)(::smtk::operation::Metadata const &)) &smtk::operation::Metadata::operator=)
     .def("acceptsComponent", &smtk::operation::Metadata::acceptsComponent, py::arg("c"))
     .def("index", &smtk::operation::Metadata::index)

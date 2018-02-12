@@ -12,8 +12,8 @@
 
 #include "smtk/extension/paraview/appcomponents/Exports.h"
 
-#include "smtk/operation/NewOp.h"
 #include "smtk/operation/Observer.h"
+#include "smtk/operation/Operation.h"
 
 #include "smtk/PublicPointerDefs.h"
 
@@ -86,8 +86,8 @@ signals:
   /**\brief Signal that an operator \a op has been created, is about to run,
     *       or has run with the included \a result.
     */
-  void operationEvent(smtk::operation::NewOp::Ptr op, smtk::operation::EventType event,
-    smtk::operation::NewOp::Result result);
+  void operationEvent(smtk::operation::Operation::Ptr op, smtk::operation::EventType event,
+    smtk::operation::Operation::Result result);
 
 protected slots:
   virtual void paraviewSelectionChanged(pqOutputPort* port);

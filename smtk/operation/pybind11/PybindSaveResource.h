@@ -15,13 +15,13 @@
 
 #include "smtk/operation/SaveResource.h"
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::operation::SaveResource, smtk::operation::XMLOperator > pybind11_init_smtk_operation_SaveResource(py::module &m)
+PySharedPtrClass< smtk::operation::SaveResource, smtk::operation::XMLOperation > pybind11_init_smtk_operation_SaveResource(py::module &m)
 {
-  PySharedPtrClass< smtk::operation::SaveResource, smtk::operation::XMLOperator > instance(m, "SaveResource");
+  PySharedPtrClass< smtk::operation::SaveResource, smtk::operation::XMLOperation > instance(m, "SaveResource");
   instance
     .def(py::init<::smtk::operation::SaveResource const &>())
     .def("deepcopy", (smtk::operation::SaveResource & (smtk::operation::SaveResource::*)(::smtk::operation::SaveResource const &)) &smtk::operation::SaveResource::operator=)

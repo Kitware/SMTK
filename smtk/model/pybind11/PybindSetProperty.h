@@ -15,13 +15,13 @@
 
 #include "smtk/model/operators/SetProperty.h"
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::model::SetProperty, smtk::operation::XMLOperator > pybind11_init_smtk_model_SetProperty(py::module &m)
+PySharedPtrClass< smtk::model::SetProperty, smtk::operation::XMLOperation > pybind11_init_smtk_model_SetProperty(py::module &m)
 {
-  PySharedPtrClass< smtk::model::SetProperty, smtk::operation::XMLOperator > instance(m, "SetProperty");
+  PySharedPtrClass< smtk::model::SetProperty, smtk::operation::XMLOperation > instance(m, "SetProperty");
   instance
     .def(py::init<>())
     .def(py::init<::smtk::model::SetProperty const &>())

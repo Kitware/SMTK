@@ -50,7 +50,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::operation::NewOpResult Reflect::operateInternal()
+smtk::operation::OperationResult Reflect::operateInternal()
 {
   smtk::attribute::DoubleItemPtr basepointItem = this->findDouble("base point");
   smtk::attribute::DoubleItemPtr directionItem = this->findDouble("direction");
@@ -83,11 +83,11 @@ smtk::operation::NewOpResult Reflect::operateInternal()
     smtkInfoMacro(log(), "Failed to reflect bodies or wrong number"
         << " (" << cgmEntitiesOut.size() << " != " << nb << ")"
         << " of resulting bodies.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
-  smtk::operation::NewOpResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  smtk::operation::OperationResult result =
+    this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmEntitiesOut, result, MODIFIED);
   // Nothing expunged.
@@ -99,5 +99,5 @@ smtk::operation::NewOpResult Reflect::operateInternal()
 } //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::Reflect, cgm_reflect,
+smtkImplementsModelOperation(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::Reflect, cgm_reflect,
   "reflect", Reflect_xml, smtk::bridge::cgm::Session);

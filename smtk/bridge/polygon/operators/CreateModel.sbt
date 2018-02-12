@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the Polygon "CreateModel" Operator -->
+<!-- Description of the Polygon "CreateModel" Operation -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="create model" Label="Model - Create" BaseType="operator">
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="create model" Label="Model - Create" BaseType="operation">
       <BriefDescription>Create a planar model.</BriefDescription>
       <DetailedDescription>
         Create a model given a set of coordinate axes in 3D and a minimum feature size.

@@ -26,7 +26,7 @@
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
 
-#include "smtk/operation/NewOp.h"
+#include "smtk/operation/Operation.h"
 
 #include <fstream>
 #include <streambuf>
@@ -93,7 +93,7 @@ int main(int argc, char* argv[])
   }
 
   // Construct a "render mesh" operator
-  smtk::operation::NewOp::Ptr op =
+  smtk::operation::Operation::Ptr op =
     operationManager->create("smtk.extension.matplotlib.render_mesh.RenderMesh");
 
   if (!op)
@@ -111,11 +111,11 @@ int main(int argc, char* argv[])
   op->parameters()->findFile("filename")->setValue(write_path);
 
   // Execute the operator
-  smtk::operation::NewOp::Result result = op->operate();
+  smtk::operation::Operation::Result result = op->operate();
 
   // Confirm that the operator succeeded
   if (result->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "render mesh operator failed\n";
     return 1;

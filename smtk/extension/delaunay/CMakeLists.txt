@@ -10,8 +10,8 @@ set(headers
   operators/RegisterOperations.h
   operators/TessellateFaces.h
   operators/TriangulateFaces.h)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/TriangulateFaces.sbt" delaunayOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/TessellateFaces.sbt" delaunayOperatorXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/TriangulateFaces.sbt" delaunayOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/TessellateFaces.sbt" delaunayOperationXML)
 
 add_library(smtkDelaunayExt ${source})
 target_link_libraries(smtkDelaunayExt

@@ -10,7 +10,7 @@
 #ifndef __smtk_model_SetProperty_h
 #define __smtk_model_SetProperty_h
 
-#include "smtk/bridge/discrete/Operator.h"
+#include "smtk/bridge/discrete/Operation.h"
 
 namespace smtk
 {
@@ -19,13 +19,13 @@ namespace bridge
 namespace discrete
 {
 
-class SMTKDISCRETESESSION_EXPORT SetProperty : public Operator
+class SMTKDISCRETESESSION_EXPORT SetProperty : public Operation
 {
 public:
   smtkTypeMacro(SetProperty);
   smtkCreateMacro(SetProperty);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
-  smtkSuperclassMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
+  smtkSuperclassMacro(Operation);
 
 protected:
   Result operateInternal() override;

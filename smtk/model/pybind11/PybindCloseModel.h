@@ -15,13 +15,13 @@
 
 #include "smtk/model/operators/CloseModel.h"
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::model::CloseModel, smtk::operation::XMLOperator > pybind11_init_smtk_model_CloseModel(py::module &m)
+PySharedPtrClass< smtk::model::CloseModel, smtk::operation::XMLOperation > pybind11_init_smtk_model_CloseModel(py::module &m)
 {
-  PySharedPtrClass< smtk::model::CloseModel, smtk::operation::XMLOperator > instance(m, "CloseModel");
+  PySharedPtrClass< smtk::model::CloseModel, smtk::operation::XMLOperation > instance(m, "CloseModel");
   instance
     .def(py::init<>())
     .def(py::init<::smtk::model::CloseModel const &>())

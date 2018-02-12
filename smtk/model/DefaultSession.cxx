@@ -68,16 +68,16 @@ std::string DefaultSession::remoteName() const
 
 /**\brief Return an instance of the operator of the given name, if it exists.
   *
-  * Under some circumstances, a RemoteOperator will be created and returned:
+  * Under some circumstances, a RemoteOperation will be created and returned:
   * 1. No existing operator matches the given name.
   * 2. The remoteName() method returns a non-empty string (i..e, backsRemoteSession
   *    has been called).
-  * 3. A friend class (such as LoadJSON) has called setImportingOperators(true)
-  *    and not subsequently called setImportingOperators(false).
+  * 3. A friend class (such as LoadJSON) has called setImportingOperations(true)
+  *    and not subsequently called setImportingOperations(false).
   */
-// OperatorPtr DefaultSession::op(const std::string& opName) const
+// OperationPtr DefaultSession::op(const std::string& opName) const
 // {
-//   OperatorPtr oper = this->Session::op(opName);
+//   OperationPtr oper = this->Session::op(opName);
 //   return oper;
 // }
 

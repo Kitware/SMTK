@@ -10,19 +10,19 @@ if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 
   add_paraview_plugin(
-    smtkVTKOperatorsPlugin "1.0"
+    smtkVTKOperationsPlugin "1.0"
     SERVER_SOURCES
     sessionInit.cxx
     )
 
-  target_link_libraries(smtkVTKOperatorsPlugin
+  target_link_libraries(smtkVTKOperationsPlugin
     LINK_PUBLIC
       smtkCore
       vtkPVServerManagerApplication
     LINK_PRIVATE
-      vtkSMTKOperatorsExt
+      vtkSMTKOperationsExt
       vtkPVServerManagerApplicationCS
     )
-  smtk_install_library(smtkVTKOperatorsPlugin)
+  smtk_install_library(smtkVTKOperationsPlugin)
 
 endif ()

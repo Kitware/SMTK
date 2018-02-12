@@ -21,12 +21,12 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/bridge/polygon/Operator.h"
+#include "smtk/bridge/polygon/Operation.h"
 #include "smtk/bridge/polygon/Resource.h"
 
 #include "smtk/common/Paths.h"
 
-#include "smtk/extension/remus/MeshOperator.h"
+#include "smtk/extension/remus/MeshOperation.h"
 #include "smtk/extension/remus/MeshServerLauncher.h"
 
 #include "smtk/io/AttributeReader.h"
@@ -104,9 +104,9 @@ int main(int argc, char** const argv)
 
   // Register the operators to the operation manager
   {
-    operationManager->registerOperator<smtk::model::LoadSMTKModel>("smtk::model::LoadSMTKModel");
-    operationManager->registerOperator<smtk::extension::remus::MeshOperator>(
-      "smtk::extension::remus::MeshOperator");
+    operationManager->registerOperation<smtk::model::LoadSMTKModel>("smtk::model::LoadSMTKModel");
+    operationManager->registerOperation<smtk::extension::remus::MeshOperation>(
+      "smtk::extension::remus::MeshOperation");
   }
 
   // Register the resource manager to the operation manager (newly created
@@ -127,7 +127,7 @@ int main(int argc, char** const argv)
     loadOp->parameters()->findFile("filename")->setValue(file_path.c_str());
     smtk::model::LoadSMTKModel::Result result = loadOp->operate();
     if (result->findInt("outcome")->value() !=
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Could not load smtk model!\n";
       return 1;
@@ -148,8 +148,8 @@ int main(int argc, char** const argv)
   }
 
   // Construct a mesh operator
-  smtk::extension::remus::MeshOperator::Ptr mesher =
-    operationManager->create<smtk::extension::remus::MeshOperator>();
+  smtk::extension::remus::MeshOperation::Ptr mesher =
+    operationManager->create<smtk::extension::remus::MeshOperation>();
   if (!mesher)
   {
     std::cerr << "No mesh operator\n";
@@ -211,14 +211,14 @@ int main(int argc, char** const argv)
   }
 
   // Execute the mesh operator
-  smtk::extension::remus::MeshOperator::Result result = mesher->operate();
+  smtk::extension::remus::MeshOperation::Result result = mesher->operate();
 
   // We no longer need the mesh server, so we terminate it
   meshServerLauncher.terminate();
 
   // Check the outcome of the operation
   if (result->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "Mesh operator failed\n";
     return 1;

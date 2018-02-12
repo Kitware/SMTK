@@ -15,11 +15,11 @@
 
 #include "smtk/bridge/polygon/operators/ForceCreateFace.h"
 
-#include "smtk/bridge/polygon/Operator.h"
+#include "smtk/bridge/polygon/Operation.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::polygon::ForceCreateFace > pybind11_init_smtk_bridge_polygon_ForceCreateFace(py::module &m, PySharedPtrClass< smtk::bridge::polygon::Operator, smtk::operation::XMLOperator >& parent)
+PySharedPtrClass< smtk::bridge::polygon::ForceCreateFace > pybind11_init_smtk_bridge_polygon_ForceCreateFace(py::module &m, PySharedPtrClass< smtk::bridge::polygon::Operation, smtk::operation::XMLOperation >& parent)
 {
   PySharedPtrClass< smtk::bridge::polygon::ForceCreateFace > instance(m, "ForceCreateFace", parent);
   instance

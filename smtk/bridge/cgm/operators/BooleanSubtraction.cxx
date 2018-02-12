@@ -52,7 +52,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::operation::NewOpResult BooleanSubtraction::operateInternal()
+smtk::operation::OperationResult BooleanSubtraction::operateInternal()
 {
   int keepInputs = this->findInt("keep inputs")->value();
   int imprint = this->findInt("imprint workpieces")->value();
@@ -70,14 +70,14 @@ smtk::operation::NewOpResult BooleanSubtraction::operateInternal()
   if (!ok)
   {
     smtkInfoMacro(log(), "Need at least 1 workpiece, none of the associated entities were valid.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
   ok &= this->cgmEntities(*this->findModelEntity("tools").get(), cgmToolsIn, keepInputs, expunged);
   if (!ok)
   {
     smtkInfoMacro(log(), "Need at least 1 tool; none of the specified entities were valid.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
   DLIList<RefEntity*> imported;
@@ -86,11 +86,11 @@ smtk::operation::NewOpResult BooleanSubtraction::operateInternal()
   if (s != CUBIT_SUCCESS)
   {
     smtkInfoMacro(log(), "Failed to perform subtraction (status " << s << ").");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
-  smtk::operation::NewOpResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  smtk::operation::OperationResult result =
+    this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmBodiesOut, result, MODIFIED);
   result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
@@ -102,5 +102,5 @@ smtk::operation::NewOpResult BooleanSubtraction::operateInternal()
 } //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::BooleanSubtraction,
+smtkImplementsModelOperation(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::BooleanSubtraction,
   cgm_boolean_subtraction, "subtraction", BooleanSubtraction_xml, smtk::bridge::cgm::Session);

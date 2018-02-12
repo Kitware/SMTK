@@ -21,7 +21,7 @@
 #include "smtk/model/Model.h"
 
 #include "smtk/environment/Environment.h"
-#include "smtk/operation/NewOp.h"
+#include "smtk/operation/Operation.h"
 
 namespace
 {
@@ -41,9 +41,9 @@ int main(int argc, char* argv[])
   std::string filename = dataRoot + "/model/2d/smtk/epic-trex-drummer.smtk";
   loadOp->parameters()->findFile("filename")->setValue(filename);
 
-  smtk::operation::NewOp::Result loadOpResult = loadOp->operate();
+  smtk::operation::Operation::Result loadOpResult = loadOp->operate();
   test(loadOpResult->findInt("outcome")->value() ==
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Load operator failed");
 
   smtk::bridge::polygon::Resource::Ptr polygonResource =

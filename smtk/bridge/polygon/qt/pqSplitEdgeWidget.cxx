@@ -49,7 +49,7 @@
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/Manager.h"
-#include "smtk/operation/NewOp.h"
+#include "smtk/operation/Operation.h"
 
 #include <QToolButton>
 #include <QVBoxLayout>
@@ -183,14 +183,14 @@ void pqSplitEdgeWidget::setView(pqRenderView* view)
   }
 }
 
-void pqSplitEdgeWidget::setEdgeOperator(smtk::operation::NewOpPtr edgeOp)
+void pqSplitEdgeWidget::setEdgeOperation(smtk::operation::OperationPtr edgeOp)
 {
   if (edgeOp && edgeOp->uniqueName() == "smtk::bridge::polygon::operators::SplitEdge")
     this->m_edgeOp = edgeOp;
   else
-    this->m_edgeOp = smtk::operation::NewOp::Ptr();
+    this->m_edgeOp = smtk::operation::Operation::Ptr();
 }
-smtk::shared_ptr<smtk::operation::NewOp> pqSplitEdgeWidget::edgeOperator()
+smtk::shared_ptr<smtk::operation::Operation> pqSplitEdgeWidget::edgeOperation()
 {
   return this->m_edgeOp.lock();
 }

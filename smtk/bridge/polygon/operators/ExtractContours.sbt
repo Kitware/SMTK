@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the smtk polygon Model "extract contours" Operator -->
+<!-- Description of the smtk polygon Model "extract contours" Operation -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="extract contours" Label="Edge - Create from Contours" BaseType="operator">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="extract contours" Label="Edge - Create from Contours" BaseType="operation">
       <AssociationsDef Name="auxiliary geometry" NumberOfRequiredValues="1" AdvanceLevel="0">
         <MembershipMask>aux_geom</MembershipMask>
         <BriefDescription>The image auxiliary geometry to which this op will operate on.</BriefDescription>
@@ -56,7 +56,7 @@
           </DetailedDescription>
         </Double>
 
-        <!-- This is needed for linking with a vtkSMTKOperator that is used as an smtk operator interface
+        <!-- This is needed for linking with a vtkSMTKOperation that is used as an smtk operator interface
         to vtk pipeline -->
         <Int Name="HelperGlobalID" Label="Unique global ID for a helper object" AdvanceLevel="11" NumberOfRequiredValues="1" Optional="true">
           <DefaultValue>0</DefaultValue>

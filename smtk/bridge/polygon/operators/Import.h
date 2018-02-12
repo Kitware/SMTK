@@ -11,7 +11,7 @@
 #ifndef __smtk_session_polygon_Import_h
 #define __smtk_session_polygon_Import_h
 
-#include "smtk/bridge/polygon/Operator.h"
+#include "smtk/bridge/polygon/Operation.h"
 #include "smtk/bridge/polygon/Resource.h"
 
 class vtkIdTypeArray;
@@ -37,13 +37,13 @@ namespace polygon
   *    "Poly files (*.poly *.smesh)
   *    "Shape files (*.shp)
   */
-class SMTKPOLYGONSESSION_EXPORT Import : public Operator
+class SMTKPOLYGONSESSION_EXPORT Import : public Operation
 {
 public:
   smtkTypeMacro(Import);
   smtkCreateMacro(Import);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
-  smtkSuperclassMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
+  smtkSuperclassMacro(Operation);
 
   bool ableToOperate() override;
 

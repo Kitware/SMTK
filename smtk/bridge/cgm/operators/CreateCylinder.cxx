@@ -46,7 +46,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::operation::NewOpResult CreateCylinder::operateInternal()
+smtk::operation::OperationResult CreateCylinder::operateInternal()
 {
   smtk::attribute::DoubleItem::Ptr heightItem = this->specification()->findDouble("height");
   smtk::attribute::DoubleItem::Ptr majorBaseRadiusItem =
@@ -73,11 +73,11 @@ smtk::operation::NewOpResult CreateCylinder::operateInternal()
   if (!cgmBody)
   {
     smtkInfoMacro(log(), "Failed to create body.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
-  smtk::operation::NewOpResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  smtk::operation::OperationResult result =
+    this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
 
   DLIList<Body*> cgmBodiesOut;
   cgmBodiesOut.push(cgmBody);
@@ -91,5 +91,5 @@ smtk::operation::NewOpResult CreateCylinder::operateInternal()
 } //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::CreateCylinder,
+smtkImplementsModelOperation(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::CreateCylinder,
   cgm_create_cylinder, "create cylinder", CreateCylinder_xml, smtk::bridge::cgm::Session);

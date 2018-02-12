@@ -23,9 +23,9 @@ namespace delaunay
 
 void registerOperations(smtk::operation::Manager::Ptr& operationManager)
 {
-  operationManager->registerOperator<smtk::extension::delaunay::TessellateFaces>(
+  operationManager->registerOperation<smtk::extension::delaunay::TessellateFaces>(
     "smtk::extension::delaunay::TessellateFaces");
-  operationManager->registerOperator<smtk::extension::delaunay::TriangulateFaces>(
+  operationManager->registerOperation<smtk::extension::delaunay::TriangulateFaces>(
     "smtk::extension::delaunay::TriangulateFaces");
 }
 }

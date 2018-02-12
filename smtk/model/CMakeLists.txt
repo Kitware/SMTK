@@ -6,7 +6,7 @@ set(modelOps
   CloseModel
   CompositeAuxiliaryGeometry
   CreateInstances
-  EntityGroupOperator
+  EntityGroupOperation
   ExportModelJSON
   ExportSMTKModel
   GroupAuxiliaryGeometry
@@ -117,7 +117,7 @@ set(modelHeaders
 
 smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/DefaultSession.json" defSessionJSON)
 foreach (operator ${modelOps})
-  smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt" defOpXML)
+  smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt" defOpXML)
   list(APPEND modelSrcs operators/${operator}.cxx)
   list(APPEND modelHeaders operators/${operator}.h)
 endforeach()

@@ -58,11 +58,11 @@ int UnitTestPolygonCreateEdgeFromVerts(int argc, char* argv[])
 
   // Register operators to the operation manager
   {
-    operationManager->registerOperator<smtk::bridge::polygon::CreateModel>(
+    operationManager->registerOperation<smtk::bridge::polygon::CreateModel>(
       "smtk::bridge::polygon::CreateModel");
-    operationManager->registerOperator<smtk::bridge::polygon::CreateVertices>(
+    operationManager->registerOperation<smtk::bridge::polygon::CreateVertices>(
       "smtk::bridge::polygon::CreateVertices");
-    operationManager->registerOperator<smtk::bridge::polygon::CreateEdgeFromVertices>(
+    operationManager->registerOperation<smtk::bridge::polygon::CreateEdgeFromVertices>(
       "smtk::bridge::polygon::CreateEdgeFromVertices");
   }
 
@@ -75,7 +75,7 @@ int UnitTestPolygonCreateEdgeFromVerts(int argc, char* argv[])
     operationManager->create<smtk::bridge::polygon::CreateModel>();
 
   // Apply the operation and check the result
-  smtk::operation::NewOp::Result createOpResult = createOp->operate();
+  smtk::operation::Operation::Result createOpResult = createOp->operate();
 
   // Retrieve the resulting model item
   smtk::attribute::ComponentItemPtr componentItem =
@@ -114,9 +114,9 @@ int UnitTestPolygonCreateEdgeFromVerts(int argc, char* argv[])
   }
 
   // Apply the create vertices operation
-  smtk::operation::NewOp::Result res = createVerticesOp->operate();
+  smtk::operation::Operation::Result res = createVerticesOp->operate();
   test(res->findInt("outcome")->value() ==
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Create vertices operator failed");
 
   // Verify the vertices are correctly created
@@ -157,7 +157,7 @@ int UnitTestPolygonCreateEdgeFromVerts(int argc, char* argv[])
   // Apply the create edge from vertices operation
   res = createEdgeFromVerticesOp->operate();
   test(res->findInt("outcome")->value() ==
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Create edge from vertices operator failed");
 
   // Vertify that the edge is created

@@ -34,7 +34,7 @@ py::class_< smtk::operation::Observers > pybind11_init_smtk_operation_Observers(
   instance
     .def(py::init<>())
     .def(py::init<::smtk::operation::Observers const &>())
-    .def("__call__", (int (smtk::operation::Observers::*)(::std::shared_ptr<smtk::operation::NewOp>, ::smtk::operation::EventType, ::smtk::operation::NewOp::Result)) &smtk::operation::Observers::operator())
+    .def("__call__", (int (smtk::operation::Observers::*)(::std::shared_ptr<smtk::operation::Operation>, ::smtk::operation::EventType, ::smtk::operation::Operation::Result)) &smtk::operation::Observers::operator())
     .def("deepcopy", (smtk::operation::Observers & (smtk::operation::Observers::*)(::smtk::operation::Observers const &)) &smtk::operation::Observers::operator=)
     .def("erase", &smtk::operation::Observers::erase, py::arg("arg0"))
     .def("insert", &smtk::operation::Observers::insert, py::arg("arg0"))

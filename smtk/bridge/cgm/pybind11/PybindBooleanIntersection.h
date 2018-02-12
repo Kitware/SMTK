@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::cgm::BooleanIntersection > pybind11_init_smtk_bridge_cgm_BooleanIntersection(py::module &m, PySharedPtrClass< smtk::bridge::cgm::Operator, smtk::operation::NewOp >& parent)
+PySharedPtrClass< smtk::bridge::cgm::BooleanIntersection > pybind11_init_smtk_bridge_cgm_BooleanIntersection(py::module &m, PySharedPtrClass< smtk::bridge::cgm::Operation, smtk::operation::Operation >& parent)
 {
   PySharedPtrClass< smtk::bridge::cgm::BooleanIntersection > instance(m, "BooleanIntersection", parent);
   instance

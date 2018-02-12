@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the model "TerrainExtraction" Operator -->
+<!-- Description of the model "TerrainExtraction" Operation -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="terrain extraction" Label="Model - Terrain Extraction" BaseType="operator">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="terrain extraction" Label="Model - Terrain Extraction" BaseType="operation">
       <AssociationsDef Name="Point Cloud" NumberOfRequiredValues="1" AdvanceLevel="0">
         <MembershipMask>aux_geom</MembershipMask>
       </AssociationsDef>

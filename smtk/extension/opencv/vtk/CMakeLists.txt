@@ -1,20 +1,20 @@
 set(srcs
-  vtkSurfaceExtractorOperator.cxx
+  vtkSurfaceExtractorOperation.cxx
   )
 
 set(headers
-  vtkSurfaceExtractorOperator.h
+  vtkSurfaceExtractorOperation.h
 )
 
 set(${vtk-module}_NO_HeaderTest 1)
 set(VTK_INSTALL_NO_HEADERS 1)
 vtk_module_library(${vtk-module} ${srcs})
-#Link explicitly to vtkSMTKOperatorsExt, which can't be set in module.cmake
+#Link explicitly to vtkSMTKOperationsExt, which can't be set in module.cmake
 #because this is invoked by separate vtk_smtk_process_modules in polygon session
 target_link_libraries(${vtk-module}
   LINK_PUBLIC
     smtkCore
-    vtkSMTKOperatorsExt
+    vtkSMTKOperationsExt
   LINK_PRIVATE
   )
 

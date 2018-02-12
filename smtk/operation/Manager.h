@@ -17,8 +17,8 @@
 
 #include "smtk/operation/Metadata.h"
 #include "smtk/operation/MetadataContainer.h"
-#include "smtk/operation/NewOp.h"
 #include "smtk/operation/Observer.h"
+#include "smtk/operation/Operation.h"
 
 #include <string>
 #include <typeinfo>
@@ -27,9 +27,9 @@ namespace smtk
 {
 namespace operation
 {
-/// An operation Manager is responsible for creating new operators and
-/// filtering operators based on input type. Operator types must first be
-/// registered with the Manager before operators of this type can be manipulated
+/// An operation Manager is responsible for creating new operations and
+/// filtering operations based on input type. Operation types must first be
+/// registered with the Manager before operations of this type can be manipulated
 /// by the manager.
 class SMTKCORE_EXPORT Manager : smtkEnableSharedPtr(Manager)
 {
@@ -41,20 +41,20 @@ public:
 
   /// Register a resource identified by its class type and unique name.
   template <typename ResourceType>
-  bool registerOperator(const std::string&);
+  bool registerOperation(const std::string&);
 
-  /// Register an operator identified by its type index.
-  bool registerOperator(Metadata&&);
+  /// Register an operation identified by its type index.
+  bool registerOperation(Metadata&&);
 
-  /// Construct an operator identified by its unique name.
-  std::shared_ptr<smtk::operation::NewOp> create(const std::string&);
+  /// Construct an operation identified by its unique name.
+  std::shared_ptr<smtk::operation::Operation> create(const std::string&);
 
-  /// Construct an operator identified by its type index.
-  std::shared_ptr<smtk::operation::NewOp> create(const NewOp::Index&);
+  /// Construct an operation identified by its type index.
+  std::shared_ptr<smtk::operation::Operation> create(const Operation::Index&);
 
-  /// Construct an operator identified by its class type.
-  template <typename OperatorType>
-  smtk::shared_ptr<OperatorType> create();
+  /// Construct an operation identified by its class type.
+  template <typename OperationType>
+  smtk::shared_ptr<OperationType> create();
 
   // We expose the underlying containers for metadata; this means of access
   // should not be necessary for most use cases.
@@ -74,21 +74,21 @@ public:
   ///
   /// This method constructs an observer that registers created resources to the
   /// resource manager. It also constructs a metadata observer that assigns the
-  /// resource manager to all generated instances of operators that inherit from
-  /// ResourceManagerOperator.
+  /// resource manager to all generated instances of operations that inherit from
+  /// ResourceManagerOperation.
   bool registerResourceManager(smtk::resource::ManagerPtr&);
 
-  /// Given a resource component, return a set of indices for operators that can
+  /// Given a resource component, return a set of indices for operations that can
   /// accept the component as input.
-  std::set<NewOp::Index> availableOperators(const smtk::resource::ComponentPtr&) const;
+  std::set<Operation::Index> availableOperations(const smtk::resource::ComponentPtr&) const;
 
 private:
   Manager();
 
-  /// A container for all operator observers.
+  /// A container for all operation observers.
   Observers m_observers;
 
-  /// A container for all operator metadata observers.
+  /// A container for all operation metadata observers.
   Metadata::Observers m_metadataObservers;
 
   /// Observer index for resource manager.
@@ -97,30 +97,30 @@ private:
   /// Metadata Observer index for resource manager.
   Metadata::Observers::Key m_resourceMetadataObserver;
 
-  /// A container for all registered operator metadata.
+  /// A container for all registered operation metadata.
   MetadataContainer m_metadata;
 };
 
-template <typename OperatorType>
-smtk::shared_ptr<OperatorType> Manager::create()
+template <typename OperationType>
+smtk::shared_ptr<OperationType> Manager::create()
 {
-  return smtk::static_pointer_cast<OperatorType>(
-    this->create(std::type_index(typeid(OperatorType)).hash_code()));
+  return smtk::static_pointer_cast<OperationType>(
+    this->create(std::type_index(typeid(OperationType)).hash_code()));
 }
 
-template <typename OperatorType>
-bool Manager::registerOperator(const std::string& uniqueName)
+template <typename OperationType>
+bool Manager::registerOperation(const std::string& uniqueName)
 {
-  // For standard operators (i.e. those defined in C++), the pattern is to use
+  // For standard operations (i.e. those defined in C++), the pattern is to use
   // the hash of the type_index as its index, the specification defined by
-  // OperatorType::createSpecification() and the creation method
-  // OperatorType::create(). This method is simply a shorthand that constructs a
+  // OperationType::createSpecification() and the creation method
+  // OperationType::create(). This method is simply a shorthand that constructs a
   // metadata instance that adheres to this convention.
 
-  return Manager::registerOperator(
-    Metadata(uniqueName, std::type_index(typeid(OperatorType)).hash_code(),
-      std::dynamic_pointer_cast<NewOp>(OperatorType::create())->createSpecification(),
-      []() { return OperatorType::create(); }));
+  return Manager::registerOperation(
+    Metadata(uniqueName, std::type_index(typeid(OperationType)).hash_code(),
+      std::dynamic_pointer_cast<Operation>(OperationType::create())->createSpecification(),
+      []() { return OperationType::create(); }));
 }
 }
 }

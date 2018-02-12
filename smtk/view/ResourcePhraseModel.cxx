@@ -56,7 +56,7 @@ void ResourcePhraseModel::handleResourceEvent(Resource::Ptr rsrc, smtk::resource
 }
 
 void ResourcePhraseModel::handleCreated(
-  Operator::Ptr op, Operator::Result res, ComponentItemPtr data)
+  Operation::Ptr op, Operation::Result res, ComponentItemPtr data)
 {
   (void)op;
   if (!res || !data)

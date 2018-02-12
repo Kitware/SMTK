@@ -46,7 +46,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::operation::NewOpResult CreatePrism::operateInternal()
+smtk::operation::OperationResult CreatePrism::operateInternal()
 {
   smtk::attribute::DoubleItem::Ptr heightItem = this->specification()->findDouble("height");
   smtk::attribute::DoubleItem::Ptr majorRadiusItem =
@@ -73,11 +73,11 @@ smtk::operation::NewOpResult CreatePrism::operateInternal()
   if (!cgmBody)
   {
     smtkInfoMacro(log(), "Failed to create body.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
-  smtk::operation::NewOpResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  smtk::operation::OperationResult result =
+    this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
 
   DLIList<Body*> cgmEntitiesOut;
   cgmEntitiesOut.push(cgmBody);
@@ -91,5 +91,5 @@ smtk::operation::NewOpResult CreatePrism::operateInternal()
 } //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::CreatePrism, cgm_create_prism,
-  "create prism", CreatePrism_xml, smtk::bridge::cgm::Session);
+smtkImplementsModelOperation(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::CreatePrism,
+  cgm_create_prism, "create prism", CreatePrism_xml, smtk::bridge::cgm::Session);

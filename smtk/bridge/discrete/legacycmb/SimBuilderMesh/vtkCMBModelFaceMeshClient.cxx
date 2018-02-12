@@ -17,7 +17,7 @@
 #include <vtkObjectFactory.h>
 #include <vtkPolyData.h>
 #include <vtkSMIntVectorProperty.h>
-#include <vtkSMOperatorProxy.h>
+#include <vtkSMOperationProxy.h>
 #include <vtkSMProxyManager.h>
 
 vtkStandardNewMacro(vtkCMBModelFaceMeshClient);
@@ -33,8 +33,8 @@ vtkCMBModelFaceMeshClient::~vtkCMBModelFaceMeshClient()
 bool vtkCMBModelFaceMeshClient::SendLengthAndAngleToServer()
 {
   vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
-  vtkSMOperatorProxy* operatorProxy = vtkSMOperatorProxy::SafeDownCast(
-    manager->NewProxy("CMBSimBuilderMeshGroup", "ModelFaceMeshOperator"));
+  vtkSMOperationProxy* operatorProxy = vtkSMOperationProxy::SafeDownCast(
+    manager->NewProxy("CMBSimBuilderMeshGroup", "ModelFaceMeshOperation"));
   if (!operatorProxy)
   {
     vtkErrorMacro("Unable to create operator proxy.");
@@ -78,8 +78,8 @@ bool vtkCMBModelFaceMeshClient::BuildMesh(bool /*meshHigherDimensionalEntities*/
   this->SetMeshedLength(0);
   this->SetMeshedMinimumAngle(0);
   vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
-  vtkSMOperatorProxy* operatorProxy = vtkSMOperatorProxy::SafeDownCast(
-    manager->NewProxy("CMBSimBuilderMeshGroup", "ModelFaceMeshOperator"));
+  vtkSMOperationProxy* operatorProxy = vtkSMOperationProxy::SafeDownCast(
+    manager->NewProxy("CMBSimBuilderMeshGroup", "ModelFaceMeshOperation"));
   if (!operatorProxy)
   {
     vtkErrorMacro("Unable to create operator proxy.");

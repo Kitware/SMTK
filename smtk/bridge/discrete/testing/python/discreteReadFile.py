@@ -162,7 +162,7 @@ class TestDiscreteSession(smtk.testing.TestCase):
         for eng in sref.engines():
             print('  Engine %s filetypes:\n    %s' %
                   (eng, '\n    '.join(sref.fileTypes(eng))))
-        print('Operators:\n  ')
+        print('Operations:\n  ')
         print('\n  '.join(sref.operatorNames()))
         print('\n')
 

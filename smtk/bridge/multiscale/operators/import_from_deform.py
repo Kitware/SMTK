@@ -50,10 +50,10 @@ import subprocess
 import vtk
 
 
-class import_from_deform(smtk.operation.NewOp):
+class import_from_deform(smtk.operation.Operation):
 
     def __init__(self):
-        smtk.operation.NewOp.__init__(self)
+        smtk.operation.Operation.__init__(self)
 
     def name(self):
         return "import from deform"
@@ -102,7 +102,7 @@ class import_from_deform(smtk.operation.NewOp):
         if pipeline is None:
             print('Cannot find PipelineRunner at \'',
                   pipeline_executable, '\'')
-            return self.createResult(smtk.operation.NewOp.Outcome.FAILED)
+            return self.createResult(smtk.operation.Operation.Outcome.FAILED)
 
         # Generate the Dream3D pipeline for this operation
         pipeline_file = \
@@ -138,7 +138,7 @@ class import_from_deform(smtk.operation.NewOp):
 
         # Ensure that the import succeeded
         if not collection or not collection.isValid():
-            return self.createResult(smtk.operation.NewOp.Outcome.FAILED)
+            return self.createResult(smtk.operation.Operation.Outcome.FAILED)
 
         # Assign its model manager to the one associated with this session
         collection.modelManager = self.manager()
@@ -166,7 +166,7 @@ class import_from_deform(smtk.operation.NewOp):
         self.activeSession().transcribe(
             model, smtk.model.SESSION_EVERYTHING, False)
 
-        result = self.createResult(smtk.operation.NewOp.Outcome.SUCCEEDED)
+        result = self.createResult(smtk.operation.Operation.Outcome.SUCCEEDED)
 
         resultModels = result.findModelEntity("model")
         resultModels.setValue(model)

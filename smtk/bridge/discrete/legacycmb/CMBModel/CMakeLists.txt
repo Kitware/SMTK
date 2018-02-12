@@ -4,7 +4,7 @@ find_package(SMTK REQUIRED)
 find_package(Remus REQUIRED)
 
 set(CMAKE_MODULE_PATH "${SMTK_ROOT_DIR}/lib/cmake/SMTK" ${CMAKE_MODULE_PATH})
-include(SMTKOperatorXML)
+include(SMTKOperationXML)
 
 SET(CmbModelFiles
   vtkCMBModelWriterV2.cxx
@@ -15,54 +15,54 @@ SET(CmbModelFiles
   vtkCMBParserV4.cxx
   vtkCMBParserV5.cxx
   vtkCMBModelOmicronMeshInputWriter.cxx
-  vtkEnclosingModelEntityOperator.cxx
+  vtkEnclosingModelEntityOperation.cxx
   vtkCMBModelActor.cxx
 )
 
 SET(CMBOperationFiles
-  vtkADHExporterOperator.cxx
-  vtkADHExporterOperatorBase.cxx
+  vtkADHExporterOperation.cxx
+  vtkADHExporterOperationBase.cxx
   vtkAppendSolids.cxx
-  vtkMaterialOperator.cxx
-  vtkMaterialOperatorBase.cxx
-  vtkMergeOperator.cxx
-  vtkMergeOperatorBase.cxx
-  vtkCMBImportBCFileOperator.cxx
-  vtkCMBIncorporateMeshOperator.cxx
+  vtkMaterialOperation.cxx
+  vtkMaterialOperationBase.cxx
+  vtkMergeOperation.cxx
+  vtkMergeOperationBase.cxx
+  vtkCMBImportBCFileOperation.cxx
+  vtkCMBIncorporateMeshOperation.cxx
   vtkCMBModelBuilder.cxx
   vtkCMBMapToCMBModel.cxx
   vtkCMBModelReader.cxx
-  vtkCMBModelReadOperator.cxx
+  vtkCMBModelReadOperation.cxx
   vtkCMBModelWriterBase.cxx
   vtkCMBPolyDataProvider.cxx
-  vtkCreateModelEdgesOperator.cxx
-  vtkCreateModelEdgesOperatorBase.cxx
-  vtkGenerateSimpleModelOperator.cxx
-  vtkModelEntityGroupOperator.cxx
-  vtkModelEntityGroupOperatorBase.cxx
-  vtkModelEntityOperator.cxx
-  vtkModelEntityOperatorBase.cxx
+  vtkCreateModelEdgesOperation.cxx
+  vtkCreateModelEdgesOperationBase.cxx
+  vtkGenerateSimpleModelOperation.cxx
+  vtkModelEntityGroupOperation.cxx
+  vtkModelEntityGroupOperationBase.cxx
+  vtkModelEntityOperation.cxx
+  vtkModelEntityOperationBase.cxx
   vtkSeedGrowSelectionFilter.cxx
-  vtkSelectionSplitOperator.cxx
-  vtkSelectionSplitOperatorBase.cxx
-  vtkSplitOperator.cxx
-  vtkSplitOperatorBase.cxx
-  vtkCMBModelStateOperatorBase.cxx
-  vtkCMBModelStateOperator.cxx
+  vtkSelectionSplitOperation.cxx
+  vtkSelectionSplitOperationBase.cxx
+  vtkSplitOperation.cxx
+  vtkSplitOperationBase.cxx
+  vtkCMBModelStateOperationBase.cxx
+  vtkCMBModelStateOperation.cxx
   vtkCMBXMLBCSWriter.cxx
   vtkCMBModelOmicronMeshInputWriterBase.cxx
   vtkMergeDuplicateCells.cxx
   vtkMasterPolyDataNormals.cxx
   vtkCompleteShells.cxx
-  vtkModelEdgeOperatorBase.cxx
-  vtkModelEdgeOperator.cxx
-  vtkEdgeSplitOperator.cxx
-  vtkEdgeSplitOperatorBase.cxx
-  vtkGeoTransformOperator.cxx
-  vtkCMBModelPointsOperator.cxx
+  vtkModelEdgeOperationBase.cxx
+  vtkModelEdgeOperation.cxx
+  vtkEdgeSplitOperation.cxx
+  vtkEdgeSplitOperationBase.cxx
+  vtkGeoTransformOperation.cxx
+  vtkCMBModelPointsOperation.cxx
 # This class should really be in ${Plugin_Src_Files},
 # but it is linked from SimBuilderMeshPlugin
-  vtkSMOperatorProxy.cxx
+  vtkSMOperationProxy.cxx
   vtkCMBModelRepresentation.cxx
   vtkCMBModelSource.cxx
   vtkCMBModelMapper.cxx
@@ -89,10 +89,10 @@ SET_SOURCE_FILES_PROPERTIES(
   ABSTRACT
 )
 
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateEdgesOperator.sbt" unitOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/MergeOperator.sbt" unitOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ReadOperator.sbt" unitOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/SplitFaceOperator.sbt" unitOperatorXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateEdgesOperation.sbt" unitOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/MergeOperation.sbt" unitOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/ReadOperation.sbt" unitOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/SplitFaceOperation.sbt" unitOperationXML)
 
 # Disable manifests for plugins on Windows so that they do not need to resolve their dependencies.
 if (MSVC)

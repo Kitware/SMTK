@@ -50,7 +50,7 @@ int UnitTestPolygonImport(int argc, char* argv[])
 
   // Register import and write operators to the operation manager
   {
-    operationManager->registerOperator<smtk::bridge::polygon::Import>(
+    operationManager->registerOperation<smtk::bridge::polygon::Import>(
       "smtk::bridge::polygon::Import");
   }
 
@@ -69,9 +69,9 @@ int UnitTestPolygonImport(int argc, char* argv[])
   importOp->parameters()->findFile("filename")->setValue(readFilePath);
   std::cout << "Importing " << readFilePath << std::endl;
 
-  smtk::operation::NewOp::Result importOpResult = importOp->operate();
+  smtk::operation::Operation::Result importOpResult = importOp->operate();
   test(importOpResult->findInt("outcome")->value() ==
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Import operator failed");
   // Retrieve the resulting model
   smtk::attribute::ComponentItemPtr componentItem =

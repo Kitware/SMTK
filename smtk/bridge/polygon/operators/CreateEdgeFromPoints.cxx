@@ -48,7 +48,7 @@ CreateEdgeFromPoints::Result CreateEdgeFromPoints::operateInternal()
     std::static_pointer_cast<smtk::bridge::polygon::Resource>(model.component()->resource());
 
   if (!resource)
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
 
   smtk::attribute::GroupItem::Ptr pointsInfo;
   smtk::attribute::IntItem::Ptr coordinatesItem = this->parameters()->findInt("pointGeometry");
@@ -69,7 +69,7 @@ CreateEdgeFromPoints::Result CreateEdgeFromPoints::operateInternal()
   if (!parentModel.isValid())
   {
     smtkErrorMacro(this->log(), "A model must be associated with the operator.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   std::vector<double> pnts(numPts * numCoordsPerPt);
@@ -94,7 +94,7 @@ CreateEdgeFromPoints::Result CreateEdgeFromPoints::process(
 
   smtk::bridge::polygon::SessionPtr sess = resource->polygonSession();
   if (!sess)
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
 
   bool ok = true;
 
@@ -153,7 +153,7 @@ CreateEdgeFromPoints::Result CreateEdgeFromPoints::process(
     if (result.empty())
     {
       smtkErrorMacro(this->log(), "Self-intersection of edge segments was empty set.");
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
     // I. Pre-process the intersected segments
@@ -328,7 +328,7 @@ CreateEdgeFromPoints::Result CreateEdgeFromPoints::process(
   Result opResult;
   if (ok)
   {
-    opResult = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+    opResult = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
     smtk::attribute::ComponentItem::Ptr createdItem = opResult->findComponent("created");
     for (auto& c : created)
@@ -344,7 +344,7 @@ CreateEdgeFromPoints::Result CreateEdgeFromPoints::process(
   }
   else
   {
-    opResult = this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    opResult = this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   return opResult;

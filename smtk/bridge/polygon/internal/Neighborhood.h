@@ -10,7 +10,7 @@
 #ifndef __smtk_session_polygon_internal_Neighborhood_h
 #define __smtk_session_polygon_internal_Neighborhood_h
 
-#include "smtk/bridge/polygon/Operator.h"
+#include "smtk/bridge/polygon/Operation.h"
 #include "smtk/bridge/polygon/Resource.h"
 #include "smtk/bridge/polygon/Session.h"
 #include "smtk/bridge/polygon/internal/ActiveFragmentTree.h"

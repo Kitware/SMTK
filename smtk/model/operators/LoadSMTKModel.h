@@ -10,7 +10,7 @@
 #ifndef smtk_model_operators_LoadSMTKModel_h
 #define smtk_model_operators_LoadSMTKModel_h
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace smtk
 {
@@ -19,12 +19,12 @@ namespace model
 
 /**\brief Load an SMTK resource from a file.
   */
-class SMTKCORE_EXPORT LoadSMTKModel : public smtk::operation::XMLOperator
+class SMTKCORE_EXPORT LoadSMTKModel : public smtk::operation::XMLOperation
 {
 public:
   smtkTypeMacro(LoadSMTKModel);
-  smtkSharedPtrCreateMacro(smtk::operation::NewOp);
-  smtkSuperclassMacro(smtk::operation::XMLOperator);
+  smtkSharedPtrCreateMacro(smtk::operation::Operation);
+  smtkSuperclassMacro(smtk::operation::XMLOperation);
 
 protected:
   LoadSMTKModel();

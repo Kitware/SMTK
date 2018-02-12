@@ -2,9 +2,9 @@
 <!-- Description of the polygon "ForceCreateFace" operator -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="force create face" AdvanceLevel="11"  BaseType="operator">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="force create face" AdvanceLevel="11"  BaseType="operation">
       <BriefDescription>Create a model face without sanity checks.</BriefDescription>
       <DetailedDescription>
         Create a model face from a sequence of points holding an outer loop and

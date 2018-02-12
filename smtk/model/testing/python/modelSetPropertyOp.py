@@ -55,7 +55,7 @@ class TestModelSetPropertyOp(unittest.TestCase):
         result = op.operate()
         self.assertEqual(
             result.find('outcome').value(0),
-            int(smtk.operation.NewOp.SUCCEEDED),
+            int(smtk.operation.Operation.SUCCEEDED),
             'Set property operator failed')
         print('Checking properties')
         for x in mgr.findEntitiesOfType(int(smtk.model.ANY_ENTITY), False):

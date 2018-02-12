@@ -12,12 +12,12 @@ if (SMTK_DATA_DIR)
   endforeach()
 endif()
 
-add_executable(testImportPythonOperator TestImportPythonOperator.cxx)
-target_compile_definitions(testImportPythonOperator PRIVATE "SMTK_DATA_DIR=\"${SMTK_DATA_DIR}\"")
-target_link_libraries(testImportPythonOperator smtkCore)
-add_test(NAME testImportPythonOperator
-  COMMAND $<TARGET_FILE:testImportPythonOperator>
+add_executable(testImportPythonOperation TestImportPythonOperation.cxx)
+target_compile_definitions(testImportPythonOperation PRIVATE "SMTK_DATA_DIR=\"${SMTK_DATA_DIR}\"")
+target_link_libraries(testImportPythonOperation smtkCore)
+add_test(NAME testImportPythonOperation
+  COMMAND $<TARGET_FILE:testImportPythonOperation>
   "${CMAKE_CURRENT_SOURCE_DIR}/test_op.py")
-set_tests_properties(testImportPythonOperator PROPERTIES
+set_tests_properties(testImportPythonOperation PROPERTIES
   LABELS "Operation"
   ENVIRONMENT PYTHONDONTWRITEBYTECODE=1)

@@ -74,7 +74,7 @@ int ImportFromDEFORMOp(int argc, char* argv[])
   operationManager->registerResourceManager(resourceManager);
 
   // Create an import operator
-  smtk::operation::NewOp::Ptr importFromDeformOp =
+  smtk::operation::Operation::Ptr importFromDeformOp =
     operationManager->create("smtk.bridge.multiscale.import_from_deform.import_from_deform");
 
   if (!importFromDeformOp)
@@ -114,9 +114,9 @@ int ImportFromDEFORMOp(int argc, char* argv[])
     stats->findAs<smtk::attribute::DoubleItem>(i, "max_cutoff")->setValue(max_cutoff.at(i));
   }
 
-  smtk::operation::NewOp::Result importFromDeformOpResult = importFromDeformOp->operate();
+  smtk::operation::Operation::Result importFromDeformOpResult = importFromDeformOp->operate();
   if (importFromDeformOpResult->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "import from deform operator failed\n";
     return 1;

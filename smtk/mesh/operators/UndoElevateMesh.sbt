@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the "undo elevate mesh" Operator -->
+<!-- Description of the "undo elevate mesh" Operation -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="undo elevate mesh"
-            Label="Mesh - Undo Elevate" BaseType="operator">
+            Label="Mesh - Undo Elevate" BaseType="operation">
       <BriefDescription>
         Restore a mesh to its unelevated state.
       </BriefDescription>

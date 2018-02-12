@@ -105,7 +105,7 @@ SetProperty::Result SetProperty::operateInternal()
 
   if (nameItem->value(0).empty())
   {
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   smtk::model::Manager::Ptr resource =
@@ -147,7 +147,7 @@ SetProperty::Result SetProperty::operateInternal()
     }
   }
 
-  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
   // if a model is in the changed entities and it is a submodel, we
   // want to label its parent model to be modified too.

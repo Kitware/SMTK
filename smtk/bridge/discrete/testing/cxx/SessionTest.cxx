@@ -16,8 +16,8 @@
 
 #include "smtk/bridge/discrete/Resource.h"
 #include "smtk/bridge/discrete/Session.h"
-#include "smtk/bridge/discrete/operators/ReadOperator.h"
-#include "smtk/bridge/discrete/operators/SplitFaceOperator.h"
+#include "smtk/bridge/discrete/operators/ReadOperation.h"
+#include "smtk/bridge/discrete/operators/SplitFaceOperation.h"
 
 #include "smtk/io/SaveJSON.h"
 
@@ -52,10 +52,10 @@ int main(int argc, char* argv[])
 
   // Register the operators to the operation manager
   {
-    operationManager->registerOperator<smtk::bridge::discrete::ReadOperator>(
-      "smtk::bridge::discrete::ReadOperator");
-    operationManager->registerOperator<smtk::bridge::discrete::SplitFaceOperator>(
-      "smtk::bridge::discrete::SplitFaceOperator");
+    operationManager->registerOperation<smtk::bridge::discrete::ReadOperation>(
+      "smtk::bridge::discrete::ReadOperation");
+    operationManager->registerOperation<smtk::bridge::discrete::SplitFaceOperation>(
+      "smtk::bridge::discrete::SplitFaceOperation");
   }
 
   // Register the resource manager to the operation manager (newly created
@@ -66,8 +66,8 @@ int main(int argc, char* argv[])
 
   {
     // Create a read operator
-    smtk::bridge::discrete::ReadOperator::Ptr readOp =
-      operationManager->create<smtk::bridge::discrete::ReadOperator>();
+    smtk::bridge::discrete::ReadOperation::Ptr readOp =
+      operationManager->create<smtk::bridge::discrete::ReadOperation>();
     if (!readOp)
     {
       std::cerr << "No read operator\n";
@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
     readOp->parameters()->findFile("filename")->setValue(std::string(argv[1]));
 
     // Execute the operation
-    smtk::operation::NewOp::Result readOpResult = readOp->operate();
+    smtk::operation::Operation::Result readOpResult = readOp->operate();
 
     // Retrieve the resulting model
     smtk::attribute::ComponentItemPtr componentItem =
@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
 
     // Test for success
     if (readOpResult->findInt("outcome")->value() !=
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Read operator failed\n";
       return 1;
@@ -121,8 +121,8 @@ int main(int argc, char* argv[])
       std::cout << "Attempting face split\n";
 
       // Create a split face operator
-      smtk::bridge::discrete::SplitFaceOperator::Ptr splitFaceOp =
-        operationManager->create<smtk::bridge::discrete::SplitFaceOperator>();
+      smtk::bridge::discrete::SplitFaceOperation::Ptr splitFaceOp =
+        operationManager->create<smtk::bridge::discrete::SplitFaceOperation>();
       if (!splitFaceOp)
       {
         std::cerr << "No split face operator\n";
@@ -135,10 +135,10 @@ int main(int argc, char* argv[])
       splitFaceOp->parameters()->findModelEntity("model")->setValue(
         *resource->entitiesMatchingFlagsAs<Models>(smtk::model::MODEL_ENTITY).begin());
       splitFaceOp->parameters()->findDouble("feature angle")->setValue(15.0);
-      smtk::bridge::discrete::SplitFaceOperator::Result result = splitFaceOp->operate();
+      smtk::bridge::discrete::SplitFaceOperation::Result result = splitFaceOp->operate();
       std::cout << "  Face is " << f.name() << " (" << f.entity() << ")\n";
       std::cout << "  " << (result->findInt("outcome")->value() ==
-                                 static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED)
+                                 static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED)
                                ? "OK"
                                : "Failed")
                 << "\n";

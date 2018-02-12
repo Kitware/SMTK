@@ -84,7 +84,7 @@ class VoidItemDefinition;
 
 namespace operation
 {
-class NewOp;
+class Operation;
 class Manager;
 }
 
@@ -234,7 +234,7 @@ namespace io
 {
 class SaveJSON;
 class LoadJSON;
-class OperatorLog;
+class OperationLog;
 class Logger;
 typedef smtk::shared_ptr<smtk::io::Logger> LoggerPtr;
 }
@@ -258,8 +258,8 @@ typedef std::set<ComponentPtr> ComponentSet;
 
 namespace operation
 {
-typedef smtk::shared_ptr<smtk::operation::NewOp> NewOpPtr;
-typedef smtk::weak_ptr<smtk::operation::NewOp> WeakNewOpPtr;
+typedef smtk::shared_ptr<smtk::operation::Operation> OperationPtr;
+typedef smtk::weak_ptr<smtk::operation::Operation> WeakOperationPtr;
 typedef smtk::shared_ptr<smtk::operation::Manager> ManagerPtr;
 typedef smtk::weak_ptr<smtk::operation::Manager> WeakManagerPtr;
 }

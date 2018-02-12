@@ -11,7 +11,7 @@
 #define __smtk_extension_delaunay_TessellateFaces_h
 
 #include "smtk/extension/delaunay/Exports.h"
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace smtk
 {
@@ -27,13 +27,13 @@ class Session;
   * This operation updates the smtk::model::Tessellations associated with
   * smtk::model::Faces using Delaunay.
   */
-class SMTKDELAUNAYEXT_EXPORT TessellateFaces : public smtk::operation::XMLOperator
+class SMTKDELAUNAYEXT_EXPORT TessellateFaces : public smtk::operation::XMLOperation
 {
 public:
   smtkTypeMacro(TessellateFaces);
-  smtkSuperclassMacro(smtk::operation::XMLOperator);
+  smtkSuperclassMacro(smtk::operation::XMLOperation);
   smtkCreateMacro(TessellateFaces);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
 
   bool ableToOperate() override;
 

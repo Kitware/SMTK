@@ -23,10 +23,10 @@ import math
 
 
 @smtk.model.operator("my elevate mesh", smtk.model.Session)
-class MyElevateMesh(smtk.model.Operator):
+class MyElevateMesh(smtk.model.Operation):
 
     def __init__(self):
-        smtk.model.Operator.__init__(self)
+        smtk.model.Operation.__init__(self)
 
     def name(self):
         return "my elevate mesh"

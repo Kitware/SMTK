@@ -2,9 +2,9 @@
 <!-- Description of the polygon "CreateEdgeFromVertices" operator -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="create edge from vertices" Label="Edge - Create from Vertices" BaseType="operator">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="create edge from vertices" Label="Edge - Create from Vertices" BaseType="operation">
       <BriefDescription>Create model edge.</BriefDescription>
       <DetailedDescription>
         Create a model edge from a pair of model vertices.

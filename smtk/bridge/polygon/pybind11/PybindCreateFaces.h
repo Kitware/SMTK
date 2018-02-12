@@ -30,7 +30,7 @@ py::class_< smtk::bridge::polygon::ModelEdgeInfo > pybind11_init_smtk_bridge_pol
   return instance;
 }
 
-PySharedPtrClass< smtk::bridge::polygon::CreateFaces > pybind11_init_smtk_bridge_polygon_CreateFaces(py::module &m, PySharedPtrClass< smtk::bridge::polygon::Operator, smtk::operation::XMLOperator >& parent)
+PySharedPtrClass< smtk::bridge::polygon::CreateFaces > pybind11_init_smtk_bridge_polygon_CreateFaces(py::module &m, PySharedPtrClass< smtk::bridge::polygon::Operation, smtk::operation::XMLOperation >& parent)
 {
   PySharedPtrClass< smtk::bridge::polygon::CreateFaces > instance(m, "CreateFaces", parent);
   instance

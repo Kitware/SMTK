@@ -50,7 +50,7 @@ class UnitTriangulateFaces(smtk.testing.TestCase):
             smtk.testing.DATA_DIR, 'mesh', '2d', 'boxWithHole.smtk')
 
         # Load the input file
-        loadOp = self.operationManager.createOperator(
+        loadOp = self.operationManager.createOperation(
             'smtk::operation::LoadResource')
         loadOp.parameters().find('filename').setValue(modelFile)
         loadRes = loadOp.operate()
@@ -61,7 +61,7 @@ class UnitTriangulateFaces(smtk.testing.TestCase):
 
     def testMeshing2D(self):
         face = self.resource.findEntitiesOfType(int(smtk.model.FACE))[0]
-        triangulateFace = self.operationManager.createOperator(
+        triangulateFace = self.operationManager.createOperation(
             'smtk::extension::delaunay::TriangulateFaces')
         triangulateFace.parameters().associateEntity(face)
         result = triangulateFace.operate()

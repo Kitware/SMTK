@@ -186,7 +186,7 @@ bool vtkSMTKModelReader::LoadFile()
 
   auto result = oper->operate();
   if (result->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     return false;
   }

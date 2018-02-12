@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the CGM "CreateFace" Operator -->
+<!-- Description of the CGM "CreateFace" Operation -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
-    <!-- Operator -->
-    <AttDef Type="create face" BaseType="operator">
+    <!-- Operation -->
+    <AttDef Type="create face" BaseType="operation">
       <AssociationsDef Name="edges" NumberOfRequiredValues="1" Extensible="true">
         <BriefDescription>One or more pre-existing model edges.</BriefDescription>
         <MembershipMask>edge</MembershipMask>

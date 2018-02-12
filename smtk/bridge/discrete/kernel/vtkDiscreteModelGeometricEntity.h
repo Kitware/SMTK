@@ -80,10 +80,10 @@ protected:
   friend class vtkDiscreteModel;
   friend class vtkCMBParserBase;
   friend class vtkDiscreteModelWrapper;
-  friend class vtkCMBModelStateOperator;
+  friend class vtkCMBModelStateOperation;
   friend class vtkCMBModelBuilder;
   friend class vtkCMBMeshToModelWriter;
-  friend class vtkGenerateSimpleModelOperator;
+  friend class vtkGenerateSimpleModelOperation;
   friend class pqCMBGeologyBuilderMainWindowCore;
   friend class pqCMBSceneBuilderMainWindowCore;
 

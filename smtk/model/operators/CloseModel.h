@@ -10,20 +10,20 @@
 #ifndef __smtk_model_CloseModel_h
 #define __smtk_model_CloseModel_h
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace smtk
 {
 namespace model
 {
 
-class SMTKCORE_EXPORT CloseModel : public smtk::operation::XMLOperator
+class SMTKCORE_EXPORT CloseModel : public smtk::operation::XMLOperation
 {
 public:
   smtkTypeMacro(CloseModel);
   smtkCreateMacro(CloseModel);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
-  smtkSuperclassMacro(smtk::operation::XMLOperator);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
+  smtkSuperclassMacro(smtk::operation::XMLOperation);
 
   bool ableToOperate() override;
 

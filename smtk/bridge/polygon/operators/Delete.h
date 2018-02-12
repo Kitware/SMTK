@@ -10,7 +10,7 @@
 #ifndef smtk_session_polygon_Delete_h
 #define smtk_session_polygon_Delete_h
 
-#include "smtk/bridge/polygon/Operator.h"
+#include "smtk/bridge/polygon/Operation.h"
 
 #include "smtk/model/EntityRef.h"
 
@@ -35,13 +35,13 @@ namespace polygon
   * attempting to share points across different discretizations on different
   * projected planes would be error-prone at best.
   */
-class SMTKPOLYGONSESSION_EXPORT Delete : public Operator
+class SMTKPOLYGONSESSION_EXPORT Delete : public Operation
 {
 public:
   smtkTypeMacro(Delete);
   smtkCreateMacro(Delete);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
-  smtkSuperclassMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
+  smtkSuperclassMacro(Operation);
 
 protected:
   Result operateInternal() override;

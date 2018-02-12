@@ -51,7 +51,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::operation::NewOpResult BooleanUnion::operateInternal()
+smtk::operation::OperationResult BooleanUnion::operateInternal()
 {
   // The union operator preserves the first input body even when
   // keepInputs is false, so be careful not to expunge it (by
@@ -69,7 +69,7 @@ smtk::operation::NewOpResult BooleanUnion::operateInternal()
   if (cgmBodiesIn.size() < 2)
   {
     smtkInfoMacro(log(), "Need multiple bodies to union, given " << cgmBodiesIn.size() << ".");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
   DLIList<RefEntity*> imported;
@@ -77,11 +77,11 @@ smtk::operation::NewOpResult BooleanUnion::operateInternal()
   if (s != CUBIT_SUCCESS)
   {
     smtkInfoMacro(log(), "Failed to perform union (status " << s << ").");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
-  smtk::operation::NewOpResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  smtk::operation::OperationResult result =
+    this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmBodiesOut, result, MODIFIED);
   result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
@@ -93,5 +93,5 @@ smtk::operation::NewOpResult BooleanUnion::operateInternal()
 } //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::BooleanUnion,
+smtkImplementsModelOperation(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::BooleanUnion,
   cgm_boolean_union, "union", BooleanUnion_xml, smtk::bridge::cgm::Session);

@@ -10,7 +10,7 @@
 
 #include "smtk/bridge/mesh/Resource.h"
 #include "smtk/bridge/mesh/operators/EulerCharacteristicRatio.h"
-#include "smtk/bridge/mesh/operators/ImportOperator.h"
+#include "smtk/bridge/mesh/operators/ImportOperation.h"
 
 #include "smtk/common/UUID.h"
 
@@ -53,9 +53,9 @@ int UnitTestEulerRatio(int argc, char* argv[])
 
   // Register import and euler characteristic ratio operators to the operation manager
   {
-    operationManager->registerOperator<smtk::bridge::mesh::ImportOperator>(
-      "smtk::bridge::mesh::ImportOperator");
-    operationManager->registerOperator<smtk::bridge::mesh::EulerCharacteristicRatio>(
+    operationManager->registerOperation<smtk::bridge::mesh::ImportOperation>(
+      "smtk::bridge::mesh::ImportOperation");
+    operationManager->registerOperation<smtk::bridge::mesh::EulerCharacteristicRatio>(
       "smtk::bridge::mesh::EulerCharacteristicRatio");
   }
 
@@ -67,8 +67,8 @@ int UnitTestEulerRatio(int argc, char* argv[])
 
   {
     // Create an import operator
-    smtk::bridge::mesh::ImportOperator::Ptr importOp =
-      operationManager->create<smtk::bridge::mesh::ImportOperator>();
+    smtk::bridge::mesh::ImportOperation::Ptr importOp =
+      operationManager->create<smtk::bridge::mesh::ImportOperation>();
     if (!importOp)
     {
       std::cerr << "No import operator\n";
@@ -81,7 +81,7 @@ int UnitTestEulerRatio(int argc, char* argv[])
     importOp->parameters()->findFile("filename")->setValue(importFilePath);
 
     // Execute the operation
-    smtk::operation::NewOp::Result importOpResult = importOp->operate();
+    smtk::operation::Operation::Result importOpResult = importOp->operate();
 
     // Retrieve the resulting model
     smtk::attribute::ComponentItemPtr componentItem =
@@ -93,7 +93,7 @@ int UnitTestEulerRatio(int argc, char* argv[])
 
     // Test for success
     if (importOpResult->findInt("outcome")->value() !=
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Import operator failed\n";
       return 1;
@@ -101,7 +101,7 @@ int UnitTestEulerRatio(int argc, char* argv[])
   }
 
   {
-    smtk::operation::NewOp::Ptr eulerOp =
+    smtk::operation::Operation::Ptr eulerOp =
       operationManager->create<smtk::bridge::mesh::EulerCharacteristicRatio>();
 
     if (!eulerOp)
@@ -112,9 +112,9 @@ int UnitTestEulerRatio(int argc, char* argv[])
 
     eulerOp->parameters()->associateEntity(model->referenceAs<smtk::model::Model>());
 
-    smtk::operation::NewOp::Result eulerOpResult = eulerOp->operate();
+    smtk::operation::Operation::Result eulerOpResult = eulerOp->operate();
     if (eulerOpResult->findInt("outcome")->value() !=
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "\"Euler characteristic ratio\" operator failed\n";
       return 1;

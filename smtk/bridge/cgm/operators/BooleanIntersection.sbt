@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the CGM "BooleanIntersection" Operator -->
+<!-- Description of the CGM "BooleanIntersection" Operation -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
-    <!-- Operator -->
-    <AttDef Type="intersection" BaseType="operator">
+    <!-- Operation -->
+    <AttDef Type="intersection" BaseType="operation">
       <BriefDescription>Intersect the workpiece volumes.</BriefDescription>
       <DetailedDescription>
         Intersect the workpieces, either with each other or with a tool if one is specified.

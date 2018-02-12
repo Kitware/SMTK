@@ -10,7 +10,7 @@
 #ifndef __smtk_session_cgm_Read_h
 #define __smtk_session_cgm_Read_h
 
-#include "smtk/bridge/cgm/Operator.h"
+#include "smtk/bridge/cgm/Operation.h"
 
 namespace smtk
 {
@@ -19,13 +19,13 @@ namespace bridge
 namespace cgm
 {
 
-class SMTKCGMSESSION_EXPORT Read : public Operator
+class SMTKCGMSESSION_EXPORT Read : public Operation
 {
 public:
   smtkTypeMacro(Read);
   smtkCreateMacro(Read);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(Operation);
+  smtkDeclareModelOperation();
 
 protected:
   Result operateInternal() override;

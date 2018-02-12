@@ -50,7 +50,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::operation::NewOpResult Rotate::operateInternal()
+smtk::operation::OperationResult Rotate::operateInternal()
 {
   smtk::attribute::DoubleItemPtr centerItem = this->findDouble("center");
   smtk::attribute::DoubleItemPtr axisItem = this->findDouble("axis");
@@ -80,7 +80,7 @@ smtk::operation::NewOpResult Rotate::operateInternal()
   if (axis.normalize() == 0)
   {
     smtkInfoMacro(log(), "Ill-defined rotation: given axis of rotation is a zero-length vector.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
   double angle = angleItem->value(0);
   GeometryQueryTool::instance()->rotate(cgmEntitiesIn, center, axis, angle,
@@ -91,11 +91,11 @@ smtk::operation::NewOpResult Rotate::operateInternal()
     smtkInfoMacro(log(), "Failed to rotate bodies or wrong number"
         << " (" << cgmEntitiesOut.size() << " != " << nb << ")"
         << " of resulting bodies.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
-  smtk::operation::NewOpResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  smtk::operation::OperationResult result =
+    this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmEntitiesOut, result, MODIFIED);
   // Nothing expunged.
@@ -107,5 +107,5 @@ smtk::operation::NewOpResult Rotate::operateInternal()
 } //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::Rotate, cgm_rotate, "rotate",
+smtkImplementsModelOperation(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::Rotate, cgm_rotate, "rotate",
   Rotate_xml, smtk::bridge::cgm::Session);

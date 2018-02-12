@@ -27,10 +27,10 @@ import smtk.mesh
 import smtk.operation
 
 
-class RenderMesh(smtk.operation.NewOp):
+class RenderMesh(smtk.operation.Operation):
 
     def __init__(self):
-        smtk.operation.NewOp.__init__(self)
+        smtk.operation.Operation.__init__(self)
 
     def name(self):
         return "render mesh"
@@ -85,7 +85,7 @@ class RenderMesh(smtk.operation.NewOp):
         plt.savefig(filename, bbox_inches='tight')
 
         # Return with success
-        result = self.createResult(smtk.operation.NewOp.Outcome.SUCCEEDED)
+        result = self.createResult(smtk.operation.Operation.Outcome.SUCCEEDED)
         return result
 
     def createSpecification(self):

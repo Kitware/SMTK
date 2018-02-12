@@ -47,21 +47,21 @@ ExportModelJSON::Result ExportModelJSON::operateInternal()
   if (entities.empty())
   {
     smtkErrorMacro(this->log(), "No valid models selected for export.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   std::string filename = filenameItem->value();
   if (filename.empty())
   {
     smtkErrorMacro(this->log(), "A filename must be provided.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   std::ofstream jsonFile(filename.c_str(), std::ios::trunc);
   if (!jsonFile.good())
   {
     smtkErrorMacro(this->log(), "Could not open file \"" << filename << "\".");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   JSONFlags flags = static_cast<JSONFlags>(flagsItem->value(0));
@@ -71,7 +71,7 @@ ExportModelJSON::Result ExportModelJSON::operateInternal()
   jsonFile << jsonStr;
   jsonFile.close();
 
-  return this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  return this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 }
 
 const char* ExportModelJSON::xmlDescription() const

@@ -40,7 +40,7 @@ class vtkPointData;
 class vtkDiscreteModelWrapper;
 //it is too stateful. It is used in a tight loop to check points
 //instead of given a collection of points to work on
-class vtkEnclosingModelEntityOperator;
+class vtkEnclosingModelEntityOperation;
 //what is the purpose of this class now that we have vtkDiscreteModelWrapper
 class vtkCMBPolyDataProvider;
 //we need to add a cell iterator for this class to be happy
@@ -192,7 +192,7 @@ public:
   DiscreteMesh::FaceResult AddFace(const DiscreteMesh::Face& f) const;
 
   friend class vtkDiscreteModelWrapper;
-  friend class vtkEnclosingModelEntityOperator;
+  friend class vtkEnclosingModelEntityOperation;
   friend class vtkCMBPolyDataProvider;
   friend class vtkCMBXMLBCSWriter;
   friend class vtkCMBMeshServerJobSubmitter;

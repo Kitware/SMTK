@@ -44,7 +44,7 @@
 #include "smtk/extension/paraview/widgets/qtArcWidget.h"
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/io/Logger.h"
-#include "smtk/operation/NewOp.h"
+#include "smtk/operation/Operation.h"
 
 #include "vtkDataObject.h"
 

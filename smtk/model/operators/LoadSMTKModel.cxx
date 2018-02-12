@@ -33,7 +33,7 @@ LoadSMTKModel::LoadSMTKModel()
 {
 }
 
-smtk::operation::NewOp::Result LoadSMTKModel::operateInternal()
+smtk::operation::Operation::Result LoadSMTKModel::operateInternal()
 {
   auto params = this->parameters();
   auto fileItem = params->findFile("filename");
@@ -47,7 +47,7 @@ smtk::operation::NewOp::Result LoadSMTKModel::operateInternal()
     {
       smtkErrorMacro(
         smtk::io::Logger::instance(), "Could not open file \"" << filename << "\" for writing.");
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
     j = json::parse(file);
   }
@@ -63,7 +63,7 @@ smtk::operation::NewOp::Result LoadSMTKModel::operateInternal()
       smtkErrorMacro(smtk::io::Logger::instance(),
         "Resource " << rsrc->uniqueName() << " \"" << rsrc->location() << "\" has no manager"
         " which is required in order to discern how it should be read.");
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
     auto rsrcMetaMeta = rsrcMgr->metadata();
@@ -74,14 +74,14 @@ smtk::operation::NewOp::Result LoadSMTKModel::operateInternal()
       smtkErrorMacro(smtk::io::Logger::instance(),
         "Resource " << rsrc->uniqueName() << " \"" << rsrc->location() << "\" has no metadata"
         " registered with its manager, which is required in order to discern how it should be read.");
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
     if (!meta->read)
     {
       smtkErrorMacro(smtk::io::Logger::instance(),
         "Resource metadata for " << rsrc->uniqueName() << " has a null read method.");
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
     std::string filename =  fileItem->value(rr);
@@ -89,18 +89,18 @@ smtk::operation::NewOp::Result LoadSMTKModel::operateInternal()
     if (filename.empty())
     {
         smtkErrorMacro(smtk::io::Logger::instance(), "An empty filename is not allowed.");
-        return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+        return this->createResult(smtk::operation::Operation::Outcome::FAILED);
       rsrc->setLocation(filename);
     }
 
     if (!meta->write(rsrc))
     {
       // The writer will have logged an error message.
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
   }
 */
-  return this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  return this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 }
 
 const char* LoadSMTKModel::xmlDescription() const
@@ -113,7 +113,7 @@ void LoadSMTKModel::generateSummary(LoadSMTKModel::Result& res)
   int outcome = res->findInt("outcome")->value();
   smtk::attribute::FileItemPtr fitem = this->parameters()->findFile("filename");
   std::string label = this->parameters()->definition()->label();
-  if (outcome == static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+  if (outcome == static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     smtkInfoMacro(this->log(), label << ": loaded \"" << fitem->value(0) << "\"");
   }

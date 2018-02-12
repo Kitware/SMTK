@@ -2,8 +2,8 @@
 <!-- Description of the polygon "CreateVertices" operator -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="create edge from points" Label="Edge - Create from Points" BaseType="operator">
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="create edge from points" Label="Edge - Create from Points" BaseType="operation">
       <BriefDescription>Create model edge based on a list of points.</BriefDescription>
       <DetailedDescription>
         Create one or more vertices in the associated model.

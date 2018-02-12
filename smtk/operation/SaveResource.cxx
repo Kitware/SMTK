@@ -55,7 +55,7 @@ bool SaveResource::ableToOperate()
   return true;
 }
 
-smtk::operation::NewOp::Result SaveResource::operateInternal()
+smtk::operation::Operation::Result SaveResource::operateInternal()
 {
   auto params = this->parameters();
   auto fileItem = params->findFile("filename");
@@ -65,13 +65,13 @@ smtk::operation::NewOp::Result SaveResource::operateInternal()
   if (resourceItem->numberOfValues() < 1)
   {
     smtkErrorMacro(this->log(), "At least one resource must be selected for saving.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   if (setFilename && resourceItem->numberOfValues() != fileItem->numberOfValues())
   {
     smtkErrorMacro(this->log(), "Number of filenames must match number of resources.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   int rr = 0;
@@ -82,19 +82,19 @@ smtk::operation::NewOp::Result SaveResource::operateInternal()
     auto resourceManager = resource->manager();
 
     // If the resource has no associated resource manager, that's ok. Try using
-    // the resource manager associated to the operator.
+    // the resource manager associated to the operation.
     if (!resourceManager)
     {
       resourceManager = this->resourceManager();
     }
 
-    // If neither the operator nor the resource have an associated resource
+    // If neither the operation nor the resource have an associated resource
     // manager, there's not much we can do.
     if (!resourceManager)
     {
       smtkErrorMacro(this->log(), "Resource \"" << resource->uniqueName() << "\" (\""
                                                 << resource->location() << "\") has no manager.");
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
     auto metadata =
@@ -104,14 +104,14 @@ smtk::operation::NewOp::Result SaveResource::operateInternal()
       smtkErrorMacro(this->log(), "Resource \""
           << resource->uniqueName() << "\" (\"" << resource->location()
           << "\") is not registered with the available resource manager.");
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
     if (!metadata->write)
     {
       smtkErrorMacro(this->log(), "Resource metadata for " << resource->uniqueName()
                                                            << " has a null write method.");
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
     if (resource->location().empty())
@@ -120,7 +120,7 @@ smtk::operation::NewOp::Result SaveResource::operateInternal()
       if (filename.empty())
       {
         smtkErrorMacro(this->log(), "An empty filename is not allowed.");
-        return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+        return this->createResult(smtk::operation::Operation::Outcome::FAILED);
       }
       resource->setLocation(filename);
     }
@@ -128,10 +128,10 @@ smtk::operation::NewOp::Result SaveResource::operateInternal()
     if (!metadata->write(resource))
     {
       // The writer will have logged an error message.
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
   }
-  return this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  return this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 }
 
 const char* SaveResource::xmlDescription() const
@@ -145,7 +145,7 @@ void SaveResource::generateSummary(SaveResource::Result& res)
   int outcome = res->findInt("outcome")->value();
   auto resourceItem = this->parameters()->findResource("resource");
   msg << this->parameters()->definition()->label();
-  if (outcome == static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+  if (outcome == static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     msg << ": wrote \"" << resourceItem->value(0)->location() << "\"";
     smtkInfoMacro(this->log(), msg.str());

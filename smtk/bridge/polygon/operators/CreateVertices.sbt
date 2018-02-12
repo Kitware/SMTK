@@ -2,8 +2,8 @@
 <!-- Description of the polygon "CreateVertices" operator -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="create vertices" Label="Vertex - Create" BaseType="operator">
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="create vertices" Label="Vertex - Create" BaseType="operation">
       <BriefDescription>Create model vertices.</BriefDescription>
       <DetailedDescription>
         Create one or more vertices in the associated model.

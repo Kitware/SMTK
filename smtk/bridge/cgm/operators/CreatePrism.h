@@ -10,7 +10,7 @@
 #ifndef __smtk_session_cgm_CreatePrism_h
 #define __smtk_session_cgm_CreatePrism_h
 
-#include "smtk/bridge/cgm/Operator.h"
+#include "smtk/bridge/cgm/Operation.h"
 
 namespace smtk
 {
@@ -23,13 +23,13 @@ namespace cgm
   *
   * The number of sides must be 3 or greater.
   */
-class SMTKCGMSESSION_EXPORT CreatePrism : public Operator
+class SMTKCGMSESSION_EXPORT CreatePrism : public Operation
 {
 public:
   smtkTypeMacro(CreatePrism);
   smtkCreateMacro(CreatePrism);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(Operation);
+  smtkDeclareModelOperation();
 
 protected:
   Result operateInternal() override;

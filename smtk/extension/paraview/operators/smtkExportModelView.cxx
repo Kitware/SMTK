@@ -11,7 +11,7 @@
 #include "smtk/extension/paraview/operators/smtkExportModelView.h"
 #include "smtk/extension/paraview/operators/ui_smtkExportModelParameters.h"
 #include "smtk/extension/qt/qtActiveObjects.h"
-#include "smtk/extension/qt/qtOperatorView.h"
+#include "smtk/extension/qt/qtOperationView.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
@@ -32,7 +32,7 @@
 #include "smtk/extension/qt/qtFileItem.h"
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtModelView.h"
-#include "smtk/extension/qt/qtOperatorView.h"
+#include "smtk/extension/qt/qtOperationView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/model/SessionRef.h"
@@ -116,18 +116,18 @@ public:
   smtkExportActions SaveAsActions;
   smtkExportActions ExportActions;
 
-  smtk::weak_ptr<smtk::operation::NewOp> CurrentOp;
+  smtk::weak_ptr<smtk::operation::Operation> CurrentOp;
 
   bool Fini; // Prevent access to child widgets after parent is destroyed.
 };
 
 template <typename T>
-bool smtkExportModelView::updateOperatorFromUI(const std::string& mode, const T& action)
+bool smtkExportModelView::updateOperationFromUI(const std::string& mode, const T& action)
 {
   using namespace ::boost::filesystem;
   using namespace smtk::model;
 
-  smtk::shared_ptr<smtk::operation::NewOp> op = this->Internals->CurrentOp.lock();
+  smtk::shared_ptr<smtk::operation::Operation> op = this->Internals->CurrentOp.lock();
   if (!op || (mode != "save" && mode != "save as" && mode != "save a copy"))
   {
     return false;
@@ -203,7 +203,7 @@ smtkExportModelView::smtkExportModelView(const ViewInfo& info)
   : smtkModelIOView(info)
 {
   this->Internals = new smtkExportModelViewInternals;
-  auto opinfo = dynamic_cast<const OperatorViewInfo*>(&info);
+  auto opinfo = dynamic_cast<const OperationViewInfo*>(&info);
   if (opinfo)
   {
     this->Internals->CurrentOp = opinfo->m_operator;
@@ -285,8 +285,8 @@ void smtkExportModelView::updateAttributeData()
     return;
   }
 
-  smtk::operation::NewOpPtr saveModelOp =
-    this->uiManager()->activeModelView()->operatorsWidget()->existingOperator(defName);
+  smtk::operation::OperationPtr saveModelOp =
+    this->uiManager()->activeModelView()->operatorsWidget()->existingOperation(defName);
   this->Internals->CurrentOp = saveModelOp;
 
   // expecting only 1 instance of the op?
@@ -397,7 +397,7 @@ bool smtkExportModelView::eventFilter(QObject* obj, QEvent* evnt)
   return this->smtk::extension::qtBaseView::eventFilter(obj, evnt);
 }
 
-bool smtkExportModelView::requestOperation(const smtk::operation::NewOpPtr& op)
+bool smtkExportModelView::requestOperation(const smtk::operation::OperationPtr& op)
 {
   if (!op || !op->parameters())
   {
@@ -406,7 +406,7 @@ bool smtkExportModelView::requestOperation(const smtk::operation::NewOpPtr& op)
   return this->uiManager()->activeModelView()->requestOperation(op, false);
 }
 
-void smtkExportModelView::cancelOperation(const smtk::operation::NewOpPtr& op)
+void smtkExportModelView::cancelOperation(const smtk::operation::OperationPtr& op)
 {
   if (!op || !this->Widget || !this->Internals->CurrentOp.lock())
   {
@@ -441,7 +441,7 @@ bool smtkExportModelView::canSave() const
 
 bool smtkExportModelView::onSave()
 {
-  if (this->updateOperatorFromUI("save as", this->Internals->SaveActions))
+  if (this->updateOperationFromUI("save as", this->Internals->SaveActions))
   {
     this->requestOperation(this->Internals->CurrentOp.lock());
     return true;
@@ -451,7 +451,7 @@ bool smtkExportModelView::onSave()
 
 bool smtkExportModelView::onSaveAs()
 {
-  if (this->updateOperatorFromUI("save as", this->Internals->SaveAsActions))
+  if (this->updateOperationFromUI("save as", this->Internals->SaveAsActions))
   {
     this->requestOperation(this->Internals->CurrentOp.lock());
     return true;
@@ -461,7 +461,7 @@ bool smtkExportModelView::onSaveAs()
 
 bool smtkExportModelView::onExport()
 {
-  if (this->updateOperatorFromUI("save a copy", this->Internals->ExportActions))
+  if (this->updateOperationFromUI("save a copy", this->Internals->ExportActions))
   {
     this->requestOperation(this->Internals->CurrentOp.lock());
     return true;
@@ -504,15 +504,15 @@ bool smtkExportModelView::attemptSave(const std::string& mode)
   {
     if (mode == "save")
     {
-      shouldSave = this->updateOperatorFromUI("save", this->Internals->SaveActions);
+      shouldSave = this->updateOperationFromUI("save", this->Internals->SaveActions);
     }
     else if (mode == "save as")
     {
-      shouldSave = this->updateOperatorFromUI("save as", this->Internals->SaveAsActions);
+      shouldSave = this->updateOperationFromUI("save as", this->Internals->SaveAsActions);
     }
     else if (mode == "save a copy")
     {
-      shouldSave = this->updateOperatorFromUI("save a copy", this->Internals->ExportActions);
+      shouldSave = this->updateOperationFromUI("save a copy", this->Internals->ExportActions);
     }
     else
     {

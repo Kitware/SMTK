@@ -87,8 +87,8 @@ protected:
   // has edges, and splitting that face may need split its edges too.
   void SplitEdges(vtkDiscreteModelFace* newModelFace, FaceEdgeSplitInfo& splitInfo);
 
-  friend class vtkSelectionSplitOperator;
-  friend class vtkCMBIncorporateMeshOperator;
+  friend class vtkSelectionSplitOperation;
+  friend class vtkCMBIncorporateMeshOperation;
 
   vtkModelEntity* GetThisModelEntity() override;
   bool Destroy() override;

@@ -146,7 +146,8 @@ int main(int argc, char* argv[])
   smtk::mesh::CollectionPtr c = convert(meshManager, manager);
 
   // Create a "Generate Hotstart Data" operator
-  smtk::operation::NewOp::Ptr generateHotStartDataOp = smtk::mesh::GenerateHotStartData::create();
+  smtk::operation::Operation::Ptr generateHotStartDataOp =
+    smtk::mesh::GenerateHotStartData::create();
   if (!generateHotStartDataOp)
   {
     std::cerr << "No \"generate hotstart data\" operator\n";
@@ -241,7 +242,8 @@ int main(int argc, char* argv[])
   }
 
   // Execute "generate hotstart data" operator...
-  smtk::operation::NewOp::Result generateHotStartDataOpResult = generateHotStartDataOp->operate();
+  smtk::operation::Operation::Result generateHotStartDataOpResult =
+    generateHotStartDataOp->operate();
 
   // ...delete the generated points file...
   if (fromCSV)
@@ -251,7 +253,7 @@ int main(int argc, char* argv[])
 
   // ...and test the results for success.
   if (generateHotStartDataOpResult->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "\"generate hotstart data\" operator failed\n";
     return 1;

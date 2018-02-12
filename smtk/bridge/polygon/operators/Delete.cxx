@@ -435,7 +435,7 @@ Delete::Result Delete::operateInternal()
       smtkErrorMacro(this->log(), "... and " << (this->m_numWarnings - MAX_WARNINGS)
                                              << " more entities with dependents.");
     }
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   smtkOpDebug("Given " << entities.size() << ", found " << faces.size() << " faces, "
@@ -453,7 +453,7 @@ Delete::Result Delete::operateInternal()
   resource->polygonSession()->consistentInternalDelete(
     other, this->m_modified, this->m_expunged, this->m_debugLevel > 0);
 
-  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
   smtk::attribute::ComponentItem::Ptr expunged = result->findComponent("expunged");
   for (auto e = this->m_expunged.begin(); e != this->m_expunged.end(); ++e)

@@ -57,7 +57,7 @@ AssignColors::Result AssignColors::operateInternal()
   if (numColors > 0 && colors.empty())
   { // someone tried to specify colors, but failed.
     smtkErrorMacro(this->log(), "No valid colors to assign.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   auto associations = this->parameters()->associations();
@@ -95,7 +95,7 @@ AssignColors::Result AssignColors::operateInternal()
     }
   }
 
-  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
   smtk::attribute::ComponentItem::Ptr modifiedItem = result->findComponent("modified");
   for (auto& m : modified)

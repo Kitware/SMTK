@@ -89,9 +89,9 @@ int internal_createEdge(smtk::bridge::polygon::CreateEdge::Ptr edgeOp,
   sourceItem = opParams->find("coordinates", smtk::attribute::ALL_CHILDREN);
   numCoords->assign(sourceItem); // number of elements in coordinates
 
-  smtk::operation::NewOp::Result edgeResult = edgeOp->operate();
+  smtk::operation::Operation::Result edgeResult = edgeOp->operate();
   if (edgeResult->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     smtkDebugMacro(logger, "\"create edge\" op failed to creat edge with given line cells.");
     return 0;
@@ -128,11 +128,11 @@ SurfaceExtractContours::Result SurfaceExtractContours::operateInternal()
   if (!edgeOp)
   {
     smtkInfoMacro(log(), "Failed to create CreateEdge op.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
   int numEdges = internal_createEdge(edgeOp, this->parameters(), newEdges, model, log());
-  Result result = this->createResult(numEdges > 0 ? smtk::operation::NewOp::Outcome::SUCCEEDED
-                                                  : smtk::operation::NewOp::Outcome::FAILED);
+  Result result = this->createResult(numEdges > 0 ? smtk::operation::Operation::Outcome::SUCCEEDED
+                                                  : smtk::operation::Operation::Outcome::FAILED);
 
   if (numEdges > 0)
   {

@@ -27,7 +27,7 @@
 
 #include "smtk/bridge/mesh/RegisterSession.h"
 #include "smtk/bridge/mesh/Resource.h"
-#include "smtk/bridge/mesh/operators/ImportOperator.h"
+#include "smtk/bridge/mesh/operators/ImportOperation.h"
 
 #include "smtk/operation/Manager.h"
 
@@ -136,8 +136,8 @@ int UnitTestReadWrite(int argc, char* argv[])
 
   {
     // Create an import operator
-    smtk::bridge::mesh::ImportOperator::Ptr importOp =
-      operationManager->create<smtk::bridge::mesh::ImportOperator>();
+    smtk::bridge::mesh::ImportOperation::Ptr importOp =
+      operationManager->create<smtk::bridge::mesh::ImportOperation>();
     if (!importOp)
     {
       std::cerr << "No import operator\n";
@@ -150,7 +150,7 @@ int UnitTestReadWrite(int argc, char* argv[])
     importOp->parameters()->findFile("filename")->setValue(importFilePath);
 
     // Execute the operation
-    smtk::operation::NewOp::Result importOpResult = importOp->operate();
+    smtk::operation::Operation::Result importOpResult = importOp->operate();
 
     // Retrieve the resulting polygon resource
     smtk::attribute::ResourceItemPtr resourceItem =
@@ -168,7 +168,7 @@ int UnitTestReadWrite(int argc, char* argv[])
 
     // Test for success
     if (importOpResult->findInt("outcome")->value() !=
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Import operator failed\n";
       return 1;
@@ -189,9 +189,9 @@ int UnitTestReadWrite(int argc, char* argv[])
 
     saveOp->parameters()->findResource("resource")->setValue(resource);
 
-    smtk::operation::NewOp::Result saveOpResult = saveOp->operate();
+    smtk::operation::Operation::Result saveOpResult = saveOp->operate();
     test(saveOpResult->findInt("outcome")->value() ==
-        static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
+        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
       "Save operator failed");
 
     smtk::operation::LoadResource::Ptr loadOp =
@@ -201,9 +201,9 @@ int UnitTestReadWrite(int argc, char* argv[])
 
     loadOp->parameters()->findFile("filename")->setValue(writeFilePath);
 
-    smtk::operation::NewOp::Result loadOpResult = loadOp->operate();
+    smtk::operation::Operation::Result loadOpResult = loadOp->operate();
     test(loadOpResult->findInt("outcome")->value() ==
-        static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
+        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
       "Load operator failed");
 
     smtk::bridge::mesh::Resource::Ptr resource2 =

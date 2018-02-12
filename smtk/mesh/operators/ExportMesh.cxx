@@ -109,11 +109,11 @@ ExportMesh::Result ExportMesh::operateInternal()
       {
         cleanup(file);
       }
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
   }
 
-  return this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  return this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 }
 
 const char* ExportMesh::xmlDescription() const

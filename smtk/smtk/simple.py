@@ -48,7 +48,7 @@ import smtk.model
 import smtk.io
 
 activeSession = None
-lastOperatorResult = None
+lastOperationResult = None
 
 
 def SetActiveSession(sess):
@@ -65,14 +65,14 @@ def GetActiveSession():
 
 def SetLastResult(res):
     """An internal method used by operations to save their results for advanced users."""
-    global lastOperatorResult
-    lastOperatorResult = res
+    global lastOperationResult
+    lastOperationResult = res
 
 
 def GetLastResult():
     """Returns the result of the last operation invoked via the smtk.simple API."""
-    global lastOperatorResult
-    return lastOperatorResult
+    global lastOperationResult
+    return lastOperationResult
 
 
 class CurveType:

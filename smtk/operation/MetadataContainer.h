@@ -12,7 +12,7 @@
 #define smtk_operation_MetadataContainer_h
 
 #include "smtk/operation/Metadata.h"
-#include "smtk/operation/NewOp.h"
+#include "smtk/operation/Operation.h"
 
 #include <boost/multi_index/global_fun.hpp>
 #include <boost/multi_index/mem_fun.hpp>
@@ -34,15 +34,15 @@ struct NameTag
 
 using namespace boost::multi_index;
 
-/// A multi-index container for accessing operator metadata. This class is
+/// A multi-index container for accessing operation metadata. This class is
 /// primarily intended to be used in the implementation of
 /// smtk::operation::Manager only.
 typedef boost::multi_index_container<
   Metadata,
   indexed_by<ordered_unique<tag<NameTag>,
                const_mem_fun<Metadata, const std::string&, &Metadata::uniqueName> >,
-    ordered_unique<tag<IndexTag>,
-               const_mem_fun<Metadata, const smtk::operation::NewOp::Index&, &Metadata::index> > > >
+    ordered_unique<tag<IndexTag>, const_mem_fun<Metadata, const smtk::operation::Operation::Index&,
+                                    &Metadata::index> > > >
   MetadataContainer;
 }
 }

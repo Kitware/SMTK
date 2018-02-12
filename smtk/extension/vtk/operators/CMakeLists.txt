@@ -1,15 +1,15 @@
 
 set(srcs
-  vtkSMTKOperator.cxx
+  vtkSMTKOperation.cxx
   ExportEdgesToVTK.cxx
   )
 
 set(headers
-  vtkSMTKOperator.h
+  vtkSMTKOperation.h
   ExportEdgesToVTK.h
 )
 
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ExportEdgesToVTK.sbt" smtkVTKOperatorXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/ExportEdgesToVTK.sbt" smtkVTKOperationXML)
 
 set_source_files_properties(
   ExportEdgesToVTK.cxx

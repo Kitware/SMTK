@@ -13,14 +13,14 @@
 #include <vtkCMBModelEdgeMesh.h>
 #include <vtkCMBModelEntityMesh.h>
 #include <vtkCMBModelFaceMesh.h>
-#include <vtkCMBModelReadOperator.h>
+#include <vtkCMBModelReadOperation.h>
 #include <vtkCellData.h>
 #include <vtkDiscreteModel.h>
 #include <vtkDiscreteModelWrapper.h>
-#include <vtkEdgeSplitOperator.h>
+#include <vtkEdgeSplitOperation.h>
 #include <vtkIdTypeArray.h>
 #include <vtkIntArray.h>
-#include <vtkMergeOperator.h>
+#include <vtkMergeOperation.h>
 #include <vtkModelEdge.h>
 #include <vtkModelFace.h>
 #include <vtkModelItemIterator.h>
@@ -39,7 +39,8 @@ int Check2DModel(const char* fileName)
 
   vtkDiscreteModel* model = modelWrapper->GetModel();
 
-  vtkSmartPointer<vtkCMBModelReadOperator> reader = vtkSmartPointer<vtkCMBModelReadOperator>::New();
+  vtkSmartPointer<vtkCMBModelReadOperation> reader =
+    vtkSmartPointer<vtkCMBModelReadOperation>::New();
   reader->SetFileName(fileName);
   reader->Operate(modelWrapper);
   if (reader->GetOperateSucceeded() == false)
@@ -140,12 +141,11 @@ int Check2DModel(const char* fileName)
   //face 28 == 2 2 edge cell, 6 1 edge cells, 6 face cells
   //face 29 == 1 2 edge cell, 16 1 edge cells, 17 face cells
 
-  const int correctCellIdSums[4][19] = {
-    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 12, 0, 0, 19 },
-    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 10, 0, 0, 14 },
-    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 6, 0, 0, 6 },
-    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 16, 0, 0, 17 }
-  };
+  const int correctCellIdSums[4]
+                             [19] = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 12, 0, 0, 19 },
+                               { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 10, 0, 0, 14 },
+                               { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 6, 0, 0, 6 },
+                               { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 16, 0, 0, 17 } };
 
   int foundCellIdSums[4][19] = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },

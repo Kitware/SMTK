@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the "elevate mesh" Operator -->
+<!-- Description of the "elevate mesh" Operation -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="elevate mesh"
-            Label="Mesh - Apply Elevation" BaseType="operator">
+            Label="Mesh - Apply Elevation" BaseType="operation">
       <BriefDescription>
         Modify the z-coordinates a mesh's nodes according to an external data set.
       </BriefDescription>
@@ -267,7 +267,7 @@
     </AttDef>
   </Definitions>
   <Views>
-    <View Type="Operator" Title="Elevation Mesh" FilterByAdvanceLevel="true" UseSelectionManager="true">
+    <View Type="Operation" Title="Elevation Mesh" FilterByAdvanceLevel="true" UseSelectionManager="true">
       <InstancedAttributes>
         <Att Type="elevate mesh" Name="elevate mesh"/>
       </InstancedAttributes>

@@ -144,9 +144,9 @@ int UnitTestPolygonReadWrite(int argc, char* argv[])
   importOp->parameters()->findFile("filename")->setValue(readFilePath);
   std::cout << "Importing " << readFilePath << std::endl;
 
-  smtk::operation::NewOp::Result importOpResult = importOp->operate();
+  smtk::operation::Operation::Result importOpResult = importOp->operate();
   test(importOpResult->findInt("outcome")->value() ==
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Import operator failed");
 
   // Retrieve the resulting polygon resource
@@ -177,9 +177,9 @@ int UnitTestPolygonReadWrite(int argc, char* argv[])
 
     saveOp->parameters()->findResource("resource")->setValue(polygonResource);
 
-    smtk::operation::NewOp::Result saveOpResult = saveOp->operate();
+    smtk::operation::Operation::Result saveOpResult = saveOp->operate();
     test(saveOpResult->findInt("outcome")->value() ==
-        static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
+        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
       "Save operator failed");
 
     smtk::operation::LoadResource::Ptr loadOp =
@@ -189,9 +189,9 @@ int UnitTestPolygonReadWrite(int argc, char* argv[])
 
     loadOp->parameters()->findFile("filename")->setValue(writeFilePath);
 
-    smtk::operation::NewOp::Result loadOpResult = loadOp->operate();
+    smtk::operation::Operation::Result loadOpResult = loadOp->operate();
     test(loadOpResult->findInt("outcome")->value() ==
-        static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
+        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
       "Load operator failed");
 
     smtk::bridge::polygon::Resource::Ptr polygonResource2 =

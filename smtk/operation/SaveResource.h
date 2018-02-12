@@ -10,20 +10,20 @@
 #ifndef smtk_operation_SaveResource_h
 #define smtk_operation_SaveResource_h
 
-#include "smtk/operation/ResourceManagerOperator.h"
+#include "smtk/operation/ResourceManagerOperation.h"
 
 namespace smtk
 {
 namespace operation
 {
 
-/// An operator that uses resource metadata to write resources.
-class SMTKCORE_EXPORT SaveResource : public smtk::operation::ResourceManagerOperator
+/// An operation that uses resource metadata to write resources.
+class SMTKCORE_EXPORT SaveResource : public smtk::operation::ResourceManagerOperation
 {
 public:
   smtkTypeMacro(SaveResource);
-  smtkSharedPtrCreateMacro(smtk::operation::NewOp);
-  smtkSuperclassMacro(smtk::operation::XMLOperator);
+  smtkSharedPtrCreateMacro(smtk::operation::Operation);
+  smtkSuperclassMacro(smtk::operation::XMLOperation);
 
   virtual bool ableToOperate() override;
 

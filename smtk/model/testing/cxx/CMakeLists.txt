@@ -28,21 +28,21 @@ add_executable(unitTessellation unitTessellation.cxx)
 target_link_libraries(unitTessellation smtkCore smtkCoreModelTesting)
 add_test(NAME unitTessellation COMMAND unitTessellation)
 
-#add_executable(unitOperator unitOperator.cxx)
-#smtk_operator_xml( "${CMAKE_CURRENT_SOURCE_DIR}/unitOutcomeOperator.sbt" unitOperatorXML)
-#target_include_directories(unitOperator PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
-#target_link_libraries(unitOperator smtkCore smtkCoreModelTesting)
+#add_executable(unitOperation unitOperation.cxx)
+#smtk_operation_xml( "${CMAKE_CURRENT_SOURCE_DIR}/unitOutcomeOperation.sbt" unitOperationXML)
+#target_include_directories(unitOperation PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
+#target_link_libraries(unitOperation smtkCore smtkCoreModelTesting)
 #if (SMTK_ENABLE_CGM_SESSION)
-#  target_link_libraries(unitOperator smtkCGMSession)
+#  target_link_libraries(unitOperation smtkCGMSession)
 #endif (SMTK_ENABLE_CGM_SESSION)
-#add_test(NAME unitOperator COMMAND unitOperator)
+#add_test(NAME unitOperation COMMAND unitOperation)
 
 add_executable(unitEntityRef unitEntityRef.cxx)
 target_link_libraries(unitEntityRef smtkCore smtkCoreModelTesting)
 add_test(NAME unitEntityRef COMMAND unitEntityRef)
 
 #add_executable(unitDefaultSession unitDefaultSession.cxx)
-#smtk_operator_xml( "${CMAKE_CURRENT_SOURCE_DIR}/unitForwardingOperator.sbt" unitOperatorXML)
+#smtk_operation_xml( "${CMAKE_CURRENT_SOURCE_DIR}/unitForwardingOperation.sbt" unitOperationXML)
 #target_include_directories(unitDefaultSession PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 #target_link_libraries(unitDefaultSession smtkCore smtkCoreModelTesting)
 #add_test(NAME unitDefaultSession COMMAND unitDefaultSession)
@@ -55,9 +55,9 @@ add_executable(unitEntity unitEntity.cxx)
 target_link_libraries(unitEntity smtkCore smtkCoreModelTesting)
 add_test(NAME unitEntity COMMAND unitEntity)
 
-add_executable(unitExportMeshOperator unitExportMeshOperator.cxx)
-target_compile_definitions(unitExportMeshOperator PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
-target_link_libraries(unitExportMeshOperator smtkCore smtkCoreModelTesting
+add_executable(unitExportMeshOperation unitExportMeshOperation.cxx)
+target_compile_definitions(unitExportMeshOperation PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
+target_link_libraries(unitExportMeshOperation smtkCore smtkCoreModelTesting
   ${Boost_LIBRARIES})
 
 add_executable(benchmarkModel benchmarkModel.cxx)
@@ -68,7 +68,7 @@ target_link_libraries(benchmarkModel smtkCore smtkCoreModelTesting)
 # Tests that require SMTK_DATA_DIR
 ################################################################################
 if (SMTK_DATA_DIR)
-  add_test(NAME unitExportMeshOperator
-    COMMAND $<TARGET_FILE:unitExportMeshOperator>
+  add_test(NAME unitExportMeshOperation
+    COMMAND $<TARGET_FILE:unitExportMeshOperation>
     "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json")
 endif()

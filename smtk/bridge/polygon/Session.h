@@ -75,7 +75,7 @@ public:
 
 protected:
   friend class Neighborhood;
-  friend class Operator;
+  friend class Operation;
   friend class Resource;
   friend class internal::pmodel;
   friend class SessionIOJSON;

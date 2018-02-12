@@ -59,7 +59,7 @@ UndoElevateMesh::Result UndoElevateMesh::operateInternal()
   smtk::attribute::MeshItem::Ptr meshItem = this->parameters()->findMesh("mesh");
 
   // Access the attribute associated with the modified meshes
-  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
   smtk::attribute::MeshItem::Ptr modifiedMeshes = result->findMesh("mesh_modified");
   modifiedMeshes->setNumberOfValues(meshItem->numberOfValues());
 
@@ -80,7 +80,7 @@ UndoElevateMesh::Result UndoElevateMesh::operateInternal()
     if (!success)
     {
       smtkErrorMacro(this->log(), "Undo elevate failed.");
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
     modifiedMeshes->appendValue(mesh);

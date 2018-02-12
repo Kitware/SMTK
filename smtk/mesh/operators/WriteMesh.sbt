@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the mesh "WriteMesh" Operator -->
+<!-- Description of the mesh "WriteMesh" Operation -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="write mesh" Label="Mesh - Save" BaseType="operator">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="write mesh" Label="Mesh - Save" BaseType="operation">
       <BriefDescription>
         Write a mesh to disk.
       </BriefDescription>

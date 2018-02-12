@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the "generate hotstart data" Operator -->
+<!-- Description of the "generate hotstart data" Operation -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="generate hotstart data"
-            Label="AdH - Generate Hotstart Data" BaseType="operator">
+            Label="AdH - Generate Hotstart Data" BaseType="operation">
       <BriefDescription>
         Create a field on mesh nodes/elements from
         interpolated 2-dimensional data.

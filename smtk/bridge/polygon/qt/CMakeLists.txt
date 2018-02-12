@@ -47,7 +47,7 @@ target_link_libraries(smtkPolygonQtExt LINK_PUBLIC
   smtkCore
   smtkPQWidgetsExt
   smtkQtExt
-  vtkPolygonOperatorsExt
+  vtkPolygonOperationsExt
   vtkSMTKSourceExt
   vtkDomainsChemistryOpenGL2
   vtkSMTKFilterExt

@@ -70,12 +70,12 @@ class vtkItemWatcherCommand;
 /**\brief A class that handles translation between CMB and SMTK instances.
   *
   * How it works:
-  * (1) A Session entity and ReadOperator are created. The read operator is called
-  *     to load a CMB model. Internally, a CMBModelReadOperator is used to load
+  * (1) A Session entity and ReadOperation are created. The read operator is called
+  *     to load a CMB model. Internally, a CMBModelReadOperation is used to load
   *     a vtkDiscreteModel (placed inside a vtkDiscreteModelWrapper by the
   *     CMB operator). The Session instance is associated to the model wrapper
   *     in the m_modelsToSessions variable.
-  * (2) The ReadOperator calls trackModel with the vtkDiscreteModelWrapper
+  * (2) The ReadOperation calls trackModel with the vtkDiscreteModelWrapper
   *     obtained using CMB's (not SMTK's) "read" operator. Since
   *     vtkDiscreteModelWrapper is a subclass of vtkObject,
   *     we can keep it from being destroyed by holding a smart-pointer to
@@ -83,7 +83,7 @@ class vtkItemWatcherCommand;
   * (2) The model and, upon demand, entities contained in the model
   *     are assigned UUIDs if not present already. The UUIDs are kept
   *     in the vtkInformation object every vtkModelItem owns (Properties).
-  * (3) An SMTK WriteOperator will accept a list of UUIDs for vtkModel
+  * (3) An SMTK WriteOperation will accept a list of UUIDs for vtkModel
   *     instances. For each top-level vtkDiscreteModelWrapper in the list,
   *     it calls CMB's "write" operator on the model.
   */
@@ -118,18 +118,18 @@ public:
 
 protected:
   friend class vtkItemWatcherCommand;
-  friend class MergeOperator;
-  friend class ReadOperator;
-  friend class SplitFaceOperator;
-  friend class ImportOperator;
-  friend class EntityGroupOperator;
-  friend class GrowOperator;
-  friend class CreateEdgesOperator;
-  friend class WriteOperator;
+  friend class MergeOperation;
+  friend class ReadOperation;
+  friend class SplitFaceOperation;
+  friend class ImportOperation;
+  friend class EntityGroupOperation;
+  friend class GrowOperation;
+  friend class CreateEdgesOperation;
+  friend class WriteOperation;
   friend class RemoveModel;
   friend class ArrangementHelper;
-  friend class EdgeOperator;
-  friend class Operator;
+  friend class EdgeOperation;
+  friend class Operation;
   friend class Resource;
 
   Session();

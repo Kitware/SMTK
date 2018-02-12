@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the model "SaveSMTKModel" Operator -->
+<!-- Description of the model "SaveSMTKModel" Operation -->
 <SMTK_AttributeSystem Version="3">
 
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="save smtk model" Label="Model - Save" BaseType="operator">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="save smtk model" Label="Model - Save" BaseType="operation">
       <BriefDecscription>
         Save one or more SMTK model resources to disk
       </BriefDecscription>

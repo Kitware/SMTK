@@ -12,7 +12,7 @@
 
 #include "smtk/bridge/multiscale/Exports.h"
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace smtk
 {
@@ -27,12 +27,12 @@ namespace multiscale
  * cooling plate and ambient air Dirichlet boundaries.
 */
 
-class SMTKMULTISCALESESSION_EXPORT PartitionBoundaries : public smtk::operation::XMLOperator
+class SMTKMULTISCALESESSION_EXPORT PartitionBoundaries : public smtk::operation::XMLOperation
 {
 public:
   smtkTypeMacro(PartitionBoundaries);
   smtkCreateMacro(PartitionBoundaries);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
 
 protected:
   Result operateInternal() override;

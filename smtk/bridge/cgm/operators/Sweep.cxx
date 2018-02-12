@@ -54,7 +54,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::operation::NewOpResult Sweep::operateInternal()
+smtk::operation::OperationResult Sweep::operateInternal()
 {
   // 0 = extrude, 1 = revolve, 2 = helix, 3 = sweep along curve:
   int sweepOp = this->findInt("construction method")->value();
@@ -70,7 +70,7 @@ smtk::operation::NewOpResult Sweep::operateInternal()
       *this->findModelEntity("sweep path").get(), cgmSweepPath, keepInputs, expunged);
 
   if (!ok)
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
 
   DLIList<Body*> cgmResults;
   CubitStatus s;
@@ -172,11 +172,11 @@ smtk::operation::NewOpResult Sweep::operateInternal()
   if (s != CUBIT_SUCCESS)
   {
     smtkInfoMacro(log(), "Failed to perform sweep (status " << s << ").");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
-  smtk::operation::NewOpResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  smtk::operation::OperationResult result =
+    this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmResults, result, CREATED);
   result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
@@ -188,5 +188,5 @@ smtk::operation::NewOpResult Sweep::operateInternal()
 } //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::Sweep, cgm_sweep, "sweep",
+smtkImplementsModelOperation(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::Sweep, cgm_sweep, "sweep",
   Sweep_xml, smtk::bridge::cgm::Session);

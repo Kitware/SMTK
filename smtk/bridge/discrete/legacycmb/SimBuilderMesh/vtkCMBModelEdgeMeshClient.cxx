@@ -30,7 +30,7 @@
 #include <vtkPoints.h>
 #include <vtkPolyData.h>
 #include <vtkSMIntVectorProperty.h>
-#include <vtkSMOperatorProxy.h>
+#include <vtkSMOperationProxy.h>
 #include <vtkSMProxy.h>
 #include <vtkSMProxyManager.h>
 #include <vtkSmartPointer.h>
@@ -58,8 +58,8 @@ bool vtkCMBModelEdgeMeshClient::SetLocalLength(double length)
 bool vtkCMBModelEdgeMeshClient::SendLengthToServer()
 {
   vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
-  vtkSMOperatorProxy* operatorProxy = vtkSMOperatorProxy::SafeDownCast(
-    manager->NewProxy("CMBSimBuilderMeshGroup", "ModelEdgeMeshOperator"));
+  vtkSMOperationProxy* operatorProxy = vtkSMOperationProxy::SafeDownCast(
+    manager->NewProxy("CMBSimBuilderMeshGroup", "ModelEdgeMeshOperation"));
   if (!operatorProxy)
   {
     vtkErrorMacro("Unable to create operator proxy.");
@@ -99,8 +99,8 @@ bool vtkCMBModelEdgeMeshClient::SendLengthToServer()
 bool vtkCMBModelEdgeMeshClient::BuildMesh(bool meshHigherDimensionalEntities)
 {
   vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
-  vtkSMOperatorProxy* operatorProxy = vtkSMOperatorProxy::SafeDownCast(
-    manager->NewProxy("CMBSimBuilderMeshGroup", "ModelEdgeMeshOperator"));
+  vtkSMOperationProxy* operatorProxy = vtkSMOperationProxy::SafeDownCast(
+    manager->NewProxy("CMBSimBuilderMeshGroup", "ModelEdgeMeshOperation"));
   if (!operatorProxy)
   {
     vtkErrorMacro("Unable to create operator proxy.");

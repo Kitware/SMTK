@@ -17,8 +17,8 @@
 #include "smtk/attribute/ResourceItem.h"
 
 #include "smtk/bridge/mesh/operators/EulerCharacteristicRatio.h"
-#include "smtk/bridge/mesh/operators/ExportOperator.h"
-#include "smtk/bridge/mesh/operators/ImportOperator.h"
+#include "smtk/bridge/mesh/operators/ExportOperation.h"
+#include "smtk/bridge/mesh/operators/ImportOperation.h"
 
 #include "smtk/bridge/mesh/Resource.h"
 
@@ -35,12 +35,12 @@ namespace mesh
 
 void registerOperations(smtk::operation::Manager::Ptr& operationManager)
 {
-  operationManager->registerOperator<smtk::bridge::mesh::EulerCharacteristicRatio>(
+  operationManager->registerOperation<smtk::bridge::mesh::EulerCharacteristicRatio>(
     "smtk::bridge::mesh::EulerCharacteristicRatio");
-  operationManager->registerOperator<smtk::bridge::mesh::ExportOperator>(
-    "smtk::bridge::mesh::ExportOperator");
-  operationManager->registerOperator<smtk::bridge::mesh::ImportOperator>(
-    "smtk::bridge::mesh::ImportOperator");
+  operationManager->registerOperation<smtk::bridge::mesh::ExportOperation>(
+    "smtk::bridge::mesh::ExportOperation");
+  operationManager->registerOperation<smtk::bridge::mesh::ImportOperation>(
+    "smtk::bridge::mesh::ImportOperation");
 }
 
 void registerResources(smtk::resource::Manager::Ptr& resourceManager)
@@ -57,12 +57,12 @@ void registerResources(smtk::resource::Manager::Ptr& resourceManager)
       std::string meshFilename = j.at("Mesh URL");
 
       // Create an import operator
-      smtk::bridge::mesh::ImportOperator::Ptr importOp =
-        smtk::bridge::mesh::ImportOperator::create();
+      smtk::bridge::mesh::ImportOperation::Ptr importOp =
+        smtk::bridge::mesh::ImportOperation::create();
       importOp->parameters()->findFile("filename")->setValue(meshFilename);
 
       // Execute the operation
-      smtk::operation::NewOp::Result importOpResult = importOp->operate();
+      smtk::operation::Operation::Result importOpResult = importOp->operate();
 
       // Retrieve the resulting resource
       smtk::attribute::ResourceItemPtr resourceItem =
@@ -111,19 +111,19 @@ void registerResources(smtk::resource::Manager::Ptr& resourceManager)
       smtk::model::SessionIOJSON::saveModelRecords(j, rsrc->location());
 
       // Create an export operator
-      smtk::bridge::mesh::ExportOperator::Ptr exportOp =
-        smtk::bridge::mesh::ExportOperator::create();
+      smtk::bridge::mesh::ExportOperation::Ptr exportOp =
+        smtk::bridge::mesh::ExportOperation::create();
       exportOp->parameters()->findFile("filename")->setValue(meshFilename);
 
       // Set the entity association
       exportOp->parameters()->associateEntity(model);
 
       // Execute the operation
-      smtk::operation::NewOp::Result exportOpResult = exportOp->operate();
+      smtk::operation::Operation::Result exportOpResult = exportOp->operate();
 
       // Test for success
       return (exportOpResult->findInt("outcome")->value() ==
-        static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED));
+        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED));
     });
 }
 }

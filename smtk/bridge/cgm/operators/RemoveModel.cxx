@@ -39,22 +39,22 @@ bool RemoveModel::ableToOperate()
   return numModels > 0;
 }
 
-smtk::operation::NewOpResult RemoveModel::operateInternal()
+smtk::operation::OperationResult RemoveModel::operateInternal()
 {
   GeometryQueryTool* gqt = GeometryQueryTool::instance();
   if (!gqt)
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
 
   // ableToOperate should have verified that model(s) are set
   DLIList<Body*> bodies;
   EntityRefArray expunged;
   if (!this->cgmEntities(this->associatedEntitiesAs<Models>(), bodies, false, expunged))
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
 
   // This does not return an error code; assume success.
   gqt->delete_Body(bodies);
 
-  OperatorResult result = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  OperationResult result = this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
 
   result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
   return result;
@@ -64,5 +64,5 @@ smtk::operation::NewOpResult RemoveModel::operateInternal()
 } //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::RemoveModel, cgm_remove_model,
-  "remove model", RemoveModel_xml, smtk::bridge::cgm::Session);
+smtkImplementsModelOperation(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::RemoveModel,
+  cgm_remove_model, "remove model", RemoveModel_xml, smtk::bridge::cgm::Session);

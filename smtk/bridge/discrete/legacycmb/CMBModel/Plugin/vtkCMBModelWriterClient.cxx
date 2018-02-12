@@ -13,7 +13,7 @@
 #include "vtkDiscreteModel.h"
 #include "vtkObjectFactory.h"
 #include "vtkSMIntVectorProperty.h"
-#include "vtkSMOperatorProxy.h"
+#include "vtkSMOperationProxy.h"
 #include "vtkSMProxyManager.h"
 #include "vtkSMStringVectorProperty.h"
 #include "vtkSmartPointer.h"
@@ -51,34 +51,34 @@ bool vtkCMBModelWriterClient::Operate(vtkDiscreteModel* Model, vtkSMProxy* Serve
   }
 
   vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
-  vtkSMOperatorProxy* OperatorProxy =
-    vtkSMOperatorProxy::SafeDownCast(manager->NewProxy("CMBModelGroup", "CMBModelWriter"));
-  if (!OperatorProxy)
+  vtkSMOperationProxy* OperationProxy =
+    vtkSMOperationProxy::SafeDownCast(manager->NewProxy("CMBModelGroup", "CMBModelWriter"));
+  if (!OperationProxy)
   {
     vtkErrorMacro("Unable to create operator proxy.");
     return 0;
   }
-  OperatorProxy->SetLocation(ServerModelProxy->GetLocation());
+  OperationProxy->SetLocation(ServerModelProxy->GetLocation());
 
   vtkSMIntVectorProperty* versionproperty =
-    vtkSMIntVectorProperty::SafeDownCast(OperatorProxy->GetProperty("Version"));
+    vtkSMIntVectorProperty::SafeDownCast(OperationProxy->GetProperty("Version"));
   versionproperty->SetElement(0, this->GetVersion());
 
   vtkSMStringVectorProperty* strproperty =
-    vtkSMStringVectorProperty::SafeDownCast(OperatorProxy->GetProperty("FileName"));
+    vtkSMStringVectorProperty::SafeDownCast(OperationProxy->GetProperty("FileName"));
   strproperty->SetElement(0, this->GetFileName());
   strproperty->SetElementType(0, vtkSMStringVectorProperty::STRING);
 
-  OperatorProxy->Operate(Model, ServerModelProxy);
+  OperationProxy->Operate(Model, ServerModelProxy);
 
   // check to see if the operation succeeded on the server
   vtkSMIntVectorProperty* OperateSucceeded =
-    vtkSMIntVectorProperty::SafeDownCast(OperatorProxy->GetProperty("OperateSucceeded"));
+    vtkSMIntVectorProperty::SafeDownCast(OperationProxy->GetProperty("OperateSucceeded"));
 
-  OperatorProxy->UpdatePropertyInformation();
+  OperationProxy->UpdatePropertyInformation();
 
   int Succeeded = OperateSucceeded->GetElement(0);
-  OperatorProxy->Delete();
+  OperationProxy->Delete();
   if (!Succeeded)
   {
     vtkErrorMacro("Server side operator failed.");

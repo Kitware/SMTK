@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the CGM "Write" Operator -->
+<!-- Description of the CGM "Write" Operation -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
-    <!-- Operator -->
-    <AttDef Type="write" BaseType="operator">
+    <!-- Operation -->
+    <AttDef Type="write" BaseType="operation">
       <AssociationsDef Name="Workpiece(s)" NumberOfRequiredValues="1" Extensible="true">
         <MembershipMask>model</MembershipMask>
       </AssociationsDef>

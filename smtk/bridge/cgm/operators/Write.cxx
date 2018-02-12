@@ -57,7 +57,7 @@ static bool hasEnding(const std::string& fullString, const std::string& ending)
     return false;
 }
 
-smtk::operation::NewOpResult Write::operateInternal()
+smtk::operation::OperationResult Write::operateInternal()
 {
   smtk::attribute::FileItem::Ptr filenameItem = this->specification()->findFile("filename");
   smtk::attribute::StringItem::Ptr filetypeItem = this->specification()->findString("filetype");
@@ -125,11 +125,11 @@ smtk::operation::NewOpResult Write::operateInternal()
   if (s != CUBIT_SUCCESS)
   {
     smtkWarningMacro(this->manager()->log(), "Failed to save CGM model, status " << s);
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
-  smtk::operation::NewOpResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  smtk::operation::OperationResult result =
+    this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
 
   return result;
 }
@@ -138,5 +138,5 @@ smtk::operation::NewOpResult Write::operateInternal()
 } //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::Write, cgm_write, "write",
+smtkImplementsModelOperation(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::Write, cgm_write, "write",
   Write_xml, smtk::bridge::cgm::Session);

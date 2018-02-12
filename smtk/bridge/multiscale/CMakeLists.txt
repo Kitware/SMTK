@@ -51,14 +51,14 @@ smtk_export_header(smtkMultiscaleSession Exports.h)
 #install the library and exports the library when used from a build tree
 smtk_install_library(smtkMultiscaleSession)
 
-# Operators which have XML descriptions in separate files
+# Operations which have XML descriptions in separate files
 # need to have it encoded as a string in a header.
 # We do not need the path to the generated header (appended
-# to multiscaleOperatorXML) since the operators themselves include
+# to multiscaleOperationXML) since the operators themselves include
 # the header in their implementations.
 smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" multiscaleSessionJSON)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/PartitionBoundaries.sbt" multiscaleOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Revolve.sbt" multiscaleOperatorXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/PartitionBoundaries.sbt" multiscaleOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Revolve.sbt" multiscaleOperationXML)
 
 # Install the headers
 smtk_public_headers(${multiscaleHeaders})
@@ -82,7 +82,7 @@ configureStringAsPyVariable(AFRL_DIR
 list(APPEND multiscale_pymodulefiles
   ${CMAKE_CURRENT_BINARY_DIR}/AFRLDir.py)
 
-  smtk_pyoperator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/import_from_deform.sbt" multiscale_pymodulefiles)
+  smtk_pyoperation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/import_from_deform.sbt" multiscale_pymodulefiles)
 
   foreach(pyfile ${multiscalePySrcs})
     get_filename_component(filename ${pyfile} NAME)

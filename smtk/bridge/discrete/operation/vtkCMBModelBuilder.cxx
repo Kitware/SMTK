@@ -35,7 +35,7 @@
 #include "vtkMath.h"
 #include "vtkModel3dm2DGridRepresentation.h"
 #include "vtkModel3dmGridRepresentation.h"
-#include "vtkModelEntityOperatorBase.h"
+#include "vtkModelEntityOperationBase.h"
 #include "vtkModelItemIterator.h"
 #include "vtkModelMaterial.h"
 #include "vtkNew.h"
@@ -349,7 +349,7 @@ void vtkCMBModelBuilder::Operate(vtkDiscreteModelWrapper* modelWrapper, vtkAlgor
       info->Set(vtkModelEntity::USERDATA(), data.c_str());
       // set the name according to the neumann set id
       // this makes it easier to debug moab input files
-      vtkNew<vtkModelEntityOperatorBase> op;
+      vtkNew<vtkModelEntityOperationBase> op;
       op->SetId(material->GetUniquePersistentId());
       op->SetItemType(material->GetType());
       data = "material set " + data;
@@ -453,7 +453,7 @@ void vtkCMBModelBuilder::Operate(vtkDiscreteModelWrapper* modelWrapper, vtkAlgor
       info->Set(vtkModelEntity::USERDATA(), data.c_str());
       // set the name according to the neumann set id
       // this makes it easier to debug moab input files
-      vtkNew<vtkModelEntityOperatorBase> op;
+      vtkNew<vtkModelEntityOperationBase> op;
       op->SetId(bcSet->GetUniquePersistentId());
       op->SetItemType(bcSet->GetType());
       data = "boundary set " + data;

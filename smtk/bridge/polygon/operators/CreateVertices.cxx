@@ -73,7 +73,7 @@ CreateVertices::Result CreateVertices::operateInternal()
     }
 
     smtk::model::Vertices verts = storage->findOrAddModelVertices(mgr, pcoords, numCoordsPerPt);
-    result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+    result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
     smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");
 
@@ -88,7 +88,7 @@ CreateVertices::Result CreateVertices::operateInternal()
   }
   if (!result)
   {
-    result = this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    result = this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   return result;

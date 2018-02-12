@@ -10,7 +10,7 @@
 #ifndef __smtk_session_polygon_ForceCreateFace_h
 #define __smtk_session_polygon_ForceCreateFace_h
 
-#include "smtk/bridge/polygon/Operator.h"
+#include "smtk/bridge/polygon/Operation.h"
 
 #include "smtk/common/UnionFind.h"
 
@@ -28,13 +28,13 @@ namespace polygon
 /**\brief Create a face given a set of point coordinates or edges (but not both).
   *
   */
-class SMTKPOLYGONSESSION_EXPORT ForceCreateFace : public Operator
+class SMTKPOLYGONSESSION_EXPORT ForceCreateFace : public Operation
 {
 public:
   smtkTypeMacro(ForceCreateFace);
   smtkCreateMacro(ForceCreateFace);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
-  smtkSuperclassMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
+  smtkSuperclassMacro(Operation);
 
   // NB: These must match discrete indices of "construction method" in ForceCreateFace.sbt:
   enum ConstructionMethod

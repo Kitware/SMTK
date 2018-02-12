@@ -36,11 +36,11 @@ public slots:
   void onShowCategory() override { this->updateAttributeData(); }
   // This will be triggered by selecting different type
   // of edge operations, create-edge, edit-edge, or split-edge.
-  virtual void operationSelected(const smtk::operation::NewOpPtr& op);
+  virtual void operationSelected(const smtk::operation::OperationPtr& op);
 
 protected slots:
-  virtual void requestOperation(const smtk::operation::NewOpPtr& op);
-  virtual void cancelOperation(const smtk::operation::NewOpPtr&);
+  virtual void requestOperation(const smtk::operation::OperationPtr& op);
+  virtual void cancelOperation(const smtk::operation::OperationPtr&);
   virtual void startContourOperation();
   virtual void acceptContours(pqPipelineSource* contourSource);
 

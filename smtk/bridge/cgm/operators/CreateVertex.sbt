@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the CGM "CreateVertex" Operator -->
+<!-- Description of the CGM "CreateVertex" Operation -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
-    <!-- Operator -->
-    <AttDef Type="create vertex" BaseType="operator">
+    <!-- Operation -->
+    <AttDef Type="create vertex" BaseType="operation">
       <ItemDefinitions>
         <Double Name="point" NumberOfRequiredValues="3">
           <BriefDescription>The (x,y,z) coordinates of the vertex.</BriefDescription>

@@ -72,7 +72,7 @@ public:
   }
 
   QPointer<qtAttribute> CurrentAtt;
-  smtk::weak_ptr<smtk::operation::NewOp> CurrentOp;
+  smtk::weak_ptr<smtk::operation::Operation> CurrentOp;
   imageFeatureExtractorWidget* ExtractorWidget;
 };
 
@@ -172,8 +172,8 @@ void qtSurfaceExtractorView::updateAttributeData()
     return;
   }
 
-  smtk::operation::NewOpPtr edgeOp =
-    this->uiManager()->activeModelView()->operatorsWidget()->existingOperator(defName);
+  smtk::operation::OperationPtr edgeOp =
+    this->uiManager()->activeModelView()->operatorsWidget()->existingOperation(defName);
   this->Internals->CurrentOp = edgeOp;
   // expecting only 1 instance of the op?
   smtk::attribute::AttributePtr att = edgeOp->parameters();
@@ -185,7 +185,7 @@ void qtSurfaceExtractorView::startContourOperation()
   this->operationSelected(this->Internals->CurrentOp.lock());
 }
 
-void qtSurfaceExtractorView::requestOperation(const smtk::operation::NewOpPtr& op)
+void qtSurfaceExtractorView::requestOperation(const smtk::operation::OperationPtr& op)
 {
   if (!op || !op->parameters())
   {
@@ -194,7 +194,7 @@ void qtSurfaceExtractorView::requestOperation(const smtk::operation::NewOpPtr& o
   this->uiManager()->activeModelView()->requestOperation(op, false);
 }
 
-void qtSurfaceExtractorView::cancelOperation(const smtk::operation::NewOpPtr& op)
+void qtSurfaceExtractorView::cancelOperation(const smtk::operation::OperationPtr& op)
 {
   (void)op;
 }
@@ -216,7 +216,7 @@ void qtSurfaceExtractorView::acceptContours(vtkSmartPointer<vtkPolyData> contour
   this->requestOperation(this->Internals->CurrentOp.lock());
 }
 
-void qtSurfaceExtractorView::operationSelected(const smtk::operation::NewOpPtr& op)
+void qtSurfaceExtractorView::operationSelected(const smtk::operation::OperationPtr& op)
 {
   if (!this->Internals->CurrentAtt || !this->Widget ||
     op->uniqueName() != "extract surface contours")
@@ -243,7 +243,7 @@ void qtSurfaceExtractorView::operationSelected(const smtk::operation::NewOpPtr& 
   if (this->Internals->ExtractorWidget->exec())
   {
     vtkSmartPointer<vtkPolyData> pd = this->Internals->ExtractorWidget->getPolydata();
-    smtk::operation::NewOp::Result edgeResult;
+    smtk::operation::Operation::Result edgeResult;
     smtk::attribute::IntItem::Ptr offsetsItem =
       spec->findAs<smtk::attribute::IntItem>("offsets", smtk::attribute::ALL_CHILDREN);
     smtk::attribute::DoubleItem::Ptr pointsItem =

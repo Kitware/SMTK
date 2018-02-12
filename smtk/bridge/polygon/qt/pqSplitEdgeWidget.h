@@ -53,12 +53,12 @@ public:
   virtual ~pqSplitEdgeWidget();
 
   virtual void setView(pqRenderView* view);
-  void setEdgeOperator(smtk::operation::NewOpPtr edgeOp);
-  smtk::shared_ptr<smtk::operation::NewOp> edgeOperator();
+  void setEdgeOperation(smtk::operation::OperationPtr edgeOp);
+  smtk::shared_ptr<smtk::operation::Operation> edgeOperation();
   bool isActive();
 
 signals:
-  void operationRequested(const smtk::operation::NewOpPtr& brOp);
+  void operationRequested(const smtk::operation::OperationPtr& brOp);
   /// update face visbility before picking points
   /// hide all faces when picking then restore the visibility after picking
   void hideAllFaces(bool status);
@@ -78,7 +78,7 @@ private:
   pqSplitEdgeWidgetInternals::EdgePointPicker* m_edgePointPicker;
 
   pqRenderView* View;
-  smtk::weak_ptr<smtk::operation::NewOp> m_edgeOp;
+  smtk::weak_ptr<smtk::operation::Operation> m_edgeOp;
 };
 
 #endif // __smtk_polygon_pq_SplitEdgeWidget_h

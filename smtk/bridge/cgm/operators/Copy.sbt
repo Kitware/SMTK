@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the CGM "Copy" Operator -->
+<!-- Description of the CGM "Copy" Operation -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
-    <!-- Operator -->
-    <AttDef Type="copy" BaseType="operator">
+    <!-- Operation -->
+    <AttDef Type="copy" BaseType="operation">
       <AssociationsDef Name="Workpiece(s)" NumberOfRequiredValues="1" Extensible="true">
         <MembershipMask>model|cell|anydim</MembershipMask>
       </AssociationsDef>
