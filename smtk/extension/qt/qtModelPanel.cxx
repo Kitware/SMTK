@@ -78,6 +78,7 @@ void qtModelPanel::onViewTypeChanged()
   int type = this->Internal->comboBoxViewBy->currentIndex();
   qtModelPanel::enumTreeView enType =
     (type == 0) ? qtModelPanel::VIEW_BY_TOPOLOGY : qtModelPanel::VIEW_BY_ENTITY_LIST;
+  (void)enType;
 }
 
 void qtModelPanel::resetView(qtModelPanel::enumTreeView, smtk::model::ManagerPtr)

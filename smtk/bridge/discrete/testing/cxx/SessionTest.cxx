@@ -33,8 +33,6 @@
 
 #include <fstream>
 
-static int maxIndent = 10;
-
 using namespace smtk::model;
 
 int main(int argc, char* argv[])

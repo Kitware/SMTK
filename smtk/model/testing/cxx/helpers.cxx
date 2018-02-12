@@ -299,8 +299,6 @@ double Timer::elapsed()
   return result;
 }
 
-static int maxIndent = 20;
-
 } // namespace testing
 } // namespace model
 } // namespace smtk
