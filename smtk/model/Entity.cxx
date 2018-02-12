@@ -35,10 +35,10 @@ namespace model
 {
 
 static const char* cellNamesByDimensionSingular[] = { "vertex", "edge", "face", "volume",
-  "spacetime", "mixed-dimension cell" };
+  "spacetime", "cell" };
 
 static const char* cellNamesByDimensionPlural[] = { "vertices", "edges", "faces", "volumes",
-  "spacetimes", "mixed-dimension cells" };
+  "spacetimes", "cells" };
 
 static const char* auxGeomNamesByDimensionSingular[] = { "auxiliary point", "auxiliary curve",
   "auxiliary surface", "auxiliary volume", "auxiliary spacetime", "auxiliary geometry" };
@@ -431,7 +431,7 @@ std::string Entity::flagSummaryHelper(BitFlags flags, int form)
           result = "spacetime volume use";
           break;
         default:
-          result = "mixed-dimension cell use";
+          result = "cell use";
       }
       if (form)
       {

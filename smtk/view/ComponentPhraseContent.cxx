@@ -48,6 +48,7 @@ DescriptivePhrasePtr ComponentPhraseContent::createPhrase(
     DescriptivePhrase::create()->setup(DescriptivePhraseType::COMPONENT_SUMMARY, parent);
   auto content = ComponentPhraseContent::create()->setup(component, mutability);
   result->setContent(content);
+  content->setLocation(result);
   return result;
 }
 

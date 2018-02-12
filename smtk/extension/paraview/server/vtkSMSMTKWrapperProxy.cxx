@@ -198,7 +198,9 @@ void vtkSMSMTKWrapperProxy::SetResourceForRepresentation(
 {
   this->SetRepresentation(pxy);
   json request = { { "method", "setup representation" }, { "id", 1 },
-    { "params", { { "resource", clientSideResource->id().toString() } } } };
+    { "params",
+      { { "resource", (clientSideResource ? clientSideResource->id() : smtk::common::UUID::null())
+                        .toString() } } } };
 
   json response = this->JSONRPCRequest(request);
   // std::cout << response.dump(2) << "\n"; // for debugging

@@ -48,6 +48,7 @@ DescriptivePhrasePtr ResourcePhraseContent::createPhrase(
 {
   auto result = DescriptivePhrase::create()->setup(DescriptivePhraseType::RESOURCE_SUMMARY, parent);
   auto content = ResourcePhraseContent::create()->setup(rsrc, mutability);
+  content->setLocation(result);
   result->setContent(content);
   return result;
 }

@@ -95,7 +95,11 @@ bool pqSMTKModelRepresentation::setVisibility(smtk::resource::ComponentPtr comp,
     cmp ? vtkSMTKModelRepresentation::SafeDownCast(cmp->GetActiveRepresentation()) : nullptr;
   if (spx)
   {
-    return spx->SetEntityVisibility(std::dynamic_pointer_cast<smtk::model::Entity>(comp), visible);
+    if (spx->SetEntityVisibility(std::dynamic_pointer_cast<smtk::model::Entity>(comp), visible))
+    {
+      emit componentVisibilityChanged(comp, visible);
+      return true;
+    }
   }
   return false;
 }

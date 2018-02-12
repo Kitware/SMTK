@@ -75,12 +75,18 @@ public:
           : (data ? std::dynamic_pointer_cast<smtk::model::Manager>(data->relatedResource())
                   : nullptr);
         auto smtkBehavior = pqSMTKBehavior::instance();
+
+        // TODO: We could check more than just that the view is non-null.
+        //       For instance, does the resource have a representation in the active view?
+        //       However, that gets expensive.
+        bool validView = pqActiveObjects::instance().activeView() ? true : false;
+
         switch (qq)
         {
           case smtk::view::VisibilityContent::DISPLAYABLE:
-            return ent || (!ent && mmgr) ? 1 : 0;
+            return validView && (ent || (!ent && mmgr)) ? 1 : 0;
           case smtk::view::VisibilityContent::EDITABLE:
-            return ent || (!ent && mmgr) ? 1 : 0;
+            return validView && (ent || (!ent && mmgr)) ? 1 : 0;
           case smtk::view::VisibilityContent::GET_VALUE:
             if (ent)
             {
@@ -108,11 +114,13 @@ public:
               auto smap = dynamic_cast<pqSMTKModelRepresentation*>(mapr);
               if (smap)
               {
-                return smap->setVisibility(ent, val ? true : false) ? 1 : 0;
+                int rval = smap->setVisibility(ent, val ? true : false) ? 1 : 0;
+                smap->renderViewEventually();
+                return rval;
               }
             }
             else if (mmgr)
-            {
+            { // A resource, not a component, is being modified. Change the pipeline object's visibility.
               auto view = pqActiveObjects::instance().activeView();
               auto pvrc = smtkBehavior->getPVResource(mmgr);
               auto mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;
@@ -120,6 +128,7 @@ public:
               {
                 mapr->setVisible(!mapr->isVisible());
                 pqActiveObjects::instance().setActiveSource(pvrc);
+                mapr->renderViewEventually();
                 return 1;
               }
             }
@@ -298,10 +307,6 @@ void pqSMTKResourcePanel::resourceManagerAdded(pqSMTKWrapper* wrapper, pqServer*
 
   // wrapper->smtkProxy()->UpdateVTKObjects();
   smtk::resource::ManagerPtr rsrcMgr = wrapper->smtkResourceManager();
-  /*
-  std::cout << "Panel should watch " << rsrcMgr << " for resources\n";
-  std::cout << "      seln " << wrapper->smtkSelection() << "\n";
-  */
   if (!rsrcMgr)
   {
     return;
@@ -346,9 +351,20 @@ void pqSMTKResourcePanel::resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer* s
 
 void pqSMTKResourcePanel::activeViewChanged(pqView* view)
 {
-#ifndef NDEBUG
-  std::cout << "-- Reset resource panel visibilities " << view << " --\n";
-#endif
+  m_p->m_visibleThings.clear();
+  if (view)
+  {
+    // Disconnect old representations, connect new ones.
+    QObject::disconnect(this, SLOT(componentVisibilityChanged(smtk::resource::ComponentPtr, bool)));
+    foreach (pqRepresentation* rep, view->getRepresentations())
+    {
+      this->representationAddedToActiveView(rep);
+    }
+    QObject::connect(view, SIGNAL(representationAdded(pqRepresentation*)), this,
+      SLOT(representationAddedToActiveView(pqRepresentation*)));
+    QObject::connect(view, SIGNAL(representationRemoved(pqRepresentation*)), this,
+      SLOT(representationRemovedFromActiveView(pqRepresentation*)));
+  }
   auto rsrcPhrases = m_p->m_phraseModel->root()->subphrases();
   auto behavior = pqSMTKBehavior::instance();
   for (auto rsrcPhrase : rsrcPhrases)
@@ -356,9 +372,6 @@ void pqSMTKResourcePanel::activeViewChanged(pqView* view)
     auto rsrc = rsrcPhrase->relatedResource();
     auto pvr = behavior->getPVResource(rsrc);
     auto rep = pvr ? pvr->getRepresentation(view) : nullptr;
-#ifndef NDEBUG
-    std::cout << "--  Fetch vis for " << pvr << " " << rep << "\n";
-#endif
     // TODO: At a minimum, we can update the representation's visibility now
     //       since if rep is null it is invisible and if not null, we can ask
     //       for its visibility.
@@ -376,10 +389,41 @@ void pqSMTKResourcePanel::activeViewChanged(pqView* view)
     }
     else
     {
+      // This is a sign that things are going poorly.
+      // The representation should already have been created either when
+      // the view was created or the resource loaded.
       m_p->m_visibleThings[rsrc->id()] = behavior->createRepresentation(pvr, view) ? 1 : 0;
     }
   }
-#ifndef NDEBUG
-  std::cout << "Visible things has " << m_p->m_visibleThings.size() << " entries.\n";
-#endif
+  m_p->m_phraseModel->triggerDataChanged();
+}
+
+void pqSMTKResourcePanel::representationAddedToActiveView(pqRepresentation* rep)
+{
+  auto modelRep = dynamic_cast<pqSMTKModelRepresentation*>(rep);
+  if (modelRep)
+  {
+    QObject::connect(modelRep,
+      SIGNAL(componentVisibilityChanged(smtk::resource::ComponentPtr, bool)), this,
+      SLOT(componentVisibilityChanged(smtk::resource::ComponentPtr, bool)));
+  }
+}
+
+void pqSMTKResourcePanel::representationRemovedFromActiveView(pqRepresentation* rep)
+{
+  auto modelRep = dynamic_cast<pqSMTKModelRepresentation*>(rep);
+  if (modelRep)
+  {
+    QObject::disconnect(modelRep,
+      SIGNAL(componentVisibilityChanged(smtk::resource::ComponentPtr, bool)), this,
+      SLOT(componentVisibilityChanged(smtk::resource::ComponentPtr, bool)));
+  }
+}
+
+void pqSMTKResourcePanel::componentVisibilityChanged(
+  smtk::resource::ComponentPtr comp, bool visible)
+{
+  // The visibilty should change for every row displaying the same \a ent:
+  m_p->m_visibleThings[comp->id()] = visible;
+  m_p->m_phraseModel->triggerDataChangedFor(comp);
 }

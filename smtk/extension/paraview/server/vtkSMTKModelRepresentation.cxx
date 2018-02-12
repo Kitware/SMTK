@@ -60,6 +60,38 @@ void ColorBlockAsEntity(vtkCompositePolyDataMapper2* mapper, vtkDataObject* bloc
   auto atts = mapper->GetCompositeDataDisplayAttributes();
   atts->SetBlockColor(block, color.data());
 }
+
+static void AddEntityVisibilities(vtkCompositeDataDisplayAttributes* attr,
+  std::map<smtk::common::UUID, vtkSMTKModelRepresentation::State>& visdata)
+{
+  if (!attr)
+  {
+    return;
+  }
+
+  attr->VisitVisibilities([&visdata](vtkDataObject* obj, bool vis) {
+    if (!obj)
+      return true;
+
+    auto uid = vtkModelMultiBlockSource::GetDataObjectUUID(obj->GetInformation());
+    if (uid)
+    {
+      auto it = visdata.find(uid);
+      if (it == visdata.end())
+      {
+        vtkSMTKModelRepresentation::State value;
+        value.m_data = obj;
+        value.m_visibility = (vis ? 1 : 0);
+        visdata[uid] = value;
+      }
+      else
+      {
+        it->second.m_visibility |= vis ? 1 : 0; // visibility in any mapper is visibility.
+      }
+    }
+    return true;
+  });
+}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -101,8 +133,10 @@ void vtkSMTKModelRepresentation::SetupDefaults()
 
   this->Entities->SetMapper(this->EntityMapper);
   this->SelectedEntities->SetMapper(this->SelectedEntityMapper);
+  this->SelectedEntities->GetProperty()->SetOpacity(0.6);
   this->GlyphEntities->SetMapper(this->GlyphMapper);
   this->SelectedGlyphEntities->SetMapper(this->SelectedGlyphMapper);
+  this->SelectedGlyphEntities->GetProperty()->SetOpacity(0.6);
 
   // Share vtkProperty between model mappers
   this->Property = this->Entities->GetProperty();
@@ -168,6 +202,17 @@ bool vtkSMTKModelRepresentation::GetEntityBounds(
     }
   }
   return false;
+}
+
+void vtkSMTKModelRepresentation::UpdateState()
+{
+  this->ComponentState.clear();
+  AddEntityVisibilities(
+    this->EntityMapper->GetCompositeDataDisplayAttributes(), this->ComponentState);
+  AddEntityVisibilities(
+    this->SelectedEntityMapper->GetCompositeDataDisplayAttributes(), this->ComponentState);
+  AddEntityVisibilities(this->GlyphMapper->GetBlockAttributes(), this->ComponentState);
+  AddEntityVisibilities(this->SelectedGlyphMapper->GetBlockAttributes(), this->ComponentState);
 }
 
 int vtkSMTKModelRepresentation::RequestData(
@@ -255,7 +300,8 @@ int vtkSMTKModelRepresentation::ProcessViewRequest(
     // this class.
     auto producerPort = vtkPVRenderView::GetPieceProducer(inInfo, this, 0);
     this->EntityMapper->SetInputConnection(0, producerPort);
-    auto data = producerPort->GetProducer()->GetOutputDataObject(0);
+    auto producer = producerPort->GetProducer();
+    auto data = producer->GetOutputDataObject(vtkModelMultiBlockSource::MODEL_ENTITY_PORT);
     this->UpdateColoringParameters(data);
     this->UpdateRepresentationSubtype();
 
@@ -264,6 +310,26 @@ int vtkSMTKModelRepresentation::ProcessViewRequest(
     auto multiBlock = vtkMultiBlockDataSet::SafeDownCast(data);
     if (multiBlock)
     {
+      // TODO: Ugly and expensive. We hold on to tessellations after our input is gone.
+      auto mbit = multiBlock->NewTreeIterator();
+      mbit->VisitOnlyLeavesOn();
+      for (mbit->GoToFirstItem(); !mbit->IsDoneWithTraversal(); mbit->GoToNextItem())
+      {
+        auto obj = mbit->GetCurrentDataObject();
+        auto uid = vtkModelMultiBlockSource::GetDataObjectUUID(mbit->GetCurrentMetaData());
+        if (!obj || !uid)
+        {
+          continue;
+        }
+        auto stit = this->ComponentState.find(uid);
+        if (stit == this->ComponentState.end())
+        {
+          stit = this->ComponentState.insert(std::make_pair(uid, State())).first;
+          stit->second.m_visibility = 1;
+        }
+        stit->second.m_data = obj;
+      }
+
       this->SelectedEntityMapper->SetInputConnection(0, producerPort);
       auto attr = this->SelectedEntityMapper->GetCompositeDataDisplayAttributes();
       this->UpdateSelection(multiBlock, attr, this->SelectedEntities);
@@ -271,6 +337,9 @@ int vtkSMTKModelRepresentation::ProcessViewRequest(
 
     // Update selected glyphs
     // FIXME Selection should only update if it has changed
+    data = producer->GetNumberOfOutputPorts() > 1
+      ? producer->GetOutputDataObject(vtkModelMultiBlockSource::INSTANCE_PORT)
+      : nullptr;
     multiBlock = vtkMultiBlockDataSet::SafeDownCast(data);
     if (multiBlock)
     {
@@ -338,36 +407,6 @@ void vtkSMTKModelRepresentation::SetVisibility(bool val)
   Superclass::SetVisibility(val);
 }
 
-static void AddEntityVisibilities(
-  vtkCompositeDataDisplayAttributes* attr, std::map<smtk::common::UUID, int>& visdata)
-{
-  if (!attr)
-  {
-    return;
-  }
-
-  attr->VisitVisibilities([&visdata](vtkDataObject* obj, bool vis) {
-    if (!obj)
-      return true;
-
-    auto uid = vtkModelMultiBlockSource::GetDataObjectUUID(obj->GetInformation());
-    if (uid)
-    {
-      visdata[uid] |= vis ? 1 : 0; // visibility in any mapper is visibility.
-    }
-    return true;
-  });
-}
-
-void vtkSMTKModelRepresentation::GetEntityVisibilities(std::map<smtk::common::UUID, int>& visdata)
-{
-  visdata.clear();
-  AddEntityVisibilities(this->EntityMapper->GetCompositeDataDisplayAttributes(), visdata);
-  AddEntityVisibilities(this->SelectedEntityMapper->GetCompositeDataDisplayAttributes(), visdata);
-  AddEntityVisibilities(this->GlyphMapper->GetBlockAttributes(), visdata);
-  AddEntityVisibilities(this->SelectedGlyphMapper->GetBlockAttributes(), visdata);
-}
-
 vtkDataObject* FindEntityData(vtkMultiBlockDataSet* mbds, smtk::model::EntityPtr ent)
 {
   if (mbds)
@@ -391,41 +430,52 @@ vtkDataObject* FindEntityData(vtkMultiBlockDataSet* mbds, smtk::model::EntityPtr
   return nullptr;
 }
 
+void vtkSMTKModelRepresentation::GetEntityVisibilities(std::map<smtk::common::UUID, int>& visdata)
+{
+  visdata.clear();
+  for (auto entry : this->ComponentState)
+  {
+    visdata[entry.first] = entry.second.m_visibility;
+  }
+}
+
 bool vtkSMTKModelRepresentation::SetEntityVisibility(smtk::model::EntityPtr ent, bool visible)
 {
-  vtkDataObject* data;
-  // std::cout << "Set visibility " << (visible ? "T" : "F") << " for " << ent->flagSummary() << "\n";
-  // Find which mapper should have its visibility modified
-  auto mbds = vtkMultiBlockDataSet::SafeDownCast(this->EntityMapper->GetInputDataObject(0, 0));
-  vtkCompositeDataDisplayAttributes* attr;
-  if ((data = FindEntityData(mbds, ent)))
+  bool didChange = false;
+  if (!ent || !ent->id())
   {
-    attr = this->EntityMapper->GetCompositeDataDisplayAttributes();
-    if (attr->GetBlockVisibility(data) != visible)
+    return didChange;
+  }
+
+  auto csit = this->ComponentState.find(ent->id());
+  if (csit == this->ComponentState.end() && visible)
+  { // No change from the presumed default.
+    return didChange;
+  }
+  else if (csit == this->ComponentState.end())
+  { // No previous visibility entry. Add one and update.
+    csit = this->ComponentState.insert(std::make_pair(ent->id(), State())).first;
+    didChange = true;
+  }
+  if (!!csit->second.m_visibility != visible || didChange)
+  {
+    csit->second.m_visibility = (visible ? 1 : 0);
+    if (csit->second.m_data)
     {
-      attr->SetBlockVisibility(data, visible);
-      return true;
-    }
-    else
-    {
-      return false;
+      // Tell both the entity and glyph mappers that, should they encounter the data object,
+      // use the provided visibility. We don't tell the "selected-data" mappers this because
+      // we always want to render selections.
+      this->EntityMapper->GetCompositeDataDisplayAttributes()->SetBlockVisibility(
+        csit->second.m_data, csit->second.m_visibility);
+      this->GlyphMapper->GetBlockAttributes()->SetBlockVisibility(
+        csit->second.m_data, csit->second.m_visibility);
+      // Mark the mappers as modified or the new visibility info will not be updated:
+      this->EntityMapper->Modified();
+      this->GlyphMapper->Modified();
+      didChange = true;
     }
   }
-  mbds = vtkMultiBlockDataSet::SafeDownCast(this->GlyphMapper->GetInputDataObject(0, 0));
-  if ((data = FindEntityData(mbds, ent)))
-  {
-    attr = this->GlyphMapper->GetBlockAttributes();
-    if (attr->GetBlockVisibility(data) != visible)
-    {
-      attr->SetBlockVisibility(data, visible);
-      return true;
-    }
-    else
-    {
-      return false;
-    }
-  }
-  return false;
+  return didChange;
 }
 
 int vtkSMTKModelRepresentation::FillInputPortInformation(int port, vtkInformation* info)
@@ -520,7 +570,10 @@ void vtkSMTKModelRepresentation::UpdateSelection(
   // std::cout << "Updating rep selection from " << sm << ", have " << selection.size() << " entries in map\n";
 
   int propVis = 0;
-  this->ClearSelection(actor->GetMapper());
+  this->ClearSelection(actor->GetMapper()); // FIXME: ClearSelection does stupid things.
+  // FIXME: This is the wrong thing to loop over -- since we don't have a map
+  //        from component (or UUID) to block ID, the call to FindNode is slow.
+  //        If we loop over blocks instead, we can search the selection map quickly!
   for (auto& item : selection)
   {
     auto matchedBlock = this->FindNode(data, item.first->id().toString());
@@ -973,11 +1026,10 @@ void vtkSMTKModelRepresentation::ApplyEntityAttributes(vtkMapper* mapper)
     return;
   }
 
-  cpm->RemoveBlockVisibilities();
-  for (auto const& item : this->BlockVisibilities)
-  {
-    cpm->SetBlockVisibility(item.first, item.second);
-  }
+  // TODO: Should we re-apply BlockVisibilities or ComponentState?
+  //       If restoring visibility from a file, ParaView will probably
+  //       provide via BlockVisibilities. Otherwise we should use
+  //       ComponentState.
 
   // Do not call RemoveBlockColors, since some block attributes could
   // have been set through ColorBy mode

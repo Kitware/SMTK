@@ -25,8 +25,12 @@ namespace view
 
 /**\brief An abstract base class for obtaining descriptive phrase information.
   *
-  * Each object may hold a shared pointer to another instance
-  * which it decorates.
+  * Subclasses implement methods which indicate whether particular
+  * information (title, subtitle, color, visibility, icon) is displayable and
+  * potentially editable. If they are, then methods to obtain or set values
+  * must also be implemented.
+  *
+  * Each instance may hold a shared pointer to another instance, which it decorates.
   * This can be used to change how some attributes are displayed or edited.
   */
 class SMTKCORE_EXPORT PhraseContent : smtkEnableSharedPtr(PhraseContent)
@@ -45,15 +49,28 @@ public:
     ICON = 0x10        //!< The icon of the phrase's subject.
   };
 
-  /// Append the given decorator at the tail of this object's chain of decorators.
+  /**\brief Append the given decorator at the tail of this object's chain of decorators.
+    *
+    * Note that this will force this instance's location to match \a other,
+    * and will prefer \a other's location to its own if they are both non-null.
+    */
   Ptr appendDecorator(Ptr other)
   {
-    PhraseContent* attr = this;
-    for (; attr->m_decorator; attr = attr->m_decorator.get())
+    if (other)
     {
-      // do nothing
+      auto locn = other->location();
+      if (!locn)
+      {
+        locn = this->location();
+        other->setLocation(locn);
+      }
+      PhraseContent* attr = this;
+      attr->m_decorator = other;
+      for (; attr->m_decorator; attr = attr->m_decorator.get())
+      {
+        attr->m_location = locn;
+      }
     }
-    attr->m_decorator = other;
     return shared_from_this();
   }
 
@@ -131,7 +148,35 @@ public:
   /// Test for use in derived-class equality operators.
   bool equalTo(const PhraseContent& other) const
   {
-    return (typeid(*this) == typeid(other)) && *m_decorator.get() == *other.m_decorator.get();
+    return this->location() == other.location() && (typeid(*this) == typeid(other)) &&
+      *m_decorator.get() == *other.m_decorator.get();
+  }
+
+  /**\brief Return the location of this content in a DescriptivePhrase hierarchy.
+    *
+    * The DescriptivePhrase instance which owns this content must be accessible
+    * from here so that when content is edited, the proper observers can
+    * be triggered in response (to keep a user interface up to date).
+    *
+    * Note that you could, in theory, obtain a pointer to this instance
+    * by calling location()->content() and calling popDecorator()
+    * repeatedly (but this will obviously remove the instance from use).
+    */
+  DescriptivePhrasePtr location() const { return m_location.lock(); }
+
+  /**\brief Set the descriptive phrase that will present this content.
+    *
+    * Note that this should only be called by appendDecorator() or by
+    * subphrase generators as they create the initial content for a phrase.
+    */
+  bool setLocation(DescriptivePhrasePtr locn)
+  {
+    if (!locn || m_location.lock() == locn)
+    {
+      return false;
+    }
+    m_location = locn;
+    return true;
   }
 
   virtual bool operator==(const PhraseContent& other) const { return this->equalTo(other); }
@@ -139,6 +184,7 @@ protected:
   PhraseContent() {}
 
   Ptr m_decorator;
+  WeakDescriptivePhrasePtr m_location;
 };
 }
 }
