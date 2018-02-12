@@ -78,6 +78,8 @@ PYBIND11_MODULE(_smtkPybindMesh, mesh)
   pybind11_init_moab_range_iter_tag(moab);
   pybind11_init_std_bidirectional_iterator_tag(moab);
   PySharedPtrClass< smtk::mesh::Allocator > smtk_mesh_Allocator = pybind11_init_smtk_mesh_Allocator(mesh);
+  PySharedPtrClass< smtk::mesh::BufferedCellAllocator > smtk_mesh_BufferedCellAllocator = pybind11_init_smtk_mesh_BufferedCellAllocator(mesh);
+  PySharedPtrClass< smtk::mesh::IncrementalAllocator > smtk_mesh_IncrementalAllocator = pybind11_init_smtk_mesh_IncrementalAllocator(mesh);
   pybind11_init_smtk_mesh_DimensionType(mesh);
   pybind11_init_smtk_mesh_FieldType(mesh);
   PySharedPtrClass< smtk::mesh::CellForEach > smtk_mesh_CellForEach = pybind11_init_smtk_mesh_CellForEach(mesh);
