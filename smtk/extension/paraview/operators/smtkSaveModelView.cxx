@@ -16,7 +16,6 @@
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
@@ -28,7 +27,6 @@
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtFileItem.h"
-#include "smtk/extension/qt/qtModelEntityItem.h"
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtOperatorView.h"
@@ -100,20 +98,14 @@ class smtkSaveModelViewInternals : public Ui::smtkSaveModelParameters
 {
 public:
   smtkSaveModelViewInternals()
-    : AssocModels(nullptr)
-    , FileItem(nullptr)
+    : FileItem(nullptr)
     , SummaryMode("save")
     , Fini(false)
   {
   }
 
-  ~smtkSaveModelViewInternals()
-  {
-    delete this->AssocModels;
-    delete this->FileItem;
-  }
+  ~smtkSaveModelViewInternals() { delete this->FileItem; }
 
-  qtModelEntityItem* AssocModels;
   qtFileItem* FileItem;
   QString UserFilename;
   std::string SummaryMode;
@@ -139,12 +131,14 @@ bool smtkSaveModelView::updateOperatorFromUI(const std::string& mode, const T& a
     return false;
   }
 
+  /*
   smtk::attribute::ModelEntityItem::Ptr assocSrc = this->Internals->AssocModels->modelEntityItem();
   smtk::attribute::ModelEntityItem::Ptr assocDst = op->specification()->associations();
   if (assocSrc != assocDst)
   {
     assocDst->setValues(assocSrc->begin(), assocSrc->end(), 0);
   }
+  */
   path fullSMTKPath = action.m_embedDir.empty() ? path(action.m_smtkFilename)
                                                 : path(action.m_embedDir) / action.m_smtkFilename;
 
@@ -158,7 +152,7 @@ bool smtkSaveModelView::updateOperatorFromUI(const std::string& mode, const T& a
   for (auto mcit = action.m_modelChanges.begin(); mcit != action.m_modelChanges.end();
        ++mcit, ++grp)
   {
-    propEdits->findAs<smtk::attribute::ModelEntityItem>(grp, "edit entity")->setValue(mcit->first);
+    // propEdits->findAs<smtk::attribute::ModelEntityItem>(grp, "edit entity")->setValue(mcit->first);
     smtk::attribute::GroupItemPtr valPairs =
       propEdits->findAs<smtk::attribute::GroupItem>(grp, "value pairs");
     valPairs->setNumberOfGroups(mcit->second.size());
@@ -328,6 +322,7 @@ void smtkSaveModelView::createWidget()
 
   this->updateAttributeData();
 
+  /*
   this->Internals->AssocModels =
     new qtModelEntityItem(this->Internals->CurrentOp.lock()->specification()->associations(),
       nullptr, this, Qt::Horizontal);
@@ -335,6 +330,7 @@ void smtkSaveModelView::createWidget()
   QObject::connect(&qtActiveObjects::instance(), SIGNAL(activeModelChanged()),
     this->Internals->AssocModels, SLOT(clearEntityAssociations()));
   layout->addWidget(this->Internals->AssocModels->widget());
+  */
 
   this->Internals->FileItem = new qtFileItem(
     this->Internals->CurrentOp.lock()->specification()->findAs<smtk::attribute::FileSystemItem>(
@@ -371,7 +367,7 @@ void smtkSaveModelView::createWidget()
 
   // Ask the widget showing associations to fetch the
   // currently-selected models:
-  this->Internals->AssocModels->onRequestEntityAssociation();
+  // this->Internals->AssocModels->onRequestEntityAssociation();
   this->updateSummary("unhovered");
 
   // Connect the "info" button to display help
@@ -432,6 +428,7 @@ void smtkSaveModelView::valueChanged(smtk::attribute::ItemPtr valItem)
 
 bool smtkSaveModelView::canSave() const
 {
+  /*
   smtk::attribute::ModelEntityItem::Ptr assoc = this->Internals->AssocModels->modelEntityItem();
   bool ok = true;
   for (auto ait = assoc->begin(); ait != assoc->end(); ++ait)
@@ -443,6 +440,8 @@ bool smtkSaveModelView::canSave() const
     }
   }
   return ok;
+  */
+  return true;
 }
 
 bool smtkSaveModelView::onSave()
@@ -571,7 +570,7 @@ void smtkSaveModelView::setModelToSave(const smtk::model::Model& model)
 {
   smtk::model::EntityRefs assoc;
   assoc.insert(model);
-  this->Internals->AssocModels->associateEntities(assoc, /*resetExisting*/ true);
+  // this->Internals->AssocModels->associateEntities(assoc, /*resetExisting*/ true);
   this->updateActions();
 }
 

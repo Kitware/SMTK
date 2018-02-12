@@ -33,7 +33,7 @@ public:
 
 signals:
   /// Emitted from within setVisibility().
-  virtual void componentVisibilityChanged(smtk::resource::ComponentPtr comp, bool visible);
+  void componentVisibilityChanged(smtk::resource::ComponentPtr comp, bool visible);
 
 protected:
   virtual void handleSMTKSelectionChange(const std::string& src, smtk::view::SelectionPtr seln);

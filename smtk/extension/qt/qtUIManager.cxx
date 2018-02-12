@@ -16,12 +16,9 @@
 #include "smtk/extension/qt/qtInputsItem.h"
 #include "smtk/extension/qt/qtInstancedView.h"
 #include "smtk/extension/qt/qtItem.h"
-#include "smtk/extension/qt/qtMeshSelectionItem.h"
-#include "smtk/extension/qt/qtModelEntityItem.h"
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtOperatorView.h"
 #include "smtk/extension/qt/qtSMTKUtilities.h"
-#include "smtk/extension/qt/qtSelectionManager.h"
 #include "smtk/extension/qt/qtSelectorView.h"
 #include "smtk/extension/qt/qtSimpleExpressionView.h"
 
@@ -568,11 +565,6 @@ void qtUIManager::onModelEntityItemCreated(smtk::extension::qtModelEntityItem* e
   emit this->modelEntityItemCreated(entItem);
 }
 
-void qtUIManager::onMeshSelectionItemCreated(smtk::extension::qtMeshSelectionItem* entItem)
-{
-  emit this->meshSelectionItemCreated(entItem);
-}
-
 bool qtUIManager::updateTableItemCheckState(
   QTableWidgetItem* labelitem, smtk::attribute::ItemPtr attItem)
 {
@@ -714,14 +706,4 @@ void qtUIManager::findDefinitionsLongLabels()
     this->findDefinitionLongLabel(*defIter, text);
     this->Def2LongLabel[*defIter] = text;
   }
-}
-
-void qtUIManager::invokeEntitiesSelected(
-  const smtk::model::EntityRefs& selEnts, const std::string& selectionSource)
-{
-  // select entities in attribute panel
-  // skip attribute panel
-  emit this->sendSelectionsFromAttributePanelToSelectionManager(selEnts, smtk::mesh::MeshSets(),
-    smtk::model::DescriptivePhrases(), smtk::view::SelectionAction::UNFILTERED_REPLACE,
-    selectionSource);
 }

@@ -20,7 +20,6 @@
 
 #include "smtk/attribute/VoidItem.h"
 #include "smtk/model/Edge.h"
-#include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/Group.h"
@@ -28,7 +27,6 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/Operator.h"
 #include "smtk/model/RegisterOperations.h"
-#include "smtk/model/SimpleModelSubphrases.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/operators/AddAuxiliaryGeometry.h"
 

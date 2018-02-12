@@ -47,9 +47,6 @@ add_test(NAME unitEntityRef COMMAND unitEntityRef)
 #target_link_libraries(unitDefaultSession smtkCore smtkCoreModelTesting)
 #add_test(NAME unitDefaultSession COMMAND unitDefaultSession)
 
-add_executable(unitDescriptivePhrase unitDescriptivePhrase.cxx)
-target_link_libraries(unitDescriptivePhrase smtkCore smtkCoreModelTesting)
-
 add_executable(unitArrangement unitArrangement.cxx)
 target_link_libraries(unitArrangement smtkCore)
 add_test(NAME unitArrangement COMMAND unitArrangement)
@@ -71,8 +68,6 @@ target_link_libraries(benchmarkModel smtkCore smtkCoreModelTesting)
 # Tests that require SMTK_DATA_DIR
 ################################################################################
 if (SMTK_DATA_DIR)
-  add_test(NAME unitDescriptivePhrase COMMAND unitDescriptivePhrase
-    "${SMTK_DATA_DIR}/model/3d/smtk/simple.json")
   add_test(NAME unitExportMeshOperator
     COMMAND $<TARGET_FILE:unitExportMeshOperator>
     "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json")

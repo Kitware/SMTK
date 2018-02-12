@@ -21,7 +21,6 @@
 
 #include "smtk/mesh/core/MeshSet.h"
 
-#include "smtk/model/DescriptivePhrase.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 
@@ -53,9 +52,6 @@ public slots:
     smtk::model::EntityRef theEntiy, std::vector<smtk::attribute::DefinitionPtr>& attDefs);
   virtual void showDomainsAssociation(std::vector<smtk::model::Group>& theDomains,
     std::vector<smtk::attribute::DefinitionPtr>& attDefs);
-  void updateAvailableListBySelection(const smtk::model::EntityRefs& selEntities,
-    const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& selDPs,
-    const std::string& senderSourceName);
 
 signals:
   void attAssociationChanged();

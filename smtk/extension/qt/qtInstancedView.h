@@ -39,7 +39,6 @@ public:
 
 public slots:
   void showAdvanceLevelOverlay(bool show) override;
-  void requestModelEntityAssociation() override;
   void onShowCategory() override { this->updateAttributeData(); }
 
 signals:

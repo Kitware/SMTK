@@ -466,9 +466,9 @@ bool vtkSMTKModelRepresentation::SetEntityVisibility(smtk::model::EntityPtr ent,
       // use the provided visibility. We don't tell the "selected-data" mappers this because
       // we always want to render selections.
       this->EntityMapper->GetCompositeDataDisplayAttributes()->SetBlockVisibility(
-        csit->second.m_data, csit->second.m_visibility);
+        csit->second.m_data, !!csit->second.m_visibility);
       this->GlyphMapper->GetBlockAttributes()->SetBlockVisibility(
-        csit->second.m_data, csit->second.m_visibility);
+        csit->second.m_data, !!csit->second.m_visibility);
       // Mark the mappers as modified or the new visibility info will not be updated:
       this->EntityMapper->Modified();
       this->GlyphMapper->Modified();

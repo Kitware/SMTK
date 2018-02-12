@@ -19,7 +19,6 @@
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtBaseView.h" // Needed for ViewInfo definition
 #include "smtk/extension/qt/qtItem.h"
-#include "smtk/extension/qt/qtSelectionManager.h"
 #include <QColor>
 #include <QFont>
 #include <QMap>
@@ -149,7 +148,6 @@ public:
 public slots:
   void onFileItemCreated(smtk::extension::qtFileItem*);
   void onModelEntityItemCreated(smtk::extension::qtModelEntityItem*);
-  void onMeshSelectionItemCreated(smtk::extension::qtMeshSelectionItem*);
   void updateModelViews();
   void onViewUIModified(smtk::extension::qtBaseView*, smtk::attribute::ItemPtr);
   void setAdvanceLevel(int b);
@@ -158,20 +156,11 @@ public slots:
 signals:
   void fileItemCreated(smtk::extension::qtFileItem* fileItem);
   void modelEntityItemCreated(smtk::extension::qtModelEntityItem* entItem);
-  void meshSelectionItemCreated(smtk::extension::qtMeshSelectionItem*);
   void viewUIChanged(smtk::extension::qtBaseView*, smtk::attribute::ItemPtr);
-  void sendSelectionsFromAttributePanelToSelectionManager(
-    const smtk::model::EntityRefs& selEntities, const smtk::mesh::MeshSets& selMeshes,
-    const smtk::model::DescriptivePhrases& DesPhrases,
-    const smtk::view::SelectionAction modifierFlag, const std::string& selectionSource);
   void refreshEntityItems();
 
   friend class qtRootView;
   friend class qtAssociationWidget;
-
-protected slots:
-  void invokeEntitiesSelected(
-    const smtk::model::EntityRefs& selEnts, const std::string& selectionSource);
 
 protected:
   virtual void internalInitialize();

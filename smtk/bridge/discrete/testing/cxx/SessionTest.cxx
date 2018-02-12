@@ -21,43 +21,19 @@
 
 #include "smtk/io/SaveJSON.h"
 
-#include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Operator.h"
-#include "smtk/model/SimpleModelSubphrases.h"
 #include "smtk/model/Tessellation.h"
 
 #include "smtk/operation/Manager.h"
 
 #include <fstream>
 
-static int maxIndent = 10;
-
 using namespace smtk::model;
-
-void prindent(std::ostream& os, int indent, smtk::model::DescriptivePhrase::Ptr p)
-{
-  // Do not descend too far, as infinite recursion is possible,
-  // even with the SimpleSubphraseGenerator
-  if (indent > maxIndent)
-    return;
-
-  os << std::string(indent, ' ') << p->title() << "  (" << p->subtitle() << ")";
-  smtk::model::FloatList rgba = p->relatedColor();
-  if (rgba[3] >= 0.)
-    os << " rgba(" << rgba[0] << "," << rgba[1] << "," << rgba[2] << "," << rgba[3] << ")";
-  os << "\n";
-  smtk::model::DescriptivePhrases sub = p->subphrases();
-  indent += 2;
-  for (smtk::model::DescriptivePhrases::iterator it = sub.begin(); it != sub.end(); ++it)
-  {
-    prindent(os, indent, *it);
-  }
-}
 
 int main(int argc, char* argv[])
 {
@@ -125,12 +101,6 @@ int main(int argc, char* argv[])
   smtk::bridge::discrete::Resource::Ptr resource =
     std::dynamic_pointer_cast<smtk::bridge::discrete::Resource>(model->resource());
   resource->assignDefaultNames(); // should force transcription of every entity, but doesn't yet.
-
-  smtk::model::DescriptivePhrase::Ptr dit;
-  smtk::model::EntityPhrase::Ptr ephr = smtk::model::EntityPhrase::create()->setup(model);
-  smtk::model::SimpleModelSubphrases::Ptr spg = smtk::model::SimpleModelSubphrases::create();
-  ephr->setDelegate(spg);
-  prindent(std::cout, 0, ephr);
 
   // Test a model operator (if some argument beyond filename is given)
   if (argc > 2)

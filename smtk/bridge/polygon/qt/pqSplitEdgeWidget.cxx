@@ -200,7 +200,7 @@ void pqSplitEdgeWidget::splitEdgeOperation(bool start)
   if (this->View && this->m_edgeOp.lock() && start)
   {
     // clear the selection first
-    qtActiveObjects::instance().smtkSelectionManager()->clearAllSelections();
+    // qtActiveObjects::instance().smtkSelectionManager()->clearAllSelections();
 
     int curSelMode = 0;
     vtkSMPropertyHelper(this->View->getRenderViewProxy(), "InteractionMode").Get(&curSelMode);

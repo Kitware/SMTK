@@ -17,7 +17,6 @@
 #include "smtk/extension/qt/qtCheckItemComboBox.h"
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/qtReferencesWidget.h"
-#include "smtk/extension/qt/qtSelectionManager.h"
 #include "smtk/extension/qt/qtTableWidget.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtVoidItem.h"
@@ -121,29 +120,7 @@ public:
 qtBaseView* qtAttributeView::createViewWidget(const ViewInfo& info)
 {
   qtAttributeView* view = new qtAttributeView(info);
-  // connect with selection manager
-  if (smtk::extension::qtSelectionManagerPtr selMgr =
-        qtActiveObjects::instance().smtkSelectionManager())
-  {
-    // need a relay since association widget might be empty at this time
-    QObject::connect(selMgr.get(),
-      SIGNAL(broadcastToReceivers(const smtk::model::EntityRefs&, const smtk::mesh::MeshSets&,
-        const smtk::model::DescriptivePhrases&, const std::string&)),
-      view,
-      SIGNAL(relaySelectionToAssiocationWidget(const smtk::model::EntityRefs&,
-        const smtk::mesh::MeshSets&, const smtk::model::DescriptivePhrases&, const std::string&)));
-    view->buildUI();
-    smtk::model::EntityRefs selEntities;
-    selMgr->getSelectedEntitiesAsEntityRefs(selEntities);
-    //qt 4 signals are private. Just use the slot for update
-    selMgr->updateSelectedItems(selEntities, smtk::mesh::MeshSets(),
-      smtk::model::DescriptivePhrases(), smtk::view::SelectionAction::UNFILTERED_REPLACE,
-      std::string());
-  }
-  else
-  {
-    view->buildUI();
-  }
+  view->buildUI();
   return view;
 }
 
@@ -344,13 +321,6 @@ void qtAttributeView::createWidget()
   QObject::connect(this->Internals->AssociationsWidget, SIGNAL(attAssociationChanged()), this,
     SIGNAL(attAssociationChanged()));
 
-  QObject::connect(this,
-    SIGNAL(relaySelectionToAssiocationWidget(const smtk::model::EntityRefs&,
-      const smtk::mesh::MeshSets&, const smtk::model::DescriptivePhrases&, const std::string&)),
-    this->Internals->AssociationsWidget,
-    SLOT(updateAvailableListBySelection(const smtk::model::EntityRefs&, const smtk::mesh::MeshSets&,
-      const smtk::model::DescriptivePhrases&, const std::string&)));
-
   QObject::connect(
     this->Internals->ViewByCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(onViewBy(int)));
 
@@ -472,7 +442,6 @@ void qtAttributeView::onListBoxSelectionChanged()
   this->Internals->ValuesTable->resizeRowsToContents();
   this->Internals->ValuesTable->resizeColumnsToContents();
   this->Internals->ValuesTable->update();
-  this->updateSelectionOfEntities();
 }
 
 void qtAttributeView::onAttributeNameChanged(QTableWidgetItem* item)
@@ -483,7 +452,6 @@ void qtAttributeView::onAttributeNameChanged(QTableWidgetItem* item)
     CollectionPtr attCollection = aAttribute->definition()->collection();
     attCollection->rename(aAttribute, item->text().toStdString());
     //aAttribute->definition()->setLabel(item->text().toAscii().constData());
-    this->updateSelectionOfEntities();
   }
 }
 
@@ -493,7 +461,6 @@ void qtAttributeView::onAttributeCellChanged(int row, int col)
   {
     QTableWidgetItem* item = this->Internals->ListTable->item(row, col);
     this->onAttributeNameChanged(item);
-    this->updateSelectionOfEntities();
   }
 }
 
@@ -586,20 +553,6 @@ void qtAttributeView::insertTableColumn(
   if (advancedlevel)
   {
     vtWidget->horizontalHeaderItem(insertCol)->setFont(this->uiManager()->advancedFont());
-  }
-}
-
-void qtAttributeView::updateSelectionOfEntities()
-{
-  if (smtk::extension::qtSelectionManagerPtr selMgr =
-        qtActiveObjects::instance().smtkSelectionManager())
-  {
-    smtk::model::EntityRefs selEntities;
-    selMgr->getSelectedEntitiesAsEntityRefs(selEntities);
-    //qt 4 signals are private. Just use the slot for update
-    selMgr->updateSelectedItems(selEntities, smtk::mesh::MeshSets(),
-      smtk::model::DescriptivePhrases(), smtk::view::SelectionAction::UNFILTERED_REPLACE,
-      std::string());
   }
 }
 
@@ -722,7 +675,6 @@ void qtAttributeView::createNewAttribute(smtk::attribute::DefinitionPtr attDef)
     this->Internals->ListTable->selectRow(item->row());
   }
   emit this->numOfAttributesChanged();
-  this->updateSelectionOfEntities();
 }
 
 void qtAttributeView::onCopySelected()
@@ -743,7 +695,6 @@ void qtAttributeView::onCopySelected()
       this->Internals->ListTable->selectRow(item->row());
     }
     emit this->numOfAttributesChanged();
-    this->updateSelectionOfEntities();
   }
 }
 

@@ -32,8 +32,6 @@ namespace extension
 {
 class qtBaseView;
 class qtFileItem;
-class qtModelEntityItem;
-class qtMeshSelectionItem;
 class qtModelView;
 
 class SMTKQTEXT_EXPORT qtModelOperationWidget : public QWidget
@@ -61,7 +59,6 @@ public slots:
   }
   virtual void displayResult(const smtk::io::Logger& html);
   virtual void resetUI();
-  virtual void onModelEntityItemCreated(smtk::extension::qtModelEntityItem* entItem);
   virtual bool showPreviousOp();
   virtual void showLogInfo(bool visibilityMode);
 
@@ -70,9 +67,6 @@ signals:
   void operationCancelled(const smtk::model::OperatorPtr& brOp);
   void operationFinished(const smtk::model::OperatorResult&);
   void fileItemCreated(smtk::extension::qtFileItem* fileItem);
-  void modelEntityItemCreated(smtk::extension::qtModelEntityItem* entItem);
-  void meshSelectionItemCreated(smtk::extension::qtMeshSelectionItem* meshItem,
-    const std::string& opName, const smtk::common::UUID& uuid);
   void activateOperationTarget(const smtk::common::UUID&);
   void broadcastExpungeEntities(const smtk::model::EntityRefs& expungedEnts);
   void operatorSet(const smtk::model::OperatorPtr& brOp);
@@ -83,7 +77,6 @@ protected slots:
   virtual void onOperationSelected();
   virtual void cancelCurrentOperator();
   virtual void cancelOperator(const std::string& opName);
-  virtual void onMeshSelectionItemCreated(smtk::extension::qtMeshSelectionItem*);
   virtual bool checkExistingOperator(const std::string& opName);
 
 protected:

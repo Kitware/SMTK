@@ -21,7 +21,6 @@ set(modelSrcs
   ArrangementHelper.cxx
   ArrangementKind.cxx
   AttributeAssignments.cxx
-  AttributeListPhrase.cxx
   AuxiliaryGeometry.cxx
   AuxiliaryGeometryExtension.cxx
   Session.cxx
@@ -34,34 +33,24 @@ set(modelSrcs
   EntityRef.cxx
   EntityRefArrangementOps.cxx
   DefaultSession.cxx
-  DescriptivePhrase.cxx
   Edge.cxx
   EdgeUse.cxx
   Entity.cxx
   EntityIterator.cxx
-  EntityListPhrase.cxx
-  EntityPhrase.cxx
-  EntityTypeSubphrases.cxx
   Face.cxx
   FaceUse.cxx
   Group.cxx
   GridInfo.cxx
   Instance.cxx
   Loop.cxx
-  MeshListPhrase.cxx
-  MeshPhrase.cxx
   Model.cxx
   Operator.cxx
   PointLocatorExtension.cxx
-  PropertyListPhrase.cxx
-  PropertyValuePhrase.cxx
   RegisterResources.cxx
   RegisterOperations.cxx
   Shell.cxx
   ShellEntity.cxx
-  SimpleModelSubphrases.cxx
   Manager.cxx
-  SubphraseGenerator.cxx
   Tessellation.cxx
   UseEntity.cxx
   Vertex.cxx
@@ -80,7 +69,6 @@ set(modelHeaders
   ArrangementHelper.h
   ArrangementKind.h
   AttributeAssignments.h
-  AttributeListPhrase.h
   AuxiliaryGeometry.h
   AuxiliaryGeometryExtension.h
   Session.h
@@ -93,15 +81,11 @@ set(modelHeaders
   EntityRef.h
   EntityRefArrangementOps.h
   DefaultSession.h
-  DescriptivePhrase.h
   Edge.h
   EdgeUse.h
   Entity.h
   EntityIterator.h
-  EntityListPhrase.h
-  EntityPhrase.h
   EntityTypeBits.h
-  EntityTypeSubphrases.h
   Events.h
   Face.h
   FaceUse.h
@@ -111,20 +95,14 @@ set(modelHeaders
   Instance.h
   IntegerData.h
   Loop.h
-  MeshListPhrase.h
-  MeshPhrase.h
   Model.h
   Operator.h
   PointLocatorExtension.h
-  PropertyListPhrase.h
-  PropertyValuePhrase.h
   RegisterResources.h
   RegisterOperations.h
   Shell.h
   ShellEntity.h
-  SimpleModelSubphrases.h
   Manager.h
-  SubphraseGenerator.h
   StringData.h
   Tessellation.h
   UseEntity.h

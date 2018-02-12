@@ -25,8 +25,6 @@ namespace smtk
 namespace extension
 {
 
-class qtModelEntityItem;
-class qtMeshItem;
 //A sublcass of QTextEdit to give initial sizehint
 class SMTKQTEXT_EXPORT qtCheckableComboItemDelegate : public QStyledItemDelegate
 {
@@ -55,38 +53,6 @@ protected:
 private:
   QStandardItem* m_displayItem;
   QString m_displayTextExt;
-};
-
-//A sublcass of qtCheckItemComboBox to refresh the list on popup
-class SMTKQTEXT_EXPORT qtModelEntityItemCombo : public qtCheckItemComboBox
-{
-  Q_OBJECT
-public:
-  qtModelEntityItemCombo(qtModelEntityItem* item, QWidget* parent, const QString& displayExt);
-  void showPopup() override;
-  void init() override;
-
-protected slots:
-  virtual void itemCheckChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
-
-private:
-  qtModelEntityItem* m_ModelEntityItem;
-};
-
-//A sublcass of qtCheckItemComboBox to refresh the list on popup
-class SMTKQTEXT_EXPORT qtMeshItemCombo : public qtCheckItemComboBox
-{
-  Q_OBJECT
-public:
-  qtMeshItemCombo(qtMeshItem* item, QWidget* parent, const QString& displayExt);
-  void showPopup() override;
-  void init() override;
-
-protected slots:
-  virtual void itemCheckChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
-
-private:
-  qtMeshItem* m_MeshItem;
 };
 
 } // namespace extension
