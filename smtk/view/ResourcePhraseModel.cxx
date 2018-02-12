@@ -16,7 +16,6 @@
 #include "smtk/view/View.h"
 
 #include "smtk/operation/Manager.h"
-#include "smtk/operation/Operator.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"

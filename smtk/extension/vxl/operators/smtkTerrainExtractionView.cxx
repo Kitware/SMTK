@@ -16,8 +16,6 @@
 #include "smtk/extension/vxl/operators/ui_smtkTerrainExtractionParameters.h"
 #include "smtk/extension/vxl/widgets/pqTerrainExtractionManager.h"
 
-#include "smtk/model/Operator.h"
-
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
@@ -73,8 +71,8 @@ public:
   }
 
   QPointer<qtAttribute> TerrainExtractionAtt;
-  smtk::weak_ptr<smtk::model::Operator> terrainExtractionOp;
-  smtk::weak_ptr<smtk::model::Operator> addAux_GeomOp;
+  smtk::weak_ptr<smtk::operation::NewOp> terrainExtractionOp;
+  smtk::weak_ptr<smtk::operation::NewOp> addAux_GeomOp;
   QPointer<QWidget> terrainExtraction;
 };
 
@@ -128,8 +126,7 @@ void smtkTerrainExtractionView::attributeModified()
   if (this->Internals->TerrainExtractionAtt->attribute()->isValid())
   {
     // Pass in the aux_geom to manager
-    smtk::attribute::AttributePtr spec =
-      this->Internals->terrainExtractionOp.lock()->specification();
+    smtk::attribute::AttributePtr spec = this->Internals->terrainExtractionOp.lock()->parameters();
     smtk::attribute::ModelEntityItem::Ptr modelItem = spec->associations();
     smtk::model::AuxiliaryGeometry aux(modelItem->value(0));
     if (!aux.isValid())
@@ -313,12 +310,12 @@ void smtkTerrainExtractionView::updateAttributeData()
     return;
   }
 
-  smtk::model::OperatorPtr terrainExtractionOp =
+  smtk::operation::NewOpPtr terrainExtractionOp =
     this->uiManager()->activeModelView()->operatorsWidget()->existingOperator(defName);
   this->Internals->terrainExtractionOp = terrainExtractionOp;
 
   // expecting only 1 instance of the op?
-  smtk::attribute::AttributePtr att = terrainExtractionOp->specification();
+  smtk::attribute::AttributePtr att = terrainExtractionOp->parameters();
   this->Internals->TerrainExtractionAtt = this->Internals->createAttUI(att, this->Widget, this);
   if (this->Internals->TerrainExtractionAtt)
   {
@@ -327,16 +324,16 @@ void smtkTerrainExtractionView::updateAttributeData()
   }
 }
 
-void smtkTerrainExtractionView::requestOperation(const smtk::model::OperatorPtr& op)
+void smtkTerrainExtractionView::requestOperation(const smtk::operation::NewOpPtr& op)
 {
-  if (!op || !op->specification())
+  if (!op || !op->parameters())
   {
     return;
   }
   this->uiManager()->activeModelView()->requestOperation(op, false);
 }
 
-void smtkTerrainExtractionView::cancelOperation(const smtk::model::OperatorPtr& op)
+void smtkTerrainExtractionView::cancelOperation(const smtk::operation::NewOpPtr& op)
 {
   if (!op || !this->Widget || !this->Internals->TerrainExtractionAtt)
   {
@@ -428,7 +425,7 @@ void smtkTerrainExtractionView::onProcessFullExtraction()
   bool computeColor = this->Internals->computeColor->isChecked();
   bool viewOutput = this->Internals->ViewOnCompletionCheckBox->isChecked();
   bool pickCustomResult = this->Internals->terrainExtractionOp.lock()
-                            ->specification()
+                            ->parameters()
                             ->findVoid("pick custom result")
                             ->isEnabled();
   this->TerrainExtractionManager->onProcesssFullData(

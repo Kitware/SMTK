@@ -31,7 +31,6 @@
 #include "smtk/model/Edge.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/Vertex.h"
 
 using namespace smtk::model;
@@ -127,7 +126,7 @@ int main(int argc, char* argv[])
   egOp->parameters()->findModelEntity("cell to add")->setValue(edge1);
   egOp->parameters()->findModelEntity("cell to add")->appendValue(edge2);
 
-  smtk::model::OperatorResult egResult = egOp->operate();
+  smtk::operation::NewOp::Result egResult = egOp->operate();
   if (egResult->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
   {

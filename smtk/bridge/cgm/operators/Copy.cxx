@@ -51,7 +51,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::model::OperatorResult Copy::operateInternal()
+smtk::operation::NewOpResult Copy::operateInternal()
 {
   EntityRefArray entitiesIn = this->associatedEntitiesAs<EntityRefArray>();
   if (entitiesIn.size() != 1)
@@ -102,7 +102,7 @@ smtk::model::OperatorResult Copy::operateInternal()
     return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result =
+  smtk::operation::NewOpResult result =
     this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   DLIList<RefEntity*> cgmEntitiesOut;

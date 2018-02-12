@@ -23,7 +23,6 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/SessionRef.h"
 
 namespace py = pybind11;
@@ -52,7 +51,6 @@ py::class_< smtk::model::Model, smtk::model::EntityRef > pybind11_init_smtk_mode
     .def("groups", &smtk::model::Model::groups)
     .def("isValid", (bool (smtk::model::Model::*)() const) &smtk::model::Model::isValid)
     // .def("isValid", (bool (smtk::model::Model::*)(::smtk::model::Entity * *) const) &smtk::model::Model::isValid, py::arg("entRec"))
-    .def("operatorNames", &smtk::model::Model::operatorNames)
     .def("parent", &smtk::model::Model::parent)
     .def("removeAuxiliaryGeometry", &smtk::model::Model::removeAuxiliaryGeometry, py::arg("ag"))
     .def("removeCell", &smtk::model::Model::removeCell, py::arg("c"))

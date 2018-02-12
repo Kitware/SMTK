@@ -140,7 +140,7 @@ public:
     return m_decorator ? m_decorator->relatedComponent() : nullptr;
   }
   /// Return an operator related to this phrase (or nullptr if not well defined).
-  virtual smtk::operation::OperatorPtr relatedOperator() const
+  virtual smtk::operation::NewOpPtr relatedOperator() const
   {
     return m_decorator ? m_decorator->relatedOperator() : nullptr;
   }

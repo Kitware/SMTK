@@ -30,6 +30,6 @@ PYBIND11_MODULE(_smtkPybindModelRemus, remus)
 {
   remus.doc() = "<description>";
 
-  // PySharedPtrClass< smtk::model::MeshOperator, smtk::model::Operator > smtk_extension_remus_MeshOperator = pybind11_init_smtk_extension_remus_MeshOperator(remus);
+  // PySharedPtrClass< smtk::model::MeshOperator, smtk::operation::NewOp > smtk_extension_remus_MeshOperator = pybind11_init_smtk_extension_remus_MeshOperator(remus);
   py::class_< smtk::mesh::MeshServerLauncher > smtk_extension_remus_MeshServerLauncher = pybind11_init_smtk_extension_remus_MeshServerLauncher(remus);
 }

@@ -15,13 +15,12 @@
 
 #include "smtk/bridge/cgm/Operator.h"
 
-#include "smtk/model/Operator.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::cgm::Operator, smtk::model::Operator > pybind11_init_smtk_bridge_cgm_Operator(py::module &m)
+PySharedPtrClass< smtk::bridge::cgm::Operator, smtk::operation::NewOp > pybind11_init_smtk_bridge_cgm_Operator(py::module &m)
 {
-  PySharedPtrClass< smtk::bridge::cgm::Operator, smtk::model::Operator > instance(m, "Operator");
+  PySharedPtrClass< smtk::bridge::cgm::Operator, smtk::operation::NewOp > instance(m, "Operator");
   instance
     .def("deepcopy", (smtk::bridge::cgm::Operator & (smtk::bridge::cgm::Operator::*)(::smtk::bridge::cgm::Operator const &)) &smtk::bridge::cgm::Operator::operator=)
     ;

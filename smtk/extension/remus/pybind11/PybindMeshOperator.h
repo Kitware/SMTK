@@ -15,9 +15,9 @@
 
 #include "smtk/extension/remus/MeshOperator.h"
 
-PySharedPtrClass< smtk::model::MeshOperator, smtk::model::Operator > pybind11_init_smtk_extension_remus_MeshOperator(py::module &m)
+PySharedPtrClass< smtk::model::MeshOperator, smtk::operation::NewOp > pybind11_init_smtk_extension_remus_MeshOperator(py::module &m)
 {
-  PySharedPtrClass< smtk::model::MeshOperator, smtk::model::Operator > instance(m, "MeshOperator");
+  PySharedPtrClass< smtk::model::MeshOperator, smtk::operation::NewOp > instance(m, "MeshOperator");
   instance
     .def("classname", &smtk::model::MeshOperator::classname)
     .def_static("create", (std::shared_ptr<smtk::model::MeshOperator> (*)()) &smtk::model::MeshOperator::create)

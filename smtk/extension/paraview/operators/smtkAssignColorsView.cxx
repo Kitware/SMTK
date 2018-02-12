@@ -21,7 +21,6 @@
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtUIManager.h"
-#include "smtk/model/Operator.h"
 #include "smtk/view/View.h"
 
 #include "pqActiveObjects.h"
@@ -129,7 +128,7 @@ public:
   QPointer<QHBoxLayout> EditorLayout;
 
   QPointer<pqPresetDialog> PaletteChooser;
-  smtk::weak_ptr<smtk::model::Operator> CurrentOp;
+  smtk::weak_ptr<smtk::operation::NewOp> CurrentOp;
 };
 
 smtkAssignColorsView::smtkAssignColorsView(const ViewInfo& info)
@@ -312,8 +311,8 @@ void smtkAssignColorsView::createWidget()
 
   QObject::disconnect(this->uiManager()->activeModelView());
   QObject::connect(this->uiManager()->activeModelView(),
-    SIGNAL(operationCancelled(const smtk::model::OperatorPtr&)), this,
-    SLOT(cancelOperation(const smtk::model::OperatorPtr&)));
+    SIGNAL(operationCancelled(const smtk::operation::NewOpPtr&)), this,
+    SLOT(cancelOperation(const smtk::operation::NewOpPtr&)));
 
   // Show help when the info button is clicked.
   QObject::connect(this->Internals->InfoBtn, SIGNAL(released()), this, SLOT(onInfo()));
@@ -363,25 +362,25 @@ void smtkAssignColorsView::updateAttributeData()
     return;
   }
 
-  smtk::model::OperatorPtr assignColorsOp =
+  smtk::operation::NewOpPtr assignColorsOp =
     this->uiManager()->activeModelView()->operatorsWidget()->existingOperator(defName);
   this->Internals->CurrentOp = assignColorsOp;
 
   // expecting only 1 instance of the op?
-  smtk::attribute::AttributePtr att = assignColorsOp->specification();
+  smtk::attribute::AttributePtr att = assignColorsOp->parameters();
   this->Internals->CurrentAtt = this->Internals->createAttUI(att, this->Widget, this);
 }
 
-void smtkAssignColorsView::requestOperation(const smtk::model::OperatorPtr& op)
+void smtkAssignColorsView::requestOperation(const smtk::operation::NewOpPtr& op)
 {
-  if (!op || !op->specification())
+  if (!op || !op->parameters())
   {
     return;
   }
   this->uiManager()->activeModelView()->requestOperation(op, false);
 }
 
-void smtkAssignColorsView::cancelOperation(const smtk::model::OperatorPtr& op)
+void smtkAssignColorsView::cancelOperation(const smtk::operation::NewOpPtr& op)
 {
   if (!op || !this->Widget || !this->Internals->CurrentAtt)
   {

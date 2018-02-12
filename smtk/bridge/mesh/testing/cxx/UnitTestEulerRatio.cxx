@@ -23,7 +23,6 @@
 #include "smtk/mesh/core/Manager.h"
 
 #include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
 
 #include <cmath>
 

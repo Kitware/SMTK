@@ -15,13 +15,12 @@
 
 #include "smtk/bridge/discrete/operators/WriteOperator.h"
 
-#include "smtk/model/Operator.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::discrete::WriteOperator, smtk::model::Operator > pybind11_init_smtk_bridge_discrete_WriteOperator(py::module &m)
+PySharedPtrClass< smtk::bridge::discrete::WriteOperator, smtk::operation::NewOp > pybind11_init_smtk_bridge_discrete_WriteOperator(py::module &m)
 {
-  PySharedPtrClass< smtk::bridge::discrete::WriteOperator, smtk::model::Operator > instance(m, "WriteOperator");
+  PySharedPtrClass< smtk::bridge::discrete::WriteOperator, smtk::operation::NewOp > instance(m, "WriteOperator");
   instance
     .def("classname", &smtk::bridge::discrete::WriteOperator::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::discrete::WriteOperator> (*)()) &smtk::bridge::discrete::WriteOperator::create)

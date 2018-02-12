@@ -30,7 +30,7 @@ public:
   //Description:
   //Convert the passed-in polydata into polygon edge(s)
   bool AbleToOperate() override;
-  smtk::model::OperatorResult Operate() override;
+  smtk::operation::NewOp::Result Operate() override;
 
   //Description:
   //Get/Set the Contour Input

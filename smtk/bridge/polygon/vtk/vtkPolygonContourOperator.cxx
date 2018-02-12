@@ -15,7 +15,6 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/model/Edge.h"
-#include "smtk/model/Operator.h"
 
 #include "vtkBoundingBox.h"
 #include "vtkObjectFactory.h"
@@ -54,7 +53,7 @@ bool vtkPolygonContourOperator::AbleToOperate()
   return able2Op;
 }
 
-smtk::model::OperatorResult vtkPolygonContourOperator::Operate()
+smtk::operation::NewOp::Result vtkPolygonContourOperator::Operate()
 {
   // ONLY for create-edge-with-widget and edit-edge operations,
   if (!this->AbleToOperate())
@@ -62,7 +61,7 @@ smtk::model::OperatorResult vtkPolygonContourOperator::Operate()
     return this->m_smtkOp.lock()->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
-  smtk::model::OperatorResult edgeResult;
+  smtk::operation::NewOp::Result edgeResult;
   smtk::attribute::AttributePtr spec = this->m_smtkOp.lock()->parameters();
   smtk::attribute::IntItem::Ptr offsetsItem =
     spec->findAs<smtk::attribute::IntItem>("offsets", smtk::attribute::ALL_CHILDREN);

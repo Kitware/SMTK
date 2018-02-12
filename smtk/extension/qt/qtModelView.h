@@ -19,6 +19,7 @@
 #include "smtk/common/UUID.h"
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/model/SessionRef.h"
+#include "smtk/operation/NewOp.h"
 
 #include <QMap>
 #include <QPoint>
@@ -55,7 +56,7 @@ public:
   std::string determineAction(const QPoint& pPos) const;
   qtModelOperationWidget* operatorsWidget();
   bool setEntityVisibility(const smtk::model::EntityRefs& selentityrefs,
-    const smtk::mesh::MeshSets& selmeshes, int vis, smtk::model::OperatorPtr op);
+    const smtk::mesh::MeshSets& selmeshes, int vis, smtk::operation::NewOpPtr op);
 
 public slots:
   void updateActiveModelByModelIndex();
@@ -66,16 +67,16 @@ public slots:
   void operatorInvoked();
   void toggleEntityVisibility(const QModelIndex&);
   void onEntitiesExpunged(const smtk::model::EntityRefs& expungedEnts);
-  bool requestOperation(const smtk::model::OperatorPtr& brOp, bool launchUI);
+  bool requestOperation(const smtk::operation::NewOpPtr& brOp, bool launchUI);
   bool requestOperation(
     const std::string& opName, const smtk::common::UUID& sessionId, bool launchOp);
   virtual void onOperationPanelClosing();
   virtual bool showPreviousOpOrHide(bool alwaysHide = true);
 
 signals:
-  void operationRequested(const smtk::model::OperatorPtr& brOp);
-  void operationCancelled(const smtk::model::OperatorPtr& brOp);
-  void operationFinished(const smtk::model::OperatorResult&);
+  void operationRequested(const smtk::operation::NewOpPtr& brOp);
+  void operationCancelled(const smtk::operation::NewOpPtr& brOp);
+  void operationFinished(const smtk::operation::NewOp::Result&);
   void fileItemCreated(smtk::extension::qtFileItem* fileItem);
   void visibilityChangeRequested(const QModelIndex&);
   void colorChangeRequested(const QModelIndex&);
@@ -98,8 +99,8 @@ protected:
 
   // bool hasSessionOp(const smtk::model::SessionRef& brSession, const std::string& opname);
   // bool hasSessionOp(const QModelIndex& idx, const std::string& opname);
-  // smtk::model::OperatorPtr getOp(const QModelIndex& idx, const std::string& opname);
-  // smtk::model::OperatorPtr getOp(
+  // smtk::operation::NewOpPtr getOp(const QModelIndex& idx, const std::string& opname);
+  // smtk::operation::NewOpPtr getOp(
   //   const smtk::model::SessionPtr& brSession, const std::string& opname);
 
   //Description:
@@ -114,7 +115,7 @@ protected:
   // Customized selection related methods
   void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected) override;
 
-  bool initOperator(smtk::model::OperatorPtr op);
+  bool initOperator(smtk::operation::NewOpPtr op);
   void initOperatorsDock(const std::string& opName, smtk::model::SessionPtr session);
 
   /*

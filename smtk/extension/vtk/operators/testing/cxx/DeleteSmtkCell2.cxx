@@ -25,7 +25,6 @@
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/RegisterOperations.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/operators/AddAuxiliaryGeometry.h"
@@ -147,7 +146,7 @@ int main(int argc, char* argv[])
   test(result == 1);
 
   // it's designed to fail.
-  smtk::model::OperatorResult deleteOpResult = deleteOp->operate();
+  smtk::bridge::polygon::Delete::Result deleteOpResult = deleteOp->operate();
   if (deleteOpResult->findInt("outcome")->value() ==
     static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
   {

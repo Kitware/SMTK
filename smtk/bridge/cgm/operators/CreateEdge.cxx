@@ -49,7 +49,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::model::OperatorResult CreateEdge::operateInternal()
+smtk::operation::NewOpResult CreateEdge::operateInternal()
 {
   smtk::model::Vertices vertices = this->associatedEntitiesAs<smtk::model::Vertices>();
   if (vertices.size() != 2)
@@ -99,7 +99,7 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
   // Assign color to match vertex API that requires a color.
   cgmEdge->color(color);
 
-  smtk::model::OperatorResult result =
+  smtk::operation::NewOpResult result =
     this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   DLIList<RefEdge*> cgmEdgesOut;

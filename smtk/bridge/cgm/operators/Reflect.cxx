@@ -50,7 +50,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::model::OperatorResult Reflect::operateInternal()
+smtk::operation::NewOpResult Reflect::operateInternal()
 {
   smtk::attribute::DoubleItemPtr basepointItem = this->findDouble("base point");
   smtk::attribute::DoubleItemPtr directionItem = this->findDouble("direction");
@@ -86,7 +86,7 @@ smtk::model::OperatorResult Reflect::operateInternal()
     return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result =
+  smtk::operation::NewOpResult result =
     this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmEntitiesOut, result, MODIFIED);

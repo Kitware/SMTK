@@ -201,8 +201,7 @@ SetProperty::Result SetProperty::operateInternal()
     }
   }
 
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
 
   // if a model is in the changed entities and it is a submodel, we
   // want to label its parent model to be modified too.

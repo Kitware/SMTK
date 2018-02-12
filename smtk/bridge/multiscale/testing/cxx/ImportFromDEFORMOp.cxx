@@ -30,7 +30,6 @@
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/SimpleModelSubphrases.h"
 #include "smtk/model/Tessellation.h"
 

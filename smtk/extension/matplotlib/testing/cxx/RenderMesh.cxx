@@ -111,7 +111,7 @@ int main(int argc, char* argv[])
   op->parameters()->findFile("filename")->setValue(write_path);
 
   // Execute the operator
-  smtk::model::OperatorResult result = op->operate();
+  smtk::operation::NewOp::Result result = op->operate();
 
   // Confirm that the operator succeeded
   if (result->findInt("outcome")->value() !=

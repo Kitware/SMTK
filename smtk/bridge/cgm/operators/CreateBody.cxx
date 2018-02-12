@@ -49,7 +49,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::model::OperatorResult CreateBody::operateInternal()
+smtk::operation::NewOpResult CreateBody::operateInternal()
 {
   int keepInputs = this->findInt("keep inputs")->value();
 
@@ -138,7 +138,7 @@ smtk::model::OperatorResult CreateBody::operateInternal()
     cgmBodies.push(bod);
   }
 
-  smtk::model::OperatorResult result =
+  smtk::operation::NewOpResult result =
     this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmBodies, result, CREATED);

@@ -260,7 +260,7 @@ int TestElevateMeshOnStructuredGrid(int argc, char* argv[])
 
     undoElevateMesh->parameters()->findMesh("mesh")->appendValue(mesh);
 
-    smtk::model::OperatorResult result = undoElevateMesh->operate();
+    smtk::operation::NewOp::Result result = undoElevateMesh->operate();
     if (result->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
     {

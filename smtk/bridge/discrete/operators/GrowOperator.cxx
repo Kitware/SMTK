@@ -24,7 +24,6 @@
 #include "smtk/model/Face.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/Volume.h"
 
 #include "vtkDiscreteModel.h"
@@ -87,7 +86,7 @@ bool GrowOperator::ableToOperate()
 }
 
 bool GrowOperator::writeSelectionResult(
-  const std::map<smtk::common::UUID, std::set<int> >& cachedSelection, OperatorResult& result)
+  const std::map<smtk::common::UUID, std::set<int> >& cachedSelection, GrowOperator::Result& result)
 {
   smtk::attribute::MeshSelectionItem::Ptr outSelectionItem = result->findMeshSelection("selection");
   if (!outSelectionItem)
@@ -291,7 +290,7 @@ void GrowOperator::findVisibleModelFaces(
   }
 }
 
-smtk::model::OperatorResult GrowOperator::operateInternal()
+GrowOperator::Result GrowOperator::operateInternal()
 {
   smtk::model::Model model =
     this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
@@ -386,7 +385,7 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
       break;
   }
 
-  OperatorResult result = this->createResult(
+  Result result = this->createResult(
     ok ? smtk::operation::NewOp::Outcome::SUCCEEDED : smtk::operation::NewOp::Outcome::FAILED);
 
   if (ok)

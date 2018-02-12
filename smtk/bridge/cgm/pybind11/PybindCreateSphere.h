@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::cgm::CreateSphere > pybind11_init_smtk_bridge_cgm_CreateSphere(py::module &m, PySharedPtrClass< smtk::bridge::cgm::Operator, smtk::model::Operator >& parent)
+PySharedPtrClass< smtk::bridge::cgm::CreateSphere > pybind11_init_smtk_bridge_cgm_CreateSphere(py::module &m, PySharedPtrClass< smtk::bridge::cgm::Operator, smtk::operation::NewOp >& parent)
 {
   PySharedPtrClass< smtk::bridge::cgm::CreateSphere > instance(m, "CreateSphere", parent);
   instance

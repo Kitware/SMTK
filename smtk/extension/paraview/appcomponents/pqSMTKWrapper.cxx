@@ -27,7 +27,6 @@
 #include "smtk/resource/Resource.h"
 
 #include "smtk/operation/Manager.h"
-#include "smtk/operation/Operator.h"
 
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"

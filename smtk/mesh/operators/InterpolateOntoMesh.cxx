@@ -363,8 +363,7 @@ InterpolateOntoMesh::Result InterpolateOntoMesh::operateInternal()
   }
 
   // Access the attribute associated with the modified meshes
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
   smtk::attribute::MeshItem::Ptr modifiedMeshes = result->findMesh("mesh_modified");
   modifiedMeshes->setNumberOfValues(meshItem->numberOfValues());
 

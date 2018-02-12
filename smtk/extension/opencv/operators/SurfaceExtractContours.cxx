@@ -26,7 +26,6 @@
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/SessionRef.h"
 
 #include "smtk/extension/opencv/SurfaceExtractContours_xml.h"
@@ -107,7 +106,7 @@ int internal_createEdge(smtk::bridge::polygon::CreateEdge::Ptr edgeOp,
 }
 }
 
-OperatorResult SurfaceExtractContours::operateInternal()
+SurfaceExtractContours::Result SurfaceExtractContours::operateInternal()
 {
   // ableToOperate should have verified that aux is valid
   smtk::model::AuxiliaryGeometry aux =

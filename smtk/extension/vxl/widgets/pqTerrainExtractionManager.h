@@ -22,7 +22,6 @@
 
 #include "smtk/extension/vxl/widgets/Exports.h"
 #include "smtk/model/AuxiliaryGeometry.h"
-#include "smtk/model/Operator.h"
 #include <QtCore/QFileInfo>
 #include <QtCore/QObject>
 
@@ -50,7 +49,7 @@ public slots:
   // set aux_geom input then compute basic resolution and guess cache dir
   void setAuxGeom(smtk::model::AuxiliaryGeometry aux);
 
-  void setAuxGeomOperator(smtk::model::OperatorPtr addAux_GeomOp)
+  void setAuxGeomOperator(smtk::operation::NewOpPtr addAux_GeomOp)
   {
     this->AddAux_GeomOp = addAux_GeomOp;
   }
@@ -94,7 +93,7 @@ protected:
 
   QList<QVariant> DataTransform;
 
-  smtk::weak_ptr<smtk::model::Operator> AddAux_GeomOp;
+  smtk::weak_ptr<smtk::operation::NewOp> AddAux_GeomOp;
 
   smtk::model::AuxiliaryGeometry Aux_geom;
 };

@@ -36,7 +36,7 @@ namespace bridge
 namespace mesh
 {
 
-smtk::model::OperatorResult EulerCharacteristicRatio::operateInternal()
+EulerCharacteristicRatio::Result EulerCharacteristicRatio::operateInternal()
 {
   // Access the associated model.
   smtk::model::Model model = this->parameters()->associatedModelEntities<smtk::model::Models>()[0];
@@ -69,8 +69,7 @@ smtk::model::OperatorResult EulerCharacteristicRatio::operateInternal()
   // Compute the ratio of these two values.
   double eulerRatio = ((double)(eulerBoundary)) / ((double)(eulerVolume));
 
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
 
   // Set the double item that will hold the euler ratio.
   smtk::attribute::DoubleItemPtr eulerItem = result->findDouble("value");

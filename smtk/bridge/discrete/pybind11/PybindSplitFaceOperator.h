@@ -15,13 +15,12 @@
 
 #include "smtk/bridge/discrete/operators/SplitFaceOperator.h"
 
-#include "smtk/model/Operator.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::discrete::SplitFaceOperator, smtk::model::Operator > pybind11_init_smtk_bridge_discrete_SplitFaceOperator(py::module &m)
+PySharedPtrClass< smtk::bridge::discrete::SplitFaceOperator, smtk::operation::NewOp > pybind11_init_smtk_bridge_discrete_SplitFaceOperator(py::module &m)
 {
-  PySharedPtrClass< smtk::bridge::discrete::SplitFaceOperator, smtk::model::Operator > instance(m, "SplitFaceOperator");
+  PySharedPtrClass< smtk::bridge::discrete::SplitFaceOperator, smtk::operation::NewOp > instance(m, "SplitFaceOperator");
   instance
     .def("classname", &smtk::bridge::discrete::SplitFaceOperator::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::discrete::SplitFaceOperator> (*)()) &smtk::bridge::discrete::SplitFaceOperator::create)

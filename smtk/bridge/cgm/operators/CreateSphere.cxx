@@ -45,7 +45,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::model::OperatorResult CreateSphere::operateInternal()
+smtk::operation::NewOpResult CreateSphere::operateInternal()
 {
   smtk::attribute::DoubleItem::Ptr centerItem = this->specification()->findDouble("center");
   smtk::attribute::DoubleItem::Ptr radiusItem = this->specification()->findDouble("radius");
@@ -87,7 +87,7 @@ smtk::model::OperatorResult CreateSphere::operateInternal()
     return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result =
+  smtk::operation::NewOpResult result =
     this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   DLIList<Body*> cgmEntitiesOut;

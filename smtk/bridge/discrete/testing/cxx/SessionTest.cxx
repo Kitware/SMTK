@@ -26,7 +26,6 @@
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/Tessellation.h"
 
 #include "smtk/operation/Manager.h"
@@ -139,7 +138,7 @@ int main(int argc, char* argv[])
       smtk::bridge::discrete::SplitFaceOperator::Result result = splitFaceOp->operate();
       std::cout << "  Face is " << f.name() << " (" << f.entity() << ")\n";
       std::cout << "  " << (result->findInt("outcome")->value() ==
-                                 smtk::operation::Operator::OPERATION_SUCCEEDED
+                                 static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED)
                                ? "OK"
                                : "Failed")
                 << "\n";

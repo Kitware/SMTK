@@ -9,7 +9,6 @@
 //=========================================================================
 
 #include "smtk/extension/vtk/operators/vtkSMTKOperator.h"
-#include "smtk/model/Operator.h"
 
 #include "vtkObjectFactory.h"
 
@@ -42,7 +41,7 @@ bool vtkSMTKOperator::AbleToOperate()
   return this->m_smtkOp.lock() ? this->m_smtkOp.lock()->ableToOperate() : false;
 }
 
-smtk::model::OperatorResult vtkSMTKOperator::Operate()
+smtk::operation::NewOp::Result vtkSMTKOperator::Operate()
 {
   return this->m_smtkOp.lock() ? this->m_smtkOp.lock()->operate()
                                : smtk::operation::NewOp::Result();

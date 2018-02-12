@@ -60,7 +60,7 @@ DemoteVertex::Result DemoteVertex::operateInternal()
   smtk::model::EntityRefs modified;
   smtk::model::EntityRefs expunged;
   bool ok = mod->demoteModelVertex(resource, storage, created, modified, expunged);
-  smtk::model::OperatorResult opResult;
+  Result opResult;
   if (ok)
   {
     opResult = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);

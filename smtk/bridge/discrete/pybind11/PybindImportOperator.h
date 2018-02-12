@@ -15,13 +15,12 @@
 
 #include "smtk/bridge/discrete/operators/ImportOperator.h"
 
-#include "smtk/model/Operator.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::discrete::ImportOperator, smtk::model::Operator > pybind11_init_smtk_bridge_discrete_ImportOperator(py::module &m)
+PySharedPtrClass< smtk::bridge::discrete::ImportOperator, smtk::operation::NewOp > pybind11_init_smtk_bridge_discrete_ImportOperator(py::module &m)
 {
-  PySharedPtrClass< smtk::bridge::discrete::ImportOperator, smtk::model::Operator > instance(m, "ImportOperator");
+  PySharedPtrClass< smtk::bridge::discrete::ImportOperator, smtk::operation::NewOp > instance(m, "ImportOperator");
   instance
     .def("classname", &smtk::bridge::discrete::ImportOperator::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::discrete::ImportOperator> (*)()) &smtk::bridge::discrete::ImportOperator::create)

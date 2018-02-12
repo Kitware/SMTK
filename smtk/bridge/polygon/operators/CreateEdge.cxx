@@ -389,7 +389,7 @@ CreateEdge::Result CreateEdge::operateInternal()
     modified.push_back(parentModel);
   }
 
-  smtk::model::OperatorResult opResult;
+  Result opResult;
   if (ok)
   {
     opResult = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);

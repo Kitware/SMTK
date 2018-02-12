@@ -17,6 +17,7 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/qt/Exports.h"
+#include "smtk/operation/NewOp.h"
 #include <QWidget>
 
 class qtModelOperationWidgetInternals;
@@ -45,12 +46,12 @@ public:
   virtual void refreshOperatorList();
   QSize sizeHint() const override;
   virtual qtModelView* modelView();
-  virtual smtk::model::OperatorPtr existingOperator(const std::string& opname);
+  virtual smtk::operation::NewOpPtr existingOperator(const std::string& opname);
   virtual qtBaseView* existingOperatorView(const std::string& opname);
 
 public slots:
   virtual bool setCurrentOperator(const std::string& opName, smtk::model::SessionPtr session);
-  virtual bool initOperatorUI(const smtk::model::OperatorPtr& brOp);
+  virtual bool initOperatorUI(const smtk::operation::NewOpPtr& brOp);
   virtual void expungeEntities(const smtk::model::EntityRefs& expungedEnts);
   virtual void onOperate();
   virtual void setOperationTargetActive(const smtk::common::UUID& eid)
@@ -63,13 +64,13 @@ public slots:
   virtual void showLogInfo(bool visibilityMode);
 
 signals:
-  void operationRequested(const smtk::model::OperatorPtr& brOp);
-  void operationCancelled(const smtk::model::OperatorPtr& brOp);
-  void operationFinished(const smtk::model::OperatorResult&);
+  void operationRequested(const smtk::operation::NewOpPtr& brOp);
+  void operationCancelled(const smtk::operation::NewOpPtr& brOp);
+  void operationFinished(const smtk::operation::NewOp::Result&);
   void fileItemCreated(smtk::extension::qtFileItem* fileItem);
   void activateOperationTarget(const smtk::common::UUID&);
   void broadcastExpungeEntities(const smtk::model::EntityRefs& expungedEnts);
-  void operatorSet(const smtk::model::OperatorPtr& brOp);
+  void operatorSet(const smtk::operation::NewOpPtr& brOp);
 
   friend class qtModelView;
 

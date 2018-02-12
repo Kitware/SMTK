@@ -44,7 +44,6 @@ set(modelSrcs
   Instance.cxx
   Loop.cxx
   Model.cxx
-  Operator.cxx
   PointLocatorExtension.cxx
   RegisterResources.cxx
   RegisterOperations.cxx
@@ -96,7 +95,6 @@ set(modelHeaders
   IntegerData.h
   Loop.h
   Model.h
-  Operator.h
   PointLocatorExtension.h
   RegisterResources.h
   RegisterOperations.h

@@ -18,7 +18,7 @@
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtUIManager.h"
-#include "smtk/model/Operator.h"
+#include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/view/View.h"
 
 #include "pqActiveObjects.h"
@@ -72,7 +72,7 @@ public:
   }
 
   QPointer<qtAttribute> CurrentAtt;
-  smtk::weak_ptr<smtk::model::Operator> CurrentOp;
+  smtk::weak_ptr<smtk::operation::NewOp> CurrentOp;
   imageFeatureExtractorWidget* ExtractorWidget;
 };
 
@@ -172,11 +172,11 @@ void qtSurfaceExtractorView::updateAttributeData()
     return;
   }
 
-  smtk::model::OperatorPtr edgeOp =
+  smtk::operation::NewOpPtr edgeOp =
     this->uiManager()->activeModelView()->operatorsWidget()->existingOperator(defName);
   this->Internals->CurrentOp = edgeOp;
   // expecting only 1 instance of the op?
-  smtk::attribute::AttributePtr att = edgeOp->specification();
+  smtk::attribute::AttributePtr att = edgeOp->parameters();
   this->Internals->CurrentAtt = this->Internals->createAttUI(att, this->Widget, this);
 }
 
@@ -185,16 +185,16 @@ void qtSurfaceExtractorView::startContourOperation()
   this->operationSelected(this->Internals->CurrentOp.lock());
 }
 
-void qtSurfaceExtractorView::requestOperation(const smtk::model::OperatorPtr& op)
+void qtSurfaceExtractorView::requestOperation(const smtk::operation::NewOpPtr& op)
 {
-  if (!op || !op->specification())
+  if (!op || !op->parameters())
   {
     return;
   }
   this->uiManager()->activeModelView()->requestOperation(op, false);
 }
 
-void qtSurfaceExtractorView::cancelOperation(const smtk::model::OperatorPtr& op)
+void qtSurfaceExtractorView::cancelOperation(const smtk::operation::NewOpPtr& op)
 {
   (void)op;
 }
@@ -207,7 +207,7 @@ void qtSurfaceExtractorView::acceptContours(vtkSmartPointer<vtkPolyData> contour
     return;
   }
 
-  smtk::attribute::AttributePtr spec = this->Internals->CurrentOp.lock()->specification();
+  smtk::attribute::AttributePtr spec = this->Internals->CurrentOp.lock()->parameters();
   if (spec->type() != "extract surface contours")
     return;
   smtk::attribute::IntItem::Ptr opProxyIdItem = spec->findInt("HelperGlobalID");
@@ -216,9 +216,10 @@ void qtSurfaceExtractorView::acceptContours(vtkSmartPointer<vtkPolyData> contour
   this->requestOperation(this->Internals->CurrentOp.lock());
 }
 
-void qtSurfaceExtractorView::operationSelected(const smtk::model::OperatorPtr& op)
+void qtSurfaceExtractorView::operationSelected(const smtk::operation::NewOpPtr& op)
 {
-  if (!this->Internals->CurrentAtt || !this->Widget || op->name() != "extract surface contours")
+  if (!this->Internals->CurrentAtt || !this->Widget ||
+    op->uniqueName() != "extract surface contours")
     return;
 
   if (this->Internals->ExtractorWidget)
@@ -227,7 +228,7 @@ void qtSurfaceExtractorView::operationSelected(const smtk::model::OperatorPtr& o
   }
   this->Internals->ExtractorWidget = new imageFeatureExtractorWidget();
 
-  smtk::attribute::AttributePtr spec = op->specification();
+  smtk::attribute::AttributePtr spec = op->parameters();
   smtk::attribute::ModelEntityItem::Ptr modelItem = spec->associations();
   smtk::model::AuxiliaryGeometry aux(modelItem->value(0));
   if (!aux.isValid())
@@ -242,7 +243,7 @@ void qtSurfaceExtractorView::operationSelected(const smtk::model::OperatorPtr& o
   if (this->Internals->ExtractorWidget->exec())
   {
     vtkSmartPointer<vtkPolyData> pd = this->Internals->ExtractorWidget->getPolydata();
-    smtk::model::OperatorResult edgeResult;
+    smtk::operation::NewOp::Result edgeResult;
     smtk::attribute::IntItem::Ptr offsetsItem =
       spec->findAs<smtk::attribute::IntItem>("offsets", smtk::attribute::ALL_CHILDREN);
     smtk::attribute::DoubleItem::Ptr pointsItem =

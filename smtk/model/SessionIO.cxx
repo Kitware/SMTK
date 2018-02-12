@@ -17,7 +17,6 @@
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/SessionRef.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE

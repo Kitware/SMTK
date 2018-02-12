@@ -15,13 +15,12 @@
 
 #include "smtk/bridge/discrete/operators/GrowOperator.h"
 
-#include "smtk/model/Operator.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::discrete::GrowOperator, smtk::model::Operator > pybind11_init_smtk_bridge_discrete_GrowOperator(py::module &m)
+PySharedPtrClass< smtk::bridge::discrete::GrowOperator, smtk::operation::NewOp > pybind11_init_smtk_bridge_discrete_GrowOperator(py::module &m)
 {
-  PySharedPtrClass< smtk::bridge::discrete::GrowOperator, smtk::model::Operator > instance(m, "GrowOperator");
+  PySharedPtrClass< smtk::bridge::discrete::GrowOperator, smtk::operation::NewOp > instance(m, "GrowOperator");
   instance
     .def("classname", &smtk::bridge::discrete::GrowOperator::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::discrete::GrowOperator> (*)()) &smtk::bridge::discrete::GrowOperator::create)

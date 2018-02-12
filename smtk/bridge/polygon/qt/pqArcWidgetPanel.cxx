@@ -35,6 +35,7 @@
 #include "vtkSelectionNode.h"
 #include "vtkUnsignedIntArray.h"
 
+#include "smtk/attribute/Attribute.h"
 #include "smtk/bridge/polygon/qt/pqArcWidgetManager.h"
 #include "smtk/bridge/polygon/qt/pqPolygonArc.h"
 #include "smtk/bridge/polygon/qt/vtkPolygonArcInfo.h"
@@ -42,7 +43,7 @@
 #include "smtk/extension/vtk/widgets/vtkSMTKArcRepresentation.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
+#include "smtk/operation/NewOp.h"
 #include <QtDebug>
 
 namespace Ui
@@ -156,11 +157,12 @@ void ArcPicker::selectedInfo(pqOutputPort* port)
         if (arcInfo->GetModelEntityID())
         {
           edgeId = smtk::common::UUID(arcInfo->GetModelEntityID());
-          edge = smtk::model::Edge(this->Arc->edgeOperator()->manager(), edgeId);
-          if (edge.isValid())
-          {
-            break;
-          }
+          // TODO: cannot access manager through operator directly
+          // edge = smtk::model::Edge(this->Arc->edgeOperator()->manager(), edgeId);
+          // if (edge.isValid())
+          // {
+          //   break;
+          // }
         }
       }
 
@@ -302,19 +304,20 @@ void pqArcWidgetPanel::arcPicked()
 {
   if (this->Arc && this->Arc->edgeOperator())
   {
-    smtk::model::Edge edge(this->Arc->edgeOperator()->manager(), this->ArcInfo.EdgeId);
-    if (edge.isValid())
-    {
-      smtk::attribute::AttributePtr opSpec = this->Arc->edgeOperator()->specification();
-      edge.setIntegerProperty("block_index", this->ArcInfo.BlockIndex);
-      if (!opSpec->isEntityAssociated(edge))
-      {
-        opSpec->removeAllAssociations();
-        opSpec->associateEntity(edge);
-      }
-      this->showEditWidget();
-      return;
-    }
+    // TODO: cannot access the manager directly through the operator
+    // smtk::model::Edge edge(this->Arc->edgeOperator()->manager(), this->ArcInfo.EdgeId);
+    // if (edge.isValid())
+    // {
+    //   smtk::attribute::AttributePtr opSpec = this->Arc->edgeOperator()->specification();
+    //   edge.setIntegerProperty("block_index", this->ArcInfo.BlockIndex);
+    //   if (!opSpec->isEntityAssociated(edge))
+    //   {
+    //     opSpec->removeAllAssociations();
+    //     opSpec->associateEntity(edge);
+    //   }
+    //   this->showEditWidget();
+    //   return;
+    // }
   }
 
   this->resetWidget();

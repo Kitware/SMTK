@@ -82,7 +82,7 @@ int polyLines2modelEdges(vtkPolyData* mesh, smtk::operation::NewOp::Ptr edgeOp,
       pointsItem->setValue(3 * j + i, p[i]);
     }
   }
-  OperatorResult edgeResult = edgeOp->operate();
+  smtk::operation::NewOp::Result edgeResult = edgeOp->operate();
   if (edgeResult->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
   {
@@ -322,7 +322,7 @@ int polyLines2modelEdgesAndFaces(
         smtk::attribute::IntItem::Ptr countsArr = faceSpec->findInt("counts");
         countsArr->setValues(counts.begin(), counts.end());
 
-        OperatorResult faceResult = faceOp->operate();
+        smtk::operation::NewOp::Result faceResult = faceOp->operate();
         if (faceResult->findInt("outcome")->value() !=
           static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
         {
@@ -363,9 +363,9 @@ bool Import::ableToOperate()
   return false;
 }
 
-OperatorResult Import::operateInternal()
+Import::Result Import::operateInternal()
 {
-  OperatorResult result;
+  Result result;
   std::string filename = this->parameters()->findFile("filename")->value();
   if (filename.empty())
   {
@@ -476,7 +476,7 @@ OperatorResult Import::operateInternal()
     }
   }
 
-  OperatorResult modResult = modOp->operate();
+  smtk::operation::NewOp::Result modResult = modOp->operate();
   if (modResult->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
   {

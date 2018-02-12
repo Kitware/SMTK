@@ -24,7 +24,6 @@
 #include "smtk/model/SessionRef.h"
 #include "smtk/model/StringData.h"
 
-#include "smtk/model/Operator.h"
 #include "smtk/model/SessionRef.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -196,23 +195,24 @@ void qtModelView::showContextMenu(const QModelIndex& idx, const QPoint& p)
   // Have we already processed this session previously? Have the number of
   // operators changed?
   auto sinfoIt = this->m_sessionInfo.find(sessionString);
-  if (sinfoIt == this->m_sessionInfo.end() ||
-    (*sinfoIt).first.size() != brSession.session()->numberOfOperators(false))
-  {
-    // This is the first time seeing this session
-    // First we need to get the mapping between operator labels and their names
-    std::map<std::string, std::string> opLabelsMap = brSession.session()->operatorLabelsMap(false);
-    // Next lets get the list of labels so we can sort them
-    std::vector<std::string> keyList;
-    for (auto imap : opLabelsMap)
-    {
-      keyList.push_back(imap.first);
-    }
-    std::sort(keyList.begin(), keyList.end());
-    this->m_sessionInfo[sessionString] =
-      std::pair<std::vector<std::string>, std::map<std::string, std::string> >(
-        keyList, opLabelsMap);
-  }
+  // TODO: Sessions on longer have information about operators
+  // if (sinfoIt == this->m_sessionInfo.end() ||
+  //   (*sinfoIt).first.size() != brSession.session()->numberOfOperators(false))
+  // {
+  //   // This is the first time seeing this session
+  //   // First we need to get the mapping between operator labels and their names
+  //   std::map<std::string, std::string> opLabelsMap = brSession.session()->operatorLabelsMap(false);
+  //   // Next lets get the list of labels so we can sort them
+  //   std::vector<std::string> keyList;
+  //   for (auto imap : opLabelsMap)
+  //   {
+  //     keyList.push_back(imap.first);
+  //   }
+  //   std::sort(keyList.begin(), keyList.end());
+  //   this->m_sessionInfo[sessionString] =
+  //     std::pair<std::vector<std::string>, std::map<std::string, std::string> >(
+  //       keyList, opLabelsMap);
+  // }
   auto sinfo = this->m_sessionInfo[sessionString];
   // Compare the current model with active model. If true, show related
   // operators. If not, only show `set as active model`.
@@ -271,14 +271,14 @@ qtOperatorDockWidget* qtModelView::operatorsDock()
 
   qtModelOperationWidget* opWidget = new qtModelOperationWidget();
   opWidget->setModelView(this);
-  QObject::connect(opWidget, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)), this,
-    SIGNAL(operationRequested(const smtk::model::OperatorPtr&)));
-  QObject::connect(opWidget, SIGNAL(operationCancelled(const smtk::model::OperatorPtr&)), this,
-    SIGNAL(operationCancelled(const smtk::model::OperatorPtr&)));
+  QObject::connect(opWidget, SIGNAL(operationRequested(const smtk::operation::NewOpPtr&)), this,
+    SIGNAL(operationRequested(const smtk::operation::NewOpPtr&)));
+  QObject::connect(opWidget, SIGNAL(operationCancelled(const smtk::operation::NewOpPtr&)), this,
+    SIGNAL(operationCancelled(const smtk::operation::NewOpPtr&)));
   QObject::connect(opWidget, SIGNAL(fileItemCreated(smtk::extension::qtFileItem*)), this,
     SIGNAL(fileItemCreated(smtk::extension::qtFileItem*)));
-  QObject::connect(this, SIGNAL(operationFinished(const smtk::model::OperatorResult&)), opWidget,
-    SIGNAL(operationFinished(const smtk::model::OperatorResult&)));
+  QObject::connect(this, SIGNAL(operationFinished(const smtk::operation::NewOpResult&)), opWidget,
+    SIGNAL(operationFinished(const smtk::operation::NewOpResult&)));
 
   QWidget* dockP = NULL;
   foreach (QWidget* widget, QApplication::topLevelWidgets())
@@ -338,7 +338,7 @@ void qtModelView::initOperatorsDock(const std::string& opName, smtk::model::Sess
   this->m_OperatorsDock->updateGeometry();
 }
 
-bool qtModelView::requestOperation(const smtk::model::OperatorPtr& brOp, bool launchUI)
+bool qtModelView::requestOperation(const smtk::operation::NewOpPtr& brOp, bool launchUI)
 {
   if (!brOp)
   {
@@ -352,10 +352,12 @@ bool qtModelView::requestOperation(const smtk::model::OperatorPtr& brOp, bool la
   else // launch the m_OperatorsDock
   {
     this->operatorsDock()->show();
-    SessionRef bs(brOp->manager(), brOp->session()->sessionId());
+    // TODO: operators no longer have access to this information
+    // SessionRef bs(brOp->manager(), brOp->session()->sessionId());
 
     this->m_OperatorsWidget->initOperatorUI(brOp);
-    this->m_OperatorsDock->setWindowTitle(bs.flagSummary().c_str());
+    // TODO: operators no longer have access to this information
+    // this->m_OperatorsDock->setWindowTitle(bs.flagSummary().c_str());
 
     if (QScrollArea* scrollArea = qobject_cast<QScrollArea*>(this->m_OperatorsDock->widget()))
     {
@@ -448,7 +450,7 @@ void qtModelView::toggleEntityVisibility(const QModelIndex& /*idx*/)
 }
 
 bool qtModelView::setEntityVisibility(const smtk::model::EntityRefs& /*selentityrefs*/,
-  const smtk::mesh::MeshSets& /*selmeshes*/, int /*vis*/, OperatorPtr /*brOp*/)
+  const smtk::mesh::MeshSets& /*selmeshes*/, int /*vis*/, smtk::operation::NewOpPtr /*brOp*/)
 {
   return false;
 }

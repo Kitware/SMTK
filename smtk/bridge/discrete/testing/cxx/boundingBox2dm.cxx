@@ -30,7 +30,6 @@
 #include "smtk/model/Edge.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/Vertex.h"
 
 using namespace smtk::model;

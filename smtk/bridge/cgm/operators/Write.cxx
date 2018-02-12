@@ -57,7 +57,7 @@ static bool hasEnding(const std::string& fullString, const std::string& ending)
     return false;
 }
 
-smtk::model::OperatorResult Write::operateInternal()
+smtk::operation::NewOpResult Write::operateInternal()
 {
   smtk::attribute::FileItem::Ptr filenameItem = this->specification()->findFile("filename");
   smtk::attribute::StringItem::Ptr filetypeItem = this->specification()->findString("filetype");
@@ -128,7 +128,7 @@ smtk::model::OperatorResult Write::operateInternal()
     return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result =
+  smtk::operation::NewOpResult result =
     this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   return result;

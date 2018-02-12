@@ -20,7 +20,6 @@
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkModel.h"
@@ -121,7 +120,7 @@ WriteOperator::Result WriteOperator::operateInternal()
     return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
-  OperatorResult result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
   this->parameters()->findFile("filename")->setValue(fname);
   // The model was not modified while writing cmb file.
   // this->addEntityToResult(result, model, MODIFIED);

@@ -32,7 +32,6 @@
 #include "smtk/extension/qt/qtOperatorView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
-#include "smtk/model/Operator.h"
 #include "smtk/model/SessionRef.h"
 
 #include "pqActiveObjects.h"
@@ -114,7 +113,7 @@ public:
   smtkSaveActions SaveAsActions;
   smtkSaveActions ExportActions;
 
-  smtk::weak_ptr<smtk::model::Operator> CurrentOp;
+  smtk::weak_ptr<smtk::operation::NewOp> CurrentOp;
 
   bool Fini; // Prevent access to child widgets after parent is destroyed.
 };
@@ -125,7 +124,7 @@ bool smtkSaveModelView::updateOperatorFromUI(const std::string& mode, const T& a
   using namespace ::boost::filesystem;
   using namespace smtk::model;
 
-  smtk::shared_ptr<smtk::model::Operator> op = this->Internals->CurrentOp.lock();
+  smtk::shared_ptr<smtk::operation::NewOp> op = this->Internals->CurrentOp.lock();
   if (!op || (mode != "save" && mode != "save as" && mode != "save a copy"))
   {
     return false;
@@ -133,7 +132,7 @@ bool smtkSaveModelView::updateOperatorFromUI(const std::string& mode, const T& a
 
   /*
   smtk::attribute::ModelEntityItem::Ptr assocSrc = this->Internals->AssocModels->modelEntityItem();
-  smtk::attribute::ModelEntityItem::Ptr assocDst = op->specification()->associations();
+  smtk::attribute::ModelEntityItem::Ptr assocDst = op->parameters()->associations();
   if (assocSrc != assocDst)
   {
     assocDst->setValues(assocSrc->begin(), assocSrc->end(), 0);
@@ -142,11 +141,11 @@ bool smtkSaveModelView::updateOperatorFromUI(const std::string& mode, const T& a
   path fullSMTKPath = action.m_embedDir.empty() ? path(action.m_smtkFilename)
                                                 : path(action.m_embedDir) / action.m_smtkFilename;
 
-  op->findFile("filename")->setValue(fullSMTKPath.string());
+  op->parameters()->findFile("filename")->setValue(fullSMTKPath.string());
 
-  op->findVoid("undo edits")->setIsEnabled(mode == "save a copy");
+  op->parameters()->findVoid("undo edits")->setIsEnabled(mode == "save a copy");
 
-  smtk::attribute::GroupItemPtr propEdits = op->findGroup("property edits");
+  smtk::attribute::GroupItemPtr propEdits = op->parameters()->findGroup("property edits");
   propEdits->setNumberOfGroups(action.m_modelChanges.size());
   int grp = 0;
   for (auto mcit = action.m_modelChanges.begin(); mcit != action.m_modelChanges.end();
@@ -165,7 +164,7 @@ bool smtkSaveModelView::updateOperatorFromUI(const std::string& mode, const T& a
     }
   }
 
-  smtk::attribute::StringItemPtr copyFilesItem = op->findString("copy files");
+  smtk::attribute::StringItemPtr copyFilesItem = op->parameters()->findString("copy files");
   copyFilesItem->setNumberOfValues(2 * action.m_copyFiles.size());
   int cfn = 0;
   for (auto cfit = action.m_copyFiles.begin(); cfit != action.m_copyFiles.end(); ++cfit, ++cfn)
@@ -174,7 +173,7 @@ bool smtkSaveModelView::updateOperatorFromUI(const std::string& mode, const T& a
     copyFilesItem->setValue(2 * cfn + 1, cfit->second);
   }
 
-  smtk::attribute::StringItemPtr saveModelsItem = op->findString("save models");
+  smtk::attribute::StringItemPtr saveModelsItem = op->parameters()->findString("save models");
   saveModelsItem->setNumberOfValues(2 * action.m_saveModels.size());
   int smn = 0;
   for (auto smit = action.m_saveModels.begin(); smit != action.m_saveModels.end(); ++smit, ++smn)
@@ -183,8 +182,8 @@ bool smtkSaveModelView::updateOperatorFromUI(const std::string& mode, const T& a
     saveModelsItem->setValue(2 * smn + 1, smit->second);
   }
 
-  smtk::attribute::MeshItemPtr saveMeshesItem = op->findMesh("save meshes");
-  smtk::attribute::StringItemPtr saveMeshURLsItem = op->findString("save mesh urls");
+  smtk::attribute::MeshItemPtr saveMeshesItem = op->parameters()->findMesh("save meshes");
+  smtk::attribute::StringItemPtr saveMeshURLsItem = op->parameters()->findString("save mesh urls");
   saveMeshesItem->setNumberOfValues(action.m_saveMeshes.size());
   saveMeshURLsItem->setNumberOfValues(action.m_saveMeshes.size());
   smn = 0;
@@ -283,12 +282,12 @@ void smtkSaveModelView::updateAttributeData()
     return;
   }
 
-  smtk::model::OperatorPtr saveModelOp =
+  smtk::operation::NewOpPtr saveModelOp =
     this->uiManager()->activeModelView()->operatorsWidget()->existingOperator(defName);
   this->Internals->CurrentOp = saveModelOp;
 
   // expecting only 1 instance of the op?
-  smtk::attribute::AttributePtr att = saveModelOp->specification();
+  smtk::attribute::AttributePtr att = saveModelOp->parameters();
   //this->Internals->CurrentAtt = this->Internals->createAttUI(att, this->Widget, this);
 }
 
@@ -324,7 +323,7 @@ void smtkSaveModelView::createWidget()
 
   /*
   this->Internals->AssocModels =
-    new qtModelEntityItem(this->Internals->CurrentOp.lock()->specification()->associations(),
+    new qtModelEntityItem(this->Internals->CurrentOp.lock()->parameters()->associations(),
       nullptr, this, Qt::Horizontal);
   this->Internals->AssocModels->setUseSelectionManager(this->useSelectionManager());
   QObject::connect(&qtActiveObjects::instance(), SIGNAL(activeModelChanged()),
@@ -333,7 +332,7 @@ void smtkSaveModelView::createWidget()
   */
 
   this->Internals->FileItem = new qtFileItem(
-    this->Internals->CurrentOp.lock()->specification()->findAs<smtk::attribute::FileSystemItem>(
+    this->Internals->CurrentOp.lock()->parameters()->findAs<smtk::attribute::FileSystemItem>(
       "filename", smtk::attribute::ACTIVE_CHILDREN),
     nullptr, this, Qt::Horizontal);
   layout->addWidget(this->Internals->FileItem->widget());
@@ -402,16 +401,16 @@ bool smtkSaveModelView::eventFilter(QObject* obj, QEvent* evnt)
   return this->smtk::extension::qtBaseView::eventFilter(obj, evnt);
 }
 
-bool smtkSaveModelView::requestOperation(const smtk::model::OperatorPtr& op)
+bool smtkSaveModelView::requestOperation(const smtk::operation::NewOpPtr& op)
 {
-  if (!op || !op->specification())
+  if (!op || !op->parameters())
   {
     return false;
   }
   return this->uiManager()->activeModelView()->requestOperation(op, false);
 }
 
-void smtkSaveModelView::cancelOperation(const smtk::model::OperatorPtr& op)
+void smtkSaveModelView::cancelOperation(const smtk::operation::NewOpPtr& op)
 {
   if (!op || !this->Widget || !this->Internals->CurrentOp.lock())
   {

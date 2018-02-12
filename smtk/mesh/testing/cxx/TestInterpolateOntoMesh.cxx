@@ -10,6 +10,7 @@
 
 #include "smtk/common/UUID.h"
 
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/GroupItem.h"
@@ -31,7 +32,6 @@
 #include "smtk/mesh/operators/InterpolateOntoMesh.h"
 
 #include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
 
 #include <algorithm>
 #include <array>
@@ -300,7 +300,7 @@ int main(int argc, char* argv[])
 
   // ...and test the results for success.
   if (interpolateOntoMeshOpResult->findInt("outcome")->value() !=
-    smtk::operation::Operator::OPERATION_SUCCEEDED)
+    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
   {
     std::cerr << "\"interpolate onto mesh\" operator failed\n";
     return 1;

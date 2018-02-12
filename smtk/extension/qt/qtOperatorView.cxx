@@ -14,7 +14,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtUIManager.h"
-#include "smtk/model/Operator.h"
+#include "smtk/operation/NewOp.h"
 #include "smtk/view/View.h"
 
 #include <QDialogButtonBox>
@@ -37,7 +37,7 @@ public:
     : m_instancedView(nullptr)
   {
   }
-  smtk::model::OperatorPtr m_operator;
+  smtk::operation::NewOpPtr m_operator;
   std::unique_ptr<qtInstancedView> m_instancedView;
   smtk::view::ViewPtr m_instancedViewDef;
   QPointer<QPushButton> m_applyButton;
@@ -156,7 +156,7 @@ void qtOperatorView::requestModelEntityAssociation()
 
 void qtOperatorView::setInfoToBeDisplayed()
 {
-  this->m_infoDialog->displayInfo(this->Internals->m_operator->specification());
+  this->m_infoDialog->displayInfo(this->Internals->m_operator->parameters());
 }
 
 void qtOperatorView::onOperate()

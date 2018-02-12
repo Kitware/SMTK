@@ -49,7 +49,7 @@ public:
 
 protected:
   Import();
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
   virtual const char* xmlDescription() const override;
   int taggedPolyData2PolygonModelEntities(smtk::bridge::polygon::Resource::Ptr& resource,
     vtkIdTypeArray* tagInfo, vtkPolyData* mesh, smtk::model::Model& model);

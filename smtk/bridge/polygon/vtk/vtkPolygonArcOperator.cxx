@@ -15,7 +15,6 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/model/Edge.h"
-#include "smtk/model/Operator.h"
 
 #include "vtkContourRepresentation.h"
 #include "vtkObjectFactory.h"
@@ -75,7 +74,7 @@ bool vtkPolygonArcOperator::AbleToOperate()
   return able2Op;
 }
 
-smtk::model::OperatorResult vtkPolygonArcOperator::Operate()
+smtk::operation::NewOp::Result vtkPolygonArcOperator::Operate()
 {
   // ONLY for create-edge-with-widget and edit-edge operations,
   if (!this->AbleToOperate())
@@ -83,7 +82,7 @@ smtk::model::OperatorResult vtkPolygonArcOperator::Operate()
     return this->m_smtkOp.lock()->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
-  smtk::model::OperatorResult edgeResult;
+  smtk::operation::NewOp::Result edgeResult;
   smtk::attribute::AttributePtr spec = this->m_smtkOp.lock()->parameters();
   vtkPolyData* pd = this->ArcRepresentation->GetContourRepresentationAsPolyData();
   vtkCellArray* lines = pd->GetLines();

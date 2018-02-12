@@ -29,7 +29,6 @@
 #include "smtk/model/Face.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Vertex.h"
 #include "smtk/model/Volume.h"
@@ -288,7 +287,7 @@ EdgeOperator::Result EdgeOperator::operateInternal()
       break;
   }
 
-  OperatorResult result = this->createResult(
+  Result result = this->createResult(
     ok ? smtk::operation::NewOp::Outcome::SUCCEEDED : smtk::operation::NewOp::Outcome::FAILED);
 
   if (ok)

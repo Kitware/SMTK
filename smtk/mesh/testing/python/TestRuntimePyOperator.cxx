@@ -31,7 +31,6 @@
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/SimpleModelSubphrases.h"
 #include "smtk/model/Tessellation.h"
 
@@ -136,11 +135,11 @@ int main(int argc, char* argv[])
   std::cout << "\n";
 
   {
-    smtk::model::Operator::Ptr op = session->op("import python operator");
+    smtk::operation::NewOp::Ptr op = session->op("import python operator");
 
     op->findFile("filename")->setValue(::boost::filesystem::absolute(path).string().c_str());
 
-    smtk::model::OperatorResult result = op->operate();
+    smtk::operation::NewOpResult result = op->operate();
     if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
     {
       std::cerr << "Could not load smtk model!\n";
@@ -158,10 +157,10 @@ int main(int argc, char* argv[])
     { //just make sure the file exists
       file.close();
 
-      smtk::model::Operator::Ptr op = session->op("load smtk model");
+      smtk::operation::NewOp::Ptr op = session->op("load smtk model");
 
       op->findFile("filename")->setValue(file_path.c_str());
-      smtk::model::OperatorResult result = op->operate();
+      smtk::operation::NewOpResult result = op->operate();
       if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
       {
         std::cerr << "Could not load smtk model!\n";
@@ -187,14 +186,14 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    smtk::model::OperatorPtr triangulateFace = session->op("triangulate faces");
+    smtk::operation::NewOpPtr triangulateFace = session->op("triangulate faces");
     if (!triangulateFace)
     {
       std::cerr << "No triangulate face operator\n";
       return 1;
     }
     triangulateFace->specification()->associateEntity(face);
-    smtk::model::OperatorResult result = triangulateFace->operate();
+    smtk::operation::NewOpResult result = triangulateFace->operate();
     auto associatedCollections = meshManager->associatedCollections(face);
     collection = associatedCollections[0];
   }
@@ -212,10 +211,10 @@ int main(int argc, char* argv[])
   }
 
   {
-    smtk::model::Operator::Ptr op = session->op("my elevate mesh");
+    smtk::operation::NewOp::Ptr op = session->op("my elevate mesh");
 
     op->findMesh("mesh")->setValue(collection->meshes());
-    smtk::model::OperatorResult result = op->operate();
+    smtk::operation::NewOpResult result = op->operate();
     if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
     {
       std::cerr << "Could not run \"my elevate mesh\"!\n";

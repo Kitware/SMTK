@@ -23,7 +23,6 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/StringData.h"
 
@@ -47,11 +46,6 @@ py::class_< smtk::model::SessionRef, smtk::model::EntityRef > pybind11_init_smtk
     .def("engines", &smtk::model::SessionRef::engines)
     .def("fileTypes", &smtk::model::SessionRef::fileTypes, py::arg("engine") = std::string())
     .def("isValid", (bool (smtk::model::SessionRef::*)() const) &smtk::model::SessionRef::isValid)
-    // .def("isValid", (bool (smtk::model::SessionRef::*)(::smtk::model::Entity * *) const) &smtk::model::SessionRef::isValid, py::arg("entRec"))
-    .def("opDef", &smtk::model::SessionRef::opDef, py::arg("opName"))
-    .def("opSys", &smtk::model::SessionRef::opSys)
-    .def("operatorNames", &smtk::model::SessionRef::operatorNames, py::arg("includeAdvanced") = true)
-    .def("operatorsForAssociation", (smtk::model::StringList (smtk::model::SessionRef::*)(::smtk::model::BitFlags) const) &smtk::model::SessionRef::operatorsForAssociation, py::arg("assocMask"))
     .def("session", &smtk::model::SessionRef::session)
     .def("site", &smtk::model::SessionRef::site)
     .def("tag", &smtk::model::SessionRef::tag)

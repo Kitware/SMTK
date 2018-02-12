@@ -51,8 +51,8 @@ public slots:
   void onResolutionEditChanged(QString scaleString);
 
 protected slots:
-  virtual void requestOperation(const smtk::model::OperatorPtr& op);
-  virtual void cancelOperation(const smtk::model::OperatorPtr&);
+  virtual void requestOperation(const smtk::operation::NewOpPtr& op);
+  virtual void cancelOperation(const smtk::operation::NewOpPtr&);
 
   // Auto save slots
   bool onAutoSaveExtractFileName(); //Returns true if user selected a file

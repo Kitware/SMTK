@@ -17,7 +17,6 @@
 #include "smtk/io/SaveJSON.h"
 #include "smtk/io/SaveJSON.txx"
 #include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
 
 #include "smtk/model/json/jsonResource.h"
 

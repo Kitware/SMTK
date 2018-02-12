@@ -44,7 +44,7 @@ public:
   smtkSuperclassMacro(Operator);
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
   virtual const char* xmlDescription() const override;
 
   template <typename U, typename V, typename W, typename X>

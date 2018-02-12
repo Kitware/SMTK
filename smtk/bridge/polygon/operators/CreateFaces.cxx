@@ -133,7 +133,7 @@ bool CreateFaces::populateEdgeMap()
   return true;
 }
 
-smtk::model::OperatorResult CreateFaces::operateInternal()
+CreateFaces::Result CreateFaces::operateInternal()
 {
   smtk::attribute::ModelEntityItem::Ptr modelItem = this->parameters()->associations();
 

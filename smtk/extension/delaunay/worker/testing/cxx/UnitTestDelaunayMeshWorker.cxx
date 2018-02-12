@@ -217,7 +217,8 @@ int main(int argc, char** const argv)
   meshServerLauncher.terminate();
 
   // Check the outcome of the operation
-  if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
+  if (result->findInt("outcome")->value() !=
+    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
   {
     std::cerr << "Mesh operator failed\n";
     return 1;

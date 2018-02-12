@@ -93,7 +93,7 @@ void SetMeshPropertyValue(const std::string& name, typename VI::Ptr item,
   }
 }
 
-smtk::model::OperatorResult SetProperty::operateInternal()
+SetProperty::Result SetProperty::operateInternal()
 {
   smtk::attribute::StringItemPtr nameItem = this->parameters()->findString("name");
   smtk::attribute::StringItemPtr stringItem = this->parameters()->findString("string value");

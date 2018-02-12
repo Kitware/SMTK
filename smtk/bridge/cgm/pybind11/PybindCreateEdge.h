@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::cgm::CreateEdge > pybind11_init_smtk_bridge_cgm_CreateEdge(py::module &m, PySharedPtrClass< smtk::bridge::cgm::Operator, smtk::model::Operator >& parent)
+PySharedPtrClass< smtk::bridge::cgm::CreateEdge > pybind11_init_smtk_bridge_cgm_CreateEdge(py::module &m, PySharedPtrClass< smtk::bridge::cgm::Operator, smtk::operation::NewOp >& parent)
 {
   PySharedPtrClass< smtk::bridge::cgm::CreateEdge > instance(m, "CreateEdge", parent);
   instance

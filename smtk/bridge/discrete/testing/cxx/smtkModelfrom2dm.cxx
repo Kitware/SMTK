@@ -333,7 +333,8 @@ int main(int argc, char* argv[])
     meshItem->setValues(edge1, pids);
     meshItem->setModifyMode(smtk::attribute::ACCEPT);
     result = edgeop->operate();
-    if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
+    if (result->findInt("outcome")->value() !=
+      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
     {
       std::cerr << "Split Edge 1 Failed!\n";
       return 1;
@@ -352,7 +353,8 @@ int main(int argc, char* argv[])
     meshItem->setValues(edge10, pids);
     meshItem->setModifyMode(smtk::attribute::ACCEPT);
     result = edgeop->operate();
-    if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
+    if (result->findInt("outcome")->value() !=
+      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
     {
       std::cerr << "Split Edge 10 Failed!\n";
       return 1;
@@ -371,7 +373,8 @@ int main(int argc, char* argv[])
     meshItem->setValues(vertex4, pids);
     meshItem->setModifyMode(smtk::attribute::ACCEPT);
     result = edgeop->operate();
-    if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
+    if (result->findInt("outcome")->value() !=
+      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
     {
       std::cerr << "Demote Vertex 4 on Edge 10 Failed!\n";
       return 1;

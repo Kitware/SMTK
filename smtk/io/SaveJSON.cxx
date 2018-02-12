@@ -18,7 +18,6 @@
 #include "smtk/model/Entity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/SessionIOJSON.h"
 #include "smtk/model/SessionRegistrar.h"
 #include "smtk/model/Tessellation.h"
@@ -82,26 +81,26 @@ cJSON* cJSON_AddAttributeSpec(cJSON* opEntry,
   return opEntry;
 }
 
-cJSON* cJSON_AddOperator(smtk::model::OperatorPtr op, cJSON* opEntry)
-{
-  cJSON_AddItemToObject(opEntry, "name", cJSON_CreateString(op->name().c_str()));
-  smtk::attribute::AttributePtr spec = op->specification();
-  if (spec)
-  {
-    cJSON_AddAttributeSpec(opEntry, "spec", "specXML", spec);
-  }
-  /*
-    cJSON_AddItemToObject(opEntry, "parameters",
-      cJSON_CreateParameterArray(op->parameters()));
-      */
-  return opEntry;
-}
+// cJSON* cJSON_AddOperator(smtk::operation::NewOpPtr op, cJSON* opEntry)
+// {
+//   cJSON_AddItemToObject(opEntry, "name", cJSON_CreateString(op->name().c_str()));
+//   smtk::attribute::AttributePtr spec = op->specification();
+//   if (spec)
+//   {
+//     cJSON_AddAttributeSpec(opEntry, "spec", "specXML", spec);
+//   }
+//   /*
+//     cJSON_AddItemToObject(opEntry, "parameters",
+//       cJSON_CreateParameterArray(op->parameters()));
+//       */
+//   return opEntry;
+// }
 
 /*
-  cJSON* cJSON_CreateOperatorArray(const smtk::model::Operators& ops)
+  cJSON* cJSON_CreateOperatorArray(const smtk::operation::NewOps& ops)
     {
     cJSON* a = cJSON_CreateArray();
-    for (smtk::model::Operators::const_iterator it = ops.begin(); it != ops.end(); ++it)
+    for (smtk::operation::NewOps::const_iterator it = ops.begin(); it != ops.end(); ++it)
       {
       cJSON* opEntry = cJSON_CreateObject();
       cJSON_AddItemToArray(a, opEntry);
@@ -668,7 +667,7 @@ int SaveJSON::forManagerSession(const smtk::common::UUID& uid, cJSON* node, Mana
   SaveJSON::addModelsRecord(modelMgr, modelsOfSession, sess);
   SaveJSON::addMeshesRecord(modelMgr, modelsOfSession, sess);
 
-  status &= SaveJSON::forOperatorDefinitions(session->operatorCollection(), sess);
+  // status &= SaveJSON::forOperatorDefinitions(session->operatorCollection(), sess);
   return status;
 }
 
@@ -695,7 +694,7 @@ int SaveJSON::forManagerSessionPartial(const smtk::common::UUID& sessionid,
   }
   SaveJSON::addModelsRecord(modelMgr, modelIds, sess);
   SaveJSON::addMeshesRecord(modelMgr, modelIds, sess);
-  status &= SaveJSON::forOperatorDefinitions(session->operatorCollection(), sess);
+  // status &= SaveJSON::forOperatorDefinitions(session->operatorCollection(), sess);
   return status;
 }
 
@@ -703,12 +702,13 @@ int SaveJSON::forManagerSessionPartial(const smtk::common::UUID& sessionid,
 int SaveJSON::forModelOperators(const smtk::common::UUID& uid, cJSON* entRec, ManagerPtr modelMgr)
 {
   smtk::model::Model mod(modelMgr, uid);
-  smtk::model::Operators ops(mod.operators());
+  smtk::operation::NewOps ops(mod.operators());
   cJSON_AddItemToObject(entRec, "ops",
     cJSON_CreateOperatorArray(ops));`
   return 1; // SaveJSON::forOperators(ops, entRec);
 } */
 
+/*
 int SaveJSON::forOperatorDefinitions(smtk::attribute::CollectionPtr opSys, cJSON* entRec)
 {
   smtk::io::Logger log;
@@ -724,7 +724,6 @@ int SaveJSON::forOperatorDefinitions(smtk::attribute::CollectionPtr opSys, cJSON
   {
     cJSON_AddItemToObject(entRec, "ops", cJSON_CreateString(xml.c_str()));
   }
-  /*
   std::vector<smtk::attribute::DefinitionPtr> ops;
   opSys.derivedDefinitions(
     opSys.findDefinition("operator"), ops);
@@ -733,7 +732,6 @@ int SaveJSON::forOperatorDefinitions(smtk::attribute::CollectionPtr opSys, cJSON
     cJSON_AddItemToObject(entRec, "ops",
       cJSON_CreateOperatorArray(ops));
     }
-    */
   return 1;
 }
 
@@ -801,6 +799,7 @@ int SaveJSON::forOperatorResult(OperatorResult res, cJSON* entRec)
 
   return 1;
 }
+  */
 
 /// Serialize a session's list of dangling entities held in the given \a modelMgr.
 int SaveJSON::forDanglingEntities(

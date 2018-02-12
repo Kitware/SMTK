@@ -46,7 +46,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::model::OperatorResult CreateVertex::operateInternal()
+smtk::operation::NewOpResult CreateVertex::operateInternal()
 {
   smtk::attribute::DoubleItem::Ptr pointItem = this->specification()->findDouble("point");
   smtk::attribute::IntItem::Ptr colorItem = this->specification()->findInt("color");
@@ -61,7 +61,7 @@ smtk::model::OperatorResult CreateVertex::operateInternal()
     return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result =
+  smtk::operation::NewOpResult result =
     this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   DLIList<RefVertex*> cgmEntitiesOut;

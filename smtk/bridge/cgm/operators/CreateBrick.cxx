@@ -46,7 +46,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::model::OperatorResult CreateBrick::operateInternal()
+smtk::operation::NewOpResult CreateBrick::operateInternal()
 {
   using smtk::attribute::SearchStyle;
 
@@ -113,7 +113,7 @@ smtk::model::OperatorResult CreateBrick::operateInternal()
     return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result =
+  smtk::operation::NewOpResult result =
     this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   DLIList<Body*> cgmBodiesOut;

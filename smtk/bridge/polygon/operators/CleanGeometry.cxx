@@ -895,7 +895,7 @@ CleanGeometry::Result CleanGeometry::operateInternal()
     }
   }
 
-  smtk::model::OperatorResult opResult;
+  Result opResult;
   opResult = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
   smtk::attribute::ComponentItem::Ptr createdItem = opResult->findComponent("created");
   for (auto& c : created)

@@ -55,7 +55,7 @@ RemoveModel::Result RemoveModel::operateInternal()
       break;
   }
 
-  OperatorResult result = this->createResult(
+  Result result = this->createResult(
     success ? smtk::operation::NewOp::Outcome::SUCCEEDED : smtk::operation::NewOp::Outcome::FAILED);
 
   if (success)

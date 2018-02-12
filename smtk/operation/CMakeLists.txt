@@ -5,7 +5,6 @@ set(operationSrcs
   Metadata.cxx
   MetadataObserver.cxx
   Observer.cxx
-  Operator.cxx
   NewOp.cxx
   RegisterOperations.cxx
   RegisterResources.cxx
@@ -23,7 +22,6 @@ set(operationHeaders
   MetadataContainer.h
   MetadataObserver.h
   Observer.h
-  Operator.h
   NewOp.h
   RegisterOperations.h
   RegisterResources.h

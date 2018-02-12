@@ -246,7 +246,7 @@ EntityGroupOperator::Result EntityGroupOperator::operateInternal()
     }
   }
 
-  OperatorResult result = this->createResult(
+  Result result = this->createResult(
     ok ? smtk::operation::NewOp::Outcome::SUCCEEDED : smtk::operation::NewOp::Outcome::FAILED);
 
   if (ok)

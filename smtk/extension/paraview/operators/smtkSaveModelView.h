@@ -59,8 +59,8 @@ public slots:
   bool attemptSave(const std::string& mode) override;
 
 protected slots:
-  virtual bool requestOperation(const smtk::model::OperatorPtr& op);
-  virtual void cancelOperation(const smtk::model::OperatorPtr&);
+  virtual bool requestOperation(const smtk::operation::NewOpPtr& op);
+  virtual void cancelOperation(const smtk::operation::NewOpPtr&);
   virtual void clearSelection();
 
   // This slot is used to indicate that the underlying attribute

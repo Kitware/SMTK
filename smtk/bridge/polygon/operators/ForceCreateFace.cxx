@@ -77,7 +77,7 @@ bool ForceCreateFace::ableToOperate()
 }
 
 /// Create one or more polygonal faces without sanity checks.
-smtk::model::OperatorResult ForceCreateFace::operateInternal()
+smtk::operation::NewOp::Result ForceCreateFace::operateInternal()
 {
   int method = this->parameters()->findInt("construction method")->discreteIndex();
 
@@ -283,8 +283,7 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
     modelFace.setBoundingBox(&bbox[0]);
   }
 
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
 
   smtk::attribute::ComponentItem::Ptr createdItem = result->findComponent("created");
   for (auto& c : created)

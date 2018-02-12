@@ -49,7 +49,6 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindTranslate.h"
 #include "PybindWrite.h"
 
-#include "smtk/model/Operator.h"
 #include "smtk/model/Session.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
@@ -63,7 +62,7 @@ PYBIND11_MODULE(_smtkPybindCGMSession, cgm)
   py::class_< smtk::bridge::cgm::Engines > smtk_bridge_cgm_Engines = pybind11_init_smtk_bridge_cgm_Engines(cgm);
   py::class_< smtk::bridge::cgm::ExportSolid > smtk_bridge_cgm_ExportSolid = pybind11_init_smtk_bridge_cgm_ExportSolid(cgm);
   py::class_< smtk::bridge::cgm::ImportSolid > smtk_bridge_cgm_ImportSolid = pybind11_init_smtk_bridge_cgm_ImportSolid(cgm);
-  PySharedPtrClass< smtk::bridge::cgm::Operator, smtk::model::Operator > smtk_bridge_cgm_Operator = pybind11_init_smtk_bridge_cgm_Operator(cgm);
+  PySharedPtrClass< smtk::bridge::cgm::Operator, smtk::operation::NewOp > smtk_bridge_cgm_Operator = pybind11_init_smtk_bridge_cgm_Operator(cgm);
   PySharedPtrClass< smtk::bridge::cgm::Session, smtk::model::Session > smtk_bridge_cgm_Session = pybind11_init_smtk_bridge_cgm_Session(cgm);
   PySharedPtrClass< smtk::bridge::cgm::BooleanIntersection > smtk_bridge_cgm_BooleanIntersection = pybind11_init_smtk_bridge_cgm_BooleanIntersection(cgm, smtk_bridge_cgm_Operator);
   PySharedPtrClass< smtk::bridge::cgm::BooleanSubtraction > smtk_bridge_cgm_BooleanSubtraction = pybind11_init_smtk_bridge_cgm_BooleanSubtraction(cgm, smtk_bridge_cgm_Operator);

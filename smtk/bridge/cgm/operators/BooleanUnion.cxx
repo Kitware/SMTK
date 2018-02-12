@@ -51,7 +51,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::model::OperatorResult BooleanUnion::operateInternal()
+smtk::operation::NewOpResult BooleanUnion::operateInternal()
 {
   // The union operator preserves the first input body even when
   // keepInputs is false, so be careful not to expunge it (by
@@ -80,7 +80,7 @@ smtk::model::OperatorResult BooleanUnion::operateInternal()
     return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result =
+  smtk::operation::NewOpResult result =
     this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmBodiesOut, result, MODIFIED);

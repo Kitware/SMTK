@@ -39,7 +39,7 @@ bool RemoveModel::ableToOperate()
   return numModels > 0;
 }
 
-smtk::model::OperatorResult RemoveModel::operateInternal()
+smtk::operation::NewOpResult RemoveModel::operateInternal()
 {
   GeometryQueryTool* gqt = GeometryQueryTool::instance();
   if (!gqt)

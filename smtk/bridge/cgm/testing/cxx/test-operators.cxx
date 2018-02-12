@@ -15,7 +15,6 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/SessionRef.h"
 #include "smtk/model/Volume.h"

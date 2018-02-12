@@ -27,7 +27,6 @@
 #include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/SessionRef.h"
 
 #include "smtk/bridge/polygon/ExtractContours_xml.h"

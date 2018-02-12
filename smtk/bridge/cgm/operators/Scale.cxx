@@ -50,7 +50,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::model::OperatorResult Scale::operateInternal()
+smtk::operation::NewOpResult Scale::operateInternal()
 {
   smtk::attribute::DoubleItemPtr originItem = this->findDouble("origin");
   smtk::attribute::IntItemPtr typeItem = this->findInt("scale factor type");
@@ -98,7 +98,7 @@ smtk::model::OperatorResult Scale::operateInternal()
     return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result =
+  smtk::operation::NewOpResult result =
     this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmEntitiesOut, result, MODIFIED);

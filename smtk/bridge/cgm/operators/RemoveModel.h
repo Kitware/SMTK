@@ -30,7 +30,7 @@ public:
   bool ableToOperate() override;
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
 };
 
 } //namespace cgm

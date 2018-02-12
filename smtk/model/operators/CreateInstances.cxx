@@ -94,7 +94,7 @@ void CreateInstances::addSnappingConstraints(Instance& instance, const EntityRef
   }
 }
 
-smtk::model::OperatorResult CreateInstances::operateInternal()
+CreateInstances::Result CreateInstances::operateInternal()
 {
   auto associations = this->parameters()->associations();
   EntityRefArray prototypes(associations->begin(), associations->end());

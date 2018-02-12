@@ -52,7 +52,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::model::OperatorResult BooleanSubtraction::operateInternal()
+smtk::operation::NewOpResult BooleanSubtraction::operateInternal()
 {
   int keepInputs = this->findInt("keep inputs")->value();
   int imprint = this->findInt("imprint workpieces")->value();
@@ -89,7 +89,7 @@ smtk::model::OperatorResult BooleanSubtraction::operateInternal()
     return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result =
+  smtk::operation::NewOpResult result =
     this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmBodiesOut, result, MODIFIED);

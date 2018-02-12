@@ -32,7 +32,7 @@ public:
   smtkDeclareModelOperator();
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
 };
 
 } // namespace cgm

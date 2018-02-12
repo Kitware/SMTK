@@ -27,14 +27,14 @@ namespace extension
 class SMTKQTEXT_EXPORT OperatorViewInfo : public ViewInfo
 {
 public:
-  OperatorViewInfo(smtk::view::ViewPtr view, smtk::model::OperatorPtr targetOperator,
+  OperatorViewInfo(smtk::view::ViewPtr view, smtk::operation::NewOpPtr targetOperator,
     QWidget* parent, qtUIManager* uiman)
     : ViewInfo(view, parent, uiman)
     , m_operator(targetOperator)
   {
   }
 
-  OperatorViewInfo(smtk::view::ViewPtr view, smtk::model::OperatorPtr targetOperator,
+  OperatorViewInfo(smtk::view::ViewPtr view, smtk::operation::NewOpPtr targetOperator,
     QWidget* parent, qtUIManager* uiman, const std::map<std::string, QLayout*>& layoutDict)
     : ViewInfo(view, parent, uiman, layoutDict)
     , m_operator(targetOperator)
@@ -42,7 +42,7 @@ public:
   }
 
   OperatorViewInfo() {}
-  smtk::model::OperatorPtr m_operator;
+  smtk::operation::NewOpPtr m_operator;
 };
 
 class SMTKQTEXT_EXPORT qtOperatorView : public qtBaseView
@@ -63,7 +63,7 @@ public slots:
   virtual void onOperate();
 
 signals:
-  void operationRequested(const smtk::model::OperatorPtr& brOp);
+  void operationRequested(const smtk::operation::NewOpPtr& brOp);
 
 protected:
   void createWidget() override;

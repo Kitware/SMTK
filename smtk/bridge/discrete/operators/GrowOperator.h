@@ -49,8 +49,8 @@ protected:
   void findVisibleModelFaces(
     const smtk::model::CellEntity& cellent, std::set<vtkIdType>& ModelFaceIds, Session* opsession);
 
-  bool writeSelectionResult(const std::map<smtk::common::UUID, std::set<int> >& cachedSelection,
-    smtk::model::OperatorResult& result);
+  bool writeSelectionResult(
+    const std::map<smtk::common::UUID, std::set<int> >& cachedSelection, Result& result);
   void writeSplitResult(vtkSelectionSplitOperator* splitOp, vtkDiscreteModelWrapper* modelWrapper,
     smtk::bridge::discrete::Resource::Ptr& resource, Session* opsession, Result& result);
   // This grow_selection is a list of cell ids from master polydata,

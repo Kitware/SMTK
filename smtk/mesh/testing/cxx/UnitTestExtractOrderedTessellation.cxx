@@ -57,8 +57,9 @@ smtk::bridge::discrete::Resource::Ptr create_discrete_mesh_model()
   smtk::bridge::discrete::ImportOperator::Ptr op = smtk::bridge::discrete::ImportOperator::create();
 
   op->parameters()->findFile("filename")->setValue(file_path.c_str());
-  smtk::model::OperatorResult result = op->operate();
-  if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
+  smtk::bridge::discrete::ImportOperator::Result result = op->operate();
+  if (result->findInt("outcome")->value() !=
+    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
   {
     std::cout << "Import 2dm Failed!" << std::endl;
   }

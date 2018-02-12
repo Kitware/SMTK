@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshSelectionItem.h"
@@ -31,7 +32,6 @@
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/Vertex.h"
 
 #include "vtkActor.h"

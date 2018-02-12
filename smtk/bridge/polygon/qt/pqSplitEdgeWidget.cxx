@@ -49,7 +49,7 @@
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
+#include "smtk/operation/NewOp.h"
 
 #include <QToolButton>
 #include <QVBoxLayout>
@@ -183,14 +183,14 @@ void pqSplitEdgeWidget::setView(pqRenderView* view)
   }
 }
 
-void pqSplitEdgeWidget::setEdgeOperator(smtk::model::OperatorPtr edgeOp)
+void pqSplitEdgeWidget::setEdgeOperator(smtk::operation::NewOpPtr edgeOp)
 {
-  if (edgeOp && edgeOp->name() == "split edge")
+  if (edgeOp && edgeOp->uniqueName() == "smtk::bridge::polygon::operators::SplitEdge")
     this->m_edgeOp = edgeOp;
   else
-    this->m_edgeOp = smtk::model::Operator::Ptr();
+    this->m_edgeOp = smtk::operation::NewOp::Ptr();
 }
-smtk::shared_ptr<smtk::model::Operator> pqSplitEdgeWidget::edgeOperator()
+smtk::shared_ptr<smtk::operation::NewOp> pqSplitEdgeWidget::edgeOperator()
 {
   return this->m_edgeOp.lock();
 }
@@ -253,7 +253,7 @@ void pqSplitEdgeWidget::arcPointPicked(pqOutputPort* port)
 
     //collect the information from the server model source
     vtkSMProxy* proxy = port->getSource()->getProxy();
-    smtk::attribute::AttributePtr opSpec = this->m_edgeOp.lock()->specification();
+    smtk::attribute::AttributePtr opSpec = this->m_edgeOp.lock()->parameters();
 
     // find the first proper point to start spliting
     if (ids.size() > 2 && (ids.size() % 3 == 0)) // A valid selection
@@ -268,20 +268,21 @@ void pqSplitEdgeWidget::arcPointPicked(pqOutputPort* port)
         if (arcInfo->GetModelEntityID())
         {
           smtk::common::UUID edgeId(arcInfo->GetModelEntityID());
-          smtk::model::Edge edge(this->m_edgeOp.lock()->manager(), edgeId);
-          if (edge.isValid())
-          {
-            opSpec->removeAllAssociations();
-            opSpec->associateEntity(edge);
-            double ptcoords[3];
-            arcInfo->GetSelectedPointCoordinates(ptcoords);
-            opSpec->findDouble("point")->setValue(0, ptcoords[0]);
-            opSpec->findDouble("point")->setValue(1, ptcoords[1]);
-            opSpec->findInt("point id")->setValue(ptid);
-            // now request the operation
-            readytoOp = true;
-            break;
-          }
+          // TODO: manager cannot be accessed through the operator directly
+          // smtk::model::Edge edge(this->m_edgeOp.lock()->manager(), edgeId);
+          // if (edge.isValid())
+          // {
+          //   opSpec->removeAllAssociations();
+          //   opSpec->associateEntity(edge);
+          //   double ptcoords[3];
+          //   arcInfo->GetSelectedPointCoordinates(ptcoords);
+          //   opSpec->findDouble("point")->setValue(0, ptcoords[0]);
+          //   opSpec->findDouble("point")->setValue(1, ptcoords[1]);
+          //   opSpec->findInt("point id")->setValue(ptid);
+          //   // now request the operation
+          //   readytoOp = true;
+          //   break;
+          // }
         }
       }
     }

@@ -26,7 +26,6 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
 
 #include "smtk/operation/Manager.h"
 #include "smtk/resource/Manager.h"
@@ -87,7 +86,7 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
       model = std::dynamic_pointer_cast<smtk::model::Entity>(componentItem->value());
 
       if (importOpResult->findInt("outcome")->value() !=
-        smtk::operation::Operator::OPERATION_SUCCEEDED)
+        static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
       {
         std::cerr << "Import operator failed\n";
         return 1;

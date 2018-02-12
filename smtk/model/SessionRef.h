@@ -37,15 +37,6 @@ public:
   T models() const;
   SessionRef& addModel(const Model& mod);
 
-  StringList operatorNames(bool includeAdvanced = true) const;
-  smtk::attribute::CollectionPtr opSys() const;
-  OperatorDefinition opDef(const std::string& opName) const;
-  // OperatorPtr op(const std::string& opName) const;
-
-  StringList operatorsForAssociation(BitFlags assocMask) const;
-  template <typename T>
-  StringList operatorsForAssociation(const T& entityrefContainer) const;
-
   std::string tag() const;
   std::string site() const;
   StringList engines() const;
@@ -60,19 +51,6 @@ T SessionRef::models() const
 {
   return this->relationsAs<T>();
 }
-
-template <typename T>
-StringList SessionRef::operatorsForAssociation(const T& entityrefContainer) const
-{
-  BitFlags mask = ANY_ENTITY;
-  typename T::const_iterator it;
-  for (it = entityrefContainer.begin(); mask && it != entityrefContainer.end(); ++it)
-  {
-    mask &= it->entityFlags();
-  }
-  return this->operatorsForAssociation(mask);
-}
-
 } // namespace model
 } // namespace smtk
 

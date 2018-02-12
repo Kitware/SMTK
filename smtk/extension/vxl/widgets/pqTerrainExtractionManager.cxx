@@ -38,11 +38,13 @@
 #include "pqRenderView.h"
 #include "pqSMAdaptor.h"
 
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/VoidItem.h"
 #include "smtk/extension/paraview/widgets/qtArcWidget.h"
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/io/Logger.h"
+#include "smtk/operation/NewOp.h"
 
 #include "vtkDataObject.h"
 
@@ -508,7 +510,7 @@ void pqTerrainExtractionManager::onSaveRefineResultsChange(bool change)
 
 void pqTerrainExtractionManager::ViewResults(QFileInfo autoSaveInfo, bool pickCustomResult)
 {
-  smtk::attribute::AttributePtr att = this->AddAux_GeomOp.lock()->specification();
+  smtk::attribute::AttributePtr att = this->AddAux_GeomOp.lock()->parameters();
   std::string filename;
   if (pickCustomResult)
   { // Let user choose a file

@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::cgm::BooleanUnion > pybind11_init_smtk_bridge_cgm_BooleanUnion(py::module &m, PySharedPtrClass< smtk::bridge::cgm::Operator, smtk::model::Operator >& parent)
+PySharedPtrClass< smtk::bridge::cgm::BooleanUnion > pybind11_init_smtk_bridge_cgm_BooleanUnion(py::module &m, PySharedPtrClass< smtk::bridge::cgm::Operator, smtk::operation::NewOp >& parent)
 {
   PySharedPtrClass< smtk::bridge::cgm::BooleanUnion > instance(m, "BooleanUnion", parent);
   instance

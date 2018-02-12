@@ -23,7 +23,6 @@
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/SessionRef.h"
 
 #include "smtk/extension/vtk/reader/vtkCMBGeometryReader.h"
@@ -104,7 +103,7 @@ bool ImportOperator::ableToOperate()
   return able;
 }
 
-OperatorResult ImportOperator::operateInternal()
+ImportOperator::Result ImportOperator::operateInternal()
 {
   std::string filename = this->parameters()->findFile("filename")->value();
 
@@ -329,7 +328,7 @@ OperatorResult ImportOperator::operateInternal()
   smtk::common::UUID modelId = session->trackModel(mod.GetPointer(), filename, resource);
   smtk::model::EntityRef modelEntity(resource, modelId);
 
-  OperatorResult result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
   {
     smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");
     created->appendValue(modelEntity.component());

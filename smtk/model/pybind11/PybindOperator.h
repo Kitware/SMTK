@@ -15,7 +15,6 @@
 
 #include <type_traits>
 
-#include "smtk/model/Operator.h"
 
 #include "smtk/model/pybind11/PyOperator.h"
 
@@ -43,103 +42,103 @@ namespace py = pybind11;
 
 void pybind11_init_smtk_model_OperatorOutcome(py::module &m)
 {
-  py::enum_<smtk::model::OperatorOutcome>(m, "OperatorOutcome")
-    .value("UNABLE_TO_OPERATE", smtk::model::OperatorOutcome::UNABLE_TO_OPERATE)
-    .value("OPERATION_CANCELED", smtk::model::OperatorOutcome::OPERATION_CANCELED)
-    .value("OPERATION_FAILED", smtk::model::OperatorOutcome::OPERATION_FAILED)
-    .value("OPERATION_SUCCEEDED", smtk::model::OperatorOutcome::OPERATION_SUCCEEDED)
-    .value("OUTCOME_UNKNOWN", smtk::model::OperatorOutcome::OUTCOME_UNKNOWN)
+  py::enum_<smtk::operation::NewOpOutcome>(m, "OperatorOutcome")
+    .value("UNABLE_TO_OPERATE", smtk::operation::NewOpOutcome::UNABLE_TO_OPERATE)
+    .value("OPERATION_CANCELED", smtk::operation::NewOpOutcome::OPERATION_CANCELED)
+    .value("OPERATION_FAILED", smtk::operation::NewOpOutcome::OPERATION_FAILED)
+    .value("OPERATION_SUCCEEDED", smtk::operation::NewOpOutcome::OPERATION_SUCCEEDED)
+    .value("OUTCOME_UNKNOWN", smtk::operation::NewOpOutcome::OUTCOME_UNKNOWN)
     .export_values();
 }
 
-PySharedPtrClass< smtk::model::Operator, smtk::model::PyOperator > pybind11_init_smtk_model_Operator(py::module &m)
+PySharedPtrClass< smtk::operation::NewOp, smtk::model::PyOperator > pybind11_init_smtk_model_Operator(py::module &m)
 {
   typedef std::underlying_type<::smtk::attribute::SearchStyle>::type SearchStyleType;
 
-  PySharedPtrClass< smtk::model::Operator, smtk::model::PyOperator > instance(m, "Operator");
+  PySharedPtrClass< smtk::operation::NewOp, smtk::model::PyOperator > instance(m, "Operator");
   instance
     .def(py::init<>())
-    .def("__lt__", (bool (smtk::model::Operator::*)(::smtk::model::Operator const &) const) &smtk::model::Operator::operator<)
-    .def("deepcopy", (smtk::model::Operator & (smtk::model::Operator::*)(::smtk::model::Operator const &)) &smtk::model::Operator::operator=)
-    .def("ableToOperate", &smtk::model::Operator::ableToOperate)
-    .def("associateEntity", &smtk::model::Operator::associateEntity, py::arg("entity"))
-    .def("className", &smtk::model::Operator::className)
-    .def("classname", &smtk::model::Operator::classname)
+    .def("__lt__", (bool (smtk::operation::NewOp::*)(::smtk::model::Operator const &) const) &smtk::model::Operator::operator<)
+    .def("deepcopy", (smtk::operation::NewOp & (smtk::model::Operator::*)(::smtk::model::Operator const &)) &smtk::model::Operator::operator=)
+    .def("ableToOperate", &smtk::operation::NewOp::ableToOperate)
+    .def("associateEntity", &smtk::operation::NewOp::associateEntity, py::arg("entity"))
+    .def("className", &smtk::operation::NewOp::className)
+    .def("classname", &smtk::operation::NewOp::classname)
     .def_static("create", &smtk::model::PyOperator::create)
-    .def("createResult", &smtk::model::Operator::createResult, py::arg("outcome") = ::smtk::model::OperatorOutcome::UNABLE_TO_OPERATE)
-    .def("definition", &smtk::model::Operator::definition)
-    .def("disassociateEntity", &smtk::model::Operator::disassociateEntity, py::arg("entity"))
-    .def("ensureSpecification", &smtk::model::Operator::ensureSpecification)
-    .def("eraseResult", &smtk::model::Operator::eraseResult, py::arg("res"))
-    .def("_find", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findAs<smtk::attribute::Item>(s, ::smtk::attribute::SearchStyle(i)); },
+    .def("createResult", &smtk::operation::NewOp::createResult, py::arg("outcome") = ::smtk::model::OperatorOutcome::UNABLE_TO_OPERATE)
+    .def("definition", &smtk::operation::NewOp::definition)
+    .def("disassociateEntity", &smtk::operation::NewOp::disassociateEntity, py::arg("entity"))
+    .def("ensureSpecification", &smtk::operation::NewOp::ensureSpecification)
+    .def("eraseResult", &smtk::operation::NewOp::eraseResult, py::arg("res"))
+    .def("_find", [](smtk::operation::NewOp& o, const std::string& s, SearchStyleType i) { return o.findAs<smtk::attribute::Item>(s, ::smtk::attribute::SearchStyle(i)); },
          py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
-    .def("findDirectory", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findDirectory(s, ::smtk::attribute::SearchStyle(i)); },
+    .def("findDirectory", [](smtk::operation::NewOp& o, const std::string& s, SearchStyleType i) { return o.findDirectory(s, ::smtk::attribute::SearchStyle(i)); },
          py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
-    .def("findDouble", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findDouble(s, ::smtk::attribute::SearchStyle(i)); },
+    .def("findDouble", [](smtk::operation::NewOp& o, const std::string& s, SearchStyleType i) { return o.findDouble(s, ::smtk::attribute::SearchStyle(i)); },
          py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
-    .def("findFile", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findFile(s, ::smtk::attribute::SearchStyle(i)); },
+    .def("findFile", [](smtk::operation::NewOp& o, const std::string& s, SearchStyleType i) { return o.findFile(s, ::smtk::attribute::SearchStyle(i)); },
          py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
-    .def("findGroup", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findGroup(s, ::smtk::attribute::SearchStyle(i)); },
+    .def("findGroup", [](smtk::operation::NewOp& o, const std::string& s, SearchStyleType i) { return o.findGroup(s, ::smtk::attribute::SearchStyle(i)); },
          py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
-    .def("findInt", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findInt(s, ::smtk::attribute::SearchStyle(i)); },
+    .def("findInt", [](smtk::operation::NewOp& o, const std::string& s, SearchStyleType i) { return o.findInt(s, ::smtk::attribute::SearchStyle(i)); },
          py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
-    .def("findMesh", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findMesh(s, ::smtk::attribute::SearchStyle(i)); },
+    .def("findMesh", [](smtk::operation::NewOp& o, const std::string& s, SearchStyleType i) { return o.findMesh(s, ::smtk::attribute::SearchStyle(i)); },
          py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
-    .def("findMeshSelection", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findMeshSelection(s, ::smtk::attribute::SearchStyle(i)); },
+    .def("findMeshSelection", [](smtk::operation::NewOp& o, const std::string& s, SearchStyleType i) { return o.findMeshSelection(s, ::smtk::attribute::SearchStyle(i)); },
          py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
-    .def("findModelEntity", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findModelEntity(s, ::smtk::attribute::SearchStyle(i)); },
+    .def("findModelEntity", [](smtk::operation::NewOp& o, const std::string& s, SearchStyleType i) { return o.findModelEntity(s, ::smtk::attribute::SearchStyle(i)); },
          py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
-    .def("findRef", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findRef(s, ::smtk::attribute::SearchStyle(i)); },
+    .def("findRef", [](smtk::operation::NewOp& o, const std::string& s, SearchStyleType i) { return o.findRef(s, ::smtk::attribute::SearchStyle(i)); },
          py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
-    .def("findString", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findString(s, ::smtk::attribute::SearchStyle(i)); },
+    .def("findString", [](smtk::operation::NewOp& o, const std::string& s, SearchStyleType i) { return o.findString(s, ::smtk::attribute::SearchStyle(i)); },
          py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
-    .def("findVoid", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findVoid(s, ::smtk::attribute::SearchStyle(i)); },
+    .def("findVoid", [](smtk::operation::NewOp& o, const std::string& s, SearchStyleType i) { return o.findVoid(s, ::smtk::attribute::SearchStyle(i)); },
          py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
-    .def("log", &smtk::model::Operator::log)
-    .def("manager", &smtk::model::Operator::manager)
-    .def("meshManager", &smtk::model::Operator::meshManager)
-    .def("name", &smtk::model::Operator::name)
-    .def("observe", (void (smtk::model::Operator::*)(::smtk::model::OperatorEventType, ::smtk::model::BareOperatorCallback, void *)) &smtk::model::Operator::observe, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))
-    .def("observe", (void (smtk::model::Operator::*)(::smtk::model::OperatorEventType, ::smtk::model::OperatorWithResultCallback, void *)) &smtk::model::Operator::observe, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))
-    .def("operate", &smtk::model::Operator::operate)
-    .def("removeAllAssociations", &smtk::model::Operator::removeAllAssociations)
-    .def("associatedEntities", [](smtk::model::Operator& o){ return o.associatedEntitiesAs<smtk::model::EntityRefs>(); })
-    .def("session", &smtk::model::Operator::session)
-    .def("setManager", &smtk::model::Operator::setManager, py::arg("manager"))
-    .def("setMeshManager", &smtk::model::Operator::setMeshManager, py::arg("s"))
-    .def("setResultOutcome", &smtk::model::Operator::setResultOutcome, py::arg("res"), py::arg("outcome"))
-    .def("setSession", &smtk::model::Operator::setSession, py::arg("session"))
-    .def("setSpecification", &smtk::model::Operator::setSpecification, py::arg("spec"))
-    .def("specification", &smtk::model::Operator::specification)
-    .def("trigger", (int (smtk::model::Operator::*)(::smtk::model::OperatorEventType)) &smtk::model::Operator::trigger, py::arg("event"))
-    .def("trigger", (int (smtk::model::Operator::*)(::smtk::model::OperatorEventType, ::smtk::model::OperatorResult const &)) &smtk::model::Operator::trigger, py::arg("event"), py::arg("result"))
-    .def("unobserve", (void (smtk::model::Operator::*)(::smtk::model::OperatorEventType, ::smtk::model::BareOperatorCallback, void *)) &smtk::model::Operator::unobserve, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))
-    .def("unobserve", (void (smtk::model::Operator::*)(::smtk::model::OperatorEventType, ::smtk::model::OperatorWithResultCallback, void *)) &smtk::model::Operator::unobserve, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))
-    .def("findAsInt", [](const smtk::model::Operator& o, const std::string& s) {
+    .def("log", &smtk::operation::NewOp::log)
+    .def("manager", &smtk::operation::NewOp::manager)
+    .def("meshManager", &smtk::operation::NewOp::meshManager)
+    .def("name", &smtk::operation::NewOp::name)
+    .def("observe", (void (smtk::operation::NewOp::*)(::smtk::model::OperatorEventType, ::smtk::model::BareOperatorCallback, void *)) &smtk::model::Operator::observe, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))
+    .def("observe", (void (smtk::operation::NewOp::*)(::smtk::model::OperatorEventType, ::smtk::model::OperatorWithResultCallback, void *)) &smtk::model::Operator::observe, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))
+    .def("operate", &smtk::operation::NewOp::operate)
+    .def("removeAllAssociations", &smtk::operation::NewOp::removeAllAssociations)
+    .def("associatedEntities", [](smtk::operation::NewOp& o){ return o.associatedEntitiesAs<smtk::model::EntityRefs>(); })
+    .def("session", &smtk::operation::NewOp::session)
+    .def("setManager", &smtk::operation::NewOp::setManager, py::arg("manager"))
+    .def("setMeshManager", &smtk::operation::NewOp::setMeshManager, py::arg("s"))
+    .def("setResultOutcome", &smtk::operation::NewOp::setResultOutcome, py::arg("res"), py::arg("outcome"))
+    .def("setSession", &smtk::operation::NewOp::setSession, py::arg("session"))
+    .def("setSpecification", &smtk::operation::NewOp::setSpecification, py::arg("spec"))
+    .def("specification", &smtk::operation::NewOp::specification)
+    .def("trigger", (int (smtk::operation::NewOp::*)(::smtk::model::OperatorEventType)) &smtk::model::Operator::trigger, py::arg("event"))
+    .def("trigger", (int (smtk::operation::NewOp::*)(::smtk::model::OperatorEventType, ::smtk::model::OperatorResult const &)) &smtk::model::Operator::trigger, py::arg("event"), py::arg("result"))
+    .def("unobserve", (void (smtk::operation::NewOp::*)(::smtk::model::OperatorEventType, ::smtk::model::BareOperatorCallback, void *)) &smtk::model::Operator::unobserve, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))
+    .def("unobserve", (void (smtk::operation::NewOp::*)(::smtk::model::OperatorEventType, ::smtk::model::OperatorWithResultCallback, void *)) &smtk::model::Operator::unobserve, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))
+    .def("findAsInt", [](const smtk::operation::NewOp& o, const std::string& s) {
         return o.specification()->findAs<smtk::attribute::IntItem>(s, smtk::attribute::SearchStyle::ALL_CHILDREN); })
-    .def("findAsDouble", [](const smtk::model::Operator& o, const std::string& s) {
+    .def("findAsDouble", [](const smtk::operation::NewOp& o, const std::string& s) {
         return o.specification()->findAs<smtk::attribute::DoubleItem>(s, smtk::attribute::SearchStyle::ALL_CHILDREN); })
-    .def("findAsString", [](const smtk::model::Operator& o, const std::string& s) {
+    .def("findAsString", [](const smtk::operation::NewOp& o, const std::string& s) {
         return o.specification()->findAs<smtk::attribute::StringItem>(s, smtk::attribute::SearchStyle::ALL_CHILDREN); })
-    .def("findAsFile", [](const smtk::model::Operator& o, const std::string& s) {
+    .def("findAsFile", [](const smtk::operation::NewOp& o, const std::string& s) {
         return o.specification()->findAs<smtk::attribute::FileItem>(s, smtk::attribute::SearchStyle::ALL_CHILDREN); })
-    .def("findAsDirectory", [](const smtk::model::Operator& o, const std::string& s) {
+    .def("findAsDirectory", [](const smtk::operation::NewOp& o, const std::string& s) {
         return o.specification()->findAs<smtk::attribute::DirectoryItem>(s, smtk::attribute::SearchStyle::ALL_CHILDREN); })
-    .def("findAsGroup", [](const smtk::model::Operator& o, const std::string& s) {
+    .def("findAsGroup", [](const smtk::operation::NewOp& o, const std::string& s) {
         return o.specification()->findAs<smtk::attribute::GroupItem>(s, smtk::attribute::SearchStyle::ALL_CHILDREN); })
-    .def("findAsRef", [](const smtk::model::Operator& o, const std::string& s) {
+    .def("findAsRef", [](const smtk::operation::NewOp& o, const std::string& s) {
         return o.specification()->findAs<smtk::attribute::RefItem>(s, smtk::attribute::SearchStyle::ALL_CHILDREN); })
-    .def("findAsModelEntity", [](const smtk::model::Operator& o, const std::string& s) {
+    .def("findAsModelEntity", [](const smtk::operation::NewOp& o, const std::string& s) {
         return o.specification()->findAs<smtk::attribute::ModelEntityItem>(s, smtk::attribute::SearchStyle::ALL_CHILDREN); })
     ;
-  py::enum_<smtk::model::Operator::ResultEntityOrigin>(instance, "ResultEntityOrigin")
-    .value("CREATED", smtk::model::Operator::ResultEntityOrigin::CREATED)
-    .value("MODIFIED", smtk::model::Operator::ResultEntityOrigin::MODIFIED)
-    .value("EXPUNGED", smtk::model::Operator::ResultEntityOrigin::EXPUNGED)
-    .value("UNKNOWN", smtk::model::Operator::ResultEntityOrigin::UNKNOWN)
+  py::enum_<smtk::operation::NewOp::ResultEntityOrigin>(instance, "ResultEntityOrigin")
+    .value("CREATED", smtk::operation::NewOp::ResultEntityOrigin::CREATED)
+    .value("MODIFIED", smtk::operation::NewOp::ResultEntityOrigin::MODIFIED)
+    .value("EXPUNGED", smtk::operation::NewOp::ResultEntityOrigin::EXPUNGED)
+    .value("UNKNOWN", smtk::operation::NewOp::ResultEntityOrigin::UNKNOWN)
     .export_values();
 
-  py::implicitly_convertible<py::object, smtk::model::Operator>();
+  py::implicitly_convertible<py::object, smtk::operation::NewOp>();
 
   return instance;
 }

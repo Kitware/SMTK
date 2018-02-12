@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::cgm::Write > pybind11_init_smtk_bridge_cgm_Write(py::module &m, PySharedPtrClass< smtk::bridge::cgm::Operator, smtk::model::Operator >& parent)
+PySharedPtrClass< smtk::bridge::cgm::Write > pybind11_init_smtk_bridge_cgm_Write(py::module &m, PySharedPtrClass< smtk::bridge::cgm::Operator, smtk::operation::NewOp >& parent)
 {
   PySharedPtrClass< smtk::bridge::cgm::Write > instance(m, "Write", parent);
   instance

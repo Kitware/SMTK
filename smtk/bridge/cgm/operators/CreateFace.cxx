@@ -47,7 +47,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::model::OperatorResult CreateFace::operateInternal()
+smtk::operation::NewOpResult CreateFace::operateInternal()
 {
   smtk::attribute::IntItem::Ptr surfTypeItem = this->findInt("surface type");
   smtk::attribute::IntItem::Ptr colorItem = this->findInt("color");
@@ -87,7 +87,7 @@ smtk::model::OperatorResult CreateFace::operateInternal()
   // Assign color to match vertex API that requires a color.
   cgmFace->color(color);
 
-  smtk::model::OperatorResult result =
+  smtk::operation::NewOpResult result =
     this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   DLIList<RefFace*> cgmFacesOut;

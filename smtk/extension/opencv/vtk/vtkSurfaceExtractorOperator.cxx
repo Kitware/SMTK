@@ -15,7 +15,6 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/model/Edge.h"
-#include "smtk/model/Operator.h"
 
 #include "vtkObjectFactory.h"
 #include "vtkPoints.h"
@@ -40,7 +39,7 @@ bool vtkSurfaceExtractorOperator::AbleToOperate()
   return able2Op;
 }
 
-smtk::model::OperatorResult vtkSurfaceExtractorOperator::Operate()
+smtk::operation::NewOp::Result vtkSurfaceExtractorOperator::Operate()
 {
   // ONLY for create-edge-with-widget and edit-edge operations,
   if (!this->AbleToOperate())
@@ -48,7 +47,7 @@ smtk::model::OperatorResult vtkSurfaceExtractorOperator::Operate()
     return this->m_smtkOp.lock()->createResult(smtk::operation::NewOp::Outcome::FAILED);
   }
 
-  smtk::model::OperatorResult edgeResult;
+  smtk::operation::NewOp::Result edgeResult;
   edgeResult = this->m_smtkOp.lock()->operate();
 
   return edgeResult;

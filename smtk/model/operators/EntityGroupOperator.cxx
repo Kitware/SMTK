@@ -62,7 +62,7 @@ bool EntityGroupOperator::ableToOperate()
   return ableToOperate;
 }
 
-smtk::model::OperatorResult EntityGroupOperator::operateInternal()
+EntityGroupOperator::Result EntityGroupOperator::operateInternal()
 {
   // pre processing the data
   auto modelItem = this->parameters()->findModelEntity("model");
@@ -182,7 +182,7 @@ smtk::model::OperatorResult EntityGroupOperator::operateInternal()
     ok = modGroups.size() == 0 ? false : true;
   }
 
-  OperatorResult result = this->createResult(
+  Result result = this->createResult(
     ok ? smtk::operation::NewOp::Outcome::SUCCEEDED : smtk::operation::NewOp::Outcome::FAILED);
   if (ok)
   {

@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
   }
 
   // Execute "export mesh" operator...
-  smtk::model::OperatorResult exportMeshOpResult = exportMeshOp->operate();
+  smtk::operation::NewOp::Result exportMeshOpResult = exportMeshOp->operate();
   // ...and test the results for success.
   if (exportMeshOpResult->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))

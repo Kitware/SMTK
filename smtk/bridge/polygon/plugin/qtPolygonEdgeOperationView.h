@@ -36,7 +36,7 @@ public slots:
   void onShowCategory() override { this->updateAttributeData(); }
   // This will be triggered by selecting different type
   // of edge operations, create-edge, edit-edge, or split-edge.
-  virtual void operationSelected(const smtk::model::OperatorPtr& op);
+  virtual void operationSelected(const smtk::operation::NewOpPtr& op);
   // This will be triggered by selecting different type
   // of construction method in create-edge op.
   void valueChanged(smtk::attribute::ItemPtr optype) override;
@@ -44,8 +44,8 @@ public slots:
   virtual void onHideAllFaces(bool status);
 
 protected slots:
-  virtual void requestOperation(const smtk::model::OperatorPtr& op);
-  virtual void cancelOperation(const smtk::model::OperatorPtr&);
+  virtual void requestOperation(const smtk::operation::NewOpPtr& op);
+  virtual void cancelOperation(const smtk::operation::NewOpPtr&);
   virtual void clearSelection();
   virtual void arcOperationDone();
   // This slot is used to indicate that the underlying attribute

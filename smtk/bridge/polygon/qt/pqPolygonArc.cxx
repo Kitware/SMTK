@@ -18,7 +18,7 @@
 #include "smtk/model/Edge.h"
 #include "smtk/model/IntegerData.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
+#include "smtk/operation/NewOp.h"
 
 #include "pqActiveObjects.h"
 #include "pqApplicationCore.h"
@@ -68,11 +68,11 @@ pqPolygonArc::~pqPolygonArc()
   }
 }
 
-void pqPolygonArc::setEdgeOperator(smtk::model::OperatorPtr edgeOp)
+void pqPolygonArc::setEdgeOperator(smtk::operation::NewOpPtr edgeOp)
 {
   this->m_edgeOp = edgeOp;
 }
-smtk::shared_ptr<smtk::model::Operator> pqPolygonArc::edgeOperator()
+smtk::shared_ptr<smtk::operation::NewOp> pqPolygonArc::edgeOperator()
 {
   return this->m_edgeOp.lock();
 }
@@ -100,7 +100,7 @@ vtkSMProxy* pqPolygonArc::prepareOperation(vtkSMNewWidgetRepresentationProxy* wi
 {
   if (!widgetProxy || !this->edgeOperator())
     return NULL;
-  smtk::attribute::AttributePtr spec = this->edgeOperator()->specification();
+  smtk::attribute::AttributePtr spec = this->edgeOperator()->parameters();
   if (spec->type() != "tweak edge" && spec->type() != "create edge")
     return NULL;
   smtk::attribute::IntItem::Ptr opProxyIdItem = spec->findInt("HelperGlobalID");
@@ -135,19 +135,20 @@ bool pqPolygonArc::editEdge(
     return false;
   }
 
-  smtk::attribute::AttributePtr opSpec = this->edgeOperator()->specification();
-  smtk::model::Edge edge(this->edgeOperator()->manager(), edgeId);
-  if (!edge.isValid())
-  {
-    return false;
-  }
-  if (!opSpec->isEntityAssociated(edge))
-  {
-    opSpec->removeAllAssociations();
-    opSpec->associateEntity(edge);
-  }
+  smtk::attribute::AttributePtr opSpec = this->edgeOperator()->parameters();
+  // TODO: cannot access the manager through the operator (unless its a parameter...)
+  // smtk::model::Edge edge(this->edgeOperator()->manager(), edgeId);
+  // if (!edge.isValid())
+  // {
+  //   return false;
+  // }
+  // if (!opSpec->isEntityAssociated(edge))
+  // {
+  //   opSpec->removeAllAssociations();
+  //   opSpec->associateEntity(edge);
+  // }
 
-  emit this->operationRequested(this->edgeOperator());
+  // emit this->operationRequested(this->edgeOperator());
   smPolyEdgeOp->Delete();
   return true;
 }
@@ -242,9 +243,9 @@ void pqPolygonArc::resetOperationSource()
   this->m_currentModelId = smtk::common::UUID::null();
   // the Source should always reference to the source for the referenced model,
   // which should be activated by emitting activateModel()
-  if (this->m_edgeOp.lock() && this->m_edgeOp.lock()->specification())
+  if (this->m_edgeOp.lock() && this->m_edgeOp.lock()->parameters())
   {
-    smtk::model::EntityRef entref = this->m_edgeOp.lock()->specification()->associations()->value();
+    smtk::model::EntityRef entref = this->m_edgeOp.lock()->parameters()->associations()->value();
     if (!entref.isValid())
     {
       return;
@@ -295,10 +296,10 @@ void pqPolygonArc::setSource(pqPipelineSource* modelSource)
 
 int pqPolygonArc::getAssignedEdgeBlock() const
 {
-  if (this->m_edgeOp.lock() && this->m_edgeOp.lock()->specification())
+  if (this->m_edgeOp.lock() && this->m_edgeOp.lock()->parameters())
   {
     // for Destroy and Modify operation, we need edge is set
-    smtk::model::EntityRef entref = this->m_edgeOp.lock()->specification()->associations()->value();
+    smtk::model::EntityRef entref = this->m_edgeOp.lock()->parameters()->associations()->value();
     smtk::model::Edge edge;
     if (entref.isModel()) // "create edge"
     {

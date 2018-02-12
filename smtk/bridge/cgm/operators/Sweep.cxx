@@ -54,7 +54,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::model::OperatorResult Sweep::operateInternal()
+smtk::operation::NewOpResult Sweep::operateInternal()
 {
   // 0 = extrude, 1 = revolve, 2 = helix, 3 = sweep along curve:
   int sweepOp = this->findInt("construction method")->value();
@@ -175,7 +175,7 @@ smtk::model::OperatorResult Sweep::operateInternal()
     return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result =
+  smtk::operation::NewOpResult result =
     this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmResults, result, CREATED);

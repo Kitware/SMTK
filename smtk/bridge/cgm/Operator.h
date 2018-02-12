@@ -15,7 +15,6 @@
 #include "smtk/bridge/cgm/TDUUID.h"
 
 #include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ModelEntityItem.h"
@@ -40,7 +39,7 @@ class Session;
   * It provides convenience methods for accessing CGM-specific data
   * for its subclasses to use internally.
   */
-class SMTKCGMSESSION_EXPORT Operator : public smtk::model::Operator
+class SMTKCGMSESSION_EXPORT Operator : public smtk::operation::NewOp
 {
 protected:
   SessionPtr cgmSession();
@@ -55,8 +54,8 @@ protected:
     smtk::model::EntityRefArray& expunged);
 
   template <typename T>
-  void addEntitiesToResult(DLIList<T>& cgmContainer, smtk::model::OperatorResult result,
-    ResultEntityOrigin origin = UNKNOWN);
+  void addEntitiesToResult(
+    DLIList<T>& cgmContainer, Result result, ResultEntityOrigin origin = UNKNOWN);
 };
 
 /// A convenience method for returning the CGM counterpart of an SMTK entity already cast to a subtype.
@@ -109,7 +108,7 @@ bool Operator::cgmEntities(const T& smtkContainer, DLIList<U>& cgmContainer, int
 
 template <typename T>
 void Operator::addEntitiesToResult(
-  DLIList<T>& cgmContainer, smtk::model::OperatorResult result, ResultEntityOrigin origin)
+  DLIList<T>& cgmContainer, Result result, ResultEntityOrigin origin)
 {
   SessionPtr session = this->cgmSession();
   int numBodiesOut = cgmContainer.size();

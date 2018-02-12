@@ -20,8 +20,6 @@
 
 #include "smtk/mesh/utility/Metrics.h"
 
-#include "smtk/model/Operator.h"
-
 #include "smtk/mesh/testing/cxx/helpers.h"
 
 namespace

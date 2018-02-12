@@ -48,8 +48,8 @@ public slots:
   void valueChanged(smtk::attribute::ItemPtr optype) override;
 
 protected slots:
-  virtual void requestOperation(const smtk::model::OperatorPtr& op);
-  virtual void cancelOperation(const smtk::model::OperatorPtr&);
+  virtual void requestOperation(const smtk::operation::NewOpPtr& op);
+  virtual void cancelOperation(const smtk::operation::NewOpPtr&);
   virtual void clearSelection();
 
   virtual void chooseDefaultColorAndApply();

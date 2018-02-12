@@ -19,7 +19,6 @@
 #include "smtk/model/DefaultSession.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/SessionRef.h"
 
@@ -83,7 +82,7 @@ void testSessionList(smtk::model::Manager::Ptr manager)
   std::cout << "\n";
 }
 
-class TestOutcomeOperator : public smtk::model::Operator
+class TestOutcomeOperator : public smtk::operation::NewOp
 {
 public:
   smtkTypeMacro(TestOutcomeOperator);
@@ -91,7 +90,7 @@ public:
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
-  static smtk::model::OperatorPtr baseCreate();
+  static smtk::operation::NewOpPtr baseCreate();
 
   TestOutcomeOperator()
     : m_able(false) // fail operation until told otherwise
@@ -130,7 +129,7 @@ smtkImplementsModelOperator(
   smtk::model::DefaultSession);
  */
 
-smtk::model::OperatorPtr TestOutcomeOperator::baseCreate()
+smtk::operation::NewOpPtr TestOutcomeOperator::baseCreate()
 {
   return TestOutcomeOperator::create();
 }
@@ -236,7 +235,7 @@ void testSessionAssociation(smtk::model::Manager::Ptr manager)
     "Expected \"outcome test\" operator defined for the test model.");
 
   // Test op(name) method
-  smtk::model::Operator::Ptr op = model.op("outcome test");
+  smtk::operation::NewOp::Ptr op = model.op("outcome test");
   test(op ? 1 : 0, "Model::op(\"outcome test\") returned a \"null\" shared pointer.");
 
   // Test Operator->Session association

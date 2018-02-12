@@ -32,7 +32,7 @@ public:
   smtkSuperclassMacro(Operator);
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
   virtual const char* xmlDescription() const override;
 };
 

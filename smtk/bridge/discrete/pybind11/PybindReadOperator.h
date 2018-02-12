@@ -15,13 +15,12 @@
 
 #include "smtk/bridge/discrete/operators/ReadOperator.h"
 
-#include "smtk/model/Operator.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::discrete::ReadOperator, smtk::model::Operator > pybind11_init_smtk_bridge_discrete_ReadOperator(py::module &m)
+PySharedPtrClass< smtk::bridge::discrete::ReadOperator, smtk::operation::NewOp > pybind11_init_smtk_bridge_discrete_ReadOperator(py::module &m)
 {
-  PySharedPtrClass< smtk::bridge::discrete::ReadOperator, smtk::model::Operator > instance(m, "ReadOperator");
+  PySharedPtrClass< smtk::bridge::discrete::ReadOperator, smtk::operation::NewOp > instance(m, "ReadOperator");
   instance
     .def("classname", &smtk::bridge::discrete::ReadOperator::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::discrete::ReadOperator> (*)()) &smtk::bridge::discrete::ReadOperator::create)

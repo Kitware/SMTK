@@ -51,7 +51,7 @@ public:
   pqPolygonArc* activeArc();
   void setActiveArc(pqPolygonArc*);
   // cancel the op if it is the current edge op
-  void cancelOperation(const smtk::model::OperatorPtr&);
+  void cancelOperation(const smtk::operation::NewOpPtr&);
 
 signals:
   void Busy();

@@ -10,7 +10,6 @@
 #ifndef smtk_model_operators_CompositeAuxiliaryGeometry_h
 #define smtk_model_operators_CompositeAuxiliaryGeometry_h
 
-#include "smtk/model/Operator.h"
 #include "smtk/model/operators/AddAuxiliaryGeometry.h"
 
 namespace smtk

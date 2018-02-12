@@ -33,7 +33,7 @@ namespace smtk
 namespace model
 {
 
-smtk::model::OperatorResult GroupAuxiliaryGeometry::operateInternal()
+GroupAuxiliaryGeometry::Result GroupAuxiliaryGeometry::operateInternal()
 {
   auto associations = this->parameters()->associations();
   AuxiliaryGeometries entities(associations->begin(), associations->end());
@@ -98,8 +98,7 @@ smtk::model::OperatorResult GroupAuxiliaryGeometry::operateInternal()
 
   auxGeom.setStringProperty("type", "group");
 
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
 
   smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");
   created->setValue(auxGeom.component());

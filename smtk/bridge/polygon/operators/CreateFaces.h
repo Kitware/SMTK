@@ -76,7 +76,7 @@ protected:
   friend class Neighborhood;
 
   virtual bool populateEdgeMap();
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
   virtual const char* xmlDescription() const override;
 
   void evaluateLoop(RegionId faceNumber, OrientedEdges& loop, std::set<RegionId>& borders);

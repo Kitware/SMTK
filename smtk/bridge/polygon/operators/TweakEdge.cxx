@@ -174,7 +174,7 @@ TweakEdge::Result TweakEdge::operateInternal()
     }
   }
 
-  smtk::model::OperatorResult opResult;
+  Result opResult;
   if (ok)
   {
     opResult = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);

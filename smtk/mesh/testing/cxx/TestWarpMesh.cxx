@@ -10,6 +10,7 @@
 
 #include "smtk/common/UUID.h"
 
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/GroupItem.h"
@@ -30,7 +31,6 @@
 #include "smtk/mesh/operators/ElevateMesh.h"
 
 #include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
 
 #include <algorithm>
 #include <array>

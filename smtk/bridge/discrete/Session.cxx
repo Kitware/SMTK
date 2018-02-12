@@ -162,7 +162,6 @@ public:
   */
 Session::Session()
 {
-  this->initializeOperatorCollection(Session::s_operators);
   this->m_itemWatcher = vtkItemWatcherCommand::New();
   this->m_itemWatcher->session = this;
 }
@@ -2307,5 +2306,4 @@ void Session::retranscribeModel(const smtk::model::Model& inModel)
 
 #include "smtk/bridge/discrete/Session_json.h"
 smtkImplementsModelingKernel(SMTKDISCRETESESSION_EXPORT, discrete, Session_json,
-  SessionHasNoStaticSetup, smtk::bridge::discrete::Session, true /* inherit "universal" operators */
-  );
+  SessionHasNoStaticSetup, smtk::bridge::discrete::Session);

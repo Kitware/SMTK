@@ -160,7 +160,7 @@ int pqArcWidgetManager::edit()
   return 1;
 }
 
-void pqArcWidgetManager::cancelOperation(const smtk::model::OperatorPtr& op)
+void pqArcWidgetManager::cancelOperation(const smtk::operation::NewOpPtr& op)
 {
   if (!this->Arc || this->Arc->edgeOperator() != op)
     return;

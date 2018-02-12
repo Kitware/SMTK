@@ -15,13 +15,12 @@
 
 #include "smtk/bridge/discrete/operators/EntityGroupOperator.h"
 
-#include "smtk/model/Operator.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::discrete::EntityGroupOperator, smtk::model::Operator > pybind11_init_smtk_bridge_discrete_EntityGroupOperator(py::module &m)
+PySharedPtrClass< smtk::bridge::discrete::EntityGroupOperator, smtk::operation::NewOp > pybind11_init_smtk_bridge_discrete_EntityGroupOperator(py::module &m)
 {
-  PySharedPtrClass< smtk::bridge::discrete::EntityGroupOperator, smtk::model::Operator > instance(m, "EntityGroupOperator");
+  PySharedPtrClass< smtk::bridge::discrete::EntityGroupOperator, smtk::operation::NewOp > instance(m, "EntityGroupOperator");
   instance
     .def("classname", &smtk::bridge::discrete::EntityGroupOperator::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::discrete::EntityGroupOperator> (*)()) &smtk::bridge::discrete::EntityGroupOperator::create)

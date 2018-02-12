@@ -15,13 +15,12 @@
 
 #include "smtk/bridge/discrete/operators/EdgeOperator.h"
 
-#include "smtk/model/Operator.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::discrete::EdgeOperator, smtk::model::Operator > pybind11_init_smtk_bridge_discrete_EdgeOperator(py::module &m)
+PySharedPtrClass< smtk::bridge::discrete::EdgeOperator, smtk::operation::NewOp > pybind11_init_smtk_bridge_discrete_EdgeOperator(py::module &m)
 {
-  PySharedPtrClass< smtk::bridge::discrete::EdgeOperator, smtk::model::Operator > instance(m, "EdgeOperator");
+  PySharedPtrClass< smtk::bridge::discrete::EdgeOperator, smtk::operation::NewOp > instance(m, "EdgeOperator");
   instance
     .def("classname", &smtk::bridge::discrete::EdgeOperator::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::discrete::EdgeOperator> (*)()) &smtk::bridge::discrete::EdgeOperator::create)

@@ -23,7 +23,6 @@
 #include "smtk/mesh/core/Manager.h"
 
 #include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
 
 #include <fstream>
 
@@ -112,7 +111,7 @@ int main(int argc, char* argv[])
       std::cout << "Testing file type " << extension[fileType] << std::endl;
 
       // Create a new "write mesh" operator
-      smtk::model::OperatorPtr writeMeshOp = sessRef.session()->op("write mesh");
+      smtk::operation::NewOpPtr writeMeshOp = sessRef.session()->op("write mesh");
       if (!writeMeshOp)
       {
         std::cerr << "No \"write mesh\" operator\n";
@@ -133,7 +132,7 @@ int main(int argc, char* argv[])
       }
 
       // Execute "write mesh" operator...
-      smtk::model::OperatorResult writeMeshOpResult = writeMeshOp->operate();
+      smtk::operation::NewOpResult writeMeshOpResult = writeMeshOp->operate();
       // ...and test the results for success.
       if (writeMeshOpResult->findInt("outcome")->value() !=
         smtk::operation::Operator::OPERATION_SUCCEEDED)

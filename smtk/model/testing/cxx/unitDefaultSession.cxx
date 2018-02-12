@@ -27,7 +27,6 @@
 #include "smtk/model/DefaultSession.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/RemoteOperator.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/SessionRef.h"
@@ -263,7 +262,7 @@ void printSessionOperatorNames(const SessionRef& br, const std::string& msg)
             << "] operators:\n";
   for (it = opNames.begin(); it != opNames.end(); ++it)
   {
-    smtk::model::OperatorPtr op = br.op(*it);
+    smtk::operation::NewOpPtr op = br.op(*it);
     std::cout << "  " << *it << " [" << op->className() << "]"
               << "\n";
   }

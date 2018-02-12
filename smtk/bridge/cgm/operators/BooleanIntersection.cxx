@@ -68,7 +68,7 @@ bool BooleanIntersection::ableToOperate()
   return result;
 }
 
-smtk::model::OperatorResult BooleanIntersection::operateInternal()
+smtk::operation::NewOpResult BooleanIntersection::operateInternal()
 {
   int keepInputs = this->findInt("keep inputs")->value();
   Models bodiesIn = this->associatedEntitiesAs<Models>();
@@ -130,7 +130,7 @@ smtk::model::OperatorResult BooleanIntersection::operateInternal()
     return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result =
+  smtk::operation::NewOpResult result =
     this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmBodiesOut, result, MODIFIED);

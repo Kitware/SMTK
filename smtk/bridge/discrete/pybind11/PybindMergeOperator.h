@@ -15,13 +15,12 @@
 
 #include "smtk/bridge/discrete/operators/MergeOperator.h"
 
-#include "smtk/model/Operator.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::discrete::MergeOperator, smtk::model::Operator > pybind11_init_smtk_bridge_discrete_MergeOperator(py::module &m)
+PySharedPtrClass< smtk::bridge::discrete::MergeOperator, smtk::operation::NewOp > pybind11_init_smtk_bridge_discrete_MergeOperator(py::module &m)
 {
-  PySharedPtrClass< smtk::bridge::discrete::MergeOperator, smtk::model::Operator > instance(m, "MergeOperator");
+  PySharedPtrClass< smtk::bridge::discrete::MergeOperator, smtk::operation::NewOp > instance(m, "MergeOperator");
   instance
     .def("classname", &smtk::bridge::discrete::MergeOperator::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::discrete::MergeOperator> (*)()) &smtk::bridge::discrete::MergeOperator::create)

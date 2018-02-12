@@ -46,7 +46,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::model::OperatorResult CreatePrism::operateInternal()
+smtk::operation::NewOpResult CreatePrism::operateInternal()
 {
   smtk::attribute::DoubleItem::Ptr heightItem = this->specification()->findDouble("height");
   smtk::attribute::DoubleItem::Ptr majorRadiusItem =
@@ -76,7 +76,7 @@ smtk::model::OperatorResult CreatePrism::operateInternal()
     return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result =
+  smtk::operation::NewOpResult result =
     this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
   DLIList<Body*> cgmEntitiesOut;

@@ -21,7 +21,6 @@
 #include "smtk/model/Face.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/Volume.h"
 
 #include "vtkDiscreteModel.h"
@@ -77,7 +76,7 @@ bool SplitFaceOperator::ableToOperate()
   return true;
 }
 
-OperatorResult SplitFaceOperator::operateInternal()
+SplitFaceOperator::Result SplitFaceOperator::operateInternal()
 {
   smtk::model::Model model =
     this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
@@ -129,7 +128,7 @@ OperatorResult SplitFaceOperator::operateInternal()
     }
   }
 
-  OperatorResult result = this->createResult(
+  Result result = this->createResult(
     ok ? smtk::operation::NewOp::Outcome::SUCCEEDED : smtk::operation::NewOp::Outcome::FAILED);
 
   if (ok)

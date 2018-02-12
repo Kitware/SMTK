@@ -21,7 +21,6 @@
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkModel.h"
@@ -138,7 +137,7 @@ ReadOperator::Result ReadOperator::operateInternal()
   smtk::model::EntityRef modelEntity(resource, modelId);
   modelEntity.setName(modelName);
 
-  OperatorResult result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
 
   {
     smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");

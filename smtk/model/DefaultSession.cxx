@@ -25,7 +25,6 @@ namespace model
 /// Default constructor. Initializes statically-registered operators.
 DefaultSession::DefaultSession()
 {
-  this->initializeOperatorCollection(DefaultSession::s_operators);
 }
 
 /// Indicate that, since we have no "backing store" model, the entire model is already present.
@@ -86,7 +85,5 @@ std::string DefaultSession::remoteName() const
 } // namespace smtk
 
 #include "smtk/model/DefaultSession_json.h" // For DefaultSession_json
-smtkImplementsModelingKernel(
-  SMTKCORE_EXPORT, native, DefaultSession_json, smtk::model::SessionHasNoStaticSetup,
-  smtk::model::DefaultSession, true /* inherit "universal" operators */
-  );
+smtkImplementsModelingKernel(SMTKCORE_EXPORT, native, DefaultSession_json,
+  smtk::model::SessionHasNoStaticSetup, smtk::model::DefaultSession);
