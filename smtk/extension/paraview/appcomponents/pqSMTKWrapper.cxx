@@ -241,7 +241,8 @@ void pqSMTKWrapper::paraviewSelectionChanged(pqOutputPort* port)
     auto smtkThing = dynamic_cast<vtkSMTKModelReader*>(dataThing);
     auto mbdsThing = smtkThing ? smtkThing->GetOutput() : nullptr;
     auto selnInput = port->getSelectionInput();
-    auto selnThing = dynamic_cast<vtkPVSelectionSource*>(selnInput->GetClientSideObject());
+    vtkPVSelectionSource* selnThing =
+      selnInput ? dynamic_cast<vtkPVSelectionSource*>(selnInput->GetClientSideObject()) : nullptr;
     if (selnThing)
     {
       selnThing->Update();

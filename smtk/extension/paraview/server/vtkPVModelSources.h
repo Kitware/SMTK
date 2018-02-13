@@ -33,7 +33,7 @@ class vtkMeshMultiBlockSource;
   * graphics primitives for any model or mesh entity by UUID, making it possible
   * to use VTK filters for queries on renderable entities.
   */
-class SMTKPVSERVEREXTPLUGIN_EXPORT vtkPVModelSources : public vtkObject
+class SMTKPVSERVEREXT_EXPORT vtkPVModelSources : public vtkObject
 {
 public:
   static vtkPVModelSources* New();

@@ -10,6 +10,8 @@
 
 #include "smtk/resource/Manager.h"
 
+#include "smtk/io/Logger.h"
+
 #include "smtk/common/UUIDGenerator.h"
 
 namespace smtk
@@ -318,6 +320,11 @@ bool Manager::add(const Resource::Index& index, const smtk::resource::ResourcePt
   auto metadata = m_metadata.get<IndexTag>().find(index);
   if (metadata == m_metadata.get<IndexTag>().end())
   {
+    smtkErrorMacro(smtk::io::Logger::instance(), "Resource manager "
+        << this << " is refusing to add resource " << resource << " of type \""
+        << resource->uniqueName() << "\" "
+        << "as that type has not been registered.\n"
+        << "Perhaps you should link to the proper environment?");
     return false;
   }
 

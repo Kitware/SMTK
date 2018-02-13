@@ -18,6 +18,7 @@ set(serverWrappedSrcs
   vtkPVModelSources.cxx
   vtkSMTKAttributeReader.cxx
   vtkSMTKModelReader.cxx
+  vtkSMTKResourceReader.cxx
   vtkSMSMTKWrapperProxy.cxx
   vtkSMTKWrapper.cxx
   vtkSMSMTKModelRepresentationProxy.cxx
@@ -28,6 +29,7 @@ set(serverWrappedHdrs
   vtkPVModelSources.h
   vtkSMTKAttributeReader.h
   vtkSMTKModelReader.h
+  vtkSMTKResourceReader.h
   vtkSMSMTKWrapperProxy.h
   vtkSMTKWrapper.h
   vtkSMSMTKModelRepresentationProxy.h
@@ -36,36 +38,46 @@ set(serverWrappedHdrs
 
 set(hdrs ${serverUnwrappedHdrs} ${serverWrappedHdrs})
 
-#install the headers
-smtk_public_headers(${hdrs})
-
-#target_include_directories(smtkPVServerExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+add_library(smtkPVServerExt
+  ${serverUnwrappedSrcs}
+  ${serverWrappedSrcs}
+)
+target_link_libraries(smtkPVServerExt
+  LINK_PUBLIC
+    smtkCore
+    smtkEnvironment
+    vtkPVClientServer
+    vtkPVServerManager
+    vtkSMTKSourceExt
+    vtkSMTKReaderExt # vtkLIDARReader
+    vtkSMTKFilterExt # vtkTerrainExtractionFilter, vtkLIDARElevationFilter
+)
+target_include_directories(smtkPVServerExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 # Generate a ParaView plugin
 add_paraview_plugin(
   smtkPVServerExtPlugin "1.0"
   REQUIRED_ON_SERVER
   REQUIRED_ON_CLIENT
-  SERVER_SOURCES ${serverUnwrappedSrcs}
-  SERVER_MANAGER_SOURCES ${serverWrappedSrcs}
+  SERVER_MANAGER_SOURCES ${serverWrappedHdrs}
   SERVER_MANAGER_XML ${serverXMLSrcs}
 )
 target_link_libraries(smtkPVServerExtPlugin
   LINK_PUBLIC
-    smtkCore
-    smtkEnvironment
-    vtkSMTKSourceExt
-    vtkSMTKReaderExt # vtkLIDARReader
-    vtkSMTKFilterExt # vtkTerrainExtractionFilter, vtkLIDARElevationFilter
+    smtkPVServerExt
 )
-smtk_export_header(smtkPVServerExtPlugin Exports.h)
+smtk_export_header(smtkPVServerExt Exports.h)
 
-#install the library and exports the library when used from a build tree
+# Install the library and exports the library when used from a build tree
+smtk_install_library(smtkPVServerExt)
 smtk_install_library(smtkPVServerExtPlugin)
+# Install the headers
+smtk_public_headers(${hdrs})
 
 if (SMTK_ENABLE_TESTING)
   target_link_libraries(TestBuild_smtk_extension_paraview_server
     PUBLIC
+      smtkPVServerExt
       smtkPVServerExtPlugin
     INTERFACE
       nlohmann_json

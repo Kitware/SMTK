@@ -106,6 +106,31 @@
       </Hints>
     </SourceProxy>
 
+    <SourceProxy name="SMTKAttributeReader" class="vtkSMTKAttributeReader" label="SMTK Attribute Reader">
+      <Documentation
+        short_help="Read an SMTK attribute file."
+        long_help="Read an SMTK attribute file as a set of multiblock datasets.">
+      </Documentation>
+
+      <StringVectorProperty
+        name="FileName"
+        command="SetFileName"
+        animateable="0"
+        number_of_elements="1">
+        <FileListDomain name="files"/>
+        <Documentation>
+          The path to an SMTK XML file to read.
+        </Documentation>
+      </StringVectorProperty>
+
+      <OutputPort index="0" name="attributes"/>
+
+      <Hints>
+        <ReaderFactory extensions="sbt sbi crf" file_description="SMTK Attribute Files"/>
+        <!-- Representation view="RenderView" type="SMTKModelCompositeRepresentation" / -->
+      </Hints>
+    </SourceProxy>
+
     <SourceProxy name="CMBGeometryReader"
       class="vtkCMBGeometryReader"
       label="CMB Geometry reader">

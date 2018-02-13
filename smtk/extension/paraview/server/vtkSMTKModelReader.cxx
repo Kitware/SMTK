@@ -40,14 +40,10 @@
 using namespace smtk;
 
 vtkStandardNewMacro(vtkSMTKModelReader);
-vtkCxxSetObjectMacro(vtkSMTKModelReader, Wrapper, vtkSMTKWrapper);
 
 vtkSMTKModelReader::vtkSMTKModelReader()
 {
   //std::cout << "Create reader " << this << "\n";
-  this->FileName = nullptr;
-  this->Wrapper = nullptr;
-  this->SetNumberOfInputPorts(0);
   this->SetNumberOfOutputPorts(vtkModelMultiBlockSource::NUMBER_OF_OUTPUT_PORTS);
 
   // Ensure this object's MTime > this->ModelSource's MTime so first RequestData() call
@@ -66,33 +62,17 @@ vtkSMTKModelReader::~vtkSMTKModelReader()
 void vtkSMTKModelReader::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
-  os << indent << "FileName: " << this->FileName << "\n";
   os << indent << "ModelSource: " << this->ModelSource << "\n";
-  os << indent << "Wrapper: " << this->Wrapper << "\n";
+}
+
+smtk::resource::ResourcePtr vtkSMTKModelReader::GetResource() const
+{
+  return std::dynamic_pointer_cast<smtk::resource::Resource>(this->GetSMTKResource());
 }
 
 smtk::model::ManagerPtr vtkSMTKModelReader::GetSMTKResource() const
 {
   return this->ModelSource->GetModelManager();
-}
-
-void vtkSMTKModelReader::DropResource()
-{
-  auto rsrc = this->GetSMTKResource();
-  if (!rsrc)
-  {
-    return;
-  }
-
-  smtk::resource::Manager::Ptr rsrcMgr = this->Wrapper
-    ? this->Wrapper->GetResourceManager()
-    : smtk::environment::ResourceManager::instance();
-  if (!rsrcMgr)
-  {
-    return;
-  }
-
-  rsrcMgr->remove(rsrc);
 }
 
 /// Generate polydata from an smtk::model with tessellation information.

@@ -88,7 +88,7 @@ class vtkTexture;
  *
  *  \sa vtkSMSMTKModelRepresentationProxy vtkCompositeDataDisplayAttributes
  */
-class SMTKPVSERVEREXTPLUGIN_EXPORT vtkSMTKModelRepresentation : public vtkPVDataRepresentation
+class SMTKPVSERVEREXT_EXPORT vtkSMTKModelRepresentation : public vtkPVDataRepresentation
 {
 public:
   static vtkSMTKModelRepresentation* New();
