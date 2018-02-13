@@ -31,11 +31,6 @@ PySharedPtrClass< smtk::bridge::polygon::Session, smtk::model::Session > pybind1
     .def_static("staticClassName", &smtk::bridge::polygon::Session::staticClassName)
     .def("name", &smtk::bridge::polygon::Session::name)
     .def("className", &smtk::bridge::polygon::Session::className)
-    .def("registerOperator", &smtk::bridge::polygon::Session::registerOperator, py::arg("opName"), py::arg("opDescrXML"), py::arg("opCtor"))
-    .def_static("registerStaticOperator", &smtk::bridge::polygon::Session::registerStaticOperator, py::arg("opName"), py::arg("opDescrXML"), py::arg("opCtor"))
-    .def("findOperatorXML", &smtk::bridge::polygon::Session::findOperatorXML, py::arg("opName"))
-    // .def("findOperatorConstructor", &smtk::bridge::polygon::Session::findOperatorConstructor, py::arg("opName"))
-    .def("inheritsOperators", &smtk::bridge::polygon::Session::inheritsOperators)
     .def("allSupportedInformation", &smtk::bridge::polygon::Session::allSupportedInformation)
     ;
   return instance;

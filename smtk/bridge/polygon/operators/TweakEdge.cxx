@@ -44,13 +44,13 @@ TweakEdge::Result TweakEdge::operateInternal()
   if (!src.isValid())
   {
     smtkErrorMacro(this->log(), "Input edge was invalid.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   smtk::bridge::polygon::Resource::Ptr resource =
     std::static_pointer_cast<smtk::bridge::polygon::Resource>(src.component()->resource());
   if (!resource)
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
 
   internal::edge::Ptr storage = resource->findStorage<internal::edge>(src.entity());
   internal::pmodel* pmod = storage->parentAs<internal::pmodel>();
@@ -58,7 +58,7 @@ TweakEdge::Result TweakEdge::operateInternal()
   {
     smtkErrorMacro(
       this->log(), "Input edge was not part of its parent model (or not a polygon-session edge).");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   bool ok = true;
@@ -70,7 +70,7 @@ TweakEdge::Result TweakEdge::operateInternal()
     smtkErrorMacro(this->log(), "Not enough points to form an edge ("
         << pointsItem->numberOfValues() << " coordinates at " << numCoordsPerPt << " per point => "
         << npts << " points)");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   if (!splits.empty())
@@ -174,10 +174,10 @@ TweakEdge::Result TweakEdge::operateInternal()
     }
   }
 
-  smtk::model::OperatorResult opResult;
+  Result opResult;
   if (ok)
   {
-    opResult = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+    opResult = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
     smtk::attribute::ComponentItem::Ptr createdItem = opResult->findComponent("created");
     for (auto& c : verticesCreated)
@@ -208,7 +208,7 @@ TweakEdge::Result TweakEdge::operateInternal()
   }
   else
   {
-    opResult = this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    opResult = this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   return opResult;

@@ -15,13 +15,13 @@
 
 #include "smtk/operation/LoadResource.h"
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::operation::LoadResource, smtk::operation::XMLOperator > pybind11_init_smtk_operation_LoadResource(py::module &m)
+PySharedPtrClass< smtk::operation::LoadResource, smtk::operation::XMLOperation > pybind11_init_smtk_operation_LoadResource(py::module &m)
 {
-  PySharedPtrClass< smtk::operation::LoadResource, smtk::operation::XMLOperator > instance(m, "LoadResource");
+  PySharedPtrClass< smtk::operation::LoadResource, smtk::operation::XMLOperation > instance(m, "LoadResource");
   instance
     .def(py::init<::smtk::operation::LoadResource const &>())
     .def("deepcopy", (smtk::operation::LoadResource & (smtk::operation::LoadResource::*)(::smtk::operation::LoadResource const &)) &smtk::operation::LoadResource::operator=)

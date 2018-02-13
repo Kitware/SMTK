@@ -15,13 +15,13 @@
 
 #include "smtk/operation/CreateResource.h"
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::operation::CreateResource, smtk::operation::XMLOperator > pybind11_init_smtk_operation_CreateResource(py::module &m)
+PySharedPtrClass< smtk::operation::CreateResource, smtk::operation::XMLOperation > pybind11_init_smtk_operation_CreateResource(py::module &m)
 {
-  PySharedPtrClass< smtk::operation::CreateResource, smtk::operation::XMLOperator > instance(m, "CreateResource");
+  PySharedPtrClass< smtk::operation::CreateResource, smtk::operation::XMLOperation > instance(m, "CreateResource");
   instance
     .def(py::init<::smtk::operation::CreateResource const &>())
     .def("deepcopy", (smtk::operation::CreateResource & (smtk::operation::CreateResource::*)(::smtk::operation::CreateResource const &)) &smtk::operation::CreateResource::operator=)

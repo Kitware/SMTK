@@ -12,7 +12,7 @@ foreach(target
 endforeach()
 
 
-vtk_module(vtkPolygonOperatorsExt
+vtk_module(vtkPolygonOperationsExt
   DEPENDS
     vtkCommonDataModel
     vtkCommonExecutionModel

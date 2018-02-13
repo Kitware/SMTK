@@ -6,7 +6,7 @@ set(cgmSrcs
   Engines.cxx
   ExportSolid.cxx
   ImportSolid.cxx
-  Operator.cxx
+  Operation.cxx
   operators/BooleanIntersection.cxx
   operators/BooleanSubtraction.cxx
   operators/BooleanUnion.cxx
@@ -36,7 +36,7 @@ set(cgmHeaders
   Engines.h
   ExportSolid.h
   ImportSolid.h
-  Operator.h
+  Operation.h
   operators/BooleanIntersection.h
   operators/BooleanSubtraction.h
   operators/BooleanUnion.h
@@ -91,31 +91,31 @@ smtk_install_library(smtkCGMSession)
 # build a program at configure-time to conditionally create the JSON and/or header.
 # But this is simpler.
 
-# Operators which have XML descriptions in separate files
+# Operations which have XML descriptions in separate files
 # need to have it encoded as a string in a header.
 # We do not need the path to the generated header (appended
-# to cgmOperatorXML) since the operators themselves include
+# to cgmOperationXML) since the operators themselves include
 # the header in their implementations.
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/BooleanIntersection.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/BooleanSubtraction.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/BooleanUnion.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Copy.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateBody.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateBrick.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateCylinder.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdge.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateFace.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreatePrism.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateSphere.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateVertex.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Reflect.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/RemoveModel.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Rotate.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Scale.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Sweep.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Translate.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" cgmOperatorXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/BooleanIntersection.sbt" cgmOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/BooleanSubtraction.sbt" cgmOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/BooleanUnion.sbt" cgmOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Copy.sbt" cgmOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateBody.sbt" cgmOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateBrick.sbt" cgmOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateCylinder.sbt" cgmOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdge.sbt" cgmOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateFace.sbt" cgmOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreatePrism.sbt" cgmOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateSphere.sbt" cgmOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateVertex.sbt" cgmOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" cgmOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Reflect.sbt" cgmOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/RemoveModel.sbt" cgmOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Rotate.sbt" cgmOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Scale.sbt" cgmOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Sweep.sbt" cgmOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Translate.sbt" cgmOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" cgmOperationXML)
 
 # Install the headers
 smtk_public_headers(${cgmHeaders})

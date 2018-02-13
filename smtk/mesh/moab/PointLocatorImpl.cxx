@@ -86,7 +86,7 @@ PointLocatorImpl::PointLocatorImpl(::moab::Interface* interface, std::size_t num
   smtk::mesh::HandleRange points;
   m_meshOwningPoints =
     create_point_mesh(interface, static_cast<int>(numPoints), coordinates, points);
-  // hacker solution to speed up the bathymetry Operator
+  // hacker solution to speed up the bathymetry Operation
   ::moab::FileOptions treeOptions("MAX_DEPTH=13");
   m_tree.build_tree(points, NULL, &treeOptions);
 }

@@ -67,7 +67,7 @@ namespace bridge
 namespace polygon
 {
 
-int polyLines2modelEdges(vtkPolyData* mesh, smtk::operation::NewOp::Ptr edgeOp,
+int polyLines2modelEdges(vtkPolyData* mesh, smtk::operation::Operation::Ptr edgeOp,
   smtk::model::EntityRefArray& createdEds, smtk::attribute::DoubleItem::Ptr pointsItem,
   vtkIdType* pts, vtkIdType npts, smtk::io::Logger& logger)
 {
@@ -82,9 +82,9 @@ int polyLines2modelEdges(vtkPolyData* mesh, smtk::operation::NewOp::Ptr edgeOp,
       pointsItem->setValue(3 * j + i, p[i]);
     }
   }
-  OperatorResult edgeResult = edgeOp->operate();
+  smtk::operation::Operation::Result edgeResult = edgeOp->operate();
   if (edgeResult->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     smtkDebugMacro(logger, "\"create edge\" op failed to creat edge with given line cells.");
     return 0;
@@ -139,7 +139,7 @@ int Import::taggedPolyData2PolygonModelEntities(smtk::bridge::polygon::Resource:
   linesOffset = n;
   vtkCellArray* lines = pdata->GetLines();
   vtkIdType currentEdgeTag, lastPointId, cellId;
-  smtk::operation::NewOp::Ptr edgeOp = CreateEdgeFromPoints::create();
+  smtk::operation::Operation::Ptr edgeOp = CreateEdgeFromPoints::create();
   auto createEdgeOp = std::dynamic_pointer_cast<CreateEdgeFromPoints>(edgeOp);
   if (!lines)
   {
@@ -218,7 +218,7 @@ int Import::basicPolyData2PolygonModelEntities(
   vtkIdType n, i, j;
   vtkCellArray* lines = pdata->GetLines();
   vtkIdType cellId;
-  smtk::operation::NewOp::Ptr edgeOp = CreateEdgeFromPoints::create();
+  smtk::operation::Operation::Ptr edgeOp = CreateEdgeFromPoints::create();
   auto createEdgeOp = std::dynamic_pointer_cast<CreateEdgeFromPoints>(edgeOp);
   if (!lines)
   {
@@ -250,7 +250,7 @@ int polyLines2modelEdgesAndFaces(
   vtkCellArray* lines = mesh->GetLines();
   if (lines)
   {
-    smtk::operation::NewOp::Ptr edgeOp = CreateEdge::create();
+    smtk::operation::Operation::Ptr edgeOp = CreateEdge::create();
     smtk::attribute::AttributePtr spec = edgeOp->parameters();
     spec->associateEntity(model);
     smtk::attribute::IntItem::Ptr constructMethod = spec->findInt("construction method");
@@ -259,7 +259,7 @@ int polyLines2modelEdgesAndFaces(
     numCoords->setValue(3); // number of elements in coordinates
     smtk::attribute::DoubleItem::Ptr pointsItem = spec->findDouble("points");
 
-    smtk::operation::NewOp::Ptr faceOp = ForceCreateFace::create();
+    smtk::operation::Operation::Ptr faceOp = ForceCreateFace::create();
     smtk::attribute::AttributePtr faceSpec = faceOp->parameters();
     faceSpec->findInt("construction method")->setDiscreteIndex(1); // "edges"
 
@@ -322,9 +322,9 @@ int polyLines2modelEdgesAndFaces(
         smtk::attribute::IntItem::Ptr countsArr = faceSpec->findInt("counts");
         countsArr->setValues(counts.begin(), counts.end());
 
-        OperatorResult faceResult = faceOp->operate();
+        smtk::operation::Operation::Result faceResult = faceOp->operate();
         if (faceResult->findInt("outcome")->value() !=
-          static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+          static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
         {
           smtkDebugMacro(logger, "\"force create face\" op failed to creat face with given edges.");
         }
@@ -363,14 +363,14 @@ bool Import::ableToOperate()
   return false;
 }
 
-OperatorResult Import::operateInternal()
+Import::Result Import::operateInternal()
 {
-  OperatorResult result;
+  Result result;
   std::string filename = this->parameters()->findFile("filename")->value();
   if (filename.empty())
   {
     smtkErrorMacro(log(), "File name is empty!");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   vtkPolyData* polyOutput = vtkPolyData::New();
@@ -427,16 +427,16 @@ OperatorResult Import::operateInternal()
   {
     smtkErrorMacro(log(), "Unhandled file extension " << ext << ".");
     polyOutput->Delete();
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   // First create a model with CreateModel op, then use line cells from reader's
   // output polydata to create edges
-  smtk::operation::NewOp::Ptr modOp = smtk::bridge::polygon::CreateModel::create();
+  smtk::operation::Operation::Ptr modOp = smtk::bridge::polygon::CreateModel::create();
   if (!modOp)
   {
     smtkErrorMacro(log(), "Failed to create CreateModel op.");
-    result = this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    result = this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
   //modOp->findInt("model scale")->setValue(1);
 
@@ -476,12 +476,12 @@ OperatorResult Import::operateInternal()
     }
   }
 
-  OperatorResult modResult = modOp->operate();
+  smtk::operation::Operation::Result modResult = modOp->operate();
   if (modResult->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     smtkInfoMacro(log(), "CreateModel operator failed.");
-    result = this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    result = this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   // Retrieve the resulting resource
@@ -519,7 +519,7 @@ OperatorResult Import::operateInternal()
   }
   smtkDebugMacro(log(), "Number of entities: " << numEntities << "\n");
 
-  result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
   {
     smtk::attribute::ComponentItem::Ptr resultModels = result->findComponent("model");

@@ -9,8 +9,8 @@
 //=========================================================================
 
 #include "smtk/bridge/mesh/Resource.h"
-#include "smtk/bridge/mesh/operators/ExportOperator.h"
-#include "smtk/bridge/mesh/operators/ImportOperator.h"
+#include "smtk/bridge/mesh/operators/ExportOperation.h"
+#include "smtk/bridge/mesh/operators/ImportOperation.h"
 
 #include "smtk/common/UUID.h"
 
@@ -66,10 +66,10 @@ int UnitTestImportExport(int argc, char* argv[])
 
   // Register import and write operators to the operation manager
   {
-    operationManager->registerOperator<smtk::bridge::mesh::ExportOperator>(
-      "smtk::bridge::mesh::ExportOperator");
-    operationManager->registerOperator<smtk::bridge::mesh::ImportOperator>(
-      "smtk::bridge::mesh::ImportOperator");
+    operationManager->registerOperation<smtk::bridge::mesh::ExportOperation>(
+      "smtk::bridge::mesh::ExportOperation");
+    operationManager->registerOperation<smtk::bridge::mesh::ImportOperation>(
+      "smtk::bridge::mesh::ImportOperation");
   }
 
   // Register the resource manager to the operation manager (newly created
@@ -80,8 +80,8 @@ int UnitTestImportExport(int argc, char* argv[])
 
   {
     // Create an import operator
-    smtk::bridge::mesh::ImportOperator::Ptr importOp =
-      operationManager->create<smtk::bridge::mesh::ImportOperator>();
+    smtk::bridge::mesh::ImportOperation::Ptr importOp =
+      operationManager->create<smtk::bridge::mesh::ImportOperation>();
     if (!importOp)
     {
       std::cerr << "No import operator\n";
@@ -94,7 +94,7 @@ int UnitTestImportExport(int argc, char* argv[])
     importOp->parameters()->findFile("filename")->setValue(importFilePath);
 
     // Execute the operation
-    smtk::operation::NewOp::Result importOpResult = importOp->operate();
+    smtk::operation::Operation::Result importOpResult = importOp->operate();
 
     // Retrieve the resulting model
     smtk::attribute::ComponentItemPtr componentItem =
@@ -106,7 +106,7 @@ int UnitTestImportExport(int argc, char* argv[])
 
     // Test for success
     if (importOpResult->findInt("outcome")->value() !=
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Import operator failed\n";
       return 1;
@@ -115,8 +115,8 @@ int UnitTestImportExport(int argc, char* argv[])
 
   {
     // Create an export operator
-    smtk::operation::NewOp::Ptr exportOp =
-      operationManager->create<smtk::bridge::mesh::ExportOperator>();
+    smtk::operation::Operation::Ptr exportOp =
+      operationManager->create<smtk::bridge::mesh::ExportOperation>();
     if (!exportOp)
     {
       std::cerr << "No export operator\n";
@@ -132,11 +132,11 @@ int UnitTestImportExport(int argc, char* argv[])
     exportOp->parameters()->associateEntity(model);
 
     // Execute the operation
-    smtk::operation::NewOp::Result exportOpResult = exportOp->operate();
+    smtk::operation::Operation::Result exportOpResult = exportOp->operate();
 
     // Test for success
     if (exportOpResult->findInt("outcome")->value() !=
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Export operator failed\n";
       return 1;

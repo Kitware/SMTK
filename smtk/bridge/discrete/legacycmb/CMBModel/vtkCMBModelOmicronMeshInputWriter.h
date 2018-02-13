@@ -10,7 +10,7 @@
 
 // .NAME vtkCMBModelOmicronMeshInputWriter - Merge a set of geometric model entities
 // .SECTION Description
-// Operator to merge a set of source geometric model entities into
+// Operation to merge a set of source geometric model entities into
 // a target geometric entity on the server.  The properties of the target entity
 // (e.g. color, BCS/ModelEntityGroup associations) will not be changed.
 // Warning: This may only currently work from model faces.

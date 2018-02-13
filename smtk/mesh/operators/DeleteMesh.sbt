@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the mesh "DeleteMesh" Operator -->
+<!-- Description of the mesh "DeleteMesh" Operation -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="delete mesh" BaseType="operator" Label="Mesh - Delete">
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="delete mesh" BaseType="operation" Label="Mesh - Delete">
       <ItemDefinitions>
         <MeshEntity Name="mesh" NumberOfRequiredValues="1" Extensible="true" />
       </ItemDefinitions>

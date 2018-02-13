@@ -2,9 +2,9 @@
 <!-- Description of the polygon "TweakEdge" operator -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="tweak edge" Label="Edge - Reshape" BaseType="operator">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="tweak edge" Label="Edge - Reshape" BaseType="operation">
       <BriefDescription>Tweak the shape of a model edge.</BriefDescription>
       <DetailedDescription>
         Replace all the point coordinates of an edge.
@@ -61,7 +61,7 @@
             model vertices afterwards, regardless of the value of "promote".
           </DetailedDescription>
         </Int>
-        <!-- This is needed for linking with a vtkSMTKOperator that is used as an smtk operator interface
+        <!-- This is needed for linking with a vtkSMTKOperation that is used as an smtk operator interface
         to vtk pipeline -->
         <Int Name="HelperGlobalID" Label="Unique global ID for a helper object"
           AdvanceLevel="11" NumberOfRequiredValues="1" Optional="true">

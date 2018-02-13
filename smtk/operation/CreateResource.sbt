@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the model "CreateResource" Operator -->
+<!-- Description of the model "CreateResource" Operation -->
 <SMTK_AttributeSystem Version="3">
 
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="create resource" Label="Create" BaseType="operator">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="create resource" Label="Create" BaseType="operation">
       <BriefDecscription>
         Create one or more SMTK resources
       </BriefDecscription>

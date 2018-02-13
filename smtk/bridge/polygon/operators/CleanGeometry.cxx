@@ -642,7 +642,7 @@ CleanGeometry::Result CleanGeometry::operateInternal()
     std::static_pointer_cast<smtk::bridge::polygon::Resource>(
       cleanItems->begin()->component()->resource());
   if (!resource)
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
 
   smtk::model::CellSet::iterator iit;
   smtk::model::CellSet::iterator tmp;
@@ -662,7 +662,7 @@ CleanGeometry::Result CleanGeometry::operateInternal()
   if (inputs.empty())
   {
     smtkErrorMacro(this->log(), "No valid input cells.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   std::map<internal::Point, std::set<smtk::model::EntityRef> > endpoints;
@@ -684,7 +684,7 @@ CleanGeometry::Result CleanGeometry::operateInternal()
       if (!storage)
       {
         smtkErrorMacro(this->log(), "Input edge " << iit->name() << " has no storage.");
-        return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+        return this->createResult(smtk::operation::Operation::Outcome::FAILED);
       }
       mod = storage->parentAs<internal::pmodel>();
       if (!mod || (pp && pp != mod))
@@ -692,7 +692,7 @@ CleanGeometry::Result CleanGeometry::operateInternal()
         smtkErrorMacro(this->log(), "Input edge " << iit->name() << " has no parent model (" << mod
                                                   << ") or a different parent (" << pp
                                                   << ") from other inputs.");
-        return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+        return this->createResult(smtk::operation::Operation::Outcome::FAILED);
       }
       else if (!pp)
       {
@@ -722,7 +722,7 @@ CleanGeometry::Result CleanGeometry::operateInternal()
       if (!vv)
       {
         smtkErrorMacro(this->log(), "Input vertex " << iit->name() << " has no storage.");
-        return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+        return this->createResult(smtk::operation::Operation::Outcome::FAILED);
       }
       else
       {
@@ -731,7 +731,7 @@ CleanGeometry::Result CleanGeometry::operateInternal()
           smtkErrorMacro(this->log(), "Input vertex " << iit->name() << " has no parent model ("
                                                       << mod << ") or a different parent (" << pp
                                                       << ") from other inputs.");
-          return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+          return this->createResult(smtk::operation::Operation::Outcome::FAILED);
         }
         else if (!pp)
         {
@@ -895,8 +895,8 @@ CleanGeometry::Result CleanGeometry::operateInternal()
     }
   }
 
-  smtk::model::OperatorResult opResult;
-  opResult = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  Result opResult;
+  opResult = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
   smtk::attribute::ComponentItem::Ptr createdItem = opResult->findComponent("created");
   for (auto& c : created)
   {

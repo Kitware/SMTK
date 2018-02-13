@@ -24,7 +24,7 @@ class SMTKCORE_EXPORT ExportSMTKModel : public SaveSMTKModel
 public:
   smtkTypeMacro(ExportSMTKModel);
   smtkCreateMacro(ExportSMTKModel);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
 
 protected:
   ExportSMTKModel();

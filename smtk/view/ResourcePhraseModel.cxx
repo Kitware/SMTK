@@ -16,7 +16,6 @@
 #include "smtk/view/View.h"
 
 #include "smtk/operation/Manager.h"
-#include "smtk/operation/Operator.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
@@ -57,7 +56,7 @@ void ResourcePhraseModel::handleResourceEvent(Resource::Ptr rsrc, smtk::resource
 }
 
 void ResourcePhraseModel::handleCreated(
-  Operator::Ptr op, Operator::Result res, ComponentItemPtr data)
+  Operation::Ptr op, Operation::Result res, ComponentItemPtr data)
 {
   (void)op;
   if (!res || !data)

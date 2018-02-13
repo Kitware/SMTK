@@ -18,8 +18,8 @@
 
 #include "smtk/bridge/discrete/Resource.h"
 #include "smtk/bridge/discrete/Session.h"
-#include "smtk/bridge/discrete/operators/EntityGroupOperator.h"
-#include "smtk/bridge/discrete/operators/ImportOperator.h"
+#include "smtk/bridge/discrete/operators/EntityGroupOperation.h"
+#include "smtk/bridge/discrete/operators/ImportOperation.h"
 
 #include "smtk/io/LoadJSON.h"
 #include "smtk/io/ModelToMesh.h"
@@ -31,7 +31,6 @@
 #include "smtk/model/Edge.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/Vertex.h"
 
 using namespace smtk::model;
@@ -46,8 +45,8 @@ int main(int argc, char* argv[])
   }
 
   // Create an import operator
-  smtk::bridge::discrete::ImportOperator::Ptr importOp =
-    smtk::bridge::discrete::ImportOperator::create();
+  smtk::bridge::discrete::ImportOperation::Ptr importOp =
+    smtk::bridge::discrete::ImportOperation::create();
   if (!importOp)
   {
     std::cerr << "No import operator\n";
@@ -58,7 +57,7 @@ int main(int argc, char* argv[])
   importOp->parameters()->findFile("filename")->setValue(std::string(argv[1]));
 
   // Execute the operation
-  smtk::operation::NewOp::Result importOpResult = importOp->operate();
+  smtk::operation::Operation::Result importOpResult = importOp->operate();
 
   // Retrieve the resulting model
   smtk::attribute::ComponentItemPtr componentItem =
@@ -71,7 +70,7 @@ int main(int argc, char* argv[])
 
   // Test for success
   if (importOpResult->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "Import operator failed\n";
     return 1;
@@ -108,8 +107,8 @@ int main(int argc, char* argv[])
 
   // create entity group operator
   std::cout << "Create the entity group operator\n";
-  smtk::bridge::discrete::EntityGroupOperator::Ptr egOp =
-    smtk::bridge::discrete::EntityGroupOperator::create();
+  smtk::bridge::discrete::EntityGroupOperation::Ptr egOp =
+    smtk::bridge::discrete::EntityGroupOperation::create();
   if (!egOp)
   {
     std::cerr << "No entity group operator!\n";
@@ -127,9 +126,9 @@ int main(int argc, char* argv[])
   egOp->parameters()->findModelEntity("cell to add")->setValue(edge1);
   egOp->parameters()->findModelEntity("cell to add")->appendValue(edge2);
 
-  smtk::model::OperatorResult egResult = egOp->operate();
+  smtk::operation::Operation::Result egResult = egOp->operate();
   if (egResult->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "Entity group operator failed!\n";
     return 1;

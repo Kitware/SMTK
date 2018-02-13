@@ -2,9 +2,9 @@
 <!-- Description of the polygon "CleanGeometry" operator -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="clean geometry" Label="Geometry - Clean" BaseType="operator">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="clean geometry" Label="Geometry - Clean" BaseType="operation">
       <BriefDescription>Make geometric entities consistent with modeling assumptions.</BriefDescription>
       <DetailedDescription>
         This operator will split intersecting entities and remove duplicate geometric entities

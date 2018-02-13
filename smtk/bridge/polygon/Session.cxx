@@ -53,7 +53,6 @@ namespace polygon
 Session::Session()
   : m_nextModelNumber(0)
 {
-  this->initializeOperatorCollection(Session::s_operators);
 }
 
 /// Virtual destructor. Here because Session overrides virtual methods from Session.
@@ -215,7 +214,5 @@ internal::EntityIdToPtr::const_iterator Session::endStorage() const
 } // namespace smtk
 
 #include "smtk/bridge/polygon/Session_json.h" // For Session_json
-smtkImplementsModelingKernel(
-  SMTKPOLYGONSESSION_EXPORT, polygon, Session_json, smtk::model::SessionHasNoStaticSetup,
-  smtk::bridge::polygon::Session, true /* inherit "universal" operators */
-  );
+smtkImplementsModelingKernel(SMTKPOLYGONSESSION_EXPORT, polygon, Session_json,
+  smtk::model::SessionHasNoStaticSetup, smtk::bridge::polygon::Session);

@@ -10,7 +10,7 @@
 #ifndef __smtk_session_polygon_SplitEdge_h
 #define __smtk_session_polygon_SplitEdge_h
 
-#include "smtk/bridge/polygon/Operator.h"
+#include "smtk/bridge/polygon/Operation.h"
 
 namespace smtk
 {
@@ -23,13 +23,13 @@ namespace polygon
   *
   * Self-intersecting edges are broken into multiple non-self-intersecting edges.
   */
-class SMTKPOLYGONSESSION_EXPORT SplitEdge : public Operator
+class SMTKPOLYGONSESSION_EXPORT SplitEdge : public Operation
 {
 public:
   smtkTypeMacro(SplitEdge);
   smtkCreateMacro(SplitEdge);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
-  smtkSuperclassMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
+  smtkSuperclassMacro(Operation);
 
 protected:
   Result operateInternal() override;

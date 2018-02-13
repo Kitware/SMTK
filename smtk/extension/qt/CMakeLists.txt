@@ -16,7 +16,7 @@ set(QAttrLibSrcs
   qtGroupView.cxx
   qtAttributeView.cxx
   qtInstancedView.cxx
-  qtOperatorView.cxx
+  qtOperationView.cxx
   #qtModelView.cxx
   qtSelectorView.cxx
   qtSimpleExpressionView.cxx
@@ -38,7 +38,7 @@ set(QAttrLibSrcs
   qtNewAttributeWidget.cxx
   qtOverlay.cxx
   qtModelOperationWidget.cxx
-  qtOperatorDockWidget.cxx
+  qtOperationDockWidget.cxx
   qtTimeZoneRegionModel.cxx
   qtTimeZoneSelectWidget.cxx
   qtViewInterface.cxx
@@ -71,7 +71,7 @@ set(QAttrLibMocHeaders
   qtGroupView.h
   qtAttributeView.h
   qtInstancedView.h
-  qtOperatorView.h
+  qtOperationView.h
   #qtModelView.h
   qtSelectorView.h
   qtSimpleExpressionView.h
@@ -93,7 +93,7 @@ set(QAttrLibMocHeaders
   qtNewAttributeWidget.h
   qtOverlay.h
   qtModelOperationWidget.h
-  qtOperatorDockWidget.h
+  qtOperationDockWidget.h
   qtDateTimeItem.h
   qtTimeZoneRegionModel.h
   qtTimeZoneSelectWidget.h

@@ -93,7 +93,7 @@ void SetMeshPropertyValue(const std::string& name, typename VI::Ptr item,
   }
 }
 
-smtk::model::OperatorResult SetProperty::operateInternal()
+SetProperty::Result SetProperty::operateInternal()
 {
   smtk::attribute::StringItemPtr nameItem = this->parameters()->findString("name");
   smtk::attribute::StringItemPtr stringItem = this->parameters()->findString("string value");
@@ -105,7 +105,7 @@ smtk::model::OperatorResult SetProperty::operateInternal()
 
   if (nameItem->value(0).empty())
   {
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   smtk::model::Manager::Ptr resource =
@@ -147,7 +147,7 @@ smtk::model::OperatorResult SetProperty::operateInternal()
     }
   }
 
-  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
   // if a model is in the changed entities and it is a submodel, we
   // want to label its parent model to be modified too.

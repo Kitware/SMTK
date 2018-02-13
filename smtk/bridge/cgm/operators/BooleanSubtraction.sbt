@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the CGM "BooleanSubtraction" Operator -->
+<!-- Description of the CGM "BooleanSubtraction" Operation -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
-    <!-- Operator -->
-    <AttDef Type="subtraction" BaseType="operator">
+    <!-- Operation -->
+    <AttDef Type="subtraction" BaseType="operation">
       <BriefDescription>Subtract tool(s) from the workpiece(s).</BriefDescription>
       <DetailedDescription>
         Subtract the tool body (or bodies) from the workpiece body (or bodies).

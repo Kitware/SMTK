@@ -18,7 +18,6 @@
 #include "smtk/model/Face.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/Vertex.h"
 #include <complex>
@@ -66,15 +65,15 @@ int UnitTestPolygonDemoteVertex(int argc, char* argv[])
 
   // Register operators to the operation manager
   {
-    operationManager->registerOperator<smtk::bridge::polygon::CreateModel>(
+    operationManager->registerOperation<smtk::bridge::polygon::CreateModel>(
       "smtk::bridge::polygon::CreateModel");
-    operationManager->registerOperator<smtk::bridge::polygon::CreateVertices>(
+    operationManager->registerOperation<smtk::bridge::polygon::CreateVertices>(
       "smtk::bridge::polygon::CreateVertices");
-    operationManager->registerOperator<smtk::bridge::polygon::CreateEdgeFromVertices>(
+    operationManager->registerOperation<smtk::bridge::polygon::CreateEdgeFromVertices>(
       "smtk::bridge::polygon::CreateEdgeFromVertices");
-    operationManager->registerOperator<smtk::bridge::polygon::CreateFacesFromEdges>(
+    operationManager->registerOperation<smtk::bridge::polygon::CreateFacesFromEdges>(
       "smtk::bridge::polygon::CreateFacesFromEdges");
-    operationManager->registerOperator<smtk::bridge::polygon::DemoteVertex>(
+    operationManager->registerOperation<smtk::bridge::polygon::DemoteVertex>(
       "smtk::bridge::polygon::DemoteVertex");
   }
 
@@ -87,7 +86,7 @@ int UnitTestPolygonDemoteVertex(int argc, char* argv[])
     operationManager->create<smtk::bridge::polygon::CreateModel>();
 
   // Apply the operation and check the result
-  smtk::operation::NewOp::Result createOpResult = createOp->operate();
+  smtk::operation::Operation::Result createOpResult = createOp->operate();
 
   // Retrieve the resulting model item
   smtk::attribute::ComponentItemPtr componentItem =
@@ -123,9 +122,9 @@ int UnitTestPolygonDemoteVertex(int argc, char* argv[])
     }
   }
 
-  smtk::operation::NewOp::Result res = createVerticesOp->operate();
+  smtk::operation::Operation::Result res = createVerticesOp->operate();
   test(res->findInt("outcome")->value() ==
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Create vertices operator failed");
 
   smtk::model::Model modelCreated = model->referenceAs<smtk::model::Model>();
@@ -154,7 +153,7 @@ int UnitTestPolygonDemoteVertex(int argc, char* argv[])
       "Could not associate vertex");
     res = createEdgeFromVerticesOp->operate();
     test(res->findInt("outcome")->value() ==
-        static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
+        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
       "Create edge from vertices operator failed");
   }
 
@@ -179,7 +178,7 @@ int UnitTestPolygonDemoteVertex(int argc, char* argv[])
   }
   res = createFacesFromEdgesOp->operate();
   test(res->findInt("outcome")->value() ==
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Create faces from edges operator failed");
 
   int numberOfFaces = 0;
@@ -200,7 +199,7 @@ int UnitTestPolygonDemoteVertex(int argc, char* argv[])
     "Could not associate vertex");
   res = demoteVertexOp->operate();
   test(res->findInt("outcome")->value() ==
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Demote vertex operator failed");
 
   // Check the state of the model after operation

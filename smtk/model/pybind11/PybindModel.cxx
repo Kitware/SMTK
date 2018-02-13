@@ -148,8 +148,8 @@ PYBIND11_MODULE(_smtkPybindModel, model)
   py::class_< smtk::model::Volume, smtk::model::CellEntity > smtk_model_Volume = pybind11_init_smtk_model_Volume(model);
   py::class_< smtk::model::VolumeUse, smtk::model::UseEntity > smtk_model_VolumeUse = pybind11_init_smtk_model_VolumeUse(model);
 
-  PySharedPtrClass< smtk::model::AddAuxiliaryGeometry, smtk::operation::XMLOperator > smtk_model_AddAuxiliaryGeometry = pybind11_init_smtk_model_AddAuxiliaryGeometry(model);
-  PySharedPtrClass< smtk::model::CloseModel, smtk::operation::XMLOperator > smtk_model_CloseModel = pybind11_init_smtk_model_CloseModel(model);
-  PySharedPtrClass< smtk::model::ExportModelJSON, smtk::operation::XMLOperator > smtk_model_ExportModelJSON = pybind11_init_smtk_model_ExportModelJSON(model);
-  PySharedPtrClass< smtk::model::SetProperty, smtk::operation::XMLOperator > smtk_model_SetProperty = pybind11_init_smtk_model_SetProperty(model);
+  PySharedPtrClass< smtk::model::AddAuxiliaryGeometry, smtk::operation::XMLOperation > smtk_model_AddAuxiliaryGeometry = pybind11_init_smtk_model_AddAuxiliaryGeometry(model);
+  PySharedPtrClass< smtk::model::CloseModel, smtk::operation::XMLOperation > smtk_model_CloseModel = pybind11_init_smtk_model_CloseModel(model);
+  PySharedPtrClass< smtk::model::ExportModelJSON, smtk::operation::XMLOperation > smtk_model_ExportModelJSON = pybind11_init_smtk_model_ExportModelJSON(model);
+  PySharedPtrClass< smtk::model::SetProperty, smtk::operation::XMLOperation > smtk_model_SetProperty = pybind11_init_smtk_model_SetProperty(model);
 }

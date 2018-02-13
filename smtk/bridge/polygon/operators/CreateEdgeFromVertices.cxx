@@ -43,20 +43,20 @@ CreateEdgeFromVertices::Result CreateEdgeFromVertices::operateInternal()
     std::static_pointer_cast<smtk::bridge::polygon::Resource>(parentModel.component()->resource());
 
   if (!resource)
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
 
   if (!(parentModel.isValid() && (modelItem->numberOfValues() == 2)))
   {
     smtkErrorMacro(this->log(),
       "A model (or vertices with a valid parent model) must be associated with the operator.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
   if (!(modelItem->value(0).isVertex() && modelItem->value(1).isVertex()))
   {
     smtkErrorMacro(this->log(), "When constructing an edge from vertices,"
                                 " all associated model entities must be vertices"
                                 " and there must be 2 vertices");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   internal::pmodel::Ptr storage = resource->findStorage<internal::pmodel>(parentModel.entity());
@@ -71,7 +71,7 @@ CreateEdgeFromVertices::Result CreateEdgeFromVertices::operateInternal()
     {
       smtkErrorMacro(this->log(), "When constructing an edge from vertices, Vertex "
           << i << " does not apprear to be valid");
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
   }
 
@@ -87,10 +87,10 @@ CreateEdgeFromVertices::Result CreateEdgeFromVertices::operateInternal()
     created.push_back(edge);
   }
 
-  smtk::model::OperatorResult opResult;
+  Result opResult;
   if (ok)
   {
-    opResult = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+    opResult = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
     smtk::attribute::ComponentItem::Ptr createdItem = opResult->findComponent("created");
     for (auto& c : created)
@@ -103,7 +103,7 @@ CreateEdgeFromVertices::Result CreateEdgeFromVertices::operateInternal()
   }
   else
   {
-    opResult = this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    opResult = this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   return opResult;

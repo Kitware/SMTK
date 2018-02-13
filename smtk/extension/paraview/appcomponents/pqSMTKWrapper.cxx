@@ -27,7 +27,6 @@
 #include "smtk/resource/Resource.h"
 
 #include "smtk/operation/Manager.h"
-#include "smtk/operation/Operator.h"
 
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
@@ -98,8 +97,8 @@ pqSMTKWrapper::pqSMTKWrapper(const QString& regGroup, const QString& regName, vt
     );
     */
     wrapper->GetOperationManager()->observers().insert(
-      [this](smtk::operation::NewOp::Ptr oper, smtk::operation::EventType event,
-        smtk::operation::NewOp::Result result) -> int {
+      [this](smtk::operation::Operation::Ptr oper, smtk::operation::EventType event,
+        smtk::operation::Operation::Result result) -> int {
         emit operationEvent(oper, event, result);
         return 0;
       });

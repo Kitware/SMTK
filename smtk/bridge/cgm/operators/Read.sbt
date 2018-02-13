@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the CGM "Read" Operator -->
+<!-- Description of the CGM "Read" Operation -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
-    <!-- Operator -->
-    <AttDef Type="read" BaseType="operator">
+    <!-- Operation -->
+    <AttDef Type="read" BaseType="operation">
       <ItemDefinitions>
         <File Name="filename" NumberOfRequiredValues="1"
           ShouldExist="true"

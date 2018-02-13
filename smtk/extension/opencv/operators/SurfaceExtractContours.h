@@ -11,7 +11,7 @@
 #ifndef __smtk_extension_opencv_SurfaceExtractContours_h
 #define __smtk_extension_opencv_SurfaceExtractContours_h
 
-#include "smtk/bridge/polygon/Operator.h"
+#include "smtk/bridge/polygon/Operation.h"
 #include "smtk/extension/opencv/Exports.h"
 
 namespace smtk
@@ -29,13 +29,13 @@ namespace polygon
   * file.
   *
   */
-class SMTKOPENCVEXT_EXPORT SurfaceExtractContours : public Operator
+class SMTKOPENCVEXT_EXPORT SurfaceExtractContours : public Operation
 {
 public:
   smtkTypeMacro(SurfaceExtractContours);
   smtkCreateMacro(SurfaceExtractContours);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
-  smtkSuperclassMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
+  smtkSuperclassMacro(Operation);
 
   bool ableToOperate() override;
 

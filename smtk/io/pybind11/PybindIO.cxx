@@ -36,7 +36,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindImportMesh.h"
 #include "PybindLogger.h"
 #include "PybindModelToMesh.h"
-#include "PybindOperatorLog.h"
+#include "PybindOperationLog.h"
 #include "PybindReadMesh.h"
 #include "PybindResourceSetReader.h"
 #include "PybindResourceSetWriter.h"
@@ -73,7 +73,7 @@ PYBIND11_MODULE(_smtkPybindIO, io)
   PySharedPtrClass< smtk::io::ItemExpressionInfo > smtk_io_ItemExpressionInfo = pybind11_init_smtk_io_ItemExpressionInfo(io);
   PySharedPtrClass< smtk::io::Logger > smtk_io_Logger = pybind11_init_smtk_io_Logger(io);
   PySharedPtrClass< smtk::io::ModelToMesh > smtk_io_ModelToMesh = pybind11_init_smtk_io_ModelToMesh(io);
-  PySharedPtrClass< smtk::io::OperatorLog > smtk_io_OperatorLog = pybind11_init_smtk_io_OperatorLog(io);
+  PySharedPtrClass< smtk::io::OperationLog > smtk_io_OperationLog = pybind11_init_smtk_io_OperationLog(io);
   PySharedPtrClass< smtk::io::ReadMesh > smtk_io_ReadMesh = pybind11_init_smtk_io_ReadMesh(io);
   PySharedPtrClass< smtk::io::ResourceSetReader > smtk_io_ResourceSetReader = pybind11_init_smtk_io_ResourceSetReader(io);
   PySharedPtrClass< smtk::io::ResourceSetWriter > smtk_io_ResourceSetWriter = pybind11_init_smtk_io_ResourceSetWriter(io);

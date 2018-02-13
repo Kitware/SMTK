@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the CGM "CreateSphere" Operator -->
+<!-- Description of the CGM "CreateSphere" Operation -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
-    <!-- Operator -->
-    <AttDef Type="create sphere" BaseType="operator">
+    <!-- Operation -->
+    <AttDef Type="create sphere" BaseType="operation">
       <ItemDefinitions>
         <Double Name="center" NumberOfRequiredValues="3">
           <DefaultValue>0.0</DefaultValue>

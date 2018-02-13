@@ -32,13 +32,13 @@ TerrainExtraction::Result TerrainExtraction::operateInternal()
   if (!associations || associations->numberOfValues() == 0)
   {
     smtkErrorMacro(this->log(), "No parent specified.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   // Hide the visibilty of input aux_geom
   EntityRef parent = associations->value();
   parent.setVisible(false);
-  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
   smtk::attribute::ComponentItem::Ptr modifiedItem = result->findComponent("modified");
   modifiedItem->appendValue(parent.component());

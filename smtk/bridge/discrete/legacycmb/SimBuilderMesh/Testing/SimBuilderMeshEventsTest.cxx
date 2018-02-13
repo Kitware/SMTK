@@ -12,11 +12,11 @@
 #include <vtkCMBModelEdgeMesh.h>
 #include <vtkCMBModelEntityMesh.h>
 #include <vtkCMBModelFaceMesh.h>
-#include <vtkCMBModelReadOperator.h>
+#include <vtkCMBModelReadOperation.h>
 #include <vtkDiscreteModel.h>
 #include <vtkDiscreteModelWrapper.h>
-#include <vtkEdgeSplitOperator.h>
-#include <vtkMergeOperator.h>
+#include <vtkEdgeSplitOperation.h>
+#include <vtkMergeOperation.h>
 #include <vtkModelEdge.h>
 #include <vtkModelFace.h>
 #include <vtkModelItemIterator.h>
@@ -32,7 +32,8 @@ int Check2DModel(const char* fileName)
 
   vtkDiscreteModel* model = modelWrapper->GetModel();
 
-  vtkSmartPointer<vtkCMBModelReadOperator> reader = vtkSmartPointer<vtkCMBModelReadOperator>::New();
+  vtkSmartPointer<vtkCMBModelReadOperation> reader =
+    vtkSmartPointer<vtkCMBModelReadOperation>::New();
   reader->SetFileName(fileName);
   reader->Operate(modelWrapper);
   if (reader->GetOperateSucceeded() == false)
@@ -73,18 +74,18 @@ int Check2DModel(const char* fileName)
   }
 
   // test 2D split by splitting an edge adjacent to 2 faces
-  vtkSmartPointer<vtkEdgeSplitOperator> splitOperator =
-    vtkSmartPointer<vtkEdgeSplitOperator>::New();
+  vtkSmartPointer<vtkEdgeSplitOperation> splitOperation =
+    vtkSmartPointer<vtkEdgeSplitOperation>::New();
   vtkModelEdge* edge = vtkModelEdge::SafeDownCast(model->GetModelEntity(vtkModelEdgeType, 17));
-  splitOperator->SetEdgeId(edge->GetUniquePersistentId());
-  splitOperator->SetPointId(6);
-  splitOperator->Operate(modelWrapper);
-  if (splitOperator->GetOperateSucceeded() == false)
+  splitOperation->SetEdgeId(edge->GetUniquePersistentId());
+  splitOperation->SetPointId(6);
+  splitOperation->Operate(modelWrapper);
+  if (splitOperation->GetOperateSucceeded() == false)
   {
     vtkGenericWarningMacro("Model edge split operator failed.");
     numberOfErrors++;
   }
-  if (splitOperator->GetCreatedModelEdgeId() < 0)
+  if (splitOperation->GetCreatedModelEdgeId() < 0)
   {
     vtkGenericWarningMacro("Split operator failed to split any model edges.");
     return ++numberOfErrors;
@@ -110,18 +111,18 @@ int Check2DModel(const char* fileName)
 
   // test 2D merge
   vtkModelGeometricEntity* createdEdge = vtkModelGeometricEntity::SafeDownCast(
-    model->GetModelEntity(vtkModelEdgeType, splitOperator->GetCreatedModelEdgeId()));
+    model->GetModelEntity(vtkModelEdgeType, splitOperation->GetCreatedModelEdgeId()));
   vtkCMBModelEdgeMesh* createdMesh =
     vtkCMBModelEdgeMesh::SafeDownCast(mesh->GetModelEntityMesh(createdEdge));
   // set the size to be larger to test that the smaller size is kept
   createdMesh->SetLength(5.);
 
-  vtkSmartPointer<vtkMergeOperator> mergeOperator = vtkSmartPointer<vtkMergeOperator>::New();
-  mergeOperator->SetSourceId(edge->GetUniquePersistentId());
-  mergeOperator->SetTargetId(createdEdge->GetUniquePersistentId());
-  mergeOperator->AddLowerDimensionalId(41);
-  mergeOperator->Operate(modelWrapper);
-  if (mergeOperator->GetOperateSucceeded() == false)
+  vtkSmartPointer<vtkMergeOperation> mergeOperation = vtkSmartPointer<vtkMergeOperator>::New();
+  mergeOperation->SetSourceId(edge->GetUniquePersistentId());
+  mergeOperation->SetTargetId(createdEdge->GetUniquePersistentId());
+  mergeOperation->AddLowerDimensionalId(41);
+  mergeOperation->Operate(modelWrapper);
+  if (mergeOperation->GetOperateSucceeded() == false)
   {
     vtkGenericWarningMacro("Model edge merge operator failed.");
     return ++numberOfErrors;

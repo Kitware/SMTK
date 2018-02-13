@@ -157,7 +157,7 @@ CreateModel::Result CreateModel::operateInternal()
         model.assignDefaultName();
       }
 
-      result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+      result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
       {
         smtk::attribute::ComponentItem::Ptr resultModels = result->findComponent("model");
@@ -198,7 +198,7 @@ CreateModel::Result CreateModel::operateInternal()
 
   if (!result)
   {
-    result = this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    result = this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   return result;

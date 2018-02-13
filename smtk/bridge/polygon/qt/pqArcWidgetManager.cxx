@@ -160,9 +160,9 @@ int pqArcWidgetManager::edit()
   return 1;
 }
 
-void pqArcWidgetManager::cancelOperation(const smtk::model::OperatorPtr& op)
+void pqArcWidgetManager::cancelOperation(const smtk::operation::OperationPtr& op)
 {
-  if (!this->Arc || this->Arc->edgeOperator() != op)
+  if (!this->Arc || this->Arc->edgeOperation() != op)
     return;
 
   if (this->EditWidget && this->EditWidget->isVisible())
@@ -244,7 +244,7 @@ void pqArcWidgetManager::updateEdge(qtArcWidget* subArcWidget, const smtk::commo
     vtkNew<vtkIdTypeArray> arcIdsFromSplit;
 
     //call the update arc operator
-    vtkNew<vtkCMBSubArcModifyClientOperator> updateAndSplitOp;
+    vtkNew<vtkCMBSubArcModifyClientOperation> updateAndSplitOp;
     updateAndSplitOp->SetStartPointId(startPID);
     updateAndSplitOp->SetEndPointId(endPID);
     bool valid = updateAndSplitOp->Operate(obj->getArcId(),widget,

@@ -3,7 +3,7 @@ if (SMTK_DATA_DIR AND SMTK_ENABLE_POLYGON_SESSION)
   add_executable(DeleteSmtkCell DeleteSmtkCell.cxx)
   target_link_libraries(DeleteSmtkCell
     smtkCore
-    vtkSMTKOperatorsExt
+    vtkSMTKOperationsExt
     smtkPolygonSession
     vtkSMTKSourceExt
     vtkRenderingGL2PSOpenGL2
@@ -17,7 +17,7 @@ if (SMTK_DATA_DIR AND SMTK_ENABLE_POLYGON_SESSION)
   add_executable(DeleteSmtkCell2 DeleteSmtkCell2.cxx)
   target_link_libraries(DeleteSmtkCell2
     smtkCore
-    vtkSMTKOperatorsExt
+    vtkSMTKOperationsExt
     smtkPolygonSession
     vtkSMTKSourceExt)
   add_test(

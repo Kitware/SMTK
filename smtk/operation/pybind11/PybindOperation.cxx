@@ -23,10 +23,10 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindMetadata.h"
 #include "PybindMetadataContainer.h"
 #include "PybindMetadataObserver.h"
-#include "PybindNewOp.h"
+#include "PybindOperation.h"
 #include "PybindManager.h"
 #include "PybindObserver.h"
-#include "PybindXMLOperator.h"
+#include "PybindXMLOperation.h"
 
 #include "PybindRegisterOperations.h"
 #include "PybindCreateResource.h"
@@ -47,13 +47,13 @@ PYBIND11_MODULE(_smtkPybindOperation, operation)
   py::class_< smtk::operation::MetadataObservers > smtk_operation_MetadataObservers = pybind11_init_smtk_operation_MetadataObservers(operation);
   py::class_< smtk::operation::NameTag > smtk_operation_NameTag = pybind11_init_smtk_operation_NameTag(operation);
   PySharedPtrClass< smtk::operation::Manager > smtk_operation_Manager = pybind11_init_smtk_operation_Manager(operation);
-  PySharedPtrClass< smtk::operation::NewOp, smtk::operation::PyOperator > smtk_operation_NewOp = pybind11_init_smtk_operation_NewOp(operation);
+  PySharedPtrClass< smtk::operation::Operation, smtk::operation::PyOperation > smtk_operation_Operation = pybind11_init_smtk_operation_Operation(operation);
   py::class_< smtk::operation::Observers > smtk_operation_Observers = pybind11_init_smtk_operation_Observers(operation);
   pybind11_init_smtk_operation_EventType(operation);
-  PySharedPtrClass< smtk::operation::XMLOperator, smtk::operation::NewOp > smtk_operation_XMLOperator = pybind11_init_smtk_operation_XMLOperator(operation);
+  PySharedPtrClass< smtk::operation::XMLOperation, smtk::operation::Operation > smtk_operation_XMLOperation = pybind11_init_smtk_operation_XMLOperation(operation);
 
-  PySharedPtrClass< smtk::operation::CreateResource, smtk::operation::XMLOperator > smtk_operation_CreateResource = pybind11_init_smtk_operation_CreateResource(operation);
-  PySharedPtrClass< smtk::operation::LoadResource, smtk::operation::XMLOperator > smtk_operation_LoadResource = pybind11_init_smtk_operation_LoadResource(operation);
-  PySharedPtrClass< smtk::operation::SaveResource, smtk::operation::XMLOperator > smtk_operation_SaveResource = pybind11_init_smtk_operation_SaveResource(operation);
+  PySharedPtrClass< smtk::operation::CreateResource, smtk::operation::XMLOperation > smtk_operation_CreateResource = pybind11_init_smtk_operation_CreateResource(operation);
+  PySharedPtrClass< smtk::operation::LoadResource, smtk::operation::XMLOperation > smtk_operation_LoadResource = pybind11_init_smtk_operation_LoadResource(operation);
+  PySharedPtrClass< smtk::operation::SaveResource, smtk::operation::XMLOperation > smtk_operation_SaveResource = pybind11_init_smtk_operation_SaveResource(operation);
   pybind11_init__operation_registerOperations(operation);
 }

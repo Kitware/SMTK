@@ -15,13 +15,13 @@
 
 #include "smtk/model/operators/AddAuxiliaryGeometry.h"
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::model::AddAuxiliaryGeometry, smtk::operation::XMLOperator > pybind11_init_smtk_model_AddAuxiliaryGeometry(py::module &m)
+PySharedPtrClass< smtk::model::AddAuxiliaryGeometry, smtk::operation::XMLOperation > pybind11_init_smtk_model_AddAuxiliaryGeometry(py::module &m)
 {
-  PySharedPtrClass< smtk::model::AddAuxiliaryGeometry, smtk::operation::XMLOperator > instance(m, "AddAuxiliaryGeometry");
+  PySharedPtrClass< smtk::model::AddAuxiliaryGeometry, smtk::operation::XMLOperation > instance(m, "AddAuxiliaryGeometry");
   instance
     .def(py::init<>())
     .def(py::init<::smtk::model::AddAuxiliaryGeometry const &>())

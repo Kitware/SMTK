@@ -42,7 +42,7 @@ bool CloseModel::ableToOperate()
   return modelItem && modelItem->numberOfValues() > 0;
 }
 
-smtk::model::OperatorResult CloseModel::operateInternal()
+CloseModel::Result CloseModel::operateInternal()
 {
   // ableToOperate should have verified that model(s) are set
   smtk::attribute::ModelEntityItem::Ptr modelItem = this->parameters()->findModelEntity("model");
@@ -78,8 +78,8 @@ smtk::model::OperatorResult CloseModel::operateInternal()
     expunged.push_back(*mit);
   }
 
-  OperatorResult result = this->createResult(
-    success ? smtk::operation::NewOp::Outcome::SUCCEEDED : smtk::operation::NewOp::Outcome::FAILED);
+  Result result = this->createResult(success ? smtk::operation::Operation::Outcome::SUCCEEDED
+                                             : smtk::operation::Operation::Outcome::FAILED);
 
   if (success)
   {

@@ -15,11 +15,11 @@
 
 #include "smtk/extension/delaunay/operators/TriangulateFaces.h"
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
-PySharedPtrClass< smtk::extension::delaunay::TriangulateFaces, smtk::operation::XMLOperator > pybind11_init_smtk_extension_delaunay_TriangulateFaces(py::module &m)
+PySharedPtrClass< smtk::extension::delaunay::TriangulateFaces, smtk::operation::XMLOperation > pybind11_init_smtk_extension_delaunay_TriangulateFaces(py::module &m)
 {
-  PySharedPtrClass< smtk::extension::delaunay::TriangulateFaces, smtk::operation::XMLOperator > instance(m, "TriangulateFaces");
+  PySharedPtrClass< smtk::extension::delaunay::TriangulateFaces, smtk::operation::XMLOperation > instance(m, "TriangulateFaces");
   instance
     .def("classname", &smtk::extension::delaunay::TriangulateFaces::classname)
     .def_static("create", (std::shared_ptr<smtk::extension::delaunay::TriangulateFaces> (*)()) &smtk::extension::delaunay::TriangulateFaces::create)

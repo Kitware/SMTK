@@ -50,7 +50,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::model::OperatorResult Scale::operateInternal()
+smtk::operation::OperationResult Scale::operateInternal()
 {
   smtk::attribute::DoubleItemPtr originItem = this->findDouble("origin");
   smtk::attribute::IntItemPtr typeItem = this->findInt("scale factor type");
@@ -95,11 +95,11 @@ smtk::model::OperatorResult Scale::operateInternal()
     smtkInfoMacro(log(), "Failed to scale bodies or wrong number"
         << " (" << cgmEntitiesOut.size() << " != " << nb << ")"
         << " of resulting bodies.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  smtk::operation::OperationResult result =
+    this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmEntitiesOut, result, MODIFIED);
   // Nothing expunged.
@@ -111,5 +111,5 @@ smtk::model::OperatorResult Scale::operateInternal()
 } //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::Scale, cgm_scale, "scale",
+smtkImplementsModelOperation(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::Scale, cgm_scale, "scale",
   Scale_xml, smtk::bridge::cgm::Session);

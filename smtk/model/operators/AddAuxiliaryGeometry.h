@@ -10,20 +10,20 @@
 #ifndef smtk_model_operators_AddAuxiliaryGeometry_h
 #define smtk_model_operators_AddAuxiliaryGeometry_h
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace smtk
 {
 namespace model
 {
 
-class SMTKCORE_EXPORT AddAuxiliaryGeometry : public smtk::operation::XMLOperator
+class SMTKCORE_EXPORT AddAuxiliaryGeometry : public smtk::operation::XMLOperation
 {
 public:
   smtkTypeMacro(AddAuxiliaryGeometry);
   smtkCreateMacro(AddAuxiliaryGeometry);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
-  smtkSuperclassMacro(smtk::operation::XMLOperator);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
+  smtkSuperclassMacro(smtk::operation::XMLOperation);
 
 protected:
   Result operateInternal() override;

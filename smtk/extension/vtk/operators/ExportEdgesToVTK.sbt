@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the model "ExportEdgesToVTK" Operator -->
+<!-- Description of the model "ExportEdgesToVTK" Operation -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="export edges to vtk" BaseType="operator" Label="Model - Export edges to VTK">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="export edges to vtk" BaseType="operation" Label="Model - Export edges to VTK">
       <AssociationsDef Name="models" NumberOfRequiredValues="1">
         <MembershipMask>model</MembershipMask>
       </AssociationsDef>

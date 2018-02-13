@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the Exodus "EulerCharacteristicRatio" Operator -->
+<!-- Description of the Exodus "EulerCharacteristicRatio" Operation -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="euler characteristic ratio" Label="Model - Compute Euler Characteristic Ratio" BaseType="operator">
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="euler characteristic ratio" Label="Model - Compute Euler Characteristic Ratio" BaseType="operation">
       <BriefDescription>
         Compute the ratio of the Euler characteristics for a model's
         boundary to its volume.

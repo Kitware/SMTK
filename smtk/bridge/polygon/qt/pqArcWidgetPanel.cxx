@@ -35,6 +35,7 @@
 #include "vtkSelectionNode.h"
 #include "vtkUnsignedIntArray.h"
 
+#include "smtk/attribute/Attribute.h"
 #include "smtk/bridge/polygon/qt/pqArcWidgetManager.h"
 #include "smtk/bridge/polygon/qt/pqPolygonArc.h"
 #include "smtk/bridge/polygon/qt/vtkPolygonArcInfo.h"
@@ -42,7 +43,7 @@
 #include "smtk/extension/vtk/widgets/vtkSMTKArcRepresentation.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
+#include "smtk/operation/Operation.h"
 #include <QtDebug>
 
 namespace Ui
@@ -126,7 +127,7 @@ void ArcPicker::selectedInfo(pqOutputPort* port)
   this->Info->EdgeId = smtk::common::UUID::null();
   this->Info->port = NULL;
 
-  if (port && this->Arc->edgeOperator())
+  if (port && this->Arc->edgeOperation())
   {
     // This "IDs" only have three components [composite_index, processId, Index]
     // where composit_index is blockId and index is cellId
@@ -156,11 +157,12 @@ void ArcPicker::selectedInfo(pqOutputPort* port)
         if (arcInfo->GetModelEntityID())
         {
           edgeId = smtk::common::UUID(arcInfo->GetModelEntityID());
-          edge = smtk::model::Edge(this->Arc->edgeOperator()->manager(), edgeId);
-          if (edge.isValid())
-          {
-            break;
-          }
+          // TODO: cannot access manager through operator directly
+          // edge = smtk::model::Edge(this->Arc->edgeOperation()->manager(), edgeId);
+          // if (edge.isValid())
+          // {
+          //   break;
+          // }
         }
       }
 
@@ -300,21 +302,22 @@ void pqArcWidgetPanel::pickWholeArc()
 
 void pqArcWidgetPanel::arcPicked()
 {
-  if (this->Arc && this->Arc->edgeOperator())
+  if (this->Arc && this->Arc->edgeOperation())
   {
-    smtk::model::Edge edge(this->Arc->edgeOperator()->manager(), this->ArcInfo.EdgeId);
-    if (edge.isValid())
-    {
-      smtk::attribute::AttributePtr opSpec = this->Arc->edgeOperator()->specification();
-      edge.setIntegerProperty("block_index", this->ArcInfo.BlockIndex);
-      if (!opSpec->isEntityAssociated(edge))
-      {
-        opSpec->removeAllAssociations();
-        opSpec->associateEntity(edge);
-      }
-      this->showEditWidget();
-      return;
-    }
+    // TODO: cannot access the manager directly through the operator
+    // smtk::model::Edge edge(this->Arc->edgeOperation()->manager(), this->ArcInfo.EdgeId);
+    // if (edge.isValid())
+    // {
+    //   smtk::attribute::AttributePtr opSpec = this->Arc->edgeOperation()->specification();
+    //   edge.setIntegerProperty("block_index", this->ArcInfo.BlockIndex);
+    //   if (!opSpec->isEntityAssociated(edge))
+    //   {
+    //     opSpec->removeAllAssociations();
+    //     opSpec->associateEntity(edge);
+    //   }
+    //   this->showEditWidget();
+    //   return;
+    // }
   }
 
   this->resetWidget();

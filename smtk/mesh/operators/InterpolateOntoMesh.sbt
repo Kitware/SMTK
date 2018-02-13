@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the "interpolate onto mesh" Operator -->
+<!-- Description of the "interpolate onto mesh" Operation -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="interpolate onto mesh"
-            Label="Mesh - Interpolate data onto mesh" BaseType="operator">
+            Label="Mesh - Interpolate data onto mesh" BaseType="operation">
       <BriefDescription>
         Create a field on mesh nodes/elements from interpolated 3-dimensional data.
       </BriefDescription>
@@ -281,7 +281,7 @@
     </AttDef>
   </Definitions>
   <Views>
-    <View Type="Operator" Title="Interpolate onto Mesh" FilterByAdvanceLevel="true" UseSelectionManager="true">
+    <View Type="Operation" Title="Interpolate onto Mesh" FilterByAdvanceLevel="true" UseSelectionManager="true">
       <InstancedAttributes>
         <Att Type="interpolate onto mesh" Name="interpolate onto mesh"/>
       </InstancedAttributes>

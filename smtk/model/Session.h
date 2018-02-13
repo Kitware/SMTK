@@ -44,7 +44,6 @@ class UseEntity;
 class Instance;
 class ShellEntity;
 class Model;
-class Operator;
 class Session;
 class SessionRef;
 typedef std::map<smtk::common::UUID, smtk::shared_ptr<Session> > UUIDsToSessions;
@@ -93,103 +92,6 @@ enum SessionInformation
     0x000001ff //!< Erase **all** information about the entity, including user-specified.
 };
 
-/**\brief Boilerplate for classes that accept operator registration.
- *
- * This is invoked by smtkDeclareModelingKernel(), so you should not
- * normally need to use it directly.
- *
- * Note that you must invoke this macro in a public section of your class declaration!
- *
- * If you invoke this macro, you must also use the
- * smtkImplementsOperatorRegistration macro in your session's implementation.
- */
-#define smtkDeclareOperatorRegistration()                                                          \
-protected:                                                                                         \
-  static void cleanupOperators();                                                                  \
-                                                                                                   \
-public:                                                                                            \
-  static smtk::model::OperatorConstructors* s_operators;                                           \
-  bool registerOperator(const std::string& opName, const char* opDescrXML,                         \
-    smtk::model::OperatorConstructor opCtor) override;                                             \
-  static bool registerStaticOperator(                                                              \
-    const std::string& opName, const char* opDescrXML, smtk::model::OperatorConstructor opCtor);   \
-  std::string findOperatorXML(const std::string& opName) const override;                           \
-  smtk::model::OperatorConstructor findOperatorConstructor(const std::string& opName)              \
-    const override;                                                                                \
-  smtk::model::OperatorConstructors* operatorConstructors() override;                              \
-  bool inheritsOperators() const override
-
-/**\brief Implement methods declared by smtkDeclareOperatorRegistration().
-  *
-  * Usually this macro is invoked by smtkImplementsModelingKernel().
-  */
-#define smtkImplementsOperatorRegistration(Cls, Inherits)                                             \
-  /**\brief Declare the map of operator constructors */                                               \
-  smtk::model::OperatorConstructors* Cls::s_operators = NULL;                                         \
-  /**\brief Override the virtual method returning all operator constructors for this session type. */ \
-  smtk::model::OperatorConstructors* Cls::operatorConstructors() { return Cls::s_operators; }         \
-  /**\brief Virtual method to allow operators to register themselves with us */                       \
-  bool Cls::registerOperator(                                                                         \
-    const std::string& opName, const char* opDescrXML, smtk::model::OperatorConstructor opCtor)       \
-  {                                                                                                   \
-    /* std::cerr << "Register " << opName << " w/ " << #Cls << "\n"; */                               \
-    bool result = Cls::registerStaticOperator(opName, opDescrXML, opCtor);                            \
-    if (opDescrXML)                                                                                   \
-      this->importOperatorXML(opDescrXML);                                                            \
-    return result;                                                                                    \
-  }                                                                                                   \
-  /**\brief Allow operators to register themselves with us */                                         \
-  bool Cls::registerStaticOperator(                                                                   \
-    const std::string& opName, const char* opDescrXML, smtk::model::OperatorConstructor opCtor)       \
-  {                                                                                                   \
-    if (!Cls::s_operators)                                                                            \
-    {                                                                                                 \
-      Cls::s_operators = new smtk::model::OperatorConstructors;                                       \
-      atexit(Cls::cleanupOperators);                                                                  \
-    }                                                                                                 \
-    if (!opName.empty() && opCtor)                                                                    \
-    {                                                                                                 \
-      smtk::model::StaticOperatorInfo entry(opDescrXML ? opDescrXML : "", opCtor);                    \
-      (*Cls::s_operators)[opName] = entry;                                                            \
-      return true;                                                                                    \
-    }                                                                                                 \
-    else if (!opName.empty())                                                                         \
-    { /* unregister the operator of the given name. */                                                \
-      Cls::s_operators->erase(opName);                                                                \
-      /* FIXME: We should ensure that no operator instances of this type are in */                    \
-      /*        existence before allowing "unregistration" to proceed. */                             \
-    }                                                                                                 \
-    return false;                                                                                     \
-  }                                                                                                   \
-  /**\brief Find an operator constructor in this subclass' static list. */                            \
-  smtk::model::OperatorConstructor Cls::findOperatorConstructor(const std::string& opName) const      \
-  {                                                                                                   \
-    smtk::model::OperatorConstructor result;                                                          \
-    result = this->findOperatorConstructorInternal(opName, Cls::s_operators);                         \
-    if (!result && this->inheritsOperators() &&                                                       \
-      Cls::Superclass::staticClassName() != Cls::staticClassName())                                   \
-      result = this->Superclass::findOperatorConstructor(opName);                                     \
-    return result;                                                                                    \
-  }                                                                                                   \
-  /**\brief Find an XML description of an operator in this subclass' static list. */                  \
-  std::string Cls::findOperatorXML(const std::string& opName) const                                   \
-  {                                                                                                   \
-    std::string result;                                                                               \
-    result = this->findOperatorXMLInternal(opName, Cls::s_operators);                                 \
-    if (result.empty() && this->inheritsOperators() &&                                                \
-      Cls::Superclass::staticClassName() != Cls::staticClassName())                                   \
-      result = this->Superclass::findOperatorXML(opName);                                             \
-    return result;                                                                                    \
-  }                                                                                                   \
-  /**\brief Called to delete registered operator map at exit. */                                      \
-  void Cls::cleanupOperators()                                                                        \
-  {                                                                                                   \
-    delete Cls::s_operators;                                                                          \
-    Cls::s_operators = NULL;                                                                          \
-  }                                                                                                   \
-  /**\brief Return whether the class inherits operators. */                                           \
-  bool Cls::inheritsOperators() const { return Inherits; }
-
 /**\brief Boilerplate for classes that session to a solid modeling kernel.
  *
  * Invoke this macro inside every class definition inheriting smtk::model::Session.
@@ -202,8 +104,7 @@ public:                                                                         
   static std::string sessionName;                                                                  \
   static std::string staticClassName();                                                            \
   std::string name() const override { return sessionName; }                                        \
-  std::string className() const override;                                                          \
-  smtkDeclareOperatorRegistration()
+  std::string className() const override;
 
 /**\brief Declare that a class implements a session to a solid modeling kernel.
   *
@@ -226,16 +127,8 @@ public:                                                                         
   *                See the documentation for SessionStaticSetup and SessionHasNoStaticSetup.
   * \a Cls       - The name of the session class. The class must have a static method named
   *                "create" that constructs and instance and returns a shared pointer to it.
-  * \a Inherits  - Either "true" or "false", depending on whether the session should inherit
-  *                operators from its superclass. This is used to keep forwarding sessions
-  *                like the Remus remote session from inheriting local operators.
-  * \a OpCons    - A pointer to an OperatorConstructors instance (i.e., a pointer to a map
-  *                from strings (operator names) to StaticOperatorInfo objects, each of
-  *                which holds both the operator's XML description and a function pointer
-  *                for constructing a subclass of smtk::model::Operator to perform the
-  *                operation).
   */
-#define smtkImplementsModelingKernel(ExportSym, Comp, Tags, Setup, Cls, Inherits)                  \
+#define smtkImplementsModelingKernel(ExportSym, Comp, Tags, Setup, Cls)                            \
   /* Adapt create() to return a base-class pointer */                                              \
   static smtk::model::SessionPtr baseCreate() { return Cls::create(); }                            \
   /* Implement autoinit methods */                                                                 \
@@ -243,12 +136,12 @@ public:                                                                         
   {                                                                                                \
     smtk::model::SessionRegistrar::registerSession(                                                \
       #Comp, /* Can't rely on sessionName to be initialized yet */                                 \
-      Tags, Setup, baseCreate, Cls::s_operators);                                                  \
+      Tags, Setup, baseCreate);                                                                    \
   }                                                                                                \
   void ExportSym smtk_##Comp##_session_AutoInit_Destruct()                                         \
   {                                                                                                \
-    smtk::model::SessionRegistrar::registerSession(Cls::sessionName, std::string(),                \
-      SMTK_FUNCTION_INIT, SMTK_FUNCTION_INIT, SMTK_FUNCTION_INIT);                                 \
+    smtk::model::SessionRegistrar::registerSession(                                                \
+      Cls::sessionName, std::string(), SMTK_FUNCTION_INIT, SMTK_FUNCTION_INIT);                    \
   }                                                                                                \
   /**\brief Declare the component name */                                                          \
   std::string Cls::sessionName(#Comp);                                                             \
@@ -256,7 +149,6 @@ public:                                                                         
   std::string Cls::staticClassName() { return #Cls; }                                              \
   /**\brief Declare the class name */                                                              \
   std::string Cls::className() const { return Cls::staticClassName(); }                            \
-  smtkImplementsOperatorRegistration(Cls, Inherits);                                               \
   smtkComponentInitMacro(smtk_##Comp##_session);
 
 /**\brief A base class for bridging modelers into SMTK.
@@ -268,15 +160,6 @@ public:                                                                         
   * and for obtaining notification when foreign model entities are modified or
   * destroyed. In extreme cases, the SMTK model manager must be reset after
   * each modeling operation to guarantee a consistent model.
-  *
-  * Sessions may provide SMTK with Operators that can be used to
-  * modify models in storage.
-  * Operators have two parts: (1) a concrete subclass of smtk::model::Operator
-  * that implements the modeling operation using the "foreign" modeling
-  * kernel, and (2) a pair of smtk::attribute::Definition instances that
-  * define the structure of operator parameters and results.
-  * The latter Definition instances are kept inside an attribute collection
-  * owned by the Session; you can access it with smtk::Session::operatorCollection().
   *
   * Instances of Session subclasses should be registered with a
   * model using Manager::sessionModel(). Then, when an
@@ -291,7 +174,7 @@ public:                                                                         
   * by subclasses in order to track UUIDs for which there
   * is only partial information in Manager.
   *
-  * \sa smtk::model::SessionInformation smtk::model::Operator
+  * \sa smtk::model::SessionInformation
   * \sa smtkDeclareModelingKernel smtkImplementsModelingKernel
   */
 class SMTKCORE_EXPORT Session : smtkEnableSharedPtr(Session)
@@ -299,23 +182,6 @@ class SMTKCORE_EXPORT Session : smtkEnableSharedPtr(Session)
 public:
   smtkTypeMacroBase(Session);
 
-  // From smtkDeclareOperatorRegistration
-protected:
-  static void cleanupOperators();
-
-public:
-  static smtk::model::OperatorConstructors* s_operators;
-  virtual bool registerOperator(
-    const std::string& opName, const char* opDescrXML, smtk::model::OperatorConstructor opCtor);
-  static bool registerStaticOperator(
-    const std::string& opName, const char* opDescrXML, smtk::model::OperatorConstructor opCtor);
-  virtual std::string findOperatorXML(const std::string& opName) const;
-  virtual smtk::model::OperatorConstructor findOperatorConstructor(const std::string& opName) const;
-  virtual smtk::model::OperatorConstructors* operatorConstructors();
-  virtual bool inheritsOperators() const;
-  // End smtkDeclareOperatorRegistration
-
-  // Required to be circular for Superclass::findOperator{Constructor,XML}:
   smtkSuperclassMacro(smtk::model::Session);
 
   static std::string staticClassName() { return "smtk::model::Session"; }
@@ -328,16 +194,8 @@ public:
 
   virtual SessionInfoBits allSupportedInformation() const;
 
-  std::size_t numberOfOperators(bool includeAdvanced = true) const;
-  StringList operatorNames(bool includeAdvanced = true) const;
-  std::map<std::string, std::string> operatorLabelsMap(bool includeAdvanced = true) const;
-  // virtual OperatorPtr op(const std::string& opName) const;
-
   const DanglingEntities& danglingEntities() const;
   void declareDanglingEntity(const EntityRef& ent, SessionInfoBits present = 0);
-
-  smtk::attribute::CollectionPtr operatorCollection();
-  smtk::attribute::ConstCollectionPtr operatorCollection() const;
 
   virtual int setup(const std::string& optName, const StringList& optVal);
 
@@ -417,18 +275,10 @@ protected:
   virtual SessionInfoBits updateTessellation(
     const EntityRef& entRef, SessionInfoBits flags, ArrangementHelper* helper);
 
-  void initializeOperatorCollection(const OperatorConstructors* opList);
-  void importOperatorXML(const std::string& opXML);
-  virtual OperatorConstructor findOperatorConstructorInternal(
-    const std::string&, const OperatorConstructors* opList) const;
-  virtual std::string findOperatorXMLInternal(
-    const std::string&, const OperatorConstructors* opList) const;
-
   virtual SessionIOPtr createIODelegate(const std::string& format);
 
   DanglingEntities m_dangling;
   smtk::common::UUID m_sessionId;
-  smtk::attribute::CollectionPtr m_operatorCollection;
   Manager* m_manager;
 };
 

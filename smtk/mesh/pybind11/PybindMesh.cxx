@@ -60,7 +60,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 #include "smtk/mesh/interpolation/PointCloudFromCSV.h"
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
@@ -161,11 +161,11 @@ PYBIND11_MODULE(_smtkPybindMesh, mesh)
   PySharedPtrClass< smtk::mesh::UUIDTag > smtk_mesh_UUIDTag = pybind11_init_smtk_mesh_UUIDTag(mesh, smtk_mesh_OpaqueTag_16_);
   PySharedPtrClass< smtk::mesh::Model > smtk_mesh_Model = pybind11_init_smtk_mesh_Model(mesh, smtk_mesh_UUIDTag);
 
-  PySharedPtrClass< smtk::mesh::DeleteMesh, smtk::operation::XMLOperator > smtk_mesh_DeleteMesh = pybind11_init_smtk_mesh_DeleteMesh(mesh);
-  PySharedPtrClass< smtk::mesh::ElevateMesh, smtk::operation::XMLOperator > smtk_mesh_ElevateMesh = pybind11_init_smtk_mesh_ElevateMesh(mesh);
-  PySharedPtrClass< smtk::mesh::ExportMesh, smtk::operation::XMLOperator > smtk_mesh_ExportMesh = pybind11_init_smtk_mesh_ExportMesh(mesh);
-  PySharedPtrClass< smtk::mesh::InterpolateOntoMesh, smtk::operation::XMLOperator > smtk_mesh_InterpolateOntoMesh = pybind11_init_smtk_mesh_InterpolateOntoMesh(mesh);
-  PySharedPtrClass< smtk::mesh::WriteMesh, smtk::operation::XMLOperator > smtk_mesh_WriteMesh = pybind11_init_smtk_mesh_WriteMesh(mesh);
+  PySharedPtrClass< smtk::mesh::DeleteMesh, smtk::operation::XMLOperation > smtk_mesh_DeleteMesh = pybind11_init_smtk_mesh_DeleteMesh(mesh);
+  PySharedPtrClass< smtk::mesh::ElevateMesh, smtk::operation::XMLOperation > smtk_mesh_ElevateMesh = pybind11_init_smtk_mesh_ElevateMesh(mesh);
+  PySharedPtrClass< smtk::mesh::ExportMesh, smtk::operation::XMLOperation > smtk_mesh_ExportMesh = pybind11_init_smtk_mesh_ExportMesh(mesh);
+  PySharedPtrClass< smtk::mesh::InterpolateOntoMesh, smtk::operation::XMLOperation > smtk_mesh_InterpolateOntoMesh = pybind11_init_smtk_mesh_InterpolateOntoMesh(mesh);
+  PySharedPtrClass< smtk::mesh::WriteMesh, smtk::operation::XMLOperation > smtk_mesh_WriteMesh = pybind11_init_smtk_mesh_WriteMesh(mesh);
 
   py::class_< smtk::mesh::PointCloud > smtk_mesh_PointCloud = pybind11_init_smtk_mesh_PointCloud(mesh);
   py::class_< smtk::mesh::StructuredGrid > smtk_mesh_StructuredGrid = pybind11_init_smtk_mesh_StructuredGrid(mesh);

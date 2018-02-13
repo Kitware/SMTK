@@ -16,7 +16,7 @@
 #include "smtk/bridge/polygon/internal/Model.txx"
 #include "smtk/bridge/polygon/internal/Util.h"
 
-#include "smtk/bridge/polygon/Operator.txx"
+#include "smtk/bridge/polygon/Operation.txx"
 
 #include "smtk/common/CompilerInformation.h"
 #include "smtk/common/UnionFind.h"
@@ -77,7 +77,7 @@ bool ForceCreateFace::ableToOperate()
 }
 
 /// Create one or more polygonal faces without sanity checks.
-smtk::model::OperatorResult ForceCreateFace::operateInternal()
+smtk::operation::Operation::Result ForceCreateFace::operateInternal()
 {
   int method = this->parameters()->findInt("construction method")->discreteIndex();
 
@@ -93,7 +93,7 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
     std::static_pointer_cast<smtk::bridge::polygon::Resource>(
       modelItem->value(0).component()->resource());
   if (!resource)
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
 
   smtk::model::Model smodel;
 
@@ -109,7 +109,7 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
     default:
     {
       smtkErrorMacro(this->log(), "Unknown construction method " << method << ".");
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
     break;
   }
@@ -117,7 +117,7 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
   if (!pmodel)
   {
     smtkErrorMacro(this->log(), "The associated model is not a polygon-session model.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   // Sanity-check point coordinates array size:
@@ -126,7 +126,7 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
     smtkErrorMacro(this->log(), "Number of point-coordinates ("
         << pointsItem->numberOfValues() << ") "
         << "not a multiple of the number of coordinates per pt (" << numCoordsPerPt << ")");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   // I. While the counts array indicates we have faces to process:
@@ -226,7 +226,7 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
           modelFaceId, modelFaceUseId, outerLoopId, outerLoopEdges))
     {
       smtkErrorMacro(this->log(), "Could not create SMTK outer loop of face.");
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
     smtk::model::Face modelFace(resource, modelFaceId);
     smodel.addCell(modelFace);
@@ -242,7 +242,7 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
             innerLoopId, outerLoopId, innerLoopsEdges[inner]))
       {
         smtkErrorMacro(this->log(), "Could not create SMTK inner loop of face.");
-        return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+        return this->createResult(smtk::operation::Operation::Outcome::FAILED);
       }
     }
 
@@ -283,8 +283,7 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
     modelFace.setBoundingBox(&bbox[0]);
   }
 
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
   smtk::attribute::ComponentItem::Ptr createdItem = result->findComponent("created");
   for (auto& c : created)

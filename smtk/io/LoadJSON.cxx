@@ -13,7 +13,7 @@
 #include "smtk/model/DefaultSession.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/Manager.h"
-// #include "smtk/model/RemoteOperator.h"
+// #include "smtk/model/RemoteOperation.h"
 #include "smtk/model/SessionIOJSON.h"
 #include "smtk/model/SessionRegistrar.h"
 #include "smtk/model/StringData.h"
@@ -316,27 +316,27 @@ int cJSON_GetRealArray(cJSON* arrayNode, std::vector<double>& values)
 }
 
 // This is a hack until we can get rid of the model manager
-smtk::resource::ManagerPtr ensureResourceManager(smtk::attribute::CollectionPtr collection)
-{
-  if (!collection)
-  {
-    return nullptr;
-  }
+// smtk::resource::ManagerPtr ensureResourceManager(smtk::attribute::CollectionPtr collection)
+// {
+//   if (!collection)
+//   {
+//     return nullptr;
+//   }
 
-  auto result = collection->manager();
-  if (!result)
-  {
-    result = smtk::resource::Manager::create();
-    // Ensure that both attribute and model are registered.
-    result->add(collection);
-    result->add(collection->refModelManager());
-  }
-  else
-  {
-    result->add(collection->refModelManager());
-  }
-  return result;
-}
+//   auto result = collection->manager();
+//   if (!result)
+//   {
+//     result = smtk::resource::Manager::create();
+//     // Ensure that both attribute and model are registered.
+//     result->add(collection);
+//     result->add(collection->refModelManager());
+//   }
+//   else
+//   {
+//     result->add(collection->refModelManager());
+//   }
+//   return result;
+// }
 }
 
 namespace smtk
@@ -344,36 +344,36 @@ namespace smtk
 namespace io
 {
 
-template <typename T>
-int cJSON_GetObjectParameters(
-  cJSON* node, T& obj, smtk::attribute::CollectionPtr sys, const char* attName, const char* attXML)
-{
-  cJSON* params = cJSON_GetObjectItem(node, attXML);
-  cJSON* opspec = cJSON_GetObjectItem(node, attName);
-  if (params && params->type == cJSON_String && params->valuestring && params->valuestring[0] &&
-    opspec && opspec->type == cJSON_String && opspec->valuestring && opspec->valuestring[0])
-  {
-    smtk::resource::ManagerPtr rsrcMgr = ensureResourceManager(sys);
-    smtk::io::Logger log;
-    smtk::io::AttributeReader rdr;
-    rdr.setReportDuplicateDefinitionsAsErrors(false);
-    if (rdr.readContents(sys, params->valuestring, strlen(params->valuestring), log))
-    {
-      std::cerr << "Error. Log follows:\n---\n" << log.convertToString() << "\n---\n";
-      throw std::string("Could not parse operator parameter XML.");
-    }
-    if (log.numberOfRecords())
-    {
-      std::cout << "  " << log.convertToString() << "\n";
-    }
+// template <typename T>
+// int cJSON_GetObjectParameters(
+//   cJSON* node, T& obj, smtk::attribute::CollectionPtr sys, const char* attName, const char* attXML)
+// {
+//   cJSON* params = cJSON_GetObjectItem(node, attXML);
+//   cJSON* opspec = cJSON_GetObjectItem(node, attName);
+//   if (params && params->type == cJSON_String && params->valuestring && params->valuestring[0] &&
+//     opspec && opspec->type == cJSON_String && opspec->valuestring && opspec->valuestring[0])
+//   {
+//     smtk::resource::ManagerPtr rsrcMgr = ensureResourceManager(sys);
+//     smtk::io::Logger log;
+//     smtk::io::AttributeReader rdr;
+//     rdr.setReportDuplicateDefinitionsAsErrors(false);
+//     if (rdr.readContents(sys, params->valuestring, strlen(params->valuestring), log))
+//     {
+//       std::cerr << "Error. Log follows:\n---\n" << log.convertToString() << "\n---\n";
+//       throw std::string("Could not parse operator parameter XML.");
+//     }
+//     if (log.numberOfRecords())
+//     {
+//       std::cout << "  " << log.convertToString() << "\n";
+//     }
 
-    // Now link the loaded XML to the operator instance by searching
-    // the operatorCollection for its name.
-    obj = sys->findAttribute(opspec->valuestring);
-    return !!obj;
-  }
-  return 0;
-}
+//     // Now link the loaded XML to the operator instance by searching
+//     // the operatorCollection for its name.
+//     obj = sys->findAttribute(opspec->valuestring);
+//     return !!obj;
+//   }
+//   return 0;
+// }
 
 /**\brief Create records in the \a manager given a string containing \a json data.
   *
@@ -719,27 +719,27 @@ int LoadJSON::ofManagerIntegerProperties(
   * The \a destSession must be of a proper type for your application
   * (i.e., be able to forward requests for data and operations).
   */
-int LoadJSON::ofOperatorDefinitions(cJSON* node, DefaultSessionPtr destSession)
-{
-  // Import the XML definitions of the serialized session
-  // into the destination session's operatorCollection():
-  int status = 0;
-  smtk::io::Logger log;
-  smtk::io::AttributeReader rdr;
-  rdr.setReportDuplicateDefinitionsAsErrors(false);
-  smtk::resource::ManagerPtr rsrcMgr = ensureResourceManager(destSession->operatorCollection());
-  if (rdr.readContents(
-        destSession->operatorCollection(), node->valuestring, strlen(node->valuestring), log))
-  {
-    std::cerr << "Error. Log follows:\n---\n" << log.convertToString() << "\n---\n";
-    throw std::string("Could not parse operator XML.");
-  }
-  if (log.numberOfRecords())
-  {
-    std::cout << "  " << log.convertToString() << "\n";
-  }
-  return status;
-}
+// int LoadJSON::ofOperationDefinitions(cJSON* node, DefaultSessionPtr destSession)
+// {
+//   // Import the XML definitions of the serialized session
+//   // into the destination session's operatorCollection():
+//   int status = 0;
+//   smtk::io::Logger log;
+//   smtk::io::AttributeReader rdr;
+//   rdr.setReportDuplicateDefinitionsAsErrors(false);
+//   smtk::resource::ManagerPtr rsrcMgr = ensureResourceManager(destSession->operatorCollection());
+//   if (rdr.readContents(
+//         destSession->operatorCollection(), node->valuestring, strlen(node->valuestring), log))
+//   {
+//     std::cerr << "Error. Log follows:\n---\n" << log.convertToString() << "\n---\n";
+//     throw std::string("Could not parse operator XML.");
+//   }
+//   if (log.numberOfRecords())
+//   {
+//     std::cout << "  " << log.convertToString() << "\n";
+//   }
+//   return status;
+// }
 
 /**\brief Import JSON holding a session into a local session.
   *
@@ -772,26 +772,26 @@ int LoadJSON::ofRemoteSession(
 
   destSession->backsRemoteSession(nameObj->valuestring, smtk::common::UUID(node->string));
 
-  LoadJSON::ofOperatorDefinitions(opsObj, destSession);
+  // LoadJSON::ofOperationDefinitions(opsObj, destSession);
 
   // Register the session with the model manager:
   context->registerSession(destSession);
 
-  // Now register the RemoteOperator constructor with each
+  // Now register the RemoteOperation constructor with each
   // operator in the session.
   // NB: This registers the constructor with the entire
   //     session class, not just the destSession instance.
   //     If destSession is a DefaultSession (and not a subclass
-  //     of it), then be aware that this may override non-RemoteOperator
-  //     constructors with RemoteOperator constructors for operators
+  //     of it), then be aware that this may override non-RemoteOperation
+  //     constructors with RemoteOperation constructors for operators
   //     of the same name.
-  StringList opNames = destSession->operatorNames();
+  // StringList opNames = destSession->operatorNames();
   // for (StringList::iterator it = opNames.begin(); it != opNames.end(); ++it)
   // {
-  //   auto create = []() -> smtk::model::OperatorPtr {
-  //     return std::static_pointer_cast<smtk::model::Operator>(RemoteOperator::create());
+  //   auto create = []() -> smtk::operation::OperationPtr {
+  //     return std::static_pointer_cast<smtk::operation::Operation>(RemoteOperation::create());
   //   };
-  //   destSession->registerOperator(*it, NULL, create);
+  //   destSession->registerOperation(*it, NULL, create);
   // }
 
   // Import additional state if the session can accept it.
@@ -947,16 +947,16 @@ int LoadJSON::ofLocalSession(
   return status;
 }
 
-/**\brief Import JSON for an operator into an Operator instance.
+/**\brief Import JSON for an operator into an Operation instance.
   *
   * **Important**: Unlike other JSON import methods, this method
-  * creates a new instance of an Operator subclass, storing the result
+  * creates a new instance of an Operation subclass, storing the result
   * into \a op.
   *
   * If the JSON \a node contains a "sessionId" property,
   * the storage manager \a context is searched for a Session with the
   * matching UUID. If no matching Session exists, then
-  * a RemoteOperator is created on the default Session and
+  * a RemoteOperation is created on the default Session and
   * its session ID set to the corresponding value.
   * If no "sessionId" is present in \a node, then the method returns
   * 0 (failure) and \a op is unchanged.
@@ -967,49 +967,49 @@ int LoadJSON::ofLocalSession(
   * Finally, parameter values stored in \a node's "param"
   * string (as XML) are read into the operator's attribute manager.
   */
-int LoadJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
-{
-  cJSON* pnode;
+// int LoadJSON::ofOperation(cJSON* node, OperationPtr& op, ManagerPtr context)
+// {
+//   cJSON* pnode;
 
-  std::string osess;
-  pnode = cJSON_GetObjectItem(node, "sessionId");
-  smtk::common::UUID sessionId;
-  if (!pnode || cJSON_GetStringValue(pnode, osess) || osess.empty() ||
-    (sessionId = smtk::common::UUID(osess)).isNull())
-    return 0;
+//   std::string osess;
+//   pnode = cJSON_GetObjectItem(node, "sessionId");
+//   smtk::common::UUID sessionId;
+//   if (!pnode || cJSON_GetStringValue(pnode, osess) || osess.empty() ||
+//     (sessionId = smtk::common::UUID(osess)).isNull())
+//     return 0;
 
-  SessionPtr session;
-  DefaultSession::Ptr defSession;
-  if (context)
-  {
-    session = SessionRef(context, sessionId).session();
-    defSession = smtk::dynamic_pointer_cast<DefaultSession>(session);
-  }
+//   SessionPtr session;
+//   DefaultSession::Ptr defSession;
+//   if (context)
+//   {
+//     session = SessionRef(context, sessionId).session();
+//     defSession = smtk::dynamic_pointer_cast<DefaultSession>(session);
+//   }
 
-  std::string oname;
-  pnode = cJSON_GetObjectItem(node, "name");
-  if (!pnode || cJSON_GetStringValue(pnode, oname))
-    return 0;
+//   std::string oname;
+//   pnode = cJSON_GetObjectItem(node, "name");
+//   if (!pnode || cJSON_GetStringValue(pnode, oname))
+//     return 0;
 
-  // op = session->op(oname);
-  if (!op)
-    return 0;
+//   // op = session->op(oname);
+//   if (!op)
+//     return 0;
 
-  // If the operator has a specification, use it.
-  // It is not an error to pass an unspecified operator.
-  OperatorSpecification spec;
-  // if (cJSON_GetObjectParameters(node, spec, op->session()->operatorCollection(), "spec", "specXML"))
-  // {
-  //   op->setSpecification(spec);
-  // }
-  return 1;
-}
+//   // If the operator has a specification, use it.
+//   // It is not an error to pass an unspecified operator.
+//   OperationSpecification spec;
+//   // if (cJSON_GetObjectParameters(node, spec, op->session()->operatorCollection(), "spec", "specXML"))
+//   // {
+//   //   op->setSpecification(spec);
+//   // }
+//   return 1;
+// }
 
-// int LoadJSON::ofOperatorResult(
-//   cJSON* node, OperatorResult& resOut, smtk::model::RemoteOperatorPtr op)
+// int LoadJSON::ofOperationResult(
+//   cJSON* node, OperationResult& resOut, smtk::model::RemoteOperationPtr op)
 // {
 //   smtk::attribute::CollectionPtr opSys = op->session()->operatorCollection();
-//   // Deserialize the OperatorResult into \a resOut:
+//   // Deserialize the OperationResult into \a resOut:
 //   int status = cJSON_GetObjectParameters(node, resOut, opSys, "result", "resultXML");
 
 //   // Remove entities that the operator result reports as expunged:

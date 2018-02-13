@@ -13,7 +13,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
-#include "smtk/bridge/polygon/Operator.h"
+#include "smtk/bridge/polygon/Operation.h"
 #include "smtk/bridge/polygon/RegisterSession.h"
 #include "smtk/bridge/polygon/Resource.h"
 
@@ -81,9 +81,9 @@ int UnitTestTessellateFaces(int, char** const)
 
   // Register import and write operators to the operation manager
   {
-    operationManager->registerOperator<smtk::operation::LoadResource>(
+    operationManager->registerOperation<smtk::operation::LoadResource>(
       "smtk::operation::LoadResource");
-    operationManager->registerOperator<smtk::extension::delaunay::TessellateFaces>(
+    operationManager->registerOperation<smtk::extension::delaunay::TessellateFaces>(
       "smtk::extension::delaunay::TessellateFaces");
   }
 
@@ -114,7 +114,7 @@ int UnitTestTessellateFaces(int, char** const)
       loadOp->parameters()->findFile("filename")->setValue(file_path.c_str());
       smtk::operation::LoadResource::Result result = loadOp->operate();
       if (result->findInt("outcome")->value() !=
-        static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
       {
         std::cerr << "Could not load smtk model!\n";
         return 1;
@@ -164,7 +164,7 @@ int UnitTestTessellateFaces(int, char** const)
 
     smtk::extension::delaunay::TessellateFaces::Result result = tessellateFacesOp->operate();
     if (result->findInt("outcome")->value() !=
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Tessellate faces operator failed\n";
       return 1;

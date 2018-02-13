@@ -49,13 +49,13 @@ namespace bridge
 namespace cgm
 {
 
-smtk::model::OperatorResult CreateEdge::operateInternal()
+smtk::operation::OperationResult CreateEdge::operateInternal()
 {
   smtk::model::Vertices vertices = this->associatedEntitiesAs<smtk::model::Vertices>();
   if (vertices.size() != 2)
   {
     smtkInfoMacro(log(), "Expected 2 vertices, got " << vertices.size() << ".");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
   smtk::attribute::DoubleItem::Ptr pointItem = this->findDouble("point");
@@ -79,28 +79,28 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
       break;
     default:
       smtkInfoMacro(log(), "Bad curve type " << curveType << ".");
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
   RefVertex* v0 = this->cgmEntityAs<RefVertex*>(vertices[0]);
   RefVertex* v1 = this->cgmEntityAs<RefVertex*>(vertices[1]);
   if (!v0 || !v1)
   {
     smtkInfoMacro(log(), "One or more vertices were invalid " << v0 << ", " << v1 << ".");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
   RefEdge* cgmEdge = GeometryModifyTool::instance()->make_RefEdge(curveType, v0, v1, &point);
   if (!cgmEdge)
   {
     smtkInfoMacro(log(), "Failed to create edge.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
   // Assign color to match vertex API that requires a color.
   cgmEdge->color(color);
 
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  smtk::operation::OperationResult result =
+    this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
 
   DLIList<RefEdge*> cgmEdgesOut;
   cgmEdgesOut.push(cgmEdge);
@@ -114,5 +114,5 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
 } //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::CreateEdge, cgm_create_edge,
+smtkImplementsModelOperation(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::CreateEdge, cgm_create_edge,
   "create edge", CreateEdge_xml, smtk::bridge::cgm::Session);

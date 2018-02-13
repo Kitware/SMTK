@@ -46,7 +46,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::model::OperatorResult CreateBrick::operateInternal()
+smtk::operation::OperationResult CreateBrick::operateInternal()
 {
   using smtk::attribute::SearchStyle;
 
@@ -110,11 +110,11 @@ smtk::model::OperatorResult CreateBrick::operateInternal()
   if (!cgmBody)
   {
     smtkInfoMacro(log(), "Failed to create body.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  smtk::operation::OperationResult result =
+    this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
 
   DLIList<Body*> cgmBodiesOut;
   cgmBodiesOut.push(cgmBody);
@@ -128,5 +128,5 @@ smtk::model::OperatorResult CreateBrick::operateInternal()
 } //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::CreateBrick, cgm_create_brick,
-  "create brick", CreateBrick_xml, smtk::bridge::cgm::Session);
+smtkImplementsModelOperation(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::CreateBrick,
+  cgm_create_brick, "create brick", CreateBrick_xml, smtk::bridge::cgm::Session);

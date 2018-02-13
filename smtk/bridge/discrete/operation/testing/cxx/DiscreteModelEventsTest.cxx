@@ -8,18 +8,18 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "vtkCMBModelReadOperator.h"
+#include "vtkCMBModelReadOperation.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEdge.h"
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelWrapper.h"
-#include "vtkEdgeSplitOperator.h"
+#include "vtkEdgeSplitOperation.h"
 #include "vtkMergeEventData.h"
-#include "vtkMergeOperator.h"
+#include "vtkMergeOperation.h"
 #include "vtkModelItemIterator.h"
 #include "vtkNew.h"
 #include "vtkSplitEventData.h"
-#include "vtkSplitOperator.h"
+#include "vtkSplitOperation.h"
 #include <map>
 #include <vtkCallbackCommand.h>
 #include <vtkIdList.h>
@@ -212,7 +212,8 @@ int Check3DModel(const char* fileName)
   model->AddObserver(ModelGeometricEntitiesAboutToMerge, callbackCommand);
   model->AddObserver(ModelGeometricEntitySplit, callbackCommand);
 
-  vtkSmartPointer<vtkCMBModelReadOperator> reader = vtkSmartPointer<vtkCMBModelReadOperator>::New();
+  vtkSmartPointer<vtkCMBModelReadOperation> reader =
+    vtkSmartPointer<vtkCMBModelReadOperation>::New();
   reader->SetFileName(fileName);
   reader->Operate(modelWrapper);
   if (reader->GetOperateSucceeded() == false)
@@ -228,15 +229,15 @@ int Check3DModel(const char* fileName)
   }
 
   // test 3D split
-  vtkSmartPointer<vtkSplitOperator> splitOperator = vtkSmartPointer<vtkSplitOperator>::New();
+  vtkSmartPointer<vtkSplitOperation> splitOperation = vtkSmartPointer<vtkSplitOperator>::New();
   vtkModelItemIterator* faces = model->NewIterator(vtkModelFaceType);
   faces->Begin();
   vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
   faces->Delete();
-  splitOperator->SetId(face->GetUniquePersistentId());
-  splitOperator->SetFeatureAngle(30);
-  splitOperator->Operate(modelWrapper);
-  if (splitOperator->GetOperateSucceeded() == false)
+  splitOperation->SetId(face->GetUniquePersistentId());
+  splitOperation->SetFeatureAngle(30);
+  splitOperation->Operate(modelWrapper);
+  if (splitOperation->GetOperateSucceeded() == false)
   {
     vtkGenericWarningMacro("Model face split operator failed.");
     clientData.NumberOfErrors++;
@@ -246,7 +247,7 @@ int Check3DModel(const char* fileName)
     vtkGenericWarningMacro("Model face split operator missed some events.");
     clientData.NumberOfErrors++;
   }
-  vtkIdTypeArray* createdModelFaceIds = splitOperator->GetCreatedModelFaceIDs();
+  vtkIdTypeArray* createdModelFaceIds = splitOperation->GetCreatedModelFaceIDs();
   if (createdModelFaceIds->GetNumberOfTuples() == 0)
   {
     vtkGenericWarningMacro("Split operator failed to split any model faces.");
@@ -254,11 +255,11 @@ int Check3DModel(const char* fileName)
   }
 
   // test 3D merge
-  vtkSmartPointer<vtkMergeOperator> mergeOperator = vtkSmartPointer<vtkMergeOperator>::New();
-  mergeOperator->SetSourceId(face->GetUniquePersistentId());
-  mergeOperator->SetTargetId(createdModelFaceIds->GetValue(0));
-  mergeOperator->Operate(modelWrapper);
-  if (mergeOperator->GetOperateSucceeded() == false)
+  vtkSmartPointer<vtkMergeOperation> mergeOperation = vtkSmartPointer<vtkMergeOperator>::New();
+  mergeOperation->SetSourceId(face->GetUniquePersistentId());
+  mergeOperation->SetTargetId(createdModelFaceIds->GetValue(0));
+  mergeOperation->Operate(modelWrapper);
+  if (mergeOperation->GetOperateSucceeded() == false)
   {
     vtkGenericWarningMacro("Model face merge operator failed.");
     clientData.NumberOfErrors++;
@@ -301,7 +302,8 @@ int Check2DModel(const char* fileName)
   model->AddObserver(ModelGeometricEntitiesAboutToMerge, callbackCommand);
   model->AddObserver(ModelGeometricEntitySplit, callbackCommand);
 
-  vtkSmartPointer<vtkCMBModelReadOperator> reader = vtkSmartPointer<vtkCMBModelReadOperator>::New();
+  vtkSmartPointer<vtkCMBModelReadOperation> reader =
+    vtkSmartPointer<vtkCMBModelReadOperation>::New();
   reader->SetFileName(fileName);
   reader->Operate(modelWrapper);
   if (reader->GetOperateSucceeded() == false)
@@ -317,13 +319,13 @@ int Check2DModel(const char* fileName)
   }
 
   // test 2D split by splitting an edge adjacent to 2 faces
-  vtkSmartPointer<vtkEdgeSplitOperator> splitOperator =
-    vtkSmartPointer<vtkEdgeSplitOperator>::New();
+  vtkSmartPointer<vtkEdgeSplitOperation> splitOperation =
+    vtkSmartPointer<vtkEdgeSplitOperation>::New();
   vtkModelEdge* edge = vtkModelEdge::SafeDownCast(model->GetModelEntity(vtkModelEdgeType, 17));
-  splitOperator->SetEdgeId(edge->GetUniquePersistentId());
-  splitOperator->SetPointId(6);
-  splitOperator->Operate(modelWrapper);
-  if (splitOperator->GetOperateSucceeded() == false)
+  splitOperation->SetEdgeId(edge->GetUniquePersistentId());
+  splitOperation->SetPointId(6);
+  splitOperation->Operate(modelWrapper);
+  if (splitOperation->GetOperateSucceeded() == false)
   {
     vtkGenericWarningMacro("Model edge split operator failed.");
     clientData.NumberOfErrors++;
@@ -333,19 +335,19 @@ int Check2DModel(const char* fileName)
     vtkGenericWarningMacro("Model edge split operator missed some events.");
     clientData.NumberOfErrors++;
   }
-  if (splitOperator->GetCreatedModelEdgeId() < 0)
+  if (splitOperation->GetCreatedModelEdgeId() < 0)
   {
     vtkGenericWarningMacro("Split operator failed to split any model edges.");
     return clientData.NumberOfErrors + 1;
   }
 
   // test 2D merge
-  vtkSmartPointer<vtkMergeOperator> mergeOperator = vtkSmartPointer<vtkMergeOperator>::New();
-  mergeOperator->SetSourceId(edge->GetUniquePersistentId());
-  mergeOperator->SetTargetId(splitOperator->GetCreatedModelEdgeId());
-  mergeOperator->AddLowerDimensionalId(41);
-  mergeOperator->Operate(modelWrapper);
-  if (mergeOperator->GetOperateSucceeded() == false)
+  vtkSmartPointer<vtkMergeOperation> mergeOperation = vtkSmartPointer<vtkMergeOperator>::New();
+  mergeOperation->SetSourceId(edge->GetUniquePersistentId());
+  mergeOperation->SetTargetId(splitOperation->GetCreatedModelEdgeId());
+  mergeOperation->AddLowerDimensionalId(41);
+  mergeOperation->Operate(modelWrapper);
+  if (mergeOperation->GetOperateSucceeded() == false)
   {
     vtkGenericWarningMacro("Model edge merge operator failed.");
     clientData.NumberOfErrors++;

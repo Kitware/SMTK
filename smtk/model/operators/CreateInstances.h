@@ -10,20 +10,20 @@
 #ifndef smtk_model_operators_CreateInstances_h
 #define smtk_model_operators_CreateInstances_h
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace smtk
 {
 namespace model
 {
 
-class SMTKCORE_EXPORT CreateInstances : public smtk::operation::XMLOperator
+class SMTKCORE_EXPORT CreateInstances : public smtk::operation::XMLOperation
 {
 public:
   smtkTypeMacro(CreateInstances);
   smtkCreateMacro(CreateInstances);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
-  smtkSuperclassMacro(smtk::operation::XMLOperator);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
+  smtkSuperclassMacro(smtk::operation::XMLOperation);
 
 protected:
   Result operateInternal() override;

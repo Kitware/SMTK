@@ -44,7 +44,7 @@ LoadResource::Result LoadResource::operateInternal()
 
   std::string type;
 
-  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
   for (auto fileIt = fileItem->begin(); fileIt != fileItem->end(); ++fileIt)
   {
@@ -56,7 +56,7 @@ LoadResource::Result LoadResource::operateInternal()
       if (!file.good())
       {
         smtkErrorMacro(this->log(), "Could not open file \"" << filename << "\" for reading.");
-        return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+        return this->createResult(smtk::operation::Operation::Outcome::FAILED);
       }
 
       bool fileTypeKnown = false;
@@ -95,7 +95,7 @@ LoadResource::Result LoadResource::operateInternal()
       {
         smtkErrorMacro(
           this->log(), "Could not determine resource type for file \"" << filename << "\".");
-        return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+        return this->createResult(smtk::operation::Operation::Outcome::FAILED);
       }
     }
 
@@ -106,7 +106,7 @@ LoadResource::Result LoadResource::operateInternal()
     {
       smtkErrorMacro(
         this->log(), "Error reading file \"" << filename << "\" (type = " << type << ").");
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
     smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
@@ -126,7 +126,7 @@ void LoadResource::generateSummary(LoadResource::Result& res)
   int outcome = res->findInt("outcome")->value();
   smtk::attribute::FileItemPtr fitem = this->parameters()->findFile("filename");
   std::string label = this->parameters()->definition()->label();
-  if (outcome == static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+  if (outcome == static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     smtkInfoMacro(this->log(), label << ": loaded \"" << fitem->value(0) << "\"");
   }

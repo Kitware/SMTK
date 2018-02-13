@@ -56,7 +56,7 @@ static bool hasEnding(const std::string& fullString, const std::string& ending)
     return false;
 }
 
-smtk::model::OperatorResult Read::operateInternal()
+smtk::operation::OperationResult Read::operateInternal()
 {
   smtk::attribute::FileItem::Ptr filenameItem = this->specification()->findFile("filename");
   smtk::attribute::StringItem::Ptr filetypeItem = this->specification()->findString("filetype");
@@ -114,11 +114,11 @@ smtk::model::OperatorResult Read::operateInternal()
   if (s != CUBIT_SUCCESS)
   {
     smtkInfoMacro(this->manager()->log(), "Failed to import CGM model, status " << s);
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  smtk::operation::OperationResult result =
+    this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(imported, result, CREATED);
 
@@ -147,5 +147,5 @@ smtk::model::OperatorResult Read::operateInternal()
 } //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::Read, cgm_read, "read",
+smtkImplementsModelOperation(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::Read, cgm_read, "read",
   Read_xml, smtk::bridge::cgm::Session);

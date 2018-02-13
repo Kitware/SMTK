@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the CGM "BooleanUnion" Operator -->
+<!-- Description of the CGM "BooleanUnion" Operation -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
-    <!-- Operator -->
-    <AttDef Type="union" BaseType="operator">
+    <!-- Operation -->
+    <AttDef Type="union" BaseType="operation">
       <AssociationsDef Name="Workpiece(s)" NumberOfRequiredValues="2" Extensible="true">
         <MembershipMask>model</MembershipMask>
       </AssociationsDef>

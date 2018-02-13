@@ -10,7 +10,7 @@
 #ifndef __smtk_session_cgm_CreateSphere_h
 #define __smtk_session_cgm_CreateSphere_h
 
-#include "smtk/bridge/cgm/Operator.h"
+#include "smtk/bridge/cgm/Operation.h"
 
 namespace smtk
 {
@@ -19,16 +19,16 @@ namespace bridge
 namespace cgm
 {
 
-class SMTKCGMSESSION_EXPORT CreateSphere : public Operator
+class SMTKCGMSESSION_EXPORT CreateSphere : public Operation
 {
 public:
   smtkTypeMacro(CreateSphere);
   smtkCreateMacro(CreateSphere);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(Operation);
+  smtkDeclareModelOperation();
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
 };
 
 } // namespace cgm

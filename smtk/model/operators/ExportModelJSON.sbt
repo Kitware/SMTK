@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the model "ExportModelJSON" Operator -->
+<!-- Description of the model "ExportModelJSON" Operation -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="export model json" Label="Model - Export JSON" BaseType="operator" AdvanceLevel="10">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="export model json" Label="Model - Export JSON" BaseType="operation" AdvanceLevel="10">
       <AssociationsDef Name="models" NumberOfRequiredValues="1" Extensible="true">
         <MembershipMask>model</MembershipMask>
       </AssociationsDef>

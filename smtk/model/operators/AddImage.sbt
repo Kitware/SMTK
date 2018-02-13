@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the model "AddImage" Operator -->
+<!-- Description of the model "AddImage" Operation -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="add image" BaseType="operator" Label="Model - Add Image">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="add image" BaseType="operation" Label="Model - Add Image">
       <!-- In the future Label shoud be removed when SMTK supports compound auxiliary geometry -->
       <AssociationsDef Name="entities" Label="model" NumberOfRequiredValues="1">
         <MembershipMask>model</MembershipMask>

@@ -15,13 +15,13 @@
 
 #include "smtk/mesh/operators/ExportMesh.h"
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::mesh::ExportMesh, smtk::operation::XMLOperator > pybind11_init_smtk_mesh_ExportMesh(py::module &m)
+PySharedPtrClass< smtk::mesh::ExportMesh, smtk::operation::XMLOperation > pybind11_init_smtk_mesh_ExportMesh(py::module &m)
 {
-  PySharedPtrClass< smtk::mesh::ExportMesh, smtk::operation::XMLOperator > instance(m, "ExportMesh");
+  PySharedPtrClass< smtk::mesh::ExportMesh, smtk::operation::XMLOperation > instance(m, "ExportMesh");
   instance
     .def(py::init<>())
     .def(py::init<::smtk::mesh::ExportMesh const &>())

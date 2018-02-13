@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the CGM "CreateEdge" Operator -->
+<!-- Description of the CGM "CreateEdge" Operation -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
-    <!-- Operator -->
-    <AttDef Type="create edge" BaseType="operator">
+    <!-- Operation -->
+    <AttDef Type="create edge" BaseType="operation">
       <AssociationsDef Name="vertices" NumberOfRequiredValues="2">
         <BriefDescription>Two pre-existing model vertices.</BriefDescription>
         <MembershipMask>vertex</MembershipMask>

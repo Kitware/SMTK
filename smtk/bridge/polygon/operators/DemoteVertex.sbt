@@ -2,9 +2,9 @@
 <!-- Description of the polygon "DemoteVertex" operator -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="demote vertex" Label="Vertex - Demote" BaseType="operator">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="demote vertex" Label="Vertex - Demote" BaseType="operation">
       <BriefDescription>Demote a model vertex.</BriefDescription>
       <DetailedDescription>
         Demote a model vertex where 1 edge forms a loop with itself or 2 edges meet.

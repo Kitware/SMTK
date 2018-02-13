@@ -15,13 +15,13 @@
 
 #include "smtk/bridge/multiscale/operators/PartitionBoundaries.h"
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::multiscale::PartitionBoundaries, smtk::operation::XMLOperator > pybind11_init_smtk_bridge_multiscale_PartitionBoundaries(py::module &m)
+PySharedPtrClass< smtk::bridge::multiscale::PartitionBoundaries, smtk::operation::XMLOperation > pybind11_init_smtk_bridge_multiscale_PartitionBoundaries(py::module &m)
 {
-  PySharedPtrClass< smtk::bridge::multiscale::PartitionBoundaries, smtk::operation::XMLOperator > instance(m, "PartitionBoundaries");
+  PySharedPtrClass< smtk::bridge::multiscale::PartitionBoundaries, smtk::operation::XMLOperation > instance(m, "PartitionBoundaries");
   instance
     .def(py::init<>())
     .def(py::init<::smtk::bridge::multiscale::PartitionBoundaries const &>())

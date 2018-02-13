@@ -21,7 +21,7 @@
 #include "smtk/resource/Resource.h"
 
 #include "smtk/operation/Manager.h"
-#include "smtk/operation/NewOp.h"
+#include "smtk/operation/Operation.h"
 
 #include <functional>
 #include <list>
@@ -80,8 +80,8 @@ public:
   /// Applications may have a model decorate its phrases by providing a method with this signature.
   using PhraseDecorator = std::function<void(smtk::view::DescriptivePhrasePtr)>;
 
-  using Operator = smtk::operation::NewOp;
-  using OperatorPtr = smtk::operation::NewOp::Ptr;
+  using Operation = smtk::operation::Operation;
+  using OperationPtr = smtk::operation::Operation::Ptr;
   using ComponentItemPtr = smtk::attribute::ComponentItemPtr;
 
   using Resource = smtk::resource::Resource;
@@ -186,16 +186,17 @@ protected:
     * You may subclass this method or, perhaps preferrably, one of the specific methods
     * that this method invokes (handleExpunged, handleModified, handleCreated).
     * The only case where overriding this method is required (as opposed to those listed above)
-    * is when you wish to respond to events other than Operator::DID_OPERATE.
+    * is when you wish to respond to events other than Operation::DID_OPERATE.
     */
-  virtual int handleOperatorEvent(Operator::Ptr op, operation::EventType e, Operator::Result res);
+  virtual int handleOperationEvent(
+    Operation::Ptr op, operation::EventType e, Operation::Result res);
 
   /// Called to deal with resources/components being removed as a result of an operation.
-  virtual void handleExpunged(Operator::Ptr op, Operator::Result res, ComponentItemPtr data);
+  virtual void handleExpunged(Operation::Ptr op, Operation::Result res, ComponentItemPtr data);
   /// Called to deal with resources/components marked as modified by the operation.
-  virtual void handleModified(Operator::Ptr op, Operator::Result res, ComponentItemPtr data);
+  virtual void handleModified(Operation::Ptr op, Operation::Result res, ComponentItemPtr data);
   /// Called to deal with resources/components being created as a result of an operation.
-  virtual void handleCreated(Operator::Ptr op, Operator::Result res, ComponentItemPtr data);
+  virtual void handleCreated(Operation::Ptr op, Operation::Result res, ComponentItemPtr data);
 
   /** \brief Make changes to the phrase hierarchy.
     *

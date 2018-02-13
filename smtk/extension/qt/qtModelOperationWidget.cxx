@@ -15,7 +15,7 @@
 #include "smtk/extension/qt/qtCollapsibleGroupWidget.h"
 #include "smtk/extension/qt/qtInstancedView.h"
 #include "smtk/extension/qt/qtModelView.h"
-#include "smtk/extension/qt/qtOperatorView.h"
+#include "smtk/extension/qt/qtOperationView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -26,7 +26,6 @@
 #include "smtk/attribute/VoidItem.h"
 
 #include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/StringData.h"
 #include "smtk/view/View.h"
@@ -52,9 +51,9 @@ using namespace smtk::model;
 class qtModelOperationWidgetInternals
 {
 public:
-  struct OperatorInfo
+  struct OperationInfo
   {
-    smtk::model::OperatorPtr opPtr;
+    smtk::operation::OperationPtr opPtr;
     QPointer<qtUIManager> opUiManager;
     QPointer<QFrame> opUiParent;
     QPointer<qtBaseView> opUiView;
@@ -68,18 +67,18 @@ public:
   QVBoxLayout* WidgetLayout;
   QPointer<QComboBox> OperationCombo;
   QStackedLayout* OperationsLayout;
-  QMap<std::string, OperatorInfo> OperatorMap;
+  QMap<std::string, OperationInfo> OperationMap;
   QPointer<qtModelView> ModelView;
   QPointer<qtCollapsibleGroupWidget> opLogInfo;
   QTextEdit* ResultLog;
   std::map<std::string, std::string> m_operatorLabelMap;
   std::map<std::string, std::string> m_operatorNameMap;
-  std::vector<std::string> m_sortedOperatorLabels;
+  std::vector<std::string> m_sortedOperationLabels;
   int findLabelPosition(const std::string& label)
   {
     return (
-      std::find(this->m_sortedOperatorLabels.begin(), this->m_sortedOperatorLabels.end(), label) -
-      this->m_sortedOperatorLabels.begin());
+      std::find(this->m_sortedOperationLabels.begin(), this->m_sortedOperationLabels.end(), label) -
+      this->m_sortedOperationLabels.begin());
   }
   int findNamePosition(const std::string& opName)
   {
@@ -134,7 +133,7 @@ void qtModelOperationWidget::initWidget()
   // logging widget initially
   this->Internals->opLogInfo->hide();
   this->Internals->opLogInfo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
-  this->Internals->opLogInfo->setName("Show Operator Log");
+  this->Internals->opLogInfo->setName("Show Operation Log");
   this->Internals->opLogInfo->contentsLayout()->addWidget(this->Internals->ResultLog);
   this->Internals->opLogInfo->collapse();
   this->Internals->LogSplitter->addWidget(this->Internals->opLogInfo);
@@ -182,11 +181,12 @@ QSize qtModelOperationWidget::sizeHint() const
 void qtModelOperationWidget::setSession(smtk::model::SessionPtr session)
 {
   // if it's current session and we've already constructed operators for it
-  if (this->Internals->CurrentSession.lock() == session && session &&
-    std::size_t(this->Internals->OperationCombo->count()) == session->numberOfOperators(false))
-  {
-    return;
-  }
+  // TODO: this information is no longer held by the session
+  // if (this->Internals->CurrentSession.lock() == session && session &&
+  //   std::size_t(this->Internals->OperationCombo->count()) == session->numberOfOperations(false))
+  // {
+  //   return;
+  // }
 
   // clean up current UI
   QStackedLayout* opLayout = this->Internals->OperationsLayout;
@@ -199,29 +199,30 @@ void qtModelOperationWidget::setSession(smtk::model::SessionPtr session)
   this->Internals->CurrentSession = session;
   this->Internals->OperationCombo->blockSignals(true);
   this->Internals->OperationCombo->clear();
-  if (session)
-  {
-    this->Internals->m_operatorLabelMap = session->operatorLabelsMap(false);
-    this->Internals->m_sortedOperatorLabels.clear();
-    this->Internals->m_operatorNameMap.clear();
-    // Next lets get the list of labels so we can sort them
-    for (auto imap : this->Internals->m_operatorLabelMap)
-    {
-      this->Internals->m_sortedOperatorLabels.push_back(imap.first);
-      this->Internals->m_operatorNameMap[imap.second] = imap.first;
-    }
-    std::sort(this->Internals->m_sortedOperatorLabels.begin(),
-      this->Internals->m_sortedOperatorLabels.end());
-    for (auto it : this->Internals->m_sortedOperatorLabels)
-    {
-      this->Internals->OperationCombo->addItem(it.c_str());
-    }
-  }
-  this->Internals->OperationCombo->blockSignals(false);
-  this->Internals->OperatorMap.clear();
+  // TODO: this information is no longer held by the session
+  // if (session)
+  // {
+  //   this->Internals->m_operatorLabelMap = session->operatorLabelsMap(false);
+  //   this->Internals->m_sortedOperationLabels.clear();
+  //   this->Internals->m_operatorNameMap.clear();
+  //   // Next lets get the list of labels so we can sort them
+  //   for (auto imap : this->Internals->m_operatorLabelMap)
+  //   {
+  //     this->Internals->m_sortedOperationLabels.push_back(imap.first);
+  //     this->Internals->m_operatorNameMap[imap.second] = imap.first;
+  //   }
+  //   std::sort(this->Internals->m_sortedOperationLabels.begin(),
+  //     this->Internals->m_sortedOperationLabels.end());
+  //   for (auto it : this->Internals->m_sortedOperationLabels)
+  //   {
+  //     this->Internals->OperationCombo->addItem(it.c_str());
+  //   }
+  // }
+  // this->Internals->OperationCombo->blockSignals(false);
+  // this->Internals->OperationMap.clear();
 }
 
-void qtModelOperationWidget::refreshOperatorList()
+void qtModelOperationWidget::refreshOperationList()
 {
   auto session = this->Internals->CurrentSession.lock();
   if (!session)
@@ -247,184 +248,187 @@ qtModelView* qtModelOperationWidget::modelView()
   return this->Internals->ModelView;
 }
 
-void qtModelOperationWidget::cancelCurrentOperator()
+void qtModelOperationWidget::cancelCurrentOperation()
 {
-  this->cancelOperator(this->Internals->CurrentOpName);
+  this->cancelOperation(this->Internals->CurrentOpName);
 }
 
-void qtModelOperationWidget::cancelOperator(const std::string& opName)
+void qtModelOperationWidget::cancelOperation(const std::string& opName)
 {
-  if (this->Internals->OperatorMap.contains(opName))
+  if (this->Internals->OperationMap.contains(opName))
   {
-    OperatorPtr brOp = this->Internals->OperatorMap[opName].opPtr;
-    emit this->operationCancelled(brOp);
+    // TODO: this information is no longer held by the session
+    // OperationPtr brOp = this->Internals->OperationMap[opName].opPtr;
+    // emit this->operationCancelled(brOp);
   }
 }
 
-bool qtModelOperationWidget::checkExistingOperator(const std::string& opName)
+bool qtModelOperationWidget::checkExistingOperation(const std::string& opName)
 {
   // if the operator is already created, just set its UI to be current widget
-  if (this->Internals->OperatorMap.contains(opName))
+  if (this->Internals->OperationMap.contains(opName))
   {
-    this->Internals->OperatorMap[opName].opUiView->requestModelEntityAssociation();
+    this->Internals->OperationMap[opName].opUiView->requestModelEntityAssociation();
     this->Internals->OperationsLayout->setCurrentWidget(
-      this->Internals->OperatorMap[opName].opUiParent);
+      this->Internals->OperationMap[opName].opUiParent);
     return true;
   }
   return false;
 }
 
-bool qtModelOperationWidget::initOperatorUI(const smtk::model::OperatorPtr& brOp)
+bool qtModelOperationWidget::initOperationUI(const smtk::operation::OperationPtr& /*brOp*/)
 {
-  std::string opName = brOp->name();
-  std::string opLabel = this->Internals->m_operatorNameMap[opName];
-  std::string prevOpName = this->Internals->CurrentOpName;
-  if (!prevOpName.empty() && opName != prevOpName)
-  {
-    // we need to reset previous operator's UI
-    this->cancelOperator(prevOpName);
-  }
+  // TODO: this has all changed
+  // std::string opName = brOp->name();
+  // std::string opLabel = this->Internals->m_operatorNameMap[opName];
+  // std::string prevOpName = this->Internals->CurrentOpName;
+  // if (!prevOpName.empty() && opName != prevOpName)
+  // {
+  //   // we need to reset previous operator's UI
+  //   this->cancelOperation(prevOpName);
+  // }
 
-  // set the operator combobox to the new index
-  if (opLabel != this->Internals->OperationCombo->currentText().toStdString())
-  {
-    int idx = this->Internals->findLabelPosition(opLabel);
-    this->Internals->OperationCombo->blockSignals(true);
-    this->Internals->OperationCombo->setCurrentIndex(idx);
-    this->Internals->OperationCombo->blockSignals(false);
-  }
+  // // set the operator combobox to the new index
+  // if (opLabel != this->Internals->OperationCombo->currentText().toStdString())
+  // {
+  //   int idx = this->Internals->findLabelPosition(opLabel);
+  //   this->Internals->OperationCombo->blockSignals(true);
+  //   this->Internals->OperationCombo->setCurrentIndex(idx);
+  //   this->Internals->OperationCombo->blockSignals(false);
+  // }
 
-  // if the operator is already created, just set its UI to be current widget
-  if (this->checkExistingOperator(opName))
-  {
-    this->Internals->CurrentOpName = opName;
-    return true;
-  }
+  // // if the operator is already created, just set its UI to be current widget
+  // if (this->checkExistingOperation(opName))
+  // {
+  //   this->Internals->CurrentOpName = opName;
+  //   return true;
+  // }
 
-  if (!brOp->specification())
-  {
-    std::cerr << "  Operator has no specification\n";
-    return false;
-  }
+  // if (!brOp->specification())
+  // {
+  //   std::cerr << "  Operation has no specification\n";
+  //   return false;
+  // }
 
-  SessionRef bs(brOp->manager(), brOp->session()->sessionId());
-  this->setSession(bs.session());
-  QFrame* opParent = new QFrame(this);
+  // SessionRef bs(brOp->manager(), brOp->session()->sessionId());
+  // this->setSession(bs.session());
+  // QFrame* opParent = new QFrame(this);
 
-  // Since the parent of `this` currently is a QScrollArea, it is necessary
-  // to ensure `this` and its children provide a suitable sizeHint, so a
-  // minimum is set in opParent.
-  // http://doc.qt.io/qt-5/qscrollarea.html#details
-  // The minimum in opParent is small, such that it allows certain flexibility
-  // for the top parent (QDockWidget, QDialog, etc.) to resize `this` properly.
-  opParent->setMinimumSize(50, 0);
-  opParent->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
-  QVBoxLayout* opLayout = new QVBoxLayout(opParent);
-  opLayout->setMargin(0);
+  // // Since the parent of `this` currently is a QScrollArea, it is necessary
+  // // to ensure `this` and its children provide a suitable sizeHint, so a
+  // // minimum is set in opParent.
+  // // http://doc.qt.io/qt-5/qscrollarea.html#details
+  // // The minimum in opParent is small, such that it allows certain flexibility
+  // // for the top parent (QDockWidget, QDialog, etc.) to resize `this` properly.
+  // opParent->setMinimumSize(50, 0);
+  // opParent->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
+  // QVBoxLayout* opLayout = new QVBoxLayout(opParent);
+  // opLayout->setMargin(0);
 
-  smtk::attribute::AttributePtr att = brOp->specification();
-  att->collection()->setRefModelManager(brOp->manager());
+  // smtk::attribute::AttributePtr att = brOp->specification();
+  // // TODO: the manager is no longer accessible through the operator
+  // // att->collection()->setRefModelManager(brOp->manager());
 
-  smtk::extension::qtUIManager* uiManager = new smtk::extension::qtUIManager(att->collection());
-  uiManager->setActiveModelView(this->Internals->ModelView);
+  // smtk::extension::qtUIManager* uiManager = new smtk::extension::qtUIManager(att->collection());
+  // uiManager->setActiveModelView(this->Internals->ModelView);
 
-  // find out what view to use to construct the UI, if none is specified for this op
-  // ( meaning if there is no "AttributeTypes" specified in view components' children,
-  // or the att->type() is not included in any view "AttributeTypes" ),
-  // use "Operator" view by default
-  smtk::view::ViewPtr opView;
+  // // find out what view to use to construct the UI, if none is specified for this op
+  // // ( meaning if there is no "AttributeTypes" specified in view components' children,
+  // // or the att->type() is not included in any view "AttributeTypes" ),
+  // // use "Operation" view by default
+  // smtk::view::ViewPtr opView;
 
-  std::map<std::string, smtk::view::ViewPtr>::const_iterator it;
-  for (it = att->collection()->views().begin(); it != att->collection()->views().end(); ++it)
-  {
-    //If  this is an Operator View we need to check its InstancedAttributes child else
-    // we need to check AttributeTypes
-    int i; // View Component index we need to check
-    if (it->second->type() == "Operator")
-    {
-      i = it->second->details().findChild("InstancedAttributes");
-    }
-    else
-    {
-      i = it->second->details().findChild("AttributeTypes");
-    }
-    if (i < 0)
-    {
-      continue;
-    }
-    smtk::view::View::Component& comp = it->second->details().child(i);
-    for (std::size_t ci = 0; ci < comp.numberOfChildren(); ++ci)
-    {
-      std::string optype;
-      if (comp.child(ci).attribute("Type", optype) && optype == att->type())
-      {
-        opView = it->second;
-        // If we are dealing with an Operator View - The Name attribute needs to be
-        // set to the same of the attribute the operator is using - so in practice
-        // the Name attribute does not have to be set in the operator's sbt info
-        if (opView->type() == "Operator")
-        {
-          comp.child(ci).setAttribute("Name", att->name());
-        }
-        break;
-      }
-    }
-    if (opView)
-      break;
-  }
+  // std::map<std::string, smtk::view::ViewPtr>::const_iterator it;
+  // for (it = att->collection()->views().begin(); it != att->collection()->views().end(); ++it)
+  // {
+  //   //If  this is an Operation View we need to check its InstancedAttributes child else
+  //   // we need to check AttributeTypes
+  //   int i; // View Component index we need to check
+  //   if (it->second->type() == "Operation")
+  //   {
+  //     i = it->second->details().findChild("InstancedAttributes");
+  //   }
+  //   else
+  //   {
+  //     i = it->second->details().findChild("AttributeTypes");
+  //   }
+  //   if (i < 0)
+  //   {
+  //     continue;
+  //   }
+  //   smtk::view::View::Component& comp = it->second->details().child(i);
+  //   for (std::size_t ci = 0; ci < comp.numberOfChildren(); ++ci)
+  //   {
+  //     std::string optype;
+  //     if (comp.child(ci).attribute("Type", optype) && optype == att->type())
+  //     {
+  //       opView = it->second;
+  //       // If we are dealing with an Operation View - The Name attribute needs to be
+  //       // set to the same of the attribute the operator is using - so in practice
+  //       // the Name attribute does not have to be set in the operator's sbt info
+  //       if (opView->type() == "Operation")
+  //       {
+  //         comp.child(ci).setAttribute("Name", att->name());
+  //       }
+  //       break;
+  //     }
+  //   }
+  //   if (opView)
+  //     break;
+  // }
 
-  if (!opView || !uiManager->hasViewConstructor(opView->type()))
-  {
-    //Lets create a default view for the operator itself
-    opView = smtk::view::View::New("Operator", brOp->name());
-    opView->details().setAttribute("UseSelectionManager", "true");
-    smtk::view::View::Component& comp =
-      opView->details().addChild("InstancedAttributes").addChild("Att");
-    comp.setAttribute("Type", att->type()).setAttribute("Name", att->name());
-    att->collection()->addView(opView);
-  }
+  // if (!opView || !uiManager->hasViewConstructor(opView->type()))
+  // {
+  //   //Lets create a default view for the operator itself
+  //   opView = smtk::view::View::New("Operation", brOp->name());
+  //   opView->details().setAttribute("UseSelectionManager", "true");
+  //   smtk::view::View::Component& comp =
+  //     opView->details().addChild("InstancedAttributes").addChild("Att");
+  //   comp.setAttribute("Type", att->type()).setAttribute("Name", att->name());
+  //   att->collection()->addView(opView);
+  // }
 
-  opView->details().setAttribute("TopLevel", "true");
+  // opView->details().setAttribute("TopLevel", "true");
 
-  QObject::connect(uiManager, SIGNAL(fileItemCreated(smtk::extension::qtFileItem*)), this,
-    SIGNAL(fileItemCreated(smtk::extension::qtFileItem*)));
-  QObject::connect(this, SIGNAL(operationFinished(const smtk::model::OperatorResult&)), uiManager,
-    SLOT(onOperationFinished()));
+  // QObject::connect(uiManager, SIGNAL(fileItemCreated(smtk::extension::qtFileItem*)), this,
+  //   SIGNAL(fileItemCreated(smtk::extension::qtFileItem*)));
+  // QObject::connect(this, SIGNAL(operationFinished(const smtk::operation::OperationResult&)), uiManager,
+  //   SLOT(onOperationFinished()));
 
-  qtModelOperationWidgetInternals::OperatorInfo opInfo;
-  opInfo.opPtr = brOp;
-  opInfo.opUiParent = opParent;
-  opInfo.opUiManager = uiManager;
-  this->Internals->OperatorMap[opName] = opInfo;
+  // qtModelOperationWidgetInternals::OperationInfo opInfo;
+  // opInfo.opPtr = brOp;
+  // opInfo.opUiParent = opParent;
+  // opInfo.opUiManager = uiManager;
+  // this->Internals->OperationMap[opName] = opInfo;
 
-  OperatorViewInfo opViewInfo(opView, brOp, opParent, uiManager);
-  qtBaseView* theView = uiManager->setSMTKView(opViewInfo, false);
-  auto opViewWidget = dynamic_cast<qtOperatorView*>(theView);
-  if (opViewWidget)
-  {
-    QObject::connect(opViewWidget, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)),
-      this, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)));
-  }
+  // OperationViewInfo opViewInfo(opView, brOp, opParent, uiManager);
+  // qtBaseView* theView = uiManager->setSMTKView(opViewInfo, false);
+  // auto opViewWidget = dynamic_cast<qtOperationView*>(theView);
+  // if (opViewWidget)
+  // {
+  //   QObject::connect(opViewWidget, SIGNAL(operationRequested(const smtk::operation::OperationPtr&)),
+  //     this, SIGNAL(operationRequested(const smtk::operation::OperationPtr&)));
+  // }
 
-  theView->requestModelEntityAssociation();
+  // theView->requestModelEntityAssociation();
 
-  this->Internals->OperatorMap[opName].opUiView = theView;
+  // this->Internals->OperationMap[opName].opUiView = theView;
 
-  this->Internals->OperationsLayout->addWidget(opParent);
-  this->Internals->OperationsLayout->setCurrentWidget(opParent);
-  this->Internals->CurrentOpName = opName;
+  // this->Internals->OperationsLayout->addWidget(opParent);
+  // this->Internals->OperationsLayout->setCurrentWidget(opParent);
+  // this->Internals->CurrentOpName = opName;
   return true;
 }
 
-bool qtModelOperationWidget::setCurrentOperator(
+bool qtModelOperationWidget::setCurrentOperation(
   const std::string& /*opName*/, smtk::model::SessionPtr /*session*/)
 {
   // smtk::model::Session::WeakPtr prevSession = this->Internals->CurrentSession;
   // std::string currOpName = this->Internals->CurrentOpName;
-  // QMap<std::string, qtModelOperationWidgetInternals::OperatorInfo>::Iterator opIt;
+  // QMap<std::string, qtModelOperationWidgetInternals::OperationInfo>::Iterator opIt;
   // // Do not set the previous operator to be an "advanced" operator or the "Model - Save" operator:
   // std::string prevOpName =
-  //   (opIt = this->Internals->OperatorMap.find(currOpName)) != this->Internals->OperatorMap.end() &&
+  //   (opIt = this->Internals->OperationMap.find(currOpName)) != this->Internals->OperationMap.end() &&
   //     opIt->opPtr && opIt->opPtr->specification()->definition()->advanceLevel() < 1 &&
   //     currOpName != "save smtk model"
   //   ? currOpName
@@ -447,8 +451,8 @@ bool qtModelOperationWidget::setCurrentOperator(
   //   this->Internals->OperationCombo->setCurrentIndex(idx);
   //   return true;
   // }
-  // OperatorPtr brOp = this->Internals->OperatorMap.contains(opName)
-  //   ? this->Internals->OperatorMap[opName].opPtr
+  // OperationPtr brOp = this->Internals->OperationMap.contains(opName)
+  //   ? this->Internals->OperationMap[opName].opPtr
   //   : session->op(opName); // create the operator
 
   // if (!brOp)
@@ -459,9 +463,9 @@ bool qtModelOperationWidget::setCurrentOperator(
   //   return false;
   // }
   // emit operatorSet(brOp);
-  // // We cannot rely on initOperatorUI to set PreviousSession since we may have
+  // // We cannot rely on initOperationUI to set PreviousSession since we may have
   // // changed the session above.
-  // bool didChange = this->initOperatorUI(brOp);
+  // bool didChange = this->initOperationUI(brOp);
   // if (didChange && !prevOpName.empty())
   // {
   //   this->Internals->PreviousSession = prevSession;
@@ -471,23 +475,26 @@ bool qtModelOperationWidget::setCurrentOperator(
   return false;
 }
 
-smtk::model::OperatorPtr qtModelOperationWidget::existingOperator(const std::string& opName)
+smtk::operation::OperationPtr qtModelOperationWidget::existingOperation(
+  const std::string& /*opName*/)
 {
-  OperatorPtr brOp;
-  if (this->Internals->OperatorMap.contains(opName))
-  {
-    brOp = this->Internals->OperatorMap[opName].opPtr;
-  }
+  // TODO: this information is no longer held by the session
+  // OperationPtr brOp;
+  // if (this->Internals->OperationMap.contains(opName))
+  // {
+  //   brOp = this->Internals->OperationMap[opName].opPtr;
+  // }
 
-  return brOp;
+  // return brOp;
+  return nullptr;
 }
 
-qtBaseView* qtModelOperationWidget::existingOperatorView(const std::string& opName)
+qtBaseView* qtModelOperationWidget::existingOperationView(const std::string& opName)
 {
   qtBaseView* opview = nullptr;
-  if (this->Internals->OperatorMap.contains(opName))
+  if (this->Internals->OperationMap.contains(opName))
   {
-    opview = this->Internals->OperatorMap[opName].opUiView;
+    opview = this->Internals->OperationMap[opName].opUiView;
   }
 
   return opview;
@@ -495,18 +502,18 @@ qtBaseView* qtModelOperationWidget::existingOperatorView(const std::string& opNa
 
 void qtModelOperationWidget::expungeEntities(const smtk::model::EntityRefs& expungedEnts)
 {
-  QMapIterator<std::string, qtModelOperationWidgetInternals::OperatorInfo> it(
-    this->Internals->OperatorMap);
+  QMapIterator<std::string, qtModelOperationWidgetInternals::OperationInfo> it(
+    this->Internals->OperationMap);
   while (it.hasNext())
   {
     it.next();
     bool associationChanged = false;
-    if (it.value().opPtr && it.value().opPtr->specification())
+    if (it.value().opPtr && it.value().opPtr->parameters())
     {
-      // update operator's specification
-      associationChanged = it.value().opPtr->specification()->removeExpungedEntities(expungedEnts);
-      if (!it.value().opPtr->specification()->associations())
-      { // Operator's modelEntityItem has been expunged. Update in qtModelEntityItem
+      // update operator's parameters
+      associationChanged = it.value().opPtr->parameters()->removeExpungedEntities(expungedEnts);
+      if (!it.value().opPtr->parameters()->associations())
+      { // Operation's modelEntityItem has been expunged. Update in qtModelEntityItem
         emit broadcastExpungeEntities(expungedEnts);
       }
     }
@@ -520,18 +527,19 @@ void qtModelOperationWidget::onOperationSelected()
   std::string opName =
     this->Internals
       ->m_operatorLabelMap[this->Internals->OperationCombo->currentText().toStdString()];
-  this->setCurrentOperator(opName, this->Internals->CurrentSession.lock());
+  this->setCurrentOperation(opName, this->Internals->CurrentSession.lock());
 }
 
 void qtModelOperationWidget::onOperate()
 {
-  std::string opLabel = this->Internals->OperationCombo->currentText().toStdString();
-  std::string opName = this->Internals->m_operatorLabelMap[opLabel];
-  if (this->Internals->OperatorMap.contains(opName))
-  {
-    OperatorPtr brOp = this->Internals->OperatorMap[opName].opPtr;
-    emit this->operationRequested(brOp);
-  }
+  // TODO: this information is no longer held by the session
+  // std::string opLabel = this->Internals->OperationCombo->currentText().toStdString();
+  // std::string opName = this->Internals->m_operatorLabelMap[opLabel];
+  // if (this->Internals->OperationMap.contains(opName))
+  // {
+  //   OperationPtr brOp = this->Internals->OperationMap[opName].opPtr;
+  //   emit this->operationRequested(brOp);
+  // }
 }
 
 /// Display messages summarizing the result of an operation to the user.
@@ -562,7 +570,7 @@ void qtModelOperationWidget::resetUI()
     this->Internals->OperationCombo->blockSignals(true);
     this->Internals->OperationCombo->clear();
     this->Internals->OperationCombo->blockSignals(false);
-    this->Internals->OperatorMap.clear();
+    this->Internals->OperationMap.clear();
   }
 }
 
@@ -573,5 +581,5 @@ bool qtModelOperationWidget::showPreviousOp()
   {
     return false;
   }
-  return this->setCurrentOperator(this->Internals->PreviousOpName, prevSess);
+  return this->setCurrentOperation(this->Internals->PreviousOpName, prevSess);
 }

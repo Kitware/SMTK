@@ -9,7 +9,7 @@ set(ioSrcs
   LoadJSON.cxx
   Logger.cxx
   ModelToMesh.cxx
-  OperatorLog.cxx
+  OperationLog.cxx
   ResourceSetReader.cxx
   ResourceSetWriter.cxx
   XmlDocV1Parser.cxx
@@ -29,7 +29,7 @@ set(ioHeaders
   LoadJSON.h
   Logger.h
   ModelToMesh.h
-  OperatorLog.h
+  OperationLog.h
   ResourceSetReader.h
   ResourceSetWriter.h
   #XmlDocV1Parser.h

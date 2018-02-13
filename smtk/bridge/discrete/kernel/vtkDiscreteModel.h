@@ -219,11 +219,11 @@ protected:
   friend class vtkDiscreteModelWrapper;
   friend class vtkCMBModelBuilder;
   friend class vtkDiscreteModelEdge;
-  friend class vtkGenerateSimpleModelOperator;
+  friend class vtkGenerateSimpleModelOperation;
   friend class pqCMBSceneBuilderMainWindowCore;
   friend class pqCMBGeologyBuilderMainWindowCore;
   friend class vtkCMBMapToCMBModel;
-  friend class vtkCMBIncorporateMeshOperator;
+  friend class vtkCMBIncorporateMeshOperation;
 
   // Description:
   // Set the Discrete mesh. This should only be called on the server.

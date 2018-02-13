@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the CMB polygon Model "import" Operator -->
+<!-- Description of the CMB polygon Model "import" Operation -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="import" Label="Model - Import Geometry" BaseType="operator">
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="import" Label="Model - Import Geometry" BaseType="operation">
       <ItemDefinitions>
         <File Name="filename" Label="File Name" NumberOfRequiredValues="1"
           ShouldExist="true"

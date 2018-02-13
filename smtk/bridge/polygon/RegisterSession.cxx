@@ -39,35 +39,35 @@ namespace polygon
 
 void registerOperations(smtk::operation::Manager::Ptr& operationManager)
 {
-  operationManager->registerOperator<smtk::bridge::polygon::CleanGeometry>(
+  operationManager->registerOperation<smtk::bridge::polygon::CleanGeometry>(
     "smtk::bridge::polygon::CleanGeometry");
-  operationManager->registerOperator<smtk::bridge::polygon::CreateEdge>(
+  operationManager->registerOperation<smtk::bridge::polygon::CreateEdge>(
     "smtk::bridge::polygon::CreateEdge");
-  operationManager->registerOperator<smtk::bridge::polygon::CreateEdgeFromPoints>(
+  operationManager->registerOperation<smtk::bridge::polygon::CreateEdgeFromPoints>(
     "smtk::bridge::polygon::CreateEdgeFromPoints");
-  operationManager->registerOperator<smtk::bridge::polygon::CreateEdgeFromVertices>(
+  operationManager->registerOperation<smtk::bridge::polygon::CreateEdgeFromVertices>(
     "smtk::bridge::polygon::CreateEdgeFromVertices");
-  operationManager->registerOperator<smtk::bridge::polygon::CreateFaces>(
+  operationManager->registerOperation<smtk::bridge::polygon::CreateFaces>(
     "smtk::bridge::polygon::CreateFaces");
-  operationManager->registerOperator<smtk::bridge::polygon::CreateFacesFromEdges>(
+  operationManager->registerOperation<smtk::bridge::polygon::CreateFacesFromEdges>(
     "smtk::bridge::polygon::CreateFacesFromEdges");
-  operationManager->registerOperator<smtk::bridge::polygon::CreateModel>(
+  operationManager->registerOperation<smtk::bridge::polygon::CreateModel>(
     "smtk::bridge::polygon::CreateModel");
-  operationManager->registerOperator<smtk::bridge::polygon::CreateVertices>(
+  operationManager->registerOperation<smtk::bridge::polygon::CreateVertices>(
     "smtk::bridge::polygon::CreateVertices");
-  operationManager->registerOperator<smtk::bridge::polygon::Delete>(
+  operationManager->registerOperation<smtk::bridge::polygon::Delete>(
     "smtk::bridge::polygon::Delete");
-  operationManager->registerOperator<smtk::bridge::polygon::DemoteVertex>(
+  operationManager->registerOperation<smtk::bridge::polygon::DemoteVertex>(
     "smtk::bridge::polygon::DemoteVertex");
-  operationManager->registerOperator<smtk::bridge::polygon::ExtractContours>(
+  operationManager->registerOperation<smtk::bridge::polygon::ExtractContours>(
     "smtk::bridge::polygon::ExtractContours");
-  operationManager->registerOperator<smtk::bridge::polygon::ForceCreateFace>(
+  operationManager->registerOperation<smtk::bridge::polygon::ForceCreateFace>(
     "smtk::bridge::polygon::ForceCreateFace");
-  operationManager->registerOperator<smtk::bridge::polygon::Import>(
+  operationManager->registerOperation<smtk::bridge::polygon::Import>(
     "smtk::bridge::polygon::Import");
-  operationManager->registerOperator<smtk::bridge::polygon::SplitEdge>(
+  operationManager->registerOperation<smtk::bridge::polygon::SplitEdge>(
     "smtk::bridge::polygon::SplitEdge");
-  operationManager->registerOperator<smtk::bridge::polygon::TweakEdge>(
+  operationManager->registerOperation<smtk::bridge::polygon::TweakEdge>(
     "smtk::bridge::polygon::TweakEdge");
 }
 

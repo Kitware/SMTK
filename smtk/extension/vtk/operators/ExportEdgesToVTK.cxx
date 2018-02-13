@@ -148,14 +148,14 @@ ExportEdgesToVTK::Result ExportEdgesToVTK::operateInternal()
   if (entities.empty())
   {
     smtkErrorMacro(this->log(), "No valid models selected for export.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   std::string filename = filenameItem->value();
   if (filename.empty())
   {
     smtkErrorMacro(this->log(), "A filename must be provided.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   vtkNew<vtkPolyData> pdt;
@@ -171,8 +171,8 @@ ExportEdgesToVTK::Result ExportEdgesToVTK::operateInternal()
   wri->SetFileName(filename.c_str());
   bool ok = (wri->Write() != 0);
 
-  return this->createResult(
-    ok ? smtk::operation::NewOp::Outcome::SUCCEEDED : smtk::operation::NewOp::Outcome::FAILED);
+  return this->createResult(ok ? smtk::operation::Operation::Outcome::SUCCEEDED
+                               : smtk::operation::Operation::Outcome::FAILED);
 }
 
 const char* ExportEdgesToVTK::xmlDescription() const

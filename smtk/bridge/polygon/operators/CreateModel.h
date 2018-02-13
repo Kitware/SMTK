@@ -10,7 +10,7 @@
 #ifndef __smtk_session_polygon_CreateModel_h
 #define __smtk_session_polygon_CreateModel_h
 
-#include "smtk/bridge/polygon/Operator.h"
+#include "smtk/bridge/polygon/Operation.h"
 
 namespace smtk
 {
@@ -33,13 +33,13 @@ namespace polygon
   * attempting to share points across different discretizations on different
   * projected planes would be error-prone at best.
   */
-class SMTKPOLYGONSESSION_EXPORT CreateModel : public Operator
+class SMTKPOLYGONSESSION_EXPORT CreateModel : public Operation
 {
 public:
   smtkTypeMacro(CreateModel);
   smtkCreateMacro(CreateModel);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
-  smtkSuperclassMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
+  smtkSuperclassMacro(Operation);
 
 protected:
   Result operateInternal() override;

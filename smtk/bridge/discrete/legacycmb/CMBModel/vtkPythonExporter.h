@@ -10,7 +10,7 @@
 
 // .NAME vtkPythonExporter - Export info with a Python script.
 // .SECTION Description
-// Operator to export ModelBuilder, SimBuilder and SMTK information through
+// Operation to export ModelBuilder, SimBuilder and SMTK information through
 // a Python script.
 
 #ifndef __vtkPythonExporter_h

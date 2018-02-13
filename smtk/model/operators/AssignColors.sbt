@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the model "AssignColors" Operator -->
+<!-- Description of the model "AssignColors" Operation -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="assign colors" Label="Model Entities - Assign Colors" BaseType="operator">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="assign colors" Label="Model Entities - Assign Colors" BaseType="operation">
       <AssociationsDef Name="entities" NumberOfRequiredValues="1" Extensible="true">
         <MembershipMask>model|group|cell|anydim</MembershipMask>
       </AssociationsDef>

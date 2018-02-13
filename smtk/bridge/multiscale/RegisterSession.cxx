@@ -17,8 +17,8 @@
 #include "smtk/attribute/ResourceItem.h"
 
 #include "smtk/bridge/mesh/RegisterSession.h"
-#include "smtk/bridge/mesh/operators/ExportOperator.h"
-#include "smtk/bridge/mesh/operators/ImportOperator.h"
+#include "smtk/bridge/mesh/operators/ExportOperation.h"
+#include "smtk/bridge/mesh/operators/ImportOperation.h"
 
 #include "smtk/bridge/multiscale/operators/PartitionBoundaries.h"
 #include "smtk/bridge/multiscale/operators/Revolve.h"
@@ -29,7 +29,7 @@
 
 #include "smtk/model/SessionIOJSON.h"
 
-#include "smtk/operation/RegisterPythonOperators.h"
+#include "smtk/operation/RegisterPythonOperations.h"
 
 namespace smtk
 {
@@ -41,11 +41,11 @@ namespace multiscale
 void registerOperations(smtk::operation::Manager::Ptr& operationManager)
 {
   smtk::bridge::mesh::registerOperations(operationManager);
-  operationManager->registerOperator<smtk::bridge::multiscale::PartitionBoundaries>(
+  operationManager->registerOperation<smtk::bridge::multiscale::PartitionBoundaries>(
     "smtk::bridge::multiscale::PartitionBoundaries");
-  operationManager->registerOperator<smtk::bridge::multiscale::Revolve>(
+  operationManager->registerOperation<smtk::bridge::multiscale::Revolve>(
     "smtk::bridge::multiscale::Revolve");
-  smtk::operation::registerPythonOperators(
+  smtk::operation::registerPythonOperations(
     operationManager, "smtk.bridge.multiscale.import_from_deform");
 }
 
@@ -64,12 +64,12 @@ void registerResources(smtk::resource::Manager::Ptr& resourceManager)
       std::string meshFilename = j.at("Mesh URL");
 
       // Create an import operator
-      smtk::bridge::mesh::ImportOperator::Ptr importOp =
-        smtk::bridge::mesh::ImportOperator::create();
+      smtk::bridge::mesh::ImportOperation::Ptr importOp =
+        smtk::bridge::mesh::ImportOperation::create();
       importOp->parameters()->findFile("filename")->setValue(meshFilename);
 
       // Execute the operation
-      smtk::operation::NewOp::Result importOpResult = importOp->operate();
+      smtk::operation::Operation::Result importOpResult = importOp->operate();
 
       // Retrieve the resulting resource
       smtk::attribute::ResourceItemPtr resourceItem =
@@ -118,19 +118,19 @@ void registerResources(smtk::resource::Manager::Ptr& resourceManager)
       smtk::model::SessionIOJSON::saveModelRecords(j, rsrc->location());
 
       // Create an export operator
-      smtk::bridge::mesh::ExportOperator::Ptr exportOp =
-        smtk::bridge::mesh::ExportOperator::create();
+      smtk::bridge::mesh::ExportOperation::Ptr exportOp =
+        smtk::bridge::mesh::ExportOperation::create();
       exportOp->parameters()->findFile("filename")->setValue(meshFilename);
 
       // Set the entity association
       exportOp->parameters()->associateEntity(model);
 
       // Execute the operation
-      smtk::operation::NewOp::Result exportOpResult = exportOp->operate();
+      smtk::operation::Operation::Result exportOpResult = exportOp->operate();
 
       // Test for success
       return (exportOpResult->findInt("outcome")->value() ==
-        static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED));
+        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED));
     });
 }
 }

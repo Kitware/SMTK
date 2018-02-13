@@ -47,7 +47,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::model::OperatorResult CreateFace::operateInternal()
+smtk::operation::OperationResult CreateFace::operateInternal()
 {
   smtk::attribute::IntItem::Ptr surfTypeItem = this->findInt("surface type");
   smtk::attribute::IntItem::Ptr colorItem = this->findInt("color");
@@ -63,7 +63,7 @@ smtk::model::OperatorResult CreateFace::operateInternal()
       break;
     default:
       smtkInfoMacro(log(), "Bad surf type " << surfType << ".");
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
   DLIList<RefEdge*> edgeList;
   smtk::model::EntityRefArray expunged;
@@ -71,7 +71,7 @@ smtk::model::OperatorResult CreateFace::operateInternal()
         *this->specification()->associations().get(), edgeList, keepInputs, expunged))
   {
     smtkInfoMacro(log(), "One or more edges were invalid.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
   bool isFree = true;
@@ -81,14 +81,14 @@ smtk::model::OperatorResult CreateFace::operateInternal()
   if (!cgmFace)
   {
     smtkInfoMacro(log(), "Failed to create face.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
   // Assign color to match vertex API that requires a color.
   cgmFace->color(color);
 
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  smtk::operation::OperationResult result =
+    this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
 
   DLIList<RefFace*> cgmFacesOut;
   cgmFacesOut.push(cgmFace);
@@ -102,5 +102,5 @@ smtk::model::OperatorResult CreateFace::operateInternal()
 } //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::CreateFace, cgm_create_face,
+smtkImplementsModelOperation(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::CreateFace, cgm_create_face,
   "create face", CreateFace_xml, smtk::bridge::cgm::Session);

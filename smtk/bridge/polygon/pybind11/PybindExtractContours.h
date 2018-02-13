@@ -15,11 +15,11 @@
 
 #include "smtk/bridge/polygon/operators/ExtractContours.h"
 
-#include "smtk/bridge/polygon/Operator.h"
+#include "smtk/bridge/polygon/Operation.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::polygon::ExtractContours > pybind11_init_smtk_bridge_polygon_ExtractContours(py::module &m, PySharedPtrClass< smtk::bridge::polygon::Operator, smtk::operation::XMLOperator >& parent)
+PySharedPtrClass< smtk::bridge::polygon::ExtractContours > pybind11_init_smtk_bridge_polygon_ExtractContours(py::module &m, PySharedPtrClass< smtk::bridge::polygon::Operation, smtk::operation::XMLOperation >& parent)
 {
   PySharedPtrClass< smtk::bridge::polygon::ExtractContours > instance(m, "ExtractContours", parent);
   instance

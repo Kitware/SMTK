@@ -74,8 +74,8 @@ public:
   pqPipelineSource* getSource();
   void setSource(pqPipelineSource*);
 
-  smtk::shared_ptr<smtk::model::Operator> edgeOperator();
-  void setEdgeOperator(smtk::model::OperatorPtr edgeOp);
+  smtk::shared_ptr<smtk::operation::Operation> edgeOperation();
+  void setEdgeOperation(smtk::operation::OperationPtr edgeOp);
 
   bool isClosedLoop();
   int getClosedLoop();
@@ -111,7 +111,7 @@ public:
   void resetOperationSource();
 
 signals:
-  void operationRequested(const smtk::model::OperatorPtr& brOp);
+  void operationRequested(const smtk::operation::OperationPtr& brOp);
   void activateModel(const smtk::common::UUID& modelid);
 
 protected:
@@ -136,6 +136,6 @@ protected:
 
   smtk::common::UUID m_currentModelId;
   QPointer<pqPipelineSource> Source;
-  smtk::weak_ptr<smtk::model::Operator> m_edgeOp;
+  smtk::weak_ptr<smtk::operation::Operation> m_edgeOp;
 };
 #endif

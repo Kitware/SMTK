@@ -30,7 +30,7 @@ class SMTKPOLYGONSESSION_EXPORT CreateFacesFromEdges : public CreateFaces
 public:
   smtkTypeMacro(CreateFacesFromEdges);
   smtkCreateMacro(CreateFacesFromEdges);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(CreateFaces);
 
 protected:

@@ -24,7 +24,6 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/SessionRef.h"
 
 #include "smtk/operation/LoadResource.h"
@@ -187,7 +186,7 @@ bool vtkSMTKModelReader::LoadFile()
 
   auto result = oper->operate();
   if (result->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     return false;
   }

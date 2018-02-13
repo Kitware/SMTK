@@ -180,7 +180,7 @@ protected:
   friend class vtkModelRegion;
   friend class vtkModelVertex;
   friend class vtkModelGeometricEntity;
-  friend class vtkEdgeSplitOperatorClient;
+  friend class vtkEdgeSplitOperationClient;
 
 private:
   vtkModel(const vtkModel&);       // Not implemented.

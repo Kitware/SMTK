@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the model "CompositeAuxiliaryGeometry" Operator -->
+<!-- Description of the model "CompositeAuxiliaryGeometry" Operation -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
-    <!-- Operator -->
-    <AttDef Type="composite auxiliary geometry" BaseType="operator" Label="Model - Composite Auxiliary Geometry">
+    <!-- Operation -->
+    <AttDef Type="composite auxiliary geometry" BaseType="operation" Label="Model - Composite Auxiliary Geometry">
       <!-- In the future Label shoud be removed when SMTK supports compound auxiliary geometry -->
       <AssociationsDef Name="entities" Label="model" NumberOfRequiredValues="1" Extensible="true">
         <MembershipMask>aux_geom</MembershipMask>
@@ -103,7 +103,7 @@
     </AttDef>
   </Definitions>
     <Views>
-    <View Type="Operator" Title="Composite Aux Geometry" FilterByAdvanceLevel="true">
+    <View Type="Operation" Title="Composite Aux Geometry" FilterByAdvanceLevel="true">
       <InstancedAttributes>
         <Att Type="composite auxiliary geometry"/>
       </InstancedAttributes>

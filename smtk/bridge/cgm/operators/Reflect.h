@@ -10,7 +10,7 @@
 #ifndef __smtk_session_cgm_Reflect_h
 #define __smtk_session_cgm_Reflect_h
 
-#include "smtk/bridge/cgm/Operator.h"
+#include "smtk/bridge/cgm/Operation.h"
 
 namespace smtk
 {
@@ -19,16 +19,16 @@ namespace bridge
 namespace cgm
 {
 
-class SMTKCGMSESSION_EXPORT Reflect : public Operator
+class SMTKCGMSESSION_EXPORT Reflect : public Operation
 {
 public:
   smtkTypeMacro(Reflect);
   smtkCreateMacro(Reflect);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(Operation);
+  smtkDeclareModelOperation();
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
 };
 
 } // namespace cgm

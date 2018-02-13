@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the model "SetProperty" Operator -->
+<!-- Description of the model "SetProperty" Operation -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="set property" Label="Entities - Set Property" BaseType="operator" AdvanceLevel="10">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="set property" Label="Entities - Set Property" BaseType="operation" AdvanceLevel="10">
       <AssociationsDef Name="Entities" NumberOfRequiredValues="0" Extensible="true">
         <MembershipMask>any</MembershipMask>
       </AssociationsDef>

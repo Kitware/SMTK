@@ -16,7 +16,6 @@
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/SessionRegistrar.h"
 
 namespace smtk
@@ -58,69 +57,6 @@ SessionRef& SessionRef::addModel(const Model& mod)
 {
   this->addMemberEntity(mod);
   return *this;
-}
-
-/**\brief Return the list of operations this session supports.
-  *
-  */
-StringList SessionRef::operatorNames(bool includeAdvanced) const
-{
-  Session::Ptr brdg = this->session();
-  if (!brdg)
-    return StringList();
-  return brdg->operatorNames(includeAdvanced);
-}
-
-/**\brief Return the smtk::attribute::Collection holding all the operator definitions.
-  *
-  */
-smtk::attribute::CollectionPtr SessionRef::opSys() const
-{
-  Session::Ptr brdg = this->session();
-  if (!brdg)
-    return NULL;
-  return brdg->operatorCollection();
-}
-
-/**\brief Return the smtk::attribute::Definition describing an operator.
-  *
-  */
-OperatorDefinition SessionRef::opDef(const std::string& opName) const
-{
-  smtk::attribute::CollectionPtr sys = this->opSys();
-  if (!sys)
-    return OperatorDefinition();
-  return sys->findDefinition(opName);
-}
-
-// /**\brief Return an instance of an operator given its name.
-//   *
-//   */
-// Operator::Ptr SessionRef::op(const std::string& opName) const
-// {
-//   Session::Ptr brdg = this->session();
-//   if (!brdg)
-//     return Operator::Ptr();
-//   return brdg->op(opName);
-// }
-
-/**\brief Return operators that can be associated with the given entity flags.
-  *
-  */
-StringList SessionRef::operatorsForAssociation(BitFlags assocMask) const
-{
-  StringList result;
-  smtk::attribute::CollectionPtr sys = this->opSys();
-  if (!assocMask || !sys)
-    return result;
-
-  std::vector<smtk::attribute::DefinitionPtr> defs;
-  std::vector<smtk::attribute::DefinitionPtr>::iterator it;
-  sys->findDefinitions(assocMask, defs);
-  for (it = defs.begin(); it != defs.end(); ++it)
-    result.push_back((*it)->type());
-
-  return result;
 }
 
 /**\brief Return the session-class's tag data (a JSON string).
@@ -182,18 +118,6 @@ void SessionRef::close()
   *
   * This returns all of the models for which Manager::setSessionForModel()
   * has been called with this entityref's session.
-  */
-
-/*! \fn template<typename T> StringList SessionRef::operatorsForAssociationconst T& entityrefContainer) const
-  * \brief Return operators that can be associated with the given entity flags.
-  *
-  * This list is obtained by bitwise-ANDing all of the entity flags of
-  * the entityrefs in the given \a entityrefContainer and calling
-  * another variant of operatorsForAssociation with the resulting mask.
-  * It exits early if the mask is empty.
-  *
-  * TODO: Handle recursive testing of groups like that done
-  *       by GroupEntitity::meetsMembershipConstraints.
   */
 
 } // namespace model

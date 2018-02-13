@@ -94,14 +94,14 @@ void CreateInstances::addSnappingConstraints(Instance& instance, const EntityRef
   }
 }
 
-smtk::model::OperatorResult CreateInstances::operateInternal()
+CreateInstances::Result CreateInstances::operateInternal()
 {
   auto associations = this->parameters()->associations();
   EntityRefArray prototypes(associations->begin(), associations->end());
 
   std::string rule = this->parameters()->findString("placement rule")->value(0);
 
-  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
   smtk::attribute::ComponentItem::Ptr createdItem = result->findComponent("created");
   smtk::attribute::ComponentItem::Ptr modifiedItem = result->findComponent("modified");
 

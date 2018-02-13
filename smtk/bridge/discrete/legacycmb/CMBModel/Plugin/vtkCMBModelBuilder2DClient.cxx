@@ -14,7 +14,7 @@
 #include "vtkDiscreteModel.h"
 #include "vtkObjectFactory.h"
 #include "vtkSMIntVectorProperty.h"
-#include "vtkSMOperatorProxy.h"
+#include "vtkSMOperationProxy.h"
 #include "vtkSMProxyManager.h"
 #include "vtkSMSession.h"
 #include "vtkSMStringVectorProperty.h"
@@ -42,8 +42,8 @@ bool vtkCMBModelBuilder2DClient::Operate(
   }
 
   vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
-  vtkSMOperatorProxy* operatorProxy = vtkSMOperatorProxy::SafeDownCast(
-    manager->NewProxy("CMBModelGroup", "GenerateSimpleModelOperator"));
+  vtkSMOperationProxy* operatorProxy = vtkSMOperationProxy::SafeDownCast(
+    manager->NewProxy("CMBModelGroup", "GenerateSimpleModelOperation"));
   if (!operatorProxy)
   {
     vtkErrorMacro("Unable to create builder operator proxy.");

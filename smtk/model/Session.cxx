@@ -48,10 +48,8 @@ namespace model
 /// Default constructor. This assigns a random session ID to each Session instance.
 Session::Session()
   : m_sessionId(smtk::common::UUID::random())
-  , m_operatorCollection(nullptr)
   , m_manager(nullptr)
 {
-  this->initializeOperatorCollection(Session::s_operators);
 }
 
 /// Destructor.
@@ -72,10 +70,7 @@ std::string Session::name() const
 /**\brief Return the session ID for this instance of the session.
   *
   * Sessions are ephemeral and tied to a particular machine so
-  * they should generally not be serialized. However, when using
-  * JSON stringifications of operators to perform remote procedure
-  * calls (RPC), the session ID specifies which Session on which
-  * machine should actually invoke the operator.
+  * they should generally not be serialized.
   */
 smtk::common::UUID Session::sessionId() const
 {
@@ -136,92 +131,6 @@ SessionInfoBits Session::allSupportedInformation() const
   return SESSION_EVERYTHING;
 }
 
-/// Return the number of solid-model operators available.
-std::size_t Session::numberOfOperators(bool includeAdvanced) const
-{
-  std::vector<smtk::attribute::DefinitionPtr> ops;
-  this->m_operatorCollection->derivedDefinitions(
-    this->m_operatorCollection->findDefinition("operator"), ops);
-
-  std::size_t nOps = 0;
-  std::vector<smtk::attribute::DefinitionPtr>::iterator it;
-  for (it = ops.begin(); it != ops.end(); ++it)
-  {
-    // only show operators that are not advanced
-    if (!includeAdvanced && (*it)->advanceLevel() > 0)
-      continue;
-    ++nOps;
-  }
-  return nOps;
-}
-
-/// Return a list of names of solid-model operators available.
-StringList Session::operatorNames(bool includeAdvanced) const
-{
-  std::vector<smtk::attribute::DefinitionPtr> ops;
-  this->m_operatorCollection->derivedDefinitions(
-    this->m_operatorCollection->findDefinition("operator"), ops);
-
-  StringList nameList;
-  std::vector<smtk::attribute::DefinitionPtr>::iterator it;
-  for (it = ops.begin(); it != ops.end(); ++it)
-  {
-    // only show operators that are not advanced
-    if (!includeAdvanced && (*it)->advanceLevel() > 0)
-      continue;
-    nameList.push_back((*it)->type());
-  }
-  return nameList;
-}
-
-/// Return a map between the labels associated with the session's operators
-/// and its names
-std::map<std::string, std::string> Session::operatorLabelsMap(bool includeAdvanced) const
-{
-  std::vector<smtk::attribute::DefinitionPtr> ops;
-  std::map<std::string, std::string> result;
-  this->m_operatorCollection->derivedDefinitions(
-    this->m_operatorCollection->findDefinition("operator"), ops);
-  //std::cerr << "Getting Map from system " << this->m_operatorCollection << ": \n";
-  std::vector<smtk::attribute::DefinitionPtr>::iterator it;
-  for (it = ops.begin(); it != ops.end(); ++it)
-  {
-    // only show operators that are not advanced
-    if (!includeAdvanced && (*it)->advanceLevel() > 0)
-    {
-      continue;
-    }
-    result[(*it)->label()] = (*it)->type();
-    //std::cerr << "\tType: " << (*it)->type() << " Label: " << (*it)->label() << "\n";
-  }
-  return result;
-}
-
-// OperatorPtr Session::op(const std::string& opName) const
-// {
-//   OperatorPtr oper;
-//   if (opName.empty())
-//     return oper;
-
-//   OperatorConstructor ctor = this->findOperatorConstructor(opName);
-//   if (!ctor)
-//     return oper;
-
-//   oper = ctor();
-//   if (!oper)
-//     return oper;
-
-//   oper->setSession(const_cast<Session*>(this)->shared_from_this());
-//   oper->setManager(this->manager());
-//   oper->setMeshManager(this->meshManager());
-
-//   // Notify observers that an operator was created.
-//   if (this->m_manager)
-//     this->m_manager->trigger(OperatorEventType::CREATED_OPERATOR, *oper.get());
-
-//   return oper;
-// }
-
 /// Return the map from dangling entityrefs to bits describing their partial transcription state.
 const DanglingEntities& Session::danglingEntities() const
 {
@@ -248,25 +157,6 @@ void Session::declareDanglingEntity(const EntityRef& ent, SessionInfoBits presen
   else
     this->m_dangling.erase(ent);
 }
-
-/** @name Operator Manager
-  *\brief Return this session's internal attribute collection, used to describe operators.
-  *
-  * Each operator should have a definition of the same name held in this manager.
-  */
-///@{
-/// Return the attribute collection that holds definitions for all of this session's operators.
-smtk::attribute::CollectionPtr Session::operatorCollection()
-{
-  return this->m_operatorCollection;
-}
-
-/// Return the attribute collection that holds definitions for all of this session's operators.
-smtk::attribute::ConstCollectionPtr Session::operatorCollection() const
-{
-  return dynamic_pointer_cast<const smtk::attribute::Collection>(this->m_operatorCollection);
-}
-///@}
 
 /**\brief Set configuration options on the session.
   *
@@ -372,7 +262,6 @@ void Session::setSessionId(const smtk::common::UUID& sessId)
 void Session::setManager(Manager* mgr)
 {
   this->m_manager = mgr;
-  this->m_operatorCollection->setRefModelManager(mgr->shared_from_this());
 }
 
 /**\brief Called when an entity is being split so that attribute assignments can be updated.
@@ -963,226 +852,6 @@ SessionInfoBits Session::updateTessellation(
   return SESSION_TESSELLATION;
 }
 
-/**\brief Subclasses must call this method from within their constructors.
-  *
-  * Each subclass has (by virtue of invoking the smtkDeclareModelOperator
-  * and smtkImplementsModelOperator macros) a static map from operator
-  * names to constructors and XML descriptions. That map is named
-  * s_operators and should be passed to this method in the constructor
-  * of the subclass (since the base class does not have access to the map).
-  *
-  * This method traverses the XML descriptions and imports each into
-  * the session's attribute collection.
-  */
-void Session::initializeOperatorCollection(const OperatorConstructors* opList)
-{
-  // Superclasses may already have initialized, but since
-  // we cannot remove Definitions from an attribute.Collection
-  // and may want to override an operator with a session-specific
-  // version, we must wipe away whatever already exists.
-  smtk::attribute::CollectionPtr other = this->m_operatorCollection;
-
-  this->m_operatorCollection = smtk::attribute::Collection::create();
-  // Create the "base" definitions that all operators and results will inherit.
-  Definition::Ptr opdefn = this->m_operatorCollection->createDefinition("operator");
-
-  IntItemDefinition::Ptr assignNamesDefn = IntItemDefinition::New("assign names");
-  // Do not assign names to entities after the operation by default:
-  assignNamesDefn->setDefaultValue(0);
-  assignNamesDefn->setIsOptional(true);
-  assignNamesDefn->setAdvanceLevel(11);
-
-  IntItemDefinition::Ptr debugLevelDefn = IntItemDefinition::New("debug level");
-  debugLevelDefn->setIsOptional(true);
-  debugLevelDefn->setDefaultValue(0);
-  debugLevelDefn->setAdvanceLevel(10);
-
-  opdefn->addItemDefinition(assignNamesDefn);
-  opdefn->addItemDefinition(debugLevelDefn);
-
-  Definition::Ptr resultdefn = this->m_operatorCollection->createDefinition("result");
-  IntItemDefinition::Ptr outcomeDefn = IntItemDefinition::New("outcome");
-  ModelEntityItemDefinition::Ptr entcreDefn = ModelEntityItemDefinition::New("created");
-  ModelEntityItemDefinition::Ptr entmodDefn = ModelEntityItemDefinition::New("modified");
-  ModelEntityItemDefinition::Ptr entremDefn = ModelEntityItemDefinition::New("expunged");
-  ComponentItemDefinition::Ptr cmpcreDefn = ComponentItemDefinition::New("created components");
-  ComponentItemDefinition::Ptr cmpmodDefn = ComponentItemDefinition::New("modified components");
-  ComponentItemDefinition::Ptr cmpremDefn = ComponentItemDefinition::New("expunged components");
-  ComponentItemDefinition::Ptr cmptssDefn = ComponentItemDefinition::New("tessellated components");
-
-  StringItemDefinition::Ptr logDefn = StringItemDefinition::New("log");
-  outcomeDefn->setNumberOfRequiredValues(1);
-  outcomeDefn->setIsOptional(false);
-  entcreDefn->setNumberOfRequiredValues(0);
-  entcreDefn->setIsOptional(true);
-  entcreDefn->setIsExtensible(true);
-  entmodDefn->setNumberOfRequiredValues(0);
-  entmodDefn->setIsOptional(true);
-  entmodDefn->setIsExtensible(true);
-  entremDefn->setNumberOfRequiredValues(0);
-  entremDefn->setIsOptional(true);
-  entremDefn->setIsExtensible(true);
-  cmpcreDefn->setNumberOfRequiredValues(0);
-  cmpcreDefn->setIsOptional(true);
-  cmpcreDefn->setIsExtensible(true);
-  cmpmodDefn->setNumberOfRequiredValues(0);
-  cmpmodDefn->setIsOptional(true);
-  cmpmodDefn->setIsExtensible(true);
-  cmpremDefn->setNumberOfRequiredValues(0);
-  cmpremDefn->setIsOptional(true);
-  cmpremDefn->setIsExtensible(true);
-  cmptssDefn->setNumberOfRequiredValues(0);
-  cmptssDefn->setIsOptional(true);
-  cmptssDefn->setIsExtensible(true);
-
-  cmpcreDefn->setAcceptsResourceComponents(
-    smtk::model::Manager::type_name, std::to_string(smtk::model::ANY_ENTITY), true);
-  cmpmodDefn->setAcceptsResourceComponents(
-    smtk::model::Manager::type_name, std::to_string(smtk::model::ANY_ENTITY), true);
-  cmpremDefn->setAcceptsResourceComponents(
-    smtk::model::Manager::type_name, std::to_string(smtk::model::ANY_ENTITY), true);
-  cmptssDefn->setAcceptsResourceComponents(
-    smtk::model::Manager::type_name, std::to_string(smtk::model::ANY_ENTITY), true);
-
-  logDefn->setNumberOfRequiredValues(0);
-  logDefn->setIsExtensible(1);
-  logDefn->setIsOptional(true);
-
-  resultdefn->addItemDefinition(outcomeDefn);
-  resultdefn->addItemDefinition(entcreDefn);
-  resultdefn->addItemDefinition(entmodDefn);
-  resultdefn->addItemDefinition(entremDefn);
-  resultdefn->addItemDefinition(cmpcreDefn);
-  resultdefn->addItemDefinition(cmpmodDefn);
-  resultdefn->addItemDefinition(cmpremDefn);
-  resultdefn->addItemDefinition(cmptssDefn);
-  resultdefn->addItemDefinition(logDefn);
-
-  if (!opList && this->inheritsOperators())
-  {
-    this->m_operatorCollection = other;
-    return;
-  }
-
-  if (opList)
-  {
-    smtk::io::Logger tmpLog;
-    smtk::io::AttributeReader rdr;
-    OperatorConstructors::const_iterator it;
-    bool ok = true;
-    for (it = opList->begin(); it != opList->end(); ++it)
-    {
-      if (it->second.first.empty())
-        continue;
-
-      ok &= !rdr.readContents(
-        this->m_operatorCollection, it->second.first.c_str(), it->second.first.size(), tmpLog);
-    }
-    if (!ok)
-    {
-      std::cerr << "Error. Log follows:\n---\n" << tmpLog.convertToString() << "\n---\n";
-    }
-  }
-
-  if (other)
-  {
-    if (this->inheritsOperators())
-    {
-      // Copy definitions that do not already exist.
-      std::vector<smtk::attribute::DefinitionPtr> tmp;
-      std::vector<smtk::attribute::DefinitionPtr>::iterator it;
-
-      DefinitionPtr otherOperator = other->findDefinition("operator");
-      other->derivedDefinitions(otherOperator, tmp);
-      for (it = tmp.begin(); it != tmp.end(); ++it)
-      {
-        if (!this->m_operatorCollection->findDefinition((*it)->type()))
-        {
-          this->m_operatorCollection->copyDefinition(*it);
-        }
-      }
-
-      DefinitionPtr otherResult = other->findDefinition("result");
-      other->derivedDefinitions(otherResult, tmp);
-      for (it = tmp.begin(); it != tmp.end(); ++it)
-      {
-        if (!this->m_operatorCollection->findDefinition((*it)->type()))
-        {
-          this->m_operatorCollection->copyDefinition(*it);
-        }
-      }
-
-      // Copy views that do not already exist
-      const std::map<std::string, smtk::view::ViewPtr>& otherViews(other->views());
-      std::map<std::string, smtk::view::ViewPtr>::const_iterator vit;
-      for (vit = otherViews.begin(); vit != otherViews.end(); ++vit)
-      {
-        if (!this->m_operatorCollection->findView(vit->first))
-        {
-          this->m_operatorCollection->addView(vit->second);
-        }
-      }
-    }
-  }
-}
-
-/**\brief Import XML describing an operator into this session's operator collection.
-  *
-  * This does not register a constructor for the operator;
-  * it is meant for exposing operators registered after this session instance
-  * has been constructed (and thus not defined by initializeOperatorCollection()),
-  * so it should only be called from within registerOperator().
-  */
-void Session::importOperatorXML(const std::string& opXML)
-{
-  if (this->m_operatorCollection && !opXML.empty())
-  {
-    smtk::io::AttributeReader rdr;
-    bool ok = true;
-    ok &= !rdr.readContents(this->m_operatorCollection, opXML.c_str(), opXML.size(), this->log());
-
-    if (!ok)
-    {
-      std::cerr << "Error. Log follows:\n---\n" << this->log().convertToString() << "\n---\n";
-    }
-  }
-}
-
-/**\brief A convenience method used by subclass findOperatorXML methods.
-  */
-std::string Session::findOperatorXMLInternal(
-  const std::string& opName, const OperatorConstructors* opList) const
-{
-  std::string xml;
-  if (!opList)
-  { // No operators registered.
-    return xml;
-  }
-  smtk::model::OperatorConstructors::const_iterator it = opList->find(opName);
-  if (it == opList->end())
-  { // No matching operator.
-    return xml;
-  }
-  return it->second.first;
-}
-
-/**\brief A convenience method used by subclass findOperatorConstructor methods.
-  */
-OperatorConstructor Session::findOperatorConstructorInternal(
-  const std::string& opName, const OperatorConstructors* opList) const
-{
-  if (!opList)
-  { // No operators registered.
-    return smtk::model::OperatorConstructor();
-  }
-  smtk::model::OperatorConstructors::const_iterator it = opList->find(opName);
-  if (it == opList->end())
-  { // No matching operator.
-    return smtk::model::OperatorConstructor();
-  }
-  return it->second.second;
-}
-
 /**\brief Subclasses may override this method to export additional state.
   *
   * Importers (e.g., LoadJSON) and exporters (e.g., SaveJSON) will
@@ -1207,6 +876,3 @@ SessionIOPtr Session::createIODelegate(const std::string& format)
 
 } // namespace model
 } // namespace smtk
-
-smtkImplementsOperatorRegistration(smtk::model::Session,
-  /* Do not inherit operators. */ false);

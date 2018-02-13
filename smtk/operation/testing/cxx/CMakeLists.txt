@@ -1,8 +1,8 @@
 set(unit_tests
-  TestAsyncOperator
-  TestAvailableOperators
-  TestMutexedOperator
-  unitNewOp
+  TestAsyncOperation
+  TestAvailableOperations
+  TestMutexedOperation
+  unitOperation
 )
 
 find_package(Threads REQUIRED)

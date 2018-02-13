@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the model "GroupAuxiliaryGeometry" Operator -->
+<!-- Description of the model "GroupAuxiliaryGeometry" Operation -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="group auxiliary geometry" BaseType="operator"
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="group auxiliary geometry" BaseType="operation"
       Label="Model Entities - Group Auxiliary Geometry">
       <AssociationsDef Name="children" NumberOfRequiredValues="0" Extensible="true">
         <MembershipMask>aux_geom</MembershipMask>

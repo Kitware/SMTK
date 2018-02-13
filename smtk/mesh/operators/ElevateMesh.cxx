@@ -220,7 +220,7 @@ ElevateMesh::Result ElevateMesh::operateInternal()
     if (!interpolation)
     {
       smtkErrorMacro(this->log(), "Could not convert auxiliary geometry.");
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
   }
   else if (inputDataItem->value() == "ptsfile")
@@ -244,7 +244,7 @@ ElevateMesh::Result ElevateMesh::operateInternal()
     if (!interpolation)
     {
       smtkErrorMacro(this->log(), "Could not read file.");
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
   }
   else if (inputDataItem->value() == "points")
@@ -286,13 +286,13 @@ ElevateMesh::Result ElevateMesh::operateInternal()
     if (!interpolation)
     {
       smtkErrorMacro(this->log(), "Could not read points.");
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
   }
   else
   {
     smtkErrorMacro(this->log(), "Unrecognized input type.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   // Construct a function that clips its input according to the input parameters
@@ -364,7 +364,7 @@ ElevateMesh::Result ElevateMesh::operateInternal()
   };
 
   // Access the attribute associated with the modified meshes
-  Result result = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
   smtk::attribute::MeshItem::Ptr modifiedMeshes = result->findMesh("mesh_modified");
   modifiedMeshes->setNumberOfValues(meshItem->numberOfValues());
 

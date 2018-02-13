@@ -25,17 +25,17 @@ source_group("Qt_Source" FILES ${srcs} ${qtui} )
 source_group("Qt_Generated" FILES ${MOC_BUILT_SOURCES} ${UI_BUILT_SOURCES})
 source_group("Qt_Header" FILES ${hdrs})
 
-add_library(smtkVXLOperatorViewsExt
+add_library(smtkVXLOperationViewsExt
   ${srcs}
   ${MOC_BUILT_SOURCES}
   ${UI_BUILT_SOURCES}
 )
 
 #we need to add the location of the moc files to the include dir for smtkVXLWidgetExt
-target_include_directories(smtkVXLOperatorViewsExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(smtkVXLOperationViewsExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
-#set smtkVXLOperatorViewsExt to publicly link to smtkCore
-target_link_libraries(smtkVXLOperatorViewsExt
+#set smtkVXLOperationViewsExt to publicly link to smtkCore
+target_link_libraries(smtkVXLOperationViewsExt
   LINK_PUBLIC
     smtkQtExt
     pqApplicationComponents
@@ -51,14 +51,14 @@ target_link_libraries(smtkVXLOperatorViewsExt
 if (SMTK_ENABLE_TESTING)
   target_link_libraries(TestBuild_smtk_extension_vxl_operators
     LINK_PUBLIC
-    smtkVXLOperatorViewsExt
+    smtkVXLOperationViewsExt
     )
 endif()
 
-smtk_export_header(smtkVXLOperatorViewsExt Exports.h)
+smtk_export_header(smtkVXLOperationViewsExt Exports.h)
 
 # Generate the ParaView plugin code for each view class
-# added to the smtkVXLOperatorViewsExt library above:
+# added to the smtkVXLOperationViewsExt library above:
 set(viewInterfaces)
 set(viewSources)
 foreach(src ${srcs})
@@ -76,18 +76,18 @@ foreach(src ${srcs})
 endforeach()
 
 add_paraview_plugin(
-  smtkVXLOperatorViewsPlugin "1.0"
+  smtkVXLOperationViewsPlugin "1.0"
   #SERVER_MANAGER_XML smconfig.xml
   GUI_INTERFACES ${viewInterfaces}
   GUI_SOURCES ${viewSources}
   CS_KITS
     vtkSMTKWidgetsExt
 )
-target_link_libraries(smtkVXLOperatorViewsPlugin
+target_link_libraries(smtkVXLOperationViewsPlugin
   LINK_PUBLIC
-    smtkVXLOperatorViewsExt
+    smtkVXLOperationViewsExt
 )
 
 #install the library and exports the library when used from a build tree
-smtk_install_library(smtkVXLOperatorViewsExt)
-smtk_install_library(smtkVXLOperatorViewsPlugin)
+smtk_install_library(smtkVXLOperationViewsExt)
+smtk_install_library(smtkVXLOperationViewsPlugin)

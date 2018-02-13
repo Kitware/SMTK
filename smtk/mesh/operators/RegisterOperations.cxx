@@ -26,15 +26,15 @@ namespace mesh
 
 void registerOperations(smtk::operation::Manager::Ptr& operationManager)
 {
-  operationManager->registerOperator<smtk::mesh::DeleteMesh>("smtk::mesh::DeleteMesh");
-  operationManager->registerOperator<smtk::mesh::ElevateMesh>("smtk::mesh::ElevateMesh");
-  operationManager->registerOperator<smtk::mesh::ExportMesh>("smtk::mesh::ExportMesh");
-  operationManager->registerOperator<smtk::mesh::GenerateHotStartData>(
+  operationManager->registerOperation<smtk::mesh::DeleteMesh>("smtk::mesh::DeleteMesh");
+  operationManager->registerOperation<smtk::mesh::ElevateMesh>("smtk::mesh::ElevateMesh");
+  operationManager->registerOperation<smtk::mesh::ExportMesh>("smtk::mesh::ExportMesh");
+  operationManager->registerOperation<smtk::mesh::GenerateHotStartData>(
     "smtk::mesh::GenerateHotStartData");
-  operationManager->registerOperator<smtk::mesh::InterpolateOntoMesh>(
+  operationManager->registerOperation<smtk::mesh::InterpolateOntoMesh>(
     "smtk::mesh::InterpolateOntoMesh");
-  operationManager->registerOperator<smtk::mesh::UndoElevateMesh>("smtk::mesh::UndoElevateMesh");
-  operationManager->registerOperator<smtk::mesh::WriteMesh>("smtk::mesh::WriteMesh");
+  operationManager->registerOperation<smtk::mesh::UndoElevateMesh>("smtk::mesh::UndoElevateMesh");
+  operationManager->registerOperation<smtk::mesh::WriteMesh>("smtk::mesh::WriteMesh");
 }
 }
 }

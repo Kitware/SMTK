@@ -15,11 +15,11 @@
 
 #include "smtk/bridge/polygon/operators/TweakEdge.h"
 
-#include "smtk/bridge/polygon/Operator.h"
+#include "smtk/bridge/polygon/Operation.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::polygon::TweakEdge > pybind11_init_smtk_bridge_polygon_TweakEdge(py::module &m, PySharedPtrClass< smtk::bridge::polygon::Operator, smtk::operation::XMLOperator >& parent)
+PySharedPtrClass< smtk::bridge::polygon::TweakEdge > pybind11_init_smtk_bridge_polygon_TweakEdge(py::module &m, PySharedPtrClass< smtk::bridge::polygon::Operation, smtk::operation::XMLOperation >& parent)
 {
   PySharedPtrClass< smtk::bridge::polygon::TweakEdge > instance(m, "TweakEdge", parent);
   instance

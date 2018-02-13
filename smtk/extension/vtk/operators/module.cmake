@@ -1,6 +1,6 @@
 set (__dependencies)
 
-vtk_module(vtkSMTKOperatorsExt
+vtk_module(vtkSMTKOperationsExt
   DEPENDS
     vtkCommonCore
   PRIVATE_DEPENDS

@@ -14,7 +14,7 @@
 #include "smtk/view/View.h"
 
 #include "smtk/operation/Manager.h"
-#include "smtk/operation/Operator.h"
+#include "smtk/operation/Operation.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
@@ -88,8 +88,8 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
     : -1;
   int operHandle = operMgr
     ? operMgr->observers().insert(
-        [this](Operator::Ptr op, operation::EventType event, Operator::Result res) {
-          this->handleOperatorEvent(op, event, res);
+        [this](Operation::Ptr op, operation::EventType event, Operation::Result res) {
+          this->handleOperationEvent(op, event, res);
           return 0;
         })
     : -1;
@@ -197,8 +197,8 @@ void PhraseModel::handleResourceEvent(Resource::Ptr rsrc, smtk::resource::Event 
             << " rsrc " << rsrc << " " << rsrc->location() << "\n";
 }
 
-int PhraseModel::handleOperatorEvent(
-  Operator::Ptr op, operation::EventType event, Operator::Result res)
+int PhraseModel::handleOperationEvent(
+  Operation::Ptr op, operation::EventType event, Operation::Result res)
 {
   /*
   std::cout << "      phrase op "
@@ -226,14 +226,14 @@ int PhraseModel::handleOperatorEvent(
   return 0;
 }
 
-void PhraseModel::handleExpunged(Operator::Ptr op, Operator::Result res, ComponentItemPtr data)
+void PhraseModel::handleExpunged(Operation::Ptr op, Operation::Result res, ComponentItemPtr data)
 {
   (void)op;
   (void)res;
   (void)data;
 }
 
-void PhraseModel::handleModified(Operator::Ptr op, Operator::Result res, ComponentItemPtr data)
+void PhraseModel::handleModified(Operation::Ptr op, Operation::Result res, ComponentItemPtr data)
 {
   (void)op;
   (void)res;
@@ -258,7 +258,7 @@ void PhraseModel::handleModified(Operator::Ptr op, Operator::Result res, Compone
   }
 }
 
-void PhraseModel::handleCreated(Operator::Ptr op, Operator::Result res, ComponentItemPtr data)
+void PhraseModel::handleCreated(Operation::Ptr op, Operation::Result res, ComponentItemPtr data)
 {
   (void)op;
   (void)res;

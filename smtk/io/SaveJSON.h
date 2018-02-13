@@ -118,11 +118,11 @@ public:
   static int forManagerSessionPartial(const smtk::common::UUID& sessionId,
     const common::UUIDs& modelIds, cJSON*, smtk::model::ManagerPtr modelMgrId,
     bool writeNativeModels = false, const std::string& referencePath = std::string());
-  //static int forModelOperators(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
-  static int forOperatorDefinitions(smtk::attribute::CollectionPtr opSys, cJSON*);
-  static int forOperator(smtk::model::OperatorSpecification op, cJSON*);
-  static int forOperator(smtk::model::OperatorPtr op, cJSON*);
-  static int forOperatorResult(smtk::model::OperatorResult res, cJSON*);
+  //static int forModelOperations(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
+  // static int forOperationDefinitions(smtk::attribute::CollectionPtr opSys, cJSON*);
+  // static int forOperation(smtk::operation::OperationSpecification op, cJSON*);
+  // static int forOperation(smtk::operation::OperationPtr op, cJSON*);
+  // static int forOperationResult(Result res, cJSON*);
   static int forDanglingEntities(
     const smtk::common::UUID& sessionId, cJSON* node, smtk::model::ManagerPtr modelMgr);
 

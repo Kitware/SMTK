@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the CGM "CreateBody" Operator -->
+<!-- Description of the CGM "CreateBody" Operation -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
-    <!-- Operator -->
-    <AttDef Type="create body" BaseType="operator">
+    <!-- Operation -->
+    <AttDef Type="create body" BaseType="operation">
       <AssociationsDef Name="free cells" NumberOfRequiredValues="1" Extensible="true">
         <BriefDescription>One or more pre-existing model cells that are not bounding higher-dimensional cells.</BriefDescription>
         <MembershipMask>cell</MembershipMask>

@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::cgm::Rotate > pybind11_init_smtk_bridge_cgm_Rotate(py::module &m, PySharedPtrClass< smtk::bridge::cgm::Operator, smtk::model::Operator >& parent)
+PySharedPtrClass< smtk::bridge::cgm::Rotate > pybind11_init_smtk_bridge_cgm_Rotate(py::module &m, PySharedPtrClass< smtk::bridge::cgm::Operation, smtk::operation::Operation >& parent)
 {
   PySharedPtrClass< smtk::bridge::cgm::Rotate > instance(m, "Rotate", parent);
   instance

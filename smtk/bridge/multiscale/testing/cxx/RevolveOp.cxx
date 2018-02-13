@@ -21,7 +21,7 @@
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/bridge/mesh/RegisterSession.h"
-#include "smtk/bridge/mesh/operators/ImportOperator.h"
+#include "smtk/bridge/mesh/operators/ImportOperation.h"
 #include "smtk/bridge/multiscale/RegisterSession.h"
 #include "smtk/bridge/multiscale/Session.h"
 #include "smtk/bridge/multiscale/operators/Revolve.h"
@@ -38,7 +38,6 @@
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/SimpleModelSubphrases.h"
 #include "smtk/model/Tessellation.h"
 
@@ -86,8 +85,8 @@ int RevolveOp(int argc, char* argv[])
   operationManager->registerResourceManager(resourceManager);
 
   // Create an import operator
-  smtk::operation::NewOp::Ptr importOp =
-    operationManager->create<smtk::bridge::mesh::ImportOperator>();
+  smtk::operation::Operation::Ptr importOp =
+    operationManager->create<smtk::bridge::mesh::ImportOperation>();
   if (!importOp)
   {
     std::cerr << "No import operator\n";
@@ -99,10 +98,10 @@ int RevolveOp(int argc, char* argv[])
 
   importOp->parameters()->findFile("filename")->setValue(importFilePath);
 
-  smtk::operation::NewOp::Result importOpResult = importOp->operate();
+  smtk::operation::Operation::Result importOpResult = importOp->operate();
 
   if (importOpResult->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "Import operator failed\n";
     return 1;
@@ -117,7 +116,7 @@ int RevolveOp(int argc, char* argv[])
   smtk::model::Entity::Ptr model =
     std::dynamic_pointer_cast<smtk::model::Entity>(componentItem->value());
 
-  smtk::operation::NewOp::Ptr revolveOp =
+  smtk::operation::Operation::Ptr revolveOp =
     operationManager->create<smtk::bridge::multiscale::Revolve>();
   if (!revolveOp)
   {
@@ -135,9 +134,9 @@ int RevolveOp(int argc, char* argv[])
   revolveOp->parameters()->findDouble("axis-position")->setValue(1, 0.);
   revolveOp->parameters()->findDouble("axis-position")->setValue(2, 0.);
 
-  smtk::operation::NewOp::Result revolveOpResult = revolveOp->operate();
+  smtk::operation::Operation::Result revolveOpResult = revolveOp->operate();
   if (revolveOpResult->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "Revolve operator failed\n";
     return 1;

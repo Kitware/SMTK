@@ -79,7 +79,6 @@ protected:
   bool UseRelativeLineLength;
   QDoubleValidator* ContourValidator;
   QProgressDialog* Progress;
-  smtk::weak_ptr<smtk::model::Operator> m_edgeOp;
 };
 
 //need a sublcass validator, since QDoubleValidator is really shitty

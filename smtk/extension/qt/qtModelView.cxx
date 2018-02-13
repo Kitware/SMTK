@@ -24,7 +24,6 @@
 #include "smtk/model/SessionRef.h"
 #include "smtk/model/StringData.h"
 
-#include "smtk/model/Operator.h"
 #include "smtk/model/SessionRef.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -39,7 +38,7 @@
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtModelPanel.h"
-#include "smtk/extension/qt/qtOperatorDockWidget.h"
+#include "smtk/extension/qt/qtOperationDockWidget.h"
 #include "smtk/extension/qt/qtSMTKUtilities.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
@@ -89,8 +88,8 @@ qtModelView::qtModelView(QWidget* p)
   //                   SIGNAL(customContextMenuRequested(const QPoint &)),
   //                   this, SLOT(showContextMenu(const QPoint &)));
   this->m_ContextMenu = NULL;
-  this->m_OperatorsDock = NULL;
-  this->m_OperatorsWidget = NULL;
+  this->m_OperationsDock = NULL;
+  this->m_OperationsWidget = NULL;
 
   this->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
@@ -102,9 +101,9 @@ qtModelView::qtModelView(QWidget* p)
 qtModelView::~qtModelView()
 {
   // Explicitly delete dock widget if not parented
-  if (this->m_OperatorsDock && !m_OperatorsDock->parent())
+  if (this->m_OperationsDock && !m_OperationsDock->parent())
   {
-    delete this->m_OperatorsDock;
+    delete this->m_OperationsDock;
   }
 }
 
@@ -179,7 +178,7 @@ void qtModelView::showContextMenu(const QModelIndex& idx, const QPoint& p)
   else
   {
     this->m_ContextMenu = new QMenu(this);
-    this->m_ContextMenu->setTitle("Operators Menu");
+    this->m_ContextMenu->setTitle("Operations Menu");
   }
 
   smtk::model::SessionRef brSession;
@@ -195,24 +194,25 @@ void qtModelView::showContextMenu(const QModelIndex& idx, const QPoint& p)
   std::string sessionString = brSession.entity().toString();
   // Have we already processed this session previously? Have the number of
   // operators changed?
-  auto sinfoIt = this->m_sessionInfo.find(sessionString);
-  if (sinfoIt == this->m_sessionInfo.end() ||
-    (*sinfoIt).first.size() != brSession.session()->numberOfOperators(false))
-  {
-    // This is the first time seeing this session
-    // First we need to get the mapping between operator labels and their names
-    std::map<std::string, std::string> opLabelsMap = brSession.session()->operatorLabelsMap(false);
-    // Next lets get the list of labels so we can sort them
-    std::vector<std::string> keyList;
-    for (auto imap : opLabelsMap)
-    {
-      keyList.push_back(imap.first);
-    }
-    std::sort(keyList.begin(), keyList.end());
-    this->m_sessionInfo[sessionString] =
-      std::pair<std::vector<std::string>, std::map<std::string, std::string> >(
-        keyList, opLabelsMap);
-  }
+  // auto sinfoIt = this->m_sessionInfo.find(sessionString);
+  // TODO: Sessions on longer have information about operators
+  // if (sinfoIt == this->m_sessionInfo.end() ||
+  //   (*sinfoIt).first.size() != brSession.session()->numberOfOperations(false))
+  // {
+  //   // This is the first time seeing this session
+  //   // First we need to get the mapping between operator labels and their names
+  //   std::map<std::string, std::string> opLabelsMap = brSession.session()->operatorLabelsMap(false);
+  //   // Next lets get the list of labels so we can sort them
+  //   std::vector<std::string> keyList;
+  //   for (auto imap : opLabelsMap)
+  //   {
+  //     keyList.push_back(imap.first);
+  //   }
+  //   std::sort(keyList.begin(), keyList.end());
+  //   this->m_sessionInfo[sessionString] =
+  //     std::pair<std::vector<std::string>, std::map<std::string, std::string> >(
+  //       keyList, opLabelsMap);
+  // }
   auto sinfo = this->m_sessionInfo[sessionString];
   // Compare the current model with active model. If true, show related
   // operators. If not, only show `set as active model`.
@@ -262,23 +262,23 @@ void qtModelView::operatorInvoked()
 {
 }
 
-qtOperatorDockWidget* qtModelView::operatorsDock()
+qtOperationDockWidget* qtModelView::operatorsDock()
 {
-  if (this->m_OperatorsDock && this->m_OperatorsWidget)
+  if (this->m_OperationsDock && this->m_OperationsWidget)
   {
-    return this->m_OperatorsDock;
+    return this->m_OperationsDock;
   }
 
   qtModelOperationWidget* opWidget = new qtModelOperationWidget();
   opWidget->setModelView(this);
-  QObject::connect(opWidget, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)), this,
-    SIGNAL(operationRequested(const smtk::model::OperatorPtr&)));
-  QObject::connect(opWidget, SIGNAL(operationCancelled(const smtk::model::OperatorPtr&)), this,
-    SIGNAL(operationCancelled(const smtk::model::OperatorPtr&)));
+  QObject::connect(opWidget, SIGNAL(operationRequested(const smtk::operation::OperationPtr&)), this,
+    SIGNAL(operationRequested(const smtk::operation::OperationPtr&)));
+  QObject::connect(opWidget, SIGNAL(operationCancelled(const smtk::operation::OperationPtr&)), this,
+    SIGNAL(operationCancelled(const smtk::operation::OperationPtr&)));
   QObject::connect(opWidget, SIGNAL(fileItemCreated(smtk::extension::qtFileItem*)), this,
     SIGNAL(fileItemCreated(smtk::extension::qtFileItem*)));
-  QObject::connect(this, SIGNAL(operationFinished(const smtk::model::OperatorResult&)), opWidget,
-    SIGNAL(operationFinished(const smtk::model::OperatorResult&)));
+  QObject::connect(this, SIGNAL(operationFinished(const smtk::operation::OperationResult&)),
+    opWidget, SIGNAL(operationFinished(const smtk::operation::OperationResult&)));
 
   QWidget* dockP = NULL;
   foreach (QWidget* widget, QApplication::topLevelWidgets())
@@ -290,7 +290,7 @@ qtOperatorDockWidget* qtModelView::operatorsDock()
     }
   }
 
-  qtOperatorDockWidget* dw = new qtOperatorDockWidget(dockP);
+  qtOperationDockWidget* dw = new qtOperationDockWidget(dockP);
   QScrollArea* s = new QScrollArea(dw);
   s->setWidgetResizable(true);
   s->setFrameShape(QFrame::NoFrame);
@@ -302,43 +302,43 @@ qtOperatorDockWidget* qtModelView::operatorsDock()
 
   QObject::connect(dw, SIGNAL(closing()), this, SLOT(onOperationPanelClosing()));
 
-  this->m_OperatorsWidget = opWidget;
-  this->m_OperatorsDock = dw;
+  this->m_OperationsWidget = opWidget;
+  this->m_OperationsDock = dw;
   QObject::connect(&qtActiveObjects::instance(), SIGNAL(activeModelChanged()),
-    this->m_OperatorsDock, SLOT(reset()), Qt::UniqueConnection);
-  //  this->m_OperatorsDock->hide();
+    this->m_OperationsDock, SLOT(reset()), Qt::UniqueConnection);
+  //  this->m_OperationsDock->hide();
   return dw;
 }
 
 qtModelOperationWidget* qtModelView::operatorsWidget()
 {
-  if (!this->m_OperatorsWidget)
+  if (!this->m_OperationsWidget)
   {
     this->operatorsDock();
   }
-  return this->m_OperatorsWidget;
+  return this->m_OperationsWidget;
 }
 
-void qtModelView::initOperatorsDock(const std::string& opName, smtk::model::SessionPtr session)
+void qtModelView::initOperationsDock(const std::string& opName, smtk::model::SessionPtr session)
 {
   // make sure the operator widget is created.
   this->operatorsDock()->raise();
   this->operatorsDock()->show();
   SessionRef bs(session->manager(), session->sessionId());
 
-  this->m_OperatorsWidget->setCurrentOperator(opName, session);
-  this->m_OperatorsDock->setWindowTitle(bs.flagSummary().c_str());
+  this->m_OperationsWidget->setCurrentOperation(opName, session);
+  this->m_OperationsDock->setWindowTitle(bs.flagSummary().c_str());
 
-  if (QScrollArea* scrollArea = qobject_cast<QScrollArea*>(this->m_OperatorsDock->widget()))
+  if (QScrollArea* scrollArea = qobject_cast<QScrollArea*>(this->m_OperationsDock->widget()))
   {
-    scrollArea->ensureWidgetVisible(this->m_OperatorsWidget);
+    scrollArea->ensureWidgetVisible(this->m_OperationsWidget);
   }
   // sizeHint() alone doesn't work, so force resize
-  this->m_OperatorsDock->resize(this->m_OperatorsWidget->sizeHint());
-  this->m_OperatorsDock->updateGeometry();
+  this->m_OperationsDock->resize(this->m_OperationsWidget->sizeHint());
+  this->m_OperationsDock->updateGeometry();
 }
 
-bool qtModelView::requestOperation(const smtk::model::OperatorPtr& brOp, bool launchUI)
+bool qtModelView::requestOperation(const smtk::operation::OperationPtr& brOp, bool launchUI)
 {
   if (!brOp)
   {
@@ -349,29 +349,31 @@ bool qtModelView::requestOperation(const smtk::model::OperatorPtr& brOp, bool la
   {
     emit this->operationRequested(brOp);
   }
-  else // launch the m_OperatorsDock
+  else // launch the m_OperationsDock
   {
     this->operatorsDock()->show();
-    SessionRef bs(brOp->manager(), brOp->session()->sessionId());
+    // TODO: operators no longer have access to this information
+    // SessionRef bs(brOp->manager(), brOp->session()->sessionId());
 
-    this->m_OperatorsWidget->initOperatorUI(brOp);
-    this->m_OperatorsDock->setWindowTitle(bs.flagSummary().c_str());
+    this->m_OperationsWidget->initOperationUI(brOp);
+    // TODO: operators no longer have access to this information
+    // this->m_OperationsDock->setWindowTitle(bs.flagSummary().c_str());
 
-    if (QScrollArea* scrollArea = qobject_cast<QScrollArea*>(this->m_OperatorsDock->widget()))
+    if (QScrollArea* scrollArea = qobject_cast<QScrollArea*>(this->m_OperationsDock->widget()))
     {
-      scrollArea->ensureWidgetVisible(this->m_OperatorsWidget);
+      scrollArea->ensureWidgetVisible(this->m_OperationsWidget);
     }
     // sizeHint() alone doesn't work, so force resize
-    this->m_OperatorsDock->resize(this->m_OperatorsWidget->sizeHint());
-    this->m_OperatorsDock->updateGeometry();
+    this->m_OperationsDock->resize(this->m_OperationsWidget->sizeHint());
+    this->m_OperationsDock->updateGeometry();
   }
   return true;
   //  cJSON* json = cJSON_CreateObject();
-  //  SaveJSON::forOperator(brOp, json);
+  //  SaveJSON::forOperation(brOp, json);
   //  std::cout << "Found operator " << cJSON_Print(json) << ")\n";
-  //  OperatorResult result = brOp->operate();
+  //  OperationResult result = brOp->operate();
   //  json = cJSON_CreateObject();
-  //  SaveJSON::forOperatorResult(result, json);
+  //  SaveJSON::forOperationResult(result, json);
   //  std::cout << "Result " << cJSON_Print(json) << "\n";
 
   //  emit this->operationRequested(uid, action->text());
@@ -399,13 +401,13 @@ bool qtModelView::requestOperation(const std::string&, const smtk::common::UUID&
 //   return false;
 // }
 
-// OperatorPtr qtModelView::getOp(const QModelIndex& idx, const std::string& opname)
+// OperationPtr qtModelView::getOp(const QModelIndex& idx, const std::string& opname)
 // {
 //   smtk::model::SessionRef sref = this->owningEntityAs<smtk::model::SessionRef>(idx);
 //   if (!sref.isValid())
 //   {
 //     std::cerr << "Could not find session!\n";
-//     return OperatorPtr();
+//     return OperationPtr();
 //   }
 
 //   if (!this->hasSessionOp(sref, opname))
@@ -413,29 +415,29 @@ bool qtModelView::requestOperation(const std::string&, const smtk::common::UUID&
 //     std::cout << "The requested operator: \"" << opname << "\" for session"
 //               << " \"" << (sref.session() ? sref.session()->name() : "(invalid)") << "\""
 //               << " is not part of session operators.\n";
-//     return OperatorPtr();
+//     return OperationPtr();
 //   }
 
 //   smtk::model::SessionPtr session = sref.session();
 //   return this->getOp(session, opname);
 // }
 
-// OperatorPtr qtModelView::getOp(const smtk::model::SessionPtr& brSession, const std::string& opname)
+// OperationPtr qtModelView::getOp(const smtk::model::SessionPtr& brSession, const std::string& opname)
 // {
-//   OperatorPtr brOp;
+//   OperationPtr brOp;
 //   if (!brSession || !(brOp = brSession->op(opname)))
 //   {
 //     std::cerr << "Could not create operator: \"" << opname << "\" for session"
 //               << " \"" << (brSession ? brSession->name() : "(null)") << "\""
 //               << " (" << (brSession ? brSession->sessionId().toString() : "--") << ")\n";
-//     return OperatorPtr();
+//     return OperationPtr();
 //   }
 
 //   smtk::attribute::AttributePtr attrib = brOp->specification();
 //   if (!attrib)
 //   {
 //     std::cerr << "Invalid spec for the op: " << brOp->name() << "\n";
-//     return OperatorPtr();
+//     return OperationPtr();
 //   }
 
 //   attrib->collection()->setRefModelManager(brSession->manager());
@@ -448,7 +450,7 @@ void qtModelView::toggleEntityVisibility(const QModelIndex& /*idx*/)
 }
 
 bool qtModelView::setEntityVisibility(const smtk::model::EntityRefs& /*selentityrefs*/,
-  const smtk::mesh::MeshSets& /*selmeshes*/, int /*vis*/, OperatorPtr /*brOp*/)
+  const smtk::mesh::MeshSets& /*selmeshes*/, int /*vis*/, smtk::operation::OperationPtr /*brOp*/)
 {
   return false;
 }
@@ -464,9 +466,9 @@ QColor internal_convertColor(const FloatList& rgba)
 
 void qtModelView::onEntitiesExpunged(const smtk::model::EntityRefs& expungedEnts)
 {
-  if (!this->m_OperatorsWidget)
+  if (!this->m_OperationsWidget)
     return;
-  this->m_OperatorsWidget->expungeEntities(expungedEnts);
+  this->m_OperationsWidget->expungeEntities(expungedEnts);
 }
 
 std::string qtModelView::determineAction(const QPoint&) const
@@ -477,23 +479,23 @@ std::string qtModelView::determineAction(const QPoint&) const
 void qtModelView::onOperationPanelClosing()
 {
   // If the operation panel is closing, cancel current operation
-  if (this->m_OperatorsWidget)
+  if (this->m_OperationsWidget)
   {
-    this->m_OperatorsWidget->cancelCurrentOperator();
+    this->m_OperationsWidget->cancelCurrentOperation();
   }
 }
 
 bool qtModelView::showPreviousOpOrHide(bool alwaysHide)
 {
-  if (this->m_OperatorsWidget)
+  if (this->m_OperationsWidget)
   {
-    if (this->m_OperatorsWidget->showPreviousOp() && !alwaysHide)
+    if (this->m_OperationsWidget->showPreviousOp() && !alwaysHide)
     {
       return true;
     }
-    if (this->m_OperatorsDock)
+    if (this->m_OperationsDock)
     {
-      this->m_OperatorsDock->hide();
+      this->m_OperationsDock->hide();
     }
   }
   return false; // false implies the widget is hidden

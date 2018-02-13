@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the CGM "CreateCylinder" Operator -->
+<!-- Description of the CGM "CreateCylinder" Operation -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
-    <!-- Operator -->
-    <AttDef Type="create cylinder" BaseType="operator">
+    <!-- Operation -->
+    <AttDef Type="create cylinder" BaseType="operation">
       <ItemDefinitions>
         <Double Name="height" NumberOfRequiredValues="1">
           <DefaultValue>1.0</DefaultValue>

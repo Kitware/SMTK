@@ -25,7 +25,6 @@
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/RegisterOperations.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/operators/AddAuxiliaryGeometry.h"
@@ -94,9 +93,9 @@ int main(int argc, char* argv[])
 
   std::cout << "Importing " << argv[1] << "\n";
 
-  smtk::operation::NewOp::Result loadOpResult = loadOp->operate();
+  smtk::operation::Operation::Result loadOpResult = loadOp->operate();
   test(loadOpResult->findInt("outcome")->value() ==
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Load operator failed");
 
   smtk::bridge::polygon::Resource::Ptr manager =
@@ -147,9 +146,9 @@ int main(int argc, char* argv[])
   test(result == 1);
 
   // it's designed to fail.
-  smtk::model::OperatorResult deleteOpResult = deleteOp->operate();
+  smtk::bridge::polygon::Delete::Result deleteOpResult = deleteOp->operate();
   if (deleteOpResult->findInt("outcome")->value() ==
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "Delete operator should not succeed!\n";
     return 1;

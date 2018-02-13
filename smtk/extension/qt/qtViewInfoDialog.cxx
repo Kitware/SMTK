@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME qtViewInfoDialog - A Information Dialog for SMTK Operators
+// .NAME qtViewInfoDialog - A Information Dialog for SMTK Operations
 // .SECTION Description
 // .SECTION Caveats
 

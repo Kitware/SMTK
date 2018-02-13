@@ -3,22 +3,22 @@ find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
 find_package( VTK REQUIRED )
 include_directories(${VTK_INCLUDE_DIRS})
 
-set(OpenCVOperatorsHeaders imageFeatureExtractorWidget.h)
-set(OpenCVOperatorsSrcs imageFeatureExtractorWidget.cxx)
-set(OpenCVOperatorsUI imageFeatureExtractor.ui)
+set(OpenCVOperationsHeaders imageFeatureExtractorWidget.h)
+set(OpenCVOperationsSrcs imageFeatureExtractorWidget.cxx)
+set(OpenCVOperationsUI imageFeatureExtractor.ui)
 
 #install the headers
-smtk_public_headers(${OpenCVOperatorsHeaders})
+smtk_public_headers(${OpenCVOperationsHeaders})
 
-qt5_wrap_cpp(MOC_BUILT_SOURCES ${OpenCVOperatorsHeaders})
-qt5_wrap_ui(UI_BUILT_SOURCES ${OpenCVOperatorsUI})
+qt5_wrap_cpp(MOC_BUILT_SOURCES ${OpenCVOperationsHeaders})
+qt5_wrap_ui(UI_BUILT_SOURCES ${OpenCVOperationsUI})
 
-source_group("Qt_Source" FILES ${OpenCVOperatorsSrcs} ${OpenCVOperatorsUI})
+source_group("Qt_Source" FILES ${OpenCVOperationsSrcs} ${OpenCVOperationsUI})
 source_group("Qt_Generated" FILES ${MOC_BUILT_SOURCES} ${UI_BUILT_SOURCES} ${RCS_RESOURCES})
-source_group("Qt_Header" FILES ${OpenCVOperatorsMocHeaders})
+source_group("Qt_Header" FILES ${OpenCVOperationsMocHeaders})
 
 add_library(smtkOpenCVQtExt
-  ${OpenCVOperatorsSrcs}
+  ${OpenCVOperationsSrcs}
   ${MOC_BUILT_SOURCES}
   ${UI_BUILT_SOURCES}
   ${RCS_RESOURCES}
@@ -30,7 +30,7 @@ target_link_libraries(smtkOpenCVQtExt LINK_PUBLIC
   pqApplicationComponents
   smtkCore
   smtkPQWidgetsExt
-  vtkPolygonOperatorsExt
+  vtkPolygonOperationsExt
   vtkSMTKSourceExt
   vtkDomainsChemistryOpenGL2
   vtkSMTKFilterExt

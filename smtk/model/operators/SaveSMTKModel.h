@@ -10,7 +10,7 @@
 #ifndef smtk_model_operators_SaveSMTKModel_h
 #define smtk_model_operators_SaveSMTKModel_h
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace smtk
 {
@@ -18,12 +18,12 @@ namespace model
 {
 
 /// An operator that uses resource metadata to write resources.
-class SMTKCORE_EXPORT SaveSMTKModel : public smtk::operation::XMLOperator
+class SMTKCORE_EXPORT SaveSMTKModel : public smtk::operation::XMLOperation
 {
 public:
   smtkTypeMacro(SaveSMTKModel);
-  smtkSharedPtrCreateMacro(smtk::operation::NewOp);
-  smtkSuperclassMacro(smtk::operation::XMLOperator);
+  smtkSharedPtrCreateMacro(smtk::operation::Operation);
+  smtkSuperclassMacro(smtk::operation::XMLOperation);
 
 protected:
   SaveSMTKModel();

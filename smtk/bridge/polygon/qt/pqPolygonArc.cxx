@@ -18,7 +18,7 @@
 #include "smtk/model/Edge.h"
 #include "smtk/model/IntegerData.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
+#include "smtk/operation/Operation.h"
 
 #include "pqActiveObjects.h"
 #include "pqApplicationCore.h"
@@ -68,24 +68,24 @@ pqPolygonArc::~pqPolygonArc()
   }
 }
 
-void pqPolygonArc::setEdgeOperator(smtk::model::OperatorPtr edgeOp)
+void pqPolygonArc::setEdgeOperation(smtk::operation::OperationPtr edgeOp)
 {
   this->m_edgeOp = edgeOp;
 }
-smtk::shared_ptr<smtk::model::Operator> pqPolygonArc::edgeOperator()
+smtk::shared_ptr<smtk::operation::Operation> pqPolygonArc::edgeOperation()
 {
   return this->m_edgeOp.lock();
 }
 
-inline vtkSMProxy* internal_createVTKEdgeOperator(vtkSMNewWidgetRepresentationProxy* widgetProxy)
+inline vtkSMProxy* internal_createVTKEdgeOperation(vtkSMNewWidgetRepresentationProxy* widgetProxy)
 {
   vtkSMProxy* smPolyEdgeOp =
-    vtkSMProxyManager::GetProxyManager()->NewProxy("polygon_operators", "PolygonArcOperator");
+    vtkSMProxyManager::GetProxyManager()->NewProxy("polygon_operators", "PolygonArcOperation");
   if (!smPolyEdgeOp)
     return NULL;
   smPolyEdgeOp->UpdateVTKObjects();
 
-  // create the vtkPolygonArcOperator proxy, and set its ArcRepresentation with
+  // create the vtkPolygonArcOperation proxy, and set its ArcRepresentation with
   // the coutour representation.
   vtkSMProxy* repProxy = widgetProxy->GetRepresentationProxy();
   repProxy->UpdateVTKObjects();
@@ -98,15 +98,15 @@ inline vtkSMProxy* internal_createVTKEdgeOperator(vtkSMNewWidgetRepresentationPr
 
 vtkSMProxy* pqPolygonArc::prepareOperation(vtkSMNewWidgetRepresentationProxy* widgetProxy)
 {
-  if (!widgetProxy || !this->edgeOperator())
+  if (!widgetProxy || !this->edgeOperation())
     return NULL;
-  smtk::attribute::AttributePtr spec = this->edgeOperator()->specification();
+  smtk::attribute::AttributePtr spec = this->edgeOperation()->parameters();
   if (spec->type() != "tweak edge" && spec->type() != "create edge")
     return NULL;
   smtk::attribute::IntItem::Ptr opProxyIdItem = spec->findInt("HelperGlobalID");
   if (!opProxyIdItem)
     return NULL;
-  vtkSMProxy* smPolyEdgeOp = internal_createVTKEdgeOperator(widgetProxy);
+  vtkSMProxy* smPolyEdgeOp = internal_createVTKEdgeOperation(widgetProxy);
   if (!smPolyEdgeOp)
     return NULL;
   // Now set the GlobalId of smPolyEdgeOp proxy to the edge op, and later
@@ -121,7 +121,7 @@ bool pqPolygonArc::createEdge(vtkSMNewWidgetRepresentationProxy* widgetProxy)
   vtkSMProxy* smPolyEdgeOp = this->prepareOperation(widgetProxy);
   if (!smPolyEdgeOp)
     return false;
-  emit this->operationRequested(this->edgeOperator());
+  emit this->operationRequested(this->edgeOperation());
   smPolyEdgeOp->Delete();
   return true;
 }
@@ -135,19 +135,20 @@ bool pqPolygonArc::editEdge(
     return false;
   }
 
-  smtk::attribute::AttributePtr opSpec = this->edgeOperator()->specification();
-  smtk::model::Edge edge(this->edgeOperator()->manager(), edgeId);
-  if (!edge.isValid())
-  {
-    return false;
-  }
-  if (!opSpec->isEntityAssociated(edge))
-  {
-    opSpec->removeAllAssociations();
-    opSpec->associateEntity(edge);
-  }
+  smtk::attribute::AttributePtr opSpec = this->edgeOperation()->parameters();
+  // TODO: cannot access the manager through the operator (unless its a parameter...)
+  // smtk::model::Edge edge(this->edgeOperation()->manager(), edgeId);
+  // if (!edge.isValid())
+  // {
+  //   return false;
+  // }
+  // if (!opSpec->isEntityAssociated(edge))
+  // {
+  //   opSpec->removeAllAssociations();
+  //   opSpec->associateEntity(edge);
+  // }
 
-  emit this->operationRequested(this->edgeOperator());
+  // emit this->operationRequested(this->edgeOperation());
   smPolyEdgeOp->Delete();
   return true;
 }
@@ -174,7 +175,7 @@ bool pqPolygonArc::updateArc(
     }
 
   //call the update arc operator
-  vtkNew<vtkCMBArcUpdateAndSplitClientOperator> updateAndSplitOp;
+  vtkNew<vtkCMBArcUpdateAndSplitClientOperation> updateAndSplitOp;
   bool valid = updateAndSplitOp->Operate(this->ArcId,widget);
   if (!valid)
     {
@@ -200,7 +201,7 @@ vtkIdType pqPolygonArc::autoConnect(const vtkIdType& secondArcId)
 {
   (void)secondArcId;
   /*
-  vtkNew<vtkCMBArcAutoConnectClientOperator> autoConnectOp;
+  vtkNew<vtkCMBArcAutoConnectClientOperation> autoConnectOp;
   bool valid = autoConnectOp->Operate(this->ArcId,secondArcId);
   if(valid)
     {
@@ -242,9 +243,9 @@ void pqPolygonArc::resetOperationSource()
   this->m_currentModelId = smtk::common::UUID::null();
   // the Source should always reference to the source for the referenced model,
   // which should be activated by emitting activateModel()
-  if (this->m_edgeOp.lock() && this->m_edgeOp.lock()->specification())
+  if (this->m_edgeOp.lock() && this->m_edgeOp.lock()->parameters())
   {
-    smtk::model::EntityRef entref = this->m_edgeOp.lock()->specification()->associations()->value();
+    smtk::model::EntityRef entref = this->m_edgeOp.lock()->parameters()->associations()->value();
     if (!entref.isValid())
     {
       return;
@@ -295,10 +296,10 @@ void pqPolygonArc::setSource(pqPipelineSource* modelSource)
 
 int pqPolygonArc::getAssignedEdgeBlock() const
 {
-  if (this->m_edgeOp.lock() && this->m_edgeOp.lock()->specification())
+  if (this->m_edgeOp.lock() && this->m_edgeOp.lock()->parameters())
   {
     // for Destroy and Modify operation, we need edge is set
-    smtk::model::EntityRef entref = this->m_edgeOp.lock()->specification()->associations()->value();
+    smtk::model::EntityRef entref = this->m_edgeOp.lock()->parameters()->associations()->value();
     smtk::model::Edge edge;
     if (entref.isModel()) // "create edge"
     {
@@ -420,7 +421,7 @@ void pqPolygonArc::setMarkedForDeletion()
     return;
   }
   /*
-  vtkNew<vtkCMBArcDeleteClientOperator> undoOp;
+  vtkNew<vtkCMBArcDeleteClientOperation> undoOp;
   undoOp->SetMarkedForDeletion(this->ArcId);
 
   this->Superclass::setMarkedForDeletion();
@@ -434,7 +435,7 @@ void pqPolygonArc::unsetMarkedForDeletion()
     return;
   }
   /*
-  vtkNew<vtkCMBArcDeleteClientOperator> undoOp;
+  vtkNew<vtkCMBArcDeleteClientOperation> undoOp;
   undoOp->SetUnMarkedForDeletion(this->ArcId);
 
   this->Superclass::unsetMarkedForDeletion();

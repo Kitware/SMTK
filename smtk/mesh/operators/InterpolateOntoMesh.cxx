@@ -232,7 +232,7 @@ InterpolateOntoMesh::Result InterpolateOntoMesh::operateInternal()
     if (!interpolation)
     {
       smtkErrorMacro(this->log(), "Could not convert auxiliary geometry.");
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
   }
   else if (inputDataItem->value() == "ptsfile")
@@ -256,7 +256,7 @@ InterpolateOntoMesh::Result InterpolateOntoMesh::operateInternal()
     if (!interpolation)
     {
       smtkErrorMacro(this->log(), "Could not read file.");
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
   }
   else if (inputDataItem->value() == "points")
@@ -298,13 +298,13 @@ InterpolateOntoMesh::Result InterpolateOntoMesh::operateInternal()
     if (!interpolation)
     {
       smtkErrorMacro(this->log(), "Could not read points.");
-      return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
   }
   else
   {
     smtkErrorMacro(this->log(), "Unrecognized input type.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   // Construct a function that clips its input according to the input parameters
@@ -363,8 +363,7 @@ InterpolateOntoMesh::Result InterpolateOntoMesh::operateInternal()
   }
 
   // Access the attribute associated with the modified meshes
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+  Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
   smtk::attribute::MeshItem::Ptr modifiedMeshes = result->findMesh("mesh_modified");
   modifiedMeshes->setNumberOfValues(meshItem->numberOfValues());
 

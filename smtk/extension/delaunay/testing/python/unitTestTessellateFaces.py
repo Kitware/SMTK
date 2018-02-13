@@ -48,7 +48,7 @@ class UnitTessellateFaces(smtk.testing.TestCase):
             smtk.testing.DATA_DIR, 'mesh', '2d', 'boxWithHole.smtk')
 
         # Load the input file
-        loadOp = self.operationManager.createOperator(
+        loadOp = self.operationManager.createOperation(
             'smtk::operation::LoadResource')
         loadOp.parameters().find('filename').setValue(modelFile)
         loadRes = loadOp.operate()
@@ -59,7 +59,7 @@ class UnitTessellateFaces(smtk.testing.TestCase):
 
     def testMeshing2D(self):
         face = self.resource.findEntitiesOfType(int(smtk.model.FACE))[0]
-        tessellateFace = self.operationManager.createOperator(
+        tessellateFace = self.operationManager.createOperation(
             'smtk::extension::delaunay::TessellateFaces')
         tessellateFace.parameters().associateEntity(face)
         result = tessellateFace.operate()

@@ -10,7 +10,7 @@
 #ifndef smtk_model_operation_CreateResource_h
 #define smtk_model_operation_CreateResource_h
 
-#include "smtk/operation/ResourceManagerOperator.h"
+#include "smtk/operation/ResourceManagerOperation.h"
 
 namespace smtk
 {
@@ -18,12 +18,12 @@ namespace operation
 {
 
 /// Create an SMTK resource.
-class SMTKCORE_EXPORT CreateResource : public smtk::operation::ResourceManagerOperator
+class SMTKCORE_EXPORT CreateResource : public smtk::operation::ResourceManagerOperation
 {
 public:
   smtkTypeMacro(CreateResource);
-  smtkSharedPtrCreateMacro(smtk::operation::NewOp);
-  smtkSuperclassMacro(smtk::operation::ResourceManagerOperator);
+  smtkSharedPtrCreateMacro(smtk::operation::Operation);
+  smtkSuperclassMacro(smtk::operation::ResourceManagerOperation);
 
 protected:
   CreateResource();

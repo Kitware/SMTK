@@ -15,13 +15,13 @@
 
 #include "smtk/bridge/multiscale/operators/Revolve.h"
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::multiscale::Revolve, smtk::operation::XMLOperator > pybind11_init_smtk_bridge_multiscale_Revolve(py::module &m)
+PySharedPtrClass< smtk::bridge::multiscale::Revolve, smtk::operation::XMLOperation > pybind11_init_smtk_bridge_multiscale_Revolve(py::module &m)
 {
-  PySharedPtrClass< smtk::bridge::multiscale::Revolve, smtk::operation::XMLOperator > instance(m, "Revolve");
+  PySharedPtrClass< smtk::bridge::multiscale::Revolve, smtk::operation::XMLOperation > instance(m, "Revolve");
   instance
     .def(py::init<>())
     .def(py::init<::smtk::bridge::multiscale::Revolve const &>())

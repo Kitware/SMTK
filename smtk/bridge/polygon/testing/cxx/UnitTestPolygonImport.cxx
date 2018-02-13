@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
@@ -15,7 +16,6 @@
 #include "smtk/model/Edge.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/Vertex.h"
 
@@ -50,7 +50,7 @@ int UnitTestPolygonImport(int argc, char* argv[])
 
   // Register import and write operators to the operation manager
   {
-    operationManager->registerOperator<smtk::bridge::polygon::Import>(
+    operationManager->registerOperation<smtk::bridge::polygon::Import>(
       "smtk::bridge::polygon::Import");
   }
 
@@ -69,9 +69,9 @@ int UnitTestPolygonImport(int argc, char* argv[])
   importOp->parameters()->findFile("filename")->setValue(readFilePath);
   std::cout << "Importing " << readFilePath << std::endl;
 
-  smtk::operation::NewOp::Result importOpResult = importOp->operate();
+  smtk::operation::Operation::Result importOpResult = importOp->operate();
   test(importOpResult->findInt("outcome")->value() ==
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Import operator failed");
   // Retrieve the resulting model
   smtk::attribute::ComponentItemPtr componentItem =

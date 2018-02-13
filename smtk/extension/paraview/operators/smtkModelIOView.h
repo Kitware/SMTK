@@ -18,7 +18,7 @@ class QColor;
 class QIcon;
 class QMouseEvent;
 
-class SMTKPQOPERATORVIEWSEXT_EXPORT smtkModelIOView : public smtk::extension::qtBaseView
+class SMTKPQOPERATIONVIEWSEXT_EXPORT smtkModelIOView : public smtk::extension::qtBaseView
 {
   Q_OBJECT
 

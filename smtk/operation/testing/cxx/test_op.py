@@ -12,7 +12,7 @@
 
 """ test_op.py:
 
-Test the functionality of python operators.
+Test the functionality of python operations.
 
 """
 import smtk
@@ -21,22 +21,22 @@ import smtk.io
 import smtk.operation
 
 
-class TestOp(smtk.operation.NewOp):
+class TestOp(smtk.operation.Operation):
 
     def __init__(self):
-        smtk.operation.NewOp.__init__(self)
+        smtk.operation.Operation.__init__(self)
 
     def operateInternal(self):
         smtk.InfoMessage(logger, 'My string is %s' % stringDef.value())
 
         # Return with success
-        result = self.createResult(smtk.operation.NewOp.Outcome.SUCCEEDED)
+        result = self.createResult(smtk.operation.Operation.Outcome.SUCCEEDED)
         return result
 
     def createSpecification(self):
         spec = smtk.attribute.Collection.create()
 
-        opDef = spec.createDefinition('operator')
+        opDef = spec.createDefinition('operation')
 
         debugDef = smtk.attribute.IntItemDefinition.New('debug level')
         debugDef.setDefaultValue(0)

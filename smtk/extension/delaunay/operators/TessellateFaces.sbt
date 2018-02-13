@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the model "Tessellate Face" Operator -->
+<!-- Description of the model "Tessellate Face" Operation -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="tessellate faces" Label="Faces - Tessellate" BaseType="operator">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="tessellate faces" Label="Faces - Tessellate" BaseType="operation">
       <BriefDescription>Tessellate model faces.</BriefDescription>
       <DetailedDescription>
         Tessellate model faces using Delaunay.
@@ -34,7 +34,7 @@
     </AttDef>
   </Definitions>
   <Views>
-    <View Type="Operator" Title="Tessellate Face" FilterByAdvanceLevel="true" UseSelectionManager="true">
+    <View Type="Operation" Title="Tessellate Face" FilterByAdvanceLevel="true" UseSelectionManager="true">
       <InstancedAttributes>
         <Att Type="tessellate face"/>
       </InstancedAttributes>

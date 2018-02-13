@@ -13,7 +13,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
-#include "smtk/bridge/polygon/Operator.h"
+#include "smtk/bridge/polygon/Operation.h"
 #include "smtk/bridge/polygon/RegisterSession.h"
 #include "smtk/bridge/polygon/Resource.h"
 
@@ -83,9 +83,9 @@ int UnitTestTriangulateFaces(int, char** const)
 
   // Register import and write operators to the operation manager
   {
-    operationManager->registerOperator<smtk::operation::LoadResource>(
+    operationManager->registerOperation<smtk::operation::LoadResource>(
       "smtk::operation::LoadResource");
-    operationManager->registerOperator<smtk::extension::delaunay::TriangulateFaces>(
+    operationManager->registerOperation<smtk::extension::delaunay::TriangulateFaces>(
       "smtk::extension::delaunay::TriangulateFaces");
   }
 
@@ -116,7 +116,7 @@ int UnitTestTriangulateFaces(int, char** const)
       loadOp->parameters()->findFile("filename")->setValue(file_path.c_str());
       smtk::operation::LoadResource::Result result = loadOp->operate();
       if (result->findInt("outcome")->value() !=
-        static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
       {
         std::cerr << "Could not load smtk model!\n";
         return 1;
@@ -166,7 +166,7 @@ int UnitTestTriangulateFaces(int, char** const)
 
     smtk::extension::delaunay::TriangulateFaces::Result result = triangulateFacesOp->operate();
     if (result->findInt("outcome")->value() !=
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Triangulate face operator failed\n";
       return 1;

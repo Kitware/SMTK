@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the CGM "CreateBrick" Operator -->
+<!-- Description of the CGM "CreateBrick" Operation -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
-    <!-- Operator -->
-    <AttDef Type="create brick" BaseType="operator">
+    <!-- Operation -->
+    <AttDef Type="create brick" BaseType="operation">
       <BriefDescription>
         Create a parallelepiped or rhombus.
       </BriefDescription>

@@ -43,8 +43,8 @@ public:
   virtual ~Session();
 
 protected:
-  friend class Operator;
-  friend class Dream3DOperator;
+  friend class Operation;
+  friend class Dream3DOperation;
 
   typedef smtk::model::SessionInfoBits SessionInfoBits;
 

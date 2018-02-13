@@ -11,7 +11,7 @@
 //=============================================================================
 #include "smtk/extension/matplotlib/RegisterOperations.h"
 
-#include "smtk/operation/RegisterPythonOperators.h"
+#include "smtk/operation/RegisterPythonOperations.h"
 
 namespace smtk
 {
@@ -22,7 +22,7 @@ namespace matplotlib
 
 void registerOperations(smtk::operation::Manager::Ptr& operationManager)
 {
-  smtk::operation::registerPythonOperators(
+  smtk::operation::registerPythonOperations(
     operationManager, "smtk.extension.matplotlib.render_mesh");
 }
 }

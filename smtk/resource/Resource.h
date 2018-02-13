@@ -27,16 +27,16 @@ namespace smtk
 {
 namespace operation
 {
-class NewOp;
+class Operation;
 }
 namespace resource
 {
-/// Operators need the ability to lock and unlock resources, but no additional
+/// Operations need the ability to lock and unlock resources, but no additional
 /// access privilege is required. We therefore use the PassKey pattern to grant
-/// NewOp access to a resource's lock.
+/// Operation access to a resource's lock.
 class Key
 {
-  friend class operation::NewOp;
+  friend class operation::Operation;
   Key() {}
 };
 
@@ -97,7 +97,7 @@ public:
     * Resources that have a non-empty location and are identical to
     * the data stored at location are clean. All other resources are dirty.
     *
-    * Operators that are write-operators (i.e., not read-only) should mark
+    * Operations that are write-operators (i.e., not read-only) should mark
     * resources as modified. Saving a resource using its metadata's write
     * method will mark the resource as clean. Loading a resource using
     * its metadata's read method should return a clean resource.

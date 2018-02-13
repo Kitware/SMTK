@@ -62,8 +62,8 @@ protected:
   friend class vtkModelFaceUse;
   // these two friend classes should eventually come out
   // as they are specific to CMB
-  friend class vtkSplitOperatorClient;
-  friend class vtkSelectionSplitOperatorClient;
+  friend class vtkSplitOperationClient;
+  friend class vtkSelectionSplitOperationClient;
   friend class vtkDiscreteModelGeometricEntity;
 
 private:

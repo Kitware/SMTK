@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="partition boundaries" Label="Model - Partition Boundaries" BaseType="operator">
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="partition boundaries" Label="Model - Partition Boundaries" BaseType="operation">
       <BriefDescription>
         Compute the ratio of the Euler characteristics for a model's
         boundary to its volume.

@@ -12,8 +12,6 @@
 
 #include "smtk/PublicPointerDefs.h" // For EntityRef and EntityRefArray
 
-#include "smtk/operation/Operator.h"
-
 #include <utility> // For std::pair
 
 namespace smtk
@@ -146,14 +144,6 @@ typedef int (*OneToManyCallback)(
 typedef std::pair<OneToManyCallback, void*> OneToManyObserver;
 /// A trigger entry for an event-observer pair.
 typedef std::pair<ManagerEventType, OneToManyObserver> OneToManyTrigger;
-
-typedef smtk::operation::Operator::EventType OperatorEventType;
-typedef smtk::operation::Operator::Callback BareOperatorCallback;
-typedef smtk::operation::Operator::Observer BareOperatorObserver;
-typedef smtk::operation::Operator::Outcome OperatorOutcome;
-typedef smtk::operation::Operator::Trigger BareOperatorTrigger;
-typedef smtk::operation::Operator::CallbackWithResult OperatorWithResultCallback;
-typedef smtk::operation::Operator::ObserverWithResult OperatorWithResultObserver;
 
 } // namespace model
 } // namespace smtk

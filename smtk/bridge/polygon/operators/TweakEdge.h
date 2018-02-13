@@ -10,7 +10,7 @@
 #ifndef __smtk_session_polygon_TweakEdge_h
 #define __smtk_session_polygon_TweakEdge_h
 
-#include "smtk/bridge/polygon/Operator.h"
+#include "smtk/bridge/polygon/Operation.h"
 
 namespace smtk
 {
@@ -21,13 +21,13 @@ namespace polygon
 
 /**\brief Tweak the shape of a model edge by redefining its point coordinates.
   */
-class SMTKPOLYGONSESSION_EXPORT TweakEdge : public Operator
+class SMTKPOLYGONSESSION_EXPORT TweakEdge : public Operation
 {
 public:
   smtkTypeMacro(TweakEdge);
   smtkCreateMacro(TweakEdge);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
-  smtkSuperclassMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
+  smtkSuperclassMacro(Operation);
 
 protected:
   Result operateInternal() override;

@@ -12,11 +12,11 @@
 #include <vtkCMBModelEdgeMeshServer.h>
 #include <vtkCMBModelEntityMesh.h>
 #include <vtkCMBModelFaceMeshServer.h>
-#include <vtkCMBModelReadOperator.h>
+#include <vtkCMBModelReadOperation.h>
 #include <vtkDiscreteModel.h>
 #include <vtkDiscreteModelWrapper.h>
-#include <vtkEdgeSplitOperator.h>
-#include <vtkMergeOperator.h>
+#include <vtkEdgeSplitOperation.h>
+#include <vtkMergeOperation.h>
 #include <vtkModelEdge.h>
 #include <vtkModelFace.h>
 #include <vtkModelItemIterator.h>
@@ -32,7 +32,8 @@ int Check2DModel(const char* fileName)
 
   vtkDiscreteModel* model = modelWrapper->GetModel();
 
-  vtkSmartPointer<vtkCMBModelReadOperator> reader = vtkSmartPointer<vtkCMBModelReadOperator>::New();
+  vtkSmartPointer<vtkCMBModelReadOperation> reader =
+    vtkSmartPointer<vtkCMBModelReadOperation>::New();
   reader->SetFileName(fileName);
   reader->Operate(modelWrapper);
   if (reader->GetOperateSucceeded() == false)

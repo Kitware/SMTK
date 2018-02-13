@@ -9,16 +9,16 @@ if (SMTK_ENABLE_DISCRETE_SESSION AND SMTK_ENABLE_PARAVIEW_SUPPORT)
   # not be found.
   list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 
-  add_paraview_plugin(smtkRemusMeshOperatorPlugin "1.0"
+  add_paraview_plugin(smtkRemusMeshOperationPlugin "1.0"
     SERVER_SOURCES
       sessionInit.cxx
   )
 
-  target_link_libraries(smtkRemusMeshOperatorPlugin
+  target_link_libraries(smtkRemusMeshOperationPlugin
     LINK_PUBLIC
       smtkRemusExt
     LINK_PRIVATE
       vtkPVServerManagerApplicationCS
   )
-  smtk_install_library(smtkRemusMeshOperatorPlugin DEPENDS smtkRemusExt)
+  smtk_install_library(smtkRemusMeshOperationPlugin DEPENDS smtkRemusExt)
 endif()

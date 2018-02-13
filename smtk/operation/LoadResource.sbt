@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the model "LoadResource" Operator -->
+<!-- Description of the model "LoadResource" Operation -->
 <SMTK_AttributeSystem Version="3">
 
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="load resource" Label="Load" BaseType="operator">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="load resource" Label="Load" BaseType="operation">
       <BriefDecscription>
         Load one or more SMTK resources from disk
       </BriefDecscription>

@@ -13,7 +13,7 @@
 #include "vtkDiscreteModel.h"
 #include "vtkObjectFactory.h"
 #include "vtkSMIntVectorProperty.h"
-#include "vtkSMOperatorProxy.h"
+#include "vtkSMOperationProxy.h"
 #include "vtkSMProxyManager.h"
 #include "vtkSMStringVectorProperty.h"
 #include "vtkSmartPointer.h"
@@ -40,26 +40,26 @@ bool vtkCMBModelBuilderClient::Operate(
   }
 
   vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
-  vtkSMOperatorProxy* OperatorProxy =
-    vtkSMOperatorProxy::SafeDownCast(manager->NewProxy("CMBModelGroup", "CMBModelBuilder"));
-  if (!OperatorProxy)
+  vtkSMOperationProxy* OperationProxy =
+    vtkSMOperationProxy::SafeDownCast(manager->NewProxy("CMBModelGroup", "CMBModelBuilder"));
+  if (!OperationProxy)
   {
     vtkErrorMacro("Unable to create builder operator proxy.");
     return 0;
   }
-  OperatorProxy->SetLocation(ServerModelProxy->GetLocation());
+  OperationProxy->SetLocation(ServerModelProxy->GetLocation());
 
-  OperatorProxy->Operate(Model, ServerModelProxy, PolySourceProxy);
+  OperationProxy->Operate(Model, ServerModelProxy, PolySourceProxy);
 
   // check to see if the operation succeeded on the server
   vtkSMIntVectorProperty* OperateSucceeded =
-    vtkSMIntVectorProperty::SafeDownCast(OperatorProxy->GetProperty("OperateSucceeded"));
+    vtkSMIntVectorProperty::SafeDownCast(OperationProxy->GetProperty("OperateSucceeded"));
 
-  OperatorProxy->UpdatePropertyInformation();
+  OperationProxy->UpdatePropertyInformation();
 
   int Succeeded = OperateSucceeded->GetElement(0);
-  OperatorProxy->Delete();
-  OperatorProxy = 0;
+  OperationProxy->Delete();
+  OperationProxy = 0;
   if (!Succeeded)
   {
     vtkErrorMacro("Server side operator failed.");

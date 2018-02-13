@@ -22,7 +22,7 @@ class SMTKCORE_EXPORT AddImage : public AddAuxiliaryGeometry
 public:
   smtkTypeMacro(AddImage);
   smtkCreateMacro(AddImage);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(AddAuxiliaryGeometry);
 
 private:

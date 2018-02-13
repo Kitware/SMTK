@@ -13,8 +13,8 @@
 #include "smtk/attribute/IntItem.h"
 
 #include "smtk/bridge/discrete/Session.h"
-#include "smtk/bridge/discrete/operators/MergeOperator.h"
-#include "smtk/bridge/discrete/operators/ReadOperator.h"
+#include "smtk/bridge/discrete/operators/MergeOperation.h"
+#include "smtk/bridge/discrete/operators/ReadOperation.h"
 
 #include "smtk/common/UUID.h"
 
@@ -46,7 +46,8 @@ int main(int argc, char* argv[])
   file.close();
 
   // Create a read operator
-  smtk::bridge::discrete::ReadOperator::Ptr readOp = smtk::bridge::discrete::ReadOperator::create();
+  smtk::bridge::discrete::ReadOperation::Ptr readOp =
+    smtk::bridge::discrete::ReadOperation::create();
   if (!readOp)
   {
     std::cerr << "No read operator\n";
@@ -57,7 +58,7 @@ int main(int argc, char* argv[])
   readOp->parameters()->findFile("filename")->setValue(std::string(argv[1]));
 
   // Execute the operation
-  smtk::operation::NewOp::Result readOpResult = readOp->operate();
+  smtk::operation::Operation::Result readOpResult = readOp->operate();
 
   // Retrieve the resulting model
   smtk::attribute::ComponentItemPtr componentItem =
@@ -69,7 +70,7 @@ int main(int argc, char* argv[])
 
   // Test for success
   if (readOpResult->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "Read operator failed\n";
     return 1;
@@ -108,8 +109,8 @@ int main(int argc, char* argv[])
   test(noVolumes == 1, "Expecting 1 volume.");
   test(noFaces == 6, "Expecting 6 faces.");
   // Merge faces 3, 4, 5, 6
-  smtk::bridge::discrete::MergeOperator::Ptr mergeOp =
-    smtk::bridge::discrete::MergeOperator::create();
+  smtk::bridge::discrete::MergeOperation::Ptr mergeOp =
+    smtk::bridge::discrete::MergeOperation::create();
   test(mergeOp != nullptr, "No merge face operator.");
   auto modelPtr = mergeOp->parameters()->findModelEntity("model");
   test(modelPtr != nullptr && modelPtr->setValue(modelCmb), "Could not associate model");
@@ -121,7 +122,7 @@ int main(int argc, char* argv[])
   test(modelPtr != nullptr && modelPtr->appendValue(faces[5]), "Could not set target cell");
   auto result = mergeOp->operate();
   test(result->findInt("outcome")->value() ==
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Merge face failed");
   // Check the number of faces after merge face operation
   test(modelCmb.cells().size() == 1 && isVolume(modelCmb.cells()[0].entityFlags()),

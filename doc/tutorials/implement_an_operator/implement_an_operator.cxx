@@ -35,10 +35,10 @@ namespace ex
 {
 
 // ++ 2 ++
-OperatorResult CounterOperator::operateInternal()
+OperationResult CounterOperator::operateInternal()
 {
   // Get the attribute holding parameter values:
-  OperatorSpecification params = this->specification();
+  OperationSpecification params = this->specification();
 
   // Get the input model to be processed:
   Model model = params->findModelEntity("model")->value();
@@ -49,9 +49,9 @@ OperatorResult CounterOperator::operateInternal()
 
   // Create the attribute holding the results of
   // our operation using a convenience method
-  // provided by the Operator base class.
+  // provided by the Operation base class.
   // Our operation is simple; we always succeed.
-  OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
+  OperationResult result = this->createResult(OPERATION_SUCCEEDED);
 
   // Fetch the item to store our output:
   smtk::attribute::IntItemPtr cellCount = result->findInt("count");
@@ -65,26 +65,26 @@ OperatorResult CounterOperator::operateInternal()
 } // namespace ex
 
 // ++ 3 ++
-// Implement methods from smtkDeclareModelOperator()
+// Implement methods from smtkDeclareModelOperation()
 // and provide an auto-init object for registering the
 // operator with the session.
-smtkImplementsModelOperator(
+smtkImplementsModelOperation(
   /* no export symbol */,       // Export symbol (none here)
-  ex::CounterOperator,          // The class name (include all namespaces)
+  ex::CounterOperation,         // The class name (include all namespaces)
   ex_counter,                   // The "component" name (for auto-init)
   "counter",                    // The user-printable operator name.
   implement_an_operator_xml,    // An XML description (or NULL).
   smtk::model::DefaultSession); // The modeling kernel this operator uses.
 // -- 3 --
 
-void testOperator(Model model)
+void testOperation(Model model)
 {
   // Get the default session for our model manager:
   smtk::model::SessionPtr session = model.session().session();
 
   // Ask the session to create an operator:
-  ex::CounterOperator::Ptr op =
-    smtk::dynamic_pointer_cast<ex::CounterOperator>(session->op("counter"));
+  ex::CounterOperation::Ptr op =
+    smtk::dynamic_pointer_cast<ex::CounterOperation>(session->op("counter"));
 
   op->ensureSpecification();
   smtk::attribute::ModelEntityItemPtr input = op->specification()->findModelEntity("model");
@@ -115,7 +115,7 @@ int main()
   try
   {
 
-    testOperator(model);
+    testOperation(model);
   }
   catch (const std::string& msg)
   {

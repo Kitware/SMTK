@@ -23,7 +23,6 @@
 #include "smtk/mesh/core/Manager.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
 
 namespace py = pybind11;
 
@@ -59,20 +58,10 @@ PySharedPtrClass< smtk::model::Session > pybind11_init_smtk_model_Session(py::mo
     .def("classname", &smtk::model::Session::classname)
     .def("danglingEntities", &smtk::model::Session::danglingEntities)
     .def("declareDanglingEntity", &smtk::model::Session::declareDanglingEntity, py::arg("ent"), py::arg("present") = 0)
-    .def("findOperatorConstructor", &smtk::model::Session::findOperatorConstructor, py::arg("opName"))
-    .def("findOperatorXML", &smtk::model::Session::findOperatorXML, py::arg("opName"))
-    .def("inheritsOperators", &smtk::model::Session::inheritsOperators)
     .def("log", &smtk::model::Session::log)
     .def("manager", &smtk::model::Session::manager)
     .def("meshManager", &smtk::model::Session::meshManager)
     .def("name", &smtk::model::Session::name)
-    .def("operatorLabelsMap", &smtk::model::Session::operatorLabelsMap, py::arg("includeAdvanced") = true)
-    .def("operatorNames", &smtk::model::Session::operatorNames, py::arg("includeAdvanced") = true)
-    .def("operatorConstructors", &smtk::model::Session::operatorConstructors)
-    .def("operatorCollection", (smtk::attribute::CollectionPtr (smtk::model::Session::*)()) &smtk::model::Session::operatorCollection)
-    .def("operatorCollection", (smtk::attribute::ConstCollectionPtr (smtk::model::Session::*)() const) &smtk::model::Session::operatorCollection)
-    .def("registerOperator", &smtk::model::Session::registerOperator, py::arg("opName"), py::arg("opDescrXML"), py::arg("opCtor"))
-    .def_static("registerStaticOperator", &smtk::model::Session::registerStaticOperator, py::arg("opName"), py::arg("opDescrXML"), py::arg("opCtor"))
     .def("sessionId", &smtk::model::Session::sessionId)
     .def("setup", &smtk::model::Session::setup, py::arg("optName"), py::arg("optVal"))
     .def_static("staticClassName", &smtk::model::Session::staticClassName)

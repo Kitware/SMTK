@@ -2,15 +2,15 @@ project(ex_implement_an_operator)
 cmake_minimum_required(VERSION 3.5)
 
 # ++ 1 ++
-include(SMTKOperatorXML) # defines smtk_operator_xml()
+include(SMTKOperationXML) # defines smtk_operation_xml()
 
-# The smtk_operator_xml() function writes a file to the current
+# The smtk_operation_xml() function writes a file to the current
 # binary directory sharing the same name as the input file
 # but with "_xml.h" replacing the file extension. For this
 # example, that filename is "implement_an_operator_xml.h".
-# smtk_operator_xml() appends the exact filename to the
+# smtk_operation_xml() appends the exact filename to the
 # "operatorXML" variable.
-smtk_operator_xml(
+smtk_operation_xml(
   "${CMAKE_CURRENT_SOURCE_DIR}/implement_an_operator.xml"
   operatorXML
 )

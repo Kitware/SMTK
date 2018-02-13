@@ -10,6 +10,7 @@
 
 #include "smtk/common/UUID.h"
 
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/GroupItem.h"
@@ -30,7 +31,6 @@
 #include "smtk/mesh/operators/ElevateMesh.h"
 
 #include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
 
 #include <algorithm>
 #include <array>
@@ -133,7 +133,7 @@ int main(int argc, char* argv[])
   smtk::mesh::CollectionPtr c = convert(meshManager, manager);
 
   // Create an "Elevate Mesh" operator
-  smtk::operation::NewOp::Ptr elevateMeshOp = smtk::mesh::ElevateMesh::create();
+  smtk::operation::Operation::Ptr elevateMeshOp = smtk::mesh::ElevateMesh::create();
   if (!elevateMeshOp)
   {
     std::cerr << "No \"elevate mesh\" operator\n";
@@ -225,7 +225,7 @@ int main(int argc, char* argv[])
   }
 
   // Execute "Elevate Mesh" operator...
-  smtk::operation::NewOp::Result elevateMeshOpResult = elevateMeshOp->operate();
+  smtk::operation::Operation::Result elevateMeshOpResult = elevateMeshOp->operate();
 
   // ...delete the generated points file...
   if (fromCSV)
@@ -235,7 +235,7 @@ int main(int argc, char* argv[])
 
   // ...and test the results for success.
   if (elevateMeshOpResult->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "\"elevate mesh\" operator failed\n";
     return 1;

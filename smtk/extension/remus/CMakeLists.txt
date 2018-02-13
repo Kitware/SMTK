@@ -1,12 +1,12 @@
 set(remusExtSource
-  MeshOperator.cxx
+  MeshOperation.cxx
   MeshServerLauncher.cxx)
 
 set(remusExtHeaders
-  MeshOperator.h
+  MeshOperation.h
   MeshServerLauncher.h)
 
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/MeshOperator.sbt" remusOperatorXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/MeshOperation.sbt" remusOperationXML)
 
 add_library(smtkRemusExt ${remusExtSource})
 target_link_libraries(smtkRemusExt

@@ -16,7 +16,7 @@ namespace smtk
 namespace operation
 {
 
-int Observers::operator()(std::shared_ptr<NewOp> op, EventType event, NewOp::Result opres)
+int Observers::operator()(std::shared_ptr<Operation> op, EventType event, Operation::Result opres)
 {
   int result = 0;
   if (!op || (!opres && event == EventType::DID_OPERATE))

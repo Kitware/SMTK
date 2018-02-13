@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="export mesh" Label="Mesh - Export" BaseType="operator">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="export mesh" Label="Mesh - Export" BaseType="operation">
       <BriefDescription>
         Export a mesh to disk.
       </BriefDescription>

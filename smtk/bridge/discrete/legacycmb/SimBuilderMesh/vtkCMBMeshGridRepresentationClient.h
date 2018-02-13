@@ -10,7 +10,7 @@
 
 // .NAME vtkCMBMeshGridRepresentationClient
 // .SECTION Description
-// Operator that reads in the simulation mesh on the server and creates a
+// Operation that reads in the simulation mesh on the server and creates a
 // vtkCMBMeshGridRepresentation to be used by the model.
 
 #ifndef __vtkCMBMeshGridRepresentationClient_h

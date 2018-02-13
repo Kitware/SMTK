@@ -4,25 +4,25 @@ include_directories(
   )
 
 set(Plugin_Src_Files
-  vtkADHExporterOperatorClient.cxx
-  vtkCMBImportBCFileOperatorClient.cxx
+  vtkADHExporterOperationClient.cxx
+  vtkCMBImportBCFileOperationClient.cxx
   vtkCMBModelBuilderClient.cxx
   vtkCMBModelBuilder2DClient.cxx
   vtkCMBMapToCMBModelClient.cxx
-  vtkCMBModelReadOperatorClient.cxx
+  vtkCMBModelReadOperationClient.cxx
   vtkCMBModelWriterClient.cxx
-  vtkCreateModelEdgesOperatorClient.cxx
-  vtkEdgeSplitOperatorClient.cxx
-  vtkMaterialOperatorClient.cxx
-  vtkMergeOperatorClient.cxx
-  vtkModelEntityGroupOperatorClient.cxx
-  vtkModelEntityOperatorClient.cxx
-  vtkSelectionSplitOperatorClient.cxx
-  vtkSplitOperatorClient.cxx
-  vtkCMBModelStateOperatorClient.cxx
+  vtkCreateModelEdgesOperationClient.cxx
+  vtkEdgeSplitOperationClient.cxx
+  vtkMaterialOperationClient.cxx
+  vtkMergeOperationClient.cxx
+  vtkModelEntityGroupOperationClient.cxx
+  vtkModelEntityOperationClient.cxx
+  vtkSelectionSplitOperationClient.cxx
+  vtkSplitOperationClient.cxx
+  vtkCMBModelStateOperationClient.cxx
   vtkCMBModelOmicronMeshInputWriterClient.cxx
-  vtkModelEdgeOperatorClient.cxx
-  vtkGeoTransformOperatorClient.cxx
+  vtkModelEdgeOperationClient.cxx
+  vtkGeoTransformOperationClient.cxx
   pqCMBModelPluginStarter.cxx
 )
 

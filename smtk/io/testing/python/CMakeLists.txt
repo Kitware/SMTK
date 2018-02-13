@@ -1,5 +1,5 @@
 set(smtkIOPythonTests
-  unitOperatorLog
+  unitOperationLog
   logMessage
 )
 

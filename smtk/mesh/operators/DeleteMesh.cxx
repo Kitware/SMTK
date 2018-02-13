@@ -58,8 +58,8 @@ smtk::mesh::DeleteMesh::Result DeleteMesh::operateInternal()
     }
   }
 
-  Result result = this->createResult(
-    success ? smtk::operation::NewOp::Outcome::SUCCEEDED : smtk::operation::NewOp::Outcome::FAILED);
+  Result result = this->createResult(success ? smtk::operation::Operation::Outcome::SUCCEEDED
+                                             : smtk::operation::Operation::Outcome::FAILED);
 
   if (success)
   {

@@ -12,7 +12,7 @@
 
 #include "smtk/bridge/multiscale/Exports.h"
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace smtk
 {
@@ -27,12 +27,12 @@ namespace multiscale
  * revolves it about an axis, generating a 3-dimensional mesh.
  */
 
-class SMTKMULTISCALESESSION_EXPORT Revolve : public smtk::operation::XMLOperator
+class SMTKMULTISCALESESSION_EXPORT Revolve : public smtk::operation::XMLOperation
 {
 public:
   smtkTypeMacro(Revolve);
   smtkCreateMacro(Revolve);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
 
 protected:
   Result operateInternal() override;

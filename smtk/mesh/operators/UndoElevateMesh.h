@@ -10,7 +10,7 @@
 #ifndef __smtk_mesh_operators_UndoElevateMesh_h
 #define __smtk_mesh_operators_UndoElevateMesh_h
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace smtk
 {
@@ -19,17 +19,17 @@ namespace mesh
 
 /**\brief A class for reversing the results of operators that elevate a mesh.
 
-   Operators that use the methods defined in ApplyToMesh to deform a mesh's
+   Operations that use the methods defined in ApplyToMesh to deform a mesh's
    coordinates can optionally cache the original unelevated coordinate values.
    This operator then reverts the deformation performed by these operators.
   */
-class SMTKCORE_EXPORT UndoElevateMesh : public smtk::operation::XMLOperator
+class SMTKCORE_EXPORT UndoElevateMesh : public smtk::operation::XMLOperation
 {
 public:
   smtkTypeMacro(UndoElevateMesh);
   smtkCreateMacro(UndoElevateMesh);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
-  smtkSuperclassMacro(smtk::operation::XMLOperator);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
+  smtkSuperclassMacro(smtk::operation::XMLOperation);
 
   bool ableToOperate() override;
 

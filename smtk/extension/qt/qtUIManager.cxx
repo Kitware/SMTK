@@ -17,7 +17,7 @@
 #include "smtk/extension/qt/qtInstancedView.h"
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/qtModelView.h"
-#include "smtk/extension/qt/qtOperatorView.h"
+#include "smtk/extension/qt/qtOperationView.h"
 #include "smtk/extension/qt/qtSMTKUtilities.h"
 #include "smtk/extension/qt/qtSelectorView.h"
 #include "smtk/extension/qt/qtSimpleExpressionView.h"
@@ -97,7 +97,7 @@ qtUIManager::qtUIManager(smtk::attribute::CollectionPtr collection)
   this->registerViewConstructor("Attribute", qtAttributeView::createViewWidget);
   this->registerViewConstructor("Group", qtGroupView::createViewWidget);
   this->registerViewConstructor("Instanced", qtInstancedView::createViewWidget);
-  this->registerViewConstructor("Operator", qtOperatorView::createViewWidget);
+  this->registerViewConstructor("Operation", qtOperationView::createViewWidget);
   this->registerViewConstructor("Selector", qtSelectorView::createViewWidget);
   this->registerViewConstructor("SimpleExpression", qtSimpleExpressionView::createViewWidget);
 

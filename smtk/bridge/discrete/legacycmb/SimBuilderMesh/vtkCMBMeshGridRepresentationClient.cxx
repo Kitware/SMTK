@@ -13,7 +13,7 @@
 #include "vtkDiscreteModel.h"
 #include "vtkObjectFactory.h"
 #include "vtkSMIntVectorProperty.h"
-#include "vtkSMOperatorProxy.h"
+#include "vtkSMOperationProxy.h"
 #include "vtkSMPropertyHelper.h"
 #include "vtkSMProxyManager.h"
 #include "vtkSMProxyProperty.h"
@@ -44,8 +44,8 @@ bool vtkCMBMeshGridRepresentationClient::Operate(
 {
 
   vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
-  vtkSMOperatorProxy* operatorProxy = vtkSMOperatorProxy::SafeDownCast(
-    manager->NewProxy("CMBSimBuilderMeshGroup", "CmbMeshGridRepresentationOperator"));
+  vtkSMOperationProxy* operatorProxy = vtkSMOperationProxy::SafeDownCast(
+    manager->NewProxy("CMBSimBuilderMeshGroup", "CmbMeshGridRepresentationOperation"));
   if (!operatorProxy)
   {
     vtkErrorMacro("Unable to create operator proxy.");

@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::polygon::Import > pybind11_init_smtk_bridge_polygon_Import(py::module &m, PySharedPtrClass< smtk::bridge::polygon::Operator, smtk::operation::XMLOperator >& parent)
+PySharedPtrClass< smtk::bridge::polygon::Import > pybind11_init_smtk_bridge_polygon_Import(py::module &m, PySharedPtrClass< smtk::bridge::polygon::Operation, smtk::operation::XMLOperation >& parent)
 {
   PySharedPtrClass< smtk::bridge::polygon::Import > instance(m, "Import", parent);
   instance

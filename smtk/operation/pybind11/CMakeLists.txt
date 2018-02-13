@@ -17,9 +17,9 @@ set_target_properties(${library_name}
 # Install library
 install(TARGETS ${library_name} DESTINATION "${install_path}")
 
-# Install PyOperator header
+# Install PyOperation header
 install(
-  FILES PyOperator.h
+  FILES PyOperation.h
   DESTINATION include/smtk/${SMTK_VERSION}/smtk/operation/pybind11
   )
 

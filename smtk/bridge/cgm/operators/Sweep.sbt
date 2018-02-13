@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the CGM "Sweep" Operator -->
+<!-- Description of the CGM "Sweep" Operation -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
-    <!-- Operator -->
-    <AttDef Type="sweep" BaseType="operator">
+    <!-- Operation -->
+    <AttDef Type="sweep" BaseType="operation">
       <BriefDescription>Sweep the entities along the path or direction to form a body.</BriefDescription>
       <DetailedDescription>
         Create a wire or solid body given a set of curves and/or surfaces plus

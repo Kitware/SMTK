@@ -10,6 +10,7 @@
 
 #include "smtk/common/UUID.h"
 
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/GroupItem.h"
@@ -31,7 +32,6 @@
 #include "smtk/mesh/operators/InterpolateOntoMesh.h"
 
 #include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
 
 #include <algorithm>
 #include <array>
@@ -172,7 +172,7 @@ int main(int argc, char* argv[])
   smtk::mesh::CollectionPtr c = convert(meshManager, manager);
 
   // Create an "Interpolate Onto Mesh" operator
-  smtk::operation::NewOp::Ptr interpolateOntoMeshOp = smtk::mesh::InterpolateOntoMesh::create();
+  smtk::operation::Operation::Ptr interpolateOntoMeshOp = smtk::mesh::InterpolateOntoMesh::create();
   if (!interpolateOntoMeshOp)
   {
     std::cerr << "No \"interpolate onto mesh\" operator\n";
@@ -290,7 +290,7 @@ int main(int argc, char* argv[])
   }
 
   // Execute "Interpolate Onto Mesh" operator...
-  smtk::operation::NewOp::Result interpolateOntoMeshOpResult = interpolateOntoMeshOp->operate();
+  smtk::operation::Operation::Result interpolateOntoMeshOpResult = interpolateOntoMeshOp->operate();
 
   // ...delete the generated points file...
   if (fromCSV)
@@ -300,7 +300,7 @@ int main(int argc, char* argv[])
 
   // ...and test the results for success.
   if (interpolateOntoMeshOpResult->findInt("outcome")->value() !=
-    smtk::operation::Operator::OPERATION_SUCCEEDED)
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "\"interpolate onto mesh\" operator failed\n";
     return 1;

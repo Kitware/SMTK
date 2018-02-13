@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/SearchStyle.h"
@@ -15,7 +16,6 @@
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/FloatData.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/Session.h"
 
 #include "smtk/bridge/polygon/Resource.h"
@@ -50,7 +50,7 @@ int UnitTestPolygonCreateModel(int argc, char* argv[])
 
   // Register operators to the operation manager
   {
-    operationManager->registerOperator<smtk::bridge::polygon::CreateModel>(
+    operationManager->registerOperation<smtk::bridge::polygon::CreateModel>(
       "smtk::bridge::polygon::CreateModel");
   }
 
@@ -126,10 +126,10 @@ int UnitTestPolygonCreateModel(int argc, char* argv[])
       "Setting feature size failed");
 
     // Apply the operation and check the result
-    smtk::operation::NewOp::Result createOpResult = createOp->operate();
+    smtk::operation::Operation::Result createOpResult = createOp->operate();
 
     test(createOpResult->findInt("outcome")->value() ==
-        static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
+        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
       "Create operator failed");
 
     // Retrieve the resulting model item

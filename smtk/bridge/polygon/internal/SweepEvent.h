@@ -10,7 +10,7 @@
 #ifndef __smtk_session_polygon_internal_SweepEvent_h
 #define __smtk_session_polygon_internal_SweepEvent_h
 
-#include "smtk/bridge/polygon/Operator.h"
+#include "smtk/bridge/polygon/Operation.h"
 #include "smtk/bridge/polygon/internal/Fragment.h"
 
 #include "smtk/model/Edge.h"

@@ -20,6 +20,6 @@ import smtk.operation
 
 def registerOperations(operationManager):
     for name, obj in inspect.getmembers(render_mesh):
-        if inspect.isclass(obj) and issubclass(obj, smtk.operation.NewOp):
-            operationManager.registerOperator(
+        if inspect.isclass(obj) and issubclass(obj, smtk.operation.Operation):
+            operationManager.registerOperation(
                 render_mesh.__name__, obj.__name__)

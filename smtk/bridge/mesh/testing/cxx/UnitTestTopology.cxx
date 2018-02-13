@@ -9,7 +9,7 @@
 //=========================================================================
 
 #include "smtk/bridge/mesh/Resource.h"
-#include "smtk/bridge/mesh/operators/ImportOperator.h"
+#include "smtk/bridge/mesh/operators/ImportOperation.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
@@ -26,7 +26,6 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
 
 #include "smtk/operation/Manager.h"
 #include "smtk/resource/Manager.h"
@@ -66,8 +65,8 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
     std::string label = std::string())
   {
     {
-      smtk::bridge::mesh::ImportOperator::Ptr importOp =
-        operationManager->create<smtk::bridge::mesh::ImportOperator>();
+      smtk::bridge::mesh::ImportOperation::Ptr importOp =
+        operationManager->create<smtk::bridge::mesh::ImportOperation>();
       if (!importOp)
       {
         std::cerr << "No import operator\n";
@@ -78,7 +77,7 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
       importOp->parameters()->findString("label")->setValue(label);
       importOp->parameters()->findVoid("construct hierarchy")->setIsEnabled(true);
 
-      smtk::bridge::mesh::ImportOperator::Result importOpResult = importOp->operate();
+      smtk::bridge::mesh::ImportOperation::Result importOpResult = importOp->operate();
 
       smtk::attribute::ComponentItemPtr componentItem =
         std::dynamic_pointer_cast<smtk::attribute::ComponentItem>(
@@ -87,7 +86,7 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
       model = std::dynamic_pointer_cast<smtk::model::Entity>(componentItem->value());
 
       if (importOpResult->findInt("outcome")->value() !=
-        smtk::operation::Operator::OPERATION_SUCCEEDED)
+        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
       {
         std::cerr << "Import operator failed\n";
         return 1;
@@ -193,8 +192,8 @@ int UnitTestTopology(int argc, char* argv[])
 
   // Register import operator to the operation manager
   {
-    operationManager->registerOperator<smtk::bridge::mesh::ImportOperator>(
-      "smtk::bridge::mesh::ImportOperator");
+    operationManager->registerOperation<smtk::bridge::mesh::ImportOperation>(
+      "smtk::bridge::mesh::ImportOperation");
   }
 
   // Register the resource manager to the operation manager (newly created

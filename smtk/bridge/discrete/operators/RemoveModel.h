@@ -10,7 +10,7 @@
 #ifndef __smtk_session_discrete_RemoveModel_h
 #define __smtk_session_discrete_RemoveModel_h
 
-#include "smtk/bridge/discrete/Operator.h"
+#include "smtk/bridge/discrete/Operation.h"
 
 namespace smtk
 {
@@ -19,13 +19,13 @@ namespace bridge
 namespace discrete
 {
 
-class SMTKDISCRETESESSION_EXPORT RemoveModel : public Operator
+class SMTKDISCRETESESSION_EXPORT RemoveModel : public Operation
 {
 public:
   smtkTypeMacro(RemoveModel);
   smtkCreateMacro(RemoveModel);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
-  smtkSuperclassMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
+  smtkSuperclassMacro(Operation);
 
   bool ableToOperate() override;
 

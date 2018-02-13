@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the Polygon "Delete" Operator -->
+<!-- Description of the Polygon "Delete" Operation -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="delete" BaseType="operator" Label="Model Entities - Delete">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="delete" BaseType="operation" Label="Model Entities - Delete">
       <BriefDescription>Delete model entities.</BriefDescription>
       <DetailedDescription>
         Permanently remove model entities (vertices, edges, faces) from a model.

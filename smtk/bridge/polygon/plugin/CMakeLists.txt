@@ -34,7 +34,7 @@ add_paraview_plugin(
               qtExtractContoursView.cxx
   CS_KITS
     vtkSMTKWidgetsExt
-    vtkPolygonOperatorsExt
+    vtkPolygonOperationsExt
   )
 
 target_link_libraries(smtkPolygonSessionPlugin
@@ -49,7 +49,7 @@ target_link_libraries(smtkPolygonSessionPlugin
   LINK_PRIVATE
     vtkPVServerManagerApplicationCS
     vtkSMTKWidgetsExtCS
-    vtkPolygonOperatorsExtCS
+    vtkPolygonOperationsExtCS
     vtkSMTKFilterExtCS
 )
 smtk_install_library(smtkPolygonSessionPlugin)

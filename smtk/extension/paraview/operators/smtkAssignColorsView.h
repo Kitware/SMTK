@@ -23,7 +23,7 @@ class QColor;
 class QIcon;
 class smtkAssignColorsViewInternals;
 
-class SMTKPQOPERATORVIEWSEXT_EXPORT smtkAssignColorsView : public smtk::extension::qtBaseView
+class SMTKPQOPERATIONVIEWSEXT_EXPORT smtkAssignColorsView : public smtk::extension::qtBaseView
 {
   Q_OBJECT
 
@@ -48,8 +48,8 @@ public slots:
   void valueChanged(smtk::attribute::ItemPtr optype) override;
 
 protected slots:
-  virtual void requestOperation(const smtk::model::OperatorPtr& op);
-  virtual void cancelOperation(const smtk::model::OperatorPtr&);
+  virtual void requestOperation(const smtk::operation::OperationPtr& op);
+  virtual void cancelOperation(const smtk::operation::OperationPtr&);
   virtual void clearSelection();
 
   virtual void chooseDefaultColorAndApply();

@@ -45,7 +45,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::model::OperatorResult CreateSphere::operateInternal()
+smtk::operation::OperationResult CreateSphere::operateInternal()
 {
   smtk::attribute::DoubleItem::Ptr centerItem = this->specification()->findDouble("center");
   smtk::attribute::DoubleItem::Ptr radiusItem = this->specification()->findDouble("radius");
@@ -69,7 +69,7 @@ smtk::model::OperatorResult CreateSphere::operateInternal()
   if (!cgmBody)
   {
     smtkInfoMacro(log(), "Failed to create body.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
   // Do this separately because CGM's sphere() method is broken (for OCC at a minimum).
@@ -84,11 +84,11 @@ smtk::model::OperatorResult CreateSphere::operateInternal()
   if (status != CUBIT_SUCCESS)
   {
     smtkInfoMacro(log(), "Failed to translate body.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  smtk::operation::OperationResult result =
+    this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
 
   DLIList<Body*> cgmEntitiesOut;
   cgmEntitiesOut.push(cgmBody);
@@ -102,5 +102,5 @@ smtk::model::OperatorResult CreateSphere::operateInternal()
 } //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::CreateSphere,
+smtkImplementsModelOperation(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::CreateSphere,
   cgm_create_sphere, "create sphere", CreateSphere_xml, smtk::bridge::cgm::Session);

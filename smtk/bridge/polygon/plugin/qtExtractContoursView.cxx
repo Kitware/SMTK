@@ -18,7 +18,7 @@
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtUIManager.h"
-#include "smtk/model/Operator.h"
+#include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/view/View.h"
 
 #include "pqActiveObjects.h"
@@ -80,10 +80,10 @@ public:
     return NULL;
   }
 
-  vtkSMProxy* createVTKContourOperator(vtkSMProxy* sourceProxy)
+  vtkSMProxy* createVTKContourOperation(vtkSMProxy* sourceProxy)
   {
-    vtkSMProxy* smPolyEdgeOp =
-      vtkSMProxyManager::GetProxyManager()->NewProxy("polygon_operators", "PolygonContourOperator");
+    vtkSMProxy* smPolyEdgeOp = vtkSMProxyManager::GetProxyManager()->NewProxy(
+      "polygon_operators", "PolygonContourOperation");
     if (!smPolyEdgeOp)
       return NULL;
     smPolyEdgeOp->UpdateVTKObjects();
@@ -107,7 +107,7 @@ public:
   QPointer<qtAttribute> CurrentAtt;
   QPointer<QVBoxLayout> EditorLayout;
 
-  smtk::weak_ptr<smtk::model::Operator> CurrentOp;
+  smtk::weak_ptr<smtk::operation::Operation> CurrentOp;
   QPointer<pqPipelineSource> CurrentImage;
 };
 
@@ -206,11 +206,11 @@ void qtExtractContoursView::updateAttributeData()
     return;
   }
 
-  smtk::model::OperatorPtr edgeOp =
-    this->uiManager()->activeModelView()->operatorsWidget()->existingOperator(defName);
+  smtk::operation::OperationPtr edgeOp =
+    this->uiManager()->activeModelView()->operatorsWidget()->existingOperation(defName);
   this->Internals->CurrentOp = edgeOp;
   // expecting only 1 instance of the op?
-  smtk::attribute::AttributePtr att = edgeOp->specification();
+  smtk::attribute::AttributePtr att = edgeOp->parameters();
   this->Internals->CurrentAtt = this->Internals->createAttUI(att, this->Widget, this);
 }
 
@@ -219,16 +219,16 @@ void qtExtractContoursView::startContourOperation()
   this->operationSelected(this->Internals->CurrentOp.lock());
 }
 
-void qtExtractContoursView::requestOperation(const smtk::model::OperatorPtr& op)
+void qtExtractContoursView::requestOperation(const smtk::operation::OperationPtr& op)
 {
-  if (!op || !op->specification())
+  if (!op || !op->parameters())
   {
     return;
   }
   this->uiManager()->activeModelView()->requestOperation(op, false);
 }
 
-void qtExtractContoursView::cancelOperation(const smtk::model::OperatorPtr& op)
+void qtExtractContoursView::cancelOperation(const smtk::operation::OperationPtr& op)
 {
   if (!op || !this->Widget || !this->Internals->CurrentAtt)
     return;
@@ -246,13 +246,13 @@ void qtExtractContoursView::acceptContours(pqPipelineSource* contourSource)
     return;
   }
 
-  smtk::attribute::AttributePtr spec = this->Internals->CurrentOp.lock()->specification();
+  smtk::attribute::AttributePtr spec = this->Internals->CurrentOp.lock()->parameters();
   if (spec->type() != "extract contours")
     return;
   smtk::attribute::IntItem::Ptr opProxyIdItem = spec->findInt("HelperGlobalID");
   if (!opProxyIdItem)
     return;
-  vtkSMProxy* smPolyEdgeOp = this->Internals->createVTKContourOperator(contourSource->getProxy());
+  vtkSMProxy* smPolyEdgeOp = this->Internals->createVTKContourOperation(contourSource->getProxy());
   if (!smPolyEdgeOp)
     return;
   if (this->Internals->CurrentImage)
@@ -296,9 +296,9 @@ pqPipelineSource* internal_createImageSource(const std::string& imageurl)
   return source;
 }
 
-void qtExtractContoursView::operationSelected(const smtk::model::OperatorPtr& op)
+void qtExtractContoursView::operationSelected(const smtk::operation::OperationPtr& op)
 {
-  if (!this->Internals->CurrentAtt || !this->Widget || op->name() != "extract contours")
+  if (!this->Internals->CurrentAtt || !this->Widget || op->uniqueName() != "extract contours")
     return;
 
   if (this->Internals->ContoursDialog)
@@ -307,7 +307,7 @@ void qtExtractContoursView::operationSelected(const smtk::model::OperatorPtr& op
     delete this->Internals->ContoursDialog;
   }
 
-  smtk::attribute::AttributePtr spec = op->specification();
+  smtk::attribute::AttributePtr spec = op->parameters();
   smtk::attribute::ModelEntityItem::Ptr modelItem = spec->associations();
   smtk::model::AuxiliaryGeometry aux(modelItem->value(0));
   if (!aux.isValid())

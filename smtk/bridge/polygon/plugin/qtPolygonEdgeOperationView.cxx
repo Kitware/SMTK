@@ -22,7 +22,6 @@
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/model/CellEntity.h"
-#include "smtk/model/Operator.h"
 #include "smtk/view/View.h"
 
 #include "pqActiveObjects.h"
@@ -57,20 +56,20 @@ public:
       delete CurrentAtt;
   }
 
-  bool needArc(const smtk::model::OperatorPtr& op)
+  bool needArc(const smtk::operation::OperationPtr& op)
   {
-    bool able2Op = op && (op->name() == "tweak edge" || op->name() == "create edge") &&
-      op->ensureSpecification();
+    bool able2Op = op && (op->uniqueName() == "smtk::bridge::polygon::TweakEdge" ||
+                           op->uniqueName() == "smtk::bridge::polygon::CreateEdge") &&
+      op->ableToOperate();
     if (!able2Op)
     {
       return able2Op;
     }
 
     // for create-edge operation, we only handle "interactive widget" case
-    if (op->name() == "create edge")
+    if (op->uniqueName() == "smtk::bridge::polygon::CreateEdge")
     {
-      smtk::attribute::IntItem::Ptr optypeItem =
-        op->specification()->findInt("construction method");
+      smtk::attribute::IntItem::Ptr optypeItem = op->parameters()->findInt("construction method");
       able2Op = optypeItem && (optypeItem->discreteIndex(0) == 2);
     }
 
@@ -102,7 +101,7 @@ public:
   QPointer<QVBoxLayout> EditorLayout;
 
   QPointer<pqSplitEdgeWidget> SplitEdgeWidget;
-  smtk::weak_ptr<smtk::model::Operator> CurrentOp;
+  smtk::weak_ptr<smtk::operation::Operation> CurrentOp;
   std::map<smtk::common::UUID, int> EntitiesToVisibility;
   bool m_useSelectionManager;
 };
@@ -163,8 +162,8 @@ void qtPolygonEdgeOperationView::createWidget()
 
   QObject::disconnect(this->uiManager()->activeModelView());
   QObject::connect(this->uiManager()->activeModelView(),
-    SIGNAL(operationCancelled(const smtk::model::OperatorPtr&)), this,
-    SLOT(cancelOperation(const smtk::model::OperatorPtr&)));
+    SIGNAL(operationCancelled(const smtk::operation::OperationPtr&)), this,
+    SLOT(cancelOperation(const smtk::operation::OperationPtr&)));
 }
 
 void qtPolygonEdgeOperationView::updateAttributeData()
@@ -186,7 +185,7 @@ void qtPolygonEdgeOperationView::updateAttributeData()
     return;
   }
   smtk::view::View::Component& comp = view->details().child(i);
-  // for now, we only handle "tweak edge" operator; later we could use a list
+  // for now, we only handle "smtk::bridge::polygon::TweakEdge" operator; later we could use a list
   // to show all operators (attributes), and a panel underneath to edit current
   // selected operator.
   std::string defName;
@@ -199,7 +198,8 @@ void qtPolygonEdgeOperationView::updateAttributeData()
     }
     std::string optype;
     if (attComp.attribute("Type", optype) &&
-      (optype == "tweak edge" || optype == "create edge" || "split edge"))
+      (optype == "smtk::bridge::polygon::TweakEdge" ||
+          optype == "smtk::bridge::polygon::CreateEdge" || "smtk::bridge::polygon::SplitEdge"))
     {
       defName = optype;
       break;
@@ -210,15 +210,15 @@ void qtPolygonEdgeOperationView::updateAttributeData()
     return;
   }
 
-  smtk::model::OperatorPtr edgeOp =
-    this->uiManager()->activeModelView()->operatorsWidget()->existingOperator(defName);
+  smtk::operation::OperationPtr edgeOp =
+    this->uiManager()->activeModelView()->operatorsWidget()->existingOperation(defName);
   this->Internals->CurrentOp = edgeOp;
   // expecting only 1 instance of the op?
-  smtk::attribute::AttributePtr att = edgeOp->specification();
+  smtk::attribute::AttributePtr att = edgeOp->parameters();
   this->Internals->CurrentAtt = this->Internals->createAttUI(att, this->Widget, this);
   // The arc widget interaction is only needed for:
-  // * create edge op : with "construction method" set to "interactive widget"
-  // * tweak edge
+  // * smtk::bridge::polygon::CreateEdge op : with "construction method" set to "interactive widget"
+  // * smtk::bridge::polygon::TweakEdge
   if (this->Internals->needArc(edgeOp))
   {
     pqRenderView* renView = qobject_cast<pqRenderView*>(pqActiveObjects::instance().activeView());
@@ -246,10 +246,10 @@ void qtPolygonEdgeOperationView::updateAttributeData()
     }
 
     pqPolygonArc* objArc = new pqPolygonArc;
-    objArc->setEdgeOperator(edgeOp);
+    objArc->setEdgeOperation(edgeOp);
     this->Internals->ArcManager->setActiveArc(objArc);
-    QObject::connect(objArc, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)), this,
-      SLOT(requestOperation(const smtk::model::OperatorPtr&)));
+    QObject::connect(objArc, SIGNAL(operationRequested(const smtk::operation::OperationPtr&)), this,
+      SLOT(requestOperation(const smtk::operation::OperationPtr&)));
     QObject::connect(objArc, SIGNAL(activateModel(const smtk::common::UUID&)),
       this->uiManager()->activeModelView()->operatorsWidget(),
       SLOT(setOperationTargetActive(const smtk::common::UUID&)));
@@ -258,16 +258,16 @@ void qtPolygonEdgeOperationView::updateAttributeData()
   this->operationSelected(edgeOp);
 }
 
-void qtPolygonEdgeOperationView::requestOperation(const smtk::model::OperatorPtr& op)
+void qtPolygonEdgeOperationView::requestOperation(const smtk::operation::OperationPtr& op)
 {
-  if (!op || !op->specification())
+  if (!op || !op->parameters())
   {
     return;
   }
   this->uiManager()->activeModelView()->requestOperation(op, false);
 }
 
-void qtPolygonEdgeOperationView::cancelOperation(const smtk::model::OperatorPtr& op)
+void qtPolygonEdgeOperationView::cancelOperation(const smtk::operation::OperationPtr& op)
 {
   if (!op || !this->Widget || !this->Internals->CurrentAtt)
     return;
@@ -283,9 +283,9 @@ void qtPolygonEdgeOperationView::cancelOperation(const smtk::model::OperatorPtr&
 
 void qtPolygonEdgeOperationView::valueChanged(smtk::attribute::ItemPtr valitem)
 {
-  // "create edge" op "construction method" changed.
+  // "smtk::bridge::polygon::CreateEdge" op "construction method" changed.
   if (!this->Internals->CurrentAtt || !this->Widget || !this->Internals->CurrentOp.lock() ||
-    this->Internals->CurrentOp.lock()->name() != "create edge")
+    this->Internals->CurrentOp.lock()->uniqueName() != "smtk::bridge::polygon::CreateEdge")
   {
     return;
   }
@@ -314,11 +314,11 @@ void qtPolygonEdgeOperationView::onHideAllFaces(bool status)
   }
 
   smtk::model::SessionRef activeSession = qtActiveObjects::instance().activeModel().session();
-  smtk::model::OperatorPtr setPropertyOp; // = activeSession.op("set property");
+  smtk::operation::OperationPtr setPropertyOp; // = activeSession.op("set property");
 
-  if (setPropertyOp && setPropertyOp->specification())
+  if (setPropertyOp && setPropertyOp->parameters())
   {
-    setPropertyOp->specification()->collection()->setRefModelManager(activeSession.manager());
+    setPropertyOp->parameters()->collection()->setRefModelManager(activeSession.manager());
     if (status)
     { // cache faces' visiblity and set them all to invisible
       for (const auto& face : faces)
@@ -370,7 +370,7 @@ void qtPolygonEdgeOperationView::clearSelection()
   this->uiManager()->activeModelView()->clearSelection();
 }
 
-void qtPolygonEdgeOperationView::operationSelected(const smtk::model::OperatorPtr& op)
+void qtPolygonEdgeOperationView::operationSelected(const smtk::operation::OperationPtr& op)
 {
   if (!this->Internals->CurrentAtt || !this->Widget)
     return;
@@ -385,11 +385,11 @@ void qtPolygonEdgeOperationView::operationSelected(const smtk::model::OperatorPt
 
     // This handles ui panel update when we need an arc-edit widget
     QWidget* prevUiWidget = this->Internals->ArcManager->getActiveWidget();
-    if (op->name() == "create edge")
+    if (op->uniqueName() == "smtk::bridge::polygon::CreateEdge")
     {
       this->Internals->ArcManager->create();
     }
-    else if (op->name() == "tweak edge")
+    else if (op->uniqueName() == "smtk::bridge::polygon::TweakEdge")
     {
       this->Internals->ArcManager->edit();
     }
@@ -453,14 +453,15 @@ void qtPolygonEdgeOperationView::operationSelected(const smtk::model::OperatorPt
     }
 
     // for edge operations that do not need arc-edit widget
-    // * create edge op : "points" and "vertex ids" // no custom ui needed
-    // * split edge: // this need a special
-    if (op->name() == "split edge") // otherwise, only handle split edge custom ui
+    // * smtk::bridge::polygon::CreateEdge op : "points" and "vertex ids" // no custom ui needed
+    // * smtk::bridge::polygon::SplitEdge: // this need a special
+    if (op->uniqueName() ==
+      "smtk::bridge::polygon::SplitEdge") // otherwise, only handle smtk::bridge::polygon::SplitEdge custom ui
     {
       // If this is the same operator the SplitEdgeWidget is actively working with,
       // then nothing to do here
       if (this->Internals->SplitEdgeWidget && this->Internals->SplitEdgeWidget->isActive() &&
-        this->Internals->SplitEdgeWidget->edgeOperator() == op)
+        this->Internals->SplitEdgeWidget->edgeOperation() == op)
       {
         return;
       }
@@ -470,8 +471,8 @@ void qtPolygonEdgeOperationView::operationSelected(const smtk::model::OperatorPt
         this->Internals->SplitEdgeWidget = new pqSplitEdgeWidget(this->Widget);
         this->Internals->EditorLayout->addWidget(this->Internals->SplitEdgeWidget);
         QObject::connect(this->Internals->SplitEdgeWidget,
-          SIGNAL(operationRequested(const smtk::model::OperatorPtr&)), this,
-          SLOT(requestOperation(const smtk::model::OperatorPtr&)));
+          SIGNAL(operationRequested(const smtk::operation::OperationPtr&)), this,
+          SLOT(requestOperation(const smtk::operation::OperationPtr&)));
         QObject::connect(this->Internals->SplitEdgeWidget, SIGNAL(hideAllFaces(bool)), this,
           SLOT(onHideAllFaces(bool)));
       }
@@ -479,7 +480,7 @@ void qtPolygonEdgeOperationView::operationSelected(const smtk::model::OperatorPt
       pqRenderView* renView = qobject_cast<pqRenderView*>(pqActiveObjects::instance().activeView());
       this->Internals->SplitEdgeWidget->resetWidget();
       this->Internals->SplitEdgeWidget->setView(renView);
-      this->Internals->SplitEdgeWidget->setEdgeOperator(op);
+      this->Internals->SplitEdgeWidget->setEdgeOperation(op);
       this->Internals->SplitEdgeWidget->setVisible(true);
     }
   }

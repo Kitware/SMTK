@@ -17,7 +17,7 @@ namespace smtk
 {
 namespace operation
 {
-ResourceAccessMap extractResourcesAndPermissions(NewOp::Specification specification)
+ResourceAccessMap extractResourcesAndPermissions(Operation::Specification specification)
 {
   ResourceAccessMap resourcesAndPermissions;
 
@@ -85,9 +85,9 @@ ResourceAccessMap extractResourcesAndPermissions(NewOp::Specification specificat
   return resourcesAndPermissions;
 }
 
-ComponentDefinitionVector extractComponentDefinitions(NewOp::Specification specification)
+ComponentDefinitionVector extractComponentDefinitions(Operation::Specification specification)
 {
-  // If we are passed a bad specification, then nothing its associated operator
+  // If we are passed a bad specification, then nothing its associated operation
   // can accept no definitions. We return an empty vector of component
   // definitions.
   if (specification == nullptr)

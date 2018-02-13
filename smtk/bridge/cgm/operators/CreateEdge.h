@@ -10,7 +10,7 @@
 #ifndef __smtk_session_cgm_CreateEdge_h
 #define __smtk_session_cgm_CreateEdge_h
 
-#include "smtk/bridge/cgm/Operator.h"
+#include "smtk/bridge/cgm/Operation.h"
 
 namespace smtk
 {
@@ -23,16 +23,16 @@ namespace cgm
   *
   * The number of sides must be 3 or greater.
   */
-class SMTKCGMSESSION_EXPORT CreateEdge : public Operator
+class SMTKCGMSESSION_EXPORT CreateEdge : public Operation
 {
 public:
   smtkTypeMacro(CreateEdge);
   smtkCreateMacro(CreateEdge);
-  smtkSharedFromThisMacro(Operator);
-  smtkDeclareModelOperator();
+  smtkSharedFromThisMacro(Operation);
+  smtkDeclareModelOperation();
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
 };
 
 } // namespace cgm

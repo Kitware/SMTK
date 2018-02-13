@@ -22,7 +22,7 @@ class QIcon;
 class QMouseEvent;
 class smtkSaveModelViewInternals;
 
-class SMTKPQOPERATORVIEWSEXT_EXPORT smtkSaveModelView : public smtkModelIOView
+class SMTKPQOPERATIONVIEWSEXT_EXPORT smtkSaveModelView : public smtkModelIOView
 {
   Q_OBJECT
 
@@ -59,8 +59,8 @@ public slots:
   bool attemptSave(const std::string& mode) override;
 
 protected slots:
-  virtual bool requestOperation(const smtk::model::OperatorPtr& op);
-  virtual void cancelOperation(const smtk::model::OperatorPtr&);
+  virtual bool requestOperation(const smtk::operation::OperationPtr& op);
+  virtual void cancelOperation(const smtk::operation::OperationPtr&);
   virtual void clearSelection();
 
   // This slot is used to indicate that the underlying attribute
@@ -80,7 +80,7 @@ protected:
   virtual void setInfoToBeDisplayed() override;
 
   template <typename T>
-  bool updateOperatorFromUI(const std::string& mode, const T& action);
+  bool updateOperationFromUI(const std::string& mode, const T& action);
 
 private:
   smtkSaveModelViewInternals* Internals;

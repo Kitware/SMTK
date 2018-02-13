@@ -62,7 +62,7 @@ class TestCGMSolidModeling(smtk.testing.TestCase):
         res2 = cs2.operate()
         sph2 = res2.findModelEntity('created').value(0)
 
-        print('Operators that can associate with ' + sph2.flagSummary(1) + ' include\n  %s' %
+        print('Operations that can associate with ' + sph2.flagSummary(1) + ' include\n  %s' %
               '\n  '.join(self.sref.operatorsForAssociation(sph2.entityFlags())))
 
         u1 = self.sref.op('union')

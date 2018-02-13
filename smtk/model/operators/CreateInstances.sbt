@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the model "CreateInstances" Operator -->
+<!-- Description of the model "CreateInstances" Operation -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="create instances" BaseType="operator" Label="Model Entities - Create Instances">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="create instances" BaseType="operation" Label="Model Entities - Create Instances">
       <AssociationsDef Name="entities" NumberOfRequiredValues="1">
         <MembershipMask>cell|aux_geom</MembershipMask>
       </AssociationsDef>

@@ -84,8 +84,8 @@ class VoidItemDefinition;
 
 namespace operation
 {
+class Operation;
 class Manager;
-class Operator;
 }
 
 namespace extension
@@ -168,10 +168,8 @@ class MeshPhrase;
 class MeshListPhrase;
 class Model;
 typedef std::vector<Model> Models;
-class Operator;
 class PropertyValuePhrase;
 class PropertyListPhrase;
-class RemoteOperator;
 class Shell;
 typedef std::vector<smtk::model::Shell> Shells;
 class ShellEntity;
@@ -236,7 +234,7 @@ namespace io
 {
 class SaveJSON;
 class LoadJSON;
-class OperatorLog;
+class OperationLog;
 class Logger;
 typedef smtk::shared_ptr<smtk::io::Logger> LoggerPtr;
 }
@@ -260,10 +258,10 @@ typedef std::set<ComponentPtr> ComponentSet;
 
 namespace operation
 {
+typedef smtk::shared_ptr<smtk::operation::Operation> OperationPtr;
+typedef smtk::weak_ptr<smtk::operation::Operation> WeakOperationPtr;
 typedef smtk::shared_ptr<smtk::operation::Manager> ManagerPtr;
 typedef smtk::weak_ptr<smtk::operation::Manager> WeakManagerPtr;
-typedef smtk::shared_ptr<smtk::operation::Operator> OperatorPtr;
-typedef smtk::weak_ptr<smtk::operation::Operator> WeakOperatorPtr;
 }
 
 namespace mesh
@@ -310,13 +308,6 @@ typedef smtk::shared_ptr<smtk::model::SimpleModelSubphrases> SimpleModelSubphras
 typedef smtk::shared_ptr<smtk::model::SubphraseGenerator> SubphraseGeneratorPtr;
 typedef smtk::shared_ptr<smtk::model::Manager> ManagerPtr;
 typedef smtk::weak_ptr<smtk::model::Manager> WeakManagerPtr;
-typedef smtk::shared_ptr<smtk::model::Operator> OperatorPtr;
-typedef smtk::weak_ptr<smtk::model::Operator> WeakOperatorPtr;
-typedef std::set<smtk::model::OperatorPtr> Operators;
-typedef smtk::shared_ptr<smtk::model::RemoteOperator> RemoteOperatorPtr;
-typedef std::function<smtk::model::OperatorPtr()> OperatorConstructor;
-typedef std::pair<std::string, OperatorConstructor> StaticOperatorInfo;
-typedef std::map<std::string, StaticOperatorInfo> OperatorConstructors;
 typedef smtk::shared_ptr<smtk::model::Entity> EntityPtr;
 typedef smtk::weak_ptr<smtk::model::Entity> WeakEntityPtr;
 typedef std::vector<smtk::model::EntityPtr> EntityArray;
@@ -329,11 +320,6 @@ typedef smtk::weak_ptr<smtk::model::Tessellation> WeakTessellationPtr;
 typedef smtk::shared_ptr<smtk::model::GridInfo> GridInfoPtr;
 typedef smtk::shared_ptr<smtk::model::GridInfo2D> GridInfo2DPtr;
 typedef smtk::shared_ptr<smtk::model::GridInfo3D> GridInfo3DPtr;
-
-// Model-related typedefs (dependent on attribute classes)
-typedef smtk::shared_ptr<smtk::attribute::Definition> OperatorDefinition;
-typedef smtk::shared_ptr<smtk::attribute::Attribute> OperatorSpecification;
-typedef smtk::shared_ptr<smtk::attribute::Attribute> OperatorResult;
 }
 
 namespace attribute

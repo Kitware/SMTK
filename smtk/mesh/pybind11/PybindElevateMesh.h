@@ -15,13 +15,13 @@
 
 #include "smtk/mesh/operators/ElevateMesh.h"
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::mesh::ElevateMesh, smtk::operation::XMLOperator > pybind11_init_smtk_mesh_ElevateMesh(py::module &m)
+PySharedPtrClass< smtk::mesh::ElevateMesh, smtk::operation::XMLOperation > pybind11_init_smtk_mesh_ElevateMesh(py::module &m)
 {
-  PySharedPtrClass< smtk::mesh::ElevateMesh, smtk::operation::XMLOperator > instance(m, "ElevateMesh");
+  PySharedPtrClass< smtk::mesh::ElevateMesh, smtk::operation::XMLOperation > instance(m, "ElevateMesh");
   instance
     .def(py::init<>())
     .def(py::init<::smtk::mesh::ElevateMesh const &>())

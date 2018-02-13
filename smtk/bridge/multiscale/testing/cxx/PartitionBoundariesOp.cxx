@@ -11,7 +11,7 @@
 #include "smtk/PythonAutoInit.h"
 
 #include "smtk/bridge/mesh/RegisterSession.h"
-#include "smtk/bridge/mesh/operators/ImportOperator.h"
+#include "smtk/bridge/mesh/operators/ImportOperation.h"
 
 #include "smtk/bridge/multiscale/RegisterSession.h"
 #include "smtk/bridge/multiscale/Session.h"
@@ -35,7 +35,6 @@
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/SimpleModelSubphrases.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Vertex.h"
@@ -102,8 +101,8 @@ int PartitionBoundariesOp(int argc, char* argv[])
   operationManager->registerResourceManager(resourceManager);
 
   // Create an import operator
-  smtk::operation::NewOp::Ptr importOp =
-    operationManager->create<smtk::bridge::mesh::ImportOperator>();
+  smtk::operation::Operation::Ptr importOp =
+    operationManager->create<smtk::bridge::mesh::ImportOperation>();
   if (!importOp)
   {
     std::cerr << "No import operator\n";
@@ -115,10 +114,10 @@ int PartitionBoundariesOp(int argc, char* argv[])
 
   importOp->parameters()->findFile("filename")->setValue(importFilePath);
 
-  smtk::operation::NewOp::Result importOpResult = importOp->operate();
+  smtk::operation::Operation::Result importOpResult = importOp->operate();
 
   if (importOpResult->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "Import operator failed\n";
     return 1;
@@ -133,7 +132,7 @@ int PartitionBoundariesOp(int argc, char* argv[])
   smtk::model::Entity::Ptr model =
     std::dynamic_pointer_cast<smtk::model::Entity>(componentItem->value());
 
-  smtk::operation::NewOp::Ptr revolveOp =
+  smtk::operation::Operation::Ptr revolveOp =
     operationManager->create<smtk::bridge::multiscale::Revolve>();
   if (!revolveOp)
   {
@@ -151,9 +150,9 @@ int PartitionBoundariesOp(int argc, char* argv[])
   revolveOp->parameters()->findDouble("axis-position")->setValue(1, 0.);
   revolveOp->parameters()->findDouble("axis-position")->setValue(2, 0.);
 
-  smtk::operation::NewOp::Result revolveOpResult = revolveOp->operate();
+  smtk::operation::Operation::Result revolveOpResult = revolveOp->operate();
   if (revolveOpResult->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "Revolve operator failed\n";
     return 1;
@@ -166,7 +165,7 @@ int PartitionBoundariesOp(int argc, char* argv[])
   // Access the generated model
   model = std::dynamic_pointer_cast<smtk::model::Entity>(componentItem->value());
 
-  smtk::operation::NewOp::Ptr partitionBoundariesOp =
+  smtk::operation::Operation::Ptr partitionBoundariesOp =
     operationManager->create<smtk::bridge::multiscale::PartitionBoundaries>();
   if (!partitionBoundariesOp)
   {
@@ -180,10 +179,10 @@ int PartitionBoundariesOp(int argc, char* argv[])
   partitionBoundariesOp->parameters()->findDouble("origin")->setValue(2, 0.);
   partitionBoundariesOp->parameters()->findDouble("radius")->setValue(1.2);
 
-  smtk::operation::NewOp::Result partitionBoundariesOpResult = partitionBoundariesOp->operate();
+  smtk::operation::Operation::Result partitionBoundariesOpResult = partitionBoundariesOp->operate();
 
   if (partitionBoundariesOpResult->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "partition boundaries operator failed\n";
     return 1;

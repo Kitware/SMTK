@@ -21,7 +21,7 @@
 
 class vtkPolyData;
 
-class VTKPOLYGONOPERATORSEXT_EXPORT vtkPolygonArcProvider : public vtkPolyDataAlgorithm
+class VTKPOLYGONOPERATIONSEXT_EXPORT vtkPolygonArcProvider : public vtkPolyDataAlgorithm
 {
 public:
   static vtkPolygonArcProvider* New();

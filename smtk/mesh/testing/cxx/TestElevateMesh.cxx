@@ -20,7 +20,7 @@
 #include "smtk/attribute/VoidItem.h"
 
 #include "smtk/bridge/discrete/Resource.h"
-#include "smtk/bridge/discrete/operators/ImportOperator.h"
+#include "smtk/bridge/discrete/operators/ImportOperation.h"
 
 #include "smtk/extension/vtk/source/PointCloudFromVTKAuxiliaryGeometry.h"
 #include "smtk/extension/vtk/source/StructuredGridFromVTKAuxiliaryGeometry.h"
@@ -111,7 +111,7 @@ int TestElevateMesh(int argc, char* argv[])
   (void)argc;
   (void)argv;
 
-  smtk::operation::NewOp::Ptr importOp = smtk::bridge::discrete::ImportOperator::create();
+  smtk::operation::Operation::Ptr importOp = smtk::bridge::discrete::ImportOperation::create();
 
   if (!importOp)
   {
@@ -126,9 +126,9 @@ int TestElevateMesh(int argc, char* argv[])
     std::cout << "Importing " << file_path << "\n";
   }
 
-  smtk::operation::NewOp::Result importOpResult = importOp->operate();
+  smtk::operation::Operation::Result importOpResult = importOp->operate();
   if (importOpResult->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "Import operator failed\n";
     return 1;
@@ -175,7 +175,7 @@ int TestElevateMesh(int argc, char* argv[])
   }
 
   // add auxiliary geometry
-  smtk::operation::NewOp::Ptr auxGeoOp = smtk::model::AddAuxiliaryGeometry::create();
+  smtk::operation::Operation::Ptr auxGeoOp = smtk::model::AddAuxiliaryGeometry::create();
 
   {
     std::string file_path(data_root);
@@ -184,9 +184,9 @@ int TestElevateMesh(int argc, char* argv[])
   }
 
   auxGeoOp->parameters()->associateEntity(model2dm);
-  smtk::operation::NewOp::Result auxGeoOpResult = auxGeoOp->operate();
+  smtk::operation::Operation::Result auxGeoOpResult = auxGeoOp->operate();
   if (auxGeoOpResult->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cerr << "Add auxiliary geometry failed!\n";
     return 1;
@@ -211,7 +211,7 @@ int TestElevateMesh(int argc, char* argv[])
   {
     // create the elevate mesh operator
     std::cout << "Creating elevate mesh operator\n";
-    smtk::operation::NewOp::Ptr elevateMesh = smtk::mesh::ElevateMesh::create();
+    smtk::operation::Operation::Ptr elevateMesh = smtk::mesh::ElevateMesh::create();
     if (!elevateMesh)
     {
       std::cerr << "No Elevate Mesh operator!\n";
@@ -225,9 +225,9 @@ int TestElevateMesh(int argc, char* argv[])
     elevateMesh->parameters()->findDouble("radius")->setValue(7.);
     elevateMesh->parameters()->findMesh("mesh")->appendValue(mesh);
 
-    smtk::operation::NewOp::Result bathyResult = elevateMesh->operate();
+    smtk::operation::Operation::Result bathyResult = elevateMesh->operate();
     if (bathyResult->findInt("outcome")->value() !=
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Elevate mesh operator failed\n";
       return 1;
@@ -249,7 +249,7 @@ int TestElevateMesh(int argc, char* argv[])
   {
     // create the undo elevate mesh operator
     std::cout << "Creating undo elevate mesh operator\n";
-    smtk::operation::NewOp::Ptr undoElevateMesh = smtk::mesh::UndoElevateMesh::create();
+    smtk::operation::Operation::Ptr undoElevateMesh = smtk::mesh::UndoElevateMesh::create();
     if (!undoElevateMesh)
     {
       std::cerr << "No Undo Elevate Mesh operator!\n";
@@ -258,9 +258,9 @@ int TestElevateMesh(int argc, char* argv[])
 
     undoElevateMesh->parameters()->findMesh("mesh")->appendValue(mesh);
 
-    smtk::operation::NewOp::Result result = undoElevateMesh->operate();
+    smtk::operation::Operation::Result result = undoElevateMesh->operate();
     if (result->findInt("outcome")->value() !=
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED))
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
       std::cerr << "Undo elevate mesh operator failed\n";
       return 1;

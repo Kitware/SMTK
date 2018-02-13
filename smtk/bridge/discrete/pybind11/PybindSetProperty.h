@@ -15,13 +15,12 @@
 
 #include "smtk/bridge/discrete/operators/SetProperty.h"
 
-#include "smtk/model/Operator.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::discrete::SetProperty, smtk::model::Operator > pybind11_init_smtk_bridge_discrete_SetProperty(py::module &m)
+PySharedPtrClass< smtk::bridge::discrete::SetProperty, smtk::operation::Operation > pybind11_init_smtk_bridge_discrete_SetProperty(py::module &m)
 {
-  PySharedPtrClass< smtk::bridge::discrete::SetProperty, smtk::model::Operator > instance(m, "SetProperty");
+  PySharedPtrClass< smtk::bridge::discrete::SetProperty, smtk::operation::Operation > instance(m, "SetProperty");
   instance
     .def(py::init<>())
     .def(py::init<::smtk::bridge::discrete::SetProperty const &>())

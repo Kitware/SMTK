@@ -158,7 +158,7 @@ protected:
 
   friend class vtkCMBModelRepresentation;
   friend class vtkCMBModelSelectionSource;
-  friend class vtkModelEntityOperator;
+  friend class vtkModelEntityOperation;
   friend class vtkCMBModelSource;
   friend class vtkCMBModelMapper;
 

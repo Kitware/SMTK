@@ -55,13 +55,4 @@ void pybind11_init_smtk_model_ManagerEventRelationType(py::module &m)
     .export_values();
 }
 
-void pybind11_init_smtk_model_OperatorEventType(py::module &m)
-{
-  py::enum_<smtk::model::OperatorEventType>(m, "OperatorEventType")
-    .value("CREATED_OPERATOR", smtk::model::OperatorEventType::CREATED_OPERATOR)
-    .value("WILL_OPERATE", smtk::model::OperatorEventType::WILL_OPERATE)
-    .value("DID_OPERATE", smtk::model::OperatorEventType::DID_OPERATE)
-    .export_values();
-}
-
 #endif

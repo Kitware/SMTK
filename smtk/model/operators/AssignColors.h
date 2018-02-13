@@ -10,20 +10,20 @@
 #ifndef __smtk_model_AssignColors_h
 #define __smtk_model_AssignColors_h
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace smtk
 {
 namespace model
 {
 
-class SMTKCORE_EXPORT AssignColors : public smtk::operation::XMLOperator
+class SMTKCORE_EXPORT AssignColors : public smtk::operation::XMLOperation
 {
 public:
   smtkTypeMacro(AssignColors);
   smtkCreateMacro(AssignColors);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
-  smtkSuperclassMacro(smtk::operation::XMLOperator);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
+  smtkSuperclassMacro(smtk::operation::XMLOperation);
 
 protected:
   Result operateInternal() override;

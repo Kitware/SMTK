@@ -12,20 +12,20 @@
 #ifndef __VTK_WRAP__
 
 #include "smtk/extension/vtk/operators/Exports.h" // For export macro
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace smtk
 {
 namespace model
 {
 
-class VTKSMTKOPERATORSEXT_EXPORT ExportEdgesToVTK : public smtk::operation::XMLOperator
+class VTKSMTKOPERATIONSEXT_EXPORT ExportEdgesToVTK : public smtk::operation::XMLOperation
 {
 public:
   smtkTypeMacro(ExportEdgesToVTK);
   smtkCreateMacro(ExportEdgesToVTK);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
-  smtkSuperclassMacro(smtk::operation::XMLOperator);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
+  smtkSuperclassMacro(smtk::operation::XMLOperation);
 
 protected:
   Result operateInternal() override;

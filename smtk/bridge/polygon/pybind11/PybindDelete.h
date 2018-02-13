@@ -15,11 +15,11 @@
 
 #include "smtk/bridge/polygon/operators/Delete.h"
 
-#include "smtk/bridge/polygon/Operator.h"
+#include "smtk/bridge/polygon/Operation.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::polygon::Delete> pybind11_init_smtk_bridge_polygon_Delete(py::module &m, PySharedPtrClass< smtk::bridge::polygon::Operator, smtk::operation::XMLOperator >& parent)
+PySharedPtrClass< smtk::bridge::polygon::Delete> pybind11_init_smtk_bridge_polygon_Delete(py::module &m, PySharedPtrClass< smtk::bridge::polygon::Operation, smtk::operation::XMLOperation >& parent)
 {
   PySharedPtrClass< smtk::bridge::polygon::Delete > instance(m, "Delete", parent);
   instance

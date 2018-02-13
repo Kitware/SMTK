@@ -18,7 +18,6 @@
 #include "smtk/model/Face.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/Vertex.h"
 #include <complex>
@@ -55,11 +54,11 @@ int UnitTestPolygonCreateFacesFromEdges(int argc, char* argv[])
 
   // Register operators to the operation manager
   {
-    operationManager->registerOperator<smtk::bridge::polygon::CreateModel>(
+    operationManager->registerOperation<smtk::bridge::polygon::CreateModel>(
       "smtk::bridge::polygon::CreateModel");
-    operationManager->registerOperator<smtk::bridge::polygon::CreateEdgeFromPoints>(
+    operationManager->registerOperation<smtk::bridge::polygon::CreateEdgeFromPoints>(
       "smtk::bridge::polygon::CreateEdgeFromPoints");
-    operationManager->registerOperator<smtk::bridge::polygon::CreateFacesFromEdges>(
+    operationManager->registerOperation<smtk::bridge::polygon::CreateFacesFromEdges>(
       "smtk::bridge::polygon::CreateFacesFromEdges");
   }
 
@@ -72,7 +71,7 @@ int UnitTestPolygonCreateFacesFromEdges(int argc, char* argv[])
     operationManager->create<smtk::bridge::polygon::CreateModel>();
 
   // Apply the operation and check the result
-  smtk::operation::NewOp::Result createOpResult = createOp->operate();
+  smtk::operation::Operation::Result createOpResult = createOp->operate();
 
   // Retrieve the resulting model item
   smtk::attribute::ComponentItemPtr componentItem =
@@ -111,9 +110,9 @@ int UnitTestPolygonCreateFacesFromEdges(int argc, char* argv[])
   }
 
   // Apply the create edge from ponits operation
-  smtk::operation::NewOp::Result res = createEdgeFromPointsOp->operate();
+  smtk::operation::Operation::Result res = createEdgeFromPointsOp->operate();
   test(res->findInt("outcome")->value() ==
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Create edge from points operator failed");
 
   // Check the created edge and vertices
@@ -141,7 +140,7 @@ int UnitTestPolygonCreateFacesFromEdges(int argc, char* argv[])
   test(createFacesFromEdgesOp->parameters()->associateEntity(edges[0]), "Could not associate edge");
   res = createFacesFromEdgesOp->operate();
   test(res->findInt("outcome")->value() ==
-      static_cast<int>(smtk::operation::NewOp::Outcome::SUCCEEDED),
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Create faces from edges operator failed");
 
   // Verify that face has been created

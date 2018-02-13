@@ -10,7 +10,7 @@
 #ifndef __smtk_session_polygon_DemoteVertex_h
 #define __smtk_session_polygon_DemoteVertex_h
 
-#include "smtk/bridge/polygon/Operator.h"
+#include "smtk/bridge/polygon/Operation.h"
 
 namespace smtk
 {
@@ -23,16 +23,16 @@ namespace polygon
   *
   * Self-intersecting edges are broken into multiple non-self-intersecting edges.
   */
-class SMTKPOLYGONSESSION_EXPORT DemoteVertex : public Operator
+class SMTKPOLYGONSESSION_EXPORT DemoteVertex : public Operation
 {
 public:
   smtkTypeMacro(DemoteVertex);
   smtkCreateMacro(DemoteVertex);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
-  smtkSuperclassMacro(Operator);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
+  smtkSuperclassMacro(Operation);
 
 protected:
-  smtk::model::OperatorResult operateInternal() override;
+  Result operateInternal() override;
   virtual const char* xmlDescription() const override;
 };
 

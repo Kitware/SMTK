@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the model "AddAuxiliaryGeometry" Operator -->
+<!-- Description of the model "AddAuxiliaryGeometry" Operation -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="add auxiliary geometry" BaseType="operator" Label="Model - Add Auxiliary Geometry">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="add auxiliary geometry" BaseType="operation" Label="Model - Add Auxiliary Geometry">
       <!-- In the future Label shoud be removed when SMTK supports compound auxiliary geometry -->
       <AssociationsDef Name="entities" Label="model" NumberOfRequiredValues="1">
         <MembershipMask>model</MembershipMask>
@@ -117,7 +117,7 @@
     </AttDef>
   </Definitions>
     <Views>
-    <View Type="Operator" Title="Add Aux Geometry" FilterByAdvanceLevel="true" UseSelectionManager="true">
+    <View Type="Operation" Title="Add Aux Geometry" FilterByAdvanceLevel="true" UseSelectionManager="true">
       <InstancedAttributes>
         <Att Type="add auxiliary geometry"/>
       </InstancedAttributes>

@@ -41,7 +41,7 @@ DemoteVertex::Result DemoteVertex::operateInternal()
   if (!vertexToDemote.isValid())
   {
     smtkErrorMacro(this->log(), "The input vertex (" << vertexToDemote.entity() << ") is invalid.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   smtk::bridge::polygon::Resource::Ptr resource =
@@ -53,17 +53,17 @@ DemoteVertex::Result DemoteVertex::operateInternal()
   if (!storage || !mod)
   {
     smtkErrorMacro(this->log(), "The input vertex has no storage or no parent model set.");
-    return this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   smtk::model::EntityRefs created;
   smtk::model::EntityRefs modified;
   smtk::model::EntityRefs expunged;
   bool ok = mod->demoteModelVertex(resource, storage, created, modified, expunged);
-  smtk::model::OperatorResult opResult;
+  Result opResult;
   if (ok)
   {
-    opResult = this->createResult(smtk::operation::NewOp::Outcome::SUCCEEDED);
+    opResult = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
     smtk::attribute::ComponentItem::Ptr createdItem = opResult->findComponent("created");
     for (auto it = created.begin(); it != created.end(); ++it)
@@ -85,7 +85,7 @@ DemoteVertex::Result DemoteVertex::operateInternal()
   }
   else
   {
-    opResult = this->createResult(smtk::operation::NewOp::Outcome::FAILED);
+    opResult = this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   return opResult;

@@ -12,7 +12,7 @@
 
 #include "smtk/bridge/mesh/Exports.h"
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace smtk
 {
@@ -24,12 +24,12 @@ namespace mesh
 /**\brief Compute and return the ratio of Euler characteristic surface to volume
    for a model's mesh tessellation.
   */
-class SMTKMESHSESSION_EXPORT EulerCharacteristicRatio : public smtk::operation::XMLOperator
+class SMTKMESHSESSION_EXPORT EulerCharacteristicRatio : public smtk::operation::XMLOperation
 {
 public:
   smtkTypeMacro(EulerCharacteristicRatio);
   smtkCreateMacro(EulerCharacteristicRatio);
-  smtkSharedFromThisMacro(smtk::operation::NewOp);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
 
 protected:
   Result operateInternal() override;

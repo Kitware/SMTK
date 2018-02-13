@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the model "CloseModel" Operator -->
+<!-- Description of the model "CloseModel" Operation -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
-    <!-- Operator -->
-    <include href="smtk/operation/NewOp.xml"/>
-    <AttDef Type="close model" Label="Model - Close" BaseType="operator">
+    <!-- Operation -->
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="close model" Label="Model - Close" BaseType="operation">
       <BriefDescription>
         Close the associated models.
       </BriefDescription>

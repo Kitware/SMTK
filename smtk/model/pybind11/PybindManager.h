@@ -34,7 +34,6 @@
 #include "smtk/model/Instance.h"
 #include "smtk/model/Loop.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/SessionRef.h"
 #include "smtk/model/Shell.h"
@@ -193,7 +192,6 @@ PySharedPtrClass< smtk::model::Manager, smtk::resource::Resource > pybind11_init
     .def("observe", (void (smtk::model::Manager::*)(::smtk::model::ManagerEventType, ::smtk::model::ConditionCallback, void *)) &smtk::model::Manager::observe, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))
     .def("observe", (void (smtk::model::Manager::*)(::smtk::model::ManagerEventType, ::smtk::model::OneToOneCallback, void *)) &smtk::model::Manager::observe, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))
     .def("observe", (void (smtk::model::Manager::*)(::smtk::model::ManagerEventType, ::smtk::model::OneToManyCallback, void *)) &smtk::model::Manager::observe, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))
-    .def("observe", (void (smtk::model::Manager::*)(::smtk::model::OperatorEventType, ::smtk::model::BareOperatorCallback, void *)) &smtk::model::Manager::observe, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))
     .def("registerSession", &smtk::model::Manager::registerSession, py::arg("session"))
     .def("removeEntityReferences", &smtk::model::Manager::removeEntityReferences, py::arg("c"))
     .def("removeFloatProperty", &smtk::model::Manager::removeFloatProperty, py::arg("entity"), py::arg("propName"))
@@ -244,13 +242,11 @@ PySharedPtrClass< smtk::model::Manager, smtk::resource::Resource > pybind11_init
     .def("trigger", (void (smtk::model::Manager::*)(::smtk::model::ManagerEventType, ::smtk::model::EntityRef const &)) &smtk::model::Manager::trigger, py::arg("event"), py::arg("src"))
     .def("trigger", (void (smtk::model::Manager::*)(::smtk::model::ManagerEventType, ::smtk::model::EntityRef const &, ::smtk::model::EntityRef const &)) &smtk::model::Manager::trigger, py::arg("event"), py::arg("src"), py::arg("related"))
     .def("trigger", (void (smtk::model::Manager::*)(::smtk::model::ManagerEventType, ::smtk::model::EntityRef const &, ::smtk::model::EntityRefArray const &)) &smtk::model::Manager::trigger, py::arg("event"), py::arg("src"), py::arg("related"))
-    .def("trigger", (void (smtk::model::Manager::*)(::smtk::model::OperatorEventType, ::smtk::model::Operator const &)) &smtk::model::Manager::trigger, py::arg("event"), py::arg("src"))
     .def("type", (smtk::model::BitFlags (smtk::model::Manager::*)(const ::smtk::common::UUID&) const) &smtk::model::Manager::type, py::arg("ofEntity"))
     .def("unarrangeEntity", &smtk::model::Manager::unarrangeEntity, py::arg("entityId"), py::arg("arg1"), py::arg("index"), py::arg("removeIfLast") = false)
     .def("unobserve", (void (smtk::model::Manager::*)(::smtk::model::ManagerEventType, ::smtk::model::ConditionCallback, void *)) &smtk::model::Manager::unobserve, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))
     .def("unobserve", (void (smtk::model::Manager::*)(::smtk::model::ManagerEventType, ::smtk::model::OneToOneCallback, void *)) &smtk::model::Manager::unobserve, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))
     .def("unobserve", (void (smtk::model::Manager::*)(::smtk::model::ManagerEventType, ::smtk::model::OneToManyCallback, void *)) &smtk::model::Manager::unobserve, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))
-    .def("unobserve", (void (smtk::model::Manager::*)(::smtk::model::OperatorEventType, ::smtk::model::BareOperatorCallback, void *)) &smtk::model::Manager::unobserve, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))
     .def("unregisterSession", &smtk::model::Manager::unregisterSession, py::arg("session"), py::arg("expungeSession") = true)
     .def("unusedUUID", &smtk::model::Manager::unusedUUID)
     .def("useOrShellIncludesShells", &smtk::model::Manager::useOrShellIncludesShells, py::arg("cellUseOrShell"))

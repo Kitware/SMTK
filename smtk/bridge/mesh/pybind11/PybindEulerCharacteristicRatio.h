@@ -15,13 +15,13 @@
 
 #include "smtk/bridge/mesh/operators/EulerCharacteristicRatio.h"
 
-#include "smtk/operation/XMLOperator.h"
+#include "smtk/operation/XMLOperation.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::mesh::EulerCharacteristicRatio, smtk::operation::XMLOperator > pybind11_init_smtk_bridge_mesh_EulerCharacteristicRatio(py::module &m)
+PySharedPtrClass< smtk::bridge::mesh::EulerCharacteristicRatio, smtk::operation::XMLOperation > pybind11_init_smtk_bridge_mesh_EulerCharacteristicRatio(py::module &m)
 {
-  PySharedPtrClass< smtk::bridge::mesh::EulerCharacteristicRatio, smtk::operation::XMLOperator > instance(m, "EulerCharacteristicRatio");
+  PySharedPtrClass< smtk::bridge::mesh::EulerCharacteristicRatio, smtk::operation::XMLOperation > instance(m, "EulerCharacteristicRatio");
   instance
     .def(py::init<::smtk::bridge::mesh::EulerCharacteristicRatio const &>())
     .def(py::init<>())

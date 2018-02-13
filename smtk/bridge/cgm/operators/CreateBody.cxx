@@ -49,7 +49,7 @@ namespace bridge
 namespace cgm
 {
 
-smtk::model::OperatorResult CreateBody::operateInternal()
+smtk::operation::OperationResult CreateBody::operateInternal()
 {
   int keepInputs = this->findInt("keep inputs")->value();
 
@@ -63,7 +63,7 @@ smtk::model::OperatorResult CreateBody::operateInternal()
         *this->specification()->associations().get(), entList, keepInputs, expunged))
   {
     smtkInfoMacro(log(), "Could not find CGM entities for input cells.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
   DLIList<RefEdge*> edgeList;
@@ -90,7 +90,7 @@ smtk::model::OperatorResult CreateBody::operateInternal()
     else
     {
       smtkInfoMacro(log(), "An input entity was not an edge, face, or volume.");
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
     }
   }
 
@@ -104,7 +104,7 @@ smtk::model::OperatorResult CreateBody::operateInternal()
     {
       smtkInfoMacro(
         log(), "Could not create planar sheet-body from " << edgeList.size() << " edge(s).");
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
     }
     bod->color(color);
     cgmBodies.push(bod);
@@ -121,7 +121,7 @@ smtk::model::OperatorResult CreateBody::operateInternal()
     {
       smtkInfoMacro(log(), "Could not create planar sheet-body from face "
           << (i + 1) << " of " << edgeList.size() << ".");
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
     }
     bod->color(color);
     cgmBodies.push(bod);
@@ -132,14 +132,14 @@ smtk::model::OperatorResult CreateBody::operateInternal()
     if (!bod)
     {
       smtkInfoMacro(log(), "Could not create body from " << volumeList.size() << " volume(s).");
-      return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+      return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
     }
     bod->color(color);
     cgmBodies.push(bod);
   }
 
-  smtk::model::OperatorResult result =
-    this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+  smtk::operation::OperationResult result =
+    this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmBodies, result, CREATED);
   result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
@@ -151,5 +151,5 @@ smtk::model::OperatorResult CreateBody::operateInternal()
 } //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::CreateBody, cgm_create_body,
+smtkImplementsModelOperation(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::CreateBody, cgm_create_body,
   "create body", CreateBody_xml, smtk::bridge::cgm::Session);

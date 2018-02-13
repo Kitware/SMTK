@@ -53,7 +53,6 @@ struct StaticSessionInfo
   std::string Name;
   SessionStaticSetup Setup;
   SessionConstructor Constructor;
-  OperatorConstructors* OpConstructors;
   std::string Tags;
   bool TagsParsed;
   std::string Site;
@@ -65,11 +64,10 @@ struct StaticSessionInfo
   {
   }
   StaticSessionInfo(const std::string& bname, const std::string& btags, SessionStaticSetup bsetup,
-    SessionConstructor bctor, OperatorConstructors* opctors)
+    SessionConstructor bctor)
     : Name(bname)
     , Setup(bsetup)
     , Constructor(bctor)
-    , OpConstructors(opctors)
     , Tags(btags)
     , TagsParsed(false)
   {
@@ -95,7 +93,7 @@ class SMTKCORE_EXPORT SessionRegistrar
 {
 public:
   static bool registerSession(const std::string& bname, const std::string& tags,
-    SessionStaticSetup bsetup, SessionConstructor bctor, OperatorConstructors* sopcons);
+    SessionStaticSetup bsetup, SessionConstructor bctor);
   static StringList sessionTypeNames();
   static std::string sessionTags(const std::string& bname);
   static std::string sessionSite(const std::string& bname);
@@ -104,8 +102,6 @@ public:
     const std::string& bname, const std::string& engine = std::string());
   static SessionStaticSetup sessionStaticSetup(const std::string& bname);
   static SessionConstructor sessionConstructor(const std::string& bname);
-  static OperatorConstructors* sessionOperatorConstructors(const std::string& stype);
-  static std::set<std::string> sessionOperatorNames(const std::string& stype);
   static SessionPtr createSession(const std::string& bname);
 
   static std::string fileTypesTag() { return "filetypes"; }

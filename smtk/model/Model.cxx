@@ -269,39 +269,6 @@ Model& Model::removeAuxiliaryGeometry(const AuxiliaryGeometry& ag)
   return *this;
 }
 
-/*
-/// Return an operator of the given \a opname with its Manager set to this model's.
-OperatorPtr Model::op(const std::string& opname) const
-{
-  return this->session().op(opname);
-}
-*/
-
-/*
-/// Return a set of the operators available for this model.
-Operators Model::operators() const
-{
-  Operators ops;
-  ManagerPtr mgr = this->manager();
-  Operators::const_iterator it;
-  Session::ConstPtr br = this->session();
-  for (
-    it = br->operators().begin();
-    it != br->operators().end();
-    ++it)
-    {
-    ops.insert((*it)->clone()->setManager(mgr));
-    }
-  return ops;
-}
-*/
-
-/// Return the names of all the operators which can be applied to this model.
-StringList Model::operatorNames() const
-{
-  return this->session().operatorNames();
-}
-
 /// An efficient method for assigning default names to all of the model's entities.
 void Model::assignDefaultNames()
 {

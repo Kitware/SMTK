@@ -17,7 +17,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::bridge::cgm::CreateVertex > pybind11_init_smtk_bridge_cgm_CreateVertex(py::module &m, PySharedPtrClass< smtk::bridge::cgm::Operator, smtk::model::Operator >& parent)
+PySharedPtrClass< smtk::bridge::cgm::CreateVertex > pybind11_init_smtk_bridge_cgm_CreateVertex(py::module &m, PySharedPtrClass< smtk::bridge::cgm::Operation, smtk::operation::Operation >& parent)
 {
   PySharedPtrClass< smtk::bridge::cgm::CreateVertex > instance(m, "CreateVertex", parent);
   instance

@@ -140,9 +140,9 @@ public:
     return m_decorator ? m_decorator->relatedComponent() : nullptr;
   }
   /// Return an operator related to this phrase (or nullptr if not well defined).
-  virtual smtk::operation::OperatorPtr relatedOperator() const
+  virtual smtk::operation::OperationPtr relatedOperation() const
   {
-    return m_decorator ? m_decorator->relatedOperator() : nullptr;
+    return m_decorator ? m_decorator->relatedOperation() : nullptr;
   }
 
   /// Test for use in derived-class equality operators.
