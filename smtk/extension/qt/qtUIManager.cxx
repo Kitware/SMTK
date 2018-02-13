@@ -11,6 +11,7 @@
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/extension/qt/qtAttributeView.h"
+#include "smtk/extension/qt/qtCategorySelectorView.h"
 #include "smtk/extension/qt/qtFileItem.h"
 #include "smtk/extension/qt/qtGroupView.h"
 #include "smtk/extension/qt/qtInputsItem.h"
@@ -103,6 +104,7 @@ qtUIManager::qtUIManager(smtk::attribute::CollectionPtr collection)
   this->registerViewConstructor("Operator", qtOperatorView::createViewWidget);
   this->registerViewConstructor("Selector", qtSelectorView::createViewWidget);
   this->registerViewConstructor("SimpleExpression", qtSimpleExpressionView::createViewWidget);
+  this->registerViewConstructor("Category", qtCategorySelectorView::createViewWidget);
 
   // register view constructors coming from plugins.
   qtSMTKUtilities::updateViewConstructors(this);
