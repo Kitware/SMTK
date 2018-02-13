@@ -59,7 +59,7 @@ public:
   void setup(::pqSMTKResourcePanel* parent)
   {
     QWidget* ww = new QWidget(parent);
-    parent->setWindowTitle("SMTK");
+    parent->setWindowTitle("Resources");
     this->setupUi(ww);
     parent->setWidget(ww);
     m_phraseModel = smtk::view::ResourcePhraseModel::create();
@@ -380,7 +380,8 @@ void pqSMTKResourcePanel::activeViewChanged(pqView* view)
       m_p->m_visibleThings[rsrc->id()] = rep->isVisible() ? 1 : 0;
       auto thingy = rep->getProxy()->GetClientSideObject();
       auto thingy2 = vtkCompositeRepresentation::SafeDownCast(thingy);
-      auto srvrep = vtkSMTKModelRepresentation::SafeDownCast(thingy2->GetActiveRepresentation());
+      auto srvrep = vtkSMTKModelRepresentation::SafeDownCast(
+        thingy2 ? thingy2->GetActiveRepresentation() : nullptr);
       if (srvrep)
       {
         // TODO: This assumes we are running in built-in mode.

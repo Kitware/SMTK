@@ -4,6 +4,13 @@
 # + smtkPQComponentsPlugin, a plugin exposing the above with an autostart object
 ###
 
+set(PLUGIN_AUTOSTART_IFACES)
+set(PLUGIN_AUTOSTART_IFACE_SRCS)
+set(PLUGIN_ACTION_IFACES)
+set(PLUGIN_ACTION_IFACE_SRCS)
+set(PLUGIN_DOCK_IFACES)
+set(PLUGIN_DOCK_IFACES_SRCS)
+
 set(PQComponentsUnwrappedSrcs
 )
 
@@ -15,6 +22,7 @@ find_package(Qt5 REQUIRED COMPONENTS Core)
 # set up sources to build
 set(PQComponentsSrcs
   pqPluginSMTKViewBehavior.cxx
+  pqSMTKAttributePanel.cxx
   pqSMTKBehavior.cxx
   pqSMTKColorByToolBar.cxx
   pqSMTKColorByWidget.cxx
@@ -27,6 +35,7 @@ set(PQComponentsSrcs
 
 set(PQComponentsHeaders
   pqPluginSMTKViewBehavior.h
+  pqSMTKAttributePanel.h
   pqSMTKBehavior.h
   pqSMTKColorByToolBar.h
   pqSMTKColorByWidget.h
@@ -38,9 +47,9 @@ set(PQComponentsHeaders
 )
 
 set(PQComponentsUIs
-  resources/pqSMTKSelectionFilterBehavior.ui
-  resources/pqSMTKResourcePanel.ui
   resources/pqSMTKColorByWidget.ui
+  resources/pqSMTKResourcePanel.ui
+  resources/pqSMTKSelectionFilterBehavior.ui
 )
 
 set(PQComponentsResources
@@ -80,9 +89,10 @@ target_link_libraries(smtkPQComponentsExt LINK_PUBLIC
 
   # Server-side stuff because some stuff uses GetClientSideObject()
   vtkPVVTKExtensionsDefault
-  smtkPVServerExtPlugin
+  smtkPVServerExt
 
   smtkQtExt
+  smtkAttributeEnvironment
   smtkOperationEnvironment
   smtkEnvironment
   Qt5::Core
@@ -132,26 +142,35 @@ add_pqproxy(modelRepIfaces modelRepIfaceSrcs
 list(APPEND PLUGIN_PROXY_IFACES ${modelRepIfaces})
 list(APPEND PLUGIN_PROXY_IFACE_SRCS ${modelRepIfaceSrcs})
 
-add_pqproxy(rsrcIfaces rsrcIfaceSrcs
+add_pqproxy(proxyIfaces proxyIfaceSrcs
   TYPE pqSMTKResource
   XML_GROUP sources
   XML_NAME SMTKModelReader
-)
-list(APPEND PLUGIN_PROXY_IFACES ${rsrcIfaces})
-list(APPEND PLUGIN_PROXY_IFACE_SRCS ${rsrcIfaceSrcs})
 
-add_pqproxy(wrapperIfaces wrapperIfaceSrcs
+  TYPE pqSMTKResource
+  XML_GROUP sources
+  XML_NAME SMTKAttributeReader
+
   TYPE pqSMTKWrapper
   XML_GROUP smtk
   XML_NAME SMTKWrapper
 )
-list(APPEND PLUGIN_PROXY_IFACES ${wrapperIfaces})
-list(APPEND PLUGIN_PROXY_IFACE_SRCS ${wrapperIfaceSrcs})
+list(APPEND PLUGIN_PROXY_IFACES ${proxyIfaces})
+list(APPEND PLUGIN_PROXY_IFACE_SRCS ${proxyIfaceSrcs})
 
-add_paraview_dock_window(PLUGIN_DOCK_IFACES PLUGIN_DOCK_IFACES_SRCS
+add_paraview_dock_window(attrPanelIfaces attrPanelIfaceSrcs
+  CLASS_NAME pqSMTKAttributePanel
+  DOCK_AREA Left
+)
+list(APPEND PLUGIN_DOCK_IFACES ${attrPanelIfaces})
+list(APPEND PLUGIN_DOCK_IFACES_SRCS ${attrPanelIfaceSrcs})
+
+add_paraview_dock_window(rsrcPanelIfaces rsrcPanelIfaceSrcs
   CLASS_NAME pqSMTKResourcePanel
   DOCK_AREA Left
 )
+list(APPEND PLUGIN_DOCK_IFACES ${rsrcPanelIfaces})
+list(APPEND PLUGIN_DOCK_IFACES_SRCS ${rsrcPanelIfaceSrcs})
 
 pv_qt_wrap_cpp(PLUGIN_MOC_SRCS ${PQComponentsPluginHdrs})
 add_paraview_plugin(
@@ -169,8 +188,6 @@ add_paraview_plugin(
     ${PLUGIN_AUTOSTART_IFACE_SRCS}
     ${PLUGIN_PROXY_IFACE_SRCS}
     ${PLUGIN_DOCK_IFACES_SRCS}
-  REQUIRED_PLUGINS
-    smtkPVServerExtPlugin
 )
 target_link_libraries(smtkPQComponentsPlugin
   LINK_PUBLIC

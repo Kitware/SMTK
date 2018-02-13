@@ -39,7 +39,7 @@ class vtkSMRepresentationProxy;
  * and the client asks the server for the selection when it is
  * notified that a selection event occurred on the server.
  */
-class SMTKPVSERVEREXTPLUGIN_EXPORT vtkSMSMTKWrapperProxy : public vtkSMProxy
+class SMTKPVSERVEREXT_EXPORT vtkSMSMTKWrapperProxy : public vtkSMProxy
 {
   using json = nlohmann::json;
 

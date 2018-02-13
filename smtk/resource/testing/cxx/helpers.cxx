@@ -29,7 +29,7 @@ namespace testing
 {
 
 ResourceArray loadTestResources(
-  smtk::resource::Manager::Ptr& resourceManager, int argc, char* argv[])
+  smtk::resource::Manager::Ptr resourceManager, int argc, char* argv[])
 {
   smtk::model::registerResources(resourceManager);
 

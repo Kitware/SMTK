@@ -30,6 +30,7 @@ PhraseModelPtr ResourcePhraseModel::create(const smtk::view::ViewPtr& viewSpec)
 {
   (void)viewSpec;
   auto model = PhraseModel::Ptr(new ResourcePhraseModel);
+  model->root()->findDelegate()->setModel(model);
   return model;
 }
 

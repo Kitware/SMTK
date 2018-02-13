@@ -24,7 +24,7 @@
 
 class vtkSMTKModelRepresentation;
 
-class SMTKPVSERVEREXTPLUGIN_EXPORT vtkSMSMTKModelRepresentationProxy
+class SMTKPVSERVEREXT_EXPORT vtkSMSMTKModelRepresentationProxy
   : public vtkSMPVRepresentationProxy
 {
 public:
