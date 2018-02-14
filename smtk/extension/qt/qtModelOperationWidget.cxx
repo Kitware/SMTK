@@ -552,9 +552,10 @@ void qtModelOperationWidget::displayResult(const smtk::io::Logger& log)
 void qtModelOperationWidget::resetUI()
 {
   smtk::model::SessionRef activeSession = qtActiveObjects::instance().activeModel().owningSession();
-  // clean up current UI only when switching to a new session
+  // Clean up current UI only when switching to a new session or closing all data
   // then model tree would update properly
-  if (this->Internals && activeSession.session() != this->Internals->CurrentSession.lock())
+  if (this->Internals &&
+    (!activeSession.isValid() || activeSession.session() != this->Internals->CurrentSession.lock()))
   {
     QStackedLayout* opLayout = this->Internals->OperationsLayout;
     for (int i = 0; i < opLayout->count(); ++i)
@@ -570,6 +571,14 @@ void qtModelOperationWidget::resetUI()
     this->Internals->OperationCombo->blockSignals(true);
     this->Internals->OperationCombo->clear();
     this->Internals->OperationCombo->blockSignals(false);
+    foreach (auto& opInfo, this->Internals->OperationMap)
+    {
+      if (!opInfo.opUiManager.isNull())
+      {
+        // The frame and base view would be taken care of by Qt
+        delete opInfo.opUiManager;
+      }
+    }
     this->Internals->OperationMap.clear();
   }
 }
