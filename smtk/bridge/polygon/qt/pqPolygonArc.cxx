@@ -129,6 +129,7 @@ bool pqPolygonArc::createEdge(vtkSMNewWidgetRepresentationProxy* widgetProxy)
 bool pqPolygonArc::editEdge(
   vtkSMNewWidgetRepresentationProxy* widgetProxy, const smtk::common::UUID& edgeId)
 {
+  (void)edgeId;
   vtkSMProxy* smPolyEdgeOp = this->prepareOperation(widgetProxy);
   if (!smPolyEdgeOp)
   {
