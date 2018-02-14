@@ -89,10 +89,6 @@ qtBaseView::~qtBaseView()
   {
     delete this->Internals;
   }
-  if (this->m_ScrollArea)
-  {
-    delete this->m_ScrollArea;
-  }
 }
 
 void qtBaseView::getDefinitions(
