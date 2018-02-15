@@ -390,6 +390,11 @@ int Manager::observe(const Observer& fn, bool notifyOfCurrentState)
     for (auto rsrc : m_resources)
     {
       fn(Event::RESOURCE_ADDED, rsrc);
+      // Terminate if the observe removes itself.
+      if (m_observers.find(handle) == m_observers.end())
+      {
+        break;
+      }
     }
   }
   return handle;
@@ -402,9 +407,13 @@ bool Manager::unobserve(int handle)
 
 void Manager::trigger(Event evt, const ResourcePtr& rsrc)
 {
-  for (auto observer : m_observers)
+  // This careful loop allows an observer to unregister itself.
+  std::map<int, Observer>::iterator observer = m_observers.begin();
+  std::map<int, Observer>::iterator next;
+  for (next = observer; observer != m_observers.end(); observer = next)
   {
-    observer.second(evt, rsrc);
+    ++next;
+    observer->second(evt, rsrc);
   }
 }
 }

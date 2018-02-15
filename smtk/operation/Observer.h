@@ -55,6 +55,9 @@ public:
   /// of remaining observers.
   std::size_t erase(Key);
 
+  /// Returns the observer for the given key if one exists or nullptr otherwise.
+  Observer find(Key) const;
+
 private:
   // A map of observers. The observers are held in a map so that they can be
   // referenced (and therefore removed) at a later time using the observer's
