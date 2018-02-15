@@ -144,9 +144,11 @@ set(discreteSessionSrcs
   operators/ImportOperation.cxx
   operators/MergeOperation.cxx
   operators/ReadOperation.cxx
+  operators/ReadResource.cxx
   operators/SplitFaceOperation.cxx
   operators/GrowOperation.cxx
   operators/WriteOperation.cxx
+  operators/WriteResource.cxx
   operators/RemoveModel.cxx
   operators/EdgeOperation.cxx
   operators/SetProperty.cxx
@@ -163,9 +165,11 @@ set(discreteSessionHeaders
   operators/ImportOperation.h
   operators/MergeOperation.h
   operators/ReadOperation.h
+  operators/ReadResource.h
   operators/SplitFaceOperation.h
   operators/GrowOperation.h
   operators/WriteOperation.h
+  operators/WriteResource.h
   operators/RemoveModel.h
   operators/EdgeOperation.h
   operators/SetProperty.h
@@ -183,11 +187,13 @@ include(SMTKOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdgesOperation.sbt" unitOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/MergeOperation.sbt" unitOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ReadOperation.sbt" unitOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ReadResource.sbt" unitOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SplitFaceOperation.sbt" unitOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ImportOperation.sbt" unitOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EntityGroupOperation.sbt" unitOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/GrowOperation.sbt" unitOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteOperation.sbt" unitOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteResource.sbt" unitOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/RemoveModel.sbt" unitOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EdgeOperation.sbt" unitOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SetProperty.sbt" unitOperationXML)
