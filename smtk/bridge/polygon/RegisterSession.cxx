@@ -24,8 +24,10 @@
 #include "smtk/bridge/polygon/operators/ExtractContours.h"
 #include "smtk/bridge/polygon/operators/ForceCreateFace.h"
 #include "smtk/bridge/polygon/operators/Import.h"
+#include "smtk/bridge/polygon/operators/Read.h"
 #include "smtk/bridge/polygon/operators/SplitEdge.h"
 #include "smtk/bridge/polygon/operators/TweakEdge.h"
+#include "smtk/bridge/polygon/operators/Write.h"
 
 #include "smtk/bridge/polygon/Resource.h"
 #include "smtk/bridge/polygon/SessionIOJSON.h"
@@ -65,45 +67,21 @@ void registerOperations(smtk::operation::Manager::Ptr& operationManager)
     "smtk::bridge::polygon::ForceCreateFace");
   operationManager->registerOperation<smtk::bridge::polygon::Import>(
     "smtk::bridge::polygon::Import");
+  operationManager->registerOperation<smtk::bridge::polygon::Read>("smtk::bridge::polygon::Read");
   operationManager->registerOperation<smtk::bridge::polygon::SplitEdge>(
     "smtk::bridge::polygon::SplitEdge");
   operationManager->registerOperation<smtk::bridge::polygon::TweakEdge>(
     "smtk::bridge::polygon::TweakEdge");
+  operationManager->registerOperation<smtk::bridge::polygon::Write>("smtk::bridge::polygon::Write");
 }
 
 void registerResources(smtk::resource::Manager::Ptr& resourceManager)
 {
-  resourceManager->registerResource<smtk::bridge::polygon::Resource>(
-    // ### Load a model file ###
-    [](const std::string& filename) -> smtk::resource::ResourcePtr {
-      // Load file and parse it:
-      smtk::bridge::polygon::SessionIOJSON::json j =
-        smtk::bridge::polygon::SessionIOJSON::loadJSON(filename);
-      if (j.is_null())
-      {
-        return smtk::resource::Resource::Ptr();
-      }
+  resourceManager->registerResource<smtk::bridge::polygon::Resource>(&read, &write);
 
-      // Deserialize parsed JSON into a model resource:
-      auto rsrc = smtk::bridge::polygon::Resource::create();
-      smtk::bridge::polygon::SessionIOJSON::loadModelRecords(j, rsrc);
-
-      return smtk::static_pointer_cast<smtk::resource::Resource>(rsrc);
-    },
-
-    // ### Save a model file ###
-    [](const smtk::resource::ResourcePtr& rsrc) -> bool {
-      // Serialize rsrc into a set of JSON records:
-      smtk::bridge::polygon::SessionIOJSON::json j = smtk::bridge::polygon::SessionIOJSON::saveJSON(
-        std::dynamic_pointer_cast<smtk::bridge::polygon::Resource>(rsrc));
-      if (j.is_null())
-      {
-        return false;
-      }
-      // Write JSON records to the specified URL:
-      bool ok = smtk::bridge::polygon::SessionIOJSON::saveModelRecords(j, rsrc->location());
-      return ok;
-    });
+  // When moving from CJSON to nlohmann::json, the file format for polygon
+  // models changed slightly. This functor facilitates reading the old format
+  // using our new tools.
   resourceManager->addLegacyReader(
     "polygon", [](const std::string& filename) -> smtk::resource::ResourcePtr {
       // Load file and parse it:

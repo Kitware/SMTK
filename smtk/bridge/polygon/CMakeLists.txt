@@ -25,9 +25,11 @@ set(polygonSrcs
   operators/Delete.cxx
   operators/DemoteVertex.cxx
   operators/ForceCreateFace.cxx
+  operators/Read.cxx
   operators/SplitEdge.cxx
   operators/TweakEdge.cxx
   operators/ExtractContours.cxx
+  operators/Write.cxx
 )
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND
@@ -65,9 +67,11 @@ set(polygonHeaders
   operators/Delete.h
   operators/DemoteVertex.h
   operators/ForceCreateFace.h
+  operators/Read.h
   operators/SplitEdge.h
   operators/TweakEdge.h
   operators/ExtractContours.h
+  operators/Write.h
 
   json/jsonEdge.h
   json/jsonModel.h
@@ -88,9 +92,11 @@ smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateFacesFromEdges.s
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Delete.sbt" polygonOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/DemoteVertex.sbt" polygonOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ForceCreateFace.sbt" polygonOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" polygonOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SplitEdge.sbt" polygonOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/TweakEdge.sbt" polygonOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExtractContours.sbt" polygonOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" polygonOperationXML)
 
 set(import_vtk_depends)
 
