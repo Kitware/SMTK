@@ -25,9 +25,13 @@ int Observers::operator()(std::shared_ptr<Operation> op, EventType event, Operat
     return result;
   }
 
-  for (auto entry : m_observers)
+  // This careful loop allows an observer to erase itself.
+  std::map<Key, Observer>::iterator entry = m_observers.begin();
+  std::map<Key, Observer>::iterator next;
+  for (next = entry; entry != m_observers.end(); entry = next)
   {
-    result |= entry.second(op, event, opres);
+    ++next;
+    result |= entry->second(op, event, opres);
   }
   return result;
 }
@@ -41,6 +45,12 @@ Observers::Key Observers::insert(Observer fn)
 std::size_t Observers::erase(Observers::Key handle)
 {
   return m_observers.erase(handle);
+}
+
+Observer Observers::find(Key handle) const
+{
+  auto entry = m_observers.find(handle);
+  return entry == m_observers.end() ? nullptr : entry->second;
 }
 
 } // operation namespace
