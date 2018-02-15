@@ -28,7 +28,7 @@
 
 #include "smtk/bridge/mesh/RegisterSession.h"
 #include "smtk/bridge/mesh/Resource.h"
-#include "smtk/bridge/mesh/operators/ImportOperation.h"
+#include "smtk/bridge/mesh/operators/Import.h"
 
 #include "smtk/operation/Manager.h"
 
@@ -137,8 +137,8 @@ int UnitTestReadWrite(int argc, char* argv[])
 
   {
     // Create an import operator
-    smtk::bridge::mesh::ImportOperation::Ptr importOp =
-      operationManager->create<smtk::bridge::mesh::ImportOperation>();
+    smtk::bridge::mesh::Import::Ptr importOp =
+      operationManager->create<smtk::bridge::mesh::Import>();
     if (!importOp)
     {
       std::cerr << "No import operator\n";

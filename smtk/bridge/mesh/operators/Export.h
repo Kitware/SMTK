@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_session_mesh_ImportOperation_h
-#define __smtk_session_mesh_ImportOperation_h
+#ifndef __smtk_session_mesh_Export_h
+#define __smtk_session_mesh_Export_h
 
 #include "smtk/bridge/mesh/Exports.h"
 
@@ -21,11 +21,11 @@ namespace bridge
 namespace mesh
 {
 
-class SMTKMESHSESSION_EXPORT ImportOperation : public smtk::operation::XMLOperation
+class SMTKMESHSESSION_EXPORT Export : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(ImportOperation);
-  smtkCreateMacro(ImportOperation);
+  smtkTypeMacro(Export);
+  smtkCreateMacro(Export);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 
 protected:
@@ -37,4 +37,4 @@ protected:
 } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_session_mesh_ImportOperation_h
+#endif // __smtk_session_mesh_Export_h

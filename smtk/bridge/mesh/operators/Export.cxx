@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/bridge/mesh/operators/ExportOperation.h"
+#include "smtk/bridge/mesh/operators/Export.h"
 
 #include "smtk/bridge/mesh/Resource.h"
 #include "smtk/bridge/mesh/Session.h"
@@ -25,7 +25,7 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 
-#include "smtk/bridge/mesh/ExportOperation_xml.h"
+#include "smtk/bridge/mesh/Export_xml.h"
 
 using namespace smtk::model;
 using namespace smtk::common;
@@ -51,7 +51,7 @@ void breakMaterialsByAssociation(const smtk::mesh::CollectionPtr& c)
   }
 }
 
-smtk::bridge::mesh::ExportOperation::Result ExportOperation::operateInternal()
+smtk::bridge::mesh::Export::Result Export::operateInternal()
 {
   smtk::attribute::FileItem::Ptr filePathItem = this->parameters()->findFile("filename");
 
@@ -93,9 +93,9 @@ smtk::bridge::mesh::ExportOperation::Result ExportOperation::operateInternal()
   return result;
 }
 
-const char* ExportOperation::xmlDescription() const
+const char* Export::xmlDescription() const
 {
-  return ExportOperation_xml;
+  return Export_xml;
 }
 
 } // namespace mesh

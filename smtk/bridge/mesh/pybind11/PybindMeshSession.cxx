@@ -24,8 +24,8 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindSession.h"
 #include "PybindTopology.h"
 
-#include "PybindImportOperation.h"
-#include "PybindExportOperation.h"
+#include "PybindImport.h"
+#include "PybindExport.h"
 #include "PybindEulerCharacteristicRatio.h"
 
 #include "smtk/model/Session.h"
@@ -42,6 +42,6 @@ PYBIND11_MODULE(_smtkPybindMeshSession, mesh)
   PySharedPtrClass< smtk::bridge::mesh::Session, smtk::model::Session > smtk_bridge_mesh_Session = pybind11_init_smtk_bridge_mesh_Session(mesh);
 
   PySharedPtrClass< smtk::bridge::mesh::EulerCharacteristicRatio, smtk::operation::XMLOperation > smtk_bridge_mesh_EulerCharacteristicRatio = pybind11_init_smtk_bridge_mesh_EulerCharacteristicRatio(mesh);
-  PySharedPtrClass< smtk::bridge::mesh::ImportOperation, smtk::operation::XMLOperation > smtk_bridge_mesh_ImportOperation = pybind11_init_smtk_bridge_mesh_ImportOperation(mesh);
-  PySharedPtrClass< smtk::bridge::mesh::ExportOperation, smtk::operation::XMLOperation > smtk_bridge_mesh_ExportOperation = pybind11_init_smtk_bridge_mesh_ExportOperation(mesh);
+  PySharedPtrClass< smtk::bridge::mesh::Import, smtk::operation::XMLOperation > smtk_bridge_mesh_Import = pybind11_init_smtk_bridge_mesh_Import(mesh);
+  PySharedPtrClass< smtk::bridge::mesh::Export, smtk::operation::XMLOperation > smtk_bridge_mesh_Export = pybind11_init_smtk_bridge_mesh_Export(mesh);
 }

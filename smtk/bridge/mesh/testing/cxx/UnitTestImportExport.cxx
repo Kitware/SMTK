@@ -9,8 +9,8 @@
 //=========================================================================
 
 #include "smtk/bridge/mesh/Resource.h"
-#include "smtk/bridge/mesh/operators/ExportOperation.h"
-#include "smtk/bridge/mesh/operators/ImportOperation.h"
+#include "smtk/bridge/mesh/operators/Export.h"
+#include "smtk/bridge/mesh/operators/Import.h"
 
 #include "smtk/common/UUID.h"
 
@@ -67,10 +67,8 @@ int UnitTestImportExport(int argc, char* argv[])
 
   // Register import and write operators to the operation manager
   {
-    operationManager->registerOperation<smtk::bridge::mesh::ExportOperation>(
-      "smtk::bridge::mesh::ExportOperation");
-    operationManager->registerOperation<smtk::bridge::mesh::ImportOperation>(
-      "smtk::bridge::mesh::ImportOperation");
+    operationManager->registerOperation<smtk::bridge::mesh::Export>("smtk::bridge::mesh::Export");
+    operationManager->registerOperation<smtk::bridge::mesh::Import>("smtk::bridge::mesh::Import");
   }
 
   // Register the resource manager to the operation manager (newly created
@@ -81,8 +79,8 @@ int UnitTestImportExport(int argc, char* argv[])
 
   {
     // Create an import operator
-    smtk::bridge::mesh::ImportOperation::Ptr importOp =
-      operationManager->create<smtk::bridge::mesh::ImportOperation>();
+    smtk::bridge::mesh::Import::Ptr importOp =
+      operationManager->create<smtk::bridge::mesh::Import>();
     if (!importOp)
     {
       std::cerr << "No import operator\n";
@@ -117,7 +115,7 @@ int UnitTestImportExport(int argc, char* argv[])
   {
     // Create an export operator
     smtk::operation::Operation::Ptr exportOp =
-      operationManager->create<smtk::bridge::mesh::ExportOperation>();
+      operationManager->create<smtk::bridge::mesh::Export>();
     if (!exportOp)
     {
       std::cerr << "No export operator\n";

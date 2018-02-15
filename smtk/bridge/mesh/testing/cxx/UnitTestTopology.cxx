@@ -9,7 +9,7 @@
 //=========================================================================
 
 #include "smtk/bridge/mesh/Resource.h"
-#include "smtk/bridge/mesh/operators/ImportOperation.h"
+#include "smtk/bridge/mesh/operators/Import.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
@@ -66,8 +66,8 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
     std::string label = std::string())
   {
     {
-      smtk::bridge::mesh::ImportOperation::Ptr importOp =
-        operationManager->create<smtk::bridge::mesh::ImportOperation>();
+      smtk::bridge::mesh::Import::Ptr importOp =
+        operationManager->create<smtk::bridge::mesh::Import>();
       if (!importOp)
       {
         std::cerr << "No import operator\n";
@@ -78,7 +78,7 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
       importOp->parameters()->findString("label")->setValue(label);
       importOp->parameters()->findVoid("construct hierarchy")->setIsEnabled(true);
 
-      smtk::bridge::mesh::ImportOperation::Result importOpResult = importOp->operate();
+      smtk::bridge::mesh::Import::Result importOpResult = importOp->operate();
 
       smtk::attribute::ComponentItemPtr componentItem =
         std::dynamic_pointer_cast<smtk::attribute::ComponentItem>(
@@ -193,8 +193,7 @@ int UnitTestTopology(int argc, char* argv[])
 
   // Register import operator to the operation manager
   {
-    operationManager->registerOperation<smtk::bridge::mesh::ImportOperation>(
-      "smtk::bridge::mesh::ImportOperation");
+    operationManager->registerOperation<smtk::bridge::mesh::Import>("smtk::bridge::mesh::Import");
   }
 
   // Register the resource manager to the operation manager (newly created

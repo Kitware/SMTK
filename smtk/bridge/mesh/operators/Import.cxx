@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/bridge/mesh/operators/ImportOperation.h"
+#include "smtk/bridge/mesh/operators/Import.h"
 
 #include "smtk/bridge/mesh/Resource.h"
 #include "smtk/bridge/mesh/Session.h"
@@ -32,7 +32,7 @@
 
 #include "smtk/resource/Manager.h"
 
-#include "smtk/bridge/mesh/ImportOperation_xml.h"
+#include "smtk/bridge/mesh/Import_xml.h"
 
 using namespace smtk::model;
 using namespace smtk::common;
@@ -44,7 +44,7 @@ namespace bridge
 namespace mesh
 {
 
-ImportOperation::Result ImportOperation::operateInternal()
+Import::Result Import::operateInternal()
 {
   // Get the read file name
   smtk::attribute::FileItem::Ptr filePathItem = this->parameters()->findFile("filename");
@@ -185,9 +185,9 @@ ImportOperation::Result ImportOperation::operateInternal()
   return result;
 }
 
-const char* ImportOperation::xmlDescription() const
+const char* Import::xmlDescription() const
 {
-  return ImportOperation_xml;
+  return Import_xml;
 }
 
 } // namespace mesh

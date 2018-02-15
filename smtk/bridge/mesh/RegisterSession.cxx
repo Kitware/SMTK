@@ -17,8 +17,8 @@
 #include "smtk/attribute/ResourceItem.h"
 
 #include "smtk/bridge/mesh/operators/EulerCharacteristicRatio.h"
-#include "smtk/bridge/mesh/operators/ExportOperation.h"
-#include "smtk/bridge/mesh/operators/ImportOperation.h"
+#include "smtk/bridge/mesh/operators/Export.h"
+#include "smtk/bridge/mesh/operators/Import.h"
 
 #include "smtk/bridge/mesh/Resource.h"
 
@@ -37,10 +37,8 @@ void registerOperations(smtk::operation::Manager::Ptr& operationManager)
 {
   operationManager->registerOperation<smtk::bridge::mesh::EulerCharacteristicRatio>(
     "smtk::bridge::mesh::EulerCharacteristicRatio");
-  operationManager->registerOperation<smtk::bridge::mesh::ExportOperation>(
-    "smtk::bridge::mesh::ExportOperation");
-  operationManager->registerOperation<smtk::bridge::mesh::ImportOperation>(
-    "smtk::bridge::mesh::ImportOperation");
+  operationManager->registerOperation<smtk::bridge::mesh::Export>("smtk::bridge::mesh::Export");
+  operationManager->registerOperation<smtk::bridge::mesh::Import>("smtk::bridge::mesh::Import");
 }
 
 void registerResources(smtk::resource::Manager::Ptr& resourceManager)
@@ -57,8 +55,7 @@ void registerResources(smtk::resource::Manager::Ptr& resourceManager)
       std::string meshFilename = j.at("Mesh URL");
 
       // Create an import operator
-      smtk::bridge::mesh::ImportOperation::Ptr importOp =
-        smtk::bridge::mesh::ImportOperation::create();
+      smtk::bridge::mesh::Import::Ptr importOp = smtk::bridge::mesh::Import::create();
       importOp->parameters()->findFile("filename")->setValue(meshFilename);
 
       // Execute the operation
@@ -111,8 +108,7 @@ void registerResources(smtk::resource::Manager::Ptr& resourceManager)
       smtk::model::SessionIOJSON::saveModelRecords(j, rsrc->location());
 
       // Create an export operator
-      smtk::bridge::mesh::ExportOperation::Ptr exportOp =
-        smtk::bridge::mesh::ExportOperation::create();
+      smtk::bridge::mesh::Export::Ptr exportOp = smtk::bridge::mesh::Export::create();
       exportOp->parameters()->findFile("filename")->setValue(meshFilename);
 
       // Set the entity association
