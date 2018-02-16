@@ -14,7 +14,7 @@
 
 #include "vtkActor.h"
 #include "vtkCommand.h"
-#include "vtkCompositePolyDataMapper.h"
+#include "vtkCompositePolyDataMapper2.h"
 #include "vtkDataSetAttributes.h"
 #include "vtkInteractorStyleSwitch.h"
 #include "vtkNew.h"
@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
   {
     vtkNew<vtkActor> act;
     vtkNew<vtkModelMultiBlockSource> src;
-    vtkNew<vtkCompositePolyDataMapper> map;
+    vtkNew<vtkCompositePolyDataMapper2> map;
     vtkNew<vtkRenderer> ren;
     vtkNew<vtkRenderWindow> win;
     src->SetModelManager(sm);
@@ -88,6 +88,12 @@ int main(int argc, char* argv[])
       src->AllowNormalGenerationOn();
     }
     map->SetInputConnection(src->GetOutputPort());
+    map->ScalarVisibilityOn();
+    map->SelectColorArray("entity color");
+    map->SetScalarModeToUseFieldData();
+    map->SetColorModeToDirectScalars();
+    map->SetScalarMode(VTK_SCALAR_MODE_USE_FIELD_DATA);
+    map->SetFieldDataTupleId(0);
     act->SetMapper(map.GetPointer());
     act->GetProperty()->SetPointSize(5);
     act->GetProperty()->SetLineWidth(2);
