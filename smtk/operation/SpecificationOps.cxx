@@ -11,6 +11,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Collection.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Definition.h"
 
 namespace smtk

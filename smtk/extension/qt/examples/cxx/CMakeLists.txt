@@ -11,6 +11,11 @@ target_link_libraries(browseModel
   smtkCore
   smtkCoreModelTesting
   smtkQtExt
+  smtkEnvironment
+  smtkOperationEnvironment
+  smtkDiscreteSessionEnvironment
+  smtkMeshSessionEnvironment
+  smtkPolygonSessionEnvironment
 )
 
 set_target_properties(
@@ -48,17 +53,3 @@ if (NOT WIN32 AND SMTK_DATA_DIR)
       0xffffffff
   )
 endif()
-
-##
-## browse model and mesh (created from the model)
-
-add_executable(browseMesh MACOSX_BUNDLE
-  browseMesh.cxx
-  ModelBrowser.cxx
-  ${browseModel_UI_BUILT_SOURCES})
-
-set_target_properties(
-  browseMesh PROPERTIES AUTOMOC TRUE
-  INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/bin")
-
-target_link_libraries(browseMesh smtkCore smtkCoreModelTesting smtkQtExt)

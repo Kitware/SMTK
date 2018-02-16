@@ -12,6 +12,7 @@
 #include "smtk/extension/delaunay/operators/TriangulateFaces.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/VoidItem.h"
 
 #include "smtk/extension/delaunay/io/ExportDelaunayMesh.h"

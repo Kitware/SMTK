@@ -73,6 +73,7 @@ set (jsonAttributeSrcs
 
 set(attributeHeaders
   Attribute.h
+  Collection.h
   ComponentItem.h
   ComponentItemDefinition.h
   Definition.h
@@ -92,13 +93,16 @@ set(attributeHeaders
   IntItemDefinition.h
   Item.h
   ItemDefinition.h
-  Collection.h
   MeshItem.h
   MeshItemDefinition.h
   MeshSelectionItem.h
   MeshSelectionItemDefinition.h
   ModelEntityItem.h
   ModelEntityItemDefinition.h
+  ReferenceItem.h
+  ReferenceItem.txx
+  ReferenceItemDefinition.h
+  ReferenceItemDefinition.txx
   RefItem.h
   RefItemDefinition.h
   RegisterOperations.h
@@ -120,6 +124,7 @@ set(attributeHeaders
 set(attributeSrcs
   ${jsonAttributeSrcs}
   Attribute.cxx
+  Collection.cxx
   ComponentItem.cxx
   ComponentItemDefinition.cxx
   DateTimeItem.cxx
@@ -139,7 +144,6 @@ set(attributeSrcs
   IntItemDefinition.cxx
   Item.cxx
   ItemDefinition.cxx
-  Collection.cxx
   MeshItem.cxx
   MeshItemDefinition.cxx
   MeshSelectionItem.cxx

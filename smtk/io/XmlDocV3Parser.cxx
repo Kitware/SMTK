@@ -314,7 +314,8 @@ void XmlDocV3Parser::processResourceDef(
     {
       if (child.name() == resourceName)
       {
-        idef->setAcceptsResources(child.attribute("Name").value(), true);
+        idef->setAcceptsEntries(
+          child.attribute("Name").value(), child.attribute("Filter").value(), true);
       }
     }
   }
@@ -484,7 +485,7 @@ void XmlDocV3Parser::processComponentDef(
     {
       if (child.name() == resourceName)
       {
-        idef->setAcceptsResourceComponents(
+        idef->setAcceptsEntries(
           child.attribute("Name").value(), child.attribute("Filter").value(), true);
       }
     }

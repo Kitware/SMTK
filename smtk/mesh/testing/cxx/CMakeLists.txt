@@ -64,6 +64,7 @@ if(SMTK_ENABLE_DISCRETE_SESSION AND SMTK_ENABLE_VTK_SUPPORT)
        )
   list(APPEND extra_libs
        smtkDiscreteSession
+       smtkDiscreteSessionEnvironment
        smtkIOVTK
        vtkSMTKSourceExt
        )
@@ -75,6 +76,7 @@ if(SMTK_ENABLE_MESH_SESSION AND SMTK_ENABLE_VTK_SUPPORT)
        )
   list(APPEND extra_libs
        smtkMeshSession
+       smtkMeshSessionEnvironment
        smtkIOVTK
        vtkSMTKSourceExt
        )

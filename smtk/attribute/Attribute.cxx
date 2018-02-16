@@ -10,6 +10,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Collection.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryItem.h"

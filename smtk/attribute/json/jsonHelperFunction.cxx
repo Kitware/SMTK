@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/attribute/json/jsonHelperFunction.h"
 
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/DateTimeItemDefinition.h"
 #include "smtk/attribute/DirectoryItemDefinition.h"
@@ -22,6 +23,7 @@
 #include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/ResourceItemDefinition.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 

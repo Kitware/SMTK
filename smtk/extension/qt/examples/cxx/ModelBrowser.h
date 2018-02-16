@@ -22,8 +22,8 @@ namespace smtk
 {
 namespace extension
 {
-class QEntityItemModel;
-class QEntityItemDelegate;
+class qtDescriptivePhraseModel;
+class qtDescriptivePhraseDelegate;
 }
 }
 
@@ -36,8 +36,8 @@ public:
 
   QTreeView* tree() const;
 
-  void setup(smtk::model::ManagerPtr s, smtk::extension::QEntityItemModel* qm,
-    smtk::extension::QEntityItemDelegate* qd, smtk::model::DescriptivePhrasePtr root);
+  void setup(smtk::resource::ManagerPtr mgr, smtk::extension::qtDescriptivePhraseModel* qm,
+    smtk::extension::qtDescriptivePhraseDelegate* qd, smtk::model::DescriptivePhrasePtr root);
 
 public slots:
   virtual void addGroup();
@@ -48,7 +48,7 @@ public slots:
 protected:
   class Internals;
   Internals* m_p;
-  smtk::model::ManagerPtr m_manager;
+  smtk::resource::ManagerPtr m_manager;
 
   smtk::model::Group groupParentOfIndex(const QModelIndex& qidx);
 };

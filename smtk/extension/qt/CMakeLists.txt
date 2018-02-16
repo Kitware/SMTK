@@ -11,12 +11,14 @@ set(QAttrLibSrcs
   qtCategorySelectorView.cxx
   qtCheckItemComboBox.cxx
   qtCollapsibleGroupWidget.cxx
+  qtComponentItem.cxx
   qtDescriptivePhraseDelegate.cxx
   qtDescriptivePhraseEditor.cxx
   qtDescriptivePhraseModel.cxx
   qtGroupView.cxx
   qtAttributeView.cxx
   qtInstancedView.cxx
+  qtReferenceItem.cxx
   qtOperationView.cxx
   #qtModelView.cxx
   qtSelectorView.cxx
@@ -66,6 +68,7 @@ set(QAttrLibMocHeaders
   qtCategorySelectorView.h
   qtCheckItemComboBox.h
   qtCollapsibleGroupWidget.h
+  qtComponentItem.h
   qtEmittingStringBuffer.h
   qtDescriptivePhraseDelegate.h
   qtDescriptivePhraseEditor.h
@@ -73,6 +76,8 @@ set(QAttrLibMocHeaders
   qtGroupView.h
   qtAttributeView.h
   qtInstancedView.h
+  qtReferenceItem.h
+  qtReferenceItemData.h
   qtOperationView.h
   #qtModelView.h
   qtSelectorView.h

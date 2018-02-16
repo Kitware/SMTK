@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "jsonComponentItemDefinition.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/json/jsonItemDefinition.h"
 
@@ -29,7 +30,7 @@ SMTKCORE_EXPORT void to_json(
 {
   smtk::attribute::to_json(j, smtk::dynamic_pointer_cast<ItemDefinition>(defPtr));
   nlohmann::json accept;
-  for (auto& acceptable : defPtr->acceptableResourceComponents())
+  for (auto& acceptable : defPtr->acceptableEntries())
   {
     accept.push_back(acceptable.first);
     accept.push_back(acceptable.second);
@@ -80,7 +81,7 @@ SMTKCORE_EXPORT void from_json(
       auto acc1 = (*iterator).get<std::string>();
       ++iterator;
       auto acc2 = (*iterator).get<std::string>();
-      defPtr->setAcceptsResourceComponents(acc1, acc2, true);
+      defPtr->setAcceptsEntries(acc1, acc2, true);
     }
   }
   catch (std::exception& /*e*/)

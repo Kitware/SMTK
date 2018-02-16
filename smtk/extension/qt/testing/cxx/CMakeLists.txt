@@ -13,6 +13,7 @@
 if (SMTK_ENABLE_POLYGON_SESSION)
   set(unit_tests_headers
     qtPrintLog.h
+    unitQtComponentItem.h
   )
 
   set(unit_tests

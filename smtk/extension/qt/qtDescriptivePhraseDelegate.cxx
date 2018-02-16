@@ -103,6 +103,16 @@ void qtDescriptivePhraseDelegate::setDrawSubtitle(bool includeSubtitle)
   this->m_drawSubtitle = includeSubtitle;
 }
 
+bool qtDescriptivePhraseDelegate::visibilityMode() const
+{
+  return this->m_visibilityMode;
+}
+
+void qtDescriptivePhraseDelegate::setVisibilityMode(bool allEditsChangeVisibility)
+{
+  this->m_visibilityMode = allEditsChangeVisibility;
+}
+
 QSize qtDescriptivePhraseDelegate::sizeHint(
   const QStyleOptionViewItem& option, const QModelIndex& idx) const
 {
@@ -231,6 +241,10 @@ void qtDescriptivePhraseDelegate::paint(
 QWidget* qtDescriptivePhraseDelegate::createEditor(
   QWidget* owner, const QStyleOptionViewItem& option, const QModelIndex& idx) const
 {
+  if (m_visibilityMode)
+  {
+    return nullptr;
+  } // Visibility mode does not allow editing the title.
   (void)option;
   (void)idx;
   smtk::extension::qtDescriptivePhraseEditor* editor = new qtDescriptivePhraseEditor(owner);
@@ -321,6 +335,11 @@ std::string qtDescriptivePhraseDelegate::determineAction(const QPoint& pPos, con
   const smtk::extension::qtDescriptivePhraseModel* entityMod) const
 {
   std::string res;
+  if (m_visibilityMode)
+  {
+    res = "visible";
+    return res;
+  }
   // with the help of styles, return where the pPos is on:
   // the eye-ball, or the color swatch
   // visible icon

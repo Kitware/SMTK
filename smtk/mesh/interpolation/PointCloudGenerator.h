@@ -17,15 +17,9 @@
 
 #include <string>
 
-#ifndef smtkCore_EXPORTS
-extern
-#endif
-  template class smtk::common::Generator<std::string, smtk::mesh::PointCloud>;
-
-#ifndef smtkCore_EXPORTS
-extern
-#endif
-  template class smtk::common::Generator<smtk::model::AuxiliaryGeometry, smtk::mesh::PointCloud>;
+template class SMTKCORE_EXPORT smtk::common::Generator<std::string, smtk::mesh::PointCloud>;
+template class SMTKCORE_EXPORT
+  smtk::common::Generator<smtk::model::AuxiliaryGeometry, smtk::mesh::PointCloud>;
 
 namespace smtk
 {

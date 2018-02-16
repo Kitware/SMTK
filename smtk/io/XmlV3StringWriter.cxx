@@ -175,12 +175,16 @@ void XmlV3StringWriter::processDateTimeItem(pugi::xml_node& node, attribute::Dat
 void XmlV3StringWriter::processResourceDef(
   pugi::xml_node& node, smtk::attribute::ResourceItemDefinitionPtr idef)
 {
-  auto acceptableResources = idef->acceptableResources();
+  auto acceptableEntries = idef->acceptableEntries();
   xml_node accnode = node.append_child("Accepts");
-  for (auto name : acceptableResources)
+  for (auto entry : acceptableEntries)
   {
     xml_node rsrcnode = accnode.append_child("Resource");
-    rsrcnode.append_attribute("Name").set_value(name.c_str());
+    rsrcnode.append_attribute("Name").set_value(entry.first.c_str());
+    if (!entry.second.empty())
+    {
+      rsrcnode.append_attribute("Filter").set_value(entry.second.c_str());
+    }
   }
 
   if (idef->isWritable())
@@ -273,13 +277,16 @@ void XmlV3StringWriter::processResourceItem(pugi::xml_node& node, attribute::Res
 void XmlV3StringWriter::processComponentDef(
   pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef)
 {
-  auto acceptableResources = idef->acceptableResourceComponents();
+  auto acceptableEntries = idef->acceptableEntries();
   xml_node accnode = node.append_child("Accepts");
-  for (auto name : acceptableResources)
+  for (auto entry : acceptableEntries)
   {
     xml_node rsrcnode = accnode.append_child("Resource");
-    rsrcnode.append_attribute("Name").set_value(name.first.c_str());
-    rsrcnode.append_attribute("Filter").set_value(name.second.c_str());
+    rsrcnode.append_attribute("Name").set_value(entry.first.c_str());
+    if (!entry.second.empty())
+    {
+      rsrcnode.append_attribute("Filter").set_value(entry.second.c_str());
+    }
   }
 
   if (idef->isWritable())

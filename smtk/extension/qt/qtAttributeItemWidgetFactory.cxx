@@ -11,17 +11,20 @@
 
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtAttributeRefItem.h"
+#include "smtk/extension/qt/qtComponentItem.h"
 #include "smtk/extension/qt/qtDateTimeItem.h"
 #include "smtk/extension/qt/qtFileItem.h"
 #include "smtk/extension/qt/qtGroupItem.h"
 #include "smtk/extension/qt/qtInputsItem.h"
 #include "smtk/extension/qt/qtVoidItem.h"
 
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/RefItem.h"
+#include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/VoidItem.h"
 
@@ -94,4 +97,13 @@ qtItem* qtAttributeItemWidgetFactory::createDateTimeItemWidget(
   DateTimeItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient)
 {
   return new qtDateTimeItem(smtk::dynamic_pointer_cast<DateTimeItem>(item), p, bview, orient);
+}
+
+/**\brief Create a widget that illustrates an item whose value is an array of resource components.
+  *
+  */
+qtItem* qtAttributeItemWidgetFactory::createComponentItemWidget(
+  ComponentItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient)
+{
+  return new qtComponentItem(smtk::dynamic_pointer_cast<ComponentItem>(item), p, bview, orient);
 }
