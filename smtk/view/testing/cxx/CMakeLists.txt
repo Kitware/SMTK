@@ -15,6 +15,9 @@ if (SMTK_ENABLE_POLYGON_SESSION)
       smtkCore
       smtkCoreResourceTesting
       smtkPolygonSession
+      smtkPolygonSessionEnvironment
+      smtkOperationEnvironment
+      smtkEnvironment
       ${Boost_LIBRARIES}
   )
 endif()

@@ -119,7 +119,7 @@ int unitOperation(int, char* [])
 
   std::shared_ptr<TestOp> testOp;
 
-  std::size_t handleTmp = manager->observers().insert(
+  smtk::operation::Observers::Key handleTmp = manager->observers().insert(
     [&handleTmp, &manager](std::shared_ptr<smtk::operation::Operation> op,
       smtk::operation::EventType event, smtk::operation::Operation::Result) -> int {
       std::cout << "[x] " << op->classname() << " event " << static_cast<int>(event)
