@@ -13,6 +13,7 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
+#include "smtk/extension/paraview/server/vtkSMTKAttributeReader.h"
 #include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
 
 #include "smtk/model/Manager.h"
@@ -68,6 +69,17 @@ smtk::resource::ResourcePtr pqSMTKResource::getResource() const
   // std::cout << "get resource from " << pxy->GetClassName() << "\n";
   auto smtkModelRdr = vtkSMTKModelReader::SafeDownCast(pxy);
   rsrc = smtkModelRdr ? smtkModelRdr->GetSMTKResource() : nullptr;
+  if (rsrc)
+  {
+    return rsrc;
+  }
+  auto smtkAttributeRdr = vtkSMTKAttributeReader::SafeDownCast(pxy);
+  rsrc = smtkAttributeRdr ? smtkAttributeRdr->GetSMTKResource() : nullptr;
+  if (rsrc)
+  {
+    return rsrc;
+  }
+  // TODO: Handle meshes here.
   return rsrc;
 }
 

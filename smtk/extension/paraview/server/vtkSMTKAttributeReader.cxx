@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/extension/paraview/server/vtkSMTKAttributeReader.h"
+#include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
@@ -35,10 +36,7 @@ vtkStandardNewMacro(vtkSMTKAttributeReader);
 vtkSMTKAttributeReader::vtkSMTKAttributeReader()
 {
   //std::cout << "Create reader " << this << "\n";
-  this->FileName = nullptr;
-  this->ResourceObserver = nullptr;
   this->Defs = vtkSmartPointer<vtkTable>::New();
-  this->SetNumberOfInputPorts(0);
   this->SetNumberOfOutputPorts(1);
 
   // Ensure this object's MTime > this->ModelSource's MTime so first RequestData() call
@@ -50,14 +48,18 @@ vtkSMTKAttributeReader::~vtkSMTKAttributeReader()
 {
   //std::cout << "Delete reader " << this << "\n";
   this->SetFileName(nullptr);
+  this->SetWrapper(nullptr);
 }
 
 void vtkSMTKAttributeReader::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
-  os << indent << "FileName: " << this->FileName << "\n";
   os << indent << "AttributeResource: " << this->AttributeResource << "\n";
-  os << indent << "ResourceObserver: " << (this->ResourceObserver ? "Y" : "N") << "\n";
+}
+
+smtk::resource::ResourcePtr vtkSMTKAttributeReader::GetResource() const
+{
+  return std::dynamic_pointer_cast<smtk::resource::Resource>(this->AttributeResource);
 }
 
 smtk::attribute::CollectionPtr vtkSMTKAttributeReader::GetSMTKResource() const
@@ -95,32 +97,31 @@ int vtkSMTKAttributeReader::RequestData(vtkInformation* vtkNotUsed(request),
   }
 
   entitySource->SetNumberOfBlocks(1);
-  entitySource->SetBlock(0, this->Defs);
+  // entitySource->SetBlock(0, this->Defs);
   return 1;
 }
 
 bool vtkSMTKAttributeReader::LoadFile()
 {
-  if (this->AttributeResource && this->ResourceObserver)
+  if (this->AttributeResource && this->Wrapper)
   {
-    this->ResourceObserver(this->AttributeResource, false);
+    this->Wrapper->GetResourceManager()->remove(this->AttributeResource);
   }
-  auto mgr = smtk::attribute::Collection::create();
-  this->AttributeResource = mgr;
-  mgr->setLocation(this->FileName);
+  auto rsrc = smtk::attribute::Collection::create();
+  this->AttributeResource = rsrc;
+  rsrc->setLocation(this->FileName);
 
   smtk::io::AttributeReader rdr;
-  if (!rdr.read(
-        this->AttributeResource, this->FileName, this->IncludePath, smtk::io::Logger::instance()))
+  if (rdr.read(rsrc, this->FileName, this->IncludePath, smtk::io::Logger::instance()))
   {
     this->AttributeResource = nullptr;
     vtkErrorMacro("Could not read \"" << this->FileName << "\"");
     return false;
   }
 
-  if (this->ResourceObserver)
+  if (this->Wrapper)
   {
-    this->ResourceObserver(this->AttributeResource, true);
+    this->Wrapper->GetResourceManager()->add(this->AttributeResource);
   }
 
   return true;

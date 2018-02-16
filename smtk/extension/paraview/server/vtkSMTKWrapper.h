@@ -43,7 +43,7 @@
 
 class vtkPVDataRepresentation;
 
-class SMTKPVSERVEREXTPLUGIN_EXPORT vtkSMTKWrapper : public vtkObject
+class SMTKPVSERVEREXT_EXPORT vtkSMTKWrapper : public vtkObject
 {
 public:
   using UUID = smtk::common::UUID;

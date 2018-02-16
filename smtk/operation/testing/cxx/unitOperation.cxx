@@ -119,6 +119,15 @@ int unitOperation(int, char* [])
 
   std::shared_ptr<TestOp> testOp;
 
+  smtk::operation::Observers::Key handleTmp = manager->observers().insert(
+    [&handleTmp, &manager](std::shared_ptr<smtk::operation::Operation> op,
+      smtk::operation::EventType event, smtk::operation::Operation::Result) -> int {
+      std::cout << "[x] " << op->classname() << " event " << static_cast<int>(event)
+                << " testing that an observer (" << handleTmp << ") can remove itself.\n";
+      manager->observers().erase(handleTmp);
+      return 0;
+    });
+
   std::size_t handle = manager->observers().insert(
     [&testOp](std::shared_ptr<smtk::operation::Operation> op, smtk::operation::EventType event,
       smtk::operation::Operation::Result result) -> int {
@@ -160,6 +169,10 @@ int unitOperation(int, char* [])
 
   testOp->m_outcome = smtk::operation::Operation::Outcome::FAILED;
   auto result = testOp->operate();
+  // After the first operation, handleTmp should have been erased. Verify:
+  smtkTest(!manager->observers().find(handleTmp), "Observer "
+      << handleTmp << " could not remove itself during its callback.");
+  std::cout << "[x]                observer (" << handleTmp << ") could remove itself.\n";
 
   // This generates no events since ableToOperate() fails
   testOp->m_outcome = smtk::operation::Operation::Outcome::UNABLE_TO_OPERATE;

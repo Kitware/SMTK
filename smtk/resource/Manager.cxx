@@ -10,6 +10,8 @@
 
 #include "smtk/resource/Manager.h"
 
+#include "smtk/io/Logger.h"
+
 #include "smtk/common/UUIDGenerator.h"
 
 namespace smtk
@@ -318,6 +320,11 @@ bool Manager::add(const Resource::Index& index, const smtk::resource::ResourcePt
   auto metadata = m_metadata.get<IndexTag>().find(index);
   if (metadata == m_metadata.get<IndexTag>().end())
   {
+    smtkErrorMacro(smtk::io::Logger::instance(), "Resource manager "
+        << this << " is refusing to add resource " << resource << " of type \""
+        << resource->uniqueName() << "\" "
+        << "as that type has not been registered.\n"
+        << "Perhaps you should link to the proper environment?");
     return false;
   }
 
@@ -390,6 +397,11 @@ int Manager::observe(const Observer& fn, bool notifyOfCurrentState)
     for (auto rsrc : m_resources)
     {
       fn(Event::RESOURCE_ADDED, rsrc);
+      // Terminate if the observe removes itself.
+      if (m_observers.find(handle) == m_observers.end())
+      {
+        break;
+      }
     }
   }
   return handle;
@@ -402,9 +414,13 @@ bool Manager::unobserve(int handle)
 
 void Manager::trigger(Event evt, const ResourcePtr& rsrc)
 {
-  for (auto observer : m_observers)
+  // This careful loop allows an observer to unregister itself.
+  std::map<int, Observer>::iterator observer = m_observers.begin();
+  std::map<int, Observer>::iterator next;
+  for (next = observer; observer != m_observers.end(); observer = next)
   {
-    observer.second(evt, rsrc);
+    ++next;
+    observer->second(evt, rsrc);
   }
 }
 }

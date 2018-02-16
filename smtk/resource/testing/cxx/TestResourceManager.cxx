@@ -104,6 +104,14 @@ int TestResourceManager(int, char** const)
   // Unregister the observer
   smtkTest(resourceManager->unobserve(handle), "Could not unregister observer.");
 
+  // Test that the observer can unregister itself while the observer is being called.
+  handle = resourceManager->observe(
+    [&handle, &resourceManager](smtk::resource::Event, const smtk::resource::Resource::Ptr&) {
+      resourceManager->unobserve(handle);
+      std::cout << "Observer " << handle << " removing self\n";
+    });
+  smtkTest(!resourceManager->unobserve(handle), "Observer did not remove itself.");
+
   // Attempt to set its UUID to that of the first ResourceA type (should fail)
   smtk::common::UUID originalUUID = resourceA2->id();
   smtkTest(!resourceA2->setId(resourceA1->id()), "Resource ID collision allowed.");

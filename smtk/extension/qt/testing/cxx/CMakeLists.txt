@@ -20,8 +20,10 @@ if (SMTK_ENABLE_POLYGON_SESSION)
   )
 
   set(unit_tests_which_require_data
-    #unitQtComponentItem.cxx
+    unitQtComponentItem.cxx
   )
+
+  set(unitQtComponentItem_EXTRA_ARGUMENTS "--exit")
 
   qt5_wrap_cpp(unit_tests_headers_moc ${unit_tests_headers})
 
@@ -35,6 +37,9 @@ if (SMTK_ENABLE_POLYGON_SESSION)
       smtkCoreModelTesting
       smtkCoreResourceTesting
       smtkPolygonSession
+      smtkEnvironment
+      smtkOperationEnvironment
+      smtkPolygonSessionEnvironment
       ${Boost_LIBRARIES}
   )
 endif()

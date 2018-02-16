@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
+#include "smtk/extension/paraview/server/vtkSMTKAttributeReader.h"
 #include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
 #include "smtk/extension/paraview/server/vtkSMTKModelRepresentation.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
@@ -252,33 +253,23 @@ void vtkSMTKWrapper::AddResourceFilter(json& response)
   if (rsrcThing)
   {
     vtkAlgorithm* alg = rsrcThing;
-    while (alg && !vtkSMTKModelReader::SafeDownCast(alg))
+    vtkSMTKModelReader* modelSrc = nullptr;
+    vtkSMTKAttributeReader* attrSrc = nullptr;
+    while (alg && !(modelSrc = vtkSMTKModelReader::SafeDownCast(alg)) &&
+      !(attrSrc = vtkSMTKAttributeReader::SafeDownCast(alg)))
     { // TODO: Also stop when we get to a mesh/attrib/etc source...
       alg = alg->GetInputAlgorithm(0, 0);
     }
-    auto src = vtkSMTKModelReader::SafeDownCast(alg);
-    if (src)
+    if (modelSrc)
     {
-      src->SetWrapper(this);
-      /*
-      src->ObserveResourceChanges([this](smtk::model::ManagerPtr rsrc, bool adding) {
-        if (rsrc)
-        {
-          if (adding)
-          {
-            std::cout << "  Adding resource   " << rsrc->id() << " loc " << rsrc->location()
-                      << "\n";
-            this->GetResourceManager()->add(rsrc);
-          }
-          else
-          {
-            std::cout << "  Removing resource " << rsrc->id() << " loc " << rsrc->location()
-                      << "\n";
-            this->GetResourceManager()->remove(rsrc);
-          }
-        }
-      });
-      */
+      modelSrc->SetWrapper(this);
+    }
+    if (attrSrc)
+    {
+      attrSrc->SetWrapper(this);
+    }
+    if (modelSrc || attrSrc)
+    {
       found = true;
       response["result"] = {
         { "success", true },

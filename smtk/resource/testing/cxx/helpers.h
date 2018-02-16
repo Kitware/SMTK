@@ -12,6 +12,7 @@
 
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
+#include "smtk/resource/testing/cxx/CoreResourceTestingExports.h"
 
 namespace smtk
 {
@@ -20,7 +21,8 @@ namespace resource
 namespace testing
 {
 
-ResourceArray loadTestResources(ManagerPtr resourceManager, int argc, char* argv[]);
+ResourceArray SMTKCORERESOURCETESTING_EXPORT loadTestResources(
+  ManagerPtr resourceManager, int argc, char* argv[]);
 }
 }
 }

@@ -13,15 +13,20 @@
 
 #include "smtk/resource/Manager.h"
 
+#include "smtk/operation/LoadResource.h"
 #include "smtk/operation/Manager.h"
 
-#include "smtk/model/RegisterResources.h"
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/FileItem.h"
+
 #include "smtk/model/SessionRef.h"
 
 #include "smtk/io/LoadJSON.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
+
+#include "smtk/environment/Environment.h"
 
 #include "smtk/AutoInit.h"
 
@@ -42,33 +47,44 @@ static std::vector<char*> dataArgs;
 
 void testUpdateChildren(smtk::view::ResourcePhraseModel::Ptr phraseModel)
 {
-  (void)phraseModel;
   auto root = phraseModel->root();
   auto phrResources = root->subphrases();
-  test(!phrResources.empty(), "Expected a phrase resource.");
+  test(!phrResources.empty(), "Expected a phrase for the resource.");
   std::cout << "rsrc " << phrResources[0]->title() << "\n";
   auto phrModels = phrResources[0]->subphrases();
+  test(!phrModels.empty(), "Expected a phrase for the resource's model.");
   std::cout << "modl " << phrModels[0]->title() << "\n";
   auto phrModelSummary = phrModels[0]->subphrases();
-  std::cout << "summ " << phrModelSummary[1]->title() << "\n";
-  DescriptivePhrases phrFaces = phrModelSummary[1]->subphrases();
-  phrFaces.erase(phrFaces.begin() + 2, phrFaces.begin() + 6);
+  test(phrModelSummary.size() > 3, "Expected phrases describing the resource's model.");
+  std::cout << "summ " << phrModelSummary[3]->title() << "\n";
+  DescriptivePhrases phrFaces = phrModelSummary[3]->subphrases();
+  std::cout << "Removing 3 entries from " << phrModelSummary[3]->title() << "\n";
+  phrFaces.erase(phrFaces.begin() + 2, phrFaces.begin() + 5);
   std::vector<int> idx;
   idx.push_back(0);
   idx.push_back(0);
   idx.push_back(1);
-  phraseModel->updateChildren(phrModelSummary[1], phrFaces, idx);
-  std::cout << "There are " << phrModelSummary[1]->subphrases().size() << " faces\n";
+  int numObservations = 0;
+  phraseModel->observe(
+    [&numObservations](DescriptivePhrasePtr pp, PhraseModelEvent pe, const std::vector<int>& src,
+      const std::vector<int>& dst, const std::vector<int>& delta) {
+      (void)src;
+      (void)dst;
+      std::cout << "Phrase event " << static_cast<int>(pe) << " " << pp->title() << " " << delta[0]
+                << " " << delta[1] << "\n";
+      smtkTest(delta.size() == 2, "Expecting phrase update to specify range of removed entries.");
+      smtkTest(delta[0] == 2 && delta[1] == 4, "Expecting delta = [2, 4].");
+      ++numObservations;
+    },
+    false // Do not immediately notify of existing items.
+    );
+  phraseModel->updateChildren(phrModelSummary[3], phrFaces, idx);
+  smtkTest(numObservations == 2, "Expected to observe removal of rows in 2 steps.");
+  std::cout << "There are " << phrModelSummary[3]->subphrases().size() << " entries remaining.\n";
 }
 
 int unitDescriptivePhrase(int argc, char* argv[])
 {
-  // std::cerr << "\nThis test is broken because the operators \"LoadSMTKModel\" and\n"
-  //           << "\"SaveSMTKModel\" are broken. They will not be fixed until the\n"
-  //           << "new json bindings are in place. Until then, may the dashboard\n"
-  //           << "gods have mercy on my soul.\n\n";
-  // return 1;
-
   if (argc < 2)
   {
     std::string testFile;
@@ -80,15 +96,17 @@ int unitDescriptivePhrase(int argc, char* argv[])
     argc = 2;
     argv = &dataArgs[0];
   }
-  auto rsrcMgr = smtk::resource::Manager::create();
-  auto operMgr = smtk::operation::Manager::create();
+  auto rsrcMgr = smtk::environment::ResourceManager::instance();
+  auto operMgr = smtk::environment::OperationManager::instance();
   auto phraseModel = smtk::view::ResourcePhraseModel::create();
   phraseModel->addSource(rsrcMgr, operMgr);
-  smtk::model::registerResources(rsrcMgr);
   smtk::resource::ResourceArray rsrcs;
   for (int i = 1; i < argc; i++)
   {
-    rsrcs.push_back(rsrcMgr->read<smtk::model::Manager>(argv[1]));
+    auto rdr = operMgr->create<smtk::operation::LoadResource>();
+    rdr->parameters()->findFile("filename")->setValue(argv[i]);
+    rdr->operate();
+    // rsrcs.push_back(rsrcMgr->read<smtk::bridge::polygon::Resource>(argv[1]));
   }
 
   test(phraseModel->root()->root() == phraseModel->root(),

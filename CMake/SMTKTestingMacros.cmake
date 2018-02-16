@@ -52,7 +52,7 @@ function(smtk_unit_tests)
     foreach (test ${SMTK_ut_SOURCES})
       get_filename_component(tname ${test} NAME_WE)
       add_test(NAME ${tname}
-        COMMAND ${test_prog} ${tname}
+        COMMAND ${test_prog} ${tname} ${${tname}_EXTRA_ARGUMENTS}
         )
       set_tests_properties(${tname} PROPERTIES TIMEOUT 120)
       if(SMTK_ut_LABEL)

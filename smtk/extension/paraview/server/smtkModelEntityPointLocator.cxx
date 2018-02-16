@@ -58,6 +58,6 @@ bool smtkModelEntityPointLocator::closestPointOn(const smtk::model::EntityRef& e
 }
 
 smtkDeclareExtension(
-  SMTKPVSERVEREXTPLUGIN_EXPORT, model_entity_point_locator, smtkModelEntityPointLocator);
+  SMTKPVSERVEREXT_EXPORT, model_entity_point_locator, smtkModelEntityPointLocator);
 
 smtkComponentInitMacro(smtk_model_entity_point_locator_extension);

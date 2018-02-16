@@ -1,8 +1,9 @@
 ################################################################################
 # Make a library of some utility functions for tests to use:
 ################################################################################
-add_library(smtkCoreResourceTesting STATIC helpers.cxx)
-smtk_public_headers(helpers.h)
+add_library(smtkCoreResourceTesting helpers.cxx)
+smtk_export_header(smtkCoreResourceTesting CoreResourceTestingExports.h)
+smtk_public_headers(helpers.h ${CMAKE_CURRENT_BINARY_DIR}/CoreResourceTestingExports.h)
 target_link_libraries(smtkCoreResourceTesting LINK_PRIVATE smtkCore)
 smtk_install_library(smtkCoreResourceTesting)
 

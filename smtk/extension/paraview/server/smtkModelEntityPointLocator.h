@@ -15,8 +15,7 @@
 
 /**\brief A class that provides point-location based on the VTK tessellation of entities.
   */
-class SMTKPVSERVEREXTPLUGIN_EXPORT smtkModelEntityPointLocator
-  : public smtk::model::PointLocatorExtension
+class SMTKPVSERVEREXT_EXPORT smtkModelEntityPointLocator : public smtk::model::PointLocatorExtension
 {
 public:
   smtkTypeMacro(smtkModelEntityPointLocator);
