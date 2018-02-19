@@ -61,6 +61,7 @@ protected slots:
 
   void calculatePitches();
   void launchSchemaPlanner();
+  void onOperationFinished(const smtk::model::OperatorResult& result);
 
 protected:
   void updateAttributeData() override;

@@ -21,12 +21,12 @@
           </DetailedDescription>
           <DefaultValue>PinCell</DefaultValue>
         </String>
-        <String Name="label" NumberOfRequiredValues="1" AdvanceLevel="0">
+        <String Name="label" NumberOfRequiredValues="1" AdvanceLevel="11">
           <BriefDescription>A user assigned label for the nulcear pin</BriefDescription>
           <DetailedDescription>
             A user assigned label for the nulcear pin.
           </DetailedDescription>
-          <DefaultValue>rgg pin cell</DefaultValue>
+          <DefaultValue>pinCell0</DefaultValue>
         </String>
         <Int Name="cell material" NumberOfRequiredValues="1" AdvanceLevel="11">
           <BriefDescription>A user assigned outer material for the nulcear pin</BriefDescription>

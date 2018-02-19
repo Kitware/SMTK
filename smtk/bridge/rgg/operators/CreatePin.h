@@ -55,6 +55,9 @@ public:
   smtkSuperclassMacro(Operator);
   smtkDeclareModelOperator();
 
+  static void populatePin(smtk::model::Operator* op, smtk::model::AuxiliaryGeometry& pin,
+    std::vector<smtk::model::EntityRef>& subAuxGeoms, bool isCreation = false);
+
 protected:
   smtk::model::OperatorResult operateInternal() override;
 };

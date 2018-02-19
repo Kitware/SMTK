@@ -1,289 +1,293 @@
+//=============================================================================
+// Copyright (c) Kitware, Inc.
+// All rights reserved.
+// See LICENSE.txt for details.
+//
+// This software is distributed WITHOUT ANY WARRANTY; without even
+// the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+// PURPOSE.  See the above copyright notice for more information.
+//=============================================================================
 #include "qtLattice.h"
-#include "cmbNucCordinateConverter.h"
-#include "cmbNucFillLattice.h"
-#include "cmbNucPartDefinition.h"
+#include "smtk/bridge/rgg/qt/qtLatticeHelper.h"
+#include "smtk/bridge/rgg/qt/rggNucCoordinateConverter.h"
+#include "smtk/bridge/rgg/qt/rggNucPartDefinition.h"
+#include "smtk/io/Logger.h"
+
+#include "smtk/extension/qt/qtActiveObjects.h"
+#include "smtk/model/Manager.h"
+
 #include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <limits.h>
 
 #include <QDebug>
+#include <iostream>
 
-namespace
-{
-cmbNucPart SingleBlank("XX", "XX");
-}
-
-//radius helper functions
-class cmbNucMaxRadiusFunction
+// Radius helper functions
+class rggNucMaxRadiusFunction
 {
 public:
-  cmbNucMaxRadiusFunction(double ri, double rj, double px, double py)
-    : radiusX(ri)
-    , radiusY(rj)
-    , pitchX(px)
-    , pitchY(py)
+  rggNucMaxRadiusFunction(double ri, double rj, double px, double py)
+    : m_radiusX(ri)
+    , m_radiusY(rj)
+    , m_pitchX(px)
+    , m_pitchY(py)
   {
     if (px == 0 || py == 0)
-      setPitch(px, py);
+    { // Reassign 0 pitch to 1
+      this->setPitch(px, py);
+    }
     assert(ri > 0);
     assert(rj > 0);
   }
-  virtual ~cmbNucMaxRadiusFunction() {}
+  virtual ~rggNucMaxRadiusFunction() {}
   virtual double getMaxRadius(int i, int j) = 0;
-  virtual cmbNucMaxRadiusFunction* clone() = 0;
+  virtual rggNucMaxRadiusFunction* clone() = 0;
   virtual double getCellRadius() const = 0;
-  virtual cmbLaticeFillFunction* createFillFuntion(size_t i, size_t j, double r, Lattice* l) = 0;
-  virtual double getRi() const { return pitchX * 0.5; }
-  virtual double getRj() const { return pitchY * 0.5; }
-  double radiusX, radiusY;
-  double centerX, centerY;
+  //virtual rggLatticeFillFunction * createFillFuntion(size_t i, size_t j, double r, qtLattice * l) = 0;
+  virtual double getRi() const { return m_pitchX * 0.5; }
+  virtual double getRj() const { return m_pitchY * 0.5; }
+  double m_radiusX, m_radiusY;
+  double m_centerX, m_centerY;
 
   virtual void setPitch(double x, double y)
   {
-    if (x == 0)
-      x = 1;
-    if (y == 0)
-      y = 1;
-    pitchX = x;
-    pitchY = y;
+    this->m_pitchX = (x == 0) ? 1 : x;
+    this->m_pitchY = (y == 0) ? 1 : y;
   }
 
 protected:
-  double pitchX, pitchY;
+  double m_pitchX, m_pitchY;
 };
 
-class cmbNucMaxHexRadiusFunction : public cmbNucMaxRadiusFunction
+class rggNucMaxHexRadiusFunction : public rggNucMaxRadiusFunction
 {
 public:
-  cmbNucMaxHexRadiusFunction(double ri, double px)
-    : cmbNucMaxRadiusFunction(ri, ri, px, px)
+  rggNucMaxHexRadiusFunction(double ri, double px)
+    : rggNucMaxRadiusFunction(ri, ri, px, px)
   {
   }
   virtual double getMaxRadius(int level, int /*j*/)
   {
-    double tmp = level * pitchX * cmbNucMathConst::cos30;
-    return std::max(0.0, this->radiusX - tmp); //less than zero has special meaning.
+    double tmp = level * m_pitchX * rggNucMathConst::cos30;
+    return std::max(0.0, this->m_radiusX - tmp); //less than zero has special meaning.
   }
-  cmbNucMaxRadiusFunction* clone()
+  rggNucMaxRadiusFunction* clone()
   {
-    return new cmbNucMaxHexRadiusFunction(this->radiusX, this->pitchX);
+    return new rggNucMaxHexRadiusFunction(this->m_radiusX, this->m_pitchX);
   }
-  virtual double getCellRadius() const { return pitchX * cmbNucMathConst::cos30; }
-  virtual double getRi() const { return pitchX; }
-  virtual double getRj() const { return getRi(); }
-  virtual cmbLaticeFillFunction* createFillFuntion(size_t i, size_t j, double r, Lattice* l)
-  {
-    return cmbLaticeFillFunction::generateFunctionHex(
-      i, j, r, true, cmbLaticeFillFunction::RELATIVE_CIRCLE, l);
-  }
+  virtual double getCellRadius() const { return m_pitchX * rggNucMathConst::cos30; }
+  virtual double getRi() const { return m_pitchX; }
+  virtual double getRj() const { return this->getRi(); }
+  // FIXME when adding support for fill function
+  // virtual cmbLaticeFillFunction* createFillFuntion(size_t i, size_t j, double r, Lattice * l)
+  // {
+  //   return cmbLaticeFillFunction::generateFunctionHex(i, j, r, true,
+  //                                                     cmbLaticeFillFunction::RELATIVE_CIRCLE, l);
+  // }
 };
 
-class cmbNucMaxRectRadiusFunction : public cmbNucMaxRadiusFunction
+class rggNucMaxRectRadiusFunction : public rggNucMaxRadiusFunction
 {
 public:
-  cmbNucMaxRectRadiusFunction(double cx, double cy, double ri, double rj, double px, double py)
-    : cmbNucMaxRadiusFunction(ri, rj, px, py)
+  rggNucMaxRectRadiusFunction(double cx, double cy, double ri, double rj, double px, double py)
+    : rggNucMaxRadiusFunction(ri, rj, px, py)
   {
-    centerX = cx;
-    centerY = cy;
+    this->m_centerX = cx;
+    this->m_centerY = cy;
   }
   virtual double getMaxRadius(int i, int j)
   {
-    double di = std::abs(i - centerX);
-    double dj = std::abs(j - centerY);
-    di *= pitchX;
-    dj *= pitchY;
+    double di = std::abs(i - this->m_centerX);
+    double dj = std::abs(j - this->m_centerY);
+    di *= m_pitchX;
+    dj *= m_pitchY;
 
-    return std::max(
-      0.0, std::min(this->radiusX - di, this->radiusY - dj)); //less than zero has special meaning.
+    return std::max(0.0,
+      std::min(this->m_radiusX - di, this->m_radiusY - dj)); //less than zero has special meaning.
   }
-  cmbNucMaxRadiusFunction* clone()
+  rggNucMaxRadiusFunction* clone()
   {
-    assert(pitchX != 0 && pitchY != 0);
-    return new cmbNucMaxRectRadiusFunction(
-      this->centerX, this->centerY, this->radiusX, this->radiusY, this->pitchX, this->pitchY);
+    assert(m_pitchX != 0 && m_pitchY != 0);
+    return new rggNucMaxRectRadiusFunction(this->m_centerX, this->m_centerY, this->m_radiusX,
+      this->m_radiusY, this->m_pitchX, this->m_pitchY);
   }
   virtual double getCellRadius() const
   {
-    assert(pitchX != 0 && pitchY != 0);
-    return std::min(pitchX, pitchY) * 0.5;
+    assert(m_pitchX != 0 && m_pitchY != 0);
+    return std::min(m_pitchX, m_pitchY) * 0.5;
   }
-  virtual cmbLaticeFillFunction* createFillFuntion(size_t i, size_t j, double r, Lattice* l)
-  {
-    return cmbLaticeFillFunction::generateFunction(
-      i, j, r, true, cmbLaticeFillFunction::RELATIVE_CIRCLE, l);
-  }
-};
-
-struct Lattice::CellReference::OverflowPartReference
-{
-  OverflowPartReference(size_t ci, size_t cj, CellReference& ref)
-    : centerCellI(ci)
-    , centerCellJ(cj)
-    , reference(ref)
-  {
-  }
-  OverflowPartReference(OverflowPartReference const* o)
-    : centerCellI(o->centerCellI)
-    , centerCellJ(o->centerCellJ)
-    , reference(o->reference)
-  {
-  }
-  size_t centerCellI, centerCellJ;
-  Lattice::CellReference reference;
+  //  virtual cmbLaticeFillFunction * createFillFuntion(size_t i, size_t j, double r, Lattice * l)
+  //  {
+  //    return cmbLaticeFillFunction::generateFunction(i, j, r, true,
+  //                                                   cmbLaticeFillFunction::RELATIVE_CIRCLE, l);
+  //  }
 };
 
 //lattice stuff
-Lattice::Lattice()
-  : enGeometryType(RECTILINEAR)
-  , subType(FLAT | ANGLE_360)
-  , FullCellMode(RECT)
-  , Blank(&SingleBlank)
+qtLattice::qtLattice()
+  : m_enGeometryType(RECTILINEAR)
+  , m_subType(FLAT | ANGLE_360)
+  , m_fullCellMode(RECT)
 {
-  this->maxRadiusFun = new cmbNucMaxRectRadiusFunction(
+  this->m_maxRadiusFun = new rggNucMaxRectRadiusFunction(
     2.0, 2.0, std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 1, 1);
+  smtk::model::ManagerPtr ptr = qtActiveObjects::instance().activeModel().manager();
+  if (ptr->findEntitiesByProperty("label", "XX").size() == 0)
+  { // Create a blank entity fits lattice need
+    smtk::model::AuxiliaryGeometry blankAux = ptr->addAuxiliaryGeometry();
+    blankAux.setName("Empty Cell");
+    blankAux.setStringProperty("label", "XX");
+    blankAux.setColor(1, 1, 1);
+    this->m_blank = smtk::model::EntityRef(ptr, blankAux.entity());
+  }
+  else
+  {
+    this->m_blank = ptr->findEntitiesByProperty("label", "XX")[0];
+  }
+
   this->SetDimensions(4, 4);
-  this->radius = -1;
+  this->m_radius = -1.0;
 }
 
-Lattice::Lattice(Lattice const& other)
-  : enGeometryType(other.enGeometryType)
-  , subType(other.subType)
-  , FullCellMode(other.FullCellMode)
-  , Blank(&SingleBlank)
+qtLattice::qtLattice(qtLattice const& other)
+  : m_enGeometryType(other.m_enGeometryType)
+  , m_subType(other.m_subType)
+  , m_fullCellMode(other.m_fullCellMode)
 {
-  this->maxRadiusFun = other.maxRadiusFun->clone();
-  setUpGrid(other);
-  this->validRange = other.validRange;
-  this->radius = -1;
+  this->m_maxRadiusFun = other.m_maxRadiusFun->clone();
+  this->setUpGrid(other);
+  this->m_validRange = other.m_validRange;
+  this->m_radius = -1.0;
+  this->m_blank = other.m_blank;
 }
 
-Lattice::~Lattice()
+qtLattice::~qtLattice()
 {
-  Grid.clear();
-  for (std::map<cmbNucPart*, Cell*>::iterator i = PartToCell.begin(); i != PartToCell.end(); ++i)
+  m_grid.clear(); // FIXME: store pointers instead of reference
+  for (auto i = m_partToCell.begin(); i != m_partToCell.end(); ++i)
   {
     delete i->second;
-    i->second = NULL;
+    i->second = nullptr;
   }
-  PartToCell.clear();
-  delete this->maxRadiusFun;
+  m_partToCell.clear();
+  //  if (this->m_maxRadiusFun != nullptr)
+  //  { // TODO: Handle m_maxRadiusFun to prevent crash
+  //    delete this->m_maxRadiusFun;
+  //  }
 }
 
-Lattice& Lattice::operator=(Lattice const& other)
+qtLattice& qtLattice::operator=(qtLattice const& other)
 {
-  delete this->maxRadiusFun;
-  this->maxRadiusFun = NULL;
-  this->maxRadiusFun = other.maxRadiusFun->clone();
-  this->subType = other.subType;
-  this->enGeometryType = other.enGeometryType;
-  this->FullCellMode = other.FullCellMode;
-  this->validRange = other.validRange;
-  this->radius = other.radius;
+  delete this->m_maxRadiusFun;
+  this->m_maxRadiusFun = nullptr;
+  this->m_maxRadiusFun = other.m_maxRadiusFun->clone();
+  this->m_subType = other.m_subType;
+  this->m_enGeometryType = other.m_enGeometryType;
+  this->m_fullCellMode = other.m_fullCellMode;
+  this->m_validRange = other.m_validRange;
+  this->m_radius = other.m_radius;
   setUpGrid(other);
   return *this;
 }
 
-void Lattice::setUpGrid(Lattice const& other)
+void qtLattice::setUpGrid(qtLattice const& other)
 {
-  this->Grid.clear();
-  this->Grid.resize(other.Grid.size());
-  for (unsigned int i = 0; i < other.Grid.size(); ++i)
+  this->m_grid.clear();
+  this->m_grid.resize(other.m_grid.size());
+  for (size_t i = 0; i < other.m_grid.size(); ++i)
   {
-    this->Grid[i].resize(other.Grid[i].size());
+    this->m_grid[i].resize(other.m_grid[i].size());
   }
 
   //Clear out old data
-  for (std::map<cmbNucPart*, Cell*>::iterator i = this->PartToCell.begin();
-       i != this->PartToCell.end(); ++i)
+  for (auto i = this->m_partToCell.begin(); i != this->m_partToCell.end(); ++i)
   {
     delete i->second;
-    i->second = NULL;
+    i->second = nullptr;
   }
 
-  this->PartToCell.clear();
+  this->m_partToCell.clear();
 
   //Add the parts to cells
-  for (std::map<cmbNucPart*, Cell*>::const_iterator i = other.PartToCell.begin();
-       i != other.PartToCell.end(); ++i)
+  for (auto i = other.m_partToCell.begin(); i != other.m_partToCell.end(); ++i)
   {
-    this->PartToCell[i->first] = new Cell(*(i->second));
+    this->m_partToCell[i->first] = new qtCell(*(i->second));
   }
 
   //update grid
-  this->Grid.clear();
-  this->Grid.resize(other.Grid.size());
-  for (unsigned int i = 0; i < other.Grid.size(); ++i)
+  this->m_grid.clear();
+  this->m_grid.resize(other.m_grid.size());
+  for (size_t i = 0; i < other.m_grid.size(); ++i)
   {
-    this->Grid[i].resize(other.Grid[i].size());
+    this->m_grid[i].resize(other.m_grid[i].size());
   }
-  for (unsigned int i = 0; i < other.Grid.size(); ++i)
+  for (size_t i = 0; i < other.m_grid.size(); ++i)
   {
-    for (unsigned j = 0; j < other.Grid[i].size(); ++j)
+    for (size_t j = 0; j < other.m_grid[i].size(); ++j)
     {
-      Cell* c = this->getCell(other.Grid[i][j].getCell()->getPart());
-      int oc = c->getCount();
-      (void)(oc);
-      this->Grid[i][j].setCell(c);
-      assert(c->getCount() == static_cast<unsigned int>(oc) + 1);
+      qtCell* c = this->getCell(other.m_grid[i][j].getCell()->getPart());
+      size_t oc = c->getCount();
+      this->m_grid[i][j].setCell(c);
+      assert(c->getCount() == (oc + 1));
     }
   }
   this->computeValidRange();
   this->sendMaxRadiusToReference();
 }
 
-void Lattice::setInvalidCells()
+void qtLattice::setInvalidCells()
 {
   //TODO Look at this
-  Cell* invalid = this->getCell(NULL);
+  qtCell* invalid = this->getCell(smtk::model::EntityRef());
   //invalid->setInvalid();
-  for (size_t i = 0; i < this->Grid.size(); i++)
+  for (size_t i = 0; i < this->m_grid.size(); i++)
   {
-    size_t start = (subType & FLAT) ? (i) : (i - (i) / 2);
-    size_t cols = ((subType & FLAT) ? (i + 1) : (((i + 1) - (i + 2) % 2))) + start;
-    if (subType & ANGLE_30)
+    size_t start = (m_subType & FLAT) ? (i) : (i - (i) / 2);
+    size_t cols = ((m_subType & FLAT) ? (i + 1) : (((i + 1) - (i + 2) % 2))) + start;
+    if (m_subType & ANGLE_30)
     {
       start = 2 * i - i / 2;
       cols = (i % 2 ? (i + 1) / 2 : (i + 2) / 2) + start;
     }
     for (unsigned int j = 0; j < start; ++j)
     {
-      this->Grid[i][j].setCell(invalid);
+      this->m_grid[i][j].setCell(invalid);
     }
-    for (size_t j = cols; j < this->Grid[i].size(); j++)
+    for (size_t j = cols; j < this->m_grid[i].size(); j++)
     {
-      this->Grid[i][j].setCell(invalid);
+      this->m_grid[i][j].setCell(invalid);
     }
   }
 }
 
-void Lattice::SetDimensions(size_t iin, size_t jin, bool reset)
+void qtLattice::SetDimensions(size_t iin, size_t jin, bool reset)
 {
-  Cell* invalid = this->getCell(NULL);
-  Cell* XX = this->getCell(this->Blank);
-  if (this->enGeometryType == RECTILINEAR)
+  qtCell* invalid = this->getCell(smtk::model::EntityRef());
+  qtCell* XX = this->getCell(this->m_blank);
+  if (this->m_enGeometryType == RECTILINEAR)
   {
-    this->Grid.resize(iin);
+    this->m_grid.resize(iin);
     for (size_t k = 0; k < iin; k++)
     {
-      int old = static_cast<int>(reset ? 0 : this->Grid[k].size());
-      this->Grid[k].resize(jin);
+      size_t old = reset ? static_cast<size_t>(0) : this->m_grid[k].size();
+      this->m_grid[k].resize(jin);
       for (size_t r = old; r < jin; ++r)
       {
-        this->Grid[k][r].setCell(XX);
+        this->m_grid[k][r].setCell(XX);
       }
     }
   }
-  else if (this->enGeometryType == HEXAGONAL)
+  else if (this->m_enGeometryType == HEXAGONAL)
   {
-    size_t current = reset ? static_cast<size_t>(0) : this->Grid.size();
+    size_t current = reset ? static_cast<size_t>(0) : this->m_grid.size();
     if (current == iin)
     {
       return;
     }
 
-    this->Grid.resize(iin);
+    this->m_grid.resize(iin);
 
     this->computeValidRange();
 
@@ -293,75 +297,77 @@ void Lattice::SetDimensions(size_t iin, size_t jin, bool reset)
       {
         if (k == 0)
         {
-          this->Grid[k].resize(1);
-          this->Grid[k][0].setCell(XX);
+          this->m_grid[k].resize(1);
+          this->m_grid[k][0].setCell(XX);
         }
         else
         {
           // for each layer, we need 6*Layer cells
           size_t cols = 6 * k;
-          this->Grid[k].resize(cols);
+          this->m_grid[k].resize(cols);
           size_t start = 0, end = 0;
-          if (!getValidRange(k, start, end))
+          if (!this->getValidRange(k, start, end))
+          {
             continue;
+          }
           for (size_t c = 0; c < cols; c++)
           {
             if (start <= c && c <= end)
             {
-              this->Grid[k][c].setCell(XX);
+              this->m_grid[k][c].setCell(XX);
             }
             else
             {
-              this->Grid[k][c].setCell(invalid);
+              this->m_grid[k][c].setCell(invalid);
             }
           }
         }
       }
     }
   }
-  this->maxRadiusFun->centerX = (iin - 1) * 0.5;
-  this->maxRadiusFun->centerY = (jin - 1) * 0.5;
+  this->m_maxRadiusFun->m_centerX = (iin - 1) * 0.5;
+  this->m_maxRadiusFun->m_centerY = (jin - 1) * 0.5;
   this->sendMaxRadiusToReference();
 }
 
-bool Lattice::getValidRange(size_t layer, size_t& start, size_t& end) const
+bool qtLattice::getValidRange(size_t layer, size_t& start, size_t& end) const
 {
-  if (this->enGeometryType == HEXAGONAL)
+  if (this->m_enGeometryType == HEXAGONAL)
   {
-    start = this->validRange[layer].first;
-    end = this->validRange[layer].second;
+    start = this->m_validRange[layer].first;
+    end = this->m_validRange[layer].second;
     return true;
   }
   return false;
 }
 
-void Lattice::computeValidRange()
+void qtLattice::computeValidRange()
 {
-  if (this->enGeometryType == HEXAGONAL)
+  if (this->m_enGeometryType == HEXAGONAL)
   {
-    this->validRange.resize(Grid.size());
-    for (std::size_t layer = 0; layer < Grid.size(); ++layer)
+    this->m_validRange.resize(m_grid.size());
+    for (std::size_t layer = 0; layer < m_grid.size(); ++layer)
     {
-      this->validRange[layer].first = 0;
+      this->m_validRange[layer].first = 0;
       if (layer == 0)
       {
-        this->validRange[layer].second = 0;
+        this->m_validRange[layer].second = 0;
       }
       else
       {
         const size_t tl = static_cast<int>(layer);
-        this->validRange[layer].second = 6 * tl - 1;
-        if (subType != 0 && !(subType & ANGLE_360))
+        this->m_validRange[layer].second = 6 * tl - 1;
+        if (m_subType != 0 && !(m_subType & ANGLE_360))
         {
-          this->validRange[layer].first = (subType & FLAT) ? (tl) : (tl - (tl / 2));
-          this->validRange[layer].second =
-            ((subType & FLAT) ? (tl + 1) : ((tl + 1) - (tl + 2) % 2)) +
-            this->validRange[layer].first - 1;
-          if (subType & ANGLE_30)
+          this->m_validRange[layer].first = (m_subType & FLAT) ? (tl) : (tl - (tl / 2));
+          this->m_validRange[layer].second =
+            ((m_subType & FLAT) ? (tl + 1) : ((tl + 1) - (tl + 2) % 2)) +
+            this->m_validRange[layer].first - 1;
+          if (m_subType & ANGLE_30)
           {
-            this->validRange[layer].first = 2 * tl - tl / 2;
-            this->validRange[layer].second =
-              (layer % 2 ? (tl + 1) / 2 : (tl + 2) / 2) + this->validRange[layer].first - 1;
+            this->m_validRange[layer].first = 2 * tl - tl / 2;
+            this->m_validRange[layer].second =
+              (layer % 2 ? (tl + 1) / 2 : (tl + 2) / 2) + this->m_validRange[layer].first - 1;
           }
         }
       }
@@ -369,57 +375,61 @@ void Lattice::computeValidRange()
   }
 }
 
-std::pair<size_t, size_t> Lattice::GetDimensions() const
+std::pair<size_t, size_t> qtLattice::GetDimensions() const
 {
-  if (this->Grid.size() == 0)
+  if (this->m_grid.size() == 0)
     return std::make_pair(0, 0);
-  if (this->enGeometryType == RECTILINEAR)
+  if (this->m_enGeometryType == RECTILINEAR)
   {
-    return std::make_pair(this->Grid.size(), this->Grid[0].size());
+    return std::make_pair(this->m_grid.size(), this->m_grid[0].size());
   }
   else
   {
-    return std::make_pair(this->Grid.size(), 6);
+    return std::make_pair(this->m_grid.size(), 6);
   }
 }
 
-bool Lattice::SetCell(size_t i, size_t j, cmbNucPart* part, bool valid, bool overInvalid)
+bool qtLattice::SetCell(
+  size_t i, size_t j, smtk::model::EntityRef part, bool valid, bool overInvalid)
 {
-  Cell* cr = NULL;
-  if (part == NULL && valid)
+  qtCell* cr = nullptr;
+  if (!part.isValid() && valid)
   {
-    cr = this->getCell(this->Blank);
+    cr = this->getCell(this->m_blank);
   }
   else
   {
     cr = this->getCell(part);
   }
-  if (i >= this->Grid.size() || j >= this->Grid[i].size())
-    return false;
-  if (overInvalid || this->Grid[i][j].getCell()->isValid())
+  if (i >= this->m_grid.size() || j >= this->m_grid[i].size())
   {
-    return this->Grid[i][j].setCell(cr);
+    return false;
+  }
+
+  if (overInvalid || this->m_grid[i][j].getCell()->isValid())
+  {
+    return this->m_grid[i][j].setCell(cr);
   }
   return false;
 }
 
-Lattice::Cell Lattice::GetCell(size_t i, size_t j) const
+qtCell qtLattice::GetCell(size_t i, size_t j) const
 {
-  return *(this->Grid[i][j].getCell());
+  return *(this->m_grid[i][j].getCell());
 }
 
-void Lattice::ClearCell(size_t i, size_t j)
+void qtLattice::ClearCell(size_t i, size_t j)
 {
-  Cell* cr = this->getCell(Blank);
-  this->Grid[i][j].setCell(cr);
+  qtCell* cr = this->getCell(m_blank);
+  this->m_grid[i][j].setCell(cr);
 }
 
-bool Lattice::ClearCell(const QString& label)
+bool qtLattice::ClearCell(const QString& label)
 {
   bool r = false;
-  for (size_t i = 0; i < this->Grid.size(); i++)
+  for (size_t i = 0; i < this->m_grid.size(); i++)
   {
-    for (size_t j = 0; j < this->Grid[i].size(); j++)
+    for (size_t j = 0; j < this->m_grid[i].size(); j++)
     {
       if (this->GetCell(static_cast<int>(i), static_cast<int>(j)).getLabel() == label)
       {
@@ -431,84 +441,91 @@ bool Lattice::ClearCell(const QString& label)
   return r;
 }
 
-bool Lattice::replacePart(cmbNucPart* oldObj, cmbNucPart* newObj)
+bool qtLattice::replacePart(smtk::model::EntityRef oldObj, smtk::model::EntityRef newObj)
 {
   bool change = false;
-  if (oldObj == NULL)
-    oldObj = this->Blank;
-  if (newObj == NULL)
-    newObj = this->Blank;
-  Cell* lcOld = this->getCell(oldObj);
-  Cell* lcNew = this->getCell(newObj);
-  for (size_t i = 0; i < this->Grid.size(); i++)
+  if (!oldObj.isValid())
   {
-    for (size_t j = 0; j < this->Grid[i].size(); j++)
+    oldObj = this->m_blank;
+  }
+  if (!newObj.isValid())
+  {
+    newObj = this->m_blank;
+  }
+  qtCell* lcOld = this->getCell(oldObj);
+  qtCell* lcNew = this->getCell(newObj);
+  for (size_t i = 0; i < this->m_grid.size(); i++)
+  {
+    for (size_t j = 0; j < this->m_grid[i].size(); j++)
     {
-      if (this->Grid[i][j].getCell() == lcOld)
+      if (this->m_grid[i][j].getCell() == lcOld)
       {
         change = true;
-        this->Grid[i][j].setCell(lcNew);
+        this->m_grid[i][j].setCell(lcNew);
       }
     }
   }
   return change;
 }
 
-bool Lattice::deletePart(cmbNucPart* obj)
+bool qtLattice::deletePart(smtk::model::EntityRef obj)
 {
-  bool r = this->replacePart(obj, this->Blank);
-  std::map<cmbNucPart*, Cell*>::iterator iter = PartToCell.find(obj);
-  if (iter != PartToCell.end())
+  bool r = this->replacePart(obj, this->m_blank);
+  auto iter = m_partToCell.find(obj);
+  if (iter != m_partToCell.end())
   {
     delete iter->second;
-    PartToCell.erase(iter);
+    m_partToCell.erase(iter);
   }
   return r;
 }
 
-void Lattice::SetGeometryType(enumGeometryType type)
+void qtLattice::SetGeometryType(rggGeometryType type)
 {
-  if (this->enGeometryType == type)
+  if (this->m_enGeometryType == type)
+  {
     return;
-  this->enGeometryType = type;
-  delete this->maxRadiusFun;
+  }
+  this->m_enGeometryType = type;
+  delete this->m_maxRadiusFun;
   if (type == RECTILINEAR)
   {
-    this->FullCellMode = RECT;
-    this->maxRadiusFun = new cmbNucMaxRectRadiusFunction(
+    this->m_fullCellMode = RECT;
+    this->m_maxRadiusFun = new rggNucMaxRectRadiusFunction(
       2.0, 2.0, std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 1, 1);
-    this->SetDimensions(4, 4);
+    this->SetDimensions(4, 4); // Default size
   }
   else
   {
-    this->maxRadiusFun = new cmbNucMaxHexRadiusFunction(std::numeric_limits<double>::max(), 1);
-    this->FullCellMode = HEX_FULL;
-    this->SetDimensions(1, 1, true);
+    this->m_maxRadiusFun = new rggNucMaxHexRadiusFunction(std::numeric_limits<double>::max(), 1);
+    this->m_fullCellMode = HEX_FULL;
+    this->SetDimensions(1, 1, true); // Default size
   }
 }
 
-enumGeometryType Lattice::GetGeometryType()
+rggGeometryType qtLattice::GetGeometryType()
 {
-  return this->enGeometryType;
+  return this->m_enGeometryType;
 }
 
-void Lattice::SetGeometrySubType(int type)
+void qtLattice::SetGeometrySubType(int type)
 {
-  subType = type;
+  this->m_subType = type;
 }
 
-int Lattice::GetGeometrySubType() const
+int qtLattice::GetGeometrySubType() const
 {
-  return subType;
+  return m_subType;
 }
 
-Lattice::Cell* Lattice::getCell(cmbNucPart* part)
+qtCell* qtLattice::getCell(smtk::model::EntityRef part)
 {
-  Cell* result = NULL;
-  std::map<cmbNucPart*, Cell*>::iterator iter = PartToCell.find(part);
-  if (iter == PartToCell.end())
+  // An invalid entityRef is allowed because it means an invalid input
+  qtCell* result = nullptr;
+  auto iter = m_partToCell.find(part);
+  if (iter == m_partToCell.end())
   {
-    result = PartToCell[part] = new Cell(part);
+    result = m_partToCell[part] = new qtCell(part);
   }
   else
   {
@@ -517,72 +534,72 @@ Lattice::Cell* Lattice::getCell(cmbNucPart* part)
   return result;
 }
 
-Lattice::CellDrawMode Lattice::getDrawMode(size_t index, size_t layer) const
+qtLattice::CellDrawMode qtLattice::getDrawMode(size_t index, size_t layer) const
 {
-  if (this->enGeometryType == RECTILINEAR)
-    return Lattice::RECT;
+  if (this->m_enGeometryType == RECTILINEAR)
+    return qtLattice::RECT;
   size_t start = 0, end = 0;
   if (!this->getValidRange(layer, start, end))
   {
-    return Lattice::RECT;
+    return qtLattice::RECT;
   }
   if (layer == 0)
   {
-    if (this->subType & ANGLE_360)
+    if (this->m_subType & ANGLE_360)
     {
       return this->getFullCellMode();
     }
-    else if (this->subType & ANGLE_60 && this->subType & FLAT)
+    else if (this->m_subType & ANGLE_60 && this->m_subType & FLAT)
     {
-      return Lattice::HEX_SIXTH_FLAT_CENTER;
+      return qtLattice::HEX_SIXTH_FLAT_CENTER;
     }
-    else if (this->subType & ANGLE_60 && this->subType & VERTEX)
+    else if (this->m_subType & ANGLE_60 && this->m_subType & VERTEX)
     {
-      return Lattice::HEX_SIXTH_VERT_CENTER;
+      return qtLattice::HEX_SIXTH_VERT_CENTER;
     }
-    else if (this->subType & ANGLE_30)
+    else if (this->m_subType & ANGLE_30)
     {
-      return Lattice::HEX_TWELFTH_CENTER;
+      return qtLattice::HEX_TWELFTH_CENTER;
     }
   }
-  else if (this->subType & ANGLE_360)
+  else if (this->m_subType & ANGLE_360)
   {
-    return FullCellMode;
+    return m_fullCellMode;
   }
-  else if (this->subType & ANGLE_60 && this->subType & FLAT)
+  else if (this->m_subType & ANGLE_60 && this->m_subType & FLAT)
   {
     if (index == start)
     {
-      return Lattice::HEX_SIXTH_FLAT_TOP;
+      return qtLattice::HEX_SIXTH_FLAT_TOP;
     }
     else if (index == end)
     {
-      return Lattice::HEX_SIXTH_FLAT_BOTTOM;
+      return qtLattice::HEX_SIXTH_FLAT_BOTTOM;
     }
     else
     {
-      return Lattice::HEX_FULL;
+      return qtLattice::HEX_FULL;
     }
   }
-  else if (this->subType & ANGLE_60 && this->subType & VERTEX)
+  else if (this->m_subType & ANGLE_60 && this->m_subType & VERTEX)
   {
     if (index == start && layer % 2 == 0)
-      return Lattice::HEX_SIXTH_VERT_TOP;
+      return qtLattice::HEX_SIXTH_VERT_TOP;
     else if (index == end && layer % 2 == 0)
-      return Lattice::HEX_SIXTH_VERT_BOTTOM;
-    return Lattice::HEX_FULL_30;
+      return qtLattice::HEX_SIXTH_VERT_BOTTOM;
+    return qtLattice::HEX_FULL_30;
   }
-  else if (this->subType & ANGLE_30)
+  else if (this->m_subType & ANGLE_30)
   {
     if (index == end)
-      return Lattice::HEX_TWELFTH_BOTTOM;
+      return qtLattice::HEX_TWELFTH_BOTTOM;
     else if (index == start && layer % 2 == 0)
-      return Lattice::HEX_TWELFTH_TOP;
+      return qtLattice::HEX_TWELFTH_TOP;
   }
-  return Lattice::HEX_FULL;
+  return qtLattice::HEX_FULL;
 }
 
-QString Lattice::generate_string(QString in, CellDrawMode mode)
+QString qtLattice::generate_string(QString in, CellDrawMode mode)
 {
   switch (mode)
   {
@@ -607,29 +624,26 @@ QString Lattice::generate_string(QString in, CellDrawMode mode)
   return in;
 }
 
-bool Lattice::fill(cmbLaticeFillFunction* fun, cmbNucPart* obj)
-{
-  if (fun == NULL)
-    return false;
-  bool change = false;
-  fun->begin();
-  size_t i, j;
-  while (fun->getNext(i, j))
-  {
-    change |= this->SetCell(i, j, obj, true, false);
-  }
-  if (change)
-    this->sendMaxRadiusToReference();
-  return change;
-}
+//bool qtLattice::fill(cmbLaticeFillFunction * fun, cmbNucPart * obj)
+//{
+//  if(fun == NULL) return false;
+//  bool change = false;
+//  fun->begin();
+//  size_t i, j;
+//  while( fun->getNext(i,j) )
+//  {
+//    change |= this->SetCell(i, j, obj, true, false);
+//  }
+//  if(change) this->sendMaxRadiusToReference();
+//  return change;
+//}
 
-std::vector<cmbNucPart*> Lattice::getUsedParts() const
+std::vector<smtk::model::EntityRef> qtLattice::getUsedParts() const
 {
-  std::vector<cmbNucPart*> result;
-  for (std::map<cmbNucPart*, Cell*>::const_iterator i = PartToCell.begin(); i != PartToCell.end();
-       ++i)
+  std::vector<smtk::model::EntityRef> result;
+  for (auto i = m_partToCell.begin(); i != m_partToCell.end(); ++i)
   {
-    Cell* c = i->second;
+    qtCell* c = i->second;
     if (!c->isBlank() && c->isValid() && c->getCount() != 0)
     {
       result.push_back(c->getPart());
@@ -638,112 +652,123 @@ std::vector<cmbNucPart*> Lattice::getUsedParts() const
   return result;
 }
 
-Lattice::changeMode Lattice::compair(Lattice const& other) const
+qtLattice::ChangeMode qtLattice::compair(qtLattice const& other) const
 {
   std::pair<int, int> dim = this->GetDimensions();
   std::pair<int, int> oDim = other.GetDimensions();
   if (dim.first != oDim.first || dim.second != oDim.second)
-    return SizeDiff;
-  for (unsigned int i = 0; i < this->Grid.size(); ++i)
+    return ChangeMode::SizeDiff;
+  for (unsigned int i = 0; i < this->m_grid.size(); ++i)
   {
-    for (unsigned int j = 0; j < this->Grid[i].size(); ++j)
+    for (unsigned int j = 0; j < this->m_grid[i].size(); ++j)
     {
-      if (this->Grid[i][j].getCell()->getPart() != other.Grid[i][j].getCell()->getPart())
+      if (this->m_grid[i][j].getCell()->getPart() != other.m_grid[i][j].getCell()->getPart())
       {
-        return ContentDiff;
+        return ChangeMode::ContentDiff;
       }
     }
   }
-  return Same;
+  return ChangeMode::Same;
 }
 
-void Lattice::unselect()
+void qtLattice::unselect()
 {
-  for (size_t i = 0; i < this->Grid.size(); ++i)
+  for (size_t i = 0; i < this->m_grid.size(); ++i)
   {
-    for (size_t j = 0; j < this->Grid[i].size(); ++j)
+    for (size_t j = 0; j < this->m_grid[i].size(); ++j)
     {
-      this->Grid[i][j].setDrawMode(CellReference::UNSELECTED);
-      this->Grid[i][j].clearPreview();
+      this->m_grid[i][j].setDrawMode(qtCellReference::UNSELECTED);
+      this->m_grid[i][j].clearPreview();
     }
   }
 }
 
-void Lattice::setPotentialConflictCells(double r)
+void qtLattice::setPotentialConflictCells(double r)
 {
-  for (size_t i = 0; i < this->Grid.size(); ++i)
+  for (size_t i = 0; i < this->m_grid.size(); ++i)
   {
-    for (size_t j = 0; j < this->Grid[i].size(); ++j)
+    for (size_t j = 0; j < this->m_grid[i].size(); ++j)
     {
-      if (this->Grid[i][j].radiusConflicts(r))
+      if (this->m_grid[i][j].radiusConflicts(r))
       {
-        this->Grid[i][j].setDrawMode(CellReference::UNSELECTED);
+        this->m_grid[i][j].setDrawMode(qtCellReference::UNSELECTED);
       }
     }
   }
 }
 
-void Lattice::selectCell(size_t i, size_t j)
+void qtLattice::selectCell(size_t i, size_t j)
 {
-  this->Grid[i][j].setDrawMode(CellReference::SELECTED);
+  this->m_grid[i][j].setDrawMode(qtCellReference::SELECTED);
 }
 
-void Lattice::clearSelection()
+void qtLattice::clearSelection()
 {
-  for (size_t i = 0; i < this->Grid.size(); ++i)
+  for (size_t i = 0; i < this->m_grid.size(); ++i)
   {
-    for (size_t j = 0; j < this->Grid[i].size(); ++j)
+    for (size_t j = 0; j < this->m_grid[i].size(); ++j)
     {
-      this->Grid[i][j].setDrawMode(CellReference::NORMAL);
-      this->Grid[i][j].clearPreview();
+      this->m_grid[i][j].setDrawMode(qtCellReference::NORMAL);
+      this->m_grid[i][j].clearPreview();
     }
   }
 }
 
-void Lattice::functionPreview(cmbLaticeFillFunction* fun, cmbNucPart* part)
+//void qtLattice::functionPreview(cmbLaticeFillFunction * fun, cmbNucPart * part)
+//{
+//  if(fun == NULL) return;
+//  fun->begin();
+//  size_t i, j;
+//  Cell * pv = NULL;
+//  if(part == NULL)
+//  {
+//    pv = this->getCell(this->m_blank);
+//  }
+//  else
+//  {
+//    pv = this->getCell(part);
+//  }
+//  while( fun->getNext(i,j) )
+//  {
+//    if(i < this->m_grid.size() &&  j < this->m_grid[i].size())
+//    {
+//      this->m_grid[i][j].setDrawMode( CellReference::FUNCTION_APPLY );
+//      this->m_grid[i][j].setPreviewCell(pv);
+//    }
+//  }
+//}
+
+void qtLattice::checkCellRadiiForValidity()
 {
-  if (fun == NULL)
-    return;
-  fun->begin();
-  size_t i, j;
-  Cell* pv = NULL;
-  if (part == NULL)
-  {
-    pv = this->getCell(this->Blank);
-  }
-  else
-  {
-    pv = this->getCell(part);
-  }
-  while (fun->getNext(i, j))
-  {
-    if (i < this->Grid.size() && j < this->Grid[i].size())
-    {
-      this->Grid[i][j].setDrawMode(CellReference::FUNCTION_APPLY);
-      this->Grid[i][j].setPreviewCell(pv);
-    }
-  }
 }
 
-void Lattice::checkCellRadiiForValidity()
+void qtLattice::sendMaxRadiusToReference()
 {
-}
-
-void Lattice::sendMaxRadiusToReference()
-{
-  cmbNucCordinateConverter converter(*this);
+  rggNucCoordinateConverter converter(*this);
   std::vector<std::pair<size_t, size_t> > pinOutsideCell;
-  double cellR = this->maxRadiusFun->getCellRadius();
+  double cellR = this->m_maxRadiusFun->getCellRadius();
   bool radiusGt0 = false;
-  for (size_t i = 0; i < this->Grid.size(); ++i)
-  {
-    for (size_t j = 0; j < this->Grid[i].size(); ++j)
+
+  auto getPinMaxRadius = [](const smtk::model::EntityRef& part, bool warning = true) -> double {
+    double partRadius = (!part.isValid() || !part.hasFloatProperty("max radius"))
+      ? -1.0
+      : part.floatProperty("max radius")[0];
+    if (partRadius <= 0 && warning)
     {
-      Lattice::CellReference& cr = this->Grid[i][j];
-      cr.setMaxRadius(this->maxRadiusFun->getMaxRadius(i, j));
+      smtkWarningMacro(smtk::io::Logger::instance(), "when sending max radius to instance,"
+          << part.name() << " has an invalid radius");
+    }
+  };
+
+  for (size_t i = 0; i < this->m_grid.size(); ++i)
+  {
+    for (size_t j = 0; j < this->m_grid[i].size(); ++j)
+    {
+      qtCellReference& cr = this->m_grid[i][j];
+      cr.setMaxRadius(this->m_maxRadiusFun->getMaxRadius(i, j));
       cr.clearOverflow();
-      cmbNucPart* part = cr.getCell()->getPart();
-      double r = (part == NULL) ? -1 : cr.getCell()->getPart()->getRadius();
+      smtk::model::EntityRef part = cr.getCell()->getPart();
+      double r = getPinMaxRadius(part, false);
       radiusGt0 |= r > 0;
       if (cr.isOccupied() && r > cellR)
       {
@@ -753,249 +778,123 @@ void Lattice::sendMaxRadiusToReference()
   }
   if (!radiusGt0)
     return; //this is for core, to short curcuit extra calculation
-  double ri = this->maxRadiusFun->getRi();
-  double rj = this->maxRadiusFun->getRj();
+  double ri = this->m_maxRadiusFun->getRi();
+  double rj = this->m_maxRadiusFun->getRj();
   for (size_t pit = 0; pit < pinOutsideCell.size(); ++pit)
   {
     std::pair<size_t, size_t>& at = pinOutsideCell[pit];
     double atX, atY;
     converter.convertToPixelXY(at.first, at.second, atX, atY, ri, rj);
-    double partRadius = this->Grid[at.first][at.second].getCell()->getPart()->getRadius();
+    // Get radius
+    smtk::model::EntityRef part = this->m_grid[at.first][at.second].getCell()->getPart();
+    double partRadius = getPinMaxRadius(part);
+
     double partR2 = partRadius * partRadius;
-    cmbLaticeFillFunction* fun =
-      this->maxRadiusFun->createFillFuntion(at.first, at.second, partRadius / cellR, this);
-    fun->begin();
-    size_t i, j;
-    bool hasConflict = false;
+    // FIXME
+    //    cmbLaticeFillFunction * fun = this->m_maxRadiusFun->createFillFuntion(at.first, at.second,
+    //                                                                        partRadius/cellR, this);
+    //    fun->begin();
+    //    size_t i, j;
+    //    bool hasConflict = false;
 
-    qDebug() << at.first << at.second;
+    //    qDebug() << at.first << at.second;
 
-    while (fun->getNext(i, j))
-    {
-      if (i >= this->Grid.size() || j >= this->Grid[i].size())
-        continue;
-      if (i == at.first && j == at.second)
-        continue;
-      double iX, jY;
-      converter.convertToPixelXY(i, j, iX, jY, ri, rj);
+    //    while( fun->getNext(i,j) )
+    //    {
+    //      if(i >= this->m_grid.size() || j >= this->m_grid[i].size()) continue;
+    //      if(i == at.first && j == at.second) continue;
+    //      double iX, jY;
+    //      converter.convertToPixelXY(i, j, iX, jY, ri, rj);
 
-      double di = atX - iX;
-      double dj = atY - jY;
-      double tmp = (di * di + dj * dj) / partR2;
-      if (tmp <= 1)
-      {
-        this->Grid[i][j].setMaxRadius(-0.5);
-        hasConflict |= this->Grid[i][j].isOccupied();
-        qDebug() << "\t" << i << j << this->Grid[i][j].isOccupied();
-        Lattice::CellReference& lcr = this->Grid[at.first][at.second];
-        this->Grid[i][j].addOverflow(&lcr, at.first, at.second);
-      }
-    }
+    //      double di = atX - iX;
+    //      double dj = atY - jY;
+    //      double tmp = (di*di + dj*dj)/partR2;
+    //      if(tmp <= 1)
+    //      {
+    //        this->m_grid[i][j].setMaxRadius(-0.5);
+    //        hasConflict |= this->m_grid[i][j].isOccupied();
+    //        qDebug() << "\t" << i << j << this->m_grid[i][j].isOccupied();
+    //        qtLattice::CellReference & lcr = this->m_grid[at.first][at.second];
+    //        this->m_grid[i][j].addOverflow(&lcr, at.first, at.second);
+    //      }
+    //    }
 
-    if (hasConflict)
-    {
-      this->Grid[at.first][at.second].setMaxRadius(-0.5);
-    }
+    //    if(hasConflict)
+    //    {
+    //      this->m_grid[at.first][at.second].setMaxRadius(-0.5);
+    //    }
   }
-  for (size_t ai = 0; ai < this->Grid.size(); ++ai)
+  for (size_t ai = 0; ai < this->m_grid.size(); ++ai)
   {
-    for (size_t aj = 0; aj < this->Grid[ai].size(); ++aj)
+    for (size_t aj = 0; aj < this->m_grid[ai].size(); ++aj)
     {
-      Lattice::CellReference& cr = this->Grid[ai][aj];
+      qtCellReference& cr = this->m_grid[ai][aj];
       double maxRadius = cr.getMaxRadius();
       if (maxRadius < 0)
         continue; //Already in conflict
       double atX, atY;
       converter.convertToPixelXY(ai, aj, atX, atY, ri, rj);
-      cmbLaticeFillFunction* fun =
-        this->maxRadiusFun->createFillFuntion(ai, aj, maxRadius / cellR, this);
-      fun->begin();
-      size_t i, j;
+      //      cmbLaticeFillFunction * fun = this->m_maxRadiusFun->createFillFuntion(ai, aj,
+      //                                                                          maxRadius/cellR, this);
+      //      fun->begin();
+      //      size_t i, j;
 
-      while (fun->getNext(i, j))
-      {
-        if (i >= this->Grid.size() || j >= this->Grid[i].size())
-          continue;
-        if (i == ai && j == aj)
-          continue;
-        if (this->Grid[i][j].isOccupied())
-        {
-          double r = this->Grid[i][j].getCell()->getPart()->getRadius();
-          double iX, jY;
-          converter.convertToPixelXY(i, j, iX, jY, ri, rj);
-          double di = atX - iX;
-          double dj = atY - jY;
-          double tmp = std::sqrt(di * di + dj * dj) - r;
-          if (tmp < maxRadius)
-          {
-            cr.setMaxRadius(tmp);
-            maxRadius = tmp;
-          }
-        }
-        if (this->Grid[i][j].hasOccupiers())
-        {
-          std::vector<CellReference::OverflowPartReference*> const& oc =
-            this->Grid[i][j].getOccupiers();
-          for (size_t k = 0; k < oc.size(); ++k)
-          {
-            CellReference::OverflowPartReference const* opr = oc[k];
-            if (opr->centerCellI == ai && opr->centerCellJ == aj)
-              continue;
+      //      while( fun->getNext(i,j) )
+      //      {
+      //        if(i >= this->m_grid.size() || j >= this->m_grid[i].size()) continue;
+      //        if(i == ai && j == aj) continue;
+      //        if(this->m_grid[i][j].isOccupied())
+      //        {
+      //          double r = getPinMaxRadius(this->m_grid[i][j].getCell()->getPart());
+      //          double iX, jY;
+      //          converter.convertToPixelXY(i, j, iX, jY, ri, rj);
+      //          double di = atX - iX;
+      //          double dj = atY - jY;
+      //          double tmp = std::sqrt(di*di + dj*dj) - r;
+      //          if(tmp < maxRadius)
+      //          {
+      //            cr.setMaxRadius(tmp);
+      //            maxRadius = tmp;
+      //          }
+      //        }
+      //        if(this->m_grid[i][j].hasOccupiers())
+      //        {
+      //          std::vector<CellReference::OverflowPartReference *> const& oc =
+      //                                                                    this->m_grid[i][j].getOccupiers();
+      //          for(size_t k = 0; k < oc.size(); ++k)
+      //          {
+      //            CellReference::OverflowPartReference const* opr = oc[k];
+      //            if(opr->centerCellI == ai && opr->centerCellJ == aj) continue;
 
-            double iX, jY;
-            converter.convertToPixelXY(opr->centerCellI, opr->centerCellJ, iX, jY, ri, rj);
-            double r =
-              this->Grid[opr->centerCellI][opr->centerCellJ].getCell()->getPart()->getRadius();
-            double di = atX - iX;
-            double dj = atY - jY;
-            double tmp = std::sqrt(di * di + dj * dj) - r;
-            if (tmp < maxRadius)
-            {
-              cr.setMaxRadius(tmp);
-              maxRadius = tmp;
-            }
-          }
-        }
-      }
-      delete fun;
+      //            double iX, jY;
+      //            converter.convertToPixelXY(opr->centerCellI, opr->centerCellJ, iX, jY, ri, rj);
+      //            double r =
+      //                  getPinMaxRadius(this->m_grid[opr->centerCellI][opr->centerCellJ].getCell()->getPart());
+      //            double di = atX - iX;
+      //            double dj = atY - jY;
+      //            double tmp = std::sqrt(di*di + dj*dj) - r;
+      //            if(tmp < maxRadius)
+      //            {
+      //              cr.setMaxRadius(tmp);
+      //              maxRadius = tmp;
+      //            }
+      //          }
+      //        }
+      //      }
+      //      delete fun;
     }
   }
 }
 
-void Lattice::updatePitchForMaxRadius(double x, double y)
+void qtLattice::updatePitchForMaxRadius(double x, double y)
 {
-  this->maxRadiusFun->setPitch(x, y);
+  this->m_maxRadiusFun->setPitch(x, y);
 }
 
-void Lattice::updateMaxRadius(double ri, double rj)
+void qtLattice::updateMaxRadius(double ri, double rj)
 {
-  this->maxRadiusFun->radiusX = ri;
-  this->maxRadiusFun->radiusY = rj;
-  this->maxRadiusFun->centerX = (this->Grid.size() - 1) * 0.5;
-  this->maxRadiusFun->centerY = (this->Grid[0].size() - 1) * 0.5;
-}
-
-//latice cell reference stuff
-Lattice::CellReference::CellReference()
-  : cell(NULL)
-  , previewCell(NULL)
-  , mode(NORMAL)
-{
-}
-
-Lattice::CellReference::CellReference(CellReference const& other)
-  : cell(other.cell)
-  , previewCell(other.previewCell)
-  , mode(NORMAL)
-  , maxRadius(other.maxRadius)
-{
-  if (cell)
-    cell->inc();
-  for (size_t i = 0; i < other.cellOccupier.size(); ++i)
-  {
-    this->cellOccupier.push_back(new OverflowPartReference(other.cellOccupier[i]));
-  }
-}
-
-Lattice::CellReference::~CellReference()
-{
-  if (cell)
-    cell->dec();
-  this->clearOverflow();
-}
-
-std::vector<Lattice::CellReference::OverflowPartReference*> const&
-Lattice::CellReference::getOccupiers() const
-{
-  return cellOccupier;
-}
-
-bool Lattice::CellReference::setCell(Lattice::Cell* c)
-{
-  if (c == cell)
-    return false;
-  if (cell && cell->getCount())
-    cell->dec();
-  if (c)
-    c->inc();
-  cell = c;
-  previewCell = c;
-  return true;
-}
-
-Lattice::Cell* Lattice::CellReference::getCell()
-{
-  return cell;
-}
-
-Lattice::Cell const* Lattice::CellReference::getCell() const
-{
-  return cell;
-}
-
-Lattice::Cell* Lattice::CellReference::getPreviewCell()
-{
-  return previewCell;
-}
-
-Lattice::Cell const* Lattice::CellReference::getPreviewCell() const
-{
-  return previewCell;
-}
-
-Lattice::Cell const* Lattice::CellReference::getModeCell() const
-{
-  switch (this->getDrawMode())
-  {
-    case Lattice::CellReference::SELECTED:
-    case Lattice::CellReference::FUNCTION_APPLY:
-      return this->getPreviewCell();
-    default:
-      return this->getCell();
-  }
-}
-
-bool Lattice::CellReference::isInConflict() const
-{
-  return this->isOccupied() && this->radiusConflicts(cell->getPart()->getRadius());
-}
-
-bool Lattice::CellReference::radiusConflicts(double r) const
-{
-  return r >= this->getMaxRadius();
-}
-
-bool Lattice::CellReference::isOccupied() const
-{
-  return cell != NULL && !cell->isBlank() && cell->getPart() != NULL;
-}
-
-void Lattice::CellReference::addOverflow(CellReference* ref, size_t i, size_t j)
-{
-  this->cellOccupier.push_back(new OverflowPartReference(i, j, *ref));
-}
-
-void Lattice::CellReference::clearOverflow()
-{
-  for (size_t i = 0; i < this->cellOccupier.size(); ++i)
-  {
-    delete this->cellOccupier[i];
-  }
-  this->cellOccupier.clear();
-}
-
-//latice container functions
-void LatticeContainer::updateLaticeFunction()
-{
-  double ri, rj;
-  this->getRadius(ri, rj);
-  lattice.updatePitchForMaxRadius(this->getPitchX(), this->getPitchY());
-  lattice.updateMaxRadius(ri, rj);
-  lattice.sendMaxRadiusToReference();
-}
-
-void LatticeContainer::getRadius(double& ri, double& rj) const
-{
-  ri = std::numeric_limits<double>::max();
-  rj = std::numeric_limits<double>::max();
+  this->m_maxRadiusFun->m_radiusX = ri;
+  this->m_maxRadiusFun->m_radiusY = rj;
+  this->m_maxRadiusFun->m_centerX = (this->m_grid.size() - 1) * 0.5;
+  this->m_maxRadiusFun->m_centerY = (this->m_grid[0].size() - 1) * 0.5;
 }

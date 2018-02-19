@@ -13,6 +13,7 @@
 #include "smtk/model/Manager.txx"
 
 #include "smtk/bridge/rgg/Session.h"
+#include "smtk/bridge/rgg/operators/CreateDuct.h"
 #include "smtk/bridge/rgg/operators/CreatePin.h"
 
 #include "smtk/bridge/rgg/Delete_xml.h"
@@ -40,25 +41,38 @@ smtk::model::OperatorResult Delete::operateInternal()
   EntityRefArray tobeDeleted;
   for (auto ent = entities.begin(); ent != entities.end(); ent++)
   {
-    if (!ent->isAuxiliaryGeometry() || !ent->hasStringProperty("rggType"))
+    std::cout << "DELETE: ent name=" << ent->name() << " is instance?" << ent->isInstance()
+              << std::endl;
+    if ((!ent->isAuxiliaryGeometry() || !ent->hasStringProperty("rggType")) && !ent->isInstance())
     {
-      smtkErrorMacro(this->log(), "Non rgg entities cannot be deleted by"
+      smtkErrorMacro(this->log(), "Non rgg entities cannot be deleted by "
                                   "this operator");
       return result;
     }
-    if (ent->stringProperty("rggType")[0] != SMTK_BRIDGE_RGG_PIN)
+    // FIXME: Remove me when we have full support for rgg entities
+    if (ent->hasStringProperty("rggType") &&
+      ent->stringProperty("rggType")[0] != SMTK_BRIDGE_RGG_PIN &&
+      ent->stringProperty("rggType")[0] != SMTK_BRIDGE_RGG_DUCT)
     {
       smtkWarningMacro(this->log(), "Currently delete operator is only"
-                                    "applicable to nuclear pin");
+                                    "applicable to nuclear pin, duct");
       continue;
     }
-    // Nuclear pin
-    if (ent->stringProperty("rggType")[0] == SMTK_BRIDGE_RGG_PIN)
+    // Nuclear pin and duct
+    if (ent->hasStringProperty("rggType") &&
+      (ent->stringProperty("rggType")[0] == SMTK_BRIDGE_RGG_PIN ||
+          ent->stringProperty("rggType")[0] == SMTK_BRIDGE_RGG_DUCT))
     {
       // Delete the pin and its childrens
+      // Corresponding instances would also get deleted
       EntityRefArray children = ent->as<AuxiliaryGeometry>().embeddedEntities<EntityRefArray>();
       tobeDeleted.push_back(*ent);
       tobeDeleted.insert(tobeDeleted.end(), children.begin(), children.end());
+    }
+    // Nuclear instance
+    if (ent->isInstance())
+    {
+      tobeDeleted.push_back(*ent);
     }
   }
   // Delete entities from the manager

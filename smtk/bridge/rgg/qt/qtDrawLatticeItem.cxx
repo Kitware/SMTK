@@ -17,26 +17,26 @@
 
 #include <iostream>
 
-qtDrawLatticeItem::qtDrawLatticeItem(const QPolygonF& poly, int l, int cellIdx,
-  qtLattice::CellReference const& ref, QGraphicsItem* parent)
+qtDrawLatticeItem::qtDrawLatticeItem(
+  const QPolygonF& poly, int l, int cellIdx, qtCellReference const& ref, QGraphicsItem* parent)
   : QGraphicsPolygonItem(poly, parent)
-  , refCell(ref)
+  , m_refCell(ref)
   , m_layer(l)
   , m_cellIndex(cellIdx)
 
 {
   this->setAcceptDrops(true);
-  localCenter = QPointF(0, 0);
+  this->m_localCenter = QPointF(0, 0);
   for (int i = 0; i < poly.count(); ++i)
   {
-    localCenter += poly.value(i);
+    this->m_localCenter += poly.value(i);
   }
-  localCenter /= poly.count();
+  this->m_localCenter /= poly.count();
 }
 
 QString qtDrawLatticeItem::text() const
 {
-  return refCell.getCell()->getLabel();
+  return m_refCell.getCell()->getLabel();
 }
 
 int qtDrawLatticeItem::layer()
@@ -52,20 +52,20 @@ int qtDrawLatticeItem::cellIndex()
 void qtDrawLatticeItem::drawText(QPainter* painter)
 {
   QRectF trect = this->boundingRect();
-  Lattice::Cell const* cell = refCell.getModeCell();
+  qtCell const* cell = m_refCell.getModeCell();
   QColor c = cell->getColor();
   double gray = c.red() * 0.299 + c.green() * 0.587 + c.blue() * 0.114;
 
   QColor textColor;
 
-  switch (refCell.getDrawMode())
+  switch (m_refCell.getDrawMode())
   {
-    case Lattice::CellReference::SELECTED:
-    case Lattice::CellReference::NORMAL:
-    case Lattice::CellReference::FUNCTION_APPLY:
+    case qtCellReference::SELECTED:
+    case qtCellReference::NORMAL:
+    case qtCellReference::FUNCTION_APPLY:
       textColor = (gray < 186) ? Qt::white : Qt::black;
       break;
-    case Lattice::CellReference::UNSELECTED:
+    case qtCellReference::UNSELECTED:
       textColor = (gray < 186) ? QColor(200, 200, 200, 100) : QColor(50, 50, 50, 100);
       break;
   }
@@ -74,7 +74,7 @@ void qtDrawLatticeItem::drawText(QPainter* painter)
   font.setPixelSize(12);
   painter->setPen(textColor);
   QString txt = cell->getLabel();
-  if (refCell.isInConflict())
+  if (m_refCell.isInConflict())
   {
     txt = "!" + txt + "!";
     font.setBold(true);
@@ -82,7 +82,7 @@ void qtDrawLatticeItem::drawText(QPainter* painter)
   }
   painter->setFont(font);
 #ifdef DEBUG_CORDINATE
-  double mr = refCell.getMaxRadius();
+  double mr = m_refCell.getMaxRadius();
   txt = QString::number(mr, 'f', 2);
 #endif
   painter->drawText(trect, Qt::AlignCenter | Qt::AlignCenter | Qt::TextWordWrap, txt);
@@ -91,20 +91,20 @@ void qtDrawLatticeItem::drawText(QPainter* painter)
 void qtDrawLatticeItem::paint(
   QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
-  Lattice::Cell const* cell = refCell.getModeCell();
+  qtCell const* cell = m_refCell.getModeCell();
   QColor c = cell->getColor();
   double gray = c.red() * 0.299 + c.green() * 0.587 + c.blue() * 0.114;
-  switch (refCell.getDrawMode())
+  switch (m_refCell.getDrawMode())
   {
-    case Lattice::CellReference::SELECTED:
+    case qtCellReference::SELECTED:
       this->setPen(QPen(Qt::darkCyan, 3));
       this->setAcceptDrops(true);
       break;
-    case Lattice::CellReference::NORMAL:
+    case qtCellReference::NORMAL:
       this->setPen(QPen(Qt::black));
       this->setAcceptDrops(true);
       break;
-    case Lattice::CellReference::UNSELECTED:
+    case qtCellReference::UNSELECTED:
     {
       int g = qGray(c.rgb());
       if (g >= 230)
@@ -114,7 +114,7 @@ void qtDrawLatticeItem::paint(
       this->setAcceptDrops(false);
       break;
     }
-    case Lattice::CellReference::FUNCTION_APPLY:
+    case qtCellReference::FUNCTION_APPLY:
       this->setPen(QPen(Qt::darkRed, 2));
       this->setAcceptDrops(true);
       break;
@@ -123,7 +123,7 @@ void qtDrawLatticeItem::paint(
 
   this->Superclass::paint(painter, option, widget);
 
-  if (refCell.isInConflict())
+  if (m_refCell.isInConflict())
   {
     if (gray < 186)
     {
@@ -142,14 +142,11 @@ void qtDrawLatticeItem::paint(
 
 smtk::model::EntityRef qtDrawLatticeItem::getPart()
 {
-  // FIXME
-  std::cout << "Fixme: qtDrawLatticeItem::getPart" << std::endl;
-  return smtk::model::EntityRef;
-  //  Lattice::Cell const* cell = refCell.getCell();
-  //  return cell->getPart();
+  qtCell const* cell = m_refCell.getCell();
+  return (cell) ? cell->getPart() : smtk::model::EntityRef();
 }
 
 QPointF qtDrawLatticeItem::getCentroid() const
 {
-  return localCenter + pos();
+  return this->m_localCenter + pos();
 }

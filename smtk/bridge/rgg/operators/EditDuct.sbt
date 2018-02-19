@@ -25,7 +25,7 @@
           <DetailedDescription>
             Pitch value is controlled by the nuclear core.
             If the model is a hexagonal core, then pitch would have two values which are twice of the hexagon
-            radius.
+            inradius.
             If the model is a rectilinear core, then pitch would have two values which are width and length.
           </DetailedDescription>
         </Double>

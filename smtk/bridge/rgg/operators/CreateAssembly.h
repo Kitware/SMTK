@@ -12,7 +12,7 @@
 
 #include "smtk/bridge/rgg/Operator.h"
 
-/**\brief a type to define auxgeoms used for duct
+/**\brief a type to define a group used for rgg assembly
   */
 #define SMTK_BRIDGE_RGG_ASSEMBLY "_rgg_assembly"
 
@@ -33,7 +33,7 @@ namespace rgg
 {
 
 /**\brief create a rgg assembly
-  * The nuclear assembly is converted into an auxiliary geometry in smtk world. All
+  * The nuclear assembly is converted into a group in smtk world. All
   * parameters are stored as properties.
   */
 class SMTKRGGSESSION_EXPORT CreateAssembly : public Operator
@@ -44,6 +44,10 @@ public:
   smtkSharedFromThisMacro(Operator);
   smtkSuperclassMacro(Operator);
   smtkDeclareModelOperator();
+
+  // If it's in create mode, it would populate the assembly with predefined properties
+  static void populateAssembly(
+    smtk::model::Operator* op, smtk::model::Group& assembly, bool createMode = false);
 
 protected:
   smtk::model::OperatorResult operateInternal() override;

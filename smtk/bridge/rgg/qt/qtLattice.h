@@ -6,13 +6,18 @@
 //  This software is distributed WITHOUT ANY WARRANTY; without even
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME qtLattice - UI component for rgg lattice. It has 2 nested classes that
-// are cell and cellReference.
+// .NAME qtLattice - UI component for rgg lattice.
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef qtLattice_h
-#define qtLattice_h
+#ifndef __smtk_bridge_rgg_qt_qtLattice_h
+#define __smtk_bridge_rgg_qt_qtLattice_h
+
+#include "smtk/bridge/rgg/qt/qtLatticeHelper.h"
+#include "smtk/bridge/rgg/qt/rggNucPartDefinition.h"
+#include "smtk/model/EntityRef.h"
+
+#include "smtk/bridge/rgg/qt/Exports.h"
 
 #include <QColor>
 #include <QStringList>
@@ -25,12 +30,12 @@
 
 #include <iostream>
 
-#include "smtk/model/EntityRef.h"
-
+class qtCell;
 class qtDrawLatticeItem;
 class qtDraw2DLattice;
-class cmbLaticeFillFunction;
-class cmbNucMaxRadiusFunction;
+// FIXME when adding support for fill function
+//class cmbLaticeFillFunction;
+class rggNucMaxRadiusFunction;
 
 namespace smtk
 {
@@ -40,15 +45,10 @@ class EntityRef;
 }
 }
 
-class qtLattice
+class SMTKQTRGGSESSION_EXPORT qtLattice
 {
 public:
-  enum enumGeometryType
-  {
-    RECTILINEAR = 0x0140,
-    HEXAGONAL = 0x0241,
-  };
-  enum changeMode
+  enum ChangeMode
   {
     Same = 0,
     SizeDiff = 1,
@@ -76,55 +76,6 @@ public:
 
   static QString generate_string(QString, CellDrawMode);
 
-  // Represents a cell in the lattice view widget. It's a wrapper class around
-  // EntityRef which has an additional class variable as count
-  struct Cell
-  {
-    Cell(smtk::model::EntityRef ent)
-      : Count(0)
-      , Part(ent)
-    {
-    }
-    Cell(Cell const& other)
-      : Count(0)
-      , Part(other.Part)
-    {
-    }
-
-    bool isBlank() const { return this->getLabel() == "XX"; }
-
-    QString getLabel() const
-    {
-      return (this->isValid() && Part.hasStringProperty("label")) ? Part.stringProperty("label")
-                                                                  : "";
-    }
-    QColor getColor() const
-    {
-      if (this->isValid() && Part.hasColor())
-      {
-        smtk::model::FloatList color = Part.color();
-        return QColor::fromRgbF(color[0], color[1], color[2], color[3]);
-      }
-      else
-      {
-        return Qt::black;
-      }
-    }
-
-    bool isValid() const { return this->Part.isValid(); }
-
-    void setPart(smtk::model::EntityRef p) { this->Part = p; }
-    smtk::model::EntityRef getPart() const { return this->Part; }
-
-    void inc() { Count++; }
-    void dec() { Count--; }
-
-    size_t getCount() const { return Count; }
-  protected:
-    size_t Count;
-    smtk::model::EntityRef Part;
-  };
-
   qtLattice();
 
   qtLattice(qtLattice const& other);
@@ -151,7 +102,7 @@ public:
 
   // Returns the contents of the cell (i, j).
   // For Hex type, i is layer/ring index, j is index on that layer
-  Cell GetCell(size_t i, size_t j) const;
+  qtCell GetCell(size_t i, size_t j) const;
 
   // Clears the contents of the cell (i, j).
   // For Hex type, i is layer/ring index, j is index on that layer
@@ -167,40 +118,40 @@ public:
   std::vector<smtk::model::EntityRef> getUsedParts() const;
 
   // get/set Geometry type (hex or rect)
-  void SetGeometryType(enumGeometryType type);
+  void SetGeometryType(rggGeometryType type);
 
-  enumGeometryType GetGeometryType();
+  rggGeometryType GetGeometryType();
 
   void SetGeometrySubType(int type);
   int GetGeometrySubType() const;
 
-  size_t getSize() const { return Grid.size(); }
-  size_t getSize(size_t i) const { return Grid[i].size(); }
+  size_t getSize() const { return m_grid.size(); }
+  size_t getSize(size_t i) const { return m_grid[i].size(); }
 
   qtLattice::CellDrawMode getDrawMode(size_t index, size_t layer) const;
 
   void setFullCellMode(qtLattice::CellDrawMode m)
   {
-    if (this->enGeometryType == HEXAGONAL)
+    if (this->m_enGeometryType == HEXAGONAL)
     {
-      FullCellMode = m;
+      m_fullCellMode = m;
     }
     else
     {
-      FullCellMode = RECT;
+      m_fullCellMode = RECT;
     }
   }
 
   qtLattice::CellDrawMode getFullCellMode() const
   {
-    assert(FullCellMode == RECT || FullCellMode == HEX_FULL || FullCellMode == HEX_FULL_30);
-    return FullCellMode;
+    assert(m_fullCellMode == RECT || m_fullCellMode == HEX_FULL || m_fullCellMode == HEX_FULL_30);
+    return m_fullCellMode;
   }
 
   // FIXME when adding support for fill function
   //bool fill(cmbLaticeFillFunction * fun, smtk::model::EntityRef* obj);
 
-  changeMode compair(qtLattice const& other) const;
+  ChangeMode compair(qtLattice const& other) const;
 
   void selectCell(size_t i, size_t j);
   void unselect();
@@ -209,7 +160,7 @@ public:
   //void functionPreview(cmbLaticeFillFunction * fun, smtk::model::EntityRef* p);
   void setPotentialConflictCells(double r);
 
-  void setRadius(double r) { this->radius = r; }
+  void setRadius(double r) { this->m_radius = r; }
   void checkCellRadiiForValidity();
 
   void updatePitchForMaxRadius(double x, double y);
@@ -217,113 +168,23 @@ public:
   void sendMaxRadiusToReference();
 
 protected:
-  class CellReference
-  {
-  public:
-    enum DrawMode
-    {
-      SELECTED = 1,
-      UNSELECTED = 0,
-      NORMAL = 2,
-      FUNCTION_APPLY = 3
-    };
-    CellReference();
-    CellReference(CellReference const& other);
-    ~CellReference();
-
-    bool setCell(Cell* c);
-
-    Cell* getCell();
-    Cell const* getCell() const;
-
-    Cell* getPreviewCell();
-    Cell const* getPreviewCell() const;
-
-    DrawMode getDrawMode() const { return mode; }
-    void setDrawMode(DrawMode m) const { mode = m; }
-    void setPreviewCell(Cell* pv) { previewCell = pv; }
-    void clearPreview() { previewCell = cell; }
-
-    Cell const* getModeCell() const;
-
-    void setMaxRadius(double r) { this->maxRadius = r; }
-    double getMaxRadius() const { return maxRadius; }
-
-    bool isInConflict() const;
-
-    bool radiusConflicts(double r) const;
-
-    bool isOccupied() const;
-    bool hasOccupiers() const { return !cellOccupier.empty(); }
-
-    void addOverflow(CellReference* ref, size_t i, size_t j);
-
-    struct OverflowPartReference;
-
-    std::vector<CellReference::OverflowPartReference*> const& getOccupiers() const;
-    void clearOverflow();
-
-  protected:
-    Cell* cell;
-    Cell* previewCell;
-
-    std::vector<OverflowPartReference*> cellOccupier;
-
-    mutable DrawMode mode;
-    double maxRadius;
-  };
-
-  Cell* getCell(smtk::model::EntityRef* part);
+  qtCell* getCell(smtk::model::EntityRef part);
 
   void setUpGrid(qtLattice const& other);
 
-  CellReference const& getRerference(int i, int j) { return this->Grid[i][j]; }
+  qtCellReference const& getRerference(int i, int j) { return this->m_grid[i][j]; }
 
-  std::vector<std::vector<CellReference> > Grid;
-  std::map<smtk::model::EntityRef*, Cell*> PartToCell;
-  enumGeometryType enGeometryType;
-  int subType;
-  std::vector<std::pair<size_t, size_t> > validRange;
   void computeValidRange();
-  qtLattice::CellDrawMode FullCellMode;
-  smtk::model::EntityRef* Blank;
-  double radius;
-  cmbNucMaxRadiusFunction* maxRadiusFun;
-};
 
-class LatticeContainer : public smtk::model::EntityRef
-{
-public:
-  LatticeContainer(QString label, QString name, QColor color, double px, double py)
-    : smtk::model::EntityRef(label, name, color)
-    , pitchX(px)
-    , pitchY(py)
-  {
-    std::cout << "Create LatticeContainer" << std::endl;
-  }
-  qtLattice& getLattice() { return this->lattice; }
-  virtual QString extractLabel(QString const&) = 0;
-  virtual void fillList(std::vector<std::pair<QString, smtk::model::EntityRef*> >& l) = 0;
-  virtual smtk::model::EntityRef* getFromLabel(const QString&) = 0;
-  virtual bool IsHexType() = 0;
-  virtual void calculateExtraTranslation(double& transX, double& transY) = 0;
-  virtual void calculateTranslation(double& transX, double& transY) = 0;
-  virtual void setUpdateUsed() = 0;
-  virtual void updateLaticeFunction();
-  virtual void getRadius(double& ri, double& rj) const;
-  virtual double getRadius() const { return -1; }
-  double getPitchX() const { return this->pitchX; }
-  double getPitchY() const { return this->pitchY; }
-  void setPitch(double x, double y)
-  {
-    this->pitchX = x;
-    this->pitchY = y;
-  }
-  std::pair<int, int> GetDimensions() { return this->lattice.GetDimensions(); }
-protected:
-  qtLattice lattice;
-  double pitchX;
-  double pitchY;
+  std::vector<std::vector<qtCellReference> > m_grid;
+  std::map<smtk::model::EntityRef, qtCell*> m_partToCell;
+  rggGeometryType m_enGeometryType;
+  int m_subType;
+  std::vector<std::pair<size_t, size_t> > m_validRange;
+  qtLattice::CellDrawMode m_fullCellMode;
+  smtk::model::EntityRef m_blank;
+  double m_radius;
+  rggNucMaxRadiusFunction* m_maxRadiusFun;
 };
 
 #endif

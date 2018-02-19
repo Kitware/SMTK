@@ -312,7 +312,6 @@ static bool updateBoundsFromDataSet(smtk::model::AuxiliaryGeometry& aux,
 bool vtkAuxiliaryGeometryExtension::canHandleAuxiliaryGeometry(
   smtk::model::AuxiliaryGeometry& entity, std::vector<double>& bboxOut)
 {
-  //  std::cout << "--- check aux: " << entity.name() <<std::endl;
   if (!entity.isValid())
   {
     return false;
@@ -322,7 +321,6 @@ bool vtkAuxiliaryGeometryExtension::canHandleAuxiliaryGeometry(
   auto tuple = s_p->fetch(entity);
   auto dataset = std::get<ClassInternal::DATA>(tuple);
   std::time_t mtime;
-  std::cout << "canHandleAuxiliaryGeometry ? " << entity.name();
   if (dataset)
   {
     // Check timestamp
@@ -345,12 +343,10 @@ bool vtkAuxiliaryGeometryExtension::canHandleAuxiliaryGeometry(
     {
       if (entity.auxiliaryGeometries().size() == 0)
       { // For sub pin part/layer, just update bbox.
-        std::cout << "  ->update BBOX" << std::endl;
         return updateBoundsFromDataSet(entity, bboxOut, dataset);
       }
     }
   }
-  std::cout << "  ->generate new rep" << std::endl;
 
   // No cache entry for the data; we need to read it.
   bool trimCache(true);
@@ -487,7 +483,6 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRepresenta
   {
     // SMTK should check the pin auxgeom first. It would create corresponding
     // representation for its parts and layers.
-    std::cout << " generateRep for aux " << auxGeom.name() << std::endl;
     return vtkAuxiliaryGeometryExtension::generateRGGRepresentation(auxGeom, genNormals);
   }
 
@@ -564,7 +559,6 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGPinRepr
   const AuxiliaryGeometry& pin, bool genNormals)
 {
   vtkAuxiliaryGeometryExtension::ensureCache();
-  std::cout << "generateRGGPinRpresentation:\nChecking input first " << std::endl;
   //Extract info from pin
   int materialIndex;
   bool isMaterialSet;
@@ -572,26 +566,22 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGPinRepr
   {
     materialIndex = pin.integerProperty("cell material")[0];
     isMaterialSet = materialIndex > 0 ? true : false;
-    std::cout << "  cell material: " << materialIndex << std::endl;
   }
   int zOrigin;
   if (pin.hasFloatProperty("z origin"))
   {
     zOrigin = pin.floatProperty("z origin")[0];
-    std::cout << "  zOrigin: " << zOrigin << std::endl;
   }
   int isHex;
   if (pin.hasIntegerProperty("hex"))
   {
     isHex = pin.integerProperty("hex")[0];
-    std::cout << "  hex: " << isHex << std::endl;
   }
 
   int isCutAway;
   if (pin.hasIntegerProperty("cut away"))
   {
     isCutAway = pin.integerProperty("cut away")[0];
-    std::cout << "  cut away: " << isCutAway << std::endl;
   }
   // Pieces
   // Segment type of each piece. 0 means cylinder and 1 means frustum
@@ -599,47 +589,23 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGPinRepr
   if (pin.hasIntegerProperty("pieces"))
   {
     segTypes = pin.integerProperty("pieces");
-    std::cout << "  segment type: ";
-    for (auto item : segTypes)
-    {
-      std::cout << " " << item;
-    }
-    std::cout << std::endl;
   }
   smtk::model::FloatList typeParas;
   // For each piece, it would 3 parameters as: length, base radius, top radius,
   if (pin.hasFloatProperty("pieces"))
   {
     typeParas = pin.floatProperty("pieces");
-    std::cout << "  type parameters: ";
-    for (auto item : typeParas)
-    {
-      std::cout << " " << item;
-    }
-    std::cout << std::endl;
   }
   // Layer materials
   smtk::model::IntegerList subMaterials;
   if (pin.hasIntegerProperty("layer materials"))
   {
     subMaterials = pin.integerProperty("layer materials");
-    std::cout << "  sub material: ";
-    for (auto item : subMaterials)
-    {
-      std::cout << " " << item;
-    }
-    std::cout << std::endl;
   }
   smtk::model::FloatList radiusNs;
   if (pin.hasFloatProperty("layer materials"))
   {
     radiusNs = pin.floatProperty("layer materials");
-    std::cout << "  radius(normalized): ";
-    for (auto item : radiusNs)
-    {
-      std::cout << " " << item;
-    }
-    std::cout << std::endl;
   }
 
   // Follow logic in cmbNucRender::createGeo function. L249
@@ -706,7 +672,6 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGPinRepr
     }
     if (isMaterialSet) // We have a valid material assigned( 0 means no material)
     {
-      std::cout << "Creating material layer!" << std::endl;
       largestRadius *= 2.50;
       double r[] = { largestRadius * 0.5, largestRadius * 0.5 };
       int res = 4;
@@ -737,7 +702,6 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGPinRepr
       {
         subName = pin.name() + SMTK_BRIDGE_RGG_PIN_SUBPART + std::to_string(j) +
           SMTK_BRIDGE_RGG_PIN_MATERIAL;
-        std::cout << "searching for material layer! for part " << j << std::endl;
       }
       // Follow logic in L263 cmbNucRender
       vtkSmartPointer<vtkPolyData> dataset = coneSource->CreateUnitLayer(k);
@@ -747,22 +711,17 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGPinRepr
       double xyz[3];
       coneSource->GetBaseCenter(xyz);
       transform->Translate(xyz[0], xyz[1], xyz[2]);
-      std::cout << "  translate: x=" << xyz[0] << " y=" << xyz[1] << " z=" << xyz[2] << std::endl;
 
       transform->RotateZ((isHex) ? 30 : 0);
       double angle = (isHex) ? 30 : 0;
-      std::cout << "  rotate: z=" << angle << std::endl;
 
       if (segTypes[j] == RGGType::CYLINDER && k == 0)
       { // Cylinder in the 0 layer should be handled differently(Following RGG's logic)
         transform->Scale(coneSource->GetTopRadius(k), coneSource->GetBaseRadius(k), height);
-        std::cout << "  scale: x=" << coneSource->GetTopRadius(k)
-                  << " y=" << coneSource->GetBaseRadius(k) << " z=" << height << std::endl;
       }
       else
       {
         transform->Scale(1, 1, height);
-        std::cout << "  scale: x=" << 1 << " y=" << 1 << " z=" << height << std::endl;
       }
       vtkSmartPointer<vtkTransformPolyDataFilter> transformFilter =
         vtkSmartPointer<vtkTransformPolyDataFilter>::New();
@@ -787,7 +746,6 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGPinRepr
       {
         if (childAux.name() == subName)
         {
-          std::cout << "  insert aux " << childAux.name() << " to s_p" << std::endl;
           s_p->insert(childAux, ClassInternal::CacheValue(transformed, mtime), false);
         }
       }
@@ -807,94 +765,53 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGDuctRep
   const AuxiliaryGeometry& duct, bool /*genNormals*/)
 {
   vtkAuxiliaryGeometryExtension::ensureCache();
-  std::cout << "generateRGGDuctRpresentation. Checking input first " << std::endl;
   //Extract info from duct
   bool isHex(false);
   if (duct.hasIntegerProperty("hex"))
   {
     isHex = duct.integerProperty("hex")[0];
-    std::cout << "  "
-              << "set hex to be " << isHex << std::endl;
   }
 
   bool isCrossSection(false);
   if (duct.hasIntegerProperty("cross section"))
   {
     isCrossSection = duct.integerProperty("cross section")[0];
-    std::cout << "  "
-              << "set crossSection to be " << isCrossSection << std::endl;
   }
 
   smtk::model::FloatList pitch;
   if (duct.hasFloatProperty("pitch"))
   {
     pitch = duct.floatProperty("pitch");
-    std::cout << "  pitch: ";
-    for (auto item : pitch)
-    {
-      std::cout << item << " ";
-    }
-    std::cout << std::endl;
   }
 
   smtk::model::FloatList ductHeight;
   if (duct.hasFloatProperty("duct height"))
   {
     ductHeight = duct.floatProperty("duct height");
-    std::cout << "  height: ";
-    for (auto item : ductHeight)
-    {
-      std::cout << item << " ";
-    }
-    std::cout << std::endl;
   }
 
   smtk::model::IntegerList numMaterialsPerSeg;
   if (duct.hasIntegerProperty("material nums per segment"))
   {
     numMaterialsPerSeg = duct.integerProperty("material nums per segment");
-    std::cout << "  num of materials per seg: ";
-    for (auto item : numMaterialsPerSeg)
-    {
-      std::cout << item << " ";
-    }
-    std::cout << std::endl;
   }
 
   smtk::model::FloatList zValues;
   if (duct.hasFloatProperty("z values"))
   {
     zValues = duct.floatProperty("z values");
-    std::cout << "  z values: ";
-    for (auto item : zValues)
-    {
-      std::cout << item << " ";
-    }
-    std::cout << std::endl;
   }
 
   smtk::model::IntegerList materials;
   if (duct.hasIntegerProperty("materials"))
   {
     materials = duct.integerProperty("materials");
-    std::cout << "  materials: ";
-    for (auto item : materials)
-    {
-      std::cout << item << " ";
-    }
-    std::cout << std::endl;
   }
 
   smtk::model::FloatList thicknessesN;
   if (duct.hasFloatProperty("thicknesses(normalized)"))
   {
     thicknessesN = duct.floatProperty("thicknesses(normalized)");
-    std::cout << "  thicknesses(N): ";
-    for (auto item : thicknessesN)
-    {
-      std::cout << item << " ";
-    }
-    std::cout << std::endl;
   }
 
   // Follow logic in cmbNucRender::createGeo function. L168
@@ -947,10 +864,6 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGDuctRep
     double direction[] = { 0, 0, 1 };
     coneSource->SetDirection(direction);
     coneSource->SetHeight(height);
-    /**************************************************************************/
-    std::cout << "  i=" << i << " base z=" << z1 << " height=" << height
-              << " numLayers=" << numLayers << std::endl;
-    /**************************************************************************/
 
     int res = 4;
     double mult = 0.5;
@@ -961,7 +874,6 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGDuctRep
       mult = 0.5 / cos30;
     }
 
-    std::cout << "thicknessOffset: " << thicknessOffset << std::endl;
     for (int k = 0; k < numLayers; k++)
     { // For each layer based on is hex or not,
       // it might have two different thicknesses
@@ -969,10 +881,6 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGDuctRep
       double tx = thicknessesN[tNIndex] * pitch[0] - thicknessesN[tNIndex] * pitch[0] * 0.0005;
       double ty =
         thicknessesN[tNIndex + 1] * pitch[1] - thicknessesN[tNIndex + 1] * pitch[1] * 0.0005;
-      /********************************************************************/
-      std::cout << "  k=" << k << " tx=" << thicknessesN[tNIndex] * pitch[0]
-                << " ty=" << thicknessesN[tNIndex + 1] * pitch[1] << std::endl;
-      /********************************************************************/
       coneSource->SetBaseRadius(k, tx * mult, ty * mult);
       coneSource->SetTopRadius(k, tx * mult, ty * mult);
       coneSource->SetResolution(k, res);
@@ -987,35 +895,20 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGDuctRep
 
       // Follow logic in L168 cmbNucRender
       vtkSmartPointer<vtkPolyData> dataset = coneSource->CreateUnitLayer(k);
-      /****************************************************/
-      dataset->ComputeBounds();
-      double* bounds = dataset->GetBounds();
-      std::cout << "bounds for " << i << " segment "
-                << " " << k << " layer" << std::endl;
-      for (int i = 0; i < 6; i++)
-      {
-        std::cout << " " << bounds[i];
-      }
-      std::cout << std::endl;
-      /****************************************************/
       // Since it's a unit layer, proper trasformation should be applied
       vtkSmartPointer<vtkTransform> transform = vtkSmartPointer<vtkTransform>::New();
       // Translate, rotate then scale
       double xyz[3];
       coneSource->GetBaseCenter(xyz);
       transform->Translate(xyz[0], xyz[1], xyz[2]);
-      std::cout << "  translate: x=" << xyz[0] << " y=" << xyz[1] << " z=" << xyz[2] << std::endl;
 
       if (k == 0)
       { // Cylinder in the 0 layer should be handled differently(Following RGG's logic)
         transform->Scale(coneSource->GetTopRadius(k, 0), coneSource->GetBaseRadius(k, 1), height);
-        std::cout << "  scale: x=" << coneSource->GetTopRadius(k)
-                  << " y=" << coneSource->GetBaseRadius(k) << " z=" << height << std::endl;
       }
       else
       {
         transform->Scale(1, 1, height);
-        std::cout << "  scale: x=" << 1 << " y=" << 1 << " z=" << height << std::endl;
       }
       vtkSmartPointer<vtkTransformPolyDataFilter> transformFilter =
         vtkSmartPointer<vtkTransformPolyDataFilter>::New();
@@ -1037,7 +930,6 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGDuctRep
       {
         if (childAux.name() == subName)
         {
-          std::cout << "  insert aux " << childAux.name() << " to s_p" << std::endl;
           s_p->insert(childAux, ClassInternal::CacheValue(transformed, mtime), false);
         }
       }

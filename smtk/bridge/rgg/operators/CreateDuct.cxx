@@ -182,7 +182,7 @@ void CreateDuct::populateDuct(
     auxGeom.setIntegerProperty("materials", materials);
     auxGeom.setFloatProperty("thicknesses(normalized)", thicknesses);
   }
-  // Helper property for segments which would be used as offset hint
+  // Helper property for segments which would be used as an offset hint
   auxGeom.setIntegerProperty("material nums per segment", numMaterialsPerSeg);
 
   // Create auxgeom placeholders for layers and parts

@@ -43,6 +43,10 @@ public:
 
 protected:
   smtk::model::OperatorResult operateInternal() override;
+  // Helper function to generate instances given an entity
+  void generateInstances(const smtk::model::EntityRef& prototype,
+    const smtk::model::IntegerList& layout, smtk::model::OperatorResult& result,
+    double pitchXSpace = 1, double pitchYSpace = 1);
 };
 
 } // namespace rgg

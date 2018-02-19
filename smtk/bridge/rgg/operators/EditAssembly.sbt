@@ -10,23 +10,84 @@
         is provided to plan the layout of nuclear pins in the assembly.
       </DetailedDescription>
       <AssociationsDef Name="assembly" NumberOfRequiredValues="1" AdvanceLevel="0">
-        <MembershipMask>aux_geom</MembershipMask>
+        <MembershipMask>group</MembershipMask>
       </AssociationsDef>
       <ItemDefinitions>
-        <ModelEntity Name= "associated duct" NumberOfRequiredValues="1">
-          <MembershipMask>aux_geom</MembershipMask>
-          <BriefDescription>A duct which is assocated with current assembly.</BriefDescription>
+        <String Name="name" NumberOfRequiredValues="1" AdvanceLevel="11">
+          <BriefDescription>A user assigned name for the nulcear assembly</BriefDescription>
           <DetailedDescription>
-            A duct which is assocated with current assembly. For now it would dicate assembly's
-            size and height.
+            A user assigned name for the nulcear assembly.
+          </DetailedDescription>
+        </String>
+        <String Name="label" NumberOfRequiredValues="1" AdvanceLevel="11">
+          <BriefDescription>A user assigned label for the nulcear assembly</BriefDescription>
+          <DetailedDescription>
+            A user assigned name for the nulcear assembly.
+          </DetailedDescription>
+        </String>
+        <Void Name="hex" NumberOfRequiredValues="1" Optional="true" IsEnabledByDafault="true" AdvanceLevel="11">
+          <BriefDescription>Create a hex nulcear assembly</BriefDescription>
+          <DetailedDescription>
+            If enabled, SMTK create a hex nulcear assembly. Otherwise it would be a rectilinear nuclear assembly.
+            FIXME: It should be decided at the model(core) level.
+          </DetailedDescription>
+        </Void>
+        <Group Name="pins and layouts" Extensible="true" NumberOfRequiredGroups="0" AdvanceLevel="11">
+          <BriefDescription>A user assigned a set of pins which are laid out in the lattice</BriefDescription>
+          <DetailedDescription>
+            A user assigned a set of pins which are laid out in the lattice.
+          </DetailedDescription>
+          <ItemDefinitions>
+            <String Name="pin UUID" NumberOfRequiredValues="1" Extensible="true" AdvanceLevel="11">
+            </String>
+            <Int Name="schema plan" NumberOfRequiredValues="2" Extensible="true" AdvanceLevel="11">
+              <!-- Rect: (i, j) where i is the index along width and y is along height. Hex(i, j) where i is the index along the ring and j is the index on that layer -->
+            </Int>
+          </ItemDefinitions>
+        </Group>
+        <ModelEntity Name="associated duct" NumberOfRequiredValues="1" AdvanceLevel="0">
+          <MembershipMask>aux_geom</MembershipMask>
+          <BriefDescription>A user assigned duct which bounds the pins in the assembly</BriefDescription>
+          <DetailedDescription>
+            A user assigned duct which bounds the pins in the assembly. It would define the size
+            of the assembly.
           </DetailedDescription>
         </ModelEntity>
+        <ModelEntity Name="instance to be deleted" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11">
+          <MembershipMask>instance</MembershipMask>
+          <BriefDescription>instances which should be deleted from current assembly</BriefDescription>
+          <DetailedDescription>
+            Instances which should be deleted from current assembly.
+          </DetailedDescription>
+        </ModelEntity>
+        <ModelEntity Name="instance to be added" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11">
+          <MembershipMask>instance</MembershipMask>
+          <BriefDescription>instances which should be added into current assembly</BriefDescription>
+          <DetailedDescription>
+            Instances which should be added into current assembly.
+          </DetailedDescription>
+        </ModelEntity>
+        <Void Name="center pins" NumberOfRequiredValues="1" Optional="true" IsEnabledByDafault="true" AdvanceLevel="11">
+        </Void>
+        <Double Name="pitches" NumberOfRequiredValues="1" Extensible="true" AdvanceLevel="11">
+          <BriefDescription>distance between two adjacent pin centers</BriefDescription>
+          <DetailedDescription>
+            Distance between two adjacent pin centers. For now it's calculated by a formula provided by the vendor.
+          </DetailedDescription>
+          <!-- Since SMTK does not support more than one default values we make it one and extensible -->
+        </Double>
+        <Int Name="lattice size" NumberOfRequiredValues="1" Extensible="true" AdvanceLevel="11">
+          <!-- Since SMTK does not support more than one default values we make it one and extensible -->
+        </Int>
+        <Int Name="z axis" NumberOfRequiredValues="1" AdvanceLevel="11">
+        </Int>
+
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
     <AttDef Type="result(edit assembly)" BaseType="result">
       <ItemDefinitions>
-        <!-- The editd assembly is returned in the base result's "edit" item. -->
+        <ModelEntity Name="tess_changed" NumberOfRequiredValues="0" Extensible="true"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

@@ -13,16 +13,29 @@ set (srcs
   qtDraw2DLattice.cxx
   qtDrawLatticeItem.cxx
   qtLattice.cxx
+  qtLatticeHelper.cxx
 )
 
-set (non_ui_src
+set (non_ui_srcs
+  rggLatticeContainer.cxx
+  rggNucAssembly.cxx
+  rggNucCoordinateConverter.cxx
 )
 
-set (hdrs
+set (moc_hdrs
   qtDraw2DLattice.h
   qtDrawLatticeItem.h
-  qtLattice.h
 )
+set (hdrs
+  ${moc_hdrs}
+  qtLattice.h
+  qtLatticeHelper.h
+  rggNucAssembly.h
+  rggLatticeContainer.h
+  rggNucCoordinateConverter.h
+  rggNucPartDefinition.h
+)
+
 
 set (qtui
 )
@@ -30,7 +43,7 @@ set (qtui
 #install the headers
 smtk_public_headers(${hdrs})
 
-qt5_wrap_cpp(mocs ${hdrs})
+qt5_wrap_cpp(mocs ${moc_hdrs})
 qt5_wrap_ui(uisrc ${qtui})
 
 source_group("Qt_Source" FILES ${srcs} )

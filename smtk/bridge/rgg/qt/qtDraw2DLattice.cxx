@@ -1,219 +1,263 @@
-#include "cmbNucDraw2DLattice.h"
+//=============================================================================
+// Copyright (c) Kitware, Inc.
+// All rights reserved.
+// See LICENSE.txt for details.
+//
+// This software is distributed WITHOUT ANY WARRANTY; without even
+// the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+// PURPOSE.  See the above copyright notice for more information.
+//=============================================================================
+#include "smtk/bridge/rgg/qt/qtDraw2DLattice.h"
+
+#include "vtkMath.h"
+//#include "cmbNucCore.h"
+//#include "cmbNucFillLattice.h"
+#include "smtk/bridge/rgg/qt/rggLatticeContainer.h"
+#include "smtk/bridge/rgg/qt/rggNucAssembly.h"
+#include "smtk/bridge/rgg/qt/rggNucCoordinateConverter.h"
 
 #include <QAction>
 #include <QApplication>
 #include <QDebug>
+#include <QDrag>
 #include <QGraphicsItem>
 #include <QGraphicsSceneMouseEvent>
 #include <QMenu>
 #include <QMessageBox>
+#include <QMimeData>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPixmap>
 #include <QStyleOptionGraphicsItem>
 
-#include "cmbNucAssembly.h"
-#include "cmbNucCordinateConverter.h"
-#include "cmbNucCore.h"
-#include "cmbNucFillLattice.h"
-#include "vtkMath.h"
-
 #include <set>
 
-cmbNucDraw2DLattice::cmbNucDraw2DLattice(QWidget* p, Qt::WindowFlags f)
-  : QGraphicsView(p)
-  , CurrentLattice(NULL)
-  , Converter(NULL)
-  , FullCellMode(Lattice::HEX_FULL)
+namespace
 {
-  latticeChanged = false;
-  changed = static_cast<int>(NoChange);
-  setScene(&this->Canvas);
-  setInteractive(true);
-  setResizeAnchor(QGraphicsView::AnchorViewCenter);
-  setWindowFlags(f);
-  setAcceptDrops(true);
-  setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
-  this->Grid.SetDimensions(0, 0);
+auto getRGGEntityRadius = [](const smtk::model::EntityRef& ent) -> double {
+  double r(-1);
+  if (ent.isValid() && ent.hasFloatProperty("max radius"))
+  {
+    r = ent.floatProperty("max radius")[0];
+  }
+  return r;
+};
+}
+
+qtDraw2DLattice::qtDraw2DLattice(QWidget* p, Qt::WindowFlags f)
+  : QGraphicsView(p)
+  , m_currentLattice(NULL)
+  , m_converter(NULL)
+  , m_fullCellMode(qtLattice::HEX_FULL)
+{
+  m_latticeChanged = false;
+  m_changed = static_cast<int>(NoChange);
+  this->setScene(&this->m_canvas);
+  this->setInteractive(true);
+  this->setResizeAnchor(QGraphicsView::AnchorViewCenter);
+  this->setWindowFlags(f);
+  this->setAcceptDrops(true);
+  this->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+
+  this->m_grid.SetDimensions(0, 0);
   init();
 }
 
-cmbNucDraw2DLattice::~cmbNucDraw2DLattice()
+qtDraw2DLattice::~qtDraw2DLattice()
 {
-  this->Canvas.clear();
-  delete Converter;
+  this->m_canvas.clear();
+  if (this->m_converter)
+  {
+    delete this->m_converter;
+  }
 }
 
-void cmbNucDraw2DLattice::clear()
+void qtDraw2DLattice::clear()
 {
-  this->Canvas.clear();
-  this->CurrentLattice = NULL;
-  latticeChanged = false;
+  this->m_canvas.clear();
+  this->m_currentLattice = NULL;
+  m_latticeChanged = false;
   this->init();
 }
 
-void cmbNucDraw2DLattice::init()
+void qtDraw2DLattice::init()
 {
-  this->Grid.SetDimensions(0, 0);
+  this->m_grid.SetDimensions(0, 0);
   this->rebuild();
 }
 
-void cmbNucDraw2DLattice::reset()
+void qtDraw2DLattice::reset()
 {
-  this->changed = static_cast<int>(NoChange);
-  latticeChanged = false;
-  if (this->CurrentLattice)
+  this->m_changed = static_cast<int>(NoChange);
+  m_latticeChanged = false;
+  if (this->m_currentLattice)
   {
-    this->Grid = this->CurrentLattice->getLattice();
+    this->m_grid = this->m_currentLattice->getLattice();
   }
   this->rebuild();
 }
 
-void cmbNucDraw2DLattice::apply()
+void qtDraw2DLattice::apply()
 {
-  int hasChanged = this->changed;
-  if (this->CurrentLattice == NULL)
+  int hasChanged = this->m_changed;
+  if (this->m_currentLattice == NULL)
     return;
-  if (changed)
+  if (m_changed)
   {
-    this->CurrentLattice->getLattice() = this->Grid;
-    this->CurrentLattice->setUpdateUsed();
+    this->m_currentLattice->getLattice() = this->m_grid;
+    this->m_currentLattice->setUpdateUsed();
     emit(valuesChanged());
-    emit(objGeometryChanged(this->CurrentLattice, hasChanged));
+    emit(objGeometryChanged(this->m_currentLattice, hasChanged));
   }
-  this->changed = static_cast<int>(NoChange);
-  latticeChanged = false;
+  this->m_changed = static_cast<int>(NoChange);
+  m_latticeChanged = false;
   this->rebuild();
 }
 
-int cmbNucDraw2DLattice::layers()
+int qtDraw2DLattice::layers()
 {
-  return this->Grid.GetDimensions().first;
+  return this->m_grid.GetDimensions().first;
 }
 
-void cmbNucDraw2DLattice::setLatticeXorLayers(int val)
+void qtDraw2DLattice::setLatticeXorLayers(int val)
 {
-  std::pair<int, int> wh = Grid.GetDimensions();
+  std::pair<int, int> wh = m_grid.GetDimensions();
   if (val == wh.first)
     return;
-  this->changed |= static_cast<int>(SizeChange);
-  Grid.SetDimensions(val, wh.second);
+  this->m_changed |= static_cast<int>(SizeChange);
+  m_grid.SetDimensions(val, wh.second);
   checkForChangeMode();
   this->rebuild();
 }
 
-void cmbNucDraw2DLattice::setLatticeY(int val)
+void qtDraw2DLattice::setLatticeY(int val)
 {
-  std::pair<int, int> wh = Grid.GetDimensions();
+  std::pair<int, int> wh = m_grid.GetDimensions();
   if (val == wh.second)
     return;
-  this->changed |= static_cast<int>(SizeChange);
-  Grid.SetDimensions(wh.first, val);
+  this->m_changed |= static_cast<int>(SizeChange);
+  m_grid.SetDimensions(wh.first, val);
   checkForChangeMode();
   this->rebuild();
 }
 
-void cmbNucDraw2DLattice::setLattice(LatticeContainer* l)
+void qtDraw2DLattice::setLattice(rggLatticeContainer* l)
 {
-  this->CurrentLattice = l;
-  this->changed = static_cast<int>(NoChange);
-  latticeChanged = false;
+  this->m_currentLattice = l;
+  this->m_changed = static_cast<int>(NoChange);
+  m_latticeChanged = false;
 
   if (l)
   {
     l->updateLaticeFunction();
-    this->Grid = l->getLattice();
+    this->m_grid = l->getLattice();
   }
   else
   {
-    Grid.SetDimensions(0, 0);
+    m_grid.SetDimensions(0, 0);
   }
   this->updateActionList();
   this->rebuild();
 }
 
-QColor cmbNucDraw2DLattice::getColor(QString name) const
+QColor qtDraw2DLattice::getColor(QString name) const
 {
-  cmbNucPart* obj = this->CurrentLattice->getFromLabel(name);
-  return obj ? obj->GetLegendColor() : Qt::white;
+  smtk::model::EntityRef ent = this->m_currentLattice->getFromLabel(name);
+  if (ent.isValid())
+  {
+    smtk::model::FloatList color = ent.color();
+    return QColor::fromRgbF(color[0], color[1], color[2], color[3]);
+  }
+  else
+  {
+    return Qt::white;
+  }
 }
 
-void cmbNucDraw2DLattice::addCell(
-  QPointF const& posF, double r, int layer, int cellIdx, Lattice::CellDrawMode mode)
+void qtDraw2DLattice::addCell(
+  QPointF const& posF, double r, int layer, int cellIdx, qtLattice::CellDrawMode mode)
 {
-  Lattice::Cell lc = Grid.GetCell(layer, cellIdx);
+  //  std::cout << "  addCell: " << " r=" << r <<  " layer="
+  //            << layer << " cellIdx=" << cellIdx <<std::endl;
+  qtCell lc = m_grid.GetCell(layer, cellIdx);
   if (!lc.isValid())
+  {
     return;
+  }
   QPolygon polygon;
 
+  double sizeCoefficient = 1.73;
   switch (mode)
   {
-    case Lattice::HEX_FULL:
-      polygon << QPoint(0, 2 * r) << QPoint(-r * 1.73, r) << QPoint(-r * 1.73, -r)
-              << QPoint(0, -2 * r) << QPoint(r * 1.73, -r) << QPoint(r * 1.73, r);
+    case qtLattice::HEX_FULL:
+      polygon << QPoint(0, 2 * r) << QPoint(-r * sizeCoefficient, r)
+              << QPoint(-r * sizeCoefficient, -r) << QPoint(0, -2 * r)
+              << QPoint(r * sizeCoefficient, -r) << QPoint(r * sizeCoefficient, r);
       break;
-    case Lattice::HEX_FULL_30:
-      polygon << QPoint(2 * r, 0) << QPoint(r, -r * 1.73) << QPoint(-r, -r * 1.73)
-              << QPoint(-2 * r, 0) << QPoint(-r, r * 1.73) << QPoint(r, r * 1.73);
+    case qtLattice::HEX_FULL_30:
+      polygon << QPoint(2 * r, 0) << QPoint(r, -r * sizeCoefficient)
+              << QPoint(-r, -r * sizeCoefficient) << QPoint(-2 * r, 0)
+              << QPoint(-r, r * sizeCoefficient) << QPoint(r, r * sizeCoefficient);
       break;
-    case Lattice::HEX_SIXTH_VERT_BOTTOM:
-      polygon << QPoint(2 * r, 0) << QPoint(r, -r * 1.73) << QPoint(-r, -r * 1.73)
-              << QPoint(-2 * r, 0);
+    case qtLattice::HEX_SIXTH_VERT_BOTTOM:
+      polygon << QPoint(2 * r, 0) << QPoint(r, -r * sizeCoefficient)
+              << QPoint(-r, -r * sizeCoefficient) << QPoint(-2 * r, 0);
       break;
-    case Lattice::HEX_SIXTH_VERT_CENTER:
-      polygon << QPoint(2 * r, 0) << QPoint(r, -r * 1.73) << QPoint(0, 0);
+    case qtLattice::HEX_SIXTH_VERT_CENTER:
+      polygon << QPoint(2 * r, 0) << QPoint(r, -r * sizeCoefficient) << QPoint(0, 0);
       break;
-    case Lattice::HEX_SIXTH_VERT_TOP:
-      polygon << QPoint(2 * r, 0) << QPoint(r, -r * 1.73) << QPoint(-r, r * 1.73)
-              << QPoint(r, r * 1.73);
+    case qtLattice::HEX_SIXTH_VERT_TOP:
+      polygon << QPoint(2 * r, 0) << QPoint(r, -r * sizeCoefficient)
+              << QPoint(-r, r * sizeCoefficient) << QPoint(r, r * sizeCoefficient);
       break;
-    case Lattice::HEX_SIXTH_FLAT_CENTER:
-      polygon << QPoint(0, 0) << QPoint(r * cmbNucMathConst::cos30, -1.5 * r)
-              << QPoint(r * 1.73, -r) << QPoint(r * 1.73, 0);
+    case qtLattice::HEX_SIXTH_FLAT_CENTER:
+      polygon << QPoint(0, 0) << QPoint(r * rggNucMathConst::cos30, -1.5 * r)
+              << QPoint(r * sizeCoefficient, -r) << QPoint(r * sizeCoefficient, 0);
       break;
-    case Lattice::HEX_SIXTH_FLAT_TOP:
+    case qtLattice::HEX_SIXTH_FLAT_TOP:
       polygon << QPoint(0, 2 * r)                               //keep
-              << QPoint((-r * cmbNucMathConst::cos30), 1.5 * r) //half
-              << QPoint(r * cmbNucMathConst::cos30, -1.5 * r) << QPoint(r * 1.73, -r)
-              << QPoint(r * 1.73, r);
+              << QPoint((-r * rggNucMathConst::cos30), 1.5 * r) //half
+              << QPoint(r * rggNucMathConst::cos30, -1.5 * r) << QPoint(r * sizeCoefficient, -r)
+              << QPoint(r * sizeCoefficient, r);
       break;
-    case Lattice::HEX_SIXTH_FLAT_BOTTOM:
-    case Lattice::HEX_TWELFTH_BOTTOM:
-      polygon << QPoint(-r * 1.73, 0) << QPoint(-r * 1.73, -r) << QPoint(0, -2 * r)
-              << QPoint(r * 1.73, -r) << QPoint(r * 1.73, 0);
+    case qtLattice::HEX_SIXTH_FLAT_BOTTOM:
+    case qtLattice::HEX_TWELFTH_BOTTOM:
+      polygon << QPoint(-r * sizeCoefficient, 0) << QPoint(-r * sizeCoefficient, -r)
+              << QPoint(0, -2 * r) << QPoint(r * sizeCoefficient, -r)
+              << QPoint(r * sizeCoefficient, 0);
       break;
-    case Lattice::HEX_TWELFTH_TOP:
+    case qtLattice::HEX_TWELFTH_TOP:
       polygon << QPoint(0, 2 * r) //keep
-              << QPoint(-r * 1.73, r) << QPoint(r * 1.73, -r) << QPoint(r * 1.73, r);
+              << QPoint(-r * sizeCoefficient, r) << QPoint(r * sizeCoefficient, -r)
+              << QPoint(r * sizeCoefficient, r);
       break;
-    case Lattice::HEX_TWELFTH_CENTER:
-      polygon << QPoint(0, 0) << QPoint(r * 1.73, -r) << QPoint(r * 1.73, 0);
+    case qtLattice::HEX_TWELFTH_CENTER:
+      polygon << QPoint(0, 0) << QPoint(r * sizeCoefficient, -r) << QPoint(r * sizeCoefficient, 0);
       break;
-    case Lattice::RECT:
+    case qtLattice::RECT:
       polygon << QPoint(-r, -r) << QPoint(-r, r) << QPoint(r, r) << QPoint(r, -r);
       break;
   }
-  DrawLatticeItem* cell =
-    new DrawLatticeItem(polygon, layer, cellIdx, Grid.getRerference(layer, cellIdx));
-  itemLinks[layer][cellIdx] = cell;
+  qtDrawLatticeItem* cell =
+    new qtDrawLatticeItem(polygon, layer, cellIdx, m_grid.getRerference(layer, cellIdx));
+  m_itemLinks[layer][cellIdx] = cell;
 
   cell->setPos(posF);
 
   // update color in hex map
-  QString text(lc.getLabel());
   scene()->addItem(cell);
 }
 
-QPointF cmbNucDraw2DLattice::getLatticeLocation(int ti, int tj)
+QPointF qtDraw2DLattice::getLatticeLocation(int ti, int tj)
 {
   double centerPos[2];
-  Converter->convertToPixelXY(ti, tj, centerPos[0], centerPos[1], radius[1]);
+  this->m_converter->convertToPixelXY(ti, tj, centerPos[0], centerPos[1], m_radius[1]);
   return QPointF(
     centerPos[0] + this->rect().center().x(), centerPos[1] + this->rect().center().y());
 }
 
-void cmbNucDraw2DLattice::rebuild()
+void qtDraw2DLattice::rebuild()
 {
   scene()->clear();
   int numLayers = this->layers();
@@ -222,34 +266,40 @@ void cmbNucDraw2DLattice::rebuild()
     return;
   }
 
-  delete Converter;
-  Converter = new cmbNucCordinateConverter(this->Grid);
-  Converter->computeRadius(this->width(), this->height(), radius);
-  itemLinks.clear();
-  itemLinks.resize(this->Grid.getSize());
-  for (size_t i = 0; i < this->Grid.getSize(); ++i)
+  if (this->m_converter)
   {
-    itemLinks[i].resize(this->Grid.getSize(i), NULL);
-    for (size_t j = 0; j < this->Grid.getSize(i); ++j)
+    delete this->m_converter;
+  }
+
+  this->m_converter = new rggNucCoordinateConverter(this->m_grid);
+  this->m_converter->computeRadius(this->width(), this->height(), m_radius);
+  m_itemLinks.clear();
+  m_itemLinks.resize(this->m_grid.getSize());
+  for (size_t i = 0; i < this->m_grid.getSize(); ++i)
+  {
+    m_itemLinks[i].resize(this->m_grid.getSize(i), NULL);
+    for (size_t j = 0; j < this->m_grid.getSize(i); ++j)
     {
       int ti = static_cast<int>(i);
       int tj = static_cast<int>(j);
-      this->addCell(getLatticeLocation(ti, tj), radius[0], ti, tj, this->Grid.getDrawMode(tj, ti));
+      // Why getDrawMode has a different index system
+      this->addCell(
+        this->getLatticeLocation(ti, tj), m_radius[0], ti, tj, this->m_grid.getDrawMode(tj, ti));
     }
   }
   scene()->setSceneRect(scene()->itemsBoundingRect());
   this->repaint();
 }
 
-void cmbNucDraw2DLattice::showContextMenu(DrawLatticeItem* hexitem, QPoint qme)
+void qtDraw2DLattice::showContextMenu(qtDrawLatticeItem* hexitem, QPoint qme)
 {
   if (!hexitem)
   {
     return;
   }
 
-  this->Grid.unselect();
-  this->Grid.selectCell(hexitem->layer(), hexitem->cellIndex());
+  this->m_grid.unselect();
+  this->m_grid.selectCell(hexitem->layer(), hexitem->cellIndex());
   this->refresh(hexitem);
 
   QMenu contextMenu(this);
@@ -257,104 +307,115 @@ void cmbNucDraw2DLattice::showContextMenu(DrawLatticeItem* hexitem, QPoint qme)
   QMenu* replace_function = new QMenu(QString("Replace All With"), &contextMenu);
   replace_function->setObjectName(QString("Replace_All_With"));
 
-  QAction* fillSimple = new QAction(QString("Fill"), this);
+  QAction* fillSimple = new QAction(QString("Fill(WIP)"), this);
   fillSimple->setObjectName(QString("Fill_Cells"));
   fillSimple->setData(2);
-  QAction* pAction = NULL;
-  // available parts
-  for (size_t i = 0; i < this->ActionList.size(); ++i)
+  fillSimple->setEnabled(false); // FIXME
+
+  QAction* pAction = nullptr;
+  // Fill single part mode
+  this->updateActionList(); // User might have changed pin label
+  for (size_t i = 0; i < this->m_actionList.size(); ++i)
   {
-    QString strAct = this->ActionList[i].first;
-    cmbNucPart const* part = this->ActionList[i].second;
-    double r = (part) ? part->getRadius() : -1;
+    QString strAct = this->m_actionList[i].first;
+    smtk::model::EntityRef part = this->m_actionList[i].second;
+    double r = getRGGEntityRadius(part);
+
     pAction = new QAction(strAct, this);
-    pAction->setEnabled(hexitem->checkRadiusIsOk(r));
-    pAction->setData(0);
+    //FIXME: Always enable for now
+    //pAction->setEnabled(hexitem->checkRadiusIsOk(r));
+    pAction->setData(replaceMode::Single);
     contextMenu.addAction(pAction);
     pAction = new QAction(strAct, this);
-    pAction->setData(1);
-    pAction->setEnabled(hexitem->checkRadiusIsOk(r));
+    pAction->setData(replaceMode::All);
+    //FIXME: Always enable for now
+    //pAction->setEnabled(hexitem->checkRadiusIsOk(r));
     replace_function->addAction(pAction);
   }
+  // Replace all mode
   contextMenu.addMenu(replace_function);
+  // Fill function mode(WIP)
   contextMenu.addAction(fillSimple);
 
   QAction* assignAct = contextMenu.exec(qme);
-  if (assignAct && assignAct->data().toInt() == 2)
+  if (assignAct && assignAct->data().toInt() == replaceMode::Fill)
   {
-    cmbNucFillLattice fillFun;
-    connect(&fillFun, SIGNAL(refresh(DrawLatticeItem*)), this, SLOT(refresh(DrawLatticeItem*)));
-    if (fillFun.fillSimple(hexitem, &(this->Grid), this->CurrentLattice))
-    {
-      this->changed |= static_cast<int>(ContentChange);
-      checkForChangeMode();
-    }
+    //    cmbNucFillLattice fillFun;
+    //    connect(&fillFun, SIGNAL(refresh(DrawLatticeItem*)), this, SLOT(refresh(DrawLatticeItem*)));
+    //    if(fillFun.fillSimple(hexitem, &(this->m_grid), this->m_currentLattice))
+    //    {
+    //     this->m_changed |= static_cast<int>(ContentChange);
+    //     checkForChangeMode();
+    //    }
   }
   else if (assignAct)
   {
-    QString text = this->CurrentLattice->extractLabel(assignAct->text());
-    cmbNucPart* newPart = this->CurrentLattice->getFromLabel(text);
-    if (assignAct->data().toInt() == 0)
+    QString label = this->m_currentLattice->extractLabel(assignAct->text());
+    smtk::model::EntityRef newPart = this->m_currentLattice->getFromLabel(label);
+    if (assignAct->data().toInt() == replaceMode::Single)
     {
-      QString oldText = hexitem->text();
-      if (this->Grid.SetCell(hexitem->layer(), hexitem->cellIndex(), newPart))
+      if (this->m_grid.SetCell(hexitem->layer(), hexitem->cellIndex(), newPart))
       {
-        this->changed |= static_cast<int>(ContentChange);
+        this->m_changed |= static_cast<int>(ContentChange);
         checkForChangeMode();
       }
     }
-    else if (assignAct->data().toInt() == 1)
+    else if (assignAct->data().toInt() == replaceMode::All)
     {
-      if (hexitem->text() != text)
+      if (hexitem->text() != label)
       {
-        this->changed |= static_cast<int>(ContentChange);
-        cmbNucPart* oldPart = this->CurrentLattice->getFromLabel(hexitem->text());
-        this->Grid.replacePart(oldPart, newPart);
+        this->m_changed |= static_cast<int>(ContentChange);
+        smtk::model::EntityRef oldPart = this->m_currentLattice->getFromLabel(hexitem->text());
+        this->m_grid.replacePart(oldPart, newPart);
         checkForChangeMode();
       }
     }
   }
-  this->Grid.clearSelection();
-  this->Grid.sendMaxRadiusToReference();
+  this->m_grid.clearSelection();
+  this->m_grid.sendMaxRadiusToReference();
   this->refresh(hexitem);
 }
 
-DrawLatticeItem* cmbNucDraw2DLattice::getItemAt(const QPoint& pt)
+qtDrawLatticeItem* qtDraw2DLattice::getItemAt(const QPoint& pt)
 {
-  return dynamic_cast<DrawLatticeItem*>(this->itemAt(pt));
+  return dynamic_cast<qtDrawLatticeItem*>(this->itemAt(pt));
 }
 
-void cmbNucDraw2DLattice::dropEvent(QDropEvent* qde)
+void qtDraw2DLattice::dropEvent(QDropEvent* qde)
 {
-  DrawLatticeItem* dest = this->getItemAt(qde->pos());
+  qtDrawLatticeItem* dest = this->getItemAt(qde->pos());
   if (!dest)
     return;
 
   QString newLabel = qde->mimeData()->text();
-  cmbNucPart* newPart = this->CurrentLattice->getFromLabel(newLabel);
-  if (!dest->checkRadiusIsOk((newPart) ? newPart->getRadius() : -1))
-    return;
+  smtk::model::EntityRef newPart = this->m_currentLattice->getFromLabel(newLabel);
 
-  if (this->Grid.SetCell(dest->layer(), dest->cellIndex(), newPart))
+  double r = getRGGEntityRadius(newPart);
+  if (!dest->checkRadiusIsOk(r))
   {
-    this->changed |= (static_cast<int>(ContentChange));
+    return;
+  }
+
+  if (this->m_grid.SetCell(dest->layer(), dest->cellIndex(), newPart))
+  {
+    this->m_changed |= (static_cast<int>(ContentChange));
     checkForChangeMode();
   }
   qde->acceptProposedAction();
-  this->Grid.clearSelection();
-  this->Grid.sendMaxRadiusToReference();
+  this->m_grid.clearSelection();
+  this->m_grid.sendMaxRadiusToReference();
   this->refresh(dest);
 }
 
-void cmbNucDraw2DLattice::resizeEvent(QResizeEvent* qre)
+void qtDraw2DLattice::resizeEvent(QResizeEvent* qre)
 {
   QGraphicsView::resizeEvent(qre);
   this->rebuild();
 }
 
-void cmbNucDraw2DLattice::mousePressEvent(QMouseEvent* qme)
+void qtDraw2DLattice::mousePressEvent(QMouseEvent* qme)
 {
-  DrawLatticeItem* hitem = this->getItemAt(qme->pos());
+  qtDrawLatticeItem* hitem = this->getItemAt(qme->pos());
   if (!hitem)
   {
     return;
@@ -370,8 +431,8 @@ void cmbNucDraw2DLattice::mousePressEvent(QMouseEvent* qme)
   {
     QMimeData* mimeData = new QMimeData;
     mimeData->setText(hitem->text());
-    cmbNucPart* part = hitem->getPart();
-    this->Grid.setPotentialConflictCells((part) ? part->getRadius() : -1);
+    smtk::model::EntityRef part = hitem->getPart();
+    this->m_grid.setPotentialConflictCells(getRGGEntityRadius(part));
     this->refresh(hitem);
 
     QSize tmpsize = hitem->boundingRect().size().toSize();
@@ -392,31 +453,31 @@ void cmbNucDraw2DLattice::mousePressEvent(QMouseEvent* qme)
     drag->setPixmap(pixmap.scaledToHeight(40, Qt::SmoothTransformation));
 #endif
     drag->exec(Qt::CopyAction);
-    this->Grid.clearSelection();
+    this->m_grid.clearSelection();
     this->refresh(hitem);
     imagePainter.end();
   }
 }
 
-void cmbNucDraw2DLattice::checkForChangeMode()
+void qtDraw2DLattice::checkForChangeMode()
 {
-  Lattice::changeMode cm = CurrentLattice->getLattice().compair(Grid);
-  if (cm == Lattice::Same && latticeChanged)
+  qtLattice::ChangeMode cm = m_currentLattice->getLattice().compair(m_grid);
+  if (cm == qtLattice::Same && m_latticeChanged)
   {
-    emit sendMode(cmbNucWidgetChangeChecker::reverted_to_orginal);
-    latticeChanged = true;
+    //emit sendMode(cmbNucWidgetChangeChecker::reverted_to_orginal);
+    m_latticeChanged = true;
   }
-  else if (cm == Lattice::ContentDiff && !latticeChanged)
+  else if (cm == qtLattice::ContentDiff && !m_latticeChanged)
   {
-    latticeChanged = true;
-    emit sendMode(cmbNucWidgetChangeChecker::newly_changed);
+    m_latticeChanged = true;
+    //emit sendMode(cmbNucWidgetChangeChecker::newly_changed);
   }
 }
 
-void cmbNucDraw2DLattice::createImage(QString fname)
+void qtDraw2DLattice::createImage(QString fname)
 {
-  QGraphicsView* view = new QGraphicsView(&Canvas, this);
-  view->setSceneRect(Canvas.itemsBoundingRect());
+  QGraphicsView* view = new QGraphicsView(&m_canvas, this);
+  view->setSceneRect(m_canvas.itemsBoundingRect());
   view->setMinimumHeight(600);
   view->setMinimumWidth(600);
   QPixmap pixMap = QPixmap::grabWidget(view, 0, 0, 600, 600);
@@ -424,35 +485,35 @@ void cmbNucDraw2DLattice::createImage(QString fname)
   delete view;
 }
 
-void cmbNucDraw2DLattice::refresh(DrawLatticeItem* hexitem)
+void qtDraw2DLattice::refresh(qtDrawLatticeItem* hexitem)
 {
   if (hexitem == NULL)
   {
-    if (Canvas.items().isEmpty())
+    if (m_canvas.items().isEmpty())
     {
       this->repaint();
       return;
     }
-    hexitem = dynamic_cast<DrawLatticeItem*>(Canvas.items()[0]);
+    hexitem = dynamic_cast<qtDrawLatticeItem*>(m_canvas.items()[0]);
   }
   scene()->removeItem(hexitem);
   scene()->addItem(hexitem);
   this->repaint();
 }
 
-void cmbNucDraw2DLattice::updateActionList()
+void qtDraw2DLattice::updateActionList()
 {
-  this->ActionList.clear();
-  if (this->CurrentLattice != NULL)
+  this->m_actionList.clear();
+  if (this->m_currentLattice != NULL)
   {
-    this->CurrentLattice->fillList(this->ActionList);
+    this->m_currentLattice->fillList(this->m_actionList);
   }
 }
 
-void cmbNucDraw2DLattice::updatePitch(double xin, double yin)
+void qtDraw2DLattice::updatePitch(double xin, double yin)
 {
   //get the width and height radius, if -1, do nothing, otherwise redraw
-  Grid.updatePitchForMaxRadius(xin, yin);
-  Grid.sendMaxRadiusToReference();
+  m_grid.updatePitchForMaxRadius(xin, yin);
+  m_grid.sendMaxRadiusToReference();
   this->refresh();
 }

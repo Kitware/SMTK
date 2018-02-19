@@ -1,56 +1,73 @@
-#ifndef __cmbNucDraw2DLattice_h
-#define __cmbNucDraw2DLattice_h
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR //  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
+// .NAME qtDraw2DLattice - A QGraphicsView that serves as a schema planner for
+// the user. It can be used for cores and assemblies to specify which and where
+// assembly/pin should be placed and do a validation check.
+// .SECTION Description
+// .SECTION See Also
+
+#ifndef __smtk_bridge_rgg_qt_qtDraw2DLattice_h
+#define __smtk_bridge_rgg_qt_qtDraw2DLattice_h
 
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QPointF>
 
-#include "DrawLatticeItem.h"
-#include "cmbNucLattice.h"
-#include "cmbNucPartDefinition.h"
-#include "cmbNucWidgetChangeChecker.h"
+#include "smtk/bridge/rgg/qt/qtDrawLatticeItem.h"
+#include "smtk/bridge/rgg/qt/qtLattice.h"
+#include "smtk/bridge/rgg/qt/rggNucPartDefinition.h"
+#include "smtk/model/EntityRef.h"
 
 #include <map>
 #include <vector>
 
 class QMouseEvent;
-class LatticeContainer;
-class cmbNucDraw2DLattice;
-class pqXMLEventObserver;
-class XMLEventSource;
+class rggLatticeContainer;
 class QPoint;
-class cmbNucCordinateConverter;
+class rggNucCoordinateConverter;
 
-class cmbNucDraw2DLattice : public QGraphicsView
+class qtDraw2DLattice : public QGraphicsView
 {
   Q_OBJECT
   typedef QGraphicsView Superclass;
 
 public:
-  friend class pqXMLEventObserver;
-  friend class XMLEventSource;
   enum changeMode
   {
     NoChange = 0,
     SizeChange = 1,
     ContentChange = 2
   };
-  cmbNucDraw2DLattice(QWidget* parent = 0, Qt::WindowFlags f = 0);
-  ~cmbNucDraw2DLattice();
+  enum replaceMode
+  {
+    Single = 0,
+    All = 1,
+    Fill = 2
+  };
+  qtDraw2DLattice(QWidget* parent = 0, Qt::WindowFlags f = 0);
+  ~qtDraw2DLattice();
 
   int layers();
   void rebuild();
-  void showContextMenu(DrawLatticeItem* hexitem, QPoint loc);
+  void showContextMenu(qtDrawLatticeItem* hexitem, QPoint loc);
 
 signals:
-  void sendMode(cmbNucWidgetChangeChecker::mode);
+  // TODO: Add validation check
+  // void sendMode(cmbNucWidgetChangeChecker::mode);
   void valuesChanged();
-  void objGeometryChanged(cmbNucPart* selObj, int changeType);
+  // Who listens to it?
+  void objGeometryChanged(rggLatticeContainer* selObj, int changeType);
 
 public slots:
   void clear();
   void createImage(QString name);
-  void setLattice(LatticeContainer* l);
+  void setLattice(rggLatticeContainer* l);
   void setLatticeXorLayers(int v);
   void setLatticeY(int v);
   void updatePitch(double x, double y);
@@ -67,30 +84,30 @@ private slots:
   void init();
 
   void addCell(
-    QPointF const& pos, double radius, int layer, int cellIdx, Lattice::CellDrawMode mode);
+    QPointF const& pos, double radius, int layer, int cellIdx, qtLattice::CellDrawMode mode);
 
-  void refresh(DrawLatticeItem* hexitem = NULL);
+  void refresh(qtDrawLatticeItem* hexitem = NULL);
 
 private:
-  LatticeContainer* CurrentLattice;
-  cmbNucCordinateConverter* Converter;
-  double radius[2];
-  QGraphicsScene Canvas;
-  Lattice Grid;
-  int changed;
-  bool latticeChanged;
+  rggLatticeContainer* m_currentLattice;
+  rggNucCoordinateConverter* m_converter;
+  double m_radius[2];
+  QGraphicsScene m_canvas;
+  qtLattice m_grid;
+  int m_changed;
+  bool m_latticeChanged;
 
-  Lattice::CellDrawMode FullCellMode;
+  qtLattice::CellDrawMode m_fullCellMode;
 
-  std::vector<std::pair<QString, cmbNucPart*> > ActionList;
+  std::vector<std::pair<QString, smtk::model::EntityRef> > m_actionList;
 
   QColor getColor(QString name) const;
 
   void checkForChangeMode();
 
-  DrawLatticeItem* getItemAt(const QPoint& pt);
+  qtDrawLatticeItem* getItemAt(const QPoint& pt);
   QPointF getLatticeLocation(int layer, int cellIdx);
-  std::vector<std::vector<DrawLatticeItem*> > itemLinks;
+  std::vector<std::vector<qtDrawLatticeItem*> > m_itemLinks;
 };
 
 #endif

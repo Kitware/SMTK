@@ -10,11 +10,11 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef qtDrawLatticeItem_h
-#define qtDrawLatticeItem_h
+#ifndef __smtk_bridge_rgg_qt_qtDrawLatticeItem_h
+#define __smtk_bridge_rgg_qt_qtDrawLatticeItem_h
 
 #include "smtk/bridge/rgg/qt/Exports.h"
-#include "smtk/bridge/rgg/qt/qtLattice.h"
+#include "smtk/bridge/rgg/qt/qtLatticeHelper.h"
 
 #include <QGraphicsPolygonItem>
 #include <QObject>
@@ -34,8 +34,8 @@ class SMTKQTRGGSESSION_EXPORT qtDrawLatticeItem : public QGraphicsPolygonItem
 public:
   // Rect: layer expands horizontally and cellIdx expands vertically
   // Hex: layer expands along radius and cellIdx expands along the edges
-  qtDrawLatticeItem(const QPolygonF& polygon, int layer, int cellIdx,
-    qtLattice::CellReference const& ref, QGraphicsItem* parent = 0);
+  qtDrawLatticeItem(const QPolygonF& polygon, int layer, int cellIdx, qtCellReference const& ref,
+    QGraphicsItem* parent = 0);
 
   void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
 
@@ -46,9 +46,9 @@ public:
 
   smtk::model::EntityRef getPart();
 
-  void select() { refCell.setDrawMode(qtLattice::CellReference::SELECTED); }
+  void select() { this->m_refCell.setDrawMode(qtCellReference::DrawMode::SELECTED); }
 
-  bool checkRadiusIsOk(double r) const { return !refCell.radiusConflicts(r); }
+  bool checkRadiusIsOk(double r) const { return !this->m_refCell.radiusConflicts(r); }
 
   QPointF getCentroid() const;
 
@@ -56,10 +56,10 @@ protected:
   void drawText(QPainter* painter);
 
 private:
-  qtLattice::CellReference const& refCell;
+  qtCellReference const& m_refCell;
   int m_layer;
   int m_cellIndex;
-  QPointF localCenter;
+  QPointF m_localCenter;
 };
 
 #endif

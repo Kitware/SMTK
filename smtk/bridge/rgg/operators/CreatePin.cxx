@@ -61,10 +61,22 @@ smtk::model::OperatorResult CreatePin::operateInternal()
   std::vector<EntityRef> subAuxGeoms;
   // TODO: These codes are duplicated in EditPin operator
   auxGeom = parent.manager()->addAuxiliaryGeometry(parent.as<smtk::model::Model>(), 3);
+  CreatePin::populatePin(this, auxGeom, subAuxGeoms, true);
+
+  result = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
+
+  this->addEntityToResult(result, auxGeom, CREATED);
+  this->addEntitiesToResult(result, subAuxGeoms, CREATED);
+  return result;
+}
+
+void CreatePin::populatePin(smtk::model::Operator* op, smtk::model::AuxiliaryGeometry& auxGeom,
+  std::vector<smtk::model::EntityRef>& subAuxGeoms, bool isCreation)
+{
   auxGeom.setStringProperty("rggType", SMTK_BRIDGE_RGG_PIN);
 
   // Hex or rectinlinear
-  smtk::attribute::VoidItemPtr isHex = this->findVoid("hex");
+  smtk::attribute::VoidItemPtr isHex = op->findVoid("hex");
   if (isHex->isEnabled())
   {
     auxGeom.setIntegerProperty("hex", 1);
@@ -75,7 +87,7 @@ smtk::model::OperatorResult CreatePin::operateInternal()
   }
 
   // Cut away the pin?
-  smtk::attribute::VoidItemPtr isCutAway = this->findVoid("cut away");
+  smtk::attribute::VoidItemPtr isCutAway = op->findVoid("cut away");
   if (isCutAway->isEnabled())
   {
     auxGeom.setIntegerProperty("cut away", 1);
@@ -85,7 +97,7 @@ smtk::model::OperatorResult CreatePin::operateInternal()
     auxGeom.setIntegerProperty("cut away", 0);
   }
 
-  smtk::attribute::StringItemPtr nameItem = this->findString("name");
+  smtk::attribute::StringItemPtr nameItem = op->findString("name");
   std::string pinName;
   if (nameItem != nullptr && !nameItem->value(0).empty())
   {
@@ -93,13 +105,36 @@ smtk::model::OperatorResult CreatePin::operateInternal()
     auxGeom.setName(nameItem->value(0));
   }
 
-  smtk::attribute::StringItemPtr labelItem = this->findString("label");
+  smtk::attribute::StringItemPtr labelItem = op->findString("label");
   if (labelItem != nullptr && !labelItem->value(0).empty())
   {
-    auxGeom.setStringProperty(labelItem->name(), labelItem->value(0));
+    // Make sure that the label is unique
+    smtk::model::Model model = auxGeom.owningModel();
+    std::string labelValue = labelItem->value(0);
+    if ((auxGeom.hasStringProperty("label") && auxGeom.stringProperty("label")[0] != labelValue) ||
+      isCreation)
+    { // Only check and generate new label if user provides a new label
+      if (model.hasStringProperty("pin labels list"))
+      {
+        smtk::model::StringList& labels = model.stringProperty("pin labels list");
+        int count = 0;
+        while (std::find(std::begin(labels), std::end(labels), labelValue) != std::end(labels))
+        { // need to generate a new label
+          labelValue = "pinCell" + std::to_string(count);
+          count++;
+        }
+        // Update the label list
+        labels.push_back(labelValue);
+      }
+      else
+      {
+        model.setStringProperty("pin labels list", labelValue);
+      }
+    }
+    auxGeom.setStringProperty(labelItem->name(), labelValue);
   }
 
-  smtk::attribute::IntItemPtr pinMaterialItem = this->findInt("cell material");
+  smtk::attribute::IntItemPtr pinMaterialItem = op->findInt("cell material");
   bool isMaterialSet(false);
   if (pinMaterialItem != nullptr && pinMaterialItem->numberOfValues() == 1)
   {
@@ -107,13 +142,13 @@ smtk::model::OperatorResult CreatePin::operateInternal()
     isMaterialSet = static_cast<bool>(pinMaterialItem->value(0) > 0);
   }
 
-  smtk::attribute::DoubleItemPtr zOriginItem = this->findDouble("z origin");
+  smtk::attribute::DoubleItemPtr zOriginItem = op->findDouble("z origin");
   if (zOriginItem != nullptr && zOriginItem->numberOfValues() == 1)
   {
     auxGeom.setFloatProperty(zOriginItem->name(), zOriginItem->value(0));
   }
 
-  smtk::attribute::GroupItemPtr piecesGItem = this->findGroup("pieces");
+  smtk::attribute::GroupItemPtr piecesGItem = op->findGroup("pieces");
   size_t numParts;
   if (piecesGItem != nullptr)
   {
@@ -141,7 +176,7 @@ smtk::model::OperatorResult CreatePin::operateInternal()
     auxGeom.setFloatProperty("max radius", maxRadius);
   }
 
-  smtk::attribute::GroupItemPtr layerMaterialsItem = this->findGroup("layer materials");
+  smtk::attribute::GroupItemPtr layerMaterialsItem = op->findGroup("layer materials");
   size_t numLayers;
   if (layerMaterialsItem != nullptr)
   {
@@ -167,7 +202,7 @@ smtk::model::OperatorResult CreatePin::operateInternal()
     for (std::size_t j = 0; j < numLayers; j++)
     {
       // Create an auxo_geom for current each unit part&layer
-      AuxiliaryGeometry subLayer = parent.manager()->addAuxiliaryGeometry(auxGeom, 3);
+      AuxiliaryGeometry subLayer = auxGeom.manager()->addAuxiliaryGeometry(auxGeom, 3);
       std::string subLName = pinName + SMTK_BRIDGE_RGG_PIN_SUBPART + std::to_string(i) +
         SMTK_BRIDGE_RGG_PIN_LAYER + std::to_string(j);
       subLayer.setName(subLName);
@@ -176,7 +211,7 @@ smtk::model::OperatorResult CreatePin::operateInternal()
     }
     if (isMaterialSet)
     { // Append a material layer after the last layer
-      AuxiliaryGeometry materialLayer = parent.manager()->addAuxiliaryGeometry(auxGeom, 3);
+      AuxiliaryGeometry materialLayer = auxGeom.manager()->addAuxiliaryGeometry(auxGeom, 3);
       std::string materialName =
         pinName + SMTK_BRIDGE_RGG_PIN_SUBPART + std::to_string(i) + SMTK_BRIDGE_RGG_PIN_MATERIAL;
       materialLayer.setName(materialName);
@@ -184,12 +219,6 @@ smtk::model::OperatorResult CreatePin::operateInternal()
       subAuxGeoms.push_back(materialLayer.as<EntityRef>());
     }
   }
-
-  result = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
-
-  this->addEntityToResult(result, auxGeom, CREATED);
-  this->addEntitiesToResult(result, subAuxGeoms, CREATED);
-  return result;
 }
 
 } // namespace rgg

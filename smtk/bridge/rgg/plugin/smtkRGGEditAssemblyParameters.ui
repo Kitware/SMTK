@@ -46,10 +46,10 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QLineEdit" name="nameLineEdit"/>
+          <widget class="QLineEdit" name="labelLineEdit"/>
          </item>
          <item row="0" column="1">
-          <widget class="QLineEdit" name="labelLineEdit"/>
+          <widget class="QLineEdit" name="nameLineEdit"/>
          </item>
         </layout>
        </item>
@@ -215,14 +215,24 @@
          <item row="1" column="1">
           <widget class="QComboBox" name="zAxisRotationComboBox"/>
          </item>
+         <item row="2" column="0">
+          <widget class="QPushButton" name="launchSchemaButton">
+           <property name="text">
+            <string>Launch Schema Planner</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QPushButton" name="resetSchemaPlannerButton">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Reset the Schema Planner to an original state where each apply process would create a new one.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>Reset Schema Planner</string>
+           </property>
+          </widget>
+         </item>
         </layout>
-       </item>
-       <item>
-        <widget class="QPushButton" name="launchSchemaButton">
-         <property name="text">
-          <string>Launch Schema Planner</string>
-         </property>
-        </widget>
        </item>
        <item>
         <spacer name="verticalSpacer">

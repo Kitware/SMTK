@@ -525,7 +525,7 @@ void smtkRGGEditPinView::createPiecesTable()
     {
       radiusItem* baseRBefore = dynamic_cast<radiusItem*>(pT->item(row - 1, 2));
       radiusItem* baseRAfter = dynamic_cast<radiusItem*>(pT->item(row + 1, 2));
-      if (baseRBefore != baseRAfter)
+      if (baseRAfter && baseRBefore && baseRBefore != baseRAfter)
       {
         baseRBefore->setData(Qt::EditRole, QVariant(baseRAfter->text().toDouble()));
       }
