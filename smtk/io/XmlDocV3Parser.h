@@ -33,6 +33,8 @@ public:
   static pugi::xml_node getRootNode(pugi::xml_document& doc);
 
 protected:
+  void processDefinition(pugi::xml_node& defNode, smtk::attribute::DefinitionPtr def) override;
+
   void processDateTimeItem(pugi::xml_node& node, smtk::attribute::DateTimeItemPtr item) override;
   void processDateTimeDef(
     pugi::xml_node& node, smtk::attribute::DateTimeItemDefinitionPtr idef) override;

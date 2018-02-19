@@ -17,6 +17,7 @@
 #include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/DateTimeItemDefinition.h"
+#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/ResourceItemDefinition.h"
 #include "smtk/io/Logger.h"
@@ -47,6 +48,29 @@ std::string XmlV3StringWriter::className() const
 unsigned int XmlV3StringWriter::fileVersion() const
 {
   return 3;
+}
+
+void XmlV3StringWriter::processDefinitionInternal(
+  xml_node& definition, smtk::attribute::DefinitionPtr def)
+{
+  if (!def->tags().empty())
+  {
+    xml_node tagsNode = definition.append_child();
+    tagsNode.set_name("Tags");
+
+    std::string sep; // TODO: The writer could accept a user-provided separator.
+    for (auto& tag : def->tags())
+    {
+      xml_node tagNode = tagsNode.append_child();
+      tagNode.set_name("Tag");
+      tagNode.append_attribute("Name").set_value(tag.name().c_str());
+      if (!tag.values().empty())
+      {
+        tagNode.text().set(concatenate(tag.values(), sep, &m_logger).c_str());
+      }
+    }
+  }
+  XmlV2StringWriter::processDefinitionInternal(definition, def);
 }
 
 void XmlV3StringWriter::processItemDefinitionType(

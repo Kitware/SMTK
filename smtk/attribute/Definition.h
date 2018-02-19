@@ -19,7 +19,10 @@
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/SharedFromThis.h"       // For smtkTypeMacroBase.
+#include "smtk/SharedFromThis.h" // For smtkTypeMacroBase.
+
+#include "smtk/attribute/Tag.h"
+
 #include "smtk/model/EntityRef.h"      //for EntityRef version of canBeAssociated
 #include "smtk/model/EntityTypeBits.h" // for BitFlags type
 
@@ -54,6 +57,16 @@ public:
   const std::string& type() const { return this->m_type; }
 
   smtk::attribute::CollectionPtr collection() const { return this->m_collection.lock(); }
+
+  const Tags& tags() const { return this->m_tags; }
+
+  // Return a pointer to a const tag with a given name. If the tag does not
+  // exist, return a null pointer.
+  const Tag* tag(const std::string& name) const;
+  Tag* tag(const std::string& name);
+
+  bool addTag(const Tag& tag);
+  bool removeTag(const std::string& name);
 
   // The label is what can be displayed in an application.  Unlike the type
   // which is constant w/r to the definition, an application can change the label
@@ -292,6 +305,7 @@ protected:
   // Used by the find method to calculate an item's position
   std::size_t m_baseItemOffset;
   std::string m_rootName;
+  Tags m_tags;
 
 private:
   // These colors are returned for base definitions w/o set colors
