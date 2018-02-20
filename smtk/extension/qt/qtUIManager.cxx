@@ -136,9 +136,20 @@ void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
 
   smtk::extension::ViewInfo vinfo(this->m_smtkView, pWidget, this);
   this->m_topView = this->createView(vinfo);
-  if (this->m_topView && this->m_currentAdvLevel) // only build advanced level when needed
+  if (this->m_topView)
   {
-    this->m_topView->showAdvanceLevel(this->m_currentAdvLevel);
+    if (this->m_currentAdvLevel) // only build advanced level when needed)
+    {
+      this->m_topView->showAdvanceLevel(this->m_currentAdvLevel);
+    }
+    // In case we are filtering by categories by default or
+    // its set on permanently we need to  have the top level view
+    // initially set its category.  The reason is because the UIManager's
+    // currentCategory method is used to determine the current category but at
+    // qtView construction time the UIManager's TopLevel View is not currently set
+    // resulting in the current category not being set.  This method allows the UI
+    // Manager to have the current category being set.
+    this->m_topView->setInitialCategory();
   }
 }
 
@@ -164,6 +175,7 @@ void qtUIManager::initializeUI(
   {
     this->m_topView->showAdvanceLevel(this->m_currentAdvLevel);
   }
+  this->m_topView->setInitialCategory();
 }
 
 qtBaseView* qtUIManager::setSMTKView(

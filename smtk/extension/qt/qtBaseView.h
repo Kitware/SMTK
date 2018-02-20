@@ -89,6 +89,11 @@ public:
   virtual int advanceLevel();
   virtual bool categoryEnabled();
   virtual std::string currentCategory();
+  // When category filtering is requested to be either on by default or is requested to be
+  // on permanently, we need to have a mechanism to force the views to display info based on
+  // the initial category.  This method will check to see if this is the case and call the
+  // onShowCategory method
+  void setInitialCategory();
 
   bool isTopLevel() const { return this->m_isTopLevel; }
 
