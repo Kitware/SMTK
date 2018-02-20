@@ -12,7 +12,7 @@ readonly tag="setup"
 readonly paths="
 .gitattributes
 
-git-gitlab-push
+git-gitlab-sync
 setup-gitlab
 setup-hooks
 setup-lfs
