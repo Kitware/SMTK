@@ -102,8 +102,8 @@ Typically, one addresses issues by writing code. To start contributing to SMTK:
     Git to [use SSH instead of HTTPS][].
     Then clone:
 
-        $ git clone --recursive https://gitlab.kitware.com/cmb/cmb.git SMTK
-        $ cd SMTK
+        $ git clone --recursive https://gitlab.kitware.com/cmb/smtk.git smtk
+        $ cd smtk
 
     The main repository will be configured as your `origin` remote.
 
