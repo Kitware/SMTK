@@ -341,9 +341,10 @@ to schedule.
 
 Builder names always follow this pattern:
 
-        project-host-os-libtype-buildtype+feature1+feature2
+        project@branch-host-os-libtype-buildtype+feature1+feature2
 
   * project: always `cmb` for cmb
+  * branch: the branch being built (e.g., `master` or `release`)
   * host: the buildbot host
   * os: one of `windows`, `osx`, or `linux`
   * libtype: `shared` or `static`
