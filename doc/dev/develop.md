@@ -77,6 +77,7 @@ Update
 
         $ git checkout master
         $ git pullall
+
 2.  Optionally push `master` to your fork in GitLab:
 
         $ git push gitlab master
@@ -254,7 +255,7 @@ of the line:
 *   `+2` means "I've reviewed and compiled the changes and they look good."
 *   `+3` means "I have tested the change and verified it works."
 
-**Note:** In the case of large commits, several reviewers may be involved.  In these cases each reviewer should document which section of the commit their comments pertain to. 
+**Note:** In the case of large commits, several reviewers may be involved.  In these cases each reviewer should document which section of the commit their comments pertain to.
 
 The middle lines of a comment may be free-form [GitLab Flavored Markdown][].
 
@@ -444,7 +445,7 @@ Contributing CMB, VTK or ParaView Changes
 ----------------------
 
 If you have any CMB, VTK or ParaView changes, then you are required to get your changes
-incorporated into CMB using [CMB's development workflow][], VTK using [VTK's development workflow][] and/or into ParaView using [ParaView's development workflow][]. 
+incorporated into CMB using [CMB's development workflow][], VTK using [VTK's development workflow][] and/or into ParaView using [ParaView's development workflow][].
 
 [CMB's development workflow]: https://gitlab.kitware.com/cmb/cmb/tree/master/Documentation/dev
 [VTK's development workflow]: https://gitlab.kitware.com/vtk/vtk/tree/master/Documentation/dev/git

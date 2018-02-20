@@ -40,7 +40,7 @@ To report an issue.
    **should not** set any other fields for the issue, including
    **Assignee**, **Milestone**, or **Labels**. These get set by members of the
    development team.
-   
+
 4. If developers need more information on an issue, they will add the
    `triage:needinfo` label as add a comment for the reporter soliciting more
    information. Once the reporter has provided the necessary information, he or she
@@ -104,6 +104,7 @@ Typically, one addresses issues by writing code. To start contributing to SMTK:
 
         $ git clone --recursive https://gitlab.kitware.com/cmb/cmb.git SMTK
         $ cd SMTK
+
     The main repository will be configured as your `origin` remote.
 
     For more information see: [Setup][] and [download instructions][]
@@ -112,8 +113,9 @@ Typically, one addresses issues by writing code. To start contributing to SMTK:
     tree and create Git command aliases used below:
 
         $ ./utilities/SetupForDevelopment.sh
+
     This will prompt for your GitLab user name and configure a remote
-    called `gitlab` to refer to it. 
+    called `gitlab` to refer to it.
 
     For more information see: [Setup][]
 
