@@ -8,6 +8,7 @@ set(QAttrLibSrcs
   qtAttributeDisplay.cxx
   qtAttributeItemWidgetFactory.cxx
   qtBaseView.cxx
+  qtCategorySelectorView.cxx
   qtCheckItemComboBox.cxx
   qtCollapsibleGroupWidget.cxx
   qtDescriptivePhraseDelegate.cxx
@@ -62,6 +63,7 @@ set(QAttrLibMocHeaders
   qtAttribute.h
   qtAttributeDisplay.h
   qtBaseView.h
+  qtCategorySelectorView.h
   qtCheckItemComboBox.h
   qtCollapsibleGroupWidget.h
   qtEmittingStringBuffer.h

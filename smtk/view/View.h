@@ -41,7 +41,6 @@ public:
     ~Component() {}
 
     const std::string& name() const { return this->m_name; }
-
     const std::string& contents() const { return this->m_contents; }
     bool contentsAsVector(std::vector<double>& vec) const;
     bool contentsAsInt(int& val) const;
@@ -108,6 +107,9 @@ public:
   // v with the exception of its title and type
   void copyContents(const View& v);
   const std::string& title() const { return this->m_title; }
+  // Returns the name to be used in the GUI for the View - if there is none
+  // defined the title is returned.
+  std::string label() const;
 
   const std::string& type() const { return this->m_type; }
 

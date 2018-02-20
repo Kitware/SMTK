@@ -254,7 +254,6 @@ void qtSelectorView::addChildView(qtBaseView* child, int viewEnumIndex)
     }
 
     QLayout* vLayout = this->Widget->layout();
-    vLayout->setMargin(0);
     vLayout->addWidget(child->widget());
     vLayout->setAlignment(Qt::AlignTop);
   }
