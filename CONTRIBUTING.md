@@ -136,7 +136,7 @@ Typically, one addresses issues by writing code. To start contributing to SMTK:
 
 7.  Push commits in your topic branch to your fork in GitLab:
 
-        $ git gitlab-push
+        $ git push gitlab HEAD
 
     For more information see: [Share a Topic][]
 
