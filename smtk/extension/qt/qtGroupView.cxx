@@ -298,7 +298,7 @@ void qtGroupView::addTabEntry(qtBaseView* child)
   QScrollArea* s = new QScrollArea(tabWidget);
   s->setWidgetResizable(true);
   s->setFrameShape(QFrame::NoFrame);
-  QString secTitle = child->getObject()->title().c_str();
+  QString secTitle = child->getObject()->label().c_str();
   QString name = "tab" + QString(secTitle);
   s->setObjectName(name);
   s->setWidget(tabPage);
@@ -352,7 +352,7 @@ void qtGroupView::addGroupBoxEntry(qtBaseView* child)
   }
   smtk::extension::qtCollapsibleGroupWidget* gw = new qtCollapsibleGroupWidget(frame);
   this->Widget->layout()->addWidget(gw);
-  gw->setName(child->getObject()->title().c_str());
+  gw->setName(child->getObject()->label().c_str());
   gw->contentsLayout()->addWidget(child->widget());
   gw->collapse();
 }
@@ -364,7 +364,7 @@ void qtGroupView::addTileEntry(qtBaseView* child)
   {
     return;
   }
-  QLabel* label = new QLabel(child->getObject()->title().c_str(), this->Widget);
+  QLabel* label = new QLabel(child->getObject()->label().c_str(), this->Widget);
   QFont titleFont;
   titleFont.setBold(true);
   titleFont.setItalic(true);

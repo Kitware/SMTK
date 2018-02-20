@@ -171,5 +171,16 @@ void View::copyContents(const View& view)
   this->m_iconName = view.m_iconName;
   this->m_details.copyContents(view.m_details);
 }
+
+std::string View::label() const
+{
+  std::string l;
+  if (this->m_details.attribute("Label", l))
+  {
+    return l;
+  }
+  return this->m_title;
+}
+
 } // namespace view
 } // namespace smtk
