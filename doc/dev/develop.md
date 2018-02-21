@@ -77,11 +77,12 @@ Update
 
         $ git checkout master
         $ git pullall
+
 2.  Optionally push `master` to your fork in GitLab:
 
         $ git push gitlab master
-    to keep it in sync.  The `git gitlab-push` script used to
-    [Share a Topic](#share-a-topic) below will also do this.
+
+    to keep it in sync.
 
 Create a Topic
 --------------
@@ -144,13 +145,11 @@ signed in for [GitLab Access][] and created your fork by visiting the main
 
 3.  Push commits in your topic branch to your fork in GitLab:
 
-        $ git gitlab-push
+        $ git push gitlab HEAD
 
     Notes:
     * If you are revising a previously pushed topic and have rewritten the
       topic history, add `-f` or `--force` to overwrite the destination.
-    * The `gitlab-push` script also pushes the `master` branch to your
-      fork in GitLab to keep it in sync with the upstream `master`.
 
     The output will include a link to the topic branch in your fork in GitLab
     and a link to a page for creating a Merge Request.
@@ -254,7 +253,7 @@ of the line:
 *   `+2` means "I've reviewed and compiled the changes and they look good."
 *   `+3` means "I have tested the change and verified it works."
 
-**Note:** In the case of large commits, several reviewers may be involved.  In these cases each reviewer should document which section of the commit their comments pertain to. 
+**Note:** In the case of large commits, several reviewers may be involved.  In these cases each reviewer should document which section of the commit their comments pertain to.
 
 The middle lines of a comment may be free-form [GitLab Flavored Markdown][].
 
@@ -342,9 +341,10 @@ to schedule.
 
 Builder names always follow this pattern:
 
-        project-host-os-libtype-buildtype+feature1+feature2
+        project@branch-host-os-libtype-buildtype+feature1+feature2
 
   * project: always `cmb` for cmb
+  * branch: the branch being built (e.g., `master` or `release`)
   * host: the buildbot host
   * os: one of `windows`, `osx`, or `linux`
   * libtype: `shared` or `static`
@@ -444,7 +444,7 @@ Contributing CMB, VTK or ParaView Changes
 ----------------------
 
 If you have any CMB, VTK or ParaView changes, then you are required to get your changes
-incorporated into CMB using [CMB's development workflow][], VTK using [VTK's development workflow][] and/or into ParaView using [ParaView's development workflow][]. 
+incorporated into CMB using [CMB's development workflow][], VTK using [VTK's development workflow][] and/or into ParaView using [ParaView's development workflow][].
 
 [CMB's development workflow]: https://gitlab.kitware.com/cmb/cmb/tree/master/Documentation/dev
 [VTK's development workflow]: https://gitlab.kitware.com/vtk/vtk/tree/master/Documentation/dev/git
