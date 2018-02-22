@@ -47,7 +47,7 @@ public:
   {
     this->deleteWidget(this->AdvLevelCombo);
     this->deleteWidget(this->ShowCategoryCombo);
-    this->deleteWidget(this->FilterByCheck);
+    this->deleteWidget(this->FilterByCategory);
     this->deleteWidget(this->AdvLevelEditButton);
     this->deleteWidget(this->AdvLevelLabel);
     if (this->TopLevelLayout)
@@ -57,7 +57,8 @@ public:
   }
 
   QPointer<QComboBox> AdvLevelCombo;
-  QPointer<QCheckBox> FilterByCheck;
+  QPointer<QCheckBox> FilterByCategory;
+  QPointer<QLabel> FilterByCategoryLabel;
   QPointer<QComboBox> ShowCategoryCombo;
   QPointer<QLabel> AdvLevelLabel;
   QPointer<QToolButton> AdvLevelEditButton;
@@ -176,6 +177,15 @@ void qtBaseView::buildUI()
   this->m_ScrollArea->setWidget(this->Widget);
 }
 
+void qtBaseView::setInitialCategory()
+{
+  if (this->isTopLevel() && (this->Internals->ShowCategoryCombo != nullptr) &&
+    this->Internals->ShowCategoryCombo->isEnabled())
+  {
+    this->onShowCategory();
+  }
+}
+
 void qtBaseView::makeTopLevel()
 {
 
@@ -275,9 +285,21 @@ void qtBaseView::makeTopLevel()
   // Do we need to provide category filtering - this is on by default
   if ((!view->details().attributeAsBool("FilterByCategory", flag)) || flag)
   {
-    this->Internals->FilterByCheck = new QCheckBox(this->parentWidget());
-    this->Internals->FilterByCheck->setText("Show by Category: ");
-    this->Internals->FilterByCheck->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    std::string fbcm;
+    view->details().attribute("FilterByCategoryMode", fbcm);
+    // is category filtering always suppose to be on?
+    if (fbcm == "alwaysOn")
+    {
+      this->Internals->FilterByCategoryLabel = new QLabel(this->parentWidget());
+      this->Internals->FilterByCategoryLabel->setText("Show by Category");
+      this->Internals->FilterByCategoryLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    }
+    else
+    {
+      this->Internals->FilterByCategory = new QCheckBox(this->parentWidget());
+      this->Internals->FilterByCategory->setText("Show by Category: ");
+      this->Internals->FilterByCategory->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    }
     this->Internals->ShowCategoryCombo = new QComboBox(this->parentWidget());
     std::set<std::string>::const_iterator it;
     const std::set<std::string>& cats = attSys->categories();
@@ -285,7 +307,7 @@ void qtBaseView::makeTopLevel()
     {
       this->Internals->ShowCategoryCombo->addItem(it->c_str());
     }
-    this->Internals->ShowCategoryCombo->setEnabled(false);
+    this->Internals->ShowCategoryCombo->setEnabled(fbcm == "alwaysOn");
   }
 
   this->Internals->TopLevelLayout = new QHBoxLayout();
@@ -300,13 +322,20 @@ void qtBaseView::makeTopLevel()
     QObject::connect(this->Internals->AdvLevelCombo, SIGNAL(currentIndexChanged(int)), this,
       SLOT(onAdvanceLevelChanged(int)));
   }
-  if (this->Internals->FilterByCheck)
+  if (this->Internals->ShowCategoryCombo)
   {
-    this->Internals->TopLevelLayout->addWidget(this->Internals->FilterByCheck);
+    if (this->Internals->FilterByCategory)
+    {
+      this->Internals->TopLevelLayout->addWidget(this->Internals->FilterByCategory);
+      QObject::connect(this->Internals->FilterByCategory, SIGNAL(stateChanged(int)), this,
+        SLOT(enableShowBy(int)));
+    }
+    else
+    {
+      this->Internals->TopLevelLayout->addWidget(this->Internals->FilterByCategoryLabel);
+    }
     this->Internals->TopLevelLayout->addWidget(this->Internals->ShowCategoryCombo);
 
-    QObject::connect(
-      this->Internals->FilterByCheck, SIGNAL(stateChanged(int)), this, SLOT(enableShowBy(int)));
     QObject::connect(this->Internals->ShowCategoryCombo, SIGNAL(currentIndexChanged(int)), this,
       SLOT(onShowCategory()));
   }
