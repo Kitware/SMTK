@@ -13,9 +13,11 @@
 #include "smtk/bridge/discrete/Session.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ResourceItem.h"
 
 #include "smtk/model/Events.h"
 #include "smtk/model/Face.h"

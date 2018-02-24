@@ -11,6 +11,7 @@
 #include "smtk/mesh/operators/UndoElevateMesh.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/MeshItem.h"
 
 #include "smtk/io/Logger.h"

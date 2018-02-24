@@ -57,6 +57,8 @@ public:
     attribute::VoidItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
   virtual qtItem* createDateTimeItemWidget(
     attribute::DateTimeItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
+  virtual qtItem* createComponentItemWidget(
+    attribute::ComponentItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
 };
 
 } // namespace extension

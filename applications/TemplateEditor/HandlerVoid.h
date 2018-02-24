@@ -97,17 +97,36 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////
 /**
- * \brief Generates a custom UI for a ModelEntityItemDef instance.
+ * \brief Generates a custom UI for a ComponentItemDef instance.
  */
-class HandlerModelEntity : public HandlerItemDef
+class HandlerComponent : public HandlerItemDef
 {
 public:
-  HandlerModelEntity() = default;
-  ~HandlerModelEntity() = default;
+  HandlerComponent() = default;
+  ~HandlerComponent() = default;
 
 private:
-  HandlerModelEntity(const HandlerModelEntity&) = delete;
-  void operator=(const HandlerModelEntity&) = delete;
+  HandlerComponent(const HandlerComponent&) = delete;
+  void operator=(const HandlerComponent&) = delete;
+
+  smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override;
+  smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;
+  bool initialize_impl(QWidget* parent) override;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+/**
+ * \brief Generates a custom UI for a ResourceItemDef instance.
+ */
+class HandlerResource : public HandlerItemDef
+{
+public:
+  HandlerResource() = default;
+  ~HandlerResource() = default;
+
+private:
+  HandlerResource(const HandlerResource&) = delete;
+  void operator=(const HandlerResource&) = delete;
 
   smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override;
   smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;

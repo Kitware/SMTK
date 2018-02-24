@@ -7,15 +7,23 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/qt/qtEntityItemDelegate.h"
-#include "smtk/extension/qt/qtEntityItemModel.h"
+#include "smtk/extension/qt/qtDescriptivePhraseDelegate.h"
+#include "smtk/extension/qt/qtDescriptivePhraseModel.h"
 
-#include "smtk/io/LoadJSON.h"
-#include "smtk/io/SaveJSON.h"
-#include "smtk/model/EntityListPhrase.h"
-#include "smtk/model/EntityPhrase.h"
+#include "smtk/view/PhraseModel.h"
+#include "smtk/view/ResourcePhraseModel.h"
+#include "smtk/view/View.h"
+
+#include "smtk/environment/Environment.h"
+
+#include "smtk/operation/LoadResource.h"
+
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/ResourceItem.h"
+
 #include "smtk/model/Manager.h"
-#include "smtk/model/SimpleModelSubphrases.h"
 
 #include "smtk/extension/qt/examples/cxx/ModelBrowser.h"
 
@@ -40,69 +48,67 @@ int main(int argc, char* argv[])
   QApplication app(argc, argv);
   const char* filename = argc > 1 ? argv[1] : "smtkModel.json";
   char* endMask;
-  long mask = strtol(argc > 2 ? argv[2] : "0xffffffff", &endMask, 16);
-  int debug = argc > 3 ? 1 : 0;
+  int debug = argc > 2 ? 1 : 0;
 
   std::ifstream file(filename);
   if (!file.good())
   {
     cout << "Could not open file \"" << filename << "\".\n\n"
-         << "Usage:\n  " << argv[0] << " [[[filename] mask] debug]\n"
+         << "Usage:\n  " << argv[0] << " [[filename] debug]\n"
          << "where\n"
          << "  filename is the path to a JSON model.\n"
-         << "  mask     is an integer entity mask selecting what to display.\n"
          << "  debug    is any character, indicating a debug session.\n\n";
     return 1;
   }
-  std::string json((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
-
-  smtk::model::ManagerPtr model = smtk::model::Manager::create();
-  smtk::io::LoadJSON::intoModelManager(json.c_str(), model);
-  model->assignDefaultNames();
-
-  smtk::extension::QEntityItemModel* qmodel = new smtk::extension::QEntityItemModel;
-  smtk::extension::QEntityItemDelegate* qdelegate = new smtk::extension::QEntityItemDelegate;
+  auto qmodel = new smtk::extension::qtDescriptivePhraseModel;
+  auto qdelegate = new smtk::extension::qtDescriptivePhraseDelegate;
   qdelegate->setTitleFontSize(12);
   qdelegate->setTitleFontWeight(2);
   qdelegate->setSubtitleFontSize(10);
   qdelegate->setSubtitleFontWeight(1);
-  ModelBrowser* view = new ModelBrowser;
-  //QTreeView* view = new QTreeView;
-  cout << "mask " << hexconst(mask) << "\n";
-  /*
-  smtk::model::DescriptivePhrases plist =
-    smtk::model::EntityPhrase::PhrasesFromUUIDs(
-      model, model->entitiesMatchingFlags(mask, false));
-  std::cout << std::setbase(10) << "Found " << plist.size() << " entries\n";
-  qmodel->setPhrases(plist);
-  */
-  smtk::model::EntityRefs entityrefs;
-  smtk::model::EntityRef::EntityRefsFromUUIDs(
-    entityrefs, model, model->entitiesMatchingFlags(mask, false));
-  std::cout << std::setbase(10) << "Found " << entityrefs.size() << " entries\n";
-  view->setup(model, qmodel, qdelegate,
-    smtk::model::EntityListPhrase::create()
-      ->setup(entityrefs)
-      ->setDelegate( // set the subphrase generator:
-        smtk::model::SimpleModelSubphrases::create()));
-  test(entityrefs.empty() || qmodel->manager() == model,
-    "Failed to obtain Manager from QEntityItemModel.");
+  ModelBrowser* qview = new ModelBrowser;
+  auto operationManager = smtk::environment::OperationManager::instance();
+  auto resourceManager = smtk::environment::ResourceManager::instance();
+  auto view = smtk::view::View::New("ModelBrowser", "SMTK Model");
+  auto phraseModel = smtk::view::ResourcePhraseModel::create(view);
+  phraseModel->addSource(resourceManager, operationManager);
+  qmodel->setPhraseModel(phraseModel);
+  qview->setup(smtk::environment::ResourceManager::instance(), qmodel, qdelegate, nullptr);
+
+  auto loadOp = operationManager->create<smtk::operation::LoadResource>();
+  if (!loadOp)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), "No load operator.");
+    return 1;
+  }
+
+  loadOp->parameters()->findFile("filename")->setValue(filename);
+  smtk::operation::Operation::Result loadOpResult = loadOp->operate();
+  if (loadOpResult->findInt("outcome")->value() !=
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), "Load operator failed for \"" << filename << "\"");
+    return 1;
+  }
+
+  auto rsrc = loadOpResult->findResource("resource")->value(0);
+  auto model = std::dynamic_pointer_cast<smtk::model::Manager>(rsrc);
+  if (!model)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), "Did not load a model.");
+    return 1;
+  }
+  model->assignDefaultNames();
+  std::cout << "Loaded a " << model->uniqueName() << "\n";
 
   // Enable user sorting.
-  view->tree()->setSortingEnabled(true);
-
-  view->show();
+  qview->tree()->setSortingEnabled(true);
+  qview->show();
 
   // FIXME: Actually test something when not in debug mode.
   int status = debug ? app.exec() : 0;
-  if (argc > 4)
-  {
-    std::ofstream result(argv[4]);
-    result << smtk::io::SaveJSON::fromModelManager(model).c_str() << "\n";
-    result.close();
-  }
 
-  delete view;
+  delete qview;
   delete qmodel;
   delete qdelegate;
 

@@ -21,10 +21,12 @@
 #include "smtk/mesh/core/Manager.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/bridge/discrete/kernel/Model/vtkModelEntity.h"

@@ -30,6 +30,8 @@
 
 #include "smtk/resource/Manager.h"
 
+#include "smtk/attribute/ComponentItem.h"
+
 #include "vtkCompositeDataIterator.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"

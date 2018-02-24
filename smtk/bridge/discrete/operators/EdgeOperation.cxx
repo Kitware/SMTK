@@ -13,11 +13,13 @@
 #include "smtk/bridge/discrete/Session.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ResourceItem.h"
 
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"

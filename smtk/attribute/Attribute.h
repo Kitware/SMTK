@@ -18,8 +18,6 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/resource/Component.h"
 
-#include "smtk/attribute/ComponentItem.h"
-#include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/SearchStyle.h"
 #include "smtk/attribute/ValueItem.h"

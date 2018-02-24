@@ -34,6 +34,7 @@ class SMTKQTEXT_EXPORT qtDescriptivePhraseDelegate : public QStyledItemDelegate
   Q_PROPERTY(int subtitleFontWeight READ subtitleFontWeight WRITE setSubtitleFontWeight)
   Q_PROPERTY(int textVerticalPad READ textVerticalPad WRITE setTextVerticalPad)
   Q_PROPERTY(bool drawSubtitle READ drawSubtitle WRITE setDrawSubtitle)
+  Q_PROPERTY(bool visibilityMode READ visibilityMode WRITE setVisibilityMode)
 public:
   qtDescriptivePhraseDelegate(QWidget* parent = 0);
 
@@ -44,6 +45,7 @@ public:
   int swatchSize() const;
   int textVerticalPad() const;
   bool drawSubtitle() const;
+  bool visibilityMode() const;
 
 public slots:
   void setTitleFontSize(int tfs);
@@ -53,6 +55,7 @@ public slots:
   void setSwatchSize(int sws);
   void setTextVerticalPad(int tvp);
   void setDrawSubtitle(bool includeSubtitle);
+  void setVisibilityMode(bool allEditsChangeVisibility);
 
 signals:
   void requestVisibilityChange(const QModelIndex&);
@@ -91,6 +94,7 @@ protected:
   int m_subtitleFontWeight;
   int m_textVerticalPad;
   bool m_drawSubtitle;
+  bool m_visibilityMode;
 };
 
 } // namespace extension

@@ -28,7 +28,6 @@ py::class_< smtk::attribute::ResourceItemDefinition, smtk::attribute::ItemDefini
   instance
     .def(py::init<::smtk::attribute::ResourceItemDefinition const &>())
     .def_static("New", &smtk::attribute::ResourceItemDefinition::New, py::arg("sname"))
-    .def("acceptsResource", &smtk::attribute::ResourceItemDefinition::acceptsResource)
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::ResourceItemDefinition::*)(::smtk::attribute::Attribute *, int) const) &smtk::attribute::ResourceItemDefinition::buildItem, py::arg("owningAttribute"), py::arg("itemPosition"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::ResourceItemDefinition::*)(::smtk::attribute::Item *, int, int) const) &smtk::attribute::ResourceItemDefinition::buildItem, py::arg("owningItem"), py::arg("position"), py::arg("subGroupPosition"))
     .def("classname", &smtk::attribute::ResourceItemDefinition::classname)
@@ -38,8 +37,8 @@ py::class_< smtk::attribute::ResourceItemDefinition, smtk::attribute::ItemDefini
     .def("isValueValid", &smtk::attribute::ResourceItemDefinition::isValueValid, py::arg("entity"))
     .def("maxNumberOfValues", &smtk::attribute::ResourceItemDefinition::maxNumberOfValues)
     .def("numberOfRequiredValues", &smtk::attribute::ResourceItemDefinition::numberOfRequiredValues)
-    .def("setAcceptsResources", (bool (smtk::attribute::ResourceItemDefinition::*)(::std::string const &, bool)) &smtk::attribute::ResourceItemDefinition::setAcceptsResources, py::arg("uniqueName"), py::arg("accept"))
-    .def("setAcceptsResources", (bool (smtk::attribute::ResourceItemDefinition::*)(::smtk::resource::Resource::Index, bool)) &smtk::attribute::ResourceItemDefinition::setAcceptsResources, py::arg("resourceIndex"), py::arg("accept"))
+    .def("setAcceptsEntries", (bool (smtk::attribute::ResourceItemDefinition::*)(::std::string const &, bool)) &smtk::attribute::ResourceItemDefinition::setAcceptsEntries, py::arg("uniqueName"), py::arg("accept"))
+    // .def("setAcceptsEntries", (bool (smtk::attribute::ResourceItemDefinition::*)(::smtk::resource::Resource::Index, bool)) &smtk::attribute::ResourceItemDefinition::setAcceptsEntries, py::arg("resourceIndex"), py::arg("accept"))
     .def("setCommonValueLabel", &smtk::attribute::ResourceItemDefinition::setCommonValueLabel, py::arg("elabel"))
     .def("setIsExtensible", &smtk::attribute::ResourceItemDefinition::setIsExtensible, py::arg("extensible"))
     .def("setMaxNumberOfValues", &smtk::attribute::ResourceItemDefinition::setMaxNumberOfValues, py::arg("maxNum"))

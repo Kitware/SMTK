@@ -7,68 +7,58 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/qt/qtComponentItem.h"
+#include "smtk/extension/qt/qtReferenceItem.h"
 #include "smtk/extension/qt/qtReferenceItemData.h"
 
 #include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtOverlay.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ComponentItemDefinition.h"
+#include "smtk/attribute/Item.h"
+#include "smtk/attribute/ItemDefinition.h"
 
-namespace smtk
-{
-namespace extension
-{
+using namespace smtk::extension;
+using namespace smtk::attribute;
 
-class qtComponentItem::Internal
+qtReferenceItemData::qtReferenceItemData()
 {
-public:
-};
-
-qtComponentItem::qtComponentItem(
-  smtk::attribute::ComponentItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation enumOrient)
-  : Superclass(std::static_pointer_cast<smtk::attribute::Item>(item), p, bview)
-{
-  (void)enumOrient;
-  m_p = new Internal;
-  this->createWidget();
 }
 
-qtComponentItem::~qtComponentItem()
+qtReferenceItemData::~qtReferenceItemData()
+{
+}
+
+qtReferenceItem::qtReferenceItem(smtk::attribute::ItemPtr item, QWidget* parent, qtBaseView* bview)
+  : Superclass(item, parent, bview)
+  , m_p(new qtReferenceItemData)
+{
+}
+
+qtReferenceItem::~qtReferenceItem()
 {
   delete m_p;
+  m_p = nullptr;
 }
 
-void qtComponentItem::setLabelVisible(bool visible)
+void qtReferenceItem::selectionLinkToggled(bool linked)
 {
-  qtReferenceItem::m_p->m_label->setVisible(visible);
+  (void)linked;
 }
 
-smtk::attribute::ComponentItemPtr qtComponentItem::componentItem()
-{
-  return std::static_pointer_cast<smtk::attribute::ComponentItem>(this->getObject());
-}
-
-void qtComponentItem::updateItemData()
+void qtReferenceItem::createWidget()
 {
 }
 
-void qtComponentItem::createWidget()
+void qtReferenceItem::updateUI()
 {
-  // Let our subclass do the UI work.
-  this->Superclass::createWidget();
-
-  // Now add in ComponentItem specifics.
   smtk::attribute::ItemPtr dataObj = this->getObject();
+  // smtk::attribute::ValueItemPtr dataObj = this->valueItem();
   if (!dataObj || !this->passAdvancedCheck() ||
     (this->baseView() &&
       !this->baseView()->uiManager()->passItemCategoryCheck(dataObj->definition())))
   {
     return;
   }
-
-  this->updateItemData();
-}
-}
 }

@@ -10,8 +10,7 @@
 #ifndef smtk_extension_qt_qtComponentItem_h
 #define smtk_extension_qt_qtComponentItem_h
 
-#include "smtk/extension/qt/Exports.h"
-#include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/qtReferenceItem.h"
 
 #include "smtk/model/EntityTypeBits.h" // for smtk::model::BitFlags
 
@@ -22,26 +21,27 @@ namespace smtk
 namespace extension
 {
 
-class SMTKQTEXT_EXPORT qtComponentItem : public qtItem
+class SMTKQTEXT_EXPORT qtComponentItem : public qtReferenceItem
 {
   Q_OBJECT
-  using Superclass = qtItem;
+  using Superclass = qtReferenceItem;
 
 public:
-  qtComponentItem(smtk::attribute::ItemPtr, QWidget* p, qtBaseView* bview,
+  qtComponentItem(smtk::attribute::ComponentItemPtr, QWidget* p, qtBaseView* bview,
     Qt::Orientation enumOrient = Qt::Horizontal);
-  virtual ~qtModelEntityItem();
+  virtual ~qtComponentItem();
 
   void setLabelVisible(bool) override;
   smtk::attribute::ComponentItemPtr componentItem();
-
-  virtual std::string selectionSourceName() const { return this->m_selectionSourceName; }
 
 protected slots:
   void updateItemData() override;
 
 protected:
   void createWidget() override;
+
+  class Internal;
+  Internal* m_p;
 };
 }
 }

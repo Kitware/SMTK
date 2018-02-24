@@ -9,13 +9,14 @@
 //=========================================================================
 #include <QWidget>
 
+#include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/DateTimeItemDefinition.h"
 #include "smtk/attribute/DirectoryItemDefinition.h"
 #include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/MeshItemDefinition.h"
 #include "smtk/attribute/MeshSelectionItemDefinition.h"
-#include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/ResourceItemDefinition.h"
 #include "smtk/attribute/VoidItemDefinition.h"
 
 #include "HandlerVoid.h"
@@ -128,22 +129,41 @@ smtk::attribute::ItemDefinitionPtr HandlerDirectory::createItemDef_impl(const st
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool HandlerModelEntity::initialize_impl(QWidget* parent)
+bool HandlerComponent::initialize_impl(QWidget* parent)
 {
   parent->hide();
   return true;
 }
 
 // -----------------------------------------------------------------------------
-smtk::attribute::ItemDefinitionPtr HandlerModelEntity::updateItemDef_impl()
+smtk::attribute::ItemDefinitionPtr HandlerComponent::updateItemDef_impl()
 {
   return this->ItemDef;
 }
 
 // -----------------------------------------------------------------------------
-smtk::attribute::ItemDefinitionPtr HandlerModelEntity::createItemDef_impl(const std::string& name)
+smtk::attribute::ItemDefinitionPtr HandlerComponent::createItemDef_impl(const std::string& name)
 {
-  return smtk::attribute::ModelEntityItemDefinition::New(name);
+  return smtk::attribute::ComponentItemDefinition::New(name);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool HandlerResource::initialize_impl(QWidget* parent)
+{
+  parent->hide();
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+smtk::attribute::ItemDefinitionPtr HandlerResource::updateItemDef_impl()
+{
+  return this->ItemDef;
+}
+
+// -----------------------------------------------------------------------------
+smtk::attribute::ItemDefinitionPtr HandlerResource::createItemDef_impl(const std::string& name)
+{
+  return smtk::attribute::ResourceItemDefinition::New(name);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
