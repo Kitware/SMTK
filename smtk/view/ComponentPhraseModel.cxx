@@ -9,10 +9,10 @@
 //=========================================================================
 #include "smtk/view/ComponentPhraseModel.h"
 
+#include "smtk/view/ComponentPhraseContent.h"
 #include "smtk/view/DescriptivePhrase.h"
+#include "smtk/view/EmptySubphraseGenerator.h"
 #include "smtk/view/PhraseListContent.h"
-#include "smtk/view/ResourcePhraseContent.h"
-#include "smtk/view/SubphraseGenerator.h"
 #include "smtk/view/View.h"
 
 #include "smtk/operation/Manager.h"
@@ -36,8 +36,9 @@ PhraseModelPtr ComponentPhraseModel::create(const smtk::view::ViewPtr& viewSpec)
 
 ComponentPhraseModel::ComponentPhraseModel()
   : m_root(DescriptivePhrase::create())
+  , m_onlyShowActiveResourceComponents(false)
 {
-  auto generator = smtk::view::SubphraseGenerator::create();
+  auto generator = smtk::view::EmptySubphraseGenerator::create();
   m_root->setDelegate(generator);
 }
 
@@ -49,6 +50,42 @@ ComponentPhraseModel::~ComponentPhraseModel()
 DescriptivePhrasePtr ComponentPhraseModel::root() const
 {
   return m_root;
+}
+
+bool ComponentPhraseModel::setActiveResource(smtk::resource::ResourcePtr rsrc)
+{
+  if (rsrc == m_activeResource)
+  {
+    return false;
+  }
+
+  m_activeResource = rsrc;
+  this->populateRoot();
+  return true;
+}
+
+bool ComponentPhraseModel::setOnlyShowActiveResourceComponents(bool limitToActiveResource)
+{
+  if (limitToActiveResource == m_onlyShowActiveResourceComponents)
+  {
+    return false;
+  }
+
+  m_onlyShowActiveResourceComponents = limitToActiveResource;
+  this->populateRoot();
+  return true;
+}
+
+bool ComponentPhraseModel::setComponentFilters(const std::multimap<std::string, std::string>& src)
+{
+  if (src == m_componentFilters)
+  {
+    return false;
+  }
+
+  m_componentFilters = src;
+  this->populateRoot();
+  return true;
 }
 
 void ComponentPhraseModel::handleResourceEvent(Resource::Ptr rsrc, smtk::resource::Event event)
@@ -95,18 +132,16 @@ void ComponentPhraseModel::processResource(Resource::Ptr rsrc, bool adding)
 {
   if (adding)
   {
+    // Insert the resource.
     if (m_resources.find(rsrc) == m_resources.end())
     {
       m_resources.insert(rsrc);
-      DescriptivePhrases children(m_root->subphrases());
-      children.push_back(smtk::view::ResourcePhraseContent::createPhrase(rsrc, 0, m_root));
-      std::sort(children.begin(), children.end(), DescriptivePhrase::compareByTypeThenTitle);
-      this->root()->findDelegate()->decoratePhrases(children);
-      this->updateChildren(m_root, children, std::vector<int>());
+      this->populateRoot();
     }
   }
   else
   {
+    // Delete the resource.
     auto it = m_resources.find(rsrc);
     if (it != m_resources.end())
     {
@@ -119,8 +154,74 @@ void ComponentPhraseModel::processResource(Resource::Ptr rsrc, bool adding)
         children.end());
       this->updateChildren(m_root, children, std::vector<int>());
     }
+    if (rsrc == m_activeResource)
+    {
+      // Reset the active resource
+      m_activeResource = smtk::resource::ResourcePtr();
+      // If the resource was the active resource, then we have an issue since
+      // now we have no context for what should be displayed. The thing most
+      // developers would expect is to show all matching components from all
+      // resources. This may not be what users expect, so perhaps we should
+      // give some observer a way to respond to the situation here?
+      this->populateRoot();
+    }
   }
 }
 
+void ComponentPhraseModel::populateRoot()
+{
+  smtk::resource::ComponentSet comps;
+  if (m_onlyShowActiveResourceComponents)
+  {
+    if (m_activeResource)
+    {
+      for (auto filter : m_componentFilters)
+      {
+        // Skip filters that do not apply to this resource.
+        // FIXME: Handle inheritance (e.g.,
+        //        if m_activeResource->uniqueName() == "polygon model" and
+        //        filter.first == "model", we should apply the filter.
+        if (filter.first != m_activeResource->uniqueName())
+        {
+          continue;
+        }
+
+        auto entries = m_activeResource->find(filter.second);
+        comps.insert(entries.begin(), entries.end());
+      }
+    }
+  }
+  else
+  {
+    for (auto rsrc : m_resources)
+    {
+      for (auto filter : m_componentFilters)
+      {
+        // Skip filters that do not apply to this resource.
+        // FIXME: Handle inheritance (e.g.,
+        //        if rsrc->uniqueName() == "polygon model" and
+        //        filter.first == "model", we should apply the filter.
+        if (rsrc->uniqueName() != filter.first)
+        {
+          continue;
+        }
+
+        auto entries = rsrc->find(filter.second);
+        comps.insert(entries.begin(), entries.end());
+      }
+    }
+  }
+
+  // Turn each entry of comps into a decorated phrase, sort, and update.
+  DescriptivePhrases children;
+  for (auto comp : comps)
+  {
+    children.push_back(smtk::view::ComponentPhraseContent::createPhrase(comp, 0, m_root));
+  }
+  std::sort(children.begin(), children.end(), DescriptivePhrase::compareByTypeThenTitle);
+  this->root()->findDelegate()->decoratePhrases(children);
+  this->updateChildren(m_root, children, std::vector<int>());
+}
+
 smtkImplementsPhraseModel(
-  SMTKCORE_EXPORT, smtk::view::ComponentPhraseModel, resource, ComponentPhrase);
+  SMTKCORE_EXPORT, smtk::view::ComponentPhraseModel, component, ComponentPhrase);
