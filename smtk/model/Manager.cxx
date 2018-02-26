@@ -1027,6 +1027,7 @@ bool IsValueValid(const smtk::resource::ComponentPtr& comp, smtk::model::BitFlag
         return false;
       }
     }
+    return true;
   }
   return false;
 }
@@ -1037,8 +1038,9 @@ bool IsValueValid(const smtk::resource::ComponentPtr& comp, smtk::model::BitFlag
 std::function<bool(const ComponentPtr&)> Manager::queryOperation(
   const std::string& queryString) const
 {
-  smtk::model::BitFlags bitflags =
-    queryString.empty() ? smtk::model::ANY_ENTITY : std::stoul(queryString, nullptr, 0);
+  smtk::model::BitFlags bitflags = queryString.empty()
+    ? smtk::model::ANY_ENTITY
+    : smtk::model::Entity::specifierStringToFlag(queryString);
   return std::bind(IsValueValid, std::placeholders::_1, bitflags);
 }
 
