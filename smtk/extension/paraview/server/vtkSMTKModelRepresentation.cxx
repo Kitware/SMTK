@@ -329,6 +329,7 @@ int vtkSMTKModelRepresentation::ProcessViewRequest(
         }
         stit->second.m_data = obj;
       }
+      mbit->Delete();
 
       this->SelectedEntityMapper->SetInputConnection(0, producerPort);
       auto attr = this->SelectedEntityMapper->GetCompositeDataDisplayAttributes();
@@ -576,12 +577,17 @@ void vtkSMTKModelRepresentation::UpdateSelection(
   //        If we loop over blocks instead, we can search the selection map quickly!
   for (auto& item : selection)
   {
+    if (item.second <= 0)
+    {
+      continue;
+    }
     auto matchedBlock = this->FindNode(data, item.first->id().toString());
     if (matchedBlock)
     {
       propVis = 1;
       blockAttr->SetBlockVisibility(matchedBlock, true);
-      blockAttr->SetBlockColor(matchedBlock, this->SelectionColor);
+      blockAttr->SetBlockColor(
+        matchedBlock, item.second > 1 ? this->HoverColor : this->SelectionColor);
     }
   }
   actor->SetVisibility(propVis);

@@ -159,6 +159,10 @@ void ComponentPhraseModel::processResource(Resource::Ptr rsrc, bool adding)
 
 void ComponentPhraseModel::populateRoot()
 {
+  // FIXME: What should happen if m_componentFilters is empty?
+  //        It seems like _all_ components (possibly just from the active resource)
+  //        should be displayed. If so, we need to handle it here. On the other hand
+  //        if nothing should be displayed, then no action is needed.
   smtk::resource::ComponentSet comps;
   if (m_onlyShowActiveResourceComponents)
   {
@@ -167,10 +171,7 @@ void ComponentPhraseModel::populateRoot()
       for (auto filter : m_componentFilters)
       {
         // Skip filters that do not apply to this resource.
-        // FIXME: Handle inheritance (e.g.,
-        //        if m_activeResource->uniqueName() == "polygon model" and
-        //        filter.first == "model", we should apply the filter.
-        if (filter.first != m_activeResource->uniqueName())
+        if (!m_activeResource->isOfType(filter.first))
         {
           continue;
         }
@@ -186,11 +187,7 @@ void ComponentPhraseModel::populateRoot()
     {
       for (auto filter : m_componentFilters)
       {
-        // Skip filters that do not apply to this resource.
-        // FIXME: Handle inheritance (e.g.,
-        //        if rsrc->uniqueName() == "polygon model" and
-        //        filter.first == "model", we should apply the filter.
-        if (rsrc->uniqueName() != filter.first)
+        if (!rsrc->isOfType(filter.first))
         {
           continue;
         }

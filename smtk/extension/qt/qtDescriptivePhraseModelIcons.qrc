@@ -18,6 +18,8 @@
   <qresource prefix="/icons/display">
     <file>eyeball.png</file>
     <file>eyeballClosed.png</file>
+    <file>selected.png</file>
+    <file>unselected.png</file>
   </qresource>
 
 </RCC>

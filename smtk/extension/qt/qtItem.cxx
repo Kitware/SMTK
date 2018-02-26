@@ -109,7 +109,7 @@ void qtItem::clearChildItems()
   this->Internals->ChildItems.clear();
 }
 
-smtk::attribute::ItemPtr qtItem::getObject()
+smtk::attribute::ItemPtr qtItem::getObject() const
 {
   return this->Internals->DataObject.lock();
 }

@@ -57,7 +57,7 @@ public:
   qtItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview);
   virtual ~qtItem();
 
-  smtk::attribute::ItemPtr getObject();
+  smtk::attribute::ItemPtr getObject() const;
   qtUIManager* uiManager() const;
 
   QWidget* widget() { return this->Widget; }

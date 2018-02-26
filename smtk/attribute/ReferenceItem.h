@@ -69,6 +69,8 @@ public:
 
   /// Return the number of values required by this item's definition (if it has one).
   std::size_t numberOfRequiredValues() const;
+  /// Return the maximum number of values allowed by this item's definition (or 0).
+  std::size_t maxNumberOfValues() const;
   /// Return the \a i-th component stored in this item.
   typename T::Ptr value(std::size_t i = 0) const;
   /**\brief Set the component stored with this item.

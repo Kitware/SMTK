@@ -40,6 +40,7 @@ template <typename T>
 class ReferenceItemDefinition : public ItemDefinition
 {
 public:
+  /// Construct an item definition given a name. Names should be unique and non-empty.
   smtkTypeMacro(ReferenceItemDefinition<T>);
   smtkSuperclassMacro(ItemDefinition);
 
@@ -52,29 +53,37 @@ public:
 
   virtual bool isValueValid(typename T::Ptr entity) const = 0;
 
+  /// Return the number of values required by this definition.
   std::size_t numberOfRequiredValues() const;
+  /// Set the number of values required by this definition. Use 0 when there is no requirement.
   void setNumberOfRequiredValues(std::size_t esize);
 
   bool isExtensible() const { return m_isExtensible; }
   void setIsExtensible(bool extensible) { m_isExtensible = extensible; }
 
   std::size_t maxNumberOfValues() const { return m_maxNumberOfValues; }
+  /// Set the maximum number of values accepted (or 0 for no limit).
   void setMaxNumberOfValues(std::size_t maxNum);
 
+  /// Return whether the definition provides labels for each value.
   bool hasValueLabels() const;
+  /// Return the label for the \a i-th value.
   std::string valueLabel(std::size_t element) const;
+  /// Set the label for the \a i-th value in the item.
   void setValueLabel(std::size_t element, const std::string& elabel);
+  /// Indicate that all values share the \a elabel provided.
   void setCommonValueLabel(const std::string& elabel);
+  /// Returns true when all values share a common label and false otherwise.
   bool usingCommonLabel() const;
 
-  // Set/Get the writable (vs read-only) property of the item defintiion.
-  // The default is true.
+  /// Set/get the writable (vs read-only) property of the item definition. The default is true.
   void setIsWritable(bool val) { m_isWritable = val; }
   bool isWritable() const { return m_isWritable; }
 
 protected:
   ReferenceItemDefinition(const std::string& myName);
 
+  /// Overwrite \a dst with a copy of this instance.
   void copyTo(Ptr dst) const;
 
   bool m_useCommonLabel;

@@ -117,6 +117,17 @@ std::size_t ReferenceItem<T>::numberOfRequiredValues() const
 }
 
 template <typename T>
+std::size_t ReferenceItem<T>::maxNumberOfValues() const
+{
+  auto def = static_cast<const ReferenceItemDefinition<T>*>(m_definition.get());
+  if (!def)
+  {
+    return 0;
+  }
+  return def->maxNumberOfValues();
+}
+
+template <typename T>
 typename T::Ptr ReferenceItem<T>::value(std::size_t i) const
 {
   if (i >= static_cast<std::size_t>(this->m_values.size()))

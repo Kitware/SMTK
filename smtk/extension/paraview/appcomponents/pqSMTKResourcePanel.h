@@ -60,6 +60,8 @@ protected slots:
   /// Used to listen for self and others making changes to component visibilities in active view's representations.
   virtual void componentVisibilityChanged(smtk::resource::ComponentPtr comp, bool visible);
 
+  virtual void hoverRow(const QModelIndex& idx);
+
 protected:
   class Internal;
   Internal* m_p;

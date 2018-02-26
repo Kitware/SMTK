@@ -131,6 +131,8 @@ public:
    */
   vtkSetVector3Macro(SelectionColor, double);
   vtkGetVector3Macro(SelectionColor, double);
+  vtkSetVector3Macro(HoverColor, double);
+  vtkGetVector3Macro(HoverColor, double);
   void SetSelectionPointSize(double val);
   void SetSelectionLineWidth(double val);
   void SetOpacity(double val);
@@ -349,7 +351,8 @@ protected:
   double Diffuse = 1.;
   double Specular = 0.;
 
-  double SelectionColor[3] = { 1., 0.6, 1. };
+  double SelectionColor[3] = { 1., 0.48235, 0.0 }; // { 1., 0.6, 1. };
+  double HoverColor[3] = { 0.7, 0.483, 0.5873 };
 
   //@{
   /**

@@ -27,7 +27,6 @@ namespace smtk
 namespace attribute
 {
 
-/// Construct an item definition given a name. Names should be unique and non-empty.
 template <typename T>
 ReferenceItemDefinition<T>::ReferenceItemDefinition(const std::string& sname)
   : Superclass(sname)
@@ -39,7 +38,6 @@ ReferenceItemDefinition<T>::ReferenceItemDefinition(const std::string& sname)
   m_isWritable = true;
 }
 
-/// Destructor.
 template <typename T>
 ReferenceItemDefinition<T>::~ReferenceItemDefinition()
 {
@@ -72,14 +70,12 @@ bool ReferenceItemDefinition<T>::setAcceptsEntries(
   }
 }
 
-/// Return the number of values (model entities) required by this definition.
 template <typename T>
 std::size_t ReferenceItemDefinition<T>::numberOfRequiredValues() const
 {
   return m_numberOfRequiredValues;
 }
 
-/// Set the number of values (model entities) required by this definition. Use 0 when there is no requirement.
 template <typename T>
 void ReferenceItemDefinition<T>::setNumberOfRequiredValues(std::size_t esize)
 {
@@ -94,21 +90,18 @@ void ReferenceItemDefinition<T>::setNumberOfRequiredValues(std::size_t esize)
   }
 }
 
-/// Set the maximum number of values accepted (or 0 for no limit).
 template <typename T>
 void ReferenceItemDefinition<T>::setMaxNumberOfValues(std::size_t maxNum)
 {
   m_maxNumberOfValues = maxNum;
 }
 
-/// Return whether the definition provides labels for each value.
 template <typename T>
 bool ReferenceItemDefinition<T>::hasValueLabels() const
 {
   return !m_valueLabels.empty();
 }
 
-/// Return the label for the \a i-th model entity.
 template <typename T>
 std::string ReferenceItemDefinition<T>::valueLabel(std::size_t i) const
 {
@@ -125,7 +118,6 @@ std::string ReferenceItemDefinition<T>::valueLabel(std::size_t i) const
   return "";
 }
 
-/// Set the label for the \a i-th entity.
 template <typename T>
 void ReferenceItemDefinition<T>::setValueLabel(std::size_t i, const std::string& elabel)
 {
@@ -141,7 +133,6 @@ void ReferenceItemDefinition<T>::setValueLabel(std::size_t i, const std::string&
   m_valueLabels[i] = elabel;
 }
 
-/// Indicate that all values share the \a elabel provided.
 template <typename T>
 void ReferenceItemDefinition<T>::setCommonValueLabel(const std::string& elabel)
 {
@@ -150,14 +141,12 @@ void ReferenceItemDefinition<T>::setCommonValueLabel(const std::string& elabel)
   m_valueLabels[0] = elabel;
 }
 
-/// Returns true when all values share a common label and false otherwise.
 template <typename T>
 bool ReferenceItemDefinition<T>::usingCommonLabel() const
 {
   return m_useCommonLabel;
 }
 
-/// Builds and returns copy of self
 template <typename T>
 void ReferenceItemDefinition<T>::copyTo(Ptr dest) const
 {
