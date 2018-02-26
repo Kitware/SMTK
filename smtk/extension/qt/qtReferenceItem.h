@@ -37,10 +37,12 @@ public:
 
 protected slots:
   virtual void selectionLinkToggled(bool linked);
+  virtual void setOutputOptional(int state);
 
 protected:
   virtual void createWidget() override;
 
+  virtual void clearWidgets();
   virtual void updateUI();
 
   qtReferenceItemData* m_p;

@@ -14,6 +14,7 @@
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -236,6 +237,11 @@ qtItem* qtAttribute::createItem(
     case smtk::attribute::Item::DateTimeType:
       aItem = qtAttribute::s_factory->createDateTimeItemWidget(
         smtk::dynamic_pointer_cast<DateTimeItem>(item), pW, bview, enVectorItemOrient);
+      break;
+    case smtk::attribute::Item::ComponentType:
+      aItem = qtAttribute::s_factory->createComponentItemWidget(
+        smtk::dynamic_pointer_cast<ComponentItem>(item), pW, bview, enVectorItemOrient);
+      break;
     default:
       //this->m_errorStatus << "Error: Unsupported Item Type: " <<
       // smtk::attribute::Item::type2String(item->type()) << "\n";
