@@ -102,7 +102,9 @@ void ComponentPhraseModel::handleCreated(
     return;
   }
 
-  // First, handle root node:
+  // TODO: Instead of looking for new resources (which perhaps we should leave to the
+  //       handleResourceEvent()), we should optimize by adding new components to the
+  //       root phrase if they pass m_componentFilters.
   for (auto it = data->begin(); it != data->end(); ++it)
   {
     smtk::resource::ComponentPtr comp = *it;
@@ -113,19 +115,6 @@ void ComponentPhraseModel::handleCreated(
     smtk::resource::ResourcePtr rsrc = comp->resource();
     this->processResource(rsrc, true);
   }
-
-  // Now we need to traverse the existing phrases to see if any entries in
-  // data need to be inserted.
-  //
-  // There are a couple strategies we might use:
-  // 1. For each phrase in existence with built-out subphrases, rebuild them and call updateChildren.
-  //    This is expensive, but perhaps less error prone.
-  // 2. For each entry in data, call this->root()->visitChildren(...) and decide whether it
-  //    belongs in the subphrases of each visited phrase. If it does and the visited phrase has
-  //    its subphrases built, modify and call updateChildren().
-  // 3. For each entry in data, identify a vector<int> (or multiple vector<int>?) where it
-  //    belongs and add it.
-  // TODO
 }
 
 void ComponentPhraseModel::processResource(Resource::Ptr rsrc, bool adding)
