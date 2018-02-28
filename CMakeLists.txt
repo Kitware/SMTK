@@ -68,21 +68,20 @@ include(FindHashFunctor)
 ################################################################################
 ## Paths for output
 
+# Force LIBRARY_OUTPUT_PATH to be a cache variable, whether it was already defined or not.
+if (NOT DEFINED LIBRARY_OUTPUT_PATH)
+  set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE INTERNAL "Directory for all libraries.")
+else()
+  set(LIBRARY_OUTPUT_PATH ${LIBRARY_OUTPUT_PATH} CACHE INTERNAL "Directory for all libraries.")
+endif()
 # Set the directory where the binaries will be stored
-set(EXECUTABLE_OUTPUT_PATH
-  ${PROJECT_BINARY_DIR}/bin)
-
-# Set the directory where the libraries will be stored
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY
-  ${PROJECT_BINARY_DIR}/bin)
-set(LIBRARY_OUTPUT_PATH
-  ${PROJECT_BINARY_DIR}/lib)
-
-include(CMakeDependentOption)
+set(EXECUTABLE_OUTPUT_PATH         ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 ################################################################################
 # Options that the user controls
 ################################################################################
+include(CMakeDependentOption)
 option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" ON)
 option(SMTK_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" ON)
 # Option to build Qt ui compoments for attributes
