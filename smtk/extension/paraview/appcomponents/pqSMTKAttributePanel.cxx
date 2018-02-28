@@ -95,6 +95,7 @@ bool pqSMTKAttributePanel::displayResource(smtk::attribute::CollectionPtr rsrc)
           // Clear out the panel and unobserve the manager.
           rsrcMgr->unobserve(m_observer);
           delete m_attrUIMgr;
+          m_attrUIMgr = nullptr;
           m_rsrc = nullptr;
         }
       });
