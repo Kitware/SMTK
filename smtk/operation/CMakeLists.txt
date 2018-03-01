@@ -1,5 +1,6 @@
 set(operationSrcs
   CreateResource.cxx
+  Group.cxx
   LoadResource.cxx
   Manager.cxx
   Metadata.cxx
@@ -16,6 +17,7 @@ set(operationSrcs
 
 set(operationHeaders
   CreateResource.h
+  Group.h
   LoadResource.h
   Manager.h
   Metadata.h

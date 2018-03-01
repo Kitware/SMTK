@@ -3,6 +3,7 @@ set(unit_tests
   TestAvailableOperations
   TestMutexedOperation
   unitOperation
+  TestOperationGroup
 )
 
 find_package(Threads REQUIRED)

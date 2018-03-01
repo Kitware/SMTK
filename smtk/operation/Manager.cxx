@@ -59,7 +59,7 @@ std::shared_ptr<Operation> Manager::create(const std::string& uniqueName)
   {
     // Create the resource using its index
     op = metadata->create();
-    op->m_manager = this;
+    op->m_manager = shared_from_this();
     m_observers(op, smtk::operation::EventType::CREATED, nullptr);
   }
 
@@ -76,7 +76,7 @@ std::shared_ptr<Operation> Manager::create(const Operation::Index& index)
   {
     // Create the resource with the appropriate UUID
     op = metadata->create();
-    op->m_manager = this;
+    op->m_manager = shared_from_this();
     m_observers(op, smtk::operation::EventType::CREATED, nullptr);
   }
 
@@ -202,6 +202,22 @@ std::set<Operation::Index> Manager::availableOperations(
     }
   }
   return availableOperations;
+}
+
+std::set<std::string> Manager::availableGroups() const
+{
+  std::set<std::string> available;
+  for (auto& md : m_metadata)
+  {
+    std::set<std::string> operatorGroups = md.groups();
+    available.insert(operatorGroups.begin(), operatorGroups.end());
+  }
+  return available;
+}
+
+smtk::operation::Group Manager::group(const std::string& groupName)
+{
+  return Group(groupName, shared_from_this());
 }
 }
 }
