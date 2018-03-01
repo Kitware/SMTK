@@ -152,7 +152,7 @@ private:
   Parameters m_parameters;
   Definition m_resultDefinition;
   std::vector<Result> m_results;
-  Manager* m_manager;
+  std::weak_ptr<Manager> m_manager;
 };
 }
 }

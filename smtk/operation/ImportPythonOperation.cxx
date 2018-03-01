@@ -68,7 +68,7 @@ bool ImportPythonOperation::ableToOperate()
 
   // To import a python operation, we must have an operation manager into which
   // the new operation is imported.
-  if (m_manager == nullptr)
+  if (m_manager.expired())
   {
     return false;
   }
@@ -152,7 +152,7 @@ ImportPythonOperation::Result ImportPythonOperation::operateInternal()
   }
 
   std::vector<std::string> uniqueNames =
-    this->importOperationsFromModule(moduleName, *(this->m_manager));
+    this->importOperationsFromModule(moduleName, *(this->m_manager.lock()));
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
@@ -172,7 +172,7 @@ ImportPythonOperation::Specification ImportPythonOperation::createSpecification(
 {
   Specification spec = this->createBaseSpecification();
 
-  auto opDef = spec->createDefinition("test op", "operation");
+  auto opDef = spec->createDefinition("import python op", "operation");
   opDef->setBriefDescription("Import a python operation.");
 
   const char detailedDescription[] =

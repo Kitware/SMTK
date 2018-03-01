@@ -39,7 +39,7 @@ Operation::Operation()
   , m_specification(nullptr)
   , m_parameters(nullptr)
   , m_resultDefinition(nullptr)
-  , m_manager(nullptr)
+  , m_manager()
 {
 }
 
@@ -66,13 +66,13 @@ Operation::~Operation()
 
 std::string Operation::uniqueName() const
 {
-  if (m_manager)
+  if (auto manager = m_manager.lock())
   {
     // If the operation's manager is set, then the operation is registered to a
     // manager. The operation metadata has a unique name for this operation
     // type, so we return this name.
-    auto metadata = m_manager->metadata().get<IndexTag>().find(this->index());
-    if (metadata != m_manager->metadata().get<IndexTag>().end())
+    auto metadata = manager->metadata().get<IndexTag>().find(this->index());
+    if (metadata != manager->metadata().get<IndexTag>().end())
     {
       return metadata->uniqueName();
     }
@@ -88,14 +88,14 @@ Operation::Specification Operation::specification()
   // Lazily create the specification.
   if (m_specification == nullptr)
   {
-    if (m_manager)
+    if (auto manager = m_manager.lock())
     {
-      auto metadata = m_manager->metadata().get<IndexTag>().find(this->index());
+      auto metadata = manager->metadata().get<IndexTag>().find(this->index());
 
       // The only way for an operation's manager to be set is if a manager
       // created it. The only way for a manager to create an operation is if it
       // has a metadata instance for its type. Let's check anyway.
-      assert(metadata != m_manager->metadata().get<IndexTag>().end());
+      assert(metadata != manager->metadata().get<IndexTag>().end());
 
       m_specification = metadata->specification();
     }
@@ -136,7 +136,8 @@ Operation::Result Operation::operate()
   // one requests the operation be canceled. This is useful since all
   // DID_OPERATE observers are called whether the operation was canceled or not
   // -- and observers of both will expect them to be called in pairs.
-  bool observePostOperation = m_manager != nullptr;
+  auto manager = m_manager.lock();
+  bool observePostOperation = manager != nullptr;
 
   // First, we check that the operation is able to operate.
   if (!this->ableToOperate())
@@ -146,8 +147,7 @@ Operation::Result Operation::operate()
     observePostOperation = false;
   }
   // Then, we check if any observers wish to cancel this operation.
-  else if (m_manager &&
-    m_manager->observers()(shared_from_this(), EventType::WILL_OPERATE, nullptr))
+  else if (manager && manager->observers()(shared_from_this(), EventType::WILL_OPERATE, nullptr))
   {
     result = this->createResult(Outcome::CANCELED);
   }
@@ -189,7 +189,7 @@ Operation::Result Operation::operate()
   // Execute post-operation observation
   if (observePostOperation)
   {
-    m_manager->observers()(shared_from_this(), EventType::DID_OPERATE, result);
+    manager->observers()(shared_from_this(), EventType::DID_OPERATE, result);
   }
 
   // Unlock the resources.
@@ -244,7 +244,7 @@ Operation::Parameters Operation::parameters()
       for (auto& def : operationDefinitions)
       {
         if (def->type() == this->classname() ||
-          (m_manager != nullptr && def->type() == this->uniqueName()))
+          (!m_manager.expired() && def->type() == this->uniqueName()))
         {
           operationDefinition = def;
           break;
@@ -300,7 +300,7 @@ Operation::Result Operation::createResult(Outcome outcome)
         s << "Multiple definitions for operation \"" << this->classname()
           << "\" derive from \"result\". Looking for one with the name result(\""
           << this->classname() << ")\"";
-        if (m_manager != nullptr && this->classname() != this->uniqueName())
+        if (!m_manager.expired() && this->classname() != this->uniqueName())
         {
           s << " or result(\"" << this->uniqueName() << ")\".";
         }
@@ -313,7 +313,7 @@ Operation::Result Operation::createResult(Outcome outcome)
         resultClassName = s.str();
       }
       std::string resultUniqueName;
-      if (m_manager != nullptr && this->classname() != this->uniqueName())
+      if (!m_manager.expired() && this->classname() != this->uniqueName())
       {
         std::stringstream s;
         s << "result(" << this->uniqueName() << ")";
