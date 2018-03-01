@@ -95,37 +95,37 @@ public:
     std::vector<Component> m_children;
   };
 
-  View(const std::string& myType, const std::string& myTitle);
-  static smtk::view::ViewPtr New(const std::string& myType, const std::string& myTitle)
+  View(const std::string& myType, const std::string& myName);
+  static smtk::view::ViewPtr New(const std::string& myType, const std::string& myName)
   {
-    return smtk::view::ViewPtr(new smtk::view::View(myType, myTitle));
+    return smtk::view::ViewPtr(new smtk::view::View(myType, myName));
   }
 
   ~View();
 
   // Copy the contents of one View into another - this View will be the same as
-  // v with the exception of its title and type
+  // v with the exception of its name and type
   void copyContents(const View& v);
-  const std::string& title() const { return this->m_title; }
+  const std::string& name() const { return this->m_name; }
   // Returns the name to be used in the GUI for the View - if there is none
-  // defined the title is returned.
+  // defined the name is returned.
   std::string label() const;
 
   const std::string& type() const { return this->m_type; }
 
   const std::string& iconName() const { return this->m_iconName; }
-  void setIconName(const std::string& name) { this->m_iconName = name; }
+  void setIconName(const std::string& iname) { this->m_iconName = iname; }
 
   Component& details() { return this->m_details; }
 
   bool operator==(const View& other) const
   {
-    return m_title == other.m_title && m_type == other.m_type && m_iconName == other.m_iconName &&
+    return m_name == other.m_name && m_type == other.m_type && m_iconName == other.m_iconName &&
       m_details == other.m_details;
   }
 
 protected:
-  std::string m_title;
+  std::string m_name;
   std::string m_type;
   std::string m_iconName;
   Component m_details;

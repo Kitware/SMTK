@@ -2513,7 +2513,7 @@ void XmlDocV1Parser::processInstancedView(xml_node& node, smtk::view::ViewPtr vi
     {
       smtkErrorMacro(this->m_logger, "XML Attribute Type is missing"
           << "and is required to create attribute: " << child.text().get()
-          << " for Instanced View: " << view->title());
+          << " for Instanced View: " << view->name());
       continue;
     }
 
@@ -2570,7 +2570,7 @@ void XmlDocV1Parser::processGroupView(xml_node& node, smtk::view::ViewPtr group)
       childView = this->createView(child, "Attribute");
       if (childView)
       {
-        vcomp.addChild("View").setAttribute("Title", childView->title());
+        vcomp.addChild("View").setAttribute("Title", childView->name());
         this->processAttributeView(child, childView);
       }
       continue;
@@ -2581,7 +2581,7 @@ void XmlDocV1Parser::processGroupView(xml_node& node, smtk::view::ViewPtr group)
       childView = this->createView(child, "Group");
       if (childView)
       {
-        vcomp.addChild("View").setAttribute("Title", childView->title());
+        vcomp.addChild("View").setAttribute("Title", childView->name());
         this->processGroupView(child, childView);
       }
       continue;
@@ -2592,7 +2592,7 @@ void XmlDocV1Parser::processGroupView(xml_node& node, smtk::view::ViewPtr group)
       childView = this->createView(child, "Instanced");
       if (childView)
       {
-        vcomp.addChild("View").setAttribute("Title", childView->title());
+        vcomp.addChild("View").setAttribute("Title", childView->name());
         this->processInstancedView(child, childView);
       }
       continue;
@@ -2603,7 +2603,7 @@ void XmlDocV1Parser::processGroupView(xml_node& node, smtk::view::ViewPtr group)
       childView = this->createView(child, "ModelEntity");
       if (childView)
       {
-        vcomp.addChild("View").setAttribute("Title", childView->title());
+        vcomp.addChild("View").setAttribute("Title", childView->name());
         this->processModelEntityView(child, childView);
       }
       continue;
@@ -2614,7 +2614,7 @@ void XmlDocV1Parser::processGroupView(xml_node& node, smtk::view::ViewPtr group)
       childView = this->createView(child, "SimpleExpression");
       if (childView)
       {
-        vcomp.addChild("View").setAttribute("Title", childView->title());
+        vcomp.addChild("View").setAttribute("Title", childView->name());
         this->processSimpleExpressionView(child, childView);
       }
       continue;
