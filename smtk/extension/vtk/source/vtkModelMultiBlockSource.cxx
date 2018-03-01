@@ -687,6 +687,21 @@ void vtkModelMultiBlockSource::PrepareInstanceOutput(vtkMultiBlockDataSet* insta
 
     this->AddInstancePoints(instancePoly.GetPointer(), instance, instancePrototypes);
   }
+  // Update UUIDBlockIdMap with flat index
+  vtkDataObjectTreeIterator* miter = instanceBlocks->NewTreeIterator();
+  miter->VisitOnlyLeavesOff();
+  for (miter->GoToFirstItem(); !miter->IsDoneWithTraversal(); miter->GoToNextItem())
+  {
+    if (!miter->HasCurrentMetaData())
+    {
+      continue;
+    }
+    smtk::model::EntityRef instance = this->GetDataObjectEntityAs<smtk::model::EntityRef>(
+      this->GetModelManager(), miter->GetCurrentMetaData());
+
+    addBlockInfo(instance.manager(), instance, volumeOfEntity(instance),
+      miter->GetCurrentFlatIndex(), miter->GetCurrentDataObject(), this->UUID2BlockIdMap);
+  }
 }
 
 /// Called by GenerateRepresentationFromModel to add a glyph point per instance location.
