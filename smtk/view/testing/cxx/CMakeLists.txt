@@ -1,6 +1,5 @@
 set(unit_tests
   unitDescriptivePhrase.cxx
-  unitJSONView.cxx
 )
 
 if (SMTK_ENABLE_POLYGON_SESSION)
