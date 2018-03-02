@@ -78,7 +78,7 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, View::Component& comp)
 
 SMTKCORE_EXPORT void to_json(nlohmann::json& j, const ViewPtr& view)
 {
-  j = { { "Type", view->type() }, { "Title", view->title() }, { "Component", view->details() } };
+  j = { { "Type", view->type() }, { "Name", view->name() }, { "Component", view->details() } };
   if (!view->iconName().empty())
   {
     j["Icon"] = view->iconName();
@@ -87,7 +87,7 @@ SMTKCORE_EXPORT void to_json(nlohmann::json& j, const ViewPtr& view)
 
 SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::view::ViewPtr& view)
 {
-  view = smtk::view::View::New(j["Type"].get<std::string>(), j["Title"].get<std::string>());
+  view = smtk::view::View::New(j["Type"].get<std::string>(), j["Name"].get<std::string>());
   nlohmann::json::const_iterator it;
   if ((it = j.find("Icon")) != j.end())
   {

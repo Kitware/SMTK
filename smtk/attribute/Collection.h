@@ -136,7 +136,7 @@ public:
   const std::set<std::string>& categories() const { return this->m_categories; }
 
   void addView(smtk::view::ViewPtr);
-  smtk::view::ViewPtr findView(const std::string& title) const;
+  smtk::view::ViewPtr findView(const std::string& name) const;
   smtk::view::ViewPtr findViewByType(const std::string& vtype) const;
   smtk::view::ViewPtr findTopLevelView() const;
   std::vector<smtk::view::ViewPtr> findTopLevelViews() const;

@@ -47,19 +47,19 @@ int unitJSONView(int argc, char* argv[])
     smtk::view::ViewPtr test = view;
     json jtmp = test;
     std::cout << "jtemp:\n" << jtmp.dump(2) << std::endl;
-    auto xit = rsrc->views().find(test->title());
+    auto xit = rsrc->views().find(test->name());
     if (xit == rsrc->views().end())
     {
       std::cerr << jtmp.dump(2) << "\n";
       smtkErrorMacro(smtk::io::Logger::instance(), "Error: View "
-          << test->title() << " (" << test->type() << ") unmatched.");
+          << test->name() << " (" << test->type() << ") unmatched.");
       ok = false;
     }
     else
     {
       if (*xit->second == *test)
       {
-        smtkInfoMacro(smtk::io::Logger::instance(), "Views of " << test->title() << " matched.");
+        smtkInfoMacro(smtk::io::Logger::instance(), "Views of " << test->name() << " matched.");
       }
       else
       {

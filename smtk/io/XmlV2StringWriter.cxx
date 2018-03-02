@@ -1446,7 +1446,7 @@ void XmlV2StringWriter::processViews()
     node = views.append_child("View");
 
     node.append_attribute("Type").set_value(iter->second->type().c_str());
-    node.append_attribute("Title").set_value(iter->second->title().c_str());
+    node.append_attribute("Name").set_value(iter->second->name().c_str());
     if (iter->second->iconName() != "")
     {
       node.append_attribute("Icon").set_value(iter->second->iconName().c_str());
@@ -1464,7 +1464,7 @@ void XmlV2StringWriter::processViews()
     node = views.append_child("View");
 
     node.append_attribute("Type").set_value(iter->second->type().c_str());
-    node.append_attribute("Title").set_value(iter->second->title().c_str());
+    node.append_attribute("Name").set_value(iter->second->name().c_str());
     if (iter->second->iconName() != "")
     {
       node.append_attribute("Icon").set_value(iter->second->iconName().c_str());
