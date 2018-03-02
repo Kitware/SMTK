@@ -41,16 +41,16 @@ void qtViewInfoDialog::displayInfo(smtk::view::ViewPtr view)
   std::string s;
   this->m_view = view;
   this->m_dialog->textBrowser->clear();
-  s = this->m_view->title();
+  s = this->m_view->label();
   s.append(" Information");
   this->setWindowTitle(s.c_str());
 
   s = "<!DOCTYPE html><html><head><title>";
-  s.append(this->m_view->title()).append("</title></head><body>");
+  s.append(this->m_view->label()).append("</title></head><body>");
   this->m_dialog->textBrowser->insertHtml(s.c_str());
 
   s = "<h2>";
-  s.append(this->m_view->title()).append("  Information</h2>");
+  s.append(this->m_view->label()).append("  Information</h2>");
   this->m_dialog->textBrowser->insertHtml(s.c_str());
   this->m_dialog->textBrowser->insertHtml("<hr size=\"1\" /><br>");
 

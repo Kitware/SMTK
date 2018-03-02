@@ -155,8 +155,8 @@ void View::Component::copyContents(const Component& comp)
   }
 }
 
-View::View(const std::string& myType, const std::string& myTitle)
-  : m_title(myTitle)
+View::View(const std::string& myType, const std::string& myName)
+  : m_name(myName)
   , m_type(myType)
   , m_details("Details")
 {
@@ -179,7 +179,7 @@ std::string View::label() const
   {
     return l;
   }
-  return this->m_title;
+  return this->m_name;
 }
 
 } // namespace view

@@ -821,7 +821,7 @@ smtk::attribute::AttributePtr Collection::copyAttribute(
 
 void Collection::addView(smtk::view::ViewPtr v)
 {
-  this->m_views[v->title()] = v;
+  this->m_views[v->name()] = v;
 }
 
 smtk::view::ViewPtr Collection::findViewByType(const std::string& vtype) const
