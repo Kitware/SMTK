@@ -86,9 +86,6 @@ public:
   /// Query the registered operator metadata for operator group names.
   std::set<std::string> availableGroups() const;
 
-  /// Construct an operator group associated with this manager.
-  Group group(const std::string&);
-
 private:
   Manager();
 

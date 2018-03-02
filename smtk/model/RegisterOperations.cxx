@@ -18,10 +18,7 @@
 #include "smtk/model/operators/CreateInstances.h"
 #include "smtk/model/operators/EntityGroupOperation.h"
 #include "smtk/model/operators/ExportModelJSON.h"
-#include "smtk/model/operators/ExportSMTKModel.h"
 #include "smtk/model/operators/GroupAuxiliaryGeometry.h"
-#include "smtk/model/operators/LoadSMTKModel.h"
-#include "smtk/model/operators/SaveSMTKModel.h"
 #include "smtk/model/operators/SetProperty.h"
 #include "smtk/model/operators/TerrainExtraction.h"
 
@@ -41,11 +38,8 @@ void registerOperations(smtk::operation::Manager::Ptr& operationManager)
   operationManager->registerOperation<smtk::model::EntityGroupOperation>(
     "smtk::model::EntityGroupOperation");
   operationManager->registerOperation<smtk::model::ExportModelJSON>("smtk::model::ExportModelJSON");
-  operationManager->registerOperation<smtk::model::ExportSMTKModel>("smtk::model::ExportSMTKModel");
   operationManager->registerOperation<smtk::model::GroupAuxiliaryGeometry>(
     "smtk::model::GroupAuxiliaryGeometry");
-  operationManager->registerOperation<smtk::model::LoadSMTKModel>("smtk::model::LoadSMTKModel");
-  operationManager->registerOperation<smtk::model::SaveSMTKModel>("smtk::model::SaveSMTKModel");
   operationManager->registerOperation<smtk::model::SetProperty>("smtk::model::SetProperty");
   operationManager->registerOperation<smtk::model::TerrainExtraction>(
     "smtk::model::TerrainExtraction");

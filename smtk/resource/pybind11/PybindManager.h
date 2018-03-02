@@ -45,8 +45,6 @@ PySharedPtrClass< smtk::resource::Manager > pybind11_init_smtk_resource_Manager(
     .def("metadata", [](smtk::resource::Manager& man) { std::vector<std::reference_wrapper<smtk::resource::Metadata>> vec; vec.reserve(man.metadata().size()); for (auto md : man.metadata()) { vec.push_back(md); } return vec; })
     .def("remove", (bool (smtk::resource::Manager::*)(const std::shared_ptr<smtk::resource::Resource>&)) &smtk::resource::Manager::remove)
     .def("resources", [](smtk::resource::Manager& man) { return std::vector<std::shared_ptr<smtk::resource::Resource>>(man.resources().begin(), man.resources().end()); })
-    .def("write", (bool (smtk::resource::Manager::*)(const std::shared_ptr<smtk::resource::Resource>&)) &smtk::resource::Manager::write)
-    .def("write", (bool (smtk::resource::Manager::*)(const std::shared_ptr<smtk::resource::Resource>&, const std::string&)) &smtk::resource::Manager::write)
     ;
   return instance;
 }

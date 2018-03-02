@@ -29,9 +29,8 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindXMLOperation.h"
 
 #include "PybindRegisterOperations.h"
-#include "PybindCreateResource.h"
-#include "PybindLoadResource.h"
-#include "PybindSaveResource.h"
+#include "PybindReadResource.h"
+#include "PybindWriteResource.h"
 
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
@@ -52,8 +51,7 @@ PYBIND11_MODULE(_smtkPybindOperation, operation)
   pybind11_init_smtk_operation_EventType(operation);
   PySharedPtrClass< smtk::operation::XMLOperation, smtk::operation::Operation > smtk_operation_XMLOperation = pybind11_init_smtk_operation_XMLOperation(operation);
 
-  PySharedPtrClass< smtk::operation::CreateResource, smtk::operation::XMLOperation > smtk_operation_CreateResource = pybind11_init_smtk_operation_CreateResource(operation);
-  PySharedPtrClass< smtk::operation::LoadResource, smtk::operation::XMLOperation > smtk_operation_LoadResource = pybind11_init_smtk_operation_LoadResource(operation);
-  PySharedPtrClass< smtk::operation::SaveResource, smtk::operation::XMLOperation > smtk_operation_SaveResource = pybind11_init_smtk_operation_SaveResource(operation);
+  PySharedPtrClass< smtk::operation::ReadResource, smtk::operation::XMLOperation > smtk_operation_ReadResource = pybind11_init_smtk_operation_ReadResource(operation);
+  PySharedPtrClass< smtk::operation::WriteResource, smtk::operation::XMLOperation > smtk_operation_WriteResource = pybind11_init_smtk_operation_WriteResource(operation);
   pybind11_init__operation_registerOperations(operation);
 }

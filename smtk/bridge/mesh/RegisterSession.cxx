@@ -24,9 +24,9 @@
 
 #include "smtk/bridge/mesh/Resource.h"
 
-#include "smtk/common/Paths.h"
-
-#include "smtk/model/SessionIOJSON.h"
+#include "smtk/operation/groups/ImporterGroup.h"
+#include "smtk/operation/groups/ReaderGroup.h"
+#include "smtk/operation/groups/WriterGroup.h"
 
 namespace smtk
 {
@@ -43,11 +43,20 @@ void registerOperations(smtk::operation::Manager::Ptr& operationManager)
   operationManager->registerOperation<smtk::bridge::mesh::Import>("smtk::bridge::mesh::Import");
   operationManager->registerOperation<smtk::bridge::mesh::Read>("smtk::bridge::mesh::Read");
   operationManager->registerOperation<smtk::bridge::mesh::Write>("smtk::bridge::mesh::Write");
+
+  smtk::operation::ImporterGroup(operationManager)
+    .registerOperation<smtk::bridge::mesh::Resource, smtk::bridge::mesh::Import>();
+
+  smtk::operation::ReaderGroup(operationManager)
+    .registerOperation<smtk::bridge::mesh::Resource, smtk::bridge::mesh::Read>();
+
+  smtk::operation::WriterGroup(operationManager)
+    .registerOperation<smtk::bridge::mesh::Resource, smtk::bridge::mesh::Write>();
 }
 
 void registerResources(smtk::resource::Manager::Ptr& resourceManager)
 {
-  resourceManager->registerResource<smtk::bridge::mesh::Resource>(&read, &write);
+  resourceManager->registerResource<smtk::bridge::mesh::Resource>();
 }
 }
 }

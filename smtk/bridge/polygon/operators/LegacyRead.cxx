@@ -8,16 +8,17 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "Write.h"
+#include "LegacyRead.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
 #include "smtk/bridge/polygon/Resource.h"
 #include "smtk/bridge/polygon/SessionIOJSON.h"
 
-#include "smtk/bridge/polygon/Write_xml.h"
+#include "smtk/bridge/polygon/LegacyRead_xml.h"
 
 using namespace smtk::model;
 
@@ -25,36 +26,39 @@ namespace smtk
 {
 namespace bridge
 {
-
 namespace polygon
 {
 
-Write::Result Write::operateInternal()
+LegacyRead::Result LegacyRead::operateInternal()
 {
-  smtk::attribute::ResourceItem::Ptr resourceItem = this->parameters()->findResource("resource");
+  std::string filename = this->parameters()->findFile("filename")->value();
 
-  smtk::bridge::polygon::Resource::Ptr rsrc =
-    std::dynamic_pointer_cast<smtk::bridge::polygon::Resource>(resourceItem->value());
-
-  // Serialize resource into a set of JSON records:
+  // Load file and parse it:
   smtk::bridge::polygon::SessionIOJSON::json j =
-    smtk::bridge::polygon::SessionIOJSON::saveJSON(rsrc);
-
+    smtk::bridge::polygon::SessionIOJSON::loadJSON(filename);
   if (j.is_null())
   {
+    smtkErrorMacro(log(), "Cannot parse file \"" << filename << "\".");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  // Write JSON records to the specified URL:
-  bool ok = smtk::bridge::polygon::SessionIOJSON::saveModelRecords(j, rsrc->location());
+  // Deserialize parsed JSON into a model resource:
+  auto rsrc = smtk::bridge::polygon::Resource::create();
+  smtk::bridge::polygon::SessionIOJSON::loadModelRecords(*j.begin(), rsrc);
 
-  return ok ? this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED)
-            : this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
+  Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
+
+  {
+    smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
+    created->setValue(rsrc);
+  }
+
+  return result;
 }
 
-const char* Write::xmlDescription() const
+const char* LegacyRead::xmlDescription() const
 {
-  return Write_xml;
+  return LegacyRead_xml;
 }
 
 } // namespace polygon

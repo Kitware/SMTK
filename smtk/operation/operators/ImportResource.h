@@ -7,10 +7,10 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_model_operation_LoadResource_h
-#define smtk_model_operation_LoadResource_h
+#ifndef smtk_model_operation_ImportResource_h
+#define smtk_model_operation_ImportResource_h
 
-#include "smtk/operation/ResourceManagerOperation.h"
+#include "smtk/operation/Operation.h"
 
 namespace smtk
 {
@@ -18,19 +18,21 @@ namespace operation
 {
 
 /// Load an SMTK resource from a file.
-class SMTKCORE_EXPORT LoadResource : public smtk::operation::ResourceManagerOperation
+class SMTKCORE_EXPORT ImportResource : public Operation
 {
 public:
-  smtkTypeMacro(LoadResource);
+  smtkTypeMacro(ImportResource);
   smtkSharedPtrCreateMacro(smtk::operation::Operation);
-  smtkSuperclassMacro(smtk::operation::ResourceManagerOperation);
+  smtkSuperclassMacro(smtk::operation::Operation);
+
+  virtual bool ableToOperate() override;
 
 protected:
-  LoadResource();
+  ImportResource();
 
   Result operateInternal() override;
 
-  virtual const char* xmlDescription() const override;
+  Specification createSpecification() override;
   void generateSummary(Result&) override;
 };
 }

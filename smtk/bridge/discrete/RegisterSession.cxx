@@ -33,6 +33,10 @@
 
 #include "smtk/model/SessionIOJSON.h"
 
+#include "smtk/operation/groups/ImporterGroup.h"
+#include "smtk/operation/groups/ReaderGroup.h"
+#include "smtk/operation/groups/WriterGroup.h"
+
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
@@ -74,17 +78,26 @@ void registerOperations(smtk::operation::Manager::Ptr& operationManager)
     "smtk::bridge::discrete::WriteOperation");
   operationManager->registerOperation<smtk::bridge::discrete::WriteResource>(
     "smtk::bridge::discrete::WriteResource");
-}
 
-void registerResources(smtk::resource::Manager::Ptr& resourceManager)
-{
-  resourceManager->registerResource<smtk::bridge::discrete::Resource>(
-    &readResource, &writeResource);
+  smtk::operation::ImporterGroup(operationManager)
+    .registerOperation<smtk::bridge::discrete::Resource, smtk::bridge::discrete::ImportOperation>();
+
+  smtk::operation::ReaderGroup(operationManager)
+    .registerOperation<smtk::bridge::discrete::Resource, smtk::bridge::discrete::ReadResource>();
 
   // When resources were introduced, the JSON description for a discrete model
   // changed from "discrete" to "discrete model". This functor enables reading a
   // legacy file with the JSON tag "discrete".
-  resourceManager->addLegacyReader("discrete", &readResource);
+  smtk::operation::ReaderGroup(operationManager)
+    .registerOperation("smtk::bridge::discrete::ReadResource", "discrete");
+
+  smtk::operation::WriterGroup(operationManager)
+    .registerOperation<smtk::bridge::discrete::Resource, smtk::bridge::discrete::WriteResource>();
+}
+
+void registerResources(smtk::resource::Manager::Ptr& resourceManager)
+{
+  resourceManager->registerResource<smtk::bridge::discrete::Resource>();
 }
 }
 }

@@ -16,7 +16,7 @@
 
 #include "smtk/environment/Environment.h"
 
-#include "smtk/operation/LoadResource.h"
+#include "smtk/operation/operators/ReadResource.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
@@ -74,31 +74,31 @@ int main(int argc, char* argv[])
   qmodel->setPhraseModel(phraseModel);
   qview->setup(smtk::environment::ResourceManager::instance(), qmodel, qdelegate, nullptr);
 
-  auto loadOp = operationManager->create<smtk::operation::LoadResource>();
-  if (!loadOp)
+  auto readOp = operationManager->create<smtk::operation::ReadResource>();
+  if (!readOp)
   {
-    smtkErrorMacro(smtk::io::Logger::instance(), "No load operator.");
+    smtkErrorMacro(smtk::io::Logger::instance(), "No read operator.");
     return 1;
   }
 
-  loadOp->parameters()->findFile("filename")->setValue(filename);
-  smtk::operation::Operation::Result loadOpResult = loadOp->operate();
-  if (loadOpResult->findInt("outcome")->value() !=
+  readOp->parameters()->findFile("filename")->setValue(filename);
+  smtk::operation::Operation::Result readOpResult = readOp->operate();
+  if (readOpResult->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
-    smtkErrorMacro(smtk::io::Logger::instance(), "Load operator failed for \"" << filename << "\"");
+    smtkErrorMacro(smtk::io::Logger::instance(), "Read operator failed for \"" << filename << "\"");
     return 1;
   }
 
-  auto rsrc = loadOpResult->findResource("resource")->value(0);
+  auto rsrc = readOpResult->findResource("resource")->value(0);
   auto model = std::dynamic_pointer_cast<smtk::model::Manager>(rsrc);
   if (!model)
   {
-    smtkErrorMacro(smtk::io::Logger::instance(), "Did not load a model.");
+    smtkErrorMacro(smtk::io::Logger::instance(), "Did not read a model.");
     return 1;
   }
   model->assignDefaultNames();
-  std::cout << "Loaded a " << model->uniqueName() << "\n";
+  std::cout << "Read a " << model->uniqueName() << "\n";
 
   // Enable user sorting.
   qview->tree()->setSortingEnabled(true);

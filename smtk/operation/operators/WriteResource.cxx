@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/operation/SaveResource.h"
+#include "smtk/operation/operators/WriteResource.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -20,7 +20,9 @@
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Metadata.h"
 
-#include "smtk/operation/SaveResource_xml.h"
+#include "smtk/operation/Group.h"
+#include "smtk/operation/WriteResource_xml.h"
+#include "smtk/operation/groups/WriterGroup.h"
 
 #include "nlohmann/json.hpp"
 
@@ -33,21 +35,20 @@ namespace smtk
 namespace operation
 {
 
-SaveResource::SaveResource()
+WriteResource::WriteResource()
 {
 }
 
-bool SaveResource::ableToOperate()
+bool WriteResource::ableToOperate()
 {
   if (!this->Superclass::ableToOperate())
   {
     return false;
   }
 
-  // To save a resource, we must have a resource manager that can read
-  // resources. The resource manager may be associated with the resource itself.
-  auto resource = this->parameters()->findResource("resource")->value();
-  if (resource->manager() == nullptr && this->resourceManager() == nullptr)
+  // To write a resource, we must have an operation manager from which we access
+  // specific write operations.
+  if (m_manager.expired())
   {
     return false;
   }
@@ -55,11 +56,13 @@ bool SaveResource::ableToOperate()
   return true;
 }
 
-smtk::operation::Operation::Result SaveResource::operateInternal()
+smtk::operation::Operation::Result WriteResource::operateInternal()
 {
+  auto manager = this->m_manager.lock();
+
   auto params = this->parameters();
   auto fileItem = params->findFile("filename");
-  auto setFilename = fileItem->isEnabled();
+  auto setFileName = fileItem->isEnabled();
   auto resourceItem = params->findResource("resource");
 
   if (resourceItem->numberOfValues() < 1)
@@ -68,78 +71,81 @@ smtk::operation::Operation::Result SaveResource::operateInternal()
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  if (setFilename && resourceItem->numberOfValues() != fileItem->numberOfValues())
+  if (setFileName && resourceItem->numberOfValues() != fileItem->numberOfValues())
   {
     smtkErrorMacro(this->log(), "Number of filenames must match number of resources.");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
+  smtk::operation::WriterGroup writerGroup(manager);
+
   int rr = 0;
   for (auto rit = resourceItem->begin(); rit != resourceItem->end(); ++rit, ++rr)
   {
     auto resource = *rit;
-    // First try to use the resource manager associated with the resource.
-    auto resourceManager = resource->manager();
 
-    // If the resource has no associated resource manager, that's ok. Try using
-    // the resource manager associated to the operation.
-    if (!resourceManager)
-    {
-      resourceManager = this->resourceManager();
-    }
+    smtk::operation::Operation::Ptr writeOperation =
+      writerGroup.writerForResource(resource->uniqueName());
 
-    // If neither the operation nor the resource have an associated resource
-    // manager, there's not much we can do.
-    if (!resourceManager)
+    if (writeOperation == nullptr)
     {
-      smtkErrorMacro(this->log(), "Resource \"" << resource->uniqueName() << "\" (\""
-                                                << resource->location() << "\") has no manager.");
+      smtkErrorMacro(
+        this->log(), "Could not find writer for type = " << resource->uniqueName() << ".");
       return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
-    auto metadata =
-      resourceManager->metadata().get<smtk::resource::IndexTag>().find(resource->index());
-    if (metadata == resourceManager->metadata().get<smtk::resource::IndexTag>().end())
+    auto fileName = setFileName ? fileItem->value(rr) : resource->location();
+
+    if (fileName.empty())
     {
-      smtkErrorMacro(this->log(), "Resource \""
-          << resource->uniqueName() << "\" (\"" << resource->location()
-          << "\") is not registered with the available resource manager.");
+      smtkErrorMacro(this->log(), "An empty file name is not allowed.");
       return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
-    if (!metadata->write)
+    // Set the local writer's filename field, if there is one.
+    smtk::attribute::FileItem::Ptr writerFileItem =
+      writerGroup.fileItemForOperation(writeOperation->index());
+
+    // A writer may not accept a filename input. If this is the case and a file
+    // name is requested by the user, warn and continue.
+    if (!writerFileItem && setFileName)
     {
-      smtkErrorMacro(this->log(), "Resource metadata for " << resource->uniqueName()
-                                                           << " has a null write method.");
+      smtkWarningMacro(this->log(), "File name \""
+          << fileName << "\" was provided, but the registered writer for type \""
+          << resource->uniqueName() << "\" does not accept an input file item.");
+    }
+
+    // If the writer does accept a filename input, set it.
+    if (writerFileItem)
+    {
+      writerFileItem->setValue(fileName);
+    }
+
+    writeOperation->parameters()->findResource("resource")->setValue(*rit);
+
+    smtk::operation::Operation::Result writeOperationResult = writeOperation->operate();
+    if (writeOperationResult->findInt("outcome")->value() !=
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+    {
+      // An error message should already enter the logger from the local
+      // operation.
       return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
-    if (resource->location().empty())
+    if (setFileName)
     {
-      auto filename = setFilename ? fileItem->value(rr) : "";
-      if (filename.empty())
-      {
-        smtkErrorMacro(this->log(), "An empty filename is not allowed.");
-        return this->createResult(smtk::operation::Operation::Outcome::FAILED);
-      }
-      resource->setLocation(filename);
-    }
-
-    if (!metadata->write(resource))
-    {
-      // The writer will have logged an error message.
-      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+      resource->setLocation(fileName);
     }
   }
   return this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 }
 
-const char* SaveResource::xmlDescription() const
+const char* WriteResource::xmlDescription() const
 {
-  return SaveResource_xml;
+  return WriteResource_xml;
 }
 
-void SaveResource::generateSummary(SaveResource::Result& res)
+void WriteResource::generateSummary(WriteResource::Result& res)
 {
   std::ostringstream msg;
   int outcome = res->findInt("outcome")->value();

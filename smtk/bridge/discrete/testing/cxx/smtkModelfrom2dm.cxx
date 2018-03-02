@@ -14,8 +14,8 @@
 #include "smtk/io/ReadMesh.h"
 #include "smtk/io/WriteMesh.h"
 
-#include "smtk/operation/LoadResource.h"
-#include "smtk/operation/SaveResource.h"
+#include "smtk/operation/operators/ReadResource.h"
+#include "smtk/operation/operators/WriteResource.h"
 
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
@@ -61,9 +61,6 @@
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
-
-#include "smtk/model/operators/LoadSMTKModel.h"
-#include "smtk/model/operators/SaveSMTKModel.h"
 
 #include "smtk/operation/RegisterOperations.h"
 
@@ -231,14 +228,14 @@ int main(int argc, char* argv[])
   std::ostringstream mesh_path;
   mesh_path << write_root << "/test2D_2dm_save_" << mc->name() << ".h5m";
 
-  smtk::operation::SaveResource::Ptr saveOp =
-    operationManager->create<smtk::operation::SaveResource>();
+  smtk::operation::WriteResource::Ptr writeOp =
+    operationManager->create<smtk::operation::WriteResource>();
 
-  saveOp->parameters()->findFile("filename")->setValue(write_path);
-  saveOp->parameters()->findResource("resource")->setValue(resource);
+  writeOp->parameters()->findFile("filename")->setValue(write_path);
+  writeOp->parameters()->findResource("resource")->setValue(resource);
 
   //write out the smtk model.
-  auto result = saveOp->operate();
+  auto result = writeOp->operate();
   if (result->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
@@ -249,15 +246,15 @@ int main(int argc, char* argv[])
   // Erase the original model before loading the saved smtk model
   resource->eraseModel(model2dm);
 
-  smtk::operation::LoadResource::Ptr loadOp =
-    operationManager->create<smtk::operation::LoadResource>();
-  loadOp->parameters()->findFile("filename")->setValue(write_path);
-  result = loadOp->operate();
+  smtk::operation::ReadResource::Ptr readOp =
+    operationManager->create<smtk::operation::ReadResource>();
+  readOp->parameters()->findFile("filename")->setValue(write_path);
+  result = readOp->operate();
   if (result->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     cleanupsmtkfiles(write_path, mc->name());
-    std::cerr << "Load resource failed: " << write_path << std::endl;
+    std::cerr << "Read resource failed: " << write_path << std::endl;
     return 1;
   }
   //remove the file from disk

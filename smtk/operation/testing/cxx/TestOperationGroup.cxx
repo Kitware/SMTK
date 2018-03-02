@@ -78,10 +78,13 @@ int TestOperationGroup(int, char** const)
 
   // Check that the operation manager has no available groups
   smtkTest(operationManager->availableGroups().empty(),
-    "Operation manager should have no available groups.")
+    "Operation manager should have no available groups.");
 
-    // Register OperationA to group "my group" and test for success
-    bool success = operationManager->group("my group").registerOperation<OperationA>();
+  // Create a group
+  smtk::operation::Group group("my group", operationManager);
+
+  // Register OperationA to the group and test for success
+  bool success = group.registerOperation<OperationA>();
   smtkTest(success, "Failed to register OperationA to my group");
 
   // Check that the operation manager has one available group
@@ -89,13 +92,10 @@ int TestOperationGroup(int, char** const)
   smtkTest(availableGroups.size() == 1, "Operation manager should have one available group.");
 
   // Check that the available group is "my group"
-  smtkTest(availableGroups.find("my group") != availableGroups.end(),
+  smtkTest(availableGroups.find(group.name()) != availableGroups.end(),
     "Operation manager should have my group.");
 
-  // Access "my group"
-  auto group = operationManager->group("my group");
-
-  // Check if it has an operation
+  // Check if my group has an operation
   smtkTest(group.operations().size() == 1, "my group should have 1 tag");
 
   // Check if the operation is accessible by name
@@ -112,14 +112,17 @@ int TestOperationGroup(int, char** const)
   // Check that OperationB is not in the group
   smtkTest(!group.has("OperationB"), "Operation group should not access OperationB");
 
+  // Create another instance of my group
+  smtk::operation::Group sameGroup(group.name(), operationManager);
+
   // Try to register OperationB to group "my group" without adding it to the
   // manager (should fail because tags are not inherited).
-  success = operationManager->group("my group").registerOperation("OperationB");
+  success = sameGroup.registerOperation("OperationB");
   smtkTest(!success, "Should not be able to register OperationB to my group");
 
   // Now register it to the manager and try again.
   operationManager->registerOperation<OperationB>("OperationB");
-  success = operationManager->group("my group").registerOperation("OperationB", { "foo", "bar" });
+  success = group.registerOperation("OperationB", { "foo", "bar" });
   smtkTest(success, "Failed to register OperationB to my group");
 
   // Check if OperationB has any group values.
@@ -136,11 +139,11 @@ int TestOperationGroup(int, char** const)
   smtkTest(group.operations().size() == 2, "my group should have 2 tags");
 
   // Attempt to register OperationA again (should fail)
-  success = operationManager->group("my group").registerOperation<OperationA>();
+  success = group.registerOperation<OperationA>();
   smtkTest(!success, "OperationA should not be added to my group twice");
 
   // Unregister OperationA from group "my group" and test for success
-  success = operationManager->group("my group").unregisterOperation<OperationA>();
+  success = group.unregisterOperation<OperationA>();
   smtkTest(success, "OperationA could not be removed from my group");
 
   // Check that my group is back to one tag

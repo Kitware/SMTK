@@ -34,10 +34,11 @@ class UnitTessellateFaces(smtk.testing.TestCase):
         # Construct an operation manager
         self.operationManager = smtk.operation.Manager.create()
 
-        # Register operation and delaunay operations to the operation manager
-        # (the former provides us with resource I/O, and the latter provides
-        # us with the TriangulateFaces operator we wish to test.
+        # Register operation, polygon and delaunay operations to the operation
+        # manager (the first two provide us with resource I/O, and the last
+        # provides us with the TessellateFaces operator we wish to test.
         smtk.operation.registerOperations(self.operationManager)
+        smtk.bridge.polygon.registerOperations(self.operationManager)
         smtk.extension.delaunay.registerOperations(self.operationManager)
 
         # Register resource manager to the operation manager
@@ -49,7 +50,7 @@ class UnitTessellateFaces(smtk.testing.TestCase):
 
         # Load the input file
         loadOp = self.operationManager.createOperation(
-            'smtk::operation::LoadResource')
+            'smtk::operation::ReadResource')
         loadOp.parameters().find('filename').setValue(modelFile)
         loadRes = loadOp.operate()
 

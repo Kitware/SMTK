@@ -214,10 +214,5 @@ std::set<std::string> Manager::availableGroups() const
   }
   return available;
 }
-
-smtk::operation::Group Manager::group(const std::string& groupName)
-{
-  return Group(groupName, shared_from_this());
-}
 }
 }

@@ -35,8 +35,6 @@ protected:
   Result operateInternal() override;
   virtual const char* xmlDescription() const override;
 };
-
-bool write(const smtk::resource::ResourcePtr&);
 }
 }
 }

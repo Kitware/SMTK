@@ -22,13 +22,13 @@
 #include "smtk/model/Session.h"
 #include "smtk/model/Vertex.h"
 
-#include "smtk/operation/LoadResource.h"
 #include "smtk/operation/RegisterOperations.h"
-#include "smtk/operation/SaveResource.h"
+#include "smtk/operation/operators/ImportResource.h"
+#include "smtk/operation/operators/ReadResource.h"
+#include "smtk/operation/operators/WriteResource.h"
 
 #include "smtk/bridge/polygon/RegisterSession.h"
 #include "smtk/bridge/polygon/Resource.h"
-#include "smtk/bridge/polygon/operators/Import.h"
 
 #include "smtk/bridge/polygon/json/jsonResource.h"
 
@@ -137,8 +137,8 @@ int UnitTestPolygonReadWrite(int argc, char* argv[])
   smtk::model::Entity::Ptr model;
 
   // Create an "import" operator
-  smtk::bridge::polygon::Import::Ptr importOp =
-    operationManager->create<smtk::bridge::polygon::Import>();
+  smtk::operation::ImportResource::Ptr importOp =
+    operationManager->create<smtk::operation::ImportResource>();
 
   test(importOp != nullptr, "No import operator");
   std::string readFilePath = dataRoot + filename;
@@ -158,74 +158,54 @@ int UnitTestPolygonReadWrite(int argc, char* argv[])
     std::dynamic_pointer_cast<smtk::bridge::polygon::Resource>(resourceItem->value());
 
   // Retrieve the resulting model
-  smtk::attribute::ComponentItemPtr componentItem =
-    std::dynamic_pointer_cast<smtk::attribute::ComponentItem>(
-      importOpResult->findComponent("model"));
-  smtk::model::Model modelCreated =
-    std::dynamic_pointer_cast<smtk::model::Entity>(componentItem->value());
-
-  ValidateModelTopology(modelCreated);
-
-  std::string writeFilePath(writeRoot);
-  writeFilePath += "/" + smtk::common::UUID::random().toString() + ".smtk";
-  polygonResource->setLocation(writeFilePath);
-
   {
-    smtk::operation::SaveResource::Ptr saveOp =
-      operationManager->create<smtk::operation::SaveResource>();
-
-    test(saveOp != nullptr, "No save operator");
-
-    saveOp->parameters()->findResource("resource")->setValue(polygonResource);
-
-    smtk::operation::Operation::Result saveOpResult = saveOp->operate();
-    test(saveOpResult->findInt("outcome")->value() ==
-        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
-      "Save operator failed");
-
-    smtk::operation::LoadResource::Ptr loadOp =
-      operationManager->create<smtk::operation::LoadResource>();
-
-    test(loadOp != nullptr, "No load operator");
-
-    loadOp->parameters()->findFile("filename")->setValue(writeFilePath);
-
-    smtk::operation::Operation::Result loadOpResult = loadOp->operate();
-    test(loadOpResult->findInt("outcome")->value() ==
-        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
-      "Load operator failed");
-
-    smtk::bridge::polygon::Resource::Ptr polygonResource2 =
-      smtk::dynamic_pointer_cast<smtk::bridge::polygon::Resource>(
-        loadOpResult->findResource("resource")->value(0));
-
-    cleanup(writeFilePath);
-
-    smtk::model::Models models = polygonResource2->entitiesMatchingFlagsAs<smtk::model::Models>(
+    smtk::model::Models models = polygonResource->entitiesMatchingFlagsAs<smtk::model::Models>(
       smtk::model::MODEL_ENTITY, false);
 
     std::cout << "found " << models.size() << " models" << std::endl;
     if (models.size() < 1)
       return 1;
 
-    smtk::model::Model model2 = models[0];
-
-    ValidateModelTopology(model2);
+    smtk::model::Model model = models[0];
+    ValidateModelTopology(model);
   }
 
+  std::string writeFilePath(writeRoot);
+  writeFilePath += "/" + smtk::common::UUID::random().toString() + ".smtk";
+  polygonResource->setLocation(writeFilePath);
+
   {
-    resourceManager->write(polygonResource);
+    smtk::operation::WriteResource::Ptr writeOp =
+      operationManager->create<smtk::operation::WriteResource>();
 
-    // Create another resource manager
-    smtk::resource::Manager::Ptr resourceManager2 = smtk::resource::Manager::create();
+    test(writeOp != nullptr, "No write operator");
 
-    // Register the polygon resource to this resource manager as well
-    {
-      smtk::bridge::polygon::registerResources(resourceManager2);
-    }
+    writeOp->parameters()->findResource("resource")->setValue(polygonResource);
 
-    auto polygonResource2 = resourceManager2->read<smtk::bridge::polygon::Resource>(writeFilePath);
-    // cleanup(writeFilePath);
+    std::cout << "executing write op" << std::endl;
+    smtk::operation::Operation::Result writeOpResult = writeOp->operate();
+    std::cout << "done" << std::endl;
+    test(writeOpResult->findInt("outcome")->value() ==
+        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
+      "Write operator failed");
+
+    smtk::operation::ReadResource::Ptr readOp =
+      operationManager->create<smtk::operation::ReadResource>();
+
+    test(readOp != nullptr, "No read operator");
+
+    readOp->parameters()->findFile("filename")->setValue(writeFilePath);
+
+    smtk::operation::Operation::Result readOpResult = readOp->operate();
+    test(readOpResult->findInt("outcome")->value() ==
+        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
+      "Read operator failed");
+
+    smtk::bridge::polygon::Resource::Ptr polygonResource2 =
+      smtk::dynamic_pointer_cast<smtk::bridge::polygon::Resource>(
+        readOpResult->findResource("resource")->value(0));
+
+    cleanup(writeFilePath);
 
     smtk::model::Models models = polygonResource2->entitiesMatchingFlagsAs<smtk::model::Models>(
       smtk::model::MODEL_ENTITY, false);

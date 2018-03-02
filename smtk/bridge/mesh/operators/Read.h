@@ -23,7 +23,15 @@ namespace mesh
 {
 
 /**\brief Read an smtk mesh model file.
-  */
+ *
+ * Here and throughout SMTK, we use the terms read/write to describe
+ * serialization of native SMTK files, while the terms import/export describe
+ * transcription from/to a different format. Currently, the mesh session's
+ * model file is a .smtk json file that describes model relationships and
+ * contains the url to the mesh file. The read operation is therefore a veneer
+ * around the import operation; it simply opens the .smtk file, accesses the url
+ * of the mesh and imports it.
+ */
 class SMTKMESHSESSION_EXPORT Read : public smtk::operation::XMLOperation
 {
 public:
@@ -35,8 +43,6 @@ protected:
   Result operateInternal() override;
   virtual const char* xmlDescription() const override;
 };
-
-smtk::resource::ResourcePtr read(const std::string&);
 }
 }
 }

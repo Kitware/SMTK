@@ -14,9 +14,6 @@
 #include "smtk/bridge/polygon/Operation.h"
 #include "smtk/bridge/polygon/Resource.h"
 
-class vtkIdTypeArray;
-class vtkPolyData;
-
 namespace smtk
 {
 namespace bridge
@@ -38,8 +35,6 @@ protected:
   Result operateInternal() override;
   virtual const char* xmlDescription() const override;
 };
-
-bool write(const smtk::resource::ResourcePtr&);
 
 } // namespace polygon
 } // namespace bridge

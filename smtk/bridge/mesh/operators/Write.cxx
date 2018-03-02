@@ -107,15 +107,6 @@ const char* Write::xmlDescription() const
 {
   return Write_xml;
 }
-
-bool write(const smtk::resource::ResourcePtr& resource)
-{
-  Write::Ptr write = Write::create();
-  write->parameters()->findResource("resource")->setValue(resource);
-  Write::Result result = write->operate();
-  return (result->findInt("outcome")->value() == static_cast<int>(Write::Outcome::SUCCEEDED));
-}
-
 } // namespace mesh
 } // namespace bridge
 } // namespace smtk

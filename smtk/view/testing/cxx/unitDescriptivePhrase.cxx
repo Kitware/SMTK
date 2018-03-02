@@ -13,8 +13,8 @@
 
 #include "smtk/resource/Manager.h"
 
-#include "smtk/operation/LoadResource.h"
 #include "smtk/operation/Manager.h"
+#include "smtk/operation/operators/ReadResource.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
@@ -103,7 +103,7 @@ int unitDescriptivePhrase(int argc, char* argv[])
   smtk::resource::ResourceArray rsrcs;
   for (int i = 1; i < argc; i++)
   {
-    auto rdr = operMgr->create<smtk::operation::LoadResource>();
+    auto rdr = operMgr->create<smtk::operation::ReadResource>();
     rdr->parameters()->findFile("filename")->setValue(argv[i]);
     rdr->operate();
     // rsrcs.push_back(rsrcMgr->read<smtk::bridge::polygon::Resource>(argv[1]));

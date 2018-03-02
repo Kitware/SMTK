@@ -36,33 +36,47 @@ namespace operation
 typedef std::map<smtk::resource::Resource::Ptr, smtk::resource::Permission> ResourceAccessMap;
 typedef std::vector<smtk::attribute::ComponentItemDefinition::Ptr> ComponentDefinitionVector;
 
+/// Return the parameters for the operation.
+SMTKCORE_EXPORT
+Operation::Parameters extractParameters(
+  Operation::Specification specification, const std::string& operatorName);
+
+/// Return the definition for the operation.
+SMTKCORE_EXPORT
+Operation::Definition extractParameterDefinition(
+  Operation::Specification specification, const std::string& operatorName);
+
+/// Return the definition for the operation result.
+SMTKCORE_EXPORT
+Operation::Definition extractResultDefinition(
+  Operation::Specification specification, const std::string& operatorName);
+
 /// Construct a map of all of the resources referenced in the specification,
 /// along with their permission levels (read/write).
-SMTKCORE_NO_EXPORT
+SMTKCORE_EXPORT
 ResourceAccessMap extractResourcesAndPermissions(Operation::Specification specification);
 
 /// Construct a vector of all of the resource component definitions referenced
 /// in the specification.
-SMTKCORE_NO_EXPORT
+SMTKCORE_EXPORT
 ComponentDefinitionVector extractComponentDefinitions(Operation::Specification specification);
 
 /// Construct a set of all of the operator tags referenced in the
 /// specification.
-SMTKCORE_NO_EXPORT std::set<std::string> extractTagNames(Operation::Specification specification);
+SMTKCORE_EXPORT std::set<std::string> extractTagNames(Operation::Specification specification);
 
 /// Add a tag to the specification.
-SMTKCORE_NO_EXPORT bool addTag(Operation::Specification specification, const std::string& tagName);
+SMTKCORE_EXPORT bool addTag(Operation::Specification specification, const std::string& tagName);
 
 /// Add a tag to the specification.
-SMTKCORE_NO_EXPORT bool addTag(Operation::Specification specification, const std::string& tagName,
+SMTKCORE_EXPORT bool addTag(Operation::Specification specification, const std::string& tagName,
   const std::set<std::string>& tagValues);
 
 /// Remove a tag from the specification.
-SMTKCORE_NO_EXPORT bool removeTag(
-  Operation::Specification specification, const std::string& tagName);
+SMTKCORE_EXPORT bool removeTag(Operation::Specification specification, const std::string& tagName);
 
 /// Retrieve a tag's values.
-SMTKCORE_NO_EXPORT std::set<std::string> tagValues(
+SMTKCORE_EXPORT std::set<std::string> tagValues(
   Operation::Specification specification, const std::string& tagName);
 }
 }

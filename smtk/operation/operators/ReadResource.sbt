@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the model "LoadResource" Operation -->
+<!-- Description of the model "ReadResource" Operation -->
 <SMTK_AttributeSystem Version="3">
 
   <Definitions>
     <!-- Operation -->
     <include href="smtk/operation/Operation.xml"/>
-    <AttDef Type="load resource" Label="Load" BaseType="operation">
+    <AttDef Type="read resource" Label="Read" BaseType="operation">
       <BriefDecscription>
         Load one or more SMTK resources from disk
       </BriefDecscription>
@@ -22,7 +22,7 @@
 
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(load resource)" BaseType="result">
+    <AttDef Type="result(read resource)" BaseType="result">
       <ItemDefinitions>
         <Resource Name="resource" IsEnabledByDefault="true"></Resource>
       </ItemDefinitions>

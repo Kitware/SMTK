@@ -15,8 +15,8 @@
 
 #include "smtk/common/testing/cxx/helpers.h"
 
-#include "smtk/operation/ImportPythonOperation.h"
 #include "smtk/operation/Manager.h"
+#include "smtk/operation/operators/ImportPythonOperation.h"
 
 int main(int argc, char** const argv)
 {

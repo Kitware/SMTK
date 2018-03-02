@@ -63,6 +63,8 @@ public:
   // result definition.
   typedef std::shared_ptr<smtk::attribute::Collection> Specification;
 
+  typedef std::shared_ptr<smtk::attribute::Definition> Definition;
+
   // These values are taken on by the "outcome" item of every Operation Result.
   enum class Outcome
   {
@@ -138,10 +140,9 @@ protected:
   Specification createBaseSpecification() const;
 
   int m_debugLevel;
+  std::weak_ptr<Manager> m_manager;
 
 private:
-  typedef std::shared_ptr<smtk::attribute::Definition> Definition;
-
   // Construct the operation's specification. This is typically done by reading
   // an attribute .sbt file, but can be done by first constructing a base
   // specification and then augmenting the specification to include the derived
@@ -152,7 +153,6 @@ private:
   Parameters m_parameters;
   Definition m_resultDefinition;
   std::vector<Result> m_results;
-  std::weak_ptr<Manager> m_manager;
 };
 }
 }

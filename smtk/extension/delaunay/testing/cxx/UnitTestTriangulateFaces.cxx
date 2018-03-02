@@ -13,9 +13,9 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
-#include "smtk/bridge/polygon/Operation.h"
 #include "smtk/bridge/polygon/RegisterSession.h"
 #include "smtk/bridge/polygon/Resource.h"
+#include "smtk/bridge/polygon/operators/LegacyRead.h"
 
 #include "smtk/extension/delaunay/operators/TriangulateFaces.h"
 
@@ -32,8 +32,6 @@
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Loop.h"
-
-#include "smtk/operation/LoadResource.h"
 
 #include "smtk/resource/Manager.h"
 
@@ -83,8 +81,8 @@ int UnitTestTriangulateFaces(int, char** const)
 
   // Register import and write operators to the operation manager
   {
-    operationManager->registerOperation<smtk::operation::LoadResource>(
-      "smtk::operation::LoadResource");
+    operationManager->registerOperation<smtk::bridge::polygon::LegacyRead>(
+      "smtk::bridge::polygon::LegacyRead");
     operationManager->registerOperation<smtk::extension::delaunay::TriangulateFaces>(
       "smtk::extension::delaunay::TriangulateFaces");
   }
@@ -97,11 +95,11 @@ int UnitTestTriangulateFaces(int, char** const)
 
   {
     // Create an import operator
-    smtk::operation::LoadResource::Ptr loadOp =
-      operationManager->create<smtk::operation::LoadResource>();
-    if (!loadOp)
+    smtk::bridge::polygon::LegacyRead::Ptr readOp =
+      operationManager->create<smtk::bridge::polygon::LegacyRead>();
+    if (!readOp)
     {
-      std::cerr << "No load operator\n";
+      std::cerr << "No read operator\n";
       return 1;
     }
 
@@ -113,12 +111,12 @@ int UnitTestTriangulateFaces(int, char** const)
     { //just make sure the file exists
       file.close();
 
-      loadOp->parameters()->findFile("filename")->setValue(file_path.c_str());
-      smtk::operation::LoadResource::Result result = loadOp->operate();
+      readOp->parameters()->findFile("filename")->setValue(file_path.c_str());
+      smtk::bridge::polygon::LegacyRead::Result result = readOp->operate();
       if (result->findInt("outcome")->value() !=
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
       {
-        std::cerr << "Could not load smtk model!\n";
+        std::cerr << "Could not read smtk model!\n";
         return 1;
       }
 

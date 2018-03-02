@@ -21,6 +21,113 @@ namespace smtk
 {
 namespace operation
 {
+Operation::Parameters extractParameters(
+  Operation::Specification specification, const std::string& operatorName)
+{
+  Operation::Definition parameterDefinition =
+    extractParameterDefinition(specification, operatorName);
+
+  if (parameterDefinition != nullptr)
+  {
+    // Now that we have our operation definition, we access our parameters
+    // attribute.
+
+    // Access all parameters created using this definition.
+    std::vector<Operation::Parameters> parameters;
+    specification->findAttributes(parameterDefinition, parameters);
+
+    if (!parameters.empty())
+    {
+      // If an instance of our parameters exist, use it.
+      return parameters[0];
+    }
+    else
+    {
+      // If no instance of our parameters exist, create one.
+      return specification->createAttribute(parameterDefinition);
+    }
+  }
+  else
+  {
+    // If we cannot access the parameter definition, we cannot access the
+    // parameters either.
+    return Operation::Parameters();
+  }
+}
+
+Operation::Definition extractParameterDefinition(
+  Operation::Specification specification, const std::string& operatorName)
+{
+  Operation::Definition parameterDefinition;
+
+  // Access the base operation definition.
+  Operation::Definition operationBase = specification->findDefinition("operation");
+
+  // Find all definitions that derive from the operation definition.
+  std::vector<Operation::Definition> parameterDefinitions;
+  specification->findAllDerivedDefinitions(operationBase, true, parameterDefinitions);
+
+  // If there is only one derived definition, then it is the one we want.
+  if (parameterDefinitions.size() == 1)
+  {
+    parameterDefinition = parameterDefinitions[0];
+  }
+  else if (!parameterDefinitions.empty())
+  {
+    // If there are more than one derived definitions, then we pick the one
+    // with the same name as our class.
+    for (auto& def : parameterDefinitions)
+    {
+      if (def->type() == operatorName)
+      {
+        parameterDefinition = def;
+        break;
+      }
+    }
+  }
+  return parameterDefinition;
+}
+
+Operation::Definition extractResultDefinition(
+  Operation::Specification specification, const std::string& operatorName)
+{
+  smtk::attribute::DefinitionPtr resultDefinition;
+
+  // Access the base result definition.
+  Operation::Definition resultBase = specification->findDefinition("result");
+
+  // Find all definitions that derive from the result definition.
+  std::vector<Operation::Definition> resultDefinitions;
+  specification->findAllDerivedDefinitions(resultBase, true, resultDefinitions);
+
+  // If there is only one derived definition, then it is the one we want.
+  if (resultDefinitions.size() == 1)
+  {
+    resultDefinition = resultDefinitions[0];
+  }
+  else if (!resultDefinitions.empty())
+  {
+    // If there are more than one derived definitions, then we pick the one
+    // whose type name is keyed for our operation.
+    std::string resultClassName;
+    {
+      std::stringstream s;
+      s << "result(" << operatorName << ")";
+      resultClassName = s.str();
+    }
+
+    for (auto& def : resultDefinitions)
+    {
+      if (def->type() == resultClassName)
+      {
+        resultDefinition = def;
+        break;
+      }
+    }
+  }
+  return resultDefinition;
+}
+
 ResourceAccessMap extractResourcesAndPermissions(Operation::Specification specification)
 {
   ResourceAccessMap resourcesAndPermissions;

@@ -8,10 +8,7 @@ set(modelOps
   CreateInstances
   EntityGroupOperation
   ExportModelJSON
-  ExportSMTKModel
   GroupAuxiliaryGeometry
-  LoadSMTKModel
-  SaveSMTKModel
   SetProperty
   TerrainExtraction
 )

@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/operation/LoadResource.h"
+#include "smtk/operation/operators/ReadResource.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -20,7 +20,9 @@
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Metadata.h"
 
-#include "smtk/operation/LoadResource_xml.h"
+#include "smtk/operation/Group.h"
+#include "smtk/operation/ReadResource_xml.h"
+#include "smtk/operation/groups/ReaderGroup.h"
 
 #include "nlohmann/json.hpp"
 
@@ -33,16 +35,42 @@ namespace smtk
 namespace operation
 {
 
-LoadResource::LoadResource()
+ReadResource::ReadResource()
 {
 }
 
-LoadResource::Result LoadResource::operateInternal()
+bool ReadResource::ableToOperate()
 {
+  if (!this->Superclass::ableToOperate())
+  {
+    return false;
+  }
+
+  // To read a resource, we must have an operation manager from which we access
+  // specific read operations.
+  if (m_manager.expired())
+  {
+    return false;
+  }
+
+  return true;
+}
+
+ReadResource::Result ReadResource::operateInternal()
+{
+  auto manager = this->m_manager.lock();
+
+  if (manager == nullptr)
+  {
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+  }
+
   auto params = this->parameters();
   auto fileItem = params->findFile("filename");
 
   std::string type;
+
+  smtk::operation::ReaderGroup readerGroup(manager);
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
@@ -99,9 +127,30 @@ LoadResource::Result LoadResource::operateInternal()
       }
     }
 
-    smtk::resource::ManagerPtr resourceManager = this->resourceManager();
-    smtk::resource::ResourcePtr resource = resourceManager->read(type, filename);
+    smtk::operation::Operation::Ptr readOperation = readerGroup.readerForResource(type);
 
+    if (readOperation == nullptr)
+    {
+      smtkErrorMacro(this->log(), "Could not find reader for file \""
+          << filename << "\" (type = " << type << ").");
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+    }
+
+    // Set the local reader's filename field.
+    smtk::attribute::FileItem::Ptr readerFileItem =
+      readerGroup.fileItemForOperation(readOperation->index());
+    readerFileItem->setValue(filename);
+
+    smtk::operation::Operation::Result readOperationResult = readOperation->operate();
+    if (readOperationResult->findInt("outcome")->value() !=
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+    {
+      // An error message should already enter the logger from the local
+      // operation.
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+    }
+
+    smtk::resource::ResourcePtr resource = readOperationResult->findResource("resource")->value();
     if (resource == nullptr)
     {
       smtkErrorMacro(
@@ -116,23 +165,23 @@ LoadResource::Result LoadResource::operateInternal()
   return result;
 }
 
-const char* LoadResource::xmlDescription() const
+const char* ReadResource::xmlDescription() const
 {
-  return LoadResource_xml;
+  return ReadResource_xml;
 }
 
-void LoadResource::generateSummary(LoadResource::Result& res)
+void ReadResource::generateSummary(ReadResource::Result& res)
 {
   int outcome = res->findInt("outcome")->value();
   smtk::attribute::FileItemPtr fitem = this->parameters()->findFile("filename");
   std::string label = this->parameters()->definition()->label();
   if (outcome == static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
-    smtkInfoMacro(this->log(), label << ": loaded \"" << fitem->value(0) << "\"");
+    smtkInfoMacro(this->log(), label << ": read \"" << fitem->value(0) << "\"");
   }
   else
   {
-    smtkErrorMacro(this->log(), label << ": failed to load \"" << fitem->value(0) << "\"");
+    smtkErrorMacro(this->log(), label << ": failed to read \"" << fitem->value(0) << "\"");
   }
 }
 }
