@@ -16,6 +16,7 @@ set(resourceHeaders
   Lock.h
   Manager.h
   Metadata.h
+  Name.h
   PropertyType.h
   RegisterOperations.h
   RegisterResources.h

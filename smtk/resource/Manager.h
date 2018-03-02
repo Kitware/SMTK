@@ -21,6 +21,7 @@
 #include "smtk/resource/Container.h"
 #include "smtk/resource/Event.h"
 #include "smtk/resource/Metadata.h"
+#include "smtk/resource/Name.h"
 #include "smtk/resource/Resource.h"
 
 #include <functional>
@@ -37,7 +38,7 @@ class Manager;
 /// A resource Manager is responsible for tracking currently allocaated
 /// resources, creating new resources and serializing/deserializing resources
 /// to/from disk. Resource types must first be registered with the Manager
-/// before resources of this type can be manipulated by the manager.
+/// before resources of they can be manipulated by the manager.
 class SMTKCORE_EXPORT Manager : smtkEnableSharedPtr(Manager)
 {
 public:
@@ -355,53 +356,6 @@ struct resource_index_set_generator<ResourceType, true>
     return indices;
   }
 };
-
-// A compile-time test to check whether or not a class has a type_name defined.
-template <typename T>
-class is_named_resource
-{
-  class No
-  {
-  };
-  class Yes
-  {
-    No no[2];
-  };
-
-  template <typename C>
-  static Yes Test(typename C::type_name*);
-  template <typename C>
-  static No Test(...);
-
-public:
-  enum
-  {
-    value = sizeof(Test<T>(0)) == sizeof(Yes)
-  };
-};
-
-// The signature for our resource name-finding struct has two template
-// parameters.
-template <typename ResourceType, bool is_named>
-struct resource_name;
-
-// This partial template specialization deals with the case where
-// <ResourceType> does not have a type_name. In this case, we create a temporary
-/// resource and ask for its uniqueName.
-template <typename ResourceType>
-struct resource_name<ResourceType, false>
-{
-  static std::string name() { return ResourceType::create()->uniqueName(); }
-};
-
-// This partial template specialization deals with the case where
-// <ResourceType> has a type_name. In this case, we can return the resource type
-// name without instantiating the resource.
-template <typename ResourceType>
-struct resource_name<ResourceType, true>
-{
-  static std::string name() { return ResourceType::type_name; }
-};
 }
 
 template <typename ResourceType>
@@ -421,8 +375,7 @@ bool Manager::registerResource(const std::function<ResourcePtr(const std::string
   // Write Functor: either a user-defined functor or nothing
 
   return Manager::registerResource(
-    Metadata((detail::resource_name<ResourceType,
-              detail::is_named_resource<ResourceType>::value>::name()),
+    Metadata(smtk::resource::name<ResourceType>(),
              std::type_index(typeid(ResourceType)).hash_code(),
              (detail::resource_index_set_generator<ResourceType,
               detail::is_derived_resource<ResourceType>::value>::indices()),
