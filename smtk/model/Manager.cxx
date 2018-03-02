@@ -3365,7 +3365,7 @@ Instance Manager::addInstance(const EntityRef& object)
     int oidx = this->findEntity(uid)->findOrAppendRelation(object.entity());
     this->arrangeEntity(uid, INSTANCE_OF, Arrangement::InstanceInstanceOfWithIndex(oidx));
     this->arrangeEntity(
-      object.entity(), INSTANCED_BY, Arrangement::InstanceInstanceOfWithIndex(iidx));
+      object.entity(), INSTANCED_BY, Arrangement::EntityInstancedByWithIndex(iidx));
     return Instance(shared_from_this(), uid);
   }
   return Instance();
