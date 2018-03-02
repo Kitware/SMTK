@@ -586,17 +586,25 @@ void XmlDocV2Parser::processViews(xml_node& root)
   for (child = views.first_child(); child; child = child.next_sibling())
   {
     xml_attribute xatt;
-    std::string title, vtype, icon;
+    std::string name, vtype, icon;
     smtk::view::ViewPtr view;
-    xatt = child.attribute("Title");
+    xatt = child.attribute("Name");
     if (xatt)
     {
-      title = xatt.value();
+      name = xatt.value();
     }
     else
     {
-      smtkErrorMacro(this->m_logger, "Could not find View's Title - skipping it!");
-      continue;
+      xatt = child.attribute("Title");
+      if (xatt)
+      {
+        name = xatt.value();
+      }
+      else
+      {
+        smtkErrorMacro(this->m_logger, "Could not find View's Name or Title - skipping it!");
+        continue;
+      }
     }
 
     xatt = child.attribute("Type");
@@ -606,11 +614,11 @@ void XmlDocV2Parser::processViews(xml_node& root)
     }
     else
     {
-      smtkErrorMacro(this->m_logger, "Could not find View " << title << "'s Type - skipping it!");
+      smtkErrorMacro(this->m_logger, "Could not find View " << name << "'s Type - skipping it!");
       continue;
     }
 
-    view = smtk::view::View::New(vtype, title);
+    view = smtk::view::View::New(vtype, name);
     xatt = child.attribute("Icon");
     if (xatt)
     {
@@ -631,9 +639,10 @@ void XmlDocV2Parser::processViewComponent(
 
   for (xatt = node.first_attribute(); xatt; xatt = xatt.next_attribute())
   {
-    // If this is the top View comp then skip Title and Type Attributes
+    // If this is the top View comp then skip Title, Name and Type Attributes
     name = xatt.name();
-    if (isTopComp && ((name == "Title") || (name == "Type") || (name == "Icon")))
+    if (isTopComp &&
+      ((name == "Name") || (name == "Title") || (name == "Type") || (name == "Icon")))
     {
       continue;
     }
