@@ -3,6 +3,7 @@ set(unit_tests
 
 set(unit_tests_which_require_data
   unitDescriptivePhrase.cxx
+  unitComponentPhraseModel.cxx
   unitJSONView.cxx
 )
 

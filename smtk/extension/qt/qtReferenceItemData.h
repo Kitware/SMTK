@@ -24,7 +24,9 @@
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
 
+#include <QCheckBox>
 #include <QDialog>
+#include <QGridLayout>
 #include <QLabel>
 #include <QListView>
 #include <QPushButton>
@@ -53,12 +55,16 @@ public:
   smtk::view::PhraseModelPtr m_phraseModel;
 
   // Main widget contents
-  QLabel* m_label;
-  QLabel* m_synopsis;
-  QPushButton* m_editBtn;
-  QPushButton* m_exportSeln;
-  QPushButton* m_importSeln;
-  QPushButton* m_linkSeln;
+  QGridLayout* m_grid;
+  QCheckBox* m_optional;  // Added if the item is optional to reflect IsEnabled().
+  QLabel* m_label;        // The item's label (or name if no label).
+  QLabel* m_synopsis;     // A live summary of the item's entries and acceptability
+  QPushButton* m_editBtn; // A button to show a popup used to edit the item's entries
+  QPushButton*
+    m_exportSeln; // A button to one-shot export the item's entries to an application selection
+  QPushButton* m_importSeln; // A button to one-shot import an application selection to the entries
+  QPushButton*
+    m_linkSeln; // A button to link an application selection to the item's entries on an ongoing basis.
 
   // Popup widget contents
   QDialog* m_popup;

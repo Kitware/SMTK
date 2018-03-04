@@ -1,8 +1,10 @@
 # set up sources to build
 set(viewSrcs
   ComponentPhraseContent.cxx
+  ComponentPhraseModel.cxx
   #ComponentsByTypeGenerator.cxx
   DescriptivePhrase.cxx
+  EmptySubphraseGenerator.cxx
   json/jsonView.cxx
   PhraseListContent.cxx
   PhraseModel.cxx
@@ -19,8 +21,10 @@ set (jsonViewHeaders
   )
 set(viewHeaders
   ComponentPhraseContent.h
+  ComponentPhraseModel.h
   #ComponentsByTypeGenerator.h
   DescriptivePhrase.h
+  EmptySubphraseGenerator.h
   PhraseListContent.h
   PhraseContent.h
   PhraseModel.h

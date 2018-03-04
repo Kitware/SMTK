@@ -30,6 +30,7 @@ qtDescriptivePhraseDelegate::qtDescriptivePhraseDelegate(QWidget* owner)
   , m_subtitleFontWeight(1)
   , m_textVerticalPad(2)
   , m_drawSubtitle(true)
+  , m_visibilityMode(false)
 {
 }
 

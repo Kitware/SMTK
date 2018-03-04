@@ -47,7 +47,6 @@ int main(int argc, char* argv[])
 {
   QApplication app(argc, argv);
   const char* filename = argc > 1 ? argv[1] : "smtkModel.json";
-  char* endMask;
   int debug = argc > 2 ? 1 : 0;
 
   std::ifstream file(filename);
