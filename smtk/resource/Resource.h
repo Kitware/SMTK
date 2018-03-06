@@ -84,6 +84,10 @@ public:
   // derived from the resource described by the index.
   bool isOfType(const Index& index) const;
 
+  // given a resource's unique name, return whether or not this resource is or
+  // is derived from the resource described by the name.
+  bool isOfType(const std::string& uniqueName) const;
+
   // id and location are run-time intrinsics of the derived resource; we need to
   // allow the user to reset these values.
   const smtk::common::UUID& id() const { return this->m_id; }
