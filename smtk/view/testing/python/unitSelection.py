@@ -30,20 +30,17 @@ class TestSelection(smtk.testing.TestCase):
     def loadTestData(self):
         import os
         self.mgr = smtk.model.Manager.create()
-#        SetActiveSession(self.mgr.createSession('polygon'))
-#        self.assertIsNotNone(
-#            GetActiveSession(), 'Could not create polygon session.')
         fpath = [smtk.testing.DATA_DIR, 'model',
                  '2d', 'smtk', 'epic-trex-drummer.smtk']
-        op = smtk.operation.LoadResource.create()
+        op = smtk.bridge.polygon.LegacyRead.create()
         print 'here', os.path.join(*fpath)
         op.parameters().find('filename').setValue(os.path.join(*fpath))
         res = op.operate()
-        if res.findInt('outcome').value(0) != int(smtk.operation.Operation.SUCCEEDED):
+        if res.find('outcome').value(0) != int(smtk.operation.Operation.SUCCEEDED):
             raise ImportError
-        modelEntity = res.find('created').value(0)
-        self.model = smtk.model.Model(
-            modelEntity.modelResource(), modelEntity.id())
+        self.resource = smtk.model.Manager.CastTo(res.find('resource').value())
+        self.model = self.resource.findEntitiesOfType(
+            int(smtk.model.MODEL_ENTITY))[0]
 
     def testSelectionValues(self):
         mgr = self.selnMgr
@@ -133,7 +130,7 @@ class TestSelection(smtk.testing.TestCase):
         expectedEventCount = 1
         self.assertEqual(eventCount, expectedEventCount,
                          'Selection listener was not called immediately.')
-        comp = self.mgr.find(self.model.entity())
+        comp = self.resource.find(self.model.entity())
         selnVal = mgr.findOrCreateLabeledValue('selection')
         selnSrc = 'testSelectionModificationListen'
         mgr.registerSelectionSource(selnSrc)
@@ -193,7 +190,8 @@ class TestSelection(smtk.testing.TestCase):
 
         # Test enumeration of selection
         model = smtk.model.Model(comp.modelResource(), comp.id())
-        cellComps = [self.mgr.find(cell.entity()) for cell in model.cells()]
+        cellComps = [self.resource.find(cell.entity())
+                     for cell in model.cells()]
         mgr.setFilter(None)
         mgr.modifySelection(
             cellComps, selnSrc, selnVal, smtk.view.SelectionAction.DEFAULT)
