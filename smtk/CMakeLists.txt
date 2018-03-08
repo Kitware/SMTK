@@ -148,7 +148,7 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
   foreach(pyfile ${SMTK_PYTHON_MODULE_SRCS})
     configure_file(
       "${CMAKE_CURRENT_SOURCE_DIR}/smtk/${pyfile}.py"
-      "${SMTK_BINARY_DIR}/smtk/${pyfile}.py" @ONLY
+      "${CMAKE_BINARY_DIR}/smtk/${pyfile}.py" @ONLY
       )
     list(APPEND SMTK_PYTHON_MODULEFILES "smtk/${pyfile}.py")
   endforeach()
