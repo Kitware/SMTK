@@ -33,22 +33,22 @@ int main(int argc, char* argv[])
   (void)argc;
   (void)argv;
 
-  auto loadOp =
-    smtk::environment::OperationManager::instance()->create("smtk::operation::LoadResource");
+  auto readOp =
+    smtk::environment::OperationManager::instance()->create("smtk::operation::ReadResource");
 
-  test(loadOp != nullptr, "No load operator");
+  test(readOp != nullptr, "No read operator");
 
   std::string filename = dataRoot + "/model/2d/smtk/epic-trex-drummer.smtk";
-  loadOp->parameters()->findFile("filename")->setValue(filename);
+  readOp->parameters()->findFile("filename")->setValue(filename);
 
-  smtk::operation::Operation::Result loadOpResult = loadOp->operate();
-  test(loadOpResult->findInt("outcome")->value() ==
+  smtk::operation::Operation::Result readOpResult = readOp->operate();
+  test(readOpResult->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
-    "Load operator failed");
+    "Read operator failed");
 
   smtk::bridge::polygon::Resource::Ptr polygonResource =
     smtk::dynamic_pointer_cast<smtk::bridge::polygon::Resource>(
-      loadOpResult->findResource("resource")->value());
+      readOpResult->findResource("resource")->value());
 
   smtk::model::Models models =
     polygonResource->entitiesMatchingFlagsAs<smtk::model::Models>(smtk::model::MODEL_ENTITY, false);

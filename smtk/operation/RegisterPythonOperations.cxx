@@ -15,7 +15,7 @@
 #include "smtk/common/CompilerInformation.h"
 #include "smtk/common/PythonInterpreter.h"
 
-#include "smtk/operation/ImportPythonOperation.h"
+#include "smtk/operation/operators/ImportPythonOperation.h"
 
 #include "smtk/operation/pybind11/PyOperation.h"
 

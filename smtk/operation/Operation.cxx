@@ -36,10 +36,10 @@ namespace operation
 
 Operation::Operation()
   : m_debugLevel(0)
+  , m_manager()
   , m_specification(nullptr)
   , m_parameters(nullptr)
   , m_resultDefinition(nullptr)
-  , m_manager(nullptr)
 {
 }
 
@@ -66,13 +66,13 @@ Operation::~Operation()
 
 std::string Operation::uniqueName() const
 {
-  if (m_manager)
+  if (auto manager = m_manager.lock())
   {
     // If the operation's manager is set, then the operation is registered to a
     // manager. The operation metadata has a unique name for this operation
     // type, so we return this name.
-    auto metadata = m_manager->metadata().get<IndexTag>().find(this->index());
-    if (metadata != m_manager->metadata().get<IndexTag>().end())
+    auto metadata = manager->metadata().get<IndexTag>().find(this->index());
+    if (metadata != manager->metadata().get<IndexTag>().end())
     {
       return metadata->uniqueName();
     }
@@ -88,14 +88,14 @@ Operation::Specification Operation::specification()
   // Lazily create the specification.
   if (m_specification == nullptr)
   {
-    if (m_manager)
+    if (auto manager = m_manager.lock())
     {
-      auto metadata = m_manager->metadata().get<IndexTag>().find(this->index());
+      auto metadata = manager->metadata().get<IndexTag>().find(this->index());
 
       // The only way for an operation's manager to be set is if a manager
       // created it. The only way for a manager to create an operation is if it
       // has a metadata instance for its type. Let's check anyway.
-      assert(metadata != m_manager->metadata().get<IndexTag>().end());
+      assert(metadata != manager->metadata().get<IndexTag>().end());
 
       m_specification = metadata->specification();
     }
@@ -136,7 +136,8 @@ Operation::Result Operation::operate()
   // one requests the operation be canceled. This is useful since all
   // DID_OPERATE observers are called whether the operation was canceled or not
   // -- and observers of both will expect them to be called in pairs.
-  bool observePostOperation = m_manager != nullptr;
+  auto manager = m_manager.lock();
+  bool observePostOperation = manager != nullptr;
 
   // First, we check that the operation is able to operate.
   if (!this->ableToOperate())
@@ -146,8 +147,7 @@ Operation::Result Operation::operate()
     observePostOperation = false;
   }
   // Then, we check if any observers wish to cancel this operation.
-  else if (m_manager &&
-    m_manager->observers()(shared_from_this(), EventType::WILL_OPERATE, nullptr))
+  else if (manager && manager->observers()(shared_from_this(), EventType::WILL_OPERATE, nullptr))
   {
     result = this->createResult(Outcome::CANCELED);
   }
@@ -189,7 +189,7 @@ Operation::Result Operation::operate()
   // Execute post-operation observation
   if (observePostOperation)
   {
-    m_manager->observers()(shared_from_this(), EventType::DID_OPERATE, result);
+    manager->observers()(shared_from_this(), EventType::DID_OPERATE, result);
   }
 
   // Unlock the resources.
@@ -210,62 +210,22 @@ smtk::io::Logger& Operation::log() const
 
 Operation::Parameters Operation::parameters()
 {
+  // If we haven't accessed our parameters yet, ask the specification to either
+  // retrieve the exisiting one or create a new one.
   if (!m_parameters)
   {
-    // Access the operation's specification via its accessor method to ensure
-    // that it is created.
-    Specification specification = this->specification();
-
-    // Access the base operation definition.
-    Definition operationBase = specification->findDefinition("operation");
-
-    // Find all definitions that derive from the operation definition.
-    std::vector<Definition> operationDefinitions;
-    specification->findAllDerivedDefinitions(operationBase, true, operationDefinitions);
-
-    smtk::attribute::DefinitionPtr operationDefinition;
-    // If there is only one derived definition, then it is the one we want.
-    if (operationDefinitions.size() == 1)
-    {
-      operationDefinition = operationDefinitions[0];
-    }
-    else if (!operationDefinitions.empty())
-    {
-      // If there are more than one derived definitions, then we pick the one
-      // with the same name as our class.
-      {
-        std::stringstream s;
-        s << "Multiple definitions for operation \"" << this->classname()
-          << "\" derive from \"operation\". Looking for one with the name \"" << this->classname()
-          << "\".";
-        smtkWarningMacro(this->log(), s.str());
-      }
-
-      for (auto& def : operationDefinitions)
-      {
-        if (def->type() == this->classname() ||
-          (m_manager != nullptr && def->type() == this->uniqueName()))
-        {
-          operationDefinition = def;
-          break;
-        }
-      }
-    }
-
-    // Now that we have our operation definition, we create our parameters
-    // attribute.
-    if (operationDefinition)
-    {
-      m_parameters = specification->createAttribute(operationDefinition);
-    }
-    else
-    {
-      std::stringstream s;
-      s << "Could not identify parameters attribute definition for operation \""
-        << this->classname() << "\".";
-      smtkErrorMacro(this->log(), s.str());
-    }
+    m_parameters = extractParameters(this->specification(), this->uniqueName());
   }
+
+  // If we still don't have our parameters, then there's not much we can do.
+  if (!m_parameters)
+  {
+    std::stringstream s;
+    s << "Could not identify parameters attribute definition for operation \"" << this->classname()
+      << "\".";
+    smtkErrorMacro(this->log(), s.str());
+  }
+
   return m_parameters;
 }
 
@@ -275,60 +235,7 @@ Operation::Result Operation::createResult(Outcome outcome)
   // subsequently retrieved from cache to avoid superfluous lookups.
   if (!m_resultDefinition)
   {
-    // Access the operation's specification via its accessor method to ensure
-    // that it is created.
-    Specification specification = this->specification();
-
-    // Access the base result definition.
-    Definition resultBase = specification->findDefinition("result");
-
-    // Find all definitions that derive from the result definition.
-    std::vector<Definition> resultDefinitions;
-    specification->findAllDerivedDefinitions(resultBase, true, resultDefinitions);
-
-    // If there is only one derived definition, then it is the one we want.
-    if (resultDefinitions.size() == 1)
-    {
-      m_resultDefinition = resultDefinitions[0];
-    }
-    else if (!resultDefinitions.empty())
-    {
-      // If there are more than one derived definitions, then we pick the one
-      // whose type name is keyed for our operation.
-      {
-        std::stringstream s;
-        s << "Multiple definitions for operation \"" << this->classname()
-          << "\" derive from \"result\". Looking for one with the name result(\""
-          << this->classname() << ")\"";
-        if (m_manager != nullptr && this->classname() != this->uniqueName())
-        {
-          s << " or result(\"" << this->uniqueName() << ")\".";
-        }
-        smtkWarningMacro(this->log(), s.str());
-      }
-      std::string resultClassName;
-      {
-        std::stringstream s;
-        s << "result(" << this->classname() << ")";
-        resultClassName = s.str();
-      }
-      std::string resultUniqueName;
-      if (m_manager != nullptr && this->classname() != this->uniqueName())
-      {
-        std::stringstream s;
-        s << "result(" << this->uniqueName() << ")";
-        resultUniqueName = s.str();
-      }
-
-      for (auto& def : resultDefinitions)
-      {
-        if (def->type() == resultClassName || def->type() == resultUniqueName)
-        {
-          m_resultDefinition = def;
-          break;
-        }
-      }
-    }
+    m_resultDefinition = extractResultDefinition(this->specification(), this->uniqueName());
   }
 
   // Now that we have our result definition, we create our result attribute.
@@ -336,6 +243,7 @@ Operation::Result Operation::createResult(Outcome outcome)
 
   if (m_resultDefinition)
   {
+    // Create a new instance of the result.
     result = this->specification()->createAttribute(m_resultDefinition);
 
     // Hold on to a copy of the generated result so we can remove it from our

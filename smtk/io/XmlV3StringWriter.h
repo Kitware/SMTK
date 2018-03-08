@@ -40,6 +40,8 @@ protected:
   std::string className() const override;
   unsigned int fileVersion() const override;
 
+  void processDefinitionInternal(
+    pugi::xml_node& definition, smtk::attribute::DefinitionPtr def) override;
   void processItemDefinitionType(
     pugi::xml_node& node, smtk::attribute::ItemDefinitionPtr idef) override;
   void processItemType(pugi::xml_node& node, smtk::attribute::ItemPtr item) override;

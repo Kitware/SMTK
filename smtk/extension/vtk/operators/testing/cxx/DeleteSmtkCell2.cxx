@@ -29,9 +29,8 @@
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/operators/AddAuxiliaryGeometry.h"
 
-#include "smtk/operation/LoadResource.h"
 #include "smtk/operation/RegisterOperations.h"
-#include "smtk/operation/SaveResource.h"
+#include "smtk/operation/operators/ReadResource.h"
 
 #include "smtk/bridge/polygon/RegisterSession.h"
 #include "smtk/bridge/polygon/Resource.h"
@@ -86,21 +85,21 @@ int main(int argc, char* argv[])
   // resources will be automatically registered to the resource manager).
   operationManager->registerResourceManager(resourceManager);
 
-  smtk::operation::LoadResource::Ptr loadOp =
-    operationManager->create<smtk::operation::LoadResource>();
+  smtk::operation::ReadResource::Ptr readOp =
+    operationManager->create<smtk::operation::ReadResource>();
 
-  loadOp->parameters()->findFile("filename")->setValue(std::string(argv[1]));
+  readOp->parameters()->findFile("filename")->setValue(std::string(argv[1]));
 
   std::cout << "Importing " << argv[1] << "\n";
 
-  smtk::operation::Operation::Result loadOpResult = loadOp->operate();
-  test(loadOpResult->findInt("outcome")->value() ==
+  smtk::operation::Operation::Result readOpResult = readOp->operate();
+  test(readOpResult->findInt("outcome")->value() ==
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
-    "Load operator failed");
+    "Read operator failed");
 
   smtk::bridge::polygon::Resource::Ptr manager =
     smtk::dynamic_pointer_cast<smtk::bridge::polygon::Resource>(
-      loadOpResult->findResource("resource")->value(0));
+      readOpResult->findResource("resource")->value(0));
 
   smtk::model::Models models =
     manager->entitiesMatchingFlagsAs<smtk::model::Models>(smtk::model::MODEL_ENTITY, false);

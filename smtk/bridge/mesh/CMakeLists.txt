@@ -5,8 +5,10 @@ set(meshSrcs
   Session.cxx
   Topology.cxx
   operators/EulerCharacteristicRatio.cxx
-  operators/ImportOperation.cxx
-  operators/ExportOperation.cxx
+  operators/Import.cxx
+  operators/Export.cxx
+  operators/Read.cxx
+  operators/Write.cxx
 )
 
 set(meshHeaders
@@ -16,8 +18,10 @@ set(meshHeaders
   Session.h
   Topology.h
   operators/EulerCharacteristicRatio.h
-  operators/ImportOperation.h
-  operators/ExportOperation.h
+  operators/Import.h
+  operators/Export.h
+  operators/Read.h
+  operators/Write.h
 )
 
 add_library(smtkMeshSession ${meshSrcs})
@@ -40,8 +44,10 @@ smtk_install_library(smtkMeshSession)
 # to meshOperationXML) since the operators themselves include
 # the header in their implementations.
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EulerCharacteristicRatio.sbt" meshOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ImportOperation.sbt" meshOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportOperation.sbt" meshOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Import.sbt" meshOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Export.sbt" meshOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" meshOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" meshOperationXML)
 
 # Install the headers
 smtk_public_headers(${meshHeaders})

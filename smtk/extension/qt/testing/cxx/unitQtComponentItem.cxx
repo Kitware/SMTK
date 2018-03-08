@@ -22,8 +22,8 @@
 
 #include "smtk/environment/Environment.h"
 
-#include "smtk/operation/LoadResource.h"
 #include "smtk/operation/Manager.h"
+#include "smtk/operation/operators/ReadResource.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
@@ -314,10 +314,10 @@ int unitQtComponentItem(int argc, char* argv[])
     return 0;
   });
 
-  auto oper = operMgr->create<smtk::operation::LoadResource>();
+  auto oper = operMgr->create<smtk::operation::ReadResource>();
   if (!oper)
   {
-    std::cout << "No load operator\n";
+    std::cout << "No read operator\n";
     return 1;
   }
 
@@ -326,7 +326,7 @@ int unitQtComponentItem(int argc, char* argv[])
   if (result->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
-    std::cout << "Load operator failed\n";
+    std::cout << "Read operator failed\n";
     return 2;
   }
 
@@ -334,7 +334,7 @@ int unitQtComponentItem(int argc, char* argv[])
   auto modelRsrc = std::dynamic_pointer_cast<smtk::model::Manager>(rsrc);
   if (!modelRsrc)
   {
-    std::cout << "Load operator succeeded but had empty output\n";
+    std::cout << "Read operator succeeded but had empty output\n";
     return 4;
   }
   auto qmodel = new qtDescriptivePhraseModel;

@@ -46,7 +46,7 @@
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Loop.h"
 
-#include "smtk/model/operators/LoadSMTKModel.h"
+#include "smtk/operation/operators/ReadResource.h"
 
 #include "smtk/resource/Manager.h"
 
@@ -105,7 +105,6 @@ int main(int argc, char** const argv)
 
   // Register the operators to the operation manager
   {
-    operationManager->registerOperation<smtk::model::LoadSMTKModel>("smtk::model::LoadSMTKModel");
     operationManager->registerOperation<smtk::extension::remus::MeshOperation>(
       "smtk::extension::remus::MeshOperation");
   }
@@ -118,7 +117,8 @@ int main(int argc, char** const argv)
 
   {
     // Create an import operator
-    smtk::model::LoadSMTKModel::Ptr loadOp = operationManager->create<smtk::model::LoadSMTKModel>();
+    smtk::operation::ReadResource::Ptr loadOp =
+      operationManager->create<smtk::operation::ReadResource>();
     if (!loadOp)
     {
       std::cerr << "No load operator\n";
@@ -126,7 +126,7 @@ int main(int argc, char** const argv)
     }
 
     loadOp->parameters()->findFile("filename")->setValue(file_path.c_str());
-    smtk::model::LoadSMTKModel::Result result = loadOp->operate();
+    smtk::operation::ReadResource::Result result = loadOp->operate();
     if (result->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {

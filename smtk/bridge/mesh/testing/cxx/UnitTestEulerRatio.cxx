@@ -10,7 +10,7 @@
 
 #include "smtk/bridge/mesh/Resource.h"
 #include "smtk/bridge/mesh/operators/EulerCharacteristicRatio.h"
-#include "smtk/bridge/mesh/operators/ImportOperation.h"
+#include "smtk/bridge/mesh/operators/Import.h"
 
 #include "smtk/common/UUID.h"
 
@@ -54,8 +54,7 @@ int UnitTestEulerRatio(int argc, char* argv[])
 
   // Register import and euler characteristic ratio operators to the operation manager
   {
-    operationManager->registerOperation<smtk::bridge::mesh::ImportOperation>(
-      "smtk::bridge::mesh::ImportOperation");
+    operationManager->registerOperation<smtk::bridge::mesh::Import>("smtk::bridge::mesh::Import");
     operationManager->registerOperation<smtk::bridge::mesh::EulerCharacteristicRatio>(
       "smtk::bridge::mesh::EulerCharacteristicRatio");
   }
@@ -68,8 +67,8 @@ int UnitTestEulerRatio(int argc, char* argv[])
 
   {
     // Create an import operator
-    smtk::bridge::mesh::ImportOperation::Ptr importOp =
-      operationManager->create<smtk::bridge::mesh::ImportOperation>();
+    smtk::bridge::mesh::Import::Ptr importOp =
+      operationManager->create<smtk::bridge::mesh::Import>();
     if (!importOp)
     {
       std::cerr << "No import operator\n";

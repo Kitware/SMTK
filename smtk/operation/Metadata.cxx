@@ -26,6 +26,8 @@ Metadata::Metadata(const std::string& uniqueName, Operation::Index index,
   , m_index(index)
   , m_specification(specification)
 {
+  // Extract all of the component definitions once, rather than invoking this
+  // call every time Metadata::acceptsComponent() is called.
   ComponentDefinitionVector componentDefinitions = extractComponentDefinitions(specification);
 
   m_acceptsComponent = [=](const smtk::resource::ComponentPtr& component) {
@@ -38,6 +40,11 @@ Metadata::Metadata(const std::string& uniqueName, Operation::Index index,
     }
     return false;
   };
+}
+
+std::set<std::string> Metadata::groups() const
+{
+  return extractTagNames(m_specification);
 }
 
 } // operation namespace

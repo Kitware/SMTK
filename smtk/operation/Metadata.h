@@ -48,6 +48,8 @@ public:
     return m_acceptsComponent(c);
   }
 
+  std::set<std::string> groups() const;
+
   std::function<std::shared_ptr<smtk::operation::Operation>(void)> create;
 
 private:

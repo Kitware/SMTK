@@ -91,6 +91,8 @@ int main(int argc, char* argv[])
     smtk::attribute::DefinitionPtr expDef = collection.createDefinition("ExpDef");
     expDef->setBriefDescription("Sample Expression");
     expDef->setDetailedDescription("Sample Expression for testing\nThere is not much here!");
+    expDef->addTag(smtk::attribute::Tag("My Tag"));
+    expDef->addTag(smtk::attribute::Tag("My Tag with Values", { "value1", "value2", "value3" }));
     smtk::attribute::StringItemDefinitionPtr eitemdef =
       expDef->addItemDefinition<smtk::attribute::StringItemDefinitionPtr>("Expression String");
     smtk::attribute::StringItemDefinitionPtr eitemdef2 =
@@ -188,6 +190,7 @@ int main(int argc, char* argv[])
     item = att->item(2);
     vitem = smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(item);
     smtk::io::AttributeWriter writer;
+    writer.setFileVersion(3);
     smtk::io::Logger logger;
     if (writer.write(sysptr, argv[1], logger))
     {

@@ -15,6 +15,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
+#include "smtk/operation/Group.h"
 #include "smtk/operation/Metadata.h"
 #include "smtk/operation/MetadataContainer.h"
 #include "smtk/operation/Observer.h"
@@ -81,6 +82,9 @@ public:
   /// Given a resource component, return a set of indices for operations that can
   /// accept the component as input.
   std::set<Operation::Index> availableOperations(const smtk::resource::ComponentPtr&) const;
+
+  /// Query the registered operator metadata for operator group names.
+  std::set<std::string> availableGroups() const;
 
 private:
   Manager();

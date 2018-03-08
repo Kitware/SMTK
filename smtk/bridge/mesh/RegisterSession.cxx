@@ -17,14 +17,16 @@
 #include "smtk/attribute/ResourceItem.h"
 
 #include "smtk/bridge/mesh/operators/EulerCharacteristicRatio.h"
-#include "smtk/bridge/mesh/operators/ExportOperation.h"
-#include "smtk/bridge/mesh/operators/ImportOperation.h"
+#include "smtk/bridge/mesh/operators/Export.h"
+#include "smtk/bridge/mesh/operators/Import.h"
+#include "smtk/bridge/mesh/operators/Read.h"
+#include "smtk/bridge/mesh/operators/Write.h"
 
 #include "smtk/bridge/mesh/Resource.h"
 
-#include "smtk/common/Paths.h"
-
-#include "smtk/model/SessionIOJSON.h"
+#include "smtk/operation/groups/ImporterGroup.h"
+#include "smtk/operation/groups/ReaderGroup.h"
+#include "smtk/operation/groups/WriterGroup.h"
 
 namespace smtk
 {
@@ -37,94 +39,24 @@ void registerOperations(smtk::operation::Manager::Ptr& operationManager)
 {
   operationManager->registerOperation<smtk::bridge::mesh::EulerCharacteristicRatio>(
     "smtk::bridge::mesh::EulerCharacteristicRatio");
-  operationManager->registerOperation<smtk::bridge::mesh::ExportOperation>(
-    "smtk::bridge::mesh::ExportOperation");
-  operationManager->registerOperation<smtk::bridge::mesh::ImportOperation>(
-    "smtk::bridge::mesh::ImportOperation");
+  operationManager->registerOperation<smtk::bridge::mesh::Export>("smtk::bridge::mesh::Export");
+  operationManager->registerOperation<smtk::bridge::mesh::Import>("smtk::bridge::mesh::Import");
+  operationManager->registerOperation<smtk::bridge::mesh::Read>("smtk::bridge::mesh::Read");
+  operationManager->registerOperation<smtk::bridge::mesh::Write>("smtk::bridge::mesh::Write");
+
+  smtk::operation::ImporterGroup(operationManager)
+    .registerOperation<smtk::bridge::mesh::Resource, smtk::bridge::mesh::Import>();
+
+  smtk::operation::ReaderGroup(operationManager)
+    .registerOperation<smtk::bridge::mesh::Resource, smtk::bridge::mesh::Read>();
+
+  smtk::operation::WriterGroup(operationManager)
+    .registerOperation<smtk::bridge::mesh::Resource, smtk::bridge::mesh::Write>();
 }
 
 void registerResources(smtk::resource::Manager::Ptr& resourceManager)
 {
-  resourceManager->registerResource<smtk::bridge::mesh::Resource>(
-    [](const std::string& filename) -> smtk::resource::ResourcePtr {
-      // Load file and parse it:
-      smtk::model::SessionIOJSON::json j = smtk::model::SessionIOJSON::loadJSON(filename);
-      if (j.is_null())
-      {
-        return smtk::resource::Resource::Ptr();
-      }
-
-      std::string meshFilename = j.at("Mesh URL");
-
-      // Create an import operator
-      smtk::bridge::mesh::ImportOperation::Ptr importOp =
-        smtk::bridge::mesh::ImportOperation::create();
-      importOp->parameters()->findFile("filename")->setValue(meshFilename);
-
-      // Execute the operation
-      smtk::operation::Operation::Result importOpResult = importOp->operate();
-
-      // Retrieve the resulting resource
-      smtk::attribute::ResourceItemPtr resourceItem =
-        std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(
-          importOpResult->findResource("resource"));
-
-      return resourceItem->value();
-    },
-    [](const smtk::resource::ResourcePtr& rsrc) -> bool {
-      // Downcast the resource into a mesh session resource
-      smtk::bridge::mesh::Resource::Ptr resource =
-        smtk::dynamic_pointer_cast<smtk::bridge::mesh::Resource>(rsrc);
-
-      if (resource == nullptr)
-      {
-        return false;
-      }
-
-      // Serialize rsrc into a set of JSON records:
-      smtk::model::SessionIOJSON::json j = smtk::model::SessionIOJSON::saveJSON(resource);
-      if (j.is_null())
-      {
-        return false;
-      }
-
-      // Access the model associated with this resource
-      smtk::model::Models models =
-        resource->entitiesMatchingFlagsAs<smtk::model::Models>(smtk::model::MODEL_ENTITY, false);
-
-      if (models.size() < 1)
-      {
-        return false;
-      }
-
-      smtk::model::Model model = models[0];
-
-      std::string meshFilename = resource->session()->topology(model)->m_collection->location();
-
-      if (meshFilename.empty())
-      {
-        meshFilename = smtk::common::Paths::stem(rsrc->location()) + ".h5m";
-      }
-
-      j["Mesh URL"] = meshFilename;
-
-      smtk::model::SessionIOJSON::saveModelRecords(j, rsrc->location());
-
-      // Create an export operator
-      smtk::bridge::mesh::ExportOperation::Ptr exportOp =
-        smtk::bridge::mesh::ExportOperation::create();
-      exportOp->parameters()->findFile("filename")->setValue(meshFilename);
-
-      // Set the entity association
-      exportOp->parameters()->associateEntity(model);
-
-      // Execute the operation
-      smtk::operation::Operation::Result exportOpResult = exportOp->operate();
-
-      // Test for success
-      return (exportOpResult->findInt("outcome")->value() ==
-        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED));
-    });
+  resourceManager->registerResource<smtk::bridge::mesh::Resource>();
 }
 }
 }

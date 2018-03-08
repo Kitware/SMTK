@@ -40,7 +40,7 @@ class EulerRatio(smtk.testing.TestCase):
 
     def testMeshing2D(self):
         for modelFile in self.modelFiles:
-            op = smtk.bridge.mesh.ImportOperation.create()
+            op = smtk.bridge.mesh.Import.create()
             fname = op.parameters().findFile('filename')
             fname.setValue(modelFile)
             res = op.operate()

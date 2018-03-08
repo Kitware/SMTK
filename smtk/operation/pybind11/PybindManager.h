@@ -16,7 +16,7 @@
 
 #include "smtk/operation/Manager.h"
 
-#include "smtk/operation/ImportPythonOperation.h"
+#include "smtk/operation/operators/ImportPythonOperation.h"
 #include "smtk/operation/Metadata.h"
 #include "smtk/operation/MetadataContainer.h"
 #include "smtk/operation/Operation.h"

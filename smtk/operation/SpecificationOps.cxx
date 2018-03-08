@@ -13,11 +13,121 @@
 #include "smtk/attribute/Collection.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/Tag.h"
+
+#include <array>
 
 namespace smtk
 {
 namespace operation
 {
+Operation::Parameters extractParameters(
+  Operation::Specification specification, const std::string& operatorName)
+{
+  Operation::Definition parameterDefinition =
+    extractParameterDefinition(specification, operatorName);
+
+  if (parameterDefinition != nullptr)
+  {
+    // Now that we have our operation definition, we access our parameters
+    // attribute.
+
+    // Access all parameters created using this definition.
+    std::vector<Operation::Parameters> parameters;
+    specification->findAttributes(parameterDefinition, parameters);
+
+    if (!parameters.empty())
+    {
+      // If an instance of our parameters exist, use it.
+      return parameters[0];
+    }
+    else
+    {
+      // If no instance of our parameters exist, create one.
+      return specification->createAttribute(parameterDefinition);
+    }
+  }
+  else
+  {
+    // If we cannot access the parameter definition, we cannot access the
+    // parameters either.
+    return Operation::Parameters();
+  }
+}
+
+Operation::Definition extractParameterDefinition(
+  Operation::Specification specification, const std::string& operatorName)
+{
+  Operation::Definition parameterDefinition;
+
+  // Access the base operation definition.
+  Operation::Definition operationBase = specification->findDefinition("operation");
+
+  // Find all definitions that derive from the operation definition.
+  std::vector<Operation::Definition> parameterDefinitions;
+  specification->findAllDerivedDefinitions(operationBase, true, parameterDefinitions);
+
+  // If there is only one derived definition, then it is the one we want.
+  if (parameterDefinitions.size() == 1)
+  {
+    parameterDefinition = parameterDefinitions[0];
+  }
+  else if (!parameterDefinitions.empty())
+  {
+    // If there are more than one derived definitions, then we pick the one
+    // with the same name as our class.
+    for (auto& def : parameterDefinitions)
+    {
+      if (def->type() == operatorName)
+      {
+        parameterDefinition = def;
+        break;
+      }
+    }
+  }
+  return parameterDefinition;
+}
+
+Operation::Definition extractResultDefinition(
+  Operation::Specification specification, const std::string& operatorName)
+{
+  smtk::attribute::DefinitionPtr resultDefinition;
+
+  // Access the base result definition.
+  Operation::Definition resultBase = specification->findDefinition("result");
+
+  // Find all definitions that derive from the result definition.
+  std::vector<Operation::Definition> resultDefinitions;
+  specification->findAllDerivedDefinitions(resultBase, true, resultDefinitions);
+
+  // If there is only one derived definition, then it is the one we want.
+  if (resultDefinitions.size() == 1)
+  {
+    resultDefinition = resultDefinitions[0];
+  }
+  else if (!resultDefinitions.empty())
+  {
+    // If there are more than one derived definitions, then we pick the one
+    // whose type name is keyed for our operation.
+    std::string resultClassName;
+    {
+      std::stringstream s;
+      s << "result(" << operatorName << ")";
+      resultClassName = s.str();
+    }
+
+    for (auto& def : resultDefinitions)
+    {
+      if (def->type() == resultClassName)
+      {
+        resultDefinition = def;
+        break;
+      }
+    }
+  }
+  return resultDefinition;
+}
+
 ResourceAccessMap extractResourcesAndPermissions(Operation::Specification specification)
 {
   ResourceAccessMap resourcesAndPermissions;
@@ -88,9 +198,8 @@ ResourceAccessMap extractResourcesAndPermissions(Operation::Specification specif
 
 ComponentDefinitionVector extractComponentDefinitions(Operation::Specification specification)
 {
-  // If we are passed a bad specification, then nothing its associated operation
-  // can accept no definitions. We return an empty vector of component
-  // definitions.
+  // If we are passed a bad specification, then its associated operation can
+  // accept no definitions. We return an empty vector of component definitions.
   if (specification == nullptr)
   {
     return ComponentDefinitionVector();
@@ -113,6 +222,134 @@ ComponentDefinitionVector extractComponentDefinitions(Operation::Specification s
   }
 
   return componentItemDefinitions;
+}
+
+std::set<std::string> extractTagNames(Operation::Specification specification)
+{
+  std::set<std::string> tagNames;
+
+  // If we are passed a bad specification, then its associated operation cannot
+  //  be in a tag. We return an empty set of strings.
+  if (specification == nullptr)
+  {
+    return tagNames;
+  }
+
+  smtk::attribute::DefinitionPtr operationBase = specification->findDefinition("operation");
+
+  // Find all definitions that derive from the operation definition.
+  std::vector<smtk::attribute::DefinitionPtr> definitions;
+  specification->findAllDerivedDefinitions(operationBase, true, definitions);
+
+  // For each definition, access the tags.
+  for (auto& definition : definitions)
+  {
+    auto tags = definition->tags();
+    for (auto& tag : tags)
+    {
+      tagNames.insert(tag.name());
+    }
+  }
+
+  return tagNames;
+}
+
+namespace
+{
+enum class Action
+{
+  ADD,
+  REMOVE,
+  QUERY
+};
+
+static std::set<std::string> emptyTagValues;
+
+bool actOnTag(Operation::Specification specification, const std::string& tagName, Action action,
+  const std::set<std::string>& tagValues)
+{
+  // If we are passed a bad specification, then its associated operation cannot
+  //  be in a tag.
+  if (specification == nullptr)
+  {
+    return false;
+  }
+
+  smtk::attribute::DefinitionPtr operationBase = specification->findDefinition("operation");
+
+  // Find all definitions that derive from the operation definition.
+  std::vector<smtk::attribute::DefinitionPtr> definitions;
+  specification->findAllDerivedDefinitions(operationBase, true, definitions);
+
+  bool modified = false;
+
+  // For each definition, access the tag.
+  for (auto& definition : definitions)
+  {
+    auto tag = definition->tag(tagName);
+    // If we are adding...
+    if (action == Action::ADD)
+    {
+      /// ...and the tag doesn't already exist, create it.
+      if (!tag)
+      {
+        modified |= definition->addTag(smtk::attribute::Tag(tagName, tagValues));
+      }
+      else
+      {
+        // ...and the tag already exists, add the new values to the existing tag.
+        for (auto& tagValue : tagValues)
+        {
+          modified |= tag->add(tagValue);
+        }
+      }
+    }
+    else if (action == Action::REMOVE)
+    {
+      // If we are removing and the tag exists, remove the tag.
+      if (tag)
+      {
+        modified |= definition->removeTag(tagName);
+      }
+    }
+    else if (action == Action::QUERY)
+    {
+      // If we are querying and the tag exists, set the tag values. We
+      // const-cast here because the input set of strings is local to the
+      // calling method, and there is no out-facing API to access this function.
+      if (tag)
+      {
+        const_cast<std::set<std::string>&>(tagValues) = tag->values();
+        modified = true;
+      }
+    }
+  }
+
+  return modified;
+}
+}
+
+bool addTag(Operation::Specification specification, const std::string& tagName)
+{
+  return actOnTag(specification, tagName, Action::ADD, emptyTagValues);
+}
+
+bool addTag(Operation::Specification specification, const std::string& tagName,
+  const std::set<std::string>& tagValues)
+{
+  return actOnTag(specification, tagName, Action::ADD, tagValues);
+}
+
+bool removeTag(Operation::Specification specification, const std::string& tagName)
+{
+  return actOnTag(specification, tagName, Action::REMOVE, emptyTagValues);
+}
+
+std::set<std::string> tagValues(Operation::Specification specification, const std::string& tagName)
+{
+  std::set<std::string> tagValues;
+  actOnTag(specification, tagName, Action::QUERY, tagValues);
+  return tagValues;
 }
 
 } // operation namespace

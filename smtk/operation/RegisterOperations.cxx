@@ -11,10 +11,10 @@
 //=============================================================================
 #include "smtk/operation/RegisterOperations.h"
 
-#include "smtk/operation/CreateResource.h"
-#include "smtk/operation/ImportPythonOperation.h"
-#include "smtk/operation/LoadResource.h"
-#include "smtk/operation/SaveResource.h"
+#include "smtk/operation/operators/ImportPythonOperation.h"
+#include "smtk/operation/operators/ImportResource.h"
+#include "smtk/operation/operators/ReadResource.h"
+#include "smtk/operation/operators/WriteResource.h"
 
 namespace smtk
 {
@@ -25,12 +25,12 @@ void registerOperations(smtk::operation::Manager::Ptr& operationManager)
 {
   operationManager->registerOperation<smtk::operation::ImportPythonOperation>(
     "smtk::operation::ImportPythonOperation");
-  operationManager->registerOperation<smtk::operation::CreateResource>(
-    "smtk::operation::CreateResource");
-  operationManager->registerOperation<smtk::operation::LoadResource>(
-    "smtk::operation::LoadResource");
-  operationManager->registerOperation<smtk::operation::SaveResource>(
-    "smtk::operation::SaveResource");
+  operationManager->registerOperation<smtk::operation::ImportResource>(
+    "smtk::operation::ImportResource");
+  operationManager->registerOperation<smtk::operation::ReadResource>(
+    "smtk::operation::ReadResource");
+  operationManager->registerOperation<smtk::operation::WriteResource>(
+    "smtk::operation::WriteResource");
 }
 }
 }

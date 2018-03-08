@@ -22,13 +22,13 @@
 #include "smtk/model/Session.h"
 #include "smtk/model/Vertex.h"
 
-#include "smtk/operation/LoadResource.h"
 #include "smtk/operation/RegisterOperations.h"
-#include "smtk/operation/SaveResource.h"
+#include "smtk/operation/operators/ImportResource.h"
+#include "smtk/operation/operators/ReadResource.h"
+#include "smtk/operation/operators/WriteResource.h"
 
 #include "smtk/bridge/mesh/RegisterSession.h"
 #include "smtk/bridge/mesh/Resource.h"
-#include "smtk/bridge/mesh/operators/ImportOperation.h"
 
 #include "smtk/operation/Manager.h"
 
@@ -137,8 +137,8 @@ int UnitTestReadWrite(int argc, char* argv[])
 
   {
     // Create an import operator
-    smtk::bridge::mesh::ImportOperation::Ptr importOp =
-      operationManager->create<smtk::bridge::mesh::ImportOperation>();
+    smtk::operation::ImportResource::Ptr importOp =
+      operationManager->create<smtk::operation::ImportResource>();
     if (!importOp)
     {
       std::cerr << "No import operator\n";
@@ -160,12 +160,14 @@ int UnitTestReadWrite(int argc, char* argv[])
     resource = std::dynamic_pointer_cast<smtk::bridge::mesh::Resource>(resourceItem->value());
 
     // Retrieve the resulting model
-    smtk::attribute::ComponentItemPtr componentItem =
-      std::dynamic_pointer_cast<smtk::attribute::ComponentItem>(
-        importOpResult->findComponent("model"));
+    smtk::model::Models models =
+      resource->entitiesMatchingFlagsAs<smtk::model::Models>(smtk::model::MODEL_ENTITY, false);
 
-    // Access the generated model
-    model = std::dynamic_pointer_cast<smtk::model::Entity>(componentItem->value());
+    std::cout << "found " << models.size() << " models" << std::endl;
+    if (models.size() < 1)
+      return 1;
+
+    model = models[0].entityRecord();
 
     // Test for success
     if (importOpResult->findInt("outcome")->value() !=
@@ -183,33 +185,33 @@ int UnitTestReadWrite(int argc, char* argv[])
   resource->setLocation(writeFilePath);
 
   {
-    smtk::operation::SaveResource::Ptr saveOp =
-      operationManager->create<smtk::operation::SaveResource>();
+    smtk::operation::WriteResource::Ptr writeOp =
+      operationManager->create<smtk::operation::WriteResource>();
 
-    test(saveOp != nullptr, "No save operator");
+    test(writeOp != nullptr, "No write operator");
 
-    saveOp->parameters()->findResource("resource")->setValue(resource);
+    writeOp->parameters()->findResource("resource")->setValue(resource);
 
-    smtk::operation::Operation::Result saveOpResult = saveOp->operate();
-    test(saveOpResult->findInt("outcome")->value() ==
+    smtk::operation::Operation::Result writeOpResult = writeOp->operate();
+    test(writeOpResult->findInt("outcome")->value() ==
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
-      "Save operator failed");
+      "Write operator failed");
 
-    smtk::operation::LoadResource::Ptr loadOp =
-      operationManager->create<smtk::operation::LoadResource>();
+    smtk::operation::ReadResource::Ptr readOp =
+      operationManager->create<smtk::operation::ReadResource>();
 
-    test(loadOp != nullptr, "No load operator");
+    test(readOp != nullptr, "No read operator");
 
-    loadOp->parameters()->findFile("filename")->setValue(writeFilePath);
+    readOp->parameters()->findFile("filename")->setValue(writeFilePath);
 
-    smtk::operation::Operation::Result loadOpResult = loadOp->operate();
-    test(loadOpResult->findInt("outcome")->value() ==
+    smtk::operation::Operation::Result readOpResult = readOp->operate();
+    test(readOpResult->findInt("outcome")->value() ==
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
-      "Load operator failed");
+      "Read operator failed");
 
     smtk::bridge::mesh::Resource::Ptr resource2 =
       smtk::dynamic_pointer_cast<smtk::bridge::mesh::Resource>(
-        loadOpResult->findResource("resource")->value(0));
+        readOpResult->findResource("resource")->value(0));
 
     cleanup(writeFilePath);
 

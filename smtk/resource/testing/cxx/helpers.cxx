@@ -18,6 +18,9 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/ResourceItem.h"
+
+#include "smtk/operation/operators/ReadResource.h"
 
 #include "smtk/resource/Metadata.h"
 
@@ -40,8 +43,10 @@ ResourceArray loadTestResources(
     return result;
   }
 
-  auto resource = resourceManager->read<smtk::model::Manager>(argv[1]);
-  result.push_back(resource);
+  smtk::operation::ReadResource::Ptr read = smtk::operation::ReadResource::create();
+  read->parameters()->findFile("filename")->setValue(argv[1]);
+  auto opResult = read->operate();
+  result.push_back(opResult->findResource("resource")->value(0));
 
   return result;
 }

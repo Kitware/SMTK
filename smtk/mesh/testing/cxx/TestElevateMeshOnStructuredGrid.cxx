@@ -20,7 +20,7 @@
 #include "smtk/attribute/VoidItem.h"
 
 #include "smtk/bridge/mesh/Resource.h"
-#include "smtk/bridge/mesh/operators/ImportOperation.h"
+#include "smtk/bridge/mesh/operators/Import.h"
 
 #include "smtk/extension/vtk/source/PointCloudFromVTKAuxiliaryGeometry.h"
 #include "smtk/extension/vtk/source/StructuredGridFromVTKAuxiliaryGeometry.h"
@@ -115,7 +115,7 @@ int TestElevateMeshOnStructuredGrid(int argc, char* argv[])
   (void)argc;
   (void)argv;
 
-  smtk::operation::Operation::Ptr importOp = smtk::bridge::mesh::ImportOperation::create();
+  smtk::operation::Operation::Ptr importOp = smtk::bridge::mesh::Import::create();
 
   if (!importOp)
   {

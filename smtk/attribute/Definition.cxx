@@ -56,6 +56,60 @@ Definition::~Definition()
 {
 }
 
+const Tag* Definition::tag(const std::string& name) const
+{
+  const Tag* tag = nullptr;
+
+  auto t = this->m_tags.find(Tag(name));
+  if (t != this->m_tags.end())
+  {
+    tag = &(*t);
+  }
+
+  return tag;
+}
+
+Tag* Definition::tag(const std::string& name)
+{
+  const Tag* tag = nullptr;
+
+  auto t = this->m_tags.find(Tag(name));
+  if (t != this->m_tags.end())
+  {
+    tag = &(*t);
+  }
+
+  // Tags are ordered according to their name. This name is set at construction,
+  // and there is deliberately no API to modify the name after construction. Tag
+  // values are editable, however. Rather than make Tag values mutable, we
+  // perform a const_cast here to facilitate Tag value modification. This does
+  // not change the ordering of the Tag in the Tags set, so we do not break our
+  // contract with std::set.
+  return const_cast<Tag*>(tag);
+}
+
+bool Definition::addTag(const Tag& tag)
+{
+  auto t = this->m_tags.find(tag);
+  if (t == this->m_tags.end())
+  {
+    this->m_tags.insert(tag);
+    return true;
+  }
+  return false;
+}
+
+bool Definition::removeTag(const std::string& name)
+{
+  auto t = this->m_tags.find(Tag(name));
+  if (t != this->m_tags.end())
+  {
+    this->m_tags.erase(t);
+    return true;
+  }
+  return false;
+}
+
 bool Definition::isA(smtk::attribute::ConstDefinitionPtr targetDef) const
 {
   // Walk up the inheritence tree until we either hit the root or

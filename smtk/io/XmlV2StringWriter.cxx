@@ -78,70 +78,7 @@ const char* getValueForXMLElement(const std::string& v)
 template <typename T>
 std::string getValueForXMLElement(const T& v, std::string& sep)
 {
-  std::ostringstream token;
-  if (v.empty())
-    return token.str();
-
-  typename T::const_iterator it;
-  std::set<char> notSep;
-  if (sep.empty())
-  {
-    // Find all the characters that cannot serve as a separator
-    // Note that we need to do this even when v.size() == 1
-    // because some locales might use our preferred separator
-    // in a non-separator-role (e.g., "3.14" is written "3,14"
-    // in some locales), so we must ensure that the single value
-    // in v does not contain the default separator.
-    for (it = v.begin(); it != v.end(); ++it)
-    {
-      token.precision(17);
-      token << *it;
-      std::string::const_iterator sit;
-      std::string entry = token.str();
-      for (sit = entry.begin(); sit != entry.end(); ++sit)
-        notSep.insert(*sit);
-      token.str(std::string());
-      token.clear();
-    }
-    // Try some preferred separators in order of preference.
-    static const char preferredSeps[] = ",;|:#@!.-=_`?+/\\";
-    int preferredSepsLen = sizeof(preferredSeps) / sizeof(preferredSeps[0]);
-    char finalSep = '\0';
-    for (int i = 0; i < preferredSepsLen; ++i)
-      if (notSep.find(preferredSeps[i]) == notSep.end())
-      {
-        finalSep = preferredSeps[i];
-        break;
-      }
-    // OK, desperately try any character at all.
-    if (!finalSep)
-      for (int i = 1; i < 255; ++i)
-        if (notSep.find(preferredSeps[i]) == notSep.end())
-        {
-          finalSep = preferredSeps[i];
-          break;
-        }
-    if (!finalSep)
-    {
-      std::cerr << "Tokens use every single possible character; no separator found. Using comma.\n";
-      finalSep = ',';
-    }
-    // Return whatever separator we came up with to the caller:
-    sep = finalSep;
-  }
-  // Now accumulate values into an output string.
-  token.clear();
-  token.precision(17);
-  it = v.begin();
-  token << *it;
-  ++it;
-  for (; it != v.end(); ++it)
-  {
-    token.precision(17);
-    token << sep << *it;
-  }
-
-  return token.str();
+  return smtk::io::XmlV2StringWriter::concatenate(v, sep);
 }
 
 template <typename ItemDefType>
@@ -451,102 +388,19 @@ void XmlV2StringWriter::processAttributeInformation()
 void XmlV2StringWriter::processDefinition(
   xml_node& definitions, xml_node& attributes, smtk::attribute::DefinitionPtr def)
 {
-  std::size_t i, n;
-
   if (this->m_includeDefinitions)
   {
-    xml_node itemDefNode, itemDefNodes, child, node = definitions.append_child();
-
+    xml_node node = definitions.append_child();
     node.set_name("AttDef");
-    node.append_attribute("Type").set_value(def->type().c_str());
-    if (def->label() != "")
-    {
-      node.append_attribute("Label").set_value(def->label().c_str());
-    }
-    if (def->baseDefinition())
-    {
-      node.append_attribute("BaseType").set_value(def->baseDefinition()->type().c_str());
-    }
-    else
-    {
-      node.append_attribute("BaseType").set_value("");
-    }
-    node.append_attribute("Version") = def->version();
-    if (def->isAbstract())
-    {
-      node.append_attribute("Abstract").set_value("true");
-    }
-    if (def->advanceLevel())
-    {
-      node.append_attribute("AdvanceLevel") = def->advanceLevel();
-    }
-    if (def->isUnique())
-    { // true is the default
-      node.append_attribute("Unique").set_value("true");
-    }
-    else
-    {
-      node.append_attribute("Unique").set_value("false");
-    }
-    if (def->rootName() != def->type())
-    {
-      node.append_attribute("RootName").set_value(def->rootName().c_str());
-    }
-    if (def->isNodal())
-    {
-      node.append_attribute("Nodal").set_value("true");
-    }
-    // Save Color Information
-    std::string s;
-    if (def->isNotApplicableColorSet())
-    {
-      s = this->encodeColor(def->notApplicableColor());
-      node.append_child("NotApplicableColor").text().set(s.c_str());
-    }
-    if (def->isDefaultColorSet())
-    {
-      s = this->encodeColor(def->defaultColor());
-      node.append_child("DefaultColor").text().set(s.c_str());
-    }
-
-    if (def->localAssociationRule())
-    {
-      // Create association element if we need to.
-      xml_node assocDefNode = node.append_child("AssociationsDef");
-      ModelEntityItemDefinitionPtr assocRule = def->localAssociationRule();
-      this->processItemDefinition(assocDefNode, assocRule);
-    }
-
-    if (def->briefDescription() != "")
-    {
-      node.append_child("BriefDescription").text().set(def->briefDescription().c_str());
-    }
-    if (def->detailedDescription() != "")
-    {
-      node.append_child("DetailedDescription").text().set(def->detailedDescription().c_str());
-    }
-    // Now lets process its items
-    n = def->numberOfItemDefinitions();
-    // Does this definition have items not derived from its base def?
-    if (n != def->itemOffset())
-    {
-      itemDefNodes = node.append_child("ItemDefinitions");
-      for (i = def->itemOffset(); i < n; i++)
-      {
-        itemDefNode = itemDefNodes.append_child();
-        itemDefNode.set_name(
-          Item::type2String(def->itemDefinition(static_cast<int>(i))->type()).c_str());
-        this->processItemDefinition(itemDefNode, def->itemDefinition(static_cast<int>(i)));
-      }
-    }
+    this->processDefinitionInternal(node, def);
   }
   if (this->m_includeInstances)
   {
     // Process all attributes based on this class
     std::vector<smtk::attribute::AttributePtr> atts;
     this->m_collection->findDefinitionAttributes(def->type(), atts);
-    n = atts.size();
-    for (i = 0; i < n; i++)
+    std::size_t n = atts.size();
+    for (std::size_t i = 0; i < n; i++)
     {
       this->processAttribute(attributes, atts[i]);
     }
@@ -554,10 +408,97 @@ void XmlV2StringWriter::processDefinition(
   // Now process all of its derived classes
   std::vector<smtk::attribute::DefinitionPtr> defs;
   this->m_collection->derivedDefinitions(def, defs);
-  n = defs.size();
-  for (i = 0; i < n; i++)
+  std::size_t n = defs.size();
+  for (std::size_t i = 0; i < n; i++)
   {
     this->processDefinition(definitions, attributes, defs[i]);
+  }
+}
+
+void XmlV2StringWriter::processDefinitionInternal(
+  xml_node& definition, smtk::attribute::DefinitionPtr def)
+{
+  definition.append_attribute("Type").set_value(def->type().c_str());
+  if (def->label() != "")
+  {
+    definition.append_attribute("Label").set_value(def->label().c_str());
+  }
+  if (def->baseDefinition())
+  {
+    definition.append_attribute("BaseType").set_value(def->baseDefinition()->type().c_str());
+  }
+  else
+  {
+    definition.append_attribute("BaseType").set_value("");
+  }
+  definition.append_attribute("Version") = def->version();
+  if (def->isAbstract())
+  {
+    definition.append_attribute("Abstract").set_value("true");
+  }
+  if (def->advanceLevel())
+  {
+    definition.append_attribute("AdvanceLevel") = def->advanceLevel();
+  }
+  if (def->isUnique())
+  { // true is the default
+    definition.append_attribute("Unique").set_value("true");
+  }
+  else
+  {
+    definition.append_attribute("Unique").set_value("false");
+  }
+  if (def->rootName() != def->type())
+  {
+    definition.append_attribute("RootName").set_value(def->rootName().c_str());
+  }
+  if (def->isNodal())
+  {
+    definition.append_attribute("Nodal").set_value("true");
+  }
+  // Save Color Information
+  std::string s;
+  if (def->isNotApplicableColorSet())
+  {
+    s = this->encodeColor(def->notApplicableColor());
+    definition.append_child("NotApplicableColor").text().set(s.c_str());
+  }
+  if (def->isDefaultColorSet())
+  {
+    s = this->encodeColor(def->defaultColor());
+    definition.append_child("DefaultColor").text().set(s.c_str());
+  }
+
+  if (def->localAssociationRule())
+  {
+    // Create association element if we need to.
+    xml_node assocDefNode = definition.append_child("AssociationsDef");
+    ModelEntityItemDefinitionPtr assocRule = def->localAssociationRule();
+    this->processItemDefinition(assocDefNode, assocRule);
+  }
+
+  if (def->briefDescription() != "")
+  {
+    definition.append_child("BriefDescription").text().set(def->briefDescription().c_str());
+  }
+  if (def->detailedDescription() != "")
+  {
+    definition.append_child("DetailedDescription").text().set(def->detailedDescription().c_str());
+  }
+  // Now lets process its items
+  std::size_t n = def->numberOfItemDefinitions();
+  // Does this definition have items not derived from its base def?
+  if (n != def->itemOffset())
+  {
+    xml_node itemDefNodes = definition.append_child("ItemDefinitions");
+    xml_node itemDefNode;
+    for (std::size_t i = def->itemOffset(); i < n; i++)
+    {
+      itemDefNode = itemDefNodes.append_child();
+      itemDefNode.set_name(
+        Item::type2String(def->itemDefinition(static_cast<int>(i))->type()).c_str());
+      this->processItemDefinition(itemDefNode, def->itemDefinition(static_cast<int>(i)));
+    }
   }
 }
 

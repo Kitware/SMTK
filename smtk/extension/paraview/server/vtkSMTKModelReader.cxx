@@ -26,7 +26,7 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/SessionRef.h"
 
-#include "smtk/operation/LoadResource.h"
+#include "smtk/operation/operators/ReadResource.h"
 
 #include "smtk/resource/Manager.h"
 
@@ -157,7 +157,7 @@ bool vtkSMTKModelReader::LoadFile()
     return false;
   }
 
-  auto oper = operMgr->create<smtk::operation::LoadResource>();
+  auto oper = operMgr->create<smtk::operation::ReadResource>();
   if (!oper)
   {
     return false;

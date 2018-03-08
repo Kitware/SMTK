@@ -12,23 +12,25 @@
 #define PUGIXML_HEADER_ONLY
 #include "pugixml/src/pugixml.cpp"
 
-#include "smtk/resource/Component.h"
-#include "smtk/resource/Manager.h"
-#include "smtk/resource/Resource.h"
-
-#include "smtk/model/Entity.h"
-#include "smtk/model/EntityRef.h"
-#include "smtk/model/Manager.h"
-
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/DateTimeItemDefinition.h"
+#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/ResourceItemDefinition.h"
 
 #include "smtk/common/DateTimeZonePair.h"
+#include "smtk/common/StringUtil.h"
+
+#include "smtk/model/Entity.h"
+#include "smtk/model/EntityRef.h"
+#include "smtk/model/Manager.h"
+
+#include "smtk/resource/Component.h"
+#include "smtk/resource/Manager.h"
+#include "smtk/resource/Resource.h"
 
 using namespace pugi;
 using namespace smtk::io;
@@ -110,6 +112,41 @@ void XmlDocV3Parser::process(xml_document& doc)
   }
 
   this->process(amnode);
+}
+
+void XmlDocV3Parser::processDefinition(xml_node& defNode, smtk::attribute::DefinitionPtr def)
+{
+  // we just need to process Tags added in V3
+  this->XmlDocV2Parser::processDefinition(defNode, def);
+  xml_node tagsNode = defNode.child("Tags");
+  if (tagsNode)
+  {
+    for (xml_node tagNode = tagsNode.child("Tag"); tagNode; tagNode = tagNode.next_sibling("Tag"))
+    {
+      xml_attribute name_att = tagNode.attribute("Name");
+      std::string values = tagNode.text().get();
+      if (values.empty())
+      {
+        bool success = def->addTag(smtk::attribute::Tag(name_att.value()));
+        if (!success)
+        {
+          smtkWarningMacro(m_logger, "Could not add tag \"" << name_att.value() << "\"");
+        }
+      }
+      else
+      {
+        xml_attribute sep_att = tagNode.attribute("Sep");
+        std::string sep = sep_att ? sep_att.value() : ",";
+        std::vector<std::string> vals = smtk::common::StringUtil::split(values, sep, false, false);
+        bool success = def->addTag(
+          smtk::attribute::Tag(name_att.value(), std::set<std::string>(vals.begin(), vals.end())));
+        if (!success)
+        {
+          smtkWarningMacro(m_logger, "Could not add tag \"" << name_att.value() << "\"");
+        }
+      }
+    }
+  }
 }
 
 void XmlDocV3Parser::processDateTimeDef(
