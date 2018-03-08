@@ -26,7 +26,8 @@ if(SMTK_ENABLE_POLYGON_SESSION AND SMTK_DATA_DIR)
            COMMAND $<TARGET_FILE:UnitTestDelaunayMeshWorker>
                    "${SMTK_DATA_DIR}/mesh/2d/boxWithHole.smtk")
   set_tests_properties(UnitTestDelaunayMeshWorker PROPERTIES
-                       LABELS "ExtDelaunay")
+                       LABELS "ExtDelaunay"
+                       SKIP_RETURN_CODE 125)
 
   add_executable(TestDelaunayMeshWorker
                  TestDelaunayMeshWorker.cxx)

@@ -164,5 +164,8 @@ class TestActiveDelaunayMeshWorker(smtk.testing.TestCase):
         self.meshServerLauncher.terminate()
 
 if __name__ == '__main__':
+    print('This test has been disabled until mesh workers have been updated.')
+    sys.exit(125)
+
     smtk.testing.process_arguments()
     unittest.main()

@@ -111,5 +111,9 @@ class TestPolygonImport(smtk.testing.TestCase):
 
 
 if __name__ == '__main__':
+    print(
+        'This test has been disabled until SMTK\'s simple.py can be updated.')
+    sys.exit(125)
+
     smtk.testing.process_arguments()
     smtk.testing.main()

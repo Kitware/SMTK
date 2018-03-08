@@ -72,6 +72,9 @@ const std::vector<std::string> absolute_search_paths()
 
 int main(int argc, char** const argv)
 {
+  std::cout << "This test has been disabled until mesh workers have been updated." << std::endl;
+  return 125;
+
   if (argc == 1)
   {
     std::cout << "Usage: UnitTestDelaunayMesh <polygon_model.smtk>" << std::endl;
