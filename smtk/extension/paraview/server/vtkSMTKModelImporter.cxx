@@ -302,6 +302,7 @@ bool vtkSMTKModelImporter::LoadFile()
   auto modelRsrc = std::dynamic_pointer_cast<smtk::model::Manager>(rsrc);
   if (!modelRsrc)
   {
+    vtkWarningMacro("Cannot access resource from succesful import.");
     return false;
   }
 
