@@ -66,7 +66,7 @@ void vtkSMTKModelImporter::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "ModelSource: " << this->ModelSource << "\n";
 }
 
-bool vtkSMTKModelImporter::ScopeImporterForResource(const std::string& uniqueName)
+bool vtkSMTKModelImporter::SetImporterResourceScope(const std::string& uniqueName)
 {
   smtk::resource::Manager::Ptr rsrcMgr = this->Wrapper
     ? this->Wrapper->GetResourceManager()
@@ -84,7 +84,7 @@ bool vtkSMTKModelImporter::ScopeImporterForResource(const std::string& uniqueNam
   return false;
 }
 
-bool vtkSMTKModelImporter::ScopeImporterForResource(const smtk::resource::Resource::Index& index)
+bool vtkSMTKModelImporter::SetImporterResourceScope(const smtk::resource::Resource::Index& index)
 {
   smtk::resource::Manager::Ptr rsrcMgr = this->Wrapper
     ? this->Wrapper->GetResourceManager()
@@ -102,7 +102,7 @@ bool vtkSMTKModelImporter::ScopeImporterForResource(const smtk::resource::Resour
   return false;
 }
 
-const std::string& vtkSMTKModelImporter::Scope() const
+const std::string& vtkSMTKModelImporter::GetImporterResourceScope() const
 {
   static std::string allTypes = "all";
   static std::string noTypes = "none";
