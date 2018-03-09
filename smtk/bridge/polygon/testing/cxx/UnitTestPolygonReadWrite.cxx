@@ -134,8 +134,6 @@ int UnitTestPolygonReadWrite(int argc, char* argv[])
   // resources will be automatically registered to the resource manager).
   operationManager->registerResourceManager(resourceManager);
 
-  smtk::model::Entity::Ptr model;
-
   // Create an "import" operator
   smtk::operation::ImportResource::Ptr importOp =
     operationManager->create<smtk::operation::ImportResource>();
