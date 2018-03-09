@@ -38,7 +38,32 @@ public:
     : ResourceIOGroup(type_name, manager)
   {
   }
+
+  // Given a file name, return the set of operators that accept the input file.
+  std::set<Operation::Index> operationsForFileName(const std::string&) const;
+
+  // Given a resource type and a file name, return the set of operators that
+  // accept the input file and return a resource of the given type.
+  template <typename ResourceType>
+  std::set<Operation::Index> operationsForResourceAndFileName(const std::string&) const;
+
+  // Given a resource name and a file name, return the set of operators that
+  // accept the input file and return a resource of the given type.
+  std::set<Operation::Index> operationsForResourceAndFileName(
+    const std::string&, const std::string&) const;
+
+private:
+  // Given a set of operation indices, remove the ones that do not accept the
+  // given file name.
+  void filterOperationsThatRejectFileName(std::set<Operation::Index>&, const std::string&) const;
 };
+
+template <typename ResourceType>
+std::set<Operation::Index> ImporterGroup::operationsForResourceAndFileName(
+  const std::string& fileName) const
+{
+  return operationsForResourceAndFileName(smtk::resource::name<ResourceType>(), fileName);
+}
 }
 }
 

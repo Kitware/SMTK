@@ -11,6 +11,7 @@ set(operationSrcs
   SpecificationOps.cxx
   XMLOperation.cxx
 
+  groups/ImporterGroup.cxx
   groups/ReaderGroup.cxx
   groups/ResourceIOGroup.cxx
   groups/WriterGroup.cxx

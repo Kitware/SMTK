@@ -19,42 +19,73 @@ namespace operation
 
 const std::string ResourceIOGroup::m_defaultFileItemName = "filename";
 
-smtk::attribute::FileItem::Ptr ResourceIOGroup::fileItemForOperation(
-  const std::string& uniqueName) const
+const std::string& ResourceIOGroup::fileItemNameForOperation(const std::string& uniqueName) const
 {
-  Operation::Specification spec = specification(uniqueName);
-  if (spec == nullptr)
-  {
-    return smtk::attribute::FileItem::Ptr();
-  }
-
-  Operation::Parameters parameters = extractParameters(spec, uniqueName);
-  return parameters->findFile(*(m_fileItemName.values(uniqueName).begin()));
+  return *(m_fileItemName.values(uniqueName).begin());
 }
 
-smtk::attribute::FileItem::Ptr ResourceIOGroup::fileItemForOperation(
-  const Operation::Index& index) const
+const std::string& ResourceIOGroup::fileItemNameForOperation(const Operation::Index& index) const
 {
+  static const std::string nullString = "";
   auto manager = m_manager.lock();
   if (manager == nullptr)
   {
-    return smtk::attribute::FileItem::Ptr();
+    return nullString;
   }
 
   auto metadata = manager->metadata().get<IndexTag>().find(index);
   if (metadata == manager->metadata().get<IndexTag>().end())
   {
-    return smtk::attribute::FileItem::Ptr();
+    return nullString;
+  }
+
+  return *(m_fileItemName.values(metadata->uniqueName()).begin());
+}
+
+smtk::attribute::FileItemDefinition::Ptr ResourceIOGroup::fileItemDefinitionForOperation(
+  const std::string& uniqueName) const
+{
+  Operation::Specification spec = specification(uniqueName);
+  if (spec == nullptr)
+  {
+    return smtk::attribute::FileItemDefinition::Ptr();
+  }
+
+  Operation::Definition parameterDefinition = extractParameterDefinition(spec, uniqueName);
+  int i = parameterDefinition->findItemPosition(*(m_fileItemName.values(uniqueName).begin()));
+  assert(i >= 0);
+  return std::dynamic_pointer_cast<smtk::attribute::FileItemDefinition>(
+    parameterDefinition->itemDefinition(i));
+}
+
+smtk::attribute::FileItemDefinition::Ptr ResourceIOGroup::fileItemDefinitionForOperation(
+  const Operation::Index& index) const
+{
+  auto manager = m_manager.lock();
+  if (manager == nullptr)
+  {
+    return smtk::attribute::FileItemDefinition::Ptr();
+  }
+
+  auto metadata = manager->metadata().get<IndexTag>().find(index);
+  if (metadata == manager->metadata().get<IndexTag>().end())
+  {
+    return smtk::attribute::FileItemDefinition::Ptr();
   }
 
   Operation::Specification spec = specification(metadata->uniqueName());
   if (spec == nullptr)
   {
-    return smtk::attribute::FileItem::Ptr();
+    return smtk::attribute::FileItemDefinition::Ptr();
   }
 
-  Operation::Parameters parameters = extractParameters(spec, metadata->uniqueName());
-  return parameters->findFile(*(m_fileItemName.values(index).begin()));
+  Operation::Definition parameterDefinition =
+    extractParameterDefinition(spec, metadata->uniqueName());
+  int i =
+    parameterDefinition->findItemPosition(*(m_fileItemName.values(metadata->uniqueName()).begin()));
+  assert(i >= 0);
+  return std::dynamic_pointer_cast<smtk::attribute::FileItemDefinition>(
+    parameterDefinition->itemDefinition(i));
 }
 
 std::string ResourceIOGroup::resourceForOperation(const Operation::Index& index) const

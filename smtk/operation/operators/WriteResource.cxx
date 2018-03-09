@@ -103,8 +103,8 @@ smtk::operation::Operation::Result WriteResource::operateInternal()
     }
 
     // Set the local writer's filename field, if there is one.
-    smtk::attribute::FileItem::Ptr writerFileItem =
-      writerGroup.fileItemForOperation(writeOperation->index());
+    smtk::attribute::FileItem::Ptr writerFileItem = writeOperation->parameters()->findFile(
+      writerGroup.fileItemNameForOperation(writeOperation->index()));
 
     // A writer may not accept a filename input. If this is the case and a file
     // name is requested by the user, warn and continue.
