@@ -70,8 +70,6 @@ int main()
 
   smtk::attribute::DefinitionPtr def = att->definition();
 
-  const smtk::attribute::Tag* tag;
-
   for (auto& tag : def->tags())
   {
     std::cout << "tag: " << tag.name() << std::endl;
@@ -88,6 +86,7 @@ int main()
   }
 
   // Test 2: access a tag
+  const smtk::attribute::Tag* tag;
   {
     tag = def->tag("My Tag");
     if (!tag)
@@ -115,7 +114,7 @@ int main()
       return -1;
     }
 
-    std::array<std::string, 3> value{ "value1", "value2", "value3" };
+    std::array<std::string, 3> value{ { "value1", "value2", "value3" } };
 
     for (std::size_t i = 0; i < 3; i++)
     {
