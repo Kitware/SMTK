@@ -473,9 +473,9 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     # the other directories (since the other directories will likely include the
     # location of the module's install).
     list(INSERT smtk_pythonpaths 0
-      "${PROJECT_BINARY_DIR}${envsep}${PROJECT_BINARY_DIR}/lib")
+      "${CMAKE_BINARY_DIR}${envsep}${CMAKE_BINARY_DIR}/lib")
     list(INSERT smtk_libpaths 0
-      "${PROJECT_BINARY_DIR}/lib")
+      "${CMAKE_BINARY_DIR}/lib")
     if (CMAKE_RUNTIME_OUTPUT_DIRECTORY)
       list(INSERT smtk_libpaths 0
         "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
