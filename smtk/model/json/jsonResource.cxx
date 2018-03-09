@@ -141,10 +141,6 @@ void from_json(const json& j, ManagerPtr& mmgr)
     { // Entities in the currentModel
       // Create and fill in the entity first
       UUID eid = UUID(jentIt.key());
-      if (eid == mid)
-      {
-        continue;
-      }
       json jEntity = jentIt.value();
       BitFlags bitflags;
       try
@@ -160,23 +156,6 @@ void from_json(const json& j, ManagerPtr& mmgr)
       mmgr->addEntity(entity);
       EntityRef entRef = EntityRef(mmgr, eid);
 
-      // Since bitflags has been set, we can use it to add the entity into the model
-      if (entRef.isCellEntity())
-      {
-        currentModel.addCell(entRef.as<CellEntity>());
-      }
-      else if (entRef.isModel())
-      {
-        currentModel.addSubmodel(entRef.as<Model>());
-      }
-      else if (entRef.isGroup())
-      {
-        currentModel.addGroup(entRef.as<Group>());
-      }
-      else if (entRef.isAuxiliaryGeometry())
-      {
-        currentModel.addAuxiliaryGeometry(entRef.as<AuxiliaryGeometry>());
-      }
       try
       {
         UUIDArray uuidArray = jEntity.at("r");
@@ -185,6 +164,7 @@ void from_json(const json& j, ManagerPtr& mmgr)
       catch (std::exception&)
       {
       }
+
       // Add arrangementInfo
       try
       {
