@@ -55,10 +55,6 @@ vtkSMTKModelReader::vtkSMTKModelReader()
 
 vtkSMTKModelReader::~vtkSMTKModelReader()
 {
-  //std::cout << "Delete reader " << this << "\n";
-  this->DropResource();
-  this->SetWrapper(nullptr);
-  this->SetFileName(nullptr);
 }
 
 void vtkSMTKModelReader::PrintSelf(ostream& os, vtkIndent indent)

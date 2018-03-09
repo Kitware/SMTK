@@ -32,7 +32,10 @@ vtkSMTKResourceReader::vtkSMTKResourceReader()
 
 vtkSMTKResourceReader::~vtkSMTKResourceReader()
 {
-  this->DropResource();
+  if (this->Wrapper)
+  {
+    this->DropResource();
+  }
   this->SetWrapper(nullptr);
   this->SetFileName(nullptr);
 }

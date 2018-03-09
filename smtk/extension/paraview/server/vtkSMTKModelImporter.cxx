@@ -49,7 +49,6 @@ vtkStandardNewMacro(vtkSMTKModelImporter);
 vtkSMTKModelImporter::vtkSMTKModelImporter()
   : ResourceName("")
 {
-  //std::cout << "Create importer " << this << "\n";
   this->SetNumberOfOutputPorts(vtkModelMultiBlockSource::NUMBER_OF_OUTPUT_PORTS);
 
   // Ensure this object's MTime > this->ModelSource's MTime so first RequestData() call
@@ -59,10 +58,6 @@ vtkSMTKModelImporter::vtkSMTKModelImporter()
 
 vtkSMTKModelImporter::~vtkSMTKModelImporter()
 {
-  //std::cout << "Delete importer " << this << "\n";
-  this->DropResource();
-  this->SetWrapper(nullptr);
-  this->SetFileName(nullptr);
 }
 
 void vtkSMTKModelImporter::PrintSelf(ostream& os, vtkIndent indent)
@@ -82,6 +77,7 @@ bool vtkSMTKModelImporter::ScopeImporterForResource(const std::string& uniqueNam
   {
     // We can support this resource type. Set our resource index accordingly.
     this->ResourceName = uniqueName;
+    this->Modified();
     return true;
   }
 
@@ -99,6 +95,7 @@ bool vtkSMTKModelImporter::ScopeImporterForResource(const smtk::resource::Resour
   {
     // We can support this resource type. Set our resource index accordingly.
     this->ResourceName = metadata->uniqueName();
+    this->Modified();
     return true;
   }
 
