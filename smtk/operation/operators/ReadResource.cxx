@@ -137,8 +137,8 @@ ReadResource::Result ReadResource::operateInternal()
     }
 
     // Set the local reader's filename field.
-    smtk::attribute::FileItem::Ptr readerFileItem =
-      readerGroup.fileItemForOperation(readOperation->index());
+    smtk::attribute::FileItem::Ptr readerFileItem = readOperation->parameters()->findFile(
+      readerGroup.fileItemNameForOperation(readOperation->index()));
     readerFileItem->setValue(filename);
 
     smtk::operation::Operation::Result readOperationResult = readOperation->operate();

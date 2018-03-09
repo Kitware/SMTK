@@ -16,6 +16,7 @@
 #include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/FileItemDefinition.h"
 
 #include "smtk/resource/Name.h"
 
@@ -68,13 +69,22 @@ public:
   template <typename ResourceType, typename OperationType>
   bool registerOperation(const std::string& fileItemName = m_defaultFileItemName);
 
-  /// Obtain the file item associated with an operation identified by its
+  /// Obtain the file item name associated with an operation identified by its
   /// unique name.
-  smtk::attribute::FileItem::Ptr fileItemForOperation(const std::string&) const;
+  const std::string& fileItemNameForOperation(const std::string&) const;
 
-  /// Obtain the file item associated with the operation identified by its
+  /// Obtain the file item name associated with the operation identified by its
   /// type index.
-  smtk::attribute::FileItem::Ptr fileItemForOperation(const Operation::Index&) const;
+  const std::string& fileItemNameForOperation(const Operation::Index&) const;
+
+  /// Obtain the file item definition associated with an operation identified
+  /// by its unique name.
+  smtk::attribute::FileItemDefinition::Ptr fileItemDefinitionForOperation(const std::string&) const;
+
+  /// Obtain the file item definition associated with the operation identified
+  /// by its type index.
+  smtk::attribute::FileItemDefinition::Ptr fileItemDefinitionForOperation(
+    const Operation::Index&) const;
 
   // Given a resource name, return the set of operators that were associated
   // with the resource during registration.
@@ -91,7 +101,7 @@ public:
   /// Obtain the file item associated with the operation identified by its
   /// class type.
   template <typename OperationType>
-  smtk::attribute::FileItem::Ptr fileItemForOperation() const;
+  const std::string& fileItemNameForOperation() const;
 
 protected:
   class FileItemName : public smtk::operation::Group
@@ -211,9 +221,9 @@ bool ResourceIOGroup::registerOperation(const std::string& fileItemName)
 }
 
 template <typename OperationType>
-smtk::attribute::FileItem::Ptr ResourceIOGroup::fileItemForOperation() const
+const std::string& ResourceIOGroup::fileItemNameForOperation() const
 {
-  return fileItemForOperation(std::type_index(typeid(OperationType)).hash_code());
+  return fileItemNameForOperation(std::type_index(typeid(OperationType)).hash_code());
 }
 
 template <typename ResourceType>

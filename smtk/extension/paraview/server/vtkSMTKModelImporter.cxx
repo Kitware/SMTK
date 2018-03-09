@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
+#include "smtk/extension/paraview/server/vtkSMTKModelImporter.h"
 
 #include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 #include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.h"
@@ -17,6 +17,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
@@ -26,7 +27,7 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/SessionRef.h"
 
-#include "smtk/operation/operators/ReadResource.h"
+#include "smtk/operation/groups/ImporterGroup.h"
 
 #include "smtk/resource/Manager.h"
 
@@ -39,13 +40,16 @@
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"
 
+#include <cassert>
+
 using namespace smtk;
 
-vtkStandardNewMacro(vtkSMTKModelReader);
+vtkStandardNewMacro(vtkSMTKModelImporter);
 
-vtkSMTKModelReader::vtkSMTKModelReader()
+vtkSMTKModelImporter::vtkSMTKModelImporter()
+  : ResourceName("")
 {
-  //std::cout << "Create reader " << this << "\n";
+  //std::cout << "Create importer " << this << "\n";
   this->SetNumberOfOutputPorts(vtkModelMultiBlockSource::NUMBER_OF_OUTPUT_PORTS);
 
   // Ensure this object's MTime > this->ModelSource's MTime so first RequestData() call
@@ -53,32 +57,131 @@ vtkSMTKModelReader::vtkSMTKModelReader()
   this->Modified();
 }
 
-vtkSMTKModelReader::~vtkSMTKModelReader()
+vtkSMTKModelImporter::~vtkSMTKModelImporter()
 {
-  //std::cout << "Delete reader " << this << "\n";
+  //std::cout << "Delete importer " << this << "\n";
   this->DropResource();
   this->SetWrapper(nullptr);
   this->SetFileName(nullptr);
 }
 
-void vtkSMTKModelReader::PrintSelf(ostream& os, vtkIndent indent)
+void vtkSMTKModelImporter::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   os << indent << "ModelSource: " << this->ModelSource << "\n";
 }
 
-smtk::resource::ResourcePtr vtkSMTKModelReader::GetResource() const
+bool vtkSMTKModelImporter::ScopeImporterForResource(const std::string& uniqueName)
+{
+  smtk::resource::Manager::Ptr rsrcMgr = this->Wrapper
+    ? this->Wrapper->GetResourceManager()
+    : smtk::environment::ResourceManager::instance();
+
+  auto metadata = rsrcMgr->metadata().get<smtk::resource::NameTag>().find(uniqueName);
+  if (metadata != rsrcMgr->metadata().get<smtk::resource::NameTag>().end())
+  {
+    // We can support this resource type. Set our resource index accordingly.
+    this->ResourceName = uniqueName;
+    return true;
+  }
+
+  return false;
+}
+
+bool vtkSMTKModelImporter::ScopeImporterForResource(const smtk::resource::Resource::Index& index)
+{
+  smtk::resource::Manager::Ptr rsrcMgr = this->Wrapper
+    ? this->Wrapper->GetResourceManager()
+    : smtk::environment::ResourceManager::instance();
+
+  auto metadata = rsrcMgr->metadata().get<smtk::resource::IndexTag>().find(index);
+  if (metadata != rsrcMgr->metadata().get<smtk::resource::IndexTag>().end())
+  {
+    // We can support this resource type. Set our resource index accordingly.
+    this->ResourceName = metadata->uniqueName();
+    return true;
+  }
+
+  return false;
+}
+
+const std::string& vtkSMTKModelImporter::Scope() const
+{
+  static std::string allTypes = "all";
+  static std::string noTypes = "none";
+
+  // If the resource index has not been set, then the default scope is to accept
+  // all files that can be imported.
+  if (this->ResourceName.empty())
+  {
+    return allTypes;
+  }
+
+  smtk::resource::Manager::Ptr rsrcMgr = this->Wrapper
+    ? this->Wrapper->GetResourceManager()
+    : smtk::environment::ResourceManager::instance();
+
+  if (rsrcMgr->metadata().get<smtk::resource::NameTag>().find(this->ResourceName) !=
+    rsrcMgr->metadata().get<smtk::resource::NameTag>().end())
+  {
+    // Return the unique name associated with our resource type.
+    return this->ResourceName;
+  }
+
+  // If our resource type is no longer supported by the resource manager, then
+  // we can no longer import it.
+  return noTypes;
+}
+
+std::string vtkSMTKModelImporter::SupportedExtensions() const
+{
+  smtk::operation::Manager::Ptr operMgr = this->Wrapper
+    ? this->Wrapper->GetOperationManager()
+    : smtk::environment::OperationManager::instance();
+
+  if (operMgr == nullptr)
+  {
+    return "";
+  }
+
+  // Access the importer group associated with this operation manager.
+  smtk::operation::ImporterGroup importerGroup(operMgr);
+
+  // Collect all of the import operation ids associated with our resource. If no
+  // resource is associated with this importer, then just use all importers.
+  std::set<smtk::operation::Operation::Index> ops = this->ResourceName.empty()
+    ? importerGroup.operations()
+    : importerGroup.operationsForResource(this->ResourceName);
+
+  // Append their supported extensions into one big file filter string.
+  std::string fileFilters = "";
+  for (const smtk::operation::Operation::Index& index : ops)
+  {
+    auto fileItemDefinition = importerGroup.fileItemDefinitionForOperation(index);
+    assert(fileItemDefinition != nullptr);
+
+    if (!fileFilters.empty())
+    {
+      fileFilters.append(";;");
+    }
+
+    fileFilters.append(fileItemDefinition->getFileFilters());
+  }
+  return fileFilters;
+}
+
+smtk::resource::ResourcePtr vtkSMTKModelImporter::GetResource() const
 {
   return std::dynamic_pointer_cast<smtk::resource::Resource>(this->GetSMTKResource());
 }
 
-smtk::model::ManagerPtr vtkSMTKModelReader::GetSMTKResource() const
+smtk::model::ManagerPtr vtkSMTKModelImporter::GetSMTKResource() const
 {
   return this->ModelSource->GetModelManager();
 }
 
 /// Generate polydata from an smtk::model with tessellation information.
-int vtkSMTKModelReader::RequestData(vtkInformation* vtkNotUsed(request),
+int vtkSMTKModelImporter::RequestData(vtkInformation* vtkNotUsed(request),
   vtkInformationVector** vtkNotUsed(inInfo), vtkInformationVector* outInfo)
 {
   vtkMultiBlockDataSet* entitySource = vtkMultiBlockDataSet::GetData(
@@ -104,7 +207,7 @@ int vtkSMTKModelReader::RequestData(vtkInformation* vtkNotUsed(request),
 
   /*
    std::cout
-     << "    Reader    " << this
+     << "    Importer    " << this
      << " has file " << (this->FileName && this->FileName[0] ? "Y" : "N") << "\n";
    */
   if (!this->FileName || !this->FileName[0])
@@ -138,7 +241,7 @@ int vtkSMTKModelReader::RequestData(vtkInformation* vtkNotUsed(request),
   return 1;
 }
 
-bool vtkSMTKModelReader::LoadFile()
+bool vtkSMTKModelImporter::LoadFile()
 {
   if (!this->FileName)
   {
@@ -157,13 +260,39 @@ bool vtkSMTKModelReader::LoadFile()
     return false;
   }
 
-  auto oper = operMgr->create<smtk::operation::ReadResource>();
+  // Access the importer group associated with this operation manager.
+  smtk::operation::ImporterGroup importerGroup(operMgr);
+
+  // Collect all of the import operation ids associated with our resource. If no
+  // resource is associated with this importer, then just use all importers.
+  std::set<smtk::operation::Operation::Index> ops = this->ResourceName.empty()
+    ? importerGroup.operationsForFileName(this->FileName)
+    : importerGroup.operationsForResourceAndFileName(this->ResourceName, this->FileName);
+
+  if (ops.empty())
+  {
+    return false;
+  }
+
+  // If there is more than one operation that can import this file type, we
+  // just use the first one.
+  //
+  // TODO: handle the case where multiple importers can import a file type
+  smtk::operation::Operation::Index opIdx = *ops.begin();
+
+  auto oper = operMgr->create(opIdx);
   if (!oper)
   {
     return false;
   }
 
-  oper->parameters()->findFile("filename")->setValue(this->FileName);
+  // Access the local operation's file item. Since importers have no restriction
+  // on the name of their file item, we record the name during operation
+  // registration and access it through the importer Group API.
+  smtk::attribute::FileItem::Ptr importerFileItem =
+    oper->parameters()->findFile(importerGroup.fileItemNameForOperation(opIdx));
+
+  importerFileItem->setValue(this->FileName);
 
   auto result = oper->operate();
   if (result->findInt("outcome")->value() !=
@@ -188,7 +317,7 @@ bool vtkSMTKModelReader::LoadFile()
     {
       rsrcMgr->remove(oldRsrc);
     }
-    // Add the resource we just read.
+    // Add the resource we just imported.
     rsrcMgr->add(rsrc);
   }
 

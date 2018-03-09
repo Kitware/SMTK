@@ -45,9 +45,24 @@ bool ImportResource::ableToOperate()
 
   // To import a resource, we must have an operation manager from which we access
   // specific import operations.
-  if (m_manager.expired())
+  auto manager = this->m_manager.lock();
+
+  if (manager == nullptr)
   {
     return false;
+  }
+
+  auto params = this->parameters();
+  auto fileItem = params->findFile(ImportResource::file_item_name);
+
+  smtk::operation::ImporterGroup importerGroup(manager);
+
+  for (auto fileIt = fileItem->begin(); fileIt != fileItem->end(); ++fileIt)
+  {
+    if (importerGroup.operationsForFileName(*fileIt).empty())
+    {
+      return false;
+    }
   }
 
   return true;
@@ -75,33 +90,19 @@ ImportResource::Result ImportResource::operateInternal()
   {
     std::string filename = *fileIt;
 
-    Operation::Index index;
-    smtk::attribute::FileItem::Ptr importerFileItem;
-    bool found = false;
-    for (const Operation::Index& idx : importerGroup.operations())
-    {
-      importerFileItem = importerGroup.fileItemForOperation(idx);
-      if (!fileItem)
-      {
-        continue;
-      }
+    // We take the first operation that accepts the file name. This set is
+    // guaranteed to be nonempty because it was checked in ableToOperate, but
+    // let's be cautious.
+    auto ops = importerGroup.operationsForFileName(filename);
+    assert(!ops.empty());
+    Operation::Index index = *ops.begin();
 
-      if (static_cast<const smtk::attribute::FileItemDefinition*>(fileItem->definition().get())
-            ->isValueValid(filename))
-      {
-        index = idx;
-        found = true;
-        break;
-      }
-    }
-
-    if (!found)
-    {
-      smtkErrorMacro(this->log(), "Could not find importer for file \"" << filename << "\".");
-      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
-    }
-
+    // Create the local operation.
     smtk::operation::Operation::Ptr importOperation = manager->create(index);
+
+    // Access the local operation's file item.
+    smtk::attribute::FileItem::Ptr importerFileItem =
+      importOperation->parameters()->findFile(importerGroup.fileItemNameForOperation(index));
 
     // Set the local importer's filename field.
     importerFileItem->setValue(filename);
@@ -144,34 +145,63 @@ ImportResource::Specification ImportResource::createSpecification()
 
   opDef->setDetailedDescription(std::string(detailedDescription));
 
-  auto fileDef = smtk::attribute::FileItemDefinition::New("filename");
+  auto fileDef = smtk::attribute::FileItemDefinition::New(ImportResource::file_item_name);
   fileDef->setNumberOfRequiredValues(1);
   fileDef->setShouldExist(true);
   fileDef->setIsExtensible(true);
 
   {
     auto manager = this->m_manager.lock();
+    // If there is an available operation manager at the time of creation, then
+    // we can query it for file filters. Otherwise, we are forced to accept all
+    // files (that's ok, though, because the called filter will still cause the
+    // operation to be uncallable).
     if (manager != nullptr)
     {
-      smtk::operation::ImporterGroup importerGroup(manager);
-      std::string fileFilters = "";
-      for (const Operation::Index& index : importerGroup.operations())
-      {
-        auto fileItem = importerGroup.fileItemForOperation(index);
-        if (!fileItem)
+      std::weak_ptr<smtk::attribute::FileItemDefinition> weakFileItemDefPtr;
+      // Define a metadata observer that appends the file filters of an import
+      // operation to the file definition.
+      auto observer = [&, weakFileItemDefPtr](const smtk::operation::Metadata& md) {
+
+        auto fileItemDef = weakFileItemDefPtr.lock();
+
+        // If the file item definition is no longer accessible, there's not much
+        // we can do.
+        if (fileItemDef == nullptr)
         {
-          continue;
+          return;
         }
+
+        // We are only interested in import operations.
+        std::set<std::string> groups = md.groups();
+        if (groups.find(ImporterGroup::type_name) == groups.end())
+        {
+          return;
+        }
+
+        std::string fileFilters = fileItemDef->getFileFilters();
+
+        // If the operation is registered as an importer, then we must be able
+        // to access its file item definition.
+        smtk::operation::ImporterGroup importerGroup(manager);
+        auto localFileItemDef = importerGroup.fileItemDefinitionForOperation(md.index());
+        assert(localFileItemDef != nullptr);
 
         if (!fileFilters.empty())
         {
           fileFilters.append(";;");
         }
-        fileFilters.append(
-          static_cast<const smtk::attribute::FileItemDefinition*>(fileItem->definition().get())
-            ->getFileFilters());
+        fileFilters.append(localFileItemDef->getFileFilters());
+      };
+
+      // Apply the metadata observer to extant operation metadata.
+      for (auto& md : manager->metadata())
+      {
+        observer(md);
       }
-      fileDef->setFileFilters(fileFilters);
+
+      // Add this metadata observer to the set of metadata observers.
+      manager->metadataObservers().insert(observer);
     }
   }
 
