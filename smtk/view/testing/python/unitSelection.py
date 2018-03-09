@@ -14,7 +14,6 @@ import smtk.attribute
 import smtk.bridge.polygon
 import smtk.testing
 import smtk.view
-from smtk.simple import GetActiveSession, SetActiveSession, LoadSMTKModel
 
 import sys
 import uuid
