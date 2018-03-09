@@ -39,6 +39,8 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindExtractContours.h"
 #include "PybindForceCreateFace.h"
 #include "PybindImport.h"
+#include "PybindRead.h"
+#include "PybindLegacyRead.h"
 #include "PybindSplitEdge.h"
 #include "PybindTweakEdge.h"
 
@@ -67,6 +69,8 @@ PYBIND11_MODULE(_smtkPybindPolygonSession, polygon)
   PySharedPtrClass< smtk::bridge::polygon::ExtractContours > smtk_bridge_polygon_ExtractContours = pybind11_init_smtk_bridge_polygon_ExtractContours(polygon, smtk_bridge_polygon_Operation);
   PySharedPtrClass< smtk::bridge::polygon::ForceCreateFace > smtk_bridge_polygon_ForceCreateFace = pybind11_init_smtk_bridge_polygon_ForceCreateFace(polygon, smtk_bridge_polygon_Operation);
   PySharedPtrClass< smtk::bridge::polygon::Import > smtk_bridge_polygon_Import = pybind11_init_smtk_bridge_polygon_Import(polygon, smtk_bridge_polygon_Operation);
+  PySharedPtrClass< smtk::bridge::polygon::Read > smtk_bridge_polygon_Read = pybind11_init_smtk_bridge_polygon_Read(polygon, smtk_bridge_polygon_Operation);
+  PySharedPtrClass< smtk::bridge::polygon::LegacyRead > smtk_bridge_polygon_LegacyRead = pybind11_init_smtk_bridge_polygon_LegacyRead(polygon, smtk_bridge_polygon_Operation);
   PySharedPtrClass< smtk::bridge::polygon::SplitEdge > smtk_bridge_polygon_SplitEdge = pybind11_init_smtk_bridge_polygon_SplitEdge(polygon, smtk_bridge_polygon_Operation);
   PySharedPtrClass< smtk::bridge::polygon::TweakEdge > smtk_bridge_polygon_TweakEdge = pybind11_init_smtk_bridge_polygon_TweakEdge(polygon, smtk_bridge_polygon_Operation);
 
