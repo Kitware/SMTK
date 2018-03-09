@@ -164,6 +164,11 @@ const QMap<QString, QList<smtk::attribute::DefinitionPtr> >& qtAttributeView::at
   return this->Internals->AttDefMap;
 }
 
+std::string qtAttributeView::getDefText(smtk::attribute::DefinitionPtr attDef)
+{
+  return attDef->label().empty() ? attDef->type() : attDef->label();
+}
+
 void qtAttributeView::createWidget()
 {
   if (!this->getObject())
@@ -240,7 +245,7 @@ void qtAttributeView::createWidget()
   else
   {
     this->Internals->PropDefLabel = new QLabel(TopFrame);
-    this->Internals->PropDefLabel->setText(this->Internals->AllDefs[0]->type().c_str());
+    this->Internals->PropDefLabel->setText(this->getDefText(this->Internals->AllDefs[0]).c_str());
     filterLayout->addWidget(this->Internals->PropDefLabel, 0, 2);
     this->Internals->PropDefLabel->setVisible(false);
     this->Internals->PropDefsCombo = NULL;
@@ -295,7 +300,7 @@ void qtAttributeView::createWidget()
   else
   {
     this->Internals->DefLabel = new QLabel(this->Internals->ButtonsFrame);
-    this->Internals->DefLabel->setText(this->Internals->AllDefs[0]->type().c_str());
+    this->Internals->DefLabel->setText(this->getDefText(this->Internals->AllDefs[0]).c_str());
     this->Internals->DefLabel->setVisible(false);
     buttonLayout->addWidget(this->Internals->DefLabel);
     this->Internals->DefsCombo = NULL;
@@ -696,7 +701,7 @@ void qtAttributeView::onCreateNew()
   foreach (attribute::DefinitionPtr attDef,
     this->Internals->getCurrentDefs(this->uiManager()->currentCategory().c_str()))
   {
-    std::string txtDef = attDef->label().empty() ? attDef->type() : attDef->label();
+    std::string txtDef = this->getDefText(attDef);
     if (strDef == QString::fromUtf8(txtDef.c_str()))
     {
       newAttDef = attDef;
@@ -781,8 +786,7 @@ QTableWidgetItem* qtAttributeView::addAttributeListItem(smtk::attribute::Attribu
   this->Internals->ListTable->setItem(numRows - 1, 0, item);
 
   // add the type column too.
-  std::string txtDef = childData->definition()->label().empty() ? childData->definition()->type()
-                                                                : childData->definition()->label();
+  std::string txtDef = this->getDefText(childData->definition());
 
   QTableWidgetItem* defitem =
     new QTableWidgetItem(QString::fromUtf8(txtDef.c_str()), smtk_USER_DATA_TYPE);
@@ -838,7 +842,7 @@ void qtAttributeView::onViewBy(int viewBy)
     {
       if (!attDef->isAbstract())
       {
-        std::string txtDef = attDef->label().empty() ? attDef->type() : attDef->label();
+        std::string txtDef = this->getDefText(attDef);
         this->Internals->DefsCombo->addItem(QString::fromUtf8(txtDef.c_str()));
         this->Internals->PropDefsCombo->addItem(QString::fromUtf8(txtDef.c_str()));
         QVariant vdata;

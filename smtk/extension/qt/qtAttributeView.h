@@ -45,6 +45,8 @@ public:
   QTableWidgetItem* getSelectedItem();
   int currentViewBy();
   virtual void createNewAttribute(smtk::attribute::DefinitionPtr attDef);
+  // Return either the def's label if set else it returns it's type
+  static std::string getDefText(smtk::attribute::DefinitionPtr attDef);
 
   enum enumViewBy
   {
