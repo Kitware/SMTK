@@ -7,6 +7,7 @@ set(SMTK_POLYGON_SESSION_ENABLED "False")
 set(SMTK_EXODUS_SESSION_ENABLED "False")
 set(SMTK_MESH_SESSION_ENABLED "False")
 set(SMTK_MULTISCALE_SESSION_ENABLED "False")
+set(SMTK_OPENFOAM_SESSION_ENABLED "False")
 set(SMTK_REMOTE_SESSION_ENABLED "False")
 
 ################################################################################
@@ -55,6 +56,14 @@ endif()
 if (SMTK_ENABLE_MULTISCALE_SESSION)
   set(SMTK_MULTISCALE_SESSION_ENABLED "True")
   add_subdirectory(multiscale)
+endif()
+
+################################################################################
+# Build OpenFOAM session
+################################################################################
+if (SMTK_ENABLE_OPENFOAM_SESSION)
+  set(SMTK_OPENFOAM_SESSION_ENABLED "True")
+  add_subdirectory(openfoam)
 endif()
 
 ################################################################################

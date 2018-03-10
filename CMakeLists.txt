@@ -125,6 +125,8 @@ cmake_dependent_option(SMTK_ENABLE_MULTISCALE_SESSION "Build a session to Multis
 if (SMTK_ENABLE_MULTISCALE_SESSION)
   set(AFRL_DIR "" CACHE PATH "Path to a directory of AFRL data.")
 endif()
+cmake_dependent_option(SMTK_ENABLE_OPENFOAM_SESSION "Build a session for OpenFOAM" OFF
+  "SMTK_ENABLE_VTK_SUPPORT;SMTK_ENABLE_MESH_SESSION;SMTK_ENABLE_PYTHON_WRAPPING" OFF)
 
 option(SMTK_USE_SYSTEM_MOAB "Use the system-installed moab?" OFF)
 

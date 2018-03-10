@@ -1,0 +1,13 @@
+{
+  "kernel": "openfoam",
+  "engines": [
+    {
+      "name": "default",
+      "filetypes": [
+	".obj (Wavefront File)",
+	".stl (Stereolithography file)"
+	".vtk (Legacy VTK Polydata file)"
+      ]
+    }
+  ]
+}
