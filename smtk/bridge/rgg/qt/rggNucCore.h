@@ -6,25 +6,24 @@
 //  This software is distributed WITHOUT ANY WARRANTY; without even
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME rggNucAssembly - Represents an assembly for schema planner.
-// Assemblies are composed of pin cells (cmbNucPinCell) and the surrounding ducting.
-// Assemblies are grouped together into cores (rggNucCore).
+// .NAME rggNucCore - Represents a core for schema planner.
+// Cores are composed of a bunch of assemblies.
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_bridge_rgg_qt_rggNucAssembly_h
-#define __smtk_bridge_rgg_qt_rggNucAssembly_h
+#ifndef __smtk_bridge_rgg_qt_rggNucCore_h
+#define __smtk_bridge_rgg_qt_rggNucCore_h
 
 #include "smtk/bridge/rgg/Exports.h"
 #include "smtk/bridge/rgg/qt/rggLatticeContainer.h"
 #include "smtk/model/EntityRef.h"
 
-// Represents a nuclear assembly in schema planner.
-class SMTKQTRGGSESSION_EXPORT rggNucAssembly : public rggLatticeContainer
+// Represents a nuclear core in schema planner.
+class SMTKQTRGGSESSION_EXPORT rggNucCore : public rggLatticeContainer
 {
 public:
-  rggNucAssembly(smtk::model::EntityRef entity);
-  ~rggNucAssembly() override;
+  rggNucCore(smtk::model::EntityRef entity);
+  ~rggNucCore() override;
   virtual QString extractLabel(QString const&);
   // Create a list with pair<${name}(${label}, entity)>
   virtual void fillList(std::vector<std::pair<QString, smtk::model::EntityRef> >& l);
@@ -35,23 +34,10 @@ public:
   virtual void setUpdateUsed();
   virtual void getRadius(double& ri, double& rj) const;
 
-  // This function would use the assy to populate the rggNucAssembly
-  void resetBySMTKAssembly(const smtk::model::EntityRef& assy);
-
-  void setAssyDuct(smtk::model::EntityRef duct);
-  smtk::model::EntityRef const& getAssyDuct() const;
-  smtk::model::EntityRef& getAssyDuct();
-
-  void setZAxisRotation(int value);
-  int getZAxisRotation() const;
-
-  void setCenterPins(bool isCentered);
-  bool isPinsCentered() const;
+  // This function would use the assy to populate the rggNucCore
+  void resetBySMTKCore(const smtk::model::EntityRef& core);
 
 protected:
-  smtk::model::EntityRef m_duct;
-  int m_zAxisRotation;
-  bool m_centerPins;
 };
 
 #endif

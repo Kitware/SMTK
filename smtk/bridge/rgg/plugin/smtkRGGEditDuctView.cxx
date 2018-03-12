@@ -167,33 +167,6 @@ void smtkRGGEditDuctView::apply()
     nameI->setValue(this->Internals->ductName->text().toStdString());
   }
 
-  smtk::attribute::DoubleItemPtr pitchI = att->findDouble("pitch");
-  if (pitchI)
-  {
-    if (this->Internals->ductPitchX->isHidden())
-    { // Hex
-      pitchI->setValue(0, this->Internals->ductPitchY->text().toDouble());
-      pitchI->setValue(1, this->Internals->ductPitchY->text().toDouble());
-    }
-    else
-    {
-      pitchI->setValue(0, this->Internals->ductPitchX->text().toDouble());
-      pitchI->setValue(1, this->Internals->ductPitchY->text().toDouble());
-    }
-  }
-
-  smtk::attribute::DoubleItemPtr heightI = att->findDouble("duct height");
-  if (heightI)
-  {
-    heightI->setValue(0, this->Internals->z1LineEdit->text().toDouble());
-    heightI->setValue(1, this->Internals->z2LineEdit->text().toDouble());
-  }
-
-  smtk::attribute::VoidItemPtr hexI = att->findVoid("hex");
-  if (hexI)
-  {
-    hexI->setIsEnabled(this->Internals->isHexButton->isChecked());
-  }
   smtk::attribute::VoidItemPtr crossSectionI = att->findVoid("cross section");
 
   if (crossSectionI)
@@ -310,6 +283,23 @@ void smtkRGGEditDuctView::updateAttributeData()
       &smtkRGGEditDuctView::attributeModified);
     QObject::connect(this->Internals->CurrentAtt, &qtAttribute::itemModified, this,
       &smtkRGGEditDuctView::onAttItemModified);
+    // Associate duct combobox with the latest duct
+    smtk::attribute::ModelEntityItemPtr ductI =
+      this->Internals->CurrentAtt->attribute()->associations();
+
+    if (!ductI)
+    {
+      smtkErrorMacro(smtk::io::Logger(), "Edit duct operator does not have a duct association");
+      return;
+    }
+    smtk::model::Model model = qtActiveObjects::instance().activeModel();
+    if (model.hasStringProperty("latest duct"))
+    {
+      smtk::model::EntityRef latestDuct = smtk::model::EntityRef(
+        model.manager(), smtk::common::UUID(model.stringProperty("latest duct")[0]));
+      ductI->setValue(latestDuct);
+    }
+    this->updateEditDuctPanel();
   }
 }
 
@@ -340,8 +330,6 @@ void smtkRGGEditDuctView::createWidget()
   this->Widget->setLayout(layout);
   this->Widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
 
-  this->updateAttributeData();
-
   // QUESTION: You might need to keep tracking of the widget
   QWidget* tempWidget = new QWidget(this->parentWidget());
   this->Internals->setupUi(tempWidget);
@@ -354,7 +342,7 @@ void smtkRGGEditDuctView::createWidget()
   QObject::connect(this->uiManager()->activeModelView(),
     &smtk::extension::qtModelView::operationCancelled, this, &smtkRGGEditDuctView::cancelOperation);
 
-  // TODO: Allow user to set duct height at some place
+  // Duct height is modified at core level
   this->Internals->z1LineEdit->setEnabled(false);
   this->Internals->z2LineEdit->setEnabled(false);
 
@@ -362,12 +350,11 @@ void smtkRGGEditDuctView::createWidget()
     this->Internals->ductPitchX->setHidden(status);
     this->Internals->ductPitchXLabel->setHidden(status);
     // Always show pitch y lineEdit widget
-    this->Internals->ductPitchY->setToolTip(QString::fromStdString(
-      status ? "set hex duct's pitch" : "set rect duct's pitch along y axis"));
+    this->Internals->ductPitchY->setToolTip(
+      QString::fromStdString(status ? "Hex duct's pitch" : "Rect duct's pitch along y axis"));
     this->Internals->ductPitchYLabel->setHidden(status);
   });
-  this->Internals->ductPitchX->setToolTip(
-    QString::fromStdString("set rect duct's pitch along x axis"));
+  this->Internals->ductPitchX->setToolTip(QString::fromStdString("Rect duct's pitch along x axis"));
 
   this->createDuctSegmentsTable();
   // Material layers buttons
@@ -385,7 +372,7 @@ void smtkRGGEditDuctView::createWidget()
   QObject::connect(
     this->Internals->applyButton, &QPushButton::released, this, &smtkRGGEditDuctView::apply);
 
-  this->updateEditDuctPanel();
+  this->updateAttributeData();
 }
 
 void smtkRGGEditDuctView::updateEditDuctPanel()
@@ -414,12 +401,13 @@ void smtkRGGEditDuctView::updateEditDuctPanel()
     // IsHex
     bool isHex;
     this->Internals->isHexButton->setEnabled(true);
-    if (duct.hasIntegerProperty("hex"))
+    if (duct.owningModel().hasIntegerProperty("hex"))
     {
-      isHex = duct.integerProperty("hex")[0];
+      isHex = duct.owningModel().integerProperty("hex")[0];
       this->Internals->isHexButton->setChecked(isHex);
     }
-    // isHex would have an impact on pitch options. For now it's specified at creation time
+    // isHex would have an impact on pitch options.
+    // For now it's specified at core creation time
     this->Internals->isHexButton->setEnabled(false);
 
     // isCrossSection
@@ -430,9 +418,9 @@ void smtkRGGEditDuctView::updateEditDuctPanel()
     }
 
     // Pitch
-    if (duct.hasFloatProperty("pitch"))
+    if (duct.owningModel().hasFloatProperty("duct thickness"))
     {
-      FloatList pitches = duct.floatProperty("pitch");
+      FloatList pitches = duct.owningModel().floatProperty("duct thickness");
       if (isHex)
       { // Since hex pitch has two same values, we only show one
         this->Internals->ductPitchY->setText(QString::number(pitches[0]));
@@ -445,7 +433,7 @@ void smtkRGGEditDuctView::updateEditDuctPanel()
     }
 
     // Duct height
-    FloatList ductHeight = duct.floatProperty("duct height");
+    FloatList ductHeight = duct.owningModel().floatProperty("duct height");
     if (ductHeight.size() == 2)
     {
       this->Internals->z1LineEdit->setText(QString::number(ductHeight[0]));

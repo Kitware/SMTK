@@ -11,6 +11,15 @@
 
 #include <limits>
 
+rggLatticeContainer::rggLatticeContainer(smtk::model::EntityRef entity)
+  : m_entity(entity)
+{
+}
+
+rggLatticeContainer::~rggLatticeContainer()
+{
+}
+
 // latice container functions
 std::pair<int, int> rggLatticeContainer::GetDimensions()
 {

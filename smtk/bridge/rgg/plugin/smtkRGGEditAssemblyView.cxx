@@ -67,13 +67,13 @@ void calculateDuctMinimimThickness(
   const smtk::model::EntityRef& duct, double& thickness0, double& thickness1)
 {
   smtk::model::FloatList pitches, thicknesses;
-  if (duct.hasFloatProperty("pitch"))
+  if (duct.owningModel().hasFloatProperty("duct thickness"))
   {
-    pitches = duct.floatProperty("pitch");
+    pitches = duct.owningModel().floatProperty("duct thickness");
     if (pitches.size() != 2)
     {
-      smtkErrorMacro(
-        smtk::io::Logger::instance(), "duct " << duct.name() << " does not have a valid pitch");
+      smtkErrorMacro(smtk::io::Logger::instance(), "duct "
+          << duct.name() << "'s owning model does not have a valid pitch");
       return;
     }
   }
@@ -142,6 +142,7 @@ public:
     if (CurrentAtt)
     {
       delete CurrentAtt;
+      CurrentAtt = nullptr;
     }
     auto mapIter = this->SMTKAssyToCMBAssy.begin();
     while (mapIter != this->SMTKAssyToCMBAssy.end())
@@ -150,6 +151,11 @@ public:
       {
         delete mapIter.value();
       }
+      mapIter++;
+    }
+    if (this->SchemaPlanner)
+    {
+      this->SchemaPlanner->setVisible(false);
     }
   }
 
@@ -179,6 +185,9 @@ public:
   // Map smtk assembly(smtk::model::AuxiliaryGeometry) to CMB assembly rggNucAssembly which is used for schema planning
   QMap<smtk::model::EntityRef, rggNucAssembly*> SMTKAssyToCMBAssy;
   rggNucAssembly* CurrentCMBAssy;
+  // Used for deciding when to enable the edit panel
+  smtk::model::EntityRef CurrentSMTKAssy;
+  smtk::model::EntityRef CurrentSMTKDuct;
 
   smtk::weak_ptr<smtk::model::Operator> CreateInstanceOp;
   smtk::weak_ptr<smtk::model::Operator> DeleteOp;
@@ -195,6 +204,7 @@ smtkRGGEditAssemblyView::~smtkRGGEditAssemblyView()
 {
   delete this->Internals;
 }
+
 qtBaseView* smtkRGGEditAssemblyView::createViewWidget(const ViewInfo& info)
 {
   smtkRGGEditAssemblyView* view = new smtkRGGEditAssemblyView(info);
@@ -248,10 +258,27 @@ void smtkRGGEditAssemblyView::attributeModified()
 void smtkRGGEditAssemblyView::onAttItemModified(smtk::extension::qtItem* item)
 {
   smtk::attribute::ItemPtr itemPtr = item->getObject();
-  // only changing assembly would update edit assembly panel
+  // only changing assembly and duct would update edit assembly panel
   if ((itemPtr->name() == "assembly" || itemPtr->name() == "associated duct") &&
     itemPtr->type() == smtk::attribute::Item::Type::ModelEntityType)
   {
+    // If the assembly has a duct assocated with it, update the duct comboBox
+    if (itemPtr->name() == "assembly")
+    {
+      smtk::attribute::AttributePtr att = this->Internals->CurrentAtt->attribute();
+      smtk::model::EntityRefArray ents =
+        att->associatedModelEntities<smtk::model::EntityRefArray>();
+      if ((ents.size() > 0) && ents[0].hasStringProperty("associated duct"))
+      {
+        smtk::model::EntityRef duct =
+          smtk::model::EntityRef(ents[0].manager(), ents[0].stringProperty("associated duct")[0]);
+        smtk::attribute::ModelEntityItemPtr ductI =
+          this->Internals->CurrentAtt->attribute()->findModelEntity("associated duct");
+        ductI->setValue(duct);
+        // FIXME: Even though I set the right duct, the qtComboBox would not
+        // update its text to reflect the change.
+      }
+    }
     this->updateEditAssemblyPanel();
   }
 }
@@ -271,11 +298,12 @@ void smtkRGGEditAssemblyView::apply()
   smtk::attribute::ModelEntityItemPtr aI =
     this->Internals->CurrentAtt->attribute()->findModelEntity("instance to be added");
   aI->setNumberOfValues(0);
-  // Ignore hex item since it can only be decided/modified at creation time
+  // Ignore geometry type item since it can only be decided at
+  // creation time
   smtk::model::EntityRefArray assemblyArray =
     eaAtt->associatedModelEntities<smtk::model::EntityRefArray>();
   smtk::attribute::IntItemPtr latticeSizeI = eaAtt->findInt("lattice size");
-  double latticeSize[2];
+  int latticeSize[2];
   if (latticeSizeI)
   {
     latticeSizeI->setNumberOfValues(2);
@@ -295,18 +323,16 @@ void smtkRGGEditAssemblyView::apply()
   }
   else
   {
-    smtkErrorMacro(smtk::io::Logger::instance(), "lattice size item is not valid");
+    smtkErrorMacro(smtk::io::Logger::instance(), "The "
+                                                 "lattice size item is not valid");
   }
 
   bool isHex(false);
-  if (assemblyArray.size() > 0 && assemblyArray[0].hasIntegerProperty("hex"))
+  if (assemblyArray.size() > 0 && assemblyArray[0].owningModel().hasIntegerProperty("hex"))
   {
-    isHex = assemblyArray[0].integerProperty("hex")[0];
+    isHex = assemblyArray[0].owningModel().integerProperty("hex")[0];
   }
-  /************************************************************/
-  std::cout << "isHex ? " << isHex << std::endl;
-  /************************************************************/
-  std::map<smtk::model::EntityRef, std::vector<int> > entityToLayouts;
+  std::map<smtk::model::EntityRef, std::vector<int> > entityToLayout;
   // Call apply function on qtDraw2DLattice to update CurrentCMBAssy
   this->Internals->Current2DLattice->apply();
   // Pins and layouts
@@ -329,40 +355,32 @@ void smtkRGGEditAssemblyView::apply()
         continue;
       }
 
-      if (entityToLayouts.find(currentPin) != entityToLayouts.end())
+      if (entityToLayout.find(currentPin) != entityToLayout.end())
       {
-        entityToLayouts[currentPin].push_back(i);
-        entityToLayouts[currentPin].push_back(j);
+        entityToLayout[currentPin].push_back(i);
+        entityToLayout[currentPin].push_back(j);
       }
       else
       {
         std::vector<int> layout;
         layout.push_back(i);
         layout.push_back(j);
-        entityToLayouts[currentPin] = layout;
+        entityToLayout[currentPin] = layout;
       }
     }
   }
 
-  smtk::attribute::GroupItemPtr plI = eaAtt->findGroup("pins and layouts");
-  plI->setNumberOfGroups(0); // Clear existing groups
-  int plGroupIndex(0);
-  for (auto iter = entityToLayouts.begin(); iter != entityToLayouts.end(); iter++, plGroupIndex++)
-  {
-    plI->appendGroup();
-    smtk::attribute::StringItemPtr pinUUIDI =
-      smtk::dynamic_pointer_cast<smtk::attribute::StringItem>(plI->item(plGroupIndex, 0));
-    smtk::attribute::IntItemPtr schemaPlanI =
-      smtk::dynamic_pointer_cast<smtk::attribute::IntItem>(plI->item(plGroupIndex, 1));
-    pinUUIDI->setValue(iter->first.entity().toString());
-    schemaPlanI->setValues(iter->second.begin(), iter->second.end());
-  }
-
-  // In order to remove/add instances into the assembly(which is a group underneath), we would listen
+  // In order to remove/add instances into the assembly(which is a group under
+  // the hood), we would listen
   // to the operationFinished signal from qtModelView. It would be disconnected
   // once the apply process has finished
   // Get needed info from assembly for deleting and creating new instances usage
-  QObject::connect(this->uiManager()->activeModelView(), &qtModelView::operationFinished, this,
+  if (!this->uiManager()->activeModelView())
+  {
+    smtkErrorMacro(smtk::io::Logger(), "An active model view is missing!");
+  }
+  QObject::connect(this->uiManager()->activeModelView()->operatorsWidget(),
+    &qtModelOperationWidget::operationFinished, this,
     &smtkRGGEditAssemblyView::onOperationFinished);
 
   // Delete pre-existing duct and pin instances first
@@ -422,8 +440,8 @@ void smtkRGGEditAssemblyView::apply()
   if (!isHex)
   { // Use the cartesian coordinate where the starting point is located
     // at left bottom
-    spacing[0] = thickness0 / latticeSize[0];
-    spacing[1] = thickness0 / latticeSize[1];
+    spacing[0] = thickness0 / static_cast<double>(latticeSize[0]);
+    spacing[1] = thickness0 / static_cast<double>(latticeSize[1]);
     baseX = -1 * thickness0 / 2 + spacing[0] / 2;
     baseY = -1 * thickness1 / 2 + spacing[0] / 2;
   }
@@ -435,12 +453,17 @@ void smtkRGGEditAssemblyView::apply()
     baseX = baseY = 0.0; // Ignored by calculateHexPinCoordinate for now
   }
 
-  for (auto iter = entityToLayouts.begin(); iter != entityToLayouts.end(); iter++, plGroupIndex++)
+  smtk::attribute::GroupItemPtr plI = eaAtt->findGroup("pins and layouts");
+  plI->setNumberOfGroups(0); // Clear existing groups
+  int plGroupIndex(0);
+  for (auto iter = entityToLayout.begin(); iter != entityToLayout.end(); iter++, plGroupIndex++)
   {
     cIAtt->removeAllAssociations();
     cIAtt->associateEntity(iter->first);
 
     std::vector<int> layout = iter->second;
+    std::vector<double> coordinates;
+    coordinates.reserve(layout.size());
     smtk::attribute::StringItemPtr plaRule = cIAtt->findString("placement rule");
     smtk::attribute::GroupItemPtr placementsI =
       smtk::dynamic_pointer_cast<smtk::attribute::GroupItem>(plaRule->activeChildItem(0));
@@ -455,23 +478,39 @@ void smtkRGGEditAssemblyView::apply()
         smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(placementsI->item(index, 0));
       double x, y;
       if (isHex)
-      { // FIXME
-        //x = y = 0;
+      {
         calculateHexPinCoordinate(x, y, spacing[0], layout[2 * index], layout[2 * index + 1]);
       }
       else
-      {
+      { // Question
+        // In schema planner, x and y axis are exchanged. Here we just follow the traditional coordinate convension
         x = baseX + spacing[0] * layout[2 * index];
         y = baseY + spacing[1] * layout[2 * index + 1];
       }
       coordinatesI->setValue(0, x);
       coordinatesI->setValue(1, y);
       coordinatesI->setValue(2, 0);
+
+      coordinates.push_back(x);
+      coordinates.push_back(y);
+      coordinates.push_back(0);
     }
     cIAtt->findModelEntity("snap to entity")->setIsEnabled(false);
     this->requestOperation(this->Internals->CreateInstanceOp.lock());
+    // Update pins and layouts
+    plI->appendGroup();
+    smtk::attribute::StringItemPtr pinUUIDI =
+      smtk::dynamic_pointer_cast<smtk::attribute::StringItem>(plI->item(plGroupIndex, 0));
+    smtk::attribute::IntItemPtr schemaPlanI =
+      smtk::dynamic_pointer_cast<smtk::attribute::IntItem>(plI->item(plGroupIndex, 1));
+    smtk::attribute::DoubleItemPtr coordinatesI =
+      smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(plI->item(plGroupIndex, 2));
+    pinUUIDI->setValue(iter->first.entity().toString());
+    schemaPlanI->setValues(iter->second.begin(), iter->second.end());
+    coordinatesI->setValues(coordinates.begin(), coordinates.end());
   }
-  QObject::disconnect(this->uiManager()->activeModelView(), &qtModelView::operationFinished, this,
+  QObject::disconnect(this->uiManager()->activeModelView()->operatorsWidget(),
+    &qtModelOperationWidget::operationFinished, this,
     &smtkRGGEditAssemblyView::onOperationFinished);
 
   // Populate the op attribute and invoke the operation
@@ -588,7 +627,6 @@ void smtkRGGEditAssemblyView::launchSchemaPlanner()
 
 void smtkRGGEditAssemblyView::onOperationFinished(const OperatorResult& result)
 {
-  std::cout << "smtkRGGEditAssemblyView::onOperationFinished" << std::endl;
   if (result->findInt("outcome")->value() != smtk::operation::Operator::OPERATION_SUCCEEDED)
   {
     return;
@@ -602,7 +640,6 @@ void smtkRGGEditAssemblyView::onOperationFinished(const OperatorResult& result)
   {
     for (it = remEntities->begin(); it != remEntities->end(); ++it)
     {
-      std::cout << "---------About to delete " << it->name() << std::endl;
       dI->appendValue(*it);
     }
   }
@@ -612,7 +649,6 @@ void smtkRGGEditAssemblyView::onOperationFinished(const OperatorResult& result)
     this->Internals->CurrentAtt->attribute()->findModelEntity("instance to be added");
   for (it = newEntities->begin(); it != newEntities->end(); ++it)
   {
-    std::cout << "---------About to add " << it->name() << std::endl;
     aI->appendValue(*it);
   }
 }
@@ -697,6 +733,38 @@ void smtkRGGEditAssemblyView::updateAttributeData()
       &smtkRGGEditAssemblyView::attributeModified);
     QObject::connect(this->Internals->CurrentAtt, &qtAttribute::itemModified, this,
       &smtkRGGEditAssemblyView::onAttItemModified);
+    // Associate assembly combobox with the latest assembly
+    smtk::attribute::ModelEntityItemPtr assemblyI =
+      this->Internals->CurrentAtt->attribute()->associations();
+    if (!assemblyI)
+    {
+      smtkErrorMacro(
+        smtk::io::Logger(), "Edit assembly operator does not have an assembly association");
+      return;
+    }
+    smtk::model::Model model = qtActiveObjects::instance().activeModel();
+    if (model.hasStringProperty("latest assembly"))
+    {
+      smtk::model::EntityRef latestAssembly = smtk::model::EntityRef(
+        model.manager(), smtk::common::UUID(model.stringProperty("latest assembly")[0]));
+      assemblyI->setValue(latestAssembly);
+    }
+
+    // Associate duct combobox with the latest duct
+    smtk::attribute::ModelEntityItemPtr ductI =
+      this->Internals->CurrentAtt->attribute()->findModelEntity("associated duct");
+    if (!ductI)
+    {
+      smtkErrorMacro(smtk::io::Logger(), "Edit assembly operator does not have a duct association");
+      return;
+    }
+    if (model.hasStringProperty("latest duct"))
+    {
+      smtk::model::EntityRef latestDuct = smtk::model::EntityRef(
+        model.manager(), smtk::common::UUID(model.stringProperty("latest duct")[0]));
+      ductI->setValue(latestDuct);
+    }
+    this->updateEditAssemblyPanel();
   }
 }
 
@@ -726,8 +794,6 @@ void smtkRGGEditAssemblyView::createWidget()
   layout->setMargin(0);
   this->Widget->setLayout(layout);
   this->Widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
-
-  this->updateAttributeData();
 
   // QUESTION: You might need to keep tracking of the widget
   QWidget* tempWidget = new QWidget(this->parentWidget());
@@ -793,20 +859,15 @@ void smtkRGGEditAssemblyView::createWidget()
   QObject::connect(
     this->Internals->applyButton, &QPushButton::released, this, &smtkRGGEditAssemblyView::apply);
 
-  this->updateEditAssemblyPanel();
+  this->updateAttributeData();
 }
 
 void smtkRGGEditAssemblyView::updateEditAssemblyPanel()
 {
   smtk::attribute::AttributePtr att = this->Internals->CurrentAtt->attribute();
   smtk::model::EntityRefArray ents = att->associatedModelEntities<smtk::model::EntityRefArray>();
-  // Need a valid assembly
   bool isEnabled(true);
-  if ((ents.size() == 0) || (!ents[0].hasStringProperty("rggType")) ||
-    (ents[0].stringProperty("rggType")[0] != SMTK_BRIDGE_RGG_ASSEMBLY))
-  { // Its type is not rgg assembly
-    isEnabled = false;
-  }
+
   // Need a valid duct
   smtk::attribute::ModelEntityItemPtr ductItem = att->findModelEntity("associated duct");
   smtk::model::EntityRef duct;
@@ -820,6 +881,25 @@ void smtkRGGEditAssemblyView::updateEditAssemblyPanel()
     }
   }
 
+  // Need a valid assembly
+  if ((ents.size() == 0) || (!ents[0].hasStringProperty("rggType")) ||
+    (ents[0].stringProperty("rggType")[0] != SMTK_BRIDGE_RGG_ASSEMBLY))
+  { // Its type is not rgg assembly
+    isEnabled = false;
+    // Invalid the current smtk assy
+    this->Internals->CurrentSMTKAssy = smtk::model::EntityRef();
+  }
+  else
+  {
+    if (this->Internals->CurrentSMTKAssy == ents[0] && this->Internals->CurrentSMTKDuct == duct)
+    { // If it's the same, do not reset the schema planner
+      // since it might surprise the user
+      return;
+    }
+    this->Internals->CurrentSMTKAssy = ents[0]; // Update current smtk assy
+  }
+  this->Internals->CurrentSMTKDuct = duct; // Update current smtk duct
+
   if (this->Internals)
   {
     this->Internals->scrollArea->setEnabled(isEnabled);
@@ -831,14 +911,12 @@ void smtkRGGEditAssemblyView::updateEditAssemblyPanel()
     if (this->Internals->SMTKAssyToCMBAssy.contains(ents[0]))
     {
       this->Internals->CurrentCMBAssy = this->Internals->SMTKAssyToCMBAssy.value(ents[0]);
-      std::cout << "  using a cached assembly for " << ents[0].name() << std::endl;
     }
     else
     {
       rggNucAssembly* assy = new rggNucAssembly(ents[0]);
       this->Internals->SMTKAssyToCMBAssy[ents[0]] = assy;
       this->Internals->CurrentCMBAssy = assy;
-      std::cout << "  using a new assembly for " << ents[0].name() << std::endl;
     }
     this->Internals->Current2DLattice->setLattice(this->Internals->CurrentCMBAssy);
     // Fulfill/ Update info of current assembly
@@ -857,9 +935,9 @@ void smtkRGGEditAssemblyView::updateEditAssemblyPanel()
       this->Internals->labelLineEdit->setText(
         QString::fromStdString(assembly.stringProperty("label")[0]));
     }
-    if (assembly.hasIntegerProperty("hex"))
+    if (assembly.owningModel().hasIntegerProperty("hex"))
     {
-      bool isHex = assembly.integerProperty("hex")[0];
+      bool isHex = assembly.owningModel().integerProperty("hex")[0];
       // Lattice
       this->Internals->latticeYLabel->setHidden(isHex);
       this->Internals->latticeYSpinBox->setHidden(isHex);
@@ -876,7 +954,7 @@ void smtkRGGEditAssemblyView::updateEditAssemblyPanel()
       else
       {
         smtkErrorMacro(smtk::io::Logger(), "Assembly " << assembly.name()
-                                                       << " does not have valid lattice size");
+                                                       << " does not have a valid lattice size");
       }
       // Make sure that the label is expanded properly
       this->Internals->latticeXLabel->setMinimumWidth(isHex ? 120 : 20);

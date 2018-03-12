@@ -20,28 +20,6 @@
             A user assigned name for the nulcear duct.
           </DetailedDescription>
         </String>
-        <Double Name="pitch" NumberOfRequiredValues="2" AdvanceLevel="11">
-          <BriefDescription>Width and length of the duct</BriefDescription>
-          <DetailedDescription>
-            Pitch value is controlled by the nuclear core.
-            If the model is a hexagonal core, then pitch would have two values which are twice of the hexagon
-            inradius.
-            If the model is a rectilinear core, then pitch would have two values which are width and length.
-          </DetailedDescription>
-        </Double>
-        <Double Name="duct height" NumberOfRequiredValues="2" AdvanceLevel="11">
-          <BriefDescription>height of the duct</BriefDescription>
-          <DetailedDescription>
-            Duct height is controlled by the nuclear core. It has two values: Z1 and Z2 where height equals (Z2-Z1);
-          </DetailedDescription>
-        </Double>
-        <Void Name="hex" NumberOfRequiredValues="1" Optional = "true" IsEnabledByDafault="false" AdvanceLevel="11">
-          <BriefDescription>Create a hex nulcear duct</BriefDescription>
-          <DetailedDescription>
-            If enabled, SMTK would create a hex nulcear duct. Otherwise it would be a rectilinear nuclear duct.
-            FIXME: It should be decided at the model(core) level.
-          </DetailedDescription>
-        </Void>
         <Void Name="cross section" NumberOfRequiredValues="1" Optional = "true" IsEnabledByDafault="false" AdvanceLevel="11">
           <BriefDescription>Cut away the duct so that the inner structure is visible</BriefDescription>
           <DetailedDescription>

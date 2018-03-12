@@ -25,13 +25,6 @@
             A user assigned name for the nulcear assembly.
           </DetailedDescription>
         </String>
-        <Void Name="hex" NumberOfRequiredValues="1" Optional="true" IsEnabledByDafault="true" AdvanceLevel="11">
-          <BriefDescription>Create a hex nulcear assembly</BriefDescription>
-          <DetailedDescription>
-            If enabled, SMTK create a hex nulcear assembly. Otherwise it would be a rectilinear nuclear assembly.
-            FIXME: It should be decided at the model(core) level.
-          </DetailedDescription>
-        </Void>
         <Group Name="pins and layouts" Extensible="true" NumberOfRequiredGroups="0" AdvanceLevel="11">
           <BriefDescription>A user assigned a set of pins which are laid out in the lattice</BriefDescription>
           <DetailedDescription>
@@ -43,6 +36,9 @@
             <Int Name="schema plan" NumberOfRequiredValues="2" Extensible="true" AdvanceLevel="11">
               <!-- Rect: (i, j) where i is the index along width and y is along height. Hex(i, j) where i is the index along the ring and j is the index on that layer -->
             </Int>
+            <Double Name="coordinates" NumberOfRequiredValues="2" Extensible="true" AdvanceLevel="11">
+              <!-- x, y and z coordinates -->
+            </Double>
           </ItemDefinitions>
         </Group>
         <ModelEntity Name="associated duct" NumberOfRequiredValues="1" AdvanceLevel="0">
@@ -77,7 +73,7 @@
           <!-- Since SMTK does not support more than one default values we make it one and extensible -->
         </Double>
         <Int Name="lattice size" NumberOfRequiredValues="1" Extensible="true" AdvanceLevel="11">
-          <!-- Since SMTK does not support more than one default values we make it one and extensible -->
+          <!-- Since SMTK does not support more than one default value we make it one and extensible -->
         </Int>
         <Int Name="z axis" NumberOfRequiredValues="1" AdvanceLevel="11">
         </Int>
@@ -88,6 +84,7 @@
     <AttDef Type="result(edit assembly)" BaseType="result">
       <ItemDefinitions>
         <ModelEntity Name="tess_changed" NumberOfRequiredValues="0" Extensible="true"/>
+        <Void Name="force camera reset" IsEnabledByDefault="true" AdvanceLevel="11"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>
@@ -98,7 +95,7 @@
       -->
     <View Type="smtkRGGEditAssemblyView" Title="Edit Assembly"  FilterByCategory="false"  FilterByAdvanceLevel="false" UseSelectionManager="false">
       <Description>
-        TODO: Add documentation for edit assembly operator.
+        Change a nulcear assembly's properties and layout.
       </Description>
       <AttributeTypes>
         <Att Type="edit assembly"/>

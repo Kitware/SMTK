@@ -94,6 +94,7 @@ public slots:
     const std::string& opName, const smtk::common::UUID& sessionId, bool launchOp);
   virtual void onOperationPanelClosing();
   virtual bool showPreviousOpOrHide(bool alwaysHide = true);
+  void initOperatorsDock(const std::string& opName, smtk::model::SessionPtr session);
 
 signals:
   void sendSelectionsFromModelViewToSelectionManager(const smtk::model::EntityRefs& selEntities,
@@ -173,7 +174,6 @@ protected:
   smtk::model::Group groupParentOfIndex(const QModelIndex& qidx);
   smtk::model::Group groupParent(const smtk::model::DescriptivePhrasePtr& phrase);
   bool initOperator(smtk::model::OperatorPtr op);
-  void initOperatorsDock(const std::string& opName, smtk::model::SessionPtr session);
 
   /*
   void findIndexes(

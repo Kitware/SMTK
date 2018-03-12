@@ -21,10 +21,8 @@
 class rggLatticeContainer
 {
 public:
-  rggLatticeContainer(smtk::model::EntityRef entity)
-    : m_entity(entity)
-  {
-  }
+  rggLatticeContainer(smtk::model::EntityRef entity);
+  virtual ~rggLatticeContainer();
   qtLattice& getLattice() { return this->m_lattice; }
   virtual QString extractLabel(QString const&) = 0;
   virtual void fillList(std::vector<std::pair<QString, smtk::model::EntityRef> >& l) = 0;

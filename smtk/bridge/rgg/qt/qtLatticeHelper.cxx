@@ -58,8 +58,8 @@ bool qtCell::isValid() const
 }
 
 qtCellReference::qtCellReference()
-  : m_cell(NULL)
-  , m_previewCell(NULL)
+  : m_cell(nullptr)
+  , m_previewCell(nullptr)
   , m_mode(NORMAL)
 {
 }
@@ -82,7 +82,7 @@ qtCellReference::qtCellReference(qtCellReference const& other)
 
 qtCellReference::~qtCellReference()
 {
-  if (m_cell)
+  if (m_cell != nullptr)
   {
     m_cell->dec();
   }

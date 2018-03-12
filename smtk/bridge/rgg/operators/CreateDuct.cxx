@@ -62,10 +62,12 @@ smtk::model::OperatorResult CreateDuct::operateInternal()
 
   auxGeom = parent.manager()->addAuxiliaryGeometry(parent.as<smtk::model::Model>(), 3);
   CreateDuct::populateDuct(dynamic_cast<smtk::model::Operator*>(this), auxGeom, subAuxGeoms);
+  // Update the latest duct in the model
+  parent.setStringProperty("latest duct", auxGeom.entity().toString());
 
   result = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
-  std::cout << "Add " << subAuxGeoms.size() << " subAuxGeoms to the duct" << std::endl;
 
+  this->addEntityToResult(result, parent, MODIFIED);
   this->addEntityToResult(result, auxGeom, CREATED);
   this->addEntitiesToResult(result, subAuxGeoms, CREATED);
   return result;
@@ -88,18 +90,6 @@ void CreateDuct::populateDuct(
     smtkErrorMacro(op->log(), " Fail to set name on the rgg duct");
   }
 
-  // FIXME: It should be specified at core level
-  // Hex or rectilinear
-  smtk::attribute::VoidItemPtr isHex = op->findVoid("hex");
-  if (isHex->isEnabled())
-  {
-    auxGeom.setIntegerProperty("hex", 1);
-  }
-  else
-  {
-    auxGeom.setIntegerProperty("hex", 0);
-  }
-
   // Cut away the duct?
   smtk::attribute::VoidItemPtr isCrossSection = op->findVoid("cross section");
   if (isCrossSection->isEnabled())
@@ -109,31 +99,6 @@ void CreateDuct::populateDuct(
   else
   {
     auxGeom.setIntegerProperty("cross section", 0);
-  }
-
-  // FIXME: It should be specified at core level
-  // Set pitch
-  smtk::attribute::DoubleItemPtr pitchItemItem = op->findDouble("pitch");
-  if (pitchItemItem != nullptr && pitchItemItem->numberOfValues() == 2)
-  { // Hex duct has two same pitch values and Rectilinear duct has two values
-    smtk::model::FloatList tmp = { pitchItemItem->value(0), pitchItemItem->value(1) };
-    auxGeom.setFloatProperty(pitchItemItem->name(), tmp);
-  }
-  else
-  {
-    smtkErrorMacro(op->log(), " Fail to set pitch on the rgg duct");
-  }
-
-  // FIXME: It should be specified at core level
-  smtk::attribute::DoubleItemPtr ductHeightI = op->findDouble("duct height");
-  if (ductHeightI != nullptr && ductHeightI->numberOfValues() == 2)
-  {
-    smtk::model::FloatList tmp = { ductHeightI->value(0), ductHeightI->value(1) };
-    auxGeom.setFloatProperty(ductHeightI->name(), tmp);
-  }
-  else
-  {
-    smtkErrorMacro(op->log(), " Fail to set duct height on the rgg duct");
   }
 
   smtk::attribute::GroupItemPtr segsGItem = op->findGroup("duct segments");
@@ -155,11 +120,12 @@ void CreateDuct::populateDuct(
         segsGItem->findAs<smtk::attribute::DoubleItem>(index, "thicknesses(normalized)");
       // Cache number of materials of current seg
       numMaterialsPerSeg.push_back(materialsI->numberOfValues());
-      // User is allowed to change the duct height in creating status,
-      // so instead of querying zValuesI here we should query ductHeight
+      // When creating duct, we just use the duct height stored on the core
+      // so instead of querying zValuesI here we should query the ductHeight
       if (zValuesI->numberOfValues() == 2 && (zValuesI->value(0) == 0) && (zValuesI->value(1) == 0))
       { // Initial invalid value, so use the duct height instead
-        zValues.insert(zValues.end(), ductHeightI->begin(), ductHeightI->end());
+        smtk::model::FloatList ductHeight = auxGeom.owningModel().floatProperty("duct height");
+        zValues.insert(zValues.end(), ductHeight.begin(), ductHeight.end());
       }
       else
       {
@@ -168,7 +134,6 @@ void CreateDuct::populateDuct(
       materials.insert(materials.end(), materialsI->begin(), materialsI->end());
 
       thicknesses.insert(thicknesses.end(), thicknessesI->begin(), thicknessesI->end());
-      // FIXME: It should be provided by the core, remove the below line in the future
       // Since xml parser cannot handle a valueItem with 2 required&default values
       // and being extensible properly, we add the default value twice
       // Ideally if it's hex, it has two same values. If not, it should have

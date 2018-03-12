@@ -61,10 +61,14 @@ smtk::model::OperatorResult CreatePin::operateInternal()
   std::vector<EntityRef> subAuxGeoms;
   // TODO: These codes are duplicated in EditPin operator
   auxGeom = parent.manager()->addAuxiliaryGeometry(parent.as<smtk::model::Model>(), 3);
+  // Update the latest pin in the model
+  parent.setStringProperty("latest pin", auxGeom.entity().toString());
+
   CreatePin::populatePin(this, auxGeom, subAuxGeoms, true);
 
   result = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
 
+  this->addEntityToResult(result, parent, MODIFIED);
   this->addEntityToResult(result, auxGeom, CREATED);
   this->addEntitiesToResult(result, subAuxGeoms, CREATED);
   return result;
@@ -74,17 +78,6 @@ void CreatePin::populatePin(smtk::model::Operator* op, smtk::model::AuxiliaryGeo
   std::vector<smtk::model::EntityRef>& subAuxGeoms, bool isCreation)
 {
   auxGeom.setStringProperty("rggType", SMTK_BRIDGE_RGG_PIN);
-
-  // Hex or rectinlinear
-  smtk::attribute::VoidItemPtr isHex = op->findVoid("hex");
-  if (isHex->isEnabled())
-  {
-    auxGeom.setIntegerProperty("hex", 1);
-  }
-  else
-  {
-    auxGeom.setIntegerProperty("hex", 0);
-  }
 
   // Cut away the pin?
   smtk::attribute::VoidItemPtr isCutAway = op->findVoid("cut away");
@@ -120,7 +113,7 @@ void CreatePin::populatePin(smtk::model::Operator* op, smtk::model::AuxiliaryGeo
         int count = 0;
         while (std::find(std::begin(labels), std::end(labels), labelValue) != std::end(labels))
         { // need to generate a new label
-          labelValue = "pinCell" + std::to_string(count);
+          labelValue = "PC" + std::to_string(count);
           count++;
         }
         // Update the label list

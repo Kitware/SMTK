@@ -172,9 +172,6 @@ void smtkRGGEditPinView::apply()
     this->Internals->CurrentAtt->attribute()->findInt("cell material");
   materialI->setValue(this->Internals->CellMaterial->currentIndex());
 
-  smtk::attribute::VoidItemPtr isHex = this->Internals->CurrentAtt->attribute()->findVoid("hex");
-  isHex->setIsEnabled(this->Internals->isHexCheckbox->isChecked());
-
   smtk::attribute::VoidItemPtr isCutAway =
     this->Internals->CurrentAtt->attribute()->findVoid("cut away");
   isCutAway->setIsEnabled(this->Internals->cutAwayViewCheckBox->isChecked());
@@ -312,6 +309,23 @@ void smtkRGGEditPinView::updateAttributeData()
       &smtkRGGEditPinView::attributeModified);
     QObject::connect(this->Internals->CurrentAtt, &qtAttribute::itemModified, this,
       &smtkRGGEditPinView::onAttItemModified);
+    // Associate pin combobox with the latest pin
+    smtk::attribute::ModelEntityItemPtr pinI =
+      this->Internals->CurrentAtt->attribute()->associations();
+
+    if (!pinI)
+    {
+      smtkErrorMacro(smtk::io::Logger(), "Edit pin operator does not have a pin association");
+      return;
+    }
+    smtk::model::Model model = qtActiveObjects::instance().activeModel();
+    if (model.hasStringProperty("latest pin"))
+    {
+      smtk::model::EntityRef latestPin = smtk::model::EntityRef(
+        model.manager(), smtk::common::UUID(model.stringProperty("latest pin")[0]));
+      pinI->setValue(latestPin);
+    }
+    this->updateEditPinPanel();
   }
 }
 
@@ -341,8 +355,6 @@ void smtkRGGEditPinView::createWidget()
   layout->setMargin(0);
   this->Widget->setLayout(layout);
   this->Widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
-
-  this->updateAttributeData();
 
   // QUESTION: You might need to keep tracking of the widget
   QWidget* tempWidget = new QWidget(this->parentWidget());
@@ -375,12 +387,6 @@ void smtkRGGEditPinView::createWidget()
     QString::fromStdString("If checked, a clipping plane would cut the"
                            "pin half through center axis"));
 
-  // Set is hex or not
-  // FIXME: Ideally, this property should be decide by the model - whether
-  // it's a hexagonal or rectilinear core
-  this->Internals->isHexCheckbox->setToolTip(
-    QString::fromStdString("If checked, the cell material would have a hex shape."
-                           "Otherwise it woulld have a rectilinear shape"));
   // Add/edit/remove pieces table
   this->createPiecesTable();
 
@@ -396,14 +402,14 @@ void smtkRGGEditPinView::createWidget()
   QObject::connect(
     this->Internals->applyButton, &QPushButton::released, this, &smtkRGGEditPinView::apply);
 
-  this->updateEditPinPanel();
+  this->updateAttributeData();
 }
 
 void smtkRGGEditPinView::updateEditPinPanel()
 {
   smtk::model::EntityRefArray ents = this->Internals->CurrentAtt->attribute()
                                        ->associatedModelEntities<smtk::model::EntityRefArray>();
-  bool isEnabled;
+  bool isEnabled(true);
   if ((ents.size() == 0) || (!ents[0].hasStringProperty("rggType")) ||
     (ents[0].stringProperty("rggType")[0] != SMTK_BRIDGE_RGG_PIN) ||
     !ents[0].embeddedEntities<smtk::model::EntityRefArray>().size() > 0)
@@ -424,7 +430,7 @@ void smtkRGGEditPinView::updateEditPinPanel()
     // Cell material
     this->Internals->CellMaterial->setCurrentIndex(pin.integerProperty("cell material")[0]);
     // Hex
-    this->Internals->isHexCheckbox->setChecked(pin.integerProperty("hex")[0]);
+    this->Internals->isHexCheckbox->setChecked(pin.owningModel().integerProperty("hex")[0]);
     // Cut away
     this->Internals->cutAwayViewCheckBox->setChecked(pin.integerProperty("cut away")[0]);
     // Z origin
@@ -432,8 +438,6 @@ void smtkRGGEditPinView::updateEditPinPanel()
     // Populate the piece table
     this->Internals->piecesTable->clearSpans();
     this->Internals->piecesTable->model()->removeRows(0, this->Internals->piecesTable->rowCount());
-    std::cout << " pieces table count after clearspans: "
-              << this->Internals->piecesTable->rowCount() << std::endl;
     smtk::model::IntegerList pieceTypes = pin.integerProperty("pieces");
     smtk::model::FloatList pieceparas = pin.floatProperty("pieces");
     if (pieceTypes.size() > 0 && (pieceTypes.size() * 3 == pieceparas.size()))

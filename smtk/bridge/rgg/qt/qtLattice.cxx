@@ -134,6 +134,10 @@ qtLattice::qtLattice()
   this->m_maxRadiusFun = new rggNucMaxRectRadiusFunction(
     2.0, 2.0, std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 1, 1);
   smtk::model::ManagerPtr ptr = qtActiveObjects::instance().activeModel().manager();
+  if (!ptr)
+  {
+    return;
+  }
   if (ptr->findEntitiesByProperty("label", "XX").size() == 0)
   { // Create a blank entity fits lattice need
     smtk::model::AuxiliaryGeometry blankAux = ptr->addAuxiliaryGeometry();
@@ -172,10 +176,10 @@ qtLattice::~qtLattice()
     i->second = nullptr;
   }
   m_partToCell.clear();
-  //  if (this->m_maxRadiusFun != nullptr)
-  //  { // TODO: Handle m_maxRadiusFun to prevent crash
-  //    delete this->m_maxRadiusFun;
-  //  }
+  if (this->m_maxRadiusFun != nullptr)
+  {
+    delete this->m_maxRadiusFun;
+  }
 }
 
 qtLattice& qtLattice::operator=(qtLattice const& other)

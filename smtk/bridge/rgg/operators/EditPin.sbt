@@ -32,12 +32,6 @@
             A user assigned outer material for the nulcear pin.
           </DetailedDescription>
         </Int>
-        <Void Name="hex" NumberOfRequiredValues="1" Optional = "true" IsEnabledByDafault="false" AdvanceLevel="11">
-          <BriefDescription>Create a hex nulcear pin</BriefDescription>
-          <DetailedDescription>
-            If enabled, SMTK create create a hex nulcear pin. Otherwise it would be a rectilinear nuclear pin.
-          </DetailedDescription>
-        </Void>
         <Void Name="cut away" NumberOfRequiredValues="1" Optional = "true" IsEnabledByDafault="false" AdvanceLevel="11">
           <BriefDescription>cut away the pin so that the inner layers are visible</BriefDescription>
           <DetailedDescription>

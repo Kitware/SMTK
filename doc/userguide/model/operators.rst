@@ -111,6 +111,9 @@ what changes an operator has made to the model:
   Operators which load data from files are encouraged to include this item in their result
   attribute while operators which let users create or modify entities interactively — especially
   through interaction in render-views — are discouraged from allowing camera resets.
+* ``force camera reset`` (:smtk:`VoidItem <smtk::attribute::VoidItem>`)
+  When present *and enabled*, this operator will *force* the camera of the active render view to be reset.
+  It should be exclusive to ``allow camera reset``.
 
 Registration
 ------------

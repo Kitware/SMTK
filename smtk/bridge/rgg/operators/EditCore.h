@@ -7,19 +7,10 @@
 // the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 // PURPOSE.  See the above copyright notice for more information.
 //=============================================================================
-#ifndef __smtk_session_rgg_EditAssembly_h
-#define __smtk_session_rgg_EditAssembly_h
+#ifndef __smtk_session_rgg_EditCore_h
+#define __smtk_session_rgg_EditCore_h
 
-#include "smtk/bridge/rgg/operators/CreateAssembly.h"
-
-namespace smtk
-{
-namespace model
-{
-class AuxiliaryGeometry;
-class EntityRef;
-}
-}
+#include "smtk/bridge/rgg/Operator.h"
 
 namespace smtk
 {
@@ -28,15 +19,15 @@ namespace bridge
 namespace rgg
 {
 
-/**\brief edit a rgg assembly
-  * The nuclear assembly is converted into an auxiliary geometry in smtk world. All
-  * parameters are stored as properties.
+/**\brief Edit a rgg core. What happens beneath the cover is that smtk is editing
+ * properties stored on the model for simplicity purpose since one rgg model
+ * can only have one core.
   */
-class SMTKRGGSESSION_EXPORT EditAssembly : public Operator
+class SMTKRGGSESSION_EXPORT EditCore : public Operator
 {
 public:
-  smtkTypeMacro(EditAssembly);
-  smtkCreateMacro(EditAssembly);
+  smtkTypeMacro(EditCore);
+  smtkCreateMacro(EditCore);
   smtkSharedFromThisMacro(Operator);
   smtkSuperclassMacro(Operator);
   smtkDeclareModelOperator();
@@ -49,4 +40,4 @@ protected:
 } //namespace bridge
 } // namespace smtk
 
-#endif // __smtk_session_rgg_EditAssembly_h
+#endif // __smtk_session_rgg_EditCore_h

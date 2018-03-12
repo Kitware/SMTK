@@ -14,10 +14,14 @@
 #include "smtk/io/Logger.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/DoubleItem.h"
+#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/VoidItem.h"
 
 #include "smtk/bridge/rgg/CreateModel_xml.h"
+using namespace smtk::model;
 
 namespace smtk
 {
@@ -33,25 +37,26 @@ smtk::model::OperatorResult CreateModel::operateInternal()
   smtk::model::Manager::Ptr mgr;
   if (sess)
   {
-    // If a name was specified, use it. Or make one up.
-    smtk::attribute::StringItem::Ptr nameItem = this->findString("name");
-    std::string modelName;
-    if (nameItem && nameItem->isEnabled())
-    {
-      modelName = nameItem->value(0);
-    }
-
     mgr = sess->manager();
-    smtk::model::Model model = mgr->addModel(/* par. dim. */ 3, /* emb. dim. */ 3, modelName);
+    smtk::model::Model model = mgr->addModel(/* par. dim. */ 3, /* emb. dim. */ 3);
     model.setSession(smtk::model::SessionRef(mgr, sess->sessionId()));
-    if (modelName.empty())
+    if (model.name().empty())
     {
       model.assignDefaultName();
     }
 
+    smtk::model::Group core = mgr->addGroup(0, "group"); // Assign the name later
+    model.addGroup(core);
+    BitFlags mask(0);
+    mask |= smtk::model::AUX_GEOM_ENTITY;
+    mask |= smtk::model::INSTANCE_ENTITY;
+    core.setMembershipMask(mask);
+
+    CreateModel::populateCore(this, core);
+
     result = this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
     this->addEntityToResult(result, model, CREATED);
-    // QUESTION: set SMTK_GEOM_STYLE_PROP?
+    this->addEntityToResult(result, core, CREATED);
     model.setIntegerProperty(SMTK_GEOM_STYLE_PROP, smtk::model::DISCRETE);
   }
 
@@ -59,8 +64,72 @@ smtk::model::OperatorResult CreateModel::operateInternal()
   {
     result = this->createResult(smtk::operation::Operator::OPERATION_FAILED);
   }
-
   return result;
+}
+
+void CreateModel::populateCore(smtk::model::Operator* op, smtk::model::Group& core)
+{
+  core.setStringProperty("rggType", SMTK_BRIDGE_RGG_CORE);
+  smtk::attribute::StringItem::Ptr nameItem = op->findString("name");
+  std::string modelName;
+  if (nameItem && nameItem->isEnabled())
+  {
+    modelName = nameItem->value(0);
+  }
+  core.setName(modelName);
+
+  smtk::model::Model model = core.owningModel();
+
+  // Hex or rectinlinear
+  std::string optype = op->findString("geometry type")->value();
+  if (optype == "Hex")
+  {
+    model.setIntegerProperty("hex", 1);
+    smtk::attribute::DoubleItemPtr thicknessI = op->findDouble("duct thickness");
+    smtk::model::FloatList tmp = { thicknessI->value(0), thicknessI->value(0) };
+    model.setFloatProperty("duct thickness", tmp);
+  }
+  else if (optype == "Rect")
+  {
+    model.setIntegerProperty("hex", 0);
+    smtk::attribute::DoubleItemPtr thicknessXI = op->findDouble("duct thickness X");
+    smtk::attribute::DoubleItemPtr thicknessYI = op->findDouble("duct thickness Y");
+    smtk::model::FloatList tmp = { thicknessXI->value(0), thicknessYI->value(0) };
+    model.setFloatProperty("duct thickness", tmp);
+  }
+  // Common items for hex and rectilinear core
+  smtk::attribute::DoubleItemPtr heightI = op->findDouble("height");
+  smtk::attribute::DoubleItemPtr zOriginI = op->findDouble("z origin");
+  if (heightI->numberOfValues() != 1 || zOriginI->numberOfValues() != 1)
+  {
+    smtkErrorMacro(op->log(), " Fail to set the duct height on the rgg core");
+  }
+  else
+  {
+    // SMTK stores the value as zOrigin and (zOrigin + height).
+    smtk::model::FloatList tmp = { zOriginI->value(0), zOriginI->value(0) + heightI->value(0) };
+    model.setFloatProperty("duct height", tmp);
+  }
+
+  smtk::attribute::IntItemPtr latticeSizeItem = op->findInt("lattice size");
+  if (latticeSizeItem)
+  {
+    if (latticeSizeItem->numberOfValues() == 1)
+    { // Default value condition
+      int unitSize = (model.integerProperty("hex")[0]) ? 1 : 4;
+      smtk::model::IntegerList size = { unitSize, unitSize };
+      model.setIntegerProperty(latticeSizeItem->name(), size);
+    }
+    else if (latticeSizeItem->numberOfValues() == 2)
+    { // Edit core
+      smtk::model::IntegerList size(latticeSizeItem->begin(), latticeSizeItem->end());
+      model.setIntegerProperty(latticeSizeItem->name(), size);
+    }
+    else
+    {
+      smtkErrorMacro(op->log(), "core " << core.name() << " does not have a valid lattice size");
+    }
+  }
 }
 
 } // namespace rgg

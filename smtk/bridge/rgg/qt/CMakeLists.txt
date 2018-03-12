@@ -19,6 +19,7 @@ set (srcs
 set (non_ui_srcs
   rggLatticeContainer.cxx
   rggNucAssembly.cxx
+  rggNucCore.cxx
   rggNucCoordinateConverter.cxx
 )
 
@@ -31,6 +32,7 @@ set (hdrs
   qtLattice.h
   qtLatticeHelper.h
   rggNucAssembly.h
+  rggNucCore.h
   rggLatticeContainer.h
   rggNucCoordinateConverter.h
   rggNucPartDefinition.h

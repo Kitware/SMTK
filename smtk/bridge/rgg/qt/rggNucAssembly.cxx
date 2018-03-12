@@ -127,16 +127,17 @@ void rggNucAssembly::resetBySMTKAssembly(const smtk::model::EntityRef& assy)
   }
 
   // Update lattice related info
-  if (assy.hasIntegerProperty("hex"))
+  if (assy.owningModel().hasIntegerProperty("hex"))
   {
-    int isHex = assy.integerProperty("hex")[0];
-    std::cout << "  hex=" << this->m_centerPins << std::endl;
+    int isHex = assy.owningModel().integerProperty("hex")[0];
+    std::cout << "  hex=" << isHex << std::endl;
     this->m_lattice.SetGeometryType(
       isHex ? rggGeometryType::HEXAGONAL : rggGeometryType::RECTILINEAR);
   }
   else
   {
-    smtkErrorMacro(smtk::io::Logger(), "Assembly does not have valid hex info");
+    smtkErrorMacro(smtk::io::Logger(), "The assembly's owning model does not "
+                                       "have a valid hex info");
   }
 
   if (assy.hasIntegerProperty("lattice size") && assy.integerProperty("lattice size").size() == 2)
@@ -150,7 +151,9 @@ void rggNucAssembly::resetBySMTKAssembly(const smtk::model::EntityRef& assy)
     smtkErrorMacro(smtk::io::Logger(), "Assembly does not have a valid lattice"
                                        " size");
   }
-  //TODO: handle pins, ducts and populate the qtLattice
+  // TODO: handle pins, ducts and populate the qtLattice
+  // It's needed when rgg file I/O is in place. Ex. Using an assembly with layout
+  // infos to create a new rggNucAssembly
 }
 
 void rggNucAssembly::setAssyDuct(smtk::model::EntityRef duct)

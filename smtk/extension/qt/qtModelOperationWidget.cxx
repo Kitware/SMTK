@@ -535,6 +535,16 @@ void qtModelOperationWidget::onOperationSelected()
     this->setCurrentOperator("create instances", this->Internals->CurrentSession.lock());
     this->setCurrentOperator("delete", this->Internals->CurrentSession.lock());
   }
+
+  if (opName == "edit core" &&
+    (!this->existingOperator("create instances") || !this->existingOperator("delete")))
+  {
+    // Edit core depends on create instances and delete Op. We should
+    // initialize them first
+    this->setCurrentOperator("create instances", this->Internals->CurrentSession.lock());
+    this->setCurrentOperator("delete", this->Internals->CurrentSession.lock());
+  }
+
   this->setCurrentOperator(opName, this->Internals->CurrentSession.lock());
 }
 

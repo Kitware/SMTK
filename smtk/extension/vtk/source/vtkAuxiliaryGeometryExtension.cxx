@@ -573,9 +573,9 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGPinRepr
     zOrigin = pin.floatProperty("z origin")[0];
   }
   int isHex;
-  if (pin.hasIntegerProperty("hex"))
+  if (pin.owningModel().hasIntegerProperty("hex"))
   {
-    isHex = pin.integerProperty("hex")[0];
+    isHex = pin.owningModel().integerProperty("hex")[0];
   }
 
   int isCutAway;
@@ -767,9 +767,9 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGDuctRep
   vtkAuxiliaryGeometryExtension::ensureCache();
   //Extract info from duct
   bool isHex(false);
-  if (duct.hasIntegerProperty("hex"))
+  if (duct.owningModel().hasIntegerProperty("hex"))
   {
-    isHex = duct.integerProperty("hex")[0];
+    isHex = duct.owningModel().integerProperty("hex")[0];
   }
 
   bool isCrossSection(false);
@@ -779,9 +779,9 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGDuctRep
   }
 
   smtk::model::FloatList pitch;
-  if (duct.hasFloatProperty("pitch"))
+  if (duct.owningModel().hasFloatProperty("duct thickness"))
   {
-    pitch = duct.floatProperty("pitch");
+    pitch = duct.owningModel().floatProperty("duct thickness");
   }
 
   smtk::model::FloatList ductHeight;
@@ -910,6 +910,7 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGDuctRep
       {
         transform->Scale(1, 1, height);
       }
+
       vtkSmartPointer<vtkTransformPolyDataFilter> transformFilter =
         vtkSmartPointer<vtkTransformPolyDataFilter>::New();
       transformFilter->SetInputData(dataset);

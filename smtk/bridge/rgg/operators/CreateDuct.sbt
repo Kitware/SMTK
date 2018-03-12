@@ -20,32 +20,8 @@
           <DetailedDescription>
             A user assigned name for the nulcear duct.
           </DetailedDescription>
-          <DefaultValue>ductEntity</DefaultValue>
+          <DefaultValue>Duct0</DefaultValue>
         </String>
-        <Double Name="pitch" NumberOfRequiredValues="2" AdvanceLevel="11">
-          <BriefDescription>Width and length of the duct</BriefDescription>
-          <DetailedDescription>
-            Pitch value is controlled by the nuclear core.
-            If the model is a hexagonal core, then pitch would have two values which are twice of the hexagon
-            radius.
-            If the model is a rectilinear core, then pitch would have two values which are width and length.
-          </DetailedDescription>
-          <DefaultValue>10.0, 10.0</DefaultValue>
-        </Double>
-        <Double Name="duct height" NumberOfRequiredValues="2" AdvanceLevel="0">
-          <BriefDescription>height of the duct</BriefDescription>
-          <DetailedDescription>
-            Duct height is controlled by the nuclear core. It has two values: Z1 and Z2 where height equals (Z2-Z1);
-          </DetailedDescription>
-          <DefaultValue>0.0, 10.0</DefaultValue>
-        </Double>
-        <Void Name="hex" NumberOfRequiredValues="1" Optional="true" IsEnabledByDafault="true" AdvanceLevel="0">
-          <BriefDescription>Create a hex nulcear duct</BriefDescription>
-          <DetailedDescription>
-            If enabled, SMTK create create a hex nulcear duct. Otherwise it would be a rectilinear nuclear duct.
-            FIXME: It should be decided at the model(core) level.
-          </DetailedDescription>
-        </Void>
         <Void Name="cross section" NumberOfRequiredValues="1" Optional = "true" IsEnabledByDafault="false" AdvanceLevel="11">
           <BriefDescription>Cut away the duct so that the inner structure is visible</BriefDescription>
           <DetailedDescription>
@@ -91,6 +67,8 @@
     <AttDef Type="result(create duct)" BaseType="result">
       <ItemDefinitions>
         <!-- The created duct is returned in the base result's "create" item. -->
+        <Void Name="force camera reset" IsEnabledByDefault="true" AdvanceLevel="11"/>
+        <Void Name="hide other entities" IsEnabledByDefault="true" AdvanceLevel="11"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

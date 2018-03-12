@@ -11,6 +11,7 @@ list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 
 set (srcs
   smtkRGGEditAssemblyView.cxx
+  smtkRGGEditCoreView.cxx
   smtkRGGEditDuctView.cxx
   smtkRGGEditPinView.cxx
 )
@@ -21,12 +22,14 @@ set (non_ui_srcs
 
 set (hdrs
   smtkRGGEditAssemblyView.h
+  smtkRGGEditCoreView.h
   smtkRGGEditDuctView.h
   smtkRGGEditPinView.h
 )
 
 set (qtui
   smtkRGGEditAssemblyParameters.ui
+  smtkRGGEditCoreParameters.ui
   smtkRGGEditDuctParameters.ui
   smtkRGGEditPinParameters.ui
 )

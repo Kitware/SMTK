@@ -198,6 +198,9 @@
             </item>
             <item>
              <widget class="QCheckBox" name="isHexButton">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="text">
                <string>Hex</string>
               </property>
@@ -238,7 +241,7 @@
        <item row="2" column="0">
         <widget class="QLabel" name="dlLabel">
          <property name="text">
-          <string>Duct Length:      </string>
+          <string>Duct Height:      </string>
          </property>
         </widget>
        </item>
@@ -252,7 +255,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="z1LineEdit"/>
+          <widget class="QLineEdit" name="z1LineEdit">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_4">
@@ -262,7 +269,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="z2LineEdit"/>
+          <widget class="QLineEdit" name="z2LineEdit">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
          </item>
          <item>
           <spacer name="horizontalSpacer_5">
@@ -284,6 +295,9 @@
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="pdLabel">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Duct pitch is set at the core level.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>Duct Pitch:</string>
          </property>
@@ -312,7 +326,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="ductPitchX"/>
+          <widget class="QLineEdit" name="ductPitchX">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="ductPitchYLabel">
@@ -322,7 +340,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="ductPitchY"/>
+          <widget class="QLineEdit" name="ductPitchY">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
          </item>
          <item>
           <spacer name="horizontalSpacer_4">

@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>RGGEditPinParameters</class>
  <widget class="QWidget" name="RGGEditPinParameters">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -282,8 +285,11 @@
         <layout class="QGridLayout" name="gridLayout_3">
          <item row="3" column="1">
           <widget class="QCheckBox" name="isHexCheckbox">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If checked, CMB would create a hexagon nuclear pin. Otherwise it would be a rectilinear nuclear pin.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pins would inherit the hex info from the core.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>Hex</string>

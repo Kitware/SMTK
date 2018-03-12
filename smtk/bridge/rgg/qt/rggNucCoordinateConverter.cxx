@@ -168,8 +168,8 @@ public:
     {
       i = wh.first - 1 - i;
     }
-    y = (i)*r1;
-    x = (j)*r2;
+    x = (i)*r1;
+    y = -(j)*r2; // Convert from qt coordinate system to natural coordinate system
   }
 
   virtual void computeRadius(int w, int h, double r[2])
@@ -192,7 +192,7 @@ rggNucCoordinateConverter::rggNucCoordinateConverter(qtLattice& lat, bool contro
   }
   else
   {
-    this->Internal = new convertRect(lat, !control);
+    this->Internal = new convertRect(lat, control);
   }
 }
 

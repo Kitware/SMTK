@@ -7,6 +7,7 @@ set (rggSrcs
   operators/CreatePin.cxx
   operators/Delete.cxx
   operators/EditAssembly.cxx
+  operators/EditCore.cxx
   operators/EditDuct.cxx
   operators/EditPin.cxx
   )
@@ -20,6 +21,7 @@ set (rggHeaders
   operators/CreatePin.h
   operators/Delete.h
   operators/EditAssembly.h
+  operators/EditCore.h
   operators/EditDuct.h
   operators/EditPin.h
   )
@@ -49,6 +51,7 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateModel.sbt" rggOpe
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreatePin.sbt" rggOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Delete.sbt" rggOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EditAssembly.sbt" rggOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EditCore.sbt" rggOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EditDuct.sbt" rggOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EditPin.sbt" rggOperatorXML)
 smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" rggSessionJSON)

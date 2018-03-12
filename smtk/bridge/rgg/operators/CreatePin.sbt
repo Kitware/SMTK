@@ -19,14 +19,14 @@
           <DetailedDescription>
             A user assigned name for the nulcear pin.
           </DetailedDescription>
-          <DefaultValue>PinCell</DefaultValue>
+          <DefaultValue>Pin0</DefaultValue>
         </String>
         <String Name="label" NumberOfRequiredValues="1" AdvanceLevel="11">
           <BriefDescription>A user assigned label for the nulcear pin</BriefDescription>
           <DetailedDescription>
             A user assigned label for the nulcear pin.
           </DetailedDescription>
-          <DefaultValue>pinCell0</DefaultValue>
+          <DefaultValue>PC0</DefaultValue>
         </String>
         <Int Name="cell material" NumberOfRequiredValues="1" AdvanceLevel="11">
           <BriefDescription>A user assigned outer material for the nulcear pin</BriefDescription>
@@ -36,12 +36,6 @@
           <!-- no material -->
           <DefaultValue>0</DefaultValue>
         </Int>
-        <Void Name="hex" NumberOfRequiredValues="1" Optional = "true" IsEnabledByDafault="false" AdvanceLevel="11">
-          <BriefDescription>Create a hex nulcear pin</BriefDescription>
-          <DetailedDescription>
-            If enabled, SMTK create create a hex nulcear pin. Otherwise it would be a rectilinear nuclear pin.
-          </DetailedDescription>
-        </Void>
         <Void Name="cut away" NumberOfRequiredValues="1" Optional = "true" IsEnabledByDafault="false" AdvanceLevel="11">
           <BriefDescription>cut away the pin so that the inner layers are visible</BriefDescription>
           <DetailedDescription>
@@ -98,6 +92,8 @@
     <AttDef Type="result(create pin)" BaseType="result">
       <ItemDefinitions>
         <!-- The created pin is returned in the base result's "create" item. -->
+        <Void Name="force camera reset" IsEnabledByDefault="true" AdvanceLevel="11"/>
+        <Void Name="hide other entities" IsEnabledByDefault="true" AdvanceLevel="11"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>
