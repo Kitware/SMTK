@@ -115,13 +115,13 @@ bool Operation::ableToOperate()
 Operation::Result Operation::operate()
 {
   // Gather all requested resources and their permission levels.
-  auto resourcesWithPermissions = extractResourcesAndPermissions(this->specification());
+  auto resourcesAndPermissions = extractResourcesAndPermissions(this->specification());
 
   // Lock the resources.
-  for (auto& resourceWithPermissions : resourcesWithPermissions)
+  for (auto& resourceAndPermission : resourcesAndPermissions)
   {
-    auto& resource = resourceWithPermissions.first;
-    auto& permission = resourceWithPermissions.second;
+    auto& resource = resourceAndPermission.first;
+    auto& permission = resourceAndPermission.second;
     resource->lock({}).lock(permission);
   }
 
@@ -193,10 +193,10 @@ Operation::Result Operation::operate()
   }
 
   // Unlock the resources.
-  for (auto& resourceWithPermissions : resourcesWithPermissions)
+  for (auto& resourceAndPermission : resourcesAndPermissions)
   {
-    auto& resource = resourceWithPermissions.first;
-    auto& permission = resourceWithPermissions.second;
+    auto& resource = resourceAndPermission.first;
+    auto& permission = resourceAndPermission.second;
     resource->lock({}).unlock(permission);
   }
 
