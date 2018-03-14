@@ -70,7 +70,11 @@ set_target_properties(TemplateEditor PROPERTIES AUTOMOC TRUE
 target_link_libraries(TemplateEditor
   LINK_PRIVATE
   smtkCore
-  smtkQtExt)
+  smtkQtExt
+  smtkEnvironment
+  smtkOperationEnvironment
+  smtkPolygonSessionEnvironment
+)
 
 # ==============================================================================
 # Install

@@ -1,11 +1,3 @@
-add_executable(displayModel MACOSX_BUNDLE displayModel.cxx)
-target_link_libraries(displayModel
-  smtkCore
-  vtkRenderingGL2PSOpenGL2
-  vtkSMTKSourceExt
-  vtkTestingRendering
-)
-
 add_executable(displayMultiBlockModel MACOSX_BUNDLE displayMultiBlockModel.cxx)
 target_link_libraries(displayMultiBlockModel
   smtkCore
@@ -32,15 +24,6 @@ target_link_libraries(displayModelToMesh
 
 # Only run tests if the data directory exists
 if (SMTK_DATA_DIR)
-  add_test(
-    NAME displayModel
-    COMMAND
-      $<TARGET_FILE:displayModel>
-      "${SMTK_DATA_DIR}/model/3d/smtk/simple.json"
-      -V "${SMTK_DATA_DIR}/baseline/smtk/vtk/simple.png"
-      -T "${CMAKE_CURRENT_BINARY_DIR}"
-  )
-
   add_test(
     NAME displayMultiBlockModel-simple
     COMMAND

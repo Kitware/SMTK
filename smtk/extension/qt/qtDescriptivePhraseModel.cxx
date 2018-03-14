@@ -92,6 +92,8 @@ public:
 qtDescriptivePhraseModel::qtDescriptivePhraseModel(QObject* owner)
   : QAbstractItemModel(owner)
   , m_modelObserver(-1)
+  , m_visibleIconURL(":/icons/display/eyeball.png")
+  , m_invisibleIconURL(":/icons/display/eyeballClosed.png")
 {
   this->m_deleteOnRemoval = true;
   this->P = new Internal;
@@ -314,9 +316,9 @@ QVariant qtDescriptivePhraseModel::data(const QModelIndex& idx, int role) const
         // by default, everything should be visible
         bool visible = item->relatedVisibility();
         if (visible)
-          return QVariant(QIcon(":/icons/display/eyeball.png"));
+          return QVariant(QIcon(m_visibleIconURL.c_str()));
         else
-          return QVariant(QIcon(":/icons/display/eyeballClosed.png"));
+          return QVariant(QIcon(m_invisibleIconURL.c_str()));
       }
       else if (role == PhraseColorRole &&
         (item->relatedComponent() || item->phraseType() == smtk::view::DescriptivePhraseType::LIST))

@@ -39,6 +39,8 @@ pqSMTKAttributePanel::pqSMTKAttributePanel(QWidget* parent)
   w->setLayout(new QVBoxLayout);
   QObject::connect(&pqActiveObjects::instance(), SIGNAL(sourceChanged(pqPipelineSource*)), this,
     SLOT(displayPipelineSource(pqPipelineSource*)));
+  QObject::connect(
+    &pqActiveObjects::instance(), SIGNAL(dataUpdated()), this, SLOT(updatePipeline()));
 }
 
 pqSMTKAttributePanel::~pqSMTKAttributePanel()
@@ -77,6 +79,14 @@ bool pqSMTKAttributePanel::displayResource(smtk::attribute::CollectionPtr rsrc)
     }
   }
   m_rsrc = rsrc;
+  if (m_attrUIMgr)
+  {
+    delete m_attrUIMgr;
+    while (QWidget* w = this->widget()->findChild<QWidget*>())
+    {
+      delete w;
+    }
+  }
 
   m_attrUIMgr = new smtk::extension::qtUIManager(rsrc);
   smtk::view::ViewPtr view = rsrc ? rsrc->findTopLevelView() : nullptr;
@@ -118,4 +128,9 @@ bool pqSMTKAttributePanel::displayView(smtk::view::ViewPtr view)
   }
   auto qview = m_attrUIMgr->setSMTKView(view, this->widget());
   return qview ? true : false;
+}
+
+bool pqSMTKAttributePanel::updatePipeline()
+{
+  return this->displayPipelineSource(pqActiveObjects::instance().activeSource());
 }

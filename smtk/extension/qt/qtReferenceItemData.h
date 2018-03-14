@@ -27,9 +27,11 @@
 #include <QCheckBox>
 #include <QDialog>
 #include <QGridLayout>
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QListView>
 #include <QPushButton>
+#include <QVBoxLayout>
 
 namespace smtk
 {
@@ -68,9 +70,10 @@ public:
 
   // Popup widget contents
   QDialog* m_popup;
+  QVBoxLayout* m_popupLayout;
+  QListView* m_popupList;
   QLabel* m_popupSynopsis;
   QPushButton* m_popupDone;
-  QListView* m_popupList;
 
   // Link between Qt and SMTK
   smtk::extension::qtDescriptivePhraseModel* m_qtModel;

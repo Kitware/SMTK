@@ -47,6 +47,8 @@ class pqSMTKResourcePanel::Internal : public Ui::pqSMTKResourcePanel
 public:
   Internal()
     : m_selnSource("resource panel")
+    , m_selnLabel("selected")
+    , m_hoverLabel("hovered")
   {
   }
 
@@ -146,6 +148,7 @@ public:
     m_delegate->setDrawSubtitle(false);
     m_view->setModel(m_model);
     m_view->setItemDelegate(m_delegate);
+    m_view->setMouseTracking(true); // Needed to receive hover events.
 
     QObject::connect(m_delegate, SIGNAL(requestVisibilityChange(const QModelIndex&)), m_model,
       SLOT(toggleVisibility(const QModelIndex&)));
@@ -157,6 +160,8 @@ public:
     QObject::connect(m_view->selectionModel(),
       SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), parent,
       SLOT(sendPanelSelectionToSMTK(const QItemSelection&, const QItemSelection&)));
+    QObject::connect(
+      m_view, SIGNAL(entered(const QModelIndex&)), parent, SLOT(hoverRow(const QModelIndex&)));
   }
 
   QPointer<smtk::extension::qtDescriptivePhraseModel> m_model;
@@ -165,8 +170,11 @@ public:
   smtk::view::ResourcePhraseModel::Ptr m_phraseModel;
   smtk::view::Selection::Ptr m_seln; // TODO: This assumes there is only 1 server connection
   int m_selnHandle;                  // TODO: Same assumption as m_seln
-  std::string m_selnLabel;
+  int m_selnValue;
+  int m_hoverValue;
   std::string m_selnSource; // TODO: This assumes there is only 1 panel (or that all should share)
+  std::string m_selnLabel;
+  std::string m_hoverLabel;
   std::map<smtk::common::UUID, int> m_visibleThings;
 };
 
@@ -230,7 +238,6 @@ void pqSMTKResourcePanel::sendPanelSelectionToSMTK(const QItemSelection&, const 
     return;
   } // No SMTK selection exists.
 
-  int selnValue = m_p->m_seln->findOrCreateLabeledValue(m_p->m_selnLabel);
   //smtk::view::Selection::SelectionMap selnMap;
   std::set<smtk::resource::Component::Ptr> selnSet;
   auto selected = m_p->m_view->selectionModel()->selection();
@@ -250,7 +257,7 @@ void pqSMTKResourcePanel::sendPanelSelectionToSMTK(const QItemSelection&, const 
     }
   }
   m_p->m_seln->modifySelection(
-    selnSet, m_p->m_selnSource, selnValue, smtk::view::SelectionAction::UNFILTERED_REPLACE);
+    selnSet, m_p->m_selnSource, m_p->m_selnValue, smtk::view::SelectionAction::UNFILTERED_REPLACE);
   if (selectedResource)
   {
     // Make the reader owning the first selected resource the active PV pipeline source:
@@ -314,6 +321,8 @@ void pqSMTKResourcePanel::resourceManagerAdded(pqSMTKWrapper* wrapper, pqServer*
   m_p->m_seln = wrapper->smtkSelection();
   if (m_p->m_seln)
   {
+    m_p->m_selnValue = m_p->m_seln->findOrCreateLabeledValue(m_p->m_selnLabel);
+    m_p->m_hoverValue = m_p->m_seln->findOrCreateLabeledValue(m_p->m_hoverLabel);
     QPointer<pqSMTKResourcePanel> self(this);
     m_p->m_seln->registerSelectionSource(m_p->m_selnSource);
     m_p->m_selnHandle =
@@ -427,4 +436,58 @@ void pqSMTKResourcePanel::componentVisibilityChanged(
   // The visibilty should change for every row displaying the same \a ent:
   m_p->m_visibleThings[comp->id()] = visible;
   m_p->m_phraseModel->triggerDataChangedFor(comp);
+}
+
+void pqSMTKResourcePanel::hoverRow(const QModelIndex& idx)
+{
+  // Erase the current hover state.
+  if (!m_p->m_seln)
+  {
+    return;
+  }
+  smtk::resource::ComponentSet csetAdd;
+  smtk::resource::ComponentSet csetDel;
+  m_p->m_seln->visitSelection(
+    [this, &csetAdd, &csetDel](smtk::resource::Component::Ptr cp, int sv) {
+      sv = sv & (~m_p->m_hoverValue);
+      if (sv)
+      {
+        csetAdd.insert(cp);
+      }
+      else
+      {
+        csetDel.insert(cp);
+      }
+    });
+  if (!csetAdd.empty())
+  {
+    m_p->m_seln->modifySelection(
+      csetAdd, m_p->m_selnSource, m_p->m_selnValue, smtk::view::SelectionAction::UNFILTERED_ADD);
+  }
+  if (!csetDel.empty())
+  {
+    m_p->m_seln->modifySelection(
+      csetDel, m_p->m_selnSource, 0, smtk::view::SelectionAction::UNFILTERED_SUBTRACT);
+  }
+
+  auto phr = m_p->m_model->getItem(idx);
+  if (!phr)
+  {
+    return;
+  }
+
+  auto comp = phr->relatedComponent();
+  if (!comp)
+  {
+    return;
+  }
+
+  // Add new hover state
+  const auto& selnMap = m_p->m_seln->currentSelection();
+  auto cvit = selnMap.find(comp);
+  int sv = (cvit == selnMap.end() ? 0 : cvit->second) | m_p->m_hoverValue;
+  csetAdd.clear();
+  csetAdd.insert(comp);
+  m_p->m_seln->modifySelection(
+    csetAdd, m_p->m_selnSource, sv, smtk::view::SelectionAction::UNFILTERED_ADD);
 }

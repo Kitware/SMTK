@@ -47,8 +47,13 @@ public:
   {
     s_defaultColors[entityType] = color;
   }
-
   static QColor defaultPhraseColor(const std::string& entityType);
+
+  /// Set and get the icons to be used when visibility is to be drawn
+  std::string visibleIconURL() const { return m_visibleIconURL; }
+  std::string invisibleIconURL() const { return m_invisibleIconURL; }
+  void setVisibleIconURL(const std::string& url) { m_visibleIconURL = url; }
+  void setInvisibleIconURL(const std::string& url) { m_invisibleIconURL = url; }
 
   /// Enumeration of model-specific data roles.
   enum DataRoles
@@ -118,6 +123,8 @@ protected:
   smtk::view::PhraseModelPtr m_model;
   int m_modelObserver;
   bool m_deleteOnRemoval; // remove UUIDs from mesh when they are removed from the list?
+  std::string m_visibleIconURL;
+  std::string m_invisibleIconURL;
   static std::map<std::string, QColor> s_defaultColors;
   class Internal;
   Internal* P;

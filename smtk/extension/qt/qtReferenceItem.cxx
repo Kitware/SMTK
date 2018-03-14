@@ -14,10 +14,17 @@
 #include "smtk/extension/qt/qtOverlay.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
+#include "smtk/view/ComponentPhraseModel.h"
+
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
+
+#include "smtk/environment/Environment.h"
+
+#include <QEvent>
+#include <QKeyEvent>
 
 using namespace smtk::extension;
 using namespace smtk::attribute;
@@ -56,6 +63,13 @@ void qtReferenceItem::setOutputOptional(int state)
   }
 }
 
+void qtReferenceItem::linkHover(bool link)
+{
+  (void)link;
+  // TODO: traverse entries of this->getObject() and ensure their "hover" bit is set
+  //       in the application selection.
+}
+
 void qtReferenceItem::createWidget()
 {
   this->clearWidgets();
@@ -81,19 +95,42 @@ void qtReferenceItem::updateUI()
     return;
   }
 
+  auto rsrcMgr = smtk::environment::ResourceManager::instance();
+  auto operMgr = smtk::environment::OperationManager::instance();
+
+  auto phraseModel = this->createPhraseModel();
+  m_p->m_phraseModel = phraseModel;
+  m_p->m_qtModel = new qtDescriptivePhraseModel;
+  m_p->m_qtModel->setPhraseModel(m_p->m_phraseModel);
+  m_p->m_qtDelegate = new smtk::extension::qtDescriptivePhraseDelegate;
+  m_p->m_qtDelegate->setTextVerticalPad(6);
+  m_p->m_qtDelegate->setTitleFontWeight(1);
+  m_p->m_qtDelegate->setDrawSubtitle(false);
+  m_p->m_qtDelegate->setVisibilityMode(true);
+  m_p->m_phraseModel->setDecorator(
+    [this](smtk::view::DescriptivePhrasePtr phr) { this->decorateWithMembership(phr); });
+  m_p->m_qtModel->setVisibleIconURL(":/icons/display/selected.png");
+  m_p->m_qtModel->setInvisibleIconURL(":/icons/display/unselected.png");
+  m_p->m_phraseModel->addSource(rsrcMgr, operMgr);
+
+  // Create a container for the item:
   this->Widget = new QFrame(this->parentWidget());
+  this->Widget->installEventFilter(this);
   m_p->m_grid = new QGridLayout(this->Widget);
   m_p->m_grid->setMargin(0);
   m_p->m_grid->setSpacing(0);
   m_p->m_grid->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  QSizePolicy sizeStretchyXPolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
 
+  // Create a layout for the item's checkbox (if it is optional) and its label.
   QHBoxLayout* labelLayout = new QHBoxLayout();
   labelLayout->setMargin(0);
   labelLayout->setSpacing(0);
   labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
+  // Add the "enable" checkbox if the item is optional.
   int padding = 0;
   if (itm->isOptional())
   {
@@ -108,6 +145,7 @@ void qtReferenceItem::updateUI()
   }
   auto itemDef = itm->definition();
 
+  // Add a label for the item.
   QString labelText = !itm->label().empty() ? itm->label().c_str() : itm->name().c_str();
   m_p->m_label = new QLabel(labelText, this->Widget);
   m_p->m_label->setSizePolicy(sizeFixedPolicy);
@@ -118,7 +156,7 @@ void qtReferenceItem::updateUI()
   m_p->m_label->setWordWrap(true);
   m_p->m_label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
-  // add in BriefDescription as tooltip if available
+  // Add in BriefDescription as tooltip if available:
   const std::string strBriefDescription = itemDef->briefDescription();
   if (!strBriefDescription.empty())
   {
@@ -131,8 +169,60 @@ void qtReferenceItem::updateUI()
   }
   labelLayout->addWidget(m_p->m_label);
 
+  // Now add widgetry for the "entry"
+  // Create a layout for the item's entry editor.
+  QHBoxLayout* entryLayout = new QHBoxLayout();
+  entryLayout->setMargin(0);
+  entryLayout->setSpacing(6);
+  entryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+
+  // An entry consists of ...
+  // ... a synopsis (label).
+  bool ok;
+  QString synText = QString::fromStdString(this->synopsis(ok));
+  m_p->m_synopsis = new QLabel(synText, this->Widget);
+  // m_p->m_synopsis->setSizePolicy(sizeFixedPolicy);
+  m_p->m_synopsis->setSizePolicy(sizeStretchyXPolicy);
+  m_p->m_synopsis->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+  entryLayout->addWidget(m_p->m_synopsis);
+
+  // ... a button to pop up an editor for the item contents.
+  m_p->m_editBtn = new QPushButton("…", this->Widget);
+  m_p->m_editBtn->setAutoDefault(true);
+  m_p->m_editBtn->setDefault(true);
+  entryLayout->addWidget(m_p->m_editBtn);
+
+  // Create a popup for editing the item's contents
+  m_p->m_popup = new QDialog(m_p->m_editBtn);
+  m_p->m_popup->setWindowFlags(Qt::FramelessWindowHint | Qt::Popup);
+  m_p->m_popupLayout = new QVBoxLayout(m_p->m_popup);
+  m_p->m_popupList = new QListView(m_p->m_popup);
+  m_p->m_popupList->setItemDelegate(m_p->m_qtDelegate);
+  m_p->m_popupSynopsis = new QLabel(m_p->m_popup);
+  m_p->m_popupSynopsis->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+  m_p->m_popupDone = new QPushButton("Done", m_p->m_popup);
+  auto hbl = new QHBoxLayout();
+  hbl->addWidget(m_p->m_popupSynopsis);
+  hbl->addWidget(m_p->m_popupDone);
+  m_p->m_popupLayout->addWidget(m_p->m_popupList);
+  m_p->m_popupLayout->addLayout(hbl);
+  m_p->m_popup->installEventFilter(this);
+  m_p->m_popupList->setModel(m_p->m_qtModel);
+
+  QObject::connect(m_p->m_editBtn, SIGNAL(clicked()), m_p->m_popup, SLOT(exec()));
+  QObject::connect(m_p->m_popupDone, SIGNAL(clicked()), m_p->m_popup, SLOT(hide()));
+  QObject::connect(m_p->m_qtDelegate, SIGNAL(requestVisibilityChange(const QModelIndex&)),
+    m_p->m_qtModel, SLOT(toggleVisibility(const QModelIndex&)));
+
+  // ... a button to export the item contents to the selection:
+  // ... a button to import the item contents from the selection:
+  // ... a label (or button?) to indicate linkage of the selection with the item:
+
   m_p->m_grid->addLayout(labelLayout, 0, 0);
+  m_p->m_grid->addLayout(entryLayout, 0, 1);
+
   // layout->addWidget(this->Widget???, 0, 1);
+
   if (this->parentWidget() && this->parentWidget()->layout())
   {
     this->parentWidget()->layout()->addWidget(this->Widget);
@@ -141,4 +231,96 @@ void qtReferenceItem::updateUI()
   {
     this->setOutputOptional(itm->isEnabled() ? 1 : 0);
   }
+
+  this->updateSynopsisLabels();
+}
+
+namespace
+{
+static void updateLabel(QLabel* lbl, const QString& txt, bool ok)
+{
+  lbl->setText(txt);
+  lbl->setAutoFillBackground(ok ? false : true);
+  QPalette pal = lbl->palette();
+  pal.setColor(QPalette::Background, QColor(QRgb(ok ? 0x00ff00 : 0xff7777)));
+  lbl->setPalette(pal);
+  lbl->update();
+}
+}
+
+void qtReferenceItem::updateSynopsisLabels() const
+{
+  if (!m_p || !m_p->m_synopsis || !m_p->m_popupSynopsis)
+  {
+    return;
+  }
+
+  bool ok;
+  auto syn = this->synopsis(ok);
+  QString qsyn = QString::fromStdString(syn);
+  updateLabel(m_p->m_synopsis, qsyn, ok);
+  updateLabel(m_p->m_popupSynopsis, qsyn, ok);
+}
+
+bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
+{
+  // We serve as an event filter on 2 widgets:
+  // 1. the inherited frame holding the item (this->Widget)
+  // 2. the popup dialog (m_p->m_popup)
+  if (src == this->Widget)
+  {
+    switch (event->type())
+    {
+      case QEvent::Enter:
+        this->linkHover(true);
+        break;
+      case QEvent::Leave:
+        this->linkHover(false);
+        break;
+      case QEvent::FocusIn:
+        this->linkHover(true);
+        break;
+      case QEvent::FocusOut:
+        this->linkHover(false);
+        break;
+      default:
+        break;
+    }
+  }
+  else if (src == m_p->m_popup)
+  {
+    // std::cout << "Popup event: " << event->type() << "\n";
+    switch (event->type())
+    {
+      case QEvent::KeyPress:
+      case QEvent::
+        ShortcutOverride: // This is what keypresses look like to us (the parent of the QListView).
+      {
+        // std::cout << "  Popup key\n";
+        auto keyEvent = static_cast<QKeyEvent*>(event);
+        int kk = keyEvent->key();
+        switch (kk)
+        {
+          case Qt::Key_Escape:
+          case Qt::Key_Cancel:
+            // std::cout << "    Hiding\n";
+            m_p->m_popup->hide();
+            return true;
+            break;
+          case Qt::Key_Return:
+          case Qt::Key_Enter:
+          case Qt::Key_Space:
+            // std::cout << "    Toggling\n";
+            this->toggleCurrentItem();
+            break;
+          default:
+            break;
+        }
+      }
+      break;
+      default:
+        break;
+    }
+  }
+  return false;
 }

@@ -32,13 +32,21 @@ public:
   virtual ~qtComponentItem();
 
   void setLabelVisible(bool) override;
-  smtk::attribute::ComponentItemPtr componentItem();
+  smtk::attribute::ComponentItemPtr componentItem() const;
 
 protected slots:
   void updateItemData() override;
 
 protected:
+  smtk::view::PhraseModelPtr createPhraseModel() const override;
+
   void createWidget() override;
+
+  std::string synopsis(bool& membershipValid) const override;
+
+  int decorateWithMembership(smtk::view::DescriptivePhrasePtr phr) override;
+
+  void toggleCurrentItem() override;
 
   class Internal;
   Internal* m_p;
