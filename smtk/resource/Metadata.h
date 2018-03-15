@@ -41,8 +41,12 @@ public:
 
   Metadata(const std::string& uniqueName, Resource::Index index,
     std::set<Resource::Index> parentIndices,
-    std::function<ResourcePtr(const smtk::common::UUID&)> createFunctor)
+    std::function<ResourcePtr(const smtk::common::UUID&)> createFunctor,
+    std::function<ResourcePtr(const std::string&)> readFunctor,
+    std::function<bool(const ResourcePtr&)> writeFunctor)
     : create(createFunctor)
+    , read(readFunctor)
+    , write(writeFunctor)
     , m_uniqueName(uniqueName)
     , m_index(index)
     , m_parentIndices(parentIndices)
@@ -61,6 +65,9 @@ public:
 
   std::function<ResourcePtr(const smtk::common::UUID&)> create = [](
     const smtk::common::UUID&) { return ResourcePtr(); };
+  std::function<ResourcePtr(const std::string&)> read = [](
+    const std::string&) { return ResourcePtr(); };
+  std::function<bool(const ResourcePtr&)> write = [](const ResourcePtr&) { return false; };
 
 private:
   std::string m_uniqueName;

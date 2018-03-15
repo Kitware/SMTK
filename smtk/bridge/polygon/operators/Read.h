@@ -36,6 +36,8 @@ protected:
   virtual const char* xmlDescription() const override;
 };
 
+SMTKPOLYGONSESSION_EXPORT smtk::resource::ResourcePtr read(const std::string&);
+
 } // namespace polygon
 } // namespace bridge
 } // namespace smtk

@@ -62,6 +62,18 @@ const char* LegacyRead::xmlDescription() const
   return LegacyRead_xml;
 }
 
+smtk::resource::ResourcePtr legacyRead(const std::string& filename)
+{
+  LegacyRead::Ptr legacyRead = LegacyRead::create();
+  legacyRead->parameters()->findFile("filename")->setValue(filename);
+  LegacyRead::Result result = legacyRead->operate();
+  if (result->findInt("outcome")->value() != static_cast<int>(LegacyRead::Outcome::SUCCEEDED))
+  {
+    return smtk::resource::ResourcePtr();
+  }
+  return result->findResource("resource")->value();
+}
+
 } // namespace polygon
 } // namespace bridge
 } // namespace smtk

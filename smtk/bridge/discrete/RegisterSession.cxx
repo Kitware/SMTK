@@ -11,10 +11,6 @@
 //=============================================================================
 #include "smtk/bridge/discrete/RegisterSession.h"
 
-#include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/FileItem.h"
-#include "smtk/attribute/IntItem.h"
-
 #include "smtk/bridge/discrete/operators/CreateEdgesOperation.h"
 #include "smtk/bridge/discrete/operators/EdgeOperation.h"
 #include "smtk/bridge/discrete/operators/EntityGroupOperation.h"
@@ -30,8 +26,6 @@
 #include "smtk/bridge/discrete/operators/WriteResource.h"
 
 #include "smtk/bridge/discrete/Resource.h"
-
-#include "smtk/model/SessionIOJSON.h"
 
 #include "smtk/operation/groups/ImporterGroup.h"
 #include "smtk/operation/groups/ReaderGroup.h"
@@ -97,7 +91,12 @@ void registerOperations(smtk::operation::Manager::Ptr& operationManager)
 
 void registerResources(smtk::resource::Manager::Ptr& resourceManager)
 {
-  resourceManager->registerResource<smtk::bridge::discrete::Resource>();
+  resourceManager->registerResource<smtk::bridge::discrete::Resource>(readResource, writeResource);
+
+  // When resources were introduced, the JSON description for a discrete model
+  // changed from "discrete" to "discrete model". This functor enables reading a
+  // legacy file with the JSON tag "discrete".
+  resourceManager->addLegacyReader("discrete", readResource);
 }
 }
 }

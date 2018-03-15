@@ -215,6 +215,90 @@ std::set<smtk::resource::ResourcePtr> Manager::find(const Resource::Index& index
   return values;
 }
 
+smtk::resource::ResourcePtr Manager::read(const std::string& uniqueName, const std::string& url)
+{
+  smtk::resource::ResourcePtr resource;
+
+  // Locate the metadata associated with this resource type
+  auto metadata = m_metadata.get<NameTag>().find(uniqueName);
+  if (metadata != m_metadata.get<NameTag>().end())
+  {
+    // Read in the resource using the provided url
+    resource = metadata->read(url);
+  }
+  else
+  {
+    // If a resource type is not identified using this unique name, we check the
+    // map of legacy readers to see if this name is a legacy name for a resource type.
+    auto search = m_legacyReaders.find(uniqueName);
+    if (search != m_legacyReaders.end())
+    {
+      // Read in the resource using the provided url
+      resource = search->second(url);
+    }
+  }
+
+  if (resource)
+  {
+    // Add the resource to be tracked by this manager
+    this->add(resource);
+
+    // Assign the resource's location
+    resource->setLocation(url);
+  }
+
+  return resource;
+}
+
+smtk::resource::ResourcePtr Manager::read(const Resource::Index& index, const std::string& url)
+{
+  smtk::resource::ResourcePtr resource;
+
+  // Locate the metadata associated with this resource type
+  auto metadata = m_metadata.get<IndexTag>().find(index);
+  if (metadata != m_metadata.get<IndexTag>().end())
+  {
+    // Read in the resource using the provided url
+    resource = metadata->read(url);
+  }
+
+  if (resource)
+  {
+    // Add the resource to be tracked by this manager
+    this->add(index, resource);
+
+    // Assign the resource's location
+    resource->setLocation(url);
+  }
+
+  return resource;
+}
+
+bool Manager::write(const smtk::resource::ResourcePtr& resource, const std::string& url)
+{
+  // Set the location of the resource to the input url and write
+  resource->setLocation(url);
+  return this->write(resource);
+}
+
+bool Manager::write(const smtk::resource::ResourcePtr& resource)
+{
+  if (!resource)
+  {
+    return false;
+  }
+
+  // Locate the metadata associated with this resource type
+  auto metadata = m_metadata.get<IndexTag>().find(resource->index());
+  if (metadata != m_metadata.get<IndexTag>().end() && metadata->write != nullptr)
+  {
+    // Write out the resource to its url
+    return metadata->write(resource);
+  }
+
+  return false;
+}
+
 bool Manager::add(const smtk::resource::ResourcePtr& resource)
 {
   // If the resource is null, do not add
@@ -286,6 +370,19 @@ bool Manager::remove(const smtk::resource::ResourcePtr& resource)
   }
 
   return false;
+}
+
+bool Manager::addLegacyReader(
+  const std::string& alias, const std::function<ResourcePtr(const std::string&)>& read)
+{
+  if (m_legacyReaders.find(alias) != m_legacyReaders.end())
+  {
+    // This alias is already registered to a resource type.
+    return false;
+  }
+
+  m_legacyReaders[alias] = read;
+  return true;
 }
 
 void Manager::visit(const smtk::resource::Resource::Visitor& visitor) const

@@ -94,7 +94,12 @@ void registerOperations(smtk::operation::Manager::Ptr& operationManager)
 
 void registerResources(smtk::resource::Manager::Ptr& resourceManager)
 {
-  resourceManager->registerResource<smtk::bridge::polygon::Resource>();
+  resourceManager->registerResource<smtk::bridge::polygon::Resource>(read, write);
+
+  // When moving from CJSON to nlohmann::json, the file format for polygon
+  // models changed slightly. This call facilitates reading the old format
+  // using our new tools.
+  resourceManager->addLegacyReader("polygon", legacyRead);
 }
 }
 }
