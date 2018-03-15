@@ -115,8 +115,12 @@ public:
   smtkCreateMacro(MyComponent);
   smtkSharedFromThisMacro(smtk::resource::Component);
 
-  smtk::common::UUID id() const override { return myId; }
-  void setId(const smtk::common::UUID& anId) override { myId = anId; }
+  const smtk::common::UUID& id() const override { return myId; }
+  bool setId(const smtk::common::UUID& anId) override
+  {
+    myId = anId;
+    return true;
+  }
 
   const smtk::resource::ResourcePtr resource() const override { return myResource; }
   void setResource(smtk::resource::Resource::Ptr& r) { myResource = r; }

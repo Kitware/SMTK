@@ -71,12 +71,14 @@ public:
   bool setModelEntityId(const smtk::common::UUID&);
   bool setModelEntity(const smtk::model::EntityRef&);
 
-  smtk::common::UUID id() const override { return this->m_meshset.id(); }
+  const smtk::common::UUID& id() const override { return this->m_meshset.id(); }
+  bool setId(const smtk::common::UUID& id) override
+  {
+    this->m_meshset.setId(id);
+    return true;
+  }
 
   smtk::mesh::MeshSet meshes() const { return this->m_meshset; }
-
-protected:
-  void setId(const smtk::common::UUID& id) override { this->m_meshset.setId(id); }
 
 private:
   smtk::mesh::MeshSet m_meshset;

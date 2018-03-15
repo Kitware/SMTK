@@ -229,7 +229,12 @@ public:
 
   bool isAboutToBeDeleted() const { return m_aboutToBeDeleted; }
 
-  common::UUID id() const override { return m_id; }
+  const common::UUID& id() const override { return m_id; }
+  bool setId(const common::UUID& uid) override
+  {
+    m_id = uid;
+    return true;
+  }
 
 protected:
   Attribute(const std::string& myName, smtk::attribute::DefinitionPtr myDefinition,
@@ -251,8 +256,6 @@ protected:
   }
   // This removes all references to a specific Ref Item
   void removeReference(smtk::attribute::RefItem* attRefItem) { m_references.erase(attRefItem); }
-
-  void setId(const common::UUID& myID) override { m_id = myID; }
 
   std::string m_name;
   std::vector<smtk::attribute::ItemPtr> m_items;
