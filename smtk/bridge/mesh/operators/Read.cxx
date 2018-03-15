@@ -85,6 +85,18 @@ const char* Read::xmlDescription() const
 {
   return Read_xml;
 }
+
+smtk::resource::ResourcePtr read(const std::string& filename)
+{
+  Read::Ptr read = Read::create();
+  read->parameters()->findFile("filename")->setValue(filename);
+  Read::Result result = read->operate();
+  if (result->findInt("outcome")->value() != static_cast<int>(Read::Outcome::SUCCEEDED))
+  {
+    return smtk::resource::ResourcePtr();
+  }
+  return result->findResource("resource")->value();
+}
 }
 }
 }

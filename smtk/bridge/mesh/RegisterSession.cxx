@@ -11,11 +11,6 @@
 //=============================================================================
 #include "smtk/bridge/mesh/RegisterSession.h"
 
-#include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/FileItem.h"
-#include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ResourceItem.h"
-
 #include "smtk/bridge/mesh/operators/EulerCharacteristicRatio.h"
 #include "smtk/bridge/mesh/operators/Export.h"
 #include "smtk/bridge/mesh/operators/Import.h"
@@ -56,7 +51,7 @@ void registerOperations(smtk::operation::Manager::Ptr& operationManager)
 
 void registerResources(smtk::resource::Manager::Ptr& resourceManager)
 {
-  resourceManager->registerResource<smtk::bridge::mesh::Resource>();
+  resourceManager->registerResource<smtk::bridge::mesh::Resource>(read, write);
 }
 }
 }

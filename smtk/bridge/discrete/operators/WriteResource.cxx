@@ -96,6 +96,16 @@ const char* WriteResource::xmlDescription() const
 {
   return WriteResource_xml;
 }
+
+bool writeResource(const smtk::resource::ResourcePtr& resource)
+{
+  WriteResource::Ptr write = WriteResource::create();
+  write->parameters()->findResource("resource")->setValue(resource);
+  WriteResource::Result result = write->operate();
+  return (
+    result->findInt("outcome")->value() == static_cast<int>(WriteResource::Outcome::SUCCEEDED));
+}
+
 } // namespace discrete
 } // namespace bridge
 } // namespace smtk

@@ -30,6 +30,9 @@ PySharedPtrClass< smtk::bridge::polygon::LegacyRead > pybind11_init_smtk_bridge_
     .def("shared_from_this", (std::shared_ptr<const smtk::bridge::polygon::LegacyRead> (smtk::bridge::polygon::LegacyRead::*)() const) &smtk::bridge::polygon::LegacyRead::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<smtk::bridge::polygon::LegacyRead> (smtk::bridge::polygon::LegacyRead::*)()) &smtk::bridge::polygon::LegacyRead::shared_from_this)
     ;
+
+  m.def("legacyRead", (smtk::resource::ResourcePtr (*)(::std::string const &)) &smtk::bridge::polygon::legacyRead, "", py::arg("filePath"));
+
   return instance;
 }
 

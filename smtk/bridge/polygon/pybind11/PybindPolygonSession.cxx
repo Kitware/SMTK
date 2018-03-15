@@ -43,6 +43,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindLegacyRead.h"
 #include "PybindSplitEdge.h"
 #include "PybindTweakEdge.h"
+#include "PybindWrite.h"
 
 #include "PybindRegisterSession.h"
 
@@ -73,6 +74,7 @@ PYBIND11_MODULE(_smtkPybindPolygonSession, polygon)
   PySharedPtrClass< smtk::bridge::polygon::LegacyRead > smtk_bridge_polygon_LegacyRead = pybind11_init_smtk_bridge_polygon_LegacyRead(polygon, smtk_bridge_polygon_Operation);
   PySharedPtrClass< smtk::bridge::polygon::SplitEdge > smtk_bridge_polygon_SplitEdge = pybind11_init_smtk_bridge_polygon_SplitEdge(polygon, smtk_bridge_polygon_Operation);
   PySharedPtrClass< smtk::bridge::polygon::TweakEdge > smtk_bridge_polygon_TweakEdge = pybind11_init_smtk_bridge_polygon_TweakEdge(polygon, smtk_bridge_polygon_Operation);
+  PySharedPtrClass< smtk::bridge::polygon::Write > smtk_bridge_polygon_Write = pybind11_init_smtk_bridge_polygon_Write(polygon, smtk_bridge_polygon_Operation);
 
   pybind11_init__bridge_polygon_registerResources(polygon);
   pybind11_init__bridge_polygon_registerOperations(polygon);

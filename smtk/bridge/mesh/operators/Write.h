@@ -35,6 +35,8 @@ protected:
   Result operateInternal() override;
   virtual const char* xmlDescription() const override;
 };
+
+SMTKMESHSESSION_EXPORT bool write(const smtk::resource::ResourcePtr&);
 }
 }
 }
