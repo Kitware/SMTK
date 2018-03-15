@@ -211,9 +211,9 @@ void XmlV3StringWriter::processResourceDef(
     }
   }
 
-  if (idef->isWritable())
+  if (idef->lockType() != smtk::resource::LockType::DoNotLock)
   {
-    node.append_attribute("Writable").set_value(true);
+    node.append_attribute("LockType").set_value(static_cast<unsigned int>(idef->lockType()));
   }
 
   node.append_attribute("NumberOfRequiredValues") =
@@ -313,9 +313,9 @@ void XmlV3StringWriter::processComponentDef(
     }
   }
 
-  if (idef->isWritable())
+  if (idef->lockType() != smtk::resource::LockType::DoNotLock)
   {
-    node.append_attribute("Writable").set_value(true);
+    node.append_attribute("LockType").set_value(static_cast<unsigned int>(idef->lockType()));
   }
 
   node.append_attribute("NumberOfRequiredValues") =

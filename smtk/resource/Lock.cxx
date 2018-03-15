@@ -22,9 +22,9 @@ Lock::Lock()
 {
 }
 
-void Lock::lock(Permission permission)
+void Lock::lock(LockType lockType)
 {
-  if (permission == Permission::Read)
+  if (lockType == LockType::Read)
   {
     // Lock the resource.
     std::unique_lock<std::mutex> lk(m_mutex);
@@ -41,7 +41,7 @@ void Lock::lock(Permission permission)
     // Unlock the resource.
     lk.unlock();
   }
-  else if (permission == Permission::Write)
+  else if (lockType == LockType::Write)
   {
     // Lock the resource.
     std::unique_lock<std::mutex> lk(m_mutex);
@@ -63,9 +63,9 @@ void Lock::lock(Permission permission)
   }
 }
 
-void Lock::unlock(Permission permission)
+void Lock::unlock(LockType lockType)
 {
-  if (permission == Permission::Read)
+  if (lockType == LockType::Read)
   {
     // Lock the resource.
     std::unique_lock<std::mutex> lk(m_mutex);
@@ -79,7 +79,7 @@ void Lock::unlock(Permission permission)
     // Tell one of the waiting writers to check if it can write.
     m_writerCondition.notify_one();
   }
-  else if (permission == Permission::Write)
+  else if (lockType == LockType::Write)
   {
     // Lock the resource.
     std::unique_lock<std::mutex> lk(m_mutex);

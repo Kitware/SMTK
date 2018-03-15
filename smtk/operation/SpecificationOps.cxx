@@ -133,7 +133,7 @@ Operation::Definition extractResultDefinition(
 namespace
 {
 void resourcesFromItem(
-  ResourceAccessMap& resourcesAndPermissions, const smtk::attribute::ResourceItem::Ptr& item)
+  ResourceAccessMap& resourcesAndLockTypes, const smtk::attribute::ResourceItem::Ptr& item)
 {
   for (std::size_t i = 0; i < item->numberOfValues(); i++)
   {
@@ -146,27 +146,26 @@ void resourcesFromItem(
     // ...access the associated resource.
     smtk::resource::ResourcePtr resource = item->value(i);
 
-    auto it = resourcesAndPermissions.find(resource);
-    if (it == resourcesAndPermissions.end())
+    auto it = resourcesAndLockTypes.find(resource);
+    if (it == resourcesAndLockTypes.end())
     {
-      // If the resource is not yet in our map, add it and set its permission.
-      resourcesAndPermissions[resource] =
-        (item->isWritable() ? smtk::resource::Permission::Write : smtk::resource::Permission::Read);
+      // If the resource is not yet in our map, add it and set its lock type.
+      resourcesAndLockTypes[resource] = item->lockType();
     }
     else
     {
-      // If the resource is already in our map, elevate its permission if
+      // If the resource is already in our map, elevate its lock type if
       // necessary.
-      if (item->isWritable() == true)
+      if (item->lockType() > it->second)
       {
-        it->second = smtk::resource::Permission::Write;
+        it->second = item->lockType();
       }
     }
   }
 }
 
 void resourcesFromItem(
-  ResourceAccessMap& resourcesAndPermissions, const smtk::attribute::ComponentItem::Ptr& item)
+  ResourceAccessMap& resourcesAndLockTypes, const smtk::attribute::ComponentItem::Ptr& item)
 {
   for (std::size_t i = 0; i < item->numberOfValues(); i++)
   {
@@ -179,29 +178,28 @@ void resourcesFromItem(
     // ...access the associated resource.
     smtk::resource::ResourcePtr resource = item->value(i)->resource();
 
-    auto it = resourcesAndPermissions.find(resource);
-    if (it == resourcesAndPermissions.end())
+    auto it = resourcesAndLockTypes.find(resource);
+    if (it == resourcesAndLockTypes.end())
     {
-      // If the resource is not yet in our map, add it and set its permission.
-      resourcesAndPermissions[resource] =
-        (item->isWritable() ? smtk::resource::Permission::Write : smtk::resource::Permission::Read);
+      // If the resource is not yet in our map, add it and set its lock type.
+      resourcesAndLockTypes[resource] = item->lockType();
     }
     else
     {
-      // If the resource is already in our map, elevate its permission if
+      // If the resource is already in our map, elevate its lock type if
       // necessary.
-      if (item->isWritable() == true)
+      if (item->lockType() > it->second)
       {
-        it->second = smtk::resource::Permission::Write;
+        it->second = item->lockType();
       }
     }
   }
 }
 }
 
-ResourceAccessMap extractResourcesAndPermissions(Operation::Specification specification)
+ResourceAccessMap extractResourcesAndLockTypes(Operation::Specification specification)
 {
-  ResourceAccessMap resourcesAndPermissions;
+  ResourceAccessMap resourcesAndLockTypes;
 
   // Gather all of the resource and component items in the specification.
   std::vector<smtk::attribute::Item::Ptr> items;
@@ -220,7 +218,6 @@ ResourceAccessMap extractResourcesAndPermissions(Operation::Specification specif
       return item->type() == smtk::attribute::Item::ResourceType ||
         item->type() == smtk::attribute::Item::ComponentType;
     };
-    auto componentFilter = [](smtk::attribute::ComponentItem::Ptr) { return true; };
     for (auto& attribute : attributes)
     {
       if (attribute->definition()->isA(resultAttribute))
@@ -234,20 +231,20 @@ ResourceAccessMap extractResourcesAndPermissions(Operation::Specification specif
   // For each item found...
   for (auto& item : items)
   {
-    // Extract the resources and permissions.
+    // Extract the resources and lock types.
     if (item->type() == smtk::attribute::Item::ResourceType)
     {
       auto resourceItem = std::static_pointer_cast<smtk::attribute::ResourceItem>(item);
-      resourcesFromItem(resourcesAndPermissions, resourceItem);
+      resourcesFromItem(resourcesAndLockTypes, resourceItem);
     }
     else
     {
       auto componentItem = std::static_pointer_cast<smtk::attribute::ComponentItem>(item);
-      resourcesFromItem(resourcesAndPermissions, componentItem);
+      resourcesFromItem(resourcesAndLockTypes, componentItem);
     }
   }
 
-  return resourcesAndPermissions;
+  return resourcesAndLockTypes;
 }
 
 ComponentDefinitionVector extractComponentDefinitions(Operation::Specification specification)

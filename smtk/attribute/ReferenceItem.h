@@ -12,6 +12,8 @@
 
 #include "smtk/attribute/Item.h"
 
+#include "smtk/resource/Lock.h"
+
 #include <vector>
 
 namespace smtk
@@ -159,8 +161,9 @@ public:
     */
   std::ptrdiff_t find(typename T::Ptr component) const;
 
-  // Returns true if the component can be modified.
-  bool isWritable() const;
+  // Returns Read/Rrite/DoNotLock for read locking, write locking, or bypassing
+  // locks.
+  smtk::resource::LockType lockType() const;
 
 protected:
   friend class ReferenceItemDefinition<T>;

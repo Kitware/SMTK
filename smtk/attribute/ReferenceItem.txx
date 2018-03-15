@@ -334,14 +334,14 @@ std::ptrdiff_t ReferenceItem<T>::find(typename T::Ptr comp) const
 }
 
 template <typename T>
-bool ReferenceItem<T>::isWritable() const
+smtk::resource::LockType ReferenceItem<T>::lockType() const
 {
   auto def = static_cast<const ReferenceItemDefinition<T>*>(this->definition().get());
   if (!def)
   {
-    return true;
+    return smtk::resource::LockType::DoNotLock;
   }
-  return def->isWritable();
+  return def->lockType();
 }
 
 template <typename T>

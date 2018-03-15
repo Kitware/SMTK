@@ -76,9 +76,10 @@ public:
   /// Returns true when all values share a common label and false otherwise.
   bool usingCommonLabel() const;
 
-  /// Set/get the writable (vs read-only) property of the item definition. The default is true.
-  void setIsWritable(bool val) { m_isWritable = val; }
-  bool isWritable() const { return m_isWritable; }
+  /// Set/Get the reference resource's lock type (Read/Write/DoNotLock) for read
+  /// lock, write lock or bypass lock. The default is DoNotLock.
+  void setLockType(smtk::resource::LockType val) { m_lockType = val; }
+  smtk::resource::LockType lockType() const { return m_lockType; }
 
 protected:
   ReferenceItemDefinition(const std::string& myName);
@@ -92,7 +93,7 @@ protected:
   std::size_t m_numberOfRequiredValues;
   std::size_t m_maxNumberOfValues;
   std::multimap<std::string, std::string> m_acceptable;
-  bool m_isWritable;
+  smtk::resource::LockType m_lockType;
 };
 
 } // namespace attribute

@@ -28,6 +28,7 @@
 #include "smtk/operation/XMLOperation.h"
 
 #include "smtk/resource/Component.h"
+#include "smtk/resource/Lock.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
 
@@ -154,7 +155,7 @@ ReadOperation::Specification ReadOperation::createSpecification()
     smtk::attribute::ComponentItemDefinition::New("component");
   compDef->setNumberOfRequiredValues(1);
   compDef->setIsOptional(false);
-  compDef->setIsWritable(false);
+  compDef->setLockType(smtk::resource::LockType::Read);
   readOpDef->addItemDefinition(compDef);
 
   smtk::attribute::DefinitionPtr readResDef = spec->createDefinition("read result", "result");
@@ -234,7 +235,7 @@ WriteOperation::Specification WriteOperation::createSpecification()
     smtk::attribute::ComponentItemDefinition::New("component");
   compDef->setNumberOfRequiredValues(1);
   compDef->setIsOptional(false);
-  compDef->setIsWritable(true);
+  compDef->setLockType(smtk::resource::LockType::Write);
   readOpDef->addItemDefinition(compDef);
 
   smtk::attribute::DefinitionPtr readResDef = spec->createDefinition("read result", "result");

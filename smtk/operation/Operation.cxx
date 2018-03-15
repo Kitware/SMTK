@@ -114,15 +114,15 @@ bool Operation::ableToOperate()
 
 Operation::Result Operation::operate()
 {
-  // Gather all requested resources and their permission levels.
-  auto resourcesAndPermissions = extractResourcesAndPermissions(this->specification());
+  // Gather all requested resources and their lock types.
+  auto resourcesAndLockTypes = extractResourcesAndLockTypes(this->specification());
 
   // Lock the resources.
-  for (auto& resourceAndPermission : resourcesAndPermissions)
+  for (auto& resourceAndLockType : resourcesAndLockTypes)
   {
-    auto& resource = resourceAndPermission.first;
-    auto& permission = resourceAndPermission.second;
-    resource->lock({}).lock(permission);
+    auto& resource = resourceAndLockType.first;
+    auto& lockType = resourceAndLockType.second;
+    resource->lock({}).lock(lockType);
   }
 
   // Remember where the log was so we only serialize messages for this
@@ -193,11 +193,11 @@ Operation::Result Operation::operate()
   }
 
   // Unlock the resources.
-  for (auto& resourceAndPermission : resourcesAndPermissions)
+  for (auto& resourceAndLockType : resourcesAndLockTypes)
   {
-    auto& resource = resourceAndPermission.first;
-    auto& permission = resourceAndPermission.second;
-    resource->lock({}).unlock(permission);
+    auto& resource = resourceAndLockType.first;
+    auto& lockType = resourceAndLockType.second;
+    resource->lock({}).unlock(lockType);
   }
 
   return result;

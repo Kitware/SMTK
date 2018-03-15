@@ -29,6 +29,7 @@
 #include "smtk/model/Manager.h"
 
 #include "smtk/resource/Component.h"
+#include "smtk/resource/Lock.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
 
@@ -339,7 +340,7 @@ void XmlDocV3Parser::processResourceDef(
   pugi::xml_node& node, smtk::attribute::ResourceItemDefinitionPtr idef)
 {
   xml_node accepts, labels, child;
-  xml_attribute watt, xatt;
+  xml_attribute xatt;
   int i;
   this->processItemDef(node, idef);
 
@@ -357,10 +358,10 @@ void XmlDocV3Parser::processResourceDef(
     }
   }
 
-  watt = node.attribute("Writable");
-  if (watt)
+  xatt = node.attribute("LockType");
+  if (xatt)
   {
-    idef->setIsWritable(watt.as_bool());
+    idef->setLockType(smtk::resource::LockType(xatt.as_int()));
   }
 
   xatt = node.attribute("NumberOfRequiredValues");
@@ -510,7 +511,7 @@ void XmlDocV3Parser::processComponentDef(
   pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef)
 {
   xml_node accepts, labels, child;
-  xml_attribute watt, xatt;
+  xml_attribute xatt;
   int i;
   this->processItemDef(node, idef);
 
@@ -528,10 +529,10 @@ void XmlDocV3Parser::processComponentDef(
     }
   }
 
-  watt = node.attribute("Writable");
-  if (watt)
+  xatt = node.attribute("LockType");
+  if (xatt)
   {
-    idef->setIsWritable(watt.as_bool());
+    idef->setLockType(smtk::resource::LockType(xatt.as_int()));
   }
 
   xatt = node.attribute("NumberOfRequiredValues");

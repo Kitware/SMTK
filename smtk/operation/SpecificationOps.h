@@ -33,7 +33,7 @@ namespace operation
 /// an API around Specification, giving it functions that are unique to its role
 /// as an operation specification.
 
-typedef std::map<smtk::resource::Resource::Ptr, smtk::resource::Permission> ResourceAccessMap;
+typedef std::map<smtk::resource::Resource::Ptr, smtk::resource::LockType> ResourceAccessMap;
 typedef std::vector<smtk::attribute::ComponentItemDefinition::Ptr> ComponentDefinitionVector;
 
 /// Return the parameters for the operation.
@@ -52,9 +52,9 @@ Operation::Definition extractResultDefinition(
   Operation::Specification specification, const std::string& operatorName);
 
 /// Construct a map of all of the resources referenced in the specification,
-/// along with their permission levels (read/write).
+/// along with their lock types (Read/Write/DoNotLock).
 SMTKCORE_EXPORT
-ResourceAccessMap extractResourcesAndPermissions(Operation::Specification specification);
+ResourceAccessMap extractResourcesAndLockTypes(Operation::Specification specification);
 
 /// Construct a vector of all of the resource component definitions referenced
 /// in the specification.

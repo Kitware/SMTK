@@ -35,7 +35,7 @@ ReferenceItemDefinition<T>::ReferenceItemDefinition(const std::string& sname)
   m_useCommonLabel = false;
   m_isExtensible = false;
   m_maxNumberOfValues = 0;
-  m_isWritable = true;
+  m_lockType = smtk::resource::LockType::DoNotLock;
 }
 
 template <typename T>
