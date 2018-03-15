@@ -23,10 +23,11 @@ namespace resource
 
 // enum class does not need to be exported
 // Reference link: https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/dfSl9Ypdq6Y
-enum class Permission
+enum class LockType
 {
+  DoNotLock,
   Read,
-  Write
+  Write,
 };
 
 /// A read/write lock for resources. This lock is designed to potentially starve
@@ -40,8 +41,8 @@ public:
   Lock(const Lock&) = delete;
   Lock& operator=(const Lock&) = delete;
 
-  SMTKCORE_EXPORT void lock(Permission);
-  SMTKCORE_EXPORT void unlock(Permission);
+  SMTKCORE_EXPORT void lock(LockType);
+  SMTKCORE_EXPORT void unlock(LockType);
 
 private:
   std::mutex m_mutex;

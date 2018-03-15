@@ -13,6 +13,8 @@
 #include "smtk/attribute/Collection.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/Item.h"
+#include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/Tag.h"
 
 #include <array>
@@ -128,16 +130,79 @@ Operation::Definition extractResultDefinition(
   return resultDefinition;
 }
 
-ResourceAccessMap extractResourcesAndPermissions(Operation::Specification specification)
+namespace
 {
-  ResourceAccessMap resourcesAndPermissions;
+void resourcesFromItem(
+  ResourceAccessMap& resourcesAndLockTypes, const smtk::attribute::ResourceItem::Ptr& item)
+{
+  for (std::size_t i = 0; i < item->numberOfValues(); i++)
+  {
+    // (no need to look at items that cannot be resolved)
+    if (!item->isValid() || item->value(i) == nullptr)
+    {
+      continue;
+    }
 
-  auto permission = [](bool isWritable) {
-    return (isWritable ? smtk::resource::Permission::Write : smtk::resource::Permission::Read);
-  };
+    // ...access the associated resource.
+    smtk::resource::ResourcePtr resource = item->value(i);
 
-  // Gather all of the component itmes in the specification.
-  std::vector<smtk::attribute::ComponentItem::Ptr> componentItems;
+    auto it = resourcesAndLockTypes.find(resource);
+    if (it == resourcesAndLockTypes.end())
+    {
+      // If the resource is not yet in our map, add it and set its lock type.
+      resourcesAndLockTypes[resource] = item->lockType();
+    }
+    else
+    {
+      // If the resource is already in our map, elevate its lock type if
+      // necessary.
+      if (item->lockType() > it->second)
+      {
+        it->second = item->lockType();
+      }
+    }
+  }
+}
+
+void resourcesFromItem(
+  ResourceAccessMap& resourcesAndLockTypes, const smtk::attribute::ComponentItem::Ptr& item)
+{
+  for (std::size_t i = 0; i < item->numberOfValues(); i++)
+  {
+    // (no need to look at items that cannot be resolved)
+    if (!item->isValid())
+    {
+      continue;
+    }
+
+    // ...access the associated resource.
+    smtk::resource::ResourcePtr resource = item->value(i)->resource();
+
+    auto it = resourcesAndLockTypes.find(resource);
+    if (it == resourcesAndLockTypes.end())
+    {
+      // If the resource is not yet in our map, add it and set its lock type.
+      resourcesAndLockTypes[resource] = item->lockType();
+    }
+    else
+    {
+      // If the resource is already in our map, elevate its lock type if
+      // necessary.
+      if (item->lockType() > it->second)
+      {
+        it->second = item->lockType();
+      }
+    }
+  }
+}
+}
+
+ResourceAccessMap extractResourcesAndLockTypes(Operation::Specification specification)
+{
+  ResourceAccessMap resourcesAndLockTypes;
+
+  // Gather all of the resource and component items in the specification.
+  std::vector<smtk::attribute::Item::Ptr> items;
 
   {
     // First, gather all of the attributes in the specification.
@@ -149,51 +214,37 @@ ResourceAccessMap extractResourcesAndPermissions(Operation::Specification specif
     auto resultAttribute = specification->findDefinition("result");
 
     // For each attribute, gather all of the components using a filter.
-    auto componentFilter = [](smtk::attribute::ComponentItem::Ptr) { return true; };
+    auto filter = [](smtk::attribute::Item::Ptr item) {
+      return item->type() == smtk::attribute::Item::ResourceType ||
+        item->type() == smtk::attribute::Item::ComponentType;
+    };
     for (auto& attribute : attributes)
     {
       if (attribute->definition()->isA(resultAttribute))
       {
         continue;
       }
-      attribute->filterItems(componentItems, componentFilter, false);
+      attribute->filterItems(items, filter, false);
     }
   }
 
-  // For each component item found...
-  for (auto& componentItem : componentItems)
+  // For each item found...
+  for (auto& item : items)
   {
-    // ...for each component in a component item...
-    for (std::size_t i = 0; i < componentItem->numberOfValues(); i++)
+    // Extract the resources and lock types.
+    if (item->type() == smtk::attribute::Item::ResourceType)
     {
-      // (no need to look at components that cannot be resolved)
-      if (!componentItem->isValid() || componentItem->value(i) == nullptr)
-      {
-        continue;
-      }
-
-      // ...access the component's resource.
-      smtk::resource::ResourcePtr resource = componentItem->value(i)->resource();
-
-      auto it = resourcesAndPermissions.find(resource);
-      if (it == resourcesAndPermissions.end())
-      {
-        // If the resource is not yet in our map, add it and set its permission.
-        resourcesAndPermissions[resource] = permission(componentItem->isWritable());
-      }
-      else
-      {
-        // If the resource is already in our map, elevate its permission if
-        // necessary.
-        if (componentItem->isWritable() == true)
-        {
-          it->second = permission(true);
-        }
-      }
+      auto resourceItem = std::static_pointer_cast<smtk::attribute::ResourceItem>(item);
+      resourcesFromItem(resourcesAndLockTypes, resourceItem);
+    }
+    else
+    {
+      auto componentItem = std::static_pointer_cast<smtk::attribute::ComponentItem>(item);
+      resourcesFromItem(resourcesAndLockTypes, componentItem);
     }
   }
 
-  return resourcesAndPermissions;
+  return resourcesAndLockTypes;
 }
 
 ComponentDefinitionVector extractComponentDefinitions(Operation::Specification specification)
