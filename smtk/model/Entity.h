@@ -127,12 +127,16 @@ public:
 
   const KindsToArrangements& arrangementMap() const { return this->m_arrangements; }
 
-  common::UUID id() const override { return m_id; }
+  const common::UUID& id() const override { return m_id; }
+  bool setId(const common::UUID& uid) override
+  {
+    m_id = uid;
+    return true;
+  }
 
 protected:
   Entity();
   int consumeInvalidIndex(const smtk::common::UUID& uid);
-  void setId(const common::UUID& myID) override { m_id = myID; }
 
   BitFlags m_entityFlags;
   smtk::common::UUIDArray m_relations;

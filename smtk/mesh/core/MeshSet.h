@@ -103,7 +103,7 @@ public:
   bool setDirichlet(const smtk::mesh::Dirichlet& d);
   bool setNeumann(const smtk::mesh::Neumann& n);
 
-  smtk::common::UUID id() const;
+  const smtk::common::UUID& id() const;
   void setId(const smtk::common::UUID&);
   smtk::common::UUIDArray modelEntityIds() const;
 
@@ -203,6 +203,7 @@ private:
   smtk::mesh::CollectionPtr m_parent;
   smtk::mesh::Handle m_handle;
   smtk::mesh::HandleRange m_range; //range of moab entity sets
+  mutable smtk::common::UUID m_id;
 };
 
 //Function that provide set operations on MeshSets

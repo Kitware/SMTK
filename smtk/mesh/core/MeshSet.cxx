@@ -225,10 +225,14 @@ bool MeshSet::setNeumann(const smtk::mesh::Neumann& n)
 /**\brief Return the meshset's UUID.
   *
   */
-smtk::common::UUID MeshSet::id() const
+const smtk::common::UUID& MeshSet::id() const
 {
-  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
-  return iface->getId(this->m_handle);
+  if (!m_id)
+  {
+    const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+    m_id = iface->getId(this->m_handle);
+  }
+  return m_id;
 }
 
 /**\brief Set the meshset's UUID.
@@ -236,6 +240,7 @@ smtk::common::UUID MeshSet::id() const
   */
 void MeshSet::setId(const smtk::common::UUID& id)
 {
+  m_id = id;
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
   iface->setId(this->m_handle, id);
 }

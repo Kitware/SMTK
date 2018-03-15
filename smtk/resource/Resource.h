@@ -11,14 +11,8 @@
 #ifndef smtk_resource_Resource_h
 #define smtk_resource_Resource_h
 
-#include "smtk/CoreExports.h"
-#include "smtk/PublicPointerDefs.h"
-#include "smtk/SharedFromThis.h"
-#include "smtk/SystemConfig.h"
-
-#include "smtk/common/UUID.h"
-
 #include "smtk/resource/Lock.h"
+#include "smtk/resource/PersistentObject.h"
 
 #include <string>
 #include <typeindex>
@@ -51,7 +45,7 @@ class Metadata;
   virtual std::string uniqueName() const override { return type_name; }
 
 /// An abstract base class for SMTK resources.
-class SMTKCORE_EXPORT Resource : smtkEnableSharedPtr(Resource)
+class SMTKCORE_EXPORT Resource : public PersistentObject
 {
 public:
   typedef std::size_t Index;
@@ -60,7 +54,9 @@ public:
 
   friend class Manager;
 
-  smtkTypeMacroBase(smtk::resource::Resource);
+  smtkTypeMacro(smtk::resource::Resource);
+  smtkSuperclassMacro(smtk::resource::PersistentObject);
+  smtkSharedFromThisMacro(smtk::resource::PersistentObject);
   virtual ~Resource();
 
   virtual std::string uniqueName() const = 0;
@@ -87,10 +83,10 @@ public:
 
   /// id and location are run-time intrinsics of the derived resource; we need
   /// to allow the user to reset these values.
-  const smtk::common::UUID& id() const { return this->m_id; }
+  const smtk::common::UUID& id() const override { return this->m_id; }
   const std::string& location() const { return this->m_location; }
 
-  bool setId(const smtk::common::UUID& myID);
+  bool setId(const smtk::common::UUID& myID) override;
   bool setLocation(const std::string& location);
 
   /// Indicate whether the resource is in sync with its location.

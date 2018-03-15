@@ -3,6 +3,7 @@ set(resourceSrcs
   Component.cxx
   Lock.cxx
   Manager.cxx
+  PersistentObject.cxx
   RegisterOperations.cxx
   RegisterResources.cxx
   Resource.cxx
@@ -17,6 +18,7 @@ set(resourceHeaders
   Manager.h
   Metadata.h
   Name.h
+  PersistentObject.h
   PropertyType.h
   RegisterOperations.h
   RegisterResources.h
