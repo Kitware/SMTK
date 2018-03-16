@@ -24,6 +24,28 @@ execute_process(
 )
 
 if (NOT rv EQUAL 0)
+  # Sometimes pvpython's LOCATION property points to the build location of
+  # pvpython, and sometimes this pvpython does not successfully run. If this
+  # happens, as a workaround we look for pvpython in our own runtime directory.
+  get_filename_component(PVPYTHON_NAME ${PVPYTHON_EXE} NAME)
+  set(PVPYTHON_EXE "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}/${PVPYTHON_NAME}")
+
+  if (EXISTS ${PVPYTHON_EXE})
+    # If we can find the installed version of pvpython, we try our
+    # FindPVPythonEnvironment.py one more time.
+    execute_process(
+      COMMAND ${PVPYTHON_EXE}
+      ${PROJECT_SOURCE_DIR}/CMake/FindPVPythonEnvironment.py
+      RESULT_VARIABLE rv
+      OUTPUT_VARIABLE out
+      ERROR_VARIABLE out
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      ERROR_STRIP_TRAILING_WHITESPACE
+      )
+  endif ()
+endif ()
+
+if (NOT rv EQUAL 0)
   message(FATAL_ERROR "Could not determine ParaView's PYTHONPATH; return value was ${rv} and output was ${out}.")
 endif()
 
