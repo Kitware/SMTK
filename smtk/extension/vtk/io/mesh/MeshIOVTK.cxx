@@ -82,6 +82,16 @@ void smtk_extension_vtk_io_mesh_MeshIOVTK_AutoInit_Construct()
 
 void smtk_extension_vtk_io_mesh_MeshIOVTK_AutoInit_Destruct()
 {
+  auto is_MeshIOVTK = [](const smtk::io::mesh::MeshIOPtr& meshIOPtr) {
+    return dynamic_cast<smtk::extension::vtk::io::mesh::MeshIOVTK*>(meshIOPtr.get()) != nullptr;
+  };
+
+  smtk::io::ImportMesh::SupportedIOTypes().erase(
+    std::remove_if(smtk::io::ImportMesh::SupportedIOTypes().begin(),
+      smtk::io::ImportMesh::SupportedIOTypes().end(), is_MeshIOVTK));
+  smtk::io::ExportMesh::SupportedIOTypes().erase(
+    std::remove_if(smtk::io::ExportMesh::SupportedIOTypes().begin(),
+      smtk::io::ExportMesh::SupportedIOTypes().end(), is_MeshIOVTK));
 }
 
 smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK);
