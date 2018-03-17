@@ -8,7 +8,7 @@
       <ItemDefinitions>
         <File Name="filename" Label="File Name" NumberOfRequiredValues="1"
           ShouldExist="true"
-          FileFilters="Supported Discrete Formats (*.vtk *.2dm *.3dm *.stl *.sol *.tin *.obj *.map *.poly *.smesh *.shp);;Legacy VTK files (*.vtk);;Solids (*.2dm *.3dm *.stl *.sol *.tin *.obj);;Map files (*.map);;Poly files (*.poly *.smesh);;Shape files (*.shp);;All files (*.*)">
+          FileFilters="Legacy VTK files (*.vtk);;Solids (*.2dm *.3dm *.stl *.sol *.tin *.obj);;Map files (*.map);;Poly files (*.poly *.smesh);;Shape files (*.shp);;All files (*.*)">
         </File>
 
         <Resource Name="resource" Label="Import into" Optional="true" IsEnabledByDefault="false">

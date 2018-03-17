@@ -106,6 +106,37 @@
       </Hints>
     </SourceProxy>
 
+    <SourceProxy name="SMTKModelImporter" class="vtkSMTKModelImporter" label="SMTK Model Importer">
+      <Documentation
+        short_help="Import a file into SMTK."
+        long_help="Import a file as a set of multiblock datasets.">
+      </Documentation>
+
+      <StringVectorProperty
+        name="FileName"
+        command="SetFileName"
+        animateable="0"
+        number_of_elements="1">
+        <FileListDomain name="files"/>
+        <Documentation>
+          The path of a file to read.
+        </Documentation>
+      </StringVectorProperty>
+
+      <StringVectorProperty
+        name="ResourceName"
+        command="SetResourceName"
+        animateable="0"
+        number_of_elements="1"
+        default_values="foo"
+        panel_visibility="never">
+      </StringVectorProperty>
+
+      <OutputPort index="0" name="model entities"/>
+      <OutputPort index="1" name="instance prototypes"/>
+      <OutputPort index="2" name="instance points"/>
+    </SourceProxy>
+
     <SourceProxy name="SMTKAttributeReader" class="vtkSMTKAttributeReader" label="SMTK Attribute Reader">
       <Documentation
         short_help="Read an SMTK attribute file."

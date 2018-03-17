@@ -36,28 +36,9 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent) override;
   static vtkSMTKModelImporter* New();
 
-  /// Set the import mode to only import resources of a given type. The resource
-  /// is identified by its class type.
-  template <typename ResourceType>
-  bool SetImporterResourceScope();
-
-  /// Set the import mode to only import resources of a given type. The resource
-  /// is identified by its unique name.
-  bool SetImporterResourceScope(const std::string&);
-
-  /// Set the import mode to only import resources of a given type. THe resource
-  /// is identified by its type index.
-  bool SetImporterResourceScope(const smtk::resource::Resource::Index&);
-
-  /// Return the name of the resource type to which this importer is scoped. If
-  /// the resource type has not been set, we accept all resource types. If the
-  /// resource type was selected and this type was subsequently removed from the
-  /// list of supported resource types, we accept no resource types.
-  const std::string& GetImporterResourceScope() const;
-
-  /// Return a string describing supported file filters in the Qt format. For
-  /// example: "Ext1 (*.ex1);;Ext2 or 3 (*.ex2 *.ex3)"
-  std::string SupportedExtensions() const;
+  /// Set/get the unique name of the SMTK resource.
+  vtkGetStringMacro(ResourceName);
+  vtkSetStringMacro(ResourceName);
 
   /// Return the VTK algorithm used to import the SMTK file.
   vtkModelMultiBlockSource* GetModelSource() { return this->ModelSource.GetPointer(); }
@@ -79,17 +60,11 @@ protected:
 
   vtkNew<vtkModelMultiBlockSource> ModelSource;
 
-  std::string ResourceName;
+  char* ResourceName;
 
 private:
   vtkSMTKModelImporter(const vtkSMTKModelImporter&) = delete;
   void operator=(const vtkSMTKModelImporter&) = delete;
 };
-
-template <typename ResourceType>
-bool vtkSMTKModelImporter::SetImporterResourceScope()
-{
-  return this->SetImporterResourceScope(std::type_index(typeid(ResourceType)).hash_code());
-}
 
 #endif
