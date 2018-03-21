@@ -48,16 +48,15 @@ public:
     {
       // This is a poor technique for seeding or
       // we would initialize this way all the time.
-      this->m_mtseed.seed(static_cast<boost::mt19937::result_type>(time(NULL)));
-      this->m_randomGenerator =
-        new boost::uuids::basic_random_generator<boost::mt19937>(&this->m_mtseed);
+      m_mtseed.seed(static_cast<boost::mt19937::result_type>(time(NULL)));
+      m_randomGenerator = new boost::uuids::basic_random_generator<boost::mt19937>(&m_mtseed);
     }
     else
     {
-      this->m_randomGenerator = new boost::uuids::basic_random_generator<boost::mt19937>;
+      m_randomGenerator = new boost::uuids::basic_random_generator<boost::mt19937>;
     }
   }
-  ~Internal() { delete this->m_randomGenerator; }
+  ~Internal() { delete m_randomGenerator; }
 
   boost::mt19937 m_mtseed;
   boost::uuids::basic_random_generator<boost::mt19937>* m_randomGenerator;

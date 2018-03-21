@@ -227,14 +227,14 @@ void XmlDocV3Parser::processDateTimeItem(pugi::xml_node& node, attribute::DateTi
         xml_attribute ixatt = val.attribute("Ith");
         if (!ixatt)
         {
-          smtkErrorMacro(this->m_logger, "XML Attribute Ith is missing for Item: " << item->name());
+          smtkErrorMacro(m_logger, "XML Attribute Ith is missing for Item: " << item->name());
           continue;
         }
         unsigned int i = ixatt.as_uint();
         if (i >= n)
         {
-          smtkErrorMacro(this->m_logger,
-            "XML Attribute Ith = " << i << " is out of range for Item: " << item->name());
+          smtkErrorMacro(
+            m_logger, "XML Attribute Ith = " << i << " is out of range for Item: " << item->name());
           continue;
         }
         if (nodeName == "Val")
@@ -246,7 +246,7 @@ void XmlDocV3Parser::processDateTimeItem(pugi::xml_node& node, attribute::DateTi
         }
         else
         {
-          smtkErrorMacro(this->m_logger, "Unsupported Value Node Type  Item: " << item->name());
+          smtkErrorMacro(m_logger, "Unsupported Value Node Type  Item: " << item->name());
         } // else
       }   // for (val)
     }     // if (valsNode)
@@ -272,7 +272,7 @@ void XmlDocV3Parser::processResourceItem(
     if (!xatt)
     {
       smtkErrorMacro(
-        this->m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
+        m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
       return;
     }
     n = xatt.as_uint();
@@ -283,15 +283,14 @@ void XmlDocV3Parser::processResourceItem(
     return;
   }
 
-  auto rsrcMgr = this->m_collection->manager();
+  auto rsrcMgr = m_collection->manager();
   if (!rsrcMgr && item->numberOfValues() > 0)
   {
     static bool once = true;
     if (once)
     {
-      smtkErrorMacro(
-        this->m_logger, "The resource manager for the attribute collection being read is "
-                        "not set but the ResourceItem \""
+      smtkErrorMacro(m_logger, "The resource manager for the attribute collection being read is "
+                               "not set but the ResourceItem \""
           << item->name() << "\" "
                              "of \""
           << item->attribute()->name() << "\" has entries"
@@ -309,14 +308,14 @@ void XmlDocV3Parser::processResourceItem(
       xatt = val.attribute("Ith");
       if (!xatt)
       {
-        smtkErrorMacro(this->m_logger, "XML Attribute Ith is missing for Item: " << item->name());
+        smtkErrorMacro(m_logger, "XML Attribute Ith is missing for Item: " << item->name());
         continue;
       }
       i = xatt.as_uint();
       if (i >= n)
       {
-        smtkErrorMacro(this->m_logger,
-          "XML Attribute Ith = " << i << " is out of range for Item: " << item->name());
+        smtkErrorMacro(
+          m_logger, "XML Attribute Ith = " << i << " is out of range for Item: " << item->name());
         continue;
       }
       item->setValue(static_cast<int>(i), this->processResourceItemValue(val, rsrcMgr));
@@ -332,7 +331,7 @@ void XmlDocV3Parser::processResourceItem(
   }
   else
   {
-    smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
+    smtkErrorMacro(m_logger, "XML Node Values is missing for Item: " << item->name());
   }
 }
 
@@ -384,7 +383,7 @@ void XmlDocV3Parser::processResourceDef(
   // Lets see if there are labels
   if (node.child("Labels"))
   {
-    smtkErrorMacro(this->m_logger, "Labels has been changed to ResourceLabels : " << idef->name());
+    smtkErrorMacro(m_logger, "Labels has been changed to ResourceLabels : " << idef->name());
   }
   labels = node.child("ResourceLabels");
   if (labels)
@@ -411,14 +410,14 @@ smtk::resource::ResourcePtr XmlDocV3Parser::processResourceItemValue(
   auto rsrcNode = val.child("Resource");
   if (!rsrcNode)
   {
-    smtkErrorMacro(this->m_logger, "ResourceItem Val node does not have a Resource as required.");
+    smtkErrorMacro(m_logger, "ResourceItem Val node does not have a Resource as required.");
     return smtk::resource::ResourcePtr();
   }
   auto ruid = smtk::common::UUID(rsrcNode.text().get());
   auto rsrc = rsrcMgr->get(ruid);
   if (!rsrc)
   {
-    smtkWarningMacro(this->m_logger, "Resource " << ruid << " is not loaded. Ignoring.");
+    smtkWarningMacro(m_logger, "Resource " << ruid << " is not loaded. Ignoring.");
     return smtk::resource::ResourcePtr();
   }
   return rsrc;
@@ -443,7 +442,7 @@ void XmlDocV3Parser::processComponentItem(
     if (!xatt)
     {
       smtkErrorMacro(
-        this->m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
+        m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
       return;
     }
     n = xatt.as_uint();
@@ -454,15 +453,14 @@ void XmlDocV3Parser::processComponentItem(
     return;
   }
 
-  auto rsrcMgr = this->m_collection->manager();
+  auto rsrcMgr = m_collection->manager();
   if (!rsrcMgr && item->numberOfValues() > 0)
   {
     static bool once = true;
     if (once)
     {
-      smtkErrorMacro(
-        this->m_logger, "The resource manager for the attribute collection being read is "
-                        "not set but the ComponentItem \""
+      smtkErrorMacro(m_logger, "The resource manager for the attribute collection being read is "
+                               "not set but the ComponentItem \""
           << item->name() << "\" "
                              "of \""
           << item->attribute()->name() << "\" has entries"
@@ -480,14 +478,14 @@ void XmlDocV3Parser::processComponentItem(
       xatt = val.attribute("Ith");
       if (!xatt)
       {
-        smtkErrorMacro(this->m_logger, "XML Attribute Ith is missing for Item: " << item->name());
+        smtkErrorMacro(m_logger, "XML Attribute Ith is missing for Item: " << item->name());
         continue;
       }
       i = xatt.as_uint();
       if (i >= n)
       {
-        smtkErrorMacro(this->m_logger,
-          "XML Attribute Ith = " << i << " is out of range for Item: " << item->name());
+        smtkErrorMacro(
+          m_logger, "XML Attribute Ith = " << i << " is out of range for Item: " << item->name());
         continue;
       }
       item->setValue(static_cast<int>(i), this->processComponentItemValue(val, rsrcMgr));
@@ -503,7 +501,7 @@ void XmlDocV3Parser::processComponentItem(
   }
   else
   {
-    smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
+    smtkErrorMacro(m_logger, "XML Node Values is missing for Item: " << item->name());
   }
 }
 
@@ -555,7 +553,7 @@ void XmlDocV3Parser::processComponentDef(
   // Lets see if there are labels
   if (node.child("Labels"))
   {
-    smtkErrorMacro(this->m_logger, "Labels has been changed to ComponentLabels : " << idef->name());
+    smtkErrorMacro(m_logger, "Labels has been changed to ComponentLabels : " << idef->name());
   }
   labels = node.child("ComponentLabels");
   if (labels)
@@ -583,15 +581,15 @@ smtk::resource::ComponentPtr XmlDocV3Parser::processComponentItemValue(
   auto compNode = val.child("Component");
   if (!rsrcNode || !compNode)
   {
-    smtkErrorMacro(this->m_logger,
-      "ComponentItem Val node does not have both a Resource and Component as required.");
+    smtkErrorMacro(
+      m_logger, "ComponentItem Val node does not have both a Resource and Component as required.");
     return smtk::resource::ComponentPtr();
   }
   auto ruid = smtk::common::UUID(rsrcNode.text().get());
   auto rsrc = rsrcMgr->get(ruid);
   if (!rsrc)
   {
-    smtkWarningMacro(this->m_logger, "Resource " << ruid << " is not loaded. Ignoring.");
+    smtkWarningMacro(m_logger, "Resource " << ruid << " is not loaded. Ignoring.");
     return smtk::resource::ComponentPtr();
   }
   auto cuid = smtk::common::UUID(compNode.text().get());

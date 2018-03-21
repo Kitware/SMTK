@@ -34,14 +34,14 @@ Item::Type DateTimeItemDefinition::type() const
 
 bool DateTimeItemDefinition::setDefaultValue(const sc::DateTimeZonePair& value)
 {
-  this->m_defaultValue = value;
-  this->m_hasDefault = true;
+  m_defaultValue = value;
+  m_hasDefault = true;
   return true;
 }
 
 bool DateTimeItemDefinition::setNumberOfRequiredValues(std::size_t esize)
 {
-  this->m_numberOfRequiredValues = esize;
+  m_numberOfRequiredValues = esize;
   return true;
 }
 

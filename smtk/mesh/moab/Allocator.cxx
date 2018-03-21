@@ -31,7 +31,7 @@ Allocator::Allocator(::moab::Interface* interface)
 {
   if (interface)
   {
-    interface->query_interface(this->m_rface);
+    interface->query_interface(m_rface);
   }
 }
 
@@ -39,18 +39,18 @@ Allocator::~Allocator()
 {
   //don't de-allocate the Interface that created us, really manages this
   //memory
-  this->m_rface = NULL;
+  m_rface = NULL;
 }
 
 bool Allocator::allocatePoints(std::size_t numPointsToAlloc, smtk::mesh::Handle& firstVertexHandle,
   std::vector<double*>& coordinateMemory)
 {
-  if (this->m_rface == NULL)
+  if (m_rface == NULL)
   {
     return false;
   }
   ::moab::ErrorCode err;
-  err = this->m_rface->get_node_coords(3, //x,y,z
+  err = m_rface->get_node_coords(3, //x,y,z
     static_cast<int>(numPointsToAlloc),
     0, //preferred_start_id
     firstVertexHandle, coordinateMemory);
@@ -61,7 +61,7 @@ bool Allocator::allocateCells(smtk::mesh::CellType cellType, std::size_t numCell
   int numVertsPerCell, smtk::mesh::HandleRange& createdCellIds,
   smtk::mesh::Handle*& connectivityArray)
 {
-  if (this->m_rface == NULL)
+  if (m_rface == NULL)
   {
     return false;
   }
@@ -70,7 +70,7 @@ bool Allocator::allocateCells(smtk::mesh::CellType cellType, std::size_t numCell
 
   const int moabCellType = smtk::mesh::moab::smtkToMOABCell(cellType);
 
-  err = this->m_rface->get_element_connect(static_cast<int>(numCellsToAlloc), numVertsPerCell,
+  err = m_rface->get_element_connect(static_cast<int>(numCellsToAlloc), numVertsPerCell,
     static_cast< ::moab::EntityType>(moabCellType),
     0, //preferred_start_id
     startHandle, connectivityArray);
@@ -82,14 +82,14 @@ bool Allocator::allocateCells(smtk::mesh::CellType cellType, std::size_t numCell
 bool Allocator::connectivityModified(const smtk::mesh::HandleRange& cellsToUpdate,
   int numVertsPerCell, const smtk::mesh::Handle* connectivityArray)
 {
-  if (this->m_rface == NULL)
+  if (m_rface == NULL)
   {
     return false;
   }
 
   const smtk::mesh::Handle& startHandle = cellsToUpdate.front();
   ::moab::ErrorCode err;
-  err = this->m_rface->update_adjacencies(
+  err = m_rface->update_adjacencies(
     startHandle, static_cast<int>(cellsToUpdate.size()), numVertsPerCell, connectivityArray);
   return err == ::moab::MB_SUCCESS;
 }

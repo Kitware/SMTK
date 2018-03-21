@@ -70,20 +70,20 @@ struct OpenFile
   OpenFile(const std::string& path)
     : m_stream(path.c_str(), std::ios::out)
   {
-    this->m_path = path;
-    this->m_canWrite = this->m_stream.is_open(); //verify file is open
-    this->m_deleteFile = true;
+    m_path = path;
+    m_canWrite = m_stream.is_open(); //verify file is open
+    m_deleteFile = true;
   }
 
   ~OpenFile()
   {
-    if (this->m_canWrite)
+    if (m_canWrite)
     {
-      this->m_stream.close();
+      m_stream.close();
 
-      if (this->m_deleteFile)
+      if (m_deleteFile)
       {
-        std::remove(this->m_path.c_str());
+        std::remove(m_path.c_str());
       }
     }
   }
@@ -91,7 +91,7 @@ struct OpenFile
   void fileWritten(bool written)
   {
     //If the file was written, we don't need to delete it
-    this->m_deleteFile = !written;
+    m_deleteFile = !written;
   }
 
   std::string m_path;
@@ -112,17 +112,17 @@ struct MeshByRegion
   int region() const { return m_regionId; }
 
   //return number cells of the set dimension
-  std::size_t numCells() const { return this->m_meshSet.cells(m_dim).size(); }
+  std::size_t numCells() const { return m_meshSet.cells(m_dim).size(); }
 
   //return all the cells of a given type
   smtk::mesh::CellSet cells(const smtk::mesh::CellType& type) const
   {
-    return this->m_meshSet.cells(type);
+    return m_meshSet.cells(type);
   }
 
   //return all the cells, restricted to the dimension passed in during
   //the constructor
-  smtk::mesh::CellSet cells() const { return this->m_meshSet.cells(m_dim); }
+  smtk::mesh::CellSet cells() const { return m_meshSet.cells(m_dim); }
 
   smtk::mesh::MeshSet m_meshSet;
   smtk::mesh::DimensionType m_dim;
@@ -232,19 +232,19 @@ public:
 
     smtk::mesh::utility::PreAllocatedTessellation connectivityInfo(&conn[0]);
     connectivityInfo.disableVTKStyleConnectivity(true);
-    smtk::mesh::utility::extractTessellation(cells, this->m_PointSet, connectivityInfo);
+    smtk::mesh::utility::extractTessellation(cells, m_PointSet, connectivityInfo);
 
     //now we just need to write out the cells
     std::size_t nCells = cells.size();
     for (std::size_t i = 0; i < nCells; ++i)
     {
-      this->m_Stream << cardType << " \t " << this->m_CellId++ << " ";
+      m_Stream << cardType << " \t " << m_CellId++ << " ";
       for (int j = 0; j < nVerts; ++j)
       {
         //We add 1, since the points are written out starting with index 1
-        this->m_Stream << std::setw(8) << 1 + conn[nVerts * i + j] << " ";
+        m_Stream << std::setw(8) << 1 + conn[nVerts * i + j] << " ";
       }
-      this->m_Stream << std::setw(8) << regionId << std::endl;
+      m_Stream << std::setw(8) << regionId << std::endl;
     }
   }
 
@@ -255,14 +255,14 @@ public:
     //to map properly to the PointSet that represents ALL points we are
     //using, not just the points these cells are using
     std::int64_t connectivityLen = cells.pointConnectivity().size();
-    std::int64_t pointLen = this->m_PointSet.size() * 3;
+    std::int64_t pointLen = m_PointSet.size() * 3;
 
     std::vector<std::int64_t> conn(connectivityLen);
     std::vector<double> points(pointLen);
 
     smtk::mesh::utility::PreAllocatedTessellation connectivityInfo(&conn[0], &points[0]);
     connectivityInfo.disableVTKStyleConnectivity(true);
-    smtk::mesh::utility::extractTessellation(cells, this->m_PointSet, connectivityInfo);
+    smtk::mesh::utility::extractTessellation(cells, m_PointSet, connectivityInfo);
 
     //when writing out a triangle or quad region the cell must be written
     //in counter clockwise orientation. We are presuming that for 2d meshes
@@ -283,13 +283,13 @@ public:
       }
 
       //now that the connectivity is the correct order we can write it out
-      this->m_Stream << cardType << " \t " << this->m_CellId++ << " ";
+      m_Stream << cardType << " \t " << m_CellId++ << " ";
       for (int j = 0; j < nVerts; ++j)
       {
         //We add 1, since the points are written out starting with index 1
-        this->m_Stream << std::setw(8) << 1 + conn[cIndex + j] << " ";
+        m_Stream << std::setw(8) << 1 + conn[cIndex + j] << " ";
       }
-      this->m_Stream << std::setw(8) << regionId << std::endl;
+      m_Stream << std::setw(8) << regionId << std::endl;
     }
   }
 };

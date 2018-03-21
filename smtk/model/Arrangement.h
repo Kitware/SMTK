@@ -43,8 +43,8 @@ public:
   ///@{
   /**\brief Access to the integer vector defining an arrangement.
     */
-  std::vector<int>& details() { return this->m_details; }
-  std::vector<int> const& details() const { return this->m_details; }
+  std::vector<int>& details() { return m_details; }
+  std::vector<int> const& details() const { return m_details; }
   ///@}
 
   static Arrangement Construct(

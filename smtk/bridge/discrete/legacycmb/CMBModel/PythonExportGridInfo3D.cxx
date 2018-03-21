@@ -43,7 +43,7 @@ std::vector<int> PythonExportGridInfo3D::analysisGridCells(
     return cellIds;
   }
 
-  if (gridRep->GetGroupFacetIds(this->m_model, modelEntityId, cellIds) == false)
+  if (gridRep->GetGroupFacetIds(m_model, modelEntityId, cellIds) == false)
   {
     status.returnType = GridInfo::NOT_AVAILABLE;
     status.errorMessage = "Could not get group facet ids";
@@ -70,7 +70,7 @@ std::vector<std::pair<int, int> > PythonExportGridInfo3D::boundaryItemsOf(
     return gridItems;
   }
 
-  vtkModelGridRepresentation* gridRep = this->m_model->GetAnalysisGridInfo();
+  vtkModelGridRepresentation* gridRep = m_model->GetAnalysisGridInfo();
   vtkSmartPointer<vtkIdList> cellIds = vtkSmartPointer<vtkIdList>::New();
   vtkSmartPointer<vtkIdList> cellSides = vtkSmartPointer<vtkIdList>::New();
   if (gridRep->GetBoundaryGroupAnalysisFacets(m_model, modelEntityId, cellIds, cellSides))
@@ -121,8 +121,7 @@ std::vector<std::pair<int, int> > PythonExportGridInfo3D::asBoundaryItems(
 
   vtkIdList* cellIds = vtkIdList::New();
   vtkIdList* cellSides = vtkIdList::New();
-  if (gridRep->GetBoundaryGroupAnalysisFacets(this->m_model, modelEntityId, cellIds, cellSides) ==
-    false)
+  if (gridRep->GetBoundaryGroupAnalysisFacets(m_model, modelEntityId, cellIds, cellSides) == false)
   {
     status.returnType = GridInfo::NOT_AVAILABLE;
     status.errorMessage = "Could not get group facets";

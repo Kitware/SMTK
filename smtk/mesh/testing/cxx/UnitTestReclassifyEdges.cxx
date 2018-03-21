@@ -143,8 +143,7 @@ struct xyz_view
   //ignore z as our dataset is all axis aligned
   bool operator<(const xyz_view& r) const
   {
-    return this->m_ptr[0] != r.m_ptr[0] ? (this->m_ptr[0] < r.m_ptr[0])
-                                        : (this->m_ptr[1] < r.m_ptr[1]);
+    return m_ptr[0] != r.m_ptr[0] ? (m_ptr[0] < r.m_ptr[0]) : (m_ptr[1] < r.m_ptr[1]);
   }
 };
 

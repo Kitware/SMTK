@@ -49,7 +49,7 @@ bool MeshItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
   std::size_t n = def->numberOfRequiredValues();
   if (n != 0)
   {
-    this->m_meshValues.resize(n);
+    m_meshValues.resize(n);
   }
   return true;
 }
@@ -70,7 +70,7 @@ Item::Type MeshItem::type() const
 
 std::size_t MeshItem::numberOfValues() const
 {
-  return this->m_meshValues.size();
+  return m_meshValues.size();
 }
 
 // Set the number of entities to be associated with this item (returns true if permitted).
@@ -96,7 +96,7 @@ bool MeshItem::setNumberOfValues(std::size_t newSize)
   if (n > 0 && newSize > n)
     return false; // The number of values requested is too large.
 
-  this->m_meshValues.resize(newSize);
+  m_meshValues.resize(newSize);
   return true;
 }
 
@@ -113,7 +113,7 @@ bool MeshItem::isValid() const
   {
     return false;
   }
-  for (auto it = this->m_meshValues.begin(); it != this->m_meshValues.end(); ++it)
+  for (auto it = m_meshValues.begin(); it != m_meshValues.end(); ++it)
   {
     // If the mesh is empty or invalid return false
     if (!(*it).isValid() || (*it).is_empty())
@@ -127,7 +127,7 @@ bool MeshItem::isValid() const
 /// Return the number of values required by this item's definition (if it has one).
 std::size_t MeshItem::numberOfRequiredValues() const
 {
-  const MeshItemDefinition* def = static_cast<const MeshItemDefinition*>(this->m_definition.get());
+  const MeshItemDefinition* def = static_cast<const MeshItemDefinition*>(m_definition.get());
   if (def == NULL)
   {
     return 0;
@@ -148,9 +148,9 @@ bool MeshItem::isExtensible() const
 /// Return the \a i-th meshset stored in this item.
 smtk::mesh::MeshSet MeshItem::value(std::size_t i) const
 {
-  if (i >= static_cast<std::size_t>(this->m_meshValues.size()))
+  if (i >= static_cast<std::size_t>(m_meshValues.size()))
     return smtk::mesh::MeshSet();
-  return this->m_meshValues[i];
+  return m_meshValues[i];
 }
 
 bool MeshItem::setValue(const smtk::mesh::MeshSet& val)
@@ -160,15 +160,15 @@ bool MeshItem::setValue(const smtk::mesh::MeshSet& val)
 
 bool MeshItem::isSet(std::size_t i) const
 {
-  return i < this->m_meshValues.size() ? !this->m_meshValues[i].is_empty() : false;
+  return i < m_meshValues.size() ? !m_meshValues[i].is_empty() : false;
 }
 
 /// Force the \a i-th value of the item to be invalid.
 void MeshItem::unset(std::size_t i)
 {
-  if (i < this->m_meshValues.size())
+  if (i < m_meshValues.size())
   {
-    this->m_meshValues[i] = smtk::mesh::MeshSet();
+    m_meshValues[i] = smtk::mesh::MeshSet();
   }
 }
 
@@ -176,9 +176,9 @@ void MeshItem::unset(std::size_t i)
 bool MeshItem::setValue(std::size_t i, const smtk::mesh::MeshSet& val)
 {
   const MeshItemDefinition* def = static_cast<const MeshItemDefinition*>(this->definition().get());
-  if (i < this->m_meshValues.size() && def->isValueValid(val))
+  if (i < m_meshValues.size() && def->isValueValid(val))
   {
-    this->m_meshValues[i] = val;
+    m_meshValues[i] = val;
     return true;
   }
   return false;
@@ -198,8 +198,8 @@ bool MeshItem::appendValue(const smtk::mesh::MeshSet& val)
   // Second - are we allowed to change the number of values?
   const MeshItemDefinition* def = static_cast<const MeshItemDefinition*>(this->definition().get());
   if ((def->isExtensible() && def->maxNumberOfValues() &&
-        this->m_meshValues.size() >= def->maxNumberOfValues()) ||
-    (!def->isExtensible() && this->m_meshValues.size() >= def->numberOfRequiredValues()))
+        m_meshValues.size() >= def->maxNumberOfValues()) ||
+    (!def->isExtensible() && m_meshValues.size() >= def->numberOfRequiredValues()))
   {
     // The maximum number of values is fixed
     return false;
@@ -207,7 +207,7 @@ bool MeshItem::appendValue(const smtk::mesh::MeshSet& val)
 
   if (def->isValueValid(val))
   {
-    this->m_meshValues.push_back(val);
+    m_meshValues.push_back(val);
     return true;
   }
   return false;
@@ -240,9 +240,9 @@ bool MeshItem::removeValue(std::size_t i)
   if (!def->isExtensible())
     return false;
 
-  if (i < this->m_meshValues.size())
+  if (i < m_meshValues.size())
   {
-    this->m_meshValues.erase(this->m_meshValues.begin() + i);
+    m_meshValues.erase(m_meshValues.begin() + i);
     return true;
   }
   return false;
@@ -250,20 +250,19 @@ bool MeshItem::removeValue(std::size_t i)
 
 bool MeshItem::hasValue(const smtk::mesh::MeshSet& val) const
 {
-  return std::find(this->m_meshValues.begin(), this->m_meshValues.end(), val) !=
-    this->m_meshValues.end();
+  return std::find(m_meshValues.begin(), m_meshValues.end(), val) != m_meshValues.end();
 }
 
 const smtk::mesh::MeshList& MeshItem::values() const
 {
-  return this->m_meshValues;
+  return m_meshValues;
 }
 
 void MeshItem::reset()
 {
-  this->m_meshValues.clear();
+  m_meshValues.clear();
   if (this->numberOfRequiredValues() > 0)
-    this->m_meshValues.resize(this->numberOfRequiredValues());
+    m_meshValues.resize(this->numberOfRequiredValues());
 }
 
 /// Assigns contents to be same as source item
@@ -313,10 +312,10 @@ std::ptrdiff_t MeshItem::find(const smtk::mesh::MeshSet& mesh) const
 
 smtk::attribute::MeshItem::const_mesh_it MeshItem::begin() const
 {
-  return this->m_meshValues.begin();
+  return m_meshValues.begin();
 }
 
 smtk::attribute::MeshItem::const_mesh_it MeshItem::end() const
 {
-  return this->m_meshValues.end();
+  return m_meshValues.end();
 }

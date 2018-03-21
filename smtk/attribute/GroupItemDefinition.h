@@ -35,13 +35,13 @@ public:
 
   ~GroupItemDefinition() override;
   Item::Type type() const override;
-  std::size_t numberOfItemDefinitions() const { return this->m_itemDefs.size(); }
+  std::size_t numberOfItemDefinitions() const { return m_itemDefs.size(); }
   smtk::attribute::ItemDefinitionPtr itemDefinition(int ith) const
   {
     return (ith < 0) ? smtk::attribute::ItemDefinitionPtr()
-                     : (static_cast<unsigned int>(ith) >= this->m_itemDefs.size()
+                     : (static_cast<unsigned int>(ith) >= m_itemDefs.size()
                            ? smtk::attribute::ItemDefinitionPtr()
-                           : this->m_itemDefs[static_cast<std::size_t>(ith)]);
+                           : m_itemDefs[static_cast<std::size_t>(ith)]);
   }
   bool addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef);
   template <typename T>
@@ -54,10 +54,10 @@ public:
     // First see if there is a item by the same name
     if (this->findItemPosition(inName) < 0)
     {
-      std::size_t n = this->m_itemDefs.size();
+      std::size_t n = m_itemDefs.size();
       item = SharedTypes::RawPointerType::New(inName);
-      this->m_itemDefs.push_back(item);
-      this->m_itemDefPositions[inName] = static_cast<int>(n);
+      m_itemDefs.push_back(item);
+      m_itemDefPositions[inName] = static_cast<int>(n);
     }
     return item;
   }
@@ -78,27 +78,27 @@ public:
   // can have a variable number of groups.  The number of sub groups is always <= to number of
   // required groups and max number of groups (provided max number of groups > 0)
   // Default value is false.
-  bool isExtensible() const { return this->m_isExtensible; }
+  bool isExtensible() const { return m_isExtensible; }
   void setIsExtensible(bool mode);
 
-  std::size_t numberOfRequiredGroups() const { return this->m_numberOfRequiredGroups; }
+  std::size_t numberOfRequiredGroups() const { return m_numberOfRequiredGroups; }
 
   // Returns false if gsize is greater than max number of groups (and max number > 0)
   bool setNumberOfRequiredGroups(std::size_t gsize);
 
-  bool hasSubGroupLabels() const { return !this->m_labels.empty(); }
+  bool hasSubGroupLabels() const { return !m_labels.empty(); }
 
   // Returns or Sets the maximum number of groups that items from this def can have.
   // if 0 is returned then there is no max limit.  Default value is 0
   // Note that this is used only when the def is extensible
-  std::size_t maxNumberOfGroups() const { return this->m_maxNumberOfGroups; }
+  std::size_t maxNumberOfGroups() const { return m_maxNumberOfGroups; }
   // Returns false if the new max is less than the number of required groups
   // and is not 0
   bool setMaxNumberOfGroups(std::size_t esize);
 
   void setSubGroupLabel(std::size_t element, const std::string& elabel);
   void setCommonSubGroupLabel(const std::string& elabel);
-  bool usingCommonSubGroupLabel() const { return this->m_useCommonLabel; }
+  bool usingCommonSubGroupLabel() const { return m_useCommonLabel; }
   std::string subGroupLabel(std::size_t element) const;
 
   smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
@@ -128,8 +128,8 @@ private:
 inline int GroupItemDefinition::findItemPosition(const std::string& inName) const
 {
   std::map<std::string, int>::const_iterator it;
-  it = this->m_itemDefPositions.find(inName);
-  if (it == this->m_itemDefPositions.end())
+  it = m_itemDefPositions.find(inName);
+  if (it == m_itemDefPositions.end())
   {
     return -1; // named item doesn't exist
   }

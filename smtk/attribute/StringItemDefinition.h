@@ -34,14 +34,14 @@ public:
   smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
   smtk::attribute::ItemPtr buildItem(
     Item* owningItem, int position, int subGroupPosition) const override;
-  bool isMultiline() const { return this->m_multiline; }
-  void setIsMultiline(bool val) { this->m_multiline = val; }
+  bool isMultiline() const { return m_multiline; }
+  void setIsMultiline(bool val) { m_multiline = val; }
 
   //Set/Get the secure property of the item definition
   //Note this is purely a GUI hint for now - the default is false.  Also this
   // will not be supported when the Item is multiline.
-  void setIsSecure(bool val) { this->m_secure = val; }
-  bool isSecure() const { return this->m_secure; }
+  void setIsSecure(bool val) { m_secure = val; }
+  bool isSecure() const { return m_secure; }
 
   smtk::attribute::ItemDefinitionPtr createCopy(
     smtk::attribute::ItemDefinition::CopyInfo& info) const override;

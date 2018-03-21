@@ -36,23 +36,23 @@ public:
   ~RefItemDefinition() override;
 
   Item::Type type() const override;
-  smtk::attribute::DefinitionPtr attributeDefinition() const { return this->m_definition.lock(); }
+  smtk::attribute::DefinitionPtr attributeDefinition() const { return m_definition.lock(); }
 
-  void setAttributeDefinition(smtk::attribute::DefinitionPtr def) { this->m_definition = def; }
+  void setAttributeDefinition(smtk::attribute::DefinitionPtr def) { m_definition = def; }
 
   bool isValueValid(smtk::attribute::AttributePtr att) const;
 
   smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
   smtk::attribute::ItemPtr buildItem(
     Item* owningItem, int position, int subGroupPosition) const override;
-  std::size_t numberOfRequiredValues() const { return this->m_numberOfRequiredValues; }
+  std::size_t numberOfRequiredValues() const { return m_numberOfRequiredValues; }
   void setNumberOfRequiredValues(std::size_t esize);
 
-  bool hasValueLabels() const { return !this->m_valueLabels.empty(); }
+  bool hasValueLabels() const { return !m_valueLabels.empty(); }
 
   void setValueLabel(std::size_t element, const std::string& elabel);
   void setCommonValueLabel(const std::string& elabel);
-  bool usingCommonLabel() const { return this->m_useCommonLabel; }
+  bool usingCommonLabel() const { return m_useCommonLabel; }
 
   std::string valueLabel(std::size_t element) const;
   smtk::attribute::ItemDefinitionPtr createCopy(

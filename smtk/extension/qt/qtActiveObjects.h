@@ -46,7 +46,7 @@ public:
   static qtActiveObjects& instance();
 
   /// Returns the active model.
-  smtk::model::Model activeModel() const { return this->m_activeModel; }
+  smtk::model::Model activeModel() const { return m_activeModel; }
 
 public slots:
   /// Set the active module.

@@ -114,7 +114,7 @@ bool SubphraseGenerator::setDirectLimit(int val)
 {
   if (val != 0)
   {
-    this->m_directLimit = val;
+    m_directLimit = val;
     return true;
   }
   return false;
@@ -374,7 +374,7 @@ void SubphraseGenerator::attributesOfModelEntity(
 void SubphraseGenerator::propertiesOfComponent(
   DescriptivePhrase::Ptr src, const smtk::model::EntityPtr& ent, DescriptivePhrases& result)
 {
-  if (!this->m_skipProperties)
+  if (!m_skipProperties)
   {
     this->stringPropertiesOfComponent(src, ent, result);
     this->integerPropertiesOfComponent(src, ent, result);

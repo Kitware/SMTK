@@ -49,7 +49,7 @@ class SMTKQTEXT_EXPORT qtModelView : public QTreeView
 public:
   qtModelView(QWidget* p = NULL);
   ~qtModelView();
-  virtual std::string selectionSourceName() { return this->m_selectionSourceName; }
+  virtual std::string selectionSourceName() { return m_selectionSourceName; }
 
   qtOperationDockWidget* operatorsDock();
 

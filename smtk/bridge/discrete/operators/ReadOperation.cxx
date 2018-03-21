@@ -71,7 +71,7 @@ ReadOperation::Result ReadOperation::operateInternal()
   if (fname.empty())
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
 
-  this->m_op->SetFileName(fname.c_str());
+  m_op->SetFileName(fname.c_str());
   std::string modelName = vtksys::SystemTools::GetFilenameWithoutExtension(fname.c_str());
 
   // There are three possible import modes
@@ -124,11 +124,11 @@ ReadOperation::Result ReadOperation::operateInternal()
 
   // Create a new model to hold the result.
   vtkNew<vtkDiscreteModelWrapper> mod;
-  this->m_op->Operate(mod.GetPointer(), session.get());
+  m_op->Operate(mod.GetPointer(), session.get());
 
   // Now assign a UUID to the model and associate its filename with
   // a URL property (if things went OK).
-  if (!this->m_op->GetOperateSucceeded())
+  if (!m_op->GetOperateSucceeded())
   {
     std::cerr << "Could not read file \"" << fname << "\".\n";
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);

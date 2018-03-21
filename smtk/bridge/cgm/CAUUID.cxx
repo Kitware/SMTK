@@ -59,7 +59,7 @@ CAUUID::CAUUID(RefEntity* ref, const CubitSimpleAttrib& sa)
 {
   if (!sa.string_data_list().empty())
   {
-    this->m_entityId = smtk::common::UUID(std::string(sa.string_data_list().back().c_str()));
+    m_entityId = smtk::common::UUID(std::string(sa.string_data_list().back().c_str()));
   }
 }
 #else
@@ -69,8 +69,7 @@ CAUUID::CAUUID(RefEntity* ref, CubitSimpleAttrib* sa)
 {
   if (sa && sa->string_data_list() && sa->string_data_list()->size() != 0)
   {
-    this->m_entityId =
-      smtk::common::UUID(std::string(sa->string_data_list()->last_item()->c_str()));
+    m_entityId = smtk::common::UUID(std::string(sa->string_data_list()->last_item()->c_str()));
   }
 }
 #endif
@@ -97,10 +96,10 @@ CubitStatus CAUUID::actuate()
   TDUUID* uuid = dynamic_cast<TDUUID*>(this->attrib_owner()->get_TD(&TDUUID::isTDUUID));
   if (uuid)
   {
-    if (uuid->entityId() != this->m_entityId)
+    if (uuid->entityId() != m_entityId)
     {
       std::cerr << "Different UUID found for " << attrib_owner()->class_name() << " ("
-                << uuid->entityId() << " vs " << this->m_entityId << ")\n";
+                << uuid->entityId() << " vs " << m_entityId << ")\n";
       return CUBIT_FAILURE;
     }
   }
@@ -117,22 +116,22 @@ CubitStatus CAUUID::actuate()
       !GeometryQueryTool::mergeGloballyOnImport)
     {
       //Is there an entity that already has this id?
-      ToolDataUser* other = TDUUID::findEntityById(this->m_entityId);
+      ToolDataUser* other = TDUUID::findEntityById(m_entityId);
       if (other)
       {
         RefEntity* otherAsEnt = dynamic_cast<RefEntity*>(other);
-        std::cerr << "UUID collision " << this->m_entityId << " between "
+        std::cerr << "UUID collision " << m_entityId << " between "
                   << (otherAsEnt ? otherAsEnt->class_name() : "unknown class") << " and "
                   << attrib_owner()->class_name() << "\n";
         return CUBIT_FAILURE;
       }
     }
-    uuid = new TDUUID(attrib_owner(), this->m_entityId);
+    uuid = new TDUUID(attrib_owner(), m_entityId);
     {
       RefEntity* ownerAsEnt = dynamic_cast<RefEntity*>(attrib_owner());
       if (ownerAsEnt)
       {
-        //std::cout << "Restored " << ownerAsEnt->entity_name().c_str() << " (" << ownerAsEnt->class_name() << ") " << this->m_entityId << "\n";
+        //std::cout << "Restored " << ownerAsEnt->entity_name().c_str() << " (" << ownerAsEnt->class_name() << ") " << m_entityId << "\n";
       }
     }
   }
@@ -157,7 +156,7 @@ CubitStatus CAUUID::update()
   }
   else
   {
-    this->m_entityId = uuid->entityId();
+    m_entityId = uuid->entityId();
     if (this->delete_attrib() == CUBIT_TRUE)
       this->delete_attrib(CUBIT_FALSE);
   }
@@ -175,9 +174,9 @@ CubitSimpleAttrib CAUUID::cubit_simple_attrib()
   RefEntity* ownerAsEnt = dynamic_cast<RefEntity*>(attrib_owner());
   if (ownerAsEnt)
   {
-    //std::cout << "Exported " << ownerAsEnt->entity_name().c_str() << " (" << ownerAsEnt->class_name() << ") " << this->m_entityId << "\n";
+    //std::cout << "Exported " << ownerAsEnt->entity_name().c_str() << " (" << ownerAsEnt->class_name() << ") " << m_entityId << "\n";
   }
-  return CubitSimpleAttrib(this->att_internal_name(), this->m_entityId.toString().c_str());
+  return CubitSimpleAttrib(this->att_internal_name(), m_entityId.toString().c_str());
 }
 #else
 CubitSimpleAttrib* CAUUID::cubit_simple_attrib()
@@ -185,15 +184,15 @@ CubitSimpleAttrib* CAUUID::cubit_simple_attrib()
   RefEntity* ownerAsEnt = dynamic_cast<RefEntity*>(attrib_owner());
   if (ownerAsEnt)
   {
-    //std::cout << "Exported " << ownerAsEnt->entity_name().c_str() << " (" << ownerAsEnt->class_name() << ") " << this->m_entityId << "\n";
+    //std::cout << "Exported " << ownerAsEnt->entity_name().c_str() << " (" << ownerAsEnt->class_name() << ") " << m_entityId << "\n";
   }
-  return new CubitSimpleAttrib(this->att_internal_name(), this->m_entityId.toString().c_str());
+  return new CubitSimpleAttrib(this->att_internal_name(), m_entityId.toString().c_str());
 }
 #endif
 
 smtk::common::UUID CAUUID::entityId() const
 {
-  return this->m_entityId;
+  return m_entityId;
 }
 
 CubitStatus CAUUID::actuate_all()

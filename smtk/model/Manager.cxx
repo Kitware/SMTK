@@ -132,15 +132,15 @@ Manager::Manager(shared_ptr<UUIDsToEntities> inTopology, shared_ptr<UUIDsToTesse
 /// Destroying a model manager requires us to release the default attribute manager..
 Manager::~Manager()
 {
-  if (this->m_defaultSession)
+  if (m_defaultSession)
   {
     // NB: We must pass "false" for the expungeSession argument because
     // the manager may have 0 shared-pointer references at this point
     // and thus cannot construct trigger callback cursors to notify
     // listeners that deletions are occurring.
-    this->unregisterSession(this->m_defaultSession, false);
+    this->unregisterSession(m_defaultSession, false);
   }
-  this->m_attributeAssignments->clear();
+  m_attributeAssignments->clear();
 }
 //@}
 
@@ -151,37 +151,37 @@ Manager::~Manager()
 //@{
 UUIDsToEntities& Manager::topology()
 {
-  return *this->m_topology.get();
+  return *m_topology.get();
 }
 
 const UUIDsToEntities& Manager::topology() const
 {
-  return *this->m_topology.get();
+  return *m_topology.get();
 }
 
 UUIDsToTessellations& Manager::tessellations()
 {
-  return *this->m_tessellations.get();
+  return *m_tessellations.get();
 }
 
 const UUIDsToTessellations& Manager::tessellations() const
 {
-  return *this->m_tessellations.get();
+  return *m_tessellations.get();
 }
 
 UUIDsToTessellations& Manager::analysisMesh()
 {
-  return *this->m_analysisMesh.get();
+  return *m_analysisMesh.get();
 }
 
 const UUIDsToTessellations& Manager::analysisMesh() const
 {
-  return *this->m_analysisMesh.get();
+  return *m_analysisMesh.get();
 }
 
 smtk::mesh::ManagerPtr Manager::meshes() const
 {
-  return this->m_meshes;
+  return m_meshes;
 }
 
 void Manager::clear()
@@ -204,7 +204,7 @@ void Manager::clear()
 
 const UUIDsToAttributeAssignments& Manager::attributeAssignments() const
 {
-  return *this->m_attributeAssignments;
+  return *m_attributeAssignments;
 }
 //@}
 
@@ -234,8 +234,8 @@ SessionInfoBits Manager::erase(const UUID& uid, SessionInfoBits flags)
   bool haveEnt = false;
   if (actual & (SESSION_ENTITY_TYPE | SESSION_ENTITY_RELATIONS))
   {
-    ent = this->m_topology->find(uid);
-    if (ent != this->m_topology->end())
+    ent = m_topology->find(uid);
+    if (ent != m_topology->end())
     {
       haveEnt = true;
       if (flags & SESSION_ENTITY_TYPE)
@@ -271,7 +271,7 @@ SessionInfoBits Manager::erase(const UUID& uid, SessionInfoBits flags)
     this->tessellations().erase(uid);
 
   if (actual & SESSION_ATTRIBUTE_ASSOCIATIONS)
-    this->m_attributeAssignments->erase(uid);
+    m_attributeAssignments->erase(uid);
 
   // TODO: If this entity is a model and has parents, we should make
   //       the parent own the child models? Erase the children? Leave
@@ -291,11 +291,11 @@ SessionInfoBits Manager::erase(const UUID& uid, SessionInfoBits flags)
   if (actual & SESSION_USER_DEFINED_PROPERTIES)
   {
     if (actual & SESSION_FLOAT_PROPERTIES)
-      this->m_floatData->erase(uid);
+      m_floatData->erase(uid);
     if (actual & SESSION_STRING_PROPERTIES)
-      this->m_stringData->erase(uid);
+      m_stringData->erase(uid);
     if (actual & SESSION_INTEGER_PROPERTIES)
-      this->m_integerData->erase(uid);
+      m_integerData->erase(uid);
   }
   else if (actual & SESSION_PROPERTIES)
   {
@@ -316,7 +316,7 @@ SessionInfoBits Manager::erase(const UUID& uid, SessionInfoBits flags)
     //       of entities in the class destructor prevent us
     //       from obtaining a shared pointer to the manager
     //       to pass to any observers...
-    this->m_topology->erase(uid);
+    m_topology->erase(uid);
   }
 
   return actual;
@@ -353,7 +353,7 @@ SessionInfoBits Manager::hardErase(const EntityRef& eref, SessionInfoBits flags)
   UUIDWithEntityPtr ent;
   if (actual & (SESSION_ENTITY_TYPE | SESSION_ENTITY_RELATIONS | SESSION_ARRANGEMENTS))
   {
-    if (!this->m_topology->erase(uid))
+    if (!m_topology->erase(uid))
     { // without an Entity record, we cannot erase these things:
       actual &= ~(SESSION_ENTITY_TYPE | SESSION_ENTITY_RELATIONS | SESSION_ARRANGEMENTS);
     }
@@ -369,7 +369,7 @@ SessionInfoBits Manager::hardErase(const EntityRef& eref, SessionInfoBits flags)
 
   if (actual & SESSION_ATTRIBUTE_ASSOCIATIONS)
   {
-    if (!this->m_attributeAssignments->erase(uid))
+    if (!m_attributeAssignments->erase(uid))
     {
       actual &= ~SESSION_ATTRIBUTE_ASSOCIATIONS;
     }
@@ -379,21 +379,21 @@ SessionInfoBits Manager::hardErase(const EntityRef& eref, SessionInfoBits flags)
   {
     if (actual & SESSION_FLOAT_PROPERTIES)
     {
-      if (!this->m_floatData->erase(uid))
+      if (!m_floatData->erase(uid))
       {
         actual &= ~SESSION_FLOAT_PROPERTIES;
       }
     }
     if (actual & SESSION_STRING_PROPERTIES)
     {
-      if (!this->m_stringData->erase(uid))
+      if (!m_stringData->erase(uid))
       {
         actual &= ~SESSION_STRING_PROPERTIES;
       }
     }
     if (actual & SESSION_INTEGER_PROPERTIES)
     {
-      if (!this->m_integerData->erase(uid))
+      if (!m_integerData->erase(uid))
       {
         actual &= ~SESSION_INTEGER_PROPERTIES;
       }
@@ -467,7 +467,7 @@ UUID Manager::unusedUUID()
   do
   {
     actual = smtk::common::UUIDGenerator::instance().random();
-  } while (this->m_topology->find(actual) != this->m_topology->end());
+  } while (m_topology->find(actual) != m_topology->end());
   return actual;
 }
 
@@ -517,8 +517,8 @@ Manager::iter_type Manager::setEntityOfTypeAndDimension(
     msg << "Nil UUID";
     throw msg.str();
   }
-  if (((it = this->m_topology->find(uid)) != this->m_topology->end()) &&
-    (entityFlags & GROUP_ENTITY) != 0 && dim >= 0 && it->second->dimension() != dim)
+  if (((it = m_topology->find(uid)) != m_topology->end()) && (entityFlags & GROUP_ENTITY) != 0 &&
+    dim >= 0 && it->second->dimension() != dim)
   {
     std::ostringstream msg;
     msg << "Duplicate UUID '" << uid << "' of different dimension " << it->second->dimension()
@@ -529,7 +529,7 @@ Manager::iter_type Manager::setEntityOfTypeAndDimension(
   entrec->setId(uid);
   std::pair<UUID, EntityPtr> entry(uid, entrec);
   this->prepareForEntity(entry);
-  std::pair<Manager::iter_type, bool> result = this->m_topology->insert(entry);
+  std::pair<Manager::iter_type, bool> result = m_topology->insert(entry);
 
   if (result.second)
   {
@@ -554,7 +554,7 @@ Manager::iter_type Manager::setEntity(EntityPtr c)
     msg << "Nil UUID";
     throw msg.str();
   }
-  if ((it = this->m_topology->find(c->id())) != this->m_topology->end())
+  if ((it = m_topology->find(c->id())) != m_topology->end())
   {
     if (it->second->dimension() != c->dimension())
     {
@@ -571,7 +571,7 @@ Manager::iter_type Manager::setEntity(EntityPtr c)
   }
   std::pair<UUID, EntityPtr> entry(c->id(), c);
   this->prepareForEntity(entry);
-  it = this->m_topology->insert(entry).first;
+  it = m_topology->insert(entry).first;
   this->insertEntityReferences(it);
   return it;
 }
@@ -630,15 +630,15 @@ UUID Manager::addCellOfDimensionWithUUID(const UUID& uid, int dim)
 /// Return the type of entity that the link represents.
 BitFlags Manager::type(const UUID& ofEntity) const
 {
-  UUIDWithEntityPtr it = this->m_topology->find(ofEntity);
-  return (it == this->m_topology->end() ? INVALID : it->second->entityFlags());
+  UUIDWithEntityPtr it = m_topology->find(ofEntity);
+  return (it == m_topology->end() ? INVALID : it->second->entityFlags());
 }
 
 /// Return the dimension of the manifold that the passed entity represents.
 int Manager::dimension(const UUID& ofEntity) const
 {
-  UUIDWithEntityPtr it = this->m_topology->find(ofEntity);
-  return (it == this->m_topology->end() ? -1 : it->second->dimension());
+  UUIDWithEntityPtr it = m_topology->find(ofEntity);
+  return (it == m_topology->end() ? -1 : it->second->dimension());
 }
 
 /**\brief Return a name for the given entity ID.
@@ -657,8 +657,8 @@ std::string Manager::name(const UUID& ofEntity) const
       return nprop[0];
     }
   }
-  UUIDWithEntityPtr it = this->m_topology->find(ofEntity);
-  if (it == this->m_topology->end())
+  UUIDWithEntityPtr it = m_topology->find(ofEntity);
+  if (it == m_topology->end())
   {
     return "invalid id " + ofEntity.toString();
   }
@@ -672,8 +672,8 @@ std::string Manager::name(const UUID& ofEntity) const
 UUIDs Manager::bordantEntities(const UUID& ofEntity, int ofDimension) const
 {
   UUIDs result;
-  UUIDWithConstEntityPtr it = this->m_topology->find(ofEntity);
-  if (it == this->m_topology->end())
+  UUIDWithConstEntityPtr it = m_topology->find(ofEntity);
+  if (it == m_topology->end())
   {
     return result;
   }
@@ -686,8 +686,8 @@ UUIDs Manager::bordantEntities(const UUID& ofEntity, int ofDimension) const
   for (UUIDArray::const_iterator ai = it->second->relations().begin();
        ai != it->second->relations().end(); ++ai)
   {
-    other = this->m_topology->find(*ai);
-    if (other == this->m_topology->end())
+    other = m_topology->find(*ai);
+    if (other == m_topology->end())
     { // TODO: silently skip bad relations or complain?
       continue;
     }
@@ -737,8 +737,8 @@ UUIDs Manager::bordantEntities(const UUIDs& ofEntities, int ofDimension) const
 UUIDs Manager::boundaryEntities(const UUID& ofEntity, int ofDimension) const
 {
   UUIDs result;
-  UUIDWithConstEntityPtr it = this->m_topology->find(ofEntity);
-  if (it == this->m_topology->end())
+  UUIDWithConstEntityPtr it = m_topology->find(ofEntity);
+  if (it == m_topology->end())
   {
     return result;
   }
@@ -751,8 +751,8 @@ UUIDs Manager::boundaryEntities(const UUID& ofEntity, int ofDimension) const
   for (UUIDArray::const_iterator ai = it->second->relations().begin();
        ai != it->second->relations().end(); ++ai)
   {
-    other = this->m_topology->find(*ai);
-    if (other == this->m_topology->end())
+    other = m_topology->find(*ai);
+    if (other == m_topology->end())
     { // TODO: silently skip bad relations or complain?
       continue;
     }
@@ -823,8 +823,8 @@ UUIDs Manager::boundaryEntities(const UUIDs& ofEntities, int ofDimension) const
 UUIDs Manager::lowerDimensionalBoundaries(const UUID& ofEntity, int lowerDimension)
 {
   UUIDs result;
-  UUIDWithEntityPtr it = this->m_topology->find(ofEntity);
-  if (it == this->m_topology->end())
+  UUIDWithEntityPtr it = m_topology->find(ofEntity);
+  if (it == m_topology->end())
   {
     return result;
   }
@@ -870,8 +870,8 @@ UUIDs Manager::lowerDimensionalBoundaries(const UUID& ofEntity, int lowerDimensi
 UUIDs Manager::higherDimensionalBordants(const UUID& ofEntity, int higherDimension)
 {
   UUIDs result;
-  UUIDWithEntityPtr it = this->m_topology->find(ofEntity);
-  if (it == this->m_topology->end())
+  UUIDWithEntityPtr it = m_topology->find(ofEntity);
+  if (it == m_topology->end())
   {
     return result;
   }
@@ -909,7 +909,7 @@ UUIDs Manager::adjacentEntities(const UUID& ofEntity, int ofDimension)
 UUIDs Manager::entitiesMatchingFlags(BitFlags mask, bool exactMatch)
 {
   UUIDs result;
-  for (UUIDWithEntityPtr it = this->m_topology->begin(); it != this->m_topology->end(); ++it)
+  for (UUIDWithEntityPtr it = m_topology->begin(); it != m_topology->end(); ++it)
   {
     BitFlags masked = it->second->entityFlags() & mask;
     if ((masked && mask == ANY_ENTITY) || (!exactMatch && masked) || (exactMatch && masked == mask))
@@ -924,7 +924,7 @@ UUIDs Manager::entitiesMatchingFlags(BitFlags mask, bool exactMatch)
 UUIDs Manager::entitiesOfDimension(int dim)
 {
   UUIDs result;
-  for (UUIDWithEntityPtr it = this->m_topology->begin(); it != this->m_topology->end(); ++it)
+  for (UUIDWithEntityPtr it = m_topology->begin(); it != m_topology->end(); ++it)
   {
     if (it->second->dimension() == dim)
     {
@@ -947,8 +947,8 @@ UUIDs Manager::entitiesOfDimension(int dim)
   */
 EntityPtr Manager::findEntity(const UUID& uid, bool trySessions) const
 {
-  UUIDWithEntityPtr it = this->m_topology->find(uid);
-  if (it == this->m_topology->end())
+  UUIDWithEntityPtr it = m_topology->find(uid);
+  if (it == m_topology->end())
   {
     // Not in storage... is it in any session's dangling entity list?
     // We use an evil const-cast here because we are working under the fiction
@@ -962,8 +962,8 @@ EntityPtr Manager::findEntity(const UUID& uid, bool trySessions) const
       {
         if (bit->second->transcribe(EntityRef(self, uid), SESSION_ENTITY_ARRANGED, true))
         {
-          it = this->m_topology->find(uid);
-          if (it != this->m_topology->end())
+          it = m_topology->find(uid);
+          if (it != m_topology->end())
             return it->second;
         }
       }
@@ -1139,8 +1139,8 @@ void Manager::removeEntityReferences(const UUIDWithEntityPtr& c)
   */
 void Manager::addToGroup(const UUID& groupId, const UUIDs& uids)
 {
-  UUIDWithEntityPtr result = this->m_topology->find(groupId);
-  if (result == this->m_topology->end())
+  UUIDWithEntityPtr result = m_topology->find(groupId);
+  if (result == m_topology->end())
   {
     return;
   }
@@ -1169,7 +1169,7 @@ void Manager::setFloatProperty(
 {
   if (!entity.isNull())
   {
-    (*this->m_floatData)[entity][propName] = propValue;
+    (*m_floatData)[entity][propName] = propValue;
   }
 }
 
@@ -1178,7 +1178,7 @@ smtk::model::FloatList const& Manager::floatProperty(
 {
   if (!entity.isNull())
   {
-    FloatData& floats((*this->m_floatData)[entity]);
+    FloatData& floats((*m_floatData)[entity]);
     return floats[propName];
   }
   static FloatList dummy;
@@ -1189,7 +1189,7 @@ smtk::model::FloatList& Manager::floatProperty(const UUID& entity, const std::st
 {
   if (!entity.isNull())
   {
-    FloatData& floats((*this->m_floatData)[entity]);
+    FloatData& floats((*m_floatData)[entity]);
     return floats[propName];
   }
   static FloatList dummy;
@@ -1198,8 +1198,8 @@ smtk::model::FloatList& Manager::floatProperty(const UUID& entity, const std::st
 
 bool Manager::hasFloatProperty(const UUID& entity, const std::string& propName) const
 {
-  UUIDsToFloatData::const_iterator uit = this->m_floatData->find(entity);
-  if (uit == this->m_floatData->end())
+  UUIDsToFloatData::const_iterator uit = m_floatData->find(entity);
+  if (uit == m_floatData->end())
   {
     return false;
   }
@@ -1210,8 +1210,8 @@ bool Manager::hasFloatProperty(const UUID& entity, const std::string& propName) 
 
 bool Manager::removeFloatProperty(const UUID& entity, const std::string& propName)
 {
-  UUIDsToFloatData::iterator uit = this->m_floatData->find(entity);
-  if (uit == this->m_floatData->end())
+  UUIDsToFloatData::iterator uit = m_floatData->find(entity);
+  if (uit == m_floatData->end())
   {
     return false;
   }
@@ -1222,18 +1222,18 @@ bool Manager::removeFloatProperty(const UUID& entity, const std::string& propNam
   }
   uit->second.erase(sit);
   if (uit->second.empty())
-    this->m_floatData->erase(uit);
+    m_floatData->erase(uit);
   return true;
 }
 
 const UUIDWithFloatProperties Manager::floatPropertiesForEntity(const UUID& entity) const
 {
-  return this->m_floatData->find(entity);
+  return m_floatData->find(entity);
 }
 
 UUIDWithFloatProperties Manager::floatPropertiesForEntity(const UUID& entity)
 {
-  return this->m_floatData->find(entity);
+  return m_floatData->find(entity);
 }
 
 void Manager::setStringProperty(
@@ -1249,7 +1249,7 @@ void Manager::setStringProperty(
 {
   if (!entity.isNull())
   {
-    (*this->m_stringData)[entity][propName] = propValue;
+    (*m_stringData)[entity][propName] = propValue;
   }
 }
 
@@ -1258,7 +1258,7 @@ smtk::model::StringList const& Manager::stringProperty(
 {
   if (!entity.isNull())
   {
-    StringData& strings((*this->m_stringData)[entity]);
+    StringData& strings((*m_stringData)[entity]);
     return strings[propName];
   }
   static StringList dummy;
@@ -1269,7 +1269,7 @@ smtk::model::StringList& Manager::stringProperty(const UUID& entity, const std::
 {
   if (!entity.isNull())
   {
-    StringData& strings((*this->m_stringData)[entity]);
+    StringData& strings((*m_stringData)[entity]);
     return strings[propName];
   }
   static StringList dummy;
@@ -1278,8 +1278,8 @@ smtk::model::StringList& Manager::stringProperty(const UUID& entity, const std::
 
 bool Manager::hasStringProperty(const UUID& entity, const std::string& propName) const
 {
-  UUIDsToStringData::const_iterator uit = this->m_stringData->find(entity);
-  if (uit == this->m_stringData->end())
+  UUIDsToStringData::const_iterator uit = m_stringData->find(entity);
+  if (uit == m_stringData->end())
   {
     return false;
   }
@@ -1290,8 +1290,8 @@ bool Manager::hasStringProperty(const UUID& entity, const std::string& propName)
 
 bool Manager::removeStringProperty(const UUID& entity, const std::string& propName)
 {
-  UUIDsToStringData::iterator uit = this->m_stringData->find(entity);
-  if (uit == this->m_stringData->end())
+  UUIDsToStringData::iterator uit = m_stringData->find(entity);
+  if (uit == m_stringData->end())
   {
     return false;
   }
@@ -1302,18 +1302,18 @@ bool Manager::removeStringProperty(const UUID& entity, const std::string& propNa
   }
   uit->second.erase(sit);
   if (uit->second.empty())
-    this->m_stringData->erase(uit);
+    m_stringData->erase(uit);
   return true;
 }
 
 const UUIDWithStringProperties Manager::stringPropertiesForEntity(const UUID& entity) const
 {
-  return this->m_stringData->find(entity);
+  return m_stringData->find(entity);
 }
 
 UUIDWithStringProperties Manager::stringPropertiesForEntity(const UUID& entity)
 {
-  return this->m_stringData->find(entity);
+  return m_stringData->find(entity);
 }
 
 void Manager::setIntegerProperty(
@@ -1329,7 +1329,7 @@ void Manager::setIntegerProperty(
 {
   if (!entity.isNull())
   {
-    (*this->m_integerData)[entity][propName] = propValue;
+    (*m_integerData)[entity][propName] = propValue;
   }
 }
 
@@ -1338,7 +1338,7 @@ smtk::model::IntegerList const& Manager::integerProperty(
 {
   if (!entity.isNull())
   {
-    IntegerData& integers((*this->m_integerData)[entity]);
+    IntegerData& integers((*m_integerData)[entity]);
     return integers[propName];
   }
   static IntegerList dummy;
@@ -1349,7 +1349,7 @@ smtk::model::IntegerList& Manager::integerProperty(const UUID& entity, const std
 {
   if (!entity.isNull())
   {
-    IntegerData& integers((*this->m_integerData)[entity]);
+    IntegerData& integers((*m_integerData)[entity]);
     return integers[propName];
   }
   static IntegerList dummy;
@@ -1358,8 +1358,8 @@ smtk::model::IntegerList& Manager::integerProperty(const UUID& entity, const std
 
 bool Manager::hasIntegerProperty(const UUID& entity, const std::string& propName) const
 {
-  UUIDsToIntegerData::const_iterator uit = this->m_integerData->find(entity);
-  if (uit == this->m_integerData->end())
+  UUIDsToIntegerData::const_iterator uit = m_integerData->find(entity);
+  if (uit == m_integerData->end())
   {
     return false;
   }
@@ -1370,8 +1370,8 @@ bool Manager::hasIntegerProperty(const UUID& entity, const std::string& propName
 
 bool Manager::removeIntegerProperty(const UUID& entity, const std::string& propName)
 {
-  UUIDsToIntegerData::iterator uit = this->m_integerData->find(entity);
-  if (uit == this->m_integerData->end())
+  UUIDsToIntegerData::iterator uit = m_integerData->find(entity);
+  if (uit == m_integerData->end())
   {
     return false;
   }
@@ -1382,18 +1382,18 @@ bool Manager::removeIntegerProperty(const UUID& entity, const std::string& propN
   }
   uit->second.erase(sit);
   if (uit->second.empty())
-    this->m_integerData->erase(uit);
+    m_integerData->erase(uit);
   return true;
 }
 
 const UUIDWithIntegerProperties Manager::integerPropertiesForEntity(const UUID& entity) const
 {
-  return this->m_integerData->find(entity);
+  return m_integerData->find(entity);
 }
 
 UUIDWithIntegerProperties Manager::integerPropertiesForEntity(const UUID& entity)
 {
-  return this->m_integerData->find(entity);
+  return m_integerData->find(entity);
 }
 ///@}
 
@@ -1426,7 +1426,7 @@ void Manager::assignDefaultNames()
   UUIDs models;  // models that have not had all of their children named
   UUIDs orphans; // entities that may or may not be parent-less
   UUIDs named;   // entities with names
-  for (it = this->m_topology->begin(); it != this->m_topology->end(); ++it)
+  for (it = m_topology->begin(); it != m_topology->end(); ++it)
   {
     BitFlags etype = it->second->entityFlags();
     if (etype & MODEL_ENTITY)
@@ -1452,7 +1452,7 @@ void Manager::assignDefaultNames()
     else
       oname = this->stringProperty(*uit, "name")[0];
 
-    UUIDWithEntityPtr iit = this->m_topology->find(*uit);
+    UUIDWithEntityPtr iit = m_topology->find(*uit);
     this->assignDefaultNamesWithOwner(iit, *uit, oname, orphans, false);
   }
   for (uit = orphans.begin(); uit != orphans.end(); ++uit)
@@ -1469,8 +1469,8 @@ void Manager::assignDefaultNames()
 void Manager::assignDefaultNamesToModelChildren(const smtk::common::UUID& modelId)
 {
   bool oops = true;
-  UUIDWithEntityPtr it = this->m_topology->find(modelId);
-  if (it != this->m_topology->end())
+  UUIDWithEntityPtr it = m_topology->find(modelId);
+  if (it != m_topology->end())
   {
     Model model(shared_from_this(), modelId);
     if (model.isValid())
@@ -1487,7 +1487,7 @@ void Manager::assignDefaultNamesToModelChildren(const smtk::common::UUID& modelI
           (*eit).assignDefaultName();
         else
           this->assignDefaultNamesWithOwner(
-            this->m_topology->find(eit->entity()), model.entity(), modelName, dummy, true);
+            m_topology->find(eit->entity()), model.entity(), modelName, dummy, true);
       }
     }
   }
@@ -1510,8 +1510,8 @@ void Manager::assignDefaultNamesToModelChildren(const smtk::common::UUID& modelI
   */
 std::string Manager::assignDefaultName(const UUID& uid)
 {
-  UUIDWithEntityPtr it = this->m_topology->find(uid);
-  if (it != this->m_topology->end())
+  UUIDWithEntityPtr it = m_topology->find(uid);
+  if (it != m_topology->end())
   {
     return this->assignDefaultName(it->first, it->second->entityFlags());
   }
@@ -1525,8 +1525,8 @@ std::string Manager::assignDefaultName(const UUID& uid)
   */
 std::string Manager::assignDefaultNameIfMissing(const UUID& uid)
 {
-  UUIDWithEntityPtr it = this->m_topology->find(uid);
-  if (it != this->m_topology->end())
+  UUIDWithEntityPtr it = m_topology->find(uid);
+  if (it != m_topology->end())
   {
     return this->hasStringProperty(uid, "name")
       ? this->name(uid)
@@ -1565,8 +1565,8 @@ void Manager::assignDefaultNamesWithOwner(const UUIDWithEntityPtr& irec, const U
   BitFlags idim = iflg & ANY_DIMENSION;
   for (relIt = irec->second->relations().begin(); relIt != irec->second->relations().end(); ++relIt)
   {
-    UUIDWithEntityPtr child = this->m_topology->find(*relIt);
-    if (child == this->m_topology->end())
+    UUIDWithEntityPtr child = m_topology->find(*relIt);
+    if (child == m_topology->end())
       continue;
     BitFlags cflg = child->second->entityFlags();
     bool yesButNoKids = (cflg & GROUP_ENTITY) && (iflg & MODEL_ENTITY);
@@ -1590,7 +1590,7 @@ std::string Manager::assignDefaultName(const UUID& uid, BitFlags entityFlags)
     {
       std::ostringstream defaultName;
       defaultName << "Model ";
-      int count = this->m_globalCounters[1]++;
+      int count = m_globalCounters[1]++;
       char hexavigesimal[8]; // 7 hexavigesimal digits will cover us up to 2**31.
       int i;
       for (i = 0; count > 0 && i < 7; ++i)
@@ -1631,7 +1631,7 @@ std::string Manager::assignDefaultName(const UUID& uid, BitFlags entityFlags)
       }
       else
       {
-        nameStream << Entity::defaultNameFromCounters(entityFlags, this->m_globalCounters);
+        nameStream << Entity::defaultNameFromCounters(entityFlags, m_globalCounters);
       }
       tmpName = nameStream.str();
       this->setStringProperty(uid, "name", tmpName);
@@ -1729,7 +1729,7 @@ SessionRef Manager::registerSession(SessionPtr session)
   if (sessId.isNull())
     return SessionRef();
 
-  (*this->m_sessions)[sessId] = session;
+  (*m_sessions)[sessId] = session;
   Manager::iter_type brec = this->setEntityOfTypeAndDimension(sessId, SESSION, -1);
 
   session->setManager(this);
@@ -1757,24 +1757,24 @@ bool Manager::unregisterSession(SessionPtr session, bool expungeSession)
   {
     // Remove the session's entity record, properties, and such, but not
     // records, properties, etc. for entities the session owns.
-    this->m_topology->erase(sessId);
-    this->m_floatData->erase(sessId);
-    this->m_stringData->erase(sessId);
-    this->m_integerData->erase(sessId);
-    this->m_tessellations->erase(sessId);
-    this->m_attributeAssignments->erase(sessId);
+    m_topology->erase(sessId);
+    m_floatData->erase(sessId);
+    m_stringData->erase(sessId);
+    m_integerData->erase(sessId);
+    m_tessellations->erase(sessId);
+    m_attributeAssignments->erase(sessId);
   }
-  return this->m_sessions->erase(sessId) ? true : false;
+  return m_sessions->erase(sessId) ? true : false;
 }
 
 /// Find a session given its session UUID (or NULL).
 SessionPtr Manager::sessionData(const smtk::model::SessionRef& sessId) const
 {
   if (sessId.entity().isNull())
-    return this->m_defaultSession;
+    return m_defaultSession;
 
-  UUIDsToSessions::const_iterator it = this->m_sessions->find(sessId.entity());
-  if (it == this->m_sessions->end())
+  UUIDsToSessions::const_iterator it = m_sessions->find(sessId.entity());
+  if (it == m_sessions->end())
     return SessionPtr();
   return it->second;
 }
@@ -1954,12 +1954,12 @@ Manager::tess_iter_type Manager::setTessellation(
   const char* genProp;
   if (!analysis)
   { // store as display tessellation
-    storage = this->m_tessellations;
+    storage = m_tessellations;
     genProp = SMTK_TESS_GEN_PROP;
   }
   else
   { // store as analysis mesh
-    storage = this->m_analysisMesh;
+    storage = m_analysisMesh;
     genProp = SMTK_MESH_GEN_PROP;
   }
 
@@ -2008,12 +2008,12 @@ Manager::tess_iter_type Manager::setTessellationAndBoundingBox(
   const char* genProp;
   if (!analysis)
   { // store as display tessellation
-    storage = this->m_tessellations;
+    storage = m_tessellations;
     genProp = SMTK_TESS_GEN_PROP;
   }
   else
   { // store as analysis mesh
-    storage = this->m_analysisMesh;
+    storage = m_analysisMesh;
     genProp = SMTK_MESH_GEN_PROP;
   }
 
@@ -2092,10 +2092,10 @@ bool Manager::setBoundingBox(
 bool Manager::removeTessellation(const smtk::common::UUID& entityId, bool removeGen)
 {
   bool didRemove;
-  UUIDWithTessellation tref = this->m_tessellations->find(entityId);
-  didRemove = (tref == this->m_tessellations->end());
+  UUIDWithTessellation tref = m_tessellations->find(entityId);
+  didRemove = (tref == m_tessellations->end());
   if (didRemove)
-    this->m_tessellations->erase(tref);
+    m_tessellations->erase(tref);
 
   if (removeGen)
     this->removeIntegerProperty(entityId, SMTK_TESS_GEN_PROP);
@@ -2112,8 +2112,8 @@ bool Manager::removeTessellation(const smtk::common::UUID& entityId, bool remove
 int Manager::arrangeEntity(
   const UUID& entityId, ArrangementKind kind, const Arrangement& arr, int index)
 {
-  UUIDsToEntities::iterator eit = this->m_topology->find(entityId);
-  if (eit == this->m_topology->end())
+  UUIDsToEntities::iterator eit = m_topology->find(entityId);
+  if (eit == m_topology->end())
   {
     return -1;
   }
@@ -2136,8 +2136,8 @@ int Manager::arrangeEntity(
   */
 int Manager::unarrangeEntity(const UUID& entityId, ArrangementKind k, int index, bool removeIfLast)
 {
-  auto eit = this->m_topology->find(entityId);
-  if (eit == this->m_topology->end())
+  auto eit = m_topology->find(entityId);
+  if (eit == m_topology->end())
   {
     return 0;
   }
@@ -2147,7 +2147,7 @@ int Manager::unarrangeEntity(const UUID& entityId, ArrangementKind k, int index,
   // and if the caller has requested it: remove the entity itself.
   if (removeIfLast && eit->second->arrangementMap().empty())
   {
-    this->m_topology->erase(eit);
+    m_topology->erase(eit);
     ++result;
   }
 
@@ -2170,8 +2170,8 @@ int Manager::unarrangeEntity(const UUID& entityId, ArrangementKind k, int index,
   */
 bool Manager::clearArrangements(const smtk::common::UUID& entityId)
 {
-  auto eit = this->m_topology->find(entityId);
-  if (eit == this->m_topology->end())
+  auto eit = m_topology->find(entityId);
+  if (eit == m_topology->end())
   {
     return false;
   }
@@ -2186,8 +2186,8 @@ bool Manager::clearArrangements(const smtk::common::UUID& entityId)
   */
 Arrangements* Manager::hasArrangementsOfKindForEntity(const UUID& entity, ArrangementKind kind)
 {
-  auto eit = this->m_topology->find(entity);
-  if (eit == this->m_topology->end())
+  auto eit = m_topology->find(entity);
+  if (eit == m_topology->end())
   {
     return nullptr;
   }
@@ -2199,8 +2199,8 @@ Arrangements* Manager::hasArrangementsOfKindForEntity(const UUID& entity, Arrang
 const Arrangements* Manager::hasArrangementsOfKindForEntity(
   const UUID& entity, ArrangementKind kind) const
 {
-  auto eit = this->m_topology->find(entity);
-  if (eit == this->m_topology->end())
+  auto eit = m_topology->find(entity);
+  if (eit == m_topology->end())
   {
     return nullptr;
   }
@@ -2216,7 +2216,7 @@ const Arrangements* Manager::hasArrangementsOfKindForEntity(
   */
 Arrangements& Manager::arrangementsOfKindForEntity(const UUID& entity, ArrangementKind kind)
 {
-  auto eit = this->m_topology->find(entity);
+  auto eit = m_topology->find(entity);
   return eit->second->arrangementsOfKind(kind);
 }
 
@@ -2232,8 +2232,8 @@ const Arrangement* Manager::findArrangement(
     return nullptr;
   }
 
-  auto eit = this->m_topology->find(entityId);
-  if (eit == this->m_topology->end())
+  auto eit = m_topology->find(entityId);
+  if (eit == m_topology->end())
   {
     return nullptr;
   }
@@ -2252,8 +2252,8 @@ Arrangement* Manager::findArrangement(const UUID& entityId, ArrangementKind kind
     return nullptr;
   }
 
-  auto eit = this->m_topology->find(entityId);
-  if (eit == this->m_topology->end())
+  auto eit = m_topology->find(entityId);
+  if (eit == m_topology->end())
   {
     return nullptr;
   }
@@ -2836,8 +2836,8 @@ bool Manager::findOrAddEntityToGroup(const UUID& grp, const UUID& ent)
   */
 bool Manager::hasAttribute(const UUID& attribId, const UUID& toEntity)
 {
-  UUIDWithAttributeAssignments it = this->m_attributeAssignments->find(toEntity);
-  if (it == this->m_attributeAssignments->end())
+  UUIDWithAttributeAssignments it = m_attributeAssignments->find(toEntity);
+  if (it == m_attributeAssignments->end())
   {
     return false;
   }
@@ -2861,10 +2861,10 @@ bool Manager::associateAttribute(
     {
       allowed = false;
     }
-    this->m_attributeCollections.insert(sys);
+    m_attributeCollections.insert(sys);
   }
   if (allowed)
-    (*this->m_attributeAssignments)[toEntity].associateAttribute(attribId);
+    (*m_attributeAssignments)[toEntity].associateAttribute(attribId);
   return allowed;
 }
 
@@ -2875,8 +2875,8 @@ bool Manager::disassociateAttribute(
   smtk::attribute::CollectionPtr sys, const UUID& attribId, const UUID& fromEntity, bool reverse)
 {
   bool didRemove = false;
-  UUIDWithAttributeAssignments ref = this->m_attributeAssignments->find(fromEntity);
-  if (ref == this->m_attributeAssignments->end())
+  UUIDWithAttributeAssignments ref = m_attributeAssignments->find(fromEntity);
+  if (ref == m_attributeAssignments->end())
   {
     return didRemove;
   }
@@ -2885,7 +2885,7 @@ bool Manager::disassociateAttribute(
     // If the AttributeAssignments instance is now empty, remove it.
     if (ref->second.attributes().empty())
     {
-      this->m_attributeAssignments->erase(ref);
+      m_attributeAssignments->erase(ref);
     }
     // Notify the Attribute of the removal
     if (reverse && sys)
@@ -2917,14 +2917,14 @@ bool Manager::insertEntityAssociations(
   const EntityRef& modelEntity, std::set<smtk::attribute::AttributePtr>& associations)
 {
   bool didFind = false;
-  auto eait = this->m_attributeAssignments->find(modelEntity.entity());
-  if (eait == this->m_attributeAssignments->end() || eait->second.attributes().empty())
+  auto eait = m_attributeAssignments->find(modelEntity.entity());
+  if (eait == m_attributeAssignments->end() || eait->second.attributes().empty())
   {
     return didFind;
   }
   for (auto attribId : eait->second.attributes())
   {
-    for (auto attribSys : this->m_attributeCollections)
+    for (auto attribSys : m_attributeCollections)
     {
       smtk::attribute::Collection::Ptr asys = attribSys.lock();
       smtk::attribute::AttributePtr att;
@@ -3311,7 +3311,7 @@ Shell Manager::addShell(const VolumeUse& v)
 Group Manager::insertGroup(const UUID& uid, int extraFlags, const std::string& groupName)
 {
   UUIDWithEntityPtr result = this->setEntityOfTypeAndDimension(uid, GROUP_ENTITY | extraFlags, -1);
-  if (result == this->m_topology->end())
+  if (result == m_topology->end())
     return Group();
 
   if (!groupName.empty())
@@ -3331,7 +3331,7 @@ Group Manager::addGroup(int extraFlags, const std::string& groupName)
 AuxiliaryGeometry Manager::insertAuxiliaryGeometry(const smtk::common::UUID& uid, int dim)
 {
   UUIDWithEntityPtr result = this->setEntityOfTypeAndDimension(uid, AUX_GEOM_ENTITY, dim);
-  if (result == this->m_topology->end())
+  if (result == m_topology->end())
   {
     return AuxiliaryGeometry();
   }
@@ -3385,7 +3385,7 @@ Model Manager::insertModel(
   const UUID& uid, int parametricDim, int embeddingDim, const std::string& modelName)
 {
   UUIDWithEntityPtr result = this->setEntityOfTypeAndDimension(uid, MODEL_ENTITY, parametricDim);
-  if (result == this->m_topology->end())
+  if (result == m_topology->end())
     return Model();
 
   if (embeddingDim > 0)
@@ -3450,8 +3450,8 @@ bool Manager::closeSession(const SessionRef& sref)
 {
   if (sref.manager().get() == this)
   {
-    UUIDsToSessions::iterator us = this->m_sessions->find(sref.entity());
-    if (us != this->m_sessions->end())
+    UUIDsToSessions::iterator us = m_sessions->find(sref.entity());
+    if (us != m_sessions->end())
     {
       EntityRefs all; // a set of all entities in the session
       Models models = sref.models<Models>();
@@ -3488,7 +3488,7 @@ SessionRefs Manager::sessions() const
 {
   SessionRefs result;
   UUIDsToSessions::const_iterator it;
-  for (it = this->m_sessions->begin(); it != this->m_sessions->end(); ++it)
+  for (it = m_sessions->begin(); it != m_sessions->end(); ++it)
     result.push_back(SessionRef(smtk::const_pointer_cast<Manager>(shared_from_this()), it->first));
   return result;
 }
@@ -3523,8 +3523,7 @@ void Manager::observe(ManagerEventType event, ConditionCallback functionHandle, 
     return;
   }
 
-  this->m_conditionTriggers.insert(
-    ConditionTrigger(event, ConditionObserver(functionHandle, callData)));
+  m_conditionTriggers.insert(ConditionTrigger(event, ConditionObserver(functionHandle, callData)));
 }
 
 /// Request notification from this manager instance when \a event occurs.
@@ -3543,8 +3542,7 @@ void Manager::observe(ManagerEventType event, OneToOneCallback functionHandle, v
     return;
   }
 
-  this->m_oneToOneTriggers.insert(
-    OneToOneTrigger(event, OneToOneObserver(functionHandle, callData)));
+  m_oneToOneTriggers.insert(OneToOneTrigger(event, OneToOneObserver(functionHandle, callData)));
 }
 
 /// Request notification from this manager instance when \a event occurs.
@@ -3563,8 +3561,7 @@ void Manager::observe(ManagerEventType event, OneToManyCallback functionHandle, 
     return;
   }
 
-  this->m_oneToManyTriggers.insert(
-    OneToManyTrigger(event, OneToManyObserver(functionHandle, callData)));
+  m_oneToManyTriggers.insert(OneToManyTrigger(event, OneToManyObserver(functionHandle, callData)));
 }
 
 /// Decline further notification from this manager instance when \a event occurs.
@@ -3583,8 +3580,7 @@ void Manager::unobserve(ManagerEventType event, ConditionCallback functionHandle
     return;
   }
 
-  this->m_conditionTriggers.erase(
-    ConditionTrigger(event, ConditionObserver(functionHandle, callData)));
+  m_conditionTriggers.erase(ConditionTrigger(event, ConditionObserver(functionHandle, callData)));
 }
 
 /// Decline further notification from this manager instance when \a event occurs.
@@ -3603,8 +3599,7 @@ void Manager::unobserve(ManagerEventType event, OneToOneCallback functionHandle,
     return;
   }
 
-  this->m_oneToOneTriggers.erase(
-    OneToOneTrigger(event, OneToOneObserver(functionHandle, callData)));
+  m_oneToOneTriggers.erase(OneToOneTrigger(event, OneToOneObserver(functionHandle, callData)));
 }
 
 /// Decline further notification from this manager instance when \a event occurs.
@@ -3623,19 +3618,17 @@ void Manager::unobserve(ManagerEventType event, OneToManyCallback functionHandle
     return;
   }
 
-  this->m_oneToManyTriggers.erase(
-    OneToManyTrigger(event, OneToManyObserver(functionHandle, callData)));
+  m_oneToManyTriggers.erase(OneToManyTrigger(event, OneToManyObserver(functionHandle, callData)));
 }
 
 /// Called by this Manager instance or EntityRef instances referencing it when \a event occurs.
 void Manager::trigger(ManagerEventType event, const smtk::model::EntityRef& src)
 {
-  std::set<ConditionTrigger>::const_iterator begin = this->m_conditionTriggers.lower_bound(
+  std::set<ConditionTrigger>::const_iterator begin = m_conditionTriggers.lower_bound(
     ConditionTrigger(event, ConditionObserver(ConditionCallback(), static_cast<void*>(NULL))));
-  std::set<ConditionTrigger>::const_iterator end =
-    this->m_conditionTriggers.upper_bound(ConditionTrigger(
-      std::make_pair(event.first, static_cast<ManagerEventRelationType>(event.second + 1)),
-      ConditionObserver(ConditionCallback(), static_cast<void*>(NULL))));
+  std::set<ConditionTrigger>::const_iterator end = m_conditionTriggers.upper_bound(ConditionTrigger(
+    std::make_pair(event.first, static_cast<ManagerEventRelationType>(event.second + 1)),
+    ConditionObserver(ConditionCallback(), static_cast<void*>(NULL))));
   for (std::set<ConditionTrigger>::const_iterator it = begin; it != end; ++it)
     (*it->second.first)(it->first, src, it->second.second);
 }
@@ -3644,12 +3637,11 @@ void Manager::trigger(ManagerEventType event, const smtk::model::EntityRef& src)
 void Manager::trigger(
   ManagerEventType event, const smtk::model::EntityRef& src, const smtk::model::EntityRef& related)
 {
-  std::set<OneToOneTrigger>::const_iterator begin = this->m_oneToOneTriggers.lower_bound(
+  std::set<OneToOneTrigger>::const_iterator begin = m_oneToOneTriggers.lower_bound(
     OneToOneTrigger(event, OneToOneObserver(OneToOneCallback(), static_cast<void*>(NULL))));
-  std::set<OneToOneTrigger>::const_iterator end =
-    this->m_oneToOneTriggers.upper_bound(OneToOneTrigger(
-      std::make_pair(event.first, static_cast<ManagerEventRelationType>(event.second + 1)),
-      OneToOneObserver(OneToOneCallback(), static_cast<void*>(NULL))));
+  std::set<OneToOneTrigger>::const_iterator end = m_oneToOneTriggers.upper_bound(OneToOneTrigger(
+    std::make_pair(event.first, static_cast<ManagerEventRelationType>(event.second + 1)),
+    OneToOneObserver(OneToOneCallback(), static_cast<void*>(NULL))));
   for (std::set<OneToOneTrigger>::const_iterator it = begin; it != end; ++it)
     (*it->second.first)(it->first, src, related, it->second.second);
 }
@@ -3658,12 +3650,11 @@ void Manager::trigger(
 void Manager::trigger(ManagerEventType event, const smtk::model::EntityRef& src,
   const smtk::model::EntityRefArray& related)
 {
-  std::set<OneToManyTrigger>::const_iterator begin = this->m_oneToManyTriggers.lower_bound(
+  std::set<OneToManyTrigger>::const_iterator begin = m_oneToManyTriggers.lower_bound(
     OneToManyTrigger(event, OneToManyObserver(OneToManyCallback(), static_cast<void*>(NULL))));
-  std::set<OneToManyTrigger>::const_iterator end =
-    this->m_oneToManyTriggers.upper_bound(OneToManyTrigger(
-      std::make_pair(event.first, static_cast<ManagerEventRelationType>(event.second + 1)),
-      OneToManyObserver(OneToManyCallback(), static_cast<void*>(NULL))));
+  std::set<OneToManyTrigger>::const_iterator end = m_oneToManyTriggers.upper_bound(OneToManyTrigger(
+    std::make_pair(event.first, static_cast<ManagerEventRelationType>(event.second + 1)),
+    OneToManyObserver(OneToManyCallback(), static_cast<void*>(NULL))));
   for (std::set<OneToManyTrigger>::const_iterator it = begin; it != end; ++it)
     (*it->second.first)(it->first, src, related, it->second.second);
 }
@@ -3692,8 +3683,8 @@ UUID Manager::modelOwningEntityRecursive(const UUID& ent, std::set<UUID>& visite
   visited.insert(ent);
 
   UUID uid(ent);
-  UUIDWithConstEntityPtr it = this->m_topology->find(uid);
-  if (it != this->m_topology->end())
+  UUIDWithConstEntityPtr it = m_topology->find(uid);
+  if (it != m_topology->end())
   {
     // If we have a use or a shell, get the associated cell, if any
     smtk::model::BitFlags etype = it->second->entityFlags();
@@ -3752,7 +3743,7 @@ UUID Manager::modelOwningEntityRecursive(const UUID& ent, std::set<UUID>& visite
             if (subentity->second->entityFlags() & GROUP_ENTITY)
             { // Switch to finding relations of the group (assume it is our parent)
               uid = subentity->first;
-              it = this->m_topology->find(uid);
+              it = m_topology->find(uid);
               sit = it->second->relations().begin();
             }
           }
@@ -3895,7 +3886,7 @@ UUID Manager::sessionOwningEntityRecursive(const UUID& ent, std::set<UUID>& visi
 
     // Assume the first relationship that is a session or model is our owner.
     // Keep going up parents until we hit the top.
-    UUIDWithConstEntityPtr it = this->m_topology->find(uid);
+    UUIDWithConstEntityPtr it = m_topology->find(uid);
     for (UUIDArray::const_iterator sit = it->second->relations().begin();
          sit != it->second->relations().end(); ++sit)
     {
@@ -3907,7 +3898,7 @@ UUID Manager::sessionOwningEntityRecursive(const UUID& ent, std::set<UUID>& visi
         if (isModel(subentity->second->entityFlags()))
         { // Switch to finding relations of the model (assume it is our parent)
           uid = subentity->first;
-          it = this->m_topology->find(uid);
+          it = m_topology->find(uid);
           sit = it->second->relations().begin();
         }
       }

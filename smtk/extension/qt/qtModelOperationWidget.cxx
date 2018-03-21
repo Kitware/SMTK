@@ -76,13 +76,12 @@ public:
   std::vector<std::string> m_sortedOperationLabels;
   int findLabelPosition(const std::string& label)
   {
-    return (
-      std::find(this->m_sortedOperationLabels.begin(), this->m_sortedOperationLabels.end(), label) -
-      this->m_sortedOperationLabels.begin());
+    return (std::find(m_sortedOperationLabels.begin(), m_sortedOperationLabels.end(), label) -
+      m_sortedOperationLabels.begin());
   }
   int findNamePosition(const std::string& opName)
   {
-    std::string opLabel = this->m_operatorNameMap[opName];
+    std::string opLabel = m_operatorNameMap[opName];
     return this->findLabelPosition(opLabel);
   }
 };

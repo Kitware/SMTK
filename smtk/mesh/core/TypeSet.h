@@ -44,7 +44,7 @@ public:
   bool hasDimension(smtk::mesh::DimensionType dt) const;
   bool hasCell(smtk::mesh::CellType ct) const;
 
-  const smtk::mesh::CellTypes& cellTypes() const { return this->m_cellTypes; }
+  const smtk::mesh::CellTypes& cellTypes() const { return m_cellTypes; }
 
   TypeSet& operator+=(const TypeSet& other);
 

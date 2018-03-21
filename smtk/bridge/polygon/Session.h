@@ -92,8 +92,8 @@ protected:
   template <typename T>
   typename T::Ptr findStorage(const smtk::common::UUID& uid)
   {
-    internal::EntityIdToPtr::iterator it = this->m_storage.find(uid);
-    if (it != this->m_storage.end())
+    internal::EntityIdToPtr::iterator it = m_storage.find(uid);
+    if (it != m_storage.end())
       return smtk::dynamic_pointer_cast<T>(it->second);
     static typename T::Ptr blank;
     return blank;
@@ -102,12 +102,12 @@ protected:
   template <typename T>
   T findOrAddStorage(const smtk::common::UUID& uid)
   {
-    internal::EntityIdToPtr::iterator it = this->m_storage.find(uid);
-    if (it != this->m_storage.end())
+    internal::EntityIdToPtr::iterator it = m_storage.find(uid);
+    if (it != m_storage.end())
       return smtk::dynamic_pointer_cast<T>(it->second);
 
     T blank = T::create();
-    it = this->m_storage
+    it = m_storage
            .insert(internal::EntityIdToPtr::value_type(
              uid, smtk::dynamic_pointer_cast<internal::entity>(blank)))
            .first;

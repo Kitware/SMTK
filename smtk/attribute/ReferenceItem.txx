@@ -53,7 +53,7 @@ bool ReferenceItem<T>::isValid() const
   {
     return false;
   }
-  for (auto it = this->m_values.begin(); it != this->m_values.end(); ++it)
+  for (auto it = m_values.begin(); it != m_values.end(); ++it)
   {
     // If the pointer is NULL then it's unset:
     if (!(*it))
@@ -67,7 +67,7 @@ bool ReferenceItem<T>::isValid() const
 template <typename T>
 std::size_t ReferenceItem<T>::numberOfValues() const
 {
-  return this->m_values.size();
+  return m_values.size();
 }
 
 template <typename T>
@@ -93,7 +93,7 @@ bool ReferenceItem<T>::setNumberOfValues(std::size_t newSize)
   if (n > 0 && newSize > n)
     return false; // The number of values requested is too large.
 
-  this->m_values.resize(newSize);
+  m_values.resize(newSize);
   return true;
 }
 
@@ -130,9 +130,9 @@ std::size_t ReferenceItem<T>::maxNumberOfValues() const
 template <typename T>
 typename T::Ptr ReferenceItem<T>::value(std::size_t i) const
 {
-  if (i >= static_cast<std::size_t>(this->m_values.size()))
+  if (i >= static_cast<std::size_t>(m_values.size()))
     return nullptr;
-  auto result = this->m_values[i];
+  auto result = m_values[i];
   return result;
 }
 
@@ -146,9 +146,9 @@ template <typename T>
 bool ReferenceItem<T>::setValue(std::size_t i, typename T::Ptr val)
 {
   auto def = static_cast<const ReferenceItemDefinition<T>*>(this->definition().get());
-  if (i < this->m_values.size() && def->isValueValid(val))
+  if (i < m_values.size() && def->isValueValid(val))
   {
-    this->m_values[i] = val;
+    m_values[i] = val;
     return true;
   }
   return false;
@@ -186,14 +186,14 @@ bool ReferenceItem<T>::appendValue(typename T::Ptr val)
   }
   // Finally - are we allowed to change the number of values?
   if ((def->isExtensible() && def->maxNumberOfValues() &&
-        this->m_values.size() >= def->maxNumberOfValues()) ||
-    (!def->isExtensible() && this->m_values.size() >= def->numberOfRequiredValues()))
+        m_values.size() >= def->maxNumberOfValues()) ||
+    (!def->isExtensible() && m_values.size() >= def->numberOfRequiredValues()))
   {
     // The number of values is fixed or we reached the max number of items
     return false;
   }
 
-  this->m_values.push_back(val);
+  m_values.push_back(val);
   return true;
 }
 
@@ -207,16 +207,16 @@ bool ReferenceItem<T>::removeValue(std::size_t i)
     return this->setValue(i, nullptr); // The number of values is fixed
   }
 
-  this->m_values.erase(this->m_values.begin() + i);
+  m_values.erase(m_values.begin() + i);
   return true;
 }
 
 template <typename T>
 void ReferenceItem<T>::reset()
 {
-  this->m_values.clear();
+  m_values.clear();
   if (this->numberOfRequiredValues() > 0)
-    this->m_values.resize(this->numberOfRequiredValues());
+    m_values.resize(this->numberOfRequiredValues());
 }
 
 template <typename T>
@@ -228,7 +228,7 @@ std::string ReferenceItem<T>::valueAsString() const
 template <typename T>
 bool ReferenceItem<T>::isSet(std::size_t i) const
 {
-  return i < this->m_values.size() ? !!this->m_values[i] : false;
+  return i < m_values.size() ? !!m_values[i] : false;
 }
 
 template <typename T>
@@ -294,13 +294,13 @@ bool ReferenceItem<T>::has(typename T::Ptr entity) const
 template <typename T>
 typename ReferenceItem<T>::const_iterator ReferenceItem<T>::begin() const
 {
-  return this->m_values.begin();
+  return m_values.begin();
 }
 
 template <typename T>
 typename ReferenceItem<T>::const_iterator ReferenceItem<T>::end() const
 {
-  return this->m_values.end();
+  return m_values.end();
 }
 
 template <typename T>
@@ -360,7 +360,7 @@ bool ReferenceItem<T>::setDefinition(smtk::attribute::ConstItemDefinitionPtr ade
   std::size_t n = def->numberOfRequiredValues();
   if (n != 0)
   {
-    this->m_values.resize(n);
+    m_values.resize(n);
   }
   return true;
 }

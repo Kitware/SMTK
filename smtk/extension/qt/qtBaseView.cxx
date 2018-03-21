@@ -67,20 +67,19 @@ public:
 
 qtBaseView::qtBaseView(const ViewInfo& info)
 {
-  this->m_viewInfo = info;
+  m_viewInfo = info;
   this->Internals = new qtBaseViewInternals;
-  this->m_fixedLabelWidth = this->m_viewInfo.m_UIManager->maxValueLabelLength();
+  m_fixedLabelWidth = m_viewInfo.m_UIManager->maxValueLabelLength();
   this->Widget = NULL;
-  this->m_advOverlayVisible = false;
-  this->m_ScrollArea = NULL;
-  this->m_isTopLevel = false;
-  this->m_useSelectionManager = false;
-  this->m_topLevelInitialized = false;
-  if (this->m_viewInfo.m_view)
+  m_advOverlayVisible = false;
+  m_ScrollArea = NULL;
+  m_isTopLevel = false;
+  m_useSelectionManager = false;
+  m_topLevelInitialized = false;
+  if (m_viewInfo.m_view)
   {
-    this->m_isTopLevel = this->m_viewInfo.m_view->details().attributeAsBool("TopLevel");
-    this->m_useSelectionManager =
-      this->m_viewInfo.m_view->details().attributeAsBool("UseSelectionManager");
+    m_isTopLevel = m_viewInfo.m_view->details().attributeAsBool("TopLevel");
+    m_useSelectionManager = m_viewInfo.m_view->details().attributeAsBool("UseSelectionManager");
   }
 }
 
@@ -132,13 +131,13 @@ bool qtBaseView::setFixedLabelWidth(int w)
 {
   w = std::min(w, this->uiManager()->maxValueLabelLength());
   w = std::max(w, this->uiManager()->minValueLabelLength());
-  this->m_fixedLabelWidth = w;
+  m_fixedLabelWidth = w;
   return false;
 }
 
 void qtBaseView::buildUI()
 {
-  if (this->m_isTopLevel && (!this->m_topLevelInitialized))
+  if (m_isTopLevel && (!m_topLevelInitialized))
   {
     // Process the aspects associated with top level views
     this->makeTopLevel();
@@ -168,13 +167,13 @@ void qtBaseView::buildUI()
     return;
   }
 
-  if (!this->m_ScrollArea)
+  if (!m_ScrollArea)
   {
     // This should be an error!
     return;
   }
 
-  this->m_ScrollArea->setWidget(this->Widget);
+  m_ScrollArea->setWidget(this->Widget);
 }
 
 void qtBaseView::setInitialCategory()
@@ -195,7 +194,7 @@ void qtBaseView::makeTopLevel()
     return;
   }
 
-  this->m_topLevelInitialized = true;
+  m_topLevelInitialized = true;
   int pos;
   std::vector<double> vals;
   pos = view->details().findChild("DefaultColor");
@@ -344,18 +343,18 @@ void qtBaseView::makeTopLevel()
   parentlayout->setAlignment(Qt::AlignTop);
   parentlayout->addLayout(this->Internals->TopLevelLayout);
 
-  this->m_ScrollArea = new QScrollArea(this->parentWidget());
-  this->m_ScrollArea->setWidgetResizable(true);
-  this->m_ScrollArea->setAlignment(Qt::AlignHCenter);
-  this->m_ScrollArea->setFrameShape(QFrame::NoFrame);
-  this->m_ScrollArea->setObjectName("topLevelScrollArea");
-  parentlayout->addWidget(this->m_ScrollArea);
+  m_ScrollArea = new QScrollArea(this->parentWidget());
+  m_ScrollArea->setWidgetResizable(true);
+  m_ScrollArea->setAlignment(Qt::AlignHCenter);
+  m_ScrollArea->setFrameShape(QFrame::NoFrame);
+  m_ScrollArea->setObjectName("topLevelScrollArea");
+  parentlayout->addWidget(m_ScrollArea);
 }
 
 void qtBaseView::showAdvanceLevel(int level)
 {
   // If this is not a toplevel widget don't do anything
-  if (!this->m_isTopLevel)
+  if (!m_isTopLevel)
   {
     return;
   }
@@ -415,7 +414,7 @@ bool qtBaseView::categoryEnabled()
 void qtBaseView::onAdvanceLevelChanged(int levelIdx)
 {
   // If this is not a toplevel widget don't do anything
-  if (!this->m_isTopLevel)
+  if (!m_isTopLevel)
   {
     return;
   }
@@ -431,22 +430,22 @@ int qtBaseView::advanceLevel()
 
 void qtBaseView::onInfo()
 {
-  if (!this->m_infoDialog)
+  if (!m_infoDialog)
   {
     // Try to get the dialog to be displayed on top - note that in the
     // case of dock widgets this can be an issue.  In that case to at least get the dialog
     // not to be completely hidden by the operator widget when it is undocked
     // we need to parent the dialog on something else
     QWidgetList l = QApplication::topLevelWidgets();
-    this->m_infoDialog = new qtViewInfoDialog(l.value(0));
+    m_infoDialog = new qtViewInfoDialog(l.value(0));
   }
   this->setInfoToBeDisplayed();
-  this->m_infoDialog->show();
-  this->m_infoDialog->raise();
-  this->m_infoDialog->activateWindow();
+  m_infoDialog->show();
+  m_infoDialog->raise();
+  m_infoDialog->activateWindow();
 }
 
 void qtBaseView::setInfoToBeDisplayed()
 {
-  this->m_infoDialog->displayInfo(this->getObject());
+  m_infoDialog->displayInfo(this->getObject());
 }

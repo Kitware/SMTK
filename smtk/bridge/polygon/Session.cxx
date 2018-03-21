@@ -88,12 +88,12 @@ smtk::model::SessionInfoBits Session::transcribeInternal(
 void Session::addStorage(
   const smtk::common::UUID& uid, smtk::bridge::polygon::internal::entity::Ptr s)
 {
-  this->m_storage[uid] = s;
+  m_storage[uid] = s;
 }
 
 bool Session::removeStorage(const smtk::common::UUID& uid)
 {
-  return this->m_storage.erase(uid) > 0;
+  return m_storage.erase(uid) > 0;
 }
 
 /**\brief Remove all references to \a face from the polygon-session internal storage.
@@ -186,27 +186,27 @@ smtk::model::SessionIOPtr Session::createIODelegate(const std::string& format)
 
 internal::EntityIdToPtr::iterator Session::findStorageIterator(const smtk::common::UUID& uid)
 {
-  return this->m_storage.find(uid);
+  return m_storage.find(uid);
 }
 
 internal::EntityIdToPtr::iterator Session::beginStorage()
 {
-  return this->m_storage.begin();
+  return m_storage.begin();
 }
 
 internal::EntityIdToPtr::iterator Session::endStorage()
 {
-  return this->m_storage.end();
+  return m_storage.end();
 }
 
 internal::EntityIdToPtr::const_iterator Session::beginStorage() const
 {
-  return this->m_storage.begin();
+  return m_storage.begin();
 }
 
 internal::EntityIdToPtr::const_iterator Session::endStorage() const
 {
-  return this->m_storage.end();
+  return m_storage.end();
 }
 
 } // namespace polygon

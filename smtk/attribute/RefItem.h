@@ -45,13 +45,13 @@ public:
   // attributes contain items that reference each other.
   bool isValid() const override;
 
-  std::size_t numberOfValues() const { return this->m_values.size(); }
+  std::size_t numberOfValues() const { return m_values.size(); }
   bool setNumberOfValues(std::size_t newSize);
   std::size_t numberOfRequiredValues() const;
   smtk::attribute::AttributePtr value(std::size_t element = 0) const
   {
-    assert(this->m_values.size() > element);
-    return this->m_values[element].lock();
+    assert(m_values.size() > element);
+    return m_values[element].lock();
   }
   //  /**
   //   * @brief visitChildren Invoke a function on each (or, if \a findInActiveChildren
@@ -74,8 +74,8 @@ public:
   virtual std::string valueAsString(std::size_t element, const std::string& format = "") const;
   virtual bool isSet(std::size_t element = 0) const
   {
-    assert(this->m_values.size() > element);
-    return this->m_values[element].lock().get() != NULL;
+    assert(m_values.size() > element);
+    return m_values[element].lock().get() != NULL;
   }
   virtual void unset(std::size_t element = 0);
 

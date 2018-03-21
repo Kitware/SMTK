@@ -51,7 +51,7 @@ CumulusProxy::~CumulusProxy()
 
 void CumulusProxy::girderUrl(const QString& url)
 {
-  this->m_girderUrl = url;
+  m_girderUrl = url;
 }
 
 bool CumulusProxy::isGirderRunning(int timeoutSec)
@@ -59,10 +59,10 @@ bool CumulusProxy::isGirderRunning(int timeoutSec)
   bool running = false; // return value
 
   // Request system version
-  QString girderVersionUrl = QString("%1/system/version").arg(this->m_girderUrl);
+  QString girderVersionUrl = QString("%1/system/version").arg(m_girderUrl);
 
   QNetworkRequest request(girderVersionUrl);
-  QNetworkReply* reply = this->m_networkManager->get(request);
+  QNetworkReply* reply = m_networkManager->get(request);
 
   // Wait for reply to finish
   qtSleeper sleeper;
@@ -99,7 +99,7 @@ void CumulusProxy::authenticateNewt(const QString& username, const QString& pass
   params.addQueryItem("username", username);
   params.addQueryItem("password", password);
 
-  auto reply = this->m_networkManager->post(request, params.query().toUtf8());
+  auto reply = m_networkManager->post(request, params.query().toUtf8());
   QObject::connect(reply, SIGNAL(finished()), this, SLOT(authenticationNewtFinished()));
   QObject::connect(reply, SIGNAL(sslErrors(const QList<QSslError>&)), this,
     SLOT(sslErrors(const QList<QSslError>&)));
@@ -142,13 +142,12 @@ void CumulusProxy::authenticateGirder(const QString& /*newtSessionId*/)
 {
   m_girderToken.clear();
 
-  QString girderAuthUrl =
-    QString("%1/newt/authenticate/%2").arg(this->m_girderUrl).arg(this->m_newtSessionId);
+  QString girderAuthUrl = QString("%1/newt/authenticate/%2").arg(m_girderUrl).arg(m_newtSessionId);
 
   QNetworkRequest request(girderAuthUrl);
 
   QByteArray empty;
-  auto reply = this->m_networkManager->put(request, empty);
+  auto reply = m_networkManager->put(request, empty);
   QObject::connect(reply, SIGNAL(finished()), this, SLOT(authenticationGirderFinished()));
 }
 
@@ -187,10 +186,10 @@ void CumulusProxy::authenticationGirderFinished()
 
 void CumulusProxy::fetchJobs()
 {
-  QString girderAuthUrl = QString("%1/jobs").arg(this->m_girderUrl);
+  QString girderAuthUrl = QString("%1/jobs").arg(m_girderUrl);
 
   QNetworkRequest request(girderAuthUrl);
-  request.setRawHeader(QByteArray("Girder-Token"), this->m_girderToken.toUtf8());
+  request.setRawHeader(QByteArray("Girder-Token"), m_girderToken.toUtf8());
 
   auto reply = m_networkManager->get(request);
   QObject::connect(reply, SIGNAL(finished()), this, SLOT(fetchJobsFinished()));
@@ -242,17 +241,17 @@ void CumulusProxy::fetchJobsFinished()
 
 bool CumulusProxy::isAuthenticated()
 {
-  return !this->m_girderToken.isEmpty();
+  return !m_girderToken.isEmpty();
 }
 
 void CumulusProxy::fetchJob(const QString& id)
 {
-  QString girderAuthUrl = QString("%1/jobs/%2").arg(this->m_girderUrl).arg(id);
+  QString girderAuthUrl = QString("%1/jobs/%2").arg(m_girderUrl).arg(id);
 
   QNetworkRequest request(girderAuthUrl);
-  request.setRawHeader(QByteArray("Girder-Token"), this->m_girderToken.toUtf8());
+  request.setRawHeader(QByteArray("Girder-Token"), m_girderToken.toUtf8());
 
-  auto reply = this->m_networkManager->get(request);
+  auto reply = m_networkManager->get(request);
   QObject::connect(reply, SIGNAL(finished()), this, SLOT(fetchJobStatusFinished()));
 }
 
@@ -294,7 +293,7 @@ void CumulusProxy::fetchJobFinished()
 void CumulusProxy::deleteJob(Job job)
 {
   DeleteJobRequest* request =
-    new DeleteJobRequest(this->m_networkManager, this->m_girderUrl, this->m_girderToken, job, this);
+    new DeleteJobRequest(m_networkManager, m_girderUrl, m_girderToken, job, this);
   connect(request, SIGNAL(complete()), this, SLOT(deleteJobFinished()));
   connect(request, SIGNAL(error(const QString, QNetworkReply*)), this,
     SIGNAL(error(const QString, QNetworkReply*)));
@@ -321,8 +320,8 @@ void CumulusProxy::patchJobs(QList<Job> jobs)
     cJSON* cmbData = job.cmbDataToJSON();
     cJSON_AddItemToObject(body, "metadata", cmbData);
 
-    PatchJobRequest* updateRequest = new PatchJobRequest(
-      this->m_networkManager, this->m_girderUrl, this->m_girderToken, job, body);
+    PatchJobRequest* updateRequest =
+      new PatchJobRequest(m_networkManager, m_girderUrl, m_girderToken, job, body);
 
     connect(updateRequest, SIGNAL(error(const QString, QNetworkReply*)), this,
       SIGNAL(error(const QString, QNetworkReply*)));
@@ -334,8 +333,8 @@ void CumulusProxy::patchJobs(QList<Job> jobs)
 
 void CumulusProxy::terminateJob(Job job)
 {
-  TerminateJobRequest* request = new TerminateJobRequest(
-    this->m_networkManager, this->m_girderUrl, this->m_girderToken, job, this);
+  TerminateJobRequest* request =
+    new TerminateJobRequest(m_networkManager, m_girderUrl, m_girderToken, job, this);
   connect(request, SIGNAL(complete()), this, SLOT(terminateJobFinished()));
   connect(request, SIGNAL(error(const QString, QNetworkReply*)), this,
     SIGNAL(error(const QString, QNetworkReply*)));
@@ -362,7 +361,7 @@ void CumulusProxy::downloadJob(const QString& downloadDirectory, Job job)
 {
 
   DownloadJobRequest* request = new DownloadJobRequest(
-    this->m_networkManager, this->m_girderUrl, this->m_girderToken, downloadDirectory, job, this);
+    m_networkManager, m_girderUrl, m_girderToken, downloadDirectory, job, this);
   connect(request, SIGNAL(complete()), this, SLOT(downloadJobFinished()));
   connect(request, SIGNAL(error(const QString, QNetworkReply*)), this,
     SIGNAL(error(const QString, QNetworkReply*)));
@@ -388,8 +387,8 @@ void CumulusProxy::downloadJobFinished()
   cJSON* cmbData = job.cmbDataToJSON();
   cJSON_AddItemToObject(body, "metadata", cmbData);
 
-  PatchJobRequest* updateRequest = new PatchJobRequest(
-    this->m_networkManager, this->m_girderUrl, this->m_girderToken, request->job(), body);
+  PatchJobRequest* updateRequest =
+    new PatchJobRequest(m_networkManager, m_girderUrl, m_girderToken, request->job(), body);
 
   connect(updateRequest, SIGNAL(error(const QString, QNetworkReply*)), this,
     SIGNAL(error(const QString, QNetworkReply*)));

@@ -24,46 +24,46 @@ public:
 qtCollapsibleGroupWidget::qtCollapsibleGroupWidget(QWidget* p)
   : QWidget(p)
 {
-  this->m_internals = new qtCollapsibleGroupWidgetInternals;
-  this->m_internals->setupUi(this);
+  m_internals = new qtCollapsibleGroupWidgetInternals;
+  m_internals->setupUi(this);
 }
 
 qtCollapsibleGroupWidget::~qtCollapsibleGroupWidget()
 {
-  delete this->m_internals;
+  delete m_internals;
 }
 
 QFrame* qtCollapsibleGroupWidget::contents() const
 {
-  return this->m_internals->BodyFrame;
+  return m_internals->BodyFrame;
 }
 
 QLayout* qtCollapsibleGroupWidget::contentsLayout() const
 {
-  return this->m_internals->BodyFrame->layout();
+  return m_internals->BodyFrame->layout();
 }
 
 void qtCollapsibleGroupWidget::setContentsLayout(QLayout* newLayout)
 {
-  this->m_internals->BodyFrame->setLayout(newLayout);
+  m_internals->BodyFrame->setLayout(newLayout);
 }
 
 void qtCollapsibleGroupWidget::setName(const QString& newName)
 {
-  return this->m_internals->VisibilityControl->setText(newName);
+  return m_internals->VisibilityControl->setText(newName);
 }
 
 QString qtCollapsibleGroupWidget::name() const
 {
-  return this->m_internals->VisibilityControl->text();
+  return m_internals->VisibilityControl->text();
 }
 
 void qtCollapsibleGroupWidget::open()
 {
-  return this->m_internals->VisibilityControl->setChecked(true);
+  return m_internals->VisibilityControl->setChecked(true);
 }
 
 void qtCollapsibleGroupWidget::collapse()
 {
-  return this->m_internals->VisibilityControl->setChecked(false);
+  return m_internals->VisibilityControl->setChecked(false);
 }

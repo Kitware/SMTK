@@ -217,7 +217,7 @@ void GrowOperation::convertToGrowSelection(
 bool GrowOperation::convertAndResetOutSelection(
   vtkSelection* inSelection, vtkDiscreteModelWrapper* modelWrapper, Session* opsession)
 {
-  this->m_outSelection.clear();
+  m_outSelection.clear();
   if (inSelection)
   {
     // in the format of list of [composite_index, process_id, index] repeated
@@ -249,7 +249,7 @@ bool GrowOperation::convertAndResetOutSelection(
 
           vtkModelEntity* entity = cmbEntity->GetThisModelEntity();
           faceUUID = opsession->findOrSetEntityUUID(entity);
-          this->m_outSelection[faceUUID].insert(faceCellId);
+          m_outSelection[faceUUID].insert(faceCellId);
         }
       }
       else
@@ -317,8 +317,8 @@ GrowOperation::Result GrowOperation::operateInternal()
       // convert current outSelection to grow Selection
       this->convertToGrowSelection(inSelectionItem, m_growSelection.GetPointer(), opsession.get());
       // Use current selection to split faces if necessary
-      this->m_splitOp->Operate(modelWrapper, this->m_growSelection.GetPointer());
-      ok = this->m_splitOp->GetOperateSucceeded() != 0;
+      m_splitOp->Operate(modelWrapper, m_growSelection.GetPointer());
+      ok = m_splitOp->GetOperateSucceeded() != 0;
       break;
     case RESET:
     case MERGE:
@@ -340,7 +340,7 @@ GrowOperation::Result GrowOperation::operateInternal()
             << featureAngle << ".");
         std::set<vtkIdType> visModelFaceIds;
         this->findVisibleModelFaces(model, visModelFaceIds, opsession.get());
-        this->m_growOp->SetModelWrapper(modelWrapper);
+        m_growOp->SetModelWrapper(modelWrapper);
         // NOTE:
         // The fact that operators are state-less, we can NOT cache
         // things inside the operator itself. In this case, the m_growSelection
@@ -361,18 +361,18 @@ GrowOperation::Result GrowOperation::operateInternal()
         m_growSelection->Initialize();
         int mode = 0;
 
-        this->m_growOp->SetGrowMode(mode);
-        this->m_growOp->SetFeatureAngle(featureAngle);
-        this->m_growOp->SetInputSelection(this->m_growSelection.GetPointer());
-        this->m_growOp->SetGrowFaceIds(visModelFaceIds);
+        m_growOp->SetGrowMode(mode);
+        m_growOp->SetFeatureAngle(featureAngle);
+        m_growOp->SetInputSelection(m_growSelection.GetPointer());
+        m_growOp->SetGrowFaceIds(visModelFaceIds);
 
         vtkModelFace* face =
           vtkModelFace::SafeDownCast(opsession->entityForUUID(inSelectionItem->begin()->first));
         if (face)
         {
-          this->m_growOp->SetFaceCellId(
+          m_growOp->SetFaceCellId(
             face->GetUniquePersistentId(), *(inSelectionItem->begin()->second.begin()));
-          this->m_growOp->Update();
+          m_growOp->Update();
           ok =
             this->convertAndResetOutSelection(m_growOp->GetOutput(), modelWrapper, opsession.get());
         }
@@ -380,7 +380,7 @@ GrowOperation::Result GrowOperation::operateInternal()
 
       break;
     case NONE:
-      this->m_outSelection.clear();
+      m_outSelection.clear();
       ok = true; // stop grow
       break;
     default:

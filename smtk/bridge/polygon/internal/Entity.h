@@ -34,16 +34,16 @@ class entity : smtkEnableSharedPtr(entity)
 public:
   smtkTypeMacroBase(entity);
 
-  Id id() const { return this->m_id; }
-  void setId(const Id& i) { this->m_id = i; }
+  Id id() const { return m_id; }
+  void setId(const Id& i) { m_id = i; }
 
-  entity* parent() const { return this->m_parent; }
-  void setParent(entity* p) { this->m_parent = p; }
+  entity* parent() const { return m_parent; }
+  void setParent(entity* p) { m_parent = p; }
 
   template <typename T>
   T* parentAs() const
   {
-    return dynamic_cast<T*>(this->m_parent);
+    return dynamic_cast<T*>(m_parent);
   }
 
 protected:
@@ -56,7 +56,7 @@ protected:
     , m_id(uid)
   {
   }
-  virtual ~entity() { this->m_parent = NULL; }
+  virtual ~entity() { m_parent = NULL; }
 
   entity* m_parent;
   Id m_id;

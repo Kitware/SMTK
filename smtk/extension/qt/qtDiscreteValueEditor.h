@@ -34,12 +34,12 @@ public:
   qtDiscreteValueEditor(qtInputsItem* item, int elementIdx, QLayout* childLayout);
   virtual ~qtDiscreteValueEditor();
   QSize sizeHint() const override;
-  bool useSelectionManger() const { return this->m_useSelectionManager; }
+  bool useSelectionManger() const { return m_useSelectionManager; }
 
 public slots:
   void onInputValueChanged();
   // Indicates if it is possible use the Selection Manager
-  // void setUseSelectionManager(bool mode) { this->m_useSelectionManager = mode; }
+  // void setUseSelectionManager(bool mode) { m_useSelectionManager = mode; }
 
 protected slots:
   virtual void updateItemData();

@@ -207,7 +207,7 @@ bool CleanGeometry::splitEdgeAsNeeded(const smtk::model::Edge& curEdge, internal
       curEdge); // The source edge is going away, to be replaced by multiple pieces:
 
     if (!mod->splitModelEdgeAtModelVertices(
-          resource, storage, splitVerts, splitPts, created, this->m_debugLevel))
+          resource, storage, splitVerts, splitPts, created, m_debugLevel))
     {
       smtkOpDebug("Could not split " << curEdge.name() << " at " << splitPts.size()
                                      << " intersection points.");
@@ -388,7 +388,7 @@ bool CleanGeometry::applyDeferredSplit(T resource, U& action, V& allpoints, W& c
   // Split the edge
   std::size_t crepre = created.size();
   if (!mod->splitModelEdgeAtModelVertices(
-        resource, storage, action.m_splitVerts, action.m_splitPts, created, this->m_debugLevel))
+        resource, storage, action.m_splitVerts, action.m_splitPts, created, m_debugLevel))
   {
     smtkOpDebug("Could not split " << action.m_edge.name() << " at " << action.m_splitPts.size()
                                    << " intersection points.");
@@ -612,7 +612,7 @@ bool CleanGeometry::deleteIfDuplicates(T& edgePair, U& modified, U& expunged)
     std::cout << "\n";
     // FIXME: Handle face attached to duplicate edge...
     resource->polygonSession()->consistentInternalDelete(
-      delset, modified, expunged, this->m_debugLevel > 0);
+      delset, modified, expunged, m_debugLevel > 0);
     return true;
   }
   return false;

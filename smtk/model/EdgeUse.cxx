@@ -123,7 +123,7 @@ EdgeUse EdgeUse::ccwUse() const
 {
   ManagerPtr mgr = this->manager();
   // Find the offset into HAS_USE arrangements for this edge-use:
-  //int curUse = mgr->findCellHasUseWithSense(this->m_entity, this->sense());
+  //int curUse = mgr->findCellHasUseWithSense(m_entity, this->sense());
   // Now ask for the next valid, cyclic HAS_USE arrangement.
   //int nxtUse mgr->findAdjacentArrangement(HAS_USE, curUse, +1);
   // Return the relation specified by the arrangement.

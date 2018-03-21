@@ -54,34 +54,34 @@ bool GroupItemDefinition::addItemDefinition(smtk::attribute::ItemDefinitionPtr c
   {
     return false;
   }
-  std::size_t n = this->m_itemDefs.size();
-  this->m_itemDefs.push_back(cdef);
-  this->m_itemDefPositions[cdef->name()] = static_cast<int>(n);
+  std::size_t n = m_itemDefs.size();
+  m_itemDefs.push_back(cdef);
+  m_itemDefPositions[cdef->name()] = static_cast<int>(n);
   return true;
 }
 
 void GroupItemDefinition::buildGroup(GroupItem* groupItem, int subGroupPosition) const
 {
-  std::size_t i, n = this->m_itemDefs.size();
+  std::size_t i, n = m_itemDefs.size();
   std::vector<smtk::attribute::ItemPtr>& items =
     groupItem->m_items[static_cast<size_t>(subGroupPosition)];
   items.resize(n);
   for (i = 0; i < n; i++)
   {
-    items[i] = this->m_itemDefs[i]->buildItem(groupItem, static_cast<int>(i), subGroupPosition);
-    items[i]->setDefinition(this->m_itemDefs[i]);
+    items[i] = m_itemDefs[i]->buildItem(groupItem, static_cast<int>(i), subGroupPosition);
+    items[i]->setDefinition(m_itemDefs[i]);
   }
 }
 
 void GroupItemDefinition::updateCategories()
 {
-  this->m_categories.clear();
-  std::size_t i, n = this->m_itemDefs.size();
+  m_categories.clear();
+  std::size_t i, n = m_itemDefs.size();
   for (i = 0; i < n; i++)
   {
-    this->m_itemDefs[i]->updateCategories();
-    const std::set<std::string>& itemCats = this->m_itemDefs[i]->categories();
-    this->m_categories.insert(itemCats.begin(), itemCats.end());
+    m_itemDefs[i]->updateCategories();
+    const std::set<std::string>& itemCats = m_itemDefs[i]->categories();
+    m_categories.insert(itemCats.begin(), itemCats.end());
   }
 }
 
@@ -99,54 +99,54 @@ void GroupItemDefinition::removeCategory(const std::string& /*category*/)
 
 void GroupItemDefinition::setSubGroupLabel(std::size_t element, const std::string& elabel)
 {
-  if (this->m_isExtensible)
+  if (m_isExtensible)
   {
     return;
   }
-  if (this->m_labels.size() != this->m_numberOfRequiredGroups)
+  if (m_labels.size() != m_numberOfRequiredGroups)
   {
-    this->m_labels.resize(this->m_numberOfRequiredGroups);
+    m_labels.resize(m_numberOfRequiredGroups);
   }
-  this->m_useCommonLabel = false;
-  this->m_labels[element] = elabel;
+  m_useCommonLabel = false;
+  m_labels[element] = elabel;
 }
 
 void GroupItemDefinition::setCommonSubGroupLabel(const std::string& elabel)
 {
-  if (this->m_labels.size() != 1)
+  if (m_labels.size() != 1)
   {
-    this->m_labels.resize(1);
+    m_labels.resize(1);
   }
-  this->m_useCommonLabel = true;
-  this->m_labels[0] = elabel;
+  m_useCommonLabel = true;
+  m_labels[0] = elabel;
 }
 
 std::string GroupItemDefinition::subGroupLabel(std::size_t element) const
 {
-  if (this->m_useCommonLabel)
+  if (m_useCommonLabel)
   {
-    return this->m_labels[0];
+    return m_labels[0];
   }
-  if (this->m_labels.size())
+  if (m_labels.size())
   {
-    return this->m_labels[element];
+    return m_labels[element];
   }
   return ""; // If we threw execeptions this method could return const string &
 }
 
 bool GroupItemDefinition::setMaxNumberOfGroups(std::size_t esize)
 {
-  if (esize && (esize < this->m_numberOfRequiredGroups))
+  if (esize && (esize < m_numberOfRequiredGroups))
   {
     return false;
   }
-  this->m_maxNumberOfGroups = esize;
+  m_maxNumberOfGroups = esize;
   return true;
 }
 
 bool GroupItemDefinition::setNumberOfRequiredGroups(std::size_t gsize)
 {
-  if (gsize == this->m_numberOfRequiredGroups)
+  if (gsize == m_numberOfRequiredGroups)
   {
     return true;
   }
@@ -156,21 +156,21 @@ bool GroupItemDefinition::setNumberOfRequiredGroups(std::size_t gsize)
     return false;
   }
 
-  this->m_numberOfRequiredGroups = gsize;
+  m_numberOfRequiredGroups = gsize;
   if (!this->hasSubGroupLabels())
   {
     return true;
   }
-  if (!(this->m_useCommonLabel || this->m_isExtensible))
+  if (!(m_useCommonLabel || m_isExtensible))
   {
-    this->m_labels.resize(gsize);
+    m_labels.resize(gsize);
   }
   return true;
 }
 
 void GroupItemDefinition::setIsExtensible(bool mode)
 {
-  this->m_isExtensible = mode;
+  m_isExtensible = mode;
   if (mode && !this->usingCommonSubGroupLabel())
   {
     // Need to clear individual labels - can only use common label with
@@ -222,11 +222,11 @@ bool GroupItemDefinition::removeItemDefinition(ItemDefinitionPtr itemDef)
     return false;
   }
 
-  auto itItemDef = std::find(this->m_itemDefs.begin(), this->m_itemDefs.end(), itemDef);
-  if (itItemDef != this->m_itemDefs.end())
+  auto itItemDef = std::find(m_itemDefs.begin(), m_itemDefs.end(), itemDef);
+  if (itItemDef != m_itemDefs.end())
   {
-    this->m_itemDefs.erase(itItemDef);
+    m_itemDefs.erase(itItemDef);
   }
-  this->m_itemDefPositions.erase(itemDef->name());
+  m_itemDefPositions.erase(itemDef->name());
   return true;
 }

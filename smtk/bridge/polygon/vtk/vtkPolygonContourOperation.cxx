@@ -38,9 +38,9 @@ vtkPolygonContourOperation::~vtkPolygonContourOperation()
 
 bool vtkPolygonContourOperation::AbleToOperate()
 {
-  bool able2Op = this->m_smtkOp.lock() &&
-    this->m_smtkOp.lock()->uniqueName() == "smtk::bridge::polygon::ExtractContouers" &&
-    this->m_smtkOp.lock()->ableToOperate();
+  bool able2Op = m_smtkOp.lock() &&
+    m_smtkOp.lock()->uniqueName() == "smtk::bridge::polygon::ExtractContouers" &&
+    m_smtkOp.lock()->ableToOperate();
   if (!able2Op)
   {
     return able2Op;
@@ -58,11 +58,11 @@ smtk::operation::Operation::Result vtkPolygonContourOperation::Operate()
   // ONLY for create-edge-with-widget and edit-edge operations,
   if (!this->AbleToOperate())
   {
-    return this->m_smtkOp.lock()->createResult(smtk::operation::Operation::Outcome::FAILED);
+    return m_smtkOp.lock()->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   smtk::operation::Operation::Result edgeResult;
-  smtk::attribute::AttributePtr spec = this->m_smtkOp.lock()->parameters();
+  smtk::attribute::AttributePtr spec = m_smtkOp.lock()->parameters();
   smtk::attribute::IntItem::Ptr offsetsItem =
     spec->findAs<smtk::attribute::IntItem>("offsets", smtk::attribute::ALL_CHILDREN);
   smtk::attribute::DoubleItem::Ptr pointsItem =
@@ -105,7 +105,7 @@ smtk::operation::Operation::Result vtkPolygonContourOperation::Operate()
   }
 
   offsetsItem->setValues(offsets.begin(), offsets.end());
-  edgeResult = this->m_smtkOp.lock()->operate();
+  edgeResult = m_smtkOp.lock()->operate();
 
   return edgeResult;
 }

@@ -30,9 +30,9 @@ Session::Session()
 
 Topology* Session::topology(smtk::model::Model& model)
 {
-  std::vector<Topology>::iterator it = find_if(this->m_topologies.begin(), this->m_topologies.end(),
+  std::vector<Topology>::iterator it = find_if(m_topologies.begin(), m_topologies.end(),
     [&](const Topology& t) { return t.m_collection->entity() == model.entity(); });
-  return (it == this->m_topologies.end() ? nullptr : &(*it));
+  return (it == m_topologies.end() ? nullptr : &(*it));
 }
 
 smtk::model::SessionInfoBits Session::transcribeInternal(
@@ -43,7 +43,7 @@ smtk::model::SessionInfoBits Session::transcribeInternal(
 
   // Find the topology associated with the entity
   const smtk::bridge::mesh::Topology* topology = nullptr;
-  for (const Topology& top : this->m_topologies)
+  for (const Topology& top : m_topologies)
   {
     if (entityRef.entity() == top.m_collection->entity())
     {

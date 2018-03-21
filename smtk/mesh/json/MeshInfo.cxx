@@ -50,13 +50,13 @@ MeshInfo::MeshInfo(smtk::mesh::Handle meshId, const smtk::common::UUID& uuid,
 
 smtk::mesh::HandleRange MeshInfo::cells() const
 {
-  return this->m_cells;
+  return m_cells;
 }
 
 smtk::mesh::HandleRange MeshInfo::cells(smtk::mesh::CellType cellType) const
 {
   const int moabCellType = smtk::mesh::moab::smtkToMOABCell(cellType);
-  return this->m_cells.subset_by_type(static_cast< ::moab::EntityType>(moabCellType));
+  return m_cells.subset_by_type(static_cast< ::moab::EntityType>(moabCellType));
 }
 
 smtk::mesh::HandleRange MeshInfo::cells(const smtk::mesh::CellTypes& cellTypes) const
@@ -80,28 +80,27 @@ smtk::mesh::HandleRange MeshInfo::cells(const smtk::mesh::CellTypes& cellTypes) 
 
 smtk::mesh::HandleRange MeshInfo::cells(smtk::mesh::DimensionType dim) const
 {
-  return this->m_cells.subset_by_dimension(static_cast<int>(dim));
+  return m_cells.subset_by_dimension(static_cast<int>(dim));
 }
 
 smtk::mesh::HandleRange MeshInfo::points() const
 {
-  return this->m_points;
+  return m_points;
 }
 
 bool MeshInfo::has(const smtk::mesh::Domain& d) const
 {
-  return std::find(this->m_domains.begin(), this->m_domains.end(), d) != this->m_domains.end();
+  return std::find(m_domains.begin(), m_domains.end(), d) != m_domains.end();
 }
 
 bool MeshInfo::has(const smtk::mesh::Dirichlet& bc) const
 {
-  return std::find(this->m_dirichlets.begin(), this->m_dirichlets.end(), bc) !=
-    this->m_dirichlets.end();
+  return std::find(m_dirichlets.begin(), m_dirichlets.end(), bc) != m_dirichlets.end();
 }
 
 bool MeshInfo::has(const smtk::mesh::Neumann& bc) const
 {
-  return std::find(this->m_neumanns.begin(), this->m_neumanns.end(), bc) != this->m_neumanns.end();
+  return std::find(m_neumanns.begin(), m_neumanns.end(), bc) != m_neumanns.end();
 }
 }
 }

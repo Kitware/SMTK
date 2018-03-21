@@ -32,21 +32,21 @@ TimeZone::TimeZone()
 
 bool TimeZone::isSet() const
 {
-  return this->m_isUTC || (!!this->m_boostTimeZone);
+  return m_isUTC || (!!m_boostTimeZone);
 }
 
 void TimeZone::setUTC()
 {
   // Clear boost pointer and region string
   boost::local_time::time_zone_ptr tzNull(0);
-  this->m_boostTimeZone = tzNull;
-  this->m_region.clear();
-  this->m_isUTC = true;
+  m_boostTimeZone = tzNull;
+  m_region.clear();
+  m_isUTC = true;
 }
 
 bool TimeZone::isUTC() const
 {
-  return this->m_isUTC;
+  return m_isUTC;
 }
 
 bool TimeZone::setRegion(const std::string& region)
@@ -64,22 +64,22 @@ bool TimeZone::setRegion(const std::string& region)
     TimeZone::s_databaseLoaded = true;
   }
 
-  this->m_boostTimeZone = s_database.time_zone_from_region(region);
+  m_boostTimeZone = s_database.time_zone_from_region(region);
   if (!this->isSet())
   {
-    this->m_region.clear();
+    m_region.clear();
     return false;
   }
 
   // else
-  this->m_isUTC = false;
-  this->m_region = region;
+  m_isUTC = false;
+  m_region = region;
   return true;
 }
 
 std::string TimeZone::region() const
 {
-  return this->m_region;
+  return m_region;
 }
 
 bool TimeZone::setPosixString(const std::string& posixTimeZoneString)
@@ -88,7 +88,7 @@ bool TimeZone::setPosixString(const std::string& posixTimeZoneString)
   {
     boost::local_time::time_zone_ptr tz(
       new boost::local_time::posix_time_zone(posixTimeZoneString));
-    this->m_boostTimeZone = tz;
+    m_boostTimeZone = tz;
   }
   catch (std::exception& e)
   {
@@ -99,29 +99,29 @@ bool TimeZone::setPosixString(const std::string& posixTimeZoneString)
     ;
 #endif
     boost::local_time::time_zone_ptr tzNull(0);
-    this->m_boostTimeZone = tzNull;
+    m_boostTimeZone = tzNull;
     return false;
   }
 
-  this->m_isUTC = false;
-  this->m_region.clear();
+  m_isUTC = false;
+  m_region.clear();
   return this->isSet();
 }
 
 std::string TimeZone::posixString() const
 {
-  if (this->m_isUTC)
+  if (m_isUTC)
   {
     return "UTC+0";
   }
-  return this->m_boostTimeZone->to_posix_string();
+  return m_boostTimeZone->to_posix_string();
 }
 
 std::string TimeZone::stdZoneName() const
 {
-  if (this->m_boostTimeZone)
+  if (m_boostTimeZone)
   {
-    return this->m_boostTimeZone->std_zone_name();
+    return m_boostTimeZone->std_zone_name();
   }
   // else
   return std::string();
@@ -129,9 +129,9 @@ std::string TimeZone::stdZoneName() const
 
 std::string TimeZone::stdZoneAbbreviation() const
 {
-  if (this->m_boostTimeZone)
+  if (m_boostTimeZone)
   {
-    return this->m_boostTimeZone->std_zone_abbrev();
+    return m_boostTimeZone->std_zone_abbrev();
   }
   // else
   return std::string();
@@ -139,9 +139,9 @@ std::string TimeZone::stdZoneAbbreviation() const
 
 std::string TimeZone::dstZoneName() const
 {
-  if (this->m_boostTimeZone)
+  if (m_boostTimeZone)
   {
-    return this->m_boostTimeZone->dst_zone_name();
+    return m_boostTimeZone->dst_zone_name();
   }
   // else
   return std::string();
@@ -149,9 +149,9 @@ std::string TimeZone::dstZoneName() const
 
 std::string TimeZone::dstZoneAbbreviation() const
 {
-  if (this->m_boostTimeZone)
+  if (m_boostTimeZone)
   {
-    return this->m_boostTimeZone->dst_zone_abbrev();
+    return m_boostTimeZone->dst_zone_abbrev();
   }
   // else
   return std::string();
@@ -159,9 +159,9 @@ std::string TimeZone::dstZoneAbbreviation() const
 
 bool TimeZone::hasDST() const
 {
-  if (this->m_boostTimeZone)
+  if (m_boostTimeZone)
   {
-    return this->m_boostTimeZone->has_dst();
+    return m_boostTimeZone->has_dst();
   }
   // else
   return false;
@@ -169,9 +169,9 @@ bool TimeZone::hasDST() const
 
 bool TimeZone::utcOffset(int& hours, int& minutes) const
 {
-  if (this->m_boostTimeZone)
+  if (m_boostTimeZone)
   {
-    boost::posix_time::time_duration delta = this->m_boostTimeZone->base_utc_offset();
+    boost::posix_time::time_duration delta = m_boostTimeZone->base_utc_offset();
     hours = delta.hours();
     minutes = delta.minutes();
     return true;
@@ -182,9 +182,9 @@ bool TimeZone::utcOffset(int& hours, int& minutes) const
 
 bool TimeZone::dstShift(int& hours, int& minutes) const
 {
-  if (this->m_boostTimeZone)
+  if (m_boostTimeZone)
   {
-    boost::posix_time::time_duration delta = this->m_boostTimeZone->dst_offset();
+    boost::posix_time::time_duration delta = m_boostTimeZone->dst_offset();
     hours = delta.hours();
     minutes = delta.minutes();
     return true;
@@ -195,7 +195,7 @@ bool TimeZone::dstShift(int& hours, int& minutes) const
 
 const boost::local_time::time_zone_ptr TimeZone::boostPointer() const
 {
-  return this->m_boostTimeZone;
+  return m_boostTimeZone;
 }
 
 } // namespace common

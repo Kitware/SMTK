@@ -32,7 +32,7 @@ MeshComponent::MeshComponent(const smtk::common::UUID& id, smtk::mesh::MeshSet m
 
 const smtk::resource::ResourcePtr MeshComponent::resource() const
 {
-  return std::dynamic_pointer_cast<smtk::resource::Resource>(this->m_meshset.collection());
+  return std::dynamic_pointer_cast<smtk::resource::Resource>(m_meshset.collection());
 }
 
 /**\brief Return an array of model entity UUIDs associated with meshset members.
@@ -40,13 +40,13 @@ const smtk::resource::ResourcePtr MeshComponent::resource() const
   */
 smtk::common::UUIDArray MeshComponent::modelEntityIds() const
 {
-  if (!this->m_meshset.collection())
+  if (!m_meshset.collection())
   {
     return smtk::common::UUIDArray();
   }
 
-  const smtk::mesh::InterfacePtr& iface = this->m_meshset.collection()->interface();
-  return iface->computeModelEntities(this->m_meshset.range());
+  const smtk::mesh::InterfacePtr& iface = m_meshset.collection()->interface();
+  return iface->computeModelEntities(m_meshset.range());
 }
 
 /**\brief Return the model entities associated with meshset members.
@@ -57,12 +57,12 @@ smtk::common::UUIDArray MeshComponent::modelEntityIds() const
   */
 bool MeshComponent::modelEntities(smtk::model::EntityRefArray& array) const
 {
-  if (!this->m_meshset.collection())
+  if (!m_meshset.collection())
   {
     return false;
   }
 
-  smtk::model::ManagerPtr mgr = this->m_meshset.collection()->modelManager();
+  smtk::model::ManagerPtr mgr = m_meshset.collection()->modelManager();
   smtk::common::UUIDArray uids = this->modelEntityIds();
   for (smtk::common::UUIDArray::const_iterator it = uids.begin(); it != uids.end(); ++it)
   {
@@ -76,13 +76,13 @@ bool MeshComponent::modelEntities(smtk::model::EntityRefArray& array) const
   */
 bool MeshComponent::setModelEntity(const smtk::model::EntityRef& ent)
 {
-  if (!this->m_meshset.collection())
+  if (!m_meshset.collection())
   {
     return false;
   }
 
-  const smtk::mesh::InterfacePtr& iface = this->m_meshset.collection()->interface();
-  return iface->setAssociation(ent.entity(), this->m_meshset.range());
+  const smtk::mesh::InterfacePtr& iface = m_meshset.collection()->interface();
+  return iface->setAssociation(ent.entity(), m_meshset.range());
 }
 
 /**\brief Set the model entity for each meshset member to \a ent.
@@ -90,13 +90,13 @@ bool MeshComponent::setModelEntity(const smtk::model::EntityRef& ent)
   */
 bool MeshComponent::setModelEntityId(const smtk::common::UUID& id)
 {
-  if (!this->m_meshset.collection())
+  if (!m_meshset.collection())
   {
     return false;
   }
 
-  const smtk::mesh::InterfacePtr& iface = this->m_meshset.collection()->interface();
-  return iface->setAssociation(id, this->m_meshset.range());
+  const smtk::mesh::InterfacePtr& iface = m_meshset.collection()->interface();
+  return iface->setAssociation(id, m_meshset.range());
 }
 }
 }

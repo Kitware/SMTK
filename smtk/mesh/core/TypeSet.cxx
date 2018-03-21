@@ -53,8 +53,8 @@ bool TypeSet::operator==(const TypeSet& other) const
 {
   //m_dimTypes are derived from m_cellTypes so we only need to compare
   //m_cellTypes and m_hasMesh, Cell, Point
-  return (this->m_cellTypes == other.m_cellTypes && this->m_hasMesh == other.m_hasMesh &&
-    this->m_hasCell == other.m_hasCell);
+  return (m_cellTypes == other.m_cellTypes && m_hasMesh == other.m_hasMesh &&
+    m_hasCell == other.m_hasCell);
 }
 
 bool TypeSet::operator!=(const TypeSet& other) const
@@ -64,34 +64,34 @@ bool TypeSet::operator!=(const TypeSet& other) const
 
 bool TypeSet::hasMeshes() const
 {
-  return this->m_hasMesh;
+  return m_hasMesh;
 }
 
 bool TypeSet::hasCells() const
 {
-  return this->m_hasCell;
+  return m_hasCell;
 }
 
 bool TypeSet::hasDimension(smtk::mesh::DimensionType dt) const
 {
-  return this->m_dimTypes[dt];
+  return m_dimTypes[dt];
 }
 
 bool TypeSet::hasCell(smtk::mesh::CellType ct) const
 {
   assert(ct != smtk::mesh::CellType_MAX);
-  return this->m_cellTypes[ct];
+  return m_cellTypes[ct];
 }
 
 TypeSet& TypeSet::operator+=(const TypeSet& other)
 {
   // Bitwise-OR of types.
   for (std::size_t i = 0; i < CellType_MAX; ++i)
-    this->m_cellTypes[i] = this->m_cellTypes[i] || other.cellTypes()[i];
+    m_cellTypes[i] = m_cellTypes[i] || other.cellTypes()[i];
 
   // Update bulk information about meshset contents
-  this->m_hasMesh |= other.hasMeshes();
-  this->m_hasCell |= other.hasCells();
+  m_hasMesh |= other.hasMeshes();
+  m_hasCell |= other.hasCells();
 
   return *this;
 }

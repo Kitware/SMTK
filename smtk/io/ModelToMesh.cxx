@@ -460,11 +460,11 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(
   }
 
   //Now merge all duplicate points inside the collection
-  if (this->m_mergeDuplicates)
+  if (m_mergeDuplicates)
   {
-    if (this->m_tolerance >= 0)
+    if (m_tolerance >= 0)
     {
-      collection->meshes().mergeCoincidentContactPoints(this->m_tolerance);
+      collection->meshes().mergeCoincidentContactPoints(m_tolerance);
     }
     else
     { //allow the meshes api to specify the default
@@ -527,11 +527,11 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::model::Model& mode
   }
 
   //Now merge all duplicate points inside the collection
-  if (this->m_mergeDuplicates)
+  if (m_mergeDuplicates)
   {
-    if (this->m_tolerance >= 0)
+    if (m_tolerance >= 0)
     {
-      collection->meshes().mergeCoincidentContactPoints(this->m_tolerance);
+      collection->meshes().mergeCoincidentContactPoints(m_tolerance);
     }
     else
     { //allow the meshes api to specify the default

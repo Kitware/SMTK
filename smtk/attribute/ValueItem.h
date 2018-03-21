@@ -35,7 +35,7 @@ public:
   friend class ValueItemDefinition;
 
   ~ValueItem() override;
-  virtual std::size_t numberOfValues() const { return this->m_isSet.size(); }
+  virtual std::size_t numberOfValues() const { return m_isSet.size(); }
   bool isValid() const override;
   std::size_t numberOfRequiredValues() const;
   std::size_t maxNumberOfValues() const;
@@ -64,8 +64,8 @@ public:
 
   int discreteIndex(std::size_t elementIndex = 0) const
   {
-    assert(this->m_discreteIndices.size() > elementIndex);
-    return this->m_discreteIndices[elementIndex];
+    assert(m_discreteIndices.size() > elementIndex);
+    return m_discreteIndices[elementIndex];
   }
   bool isDiscrete() const;
   bool isDiscreteIndexValid(int value) const;
@@ -91,34 +91,34 @@ public:
   virtual std::string valueAsString(std::size_t elementIndex) const = 0;
   virtual bool isSet(std::size_t elementIndex = 0) const
   {
-    assert(this->m_isSet.size() > elementIndex);
-    return this->m_isSet[elementIndex];
+    assert(m_isSet.size() > elementIndex);
+    return m_isSet[elementIndex];
   }
-  virtual void unset(std::size_t elementIndex = 0) { this->m_isSet[elementIndex] = false; }
+  virtual void unset(std::size_t elementIndex = 0) { m_isSet[elementIndex] = false; }
   smtk::attribute::RefItemPtr expressionReference(std::size_t elementIndex = 0) const
   {
-    assert(this->m_expressions.size() > elementIndex);
-    return this->m_expressions[elementIndex];
+    assert(m_expressions.size() > elementIndex);
+    return m_expressions[elementIndex];
   }
 
   // Interface for getting discrete-value based children items
-  std::size_t numberOfChildrenItems() const { return this->m_childrenItems.size(); }
+  std::size_t numberOfChildrenItems() const { return m_childrenItems.size(); }
 
   const std::map<std::string, smtk::attribute::ItemPtr>& childrenItems() const
   {
-    return this->m_childrenItems;
+    return m_childrenItems;
   }
 
-  std::size_t numberOfActiveChildrenItems() const { return this->m_activeChildrenItems.size(); }
+  std::size_t numberOfActiveChildrenItems() const { return m_activeChildrenItems.size(); }
 
   smtk::attribute::ItemPtr activeChildItem(int i) const
   {
-    if ((i < 0) || (static_cast<std::size_t>(i) >= this->m_activeChildrenItems.size()))
+    if ((i < 0) || (static_cast<std::size_t>(i) >= m_activeChildrenItems.size()))
     {
       smtk::attribute::ItemPtr item;
       return item;
     }
-    return this->m_activeChildrenItems[static_cast<std::size_t>(i)];
+    return m_activeChildrenItems[static_cast<std::size_t>(i)];
   }
 
   // Assigns this item to be equivalent to another.  Options are processed by derived item classes

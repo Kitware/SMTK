@@ -102,7 +102,7 @@ public:
     this->ensureSpecification();
     return
       // Force failure?
-      this->m_able && this->m_specification && this->m_specification->isValid();
+      m_able && m_specification && m_specification->isValid();
   }
   bool m_able; // Used to force UNABLE_TO_OPERATE result.
 

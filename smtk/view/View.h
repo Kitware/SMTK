@@ -40,8 +40,8 @@ public:
     }
     ~Component() {}
 
-    const std::string& name() const { return this->m_name; }
-    const std::string& contents() const { return this->m_contents; }
+    const std::string& name() const { return m_name; }
+    const std::string& contents() const { return m_contents; }
     bool contentsAsVector(std::vector<double>& vec) const;
     bool contentsAsInt(int& val) const;
 
@@ -68,7 +68,7 @@ public:
     // either t or true (ignoring case).  Else it returns false.
 
     bool attributeAsBool(const std::string& attname) const;
-    const std::map<std::string, std::string>& attributes() const { return this->m_attributes; }
+    const std::map<std::string, std::string>& attributes() const { return m_attributes; }
 
     Component& addChild(const std::string& childName);
 
@@ -76,9 +76,9 @@ public:
 
     const std::vector<Component>& children() const { return m_children; }
 
-    std::size_t numberOfChildren() const { return this->m_children.size(); }
+    std::size_t numberOfChildren() const { return m_children.size(); }
 
-    Component& child(std::size_t i) { return this->m_children[i]; }
+    Component& child(std::size_t i) { return m_children[i]; }
 
     int findChild(const std::string& compName) const;
 
@@ -106,17 +106,17 @@ public:
   // Copy the contents of one View into another - this View will be the same as
   // v with the exception of its name and type
   void copyContents(const View& v);
-  const std::string& name() const { return this->m_name; }
+  const std::string& name() const { return m_name; }
   // Returns the name to be used in the GUI for the View - if there is none
   // defined the name is returned.
   std::string label() const;
 
-  const std::string& type() const { return this->m_type; }
+  const std::string& type() const { return m_type; }
 
-  const std::string& iconName() const { return this->m_iconName; }
-  void setIconName(const std::string& iname) { this->m_iconName = iname; }
+  const std::string& iconName() const { return m_iconName; }
+  void setIconName(const std::string& iname) { m_iconName = iname; }
 
-  Component& details() { return this->m_details; }
+  Component& details() { return m_details; }
 
   bool operator==(const View& other) const
   {

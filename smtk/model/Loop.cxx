@@ -139,7 +139,7 @@ bool Loop::replaceEdgeUseWithUses(const EdgeUse& original, const EdgeUses& repla
   // The above created a new arrangement for the Loop... now we need to
   // (1) remove the original's reference to the loop and
   // (2) add new references from the replacements to the loop.
-  int aidx = mgr->findArrangementInvolvingEntity(original.entity(), HAS_SHELL, this->m_entity);
+  int aidx = mgr->findArrangementInvolvingEntity(original.entity(), HAS_SHELL, m_entity);
   //std::cout << "Original idx " << aidx << "\n";
   int didRemove = mgr->unarrangeEntity(original.entity(), HAS_SHELL, aidx, false);
   (void)didRemove;
@@ -159,7 +159,7 @@ bool Loop::replaceEdgeUseWithUses(const EdgeUse& original, const EdgeUses& repla
     }
     // Now add the shell arrangement:
     mgr->arrangeEntity(rit->entity(), HAS_SHELL,
-      Arrangement::UseHasShellWithIndex(useRec->appendRelation(this->m_entity)), -1);
+      Arrangement::UseHasShellWithIndex(useRec->appendRelation(m_entity)), -1);
   }
 
   return didFind ? true : false;

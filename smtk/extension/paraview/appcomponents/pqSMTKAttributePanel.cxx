@@ -97,7 +97,7 @@ bool pqSMTKAttributePanel::displayResource(smtk::attribute::CollectionPtr rsrc)
   auto rsrcMgr = rsrc->manager();
   if (rsrcMgr)
   {
-    this->m_observer = rsrcMgr->observe(
+    m_observer = rsrcMgr->observe(
       [this, rsrcMgr](smtk::resource::Event evnt, smtk::resource::Resource::Ptr attrRsrc) {
         if (evnt == smtk::resource::Event::RESOURCE_REMOVED && attrRsrc == m_rsrc)
         {

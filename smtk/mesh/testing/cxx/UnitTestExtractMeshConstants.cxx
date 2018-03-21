@@ -44,7 +44,7 @@ public:
 
   void forMesh(smtk::mesh::MeshSet& mesh) override
   {
-    std::size_t i = this->m_index++ % this->m_order.size();
+    std::size_t i = m_index++ % m_order.size();
     if (i != 0)
     {
       mesh.setDomain(smtk::mesh::Domain(static_cast<int>(i)));
@@ -76,16 +76,16 @@ public:
     // default to the value for unlabeled domains
     std::int64_t domainValue = -1;
 
-    for (std::size_t i = 0; i < this->m_cellsByDomain.size(); ++i)
+    for (std::size_t i = 0; i < m_cellsByDomain.size(); ++i)
     {
-      if (this->m_cellsByDomain[i].range().find(cellId) != this->m_cellsByDomain[i].range().end())
+      if (m_cellsByDomain[i].range().find(cellId) != m_cellsByDomain[i].range().end())
       {
-        domainValue = this->m_domains[i].value();
+        domainValue = m_domains[i].value();
         break;
       }
     }
 
-    test(this->m_domainAssignments[this->m_index++] == domainValue);
+    test(m_domainAssignments[m_index++] == domainValue);
   }
 
   const std::vector<smtk::mesh::CellSet>& m_cellsByDomain;
@@ -117,16 +117,15 @@ public:
       // default to the value for unlabeled domains
       std::int64_t domainValue = -1;
 
-      for (std::size_t i = 0; i < this->m_pointsByDomain.size(); ++i)
+      for (std::size_t i = 0; i < m_pointsByDomain.size(); ++i)
       {
-        if (this->m_pointsByDomain[i].range().find(*point) !=
-          this->m_pointsByDomain[i].range().end())
+        if (m_pointsByDomain[i].range().find(*point) != m_pointsByDomain[i].range().end())
         {
-          domainValue = this->m_domains[i].value();
+          domainValue = m_domains[i].value();
           break;
         }
       }
-      test(this->m_domainAssignments[this->m_index++] == domainValue);
+      test(m_domainAssignments[m_index++] == domainValue);
     }
   }
 

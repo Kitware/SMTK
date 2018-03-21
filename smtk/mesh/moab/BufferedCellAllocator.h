@@ -62,7 +62,7 @@ public:
 
   bool flush() override;
 
-  smtk::mesh::HandleRange cells() override { return this->m_cells; }
+  smtk::mesh::HandleRange cells() override { return m_cells; }
 
 protected:
   template <typename IntegerType>
@@ -86,29 +86,28 @@ template <typename IntegerType>
 bool BufferedCellAllocator::addCell(
   smtk::mesh::CellType ctype, IntegerType* pointIds, std::int64_t nCoordinates)
 {
-  if (!this->m_validState)
+  if (!m_validState)
   {
     return false;
   }
 
-  if (ctype != this->m_activeCellType ||
-    (ctype == smtk::mesh::Polygon && nCoordinates != this->m_nCoords))
+  if (ctype != m_activeCellType || (ctype == smtk::mesh::Polygon && nCoordinates != m_nCoords))
   {
-    this->m_validState = this->flush();
-    this->m_activeCellType = ctype;
-    this->m_nCoords = ctype != smtk::mesh::Polygon ? smtk::mesh::verticesPerCell(ctype)
-                                                   : static_cast<int>(nCoordinates);
+    m_validState = this->flush();
+    m_activeCellType = ctype;
+    m_nCoords = ctype != smtk::mesh::Polygon ? smtk::mesh::verticesPerCell(ctype)
+                                             : static_cast<int>(nCoordinates);
   }
 
-  assert(this->m_activeCellType != smtk::mesh::CellType_MAX);
-  assert(this->m_nCoords > 0);
+  assert(m_activeCellType != smtk::mesh::CellType_MAX);
+  assert(m_nCoords > 0);
 
-  for (std::int64_t i = 0; i < this->m_nCoords; i++)
+  for (std::int64_t i = 0; i < m_nCoords; i++)
   {
-    this->m_localConnectivity.push_back(pointIds[i]);
+    m_localConnectivity.push_back(pointIds[i]);
   }
 
-  return this->m_validState;
+  return m_validState;
 }
 }
 }

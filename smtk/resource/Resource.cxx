@@ -132,10 +132,10 @@ bool Resource::setId(const smtk::common::UUID& myId)
 
     typedef Container::index<IdTag>::type ResourcesById;
     ResourcesById& resources = mgr->resources().get<IdTag>();
-    ResourcesById::iterator resourceIt = resources.find(this->m_id);
+    ResourcesById::iterator resourceIt = resources.find(m_id);
 
     // try to modify the id, restore it in case of collisions
-    smtk::common::UUID originalId = this->m_id;
+    smtk::common::UUID originalId = m_id;
     resources.modify(resourceIt, SetId(myId), SetId(originalId));
   }
   else
@@ -144,7 +144,7 @@ bool Resource::setId(const smtk::common::UUID& myId)
     *const_cast<smtk::common::UUID*>(&m_id) = myId;
   }
 
-  return myId == this->m_id;
+  return myId == m_id;
 }
 
 bool Resource::setLocation(const std::string& myLocation)
@@ -169,8 +169,7 @@ bool Resource::setLocation(const std::string& myLocation)
 
     typedef Container::index<LocationTag>::type ResourcesByLocation;
     ResourcesByLocation& resources = mgr->resources().get<LocationTag>();
-    ResourcesByLocation::iterator resourceIt =
-      mgr->resources().get<LocationTag>().find(this->m_location);
+    ResourcesByLocation::iterator resourceIt = mgr->resources().get<LocationTag>().find(m_location);
 
     // modify the location
     resources.modify(resourceIt, SetLocation(myLocation));
@@ -181,7 +180,7 @@ bool Resource::setLocation(const std::string& myLocation)
     *const_cast<std::string*>(&m_location) = myLocation;
   }
 
-  return myLocation == this->m_location;
+  return myLocation == m_location;
 }
 
 } // namespace resource

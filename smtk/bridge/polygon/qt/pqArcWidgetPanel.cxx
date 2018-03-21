@@ -74,7 +74,7 @@ void ArcPicker::doPick(pqRenderView* view, pqPolygonArc* arc, PickInfo& arcinfo)
   {
     delete this->Selecter;
   }
-  this->m_isActive = false;
+  m_isActive = false;
   this->View = NULL; //clear the view each time
   if (view)
   {
@@ -93,7 +93,7 @@ void ArcPicker::doPick(pqRenderView* view, pqPolygonArc* arc, PickInfo& arcinfo)
     this->Arc = arc;
     this->View = view;
     this->Info = &arcinfo;
-    this->m_isActive = true;
+    m_isActive = true;
     // make sure we are using the correct source for picking
     if (arc)
       arc->resetOperationSource();
@@ -120,7 +120,7 @@ vtkSelectionNode* ArcPicker::gatherSelectionNode(
 void ArcPicker::selectedInfo(pqOutputPort* port)
 {
   // ignore selections triggered from elsewhere
-  if (!this->m_isActive)
+  if (!m_isActive)
     return;
 
   //always update the port
@@ -195,7 +195,7 @@ void ArcPicker::onPickingFinished()
     // reset multiple selection to true
     this->View->setUseMultipleRepresentationSelection(false);
   }
-  this->m_isActive = false;
+  m_isActive = false;
   emit this->pickFinished();
 }
 }

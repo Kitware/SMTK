@@ -91,7 +91,7 @@ public:
 
   Qt::ItemFlags flags(const QModelIndex& index) const override;
 
-  void setDeleteOnRemoval(bool del) { this->m_deleteOnRemoval = del; }
+  void setDeleteOnRemoval(bool del) { m_deleteOnRemoval = del; }
 
   static QIcon lookupIconForPhraseFlags(view::DescriptivePhrasePtr item, QColor color);
 

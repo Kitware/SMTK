@@ -37,10 +37,10 @@ public:
   typedef ValueItemDefinitionTemplate<DataType> DefType;
 
   ~ValueItemTemplate() override {}
-  typename std::vector<DataT>::const_iterator begin() const { return this->m_values.begin(); }
-  typename std::vector<DataT>::const_iterator end() const { return this->m_values.end(); }
+  typename std::vector<DataT>::const_iterator begin() const { return m_values.begin(); }
+  typename std::vector<DataT>::const_iterator end() const { return m_values.end(); }
   bool setNumberOfValues(std::size_t newSize) override;
-  DataT value(std::size_t element = 0) const { return this->m_values[element]; }
+  DataT value(std::size_t element = 0) const { return m_values[element]; }
   std::string valueAsString() const override { return this->valueAsString(0); }
   std::string valueAsString(std::size_t element) const override;
   bool setValue(const DataT& val) { return this->setValue(0, val); }
@@ -131,16 +131,16 @@ bool ValueItemTemplate<DataT>::setDefinition(smtk::attribute::ConstItemDefinitio
       // will be based on the default discrete index
       if (def->defaultValues().size() > 1)
       {
-        this->m_values = def->defaultValues();
+        m_values = def->defaultValues();
       }
       else
       {
-        this->m_values.resize(n, def->defaultValue());
+        m_values.resize(n, def->defaultValue());
       }
     }
     else
     {
-      this->m_values.resize(n);
+      m_values.resize(n);
     }
   }
   return true;
@@ -154,24 +154,24 @@ bool ValueItemTemplate<DataT>::setValue(size_t element, const DataT& val)
   {
     int index = def->findDiscreteIndex(val);
     // Is this the current value?
-    assert(this->m_discreteIndices.size() > element);
-    if (index == this->m_discreteIndices[element])
+    assert(m_discreteIndices.size() > element);
+    if (index == m_discreteIndices[element])
     {
       return true;
     }
 
     if (index != -1)
     {
-      this->m_discreteIndices[element] = index;
-      assert(this->m_values.size() > element);
-      this->m_values[element] = val;
+      m_discreteIndices[element] = index;
+      assert(m_values.size() > element);
+      m_values[element] = val;
       if (def->allowsExpressions())
       {
-        assert(this->m_expressions.size() > element);
-        this->m_expressions[element]->unset();
+        assert(m_expressions.size() > element);
+        m_expressions[element]->unset();
       }
-      assert(this->m_isSet.size() > element);
-      this->m_isSet[element] = true;
+      assert(m_isSet.size() > element);
+      m_isSet[element] = true;
       // Update active children if needed - note that
       // we currently only support active children based on the
       // 0th value changing
@@ -185,14 +185,14 @@ bool ValueItemTemplate<DataT>::setValue(size_t element, const DataT& val)
   }
   if (def->isValueValid(val))
   {
-    assert(this->m_values.size() > element);
-    this->m_values[element] = val;
-    assert(this->m_isSet.size() > element);
-    this->m_isSet[element] = true;
+    assert(m_values.size() > element);
+    m_values[element] = val;
+    assert(m_isSet.size() > element);
+    m_isSet[element] = true;
     if (def->allowsExpressions())
     {
-      assert(this->m_expressions.size() > element);
-      this->m_expressions[element]->unset();
+      assert(m_expressions.size() > element);
+      m_expressions[element]->unset();
     }
     return true;
   }
@@ -203,15 +203,14 @@ template <typename DataT>
 void ValueItemTemplate<DataT>::updateDiscreteValue(std::size_t element)
 {
   const DefType* def = static_cast<const DefType*>(this->definition().get());
-  this->m_values[element] =
-    def->discreteValue(static_cast<size_t>(this->m_discreteIndices[element]));
+  m_values[element] = def->discreteValue(static_cast<size_t>(m_discreteIndices[element]));
 }
 
 template <typename DataT>
 std::string ValueItemTemplate<DataT>::valueAsString(std::size_t element) const
 {
-  assert(this->m_isSet.size() > element);
-  if (this->m_isSet[element])
+  assert(m_isSet.size() > element);
+  if (m_isSet[element])
   {
     if (this->isExpression(element))
     {
@@ -220,8 +219,8 @@ std::string ValueItemTemplate<DataT>::valueAsString(std::size_t element) const
     else
     {
       std::stringstream buffer;
-      assert(this->m_values.size() > element);
-      buffer << this->m_values[element];
+      assert(m_values.size() > element);
+      buffer << m_values[element];
       return buffer.str();
     }
   }
@@ -249,13 +248,13 @@ bool ValueItemTemplate<DataT>::appendValue(const DataT& val)
     int index = def->findDiscreteIndex(val);
     if (index != -1)
     {
-      this->m_values.push_back(val);
-      this->m_discreteIndices.push_back(index);
-      this->m_isSet.push_back(true);
+      m_values.push_back(val);
+      m_discreteIndices.push_back(index);
+      m_isSet.push_back(true);
       if (def->allowsExpressions())
       {
-        std::size_t nextPos = this->m_expressions.size();
-        this->m_expressions.resize(nextPos + 1);
+        std::size_t nextPos = m_expressions.size();
+        m_expressions.resize(nextPos + 1);
         def->buildExpressionItem(this, static_cast<int>(nextPos));
       }
       return true;
@@ -266,12 +265,12 @@ bool ValueItemTemplate<DataT>::appendValue(const DataT& val)
   {
     if (def->allowsExpressions())
     {
-      std::size_t nextPos = this->m_expressions.size();
-      this->m_expressions.resize(nextPos + 1);
+      std::size_t nextPos = m_expressions.size();
+      m_expressions.resize(nextPos + 1);
       def->buildExpressionItem(this, static_cast<int>(nextPos));
     }
-    this->m_values.push_back(val);
-    this->m_isSet.push_back(true);
+    m_values.push_back(val);
+    m_isSet.push_back(true);
     return true;
   }
   return false;
@@ -312,18 +311,18 @@ bool ValueItemTemplate<DataT>::setNumberOfValues(std::size_t newSize)
     if (def->allowsExpressions())
     {
       std::size_t i;
-      assert(this->m_expressions.size() >= n);
+      assert(m_expressions.size() >= n);
       for (i = newSize; i < n; i++)
       {
-        this->m_expressions[i]->detachOwningItem();
+        m_expressions[i]->detachOwningItem();
       }
-      this->m_expressions.resize(newSize);
+      m_expressions.resize(newSize);
     }
-    this->m_values.resize(newSize);
-    this->m_isSet.resize(newSize);
+    m_values.resize(newSize);
+    m_isSet.resize(newSize);
     if (def->isDiscrete())
     {
-      this->m_discreteIndices.resize(newSize);
+      m_discreteIndices.resize(newSize);
     }
     return true;
   }
@@ -331,27 +330,27 @@ bool ValueItemTemplate<DataT>::setNumberOfValues(std::size_t newSize)
   {
     if (def->defaultValues().size() == newSize)
     {
-      this->m_values = def->defaultValues();
+      m_values = def->defaultValues();
     }
     else
     {
-      this->m_values.resize(newSize, def->defaultValue());
+      m_values.resize(newSize, def->defaultValue());
     }
-    this->m_isSet.resize(newSize, true);
+    m_isSet.resize(newSize, true);
   }
   else
   {
-    this->m_values.resize(newSize);
-    this->m_isSet.resize(newSize, false);
+    m_values.resize(newSize);
+    m_isSet.resize(newSize, false);
   }
   if (def->isDiscrete())
   {
-    this->m_discreteIndices.resize(newSize, def->defaultDiscreteIndex());
+    m_discreteIndices.resize(newSize, def->defaultDiscreteIndex());
   }
   if (def->allowsExpressions())
   {
     std::size_t i;
-    this->m_expressions.resize(newSize);
+    m_expressions.resize(newSize);
     for (i = n; i < newSize; i++)
     {
       def->buildExpressionItem(this, static_cast<int>(i));
@@ -375,15 +374,15 @@ bool ValueItemTemplate<DataT>::removeValue(std::size_t element)
   }
   if (def->allowsExpressions())
   {
-    assert(this->m_expressions.size() > element);
-    this->m_expressions[element]->detachOwningItem();
-    this->m_expressions.erase(this->m_expressions.begin() + element);
+    assert(m_expressions.size() > element);
+    m_expressions[element]->detachOwningItem();
+    m_expressions.erase(m_expressions.begin() + element);
   }
-  this->m_values.erase(this->m_values.begin() + element);
-  this->m_isSet.erase(this->m_isSet.begin() + element);
+  m_values.erase(m_values.begin() + element);
+  m_isSet.erase(m_isSet.begin() + element);
   if (def->isDiscrete())
   {
-    this->m_discreteIndices.erase(this->m_discreteIndices.begin() + element);
+    m_discreteIndices.erase(m_discreteIndices.begin() + element);
   }
   return true;
 }
@@ -425,10 +424,9 @@ bool ValueItemTemplate<DataT>::isUsingDefault() const
   bool vectorDefault = (dvals.size() == n);
   for (i = 0; i < n; i++)
   {
-    assert(this->m_isSet.size() > i);
-    assert(this->m_values.size() > i);
-    if (!(this->m_isSet[i] &&
-          (vectorDefault ? this->m_values[i] == dvals[i] : this->m_values[i] == dval)))
+    assert(m_isSet.size() > i);
+    assert(m_values.size() > i);
+    if (!(m_isSet[i] && (vectorDefault ? m_values[i] == dvals[i] : m_values[i] == dval)))
     {
       return false;
     }
@@ -440,8 +438,8 @@ template <typename DataT>
 bool ValueItemTemplate<DataT>::isUsingDefault(std::size_t element) const
 {
   const DefType* def = static_cast<const DefType*>(this->definition().get());
-  assert(this->m_isSet.size() > element);
-  if (!(def->hasDefault() && this->m_isSet[element]))
+  assert(m_isSet.size() > element);
+  if (!(def->hasDefault() && m_isSet[element]))
   {
     return false; // Doesn't have a default value
   }
@@ -449,9 +447,8 @@ bool ValueItemTemplate<DataT>::isUsingDefault(std::size_t element) const
   DataT dval = def->defaultValue();
   const std::vector<DataT>& dvals = def->defaultValues();
   bool vectorDefault = (dvals.size() == def->numberOfRequiredValues());
-  assert(this->m_values.size() > element);
-  return (
-    vectorDefault ? this->m_values[element] == dvals[element] : this->m_values[element] == dval);
+  assert(m_values.size() > element);
+  return (vectorDefault ? m_values[element] == dvals[element] : m_values[element] == dval);
 }
 
 template <typename DataT>
@@ -459,7 +456,7 @@ DataT ValueItemTemplate<DataT>::defaultValue() const
 {
   const DefType* def = static_cast<const DefType*>(this->definition().get());
   if (!def)
-    return this->m_dummy[0];
+    return m_dummy[0];
 
   return def->defaultValue();
 }
@@ -469,7 +466,7 @@ const std::vector<DataT>& ValueItemTemplate<DataT>::defaultValues() const
 {
   const DefType* def = static_cast<const DefType*>(this->definition().get());
   if (!def)
-    return this->m_dummy;
+    return m_dummy;
 
   return def->defaultValues();
 }
@@ -486,17 +483,17 @@ void ValueItemTemplate<DataT>::reset()
   }
   if (!n)
   {
-    this->m_values.clear();
-    this->m_isSet.clear();
-    this->m_discreteIndices.clear();
+    m_values.clear();
+    m_isSet.clear();
+    m_discreteIndices.clear();
     if (def->allowsExpressions())
     {
-      std::size_t j, m = this->m_expressions.size();
+      std::size_t j, m = m_expressions.size();
       for (j = 0; j < m; j++)
       {
-        this->m_expressions[j]->detachOwningItem();
+        m_expressions[j]->detachOwningItem();
       }
-      this->m_expressions.clear();
+      m_expressions.clear();
     }
     ValueItem::reset();
     return;
@@ -505,10 +502,10 @@ void ValueItemTemplate<DataT>::reset()
   // If we can have expressions then clear them
   if (def->allowsExpressions())
   {
-    assert(this->m_expressions.size() >= n);
+    assert(m_expressions.size() >= n);
     for (i = 0; i < n; i++)
     {
-      this->m_expressions[i]->unset();
+      m_expressions[i]->unset();
     }
   }
   if (!def->hasDefault()) // Do we have default values
@@ -549,7 +546,7 @@ bool ValueItemTemplate<DataT>::appendExpression(smtk::attribute::AttributePtr ex
   if (ValueItem::appendExpression(exp))
   {
     // Resize the values array to match
-    this->m_values.resize(this->m_expressions.size());
+    m_values.resize(m_expressions.size());
     return true;
   }
   return false;

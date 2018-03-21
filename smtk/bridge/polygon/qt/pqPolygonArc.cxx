@@ -52,7 +52,7 @@ pqPolygonArc::pqPolygonArc(QObject* prnt)
   //for an arc the source is actually the arc provider not the arc itself
   this->Source = NULL;
   this->ArcInfo = NULL;
-  this->m_currentModelId = smtk::common::UUID::null();
+  m_currentModelId = smtk::common::UUID::null();
   this->PlaneProjectionNormal = 2;
   this->PlaneProjectionPosition = 0;
   this->selColor[0] = this->selColor[2] = this->selColor[3] = 1.0;
@@ -70,11 +70,11 @@ pqPolygonArc::~pqPolygonArc()
 
 void pqPolygonArc::setEdgeOperation(smtk::operation::OperationPtr edgeOp)
 {
-  this->m_edgeOp = edgeOp;
+  m_edgeOp = edgeOp;
 }
 smtk::shared_ptr<smtk::operation::Operation> pqPolygonArc::edgeOperation()
 {
-  return this->m_edgeOp.lock();
+  return m_edgeOp.lock();
 }
 
 inline vtkSMProxy* internal_createVTKEdgeOperation(vtkSMNewWidgetRepresentationProxy* widgetProxy)
@@ -241,12 +241,12 @@ void pqPolygonArc::resetOperationSource()
 {
   // need to reset
   this->Source = NULL;
-  this->m_currentModelId = smtk::common::UUID::null();
+  m_currentModelId = smtk::common::UUID::null();
   // the Source should always reference to the source for the referenced model,
   // which should be activated by emitting activateModel()
-  if (this->m_edgeOp.lock() && this->m_edgeOp.lock()->parameters())
+  if (m_edgeOp.lock() && m_edgeOp.lock()->parameters())
   {
-    smtk::model::EntityRef entref = this->m_edgeOp.lock()->parameters()->associations()->value();
+    smtk::model::EntityRef entref = m_edgeOp.lock()->parameters()->associations()->value();
     if (!entref.isValid())
     {
       return;
@@ -260,7 +260,7 @@ void pqPolygonArc::resetOperationSource()
     {
       model = entref.as<smtk::model::Edge>().owningModel();
     }
-    if (model.isValid() && this->m_currentModelId == model.entity() && this->Source &&
+    if (model.isValid() && m_currentModelId == model.entity() && this->Source &&
       this->Source == pqActiveObjects::instance().activeSource())
     {
       // nothing to do
@@ -268,7 +268,7 @@ void pqPolygonArc::resetOperationSource()
     }
     if (model.isValid())
     {
-      this->m_currentModelId = model.entity();
+      m_currentModelId = model.entity();
       emit this->activateModel(model.entity());
       this->Source = pqActiveObjects::instance().activeSource();
       int blockIndex = this->getAssignedEdgeBlock();
@@ -297,10 +297,10 @@ void pqPolygonArc::setSource(pqPipelineSource* modelSource)
 
 int pqPolygonArc::getAssignedEdgeBlock() const
 {
-  if (this->m_edgeOp.lock() && this->m_edgeOp.lock()->parameters())
+  if (m_edgeOp.lock() && m_edgeOp.lock()->parameters())
   {
     // for Destroy and Modify operation, we need edge is set
-    smtk::model::EntityRef entref = this->m_edgeOp.lock()->parameters()->associations()->value();
+    smtk::model::EntityRef entref = m_edgeOp.lock()->parameters()->associations()->value();
     smtk::model::Edge edge;
     if (entref.isModel()) // "create edge"
     {

@@ -58,21 +58,21 @@ struct EdgeFragment
 
   EdgeFragment();
 
-  smtk::model::Edge edge() const { return this->m_edge; }
-  bool orientation() const { return this->m_sense; }
+  smtk::model::Edge edge() const { return m_edge; }
+  bool orientation() const { return m_sense; }
 
-  internal::Point& lo() { return this->m_lo; }
-  const internal::Point& lo() const { return this->m_lo; }
+  internal::Point& lo() { return m_lo; }
+  const internal::Point& lo() const { return m_lo; }
 
-  internal::Point& hi() { return this->m_hi; }
-  const internal::Point& hi() const { return this->m_hi; }
+  internal::Point& hi() { return m_hi; }
+  const internal::Point& hi() const { return m_hi; }
 
   /// Return the ID of the region above the fragment.
-  RegionIdSet::value_type& upperRegion() { return this->m_regionId[1]; }
-  RegionIdSet::value_type upperRegion() const { return this->m_regionId[1]; }
+  RegionIdSet::value_type& upperRegion() { return m_regionId[1]; }
+  RegionIdSet::value_type upperRegion() const { return m_regionId[1]; }
   /// Return the ID of the region below the fragment.
-  RegionIdSet::value_type& lowerRegion() { return this->m_regionId[0]; }
-  RegionIdSet::value_type lowerRegion() const { return this->m_regionId[0]; }
+  RegionIdSet::value_type& lowerRegion() { return m_regionId[0]; }
+  RegionIdSet::value_type lowerRegion() const { return m_regionId[0]; }
 
   /**\brief Return the ID of the region just counter-clockwise (CCW) of the fragment...
     *
@@ -86,39 +86,33 @@ struct EdgeFragment
     * calling ccwRegion(true) returns ID of the region to the
     * left of the forward co-fragment (from lo() to hi()).
     */
-  RegionIdSet::value_type& ccwRegion(bool fromLowerEnd)
-  {
-    return this->m_regionId[fromLowerEnd ? 1 : 0];
-  }
+  RegionIdSet::value_type& ccwRegion(bool fromLowerEnd) { return m_regionId[fromLowerEnd ? 1 : 0]; }
   RegionIdSet::value_type ccwRegion(bool fromLowerEnd) const
   {
-    return this->m_regionId[fromLowerEnd ? 1 : 0];
+    return m_regionId[fromLowerEnd ? 1 : 0];
   }
   /**\brief Return the ID of the region just clockwise (CW) of the fragment...
     *
     * ... when winding around the lower (\a fromLowerEnd is true) or
     * upper (\a fromLowerEnd is false) endpoint of the fragment.
     */
-  RegionIdSet::value_type& cwRegion(bool fromLowerEnd)
-  {
-    return this->m_regionId[fromLowerEnd ? 0 : 1];
-  }
+  RegionIdSet::value_type& cwRegion(bool fromLowerEnd) { return m_regionId[fromLowerEnd ? 0 : 1]; }
   RegionIdSet::value_type cwRegion(bool fromLowerEnd) const
   {
-    return this->m_regionId[fromLowerEnd ? 0 : 1];
+    return m_regionId[fromLowerEnd ? 0 : 1];
   }
 
   /**\brief Return the next fragment bounding the region to the left of the fragment.
     *
     */
-  FragmentId& nextFragment(bool forwardDir) { return this->m_next[forwardDir ? 1 : 0]; }
-  bool& nextFragmentSense(bool forwardDir) { return this->m_nsns[forwardDir ? 1 : 0]; }
+  FragmentId& nextFragment(bool forwardDir) { return m_next[forwardDir ? 1 : 0]; }
+  bool& nextFragmentSense(bool forwardDir) { return m_nsns[forwardDir ? 1 : 0]; }
 
   /// Mark a co-fragment as visited (or not).
-  void mark(bool orientation, int markVal) { this->m_marked[orientation ? 1 : 0] = markVal; }
+  void mark(bool orientation, int markVal) { m_marked[orientation ? 1 : 0] = markVal; }
 
   /// Return the markings on the forward (orientation true) or backward (false) co-fragment.
-  int marked(bool orientation) const { return this->m_marked[orientation ? 1 : 0]; }
+  int marked(bool orientation) const { return m_marked[orientation ? 1 : 0]; }
 
   /// Debug dump of fragment
   void dump(RegionIdSet& ufind) const;
@@ -134,7 +128,7 @@ struct EdgeFragmentComparator
   EdgeFragmentComparator(const EdgeFragmentComparator& other);
 
   /// Return the array of fragments the comparator indexes into.
-  FragmentArray* fragments() const { return this->m_sweptFragments; }
+  FragmentArray* fragments() const { return m_sweptFragments; }
 
   bool operator()(FragmentId a, FragmentId b) const;
 };
@@ -146,18 +140,18 @@ struct SweeplinePosition
   SweeplinePosition(const SweeplinePosition& other);
 
   /// Return the current sweepline position
-  internal::Point& position() { return this->m_position; }
+  internal::Point& position() { return m_position; }
 
   /// Return the current sweepline position
-  const internal::Point& position() const { return this->m_position; }
+  const internal::Point& position() const { return m_position; }
 
   /// Advance the sweepline to another position, ignoring invalid points to the left of the current position.
   void advance(const internal::Point& pt);
 
-  bool operator<(const internal::Point& other) { return this->m_position < other; }
-  bool operator>(const internal::Point& other) { return this->m_position > other; }
-  bool operator==(const internal::Point& other) { return this->m_position == other; }
-  bool operator!=(const internal::Point& other) { return this->m_position != other; }
+  bool operator<(const internal::Point& other) { return m_position < other; }
+  bool operator>(const internal::Point& other) { return m_position > other; }
+  bool operator==(const internal::Point& other) { return m_position == other; }
+  bool operator!=(const internal::Point& other) { return m_position != other; }
 };
 
 } // namespace smtk

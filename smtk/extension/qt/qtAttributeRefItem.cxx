@@ -73,18 +73,18 @@ QSize qtAttRefCombo::sizeHint() const
 void qtAttRefCombo::showPopup()
 {
   QList<QString> attNames;
-  if (!this->m_RefItem.lock())
+  if (!m_RefItem.lock())
   {
     this->QComboBox::showPopup();
     return;
   }
   // need to update the list, since it may be changed
   const RefItemDefinition* itemDef =
-    dynamic_cast<const RefItemDefinition*>(this->m_RefItem.lock()->definition().get());
+    dynamic_cast<const RefItemDefinition*>(m_RefItem.lock()->definition().get());
   qtAttRefComboInternal::init_Att_Names_and_NEW(attNames, itemDef);
   this->blockSignals(true);
 
-  RefItemPtr refitem = smtk::dynamic_pointer_cast<RefItem>(this->m_RefItem.lock());
+  RefItemPtr refitem = smtk::dynamic_pointer_cast<RefItem>(m_RefItem.lock());
   int elementIdx = this->property("ElementIndex").toInt();
   int setIndex = 0; // None
   if (refitem->isSet(elementIdx))

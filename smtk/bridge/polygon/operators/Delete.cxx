@@ -70,7 +70,7 @@ bool Delete::checkAndAddBoundingCells(const smtk::model::EntityRef& ent, bool de
     smtk::model::Edges ev = vv.edges();
     if (!ev.empty())
     {
-      ++this->m_numInUse;
+      ++m_numInUse;
       smtk::model::Edges::iterator it;
       if (deleteBoundingCells)
       {
@@ -89,7 +89,7 @@ bool Delete::checkAndAddBoundingCells(const smtk::model::EntityRef& ent, bool de
           if (edges.find(edge) == edges.end())
           {
             ok = false;
-            if (this->m_numWarnings < MAX_WARNINGS)
+            if (m_numWarnings < MAX_WARNINGS)
             {
               std::ostringstream msg;
               msg << "Vertex " << vv.name() << " is used by";
@@ -107,7 +107,7 @@ bool Delete::checkAndAddBoundingCells(const smtk::model::EntityRef& ent, bool de
               }
               smtkErrorMacro(this->log(), msg.str());
             }
-            ++this->m_numWarnings;
+            ++m_numWarnings;
             break;
           }
         }
@@ -129,7 +129,7 @@ bool Delete::checkAndAddBoundingCells(const smtk::model::EntityRef& ent, bool de
     smtk::model::Faces fe = ee.faces();
     if (!fe.empty())
     {
-      ++this->m_numInUse;
+      ++m_numInUse;
       smtk::model::Faces::iterator it;
       if (deleteBoundingCells)
       {
@@ -148,7 +148,7 @@ bool Delete::checkAndAddBoundingCells(const smtk::model::EntityRef& ent, bool de
           if (faces.find(face) == faces.end())
           {
             ok = false;
-            if (this->m_numWarnings < MAX_WARNINGS)
+            if (m_numWarnings < MAX_WARNINGS)
             {
               std::ostringstream msg;
               msg << "Edge " << ee.name() << " is used by ";
@@ -165,7 +165,7 @@ bool Delete::checkAndAddBoundingCells(const smtk::model::EntityRef& ent, bool de
               }
               smtkErrorMacro(this->log(), msg.str());
             }
-            ++this->m_numWarnings;
+            ++m_numWarnings;
           }
         }
         if (ok)
@@ -191,7 +191,7 @@ bool Delete::checkAndAddBoundingCells(const smtk::model::EntityRef& ent, bool de
       ent.as<smtk::model::AuxiliaryGeometry>().embeddedEntities<smtk::model::AuxiliaryGeometries>();
     if (!children.empty())
     {
-      ++this->m_numInUse;
+      ++m_numInUse;
       smtk::model::AuxiliaryGeometries::iterator it;
       if (deleteBoundingCells)
       {
@@ -204,7 +204,7 @@ bool Delete::checkAndAddBoundingCells(const smtk::model::EntityRef& ent, bool de
       else
       {
         ok = false;
-        if (this->m_numWarnings < MAX_WARNINGS)
+        if (m_numWarnings < MAX_WARNINGS)
         {
           std::ostringstream msg;
           msg << "Auxiliary geometry " << ent.name() << " is used by ";
@@ -221,7 +221,7 @@ bool Delete::checkAndAddBoundingCells(const smtk::model::EntityRef& ent, bool de
           }
           smtkErrorMacro(this->log(), msg.str());
         }
-        ++this->m_numWarnings;
+        ++m_numWarnings;
       }
     }
     else
@@ -365,8 +365,8 @@ Delete::Result Delete::operateInternal()
   smtk::model::FaceSet faces;
   smtk::model::EntityRefs other;
 
-  this->m_numInUse = 0;
-  this->m_numWarnings = 0;
+  m_numInUse = 0;
+  m_numWarnings = 0;
   bool ok = false;
   smtk::model::EntityRefArray::iterator eit;
 
@@ -431,9 +431,9 @@ Delete::Result Delete::operateInternal()
 
   if (!ok)
   {
-    if (this->m_numWarnings > MAX_WARNINGS)
+    if (m_numWarnings > MAX_WARNINGS)
     {
-      smtkErrorMacro(this->log(), "... and " << (this->m_numWarnings - MAX_WARNINGS)
+      smtkErrorMacro(this->log(), "... and " << (m_numWarnings - MAX_WARNINGS)
                                              << " more entities with dependents.");
     }
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
@@ -446,29 +446,29 @@ Delete::Result Delete::operateInternal()
                        << (deleteBoundaryCells ? " (including boundary cells)." : "."));
 
   resource->polygonSession()->consistentInternalDelete(
-    faces, this->m_modified, this->m_expunged, this->m_debugLevel > 0);
+    faces, m_modified, m_expunged, m_debugLevel > 0);
   resource->polygonSession()->consistentInternalDelete(
-    edges, this->m_modified, this->m_expunged, this->m_debugLevel > 0);
+    edges, m_modified, m_expunged, m_debugLevel > 0);
   resource->polygonSession()->consistentInternalDelete(
-    verts, this->m_modified, this->m_expunged, this->m_debugLevel > 0);
+    verts, m_modified, m_expunged, m_debugLevel > 0);
   resource->polygonSession()->consistentInternalDelete(
-    other, this->m_modified, this->m_expunged, this->m_debugLevel > 0);
+    other, m_modified, m_expunged, m_debugLevel > 0);
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
   smtk::attribute::ComponentItem::Ptr expunged = result->findComponent("expunged");
-  for (auto e = this->m_expunged.begin(); e != this->m_expunged.end(); ++e)
+  for (auto e = m_expunged.begin(); e != m_expunged.end(); ++e)
   {
     expunged->appendValue(e->component());
   }
 
   smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
-  for (auto m = this->m_modified.begin(); m != this->m_modified.end(); ++m)
+  for (auto m = m_modified.begin(); m != m_modified.end(); ++m)
   {
     modified->appendValue(m->component());
   }
 
-  smtkInfoMacro(this->log(), "Deleted " << this->m_expunged.size() << " of " << entities.size()
+  smtkInfoMacro(this->log(), "Deleted " << m_expunged.size() << " of " << entities.size()
                                         << " requested entities");
 
   return result;

@@ -46,7 +46,7 @@ Collection::Collection(smtk::resource::ManagerPtr manager)
 Collection::~Collection()
 {
   std::map<std::string, smtk::attribute::DefinitionPtr>::const_iterator it;
-  for (it = this->m_definitions.begin(); it != this->m_definitions.end(); it++)
+  for (it = m_definitions.begin(); it != m_definitions.end(); it++)
   {
     // Decouple all defintions from this Collection
     (*it).second->clearCollection();
@@ -73,11 +73,11 @@ smtk::attribute::DefinitionPtr Collection::createDefinition(
     }
   }
   smtk::attribute::DefinitionPtr newDef(new Definition(typeName, def, shared_from_this()));
-  this->m_definitions[typeName] = newDef;
+  m_definitions[typeName] = newDef;
   if (def)
   {
     // Need to add this new definition to the list of derived defs
-    this->m_derivedDefInfo[def].insert(newDef);
+    m_derivedDefInfo[def].insert(newDef);
   }
   return newDef;
 }
@@ -94,11 +94,11 @@ smtk::attribute::DefinitionPtr Collection::createDefinition(
   }
 
   smtk::attribute::DefinitionPtr newDef(new Definition(typeName, baseDef, shared_from_this()));
-  this->m_definitions[typeName] = newDef;
+  m_definitions[typeName] = newDef;
   if (baseDef)
   {
     // Need to add this new definition to the list of derived defs
-    this->m_derivedDefInfo[baseDef].insert(newDef);
+    m_derivedDefInfo[baseDef].insert(newDef);
   }
   return newDef;
 }
@@ -112,9 +112,8 @@ bool Collection::removeDefinition(DefinitionPtr def)
     return false;
   }
 
-  const auto childrenIt = this->m_derivedDefInfo.find(def);
-  const bool hasChildren =
-    childrenIt != this->m_derivedDefInfo.cend() && (*childrenIt).second.size() > 0;
+  const auto childrenIt = m_derivedDefInfo.find(def);
+  const bool hasChildren = childrenIt != m_derivedDefInfo.cend() && (*childrenIt).second.size() > 0;
   if (hasChildren)
   {
     std::cerr << "ERROR: Removing base Definition instances is not"
@@ -123,19 +122,19 @@ bool Collection::removeDefinition(DefinitionPtr def)
   }
 
   const auto baseDef = def->baseDefinition();
-  auto& siblings = this->m_derivedDefInfo[baseDef];
+  auto& siblings = m_derivedDefInfo[baseDef];
   const auto defIt = siblings.find(def);
   if (defIt != siblings.cend())
   {
     siblings.erase(defIt);
   }
 
-  if (childrenIt != this->m_derivedDefInfo.cend())
+  if (childrenIt != m_derivedDefInfo.cend())
   {
-    this->m_derivedDefInfo.erase(childrenIt);
+    m_derivedDefInfo.erase(childrenIt);
   }
 
-  this->m_definitions.erase(def->type());
+  m_definitions.erase(def->type());
 
   return true;
 }
@@ -156,9 +155,9 @@ smtk::attribute::AttributePtr Collection::createAttribute(
     return smtk::attribute::AttributePtr();
   }
   a = Attribute::New(name, def);
-  this->m_attributeClusters[def->type()].insert(a);
-  this->m_attributes[name] = a;
-  this->m_attributeIdMap[a->id()] = a;
+  m_attributeClusters[def->type()].insert(a);
+  m_attributes[name] = a;
+  m_attributeIdMap[a->id()] = a;
   return a;
 }
 
@@ -197,9 +196,9 @@ smtk::attribute::AttributePtr Collection::createAttribute(
 void Collection::definitions(std::vector<smtk::attribute::DefinitionPtr>& result) const
 {
   std::map<std::string, DefinitionPtr>::const_iterator it;
-  result.resize(this->m_definitions.size());
+  result.resize(m_definitions.size());
   int i;
-  for (it = this->m_definitions.begin(), i = 0; it != this->m_definitions.end(); it++, i++)
+  for (it = m_definitions.begin(), i = 0; it != m_definitions.end(); it++, i++)
   {
     result[i] = it->second;
   }
@@ -208,9 +207,9 @@ void Collection::definitions(std::vector<smtk::attribute::DefinitionPtr>& result
 void Collection::attributes(std::vector<smtk::attribute::AttributePtr>& result) const
 {
   std::map<std::string, AttributePtr>::const_iterator it;
-  result.resize(this->m_attributes.size());
+  result.resize(m_attributes.size());
   int i;
-  for (it = this->m_attributes.begin(), i = 0; it != this->m_attributes.end(); it++, i++)
+  for (it = m_attributes.begin(), i = 0; it != m_attributes.end(); it++, i++)
   {
     result[i] = it->second;
   }
@@ -228,9 +227,9 @@ smtk::attribute::AttributePtr Collection::createAttribute(
   }
 
   a = Attribute::New(name, def, id);
-  this->m_attributeClusters[def->type()].insert(a);
-  this->m_attributes[name] = a;
-  this->m_attributeIdMap[id] = a;
+  m_attributeClusters[def->type()].insert(a);
+  m_attributes[name] = a;
+  m_attributeIdMap[id] = a;
   return a;
 }
 
@@ -252,9 +251,9 @@ smtk::attribute::AttributePtr Collection::createAttribute(
     return smtk::attribute::AttributePtr();
   }
   a = Attribute::New(name, def, id);
-  this->m_attributeClusters[typeName].insert(a);
-  this->m_attributes[name] = a;
-  this->m_attributeIdMap[id] = a;
+  m_attributeClusters[typeName].insert(a);
+  m_attributes[name] = a;
+  m_attributeIdMap[id] = a;
   return a;
 }
 
@@ -265,9 +264,9 @@ bool Collection::removeAttribute(smtk::attribute::AttributePtr att)
   {
     return false;
   }
-  this->m_attributes.erase(att->name());
-  this->m_attributeIdMap.erase(att->id());
-  this->m_attributeClusters[att->type()].erase(att);
+  m_attributes.erase(att->name());
+  m_attributeIdMap.erase(att->id());
+  m_attributeClusters[att->type()].erase(att);
   return true;
 }
 
@@ -280,7 +279,7 @@ void Collection::findDefinitions(
   smtk::attribute::DefinitionPtr def;
   result.clear();
   std::map<std::string, smtk::attribute::DefinitionPtr>::const_iterator it;
-  for (it = this->m_definitions.begin(); it != this->m_definitions.end(); it++)
+  for (it = m_definitions.begin(); it != m_definitions.end(); it++)
   {
     def = (*it).second;
     // the mask could be 'ef', so this will return both 'e' and 'f'
@@ -307,16 +306,16 @@ void Collection::internalFindAttributes(
   if (!def->isAbstract())
   {
     std::map<std::string, std::set<smtk::attribute::AttributePtr> >::const_iterator it;
-    it = this->m_attributeClusters.find(def->type());
-    if (it != this->m_attributeClusters.end())
+    it = m_attributeClusters.find(def->type());
+    if (it != m_attributeClusters.end())
     {
       result.insert(result.end(), it->second.begin(), it->second.end());
     }
   }
   std::map<smtk::attribute::DefinitionPtr, smtk::attribute::WeakDefinitionPtrSet>::const_iterator
     dit;
-  dit = this->m_derivedDefInfo.find(def);
-  if (dit == this->m_derivedDefInfo.end())
+  dit = m_derivedDefInfo.find(def);
+  if (dit == m_derivedDefInfo.end())
   {
     return;
   }
@@ -346,8 +345,8 @@ void Collection::internalFindAllDerivedDefinitions(smtk::attribute::DefinitionPt
   }
   std::map<smtk::attribute::DefinitionPtr, smtk::attribute::WeakDefinitionPtrSet>::const_iterator
     dit;
-  dit = this->m_derivedDefInfo.find(def);
-  if (dit == this->m_derivedDefInfo.end())
+  dit = m_derivedDefInfo.find(def);
+  if (dit == m_derivedDefInfo.end())
   {
     return;
   }
@@ -371,9 +370,9 @@ bool Collection::rename(smtk::attribute::AttributePtr att, const std::string& ne
   {
     return false;
   }
-  this->m_attributes.erase(att->name());
+  m_attributes.erase(att->name());
   att->setName(newName);
-  this->m_attributes[newName] = att;
+  m_attributes[newName] = att;
   return true;
 }
 
@@ -402,7 +401,7 @@ void Collection::findBaseDefinitions(std::vector<smtk::attribute::DefinitionPtr>
   result.clear();
   // Insert all top most definitions into the queue
   std::map<std::string, smtk::attribute::DefinitionPtr>::const_iterator it;
-  for (it = this->m_definitions.begin(); it != this->m_definitions.end(); it++)
+  for (it = m_definitions.begin(); it != m_definitions.end(); it++)
   {
     if (!it->second->baseDefinition())
     {
@@ -416,7 +415,7 @@ void Collection::updateCategories()
   std::queue<attribute::DefinitionPtr> toBeProcessed;
   // Insert all top most definitions into the queue
   std::map<std::string, smtk::attribute::DefinitionPtr>::const_iterator it;
-  for (it = this->m_definitions.begin(); it != this->m_definitions.end(); it++)
+  for (it = m_definitions.begin(); it != m_definitions.end(); it++)
   {
     if (!it->second->baseDefinition())
     {
@@ -433,8 +432,8 @@ void Collection::updateCategories()
     def->setCategories();
     // Does this definition have derived defs from it?
     std::map<smtk::attribute::DefinitionPtr, smtk::attribute::WeakDefinitionPtrSet>::iterator dit =
-      this->m_derivedDefInfo.find(def);
-    if (dit != this->m_derivedDefInfo.end())
+      m_derivedDefInfo.find(def);
+    if (dit != m_derivedDefInfo.end())
     {
       smtk::attribute::WeakDefinitionPtrSet::iterator ddit;
       for (ddit = dit->second.begin(); ddit != dit->second.end(); ddit++)
@@ -446,10 +445,10 @@ void Collection::updateCategories()
   }
   // Now all of the definitions have been processed we need to combine all
   // of their categories to form the Collections
-  this->m_categories.clear();
-  for (it = this->m_definitions.begin(); it != this->m_definitions.end(); it++)
+  m_categories.clear();
+  for (it = m_definitions.begin(); it != m_definitions.end(); it++)
   {
-    this->m_categories.insert(it->second->categories().begin(), it->second->categories().end());
+    m_categories.insert(it->second->categories().begin(), it->second->categories().end());
   }
 }
 
@@ -458,9 +457,9 @@ void Collection::derivedDefinitions(
 {
   std::map<smtk::attribute::DefinitionPtr, smtk::attribute::WeakDefinitionPtrSet>::const_iterator
     it;
-  it = this->m_derivedDefInfo.find(def);
+  it = m_derivedDefInfo.find(def);
   result.clear();
-  if (it == this->m_derivedDefInfo.end())
+  if (it == m_derivedDefInfo.end())
   {
     return;
   }
@@ -495,7 +494,7 @@ smtk::attribute::ConstDefinitionPtr Collection::findIsUniqueBaseClass(
 
 void Collection::setRefModelManager(smtk::model::ManagerPtr refModelMgr)
 {
-  this->m_refModelMgr = refModelMgr;
+  m_refModelMgr = refModelMgr;
 }
 
 void Collection::updateDerivedDefinitionIndexOffsets(smtk::attribute::DefinitionPtr def)
@@ -517,14 +516,14 @@ void Collection::updateDerivedDefinitionIndexOffsets(smtk::attribute::Definition
 
 void Collection::addAdvanceLevel(int level, std::string label, const double* l_color)
 {
-  this->m_advLevels[level] = label;
+  m_advLevels[level] = label;
   this->setAdvanceLevelColor(level, l_color);
 }
 
 const double* Collection::advanceLevelColor(int level) const
 {
-  std::map<int, std::vector<double> >::const_iterator it = this->m_advLevelColors.find(level);
-  if (it != this->m_advLevelColors.end() && it->second.size() == 4)
+  std::map<int, std::vector<double> >::const_iterator it = m_advLevelColors.find(level);
+  if (it != m_advLevelColors.end() && it->second.size() == 4)
   {
     return &it->second[0];
   }
@@ -533,10 +532,10 @@ const double* Collection::advanceLevelColor(int level) const
 
 void Collection::setAdvanceLevelColor(int level, const double* l_color)
 {
-  if (l_color && this->m_advLevels.find(level) != this->m_advLevels.end())
+  if (l_color && m_advLevels.find(level) != m_advLevels.end())
   {
     std::vector<double> acolor(l_color, l_color + 4);
-    this->m_advLevelColors[level] = acolor;
+    m_advLevelColors[level] = acolor;
   }
 }
 
@@ -814,13 +813,13 @@ smtk::attribute::AttributePtr Collection::copyAttribute(
 
 void Collection::addView(smtk::view::ViewPtr v)
 {
-  this->m_views[v->name()] = v;
+  m_views[v->name()] = v;
 }
 
 smtk::view::ViewPtr Collection::findViewByType(const std::string& vtype) const
 {
   std::map<std::string, smtk::view::ViewPtr>::const_iterator it;
-  for (it = this->m_views.begin(); it != this->m_views.end(); ++it)
+  for (it = m_views.begin(); it != m_views.end(); ++it)
   {
     if (it->second->type() == vtype)
     {
@@ -834,7 +833,7 @@ smtk::view::ViewPtr Collection::findTopLevelView() const
 {
   std::map<std::string, smtk::view::ViewPtr>::const_iterator it;
   bool isTopLevel;
-  for (it = this->m_views.begin(); it != this->m_views.end(); ++it)
+  for (it = m_views.begin(); it != m_views.end(); ++it)
   {
     if (it->second->details().attributeAsBool("TopLevel", isTopLevel) && isTopLevel)
     {
@@ -849,7 +848,7 @@ std::vector<smtk::view::ViewPtr> Collection::findTopLevelViews() const
   std::map<std::string, smtk::view::ViewPtr>::const_iterator it;
   bool isTopLevel;
   std::vector<smtk::view::ViewPtr> topViews;
-  for (it = this->m_views.begin(); it != this->m_views.end(); ++it)
+  for (it = m_views.begin(); it != m_views.end(); ++it)
   {
     if (it->second->details().attributeAsBool("TopLevel", isTopLevel) && isTopLevel)
     {

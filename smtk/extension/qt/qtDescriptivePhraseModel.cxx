@@ -95,7 +95,7 @@ qtDescriptivePhraseModel::qtDescriptivePhraseModel(QObject* owner)
   , m_visibleIconURL(":/icons/display/eyeball.png")
   , m_invisibleIconURL(":/icons/display/eyeballClosed.png")
 {
-  this->m_deleteOnRemoval = true;
+  m_deleteOnRemoval = true;
   this->P = new Internal;
   initIconResource();
 }
@@ -124,12 +124,12 @@ void qtDescriptivePhraseModel::setPhraseModel(smtk::view::PhraseModelPtr model)
   if (m_model)
   {
     m_model->unobserve(m_modelObserver);
-    if (!this->m_model->root()->subphrases().empty())
+    if (!m_model->root()->subphrases().empty())
     {
       // Provide an invalid parent since you want to clear all
       this->beginRemoveRows(
-        QModelIndex(), 0, static_cast<int>(this->m_model->root()->subphrases().size()));
-      this->m_model = smtk::view::PhraseModelPtr();
+        QModelIndex(), 0, static_cast<int>(m_model->root()->subphrases().size()));
+      m_model = smtk::view::PhraseModelPtr();
       this->endRemoveRows();
     }
   }
@@ -148,7 +148,7 @@ void qtDescriptivePhraseModel::setPhraseModel(smtk::view::PhraseModelPtr model)
 
 QModelIndex qtDescriptivePhraseModel::index(int row, int column, const QModelIndex& owner) const
 {
-  if (!this->m_model || this->m_model->root()->subphrases().empty())
+  if (!m_model || m_model->root()->subphrases().empty())
     return QModelIndex();
 
   if (owner.isValid() && owner.column() != 0)
@@ -187,7 +187,7 @@ QModelIndex qtDescriptivePhraseModel::parent(const QModelIndex& child) const
 
   view::DescriptivePhrasePtr childPhrase = this->getItem(child);
   view::DescriptivePhrasePtr parentPhrase = childPhrase->parent();
-  if (parentPhrase == this->m_model->root())
+  if (parentPhrase == m_model->root())
   {
     return QModelIndex();
   }
@@ -216,7 +216,7 @@ bool qtDescriptivePhraseModel::hasChildren(const QModelIndex& owner) const
     }
   }
   // Return whether the toplevel m_phrases list is empty.
-  return (this->m_model ? (this->m_model->root()->subphrases().empty() ? false : true) : false);
+  return (m_model ? (m_model->root()->subphrases().empty() ? false : true) : false);
 }
 
 /// The number of rows in the table "underneath" \a owner.
@@ -568,25 +568,25 @@ void qtDescriptivePhraseModel::sortDataWithContainer(T& sorter, Qt::SortOrder or
 {
   smtk::common::UUIDArray::iterator ai;
   // Insertion into the set sorts the UUIDs.
-  for (ai = this->m_phrases.begin(); ai != this->m_phrases.end(); ++ai)
+  for (ai = m_phrases.begin(); ai != m_phrases.end(); ++ai)
     {
     sorter.insert(*ai);
     }
   // Now we reset m_phrases and m_reverse and recreate based on the sorter's order.
-  this->m_phrases.clear();
-  this->m_reverse.clear();
+  m_phrases.clear();
+  m_reverse.clear();
   int i;
   if (order == Qt::AscendingOrder)
     {
     typename T::iterator si;
     for (i = 0, si = sorter.begin(); si != sorter.end(); ++si, ++i)
       {
-      this->m_phrases.push_back(*si);
-      this->m_reverse[*si] = i;
+      m_phrases.push_back(*si);
+      m_reverse[*si] = i;
       / *
       std::cout << i << "  " << *si << "  " <<
-        (this->m_manager->hasStringProperty(*si, "name") ?
-         this->m_manager->stringProperty(*si, "name")[0].c_str() : "--") << "\n";
+        (m_manager->hasStringProperty(*si, "name") ?
+         m_manager->stringProperty(*si, "name")[0].c_str() : "--") << "\n";
          * /
       }
     }
@@ -595,12 +595,12 @@ void qtDescriptivePhraseModel::sortDataWithContainer(T& sorter, Qt::SortOrder or
     typename T::reverse_iterator si;
     for (i = 0, si = sorter.rbegin(); si != sorter.rend(); ++si, ++i)
       {
-      this->m_phrases.push_back(*si);
-      this->m_reverse[*si] = i;
+      m_phrases.push_back(*si);
+      m_reverse[*si] = i;
       / *
       std::cout << i << "  " << *si << "  " <<
-        (this->m_manager->hasStringProperty(*si, "name") ?
-         this->m_manager->stringProperty(*si, "name")[0].c_str() : "--") << "\n";
+        (m_manager->hasStringProperty(*si, "name") ?
+         m_manager->stringProperty(*si, "name")[0].c_str() : "--") << "\n";
          * /
       }
     }
@@ -618,7 +618,7 @@ view::DescriptivePhrasePtr qtDescriptivePhraseModel::getItem(const QModelIndex& 
     {
       //std::cout << "  Missing index " << phraseIdx << "\n";
       std::cout.flush();
-      return this->m_model->root();
+      return m_model->root();
     }
     view::WeakDescriptivePhrasePtr weakPhrase = it->second;
     view::DescriptivePhrasePtr phrase;
@@ -631,7 +631,7 @@ view::DescriptivePhrasePtr qtDescriptivePhraseModel::getItem(const QModelIndex& 
       this->P->ptrs.erase(phraseIdx);
     }
   }
-  return this->m_model->root();
+  return m_model->root();
 }
 
 QModelIndex qtDescriptivePhraseModel::indexFromPath(const std::vector<int>& path) const

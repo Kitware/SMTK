@@ -42,14 +42,14 @@ bool DateTime::setComponents(
     // If time zone specified, convert to UTC
     boost::local_time::local_date_time local(ptimeDate, ptimeTime, timeZone->boostPointer(),
       boost::local_time::local_date_time::NOT_DATE_TIME_ON_ERROR);
-    this->m_ptime = local.utc_time();
+    m_ptime = local.utc_time();
     // std::cout << "local: " << local
-    //           << "\nm_ptime: " << this->m_ptime << std::endl;
+    //           << "\nm_ptime: " << m_ptime << std::endl;
   }
   else
   {
     // If no tz, use as is
-    this->m_ptime = boost::posix_time::ptime(ptimeDate, ptimeTime);
+    m_ptime = boost::posix_time::ptime(ptimeDate, ptimeTime);
   }
 
   return this->isSet();
@@ -66,7 +66,7 @@ bool DateTime::components(
   if (timeZone && timeZone->isSet() && !timeZone->isUTC())
   {
     // Convert to local time
-    boost::local_time::local_date_time local(this->m_ptime, timeZone->boostPointer());
+    boost::local_time::local_date_time local(m_ptime, timeZone->boostPointer());
 
     // Convert date
     boost::gregorian::date localDate = local.date();
@@ -77,7 +77,7 @@ bool DateTime::components(
     // Convert time
     boost::posix_time::ptime ptimeLocal = local.local_time();
     boost::posix_time::time_duration workingTime = ptimeLocal.time_of_day();
-    std::cout << "m_ptime " << this->m_ptime << std::endl;
+    std::cout << "m_ptime " << m_ptime << std::endl;
     std::cout << "workingTime " << workingTime << std::endl;
     hr = workingTime.hours();
     min = workingTime.minutes();
@@ -88,13 +88,13 @@ bool DateTime::components(
   }
 
   // else use ptime
-  boost::gregorian::date ptimeDate = this->m_ptime.date();
+  boost::gregorian::date ptimeDate = m_ptime.date();
   yr = ptimeDate.year();
   month = ptimeDate.month();
   day = ptimeDate.day();
 
-  boost::posix_time::time_duration ptimeTime = this->m_ptime.time_of_day();
-  std::cout << "m_ptime " << this->m_ptime << std::endl;
+  boost::posix_time::time_duration ptimeTime = m_ptime.time_of_day();
+  std::cout << "m_ptime " << m_ptime << std::endl;
   std::cout << "ptimeTime " << ptimeTime << std::endl;
   hr = ptimeTime.hours();
   min = ptimeTime.minutes();
@@ -106,7 +106,7 @@ bool DateTime::components(
 
 bool DateTime::isSet() const
 {
-  return !this->m_ptime.is_special();
+  return !m_ptime.is_special();
 }
 
 // Parse input string in canonical format only: YYYYMMDDThhmmss[.zzzzzz]
@@ -115,13 +115,13 @@ bool DateTime::deserialize(const std::string& ts)
   // Special case for uninitialized
   if (ts == "not-a-date-time")
   {
-    this->m_ptime = boost::posix_time::ptime(boost::posix_time::not_a_date_time);
+    m_ptime = boost::posix_time::ptime(boost::posix_time::not_a_date_time);
     return true;
   }
 
   try
   {
-    this->m_ptime = boost::posix_time::from_iso_string(ts);
+    m_ptime = boost::posix_time::from_iso_string(ts);
   }
   catch (std::exception& e)
   {
@@ -131,7 +131,7 @@ bool DateTime::deserialize(const std::string& ts)
     (void)e;
     ;
 #endif
-    this->m_ptime = boost::posix_time::not_a_date_time;
+    m_ptime = boost::posix_time::not_a_date_time;
     return false;
   }
 
@@ -141,7 +141,7 @@ bool DateTime::deserialize(const std::string& ts)
 // Converts data to canonical string format only: YYYYMMDDThhmmss.zzzzzz
 std::string DateTime::serialize() const
 {
-  return boost::posix_time::to_iso_string(this->m_ptime);
+  return boost::posix_time::to_iso_string(m_ptime);
 }
 
 /// Parse string using boost time_from_string(), NOT ISO compliant
@@ -149,7 +149,7 @@ bool DateTime::parseBoostFormat(const std::string& ts)
 {
   try
   {
-    this->m_ptime = boost::posix_time::time_from_string(ts);
+    m_ptime = boost::posix_time::time_from_string(ts);
   }
   catch (std::exception& e)
   {
@@ -159,7 +159,7 @@ bool DateTime::parseBoostFormat(const std::string& ts)
     (void)e;
     ;
 #endif
-    this->m_ptime = boost::posix_time::not_a_date_time;
+    m_ptime = boost::posix_time::not_a_date_time;
     return false;
   }
 
@@ -168,17 +168,17 @@ bool DateTime::parseBoostFormat(const std::string& ts)
 
 bool DateTime::operator==(const DateTime& dt) const
 {
-  return this->m_ptime == dt.m_ptime;
+  return m_ptime == dt.m_ptime;
 }
 
 bool DateTime::operator<(const DateTime& dt) const
 {
-  return this->m_ptime < dt.m_ptime;
+  return m_ptime < dt.m_ptime;
 }
 
 bool DateTime::operator>(const DateTime& dt) const
 {
-  return this->m_ptime > dt.m_ptime;
+  return m_ptime > dt.m_ptime;
 }
 
 } // namespace common

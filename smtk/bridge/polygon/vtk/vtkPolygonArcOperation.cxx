@@ -36,20 +36,20 @@ vtkPolygonArcOperation::~vtkPolygonArcOperation()
 
 bool vtkPolygonArcOperation::AbleToOperate()
 {
-  bool able2Op = this->m_smtkOp.lock() &&
-    (this->m_smtkOp.lock()->uniqueName() == "smtk::bridge::polygon::TweakEdge" ||
-                   this->m_smtkOp.lock()->uniqueName() == "smtk::bridge::polygon::CreateEdge") &&
-    this->m_smtkOp.lock()->ableToOperate();
+  bool able2Op = m_smtkOp.lock() &&
+    (m_smtkOp.lock()->uniqueName() == "smtk::bridge::polygon::TweakEdge" ||
+                   m_smtkOp.lock()->uniqueName() == "smtk::bridge::polygon::CreateEdge") &&
+    m_smtkOp.lock()->ableToOperate();
   if (!able2Op)
   {
     return able2Op;
   }
 
   // for create-edge operation, we only handle "interactive widget" case
-  if (this->m_smtkOp.lock()->uniqueName() == "smtk::bridge::polygon::CreateEdge")
+  if (m_smtkOp.lock()->uniqueName() == "smtk::bridge::polygon::CreateEdge")
   {
     smtk::attribute::IntItem::Ptr optypeItem =
-      this->m_smtkOp.lock()->parameters()->findInt("construction method");
+      m_smtkOp.lock()->parameters()->findInt("construction method");
     able2Op = optypeItem && (optypeItem->discreteIndex(0) == 2);
   }
   if (!able2Op)
@@ -63,10 +63,10 @@ bool vtkPolygonArcOperation::AbleToOperate()
     this->ArcRepresentation ? this->ArcRepresentation->GetContourRepresentationAsPolyData() : NULL;
   able2Op = arcPoly != NULL && arcPoly->GetNumberOfLines() > 0 && arcPoly->GetNumberOfPoints() >= 2;
 
-  if (able2Op && this->m_smtkOp.lock()->uniqueName() == "smtk::bridge::polygon::TweakEdge")
+  if (able2Op && m_smtkOp.lock()->uniqueName() == "smtk::bridge::polygon::TweakEdge")
   {
     smtk::model::Edge edge =
-      this->m_smtkOp.lock()->parameters()->associations()->value().as<smtk::model::Edge>();
+      m_smtkOp.lock()->parameters()->associations()->value().as<smtk::model::Edge>();
     able2Op = edge.isValid();
     ;
   }
@@ -79,15 +79,15 @@ smtk::operation::Operation::Result vtkPolygonArcOperation::Operate()
   // ONLY for create-edge-with-widget and edit-edge operations,
   if (!this->AbleToOperate())
   {
-    return this->m_smtkOp.lock()->createResult(smtk::operation::Operation::Outcome::FAILED);
+    return m_smtkOp.lock()->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   smtk::operation::Operation::Result edgeResult;
-  smtk::attribute::AttributePtr spec = this->m_smtkOp.lock()->parameters();
+  smtk::attribute::AttributePtr spec = m_smtkOp.lock()->parameters();
   vtkPolyData* pd = this->ArcRepresentation->GetContourRepresentationAsPolyData();
   vtkCellArray* lines = pd->GetLines();
 
-  bool isTweak = this->m_smtkOp.lock()->uniqueName() == "smtk::bridge::polygon::TweakEdge";
+  bool isTweak = m_smtkOp.lock()->uniqueName() == "smtk::bridge::polygon::TweakEdge";
   spec->findAs<smtk::attribute::IntItem>("coordinates", smtk::attribute::ALL_CHILDREN)
     ->setValue(3); // number of coordinates per point
   smtk::attribute::DoubleItem::Ptr pointsItem =
@@ -132,7 +132,7 @@ smtk::operation::Operation::Result vtkPolygonArcOperation::Operate()
   }
   offsetsItem->setValues(indices.begin(), indices.end());
 
-  edgeResult = this->m_smtkOp.lock()->operate();
+  edgeResult = m_smtkOp.lock()->operate();
 
   return edgeResult;
 }

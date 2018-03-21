@@ -127,7 +127,7 @@ public:
   smtk::resource::SetPtr resources(bool skipUpdate = false)
   {
     (void)skipUpdate;
-    return this->m_resources;
+    return m_resources;
   }
 
   const UUIDsToAttributeAssignments& attributeAssignments() const;
@@ -207,8 +207,8 @@ public:
   bool removeFloatProperty(const smtk::common::UUID& entity, const std::string& propName);
   const UUIDWithFloatProperties floatPropertiesForEntity(const smtk::common::UUID& entity) const;
   UUIDWithFloatProperties floatPropertiesForEntity(const smtk::common::UUID& entity);
-  UUIDsToFloatData& floatProperties() { return *this->m_floatData; }
-  UUIDsToFloatData const& floatProperties() const { return *this->m_floatData; }
+  UUIDsToFloatData& floatProperties() { return *m_floatData; }
+  UUIDsToFloatData const& floatProperties() const { return *m_floatData; }
 
   void setStringProperty(const smtk::common::UUID& entity, const std::string& propName,
     const smtk::model::String& propValue);
@@ -222,8 +222,8 @@ public:
   bool removeStringProperty(const smtk::common::UUID& entity, const std::string& propName);
   const UUIDWithStringProperties stringPropertiesForEntity(const smtk::common::UUID& entity) const;
   UUIDWithStringProperties stringPropertiesForEntity(const smtk::common::UUID& entity);
-  UUIDsToStringData& stringProperties() { return *this->m_stringData; }
-  UUIDsToStringData const& stringProperties() const { return *this->m_stringData; }
+  UUIDsToStringData& stringProperties() { return *m_stringData; }
+  UUIDsToStringData const& stringProperties() const { return *m_stringData; }
 
   void setIntegerProperty(
     const smtk::common::UUID& entity, const std::string& propName, smtk::model::Integer propValue);
@@ -238,8 +238,8 @@ public:
   const UUIDWithIntegerProperties integerPropertiesForEntity(
     const smtk::common::UUID& entity) const;
   UUIDWithIntegerProperties integerPropertiesForEntity(const smtk::common::UUID& entity);
-  UUIDsToIntegerData& integerProperties() { return *this->m_integerData; }
-  UUIDsToIntegerData const& integerProperties() const { return *this->m_integerData; }
+  UUIDsToIntegerData& integerProperties() { return *m_integerData; }
+  UUIDsToIntegerData const& integerProperties() const { return *m_integerData; }
 
   smtk::common::UUID modelOwningEntity(const smtk::common::UUID& uid) const;
   smtk::common::UUID sessionOwningEntity(const smtk::common::UUID& uid) const;
@@ -489,7 +489,7 @@ Collection Manager::findEntitiesByPropertyAs(const std::string& pname, Integer p
 {
   Collection collection;
   UUIDWithIntegerProperties pit;
-  for (pit = this->m_integerData->begin(); pit != this->m_integerData->end(); ++pit)
+  for (pit = m_integerData->begin(); pit != m_integerData->end(); ++pit)
   {
     PropertyNameWithIntegers it;
     for (it = pit->second.begin(); it != pit->second.end(); ++it)
@@ -510,7 +510,7 @@ Collection Manager::findEntitiesByPropertyAs(const std::string& pname, const Int
 {
   Collection collection;
   UUIDWithIntegerProperties pit;
-  for (pit = this->m_integerData->begin(); pit != this->m_integerData->end(); ++pit)
+  for (pit = m_integerData->begin(); pit != m_integerData->end(); ++pit)
   {
     PropertyNameWithIntegers it;
     for (it = pit->second.begin(); it != pit->second.end(); ++it)
@@ -531,7 +531,7 @@ Collection Manager::findEntitiesByPropertyAs(const std::string& pname, Float pva
 {
   Collection collection;
   UUIDWithFloatProperties pit;
-  for (pit = this->m_floatData->begin(); pit != this->m_floatData->end(); ++pit)
+  for (pit = m_floatData->begin(); pit != m_floatData->end(); ++pit)
   {
     PropertyNameWithFloats it;
     for (it = pit->second.begin(); it != pit->second.end(); ++it)
@@ -552,7 +552,7 @@ Collection Manager::findEntitiesByPropertyAs(const std::string& pname, const Flo
 {
   Collection collection;
   UUIDWithFloatProperties pit;
-  for (pit = this->m_floatData->begin(); pit != this->m_floatData->end(); ++pit)
+  for (pit = m_floatData->begin(); pit != m_floatData->end(); ++pit)
   {
     PropertyNameWithFloats it;
     for (it = pit->second.begin(); it != pit->second.end(); ++it)
@@ -573,7 +573,7 @@ Collection Manager::findEntitiesByPropertyAs(const std::string& pname, const std
 {
   Collection collection;
   UUIDWithStringProperties pit;
-  for (pit = this->m_stringData->begin(); pit != this->m_stringData->end(); ++pit)
+  for (pit = m_stringData->begin(); pit != m_stringData->end(); ++pit)
   {
     PropertyNameWithStrings it;
     for (it = pit->second.begin(); it != pit->second.end(); ++it)
@@ -594,7 +594,7 @@ Collection Manager::findEntitiesByPropertyAs(const std::string& pname, const Str
 {
   Collection collection;
   UUIDWithStringProperties pit;
-  for (pit = this->m_stringData->begin(); pit != this->m_stringData->end(); ++pit)
+  for (pit = m_stringData->begin(); pit != m_stringData->end(); ++pit)
   {
     PropertyNameWithStrings it;
     for (it = pit->second.begin(); it != pit->second.end(); ++it)

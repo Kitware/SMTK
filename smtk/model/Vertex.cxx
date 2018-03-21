@@ -35,7 +35,7 @@ double* Vertex::coordinates() const
   ManagerPtr mgr = this->manager();
   if (this->isValid())
   {
-    UUIDWithTessellation tessRec = mgr->tessellations().find(this->m_entity);
+    UUIDWithTessellation tessRec = mgr->tessellations().find(m_entity);
     if (tessRec != mgr->tessellations().end())
     {
       if (!tessRec->second.coords().empty())
@@ -54,7 +54,7 @@ smtk::common::Vector3d Vertex::coordinates() const
   if (this->isValid())
     {
     UUIDWithTessellation tessRec =
-      mgr->tessellations().find(this->m_entity);
+      mgr->tessellations().find(m_entity);
     if (tessRec != mgr->tessellations().end())
       {
       if (!tessRec->second.coords().empty())

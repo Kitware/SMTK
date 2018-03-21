@@ -75,7 +75,7 @@ void ArrangementHelper::addArrangement(const smtk::model::EntityRef& parent,
   //   << " iter_pos: " << iter_pos << "\n";
 
   typedef std::set<Spec>::const_iterator iter;
-  std::pair<iter, bool> insertedInfo = this->m_arrangements.insert(s);
+  std::pair<iter, bool> insertedInfo = m_arrangements.insert(s);
   if (insertedInfo.second == false)
   { //already added just update the iter_pos
     insertedInfo.first->iter_pos = iter_pos;
@@ -84,9 +84,9 @@ void ArrangementHelper::addArrangement(const smtk::model::EntityRef& parent,
 
 void ArrangementHelper::resetArrangements()
 {
-  this->m_arrangements.clear();
-  this->m_edgeUseSenses.clear();
-  this->m_regionIds.clear();
+  m_arrangements.clear();
+  m_edgeUseSenses.clear();
+  m_regionIds.clear();
 }
 
 /// This method is called after all related entities have been added and before arrangement updates are made.
@@ -98,7 +98,7 @@ void ArrangementHelper::doneAddingEntities(
   smtk::model::EntityRefs::const_iterator eit;
   if (flags & smtk::model::SESSION_PROPERTIES)
   {
-    for (eit = this->m_marked.begin(); eit != this->m_marked.end(); ++eit)
+    for (eit = m_marked.begin(); eit != m_marked.end(); ++eit)
     {
       smtk::model::EntityRef mutableRef(*eit);
       vtkModelItem* dscEntity = sess->entityForUUID(eit->entity());
@@ -154,7 +154,7 @@ void ArrangementHelper::doneAddingEntities(
   // IV. Add tessellations for the entities.
   if (flags & smtk::model::SESSION_TESSELLATION)
   {
-    for (eit = this->m_marked.begin(); eit != this->m_marked.end(); ++eit)
+    for (eit = m_marked.begin(); eit != m_marked.end(); ++eit)
     {
       smtk::model::EntityRef mutableRef(*eit);
       vtkModelItem* dscEntity = sess->entityForUUID(eit->entity());
@@ -175,13 +175,13 @@ int ArrangementHelper::findOrAssignSense(vtkModelEdgeUse* eu1)
   if (!eu2)
     return -1;
   vtkModelEdge* edge = eu1->GetModelEdge();
-  EdgeToUseSenseMap::iterator eit = this->m_edgeUseSenses.find(edge);
-  if (eit == this->m_edgeUseSenses.end())
+  EdgeToUseSenseMap::iterator eit = m_edgeUseSenses.find(edge);
+  if (eit == m_edgeUseSenses.end())
   {
     EdgeUseToSenseMap entry;
     entry[eu1] = 0;
     entry[eu2] = 0;
-    this->m_edgeUseSenses[edge] = entry;
+    m_edgeUseSenses[edge] = entry;
     return 0;
   }
   EdgeUseToSenseMap::iterator sit = eit->second.find(eu1);
@@ -225,25 +225,25 @@ T* EntityFromId(const smtk::common::UUID& entId, std::map<smtk::common::UUID, T*
 /// Given a discrete-model region (volume), return a UUID for it.
 smtk::common::UUID ArrangementHelper::useForRegion(vtkModelRegion* region)
 {
-  return IdForEntity(region, this->m_regionIds, this->m_regions);
+  return IdForEntity(region, m_regionIds, m_regions);
 }
 
 /// Given the UUID for a VolumeUse, return the discrete-model Region associated with it.
 vtkModelRegion* ArrangementHelper::regionFromUseId(const smtk::common::UUID& volumeUseId)
 {
-  return EntityFromId(volumeUseId, this->m_regions);
+  return EntityFromId(volumeUseId, m_regions);
 }
 
 /// Given a discrete-model edge-use, return a UUID for a chain bounding it.
 smtk::common::UUID ArrangementHelper::chainForEdgeUse(vtkModelEdgeUse* edgeUse)
 {
-  return IdForEntity(edgeUse, this->m_chainIds, this->m_chains);
+  return IdForEntity(edgeUse, m_chainIds, m_chains);
 }
 
 /// Given the UUID for a chain, return the discrete-model edge-use associated with it.
 vtkModelEdgeUse* ArrangementHelper::edgeUseFromChainId(const smtk::common::UUID& chainId)
 {
-  return EntityFromId(chainId, this->m_chains);
+  return EntityFromId(chainId, m_chains);
 }
 
 } // namespace discrete

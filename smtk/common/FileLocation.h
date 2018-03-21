@@ -49,7 +49,7 @@ public:
   std::string relativePath() const;
   std::string referencePath() const;
 
-  bool empty() const { return this->m_filePath.empty(); }
+  bool empty() const { return m_filePath.empty(); }
   void clear()
   {
     m_filePath.clear();

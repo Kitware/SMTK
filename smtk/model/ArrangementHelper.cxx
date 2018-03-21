@@ -37,21 +37,21 @@ void ArrangementHelper::doneAddingEntities(SessionPtr sess, SessionInfoBits flag
 void ArrangementHelper::mark(const EntityRef& ent, bool m)
 {
   if (m)
-    this->m_marked.insert(ent);
+    m_marked.insert(ent);
   else
-    this->m_marked.erase(ent);
+    m_marked.erase(ent);
 }
 
 /// Return whether an entity is marked or not.
 bool ArrangementHelper::isMarked(const EntityRef& ent) const
 {
-  return this->m_marked.find(ent) == this->m_marked.end() ? false : true;
+  return m_marked.find(ent) == m_marked.end() ? false : true;
 }
 
 /// Clear all the marks so that isMarked() returns false for any argument.
 void ArrangementHelper::resetMarks()
 {
-  this->m_marked.clear();
+  m_marked.clear();
 }
 
 /**\brief Remove all relationships, arrangements, tessellations, and

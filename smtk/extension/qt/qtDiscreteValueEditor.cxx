@@ -36,8 +36,8 @@ public:
     , m_elementIndex(elementIdx)
     , m_childrenLayout(childLayout)
   {
-    this->m_hintChildWidth = 0;
-    this->m_hintChildHeight = 0;
+    m_hintChildWidth = 0;
+    m_hintChildHeight = 0;
   }
 
   QPointer<qtInputsItem> m_inputItem;
@@ -52,11 +52,11 @@ public:
 
   void clearChildItems()
   {
-    for (int i = 0; i < this->m_childItems.count(); i++)
+    for (int i = 0; i < m_childItems.count(); i++)
     {
-      delete this->m_childItems.value(i);
+      delete m_childItems.value(i);
     }
-    this->m_childItems.clear();
+    m_childItems.clear();
   }
 };
 

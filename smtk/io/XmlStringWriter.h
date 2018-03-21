@@ -56,16 +56,16 @@ public:
   //Control which sections of the attribute collection should be writtern out
   // By Default all sections are processed.  These are advance options!!
   // If val is false then defintions will not be saved
-  void includeDefinitions(bool val) { this->m_includeDefinitions = val; }
+  void includeDefinitions(bool val) { m_includeDefinitions = val; }
 
   // If val is false then instances will not be saved
-  void includeInstances(bool val) { this->m_includeInstances = val; }
+  void includeInstances(bool val) { m_includeInstances = val; }
 
   // If val is false then model information will not be saved
-  void includeModelInformation(bool val) { this->m_includeModelInformation = val; }
+  void includeModelInformation(bool val) { m_includeModelInformation = val; }
 
   // If val is false then views will not be saved
-  void includeViews(bool val) { this->m_includeViews = val; }
+  void includeViews(bool val) { m_includeViews = val; }
 
 protected:
   smtk::attribute::CollectionPtr m_collection;

@@ -121,15 +121,15 @@ public:
   {
   }
   virtual ~Logger();
-  std::size_t numberOfRecords() const { return this->m_records.size(); }
+  std::size_t numberOfRecords() const { return m_records.size(); }
 
-  bool hasErrors() const { return this->m_hasErrors; }
+  bool hasErrors() const { return m_hasErrors; }
 
   void addRecord(
     Severity s, const std::string& m, const std::string& fname = "", unsigned int line = 0);
 
-  const std::vector<Record>& records() const { return this->m_records; }
-  const Record& record(std::size_t i) const { return this->m_records[i]; }
+  const std::vector<Record>& records() const { return m_records; }
+  const Record& record(std::size_t i) const { return m_records[i]; }
 
   std::string toString(std::size_t i, bool includeSourceLoc = false) const;
   std::string toString(std::size_t i, std::size_t j, bool includeSourceLoc = false) const;

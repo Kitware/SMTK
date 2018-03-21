@@ -92,9 +92,9 @@ CreateEdgesOperation::Result CreateEdgesOperation::operateInternal()
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  this->m_op->SetShowEdges(1);
-  this->m_op->Operate(modelWrapper);
-  bool ok = this->m_op->GetOperateSucceeded() != 0;
+  m_op->SetShowEdges(1);
+  m_op->Operate(modelWrapper);
+  bool ok = m_op->GetOperateSucceeded() != 0;
   Result result = this->createResult(ok ? smtk::operation::Operation::Outcome::SUCCEEDED
                                         : smtk::operation::Operation::Outcome::FAILED);
 

@@ -36,15 +36,14 @@ PointConnectivity::~PointConnectivity()
 
 PointConnectivity& PointConnectivity::operator=(const PointConnectivity& other)
 {
-  this->m_parent = other.m_parent;
-  this->m_connectivity = other.m_connectivity;
+  m_parent = other.m_parent;
+  m_connectivity = other.m_connectivity;
   return *this;
 }
 
 bool PointConnectivity::operator==(const PointConnectivity& other) const
 {
-  return this->m_parent == other.m_parent &&
-    this->m_connectivity->equal(other.m_connectivity.get());
+  return m_parent == other.m_parent && m_connectivity->equal(other.m_connectivity.get());
 }
 
 bool PointConnectivity::operator!=(const PointConnectivity& other) const
@@ -54,17 +53,17 @@ bool PointConnectivity::operator!=(const PointConnectivity& other) const
 
 std::size_t PointConnectivity::size() const
 {
-  return this->m_connectivity->vertSize();
+  return m_connectivity->vertSize();
 }
 
 std::size_t PointConnectivity::numberOfCells() const
 {
-  return this->m_connectivity->cellSize();
+  return m_connectivity->cellSize();
 }
 
 bool PointConnectivity::is_empty() const
 {
-  return this->m_connectivity->cellSize() == 0;
+  return m_connectivity->cellSize() == 0;
 }
 
 void PointConnectivity::initCellTraversal()
@@ -74,19 +73,19 @@ void PointConnectivity::initCellTraversal()
   //can be shared between multiple instance of connectivity, but each one
   //should be able to iterate over the shared data
 
-  this->m_connectivity->initTraversal(this->m_iteratorLocation);
+  m_connectivity->initTraversal(m_iteratorLocation);
 }
 
 bool PointConnectivity::fetchNextCell(int& numPts, const smtk::mesh::Handle*& points)
 {
   smtk::mesh::CellType cellType;
-  return this->m_connectivity->fetchNextCell(this->m_iteratorLocation, cellType, numPts, points);
+  return m_connectivity->fetchNextCell(m_iteratorLocation, cellType, numPts, points);
 }
 
 bool PointConnectivity::fetchNextCell(
   smtk::mesh::CellType& cellType, int& numPts, const smtk::mesh::Handle*& points)
 {
-  return this->m_connectivity->fetchNextCell(this->m_iteratorLocation, cellType, numPts, points);
+  return m_connectivity->fetchNextCell(m_iteratorLocation, cellType, numPts, points);
 }
 }
 }

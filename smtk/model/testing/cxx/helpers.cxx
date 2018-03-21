@@ -254,7 +254,7 @@ class Timer::Internal
 public:
   struct timeval m_mark;
   Internal() { this->fetch(); }
-  void fetch() { gettimeofday(&this->m_mark, NULL); }
+  void fetch() { gettimeofday(&m_mark, NULL); }
 };
 #else
 class Timer::Internal

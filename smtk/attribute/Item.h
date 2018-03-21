@@ -85,21 +85,20 @@ public:
     std::function<void(smtk::attribute::ItemPtr, bool)> /*visitor*/, bool /*activeChildren = true*/)
   {
   }
-  smtk::attribute::ConstItemDefinitionPtr definition() const { return this->m_definition; }
+  smtk::attribute::ConstItemDefinitionPtr definition() const { return m_definition; }
 
   // Return the attribute that owns this item
   smtk::attribute::AttributePtr attribute() const;
   smtk::attribute::ItemPtr owningItem() const
   {
-    return (
-      this->m_owningItem ? this->m_owningItem->shared_from_this() : smtk::attribute::ItemPtr());
+    return (m_owningItem ? m_owningItem->shared_from_this() : smtk::attribute::ItemPtr());
   }
   //Position is the item's location w/r to the owning item if not null
   // or the owning attribute. Currently the only items that can own other items are
   // GroupItem and ValueItem (for expressions)
-  int position() const { return this->m_position; }
+  int position() const { return m_position; }
 
-  int subGroupPosition() const { return this->m_subGroupPosition; }
+  int subGroupPosition() const { return m_subGroupPosition; }
 
   // Returns true if the item is optional
   bool isOptional() const;
@@ -110,7 +109,7 @@ public:
   // 2. If it's owning item is enabled and  either
   // it is not optional or it has been explicitly enabled
   bool isEnabled() const;
-  void setIsEnabled(bool isEnabledValue) { this->m_isEnabled = isEnabledValue; }
+  void setIsEnabled(bool isEnabledValue) { m_isEnabled = isEnabledValue; }
 
   bool isMemberOf(const std::string& category) const;
   bool isMemberOf(const std::vector<std::string>& categories) const;
@@ -130,24 +129,24 @@ public:
   // advance level information
   bool usingDefinitionAdvanceLevel(int mode = 0) const
   {
-    return (mode == 1 ? this->m_usingDefAdvanceLevelInfo[1] : this->m_usingDefAdvanceLevelInfo[0]);
+    return (mode == 1 ? m_usingDefAdvanceLevelInfo[1] : m_usingDefAdvanceLevelInfo[0]);
   }
 
   void setUserData(const std::string& key, smtk::simulation::UserDataPtr value)
   {
-    this->m_userData[key] = value;
+    m_userData[key] = value;
   }
   smtk::simulation::UserDataPtr userData(const std::string& key) const;
-  void clearUserData(const std::string& key) { this->m_userData.erase(key); }
-  void clearAllUserData() { this->m_userData.clear(); }
+  void clearUserData(const std::string& key) { m_userData.erase(key); }
+  void clearAllUserData() { m_userData.clear(); }
 
   virtual void reset();
 
   //This should be used only by attributes
-  void detachOwningAttribute() { this->m_attribute = NULL; }
+  void detachOwningAttribute() { m_attribute = NULL; }
   //This should only be called by the item that owns
   // this one
-  void detachOwningItem() { this->m_owningItem = NULL; }
+  void detachOwningItem() { m_owningItem = NULL; }
 
   // Assigns this item to be equivalent to another.  Options are processed by derived item classes
   // Returns true if success and false if a problem occured
@@ -176,9 +175,8 @@ private:
 
 inline smtk::simulation::UserDataPtr Item::userData(const std::string& key) const
 {
-  std::map<std::string, smtk::simulation::UserDataPtr>::const_iterator it =
-    this->m_userData.find(key);
-  return ((it == this->m_userData.end()) ? smtk::simulation::UserDataPtr() : it->second);
+  std::map<std::string, smtk::simulation::UserDataPtr>::const_iterator it = m_userData.find(key);
+  return ((it == m_userData.end()) ? smtk::simulation::UserDataPtr() : it->second);
 }
 }
 }

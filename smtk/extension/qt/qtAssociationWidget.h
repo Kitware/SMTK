@@ -44,7 +44,7 @@ public:
   virtual ~qtAssociationWidget();
   bool hasSelectedItem();
   // when register the instance with qtSelectionManager, also add the memory address.
-  virtual std::string selectionSourceName() { return this->m_selectionSourceName; }
+  virtual std::string selectionSourceName() { return m_selectionSourceName; }
 
 public slots:
   virtual void showEntityAssociation(smtk::attribute::AttributePtr theAtt);

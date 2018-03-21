@@ -35,10 +35,10 @@ void GroupItem::detachAllItems()
 {
   // Detatch all top level items contained in this group
   std::size_t i, j, n, m;
-  n = this->m_items.size();
+  n = m_items.size();
   for (i = 0; i < n; i++)
   {
-    std::vector<smtk::attribute::ItemPtr>& items = this->m_items[i];
+    std::vector<smtk::attribute::ItemPtr>& items = m_items[i];
     m = items.size();
     for (j = 0; j < m; j++)
     {
@@ -60,7 +60,7 @@ bool GroupItem::isValid() const
   {
     return true;
   }
-  for (auto it = this->m_items.begin(); it != this->m_items.end(); ++it)
+  for (auto it = m_items.begin(); it != m_items.end(); ++it)
   {
     for (auto it1 = (*it).begin(); it1 != (*it).end(); ++it1)
     {
@@ -84,11 +84,11 @@ bool GroupItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr gdef)
   {
     return false;
   }
-  this->m_definition = gdef;
+  m_definition = gdef;
   std::size_t i, n = def->numberOfRequiredGroups();
   if (n)
   {
-    this->m_items.resize(n);
+    m_items.resize(n);
     for (i = 0; i < n; i++)
     {
       def->buildGroup(this, static_cast<int>(i));
@@ -99,8 +99,7 @@ bool GroupItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr gdef)
 
 void GroupItem::reset()
 {
-  const GroupItemDefinition* def =
-    dynamic_cast<const GroupItemDefinition*>(this->m_definition.get());
+  const GroupItemDefinition* def = dynamic_cast<const GroupItemDefinition*>(m_definition.get());
   std::size_t i, n = def->numberOfRequiredGroups();
   if (this->numberOfGroups() != n)
   {
@@ -109,16 +108,16 @@ void GroupItem::reset()
   if (!n)
   {
     this->detachAllItems();
-    this->m_items.clear();
+    m_items.clear();
   }
   else
   {
     for (i = 0; i < n; i++)
     {
-      std::size_t j, m = this->m_items[i].size();
+      std::size_t j, m = m_items[i].size();
       for (j = 0; j < m; j++)
       {
-        this->m_items[i][j]->reset();
+        m_items[i][j]->reset();
       }
     }
   }
@@ -130,7 +129,7 @@ void GroupItem::reset()
   */
 GroupItem::const_iterator GroupItem::begin() const
 {
-  return this->m_items.begin();
+  return m_items.begin();
 }
 
 /**\brief Return an iterator just past the last group in this item.
@@ -138,13 +137,12 @@ GroupItem::const_iterator GroupItem::begin() const
   */
 GroupItem::const_iterator GroupItem::end() const
 {
-  return this->m_items.end();
+  return m_items.end();
 }
 
 bool GroupItem::isExtensible() const
 {
-  const GroupItemDefinition* def =
-    static_cast<const GroupItemDefinition*>(this->m_definition.get());
+  const GroupItemDefinition* def = static_cast<const GroupItemDefinition*>(m_definition.get());
   if (!def)
   {
     return false;
@@ -168,8 +166,7 @@ std::size_t GroupItem::numberOfRequiredGroups() const
 
 std::size_t GroupItem::maxNumberOfGroups() const
 {
-  const GroupItemDefinition* def =
-    static_cast<const GroupItemDefinition*>(this->m_definition.get());
+  const GroupItemDefinition* def = static_cast<const GroupItemDefinition*>(m_definition.get());
   if (!def)
   {
     return 0;
@@ -203,7 +200,7 @@ bool GroupItem::appendGroup()
     // max number of groups reached
     return false;
   }
-  this->m_items.resize(n + 1);
+  m_items.resize(n + 1);
   def->buildGroup(this, static_cast<int>(n));
   return true;
 }
@@ -219,14 +216,14 @@ bool GroupItem::removeGroup(std::size_t element)
     return false; // min number of groups reached
   }
 
-  assert(this->m_items.size() > element);
-  std::vector<smtk::attribute::ItemPtr>& items = this->m_items[element];
+  assert(m_items.size() > element);
+  std::vector<smtk::attribute::ItemPtr>& items = m_items[element];
   std::size_t j, m = items.size();
   for (j = 0; j < m; j++)
   {
     items[j]->detachOwningItem();
   }
-  this->m_items.erase(this->m_items.begin() + element);
+  m_items.erase(m_items.begin() + element);
   return true;
 }
 
@@ -265,7 +262,7 @@ bool GroupItem::setNumberOfGroups(std::size_t newSize)
     std::size_t j, m;
     for (i = newSize; i < n; i++)
     {
-      std::vector<smtk::attribute::ItemPtr>& items = this->m_items[i];
+      std::vector<smtk::attribute::ItemPtr>& items = m_items[i];
       m = items.size();
       for (j = 0; j < m; j++)
       {
@@ -275,7 +272,7 @@ bool GroupItem::setNumberOfGroups(std::size_t newSize)
   }
   else
   {
-    this->m_items.resize(newSize);
+    m_items.resize(newSize);
     for (i = n; i < newSize; i++)
     {
       def->buildGroup(this, static_cast<int>(i));
@@ -289,9 +286,9 @@ smtk::attribute::ItemPtr GroupItem::find(std::size_t element, const std::string&
   const GroupItemDefinition* def =
     static_cast<const GroupItemDefinition*>(this->definition().get());
   int i = def->findItemPosition(inName);
-  assert(this->m_items.size() > element);
-  assert(this->m_items[element].size() > static_cast<std::size_t>(i));
-  return (i < 0) ? smtk::attribute::ItemPtr() : this->m_items[element][static_cast<std::size_t>(i)];
+  assert(m_items.size() > element);
+  assert(m_items[element].size() > static_cast<std::size_t>(i));
+  return (i < 0) ? smtk::attribute::ItemPtr() : m_items[element][static_cast<std::size_t>(i)];
 }
 
 smtk::attribute::ConstItemPtr GroupItem::find(std::size_t element, const std::string& inName) const
@@ -303,9 +300,9 @@ smtk::attribute::ConstItemPtr GroupItem::find(std::size_t element, const std::st
   {
     return smtk::attribute::ConstItemPtr();
   }
-  assert(this->m_items.size() > element);
-  assert(this->m_items[element].size() > static_cast<std::size_t>(i));
-  return this->m_items[element][static_cast<std::size_t>(i)];
+  assert(m_items.size() > element);
+  assert(m_items[element].size() > static_cast<std::size_t>(i));
+  return m_items[element][static_cast<std::size_t>(i)];
 }
 
 bool GroupItem::assign(ConstItemPtr& sourceItem, unsigned int options)

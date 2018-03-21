@@ -45,7 +45,7 @@ bool ImportResource::ableToOperate()
 
   // To import a resource, we must have an operation manager from which we access
   // specific import operations.
-  auto manager = this->m_manager.lock();
+  auto manager = m_manager.lock();
 
   if (manager == nullptr)
   {
@@ -70,7 +70,7 @@ bool ImportResource::ableToOperate()
 
 ImportResource::Result ImportResource::operateInternal()
 {
-  auto manager = this->m_manager.lock();
+  auto manager = m_manager.lock();
 
   if (manager == nullptr)
   {
@@ -151,7 +151,7 @@ ImportResource::Specification ImportResource::createSpecification()
   fileDef->setIsExtensible(true);
 
   {
-    auto manager = this->m_manager.lock();
+    auto manager = m_manager.lock();
     // If there is an available operation manager at the time of creation, then
     // we can query it for file filters. Otherwise, we are forced to accept all
     // files (that's ok, though, because the called filter will still cause the

@@ -1140,10 +1140,10 @@ public:
 
     //convert the index to a string. assign it as the name of the meshset
     std::stringstream buffer;
-    buffer << this->m_index++;
+    buffer << m_index++;
     std::string sindex = buffer.str();
 
-    cJSON_AddItemToObject(this->m_json, sindex.c_str(), meshJson);
+    cJSON_AddItemToObject(m_json, sindex.c_str(), meshJson);
   }
 
 private:

@@ -57,7 +57,7 @@ Attribute::Attribute(const std::string& myName, smtk::attribute::DefinitionPtr m
   , m_aboutToBeDeleted(false)
   , m_id(myId)
 {
-  this->m_definition->buildAttribute(this);
+  m_definition->buildAttribute(this);
 }
 
 Attribute::Attribute(const std::string& myName, smtk::attribute::DefinitionPtr myDefinition)
@@ -70,15 +70,15 @@ Attribute::Attribute(const std::string& myName, smtk::attribute::DefinitionPtr m
   , m_aboutToBeDeleted(false)
   , m_id(smtk::common::UUIDGenerator::instance().random())
 {
-  this->m_definition->buildAttribute(this);
+  m_definition->buildAttribute(this);
 }
 
 Attribute::~Attribute()
 {
-  this->m_aboutToBeDeleted = true;
+  m_aboutToBeDeleted = true;
   // Clear all references to the attribute
   std::map<smtk::attribute::RefItem*, std::set<std::size_t> >::iterator it;
-  for (it = this->m_references.begin(); it != this->m_references.end(); it++)
+  for (it = m_references.begin(); it != m_references.end(); it++)
   {
     std::set<std::size_t>::iterator sit;
     for (sit = it->second.begin(); sit != it->second.end(); sit++)
@@ -92,19 +92,19 @@ Attribute::~Attribute()
 void Attribute::removeAllItems()
 {
   // we need to detatch all items owned by this attribute
-  std::size_t i, n = this->m_items.size();
+  std::size_t i, n = m_items.size();
   for (i = 0; i < n; i++)
   {
-    this->m_items[i]->detachOwningAttribute();
+    m_items[i]->detachOwningAttribute();
   }
-  this->m_items.clear();
+  m_items.clear();
 }
 
 void Attribute::references(std::vector<smtk::attribute::ItemPtr>& list) const
 {
   list.clear();
   std::map<smtk::attribute::RefItem*, std::set<std::size_t> >::const_iterator it;
-  for (it = this->m_references.begin(); it != this->m_references.end(); it++)
+  for (it = m_references.begin(); it != m_references.end(); it++)
   {
     if (it->second.size())
     {
@@ -115,22 +115,22 @@ void Attribute::references(std::vector<smtk::attribute::ItemPtr>& list) const
 
 const double* Attribute::color() const
 {
-  if (this->m_isColorSet)
+  if (m_isColorSet)
   {
-    return this->m_color;
+    return m_color;
   }
-  return this->m_definition->defaultColor();
+  return m_definition->defaultColor();
 }
 
 const std::string& Attribute::type() const
 {
-  return this->m_definition->type();
+  return m_definition->type();
 }
 
 std::vector<std::string> Attribute::types() const
 {
   std::vector<std::string> tvec;
-  smtk::attribute::DefinitionPtr def = this->m_definition;
+  smtk::attribute::DefinitionPtr def = m_definition;
   while (def)
   {
     tvec.push_back(def->type());
@@ -141,17 +141,17 @@ std::vector<std::string> Attribute::types() const
 
 bool Attribute::isA(smtk::attribute::DefinitionPtr def) const
 {
-  return this->m_definition->isA(def);
+  return m_definition->isA(def);
 }
 
 bool Attribute::isMemberOf(const std::string& category) const
 {
-  return this->m_definition->isMemberOf(category);
+  return m_definition->isMemberOf(category);
 }
 
 bool Attribute::isMemberOf(const std::vector<std::string>& categories) const
 {
-  return this->m_definition->isMemberOf(categories);
+  return m_definition->isMemberOf(categories);
 }
 
 /**\brief Return an item given a string specifying a path to it.
@@ -255,7 +255,7 @@ bool Attribute::isValid() const
     }
   }
   // also check associations
-  if (this->m_associations && !this->m_associations->isValid())
+  if (m_associations && !m_associations->isValid())
   {
     return false;
   }
@@ -264,7 +264,7 @@ bool Attribute::isValid() const
 
 CollectionPtr Attribute::collection() const
 {
-  return this->m_definition->collection();
+  return m_definition->collection();
 }
 
 const smtk::resource::ResourcePtr Attribute::resource() const
@@ -298,18 +298,18 @@ smtk::model::ManagerPtr Attribute::modelManager() const
 void Attribute::removeAllAssociations()
 {
   smtk::model::ManagerPtr modelMgr = this->modelManager();
-  if (modelMgr && this->m_associations)
+  if (modelMgr && m_associations)
   {
     smtk::model::EntityRefArray::const_iterator it;
-    for (it = this->m_associations->begin(); it != this->m_associations->end(); ++it)
+    for (it = m_associations->begin(); it != m_associations->end(); ++it)
     {
       modelMgr->disassociateAttribute(this->collection(), this->id(), it->entity(), false);
     }
   }
 
-  if (this->m_associations)
+  if (m_associations)
   {
-    this->m_associations->reset();
+    m_associations->reset();
   }
 }
 
@@ -372,7 +372,7 @@ bool Attribute::isComponentAssociated(const smtk::resource::ComponentPtr& comp) 
   */
 bool Attribute::isEntityAssociated(const smtk::common::UUID& entity) const
 {
-  return this->m_associations ? this->m_associations->has(entity) : false;
+  return m_associations ? m_associations->has(entity) : false;
 }
 
 /**\brief Is the model entity of the \a entityref associated with this attribute?
@@ -380,7 +380,7 @@ bool Attribute::isEntityAssociated(const smtk::common::UUID& entity) const
   */
 bool Attribute::isEntityAssociated(const smtk::model::EntityRef& entityref) const
 {
-  return this->m_associations ? this->m_associations->has(entityref) : false;
+  return m_associations ? m_associations->has(entityref) : false;
 }
 
 /**\brief Return the associated model entities as a set of UUIDs.
@@ -389,13 +389,13 @@ bool Attribute::isEntityAssociated(const smtk::model::EntityRef& entityref) cons
 smtk::common::UUIDs Attribute::associatedModelEntityIds() const
 {
   smtk::common::UUIDs result;
-  if (!this->m_associations)
+  if (!m_associations)
   {
     return result;
   }
 
   smtk::model::EntityRefArray::const_iterator it;
-  for (it = this->m_associations->begin(); it != this->m_associations->end(); ++it)
+  for (it = m_associations->begin(); it != m_associations->end(); ++it)
   {
     result.insert(it->entity());
   }
@@ -443,7 +443,7 @@ bool Attribute::associateEntity(const smtk::model::EntityRef& entityRef)
   if (res)
     return res;
 
-  res = (this->m_associations) ? this->m_associations->appendValue(entityRef) : false;
+  res = (m_associations) ? m_associations->appendValue(entityRef) : false;
   if (!res)
     return res;
 
@@ -467,15 +467,15 @@ bool Attribute::associateEntity(const smtk::model::EntityRef& entityRef)
   */
 void Attribute::disassociateEntity(const smtk::common::UUID& entity, bool reverse)
 {
-  if (!this->m_associations)
+  if (!m_associations)
   {
     return;
   }
 
-  std::ptrdiff_t idx = this->m_associations->find(entity);
+  std::ptrdiff_t idx = m_associations->find(entity);
   if (idx >= 0)
   {
-    this->m_associations->removeValue(idx);
+    m_associations->removeValue(idx);
     if (reverse)
     {
       smtk::model::ManagerPtr modelMgr = this->modelManager();
@@ -492,15 +492,15 @@ void Attribute::disassociateEntity(const smtk::common::UUID& entity, bool revers
   */
 void Attribute::disassociateEntity(const smtk::model::EntityRef& entity, bool reverse)
 {
-  if (!this->m_associations)
+  if (!m_associations)
   {
     return;
   }
 
-  std::ptrdiff_t idx = this->m_associations->find(entity);
+  std::ptrdiff_t idx = m_associations->find(entity);
   if (idx >= 0)
   {
-    this->m_associations->removeValue(idx);
+    m_associations->removeValue(idx);
     if (reverse)
     {
       smtk::model::EntityRef mutableEntity(entity);
@@ -517,7 +517,7 @@ void Attribute::disassociateEntity(const smtk::model::EntityRef& entity, bool re
   */
 smtk::attribute::ItemPtr Attribute::find(const std::string& inName, SearchStyle style)
 {
-  int i = this->m_definition->findItemPosition(inName);
+  int i = m_definition->findItemPosition(inName);
   if (i < 0 && style != NO_CHILDREN)
   { // try to find child items that match the name and type.
     std::size_t numItems = this->numberOfItems();
@@ -532,13 +532,13 @@ smtk::attribute::ItemPtr Attribute::find(const std::string& inName, SearchStyle 
     }
     i = -1; // Nothing found.
   }
-  assert(i < 0 || this->m_items.size() > static_cast<std::size_t>(i));
-  return (i < 0) ? smtk::attribute::ItemPtr() : this->m_items[static_cast<std::size_t>(i)];
+  assert(i < 0 || m_items.size() > static_cast<std::size_t>(i));
+  return (i < 0) ? smtk::attribute::ItemPtr() : m_items[static_cast<std::size_t>(i)];
 }
 
 smtk::attribute::ConstItemPtr Attribute::find(const std::string& inName, SearchStyle style) const
 {
-  int i = this->m_definition->findItemPosition(inName);
+  int i = m_definition->findItemPosition(inName);
   if (i < 0 && style != NO_CHILDREN)
   { // try to find child items that match the name and type.
     std::size_t numItems = this->numberOfItems();
@@ -553,9 +553,9 @@ smtk::attribute::ConstItemPtr Attribute::find(const std::string& inName, SearchS
     }
     i = -1; // Nothing found.
   }
-  assert(i < 0 || this->m_items.size() > static_cast<std::size_t>(i));
+  assert(i < 0 || m_items.size() > static_cast<std::size_t>(i));
   return (i < 0) ? smtk::attribute::ConstItemPtr()
-                 : smtk::const_pointer_cast<const Item>(this->m_items[static_cast<std::size_t>(i)]);
+                 : smtk::const_pointer_cast<const Item>(m_items[static_cast<std::size_t>(i)]);
 }
 
 smtk::attribute::IntItemPtr Attribute::findInt(const std::string& nameStr)

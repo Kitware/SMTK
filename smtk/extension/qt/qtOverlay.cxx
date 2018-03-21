@@ -25,7 +25,7 @@ qtOverlay::qtOverlay(QWidget* parentW)
   new QHBoxLayout(this);
   this->layout()->setAlignment(Qt::AlignRight);
   this->layout()->setMargin(0);
-  this->m_overlayColor = QColor(80, 80, 255, 128);
+  m_overlayColor = QColor(80, 80, 255, 128);
 }
 
 void qtOverlay::addOverlayWidget(QWidget* w)
@@ -35,10 +35,10 @@ void qtOverlay::addOverlayWidget(QWidget* w)
     w->setAttribute(Qt::WA_NoSystemBackground);
     w->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     QString strStyle(" QWidget { background-color: rgba(");
-    strStyle.append(QString::number(this->m_overlayColor.red()) + ", ")
-      .append(QString::number(this->m_overlayColor.green()) + ", ")
-      .append(QString::number(this->m_overlayColor.blue()) + ", ")
-      .append(QString::number(this->m_overlayColor.alpha()) + ") } ");
+    strStyle.append(QString::number(m_overlayColor.red()) + ", ")
+      .append(QString::number(m_overlayColor.green()) + ", ")
+      .append(QString::number(m_overlayColor.blue()) + ", ")
+      .append(QString::number(m_overlayColor.alpha()) + ") } ");
     w->setStyleSheet(w->styleSheet() + strStyle);
     this->layout()->addWidget(w);
   }
@@ -47,7 +47,7 @@ void qtOverlay::addOverlayWidget(QWidget* w)
 void qtOverlay::paintEvent(QPaintEvent*)
 {
   QPainter p(this);
-  p.fillRect(rect(), this->m_overlayColor);
+  p.fillRect(rect(), m_overlayColor);
 }
 
 qtOverlayFilter::qtOverlayFilter(QWidget* onWidget, QObject* parentO)
@@ -62,7 +62,7 @@ qtOverlayFilter::qtOverlayFilter(QWidget* onWidget, QObject* parentO)
 
 qtOverlayFilter::~qtOverlayFilter()
 {
-  delete this->m_overlay;
+  delete m_overlay;
 }
 
 void qtOverlayFilter::setActive(bool val)
@@ -72,8 +72,8 @@ void qtOverlayFilter::setActive(bool val)
     m_overlay->setGeometry(m_overlayOn->geometry());
   }
 
-  this->m_overlay->setVisible(val);
-  this->m_Active = val;
+  m_overlay->setVisible(val);
+  m_Active = val;
 }
 
 void qtOverlayFilter::addOverlayWidget(QWidget* w)
@@ -87,11 +87,11 @@ bool qtOverlayFilter::eventFilter(QObject* obj, QEvent* ev)
   {
     return false;
   }
-  if (this->m_overlay)
+  if (m_overlay)
   {
-    this->m_overlay->setVisible(this->m_Active);
+    m_overlay->setVisible(m_Active);
   }
-  if (!this->m_Active)
+  if (!m_Active)
   {
     return false;
   }

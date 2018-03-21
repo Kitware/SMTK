@@ -106,30 +106,30 @@ public:
   void addEdgeMeshTessellation(smtk::model::Edge& edgeRec, internal::EdgePtr edgeData);
   void addVertMeshTessellation(smtk::model::Vertex& vertRec, internal::VertexPtr vertData);
 
-  double* origin() { return &(this->m_origin[0]); }
-  const double* origin() const { return &(this->m_origin[0]); }
+  double* origin() { return &(m_origin[0]); }
+  const double* origin() const { return &(m_origin[0]); }
 
-  double* xAxis() { return &(this->m_xAxis[0]); }
-  const double* xAxis() const { return &(this->m_xAxis[0]); }
+  double* xAxis() { return &(m_xAxis[0]); }
+  const double* xAxis() const { return &(m_xAxis[0]); }
 
-  double* yAxis() { return &(this->m_yAxis[0]); }
-  const double* yAxis() const { return &(this->m_yAxis[0]); }
+  double* yAxis() { return &(m_yAxis[0]); }
+  const double* yAxis() const { return &(m_yAxis[0]); }
 
-  double* zAxis() { return &(this->m_zAxis[0]); }
-  const double* zAxis() const { return &(this->m_zAxis[0]); }
+  double* zAxis() { return &(m_zAxis[0]); }
+  const double* zAxis() const { return &(m_zAxis[0]); }
 
-  double* iAxis() { return &(this->m_iAxis[0]); }
-  const double* iAxis() const { return &(this->m_iAxis[0]); }
+  double* iAxis() { return &(m_iAxis[0]); }
+  const double* iAxis() const { return &(m_iAxis[0]); }
 
-  double* jAxis() { return &(this->m_jAxis[0]); }
-  const double* jAxis() const { return &(this->m_jAxis[0]); }
+  double* jAxis() { return &(m_jAxis[0]); }
+  const double* jAxis() const { return &(m_jAxis[0]); }
 
-  double featureSize() const { return this->m_featureSize; }
-  double modelScale() const { return static_cast<double>(this->m_scale); }
+  double featureSize() const { return m_featureSize; }
+  double modelScale() const { return static_cast<double>(m_scale); }
 
-  //ConstSessionPtr session() const { return this->m_session; }
-  SessionPtr session() { return this->m_session; }
-  void setSession(SessionPtr s) { this->m_session = s; }
+  //ConstSessionPtr session() const { return m_session; }
+  SessionPtr session() { return m_session; }
+  void setSession(SessionPtr s) { m_session = s; }
 
   Id pointId(const Point& p) const;
 

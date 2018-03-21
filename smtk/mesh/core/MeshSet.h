@@ -194,7 +194,7 @@ public:
   bool removePointField(smtk::mesh::PointField pointfield);
 
   //get the underlying HandleRange that this MeshSet represents
-  const smtk::mesh::HandleRange& range() const { return this->m_range; }
+  const smtk::mesh::HandleRange& range() const { return m_range; }
 
   //get the underlying collection that this MeshSet belongs to
   const smtk::mesh::CollectionPtr& collection() const;

@@ -138,7 +138,7 @@ TweakEdge::Result TweakEdge::operateInternal()
   {
     smtkInfoMacro(this->log(), "Splitting tweaked edge at " << splitLocs.size() << " places.");
     if (!pmod->splitModelEdgeAtModelVertices(
-          resource, storage, promotedVerts, splitLocs, edgesAdded, this->m_debugLevel))
+          resource, storage, promotedVerts, splitLocs, edgesAdded, m_debugLevel))
     {
       smtkErrorMacro(this->log(), "Could not split edge.");
       ok = false;
@@ -150,7 +150,7 @@ TweakEdge::Result TweakEdge::operateInternal()
     edgeCreated.insert(edgeCreated.end(), edgesAdded.begin(), edgesAdded.end());
   }
 
-  if (this->m_debugLevel > 0)
+  if (m_debugLevel > 0)
   {
     for (smtk::model::Edges::iterator eCrit = edgeCreated.begin(); eCrit != edgeCreated.end();
          ++eCrit)

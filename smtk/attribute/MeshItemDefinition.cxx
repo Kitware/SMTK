@@ -17,9 +17,9 @@ using namespace smtk::attribute;
 MeshItemDefinition::MeshItemDefinition(const std::string& myName)
   : ItemDefinition(myName)
 {
-  this->m_numberOfRequiredValues = 0;
-  this->m_isExtensible = false;
-  this->m_maxNumberOfValues = 0;
+  m_numberOfRequiredValues = 0;
+  m_isExtensible = false;
+  m_maxNumberOfValues = 0;
 }
 
 MeshItemDefinition::~MeshItemDefinition()
@@ -33,23 +33,23 @@ Item::Type MeshItemDefinition::type() const
 /// Return the number of values (mesh entities) required by this definition.
 std::size_t MeshItemDefinition::numberOfRequiredValues() const
 {
-  return this->m_numberOfRequiredValues;
+  return m_numberOfRequiredValues;
 }
 
 /// Set the number of values (model entities) required by this definition. Use 0 when there is no requirement.
 void MeshItemDefinition::setNumberOfRequiredValues(std::size_t esize)
 {
-  if (esize == this->m_numberOfRequiredValues)
+  if (esize == m_numberOfRequiredValues)
   {
     return;
   }
-  this->m_numberOfRequiredValues = esize;
+  m_numberOfRequiredValues = esize;
 }
 
 /// Set the maximum number of values accepted (or 0 for no limit).
 void MeshItemDefinition::setMaxNumberOfValues(std::size_t maxNum)
 {
-  this->m_maxNumberOfValues = maxNum;
+  m_maxNumberOfValues = maxNum;
 }
 
 bool MeshItemDefinition::isValueValid(const smtk::mesh::MeshSet& val) const

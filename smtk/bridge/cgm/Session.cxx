@@ -76,8 +76,8 @@ namespace cgm
 /// Default constructor.
 Session::Session()
 {
-  this->m_maxRelChordErr = 0.01; // fraction of longest edge.
-  this->m_maxAngleErr = 2.0;     // maximum angle in degrees.
+  m_maxRelChordErr = 0.01; // fraction of longest edge.
+  m_maxAngleErr = 2.0;     // maximum angle in degrees.
   this->initializeOperationCollection(Session::s_operators);
   if (!Engines::areInitialized())
   {
@@ -142,18 +142,18 @@ int Session::setup(const std::string& optName, const smtk::model::StringList& op
     if (optName == "tessellation maximum relative chord error")
     {
       value = strtod(optVal[0].c_str(), &valid);
-      if (valid && value != this->m_maxRelChordErr)
+      if (valid && value != m_maxRelChordErr)
       {
-        this->m_maxRelChordErr = value;
+        m_maxRelChordErr = value;
         return 1;
       }
     }
     else if (optName == "tessellation maximum angle error")
     {
       value = strtod(optVal[0].c_str(), &valid);
-      if (valid && value != this->m_maxAngleErr)
+      if (valid && value != m_maxAngleErr)
       {
-        this->m_maxAngleErr = 2.0; // maximum angle in degrees.
+        m_maxAngleErr = 2.0; // maximum angle in degrees.
         return 1;
       }
     }
@@ -1039,20 +1039,17 @@ bool SessionAddTessellation(const EntityRef& entityref, Session&, RefVertex* cgm
 ///@{
 bool Session::addTessellation(const EntityRef& entityref, RefFace* cgmEnt)
 {
-  return SessionAddTessellation(
-    entityref, *this, cgmEnt, this->m_maxRelChordErr, this->m_maxAngleErr);
+  return SessionAddTessellation(entityref, *this, cgmEnt, m_maxRelChordErr, m_maxAngleErr);
 }
 
 bool Session::addTessellation(const EntityRef& entityref, RefEdge* cgmEnt)
 {
-  return SessionAddTessellation(
-    entityref, *this, cgmEnt, this->m_maxRelChordErr, this->m_maxAngleErr);
+  return SessionAddTessellation(entityref, *this, cgmEnt, m_maxRelChordErr, m_maxAngleErr);
 }
 
 bool Session::addTessellation(const EntityRef& entityref, RefVertex* cgmEnt)
 {
-  return SessionAddTessellation(
-    entityref, *this, cgmEnt, this->m_maxRelChordErr, this->m_maxAngleErr);
+  return SessionAddTessellation(entityref, *this, cgmEnt, m_maxRelChordErr, m_maxAngleErr);
 }
 ///@}
 

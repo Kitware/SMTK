@@ -22,7 +22,7 @@ namespace view
 
 View::Component& View::Component::setContents(const std::string& c)
 {
-  this->m_contents = c;
+  m_contents = c;
   return *this;
 }
 
@@ -61,7 +61,7 @@ bool View::Component::attributeAsBool(const std::string& attname) const
 
 bool View::Component::contentsAsInt(int& val) const
 {
-  std::istringstream iss(this->m_contents);
+  std::istringstream iss(m_contents);
   iss >> val;
   if (!iss.good())
   {
@@ -72,7 +72,7 @@ bool View::Component::contentsAsInt(int& val) const
 
 bool View::Component::contentsAsVector(std::vector<double>& vec) const
 {
-  std::istringstream iss(this->m_contents);
+  std::istringstream iss(m_contents);
   char c;
   double d;
   vec.clear();
@@ -103,8 +103,8 @@ bool View::Component::attribute(const std::string& attname) const
 bool View::Component::attribute(const std::string& attname, std::string& value) const
 {
   std::map<std::string, std::string>::const_iterator it;
-  it = this->m_attributes.find(attname);
-  if (it == this->m_attributes.end())
+  it = m_attributes.find(attname);
+  if (it == m_attributes.end())
   {
     return false;
   }
@@ -114,28 +114,28 @@ bool View::Component::attribute(const std::string& attname, std::string& value) 
 
 View::Component& View::Component::setAttribute(const std::string& attname, const std::string& value)
 {
-  this->m_attributes[attname] = value;
+  m_attributes[attname] = value;
   return *this;
 }
 
 View::Component& View::Component::unsetAttribute(const std::string& attname)
 {
-  this->m_attributes.erase(attname);
+  m_attributes.erase(attname);
   return *this;
 }
 
 View::Component& View::Component::addChild(const std::string& childName)
 {
-  this->m_children.push_back(Component(childName));
-  return this->m_children.back();
+  m_children.push_back(Component(childName));
+  return m_children.back();
 }
 
 int View::Component::findChild(const std::string& compName) const
 {
-  int i, n = static_cast<int>(this->m_children.size());
+  int i, n = static_cast<int>(m_children.size());
   for (i = 0; i < n; i++)
   {
-    if (this->m_children[i].name() == compName)
+    if (m_children[i].name() == compName)
     {
       return i;
     }
@@ -145,9 +145,9 @@ int View::Component::findChild(const std::string& compName) const
 
 void View::Component::copyContents(const Component& comp)
 {
-  this->m_name = comp.m_name;
-  this->m_attributes = comp.m_attributes;
-  this->m_contents = comp.m_contents;
+  m_name = comp.m_name;
+  m_attributes = comp.m_attributes;
+  m_contents = comp.m_contents;
   for (const Component& child : comp.m_children)
   {
     Component& myChild = this->addChild(child.name());
@@ -168,18 +168,18 @@ View::~View()
 
 void View::copyContents(const View& view)
 {
-  this->m_iconName = view.m_iconName;
-  this->m_details.copyContents(view.m_details);
+  m_iconName = view.m_iconName;
+  m_details.copyContents(view.m_details);
 }
 
 std::string View::label() const
 {
   std::string l;
-  if (this->m_details.attribute("Label", l))
+  if (m_details.attribute("Label", l))
   {
     return l;
   }
-  return this->m_name;
+  return m_name;
 }
 
 } // namespace view

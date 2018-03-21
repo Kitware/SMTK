@@ -256,13 +256,12 @@ bool AttributeReader::read(smtk::attribute::CollectionPtr collection, const std:
     // Add the path to the file as a search path
     path p(filename);
     std::vector<std::string> newSPaths(1, p.parent_path().string());
-    newSPaths.insert(newSPaths.end(), this->m_searchPaths.begin(), this->m_searchPaths.end());
-    Internal_readAttributes(collection, filename, root, newSPaths, this->m_reportAsError, logger);
+    newSPaths.insert(newSPaths.end(), m_searchPaths.begin(), m_searchPaths.end());
+    Internal_readAttributes(collection, filename, root, newSPaths, m_reportAsError, logger);
   }
   else
   {
-    Internal_readAttributes(
-      collection, filename, root, this->m_searchPaths, this->m_reportAsError, logger);
+    Internal_readAttributes(collection, filename, root, m_searchPaths, m_reportAsError, logger);
   }
   return logger.hasErrors();
 }
@@ -297,8 +296,7 @@ bool AttributeReader::readContents(
   logger.reset();
   if (root)
   {
-    Internal_readAttributes(
-      collection, "", root, this->m_searchPaths, this->m_reportAsError, logger);
+    Internal_readAttributes(collection, "", root, m_searchPaths, m_reportAsError, logger);
   }
   else
   {

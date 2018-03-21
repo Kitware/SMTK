@@ -36,82 +36,82 @@ qtDescriptivePhraseDelegate::qtDescriptivePhraseDelegate(QWidget* owner)
 
 int qtDescriptivePhraseDelegate::swatchSize() const
 {
-  return this->m_swatchSize;
+  return m_swatchSize;
 }
 
 void qtDescriptivePhraseDelegate::setSwatchSize(int sfs)
 {
-  this->m_swatchSize = sfs;
+  m_swatchSize = sfs;
 }
 
 int qtDescriptivePhraseDelegate::titleFontSize() const
 {
-  return this->m_titleFontSize;
+  return m_titleFontSize;
 }
 
 void qtDescriptivePhraseDelegate::setTitleFontSize(int tfs)
 {
-  this->m_titleFontSize = tfs;
+  m_titleFontSize = tfs;
 }
 
 int qtDescriptivePhraseDelegate::subtitleFontSize() const
 {
-  return this->m_subtitleFontSize;
+  return m_subtitleFontSize;
 }
 
 void qtDescriptivePhraseDelegate::setSubtitleFontSize(int sfs)
 {
-  this->m_subtitleFontSize = sfs;
+  m_subtitleFontSize = sfs;
 }
 
 int qtDescriptivePhraseDelegate::titleFontWeight() const
 {
-  return this->m_titleFontWeight;
+  return m_titleFontWeight;
 }
 
 void qtDescriptivePhraseDelegate::setTitleFontWeight(int tfw)
 {
-  this->m_titleFontWeight = tfw;
+  m_titleFontWeight = tfw;
 }
 
 int qtDescriptivePhraseDelegate::subtitleFontWeight() const
 {
-  return this->m_subtitleFontWeight;
+  return m_subtitleFontWeight;
 }
 
 void qtDescriptivePhraseDelegate::setSubtitleFontWeight(int sfw)
 {
-  this->m_subtitleFontWeight = sfw;
+  m_subtitleFontWeight = sfw;
 }
 
 int qtDescriptivePhraseDelegate::textVerticalPad() const
 {
-  return this->m_textVerticalPad;
+  return m_textVerticalPad;
 }
 
 void qtDescriptivePhraseDelegate::setTextVerticalPad(int tvp)
 {
-  this->m_textVerticalPad = tvp;
+  m_textVerticalPad = tvp;
 }
 
 bool qtDescriptivePhraseDelegate::drawSubtitle() const
 {
-  return this->m_drawSubtitle;
+  return m_drawSubtitle;
 }
 
 void qtDescriptivePhraseDelegate::setDrawSubtitle(bool includeSubtitle)
 {
-  this->m_drawSubtitle = includeSubtitle;
+  m_drawSubtitle = includeSubtitle;
 }
 
 bool qtDescriptivePhraseDelegate::visibilityMode() const
 {
-  return this->m_visibilityMode;
+  return m_visibilityMode;
 }
 
 void qtDescriptivePhraseDelegate::setVisibilityMode(bool allEditsChangeVisibility)
 {
-  this->m_visibilityMode = allEditsChangeVisibility;
+  m_visibilityMode = allEditsChangeVisibility;
 }
 
 QSize qtDescriptivePhraseDelegate::sizeHint(
@@ -120,15 +120,15 @@ QSize qtDescriptivePhraseDelegate::sizeHint(
   QIcon icon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseIconRole));
   QSize iconsize = icon.actualSize(option.decorationSize);
   QFont titleFont = QApplication::font();
-  titleFont.setPixelSize(this->m_titleFontSize);
+  titleFont.setPixelSize(m_titleFontSize);
   titleFont.setBold(this->titleFontWeight() > 1 ? true : false);
   QFontMetrics titleFM(titleFont);
   QFont subtitleFont = QApplication::font();
-  subtitleFont.setPixelSize(this->m_subtitleFontSize);
+  subtitleFont.setPixelSize(m_subtitleFontSize);
   subtitleFont.setBold(this->subtitleFontWeight() > 1 ? true : false);
   QFontMetrics subtitleFM(subtitleFont);
-  int minHeight = titleFM.height() + 2 * this->m_textVerticalPad;
-  if (this->m_drawSubtitle)
+  int minHeight = titleFM.height() + 2 * m_textVerticalPad;
+  if (m_drawSubtitle)
   {
     minHeight += subtitleFM.height();
   }
@@ -137,7 +137,7 @@ QSize qtDescriptivePhraseDelegate::sizeHint(
     minHeight = iconsize.height();
   }
 
-  return (QSize(iconsize.width() + this->m_swatchSize, minHeight));
+  return (QSize(iconsize.width() + m_swatchSize, minHeight));
 }
 
 void qtDescriptivePhraseDelegate::paint(
@@ -158,7 +158,7 @@ void qtDescriptivePhraseDelegate::paint(
   QSize iconsize = icon.actualSize(option.decorationSize);
   QFont titleFont = QApplication::font();
   QFont subtitleFont = QApplication::font();
-  titleFont.setPixelSize(this->m_titleFontSize);
+  titleFont.setPixelSize(m_titleFontSize);
   /// add a method to set/get title font
   titleFont.setBold(this->titleFontWeight() > 1 ? true : false);
   // bold the active model title
@@ -166,7 +166,7 @@ void qtDescriptivePhraseDelegate::paint(
   {
     titleFont.setBold(true);
   }
-  subtitleFont.setPixelSize(this->m_subtitleFontSize);
+  subtitleFont.setPixelSize(m_subtitleFontSize);
   subtitleFont.setBold(this->subtitleFontWeight() > 1 ? true : false);
 
   //subtitleFont.setWeight(subtitleFont.weight() - 2);
@@ -191,10 +191,10 @@ void qtDescriptivePhraseDelegate::paint(
   QSize visiconsize = visicon.actualSize(option.decorationSize);
 
   colorRect.setLeft(colorRect.left() + visiconsize.width() + 2);
-  colorRect.setRight(colorRect.left() + this->m_swatchSize - 1);
+  colorRect.setRight(colorRect.left() + m_swatchSize - 1);
   //  colorRect.setTop(colorRect.top() + 1);
   colorRect.setTop(colorRect.top() + 2);
-  int swdelta = (colorRect.height() - this->m_swatchSize) / 2;
+  int swdelta = (colorRect.height() - m_swatchSize) / 2;
   swdelta = (swdelta < 0 ? 0 : swdelta);
   colorRect.adjust(0, swdelta, 0, -swdelta);
   iconRect.setLeft(colorRect.left());
@@ -202,10 +202,10 @@ void qtDescriptivePhraseDelegate::paint(
   iconRect.setTop(iconRect.top() + 1);
   titleRect.setLeft(iconRect.right());
   subtitleRect.setLeft(iconRect.right());
-  titleRect.setTop(titleRect.top() + this->m_textVerticalPad / 2.0);
+  titleRect.setTop(titleRect.top() + m_textVerticalPad / 2.0);
   titleRect.setBottom(titleRect.top() +
-    (this->m_drawSubtitle ? titleFM.height() : option.rect.height() - this->m_textVerticalPad));
-  subtitleRect.setTop(titleRect.bottom() + this->m_textVerticalPad);
+    (m_drawSubtitle ? titleFM.height() : option.rect.height() - m_textVerticalPad));
+  subtitleRect.setTop(titleRect.bottom() + m_textVerticalPad);
 
   if (swatchColor.isValid())
   {
@@ -230,7 +230,7 @@ void qtDescriptivePhraseDelegate::paint(
   painter->setFont(titleFont);
   painter->drawText(titleRect, Qt::AlignVCenter, titleText);
 
-  if (this->m_drawSubtitle)
+  if (m_drawSubtitle)
   {
     painter->setFont(subtitleFont);
     painter->drawText(subtitleRect, subtitleText);
@@ -259,7 +259,7 @@ void qtDescriptivePhraseDelegate::updateEditorGeometry(
   QSize iconsize = icon.actualSize(option.decorationSize);
   QFont titleFont = QApplication::font();
   QFont subtitleFont = QApplication::font();
-  titleFont.setPixelSize(this->m_titleFontSize);
+  titleFont.setPixelSize(m_titleFontSize);
   /// add a method to set/get title font
   titleFont.setBold(this->titleFontWeight() > 1 ? true : false);
   // bold the active model title
@@ -267,7 +267,7 @@ void qtDescriptivePhraseDelegate::updateEditorGeometry(
   {
     titleFont.setBold(true);
   }
-  subtitleFont.setPixelSize(this->m_subtitleFontSize);
+  subtitleFont.setPixelSize(m_subtitleFontSize);
   subtitleFont.setBold(this->subtitleFontWeight() > 1 ? true : false);
 
   //subtitleFont.setWeight(subtitleFont.weight() - 2);
@@ -289,8 +289,8 @@ void qtDescriptivePhraseDelegate::updateEditorGeometry(
   QSize visiconsize = visicon.actualSize(option.decorationSize);
 
   colorRect.setLeft(colorRect.left() + visiconsize.width() + 2);
-  colorRect.setRight(colorRect.left() + this->m_swatchSize);
-  int swdelta = (colorRect.height() - this->m_swatchSize) / 2;
+  colorRect.setRight(colorRect.left() + m_swatchSize);
+  int swdelta = (colorRect.height() - m_swatchSize) / 2;
   swdelta = (swdelta < 0 ? 0 : swdelta);
   colorRect.adjust(0, swdelta, 0, -swdelta);
   iconRect.setLeft(colorRect.left());
@@ -357,7 +357,7 @@ std::string qtDescriptivePhraseDelegate::determineAction(const QPoint& pPos, con
   if (!bvis && entityMod && entityMod->getItem(idx)->isRelatedColorMutable())
   {
     bcolor = px > (option.rect.left() + visiconsize.width() + 2) &&
-      px < (option.rect.left() + visiconsize.width() + 2 + this->m_swatchSize) &&
+      px < (option.rect.left() + visiconsize.width() + 2 + m_swatchSize) &&
       py > option.rect.top() && py < (option.rect.top() + option.rect.height());
   }
 

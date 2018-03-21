@@ -91,7 +91,7 @@ SplitFaceOperation::Result SplitFaceOperation::operateInternal()
   vtkDiscreteModelWrapper* modelWrapper = opsession->findModelEntity(model.entity());
 
   // Translate SMTK inputs into CMB inputs
-  this->m_op->SetFeatureAngle(this->parameters()->findDouble("feature angle")->value());
+  m_op->SetFeatureAngle(this->parameters()->findDouble("feature angle")->value());
 
   bool ok = false;
   std::map<smtk::common::UUID, smtk::common::UUIDs> splitfacemaps;
@@ -106,15 +106,15 @@ SplitFaceOperation::Result SplitFaceOperation::operateInternal()
     int srcid = this->fetchCMBCellId(resource, sourceItem, static_cast<int>(idx));
     if (srcid >= 0)
     {
-      this->m_op->SetId(srcid); // "face to split"
-      this->m_op->Operate(modelWrapper);
-      ok = this->m_op->GetOperateSucceeded() != 0;
+      m_op->SetId(srcid); // "face to split"
+      m_op->Operate(modelWrapper);
+      ok = m_op->GetOperateSucceeded() != 0;
       if (ok)
       {
         smtk::model::EntityRef inFace = sourceItem->value(idx);
         inFaceUID = inFace.entity();
 
-        vtkIdTypeArray* newFaceIds = this->m_op->GetCreatedModelFaceIDs();
+        vtkIdTypeArray* newFaceIds = m_op->GetCreatedModelFaceIDs();
         vtkIdType* idBuffer = reinterpret_cast<vtkIdType*>(newFaceIds->GetVoidPointer(0));
         vtkIdType length = newFaceIds->GetNumberOfComponents() * newFaceIds->GetNumberOfTuples();
         totNewFaces += length;

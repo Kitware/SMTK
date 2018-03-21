@@ -180,7 +180,7 @@ void qtGroupView::createWidget()
     }
     // Setup the information for the new child view based off of
     // this one
-    smtk::extension::ViewInfo vinfo = this->m_viewInfo;
+    smtk::extension::ViewInfo vinfo = m_viewInfo;
     vinfo.m_view = v;
     vinfo.m_parent = this->Widget;
     qtView = this->uiManager()->createView(vinfo);

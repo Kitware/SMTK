@@ -53,8 +53,7 @@ public:
     , m_tagData()
   {
     //populate our tag
-    this->m_iface->tag_get_handle(
-      NAME_TAG_NAME, NAME_TAG_SIZE, ::moab::MB_TYPE_OPAQUE, this->m_tag);
+    m_iface->tag_get_handle(NAME_TAG_NAME, NAME_TAG_SIZE, ::moab::MB_TYPE_OPAQUE, m_tag);
   }
 //reset our warnings to the original level
 #ifdef _MSC_VER
@@ -71,7 +70,7 @@ public:
     return (rval == ::moab::MB_SUCCESS);
   }
 
-  const char* current_name() const { return this->m_tagData; }
+  const char* current_name() const { return m_tagData; }
 };
 
 class QueryIntTag
@@ -85,26 +84,26 @@ class QueryIntTag
 public:
   QueryIntTag(const char* name, int value, ::moab::Interface* iface)
   {
-    this->m_iface = iface;
-    this->m_tag_name = std::string(name);
-    this->m_value = value;
+    m_iface = iface;
+    m_tag_name = std::string(name);
+    m_value = value;
 
     //populate our tag
     ::moab::Tag moab_tag;
-    this->m_iface->tag_get_handle(this->m_tag_name.c_str(), 1, ::moab::MB_TYPE_INTEGER, moab_tag);
+    m_iface->tag_get_handle(m_tag_name.c_str(), 1, ::moab::MB_TYPE_INTEGER, moab_tag);
 
-    this->m_tag = moab_tag;
+    m_tag = moab_tag;
     //get the memory location of m_value
-    this->tag_v_ptr = &this->m_value;
+    this->tag_v_ptr = &m_value;
   }
 
-  ::moab::TagInfo* moabTag() { return this->m_tag; }
+  ::moab::TagInfo* moabTag() { return m_tag; }
 
-  ::moab::TagInfo* const* moabTagPtr() { return &this->m_tag; }
+  ::moab::TagInfo* const* moabTagPtr() { return &m_tag; }
   const void* const* moabTagValuePtr() const { return &this->tag_v_ptr; }
 
   int size() const { return 1; }
-  int value() const { return this->m_value; }
+  int value() const { return m_value; }
 };
 
 class QueryMaterialTag : public QueryIntTag
@@ -156,27 +155,27 @@ class QueryOpaqueTag
 public:
   QueryOpaqueTag(const char* name, const char* value, ::moab::Interface* iface)
   {
-    this->m_iface = iface;
-    this->m_tag_name = std::string(name);
-    memcpy(this->m_value, value, Sz);
+    m_iface = iface;
+    m_tag_name = std::string(name);
+    memcpy(m_value, value, Sz);
 
     //populate our tag
     ::moab::Tag moab_tag;
-    this->m_iface->tag_get_handle(this->m_tag_name.c_str(), Sz, ::moab::MB_TYPE_OPAQUE, moab_tag,
+    m_iface->tag_get_handle(m_tag_name.c_str(), Sz, ::moab::MB_TYPE_OPAQUE, moab_tag,
       ::moab::MB_TAG_BYTES | ::moab::MB_TAG_CREAT | ::moab::MB_TAG_SPARSE);
 
-    this->m_tag = moab_tag;
+    m_tag = moab_tag;
     //get the memory location of m_value
-    this->tag_v_ptr = &this->m_value;
+    this->tag_v_ptr = &m_value;
   }
 
-  ::moab::TagInfo* moabTag() { return this->m_tag; }
+  ::moab::TagInfo* moabTag() { return m_tag; }
 
-  ::moab::TagInfo* const* moabTagPtr() { return &this->m_tag; }
+  ::moab::TagInfo* const* moabTagPtr() { return &m_tag; }
   const void* const* moabTagValuePtr() const { return &this->tag_v_ptr; }
 
   int size() const { return Sz; }
-  const char* value() const { return this->m_value; }
+  const char* value() const { return m_value; }
 };
 
 class QueryIdTag : public QueryOpaqueTag<smtk::common::UUID::SIZE>
@@ -244,20 +243,20 @@ class QueryBitTag
 public:
   QueryBitTag(const char* name, ::moab::Interface* iface)
   {
-    this->m_iface = iface;
-    this->m_tag_name = std::string(name);
+    m_iface = iface;
+    m_tag_name = std::string(name);
 
     //populate our tag
     ::moab::Tag moab_tag;
-    this->m_iface->tag_get_handle(this->m_tag_name.c_str(), 1, ::moab::MB_TYPE_BIT, moab_tag,
+    m_iface->tag_get_handle(m_tag_name.c_str(), 1, ::moab::MB_TYPE_BIT, moab_tag,
       ::moab::MB_TAG_BYTES | ::moab::MB_TAG_CREAT | ::moab::MB_TAG_SPARSE);
 
-    this->m_tag = moab_tag;
+    m_tag = moab_tag;
   }
 
-  ::moab::TagInfo* moabTag() { return this->m_tag; }
+  ::moab::TagInfo* moabTag() { return m_tag; }
 
-  ::moab::TagInfo* const* moabTagPtr() { return &this->m_tag; }
+  ::moab::TagInfo* const* moabTagPtr() { return &m_tag; }
 
   int size() const { return 1; }
 };
@@ -292,27 +291,27 @@ class QueryFieldTag
 public:
   QueryFieldTag(const char* name, int size, ::moab::DataType type, ::moab::Interface* iface)
   {
-    this->m_iface = iface;
-    this->m_tag_name = std::string(name) + std::string("_");
-    this->m_size = size;
-    this->m_type = type;
+    m_iface = iface;
+    m_tag_name = std::string(name) + std::string("_");
+    m_size = size;
+    m_type = type;
 
     //populate our tag
     ::moab::Tag moab_tag;
-    this->m_state = this->m_iface->tag_get_handle(this->m_tag_name.c_str(), this->m_size,
-      this->m_type, moab_tag, ::moab::MB_TAG_CREAT | ::moab::MB_TAG_DENSE);
-    this->m_tag = moab_tag;
+    m_state = m_iface->tag_get_handle(
+      m_tag_name.c_str(), m_size, m_type, moab_tag, ::moab::MB_TAG_CREAT | ::moab::MB_TAG_DENSE);
+    m_tag = moab_tag;
   }
 
-  ::moab::TagInfo* moabTag() { return this->m_tag; }
+  ::moab::TagInfo* moabTag() { return m_tag; }
 
-  ::moab::TagInfo* const* moabTagPtr() { return &this->m_tag; }
+  ::moab::TagInfo* const* moabTagPtr() { return &m_tag; }
 
-  ::moab::ErrorCode state() { return this->m_state; }
+  ::moab::ErrorCode state() { return m_state; }
 
-  int size() const { return this->m_size; }
+  int size() const { return m_size; }
 
-  ::moab::DataType type() const { return this->m_type; }
+  ::moab::DataType type() const { return m_type; }
 };
 
 } // namespace tag

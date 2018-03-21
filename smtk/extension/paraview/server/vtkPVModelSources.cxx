@@ -68,12 +68,12 @@ public:
 
 vtkPVModelSources::vtkPVModelSources()
 {
-  this->m_p = new vtkPVModelSources::Internal;
+  m_p = new vtkPVModelSources::Internal;
 }
 
 vtkPVModelSources::~vtkPVModelSources()
 {
-  delete this->m_p;
+  delete m_p;
 }
 
 void vtkPVModelSources::PrintSelf(ostream& os, vtkIndent indent)
@@ -84,29 +84,29 @@ void vtkPVModelSources::PrintSelf(ostream& os, vtkIndent indent)
 /*
 bool vtkPVModelSources::AddSource(vtkModelMultiBlockSource* ms)
 {
-  return this->m_p.m_modelSources.insert(ms).second;
+  return m_p.m_modelSources.insert(ms).second;
 }
 
 bool vtkPVModelSources::AddSource(vtkMeshMultiBlockSource* ms)
 {
-  return this->m_p.m_meshSources.insert(ms).second;
+  return m_p.m_meshSources.insert(ms).second;
 }
 
 bool vtkPVModelSources::RemoveSource(vtkModelMultiBlockSource* ms)
 {
-  return this->m_p.m_modelSources.erase(ms) > 0;
+  return m_p.m_modelSources.erase(ms) > 0;
 }
 
 bool vtkPVModelSources::RemoveSource(vtkMeshMultiBlockSource* ms)
 {
-  return this->m_p.m_meshSources.erase(ms) > 0;
+  return m_p.m_meshSources.erase(ms) > 0;
 }
 
 bool vtkPVModelSources::RemoveAllSources()
 {
-  bool anythingToErase = !this->m_p.m_modelSources.empty() || !this->m_p.m_meshSources.empty();
-  this->m_p.m_modelSources.clear();
-  this->m_p.m_meshSources.clear();
+  bool anythingToErase = !m_p.m_modelSources.empty() || !m_p.m_meshSources.empty();
+  m_p.m_modelSources.clear();
+  m_p.m_meshSources.clear();
   return anythingToErase;
 }
 

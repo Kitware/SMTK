@@ -82,15 +82,15 @@ public:
   //If this is disabled we use the smtk/mesh cell enum values.
   void disableVTKCellTypes(bool disable) { m_useVTKCellTypes = !disable; }
 
-  bool hasConnectivity() const { return this->m_connectivity != NULL; }
-  bool hasCellLocations() const { return this->m_cellLocations != NULL; }
-  bool hasCellTypes() const { return this->m_cellTypes != NULL; }
+  bool hasConnectivity() const { return m_connectivity != NULL; }
+  bool hasCellLocations() const { return m_cellLocations != NULL; }
+  bool hasCellTypes() const { return m_cellTypes != NULL; }
 
-  bool hasDoublePoints() const { return this->m_dpoints != NULL; }
-  bool hasFloatPoints() const { return this->m_fpoints != NULL; }
+  bool hasDoublePoints() const { return m_dpoints != NULL; }
+  bool hasFloatPoints() const { return m_fpoints != NULL; }
 
-  bool useVTKConnectivity() const { return this->m_useVTKConnectivity; }
-  bool useVTKCellTypes() const { return this->m_useVTKCellTypes; }
+  bool useVTKConnectivity() const { return m_useVTKConnectivity; }
+  bool useVTKCellTypes() const { return m_useVTKCellTypes; }
 
 private:
   template <class PointConnectivity>
@@ -115,8 +115,8 @@ public:
 
   Tessellation(bool useVTKConnectivity, bool useVTKCellTypes);
 
-  bool useVTKConnectivity() const { return this->m_useVTKConnectivity; }
-  bool useVTKCellTypes() const { return this->m_useVTKCellTypes; }
+  bool useVTKConnectivity() const { return m_useVTKConnectivity; }
+  bool useVTKCellTypes() const { return m_useVTKCellTypes; }
 
   //This class self allocates all the memory needed to extract tessellation
   //and auto extract the tessellation based on the MeshSet or CellSet you
@@ -128,10 +128,10 @@ public:
   void extract(const smtk::mesh::CellSet& cs, const smtk::mesh::PointSet& ps);
 
   //use these methods to gain access to the tessellation after
-  const std::vector<std::int64_t>& connectivity() const { return this->m_connectivity; }
-  const std::vector<std::int64_t>& cellLocations() const { return this->m_cellLocations; }
-  const std::vector<unsigned char>& cellTypes() const { return this->m_cellTypes; }
-  const std::vector<double>& points() const { return this->m_points; }
+  const std::vector<std::int64_t>& connectivity() const { return m_connectivity; }
+  const std::vector<std::int64_t>& cellLocations() const { return m_cellLocations; }
+  const std::vector<unsigned char>& cellTypes() const { return m_cellTypes; }
+  const std::vector<double>& points() const { return m_points; }
 
 private:
   std::vector<std::int64_t> m_connectivity;

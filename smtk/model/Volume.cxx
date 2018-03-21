@@ -58,8 +58,7 @@ Volume& Volume::setVolumeUse(const VolumeUse& volUse)
   ManagerPtr mgr = this->manager();
   if (volUse.isValid() && this->isValid())
   {
-    mgr->findCreateOrReplaceCellUseOfSenseAndOrientation(
-      this->m_entity, 0, POSITIVE, volUse.entity());
+    mgr->findCreateOrReplaceCellUseOfSenseAndOrientation(m_entity, 0, POSITIVE, volUse.entity());
   }
   return *this;
 }

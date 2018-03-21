@@ -36,17 +36,17 @@ public:
   const std::vector<DataT>& defaultValues() const;
   bool setDefaultValue(const DataT& val);
   bool setDefaultValue(const std::vector<DataT>& val);
-  const DataT& discreteValue(std::size_t element) const { return this->m_discreteValues[element]; }
+  const DataT& discreteValue(std::size_t element) const { return m_discreteValues[element]; }
   void addDiscreteValue(const DataT& val);
   void addDiscreteValue(const DataT& val, const std::string& discreteEnum);
-  bool hasRange() const override { return this->m_minRangeSet || this->m_maxRangeSet; }
-  bool hasMinRange() const { return this->m_minRangeSet; }
-  const DataT& minRange() const { return this->m_minRange; }
-  bool minRangeInclusive() const { return this->m_minRangeInclusive; }
+  bool hasRange() const override { return m_minRangeSet || m_maxRangeSet; }
+  bool hasMinRange() const { return m_minRangeSet; }
+  const DataT& minRange() const { return m_minRange; }
+  bool minRangeInclusive() const { return m_minRangeInclusive; }
   bool setMinRange(const DataT& minVal, bool isInclusive);
-  bool hasMaxRange() const { return this->m_maxRangeSet; }
-  const DataT& maxRange() const { return this->m_maxRange; }
-  bool maxRangeInclusive() const { return this->m_maxRangeInclusive; }
+  bool hasMaxRange() const { return m_maxRangeSet; }
+  const DataT& maxRange() const { return m_maxRange; }
+  bool maxRangeInclusive() const { return m_maxRangeInclusive; }
   bool setMaxRange(const DataT& maxVal, bool isInclusive);
   void clearRange();
   int findDiscreteIndex(const DataT& val) const;
@@ -73,11 +73,11 @@ template <typename DataT>
 ValueItemDefinitionTemplate<DataT>::ValueItemDefinitionTemplate(const std::string& myname)
   : ValueItemDefinition(myname)
 {
-  this->m_minRangeSet = false;
-  this->m_minRangeInclusive = false;
-  this->m_maxRangeSet = false;
-  this->m_maxRangeInclusive = false;
-  this->m_dummy = DataT();
+  m_minRangeSet = false;
+  m_minRangeInclusive = false;
+  m_maxRangeSet = false;
+  m_maxRangeInclusive = false;
+  m_dummy = DataT();
 }
 
 /**\brief Set the default value for an attribute.
@@ -93,8 +93,8 @@ bool ValueItemDefinitionTemplate<DataT>::setDefaultValue(const DataT& dvalue)
 template <typename DataT>
 void ValueItemDefinitionTemplate<DataT>::updateDiscreteValue()
 {
-  assert(static_cast<int>(this->m_discreteValues.size()) > this->m_defaultDiscreteIndex);
-  this->setDefaultValue(this->m_discreteValues[this->m_defaultDiscreteIndex]);
+  assert(static_cast<int>(m_discreteValues.size()) > m_defaultDiscreteIndex);
+  this->setDefaultValue(m_discreteValues[m_defaultDiscreteIndex]);
 }
 
 /**\brief Set the default value for an attribute.
@@ -126,8 +126,8 @@ bool ValueItemDefinitionTemplate<DataT>::setDefaultValue(const std::vector<DataT
       return false; // Is each value valid?
     }
   }
-  this->m_defaultValue = dvalue;
-  this->m_hasDefault = true;
+  m_defaultValue = dvalue;
+  m_hasDefault = true;
   return true;
 }
 
@@ -144,18 +144,18 @@ template <typename DataT>
 void ValueItemDefinitionTemplate<DataT>::addDiscreteValue(
   const DataT& dvalue, const std::string& dlabel)
 {
-  this->m_discreteValues.push_back(dvalue);
-  this->m_discreteValueEnums.push_back(dlabel);
+  m_discreteValues.push_back(dvalue);
+  m_discreteValueEnums.push_back(dlabel);
 }
 
 template <typename DataT>
 bool ValueItemDefinitionTemplate<DataT>::setMinRange(const DataT& minVal, bool isInclusive)
 {
   // If there is a default value is it within the new range?
-  if (this->m_hasDefault)
+  if (m_hasDefault)
   {
     typename std::vector<DataT>::const_iterator it;
-    for (it = this->m_defaultValue.begin(); it != this->m_defaultValue.end(); ++it)
+    for (it = m_defaultValue.begin(); it != m_defaultValue.end(); ++it)
     {
       if (*it < minVal)
         return false;
@@ -163,11 +163,11 @@ bool ValueItemDefinitionTemplate<DataT>::setMinRange(const DataT& minVal, bool i
         return false;
     }
   }
-  if ((!this->m_maxRangeSet) || (minVal < this->m_maxRange))
+  if ((!m_maxRangeSet) || (minVal < m_maxRange))
   {
-    this->m_minRangeSet = true;
-    this->m_minRange = minVal;
-    this->m_minRangeInclusive = isInclusive;
+    m_minRangeSet = true;
+    m_minRange = minVal;
+    m_minRangeInclusive = isInclusive;
     return true;
   }
   return false;
@@ -177,10 +177,10 @@ template <typename DataT>
 bool ValueItemDefinitionTemplate<DataT>::setMaxRange(const DataT& maxVal, bool isInclusive)
 {
   // If there is a default value is it within the new range?
-  if (this->m_hasDefault)
+  if (m_hasDefault)
   {
     typename std::vector<DataT>::const_iterator it;
-    for (it = this->m_defaultValue.begin(); it != this->m_defaultValue.end(); ++it)
+    for (it = m_defaultValue.begin(); it != m_defaultValue.end(); ++it)
     {
       if (*it > maxVal)
         return false;
@@ -188,11 +188,11 @@ bool ValueItemDefinitionTemplate<DataT>::setMaxRange(const DataT& maxVal, bool i
         return false;
     }
   }
-  if ((!this->m_minRangeSet) || (maxVal > this->m_minRange))
+  if ((!m_minRangeSet) || (maxVal > m_minRange))
   {
-    this->m_maxRangeSet = true;
-    this->m_maxRange = maxVal;
-    this->m_maxRangeInclusive = isInclusive;
+    m_maxRangeSet = true;
+    m_maxRange = maxVal;
+    m_maxRangeInclusive = isInclusive;
     return true;
   }
   return false;
@@ -201,8 +201,8 @@ bool ValueItemDefinitionTemplate<DataT>::setMaxRange(const DataT& maxVal, bool i
 template <typename DataT>
 void ValueItemDefinitionTemplate<DataT>::clearRange()
 {
-  this->m_minRangeSet = false;
-  this->m_maxRangeSet = false;
+  m_minRangeSet = false;
+  m_maxRangeSet = false;
 }
 
 template <typename DataT>
@@ -213,10 +213,10 @@ int ValueItemDefinitionTemplate<DataT>::findDiscreteIndex(const DataT& val) cons
   {
     return -1;
   }
-  std::size_t i, n = this->m_discreteValues.size();
+  std::size_t i, n = m_discreteValues.size();
   for (i = 0; i < n; i++)
   {
-    if (this->m_discreteValues[i] == val)
+    if (m_discreteValues[i] == val)
     {
       return static_cast<int>(i);
     }
@@ -236,13 +236,11 @@ bool ValueItemDefinitionTemplate<DataT>::isValueValid(const DataT& val) const
   {
     return true;
   }
-  if (this->m_minRangeSet &&
-    ((val < this->m_minRange) || ((!this->m_minRangeInclusive) && (val == this->m_minRange))))
+  if (m_minRangeSet && ((val < m_minRange) || ((!m_minRangeInclusive) && (val == m_minRange))))
   {
     return false;
   }
-  if (this->m_maxRangeSet &&
-    ((val > this->m_maxRange) || ((!this->m_maxRangeInclusive) && (val == this->m_maxRange))))
+  if (m_maxRangeSet && ((val > m_maxRange) || ((!m_maxRangeInclusive) && (val == m_maxRange))))
   {
     return false;
   }
@@ -252,22 +250,21 @@ bool ValueItemDefinitionTemplate<DataT>::isValueValid(const DataT& val) const
 template <typename DataT>
 const DataT& ValueItemDefinitionTemplate<DataT>::defaultValue() const
 {
-  return this->m_defaultValue.empty() ? this->m_dummy : this->m_defaultValue[0];
+  return m_defaultValue.empty() ? m_dummy : m_defaultValue[0];
 }
 
 template <typename DataT>
 const DataT& ValueItemDefinitionTemplate<DataT>::defaultValue(std::size_t element) const
 {
-  bool vectorDefault = this->m_defaultValue.size() == this->numberOfRequiredValues();
-  assert(!vectorDefault || this->m_defaultValue.size() > element);
-  return this->m_defaultValue.empty() ? this->m_dummy
-                                      : this->m_defaultValue[vectorDefault ? element : 0];
+  bool vectorDefault = m_defaultValue.size() == this->numberOfRequiredValues();
+  assert(!vectorDefault || m_defaultValue.size() > element);
+  return m_defaultValue.empty() ? m_dummy : m_defaultValue[vectorDefault ? element : 0];
 }
 
 template <typename DataT>
 const std::vector<DataT>& ValueItemDefinitionTemplate<DataT>::defaultValues() const
 {
-  return this->m_defaultValue;
+  return m_defaultValue;
 }
 
 // Copies my contents to input definition
@@ -302,14 +299,14 @@ void ValueItemDefinitionTemplate<DataT>::copyTo(
     // Copy values & labels
     DataT value;
     std::string labelStr;
-    assert(this->m_discreteValueEnums.size() >= this->m_discreteValues.size());
-    for (std::size_t i = 0; i < this->m_discreteValues.size(); ++i)
+    assert(m_discreteValueEnums.size() >= m_discreteValues.size());
+    for (std::size_t i = 0; i < m_discreteValues.size(); ++i)
     {
-      value = this->m_discreteValues[i];
-      labelStr = this->m_discreteValueEnums[i];
+      value = m_discreteValues[i];
+      labelStr = m_discreteValueEnums[i];
       vdef->addDiscreteValue(value, labelStr);
     }
-    vdef->setDefaultDiscreteIndex(this->m_defaultDiscreteIndex);
+    vdef->setDefaultDiscreteIndex(m_defaultDiscreteIndex);
   }
 
   // Copy superclass *after* our stuff, so that discrete values are set up

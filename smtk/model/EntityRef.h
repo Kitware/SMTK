@@ -344,7 +344,7 @@ template <typename T>
 T EntityRef::relationsAs() const
 {
   T result;
-  ManagerPtr mgr = this->m_manager.lock();
+  ManagerPtr mgr = m_manager.lock();
   smtk::model::EntityPtr entRec;
   if (!this->isValid(&entRec))
     return result;

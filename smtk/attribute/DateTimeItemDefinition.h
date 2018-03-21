@@ -34,11 +34,11 @@ public:
   ~DateTimeItemDefinition() override;
   Item::Type type() const override;
 
-  const ::smtk::common::DateTimeZonePair& defaultValue() const { return this->m_defaultValue; }
+  const ::smtk::common::DateTimeZonePair& defaultValue() const { return m_defaultValue; }
   bool setDefaultValue(const ::smtk::common::DateTimeZonePair& value);
-  bool hasDefault() const { return this->m_hasDefault; }
+  bool hasDefault() const { return m_hasDefault; }
 
-  std::size_t numberOfRequiredValues() const { return this->m_numberOfRequiredValues; }
+  std::size_t numberOfRequiredValues() const { return m_numberOfRequiredValues; }
   bool setNumberOfRequiredValues(std::size_t esize);
 
   bool isValueValid(const ::smtk::common::DateTimeZonePair& value) const;
@@ -46,18 +46,18 @@ public:
   // Returns or sets the display format to use in UI elements.
   // SMTK uses the Qt datetime format expressions documented at
   // http://doc.qt.io/qt-4.8/qdatetime.html#toString
-  void setDisplayFormat(const std::string& format) { this->m_displayFormat = format; }
-  std::string displayFormat() const { return this->m_displayFormat; }
+  void setDisplayFormat(const std::string& format) { m_displayFormat = format; }
+  std::string displayFormat() const { return m_displayFormat; }
 
   // Returns or sets flag indicating if a time zone component can be included
   // in the item representation. When set, the UI will include an option to
   // specify a TimeZone with the DateTime data.
-  void setUseTimeZone(bool mode) { this->m_useTimeZone = mode; }
-  bool useTimeZone() const { return this->m_useTimeZone; }
+  void setUseTimeZone(bool mode) { m_useTimeZone = mode; }
+  bool useTimeZone() const { return m_useTimeZone; }
 
   // Returns or sets flag specifying if UI components include
   // a pop-up calendar widget.
-  void setEnableCalendarPopup(bool mode) { this->m_useCalendarPopup = mode; }
+  void setEnableCalendarPopup(bool mode) { m_useCalendarPopup = mode; }
   bool useCalendarPopup() const { return m_useCalendarPopup; }
 
   smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;

@@ -48,15 +48,15 @@ DeleteJobRequest::~DeleteJobRequest()
 
 void DeleteJobRequest::send()
 {
-  QString girderAuthUrl = QString("%1/jobs/%2").arg(this->m_girderUrl).arg(this->m_job.id());
+  QString girderAuthUrl = QString("%1/jobs/%2").arg(m_girderUrl).arg(m_job.id());
 
   QNetworkRequest request(girderAuthUrl);
-  request.setRawHeader(QByteArray("Girder-Token"), this->m_girderToken.toUtf8());
+  request.setRawHeader(QByteArray("Girder-Token"), m_girderToken.toUtf8());
 
   QObject::connect(
-    this->m_networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(finished(QNetworkReply*)));
+    m_networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(finished(QNetworkReply*)));
 
-  this->m_networkManager->deleteResource(request);
+  m_networkManager->deleteResource(request);
 }
 
 void DeleteJobRequest::finished()
@@ -86,17 +86,16 @@ TerminateJobRequest::~TerminateJobRequest()
 
 void TerminateJobRequest::send()
 {
-  QString girderAuthUrl =
-    QString("%1/jobs/%2/terminate").arg(this->m_girderUrl).arg(this->m_job.id());
+  QString girderAuthUrl = QString("%1/jobs/%2/terminate").arg(m_girderUrl).arg(m_job.id());
 
   QNetworkRequest request(girderAuthUrl);
-  request.setRawHeader(QByteArray("Girder-Token"), this->m_girderToken.toUtf8());
+  request.setRawHeader(QByteArray("Girder-Token"), m_girderToken.toUtf8());
 
   QObject::connect(
-    this->m_networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(finished(QNetworkReply*)));
+    m_networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(finished(QNetworkReply*)));
 
   QByteArray empty;
-  this->m_networkManager->put(request, empty);
+  m_networkManager->put(request, empty);
 }
 
 void TerminateJobRequest::finished()
@@ -128,12 +127,12 @@ DownloadJobRequest::~DownloadJobRequest()
 
 void DownloadJobRequest::send()
 {
-  foreach (QString folderId, this->m_job.outputFolderIds())
+  foreach (QString folderId, m_job.outputFolderIds())
   {
-    this->m_foldersToDownload << folderId;
+    m_foldersToDownload << folderId;
 
-    DownloadFolderRequest* request = new DownloadFolderRequest(this->m_networkManager,
-      this->m_girderUrl, this->m_girderToken, this->m_downloadPath, folderId, this);
+    DownloadFolderRequest* request = new DownloadFolderRequest(
+      m_networkManager, m_girderUrl, m_girderToken, m_downloadPath, folderId, this);
     connect(request, SIGNAL(complete()), this, SLOT(downloadFolderFinished()));
     connect(request, SIGNAL(error(const QString, QNetworkReply*)), this,
       SIGNAL(error(const QString, QNetworkReply*)));
@@ -147,9 +146,9 @@ void DownloadJobRequest::downloadFolderFinished()
 {
   DownloadFolderRequest* request = qobject_cast<DownloadFolderRequest*>(this->sender());
 
-  this->m_foldersToDownload.remove(request->folderId());
+  m_foldersToDownload.remove(request->folderId());
 
-  if (this->m_foldersToDownload.isEmpty())
+  if (m_foldersToDownload.isEmpty())
   {
     emit complete();
   }
@@ -170,16 +169,16 @@ PatchJobRequest::~PatchJobRequest()
 
 void PatchJobRequest::send()
 {
-  QString girderAuthUrl = QString("%1/jobs/%2").arg(this->m_girderUrl).arg(this->m_job.id());
+  QString girderAuthUrl = QString("%1/jobs/%2").arg(m_girderUrl).arg(m_job.id());
 
   QNetworkRequest request(girderAuthUrl);
-  request.setRawHeader(QByteArray("Girder-Token"), this->m_girderToken.toUtf8());
+  request.setRawHeader(QByteArray("Girder-Token"), m_girderToken.toUtf8());
 
   char* jsonString = cJSON_PrintUnformatted(m_body);
   QByteArray data(jsonString);
 
   // Qt doesn't have native patch method; must use custom request
-  auto reply = this->m_networkManager->sendCustomRequest(request, "PATCH", data);
+  auto reply = m_networkManager->sendCustomRequest(request, "PATCH", data);
   QObject::connect(reply, SIGNAL(finished()), this, SLOT(finished()));
 
   free(jsonString);

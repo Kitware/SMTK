@@ -307,8 +307,8 @@ public:
 
   const smtk::mesh::InterfacePtr& interface() const;
 
-  void setModelManager(smtk::model::ManagerPtr mgr) { this->m_modelManager = mgr; }
-  smtk::model::ManagerPtr modelManager() const { return this->m_modelManager.lock(); }
+  void setModelManager(smtk::model::ManagerPtr mgr) { m_modelManager = mgr; }
+  smtk::model::ManagerPtr modelManager() const { return m_modelManager.lock(); }
 
   // Float, String, Integer properties for a meshset given its handle range.
   void setFloatProperty(

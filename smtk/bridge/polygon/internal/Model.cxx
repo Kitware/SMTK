@@ -56,23 +56,23 @@ pmodel::pmodel()
 {
   for (int i = 0; i < 3; ++i)
   {
-    this->m_origin[i] = 0.; // Base point of plane for model
-    this->m_xAxis[i] =
+    m_origin[i] = 0.; // Base point of plane for model
+    m_xAxis[i] =
       0.; // Vector whose length should be equal to one "unit" (e.g., m_scale integers long)
-    this->m_yAxis[i] = 0.; // In-plane vector orthogonal to m_xAxis with the same length.
-    this->m_zAxis[i] = 0.; // Normal vector orthogonal to m_xAxis and m_yAxis with the same length.
-    this->m_iAxis[i] =
+    m_yAxis[i] = 0.; // In-plane vector orthogonal to m_xAxis with the same length.
+    m_zAxis[i] = 0.; // Normal vector orthogonal to m_xAxis and m_yAxis with the same length.
+    m_iAxis[i] =
       0.; // Vector whose length should be equal to one "unit" (e.g., 1 integer delta long)
-    this->m_jAxis[i] = 0.; // In-plane vector orthogonal to m_iAxis with the same length.
+    m_jAxis[i] = 0.; // In-plane vector orthogonal to m_iAxis with the same length.
   }
-  this->m_xAxis[0] = this->m_yAxis[1] = this->m_zAxis[2] = 1.;
-  this->m_iAxis[0] = this->m_jAxis[1] = 1.;
+  m_xAxis[0] = m_yAxis[1] = m_zAxis[2] = 1.;
+  m_iAxis[0] = m_jAxis[1] = 1.;
 }
 
 pmodel::~pmodel()
 {
   // Tis better to have dereferenced and crashed than never to have crashed at all:
-  this->m_session = NULL;
+  m_session = NULL;
 }
 
 bool pmodel::computeModelScaleAndNormal(std::vector<double>& origin, std::vector<double>& x_axis,
@@ -83,7 +83,7 @@ bool pmodel::computeModelScaleAndNormal(std::vector<double>& origin, std::vector
     smtkErrorMacro(log, "Feature size must be positive (not " << featureSize << ").");
     return false;
   }
-  this->m_featureSize = featureSize;
+  m_featureSize = featureSize;
 
   if (origin.size() != 3 || x_axis.size() != 3 || y_axis.size() != 3)
   {
@@ -96,14 +96,14 @@ bool pmodel::computeModelScaleAndNormal(std::vector<double>& origin, std::vector
   double xl2 = 0., yl2 = 0., zl2 = 0.;
   for (int i = 0; i < 3; ++i)
   {
-    this->m_origin[i] = origin[i];
-    this->m_xAxis[i] = x_axis[i];
-    this->m_yAxis[i] = y_axis[i];
+    m_origin[i] = origin[i];
+    m_xAxis[i] = x_axis[i];
+    m_yAxis[i] = y_axis[i];
     xl2 += x_axis[i] * x_axis[i];
     yl2 += y_axis[i] * y_axis[i];
-    this->m_zAxis[i] =
+    m_zAxis[i] =
       x_axis[(i + 1) % 3] * y_axis[(i + 2) % 3] - x_axis[(i + 2) % 3] * y_axis[(i + 1) % 3];
-    zl2 += this->m_zAxis[i] * this->m_zAxis[i];
+    zl2 += m_zAxis[i] * m_zAxis[i];
   }
   if (xl2 < 1e-16 || yl2 < 1e-16 || zl2 < 1e-16)
   {
@@ -117,15 +117,15 @@ bool pmodel::computeModelScaleAndNormal(std::vector<double>& origin, std::vector
   yl2 = sqrt(yl2);
   zl2 = sqrt(zl2);
   // Scale each feature size to be 231 integer quanta. (NB: 231 = 3 * 7 * 11, some nice primes)
-  this->m_scale = static_cast<long long>(231.0 / featureSize);
+  m_scale = static_cast<long long>(231.0 / featureSize);
   // Make the world (x,y) axes unit length and the (i,j) axes one quantum in length:
   for (int i = 0; i < 3; ++i)
   {
-    this->m_xAxis[i] /= xl2;
-    this->m_yAxis[i] /= yl2;
-    this->m_zAxis[i] /= zl2;
-    this->m_iAxis[i] = this->m_xAxis[i] / this->m_scale;
-    this->m_jAxis[i] = this->m_yAxis[i] / this->m_scale;
+    m_xAxis[i] /= xl2;
+    m_yAxis[i] /= yl2;
+    m_zAxis[i] /= zl2;
+    m_iAxis[i] = m_xAxis[i] / m_scale;
+    m_jAxis[i] = m_yAxis[i] / m_scale;
   }
   return true;
 }
@@ -138,7 +138,7 @@ bool pmodel::computeModelScaleAndYAxis(std::vector<double>& origin, std::vector<
     smtkErrorMacro(log, "Feature size must be positive (not " << featureSize << ").");
     return false;
   }
-  this->m_featureSize = featureSize;
+  m_featureSize = featureSize;
 
   if (origin.size() != 3 || x_axis.size() != 3 || z_axis.size() != 3)
   {
@@ -151,14 +151,14 @@ bool pmodel::computeModelScaleAndYAxis(std::vector<double>& origin, std::vector<
   double xl2 = 0., yl2 = 0., zl2 = 0.;
   for (int i = 0; i < 3; ++i)
   {
-    this->m_origin[i] = origin[i];
-    this->m_xAxis[i] = x_axis[i];
-    this->m_zAxis[i] = z_axis[i];
+    m_origin[i] = origin[i];
+    m_xAxis[i] = x_axis[i];
+    m_zAxis[i] = z_axis[i];
     xl2 += x_axis[i] * x_axis[i];
     zl2 += z_axis[i] * z_axis[i];
-    this->m_yAxis[i] =
+    m_yAxis[i] =
       z_axis[(i + 1) % 3] * x_axis[(i + 2) % 3] - z_axis[(i + 2) % 3] * x_axis[(i + 1) % 3];
-    yl2 += this->m_yAxis[i] * this->m_yAxis[i];
+    yl2 += m_yAxis[i] * m_yAxis[i];
   }
   if (xl2 < 1e-16 || yl2 < 1e-16 || zl2 < 1e-16)
   {
@@ -172,15 +172,15 @@ bool pmodel::computeModelScaleAndYAxis(std::vector<double>& origin, std::vector<
   yl2 = sqrt(yl2);
   zl2 = sqrt(zl2);
   // Make the axes one feature-size in length:
-  this->m_scale = static_cast<long long>(231.0 / featureSize);
+  m_scale = static_cast<long long>(231.0 / featureSize);
   // Make the world (x,y) axes unit length and the (i,j) axes one quantum in length:
   for (int i = 0; i < 3; ++i)
   {
-    this->m_xAxis[i] /= xl2;
-    this->m_yAxis[i] /= yl2;
-    this->m_zAxis[i] /= zl2;
-    this->m_iAxis[i] = this->m_xAxis[i] / this->m_scale;
-    this->m_jAxis[i] = this->m_yAxis[i] / this->m_scale;
+    m_xAxis[i] /= xl2;
+    m_yAxis[i] /= yl2;
+    m_zAxis[i] /= zl2;
+    m_iAxis[i] = m_xAxis[i] / m_scale;
+    m_jAxis[i] = m_yAxis[i] / m_scale;
   }
   return true;
 }
@@ -199,14 +199,14 @@ bool pmodel::computeFeatureSizeAndNormal(std::vector<double>& origin, std::vecto
   double xl2 = 0., yl2 = 0., zl2 = 0.;
   for (int i = 0; i < 3; ++i)
   {
-    this->m_origin[i] = origin[i];
-    this->m_xAxis[i] = x_axis[i];
-    this->m_yAxis[i] = y_axis[i];
+    m_origin[i] = origin[i];
+    m_xAxis[i] = x_axis[i];
+    m_yAxis[i] = y_axis[i];
     xl2 += x_axis[i] * x_axis[i];
     yl2 += y_axis[i] * y_axis[i];
-    this->m_zAxis[i] =
+    m_zAxis[i] =
       x_axis[(i + 1) % 3] * y_axis[(i + 2) % 3] - x_axis[(i + 2) % 3] * y_axis[(i + 1) % 3];
-    zl2 += this->m_zAxis[i] * this->m_zAxis[i];
+    zl2 += m_zAxis[i] * m_zAxis[i];
   }
   if (xl2 < 1e-16 || yl2 < 1e-16 || zl2 < 1e-16)
   {
@@ -219,15 +219,15 @@ bool pmodel::computeFeatureSizeAndNormal(std::vector<double>& origin, std::vecto
   xl2 = sqrt(xl2);
   yl2 = sqrt(yl2);
   zl2 = sqrt(zl2);
-  this->m_scale = modelScale;
-  this->m_featureSize = 1.0;
+  m_scale = modelScale;
+  m_featureSize = 1.0;
   for (int i = 0; i < 3; ++i)
   {
-    this->m_xAxis[i] /= xl2;
-    this->m_yAxis[i] /= yl2;
-    this->m_zAxis[i] /= zl2;
-    this->m_iAxis[i] = this->m_xAxis[i] / this->m_scale;
-    this->m_jAxis[i] = this->m_yAxis[i] / this->m_scale;
+    m_xAxis[i] /= xl2;
+    m_yAxis[i] /= yl2;
+    m_zAxis[i] /= zl2;
+    m_iAxis[i] = m_xAxis[i] / m_scale;
+    m_jAxis[i] = m_yAxis[i] / m_scale;
   }
   return true;
 }
@@ -262,15 +262,15 @@ bool pmodel::restoreModel(std::vector<double>& origin, std::vector<double>& x_ax
 
   for (int i = 0; i < 3; ++i)
   {
-    this->m_origin[i] = origin[i];
-    this->m_xAxis[i] = x_axis[i];
-    this->m_yAxis[i] = y_axis[i];
-    this->m_zAxis[i] = z_axis[i];
-    this->m_iAxis[i] = i_axis[i];
-    this->m_jAxis[i] = j_axis[i];
+    m_origin[i] = origin[i];
+    m_xAxis[i] = x_axis[i];
+    m_yAxis[i] = y_axis[i];
+    m_zAxis[i] = z_axis[i];
+    m_iAxis[i] = i_axis[i];
+    m_jAxis[i] = j_axis[i];
   }
-  this->m_scale = modelScale;
-  this->m_featureSize = featureSize;
+  m_scale = modelScale;
+  m_featureSize = featureSize;
   return true;
 }
 
@@ -301,8 +301,8 @@ smtk::model::Vertices pmodel::findOrAddModelVertices(
 smtk::model::Vertex pmodel::findOrAddModelVertex(
   smtk::model::ManagerPtr mgr, const Point& pt, bool addToModel)
 {
-  PointToVertexId::const_iterator pit = this->m_vertices.find(pt);
-  if (pit != this->m_vertices.end())
+  PointToVertexId::const_iterator pit = m_vertices.find(pt);
+  if (pit != m_vertices.end())
     return smtk::model::Vertex(mgr, pit->second);
 
   return this->addModelVertex(mgr, pt, addToModel);
@@ -314,13 +314,13 @@ smtk::model::Vertex pmodel::addModelVertex(
   // Add a model vertex to the manager
   smtk::model::Vertex v = mgr->addVertex();
   // Add a coordinate-map lookup to local storage:
-  this->m_vertices[pt] = v.entity();
+  m_vertices[pt] = v.entity();
   // Create internal storage for the neighborhood of the vertex:
   vertex::Ptr vi = vertex::create();
   vi->setParent(this);
   vi->setId(v.entity());
   vi->m_coords = pt;
-  this->m_session->addStorage(v.entity(), vi);
+  m_session->addStorage(v.entity(), vi);
   // Figure out the floating-point approximation for our discretized coordinate
   // and add it to the tessellation for the new model vertex:
   this->addVertTessellation(v, vi);
@@ -469,7 +469,7 @@ bool pmodel::demoteModelVertex(smtk::model::ManagerPtr mgr, internal::VertexPtr 
       adjacentFaces2 = this->removeModelEdgeFromEndpoints(mgr, ie2);
       if (debugLevel > -5)
       {
-        smtkDebugMacro(this->m_session->log(), "Demote adjacencies\n"
+        smtkDebugMacro(m_session->log(), "Demote adjacencies\n"
             << "  " << adjacentFaces1.first.toString() << " / " << adjacentFaces1.second.toString()
             << "  " << (e1OutgoingFromDemotedVert ? "o" : "i") << "\n"
             << "  " << adjacentFaces2.first.toString() << " / " << adjacentFaces2.second.toString()
@@ -586,7 +586,7 @@ bool pmodel::splitModelEdgeAtPoint(smtk::model::ManagerPtr mgr, const Id& edgeId
 bool pmodel::splitModelEdgeAtIndex(smtk::model::ManagerPtr mgr, const Id& edgeId, int pointIndex,
   smtk::model::EntityRefArray& created, int debugLevel)
 {
-  edge::Ptr storage = this->m_session->findStorage<internal::edge>(edgeId);
+  edge::Ptr storage = m_session->findStorage<internal::edge>(edgeId);
   if (!storage)
   {
     smtkErrorMacro(this->session()->log(), "Edge is not part of this model.");
@@ -633,7 +633,7 @@ bool pmodel::splitModelEdgeAtModelVertex(smtk::model::ManagerPtr mgr, const Id& 
   if (!edg || !vrt)
     return false;
   PointSeq::iterator split;
-  Coord maxDelta = static_cast<Coord>(this->m_featureSize * this->m_scale);
+  Coord maxDelta = static_cast<Coord>(m_featureSize * m_scale);
   for (split = edg->pointsBegin(); split != edg->pointsEnd(); ++split)
   {
     if (std::abs(vrt->point().x() - split->x()) < maxDelta &&
@@ -689,7 +689,7 @@ bool pmodel::splitModelEdgeAtModelVertices(smtk::model::ManagerPtr mgr, edge::Pt
   smtk::model::Vertices allVertices;
   smtk::model::Vertex finalModelVert;
   bool isPeriodic = (*edgeToSplit->pointsBegin() == *edgeToSplit->pointsRBegin());
-  //bool noModelVertices = (this->m_vertices.find(*edgeToSplit->pointsBegin()) == this->m_vertices.end());
+  //bool noModelVertices = (m_vertices.find(*edgeToSplit->pointsBegin()) == m_vertices.end());
   smtk::model::Vertices currentVertices = modelEdge.vertices();
   bool noModelVertices = currentVertices.empty();
   if (isPeriodic && noModelVertices)
@@ -811,9 +811,9 @@ bool pmodel::splitModelEdgeAtModelVertices(smtk::model::ManagerPtr mgr, edge::Pt
   bool isFreeCell = (!adjacentFaces.first && !adjacentFaces.second);
   if (debugLevel > 0)
   {
-    smtkDebugMacro(this->m_session->log(), "Split " << modelEdge.name() << "  faces "
-                                                    << adjacentFaces.first.toString() << " / "
-                                                    << adjacentFaces.second.toString());
+    smtkDebugMacro(m_session->log(), "Split " << modelEdge.name() << "  faces "
+                                              << adjacentFaces.first.toString() << " / "
+                                              << adjacentFaces.second.toString());
   }
 
   // Now we can create the new model edges.
@@ -868,7 +868,7 @@ bool pmodel::splitModelEdgeAtModelVertices(smtk::model::ManagerPtr mgr, edge::Pt
              << (veit->isEdgeOutgoing() ? "Y" : "N") << "\n";
       }
     }
-    smtkDebugMacro(this->m_session->log(), summ.str());
+    smtkDebugMacro(m_session->log(), summ.str());
   }
 
   // Update loops of face(s) attached to original edge.
@@ -908,7 +908,7 @@ bool pmodel::splitModelEdgeAtModelVertices(smtk::model::ManagerPtr mgr, edge::Pt
     }
     if (debugLevel > 0)
     {
-      smtkDebugMacro(this->m_session->log(), "Replace "
+      smtkDebugMacro(m_session->log(), "Replace "
           << oeus->name() << " (edge " << oeus->edge().name() << " "
           << " sense " << origSense << " ornt "
           << (origOrientation == smtk::model::POSITIVE ? "+" : "-") << ") with "
@@ -950,14 +950,14 @@ model::Edge pmodel::createModelEdgeFromVertices(
 {
   if (!mgr || !v0 || !v1)
   {
-    smtkErrorMacro(this->m_session->log(), "Detected either invalid Model Manager or at "
-                                           "least one of the vertices was NULL");
+    smtkErrorMacro(m_session->log(), "Detected either invalid Model Manager or at "
+                                     "least one of the vertices was NULL");
     return smtk::model::Edge();
   }
 
   if (v0 == v1)
   {
-    smtkErrorMacro(this->m_session->log(), "Vertices must be unique");
+    smtkErrorMacro(m_session->log(), "Vertices must be unique");
     return smtk::model::Edge();
   }
 
@@ -966,8 +966,7 @@ model::Edge pmodel::createModelEdgeFromVertices(
   // Ensure edge can be inserted without splitting a face.
   if (!v0->canInsertEdge(v1->point(), &whereBegin))
   {
-    smtkErrorMacro(
-      this->m_session->log(), "Edge would overlap face in neighborhood of first vertex ("
+    smtkErrorMacro(m_session->log(), "Edge would overlap face in neighborhood of first vertex ("
         << smtk::model::Vertex(mgr, v0->id()).name() << ")A.");
     return smtk::model::Edge();
   }
@@ -975,8 +974,7 @@ model::Edge pmodel::createModelEdgeFromVertices(
   // Ensure edge can be inserted without splitting a face.
   if (!v1->canInsertEdge(v0->point(), &whereEnd))
   {
-    smtkErrorMacro(
-      this->m_session->log(), "Edge would overlap face in neighborhood of last vertex ("
+    smtkErrorMacro(m_session->log(), "Edge would overlap face in neighborhood of last vertex ("
         << smtk::model::Vertex(mgr, v1->id()).name() << ")B.");
     return smtk::model::Edge();
   }
@@ -986,7 +984,7 @@ model::Edge pmodel::createModelEdgeFromVertices(
   internal::edge::Ptr storage = internal::edge::create();
   storage->setParent(this);
   storage->setId(created.entity());
-  this->m_session->addStorage(created.entity(), storage);
+  m_session->addStorage(created.entity(), storage);
   storage->m_points.clear();
   storage->m_points.push_back(v0->point());
   storage->m_points.push_back(v1->point());
@@ -1066,12 +1064,12 @@ std::pair<Id, Id> pmodel::removeModelEdgeFromEndpoints(smtk::model::ManagerPtr m
 /// Remove a reverse lookup (from coordinates to vertex ID) from the model's search structure.
 bool pmodel::removeVertexLookup(const Point& location, const Id& vid)
 {
-  PointToVertexId::const_iterator pit = this->m_vertices.find(location);
-  if (pit == this->m_vertices.end() || pit->second != vid)
+  PointToVertexId::const_iterator pit = m_vertices.find(location);
+  if (pit == m_vertices.end() || pit->second != vid)
   {
     return false;
   }
-  this->m_vertices.erase(pit);
+  m_vertices.erase(pit);
   return true;
 }
 
@@ -1090,7 +1088,7 @@ bool pmodel::removeVertexLookup(const Point& location, const Id& vid)
   */
 Point pmodel::edgeTestPoint(const Id& edgeId, bool edgeEndPt) const
 {
-  edge::Ptr e = this->m_session->findStorage<edge>(edgeId);
+  edge::Ptr e = m_session->findStorage<edge>(edgeId);
   if (e)
   {
     if (edgeEndPt == true)
@@ -1507,8 +1505,8 @@ void pmodel::addVertMeshTessellation(smtk::model::Vertex& vertRec, internal::ver
 
 Id pmodel::pointId(const Point& p) const
 {
-  PointToVertexId::const_iterator it = this->m_vertices.find(p);
-  if (it == this->m_vertices.end())
+  PointToVertexId::const_iterator it = m_vertices.find(p);
+  if (it == m_vertices.end())
     return Id();
   return it->second;
 }
@@ -1530,7 +1528,7 @@ Id pmodel::pointId(const Point& p) const
 bool pmodel::tweakEdge(
   smtk::model::Edge edge, internal::PointSeq& replacement, smtk::model::EntityRefArray& modified)
 {
-  edge::Ptr storage = this->m_session->findStorage<internal::edge>(edge.entity());
+  edge::Ptr storage = m_session->findStorage<internal::edge>(edge.entity());
   if (!storage)
   {
     return false;
@@ -1546,7 +1544,7 @@ bool pmodel::tweakEdge(
   if (!verts.empty())
   {
     internal::vertex::Ptr firstVert =
-      this->m_session->findStorage<internal::vertex>(verts.begin()->entity());
+      m_session->findStorage<internal::vertex>(verts.begin()->entity());
     isFirstVertStart = (firstVert->point() == *epts.begin());
   }
   // Now erase the existing edge points and rewrite them:
@@ -1554,7 +1552,7 @@ bool pmodel::tweakEdge(
   epts.splice(epts.end(), replacement);
   if (isPeriodic && (*epts.begin()) != (*(++epts.rbegin()).base()))
   { // It was periodic but isn't any more. Close the loop naively.
-    smtkDebugMacro(this->m_session->log(), "Closing non-periodic tweak to preserve topology.");
+    smtkDebugMacro(m_session->log(), "Closing non-periodic tweak to preserve topology.");
     epts.insert(epts.end(), *epts.begin());
   }
   // Lift the integer points into world coordinates:
@@ -1566,7 +1564,7 @@ bool pmodel::tweakEdge(
   {
     internal::Point locn =
       ((vit == verts.begin()) != !isFirstVertStart) ? *epts.begin() : *(++epts.rbegin()).base();
-    smtkDebugMacro(this->m_session->log(), "Tweaking vertex " << vit->name() << ".");
+    smtkDebugMacro(m_session->log(), "Tweaking vertex " << vit->name() << ".");
     if (this->tweakVertex(*vit, locn, modEdgesAndFaces))
     {
       modified.push_back(*vit);
@@ -1582,7 +1580,7 @@ bool pmodel::tweakEdge(
     // If we have a face attached, re-tessellate it and add to modEdgesAndFaces
     if (modEdgesAndFaces.find(*fit) == modEdgesAndFaces.end())
     {
-      smtkDebugMacro(this->m_session->log(), "Retessellating face " << fit->name() << ".");
+      smtkDebugMacro(m_session->log(), "Retessellating face " << fit->name() << ".");
       this->addFaceTessellation(*fit);
       this->addFaceMeshTessellation(*fit);
       modEdgesAndFaces.insert(*fit);
@@ -1620,9 +1618,9 @@ bool pmodel::tweakVertex(smtk::model::Vertex vertRec, const Point& vertPosn,
   }
 
   // Erase old reverse lookup, update vertex, and add new reverse lookup:
-  this->m_vertices.erase(vv->point());
+  m_vertices.erase(vv->point());
   vv->m_coords = vertPosn;
-  this->m_vertices[vertPosn] = vertRec.entity();
+  m_vertices[vertPosn] = vertRec.entity();
 
   vertex::incident_edges::iterator eit;
   for (eit = vv->edgesBegin(); eit != vv->edgesEnd(); ++eit)
@@ -1666,7 +1664,7 @@ bool pmodel::tweakVertex(smtk::model::Vertex vertRec, const Point& vertPosn,
 
 void pmodel::addVertexIndex(vertex::Ptr vert)
 {
-  this->m_vertices[vert->point()] = vert->id();
+  m_vertices[vert->point()] = vert->id();
 }
 
 } // namespace internal

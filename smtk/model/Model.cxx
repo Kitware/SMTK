@@ -122,7 +122,7 @@ CellEntities Model::cells() const
   EntityRefArrangementOps::appendAllRelations(*this, INCLUDES, result);
   if (result.empty())
   { // We may have a "simple" model that has no arrangements but does have relations.
-    EntityPtr erec = mgr->findEntity(this->m_entity);
+    EntityPtr erec = mgr->findEntity(m_entity);
     if (erec)
     {
       smtk::common::UUIDArray::const_iterator rit;
@@ -179,7 +179,7 @@ Model& Model::removeCell(const CellEntity& c)
     }
     */
   UUIDWithEntityPtr ent;
-  ent = mgr->topology().find(this->m_entity);
+  ent = mgr->topology().find(m_entity);
   if (ent != mgr->topology().end())
   {
     mgr->elideOneEntityReference(ent, c.entity());
@@ -187,7 +187,7 @@ Model& Model::removeCell(const CellEntity& c)
   ent = mgr->topology().find(c.entity());
   if (ent != mgr->topology().end())
   {
-    mgr->elideOneEntityReference(ent, this->m_entity);
+    mgr->elideOneEntityReference(ent, m_entity);
   }
   return *this;
 }
@@ -210,7 +210,7 @@ Model& Model::removeGroup(const Group& g)
   if (this->isValid() && g.isValid())
   {
     int aidx = EntityRefArrangementOps::findSimpleRelationship(*this, SUPERSET_OF, g);
-    if (aidx >= 0 && mgr->unarrangeEntity(this->m_entity, SUPERSET_OF, aidx) > 0)
+    if (aidx >= 0 && mgr->unarrangeEntity(m_entity, SUPERSET_OF, aidx) > 0)
     {
       mgr->trigger(ManagerEventType(DEL_EVENT, MODEL_INCLUDES_GROUP), *this, g);
     }
@@ -243,7 +243,7 @@ Model& Model::removeSubmodel(const Model& m)
   if (this->isValid() && m.isValid() && m.manager() == this->manager() && m.entity() != this->entity())
     {
     int aidx = EntityRefArrangementOps::findSimpleRelationship(*this, SUPERSET_OF, m);
-    if (aidx >= 0 && mgr->unarrangeEntity(this->m_entity, SUPERSET_OF, aidx) > 0)
+    if (aidx >= 0 && mgr->unarrangeEntity(m_entity, SUPERSET_OF, aidx) > 0)
       {
       mgr->trigger(ManagerEventType(DEL_EVENT, MODEL_INCLUDES_MODEL), *this, m);
       }

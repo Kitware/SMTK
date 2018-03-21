@@ -58,9 +58,9 @@ public:
   qtBaseView* setSMTKView(
     smtk::view::ViewPtr v, QWidget* pWidget, bool useInternalFileBrowser = false);
   qtBaseView* setSMTKView(const smtk::extension::ViewInfo& v, bool useInternalFileBrowser = false);
-  smtk::view::ViewPtr smtkView() const { return this->m_smtkView; }
+  smtk::view::ViewPtr smtkView() const { return m_smtkView; }
 
-  smtk::attribute::CollectionPtr attCollection() const { return this->m_AttCollection; }
+  smtk::attribute::CollectionPtr attCollection() const { return m_AttCollection; }
 
   void setActiveModelView(smtk::extension::qtModelView*);
   smtk::extension::qtModelView* activeModelView();
@@ -86,10 +86,10 @@ public:
 
   //Description:
   // Set and Get Value Label Lengths
-  int maxValueLabelLength() const { return this->m_maxValueLabelLength; }
-  void setMaxValueLabelLength(int w) { this->m_maxValueLabelLength = w; }
-  int minValueLabelLength() const { return this->m_minValueLabelLength; }
-  void setMinValueLabelLength(int w) { this->m_minValueLabelLength = w; }
+  int maxValueLabelLength() const { return m_maxValueLabelLength; }
+  void setMaxValueLabelLength(int w) { m_maxValueLabelLength = w; }
+  int minValueLabelLength() const { return m_minValueLabelLength; }
+  void setMinValueLabelLength(int w) { m_minValueLabelLength = w; }
 
   //Description:
   // Registers a view construction function with a view type string
@@ -98,10 +98,10 @@ public:
   // Check if view type string has a registered view construction function
   bool hasViewConstructor(const std::string& vtype)
   {
-    return this->m_constructors.find(vtype) != this->m_constructors.end();
+    return m_constructors.find(vtype) != m_constructors.end();
   }
 
-  qtBaseView* topView() { return this->m_topView; }
+  qtBaseView* topView() { return m_topView; }
   static QString clipBoardText();
   static void setClipBoardText(QString& text);
   std::string currentCategory();
@@ -114,7 +114,7 @@ public:
   bool passCategoryCheck(const std::set<std::string>& categories);
 
   const QFont& advancedFont() { return this->advFont; }
-  int advanceLevel() const { return this->m_currentAdvLevel; }
+  int advanceLevel() const { return m_currentAdvLevel; }
   void initAdvanceLevels(QComboBox* combo);
 
   void setWidgetColorToInvalid(QWidget* widget);

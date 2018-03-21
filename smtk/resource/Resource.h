@@ -83,8 +83,8 @@ public:
 
   /// id and location are run-time intrinsics of the derived resource; we need
   /// to allow the user to reset these values.
-  const smtk::common::UUID& id() const override { return this->m_id; }
-  const std::string& location() const { return this->m_location; }
+  const smtk::common::UUID& id() const override { return m_id; }
+  const std::string& location() const { return m_location; }
 
   bool setId(const smtk::common::UUID& myID) override;
   bool setLocation(const std::string& location);
@@ -102,7 +102,7 @@ public:
   void setClean(bool state = true) { m_clean = state; }
 
   /// Resources that are managed have a non-null pointer to their manager.
-  ManagerPtr manager() const { return this->m_manager.lock(); }
+  ManagerPtr manager() const { return m_manager.lock(); }
 
   /// given a resource component's UUID, return the resource component.
   virtual ComponentPtr find(const smtk::common::UUID& compId) const = 0;
@@ -121,7 +121,7 @@ public:
 
   /// classes that are granted permission to the key may retrieve the resource's
   /// lock.
-  Lock& lock(Key()) const { return this->m_lock; }
+  Lock& lock(Key()) const { return m_lock; }
 
 protected:
   Resource(const smtk::common::UUID&, ManagerPtr manager = nullptr);

@@ -39,15 +39,15 @@ Neighborhood::Neighborhood(SweeplinePosition& x, FragmentArray& fragments,
 
 int Neighborhood::sweep()
 {
-  this->m_outside = -1;
+  m_outside = -1;
   std::set<SweepEvent>::iterator event;
 
-  while (!this->m_eventQueue->empty())
+  while (!m_eventQueue->empty())
   {
     // peek at the first event's point
-    event = this->m_eventQueue->begin();
+    event = m_eventQueue->begin();
     internal::Point npt = event->point();
-    this->m_nextPoint = npt;
+    m_nextPoint = npt;
 
     // Process end events as long as they correspond to the current point
     //   remove fragment from active queue (immediately)
@@ -92,41 +92,41 @@ int Neighborhood::sweep()
 /// Return the region ID neighboring a fragment from above.
 RegionId Neighborhood::lowerRegionJustAbove(FragmentId frag)
 {
-  ActiveFragmentTree::iterator edgeNeighbor = this->m_activeEdges->upper_bound(frag);
-  if (edgeNeighbor == this->m_activeEdges->end())
+  ActiveFragmentTree::iterator edgeNeighbor = m_activeEdges->upper_bound(frag);
+  if (edgeNeighbor == m_activeEdges->end())
     return -1;
-  return (*this->m_fragments)[*edgeNeighbor].lowerRegion();
+  return (*m_fragments)[*edgeNeighbor].lowerRegion();
 }
 
 /// Return the region ID neighboring a fragment from below.
 RegionId Neighborhood::upperRegionJustBelow(FragmentId frag)
 {
-  ActiveFragmentTree::iterator edgeNeighbor = this->m_activeEdges->lower_bound(frag);
-  if (edgeNeighbor != this->m_activeEdges->end())
+  ActiveFragmentTree::iterator edgeNeighbor = m_activeEdges->lower_bound(frag);
+  if (edgeNeighbor != m_activeEdges->end())
   { // We found the edge or the edge wasn't active but we have an immediate neighbor above.
-    if (edgeNeighbor == this->m_activeEdges->begin())
+    if (edgeNeighbor == m_activeEdges->begin())
     { // The edge has no neighbor below:
       return -1;
     }
     --edgeNeighbor;
-    return (*this->m_fragments)[*edgeNeighbor].upperRegion();
+    return (*m_fragments)[*edgeNeighbor].upperRegion();
   }
   // The edge is not active and there's no edge above it.
   // Thus, if any edges are active, the topmost one is
   // just below \a frag.
-  if (this->m_activeEdges->empty())
+  if (m_activeEdges->empty())
     return -1;
   // Not empty => m_activeEdges->rbegin() is valid:
-  return (*this->m_fragments)[*this->m_activeEdges->rbegin()].upperRegion();
+  return (*m_fragments)[*m_activeEdges->rbegin()].upperRegion();
 }
 
 /// Return the region ID neighboring a point from above.
 RegionId Neighborhood::lowerRegionJustAbove(const internal::Point& pt) const
 {
-  FragmentId frag = this->m_activeEdges->boundingFragments(pt, true).second;
+  FragmentId frag = m_activeEdges->boundingFragments(pt, true).second;
   if (frag != static_cast<FragmentId>(-1))
   {
-    return (*this->m_fragments)[frag].lowerRegion();
+    return (*m_fragments)[frag].lowerRegion();
   }
   return static_cast<RegionId>(-1);
 }
@@ -134,10 +134,10 @@ RegionId Neighborhood::lowerRegionJustAbove(const internal::Point& pt) const
 /// Return the region ID neighboring a point from below.
 RegionId Neighborhood::upperRegionJustBelow(const internal::Point& pt) const
 {
-  FragmentId frag = this->m_activeEdges->boundingFragments(pt, true).first;
+  FragmentId frag = m_activeEdges->boundingFragments(pt, true).first;
   if (frag != static_cast<FragmentId>(-1))
   {
-    return (*this->m_fragments)[frag].upperRegion();
+    return (*m_fragments)[frag].upperRegion();
   }
   return static_cast<RegionId>(-1);
 }
@@ -182,7 +182,7 @@ static void printRelating(RegionId a, RegionId b, RegionId c, int caseNum, int d
  */
 bool Neighborhood::isFragmentOutgoing(const EdgeFragment& frag)
 {
-  return frag.lo() == this->m_nextPoint;
+  return frag.lo() == m_nextPoint;
 }
 
 /// Relate a region between 2 fragments A & B which share a vertex x to neighborhoods just before and after x.
@@ -215,14 +215,14 @@ void Neighborhood::relateNeighborhoods(FragmentId fA, EdgeFragment& fragA, bool 
     if (oaXyy > 0)
     { // Fragment B is incoming and bounded above by a fragment whose lower region should be merged with idB
       RegionId other = this->lowerRegionJustAbove(origin);
-      printRelating(region, other, 1, this->m_debugLevel);
-      this->m_related.insert(std::pair<RegionId, RegionId>(other, region));
+      printRelating(region, other, 1, m_debugLevel);
+      m_related.insert(std::pair<RegionId, RegionId>(other, region));
     }
     else // (oaXyy < 0)
     {    // Fragment A is incoming and bounded below by a fragment whose upper region should be merged with idA
       RegionId other = this->upperRegionJustBelow(origin);
-      printRelating(region, other, 2, this->m_debugLevel);
-      this->m_related.insert(std::pair<RegionId, RegionId>(other, region));
+      printRelating(region, other, 2, m_debugLevel);
+      m_related.insert(std::pair<RegionId, RegionId>(other, region));
     }
   }
   else if (oaXyy * yyXob < 0)
@@ -239,16 +239,16 @@ void Neighborhood::relateNeighborhoods(FragmentId fA, EdgeFragment& fragA, bool 
       // cannot be any incoming edges. So, we perform the lookups using edge that are correct
       // for the oaXyy < 0 case (where A and B are both incoming and the above/below lookups
       // would be incorrect if we swap A and B).
-      if (oaXob == 0 && (fA != fB || this->m_ring.size() > 1))
+      if (oaXob == 0 && (fA != fB || m_ring.size() > 1))
       {
         smtkWarningMacro(
-          this->m_mgr->log(), "Neighborhood of edge fragment is invalid. Expect invalid results.");
+          m_mgr->log(), "Neighborhood of edge fragment is invalid. Expect invalid results.");
       }
       RegionId above = this->lowerRegionJustAbove(origin);
       RegionId below = this->upperRegionJustBelow(origin);
-      printRelating(region, above, below, 3, this->m_debugLevel);
-      this->m_related.insert(std::pair<RegionId, RegionId>(above, region));
-      this->m_related.insert(std::pair<RegionId, RegionId>(below, region));
+      printRelating(region, above, below, 3, m_debugLevel);
+      m_related.insert(std::pair<RegionId, RegionId>(above, region));
+      m_related.insert(std::pair<RegionId, RegionId>(below, region));
     }
   }
   else // (oaXyy * yyXob == 0)
@@ -277,8 +277,8 @@ void Neighborhood::relateNeighborhoods(FragmentId fA, EdgeFragment& fragA, bool 
         other = this->upperRegionJustBelow(
           origin); // when oaXyy == 0, fA isn't in m_activeSegments yet, but the lookup is safe).
       }
-      printRelating(region, other, 4, this->m_debugLevel);
-      this->m_related.insert(std::pair<RegionId, RegionId>(other, region));
+      printRelating(region, other, 4, m_debugLevel);
+      m_related.insert(std::pair<RegionId, RegionId>(other, region));
     }
     else if (oaXob == 0)
     {
@@ -289,14 +289,14 @@ void Neighborhood::relateNeighborhoods(FragmentId fA, EdgeFragment& fragA, bool 
       if (isOutA && isOutB)
       { // Both outgoing, link to region below
         RegionId below = this->lowerRegionJustAbove(origin);
-        printRelating(region, below, 5, this->m_debugLevel);
-        this->m_related.insert(std::pair<RegionId, RegionId>(below, region));
+        printRelating(region, below, 5, m_debugLevel);
+        m_related.insert(std::pair<RegionId, RegionId>(below, region));
       }
       else if (!isOutA && !isOutB)
       {
         RegionId above = this->upperRegionJustBelow(origin);
-        printRelating(region, above, 6, this->m_debugLevel);
-        this->m_related.insert(std::pair<RegionId, RegionId>(above, region));
+        printRelating(region, above, 6, m_debugLevel);
+        m_related.insert(std::pair<RegionId, RegionId>(above, region));
       }
     }
   }
@@ -306,11 +306,11 @@ void Neighborhood::mergeRelated()
 {
   std::set<std::pair<RegionId, RegionId> >::iterator relIt;
   RegionId firstOutside = -1;
-  for (relIt = this->m_related.begin(); relIt != this->m_related.end(); ++relIt)
+  for (relIt = m_related.begin(); relIt != m_related.end(); ++relIt)
   {
-    if (this->m_regionIds.mergeSets(relIt->first, relIt->second) < 0)
+    if (m_regionIds.mergeSets(relIt->first, relIt->second) < 0)
     {
-      this->m_outside = this->m_regionIds.find(relIt->first < 0 ? relIt->second : relIt->first);
+      m_outside = m_regionIds.find(relIt->first < 0 ? relIt->second : relIt->first);
     }
     // mergeSets will not accept negative region IDs;
     // ensure outside regions merge with each other like so:
@@ -318,7 +318,7 @@ void Neighborhood::mergeRelated()
     {
       if (firstOutside >= 0)
       {
-        this->m_regionIds.mergeSets(firstOutside, relIt->second);
+        m_regionIds.mergeSets(firstOutside, relIt->second);
       }
       else
       {
@@ -332,33 +332,33 @@ void Neighborhood::mergeRelated()
 void Neighborhood::assignAndMergeRegions(
   const std::list<FragmentId>::iterator& ringA, const std::list<FragmentId>::iterator& ringB)
 {
-  if (this->m_debugLevel > 1)
+  if (m_debugLevel > 1)
   {
     std::cout << "  A-B: " << *ringA << " " << *ringB << "\n";
   }
-  EdgeFragment& fragA((*this->m_fragments)[*ringA]);
-  EdgeFragment& fragB((*this->m_fragments)[*ringB]);
+  EdgeFragment& fragA((*m_fragments)[*ringA]);
+  EdgeFragment& fragB((*m_fragments)[*ringB]);
   // Determine sense wrt neighborhood (isOutX == true => fragment's other vertex hasn't been processed yet).
   bool isOutA = this->isFragmentOutgoing(fragA); // true when m_point is coincident with fragA.lower
   bool isOutB = this->isFragmentOutgoing(fragB);
 
-  RegionIdSet::value_type idA = this->m_regionIds.find(fragA.ccwRegion(isOutA));
-  RegionIdSet::value_type idB = this->m_regionIds.find(fragB.cwRegion(isOutB));
+  RegionIdSet::value_type idA = m_regionIds.find(fragA.ccwRegion(isOutA));
+  RegionIdSet::value_type idB = m_regionIds.find(fragB.cwRegion(isOutB));
   RegionIdSet::value_type winner;
   if (idA != idB)
   { // Merge regions on inside of A--B. Add coedges (of exiting edges on inside of A--B) to region.
-    winner = this->m_regionIds.mergeSets(idA, idB);
+    winner = m_regionIds.mergeSets(idA, idB);
     RegionIdSet::value_type loser = (winner == idA ? idB : idA);
     // If this is a new region, create a record for it.
-    if (this->m_regions.find(winner) == this->m_regions.end())
+    if (m_regions.find(winner) == m_regions.end())
     {
       bool seedSense = !isOutB;
-      this->m_regions[winner] = smtk::make_shared<Region>(*ringB, seedSense);
+      m_regions[winner] = smtk::make_shared<Region>(*ringB, seedSense);
     }
-    if (this->m_regions.find(loser) != this->m_regions.end())
+    if (m_regions.find(loser) != m_regions.end())
     {
-      this->m_regions[winner]->merge(this->m_regions[loser].get());
-      this->m_regions.erase(loser);
+      m_regions[winner]->merge(m_regions[loser].get());
+      m_regions.erase(loser);
     }
   }
   else
@@ -378,16 +378,14 @@ bool Neighborhood::insertFragmentBetween(const std::list<FragmentId>::iterator& 
   const internal::Point& other)
 {
   (void)frag;
-  EdgeFragment& fragA((*this->m_fragments)[*ringA]);
-  EdgeFragment& fragB((*this->m_fragments)[*ringB]);
-  internal::Point otherA(fragA.lo() == this->m_nextPoint ? fragA.hi() : fragA.lo());
-  internal::Point otherB(fragB.lo() == this->m_nextPoint ? fragB.hi() : fragB.lo());
+  EdgeFragment& fragA((*m_fragments)[*ringA]);
+  EdgeFragment& fragB((*m_fragments)[*ringB]);
+  internal::Point otherA(fragA.lo() == m_nextPoint ? fragA.hi() : fragA.lo());
+  internal::Point otherB(fragB.lo() == m_nextPoint ? fragB.hi() : fragB.lo());
 
-  internal::Coord oa[2] = { otherA.x() - this->m_nextPoint.x(),
-    otherA.y() - this->m_nextPoint.y() };
-  internal::Coord ob[2] = { otherB.x() - this->m_nextPoint.x(),
-    otherB.y() - this->m_nextPoint.y() };
-  internal::Coord oo[2] = { other.x() - this->m_nextPoint.x(), other.y() - this->m_nextPoint.y() };
+  internal::Coord oa[2] = { otherA.x() - m_nextPoint.x(), otherA.y() - m_nextPoint.y() };
+  internal::Coord ob[2] = { otherB.x() - m_nextPoint.x(), otherB.y() - m_nextPoint.y() };
+  internal::Coord oo[2] = { other.x() - m_nextPoint.x(), other.y() - m_nextPoint.y() };
   internal::HighPrecisionCoord oaXoo = cross2d(oa, oo);
   internal::HighPrecisionCoord ooXob = cross2d(oo, ob);
   internal::HighPrecisionCoord oaXob = cross2d(oa, ob);
@@ -397,7 +395,7 @@ bool Neighborhood::insertFragmentBetween(const std::list<FragmentId>::iterator& 
           oaXoo <
             0))) // oaXob > pi and "other" is *not between* the short CCW path between B and A.
   {              // other is between ringA and ringB. Insert it just before ringB:
-    this->m_ring.insert(ringB, fragId);
+    m_ring.insert(ringB, fragId);
     return true;
   }
   else if (oaXoo == 0)
@@ -405,7 +403,7 @@ bool Neighborhood::insertFragmentBetween(const std::list<FragmentId>::iterator& 
     if (dot2d(oa, oo) < 0 && ooXob > 0)
     {
       // ... but antidirectional with ringA; and properly oriented with ringB.
-      this->m_ring.insert(ringB, fragId);
+      m_ring.insert(ringB, fragId);
       return true;
     }
     else
@@ -420,7 +418,7 @@ bool Neighborhood::insertFragmentBetween(const std::list<FragmentId>::iterator& 
     if (dot2d(oo, ob) < 0 && oaXoo > 0)
     {
       // ... but antidirectional with ringB; and properly oriented with ringA.
-      this->m_ring.insert(ringB, fragId);
+      m_ring.insert(ringB, fragId);
       return true;
     }
     else
@@ -451,22 +449,22 @@ void Neighborhood::insertFragment(
 {
   for (int i = 0; i < 2; ++i)
     if (frag.m_regionId[i] < 0)
-      frag.m_regionId[i] = this->m_regionIds.newSet();
+      frag.m_regionId[i] = m_regionIds.newSet();
 
-  if (this->m_ring.size() < 2)
+  if (m_ring.size() < 2)
   { // No matter where we insert, the order will be CCW. So insert at beginning:
-    this->m_ring.insert(this->m_ring.begin(), fragId);
+    m_ring.insert(m_ring.begin(), fragId);
     return;
   }
-  std::list<FragmentId>::iterator ringA = this->m_ring.end();
+  std::list<FragmentId>::iterator ringA = m_ring.end();
   --ringA; // "unadvance" before end() to the last ring entry.
-  std::list<FragmentId>::iterator ringB = this->m_ring.begin();
+  std::list<FragmentId>::iterator ringB = m_ring.begin();
   // Start by processing the implicit fragment-pair between m_ring.end() and m_ring.begin():
   if (this->insertFragmentBetween(ringA, ringB, fragId, frag, other))
     return;
   // Now proceed through the list until we find the right spot.
   ringA = ringB;
-  for (++ringB; ringB != this->m_ring.end(); ++ringA, ++ringB /*, sao = -sbo??? */)
+  for (++ringB; ringB != m_ring.end(); ++ringA, ++ringB /*, sao = -sbo??? */)
   {
     if (this->insertFragmentBetween(ringA, ringB, fragId, frag, other))
       return;
@@ -478,18 +476,18 @@ void Neighborhood::insertFragment(
 void Neighborhood::queueActiveEdge(FragmentId fragId, EdgeFragment& frag)
 {
   (void)frag;
-  this->m_fragmentsToQueue.push_back(fragId);
+  m_fragmentsToQueue.push_back(fragId);
 }
 
 void Neighborhood::removeActiveEdge(FragmentId fragId)
 {
-  bool did = this->m_activeEdges->erase(fragId) != 0;
-  if (this->m_debugLevel > 2)
+  bool did = m_activeEdges->erase(fragId) != 0;
+  if (m_debugLevel > 2)
   {
     std::cout << "Removing active edge " << fragId << ". Did? " << (did ? "Y" : "N") << "\n";
     ActiveFragmentTreeType::const_iterator it;
     std::cout << "                 Active fragments: ";
-    for (it = this->m_activeEdges->begin(); it != this->m_activeEdges->end(); ++it)
+    for (it = m_activeEdges->begin(); it != m_activeEdges->end(); ++it)
     {
       std::cout << " " << *it;
     }
@@ -499,11 +497,11 @@ void Neighborhood::removeActiveEdge(FragmentId fragId)
 
 void Neighborhood::processFragmentEndEvents()
 {
-  const internal::Point& npt(this->m_nextPoint);
+  const internal::Point& npt(m_nextPoint);
   std::set<SweepEvent>::iterator event;
-  while (!this->m_eventQueue->empty())
+  while (!m_eventQueue->empty())
   {
-    event = this->m_eventQueue->begin();
+    event = m_eventQueue->begin();
     if (event->point() != npt || event->type() != SweepEvent::SEGMENT_END)
     { // Only process events for the neighborhood of \a npt
       return;
@@ -513,7 +511,7 @@ void Neighborhood::processFragmentEndEvents()
     //   remove fragment from active queue (immediately)
     //   add fragId to neighborhood
     FragmentId fragId = event->m_frag[0];
-    EdgeFragment& frag((*this->m_fragments)[fragId]);
+    EdgeFragment& frag((*m_fragments)[fragId]);
 
     // Add fragment to neighborhood
     this->insertFragment(fragId, frag, frag.lo());
@@ -522,17 +520,17 @@ void Neighborhood::processFragmentEndEvents()
     this->removeActiveEdge(fragId);
 
     // Erase the event we've just processed.
-    this->m_eventQueue->erase(event);
+    m_eventQueue->erase(event);
   }
 }
 
 void Neighborhood::processFragmentStartEvents()
 {
-  const internal::Point& npt(this->m_nextPoint);
+  const internal::Point& npt(m_nextPoint);
   std::set<SweepEvent>::iterator event;
-  while (!this->m_eventQueue->empty())
+  while (!m_eventQueue->empty())
   {
-    event = this->m_eventQueue->begin();
+    event = m_eventQueue->begin();
     if (event->point() != npt || event->type() != SweepEvent::SEGMENT_START)
     { // Only process events for the neighborhood of \a npt
       return;
@@ -543,9 +541,9 @@ void Neighborhood::processFragmentStartEvents()
     // region IDs of this segment will not change. The regions will be
     // unioned with other regions depending on neighborhood adjacency.
     static EdgeFragment blank;
-    FragmentArray::size_type fragId = this->m_fragments->size();
+    FragmentArray::size_type fragId = m_fragments->size();
     // Add fragment to output.
-    FragmentArray::iterator it = this->m_fragments->insert(this->m_fragments->end(), blank);
+    FragmentArray::iterator it = m_fragments->insert(m_fragments->end(), blank);
     it->m_edge = event->m_edge;
     it->m_segment = event->m_indx;
     it->m_edgeData = this->findStorage<internal::edge>(it->m_edge.entity());
@@ -572,7 +570,7 @@ void Neighborhood::processFragmentStartEvents()
     this->queueActiveEdge(fragId, *it);
 
     // Erase the event we've just processed.
-    this->m_eventQueue->erase(event);
+    m_eventQueue->erase(event);
   }
 }
 
@@ -583,7 +581,7 @@ void Neighborhood::processFragmentStartEvents()
  */
 void Neighborhood::processNeighbors()
 {
-  if (this->m_debugLevel > 0)
+  if (m_debugLevel > 0)
   {
     std::cout << "Neighborhood::processNeighbors()\n";
   }
@@ -596,16 +594,16 @@ void Neighborhood::processNeighbors()
   //     This also marks one co-edge of the pair with the "next"
   //     fragment in the loop bounding a region.
 
-  if (!this->m_ring.empty())
+  if (!m_ring.empty())
   { // Note that ringA == ringB is valid (both sides of fragment are the same regionId).
-    std::list<FragmentId>::iterator ringA = this->m_ring.end();
+    std::list<FragmentId>::iterator ringA = m_ring.end();
     --ringA; // "unadvance" before end() to the last ring entry.
-    std::list<FragmentId>::iterator ringB = this->m_ring.begin();
+    std::list<FragmentId>::iterator ringB = m_ring.begin();
     // Start by processing the implicit fragment-pair between m_ring.end() and m_ring.begin():
     this->assignAndMergeRegions(ringA, ringB);
     // Now proceed through the list until we have visited them all.
     ringA = ringB;
-    for (++ringB; ringB != this->m_ring.end(); ++ringA, ++ringB /*, sao = -sbo??? */)
+    for (++ringB; ringB != m_ring.end(); ++ringA, ++ringB /*, sao = -sbo??? */)
     {
       this->assignAndMergeRegions(ringA, ringB);
     }
@@ -614,25 +612,25 @@ void Neighborhood::processNeighbors()
   // III. We are done processing the ring; if any incident edges are outgoing,
   //      add their SEGMENT_END events to the event queue.
   std::vector<FragmentId>::iterator it;
-  for (it = this->m_fragmentsToQueue.begin(); it != this->m_fragmentsToQueue.end(); ++it)
+  for (it = m_fragmentsToQueue.begin(); it != m_fragmentsToQueue.end(); ++it)
   {
-    std::pair<ActiveFragmentTreeType::iterator, bool> result = this->m_activeEdges->insert(*it);
-    if (this->m_debugLevel > 1)
+    std::pair<ActiveFragmentTreeType::iterator, bool> result = m_activeEdges->insert(*it);
+    if (m_debugLevel > 1)
     {
       std::cout << "Inserting active edge " << *it << ". Did? " << (result.second ? "Y" : "N")
                 << "\n";
     }
-    EdgeFragment& frag((*this->m_fragments)[*it]);
-    this->m_eventQueue->insert(SweepEvent::SegmentEnd(frag.m_hi, static_cast<int>(*it)));
+    EdgeFragment& frag((*m_fragments)[*it]);
+    m_eventQueue->insert(SweepEvent::SegmentEnd(frag.m_hi, static_cast<int>(*it)));
     // TODO: Check for neighbor intersections; remove them then check for neighbor intersections with *it and add them.
   }
-  this->m_fragmentsToQueue.clear();
-  this->m_ring.clear();
-  if (this->m_debugLevel > 2)
+  m_fragmentsToQueue.clear();
+  m_ring.clear();
+  if (m_debugLevel > 2)
   {
     ActiveFragmentTreeType::const_iterator it2;
     std::cout << "                 Active fragments: ";
-    for (it2 = this->m_activeEdges->begin(); it2 != this->m_activeEdges->end(); ++it2)
+    for (it2 = m_activeEdges->begin(); it2 != m_activeEdges->end(); ++it2)
     {
       std::cout << " " << *it2;
     }
@@ -648,21 +646,21 @@ void Neighborhood::processNeighbors()
  */
 void Neighborhood::advanceSweeplineTo(const internal::Point& pt)
 {
-  this->m_point->advance(pt);
+  m_point->advance(pt);
 }
 
 /// Process all edges passed to removeActiveEdge(). This is called each time (just before) the sweepline is advanced.
 void Neighborhood::removeDeactivatedEdges()
 {
-  while (!this->m_fragmentsToDeactivate.empty())
+  while (!m_fragmentsToDeactivate.empty())
   {
-    std::set<FragmentId>::iterator fragIt = this->m_fragmentsToDeactivate.begin();
-    bool did = this->m_activeEdges->erase(*fragIt) != 0;
-    if (this->m_debugLevel > 2)
+    std::set<FragmentId>::iterator fragIt = m_fragmentsToDeactivate.begin();
+    bool did = m_activeEdges->erase(*fragIt) != 0;
+    if (m_debugLevel > 2)
     {
       std::cout << "*Deactivating frag " << *fragIt << " did? " << (did ? "Y" : "N") << "\n";
     }
-    this->m_fragmentsToDeactivate.erase(fragIt);
+    m_fragmentsToDeactivate.erase(fragIt);
   }
 }
 
@@ -671,25 +669,25 @@ void Neighborhood::dumpRegions()
   FragmentArray::const_iterator fit;
   std::cout << "\nFragments\n";
   std::size_t i = 0;
-  for (fit = this->m_fragments->begin(); fit != this->m_fragments->end(); ++fit, ++i)
+  for (fit = m_fragments->begin(); fit != m_fragments->end(); ++fit, ++i)
   {
     std::cout << "  " << i << " ";
-    fit->dump(this->m_regionIds);
+    fit->dump(m_regionIds);
   }
 
   std::cout << "\nRegions\n";
-  std::set<RegionId> found = this->m_regionIds.roots();
+  std::set<RegionId> found = m_regionIds.roots();
   std::cout << "Top-level:";
   for (std::set<RegionId>::const_iterator rit = found.begin(); rit != found.end(); ++rit)
   {
-    std::cout << " " << this->m_regionIds.find(*rit);
+    std::cout << " " << m_regionIds.find(*rit);
   }
   std::cout << "\n";
-  for (RegionId x = 0; x < static_cast<RegionId>(this->m_fragments->size() * 2); ++x)
+  for (RegionId x = 0; x < static_cast<RegionId>(m_fragments->size() * 2); ++x)
   {
-    if (this->m_regions.find(x) != this->m_regions.end())
+    if (m_regions.find(x) != m_regions.end())
     {
-      smtk::shared_ptr<Region> regRec = this->m_regions[x];
+      smtk::shared_ptr<Region> regRec = m_regions[x];
       if (regRec)
       {
         std::cout << "  Region " << x;
@@ -708,10 +706,10 @@ RegionId Neighborhood::traverseLoop(
 
   FragmentId fragStart = fragId;
   bool orientStart = orientation;
-  EdgeFragment* frag = &((*this->m_fragments)[fragId]);
-  RegionId lr = this->m_regionIds.find(frag->ccwRegion(orientStart));
+  EdgeFragment* frag = &((*m_fragments)[fragId]);
+  RegionId lr = m_regionIds.find(frag->ccwRegion(orientStart));
   std::map<smtk::model::Edge, int> already;
-  if (this->m_debugLevel > 1)
+  if (m_debugLevel > 1)
   {
     std::cout << "   Traverse Loop [ ";
   }
@@ -728,18 +726,18 @@ RegionId Neighborhood::traverseLoop(
       already[frag->edge()] |= (edgeOrient ? 0x02 : 0x01);
       result.push_back(std::make_pair(frag->edge(), edgeOrient));
     }
-    neighborRegions.insert(this->m_regionIds.find(frag->ccwRegion(!orientation)));
+    neighborRegions.insert(m_regionIds.find(frag->ccwRegion(!orientation)));
     fragId = frag->nextFragment(orientation);
     orientation = frag->nextFragmentSense(orientation);
-    if (this->m_debugLevel > 1)
+    if (m_debugLevel > 1)
     {
       std::cout << " " << fragId << " " << (orientation ? "+" : "-");
     }
-    frag = &((*this->m_fragments)[fragId]);
+    frag = &((*m_fragments)[fragId]);
   } while ((fragId != fragStart || orientation != orientStart) &&
     !frag->marked(orientation) // stop infinity on buggy edges
     );
-  if (this->m_debugLevel > 1)
+  if (m_debugLevel > 1)
   {
     std::cout << "]";
     for (auto nr : neighborRegions)
@@ -786,10 +784,10 @@ void Neighborhood::dumpRegions2()
 {
   FragmentArray::iterator fit;
   std::cout << "\nCreepy crawler\n";
-  fit = this->m_fragments->begin();
+  fit = m_fragments->begin();
   // The left/lower region of the first fragment to be inserted is always exterior
   // to all faces. It corresponds to a "hole" cut in the infinite plane of all fragments.
-  RegionId outside = this->m_regionIds.find(fit->lowerRegion());
+  RegionId outside = m_regionIds.find(fit->lowerRegion());
 
   // Traverse every fragment. For each unprocessed coedge, if the region is equivalent
   // to outside, queue the other coedge (if unprocessed) as an output face.
@@ -797,16 +795,16 @@ void Neighborhood::dumpRegions2()
   std::set<RegionId> neighborRegions;
   std::set<RegionId>::const_iterator pit;
   FragmentId fid = 0;
-  for (fit = this->m_fragments->begin(); fit != this->m_fragments->end(); ++fit, ++fid)
+  for (fit = m_fragments->begin(); fit != m_fragments->end(); ++fit, ++fid)
   {
     std::cout << "Fragment " << fid << "-\n";
-    if (!fit->marked(false) && this->m_regionIds.find(fit->ccwRegion(false)) != outside)
+    if (!fit->marked(false) && m_regionIds.find(fit->ccwRegion(false)) != outside)
     {
       RegionId contained = this->traverseLoop(loopEdges, neighborRegions, fid, false);
       this->dumpLoop(loopEdges, contained, neighborRegions);
     }
     std::cout << "Fragment " << fid << "+\n";
-    if (!fit->marked(true) && this->m_regionIds.find(fit->ccwRegion(true)) != outside)
+    if (!fit->marked(true) && m_regionIds.find(fit->ccwRegion(true)) != outside)
     {
       RegionId contained = this->traverseLoop(loopEdges, neighborRegions, fid, true);
       this->dumpLoop(loopEdges, contained, neighborRegions);
@@ -815,7 +813,7 @@ void Neighborhood::dumpRegions2()
   }
 
   // Now erase the "visited" marks so we can re-dump if needed:
-  for (fit = this->m_fragments->begin(); fit != this->m_fragments->end(); ++fit)
+  for (fit = m_fragments->begin(); fit != m_fragments->end(); ++fit)
   {
     fit->mark(false, 0);
     fit->mark(true, 0);

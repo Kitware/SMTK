@@ -38,39 +38,38 @@ bool vertex::canInsertEdge(const Point& neighborhood, incident_edges::iterator* 
 {
   // Early termination... 0 or 1 existing vertices are always in CCW order no
   // matter where we insert
-  if (this->m_edges.size() < 2)
+  if (m_edges.size() < 2)
   {
     // Are we busy splitting an edge?
     // If so, an edge has been removed from this vertex and
     // will be replaced by the new edge. Don't panic if it looks
     // like a face will be split.
     // If not...
-    if (!this->m_insideSplit)
+    if (!m_insideSplit)
     {
       // A vertex with 1 incident edge that is part of a face has face completely
       // surrounding the vertex; it will never be valid to insert another edge
       // there without removing the face first.
-      if (!this->m_edges.empty() && this->m_edges.front().m_adjacentFace)
+      if (!m_edges.empty() && m_edges.front().m_adjacentFace)
         return false;
     }
 
     // Otherwise, it is always valid to insert a new edge anywhere.
     if (where)
-      *where = this->m_edges.begin();
+      *where = m_edges.begin();
     return true;
   }
 
   pmodel* model = this->parentAs<pmodel>();
-  Point pt(neighborhood.x() - this->m_coords.x(), neighborhood.y() - this->m_coords.y());
+  Point pt(neighborhood.x() - m_coords.x(), neighborhood.y() - m_coords.y());
 
-  Point prevPt(
-    model->edgeTestPoint(this->m_edges.back().m_edgeId, !this->m_edges.back().m_edgeOut));
-  Point pa(prevPt.x() - this->m_coords.x(), prevPt.y() - this->m_coords.y());
+  Point prevPt(model->edgeTestPoint(m_edges.back().m_edgeId, !m_edges.back().m_edgeOut));
+  Point pa(prevPt.x() - m_coords.x(), prevPt.y() - m_coords.y());
   incident_edges::iterator it;
-  for (it = this->m_edges.begin(); it != this->m_edges.end(); ++it)
+  for (it = m_edges.begin(); it != m_edges.end(); ++it)
   {
     Point currPt = model->edgeTestPoint(it->m_edgeId, !it->m_edgeOut);
-    Point pb(currPt.x() - this->m_coords.x(), currPt.y() - this->m_coords.y());
+    Point pb(currPt.x() - m_coords.x(), currPt.y() - m_coords.y());
 
     // Test whether "t" is in the CCW range between "a" and "b":
     // (Done using signs of cross-products to check angle relationships.)
@@ -89,7 +88,7 @@ bool vertex::canInsertEdge(const Point& neighborhood, incident_edges::iterator* 
 
     if (inside)
     {
-      if (!it->m_adjacentFace || this->m_insideSplit)
+      if (!it->m_adjacentFace || m_insideSplit)
       { // There is no face; it's OK to add the edge here.
         if (where)
           *where = it;
@@ -151,7 +150,7 @@ vertex::incident_edges::iterator vertex::insertEdgeAt(
   edgeData.m_edgeId = edgeId;
   edgeData.m_edgeOut = edgeOutwards;
   // NB: Not inserting edge where a face exists, so edgeData.m_adjacentFace should be left NULL.
-  return this->m_edges.insert(where, edgeData);
+  return m_edges.insert(where, edgeData);
 }
 
 /**\brief Insert the edge \a where told (by canInsertEdge).
@@ -167,7 +166,7 @@ vertex::incident_edges::iterator vertex::insertEdgeAt(
   edgeData.m_edgeId = edgeId;
   edgeData.m_edgeOut = edgeOutwards;
   edgeData.m_adjacentFace = faceId;
-  return this->m_edges.insert(where, edgeData);
+  return m_edges.insert(where, edgeData);
 }
 
 /**\brief Remove the edge incidence record at the given position.
@@ -176,14 +175,14 @@ vertex::incident_edges::iterator vertex::insertEdgeAt(
   */
 void vertex::removeEdgeAt(incident_edges::iterator where)
 {
-  this->m_edges.erase(where);
+  m_edges.erase(where);
 }
 
 bool vertex::setFaceAdjacency(
   const Id& incidentEdge, const Id& adjacentFace, bool isCCW, int edgeDir)
 {
   incident_edges::iterator it;
-  for (it = this->m_edges.begin(); it != this->m_edges.end(); ++it)
+  for (it = m_edges.begin(); it != m_edges.end(); ++it)
   {
     // This conditional is complex because we must handle the case when
     // an edge has both endpoints into the same vertex:
@@ -229,7 +228,7 @@ int vertex::removeFaceAdjacencies(const Id& face)
 {
   int numIncidents = 0;
   incident_edges::iterator it;
-  for (it = this->m_edges.begin(); it != this->m_edges.end(); ++it)
+  for (it = m_edges.begin(); it != m_edges.end(); ++it)
   {
     if (it->m_adjacentFace == face)
     {
@@ -250,13 +249,13 @@ int vertex::removeFaceAdjacencies(const Id& face)
 int vertex::removeIncidentEdge(const Id& edge)
 {
   int numIncidences = 0;
-  if (this->m_edges.empty())
+  if (m_edges.empty())
   {
     return numIncidences;
   }
 
   incident_edges::iterator it;
-  incident_edges::iterator tmp = this->m_edges.begin();
+  incident_edges::iterator tmp = m_edges.begin();
   do
   {
     it = tmp;
@@ -264,10 +263,10 @@ int vertex::removeIncidentEdge(const Id& edge)
     if (tmp->m_edgeId == edge)
     {
       ++numIncidences;
-      this->m_edges.erase(tmp);
+      m_edges.erase(tmp);
     }
     tmp = it;
-  } while (tmp != this->m_edges.end());
+  } while (tmp != m_edges.end());
   return numIncidences;
 }
 

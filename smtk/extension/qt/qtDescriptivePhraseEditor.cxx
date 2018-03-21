@@ -20,10 +20,10 @@ namespace extension
 qtDescriptivePhraseEditor::qtDescriptivePhraseEditor(QWidget* super)
   : QWidget(super)
 {
-  this->m_title = new QLineEdit(this);
-  this->setFocusProxy(this->m_title);
+  m_title = new QLineEdit(this);
+  this->setFocusProxy(m_title);
   new QHBoxLayout(this);
-  QObject::connect(this->m_title, SIGNAL(editingFinished()), this, SIGNAL(editingFinished()));
+  QObject::connect(m_title, SIGNAL(editingFinished()), this, SIGNAL(editingFinished()));
 }
 
 qtDescriptivePhraseEditor::~qtDescriptivePhraseEditor()
@@ -33,18 +33,18 @@ qtDescriptivePhraseEditor::~qtDescriptivePhraseEditor()
 /*
 QSize qtDescriptivePhraseEditor::sizeHint() const
 {
-  return this->m_title->sizeHint();
+  return m_title->sizeHint();
 }
 */
 
 QString qtDescriptivePhraseEditor::title() const
 {
-  return this->m_title->text();
+  return m_title->text();
 }
 
 void qtDescriptivePhraseEditor::setTitle(const QString& text)
 {
-  this->m_title->setText(text);
+  m_title->setText(text);
 }
 
 } // namespace model

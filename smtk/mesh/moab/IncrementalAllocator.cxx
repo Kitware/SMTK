@@ -45,7 +45,7 @@ IncrementalAllocator::IncrementalAllocator(::moab::Interface* interface)
 
 void IncrementalAllocator::initialize()
 {
-  if (this->m_nCoordinates == 0)
+  if (m_nCoordinates == 0)
   {
     this->IncrementalAllocator::allocateCoordinates(StartingAllocation);
   }
@@ -53,48 +53,48 @@ void IncrementalAllocator::initialize()
 
 bool IncrementalAllocator::allocateCoordinates(std::size_t nCoordinates)
 {
-  this->m_validState = this->BufferedCellAllocator::allocatePoints(
-    nCoordinates, this->m_firstCoordinate, this->m_coordinateMemory);
+  m_validState = this->BufferedCellAllocator::allocatePoints(
+    nCoordinates, m_firstCoordinate, m_coordinateMemory);
 
-  if (this->m_validState)
+  if (m_validState)
   {
-    this->m_nCoordinates += nCoordinates;
+    m_nCoordinates += nCoordinates;
   }
 
-  this->m_coordinateMemories.push_back(this->m_coordinateMemory);
+  m_coordinateMemories.push_back(m_coordinateMemory);
 
-  return this->m_validState;
+  return m_validState;
 }
 
 std::size_t IncrementalAllocator::addCoordinate(double* xyz)
 {
-  if (!this->m_validState)
+  if (!m_validState)
   {
     return false;
   }
 
-  if (this->m_nCoordinates <= this->m_index)
+  if (m_nCoordinates <= m_index)
   {
-    this->IncrementalAllocator::allocateCoordinates(this->m_nCoordinates);
-    if (!this->m_validState)
+    this->IncrementalAllocator::allocateCoordinates(m_nCoordinates);
+    if (!m_validState)
     {
-      return this->m_index;
+      return m_index;
     }
   }
 
-  this->m_validState = this->IncrementalAllocator::setCoordinate(this->m_index, xyz);
+  m_validState = this->IncrementalAllocator::setCoordinate(m_index, xyz);
 
-  return this->m_index++;
+  return m_index++;
 }
 
 bool IncrementalAllocator::setCoordinate(std::size_t coord, double* xyz)
 {
-  if (!this->m_validState)
+  if (!m_validState)
   {
     return false;
   }
 
-  if (coord >= this->m_nCoordinates)
+  if (coord >= m_nCoordinates)
   {
     return false;
   }
@@ -122,11 +122,11 @@ bool IncrementalAllocator::setCoordinate(std::size_t coord, double* xyz)
     coord -= offset;
   }
 
-  this->m_coordinateMemories[exp][0][coord] = xyz[0];
-  this->m_coordinateMemories[exp][1][coord] = xyz[1];
-  this->m_coordinateMemories[exp][2][coord] = xyz[2];
+  m_coordinateMemories[exp][0][coord] = xyz[0];
+  m_coordinateMemories[exp][1][coord] = xyz[1];
+  m_coordinateMemories[exp][2][coord] = xyz[2];
 
-  return this->m_validState;
+  return m_validState;
 }
 }
 }

@@ -66,7 +66,7 @@ std::string DateTimeZonePair::serialize() const
 
     // Check UTC then region then posix string
     std::string regionString = m_timezone.region();
-    if (this->m_timezone.isUTC())
+    if (m_timezone.isUTC())
     {
       cJSON* utcJson = cJSON_CreateTrue();
       cJSON_AddItemToObject(outputJson, "timezone-utc", utcJson);
@@ -121,7 +121,7 @@ bool DateTimeZonePair::deserialize(const std::string& content)
   cJSON* ptzJson = cJSON_GetObjectItem(inputJson, "timezone-posix");
   if (utcJson && utcJson->type == cJSON_True)
   {
-    this->m_timezone.setUTC();
+    m_timezone.setUTC();
   }
   else if (regionJson && regionJson->type == cJSON_String)
   {
@@ -143,8 +143,7 @@ std::string DateTimeZonePair::jsonString() const
   // Create json string, equivalent to javascript Date.toJson() output.
   // Format is  yyyy-mm-ddThh:mm:ss.mmmZ, e.g. 2016-03-31T13:44:30.095Z.
   int year = 0, month = 0, day = 0, hour = 0, minute = 0, second = 0, millisecond = 0;
-  bool ok = this->m_datetime.components(
-    this->m_timezone, year, month, day, hour, minute, second, millisecond);
+  bool ok = m_datetime.components(m_timezone, year, month, day, hour, minute, second, millisecond);
   if (!ok)
   {
     // If invalid or not set, return empty string
@@ -161,17 +160,17 @@ std::string DateTimeZonePair::jsonString() const
 
 bool DateTimeZonePair::operator==(const DateTimeZonePair& dtz) const
 {
-  return this->m_datetime == dtz.m_datetime;
+  return m_datetime == dtz.m_datetime;
 }
 
 bool DateTimeZonePair::operator<(const DateTimeZonePair& dtz) const
 {
-  return this->m_datetime < dtz.m_datetime;
+  return m_datetime < dtz.m_datetime;
 }
 
 bool DateTimeZonePair::operator>(const DateTimeZonePair& dtz) const
 {
-  return this->m_datetime > dtz.m_datetime;
+  return m_datetime > dtz.m_datetime;
 }
 
 std::ostream& operator<<(std::ostream& os, const DateTimeZonePair& dtz)

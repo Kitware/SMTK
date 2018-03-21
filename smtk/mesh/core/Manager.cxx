@@ -100,11 +100,11 @@ public:
 
   std::string next(const std::set<std::string>& usedNames)
   {
-    std::string result(this->m_basename);
-    result += boost::lexical_cast<std::string>(this->m_value++);
+    std::string result(m_basename);
+    result += boost::lexical_cast<std::string>(m_value++);
     while (usedNames.find(result) != usedNames.end())
     {
-      result = (std::string(this->m_basename) += boost::lexical_cast<std::string>(this->m_value++));
+      result = (std::string(m_basename) += boost::lexical_cast<std::string>(m_value++));
     }
     return result;
   }
@@ -164,38 +164,38 @@ smtk::mesh::CollectionPtr Manager::makeCollection(
 bool Manager::addCollection(const smtk::mesh::CollectionPtr& collection)
 {
   //do we need to re-parent the collection?
-  return this->m_collector->add(collection->entity(), collection);
+  return m_collector->add(collection->entity(), collection);
 }
 
 std::size_t Manager::numberOfCollections() const
 {
-  return this->m_collector->size();
+  return m_collector->size();
 }
 
 bool Manager::hasCollection(const smtk::mesh::CollectionPtr& collection) const
 {
-  return this->m_collector->has(collection->entity());
+  return m_collector->has(collection->entity());
 }
 
 Manager::const_iterator Manager::collectionBegin() const
 {
-  return this->m_collector->begin();
+  return m_collector->begin();
 }
 
 Manager::const_iterator Manager::collectionEnd() const
 {
-  return this->m_collector->end();
+  return m_collector->end();
 }
 
 Manager::const_iterator Manager::findCollection(const smtk::common::UUID& collectionID) const
 {
-  return this->m_collector->find(collectionID);
+  return m_collector->find(collectionID);
 }
 
 smtk::mesh::CollectionPtr Manager::collection(const smtk::common::UUID& collectionID) const
 {
-  const_iterator result = this->m_collector->find(collectionID);
-  if (result == this->m_collector->end())
+  const_iterator result = m_collector->find(collectionID);
+  if (result == m_collector->end())
   { //returning end() result causes undefined behavior and will generally
     //cause a segfault when you query the item
     return smtk::mesh::CollectionPtr();
@@ -205,13 +205,13 @@ smtk::mesh::CollectionPtr Manager::collection(const smtk::common::UUID& collecti
 
 bool Manager::removeCollection(const smtk::mesh::CollectionPtr& collection)
 {
-  return this->m_collector->remove(collection->entity());
+  return m_collector->remove(collection->entity());
 }
 
 std::vector<smtk::mesh::CollectionPtr> Manager::collectionsWithAssociations() const
 {
   std::vector<smtk::mesh::CollectionPtr> result;
-  for (const_iterator i = this->m_collector->begin(); i != this->m_collector->end(); ++i)
+  for (const_iterator i = m_collector->begin(); i != m_collector->end(); ++i)
   {
     if (i->second->hasAssociations())
     {
@@ -224,8 +224,8 @@ std::vector<smtk::mesh::CollectionPtr> Manager::collectionsWithAssociations() co
 bool Manager::isAssociatedToACollection(const smtk::model::EntityRef& eref) const
 {
   bool isAssociated = false;
-  for (const_iterator i = this->m_collector->begin();
-       i != this->m_collector->end() && isAssociated == false; ++i)
+  for (const_iterator i = m_collector->begin(); i != m_collector->end() && isAssociated == false;
+       ++i)
   {
     isAssociated = eref.isModel() ? i->second->associatedModel() == eref.entity()
                                   : !(i->second->findAssociatedMeshes(eref).is_empty());
@@ -237,7 +237,7 @@ std::vector<smtk::mesh::CollectionPtr> Manager::associatedCollections(
   const smtk::model::EntityRef& eref) const
 {
   std::vector<smtk::mesh::CollectionPtr> result;
-  for (const_iterator i = this->m_collector->begin(); i != this->m_collector->end(); ++i)
+  for (const_iterator i = m_collector->begin(); i != m_collector->end(); ++i)
   {
     bool found = eref.isModel() ? i->second->associatedModel() == eref.entity()
                                 : !(i->second->findAssociatedMeshes(eref).is_empty());
@@ -252,7 +252,7 @@ std::vector<smtk::mesh::CollectionPtr> Manager::associatedCollections(
 smtk::common::UUIDs Manager::associatedCollectionIds(const smtk::model::EntityRef& eref) const
 {
   smtk::common::UUIDs result;
-  for (const_iterator i = this->m_collector->begin(); i != this->m_collector->end(); ++i)
+  for (const_iterator i = m_collector->begin(); i != m_collector->end(); ++i)
   {
     bool found = eref.isModel() ? i->second->associatedModel() == eref.entity()
                                 : !(i->second->findAssociatedMeshes(eref).is_empty());
@@ -273,7 +273,7 @@ bool Manager::assignUniqueName(smtk::mesh::CollectionPtr collection)
   }
 
   std::set<std::string> usedNames;
-  for (const_iterator i = this->m_collector->begin(); i != this->m_collector->end(); ++i)
+  for (const_iterator i = m_collector->begin(); i != m_collector->end(); ++i)
   {
     if (i->second != collection)
     {
@@ -288,7 +288,7 @@ bool Manager::assignUniqueName(smtk::mesh::CollectionPtr collection)
   {
     //time to generate a new name, we pass the number of existing meshes
     //to
-    collection->name(this->m_nameGenerator->next(usedNames));
+    collection->name(m_nameGenerator->next(usedNames));
   }
 
   return true;

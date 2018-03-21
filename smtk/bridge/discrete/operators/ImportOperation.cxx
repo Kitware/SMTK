@@ -182,7 +182,7 @@ ImportOperation::Result ImportOperation::operateInternal()
     reader->SetFileName(filename.c_str());
     reader->Update();
 
-    this->m_op->Operate(mod.GetPointer(), reader.GetPointer());
+    m_op->Operate(mod.GetPointer(), reader.GetPointer());
 #endif
   }
   else if (ext == ".2dm" || ext == ".3dm" ||
@@ -204,7 +204,7 @@ ImportOperation::Result ImportOperation::operateInternal()
 
     if (ext == ".poly" || ext == ".smesh" || hasBoundaryEdges)
     {
-      this->m_op->Operate(mod.GetPointer(), reader.GetPointer());
+      m_op->Operate(mod.GetPointer(), reader.GetPointer());
     }
     else
     {
@@ -218,7 +218,7 @@ ImportOperation::Result ImportOperation::operateInternal()
       merge->SetInputData(0, normals->GetOutputDataObject(0));
       merge->Update();
 
-      this->m_op->Operate(mod.GetPointer(), merge.GetPointer());
+      m_op->Operate(mod.GetPointer(), merge.GetPointer());
     }
   }
 #ifdef SMTK_ENABLE_REMUS_SUPPORT
@@ -233,7 +233,7 @@ ImportOperation::Result ImportOperation::operateInternal()
     trimesher->SetInputData(0, reader->GetOutputDataObject(0));
     trimesher->Update();
 
-    this->m_mapOp->Operate(mod.GetPointer(), trimesher.GetPointer());
+    m_mapOp->Operate(mod.GetPointer(), trimesher.GetPointer());
   }
   else if (ext == ".shp")
   {
@@ -282,7 +282,7 @@ ImportOperation::Result ImportOperation::operateInternal()
         reader->SetBoundaryStyle(vtkCMBGeometry2DReader::NONE);
       }
       reader->Update();
-      this->m_shpOp->Operate(mod.GetPointer(), reader.GetPointer(),
+      m_shpOp->Operate(mod.GetPointer(), reader.GetPointer(),
         /*cleanVerts:*/ 0);
     }
     else
@@ -310,14 +310,14 @@ ImportOperation::Result ImportOperation::operateInternal()
     merge->SetInputData(0, normals->GetOutputDataObject(0));
     merge->Update();
 
-    this->m_op->Operate(mod.GetPointer(), merge.GetPointer());
+    m_op->Operate(mod.GetPointer(), merge.GetPointer());
   }
 
   // Now assign a UUID to the model and associate its filename with
   // a URL property (if things went OK).
-  if (!this->m_op->GetOperateSucceeded()
+  if (!m_op->GetOperateSucceeded()
 #ifdef SMTK_ENABLE_REMUS_SUPPORT
-    && !this->m_mapOp->GetOperateSucceeded() && !this->m_shpOp->GetOperateSucceeded()
+    && !m_mapOp->GetOperateSucceeded() && !m_shpOp->GetOperateSucceeded()
 #endif
         )
   {

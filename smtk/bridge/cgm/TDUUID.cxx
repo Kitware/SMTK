@@ -39,10 +39,10 @@ UUIDToCGMRef TDUUID::s_reverseLookup;
 TDUUID::TDUUID(ToolDataUser* entity, const smtk::common::UUID& uid)
   : m_entityId(uid)
 {
-  if (this->m_entityId.isNull())
+  if (m_entityId.isNull())
   {
     while (TDUUID::s_reverseLookup.find(
-             (this->m_entityId = smtk::common::UUIDGenerator::instance().random())) !=
+             (m_entityId = smtk::common::UUIDGenerator::instance().random())) !=
       TDUUID::s_reverseLookup.end())
       /* keep generating new UUIDs */;
   }
@@ -53,7 +53,7 @@ TDUUID::TDUUID(ToolDataUser* entity, const smtk::common::UUID& uid)
   }
 
   entity->add_TD(this);
-  TDUUID::s_reverseLookup[this->m_entityId] = entity;
+  TDUUID::s_reverseLookup[m_entityId] = entity;
 
   // Update the CubitAttrib if the entity may be cast to it.
   CubitAttribUser* cau = dynamic_cast<CubitAttribUser*>(entity);
@@ -67,7 +67,7 @@ TDUUID::TDUUID(ToolDataUser* entity, const smtk::common::UUID& uid)
 
 TDUUID::~TDUUID()
 {
-  UUIDToCGMRef::iterator it = TDUUID::s_reverseLookup.find(this->m_entityId);
+  UUIDToCGMRef::iterator it = TDUUID::s_reverseLookup.find(m_entityId);
   if (it != TDUUID::s_reverseLookup.end())
   {
     // TODO: Signal SMTK that an entity is disappearing.
@@ -78,7 +78,7 @@ TDUUID::~TDUUID()
 /// Return the SMTK UUID associated with this ToolData (attached to a CGM entity).
 smtk::common::UUID TDUUID::entityId() const
 {
-  return this->m_entityId;
+  return m_entityId;
 }
 
 /**\brief Generate the ToolData that should be put on \a new_td_user when this entity is split.
@@ -97,7 +97,7 @@ ToolData* TDUUID::propogate(ToolDataUser* new_td_user)
 ToolData* TDUUID::merge(ToolDataUser* other_td_user)
 {
   (void)other_td_user;
-  // TODO: Signal SMTK that two entities (this->m_entity, other_td_user's entityId()) are merging.
+  // TODO: Signal SMTK that two entities (m_entity, other_td_user's entityId()) are merging.
   return NULL;
 }
 

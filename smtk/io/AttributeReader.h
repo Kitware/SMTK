@@ -56,9 +56,9 @@ public:
   bool readContents(
     smtk::attribute::CollectionPtr collection, pugi::xml_node& rootNode, smtk::io::Logger& logger);
 
-  void setSearchPaths(const std::vector<std::string>& paths) { this->m_searchPaths = paths; }
+  void setSearchPaths(const std::vector<std::string>& paths) { m_searchPaths = paths; }
 
-  void setReportDuplicateDefinitionsAsErrors(bool mode) { this->m_reportAsError = mode; }
+  void setReportDuplicateDefinitionsAsErrors(bool mode) { m_reportAsError = mode; }
 
 protected:
 private:

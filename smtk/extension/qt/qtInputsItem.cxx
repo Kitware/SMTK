@@ -69,31 +69,31 @@ qtDoubleValidator::qtDoubleValidator(
 
 void qtDoubleValidator::fixup(QString& input) const
 {
-  auto item = this->m_item->valueItem();
+  auto item = m_item->valueItem();
   if (!item)
   {
     return;
   }
   if (input.length() == 0)
   {
-    this->m_item->unsetValue(this->m_elementIndex);
-    this->m_item->uiManager()->setWidgetColorToInvalid(this->m_lineWidget);
+    m_item->unsetValue(m_elementIndex);
+    m_item->uiManager()->setWidgetColorToInvalid(m_lineWidget);
     return;
   }
 
   const DoubleItemDefinition* dDef =
     dynamic_cast<const DoubleItemDefinition*>(item->definition().get());
-  if (item->isSet(this->m_elementIndex))
+  if (item->isSet(m_elementIndex))
   {
-    input = item->valueAsString(this->m_elementIndex).c_str();
+    input = item->valueAsString(m_elementIndex).c_str();
   }
   else if (dDef->hasDefault())
   {
-    input = QString::number(dDef->defaultValue(this->m_elementIndex));
+    input = QString::number(dDef->defaultValue(m_elementIndex));
   }
   else
   {
-    this->m_item->uiManager()->setWidgetColorToInvalid(this->m_lineWidget);
+    m_item->uiManager()->setWidgetColorToInvalid(m_lineWidget);
   }
 }
 
@@ -108,30 +108,30 @@ qtIntValidator::qtIntValidator(
 
 void qtIntValidator::fixup(QString& input) const
 {
-  auto item = this->m_item->valueItem();
+  auto item = m_item->valueItem();
   if (!item)
   {
     return;
   }
   if (input.length() == 0)
   {
-    this->m_item->unsetValue(this->m_elementIndex);
-    this->m_item->uiManager()->setWidgetColorToInvalid(this->m_lineWidget);
+    m_item->unsetValue(m_elementIndex);
+    m_item->uiManager()->setWidgetColorToInvalid(m_lineWidget);
     return;
   }
 
   const IntItemDefinition* dDef = dynamic_cast<const IntItemDefinition*>(item->definition().get());
-  if (item->isSet(this->m_elementIndex))
+  if (item->isSet(m_elementIndex))
   {
-    input = item->valueAsString(this->m_elementIndex).c_str();
+    input = item->valueAsString(m_elementIndex).c_str();
   }
   else if (dDef->hasDefault())
   {
-    input = QString::number(dDef->defaultValue(this->m_elementIndex));
+    input = QString::number(dDef->defaultValue(m_elementIndex));
   }
   else
   {
-    this->m_item->uiManager()->setWidgetColorToInvalid(this->m_lineWidget);
+    m_item->uiManager()->setWidgetColorToInvalid(m_lineWidget);
   }
 }
 
@@ -560,7 +560,7 @@ void qtInputsItem::onRemoveValue()
       break;
     }
     default:
-      //this->m_errorStatus << "Error: Unsupported Item Type: " <<
+      //m_errorStatus << "Error: Unsupported Item Type: " <<
       // smtk::attribute::Item::type2String(item->type()) << "\n";
       break;
   }
@@ -643,7 +643,7 @@ QWidget* qtInputsItem::createInputWidget(int elementIdx, QLayout* childLayout)
   if (item->isDiscrete())
   {
     auto editor = new qtDiscreteValueEditor(this, elementIdx, childLayout);
-    // editor->setUseSelectionManager(this->m_useSelectionManager);
+    // editor->setUseSelectionManager(m_useSelectionManager);
     this->Internals->DiscreteEditors.append(editor);
     return editor;
   }
@@ -1039,7 +1039,7 @@ QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
       break;
     }
     default:
-      //this->m_errorStatus << "Error: Unsupported Item Type: " <<
+      //m_errorStatus << "Error: Unsupported Item Type: " <<
       // smtk::attribute::Item::type2String(item->type()) << "\n";
       break;
   }

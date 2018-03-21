@@ -35,7 +35,7 @@ public:
 
   Item::Type type() const override;
 
-  const std::vector<std::string>& recentValues() const { return this->m_recentValues; }
+  const std::vector<std::string>& recentValues() const { return m_recentValues; }
   void addRecentValue(const std::string& val);
 
 protected:
