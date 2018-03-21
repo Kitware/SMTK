@@ -58,7 +58,7 @@ bool WriteResource::ableToOperate()
 
 smtk::operation::Operation::Result WriteResource::operateInternal()
 {
-  auto manager = this->m_manager.lock();
+  auto manager = m_manager.lock();
 
   auto params = this->parameters();
   auto fileItem = params->findFile("filename");

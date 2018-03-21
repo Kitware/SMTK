@@ -45,8 +45,8 @@ public:
   smtk::attribute::ItemPtr buildItem(
     Item* owningItem, int position, int subGroupPosition) const override;
 
-  const std::string& getFileFilters() const { return this->m_fileFilters; }
-  void setFileFilters(const std::string& filters) { this->m_fileFilters = filters; }
+  const std::string& getFileFilters() const { return m_fileFilters; }
+  void setFileFilters(const std::string& filters) { m_fileFilters = filters; }
 
   smtk::attribute::ItemDefinitionPtr createCopy(
     smtk::attribute::ItemDefinition::CopyInfo& info) const override;

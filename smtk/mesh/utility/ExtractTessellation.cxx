@@ -271,16 +271,16 @@ void Tessellation::extract(const smtk::mesh::CellSet& cs, const smtk::mesh::Poin
     connectivityLength += numberOfCells;
   }
 
-  this->m_connectivity.resize(connectivityLength);
-  this->m_cellLocations.resize(numberOfCells);
-  this->m_cellTypes.resize(numberOfCells);
+  m_connectivity.resize(connectivityLength);
+  m_cellLocations.resize(numberOfCells);
+  m_cellTypes.resize(numberOfCells);
   //since the input PointSet can contain more points that the computed number,
   //set numberOfPoints to the PointSet size.
   numberOfPoints = ps.size();
-  this->m_points.resize(numberOfPoints * 3);
+  m_points.resize(numberOfPoints * 3);
 
   PreAllocatedTessellation tess(
-    &this->m_connectivity[0], &this->m_cellLocations[0], &this->m_cellTypes[0], &this->m_points[0]);
+    &m_connectivity[0], &m_cellLocations[0], &m_cellTypes[0], &m_points[0]);
 
   //set the vtk connectivity and cell types flags properly
   const bool disableVTKConn = !this->useVTKConnectivity();

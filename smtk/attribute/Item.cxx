@@ -25,9 +25,9 @@ Item::Item(Attribute* owningAttribute, int itemPosition)
   , m_isEnabled(true)
   , m_definition()
 {
-  this->m_usingDefAdvanceLevelInfo[0] = true;
-  this->m_usingDefAdvanceLevelInfo[1] = true;
-  this->m_advanceLevel[0] = this->m_advanceLevel[1] = 0;
+  m_usingDefAdvanceLevelInfo[0] = true;
+  m_usingDefAdvanceLevelInfo[1] = true;
+  m_advanceLevel[0] = m_advanceLevel[1] = 0;
 }
 
 Item::Item(Item* inOwningItem, int itemPosition, int inSubGroupPosition)
@@ -38,9 +38,9 @@ Item::Item(Item* inOwningItem, int itemPosition, int inSubGroupPosition)
   , m_isEnabled(true)
   , m_definition()
 {
-  this->m_usingDefAdvanceLevelInfo[0] = true;
-  this->m_usingDefAdvanceLevelInfo[1] = true;
-  this->m_advanceLevel[0] = this->m_advanceLevel[1] = 0;
+  m_usingDefAdvanceLevelInfo[0] = true;
+  m_usingDefAdvanceLevelInfo[1] = true;
+  m_advanceLevel[0] = m_advanceLevel[1] = 0;
 }
 
 Item::~Item()
@@ -49,13 +49,13 @@ Item::~Item()
 
 AttributePtr Item::attribute() const
 {
-  if (this->m_attribute)
+  if (m_attribute)
   {
-    return this->m_attribute->shared_from_this();
+    return m_attribute->shared_from_this();
   }
-  if (this->m_owningItem)
+  if (m_owningItem)
   {
-    return this->m_owningItem->attribute();
+    return m_owningItem->attribute();
   }
   return AttributePtr();
 }
@@ -67,50 +67,50 @@ bool Item::isValid() const
 
 std::string Item::name() const
 {
-  if (!this->m_definition)
+  if (!m_definition)
   {
     return "";
   }
-  return this->m_definition->name();
+  return m_definition->name();
 }
 
 std::string Item::label() const
 {
-  if (!this->m_definition)
+  if (!m_definition)
   {
     return "";
   }
-  return this->m_definition->label();
+  return m_definition->label();
 }
 
 bool Item::setDefinition(smtk::attribute::ConstItemDefinitionPtr def)
 {
-  if (this->m_definition)
+  if (m_definition)
   {
     return false;
   }
-  this->m_definition = def;
+  m_definition = def;
   if (def && def->isOptional())
   {
-    this->m_isEnabled = def->isEnabledByDefault();
+    m_isEnabled = def->isEnabledByDefault();
   }
   return true;
 }
 
 bool Item::isOptional() const
 {
-  if (!this->m_definition)
+  if (!m_definition)
   {
     return false;
   }
-  return this->m_definition->isOptional();
+  return m_definition->isOptional();
 }
 
 bool Item::isEnabled() const
 {
   // determine if the item is locally enabled - meaning that
   //either it is not optional or its enabled flag is true
-  bool enabled = this->isOptional() ? this->m_isEnabled : true;
+  bool enabled = this->isOptional() ? m_isEnabled : true;
 
   // If it is not enabled we are done
   if (!enabled)
@@ -119,13 +119,13 @@ bool Item::isEnabled() const
   }
 
   // If there is no owning item then its enabled
-  if (!this->m_owningItem)
+  if (!m_owningItem)
   {
     return true;
   }
 
   // Else delegate this to the owning item
-  return this->m_owningItem->isEnabled();
+  return m_owningItem->isEnabled();
 }
 
 bool Item::isMemberOf(const std::string& category) const
@@ -140,9 +140,9 @@ bool Item::isMemberOf(const std::vector<std::string>& categories) const
 
 void Item::reset()
 {
-  if (this->m_definition && this->m_definition->isOptional())
+  if (m_definition && m_definition->isOptional())
   {
-    this->m_isEnabled = this->m_definition->isEnabledByDefault();
+    m_isEnabled = m_definition->isEnabledByDefault();
   }
 }
 
@@ -152,8 +152,8 @@ void Item::setAdvanceLevel(int mode, int level)
   {
     return;
   }
-  this->m_usingDefAdvanceLevelInfo[mode] = false;
-  this->m_advanceLevel[mode] = level;
+  m_usingDefAdvanceLevelInfo[mode] = false;
+  m_advanceLevel[mode] = level;
 }
 
 void Item::unsetAdvanceLevel(int mode)
@@ -162,7 +162,7 @@ void Item::unsetAdvanceLevel(int mode)
   {
     return;
   }
-  this->m_usingDefAdvanceLevelInfo[mode] = true;
+  m_usingDefAdvanceLevelInfo[mode] = true;
 }
 
 int Item::advanceLevel(int mode) const
@@ -172,11 +172,11 @@ int Item::advanceLevel(int mode) const
   {
     mode = 0;
   }
-  if (this->m_definition && this->m_usingDefAdvanceLevelInfo[mode])
+  if (m_definition && m_usingDefAdvanceLevelInfo[mode])
   {
-    return this->m_definition->advanceLevel(mode);
+    return m_definition->advanceLevel(mode);
   }
-  return this->m_advanceLevel[mode];
+  return m_advanceLevel[mode];
 }
 
 bool Item::assign(ConstItemPtr& sourceItem, unsigned int)

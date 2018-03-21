@@ -39,13 +39,13 @@ std::array<double, 6> extent(const smtk::mesh::MeshSet& ms)
       {
         for (std::size_t j = 0; j < 3; j++)
         {
-          if (xyz[i + j] < this->m_values[2 * j])
+          if (xyz[i + j] < m_values[2 * j])
           {
-            this->m_values[2 * j] = xyz[i + j];
+            m_values[2 * j] = xyz[i + j];
           }
-          if (xyz[i + j] > this->m_values[2 * j + 1])
+          if (xyz[i + j] > m_values[2 * j + 1])
           {
-            this->m_values[2 * j + 1] = xyz[i + j];
+            m_values[2 * j + 1] = xyz[i + j];
           }
         }
       }

@@ -22,8 +22,8 @@ RefItemDefinition::RefItemDefinition(const std::string& myName)
   : ItemDefinition(myName)
   , m_definition()
 {
-  this->m_useCommonLabel = false;
-  this->m_numberOfRequiredValues = 1;
+  m_useCommonLabel = false;
+  m_numberOfRequiredValues = 1;
 }
 
 RefItemDefinition::~RefItemDefinition()
@@ -41,9 +41,9 @@ bool RefItemDefinition::isValueValid(smtk::attribute::AttributePtr att) const
   {
     return true;
   }
-  if (this->m_definition.lock())
+  if (m_definition.lock())
   {
-    return att->isA(this->m_definition.lock());
+    return att->isA(m_definition.lock());
   }
   return true;
 }
@@ -62,50 +62,50 @@ smtk::attribute::ItemPtr RefItemDefinition::buildItem(
 
 void RefItemDefinition::setNumberOfRequiredValues(std::size_t esize)
 {
-  if (esize == this->m_numberOfRequiredValues)
+  if (esize == m_numberOfRequiredValues)
   {
     return;
   }
-  this->m_numberOfRequiredValues = esize;
-  if (!this->m_useCommonLabel)
+  m_numberOfRequiredValues = esize;
+  if (!m_useCommonLabel)
   {
-    this->m_valueLabels.resize(esize);
+    m_valueLabels.resize(esize);
   }
 }
 
 void RefItemDefinition::setValueLabel(std::size_t element, const std::string& elabel)
 {
-  if (this->m_numberOfRequiredValues == 0)
+  if (m_numberOfRequiredValues == 0)
   {
     return;
   }
-  if (this->m_valueLabels.size() != this->m_numberOfRequiredValues)
+  if (m_valueLabels.size() != m_numberOfRequiredValues)
   {
-    this->m_valueLabels.resize(this->m_numberOfRequiredValues);
+    m_valueLabels.resize(m_numberOfRequiredValues);
   }
-  this->m_useCommonLabel = false;
-  this->m_valueLabels[element] = elabel;
+  m_useCommonLabel = false;
+  m_valueLabels[element] = elabel;
 }
 
 void RefItemDefinition::setCommonValueLabel(const std::string& elabel)
 {
-  if (this->m_valueLabels.size() != 1)
+  if (m_valueLabels.size() != 1)
   {
-    this->m_valueLabels.resize(1);
+    m_valueLabels.resize(1);
   }
-  this->m_useCommonLabel = true;
-  this->m_valueLabels[0] = elabel;
+  m_useCommonLabel = true;
+  m_valueLabels[0] = elabel;
 }
 
 std::string RefItemDefinition::valueLabel(std::size_t element) const
 {
-  if (this->m_useCommonLabel)
+  if (m_useCommonLabel)
   {
-    return this->m_valueLabels[0];
+    return m_valueLabels[0];
   }
-  if (this->m_valueLabels.size())
+  if (m_valueLabels.size())
   {
-    return this->m_valueLabels[element];
+    return m_valueLabels[element];
   }
   return ""; // If we threw execeptions this method could return const string &
 }

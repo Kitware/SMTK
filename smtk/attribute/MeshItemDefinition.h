@@ -39,12 +39,12 @@ public:
   Item::Type type() const override;
   std::size_t numberOfRequiredValues() const;
   void setNumberOfRequiredValues(std::size_t esize);
-  std::size_t maxNumberOfValues() const { return this->m_maxNumberOfValues; }
+  std::size_t maxNumberOfValues() const { return m_maxNumberOfValues; }
   void setMaxNumberOfValues(std::size_t maxNum);
 
   bool isValueValid(const smtk::mesh::MeshSet& val) const;
-  bool isExtensible() const { return this->m_isExtensible; }
-  void setIsExtensible(bool extensible) { this->m_isExtensible = extensible; }
+  bool isExtensible() const { return m_isExtensible; }
+  void setIsExtensible(bool extensible) { m_isExtensible = extensible; }
 
   smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
   smtk::attribute::ItemPtr buildItem(

@@ -54,11 +54,11 @@ public:
   // Description:
   // The type is the identifier that is used to access the
   // attribute definition through the Collection. It should never change.
-  const std::string& type() const { return this->m_type; }
+  const std::string& type() const { return m_type; }
 
-  smtk::attribute::CollectionPtr collection() const { return this->m_collection.lock(); }
+  smtk::attribute::CollectionPtr collection() const { return m_collection.lock(); }
 
-  const Tags& tags() const { return this->m_tags; }
+  const Tags& tags() const { return m_tags; }
 
   // Return a pointer to a const tag with a given name. If the tag does not
   // exist, return a null pointer.
@@ -71,33 +71,33 @@ public:
   // The label is what can be displayed in an application.  Unlike the type
   // which is constant w/r to the definition, an application can change the label
   // By default it is set to the same value as the type.
-  const std::string& label() const { return this->m_label; }
+  const std::string& label() const { return m_label; }
 
-  void setLabel(const std::string& newLabel) { this->m_label = newLabel; }
+  void setLabel(const std::string& newLabel) { m_label = newLabel; }
 
-  smtk::attribute::DefinitionPtr baseDefinition() const { return this->m_baseDefinition; }
+  smtk::attribute::DefinitionPtr baseDefinition() const { return m_baseDefinition; }
 
   bool isA(smtk::attribute::ConstDefinitionPtr def) const;
 
-  int version() const { return this->m_version; }
-  void setVersion(int myVersion) { this->m_version = myVersion; }
+  int version() const { return m_version; }
+  void setVersion(int myVersion) { m_version = myVersion; }
 
-  bool isAbstract() const { return this->m_isAbstract; }
+  bool isAbstract() const { return m_isAbstract; }
 
-  void setIsAbstract(bool isAbstractValue) { this->m_isAbstract = isAbstractValue; }
+  void setIsAbstract(bool isAbstractValue) { m_isAbstract = isAbstractValue; }
 
   // The categories that the attribute applies to. Typically
   // a category will be a simulation type like heat transfer, fluid flow, etc.
-  std::size_t numberOfCategories() const { return this->m_categories.size(); }
+  std::size_t numberOfCategories() const { return m_categories.size(); }
 
   bool isMemberOf(const std::string& category) const
   {
-    return (this->m_categories.find(category) != this->m_categories.end());
+    return (m_categories.find(category) != m_categories.end());
   }
 
   bool isMemberOf(const std::vector<std::string>& categories) const;
 
-  const std::set<std::string>& categories() const { return this->m_categories; }
+  const std::set<std::string>& categories() const { return m_categories; }
 
   /**
    * @brief Given a container, filter item definitions in the definition by a lambda function
@@ -113,23 +113,23 @@ public:
 
   // Description:
   // The attributes advance level. 0 is the simplest.
-  int advanceLevel() const { return this->m_advanceLevel; }
-  void setAdvanceLevel(int level) { this->m_advanceLevel = level; }
+  int advanceLevel() const { return m_advanceLevel; }
+  void setAdvanceLevel(int level) { m_advanceLevel = level; }
 
   // Indicates if a model entity can have multiple attributes of this
   // type associated with it
-  bool isUnique() const { return this->m_isUnique; }
+  bool isUnique() const { return m_isUnique; }
   // Be careful with setting isUnique to be false
   // in order to be consistant all definitions that this is
   // a descendant of should also have isUnique set to false!!
   // isUnique can be set to true without requiring its parent
   // class to also be true.
-  void setIsUnique(bool isUniqueValue) { this->m_isUnique = isUniqueValue; }
+  void setIsUnique(bool isUniqueValue) { m_isUnique = isUniqueValue; }
 
   // Indicates if the attribute applies to the
   // nodes of the analysis mesh
-  bool isNodal() const { return this->m_isNodal; }
-  void setIsNodal(bool isNodalValue) { this->m_isNodal = isNodalValue; }
+  bool isNodal() const { return m_isNodal; }
+  void setIsNodal(bool isNodalValue) { m_isNodal = isNodalValue; }
 
   //Color Specifications
   // Color in the case the attribute does not exist on the model entity
@@ -142,8 +142,8 @@ public:
     this->setNotApplicableColor(color[0], color[1], color[2], color[3]);
   }
   // By unsetting the color it is now inherited from the def's base definition
-  void unsetNotApplicableColor() { this->m_isNotApplicableColorSet = false; }
-  bool isNotApplicableColorSet() const { return this->m_isNotApplicableColorSet; }
+  void unsetNotApplicableColor() { m_isNotApplicableColorSet = false; }
+  bool isNotApplicableColorSet() const { return m_isNotApplicableColorSet; }
 
   // Default Color for attributes created from this definition -
   // If the color has not been set and the def has no base definition it will
@@ -155,8 +155,8 @@ public:
     this->setDefaultColor(color[0], color[1], color[2], color[3]);
   }
   // By unsetting the color it is now inherited from the def's base definition
-  void unsetDefaultColor() { this->m_isDefaultColorSet = false; }
-  bool isDefaultColorSet() const { return this->m_isDefaultColorSet; }
+  void unsetDefaultColor() { m_isDefaultColorSet = false; }
+  bool isDefaultColorSet() const { return m_isDefaultColorSet; }
   // return the asscoiationRule that the definition will use when creating
   // the attribute - Note that if the definition does not have a local
   //association rule specified, its base definition  will be returned.  If the
@@ -191,10 +191,7 @@ public:
 
   bool conflicts(smtk::attribute::DefinitionPtr definition) const;
 
-  std::size_t numberOfItemDefinitions() const
-  {
-    return this->m_itemDefs.size() + this->m_baseItemOffset;
-  }
+  std::size_t numberOfItemDefinitions() const { return m_itemDefs.size() + m_baseItemOffset; }
 
   smtk::attribute::ItemDefinitionPtr itemDefinition(int ith) const;
 
@@ -218,10 +215,10 @@ public:
     // First see if there is a item by the same name
     if (this->findItemPosition(name) < 0)
     {
-      std::size_t n = this->m_itemDefs.size();
+      std::size_t n = m_itemDefs.size();
       item = SharedTypes::RawPointerType::New(name);
-      this->m_itemDefs.push_back(item);
-      this->m_itemDefPositions[name] = static_cast<int>(n);
+      m_itemDefs.push_back(item);
+      m_itemDefPositions[name] = static_cast<int>(n);
       this->updateDerivedDefinitions();
     }
     return item;
@@ -241,11 +238,11 @@ public:
 
   int findItemPosition(const std::string& name) const;
 
-  const std::string& detailedDescription() const { return this->m_detailedDescription; }
-  void setDetailedDescription(const std::string& text) { this->m_detailedDescription = text; }
+  const std::string& detailedDescription() const { return m_detailedDescription; }
+  void setDetailedDescription(const std::string& text) { m_detailedDescription = text; }
 
-  const std::string& briefDescription() const { return this->m_briefDescription; }
-  void setBriefDescription(const std::string& text) { this->m_briefDescription = text; }
+  const std::string& briefDescription() const { return m_briefDescription; }
+  void setBriefDescription(const std::string& text) { m_briefDescription = text; }
 
   // Description:
   // Build an attribute corresponding to this definition. If the
@@ -257,13 +254,13 @@ public:
   // an attribute. This is used by the attribute collection when creating an
   // attribute without specifying a name - by default it is set to be the
   // type name of the definition
-  void setRootName(const std::string& val) { this->m_rootName = val; }
-  std::string rootName() const { return this->m_rootName; }
+  void setRootName(const std::string& val) { m_rootName = val; }
+  std::string rootName() const { return m_rootName; }
 
   //This method resets the definition item offset - this is used by the
   // collection when a definition is modified
   void resetItemOffset();
-  std::size_t itemOffset() const { return this->m_baseItemOffset; }
+  std::size_t itemOffset() const { return m_baseItemOffset; }
 
 protected:
   friend class smtk::attribute::Collection;
@@ -271,7 +268,7 @@ protected:
   Definition(const std::string& myType, smtk::attribute::DefinitionPtr myBaseDef,
     smtk::attribute::CollectionPtr myCollection);
 
-  void clearCollection() { this->m_collection.reset(); }
+  void clearCollection() { m_collection.reset(); }
 
   void setCategories();
 
@@ -318,54 +315,54 @@ private:
 
 inline void Definition::resetItemOffset()
 {
-  if (this->m_baseDefinition)
+  if (m_baseDefinition)
   {
-    this->m_baseItemOffset = this->m_baseDefinition->numberOfItemDefinitions();
+    m_baseItemOffset = m_baseDefinition->numberOfItemDefinitions();
   }
 }
 
 inline const double* Definition::notApplicableColor() const
 {
-  if (this->m_isNotApplicableColorSet)
+  if (m_isNotApplicableColorSet)
   {
-    return this->m_notApplicableColor;
+    return m_notApplicableColor;
   }
-  else if (this->m_baseDefinition)
+  else if (m_baseDefinition)
   {
-    return this->m_baseDefinition->notApplicableColor();
+    return m_baseDefinition->notApplicableColor();
   }
   return s_notApplicableBaseColor;
 }
 
 inline void Definition::setNotApplicableColor(double r, double g, double b, double a)
 {
-  this->m_isNotApplicableColorSet = true;
-  this->m_notApplicableColor[0] = r;
-  this->m_notApplicableColor[1] = g;
-  this->m_notApplicableColor[2] = b;
-  this->m_notApplicableColor[3] = a;
+  m_isNotApplicableColorSet = true;
+  m_notApplicableColor[0] = r;
+  m_notApplicableColor[1] = g;
+  m_notApplicableColor[2] = b;
+  m_notApplicableColor[3] = a;
 }
 
 inline const double* Definition::defaultColor() const
 {
-  if (this->m_isDefaultColorSet)
+  if (m_isDefaultColorSet)
   {
-    return this->m_defaultColor;
+    return m_defaultColor;
   }
-  else if (this->m_baseDefinition)
+  else if (m_baseDefinition)
   {
-    return this->m_baseDefinition->defaultColor();
+    return m_baseDefinition->defaultColor();
   }
   return s_defaultBaseColor;
 }
 
 inline void Definition::setDefaultColor(double r, double g, double b, double a)
 {
-  this->m_isDefaultColorSet = true;
-  this->m_defaultColor[0] = r;
-  this->m_defaultColor[1] = g;
-  this->m_defaultColor[2] = b;
-  this->m_defaultColor[3] = a;
+  m_isDefaultColorSet = true;
+  m_defaultColor[0] = r;
+  m_defaultColor[1] = g;
+  m_defaultColor[2] = b;
+  m_defaultColor[3] = a;
 }
 
 template <typename T>

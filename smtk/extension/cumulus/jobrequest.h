@@ -37,7 +37,7 @@ public:
   ~JobRequest();
 
   void virtual send() = 0;
-  Job job() const { return this->m_job; };
+  Job job() const { return m_job; };
 
 protected:
   Job m_job;

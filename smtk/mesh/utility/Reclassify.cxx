@@ -40,15 +40,15 @@ public:
       const std::size_t size = c.size();
       const std::size_t perSize = size / 3;
 
-      this->m_Xpoints.reserve(perSize);
-      this->m_Ypoints.reserve(perSize);
-      this->m_Zpoints.reserve(perSize);
+      m_Xpoints.reserve(perSize);
+      m_Ypoints.reserve(perSize);
+      m_Zpoints.reserve(perSize);
 
       for (std::size_t i = 0; i < size; i += 3)
       {
-        this->m_Xpoints.push_back(c[i]);
-        this->m_Ypoints.push_back(c[i + 1]);
-        this->m_Zpoints.push_back(c[i + 2]);
+        m_Xpoints.push_back(c[i]);
+        m_Ypoints.push_back(c[i + 1]);
+        m_Zpoints.push_back(c[i + 2]);
       }
     }
   }
@@ -58,7 +58,7 @@ public:
     //determine if the given point is contained in this
     //edges tessellation
     bool found = false;
-    std::size_t size = this->m_Xpoints.size();
+    std::size_t size = m_Xpoints.size();
     for (std::size_t i = 0; i < size && !found; ++i)
     {
       //Check on the X before doing an assignment to found
@@ -86,7 +86,7 @@ public:
 
     if (contained)
     {
-      this->m_cells.insert(cellId);
+      m_cells.insert(cellId);
     }
   }
 

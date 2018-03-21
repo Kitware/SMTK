@@ -54,8 +54,8 @@ public:
   RegionIdSet::value_type
     m_frag[2]; // used by SEGMENT_END and SEGMENT_CROSS as frag ID, SEGMENT_START as sense (-1/+1)
 
-  SweepEventType type() const { return this->m_type; }
-  const internal::Point& point() const { return this->m_posn; }
+  SweepEventType type() const { return m_type; }
+  const internal::Point& point() const { return m_posn; }
 
   bool operator<(const SweepEvent& other) const;
 

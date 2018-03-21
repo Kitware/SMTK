@@ -29,12 +29,12 @@ PointLocator::PointLocator(const smtk::mesh::CollectionPtr collection, std::size
 
 smtk::mesh::HandleRange PointLocator::range() const
 {
-  return this->m_locator->range();
+  return m_locator->range();
 }
 
 void PointLocator::find(double x, double y, double z, double radius, LocatorResults& results)
 {
-  return this->m_locator->locatePointsWithinRadius(x, y, z, radius, results);
+  return m_locator->locatePointsWithinRadius(x, y, z, radius, results);
 }
 }
 }

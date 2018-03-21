@@ -450,5 +450,5 @@ void smtkTerrainExtractionView::requestModelEntityAssociation()
 
 void smtkTerrainExtractionView::setInfoToBeDisplayed()
 {
-  this->m_infoDialog->displayInfo(this->getObject());
+  m_infoDialog->displayInfo(this->getObject());
 }

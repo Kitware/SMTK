@@ -276,7 +276,7 @@ std::string XmlV2StringWriter::convertToString(Logger& logger, bool no_declarati
 void XmlV2StringWriter::generateXml(pugi::xml_node& parent_node, Logger& logger, bool createRoot)
 {
   // Reset the message log
-  this->m_logger.reset();
+  m_logger.reset();
 
   xml_node root;
   if (createRoot)
@@ -294,26 +294,26 @@ void XmlV2StringWriter::generateXml(pugi::xml_node& parent_node, Logger& logger,
     m_pugi = new PugiPrivate(parent_node);
   }
 
-  this->m_pugi->root.append_child(node_comment)
+  m_pugi->root.append_child(node_comment)
     .set_value("**********  Category and Analysis Information ***********");
 
   // Write out the category and analysis information
-  if (this->m_collection->numberOfCategories())
+  if (m_collection->numberOfCategories())
   {
-    xml_node cnode, catNodes = this->m_pugi->root.append_child("Categories");
+    xml_node cnode, catNodes = m_pugi->root.append_child("Categories");
     std::set<std::string>::const_iterator it;
-    const std::set<std::string>& cats = this->m_collection->categories();
+    const std::set<std::string>& cats = m_collection->categories();
     for (it = cats.begin(); it != cats.end(); it++)
     {
       catNodes.append_child("Cat").text().set(it->c_str());
     }
   }
 
-  if (this->m_collection->numberOfAnalyses())
+  if (m_collection->numberOfAnalyses())
   {
-    xml_node cnode, catNodes = this->m_pugi->root.append_child("Analyses");
+    xml_node cnode, catNodes = m_pugi->root.append_child("Analyses");
     std::map<std::string, std::set<std::string> >::const_iterator it;
-    const std::map<std::string, std::set<std::string> >& analyses = this->m_collection->analyses();
+    const std::map<std::string, std::set<std::string> >& analyses = m_collection->analyses();
     for (it = analyses.begin(); it != analyses.end(); it++)
     {
       xml_node anode = catNodes.append_child("Analysis");
@@ -327,57 +327,57 @@ void XmlV2StringWriter::generateXml(pugi::xml_node& parent_node, Logger& logger,
   }
 
   // Write out the advance levels information
-  if (this->m_collection->numberOfAdvanceLevels())
+  if (m_collection->numberOfAdvanceLevels())
   {
-    xml_node cnode, catNodes = this->m_pugi->root.append_child("AdvanceLevels");
+    xml_node cnode, catNodes = m_pugi->root.append_child("AdvanceLevels");
     std::map<int, std::string>::const_iterator it;
-    const std::map<int, std::string>& levels = this->m_collection->advanceLevels();
+    const std::map<int, std::string>& levels = m_collection->advanceLevels();
     for (it = levels.begin(); it != levels.end(); it++)
     {
       xml_node anode = catNodes.append_child("Level");
       anode.append_attribute("Label").set_value(it->second.c_str());
-      if (this->m_collection->advanceLevelColor(it->first))
+      if (m_collection->advanceLevelColor(it->first))
       {
         anode.append_attribute("Color").set_value(
-          this->encodeColor(this->m_collection->advanceLevelColor(it->first)).c_str());
+          this->encodeColor(m_collection->advanceLevelColor(it->first)).c_str());
       }
       anode.text().set(getValueForXMLElement(it->first));
     }
   }
 
-  if (this->m_includeDefinitions || this->m_includeInstances)
+  if (m_includeDefinitions || m_includeInstances)
   {
     this->processAttributeInformation();
   }
-  if (this->m_includeViews)
+  if (m_includeViews)
   {
     this->processViews();
   }
-  if (this->m_includeModelInformation)
+  if (m_includeModelInformation)
   {
     this->processModelInfo();
   }
-  logger = this->m_logger;
+  logger = m_logger;
 }
 
 void XmlV2StringWriter::processAttributeInformation()
 {
   std::vector<smtk::attribute::DefinitionPtr> baseDefs;
-  this->m_collection->findBaseDefinitions(baseDefs);
+  m_collection->findBaseDefinitions(baseDefs);
   std::size_t i, n = baseDefs.size();
   xml_node definitions, attributes;
 
-  if (this->m_includeDefinitions)
+  if (m_includeDefinitions)
   {
-    this->m_pugi->root.append_child(node_comment)
+    m_pugi->root.append_child(node_comment)
       .set_value("**********  Attribute Definitions ***********");
-    definitions = this->m_pugi->root.append_child("Definitions");
+    definitions = m_pugi->root.append_child("Definitions");
   }
-  if (this->m_includeInstances)
+  if (m_includeInstances)
   {
-    this->m_pugi->root.append_child(node_comment)
+    m_pugi->root.append_child(node_comment)
       .set_value("**********  Attribute Instances ***********");
-    attributes = this->m_pugi->root.append_child("Attributes");
+    attributes = m_pugi->root.append_child("Attributes");
   }
   for (i = 0; i < n; i++)
   {
@@ -388,17 +388,17 @@ void XmlV2StringWriter::processAttributeInformation()
 void XmlV2StringWriter::processDefinition(
   xml_node& definitions, xml_node& attributes, smtk::attribute::DefinitionPtr def)
 {
-  if (this->m_includeDefinitions)
+  if (m_includeDefinitions)
   {
     xml_node node = definitions.append_child();
     node.set_name("AttDef");
     this->processDefinitionInternal(node, def);
   }
-  if (this->m_includeInstances)
+  if (m_includeInstances)
   {
     // Process all attributes based on this class
     std::vector<smtk::attribute::AttributePtr> atts;
-    this->m_collection->findDefinitionAttributes(def->type(), atts);
+    m_collection->findDefinitionAttributes(def->type(), atts);
     std::size_t n = atts.size();
     for (std::size_t i = 0; i < n; i++)
     {
@@ -407,7 +407,7 @@ void XmlV2StringWriter::processDefinition(
   }
   // Now process all of its derived classes
   std::vector<smtk::attribute::DefinitionPtr> defs;
-  this->m_collection->derivedDefinitions(def, defs);
+  m_collection->derivedDefinitions(def, defs);
   std::size_t n = defs.size();
   for (std::size_t i = 0; i < n; i++)
   {
@@ -606,8 +606,8 @@ void XmlV2StringWriter::processItemDefinitionType(
       break;
       break;
     default:
-      smtkErrorMacro(this->m_logger, "Unsupported Type: "
-          << Item::type2String(idef->type()) << " for Item Definition: " << idef->name());
+      smtkErrorMacro(m_logger, "Unsupported Type: " << Item::type2String(idef->type())
+                                                    << " for Item Definition: " << idef->name());
   }
 }
 
@@ -1030,8 +1030,8 @@ void XmlV2StringWriter::processItemType(xml_node& node, smtk::attribute::ItemPtr
       this->processMeshEntityItem(node, smtk::dynamic_pointer_cast<MeshItem>(item));
       break;
     default:
-      smtkErrorMacro(this->m_logger, "Unsupported Type: " << Item::type2String(item->type())
-                                                          << " for Item: " << item->name());
+      smtkErrorMacro(m_logger, "Unsupported Type: " << Item::type2String(item->type())
+                                                    << " for Item: " << item->name());
   }
 }
 
@@ -1367,17 +1367,16 @@ void XmlV2StringWriter::processGroupItem(pugi::xml_node& node, attribute::GroupI
 
 void XmlV2StringWriter::processViews()
 {
-  this->m_pugi->root.append_child(node_comment).set_value("********** Workflow Views ***********");
+  m_pugi->root.append_child(node_comment).set_value("********** Workflow Views ***********");
 
   // First write toplevel views and then write out the non-toplevel - note that the
   // attribute or view collection do care about this - the assumption is that the designer would
   // probably like all the toplevel views clustered together
 
-  xml_node views = this->m_pugi->root.append_child("Views");
+  xml_node views = m_pugi->root.append_child("Views");
   std::map<std::string, smtk::view::ViewPtr>::const_iterator iter;
   bool isTop;
-  for (iter = this->m_collection->views().begin(); iter != this->m_collection->views().end();
-       iter++)
+  for (iter = m_collection->views().begin(); iter != m_collection->views().end(); iter++)
   {
     if (!(iter->second->details().attributeAsBool("TopLevel", isTop) && isTop))
     {
@@ -1394,8 +1393,7 @@ void XmlV2StringWriter::processViews()
     }
     this->processViewComponent(iter->second->details(), node);
   }
-  for (iter = this->m_collection->views().begin(); iter != this->m_collection->views().end();
-       iter++)
+  for (iter = m_collection->views().begin(); iter != m_collection->views().end(); iter++)
   {
     if (iter->second->details().attributeAsBool("TopLevel", isTop) && isTop)
     {

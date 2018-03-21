@@ -152,7 +152,7 @@ ImportPythonOperation::Result ImportPythonOperation::operateInternal()
   }
 
   std::vector<std::string> uniqueNames =
-    this->importOperationsFromModule(moduleName, *(this->m_manager.lock()));
+    this->importOperationsFromModule(moduleName, *(m_manager.lock()));
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 

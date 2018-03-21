@@ -95,7 +95,7 @@ public:
   smtk::mesh::PointConnectivity pointConnectivity(std::size_t) const;
 
   //get the underlying HandleRange that this CellSet represents
-  const smtk::mesh::HandleRange& range() const { return this->m_range; }
+  const smtk::mesh::HandleRange& range() const { return m_range; }
 
   //get the underlying collection that this CellSet belongs to
   const smtk::mesh::CollectionPtr& collection() const;

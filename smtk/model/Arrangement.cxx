@@ -270,13 +270,13 @@ Arrangement Arrangement::EntitySubsetOfWithIndex(int relationIdx)
 bool Arrangement::IndexSenseAndOrientationFromCellHasUse(
   int& relationIdx, int& sense, Orientation& orient) const
 {
-  if (this->m_details.size() != 3)
+  if (m_details.size() != 3)
   {
     return false;
   }
-  relationIdx = this->m_details[0];
-  sense = this->m_details[1];
-  orient = static_cast<Orientation>(this->m_details[2]);
+  relationIdx = m_details[0];
+  sense = m_details[1];
+  orient = static_cast<Orientation>(m_details[2]);
   return true;
 }
 
@@ -313,12 +313,12 @@ bool Arrangement::IndexFromCellHasShell(int& relationIdx) const
 /// Obtain the index and sense of a cell entity from a cell-use's HAS_CELL arrangement.
 bool Arrangement::IndexAndSenseFromUseHasCell(int& relationIdx, int& sense) const
 {
-  if (this->m_details.size() != 2)
+  if (m_details.size() != 2)
   {
     return false;
   }
-  relationIdx = this->m_details[0];
-  sense = this->m_details[1];
+  relationIdx = m_details[0];
+  sense = m_details[1];
   return true;
 }
 
@@ -341,12 +341,12 @@ bool Arrangement::IndexFromShellHasCell(int& relationIdx) const
 
 bool Arrangement::IndexRangeFromShellHasUse(int& relationBegin, int& relationEnd) const
 {
-  if (this->m_details.size() != 2)
+  if (m_details.size() != 2)
   {
     return false;
   }
-  relationBegin = this->m_details[0];
-  relationEnd = this->m_details[1];
+  relationBegin = m_details[0];
+  relationEnd = m_details[1];
   return true;
 }
 
@@ -391,11 +391,11 @@ Arrangement Arrangement::SimpleIndex(int relationIdx)
 /// Return the index of a related entity from an arrangement holding only this single index.
 bool Arrangement::IndexFromSimple(int& relationIdx) const
 {
-  if (this->m_details.size() != 1)
+  if (m_details.size() != 1)
   {
     return false;
   }
-  relationIdx = this->m_details[0];
+  relationIdx = m_details[0];
   return true;
 }
 ///@}

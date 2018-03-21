@@ -39,12 +39,12 @@ struct SMTKPOLYGONSESSION_EXPORT ModelEdgeInfo
   ModelEdgeInfo()
     : m_allowedOrientations(0)
   {
-    this->m_visited[0] = this->m_visited[1] = false;
+    m_visited[0] = m_visited[1] = false;
   }
   ModelEdgeInfo(int allowedOrientations)
   {
-    this->m_allowedOrientations = allowedOrientations > 0 ? +1 : allowedOrientations < 0 ? -1 : 0;
-    this->m_visited[0] = this->m_visited[1] = false;
+    m_allowedOrientations = allowedOrientations > 0 ? +1 : allowedOrientations < 0 ? -1 : 0;
+    m_visited[0] = m_visited[1] = false;
   }
   ModelEdgeInfo(const ModelEdgeInfo& other)
     : m_allowedOrientations(other.m_allowedOrientations)

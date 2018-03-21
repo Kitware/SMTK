@@ -41,8 +41,8 @@ public:
   void setMembershipMask(smtk::model::BitFlags entMask);
   std::string refModelEntityName() const { return m_RefModelEntityDefName; }
   void setRefModelEntityName(const std::string& defName) { m_RefModelEntityDefName = defName; }
-  void setModifyMode(const std::string& mode) { this->m_modifyMode = mode; }
-  std::string modifyMode() const { return this->m_modifyMode; }
+  void setModifyMode(const std::string& mode) { m_modifyMode = mode; }
+  std::string modifyMode() const { return m_modifyMode; }
 
   bool isValueValid(const int& val) const;
 

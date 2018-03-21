@@ -29,8 +29,8 @@ template <typename T>
 void Neighborhood::getLoops(T evaluator)
 {
   FragmentArray::iterator fit;
-  fit = this->m_fragments->begin();
-  if (fit == this->m_fragments->end())
+  fit = m_fragments->begin();
+  if (fit == m_fragments->end())
   {
     return;
   }
@@ -45,23 +45,23 @@ void Neighborhood::getLoops(T evaluator)
   std::set<RegionId> neighborRegions;
   std::set<RegionId>::const_iterator pit;
   FragmentId fid = 0;
-  RegionId outside = this->m_regionIds.find(this->m_outside);
-  for (fit = this->m_fragments->begin(); fit != this->m_fragments->end(); ++fit, ++fid)
+  RegionId outside = m_regionIds.find(m_outside);
+  for (fit = m_fragments->begin(); fit != m_fragments->end(); ++fit, ++fid)
   {
-    if (!fit->marked(false) && this->m_regionIds.find(fit->ccwRegion(false)) != outside)
+    if (!fit->marked(false) && m_regionIds.find(fit->ccwRegion(false)) != outside)
     {
       RegionId contained = this->traverseLoop(loopEdges, neighborRegions, fid, false);
-      evaluator->evaluateLoop(this->m_regionIds.find(contained), loopEdges, neighborRegions);
+      evaluator->evaluateLoop(m_regionIds.find(contained), loopEdges, neighborRegions);
     }
-    if (!fit->marked(true) && this->m_regionIds.find(fit->ccwRegion(true)) != outside)
+    if (!fit->marked(true) && m_regionIds.find(fit->ccwRegion(true)) != outside)
     {
       RegionId contained = this->traverseLoop(loopEdges, neighborRegions, fid, true);
-      evaluator->evaluateLoop(this->m_regionIds.find(contained), loopEdges, neighborRegions);
+      evaluator->evaluateLoop(m_regionIds.find(contained), loopEdges, neighborRegions);
     }
   }
 
   // Now erase the "visited" marks so we can re-traverse if needed:
-  for (fit = this->m_fragments->begin(); fit != this->m_fragments->end(); ++fit)
+  for (fit = m_fragments->begin(); fit != m_fragments->end(); ++fit)
   {
     fit->mark(false, 0);
     fit->mark(true, 0);

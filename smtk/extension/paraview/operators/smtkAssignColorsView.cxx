@@ -510,5 +510,5 @@ void smtkAssignColorsView::requestModelEntityAssociation()
 
 void smtkAssignColorsView::setInfoToBeDisplayed()
 {
-  this->m_infoDialog->displayInfo(this->getObject());
+  m_infoDialog->displayInfo(this->getObject());
 }

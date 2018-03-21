@@ -50,7 +50,7 @@ public:
     for (c_it i = pointIds.begin(); i != pointIds.end(); ++i, offset += 3)
     {
       std::copy(&xyz[offset], &xyz[offset] + 3, &x[0]);
-      f_x = this->m_mapping(x);
+      f_x = m_mapping(x);
       std::copy(std::begin(f_x), std::end(f_x), &xyz[offset]);
     }
     coordinatesModified = true; //mark we are going to modify the points
@@ -80,15 +80,15 @@ public:
     {
       std::copy(&xyz[offset], &xyz[offset] + 3, &x[0]);
 
-      std::copy(std::begin(x), std::end(x), &this->m_data[offset]);
+      std::copy(std::begin(x), std::end(x), &m_data[offset]);
 
-      f_x = this->m_mapping(x);
+      f_x = m_mapping(x);
       std::copy(std::begin(f_x), std::end(f_x), &xyz[offset]);
     }
     coordinatesModified = true; //mark we are going to modify the points
   }
 
-  const std::vector<double>& data() const { return this->m_data; }
+  const std::vector<double>& data() const { return m_data; }
 };
 
 class UndoWarpPoints : public smtk::mesh::PointForEach
@@ -101,11 +101,11 @@ public:
   void forPoints(
     const smtk::mesh::HandleRange&, std::vector<double>& xyz, bool& coordinatesModified) override
   {
-    xyz = this->m_data;
+    xyz = m_data;
     coordinatesModified = true;
   }
 
-  std::vector<double>& data() { return this->m_data; }
+  std::vector<double>& data() { return m_data; }
 };
 }
 
@@ -170,12 +170,12 @@ public:
     typedef smtk::mesh::HandleRange::const_iterator c_it;
     for (c_it i = pointIds.begin(); i != pointIds.end(); ++i, xyzCounter += 3)
     {
-      this->m_data[this->m_counter++] = this->m_mapping(
+      m_data[m_counter++] = m_mapping(
         std::array<double, 3>({ { xyz[xyzCounter], xyz[xyzCounter + 1], xyz[xyzCounter + 2] } }));
     }
   }
 
-  const std::vector<double>& data() const { return this->m_data; }
+  const std::vector<double>& data() const { return m_data; }
 };
 }
 
@@ -219,11 +219,10 @@ public:
     {
       xyz[i] /= nPts;
     }
-    this->m_data[this->m_counter++] =
-      this->m_mapping(std::array<double, 3>({ { xyz[0], xyz[1], xyz[2] } }));
+    m_data[m_counter++] = m_mapping(std::array<double, 3>({ { xyz[0], xyz[1], xyz[2] } }));
   }
 
-  const std::vector<double>& data() const { return this->m_data; }
+  const std::vector<double>& data() const { return m_data; }
 };
 }
 
@@ -267,13 +266,13 @@ public:
     for (c_it i = pointIds.begin(); i != pointIds.end(); ++i, xyzCounter += 3)
     {
       std::copy(&xyz[xyzCounter], &xyz[xyzCounter] + 3, &x[0]);
-      f_x = this->m_mapping(x);
-      std::copy(std::begin(f_x), std::end(f_x), &this->m_data[this->m_counter]);
-      this->m_counter += 3;
+      f_x = m_mapping(x);
+      std::copy(std::begin(f_x), std::end(f_x), &m_data[m_counter]);
+      m_counter += 3;
     }
   }
 
-  const std::vector<double>& data() const { return this->m_data; }
+  const std::vector<double>& data() const { return m_data; }
 };
 }
 
@@ -318,12 +317,12 @@ public:
     {
       x[i] /= nPts;
     }
-    f_x = this->m_mapping(x);
-    std::copy(std::begin(f_x), std::end(f_x), &this->m_data[this->m_counter]);
-    this->m_counter += 3;
+    f_x = m_mapping(x);
+    std::copy(std::begin(f_x), std::end(f_x), &m_data[m_counter]);
+    m_counter += 3;
   }
 
-  const std::vector<double>& data() const { return this->m_data; }
+  const std::vector<double>& data() const { return m_data; }
 };
 }
 

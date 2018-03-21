@@ -44,14 +44,14 @@ CellField::~CellField()
 
 CellField& CellField::operator=(const CellField& other)
 {
-  this->m_name = other.m_name;
-  this->m_meshset = other.m_meshset;
+  m_name = other.m_name;
+  m_meshset = other.m_meshset;
   return *this;
 }
 
 bool CellField::operator==(const CellField& other) const
 {
-  return this->m_name == other.m_name && this->m_meshset == other.m_meshset;
+  return m_name == other.m_name && m_meshset == other.m_meshset;
 }
 
 bool CellField::operator!=(const CellField& other) const
@@ -61,121 +61,117 @@ bool CellField::operator!=(const CellField& other) const
 
 bool CellField::operator<(const CellField& other) const
 {
-  if (this->m_name == other.m_name)
+  if (m_name == other.m_name)
   {
-    return this->m_meshset < other.m_meshset;
+    return m_meshset < other.m_meshset;
   }
-  return this->m_name < other.m_name;
+  return m_name < other.m_name;
 }
 
 bool CellField::isValid() const
 {
-  if (this->m_name.empty() || this->m_meshset.collection() == nullptr)
+  if (m_name.empty() || m_meshset.collection() == nullptr)
   {
     return false;
   }
 
-  const smtk::mesh::InterfacePtr& iface = this->m_meshset.collection()->interface();
+  const smtk::mesh::InterfacePtr& iface = m_meshset.collection()->interface();
   if (!iface)
   {
     return false;
   }
 
-  smtk::mesh::CellFieldTag dsTag(this->m_name);
-  return iface->hasCellField(this->m_meshset.range(), dsTag);
+  smtk::mesh::CellFieldTag dsTag(m_name);
+  return iface->hasCellField(m_meshset.range(), dsTag);
 }
 
 std::size_t CellField::size() const
 {
-  return (this->isValid() ? this->m_meshset.cells().size() : 0);
+  return (this->isValid() ? m_meshset.cells().size() : 0);
 }
 
 std::size_t CellField::dimension() const
 {
-  const smtk::mesh::InterfacePtr& iface = this->m_meshset.collection()->interface();
+  const smtk::mesh::InterfacePtr& iface = m_meshset.collection()->interface();
   if (!iface)
   {
     return 0;
   }
 
-  smtk::mesh::CellFieldTag dsTag(this->m_name);
-  return (
-    iface->hasCellField(this->m_meshset.range(), dsTag) ? iface->getCellFieldDimension(dsTag) : 0);
+  smtk::mesh::CellFieldTag dsTag(m_name);
+  return (iface->hasCellField(m_meshset.range(), dsTag) ? iface->getCellFieldDimension(dsTag) : 0);
 }
 
 smtk::mesh::FieldType CellField::type() const
 {
-  const smtk::mesh::InterfacePtr& iface = this->m_meshset.collection()->interface();
+  const smtk::mesh::InterfacePtr& iface = m_meshset.collection()->interface();
   if (!iface)
   {
     return smtk::mesh::FieldType::MaxFieldType;
   }
 
-  smtk::mesh::CellFieldTag dsTag(this->m_name);
-  return (iface->hasCellField(this->m_meshset.range(), dsTag)
-      ? iface->getCellFieldType(dsTag)
-      : smtk::mesh::FieldType::MaxFieldType);
+  smtk::mesh::CellFieldTag dsTag(m_name);
+  return (iface->hasCellField(m_meshset.range(), dsTag) ? iface->getCellFieldType(dsTag)
+                                                        : smtk::mesh::FieldType::MaxFieldType);
 }
 
 smtk::mesh::CellSet CellField::cells() const
 {
-  return this->m_meshset.cells();
+  return m_meshset.cells();
 }
 
 bool CellField::get(const smtk::mesh::HandleRange& cellIds, void* values) const
 {
-  const smtk::mesh::InterfacePtr& iface = this->m_meshset.collection()->interface();
+  const smtk::mesh::InterfacePtr& iface = m_meshset.collection()->interface();
   if (!iface)
   {
     return false;
   }
 
-  if (!this->m_meshset.cells().range().contains(cellIds))
+  if (!m_meshset.cells().range().contains(cellIds))
   {
     return false;
   }
 
-  return iface->getField(cellIds, smtk::mesh::CellFieldTag(this->m_name), values);
+  return iface->getField(cellIds, smtk::mesh::CellFieldTag(m_name), values);
 }
 
 bool CellField::set(const smtk::mesh::HandleRange& cellIds, const void* const values)
 {
-  const smtk::mesh::InterfacePtr& iface = this->m_meshset.collection()->interface();
+  const smtk::mesh::InterfacePtr& iface = m_meshset.collection()->interface();
   if (!iface)
   {
     return false;
   }
 
-  if (!this->m_meshset.cells().range().contains(cellIds))
+  if (!m_meshset.cells().range().contains(cellIds))
   {
     return false;
   }
 
-  return iface->setField(cellIds, smtk::mesh::CellFieldTag(this->m_name), values);
+  return iface->setField(cellIds, smtk::mesh::CellFieldTag(m_name), values);
 }
 
 bool CellField::get(void* values) const
 {
-  const smtk::mesh::InterfacePtr& iface = this->m_meshset.collection()->interface();
+  const smtk::mesh::InterfacePtr& iface = m_meshset.collection()->interface();
   if (!iface)
   {
     return false;
   }
 
-  return iface->getCellField(
-    this->m_meshset.range(), smtk::mesh::CellFieldTag(this->m_name), values);
+  return iface->getCellField(m_meshset.range(), smtk::mesh::CellFieldTag(m_name), values);
 }
 
 bool CellField::set(const void* const values)
 {
-  const smtk::mesh::InterfacePtr& iface = this->m_meshset.collection()->interface();
+  const smtk::mesh::InterfacePtr& iface = m_meshset.collection()->interface();
   if (!iface)
   {
     return false;
   }
 
-  return iface->setCellField(
-    this->m_meshset.range(), smtk::mesh::CellFieldTag(this->m_name), values);
+  return iface->setCellField(m_meshset.range(), smtk::mesh::CellFieldTag(m_name), values);
 }
 }
 }

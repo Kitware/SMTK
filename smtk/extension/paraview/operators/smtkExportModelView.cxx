@@ -86,13 +86,13 @@ public:
 
   void reset()
   {
-    this->m_saveErrors.str("");
-    this->m_saveErrors.clear();
-    this->m_enabled = true;
-    this->m_modelChanges.clear();
-    this->m_copyFiles.clear();
-    this->m_saveModels.clear();
-    this->m_saveMeshes.clear();
+    m_saveErrors.str("");
+    m_saveErrors.clear();
+    m_enabled = true;
+    m_modelChanges.clear();
+    m_copyFiles.clear();
+    m_saveModels.clear();
+    m_saveMeshes.clear();
   }
 };
 
@@ -711,5 +711,5 @@ void smtkExportModelView::updateActions()
 
 void smtkExportModelView::setInfoToBeDisplayed()
 {
-  this->m_infoDialog->displayInfo(this->getObject());
+  m_infoDialog->displayInfo(this->getObject());
 }

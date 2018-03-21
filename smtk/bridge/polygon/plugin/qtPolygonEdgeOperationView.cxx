@@ -81,7 +81,7 @@ public:
     if (att && att->numberOfItems() > 0)
     {
       qtAttribute* attInstance = new qtAttribute(att, pw, view);
-      //attInstance->setUseSelectionManager(this->m_useSelectionManager);
+      //attInstance->setUseSelectionManager(m_useSelectionManager);
       if (attInstance && attInstance->widget())
       {
         //Without any additional info lets use a basic layout with model associations
@@ -122,7 +122,7 @@ void qtPolygonEdgeOperationView::attributeModified()
 qtPolygonEdgeOperationView::qtPolygonEdgeOperationView(const ViewInfo& info)
   : qtBaseView(info)
 {
-  this->Internals = new qtPolygonEdgeOperationViewInternals(this->m_useSelectionManager);
+  this->Internals = new qtPolygonEdgeOperationViewInternals(m_useSelectionManager);
 }
 
 qtPolygonEdgeOperationView::~qtPolygonEdgeOperationView()

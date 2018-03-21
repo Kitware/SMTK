@@ -46,7 +46,7 @@ qtItem::qtItem(smtk::attribute::ItemPtr dataObject, QWidget* p, qtBaseView* bvie
   this->Internals = new qtItemInternals(dataObject, p, bview);
   this->Widget = NULL;
   this->IsLeafItem = false;
-  this->m_useSelectionManager = false;
+  m_useSelectionManager = false;
 
   //this->Internals->DataConnect = NULL;
   //this->createWidget();

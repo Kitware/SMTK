@@ -37,9 +37,9 @@ JobTableWidget::~JobTableWidget()
 
 void JobTableWidget::setModel(QAbstractItemModel* model)
 {
-  this->m_proxyModel = new QSortFilterProxyModel(this);
-  this->m_proxyModel->setSourceModel(model);
-  ui->table->setModel(this->m_proxyModel);
+  m_proxyModel = new QSortFilterProxyModel(this);
+  m_proxyModel->setSourceModel(model);
+  ui->table->setModel(m_proxyModel);
 }
 
 void JobTableWidget::setCumulusProxy(CumulusProxy* cumulusProxy)

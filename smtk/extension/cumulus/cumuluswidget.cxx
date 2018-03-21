@@ -40,26 +40,26 @@ CumulusWidget::CumulusWidget(QWidget* parentObject)
 
   this->createJobTable();
 
-  connect(&m_loginDialog, SIGNAL(entered(QString, QString)), this->m_cumulusProxy,
+  connect(&m_loginDialog, SIGNAL(entered(QString, QString)), m_cumulusProxy,
     SLOT(authenticateNewt(QString, QString)));
-  connect(this->m_cumulusProxy, SIGNAL(authenticationFinished()), this, SLOT(startJobFetchLoop()));
-  connect(this->m_cumulusProxy, SIGNAL(jobsUpdated(QList<Job>)), this->m_jobTableModel,
+  connect(m_cumulusProxy, SIGNAL(authenticationFinished()), this, SLOT(startJobFetchLoop()));
+  connect(m_cumulusProxy, SIGNAL(jobsUpdated(QList<Job>)), m_jobTableModel,
     SLOT(jobsUpdated(QList<Job>)));
-  connect(this->m_cumulusProxy, SIGNAL(error(QString, QNetworkReply*)), this,
+  connect(m_cumulusProxy, SIGNAL(error(QString, QNetworkReply*)), this,
     SLOT(handleError(QString, QNetworkReply*)));
-  connect(this->m_cumulusProxy, SIGNAL(newtAuthenticationError(QString)), this,
+  connect(m_cumulusProxy, SIGNAL(newtAuthenticationError(QString)), this,
     SLOT(displayAuthError(QString)));
-  connect(this->m_cumulusProxy, SIGNAL(info(QString)), this, SIGNAL(info(QString)));
-  connect(this->m_cumulusProxy, SIGNAL(jobDownloaded(cumulus::Job, const QString&)), this,
+  connect(m_cumulusProxy, SIGNAL(info(QString)), this, SIGNAL(info(QString)));
+  connect(m_cumulusProxy, SIGNAL(jobDownloaded(cumulus::Job, const QString&)), this,
     SLOT(handleDownloadResult(cumulus::Job, const QString&)));
-  connect(this->m_jobTableModel, &JobTableModel::finishTimeChanged, this->m_cumulusProxy,
-    &CumulusProxy::patchJobs);
+  connect(
+    m_jobTableModel, &JobTableModel::finishTimeChanged, m_cumulusProxy, &CumulusProxy::patchJobs);
 
   // Instantiate polling timer (but don't start)
-  this->m_timer = new QTimer(this);
-  this->m_timer->setInterval(timer_period_msec);
-  connect(m_timer, SIGNAL(timeout()), this->m_cumulusProxy, SLOT(fetchJobs()));
-  this->m_ui->jobTableWidget->setEnabled(false);
+  m_timer = new QTimer(this);
+  m_timer->setInterval(timer_period_msec);
+  connect(m_timer, SIGNAL(timeout()), m_cumulusProxy, SLOT(fetchJobs()));
+  m_ui->jobTableWidget->setEnabled(false);
 }
 
 CumulusWidget::~CumulusWidget()
@@ -69,12 +69,12 @@ CumulusWidget::~CumulusWidget()
 
 void CumulusWidget::girderUrl(const QString& url)
 {
-  this->m_cumulusProxy->girderUrl(url);
+  m_cumulusProxy->girderUrl(url);
 }
 
 bool CumulusWidget::isGirderRunning() const
 {
-  return this->m_cumulusProxy->isGirderRunning();
+  return m_cumulusProxy->isGirderRunning();
 }
 
 void CumulusWidget::showLoginDialog()
@@ -84,26 +84,26 @@ void CumulusWidget::showLoginDialog()
 
 void CumulusWidget::addContextMenuAction(const QString& status, QAction* action)
 {
-  this->m_ui->jobTableWidget->addContextMenuAction(status, action);
+  m_ui->jobTableWidget->addContextMenuAction(status, action);
 }
 
 void CumulusWidget::createJobTable()
 {
-  this->m_ui->jobTableWidget->setModel(this->m_jobTableModel);
-  this->m_ui->jobTableWidget->setCumulusProxy(this->m_cumulusProxy);
+  m_ui->jobTableWidget->setModel(m_jobTableModel);
+  m_ui->jobTableWidget->setCumulusProxy(m_cumulusProxy);
 }
 
 void CumulusWidget::startJobFetchLoop()
 {
-  this->m_ui->jobTableWidget->setEnabled(true);
-  this->m_cumulusProxy->fetchJobs();
-  this->m_timer->start();
+  m_ui->jobTableWidget->setEnabled(true);
+  m_cumulusProxy->fetchJobs();
+  m_timer->start();
 }
 
 void CumulusWidget::displayAuthError(const QString& msg)
 {
-  this->m_loginDialog.setErrorMessage(msg);
-  this->m_loginDialog.show();
+  m_loginDialog.setErrorMessage(msg);
+  m_loginDialog.show();
 }
 
 void CumulusWidget::handleError(const QString& msg, QNetworkReply* networkReply)
@@ -115,19 +115,19 @@ void CumulusWidget::handleError(const QString& msg, QNetworkReply* networkReply)
     // Forbidden, ask the user to authenticate again
     if (statusCode == 403)
     {
-      this->m_timer->stop();
-      this->m_ui->jobTableWidget->setEnabled(false);
-      this->m_loginDialog.show();
+      m_timer->stop();
+      m_ui->jobTableWidget->setEnabled(false);
+      m_loginDialog.show();
     }
     else if (networkReply->error() == QNetworkReply::ConnectionRefusedError)
     {
-      this->m_timer->stop();
-      this->m_ui->jobTableWidget->setEnabled(false);
+      m_timer->stop();
+      m_ui->jobTableWidget->setEnabled(false);
       QMessageBox::critical(NULL, QObject::tr("Connection refused"),
         QObject::tr("Unable to connect to server at %1:%2, please ensure server is running.")
           .arg(networkReply->url().host())
           .arg(networkReply->url().port()));
-      this->m_loginDialog.show();
+      m_loginDialog.show();
     }
     else
     {

@@ -232,11 +232,11 @@ public:
     for (c_it i = pointIds.begin(); i != pointIds.end(); ++i)
     {
       double value =
-        this->m_dataGenerator(xyz[counter * 3 + 0], xyz[counter * 3 + 1], xyz[counter * 3 + 2]);
+        m_dataGenerator(xyz[counter * 3 + 0], xyz[counter * 3 + 1], xyz[counter * 3 + 2]);
       counter += 3;
       smtk::mesh::HandleRange range;
       range.insert(*i);
-      this->m_pointfield.set(range, &value);
+      m_pointfield.set(range, &value);
     }
   }
 };
@@ -264,12 +264,12 @@ public:
     for (c_it i = pointIds.begin(); i != pointIds.end(); ++i)
     {
       double expectedValue =
-        this->m_dataGenerator(xyz[counter * 3 + 0], xyz[counter * 3 + 1], xyz[counter * 3 + 2]);
+        m_dataGenerator(xyz[counter * 3 + 0], xyz[counter * 3 + 1], xyz[counter * 3 + 2]);
       counter += 3;
       smtk::mesh::HandleRange range;
       range.insert(*i);
       double value = 0.;
-      this->m_pointfield.get(range, &value);
+      m_pointfield.get(range, &value);
       test(std::abs(expectedValue - value) < EPSILON);
     }
   }

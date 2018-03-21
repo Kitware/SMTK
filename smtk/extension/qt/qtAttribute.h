@@ -40,13 +40,13 @@ public:
   virtual ~qtAttribute();
 
   smtk::attribute::AttributePtr attribute();
-  QWidget* widget() { return this->m_widget; }
+  QWidget* widget() { return m_widget; }
   QWidget* parentWidget();
 
   virtual void addItem(qtItem*);
   QList<qtItem*>& items() const;
   virtual void showAdvanceLevelOverlay(bool show);
-  bool useSelectionManager() const { return this->m_useSelectionManager; }
+  bool useSelectionManager() const { return m_useSelectionManager; }
 
   // A basic layout for an attribute
   void createBasicLayout(bool includeAssociations);

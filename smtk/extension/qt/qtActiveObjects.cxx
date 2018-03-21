@@ -12,7 +12,7 @@
 
 qtActiveObjects::qtActiveObjects()
 {
-  this->m_activeModel = smtk::model::Model();
+  m_activeModel = smtk::model::Model();
 }
 
 qtActiveObjects::~qtActiveObjects()
@@ -27,6 +27,6 @@ qtActiveObjects& qtActiveObjects::instance()
 
 void qtActiveObjects::setActiveModel(const smtk::model::Model& inputModel)
 {
-  this->m_activeModel = inputModel;
+  m_activeModel = inputModel;
   emit this->activeModelChanged();
 }

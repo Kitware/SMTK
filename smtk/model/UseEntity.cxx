@@ -44,18 +44,18 @@ Orientation UseEntity::orientation() const
   if (!mgr)
     return UNDEFINED;
 
-  EntityPtr ent = mgr->findEntity(this->m_entity);
+  EntityPtr ent = mgr->findEntity(m_entity);
   if (!ent)
     return UNDEFINED;
 
-  const Arrangement* arr = mgr->findArrangement(this->m_entity, HAS_CELL, 0);
+  const Arrangement* arr = mgr->findArrangement(m_entity, HAS_CELL, 0);
   if (ent && arr)
   {
     int idx, esense;
     arr->IndexAndSenseFromUseHasCell(idx, esense);
     smtk::common::UUID cellId = ent->relations()[idx];
     // Now find the cell's HAS_USE record with the same sense as us:
-    int arrIdx = mgr->findCellHasUseWithSense(cellId, this->m_entity, esense);
+    int arrIdx = mgr->findCellHasUseWithSense(cellId, m_entity, esense);
     if (arrIdx >= 0)
     {
       // Now find the orientation of that use of the cell:
@@ -73,8 +73,8 @@ int UseEntity::sense() const
 {
   ManagerPtr mgr = this->manager();
   // Find the cell for this use record.
-  EntityPtr ent = mgr->findEntity(this->m_entity);
-  const Arrangement* arr = mgr->findArrangement(this->m_entity, HAS_CELL, 0);
+  EntityPtr ent = mgr->findEntity(m_entity);
+  const Arrangement* arr = mgr->findArrangement(m_entity, HAS_CELL, 0);
   if (ent && arr)
   {
     int idx, esense;
@@ -91,7 +91,7 @@ UseEntity& UseEntity::setBoundingShellEntity(const ShellEntity& shell)
 {
   ManagerPtr mgr = this->manager();
   if (mgr)
-    mgr->findOrAddIncludedShell(this->m_entity, shell.entity());
+    mgr->findOrAddIncludedShell(m_entity, shell.entity());
   return *this;
 }
 
@@ -106,7 +106,7 @@ UseEntity& UseEntity::addShellEntity(const ShellEntity& shell)
 {
   ManagerPtr mgr = this->manager();
   if (mgr)
-    mgr->findOrAddIncludedShell(this->m_entity, shell.entity());
+    mgr->findOrAddIncludedShell(m_entity, shell.entity());
   return *this;
 }
 

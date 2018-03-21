@@ -58,7 +58,7 @@ bool ReadResource::ableToOperate()
 
 ReadResource::Result ReadResource::operateInternal()
 {
-  auto manager = this->m_manager.lock();
+  auto manager = m_manager.lock();
 
   if (manager == nullptr)
   {

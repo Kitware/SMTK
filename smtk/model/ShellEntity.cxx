@@ -82,7 +82,7 @@ ShellEntity& ShellEntity::addUse(const UseEntity& use)
 {
   ManagerPtr mgr = this->manager();
   if (mgr)
-    mgr->findOrAddUseToShell(this->m_entity, use.entity());
+    mgr->findOrAddUseToShell(m_entity, use.entity());
   return *this;
 }
 

@@ -256,7 +256,7 @@ std::set<smtk::shared_ptr<ResourceType> > Manager::find()
   std::set<smtk::shared_ptr<ResourceType> > values;
 
   typedef Container::index<IndexTag>::type ResourcesByIndex;
-  ResourcesByIndex& resources = this->m_resources.get<IndexTag>();
+  ResourcesByIndex& resources = m_resources.get<IndexTag>();
   for (auto& idx : validIndices)
   {
     auto resourceItRange = resources.equal_range(idx);

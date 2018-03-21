@@ -44,7 +44,7 @@ bool DateTimeItem::isValid() const
   {
     return true;
   }
-  for (auto it = this->m_isSet.begin(); it != this->m_isSet.end(); ++it)
+  for (auto it = m_isSet.begin(); it != m_isSet.end(); ++it)
   {
     if (!(*it))
     {
@@ -64,13 +64,13 @@ bool DateTimeItem::setNumberOfValues(std::size_t newSize)
   ConstDateTimeItemDefinitionPtr def = this->itemDefinition();
   if (def->hasDefault())
   {
-    this->m_values.resize(newSize, def->defaultValue());
-    this->m_isSet.resize(newSize, true);
+    m_values.resize(newSize, def->defaultValue());
+    m_isSet.resize(newSize, true);
   }
   else
   {
-    this->m_values.resize(newSize);
-    this->m_isSet.resize(newSize, false);
+    m_values.resize(newSize);
+    m_isSet.resize(newSize, false);
   }
   return true;
 }
@@ -90,10 +90,10 @@ bool DateTimeItem::setValue(size_t element, const ::smtk::common::DateTimeZonePa
   ConstDateTimeItemDefinitionPtr def = this->itemDefinition();
   if (def->isValueValid(value))
   {
-    assert(this->m_values.size() > element);
-    this->m_values[element] = value;
-    assert(this->m_isSet.size() > element);
-    this->m_isSet[element] = true;
+    assert(m_values.size() > element);
+    m_values[element] = value;
+    assert(m_isSet.size() > element);
+    m_isSet[element] = true;
     return true;
   }
   return false;
@@ -101,20 +101,20 @@ bool DateTimeItem::setValue(size_t element, const ::smtk::common::DateTimeZonePa
 
 void DateTimeItem::reset()
 {
-  this->m_isSet.clear();
-  this->m_values.clear();
+  m_isSet.clear();
+  m_values.clear();
 
   ConstDateTimeItemDefinitionPtr dtDef = itemDefinition();
   std::size_t numValues = dtDef->numberOfRequiredValues();
   if (dtDef->hasDefault())
   {
-    this->m_isSet.resize(numValues, true);
-    this->m_values.resize(numValues, dtDef->defaultValue());
+    m_isSet.resize(numValues, true);
+    m_values.resize(numValues, dtDef->defaultValue());
   }
   else
   {
-    this->m_isSet.resize(numValues, false);
-    this->m_values.resize(numValues);
+    m_isSet.resize(numValues, false);
+    m_values.resize(numValues);
   }
 }
 
@@ -133,15 +133,15 @@ bool DateTimeItem::setToDefault(std::size_t element)
 
 bool DateTimeItem::isUsingDefault(std::size_t element) const
 {
-  assert(this->m_isSet.size() > element);
+  assert(m_isSet.size() > element);
   ConstDateTimeItemDefinitionPtr def = itemDefinition();
-  if (!def->hasDefault() || (!this->m_isSet[element]))
+  if (!def->hasDefault() || (!m_isSet[element]))
   {
     return false;
   }
 
   sc::DateTimeZonePair defaultVal = def->defaultValue();
-  return this->m_values[element] == defaultVal;
+  return m_values[element] == defaultVal;
 }
 
 bool DateTimeItem::isUsingDefault() const
@@ -156,7 +156,7 @@ bool DateTimeItem::isUsingDefault() const
   sc::DateTimeZonePair defaultVal = def->defaultValue();
   for (std::size_t i = 0; i < numValues; ++i)
   {
-    if (!this->m_isSet[i] || !(this->m_values[i] == defaultVal))
+    if (!m_isSet[i] || !(m_values[i] == defaultVal))
     {
       return false;
     }
@@ -204,15 +204,15 @@ bool DateTimeItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr def)
   {
     if (dtDef->hasDefault())
     {
-      this->m_isSet.resize(numValues, true);
-      this->m_values.resize(numValues, dtDef->defaultValue());
+      m_isSet.resize(numValues, true);
+      m_values.resize(numValues, dtDef->defaultValue());
     }
     else
     {
-      this->m_isSet.clear();
-      this->m_isSet.resize(numValues, false);
-      this->m_values.clear();
-      this->m_values.resize(numValues);
+      m_isSet.clear();
+      m_isSet.resize(numValues, false);
+      m_values.clear();
+      m_values.resize(numValues);
     }
   }
 

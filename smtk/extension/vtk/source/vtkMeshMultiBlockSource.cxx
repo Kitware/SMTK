@@ -78,7 +78,7 @@ void vtkMeshMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 
-  os << indent << "Model: " << this->m_modelMgr.get() << "\n";
+  os << indent << "Model: " << m_modelMgr.get() << "\n";
   os << indent << "CachedOutput: " << this->CachedOutput << "\n";
   os << indent << "ModelEntityID: " << this->ModelEntityID << "\n";
   os << indent << "MeshCollectionID: " << this->MeshCollectionID << "\n";
@@ -88,11 +88,11 @@ void vtkMeshMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
 /// Set the SMTK model to be displayed.
 void vtkMeshMultiBlockSource::SetModelManager(smtk::model::ManagerPtr model)
 {
-  if (this->m_modelMgr == model)
+  if (m_modelMgr == model)
   {
     return;
   }
-  this->m_modelMgr = model;
+  m_modelMgr = model;
   this->SetMeshManager(model ? model->meshes() : smtk::mesh::ManagerPtr());
   this->Modified();
 }
@@ -100,24 +100,24 @@ void vtkMeshMultiBlockSource::SetModelManager(smtk::model::ManagerPtr model)
 /// Get the SMTK model being displayed.
 smtk::model::ManagerPtr vtkMeshMultiBlockSource::GetModelManager()
 {
-  return this->m_modelMgr;
+  return m_modelMgr;
 }
 
 /// Set the SMTK mesh manager
 void vtkMeshMultiBlockSource::SetMeshManager(smtk::mesh::ManagerPtr meshmgr)
 {
-  if (this->m_meshMgr == meshmgr)
+  if (m_meshMgr == meshmgr)
   {
     return;
   }
-  this->m_meshMgr = meshmgr;
+  m_meshMgr = meshmgr;
   this->Modified();
 }
 
 /// Get the SMTK mesh manager.
 smtk::mesh::ManagerPtr vtkMeshMultiBlockSource::GetMeshManager()
 {
-  return this->m_meshMgr;
+  return m_meshMgr;
 }
 
 /// Get the map from model entity UUID to the block index in multiblock output
@@ -125,7 +125,7 @@ void vtkMeshMultiBlockSource::GetMeshSet2BlockIdMap(
   std::map<smtk::mesh::MeshSet, vtkIdType>& uuid2mid)
 {
   uuid2mid.clear();
-  uuid2mid.insert(this->m_Meshset2BlockIdMap.begin(), this->m_Meshset2BlockIdMap.end());
+  uuid2mid.insert(m_Meshset2BlockIdMap.begin(), m_Meshset2BlockIdMap.end());
 }
 
 /// Indicate that the model has changed and should have its VTK representation updated.
@@ -199,9 +199,9 @@ void vtkMeshMultiBlockSource::GenerateNormals(
     }
     if (reallyNeedNormals)
     {
-      this->m_normalGenerator->SetInputDataObject(pd);
-      this->m_normalGenerator->Update();
-      pd->ShallowCopy(this->m_normalGenerator->GetOutput());
+      m_normalGenerator->SetInputDataObject(pd);
+      m_normalGenerator->Update();
+      pd->ShallowCopy(m_normalGenerator->GetOutput());
     }
   }
 }
@@ -290,16 +290,16 @@ void vtkMeshMultiBlockSource::FindEntitiesWithMesh(const smtk::mesh::CollectionP
 void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSet* mbds)
 {
 
-  if (this->MeshCollectionID && this->MeshCollectionID[0] && this->m_meshMgr)
+  if (this->MeshCollectionID && this->MeshCollectionID[0] && m_meshMgr)
   {
     smtk::common::UUID mcuid(this->MeshCollectionID);
-    smtk::mesh::CollectionPtr meshcollect = this->m_meshMgr->collection(mcuid);
+    smtk::mesh::CollectionPtr meshcollect = m_meshMgr->collection(mcuid);
     Model modelEntity;
     bool modelRequiresNormals = false;
-    if (this->ModelEntityID && this->ModelEntityID[0] && this->m_modelMgr)
+    if (this->ModelEntityID && this->ModelEntityID[0] && m_modelMgr)
     {
       smtk::common::UUID uid(this->ModelEntityID);
-      smtk::model::EntityRef entity(this->m_modelMgr, uid);
+      smtk::model::EntityRef entity(m_modelMgr, uid);
       modelEntity = entity.isModel() ? entity.as<smtk::model::Model>() : entity.owningModel();
     }
 
@@ -337,7 +337,7 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSe
         if (!(cit->first.entity().isNull()))
         {
           internal_AddBlockInfo(meshcollect, cit->first, cit->second.second, cit->second.first, i,
-            poly.GetPointer(), this->m_Meshset2BlockIdMap);
+            poly.GetPointer(), m_Meshset2BlockIdMap);
         }
       }
 
@@ -376,7 +376,7 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSe
         if (validEnts && ents.size() > 0)
         {
           internal_AddBlockEntityInfo(
-            singleMesh, ents[0], i, poly.GetPointer(), this->m_Meshset2BlockIdMap);
+            singleMesh, ents[0], i, poly.GetPointer(), m_Meshset2BlockIdMap);
         }
       }
     }
@@ -391,7 +391,7 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSe
 int vtkMeshMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
   vtkInformationVector** vtkNotUsed(inInfo), vtkInformationVector* outInfo)
 {
-  this->m_Meshset2BlockIdMap.clear();
+  m_Meshset2BlockIdMap.clear();
   vtkMultiBlockDataSet* output = vtkMultiBlockDataSet::GetData(outInfo, 0);
   if (!output)
   {
@@ -399,7 +399,7 @@ int vtkMeshMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
     return 0;
   }
 
-  if (!this->m_meshMgr)
+  if (!m_meshMgr)
   {
     vtkErrorMacro("No input mesh manager");
     return 0;

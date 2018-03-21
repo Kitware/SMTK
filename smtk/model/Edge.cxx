@@ -50,11 +50,11 @@ smtk::model::EdgeUses Edge::edgeUses() const
   */
 EdgeUse Edge::findOrAddEdgeUse(Orientation orientation, int sense)
 {
-  smtk::model::Manager::Ptr mgr(this->m_manager.lock());
+  smtk::model::Manager::Ptr mgr(m_manager.lock());
   if (this->isValid())
   {
-    return EdgeUse(mgr,
-      mgr->findCreateOrReplaceCellUseOfSenseAndOrientation(this->m_entity, sense, orientation));
+    return EdgeUse(
+      mgr, mgr->findCreateOrReplaceCellUseOfSenseAndOrientation(m_entity, sense, orientation));
   }
   return EdgeUse();
 }
@@ -138,7 +138,7 @@ smtk::common::Vector3d Edge::coordinates() const
     {
     ManagerPtr mgr = this->manager();
     UUIDWithTessellation tessRec =
-      mgr->tessellations().find(this->m_entity);
+      mgr->tessellations().find(m_entity);
     if (tessRec != mgr->tessellations().end())
       {
       if (!tessRec->second.coords().empty())

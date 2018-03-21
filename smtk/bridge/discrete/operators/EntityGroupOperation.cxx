@@ -104,16 +104,16 @@ int EntityGroupOperation::createBoundaryGroup(vtkDiscreteModelWrapper* modelWrap
   if (entType == -1)
     return -1;
 
-  this->m_opBoundary->SetBuildEnityType(entType);
-  this->m_opBoundary->Build(modelWrapper);
-  int grpId = this->m_opBoundary->GetBuiltModelEntityGroupId();
+  m_opBoundary->SetBuildEnityType(entType);
+  m_opBoundary->Build(modelWrapper);
+  int grpId = m_opBoundary->GetBuiltModelEntityGroupId();
   return grpId;
 }
 
 int EntityGroupOperation::createDomainSet(vtkDiscreteModelWrapper* modelWrapper)
 {
-  this->m_opDomain->Build(modelWrapper);
-  int dsId = this->m_opDomain->GetBuiltMaterialId();
+  m_opDomain->Build(modelWrapper);
+  int dsId = m_opDomain->GetBuiltMaterialId();
   return dsId;
 }
 
@@ -196,15 +196,15 @@ EntityGroupOperation::Result EntityGroupOperation::operateInternal()
         continue;
       if (modEntity->GetType() == vtkModelMaterialType)
       {
-        this->m_opDomain->SetId(modEntity->GetUniquePersistentId());
-        this->m_opDomain->Destroy(modelWrapper);
-        ok = this->m_opDomain->GetDestroySucceeded() != 0;
+        m_opDomain->SetId(modEntity->GetUniquePersistentId());
+        m_opDomain->Destroy(modelWrapper);
+        ok = m_opDomain->GetDestroySucceeded() != 0;
       }
       else if (modEntity->GetType() == vtkDiscreteModelEntityGroupType)
       {
-        this->m_opBoundary->SetId(modEntity->GetUniquePersistentId());
-        this->m_opBoundary->Destroy(modelWrapper);
-        ok = this->m_opBoundary->GetDestroySucceeded() != 0;
+        m_opBoundary->SetId(modEntity->GetUniquePersistentId());
+        m_opBoundary->Destroy(modelWrapper);
+        ok = m_opBoundary->GetDestroySucceeded() != 0;
       }
       if (ok)
       {
@@ -324,15 +324,15 @@ bool EntityGroupOperation::modifyGroup(smtk::bridge::discrete::Resource::Ptr& re
     vtkDiscreteModelEntityGroup* grpBC = vtkDiscreteModelEntityGroup::SafeDownCast(grpEntity);
     if (grpDS)
     {
-      this->m_opDomain->ClearGeometricEntitiesToAdd();
-      this->m_opDomain->ClearGeometricEntitiesToRemove();
-      this->m_opDomain->SetId(grpEntity->GetUniquePersistentId());
+      m_opDomain->ClearGeometricEntitiesToAdd();
+      m_opDomain->ClearGeometricEntitiesToRemove();
+      m_opDomain->SetId(grpEntity->GetUniquePersistentId());
     }
     else if (grpBC)
     {
-      this->m_opBoundary->ClearEntitiesToAdd();
-      this->m_opBoundary->ClearEntitiesToRemove();
-      this->m_opBoundary->SetId(grpEntity->GetUniquePersistentId());
+      m_opBoundary->ClearEntitiesToAdd();
+      m_opBoundary->ClearEntitiesToRemove();
+      m_opBoundary->SetId(grpEntity->GetUniquePersistentId());
     }
     smtk::attribute::ModelEntityItemPtr entItem =
       this->parameters()->findModelEntity("cell to add");
@@ -344,9 +344,9 @@ bool EntityGroupOperation::modifyGroup(smtk::bridge::discrete::Resource::Ptr& re
         if (modEntity == nullptr)
           continue;
         if (grpDS)
-          this->m_opDomain->AddModelGeometricEntity(modEntity->GetUniquePersistentId());
+          m_opDomain->AddModelGeometricEntity(modEntity->GetUniquePersistentId());
         else if (grpBC)
-          this->m_opBoundary->AddModelEntity(modEntity->GetUniquePersistentId());
+          m_opBoundary->AddModelEntity(modEntity->GetUniquePersistentId());
       }
     }
 
@@ -359,16 +359,16 @@ bool EntityGroupOperation::modifyGroup(smtk::bridge::discrete::Resource::Ptr& re
         if (!modEntity)
           continue;
         if (grpDS)
-          this->m_opDomain->RemoveModelGeometricEntity(modEntity->GetUniquePersistentId());
+          m_opDomain->RemoveModelGeometricEntity(modEntity->GetUniquePersistentId());
         else if (grpBC)
-          this->m_opBoundary->RemoveModelEntity(modEntity->GetUniquePersistentId());
+          m_opBoundary->RemoveModelEntity(modEntity->GetUniquePersistentId());
       }
     }
 
     if (grpDS)
     {
-      this->m_opDomain->Operate(modelWrapper);
-      ok = this->m_opDomain->GetOperateSucceeded() != 0;
+      m_opDomain->Operate(modelWrapper);
+      ok = m_opDomain->GetOperateSucceeded() != 0;
 
       // if we are dealing with domain set, the entities can only belong
       // to one vtkModelMaterial, and the vtkMaterialOperation will remove
@@ -377,7 +377,7 @@ bool EntityGroupOperation::modifyGroup(smtk::bridge::discrete::Resource::Ptr& re
       // item in result.
       if (ok)
       {
-        vtkIdList* prevMaterials = this->m_opDomain->GetPreviousMaterialsOfGeometricEntities();
+        vtkIdList* prevMaterials = m_opDomain->GetPreviousMaterialsOfGeometricEntities();
         for (int i = 0; i < prevMaterials->GetNumberOfIds(); i++)
         {
           vtkModelEntity* matEntity =
@@ -409,8 +409,8 @@ bool EntityGroupOperation::modifyGroup(smtk::bridge::discrete::Resource::Ptr& re
     }
     else if (grpBC)
     {
-      this->m_opBoundary->Operate(modelWrapper);
-      ok = this->m_opBoundary->GetOperateSucceeded() != 0;
+      m_opBoundary->Operate(modelWrapper);
+      ok = m_opBoundary->GetOperateSucceeded() != 0;
     }
   }
 

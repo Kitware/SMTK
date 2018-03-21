@@ -70,7 +70,7 @@ public:
 
   bool isExtensible() const;
 
-  std::size_t numberOfGroups() const { return this->m_items.size(); }
+  std::size_t numberOfGroups() const { return m_items.size(); }
   bool setNumberOfGroups(std::size_t newSize);
   std::size_t numberOfItemsPerGroup() const;
   bool appendGroup();
@@ -87,9 +87,9 @@ public:
     */
   smtk::attribute::ItemPtr item(std::size_t element, std::size_t ith) const
   {
-    assert(this->m_items.size() > element);
-    assert(this->m_items[element].size() > ith);
-    return this->m_items[element][ith];
+    assert(m_items.size() > element);
+    assert(m_items[element].size() > ith);
+    return m_items[element][ith];
   }
 
   smtk::attribute::ItemPtr find(const std::string& inName) { return this->find(0, inName); }

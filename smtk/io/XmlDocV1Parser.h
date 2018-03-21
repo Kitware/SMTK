@@ -67,9 +67,9 @@ public:
 
   // This function has no implementation!
   static void convertStringToXML(std::string& str);
-  const smtk::io::Logger& messageLog() const { return this->m_logger; }
+  const smtk::io::Logger& messageLog() const { return m_logger; }
 
-  void setReportDuplicateDefinitionsAsErrors(bool mode) { this->m_reportAsError = mode; }
+  void setReportDuplicateDefinitionsAsErrors(bool mode) { m_reportAsError = mode; }
 
   static bool canParse(pugi::xml_document& doc);
   static bool canParse(pugi::xml_node& node);

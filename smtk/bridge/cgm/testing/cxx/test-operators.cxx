@@ -88,30 +88,30 @@ struct ProgOpts
   {
   }
 
-  void setSphereRadius(double x) { this->m_sphRadius = x; }
-  void setSphereCenter(const std::vector<double>& x) { this->m_sphCenter = x; }
-  void setSphereCenterX(double x) { this->m_sphCenter[0] = x; }
-  void setSphereCenterY(double y) { this->m_sphCenter[1] = y; }
-  void setSphereCenterZ(double z) { this->m_sphCenter[2] = z; }
-  void setSphereHollow(double x) { this->m_sphHollow = x; }
-  void setPrismHeight(double x) { this->m_priHeight = x; }
-  void setPrismNumber(int n) { this->m_priNumber = n; }
-  void setPrismMajor(double x) { this->m_priMajor = x; }
-  void setPrismMinor(double x) { this->m_priMinor = x; }
-  void setRelativeChordError(const std::string& x) { this->m_relErr = x; }
-  void setAngleError(const std::string& x) { this->m_angErr = x; }
-  void setPrintHelp() { this->m_printHelp = true; }
+  void setSphereRadius(double x) { m_sphRadius = x; }
+  void setSphereCenter(const std::vector<double>& x) { m_sphCenter = x; }
+  void setSphereCenterX(double x) { m_sphCenter[0] = x; }
+  void setSphereCenterY(double y) { m_sphCenter[1] = y; }
+  void setSphereCenterZ(double z) { m_sphCenter[2] = z; }
+  void setSphereHollow(double x) { m_sphHollow = x; }
+  void setPrismHeight(double x) { m_priHeight = x; }
+  void setPrismNumber(int n) { m_priNumber = n; }
+  void setPrismMajor(double x) { m_priMajor = x; }
+  void setPrismMinor(double x) { m_priMinor = x; }
+  void setRelativeChordError(const std::string& x) { m_relErr = x; }
+  void setAngleError(const std::string& x) { m_angErr = x; }
+  void setPrintHelp() { m_printHelp = true; }
 
-  double sphereRadius() { return this->m_sphRadius; }
-  std::vector<double> sphereCenter() { return this->m_sphCenter; }
-  double sphereHollow() { return this->m_sphHollow; }
-  double prismHeight() { return this->m_priHeight; }
-  int prismNumber() { return this->m_priNumber; }
-  double prismMajor() { return this->m_priMajor; }
-  double prismMinor() { return this->m_priMinor; }
-  std::string relativeChordError() { return this->m_relErr; }
-  std::string angleError() { return this->m_angErr; }
-  bool printHelp() { return this->m_printHelp; }
+  double sphereRadius() { return m_sphRadius; }
+  std::vector<double> sphereCenter() { return m_sphCenter; }
+  double sphereHollow() { return m_sphHollow; }
+  double prismHeight() { return m_priHeight; }
+  int prismNumber() { return m_priNumber; }
+  double prismMajor() { return m_priMajor; }
+  double prismMinor() { return m_priMinor; }
+  std::string relativeChordError() { return m_relErr; }
+  std::string angleError() { return m_angErr; }
+  bool printHelp() { return m_printHelp; }
 
   double m_sphRadius;
   std::vector<double> m_sphCenter;

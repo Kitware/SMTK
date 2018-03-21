@@ -22,22 +22,21 @@ EdgeFragment::EdgeFragment()
 {
   for (int i = 0; i < 2; ++i)
   {
-    this->m_regionId[i] = -1;
-    this->m_marked[i] = 0;
-    this->m_next[i] = -1;
-    this->m_nsns[i] = true;
+    m_regionId[i] = -1;
+    m_marked[i] = 0;
+    m_next[i] = -1;
+    m_nsns[i] = true;
   }
 }
 
 void EdgeFragment::dump(RegionIdSet& ufind) const
 {
   std::cout << "  " << this->lo().x() << " " << this->lo().y() << "    " << this->hi().x() << " "
-            << this->hi().y() << "  " << this->m_edge.name() << ", seg " << this->m_segment
-            << " regIds " << (ufind.find(this->m_regionId[0]) / 2)
-            << (ufind.find(this->m_regionId[0]) % 2 == 0 ? "L" : "U") << " "
-            << (ufind.find(this->m_regionId[1]) / 2)
-            << (ufind.find(this->m_regionId[1]) % 2 == 0 ? "L" : "U") << " next " << this->m_next[0]
-            << " " << this->m_next[1] << "\n";
+            << this->hi().y() << "  " << m_edge.name() << ", seg " << m_segment << " regIds "
+            << (ufind.find(m_regionId[0]) / 2) << (ufind.find(m_regionId[0]) % 2 == 0 ? "L" : "U")
+            << " " << (ufind.find(m_regionId[1]) / 2)
+            << (ufind.find(m_regionId[1]) % 2 == 0 ? "L" : "U") << " next " << m_next[0] << " "
+            << m_next[1] << "\n";
 }
 
 EdgeFragmentComparator::EdgeFragmentComparator(FragmentArray& frag, SweeplinePosition& startPoint)
@@ -124,13 +123,13 @@ bool EdgeFragmentComparator::operator()(FragmentId a, FragmentId b) const
     // is not, so a > b.
     internal::HighPrecisionCoord dxBs =
       static_cast<smtk::bridge::polygon::internal::HighPrecisionCoord>(
-        this->m_sweepPoint->position().x() - lineB.lo().x());
+        m_sweepPoint->position().x() - lineB.lo().x());
     // FIXME: Be more careful about precision here:
     internal::HighPrecisionCoord ybs =
       static_cast<smtk::bridge::polygon::internal::HighPrecisionCoord>(
         lineB.lo().y() + (dxBs / dxB) * (lineB.hi().y() - lineB.lo().y()));
-    //std::cout << ": " << ybs << " > " << this->m_sweepPoint->position().y() << "  3\n";
-    return ybs > this->m_sweepPoint->position().y();
+    //std::cout << ": " << ybs << " > " << m_sweepPoint->position().y() << "  3\n";
+    return ybs > m_sweepPoint->position().y();
   }
 
   // A is not vertical but B may be.
@@ -142,26 +141,26 @@ bool EdgeFragmentComparator::operator()(FragmentId a, FragmentId b) const
     //
     internal::HighPrecisionCoord dxAs =
       static_cast<smtk::bridge::polygon::internal::HighPrecisionCoord>(
-        this->m_sweepPoint->position().x() - lineA.lo().x());
+        m_sweepPoint->position().x() - lineA.lo().x());
     // FIXME: Be more careful about precision here:
     internal::HighPrecisionCoord yas =
       static_cast<smtk::bridge::polygon::internal::HighPrecisionCoord>(
         lineA.lo().y() + (dxAs / dxA) * (lineA.hi().y() - lineA.lo().y()));
-    //std::cout << ": " << yas << " <= " << this->m_sweepPoint->position().y() << "  4\n";
-    return yas <= this->m_sweepPoint->position().y();
+    //std::cout << ": " << yas << " <= " << m_sweepPoint->position().y() << "  4\n";
+    return yas <= m_sweepPoint->position().y();
   }
 
   // Neither a nor b are vertical.
   // See how they behave at or just up/right of the sweep point.
   internal::HighPrecisionCoord dxAs =
     static_cast<smtk::bridge::polygon::internal::HighPrecisionCoord>(
-      this->m_sweepPoint->position().x() - lineA.lo().x());
+      m_sweepPoint->position().x() - lineA.lo().x());
   internal::HighPrecisionCoord yas =
     static_cast<smtk::bridge::polygon::internal::HighPrecisionCoord>(
       lineA.lo().y() + (dxAs / dxA) * (lineA.hi().y() - lineA.lo().y()));
   internal::HighPrecisionCoord dxBs =
     static_cast<smtk::bridge::polygon::internal::HighPrecisionCoord>(
-      this->m_sweepPoint->position().x() - lineB.lo().x());
+      m_sweepPoint->position().x() - lineB.lo().x());
   internal::HighPrecisionCoord ybs =
     static_cast<smtk::bridge::polygon::internal::HighPrecisionCoord>(
       lineB.lo().y() + (dxBs / dxB) * (lineB.hi().y() - lineB.lo().y()));
@@ -171,7 +170,7 @@ bool EdgeFragmentComparator::operator()(FragmentId a, FragmentId b) const
     return yas < ybs;
   }
 
-  internal::HighPrecisionCoord slopeDiff = this->m_sweepPoint->position().x() > lineA.lo().x()
+  internal::HighPrecisionCoord slopeDiff = m_sweepPoint->position().x() > lineA.lo().x()
     ? dxB * (lineA.hi().y() - lineA.lo().y()) - dxA * (lineB.hi().y() - lineB.lo().y())
     : dxA * (lineB.hi().y() - lineB.lo().y()) - dxB * (lineA.hi().y() - lineA.lo().y());
 
@@ -192,10 +191,9 @@ SweeplinePosition::SweeplinePosition(const SweeplinePosition& other)
 /// Advance the sweepline to another position, ignoring invalid points to the left of the current position.
 void SweeplinePosition::advance(const internal::Point& pt)
 {
-  if (pt.x() > this->m_position.x() ||
-    (pt.x() == this->m_position.x() && pt.y() > this->m_position.y()))
+  if (pt.x() > m_position.x() || (pt.x() == m_position.x() && pt.y() > m_position.y()))
   {
-    this->m_position = pt;
+    m_position = pt;
   }
   /*
   else

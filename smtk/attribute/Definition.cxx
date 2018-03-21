@@ -29,26 +29,26 @@ double Definition::s_defaultBaseColor[4] = { 1.0, 1.0, 1.0, 1.0 };
 Definition::Definition(
   const std::string& myType, smtk::attribute::DefinitionPtr myBaseDef, CollectionPtr myCollection)
 {
-  this->m_collection = myCollection;
-  this->m_baseDefinition = myBaseDef;
-  this->m_type = myType;
-  this->m_label = this->m_type;
-  this->m_version = 0;
-  this->m_isAbstract = false;
-  this->m_isNodal = false;
-  this->m_advanceLevel = 0;
-  this->m_isUnique = true;
-  this->m_isRequired = false;
-  this->m_isNotApplicableColorSet = false;
-  this->m_isDefaultColorSet = false;
-  this->m_rootName = this->m_type;
+  m_collection = myCollection;
+  m_baseDefinition = myBaseDef;
+  m_type = myType;
+  m_label = m_type;
+  m_version = 0;
+  m_isAbstract = false;
+  m_isNodal = false;
+  m_advanceLevel = 0;
+  m_isUnique = true;
+  m_isRequired = false;
+  m_isNotApplicableColorSet = false;
+  m_isDefaultColorSet = false;
+  m_rootName = m_type;
   if (myBaseDef)
   {
-    this->m_baseItemOffset = myBaseDef->numberOfItemDefinitions();
+    m_baseItemOffset = myBaseDef->numberOfItemDefinitions();
   }
   else
   {
-    this->m_baseItemOffset = 0;
+    m_baseItemOffset = 0;
   }
 }
 
@@ -60,8 +60,8 @@ const Tag* Definition::tag(const std::string& name) const
 {
   const Tag* tag = nullptr;
 
-  auto t = this->m_tags.find(Tag(name));
-  if (t != this->m_tags.end())
+  auto t = m_tags.find(Tag(name));
+  if (t != m_tags.end())
   {
     tag = &(*t);
   }
@@ -73,8 +73,8 @@ Tag* Definition::tag(const std::string& name)
 {
   const Tag* tag = nullptr;
 
-  auto t = this->m_tags.find(Tag(name));
-  if (t != this->m_tags.end())
+  auto t = m_tags.find(Tag(name));
+  if (t != m_tags.end())
   {
     tag = &(*t);
   }
@@ -90,10 +90,10 @@ Tag* Definition::tag(const std::string& name)
 
 bool Definition::addTag(const Tag& tag)
 {
-  auto t = this->m_tags.find(tag);
-  if (t == this->m_tags.end())
+  auto t = m_tags.find(tag);
+  if (t == m_tags.end())
   {
-    this->m_tags.insert(tag);
+    m_tags.insert(tag);
     return true;
   }
   return false;
@@ -101,10 +101,10 @@ bool Definition::addTag(const Tag& tag)
 
 bool Definition::removeTag(const std::string& name)
 {
-  auto t = this->m_tags.find(Tag(name));
-  if (t != this->m_tags.end())
+  auto t = m_tags.find(Tag(name));
+  if (t != m_tags.end())
   {
-    this->m_tags.erase(t);
+    m_tags.erase(t);
     return true;
   }
   return false;
@@ -171,11 +171,11 @@ bool Definition::conflicts(smtk::attribute::DefinitionPtr def) const
   */
 ConstModelEntityItemDefinitionPtr Definition::associationRule() const
 {
-  if (!this->m_associationRule)
+  if (!m_associationRule)
   {
-    if (this->m_baseDefinition)
+    if (m_baseDefinition)
     {
-      return this->m_baseDefinition->associationRule();
+      return m_baseDefinition->associationRule();
     }
     std::ostringstream assocName;
     assocName << this->type() << "Associations";
@@ -186,7 +186,7 @@ ConstModelEntityItemDefinitionPtr Definition::associationRule() const
     self->m_associationRule = ModelEntityItemDefinition::New(assocName.str());
     self->m_associationRule->setMembershipMask(0); // nothing allowed by default.
   }
-  return this->m_associationRule;
+  return m_associationRule;
 }
 
 /**\brief Create the definition's local association rule that governs attribute associations.
@@ -196,14 +196,14 @@ ConstModelEntityItemDefinitionPtr Definition::associationRule() const
   */
 ModelEntityItemDefinitionPtr Definition::createLocalAssociationRule()
 {
-  if (!this->m_associationRule)
+  if (!m_associationRule)
   {
     std::ostringstream assocName;
     assocName << this->type() << "Associations";
-    this->m_associationRule = ModelEntityItemDefinition::New(assocName.str());
-    this->m_associationRule->setMembershipMask(0); // nothing allowed by default.
+    m_associationRule = ModelEntityItemDefinition::New(assocName.str());
+    m_associationRule->setMembershipMask(0); // nothing allowed by default.
   }
-  return this->m_associationRule;
+  return m_associationRule;
 }
 
 /**\brief Return the definition's local association rule that governs attribute associations.
@@ -215,7 +215,7 @@ ModelEntityItemDefinitionPtr Definition::createLocalAssociationRule()
   */
 ModelEntityItemDefinitionPtr Definition::localAssociationRule() const
 {
-  return this->m_associationRule;
+  return m_associationRule;
 }
 
 /**\brief Set the rule that decides which model entities may be associated with instances of this definition.
@@ -224,7 +224,7 @@ ModelEntityItemDefinitionPtr Definition::localAssociationRule() const
   */
 void Definition::setLocalAssociationRule(ModelEntityItemDefinitionPtr rule)
 {
-  this->m_associationRule = rule;
+  m_associationRule = rule;
 }
 
 /**\brief Return the mask specifying which types of model entities this attribute can be associated with.
@@ -244,11 +244,11 @@ smtk::model::BitFlags Definition::associationMask() const
   */
 void Definition::setLocalAssociationMask(smtk::model::BitFlags mask)
 {
-  if (!this->m_associationRule)
+  if (!m_associationRule)
   {
     this->createLocalAssociationRule();
   }
-  this->m_associationRule->setMembershipMask(mask);
+  m_associationRule->setMembershipMask(mask);
 }
 
 /**\brief Reoved the local assocaition rule on the definition.
@@ -257,7 +257,7 @@ void Definition::setLocalAssociationMask(smtk::model::BitFlags mask)
   */
 void Definition::clearLocalAssociationRule()
 {
-  this->m_associationRule = nullptr;
+  m_associationRule = nullptr;
 }
 
 /// Returns whether this attribute can be associated with vertices.
@@ -335,7 +335,7 @@ bool Definition::canBeAssociated(
 void Definition::buildAttribute(Attribute* att) const
 {
   // If there is a super definition have it prep the attribute and add its items
-  const Definition* bdef = this->m_baseDefinition.get();
+  const Definition* bdef = m_baseDefinition.get();
   if (bdef)
   {
     bdef->buildAttribute(att);
@@ -359,12 +359,12 @@ void Definition::buildAttribute(Attribute* att) const
   // Next - for each item definition we have build and add the appropriate
   // item to the attribute
   smtk::attribute::ItemPtr comp;
-  std::size_t i, j, n = this->m_itemDefs.size();
+  std::size_t i, j, n = m_itemDefs.size();
   j = att->numberOfItems();
   for (i = 0; i < n; i++, j++)
   {
-    comp = this->m_itemDefs[i]->buildItem(att, static_cast<int>(j));
-    comp->setDefinition(this->m_itemDefs[i]);
+    comp = m_itemDefs[i]->buildItem(att, static_cast<int>(j));
+    comp->setDefinition(m_itemDefs[i]);
     att->addItem(comp);
   }
 }
@@ -387,9 +387,9 @@ bool Definition::addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
   {
     return false;
   }
-  std::size_t n = this->m_itemDefs.size();
-  this->m_itemDefs.push_back(cdef);
-  this->m_itemDefPositions[cdef->name()] = static_cast<int>(n);
+  std::size_t n = m_itemDefs.size();
+  m_itemDefs.push_back(cdef);
+  m_itemDefPositions[cdef->name()] = static_cast<int>(n);
   this->updateDerivedDefinitions();
   return true;
 }
@@ -409,34 +409,34 @@ void Definition::updateDerivedDefinitions()
 
 void Definition::setCategories()
 {
-  if (this->m_baseDefinition)
+  if (m_baseDefinition)
   {
-    this->m_categories = this->m_baseDefinition->m_categories;
+    m_categories = m_baseDefinition->m_categories;
   }
   else
   {
-    this->m_categories.clear();
+    m_categories.clear();
   }
-  std::size_t i, n = this->m_itemDefs.size();
+  std::size_t i, n = m_itemDefs.size();
   for (i = 0; i < n; i++)
   {
-    this->m_itemDefs[i]->updateCategories();
-    const std::set<std::string>& itemCats = this->m_itemDefs[i]->categories();
-    this->m_categories.insert(itemCats.begin(), itemCats.end());
+    m_itemDefs[i]->updateCategories();
+    const std::set<std::string>& itemCats = m_itemDefs[i]->categories();
+    m_categories.insert(itemCats.begin(), itemCats.end());
   }
 }
 
 smtk::attribute::ItemDefinitionPtr Definition::itemDefinition(int ith) const
 {
   // Is the item in this defintion?
-  if (ith >= static_cast<int>(this->m_baseItemOffset))
+  if (ith >= static_cast<int>(m_baseItemOffset))
   {
-    assert(this->m_itemDefs.size() > static_cast<std::size_t>(ith - this->m_baseItemOffset));
-    return this->m_itemDefs[static_cast<std::size_t>(ith - this->m_baseItemOffset)];
+    assert(m_itemDefs.size() > static_cast<std::size_t>(ith - m_baseItemOffset));
+    return m_itemDefs[static_cast<std::size_t>(ith - m_baseItemOffset)];
   }
-  else if (this->m_baseDefinition)
+  else if (m_baseDefinition)
   {
-    return this->m_baseDefinition->itemDefinition(ith);
+    return m_baseDefinition->itemDefinition(ith);
   }
   return smtk::attribute::ItemDefinitionPtr();
 }
@@ -444,20 +444,20 @@ smtk::attribute::ItemDefinitionPtr Definition::itemDefinition(int ith) const
 int Definition::findItemPosition(const std::string& name) const
 {
   std::map<std::string, int>::const_iterator it;
-  it = this->m_itemDefPositions.find(name);
-  if (it == this->m_itemDefPositions.end())
+  it = m_itemDefPositions.find(name);
+  if (it == m_itemDefPositions.end())
   {
     // Check the base definition if there is one
-    if (this->m_baseDefinition)
+    if (m_baseDefinition)
     {
-      return this->m_baseDefinition->findItemPosition(name);
+      return m_baseDefinition->findItemPosition(name);
     }
     else
     {
       return -1; // named item doesn't exist
     }
   }
-  return it->second + static_cast<int>(this->m_baseItemOffset);
+  return it->second + static_cast<int>(m_baseItemOffset);
 }
 
 bool Definition::removeItemDefinition(ItemDefinitionPtr itemDef)
@@ -468,12 +468,12 @@ bool Definition::removeItemDefinition(ItemDefinitionPtr itemDef)
     return false;
   }
 
-  auto itItemDef = std::find(this->m_itemDefs.begin(), this->m_itemDefs.end(), itemDef);
-  if (itItemDef != this->m_itemDefs.end())
+  auto itItemDef = std::find(m_itemDefs.begin(), m_itemDefs.end(), itemDef);
+  if (itItemDef != m_itemDefs.end())
   {
-    this->m_itemDefs.erase(itItemDef);
+    m_itemDefs.erase(itItemDef);
   }
-  this->m_itemDefPositions.erase(itemDef->name());
+  m_itemDefPositions.erase(itemDef->name());
   this->updateDerivedDefinitions();
   return true;
 }

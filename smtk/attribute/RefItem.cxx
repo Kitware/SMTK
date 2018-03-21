@@ -42,7 +42,7 @@ bool RefItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
   std::size_t n = def->numberOfRequiredValues();
   if (n != 0)
   {
-    this->m_values.resize(n);
+    m_values.resize(n);
   }
   return true;
 }
@@ -54,11 +54,11 @@ RefItem::~RefItem()
 
 void RefItem::clearAllReferences()
 {
-  std::size_t i, n = this->m_values.size();
+  std::size_t i, n = m_values.size();
   Attribute* att;
   for (i = 0; i < n; i++)
   {
-    att = this->m_values[i].lock().get();
+    att = m_values[i].lock().get();
     if (att)
     {
       att->removeReference(this);
@@ -79,7 +79,7 @@ bool RefItem::isValid() const
   {
     return true;
   }
-  for (auto it = this->m_values.begin(); it != this->m_values.end(); ++it)
+  for (auto it = m_values.begin(); it != m_values.end(); ++it)
   {
     // Is the attribute this is referencing valid?
     auto att = (*it).lock();
@@ -94,7 +94,7 @@ bool RefItem::isValid() const
 
 std::size_t RefItem::numberOfRequiredValues() const
 {
-  const RefItemDefinition* def = static_cast<const RefItemDefinition*>(this->m_definition.get());
+  const RefItemDefinition* def = static_cast<const RefItemDefinition*>(m_definition.get());
   if (def == NULL)
   {
     return 0;
@@ -104,7 +104,7 @@ std::size_t RefItem::numberOfRequiredValues() const
 
 void RefItem::visitChildren(std::function<void(ItemPtr, bool)> visitor, bool activeChildren)
 {
-  for (auto item : this->m_values)
+  for (auto item : m_values)
   {
     Attribute* attPtr = item.lock().get();
     if (attPtr)
@@ -122,13 +122,13 @@ bool RefItem::setValue(std::size_t element, smtk::attribute::AttributePtr att)
   const RefItemDefinition* def = static_cast<const RefItemDefinition*>(this->definition().get());
   if (def->isValueValid(att))
   {
-    assert(this->m_values.size() > element);
-    Attribute* attPtr = this->m_values[element].lock().get();
+    assert(m_values.size() > element);
+    Attribute* attPtr = m_values[element].lock().get();
     if (attPtr != NULL)
     {
       attPtr->removeReference(this, element);
     }
-    this->m_values[element] = att;
+    m_values[element] = att;
     att->addReference(this, element);
     return true;
   }
@@ -139,14 +139,14 @@ std::string RefItem::valueAsString(std::size_t element, const std::string& forma
 {
   // For the initial design we will use sprintf and force a limit of 300 char
   char dummy[300];
-  assert(this->m_values.size() > element);
+  assert(m_values.size() > element);
   if (format != "")
   {
-    sprintf(dummy, format.c_str(), this->m_values[element].lock()->name().c_str());
+    sprintf(dummy, format.c_str(), m_values[element].lock()->name().c_str());
   }
   else
   {
-    sprintf(dummy, "%s", this->m_values[element].lock()->name().c_str());
+    sprintf(dummy, "%s", m_values[element].lock()->name().c_str());
   }
   return dummy;
 }
@@ -156,7 +156,7 @@ std::string RefItem::valueAsString(std::size_t element, const std::string& forma
   */
 RefItem::const_iterator RefItem::begin() const
 {
-  return this->m_values.begin();
+  return m_values.begin();
 }
 
 /**\brief Return an iterator just past the last attribute-reference value in this item.
@@ -164,7 +164,7 @@ RefItem::const_iterator RefItem::begin() const
   */
 RefItem::const_iterator RefItem::end() const
 {
-  return this->m_values.end();
+  return m_values.end();
 }
 
 bool RefItem::appendValue(smtk::attribute::AttributePtr val)
@@ -178,8 +178,8 @@ bool RefItem::appendValue(smtk::attribute::AttributePtr val)
 
   if (def->isValueValid(val))
   {
-    this->m_values.push_back(val);
-    val->addReference(this, this->m_values.size() - 1);
+    m_values.push_back(val);
+    val->addReference(this, m_values.size() - 1);
     return true;
   }
   return false;
@@ -194,13 +194,13 @@ bool RefItem::removeValue(std::size_t element)
     return false; // The number of values is fixed
   }
   // Tell the attribute we are no longer referencing it (if needed)
-  assert(this->m_values.size() > element);
-  Attribute* att = this->m_values[element].lock().get();
+  assert(m_values.size() > element);
+  Attribute* att = m_values[element].lock().get();
   if (att != NULL)
   {
     att->removeReference(this, element);
   }
-  this->m_values.erase(this->m_values.begin() + element);
+  m_values.erase(m_values.begin() + element);
   return true;
 }
 
@@ -223,29 +223,29 @@ bool RefItem::setNumberOfValues(std::size_t newSize)
   {
     std::size_t i;
     Attribute* att;
-    assert(this->m_values.size() >= n);
+    assert(m_values.size() >= n);
     for (i = newSize; i < n; i++)
     {
-      att = this->m_values[i].lock().get();
+      att = m_values[i].lock().get();
       if (att != NULL)
       {
         att->removeReference(this, i);
       }
     }
   }
-  this->m_values.resize(newSize);
+  m_values.resize(newSize);
   return true;
 }
 
 void RefItem::unset(std::size_t element)
 {
-  assert(this->m_values.size() > element);
-  Attribute* att = this->m_values[element].lock().get();
+  assert(m_values.size() > element);
+  Attribute* att = m_values[element].lock().get();
   if (att == NULL)
   {
     return;
   }
-  this->m_values[element].reset();
+  m_values[element].reset();
   // See if we need to tell the attribute we are no longer referencing it
   if (!att->isAboutToBeDeleted())
   {
@@ -261,7 +261,7 @@ void RefItem::reset()
   if (!n)
   {
     this->clearAllReferences();
-    this->m_values.clear();
+    m_values.clear();
     return;
   }
   for (i = 0; i < n; i++)

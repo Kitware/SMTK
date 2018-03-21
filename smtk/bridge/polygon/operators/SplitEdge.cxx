@@ -65,13 +65,12 @@ SplitEdge::Result SplitEdge::operateInternal()
     pointIdItem->value(0) < static_cast<int>(storage->pointsSize()))
   {
     ok = mod->splitModelEdgeAtIndex(
-      resource, edgeToSplit.entity(), pointIdItem->value(0), created, this->m_debugLevel);
+      resource, edgeToSplit.entity(), pointIdItem->value(0), created, m_debugLevel);
   }
   else
   {
     point = std::vector<double>(pointItem->begin(), pointItem->end());
-    ok = mod->splitModelEdgeAtPoint(
-      resource, edgeToSplit.entity(), point, created, this->m_debugLevel);
+    ok = mod->splitModelEdgeAtPoint(resource, edgeToSplit.entity(), point, created, m_debugLevel);
   }
   Result opResult;
   if (ok)

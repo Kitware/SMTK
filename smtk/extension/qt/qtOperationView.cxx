@@ -131,12 +131,12 @@ void qtOperationView::createWidget()
   //bbox->addButton(this->Internals->m_applyButton, QDialogButtonBox::AcceptRole);
   layout->addWidget(this->Internals->m_infoButton);
   //layout->addWidget( bbox);
-  this->Internals->m_applyButton->setEnabled((!this->m_applied) && iview->isValid());
+  this->Internals->m_applyButton->setEnabled((!m_applied) && iview->isValid());
 }
 
 void qtOperationView::onModifiedParameters()
 {
-  this->m_applied = false;
+  m_applied = false;
   if (this->Internals->m_applyButton)
   {
     this->Internals->m_applyButton->setEnabled(this->Internals->m_instancedView->isValid());
@@ -156,18 +156,18 @@ void qtOperationView::requestModelEntityAssociation()
 
 void qtOperationView::setInfoToBeDisplayed()
 {
-  this->m_infoDialog->displayInfo(this->Internals->m_operator->parameters());
+  m_infoDialog->displayInfo(this->Internals->m_operator->parameters());
 }
 
 void qtOperationView::onOperate()
 {
-  if ((!this->m_applied) && this->Internals->m_instancedView->isValid())
+  if ((!m_applied) && this->Internals->m_instancedView->isValid())
   {
     emit this->operationRequested(this->Internals->m_operator);
     if (this->Internals->m_applyButton)
     { // The button may disappear when a session is closed by an operator.
       this->Internals->m_applyButton->setEnabled(false);
     }
-    this->m_applied = true;
+    m_applied = true;
   }
 }

@@ -59,37 +59,37 @@ public:
   };
 
   virtual ~ItemDefinition();
-  const std::string& name() const { return this->m_name; }
+  const std::string& name() const { return m_name; }
 
   virtual Item::Type type() const = 0;
   // The label is what can be displayed in an application.  Unlike the type
   // which is constant w/r to the definition, an application can change the label
-  const std::string& label() const { return (this->m_label != "" ? this->m_label : this->m_name); }
+  const std::string& label() const { return (m_label != "" ? m_label : m_name); }
 
-  void setLabel(const std::string& newLabel) { this->m_label = newLabel; }
+  void setLabel(const std::string& newLabel) { m_label = newLabel; }
 
-  int version() const { return this->m_version; }
-  void setVersion(int myVersion) { this->m_version = myVersion; }
+  int version() const { return m_version; }
+  void setVersion(int myVersion) { m_version = myVersion; }
 
-  bool isOptional() const { return this->m_isOptional; }
+  bool isOptional() const { return m_isOptional; }
 
-  void setIsOptional(bool isOptionalValue) { this->m_isOptional = isOptionalValue; }
+  void setIsOptional(bool isOptionalValue) { m_isOptional = isOptionalValue; }
 
   // This only comes into play if the item is optional
-  bool isEnabledByDefault() const { return this->m_isEnabledByDefault; }
+  bool isEnabledByDefault() const { return m_isEnabledByDefault; }
 
   void setIsEnabledByDefault(bool isEnabledByDefaultValue)
   {
-    this->m_isEnabledByDefault = isEnabledByDefaultValue;
+    m_isEnabledByDefault = isEnabledByDefaultValue;
   }
 
-  std::size_t numberOfCategories() const { return this->m_categories.size(); }
+  std::size_t numberOfCategories() const { return m_categories.size(); }
 
-  const std::set<std::string>& categories() const { return this->m_categories; }
+  const std::set<std::string>& categories() const { return m_categories; }
 
   bool isMemberOf(const std::string& category) const
   {
-    return (this->m_categories.find(category) != this->m_categories.end());
+    return (m_categories.find(category) != m_categories.end());
   }
 
   bool isMemberOf(const std::vector<std::string>& categories) const;
@@ -103,17 +103,17 @@ public:
   //else the read access level is returned
   int advanceLevel(int mode = 0) const
   {
-    return (mode == 1 ? this->m_advanceLevel[1] : this->m_advanceLevel[0]);
+    return (mode == 1 ? m_advanceLevel[1] : m_advanceLevel[0]);
   }
   void setAdvanceLevel(int mode, int level);
   // Convinence Method that sets both read and write to the same value
   void setAdvanceLevel(int level);
 
-  const std::string& detailedDescription() const { return this->m_detailedDescription; }
-  void setDetailedDescription(const std::string& text) { this->m_detailedDescription = text; }
+  const std::string& detailedDescription() const { return m_detailedDescription; }
+  void setDetailedDescription(const std::string& text) { m_detailedDescription = text; }
 
-  const std::string& briefDescription() const { return this->m_briefDescription; }
-  void setBriefDescription(const std::string& text) { this->m_briefDescription = text; }
+  const std::string& briefDescription() const { return m_briefDescription; }
+  void setBriefDescription(const std::string& text) { m_briefDescription = text; }
 
   virtual smtk::attribute::ItemPtr buildItem(
     Attribute* owningAttribute, int itemPosition) const = 0;

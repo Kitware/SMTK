@@ -43,7 +43,7 @@ std::vector<int> PythonExportGridInfo2D::analysisGridCells(
     return cellIds;
   }
 
-  if (gridRep->GetGroupFacetIds(this->m_model, modelEntityId, cellIds) == false)
+  if (gridRep->GetGroupFacetIds(m_model, modelEntityId, cellIds) == false)
   {
     status.returnType = GridInfo::NOT_AVAILABLE;
     status.errorMessage = "Could not get group facet ids";
@@ -143,8 +143,7 @@ std::vector<std::pair<int, int> > PythonExportGridInfo2D::asBoundaryItems(
 
   vtkIdList* cellIds = vtkIdList::New();
   vtkIdList* cellSides = vtkIdList::New();
-  if (gridRep->GetBoundaryGroupAnalysisFacets(this->m_model, modelEntityId, cellIds, cellSides) ==
-    false)
+  if (gridRep->GetBoundaryGroupAnalysisFacets(m_model, modelEntityId, cellIds, cellSides) == false)
   {
     status.returnType = GridInfo::NOT_AVAILABLE;
     status.errorMessage = "Could not get group facets";

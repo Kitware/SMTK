@@ -64,11 +64,11 @@ public:
     }
     else
     {
-      shell = this->m_collection->createMesh(existingShellCells);
+      shell = m_collection->createMesh(existingShellCells);
     }
 
     smtk::mesh::Domain domain(currentMaterialValue++);
-    this->m_collection->setDomainOnMeshes(shell, domain);
+    m_collection->setDomainOnMeshes(shell, domain);
   }
 };
 

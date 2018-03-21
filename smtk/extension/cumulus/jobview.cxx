@@ -67,7 +67,7 @@ void JobView::contextMenuEvent(QContextMenuEvent* e)
   menu->addAction(download);
 
   // Custom menu item
-  QAction* customAction = this->m_customActions.value(job.status(), nullptr);
+  QAction* customAction = m_customActions.value(job.status(), nullptr);
   if (customAction)
   {
     // Create menu action with same text as custom action, and connect trigger signals
@@ -81,7 +81,7 @@ void JobView::contextMenuEvent(QContextMenuEvent* e)
 
 void JobView::addContextMenuAction(const QString& status, QAction* action)
 {
-  this->m_customActions.insert(status, action);
+  m_customActions.insert(status, action);
 }
 
 void JobView::deleteJob()
@@ -102,7 +102,7 @@ void JobView::deleteJob()
 
   Job job = action->data().value<Job>();
 
-  this->m_cumulusProxy->deleteJob(job);
+  m_cumulusProxy->deleteJob(job);
 }
 
 void JobView::terminateJob()
@@ -113,7 +113,7 @@ void JobView::terminateJob()
 
   Job job = action->data().value<Job>();
 
-  this->m_cumulusProxy->terminateJob(job);
+  m_cumulusProxy->terminateJob(job);
 }
 
 void JobView::downloadJob()
@@ -127,12 +127,12 @@ void JobView::downloadJob()
   QString downloadDir = QFileDialog::getExistingDirectory(
     NULL, tr("Select download directory"), QString(), QFileDialog::ShowDirsOnly);
 
-  this->m_cumulusProxy->downloadJob(downloadDir, job);
+  m_cumulusProxy->downloadJob(downloadDir, job);
 }
 
 void JobView::setCumulusProxy(CumulusProxy* cumulusProxy)
 {
-  this->m_cumulusProxy = cumulusProxy;
+  m_cumulusProxy = cumulusProxy;
 }
 
 } // end namespace

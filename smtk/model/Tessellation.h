@@ -96,14 +96,14 @@ public:
   Tessellation();
 
   /// Direct access to the underlying point-coordinate storage
-  std::vector<double>& coords() { return this->m_coords; }
+  std::vector<double>& coords() { return m_coords; }
   /// Direct access to the underlying point-coordinate storage
-  std::vector<double> const& coords() const { return this->m_coords; }
+  std::vector<double> const& coords() const { return m_coords; }
 
   /// Direct access to the underlying connectivity storage
-  std::vector<int>& conn() { return this->m_conn; }
+  std::vector<int>& conn() { return m_conn; }
   /// Direct access to the underlying connectivity storage
-  std::vector<int> const& conn() const { return this->m_conn; }
+  std::vector<int> const& conn() const { return m_conn; }
 
   int addCoords(const double* a);
   Tessellation& addCoords(double x, double y, double z);

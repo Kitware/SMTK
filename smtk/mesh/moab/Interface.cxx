@@ -241,9 +241,9 @@ Interface::Interface()
   , m_bcAlloc()
   , m_modified(false)
 {
-  this->m_alloc.reset(new smtk::mesh::moab::Allocator(this->m_iface.get()));
-  this->m_bcAlloc.reset(new smtk::mesh::moab::BufferedCellAllocator(this->m_iface.get()));
-  this->m_iAlloc.reset(new smtk::mesh::moab::IncrementalAllocator(this->m_iface.get()));
+  m_alloc.reset(new smtk::mesh::moab::Allocator(m_iface.get()));
+  m_bcAlloc.reset(new smtk::mesh::moab::BufferedCellAllocator(m_iface.get()));
+  m_iAlloc.reset(new smtk::mesh::moab::IncrementalAllocator(m_iface.get()));
 }
 
 Interface::~Interface()
@@ -252,29 +252,29 @@ Interface::~Interface()
 
 bool Interface::isModified() const
 {
-  return this->m_modified;
+  return m_modified;
 }
 
 smtk::mesh::AllocatorPtr Interface::allocator()
 {
   //mark us as modified as the caller is going to add something to the database
-  this->m_modified = true;
-  return this->m_alloc;
+  m_modified = true;
+  return m_alloc;
 }
 
 smtk::mesh::BufferedCellAllocatorPtr Interface::bufferedCellAllocator()
 {
   //mark us as modified as the caller is going to add something to the database
-  this->m_modified = true;
-  return this->m_bcAlloc;
+  m_modified = true;
+  return m_bcAlloc;
 }
 
 smtk::mesh::IncrementalAllocatorPtr Interface::incrementalAllocator()
 {
   //mark us as modified as the caller is going to add something to the database
-  this->m_modified = true;
-  static_cast<smtk::mesh::moab::IncrementalAllocator*>(this->m_iAlloc.get())->initialize();
-  return this->m_iAlloc;
+  m_modified = true;
+  static_cast<smtk::mesh::moab::IncrementalAllocator*>(m_iAlloc.get())->initialize();
+  return m_iAlloc;
 }
 
 smtk::mesh::ConnectivityStoragePtr Interface::connectivityStorage(
@@ -282,14 +282,14 @@ smtk::mesh::ConnectivityStoragePtr Interface::connectivityStorage(
 {
   //make boost shared_ptr
   smtk::mesh::ConnectivityStoragePtr cs(
-    new smtk::mesh::moab::ConnectivityStorage(this->m_iface.get(), cells));
+    new smtk::mesh::moab::ConnectivityStorage(m_iface.get(), cells));
   return cs;
 }
 
 smtk::mesh::PointLocatorImplPtr Interface::pointLocator(const smtk::mesh::HandleRange& points)
 {
   return smtk::mesh::PointLocatorImplPtr(
-    new smtk::mesh::moab::PointLocatorImpl(this->m_iface.get(), points));
+    new smtk::mesh::moab::PointLocatorImpl(m_iface.get(), points));
 }
 
 smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
@@ -300,7 +300,7 @@ smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
     return smtk::mesh::PointLocatorImplPtr();
   }
   return smtk::mesh::PointLocatorImplPtr(
-    new smtk::mesh::moab::PointLocatorImpl(this->m_iface.get(), numPoints, coordinates));
+    new smtk::mesh::moab::PointLocatorImpl(m_iface.get(), numPoints, coordinates));
 }
 
 smtk::mesh::Handle Interface::getRoot() const
@@ -350,7 +350,7 @@ bool Interface::createMesh(const smtk::mesh::HandleRange& cells, smtk::mesh::Han
 
   if (rval == ::moab::MB_SUCCESS)
   {
-    this->m_modified = true;
+    m_modified = true;
     return true;
   }
   return false;
@@ -609,7 +609,7 @@ public:
     std::size_t index = xyz_index;
     for (std::vector<double>::const_iterator i = xyz.begin(); i != xyz.end(); ++i)
     {
-      this->m_xyz[index++] = static_cast<float>(*i);
+      m_xyz[index++] = static_cast<float>(*i);
     }
     this->xyz_index = index;
   }
@@ -663,7 +663,7 @@ public:
     std::size_t index = this->xyz_index;
     for (std::vector<double>::iterator i = xyz.begin(); i != xyz.end(); ++i)
     {
-      *i = static_cast<double>(this->m_xyz[index++]);
+      *i = static_cast<double>(m_xyz[index++]);
     }
     this->xyz_index = index;
   }
@@ -862,7 +862,7 @@ bool Interface::mergeCoincidentContactPoints(
   ::moab::ErrorCode rval = meshmerger.merge_entities(meshes, tolerance);
   if (rval == ::moab::MB_SUCCESS)
   {
-    this->m_modified = true;
+    m_modified = true;
     return true;
   }
   return false;
@@ -880,7 +880,7 @@ bool Interface::setDomain(
   bool tagged = detail::setDenseTagValues(mtag, meshsets, this->moabInterface());
   if (tagged)
   {
-    this->m_modified = true;
+    m_modified = true;
   }
   return tagged;
 }
@@ -902,7 +902,7 @@ bool Interface::setDirichlet(
   const bool tagged = cellsTagged && meshesTagged;
   if (tagged)
   {
-    this->m_modified = true;
+    m_modified = true;
   }
   return tagged;
 }
@@ -942,7 +942,7 @@ bool Interface::setNeumann(
 
   if (tagged)
   {
-    this->m_modified = true;
+    m_modified = true;
   }
   return tagged;
 }
@@ -962,7 +962,7 @@ bool Interface::setId(const smtk::mesh::Handle& meshset, const smtk::common::UUI
   bool tagged = detail::setDenseOpaqueTagValue(mtag, meshset, this->moabInterface());
   if (tagged)
   {
-    this->m_modified = true;
+    m_modified = true;
   }
   return tagged;
 }
@@ -1018,7 +1018,7 @@ bool Interface::setAssociation(
   bool tagged = detail::setDenseOpaqueTagValues(mtag, range, this->moabInterface());
   if (tagged)
   {
-    this->m_modified = true;
+    m_modified = true;
   }
   return tagged;
 }
@@ -1063,7 +1063,7 @@ bool Interface::setRootAssociation(const smtk::common::UUID& modelUUID) const
   bool tagged = detail::setDenseOpaqueTagValue(mtag, root, this->moabInterface());
   if (tagged)
   {
-    this->m_modified = true;
+    m_modified = true;
   }
   return tagged;
 }
@@ -1131,7 +1131,7 @@ bool Interface::createCellField(const smtk::mesh::HandleRange& meshsets, const s
 
     delete[] boolean_tag_values;
 
-    this->m_modified = true;
+    m_modified = true;
   }
   return tagged;
 }
@@ -1295,8 +1295,8 @@ bool Interface::setField(const smtk::mesh::HandleRange& cells,
 
   rval = m_iface->tag_set_data(moab_tag, cells, field);
 
-  this->m_modified = (rval == ::moab::MB_SUCCESS);
-  return this->m_modified;
+  m_modified = (rval == ::moab::MB_SUCCESS);
+  return m_modified;
 }
 
 std::set<smtk::mesh::CellFieldTag> Interface::computeCellFieldTags(
@@ -1426,7 +1426,7 @@ bool Interface::createPointField(const smtk::mesh::HandleRange& meshsets, const 
 
     delete[] boolean_tag_values;
 
-    this->m_modified = true;
+    m_modified = true;
   }
   return tagged;
 }
@@ -1590,8 +1590,8 @@ bool Interface::setField(const smtk::mesh::HandleRange& points,
 
   rval = m_iface->tag_set_data(moab_tag, points, field);
 
-  this->m_modified = (rval == ::moab::MB_SUCCESS);
-  return this->m_modified;
+  m_modified = (rval == ::moab::MB_SUCCESS);
+  return m_modified;
 }
 
 std::set<smtk::mesh::PointFieldTag> Interface::computePointFieldTags(
@@ -1952,14 +1952,14 @@ bool Interface::deleteHandles(const smtk::mesh::HandleRange& toDel)
   }
   if (isDeleted)
   {
-    this->m_modified = true;
+    m_modified = true;
   }
   return isDeleted;
 }
 
 ::moab::Interface* Interface::moabInterface() const
 {
-  return this->m_iface.get();
+  return m_iface.get();
 }
 }
 }

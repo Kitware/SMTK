@@ -33,7 +33,7 @@ bool FileItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 
   if (isSet && this->numberOfRequiredValues())
   {
-    this->m_recentValues.clear();
+    m_recentValues.clear();
   }
 
   return isSet;
@@ -50,7 +50,6 @@ Item::Type FileItem::type() const
 
 void FileItem::addRecentValue(const std::string& val)
 {
-  if (std::find(this->m_recentValues.begin(), this->m_recentValues.end(), val) ==
-    this->m_recentValues.end())
-    this->m_recentValues.push_back(val);
+  if (std::find(m_recentValues.begin(), m_recentValues.end(), val) == m_recentValues.end())
+    m_recentValues.push_back(val);
 }

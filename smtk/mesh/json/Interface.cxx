@@ -55,12 +55,12 @@ Interface::~Interface()
 
 bool Interface::isModified() const
 {
-  return this->m_modified;
+  return m_modified;
 }
 
 void Interface::addMeshes(const std::vector<smtk::mesh::json::MeshInfo>& info)
 {
-  this->m_meshInfo.insert(this->m_meshInfo.end(), info.begin(), info.end());
+  m_meshInfo.insert(m_meshInfo.end(), info.begin(), info.end());
 }
 
 smtk::mesh::AllocatorPtr Interface::allocator()
@@ -111,7 +111,7 @@ std::size_t Interface::numMeshes(smtk::mesh::Handle handle) const
   {
     return 0;
   }
-  return this->m_meshInfo.size();
+  return m_meshInfo.size();
 }
 
 smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle) const
@@ -123,7 +123,7 @@ smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle) const
 
   smtk::mesh::HandleRange meshes;
   MeshInfoVecType::const_iterator i;
-  for (i = this->m_meshInfo.begin(); i != this->m_meshInfo.end(); ++i)
+  for (i = m_meshInfo.begin(); i != m_meshInfo.end(); ++i)
   {
     meshes.insert(i->mesh());
   }
@@ -141,7 +141,7 @@ smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle, int di
 
   smtk::mesh::HandleRange meshes;
   MeshInfoVecType::const_iterator i;
-  for (i = this->m_meshInfo.begin(); i != this->m_meshInfo.end(); ++i)
+  for (i = m_meshInfo.begin(); i != m_meshInfo.end(); ++i)
   {
     if (i->types().hasDimension(dim))
     {
@@ -168,7 +168,7 @@ smtk::mesh::HandleRange Interface::getMeshsets(
 
   smtk::mesh::HandleRange meshes;
   MeshInfoVecType::const_iterator i;
-  for (i = this->m_meshInfo.begin(); i != this->m_meshInfo.end(); ++i)
+  for (i = m_meshInfo.begin(); i != m_meshInfo.end(); ++i)
   {
     if (i->has(domain))
     {
@@ -189,7 +189,7 @@ smtk::mesh::HandleRange Interface::getMeshsets(
 
   smtk::mesh::HandleRange meshes;
   MeshInfoVecType::const_iterator i;
-  for (i = this->m_meshInfo.begin(); i != this->m_meshInfo.end(); ++i)
+  for (i = m_meshInfo.begin(); i != m_meshInfo.end(); ++i)
   {
     if (i->has(dirichlet))
     {
@@ -210,7 +210,7 @@ smtk::mesh::HandleRange Interface::getMeshsets(
 
   smtk::mesh::HandleRange meshes;
   MeshInfoVecType::const_iterator i;
-  for (i = this->m_meshInfo.begin(); i != this->m_meshInfo.end(); ++i)
+  for (i = m_meshInfo.begin(); i != m_meshInfo.end(); ++i)
   {
     if (i->has(neumann))
     {
@@ -228,7 +228,7 @@ smtk::mesh::HandleRange Interface::getCells(const HandleRange& meshsets) const
   for (i = meshsets.begin(); i != meshsets.end(); ++i)
   {
     MeshInfoVecType::const_iterator m = this->find(*i);
-    if (m != this->m_meshInfo.end())
+    if (m != m_meshInfo.end())
     {
       cells.merge(m->cells());
     }
@@ -245,7 +245,7 @@ smtk::mesh::HandleRange Interface::getCells(
   for (i = meshsets.begin(); i != meshsets.end(); ++i)
   {
     MeshInfoVecType::const_iterator m = this->find(*i);
-    if (m != this->m_meshInfo.end())
+    if (m != m_meshInfo.end())
     {
       cells.merge(m->cells(cellType));
     }
@@ -262,7 +262,7 @@ smtk::mesh::HandleRange Interface::getCells(
   for (i = meshsets.begin(); i != meshsets.end(); ++i)
   {
     MeshInfoVecType::const_iterator m = this->find(*i);
-    if (m != this->m_meshInfo.end())
+    if (m != m_meshInfo.end())
     {
       cells.merge(m->cells(cellTypes));
     }
@@ -279,7 +279,7 @@ smtk::mesh::HandleRange Interface::getCells(
   for (i = meshsets.begin(); i != meshsets.end(); ++i)
   {
     MeshInfoVecType::const_iterator m = this->find(*i);
-    if (m != this->m_meshInfo.end())
+    if (m != m_meshInfo.end())
     {
       cells.merge(m->cells(dim));
     }
@@ -303,7 +303,7 @@ smtk::mesh::HandleRange Interface::getPoints(
 
   smtk::mesh::HandleRange points;
   smtk::mesh::HandleRange cellsToVisit = cells;
-  for (const auto& m : this->m_meshInfo)
+  for (const auto& m : m_meshInfo)
   {
     if (cellsToVisit.contains(m.cells()))
     {
@@ -398,7 +398,7 @@ smtk::common::UUIDArray Interface::computeModelEntities(
   for (i = meshsets.begin(); i != meshsets.end(); ++i)
   {
     MeshInfoVecType::const_iterator m = this->find(*i);
-    if (m == this->m_meshInfo.end())
+    if (m == m_meshInfo.end())
       continue;
     const smtk::common::UUIDArray& t = m->modelUUIDS();
     if (t.size() > 0)
@@ -491,7 +491,7 @@ smtk::common::UUID Interface::getId(const smtk::mesh::Handle& meshset) const
 {
   smtk::mesh::HandleRange meshes;
   MeshInfoVecType::const_iterator i;
-  for (i = this->m_meshInfo.begin(); i != this->m_meshInfo.end(); ++i)
+  for (i = m_meshInfo.begin(); i != m_meshInfo.end(); ++i)
   {
     if (i->mesh() == meshset)
     {
@@ -506,7 +506,7 @@ bool Interface::findById(
 {
   smtk::mesh::HandleRange meshes;
   MeshInfoVecType::const_iterator i;
-  for (i = this->m_meshInfo.begin(); i != this->m_meshInfo.end(); ++i)
+  for (i = m_meshInfo.begin(); i != m_meshInfo.end(); ++i)
   {
     if (i->id() == id)
     {
@@ -536,7 +536,7 @@ smtk::mesh::HandleRange Interface::findAssociations(
 
   smtk::mesh::HandleRange meshes;
   MeshInfoVecType::const_iterator i;
-  for (i = this->m_meshInfo.begin(); i != this->m_meshInfo.end(); ++i)
+  for (i = m_meshInfo.begin(); i != m_meshInfo.end(); ++i)
   {
     const smtk::common::UUIDArray& uuids = i->modelUUIDS();
     const bool contains = std::find(uuids.begin(), uuids.end(), modelUUID) != uuids.end();
@@ -552,7 +552,7 @@ smtk::mesh::HandleRange Interface::findAssociations(
   */
 bool Interface::setRootAssociation(const smtk::common::UUID& modelUUID) const
 {
-  this->m_associated_model = modelUUID;
+  m_associated_model = modelUUID;
   return true;
 }
 
@@ -560,7 +560,7 @@ bool Interface::setRootAssociation(const smtk::common::UUID& modelUUID) const
   */
 smtk::common::UUID Interface::rootAssociation() const
 {
-  return this->m_associated_model;
+  return m_associated_model;
 }
 
 bool Interface::createCellField(const smtk::mesh::HandleRange&, const std::string&, std::size_t,
@@ -739,8 +739,7 @@ bool Interface::deleteHandles(const smtk::mesh::HandleRange&)
 
 Interface::MeshInfoVecType::const_iterator Interface::find(smtk::mesh::Handle handle) const
 {
-  MeshInfoVecType::const_iterator result =
-    std::find(this->m_meshInfo.begin(), this->m_meshInfo.end(), handle);
+  MeshInfoVecType::const_iterator result = std::find(m_meshInfo.begin(), m_meshInfo.end(), handle);
   return result;
 }
 }

@@ -48,27 +48,27 @@ public:
 
   //returns true if the CellForEach visitor wants its coordinates member
   //variable filled
-  bool wantsCoordinates() const { return this->m_wantsCoordinates; }
+  bool wantsCoordinates() const { return m_wantsCoordinates; }
 
-  const smtk::mesh::Handle* pointIds() const { return this->m_pointIds; }
+  const smtk::mesh::Handle* pointIds() const { return m_pointIds; }
 
-  smtk::mesh::Handle pointId(int index) const { return this->m_pointIds[index]; }
+  smtk::mesh::Handle pointId(int index) const { return m_pointIds[index]; }
 
-  const std::vector<double>& coordinates() const { return *this->m_coords; }
+  const std::vector<double>& coordinates() const { return *m_coords; }
 
-  smtk::mesh::CollectionPtr collection() const { return this->m_collection; }
+  smtk::mesh::CollectionPtr collection() const { return m_collection; }
 
   //Set the coords for the visitor. This should be only be called by
   //smtk::mesh::Interface implementations
-  void coordinates(std::vector<double>* coords) { this->m_coords = coords; }
+  void coordinates(std::vector<double>* coords) { m_coords = coords; }
 
   //Set the pointIds for the visitor. This should be only be called by
   //smtk::mesh::Interface implementations
-  void pointIds(const smtk::mesh::Handle* ptIds) { this->m_pointIds = ptIds; }
+  void pointIds(const smtk::mesh::Handle* ptIds) { m_pointIds = ptIds; }
 
   //Set the collection for the visitor. This should be only be called by
   //smtk::mesh::Interface implementations
-  void collection(smtk::mesh::CollectionPtr c) { this->m_collection = c; }
+  void collection(smtk::mesh::CollectionPtr c) { m_collection = c; }
 
 private:
   smtk::mesh::CollectionPtr m_collection;

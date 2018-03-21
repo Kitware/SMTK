@@ -81,10 +81,10 @@ qtUIManager::qtUIManager(smtk::attribute::CollectionPtr collection)
   , m_AttCollection(collection)
   , m_useInternalFileBrowser(false)
 {
-  this->m_topView = NULL;
-  this->m_activeModelView = NULL;
-  this->m_maxValueLabelLength = 200;
-  this->m_minValueLabelLength = 50;
+  m_topView = NULL;
+  m_activeModelView = NULL;
+  m_maxValueLabelLength = 200;
+  m_minValueLabelLength = 50;
 
   // default settings
   this->advFont.setBold(true);
@@ -92,7 +92,7 @@ qtUIManager::qtUIManager(smtk::attribute::CollectionPtr collection)
   this->DefaultValueColor.setRgbF(1.0, 1.0, 0.5);
   this->InvalidValueColor.setRgbF(1.0, 0.5, 0.5);
 
-  this->m_currentAdvLevel = 0;
+  m_currentAdvLevel = 0;
 
   // Lets register some basic view constructors
   this->registerViewConstructor("Attribute", qtAttributeView::createViewWidget);
@@ -109,35 +109,35 @@ qtUIManager::qtUIManager(smtk::attribute::CollectionPtr collection)
 
 qtUIManager::~qtUIManager()
 {
-  if (this->m_topView)
+  if (m_topView)
   {
-    delete this->m_topView;
+    delete m_topView;
   }
 }
 
 void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
 {
   m_useInternalFileBrowser = useInternalFileBrowser;
-  this->m_parentWidget = pWidget;
-  if (this->m_topView)
+  m_parentWidget = pWidget;
+  if (m_topView)
   {
-    delete this->m_topView;
-    this->m_topView = NULL;
+    delete m_topView;
+    m_topView = NULL;
   }
 
-  if (!this->m_smtkView)
+  if (!m_smtkView)
   {
     return;
   }
   this->internalInitialize();
 
-  smtk::extension::ViewInfo vinfo(this->m_smtkView, pWidget, this);
-  this->m_topView = this->createView(vinfo);
-  if (this->m_topView)
+  smtk::extension::ViewInfo vinfo(m_smtkView, pWidget, this);
+  m_topView = this->createView(vinfo);
+  if (m_topView)
   {
-    if (this->m_currentAdvLevel) // only build advanced level when needed)
+    if (m_currentAdvLevel) // only build advanced level when needed)
     {
-      this->m_topView->showAdvanceLevel(this->m_currentAdvLevel);
+      m_topView->showAdvanceLevel(m_currentAdvLevel);
     }
     // In case we are filtering by categories by default or
     // its set on permanently we need to  have the top level view
@@ -146,81 +146,81 @@ void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
     // qtView construction time the UIManager's TopLevel View is not currently set
     // resulting in the current category not being set.  This method allows the UI
     // Manager to have the current category being set.
-    this->m_topView->setInitialCategory();
+    m_topView->setInitialCategory();
   }
 }
 
 void qtUIManager::initializeUI(
   const smtk::extension::ViewInfo& viewInfo, bool useInternalFileBrowser)
 {
-  this->m_useInternalFileBrowser = useInternalFileBrowser;
-  this->m_parentWidget = viewInfo.m_parent;
-  if (this->m_topView)
+  m_useInternalFileBrowser = useInternalFileBrowser;
+  m_parentWidget = viewInfo.m_parent;
+  if (m_topView)
   {
-    delete this->m_topView;
-    this->m_topView = NULL;
+    delete m_topView;
+    m_topView = NULL;
   }
 
-  if (!this->m_smtkView)
+  if (!m_smtkView)
   {
     return;
   }
   this->internalInitialize();
 
-  this->m_topView = this->createView(viewInfo);
-  if (this->m_topView && this->m_currentAdvLevel) // only build advanced level when needed
+  m_topView = this->createView(viewInfo);
+  if (m_topView && m_currentAdvLevel) // only build advanced level when needed
   {
-    this->m_topView->showAdvanceLevel(this->m_currentAdvLevel);
+    m_topView->showAdvanceLevel(m_currentAdvLevel);
   }
-  this->m_topView->setInitialCategory();
+  m_topView->setInitialCategory();
 }
 
 qtBaseView* qtUIManager::setSMTKView(
   const smtk::extension::ViewInfo& viewInfo, bool useInternalFileBrowser)
 {
-  if ((this->m_smtkView == viewInfo.m_view) && (this->m_parentWidget == viewInfo.m_parent) &&
-    (this->m_useInternalFileBrowser == useInternalFileBrowser))
+  if ((m_smtkView == viewInfo.m_view) && (m_parentWidget == viewInfo.m_parent) &&
+    (m_useInternalFileBrowser == useInternalFileBrowser))
   {
-    return this->m_topView;
+    return m_topView;
   }
-  this->m_smtkView = viewInfo.m_view;
-  this->initializeUI(viewInfo, this->m_useInternalFileBrowser);
-  return this->m_topView;
+  m_smtkView = viewInfo.m_view;
+  this->initializeUI(viewInfo, m_useInternalFileBrowser);
+  return m_topView;
 }
 
 qtBaseView* qtUIManager::setSMTKView(smtk::view::ViewPtr v)
 {
-  if (this->m_smtkView != v)
+  if (m_smtkView != v)
   {
-    this->m_smtkView = v;
-    this->initializeUI(this->m_parentWidget, this->m_useInternalFileBrowser);
+    m_smtkView = v;
+    this->initializeUI(m_parentWidget, m_useInternalFileBrowser);
   }
-  return this->m_topView;
+  return m_topView;
 }
 
 qtBaseView* qtUIManager::setSMTKView(
   smtk::view::ViewPtr v, QWidget* pWidget, bool useInternalFileBrowser)
 {
-  if ((this->m_smtkView != v) || (this->m_parentWidget != pWidget) ||
-    (this->m_useInternalFileBrowser != useInternalFileBrowser))
+  if ((m_smtkView != v) || (m_parentWidget != pWidget) ||
+    (m_useInternalFileBrowser != useInternalFileBrowser))
   {
-    this->m_smtkView = v;
+    m_smtkView = v;
     this->initializeUI(pWidget, useInternalFileBrowser);
   }
-  return this->m_topView;
+  return m_topView;
 }
 
 void qtUIManager::setActiveModelView(smtk::extension::qtModelView* mv)
 {
-  if (this->m_activeModelView != mv)
+  if (m_activeModelView != mv)
   {
-    this->m_activeModelView = mv;
+    m_activeModelView = mv;
   }
 }
 
 smtk::extension::qtModelView* qtUIManager::activeModelView()
 {
-  return this->m_activeModelView;
+  return m_activeModelView;
 }
 
 void qtUIManager::internalInitialize()
@@ -228,7 +228,7 @@ void qtUIManager::internalInitialize()
   this->findDefinitionsLongLabels();
 
   // initialize initial advance level
-  const std::map<int, std::string>& levels = this->m_AttCollection->advanceLevels();
+  const std::map<int, std::string>& levels = m_AttCollection->advanceLevels();
   if (levels.size() > 0)
   {
     // use the minimum enum value as initial advance level
@@ -239,29 +239,29 @@ void qtUIManager::internalInitialize()
     {
       minLevel = std::min(minLevel, ait->first);
     }
-    // this->m_currentAdvLevel can not be lower than the minLevel
-    this->m_currentAdvLevel = std::max(minLevel, this->m_currentAdvLevel);
+    // m_currentAdvLevel can not be lower than the minLevel
+    m_currentAdvLevel = std::max(minLevel, m_currentAdvLevel);
   }
 }
 
 void qtUIManager::setAdvanceLevel(int b)
 {
-  if (this->m_currentAdvLevel == b)
+  if (m_currentAdvLevel == b)
   {
     return;
   }
 
-  this->m_currentAdvLevel = b;
-  if (this->m_topView)
+  m_currentAdvLevel = b;
+  if (m_topView)
   {
-    this->m_topView->showAdvanceLevel(b);
+    m_topView->showAdvanceLevel(b);
   }
 }
 
 void qtUIManager::initAdvanceLevels(QComboBox* combo)
 {
   combo->blockSignals(true);
-  const std::map<int, std::string>& levels = this->m_AttCollection->advanceLevels();
+  const std::map<int, std::string>& levels = m_AttCollection->advanceLevels();
   if (levels.size() == 0)
   {
     // for backward compatibility, we automatically add
@@ -269,7 +269,7 @@ void qtUIManager::initAdvanceLevels(QComboBox* combo)
     combo->addItem("General", 0);
     combo->addItem("Advanced", 1);
 
-    combo->setCurrentIndex(this->m_currentAdvLevel);
+    combo->setCurrentIndex(m_currentAdvLevel);
   }
   else
   {
@@ -277,7 +277,7 @@ void qtUIManager::initAdvanceLevels(QComboBox* combo)
     for (ait = levels.begin(); ait != levels.end(); ++ait)
     {
       combo->addItem(ait->second.c_str(), ait->first);
-      if (this->m_currentAdvLevel == ait->first)
+      if (m_currentAdvLevel == ait->first)
       {
         combo->setCurrentIndex(combo->count() - 1);
       }
@@ -288,7 +288,7 @@ void qtUIManager::initAdvanceLevels(QComboBox* combo)
 
 void qtUIManager::updateModelViews()
 {
-  if (!this->m_topView)
+  if (!m_topView)
   {
     return;
   }
@@ -297,12 +297,12 @@ void qtUIManager::updateModelViews()
 
 std::string qtUIManager::currentCategory()
 {
-  return this->m_topView ? this->m_topView->currentCategory() : "";
+  return m_topView ? m_topView->currentCategory() : "";
 }
 
 bool qtUIManager::categoryEnabled()
 {
-  return this->m_topView ? this->m_topView->categoryEnabled() : false;
+  return m_topView ? m_topView->categoryEnabled() : false;
 }
 
 bool qtUIManager::passAdvancedCheck(int level)
@@ -338,10 +338,10 @@ void qtUIManager::setClipBoardText(QString& text)
 
 void qtUIManager::clearRoot()
 {
-  if (this->m_topView)
+  if (m_topView)
   {
-    delete this->m_topView;
-    this->m_topView = NULL;
+    delete m_topView;
+    m_topView = NULL;
   }
 }
 
@@ -600,7 +600,7 @@ bool qtUIManager::updateTableItemCheckState(
 
 void qtUIManager::registerViewConstructor(const std::string& vtype, widgetConstructor f)
 {
-  this->m_constructors[vtype] = f;
+  m_constructors[vtype] = f;
 }
 
 qtBaseView* qtUIManager::createView(const ViewInfo& info)
@@ -612,8 +612,8 @@ qtBaseView* qtUIManager::createView(const ViewInfo& info)
   }
 
   std::map<std::string, widgetConstructor>::const_iterator it;
-  it = this->m_constructors.find(info.m_view->type());
-  if (it == this->m_constructors.end())
+  it = m_constructors.find(info.m_view->type());
+  if (it == m_constructors.end())
   {
     // Constructor for that type could not be found)
     return NULL;
@@ -703,7 +703,7 @@ void qtUIManager::findDefinitionsLongLabels()
   // Generate list of all concrete definitions in the manager
   std::vector<smtk::attribute::DefinitionPtr> defs;
   std::vector<smtk::attribute::DefinitionPtr> baseDefinitions;
-  this->m_AttCollection->findBaseDefinitions(baseDefinitions);
+  m_AttCollection->findBaseDefinitions(baseDefinitions);
   std::vector<smtk::attribute::DefinitionPtr>::const_iterator baseIter;
 
   for (baseIter = baseDefinitions.begin(); baseIter != baseDefinitions.end(); baseIter++)

@@ -26,42 +26,41 @@ void EntityIterator::traverse(const EntityRef& x)
 
 void EntityIterator::traverse(const EntityRef& x, IteratorStyle style)
 {
-  this->m_related = style;
-  this->m_visited.clear();
-  if (this->m_related == ITERATE_MODELS)
+  m_related = style;
+  m_visited.clear();
+  if (m_related == ITERATE_MODELS)
   {
     Model parent;
     if ((parent = x.owningModel()).isValid())
     {
-      this->m_visited.insert(parent);
+      m_visited.insert(parent);
       SessionRef sref = parent.session();
       if (sref.isValid())
-        this->m_visited.insert(sref);
+        m_visited.insert(sref);
     }
     else if (x.isModel())
     {
       Model model(x);
       SessionRef sref = model.session();
-      this->m_visited.insert(model);
+      m_visited.insert(model);
       if (sref.isValid())
-        this->m_visited.insert(sref);
+        m_visited.insert(sref);
     }
     else
     {
-      this->m_visited.insert(
-        x); // Well, if it doesn't have a parent, at least make sure it's included.
+      m_visited.insert(x); // Well, if it doesn't have a parent, at least make sure it's included.
     }
   }
   else
   {
-    this->m_visited.insert(x);
+    m_visited.insert(x);
   }
 }
 
 void EntityIterator::begin()
 {
-  this->m_queue = this->m_visited;
-  this->m_visited.clear();
+  m_queue = m_visited;
+  m_visited.clear();
 }
 
 /// Advance to the next item, returning true until reaching the end of iteration.
@@ -74,7 +73,7 @@ bool EntityIterator::advance()
 /// Return true when iteration complete, false otherwise.
 bool EntityIterator::isAtEnd() const
 {
-  return this->m_queue.empty();
+  return m_queue.empty();
 }
 
 /**\brief Prefix increment operator.
@@ -86,12 +85,12 @@ EntityRef EntityIterator::operator++()
   if (this->isAtEnd())
     return EntityRef();
 
-  EntityRefs::iterator it = this->m_queue.begin();
-  this->m_visited.insert(*it);
+  EntityRefs::iterator it = m_queue.begin();
+  m_visited.insert(*it);
   // Always call after inserting argument into m_visited to prevent stupidity:
   this->updateQueue(*it);
-  this->m_queue.erase(it);
-  return this->isAtEnd() ? EntityRef() : *this->m_queue.begin();
+  m_queue.erase(it);
+  return this->isAtEnd() ? EntityRef() : *m_queue.begin();
 }
 
 /**\brief Postfix increment operator.
@@ -104,11 +103,11 @@ EntityRef EntityIterator::operator++(int)
   if (this->isAtEnd())
     return EntityRef();
 
-  EntityRef result = *this->m_queue.begin();
-  this->m_visited.insert(result);
+  EntityRef result = *m_queue.begin();
+  m_visited.insert(result);
   // Always call after inserting argument into m_visited to prevent stupidity:
   this->updateQueue(result);
-  this->m_queue.erase(this->m_queue.begin());
+  m_queue.erase(m_queue.begin());
   return result;
 }
 
@@ -128,7 +127,7 @@ const EntityRef* EntityIterator::operator->() const
 const EntityRef& EntityIterator::current() const
 {
   static EntityRef dummy;
-  return this->isAtEnd() ? dummy : *this->m_queue.begin();
+  return this->isAtEnd() ? dummy : *m_queue.begin();
 }
 
 /**\brief Add entities related to \a ent to the queue as required by the style.
@@ -138,7 +137,7 @@ const EntityRef& EntityIterator::current() const
   */
 void EntityIterator::updateQueue(const EntityRef& ent)
 {
-  switch (this->m_related)
+  switch (m_related)
   {
     case ITERATE_CHILDREN:
     case ITERATE_MODELS:
@@ -194,16 +193,16 @@ void EntityIterator::updateQueue(const EntityRef& ent)
       children.insert(instances.begin(), instances.end());
       // Add any unvisited children.
       for (EntityRefs::const_iterator cit = children.begin(); cit != children.end(); ++cit)
-        if (this->m_visited.find(*cit) == this->m_visited.end())
-          this->m_queue.insert(*cit);
+        if (m_visited.find(*cit) == m_visited.end())
+          m_queue.insert(*cit);
     }
     break;
     default:
       // Do nothing.
       break;
   }
-  if (this->m_queue.empty() && this->m_related != ITERATE_BARE)
-    this->m_related = ITERATE_BARE; // No need to recompute things to visit next time around.
+  if (m_queue.empty() && m_related != ITERATE_BARE)
+    m_related = ITERATE_BARE; // No need to recompute things to visit next time around.
 }
 
 } // namespace model

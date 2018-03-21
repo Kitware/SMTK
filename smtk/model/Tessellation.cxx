@@ -23,10 +23,10 @@ Tessellation::Tessellation()
 /// Add a 3-D point coordinate to the tessellation, but not a vertex record.
 int Tessellation::addCoords(const double* a)
 {
-  std::vector<double>::size_type ipt = this->m_coords.size();
+  std::vector<double>::size_type ipt = m_coords.size();
   for (int i = 0; i < 3; ++i)
   {
-    this->m_coords.push_back(a[i]);
+    m_coords.push_back(a[i]);
   }
   return static_cast<int>(ipt / 3);
 }
@@ -34,9 +34,9 @@ int Tessellation::addCoords(const double* a)
 /// Add a 3-D point coordinate to the tessellation, but not a vertex record.
 Tessellation& Tessellation::addCoords(double x, double y, double z)
 {
-  this->m_coords.push_back(x);
-  this->m_coords.push_back(y);
-  this->m_coords.push_back(z);
+  m_coords.push_back(x);
+  m_coords.push_back(y);
+  m_coords.push_back(z);
   return *this;
 }
 
@@ -72,46 +72,46 @@ Tessellation& Tessellation::addQuad(
 /// Add a vertex record using a pre-existing point coordinate (referenced by ID).
 Tessellation& Tessellation::addPoint(int ai)
 {
-  this->m_conn.push_back(TESS_VERTEX);
-  this->m_conn.push_back(ai);
+  m_conn.push_back(TESS_VERTEX);
+  m_conn.push_back(ai);
   return *this;
 }
 
 /// Add a line-segment record using 2 pre-existing point coordinates (referenced by ID).
 Tessellation& Tessellation::addLine(int ai, int bi)
 {
-  this->m_conn.push_back(TESS_POLYLINE);
-  this->m_conn.push_back(2);
-  this->m_conn.push_back(ai);
-  this->m_conn.push_back(bi);
+  m_conn.push_back(TESS_POLYLINE);
+  m_conn.push_back(2);
+  m_conn.push_back(ai);
+  m_conn.push_back(bi);
   return *this;
 }
 
 /// Add a triangle record using 3 pre-existing point coordinates (referenced by ID).
 Tessellation& Tessellation::addTriangle(int ai, int bi, int ci)
 {
-  this->m_conn.push_back(TESS_TRIANGLE);
-  this->m_conn.push_back(ai);
-  this->m_conn.push_back(bi);
-  this->m_conn.push_back(ci);
+  m_conn.push_back(TESS_TRIANGLE);
+  m_conn.push_back(ai);
+  m_conn.push_back(bi);
+  m_conn.push_back(ci);
   return *this;
 }
 
 /// Add a quadrilateral record using 4 pre-existing point coordinates (referenced by ID).
 Tessellation& Tessellation::addQuad(int ai, int bi, int ci, int di)
 {
-  this->m_conn.push_back(TESS_QUAD);
-  this->m_conn.push_back(ai);
-  this->m_conn.push_back(bi);
-  this->m_conn.push_back(ci);
-  this->m_conn.push_back(di);
+  m_conn.push_back(TESS_QUAD);
+  m_conn.push_back(ai);
+  m_conn.push_back(bi);
+  m_conn.push_back(ci);
+  m_conn.push_back(di);
   return *this;
 }
 
 /// given the id of points, set points into coords
 void Tessellation::setPoint(std::size_t id, const double* points)
 {
-  if (id <= this->m_coords.size())
+  if (id <= m_coords.size())
   {
     this->coords()[3 * id] = points[0];
     this->coords()[3 * id + 1] = points[1];
@@ -122,8 +122,8 @@ void Tessellation::setPoint(std::size_t id, const double* points)
 /// Erase all point coordinates and tessellation primitive records.
 Tessellation& Tessellation::reset()
 {
-  this->m_conn.clear();
-  this->m_coords.clear();
+  m_conn.clear();
+  m_coords.clear();
   return *this;
 }
 
@@ -136,7 +136,7 @@ Tessellation& Tessellation::reset()
   */
 Tessellation::size_type Tessellation::begin() const
 {
-  return this->m_conn.empty() ? this->end() : 0;
+  return m_conn.empty() ? this->end() : 0;
 }
 
 /**\brief Return an offset-style end iterator for traversing the
@@ -164,7 +164,7 @@ Tessellation::size_type Tessellation::nextCellOffset(size_type curOffset) const
 
   size_type unchecked_next = curOffset + (cell_type & TESS_VARYING_VERT_CELL ? 2 : 1) +
     num_verts * (1 + num_vert_props) + num_cell_props;
-  size_type next = (unchecked_next < 0 || unchecked_next >= static_cast<int>(this->m_conn.size()))
+  size_type next = (unchecked_next < 0 || unchecked_next >= static_cast<int>(m_conn.size()))
     ? this->end()
     : unchecked_next;
   return next;
@@ -179,8 +179,8 @@ Tessellation::size_type Tessellation::nextCellOffset(size_type curOffset) const
   */
 Tessellation::size_type Tessellation::cellType(size_type offset) const
 {
-  return (offset < 0 || offset >= static_cast<int>(this->m_conn.size())) ? TESS_INVALID_CELL
-                                                                         : this->m_conn[offset];
+  return (offset < 0 || offset >= static_cast<int>(m_conn.size())) ? TESS_INVALID_CELL
+                                                                   : m_conn[offset];
 }
 
 /**\brief Return the number of vertices in the tessellation primitive
@@ -210,7 +210,7 @@ Tessellation::size_type Tessellation::numberOfCellVertices(
     case TESS_POLYLINE:
     case TESS_POLYGON:
     case TESS_TRIANGLE_STRIP:
-      return this->m_conn[offset + 1];
+      return m_conn[offset + 1];
     default:
     case TESS_INVALID_CELL:
       break;
@@ -236,7 +236,7 @@ Tessellation::size_type Tessellation::vertexIdsOfCell(
   ++offset;
   if (cell_type & TESS_VARYING_VERT_CELL)
     ++offset; // advance to first vertex.
-  cellConn.insert(cellConn.end(), &this->m_conn[offset], &this->m_conn[offset] + num_verts);
+  cellConn.insert(cellConn.end(), &m_conn[offset], &m_conn[offset] + num_verts);
   return num_verts;
 }
 
@@ -252,7 +252,7 @@ Tessellation::size_type Tessellation::materialIdOfCell(size_type offset) const
   if (cell_type & TESS_VARYING_VERT_CELL)
     ++offset;          // advance to first vertex.
   offset += num_verts; // advance past vertices
-  return this->m_conn[offset];
+  return m_conn[offset];
 }
 
 /**\brief Populate \a first and \a last with the vertex IDs at each end of a polyline at \a offset.
@@ -269,8 +269,8 @@ bool Tessellation::vertexIdsOfPolylineEndpoints(size_type offset, int& first, in
   {
     return false;
   }
-  first = this->m_conn[2];
-  last = this->m_conn[nv + 1];
+  first = m_conn[2];
+  last = m_conn[nv + 1];
   return true;
 }
 
@@ -281,7 +281,7 @@ bool Tessellation::vertexIdsOfPolylineEndpoints(size_type offset, int& first, in
   */
 Tessellation::size_type Tessellation::insertNextCell(std::vector<int>& cellConn)
 {
-  size_type insert_pos = static_cast<size_type>(this->m_conn.size());
+  size_type insert_pos = static_cast<size_type>(m_conn.size());
   return this->insertCell(insert_pos, cellConn) ? insert_pos : this->end();
 }
 
@@ -292,7 +292,7 @@ Tessellation::size_type Tessellation::insertNextCell(std::vector<int>& cellConn)
   */
 Tessellation::size_type Tessellation::insertNextCell(size_type connLen, const int* cellConn)
 {
-  size_type insert_pos = static_cast<size_type>(this->m_conn.size());
+  size_type insert_pos = static_cast<size_type>(m_conn.size());
   return this->insertCell(insert_pos, connLen, cellConn) ? insert_pos : this->end();
 }
 
@@ -375,8 +375,8 @@ bool Tessellation::insertCell(size_type offset, size_type conn_length, const int
     return false;
   }
 
-  std::vector<int>::iterator cur_insert = this->m_conn.begin() + offset;
-  this->m_conn.insert(cur_insert, cellConn, cellConn + conn_length);
+  std::vector<int>::iterator cur_insert = m_conn.begin() + offset;
+  m_conn.insert(cur_insert, cellConn, cellConn + conn_length);
   return true;
 }
 
@@ -441,7 +441,7 @@ void Tessellation::invalidBoundingBox(double bbox[6])
   */
 bool Tessellation::getBoundingBox(double bbox[6]) const
 {
-  if (this->m_coords.empty())
+  if (m_coords.empty())
   {
     return false;
   }
@@ -452,7 +452,7 @@ bool Tessellation::getBoundingBox(double bbox[6]) const
   // If the current bounds are invalid, set both min and max to the first point:
   if (bbox[0] > bbox[1])
   {
-    for (cc = 0, cit = this->m_coords.begin(); cc < 3 && cit != this->m_coords.end(); ++cit, ++cc)
+    for (cc = 0, cit = m_coords.begin(); cc < 3 && cit != m_coords.end(); ++cit, ++cc)
     {
       bbox[2 * cc] = *cit;
       bbox[2 * cc + 1] = *cit;
@@ -464,7 +464,7 @@ bool Tessellation::getBoundingBox(double bbox[6]) const
     }
   }
   // Now update the bounds using all the coordinates we have:
-  for (cc = 0, cit = this->m_coords.begin(); cit != this->m_coords.end(); ++cit, ++cc)
+  for (cc = 0, cit = m_coords.begin(); cit != m_coords.end(); ++cit, ++cc)
   {
     if (*cit < bbox[2 * (cc % 3)])
     { // Update min

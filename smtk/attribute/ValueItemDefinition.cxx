@@ -24,14 +24,14 @@ using namespace smtk::attribute;
 ValueItemDefinition::ValueItemDefinition(const std::string& myName)
   : ItemDefinition(myName)
 {
-  this->m_defaultDiscreteIndex = -1;
-  this->m_hasDefault = false;
-  this->m_useCommonLabel = false;
-  this->m_numberOfRequiredValues = 1;
-  this->m_maxNumberOfValues = 0;
-  this->m_isExtensible = false;
-  this->m_expressionDefinition = RefItemDefinition::New("expression");
-  this->m_expressionDefinition->setNumberOfRequiredValues(1);
+  m_defaultDiscreteIndex = -1;
+  m_hasDefault = false;
+  m_useCommonLabel = false;
+  m_numberOfRequiredValues = 1;
+  m_maxNumberOfValues = 0;
+  m_isExtensible = false;
+  m_expressionDefinition = RefItemDefinition::New("expression");
+  m_expressionDefinition->setNumberOfRequiredValues(1);
 }
 
 ValueItemDefinition::~ValueItemDefinition()
@@ -40,81 +40,80 @@ ValueItemDefinition::~ValueItemDefinition()
 
 bool ValueItemDefinition::setNumberOfRequiredValues(std::size_t esize)
 {
-  if (esize == this->m_numberOfRequiredValues)
+  if (esize == m_numberOfRequiredValues)
   {
     return true;
   }
-  if (this->m_maxNumberOfValues && (esize > this->m_maxNumberOfValues))
+  if (m_maxNumberOfValues && (esize > m_maxNumberOfValues))
   {
     return false;
   }
 
-  this->m_numberOfRequiredValues = esize;
+  m_numberOfRequiredValues = esize;
   if (!this->hasValueLabels())
   {
     return true;
   }
-  if (!(this->m_useCommonLabel || this->m_isExtensible))
+  if (!(m_useCommonLabel || m_isExtensible))
   {
-    this->m_valueLabels.resize(esize);
+    m_valueLabels.resize(esize);
   }
   return true;
 }
 
 bool ValueItemDefinition::setMaxNumberOfValues(std::size_t esize)
 {
-  if (esize && (esize < this->m_numberOfRequiredValues))
+  if (esize && (esize < m_numberOfRequiredValues))
   {
     return false;
   }
-  this->m_maxNumberOfValues = esize;
+  m_maxNumberOfValues = esize;
   return true;
 }
 
 void ValueItemDefinition::setValueLabel(std::size_t element, const std::string& elabel)
 {
-  if (this->m_isExtensible)
+  if (m_isExtensible)
   {
     return;
   }
-  if (this->m_valueLabels.size() != this->m_numberOfRequiredValues)
+  if (m_valueLabels.size() != m_numberOfRequiredValues)
   {
-    this->m_valueLabels.resize(this->m_numberOfRequiredValues);
+    m_valueLabels.resize(m_numberOfRequiredValues);
   }
-  this->m_useCommonLabel = false;
-  assert(this->m_valueLabels.size() > element);
-  this->m_valueLabels[element] = elabel;
+  m_useCommonLabel = false;
+  assert(m_valueLabels.size() > element);
+  m_valueLabels[element] = elabel;
 }
 
 void ValueItemDefinition::setCommonValueLabel(const std::string& elabel)
 {
-  if (this->m_valueLabels.size() != 1)
+  if (m_valueLabels.size() != 1)
   {
-    this->m_valueLabels.resize(1);
+    m_valueLabels.resize(1);
   }
-  this->m_useCommonLabel = true;
-  assert(!this->m_valueLabels.empty());
-  this->m_valueLabels[0] = elabel;
+  m_useCommonLabel = true;
+  assert(!m_valueLabels.empty());
+  m_valueLabels[0] = elabel;
 }
 
 std::string ValueItemDefinition::valueLabel(std::size_t element) const
 {
-  if (this->m_useCommonLabel)
+  if (m_useCommonLabel)
   {
-    assert(!this->m_valueLabels.empty());
-    return this->m_valueLabels[0];
+    assert(!m_valueLabels.empty());
+    return m_valueLabels[0];
   }
-  if (element < this->m_valueLabels.size())
+  if (element < m_valueLabels.size())
   {
-    return this->m_valueLabels[element];
+    return m_valueLabels[element];
   }
   return ""; // If we threw execeptions this method could return const string &
 }
 
 bool ValueItemDefinition::isValidExpression(smtk::attribute::AttributePtr exp) const
 {
-  if (this->m_expressionDefinition->attributeDefinition() &&
-    this->m_expressionDefinition->isValueValid(exp))
+  if (m_expressionDefinition->attributeDefinition() && m_expressionDefinition->isValueValid(exp))
   {
     return true;
   }
@@ -123,24 +122,24 @@ bool ValueItemDefinition::isValidExpression(smtk::attribute::AttributePtr exp) c
 
 bool ValueItemDefinition::allowsExpressions() const
 {
-  return this->m_expressionDefinition->attributeDefinition() ? true : false;
+  return m_expressionDefinition->attributeDefinition() ? true : false;
 }
 
 smtk::attribute::DefinitionPtr ValueItemDefinition::expressionDefinition() const
 {
-  return this->m_expressionDefinition->attributeDefinition();
+  return m_expressionDefinition->attributeDefinition();
 }
 
 void ValueItemDefinition::setExpressionDefinition(smtk::attribute::DefinitionPtr exp)
 {
-  this->m_expressionDefinition->setAttributeDefinition(exp);
+  m_expressionDefinition->setAttributeDefinition(exp);
 }
 
 void ValueItemDefinition::buildExpressionItem(ValueItem* vitem, int position) const
 {
   smtk::attribute::RefItemPtr aref = smtk::dynamic_pointer_cast<smtk::attribute::RefItem>(
-    this->m_expressionDefinition->buildItem(vitem, position, -1));
-  aref->setDefinition(this->m_expressionDefinition);
+    m_expressionDefinition->buildItem(vitem, position, -1));
+  aref->setDefinition(m_expressionDefinition);
   assert(vitem->m_expressions.size() > static_cast<size_t>(position));
   vitem->m_expressions[static_cast<size_t>(position)] = aref;
 }
@@ -149,7 +148,7 @@ void ValueItemDefinition::buildChildrenItems(ValueItem* vitem) const
 {
   std::map<std::string, smtk::attribute::ItemDefinitionPtr>::const_iterator it;
   smtk::attribute::ItemPtr child;
-  for (it = this->m_itemDefs.begin(); it != this->m_itemDefs.end(); it++)
+  for (it = m_itemDefs.begin(); it != m_itemDefs.end(); it++)
   {
     child = it->second->buildItem(vitem, 0, -1);
     child->setDefinition(it->second);
@@ -159,9 +158,9 @@ void ValueItemDefinition::buildChildrenItems(ValueItem* vitem) const
 
 void ValueItemDefinition::setDefaultDiscreteIndex(int discreteIndex)
 {
-  this->m_defaultDiscreteIndex = discreteIndex;
+  m_defaultDiscreteIndex = discreteIndex;
   this->updateDiscreteValue();
-  this->m_hasDefault = true;
+  m_hasDefault = true;
 }
 
 bool ValueItemDefinition::addChildItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
@@ -171,7 +170,7 @@ bool ValueItemDefinition::addChildItemDefinition(smtk::attribute::ItemDefinition
   {
     return false;
   }
-  this->m_itemDefs[cdef->name()] = cdef;
+  m_itemDefs[cdef->name()] = cdef;
   return true;
 }
 
@@ -179,8 +178,8 @@ bool ValueItemDefinition::addConditionalItem(
   const std::string& valueName, const std::string& itemName)
 {
   // Do we have this valueName?
-  if (std::find(this->m_discreteValueEnums.begin(), this->m_discreteValueEnums.end(), valueName) ==
-    this->m_discreteValueEnums.end())
+  if (std::find(m_discreteValueEnums.begin(), m_discreteValueEnums.end(), valueName) ==
+    m_discreteValueEnums.end())
   {
     return false;
   }
@@ -197,24 +196,24 @@ bool ValueItemDefinition::addConditionalItem(
   }
 
   // create the association
-  this->m_valueToItemAssociations[valueName].push_back(itemName);
-  this->m_itemToValueAssociations[itemName].insert(valueName);
+  m_valueToItemAssociations[valueName].push_back(itemName);
+  m_itemToValueAssociations[itemName].insert(valueName);
   return true;
 }
 
 std::vector<std::string> ValueItemDefinition::conditionalItems(const std::string& valueName) const
 {
   // Do we have this valueName?
-  if (std::find(this->m_discreteValueEnums.begin(), this->m_discreteValueEnums.end(), valueName) ==
-    this->m_discreteValueEnums.end())
+  if (std::find(m_discreteValueEnums.begin(), m_discreteValueEnums.end(), valueName) ==
+    m_discreteValueEnums.end())
   {
     std::vector<std::string> temp;
     return temp;
   }
   std::map<std::string, std::vector<std::string> >::const_iterator citer =
-    this->m_valueToItemAssociations.find(valueName);
+    m_valueToItemAssociations.find(valueName);
   // Does the value have conditional items associated with it?
-  if (citer == this->m_valueToItemAssociations.end())
+  if (citer == m_valueToItemAssociations.end())
   {
     std::vector<std::string> dummy;
     return dummy;
@@ -224,7 +223,7 @@ std::vector<std::string> ValueItemDefinition::conditionalItems(const std::string
 
 void ValueItemDefinition::updateCategories()
 {
-  for (auto& i : this->m_itemDefs)
+  for (auto& i : m_itemDefs)
   {
     i.second->updateCategories();
   }
@@ -232,7 +231,7 @@ void ValueItemDefinition::updateCategories()
 
 void ValueItemDefinition::setIsExtensible(bool mode)
 {
-  this->m_isExtensible = mode;
+  m_isExtensible = mode;
   if (!this->hasValueLabels())
   {
     // If there are no value labels there is nothing to do
@@ -254,9 +253,9 @@ void ValueItemDefinition::copyTo(
 
   ItemDefinition::copyTo(def);
 
-  if (this->m_units != "")
+  if (m_units != "")
   {
-    def->setUnits(this->m_units);
+    def->setUnits(m_units);
   }
 
   if (this->allowsExpressions())
@@ -276,30 +275,30 @@ void ValueItemDefinition::copyTo(
     }
   }
 
-  def->setNumberOfRequiredValues(this->m_numberOfRequiredValues);
-  def->setMaxNumberOfValues(this->m_maxNumberOfValues);
-  def->setIsExtensible(this->m_isExtensible);
+  def->setNumberOfRequiredValues(m_numberOfRequiredValues);
+  def->setMaxNumberOfValues(m_maxNumberOfValues);
+  def->setIsExtensible(m_isExtensible);
 
   // Add label(s)
-  if (this->m_useCommonLabel)
+  if (m_useCommonLabel)
   {
-    assert(!this->m_valueLabels.empty());
-    def->setCommonValueLabel(this->m_valueLabels[0]);
+    assert(!m_valueLabels.empty());
+    def->setCommonValueLabel(m_valueLabels[0]);
   }
   else if (this->hasValueLabels())
   {
-    for (i = 0; i < this->m_valueLabels.size(); ++i)
+    for (i = 0; i < m_valueLabels.size(); ++i)
     {
-      def->setValueLabel(i, this->m_valueLabels[i]);
+      def->setValueLabel(i, m_valueLabels[i]);
     }
   }
 
   // Add children item definitions
-  if (this->m_itemDefs.size() > 0)
+  if (m_itemDefs.size() > 0)
   {
     std::map<std::string, smtk::attribute::ItemDefinitionPtr>::const_iterator itemDefMapIter =
-      this->m_itemDefs.begin();
-    for (; itemDefMapIter != this->m_itemDefs.end(); itemDefMapIter++)
+      m_itemDefs.begin();
+    for (; itemDefMapIter != m_itemDefs.end(); itemDefMapIter++)
     {
       smtk::attribute::ItemDefinitionPtr itemDef = itemDefMapIter->second->createCopy(info);
       def->addChildItemDefinition(itemDef);
@@ -307,13 +306,13 @@ void ValueItemDefinition::copyTo(
   }
 
   // Add condition items
-  if (this->m_valueToItemAssociations.size() > 0)
+  if (m_valueToItemAssociations.size() > 0)
   {
     std::map<std::string, std::vector<std::string> >::const_iterator mapIter =
-      this->m_valueToItemAssociations.begin();
+      m_valueToItemAssociations.begin();
     std::string value;
     std::vector<std::string>::const_iterator itemIter;
-    for (; mapIter != this->m_valueToItemAssociations.end(); mapIter++)
+    for (; mapIter != m_valueToItemAssociations.end(); mapIter++)
     {
       value = mapIter->first;
       itemIter = mapIter->second.begin();
@@ -327,10 +326,10 @@ void ValueItemDefinition::copyTo(
 
 bool ValueItemDefinition::getEnumIndex(const std::string& enumVal, std::size_t& index) const
 {
-  std::size_t i, n = this->m_discreteValueEnums.size();
+  std::size_t i, n = m_discreteValueEnums.size();
   for (i = static_cast<std::size_t>(0); i < n; i++)
   {
-    if (this->m_discreteValueEnums.at(i) == enumVal)
+    if (m_discreteValueEnums.at(i) == enumVal)
     {
       index = i;
       return true;

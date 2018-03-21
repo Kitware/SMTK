@@ -88,7 +88,7 @@ void EdgePointPicker::doPick(pqRenderView* view)
   // we only want selection on one representation.
   view->setUseMultipleRepresentationSelection(false);
 
-  this->m_isActive = true;
+  m_isActive = true;
   emit triggered(true);
 }
 
@@ -98,7 +98,7 @@ void EdgePointPicker::donePicking(pqRenderView* view)
   this->InteractiveSelectButton->blockSignals(true);
   this->InteractiveSelectButton->setChecked(false);
   this->InteractiveSelectButton->blockSignals(false);
-  this->m_isActive = false;
+  m_isActive = false;
   emit triggered(false);
   //we want the connection to stop so remove the connection
   if (this->Selecter)
@@ -141,7 +141,7 @@ pqSplitEdgeWidget::pqSplitEdgeWidget(QWidget* prent)
   splitButton->setSizePolicy(sizeFixedPolicy);
   splitButton->setCheckable(true);
 
-  this->m_edgePointPicker->InteractiveSelectButton = splitButton;
+  m_edgePointPicker->InteractiveSelectButton = splitButton;
   QVBoxLayout* layout = new QVBoxLayout(this);
   layout->setMargin(0);
   layout->addWidget(splitButton);
@@ -157,7 +157,7 @@ pqSplitEdgeWidget::~pqSplitEdgeWidget()
 {
   this->setView(NULL);
   delete this->Internals;
-  delete this->m_edgePointPicker;
+  delete m_edgePointPicker;
 }
 
 void pqSplitEdgeWidget::setView(pqRenderView* view)
@@ -186,18 +186,18 @@ void pqSplitEdgeWidget::setView(pqRenderView* view)
 void pqSplitEdgeWidget::setEdgeOperation(smtk::operation::OperationPtr edgeOp)
 {
   if (edgeOp && edgeOp->uniqueName() == "smtk::bridge::polygon::operators::SplitEdge")
-    this->m_edgeOp = edgeOp;
+    m_edgeOp = edgeOp;
   else
-    this->m_edgeOp = smtk::operation::Operation::Ptr();
+    m_edgeOp = smtk::operation::Operation::Ptr();
 }
 smtk::shared_ptr<smtk::operation::Operation> pqSplitEdgeWidget::edgeOperation()
 {
-  return this->m_edgeOp.lock();
+  return m_edgeOp.lock();
 }
 
 void pqSplitEdgeWidget::splitEdgeOperation(bool start)
 {
-  if (this->View && this->m_edgeOp.lock() && start)
+  if (this->View && m_edgeOp.lock() && start)
   {
     // clear the selection first
     // qtActiveObjects::instance().smtkSelectionManager()->clearAllSelections();
@@ -209,9 +209,9 @@ void pqSplitEdgeWidget::splitEdgeOperation(bool start)
       qCritical()
         << "The render view is in use with another selection. Stop that selection first.\n"
         << "You can do a rubber band selection in the render window to reset selection mode";
-      this->m_edgePointPicker->InteractiveSelectButton->blockSignals(true);
-      this->m_edgePointPicker->InteractiveSelectButton->setChecked(false);
-      this->m_edgePointPicker->InteractiveSelectButton->blockSignals(false);
+      m_edgePointPicker->InteractiveSelectButton->blockSignals(true);
+      m_edgePointPicker->InteractiveSelectButton->setChecked(false);
+      m_edgePointPicker->InteractiveSelectButton->blockSignals(false);
       return;
     }
 
@@ -223,7 +223,7 @@ void pqSplitEdgeWidget::splitEdgeOperation(bool start)
       Qt::UniqueConnection);
 
     emit hideAllFaces(true); // hide faces before selection
-    this->m_edgePointPicker->doPick(this->View);
+    m_edgePointPicker->doPick(this->View);
   }
   else
   {
@@ -234,10 +234,10 @@ void pqSplitEdgeWidget::splitEdgeOperation(bool start)
 
 void pqSplitEdgeWidget::arcPointPicked(pqOutputPort* port)
 {
-  if (!this->m_edgePointPicker->m_isActive)
+  if (!m_edgePointPicker->m_isActive)
     return;
 
-  if (port && this->View && this->m_edgeOp.lock())
+  if (port && this->View && m_edgeOp.lock())
   {
     // get the selected point id
     // This "IDs" only have three components [composite_index, processId, Index]
@@ -253,7 +253,7 @@ void pqSplitEdgeWidget::arcPointPicked(pqOutputPort* port)
 
     //collect the information from the server model source
     vtkSMProxy* proxy = port->getSource()->getProxy();
-    smtk::attribute::AttributePtr opSpec = this->m_edgeOp.lock()->parameters();
+    smtk::attribute::AttributePtr opSpec = m_edgeOp.lock()->parameters();
 
     // find the first proper point to start spliting
     if (ids.size() > 2 && (ids.size() % 3 == 0)) // A valid selection
@@ -269,7 +269,7 @@ void pqSplitEdgeWidget::arcPointPicked(pqOutputPort* port)
         {
           smtk::common::UUID edgeId(arcInfo->GetModelEntityID());
           // TODO: manager cannot be accessed through the operator directly
-          // smtk::model::Edge edge(this->m_edgeOp.lock()->manager(), edgeId);
+          // smtk::model::Edge edge(m_edgeOp.lock()->manager(), edgeId);
           // if (edge.isValid())
           // {
           //   opSpec->removeAllAssociations();
@@ -292,7 +292,7 @@ void pqSplitEdgeWidget::arcPointPicked(pqOutputPort* port)
     this->View->render();
     if (readytoOp)
     {
-      emit this->operationRequested(this->m_edgeOp.lock());
+      emit this->operationRequested(m_edgeOp.lock());
       // keep picking mode. We need this to refresh the Selecter with new model geometry
       vtkPVRenderView* rv =
         vtkPVRenderView::SafeDownCast(this->View->getRenderViewProxy()->GetClientSideObject());
@@ -329,10 +329,10 @@ void pqSplitEdgeWidget::onSelectionModeChanged()
 
 bool pqSplitEdgeWidget::isActive()
 {
-  return this->m_edgePointPicker->m_isActive;
+  return m_edgePointPicker->m_isActive;
 }
 
 void pqSplitEdgeWidget::resetWidget()
 {
-  this->m_edgePointPicker->donePicking(this->View);
+  m_edgePointPicker->donePicking(this->View);
 }

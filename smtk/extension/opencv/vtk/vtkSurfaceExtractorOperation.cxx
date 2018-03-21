@@ -32,9 +32,9 @@ vtkSurfaceExtractorOperation::~vtkSurfaceExtractorOperation()
 
 bool vtkSurfaceExtractorOperation::AbleToOperate()
 {
-  bool able2Op = this->m_smtkOp.lock() &&
-    this->m_smtkOp.lock()->uniqueName() == "smtk::bridge::polygon::SurfaceExtractContours" &&
-    this->m_smtkOp.lock()->ableToOperate();
+  bool able2Op = m_smtkOp.lock() &&
+    m_smtkOp.lock()->uniqueName() == "smtk::bridge::polygon::SurfaceExtractContours" &&
+    m_smtkOp.lock()->ableToOperate();
 
   return able2Op;
 }
@@ -44,11 +44,11 @@ smtk::operation::Operation::Result vtkSurfaceExtractorOperation::Operate()
   // ONLY for create-edge-with-widget and edit-edge operations,
   if (!this->AbleToOperate())
   {
-    return this->m_smtkOp.lock()->createResult(smtk::operation::Operation::Outcome::FAILED);
+    return m_smtkOp.lock()->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   smtk::operation::Operation::Result edgeResult;
-  edgeResult = this->m_smtkOp.lock()->operate();
+  edgeResult = m_smtkOp.lock()->operate();
 
   return edgeResult;
 }

@@ -35,12 +35,12 @@ public:
   Item::Type type() const override;
   bool isValid() const override;
 
-  std::size_t numberOfValues() const { return this->m_values.size(); }
+  std::size_t numberOfValues() const { return m_values.size(); }
   bool setNumberOfValues(std::size_t newSize);
   std::size_t numberOfRequiredValues() const;
   ::smtk::common::DateTimeZonePair value(std::size_t element = 0) const
   {
-    return this->m_values[element];
+    return m_values[element];
   }
   bool setValue(const ::smtk::common::DateTimeZonePair& val) { return this->setValue(0, val); }
   bool setValue(std::size_t element, const ::smtk::common::DateTimeZonePair& val);
@@ -50,8 +50,8 @@ public:
   virtual bool isUsingDefault(std::size_t elementIndex) const;
   // This method tests all of the values of the items w/r the default value
   virtual bool isUsingDefault() const;
-  virtual bool isSet(std::size_t element = 0) const { return this->m_isSet[element]; }
-  virtual void unset(std::size_t element = 0) { this->m_isSet[element] = false; }
+  virtual bool isSet(std::size_t element = 0) const { return m_isSet[element]; }
+  virtual void unset(std::size_t element = 0) { m_isSet[element] = false; }
 
   // Assigns this item to be equivalent to another. Options are processed by derived item classes.
   // The options are defined in Item.h. Returns true if success and false if a problem occured.

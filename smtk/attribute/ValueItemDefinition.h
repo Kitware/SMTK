@@ -47,18 +47,18 @@ public:
   ValueItemDefinition(const std::string& myname);
   ~ValueItemDefinition() override;
 
-  const std::string& units() const { return this->m_units; }
-  void setUnits(const std::string& newUnits) { this->m_units = newUnits; }
+  const std::string& units() const { return m_units; }
+  void setUnits(const std::string& newUnits) { m_units = newUnits; }
 
-  bool isDiscrete() const { return (this->m_discreteValueEnums.size() != 0); }
-  std::size_t numberOfDiscreteValues() const { return this->m_discreteValueEnums.size(); }
+  bool isDiscrete() const { return (m_discreteValueEnums.size() != 0); }
+  std::size_t numberOfDiscreteValues() const { return m_discreteValueEnums.size(); }
   const std::string& discreteEnum(std::size_t ith) const
   {
-    assert(this->m_discreteValueEnums.size() > ith);
-    return this->m_discreteValueEnums[ith];
+    assert(m_discreteValueEnums.size() > ith);
+    return m_discreteValueEnums[ith];
   }
   bool getEnumIndex(const std::string& enumVal, std::size_t& index) const;
-  int defaultDiscreteIndex() const { return this->m_defaultDiscreteIndex; }
+  int defaultDiscreteIndex() const { return m_defaultDiscreteIndex; }
   void setDefaultDiscreteIndex(int discreteIndex);
 
   bool allowsExpressions() const;
@@ -69,13 +69,13 @@ public:
   void buildExpressionItem(ValueItem* vitem, int position) const;
   void buildChildrenItems(ValueItem* vitem) const;
 
-  bool hasDefault() const { return this->m_hasDefault; }
+  bool hasDefault() const { return m_hasDefault; }
 
   virtual bool hasRange() const = 0;
 
   // Returns or Sets the minimum number of values that items from this def can have
   // Default value is 1
-  std::size_t numberOfRequiredValues() const { return this->m_numberOfRequiredValues; }
+  std::size_t numberOfRequiredValues() const { return m_numberOfRequiredValues; }
 
   // Returns false if esize is greater than max number of values (and max number > 0)
   bool setNumberOfRequiredValues(std::size_t esize);
@@ -83,7 +83,7 @@ public:
   // Returns or Sets the maximum number of values that items from this def can have.
   // if 0 is returned then there is no max limit.  Default value is 0
   // Note that this is used only when the def is extensible
-  std::size_t maxNumberOfValues() const { return this->m_maxNumberOfValues; }
+  std::size_t maxNumberOfValues() const { return m_maxNumberOfValues; }
 
   // Returns false if esize is less than number of required values (and esize > 0)
   bool setMaxNumberOfValues(std::size_t esize);
@@ -92,19 +92,19 @@ public:
   // can have a variable number of values.  The number of values is always <= to number of
   // required values and max number of values (provided max number of values > 0)
   // Default value is false.
-  bool isExtensible() const { return this->m_isExtensible; }
+  bool isExtensible() const { return m_isExtensible; }
   void setIsExtensible(bool mode);
 
   // Description:
   // Return whether or not there are labels for components.
   // There should only be labels if there is more than a single
   // component (i.e. m_numberOfRequiredValues != 1).
-  bool hasValueLabels() const { return !this->m_valueLabels.empty(); }
+  bool hasValueLabels() const { return !m_valueLabels.empty(); }
 
   // Description:
   // Specify whether the components label is coming from a common
   // label that is repeated.
-  bool usingCommonLabel() const { return this->m_useCommonLabel; }
+  bool usingCommonLabel() const { return m_useCommonLabel; }
   void setValueLabel(std::size_t element, const std::string& elabel);
   void setCommonValueLabel(const std::string& elabel);
   // Description:
@@ -114,21 +114,21 @@ public:
   std::string valueLabel(std::size_t element) const;
   bool isDiscreteIndexValid(int index) const
   {
-    return ((index > -1) && (static_cast<unsigned int>(index) < this->m_discreteValueEnums.size()));
+    return ((index > -1) && (static_cast<unsigned int>(index) < m_discreteValueEnums.size()));
   }
 
   // For conditional children items based on the item's current discrete value
-  std::size_t numberOfChildrenItemDefinitions() const { return this->m_itemDefs.size(); }
+  std::size_t numberOfChildrenItemDefinitions() const { return m_itemDefs.size(); }
 
   const std::map<std::string, smtk::attribute::ItemDefinitionPtr>& childrenItemDefinitions() const
   {
-    return this->m_itemDefs;
+    return m_itemDefs;
   }
 
   // returns true if this item has a child item definition of itemName
   bool hasChildItemDefinition(const std::string& itemName) const
   {
-    return (this->m_itemDefs.find(itemName) != this->m_itemDefs.end());
+    return (m_itemDefs.find(itemName) != m_itemDefs.end());
   }
 
   // returns true if valueName has a child item definition of itemName
@@ -154,7 +154,7 @@ public:
       return item;
     }
     item = SharedTypes::RawPointerType::New(idName);
-    this->m_itemDefs[item->name()] = item;
+    m_itemDefs[item->name()] = item;
     return item;
   }
 
@@ -194,8 +194,8 @@ inline bool smtk::attribute::ValueItemDefinition::hasChildItemDefinition(
   {
     return false;
   }
-  return (this->m_itemToValueAssociations[itemName].find(valueName) !=
-    this->m_itemToValueAssociations[itemName].end());
+  return (m_itemToValueAssociations[itemName].find(valueName) !=
+    m_itemToValueAssociations[itemName].end());
 }
 
 #endif /* __smtk_attribute_ValueItemDefinition_h */

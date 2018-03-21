@@ -26,13 +26,13 @@ struct UnionFindSet
 {
   UnionFindSet(T parent, T rank = 0)
   {
-    this->m_parent = parent;
-    this->m_rank = rank;
+    m_parent = parent;
+    m_rank = rank;
   }
   UnionFindSet(const UnionFindSet& other)
   {
-    this->m_parent = other.m_parent;
-    this->m_rank = other.m_rank;
+    m_parent = other.m_parent;
+    m_rank = other.m_rank;
   }
   T m_parent;
   T m_rank;
@@ -67,7 +67,7 @@ public:
   /// Popoulate a map with remaining disjoint sets numbered starting at \a startCount.
   void collapseIds(std::map<T, T>& collapsedIds, T startCount);
   /// Return the number of sets that have been created.
-  T size() const { return static_cast<T>(this->m_sets.size()); }
+  T size() const { return static_cast<T>(m_sets.size()); }
 
   std::vector<UnionFindSet<T> > m_sets;
 };
@@ -77,7 +77,7 @@ T UnionFind<T>::newSet()
 {
   T setId = this->size();
   UnionFindSet<T> entry(setId, 0);
-  this->m_sets.push_back(entry);
+  m_sets.push_back(entry);
   return setId;
 }
 
@@ -97,18 +97,18 @@ T UnionFind<T>::mergeSets(T a, T b)
     return -1;
   }
 
-  T aRank = this->m_sets[aRoot].m_rank;
-  T bRank = this->m_sets[bRoot].m_rank;
+  T aRank = m_sets[aRoot].m_rank;
+  T bRank = m_sets[bRoot].m_rank;
   if (aRank < bRank)
   {
-    this->m_sets[aRoot].m_parent = bRoot;
+    m_sets[aRoot].m_parent = bRoot;
     return bRoot;
   }
   else if (bRank == aRank)
   {
-    ++this->m_sets[aRoot].m_rank;
+    ++m_sets[aRoot].m_rank;
   }
-  this->m_sets[bRoot].m_parent = aRoot;
+  m_sets[bRoot].m_parent = aRoot;
   return aRoot;
 }
 
@@ -119,12 +119,12 @@ T UnionFind<T>::find(T src)
   {
     return -1;
   }
-  T parent = this->m_sets[src].m_parent;
+  T parent = m_sets[src].m_parent;
   if (parent != src)
   {
-    this->m_sets[src].m_parent = this->find(parent);
+    m_sets[src].m_parent = this->find(parent);
   }
-  return this->m_sets[src].m_parent;
+  return m_sets[src].m_parent;
 }
 
 template <typename T>
@@ -133,7 +133,7 @@ std::set<T> UnionFind<T>::roots()
   typename std::set<T> roots;
   typename std::vector<UnionFindSet<T> >::iterator it;
   T i = 0;
-  for (it = this->m_sets.begin(); it != this->m_sets.end(); ++it, ++i)
+  for (it = m_sets.begin(); it != m_sets.end(); ++it, ++i)
   {
     if (i == it->m_parent)
     {

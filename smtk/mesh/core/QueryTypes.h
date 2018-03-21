@@ -39,9 +39,9 @@ public:
   int value() const { return m_value; }
 
   //custom operators to make comparing tags easy
-  bool operator<(const IntegerTag& other) const { return this->m_value < other.m_value; }
-  bool operator==(const IntegerTag& other) const { return this->m_value == other.m_value; }
-  bool operator!=(const IntegerTag& other) const { return this->m_value != other.m_value; }
+  bool operator<(const IntegerTag& other) const { return m_value < other.m_value; }
+  bool operator==(const IntegerTag& other) const { return m_value == other.m_value; }
+  bool operator!=(const IntegerTag& other) const { return m_value != other.m_value; }
 
 private:
   int m_value;
@@ -91,23 +91,23 @@ public:
   inline bool operator<(const OpaqueTag& other) const
   {
     for (int i = 0; i < S; ++i)
-      if (this->m_value < other.m_value)
+      if (m_value < other.m_value)
         return true;
-      else if (this->m_value > other.m_value)
+      else if (m_value > other.m_value)
         return false;
     return false;
   }
   inline bool operator==(const OpaqueTag& other) const
   {
     for (int i = 0; i < S; ++i)
-      if (this->m_value != other.m_value)
+      if (m_value != other.m_value)
         return false;
     return true;
   }
   inline bool operator!=(const OpaqueTag& other) const
   {
     for (int i = 0; i < S; ++i)
-      if (this->m_value != other.m_value)
+      if (m_value != other.m_value)
         return true;
     return false;
   }
@@ -157,11 +157,11 @@ public:
   }
 
   //custom operators to make comparing tags easy
-  bool operator<(const CellFieldTag& other) const { return this->m_name < other.m_name; }
-  bool operator==(const CellFieldTag& other) const { return this->m_name == other.m_name; }
-  bool operator!=(const CellFieldTag& other) const { return this->m_name != other.m_name; }
+  bool operator<(const CellFieldTag& other) const { return m_name < other.m_name; }
+  bool operator==(const CellFieldTag& other) const { return m_name == other.m_name; }
+  bool operator!=(const CellFieldTag& other) const { return m_name != other.m_name; }
 
-  std::string name() const { return this->m_name; }
+  std::string name() const { return m_name; }
 
 private:
   std::string m_name;
@@ -176,11 +176,11 @@ public:
   }
 
   //custom operators to make comparing tags easy
-  bool operator<(const PointFieldTag& other) const { return this->m_name < other.m_name; }
-  bool operator==(const PointFieldTag& other) const { return this->m_name == other.m_name; }
-  bool operator!=(const PointFieldTag& other) const { return this->m_name != other.m_name; }
+  bool operator<(const PointFieldTag& other) const { return m_name < other.m_name; }
+  bool operator==(const PointFieldTag& other) const { return m_name == other.m_name; }
+  bool operator!=(const PointFieldTag& other) const { return m_name != other.m_name; }
 
-  std::string name() const { return this->m_name; }
+  std::string name() const { return m_name; }
 
 private:
   std::string m_name;

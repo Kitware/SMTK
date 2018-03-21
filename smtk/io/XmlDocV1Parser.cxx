@@ -458,13 +458,13 @@ void XmlDocV1Parser::process(xml_document& doc)
 void XmlDocV1Parser::process(xml_node& amnode)
 {
   // Reset the message log
-  this->m_logger.reset();
+  m_logger.reset();
   // Clear the vectors for dealing with attribute references
-  this->m_itemExpressionDefInfo.clear();
-  this->m_attRefDefInfo.clear();
-  this->m_itemExpressionInfo.clear();
-  this->m_attRefInfo.clear();
-  this->m_logger.reset();
+  m_itemExpressionDefInfo.clear();
+  m_attRefDefInfo.clear();
+  m_itemExpressionInfo.clear();
+  m_attRefInfo.clear();
+  m_logger.reset();
   xml_node node, cnode;
 
   // Get the category information, starting with current set
@@ -477,7 +477,7 @@ void XmlDocV1Parser::process(xml_node& amnode)
     s = node.attribute("Default").value();
     if (s != "")
     {
-      this->m_defaultCategory = s;
+      m_defaultCategory = s;
       secCatagories.insert(s.c_str());
     }
     for (cnode = node.first_child(); cnode; cnode = cnode.next_sibling())
@@ -508,7 +508,7 @@ void XmlDocV1Parser::process(xml_node& amnode)
         }
         catagories.insert(cnode.text().get());
       }
-      this->m_collection->defineAnalysis(s, catagories);
+      m_collection->defineAnalysis(s, catagories);
     }
   }
 
@@ -527,7 +527,7 @@ void XmlDocV1Parser::process(xml_node& amnode)
         tmp << "Level " << val;
         s = tmp.str();
       }
-      this->m_collection->addAdvanceLevel(val, s);
+      m_collection->addAdvanceLevel(val, s);
 
       xml_attribute xatt = anode.attribute("Color");
       if (xatt)
@@ -536,7 +536,7 @@ void XmlDocV1Parser::process(xml_node& amnode)
         s = xatt.value();
         if (!s.empty() && this->decodeColorInfo(s, color) == 0)
         {
-          this->m_collection->setAdvanceLevelColor(val, color);
+          m_collection->setAdvanceLevelColor(val, color);
         }
       }
     }
@@ -548,16 +548,16 @@ void XmlDocV1Parser::process(xml_node& amnode)
 
   // Now we need to check to see if there are any catagories in the collection
   // that were not explicitly listed in the catagories section - first update catagories
-  this->m_collection->updateCategories();
+  m_collection->updateCategories();
 
   std::set<std::string>::const_iterator it;
-  const std::set<std::string>& cats = this->m_collection->categories();
+  const std::set<std::string>& cats = m_collection->categories();
   for (it = cats.begin(); it != cats.end(); it++)
   {
     if (secCatagories.find(*it) == secCatagories.end())
     {
       smtkErrorMacro(
-        this->m_logger, "Category: " << *it << " was not listed in Collection's Category Section");
+        m_logger, "Category: " << *it << " was not listed in Collection's Category Section");
     }
   }
 }
@@ -577,34 +577,33 @@ void XmlDocV1Parser::processAttributeInformation(xml_node& root)
     // At this point we have all the definitions read in so lets
     // fix up all of the attribute definition references
     attribute::DefinitionPtr def;
-    for (i = 0; i < this->m_itemExpressionDefInfo.size(); i++)
+    for (i = 0; i < m_itemExpressionDefInfo.size(); i++)
     {
-      def = this->m_collection->findDefinition(this->m_itemExpressionDefInfo[i].second);
+      def = m_collection->findDefinition(m_itemExpressionDefInfo[i].second);
       if (def)
       {
-        this->m_itemExpressionDefInfo[i].first->setExpressionDefinition(def);
+        m_itemExpressionDefInfo[i].first->setExpressionDefinition(def);
       }
       else
       {
-        smtkErrorMacro(this->m_logger,
-          "Referenced Attribute Definition: " << this->m_itemExpressionDefInfo[i].second
-                                              << " is missing and required by Item Definition: "
-                                              << this->m_itemExpressionDefInfo[i].first->name());
+        smtkErrorMacro(m_logger, "Referenced Attribute Definition: "
+            << m_itemExpressionDefInfo[i].second << " is missing and required by Item Definition: "
+            << m_itemExpressionDefInfo[i].first->name());
       }
     }
 
-    for (i = 0; i < this->m_attRefDefInfo.size(); i++)
+    for (i = 0; i < m_attRefDefInfo.size(); i++)
     {
-      def = this->m_collection->findDefinition(this->m_attRefDefInfo[i].second);
+      def = m_collection->findDefinition(m_attRefDefInfo[i].second);
       if (def)
       {
-        this->m_attRefDefInfo[i].first->setAttributeDefinition(def);
+        m_attRefDefInfo[i].first->setAttributeDefinition(def);
       }
       else
       {
-        smtkErrorMacro(this->m_logger, "Referenced Attribute Definition: "
-            << this->m_attRefDefInfo[i].second << " is missing and required by Item Definition: "
-            << this->m_attRefDefInfo[i].first->name());
+        smtkErrorMacro(m_logger, "Referenced Attribute Definition: "
+            << m_attRefDefInfo[i].second
+            << " is missing and required by Item Definition: " << m_attRefDefInfo[i].first->name());
       }
     }
   }
@@ -622,33 +621,33 @@ void XmlDocV1Parser::processAttributeInformation(xml_node& root)
   // At this point we have all the attributes read in so lets
   // fix up all of the attribute  references
   attribute::AttributePtr att;
-  for (i = 0; i < this->m_itemExpressionInfo.size(); i++)
+  for (i = 0; i < m_itemExpressionInfo.size(); i++)
   {
-    att = this->m_collection->findAttribute(this->m_itemExpressionInfo[i].expName);
+    att = m_collection->findAttribute(m_itemExpressionInfo[i].expName);
     if (att)
     {
-      this->m_itemExpressionInfo[i].item->setExpression(m_itemExpressionInfo[i].pos, att);
+      m_itemExpressionInfo[i].item->setExpression(m_itemExpressionInfo[i].pos, att);
     }
     else
     {
-      smtkErrorMacro(this->m_logger, "Expression Attribute: "
-          << this->m_itemExpressionInfo[i].expName
-          << " is missing and required by Item : " << this->m_itemExpressionInfo[i].item->name());
+      smtkErrorMacro(m_logger, "Expression Attribute: " << m_itemExpressionInfo[i].expName
+                                                        << " is missing and required by Item : "
+                                                        << m_itemExpressionInfo[i].item->name());
     }
   }
 
-  for (i = 0; i < this->m_attRefInfo.size(); i++)
+  for (i = 0; i < m_attRefInfo.size(); i++)
   {
-    att = this->m_collection->findAttribute(this->m_attRefInfo[i].attName);
+    att = m_collection->findAttribute(m_attRefInfo[i].attName);
     if (att)
     {
-      this->m_attRefInfo[i].item->setValue(this->m_attRefInfo[i].pos, att);
+      m_attRefInfo[i].item->setValue(m_attRefInfo[i].pos, att);
     }
     else
     {
-      smtkErrorMacro(this->m_logger, "Referenced Attribute: "
-          << this->m_attRefInfo[i].attName
-          << " is missing and required by Item: " << this->m_attRefInfo[i].item->name());
+      smtkErrorMacro(m_logger, "Referenced Attribute: " << m_attRefInfo[i].attName
+                                                        << " is missing and required by Item: "
+                                                        << m_attRefInfo[i].item->name());
     }
   }
 }
@@ -665,35 +664,34 @@ void XmlDocV1Parser::createDefinition(xml_node& defNode)
   }
   else
   {
-    smtkErrorMacro(this->m_logger, "Definition missing Type XML Attribute");
+    smtkErrorMacro(m_logger, "Definition missing Type XML Attribute");
     return;
   }
   baseType = defNode.attribute("BaseType").value();
   if (baseType != "")
   {
-    baseDef = this->m_collection->findDefinition(baseType);
+    baseDef = m_collection->findDefinition(baseType);
     if (!baseDef)
     {
-      smtkErrorMacro(this->m_logger,
+      smtkErrorMacro(m_logger,
         "Could not find Base Definition: " << baseType << " needed to create Definition: " << type);
       return;
     }
-    def = this->m_collection->createDefinition(type, baseDef);
+    def = m_collection->createDefinition(type, baseDef);
   }
   else
   {
-    def = this->m_collection->createDefinition(type);
+    def = m_collection->createDefinition(type);
   }
   if (!def)
   {
     if (m_reportAsError)
     {
-      smtkErrorMacro(this->m_logger, "Definition: " << type << " already exists in the Collection");
+      smtkErrorMacro(m_logger, "Definition: " << type << " already exists in the Collection");
     }
     else
     {
-      smtkWarningMacro(
-        this->m_logger, "Definition: " << type << " already exists in the Collection");
+      smtkWarningMacro(m_logger, "Definition: " << type << " already exists in the Collection");
     }
     return;
   }
@@ -873,7 +871,7 @@ void XmlDocV1Parser::processDefinition(xml_node& defNode, smtk::attribute::Defin
         break;
 
       default:
-        smtkErrorMacro(this->m_logger, "Unsupported Item definition Type: "
+        smtkErrorMacro(m_logger, "Unsupported Item definition Type: "
             << node.name() << " needed to create Definition: " << def->type());
     }
   }
@@ -941,10 +939,10 @@ void XmlDocV1Parser::processItemDef(xml_node& node, smtk::attribute::ItemDefinit
       idef->addCategory(child.text().get());
     }
   }
-  else if (this->m_defaultCategory != "" &&
+  else if (m_defaultCategory != "" &&
     !smtk::dynamic_pointer_cast<attribute::GroupItemDefinition>(idef))
   { // group item definitions don't get categories
-    idef->addCategory(this->m_defaultCategory.c_str());
+    idef->addCategory(m_defaultCategory.c_str());
   }
 }
 
@@ -952,14 +950,14 @@ void XmlDocV1Parser::processDoubleDef(pugi::xml_node& node, attribute::DoubleIte
 {
   // First process the common value item def stuff
   this->processValueDef(node, idef);
-  processDerivedValueDef<attribute::DoubleItemDefinitionPtr, double>(node, idef, this->m_logger);
+  processDerivedValueDef<attribute::DoubleItemDefinitionPtr, double>(node, idef, m_logger);
 }
 
 void XmlDocV1Parser::processIntDef(pugi::xml_node& node, attribute::IntItemDefinitionPtr idef)
 {
   // First process the common value item def stuff
   this->processValueDef(node, idef);
-  processDerivedValueDef<attribute::IntItemDefinitionPtr, int>(node, idef, this->m_logger);
+  processDerivedValueDef<attribute::IntItemDefinitionPtr, int>(node, idef, m_logger);
 }
 
 void XmlDocV1Parser::processStringDef(pugi::xml_node& node, attribute::StringItemDefinitionPtr idef)
@@ -971,8 +969,7 @@ void XmlDocV1Parser::processStringDef(pugi::xml_node& node, attribute::StringIte
     (void)xatt;
     idef->setIsMultiline(true);
   }
-  processDerivedValueDef<attribute::StringItemDefinitionPtr, std::string>(
-    node, idef, this->m_logger);
+  processDerivedValueDef<attribute::StringItemDefinitionPtr, std::string>(node, idef, m_logger);
 }
 
 void XmlDocV1Parser::processModelEntityDef(
@@ -1008,7 +1005,7 @@ void XmlDocV1Parser::processModelEntityDef(
   // Lets see if there are labels
   if (node.child("Labels"))
   {
-    smtkErrorMacro(this->m_logger, "Labels has been changed to ComponentLabels : " << idef->name());
+    smtkErrorMacro(m_logger, "Labels has been changed to ComponentLabels : " << idef->name());
   }
   labels = node.child("ComponentLabels");
   if (labels)
@@ -1033,8 +1030,8 @@ void XmlDocV1Parser::processMeshSelectionDef(
   pugi::xml_node& node, attribute::MeshSelectionItemDefinitionPtr idef)
 {
   (void)node;
-  smtkWarningMacro(this->m_logger,
-    "The Mesh Selection defs should only be availabe starting Attribute Version 2 Format"
+  smtkWarningMacro(
+    m_logger, "The Mesh Selection defs should only be availabe starting Attribute Version 2 Format"
       << idef->name());
 }
 
@@ -1042,8 +1039,8 @@ void XmlDocV1Parser::processMeshEntityDef(
   pugi::xml_node& node, attribute::MeshItemDefinitionPtr idef)
 {
   (void)node;
-  smtkWarningMacro(this->m_logger,
-    "The Mesh Entity defs should only be availabe starting Attribute Version 2 Format"
+  smtkWarningMacro(
+    m_logger, "The Mesh Entity defs should only be availabe starting Attribute Version 2 Format"
       << idef->name());
 }
 
@@ -1051,23 +1048,23 @@ void XmlDocV1Parser::processDateTimeDef(
   pugi::xml_node& node, attribute::DateTimeItemDefinitionPtr idef)
 {
   (void)node;
-  smtkWarningMacro(this->m_logger,
-    "DateTime item defs only supported starting Attribute Version 3 Format" << idef->name());
+  smtkWarningMacro(m_logger, "DateTime item defs only supported starting Attribute Version 3 Format"
+      << idef->name());
 }
 
 void XmlDocV1Parser::processResourceDef(
   pugi::xml_node& node, attribute::ResourceItemDefinitionPtr idef)
 {
   (void)node;
-  smtkWarningMacro(this->m_logger,
-    "Resource item defs only supported starting Attribute Version 3 Format" << idef->name());
+  smtkWarningMacro(m_logger, "Resource item defs only supported starting Attribute Version 3 Format"
+      << idef->name());
 }
 
 void XmlDocV1Parser::processComponentDef(
   pugi::xml_node& node, attribute::ComponentItemDefinitionPtr idef)
 {
   (void)node;
-  smtkWarningMacro(this->m_logger,
+  smtkWarningMacro(m_logger,
     "Component item defs only supported starting Attribute Version 3 Format" << idef->name());
 }
 
@@ -1100,14 +1097,14 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
   // Lets see if there are labels
   if (node.child("Labels"))
   {
-    smtkErrorMacro(this->m_logger, "Labels has been changed to ComponentLabels : " << idef->name());
+    smtkErrorMacro(m_logger, "Labels has been changed to ComponentLabels : " << idef->name());
   }
   labels = node.child("ComponentLabels");
   if (labels)
   {
     if ((numberOfComponents == 1) && !idef->isExtensible())
     {
-      smtkErrorMacro(this->m_logger,
+      smtkErrorMacro(m_logger,
         "Should not use ComponentLabels when NumberOfRequiredValues=1 : " << idef->name());
     }
 
@@ -1119,7 +1116,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
       if (labels.first_child())
       {
         smtkErrorMacro(
-          this->m_logger, "Cannot combine CommonLabel with Label child nodes : " << idef->name());
+          m_logger, "Cannot combine CommonLabel with Label child nodes : " << idef->name());
       }
     }
     else
@@ -1133,7 +1130,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
       }
       if (i != numberOfComponents)
       {
-        smtkErrorMacro(this->m_logger, "Wrong number of component values for : " << idef->name());
+        smtkErrorMacro(m_logger, "Wrong number of component values for : " << idef->name());
       }
     }
   }
@@ -1142,7 +1139,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
   {
     // Is the attribute definition already in the collection?
     std::string etype = child.text().get();
-    attribute::DefinitionPtr adef = this->m_collection->findDefinition(etype);
+    attribute::DefinitionPtr adef = m_collection->findDefinition(etype);
     if (adef)
     {
       idef->setExpressionDefinition(adef);
@@ -1150,7 +1147,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
     else
     {
       // We need to queue up this item to be assigned its definition later
-      this->m_itemExpressionDefInfo.push_back(ItemExpressionDefInfo(idef, etype));
+      m_itemExpressionDefInfo.push_back(ItemExpressionDefInfo(idef, etype));
     }
   }
   xatt = node.attribute("Units");
@@ -1178,7 +1175,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
         }
         else
         {
-          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
         }
         break;
       case smtk::attribute::Item::DoubleType:
@@ -1189,7 +1186,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
         }
         else
         {
-          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
         }
         break;
       case smtk::attribute::Item::DirectoryType:
@@ -1200,7 +1197,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
         }
         else
         {
-          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
         }
         break;
       case smtk::attribute::Item::FileType:
@@ -1211,7 +1208,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
         }
         else
         {
-          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
         }
         break;
       case smtk::attribute::Item::GroupType:
@@ -1222,7 +1219,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
         }
         else
         {
-          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
         }
         break;
       case smtk::attribute::Item::IntType:
@@ -1233,7 +1230,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
         }
         else
         {
-          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
         }
         break;
       case smtk::attribute::Item::StringType:
@@ -1244,7 +1241,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
         }
         else
         {
-          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
         }
         break;
       case smtk::attribute::Item::ModelEntityType:
@@ -1256,7 +1253,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
         }
         else
         {
-          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
         }
         break;
       case smtk::attribute::Item::VoidType:
@@ -1266,7 +1263,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
         }
         else
         {
-          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
         }
         break;
       case smtk::attribute::Item::MeshSelectionType:
@@ -1277,7 +1274,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
         }
         else
         {
-          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
         }
         break;
       case smtk::attribute::Item::MeshEntityType:
@@ -1288,7 +1285,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
         }
         else
         {
-          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
         }
         break;
       case smtk::attribute::Item::DateTimeType:
@@ -1299,7 +1296,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
         }
         else
         {
-          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
         }
         break;
       case smtk::attribute::Item::ComponentType:
@@ -1310,11 +1307,11 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
         }
         else
         {
-          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
         }
         break;
       default:
-        smtkErrorMacro(this->m_logger, "Unsupported Item definition Type: "
+        smtkErrorMacro(m_logger, "Unsupported Item definition Type: "
             << cinode.name() << " needed to create Definition: " << citype);
     }
   }
@@ -1333,7 +1330,7 @@ void XmlDocV1Parser::processRefDef(pugi::xml_node& node, attribute::RefItemDefin
   {
     // Is the attribute definition already in the collection?
     std::string etype = child.text().get();
-    attribute::DefinitionPtr adef = this->m_collection->findDefinition(etype);
+    attribute::DefinitionPtr adef = m_collection->findDefinition(etype);
     if (adef)
     {
       idef->setAttributeDefinition(adef);
@@ -1341,7 +1338,7 @@ void XmlDocV1Parser::processRefDef(pugi::xml_node& node, attribute::RefItemDefin
     else
     {
       // We need to queue up this item to be assigned its definition later
-      this->m_attRefDefInfo.push_back(AttRefDefInfo(idef, etype));
+      m_attRefDefInfo.push_back(AttRefDefInfo(idef, etype));
     }
   }
 
@@ -1354,7 +1351,7 @@ void XmlDocV1Parser::processRefDef(pugi::xml_node& node, attribute::RefItemDefin
   // Lets see if there are labels
   if (node.child("Labels"))
   {
-    smtkErrorMacro(this->m_logger, "Labels has been changed to ComponentLabels : " << idef->name());
+    smtkErrorMacro(m_logger, "Labels has been changed to ComponentLabels : " << idef->name());
   }
   labels = node.child("ComponentLabels");
   if (labels)
@@ -1449,7 +1446,7 @@ void XmlDocV1Parser::processFileDef(pugi::xml_node& node, attribute::FileItemDef
   // Lets see if there are labels
   if (node.child("Labels"))
   {
-    smtkErrorMacro(this->m_logger, "Labels has been changed to ComponentLabels : " << idef->name());
+    smtkErrorMacro(m_logger, "Labels has been changed to ComponentLabels : " << idef->name());
   }
   labels = node.child("ComponentLabels");
   if (labels)
@@ -1510,7 +1507,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
   // Lets see if there are labels
   if (node.child("Labels"))
   {
-    smtkErrorMacro(this->m_logger, "Labels has been changed to ComponentLabels : " << def->name());
+    smtkErrorMacro(m_logger, "Labels has been changed to ComponentLabels : " << def->name());
   }
   labels = node.child("ComponentLabels");
   if (labels)
@@ -1543,7 +1540,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         idef = def->addItemDefinition<smtk::attribute::RefItemDefinition>(itemName);
         if (!idef)
         {
-          smtkErrorMacro(this->m_logger, "Failed to create Ref Item definition Type: "
+          smtkErrorMacro(m_logger, "Failed to create Ref Item definition Type: "
               << child.name() << " needed to create Group Definition: " << def->name());
           continue;
         }
@@ -1554,7 +1551,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         idef = def->addItemDefinition<smtk::attribute::DoubleItemDefinition>(itemName);
         if (!idef)
         {
-          smtkErrorMacro(this->m_logger, "Failed to create Double Item definition Type: "
+          smtkErrorMacro(m_logger, "Failed to create Double Item definition Type: "
               << child.name() << " needed to create Group Definition: " << def->name());
           continue;
         }
@@ -1565,7 +1562,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         idef = def->addItemDefinition<smtk::attribute::DirectoryItemDefinition>(itemName);
         if (!idef)
         {
-          smtkErrorMacro(this->m_logger, "Failed to create Directory Item definition Type: "
+          smtkErrorMacro(m_logger, "Failed to create Directory Item definition Type: "
               << child.name() << " needed to create Group Definition: " << def->name());
           continue;
         }
@@ -1576,7 +1573,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         idef = def->addItemDefinition<smtk::attribute::FileItemDefinition>(itemName);
         if (!idef)
         {
-          smtkErrorMacro(this->m_logger, "Failed to create File Item definition Type: "
+          smtkErrorMacro(m_logger, "Failed to create File Item definition Type: "
               << child.name() << " needed to create Group Definition: " << def->name());
           continue;
         }
@@ -1587,7 +1584,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         idef = def->addItemDefinition<smtk::attribute::GroupItemDefinition>(itemName);
         if (!idef)
         {
-          smtkErrorMacro(this->m_logger, "Failed to create Group Item definition Type: "
+          smtkErrorMacro(m_logger, "Failed to create Group Item definition Type: "
               << child.name() << " needed to create Group Definition: " << def->name());
           continue;
         }
@@ -1598,7 +1595,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         idef = def->addItemDefinition<smtk::attribute::IntItemDefinition>(itemName);
         if (!idef)
         {
-          smtkErrorMacro(this->m_logger, "Failed to create Int Item definition Type: "
+          smtkErrorMacro(m_logger, "Failed to create Int Item definition Type: "
               << child.name() << " needed to create Group Definition: " << def->name());
           continue;
         }
@@ -1609,7 +1606,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         idef = def->addItemDefinition<smtk::attribute::StringItemDefinition>(itemName);
         if (!idef)
         {
-          smtkErrorMacro(this->m_logger, "Failed to create String Item definition Type: "
+          smtkErrorMacro(m_logger, "Failed to create String Item definition Type: "
               << child.name() << " needed to create Group Definition: " << def->name());
           continue;
         }
@@ -1620,7 +1617,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         idef = def->addItemDefinition<smtk::attribute::ModelEntityItemDefinition>(itemName);
         if (!idef)
         {
-          smtkErrorMacro(this->m_logger, "Failed to create Model Entity Item definition Type: "
+          smtkErrorMacro(m_logger, "Failed to create Model Entity Item definition Type: "
               << child.name() << " needed to create Group Definition: " << def->name());
           continue;
         }
@@ -1631,7 +1628,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         idef = def->addItemDefinition<smtk::attribute::VoidItemDefinition>(itemName);
         if (!idef)
         {
-          smtkErrorMacro(this->m_logger, "Failed to create Void Item definition Type: "
+          smtkErrorMacro(m_logger, "Failed to create Void Item definition Type: "
               << child.name() << " needed to create Group Definition: " << def->name());
           continue;
         }
@@ -1641,7 +1638,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         idef = def->addItemDefinition<smtk::attribute::MeshSelectionItemDefinition>(itemName);
         if (!idef)
         {
-          smtkErrorMacro(this->m_logger, "Failed to create Mesh Selection Item definition Type: "
+          smtkErrorMacro(m_logger, "Failed to create Mesh Selection Item definition Type: "
               << child.name() << " needed to create Group Definition: " << def->name());
           continue;
         }
@@ -1651,7 +1648,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         idef = def->addItemDefinition<smtk::attribute::MeshItemDefinition>(itemName);
         if (!idef)
         {
-          smtkErrorMacro(this->m_logger, "Failed to create Mesh Entity Item definition Type: "
+          smtkErrorMacro(m_logger, "Failed to create Mesh Entity Item definition Type: "
               << child.name() << " needed to create Group Definition: " << def->name());
           continue;
         }
@@ -1662,7 +1659,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         idef = def->addItemDefinition<smtk::attribute::DateTimeItemDefinition>(itemName);
         if (!idef)
         {
-          smtkErrorMacro(this->m_logger, "Failed to create DateTime Item definition Type: "
+          smtkErrorMacro(m_logger, "Failed to create DateTime Item definition Type: "
               << child.name() << " needed to create Group Definition: " << def->name());
           continue;
         }
@@ -1673,7 +1670,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         idef = def->addItemDefinition<smtk::attribute::ComponentItemDefinition>(itemName);
         if (!idef)
         {
-          smtkErrorMacro(this->m_logger, "Failed to create Component Item definition Type: "
+          smtkErrorMacro(m_logger, "Failed to create Component Item definition Type: "
               << child.name() << " needed to create Group Definition: " << def->name());
           continue;
         }
@@ -1681,7 +1678,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
           child, smtk::dynamic_pointer_cast<smtk::attribute::ComponentItemDefinition>(idef));
         break;
       default:
-        smtkErrorMacro(this->m_logger, "Unsupported Item definition Type: "
+        smtkErrorMacro(m_logger, "Unsupported Item definition Type: "
             << child.name() << " needed to create Group Definition: " << def->name());
     }
   }
@@ -1700,7 +1697,7 @@ smtk::common::UUID XmlDocV1Parser::getAttributeID(xml_node& attNode)
     name = xatt.value();
   }
   smtkWarningMacro(
-    this->m_logger, "Attribute: " << name << " is being assigned a new ID (Version 1 Format)!");
+    m_logger, "Attribute: " << name << " is being assigned a new ID (Version 1 Format)!");
 
   return smtk::common::UUID::null();
 }
@@ -1718,51 +1715,50 @@ void XmlDocV1Parser::processAttribute(xml_node& attNode)
   xatt = attNode.attribute("Name");
   if (!xatt)
   {
-    smtkErrorMacro(this->m_logger, "Invalid Attribute! - Missing XML Attribute Name");
+    smtkErrorMacro(m_logger, "Invalid Attribute! - Missing XML Attribute Name");
     return;
   }
   name = xatt.value();
   xatt = attNode.attribute("Type");
   if (!xatt)
   {
-    smtkErrorMacro(
-      this->m_logger, "Invalid Attribute: " << name << "  - Missing XML Attribute Type");
+    smtkErrorMacro(m_logger, "Invalid Attribute: " << name << "  - Missing XML Attribute Type");
     return;
   }
   type = xatt.value();
 
   id = this->getAttributeID(attNode);
 
-  def = this->m_collection->findDefinition(type);
+  def = m_collection->findDefinition(type);
   if (!def)
   {
-    smtkErrorMacro(this->m_logger, "Attribute: " << name << " of Type: " << type
-                                                 << "  - can not find attribute definition");
+    smtkErrorMacro(m_logger, "Attribute: " << name << " of Type: " << type
+                                           << "  - can not find attribute definition");
     return;
   }
 
   // Is the definition abstract?
   if (def->isAbstract())
   {
-    smtkErrorMacro(this->m_logger, "Attribute: " << name << " of Type: " << type
-                                                 << "  - is based on an abstract definition");
+    smtkErrorMacro(m_logger, "Attribute: " << name << " of Type: " << type
+                                           << "  - is based on an abstract definition");
     return;
   }
 
   // Do we have a valid uuid?
   if (id.isNull())
   {
-    att = this->m_collection->createAttribute(name, def);
+    att = m_collection->createAttribute(name, def);
   }
   else
   {
-    att = this->m_collection->createAttribute(name, def, id);
+    att = m_collection->createAttribute(name, def, id);
   }
 
   if (!att)
   {
-    smtkErrorMacro(this->m_logger, "Attribute: "
-        << name << " of Type: " << type << "  - could not be created - is the name in use");
+    smtkErrorMacro(m_logger, "Attribute: " << name << " of Type: " << type
+                                           << "  - could not be created - is the name in use");
     return;
   }
   xatt = attNode.attribute("OnInteriorNodes");
@@ -1801,7 +1797,7 @@ void XmlDocV1Parser::processAttribute(xml_node& attNode)
       if (!xatt)
       {
         smtkErrorMacro(
-          this->m_logger, "Bad Item for Attribute : " << name << "- missing XML Attribute Name");
+          m_logger, "Bad Item for Attribute : " << name << "- missing XML Attribute Name");
         node = itemsNode.find_child_by_attribute("Name", att->item(i)->name().c_str());
       }
       else
@@ -1818,15 +1814,15 @@ void XmlDocV1Parser::processAttribute(xml_node& attNode)
       }
       if (!node)
       {
-        smtkErrorMacro(this->m_logger,
-          "Can not locate XML Item node :" << att->item(i)->name() << " for Attribute : " << name);
+        smtkErrorMacro(m_logger, "Can not locate XML Item node :" << att->item(i)->name()
+                                                                  << " for Attribute : " << name);
         continue;
       }
       this->processItem(node, att->item(i));
     }
     if (iNode || (i != n))
     {
-      smtkErrorMacro(this->m_logger, "Number of Items does not match XML for Attribute : " << name);
+      smtkErrorMacro(m_logger, "Number of Items does not match XML for Attribute : " << name);
     }
   }
 
@@ -1934,8 +1930,8 @@ void XmlDocV1Parser::processItem(xml_node& node, smtk::attribute::ItemPtr item)
       // Nothing to do!
       break;
     default:
-      smtkErrorMacro(this->m_logger,
-        "Unsupported Item Type: " << smtk::attribute::Item::type2String(item->type()));
+      smtkErrorMacro(
+        m_logger, "Unsupported Item Type: " << smtk::attribute::Item::type2String(item->type()));
   }
 }
 
@@ -1952,7 +1948,7 @@ void XmlDocV1Parser::processValueItem(pugi::xml_node& node, attribute::ValueItem
     if (!xatt)
     {
       smtkErrorMacro(
-        this->m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
+        m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
       return;
     }
     n = xatt.as_uint();
@@ -1982,8 +1978,8 @@ void XmlDocV1Parser::processValueItem(pugi::xml_node& node, attribute::ValueItem
       xatt = childNode.attribute("Name");
       if (!xatt)
       {
-        smtkErrorMacro(this->m_logger,
-          "Bad Child Item for Item : " << item->name() << "- missing XML Attribute Name");
+        smtkErrorMacro(
+          m_logger, "Bad Child Item for Item : " << item->name() << "- missing XML Attribute Name");
         inode = childrenNodes.find_child_by_attribute("Name", iter->second->name().c_str());
       }
       else
@@ -2000,7 +1996,7 @@ void XmlDocV1Parser::processValueItem(pugi::xml_node& node, attribute::ValueItem
       }
       if (!inode)
       {
-        smtkErrorMacro(this->m_logger, "Can not locate XML Child Item node :"
+        smtkErrorMacro(m_logger, "Can not locate XML Child Item node :"
             << iter->second->name() << " for Item : " << item->name());
         continue;
       }
@@ -2009,7 +2005,7 @@ void XmlDocV1Parser::processValueItem(pugi::xml_node& node, attribute::ValueItem
     if (childNode || (iter != childrenItems.end()))
     {
       smtkErrorMacro(
-        this->m_logger, "Number of Children Items does not match XML for Item : " << item->name());
+        m_logger, "Number of Children Items does not match XML for Item : " << item->name());
     }
   }
   int index = 0;
@@ -2029,21 +2025,21 @@ void XmlDocV1Parser::processValueItem(pugi::xml_node& node, attribute::ValueItem
       xatt = val.attribute("Ith");
       if (!xatt)
       {
-        smtkErrorMacro(this->m_logger, "XML Attribute Ith is missing for Item: " << item->name());
+        smtkErrorMacro(m_logger, "XML Attribute Ith is missing for Item: " << item->name());
         continue;
       }
       i = xatt.as_int();
       if (i >= n)
       {
-        smtkErrorMacro(this->m_logger,
+        smtkErrorMacro(m_logger,
           "XML Attribute Ith = " << i << " and is out of range for Item: " << item->name());
         continue;
       }
       index = val.text().as_int();
       if (!item->setDiscreteIndex(static_cast<int>(i), index))
       {
-        smtkErrorMacro(this->m_logger, "Discrete Index "
-            << index << " for  ith value : " << i << " is not valid for Item: " << item->name());
+        smtkErrorMacro(m_logger, "Discrete Index " << index << " for  ith value : " << i
+                                                   << " is not valid for Item: " << item->name());
       }
     }
     return;
@@ -2052,12 +2048,12 @@ void XmlDocV1Parser::processValueItem(pugi::xml_node& node, attribute::ValueItem
   {
     if (!item->setDiscreteIndex(node.text().as_int()))
     {
-      smtkErrorMacro(this->m_logger, "Discrete Index "
-          << index << " for  ith value : " << i << " is not valid for Item: " << item->name());
+      smtkErrorMacro(m_logger, "Discrete Index " << index << " for  ith value : " << i
+                                                 << " is not valid for Item: " << item->name());
     }
     return;
   }
-  smtkErrorMacro(this->m_logger, "Missing Discrete Values for Item: " << item->name());
+  smtkErrorMacro(m_logger, "Missing Discrete Values for Item: " << item->name());
 }
 
 void XmlDocV1Parser::processRefItem(pugi::xml_node& node, attribute::RefItemPtr item)
@@ -2078,7 +2074,7 @@ void XmlDocV1Parser::processRefItem(pugi::xml_node& node, attribute::RefItemPtr 
     if (!xatt)
     {
       smtkErrorMacro(
-        this->m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
+        m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
       return;
     }
     n = xatt.as_uint();
@@ -2097,24 +2093,24 @@ void XmlDocV1Parser::processRefItem(pugi::xml_node& node, attribute::RefItemPtr 
       xatt = val.attribute("Ith");
       if (!xatt)
       {
-        smtkErrorMacro(this->m_logger, "XML Attribute Ith is missing for Item: " << item->name());
+        smtkErrorMacro(m_logger, "XML Attribute Ith is missing for Item: " << item->name());
         continue;
       }
       i = xatt.as_uint();
       if (i >= n)
       {
-        smtkErrorMacro(this->m_logger,
-          "XML Attribute Ith = " << i << " is out of range for Item: " << item->name());
+        smtkErrorMacro(
+          m_logger, "XML Attribute Ith = " << i << " is out of range for Item: " << item->name());
         continue;
       }
       attName = val.text().get();
-      att = this->m_collection->findAttribute(attName);
+      att = m_collection->findAttribute(attName);
       if (!att)
       {
         info.item = item;
         info.pos = static_cast<int>(i);
         info.attName = attName;
-        this->m_attRefInfo.push_back(info);
+        m_attRefInfo.push_back(info);
       }
       else
       {
@@ -2128,13 +2124,13 @@ void XmlDocV1Parser::processRefItem(pugi::xml_node& node, attribute::RefItemPtr 
     if (val)
     {
       attName = val.text().get();
-      att = this->m_collection->findAttribute(attName);
+      att = m_collection->findAttribute(attName);
       if (!att)
       {
         info.item = item;
         info.pos = 0;
         info.attName = attName;
-        this->m_attRefInfo.push_back(info);
+        m_attRefInfo.push_back(info);
       }
       else
       {
@@ -2144,7 +2140,7 @@ void XmlDocV1Parser::processRefItem(pugi::xml_node& node, attribute::RefItemPtr 
   }
   else
   {
-    smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
+    smtkErrorMacro(m_logger, "XML Node Values is missing for Item: " << item->name());
   }
 }
 
@@ -2163,7 +2159,7 @@ void XmlDocV1Parser::processDirectoryItem(pugi::xml_node& node, attribute::Direc
     if (!xatt)
     {
       smtkErrorMacro(
-        this->m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
+        m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
       return;
     }
     n = xatt.as_uint();
@@ -2182,14 +2178,14 @@ void XmlDocV1Parser::processDirectoryItem(pugi::xml_node& node, attribute::Direc
       xatt = val.attribute("Ith");
       if (!xatt)
       {
-        smtkErrorMacro(this->m_logger, "XML Attribute Ith is missing for Item: " << item->name());
+        smtkErrorMacro(m_logger, "XML Attribute Ith is missing for Item: " << item->name());
         continue;
       }
       i = xatt.as_uint();
       if (i >= n)
       {
-        smtkErrorMacro(this->m_logger,
-          "XML Attribute Ith = " << i << " is out of range for Item: " << item->name());
+        smtkErrorMacro(
+          m_logger, "XML Attribute Ith = " << i << " is out of range for Item: " << item->name());
         continue;
       }
       item->setValue(static_cast<int>(i), val.text().get());
@@ -2201,7 +2197,7 @@ void XmlDocV1Parser::processDirectoryItem(pugi::xml_node& node, attribute::Direc
   }
   else
   {
-    smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
+    smtkErrorMacro(m_logger, "XML Node Values is missing for Item: " << item->name());
   }
 }
 
@@ -2209,29 +2205,29 @@ void XmlDocV1Parser::processDoubleItem(pugi::xml_node& node, attribute::DoubleIt
 {
   this->processValueItem(node, dynamic_pointer_cast<smtk::attribute::ValueItem>(item));
   processDerivedValue<attribute::DoubleItemPtr, double>(
-    node, item, this->m_collection, this->m_itemExpressionInfo, this->m_logger);
+    node, item, m_collection, m_itemExpressionInfo, m_logger);
 }
 
 void XmlDocV1Parser::processIntItem(pugi::xml_node& node, attribute::IntItemPtr item)
 {
   this->processValueItem(node, dynamic_pointer_cast<smtk::attribute::ValueItem>(item));
   processDerivedValue<attribute::IntItemPtr, int>(
-    node, item, this->m_collection, this->m_itemExpressionInfo, this->m_logger);
+    node, item, m_collection, m_itemExpressionInfo, m_logger);
 }
 
 void XmlDocV1Parser::processStringItem(pugi::xml_node& node, attribute::StringItemPtr item)
 {
   this->processValueItem(node, dynamic_pointer_cast<smtk::attribute::ValueItem>(item));
   processDerivedValue<attribute::StringItemPtr, std::string>(
-    node, item, this->m_collection, this->m_itemExpressionInfo, this->m_logger);
+    node, item, m_collection, m_itemExpressionInfo, m_logger);
 }
 
 void XmlDocV1Parser::processModelEntityItem(
   pugi::xml_node& node, attribute::ModelEntityItemPtr item)
 {
   (void)node;
-  smtkWarningMacro(this->m_logger,
-    "All Model Entity Items will be ignored for Attribute Version 1 Format" << item->name());
+  smtkWarningMacro(m_logger, "All Model Entity Items will be ignored for Attribute Version 1 Format"
+      << item->name());
   return;
 }
 
@@ -2239,36 +2235,36 @@ void XmlDocV1Parser::processMeshSelectionItem(
   pugi::xml_node& node, attribute::MeshSelectionItemPtr item)
 {
   (void)node;
-  smtkWarningMacro(this->m_logger,
+  smtkWarningMacro(m_logger,
     "All Mesh Selection Items will be ignored for Attribute Version 1 Format" << item->name());
 }
 
 void XmlDocV1Parser::processMeshEntityItem(pugi::xml_node& node, attribute::MeshItemPtr item)
 {
   (void)node;
-  smtkWarningMacro(this->m_logger,
-    "All Mesh Entity Items will be ignored for Attribute Version 1 Format" << item->name());
+  smtkWarningMacro(m_logger, "All Mesh Entity Items will be ignored for Attribute Version 1 Format"
+      << item->name());
 }
 
 void XmlDocV1Parser::processDateTimeItem(pugi::xml_node& node, attribute::DateTimeItemPtr item)
 {
   (void)node;
-  smtkWarningMacro(this->m_logger,
-    "DateTime items only supported starting Attribute Version 3 Format" << item->name());
+  smtkWarningMacro(
+    m_logger, "DateTime items only supported starting Attribute Version 3 Format" << item->name());
 }
 
 void XmlDocV1Parser::processResourceItem(pugi::xml_node& node, attribute::ResourceItemPtr item)
 {
   (void)node;
-  smtkWarningMacro(this->m_logger,
-    "Resource items only supported starting Attribute Version 3 Format" << item->name());
+  smtkWarningMacro(
+    m_logger, "Resource items only supported starting Attribute Version 3 Format" << item->name());
 }
 
 void XmlDocV1Parser::processComponentItem(pugi::xml_node& node, attribute::ComponentItemPtr item)
 {
   (void)node;
-  smtkWarningMacro(this->m_logger,
-    "Component items only supported starting Attribute Version 3 Format" << item->name());
+  smtkWarningMacro(
+    m_logger, "Component items only supported starting Attribute Version 3 Format" << item->name());
 }
 
 void XmlDocV1Parser::processFileItem(pugi::xml_node& node, attribute::FileItemPtr item)
@@ -2286,7 +2282,7 @@ void XmlDocV1Parser::processFileItem(pugi::xml_node& node, attribute::FileItemPt
     if (!xatt)
     {
       smtkErrorMacro(
-        this->m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
+        m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
       return;
     }
     n = xatt.as_uint();
@@ -2305,14 +2301,14 @@ void XmlDocV1Parser::processFileItem(pugi::xml_node& node, attribute::FileItemPt
       xatt = val.attribute("Ith");
       if (!xatt)
       {
-        smtkErrorMacro(this->m_logger, "XML Attribute Ith is missing for Item: " << item->name());
+        smtkErrorMacro(m_logger, "XML Attribute Ith is missing for Item: " << item->name());
         continue;
       }
       i = xatt.as_uint();
       if (i >= n)
       {
-        smtkErrorMacro(this->m_logger,
-          "XML Attribute Ith = " << i << " is out of range for Item: " << item->name());
+        smtkErrorMacro(
+          m_logger, "XML Attribute Ith = " << i << " is out of range for Item: " << item->name());
         continue;
       }
       item->setValue(static_cast<int>(i), val.text().get());
@@ -2324,7 +2320,7 @@ void XmlDocV1Parser::processFileItem(pugi::xml_node& node, attribute::FileItemPt
   }
   else
   {
-    smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
+    smtkErrorMacro(m_logger, "XML Node Values is missing for Item: " << item->name());
   }
 }
 
@@ -2350,8 +2346,8 @@ void XmlDocV1Parser::processGroupItem(pugi::xml_node& node, attribute::GroupItem
       xatt = node.attribute("NumberOfGroups");
       if (!xatt)
       {
-        smtkErrorMacro(this->m_logger,
-          "XML Attribute NumberOfGroups is missing for Group Item: " << item->name());
+        smtkErrorMacro(
+          m_logger, "XML Attribute NumberOfGroups is missing for Group Item: " << item->name());
         return;
       }
       n = xatt.as_uint();
@@ -2359,8 +2355,7 @@ void XmlDocV1Parser::processGroupItem(pugi::xml_node& node, attribute::GroupItem
 
     if (!item->setNumberOfGroups(n))
     {
-      smtkErrorMacro(
-        this->m_logger, "Invalid number of sub-groups for Group Item: " << item->name());
+      smtkErrorMacro(m_logger, "Invalid number of sub-groups for Group Item: " << item->name());
       return;
     }
   }
@@ -2378,7 +2373,7 @@ void XmlDocV1Parser::processGroupItem(pugi::xml_node& node, attribute::GroupItem
     {
       if (i >= n)
       {
-        smtkErrorMacro(this->m_logger, "Too many sub-groups for Group Item: " << item->name());
+        smtkErrorMacro(m_logger, "Too many sub-groups for Group Item: " << item->name());
         continue;
       }
       for (itemNode = cluster.first_child(), j = 0; itemNode;
@@ -2386,7 +2381,7 @@ void XmlDocV1Parser::processGroupItem(pugi::xml_node& node, attribute::GroupItem
       {
         if (j >= m)
         {
-          smtkErrorMacro(this->m_logger,
+          smtkErrorMacro(m_logger,
             "Too many item nodes for subGroup: " << i << " for Group Item: " << item->name());
           continue;
         }
@@ -2400,7 +2395,7 @@ void XmlDocV1Parser::processGroupItem(pugi::xml_node& node, attribute::GroupItem
     {
       if (j >= m)
       {
-        smtkErrorMacro(this->m_logger, "Too many item nodes for subGroup: 0"
+        smtkErrorMacro(m_logger, "Too many item nodes for subGroup: 0"
             << " for Group Item: " << item->name());
         continue;
       }
@@ -2409,7 +2404,7 @@ void XmlDocV1Parser::processGroupItem(pugi::xml_node& node, attribute::GroupItem
   }
   else
   {
-    smtkErrorMacro(this->m_logger, "XML Node GroupClusters is missing for Item: " << item->name());
+    smtkErrorMacro(m_logger, "XML Node GroupClusters is missing for Item: " << item->name());
   }
 }
 
@@ -2418,14 +2413,14 @@ bool XmlDocV1Parser::getColor(xml_node& node, double color[4], const std::string
   std::string s = node.text().get();
   if (s.empty())
   {
-    smtkErrorMacro(this->m_logger, "Color Format Problem - empty input for " << colorName);
+    smtkErrorMacro(m_logger, "Color Format Problem - empty input for " << colorName);
     return false;
   }
 
   int i = this->decodeColorInfo(s, color);
   if (i)
   {
-    smtkErrorMacro(this->m_logger, "Color Format Problem - only found "
+    smtkErrorMacro(m_logger, "Color Format Problem - only found "
         << 4 - i << " components for " << colorName << " from string " << s);
     return false;
   }
@@ -2444,7 +2439,7 @@ void XmlDocV1Parser::processViews(xml_node& root)
 
   if (!rootView)
   {
-    smtkErrorMacro(this->m_logger, "Can't process Root View");
+    smtkErrorMacro(m_logger, "Can't process Root View");
     return;
   }
 
@@ -2533,7 +2528,7 @@ void XmlDocV1Parser::processInstancedView(xml_node& node, smtk::view::ViewPtr vi
     xatt = child.attribute("Type");
     if (!xatt)
     {
-      smtkErrorMacro(this->m_logger, "XML Attribute Type is missing"
+      smtkErrorMacro(m_logger, "XML Attribute Type is missing"
           << "and is required to create attribute: " << child.text().get()
           << " for Instanced View: " << view->name());
       continue;
@@ -2651,7 +2646,7 @@ smtk::view::ViewPtr XmlDocV1Parser::createView(xml_node& node, const std::string
   xatt = node.attribute("Title"); // Required
   if (!xatt)
   {
-    smtkErrorMacro(this->m_logger, "View is missing XML Attribute Title");
+    smtkErrorMacro(m_logger, "View is missing XML Attribute Title");
     smtk::view::ViewPtr dummy;
     return dummy;
   }
@@ -2664,7 +2659,7 @@ smtk::view::ViewPtr XmlDocV1Parser::createView(xml_node& node, const std::string
     val = xatt.value();
     view->details().setAttribute("Icon", val);
   }
-  this->m_collection->addView(view);
+  m_collection->addView(view);
   return view;
 }
 
@@ -2673,7 +2668,7 @@ void XmlDocV1Parser::processModelInfo(xml_node& root)
   xml_node modelInfo = root.child("ModelInfo");
   if (modelInfo)
   {
-    smtkWarningMacro(this->m_logger, "Model Information is not supported in this version");
+    smtkWarningMacro(m_logger, "Model Information is not supported in this version");
   }
 }
 
@@ -2703,7 +2698,7 @@ smtk::model::BitFlags XmlDocV1Parser::decodeModelEntityMask(const std::string& s
   if (!s.empty() && flags == 0 && s != "none" && s != "none|nodim")
   {
     smtkErrorMacro(
-      this->m_logger, "Decoding Model Entity Mask - Option \"" << s << "\" is not supported");
+      m_logger, "Decoding Model Entity Mask - Option \"" << s << "\" is not supported");
   }
   return flags;
 }

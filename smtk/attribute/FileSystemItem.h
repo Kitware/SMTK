@@ -38,12 +38,12 @@ public:
   bool isValid() const override;
   bool shouldBeRelative() const;
   bool shouldExist() const;
-  std::size_t numberOfValues() const { return this->m_values.size(); }
+  std::size_t numberOfValues() const { return m_values.size(); }
   bool setNumberOfValues(std::size_t newSize);
   std::size_t numberOfRequiredValues() const;
   bool isExtensible() const;
   std::size_t maxNumberOfValues() const;
-  std::string value(std::size_t element = 0) const { return this->m_values[element]; }
+  std::string value(std::size_t element = 0) const { return m_values[element]; }
   bool setValue(const std::string& val) { return this->setValue(0, val); }
   bool setValue(std::size_t element, const std::string& val);
   bool appendValue(const std::string& val);
@@ -62,8 +62,8 @@ public:
     return this->valueAsString(0, format);
   }
   virtual std::string valueAsString(std::size_t element, const std::string& format = "") const;
-  virtual bool isSet(std::size_t element = 0) const { return this->m_isSet[element]; }
-  virtual void unset(std::size_t element = 0) { this->m_isSet[element] = false; }
+  virtual bool isSet(std::size_t element = 0) const { return m_isSet[element]; }
+  virtual void unset(std::size_t element = 0) { m_isSet[element] = false; }
 
   // Iterator-style access to values:
   const_iterator begin() const;

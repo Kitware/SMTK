@@ -125,7 +125,7 @@ public:
   int findArrangementInvolvingEntity(ArrangementKind k, const smtk::common::UUID& involved) const;
   bool findDualArrangements(ArrangementKind kind, int index, ArrangementReferences& duals) const;
 
-  const KindsToArrangements& arrangementMap() const { return this->m_arrangements; }
+  const KindsToArrangements& arrangementMap() const { return m_arrangements; }
 
   const common::UUID& id() const override { return m_id; }
   bool setId(const common::UUID& uid) override

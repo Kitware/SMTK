@@ -46,7 +46,7 @@ bool FileSystemItemDefinition::isValueValid(const std::string& val) const
 
 void FileSystemItemDefinition::setIsExtensible(bool mode)
 {
-  this->m_isExtensible = mode;
+  m_isExtensible = mode;
   if (mode && !this->usingCommonLabel())
   {
     // Need to clear individual labels - can only use common label with
@@ -57,7 +57,7 @@ void FileSystemItemDefinition::setIsExtensible(bool mode)
 
 bool FileSystemItemDefinition::setNumberOfRequiredValues(std::size_t esize)
 {
-  if (esize == this->m_numberOfRequiredValues)
+  if (esize == m_numberOfRequiredValues)
   {
     return true;
   }
@@ -67,70 +67,70 @@ bool FileSystemItemDefinition::setNumberOfRequiredValues(std::size_t esize)
     return false;
   }
 
-  this->m_numberOfRequiredValues = esize;
+  m_numberOfRequiredValues = esize;
   if (!this->hasValueLabels())
   {
     return true;
   }
-  if (!(this->m_useCommonLabel || this->m_isExtensible))
+  if (!(m_useCommonLabel || m_isExtensible))
   {
-    this->m_valueLabels.resize(esize);
+    m_valueLabels.resize(esize);
   }
   return true;
 }
 
 void FileSystemItemDefinition::setValueLabel(std::size_t element, const std::string& elabel)
 {
-  if (this->m_numberOfRequiredValues == 0)
+  if (m_numberOfRequiredValues == 0)
   {
     return;
   }
-  if (this->m_valueLabels.size() != this->m_numberOfRequiredValues)
+  if (m_valueLabels.size() != m_numberOfRequiredValues)
   {
-    this->m_valueLabels.resize(this->m_numberOfRequiredValues);
+    m_valueLabels.resize(m_numberOfRequiredValues);
   }
-  this->m_useCommonLabel = false;
-  assert(this->m_valueLabels.size() > element);
-  this->m_valueLabels[element] = elabel;
+  m_useCommonLabel = false;
+  assert(m_valueLabels.size() > element);
+  m_valueLabels[element] = elabel;
 }
 
 void FileSystemItemDefinition::setCommonValueLabel(const std::string& elabel)
 {
-  if (this->m_valueLabels.size() != 1)
+  if (m_valueLabels.size() != 1)
   {
-    this->m_valueLabels.resize(1);
+    m_valueLabels.resize(1);
   }
-  this->m_useCommonLabel = true;
-  this->m_valueLabels[0] = elabel;
+  m_useCommonLabel = true;
+  m_valueLabels[0] = elabel;
 }
 
 std::string FileSystemItemDefinition::valueLabel(std::size_t element) const
 {
-  if (this->m_useCommonLabel)
+  if (m_useCommonLabel)
   {
-    assert(this->m_valueLabels.size() > 0);
-    return this->m_valueLabels[0];
+    assert(m_valueLabels.size() > 0);
+    return m_valueLabels[0];
   }
-  if (this->m_valueLabels.size())
+  if (m_valueLabels.size())
   {
-    assert(this->m_valueLabels.size() > element);
-    return this->m_valueLabels[element];
+    assert(m_valueLabels.size() > element);
+    return m_valueLabels[element];
   }
   return ""; // If we threw execeptions this method could return const string &
 }
 
 bool FileSystemItemDefinition::setMaxNumberOfValues(std::size_t esize)
 {
-  if (esize && (esize < this->m_numberOfRequiredValues))
+  if (esize && (esize < m_numberOfRequiredValues))
   {
     return false;
   }
-  this->m_maxNumberOfValues = esize;
+  m_maxNumberOfValues = esize;
   return true;
 }
 
 void FileSystemItemDefinition::setDefaultValue(const std::string& val)
 {
-  this->m_defaultValue = val;
-  this->m_hasDefault = true;
+  m_defaultValue = val;
+  m_hasDefault = true;
 }

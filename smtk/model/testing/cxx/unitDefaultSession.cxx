@@ -154,8 +154,8 @@ public:
     for (it = danglers.begin(); it != danglers.end(); ++it)
     {
       smtk::model::DanglingEntities::const_iterator cit =
-        this->m_dangling.find(smtk::model::EntityRef(modelMgr, *it));
-      if (cit == this->m_dangling.end())
+        m_dangling.find(smtk::model::EntityRef(modelMgr, *it));
+      if (cit == m_dangling.end())
         return false;
     }
     return true;

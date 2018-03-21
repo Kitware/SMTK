@@ -42,23 +42,23 @@ public:
   smtkSharedFromThisMacro(entity);
   virtual ~edge() {}
 
-  std::size_t pointsSize() const { return this->m_points.size(); }
+  std::size_t pointsSize() const { return m_points.size(); }
 
-  PointSeq::const_iterator pointsBegin() const { return this->m_points.begin(); }
-  PointSeq::iterator pointsBegin() { return this->m_points.begin(); }
+  PointSeq::const_iterator pointsBegin() const { return m_points.begin(); }
+  PointSeq::iterator pointsBegin() { return m_points.begin(); }
 
-  PointSeq::const_iterator pointsEnd() const { return this->m_points.end(); }
-  PointSeq::iterator pointsEnd() { return this->m_points.end(); }
+  PointSeq::const_iterator pointsEnd() const { return m_points.end(); }
+  PointSeq::iterator pointsEnd() { return m_points.end(); }
 
-  PointSeq::const_reverse_iterator pointsRBegin() const { return this->m_points.rbegin(); }
-  PointSeq::reverse_iterator pointsRBegin() { return this->m_points.rbegin(); }
+  PointSeq::const_reverse_iterator pointsRBegin() const { return m_points.rbegin(); }
+  PointSeq::reverse_iterator pointsRBegin() { return m_points.rbegin(); }
 
-  PointSeq::const_reverse_iterator pointsREnd() const { return this->m_points.rend(); }
-  PointSeq::reverse_iterator pointsREnd() { return this->m_points.rend(); }
+  PointSeq::const_reverse_iterator pointsREnd() const { return m_points.rend(); }
+  PointSeq::reverse_iterator pointsREnd() { return m_points.rend(); }
 
   bool pointsOfSegment(ssize_t idx, Point& lo, Point& hi) const
   {
-    if (idx < 0 || idx >= static_cast<ssize_t>(this->m_points.size()))
+    if (idx < 0 || idx >= static_cast<ssize_t>(m_points.size()))
       return false;
 
     PointSeq::const_iterator it = this->pointsBegin();
@@ -68,8 +68,8 @@ public:
     return true;
   }
 
-  PointSeq& points() { return this->m_points; }
-  const PointSeq& points() const { return this->m_points; }
+  PointSeq& points() { return m_points; }
+  const PointSeq& points() const { return m_points; }
 
 protected:
   edge() {}

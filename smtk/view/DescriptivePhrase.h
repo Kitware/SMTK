@@ -201,15 +201,15 @@ public:
   ///@}
 
   /// Return the role that the phrase plays in the description.
-  virtual DescriptivePhraseType phraseType() const { return this->m_type; }
+  virtual DescriptivePhraseType phraseType() const { return m_type; }
 
   /// Return the parent phrase of this phrase (or null).
-  virtual DescriptivePhrasePtr parent() const { return this->m_parent.lock(); }
+  virtual DescriptivePhrasePtr parent() const { return m_parent.lock(); }
 
   /// Indicate that this phrases children need to be rebuilt (or not if \a dirty is false).
-  virtual void markDirty(bool dirty = true) { this->m_subphrasesBuilt = !dirty; }
+  virtual void markDirty(bool dirty = true) { m_subphrasesBuilt = !dirty; }
   /// Indicate whether the list of subphrases is built by a subphrase generator and is up to date.
-  virtual bool areSubphrasesBuilt() const { return this->m_subphrasesBuilt; }
+  virtual bool areSubphrasesBuilt() const { return m_subphrasesBuilt; }
 
   /// Return children phrases that further describe the subject of this phrase.
   virtual DescriptivePhrases& subphrases();
@@ -289,7 +289,7 @@ public:
   DescriptivePhrasePtr at(const std::vector<int>& absolutePath) const;
 
   /// Return a unique integer ID of this phrase.
-  unsigned int phraseId() const { return this->m_phraseId; }
+  unsigned int phraseId() const { return m_phraseId; }
 
   /// Find the subphrase generator for this phrase (held locally or by any parent) or return null.
   SubphraseGeneratorPtr findDelegate() const;

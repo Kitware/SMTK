@@ -45,7 +45,7 @@ public:
   std::string convertToString(smtk::io::Logger& logger, bool no_declaration = false) override;
   void generateXml(
     pugi::xml_node& parent_node, smtk::io::Logger& logger, bool createRoot = true) override;
-  const smtk::io::Logger& messageLog() const { return this->m_logger; }
+  const smtk::io::Logger& messageLog() const { return m_logger; }
 
   template <typename Container>
   static std::string concatenate(

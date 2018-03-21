@@ -36,7 +36,7 @@ Facade::Facade()
 
 Facade::~Facade()
 {
-  delete this->m_internal;
+  delete m_internal;
 }
 
 std::string& Facade::operator[](const std::string& key)

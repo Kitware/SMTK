@@ -51,10 +51,10 @@ public:
   void setValues(const smtk::common::UUID&, const std::set<int>&);
   void unionValues(const smtk::common::UUID&, const std::set<int>&);
   void removeValues(const smtk::common::UUID&, const std::set<int>&);
-  void setModifyMode(MeshModifyMode mode) { this->m_modifyMode = mode; }
-  MeshModifyMode modifyMode() const { return this->m_modifyMode; }
-  void setCtrlKeyDown(bool val) { this->m_isCtrlKeyDown = val; }
-  bool isCtrlKeyDown() const { return this->m_isCtrlKeyDown; }
+  void setModifyMode(MeshModifyMode mode) { m_modifyMode = mode; }
+  MeshModifyMode modifyMode() const { return m_modifyMode; }
+  void setCtrlKeyDown(bool val) { m_isCtrlKeyDown = val; }
+  bool isCtrlKeyDown() const { return m_isCtrlKeyDown; }
 
   std::size_t numberOfValues() const;
   const std::set<int>& values(const smtk::common::UUID&);

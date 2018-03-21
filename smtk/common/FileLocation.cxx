@@ -35,8 +35,8 @@ FileLocation::FileLocation(const std::string& filePath, const std::string& refPa
 
 FileLocation::FileLocation(const FileLocation& other)
 {
-  this->m_filePath = other.m_filePath;
-  this->m_referencePath = other.m_referencePath;
+  m_filePath = other.m_filePath;
+  m_referencePath = other.m_referencePath;
 }
 
 bool FileLocation::operator==(const FileLocation& from) const
@@ -47,14 +47,14 @@ bool FileLocation::operator==(const FileLocation& from) const
 
 std::string FileLocation::absolutePath() const
 {
-  path absPath(this->m_filePath);
-  if (!this->m_referencePath.empty() && !absPath.is_absolute())
+  path absPath(m_filePath);
+  if (!m_referencePath.empty() && !absPath.is_absolute())
   {
-    absPath = this->m_referencePath / absPath;
+    absPath = m_referencePath / absPath;
     if (exists(absPath))
     {
       // remove potential ".." from the path
-      absPath = canonical(absPath, this->m_referencePath);
+      absPath = canonical(absPath, m_referencePath);
     }
   }
 
@@ -63,11 +63,11 @@ std::string FileLocation::absolutePath() const
 
 std::string FileLocation::relativePath() const
 {
-  path url(this->m_filePath);
-  if (!this->m_referencePath.empty() && url.is_absolute())
+  path url(m_filePath);
+  if (!m_referencePath.empty() && url.is_absolute())
   {
     boost::system::error_code err;
-    path tryme = relative(url, this->m_referencePath, err);
+    path tryme = relative(url, m_referencePath, err);
     if (err == boost::system::errc::success)
     {
       url = tryme;
@@ -79,7 +79,7 @@ std::string FileLocation::relativePath() const
 
 std::string FileLocation::referencePath() const
 {
-  return this->m_referencePath;
+  return m_referencePath;
 }
 
 } // namespace common

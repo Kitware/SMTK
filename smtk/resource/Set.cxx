@@ -82,22 +82,22 @@ bool Set::addInfo(const std::string id, Role role, State state, std::string link
 /// Remove (not unload, but instead entirely delete) the resource and all its information from the set.
 bool Set::remove(const std::string& id)
 {
-  std::map<std::string, Wrapper*>::iterator mit = this->m_resourceMap.find(id);
-  if (mit != this->m_resourceMap.end())
+  std::map<std::string, Wrapper*>::iterator mit = m_resourceMap.find(id);
+  if (mit != m_resourceMap.end())
   {
     std::vector<std::string>::size_type ii;
-    std::vector<std::string>::size_type nn = this->m_resourceIds.size();
+    std::vector<std::string>::size_type nn = m_resourceIds.size();
     for (ii = 0; ii < nn; ++ii)
     {
-      if (this->m_resourceIds[ii] == id)
+      if (m_resourceIds[ii] == id)
       {
-        this->m_resourceIds.erase(this->m_resourceIds.begin() + ii);
+        m_resourceIds.erase(m_resourceIds.begin() + ii);
         break;
       }
     }
     delete mit->second;
     mit->second = nullptr;
-    this->m_resourceMap.erase(mit);
+    m_resourceMap.erase(mit);
     return true;
   }
   return false;

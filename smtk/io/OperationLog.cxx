@@ -25,13 +25,13 @@ OperationLog::OperationLog(smtk::model::ManagerPtr /*mgr*/)
 
 OperationLog::~OperationLog()
 {
-  // smtk::model::ManagerPtr mgr = this->m_manager.lock();
+  // smtk::model::ManagerPtr mgr = m_manager.lock();
   // if (mgr)
   //   mgr->unobserve(smtk::operation::Operation::CREATED_OPERATOR, OperationLog::operatorCreated, this);
 
   // smtk::operation::OperationPtr watched;
   // WeakOpArray::iterator it;
-  // for (it = this->m_watching.begin(); it != this->m_watching.end(); ++it)
+  // for (it = m_watching.begin(); it != m_watching.end(); ++it)
   // {
   //   if ((watched = it->lock()))
   //   {
@@ -45,12 +45,12 @@ OperationLog::~OperationLog()
 
 // bool OperationLog::hasFailures() const
 // {
-//   return this->m_hasFailures;
+//   return m_hasFailures;
 // }
 
 // void OperationLog::resetFailures()
 // {
-//   this->m_hasFailures = false;
+//   m_hasFailures = false;
 // }
 
 // int OperationLog::operatorCreated(

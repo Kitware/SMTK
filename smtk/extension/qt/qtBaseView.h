@@ -70,10 +70,10 @@ public:
   qtBaseView(const ViewInfo& info);
   ~qtBaseView() override;
 
-  smtk::view::ViewPtr getObject() const { return this->m_viewInfo.m_view; }
+  smtk::view::ViewPtr getObject() const { return m_viewInfo.m_view; }
   QWidget* widget() const { return this->Widget; }
-  QWidget* parentWidget() const { return this->m_viewInfo.m_parent; }
-  qtUIManager* uiManager() const { return this->m_viewInfo.m_UIManager; }
+  QWidget* parentWidget() const { return m_viewInfo.m_parent; }
+  qtUIManager* uiManager() const { return m_viewInfo.m_UIManager; }
 
   // Description:
   // Determines if an item should be displayed
@@ -84,7 +84,7 @@ public:
 
   bool setFixedLabelWidth(int w);
   bool advanceLevelVisible() { return m_advOverlayVisible; }
-  bool useSelectionManager() const { return this->m_useSelectionManager; }
+  bool useSelectionManager() const { return m_useSelectionManager; }
 
   virtual int advanceLevel();
   virtual bool categoryEnabled();
@@ -95,7 +95,7 @@ public:
   // onShowCategory method
   void setInitialCategory();
 
-  bool isTopLevel() const { return this->m_isTopLevel; }
+  bool isTopLevel() const { return m_isTopLevel; }
 
 signals:
   void modified(smtk::attribute::ItemPtr);

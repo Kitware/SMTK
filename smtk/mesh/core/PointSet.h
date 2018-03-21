@@ -108,7 +108,7 @@ public:
   bool set(const std::vector<float>& xyz);
 
   //get the underlying HandleRange that this PointSet represents
-  const smtk::mesh::HandleRange& range() const { return this->m_points; }
+  const smtk::mesh::HandleRange& range() const { return m_points; }
 
   //get the underlying collection that this PointSet belongs to
   const smtk::mesh::CollectionPtr& collection() const;

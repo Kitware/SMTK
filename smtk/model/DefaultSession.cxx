@@ -53,8 +53,8 @@ SessionInfoBits DefaultSession::transcribeInternal(
 void DefaultSession::backsRemoteSession(
   const std::string& remoteSessionName, const smtk::common::UUID& sessId)
 {
-  this->m_remoteSessionName = remoteSessionName;
-  this->m_sessionId = sessId;
+  m_remoteSessionName = remoteSessionName;
+  m_sessionId = sessId;
 }
 
 /**\brief Returns an empty string or, when backsRemoteSession
@@ -63,7 +63,7 @@ void DefaultSession::backsRemoteSession(
   */
 std::string DefaultSession::remoteName() const
 {
-  return this->m_remoteSessionName;
+  return m_remoteSessionName;
 }
 
 /**\brief Return an instance of the operator of the given name, if it exists.

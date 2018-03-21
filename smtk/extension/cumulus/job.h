@@ -35,19 +35,19 @@ public:
   Job(const Job& job);
 
   ~Job();
-  QString id() const { return this->m_id; };
-  QString name() const { return this->m_name; };
-  QString status() const { return this->m_status; };
-  QString machine() const { return this->m_machine; };
-  QList<QString> outputFolderIds() const { return this->m_outputFolderIds; };
-  QString notes() const { return this->m_notes; };
-  int numberOfNodes() const { return this->m_numberOfNodes; }
-  int numberOfCores() const { return this->m_numberOfCores; }
-  QDateTime started() const { return this->m_start; };
-  QDateTime finished() const { return this->m_finish; };
-  QString downloadFolder() const { return this->m_downloadFolder; }
+  QString id() const { return m_id; };
+  QString name() const { return m_name; };
+  QString status() const { return m_status; };
+  QString machine() const { return m_machine; };
+  QList<QString> outputFolderIds() const { return m_outputFolderIds; };
+  QString notes() const { return m_notes; };
+  int numberOfNodes() const { return m_numberOfNodes; }
+  int numberOfCores() const { return m_numberOfCores; }
+  QDateTime started() const { return m_start; };
+  QDateTime finished() const { return m_finish; };
+  QString downloadFolder() const { return m_downloadFolder; }
 
-  bool isValid() const { return !this->m_id.isEmpty(); };
+  bool isValid() const { return !m_id.isEmpty(); };
   void setStatus(const QString& status);
   void setDownloadFolder(const QString& path);
 

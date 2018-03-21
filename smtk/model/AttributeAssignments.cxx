@@ -16,17 +16,17 @@ namespace model
 
 bool AttributeAssignments::associateAttribute(const smtk::common::UUID& attribId)
 {
-  return this->m_attributes.insert(attribId).second;
+  return m_attributes.insert(attribId).second;
 }
 
 bool AttributeAssignments::disassociateAttribute(const smtk::common::UUID& attribId)
 {
-  return this->m_attributes.erase(attribId) > 0;
+  return m_attributes.erase(attribId) > 0;
 }
 
 bool AttributeAssignments::isAssociated(const smtk::common::UUID& attribId) const
 {
-  return this->m_attributes.find(attribId) == this->m_attributes.end() ? false : true;
+  return m_attributes.find(attribId) == m_attributes.end() ? false : true;
 }
 
 } //namespace model

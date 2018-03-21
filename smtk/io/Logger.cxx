@@ -26,9 +26,9 @@ Logger& Logger::instance()
 Logger::~Logger()
 {
   this->setFlushToStream(NULL, false, false);
-  if (this->m_callback)
+  if (m_callback)
   {
-    this->m_callback();
+    m_callback();
   }
 }
 
@@ -37,9 +37,9 @@ void Logger::addRecord(
 {
   if ((s == Logger::ERROR) || (s == Logger::FATAL))
   {
-    this->m_hasErrors = true;
+    m_hasErrors = true;
   }
-  this->m_records.push_back(Record(s, m, fname, line));
+  m_records.push_back(Record(s, m, fname, line));
   std::size_t nr = this->numberOfRecords();
   this->flushRecordsToStream(nr - 1, nr);
 }
@@ -52,10 +52,10 @@ void Logger::append(const Logger& l)
     return;
   }
 
-  this->m_records.insert(this->m_records.end(), l.m_records.begin(), l.m_records.end());
+  m_records.insert(m_records.end(), l.m_records.begin(), l.m_records.end());
   if (l.m_hasErrors)
   {
-    this->m_hasErrors = true;
+    m_hasErrors = true;
   }
   std::size_t nr = this->numberOfRecords();
   this->flushRecordsToStream(nr - l.numberOfRecords(), nr);
@@ -63,8 +63,8 @@ void Logger::append(const Logger& l)
 
 void Logger::reset()
 {
-  this->m_hasErrors = false;
-  this->m_records.clear();
+  m_hasErrors = false;
+  m_records.clear();
 }
 
 std::string Logger::severityAsString(Severity s)
@@ -93,13 +93,12 @@ std::string Logger::severityAsString(Severity s)
 std::string Logger::toString(std::size_t i, bool includeSourceLoc) const
 {
   std::stringstream ss;
-  ss << severityAsString(this->m_records[i].severity) << ": ";
-  if (includeSourceLoc && this->m_records[i].fileName != "")
+  ss << severityAsString(m_records[i].severity) << ": ";
+  if (includeSourceLoc && m_records[i].fileName != "")
   {
-    ss << "In " << this->m_records[i].fileName << ", line " << this->m_records[i].lineNumber
-       << ": ";
+    ss << "In " << m_records[i].fileName << ", line " << m_records[i].lineNumber << ": ";
   }
-  ss << this->m_records[i].message << std::endl;
+  ss << m_records[i].message << std::endl;
   return ss.str();
 }
 
@@ -111,13 +110,12 @@ std::string Logger::toString(std::size_t i, std::size_t j, bool includeSourceLoc
   std::stringstream ss;
   for (; i < j; i++)
   {
-    ss << severityAsString(this->m_records[i].severity) << ": ";
-    if (includeSourceLoc && this->m_records[i].fileName != "")
+    ss << severityAsString(m_records[i].severity) << ": ";
+    if (includeSourceLoc && m_records[i].fileName != "")
     {
-      ss << "In " << this->m_records[i].fileName << ", line " << this->m_records[i].lineNumber
-         << ": ";
+      ss << "In " << m_records[i].fileName << ", line " << m_records[i].lineNumber << ": ";
     }
-    ss << this->m_records[i].message << std::endl;
+    ss << m_records[i].message << std::endl;
   }
   return ss.str();
 }
@@ -128,13 +126,13 @@ std::string Logger::toHTML(std::size_t i, std::size_t j, bool includeSourceLoc) 
   ss << "<table>";
   for (; i < j; i++)
   {
-    ss << "<tr class=\"" << severityAsString(this->m_records[i].severity) << "\">";
+    ss << "<tr class=\"" << severityAsString(m_records[i].severity) << "\">";
     if (includeSourceLoc)
     {
       ss << "<td>";
-      if (this->m_records[i].fileName != "")
+      if (m_records[i].fileName != "")
       {
-        ss << this->m_records[i].fileName << ", line " << this->m_records[i].lineNumber;
+        ss << m_records[i].fileName << ", line " << m_records[i].lineNumber;
       }
       else
       {
@@ -142,7 +140,7 @@ std::string Logger::toHTML(std::size_t i, std::size_t j, bool includeSourceLoc) 
       }
       ss << "</td>";
     }
-    ss << "<td>" << this->m_records[i].message << "</td></tr>\n";
+    ss << "<td>" << m_records[i].message << "</td></tr>\n";
   }
   ss << "</table>";
   return ss.str();
@@ -150,12 +148,12 @@ std::string Logger::toHTML(std::size_t i, std::size_t j, bool includeSourceLoc) 
 
 std::string Logger::convertToString(bool includeSourceLoc) const
 {
-  return this->toString(0, this->m_records.size(), includeSourceLoc);
+  return this->toString(0, m_records.size(), includeSourceLoc);
 }
 
 std::string Logger::convertToHTML(bool includeSourceLog) const
 {
-  return this->toHTML(0, this->m_records.size(), includeSourceLog);
+  return this->toHTML(0, m_records.size(), includeSourceLog);
 }
 
 /**\brief Request all records be flushed to \a output as they are logged.
@@ -174,10 +172,10 @@ std::string Logger::convertToHTML(bool includeSourceLog) const
   */
 void Logger::setFlushToStream(std::ostream* output, bool ownFile, bool includePast)
 {
-  if (this->m_ownStream)
-    delete this->m_stream;
-  this->m_stream = output;
-  this->m_ownStream = output ? ownFile : false;
+  if (m_ownStream)
+    delete m_stream;
+  m_stream = output;
+  m_ownStream = output ? ownFile : false;
   if (includePast)
     this->flushRecordsToStream(0, this->numberOfRecords());
 }
@@ -246,17 +244,16 @@ void Logger::setFlushToStderr(bool includePast)
 /// Set a function to be called upon the destruction of the logger.
 void Logger::setCallback(std::function<void()> fn)
 {
-  this->m_callback = fn;
+  m_callback = fn;
 }
 
 /// This is a helper routine to write records to the stream (if one has been set).
 void Logger::flushRecordsToStream(std::size_t beginRec, std::size_t endRec)
 {
-  if (this->m_stream && beginRec < endRec && beginRec < numberOfRecords() &&
-    endRec <= numberOfRecords())
+  if (m_stream && beginRec < endRec && beginRec < numberOfRecords() && endRec <= numberOfRecords())
   {
-    (*this->m_stream) << this->toString(beginRec, endRec);
-    this->m_stream->flush();
+    (*m_stream) << this->toString(beginRec, endRec);
+    m_stream->flush();
   }
 }
 

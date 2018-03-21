@@ -157,7 +157,7 @@ Operation::Result Operation::operate()
 
     // Set the debug level if specified as a convenience for subclasses:
     smtk::attribute::IntItem::Ptr debugItem = this->parameters()->findInt("debug level");
-    this->m_debugLevel = ((debugItem && debugItem->isEnabled()) ? debugItem->value() : 0);
+    m_debugLevel = ((debugItem && debugItem->isEnabled()) ? debugItem->value() : 0);
 
     // Perform the derived operation.
     result = this->operateInternal();

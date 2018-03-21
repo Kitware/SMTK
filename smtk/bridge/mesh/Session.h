@@ -37,7 +37,7 @@ public:
 
   virtual ~Session() {}
 
-  void addTopology(Topology t) { this->m_topologies.push_back(t); }
+  void addTopology(Topology t) { m_topologies.push_back(t); }
   Topology* topology(smtk::model::Model& model);
 
   std::string defaultFileExtension(const smtk::model::Model&) const override { return ""; }

@@ -93,42 +93,42 @@ EntityPtr Entity::create(BitFlags entityFlags, int dimension, ManagerPtr resourc
   */
 EntityPtr Entity::setup(BitFlags entFlags, int dim, Manager::Ptr resource, bool resetRelations)
 {
-  this->m_entityFlags = entFlags;
-  this->m_resource = resource;
+  m_entityFlags = entFlags;
+  m_resource = resource;
   // Override the dimension bits if the dimension is specified
   if (dim >= 0 && dim <= 4)
   {
     // Clear the dimension bits:
-    this->m_entityFlags &= ~(DIMENSION_0 | DIMENSION_1 | DIMENSION_2 | DIMENSION_3 | DIMENSION_4);
+    m_entityFlags &= ~(DIMENSION_0 | DIMENSION_1 | DIMENSION_2 | DIMENSION_3 | DIMENSION_4);
     // Now add in the *proper* dimension bit to match m_dimension:
-    this->m_entityFlags |= (1 << dim);
+    m_entityFlags |= (1 << dim);
   }
   if (resetRelations)
   {
-    this->m_firstInvalid = -1;
-    this->m_relations.clear();
+    m_firstInvalid = -1;
+    m_relations.clear();
   }
   return shared_from_this();
 }
 
 const ResourcePtr Entity::resource() const
 {
-  return std::dynamic_pointer_cast<smtk::resource::Resource>(this->m_resource.lock());
+  return std::dynamic_pointer_cast<smtk::resource::Resource>(m_resource.lock());
 }
 
 ManagerPtr Entity::modelResource() const
 {
-  return std::dynamic_pointer_cast<smtk::model::Manager>(this->m_resource.lock());
+  return std::dynamic_pointer_cast<smtk::model::Manager>(m_resource.lock());
 }
 
 bool Entity::reparent(ManagerPtr newParent)
 {
-  ManagerPtr oldParent = this->m_resource.lock();
+  ManagerPtr oldParent = m_resource.lock();
   if (oldParent == newParent)
   {
     return false;
   }
-  this->m_resource = newParent;
+  m_resource = newParent;
   return true;
 }
 
@@ -138,15 +138,15 @@ bool Entity::reparent(ManagerPtr newParent)
   */
 BitFlags Entity::entityFlags() const
 {
-  return this->m_entityFlags;
+  return m_entityFlags;
 }
 
 bool Entity::setEntityFlags(BitFlags flags)
 {
   bool allowed = false;
-  if (this->m_entityFlags == INVALID)
+  if (m_entityFlags == INVALID)
   {
-    this->m_entityFlags = flags;
+    m_entityFlags = flags;
     allowed = true;
   }
   else
@@ -154,9 +154,9 @@ bool Entity::setEntityFlags(BitFlags flags)
     // Only allow changes to properties, not the entity type
     // after it has been set to something valid.
     // Otherwise, craziness may ensue.
-    if ((flags & ANY_ENTITY) == (this->m_entityFlags & ANY_ENTITY))
+    if ((flags & ANY_ENTITY) == (m_entityFlags & ANY_ENTITY))
     {
-      this->m_entityFlags = flags;
+      m_entityFlags = flags;
       allowed = true;
     }
   }
@@ -175,7 +175,7 @@ bool Entity::setEntityFlags(BitFlags flags)
   */
 int Entity::dimension() const
 {
-  BitFlags dimBits = this->m_entityFlags & ANY_DIMENSION;
+  BitFlags dimBits = m_entityFlags & ANY_DIMENSION;
   if ((dimBits != 0) & ((dimBits & (dimBits - 1)) == 0))
   { // dimBits is exactly a power of two:
     switch (dimBits)
@@ -200,16 +200,16 @@ int Entity::dimension() const
 
 BitFlags Entity::dimensionBits() const
 {
-  return this->m_entityFlags & ANY_DIMENSION;
+  return m_entityFlags & ANY_DIMENSION;
 }
 
 UUIDArray& Entity::relations()
 {
-  return this->m_relations;
+  return m_relations;
 }
 const UUIDArray& Entity::relations() const
 {
-  return this->m_relations;
+  return m_relations;
 }
 
 /**\brief Append a relation \a b to this entity's list of relations.
@@ -232,14 +232,14 @@ int Entity::appendRelation(const UUID& b, bool useHoles)
     if ((idx = this->consumeInvalidIndex(b)) >= 0)
       return idx;
   }
-  idx = static_cast<int>(this->m_relations.size());
-  this->m_relations.push_back(b);
+  idx = static_cast<int>(m_relations.size());
+  m_relations.push_back(b);
   return idx;
 }
 
 EntityPtr Entity::pushRelation(const UUID& b)
 {
-  this->m_relations.push_back(b);
+  m_relations.push_back(b);
   return shared_from_this();
 }
 
@@ -256,7 +256,7 @@ EntityPtr Entity::pushRelation(const UUID& b)
   */
 EntityPtr Entity::removeRelation(const UUID& b)
 {
-  UUIDArray& arr(this->m_relations);
+  UUIDArray& arr(m_relations);
   UUIDArray::size_type size = arr.size();
   UUIDArray::size_type curr;
   for (curr = 0; curr < size; ++curr)
@@ -278,23 +278,23 @@ EntityPtr Entity::removeRelation(const UUID& b)
   */
 void Entity::resetRelations()
 {
-  this->m_relations.clear();
-  this->m_firstInvalid = -1;
+  m_relations.clear();
+  m_firstInvalid = -1;
 }
 
 /**\brief Find the given relation \a r and return its index, inserting it if not present.
   */
 int Entity::findOrAppendRelation(const UUID& r)
 {
-  for (UUIDArray::size_type i = 0; i < this->m_relations.size(); ++i)
+  for (UUIDArray::size_type i = 0; i < m_relations.size(); ++i)
   {
-    if (this->m_relations[i] == r)
+    if (m_relations[i] == r)
     {
       return static_cast<int>(i);
     }
   }
-  int idx = static_cast<int>(this->m_relations.size());
-  this->m_relations.push_back(r);
+  int idx = static_cast<int>(m_relations.size());
+  m_relations.push_back(r);
   return idx;
 }
 
@@ -305,9 +305,9 @@ int Entity::findOrAppendRelation(const UUID& r)
   */
 int Entity::invalidateRelation(const UUID& r)
 {
-  for (UUIDArray::size_type i = 0; i < this->m_relations.size(); ++i)
+  for (UUIDArray::size_type i = 0; i < m_relations.size(); ++i)
   {
-    if (this->m_relations[i] == r)
+    if (m_relations[i] == r)
     {
       return this->invalidateRelationByIndex(static_cast<int>(i));
     }
@@ -321,12 +321,12 @@ int Entity::invalidateRelation(const UUID& r)
   */
 int Entity::invalidateRelationByIndex(int relIdx)
 {
-  if (relIdx < 0 || relIdx >= static_cast<int>(this->m_relations.size()))
+  if (relIdx < 0 || relIdx >= static_cast<int>(m_relations.size()))
     return -1;
 
-  this->m_relations[relIdx] = smtk::common::UUID::null();
-  if (this->m_firstInvalid < 0 || (this->m_firstInvalid >= 0 && relIdx < this->m_firstInvalid))
-    this->m_firstInvalid = relIdx;
+  m_relations[relIdx] = smtk::common::UUID::null();
+  if (m_firstInvalid < 0 || (m_firstInvalid >= 0 && relIdx < m_firstInvalid))
+    m_firstInvalid = relIdx;
   return relIdx;
 }
 
@@ -1113,15 +1113,15 @@ int Entity::dimensionBitsToDimension(BitFlags dimBits)
 
 int Entity::arrange(ArrangementKind kind, const Arrangement& arr, int index)
 {
-  KindsToArrangements::iterator kit = this->m_arrangements.find(kind);
-  if (kit == this->m_arrangements.end())
+  KindsToArrangements::iterator kit = m_arrangements.find(kind);
+  if (kit == m_arrangements.end())
   {
     if (index >= 0)
     { // failure: can't replace information that doesn't exist.
       return -1;
     }
     Arrangements blank;
-    kit = this->m_arrangements.insert(std::pair<ArrangementKind, Arrangements>(kind, blank)).first;
+    kit = m_arrangements.insert(std::pair<ArrangementKind, Arrangements>(kind, blank)).first;
   }
 
   if (index >= 0)
@@ -1143,12 +1143,12 @@ int Entity::arrange(ArrangementKind kind, const Arrangement& arr, int index)
 int Entity::unarrange(ArrangementKind kind, int index, bool removeIfLast)
 {
   int result = 0;
-  if (index < 0 || this->m_arrangements.empty())
+  if (index < 0 || m_arrangements.empty())
   {
     return result;
   }
-  ArrangementKindWithArrangements ak = this->m_arrangements.find(kind);
-  if (ak == this->m_arrangements.end() || index >= static_cast<int>(ak->second.size()))
+  ArrangementKindWithArrangements ak = m_arrangements.find(kind);
+  if (ak == m_arrangements.end() || index >= static_cast<int>(ak->second.size()))
   {
     return result;
   }
@@ -1172,7 +1172,7 @@ int Entity::unarrange(ArrangementKind kind, int index, bool removeIfLast)
   // Now, if we removed the last arrangement of this kind, kill the kind-dictionary entry
   if (ak->second.empty())
   {
-    this->m_arrangements.erase(ak);
+    m_arrangements.erase(ak);
   }
 
   // Now find and remove the dual arrangement (if one exists)
@@ -1202,16 +1202,16 @@ int Entity::unarrange(ArrangementKind kind, int index, bool removeIfLast)
 
 bool Entity::clearArrangements()
 {
-  bool didRemove = !this->m_arrangements.empty();
+  bool didRemove = !m_arrangements.empty();
   if (didRemove)
-    this->m_arrangements.clear();
+    m_arrangements.clear();
   return didRemove;
 }
 
 const Arrangements* Entity::hasArrangementsOfKind(ArrangementKind kind) const
 {
-  auto ait = this->m_arrangements.find(kind);
-  if (ait != this->m_arrangements.end())
+  auto ait = m_arrangements.find(kind);
+  if (ait != m_arrangements.end())
   {
     return &ait->second;
   }
@@ -1220,8 +1220,8 @@ const Arrangements* Entity::hasArrangementsOfKind(ArrangementKind kind) const
 
 Arrangements* Entity::hasArrangementsOfKind(ArrangementKind kind)
 {
-  ArrangementKindWithArrangements ait = this->m_arrangements.find(kind);
-  if (ait != this->m_arrangements.end())
+  ArrangementKindWithArrangements ait = m_arrangements.find(kind);
+  if (ait != m_arrangements.end())
   {
     return &ait->second;
   }
@@ -1230,7 +1230,7 @@ Arrangements* Entity::hasArrangementsOfKind(ArrangementKind kind)
 
 Arrangements& Entity::arrangementsOfKind(ArrangementKind kind)
 {
-  return this->m_arrangements[kind];
+  return m_arrangements[kind];
 }
 
 const Arrangement* Entity::findArrangement(ArrangementKind kind, int index) const
@@ -1240,8 +1240,8 @@ const Arrangement* Entity::findArrangement(ArrangementKind kind, int index) cons
     return nullptr;
   }
 
-  auto kit = this->m_arrangements.find(kind);
-  if (kit == this->m_arrangements.end())
+  auto kit = m_arrangements.find(kind);
+  if (kit == m_arrangements.end())
   {
     return nullptr;
   }
@@ -1261,8 +1261,8 @@ Arrangement* Entity::findArrangement(ArrangementKind kind, int index)
     return nullptr;
   }
 
-  KindsToArrangements::iterator kit = this->m_arrangements.find(kind);
-  if (kit == this->m_arrangements.end())
+  KindsToArrangements::iterator kit = m_arrangements.find(kind);
+  if (kit == m_arrangements.end())
   {
     return nullptr;
   }
@@ -1330,7 +1330,7 @@ bool Entity::findDualArrangements(
           { // OK, find use's reference to this cell.
             if (relationIdx < 0 || static_cast<int>(this->relations().size()) <= relationIdx)
               return false;
-            dualEntityId = this->m_relations[relationIdx];
+            dualEntityId = m_relations[relationIdx];
             dualKind = HAS_CELL;
             if ((dualIndex = this->modelResource()->findArrangementInvolvingEntity(
                    dualEntityId, dualKind, this->id())) >= 0)
@@ -1346,7 +1346,7 @@ bool Entity::findDualArrangements(
             dualKind = HAS_SHELL;
             for (; relStart != relEnd; ++relStart)
             {
-              dualEntityId = this->m_relations[relStart];
+              dualEntityId = m_relations[relStart];
               if ((dualIndex = this->modelResource()->findArrangementInvolvingEntity(
                      dualEntityId, dualKind, this->id())) >= 0)
                 duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
@@ -1379,9 +1379,9 @@ bool Entity::findDualArrangements(
     case EMBEDDED_IN:
       if ((*arr)[index].IndexFromSimple(relationIdx))
       { // OK, find use's reference to this cell.
-        if (relationIdx < 0 || static_cast<int>(this->m_relations.size()) <= relationIdx)
+        if (relationIdx < 0 || static_cast<int>(m_relations.size()) <= relationIdx)
           return false;
-        dualEntityId = this->m_relations[relationIdx];
+        dualEntityId = m_relations[relationIdx];
         dualKind = kind == INCLUDES ? EMBEDDED_IN : INCLUDES;
         if ((dualIndex = this->modelResource()->findArrangementInvolvingEntity(
                dualEntityId, dualKind, this->id())) >= 0)
@@ -1395,11 +1395,11 @@ bool Entity::findDualArrangements(
     case SUBSET_OF:
       if ((*arr)[index].IndexFromSimple(relationIdx))
       { // OK, find the related entity's reference to this one.
-        if (relationIdx < 0 || static_cast<int>(this->m_relations.size()) <= relationIdx)
+        if (relationIdx < 0 || static_cast<int>(m_relations.size()) <= relationIdx)
         {
           return false;
         }
-        dualEntityId = this->m_relations[relationIdx];
+        dualEntityId = m_relations[relationIdx];
         dualKind = (kind == SUPERSET_OF ? SUBSET_OF : SUPERSET_OF);
         if ((dualIndex = this->modelResource()->findArrangementInvolvingEntity(
                dualEntityId, dualKind, this->id())) >= 0)
@@ -1413,11 +1413,11 @@ bool Entity::findDualArrangements(
     case INSTANCED_BY:
       if ((*arr)[index].IndexFromSimple(relationIdx))
       { // OK, find the related entity's reference to this one.
-        if (relationIdx < 0 || static_cast<int>(this->m_relations.size()) <= relationIdx)
+        if (relationIdx < 0 || static_cast<int>(m_relations.size()) <= relationIdx)
         {
           return false;
         }
-        dualEntityId = this->m_relations[relationIdx];
+        dualEntityId = m_relations[relationIdx];
         dualKind = (kind == INSTANCED_BY ? INSTANCE_OF : INSTANCED_BY);
         if ((dualIndex = this->modelResource()->findArrangementInvolvingEntity(
                dualEntityId, dualKind, this->id())) >= 0)
@@ -1436,11 +1436,11 @@ bool Entity::findDualArrangements(
       {
         if ((*arr)[index].IndexFromSimple(relationIdx))
         { // OK, find the related entity's reference to this one.
-          if (relationIdx < 0 || static_cast<int>(this->m_relations.size()) <= relationIdx)
+          if (relationIdx < 0 || static_cast<int>(m_relations.size()) <= relationIdx)
           {
             return false;
           }
-          dualEntityId = this->m_relations[relationIdx];
+          dualEntityId = m_relations[relationIdx];
           dualKind = HAS_USE;
           if ((dualIndex = this->modelResource()->findArrangementInvolvingEntity(
                  dualEntityId, dualKind, this->id())) >= 0)
@@ -1461,28 +1461,28 @@ bool Entity::findDualArrangements(
 
 int Entity::consumeInvalidIndex(const smtk::common::UUID& uid)
 {
-  int result = this->m_firstInvalid;
+  int result = m_firstInvalid;
   if (result < 0)
     return result; // no hole to consume
-  this->m_relations[result] = uid;
+  m_relations[result] = uid;
 
   // Now update m_firstInvalid:
   // I. Are we already at the end of the relations? If so, we're done.
-  if (this->m_firstInvalid == static_cast<int>(this->m_relations.size()) - 1)
+  if (m_firstInvalid == static_cast<int>(m_relations.size()) - 1)
   {
-    this->m_firstInvalid = -1;
+    m_firstInvalid = -1;
     return result;
   }
 
   // II. Keep looking past the entry we just consumed for the next invalid one.
-  ++this->m_firstInvalid;
-  UUIDArray::iterator it = this->m_relations.begin() + this->m_firstInvalid;
-  for (; it != this->m_relations.end(); ++it, ++this->m_firstInvalid)
+  ++m_firstInvalid;
+  UUIDArray::iterator it = m_relations.begin() + m_firstInvalid;
+  for (; it != m_relations.end(); ++it, ++m_firstInvalid)
     if (!*it)
     {
       return result;
     }
-  this->m_firstInvalid = -1;
+  m_firstInvalid = -1;
   return result;
 }
 

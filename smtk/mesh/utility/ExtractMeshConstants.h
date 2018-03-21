@@ -62,8 +62,8 @@ public:
   void extractDomain(const smtk::mesh::MeshSet& cs, const smtk::mesh::PointSet& ps);
 
   //use these methods to gain access to the field after extraction
-  const std::vector<std::int64_t>& cellData() const { return this->m_cellData; }
-  const std::vector<std::int64_t>& pointData() const { return this->m_pointData; }
+  const std::vector<std::int64_t>& cellData() const { return m_cellData; }
+  const std::vector<std::int64_t>& pointData() const { return m_pointData; }
 
 private:
   template <typename QueryTag>

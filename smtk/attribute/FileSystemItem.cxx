@@ -46,13 +46,13 @@ bool FileSystemItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
   {
     if (def->hasDefault())
     {
-      this->m_values.resize(n, def->defaultValue());
-      this->m_isSet.resize(n, true);
+      m_values.resize(n, def->defaultValue());
+      m_isSet.resize(n, true);
     }
     else
     {
-      this->m_isSet.resize(n, false);
-      this->m_values.resize(n);
+      m_isSet.resize(n, false);
+      m_values.resize(n);
     }
   }
   return true;
@@ -70,7 +70,7 @@ bool FileSystemItem::isValid() const
   {
     return true;
   }
-  for (auto it = this->m_isSet.begin(); it != this->m_isSet.end(); ++it)
+  for (auto it = m_isSet.begin(); it != m_isSet.end(); ++it)
   {
     if (!(*it))
     {
@@ -82,7 +82,7 @@ bool FileSystemItem::isValid() const
 
 bool FileSystemItem::isExtensible() const
 {
-  auto def = static_cast<const FileSystemItemDefinition*>(this->m_definition.get());
+  auto def = static_cast<const FileSystemItemDefinition*>(m_definition.get());
   if (!def)
   {
     return false;
@@ -93,7 +93,7 @@ bool FileSystemItem::isExtensible() const
 std::size_t FileSystemItem::numberOfRequiredValues() const
 {
   const FileSystemItemDefinition* def =
-    static_cast<const FileSystemItemDefinition*>(this->m_definition.get());
+    static_cast<const FileSystemItemDefinition*>(m_definition.get());
   if (def == NULL)
   {
     return 0;
@@ -104,7 +104,7 @@ std::size_t FileSystemItem::numberOfRequiredValues() const
 std::size_t FileSystemItem::maxNumberOfValues() const
 {
   const FileSystemItemDefinition* def =
-    static_cast<const FileSystemItemDefinition*>(this->m_definition.get());
+    static_cast<const FileSystemItemDefinition*>(m_definition.get());
   if (def == NULL)
   {
     return 0;
@@ -140,10 +140,10 @@ bool FileSystemItem::setValue(std::size_t element, const std::string& val)
     static_cast<const FileSystemItemDefinition*>(this->definition().get());
   if ((def == NULL) || (def->isValueValid(val)))
   {
-    assert(this->m_values.size() > element);
-    assert(this->m_isSet.size() > element);
-    this->m_values[element] = val;
-    this->m_isSet[element] = true;
+    assert(m_values.size() > element);
+    assert(m_isSet.size() > element);
+    m_values[element] = val;
+    m_isSet[element] = true;
     return true;
   }
   return false;
@@ -153,14 +153,14 @@ std::string FileSystemItem::valueAsString(std::size_t element, const std::string
 {
   // For the initial design we will use sprintf and force a limit of 300 char
   char dummy[300];
-  assert(this->m_values.size() > element);
+  assert(m_values.size() > element);
   if (format != "")
   {
-    sprintf(dummy, format.c_str(), this->m_values[element].c_str());
+    sprintf(dummy, format.c_str(), m_values[element].c_str());
   }
   else
   {
-    sprintf(dummy, "%s", this->m_values[element].c_str());
+    sprintf(dummy, "%s", m_values[element].c_str());
   }
   return dummy;
 }
@@ -170,7 +170,7 @@ std::string FileSystemItem::valueAsString(std::size_t element, const std::string
   */
 FileSystemItem::const_iterator FileSystemItem::begin() const
 {
-  return this->m_values.begin();
+  return m_values.begin();
 }
 
 /**\brief Return an iterator just past the last directory value in this item.
@@ -178,7 +178,7 @@ FileSystemItem::const_iterator FileSystemItem::begin() const
   */
 FileSystemItem::const_iterator FileSystemItem::end() const
 {
-  return this->m_values.end();
+  return m_values.end();
 }
 
 bool FileSystemItem::appendValue(const std::string& val)
@@ -194,11 +194,11 @@ bool FileSystemItem::appendValue(const std::string& val)
   {
     return false;
   }
-  auto def = static_cast<const FileSystemItemDefinition*>(this->m_definition.get());
+  auto def = static_cast<const FileSystemItemDefinition*>(m_definition.get());
   if (def->isValueValid(val))
   {
-    this->m_values.push_back(val);
-    this->m_isSet.push_back(true);
+    m_values.push_back(val);
+    m_isSet.push_back(true);
     return true;
   }
   return false;
@@ -216,8 +216,8 @@ bool FileSystemItem::removeValue(int element)
   {
     return false;
   }
-  this->m_values.erase(this->m_values.begin() + element);
-  this->m_isSet.erase(this->m_isSet.begin() + element);
+  m_values.erase(m_values.begin() + element);
+  m_isSet.erase(m_isSet.begin() + element);
   return true;
 }
 
@@ -247,13 +247,13 @@ bool FileSystemItem::setNumberOfValues(std::size_t newSize)
   }
   if (this->hasDefault())
   {
-    this->m_values.resize(newSize, this->defaultValue());
-    this->m_isSet.resize(newSize, true);
+    m_values.resize(newSize, this->defaultValue());
+    m_isSet.resize(newSize, true);
   }
   else
   {
-    this->m_values.resize(newSize);
-    this->m_isSet.resize(newSize, false); //Any added values are not set
+    m_values.resize(newSize);
+    m_isSet.resize(newSize, false); //Any added values are not set
   }
   return true;
 }
@@ -290,11 +290,11 @@ bool FileSystemItem::isUsingDefault() const
 
   std::size_t i, n = this->numberOfValues();
   std::string dval = def->defaultValue();
-  assert(this->m_isSet.size() >= n);
-  assert(this->m_values.size() >= n);
+  assert(m_isSet.size() >= n);
+  assert(m_values.size() >= n);
   for (i = 0; i < n; i++)
   {
-    if (!(this->m_isSet[i] && (this->m_values[i] == dval)))
+    if (!(m_isSet[i] && (m_values[i] == dval)))
     {
       return false;
     }
@@ -305,9 +305,9 @@ bool FileSystemItem::isUsingDefault() const
 bool FileSystemItem::isUsingDefault(std::size_t element) const
 {
   auto def = static_cast<const FileSystemItemDefinition*>(this->definition().get());
-  assert(this->m_isSet.size() > element);
-  assert(this->m_values.size() > element);
-  if (def->hasDefault() && this->m_isSet[element] && this->m_values[element] == def->defaultValue())
+  assert(m_isSet.size() > element);
+  assert(m_values.size() > element);
+  if (def->hasDefault() && m_isSet[element] && m_values[element] == def->defaultValue())
   {
     return true;
   }

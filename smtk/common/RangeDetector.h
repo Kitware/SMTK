@@ -25,52 +25,52 @@ public:
   /// Insert a new entry, which may add to an existing range or start a new one.
   void insert(I val)
   {
-    typename std::map<I, I>::iterator it = this->m_collapse.find(val);
-    if (it != this->m_collapse.end())
+    typename std::map<I, I>::iterator it = m_collapse.find(val);
+    if (it != m_collapse.end())
     { // val is not at
       I collapseTarget = it->second;
-      this->m_ranges[collapseTarget]++;
-      this->m_collapse.erase(it->first);
-      typename std::map<I, I>::iterator rit = this->m_ranges.find(val + 1);
-      if (rit != this->m_ranges.end())
+      m_ranges[collapseTarget]++;
+      m_collapse.erase(it->first);
+      typename std::map<I, I>::iterator rit = m_ranges.find(val + 1);
+      if (rit != m_ranges.end())
       {
-        this->m_ranges[collapseTarget] = rit->second;
-        this->m_ranges.erase(rit);
+        m_ranges[collapseTarget] = rit->second;
+        m_ranges.erase(rit);
         // The entry in m_collapse will now serve match it->second's range entry:
-        this->m_collapse[rit->second + 1] = collapseTarget;
+        m_collapse[rit->second + 1] = collapseTarget;
       }
       else
       {
-        this->m_collapse[val + 1] = collapseTarget;
+        m_collapse[val + 1] = collapseTarget;
       }
     }
     else
     {
-      it = this->m_ranges.find(val + 1);
-      if (it != this->m_ranges.end())
+      it = m_ranges.find(val + 1);
+      if (it != m_ranges.end())
       { // Expand the range we found to the left:
-        this->m_ranges[val] = it->second;
-        this->m_collapse[it->second + 1] = val;
-        this->m_ranges.erase(it);
+        m_ranges[val] = it->second;
+        m_collapse[it->second + 1] = val;
+        m_ranges.erase(it);
       }
       else
       { // Add a new range and collapse entry:
-        this->m_ranges[val] = val;
-        this->m_collapse[val + 1] = val;
+        m_ranges[val] = val;
+        m_collapse[val + 1] = val;
       }
     }
   }
 
   /// Return the current set of intervals.
-  std::map<I, I>& ranges() const { return this->m_ranges; }
-  std::map<I, I>& ranges() { return this->m_ranges; }
+  std::map<I, I>& ranges() const { return m_ranges; }
+  std::map<I, I>& ranges() { return m_ranges; }
 
   /// Return the number of entries (not the number of ranges) as the size
   size_t size() const
   {
     size_t nn = 0;
     typename std::map<I, I>::const_iterator it;
-    for (it = this->m_ranges.begin(); it != this->m_ranges.end(); ++it)
+    for (it = m_ranges.begin(); it != m_ranges.end(); ++it)
     {
       nn += it->second - it->first + 1;
     }
@@ -80,8 +80,8 @@ public:
   /// Empty the list of detected ranges and start over.
   void clear()
   {
-    this->m_ranges.clear();
-    this->m_collapse.clear();
+    m_ranges.clear();
+    m_collapse.clear();
   }
 
   /// Dump the ranges
@@ -89,12 +89,12 @@ public:
   {
     std::cout << "Ranges:\n";
     typename std::map<I, I>::iterator it;
-    for (it = this->m_ranges.begin(); it != this->m_ranges.end(); ++it)
+    for (it = m_ranges.begin(); it != m_ranges.end(); ++it)
     {
       std::cout << "  " << it->first << " .. " << it->second << "\n";
     }
     std::cout << "Collapsers:\n";
-    for (it = this->m_collapse.begin(); it != this->m_collapse.end(); ++it)
+    for (it = m_collapse.begin(); it != m_collapse.end(); ++it)
     {
       std::cout << "  " << it->first << " .. " << it->second << "\n";
     }

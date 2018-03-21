@@ -113,13 +113,13 @@ public:
 
   bool rename(AttributePtr att, const std::string& newName);
   bool defineAnalysis(const std::string& analysisName, const std::set<std::string>& categories);
-  std::size_t numberOfAnalyses() const { return this->m_analyses.size(); }
+  std::size_t numberOfAnalyses() const { return m_analyses.size(); }
   std::set<std::string> analysisCategories(const std::string& analysisType) const;
-  const std::map<std::string, std::set<std::string> >& analyses() const { return this->m_analyses; }
+  const std::map<std::string, std::set<std::string> >& analyses() const { return m_analyses; }
 
-  std::size_t numberOfAdvanceLevels() const { return this->m_advLevels.size(); }
+  std::size_t numberOfAdvanceLevels() const { return m_advLevels.size(); }
   void addAdvanceLevel(int level, std::string label, const double* l_color = 0);
-  const std::map<int, std::string>& advanceLevels() const { return this->m_advLevels; }
+  const std::map<int, std::string>& advanceLevels() const { return m_advLevels; }
   // the color is expected in the format of double[4] - rgba
   const double* advanceLevelColor(int level) const;
   void setAdvanceLevelColor(int level, const double* l_color);
@@ -132,20 +132,20 @@ public:
   std::string createUniqueName(const std::string& type) const;
 
   void updateCategories();
-  std::size_t numberOfCategories() const { return this->m_categories.size(); }
-  const std::set<std::string>& categories() const { return this->m_categories; }
+  std::size_t numberOfCategories() const { return m_categories.size(); }
+  const std::set<std::string>& categories() const { return m_categories; }
 
   void addView(smtk::view::ViewPtr);
   smtk::view::ViewPtr findView(const std::string& name) const;
   smtk::view::ViewPtr findViewByType(const std::string& vtype) const;
   smtk::view::ViewPtr findTopLevelView() const;
   std::vector<smtk::view::ViewPtr> findTopLevelViews() const;
-  const std::map<std::string, smtk::view::ViewPtr>& views() const { return this->m_views; }
+  const std::map<std::string, smtk::view::ViewPtr>& views() const { return m_views; }
 
-  smtk::model::ManagerPtr refModelManager() const { return this->m_refModelMgr.lock(); }
+  smtk::model::ManagerPtr refModelManager() const { return m_refModelMgr.lock(); }
   void setRefModelManager(smtk::model::ManagerPtr refModelMgr);
 
-  bool hasAttributes() { return this->m_attributes.size() > 0; }
+  bool hasAttributes() { return m_attributes.size() > 0; }
 
   // When a definition's items has changed use this method to update derived def
   // item offsets which is used by the find item method
@@ -197,30 +197,30 @@ private:
 inline smtk::view::ViewPtr Collection::findView(const std::string& name) const
 {
   std::map<std::string, smtk::view::ViewPtr>::const_iterator it;
-  it = this->m_views.find(name);
-  return (it == this->m_views.end()) ? smtk::view::ViewPtr() : it->second;
+  it = m_views.find(name);
+  return (it == m_views.end()) ? smtk::view::ViewPtr() : it->second;
 }
 
 inline smtk::attribute::AttributePtr Collection::findAttribute(const std::string& name) const
 {
   std::map<std::string, AttributePtr>::const_iterator it;
-  it = this->m_attributes.find(name);
-  return (it == this->m_attributes.end()) ? smtk::attribute::AttributePtr() : it->second;
+  it = m_attributes.find(name);
+  return (it == m_attributes.end()) ? smtk::attribute::AttributePtr() : it->second;
 }
 
 inline smtk::attribute::AttributePtr Collection::findAttribute(
   const smtk::common::UUID& attId) const
 {
   std::map<smtk::common::UUID, AttributePtr>::const_iterator it;
-  it = this->m_attributeIdMap.find(attId);
-  return (it == this->m_attributeIdMap.end()) ? smtk::attribute::AttributePtr() : it->second;
+  it = m_attributeIdMap.find(attId);
+  return (it == m_attributeIdMap.end()) ? smtk::attribute::AttributePtr() : it->second;
 }
 
 inline smtk::attribute::DefinitionPtr Collection::findDefinition(const std::string& typeName) const
 {
   std::map<std::string, smtk::attribute::DefinitionPtr>::const_iterator it;
-  it = this->m_definitions.find(typeName);
-  return (it == this->m_definitions.end()) ? smtk::attribute::DefinitionPtr() : it->second;
+  it = m_definitions.find(typeName);
+  return (it == m_definitions.end()) ? smtk::attribute::DefinitionPtr() : it->second;
 }
 
 inline void Collection::findDefinitionAttributes(
@@ -228,8 +228,8 @@ inline void Collection::findDefinitionAttributes(
 {
   result.clear();
   std::map<std::string, std::set<smtk::attribute::AttributePtr> >::const_iterator it;
-  it = this->m_attributeClusters.find(typeName);
-  if (it != this->m_attributeClusters.end())
+  it = m_attributeClusters.find(typeName);
+  if (it != m_attributeClusters.end())
   {
     result.insert(result.end(), it->second.begin(), it->second.end());
   }
@@ -257,8 +257,8 @@ inline std::vector<smtk::attribute::AttributePtr> Collection::findAttributes(
 inline std::set<std::string> Collection::analysisCategories(const std::string& analysisType) const
 {
   std::map<std::string, std::set<std::string> >::const_iterator it;
-  it = this->m_analyses.find(analysisType);
-  if (it != this->m_analyses.end())
+  it = m_analyses.find(analysisType);
+  if (it != m_analyses.end())
   {
     return it->second;
   }
@@ -269,13 +269,13 @@ inline bool Collection::defineAnalysis(
   const std::string& analysisName, const std::set<std::string>& categoriesIn)
 {
   std::map<std::string, std::set<std::string> >::const_iterator it;
-  it = this->m_analyses.find(analysisName);
-  if (it != this->m_analyses.end())
+  it = m_analyses.find(analysisName);
+  if (it != m_analyses.end())
   {
     // it already exists
     return false;
   }
-  this->m_analyses[analysisName] = categoriesIn;
+  m_analyses[analysisName] = categoriesIn;
   return true;
 }
 }

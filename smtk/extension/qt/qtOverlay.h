@@ -26,7 +26,7 @@ class SMTKQTEXT_EXPORT qtOverlay : public QWidget
 public:
   qtOverlay(QWidget* parent = 0);
   void addOverlayWidget(QWidget* w);
-  void setColor(const QColor& ocolor) { this->m_overlayColor = ocolor; }
+  void setColor(const QColor& ocolor) { m_overlayColor = ocolor; }
 
 protected:
   void paintEvent(QPaintEvent*) override;

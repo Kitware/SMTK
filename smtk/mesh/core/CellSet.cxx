@@ -36,7 +36,7 @@ CellSet::CellSet(
   : m_parent(parent)
   , m_range()
 {
-  std::copy(cellIds.rbegin(), cellIds.rend(), HandleRangeInserter(this->m_range));
+  std::copy(cellIds.rbegin(), cellIds.rend(), HandleRangeInserter(m_range));
 }
 
 CellSet::CellSet(
@@ -44,7 +44,7 @@ CellSet::CellSet(
   : m_parent(parent)
   , m_range()
 {
-  std::copy(cellIds.rbegin(), cellIds.rend(), HandleRangeInserter(this->m_range));
+  std::copy(cellIds.rbegin(), cellIds.rend(), HandleRangeInserter(m_range));
 }
 
 CellSet::CellSet(const smtk::mesh::CellSet& other)
@@ -59,16 +59,16 @@ CellSet::~CellSet()
 
 CellSet& CellSet::operator=(const CellSet& other)
 {
-  this->m_parent = other.m_parent;
-  this->m_range = other.m_range;
+  m_parent = other.m_parent;
+  m_range = other.m_range;
   return *this;
 }
 
 bool CellSet::operator==(const CellSet& other) const
 {
-  return this->m_parent == other.m_parent &&
+  return m_parent == other.m_parent &&
     //empty is a fast way to check for easy mismatching ranges
-    this->m_range.empty() == other.m_range.empty() && this->m_range == other.m_range;
+    m_range.empty() == other.m_range.empty() && m_range == other.m_range;
 }
 
 bool CellSet::operator!=(const CellSet& other) const
@@ -78,57 +78,57 @@ bool CellSet::operator!=(const CellSet& other) const
 
 bool CellSet::append(const CellSet& other)
 {
-  const bool can_append = this->m_parent == other.m_parent;
+  const bool can_append = m_parent == other.m_parent;
   if (can_append)
   {
-    this->m_range.insert(other.m_range.begin(), other.m_range.end());
+    m_range.insert(other.m_range.begin(), other.m_range.end());
   }
   return can_append;
 }
 
 bool CellSet::is_empty() const
 {
-  return this->m_range.empty();
+  return m_range.empty();
 }
 
 std::size_t CellSet::size() const
 {
-  return this->m_range.size();
+  return m_range.size();
 }
 
 smtk::mesh::TypeSet CellSet::types() const
 {
-  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
-  return iface->computeTypes(this->m_range);
+  const smtk::mesh::InterfacePtr& iface = m_parent->interface();
+  return iface->computeTypes(m_range);
 }
 
 smtk::mesh::PointSet CellSet::points(bool boundary_only) const
 {
-  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
-  smtk::mesh::HandleRange range = iface->getPoints(this->m_range, boundary_only);
-  return smtk::mesh::PointSet(this->m_parent, range);
+  const smtk::mesh::InterfacePtr& iface = m_parent->interface();
+  smtk::mesh::HandleRange range = iface->getPoints(m_range, boundary_only);
+  return smtk::mesh::PointSet(m_parent, range);
 }
 
 smtk::mesh::PointSet CellSet::points(std::size_t position) const
 {
   smtk::mesh::HandleRange singleIndex;
-  singleIndex.insert(this->m_range[position]);
+  singleIndex.insert(m_range[position]);
 
-  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  const smtk::mesh::InterfacePtr& iface = m_parent->interface();
   smtk::mesh::HandleRange range = iface->getPoints(singleIndex);
-  return smtk::mesh::PointSet(this->m_parent, range);
+  return smtk::mesh::PointSet(m_parent, range);
 }
 
 smtk::mesh::PointConnectivity CellSet::pointConnectivity() const
 {
-  return smtk::mesh::PointConnectivity(this->m_parent, this->m_range);
+  return smtk::mesh::PointConnectivity(m_parent, m_range);
 }
 
 smtk::mesh::PointConnectivity CellSet::pointConnectivity(std::size_t position) const
 {
   smtk::mesh::HandleRange singleIndex;
-  singleIndex.insert(this->m_range[position]);
-  return smtk::mesh::PointConnectivity(this->m_parent, singleIndex);
+  singleIndex.insert(m_range[position]);
+  return smtk::mesh::PointConnectivity(m_parent, singleIndex);
 }
 
 /**\brief Get the parent collection that this meshset belongs to.
@@ -136,7 +136,7 @@ smtk::mesh::PointConnectivity CellSet::pointConnectivity(std::size_t position) c
   */
 const smtk::mesh::CollectionPtr& CellSet::collection() const
 {
-  return this->m_parent;
+  return m_parent;
 }
 
 //intersect two mesh sets, placing the results in the return mesh set

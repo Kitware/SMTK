@@ -53,7 +53,7 @@ bool ModelEntityItem::isValid() const
   {
     return false;
   }
-  for (auto it = this->m_values.begin(); it != this->m_values.end(); ++it)
+  for (auto it = m_values.begin(); it != m_values.end(); ++it)
   {
     // If the enitity is NULL then its unset
     if (!(*it).entity())
@@ -80,7 +80,7 @@ bool ModelEntityItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef
   std::size_t n = def->numberOfRequiredValues();
   if (n != 0)
   {
-    this->m_values.resize(n);
+    m_values.resize(n);
   }
   return true;
 }
@@ -88,14 +88,14 @@ bool ModelEntityItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef
 /// Return the size of the item (number of entities associated with the item).
 std::size_t ModelEntityItem::numberOfValues() const
 {
-  return this->m_values.size();
+  return m_values.size();
 }
 
 /// Return the number of values required by this item's definition (if it has one).
 std::size_t ModelEntityItem::numberOfRequiredValues() const
 {
   const ModelEntityItemDefinition* def =
-    static_cast<const ModelEntityItemDefinition*>(this->m_definition.get());
+    static_cast<const ModelEntityItemDefinition*>(m_definition.get());
   if (def == NULL)
   {
     return 0;
@@ -127,7 +127,7 @@ bool ModelEntityItem::setNumberOfValues(std::size_t newSize)
   if (n > 0 && newSize > n)
     return false; // The number of values requested is too large.
 
-  this->m_values.resize(newSize);
+  m_values.resize(newSize);
   return true;
 }
 
@@ -135,17 +135,16 @@ bool ModelEntityItem::setNumberOfValues(std::size_t newSize)
 smtk::attribute::ConstModelEntityItemDefinitionPtr ModelEntityItem::definition() const
 {
   smtk::attribute::ConstModelEntityItemDefinitionPtr ptr =
-    smtk::dynamic_pointer_cast<const smtk::attribute::ModelEntityItemDefinition>(
-      this->m_definition);
+    smtk::dynamic_pointer_cast<const smtk::attribute::ModelEntityItemDefinition>(m_definition);
   return ptr ? ptr : nullptr;
 }
 
 /// Return the \a i-th entity stored in this item.
 smtk::model::EntityRef ModelEntityItem::value(std::size_t i) const
 {
-  if (i >= static_cast<std::size_t>(this->m_values.size()))
+  if (i >= static_cast<std::size_t>(m_values.size()))
     return smtk::model::EntityRef();
-  auto result = this->m_values[i];
+  auto result = m_values[i];
   if (!result.manager())
   {
     smtk::model::Manager::Ptr mgr = this->attribute()->collection()->refModelManager();
@@ -172,9 +171,9 @@ bool ModelEntityItem::setValue(std::size_t i, const smtk::model::EntityRef& val)
 {
   const ModelEntityItemDefinition* def =
     static_cast<const ModelEntityItemDefinition*>(this->definition().get());
-  if (i < this->m_values.size() && def->isValueValid(val))
+  if (i < m_values.size() && def->isValueValid(val))
   {
-    this->m_values[i] = val;
+    m_values[i] = val;
     return true;
   }
   return false;
@@ -212,14 +211,14 @@ bool ModelEntityItem::appendValue(const smtk::model::EntityRef& val)
   }
   // Finally - are we allowed to change the number of values?
   if ((def->isExtensible() && def->maxNumberOfValues() &&
-        this->m_values.size() >= def->maxNumberOfValues()) ||
-    (!def->isExtensible() && this->m_values.size() >= def->numberOfRequiredValues()))
+        m_values.size() >= def->maxNumberOfValues()) ||
+    (!def->isExtensible() && m_values.size() >= def->numberOfRequiredValues()))
   {
     // The number of values is fixed or we reached the max number of items
     return false;
   }
 
-  this->m_values.push_back(val);
+  m_values.push_back(val);
   return true;
 }
 
@@ -233,16 +232,16 @@ bool ModelEntityItem::removeValue(std::size_t i)
     return this->setValue(i, smtk::model::EntityRef()); // The number of values is fixed
   }
 
-  this->m_values.erase(this->m_values.begin() + i);
+  m_values.erase(m_values.begin() + i);
   return true;
 }
 
 /// This clears the list of values and then fills it with null entities up to the number of required values.
 void ModelEntityItem::reset()
 {
-  this->m_values.clear();
+  m_values.clear();
   if (this->numberOfRequiredValues() > 0)
-    this->m_values.resize(this->numberOfRequiredValues());
+    m_values.resize(this->numberOfRequiredValues());
 }
 
 /// A convenience method to obtain the first value in the item as a string.
@@ -272,7 +271,7 @@ std::string ModelEntityItem::valueAsString(std::size_t i) const
   */
 bool ModelEntityItem::isSet(std::size_t i) const
 {
-  return i < this->m_values.size() ? !!this->m_values[i].entity() : false;
+  return i < m_values.size() ? !!m_values[i].entity() : false;
 }
 
 /// Force the \a i-th value of the item to be invalid.
@@ -347,7 +346,7 @@ bool ModelEntityItem::has(const smtk::model::EntityRef& entity) const
   */
 smtk::model::EntityRefArray::const_iterator ModelEntityItem::begin() const
 {
-  return this->m_values.begin();
+  return m_values.begin();
 }
 
 /**\brief Return an iterator just past the last model-entity value in this item.
@@ -355,7 +354,7 @@ smtk::model::EntityRefArray::const_iterator ModelEntityItem::begin() const
   */
 smtk::model::EntityRefArray::const_iterator ModelEntityItem::end() const
 {
-  return this->m_values.end();
+  return m_values.end();
 }
 
 /**\brief

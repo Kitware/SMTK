@@ -49,7 +49,7 @@ namespace discrete
 
 WriteOperation::WriteOperation()
 {
-  this->m_currentversion = 5;
+  m_currentversion = 5;
 }
 
 bool WriteOperation::ableToOperate()
@@ -96,7 +96,7 @@ WriteOperation::Result WriteOperation::operateInternal()
     fname.append("/").append(tmpname).append(".cmb");
   }
 
-  this->m_op->SetFileName(fname.c_str());
+  m_op->SetFileName(fname.c_str());
 
   // ableToOperate should have verified that the model exists
   smtk::model::Models models = this->parameters()->associatedModelEntities<smtk::model::Models>();
@@ -113,10 +113,10 @@ WriteOperation::Result WriteOperation::operateInternal()
   vtkDiscreteModelWrapper* modelWrapper = opsession->findModelEntity(model.entity());
 
   // write the file out.
-  this->m_op->SetVersion(this->m_currentversion);
-  this->m_op->Operate(modelWrapper, opsession.get());
+  m_op->SetVersion(m_currentversion);
+  m_op->Operate(modelWrapper, opsession.get());
 
-  if (!this->m_op->GetOperateSucceeded())
+  if (!m_op->GetOperateSucceeded())
   {
     std::cerr << "Could not write file \"" << fname << "\".\n";
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);

@@ -79,8 +79,8 @@ model::Edge pmodel::createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, 
     << "    " << vFini << "  " << x1[0] << " " << x1[1] << "\n";
     */
 
-  vertex::Ptr vInitStorage = this->m_session->findStorage<vertex>(vInit);
-  vertex::Ptr vFiniStorage = this->m_session->findStorage<vertex>(vFini);
+  vertex::Ptr vInitStorage = m_session->findStorage<vertex>(vInit);
+  vertex::Ptr vFiniStorage = m_session->findStorage<vertex>(vFini);
 
   if (!vInitStorage ^ !vFiniStorage)
   { // one but not both of the points are model vertices. Error.
@@ -100,8 +100,7 @@ model::Edge pmodel::createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, 
     }
     if (!vInitStorage->canInsertEdge(begin->second.high(), &whereBegin))
     {
-      smtkErrorMacro(
-        this->m_session->log(), "Edge would overlap face in neighborhood of first vertex ("
+      smtkErrorMacro(m_session->log(), "Edge would overlap face in neighborhood of first vertex ("
           << smtk::model::Vertex(mgr, vInit).name() << ")E.");
       return smtk::model::Edge();
     }
@@ -115,8 +114,7 @@ model::Edge pmodel::createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, 
     }
     if (!vFiniStorage->canInsertEdge((begin + (end - begin - 1))->second.low(), &whereEnd))
     {
-      smtkErrorMacro(
-        this->m_session->log(), "Edge would overlap face in neighborhood of last vertex ("
+      smtkErrorMacro(m_session->log(), "Edge would overlap face in neighborhood of last vertex ("
           << smtk::model::Vertex(mgr, vFini).name() << ")F.");
       return smtk::model::Edge();
     }
@@ -127,7 +125,7 @@ model::Edge pmodel::createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, 
   internal::edge::Ptr storage = internal::edge::create();
   storage->setParent(this);
   storage->setId(created.entity());
-  this->m_session->addStorage(created.entity(), storage);
+  m_session->addStorage(created.entity(), storage);
   storage->m_points.clear();
   storage->m_points.insert(storage->m_points.end(), begin->second.low());
   for (T segIt = begin; segIt != end; ++segIt)
@@ -207,8 +205,8 @@ model::Edge pmodel::createModelEdgeFromPoints(
   Id vInit = this->pointId(*begin);
   Id vFini = this->pointId((*(end - 1)));
 
-  vertex::Ptr vInitStorage = this->m_session->findStorage<vertex>(vInit);
-  vertex::Ptr vFiniStorage = this->m_session->findStorage<vertex>(vFini);
+  vertex::Ptr vInitStorage = m_session->findStorage<vertex>(vInit);
+  vertex::Ptr vFiniStorage = m_session->findStorage<vertex>(vFini);
 
   if (!vInitStorage ^ !vFiniStorage)
   { // one but not both of the points are model vertices. Error.
@@ -223,8 +221,7 @@ model::Edge pmodel::createModelEdgeFromPoints(
   { // Ensure edge can be inserted without splitting a face.
     if (!vInitStorage->canInsertEdge(*begin, &whereBegin))
     {
-      smtkErrorMacro(
-        this->m_session->log(), "Edge would overlap face in neighborhood of first vertex ("
+      smtkErrorMacro(m_session->log(), "Edge would overlap face in neighborhood of first vertex ("
           << smtk::model::Vertex(mgr, vInit).name() << ")C.");
       return smtk::model::Edge();
     }
@@ -234,8 +231,7 @@ model::Edge pmodel::createModelEdgeFromPoints(
   { // Ensure edge can be inserted without splitting a face.
     if (!vFiniStorage->canInsertEdge(*(end - 1), &whereEnd))
     {
-      smtkErrorMacro(
-        this->m_session->log(), "Edge would overlap face in neighborhood of last vertex ("
+      smtkErrorMacro(m_session->log(), "Edge would overlap face in neighborhood of last vertex ("
           << smtk::model::Vertex(mgr, vFini).name() << ")D.");
       return smtk::model::Edge();
     }
@@ -246,7 +242,7 @@ model::Edge pmodel::createModelEdgeFromPoints(
   internal::edge::Ptr storage = internal::edge::create();
   storage->setParent(this);
   storage->setId(created.entity());
-  this->m_session->addStorage(created.entity(), storage);
+  m_session->addStorage(created.entity(), storage);
   storage->m_points.clear();
   storage->m_points.insert(storage->m_points.end(), begin, end);
 
@@ -290,23 +286,23 @@ Point pmodel::projectPoint(T coordBegin, T coordEnd)
   // Translate to origin
   for (T c = coordBegin; c != coordEnd && i < 3; ++i, ++c)
   {
-    xyz[i] = *c - this->m_origin[i];
+    xyz[i] = *c - m_origin[i];
   }
   // Assume any unspecified coordinates are 0 and finish translating to origin
   for (; i < 3; ++i)
   {
-    xyz[i] = -this->m_origin[i];
+    xyz[i] = -m_origin[i];
   }
   // Project translated point to x and y axes
   double px = 0, py = 0;
   for (i = 0; i < 3; ++i)
   {
-    px += xyz[i] * this->m_xAxis[i];
-    py += xyz[i] * this->m_yAxis[i];
+    px += xyz[i] * m_xAxis[i];
+    py += xyz[i] * m_yAxis[i];
   }
   // Scale point and round to integer
-  Point result(static_cast<Point::coordinate_type>(px * this->m_scale),
-    static_cast<Point::coordinate_type>(py * this->m_scale));
+  Point result(static_cast<Point::coordinate_type>(px * m_scale),
+    static_cast<Point::coordinate_type>(py * m_scale));
   return result;
 }
 
@@ -316,7 +312,7 @@ void pmodel::liftPoint(const Point& ix, T coordBegin)
   T coord = coordBegin;
   for (int i = 0; i < 3; ++i, ++coord)
   {
-    *coord = this->m_origin[i] + ix.x() * this->m_iAxis[i] + ix.y() * this->m_jAxis[i];
+    *coord = m_origin[i] + ix.x() * m_iAxis[i] + ix.y() * m_jAxis[i];
   }
 }
 

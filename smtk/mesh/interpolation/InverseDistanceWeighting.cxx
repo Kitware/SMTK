@@ -58,7 +58,7 @@ public:
           return m_pointcloud.data()(i);
         }
         // Otherwise, sum the contribution from each point.
-        w = std::pow(d, -1. * this->m_power);
+        w = std::pow(d, -1. * m_power);
         num += w * m_pointcloud.data()(i);
         denom += w;
       }
@@ -112,7 +112,7 @@ public:
               return value;
             }
             // Otherwise, sum the contribution from each point.
-            w = std::pow(d, -1. * this->m_power);
+            w = std::pow(d, -1. * m_power);
             num += w * value;
             denom += w;
           }

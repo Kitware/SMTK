@@ -51,67 +51,66 @@ BufferedCellAllocator::~BufferedCellAllocator()
 bool BufferedCellAllocator::reserveNumberOfCoordinates(std::size_t nCoordinates)
 {
   // Can only reserve coordinates once
-  if (this->m_nCoordinates != 0)
+  if (m_nCoordinates != 0)
   {
     return false;
   }
 
-  this->m_validState =
-    this->allocatePoints(nCoordinates, this->m_firstCoordinate, this->m_coordinateMemory);
+  m_validState = this->allocatePoints(nCoordinates, m_firstCoordinate, m_coordinateMemory);
 
-  if (this->m_validState)
+  if (m_validState)
   {
-    this->m_nCoordinates = nCoordinates;
+    m_nCoordinates = nCoordinates;
   }
 
-  return this->m_validState;
+  return m_validState;
 }
 
 bool BufferedCellAllocator::setCoordinate(std::size_t coord, double* xyz)
 {
-  if (!this->m_validState)
+  if (!m_validState)
   {
     return false;
   }
-  assert(coord < this->m_nCoordinates);
+  assert(coord < m_nCoordinates);
 
-  this->m_coordinateMemory[0][coord] = xyz[0];
-  this->m_coordinateMemory[1][coord] = xyz[1];
-  this->m_coordinateMemory[2][coord] = xyz[2];
+  m_coordinateMemory[0][coord] = xyz[0];
+  m_coordinateMemory[1][coord] = xyz[1];
+  m_coordinateMemory[2][coord] = xyz[2];
 
-  return this->m_validState;
+  return m_validState;
 }
 
 bool BufferedCellAllocator::flush()
 {
-  if (!this->m_validState)
+  if (!m_validState)
   {
     return false;
   }
 
-  if (this->m_localConnectivity.empty())
+  if (m_localConnectivity.empty())
   {
     return true;
   }
 
-  if (this->m_activeCellType == smtk::mesh::CellType_MAX)
+  if (m_activeCellType == smtk::mesh::CellType_MAX)
   {
     return false;
   }
 
-  if (this->m_activeCellType == smtk::mesh::Vertex)
+  if (m_activeCellType == smtk::mesh::Vertex)
   {
     // In the moab/interface world vertices don't have explicit connectivity
     // so we can't allocate cells. Instead we just explicitly add those
     // points to the cells range
-    for (auto&& ptCoordinate : this->m_localConnectivity)
+    for (auto&& ptCoordinate : m_localConnectivity)
     {
-      this->m_cells.insert(this->m_firstCoordinate + ptCoordinate);
+      m_cells.insert(m_firstCoordinate + ptCoordinate);
     }
 
-    this->m_localConnectivity.clear();
+    m_localConnectivity.clear();
 
-    return this->m_validState;
+    return m_validState;
   }
 
   // only convert cells smtk mesh supports
@@ -120,30 +119,29 @@ bool BufferedCellAllocator::flush()
   // need to convert from smtk cell type to moab cell type
   ::moab::EntityHandle* startOfConnectivityArray = 0;
 
-  this->m_validState =
-    this->allocateCells(this->m_activeCellType, this->m_localConnectivity.size() / this->m_nCoords,
-      this->m_nCoords, cellsCreatedForThisType, startOfConnectivityArray);
+  m_validState = this->allocateCells(m_activeCellType, m_localConnectivity.size() / m_nCoords,
+    m_nCoords, cellsCreatedForThisType, startOfConnectivityArray);
 
-  if (this->m_validState)
+  if (m_validState)
   {
     // now that we have the chunk allocated need to fill it
     // we do this by iterating the cells
-    for (std::size_t i = 0; i < this->m_localConnectivity.size(); ++i)
+    for (std::size_t i = 0; i < m_localConnectivity.size(); ++i)
     {
-      startOfConnectivityArray[i] = this->m_firstCoordinate + this->m_localConnectivity[i];
+      startOfConnectivityArray[i] = m_firstCoordinate + m_localConnectivity[i];
     }
 
     // notify database that we have written to connectivity, that way
     // it can properly update adjacencies and other database info
-    this->connectivityModified(this->m_cells, this->m_nCoords, startOfConnectivityArray);
+    this->connectivityModified(m_cells, m_nCoords, startOfConnectivityArray);
 
     // insert these cells back into the range
-    this->m_cells.insert(cellsCreatedForThisType.begin(), cellsCreatedForThisType.end());
+    m_cells.insert(cellsCreatedForThisType.begin(), cellsCreatedForThisType.end());
   }
 
-  this->m_localConnectivity.clear();
+  m_localConnectivity.clear();
 
-  return this->m_validState;
+  return m_validState;
 }
 }
 }

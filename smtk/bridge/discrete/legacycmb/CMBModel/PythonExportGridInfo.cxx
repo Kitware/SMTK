@@ -188,14 +188,14 @@ std::vector<std::pair<int, int> > PythonExportGridInfo::edgeGridItems(
 
 vtkModelGeneratedGridRepresentation* PythonExportGridInfo::getGeneratedGridRep(ApiStatus& status)
 {
-  if (NULL == this->m_model)
+  if (NULL == m_model)
   {
     status.returnType = GridInfo::NOT_AVAILABLE;
     status.errorMessage = "model is null";
     return NULL;
   }
   vtkModelGeneratedGridRepresentation* gridRep =
-    vtkModelGeneratedGridRepresentation::SafeDownCast(this->m_model->GetAnalysisGridInfo());
+    vtkModelGeneratedGridRepresentation::SafeDownCast(m_model->GetAnalysisGridInfo());
 
   return gridRep;
 }

@@ -43,7 +43,7 @@ bool MeshSelectionItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr ad
   {
     return false;
   }
-  this->m_selectionValues.clear();
+  m_selectionValues.clear();
   return true;
 }
 
@@ -78,31 +78,31 @@ std::size_t MeshSelectionItem::numberOfValues() const
 
 void MeshSelectionItem::setValues(const smtk::common::UUID& uuid, const std::set<int>& vals)
 {
-  this->m_selectionValues[uuid] = vals;
+  m_selectionValues[uuid] = vals;
 }
 
 void MeshSelectionItem::unionValues(const smtk::common::UUID& uuid, const std::set<int>& vals)
 {
-  this->m_selectionValues[uuid].insert(vals.begin(), vals.end());
+  m_selectionValues[uuid].insert(vals.begin(), vals.end());
 }
 
 void MeshSelectionItem::removeValues(const smtk::common::UUID& uuid, const std::set<int>& vals)
 {
   std::set<int> diffSet;
-  std::set_difference(this->m_selectionValues[uuid].begin(), this->m_selectionValues[uuid].end(),
-    vals.begin(), vals.end(), std::inserter(diffSet, diffSet.end()));
-  this->m_selectionValues[uuid] = diffSet;
+  std::set_difference(m_selectionValues[uuid].begin(), m_selectionValues[uuid].end(), vals.begin(),
+    vals.end(), std::inserter(diffSet, diffSet.end()));
+  m_selectionValues[uuid] = diffSet;
 }
 
 const std::set<int>& MeshSelectionItem::values(const smtk::common::UUID& uuid)
 {
   //std::advance(it,element);
-  return this->m_selectionValues[uuid];
+  return m_selectionValues[uuid];
 }
 
 void MeshSelectionItem::reset()
 {
-  this->m_selectionValues.clear();
+  m_selectionValues.clear();
 }
 
 bool MeshSelectionItem::assign(ConstItemPtr& sourceItem, unsigned int options)
@@ -115,9 +115,9 @@ bool MeshSelectionItem::assign(ConstItemPtr& sourceItem, unsigned int options)
     return false; // Source is not a mesh selection item
   }
 
-  this->m_modifyMode = sourceMeshSelectionItem->modifyMode();
-  this->m_isCtrlKeyDown = sourceMeshSelectionItem->isCtrlKeyDown();
-  this->m_selectionValues = sourceMeshSelectionItem->m_selectionValues;
+  m_modifyMode = sourceMeshSelectionItem->modifyMode();
+  m_isCtrlKeyDown = sourceMeshSelectionItem->isCtrlKeyDown();
+  m_selectionValues = sourceMeshSelectionItem->m_selectionValues;
 
   // Assigns my contents to be same as sourceItem
   return Item::assign(sourceItem, options);
@@ -125,12 +125,12 @@ bool MeshSelectionItem::assign(ConstItemPtr& sourceItem, unsigned int options)
 
 smtk::attribute::MeshSelectionItem::const_sel_map_it MeshSelectionItem::begin() const
 {
-  return this->m_selectionValues.begin();
+  return m_selectionValues.begin();
 }
 
 smtk::attribute::MeshSelectionItem::const_sel_map_it MeshSelectionItem::end() const
 {
-  return this->m_selectionValues.end();
+  return m_selectionValues.end();
 }
 
 std::string MeshSelectionItem::modifyMode2String(MeshModifyMode m)

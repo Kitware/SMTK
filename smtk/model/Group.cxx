@@ -67,11 +67,11 @@ bool Group::removeEntity(const EntityRef& thing)
   ManagerPtr mgr = this->manager();
   if (this->isValid() && !thing.entity().isNull())
   {
-    int aidx = mgr->findArrangementInvolvingEntity(this->m_entity, SUPERSET_OF, thing.entity());
+    int aidx = mgr->findArrangementInvolvingEntity(m_entity, SUPERSET_OF, thing.entity());
 
     // FIXME: This really belongs inside unarrangeEntity().
     // But there we have no access to thing.entity() until too late.
-    if (mgr->unarrangeEntity(this->m_entity, SUPERSET_OF, aidx) > 0)
+    if (mgr->unarrangeEntity(m_entity, SUPERSET_OF, aidx) > 0)
     {
       mgr->trigger(
         std::make_pair(DEL_EVENT, GROUP_SUPERSET_OF_ENTITY), *this, EntityRef(mgr, thing.entity()));

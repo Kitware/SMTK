@@ -181,7 +181,7 @@ std::set<smtk::resource::ResourcePtr> Manager::find(const std::string& uniqueNam
   }
 
   typedef Container::index<IndexTag>::type ResourcesByIndex;
-  ResourcesByIndex& resources = this->m_resources.get<IndexTag>();
+  ResourcesByIndex& resources = m_resources.get<IndexTag>();
   for (auto& idx : validIndices)
   {
     auto resourceItRange = resources.equal_range(idx);
@@ -205,7 +205,7 @@ std::set<smtk::resource::ResourcePtr> Manager::find(const Resource::Index& index
   std::set<smtk::resource::ResourcePtr> values;
 
   typedef Container::index<IndexTag>::type ResourcesByIndex;
-  ResourcesByIndex& resources = this->m_resources.get<IndexTag>();
+  ResourcesByIndex& resources = m_resources.get<IndexTag>();
   for (auto& idx : validIndices)
   {
     auto resourceItRange = resources.equal_range(idx);

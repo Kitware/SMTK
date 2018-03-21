@@ -51,32 +51,32 @@ public:
 
   void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType cellType, int numPts) override
   {
-    this->m_cells.insert(cellId);
+    m_cells.insert(cellId);
     //verify the offset is in the correct location
-    std::int64_t offset = this->m_locations[this->m_currentIndex];
-    test(offset == this->m_currentLocation);
+    std::int64_t offset = m_locations[m_currentIndex];
+    test(offset == m_currentLocation);
     if (m_is_vtk)
     {
       //the connectivity at offset should hold the number of points
-      test(this->m_conn[offset] == numPts);
-      this->m_currentLocation++;
+      test(m_conn[offset] == numPts);
+      m_currentLocation++;
       offset++;
     }
     else
     {
       //verify the types match when doing smtk types
-      test(this->m_types[this->m_currentIndex] == static_cast<unsigned char>(cellType));
+      test(m_types[m_currentIndex] == static_cast<unsigned char>(cellType));
     }
 
     //verify the points ids are mapped properly
     for (int i = 0; i < numPts; ++i)
     {
-      test(static_cast<const std::size_t>(this->m_conn[offset + i]) ==
-        this->m_points.find(this->pointIds()[i]));
+      test(
+        static_cast<const std::size_t>(m_conn[offset + i]) == m_points.find(this->pointIds()[i]));
     }
 
-    this->m_currentIndex++;
-    this->m_currentLocation += numPts;
+    m_currentIndex++;
+    m_currentLocation += numPts;
   }
 
   smtk::mesh::CellSet cells(smtk::mesh::CollectionPtr c) const
@@ -109,10 +109,10 @@ public:
     for (c_it i = pointIds.begin(); i != pointIds.end(); ++i)
     {
       //iterate the range of coords / point ids
-      test(this->m_points[m_currentIndex] == static_cast<T>(xyz[offset]));
-      test(this->m_points[m_currentIndex + 1] == static_cast<T>(xyz[offset + 1]));
-      test(this->m_points[m_currentIndex + 2] == static_cast<T>(xyz[offset + 2]));
-      this->m_currentIndex += 3;
+      test(m_points[m_currentIndex] == static_cast<T>(xyz[offset]));
+      test(m_points[m_currentIndex + 1] == static_cast<T>(xyz[offset + 1]));
+      test(m_points[m_currentIndex + 2] == static_cast<T>(xyz[offset + 2]));
+      m_currentIndex += 3;
       offset += 3;
     }
   }

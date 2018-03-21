@@ -32,20 +32,20 @@ DescriptivePhrase::DescriptivePhrase()
   : m_type(DescriptivePhraseType::INVALID_DESCRIPTION)
   , m_subphrasesBuilt(false)
 {
-  this->m_phraseId = DescriptivePhrase::s_nextPhraseId++;
+  m_phraseId = DescriptivePhrase::s_nextPhraseId++;
 }
 
 DescriptivePhrasePtr DescriptivePhrase::setup(DescriptivePhraseType ptype, Ptr parnt)
 {
-  this->m_parent = parnt;
-  this->m_type = ptype;
-  this->m_subphrasesBuilt = false;
+  m_parent = parnt;
+  m_type = ptype;
+  m_subphrasesBuilt = false;
   return shared_from_this();
 }
 
 DescriptivePhrasePtr DescriptivePhrase::setDelegate(SubphraseGeneratorPtr delegate)
 {
-  this->m_delegate = delegate;
+  m_delegate = delegate;
   return shared_from_this();
 }
 
@@ -77,20 +77,20 @@ PhraseContentPtr DescriptivePhrase::content() const
 DescriptivePhrases& DescriptivePhrase::subphrases()
 {
   this->buildSubphrases();
-  return this->m_subphrases;
+  return m_subphrases;
 }
 
 DescriptivePhrases DescriptivePhrase::subphrases() const
 {
   const_cast<DescriptivePhrase*>(this)->buildSubphrases();
-  return this->m_subphrases;
+  return m_subphrases;
 }
 
 int DescriptivePhrase::argFindChild(const DescriptivePhrase* child) const
 {
   int i = 0;
   DescriptivePhrases::const_iterator it;
-  for (it = this->m_subphrases.begin(); it != this->m_subphrases.end(); ++it, ++i)
+  for (it = m_subphrases.begin(); it != m_subphrases.end(); ++it, ++i)
   {
     if (it->get() == child)
       return i;
@@ -102,7 +102,7 @@ int DescriptivePhrase::argFindChild(smtk::resource::ResourcePtr child, bool only
 {
   int i = 0;
   DescriptivePhrases::const_iterator it;
-  for (it = this->m_subphrases.begin(); it != this->m_subphrases.end(); ++it, ++i)
+  for (it = m_subphrases.begin(); it != m_subphrases.end(); ++it, ++i)
   {
     auto sp = it->get();
     if (sp->relatedResource() == child && (!onlyResource || !sp->relatedComponent()))
@@ -118,7 +118,7 @@ int DescriptivePhrase::argFindChild(smtk::resource::ComponentPtr child) const
 {
   int i = 0;
   DescriptivePhrases::const_iterator it;
-  for (it = this->m_subphrases.begin(); it != this->m_subphrases.end(); ++it, ++i)
+  for (it = m_subphrases.begin(); it != m_subphrases.end(); ++it, ++i)
   {
     if (it->get()->relatedComponent() == child)
     {
@@ -134,7 +134,7 @@ int DescriptivePhrase::argFindChild(
   (void)propType;
   int i = 0;
   DescriptivePhrases::const_iterator it;
-  for (it = this->m_subphrases.begin(); it != this->m_subphrases.end(); ++it, ++i)
+  for (it = m_subphrases.begin(); it != m_subphrases.end(); ++it, ++i)
   {
     if (propName == (*it)->title() && (*it)->isPropertyValueType())
       return i;
@@ -354,8 +354,8 @@ bool DescriptivePhrase::operator==(const DescriptivePhrase& other) const
 {
   return *m_content.get() == *other.m_content.get() &&
     // You wouldn't think typeid(baseClassReference) would work, but it does virtual lookup:
-    typeid(*this) == typeid(other) && this->m_parent.lock() == other.m_parent.lock() &&
-    this->m_type == other.m_type && this->m_delegate == other.m_delegate;
+    typeid(*this) == typeid(other) && m_parent.lock() == other.m_parent.lock() &&
+    m_type == other.m_type && m_delegate == other.m_delegate;
 }
 
 bool DescriptivePhrase::operator!=(const DescriptivePhrase& other) const
@@ -365,9 +365,9 @@ bool DescriptivePhrase::operator!=(const DescriptivePhrase& other) const
 
 void DescriptivePhrase::buildSubphrases()
 {
-  if (!this->m_subphrasesBuilt)
+  if (!m_subphrasesBuilt)
   {
-    this->m_subphrasesBuilt = true;
+    m_subphrasesBuilt = true;
     SubphraseGeneratorPtr delegate = this->findDelegate();
     if (delegate)
     {

@@ -60,10 +60,10 @@ public:
     * turn absolute paths into relative ones. It may be used
     * during import to do the reverse.
     */
-  std::string referencePath() const { return this->m_referencePath; }
+  std::string referencePath() const { return m_referencePath; }
 
   /// Set the directory to use during import/export for creating relative paths.
-  void setReferencePath(const std::string& p) { this->m_referencePath = p; }
+  void setReferencePath(const std::string& p) { m_referencePath = p; }
 
 protected:
   std::string m_referencePath;

@@ -112,7 +112,7 @@ MergeOperation::Result MergeOperation::operateInternal()
   vtkDiscreteModelWrapper* modelWrapper = opsession->findModelEntity(model.entity());
 
   int tgtid = this->fetchCMBCellId(resource, "target cell");
-  this->m_op->SetTargetId(tgtid);
+  m_op->SetTargetId(tgtid);
   smtk::model::ManagerPtr store = std::static_pointer_cast<smtk::model::Manager>(resource);
   smtk::model::EntityRefs srcsRemoved;
 
@@ -125,9 +125,9 @@ MergeOperation::Result MergeOperation::operateInternal()
     int srcid = this->fetchCMBCellId(resource, sourceItem, static_cast<int>(idx));
     if (srcid >= 0 && srcid != tgtid)
     {
-      this->m_op->SetSourceId(srcid);
-      this->m_op->Operate(modelWrapper);
-      ok = this->m_op->GetOperateSucceeded() != 0;
+      m_op->SetSourceId(srcid);
+      m_op->Operate(modelWrapper);
+      ok = m_op->GetOperateSucceeded() != 0;
       if (ok)
       {
         smtk::model::EntityRef srcEnt = sourceItem->value(idx);

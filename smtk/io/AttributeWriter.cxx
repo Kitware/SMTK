@@ -38,7 +38,7 @@ bool AttributeWriter::setFileVersion(unsigned int version)
   // Validate input
   if ((version >= 2) && (version <= MAX_FILE_VERSION))
   {
-    this->m_fileVersion = version;
+    m_fileVersion = version;
     return true;
   }
 
@@ -48,12 +48,12 @@ bool AttributeWriter::setFileVersion(unsigned int version)
 
 void AttributeWriter::setMaxFileVersion()
 {
-  this->m_fileVersion = MAX_FILE_VERSION;
+  m_fileVersion = MAX_FILE_VERSION;
 }
 
 unsigned int AttributeWriter::fileVersion() const
 {
-  return this->m_fileVersion;
+  return m_fileVersion;
 }
 
 bool AttributeWriter::write(
@@ -61,10 +61,10 @@ bool AttributeWriter::write(
 {
   logger.reset();
   XmlStringWriter* theWriter = this->newXmlStringWriter(collection);
-  theWriter->includeDefinitions(this->m_includeDefinitions);
-  theWriter->includeInstances(this->m_includeInstances);
-  theWriter->includeModelInformation(this->m_includeModelInformation);
-  theWriter->includeViews(this->m_includeViews);
+  theWriter->includeDefinitions(m_includeDefinitions);
+  theWriter->includeInstances(m_includeInstances);
+  theWriter->includeModelInformation(m_includeModelInformation);
+  theWriter->includeViews(m_includeViews);
 
   std::string result = theWriter->convertToString(logger);
   if (!logger.hasErrors())
@@ -90,10 +90,10 @@ bool AttributeWriter::writeContents(const smtk::attribute::CollectionPtr collect
 {
   logger.reset();
   XmlStringWriter* theWriter = this->newXmlStringWriter(collection);
-  theWriter->includeDefinitions(this->m_includeDefinitions);
-  theWriter->includeInstances(this->m_includeInstances);
-  theWriter->includeModelInformation(this->m_includeModelInformation);
-  theWriter->includeViews(this->m_includeViews);
+  theWriter->includeDefinitions(m_includeDefinitions);
+  theWriter->includeInstances(m_includeInstances);
+  theWriter->includeModelInformation(m_includeModelInformation);
+  theWriter->includeViews(m_includeViews);
   filecontents = theWriter->convertToString(logger, no_declaration);
   delete theWriter;
   return logger.hasErrors();
@@ -103,7 +103,7 @@ XmlStringWriter* AttributeWriter::newXmlStringWriter(
   const smtk::attribute::CollectionPtr collection) const
 {
   XmlStringWriter* writer = NULL;
-  switch (this->m_fileVersion)
+  switch (m_fileVersion)
   {
     case 2:
       writer = new XmlV2StringWriter(collection);

@@ -195,24 +195,18 @@ public:
     * If false is returned, the \a name is already in use;
     * try again with a different \a name.
     */
-  bool registerSelectionSource(std::string name)
-  {
-    return this->m_selectionSources.insert(name).second;
-  }
+  bool registerSelectionSource(std::string name) { return m_selectionSources.insert(name).second; }
 
   /// Unregister a selection source; if false is returned, the source was not recognized.
-  bool unregisterSelectionSource(std::string name)
-  {
-    return (this->m_selectionSources.erase(name) > 0);
-  }
+  bool unregisterSelectionSource(std::string name) { return (m_selectionSources.erase(name) > 0); }
 
   /// Populate a set with the names of all registered selection sources.
-  const std::set<std::string>& getSelectionSources() const { return this->m_selectionSources; }
+  const std::set<std::string>& getSelectionSources() const { return m_selectionSources; }
 
   /// Populate a set with the names of all registered selection sources.
   void getSelectionSources(std::set<std::string>& selectionSources) const
   {
-    selectionSources = this->m_selectionSources;
+    selectionSources = m_selectionSources;
   }
   //@}
 
@@ -230,15 +224,12 @@ public:
   /// Unregister a selection value. If the value was not registered, returns false.
   bool unregisterSelectionValue(const std::string& valueLabel)
   {
-    return this->m_selectionValueLabels.erase(valueLabel) > 0;
+    return m_selectionValueLabels.erase(valueLabel) > 0;
   }
   /// Unregister a selection value. If the value was not registered, returns false.
   bool unregisterSelectionValue(int value);
   /// Return the map of selection values.
-  const std::map<std::string, int>& selectionValueLabels() const
-  {
-    return this->m_selectionValueLabels;
-  }
+  const std::map<std::string, int>& selectionValueLabels() const { return m_selectionValueLabels; }
   /// Return the selection value for the given \a label, or 0 if there is no such label registered.
   int selectionValueFromLabel(const std::string& label) const;
   /// Return the selection value for the given \a label, registering a new value if needed.
@@ -280,16 +271,13 @@ public:
   bool setDefaultAction(const SelectionAction& action);
 
   /// Return the current method used to modify selections when
-  SelectionAction defaultAction() const { return this->m_defaultAction; }
+  SelectionAction defaultAction() const { return m_defaultAction; }
 
-  void setDefaultActionToReplace() { this->m_defaultAction = SelectionAction::FILTERED_REPLACE; }
+  void setDefaultActionToReplace() { m_defaultAction = SelectionAction::FILTERED_REPLACE; }
 
-  void setDefaultActionToAddition() { this->m_defaultAction = SelectionAction::FILTERED_ADD; }
+  void setDefaultActionToAddition() { m_defaultAction = SelectionAction::FILTERED_ADD; }
 
-  void setDefaultActionToSubtraction()
-  {
-    this->m_defaultAction = SelectionAction::FILTERED_SUBTRACT;
-  }
+  void setDefaultActionToSubtraction() { m_defaultAction = SelectionAction::FILTERED_SUBTRACT; }
   //@}
 
   /** \brief Querying the current selection.
@@ -339,7 +327,7 @@ public:
   int observe(Observer fn, bool immediatelyNotify = false);
 
   /// Stop listening to selection events.
-  bool unobserve(int handle) { return this->m_listeners.erase(handle) > 0; }
+  bool unobserve(int handle) { return m_listeners.erase(handle) > 0; }
   //@}
 
   /** \brief Selection filtering.
@@ -384,8 +372,8 @@ bool Selection::modifySelection(
   }
   if (action == SelectionAction::FILTERED_REPLACE || action == SelectionAction::UNFILTERED_REPLACE)
   {
-    modified = !this->m_selection.empty();
-    this->m_selection.clear();
+    modified = !m_selection.empty();
+    m_selection.clear();
   }
   for (auto component : components)
   {

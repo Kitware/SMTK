@@ -74,7 +74,7 @@ std::string Session::name() const
   */
 smtk::common::UUID Session::sessionId() const
 {
-  return this->m_sessionId;
+  return m_sessionId;
 }
 
 /**\brief Transcribe an entity from a foreign modeler into an SMTK storage Manager.
@@ -100,8 +100,8 @@ int Session::transcribe(
   if (requested)
   {
     // Check that the entity ID is dangling or we are forced to continue.
-    DanglingEntities::iterator it = this->m_dangling.find(entity);
-    if (onlyDangling && it == this->m_dangling.end())
+    DanglingEntities::iterator it = m_dangling.find(entity);
+    if (onlyDangling && it == m_dangling.end())
     { // The session has not been told that this UUID exists.
       return retval;
     }
@@ -115,8 +115,8 @@ int Session::transcribe(
     // entity set. Note that we must refresh the iterator since transcribeInternal
     // may have modified m_dangling.
     if (((actual & this->allSupportedInformation()) == this->allSupportedInformation()) &&
-      ((it = this->m_dangling.find(entity)) != this->m_dangling.end()))
-      this->m_dangling.erase(it);
+      ((it = m_dangling.find(entity)) != m_dangling.end()))
+      m_dangling.erase(it);
   }
   return retval;
 }
@@ -134,7 +134,7 @@ SessionInfoBits Session::allSupportedInformation() const
 /// Return the map from dangling entityrefs to bits describing their partial transcription state.
 const DanglingEntities& Session::danglingEntities() const
 {
-  return this->m_dangling;
+  return m_dangling;
 }
 
 /**\brief Mark an entity, \a ent, as partially transcribed.
@@ -153,9 +153,9 @@ const DanglingEntities& Session::danglingEntities() const
 void Session::declareDanglingEntity(const EntityRef& ent, SessionInfoBits present)
 {
   if ((present & this->allSupportedInformation()) < this->allSupportedInformation())
-    this->m_dangling[ent] = present;
+    m_dangling[ent] = present;
   else
-    this->m_dangling.erase(ent);
+    m_dangling.erase(ent);
 }
 
 /**\brief Set configuration options on the session.
@@ -175,15 +175,15 @@ int Session::setup(const std::string& optName, const StringList& optVal)
 /// Return a reference to the manager that owns this Session.
 Manager::Ptr Session::manager() const
 {
-  return this->m_manager ? this->m_manager->shared_from_this() : Manager::Ptr();
+  return m_manager ? m_manager->shared_from_this() : Manager::Ptr();
 }
 
 /// Return a reference to the mesh manager for this Session.
 smtk::mesh::ManagerPtr Session::meshManager() const
 {
-  if (this->m_manager)
+  if (m_manager)
   {
-    return this->m_manager->meshes();
+    return m_manager->meshes();
   }
   else
   {
@@ -217,7 +217,7 @@ SessionInfoBits Session::transcribeInternal(
 {
   (void)depth;
   SessionInfoBits actual = SESSION_NOTHING;
-  EntityPtr entRec = this->m_manager->findEntity(entRef.entity(), false);
+  EntityPtr entRec = m_manager->findEntity(entRef.entity(), false);
   if (!entRec)
     entRec = this->addEntityRecord(entRef);
 
@@ -235,7 +235,7 @@ SessionInfoBits Session::transcribeInternal(
 
   // We must re-find entRec because the addition of other entities may
   // have caused a reallocation (in hash-based storage):
-  entRec = this->m_manager->findEntity(entRef.entity(), false);
+  entRec = m_manager->findEntity(entRef.entity(), false);
 
   actual |= this->findOrAddArrangements(entRef, entRec, flags, helper);
   actual |= this->updateProperties(entRef, entRec, flags, helper);
@@ -255,13 +255,13 @@ SessionInfoBits Session::transcribeInternal(
   */
 void Session::setSessionId(const smtk::common::UUID& sessId)
 {
-  this->m_sessionId = sessId;
+  m_sessionId = sessId;
 }
 
 /// Inform this instance of the session that it is owned by \a mgr.
 void Session::setManager(Manager* mgr)
 {
-  this->m_manager = mgr;
+  m_manager = mgr;
 }
 
 /**\brief Called when an entity is being split so that attribute assignments can be updated.

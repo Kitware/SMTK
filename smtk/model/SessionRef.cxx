@@ -43,8 +43,8 @@ SessionRef::SessionRef(ManagerPtr mgr, SessionPtr brdg)
   */
 Session::Ptr SessionRef::session() const
 {
-  ManagerPtr mgr = this->m_manager.lock();
-  if (!mgr || !this->m_entity)
+  ManagerPtr mgr = m_manager.lock();
+  if (!mgr || !m_entity)
     return Session::Ptr();
   return mgr->sessionData(*this);
 }

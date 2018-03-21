@@ -73,38 +73,38 @@ void EntityIterator::traverse(C ebegin, C eend)
 template <typename C>
 void EntityIterator::traverse(C ebegin, C eend, IteratorStyle related)
 {
-  this->m_related = related;
-  this->m_visited.clear();
-  if (this->m_related == ITERATE_MODELS)
+  m_related = related;
+  m_visited.clear();
+  if (m_related == ITERATE_MODELS)
   {
     Model parent;
     for (C rit = ebegin; rit != eend; ++rit)
     {
       if ((parent = rit->owningModel()).isValid())
       {
-        this->m_visited.insert(parent);
+        m_visited.insert(parent);
         SessionRef sref = parent.session();
         if (sref.isValid())
-          this->m_visited.insert(sref);
+          m_visited.insert(sref);
       }
       else if (rit->isModel())
       {
         Model model(*rit);
         SessionRef sref = model.session();
-        this->m_visited.insert(model);
+        m_visited.insert(model);
         if (sref.isValid())
-          this->m_visited.insert(sref);
+          m_visited.insert(sref);
       }
       else
       {
-        this->m_visited.insert(
+        m_visited.insert(
           *rit); // Well, if it doesn't have a parent, at least make sure it's included.
       }
     }
   }
   else
   {
-    this->m_visited.insert(ebegin, eend);
+    m_visited.insert(ebegin, eend);
   }
 }
 

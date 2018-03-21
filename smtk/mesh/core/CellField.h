@@ -53,7 +53,7 @@ public:
   bool operator<(const CellField& other) const;
 
   //Return the unique name associated with the dataset
-  std::string name() const { return this->m_name; }
+  std::string name() const { return m_name; }
 
   //Check if the dataset is represented in the mesh database
   bool isValid() const;
@@ -68,7 +68,7 @@ public:
   smtk::mesh::FieldType type() const;
 
   //Return the meshset associated with the dataset
-  const smtk::mesh::MeshSet& meshset() const { return this->m_meshset; }
+  const smtk::mesh::MeshSet& meshset() const { return m_meshset; }
 
   //Return the cells associated with the dataset
   smtk::mesh::CellSet cells() const;

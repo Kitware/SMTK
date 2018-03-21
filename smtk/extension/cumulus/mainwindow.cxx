@@ -36,7 +36,7 @@ MainWindow::MainWindow()
 
   this->createMainMenu();
 
-  connect(this->m_ui->cumulusWidget, SIGNAL(info(QString)), this, SLOT(displayInfo(QString)));
+  connect(m_ui->cumulusWidget, SIGNAL(info(QString)), this, SLOT(displayInfo(QString)));
 
 #ifdef TEST_CUSTOM_MENU
   QAction* action = new QAction("Show Download Folder", this);
@@ -54,7 +54,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::girderUrl(const QString& url)
 {
-  this->m_ui->cumulusWidget->girderUrl(url);
+  m_ui->cumulusWidget->girderUrl(url);
 }
 
 void MainWindow::createMainMenu()

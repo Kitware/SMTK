@@ -30,12 +30,12 @@ public:
   ModelToMesh();
 
   //By default will merge duplicate elements
-  bool isMergingEnabled() const { return this->m_mergeDuplicates; }
-  void setIsMerging(bool m) { this->m_mergeDuplicates = m; }
+  bool isMergingEnabled() const { return m_mergeDuplicates; }
+  void setIsMerging(bool m) { m_mergeDuplicates = m; }
 
   //Allow you to specify a custom tolerance for the merging of duplicate elements
-  double getMergeTolerance() const { return this->m_tolerance; }
-  void setMergeTolerance(double tol) { this->m_tolerance = tol; }
+  double getMergeTolerance() const { return m_tolerance; }
+  void setMergeTolerance(double tol) { m_tolerance = tol; }
 
   //convert smtk::model to a collection
   smtk::mesh::CollectionPtr operator()(

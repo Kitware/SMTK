@@ -83,19 +83,19 @@ bool Selection::registerSelectionValue(
     }
   }
 
-  return this->m_selectionValueLabels.insert(std::make_pair(valueLabel, value)).second;
+  return m_selectionValueLabels.insert(std::make_pair(valueLabel, value)).second;
 }
 
 bool Selection::unregisterSelectionValue(int value)
 {
   bool didErase = false;
-  for (auto it = this->m_selectionValueLabels.begin(); it != this->m_selectionValueLabels.end();)
+  for (auto it = m_selectionValueLabels.begin(); it != m_selectionValueLabels.end();)
   {
     auto tmp = it;
     ++it; // Keep from invalidating our current iterator.
     if (tmp->second == value)
     {
-      this->m_selectionValueLabels.erase(tmp);
+      m_selectionValueLabels.erase(tmp);
       didErase = true;
     }
   }
@@ -104,8 +104,8 @@ bool Selection::unregisterSelectionValue(int value)
 
 int Selection::selectionValueFromLabel(const std::string& label) const
 {
-  auto it = this->m_selectionValueLabels.find(label);
-  if (it == this->m_selectionValueLabels.end())
+  auto it = m_selectionValueLabels.find(label);
+  if (it == m_selectionValueLabels.end())
   {
     return 0;
   }
@@ -114,11 +114,11 @@ int Selection::selectionValueFromLabel(const std::string& label) const
 
 int Selection::findOrCreateLabeledValue(const std::string& label)
 {
-  auto it = this->m_selectionValueLabels.find(label);
-  if (it == this->m_selectionValueLabels.end())
+  auto it = m_selectionValueLabels.find(label);
+  if (it == m_selectionValueLabels.end())
   {
     // Need to find a unique value.
-    int handle = static_cast<int>(this->m_selectionValueLabels.size()) + 1;
+    int handle = static_cast<int>(m_selectionValueLabels.size()) + 1;
     while (!this->registerSelectionValue(label, handle))
     {
       ++handle;
@@ -138,7 +138,7 @@ bool Selection::setDefaultAction(const SelectionAction& action)
     case SelectionAction::UNFILTERED_REPLACE:
     case SelectionAction::UNFILTERED_ADD:
     case SelectionAction::UNFILTERED_SUBTRACT:
-      this->m_defaultAction = action;
+      m_defaultAction = action;
       return true;
     default:
       break;
@@ -159,8 +159,8 @@ int Selection::observe(Observer fn, bool immediatelyNotify)
     return -1;
   }
 
-  int handle = this->m_listeners.empty() ? 0 : this->m_listeners.rbegin()->first + 1;
-  this->m_listeners[handle] = fn;
+  int handle = m_listeners.empty() ? 0 : m_listeners.rbegin()->first + 1;
+  m_listeners[handle] = fn;
   if (immediatelyNotify)
   {
     fn(SMTK_SELECTION_MANAGER_SOURCE, shared_from_this());
@@ -173,7 +173,7 @@ void Selection::setFilter(const SelectionFilter& fn, bool refilter)
   if (!fn)
   {
     // We require a valid filter always. Use our default, which accepts everything:
-    this->m_filter = defaultFilter;
+    m_filter = defaultFilter;
     // No need to re-run filter, since we know it will accept everything in the current selection.
     return;
   }
@@ -182,7 +182,7 @@ void Selection::setFilter(const SelectionFilter& fn, bool refilter)
   // If we could, we would return early here.
 
   // Set the filter and run it on the existing selection if instructed.
-  this->m_filter = fn;
+  m_filter = fn;
   if (refilter)
   {
     this->refilter(SMTK_SELECTION_MANAGER_SOURCE);
@@ -235,17 +235,17 @@ bool Selection::performAction(
   };
 
   // Replace (which is equivalent to add inside performAction), add, or subtract:
-  auto it = this->m_selection.find(comp);
+  auto it = m_selection.find(comp);
   switch (action)
   {
     case SelectionAction::FILTERED_REPLACE:
     case SelectionAction::UNFILTERED_REPLACE:
     case SelectionAction::FILTERED_ADD:
     case SelectionAction::UNFILTERED_ADD:
-      if (it == this->m_selection.end())
+      if (it == m_selection.end())
       {
         modified = true;
-        this->m_selection[comp] = value;
+        m_selection[comp] = value;
       }
       else if (it->second != value)
       {
@@ -284,7 +284,7 @@ bool Selection::performAction(
       if (it != m_selection.end())
       {
         modified = true;
-        this->m_selection.erase(it);
+        m_selection.erase(it);
       }
       // Now deal with suggestions... should we really allow additions
       // during a subtract? Not going to for now, but I guess it is
@@ -321,7 +321,7 @@ bool Selection::refilter(const std::string& source)
   bool modified = false;
   for (auto it = m_selection.begin(); it != m_selection.end();)
   {
-    if (!this->m_filter(it->first, it->second, suggestions))
+    if (!m_filter(it->first, it->second, suggestions))
     { // Remove the current item from the selection, being careful not to invalidate the iterator:
       auto tmp = it;
       modified = true;

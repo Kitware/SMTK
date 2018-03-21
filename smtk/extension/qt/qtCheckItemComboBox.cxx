@@ -57,13 +57,13 @@ qtCheckItemComboBox::qtCheckItemComboBox(QWidget* pw, const QString& displayExt)
 
 void qtCheckItemComboBox::init()
 {
-  this->m_displayItem = new QStandardItem;
-  this->m_displayItem->setFlags(Qt::ItemIsEnabled);
-  this->m_displayItem->setText("0 " + m_displayTextExt);
+  m_displayItem = new QStandardItem;
+  m_displayItem->setFlags(Qt::ItemIsEnabled);
+  m_displayItem->setText("0 " + m_displayTextExt);
   QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());
   if (itemModel)
   {
-    itemModel->insertRow(0, this->m_displayItem);
+    itemModel->insertRow(0, m_displayItem);
   }
 }
 
@@ -86,7 +86,7 @@ void qtCheckItemComboBox::updateText()
   QString displayText = (numSel == 1 && lastSelItem)
     ? lastSelItem->text()
     : QString::number(numSel) + " " + m_displayTextExt;
-  this->m_displayItem->setText(displayText);
+  m_displayItem->setText(displayText);
   this->view()->model()->setData(this->view()->model()->index(0, 0), displayText, Qt::DisplayRole);
 
   // For the item list, all the painting operations take place in the viewport

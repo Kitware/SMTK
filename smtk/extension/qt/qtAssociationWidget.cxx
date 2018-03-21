@@ -87,7 +87,7 @@ qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
   this->Internals->boundaryGroup->setVisible(false);
   std::ostringstream receiverSource;
   receiverSource << "qtAssociationWidget_" << this;
-  this->m_selectionSourceName = receiverSource.str();
+  m_selectionSourceName = receiverSource.str();
 }
 
 qtAssociationWidget::~qtAssociationWidget()

@@ -24,28 +24,28 @@ Job::Job()
 Job::Job(const QString& id, const QString& name, const QString& status,
   const QList<QString>& outputFolderIds, const QString& machine)
 {
-  this->m_id = id;
-  this->m_name = name;
-  this->m_status = status;
-  this->m_outputFolderIds = outputFolderIds;
-  this->m_machine = machine;
-  this->m_numberOfNodes = 0;
-  this->m_numberOfCores = 0;
+  m_id = id;
+  m_name = name;
+  m_status = status;
+  m_outputFolderIds = outputFolderIds;
+  m_machine = machine;
+  m_numberOfNodes = 0;
+  m_numberOfCores = 0;
 }
 
 Job::Job(const Job& job)
 {
-  this->m_id = job.id();
-  this->m_name = job.name();
-  this->m_status = job.status();
-  this->m_outputFolderIds = job.outputFolderIds();
-  this->m_machine = job.machine();
-  this->m_notes = job.notes();
-  this->m_numberOfNodes = job.numberOfNodes();
-  this->m_numberOfCores = job.numberOfCores();
-  this->m_start = job.started();
-  this->m_finish = job.finished();
-  this->m_downloadFolder = job.downloadFolder();
+  m_id = job.id();
+  m_name = job.name();
+  m_status = job.status();
+  m_outputFolderIds = job.outputFolderIds();
+  m_machine = job.machine();
+  m_notes = job.notes();
+  m_numberOfNodes = job.numberOfNodes();
+  m_numberOfCores = job.numberOfCores();
+  m_start = job.started();
+  m_finish = job.finished();
+  m_downloadFolder = job.downloadFolder();
 }
 
 Job::~Job()
@@ -54,10 +54,10 @@ Job::~Job()
 
 void Job::setStatus(const QString& status)
 {
-  this->m_status = status;
+  m_status = status;
 
   // Return if finish time already set
-  if (this->m_finish.isValid())
+  if (m_finish.isValid())
   {
     return;
   }
@@ -66,15 +66,15 @@ void Job::setStatus(const QString& status)
   if ((status == "terminated") || (status == "unexpectederror") || (status == "error") ||
     (status == "complete"))
   {
-    this->m_finish = QDateTime::currentDateTime();
-    qDebug() << "Set finish, timestamp:" << this->m_finish.toSecsSinceEpoch();
+    m_finish = QDateTime::currentDateTime();
+    qDebug() << "Set finish, timestamp:" << m_finish.toSecsSinceEpoch();
   }
 }
 
 void Job::setDownloadFolder(const QString& path)
 {
   //qDebug() << "Setting download folder:" << path;
-  this->m_downloadFolder = path;
+  m_downloadFolder = path;
 }
 
 Job Job::fromJSON(cJSON* obj)

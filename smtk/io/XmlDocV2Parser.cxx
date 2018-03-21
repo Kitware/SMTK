@@ -221,7 +221,7 @@ void XmlDocV2Parser::processFileItem(pugi::xml_node& node, attribute::FileItemPt
     if (!xatt)
     {
       smtkErrorMacro(
-        this->m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
+        m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
       return;
     }
     n = xatt.as_uint();
@@ -241,14 +241,14 @@ void XmlDocV2Parser::processFileItem(pugi::xml_node& node, attribute::FileItemPt
       xatt = val.attribute("Ith");
       if (!xatt)
       {
-        smtkErrorMacro(this->m_logger, "XML Attribute Ith is missing for Item: " << item->name());
+        smtkErrorMacro(m_logger, "XML Attribute Ith is missing for Item: " << item->name());
         continue;
       }
       i = xatt.as_uint();
       if (i >= n)
       {
-        smtkErrorMacro(this->m_logger,
-          "XML Attribute Ith = " << i << " is out of range for Item: " << item->name());
+        smtkErrorMacro(
+          m_logger, "XML Attribute Ith = " << i << " is out of range for Item: " << item->name());
         continue;
       }
       item->setValue(static_cast<int>(i), val.text().get());
@@ -265,7 +265,7 @@ void XmlDocV2Parser::processFileItem(pugi::xml_node& node, attribute::FileItemPt
   }
   else
   {
-    smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
+    smtkErrorMacro(m_logger, "XML Node Values is missing for Item: " << item->name());
   }
 
   valsNode = node.child("RecentValues");
@@ -294,7 +294,7 @@ void XmlDocV2Parser::processDirectoryItem(pugi::xml_node& node, attribute::Direc
     if (!xatt)
     {
       smtkErrorMacro(
-        this->m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
+        m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
       return;
     }
     n = xatt.as_uint();
@@ -313,14 +313,14 @@ void XmlDocV2Parser::processDirectoryItem(pugi::xml_node& node, attribute::Direc
       xatt = val.attribute("Ith");
       if (!xatt)
       {
-        smtkErrorMacro(this->m_logger, "XML Attribute Ith is missing for Item: " << item->name());
+        smtkErrorMacro(m_logger, "XML Attribute Ith is missing for Item: " << item->name());
         continue;
       }
       i = xatt.as_uint();
       if (i >= n)
       {
-        smtkErrorMacro(this->m_logger,
-          "XML Attribute Ith = " << i << " is out of range for Item: " << item->name());
+        smtkErrorMacro(
+          m_logger, "XML Attribute Ith = " << i << " is out of range for Item: " << item->name());
         continue;
       }
       item->setValue(static_cast<int>(i), val.text().get());
@@ -332,7 +332,7 @@ void XmlDocV2Parser::processDirectoryItem(pugi::xml_node& node, attribute::Direc
   }
   else
   {
-    smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
+    smtkErrorMacro(m_logger, "XML Node Values is missing for Item: " << item->name());
   }
 }
 
@@ -343,7 +343,7 @@ void XmlDocV2Parser::processModelEntityItem(
   xml_node valsNode;
   std::size_t i, n = item->numberOfValues();
   smtk::common::UUID uid;
-  smtk::model::ManagerPtr mmgr = this->m_collection->refModelManager();
+  smtk::model::ManagerPtr mmgr = m_collection->refModelManager();
   xml_node val;
   std::size_t numRequiredVals = item->numberOfRequiredValues();
   std::string attName;
@@ -356,7 +356,7 @@ void XmlDocV2Parser::processModelEntityItem(
     if (!xatt)
     {
       smtkErrorMacro(
-        this->m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
+        m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
       return;
     }
     n = xatt.as_uint();
@@ -375,14 +375,14 @@ void XmlDocV2Parser::processModelEntityItem(
       xatt = val.attribute("Ith");
       if (!xatt)
       {
-        smtkErrorMacro(this->m_logger, "XML Attribute Ith is missing for Item: " << item->name());
+        smtkErrorMacro(m_logger, "XML Attribute Ith is missing for Item: " << item->name());
         continue;
       }
       i = xatt.as_uint();
       if (i >= n)
       {
-        smtkErrorMacro(this->m_logger,
-          "XML Attribute Ith = " << i << " is out of range for Item: " << item->name());
+        smtkErrorMacro(
+          m_logger, "XML Attribute Ith = " << i << " is out of range for Item: " << item->name());
         continue;
       }
       uid = smtk::common::UUID(val.text().get());
@@ -400,7 +400,7 @@ void XmlDocV2Parser::processModelEntityItem(
   }
   else
   {
-    smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
+    smtkErrorMacro(m_logger, "XML Node Values is missing for Item: " << item->name());
   }
 }
 
@@ -456,7 +456,7 @@ void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node& node, attribute::Mesh
     if (!xatt)
     {
       smtkErrorMacro(
-        this->m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
+        m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
       return;
     }
     n = xatt.as_uint();
@@ -469,7 +469,7 @@ void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node& node, attribute::Mesh
   }
 
   smtk::common::UUID cid;
-  smtk::model::ManagerPtr modelmgr = this->m_collection->refModelManager();
+  smtk::model::ManagerPtr modelmgr = m_collection->refModelManager();
   xml_node valsNode, val;
 
   std::size_t i = 0;
@@ -482,13 +482,13 @@ void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node& node, attribute::Mesh
       if (!xatt)
       {
         smtkErrorMacro(
-          this->m_logger, "XML Attribute collectionid is missing for Item: " << item->name());
+          m_logger, "XML Attribute collectionid is missing for Item: " << item->name());
         continue;
       }
       if (i >= n)
       {
-        smtkErrorMacro(this->m_logger,
-          "The number of values: " << i << " is out of range for Item: " << item->name());
+        smtkErrorMacro(
+          m_logger, "The number of values: " << i << " is out of range for Item: " << item->name());
         break;
       }
       cid = smtk::common::UUID(xatt.value());
@@ -517,7 +517,7 @@ void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node& node, attribute::Mesh
   }
   else
   {
-    smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
+    smtkErrorMacro(m_logger, "XML Node Values is missing for Item: " << item->name());
   }
 }
 
@@ -535,7 +535,7 @@ void XmlDocV2Parser::processMeshSelectionDef(
   else
   {
     /*  // this should be optional
-    smtkErrorMacro(this->m_logger,
+    smtkErrorMacro(m_logger,
                    "Missing XML Attribute ModelEntityRef for Item Definition : "
                    << idef->name());
 */
@@ -602,7 +602,7 @@ void XmlDocV2Parser::processViews(xml_node& root)
       }
       else
       {
-        smtkErrorMacro(this->m_logger, "Could not find View's Name or Title - skipping it!");
+        smtkErrorMacro(m_logger, "Could not find View's Name or Title - skipping it!");
         continue;
       }
     }
@@ -614,7 +614,7 @@ void XmlDocV2Parser::processViews(xml_node& root)
     }
     else
     {
-      smtkErrorMacro(this->m_logger, "Could not find View " << name << "'s Type - skipping it!");
+      smtkErrorMacro(m_logger, "Could not find View " << name << "'s Type - skipping it!");
       continue;
     }
 
@@ -626,7 +626,7 @@ void XmlDocV2Parser::processViews(xml_node& root)
       view->setIconName(icon);
     }
     this->processViewComponent(view->details(), child, true);
-    this->m_collection->addView(view);
+    m_collection->addView(view);
   }
 }
 

@@ -99,10 +99,10 @@ public:
     {
       xyz[i] /= numPts;
     }
-    double value = this->m_dataGenerator(xyz[0], xyz[1], xyz[2]);
+    double value = m_dataGenerator(xyz[0], xyz[1], xyz[2]);
     smtk::mesh::HandleRange range;
     range.insert(cellId);
-    this->m_cellField.set(range, &value);
+    m_cellField.set(range, &value);
   }
 };
 
@@ -135,11 +135,11 @@ public:
     {
       xyz[i] /= numPts;
     }
-    double expectedValue = this->m_dataGenerator(xyz[0], xyz[1], xyz[2]);
+    double expectedValue = m_dataGenerator(xyz[0], xyz[1], xyz[2]);
     smtk::mesh::HandleRange range;
     range.insert(cellId);
     double value = 0.;
-    this->m_cellField.get(range, &value);
+    m_cellField.get(range, &value);
 
     test(std::abs(expectedValue - value) < EPSILON);
   }

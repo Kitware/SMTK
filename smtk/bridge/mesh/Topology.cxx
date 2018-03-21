@@ -40,8 +40,8 @@ public:
   {
   }
 
-  void setElementShells(ElementShells* shells) { this->m_shells = shells; }
-  void setDimension(int dimension) { this->m_dimension = dimension; }
+  void setElementShells(ElementShells* shells) { m_shells = shells; }
+  void setDimension(int dimension) { m_dimension = dimension; }
 
   void forMesh(smtk::mesh::MeshSet& singleMesh) override
   {
@@ -55,7 +55,7 @@ public:
     smtk::common::UUID id;
     if (ids.empty())
     {
-      id = (this->m_topology->m_collection->modelManager()->unusedUUID());
+      id = (m_topology->m_collection->modelManager()->unusedUUID());
       // Assign the unique id to the mesh
       singleMesh.setModelEntityId(id);
     }
@@ -65,16 +65,15 @@ public:
     }
 
     // add the unique id as a child of the model
-    this->m_root->m_children.push_back(id);
+    m_root->m_children.push_back(id);
     // construct an element for the mesh, insert it into the topology's map
     // with its id as the key and, if requested, store its shell as a pair along
     // with a pointer to its associated Element (for use in extracting bound
     // elements).
     Topology::Element* element =
-      &this->m_topology->m_elements
-         .insert(std::make_pair(id, Topology::Element(singleMesh, this->m_dimension)))
+      &m_topology->m_elements.insert(std::make_pair(id, Topology::Element(singleMesh, m_dimension)))
          .first->second;
-    if (this->m_shells)
+    if (m_shells)
     {
       smtk::mesh::MeshSet shell = singleMesh.extractShell();
       if (!shell.is_empty())
@@ -85,8 +84,7 @@ public:
         // shell using the existing meshests of the appropriate dimension.
         smtk::mesh::CellSet shellCells = shell.cells();
         smtk::mesh::MeshSet cellsOfDimension = smtk::mesh::set_difference(
-          this->m_topology->m_collection->meshes(smtk::mesh::DimensionType(this->m_dimension - 1)),
-          shell);
+          m_topology->m_collection->meshes(smtk::mesh::DimensionType(m_dimension - 1)), shell);
         for (std::size_t i = 0; i < cellsOfDimension.size(); i++)
         {
           smtk::mesh::CellSet intersect =
@@ -98,7 +96,7 @@ public:
           if (!intersect.is_empty() &&
             intersect.size() == cellsOfDimension.subset(i).cells().size())
           {
-            this->m_shells->push_back(std::make_pair(cellsOfDimension.subset(i), element));
+            m_shells->push_back(std::make_pair(cellsOfDimension.subset(i), element));
             shellCells = smtk::mesh::set_difference(shellCells, intersect);
           }
         }
@@ -106,10 +104,10 @@ public:
         // whatever remains is also an entity.
         if (!shellCells.is_empty())
         {
-          this->m_shells->push_back(
-            std::make_pair(this->m_topology->m_collection->createMesh(shellCells), element));
+          m_shells->push_back(
+            std::make_pair(m_topology->m_collection->createMesh(shellCells), element));
         }
-        this->m_topology->m_collection->removeMeshes(shell);
+        m_topology->m_collection->removeMeshes(shell);
       }
     }
   }
@@ -128,8 +126,8 @@ struct AddBoundElements
   {
   }
 
-  void setElementShells(ElementShells* shells) { this->m_shells = shells; }
-  void setDimension(int dimension) { this->m_dimension = dimension; }
+  void setElementShells(ElementShells* shells) { m_shells = shells; }
+  void setDimension(int dimension) { m_dimension = dimension; }
 
   void operator()(ElementShells::iterator start, ElementShells::iterator end)
   {
@@ -149,10 +147,10 @@ struct AddBoundElements
           smtk::mesh::CellSet cs = smtk::mesh::set_intersect(m.cells(), j->first.cells());
           if (!cs.is_empty())
           {
-            m = this->m_topology->m_collection->createMesh(cs);
+            m = m_topology->m_collection->createMesh(cs);
             activeShells.push_back(j);
           }
-          if (this->m_dimension == 2 && activeShells.size() == 2)
+          if (m_dimension == 2 && activeShells.size() == 2)
           {
             break;
           }
@@ -166,7 +164,7 @@ struct AddBoundElements
           smtk::common::UUID id;
           if (ids.empty())
           {
-            id = (this->m_topology->m_collection->modelManager()->unusedUUID());
+            id = (m_topology->m_collection->modelManager()->unusedUUID());
             // Assign the unique id to the mesh
             m.setModelEntityId(id);
           }
@@ -181,9 +179,9 @@ struct AddBoundElements
           {
             if (activeShells.size() > 1)
             {
-              smtk::mesh::MeshSet tmp = this->m_topology->m_collection->createMesh(
+              smtk::mesh::MeshSet tmp = m_topology->m_collection->createMesh(
                 smtk::mesh::set_difference(shell->first.cells(), m.cells()));
-              this->m_topology->m_collection->removeMeshes(shell->first);
+              m_topology->m_collection->removeMeshes(shell->first);
               shell->first = tmp;
             }
             shell->second->m_children.push_back(id);
@@ -193,12 +191,11 @@ struct AddBoundElements
           // necessary, we store its shell for the bound element calculation of
           // lower dimension
           Topology::Element* element =
-            &this->m_topology->m_elements
-               .insert(std::make_pair(id, Topology::Element(m, this->m_dimension)))
+            &m_topology->m_elements.insert(std::make_pair(id, Topology::Element(m, m_dimension)))
                .first->second;
-          if (this->m_shells)
+          if (m_shells)
           {
-            this->m_shells->push_back(std::make_pair(m.extractShell(), element));
+            m_shells->push_back(std::make_pair(m.extractShell(), element));
           }
         }
         if (activeShells.size() == 1)
@@ -224,7 +221,7 @@ Topology::Topology(smtk::mesh::CollectionPtr collection, bool constructHierarchy
 {
   // Insert the collection as the top-level element representing the model
   Element* model =
-    &(this->m_elements.insert(std::make_pair(collection->entity(), Element(collection->meshes())))
+    &(m_elements.insert(std::make_pair(collection->entity(), Element(collection->meshes())))
         .first->second);
 
   if (constructHierarchy)
@@ -303,7 +300,7 @@ Topology::Topology(smtk::mesh::CollectionPtr collection, bool constructHierarchy
   if (false)
   {
     std::size_t count[4] = { 0, 0, 0, 0 };
-    for (auto&& i : this->m_elements)
+    for (auto&& i : m_elements)
     {
       if (i.second.m_dimension >= 0 && i.second.m_dimension <= 3)
         count[i.second.m_dimension]++;

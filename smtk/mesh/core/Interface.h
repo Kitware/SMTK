@@ -103,7 +103,7 @@ public:
     return this->setCoordinate(coord, xyz);
   }
 
-  bool isValid() const { return this->m_validState; }
+  bool isValid() const { return m_validState; }
 
 protected:
   bool m_validState;

@@ -82,12 +82,12 @@ public:
     FragmentId fragId, bool orientation);
   void dumpLoop(OrientedEdges& loopEdges, RegionId contained, std::set<RegionId>& neighborRegions);
   void dumpRegions2();
-  void setDebugLevel(int lvl) { this->m_debugLevel = lvl; }
+  void setDebugLevel(int lvl) { m_debugLevel = lvl; }
 
   template <typename T>
   typename T::Ptr findStorage(const smtk::common::UUID& uid)
   {
-    return this->m_session->findStorage<T>(uid);
+    return m_session->findStorage<T>(uid);
   }
 
   SweeplinePosition* m_point;  // The position used for ordering line segments in m_activeEdges.

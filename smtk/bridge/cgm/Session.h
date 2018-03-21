@@ -74,8 +74,8 @@ public:
 
   std::string defaultFileExtension(const smtk::model::Model& model) const override;
 
-  double maxRelChordErr() const { return this->m_maxRelChordErr; }
-  double maxAngleErr() const { return this->m_maxAngleErr; }
+  double maxRelChordErr() const { return m_maxRelChordErr; }
+  double maxAngleErr() const { return m_maxAngleErr; }
 
 protected:
   friend class ImportSolid;

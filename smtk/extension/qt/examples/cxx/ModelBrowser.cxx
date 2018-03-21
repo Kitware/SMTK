@@ -42,22 +42,21 @@ public:
 ModelBrowser::ModelBrowser(QWidget* p)
   : QWidget(p)
 {
-  this->m_p = new ModelBrowser::Internals;
-  this->m_p->setupUi(this);
-  QObject::connect(this->m_p->addGroupButton, SIGNAL(clicked()), this, SLOT(addGroup()));
-  QObject::connect(
-    this->m_p->removeFromGroupButton, SIGNAL(clicked()), this, SLOT(removeFromGroup()));
-  QObject::connect(this->m_p->addToGroupButton, SIGNAL(clicked()), this, SLOT(addToGroup()));
+  m_p = new ModelBrowser::Internals;
+  m_p->setupUi(this);
+  QObject::connect(m_p->addGroupButton, SIGNAL(clicked()), this, SLOT(addGroup()));
+  QObject::connect(m_p->removeFromGroupButton, SIGNAL(clicked()), this, SLOT(removeFromGroup()));
+  QObject::connect(m_p->addToGroupButton, SIGNAL(clicked()), this, SLOT(addToGroup()));
 }
 
 ModelBrowser::~ModelBrowser()
 {
-  delete this->m_p;
+  delete m_p;
 }
 
 QTreeView* ModelBrowser::tree() const
 {
-  return this->m_p->modelTree;
+  return m_p->modelTree;
 }
 
 void ModelBrowser::setup(smtk::resource::ManagerPtr manager,
@@ -67,12 +66,12 @@ void ModelBrowser::setup(smtk::resource::ManagerPtr manager,
   (void)root;
   m_manager = manager;
   //qmodel->setRoot(root);
-  //this->m_p->modelTree->setModel(qmodel); // Must come after qmodel->setRoot()!
+  //m_p->modelTree->setModel(qmodel); // Must come after qmodel->setRoot()!
   m_p->modelTree->setItemDelegate(qdelegate);
   m_p->qmodel = qmodel;
   m_p->modelTree->setModel(m_p->qmodel);
   m_p->qdelegate = qdelegate;
-  QObject::connect(this->m_p->modelTree->selectionModel(),
+  QObject::connect(m_p->modelTree->selectionModel(),
     SIGNAL(currentRowChanged(const QModelIndex&, const QModelIndex&)), this,
     SLOT(updateButtonStates(const QModelIndex&, const QModelIndex&)));
 }
@@ -80,10 +79,10 @@ void ModelBrowser::setup(smtk::resource::ManagerPtr manager,
 void ModelBrowser::addGroup()
 {
   /*
-  Group newGroup = this->m_manager->addGroup(0, "New Group");
+  Group newGroup = m_manager->addGroup(0, "New Group");
   Models models;
   smtk::model::EntityRef::EntityRefsFromUUIDs(
-    models, this->m_manager, this->m_manager->entitiesMatchingFlags(smtk::model::MODEL_ENTITY));
+    models, m_manager, m_manager->entitiesMatchingFlags(smtk::model::MODEL_ENTITY));
   if (!models.empty())
   {
     models.begin()->addGroup(newGroup);
@@ -96,12 +95,12 @@ void ModelBrowser::addGroup()
 void ModelBrowser::addToGroup()
 {
   /*
-  QModelIndex qidx = this->m_p->modelTree->currentIndex();
+  QModelIndex qidx = m_p->modelTree->currentIndex();
   Group group;
   EntityRef item;
   Groups groups;
   EntityRef::EntityRefsFromUUIDs(
-    groups, this->m_manager, this->m_manager->entitiesMatchingFlags(smtk::model::GROUP_ENTITY));
+    groups, m_manager, m_manager->entitiesMatchingFlags(smtk::model::GROUP_ENTITY));
   if (groups.empty())
     return;
 
@@ -109,7 +108,7 @@ void ModelBrowser::addToGroup()
 
   // Only keep the phrase alive as long as we must.
   {
-    DescriptivePhrasePtr phrase = this->m_p->qmodel->getItem(qidx);
+    DescriptivePhrasePtr phrase = m_p->qmodel->getItem(qidx);
     if (!phrase)
       return;
 
@@ -132,13 +131,13 @@ void ModelBrowser::addToGroup()
 void ModelBrowser::removeFromGroup()
 {
   /*
-  QModelIndex qidx = this->m_p->modelTree->currentIndex();
+  QModelIndex qidx = m_p->modelTree->currentIndex();
   Group group;
   if ((group = this->groupParentOfIndex(qidx)).isValid())
   {
     EntityRef relEnt;
     {
-      DescriptivePhrasePtr phrase = this->m_p->qmodel->getItem(qidx);
+      DescriptivePhrasePtr phrase = m_p->qmodel->getItem(qidx);
       if (phrase)
         relEnt = phrase->relatedEntity();
     }
@@ -176,7 +175,7 @@ void ModelBrowser::removeFromGroup()
                        .toStdString()
                   << "\" differ\n";
       }
-      this->m_p->modelTree->selectionModel()->select(
+      m_p->modelTree->selectionModel()->select(
         sidx, QItemSelectionModel::Columns | QItemSelectionModel::SelectCurrent);
       // Removing from the group emits a signal that
       // m_p->qmodel listens for, causing m_p->modelTree redraw.
@@ -189,7 +188,7 @@ void ModelBrowser::removeFromGroup()
 void ModelBrowser::updateButtonStates(const QModelIndex& curr, const QModelIndex&)
 {
   (void)curr;
-  // this->m_p->removeFromGroupButton->setEnabled(groupParentOfIndex(curr).isValid());
+  // m_p->removeFromGroupButton->setEnabled(groupParentOfIndex(curr).isValid());
 }
 
 /**\brief Does \a qidx refer to an entity that is displayed as the child of a group?
@@ -204,7 +203,7 @@ smtk::model::Group ModelBrowser::groupParentOfIndex(const QModelIndex& qidx)
   (void)qidx;
   smtk::model::Group group;
   /*
-  DescriptivePhrasePtr phrase = this->m_p->qmodel->getItem(qidx);
+  DescriptivePhrasePtr phrase = m_p->qmodel->getItem(qidx);
   if (phrase)
   {
     EntityPhrasePtr ephrase = smtk::dynamic_pointer_cast<EntityPhrase>(phrase);
