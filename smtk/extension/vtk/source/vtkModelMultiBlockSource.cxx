@@ -17,6 +17,7 @@
 
 #include "smtk/extension/vtk/io/mesh/ExportVTKData.h"
 
+#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/MeshSet.h"
 
 #include "smtk/model/AuxiliaryGeometry.h"
@@ -462,7 +463,24 @@ vtkSmartPointer<vtkPolyData> vtkModelMultiBlockSource::GenerateRepresentationFro
     return pd;
   }
   smtk::extension::vtk::io::mesh::ExportVTKData exportVTKData;
-  exportVTKData(entity.meshTessellation(), pd);
+  if (entity.dimension() == 3)
+  {
+    //To preserve the state of the mesh database, we track
+    //whether or not a new meshset was created to represent
+    //the 3d shell; if it was created, we delete it when we
+    //are finished with it.
+    bool created;
+    smtk::mesh::MeshSet shell = entity.meshTessellation().extractShell(created);
+    exportVTKData(shell, pd);
+    if (created)
+    {
+      entity.meshTessellation().collection()->removeMeshes(shell);
+    }
+  }
+  else
+  {
+    exportVTKData(entity.meshTessellation(), pd);
+  }
 
   AddColorWithDefault(pd, entity, this->DefaultColor);
   if (this->AllowNormalGeneration && pd->GetPolys()->GetSize() > 0)
