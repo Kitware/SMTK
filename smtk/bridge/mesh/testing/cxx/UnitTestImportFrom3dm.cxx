@@ -147,7 +147,7 @@ int UnitTestImportFrom3dm(int argc, char* argv[])
   ParseModelTopology(model->referenceAs<smtk::model::Model>(), count);
 
   std::cout << count[3] << " volumes" << std::endl;
-  test(count[3] == 1, "There should be one volume");
+  test(count[3] == 2, "There should be two volumes");
   std::cout << count[2] << " faces" << std::endl;
   test(count[2] == 0, "There should be no faces");
   std::cout << count[1] << " edges" << std::endl;

@@ -613,6 +613,29 @@ smtk::mesh::CellType to_CellType(const std::string& type)
   return smtk::mesh::CellType_MAX;
 }
 
+// Given a collection with multiple meshes for each domain, condense the
+// meshsets so there is only one meshset per domain.
+void condenseMeshsetsByDomain(smtk::mesh::CollectionPtr& collection)
+{
+  auto domains = collection->domains();
+  for (auto& domain : domains)
+  {
+    auto meshForDomain = collection->domainMeshes(domain);
+    auto cellsForDomain = meshForDomain.cells();
+
+    // construct a mesh set from these cells
+    auto singleMeshForDomain = collection->createMesh(cellsForDomain);
+
+    // set the domain on the mesh set
+    collection->setDomainOnMeshes(singleMeshForDomain, domain);
+
+    for (std::size_t i = 0; i < meshForDomain.size(); i++)
+    {
+      collection->removeMeshes(meshForDomain.subset(i));
+    }
+  }
+}
+
 bool readCells(std::istream& stream, const smtk::mesh::BufferedCellAllocatorPtr& bcAllocator,
   smtk::mesh::CollectionPtr& collection)
 {
@@ -673,7 +696,7 @@ bool readCells(std::istream& stream, const smtk::mesh::BufferedCellAllocatorPtr&
       if (materialId != currentMaterialId)
       {
         // ...and this is not the first material encountered...
-        if (!cellsWithMaterials.empty())
+        if (currentMaterialId != -1)
         {
           // ...flush the allocator
           bcAllocator->flush();
@@ -722,6 +745,11 @@ bool readCells(std::istream& stream, const smtk::mesh::BufferedCellAllocatorPtr&
     // set the domain on the mesh set
     collection->setDomainOnMeshes(meshForMaterial, smtk::mesh::Domain(currentMaterialId));
   }
+
+  // When cells are not contiguous by domain in the file, multiple meshsets are
+  // created for each domain. Condense the meshsets so that there is one meshset
+  // per domain.
+  condenseMeshsetsByDomain(collection);
 
   return true;
 }
