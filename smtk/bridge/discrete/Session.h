@@ -90,7 +90,7 @@ class vtkItemWatcherCommand;
 class SMTKDISCRETESESSION_EXPORT Session : public smtk::model::Session
 {
 public:
-  smtkTypeMacro(Session);
+  smtkTypeMacro(smtk::bridge::discrete::Session);
   smtkSuperclassMacro(smtk::model::Session);
   smtkCreateMacro(smtk::model::Session);
   smtkSharedFromThisMacro(smtk::model::Session);

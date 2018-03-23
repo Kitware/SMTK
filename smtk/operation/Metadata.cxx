@@ -18,11 +18,11 @@ namespace smtk
 namespace operation
 {
 
-Metadata::Metadata(const std::string& uniqueName, Operation::Index index,
+Metadata::Metadata(const std::string& typeName, Operation::Index index,
   Operation::Specification specification,
   std::function<std::shared_ptr<smtk::operation::Operation>(void)> createFunctor)
   : create(createFunctor)
-  , m_uniqueName(uniqueName)
+  , m_typeName(typeName)
   , m_index(index)
   , m_specification(specification)
 {

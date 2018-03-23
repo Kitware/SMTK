@@ -43,7 +43,6 @@ public:
   smtkTypeMacro(smtk::attribute::Collection);
   smtkCreateMacro(smtk::attribute::Collection);
   smtkSharedFromThisMacro(smtk::resource::Resource);
-  smtkResourceTypeNameMacro("attribute");
 
   // typedef referring to the parent resource.
   typedef smtk::resource::Resource ParentResource;

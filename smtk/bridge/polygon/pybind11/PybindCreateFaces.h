@@ -36,7 +36,6 @@ PySharedPtrClass< smtk::bridge::polygon::CreateFaces > pybind11_init_smtk_bridge
   instance
     .def(py::init<::smtk::bridge::polygon::CreateFaces const &>())
     .def("deepcopy", (smtk::bridge::polygon::CreateFaces & (smtk::bridge::polygon::CreateFaces::*)(::smtk::bridge::polygon::CreateFaces const &)) &smtk::bridge::polygon::CreateFaces::operator=)
-    .def("classname", &smtk::bridge::polygon::CreateFaces::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::CreateFaces> (*)()) &smtk::bridge::polygon::CreateFaces::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::CreateFaces> (*)(::std::shared_ptr<smtk::bridge::polygon::CreateFaces> &)) &smtk::bridge::polygon::CreateFaces::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<const smtk::bridge::polygon::CreateFaces> (smtk::bridge::polygon::CreateFaces::*)() const) &smtk::bridge::polygon::CreateFaces::shared_from_this)

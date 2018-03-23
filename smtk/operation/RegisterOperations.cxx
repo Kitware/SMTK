@@ -16,21 +16,24 @@
 #include "smtk/operation/operators/ReadResource.h"
 #include "smtk/operation/operators/WriteResource.h"
 
+#include <tuple>
+
 namespace smtk
 {
 namespace operation
 {
 
+typedef std::tuple<ImportPythonOperation, ImportResource, ReadResource, WriteResource>
+  OperationList;
+
 void registerOperations(smtk::operation::Manager::Ptr& operationManager)
 {
-  operationManager->registerOperation<smtk::operation::ImportPythonOperation>(
-    "smtk::operation::ImportPythonOperation");
-  operationManager->registerOperation<smtk::operation::ImportResource>(
-    "smtk::operation::ImportResource");
-  operationManager->registerOperation<smtk::operation::ReadResource>(
-    "smtk::operation::ReadResource");
-  operationManager->registerOperation<smtk::operation::WriteResource>(
-    "smtk::operation::WriteResource");
+  operationManager->registerOperations<OperationList>();
+}
+
+void unregisterOperations(smtk::operation::Manager::Ptr& operationManager)
+{
+  operationManager->unregisterOperations<OperationList>();
 }
 }
 }

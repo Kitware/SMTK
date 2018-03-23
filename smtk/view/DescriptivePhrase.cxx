@@ -291,11 +291,11 @@ bool DescriptivePhrase::compareByTypeThenTitle(
     if (rpa && rpb)
     {
       // Sort by resource _type_ first, so files of the same type appear together
-      if (rpa->uniqueName() < rpb->uniqueName())
+      if (rpa->typeName() < rpb->typeName())
       {
         return true;
       }
-      if (rpa->uniqueName() > rpb->uniqueName())
+      if (rpa->typeName() > rpb->typeName())
       {
         return false;
       }

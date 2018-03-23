@@ -35,7 +35,7 @@ namespace mesh
 class SMTKMESHSESSION_EXPORT Read : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(Read);
+  smtkTypeMacro(smtk::bridge::mesh::Read);
   smtkCreateMacro(Read);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 

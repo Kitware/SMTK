@@ -26,7 +26,7 @@ namespace attribute
 class SMTKCORE_EXPORT DirectoryItemDefinition : public FileSystemItemDefinition
 {
 public:
-  smtkTypeMacro(DirectoryItemDefinition);
+  smtkTypeMacro(smtk::attribute::DirectoryItemDefinition);
   static smtk::attribute::DirectoryItemDefinitionPtr New(const std::string& myName)
   {
     return smtk::attribute::DirectoryItemDefinitionPtr(new DirectoryItemDefinition(myName));

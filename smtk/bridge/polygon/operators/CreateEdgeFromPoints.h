@@ -26,7 +26,7 @@ namespace polygon
 class SMTKPOLYGONSESSION_EXPORT CreateEdgeFromPoints : public Operation
 {
 public:
-  smtkTypeMacro(CreateEdgeFromPoints);
+  smtkTypeMacro(smtk::bridge::polygon::CreateEdgeFromPoints);
   smtkCreateMacro(CreateEdgeFromPoints);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);

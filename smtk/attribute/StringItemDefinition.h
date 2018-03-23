@@ -23,7 +23,7 @@ namespace attribute
 class SMTKCORE_EXPORT StringItemDefinition : public ValueItemDefinitionTemplate<std::string>
 {
 public:
-  smtkTypeMacro(StringItemDefinition);
+  smtkTypeMacro(smtk::attribute::StringItemDefinition);
   static smtk::attribute::StringItemDefinitionPtr New(const std::string& myName)
   {
     return smtk::attribute::StringItemDefinitionPtr(new StringItemDefinition(myName));

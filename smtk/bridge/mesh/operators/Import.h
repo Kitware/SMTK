@@ -24,7 +24,7 @@ namespace mesh
 class SMTKMESHSESSION_EXPORT Import : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(Import);
+  smtkTypeMacro(smtk::bridge::mesh::Import);
   smtkCreateMacro(Import);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 

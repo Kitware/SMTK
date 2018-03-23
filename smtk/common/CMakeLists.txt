@@ -29,6 +29,7 @@ set(commonHeaders
   RangeDetector.h
   StringUtil.h
   TimeZone.h
+  TypeName.h
   UUID.h
   UUIDGenerator.h
 

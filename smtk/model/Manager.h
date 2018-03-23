@@ -97,7 +97,6 @@ public:
 
   smtkTypeMacro(smtk::model::Manager);
   smtkSharedPtrCreateMacro(smtk::resource::Resource);
-  smtkResourceTypeNameMacro("model");
 
   // typedef referring to the parent resource.
   typedef smtk::resource::Resource ParentResource;

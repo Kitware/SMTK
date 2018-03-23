@@ -24,7 +24,6 @@ py::class_< smtk::model::ArrangementHelper > pybind11_init_smtk_model_Arrangemen
 {
   py::class_< smtk::model::ArrangementHelper > instance(m, "ArrangementHelper");
   instance
-    .def("classname", &smtk::model::ArrangementHelper::classname)
     .def("doneAddingEntities", &smtk::model::ArrangementHelper::doneAddingEntities, py::arg("sess"), py::arg("flags"))
     .def("isMarked", &smtk::model::ArrangementHelper::isMarked, py::arg("ent"))
     .def("mark", &smtk::model::ArrangementHelper::mark, py::arg("ent"), py::arg("m"))

@@ -24,8 +24,6 @@ PySharedPtrClass< smtk::bridge::cgm::Sweep > pybind11_init_smtk_bridge_cgm_Sweep
     .def(py::init<>())
     .def(py::init<::smtk::bridge::cgm::Sweep const &>())
     .def("deepcopy", (smtk::bridge::cgm::Sweep & (smtk::bridge::cgm::Sweep::*)(::smtk::bridge::cgm::Sweep const &)) &smtk::bridge::cgm::Sweep::operator=)
-    .def("className", &smtk::bridge::cgm::Sweep::className)
-    .def("classname", &smtk::bridge::cgm::Sweep::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::cgm::Sweep> (*)()) &smtk::bridge::cgm::Sweep::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::cgm::Sweep> (*)(::std::shared_ptr<smtk::bridge::cgm::Sweep> &)) &smtk::bridge::cgm::Sweep::create, py::arg("ref"))
     .def("name", &smtk::bridge::cgm::Sweep::name)

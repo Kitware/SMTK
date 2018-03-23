@@ -49,12 +49,36 @@ bool Manager::registerOperation(Metadata&& metadata)
   return false;
 }
 
-std::shared_ptr<Operation> Manager::create(const std::string& uniqueName)
+bool Manager::unregisterOperation(const std::string& typeName)
+{
+  auto metadata = m_metadata.get<NameTag>().find(typeName);
+  if (metadata != m_metadata.get<NameTag>().end())
+  {
+    m_metadata.get<NameTag>().erase(metadata);
+    return true;
+  }
+
+  return false;
+}
+
+bool Manager::unregisterOperation(const Operation::Index& index)
+{
+  auto metadata = m_metadata.get<IndexTag>().find(index);
+  if (metadata != m_metadata.get<IndexTag>().end())
+  {
+    m_metadata.get<IndexTag>().erase(metadata);
+    return true;
+  }
+
+  return false;
+}
+
+std::shared_ptr<Operation> Manager::create(const std::string& typeName)
 {
   std::shared_ptr<Operation> op;
 
   // Locate the metadata associated with this resource type
-  auto metadata = m_metadata.get<NameTag>().find(uniqueName);
+  auto metadata = m_metadata.get<NameTag>().find(typeName);
   if (metadata != m_metadata.get<NameTag>().end())
   {
     // Create the resource using its index

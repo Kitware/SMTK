@@ -27,7 +27,7 @@ namespace discrete
 class SMTKDISCRETESESSION_EXPORT ReadResource : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(ReadResource);
+  smtkTypeMacro(smtk::bridge::discrete::ReadResource);
   smtkCreateMacro(ReadResource);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 

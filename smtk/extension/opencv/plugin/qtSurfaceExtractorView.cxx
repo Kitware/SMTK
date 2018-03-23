@@ -218,8 +218,7 @@ void qtSurfaceExtractorView::acceptContours(vtkSmartPointer<vtkPolyData> contour
 
 void qtSurfaceExtractorView::operationSelected(const smtk::operation::OperationPtr& op)
 {
-  if (!this->Internals->CurrentAtt || !this->Widget ||
-    op->uniqueName() != "extract surface contours")
+  if (!this->Internals->CurrentAtt || !this->Widget || op->typeName() != "extract surface contours")
     return;
 
   if (this->Internals->ExtractorWidget)

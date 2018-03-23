@@ -44,7 +44,6 @@ public:
   smtkTypeMacro(MyResource);
   smtkCreateMacro(MyResource);
   smtkSharedFromThisMacro(smtk::resource::Resource);
-  smtkResourceTypeNameMacro("MyResource");
 
   smtk::resource::ComponentPtr find(const smtk::common::UUID&) const override
   {

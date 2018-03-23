@@ -48,8 +48,7 @@ smtk::operation::Operation::Result vtkSMTKOperation::Operate()
 
 void vtkSMTKOperation::PrintSelf(ostream& os, vtkIndent indent)
 {
-  os << indent << "smtk op: " << (m_smtkOp.lock() ? m_smtkOp.lock()->uniqueName() : "(none)")
-     << endl;
+  os << indent << "smtk op: " << (m_smtkOp.lock() ? m_smtkOp.lock()->typeName() : "(none)") << endl;
 
   this->Superclass::PrintSelf(os, indent);
 }

@@ -23,7 +23,7 @@ namespace attribute
 class SMTKCORE_EXPORT DoubleItemDefinition : public ValueItemDefinitionTemplate<double>
 {
 public:
-  smtkTypeMacro(DoubleItemDefinition);
+  smtkTypeMacro(smtk::attribute::DoubleItemDefinition);
   static smtk::attribute::DoubleItemDefinitionPtr New(const std::string& myName)
   {
     return smtk::attribute::DoubleItemDefinitionPtr(new DoubleItemDefinition(myName));

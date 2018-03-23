@@ -106,7 +106,6 @@ PySharedPtrClass< smtk::model::Manager, smtk::resource::Resource > pybind11_init
     .def("boundaryEntities", (smtk::common::UUIDs (smtk::model::Manager::*)(::smtk::common::UUID const &, int) const) &smtk::model::Manager::boundaryEntities, py::arg("ofEntity"), py::arg("ofDimension") = -2)
     .def("boundaryEntities", (smtk::common::UUIDs (smtk::model::Manager::*)(::smtk::common::UUIDs const &, int) const) &smtk::model::Manager::boundaryEntities, py::arg("ofEntities"), py::arg("ofDimension") = -2)
     .def("cellHasUseOfSenseAndOrientation", &smtk::model::Manager::cellHasUseOfSenseAndOrientation, py::arg("cell"), py::arg("sense"), py::arg("o"))
-    .def("classname", &smtk::model::Manager::classname)
     .def("clearArrangements", &smtk::model::Manager::clearArrangements, py::arg("entityId"))
     .def("closeSession", &smtk::model::Manager::closeSession, py::arg("sess"))
     .def_static("create", (std::shared_ptr<smtk::model::Manager> (*)()) &smtk::model::Manager::create)

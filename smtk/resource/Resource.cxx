@@ -82,7 +82,7 @@ bool Resource::isOfType(const Resource::Index& index) const
   return this->index() == index;
 }
 
-bool Resource::isOfType(const std::string& uniqueName) const
+bool Resource::isOfType(const std::string& typeName) const
 {
   Manager::Ptr mgr = m_manager.lock();
   if (mgr)
@@ -92,7 +92,7 @@ bool Resource::isOfType(const std::string& uniqueName) const
     // information, so we can query it.
 
     // First, find the metadata associated with the input resource.
-    auto md = mgr->metadata().get<NameTag>().find(uniqueName);
+    auto md = mgr->metadata().get<NameTag>().find(typeName);
     if (md != mgr->metadata().get<NameTag>().end())
     {
       // Next, find the metadata associated with this resource
@@ -107,7 +107,7 @@ bool Resource::isOfType(const std::string& uniqueName) const
 
   // this resource is not registered to a manager. Simply check if the resource
   // name matches the resource's name.
-  return this->uniqueName() == uniqueName;
+  return this->typeName() == typeName;
 }
 
 bool Resource::setId(const smtk::common::UUID& myId)

@@ -27,7 +27,7 @@ class Attribute;
 class SMTKCORE_EXPORT FileSystemItemDefinition : public ItemDefinition
 {
 public:
-  smtkTypeMacro(FileSystemItemDefinition);
+  smtkTypeMacro(smtk::attribute::FileSystemItemDefinition);
 
   ~FileSystemItemDefinition() override;
 

@@ -30,7 +30,6 @@ PySharedPtrClass< smtk::attribute::ModelEntityItemDefinition, smtk::attribute::I
     .def_static("New", &smtk::attribute::ModelEntityItemDefinition::New, py::arg("sname"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::ModelEntityItemDefinition::*)(::smtk::attribute::Attribute *, int) const) &smtk::attribute::ModelEntityItemDefinition::buildItem, py::arg("owningAttribute"), py::arg("itemPosition"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::ModelEntityItemDefinition::*)(::smtk::attribute::Item *, int, int) const) &smtk::attribute::ModelEntityItemDefinition::buildItem, py::arg("owningItem"), py::arg("position"), py::arg("subGroupPosition"))
-    .def("classname", &smtk::attribute::ModelEntityItemDefinition::classname)
     .def("createCopy", &smtk::attribute::ModelEntityItemDefinition::createCopy, py::arg("info"))
     .def("hasValueLabels", &smtk::attribute::ModelEntityItemDefinition::hasValueLabels)
     .def("isExtensible", &smtk::attribute::ModelEntityItemDefinition::isExtensible)

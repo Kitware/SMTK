@@ -39,10 +39,10 @@ using namespace boost::multi_index;
 /// smtk::operation::Manager only.
 typedef boost::multi_index_container<
   Metadata,
-  indexed_by<ordered_unique<tag<NameTag>,
-               const_mem_fun<Metadata, const std::string&, &Metadata::uniqueName> >,
-    ordered_unique<tag<IndexTag>, const_mem_fun<Metadata, const smtk::operation::Operation::Index&,
-                                    &Metadata::index> > > >
+  indexed_by<
+    ordered_unique<tag<NameTag>, const_mem_fun<Metadata, const std::string&, &Metadata::typeName> >,
+    ordered_unique<tag<IndexTag>,
+      const_mem_fun<Metadata, const smtk::operation::Operation::Index&, &Metadata::index> > > >
   MetadataContainer;
 }
 }

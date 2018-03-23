@@ -26,7 +26,6 @@ PySharedPtrClass< smtk::resource::Component > pybind11_init_smtk_resource_Compon
   PySharedPtrClass< smtk::resource::Component > instance(m, "Component");
   instance
     .def("deepcopy", (smtk::resource::Component & (smtk::resource::Component::*)(::smtk::resource::Component const &)) &smtk::resource::Component::operator=)
-    .def("classname", &smtk::resource::Component::classname)
     .def("id", &smtk::resource::Component::id)
     .def("resource", &smtk::resource::Component::resource)
     ;

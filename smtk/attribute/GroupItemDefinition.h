@@ -27,7 +27,7 @@ class GroupItem;
 class SMTKCORE_EXPORT GroupItemDefinition : public ItemDefinition
 {
 public:
-  smtkTypeMacro(GroupItemDefinition);
+  smtkTypeMacro(smtk::attribute::GroupItemDefinition);
   static smtk::attribute::GroupItemDefinitionPtr New(const std::string& myName)
   {
     return smtk::attribute::GroupItemDefinitionPtr(new GroupItemDefinition(myName));

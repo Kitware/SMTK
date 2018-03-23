@@ -22,27 +22,25 @@
 #include "smtk/model/operators/SetProperty.h"
 #include "smtk/model/operators/TerrainExtraction.h"
 
+#include <tuple>
+
 namespace smtk
 {
 namespace model
 {
 
+typedef std::tuple<AddAuxiliaryGeometry, AddImage, AssignColors, CloseModel, CreateInstances,
+  EntityGroupOperation, ExportModelJSON, GroupAuxiliaryGeometry, SetProperty, TerrainExtraction>
+  OperationList;
+
 void registerOperations(smtk::operation::Manager::Ptr& operationManager)
 {
-  operationManager->registerOperation<smtk::model::AddAuxiliaryGeometry>(
-    "smtk::model::AddAuxiliaryGeometry");
-  operationManager->registerOperation<smtk::model::AddImage>("smtk::model::AddImage");
-  operationManager->registerOperation<smtk::model::AssignColors>("smtk::model::AssignColors");
-  operationManager->registerOperation<smtk::model::CloseModel>("smtk::model::CloseModel");
-  operationManager->registerOperation<smtk::model::CreateInstances>("smtk::model::CreateInstances");
-  operationManager->registerOperation<smtk::model::EntityGroupOperation>(
-    "smtk::model::EntityGroupOperation");
-  operationManager->registerOperation<smtk::model::ExportModelJSON>("smtk::model::ExportModelJSON");
-  operationManager->registerOperation<smtk::model::GroupAuxiliaryGeometry>(
-    "smtk::model::GroupAuxiliaryGeometry");
-  operationManager->registerOperation<smtk::model::SetProperty>("smtk::model::SetProperty");
-  operationManager->registerOperation<smtk::model::TerrainExtraction>(
-    "smtk::model::TerrainExtraction");
+  operationManager->registerOperations<OperationList>();
+}
+
+void unregisterOperations(smtk::operation::Manager::Ptr& operationManager)
+{
+  operationManager->unregisterOperations<OperationList>();
 }
 }
 }

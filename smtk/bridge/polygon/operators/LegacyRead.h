@@ -33,7 +33,7 @@ namespace polygon
 class SMTKPOLYGONSESSION_EXPORT LegacyRead : public Operation
 {
 public:
-  smtkTypeMacro(LegacyRead);
+  smtkTypeMacro(smtk::bridge::polygon::LegacyRead);
   smtkCreateMacro(LegacyRead);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);

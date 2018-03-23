@@ -28,7 +28,7 @@ class Attribute;
 class SMTKCORE_EXPORT MeshItemDefinition : public ItemDefinition
 {
 public:
-  smtkTypeMacro(MeshItemDefinition);
+  smtkTypeMacro(smtk::attribute::MeshItemDefinition);
   static smtk::attribute::MeshItemDefinitionPtr New(const std::string& myName)
   {
     return smtk::attribute::MeshItemDefinitionPtr(new MeshItemDefinition(myName));

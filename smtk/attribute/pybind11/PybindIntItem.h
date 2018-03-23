@@ -23,7 +23,6 @@ PySharedPtrClass< smtk::attribute::IntItem, smtk::attribute::ValueItemTemplate<i
   instance
     .def(py::init<::smtk::attribute::IntItem const &>())
     .def("assign", &smtk::attribute::IntItem::assign, py::arg("sourceItem"), py::arg("options") = 0)
-    .def("classname", &smtk::attribute::IntItem::classname)
     .def("type", &smtk::attribute::IntItem::type)
     .def_static("CastTo", [](const std::shared_ptr<smtk::attribute::Item> i) {
         return std::dynamic_pointer_cast<smtk::attribute::IntItem>(i);

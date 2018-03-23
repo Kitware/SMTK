@@ -180,8 +180,7 @@ enum SessionInformation
 class SMTKCORE_EXPORT Session : smtkEnableSharedPtr(Session)
 {
 public:
-  smtkTypeMacroBase(Session);
-
+  smtkTypeMacroBase(smtk::model::Session);
   smtkSuperclassMacro(smtk::model::Session);
 
   static std::string staticClassName() { return "smtk::model::Session"; }

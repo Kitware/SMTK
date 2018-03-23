@@ -48,10 +48,12 @@
   typedef smtk::weak_ptr<const __VA_ARGS__> WeakConstPtr
 #define smtkTypeMacro(...)                                                                         \
   smtkTypedefs(__VA_ARGS__);                                                                       \
-  std::string classname() const override { return #__VA_ARGS__; }
+  static constexpr const char* const type_name = #__VA_ARGS__;                                     \
+  std::string typeName() const override { return type_name; }
 #define smtkTypeMacroBase(...)                                                                     \
   smtkTypedefs(__VA_ARGS__);                                                                       \
-  virtual std::string classname() const { return #__VA_ARGS__; }
+  static constexpr const char* const type_name = #__VA_ARGS__;                                     \
+  virtual std::string typeName() const { return type_name; }
 
 /**\brief Add a typedef to the superclass of this class.
   *

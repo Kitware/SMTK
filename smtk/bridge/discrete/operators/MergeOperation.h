@@ -35,7 +35,7 @@ namespace discrete
 class SMTKDISCRETESESSION_EXPORT MergeOperation : public Operation
 {
 public:
-  smtkTypeMacro(MergeOperation);
+  smtkTypeMacro(smtk::bridge::discrete::MergeOperation);
   smtkCreateMacro(MergeOperation);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);

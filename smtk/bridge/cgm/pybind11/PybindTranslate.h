@@ -24,8 +24,6 @@ PySharedPtrClass< smtk::bridge::cgm::Translate > pybind11_init_smtk_bridge_cgm_T
     .def(py::init<>())
     .def(py::init<::smtk::bridge::cgm::Translate const &>())
     .def("deepcopy", (smtk::bridge::cgm::Translate & (smtk::bridge::cgm::Translate::*)(::smtk::bridge::cgm::Translate const &)) &smtk::bridge::cgm::Translate::operator=)
-    .def("className", &smtk::bridge::cgm::Translate::className)
-    .def("classname", &smtk::bridge::cgm::Translate::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::cgm::Translate> (*)()) &smtk::bridge::cgm::Translate::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::cgm::Translate> (*)(::std::shared_ptr<smtk::bridge::cgm::Translate> &)) &smtk::bridge::cgm::Translate::create, py::arg("ref"))
     .def("name", &smtk::bridge::cgm::Translate::name)

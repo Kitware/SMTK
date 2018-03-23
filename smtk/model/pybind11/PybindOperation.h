@@ -62,8 +62,6 @@ PySharedPtrClass< smtk::operation::Operation, smtk::model::PyOperation > pybind1
     .def("deepcopy", (smtk::operation::Operation & (smtk::model::Operation::*)(::smtk::model::Operation const &)) &smtk::model::Operator::operator=)
     .def("ableToOperate", &smtk::operation::Operation::ableToOperate)
     .def("associateEntity", &smtk::operation::Operation::associateEntity, py::arg("entity"))
-    .def("className", &smtk::operation::Operation::className)
-    .def("classname", &smtk::operation::Operation::classname)
     .def_static("create", &smtk::model::PyOperation::create)
     .def("createResult", &smtk::operation::Operation::createResult, py::arg("outcome") = ::smtk::model::OperationOutcome::UNABLE_TO_OPERATE)
     .def("definition", &smtk::operation::Operation::definition)

@@ -25,7 +25,6 @@ PySharedPtrClass< smtk::model::EntityTypeSubphrases, smtk::model::SubphraseGener
   instance
     .def(py::init<::smtk::model::EntityTypeSubphrases const &>())
     .def("deepcopy", (smtk::model::EntityTypeSubphrases & (smtk::model::EntityTypeSubphrases::*)(::smtk::model::EntityTypeSubphrases const &)) &smtk::model::EntityTypeSubphrases::operator=)
-    .def("classname", &smtk::model::EntityTypeSubphrases::classname)
     .def_static("create", (std::shared_ptr<smtk::model::EntityTypeSubphrases> (*)()) &smtk::model::EntityTypeSubphrases::create)
     .def_static("create", (std::shared_ptr<smtk::model::EntityTypeSubphrases> (*)(::std::shared_ptr<smtk::model::EntityTypeSubphrases> &)) &smtk::model::EntityTypeSubphrases::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<const smtk::model::EntityTypeSubphrases> (smtk::model::EntityTypeSubphrases::*)() const) &smtk::model::EntityTypeSubphrases::shared_from_this)

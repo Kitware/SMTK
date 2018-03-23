@@ -27,10 +27,36 @@ Manager::~Manager()
 {
 }
 
-smtk::resource::ResourcePtr Manager::create(const std::string& uniqueName)
+bool Manager::unregisterResource(const std::string& typeName)
 {
   // Locate the metadata associated with this resource type
-  auto metadata = m_metadata.get<NameTag>().find(uniqueName);
+  auto metadata = m_metadata.get<NameTag>().find(typeName);
+  if (metadata != m_metadata.get<NameTag>().end())
+  {
+    m_metadata.get<NameTag>().erase(metadata);
+    return true;
+  }
+
+  return false;
+}
+
+bool Manager::unregisterResource(const Resource::Index& index)
+{
+  // Locate the metadata associated with this resource type
+  auto metadata = m_metadata.get<IndexTag>().find(index);
+  if (metadata != m_metadata.get<IndexTag>().end())
+  {
+    m_metadata.get<IndexTag>().erase(metadata);
+    return true;
+  }
+
+  return false;
+}
+
+smtk::resource::ResourcePtr Manager::create(const std::string& typeName)
+{
+  // Locate the metadata associated with this resource type
+  auto metadata = m_metadata.get<NameTag>().find(typeName);
   if (metadata != m_metadata.get<NameTag>().end())
   {
     // Create the resource using its index
@@ -55,12 +81,12 @@ smtk::resource::ResourcePtr Manager::create(const Resource::Index& index)
 }
 
 smtk::resource::ResourcePtr Manager::create(
-  const std::string& uniqueName, const smtk::common::UUID& uuid)
+  const std::string& typeName, const smtk::common::UUID& uuid)
 {
   smtk::resource::ResourcePtr resource;
 
   // Locate the metadata associated with this resource type
-  auto metadata = m_metadata.get<NameTag>().find(uniqueName);
+  auto metadata = m_metadata.get<NameTag>().find(typeName);
   if (metadata != m_metadata.get<NameTag>().end())
   {
     // Create the resource using its index
@@ -161,12 +187,12 @@ smtk::resource::ConstResourcePtr Manager::get(const std::string& url) const
   return smtk::resource::ConstResourcePtr();
 }
 
-std::set<smtk::resource::ResourcePtr> Manager::find(const std::string& uniqueName)
+std::set<smtk::resource::ResourcePtr> Manager::find(const std::string& typeName)
 {
   std::set<smtk::resource::ResourcePtr> values;
   std::set<Resource::Index> validIndices;
 
-  auto metadata = m_metadata.get<NameTag>().find(uniqueName);
+  auto metadata = m_metadata.get<NameTag>().find(typeName);
   if (metadata == m_metadata.get<NameTag>().end())
   {
     return values;
@@ -215,12 +241,12 @@ std::set<smtk::resource::ResourcePtr> Manager::find(const Resource::Index& index
   return values;
 }
 
-smtk::resource::ResourcePtr Manager::read(const std::string& uniqueName, const std::string& url)
+smtk::resource::ResourcePtr Manager::read(const std::string& typeName, const std::string& url)
 {
   smtk::resource::ResourcePtr resource;
 
   // Locate the metadata associated with this resource type
-  auto metadata = m_metadata.get<NameTag>().find(uniqueName);
+  auto metadata = m_metadata.get<NameTag>().find(typeName);
   if (metadata != m_metadata.get<NameTag>().end())
   {
     // Read in the resource using the provided url
@@ -228,9 +254,9 @@ smtk::resource::ResourcePtr Manager::read(const std::string& uniqueName, const s
   }
   else
   {
-    // If a resource type is not identified using this unique name, we check the
+    // If a resource type is not identified using this type name, we check the
     // map of legacy readers to see if this name is a legacy name for a resource type.
-    auto search = m_legacyReaders.find(uniqueName);
+    auto search = m_legacyReaders.find(typeName);
     if (search != m_legacyReaders.end())
     {
       // Read in the resource using the provided url
@@ -324,7 +350,7 @@ bool Manager::add(const Resource::Index& index, const smtk::resource::ResourcePt
   {
     smtkErrorMacro(smtk::io::Logger::instance(), "Resource manager "
         << this << " is refusing to add resource " << resource << " of type \""
-        << resource->uniqueName() << "\" "
+        << resource->typeName() << "\" "
         << "as that type has not been registered.\n"
         << "Perhaps you should link to the proper environment?");
     return false;

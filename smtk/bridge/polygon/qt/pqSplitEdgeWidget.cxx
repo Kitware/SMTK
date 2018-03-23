@@ -185,7 +185,7 @@ void pqSplitEdgeWidget::setView(pqRenderView* view)
 
 void pqSplitEdgeWidget::setEdgeOperation(smtk::operation::OperationPtr edgeOp)
 {
-  if (edgeOp && edgeOp->uniqueName() == "smtk::bridge::polygon::operators::SplitEdge")
+  if (edgeOp && edgeOp->typeName() == "smtk::bridge::polygon::operators::SplitEdge")
     m_edgeOp = edgeOp;
   else
     m_edgeOp = smtk::operation::Operation::Ptr();

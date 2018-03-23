@@ -27,7 +27,7 @@ namespace mesh
 class SMTKMESHSESSION_EXPORT EulerCharacteristicRatio : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(EulerCharacteristicRatio);
+  smtkTypeMacro(smtk::bridge::mesh::EulerCharacteristicRatio);
   smtkCreateMacro(EulerCharacteristicRatio);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 

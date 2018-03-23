@@ -30,7 +30,6 @@ PySharedPtrClass< smtk::attribute::DirectoryItemDefinition, smtk::attribute::Fil
     .def_static("New", &smtk::attribute::DirectoryItemDefinition::New, py::arg("myName"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::DirectoryItemDefinition::*)(::smtk::attribute::Attribute *, int) const) &smtk::attribute::DirectoryItemDefinition::buildItem, py::arg("owningAttribute"), py::arg("itemPosition"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::DirectoryItemDefinition::*)(::smtk::attribute::Item *, int, int) const) &smtk::attribute::DirectoryItemDefinition::buildItem, py::arg("owningItem"), py::arg("position"), py::arg("subGroupPosition"))
-    .def("classname", &smtk::attribute::DirectoryItemDefinition::classname)
     .def("createCopy", &smtk::attribute::DirectoryItemDefinition::createCopy, py::arg("info"))
     .def("type", &smtk::attribute::DirectoryItemDefinition::type)
     .def_static("ToItemDefinition", [](const std::shared_ptr<smtk::attribute::DirectoryItemDefinition> d) {

@@ -34,7 +34,6 @@ PySharedPtrClass< smtk::mesh::Collection > pybind11_init_smtk_mesh_Collection(py
     .def("cells", (smtk::mesh::CellSet (smtk::mesh::Collection::*)(::smtk::mesh::CellType) const) &smtk::mesh::Collection::cells, py::arg("cellType"))
     .def("cells", (smtk::mesh::CellSet (smtk::mesh::Collection::*)(::smtk::mesh::CellTypes) const) &smtk::mesh::Collection::cells, py::arg("cellTypes"))
     .def("cells", (smtk::mesh::CellSet (smtk::mesh::Collection::*)(::smtk::mesh::DimensionType) const) &smtk::mesh::Collection::cells, py::arg("dim"))
-    .def("classname", &smtk::mesh::Collection::classname)
     .def("clearReadWriteLocations", &smtk::mesh::Collection::clearReadWriteLocations)
     .def_static("create", (std::shared_ptr<smtk::mesh::Collection> (*)()) &smtk::mesh::Collection::create)
     .def_static("create", (std::shared_ptr<smtk::mesh::Collection> (*)(::std::shared_ptr<smtk::mesh::Collection> &)) &smtk::mesh::Collection::create, py::arg("ref"))

@@ -28,7 +28,7 @@ class SMTKCORE_EXPORT IntItem : public ValueItemTemplate<int>
   friend class IntItemDefinition;
 
 public:
-  smtkTypeMacro(IntItem);
+  smtkTypeMacro(smtk::attribute::IntItem);
   ~IntItem() override;
   Item::Type type() const override;
   // Assigns this item to be equivalent to another.  Options are processed by derived item classes

@@ -39,7 +39,6 @@ py::class_< smtk::model::CellEntity, smtk::model::EntityRef > pybind11_init_smtk
     .def("__eq__", (bool (smtk::model::CellEntity::*)(::smtk::model::EntityRef const &) const) &smtk::model::CellEntity::operator==)
     .def("boundingCellUses", &smtk::model::CellEntity::boundingCellUses, py::arg("orientation"))
     .def("boundingCells", &smtk::model::CellEntity::boundingCells)
-    .def("classname", &smtk::model::CellEntity::classname)
     .def("findShellEntitiesContainingCell", &smtk::model::CellEntity::findShellEntitiesContainingCell, py::arg("cell"))
     .def("findShellEntityContainingUse", &smtk::model::CellEntity::findShellEntityContainingUse, py::arg("bdyUse"))
     .def("isValid", (bool (smtk::model::CellEntity::*)() const) &smtk::model::CellEntity::isValid)

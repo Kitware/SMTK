@@ -79,7 +79,7 @@ bool ResourceItemDefinition::isValueValid(smtk::resource::ResourcePtr rsrc) cons
   {
     // If we don't have a resource manager, see if the resource type is
     // listed explicitly. If so, presume that's OK.
-    return m_acceptable.find(rsrc->uniqueName()) != m_acceptable.end();
+    return m_acceptable.find(rsrc->typeName()) != m_acceptable.end();
   }
 
   auto& container = manager->metadata().get<smtk::resource::NameTag>();

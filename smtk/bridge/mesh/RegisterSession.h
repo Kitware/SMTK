@@ -23,6 +23,9 @@ namespace mesh
 
 SMTKMESHSESSION_EXPORT void registerOperations(smtk::operation::Manager::Ptr&);
 SMTKMESHSESSION_EXPORT void registerResources(smtk::resource::Manager::Ptr&);
+
+SMTKMESHSESSION_EXPORT void unregisterOperations(smtk::operation::Manager::Ptr&);
+SMTKMESHSESSION_EXPORT void unregisterResources(smtk::resource::Manager::Ptr&);
 }
 }
 }

@@ -20,5 +20,10 @@ void registerResources(smtk::resource::Manager::Ptr& resourceManager)
 {
   (void)resourceManager;
 }
+
+void unregisterResources(smtk::resource::Manager::Ptr& resourceManager)
+{
+  (void)resourceManager;
+}
 }
 }

@@ -24,8 +24,6 @@ PySharedPtrClass< smtk::bridge::cgm::CreateEdge > pybind11_init_smtk_bridge_cgm_
     .def(py::init<>())
     .def(py::init<::smtk::bridge::cgm::CreateEdge const &>())
     .def("deepcopy", (smtk::bridge::cgm::CreateEdge & (smtk::bridge::cgm::CreateEdge::*)(::smtk::bridge::cgm::CreateEdge const &)) &smtk::bridge::cgm::CreateEdge::operator=)
-    .def("className", &smtk::bridge::cgm::CreateEdge::className)
-    .def("classname", &smtk::bridge::cgm::CreateEdge::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::cgm::CreateEdge> (*)()) &smtk::bridge::cgm::CreateEdge::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::cgm::CreateEdge> (*)(::std::shared_ptr<smtk::bridge::cgm::CreateEdge> &)) &smtk::bridge::cgm::CreateEdge::create, py::arg("ref"))
     .def("name", &smtk::bridge::cgm::CreateEdge::name)

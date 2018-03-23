@@ -26,7 +26,6 @@ PySharedPtrClass< smtk::model::AddAuxiliaryGeometry, smtk::operation::XMLOperati
     .def(py::init<>())
     .def(py::init<::smtk::model::AddAuxiliaryGeometry const &>())
     .def("deepcopy", (smtk::model::AddAuxiliaryGeometry & (smtk::model::AddAuxiliaryGeometry::*)(::smtk::model::AddAuxiliaryGeometry const &)) &smtk::model::AddAuxiliaryGeometry::operator=)
-    .def("classname", &smtk::model::AddAuxiliaryGeometry::classname)
     .def_static("create", (std::shared_ptr<smtk::model::AddAuxiliaryGeometry> (*)()) &smtk::model::AddAuxiliaryGeometry::create)
     .def_static("create", (std::shared_ptr<smtk::model::AddAuxiliaryGeometry> (*)(::std::shared_ptr<smtk::model::AddAuxiliaryGeometry> &)) &smtk::model::AddAuxiliaryGeometry::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<const smtk::model::AddAuxiliaryGeometry> (smtk::model::AddAuxiliaryGeometry::*)() const) &smtk::model::AddAuxiliaryGeometry::shared_from_this)

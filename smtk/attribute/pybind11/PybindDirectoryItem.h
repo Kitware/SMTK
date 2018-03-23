@@ -25,7 +25,6 @@ PySharedPtrClass< smtk::attribute::DirectoryItem, smtk::attribute::FileSystemIte
   instance
     .def(py::init<::smtk::attribute::DirectoryItem const &>())
     .def("deepcopy", (smtk::attribute::DirectoryItem & (smtk::attribute::DirectoryItem::*)(::smtk::attribute::DirectoryItem const &)) &smtk::attribute::DirectoryItem::operator=)
-    .def("classname", &smtk::attribute::DirectoryItem::classname)
     .def("type", &smtk::attribute::DirectoryItem::type)
     .def_static("CastTo", [](const std::shared_ptr<smtk::attribute::Item> i) {
         return std::dynamic_pointer_cast<smtk::attribute::DirectoryItem>(i);

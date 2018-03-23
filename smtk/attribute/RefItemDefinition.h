@@ -27,7 +27,7 @@ class Attribute;
 class SMTKCORE_EXPORT RefItemDefinition : public ItemDefinition
 {
 public:
-  smtkTypeMacro(RefItemDefinition);
+  smtkTypeMacro(smtk::attribute::RefItemDefinition);
   static smtk::attribute::RefItemDefinitionPtr New(const std::string& myName)
   {
     return smtk::attribute::RefItemDefinitionPtr(new RefItemDefinition(myName));

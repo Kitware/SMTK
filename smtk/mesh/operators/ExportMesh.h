@@ -22,7 +22,7 @@ namespace mesh
 class SMTKCORE_EXPORT ExportMesh : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(ExportMesh);
+  smtkTypeMacro(smtk::mesh::ExportMesh);
   smtkCreateMacro(ExportMesh);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::XMLOperation);

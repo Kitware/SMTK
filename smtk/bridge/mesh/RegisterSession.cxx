@@ -53,6 +53,20 @@ void registerResources(smtk::resource::Manager::Ptr& resourceManager)
 {
   resourceManager->registerResource<smtk::bridge::mesh::Resource>(read, write);
 }
+
+void unregisterOperations(smtk::operation::Manager::Ptr& operationManager)
+{
+  operationManager->unregisterOperation<smtk::bridge::mesh::EulerCharacteristicRatio>();
+  operationManager->unregisterOperation<smtk::bridge::mesh::Export>();
+  operationManager->unregisterOperation<smtk::bridge::mesh::Import>();
+  operationManager->unregisterOperation<smtk::bridge::mesh::Read>();
+  operationManager->unregisterOperation<smtk::bridge::mesh::Write>();
+}
+
+void unregisterResources(smtk::resource::Manager::Ptr& resourceManager)
+{
+  resourceManager->unregisterResource<smtk::bridge::mesh::Resource>();
+}
 }
 }
 }

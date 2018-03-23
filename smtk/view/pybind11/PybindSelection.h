@@ -44,7 +44,6 @@ PySharedPtrClass< smtk::view::Selection > pybind11_init_smtk_view_Selection(py::
 {
   PySharedPtrClass< smtk::view::Selection > instance(m, "Selection");
   instance
-    .def("classname", &smtk::view::Selection::classname)
     .def_static("create", (std::shared_ptr<smtk::view::Selection> (*)()) &smtk::view::Selection::create)
     .def_static("create", (std::shared_ptr<smtk::view::Selection> (*)(::std::shared_ptr<smtk::view::Selection> &)) &smtk::view::Selection::create, py::arg("ref"))
     .def_static("instance", (std::shared_ptr<smtk::view::Selection> (*)()) &smtk::view::Selection::instance)

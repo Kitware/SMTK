@@ -83,7 +83,6 @@ class SMTKCORE_EXPORT Collection : public smtk::resource::Resource
 public:
   smtkTypeMacro(smtk::mesh::Collection);
   smtkSharedPtrCreateMacro(smtk::resource::Resource);
-  smtkResourceTypeNameMacro("mesh");
 
   // typedef referring to the parent resource.
   typedef smtk::resource::Resource ParentResource;

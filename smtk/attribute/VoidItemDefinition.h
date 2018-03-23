@@ -26,7 +26,7 @@ namespace attribute
 class SMTKCORE_EXPORT VoidItemDefinition : public ItemDefinition
 {
 public:
-  smtkTypeMacro(VoidItemDefinition);
+  smtkTypeMacro(smtk::attribute::VoidItemDefinition);
   static smtk::attribute::VoidItemDefinitionPtr New(const std::string& myName)
   {
     return smtk::attribute::VoidItemDefinitionPtr(new VoidItemDefinition(myName));

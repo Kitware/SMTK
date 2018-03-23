@@ -28,7 +28,6 @@ py::class_< smtk::model::SessionIOJSON, smtk::model::SessionIO > pybind11_init_s
     .def(py::init<>())
     .def(py::init<::smtk::model::SessionIOJSON const &>())
     .def("deepcopy", (smtk::model::SessionIOJSON & (smtk::model::SessionIOJSON::*)(::smtk::model::SessionIOJSON const &)) &smtk::model::SessionIOJSON::operator=)
-    .def("classname", &smtk::model::SessionIOJSON::classname)
     .def_static("create", (std::shared_ptr<smtk::model::SessionIOJSON> (*)()) &smtk::model::SessionIOJSON::create)
     .def_static("create", (std::shared_ptr<smtk::model::SessionIOJSON> (*)(::std::shared_ptr<smtk::model::SessionIOJSON> &)) &smtk::model::SessionIOJSON::create, py::arg("ref"))
     ;

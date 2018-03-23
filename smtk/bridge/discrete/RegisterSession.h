@@ -23,6 +23,9 @@ namespace discrete
 
 SMTKDISCRETESESSION_EXPORT void registerOperations(smtk::operation::Manager::Ptr&);
 SMTKDISCRETESESSION_EXPORT void registerResources(smtk::resource::Manager::Ptr&);
+
+SMTKDISCRETESESSION_EXPORT void unregisterOperations(smtk::operation::Manager::Ptr&);
+SMTKDISCRETESESSION_EXPORT void unregisterResources(smtk::resource::Manager::Ptr&);
 }
 }
 }

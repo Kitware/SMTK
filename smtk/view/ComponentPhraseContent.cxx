@@ -77,7 +77,7 @@ std::string ComponentPhraseContent::stringValue(ContentType attr) const
 
       // We don't know what type of component it is, but we know it's resource type and UUID:
       std::ostringstream txt;
-      txt << m_component->resource()->uniqueName() << " " << m_component->id().toString();
+      txt << m_component->resource()->typeName() << " " << m_component->id().toString();
       return txt.str();
     }
     break;

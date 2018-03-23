@@ -37,13 +37,6 @@ class Key
 class Manager;
 class Metadata;
 
-/// Declare a resource's unique name. These two declarations are combined into a
-/// single macro to ensure that a resource's compile-time-accessible name and
-/// run-time-accessible name agree.
-#define smtkResourceTypeNameMacro(Name)                                                            \
-  static constexpr const char* const type_name = Name;                                             \
-  virtual std::string uniqueName() const override { return type_name; }
-
 /// An abstract base class for SMTK resources.
 class SMTKCORE_EXPORT Resource : public PersistentObject
 {
@@ -54,12 +47,10 @@ public:
 
   friend class Manager;
 
-  smtkTypeMacro(smtk::resource::Resource);
+  smtkTypedefs(smtk::resource::Resource);
   smtkSuperclassMacro(smtk::resource::PersistentObject);
   smtkSharedFromThisMacro(smtk::resource::PersistentObject);
   virtual ~Resource();
-
-  virtual std::string uniqueName() const = 0;
 
   /// index is a compile-time intrinsic of the derived resource; as such, it
   /// cannot be set.
@@ -79,7 +70,7 @@ public:
 
   /// given a resource's unique name, return whether or not this resource is or
   /// is derived from the resource described by the name.
-  bool isOfType(const std::string& uniqueName) const;
+  bool isOfType(const std::string& typeName) const;
 
   /// id and location are run-time intrinsics of the derived resource; we need
   /// to allow the user to reset these values.

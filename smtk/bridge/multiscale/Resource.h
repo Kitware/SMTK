@@ -30,7 +30,6 @@ class SMTKMULTISCALESESSION_EXPORT Resource : public smtk::bridge::mesh::Resourc
 public:
   smtkTypeMacro(smtk::bridge::multiscale::Resource);
   smtkSharedPtrCreateMacro(smtk::resource::Resource);
-  smtkResourceTypeNameMacro("multiscale model");
 
   // typedef referring to the parent resource.
   typedef smtk::bridge::mesh::Resource ParentResource;

@@ -26,7 +26,6 @@ PySharedPtrClass< smtk::bridge::mesh::Export, smtk::operation::XMLOperation > py
     .def(py::init<::smtk::bridge::mesh::Export const &>())
     .def(py::init<>())
     .def("deepcopy", (smtk::bridge::mesh::Export & (smtk::bridge::mesh::Export::*)(::smtk::bridge::mesh::Export const &)) &smtk::bridge::mesh::Export::operator=)
-    .def("classname", &smtk::bridge::mesh::Export::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::mesh::Export> (*)()) &smtk::bridge::mesh::Export::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::mesh::Export> (*)(::std::shared_ptr<smtk::bridge::mesh::Export> &)) &smtk::bridge::mesh::Export::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<smtk::bridge::mesh::Export> (smtk::bridge::mesh::Export::*)()) &smtk::bridge::mesh::Export::shared_from_this)

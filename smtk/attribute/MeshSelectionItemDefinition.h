@@ -28,7 +28,7 @@ class Attribute;
 class SMTKCORE_EXPORT MeshSelectionItemDefinition : public ItemDefinition
 {
 public:
-  smtkTypeMacro(MeshSelectionItemDefinition);
+  smtkTypeMacro(smtk::attribute::MeshSelectionItemDefinition);
   static smtk::attribute::MeshSelectionItemDefinitionPtr New(const std::string& myName)
   {
     return smtk::attribute::MeshSelectionItemDefinitionPtr(new MeshSelectionItemDefinition(myName));

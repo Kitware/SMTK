@@ -20,7 +20,7 @@ namespace model
 class SMTKCORE_EXPORT CloseModel : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(CloseModel);
+  smtkTypeMacro(smtk::model::CloseModel);
   smtkCreateMacro(CloseModel);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::XMLOperation);

@@ -25,7 +25,6 @@ PySharedPtrClass< smtk::attribute::VoidItem, smtk::attribute::Item > pybind11_in
   instance
     .def(py::init<::smtk::attribute::VoidItem const &>())
     .def("deepcopy", (smtk::attribute::VoidItem & (smtk::attribute::VoidItem::*)(::smtk::attribute::VoidItem const &)) &smtk::attribute::VoidItem::operator=)
-    .def("classname", &smtk::attribute::VoidItem::classname)
     .def("isValid", &smtk::attribute::VoidItem::isValid)
     .def("type", &smtk::attribute::VoidItem::type)
     .def_static("CastTo", [](const std::shared_ptr<smtk::attribute::Item> i) {

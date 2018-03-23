@@ -29,7 +29,6 @@ PySharedPtrClass< smtk::attribute::StringItemDefinition, smtk::attribute::ValueI
     .def_static("New", &smtk::attribute::StringItemDefinition::New, py::arg("myName"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::StringItemDefinition::*)(::smtk::attribute::Attribute *, int) const) &smtk::attribute::StringItemDefinition::buildItem, py::arg("owningAttribute"), py::arg("itemPosition"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::StringItemDefinition::*)(::smtk::attribute::Item *, int, int) const) &smtk::attribute::StringItemDefinition::buildItem, py::arg("owningItem"), py::arg("position"), py::arg("subGroupPosition"))
-    .def("classname", &smtk::attribute::StringItemDefinition::classname)
     .def("createCopy", &smtk::attribute::StringItemDefinition::createCopy, py::arg("info"))
     .def("isMultiline", &smtk::attribute::StringItemDefinition::isMultiline)
     .def("isSecure", &smtk::attribute::StringItemDefinition::isSecure)

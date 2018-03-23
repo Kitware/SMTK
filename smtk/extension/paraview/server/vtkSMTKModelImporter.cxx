@@ -66,17 +66,17 @@ void vtkSMTKModelImporter::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "ModelSource: " << this->ModelSource << "\n";
 }
 
-bool vtkSMTKModelImporter::SetImporterResourceScope(const std::string& uniqueName)
+bool vtkSMTKModelImporter::SetImporterResourceScope(const std::string& typeName)
 {
   smtk::resource::Manager::Ptr rsrcMgr = this->Wrapper
     ? this->Wrapper->GetResourceManager()
     : smtk::environment::ResourceManager::instance();
 
-  auto metadata = rsrcMgr->metadata().get<smtk::resource::NameTag>().find(uniqueName);
+  auto metadata = rsrcMgr->metadata().get<smtk::resource::NameTag>().find(typeName);
   if (metadata != rsrcMgr->metadata().get<smtk::resource::NameTag>().end())
   {
     // We can support this resource type. Set our resource index accordingly.
-    this->ResourceName = uniqueName;
+    this->ResourceName = typeName;
     this->Modified();
     return true;
   }
@@ -94,7 +94,7 @@ bool vtkSMTKModelImporter::SetImporterResourceScope(const smtk::resource::Resour
   if (metadata != rsrcMgr->metadata().get<smtk::resource::IndexTag>().end())
   {
     // We can support this resource type. Set our resource index accordingly.
-    this->ResourceName = metadata->uniqueName();
+    this->ResourceName = metadata->typeName();
     this->Modified();
     return true;
   }

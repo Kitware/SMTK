@@ -27,7 +27,7 @@ namespace operation
 class SMTKCORE_EXPORT ImportPythonOperation : public Operation
 {
 public:
-  smtkTypeMacro(ImportPythonOperation);
+  smtkTypeMacro(smtk::operation::ImportPythonOperation);
   smtkCreateMacro(ImportPythonOperation);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::Operation);

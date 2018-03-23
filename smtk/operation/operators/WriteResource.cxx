@@ -85,12 +85,12 @@ smtk::operation::Operation::Result WriteResource::operateInternal()
     auto resource = *rit;
 
     smtk::operation::Operation::Ptr writeOperation =
-      writerGroup.writerForResource(resource->uniqueName());
+      writerGroup.writerForResource(resource->typeName());
 
     if (writeOperation == nullptr)
     {
       smtkErrorMacro(
-        this->log(), "Could not find writer for type = " << resource->uniqueName() << ".");
+        this->log(), "Could not find writer for type = " << resource->typeName() << ".");
       return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
@@ -112,7 +112,7 @@ smtk::operation::Operation::Result WriteResource::operateInternal()
     {
       smtkWarningMacro(this->log(), "File name \""
           << fileName << "\" was provided, but the registered writer for type \""
-          << resource->uniqueName() << "\" does not accept an input file item.");
+          << resource->typeName() << "\" does not accept an input file item.");
     }
 
     // If the writer does accept a filename input, set it.

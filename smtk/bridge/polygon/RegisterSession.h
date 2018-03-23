@@ -24,6 +24,9 @@ namespace polygon
 
 SMTKPOLYGONSESSION_EXPORT void registerOperations(smtk::operation::Manager::Ptr&);
 SMTKPOLYGONSESSION_EXPORT void registerResources(smtk::resource::Manager::Ptr&);
+
+SMTKPOLYGONSESSION_EXPORT void unregisterOperations(smtk::operation::Manager::Ptr&);
+SMTKPOLYGONSESSION_EXPORT void unregisterResources(smtk::resource::Manager::Ptr&);
 }
 }
 }

@@ -26,7 +26,6 @@ PySharedPtrClass< smtk::model::SimpleModelSubphrases, smtk::model::SubphraseGene
     .def(py::init<::smtk::model::SimpleModelSubphrases const &>())
     .def("deepcopy", (smtk::model::SimpleModelSubphrases & (smtk::model::SimpleModelSubphrases::*)(::smtk::model::SimpleModelSubphrases const &)) &smtk::model::SimpleModelSubphrases::operator=)
     .def("abridgeUses", &smtk::model::SimpleModelSubphrases::abridgeUses)
-    .def("classname", &smtk::model::SimpleModelSubphrases::classname)
     .def_static("create", (std::shared_ptr<smtk::model::SimpleModelSubphrases> (*)()) &smtk::model::SimpleModelSubphrases::create)
     .def_static("create", (std::shared_ptr<smtk::model::SimpleModelSubphrases> (*)(::std::shared_ptr<smtk::model::SimpleModelSubphrases> &)) &smtk::model::SimpleModelSubphrases::create, py::arg("ref"))
     .def("setAbridgeUses", &smtk::model::SimpleModelSubphrases::setAbridgeUses, py::arg("doAbridge"))

@@ -36,7 +36,6 @@ py::class_< smtk::model::Group, smtk::model::EntityRef > pybind11_init_smtk_mode
     .def("deepcopy", (smtk::model::Group & (smtk::model::Group::*)(::smtk::model::Group const &)) &smtk::model::Group::operator=)
     .def("__eq__", (bool (smtk::model::Group::*)(::smtk::model::EntityRef const &) const) &smtk::model::Group::operator==)
     .def("addEntity", &smtk::model::Group::addEntity, py::arg("entity"))
-    .def("classname", &smtk::model::Group::classname)
     .def("findFirstNonGroupMember", &smtk::model::Group::findFirstNonGroupMember)
     .def("isValid", (bool (smtk::model::Group::*)() const) &smtk::model::Group::isValid)
     // .def("isValid", (bool (smtk::model::Group::*)(::smtk::model::Entity * *) const) &smtk::model::Group::isValid, py::arg("entRec"))

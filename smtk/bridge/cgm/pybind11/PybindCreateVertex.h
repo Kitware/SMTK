@@ -24,8 +24,6 @@ PySharedPtrClass< smtk::bridge::cgm::CreateVertex > pybind11_init_smtk_bridge_cg
     .def(py::init<>())
     .def(py::init<::smtk::bridge::cgm::CreateVertex const &>())
     .def("deepcopy", (smtk::bridge::cgm::CreateVertex & (smtk::bridge::cgm::CreateVertex::*)(::smtk::bridge::cgm::CreateVertex const &)) &smtk::bridge::cgm::CreateVertex::operator=)
-    .def("className", &smtk::bridge::cgm::CreateVertex::className)
-    .def("classname", &smtk::bridge::cgm::CreateVertex::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::cgm::CreateVertex> (*)()) &smtk::bridge::cgm::CreateVertex::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::cgm::CreateVertex> (*)(::std::shared_ptr<smtk::bridge::cgm::CreateVertex> &)) &smtk::bridge::cgm::CreateVertex::create, py::arg("ref"))
     .def("name", &smtk::bridge::cgm::CreateVertex::name)

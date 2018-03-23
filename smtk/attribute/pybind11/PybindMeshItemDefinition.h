@@ -30,7 +30,6 @@ PySharedPtrClass< smtk::attribute::MeshItemDefinition, smtk::attribute::ItemDefi
     .def_static("New", &smtk::attribute::MeshItemDefinition::New, py::arg("myName"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::MeshItemDefinition::*)(::smtk::attribute::Attribute *, int) const) &smtk::attribute::MeshItemDefinition::buildItem, py::arg("owningAttribute"), py::arg("itemPosition"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::MeshItemDefinition::*)(::smtk::attribute::Item *, int, int) const) &smtk::attribute::MeshItemDefinition::buildItem, py::arg("owningItem"), py::arg("position"), py::arg("subGroupPosition"))
-    .def("classname", &smtk::attribute::MeshItemDefinition::classname)
     .def("createCopy", &smtk::attribute::MeshItemDefinition::createCopy, py::arg("info"))
     .def("isExtensible", &smtk::attribute::MeshItemDefinition::isExtensible)
     .def("isValueValid", &smtk::attribute::MeshItemDefinition::isValueValid, py::arg("val"))

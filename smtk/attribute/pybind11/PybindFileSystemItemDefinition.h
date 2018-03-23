@@ -27,7 +27,6 @@ PySharedPtrClass< smtk::attribute::FileSystemItemDefinition, smtk::attribute::It
   instance
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::FileSystemItemDefinition::*)(::smtk::attribute::Attribute *, int) const) &smtk::attribute::FileSystemItemDefinition::buildItem, py::arg("owningAttribute"), py::arg("itemPosition"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::FileSystemItemDefinition::*)(::smtk::attribute::Item *, int, int) const) &smtk::attribute::FileSystemItemDefinition::buildItem, py::arg("owningItem"), py::arg("position"), py::arg("subGroupPosition"))
-    .def("classname", &smtk::attribute::FileSystemItemDefinition::classname)
     .def("createCopy", &smtk::attribute::FileSystemItemDefinition::createCopy, py::arg("info"))
     .def("defaultValue", &smtk::attribute::FileSystemItemDefinition::defaultValue)
     .def("hasDefault", &smtk::attribute::FileSystemItemDefinition::hasDefault)

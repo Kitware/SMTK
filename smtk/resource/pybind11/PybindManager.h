@@ -29,7 +29,6 @@ PySharedPtrClass< smtk::resource::Manager > pybind11_init_smtk_resource_Manager(
     .def("deepcopy", (smtk::resource::Manager & (smtk::resource::Manager::*)(::smtk::resource::Manager const &)) &smtk::resource::Manager::operator=)
     .def("add", (bool (smtk::resource::Manager::*)(const smtk::resource::Resource::Index&, const std::shared_ptr<smtk::resource::Resource>&)) &smtk::resource::Manager::add)
     .def("add", (bool (smtk::resource::Manager::*)(const std::shared_ptr<smtk::resource::Resource>&)) &smtk::resource::Manager::add)
-    .def("classname", &smtk::resource::Manager::classname)
     .def_static("create", (std::shared_ptr<smtk::resource::Manager> (*)()) &smtk::resource::Manager::create)
     .def_static("create", (std::shared_ptr<smtk::resource::Manager> (*)(std::shared_ptr<smtk::resource::Manager>&)) &smtk::resource::Manager::create)
     .def("createResource", (std::shared_ptr<smtk::resource::Resource> (smtk::resource::Manager::*)(const std::string&)) &smtk::resource::Manager::create)

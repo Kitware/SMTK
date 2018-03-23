@@ -32,7 +32,6 @@ PySharedPtrClass< smtk::attribute::ValueItem, smtk::attribute::Item > pybind11_i
     .def("appendExpression", &smtk::attribute::ValueItem::appendExpression, py::arg("exp"))
     .def("assign", &smtk::attribute::ValueItem::assign, py::arg("sourceItem"), py::arg("options") = 0)
     .def("childrenItems", &smtk::attribute::ValueItem::childrenItems)
-    .def("classname", &smtk::attribute::ValueItem::classname)
     .def("discreteIndex", &smtk::attribute::ValueItem::discreteIndex, py::arg("elementIndex") = 0)
     .def("expression", &smtk::attribute::ValueItem::expression, py::arg("elementIndex") = 0)
     .def("expressionReference", &smtk::attribute::ValueItem::expressionReference, py::arg("elementIndex") = 0)

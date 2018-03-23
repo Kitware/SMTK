@@ -28,7 +28,7 @@ class SMTKCORE_EXPORT StringItem : public ValueItemTemplate<std::string>
   friend class StringItemDefinition;
 
 public:
-  smtkTypeMacro(StringItem);
+  smtkTypeMacro(smtk::attribute::StringItem);
   ~StringItem() override;
   Item::Type type() const override;
 

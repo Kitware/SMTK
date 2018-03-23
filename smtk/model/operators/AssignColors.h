@@ -20,7 +20,7 @@ namespace model
 class SMTKCORE_EXPORT AssignColors : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(AssignColors);
+  smtkTypeMacro(smtk::model::AssignColors);
   smtkCreateMacro(AssignColors);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::XMLOperation);

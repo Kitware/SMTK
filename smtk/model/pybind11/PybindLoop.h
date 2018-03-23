@@ -38,7 +38,6 @@ py::class_< smtk::model::Loop, smtk::model::ShellEntity > pybind11_init_smtk_mod
     .def("__ne__", (bool (smtk::model::Loop::*)(::smtk::model::EntityRef const &) const) &smtk::model::Loop::operator!=)
     .def("deepcopy", (smtk::model::Loop & (smtk::model::Loop::*)(::smtk::model::Loop const &)) &smtk::model::Loop::operator=)
     .def("__eq__", (bool (smtk::model::Loop::*)(::smtk::model::EntityRef const &) const) &smtk::model::Loop::operator==)
-    .def("classname", &smtk::model::Loop::classname)
     .def("containedLoops", &smtk::model::Loop::containedLoops)
     .def("containingLoop", &smtk::model::Loop::containingLoop)
     .def("edgeUses", &smtk::model::Loop::edgeUses)

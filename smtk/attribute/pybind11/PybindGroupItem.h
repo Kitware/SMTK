@@ -28,7 +28,6 @@ PySharedPtrClass< smtk::attribute::GroupItem, smtk::attribute::Item > pybind11_i
     .def("appendGroup", &smtk::attribute::GroupItem::appendGroup)
     .def("assign", &smtk::attribute::GroupItem::assign, py::arg("sourceItem"), py::arg("options") = 0)
     .def("begin", &smtk::attribute::GroupItem::begin)
-    .def("classname", &smtk::attribute::GroupItem::classname)
     .def("end", &smtk::attribute::GroupItem::end)
     .def("_find", (smtk::attribute::ItemPtr (smtk::attribute::GroupItem::*)(::std::string const &)) &smtk::attribute::GroupItem::find, py::arg("inName"))
     .def("_find", (smtk::attribute::ItemPtr (smtk::attribute::GroupItem::*)(::size_t, ::std::string const &)) &smtk::attribute::GroupItem::find, py::arg("element"), py::arg("name"))

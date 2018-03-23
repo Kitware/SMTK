@@ -22,13 +22,11 @@ PySharedPtrClass< smtk::bridge::discrete::ReadOperation, smtk::operation::Operat
 {
   PySharedPtrClass< smtk::bridge::discrete::ReadOperation, smtk::operation::Operation > instance(m, "ReadOperation");
   instance
-    .def("classname", &smtk::bridge::discrete::ReadOperation::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::discrete::ReadOperation> (*)()) &smtk::bridge::discrete::ReadOperation::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::discrete::ReadOperation> (*)(::std::shared_ptr<smtk::bridge::discrete::ReadOperation> &)) &smtk::bridge::discrete::ReadOperator::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<smtk::bridge::discrete::ReadOperation> (smtk::bridge::discrete::ReadOperation::*)()) &smtk::bridge::discrete::ReadOperator::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<const smtk::bridge::discrete::ReadOperation> (smtk::bridge::discrete::ReadOperation::*)() const) &smtk::bridge::discrete::ReadOperator::shared_from_this)
     .def("name", &smtk::bridge::discrete::ReadOperation::name)
-    .def("className", &smtk::bridge::discrete::ReadOperation::className)
     .def("ableToOperate", &smtk::bridge::discrete::ReadOperation::ableToOperate)
     ;
   return instance;

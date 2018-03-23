@@ -31,7 +31,6 @@ PySharedPtrClass< smtk::attribute::ComponentItem, smtk::attribute::Item > pybind
     .def("appendValue", &smtk::attribute::ComponentItem::appendValue, py::arg("val"))
     .def("assign", &smtk::attribute::ComponentItem::assign, py::arg("sourceItem"), py::arg("options") = 0)
     .def("begin", &smtk::attribute::ComponentItem::begin)
-    .def("classname", &smtk::attribute::ComponentItem::classname)
     .def("definition", &smtk::attribute::ComponentItem::definition)
     .def("end", &smtk::attribute::ComponentItem::end)
     .def("find", (ptrdiff_t (smtk::attribute::ComponentItem::*)(::smtk::common::UUID const &) const) &smtk::attribute::ComponentItem::find, py::arg("compId"))

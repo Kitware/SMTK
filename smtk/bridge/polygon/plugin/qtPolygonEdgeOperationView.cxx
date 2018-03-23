@@ -58,8 +58,8 @@ public:
 
   bool needArc(const smtk::operation::OperationPtr& op)
   {
-    bool able2Op = op && (op->uniqueName() == "smtk::bridge::polygon::TweakEdge" ||
-                           op->uniqueName() == "smtk::bridge::polygon::CreateEdge") &&
+    bool able2Op = op && (op->typeName() == "smtk::bridge::polygon::TweakEdge" ||
+                           op->typeName() == "smtk::bridge::polygon::CreateEdge") &&
       op->ableToOperate();
     if (!able2Op)
     {
@@ -67,7 +67,7 @@ public:
     }
 
     // for create-edge operation, we only handle "interactive widget" case
-    if (op->uniqueName() == "smtk::bridge::polygon::CreateEdge")
+    if (op->typeName() == "smtk::bridge::polygon::CreateEdge")
     {
       smtk::attribute::IntItem::Ptr optypeItem = op->parameters()->findInt("construction method");
       able2Op = optypeItem && (optypeItem->discreteIndex(0) == 2);
@@ -285,7 +285,7 @@ void qtPolygonEdgeOperationView::valueChanged(smtk::attribute::ItemPtr valitem)
 {
   // "smtk::bridge::polygon::CreateEdge" op "construction method" changed.
   if (!this->Internals->CurrentAtt || !this->Widget || !this->Internals->CurrentOp.lock() ||
-    this->Internals->CurrentOp.lock()->uniqueName() != "smtk::bridge::polygon::CreateEdge")
+    this->Internals->CurrentOp.lock()->typeName() != "smtk::bridge::polygon::CreateEdge")
   {
     return;
   }
@@ -385,11 +385,11 @@ void qtPolygonEdgeOperationView::operationSelected(const smtk::operation::Operat
 
     // This handles ui panel update when we need an arc-edit widget
     QWidget* prevUiWidget = this->Internals->ArcManager->getActiveWidget();
-    if (op->uniqueName() == "smtk::bridge::polygon::CreateEdge")
+    if (op->typeName() == "smtk::bridge::polygon::CreateEdge")
     {
       this->Internals->ArcManager->create();
     }
-    else if (op->uniqueName() == "smtk::bridge::polygon::TweakEdge")
+    else if (op->typeName() == "smtk::bridge::polygon::TweakEdge")
     {
       this->Internals->ArcManager->edit();
     }
@@ -455,7 +455,7 @@ void qtPolygonEdgeOperationView::operationSelected(const smtk::operation::Operat
     // for edge operations that do not need arc-edit widget
     // * smtk::bridge::polygon::CreateEdge op : "points" and "vertex ids" // no custom ui needed
     // * smtk::bridge::polygon::SplitEdge: // this need a special
-    if (op->uniqueName() ==
+    if (op->typeName() ==
       "smtk::bridge::polygon::SplitEdge") // otherwise, only handle smtk::bridge::polygon::SplitEdge custom ui
     {
       // If this is the same operator the SplitEdgeWidget is actively working with,

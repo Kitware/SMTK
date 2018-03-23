@@ -20,5 +20,10 @@ void registerOperations(smtk::operation::Manager::Ptr& operationManager)
 {
   (void)operationManager;
 }
+
+void unregisterOperations(smtk::operation::Manager::Ptr& operationManager)
+{
+  (void)operationManager;
+}
 }
 }

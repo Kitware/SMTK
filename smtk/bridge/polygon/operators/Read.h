@@ -26,7 +26,7 @@ namespace polygon
 class SMTKPOLYGONSESSION_EXPORT Read : public Operation
 {
 public:
-  smtkTypeMacro(Read);
+  smtkTypeMacro(smtk::bridge::polygon::Read);
   smtkCreateMacro(Read);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);

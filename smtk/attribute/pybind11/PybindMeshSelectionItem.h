@@ -41,7 +41,6 @@ PySharedPtrClass< smtk::attribute::MeshSelectionItem, smtk::attribute::Item > py
     .def("deepcopy", (smtk::attribute::MeshSelectionItem & (smtk::attribute::MeshSelectionItem::*)(::smtk::attribute::MeshSelectionItem const &)) &smtk::attribute::MeshSelectionItem::operator=)
     .def("assign", &smtk::attribute::MeshSelectionItem::assign, py::arg("sourceItem"), py::arg("options") = 0)
     .def("begin", &smtk::attribute::MeshSelectionItem::begin)
-    .def("classname", &smtk::attribute::MeshSelectionItem::classname)
     .def("end", &smtk::attribute::MeshSelectionItem::end)
     .def("isCtrlKeyDown", &smtk::attribute::MeshSelectionItem::isCtrlKeyDown)
     .def("isValid", &smtk::attribute::MeshSelectionItem::isValid)

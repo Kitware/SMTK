@@ -27,7 +27,6 @@ PySharedPtrClass< smtk::attribute::DateTimeItem, smtk::attribute::Item > pybind1
     .def(py::init<::smtk::attribute::DateTimeItem const &>())
     .def("deepcopy", (smtk::attribute::DateTimeItem & (smtk::attribute::DateTimeItem::*)(::smtk::attribute::DateTimeItem const &)) &smtk::attribute::DateTimeItem::operator=)
     .def("assign", &smtk::attribute::DateTimeItem::assign, py::arg("sourceItem"), py::arg("options") = 0)
-    .def("classname", &smtk::attribute::DateTimeItem::classname)
     .def("isSet", &smtk::attribute::DateTimeItem::isSet, py::arg("element") = 0)
     .def("isUsingDefault", (bool (smtk::attribute::DateTimeItem::*)(::std::size_t) const) &smtk::attribute::DateTimeItem::isUsingDefault, py::arg("elementIndex"))
     .def("isUsingDefault", (bool (smtk::attribute::DateTimeItem::*)() const) &smtk::attribute::DateTimeItem::isUsingDefault)

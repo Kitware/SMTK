@@ -29,7 +29,7 @@ namespace discrete
 class SMTKDISCRETESESSION_EXPORT WriteOperation : public Operation
 {
 public:
-  smtkTypeMacro(WriteOperation);
+  smtkTypeMacro(smtk::bridge::discrete::WriteOperation);
   smtkCreateMacro(WriteOperation);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);

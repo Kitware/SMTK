@@ -22,13 +22,11 @@ PySharedPtrClass< smtk::bridge::discrete::WriteResource, smtk::operation::Operat
 {
   PySharedPtrClass< smtk::bridge::discrete::WriteResource, smtk::operation::Operation > instance(m, "WriteResource");
   instance
-    .def("classname", &smtk::bridge::discrete::WriteResource::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::discrete::WriteResource> (*)()) &smtk::bridge::discrete::WriteResource::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::discrete::WriteResource> (*)(::std::shared_ptr<smtk::bridge::discrete::WriteResource> &)) &smtk::bridge::discrete::WriteOperator::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<smtk::bridge::discrete::WriteResource> (smtk::bridge::discrete::WriteResource::*)()) &smtk::bridge::discrete::WriteOperator::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<const smtk::bridge::discrete::WriteResource> (smtk::bridge::discrete::WriteResource::*)() const) &smtk::bridge::discrete::WriteOperator::shared_from_this)
     .def("name", &smtk::bridge::discrete::WriteResource::name)
-    .def("className", &smtk::bridge::discrete::WriteResource::className)
     .def("ableToOperate", &smtk::bridge::discrete::WriteResource::ableToOperate)
     ;
 

@@ -255,7 +255,7 @@ int SaveJSON::fromSet(cJSON* pnode, smtk::resource::SetPtr& rset)
       cJSON_AddItemToObject(jset, rid.c_str(), jsrc);
       if (rset->resourceInfo(rid, rsrcRole, rsrcState, rsrcLink))
       {
-        cJSON_AddItemToObject(jsrc, "type", cJSON_CreateString(rsrc->uniqueName().c_str()));
+        cJSON_AddItemToObject(jsrc, "type", cJSON_CreateString(rsrc->typeName().c_str()));
         cJSON_AddItemToObject(
           jsrc, "role", cJSON_CreateString(smtk::resource::Set::role2String(rsrcRole).c_str()));
         cJSON_AddItemToObject(

@@ -76,10 +76,10 @@ bool ResourceSetWriter::writeString(
     smtk::resource::ResourcePtr resource;
     ok = resources.get(id, resource);
 
-    // Create valid tag from classname, replacing "::" with "_",
+    // Create valid tag from typeName, replacing "::" with "_",
     // since colon char not valid in xml tags
     std::regex re("::");
-    std::string tag = std::regex_replace(resource->classname(), re, "_");
+    std::string tag = std::regex_replace(resource->typeName(), re, "_");
 
     pugi::xml_node resourceElement = rootElement.append_child(tag.c_str());
     resourceElement.append_attribute("id").set_value(id.c_str());

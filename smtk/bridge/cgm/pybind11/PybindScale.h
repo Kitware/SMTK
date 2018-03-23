@@ -24,8 +24,6 @@ PySharedPtrClass< smtk::bridge::cgm::Scale > pybind11_init_smtk_bridge_cgm_Scale
     .def(py::init<>())
     .def(py::init<::smtk::bridge::cgm::Scale const &>())
     .def("deepcopy", (smtk::bridge::cgm::Scale & (smtk::bridge::cgm::Scale::*)(::smtk::bridge::cgm::Scale const &)) &smtk::bridge::cgm::Scale::operator=)
-    .def("className", &smtk::bridge::cgm::Scale::className)
-    .def("classname", &smtk::bridge::cgm::Scale::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::cgm::Scale> (*)()) &smtk::bridge::cgm::Scale::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::cgm::Scale> (*)(::std::shared_ptr<smtk::bridge::cgm::Scale> &)) &smtk::bridge::cgm::Scale::create, py::arg("ref"))
     .def("name", &smtk::bridge::cgm::Scale::name)

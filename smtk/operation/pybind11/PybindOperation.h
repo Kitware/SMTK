@@ -29,9 +29,8 @@ PySharedPtrClass< smtk::operation::Operation, smtk::operation::PyOperation > pyb
   instance
     .def(py::init<>())
     .def("deepcopy", (smtk::operation::Operation & (smtk::operation::Operation::*)(::smtk::operation::Operation const &)) &smtk::operation::Operation::operator=)
-    .def("classname", &smtk::operation::Operation::classname)
     .def_static("create", &smtk::operation::PyOperation::create)
-    .def("uniqueName", &smtk::operation::Operation::uniqueName)
+    .def("typeName", &smtk::operation::Operation::typeName)
     .def("index", &smtk::operation::Operation::index)
     .def("ableToOperate", &smtk::operation::Operation::ableToOperate)
     .def("operate", &smtk::operation::Operation::operate)

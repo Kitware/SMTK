@@ -28,7 +28,6 @@ PySharedPtrClass< smtk::model::DefaultSession, smtk::model::Session > pybind11_i
     .def(py::init<::smtk::model::DefaultSession const &>())
     .def("deepcopy", (smtk::model::DefaultSession & (smtk::model::DefaultSession::*)(::smtk::model::DefaultSession const &)) &smtk::model::DefaultSession::operator=)
     .def("backsRemoteSession", &smtk::model::DefaultSession::backsRemoteSession, py::arg("remoteSessionName"), py::arg("sessionId"))
-    .def("classname", &smtk::model::DefaultSession::classname)
     .def_static("create", (std::shared_ptr<smtk::model::DefaultSession> (*)()) &smtk::model::DefaultSession::create)
     .def_static("create", (std::shared_ptr<smtk::model::DefaultSession> (*)(::std::shared_ptr<smtk::model::DefaultSession> &)) &smtk::model::DefaultSession::create, py::arg("ref"))
     .def("name", &smtk::model::DefaultSession::name)

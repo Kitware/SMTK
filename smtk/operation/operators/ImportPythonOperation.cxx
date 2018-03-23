@@ -105,7 +105,7 @@ std::vector<std::string> ImportPythonOperation::importOperationsFromModule(
   regex re(";;");
   sregex_token_iterator first{ opNames.begin(), opNames.end(), re, -1 }, last;
 
-  std::vector<std::string> uniqueNames;
+  std::vector<std::string> typeNames;
 
   // For each operation name in the imported module...
   while (first != last)
@@ -116,22 +116,22 @@ std::vector<std::string> ImportPythonOperation::importOperationsFromModule(
 
     if (registered)
     {
-      uniqueNames.push_back(std::string(moduleName + "." + opName));
+      typeNames.push_back(std::string(moduleName + "." + opName));
     }
   }
 
-  return uniqueNames;
+  return typeNames;
 }
 
 bool ImportPythonOperation::importOperation(
   smtk::operation::Manager& manager, const std::string& moduleName, const std::string& opName)
 {
-  std::string uniqueName = moduleName + "." + opName;
-  smtk::operation::Operation::Index index = std::hash<std::string>{}(uniqueName);
+  std::string typeName = moduleName + "." + opName;
+  smtk::operation::Operation::Index index = std::hash<std::string>{}(typeName);
   auto create = std::bind(smtk::operation::PyOperation::create, moduleName, opName, index);
 
   return manager.registerOperation(
-    Metadata(uniqueName, index, create()->createSpecification(), create));
+    Metadata(typeName, index, create()->createSpecification(), create));
 }
 
 ImportPythonOperation::Result ImportPythonOperation::operateInternal()
@@ -151,19 +151,19 @@ ImportPythonOperation::Result ImportPythonOperation::operateInternal()
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  std::vector<std::string> uniqueNames =
+  std::vector<std::string> typeNames =
     this->importOperationsFromModule(moduleName, *(m_manager.lock()));
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
-  smtk::attribute::StringItemPtr uniqueNameItem = result->findString("unique_name");
+  smtk::attribute::StringItemPtr typeNameItem = result->findString("unique_name");
 
-  for (auto& uniqueName : uniqueNames)
+  for (auto& typeName : typeNames)
   {
-    uniqueNameItem->appendValue(uniqueName);
+    typeNameItem->appendValue(typeName);
   }
 
-  return uniqueNameItem->numberOfValues() > 0
+  return typeNameItem->numberOfValues() > 0
     ? result
     : this->createResult(smtk::operation::Operation::Outcome::FAILED);
 }

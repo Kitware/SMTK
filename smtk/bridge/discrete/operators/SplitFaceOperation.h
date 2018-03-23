@@ -26,7 +26,7 @@ namespace discrete
 class SMTKDISCRETESESSION_EXPORT SplitFaceOperation : public Operation
 {
 public:
-  smtkTypeMacro(SplitFaceOperation);
+  smtkTypeMacro(smtk::bridge::discrete::SplitFaceOperation);
   smtkCreateMacro(SplitFaceOperation);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);

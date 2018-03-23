@@ -29,7 +29,7 @@ namespace mesh
 class SMTKCORE_EXPORT ElevateMesh : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(ElevateMesh);
+  smtkTypeMacro(smtk::mesh::ElevateMesh);
   smtkCreateMacro(ElevateMesh);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::XMLOperation);

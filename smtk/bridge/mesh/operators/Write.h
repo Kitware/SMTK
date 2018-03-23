@@ -27,7 +27,7 @@ namespace mesh
 class SMTKMESHSESSION_EXPORT Write : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(Write);
+  smtkTypeMacro(smtk::bridge::mesh::Write);
   smtkCreateMacro(Write);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 

@@ -10,19 +10,13 @@
 
 #include "smtk/environment/Environment.h"
 
+#include "smtk/mesh/environment/Environment.h"
 #include "smtk/mesh/operators/RegisterOperations.h"
 #include "smtk/mesh/resource/RegisterResources.h"
 
-#include "smtk/mesh/environment/Exports.h"
-
 namespace
 {
-bool registerToEnvironment()
-{
-  smtk::mesh::registerOperations(smtk::environment::OperationManager::instance());
-  smtk::mesh::registerResources(smtk::environment::ResourceManager::instance());
-  return true;
-}
+static unsigned int registerToEnvironmentCounter = 0;
 }
 
 namespace smtk
@@ -31,7 +25,23 @@ namespace mesh
 {
 namespace environment
 {
-SMTKMESHENVIRONMENT_EXPORT bool registered = registerToEnvironment();
+RegisterToEnvironment::RegisterToEnvironment()
+{
+  if (registerToEnvironmentCounter++ == 0)
+  {
+    registerOperations(smtk::environment::OperationManager::instance());
+    registerResources(smtk::environment::ResourceManager::instance());
+  }
+}
+
+RegisterToEnvironment::~RegisterToEnvironment()
+{
+  if (--registerToEnvironmentCounter == 0)
+  {
+    unregisterOperations(smtk::environment::OperationManager::instance());
+    unregisterResources(smtk::environment::ResourceManager::instance());
+  }
+}
 }
 }
 }

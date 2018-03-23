@@ -30,7 +30,6 @@ PySharedPtrClass< smtk::attribute::FileItemDefinition, smtk::attribute::FileSyst
     .def_static("New", &smtk::attribute::FileItemDefinition::New, py::arg("myName"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::FileItemDefinition::*)(::smtk::attribute::Attribute *, int) const) &smtk::attribute::FileItemDefinition::buildItem, py::arg("owningAttribute"), py::arg("itemPosition"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::FileItemDefinition::*)(::smtk::attribute::Item *, int, int) const) &smtk::attribute::FileItemDefinition::buildItem, py::arg("owningItem"), py::arg("position"), py::arg("subGroupPosition"))
-    .def("classname", &smtk::attribute::FileItemDefinition::classname)
     .def("createCopy", &smtk::attribute::FileItemDefinition::createCopy, py::arg("info"))
     .def("getFileFilters", &smtk::attribute::FileItemDefinition::getFileFilters)
     .def("setFileFilters", &smtk::attribute::FileItemDefinition::setFileFilters, py::arg("filters"))

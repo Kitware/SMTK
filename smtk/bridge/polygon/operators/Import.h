@@ -40,7 +40,7 @@ namespace polygon
 class SMTKPOLYGONSESSION_EXPORT Import : public Operation
 {
 public:
-  smtkTypeMacro(Import);
+  smtkTypeMacro(smtk::bridge::polygon::Import);
   smtkCreateMacro(Import);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);

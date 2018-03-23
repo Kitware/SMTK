@@ -31,7 +31,6 @@ PySharedPtrClass< smtk::attribute::RefItemDefinition, smtk::attribute::ItemDefin
     .def("attributeDefinition", &smtk::attribute::RefItemDefinition::attributeDefinition)
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::RefItemDefinition::*)(::smtk::attribute::Attribute *, int) const) &smtk::attribute::RefItemDefinition::buildItem, py::arg("owningAttribute"), py::arg("itemPosition"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::RefItemDefinition::*)(::smtk::attribute::Item *, int, int) const) &smtk::attribute::RefItemDefinition::buildItem, py::arg("owningItem"), py::arg("position"), py::arg("subGroupPosition"))
-    .def("classname", &smtk::attribute::RefItemDefinition::classname)
     .def("createCopy", &smtk::attribute::RefItemDefinition::createCopy, py::arg("info"))
     .def("hasValueLabels", &smtk::attribute::RefItemDefinition::hasValueLabels)
     .def("isValueValid", &smtk::attribute::RefItemDefinition::isValueValid, py::arg("att"))

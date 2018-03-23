@@ -7,7 +7,7 @@
       <ItemDefinitions>
         <Resource Name="resource">
           <Accepts>
-            <Resource Name="discrete model"/>
+            <Resource Name="smtk::bridge::discrete::Resource"/>
           </Accepts>
         </Resource>
       </ItemDefinitions>

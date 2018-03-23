@@ -29,7 +29,6 @@ py::class_< smtk::bridge::polygon::SessionIOJSON, smtk::model::SessionIOJSON > p
     .def(py::init<>())
     .def(py::init<::smtk::bridge::polygon::SessionIOJSON const &>())
     .def("deepcopy", (smtk::bridge::polygon::SessionIOJSON & (smtk::bridge::polygon::SessionIOJSON::*)(::smtk::bridge::polygon::SessionIOJSON const &)) &smtk::bridge::polygon::SessionIOJSON::operator=)
-    .def("classname", &smtk::bridge::polygon::SessionIOJSON::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::SessionIOJSON> (*)()) &smtk::bridge::polygon::SessionIOJSON::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::SessionIOJSON> (*)(::std::shared_ptr<smtk::bridge::polygon::SessionIOJSON> &)) &smtk::bridge::polygon::SessionIOJSON::create, py::arg("ref"))
     ;

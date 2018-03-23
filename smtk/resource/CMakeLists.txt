@@ -17,7 +17,6 @@ set(resourceHeaders
   Lock.h
   Manager.h
   Metadata.h
-  Name.h
   PersistentObject.h
   PropertyType.h
   RegisterOperations.h

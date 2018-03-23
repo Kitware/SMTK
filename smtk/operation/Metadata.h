@@ -27,7 +27,7 @@ namespace operation
 {
 /// Operations are registered to an operation manager at runtime with an instance
 /// of smtk::operation::Metadata. Instances of this class must provide
-/// <uniqueName>, a unique (to the manager) string used to describe the operation
+/// <typeName>, a unique (to the manager) string used to describe the operation
 /// within the manager. They must also provide a functor for the creation of the
 /// operation.
 class SMTKCORE_EXPORT Metadata
@@ -36,11 +36,11 @@ public:
   typedef MetadataObserver Observer;
   typedef MetadataObservers Observers;
 
-  Metadata(const std::string& uniqueName, Operation::Index index,
+  Metadata(const std::string& typeName, Operation::Index index,
     Operation::Specification specification,
     std::function<std::shared_ptr<smtk::operation::Operation>(void)> createFunctor);
 
-  const std::string& uniqueName() const { return m_uniqueName; }
+  const std::string& typeName() const { return m_typeName; }
   const Operation::Index& index() const { return m_index; }
   Operation::Specification specification() const { return m_specification; }
   bool acceptsComponent(const smtk::resource::ComponentPtr& c) const
@@ -53,7 +53,7 @@ public:
   std::function<std::shared_ptr<smtk::operation::Operation>(void)> create;
 
 private:
-  std::string m_uniqueName;
+  std::string m_typeName;
   Operation::Index m_index;
   Operation::Specification m_specification;
   std::function<bool(const smtk::resource::ComponentPtr&)> m_acceptsComponent;

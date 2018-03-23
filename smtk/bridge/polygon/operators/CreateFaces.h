@@ -67,7 +67,7 @@ typedef std::map<smtk::model::Edge, ModelEdgeInfo> ModelEdgeMap;
 class SMTKPOLYGONSESSION_EXPORT CreateFaces : public Operation
 {
 public:
-  smtkTypeMacro(CreateFaces);
+  smtkTypeMacro(smtk::bridge::polygon::CreateFaces);
   smtkCreateMacro(CreateFaces);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);

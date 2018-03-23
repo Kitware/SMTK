@@ -21,7 +21,7 @@ namespace operation
 class SMTKCORE_EXPORT ReadResource : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(ReadResource);
+  smtkTypeMacro(smtk::operation::ReadResource);
   smtkSharedPtrCreateMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::XMLOperation);
 

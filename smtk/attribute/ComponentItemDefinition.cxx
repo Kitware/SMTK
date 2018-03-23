@@ -84,7 +84,7 @@ bool ComponentItemDefinition::isValueValid(smtk::resource::ComponentPtr comp) co
     // If we can't find the resource's metadata, that's ok. It just means we do
     // not have the ability to accept derived resources from base resource
     // indices. We can still check if the resource is explicitly accepted.
-    auto range = m_acceptable.equal_range(rsrc->uniqueName());
+    auto range = m_acceptable.equal_range(rsrc->typeName());
     for (auto& it = range.first; it != range.second; ++it)
     {
       if (rsrc->queryOperation(it->second)(comp))

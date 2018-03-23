@@ -33,7 +33,6 @@ PySharedPtrClass< smtk::attribute::GroupItemDefinition, smtk::attribute::ItemDef
     .def("buildGroup", &smtk::attribute::GroupItemDefinition::buildGroup, py::arg("group"), py::arg("subGroupPosition"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::GroupItemDefinition::*)(::smtk::attribute::Attribute *, int) const) &smtk::attribute::GroupItemDefinition::buildItem, py::arg("owningAttribute"), py::arg("itemPosition"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::GroupItemDefinition::*)(::smtk::attribute::Item *, int, int) const) &smtk::attribute::GroupItemDefinition::buildItem, py::arg("owningItem"), py::arg("position"), py::arg("subGroupPosition"))
-    .def("classname", &smtk::attribute::GroupItemDefinition::classname)
     .def("createCopy", &smtk::attribute::GroupItemDefinition::createCopy, py::arg("info"))
     .def("findItemPosition", &smtk::attribute::GroupItemDefinition::findItemPosition, py::arg("name"))
     .def("hasSubGroupLabels", &smtk::attribute::GroupItemDefinition::hasSubGroupLabels)

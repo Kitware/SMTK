@@ -28,7 +28,7 @@ class Manager;
 
 /// Resources are registered to a resource manager at runtime with an instance
 /// of smtk::resource::Metadata. Instances of this class must provide
-/// <uniqueName>, a unique (to the manager) string used to describe the resource
+/// <typeName>, a unique (to the manager) string used to describe the resource
 /// within the manager. They may also provide functors for the creation and
 /// serialization/deserialization of the resource to/from disk (<create>,
 /// <write> and <read>, respectively).
@@ -39,7 +39,7 @@ class Metadata
 public:
   typedef std::function<void(const Metadata&)> Visitor;
 
-  Metadata(const std::string& uniqueName, Resource::Index index,
+  Metadata(const std::string& typeName, Resource::Index index,
     std::set<Resource::Index> parentIndices,
     std::function<ResourcePtr(const smtk::common::UUID&)> createFunctor,
     std::function<ResourcePtr(const std::string&)> readFunctor,
@@ -47,13 +47,13 @@ public:
     : create(createFunctor)
     , read(readFunctor)
     , write(writeFunctor)
-    , m_uniqueName(uniqueName)
+    , m_typeName(typeName)
     , m_index(index)
     , m_parentIndices(parentIndices)
   {
   }
 
-  const std::string& uniqueName() const { return m_uniqueName; }
+  const std::string& typeName() const { return m_typeName; }
   const Resource::Index& index() const { return m_index; }
 
   // Resource metadata holds inheritence information for its resource as a set
@@ -70,7 +70,7 @@ public:
   std::function<bool(const ResourcePtr&)> write = [](const ResourcePtr&) { return false; };
 
 private:
-  std::string m_uniqueName;
+  std::string m_typeName;
   Resource::Index m_index;
   std::set<Resource::Index> m_parentIndices;
 };

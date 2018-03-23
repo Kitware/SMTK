@@ -24,7 +24,7 @@ namespace polygon
 class SMTKPOLYGONSESSION_EXPORT TweakEdge : public Operation
 {
 public:
-  smtkTypeMacro(TweakEdge);
+  smtkTypeMacro(smtk::bridge::polygon::TweakEdge);
   smtkCreateMacro(TweakEdge);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);

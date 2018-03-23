@@ -24,7 +24,6 @@ PySharedPtrClass< smtk::io::XmlStringWriter > pybind11_init_smtk_io_XmlStringWri
 {
   PySharedPtrClass< smtk::io::XmlStringWriter > instance(m, "XmlStringWriter");
   instance
-    .def("className", &smtk::io::XmlStringWriter::className)
     .def("convertToString", &smtk::io::XmlStringWriter::convertToString, py::arg("logger"), py::arg("no_declaration") = false)
     .def("fileVersion", &smtk::io::XmlStringWriter::fileVersion)
     .def("generateXml", &smtk::io::XmlStringWriter::generateXml, py::arg("parent_node"), py::arg("logger"), py::arg("createRoot") = true)

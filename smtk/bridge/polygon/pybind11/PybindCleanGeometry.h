@@ -26,7 +26,6 @@ PySharedPtrClass< smtk::bridge::polygon::CleanGeometry, smtk::bridge::polygon::O
     .def(py::init<>())
     .def(py::init<::smtk::bridge::polygon::CleanGeometry const &>())
     .def("deepcopy", (smtk::bridge::polygon::CleanGeometry & (smtk::bridge::polygon::CleanGeometry::*)(::smtk::bridge::polygon::CleanGeometry const &)) &smtk::bridge::polygon::CleanGeometry::operator=)
-    .def("classname", &smtk::bridge::polygon::CleanGeometry::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::CleanGeometry> (*)()) &smtk::bridge::polygon::CleanGeometry::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::CleanGeometry> (*)(::std::shared_ptr<smtk::bridge::polygon::CleanGeometry> &)) &smtk::bridge::polygon::CleanGeometry::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<const smtk::bridge::polygon::CleanGeometry> (smtk::bridge::polygon::CleanGeometry::*)() const) &smtk::bridge::polygon::CleanGeometry::shared_from_this)

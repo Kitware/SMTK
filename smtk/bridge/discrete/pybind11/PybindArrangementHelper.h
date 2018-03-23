@@ -27,7 +27,6 @@ py::class_< smtk::bridge::discrete::ArrangementHelper, smtk::model::ArrangementH
   py::class_< smtk::bridge::discrete::ArrangementHelper, smtk::model::ArrangementHelper > instance(m, "ArrangementHelper");
   instance
     .def(py::init<>())
-    .def("classname", &smtk::bridge::discrete::ArrangementHelper::classname)
     .def("addArrangement", (void (smtk::bridge::discrete::ArrangementHelper::*)(::smtk::model::EntityRef const &, ::smtk::model::ArrangementKind, ::smtk::model::EntityRef const &)) &smtk::bridge::discrete::ArrangementHelper::addArrangement, py::arg("parent"), py::arg("k"), py::arg("child"))
     .def("addArrangement", (void (smtk::bridge::discrete::ArrangementHelper::*)(::smtk::model::EntityRef const &, ::smtk::model::ArrangementKind, ::smtk::model::EntityRef const &, int, ::smtk::model::Orientation, int)) &smtk::bridge::discrete::ArrangementHelper::addArrangement, py::arg("parent"), py::arg("k"), py::arg("child"), py::arg("sense"), py::arg("orientation"), py::arg("iter_pos") = 0)
     .def("resetArrangements", &smtk::bridge::discrete::ArrangementHelper::resetArrangements)

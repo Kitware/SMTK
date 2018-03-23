@@ -22,13 +22,11 @@ PySharedPtrClass< smtk::bridge::discrete::SplitFaceOperation, smtk::operation::O
 {
   PySharedPtrClass< smtk::bridge::discrete::SplitFaceOperation, smtk::operation::Operation > instance(m, "SplitFaceOperation");
   instance
-    .def("classname", &smtk::bridge::discrete::SplitFaceOperation::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::discrete::SplitFaceOperation> (*)()) &smtk::bridge::discrete::SplitFaceOperation::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::discrete::SplitFaceOperation> (*)(::std::shared_ptr<smtk::bridge::discrete::SplitFaceOperation> &)) &smtk::bridge::discrete::SplitFaceOperator::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<smtk::bridge::discrete::SplitFaceOperation> (smtk::bridge::discrete::SplitFaceOperation::*)()) &smtk::bridge::discrete::SplitFaceOperator::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<const smtk::bridge::discrete::SplitFaceOperation> (smtk::bridge::discrete::SplitFaceOperation::*)() const) &smtk::bridge::discrete::SplitFaceOperator::shared_from_this)
     .def("name", &smtk::bridge::discrete::SplitFaceOperation::name)
-    .def("className", &smtk::bridge::discrete::SplitFaceOperation::className)
     .def("ableToOperate", &smtk::bridge::discrete::SplitFaceOperation::ableToOperate)
     ;
   return instance;

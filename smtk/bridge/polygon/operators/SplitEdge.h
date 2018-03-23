@@ -26,7 +26,7 @@ namespace polygon
 class SMTKPOLYGONSESSION_EXPORT SplitEdge : public Operation
 {
 public:
-  smtkTypeMacro(SplitEdge);
+  smtkTypeMacro(smtk::bridge::polygon::SplitEdge);
   smtkCreateMacro(SplitEdge);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);

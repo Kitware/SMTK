@@ -40,7 +40,6 @@ py::class_< smtk::model::EdgeUse, smtk::model::UseEntity > pybind11_init_smtk_mo
     .def("__eq__", (bool (smtk::model::EdgeUse::*)(::smtk::model::EntityRef const &) const) &smtk::model::EdgeUse::operator==)
     .def("ccwUse", &smtk::model::EdgeUse::ccwUse)
     .def("chains", &smtk::model::EdgeUse::chains)
-    .def("classname", &smtk::model::EdgeUse::classname)
     .def("cwUse", &smtk::model::EdgeUse::cwUse)
     .def("edge", &smtk::model::EdgeUse::edge)
     .def("faceUse", &smtk::model::EdgeUse::faceUse)

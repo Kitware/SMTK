@@ -22,7 +22,7 @@ namespace mesh
 class SMTKCORE_EXPORT InterpolateOntoMesh : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(InterpolateOntoMesh);
+  smtkTypeMacro(smtk::mesh::InterpolateOntoMesh);
   smtkCreateMacro(InterpolateOntoMesh);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::XMLOperation);

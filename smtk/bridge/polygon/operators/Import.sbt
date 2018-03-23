@@ -12,7 +12,7 @@
 
         <Resource Name="resource" Label="Import into" Optional="true" IsEnabledByDefault="false">
           <Accepts>
-            <Resource Name="polygon model"/>
+            <Resource Name="smtk::bridge::polygon::Resource"/>
           </Accepts>
           <ChildrenDefinitions>
             <String Name="session only" Label="session" Advanced="1">
@@ -88,13 +88,13 @@
         <!-- The model imported from the file. -->
         <Resource Name="resource">
           <Accepts>
-            <Resource Name="polygon model"/>
+            <Resource Name="smtk::bridge::polygon::Resource"/>
           </Accepts>
         </Resource>
 
         <Component Name="model">
           <Accepts>
-            <Resource Name="polygon model" Filter=""/>
+            <Resource Name="smtk::bridge::polygon::Resource" Filter=""/>
           </Accepts>
         </Component>
 

@@ -64,25 +64,6 @@ Operation::~Operation()
   }
 }
 
-std::string Operation::uniqueName() const
-{
-  if (auto manager = m_manager.lock())
-  {
-    // If the operation's manager is set, then the operation is registered to a
-    // manager. The operation metadata has a unique name for this operation
-    // type, so we return this name.
-    auto metadata = manager->metadata().get<IndexTag>().find(this->index());
-    if (metadata != manager->metadata().get<IndexTag>().end())
-    {
-      return metadata->uniqueName();
-    }
-  }
-
-  // Either this operation is not registered to a manager or it does not have a
-  // unique name registered to it. Simply return the class name.
-  return this->classname();
-}
-
 Operation::Specification Operation::specification()
 {
   // Lazily create the specification.
@@ -214,14 +195,14 @@ Operation::Parameters Operation::parameters()
   // retrieve the exisiting one or create a new one.
   if (!m_parameters)
   {
-    m_parameters = extractParameters(this->specification(), this->uniqueName());
+    m_parameters = extractParameters(this->specification(), this->typeName());
   }
 
   // If we still don't have our parameters, then there's not much we can do.
   if (!m_parameters)
   {
     std::stringstream s;
-    s << "Could not identify parameters attribute definition for operation \"" << this->classname()
+    s << "Could not identify parameters attribute definition for operation \"" << this->typeName()
       << "\".";
     smtkErrorMacro(this->log(), s.str());
   }
@@ -235,7 +216,7 @@ Operation::Result Operation::createResult(Outcome outcome)
   // subsequently retrieved from cache to avoid superfluous lookups.
   if (!m_resultDefinition)
   {
-    m_resultDefinition = extractResultDefinition(this->specification(), this->uniqueName());
+    m_resultDefinition = extractResultDefinition(this->specification(), this->typeName());
   }
 
   // Now that we have our result definition, we create our result attribute.
@@ -253,7 +234,7 @@ Operation::Result Operation::createResult(Outcome outcome)
   else
   {
     std::stringstream s;
-    s << "Could not identify result attribute definition for operation \"" << this->classname()
+    s << "Could not identify result attribute definition for operation \"" << this->typeName()
       << "\".";
     smtkErrorMacro(this->log(), s.str());
   }
@@ -269,7 +250,7 @@ void Operation::generateSummary(Operation::Result& result)
 {
   std::stringstream s;
   int outcome = result->findInt("outcome")->value();
-  s << this->classname() << ": ";
+  s << this->typeName() << ": ";
   switch (outcome)
   {
     case static_cast<int>(Outcome::UNABLE_TO_OPERATE):
