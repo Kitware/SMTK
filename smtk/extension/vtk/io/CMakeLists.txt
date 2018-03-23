@@ -3,6 +3,7 @@ set(srcs
   RedirectOutput.cxx
   vtkLIDARPtsWriter.cxx # For terrain extraction
   mesh/ExportVTKData.cxx
+  mesh/ImportSTLFile.cxx
   mesh/ImportVTKData.cxx
   mesh/MeshIOVTK.cxx
   mesh/PointCloudFromVTKFile.cxx
