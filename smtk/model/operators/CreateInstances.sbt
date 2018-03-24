@@ -4,7 +4,7 @@
   <Definitions>
     <!-- Operator -->
     <AttDef Type="create instances" BaseType="operator" Label="Model Entities - Create Instances">
-      <AssociationsDef Name="entities" NumberOfRequiredValues="1">
+      <AssociationsDef Name="entities" NumberOfRequiredValues="1" Extensible="true">
         <MembershipMask>cell|aux_geom</MembershipMask>
       </AssociationsDef>
       <BriefDescription>

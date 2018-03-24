@@ -26,6 +26,8 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/Operator.h"
 
+#include "smtk/bridge/rgg/operators/CreateModel.h"
+
 #include "smtk/bridge/rgg/CreatePin_xml.h"
 
 #include <string> // std::to_string
@@ -128,11 +130,11 @@ void CreatePin::populatePin(smtk::model::Operator* op, smtk::model::AuxiliaryGeo
   }
 
   smtk::attribute::IntItemPtr pinMaterialItem = op->findInt("cell material");
-  bool isMaterialSet(false);
+  size_t materialIndex(0);
   if (pinMaterialItem != nullptr && pinMaterialItem->numberOfValues() == 1)
   {
     auxGeom.setIntegerProperty(pinMaterialItem->name(), pinMaterialItem->value(0));
-    isMaterialSet = static_cast<bool>(pinMaterialItem->value(0) > 0);
+    materialIndex = pinMaterialItem->value(0);
   }
 
   smtk::attribute::DoubleItemPtr zOriginItem = op->findDouble("z origin");
@@ -171,10 +173,10 @@ void CreatePin::populatePin(smtk::model::Operator* op, smtk::model::AuxiliaryGeo
 
   smtk::attribute::GroupItemPtr layerMaterialsItem = op->findGroup("layer materials");
   size_t numLayers;
+  IntegerList subMaterials;
   if (layerMaterialsItem != nullptr)
   {
     numLayers = layerMaterialsItem->numberOfGroups();
-    IntegerList subMaterials;
     FloatList radiusNs;
     for (std::size_t index = 0; index < numLayers; index++)
     {
@@ -189,6 +191,11 @@ void CreatePin::populatePin(smtk::model::Operator* op, smtk::model::AuxiliaryGeo
     auxGeom.setFloatProperty(layerMaterialsItem->name(), radiusNs);
   }
 
+  auto assignColor = [](size_t index, smtk::model::AuxiliaryGeometry& aux) {
+    smtk::model::FloatList rgba;
+    smtk::bridge::rgg::CreateModel::getMaterialColor(index, rgba);
+    aux.setColor(rgba);
+  };
   // Create auxgeom placeholders for layers and parts
   for (std::size_t i = 0; i < numParts; i++)
   {
@@ -200,15 +207,17 @@ void CreatePin::populatePin(smtk::model::Operator* op, smtk::model::AuxiliaryGeo
         SMTK_BRIDGE_RGG_PIN_LAYER + std::to_string(j);
       subLayer.setName(subLName);
       subLayer.setStringProperty("rggType", SMTK_BRIDGE_RGG_PIN);
+      assignColor(subMaterials[j], subLayer);
       subAuxGeoms.push_back(subLayer.as<EntityRef>());
     }
-    if (isMaterialSet)
-    { // Append a material layer after the last layer
+    if (materialIndex) // 0 index is no material
+    {                  // Append a material layer after the last layer
       AuxiliaryGeometry materialLayer = auxGeom.manager()->addAuxiliaryGeometry(auxGeom, 3);
       std::string materialName =
         pinName + SMTK_BRIDGE_RGG_PIN_SUBPART + std::to_string(i) + SMTK_BRIDGE_RGG_PIN_MATERIAL;
       materialLayer.setName(materialName);
       materialLayer.setStringProperty("rggType", SMTK_BRIDGE_RGG_PIN);
+      assignColor(materialIndex, materialLayer);
       subAuxGeoms.push_back(materialLayer.as<EntityRef>());
     }
   }

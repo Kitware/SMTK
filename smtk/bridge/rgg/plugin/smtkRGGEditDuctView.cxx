@@ -21,6 +21,7 @@
 #include "smtk/model/Operator.h"
 
 #include "smtk/bridge/rgg/operators/CreateDuct.h"
+#include "smtk/bridge/rgg/operators/CreateModel.h"
 #include "smtk/bridge/rgg/operators/EditDuct.h"
 
 #include "smtk/extension/qt/qtActiveObjects.h"
@@ -824,9 +825,14 @@ void smtkRGGEditDuctView::updateButtonStatus()
 }
 
 void smtkRGGEditDuctView::setupMaterialComboBox(QComboBox* box, bool isCell)
-{ // FIXME: populate the material from rgg session
-  box->addItem("No Cell Material");
-  box->addItem("Some Material");
+{
+  size_t matN = smtk::bridge::rgg::CreateModel::materialNum();
+  for (size_t i = 0; i < matN; i++)
+  {
+    std::string name;
+    smtk::bridge::rgg::CreateModel::getMaterial(i, name);
+    box->addItem(QString::fromStdString(name));
+  }
   if (isCell)
   {
     // In this condition, the part does not need to have a material. Change the item text

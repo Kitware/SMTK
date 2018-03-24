@@ -85,7 +85,9 @@ void CreateAssembly::populateAssembly(
   {
     smtk::model::Model model = assembly.owningModel();
     std::string labelValue = labelItem->value(0);
-    if ((assembly.hasStringProperty("label") && assembly.stringProperty("label")[0] != labelValue))
+    if ((assembly.hasStringProperty("label") &&
+          assembly.stringProperty("label")[0] != labelValue) ||
+      createMode)
     { // Only generate label if needed
       if (model.hasStringProperty("assembly labels list"))
       {

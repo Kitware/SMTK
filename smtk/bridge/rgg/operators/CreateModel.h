@@ -37,6 +37,10 @@ public:
   smtkSuperclassMacro(Operator);
   smtkDeclareModelOperator();
   static void populateCore(smtk::model::Operator* op, smtk::model::Group& core);
+  // Given an index, get the corresponding material and its color
+  static size_t materialNum();
+  static void getMaterial(const size_t& index, std::string& name);
+  static void getMaterialColor(const size_t& index, std::vector<double>& rgba);
 
 protected:
   smtk::model::OperatorResult operateInternal() override;

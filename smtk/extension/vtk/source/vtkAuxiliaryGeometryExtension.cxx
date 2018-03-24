@@ -758,7 +758,9 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGPinRepr
     // Update current baseCenter
     baseCenter += height;
   }
-  return mbds.GetPointer();
+  // Instead of return mbds.GetPointer(), now we do not aggregate the multiblocks
+  // on the pin geometry.
+  return vtkSmartPointer<vtkDataObject>();
 }
 
 vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGDuctRepresentation(
@@ -940,7 +942,9 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGDuctRep
       mbds->SetBlock(blockIndex, pinSubDataset);
     }
   }
-  return mbds.GetPointer();
+  // Instead of return mbds.GetPointer(), now we do not aggregate the multiblocks
+  // on the duct geometry.
+  return vtkSmartPointer<vtkDataObject>();
 }
 
 smtkDeclareExtension(

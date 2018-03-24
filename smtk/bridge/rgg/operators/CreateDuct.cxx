@@ -26,6 +26,8 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/Operator.h"
 
+#include "smtk/bridge/rgg/operators/CreateModel.h"
+
 #include "smtk/bridge/rgg/CreateDuct_xml.h"
 
 #include <string> // std::to_string
@@ -104,10 +106,10 @@ void CreateDuct::populateDuct(
   smtk::attribute::GroupItemPtr segsGItem = op->findGroup("duct segments");
   size_t numSegs;
   smtk::model::IntegerList numMaterialsPerSeg;
+  IntegerList materials;
   if (segsGItem != nullptr)
   {
     numSegs = segsGItem->numberOfGroups();
-    IntegerList materials;
     FloatList zValues, thicknesses;
     for (std::size_t index = 0; index < numSegs; index++)
     {
@@ -150,7 +152,14 @@ void CreateDuct::populateDuct(
   // Helper property for segments which would be used as an offset hint
   auxGeom.setIntegerProperty("material nums per segment", numMaterialsPerSeg);
 
+  auto assignColor = [](size_t index, smtk::model::AuxiliaryGeometry& aux) {
+    smtk::model::FloatList rgba;
+    smtk::bridge::rgg::CreateModel::getMaterialColor(index, rgba);
+    aux.setColor(rgba);
+  };
+
   // Create auxgeom placeholders for layers and parts
+  size_t materialIndex(0);
   for (std::size_t i = 0; i < numSegs; i++)
   {
     for (std::size_t j = 0; j < numMaterialsPerSeg[i]; j++)
@@ -161,6 +170,7 @@ void CreateDuct::populateDuct(
         SMTK_BRIDGE_RGG_DUCT_LAYER + std::to_string(j);
       subLayer.setName(subLName);
       subLayer.setStringProperty("rggType", SMTK_BRIDGE_RGG_DUCT);
+      assignColor(materials[materialIndex++], subLayer);
       subAuxGeoms.push_back(subLayer.as<EntityRef>());
     }
   }

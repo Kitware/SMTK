@@ -20,6 +20,7 @@
 
 #include "smtk/model/Operator.h"
 
+#include "smtk/bridge/rgg/operators/CreateModel.h"
 #include "smtk/bridge/rgg/operators/CreatePin.h"
 #include "smtk/bridge/rgg/operators/EditPin.h"
 
@@ -185,8 +186,6 @@ void smtkRGGEditPinView::apply()
   piecesI->setNumberOfGroups(1); // Clear the existing groups
   // Add pieces
   QTableWidget* pT = this->Internals->piecesTable;
-  std::cout << "---Number of rows in pT table: " << pT->rowCount()
-            << " and number of pieces in groupItem " << piecesI->numberOfGroups() << std::endl;
   for (int i = 0; i < pT->rowCount(); i++)
   { // segment part
     int segmentType = dynamic_cast<QComboBox*>(pT->cellWidget(i, 0))->currentIndex();
@@ -213,8 +212,6 @@ void smtkRGGEditPinView::apply()
   layersI->setNumberOfGroups(1); // Clear the existing groups
   // Add pieces
   QTableWidget* lT = this->Internals->layersTable;
-  std::cout << "---number of layers in lT  table: " << lT->rowCount()
-            << " and number of layers in groupItem " << layersI->numberOfGroups() << std::endl;
   for (size_t i = 0; i < lT->rowCount(); i++)
   {
     if (i > 0)
@@ -276,7 +273,6 @@ void smtkRGGEditPinView::updateAttributeData()
   for (std::size_t ci = 0; ci < comp.numberOfChildren(); ++ci)
   {
     smtk::view::View::Component& attComp = comp.child(ci);
-    //std::cout << "  component " << attComp.name() << "\n";
     if (attComp.name() != "Att")
     {
       continue;
@@ -284,7 +280,6 @@ void smtkRGGEditPinView::updateAttributeData()
     std::string optype;
     if (attComp.attribute("Type", optype) && !optype.empty())
     {
-      //std::cout << "    component type " << optype << "\n";
       if (optype == "edit pin")
       {
         defName = optype;
@@ -736,9 +731,14 @@ void smtkRGGEditPinView::updateButtonStatus()
 }
 
 void smtkRGGEditPinView::setupMaterialComboBox(QComboBox* box, bool isCell)
-{ // FIXME: populate the material from rgg session
-  box->addItem("No Cell Material");
-  box->addItem("Some Material");
+{
+  size_t matN = smtk::bridge::rgg::CreateModel::materialNum();
+  for (size_t i = 0; i < matN; i++)
+  {
+    std::string name;
+    smtk::bridge::rgg::CreateModel::getMaterial(i, name);
+    box->addItem(QString::fromStdString(name));
+  }
   if (isCell)
   {
     // In this condition, the part does not need to have a material. Change the item text

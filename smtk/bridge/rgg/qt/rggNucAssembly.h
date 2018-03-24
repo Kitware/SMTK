@@ -1,11 +1,12 @@
-//=========================================================================
-//  Copyright (c) Kitware, Inc.
-//  All rights reserved.
-//  See LICENSE.txt for details.
+//=============================================================================
+// Copyright (c) Kitware, Inc.
+// All rights reserved.
+// See LICENSE.txt for details.
 //
-//  This software is distributed WITHOUT ANY WARRANTY; without even
-//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR //  PURPOSE.  See the above copyright notice for more information.
-//=========================================================================
+// This software is distributed WITHOUT ANY WARRANTY; without even
+// the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+// PURPOSE.  See the above copyright notice for more information.
+//=============================================================================
 // .NAME rggNucAssembly - Represents an assembly for schema planner.
 // Assemblies are composed of pin cells (cmbNucPinCell) and the surrounding ducting.
 // Assemblies are grouped together into cores (rggNucCore).

@@ -22,6 +22,7 @@
 
 #include <map>
 
+#define VTK_INSTANCE_COLOR "instance color"
 #define VTK_INSTANCE_ORIENTATION "instance orientation"
 #define VTK_INSTANCE_SCALE "instance scale"
 #define VTK_INSTANCE_SOURCE "instance source"

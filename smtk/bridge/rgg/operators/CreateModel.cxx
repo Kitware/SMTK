@@ -29,6 +29,23 @@ namespace bridge
 {
 namespace rgg
 {
+static int matToColSize = 22;
+static struct
+{
+  std::string mat;
+  std::vector<double> color; // rgba
+} matToCol[] = { { "No Cell Material", { 1.0, 1.0, 1.0, 1.0 } },
+  { "coolant", { 0.3, 0.5, 1.0, .5 } }, { "duct", { 0.3, 0.3, 1.0, .5 } },
+  { "follower", { 0.75, 0.2, 0.75, 1.0 } }, { "fuel", { 1.0, 0.1, 0.1, 1.0 } },
+  { "gap", { 0.0, 0.0, 0.0, 0.0 } }, { "gasplenum", { 0.3, 1.0, 0.5, 1.0 } },
+  { "graphite", { .4, .4, .4, 1.0 } }, { "interassemblygap", { 0.0, 0.0, 0.0, 0.0 } },
+  { "metal", { .6, .6, .6, 1.0 } }, { "outerduct", { 0.2, 0.2, 0.2, 1.0 } },
+  { "water", { 0.651, 0.741, 0.859, 0.5 } }, { "absorber", { 0.7, 0.2, 0.7, 1.0 } },
+  { "activecore", { 1.0, 0.5, 0.3, 1.0 } }, { "cladding", { 0.75, 0.75, 0.75, 1.0 } },
+  { "reflector", { 0.5, 0.5, 1.0, 1.0 } }, { "shield", { 0.996, 0.698, 0.298, 1.0 } },
+  { "guidetube", { 0.6, 0.6, 0.6, 1.0 } }, { "controlrod", { 0.729, 0.894, 0.702, 1.0 } },
+  { "loadpad", { .4, .4, .4, 1.0 } }, { "sodium", { 1.0, 1.0, 0.4, 0.7 } },
+  { "restraintring", { .4, .4, .4, 1.0 } } };
 
 smtk::model::OperatorResult CreateModel::operateInternal()
 {
@@ -43,6 +60,11 @@ smtk::model::OperatorResult CreateModel::operateInternal()
     if (model.name().empty())
     {
       model.assignDefaultName();
+    }
+    // Store material colors on the model
+    for (size_t i = 0; i != matToColSize; i++)
+    {
+      model.setFloatProperty(matToCol[i].mat, matToCol[i].color);
     }
 
     smtk::model::Group core = mgr->addGroup(0, "group"); // Assign the name later
@@ -130,6 +152,21 @@ void CreateModel::populateCore(smtk::model::Operator* op, smtk::model::Group& co
       smtkErrorMacro(op->log(), "core " << core.name() << " does not have a valid lattice size");
     }
   }
+}
+
+size_t CreateModel::materialNum()
+{
+  return matToColSize;
+}
+
+void CreateModel::getMaterial(const size_t& index, std::string& name)
+{
+  name = matToCol[index].mat;
+}
+
+void CreateModel::getMaterialColor(const size_t& index, std::vector<double>& rgba)
+{
+  rgba = matToCol[index].color;
 }
 
 } // namespace rgg

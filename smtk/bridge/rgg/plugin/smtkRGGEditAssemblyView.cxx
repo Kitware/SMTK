@@ -405,6 +405,19 @@ void smtkRGGEditAssemblyView::apply()
   // FIXME: We have to explictly call create instances op due to bugs in CMB5 that
   // we can not create several instances at the same time
   // Duct then pins
+  auto associatedChildAuxsWithAtt = [](
+    smtk::attribute::AttributePtr att, smtk::model::EntityRef ent) {
+    // Associate with sub auxgeoms
+    smtk::model::AuxiliaryGeometry aux = ent.as<smtk::model::AuxiliaryGeometry>();
+    smtk::model::AuxiliaryGeometries children = aux.auxiliaryGeometries();
+    for (size_t i = 0; i < children.size(); i++)
+    {
+      smtk::model::EntityRef ent =
+        smtk::model::EntityRef(children[i].manager(), children[i].entity());
+      att->associateEntity(ent);
+    }
+  };
+
   smtk::model::EntityRef duct = eaAtt->findModelEntity("associated duct")->value();
   if (!this->Internals->CreateInstanceOp.lock())
   {
@@ -418,7 +431,7 @@ void smtkRGGEditAssemblyView::apply()
     return;
   }
   cIAtt->removeAllAssociations();
-  cIAtt->associateEntity(duct);
+  associatedChildAuxsWithAtt(cIAtt, duct);
   smtk::attribute::StringItemPtr plaRule = cIAtt->findString("placement rule");
   smtk::attribute::GroupItemPtr placementsI =
     smtk::dynamic_pointer_cast<smtk::attribute::GroupItem>(plaRule->activeChildItem(0));
@@ -459,7 +472,8 @@ void smtkRGGEditAssemblyView::apply()
   for (auto iter = entityToLayout.begin(); iter != entityToLayout.end(); iter++, plGroupIndex++)
   {
     cIAtt->removeAllAssociations();
-    cIAtt->associateEntity(iter->first);
+    // Associate with sub auxgeoms
+    associatedChildAuxsWithAtt(cIAtt, iter->first);
 
     std::vector<int> layout = iter->second;
     std::vector<double> coordinates;

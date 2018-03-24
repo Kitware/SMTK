@@ -340,19 +340,6 @@ void smtkRGGEditCoreView::apply()
     }
   }
 
-  /***********************************************************/
-  for (auto iter = assemblyToLayout.begin(); iter != assemblyToLayout.end(); iter++)
-  {
-    std::cout << "assembly: " << iter->first.name() << "\n  " << std::endl;
-    std::vector<int>& layout = iter->second;
-    for (auto item : layout)
-    {
-      std::cout << item << " ";
-    }
-    std::cout << std::endl;
-  }
-  /***********************************************************/
-
   // In order to remove/add instances into the core(which is a group under
   // the hood), we would listen
   // to the operationFinished signal from qtModelView. It would be disconnected
@@ -385,6 +372,18 @@ void smtkRGGEditCoreView::apply()
 
   // Pins and ducts
   // Calculate the starting point first
+  auto associatedChildAuxsWithAtt = [](
+    smtk::attribute::AttributePtr att, smtk::model::EntityRef ent) {
+    // Associate with sub auxgeoms
+    smtk::model::AuxiliaryGeometry aux = ent.as<smtk::model::AuxiliaryGeometry>();
+    smtk::model::AuxiliaryGeometries children = aux.auxiliaryGeometries();
+    for (size_t i = 0; i < children.size(); i++)
+    {
+      smtk::model::EntityRef ent =
+        smtk::model::EntityRef(children[i].manager(), children[i].entity());
+      att->associateEntity(ent);
+    }
+  };
   smtk::model::FloatList spacing = model.floatProperty("duct thickness");
   double baseX, baseY;
   if (!isHex)
@@ -511,19 +510,10 @@ void smtkRGGEditCoreView::apply()
   // Create instances for each pin and duct
   for (auto iter = pDToPs.begin(); iter != pDToPs.end(); iter++)
   {
-    smtk::model::EntityRef ent = iter->first;
     std::vector<double>& coords = iter->second;
-    /************************************************************/
-    std::cout << "entity " << ent.name() << " coordinates: " << std::endl;
-    for (auto item : coords)
-    {
-      std::cout << item << " ";
-    }
-    std::cout << std::endl;
-    /************************************************************/
 
     cIAtt->removeAllAssociations();
-    cIAtt->associateEntity(iter->first);
+    associatedChildAuxsWithAtt(cIAtt, iter->first);
 
     smtk::attribute::StringItemPtr plaRule = cIAtt->findString("placement rule");
     smtk::attribute::GroupItemPtr placementsI =
