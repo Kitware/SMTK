@@ -23,14 +23,12 @@ PySharedPtrClass< smtk::bridge::polygon::Session, smtk::model::Session > pybind1
 {
   PySharedPtrClass< smtk::bridge::polygon::Session, smtk::model::Session > instance(m, "Session");
   instance
-    .def("classname", &smtk::bridge::polygon::Session::classname)
     .def("shared_from_this", (std::shared_ptr<smtk::bridge::polygon::Session> (smtk::bridge::polygon::Session::*)()) &smtk::bridge::polygon::Session::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<const smtk::bridge::polygon::Session> (smtk::bridge::polygon::Session::*)() const) &smtk::bridge::polygon::Session::shared_from_this)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::Session> (*)()) &smtk::bridge::polygon::Session::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::Session> (*)(::std::shared_ptr<smtk::bridge::polygon::Session> &)) &smtk::bridge::polygon::Session::create, py::arg("ref"))
     .def_static("staticClassName", &smtk::bridge::polygon::Session::staticClassName)
     .def("name", &smtk::bridge::polygon::Session::name)
-    .def("className", &smtk::bridge::polygon::Session::className)
     .def("allSupportedInformation", &smtk::bridge::polygon::Session::allSupportedInformation)
     ;
   return instance;

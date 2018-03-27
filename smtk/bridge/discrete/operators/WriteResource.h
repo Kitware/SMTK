@@ -27,7 +27,7 @@ namespace discrete
 class SMTKDISCRETESESSION_EXPORT WriteResource : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(WriteResource);
+  smtkTypeMacro(smtk::bridge::discrete::WriteResource);
   smtkCreateMacro(WriteResource);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 

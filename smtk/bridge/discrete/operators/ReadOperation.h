@@ -30,7 +30,7 @@ namespace discrete
 class SMTKDISCRETESESSION_EXPORT ReadOperation : public Operation
 {
 public:
-  smtkTypeMacro(ReadOperation);
+  smtkTypeMacro(smtk::bridge::discrete::ReadOperation);
   smtkCreateMacro(ReadOperation);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);

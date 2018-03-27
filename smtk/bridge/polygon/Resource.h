@@ -33,7 +33,6 @@ class SMTKPOLYGONSESSION_EXPORT Resource : public smtk::model::Manager
 public:
   smtkTypeMacro(smtk::bridge::polygon::Resource);
   smtkSharedPtrCreateMacro(smtk::resource::Resource);
-  smtkResourceTypeNameMacro("polygon model");
 
   // typedef referring to the parent resource.
   typedef smtk::model::Manager ParentResource;

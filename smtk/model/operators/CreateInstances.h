@@ -20,7 +20,7 @@ namespace model
 class SMTKCORE_EXPORT CreateInstances : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(CreateInstances);
+  smtkTypeMacro(smtk::model::CreateInstances);
   smtkCreateMacro(CreateInstances);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::XMLOperation);

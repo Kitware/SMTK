@@ -24,7 +24,6 @@ PySharedPtrClass< smtk::bridge::mesh::Session, smtk::model::Session > pybind11_i
     .def(py::init<::smtk::bridge::mesh::Session const &>())
     .def("deepcopy", (smtk::bridge::mesh::Session & (smtk::bridge::mesh::Session::*)(::smtk::bridge::mesh::Session const &)) &smtk::bridge::mesh::Session::operator=)
     .def("addTopology", &smtk::bridge::mesh::Session::addTopology, py::arg("t"))
-    .def("className", &smtk::bridge::mesh::Session::className)
     .def_static("create", (std::shared_ptr<smtk::bridge::mesh::Session> (*)()) &smtk::bridge::mesh::Session::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::mesh::Session> (*)(::std::shared_ptr<smtk::bridge::mesh::Session> &)) &smtk::bridge::mesh::Session::create, py::arg("ref"))
     .def("topology", &smtk::bridge::mesh::Session::topology, py::arg("model"))

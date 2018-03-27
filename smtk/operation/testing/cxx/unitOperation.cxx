@@ -122,7 +122,7 @@ int unitOperation(int, char* [])
   smtk::operation::Observers::Key handleTmp = manager->observers().insert(
     [&handleTmp, &manager](std::shared_ptr<smtk::operation::Operation> op,
       smtk::operation::EventType event, smtk::operation::Operation::Result) -> int {
-      std::cout << "[x] " << op->classname() << " event " << static_cast<int>(event)
+      std::cout << "[x] " << op->typeName() << " event " << static_cast<int>(event)
                 << " testing that an observer (" << handleTmp << ") can remove itself.\n";
       manager->observers().erase(handleTmp);
       return 0;
@@ -132,7 +132,7 @@ int unitOperation(int, char* [])
     [&testOp](std::shared_ptr<smtk::operation::Operation> op, smtk::operation::EventType event,
       smtk::operation::Operation::Result result) -> int {
       int outcome = -1;
-      std::cout << "[" << obs << "] " << op->classname() << " event " << static_cast<int>(event)
+      std::cout << "[" << obs << "] " << op->typeName() << " event " << static_cast<int>(event)
                 << " result " << result;
       if (result && testOp)
       {

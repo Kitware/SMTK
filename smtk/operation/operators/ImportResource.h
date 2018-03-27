@@ -23,7 +23,7 @@ class SMTKCORE_EXPORT ImportResource : public Operation
 public:
   static constexpr const char* const file_item_name = "filename";
 
-  smtkTypeMacro(ImportResource);
+  smtkTypeMacro(smtk::operation::ImportResource);
   smtkSharedPtrCreateMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::Operation);
 

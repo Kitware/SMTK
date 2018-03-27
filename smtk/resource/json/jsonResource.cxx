@@ -16,7 +16,7 @@ namespace resource
 {
 void to_json(json& j, const ResourcePtr& resource)
 {
-  j["type"] = resource->uniqueName();
+  j["type"] = resource->typeName();
 }
 
 void from_json(const json&, ResourcePtr&)

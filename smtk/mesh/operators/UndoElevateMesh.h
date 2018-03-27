@@ -26,7 +26,7 @@ namespace mesh
 class SMTKCORE_EXPORT UndoElevateMesh : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(UndoElevateMesh);
+  smtkTypeMacro(smtk::mesh::UndoElevateMesh);
   smtkCreateMacro(UndoElevateMesh);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::XMLOperation);

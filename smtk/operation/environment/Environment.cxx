@@ -12,17 +12,11 @@
 
 #include "smtk/operation/RegisterOperations.h"
 #include "smtk/operation/RegisterResources.h"
-
-#include "smtk/operation/environment/Exports.h"
+#include "smtk/operation/environment/Environment.h"
 
 namespace
 {
-static bool registerToEnvironment()
-{
-  smtk::operation::registerOperations(smtk::environment::OperationManager::instance());
-  smtk::operation::registerResources(smtk::environment::ResourceManager::instance());
-  return true;
-}
+static unsigned int registerToEnvironmentCounter = 0;
 }
 
 namespace smtk
@@ -31,7 +25,23 @@ namespace operation
 {
 namespace environment
 {
-SMTKOPERATIONENVIRONMENT_EXPORT bool registered = registerToEnvironment();
+RegisterToEnvironment::RegisterToEnvironment()
+{
+  if (registerToEnvironmentCounter++ == 0)
+  {
+    registerOperations(smtk::environment::OperationManager::instance());
+    registerResources(smtk::environment::ResourceManager::instance());
+  }
+}
+
+RegisterToEnvironment::~RegisterToEnvironment()
+{
+  if (--registerToEnvironmentCounter == 0)
+  {
+    unregisterOperations(smtk::environment::OperationManager::instance());
+    unregisterResources(smtk::environment::ResourceManager::instance());
+  }
+}
 }
 }
 }

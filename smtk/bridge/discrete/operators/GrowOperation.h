@@ -34,7 +34,7 @@ class Session;
 class SMTKDISCRETESESSION_EXPORT GrowOperation : public Operation
 {
 public:
-  smtkTypeMacro(GrowOperation);
+  smtkTypeMacro(smtk::bridge::discrete::GrowOperation);
   smtkCreateMacro(GrowOperation);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);

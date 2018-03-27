@@ -22,7 +22,7 @@ namespace mesh
 class SMTKCORE_EXPORT DeleteMesh : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(DeleteMesh);
+  smtkTypeMacro(smtk::mesh::DeleteMesh);
   smtkCreateMacro(DeleteMesh);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::XMLOperation);

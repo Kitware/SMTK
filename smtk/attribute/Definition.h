@@ -48,7 +48,7 @@ class Collection;
 class SMTKCORE_EXPORT Definition : public smtk::enable_shared_from_this<Definition>
 {
 public:
-  smtkTypeMacroBase(Definition);
+  smtkTypeMacroBase(smtk::attribute::Definition);
   virtual ~Definition();
 
   // Description:

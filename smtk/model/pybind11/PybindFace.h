@@ -36,7 +36,6 @@ py::class_< smtk::model::Face, smtk::model::CellEntity > pybind11_init_smtk_mode
     .def("__ne__", (bool (smtk::model::Face::*)(::smtk::model::EntityRef const &) const) &smtk::model::Face::operator!=)
     .def("deepcopy", (smtk::model::Face & (smtk::model::Face::*)(::smtk::model::Face const &)) &smtk::model::Face::operator=)
     .def("__eq__", (bool (smtk::model::Face::*)(::smtk::model::EntityRef const &) const) &smtk::model::Face::operator==)
-    .def("classname", &smtk::model::Face::classname)
     .def("edges", &smtk::model::Face::edges)
     .def("isValid", (bool (smtk::model::Face::*)() const) &smtk::model::Face::isValid)
     // .def("isValid", (bool (smtk::model::Face::*)(::smtk::model::Entity * *) const) &smtk::model::Face::isValid, py::arg("entRec"))

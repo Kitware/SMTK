@@ -31,7 +31,7 @@ namespace polygon
 class SMTKPOLYGONSESSION_EXPORT ForceCreateFace : public Operation
 {
 public:
-  smtkTypeMacro(ForceCreateFace);
+  smtkTypeMacro(smtk::bridge::polygon::ForceCreateFace);
   smtkCreateMacro(ForceCreateFace);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);

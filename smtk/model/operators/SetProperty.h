@@ -20,7 +20,7 @@ namespace model
 class SMTKCORE_EXPORT SetProperty : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(SetProperty);
+  smtkTypeMacro(smtk::model::SetProperty);
   smtkCreateMacro(SetProperty);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::XMLOperation);

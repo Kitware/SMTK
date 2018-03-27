@@ -38,7 +38,7 @@ namespace polygon
 class SMTKPOLYGONSESSION_EXPORT Delete : public Operation
 {
 public:
-  smtkTypeMacro(Delete);
+  smtkTypeMacro(smtk::bridge::polygon::Delete);
   smtkCreateMacro(Delete);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);

@@ -30,7 +30,7 @@ namespace multiscale
 class SMTKMULTISCALESESSION_EXPORT Revolve : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(Revolve);
+  smtkTypeMacro(smtk::bridge::multiscale::Revolve);
   smtkCreateMacro(Revolve);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 

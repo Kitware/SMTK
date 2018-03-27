@@ -31,7 +31,7 @@ namespace polygon
 class SMTKPOLYGONSESSION_EXPORT ExtractContours : public Operation
 {
 public:
-  smtkTypeMacro(ExtractContours);
+  smtkTypeMacro(smtk::bridge::polygon::ExtractContours);
   smtkCreateMacro(ExtractContours);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);

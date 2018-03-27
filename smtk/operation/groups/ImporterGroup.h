@@ -13,7 +13,7 @@
 
 #include "smtk/CoreExports.h"
 
-#include "smtk/resource/Name.h"
+#include "smtk/common/TypeName.h"
 
 #include "smtk/operation/Operation.h"
 #include "smtk/operation/groups/ResourceIOGroup.h"
@@ -62,7 +62,7 @@ template <typename ResourceType>
 std::set<Operation::Index> ImporterGroup::operationsForResourceAndFileName(
   const std::string& fileName) const
 {
-  return operationsForResourceAndFileName(smtk::resource::name<ResourceType>(), fileName);
+  return operationsForResourceAndFileName(smtk::common::typeName<ResourceType>(), fileName);
 }
 }
 }

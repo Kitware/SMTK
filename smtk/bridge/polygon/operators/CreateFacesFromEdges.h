@@ -28,7 +28,7 @@ class Neighborhood;
 class SMTKPOLYGONSESSION_EXPORT CreateFacesFromEdges : public CreateFaces
 {
 public:
-  smtkTypeMacro(CreateFacesFromEdges);
+  smtkTypeMacro(smtk::bridge::polygon::CreateFacesFromEdges);
   smtkCreateMacro(CreateFacesFromEdges);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(CreateFaces);

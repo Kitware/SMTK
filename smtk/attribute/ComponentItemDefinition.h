@@ -27,7 +27,7 @@ class SMTKCORE_EXPORT ComponentItemDefinition
   : public ReferenceItemDefinition<smtk::resource::Component>
 {
 public:
-  smtkTypeMacro(ComponentItemDefinition);
+  smtkTypeMacro(smtk::attribute::ComponentItemDefinition);
   smtkSuperclassMacro(ReferenceItemDefinition<smtk::resource::Component>);
 
   static smtk::attribute::ComponentItemDefinitionPtr New(const std::string& sname)

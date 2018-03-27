@@ -26,7 +26,7 @@ namespace polygon
 class SMTKPOLYGONSESSION_EXPORT Write : public Operation
 {
 public:
-  smtkTypeMacro(Write);
+  smtkTypeMacro(smtk::bridge::polygon::Write);
   smtkCreateMacro(Write);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);

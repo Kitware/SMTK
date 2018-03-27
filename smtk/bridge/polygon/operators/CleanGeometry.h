@@ -26,7 +26,7 @@ namespace polygon
 class SMTKPOLYGONSESSION_EXPORT CleanGeometry : public Operation
 {
 public:
-  smtkTypeMacro(CleanGeometry);
+  smtkTypeMacro(smtk::bridge::polygon::CleanGeometry);
   smtkCreateMacro(CleanGeometry);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);

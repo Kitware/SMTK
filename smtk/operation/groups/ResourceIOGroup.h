@@ -18,7 +18,7 @@
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/FileItemDefinition.h"
 
-#include "smtk/resource/Name.h"
+#include "smtk/common/TypeName.h"
 
 #include "smtk/operation/Group.h"
 #include "smtk/operation/Manager.h"
@@ -121,27 +121,27 @@ protected:
 
 template <typename ResourceType>
 bool ResourceIOGroup::registerOperation(
-  const std::string& uniqueName, const std::string& fileItemName)
+  const std::string& typeName, const std::string& fileItemName)
 {
   if (this->requiresFileItem())
   {
     // Check that the file item name corresponds to a file item, and then register
     // the resource type and file item name to the operation.
-    Operation::Specification spec = specification(uniqueName);
+    Operation::Specification spec = specification(typeName);
     if (spec == nullptr)
     {
       return false;
     }
 
-    Operation::Parameters parameters = extractParameters(spec, uniqueName);
+    Operation::Parameters parameters = extractParameters(spec, typeName);
 
     if (parameters == nullptr || parameters->findFile(fileItemName) == nullptr)
     {
       return false;
     }
   }
-  return (Group::registerOperation(uniqueName, { smtk::resource::name<ResourceType>() }) &&
-    m_fileItemName.registerOperation(uniqueName, { fileItemName }));
+  return (Group::registerOperation(typeName, { smtk::common::typeName<ResourceType>() }) &&
+    m_fileItemName.registerOperation(typeName, { fileItemName }));
 }
 
 template <typename ResourceType>
@@ -164,20 +164,20 @@ bool ResourceIOGroup::registerOperation(
       return false;
     }
 
-    Operation::Specification spec = specification(metadata->uniqueName());
+    Operation::Specification spec = specification(metadata->typeName());
     if (spec == nullptr)
     {
       return false;
     }
 
-    Operation::Parameters parameters = extractParameters(spec, metadata->uniqueName());
+    Operation::Parameters parameters = extractParameters(spec, metadata->typeName());
 
     if (parameters == nullptr || parameters->findFile(fileItemName) == nullptr)
     {
       return false;
     }
   }
-  return (Group::registerOperation(index, { smtk::resource::name<ResourceType>() }) &&
+  return (Group::registerOperation(index, { smtk::common::typeName<ResourceType>() }) &&
     m_fileItemName.registerOperation(index, { fileItemName }));
 }
 
@@ -201,13 +201,13 @@ bool ResourceIOGroup::registerOperation(const std::string& fileItemName)
       return false;
     }
 
-    Operation::Specification spec = specification(metadata->uniqueName());
+    Operation::Specification spec = specification(metadata->typeName());
     if (spec == nullptr)
     {
       return false;
     }
 
-    Operation::Parameters parameters = extractParameters(spec, metadata->uniqueName());
+    Operation::Parameters parameters = extractParameters(spec, metadata->typeName());
 
     if (parameters == nullptr || parameters->findFile(fileItemName) == nullptr)
     {
@@ -215,7 +215,7 @@ bool ResourceIOGroup::registerOperation(const std::string& fileItemName)
     }
   }
   return (Group::registerOperation(std::type_index(typeid(OperationType)).hash_code(),
-            { smtk::resource::name<ResourceType>() }) &&
+            { smtk::common::typeName<ResourceType>() }) &&
     m_fileItemName.registerOperation(
       std::type_index(typeid(OperationType)).hash_code(), { fileItemName }));
 }
@@ -229,7 +229,7 @@ const std::string& ResourceIOGroup::fileItemNameForOperation() const
 template <typename ResourceType>
 std::set<Operation::Index> ResourceIOGroup::operationsForResource() const
 {
-  return operationsForResource(smtk::resource::name<ResourceType>());
+  return operationsForResource(smtk::common::typeName<ResourceType>());
 }
 }
 }

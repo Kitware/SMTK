@@ -29,7 +29,6 @@ PySharedPtrClass< smtk::attribute::MeshSelectionItemDefinition, smtk::attribute:
     .def_static("New", &smtk::attribute::MeshSelectionItemDefinition::New, py::arg("myName"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::MeshSelectionItemDefinition::*)(::smtk::attribute::Attribute *, int) const) &smtk::attribute::MeshSelectionItemDefinition::buildItem, py::arg("owningAttribute"), py::arg("itemPosition"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::MeshSelectionItemDefinition::*)(::smtk::attribute::Item *, int, int) const) &smtk::attribute::MeshSelectionItemDefinition::buildItem, py::arg("owningItem"), py::arg("position"), py::arg("subGroupPosition"))
-    .def("classname", &smtk::attribute::MeshSelectionItemDefinition::classname)
     .def("createCopy", &smtk::attribute::MeshSelectionItemDefinition::createCopy, py::arg("info"))
     .def("isValueValid", &smtk::attribute::MeshSelectionItemDefinition::isValueValid, py::arg("val"))
     .def("membershipMask", &smtk::attribute::MeshSelectionItemDefinition::membershipMask)

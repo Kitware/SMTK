@@ -29,7 +29,7 @@ namespace model
 class SMTKCORE_EXPORT EntityGroupOperation : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(EntityGroupOperation);
+  smtkTypeMacro(smtk::model::EntityGroupOperation);
   smtkCreateMacro(EntityGroupOperation);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::XMLOperation);

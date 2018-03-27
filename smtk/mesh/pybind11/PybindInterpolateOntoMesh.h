@@ -27,7 +27,6 @@ PySharedPtrClass< smtk::mesh::InterpolateOntoMesh, smtk::operation::XMLOperation
     .def(py::init<::smtk::mesh::InterpolateOntoMesh const &>())
     .def("deepcopy", (smtk::mesh::InterpolateOntoMesh & (smtk::mesh::InterpolateOntoMesh::*)(::smtk::mesh::InterpolateOntoMesh const &)) &smtk::mesh::InterpolateOntoMesh::operator=)
     .def("ableToOperate", &smtk::mesh::InterpolateOntoMesh::ableToOperate)
-    .def("classname", &smtk::mesh::InterpolateOntoMesh::classname)
     .def_static("create", (std::shared_ptr<smtk::mesh::InterpolateOntoMesh> (*)()) &smtk::mesh::InterpolateOntoMesh::create)
     .def_static("create", (std::shared_ptr<smtk::mesh::InterpolateOntoMesh> (*)(::std::shared_ptr<smtk::mesh::InterpolateOntoMesh> &)) &smtk::mesh::InterpolateOntoMesh::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<const smtk::mesh::InterpolateOntoMesh> (smtk::mesh::InterpolateOntoMesh::*)() const) &smtk::mesh::InterpolateOntoMesh::shared_from_this)

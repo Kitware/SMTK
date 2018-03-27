@@ -25,7 +25,6 @@ PySharedPtrClass< smtk::bridge::polygon::CreateVertices> pybind11_init_smtk_brid
   instance
     .def(py::init<::smtk::bridge::polygon::CreateVertices const &>())
     .def("deepcopy", (smtk::bridge::polygon::CreateVertices & (smtk::bridge::polygon::CreateVertices::*)(::smtk::bridge::polygon::CreateVertices const &)) &smtk::bridge::polygon::CreateVertices::operator=)
-    .def("classname", &smtk::bridge::polygon::CreateVertices::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::CreateVertices> (*)()) &smtk::bridge::polygon::CreateVertices::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::CreateVertices> (*)(::std::shared_ptr<smtk::bridge::polygon::CreateVertices> &)) &smtk::bridge::polygon::CreateVertices::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<const smtk::bridge::polygon::CreateVertices> (smtk::bridge::polygon::CreateVertices::*)() const) &smtk::bridge::polygon::CreateVertices::shared_from_this)

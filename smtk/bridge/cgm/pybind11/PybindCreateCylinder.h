@@ -24,8 +24,6 @@ PySharedPtrClass< smtk::bridge::cgm::CreateCylinder > pybind11_init_smtk_bridge_
     .def(py::init<>())
     .def(py::init<::smtk::bridge::cgm::CreateCylinder const &>())
     .def("deepcopy", (smtk::bridge::cgm::CreateCylinder & (smtk::bridge::cgm::CreateCylinder::*)(::smtk::bridge::cgm::CreateCylinder const &)) &smtk::bridge::cgm::CreateCylinder::operator=)
-    .def("className", &smtk::bridge::cgm::CreateCylinder::className)
-    .def("classname", &smtk::bridge::cgm::CreateCylinder::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::cgm::CreateCylinder> (*)()) &smtk::bridge::cgm::CreateCylinder::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::cgm::CreateCylinder> (*)(::std::shared_ptr<smtk::bridge::cgm::CreateCylinder> &)) &smtk::bridge::cgm::CreateCylinder::create, py::arg("ref"))
     .def("name", &smtk::bridge::cgm::CreateCylinder::name)

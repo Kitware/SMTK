@@ -36,7 +36,6 @@ py::class_< smtk::model::VolumeUse, smtk::model::UseEntity > pybind11_init_smtk_
     .def("__ne__", (bool (smtk::model::VolumeUse::*)(::smtk::model::EntityRef const &) const) &smtk::model::VolumeUse::operator!=)
     .def("deepcopy", (smtk::model::VolumeUse & (smtk::model::VolumeUse::*)(::smtk::model::VolumeUse const &)) &smtk::model::VolumeUse::operator=)
     .def("__eq__", (bool (smtk::model::VolumeUse::*)(::smtk::model::EntityRef const &) const) &smtk::model::VolumeUse::operator==)
-    .def("classname", &smtk::model::VolumeUse::classname)
     .def("isValid", (bool (smtk::model::VolumeUse::*)() const) &smtk::model::VolumeUse::isValid)
     // .def("isValid", (bool (smtk::model::VolumeUse::*)(::smtk::model::Entity * *) const) &smtk::model::VolumeUse::isValid, py::arg("entRec"))
     .def("shells", &smtk::model::VolumeUse::shells)

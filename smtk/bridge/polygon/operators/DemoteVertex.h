@@ -26,7 +26,7 @@ namespace polygon
 class SMTKPOLYGONSESSION_EXPORT DemoteVertex : public Operation
 {
 public:
-  smtkTypeMacro(DemoteVertex);
+  smtkTypeMacro(smtk::bridge::polygon::DemoteVertex);
   smtkCreateMacro(DemoteVertex);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);

@@ -31,7 +31,6 @@ PySharedPtrClass< smtk::attribute::ItemDefinition > pybind11_init_smtk_attribute
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::ItemDefinition::*)(::smtk::attribute::Attribute *, int) const) &smtk::attribute::ItemDefinition::buildItem, py::arg("owningAttribute"), py::arg("itemPosition"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::ItemDefinition::*)(::smtk::attribute::Item *, int, int) const) &smtk::attribute::ItemDefinition::buildItem, py::arg("owningItem"), py::arg("position"), py::arg("subGroupPosition"))
     .def("categories", &smtk::attribute::ItemDefinition::categories)
-    .def("classname", &smtk::attribute::ItemDefinition::classname)
     .def("createCopy", &smtk::attribute::ItemDefinition::createCopy, py::arg("info"))
     .def("detailedDescription", &smtk::attribute::ItemDefinition::detailedDescription)
     .def("isEnabledByDefault", &smtk::attribute::ItemDefinition::isEnabledByDefault)

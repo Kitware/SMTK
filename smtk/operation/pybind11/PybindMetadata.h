@@ -32,7 +32,7 @@ py::class_< smtk::operation::Metadata > pybind11_init_smtk_operation_Metadata(py
     .def("acceptsComponent", &smtk::operation::Metadata::acceptsComponent, py::arg("c"))
     .def("index", &smtk::operation::Metadata::index)
     .def("specification", &smtk::operation::Metadata::specification)
-    .def("uniqueName", &smtk::operation::Metadata::uniqueName)
+    .def("typeName", &smtk::operation::Metadata::typeName)
     .def_readwrite("create", &smtk::operation::Metadata::create)
     ;
   return instance;

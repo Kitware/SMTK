@@ -21,7 +21,6 @@ PySharedPtrClass< smtk::extension::delaunay::TriangulateFaces, smtk::operation::
 {
   PySharedPtrClass< smtk::extension::delaunay::TriangulateFaces, smtk::operation::XMLOperation > instance(m, "TriangulateFaces");
   instance
-    .def("classname", &smtk::extension::delaunay::TriangulateFaces::classname)
     .def_static("create", (std::shared_ptr<smtk::extension::delaunay::TriangulateFaces> (*)()) &smtk::extension::delaunay::TriangulateFaces::create)
     .def_static("create", (std::shared_ptr<smtk::extension::delaunay::TriangulateFaces> (*)(::std::shared_ptr<smtk::extension::delaunay::TriangulateFaces> &)) &smtk::extension::delaunay::TriangulateFaces::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<smtk::extension::delaunay::TriangulateFaces> (smtk::extension::delaunay::TriangulateFaces::*)()) &smtk::extension::delaunay::TriangulateFaces::shared_from_this)

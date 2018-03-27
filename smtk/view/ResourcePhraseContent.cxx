@@ -71,7 +71,7 @@ std::string ResourcePhraseContent::stringValue(ContentType attr) const
     }
     break;
     case PhraseContent::SUBTITLE:
-      return m_resource->uniqueName();
+      return m_resource->typeName();
       break;
 
     // We will not provide strings for these:

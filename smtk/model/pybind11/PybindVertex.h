@@ -36,7 +36,6 @@ py::class_< smtk::model::Vertex, smtk::model::CellEntity > pybind11_init_smtk_mo
     .def("__ne__", (bool (smtk::model::Vertex::*)(::smtk::model::EntityRef const &) const) &smtk::model::Vertex::operator!=)
     .def("deepcopy", (smtk::model::Vertex & (smtk::model::Vertex::*)(::smtk::model::Vertex const &)) &smtk::model::Vertex::operator=)
     .def("__eq__", (bool (smtk::model::Vertex::*)(::smtk::model::EntityRef const &) const) &smtk::model::Vertex::operator==)
-    .def("classname", &smtk::model::Vertex::classname)
     // .def("coordinates", &smtk::model::Vertex::coordinates)
     .def("coordinates", [](const smtk::model::Vertex& v) {
         return std::vector<double>{v.coordinates()[0], v.coordinates()[1],

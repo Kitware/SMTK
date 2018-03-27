@@ -20,6 +20,7 @@ namespace operation
 {
 
 SMTKCORE_EXPORT void registerResources(smtk::resource::Manager::Ptr&);
+SMTKCORE_EXPORT void unregisterResources(smtk::resource::Manager::Ptr&);
 }
 }
 

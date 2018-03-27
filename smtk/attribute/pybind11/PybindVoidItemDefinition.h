@@ -29,7 +29,6 @@ PySharedPtrClass< smtk::attribute::VoidItemDefinition, smtk::attribute::ItemDefi
     .def_static("New", &smtk::attribute::VoidItemDefinition::New, py::arg("myName"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::VoidItemDefinition::*)(::smtk::attribute::Attribute *, int) const) &smtk::attribute::VoidItemDefinition::buildItem, py::arg("owningAttribute"), py::arg("itemPosition"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::VoidItemDefinition::*)(::smtk::attribute::Item *, int, int) const) &smtk::attribute::VoidItemDefinition::buildItem, py::arg("owningItem"), py::arg("position"), py::arg("subGroupPosition"))
-    .def("classname", &smtk::attribute::VoidItemDefinition::classname)
     .def("createCopy", &smtk::attribute::VoidItemDefinition::createCopy, py::arg("info"))
     .def("type", &smtk::attribute::VoidItemDefinition::type)
     .def_static("ToItemDefinition", [](const std::shared_ptr<smtk::attribute::VoidItemDefinition> d) {

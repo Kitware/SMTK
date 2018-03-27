@@ -18,7 +18,7 @@
 
         <Resource Name="resource">
           <Accepts>
-            <Resource Name="polygon model"/>
+            <Resource Name="smtk::bridge::polygon::Resource"/>
           </Accepts>
         </Resource>
 

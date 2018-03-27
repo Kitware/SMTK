@@ -93,8 +93,10 @@ int unitComponentPhraseModel(int argc, char* argv[])
   auto operMgr = smtk::environment::OperationManager::instance();
   auto phraseModel = smtk::view::ComponentPhraseModel::create();
   std::multimap<std::string, std::string> filters;
-  filters.insert(std::make_pair(std::string("polygon model"), std::string("edge")));
-  filters.insert(std::make_pair(std::string("polygon model"), std::string("face")));
+  filters.insert(
+    std::make_pair(std::string("smtk::bridge::polygon::Resource"), std::string("edge")));
+  filters.insert(
+    std::make_pair(std::string("smtk::bridge::polygon::Resource"), std::string("face")));
   phraseModel->setComponentFilters(filters);
   phraseModel->addSource(rsrcMgr, operMgr);
   smtk::resource::ResourceArray rsrcs;

@@ -22,7 +22,7 @@ namespace discrete
 class SMTKDISCRETESESSION_EXPORT RemoveModel : public Operation
 {
 public:
-  smtkTypeMacro(RemoveModel);
+  smtkTypeMacro(smtk::bridge::discrete::RemoveModel);
   smtkCreateMacro(RemoveModel);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);

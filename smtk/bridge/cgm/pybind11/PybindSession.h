@@ -23,14 +23,12 @@ PySharedPtrClass< smtk::bridge::cgm::Session, smtk::model::Session > pybind11_in
 {
   PySharedPtrClass< smtk::bridge::cgm::Session, smtk::model::Session > instance(m, "Session");
   instance
-    .def("classname", &smtk::bridge::cgm::Session::classname)
     .def("shared_from_this", (std::shared_ptr<smtk::bridge::cgm::Session> (smtk::bridge::cgm::Session::*)()) &smtk::bridge::cgm::Session::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<const smtk::bridge::cgm::Session> (smtk::bridge::cgm::Session::*)() const) &smtk::bridge::cgm::Session::shared_from_this)
     .def_static("create", (std::shared_ptr<smtk::bridge::cgm::Session> (*)()) &smtk::bridge::cgm::Session::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::cgm::Session> (*)(::std::shared_ptr<smtk::bridge::cgm::Session> &)) &smtk::bridge::cgm::Session::create, py::arg("ref"))
     .def_static("staticClassName", &smtk::bridge::cgm::Session::staticClassName)
     .def("name", &smtk::bridge::cgm::Session::name)
-    .def("className", &smtk::bridge::cgm::Session::className)
     .def("registerOperation", &smtk::bridge::cgm::Session::registerOperation, py::arg("opName"), py::arg("opDescrXML"), py::arg("opCtor"))
     .def_static("registerStaticOperation", &smtk::bridge::cgm::Session::registerStaticOperation, py::arg("opName"), py::arg("opDescrXML"), py::arg("opCtor"))
     .def("findOperationXML", &smtk::bridge::cgm::Session::findOperationXML, py::arg("opName"))

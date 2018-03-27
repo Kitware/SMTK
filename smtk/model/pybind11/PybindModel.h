@@ -45,7 +45,6 @@ py::class_< smtk::model::Model, smtk::model::EntityRef > pybind11_init_smtk_mode
     .def("assignDefaultNames", &smtk::model::Model::assignDefaultNames)
     .def("auxiliaryGeometry", &smtk::model::Model::auxiliaryGeometry)
     .def("cells", &smtk::model::Model::cells)
-    .def("classname", &smtk::model::Model::classname)
     .def("entitiesWithTessellation", &smtk::model::Model::entitiesWithTessellation)
     .def("geometryStyle", &smtk::model::Model::geometryStyle)
     .def("groups", &smtk::model::Model::groups)

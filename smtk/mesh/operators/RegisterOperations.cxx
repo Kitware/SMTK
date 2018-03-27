@@ -19,22 +19,25 @@
 #include "smtk/mesh/operators/UndoElevateMesh.h"
 #include "smtk/mesh/operators/WriteMesh.h"
 
+#include <tuple>
+
 namespace smtk
 {
 namespace mesh
 {
 
+typedef std::tuple<DeleteMesh, ElevateMesh, ExportMesh, GenerateHotStartData, InterpolateOntoMesh,
+  UndoElevateMesh, WriteMesh>
+  OperationList;
+
 void registerOperations(smtk::operation::Manager::Ptr& operationManager)
 {
-  operationManager->registerOperation<smtk::mesh::DeleteMesh>("smtk::mesh::DeleteMesh");
-  operationManager->registerOperation<smtk::mesh::ElevateMesh>("smtk::mesh::ElevateMesh");
-  operationManager->registerOperation<smtk::mesh::ExportMesh>("smtk::mesh::ExportMesh");
-  operationManager->registerOperation<smtk::mesh::GenerateHotStartData>(
-    "smtk::mesh::GenerateHotStartData");
-  operationManager->registerOperation<smtk::mesh::InterpolateOntoMesh>(
-    "smtk::mesh::InterpolateOntoMesh");
-  operationManager->registerOperation<smtk::mesh::UndoElevateMesh>("smtk::mesh::UndoElevateMesh");
-  operationManager->registerOperation<smtk::mesh::WriteMesh>("smtk::mesh::WriteMesh");
+  operationManager->registerOperations<OperationList>();
+}
+
+void unregisterOperations(smtk::operation::Manager::Ptr& operationManager)
+{
+  operationManager->unregisterOperations<OperationList>();
 }
 }
 }

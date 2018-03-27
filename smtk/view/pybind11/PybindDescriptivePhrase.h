@@ -45,7 +45,6 @@ PySharedPtrClass< smtk::view::DescriptivePhrase > pybind11_init_smtk_view_Descri
   instance
     .def(py::init<::smtk::view::DescriptivePhrase const &>())
     .def("deepcopy", (smtk::view::DescriptivePhrase & (smtk::view::DescriptivePhrase::*)(::smtk::view::DescriptivePhrase const &)) &smtk::view::DescriptivePhrase::operator=)
-    .def("classname", &smtk::view::DescriptivePhrase::classname)
     .def("setup", &smtk::view::DescriptivePhrase::setup, py::arg("phraseType"), py::arg("parent") = ::smtk::view::DescriptivePhrase::Ptr( ))
     .def("setDelegate", &smtk::view::DescriptivePhrase::setDelegate, py::arg("delegate"))
     .def("title", &smtk::view::DescriptivePhrase::title)

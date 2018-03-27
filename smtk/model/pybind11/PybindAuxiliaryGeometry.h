@@ -34,7 +34,6 @@ py::class_< smtk::model::AuxiliaryGeometry, smtk::model::EntityRef > pybind11_in
     .def("__ne__", (bool (smtk::model::AuxiliaryGeometry::*)(::smtk::model::EntityRef const &) const) &smtk::model::AuxiliaryGeometry::operator!=)
     .def("deepcopy", (smtk::model::AuxiliaryGeometry & (smtk::model::AuxiliaryGeometry::*)(::smtk::model::AuxiliaryGeometry const &)) &smtk::model::AuxiliaryGeometry::operator=)
     .def("__eq__", (bool (smtk::model::AuxiliaryGeometry::*)(::smtk::model::EntityRef const &) const) &smtk::model::AuxiliaryGeometry::operator==)
-    .def("classname", &smtk::model::AuxiliaryGeometry::classname)
     .def("hasURL", &smtk::model::AuxiliaryGeometry::hasURL)
     .def("isValid", (bool (smtk::model::AuxiliaryGeometry::*)() const) &smtk::model::AuxiliaryGeometry::isValid)
     // .def("isValid", (bool (smtk::model::AuxiliaryGeometry::*)(::smtk::model::Entity * *) const) &smtk::model::AuxiliaryGeometry::isValid, py::arg("entRec"))

@@ -43,42 +43,14 @@ namespace bridge
 namespace polygon
 {
 
+typedef std::tuple<CleanGeometry, CreateEdge, CreateEdgeFromPoints, CreateEdgeFromVertices,
+  CreateFaces, CreateFacesFromEdges, CreateModel, CreateVertices, Delete, DemoteVertex,
+  ExtractContours, ForceCreateFace, Import, LegacyRead, Read, SplitEdge, TweakEdge, Write>
+  OperationList;
+
 void registerOperations(smtk::operation::Manager::Ptr& operationManager)
 {
-  operationManager->registerOperation<smtk::bridge::polygon::CleanGeometry>(
-    "smtk::bridge::polygon::CleanGeometry");
-  operationManager->registerOperation<smtk::bridge::polygon::CreateEdge>(
-    "smtk::bridge::polygon::CreateEdge");
-  operationManager->registerOperation<smtk::bridge::polygon::CreateEdgeFromPoints>(
-    "smtk::bridge::polygon::CreateEdgeFromPoints");
-  operationManager->registerOperation<smtk::bridge::polygon::CreateEdgeFromVertices>(
-    "smtk::bridge::polygon::CreateEdgeFromVertices");
-  operationManager->registerOperation<smtk::bridge::polygon::CreateFaces>(
-    "smtk::bridge::polygon::CreateFaces");
-  operationManager->registerOperation<smtk::bridge::polygon::CreateFacesFromEdges>(
-    "smtk::bridge::polygon::CreateFacesFromEdges");
-  operationManager->registerOperation<smtk::bridge::polygon::CreateModel>(
-    "smtk::bridge::polygon::CreateModel");
-  operationManager->registerOperation<smtk::bridge::polygon::CreateVertices>(
-    "smtk::bridge::polygon::CreateVertices");
-  operationManager->registerOperation<smtk::bridge::polygon::Delete>(
-    "smtk::bridge::polygon::Delete");
-  operationManager->registerOperation<smtk::bridge::polygon::DemoteVertex>(
-    "smtk::bridge::polygon::DemoteVertex");
-  operationManager->registerOperation<smtk::bridge::polygon::ExtractContours>(
-    "smtk::bridge::polygon::ExtractContours");
-  operationManager->registerOperation<smtk::bridge::polygon::ForceCreateFace>(
-    "smtk::bridge::polygon::ForceCreateFace");
-  operationManager->registerOperation<smtk::bridge::polygon::Import>(
-    "smtk::bridge::polygon::Import");
-  operationManager->registerOperation<smtk::bridge::polygon::LegacyRead>(
-    "smtk::bridge::polygon::LegacyRead");
-  operationManager->registerOperation<smtk::bridge::polygon::Read>("smtk::bridge::polygon::Read");
-  operationManager->registerOperation<smtk::bridge::polygon::SplitEdge>(
-    "smtk::bridge::polygon::SplitEdge");
-  operationManager->registerOperation<smtk::bridge::polygon::TweakEdge>(
-    "smtk::bridge::polygon::TweakEdge");
-  operationManager->registerOperation<smtk::bridge::polygon::Write>("smtk::bridge::polygon::Write");
+  operationManager->registerOperations<OperationList>();
 
   smtk::operation::ImporterGroup(operationManager)
     .registerOperation<smtk::bridge::polygon::Resource, smtk::bridge::polygon::Import>();
@@ -86,7 +58,7 @@ void registerOperations(smtk::operation::Manager::Ptr& operationManager)
   smtk::operation::ReaderGroup(operationManager)
     .registerOperation<smtk::bridge::polygon::Resource, smtk::bridge::polygon::Read>();
   smtk::operation::ReaderGroup(operationManager)
-    .registerOperation("smtk::bridge::polygon::LegacyRead", "polygon");
+    .registerOperation(smtk::common::typeName<smtk::bridge::polygon::LegacyRead>(), "polygon");
 
   smtk::operation::WriterGroup(operationManager)
     .registerOperation<smtk::bridge::polygon::Resource, smtk::bridge::polygon::Write>();
@@ -100,6 +72,16 @@ void registerResources(smtk::resource::Manager::Ptr& resourceManager)
   // models changed slightly. This call facilitates reading the old format
   // using our new tools.
   resourceManager->addLegacyReader("polygon", legacyRead);
+}
+
+void unregisterOperations(smtk::operation::Manager::Ptr& operationManager)
+{
+  operationManager->unregisterOperations<OperationList>();
+}
+
+void unregisterResources(smtk::resource::Manager::Ptr& resourceManager)
+{
+  resourceManager->unregisterResource<smtk::bridge::polygon::Resource>();
 }
 }
 }

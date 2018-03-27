@@ -34,7 +34,7 @@ class ResourceItemDefinition;
 class SMTKCORE_EXPORT ResourceItem : public ReferenceItem<smtk::resource::Resource>
 {
 public:
-  smtkTypeMacro(ResourceItem);
+  smtkTypeMacro(smtk::attribute::ResourceItem);
   smtkSuperclassMacro(ReferenceItem<smtk::resource::Resource>);
 
   /// Destructor

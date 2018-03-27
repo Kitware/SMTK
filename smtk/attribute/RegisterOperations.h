@@ -20,6 +20,7 @@ namespace attribute
 {
 
 SMTKCORE_EXPORT void registerOperations(smtk::operation::Manager::Ptr&);
+SMTKCORE_EXPORT void unregisterOperations(smtk::operation::Manager::Ptr&);
 }
 }
 

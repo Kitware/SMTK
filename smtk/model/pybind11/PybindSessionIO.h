@@ -24,7 +24,6 @@ py::class_< smtk::model::SessionIO > pybind11_init_smtk_model_SessionIO(py::modu
     .def(py::init<>())
     .def(py::init<::smtk::model::SessionIO const &>())
     .def("deepcopy", (smtk::model::SessionIO & (smtk::model::SessionIO::*)(::smtk::model::SessionIO const &)) &smtk::model::SessionIO::operator=)
-    .def("classname", &smtk::model::SessionIO::classname)
     .def("referencePath", &smtk::model::SessionIO::referencePath)
     .def("setReferencePath", &smtk::model::SessionIO::setReferencePath, py::arg("p"))
     ;

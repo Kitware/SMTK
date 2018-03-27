@@ -37,13 +37,13 @@ public:
   PyOperation() : Operation() {}
   virtual ~PyOperation() {}
 
-  static std::shared_ptr<smtk::operation::Operation> create(std::string modulename, std::string classname, smtk::operation::Operation::Index index)
+  static std::shared_ptr<smtk::operation::Operation> create(std::string modulename, std::string className, smtk::operation::Operation::Index index)
     {
       // Import the module containing our operation
       pybind11::module module = pybind11::module::import(modulename.c_str());
 
       // Create an instance of our operation
-      pybind11::object obj = module.attr(classname.c_str())();
+      pybind11::object obj = module.attr(className.c_str())();
 
       if (smtk::common::PythonInterpreter::instance().isEmbedded())
       {

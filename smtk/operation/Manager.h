@@ -15,13 +15,18 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
+#include "smtk/common/TypeName.h"
+
 #include "smtk/operation/Group.h"
 #include "smtk/operation/Metadata.h"
 #include "smtk/operation/MetadataContainer.h"
 #include "smtk/operation/Observer.h"
 #include "smtk/operation/Operation.h"
 
+#include <array>
 #include <string>
+#include <tuple>
+#include <type_traits>
 #include <typeinfo>
 
 namespace smtk
@@ -35,19 +40,55 @@ namespace operation
 class SMTKCORE_EXPORT Manager : smtkEnableSharedPtr(Manager)
 {
 public:
-  smtkTypeMacroBase(Manager);
+  smtkTypedefs(smtk::operation::Manager);
   smtkCreateMacro(Manager);
 
   virtual ~Manager();
 
-  /// Register a resource identified by its class type and unique name.
+  /// Register a resource identified by its class type.
+  template <typename ResourceType>
+  bool registerOperation();
+
+  /// Register a resource identified by its class type and type name.
   template <typename ResourceType>
   bool registerOperation(const std::string&);
 
   /// Register an operation identified by its type index.
   bool registerOperation(Metadata&&);
 
-  /// Construct an operation identified by its unique name.
+  /// Register a tuple of operations identified by their class types.
+  template <typename Tuple>
+  bool registerOperations()
+  {
+    return Manager::registerOperations<0, Tuple>();
+  }
+
+  /// Register a tuple of operations identified by their class types and type
+  /// names.
+  template <typename Tuple>
+  bool registerOperations(const std::array<std::string, std::tuple_size<Tuple>::value>& typeNames)
+  {
+    return Manager::registerOperations<0, Tuple>(typeNames);
+  }
+
+  /// Unegister a resource identified by its class type.
+  template <typename ResourceType>
+  bool unregisterOperation();
+
+  /// Unregister an operation identified by its type name.
+  bool unregisterOperation(const std::string&);
+
+  /// Unregister an operation identified by its type index.
+  bool unregisterOperation(const Operation::Index&);
+
+  // Unregister a tuple of operations identified by their class types.
+  template <typename Tuple>
+  bool unregisterOperations()
+  {
+    return Manager::unregisterOperations<0, Tuple>();
+  }
+
+  /// Construct an operation identified by its type name.
   std::shared_ptr<smtk::operation::Operation> create(const std::string&);
 
   /// Construct an operation identified by its type index.
@@ -89,6 +130,52 @@ public:
 private:
   Manager();
 
+  template <std::size_t I, typename Tuple>
+  inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type
+  registerOperations()
+  {
+    bool registered = this->registerOperation<typename std::tuple_element<I, Tuple>::type>();
+    return registered && Manager::registerOperations<I + 1, Tuple>();
+  }
+
+  template <std::size_t I, typename Tuple>
+  inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type
+  registerOperations()
+  {
+    return true;
+  }
+
+  template <std::size_t I, typename Tuple>
+  inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type registerOperations(
+    const std::array<std::string, std::tuple_size<Tuple>::value>& typeNames)
+  {
+    bool registered =
+      this->registerOperation<typename std::tuple_element<I, Tuple>::type>(typeNames.at(I));
+    return registered && Manager::registerOperations<I + 1, Tuple>(typeNames);
+  }
+
+  template <std::size_t I, typename Tuple>
+  inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type registerOperations(
+    const std::array<std::string, std::tuple_size<Tuple>::value>&)
+  {
+    return true;
+  }
+
+  template <std::size_t I, typename Tuple>
+  inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type
+  unregisterOperations()
+  {
+    bool unregistered = this->unregisterOperation<typename std::tuple_element<I, Tuple>::type>();
+    return unregistered && Manager::unregisterOperations<I + 1, Tuple>();
+  }
+
+  template <std::size_t I, typename Tuple>
+  inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type
+  unregisterOperations()
+  {
+    return true;
+  }
+
   /// A container for all operation observers.
   Observers m_observers;
 
@@ -106,6 +193,12 @@ private:
 };
 
 template <typename OperationType>
+bool Manager::unregisterOperation()
+{
+  return this->unregisterOperation(std::type_index(typeid(OperationType)).hash_code());
+}
+
+template <typename OperationType>
 smtk::shared_ptr<OperationType> Manager::create()
 {
   return smtk::static_pointer_cast<OperationType>(
@@ -113,7 +206,13 @@ smtk::shared_ptr<OperationType> Manager::create()
 }
 
 template <typename OperationType>
-bool Manager::registerOperation(const std::string& uniqueName)
+bool Manager::registerOperation()
+{
+  return Manager::registerOperation<OperationType>(smtk::common::typeName<OperationType>());
+}
+
+template <typename OperationType>
+bool Manager::registerOperation(const std::string& typeName)
 {
   // For standard operations (i.e. those defined in C++), the pattern is to use
   // the hash of the type_index as its index, the specification defined by
@@ -122,7 +221,7 @@ bool Manager::registerOperation(const std::string& uniqueName)
   // metadata instance that adheres to this convention.
 
   return Manager::registerOperation(
-    Metadata(uniqueName, std::type_index(typeid(OperationType)).hash_code(),
+    Metadata(typeName, std::type_index(typeid(OperationType)).hash_code(),
       std::dynamic_pointer_cast<Operation>(OperationType::create())->createSpecification(),
       []() { return OperationType::create(); }));
 }

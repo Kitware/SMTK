@@ -29,7 +29,6 @@ class SMTKMESHSESSION_EXPORT Resource : public smtk::model::Manager
 public:
   smtkTypeMacro(smtk::bridge::mesh::Resource);
   smtkSharedPtrCreateMacro(smtk::resource::Resource);
-  smtkResourceTypeNameMacro("mesh model");
 
   // typedef referring to the parent resource.
   typedef smtk::model::Manager ParentResource;

@@ -22,7 +22,7 @@ namespace discrete
 class SMTKDISCRETESESSION_EXPORT SetProperty : public Operation
 {
 public:
-  smtkTypeMacro(SetProperty);
+  smtkTypeMacro(smtk::bridge::discrete::SetProperty);
   smtkCreateMacro(SetProperty);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);

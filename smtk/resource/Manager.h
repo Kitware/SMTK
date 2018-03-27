@@ -16,12 +16,12 @@
 #include "smtk/SharedFromThis.h"
 #include "smtk/SystemConfig.h"
 
+#include "smtk/common/TypeName.h"
 #include "smtk/common/UUID.h"
 
 #include "smtk/resource/Container.h"
 #include "smtk/resource/Event.h"
 #include "smtk/resource/Metadata.h"
-#include "smtk/resource/Name.h"
 #include "smtk/resource/Resource.h"
 
 #include <functional>
@@ -45,7 +45,7 @@ public:
   /// Resource manager events result in function calls of this type.
   using Observer = std::function<void(Event, const Resource::Ptr&)>;
 
-  smtkTypeMacroBase(Manager);
+  smtkTypedefs(smtk::resource::Manager);
   smtkCreateMacro(Manager);
 
   virtual ~Manager();
@@ -57,7 +57,17 @@ public:
     const std::function<bool(const ResourcePtr&)>& write = nullptr,
     const std::function<ResourcePtr(const smtk::common::UUID&)>& create = nullptr);
 
-  /// Construct a resource identified by its unique name.
+  /// Unregister a resource identified by its class type.
+  template <typename ResourceType>
+  bool unregisterResource();
+
+  /// Unregister a resource identified by its type name.
+  bool unregisterResource(const std::string&);
+
+  /// Unregister a resource identified by its type index.
+  bool unregisterResource(const Resource::Index&);
+
+  /// Construct a resource identified by its type name.
   ResourcePtr create(const std::string&);
 
   /// Construct a resource identified by its type index.
@@ -67,7 +77,7 @@ public:
   template <typename ResourceType>
   smtk::shared_ptr<ResourceType> create();
 
-  /// Construct a resource with a given UUID identified by its unique name.
+  /// Construct a resource with a given UUID identified by its type name.
   ResourcePtr create(const std::string&, const smtk::common::UUID&);
 
   /// Construct a resource with a given UUID identified by its type index.
@@ -101,7 +111,7 @@ public:
   template <typename ResourceType>
   smtk::shared_ptr<const ResourceType> get(const std::string&) const;
 
-  /// Returns a set of resources that have a given unique name <uniqueName>.
+  /// Returns a set of resources that have a given type name <typeName>.
   std::set<ResourcePtr> find(const std::string&);
 
   /// Returns a set of resources that have a given type index..
@@ -111,7 +121,7 @@ public:
   template <typename ResourceType>
   std::set<smtk::shared_ptr<ResourceType> > find();
 
-  /// Read resource identified by its unique index from file.
+  /// Read resource identified by its type index from file.
   ResourcePtr read(const std::string&, const std::string&);
 
   /// Read resource identified by its type index from file.
@@ -148,7 +158,7 @@ public:
   bool remove(const ResourcePtr&);
 
   /// To maintain backwards compatibility, this method provides a means of
-  /// registering an alias, or additional unique name, to a resource type.
+  /// registering an alias, or additional type name, to a resource type.
   /// There can be multiple aliases for each resource type, but an alias can
   /// only refer to a single resource type.
   bool addLegacyReader(const std::string&, const std::function<ResourcePtr(const std::string&)>&);
@@ -201,6 +211,12 @@ private:
   /// A map connecting legacy resource names to legacy readers.
   std::map<std::string, std::function<ResourcePtr(const std::string&)> > m_legacyReaders;
 };
+
+template <typename ResourceType>
+bool Manager::unregisterResource()
+{
+  return this->unregisterResource(std::type_index(typeid(ResourceType)).hash_code());
+}
 
 template <typename ResourceType>
 smtk::shared_ptr<ResourceType> Manager::create()
@@ -365,8 +381,8 @@ bool Manager::registerResource(const std::function<ResourcePtr(const std::string
   const std::function<ResourcePtr(const smtk::common::UUID&)>& create)
 {
   // For standard Resources, the metadata is comprised of the following:
-  // Unique Name: either the "type_name" field or (if the former does not exist)
-  //              the uniqueName() value
+  // Type Name: either the "type_name" field or (if the former does not exist)
+  //            the typeName() value
   // Index: the hash of the type_index
   // Parent Indices: a set of indices constructed by traversing parent resources
   //                 (defined using the typedef "ParentResource")
@@ -376,7 +392,7 @@ bool Manager::registerResource(const std::function<ResourcePtr(const std::string
   // Write Functor:   either a user-defined functor or the nullptr
 
   return Manager::registerResource(Metadata(
-    smtk::resource::name<ResourceType>(), std::type_index(typeid(ResourceType)).hash_code(),
+    smtk::common::typeName<ResourceType>(), std::type_index(typeid(ResourceType)).hash_code(),
     (detail::resource_index_set_generator<ResourceType,
       detail::is_derived_resource<ResourceType>::value>::indices()),
     (create ? create : [](const smtk::common::UUID& id) {

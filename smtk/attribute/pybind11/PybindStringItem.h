@@ -23,7 +23,6 @@ PySharedPtrClass< smtk::attribute::StringItem, smtk::attribute::ValueItemTemplat
   instance
     .def(py::init<::smtk::attribute::StringItem const &>())
     .def("assign", &smtk::attribute::StringItem::assign, py::arg("sourceItem"), py::arg("options") = 0)
-    .def("classname", &smtk::attribute::StringItem::classname)
     .def("isSecure", &smtk::attribute::StringItem::isSecure)
     .def("type", &smtk::attribute::StringItem::type)
     .def_static("CastTo", [](const std::shared_ptr<smtk::attribute::Item> i) {

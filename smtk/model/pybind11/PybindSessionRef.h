@@ -41,7 +41,6 @@ py::class_< smtk::model::SessionRef, smtk::model::EntityRef > pybind11_init_smtk
     .def("deepcopy", (smtk::model::SessionRef & (smtk::model::SessionRef::*)(::smtk::model::SessionRef const &)) &smtk::model::SessionRef::operator=)
     .def("__eq__", (bool (smtk::model::SessionRef::*)(::smtk::model::EntityRef const &) const) &smtk::model::SessionRef::operator==)
     .def("addModel", &smtk::model::SessionRef::addModel, py::arg("mod"))
-    .def("classname", &smtk::model::SessionRef::classname)
     .def("close", &smtk::model::SessionRef::close)
     .def("engines", &smtk::model::SessionRef::engines)
     .def("fileTypes", &smtk::model::SessionRef::fileTypes, py::arg("engine") = std::string())

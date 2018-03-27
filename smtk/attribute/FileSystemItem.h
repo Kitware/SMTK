@@ -32,7 +32,7 @@ class SMTKCORE_EXPORT FileSystemItem : public Item
 public:
   typedef std::vector<std::string>::const_iterator const_iterator;
 
-  smtkTypeMacro(FileSystemItem);
+  smtkTypeMacro(smtk::attribute::FileSystemItem);
   ~FileSystemItem() override;
   Item::Type type() const override = 0;
   bool isValid() const override;

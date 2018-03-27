@@ -19,9 +19,9 @@ namespace operation
 
 const std::string ResourceIOGroup::m_defaultFileItemName = "filename";
 
-const std::string& ResourceIOGroup::fileItemNameForOperation(const std::string& uniqueName) const
+const std::string& ResourceIOGroup::fileItemNameForOperation(const std::string& typeName) const
 {
-  return *(m_fileItemName.values(uniqueName).begin());
+  return *(m_fileItemName.values(typeName).begin());
 }
 
 const std::string& ResourceIOGroup::fileItemNameForOperation(const Operation::Index& index) const
@@ -39,20 +39,20 @@ const std::string& ResourceIOGroup::fileItemNameForOperation(const Operation::In
     return nullString;
   }
 
-  return *(m_fileItemName.values(metadata->uniqueName()).begin());
+  return *(m_fileItemName.values(metadata->typeName()).begin());
 }
 
 smtk::attribute::FileItemDefinition::Ptr ResourceIOGroup::fileItemDefinitionForOperation(
-  const std::string& uniqueName) const
+  const std::string& typeName) const
 {
-  Operation::Specification spec = specification(uniqueName);
+  Operation::Specification spec = specification(typeName);
   if (spec == nullptr)
   {
     return smtk::attribute::FileItemDefinition::Ptr();
   }
 
-  Operation::Definition parameterDefinition = extractParameterDefinition(spec, uniqueName);
-  int i = parameterDefinition->findItemPosition(*(m_fileItemName.values(uniqueName).begin()));
+  Operation::Definition parameterDefinition = extractParameterDefinition(spec, typeName);
+  int i = parameterDefinition->findItemPosition(*(m_fileItemName.values(typeName).begin()));
   assert(i >= 0);
   return std::dynamic_pointer_cast<smtk::attribute::FileItemDefinition>(
     parameterDefinition->itemDefinition(i));
@@ -73,16 +73,16 @@ smtk::attribute::FileItemDefinition::Ptr ResourceIOGroup::fileItemDefinitionForO
     return smtk::attribute::FileItemDefinition::Ptr();
   }
 
-  Operation::Specification spec = specification(metadata->uniqueName());
+  Operation::Specification spec = specification(metadata->typeName());
   if (spec == nullptr)
   {
     return smtk::attribute::FileItemDefinition::Ptr();
   }
 
   Operation::Definition parameterDefinition =
-    extractParameterDefinition(spec, metadata->uniqueName());
+    extractParameterDefinition(spec, metadata->typeName());
   int i =
-    parameterDefinition->findItemPosition(*(m_fileItemName.values(metadata->uniqueName()).begin()));
+    parameterDefinition->findItemPosition(*(m_fileItemName.values(metadata->typeName()).begin()));
   assert(i >= 0);
   return std::dynamic_pointer_cast<smtk::attribute::FileItemDefinition>(
     parameterDefinition->itemDefinition(i));

@@ -36,7 +36,7 @@ namespace polygon
 class SMTKPOLYGONSESSION_EXPORT CreateModel : public Operation
 {
 public:
-  smtkTypeMacro(CreateModel);
+  smtkTypeMacro(smtk::bridge::polygon::CreateModel);
   smtkCreateMacro(CreateModel);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);

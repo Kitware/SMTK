@@ -48,7 +48,7 @@ class SMTKCORE_EXPORT ModelEntityItem : public Item
 public:
   typedef smtk::model::EntityRefArray::const_iterator const_iterator;
 
-  smtkTypeMacro(ModelEntityItem);
+  smtkTypeMacro(smtk::attribute::ModelEntityItem);
   ~ModelEntityItem() override;
   Item::Type type() const override;
   bool isValid() const override;

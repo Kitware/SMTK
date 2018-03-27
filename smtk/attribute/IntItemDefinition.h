@@ -23,7 +23,7 @@ namespace attribute
 class SMTKCORE_EXPORT IntItemDefinition : public ValueItemDefinitionTemplate<int>
 {
 public:
-  smtkTypeMacro(IntItemDefinition);
+  smtkTypeMacro(smtk::attribute::IntItemDefinition);
   static smtk::attribute::IntItemDefinitionPtr New(const std::string& myName)
   {
     return smtk::attribute::IntItemDefinitionPtr(new IntItemDefinition(myName));

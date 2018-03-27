@@ -77,10 +77,10 @@ typedef boost::multi_index_container<
 /// smtk::resource::Manager only.
 typedef boost::multi_index_container<
   Metadata,
-  indexed_by<ordered_unique<tag<NameTag>,
-               const_mem_fun<Metadata, const std::string&, &Metadata::uniqueName> >,
-    ordered_unique<tag<IndexTag>, const_mem_fun<Metadata, const smtk::resource::Resource::Index&,
-                                    &Metadata::index> > > >
+  indexed_by<
+    ordered_unique<tag<NameTag>, const_mem_fun<Metadata, const std::string&, &Metadata::typeName> >,
+    ordered_unique<tag<IndexTag>,
+      const_mem_fun<Metadata, const smtk::resource::Resource::Index&, &Metadata::index> > > >
   MetadataContainer;
 }
 }

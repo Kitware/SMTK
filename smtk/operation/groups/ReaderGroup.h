@@ -13,8 +13,6 @@
 
 #include "smtk/CoreExports.h"
 
-#include "smtk/resource/Name.h"
-
 #include "smtk/operation/Operation.h"
 #include "smtk/operation/groups/ResourceIOGroup.h"
 

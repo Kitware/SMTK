@@ -36,7 +36,6 @@ py::class_< smtk::model::Chain, smtk::model::ShellEntity > pybind11_init_smtk_mo
     .def("__ne__", (bool (smtk::model::Chain::*)(::smtk::model::EntityRef const &) const) &smtk::model::Chain::operator!=)
     .def("deepcopy", (smtk::model::Chain & (smtk::model::Chain::*)(::smtk::model::Chain const &)) &smtk::model::Chain::operator=)
     .def("__eq__", (bool (smtk::model::Chain::*)(::smtk::model::EntityRef const &) const) &smtk::model::Chain::operator==)
-    .def("classname", &smtk::model::Chain::classname)
     .def("containedChains", &smtk::model::Chain::containedChains)
     .def("containingChain", &smtk::model::Chain::containingChain)
     .def("edge", &smtk::model::Chain::edge)

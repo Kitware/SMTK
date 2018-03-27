@@ -30,7 +30,6 @@ PySharedPtrClass< smtk::attribute::DateTimeItemDefinition, smtk::attribute::Item
     .def_static("New", &smtk::attribute::DateTimeItemDefinition::New, py::arg("myName"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::DateTimeItemDefinition::*)(::smtk::attribute::Attribute *, int) const) &smtk::attribute::DateTimeItemDefinition::buildItem, py::arg("owningAttribute"), py::arg("itemPosition"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::DateTimeItemDefinition::*)(::smtk::attribute::Item *, int, int) const) &smtk::attribute::DateTimeItemDefinition::buildItem, py::arg("owningItem"), py::arg("position"), py::arg("subGroupPosition"))
-    .def("classname", &smtk::attribute::DateTimeItemDefinition::classname)
     .def("createCopy", &smtk::attribute::DateTimeItemDefinition::createCopy, py::arg("info"))
     .def("defaultValue", &smtk::attribute::DateTimeItemDefinition::defaultValue)
     .def("displayFormat", &smtk::attribute::DateTimeItemDefinition::displayFormat)

@@ -35,7 +35,7 @@ class SMTKCORE_EXPORT RefItem : public Item
 public:
   typedef std::vector<attribute::WeakAttributePtr>::const_iterator const_iterator;
 
-  smtkTypeMacro(RefItem);
+  smtkTypeMacro(smtk::attribute::RefItem);
   ~RefItem() override;
   Item::Type type() const override;
   // A RefItem is valid if it is either no enabled or if all of

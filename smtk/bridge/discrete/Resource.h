@@ -35,7 +35,6 @@ class SMTKDISCRETESESSION_EXPORT Resource : public smtk::model::Manager
 public:
   smtkTypeMacro(smtk::bridge::discrete::Resource);
   smtkSharedPtrCreateMacro(smtk::resource::Resource);
-  smtkResourceTypeNameMacro("discrete model");
 
   // typedef referring to the parent resource.
   typedef smtk::model::Manager ParentResource;

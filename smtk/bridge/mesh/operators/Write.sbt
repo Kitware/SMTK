@@ -7,7 +7,7 @@
       <ItemDefinitions>
         <Resource Name="resource">
           <Accepts>
-            <Resource Name="mesh model"/>
+            <Resource Name="smtk::bridge::mesh::Resource"/>
           </Accepts>
         </Resource>
       </ItemDefinitions>

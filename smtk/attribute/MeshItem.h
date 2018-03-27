@@ -33,7 +33,7 @@ public:
   typedef smtk::mesh::MeshList::const_iterator const_mesh_it;
   typedef smtk::mesh::MeshList::iterator mesh_it;
 
-  smtkTypeMacro(MeshItem);
+  smtkTypeMacro(smtk::attribute::MeshItem);
   ~MeshItem() override;
   Item::Type type() const override;
   bool isValid() const override;

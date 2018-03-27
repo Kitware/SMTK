@@ -25,13 +25,11 @@ PySharedPtrClass< smtk::bridge::discrete::RemoveModel, smtk::operation::Operatio
     .def(py::init<::smtk::bridge::discrete::RemoveModel const &>())
     .def(py::init<>())
     .def("deepcopy", (smtk::bridge::discrete::RemoveModel & (smtk::bridge::discrete::RemoveModel::*)(::smtk::bridge::discrete::RemoveModel const &)) &smtk::bridge::discrete::RemoveModel::operator=)
-    .def("classname", &smtk::bridge::discrete::RemoveModel::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::discrete::RemoveModel> (*)()) &smtk::bridge::discrete::RemoveModel::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::discrete::RemoveModel> (*)(::std::shared_ptr<smtk::bridge::discrete::RemoveModel> &)) &smtk::bridge::discrete::RemoveModel::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<smtk::bridge::discrete::RemoveModel> (smtk::bridge::discrete::RemoveModel::*)()) &smtk::bridge::discrete::RemoveModel::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<const smtk::bridge::discrete::RemoveModel> (smtk::bridge::discrete::RemoveModel::*)() const) &smtk::bridge::discrete::RemoveModel::shared_from_this)
     .def("name", &smtk::bridge::discrete::RemoveModel::name)
-    .def("className", &smtk::bridge::discrete::RemoveModel::className)
     .def("ableToOperate", &smtk::bridge::discrete::RemoveModel::ableToOperate)
     ;
   return instance;

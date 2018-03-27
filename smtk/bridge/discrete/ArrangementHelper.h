@@ -39,7 +39,7 @@ namespace discrete
 class SMTKDISCRETESESSION_EXPORT ArrangementHelper : public smtk::model::ArrangementHelper
 {
 public:
-  smtkTypeMacro(ArrangementHelper);
+  smtkTypeMacro(smtk::bridge::discrete::ArrangementHelper);
   smtkSuperclassMacro(smtk::model::ArrangementHelper);
   ArrangementHelper();
   virtual ~ArrangementHelper();

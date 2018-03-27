@@ -22,13 +22,11 @@ PySharedPtrClass< smtk::bridge::discrete::MergeOperation, smtk::operation::Opera
 {
   PySharedPtrClass< smtk::bridge::discrete::MergeOperation, smtk::operation::Operation > instance(m, "MergeOperation");
   instance
-    .def("classname", &smtk::bridge::discrete::MergeOperation::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::discrete::MergeOperation> (*)()) &smtk::bridge::discrete::MergeOperation::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::discrete::MergeOperation> (*)(::std::shared_ptr<smtk::bridge::discrete::MergeOperation> &)) &smtk::bridge::discrete::MergeOperator::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<smtk::bridge::discrete::MergeOperation> (smtk::bridge::discrete::MergeOperation::*)()) &smtk::bridge::discrete::MergeOperator::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<const smtk::bridge::discrete::MergeOperation> (smtk::bridge::discrete::MergeOperation::*)() const) &smtk::bridge::discrete::MergeOperator::shared_from_this)
     .def("name", &smtk::bridge::discrete::MergeOperation::name)
-    .def("className", &smtk::bridge::discrete::MergeOperation::className)
     .def("ableToOperate", &smtk::bridge::discrete::MergeOperation::ableToOperate)
     ;
   return instance;

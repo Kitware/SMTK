@@ -22,13 +22,11 @@ PySharedPtrClass< smtk::bridge::discrete::CreateEdgesOperation, smtk::operation:
 {
   PySharedPtrClass< smtk::bridge::discrete::CreateEdgesOperation, smtk::operation::Operation > instance(m, "CreateEdgesOperation");
   instance
-    .def("classname", &smtk::bridge::discrete::CreateEdgesOperation::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::discrete::CreateEdgesOperation> (*)()) &smtk::bridge::discrete::CreateEdgesOperation::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::discrete::CreateEdgesOperation> (*)(::std::shared_ptr<smtk::bridge::discrete::CreateEdgesOperation> &)) &smtk::bridge::discrete::CreateEdgesOperator::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<smtk::bridge::discrete::CreateEdgesOperation> (smtk::bridge::discrete::CreateEdgesOperation::*)()) &smtk::bridge::discrete::CreateEdgesOperator::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<const smtk::bridge::discrete::CreateEdgesOperation> (smtk::bridge::discrete::CreateEdgesOperation::*)() const) &smtk::bridge::discrete::CreateEdgesOperator::shared_from_this)
     .def("name", &smtk::bridge::discrete::CreateEdgesOperation::name)
-    .def("className", &smtk::bridge::discrete::CreateEdgesOperation::className)
     .def("ableToOperate", &smtk::bridge::discrete::CreateEdgesOperation::ableToOperate)
     ;
   return instance;

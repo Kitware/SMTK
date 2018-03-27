@@ -37,7 +37,6 @@ PySharedPtrClass< smtk::operation::Manager > pybind11_init_smtk_operation_Manage
     .def(py::init<::smtk::operation::Manager const &>())
     .def("deepcopy", (smtk::operation::Manager & (smtk::operation::Manager::*)(::smtk::operation::Manager const &)) &smtk::operation::Manager::operator=)
     .def("availableOperations", &smtk::operation::Manager::availableOperations, py::arg("arg0"))
-    .def("classname", &smtk::operation::Manager::classname)
     .def_static("create", (std::shared_ptr<smtk::operation::Manager> (*)()) &smtk::operation::Manager::create)
     .def_static("create", (std::shared_ptr<smtk::operation::Manager> (*)(::std::shared_ptr<smtk::operation::Manager> &)) &smtk::operation::Manager::create, py::arg("ref"))
     .def("createOperation", (std::shared_ptr<smtk::operation::Operation> (smtk::operation::Manager::*)(::std::string const &)) &smtk::operation::Manager::create, py::arg("arg0"))

@@ -39,7 +39,6 @@ py::class_< smtk::model::FaceUse, smtk::model::UseEntity > pybind11_init_smtk_mo
     .def("deepcopy", (smtk::model::FaceUse & (smtk::model::FaceUse::*)(::smtk::model::FaceUse const &)) &smtk::model::FaceUse::operator=)
     .def("__eq__", (bool (smtk::model::FaceUse::*)(::smtk::model::EntityRef const &) const) &smtk::model::FaceUse::operator==)
     .def("boundingShell", &smtk::model::FaceUse::boundingShell)
-    .def("classname", &smtk::model::FaceUse::classname)
     .def("face", &smtk::model::FaceUse::face)
     .def("isValid", (bool (smtk::model::FaceUse::*)() const) &smtk::model::FaceUse::isValid)
     // .def("isValid", (bool (smtk::model::FaceUse::*)(::smtk::model::Entity * *) const) &smtk::model::FaceUse::isValid, py::arg("entRec"))

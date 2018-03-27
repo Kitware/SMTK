@@ -37,7 +37,6 @@ py::class_< smtk::model::VertexUse, smtk::model::UseEntity > pybind11_init_smtk_
     .def("deepcopy", (smtk::model::VertexUse & (smtk::model::VertexUse::*)(::smtk::model::VertexUse const &)) &smtk::model::VertexUse::operator=)
     .def("__eq__", (bool (smtk::model::VertexUse::*)(::smtk::model::EntityRef const &) const) &smtk::model::VertexUse::operator==)
     .def("chains", &smtk::model::VertexUse::chains)
-    .def("classname", &smtk::model::VertexUse::classname)
     .def("edges", &smtk::model::VertexUse::edges)
     .def("isValid", (bool (smtk::model::VertexUse::*)() const) &smtk::model::VertexUse::isValid)
     // .def("isValid", (bool (smtk::model::VertexUse::*)(::smtk::model::Entity * *) const) &smtk::model::VertexUse::isValid, py::arg("entRec"))

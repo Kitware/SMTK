@@ -29,7 +29,6 @@ PySharedPtrClass< smtk::model::Entity, smtk::resource::Component > pybind11_init
   instance
     .def(py::init<::smtk::model::Entity const &>())
     .def("deepcopy", (smtk::model::Entity & (smtk::model::Entity::*)(::smtk::model::Entity const &)) &smtk::model::Entity::operator=)
-    .def("classname", &smtk::model::Entity::classname)
     .def("shared_from_this", (std::shared_ptr<smtk::model::Entity> (smtk::model::Entity::*)()) &smtk::model::Entity::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<const smtk::model::Entity> (smtk::model::Entity::*)() const) &smtk::model::Entity::shared_from_this)
     .def_static("create", (std::shared_ptr<smtk::model::Entity> (*)()) &smtk::model::Entity::create)

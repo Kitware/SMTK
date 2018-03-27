@@ -31,7 +31,6 @@ PySharedPtrClass< smtk::attribute::MeshItem, smtk::attribute::Item > pybind11_in
     .def("appendValues", (bool (smtk::attribute::MeshItem::*)(::smtk::mesh::MeshSets const &)) &smtk::attribute::MeshItem::appendValues, py::arg("arg0"))
     .def("assign", &smtk::attribute::MeshItem::assign, py::arg("sourceItem"), py::arg("options") = 0)
     .def("begin", &smtk::attribute::MeshItem::begin)
-    .def("classname", &smtk::attribute::MeshItem::classname)
     .def("end", &smtk::attribute::MeshItem::end)
     .def("find", &smtk::attribute::MeshItem::find, py::arg("mesh"))
     .def("hasValue", &smtk::attribute::MeshItem::hasValue, py::arg("arg0"))

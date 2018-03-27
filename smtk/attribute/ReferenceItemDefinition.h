@@ -48,8 +48,7 @@ public:
 
   std::multimap<std::string, std::string> acceptableEntries() const { return m_acceptable; }
 
-  bool setAcceptsEntries(
-    const std::string& uniqueName, const std::string& queryString, bool accept);
+  bool setAcceptsEntries(const std::string& typeName, const std::string& queryString, bool accept);
 
   virtual bool isValueValid(typename T::Ptr entity) const = 0;
 

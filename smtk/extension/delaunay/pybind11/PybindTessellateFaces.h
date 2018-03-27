@@ -19,7 +19,6 @@ PySharedPtrClass< smtk::extension::delaunay::TessellateFaces, smtk::operation::X
 {
   PySharedPtrClass< smtk::extension::delaunay::TessellateFaces, smtk::operation::XMLOperation > instance(m, "TessellateFaces");
   instance
-    .def("classname", &smtk::extension::delaunay::TessellateFaces::classname)
     .def_static("create", (std::shared_ptr<smtk::extension::delaunay::TessellateFaces> (*)()) &smtk::extension::delaunay::TessellateFaces::create)
     .def_static("create", (std::shared_ptr<smtk::extension::delaunay::TessellateFaces> (*)(::std::shared_ptr<smtk::extension::delaunay::TessellateFaces> &)) &smtk::extension::delaunay::TessellateFaces::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<smtk::extension::delaunay::TessellateFaces> (smtk::extension::delaunay::TessellateFaces::*)()) &smtk::extension::delaunay::TessellateFaces::shared_from_this)

@@ -31,7 +31,6 @@ PySharedPtrClass< smtk::attribute::ResourceItem, smtk::attribute::Item > pybind1
     .def("appendValue", &smtk::attribute::ResourceItem::appendValue, py::arg("val"))
     .def("assign", &smtk::attribute::ResourceItem::assign, py::arg("sourceItem"), py::arg("options") = 0)
     .def("begin", &smtk::attribute::ResourceItem::begin)
-    .def("classname", &smtk::attribute::ResourceItem::classname)
     .def("definition", &smtk::attribute::ResourceItem::definition)
     .def("end", &smtk::attribute::ResourceItem::end)
     .def("find", (ptrdiff_t (smtk::attribute::ResourceItem::*)(::smtk::common::UUID const &) const) &smtk::attribute::ResourceItem::find, py::arg("rsrcId"))

@@ -45,16 +45,16 @@ ReferenceItemDefinition<T>::~ReferenceItemDefinition()
 
 template <typename T>
 bool ReferenceItemDefinition<T>::setAcceptsEntries(
-  const std::string& uniqueName, const std::string& filter, bool accept)
+  const std::string& typeName, const std::string& filter, bool accept)
 {
   if (accept)
   {
-    m_acceptable.insert(std::make_pair(uniqueName, filter));
+    m_acceptable.insert(std::make_pair(typeName, filter));
     return true;
   }
   else
   {
-    auto range = m_acceptable.equal_range(uniqueName);
+    auto range = m_acceptable.equal_range(typeName);
     auto found = std::find_if(
       range.first, range.second, [&](decltype(*range.first) it) { return it.second == filter; });
 

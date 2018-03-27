@@ -39,7 +39,7 @@ vtkPolygonContourOperation::~vtkPolygonContourOperation()
 bool vtkPolygonContourOperation::AbleToOperate()
 {
   bool able2Op = m_smtkOp.lock() &&
-    m_smtkOp.lock()->uniqueName() == "smtk::bridge::polygon::ExtractContouers" &&
+    m_smtkOp.lock()->typeName() == "smtk::bridge::polygon::ExtractContouers" &&
     m_smtkOp.lock()->ableToOperate();
   if (!able2Op)
   {

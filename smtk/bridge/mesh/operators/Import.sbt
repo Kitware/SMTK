@@ -21,7 +21,7 @@
 
         <Resource Name="resource" Label="Import into" Optional="true" IsEnabledByDefault="false">
           <Accepts>
-            <Resource Name="mesh model"/>
+            <Resource Name="smtk::bridge::mesh::Resource"/>
           </Accepts>
           <ChildrenDefinitions>
             <String Name="session only" Label="session" Advanced="1">
@@ -53,19 +53,19 @@
         <!-- The model imported from the file. -->
         <Resource Name="resource">
           <Accepts>
-            <Resource Name="mesh model"/>
+            <Resource Name="smtk::bridge::mesh::Resource"/>
           </Accepts>
         </Resource>
 
         <Component Name="model">
           <Accepts>
-            <Resource Name="mesh model" Filter=""/>
+            <Resource Name="smtk::bridge::mesh::Resource" Filter=""/>
           </Accepts>
         </Component>
 
         <Component Name="mesh_created">
           <Accepts>
-            <Resource Name="mesh model" Filter=""/>
+            <Resource Name="smtk::bridge::mesh::Resource" Filter=""/>
           </Accepts>
         </Component>
 

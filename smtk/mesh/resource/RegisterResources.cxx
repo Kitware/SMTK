@@ -22,5 +22,10 @@ void registerResources(smtk::resource::Manager::Ptr& resourceManager)
 {
   resourceManager->registerResource<smtk::mesh::Collection>();
 }
+
+void unregisterResources(smtk::resource::Manager::Ptr& resourceManager)
+{
+  resourceManager->unregisterResource<smtk::mesh::Collection>();
+}
 }
 }

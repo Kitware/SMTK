@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
     return 1;
   }
   model->assignDefaultNames();
-  std::cout << "Read a " << model->uniqueName() << "\n";
+  std::cout << "Read a " << model->typeName() << "\n";
 
   // Enable user sorting.
   qview->tree()->setSortingEnabled(true);

@@ -52,7 +52,7 @@ class SMTKCORE_EXPORT GroupItem : public Item
 public:
   typedef std::vector<std::vector<smtk::attribute::ItemPtr> >::const_iterator const_iterator;
 
-  smtkTypeMacro(GroupItem);
+  smtkTypeMacro(smtk::attribute::GroupItem);
   ~GroupItem() override;
   Item::Type type() const override;
   bool isValid() const override;

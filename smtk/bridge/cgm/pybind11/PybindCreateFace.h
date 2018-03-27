@@ -24,8 +24,6 @@ PySharedPtrClass< smtk::bridge::cgm::CreateFace > pybind11_init_smtk_bridge_cgm_
     .def(py::init<>())
     .def(py::init<::smtk::bridge::cgm::CreateFace const &>())
     .def("deepcopy", (smtk::bridge::cgm::CreateFace & (smtk::bridge::cgm::CreateFace::*)(::smtk::bridge::cgm::CreateFace const &)) &smtk::bridge::cgm::CreateFace::operator=)
-    .def("className", &smtk::bridge::cgm::CreateFace::className)
-    .def("classname", &smtk::bridge::cgm::CreateFace::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::cgm::CreateFace> (*)()) &smtk::bridge::cgm::CreateFace::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::cgm::CreateFace> (*)(::std::shared_ptr<smtk::bridge::cgm::CreateFace> &)) &smtk::bridge::cgm::CreateFace::create, py::arg("ref"))
     .def("name", &smtk::bridge::cgm::CreateFace::name)

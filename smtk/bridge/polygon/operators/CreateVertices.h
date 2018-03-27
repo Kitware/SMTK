@@ -25,7 +25,7 @@ namespace polygon
 class SMTKPOLYGONSESSION_EXPORT CreateVertices : public Operation
 {
 public:
-  smtkTypeMacro(CreateVertices);
+  smtkTypeMacro(smtk::bridge::polygon::CreateVertices);
   smtkCreateMacro(CreateVertices);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);

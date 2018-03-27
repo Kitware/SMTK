@@ -31,12 +31,6 @@
 #include "smtk/operation/groups/ReaderGroup.h"
 #include "smtk/operation/groups/WriterGroup.h"
 
-SMTK_THIRDPARTY_PRE_INCLUDE
-#include "boost/filesystem.hpp"
-SMTK_THIRDPARTY_POST_INCLUDE
-
-using namespace boost::filesystem;
-
 namespace smtk
 {
 namespace bridge
@@ -44,34 +38,14 @@ namespace bridge
 namespace discrete
 {
 
+typedef std::tuple<CreateEdgesOperation, EdgeOperation, EntityGroupOperation, GrowOperation,
+  ImportOperation, MergeOperation, ReadOperation, ReadResource, RemoveModel, SetProperty,
+  SplitFaceOperation, WriteOperation, WriteResource>
+  OperationList;
+
 void registerOperations(smtk::operation::Manager::Ptr& operationManager)
 {
-  operationManager->registerOperation<smtk::bridge::discrete::CreateEdgesOperation>(
-    "smtk::bridge::discrete::CreateEdgesOperation");
-  operationManager->registerOperation<smtk::bridge::discrete::EdgeOperation>(
-    "smtk::bridge::discrete::EdgeOperation");
-  operationManager->registerOperation<smtk::bridge::discrete::EntityGroupOperation>(
-    "smtk::bridge::discrete::EntityGroupOperation");
-  operationManager->registerOperation<smtk::bridge::discrete::GrowOperation>(
-    "smtk::bridge::discrete::GrowOperation");
-  operationManager->registerOperation<smtk::bridge::discrete::ImportOperation>(
-    "smtk::bridge::discrete::ImportOperation");
-  operationManager->registerOperation<smtk::bridge::discrete::MergeOperation>(
-    "smtk::bridge::discrete::MergeOperation");
-  operationManager->registerOperation<smtk::bridge::discrete::ReadOperation>(
-    "smtk::bridge::discrete::ReadOperation");
-  operationManager->registerOperation<smtk::bridge::discrete::ReadResource>(
-    "smtk::bridge::discrete::ReadResource");
-  operationManager->registerOperation<smtk::bridge::discrete::RemoveModel>(
-    "smtk::bridge::discrete::RemoveModel");
-  operationManager->registerOperation<smtk::bridge::discrete::SetProperty>(
-    "smtk::bridge::discrete::SetProperty");
-  operationManager->registerOperation<smtk::bridge::discrete::SplitFaceOperation>(
-    "smtk::bridge::discrete::SplitFaceOperation");
-  operationManager->registerOperation<smtk::bridge::discrete::WriteOperation>(
-    "smtk::bridge::discrete::WriteOperation");
-  operationManager->registerOperation<smtk::bridge::discrete::WriteResource>(
-    "smtk::bridge::discrete::WriteResource");
+  operationManager->registerOperations<OperationList>();
 
   smtk::operation::ImporterGroup(operationManager)
     .registerOperation<smtk::bridge::discrete::Resource, smtk::bridge::discrete::ImportOperation>();
@@ -80,10 +54,10 @@ void registerOperations(smtk::operation::Manager::Ptr& operationManager)
     .registerOperation<smtk::bridge::discrete::Resource, smtk::bridge::discrete::ReadResource>();
 
   // When resources were introduced, the JSON description for a discrete model
-  // changed from "discrete" to "discrete model". This functor enables reading a
-  // legacy file with the JSON tag "discrete".
+  // changed from "discrete" to "smtk::bridge::discrete::Resource". This functor
+  // enables reading a legacy file with the JSON tag "discrete".
   smtk::operation::ReaderGroup(operationManager)
-    .registerOperation("smtk::bridge::discrete::ReadResource", "discrete");
+    .registerOperation(smtk::common::typeName<ReadResource>(), "discrete");
 
   smtk::operation::WriterGroup(operationManager)
     .registerOperation<smtk::bridge::discrete::Resource, smtk::bridge::discrete::WriteResource>();
@@ -94,9 +68,19 @@ void registerResources(smtk::resource::Manager::Ptr& resourceManager)
   resourceManager->registerResource<smtk::bridge::discrete::Resource>(readResource, writeResource);
 
   // When resources were introduced, the JSON description for a discrete model
-  // changed from "discrete" to "discrete model". This functor enables reading a
-  // legacy file with the JSON tag "discrete".
+  // changed from "discrete" to "smtk::bridge::discrete::Resource". This functor
+  // enables reading a legacy file with the JSON tag "discrete".
   resourceManager->addLegacyReader("discrete", readResource);
+}
+
+void unregisterOperations(smtk::operation::Manager::Ptr& operationManager)
+{
+  operationManager->unregisterOperations<OperationList>();
+}
+
+void unregisterResources(smtk::resource::Manager::Ptr& resourceManager)
+{
+  resourceManager->unregisterResource<smtk::bridge::discrete::Resource>();
 }
 }
 }

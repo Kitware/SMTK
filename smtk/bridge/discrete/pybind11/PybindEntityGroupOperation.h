@@ -22,13 +22,11 @@ PySharedPtrClass< smtk::bridge::discrete::EntityGroupOperation, smtk::operation:
 {
   PySharedPtrClass< smtk::bridge::discrete::EntityGroupOperation, smtk::operation::Operation > instance(m, "EntityGroupOperation");
   instance
-    .def("classname", &smtk::bridge::discrete::EntityGroupOperation::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::discrete::EntityGroupOperation> (*)()) &smtk::bridge::discrete::EntityGroupOperation::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::discrete::EntityGroupOperation> (*)(::std::shared_ptr<smtk::bridge::discrete::EntityGroupOperation> &)) &smtk::bridge::discrete::EntityGroupOperator::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<smtk::bridge::discrete::EntityGroupOperation> (smtk::bridge::discrete::EntityGroupOperation::*)()) &smtk::bridge::discrete::EntityGroupOperator::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<const smtk::bridge::discrete::EntityGroupOperation> (smtk::bridge::discrete::EntityGroupOperation::*)() const) &smtk::bridge::discrete::EntityGroupOperator::shared_from_this)
     .def("name", &smtk::bridge::discrete::EntityGroupOperation::name)
-    .def("className", &smtk::bridge::discrete::EntityGroupOperation::className)
     .def("ableToOperate", &smtk::bridge::discrete::EntityGroupOperation::ableToOperate)
     ;
   return instance;

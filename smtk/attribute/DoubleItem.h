@@ -28,7 +28,7 @@ class SMTKCORE_EXPORT DoubleItem : public ValueItemTemplate<double>
   friend class DoubleItemDefinition;
 
 public:
-  smtkTypeMacro(DoubleItem);
+  smtkTypeMacro(smtk::attribute::DoubleItem);
   ~DoubleItem() override;
   Item::Type type() const override;
   // Assigns this item to be equivalent to another.  Options are processed by derived item classes

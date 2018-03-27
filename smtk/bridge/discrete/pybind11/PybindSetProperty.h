@@ -25,8 +25,6 @@ PySharedPtrClass< smtk::bridge::discrete::SetProperty, smtk::operation::Operatio
     .def(py::init<>())
     .def(py::init<::smtk::bridge::discrete::SetProperty const &>())
     .def("deepcopy", (smtk::bridge::discrete::SetProperty & (smtk::bridge::discrete::SetProperty::*)(::smtk::bridge::discrete::SetProperty const &)) &smtk::bridge::discrete::SetProperty::operator=)
-    .def("className", &smtk::bridge::discrete::SetProperty::className)
-    .def("classname", &smtk::bridge::discrete::SetProperty::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::discrete::SetProperty> (*)()) &smtk::bridge::discrete::SetProperty::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::discrete::SetProperty> (*)(::std::shared_ptr<smtk::bridge::discrete::SetProperty> &)) &smtk::bridge::discrete::SetProperty::create, py::arg("ref"))
     .def("name", &smtk::bridge::discrete::SetProperty::name)

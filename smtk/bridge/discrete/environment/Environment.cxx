@@ -11,17 +11,11 @@
 #include "smtk/environment/Environment.h"
 
 #include "smtk/bridge/discrete/RegisterSession.h"
-
-#include "smtk/bridge/discrete/environment/Exports.h"
+#include "smtk/bridge/discrete/environment/Environment.h"
 
 namespace
 {
-bool registerToEnvironment()
-{
-  smtk::bridge::discrete::registerOperations(smtk::environment::OperationManager::instance());
-  smtk::bridge::discrete::registerResources(smtk::environment::ResourceManager::instance());
-  return true;
-}
+static unsigned int registerToEnvironmentCounter = 0;
 }
 
 namespace smtk
@@ -32,7 +26,23 @@ namespace discrete
 {
 namespace environment
 {
-SMTKDISCRETESESSIONENVIRONMENT_EXPORT bool registered = registerToEnvironment();
+RegisterToEnvironment::RegisterToEnvironment()
+{
+  if (registerToEnvironmentCounter++ == 0)
+  {
+    registerOperations(smtk::environment::OperationManager::instance());
+    registerResources(smtk::environment::ResourceManager::instance());
+  }
+}
+
+RegisterToEnvironment::~RegisterToEnvironment()
+{
+  if (--registerToEnvironmentCounter == 0)
+  {
+    unregisterOperations(smtk::environment::OperationManager::instance());
+    unregisterResources(smtk::environment::ResourceManager::instance());
+  }
+}
 }
 }
 }

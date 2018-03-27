@@ -32,7 +32,8 @@ void create_simple_model(smtk::model::ManagerPtr modelManager)
 {
   using namespace smtk::model::testing;
 
-  smtk::model::SessionRef sess = modelManager->createSession("native");
+  // smtk::model::SessionRef sess = modelManager->createSession("native");
+  smtk::model::SessionRef sess = modelManager->createSession("smtk::model::Session");
   smtk::model::Model model = modelManager->addModel();
   smtk::common::UUIDArray uids = createTet(modelManager);
   model.addCell(smtk::model::Volume(modelManager, uids[21]));

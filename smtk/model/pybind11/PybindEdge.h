@@ -36,7 +36,6 @@ py::class_< smtk::model::Edge, smtk::model::CellEntity > pybind11_init_smtk_mode
     .def("__ne__", (bool (smtk::model::Edge::*)(::smtk::model::EntityRef const &) const) &smtk::model::Edge::operator!=)
     .def("deepcopy", (smtk::model::Edge & (smtk::model::Edge::*)(::smtk::model::Edge const &)) &smtk::model::Edge::operator=)
     .def("__eq__", (bool (smtk::model::Edge::*)(::smtk::model::EntityRef const &) const) &smtk::model::Edge::operator==)
-    .def("classname", &smtk::model::Edge::classname)
     .def("edgeUses", &smtk::model::Edge::edgeUses)
     .def("faces", &smtk::model::Edge::faces)
     .def("findOrAddEdgeUse", &smtk::model::Edge::findOrAddEdgeUse, py::arg("o"), py::arg("sense") = 0)

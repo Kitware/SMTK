@@ -26,7 +26,6 @@ PySharedPtrClass< smtk::model::SetProperty, smtk::operation::XMLOperation > pybi
     .def(py::init<>())
     .def(py::init<::smtk::model::SetProperty const &>())
     .def("deepcopy", (smtk::model::SetProperty & (smtk::model::SetProperty::*)(::smtk::model::SetProperty const &)) &smtk::model::SetProperty::operator=)
-    .def("classname", &smtk::model::SetProperty::classname)
     .def_static("create", (std::shared_ptr<smtk::model::SetProperty> (*)()) &smtk::model::SetProperty::create)
     .def_static("create", (std::shared_ptr<smtk::model::SetProperty> (*)(::std::shared_ptr<smtk::model::SetProperty> &)) &smtk::model::SetProperty::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<const smtk::model::SetProperty> (smtk::model::SetProperty::*)() const) &smtk::model::SetProperty::shared_from_this)

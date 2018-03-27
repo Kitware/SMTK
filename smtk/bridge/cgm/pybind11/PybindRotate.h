@@ -24,8 +24,6 @@ PySharedPtrClass< smtk::bridge::cgm::Rotate > pybind11_init_smtk_bridge_cgm_Rota
     .def(py::init<>())
     .def(py::init<::smtk::bridge::cgm::Rotate const &>())
     .def("deepcopy", (smtk::bridge::cgm::Rotate & (smtk::bridge::cgm::Rotate::*)(::smtk::bridge::cgm::Rotate const &)) &smtk::bridge::cgm::Rotate::operator=)
-    .def("className", &smtk::bridge::cgm::Rotate::className)
-    .def("classname", &smtk::bridge::cgm::Rotate::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::cgm::Rotate> (*)()) &smtk::bridge::cgm::Rotate::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::cgm::Rotate> (*)(::std::shared_ptr<smtk::bridge::cgm::Rotate> &)) &smtk::bridge::cgm::Rotate::create, py::arg("ref"))
     .def("name", &smtk::bridge::cgm::Rotate::name)

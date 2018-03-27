@@ -27,7 +27,6 @@ PySharedPtrClass< smtk::mesh::ElevateMesh, smtk::operation::XMLOperation > pybin
     .def(py::init<::smtk::mesh::ElevateMesh const &>())
     .def("deepcopy", (smtk::mesh::ElevateMesh & (smtk::mesh::ElevateMesh::*)(::smtk::mesh::ElevateMesh const &)) &smtk::mesh::ElevateMesh::operator=)
     .def("ableToOperate", &smtk::mesh::ElevateMesh::ableToOperate)
-    .def("classname", &smtk::mesh::ElevateMesh::classname)
     .def_static("create", (std::shared_ptr<smtk::mesh::ElevateMesh> (*)()) &smtk::mesh::ElevateMesh::create)
     .def_static("create", (std::shared_ptr<smtk::mesh::ElevateMesh> (*)(::std::shared_ptr<smtk::mesh::ElevateMesh> &)) &smtk::mesh::ElevateMesh::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<const smtk::mesh::ElevateMesh> (smtk::mesh::ElevateMesh::*)() const) &smtk::mesh::ElevateMesh::shared_from_this)

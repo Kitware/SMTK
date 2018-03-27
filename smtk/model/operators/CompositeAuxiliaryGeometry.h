@@ -20,7 +20,7 @@ namespace model
 class SMTKCORE_EXPORT CompositeAuxiliaryGeometry : public AddAuxiliaryGeometry
 {
 public:
-  smtkTypeMacro(CompositeAuxiliaryGeometry);
+  smtkTypeMacro(smtk::model::CompositeAuxiliaryGeometry);
   smtkCreateMacro(CompositeAuxiliaryGeometry);
   smtkSuperclassMacro(AddAuxiliaryGeometry);
   smtkSharedFromThisMacro(smtk::operation::Operation);

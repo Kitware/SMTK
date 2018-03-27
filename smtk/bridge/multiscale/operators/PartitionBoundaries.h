@@ -30,7 +30,7 @@ namespace multiscale
 class SMTKMULTISCALESESSION_EXPORT PartitionBoundaries : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(PartitionBoundaries);
+  smtkTypeMacro(smtk::bridge::multiscale::PartitionBoundaries);
   smtkCreateMacro(PartitionBoundaries);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 

@@ -30,7 +30,7 @@ class SMTKCORE_EXPORT DirectoryItem : public FileSystemItem
   friend class DirectoryItemDefinition;
 
 public:
-  smtkTypeMacro(DirectoryItem);
+  smtkTypeMacro(smtk::attribute::DirectoryItem);
   ~DirectoryItem() override;
   Item::Type type() const override;
 

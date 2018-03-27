@@ -26,7 +26,6 @@ PySharedPtrClass< smtk::attribute::FileItem, smtk::attribute::FileSystemItem > p
     .def(py::init<::smtk::attribute::FileItem const &>())
     .def("deepcopy", (smtk::attribute::FileItem & (smtk::attribute::FileItem::*)(::smtk::attribute::FileItem const &)) &smtk::attribute::FileItem::operator=)
     .def("addRecentValue", &smtk::attribute::FileItem::addRecentValue, py::arg("val"))
-    .def("classname", &smtk::attribute::FileItem::classname)
     .def("recentValues", &smtk::attribute::FileItem::recentValues)
     .def("type", &smtk::attribute::FileItem::type)
     .def_static("CastTo", [](const std::shared_ptr<smtk::attribute::Item> i) {

@@ -48,7 +48,7 @@ class Session;
 class SMTKDISCRETESESSION_EXPORT ImportOperation : public Operation
 {
 public:
-  smtkTypeMacro(ImportOperation);
+  smtkTypeMacro(smtk::bridge::discrete::ImportOperation);
   smtkCreateMacro(ImportOperation);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);

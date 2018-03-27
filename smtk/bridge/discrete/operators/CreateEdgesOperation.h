@@ -27,7 +27,7 @@ class Session;
 class SMTKDISCRETESESSION_EXPORT CreateEdgesOperation : public Operation
 {
 public:
-  smtkTypeMacro(CreateEdgesOperation);
+  smtkTypeMacro(smtk::bridge::discrete::CreateEdgesOperation);
   smtkCreateMacro(CreateEdgesOperation);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);

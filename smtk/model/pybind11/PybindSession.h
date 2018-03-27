@@ -54,8 +54,6 @@ PySharedPtrClass< smtk::model::Session > pybind11_init_smtk_model_Session(py::mo
     .def(py::init<::smtk::model::Session const &>())
     .def("deepcopy", (smtk::model::Session & (smtk::model::Session::*)(::smtk::model::Session const &)) &smtk::model::Session::operator=)
     .def("allSupportedInformation", &smtk::model::Session::allSupportedInformation)
-    .def("className", &smtk::model::Session::className)
-    .def("classname", &smtk::model::Session::classname)
     .def("danglingEntities", &smtk::model::Session::danglingEntities)
     .def("declareDanglingEntity", &smtk::model::Session::declareDanglingEntity, py::arg("ent"), py::arg("present") = 0)
     .def("log", &smtk::model::Session::log)

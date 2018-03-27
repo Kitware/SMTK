@@ -210,7 +210,7 @@ std::string PhraseListContent::generateTitle(
     auto rsrc = phr->relatedResource();
     if (rsrc)
     {
-      rsrcType = rsrc->uniqueName();
+      rsrcType = rsrc->typeName();
       auto comp = phr->relatedComponent();
       auto modelComp = std::dynamic_pointer_cast<smtk::model::Entity>(comp);
       //auto modelRsrc = std::dynamic_pointer_cast<smtk::model::Manager>(rsrc);

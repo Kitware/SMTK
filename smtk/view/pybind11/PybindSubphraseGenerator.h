@@ -25,7 +25,6 @@ PySharedPtrClass< smtk::view::SubphraseGenerator > pybind11_init_smtk_view_Subph
   instance
     .def(py::init<::smtk::view::SubphraseGenerator const &>())
     .def("deepcopy", (smtk::view::SubphraseGenerator & (smtk::view::SubphraseGenerator::*)(::smtk::view::SubphraseGenerator const &)) &smtk::view::SubphraseGenerator::operator=)
-    .def("classname", &smtk::view::SubphraseGenerator::classname)
     .def("directLimit", &smtk::view::SubphraseGenerator::directLimit)
     .def("setDirectLimit", &smtk::view::SubphraseGenerator::setDirectLimit, py::arg("val"))
     .def("setSkipAttributes", &smtk::view::SubphraseGenerator::setSkipAttributes, py::arg("val"))

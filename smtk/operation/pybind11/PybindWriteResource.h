@@ -25,7 +25,6 @@ PySharedPtrClass< smtk::operation::WriteResource, smtk::operation::XMLOperation 
   instance
     .def(py::init<::smtk::operation::WriteResource const &>())
     .def("deepcopy", (smtk::operation::WriteResource & (smtk::operation::WriteResource::*)(::smtk::operation::WriteResource const &)) &smtk::operation::WriteResource::operator=)
-    .def("classname", &smtk::operation::WriteResource::classname)
     .def_static("create", (std::shared_ptr<smtk::operation::WriteResource> (*)()) &smtk::operation::WriteResource::create)
     .def_static("create", (std::shared_ptr<smtk::operation::WriteResource> (*)(::std::shared_ptr<smtk::operation::WriteResource> &)) &smtk::operation::WriteResource::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<const smtk::operation::WriteResource> (smtk::operation::WriteResource::*)() const) &smtk::operation::WriteResource::shared_from_this)

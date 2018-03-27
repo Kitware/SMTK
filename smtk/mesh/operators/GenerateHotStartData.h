@@ -30,7 +30,7 @@ namespace mesh
 class SMTKCORE_EXPORT GenerateHotStartData : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(GenerateHotStartData);
+  smtkTypeMacro(smtk::mesh::GenerateHotStartData);
   smtkCreateMacro(GenerateHotStartData);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::XMLOperation);

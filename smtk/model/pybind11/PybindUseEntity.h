@@ -39,7 +39,6 @@ py::class_< smtk::model::UseEntity, smtk::model::EntityRef > pybind11_init_smtk_
     .def("addShellEntity", &smtk::model::UseEntity::addShellEntity, py::arg("shell"))
     .def("boundingShellEntity", &smtk::model::UseEntity::boundingShellEntity)
     .def("cell", &smtk::model::UseEntity::cell)
-    .def("classname", &smtk::model::UseEntity::classname)
     .def("isValid", (bool (smtk::model::UseEntity::*)() const) &smtk::model::UseEntity::isValid)
     // .def("isValid", (bool (smtk::model::UseEntity::*)(::smtk::model::Entity * *) const) &smtk::model::UseEntity::isValid, py::arg("entRec"))
     .def("orientation", &smtk::model::UseEntity::orientation)

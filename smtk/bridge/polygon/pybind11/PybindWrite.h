@@ -24,7 +24,6 @@ PySharedPtrClass< smtk::bridge::polygon::Write > pybind11_init_smtk_bridge_polyg
     .def(py::init<::smtk::bridge::polygon::Write const &>())
     .def("deepcopy", (smtk::bridge::polygon::Write & (smtk::bridge::polygon::Write::*)(::smtk::bridge::polygon::Write const &)) &smtk::bridge::polygon::Write::operator=)
     .def("ableToOperate", &smtk::bridge::polygon::Write::ableToOperate)
-    .def("classname", &smtk::bridge::polygon::Write::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::Write> (*)()) &smtk::bridge::polygon::Write::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::polygon::Write> (*)(::std::shared_ptr<smtk::bridge::polygon::Write> &)) &smtk::bridge::polygon::Write::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<const smtk::bridge::polygon::Write> (smtk::bridge::polygon::Write::*)() const) &smtk::bridge::polygon::Write::shared_from_this)

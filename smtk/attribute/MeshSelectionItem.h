@@ -43,7 +43,7 @@ class SMTKCORE_EXPORT MeshSelectionItem : public Item
 public:
   typedef std::map<smtk::common::UUID, std::set<int> >::const_iterator const_sel_map_it;
 
-  smtkTypeMacro(MeshSelectionItem);
+  smtkTypeMacro(smtk::attribute::MeshSelectionItem);
   ~MeshSelectionItem() override;
   Item::Type type() const override;
   bool isValid() const override;

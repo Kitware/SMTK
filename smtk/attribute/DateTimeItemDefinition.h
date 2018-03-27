@@ -25,7 +25,7 @@ namespace attribute
 class SMTKCORE_EXPORT DateTimeItemDefinition : public ItemDefinition
 {
 public:
-  smtkTypeMacro(DateTimeItemDefinition);
+  smtkTypeMacro(smtk::attribute::DateTimeItemDefinition);
   static smtk::attribute::DateTimeItemDefinitionPtr New(const std::string& myName)
   {
     return smtk::attribute::DateTimeItemDefinitionPtr(new DateTimeItemDefinition(myName));

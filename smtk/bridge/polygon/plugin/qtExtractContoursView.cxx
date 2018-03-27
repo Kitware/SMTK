@@ -298,7 +298,7 @@ pqPipelineSource* internal_createImageSource(const std::string& imageurl)
 
 void qtExtractContoursView::operationSelected(const smtk::operation::OperationPtr& op)
 {
-  if (!this->Internals->CurrentAtt || !this->Widget || op->uniqueName() != "extract contours")
+  if (!this->Internals->CurrentAtt || !this->Widget || op->typeName() != "extract contours")
     return;
 
   if (this->Internals->ContoursDialog)

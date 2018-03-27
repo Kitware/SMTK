@@ -43,7 +43,7 @@ class ComponentItemDefinition;
 class SMTKCORE_EXPORT ComponentItem : public ReferenceItem<smtk::resource::Component>
 {
 public:
-  smtkTypeMacro(ComponentItem);
+  smtkTypeMacro(smtk::attribute::ComponentItem);
   smtkSuperclassMacro(ReferenceItem<smtk::resource::Component>);
 
   /// Destructor

@@ -48,7 +48,7 @@ class Metadata;
 class SMTKCORE_EXPORT Operation : smtkEnableSharedPtr(Operation)
 {
 public:
-  smtkTypeMacroBase(Operation);
+  smtkTypeMacroBase(smtk::operation::Operation);
 
   // A hash value uniquely representing the operation.
   typedef std::size_t Index;
@@ -77,11 +77,6 @@ public:
 
   friend class Manager;
   friend ImportPythonOperation;
-
-  // Return a unique string that describes this class. Registered operations
-  // return their registered unique name; unregistered operations simply return
-  // this->classname().
-  std::string uniqueName() const;
 
   // Index is a compile-time intrinsic of the derived operation; as such, it
   // cannot be set. It is virtual so that derived operations can assign their

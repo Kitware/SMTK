@@ -23,7 +23,6 @@ PySharedPtrClass< smtk::mesh::Manager > pybind11_init_smtk_mesh_Manager(py::modu
   instance
     .def(py::init<::smtk::mesh::Manager const &>())
     .def("deepcopy", (smtk::mesh::Manager & (smtk::mesh::Manager::*)(::smtk::mesh::Manager const &)) &smtk::mesh::Manager::operator=)
-    .def("classname", &smtk::mesh::Manager::classname)
     .def_static("create", (std::shared_ptr<smtk::mesh::Manager> (*)()) &smtk::mesh::Manager::create)
     .def_static("create", (std::shared_ptr<smtk::mesh::Manager> (*)(::std::shared_ptr<smtk::mesh::Manager> &)) &smtk::mesh::Manager::create, py::arg("ref"))
     .def("makeCollection", (smtk::mesh::CollectionPtr (smtk::mesh::Manager::*)()) &smtk::mesh::Manager::makeCollection)

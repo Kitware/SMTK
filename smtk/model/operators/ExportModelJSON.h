@@ -20,7 +20,7 @@ namespace model
 class SMTKCORE_EXPORT ExportModelJSON : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(ExportModelJSON);
+  smtkTypeMacro(smtk::model::ExportModelJSON);
   smtkCreateMacro(ExportModelJSON);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::XMLOperation);

@@ -26,7 +26,7 @@ class SMTKCORE_EXPORT ResourceItemDefinition
   : public ReferenceItemDefinition<smtk::resource::Resource>
 {
 public:
-  smtkTypeMacro(ResourceItemDefinition);
+  smtkTypeMacro(smtk::attribute::ResourceItemDefinition);
   smtkSuperclassMacro(ReferenceItemDefinition<smtk::resource::Resource>);
 
   static smtk::attribute::ResourceItemDefinitionPtr New(const std::string& sname)

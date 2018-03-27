@@ -26,7 +26,6 @@ PySharedPtrClass< smtk::bridge::mesh::EulerCharacteristicRatio, smtk::operation:
     .def(py::init<::smtk::bridge::mesh::EulerCharacteristicRatio const &>())
     .def(py::init<>())
     .def("deepcopy", (smtk::bridge::mesh::EulerCharacteristicRatio & (smtk::bridge::mesh::EulerCharacteristicRatio::*)(::smtk::bridge::mesh::EulerCharacteristicRatio const &)) &smtk::bridge::mesh::EulerCharacteristicRatio::operator=)
-    .def("classname", &smtk::bridge::mesh::EulerCharacteristicRatio::classname)
     .def_static("create", (std::shared_ptr<smtk::bridge::mesh::EulerCharacteristicRatio> (*)()) &smtk::bridge::mesh::EulerCharacteristicRatio::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::mesh::EulerCharacteristicRatio> (*)(::std::shared_ptr<smtk::bridge::mesh::EulerCharacteristicRatio> &)) &smtk::bridge::mesh::EulerCharacteristicRatio::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<smtk::bridge::mesh::EulerCharacteristicRatio> (smtk::bridge::mesh::EulerCharacteristicRatio::*)()) &smtk::bridge::mesh::EulerCharacteristicRatio::shared_from_this)

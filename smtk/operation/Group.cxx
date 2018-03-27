@@ -58,10 +58,10 @@ Operation::Specification getSpecification(
 }
 }
 
-bool Group::registerOperation(const std::string& uniqueName, std::set<std::string> values)
+bool Group::registerOperation(const std::string& typeName, std::set<std::string> values)
 {
   // Access the operation's specification.
-  Operation::Specification spec = getSpecification<std::string>(uniqueName, m_manager);
+  Operation::Specification spec = getSpecification<std::string>(typeName, m_manager);
 
   // Add the group name to the operator specification's list of groups.
   return spec ? addTag(spec, name(), values) : false;
@@ -76,10 +76,10 @@ bool Group::registerOperation(const Operation::Index& index, std::set<std::strin
   return spec ? addTag(spec, name(), values) : false;
 }
 
-bool Group::unregisterOperation(const std::string& uniqueName)
+bool Group::unregisterOperation(const std::string& typeName)
 {
   // Access the operation's specification.
-  Operation::Specification spec = getSpecification<std::string>(uniqueName, m_manager);
+  Operation::Specification spec = getSpecification<std::string>(typeName, m_manager);
 
   // Remove the group name from the operator specification's list of groups.
   return spec ? removeTag(spec, name()) : false;
@@ -94,9 +94,9 @@ bool Group::unregisterOperation(const Operation::Index& index)
   return spec ? removeTag(spec, name()) : false;
 }
 
-Operation::Specification Group::specification(const std::string& uniqueName) const
+Operation::Specification Group::specification(const std::string& typeName) const
 {
-  return getSpecification<std::string>(uniqueName, m_manager);
+  return getSpecification<std::string>(typeName, m_manager);
 }
 
 Operation::Specification Group::specification(const Operation::Index& index) const
@@ -104,10 +104,10 @@ Operation::Specification Group::specification(const Operation::Index& index) con
   return getSpecification<Operation::Index>(index, m_manager);
 }
 
-bool Group::has(const std::string& uniqueName) const
+bool Group::has(const std::string& typeName) const
 {
   // Access the operation's specification.
-  Operation::Specification spec = getSpecification<std::string>(uniqueName, m_manager);
+  Operation::Specification spec = getSpecification<std::string>(typeName, m_manager);
 
   // If there is no specification, there are no tags to query.
   if (spec == nullptr)
@@ -136,10 +136,10 @@ bool Group::has(const Operation::Index& index) const
   return tagNames.find(name()) != tagNames.end();
 }
 
-std::set<std::string> Group::values(const std::string& uniqueName) const
+std::set<std::string> Group::values(const std::string& typeName) const
 {
   // Access the operation's specification.
-  Operation::Specification spec = getSpecification<std::string>(uniqueName, m_manager);
+  Operation::Specification spec = getSpecification<std::string>(typeName, m_manager);
 
   // If there is no specification, there are no tags to query.
   if (spec == nullptr)
@@ -206,7 +206,7 @@ std::set<std::string> Group::operationNames() const
     std::set<std::string> operatorGroups = md.groups();
     if (operatorGroups.find(name()) != operatorGroups.end())
     {
-      operationNames.insert(md.uniqueName());
+      operationNames.insert(md.typeName());
     }
   }
   return operationNames;

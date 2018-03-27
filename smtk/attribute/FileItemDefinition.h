@@ -27,7 +27,7 @@ class Attribute;
 class SMTKCORE_EXPORT FileItemDefinition : public FileSystemItemDefinition
 {
 public:
-  smtkTypeMacro(FileItemDefinition);
+  smtkTypeMacro(smtk::attribute::FileItemDefinition);
   static smtk::attribute::FileItemDefinitionPtr New(const std::string& myName)
   {
     return smtk::attribute::FileItemDefinitionPtr(new FileItemDefinition(myName));

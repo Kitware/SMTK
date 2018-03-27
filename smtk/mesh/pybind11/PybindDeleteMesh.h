@@ -27,7 +27,6 @@ PySharedPtrClass< smtk::mesh::DeleteMesh, smtk::operation::XMLOperation > pybind
     .def(py::init<::smtk::mesh::DeleteMesh const &>())
     .def("deepcopy", (smtk::mesh::DeleteMesh & (smtk::mesh::DeleteMesh::*)(::smtk::mesh::DeleteMesh const &)) &smtk::mesh::DeleteMesh::operator=)
     .def("ableToOperate", &smtk::mesh::DeleteMesh::ableToOperate)
-    .def("classname", &smtk::mesh::DeleteMesh::classname)
     .def_static("create", (std::shared_ptr<smtk::mesh::DeleteMesh> (*)()) &smtk::mesh::DeleteMesh::create)
     .def_static("create", (std::shared_ptr<smtk::mesh::DeleteMesh> (*)(::std::shared_ptr<smtk::mesh::DeleteMesh> &)) &smtk::mesh::DeleteMesh::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<const smtk::mesh::DeleteMesh> (smtk::mesh::DeleteMesh::*)() const) &smtk::mesh::DeleteMesh::shared_from_this)

@@ -20,7 +20,7 @@ namespace model
 class SMTKCORE_EXPORT TerrainExtraction : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(TerrainExtraction);
+  smtkTypeMacro(smtk::model::TerrainExtraction);
   smtkCreateMacro(TerrainExtraction);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::XMLOperation);
