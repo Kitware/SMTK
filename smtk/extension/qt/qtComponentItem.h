@@ -48,6 +48,8 @@ protected:
 
   void toggleCurrentItem() override;
 
+  bool synchronize(UpdateSource src) override;
+
   class Internal;
   Internal* m_p;
 };

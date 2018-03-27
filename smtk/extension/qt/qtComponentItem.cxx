@@ -104,8 +104,7 @@ std::string qtComponentItem::synopsis(bool& ok) const
   }
 
   static const std::size_t numRequired = item->numberOfRequiredValues();
-  static const std::size_t maxAllowed =
-    item->isExtensible() ? item->maxNumberOfValues() : numRequired;
+  static const std::size_t maxAllowed = item->maxNumberOfValues();
   std::ostringstream label;
   std::size_t numSel = 0;
   for (auto entry : m_p->m_members)
@@ -201,7 +200,7 @@ int qtComponentItem::decorateWithMembership(smtk::view::DescriptivePhrasePtr phr
               qtReferenceItem::m_p->m_phraseModel->triggerDataChanged();
             }
           }
-          m_p->m_members[ent] = val ? 1 : 0;
+          m_p->m_members[ent] = val ? 1 : 0; // FIXME: Use a bit specified by the application.
           this->updateSynopsisLabels();
           return 1;
         }
@@ -231,6 +230,66 @@ void qtComponentItem::toggleCurrentItem()
     cphr->setRelatedVisibility(!currentMembership);
     this->updateSynopsisLabels();
   }
+}
+
+bool qtComponentItem::synchronize(UpdateSource src)
+{
+  auto item = this->componentItem();
+  if (!item)
+  {
+    return false;
+  }
+
+  std::size_t uiMembers = 0;
+  for (auto member : m_p->m_members)
+  {
+    if (member.second)
+    {
+      ++uiMembers;
+    }
+  }
+  static const std::size_t numRequired = item->numberOfRequiredValues();
+  static const std::size_t maxAllowed = item->maxNumberOfValues();
+  switch (src)
+  {
+    case UpdateSource::ITEM_FROM_GUI:
+    {
+      if ((numRequired > 0 && uiMembers < numRequired) ||
+        (maxAllowed > 0 && uiMembers > maxAllowed))
+      {
+        // UI cannot satisfy item. Return.
+        return false;
+      }
+      // Everything else in this case statement should really be
+      // a single, atomic operation executed on the attribute/item:
+      if (!item->setNumberOfValues(uiMembers))
+      {
+        return false;
+      }
+      int idx = 0;
+      for (auto member : m_p->m_members)
+      {
+        if (member.second)
+        {
+          if (!item->setValue(idx, member.first))
+          {
+            return false; // Huh!?!
+          }
+          ++idx;
+        }
+      }
+    }
+    break;
+    case UpdateSource::GUI_FROM_ITEM:
+      m_p->m_members
+        .clear(); // FIXME: Preserve bits other than the one used by the qtComponentItem?
+      for (auto vit = item->begin(); vit != item->end(); ++vit)
+      {
+        m_p->m_members[*vit] = 1; // FIXME: Use a bit specified by the application.
+      }
+      break;
+  }
+  return true;
 }
 }
 }

@@ -47,6 +47,21 @@ protected slots:
     */
   virtual void linkHover(bool link);
 
+  /**\brief Called when the user asks to close the popup.
+    *
+    * If \a escaping is false and if the widget's state is valid,
+    * then update the attribute-system item's state.
+    * Otherwise, revert the widget's state to the attribute-system item's state.
+    *
+    * In the future we may provide applications with more options (either via
+    * signals/slots to resolve problems, or via preferences that can be set).
+    *
+    * When \a escaping is true, this method is being called becuase the user clicked
+    * the Cancel or Escape keys. Otherwise, this method is being called because the
+    * popup's Done button has been pressed.
+    */
+  virtual void synchronizeAndHide(bool escaping = false);
+
 protected:
   /**\brief Subclasses override this to create a model of the appropriate type.
     *
@@ -75,6 +90,16 @@ protected:
     * or not it is a member of the underlying attribute-system's reference item.
     */
   virtual int decorateWithMembership(smtk::view::DescriptivePhrasePtr phr) = 0;
+
+  /// Indicate whether the GUI should be updated from the item it presents or vice versa.
+  enum class UpdateSource
+  {
+    ITEM_FROM_GUI, //!< Update the attribute-system's reference-item to match the GUI
+    GUI_FROM_ITEM, //!< Update the GUI to match the attribute-system's reference-item
+  };
+
+  /// Children must implement this.
+  virtual bool synchronize(UpdateSource src) = 0;
 
   qtReferenceItemData* m_p;
 };
