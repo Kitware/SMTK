@@ -253,23 +253,17 @@ void vtkSMTKWrapper::AddResourceFilter(json& response)
   if (rsrcThing)
   {
     vtkAlgorithm* alg = rsrcThing;
-    vtkSMTKModelReader* modelSrc = nullptr;
-    vtkSMTKAttributeReader* attrSrc = nullptr;
-    while (alg && !(modelSrc = vtkSMTKModelReader::SafeDownCast(alg)) &&
-      !(attrSrc = vtkSMTKAttributeReader::SafeDownCast(alg)))
-    { // TODO: Also stop when we get to a mesh/attrib/etc source...
+    vtkSMTKResourceReader* resourceSrc = nullptr;
+
+    // Recursively walk up ParaView's pipeline until we encounter one of our
+    // creation filters (marked by inheritence from vtkSMTKResourceReader).
+    while (alg && !(resourceSrc = vtkSMTKResourceReader::SafeDownCast(alg)))
+    {
       alg = alg->GetInputAlgorithm(0, 0);
     }
-    if (modelSrc)
+    if (resourceSrc)
     {
-      modelSrc->SetWrapper(this);
-    }
-    if (attrSrc)
-    {
-      attrSrc->SetWrapper(this);
-    }
-    if (modelSrc || attrSrc)
-    {
+      resourceSrc->SetWrapper(this);
       found = true;
       response["result"] = {
         { "success", true },

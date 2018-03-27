@@ -116,5 +116,24 @@ std::set<Operation::Index> ResourceIOGroup::operationsForResource(
   }
   return operations;
 }
+
+std::set<std::string> ResourceIOGroup::supportedResources() const
+{
+  std::set<std::string> resources;
+
+  auto manager = m_manager.lock();
+  if (manager == nullptr)
+  {
+    return resources;
+  }
+
+  std::set<Operation::Index> allOperations = this->operations();
+
+  for (auto& index : allOperations)
+  {
+    resources.insert(resourceForOperation(index));
+  }
+  return resources;
+}
 }
 }

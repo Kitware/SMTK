@@ -47,8 +47,8 @@ using namespace smtk;
 vtkStandardNewMacro(vtkSMTKModelImporter);
 
 vtkSMTKModelImporter::vtkSMTKModelImporter()
-  : ResourceName("")
 {
+  this->ResourceName = nullptr;
   this->SetNumberOfOutputPorts(vtkModelMultiBlockSource::NUMBER_OF_OUTPUT_PORTS);
 
   // Ensure this object's MTime > this->ModelSource's MTime so first RequestData() call
@@ -58,113 +58,13 @@ vtkSMTKModelImporter::vtkSMTKModelImporter()
 
 vtkSMTKModelImporter::~vtkSMTKModelImporter()
 {
+  this->SetResourceName(nullptr);
 }
 
 void vtkSMTKModelImporter::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   os << indent << "ModelSource: " << this->ModelSource << "\n";
-}
-
-bool vtkSMTKModelImporter::SetImporterResourceScope(const std::string& typeName)
-{
-  smtk::resource::Manager::Ptr rsrcMgr = this->Wrapper
-    ? this->Wrapper->GetResourceManager()
-    : smtk::environment::ResourceManager::instance();
-
-  auto metadata = rsrcMgr->metadata().get<smtk::resource::NameTag>().find(typeName);
-  if (metadata != rsrcMgr->metadata().get<smtk::resource::NameTag>().end())
-  {
-    // We can support this resource type. Set our resource index accordingly.
-    this->ResourceName = typeName;
-    this->Modified();
-    return true;
-  }
-
-  return false;
-}
-
-bool vtkSMTKModelImporter::SetImporterResourceScope(const smtk::resource::Resource::Index& index)
-{
-  smtk::resource::Manager::Ptr rsrcMgr = this->Wrapper
-    ? this->Wrapper->GetResourceManager()
-    : smtk::environment::ResourceManager::instance();
-
-  auto metadata = rsrcMgr->metadata().get<smtk::resource::IndexTag>().find(index);
-  if (metadata != rsrcMgr->metadata().get<smtk::resource::IndexTag>().end())
-  {
-    // We can support this resource type. Set our resource index accordingly.
-    this->ResourceName = metadata->typeName();
-    this->Modified();
-    return true;
-  }
-
-  return false;
-}
-
-const std::string& vtkSMTKModelImporter::GetImporterResourceScope() const
-{
-  static std::string allTypes = "all";
-  static std::string noTypes = "none";
-
-  // If the resource index has not been set, then the default scope is to accept
-  // all files that can be imported.
-  if (this->ResourceName.empty())
-  {
-    return allTypes;
-  }
-
-  smtk::resource::Manager::Ptr rsrcMgr = this->Wrapper
-    ? this->Wrapper->GetResourceManager()
-    : smtk::environment::ResourceManager::instance();
-
-  if (rsrcMgr->metadata().get<smtk::resource::NameTag>().find(this->ResourceName) !=
-    rsrcMgr->metadata().get<smtk::resource::NameTag>().end())
-  {
-    // Return the unique name associated with our resource type.
-    return this->ResourceName;
-  }
-
-  // If our resource type is no longer supported by the resource manager, then
-  // we can no longer import it.
-  return noTypes;
-}
-
-std::string vtkSMTKModelImporter::SupportedExtensions() const
-{
-  smtk::operation::Manager::Ptr operMgr = this->Wrapper
-    ? this->Wrapper->GetOperationManager()
-    : smtk::environment::OperationManager::instance();
-
-  if (operMgr == nullptr)
-  {
-    return "";
-  }
-
-  // Access the importer group associated with this operation manager.
-  smtk::operation::ImporterGroup importerGroup(operMgr);
-
-  // Collect all of the import operation ids associated with our resource. If no
-  // resource is associated with this importer, then just use all importers.
-  std::set<smtk::operation::Operation::Index> ops = this->ResourceName.empty()
-    ? importerGroup.operations()
-    : importerGroup.operationsForResource(this->ResourceName);
-
-  // Append their supported extensions into one big file filter string.
-  std::string fileFilters = "";
-  for (const smtk::operation::Operation::Index& index : ops)
-  {
-    auto fileItemDefinition = importerGroup.fileItemDefinitionForOperation(index);
-    assert(fileItemDefinition != nullptr);
-
-    if (!fileFilters.empty())
-    {
-      fileFilters.append(";;");
-    }
-
-    fileFilters.append(fileItemDefinition->getFileFilters());
-  }
-  return fileFilters;
 }
 
 smtk::resource::ResourcePtr vtkSMTKModelImporter::GetResource() const
@@ -262,9 +162,10 @@ bool vtkSMTKModelImporter::LoadFile()
 
   // Collect all of the import operation ids associated with our resource. If no
   // resource is associated with this importer, then just use all importers.
-  std::set<smtk::operation::Operation::Index> ops = this->ResourceName.empty()
+  std::string resourceName(this->ResourceName);
+  std::set<smtk::operation::Operation::Index> ops = resourceName.empty()
     ? importerGroup.operationsForFileName(this->FileName)
-    : importerGroup.operationsForResourceAndFileName(this->ResourceName, this->FileName);
+    : importerGroup.operationsForResourceAndFileName(resourceName, this->FileName);
 
   if (ops.empty())
   {
