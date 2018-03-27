@@ -142,6 +142,7 @@ set(discreteSessionSrcs
   operators/CreateEdgesOperation.cxx
   operators/EntityGroupOperation.cxx
   operators/ImportOperation.cxx
+  operators/LegacyReadResource.cxx
   operators/MergeOperation.cxx
   operators/ReadOperation.cxx
   operators/ReadResource.cxx
@@ -163,6 +164,7 @@ set(discreteSessionHeaders
   operators/CreateEdgesOperation.h
   operators/EntityGroupOperation.h
   operators/ImportOperation.h
+  operators/LegacyReadResource.h
   operators/MergeOperation.h
   operators/ReadOperation.h
   operators/ReadResource.h
@@ -187,6 +189,7 @@ include(SMTKOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdgesOperation.sbt" unitOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/MergeOperation.sbt" unitOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ReadOperation.sbt" unitOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/LegacyReadResource.sbt" unitOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ReadResource.sbt" unitOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SplitFaceOperation.sbt" unitOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ImportOperation.sbt" unitOperationXML)

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the CMB discrete Model "read resource" Operation -->
+<!-- Description of the CMB discrete Model  read resource" Operation -->
 <SMTK_AttributeSystem Version="3">
   <Definitions>
     <include href="smtk/operation/Operation.xml"/>
-    <AttDef Type="read" Label="Model - Read Resource" BaseType="operation">
+    <AttDef Type="legacy read" Label="Model - Read Legacy Resource" BaseType="operation">
       <ItemDefinitions>
         <File Name="filename" Label="File Name" NumberOfRequiredValues="1"
           ShouldExist="true"
@@ -13,7 +13,7 @@
     </AttDef>
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(read)" BaseType="result">
+    <AttDef Type="result(legacy read)" BaseType="result">
       <ItemDefinitions>
 
         <Resource Name="resource">

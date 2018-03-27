@@ -16,6 +16,7 @@
 #include "smtk/bridge/discrete/operators/EntityGroupOperation.h"
 #include "smtk/bridge/discrete/operators/GrowOperation.h"
 #include "smtk/bridge/discrete/operators/ImportOperation.h"
+#include "smtk/bridge/discrete/operators/LegacyReadResource.h"
 #include "smtk/bridge/discrete/operators/MergeOperation.h"
 #include "smtk/bridge/discrete/operators/ReadOperation.h"
 #include "smtk/bridge/discrete/operators/ReadResource.h"
@@ -39,8 +40,8 @@ namespace discrete
 {
 
 typedef std::tuple<CreateEdgesOperation, EdgeOperation, EntityGroupOperation, GrowOperation,
-  ImportOperation, MergeOperation, ReadOperation, ReadResource, RemoveModel, SetProperty,
-  SplitFaceOperation, WriteOperation, WriteResource>
+  ImportOperation, LegacyReadResource, MergeOperation, ReadOperation, ReadResource, RemoveModel,
+  SetProperty, SplitFaceOperation, WriteOperation, WriteResource>
   OperationList;
 
 void registerOperations(smtk::operation::Manager::Ptr& operationManager)
@@ -49,15 +50,13 @@ void registerOperations(smtk::operation::Manager::Ptr& operationManager)
 
   smtk::operation::ImporterGroup(operationManager)
     .registerOperation<smtk::bridge::discrete::Resource, smtk::bridge::discrete::ImportOperation>();
+  smtk::operation::ImporterGroup(operationManager)
+    .registerOperation<smtk::bridge::discrete::Resource, smtk::bridge::discrete::ReadOperation>();
 
   smtk::operation::ReaderGroup(operationManager)
     .registerOperation<smtk::bridge::discrete::Resource, smtk::bridge::discrete::ReadResource>();
-
-  // When resources were introduced, the JSON description for a discrete model
-  // changed from "discrete" to "smtk::bridge::discrete::Resource". This functor
-  // enables reading a legacy file with the JSON tag "discrete".
   smtk::operation::ReaderGroup(operationManager)
-    .registerOperation(smtk::common::typeName<ReadResource>(), "discrete");
+    .registerOperation(smtk::common::typeName<LegacyReadResource>(), "discrete");
 
   smtk::operation::WriterGroup(operationManager)
     .registerOperation<smtk::bridge::discrete::Resource, smtk::bridge::discrete::WriteResource>();
@@ -67,10 +66,10 @@ void registerResources(smtk::resource::Manager::Ptr& resourceManager)
 {
   resourceManager->registerResource<smtk::bridge::discrete::Resource>(readResource, writeResource);
 
-  // When resources were introduced, the JSON description for a discrete model
-  // changed from "discrete" to "smtk::bridge::discrete::Resource". This functor
-  // enables reading a legacy file with the JSON tag "discrete".
-  resourceManager->addLegacyReader("discrete", readResource);
+  // When moving from CJSON to nlohmann::json, the file format for discrete
+  // models changed slightly. This call facilitates reading the old format
+  // using our new tools.
+  resourceManager->addLegacyReader("discrete", legacyReadResource);
 }
 
 void unregisterOperations(smtk::operation::Manager::Ptr& operationManager)
