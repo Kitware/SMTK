@@ -448,11 +448,13 @@ void smtkRGGEditAssemblyView::apply()
   double thickness0(std::numeric_limits<double>::max()),
     thickness1(std::numeric_limits<double>::max());
   calculateDuctMinimimThickness(duct, thickness0, thickness1);
+  this->calculatePitches(); // In case the user has changed duct properties.
   std::vector<double> spacing = { 0, 0 };
   double baseX, baseY;
   if (!isHex)
   { // Use the cartesian coordinate where the starting point is located
     // at left bottom
+    // TODO: Use the pitch defined in the file?
     spacing[0] = thickness0 / static_cast<double>(latticeSize[0]);
     spacing[1] = thickness0 / static_cast<double>(latticeSize[1]);
     baseX = -1 * thickness0 / 2 + spacing[0] / 2;
@@ -477,12 +479,13 @@ void smtkRGGEditAssemblyView::apply()
 
     std::vector<int> layout = iter->second;
     std::vector<double> coordinates;
-    coordinates.reserve(layout.size());
+    coordinates.reserve(layout.size() / 2 * 3);
     smtk::attribute::StringItemPtr plaRule = cIAtt->findString("placement rule");
     smtk::attribute::GroupItemPtr placementsI =
       smtk::dynamic_pointer_cast<smtk::attribute::GroupItem>(plaRule->activeChildItem(0));
     placementsI->setNumberOfGroups(1);
-    for (size_t index = 0; index < layout.size() / 2; index++)
+    size_t numberOfPair = layout.size() / 2;
+    for (size_t index = 0; index < numberOfPair; index++)
     {
       if (index > 0)
       {
@@ -977,6 +980,19 @@ void smtkRGGEditAssemblyView::updateEditAssemblyPanel()
       this->Internals->pitchYSpinBox->setHidden(isHex);
       this->Internals->pitchXLabel->setText(
         QString::fromStdString(isHex ? "Pitch: " : "Pitch X: "));
+
+      // Center pins and pitches
+      if (assembly.hasIntegerProperty("center pins"))
+      {
+        this->Internals->centerPinsCheckbox->setChecked(assembly.integerProperty("center pins")[0]);
+      }
+      if (assembly.hasFloatProperty("pitches") && (assembly.floatProperty("pitches").size() == 2))
+      {
+        smtk::model::FloatList pitches = assembly.floatProperty("pitches");
+        this->Internals->pitchXSpinBox->setValue(pitches[0]);
+        this->Internals->pitchYSpinBox->setValue(pitches[1]);
+      }
+
       this->Internals->zAxisRotationComboBox->clear();
       QStringList rotationOptions;
       if (isHex)

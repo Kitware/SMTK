@@ -178,7 +178,6 @@ void smtkRGGEditDuctView::apply()
   smtk::attribute::GroupItemPtr segsI = att->findGroup("duct segments");
   segsI->setNumberOfGroups(1); // Clear the existing groups
   QTableWidget* dst = this->Internals->ductSegmentTable;
-  std::cout << "Polulating the segment group item" << std::endl;
   for (int i = 0; i < dst->rowCount(); i++)
   {
     if (i > 0)
@@ -194,8 +193,6 @@ void smtkRGGEditDuctView::apply()
       smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(segsI->item(i, 2));
     thicknessesI->setNumberOfValues(1); // Clear previous value
     // Fill z values first
-    std::cout << "  1st=" << dst->item(i, 0)->text().toDouble()
-              << "2nd=" << dst->item(i, 1)->text().toDouble() << std::endl;
     zValuesI->setValue(0, dst->item(i, 0)->text().toDouble());
     zValuesI->setValue(1, dst->item(i, 1)->text().toDouble());
 
@@ -219,8 +216,6 @@ void smtkRGGEditDuctView::apply()
         currentTs.push_back(radiusN2);
       }
     }
-    std::cout << "  i=" << i << " material size=" << currentMs.size()
-              << " thicknesses size=" << currentTs.size() << std::endl;
     materialsI->setValues(currentMs.begin(), currentMs.end());
     thicknessesI->setValues(currentTs.begin(), currentTs.end());
   }
@@ -251,7 +246,6 @@ void smtkRGGEditDuctView::updateAttributeData()
   for (std::size_t ci = 0; ci < comp.numberOfChildren(); ++ci)
   {
     smtk::view::View::Component& attComp = comp.child(ci);
-    //std::cout << "  component " << attComp.name() << "\n";
     if (attComp.name() != "Att")
     {
       continue;
@@ -259,7 +253,6 @@ void smtkRGGEditDuctView::updateAttributeData()
     std::string optype;
     if (attComp.attribute("Type", optype) && !optype.empty())
     {
-      //std::cout << "    component type " << optype << "\n";
       if (optype == "edit duct")
       {
         defName = optype;
@@ -383,7 +376,7 @@ void smtkRGGEditDuctView::updateEditDuctPanel()
   bool isEnabled(true);
   if ((ents.size() == 0) || (!ents[0].hasStringProperty("rggType")) ||
     (ents[0].stringProperty("rggType")[0] != SMTK_BRIDGE_RGG_DUCT) ||
-    !ents[0].embeddedEntities<smtk::model::EntityRefArray>().size() > 0)
+    (ents[0].embeddedEntities<smtk::model::EntityRefArray>().size() == 0))
   { // Its type is not rgg duct
     isEnabled = false;
   }
@@ -481,8 +474,6 @@ void smtkRGGEditDuctView::updateEditDuctPanel()
     // Clear the material layer stack widget first
     while (this->Internals->materialLayerStack->count() > 0)
     {
-      std::cout << "deleting materialLayerStack at " << this->Internals->materialLayerStack->count()
-                << std::endl;
       QWidget* tmp = this->Internals->materialLayerStack->widget(
         this->Internals->materialLayerStack->count() - 1);
       this->Internals->materialLayerStack->removeWidget(tmp);
@@ -639,8 +630,6 @@ void smtkRGGEditDuctView::onSegmentSplit()
 void smtkRGGEditDuctView::createMaterialLayersTable(const size_t index, const size_t offSet,
   const size_t numberOfMaterials, const IntegerList& materials, const FloatList& thicknessesN)
 {
-  std::cout << "createMaterialLayersTable at index=" << index << " with offSet=" << offSet
-            << " numberOfMaterials=" << numberOfMaterials << std::endl;
   // Create the table widget
   QTableWidget* mlt = new QTableWidget;
   // Selection
@@ -764,8 +753,6 @@ void smtkRGGEditDuctView::addMaterialLayerToTable(
 {
   mlt->blockSignals(true);
   mlt->insertRow(row);
-  std::cout << "  i=" << row << " subMaterial=" << subMaterial << " thickness1=" << thickness1
-            << " thickness2=" << thickness2 << std::endl;
   // Create the material combobox first
   QComboBox* materialCom = new QComboBox(mlt);
   materialCom->setObjectName("DuctMaterialBox_" + QString::number(row));
@@ -826,11 +813,13 @@ void smtkRGGEditDuctView::updateButtonStatus()
 
 void smtkRGGEditDuctView::setupMaterialComboBox(QComboBox* box, bool isCell)
 {
-  size_t matN = smtk::bridge::rgg::CreateModel::materialNum();
+  box->clear();
+  smtk::model::Model model = qtActiveObjects::instance().activeModel();
+  size_t matN = smtk::bridge::rgg::CreateModel::materialNum(model);
   for (size_t i = 0; i < matN; i++)
   {
     std::string name;
-    smtk::bridge::rgg::CreateModel::getMaterial(i, name);
+    smtk::bridge::rgg::CreateModel::getMaterial(i, name, model);
     box->addItem(QString::fromStdString(name));
   }
   if (isCell)

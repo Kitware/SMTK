@@ -14,6 +14,7 @@ set (srcs
   smtkRGGEditCoreView.cxx
   smtkRGGEditDuctView.cxx
   smtkRGGEditPinView.cxx
+  smtkRGGReadRXFFileView.cxx
 )
 
 set (non_ui_srcs
@@ -25,6 +26,7 @@ set (hdrs
   smtkRGGEditCoreView.h
   smtkRGGEditDuctView.h
   smtkRGGEditPinView.h
+  smtkRGGReadRXFFileView.h
 )
 
 set (qtui
@@ -32,6 +34,7 @@ set (qtui
   smtkRGGEditCoreParameters.ui
   smtkRGGEditDuctParameters.ui
   smtkRGGEditPinParameters.ui
+  smtkRGGReadRXFFileParameters.ui
 )
 
 #install the headers

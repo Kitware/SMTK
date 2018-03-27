@@ -308,7 +308,7 @@ void smtkRGGEditCoreView::apply()
   this->Internals->Current2DLattice->apply();
 
   // FIXME: This map might be a performance bottleneck if we are considering
-  // millions of pins
+  // millions of assemblies
   qtLattice coreLattice = this->Internals->CurrentCMBCore->getLattice();
   std::pair<size_t, size_t> dimension = coreLattice.GetDimensions();
   for (size_t i = 0; i < dimension.first; i++)
@@ -793,44 +793,7 @@ void smtkRGGEditCoreView::updateEditCorePanel()
 {
   smtk::attribute::AttributePtr att = this->Internals->CurrentAtt->attribute();
   smtk::model::EntityRefArray ents = att->associatedModelEntities<smtk::model::EntityRefArray>();
-  // Need a valid core
-  bool isEnabled(true);
-  if ((ents.size() == 0) || (!ents[0].hasStringProperty("rggType")) ||
-    (ents[0].stringProperty("rggType")[0] != SMTK_BRIDGE_RGG_CORE))
-  { // Its type is not rgg core
-    isEnabled = false;
-    this->Internals->CurrentSMTKCore = smtk::model::EntityRef(); // Invalid the current smtk core
-  }
-  else
-  {
-    if (this->Internals->CurrentSMTKCore == ents[0])
-    { // If it's the same, do not reset the schema planner
-      // since it might surprise the user
-      return;
-    }
-    this->Internals->CurrentSMTKCore = ents[0]; // Update the current smtk core
-  }
-
-  if (this->Internals)
-  {
-    this->Internals->CurrentWidget->setEnabled(isEnabled);
-  }
-
-  if (isEnabled)
-  {
-    // Create/update current rggNucCore
-    if (this->Internals->SMTKCoreToCMBCore.contains(ents[0]))
-    {
-      this->Internals->CurrentCMBCore = this->Internals->SMTKCoreToCMBCore.value(ents[0]);
-    }
-    else
-    {
-      rggNucCore* assy = new rggNucCore(ents[0]);
-      this->Internals->SMTKCoreToCMBCore[ents[0]] = assy;
-      this->Internals->CurrentCMBCore = assy;
-    }
-    this->Internals->Current2DLattice->setLattice(this->Internals->CurrentCMBCore);
-
+  auto populateThePanel = [this, &ents]() {
     // Populate the panel
     smtk::model::Model model = ents[0].owningModel();
     smtk::model::EntityRef core = ents[0];
@@ -891,6 +854,49 @@ void smtkRGGEditCoreView::updateEditCorePanel()
           smtk::io::Logger(), "Core " << core.name() << " does not have a valid lattice size");
       }
     }
+  };
+
+  // Need a valid core
+  bool isEnabled(true);
+  if ((ents.size() == 0) || (!ents[0].hasStringProperty("rggType")) ||
+    (ents[0].stringProperty("rggType")[0] != SMTK_BRIDGE_RGG_CORE))
+  { // Its type is not rgg core
+    isEnabled = false;
+    this->Internals->CurrentSMTKCore = smtk::model::EntityRef(); // Invalid the current smtk core
+  }
+  else
+  {
+    if (this->Internals->CurrentSMTKCore == ents[0])
+    { // If it's the same, do not reset the schema planner
+      // since it might surprise the user
+      // We still populate the panel incase the user uses the 'read xrf op'
+      // to read from files
+      populateThePanel();
+      return;
+    }
+    this->Internals->CurrentSMTKCore = ents[0]; // Update the current smtk core
+  }
+
+  if (this->Internals)
+  {
+    this->Internals->CurrentWidget->setEnabled(isEnabled);
+  }
+
+  if (isEnabled)
+  {
+    // Create/update current rggNucCore
+    if (this->Internals->SMTKCoreToCMBCore.contains(ents[0]))
+    {
+      this->Internals->CurrentCMBCore = this->Internals->SMTKCoreToCMBCore.value(ents[0]);
+    }
+    else
+    {
+      rggNucCore* assy = new rggNucCore(ents[0]);
+      this->Internals->SMTKCoreToCMBCore[ents[0]] = assy;
+      this->Internals->CurrentCMBCore = assy;
+    }
+    this->Internals->Current2DLattice->setLattice(this->Internals->CurrentCMBCore);
+    populateThePanel();
   }
 }
 

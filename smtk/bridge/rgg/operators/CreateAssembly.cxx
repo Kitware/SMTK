@@ -149,7 +149,7 @@ void CreateAssembly::populateAssembly(
   }
 
   smtk::attribute::VoidItemPtr isCenteredPinsItem = op->findVoid("center pins");
-  if (isCenteredPinsItem->isEnabled())
+  if (isCenteredPinsItem->isEnabled() || createMode)
   {
     assembly.setIntegerProperty(isCenteredPinsItem->name(), 1);
   }
@@ -185,7 +185,7 @@ void CreateAssembly::populateAssembly(
       if (!assembly.owningModel().hasIntegerProperty("hex"))
       {
         smtkErrorMacro(op->log(), "Core " << assembly.owningModel().name()
-                                          << " does not have geometry type value");
+                                          << " does not have a geometry type value");
       }
       else
       {

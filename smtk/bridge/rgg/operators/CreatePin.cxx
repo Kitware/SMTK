@@ -61,7 +61,6 @@ smtk::model::OperatorResult CreatePin::operateInternal()
   smtk::model::AuxiliaryGeometry auxGeom;
   // A list contains all subparts and layers of the pin
   std::vector<EntityRef> subAuxGeoms;
-  // TODO: These codes are duplicated in EditPin operator
   auxGeom = parent.manager()->addAuxiliaryGeometry(parent.as<smtk::model::Model>(), 3);
   // Update the latest pin in the model
   parent.setStringProperty("latest pin", auxGeom.entity().toString());
@@ -129,6 +128,20 @@ void CreatePin::populatePin(smtk::model::Operator* op, smtk::model::AuxiliaryGeo
     auxGeom.setStringProperty(labelItem->name(), labelValue);
   }
 
+  smtk::attribute::DoubleItemPtr colorI = op->findDouble("color");
+  if (colorI && isCreation)
+  { // For now we would only assign a color to a pin when reading from a file
+    smtk::model::FloatList color = smtk::model::FloatList{ colorI->begin(), colorI->end() };
+    if (color.size() != 4 && (color.size() != 0))
+    {
+      smtkErrorMacro(op->log(), "Color item does not have 4 values");
+    }
+    else
+    {
+      auxGeom.setColor(color);
+    }
+  }
+
   smtk::attribute::IntItemPtr pinMaterialItem = op->findInt("cell material");
   size_t materialIndex(0);
   if (pinMaterialItem != nullptr && pinMaterialItem->numberOfValues() == 1)
@@ -193,7 +206,7 @@ void CreatePin::populatePin(smtk::model::Operator* op, smtk::model::AuxiliaryGeo
 
   auto assignColor = [](size_t index, smtk::model::AuxiliaryGeometry& aux) {
     smtk::model::FloatList rgba;
-    smtk::bridge::rgg::CreateModel::getMaterialColor(index, rgba);
+    smtk::bridge::rgg::CreateModel::getMaterialColor(index, rgba, aux.owningModel());
     aux.setColor(rgba);
   };
   // Create auxgeom placeholders for layers and parts
@@ -210,7 +223,7 @@ void CreatePin::populatePin(smtk::model::Operator* op, smtk::model::AuxiliaryGeo
       assignColor(subMaterials[j], subLayer);
       subAuxGeoms.push_back(subLayer.as<EntityRef>());
     }
-    if (materialIndex) // 0 index is no material
+    if (materialIndex) // 0 index means no material
     {                  // Append a material layer after the last layer
       AuxiliaryGeometry materialLayer = auxGeom.manager()->addAuxiliaryGeometry(auxGeom, 3);
       std::string materialName =

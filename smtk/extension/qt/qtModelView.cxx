@@ -482,6 +482,15 @@ void qtModelView::filterSelectionByEntity(const smtk::model::DescriptivePhrasePt
           for (const auto& item : entities)
           {
             selentityrefs.insert(item);
+            if (item.isAuxiliaryGeometry() && item.hasStringProperty("rggType"))
+            { // Children of a rgg auxiliary geometry should also be selected
+              smtk::model::AuxiliaryGeometries children =
+                item.as<smtk::model::AuxiliaryGeometry>().auxiliaryGeometries();
+              if (children.size())
+              {
+                selentityrefs.insert(children.begin(), children.end());
+              }
+            }
           }
         }
       }

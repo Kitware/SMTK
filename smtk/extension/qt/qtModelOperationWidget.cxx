@@ -544,6 +544,17 @@ void qtModelOperationWidget::onOperationSelected()
     this->setCurrentOperator("create instances", this->Internals->CurrentSession.lock());
     this->setCurrentOperator("delete", this->Internals->CurrentSession.lock());
   }
+  if (opName == "read rxf file" &&
+    (!this->existingOperator("create instances") || !this->existingOperator("create pin") ||
+        !this->existingOperator("create duct") || !this->existingOperator("create assembly") ||
+        !this->existingOperator("edit core")))
+  {
+    this->setCurrentOperator("create instances", this->Internals->CurrentSession.lock());
+    this->setCurrentOperator("create pin", this->Internals->CurrentSession.lock());
+    this->setCurrentOperator("create duct", this->Internals->CurrentSession.lock());
+    this->setCurrentOperator("create assembly", this->Internals->CurrentSession.lock());
+    this->setCurrentOperator("edit core", this->Internals->CurrentSession.lock());
+  }
 
   this->setCurrentOperator(opName, this->Internals->CurrentSession.lock());
 }

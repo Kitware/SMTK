@@ -154,7 +154,7 @@ void CreateDuct::populateDuct(
 
   auto assignColor = [](size_t index, smtk::model::AuxiliaryGeometry& aux) {
     smtk::model::FloatList rgba;
-    smtk::bridge::rgg::CreateModel::getMaterialColor(index, rgba);
+    smtk::bridge::rgg::CreateModel::getMaterialColor(index, rgba, aux.owningModel());
     aux.setColor(rgba);
   };
 

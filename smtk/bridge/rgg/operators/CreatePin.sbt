@@ -36,6 +36,9 @@
           <!-- no material -->
           <DefaultValue>0</DefaultValue>
         </Int>
+        <Double Name="color" NumberOfRequiredValues="0" AdvanceLevel="11">
+          <!-- When reading from a file, it's allowed to assign a color at creation time-->
+        </Double>
         <Void Name="cut away" NumberOfRequiredValues="1" Optional = "true" IsEnabledByDafault="false" AdvanceLevel="11">
           <BriefDescription>cut away the pin so that the inner layers are visible</BriefDescription>
           <DetailedDescription>

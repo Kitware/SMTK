@@ -11,7 +11,15 @@
 #define __smtk_session_rgg_CreateModel_h
 
 #include "smtk/bridge/rgg/Operator.h"
-#include "smtk/model/Group.h"
+
+namespace smtk
+{
+namespace model
+{
+class Group;
+class Model;
+}
+}
 
 /**\brief a type to define models used for core
   */
@@ -37,10 +45,12 @@ public:
   smtkSuperclassMacro(Operator);
   smtkDeclareModelOperator();
   static void populateCore(smtk::model::Operator* op, smtk::model::Group& core);
-  // Given an index, get the corresponding material and its color
-  static size_t materialNum();
-  static void getMaterial(const size_t& index, std::string& name);
-  static void getMaterialColor(const size_t& index, std::vector<double>& rgba);
+
+  static size_t materialNum(smtk::model::Model = smtk::model::Model());
+  static void getMaterial(
+    const size_t& index, std::string& name, smtk::model::Model = smtk::model::Model());
+  static void getMaterialColor(
+    const size_t& index, std::vector<double>& rgba, smtk::model::Model = smtk::model::Model());
 
 protected:
   smtk::model::OperatorResult operateInternal() override;

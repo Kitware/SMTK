@@ -20,6 +20,9 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
+#include "smtk/model/Group.h"
+#include "smtk/model/Model.h"
+
 #include "smtk/bridge/rgg/CreateModel_xml.h"
 using namespace smtk::model;
 
@@ -60,11 +63,6 @@ smtk::model::OperatorResult CreateModel::operateInternal()
     if (model.name().empty())
     {
       model.assignDefaultName();
-    }
-    // Store material colors on the model
-    for (size_t i = 0; i != matToColSize; i++)
-    {
-      model.setFloatProperty(matToCol[i].mat, matToCol[i].color);
     }
 
     smtk::model::Group core = mgr->addGroup(0, "group"); // Assign the name later
@@ -154,18 +152,51 @@ void CreateModel::populateCore(smtk::model::Operator* op, smtk::model::Group& co
   }
 }
 
-size_t CreateModel::materialNum()
+size_t CreateModel::materialNum(smtk::model::Model model)
 {
+  if (model.isValid() && model.hasStringProperty("materials"))
+  { // Check if users have define some materials and they are loaded into SMTK
+    smtk::model::StringList materialsList = model.stringProperty("materials");
+    return materialsList.size();
+  }
   return matToColSize;
 }
 
-void CreateModel::getMaterial(const size_t& index, std::string& name)
+void CreateModel::getMaterial(const size_t& index, std::string& name, smtk::model::Model model)
 {
+  if (model.isValid() && model.hasStringProperty("materials"))
+  { // Check if users have define some materials and they are loaded into SMTK
+    smtk::model::StringList materialsList = model.stringProperty("materials");
+    if (index < materialsList.size())
+    {
+      name = materialsList[index];
+      return;
+    }
+  }
+  if (index >= matToColSize)
+  {
+    return;
+  }
   name = matToCol[index].mat;
 }
 
-void CreateModel::getMaterialColor(const size_t& index, std::vector<double>& rgba)
+void CreateModel::getMaterialColor(
+  const size_t& index, std::vector<double>& rgba, smtk::model::Model model)
 {
+  if (model.isValid() && model.hasStringProperty("materials"))
+  { // Check if users have define some materials and they are loaded into SMTK
+    smtk::model::StringList materialsList = model.stringProperty("materials");
+    if (index < materialsList.size() && model.hasFloatProperty(materialsList[index]) &&
+      (model.floatProperty(materialsList[index]).size() == 4))
+    {
+      rgba = model.floatProperty(materialsList[index]);
+      return;
+    }
+  }
+  if (index >= matToColSize)
+  {
+    return;
+  }
   rgba = matToCol[index].color;
 }
 

@@ -369,7 +369,6 @@ void smtkRGGEditPinView::createWidget()
   this->Internals->labelLineEdit->setToolTip(QString::fromStdString("Set the "
                                                                     "label of the pin"));
   // Edit cell material
-  // TODO: Populate the cellMaterialCombox by some pre-defined materials.
   this->setupMaterialComboBox(this->Internals->CellMaterial);
   this->Internals->CellMaterial->setToolTip(QString::fromStdString("Set the "
                                                                    " material on the cell"));
@@ -417,6 +416,9 @@ void smtkRGGEditPinView::updateEditPinPanel()
   }
   if (isEnabled)
   {
+    // Update material combo box
+    this->setupMaterialComboBox(this->Internals->CellMaterial);
+
     smtk::model::AuxiliaryGeometry pin = ents[0].as<smtk::model::AuxiliaryGeometry>();
     // Name
     this->Internals->nameLineEdit->setText(QString::fromStdString(pin.name()));
@@ -732,11 +734,13 @@ void smtkRGGEditPinView::updateButtonStatus()
 
 void smtkRGGEditPinView::setupMaterialComboBox(QComboBox* box, bool isCell)
 {
-  size_t matN = smtk::bridge::rgg::CreateModel::materialNum();
+  box->clear();
+  smtk::model::Model model = qtActiveObjects::instance().activeModel();
+  size_t matN = smtk::bridge::rgg::CreateModel::materialNum(model);
   for (size_t i = 0; i < matN; i++)
   {
     std::string name;
-    smtk::bridge::rgg::CreateModel::getMaterial(i, name);
+    smtk::bridge::rgg::CreateModel::getMaterial(i, name, model);
     box->addItem(QString::fromStdString(name));
   }
   if (isCell)

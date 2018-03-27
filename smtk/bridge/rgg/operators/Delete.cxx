@@ -11,6 +11,7 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Manager.txx"
+#include "smtk/model/ShellEntity.txx"
 
 #include "smtk/bridge/rgg/Session.h"
 #include "smtk/bridge/rgg/operators/CreateDuct.h"

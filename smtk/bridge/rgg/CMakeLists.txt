@@ -1,6 +1,7 @@
 set (rggSrcs
   Operator.cxx
   Session.cxx
+  operators/AddMaterial.cxx
   operators/CreateAssembly.cxx
   operators/CreateDuct.cxx
   operators/CreateModel.cxx
@@ -10,11 +11,14 @@ set (rggSrcs
   operators/EditCore.cxx
   operators/EditDuct.cxx
   operators/EditPin.cxx
+  operators/ReadRXFFile.cxx
+  operators/ReadRXFFileHelper.cxx
   )
 
 set (rggHeaders
   Operator.h
   Session.h
+  operators/AddMaterial.h
   operators/CreateAssembly.h
   operators/CreateDuct.h
   operators/CreateModel.h
@@ -24,6 +28,8 @@ set (rggHeaders
   operators/EditCore.h
   operators/EditDuct.h
   operators/EditPin.h
+  operators/ReadRXFFile.h
+  operators/ReadRXFFileHelper.h
   )
 
 add_library(smtkRGGSession ${rggSrcs})
@@ -45,6 +51,7 @@ smtk_install_library(smtkRGGSession)
 # We do not need the path to the generated header (appended
 # to rggOperatorXML) since the operators themselves include
 # the header in their implementations.
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/AddMaterial.sbt" rggOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateAssembly.sbt" rggOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateDuct.sbt" rggOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateModel.sbt" rggOperatorXML)
@@ -54,6 +61,7 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EditAssembly.sbt" rggOp
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EditCore.sbt" rggOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EditDuct.sbt" rggOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EditPin.sbt" rggOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ReadRXFFile.sbt" rggOperatorXML)
 smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" rggSessionJSON)
 
 # Install the headers
