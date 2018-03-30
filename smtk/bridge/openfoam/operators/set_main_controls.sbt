@@ -154,7 +154,7 @@
 
         <Int Name="writeInterval" Label="Write Interval">
           <BriefDescription>Scalar used in conjunction with writeControl described above.</BriefDescription>
-          <DefaultValue>1</DefaultValue>
+          <DefaultValue>100</DefaultValue>
         </Int>
 
         <Int Name="purgeWrite" Label="Purge Write">
