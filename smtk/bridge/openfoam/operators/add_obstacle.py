@@ -146,7 +146,7 @@ class add_obstacle(smtk.model.Operator):
             f.write('            patchInfo\n')
             f.write('            {\n')
             f.write('                type wall;\n')
-            f.write('                inGroups (%sGroup);\n' % (filenameBase))
+            f.write('                inGroups (%s);\n' % (filenameBase))
             f.write('            }\n')
             f.write('        }\n')
             f.write('    }\n')
