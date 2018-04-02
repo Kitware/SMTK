@@ -29,7 +29,21 @@
 using namespace smtk::extension;
 using namespace smtk::attribute;
 
+namespace
+{
+static void updateLabel(QLabel* lbl, const QString& txt, bool ok)
+{
+  lbl->setText(txt);
+  lbl->setAutoFillBackground(ok ? false : true);
+  QPalette pal = lbl->palette();
+  pal.setColor(QPalette::Background, QColor(QRgb(ok ? 0x00ff00 : 0xff7777)));
+  lbl->setPalette(pal);
+  lbl->update();
+}
+}
+
 qtReferenceItemData::qtReferenceItemData()
+  : m_optional(nullptr)
 {
 }
 
@@ -61,6 +75,8 @@ void qtReferenceItem::setOutputOptional(int state)
   {
     itm->setIsEnabled(state ? true : false);
   }
+  m_p->m_editBtn->setEnabled(state ? true : false);
+  this->updateSynopsisLabels();
 }
 
 void qtReferenceItem::linkHover(bool link)
@@ -68,6 +84,37 @@ void qtReferenceItem::linkHover(bool link)
   (void)link;
   // TODO: traverse entries of this->getObject() and ensure their "hover" bit is set
   //       in the application selection.
+}
+
+void qtReferenceItem::synchronizeAndHide(bool escaping)
+{
+  bool ok;
+  std::string syn;
+  if (!escaping)
+  {
+    syn = this->synopsis(ok);
+  }
+  else
+  {
+    ok = false;
+  }
+
+  if (!ok || !(ok = this->synchronize(UpdateSource::ITEM_FROM_GUI)))
+  {
+    // We cannot hide if the state is invalid...
+    // revert to the item's current state.
+    // That state may still be invalid (e.g., because
+    // the item has required, non-default values).
+    // But what else can we do?
+    ok = this->synchronize(UpdateSource::GUI_FROM_ITEM);
+    syn = this->synopsis(ok);
+  }
+
+  QString qsyn = QString::fromStdString(syn);
+  updateLabel(m_p->m_synopsis, qsyn, ok);
+  updateLabel(m_p->m_popupSynopsis, qsyn, ok);
+
+  m_p->m_popup->hide();
 }
 
 void qtReferenceItem::createWidget()
@@ -143,6 +190,10 @@ void qtReferenceItem::updateUI()
       m_p->m_optional, SIGNAL(stateChanged(int)), this, SLOT(setOutputOptional(int)));
     labelLayout->addWidget(m_p->m_optional);
   }
+  else
+  {
+    m_p->m_optional = nullptr;
+  }
   auto itemDef = itm->definition();
 
   // Add a label for the item.
@@ -210,7 +261,7 @@ void qtReferenceItem::updateUI()
   m_p->m_popupList->setModel(m_p->m_qtModel);
 
   QObject::connect(m_p->m_editBtn, SIGNAL(clicked()), m_p->m_popup, SLOT(exec()));
-  QObject::connect(m_p->m_popupDone, SIGNAL(clicked()), m_p->m_popup, SLOT(hide()));
+  QObject::connect(m_p->m_popupDone, SIGNAL(clicked()), this, SLOT(synchronizeAndHide()));
   QObject::connect(m_p->m_qtDelegate, SIGNAL(requestVisibilityChange(const QModelIndex&)),
     m_p->m_qtModel, SLOT(toggleVisibility(const QModelIndex&)));
 
@@ -231,21 +282,9 @@ void qtReferenceItem::updateUI()
   {
     this->setOutputOptional(itm->isEnabled() ? 1 : 0);
   }
+  this->synchronize(UpdateSource::GUI_FROM_ITEM);
 
   this->updateSynopsisLabels();
-}
-
-namespace
-{
-static void updateLabel(QLabel* lbl, const QString& txt, bool ok)
-{
-  lbl->setText(txt);
-  lbl->setAutoFillBackground(ok ? false : true);
-  QPalette pal = lbl->palette();
-  pal.setColor(QPalette::Background, QColor(QRgb(ok ? 0x00ff00 : 0xff7777)));
-  lbl->setPalette(pal);
-  lbl->update();
-}
 }
 
 void qtReferenceItem::updateSynopsisLabels() const
@@ -255,8 +294,9 @@ void qtReferenceItem::updateSynopsisLabels() const
     return;
   }
 
-  bool ok;
-  auto syn = this->synopsis(ok);
+  bool ok = true;
+  std::string syn = m_p->m_optional && !m_p->m_optional->isChecked() ? std::string("(disabled)")
+                                                                     : this->synopsis(ok);
   QString qsyn = QString::fromStdString(syn);
   updateLabel(m_p->m_synopsis, qsyn, ok);
   updateLabel(m_p->m_popupSynopsis, qsyn, ok);
@@ -265,8 +305,10 @@ void qtReferenceItem::updateSynopsisLabels() const
 bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
 {
   // We serve as an event filter on 2 widgets:
-  // 1. the inherited frame holding the item (this->Widget)
+  // 1. the inherited frame holding the item (this->Widget),
+  //    which we monitor for the enter/exit events that enable hovering
   // 2. the popup dialog (m_p->m_popup)
+  //    which we monitor for keyboard navigation events
   if (src == this->Widget)
   {
     switch (event->type())
@@ -304,10 +346,10 @@ bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
           case Qt::Key_Escape:
           case Qt::Key_Cancel:
             // std::cout << "    Hiding\n";
-            m_p->m_popup->hide();
+            this->synchronizeAndHide(true);
             return true;
             break;
-          case Qt::Key_Return:
+          //case Qt::Key_Return:
           case Qt::Key_Enter:
           case Qt::Key_Space:
             // std::cout << "    Toggling\n";
