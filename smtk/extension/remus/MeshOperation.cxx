@@ -24,7 +24,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/io/LoadJSON.h"
@@ -82,14 +82,14 @@ MeshOperation::MeshOperation()
 bool MeshOperation::ableToOperate()
 {
   return this->Superclass::ableToOperate() &&
-    this->parameters()->findModelEntity("model")->value().isValid();
+    smtk::model::Model(this->parameters()->associations()->valueAs<smtk::model::Entity>())
+      .isValid();
   // TODO: Add tests to verify that model dimension matches job requirements.
 }
 
 MeshOperation::Result MeshOperation::operateInternal()
 {
-  smtk::attribute::ModelEntityItemPtr mspec = this->parameters()->findModelEntity("model");
-  smtk::model::Models models(mspec->begin(), mspec->end());
+  auto models = this->parameters()->associatedModelEntities<smtk::model::Models>();
   smtk::attribute::StringItemPtr endpointItem = this->parameters()->findString("endpoint");
   smtk::attribute::StringItemPtr requirementsItem =
     this->parameters()->findString("remusRequirements");
@@ -241,7 +241,9 @@ MeshOperation::Result MeshOperation::operateInternal()
       modified->setValue(model.component());
     }
 
-    result->findModelEntity("mesh_created")->setValues(models.begin(), models.end());
+    result->findComponent("mesh_created")
+      ->setValuesVia(models.begin(), models.end(),
+        [](const smtk::model::Model& model) { return model.component(); });
   }
   return result;
 }

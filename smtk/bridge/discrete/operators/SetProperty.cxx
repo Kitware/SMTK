@@ -25,7 +25,7 @@
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
@@ -155,7 +155,10 @@ SetProperty::Result SetProperty::operateInternal()
   smtk::attribute::IntItemPtr integerItem = this->parameters()->findInt("integer value");
 
   auto associations = this->parameters()->associations();
-  smtk::model::EntityRefArray entities(associations->begin(), associations->end());
+  auto entities =
+    associations->as<smtk::model::EntityRefArray>([](smtk::resource::PersistentObjectPtr obj) {
+      return smtk::model::EntityRef(std::dynamic_pointer_cast<smtk::model::Entity>(obj));
+    });
 
   if (nameItem->value(0).empty())
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);

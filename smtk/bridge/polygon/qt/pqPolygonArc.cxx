@@ -12,6 +12,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/bridge/polygon/qt/vtkPolygonArcInfo.h"
 #include "smtk/extension/vtk/widgets/vtkSMTKArcRepresentation.h"
@@ -246,7 +247,8 @@ void pqPolygonArc::resetOperationSource()
   // which should be activated by emitting activateModel()
   if (m_edgeOp.lock() && m_edgeOp.lock()->parameters())
   {
-    smtk::model::EntityRef entref = m_edgeOp.lock()->parameters()->associations()->value();
+    smtk::model::EntityRef entref =
+      m_edgeOp.lock()->parameters()->associations()->valueAs<smtk::model::Entity>();
     if (!entref.isValid())
     {
       return;
@@ -300,7 +302,8 @@ int pqPolygonArc::getAssignedEdgeBlock() const
   if (m_edgeOp.lock() && m_edgeOp.lock()->parameters())
   {
     // for Destroy and Modify operation, we need edge is set
-    smtk::model::EntityRef entref = m_edgeOp.lock()->parameters()->associations()->value();
+    smtk::model::EntityRef entref =
+      m_edgeOp.lock()->parameters()->associations()->valueAs<smtk::model::Entity>();
     smtk::model::Edge edge;
     if (entref.isModel()) // "create edge"
     {

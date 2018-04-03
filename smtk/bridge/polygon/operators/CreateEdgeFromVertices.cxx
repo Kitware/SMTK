@@ -21,7 +21,6 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/bridge/polygon/CreateEdgeFromVertices_xml.h"
@@ -37,8 +36,9 @@ typedef std::vector<std::pair<size_t, internal::Segment> > SegmentSplitsT;
 
 CreateEdgeFromVertices::Result CreateEdgeFromVertices::operateInternal()
 {
-  smtk::attribute::ModelEntityItem::Ptr modelItem = this->parameters()->associations();
-  smtk::model::Model parentModel = modelItem->value(0).owningModel();
+  auto modelItem = this->parameters()->associations();
+  auto ment = modelItem->valueAs<smtk::model::Entity>();
+  smtk::model::Model parentModel = smtk::model::EntityRef(ment).owningModel();
 
   smtk::bridge::polygon::Resource::Ptr resource =
     std::static_pointer_cast<smtk::bridge::polygon::Resource>(parentModel.component()->resource());
@@ -52,7 +52,9 @@ CreateEdgeFromVertices::Result CreateEdgeFromVertices::operateInternal()
       "A model (or vertices with a valid parent model) must be associated with the operator.");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
-  if (!(modelItem->value(0).isVertex() && modelItem->value(1).isVertex()))
+  smtk::model::EntityPtr evert[2] = { modelItem->valueAs<smtk::model::Entity>(0),
+    modelItem->valueAs<smtk::model::Entity>(1) };
+  if (!(evert[0]->isVertex() && evert[1]->isVertex()))
   {
     smtkErrorMacro(this->log(), "When constructing an edge from vertices,"
                                 " all associated model entities must be vertices"
@@ -67,7 +69,7 @@ CreateEdgeFromVertices::Result CreateEdgeFromVertices::operateInternal()
   // Lets check to make sure the vertices are valid
   for (int i = 0; i < 2; i++)
   {
-    verts[i] = resource->findStorage<internal::vertex>(modelItem->value(i).entity());
+    verts[i] = resource->findStorage<internal::vertex>(modelItem->objectValue(i)->id());
     if (!verts[i])
     {
       smtkErrorMacro(this->log(), "When constructing an edge from vertices, Vertex "

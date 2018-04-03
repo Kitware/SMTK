@@ -26,7 +26,6 @@ namespace attribute
 {
 
 class Attribute;
-template <typename T>
 class ReferenceItemDefinition;
 
 /**\brief Hold associations that link resources or components as an attribute value.
@@ -43,18 +42,22 @@ class ReferenceItemDefinition;
   *
   * Anything inheriting this class must implement
   * + the type() method;
-  * + the pure virtual valueAsString() method this class declares; and
+  * + the virtual valueAsString() method this class declares; and
   * + a method to construct an instance and return a shared pointer to it.
   */
-template <typename T>
-class ReferenceItem : public Item
+class SMTKCORE_EXPORT ReferenceItem : public Item
 {
 public:
-  typedef typename std::vector<typename T::Ptr>::const_iterator const_iterator;
-  smtkTypeMacro(ReferenceItem<T>);
+  using PersistentObjectPtr = smtk::resource::PersistentObjectPtr;
+  using const_iterator = std::vector<smtk::resource::PersistentObjectPtr>::const_iterator;
+  smtkTypeMacro(ReferenceItem);
   smtkSuperclassMacro(Item);
   /// Destructor
   ~ReferenceItem() override;
+
+  /// Indicate we are a reference to a persistent object.
+  Item::Type type() const override { return Item::ReferenceType; }
+
   /**\brief Return whether the item is in a valid state.
     *
     * If the item is not enabled or if all of its values are set then it is valid.
@@ -67,27 +70,84 @@ public:
   /// Set the number of entities to be associated with this item (returns true if permitted).
   bool setNumberOfValues(std::size_t newSize);
   /// Return this item's definition.
-  virtual std::shared_ptr<const ReferenceItemDefinition<T> > definition() const;
+  virtual std::shared_ptr<const ReferenceItemDefinition> definition() const;
 
   /// Return the number of values required by this item's definition (if it has one).
   std::size_t numberOfRequiredValues() const;
   /// Return the maximum number of values allowed by this item's definition (or 0).
   std::size_t maxNumberOfValues() const;
+
+  /**\brief Invoke a method on each value of this item.
+    *
+    * If the lambda returns false, iteration will terminate immediately.
+    * Otherwise, iteration continues.
+    */
+  void visit(std::function<bool(PersistentObjectPtr)> visitor) const;
+
+  /**\brief Populate a container of the given type with members of this item.
+    *
+    * Note that you can use the \a converter parameter to downcast
+    * items as desired (and thus skip entries not of the downcast type).
+    * For example:
+    *
+    *     ReferenceItemPtr modelEntityItem;
+    *     std::set<smtk::model::EntityPtr> modelEntities;
+    *     modelEntityItem->as(modelEntities,
+    *       [](PersistentObjectPtr obj)
+    *       { return std::dynamic_pointer_cast<smtk::model::Entity>(obj); });
+    *
+    * will populate the \a modelEntities set with only those persistent
+    * objects that inherit smtk::model::Entity; other objects return a
+    * nullptr when cast and this method skips values which evaluate to false.
+    */
+  template <typename Container>
+  void as(Container& result,
+    std::function<typename Container::value_type(PersistentObjectPtr)> converter = [](
+      PersistentObjectPtr obj) { return obj; }) const
+  {
+    for (auto it = this->begin(); it != this->end(); ++it)
+    {
+      typename Container::value_type val = converter(*it);
+      if (val)
+      {
+        result.insert(result.end(), val);
+      }
+    }
+  }
+  template <typename Container>
+  Container as(std::function<typename Container::value_type(PersistentObjectPtr)> converter = [](
+                 PersistentObjectPtr obj) { return obj; }) const
+  {
+    Container result;
+    this->as(result, converter);
+    return result;
+  }
+
   /// Return the \a i-th component stored in this item.
-  typename T::Ptr value(std::size_t i = 0) const;
+  PersistentObjectPtr objectValue(std::size_t i = 0) const;
+  template <typename T>
+  typename T::Ptr valueAs(std::size_t i = 0) const
+  {
+    return std::dynamic_pointer_cast<T>(this->objectValue(i));
+  }
   /**\brief Set the component stored with this item.
     *
     * This always sets the 0-th item and is a convenience method
     * for cases where only 1 value is needed.
     */
-  bool setValue(typename T::Ptr val);
+  bool setObjectValue(PersistentObjectPtr val);
   /// Set the \a i-th value to the given item. This method does no checking to see if \a i is valid.
-  bool setValue(std::size_t i, typename T::Ptr val);
+  bool setObjectValue(std::size_t i, PersistentObjectPtr val);
 
   template <typename I>
-  bool setValues(I vbegin, I vend, std::size_t offset = 0);
+  bool setObjectValues(I vbegin, I vend, std::size_t offset = 0);
   template <typename I>
-  bool appendValues(I vbegin, I vend);
+  bool appendObjectValues(I vbegin, I vend);
+
+  template <typename I, typename T>
+  bool setValuesVia(I vbegin, I vend, const T& converter, std::size_t offset = 0);
+  template <typename I, typename T>
+  bool appendValuesVia(I vbegin, I vend, const T& converter);
 
   /**\brief Add \a val if it is allowed and \a val is not already present in the item.
     *
@@ -97,7 +157,7 @@ public:
     * if there is an unset value anywhere in the allocated array, that will
     * be preferred to reallocation.
     */
-  bool appendValue(typename T::Ptr val);
+  bool appendObjectValue(PersistentObjectPtr val);
   /**\brief Remove the value at the \a i-th location.
     *
     * If the number of values may not be changed, then the \a i-th
@@ -115,7 +175,7 @@ public:
     * the first UUID is the component's resource and the second UUID is
     * the component's.
     */
-  virtual std::string valueAsString(std::size_t i) const = 0;
+  virtual std::string valueAsString(std::size_t i) const;
   /**\brief Return whether the \a i-th value is set.
     *
     * This returns true when the item and its UUID are non-NULL and false otherwise.
@@ -140,8 +200,8 @@ public:
 
   /// Return true if the component is contained in this item; false otherwise.
   bool has(const smtk::common::UUID& compId) const;
-  /// Return true if \a comp is contained in this item; false otherwise.
-  bool has(typename T::Ptr comp) const;
+  /// Return true if \a obj is contained in this item; false otherwise.
+  bool has(PersistentObjectPtr obj) const;
 
   /**\brief Return an iterator to the first model-entity value in this item.
     *
@@ -159,14 +219,14 @@ public:
   /**\brief Return the index of the given \a component.
     *
     */
-  std::ptrdiff_t find(typename T::Ptr component) const;
+  std::ptrdiff_t find(PersistentObjectPtr component) const;
 
-  // Returns Read/Rrite/DoNotLock for read locking, write locking, or bypassing
+  // Returns Read/Write/DoNotLock for read locking, write locking, or bypassing
   // locks.
   smtk::resource::LockType lockType() const;
 
 protected:
-  friend class ReferenceItemDefinition<T>;
+  friend class ReferenceItemDefinition;
   friend class Definition;
 
   /// Construct an item given its owning attribute and location in the attribute.
@@ -177,12 +237,11 @@ protected:
   /// Set the definition of this attribute.
   bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def) override;
 
-  std::vector<typename T::Ptr> m_values;
+  std::vector<PersistentObjectPtr> m_values;
 };
 
-template <typename T>
 template <typename I>
-bool ReferenceItem<T>::setValues(I vbegin, I vend, std::size_t offset)
+bool ReferenceItem::setObjectValues(I vbegin, I vend, std::size_t offset)
 {
   bool ok = false;
   std::size_t num = vend - vbegin + offset;
@@ -192,7 +251,7 @@ bool ReferenceItem<T>::setValues(I vbegin, I vend, std::size_t offset)
     std::size_t i = 0;
     for (I it = vbegin; it != vend; ++it, ++i)
     {
-      if (!this->setValue(offset + i, *it))
+      if (!this->setObjectValue(offset + i, *it))
       {
         ok = false;
         break;
@@ -207,11 +266,42 @@ bool ReferenceItem<T>::setValues(I vbegin, I vend, std::size_t offset)
   return ok;
 }
 
-template <typename T>
 template <typename I>
-bool ReferenceItem<T>::appendValues(I vbegin, I vend)
+bool ReferenceItem::appendObjectValues(I vbegin, I vend)
 {
-  return this->setValues(vbegin, vend, this->numberOfValues());
+  return this->setObjectValues(vbegin, vend, this->numberOfValues());
+}
+
+template <typename I, typename T>
+bool ReferenceItem::setValuesVia(I vbegin, I vend, const T& converter, std::size_t offset)
+{
+  bool ok = false;
+  std::size_t num = vend - vbegin + offset;
+  if (this->setNumberOfValues(num))
+  {
+    ok = true;
+    std::size_t i = 0;
+    for (I it = vbegin; it != vend; ++it, ++i)
+    {
+      if (!this->setObjectValue(offset + i, converter(*it)))
+      {
+        ok = false;
+        break;
+      }
+    }
+  }
+  // Enable or disable the item if it is optional.
+  if (ok)
+  {
+    this->setIsEnabled(num > 0 ? true : false);
+  }
+  return ok;
+}
+
+template <typename I, typename T>
+bool ReferenceItem::appendValuesVia(I vbegin, I vend, const T& converter)
+{
+  return this->setValuesVia(vbegin, vend, converter, this->numberOfValues());
 }
 
 } // namespace attribute

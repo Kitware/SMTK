@@ -34,6 +34,10 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Vertex.h"
 
+#include "smtk/environment/Environment.h"
+
+#include "smtk/operation/Manager.h"
+
 using namespace smtk::model;
 
 int main(int argc, char* argv[])
@@ -45,9 +49,10 @@ int main(int argc, char* argv[])
     return 1;
   }
 
+  auto operMgr = smtk::environment::OperationManager::instance();
+
   // Create an import operator
-  smtk::bridge::discrete::ImportOperation::Ptr importOp =
-    smtk::bridge::discrete::ImportOperation::create();
+  auto importOp = operMgr->create<smtk::bridge::discrete::ImportOperation>();
   if (!importOp)
   {
     std::cerr << "No import operator\n";
@@ -108,8 +113,7 @@ int main(int argc, char* argv[])
 
   // create entity group operator
   std::cout << "Create the entity group operator\n";
-  smtk::bridge::discrete::EntityGroupOperation::Ptr egOp =
-    smtk::bridge::discrete::EntityGroupOperation::create();
+  auto egOp = operMgr->create<smtk::bridge::discrete::EntityGroupOperation>();
   if (!egOp)
   {
     std::cerr << "No entity group operator!\n";
@@ -120,12 +124,13 @@ int main(int argc, char* argv[])
   std::cout << "optypeItem current value is: "
             << egOp->parameters()->findString("Operation")->value() << std::endl;
 
-  egOp->parameters()->findModelEntity("model")->setValue(modelSimple2dm);
+  egOp->parameters()->associate(modelSimple2dm.component());
   egOp->parameters()->findString("group name")->setValue("test edges");
 
-  egOp->parameters()->findModelEntity("cell to add")->setNumberOfValues(2);
-  egOp->parameters()->findModelEntity("cell to add")->setValue(edge1);
-  egOp->parameters()->findModelEntity("cell to add")->appendValue(edge2);
+  auto cellToAdd = egOp->parameters()->findComponent("cell to add");
+  cellToAdd->setNumberOfValues(2);
+  cellToAdd->setValue(0, edge1.component());
+  cellToAdd->setValue(1, edge2.component());
 
   smtk::operation::Operation::Result egResult = egOp->operate();
   if (egResult->findInt("outcome")->value() !=

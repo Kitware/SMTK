@@ -26,7 +26,6 @@
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
@@ -90,8 +89,11 @@ int polyLines2modelEdges(vtkPolyData* mesh, smtk::operation::Operation::Ptr edge
     smtkDebugMacro(logger, "\"create edge\" op failed to creat edge with given line cells.");
     return 0;
   }
-  smtk::attribute::ModelEntityItem::Ptr newEdges = edgeResult->findModelEntity("created");
-  createdEds.insert(createdEds.end(), newEdges->begin(), newEdges->end());
+  // Append createdEds to newEdges:
+  auto newEdges = edgeResult->findComponent("created");
+  newEdges->as(createdEds, [](smtk::resource::PersistentObjectPtr obj) {
+    return smtk::model::EntityRef(std::dynamic_pointer_cast<smtk::model::Entity>(obj));
+  });
   return static_cast<int>(newEdges->numberOfValues());
 }
 
@@ -314,7 +316,14 @@ int polyLines2modelEdgesAndFaces(
       if (numNewEdges > 0)
       {
         numEdges += numNewEdges;
-        faceSpec->associations()->setValues(createdEds.begin(), createdEds.end());
+        auto assocs = faceSpec->associations();
+        assocs->setNumberOfValues(createdEds.size());
+        int ii = 0;
+        for (auto ced : createdEds)
+        {
+          assocs->setObjectValue(ii, ced.component());
+          ++ii;
+        }
         //std::cout << "number of created new edges: " << createdEds.size() << std::endl;
         smtk::attribute::IntItem::Ptr orientArr = faceSpec->findInt("orientations");
         std::vector<int> orients(numNewEdges, -1);
@@ -330,7 +339,8 @@ int polyLines2modelEdgesAndFaces(
           smtkDebugMacro(logger, "\"force create face\" op failed to creat face with given edges.");
         }
         // Add a pedigree ID (if we have it, or -1 otherwise) to each face:
-        faceResult->findModelEntity("created")->value(0).setIntegerProperty("pedigree", pedId);
+        smtk::model::EntityRef(faceResult->findComponent("created")->valueAs<smtk::model::Entity>())
+          .setIntegerProperty("pedigree", pedId);
       }
     }
   }

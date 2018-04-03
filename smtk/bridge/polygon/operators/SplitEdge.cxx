@@ -21,7 +21,6 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/bridge/polygon/SplitEdge_xml.h"
@@ -37,8 +36,8 @@ SplitEdge::Result SplitEdge::operateInternal()
 {
   smtk::attribute::IntItem::Ptr pointIdItem = this->parameters()->findInt("point id");
   smtk::attribute::DoubleItem::Ptr pointItem = this->parameters()->findDouble("point");
-  smtk::attribute::ModelEntityItem::Ptr edgeItem = this->parameters()->associations();
-  smtk::model::Edge edgeToSplit(edgeItem->value(0));
+  auto edgeItem = this->parameters()->associations();
+  smtk::model::Edge edgeToSplit(edgeItem->valueAs<smtk::model::Entity>());
   if (!edgeToSplit.isValid())
   {
     smtkErrorMacro(this->log(), "The input edge (" << edgeToSplit.entity() << ") is invalid.");

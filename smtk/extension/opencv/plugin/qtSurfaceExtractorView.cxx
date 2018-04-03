@@ -12,6 +12,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/extension/opencv/qt/imageFeatureExtractorWidget.h"
 #include "smtk/extension/qt/qtAttribute.h"
@@ -228,8 +229,8 @@ void qtSurfaceExtractorView::operationSelected(const smtk::operation::OperationP
   this->Internals->ExtractorWidget = new imageFeatureExtractorWidget();
 
   smtk::attribute::AttributePtr spec = op->parameters();
-  smtk::attribute::ModelEntityItem::Ptr modelItem = spec->associations();
-  smtk::model::AuxiliaryGeometry aux(modelItem->value(0));
+  auto modelItem = spec->associations();
+  smtk::model::AuxiliaryGeometry aux(modelItem->valueAs<smtk::model::Entity>());
   if (!aux.isValid())
   {
     qCritical() << "No AuxiliaryGeometry is associated with the operator.\n";

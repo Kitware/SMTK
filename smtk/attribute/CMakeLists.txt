@@ -1,4 +1,4 @@
-set (jsonAttributeHeaders
+set(jsonAttributeHeaders
   json/jsonAttribute.h
   json/jsonComponentItem.h
   json/jsonComponentItemDefinition.h
@@ -29,12 +29,15 @@ set (jsonAttributeHeaders
   json/jsonModelEntityItemDefinition.h
   json/jsonStringItem.h
   json/jsonStringItemDefinition.h
+  json/jsonReferenceItem.h
+  json/jsonReferenceItemDefinition.h
   json/jsonRefItem.h
   json/jsonRefItemDefinition.h
   json/jsonValueItem.h
   json/jsonValueItemDefinition.h
-  )
-set (jsonAttributeSrcs
+)
+
+set(jsonAttributeSrcs
   json/jsonAttribute.cxx
   json/jsonComponentItem.cxx
   json/jsonComponentItemDefinition.cxx
@@ -65,13 +68,16 @@ set (jsonAttributeSrcs
   json/jsonModelEntityItemDefinition.cxx
   json/jsonStringItem.cxx
   json/jsonStringItemDefinition.cxx
+  json/jsonReferenceItem.cxx
+  json/jsonReferenceItemDefinition.cxx
   json/jsonRefItem.cxx
   json/jsonRefItemDefinition.cxx
   json/jsonValueItem.cxx
   json/jsonValueItemDefinition.cxx
-  )
+)
 
 set(attributeHeaders
+  ${jsonAttributeHeaders}
   Attribute.h
   Collection.h
   ComponentItem.h
@@ -100,9 +106,7 @@ set(attributeHeaders
   ModelEntityItem.h
   ModelEntityItemDefinition.h
   ReferenceItem.h
-  ReferenceItem.txx
   ReferenceItemDefinition.h
-  ReferenceItemDefinition.txx
   RefItem.h
   RefItemDefinition.h
   RegisterOperations.h
@@ -118,8 +122,7 @@ set(attributeHeaders
   ValueItemTemplate.h
   VoidItem.h
   VoidItemDefinition.h
-  ${jsonAttributeHeaders}
-  )
+)
 
 set(attributeSrcs
   ${jsonAttributeSrcs}
@@ -152,6 +155,8 @@ set(attributeSrcs
   ModelEntityItemDefinition.cxx
   RefItem.cxx
   RefItemDefinition.cxx
+  ReferenceItem.cxx
+  ReferenceItemDefinition.cxx
   RegisterOperations.cxx
   RegisterResources.cxx
   ResourceItem.cxx

@@ -49,6 +49,8 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindModelEntityItemDefinition.h"
 #include "PybindRefItem.h"
 #include "PybindRefItemDefinition.h"
+#include "PybindReferenceItem.h"
+#include "PybindReferenceItemDefinition.h"
 #include "PybindResourceItem.h"
 #include "PybindResourceItemDefinition.h"
 #include "PybindSearchStyle.h"
@@ -88,6 +90,8 @@ PYBIND11_MODULE(_smtkPybindAttribute, attribute)
   PySharedPtrClass< smtk::attribute::ModelEntityItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_ModelEntityItemDefinition = pybind11_init_smtk_attribute_ModelEntityItemDefinition(attribute);
   PySharedPtrClass< smtk::attribute::RefItem, smtk::attribute::Item > smtk_attribute_RefItem = pybind11_init_smtk_attribute_RefItem(attribute);
   PySharedPtrClass< smtk::attribute::RefItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_RefItemDefinition = pybind11_init_smtk_attribute_RefItemDefinition(attribute);
+  PySharedPtrClass< smtk::attribute::ReferenceItem, smtk::attribute::Item > smtk_attribute_ReferenceItem = pybind11_init_smtk_attribute_ReferenceItem(attribute);
+  PySharedPtrClass< smtk::attribute::ReferenceItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_ReferenceItemDefinition = pybind11_init_smtk_attribute_ReferenceItemDefinition(attribute);
   PySharedPtrClass< smtk::attribute::Collection, smtk::resource::Resource > smtk_attribute_Collection = pybind11_init_smtk_attribute_Collection(attribute);
   PySharedPtrClass< smtk::attribute::ValueItem, smtk::attribute::Item > smtk_attribute_ValueItem = pybind11_init_smtk_attribute_ValueItem(attribute);
   PySharedPtrClass< smtk::attribute::ValueItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_ValueItemDefinition = pybind11_init_smtk_attribute_ValueItemDefinition(attribute);

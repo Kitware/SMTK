@@ -163,7 +163,7 @@ int main(int argc, char** const argv)
   // Set the input model to be meshed
   //
   // TODO: make this an association, not an item
-  mesher->parameters()->findModelEntity("model")->setValue(model);
+  mesher->parameters()->findComponent("model")->setValue(model);
 
   // Set the client endpoint for the operator
   mesher->parameters()->findString("endpoint")->setValue(meshServerLauncher.clientEndpoint());

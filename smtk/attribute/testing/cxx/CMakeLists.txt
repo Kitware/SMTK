@@ -22,7 +22,11 @@ set(basicAttributeXMLWriterTest_ARGS
 set(childrenItemsTest_ARGS "dummy.sbi")
 foreach(tst ${attributeTests})
   add_executable(${tst} ${tst}.cxx)
-  target_link_libraries(${tst} smtkCore ${Boost_LIBRARIES})
+  target_link_libraries(${tst}
+    smtkCore
+    smtkAttributeEnvironment
+    ${Boost_LIBRARIES}
+  )
   add_test(NAME ${tst} COMMAND ${tst} ${${tst}_ARGS})
 endforeach()
 
@@ -68,5 +72,10 @@ set(unit_tests
 smtk_unit_tests(
   Label "Attribute"
   SOURCES ${unit_tests}
-  LIBRARIES smtkCore ${Boost_LIBRARIES}
+  LIBRARIES
+    smtkCore
+    smtkEnvironment
+    smtkAttributeEnvironment
+    smtkOperationEnvironment
+    smtkPolygonSessionEnvironment
 )

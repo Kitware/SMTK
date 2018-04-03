@@ -26,8 +26,9 @@
     <AttDef Type="result(undo elevate mesh)" BaseType="result">
       <ItemDefinitions>
         <MeshEntity Name="mesh_modified" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>
-        <ModelEntity Name="tess_changed" NumberOfRequiredValues="0"
-                     Extensible="true" AdvanceLevel="11"/>
+        <Component Name="tess_changed" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11">
+          <Accepts><Resource Name="smtk::model::Manager" Filter=""/></Accepts>
+        </Component>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

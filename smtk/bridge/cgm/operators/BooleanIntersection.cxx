@@ -22,7 +22,6 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "Body.hpp"
@@ -43,7 +42,7 @@
 #include "smtk/bridge/cgm/BooleanIntersection_xml.h"
 
 using namespace smtk::model;
-using smtk::attribute::ModelEntityItemPtr;
+using smtk::attribute::ComponentItemPtr;
 
 namespace smtk
 {
@@ -58,7 +57,7 @@ bool BooleanIntersection::ableToOperate()
   this->ensureSpecification();
   bool result = true;
   std::size_t numWorkpieces = this->associatedEntitiesAs<Models>().size();
-  std::size_t numTools = this->findModelEntity("tool")->numberOfValues();
+  std::size_t numTools = this->findComponent("tool")->numberOfValues();
   if (numWorkpieces + numTools < 2)
   {
     result = false;
@@ -72,7 +71,7 @@ smtk::operation::OperationResult BooleanIntersection::operateInternal()
 {
   int keepInputs = this->findInt("keep inputs")->value();
   Models bodiesIn = this->associatedEntitiesAs<Models>();
-  ModelEntityItemPtr toolIn = this->findModelEntity("tool");
+  ComponentItemPtr toolIn = this->findComponent("tool");
   Body* cgmToolBody = NULL;
 
   Models::iterator it;
@@ -95,7 +94,7 @@ smtk::operation::OperationResult BooleanIntersection::operateInternal()
   {
     DLIList<Body*> cgmToolBodies;
     ok &=
-      this->cgmEntities(*this->findModelEntity("tool").get(), cgmToolBodies, keepInputs, expunged);
+      this->cgmEntities(*this->findComponent("tool").get(), cgmToolBodies, keepInputs, expunged);
     if (!ok)
     {
       smtkInfoMacro(log(), "Tool body specified as " << toolIn->value().name() << " ("
@@ -107,13 +106,14 @@ smtk::operation::OperationResult BooleanIntersection::operateInternal()
   }
   else if (!keepInputs)
   { // All but the first input will be expunged.
-    EntityRefArray::const_iterator wit;
-    smtk::attribute::ModelEntityItemPtr assoc = this->specification()->associations();
+    smtk::attribute::ReferenceItem::const_iterator wit;
+    auto assoc = this->specification()->associations();
     wit = assoc->begin();
     for (++wit; wit != assoc->end(); ++wit)
     {
-      this->manager()->erase(*wit);
-      expunged.push_back(*wit);
+      auto entry = std::dynamic_pointer_cast<smtk::model::Entity>(*wit);
+      this->manager()->erase(entry);
+      expunged.push_back(entry);
     }
   }
 
@@ -134,7 +134,7 @@ smtk::operation::OperationResult BooleanIntersection::operateInternal()
     this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmBodiesOut, result, MODIFIED);
-  result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
+  result->findComponent("expunged")->setValues(expunged.begin(), expunged.end());
 
   return result;
 }

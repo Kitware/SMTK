@@ -50,7 +50,7 @@ protected:
   vtkModelEntity* fetchCMBCell(
     smtk::bridge::discrete::Resource::Ptr& resource, const std::string& parameterName) const;
   vtkModelEntity* fetchCMBCell(smtk::bridge::discrete::Resource::Ptr& resource,
-    const smtk::attribute::ModelEntityItemPtr&, int idx) const;
+    const smtk::attribute::ComponentItemPtr&, int idx) const;
   int createBoundaryGroup(vtkDiscreteModelWrapper* modelWrapper);
   int createDomainSet(vtkDiscreteModelWrapper* modelWrapper);
 

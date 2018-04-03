@@ -330,6 +330,14 @@ SessionInfoBits Manager::erase(const EntityRef& entityref, SessionInfoBits flags
   return this->Manager::erase(entityref.entity(), flags);
 }
 
+/**\brief A convenience method for erasing an entity from storage.
+  *
+  */
+SessionInfoBits Manager::erase(const EntityPtr& entityref, SessionInfoBits flags)
+{
+  return this->Manager::erase(entityref->id(), flags);
+}
+
 /**\brief Erase records related to the entity with no clean or safety checks.
   *
   * Returns bit flags indicating what types of data were erased.

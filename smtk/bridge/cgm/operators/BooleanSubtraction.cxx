@@ -21,8 +21,8 @@
 #include "smtk/model/Model.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "Body.hpp"
@@ -56,7 +56,7 @@ smtk::operation::OperationResult BooleanSubtraction::operateInternal()
 {
   int keepInputs = this->findInt("keep inputs")->value();
   int imprint = this->findInt("imprint workpieces")->value();
-  ModelEntityItemPtr toolsIn = this->findModelEntity("tools");
+  ModelEntityItemPtr toolsIn = this->findComponent("tools");
   Models bodiesIn = this->associatedEntitiesAs<Models>();
 
   Models::iterator it;
@@ -73,7 +73,7 @@ smtk::operation::OperationResult BooleanSubtraction::operateInternal()
     return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 
-  ok &= this->cgmEntities(*this->findModelEntity("tools").get(), cgmToolsIn, keepInputs, expunged);
+  ok &= this->cgmEntities(*this->findComponent("tools").get(), cgmToolsIn, keepInputs, expunged);
   if (!ok)
   {
     smtkInfoMacro(log(), "Need at least 1 tool; none of the specified entities were valid.");
@@ -93,7 +93,7 @@ smtk::operation::OperationResult BooleanSubtraction::operateInternal()
     this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmBodiesOut, result, MODIFIED);
-  result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
+  result->findComponent("expunged")->setValues(expunged.begin(), expunged.end());
 
   return result;
 }

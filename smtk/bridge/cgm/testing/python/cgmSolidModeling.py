@@ -54,13 +54,13 @@ class TestCGMSolidModeling(smtk.testing.TestCase):
         cs1.findAsDouble('center').setValue(2, 0.2)
 
         res = cs1.operate()
-        sph = res.findModelEntity('created').value(0)
+        sph = res.findComponent('created').value(0)
 
         cs2 = self.sref.op('create sphere')
         cs2.findAsDouble('radius').setValue(0.5)
         cs2.findAsDouble('center').setValue(0, 0.9)
         res2 = cs2.operate()
-        sph2 = res2.findModelEntity('created').value(0)
+        sph2 = res2.findComponent('created').value(0)
 
         print('Operations that can associate with ' + sph2.flagSummary(1) + ' include\n  %s' %
               '\n  '.join(self.sref.operatorsForAssociation(sph2.entityFlags())))
@@ -72,7 +72,7 @@ class TestCGMSolidModeling(smtk.testing.TestCase):
         # You will see:
         #    Updated volume(s): 2
         #    Destroyed volume(s): 1
-        su = res.findModelEntity('modified').value(0)
+        su = res.findComponent('modified').value(0)
         # Note that su has same UUID as sph2
 
         # Test cylinder creation.

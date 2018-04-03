@@ -79,7 +79,7 @@ int unitAttributeBasics(int, char* [])
                                    << tcol[3]);
 
   smtkTest(att->associatedModelEntityIds().size() == 0, "Should not have associated entity IDs.");
-  smtkTest(!att->associatedComponents(), "Should not have associated components.");
+  smtkTest(!att->associatedObjects(), "Should not have associated components.");
 
   smtkTest(!att->appliesToBoundaryNodes(), "Should not be applied to boundry node.");
   att->setAppliesToBoundaryNodes(true);

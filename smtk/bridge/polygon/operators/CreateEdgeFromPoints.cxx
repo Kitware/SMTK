@@ -23,7 +23,6 @@
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/bridge/polygon/CreateEdgeFromPoints_xml.h"
@@ -41,15 +40,16 @@ typedef std::vector<std::pair<size_t, internal::Segment> > SegmentSplitsT;
 
 CreateEdgeFromPoints::Result CreateEdgeFromPoints::operateInternal()
 {
-  smtk::attribute::ModelEntityItem::Ptr modelItem = this->parameters()->associations();
+  auto modelItem = this->parameters()->associations();
 
-  smtk::model::Model model = modelItem->value(0);
+  auto ent = modelItem->valueAs<smtk::model::Entity>();
+  smtk::model::Model model(ent);
 
-  smtk::bridge::polygon::Resource::Ptr resource =
-    std::static_pointer_cast<smtk::bridge::polygon::Resource>(model.component()->resource());
-
+  auto resource = std::dynamic_pointer_cast<smtk::bridge::polygon::Resource>(ent->resource());
   if (!resource)
+  {
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+  }
 
   smtk::attribute::GroupItem::Ptr pointsInfo;
   smtk::attribute::IntItem::Ptr coordinatesItem = this->parameters()->findInt("pointGeometry");
@@ -66,7 +66,7 @@ CreateEdgeFromPoints::Result CreateEdgeFromPoints::operateInternal()
   // numPts is the number of points total (across all edges)
   long long numPts = pointsInfo->numberOfGroups();
 
-  smtk::model::Model parentModel(modelItem->value(0));
+  smtk::model::Model parentModel(ent);
   if (!parentModel.isValid())
   {
     smtkErrorMacro(this->log(), "A model must be associated with the operator.");

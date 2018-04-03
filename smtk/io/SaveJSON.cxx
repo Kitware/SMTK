@@ -752,9 +752,9 @@ int SaveJSON::forOperationResult(OperationResult res, cJSON* entRec)
 {
   cJSON_AddItemToObject(entRec, "name", cJSON_CreateString(res->type().c_str()));
   cJSON_AddAttributeSpec(entRec, "result", "resultXML", res);
-  EntityRefs ents = res->modelEntitiesAs<EntityRefs>("created");
-  EntityRefs mdfs = res->modelEntitiesAs<EntityRefs>("modified");
-  EntityRefs meshents = res->modelEntitiesAs<EntityRefs>("mesh_created");
+  EntityRefs ents = res->entityRefsAs<EntityRefs>("created");
+  EntityRefs mdfs = res->entityRefsAs<EntityRefs>("modified");
+  EntityRefs meshents = res->entityRefsAs<EntityRefs>("mesh_created");
 
   ents.insert(mdfs.begin(), mdfs.end());
   ents.insert(meshents.begin(), meshents.end());

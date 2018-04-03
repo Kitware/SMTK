@@ -68,7 +68,7 @@ void ResourcePhraseModel::handleCreated(
   // First, handle root node:
   for (auto it = data->begin(); it != data->end(); ++it)
   {
-    smtk::resource::ComponentPtr comp = *it;
+    auto comp = std::dynamic_pointer_cast<smtk::resource::Component>(*it);
     if (comp == nullptr)
     {
       continue;

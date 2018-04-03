@@ -13,7 +13,6 @@
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/bridge/multiscale/RegisterSession.h"
@@ -122,7 +121,8 @@ int ImportFromDEFORMOp(int argc, char* argv[])
     return 1;
   }
 
-  smtk::model::Model model = importFromDeformOpResult->findModelEntity("created")->value();
+  smtk::model::Model model =
+    importFromDeformOpResult->findComponent("created")->valueAs<smtk::model::Entity>();
   if (!model.isValid())
   {
     std::cerr << "import from deform operator constructed an invalid model\n";

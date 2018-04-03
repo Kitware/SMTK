@@ -6,7 +6,7 @@
     <AttDef Type="composite auxiliary geometry" BaseType="operation" Label="Model - Composite Auxiliary Geometry">
       <!-- In the future Label shoud be removed when SMTK supports compound auxiliary geometry -->
       <AssociationsDef Name="entities" Label="model" NumberOfRequiredValues="1" Extensible="true">
-        <MembershipMask>aux_geom</MembershipMask>
+        <Accepts><Resource Name="smtk::model::Manager" Filter="aux_geom"/></Accepts>
       </AssociationsDef>
       <BriefDescription>
         Composite auxiliary geometry (scene geometry not part of the model domain)
@@ -97,7 +97,9 @@
     <AttDef Type="result(composite auxiliary geometry)" BaseType="result">
       <ItemDefinitions>
         <!-- The modified entities are stored in the base result's "modified" item. -->
-        <ModelEntity Name="tess_changed" NumberOfRequiredValues="0" Extensible="true"/>
+        <Component Name="tess_changed" NumberOfRequiredValues="0" Extensible="true">
+          <Accepts><Resource Name="smtk::model::Manager" Filter=""/></Accepts>
+        </Component>
         <Void Name="allow camera reset" IsEnabledByDefault="true" AdvanceLevel="11"/>
       </ItemDefinitions>
     </AttDef>

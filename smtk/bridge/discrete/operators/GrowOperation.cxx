@@ -17,7 +17,7 @@
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshSelectionItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
 #include "smtk/io/Logger.h"
@@ -60,8 +60,7 @@ GrowOperation::GrowOperation()
 
 bool GrowOperation::ableToOperate()
 {
-  smtk::model::Model model =
-    this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
+  smtk::model::Model model = this->parameters()->associations()->valueAs<smtk::model::Entity>();
 
   // The SMTK model must be valid
   if (!model.isValid())
@@ -295,8 +294,7 @@ void GrowOperation::findVisibleModelFaces(
 
 GrowOperation::Result GrowOperation::operateInternal()
 {
-  smtk::model::Model model =
-    this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
+  smtk::model::Model model = this->parameters()->associations()->valueAs<smtk::model::Entity>();
 
   smtk::bridge::discrete::Resource::Ptr resource =
     std::static_pointer_cast<smtk::bridge::discrete::Resource>(model.component()->resource());

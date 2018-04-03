@@ -311,6 +311,8 @@ public:
   bool operator!=(const EntityRef& other) const;
   bool operator<(const EntityRef& other) const;
 
+  operator bool() const { return this->isValid(); }
+
   std::size_t hash() const;
 
 protected:

@@ -22,7 +22,8 @@
 #include "smtk/attribute/MeshItemDefinition.h"
 #include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/MeshSelectionItemDefinition.h"
-#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ReferenceItem.h"
+// #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
@@ -336,14 +337,13 @@ void XmlDocV2Parser::processDirectoryItem(pugi::xml_node& node, attribute::Direc
   }
 }
 
-void XmlDocV2Parser::processModelEntityItem(
-  pugi::xml_node& node, attribute::ModelEntityItemPtr item)
+void XmlDocV2Parser::processModelEntityItem(pugi::xml_node& node, attribute::ReferenceItemPtr item)
 {
   xml_attribute xatt;
   xml_node valsNode;
   std::size_t i, n = item->numberOfValues();
   smtk::common::UUID uid;
-  smtk::model::ManagerPtr mmgr = m_collection->refModelManager();
+  smtk::model::ManagerPtr mmgr = m_collection->refModelManager(); // FIXME: Use resource manager!
   xml_node val;
   std::size_t numRequiredVals = item->numberOfRequiredValues();
   std::string attName;
@@ -386,7 +386,7 @@ void XmlDocV2Parser::processModelEntityItem(
         continue;
       }
       uid = smtk::common::UUID(val.text().get());
-      item->setValue(static_cast<int>(i), smtk::model::EntityRef(mmgr, uid));
+      item->setObjectValue(static_cast<int>(i), mmgr->findEntity(uid));
     }
   }
   else if (numRequiredVals == 1)
@@ -395,7 +395,7 @@ void XmlDocV2Parser::processModelEntityItem(
     if (val)
     {
       uid = smtk::common::UUID(val.text().get());
-      item->setValue(smtk::model::EntityRef(mmgr, uid));
+      item->setObjectValue(mmgr->findEntity(uid));
     }
   }
   else

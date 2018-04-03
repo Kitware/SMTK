@@ -12,11 +12,11 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ReferenceItem.h"
 
 #include "smtk/attribute/json/jsonHelperFunction.h"
 #include "smtk/attribute/json/jsonItem.h"
-#include "smtk/attribute/json/jsonModelEntityItem.h"
+#include "smtk/attribute/json/jsonReferenceItem.h"
 #include "smtk/io/Logger.h"
 #include "smtk/model/Manager.h"
 
@@ -38,7 +38,6 @@ namespace attribute
 SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::AttributePtr& att);
 
 SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::AttributePtr& att,
-  const smtk::attribute::CollectionPtr& colPtr,
   std::vector<smtk::attribute::ItemExpressionInfo>& itemExpressionInfo,
   std::vector<smtk::attribute::AttRefInfo>& attRefInfo);
 }

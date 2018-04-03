@@ -33,23 +33,18 @@ int unitAttributeAssociation(int, char* [])
 
   DefinitionPtr def = sys.createDefinition("testDef");
   auto arule = def->createLocalAssociationRule();
-  arule->setMembershipMask(smtk::model::VERTEX);
+  def->setLocalAssociationMask(smtk::model::VERTEX);
   arule->setIsExtensible(true);
   arule->setMaxNumberOfValues(2);
   AttributePtr att = sys.createAttribute("testAtt", "testDef");
 
   UUID fakeEntityId = UUID::random();
-  att->associateEntity(fakeEntityId);
-  smtkTest(att->associatedModelEntityIds().count(fakeEntityId) == 1,
-    "Could not associate a \"fake\" entity with this attribute.");
+  smtkTest(!att->associateEntity(fakeEntityId),
+    "Was able to associate a \"fake\" object with an attribute.");
 
   // Attempt to disassociate an entity that was never associated.
   UUID anotherFakeId = UUID::random();
   att->disassociateEntity(anotherFakeId);
-
-  att->disassociateEntity(fakeEntityId);
-  smtkTest(att->isEntityAssociated(fakeEntityId) == false,
-    "Could not disassociate a \"fake\" entity from this attribute.");
 
   // ----
   // II. Now see how things work when the attribute collection has
@@ -63,11 +58,11 @@ int unitAttributeAssociation(int, char* [])
 
   smtk::model::Vertex v0 = modelMgr->addVertex();
   smtk::model::Vertex v1 = modelMgr->addVertex();
-  v0.associateAttribute(att->collection(), att->id());
+  att->associateEntity(v0);
   smtkTest(att->associatedModelEntityIds().count(v0.entity()) == 1,
     "Could not associate a vertex to an attribute.");
 
-  att->disassociateEntity(v0.entity());
+  att->disassociateEntity(v0);
   smtkTest(!v0.hasAttributes(), "Disassociating an attribute did not notify the entity.");
 
   att->disassociateEntity(v1.entity());

@@ -35,6 +35,8 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/ReferenceItem.h"
+#include "smtk/attribute/ReferenceItemDefinition.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
@@ -473,7 +475,7 @@ void XmlV2StringWriter::processDefinitionInternal(
   {
     // Create association element if we need to.
     xml_node assocDefNode = definition.append_child("AssociationsDef");
-    ModelEntityItemDefinitionPtr assocRule = def->localAssociationRule();
+    auto assocRule = def->localAssociationRule();
     this->processItemDefinition(assocDefNode, assocRule);
   }
 
@@ -940,7 +942,7 @@ void XmlV2StringWriter::processAttribute(xml_node& attributes, attribute::Attrib
   }
   node.append_attribute("ID").set_value(att->id().toString().c_str());
   // Save associated entities
-  ModelEntityItemPtr assoc = att->associations();
+  auto assoc = att->associations();
   if (assoc && assoc->numberOfValues() > 0)
   {
     xml_node assocNode = node.append_child("Associations");

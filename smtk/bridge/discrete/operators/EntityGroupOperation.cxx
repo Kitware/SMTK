@@ -15,7 +15,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
@@ -54,8 +54,7 @@ bool EntityGroupOperation::ableToOperate()
     return false;
   }
 
-  smtk::model::Model model =
-    this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
+  smtk::model::Model model = this->parameters()->associations()->valueAs<smtk::model::Entity>();
 
   if (!model.isValid())
   {
@@ -63,7 +62,7 @@ bool EntityGroupOperation::ableToOperate()
   }
 
   smtk::bridge::discrete::Resource::Ptr resource =
-    std::static_pointer_cast<smtk::bridge::discrete::Resource>(model.component()->resource());
+    std::static_pointer_cast<smtk::bridge::discrete::Resource>(model.manager());
 
   if (!resource->discreteSession()->findModelEntity(model.entity()))
   {
@@ -120,8 +119,7 @@ int EntityGroupOperation::createDomainSet(vtkDiscreteModelWrapper* modelWrapper)
 EntityGroupOperation::Result EntityGroupOperation::operateInternal()
 {
   // ableToOperate should have verified that model is valid
-  smtk::model::Model model =
-    this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
+  smtk::model::Model model = this->parameters()->associations()->valueAs<smtk::model::Entity>();
 
   smtk::bridge::discrete::Resource::Ptr resource =
     std::static_pointer_cast<smtk::bridge::discrete::Resource>(model.component()->resource());
@@ -187,8 +185,7 @@ EntityGroupOperation::Result EntityGroupOperation::operateInternal()
   }
   else if (optype == "Remove")
   {
-    smtk::attribute::ModelEntityItemPtr remgrpItem =
-      this->parameters()->findModelEntity("remove cell group");
+    auto remgrpItem = this->parameters()->findComponent("remove cell group");
     for (std::size_t idx = 0; idx < remgrpItem->numberOfValues(); idx++)
     {
       vtkModelEntity* modEntity = this->fetchCMBCell(resource, remgrpItem, static_cast<int>(idx));
@@ -209,7 +206,7 @@ EntityGroupOperation::Result EntityGroupOperation::operateInternal()
       if (ok)
       {
         // get rid of the group from manager
-        smtk::model::EntityRef grpRem = remgrpItem->value(idx);
+        smtk::model::EntityRef grpRem = remgrpItem->valueAs<smtk::model::Entity>(idx);
         model.removeGroup(grpRem.as<smtk::model::Group>());
         pstore->erase(grpRem);
         std::cout << "Removed " << grpRem.name() << " to " << model.name() << "\n";
@@ -226,7 +223,7 @@ EntityGroupOperation::Result EntityGroupOperation::operateInternal()
     {
       // get rid of the group from manager
       smtk::model::EntityRef grpC =
-        this->parameters()->findModelEntity("modify cell group")->value();
+        this->parameters()->findComponent("modify cell group")->valueAs<smtk::model::Entity>();
       smtk::model::Group tmpGrp = grpC.as<smtk::model::Group>();
 
       BitFlags mask = tmpGrp.membershipMask();
@@ -288,18 +285,18 @@ vtkModelEntity* EntityGroupOperation::fetchCMBCell(
   vtkModelItem* item =
     resource->discreteSession()->entityForUUID(const_cast<EntityGroupOperation*>(this)
                                                  ->parameters()
-                                                 ->findModelEntity(pname)
-                                                 ->value()
-                                                 .entity());
+                                                 ->findComponent(pname)
+                                                 ->objectValue()
+                                                 ->id());
 
   vtkModelEntity* cell = dynamic_cast<vtkModelEntity*>(item);
   return cell;
 }
 
 vtkModelEntity* EntityGroupOperation::fetchCMBCell(smtk::bridge::discrete::Resource::Ptr& resource,
-  const smtk::attribute::ModelEntityItemPtr& entItem, int idx) const
+  const smtk::attribute::ComponentItemPtr& entItem, int idx) const
 {
-  vtkModelItem* item = resource->discreteSession()->entityForUUID(entItem->value(idx).entity());
+  vtkModelItem* item = resource->discreteSession()->entityForUUID(entItem->objectValue(idx)->id());
 
   vtkModelEntity* cell = dynamic_cast<vtkModelEntity*>(item);
   return cell;
@@ -317,8 +314,7 @@ bool EntityGroupOperation::modifyGroup(smtk::bridge::discrete::Resource::Ptr& re
   if (grpEntity && (vtkModelMaterial::SafeDownCast(grpEntity) ||
                      vtkDiscreteModelEntityGroup::SafeDownCast(grpEntity)))
   {
-    smtk::model::Model model =
-      this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
+    smtk::model::Model model = this->parameters()->associations()->valueAs<smtk::model::Entity>();
 
     vtkModelMaterial* grpDS = vtkModelMaterial::SafeDownCast(grpEntity);
     vtkDiscreteModelEntityGroup* grpBC = vtkDiscreteModelEntityGroup::SafeDownCast(grpEntity);
@@ -334,8 +330,7 @@ bool EntityGroupOperation::modifyGroup(smtk::bridge::discrete::Resource::Ptr& re
       m_opBoundary->ClearEntitiesToRemove();
       m_opBoundary->SetId(grpEntity->GetUniquePersistentId());
     }
-    smtk::attribute::ModelEntityItemPtr entItem =
-      this->parameters()->findModelEntity("cell to add");
+    auto entItem = this->parameters()->findComponent("cell to add");
     if (entItem)
     {
       for (std::size_t idx = 0; idx < entItem->numberOfValues(); idx++)
@@ -350,7 +345,7 @@ bool EntityGroupOperation::modifyGroup(smtk::bridge::discrete::Resource::Ptr& re
       }
     }
 
-    entItem = this->parameters()->findModelEntity("cell to remove");
+    entItem = this->parameters()->findComponent("cell to remove");
     if (entItem)
     {
       for (std::size_t idx = 0; idx < entItem->numberOfValues(); idx++)

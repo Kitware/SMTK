@@ -58,15 +58,13 @@ public:
 
   // Main widget contents
   QGridLayout* m_grid;
-  QCheckBox* m_optional;  // Added if the item is optional to reflect IsEnabled().
-  QLabel* m_label;        // The item's label (or name if no label).
-  QLabel* m_synopsis;     // A live summary of the item's entries and acceptability
-  QPushButton* m_editBtn; // A button to show a popup used to edit the item's entries
-  QPushButton*
-    m_exportSeln; // A button to one-shot export the item's entries to an application selection
+  QCheckBox* m_optional;     // Added if the item is optional to reflect IsEnabled().
+  QLabel* m_label;           // The item's label (or name if no label).
+  QLabel* m_synopsis;        // A live summary of the item's entries and acceptability
+  QPushButton* m_editBtn;    // A button to show a popup used to edit the item's entries
+  QPushButton* m_exportSeln; // A button to one-shot export the item's entries to an app. selection
   QPushButton* m_importSeln; // A button to one-shot import an application selection to the entries
-  QPushButton*
-    m_linkSeln; // A button to link an application selection to the item's entries on an ongoing basis.
+  QPushButton* m_linkSeln; // A button to link an app. selection to the item's entries permanently.
 
   // Popup widget contents
   QDialog* m_popup;
@@ -74,6 +72,9 @@ public:
   QListView* m_popupList;
   QLabel* m_popupSynopsis;
   QPushButton* m_popupDone;
+
+  // Selection state of items shown in m_phraseModel:
+  std::map<smtk::resource::PersistentObjectPtr, int> m_members;
 
   // Link between Qt and SMTK
   smtk::extension::qtDescriptivePhraseModel* m_qtModel;

@@ -101,10 +101,9 @@ protected:
   void processStringItem(pugi::xml_node& node, smtk::attribute::StringItemPtr item);
   virtual void processStringDef(
     pugi::xml_node& node, smtk::attribute::StringItemDefinitionPtr idef);
-  virtual void processModelEntityItem(
-    pugi::xml_node& node, smtk::attribute::ModelEntityItemPtr item);
+  virtual void processModelEntityItem(pugi::xml_node& node, smtk::attribute::ReferenceItemPtr item);
   void processModelEntityDef(
-    pugi::xml_node& node, smtk::attribute::ModelEntityItemDefinitionPtr idef);
+    pugi::xml_node& node, smtk::attribute::ReferenceItemDefinitionPtr idef);
   virtual void processMeshEntityItem(pugi::xml_node& node, attribute::MeshItemPtr item);
   virtual void processMeshEntityDef(
     pugi::xml_node& node, smtk::attribute::MeshItemDefinitionPtr idef);
@@ -114,6 +113,10 @@ protected:
   virtual void processDateTimeItem(pugi::xml_node& node, smtk::attribute::DateTimeItemPtr item);
   virtual void processDateTimeDef(
     pugi::xml_node& node, smtk::attribute::DateTimeItemDefinitionPtr idef);
+  virtual void processReferenceItem(pugi::xml_node& node, smtk::attribute::ReferenceItemPtr item);
+  virtual void processReferenceDef(pugi::xml_node& node,
+    smtk::attribute::ReferenceItemDefinitionPtr idef,
+    const std::string& labelsElement = "ReferenceLabels");
   virtual void processResourceItem(pugi::xml_node& node, smtk::attribute::ResourceItemPtr item);
   virtual void processResourceDef(
     pugi::xml_node& node, smtk::attribute::ResourceItemDefinitionPtr idef);

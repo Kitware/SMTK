@@ -27,29 +27,21 @@ namespace smtk
 namespace extension
 {
 
-class qtComponentItem::Internal
-{
-public:
-  std::map<smtk::resource::ComponentPtr, int> m_members;
-};
-
 qtComponentItem::qtComponentItem(
   smtk::attribute::ComponentItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation enumOrient)
   : Superclass(std::static_pointer_cast<smtk::attribute::Item>(item), p, bview)
 {
   (void)enumOrient;
-  m_p = new Internal;
   this->createWidget();
 }
 
 qtComponentItem::~qtComponentItem()
 {
-  delete m_p;
 }
 
 void qtComponentItem::setLabelVisible(bool visible)
 {
-  qtReferenceItem::m_p->m_label->setVisible(visible);
+  m_p->m_label->setVisible(visible);
 }
 
 smtk::attribute::ComponentItemPtr qtComponentItem::componentItem() const
@@ -117,8 +109,9 @@ std::string qtComponentItem::synopsis(bool& ok) const
   ok = true;
   if (numRequired < 2 && maxAllowed == 1)
   {
-    auto ment = std::dynamic_pointer_cast<smtk::model::Entity>(
-      m_p->m_members.empty() ? smtk::resource::ComponentPtr() : m_p->m_members.begin()->first);
+    auto ment = std::dynamic_pointer_cast<smtk::model::Entity>(m_p->m_members.empty()
+        ? smtk::resource::PersistentObjectPtr()
+        : m_p->m_members.begin()->first);
     label << (numSel == 1
         ? (ment ? ment->referenceAs<smtk::model::EntityRef>().name() : "TODO (report item name)")
         : (numSel > 0 ? "too many" : "(none)"));
@@ -197,7 +190,7 @@ int qtComponentItem::decorateWithMembership(smtk::view::DescriptivePhrasePtr phr
             if (item->numberOfRequiredValues() <= 1 && item->maxNumberOfValues() == 1)
             { // Clear all other members since only 1 is allowed and the user just chose it.
               m_p->m_members.clear();
-              qtReferenceItem::m_p->m_phraseModel->triggerDataChanged();
+              m_p->m_phraseModel->triggerDataChanged();
             }
           }
           m_p->m_members[ent] = val ? 1 : 0; // FIXME: Use a bit specified by the application.
@@ -212,8 +205,7 @@ int qtComponentItem::decorateWithMembership(smtk::view::DescriptivePhrasePtr phr
 
 void qtComponentItem::toggleCurrentItem()
 {
-  auto cphr =
-    qtReferenceItem::m_p->m_qtModel->getItem(qtReferenceItem::m_p->m_popupList->currentIndex());
+  auto cphr = m_p->m_qtModel->getItem(m_p->m_popupList->currentIndex());
   if (cphr)
   {
     auto currentMembership = cphr->relatedVisibility();
@@ -224,7 +216,7 @@ void qtComponentItem::toggleCurrentItem()
       if (item->numberOfRequiredValues() <= 1 && item->maxNumberOfValues() == 1)
       {
         m_p->m_members.clear();
-        qtReferenceItem::m_p->m_phraseModel->triggerDataChanged();
+        m_p->m_phraseModel->triggerDataChanged();
       }
     }
     cphr->setRelatedVisibility(!currentMembership);
@@ -271,7 +263,8 @@ bool qtComponentItem::synchronize(UpdateSource src)
       {
         if (member.second)
         {
-          if (!item->setValue(idx, member.first))
+          if (!item->setValue(
+                idx, std::dynamic_pointer_cast<smtk::resource::Component>(member.first)))
           {
             return false; // Huh!?!
           }
@@ -280,9 +273,10 @@ bool qtComponentItem::synchronize(UpdateSource src)
       }
     }
     break;
+
     case UpdateSource::GUI_FROM_ITEM:
-      m_p->m_members
-        .clear(); // FIXME: Preserve bits other than the one used by the qtComponentItem?
+      m_p->m_members.clear(); // FIXME: Preserve bits other than the 1 used by the qtComponentItem?
+      m_p->m_phraseModel->triggerDataChanged();
       for (auto vit = item->begin(); vit != item->end(); ++vit)
       {
         m_p->m_members[*vit] = 1; // FIXME: Use a bit specified by the application.

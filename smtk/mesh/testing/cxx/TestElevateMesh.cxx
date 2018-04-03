@@ -28,6 +28,8 @@
 
 #include "smtk/io/ExportMesh.h"
 
+#include "smtk/environment/Environment.h"
+
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/ForEachTypes.h"
 #include "smtk/mesh/core/Manager.h"
@@ -110,8 +112,9 @@ int TestElevateMesh(int argc, char* argv[])
 {
   (void)argc;
   (void)argv;
-
-  smtk::operation::Operation::Ptr importOp = smtk::bridge::discrete::ImportOperation::create();
+  auto opMgr = smtk::environment::OperationManager::instance();
+  smtk::operation::Operation::Ptr importOp =
+    opMgr->create<smtk::bridge::discrete::ImportOperation>();
 
   if (!importOp)
   {
@@ -154,8 +157,7 @@ int TestElevateMesh(int argc, char* argv[])
 
   smtk::model::Model model2dm = model->referenceAs<smtk::model::Model>();
 
-  smtk::attribute::ModelEntityItemPtr meshedFaceItem =
-    importOpResult->findModelEntity("mesh_created");
+  auto meshedFaceItem = importOpResult->findComponent("mesh_created");
 
   if (!meshedFaceItem || !meshedFaceItem->isValid())
   {
@@ -163,7 +165,7 @@ int TestElevateMesh(int argc, char* argv[])
     return 1;
   }
 
-  const smtk::model::Face& meshedFace = meshedFaceItem->value();
+  smtk::model::Face meshedFace = meshedFaceItem->valueAs<smtk::model::Entity>();
   auto associatedCollections = resource->meshes()->associatedCollections(meshedFace);
   smtk::mesh::CollectionPtr collection = associatedCollections[0];
   smtk::mesh::MeshSet mesh = collection->meshes();
@@ -175,7 +177,7 @@ int TestElevateMesh(int argc, char* argv[])
   }
 
   // add auxiliary geometry
-  smtk::operation::Operation::Ptr auxGeoOp = smtk::model::AddAuxiliaryGeometry::create();
+  auto auxGeoOp = opMgr->create<smtk::model::AddAuxiliaryGeometry>();
 
   {
     std::string file_path(data_root);
@@ -211,7 +213,7 @@ int TestElevateMesh(int argc, char* argv[])
   {
     // create the elevate mesh operator
     std::cout << "Creating elevate mesh operator\n";
-    smtk::operation::Operation::Ptr elevateMesh = smtk::mesh::ElevateMesh::create();
+    auto elevateMesh = opMgr->create<smtk::mesh::ElevateMesh>();
     if (!elevateMesh)
     {
       std::cerr << "No Elevate Mesh operator!\n";
@@ -220,7 +222,9 @@ int TestElevateMesh(int argc, char* argv[])
 
     // set input values for the elevate mesh operator
     elevateMesh->parameters()->findString("input data")->setToDefault();
-    elevateMesh->parameters()->findModelEntity("auxiliary geometry")->setValue(auxGeo2dm);
+    elevateMesh->parameters()
+      ->findComponent("auxiliary geometry")
+      ->setObjectValue(auxGeo2dm.component());
     elevateMesh->parameters()->findString("interpolation scheme")->setToDefault();
     elevateMesh->parameters()->findDouble("radius")->setValue(7.);
     elevateMesh->parameters()->findMesh("mesh")->appendValue(mesh);
@@ -249,7 +253,7 @@ int TestElevateMesh(int argc, char* argv[])
   {
     // create the undo elevate mesh operator
     std::cout << "Creating undo elevate mesh operator\n";
-    smtk::operation::Operation::Ptr undoElevateMesh = smtk::mesh::UndoElevateMesh::create();
+    auto undoElevateMesh = opMgr->create<smtk::mesh::UndoElevateMesh>();
     if (!undoElevateMesh)
     {
       std::cerr << "No Undo Elevate Mesh operator!\n";

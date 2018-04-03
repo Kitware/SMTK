@@ -9,6 +9,7 @@
 //=========================================================================
 #include "jsonComponentItem.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Collection.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/json/jsonItem.h"
@@ -76,8 +77,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ComponentItemPtr& i
   j["Values"] = values;
 }
 
-SMTKCORE_EXPORT void from_json(
-  const json& j, smtk::attribute::ComponentItemPtr& itemPtr, smtk::attribute::CollectionPtr colPtr)
+SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ComponentItemPtr& itemPtr)
 {
   // The caller should make sure that itemPtr is valid since it's not default constructible
   if (!itemPtr.get())
@@ -110,7 +110,7 @@ SMTKCORE_EXPORT void from_json(
   {
     return;
   }
-  auto rsrcMgr = colPtr->manager();
+  auto rsrcMgr = itemPtr->attribute()->collection()->manager();
   if (!rsrcMgr && itemPtr->numberOfValues() > 0)
   {
     // TODO: handle check logic in XmlDocV3Parser::249

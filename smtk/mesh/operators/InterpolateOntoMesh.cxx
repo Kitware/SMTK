@@ -211,11 +211,10 @@ InterpolateOntoMesh::Result InterpolateOntoMesh::operateInternal()
   if (inputDataItem->value() == "auxiliary geometry")
   {
     // Access the external data to use in determining value values
-    smtk::attribute::ModelEntityItem::Ptr auxGeoItem =
-      this->parameters()->findModelEntity("auxiliary geometry");
+    auto auxGeoItem = this->parameters()->findComponent("auxiliary geometry");
 
     // Get the auxiliary geometry
-    smtk::model::AuxiliaryGeometry auxGeo = auxGeoItem->value();
+    smtk::model::AuxiliaryGeometry auxGeo = auxGeoItem->valueAs<smtk::model::Entity>();
 
     if (interpolationSchemeItem->value() == "radial average")
     {
@@ -372,7 +371,7 @@ InterpolateOntoMesh::Result InterpolateOntoMesh::operateInternal()
   smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
 
   // Access the attribute associated with the changed tessellation
-  smtk::attribute::ModelEntityItem::Ptr modifiedEntities = result->findModelEntity("tess_changed");
+  auto modifiedEntities = result->findComponent("tess_changed");
   modifiedEntities->setNumberOfValues(meshItem->numberOfValues());
 
   std::function<double(std::array<double, 3>)> fn = [&](std::array<double, 3> x) {
@@ -408,7 +407,7 @@ InterpolateOntoMesh::Result InterpolateOntoMesh::operateInternal()
     {
       smtk::model::Model model = entities[0].owningModel();
       modified->appendValue(model.component());
-      modifiedEntities->appendValue(model);
+      modifiedEntities->appendValue(model.component());
     }
   }
 

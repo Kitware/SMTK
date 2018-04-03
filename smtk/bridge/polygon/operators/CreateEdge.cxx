@@ -22,7 +22,6 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/bridge/polygon/CreateEdge_xml.h"
@@ -66,10 +65,10 @@ CreateEdge::Result CreateEdge::operateInternal()
   smtk::attribute::IntItem::Ptr coordinatesItem = this->parameters()->findInt("coordinates");
   smtk::attribute::IntItem::Ptr offsetsItem = this->parameters()->findInt("offsets");
 
-  smtk::attribute::ModelEntityItem::Ptr modelItem = this->parameters()->associations();
+  auto modelItem = this->parameters()->associations();
   smtk::bridge::polygon::Resource::Ptr resource =
     std::static_pointer_cast<smtk::bridge::polygon::Resource>(
-      modelItem->value(0).component()->resource());
+      modelItem->valueAs<smtk::model::Entity>()->resource());
   if (!resource)
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
 
@@ -78,10 +77,11 @@ CreateEdge::Result CreateEdge::operateInternal()
   // If method == 1 (vertices), complain if the entities are not vertices or there are too few.
   // If method == 2 (interactive widget), after widget interaction, same requirements are needed
   //    as method == 0 (points) because widget representation points will be set to "points", etc.
-  smtk::model::Model parentModel(modelItem->value(0));
+  smtk::model::EntityRef ment = modelItem->valueAs<smtk::model::Entity>();
+  smtk::model::Model parentModel(ment);
   if (!parentModel.isValid())
   {
-    parentModel = modelItem->value(0).owningModel();
+    parentModel = ment.owningModel();
     if (!parentModel.isValid() || (method == 1 && modelItem->numberOfValues() < 2))
     {
       smtkErrorMacro(this->log(),
@@ -89,7 +89,7 @@ CreateEdge::Result CreateEdge::operateInternal()
       return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
   }
-  if (method == 1 && (!modelItem->value(0).isVertex() || modelItem->numberOfValues() < 2))
+  if (method == 1 && (!ment.isVertex() || modelItem->numberOfValues() < 2))
   {
     smtkErrorMacro(this->log(), "When constructing an edge from vertices,"
                                 " all associated model entities must be vertices"
@@ -170,11 +170,12 @@ CreateEdge::Result CreateEdge::operateInternal()
         internal::Point curr;
         internal::Point prev;
         bool first = true;
-        edgeIsPeriodic = (modelItem->value(edgeOffset) == modelItem->value(edgeEnd));
+        edgeIsPeriodic = (modelItem->objectValue(edgeOffset) == modelItem->objectValue(edgeEnd));
         for (; edgeOffset < edgeEnd; ++edgeOffset, prev = curr)
         {
+          auto evert = modelItem->valueAs<smtk::model::Entity>(edgeOffset);
           internal::vertex::Ptr vert =
-            resource->findStorage<internal::vertex>(modelItem->value(edgeOffset).entity());
+            evert ? resource->findStorage<internal::vertex>(evert->id()) : nullptr;
           if (!vert)
           {
             ok = false;

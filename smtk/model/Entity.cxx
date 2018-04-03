@@ -797,12 +797,12 @@ std::string Entity::flagToSpecifierString(BitFlags val, bool textual)
       if ((tmp != 0) && !(tmp & (tmp - 1)))
       {
         // If exactly one entity-type bit is set (this is what test on tmp does above), add it:
-        if (isCellEntity(val))
+        if (smtk::model::isCellEntity(val))
         {
           haveType = true;
           spec << "cell";
         }
-        if (isUseEntity(val))
+        if (smtk::model::isUseEntity(val))
         {
           if (haveType)
             spec << "|";
@@ -810,7 +810,7 @@ std::string Entity::flagToSpecifierString(BitFlags val, bool textual)
             haveType = true;
           spec << "use";
         }
-        if (isShellEntity(val))
+        if (smtk::model::isShellEntity(val))
         {
           if (haveType)
             spec << "|";
@@ -818,7 +818,7 @@ std::string Entity::flagToSpecifierString(BitFlags val, bool textual)
             haveType = true;
           spec << "shell";
         }
-        if (isGroup(val))
+        if (smtk::model::isGroup(val))
         {
           if (haveType)
             spec << "|";
@@ -826,7 +826,7 @@ std::string Entity::flagToSpecifierString(BitFlags val, bool textual)
             haveType = true;
           spec << "group";
         }
-        if (isModel(val))
+        if (smtk::model::isModel(val))
         {
           if (haveType)
             spec << "|";
@@ -834,7 +834,7 @@ std::string Entity::flagToSpecifierString(BitFlags val, bool textual)
             haveType = true;
           spec << "model";
         }
-        if (isInstance(val))
+        if (smtk::model::isInstance(val))
         {
           if (haveType)
             spec << "|";
@@ -842,7 +842,7 @@ std::string Entity::flagToSpecifierString(BitFlags val, bool textual)
             haveType = true;
           spec << "instance";
         }
-        if (isSessionRef(val))
+        if (smtk::model::isSessionRef(val))
         {
           if (haveType)
             spec << "|";
@@ -850,7 +850,7 @@ std::string Entity::flagToSpecifierString(BitFlags val, bool textual)
             haveType = true;
           spec << "session";
         }
-        if (isAuxiliaryGeometry(val))
+        if (smtk::model::isAuxiliaryGeometry(val))
         {
           if (haveType)
             spec << "|";

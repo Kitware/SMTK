@@ -37,7 +37,10 @@ namespace model
 GroupAuxiliaryGeometry::Result GroupAuxiliaryGeometry::operateInternal()
 {
   auto associations = this->parameters()->associations();
-  AuxiliaryGeometries entities(associations->begin(), associations->end());
+  auto entities =
+    associations->as<AuxiliaryGeometries>([](smtk::resource::PersistentObjectPtr obj) {
+      return smtk::model::AuxiliaryGeometry(std::dynamic_pointer_cast<smtk::model::Entity>(obj));
+    });
   if (entities.empty())
   {
     smtkErrorMacro(this->log(), "No children specified.");

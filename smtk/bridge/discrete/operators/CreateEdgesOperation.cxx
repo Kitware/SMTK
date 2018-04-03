@@ -15,7 +15,6 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
 #include "smtk/model/Manager.h"
@@ -46,8 +45,7 @@ CreateEdgesOperation::CreateEdgesOperation()
 
 bool CreateEdgesOperation::ableToOperate()
 {
-  smtk::model::Model model =
-    this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
+  smtk::model::Model model = this->parameters()->associations()->valueAs<smtk::model::Entity>();
   if (!model.isValid())
   {
     return false;
@@ -80,7 +78,8 @@ bool CreateEdgesOperation::ableToOperate()
 
 CreateEdgesOperation::Result CreateEdgesOperation::operateInternal()
 {
-  smtk::model::EntityRef inModel = this->parameters()->findModelEntity("model")->value();
+  smtk::model::EntityRef inModel =
+    this->parameters()->associations()->valueAs<smtk::model::Entity>();
 
   smtk::bridge::discrete::Resource::Ptr resource =
     std::static_pointer_cast<smtk::bridge::discrete::Resource>(inModel.component()->resource());
@@ -117,7 +116,7 @@ CreateEdgesOperation::Result CreateEdgesOperation::operateInternal()
     }
     iter->Delete();
 
-    result->findModelEntity("tess_changed")->setValue(inModel);
+    result->findComponent("tess_changed")->setValue(inModel.component());
     smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
     for (auto m : modEnts)
     {

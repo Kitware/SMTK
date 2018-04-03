@@ -93,8 +93,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::GroupItemPtr& itemP
 }
 
 SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemPtr& itemPtr,
-  const smtk::attribute::CollectionPtr& colPtr, std::vector<ItemExpressionInfo>& itemExpressionInfo,
-  std::vector<AttRefInfo>& attRefInfo)
+  std::vector<ItemExpressionInfo>& itemExpressionInfo, std::vector<AttRefInfo>& attRefInfo)
 {
   // The caller should make sure that itemPtr is valid since it's not default constructible
   if (!itemPtr.get())
@@ -158,7 +157,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemPtr& ite
               json itemValue = itemJson.at("ItemValue");
               auto groupItemPtr = itemPtr->item(groupIter, itemPGIter);
               smtk::attribute::JsonHelperFunction::processItemTypeFromJson(
-                itemValue, groupItemPtr, colPtr, itemExpressionInfo, attRefInfo);
+                itemValue, groupItemPtr, itemExpressionInfo, attRefInfo);
             }
           }
         }

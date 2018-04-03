@@ -51,7 +51,10 @@ TessellateFaces::TessellateFaces()
 bool TessellateFaces::ableToOperate()
 {
   auto associations = this->parameters()->associations();
-  smtk::model::EntityRefArray entities(associations->begin(), associations->end());
+  auto entities =
+    associations->as<smtk::model::EntityRefArray>([](smtk::resource::PersistentObjectPtr obj) {
+      return smtk::model::EntityRef(std::dynamic_pointer_cast<smtk::model::Entity>(obj));
+    });
 
   for (auto& eRef : entities)
   {
@@ -67,7 +70,9 @@ bool TessellateFaces::ableToOperate()
 TessellateFaces::Result TessellateFaces::operateInternal()
 {
   auto associations = this->parameters()->associations();
-  smtk::model::Faces faces(associations->begin(), associations->end());
+  auto faces = associations->as<smtk::model::Faces>([](smtk::resource::PersistentObjectPtr obj) {
+    return smtk::model::Face(std::dynamic_pointer_cast<smtk::model::Entity>(obj));
+  });
 
   bool validatePolygons = this->parameters()->findVoid("validate polygons")->isEnabled();
 
@@ -143,9 +148,9 @@ TessellateFaces::Result TessellateFaces::operateInternal()
     importFromDelaunayMesh(mesh, face);
 
     smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
-    modified->setValue(face.component());
+    modified->appendValue(face.component());
 
-    result->findModelEntity("tess_changed")->appendValue(face);
+    result->findComponent("tess_changed")->appendValue(face.component());
   }
 
   return result;

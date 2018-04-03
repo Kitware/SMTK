@@ -10,11 +10,9 @@
 #include "jsonAttribute.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/ModelEntityItem.h"
 
 #include "smtk/attribute/json/jsonHelperFunction.h"
 #include "smtk/attribute/json/jsonItem.h"
-#include "smtk/attribute/json/jsonModelEntityItem.h"
 #include "smtk/io/Logger.h"
 #include "smtk/model/Manager.h"
 
@@ -48,7 +46,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::AttributePtr& att)
   j["ID"] = att->id().toString();
 
   // Save associated entities
-  smtk::attribute::ModelEntityItemPtr assoc = att->associations();
+  auto assoc = att->associations();
   if (assoc && assoc->numberOfValues() > 0)
   {
     j["Associations"] = assoc;
@@ -70,12 +68,10 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::AttributePtr& att)
     json items = json::array();
     for (i = 0; i < n; i++)
     {
-      json item, itemValue;
-      item["Type"] = Item::type2String(att->item(i)->type());
+      json item;
       // TODO Add name check and whether json equals the item of the attribute
-      smtk::attribute::JsonHelperFunction::processItemTypeToJson(itemValue, att->item(i));
+      smtk::attribute::JsonHelperFunction::processItemTypeToJson(item, att->item(i));
       // Same type items can occur multiple times
-      item["ItemValue"] = itemValue;
       items.push_back(item);
     }
     j["Items"] = items;
@@ -83,7 +79,6 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::AttributePtr& att)
 }
 
 SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::AttributePtr& att,
-  const smtk::attribute::CollectionPtr& colPtr,
   std::vector<smtk::attribute::ItemExpressionInfo>& itemExpressionInfo,
   std::vector<smtk::attribute::AttRefInfo>& attRefInfo)
 { // Follow the logic in XmlDocV1Parser::processAttribute::L1753
@@ -144,10 +139,9 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::AttributePtr& att
     {
       try
       {
-        json itemJson = itemIter->at("ItemValue");
         auto itemToProcess = att->item(i);
         smtk::attribute::JsonHelperFunction::processItemTypeFromJson(
-          itemJson, itemToProcess, colPtr, itemExpressionInfo, attRefInfo);
+          *itemIter, itemToProcess, itemExpressionInfo, attRefInfo);
       }
       catch (std::exception& /*e*/)
       {
@@ -165,21 +159,21 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::AttributePtr& att
   }
   if (!association.is_null())
   {
-    smtk::attribute::ModelEntityItem::Ptr assocsItem = att->associations();
-    smtk::attribute::from_json(association, assocsItem, colPtr);
-    // Now the ModelEntityItem is deserialized but we need
-    // to let the model manager know about the associations
-    // (assuming we have a model manager):
+    auto assocItem = att->associations();
+    smtk::attribute::from_json(association, assocItem);
+    // Now the ReferenceItem is deserialized but we need
+    // to let any referenced model components (and perhaps
+    // others eventually) know about the associations:
     smtk::model::Manager::Ptr mmgr = att->modelManager();
-    if (mmgr)
+    for (auto eit = assocItem->begin(); eit != assocItem->end(); ++eit)
     {
-      smtk::attribute::ModelEntityItem::const_iterator eit;
-      for (eit = assocsItem->begin(); eit != assocsItem->end(); ++eit)
+      auto modelEntity = std::dynamic_pointer_cast<smtk::model::Entity>(*eit);
+      if (modelEntity)
       {
-        // Calling associateAttribute() with a NULL attribute collection
+        // Calling associateAttribute() with a null attribute collection
         // prevents the model manager from attempting to add the association
         // back to the attribute we are currently deserializing:
-        mmgr->associateAttribute(NULL, att->id(), eit->entity());
+        modelEntity->modelResource()->associateAttribute(nullptr, att->id(), modelEntity->id());
       }
     }
   }

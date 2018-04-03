@@ -10,7 +10,7 @@
 #ifndef smtk_attribute_ResourceItem_h
 #define smtk_attribute_ResourceItem_h
 
-#include "smtk/attribute/ReferenceItem.txx"
+#include "smtk/attribute/ReferenceItem.h"
 
 #include "smtk/resource/Resource.h"
 
@@ -31,17 +31,33 @@ class ResourceItemDefinition;
   * An attribute whose value is a resource (such as a mesh collection,
   * model manager, or even an attribute collection).
   */
-class SMTKCORE_EXPORT ResourceItem : public ReferenceItem<smtk::resource::Resource>
+class SMTKCORE_EXPORT ResourceItem : public ReferenceItem
 {
 public:
+  using Resource = smtk::resource::Resource;
+  using ResourcePtr = smtk::resource::ResourcePtr;
   smtkTypeMacro(smtk::attribute::ResourceItem);
-  smtkSuperclassMacro(ReferenceItem<smtk::resource::Resource>);
+  smtkSuperclassMacro(ReferenceItem);
 
   /// Destructor
   ~ResourceItem() override;
 
   /// Return the type of storage used by the item.
   Item::Type type() const override;
+
+  /// Return the \a ii-th value as a resource.
+  ResourcePtr value(std::size_t ii = 0) const;
+
+  /// Set the 0-th \a value, ensuring type-safety.
+  bool setValue(ResourcePtr value) { return this->setValue(0, value); }
+  /// Set the \a ii-th value, ensuring type-safety.
+  bool setValue(std::size_t ii, ResourcePtr value);
+
+  /**\brief Append a value to the item if possible.
+    *
+    * This method ensures compile-time type-safety while appendObjectValue() does not.
+    */
+  bool appendValue(ResourcePtr value) { return this->appendObjectValue(value); }
 
   /// Serialize the \a i-th value to a string.
   std::string valueAsString(std::size_t i) const override;

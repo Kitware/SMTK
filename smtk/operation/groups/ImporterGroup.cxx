@@ -9,6 +9,7 @@
 //=========================================================================
 
 #include "smtk/operation/groups/ImporterGroup.h"
+#include "smtk/attribute/Attribute.h"
 
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/SpecificationOps.h"

@@ -63,7 +63,7 @@ PySharedPtrClass< smtk::attribute::Definition > pybind11_init_smtk_attribute_Def
     .def("localAssociationRule", &smtk::attribute::Definition::localAssociationRule)
     .def("createLocalAssociationRule", &smtk::attribute::Definition::createLocalAssociationRule)
     .def("clearLocalAssociationRule", &smtk::attribute::Definition::clearLocalAssociationRule)
-    .def("setLocalAssociationRule", &smtk::attribute::Definition::setLocalAssociationRule, py::arg("arg0"))
+    .def("setLocalAssociationRule", (void (smtk::attribute::Definition::*)(smtk::attribute::ReferenceItemDefinitionPtr))&smtk::attribute::Definition::setLocalAssociationRule, py::arg("arg0"))
     .def("associationMask", &smtk::attribute::Definition::associationMask)
     .def("setLocalAssociationMask", &smtk::attribute::Definition::setLocalAssociationMask, py::arg("mask"))
     .def("associatesWithVertex", &smtk::attribute::Definition::associatesWithVertex)

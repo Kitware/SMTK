@@ -9,6 +9,9 @@
 //=========================================================================
 #include "smtk/model/operators/ExportModelJSON.h"
 
+#include "smtk/io/SaveJSON.h"
+#include "smtk/io/SaveJSON.txx"
+
 #include "smtk/model/Session.h"
 
 #include "smtk/model/CellEntity.h"
@@ -18,10 +21,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
-
-#include "smtk/io/SaveJSON.h"
-#include "smtk/io/SaveJSON.txx"
+#include "smtk/attribute/ResourceItem.h"
 
 #include "smtk/model/ExportModelJSON_xml.h"
 
@@ -43,7 +43,9 @@ ExportModelJSON::Result ExportModelJSON::operateInternal()
   smtk::attribute::IntItemPtr flagsItem = this->parameters()->findInt("flags");
 
   auto associations = this->parameters()->associations();
-  Models entities(associations->begin(), associations->end());
+  auto entities = associations->as<EntityRefArray>([](smtk::resource::PersistentObjectPtr obj) {
+    return smtk::model::EntityRef(std::dynamic_pointer_cast<smtk::model::Entity>(obj));
+  });
   if (entities.empty())
   {
     smtkErrorMacro(this->log(), "No valid models selected for export.");

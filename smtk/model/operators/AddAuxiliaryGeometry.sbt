@@ -6,8 +6,8 @@
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="add auxiliary geometry" BaseType="operation" Label="Model - Add Auxiliary Geometry">
       <!-- In the future Label shoud be removed when SMTK supports compound auxiliary geometry -->
-      <AssociationsDef Name="entities" Label="model" NumberOfRequiredValues="1">
-        <MembershipMask>model</MembershipMask>
+      <AssociationsDef Name="model" NumberOfRequiredValues="1">
+        <Accepts><Resource Name="smtk::model::Manager" Filter="model"/></Accepts>
       </AssociationsDef>
       <BriefDescription>
         Add auxiliary geometry (scene geometry not part of the model domain)
@@ -111,7 +111,9 @@
     <AttDef Type="result(add auxiliary geometry)" BaseType="result">
       <ItemDefinitions>
         <!-- The modified entities are stored in the base result's "modified" item. -->
-        <ModelEntity Name="tess_changed" NumberOfRequiredValues="0" Extensible="true"/>
+        <Component Name="tess_changed" NumberOfRequiredValues="0" Extensible="true">
+          <Accepts><Resource Name="smtk::model::Manager" Filter=""/></Accepts>
+        </Component>
         <Void Name="allow camera reset" IsEnabledByDefault="true" AdvanceLevel="11"/>
       </ItemDefinitions>
     </AttDef>

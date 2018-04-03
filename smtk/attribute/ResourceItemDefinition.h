@@ -11,7 +11,7 @@
 #ifndef __smtk_attribute_ResourceItemDefinition_h
 #define __smtk_attribute_ResourceItemDefinition_h
 
-#include "smtk/attribute/ReferenceItemDefinition.txx"
+#include "smtk/attribute/ReferenceItemDefinition.h"
 
 #include "smtk/resource/Resource.h"
 
@@ -22,12 +22,11 @@ namespace attribute
 
 /**\brief A definition for attribute items that store Resources as values.
   */
-class SMTKCORE_EXPORT ResourceItemDefinition
-  : public ReferenceItemDefinition<smtk::resource::Resource>
+class SMTKCORE_EXPORT ResourceItemDefinition : public ReferenceItemDefinition
 {
 public:
   smtkTypeMacro(smtk::attribute::ResourceItemDefinition);
-  smtkSuperclassMacro(ReferenceItemDefinition<smtk::resource::Resource>);
+  smtkSuperclassMacro(ReferenceItemDefinition);
 
   static smtk::attribute::ResourceItemDefinitionPtr New(const std::string& sname)
   {
@@ -38,7 +37,7 @@ public:
 
   Item::Type type() const override;
 
-  bool isValueValid(smtk::resource::ResourcePtr value) const override;
+  bool isValueValid(smtk::resource::PersistentObjectPtr value) const override;
 
   /// Construct an item from the definition given its owning attribute and position.
   smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;

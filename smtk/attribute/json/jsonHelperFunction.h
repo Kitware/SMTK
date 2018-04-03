@@ -70,7 +70,6 @@ public:
    * @brief A helper function to fill an itemPtr given json
    */
   static void processItemTypeFromJson(const nlohmann::json& j, ItemPtr& itemPtr,
-    const smtk::attribute::CollectionPtr& colPtr,
     std::vector<smtk::attribute::ItemExpressionInfo>& itemExpressionInfo,
     std::vector<smtk::attribute::AttRefInfo>& attRefInfo);
 };

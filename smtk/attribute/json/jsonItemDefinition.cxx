@@ -26,6 +26,7 @@ SMTKCORE_EXPORT void to_json(
   nlohmann::json& j, const smtk::attribute::ItemDefinitionPtr& itemDefPtr)
 {
   j = {
+    { "Type", smtk::attribute::Item::type2String(itemDefPtr->type()) },
     { "Name", itemDefPtr->name() }, { "Version", itemDefPtr->version() },
   };
   if (!itemDefPtr->label().empty())

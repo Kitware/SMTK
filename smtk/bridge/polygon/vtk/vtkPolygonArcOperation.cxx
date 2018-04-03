@@ -13,6 +13,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/model/Edge.h"
 
@@ -66,7 +67,7 @@ bool vtkPolygonArcOperation::AbleToOperate()
   if (able2Op && m_smtkOp.lock()->typeName() == "smtk::bridge::polygon::TweakEdge")
   {
     smtk::model::Edge edge =
-      m_smtkOp.lock()->parameters()->associations()->value().as<smtk::model::Edge>();
+      m_smtkOp.lock()->parameters()->associations()->valueAs<smtk::model::Entity>();
     able2Op = edge.isValid();
     ;
   }

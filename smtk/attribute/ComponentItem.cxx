@@ -13,7 +13,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Collection.h"
 
-#include "smtk/attribute/ReferenceItem.txx"
+#include <sstream>
 
 using namespace smtk::attribute;
 

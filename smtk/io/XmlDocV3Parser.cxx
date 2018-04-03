@@ -253,90 +253,17 @@ void XmlDocV3Parser::processDateTimeItem(pugi::xml_node& node, attribute::DateTi
   }       // else
 }
 
-void XmlDocV3Parser::processResourceItem(
-  pugi::xml_node& node, smtk::attribute::ResourceItemPtr item)
+void XmlDocV3Parser::processReferenceItem(
+  pugi::xml_node& node, smtk::attribute::ReferenceItemPtr item)
 {
-  xml_attribute xatt;
-  xml_node valsNode;
-  std::size_t i, n = item->numberOfValues();
-  smtk::common::UUID uid;
-  xml_node val;
-  std::size_t numRequiredVals = item->numberOfRequiredValues();
-  std::string attName;
-  AttRefInfo info;
-  if (!numRequiredVals || item->isExtensible())
-  {
-    // The node should have an attribute indicating how many values are
-    // associated with the item
-    xatt = node.attribute("NumberOfValues");
-    if (!xatt)
-    {
-      smtkErrorMacro(
-        m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
-      return;
-    }
-    n = xatt.as_uint();
-    item->setNumberOfValues(n);
-  }
-  if (!n)
-  {
-    return;
-  }
-
-  auto rsrcMgr = m_collection->manager();
-  if (!rsrcMgr && item->numberOfValues() > 0)
-  {
-    static bool once = true;
-    if (once)
-    {
-      smtkErrorMacro(m_logger, "The resource manager for the attribute collection being read is "
-                               "not set but the ResourceItem \""
-          << item->name() << "\" "
-                             "of \""
-          << item->attribute()->name() << "\" has entries"
-                                          "that need to find resources using a resource manager.");
-      once = false;
-    }
-    return;
-  }
-
-  valsNode = node.child("Values");
-  if (valsNode)
-  {
-    for (val = valsNode.child("Val"); val; val = val.next_sibling("Val"))
-    {
-      xatt = val.attribute("Ith");
-      if (!xatt)
-      {
-        smtkErrorMacro(m_logger, "XML Attribute Ith is missing for Item: " << item->name());
-        continue;
-      }
-      i = xatt.as_uint();
-      if (i >= n)
-      {
-        smtkErrorMacro(
-          m_logger, "XML Attribute Ith = " << i << " is out of range for Item: " << item->name());
-        continue;
-      }
-      item->setValue(static_cast<int>(i), this->processResourceItemValue(val, rsrcMgr));
-    }
-  }
-  else if (numRequiredVals == 1)
-  {
-    val = node.child("Val");
-    if (val)
-    {
-      item->setValue(0, this->processResourceItemValue(val, rsrcMgr));
-    }
-  }
-  else
-  {
-    smtkErrorMacro(m_logger, "XML Node Values is missing for Item: " << item->name());
-  }
+  this->processReferenceItemCommon(
+    node, item, [this](const pugi::xml_node& val, smtk::resource::ManagerPtr mgr) {
+      return this->processReferenceItemValue(val, mgr);
+    });
 }
 
-void XmlDocV3Parser::processResourceDef(
-  pugi::xml_node& node, smtk::attribute::ResourceItemDefinitionPtr idef)
+void XmlDocV3Parser::processReferenceDef(pugi::xml_node& node,
+  smtk::attribute::ReferenceItemDefinitionPtr idef, const std::string& labelsElement)
 {
   xml_node accepts, labels, child;
   xml_attribute xatt;
@@ -383,9 +310,10 @@ void XmlDocV3Parser::processResourceDef(
   // Lets see if there are labels
   if (node.child("Labels"))
   {
-    smtkErrorMacro(m_logger, "Labels has been changed to ResourceLabels : " << idef->name());
+    smtkErrorMacro(
+      m_logger, "Labels has been changed to " << labelsElement << " : " << idef->name());
   }
-  labels = node.child("ResourceLabels");
+  labels = node.child(labelsElement.c_str());
   if (labels)
   {
     // Are we using a common label?
@@ -404,27 +332,102 @@ void XmlDocV3Parser::processResourceDef(
   }
 }
 
-smtk::resource::ResourcePtr XmlDocV3Parser::processResourceItemValue(
+smtk::resource::PersistentObjectPtr XmlDocV3Parser::processReferenceItemValue(
+  const pugi::xml_node& val, smtk::resource::ManagerPtr rsrcMgr)
+{
+  auto rsrcNode = val.child("Resource");
+  auto compNode = val.child("Component");
+  if (rsrcNode && !compNode)
+  {
+    return this->processResourceItemValue(val, rsrcMgr);
+  }
+  else if (compNode && rsrcNode)
+  {
+    return this->processComponentItemValue(val, rsrcMgr);
+  }
+  else // (!rsrcNode && !compNode) || (!rsrcNode && compNode)
+  {
+    smtkErrorMacro(
+      m_logger, "ReferenceItem Val node should have a Resource and optionally a Component.");
+    return smtk::resource::ResourcePtr();
+  }
+}
+
+void XmlDocV3Parser::processResourceItem(
+  pugi::xml_node& node, smtk::attribute::ResourceItemPtr item)
+{
+  this->processReferenceItemCommon(
+    node, item, [this](const pugi::xml_node& val, smtk::resource::ManagerPtr mgr) {
+      return this->processResourceItemValue(val, mgr);
+    });
+}
+
+void XmlDocV3Parser::processResourceDef(
+  pugi::xml_node& node, smtk::attribute::ResourceItemDefinitionPtr idef)
+{
+  this->processReferenceDef(node, idef, "ResourceLabels");
+}
+
+smtk::resource::PersistentObjectPtr XmlDocV3Parser::processResourceItemValue(
   const pugi::xml_node& val, smtk::resource::ManagerPtr rsrcMgr)
 {
   auto rsrcNode = val.child("Resource");
   if (!rsrcNode)
   {
     smtkErrorMacro(m_logger, "ResourceItem Val node does not have a Resource as required.");
-    return smtk::resource::ResourcePtr();
+    return smtk::resource::PersistentObjectPtr();
   }
   auto ruid = smtk::common::UUID(rsrcNode.text().get());
   auto rsrc = rsrcMgr->get(ruid);
   if (!rsrc)
   {
     smtkWarningMacro(m_logger, "Resource " << ruid << " is not loaded. Ignoring.");
-    return smtk::resource::ResourcePtr();
+    return smtk::resource::PersistentObjectPtr();
   }
   return rsrc;
 }
 
 void XmlDocV3Parser::processComponentItem(
   pugi::xml_node& node, smtk::attribute::ComponentItemPtr item)
+{
+  this->processReferenceItemCommon(
+    node, item, [this](const pugi::xml_node& val, smtk::resource::ManagerPtr mgr) {
+      return this->processComponentItemValue(val, mgr);
+    });
+}
+
+void XmlDocV3Parser::processComponentDef(
+  pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef)
+{
+  this->processReferenceDef(node, idef, "ComponentLabels");
+}
+
+smtk::resource::PersistentObjectPtr XmlDocV3Parser::processComponentItemValue(
+  const pugi::xml_node& val, smtk::resource::ManagerPtr rsrcMgr)
+{
+  auto rsrcNode = val.child("Resource");
+  auto compNode = val.child("Component");
+  if (!rsrcNode || !compNode)
+  {
+    smtkErrorMacro(
+      m_logger, "ComponentItem Val node does not have both a Resource and Component as required.");
+    return smtk::resource::PersistentObjectPtr();
+  }
+  auto ruid = smtk::common::UUID(rsrcNode.text().get());
+  auto rsrc = rsrcMgr->get(ruid);
+  if (!rsrc)
+  {
+    smtkWarningMacro(m_logger, "Resource " << ruid << " is not loaded. Ignoring.");
+    return smtk::resource::PersistentObjectPtr();
+  }
+  auto cuid = smtk::common::UUID(compNode.text().get());
+  return rsrc->find(cuid);
+}
+
+void XmlDocV3Parser::processReferenceItemCommon(pugi::xml_node& node,
+  smtk::attribute::ReferenceItemPtr item, std::function<smtk::resource::PersistentObjectPtr(
+                                            const pugi::xml_node&, smtk::resource::ManagerPtr)>
+                                            processItemValue)
 {
   xml_attribute xatt;
   xml_node valsNode;
@@ -461,10 +464,9 @@ void XmlDocV3Parser::processComponentItem(
     {
       smtkErrorMacro(m_logger, "The resource manager for the attribute collection being read is "
                                "not set but the ComponentItem \""
-          << item->name() << "\" "
-                             "of \""
-          << item->attribute()->name() << "\" has entries"
-                                          "that need to find resources using a resource manager.");
+          << item->name() << "\" of \"" << item->attribute()->name()
+          << "\" has entries "
+             "that need to find resources using a resource manager.");
       once = false;
     }
     return;
@@ -488,7 +490,7 @@ void XmlDocV3Parser::processComponentItem(
           m_logger, "XML Attribute Ith = " << i << " is out of range for Item: " << item->name());
         continue;
       }
-      item->setValue(static_cast<int>(i), this->processComponentItemValue(val, rsrcMgr));
+      item->setObjectValue(static_cast<int>(i), processItemValue(val, rsrcMgr));
     }
   }
   else if (numRequiredVals == 1)
@@ -496,102 +498,11 @@ void XmlDocV3Parser::processComponentItem(
     val = node.child("Val");
     if (val)
     {
-      item->setValue(0, this->processComponentItemValue(val, rsrcMgr));
+      item->setObjectValue(0, processItemValue(val, rsrcMgr));
     }
   }
   else
   {
     smtkErrorMacro(m_logger, "XML Node Values is missing for Item: " << item->name());
   }
-}
-
-void XmlDocV3Parser::processComponentDef(
-  pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef)
-{
-  xml_node accepts, labels, child;
-  xml_attribute xatt;
-  int i;
-  this->processItemDef(node, idef);
-
-  accepts = node.child("Accepts");
-  if (accepts)
-  {
-    std::string resourceName("Resource");
-    for (child = accepts.first_child(); child; child = child.next_sibling())
-    {
-      if (child.name() == resourceName)
-      {
-        idef->setAcceptsEntries(
-          child.attribute("Name").value(), child.attribute("Filter").value(), true);
-      }
-    }
-  }
-
-  xatt = node.attribute("LockType");
-  if (xatt)
-  {
-    idef->setLockType(smtk::resource::LockType(xatt.as_int()));
-  }
-
-  xatt = node.attribute("NumberOfRequiredValues");
-  if (xatt)
-  {
-    idef->setNumberOfRequiredValues(xatt.as_int());
-  }
-
-  xatt = node.attribute("Extensible");
-  if (xatt)
-  {
-    idef->setIsExtensible(xatt.as_bool());
-    xatt = node.attribute("MaxNumberOfValues");
-    if (xatt)
-    {
-      idef->setMaxNumberOfValues(xatt.as_uint());
-    }
-  }
-
-  // Lets see if there are labels
-  if (node.child("Labels"))
-  {
-    smtkErrorMacro(m_logger, "Labels has been changed to ComponentLabels : " << idef->name());
-  }
-  labels = node.child("ComponentLabels");
-  if (labels)
-  {
-    // Are we using a common label?
-    xatt = labels.attribute("CommonLabel");
-    if (xatt)
-    {
-      idef->setCommonValueLabel(xatt.value());
-    }
-    else
-    {
-      for (child = labels.first_child(), i = 0; child; child = child.next_sibling(), i++)
-      {
-        idef->setValueLabel(i, child.value());
-      }
-    }
-  }
-}
-
-smtk::resource::ComponentPtr XmlDocV3Parser::processComponentItemValue(
-  const pugi::xml_node& val, smtk::resource::ManagerPtr rsrcMgr)
-{
-  auto rsrcNode = val.child("Resource");
-  auto compNode = val.child("Component");
-  if (!rsrcNode || !compNode)
-  {
-    smtkErrorMacro(
-      m_logger, "ComponentItem Val node does not have both a Resource and Component as required.");
-    return smtk::resource::ComponentPtr();
-  }
-  auto ruid = smtk::common::UUID(rsrcNode.text().get());
-  auto rsrc = rsrcMgr->get(ruid);
-  if (!rsrc)
-  {
-    smtkWarningMacro(m_logger, "Resource " << ruid << " is not loaded. Ignoring.");
-    return smtk::resource::ComponentPtr();
-  }
-  auto cuid = smtk::common::UUID(compNode.text().get());
-  return rsrc->find(cuid);
 }

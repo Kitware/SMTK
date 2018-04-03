@@ -11,31 +11,37 @@
       <DetailedDescription>
         Merge several faces into one face.
       </DetailedDescription>
+      <AssociationsDef Name="source cell" NumberOfRequiredValues="1" Extensible="1">
+        <BriefDescription>
+          Source cell is what would be merged into Target cell.
+        </BriefDescription>
+        <DetailedDescription>
+          Source cell is what would be merged into Target cell.
+
+          Mutiple cells are allowed to be treated as source cells.
+        </DetailedDescription>
+        <Accepts>
+          <Resource Name="smtk::bridge::discrete::Resource" Filter="face"/>
+        </Accepts>
+      </AssociationsDef>
       <ItemDefinitions>
-        <ModelEntity Name="model" NumberOfRequiredValues="1">
-           <MembershipMask>model</MembershipMask>
-        </ModelEntity>
-        <ModelEntity Name="source cell" NumberOfRequiredValues="0" Extensible="1">
-          <BriefDescription>
-            Source cell is what would be merged into Target cell.
-          </BriefDescription>
-          <DetailedDescription>
-            Source cell is what would be merged into Target cell.
+        <Component Name="model" NumberOfRequiredValues="1">
+           <Accepts>
+             <Resource Name="smtk::bridge::discrete::Resource" Filter="model"/>
+           </Accepts>
+        </Component>
 
-            Mutiple cells are allowed to be treated as source cells.
-          </DetailedDescription>
-          <MembershipMask>face</MembershipMask>
-        </ModelEntity>
-
-        <ModelEntity Name="target cell" NumberOfRequiredValues="1">
+        <Component Name="target cell" NumberOfRequiredValues="1">
           <BriefDescription>
             Target cell is what source cells would be merged into.
           </BriefDescription>
           <DetailedDescription>
             Target cell is what source cells would be merged into.
           </DetailedDescription>
-          <MembershipMask>face</MembershipMask>
-        </ModelEntity>
+           <Accepts>
+             <Resource Name="smtk::bridge::discrete::Resource" Filter="face"/>
+           </Accepts>
+        </Component>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->

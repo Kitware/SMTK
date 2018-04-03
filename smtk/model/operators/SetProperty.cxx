@@ -102,7 +102,9 @@ SetProperty::Result SetProperty::operateInternal()
   smtk::attribute::IntItemPtr integerItem = this->parameters()->findInt("integer value");
 
   auto associations = this->parameters()->associations();
-  EntityRefArray entities(associations->begin(), associations->end());
+  auto entities = associations->as<EntityRefArray>([](smtk::resource::PersistentObjectPtr obj) {
+    return smtk::model::EntityRef(std::dynamic_pointer_cast<smtk::model::Entity>(obj));
+  });
 
   if (nameItem->value(0).empty())
   {

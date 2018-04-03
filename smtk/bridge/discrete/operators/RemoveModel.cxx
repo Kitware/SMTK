@@ -17,7 +17,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
 #include "RemoveModel_xml.h"
@@ -46,7 +46,9 @@ RemoveModel::Result RemoveModel::operateInternal()
   bool success = true;
   smtk::resource::ComponentArray expunged;
   auto associations = this->parameters()->associations();
-  Models remModels(associations->begin(), associations->end());
+  auto remModels = associations->as<Models>([](smtk::resource::PersistentObjectPtr obj) {
+    return smtk::model::Model(std::dynamic_pointer_cast<smtk::model::Entity>(obj));
+  });
   for (Models::iterator it = remModels.begin(); it != remModels.end(); ++it)
   {
     smtk::bridge::discrete::Resource::Ptr resource =

@@ -168,15 +168,15 @@ class import_from_deform(smtk.operation.Operation):
 
         result = self.createResult(smtk.operation.Operation.Outcome.SUCCEEDED)
 
-        resultModels = result.findModelEntity("model")
-        resultModels.setValue(model)
+        resultModels = result.findComponent("model")
+        resultModels.setValue(model.component())
 
-        created = result.findModelEntity("created")
+        created = result.findComponent("created")
         created.setNumberOfValues(1)
         created.setValue(model)
         created.setIsEnabled(True)
 
-        result.findModelEntity("mesh_created").setValue(model)
+        result.findComponent("mesh_created").setValue(model.component())
 
         # Return with success
         return result

@@ -14,21 +14,27 @@ set(unit_tests
 )
 
 set(unit_tests_which_require_data
-  )
+)
 
 if(SMTK_ENABLE_POLYGON_SESSION)
   list(APPEND unit_tests_which_require_data
-       UnitTestTriangulateFaces.cxx
-       UnitTestTessellateFaces.cxx
-       )
+    UnitTestTriangulateFaces.cxx
+    UnitTestTessellateFaces.cxx
+  )
   list(APPEND extra_libs
-       smtkPolygonSession
-       )
+    smtkPolygonSession
+    smtkPolygonSessionEnvironment
+  )
 endif()
 
 smtk_unit_tests(
   LABEL "ExtDelaunay"
   SOURCES ${unit_tests}
   SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
-  LIBRARIES smtkCore smtkDelaunayExt smtkCoreModelTesting ${extra_libs} ${Boost_LIBRARIES}
+  LIBRARIES
+    smtkCore
+    smtkDelaunayExt
+    smtkCoreModelTesting
+    ${extra_libs}
+    ${Boost_LIBRARIES}
 )

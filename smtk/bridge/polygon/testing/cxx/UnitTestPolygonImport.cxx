@@ -12,7 +12,6 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/Manager.h"

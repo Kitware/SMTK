@@ -13,7 +13,7 @@
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshSelectionItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ReferenceItem.h"
 
 #include "smtk/bridge/discrete/Resource.h"
 #include "smtk/bridge/discrete/Session.h"
@@ -155,7 +155,7 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
     smtk::bridge::discrete::EdgeOperation::Ptr edgeOp =
       smtk::bridge::discrete::EdgeOperation::create();
 
-    edgeOp->parameters()->findModelEntity("model")->setValue(model2dm);
+    edgeOp->parameters()->associations()->setObjectValue(model2dm.component());
 
     typedef std::vector<Edge> Edges;
 

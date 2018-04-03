@@ -16,7 +16,7 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
 #include "smtk/model/Events.h"
@@ -52,7 +52,7 @@ SplitFaceOperation::SplitFaceOperation()
 bool SplitFaceOperation::ableToOperate()
 {
   smtk::model::Model model =
-    this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
+    this->parameters()->findComponent("model")->valueAs<smtk::model::Entity>();
 
   // The SMTK model must be valid
   if (!model.isValid())
@@ -81,7 +81,7 @@ bool SplitFaceOperation::ableToOperate()
 SplitFaceOperation::Result SplitFaceOperation::operateInternal()
 {
   smtk::model::Model model =
-    this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
+    this->parameters()->findComponent("model")->valueAs<smtk::model::Entity>();
 
   smtk::bridge::discrete::Resource::Ptr resource =
     std::static_pointer_cast<smtk::bridge::discrete::Resource>(model.component()->resource());
@@ -99,8 +99,7 @@ SplitFaceOperation::Result SplitFaceOperation::operateInternal()
   smtk::common::UUID inFaceUID, faceUUID;
 
   // Translate SMTK inputs into CMB inputs
-  smtk::attribute::ModelEntityItemPtr sourceItem =
-    this->parameters()->findModelEntity("face to split");
+  auto sourceItem = this->parameters()->associations();
   for (std::size_t idx = 0; idx < sourceItem->numberOfValues(); idx++)
   {
     int srcid = this->fetchCMBCellId(resource, sourceItem, static_cast<int>(idx));
@@ -111,7 +110,7 @@ SplitFaceOperation::Result SplitFaceOperation::operateInternal()
       ok = m_op->GetOperateSucceeded() != 0;
       if (ok)
       {
-        smtk::model::EntityRef inFace = sourceItem->value(idx);
+        smtk::model::EntityRef inFace = sourceItem->valueAs<smtk::model::Entity>(idx);
         inFaceUID = inFace.entity();
 
         vtkIdTypeArray* newFaceIds = m_op->GetCreatedModelFaceIDs();
@@ -192,9 +191,9 @@ int SplitFaceOperation::fetchCMBFaceId(smtk::bridge::discrete::Resource::Ptr& re
   vtkModelItem* item =
     resource->discreteSession()->entityForUUID(const_cast<SplitFaceOperation*>(this)
                                                  ->parameters()
-                                                 ->findModelEntity("face to split")
-                                                 ->value()
-                                                 .entity());
+                                                 ->associations()
+                                                 ->valueAs<smtk::model::Entity>()
+                                                 ->id());
   vtkModelEntity* face = dynamic_cast<vtkModelEntity*>(item);
   if (face)
     return face->GetUniquePersistentId();
@@ -203,9 +202,9 @@ int SplitFaceOperation::fetchCMBFaceId(smtk::bridge::discrete::Resource::Ptr& re
 }
 
 int SplitFaceOperation::fetchCMBCellId(smtk::bridge::discrete::Resource::Ptr& resource,
-  const smtk::attribute::ModelEntityItemPtr& entItem, int idx) const
+  const smtk::attribute::ReferenceItemPtr& entItem, int idx) const
 {
-  vtkModelItem* item = resource->discreteSession()->entityForUUID(entItem->value(idx).entity());
+  vtkModelItem* item = resource->discreteSession()->entityForUUID(entItem->objectValue(idx)->id());
 
   vtkModelEntity* cell = dynamic_cast<vtkModelEntity*>(item);
   if (cell)

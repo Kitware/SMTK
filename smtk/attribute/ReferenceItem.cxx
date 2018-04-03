@@ -7,16 +7,13 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_attribute_ReferenceItem_txx
-#define smtk_attribute_ReferenceItem_txx
-
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ReferenceItemDefinition.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Collection.h"
 
-#include "smtk/attribute/ReferenceItemDefinition.txx"
+#include <sstream>
 
 namespace smtk
 {
@@ -24,25 +21,21 @@ namespace smtk
 namespace attribute
 {
 
-template <typename T>
-ReferenceItem<T>::ReferenceItem(Attribute* owningAttribute, int itemPosition)
+ReferenceItem::ReferenceItem(Attribute* owningAttribute, int itemPosition)
   : Item(owningAttribute, itemPosition)
 {
 }
 
-template <typename T>
-ReferenceItem<T>::ReferenceItem(Item* inOwningItem, int itemPosition, int mySubGroupPosition)
+ReferenceItem::ReferenceItem(Item* inOwningItem, int itemPosition, int mySubGroupPosition)
   : Item(inOwningItem, itemPosition, mySubGroupPosition)
 {
 }
 
-template <typename T>
-ReferenceItem<T>::~ReferenceItem()
+ReferenceItem::~ReferenceItem()
 {
 }
 
-template <typename T>
-bool ReferenceItem<T>::isValid() const
+bool ReferenceItem::isValid() const
 {
   if (!this->isEnabled())
   {
@@ -64,14 +57,12 @@ bool ReferenceItem<T>::isValid() const
   return true;
 }
 
-template <typename T>
-std::size_t ReferenceItem<T>::numberOfValues() const
+std::size_t ReferenceItem::numberOfValues() const
 {
   return m_values.size();
 }
 
-template <typename T>
-bool ReferenceItem<T>::setNumberOfValues(std::size_t newSize)
+bool ReferenceItem::setNumberOfValues(std::size_t newSize)
 {
   // If the current size is the same just return
   if (this->numberOfValues() == newSize)
@@ -80,7 +71,7 @@ bool ReferenceItem<T>::setNumberOfValues(std::size_t newSize)
   }
 
   // Next - are we allowed to change the number of values?
-  auto def = static_cast<const ReferenceItemDefinition<T>*>(m_definition.get());
+  auto def = static_cast<const ReferenceItemDefinition*>(m_definition.get());
   if (!def->isExtensible())
     return false; // You may not resize.
 
@@ -97,18 +88,16 @@ bool ReferenceItem<T>::setNumberOfValues(std::size_t newSize)
   return true;
 }
 
-template <typename T>
-std::shared_ptr<const ReferenceItemDefinition<T> > ReferenceItem<T>::definition() const
+std::shared_ptr<const ReferenceItemDefinition> ReferenceItem::definition() const
 {
   auto ptr =
-    smtk::dynamic_pointer_cast<const smtk::attribute::ReferenceItemDefinition<T> >(m_definition);
+    smtk::dynamic_pointer_cast<const smtk::attribute::ReferenceItemDefinition>(m_definition);
   return ptr;
 }
 
-template <typename T>
-std::size_t ReferenceItem<T>::numberOfRequiredValues() const
+std::size_t ReferenceItem::numberOfRequiredValues() const
 {
-  auto def = static_cast<const ReferenceItemDefinition<T>*>(m_definition.get());
+  auto def = static_cast<const ReferenceItemDefinition*>(m_definition.get());
   if (!def)
   {
     return 0;
@@ -116,10 +105,9 @@ std::size_t ReferenceItem<T>::numberOfRequiredValues() const
   return def->numberOfRequiredValues();
 }
 
-template <typename T>
-std::size_t ReferenceItem<T>::maxNumberOfValues() const
+std::size_t ReferenceItem::maxNumberOfValues() const
 {
-  auto def = static_cast<const ReferenceItemDefinition<T>*>(m_definition.get());
+  auto def = static_cast<const ReferenceItemDefinition*>(m_definition.get());
   if (!def)
   {
     return 0;
@@ -127,8 +115,18 @@ std::size_t ReferenceItem<T>::maxNumberOfValues() const
   return def->maxNumberOfValues();
 }
 
-template <typename T>
-typename T::Ptr ReferenceItem<T>::value(std::size_t i) const
+void ReferenceItem::visit(std::function<bool(PersistentObjectPtr)> visitor) const
+{
+  for (auto it = this->begin(); it != this->end(); ++it)
+  {
+    if (!visitor(*it))
+    {
+      break;
+    }
+  }
+}
+
+smtk::resource::PersistentObjectPtr ReferenceItem::objectValue(std::size_t i) const
 {
   if (i >= static_cast<std::size_t>(m_values.size()))
     return nullptr;
@@ -136,16 +134,14 @@ typename T::Ptr ReferenceItem<T>::value(std::size_t i) const
   return result;
 }
 
-template <typename T>
-bool ReferenceItem<T>::setValue(typename T::Ptr val)
+bool ReferenceItem::setObjectValue(PersistentObjectPtr val)
 {
-  return this->setValue(0, val);
+  return this->setObjectValue(0, val);
 }
 
-template <typename T>
-bool ReferenceItem<T>::setValue(std::size_t i, typename T::Ptr val)
+bool ReferenceItem::setObjectValue(std::size_t i, PersistentObjectPtr val)
 {
-  auto def = static_cast<const ReferenceItemDefinition<T>*>(this->definition().get());
+  auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
   if (i < m_values.size() && def->isValueValid(val))
   {
     m_values[i] = val;
@@ -154,11 +150,10 @@ bool ReferenceItem<T>::setValue(std::size_t i, typename T::Ptr val)
   return false;
 }
 
-template <typename T>
-bool ReferenceItem<T>::appendValue(typename T::Ptr val)
+bool ReferenceItem::appendObjectValue(PersistentObjectPtr val)
 {
   // First - is this value valid?
-  auto def = static_cast<const ReferenceItemDefinition<T>*>(this->definition().get());
+  auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
   if (!def->isValueValid(val))
   {
     return false;
@@ -169,7 +164,7 @@ bool ReferenceItem<T>::appendValue(typename T::Ptr val)
   bool foundEmpty = false;
   for (std::size_t i = 0; i < n; ++i)
   {
-    if (this->isSet(i) && (this->value(i) == val))
+    if (this->isSet(i) && (this->objectValue(i) == val))
     {
       return true;
     }
@@ -182,7 +177,7 @@ bool ReferenceItem<T>::appendValue(typename T::Ptr val)
   // If not, was there a space available?
   if (foundEmpty)
   {
-    return this->setValue(emptyIndex, val);
+    return this->setObjectValue(emptyIndex, val);
   }
   // Finally - are we allowed to change the number of values?
   if ((def->isExtensible() && def->maxNumberOfValues() &&
@@ -197,48 +192,69 @@ bool ReferenceItem<T>::appendValue(typename T::Ptr val)
   return true;
 }
 
-template <typename T>
-bool ReferenceItem<T>::removeValue(std::size_t i)
+bool ReferenceItem::removeValue(std::size_t i)
 {
   //First - are we allowed to change the number of values?
-  auto def = static_cast<const ReferenceItemDefinition<T>*>(this->definition().get());
+  auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
   if (!def->isExtensible())
   {
-    return this->setValue(i, nullptr); // The number of values is fixed
+    return this->setObjectValue(i, nullptr); // The number of values is fixed
   }
 
   m_values.erase(m_values.begin() + i);
   return true;
 }
 
-template <typename T>
-void ReferenceItem<T>::reset()
+void ReferenceItem::reset()
 {
   m_values.clear();
   if (this->numberOfRequiredValues() > 0)
     m_values.resize(this->numberOfRequiredValues());
 }
 
-template <typename T>
-std::string ReferenceItem<T>::valueAsString() const
+std::string ReferenceItem::valueAsString() const
 {
   return this->valueAsString(0);
 }
 
-template <typename T>
-bool ReferenceItem<T>::isSet(std::size_t i) const
+std::string ReferenceItem::valueAsString(std::size_t i) const
+{
+  std::ostringstream result;
+  auto entry = this->objectValue(i);
+  smtk::resource::ResourcePtr rsrc;
+  smtk::resource::ComponentPtr comp;
+  if ((rsrc = std::dynamic_pointer_cast<smtk::resource::Resource>(entry)))
+  {
+    result << "resource(" << rsrc->id().toString() << ")";
+  }
+  else if ((comp = std::dynamic_pointer_cast<smtk::resource::Component>(entry)))
+  {
+    rsrc = comp->resource();
+    smtk::common::UUID rid;
+    if (rsrc)
+    {
+      rid = rsrc->id();
+    }
+    result << "component(" << rid << "," << comp->id() << ")";
+  }
+  else
+  {
+    result << "unknown(" << (m_values[i] ? m_values[i]->id().toString() : "") << ")";
+  }
+  return result.str();
+}
+
+bool ReferenceItem::isSet(std::size_t i) const
 {
   return i < m_values.size() ? !!m_values[i] : false;
 }
 
-template <typename T>
-void ReferenceItem<T>::unset(std::size_t i)
+void ReferenceItem::unset(std::size_t i)
 {
-  this->setValue(i, nullptr);
+  this->setObjectValue(i, nullptr);
 }
 
-template <typename T>
-bool ReferenceItem<T>::assign(ConstItemPtr& sourceItem, unsigned int options)
+bool ReferenceItem::assign(ConstItemPtr& sourceItem, unsigned int options)
 {
   // Cast input pointer to ReferenceItem
   auto sourceReferenceItem = smtk::dynamic_pointer_cast<const ReferenceItem>(sourceItem);
@@ -259,8 +275,8 @@ bool ReferenceItem<T>::assign(ConstItemPtr& sourceItem, unsigned int options)
   {
     if (sourceReferenceItem->isSet(i))
     {
-      auto val = sourceReferenceItem->value(i);
-      this->setValue(i, val);
+      auto val = sourceReferenceItem->objectValue(i);
+      this->setObjectValue(i, val);
     }
     else
     {
@@ -270,47 +286,41 @@ bool ReferenceItem<T>::assign(ConstItemPtr& sourceItem, unsigned int options)
   return Item::assign(sourceItem, options);
 }
 
-template <typename T>
-bool ReferenceItem<T>::isExtensible() const
+bool ReferenceItem::isExtensible() const
 {
-  auto def = smtk::dynamic_pointer_cast<const ReferenceItemDefinition<T> >(this->definition());
+  auto def = smtk::dynamic_pointer_cast<const ReferenceItemDefinition>(this->definition());
   if (!def)
     return false;
   return def->isExtensible();
 }
 
-template <typename T>
-bool ReferenceItem<T>::has(const smtk::common::UUID& entity) const
+bool ReferenceItem::has(const smtk::common::UUID& entity) const
 {
   return this->find(entity) >= 0;
 }
 
-template <typename T>
-bool ReferenceItem<T>::has(typename T::Ptr entity) const
+bool ReferenceItem::has(PersistentObjectPtr entity) const
 {
   return this->find(entity) >= 0;
 }
 
-template <typename T>
-typename ReferenceItem<T>::const_iterator ReferenceItem<T>::begin() const
+typename ReferenceItem::const_iterator ReferenceItem::begin() const
 {
   return m_values.begin();
 }
 
-template <typename T>
-typename ReferenceItem<T>::const_iterator ReferenceItem<T>::end() const
+typename ReferenceItem::const_iterator ReferenceItem::end() const
 {
   return m_values.end();
 }
 
-template <typename T>
-std::ptrdiff_t ReferenceItem<T>::find(const smtk::common::UUID& uid) const
+std::ptrdiff_t ReferenceItem::find(const smtk::common::UUID& uid) const
 {
   std::ptrdiff_t idx = 0;
   const_iterator it;
   for (it = this->begin(); it != this->end(); ++it, ++idx)
   {
-    if ((*it)->id() == uid)
+    if (*it && (*it)->id() == uid)
     {
       return idx;
     }
@@ -318,8 +328,7 @@ std::ptrdiff_t ReferenceItem<T>::find(const smtk::common::UUID& uid) const
   return -1;
 }
 
-template <typename T>
-std::ptrdiff_t ReferenceItem<T>::find(typename T::Ptr comp) const
+std::ptrdiff_t ReferenceItem::find(PersistentObjectPtr comp) const
 {
   std::ptrdiff_t idx = 0;
   const_iterator it;
@@ -333,10 +342,9 @@ std::ptrdiff_t ReferenceItem<T>::find(typename T::Ptr comp) const
   return -1;
 }
 
-template <typename T>
-smtk::resource::LockType ReferenceItem<T>::lockType() const
+smtk::resource::LockType ReferenceItem::lockType() const
 {
-  auto def = static_cast<const ReferenceItemDefinition<T>*>(this->definition().get());
+  auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
   if (!def)
   {
     return smtk::resource::LockType::DoNotLock;
@@ -344,12 +352,11 @@ smtk::resource::LockType ReferenceItem<T>::lockType() const
   return def->lockType();
 }
 
-template <typename T>
-bool ReferenceItem<T>::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
+bool ReferenceItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 {
   // Note that we do a dynamic cast here since we don't
   // know if the proper definition is being passed
-  auto def = dynamic_cast<const ReferenceItemDefinition<T>*>(adef.get());
+  auto def = dynamic_cast<const ReferenceItemDefinition*>(adef.get());
 
   // Call the parent's set definition - similar to constructor calls
   // we call from base to derived
@@ -366,4 +373,3 @@ bool ReferenceItem<T>::setDefinition(smtk::attribute::ConstItemDefinitionPtr ade
 }
 }
 }
-#endif

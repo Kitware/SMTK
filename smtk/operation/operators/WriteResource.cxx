@@ -82,7 +82,7 @@ smtk::operation::Operation::Result WriteResource::operateInternal()
   int rr = 0;
   for (auto rit = resourceItem->begin(); rit != resourceItem->end(); ++rit, ++rr)
   {
-    auto resource = *rit;
+    auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(*rit);
 
     smtk::operation::Operation::Ptr writeOperation =
       writerGroup.writerForResource(resource->typeName());
@@ -121,7 +121,7 @@ smtk::operation::Operation::Result WriteResource::operateInternal()
       writerFileItem->setValue(fileName);
     }
 
-    writeOperation->parameters()->findResource("resource")->setValue(*rit);
+    writeOperation->parameters()->findResource("resource")->setValue(resource);
 
     smtk::operation::Operation::Result writeOperationResult = writeOperation->operate();
     if (writeOperationResult->findInt("outcome")->value() !=

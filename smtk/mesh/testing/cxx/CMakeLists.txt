@@ -90,7 +90,12 @@ smtk_unit_tests(
   LABEL "Mesh"
   SOURCES ${unit_tests}
   SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
-  LIBRARIES smtkCore smtkCoreModelTesting ${extra_libs} ${Boost_LIBRARIES}
+  LIBRARIES
+    smtkCore
+    smtkCoreModelTesting
+    smtkMeshEnvironment
+    ${extra_libs}
+    ${Boost_LIBRARIES}
 )
 
 add_executable(TestGenerateHotStartData TestGenerateHotStartData.cxx)

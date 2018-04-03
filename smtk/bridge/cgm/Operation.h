@@ -17,7 +17,6 @@
 #include "smtk/model/Manager.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/ModelEntityItem.h"
 
 #include "DLIList.hpp"
 
@@ -49,6 +48,9 @@ protected:
   template <typename T>
   T cgmEntityAs(const smtk::model::EntityRef& smtkEntity);
 
+  template <typename T>
+  T cgmEntityAs(const smtk::resource::PersistentObjectPtr& smtkEntity);
+
   template <typename T, typename U>
   bool cgmEntities(const T& smtkContainer, DLIList<U>& cgmContainer, int keepInputs,
     smtk::model::EntityRefArray& expunged);
@@ -63,6 +65,14 @@ template <typename T>
 T Operation::cgmEntityAs(const smtk::model::EntityRef& smtkEntity)
 {
   return dynamic_cast<T>(this->cgmEntity(smtkEntity));
+}
+
+/// A convenience method for returning the CGM counterpart of an SMTK entity already cast to a subtype.
+template <typename T>
+T Operation::cgmEntityAs(const smtk::resource::PersistentObjectPointer& obj)
+{
+  auto modelEntity = std::dynamic_cast<smtk::model::Entity>(obj);
+  return dynamic_cast<T>(this->cgmEntity(modelEntity));
 }
 
 /**\brief A helper to return CGM counterparts for all the SMTK entities in a set.
@@ -137,8 +147,8 @@ void Operation::addEntitiesToResult(
         modArr.push_back(smtkEntry);
     }
   }
-  smtk::attribute::ModelEntityItem::Ptr entCreOut = result->findModelEntity("created");
-  smtk::attribute::ModelEntityItem::Ptr entModOut = result->findModelEntity("modified");
+  auto entCreOut = result->findComponent("created");
+  auto entModOut = result->findComponent("modified");
 
   entModOut->setValues(modArr.begin(), modArr.end());
   entCreOut->setValues(creArr.begin(), creArr.end());

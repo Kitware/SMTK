@@ -22,7 +22,6 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/bridge/polygon/TweakEdge_xml.h"
@@ -36,12 +35,12 @@ namespace polygon
 
 TweakEdge::Result TweakEdge::operateInternal()
 {
-  smtk::attribute::ModelEntityItem::Ptr edgeItem = this->parameters()->associations();
-  smtk::attribute::DoubleItem::Ptr pointsItem = this->parameters()->findDouble("points");
-  smtk::attribute::IntItem::Ptr coordinatesItem = this->parameters()->findInt("coordinates");
-  smtk::attribute::IntItem::Ptr promoteItem = this->parameters()->findInt("promote");
+  auto edgeItem = this->parameters()->associations();
+  auto pointsItem = this->parameters()->findDouble("points");
+  auto coordinatesItem = this->parameters()->findInt("coordinates");
+  auto promoteItem = this->parameters()->findInt("promote");
 
-  smtk::model::Edge src(edgeItem->value(0));
+  smtk::model::Edge src(edgeItem->valueAs<smtk::model::Entity>());
   if (!src.isValid())
   {
     smtkErrorMacro(this->log(), "Input edge was invalid.");
@@ -204,8 +203,9 @@ TweakEdge::Result TweakEdge::operateInternal()
 
     // Modified items will have new tessellations, which we must indicate
     // separately for the time being.
-    attribute::ModelEntityItemPtr tessItem = opResult->findModelEntity("tess_changed");
-    tessItem->appendValues(modified.begin(), modified.end());
+    auto tessItem = opResult->findComponent("tess_changed");
+    tessItem->appendValuesVia(modified.begin(), modified.end(),
+      [](const smtk::model::EntityRef& ent) { return ent.component(); });
   }
   else
   {

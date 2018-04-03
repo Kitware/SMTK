@@ -27,7 +27,6 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/model/Edge.h"
@@ -89,10 +88,10 @@ smtk::operation::Operation::Result ForceCreateFace::operateInternal()
 
   int numCoordsPerPt = coordinatesItem->value(0);
 
-  smtk::attribute::ModelEntityItem::Ptr modelItem = this->parameters()->associations();
+  auto modelItem = this->parameters()->associations();
   smtk::bridge::polygon::Resource::Ptr resource =
     std::static_pointer_cast<smtk::bridge::polygon::Resource>(
-      modelItem->value(0).component()->resource());
+      modelItem->valueAs<smtk::model::Entity>()->resource());
   if (!resource)
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
 
@@ -102,10 +101,10 @@ smtk::operation::Operation::Result ForceCreateFace::operateInternal()
   switch (method)
   {
     case ForceCreateFace::POINTS:
-      smodel = modelItem->value(0).as<smtk::model::Model>();
+      smodel = smtk::model::Model(modelItem->valueAs<smtk::model::Entity>());
       break;
     case ForceCreateFace::EDGES:
-      smodel = modelItem->value(0).as<smtk::model::Edge>().owningModel();
+      smodel = smtk::model::Edge(modelItem->valueAs<smtk::model::Entity>()).owningModel();
       break;
     default:
     {
@@ -136,7 +135,7 @@ smtk::operation::Operation::Result ForceCreateFace::operateInternal()
 
   // Initialize iterators over things we consume as we create faces:
   smtk::attribute::DoubleItem::value_type::const_iterator coordIt = pointsItem->begin();
-  smtk::attribute::ModelEntityItem::const_iterator edgeIt = modelItem->begin();
+  auto edgeIt = modelItem->begin();
   smtk::attribute::IntItem::value_type::const_iterator edgeDirIt = edgeDirItem->begin();
 
   // Handle default value for "counts" item:

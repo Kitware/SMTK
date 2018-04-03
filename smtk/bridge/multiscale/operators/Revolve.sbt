@@ -27,8 +27,12 @@
     <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(revolve)" BaseType="result">
       <ItemDefinitions>
-        <ModelEntity Name="model" NumberOfRequiredValues="1" Extensible="1" MembershipMask="4096"/>
-        <ModelEntity Name="mesh_created" NumberOfRequiredValues="1"/>
+        <Component Name="model" NumberOfRequiredValues="1" Extensible="1">
+          <Accepts><Resource Name="smtk::bridge::multiscale::Resource" Filter="model"/></Accepts>
+        </Component>
+        <Component Name="mesh_created" NumberOfRequiredValues="1">
+          <Accepts><Resource Name="smtk::bridge::multiscale::Resource" Filter=""/></Accepts>
+        </Component>
       </ItemDefinitions>
     </AttDef>
   </Definitions>
