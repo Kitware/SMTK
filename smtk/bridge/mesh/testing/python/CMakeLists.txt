@@ -1,7 +1,9 @@
 
 
 # tests that require SMTK_DATA_DIR
-set(smtkMeshPythonDataTests)
+set(smtkMeshPythonDataTests
+  loadExodusFile
+)
 
 if (SMTK_ENABLE_VTK_SUPPORT)
   list (APPEND smtkMeshPythonDataTests eulerRatio)
