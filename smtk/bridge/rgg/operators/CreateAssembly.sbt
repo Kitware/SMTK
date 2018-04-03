@@ -16,16 +16,16 @@
       </AssociationsDef>
       <ItemDefinitions>
         <String Name="name" NumberOfRequiredValues="1" AdvanceLevel="0">
-          <BriefDescription>A user assigned name for the nulcear assembly</BriefDescription>
+          <BriefDescription>A user assigned name for the nuclear assembly</BriefDescription>
           <DetailedDescription>
-            A user assigned name for the nulcear assembly.
+            A user assigned name for the nuclear assembly.
           </DetailedDescription>
           <DefaultValue>Assembly0</DefaultValue>
         </String>
         <String Name="label" NumberOfRequiredValues="1" AdvanceLevel="11">
-          <BriefDescription>A user assigned label for the nulcear assembly</BriefDescription>
+          <BriefDescription>A user assigned label for the nuclear assembly</BriefDescription>
           <DetailedDescription>
-            A user assigned label for the nulcear assembly.
+            A user assigned label for the nuclear assembly.
           </DetailedDescription>
           <DefaultValue>A0</DefaultValue>
         </String>

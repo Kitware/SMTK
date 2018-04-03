@@ -15,9 +15,9 @@
       </AssociationsDef>
       <ItemDefinitions>
         <String Name="name" NumberOfRequiredValues="1" AdvanceLevel="11">
-          <BriefDescription>A user assigned name for the nulcear duct</BriefDescription>
+          <BriefDescription>A user assigned name for the nuclear duct</BriefDescription>
           <DetailedDescription>
-            A user assigned name for the nulcear duct.
+            A user assigned name for the nuclear duct.
           </DetailedDescription>
         </String>
         <Void Name="cross section" NumberOfRequiredValues="1" Optional = "true" IsEnabledByDafault="false" AdvanceLevel="11">
@@ -41,15 +41,15 @@
               </DetailedDescription>
             </Double>
             <Int Name="materials" NumberOfRequiredValues="1" Extensible="true" AdvanceLevel="11">
-              <BriefDescription>A user assigned material for a nulcear duct layer</BriefDescription>
+              <BriefDescription>A user assigned material for a nuclear duct layer</BriefDescription>
               <DetailedDescription>
-                A user assigned material for a nulcear duct layer.
+                A user assigned material for a nuclear duct layer.
               </DetailedDescription>
             </Int>
             <Double Name="thicknesses(normalized)" NumberOfRequiredValues="1" Extensible="true" AdvanceLevel="11">
-              <BriefDescription>A user assigned thicknesses for a nulcear duct layer</BriefDescription>
+              <BriefDescription>A user assigned thicknesses for a nuclear duct layer</BriefDescription>
               <DetailedDescription>
-                A user assigned thicknesses for a nulcear duct layer.
+                A user assigned thicknesses for a nuclear duct layer.
                 If the duct is hex, then each material would have one thickeness along radius(same thickeness along x and y axis).
                 If the duct is rectilinear, then each material would have two thicknesses along width and length.
               </DetailedDescription>

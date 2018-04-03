@@ -128,7 +128,7 @@
       -->
     <View Type="smtkRGGEditCoreView" Title="Edit Core"  FilterByCategory="false"  FilterByAdvanceLevel="false" UseSelectionManager="false">
       <Description>
-        Change a nulcear core's properties and layout.
+        Change a nuclear core's properties and layout.
       </Description>
       <AttributeTypes>
         <Att Type="edit core"/>

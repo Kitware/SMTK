@@ -14,15 +14,15 @@
       </AssociationsDef>
       <ItemDefinitions>
         <String Name="name" NumberOfRequiredValues="1" AdvanceLevel="11">
-          <BriefDescription>A user assigned name for the nulcear assembly</BriefDescription>
+          <BriefDescription>A user assigned name for the nuclear assembly</BriefDescription>
           <DetailedDescription>
-            A user assigned name for the nulcear assembly.
+            A user assigned name for the nuclear assembly.
           </DetailedDescription>
         </String>
         <String Name="label" NumberOfRequiredValues="1" AdvanceLevel="11">
-          <BriefDescription>A user assigned label for the nulcear assembly</BriefDescription>
+          <BriefDescription>A user assigned label for the nuclear assembly</BriefDescription>
           <DetailedDescription>
-            A user assigned name for the nulcear assembly.
+            A user assigned name for the nuclear assembly.
           </DetailedDescription>
         </String>
         <Group Name="pins and layouts" Extensible="true" NumberOfRequiredGroups="0" AdvanceLevel="11">
@@ -95,7 +95,7 @@
       -->
     <View Type="smtkRGGEditAssemblyView" Title="Edit Assembly"  FilterByCategory="false"  FilterByAdvanceLevel="false" UseSelectionManager="false">
       <Description>
-        Change a nulcear assembly's properties and layout.
+        Change a nuclear assembly's properties and layout.
       </Description>
       <AttributeTypes>
         <Att Type="edit assembly"/>
