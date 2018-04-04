@@ -82,3 +82,5 @@ endif()
 
 smtk_export_header(smtkQtRGGSession Exports.h)
 smtk_install_library(smtkQtRGGSession)
+
+add_subdirectory(nuclides)

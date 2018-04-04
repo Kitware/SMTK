@@ -406,7 +406,7 @@ void smtkRGGEditPinView::updateEditPinPanel()
   bool isEnabled(true);
   if ((ents.size() == 0) || (!ents[0].hasStringProperty("rggType")) ||
     (ents[0].stringProperty("rggType")[0] != SMTK_BRIDGE_RGG_PIN) ||
-    !ents[0].embeddedEntities<smtk::model::EntityRefArray>().size() > 0)
+    !(ents[0].embeddedEntities<smtk::model::EntityRefArray>().size() > 0))
   { // Its type is not rgg pin
     isEnabled = false;
   }
@@ -489,7 +489,7 @@ void smtkRGGEditPinView::createPiecesTable()
   pt->setMinimumHeight(200);
   // type, length, base radius and top radius
   pt->setColumnCount(numberOfPieceTableColumns);
-  pt->setHorizontalHeaderLabels(QStringList() << "Segmet\nType"
+  pt->setHorizontalHeaderLabels(QStringList() << "Segment\nType"
                                               << "Length"
                                               << "Base\nRadius"
                                               << "Top\nRadius");

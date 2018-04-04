@@ -10,10 +10,13 @@ include (ParaViewPlugins)
 list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 
 set (srcs
+  smtkRGGAddMaterialView.cxx
   smtkRGGEditAssemblyView.cxx
   smtkRGGEditCoreView.cxx
   smtkRGGEditDuctView.cxx
+  smtkRGGEditMaterialView.cxx
   smtkRGGEditPinView.cxx
+  smtkRGGRemoveMaterialView.cxx
   smtkRGGReadRXFFileView.cxx
 )
 
@@ -22,19 +25,25 @@ set (non_ui_srcs
 )
 
 set (hdrs
+  smtkRGGAddMaterialView.h
   smtkRGGEditAssemblyView.h
   smtkRGGEditCoreView.h
   smtkRGGEditDuctView.h
+  smtkRGGEditMaterialView.h
   smtkRGGEditPinView.h
   smtkRGGReadRXFFileView.h
+  smtkRGGRemoveMaterialView.h
 )
 
 set (qtui
+  smtkRGGAddMaterialParameters.ui
   smtkRGGEditAssemblyParameters.ui
   smtkRGGEditCoreParameters.ui
   smtkRGGEditDuctParameters.ui
+  smtkRGGEditMaterialParameters.ui
   smtkRGGEditPinParameters.ui
   smtkRGGReadRXFFileParameters.ui
+  smtkRGGRemoveMaterialParameters.ui
 )
 
 #install the headers
@@ -87,6 +96,7 @@ target_link_libraries(smtkRGGSessionPlugin
     smtkCore
     smtkRGGSession
     smtkQtRGGSession
+    smtkQtRGGNuclides
     Qt5::Core
     Qt5::Widgets
     vtkjsoncpp

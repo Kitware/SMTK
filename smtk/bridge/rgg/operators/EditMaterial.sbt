@@ -1,21 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the model "AddMaterial" Operator -->
+<!-- Description of the RGG "EditMaterial" Operator -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="add material" Label="Model - Add Material" BaseType="operator">
-      <BriefDescription>
-        Add a user defined material.
-        Warning: For now it would clear all predefined materials in smtk.
-      </BriefDescription>
+    <AttDef Type="edit material" Label="Model - Edit Material" BaseType="operator">
+      <BriefDescription>Edit material for RGG model.</BriefDescription>
       <DetailedDescription>
-        Add a user defined material.
-        Warning: For now it would clear all predefined materials in smtk.
+        Edit an available material for an RGG model.
       </DetailedDescription>
       <AssociationsDef Name="model" NumberOfRequiredValues="1" AdvanceLevel="0">
         <MembershipMask>model</MembershipMask>
       </AssociationsDef>
       <ItemDefinitions>
+
         <String Name="name" AdvanceLevel="11">
           <BriefDescription>A user assigned name for the material</BriefDescription>
         </String>
@@ -56,7 +53,7 @@
         </String>
 
         <String Name="compositionType" Label="Composition Type" AdvanceLevel="11">
-          <BriefDescription>Description of how materials components
+          <BriefDescription>Description of how material components
           are composed to form the material</BriefDescription>
           <DiscreteInfo DefaultIndex="0">
             <Value Enum="weight fractions">wfracs</Value>
@@ -75,10 +72,12 @@
           <BriefDescription>Fraction or density associated with a component</BriefDescription>
           <RangeInfo><Min Inclusive="true">0</Min></RangeInfo>
         </Double>
+
       </ItemDefinitions>
+
     </AttDef>
     <!-- Result -->
-    <AttDef Type="result(add material)" BaseType="result">
+    <AttDef Type="result(edit material)" BaseType="result">
       <ItemDefinitions>
       </ItemDefinitions>
     </AttDef>
@@ -89,12 +88,13 @@
       The customized view "Type" needs to match the plugin's VIEW_NAME:
       add_smtk_ui_view(...  VIEW_NAME smtkRGGEditMaterialView ...)
       -->
-    <View Type="smtkRGGAddMaterialView" Title="Add Material"  FilterByCategory="false"  FilterByAdvanceLevel="false" UseSelectionManager="false">
+    <View Type="smtkRGGEditMaterialView" Title="Edit Material"  FilterByCategory="false"  FilterByAdvanceLevel="false" UseSelectionManager="false">
       <Description>
-        Add a material definition to use in this RGG model.
+        Edit a preexisting material definition associated with this
+        RGG model.
       </Description>
       <AttributeTypes>
-        <Att Type="add material"/>
+        <Att Type="edit material"/>
       </AttributeTypes>
     </View>
   </Views>

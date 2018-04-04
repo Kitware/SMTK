@@ -762,6 +762,7 @@ void qtLattice::sendMaxRadiusToReference()
       smtkWarningMacro(smtk::io::Logger::instance(), "when sending max radius to instance,"
           << part.name() << " has an invalid radius");
     }
+    return partRadius;
   };
 
   for (size_t i = 0; i < this->m_grid.size(); ++i)

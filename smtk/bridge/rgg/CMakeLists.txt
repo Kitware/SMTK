@@ -1,4 +1,5 @@
 set (rggSrcs
+  Material.cxx
   Operator.cxx
   Session.cxx
   operators/AddMaterial.cxx
@@ -10,12 +11,15 @@ set (rggSrcs
   operators/EditAssembly.cxx
   operators/EditCore.cxx
   operators/EditDuct.cxx
+  operators/EditMaterial.cxx
   operators/EditPin.cxx
+  operators/RemoveMaterial.cxx
   operators/ReadRXFFile.cxx
   operators/ReadRXFFileHelper.cxx
   )
 
 set (rggHeaders
+  Material.h
   Operator.h
   Session.h
   operators/AddMaterial.h
@@ -27,7 +31,9 @@ set (rggHeaders
   operators/EditAssembly.h
   operators/EditCore.h
   operators/EditDuct.h
+  operators/EditMaterial.h
   operators/EditPin.h
+  operators/RemoveMaterial.h
   operators/ReadRXFFile.h
   operators/ReadRXFFileHelper.h
   )
@@ -60,7 +66,9 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Delete.sbt" rggOperator
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EditAssembly.sbt" rggOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EditCore.sbt" rggOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EditDuct.sbt" rggOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EditMaterial.sbt" rggOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EditPin.sbt" rggOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/RemoveMaterial.sbt" rggOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ReadRXFFile.sbt" rggOperatorXML)
 smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" rggSessionJSON)
 

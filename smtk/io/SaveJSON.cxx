@@ -586,10 +586,6 @@ int SaveJSON::forFloatData(cJSON* dict, const FloatData& fdata)
   PropertyNameWithConstFloats entry;
   for (entry = fdata.begin(); entry != fdata.end(); ++entry)
   {
-    if (entry->second.empty())
-    {
-      continue;
-    }
     cJSON_AddItemToObject(pdict, entry->first.c_str(),
       cJSON_CreateDoubleArray(&entry->second[0], static_cast<int>(entry->second.size())));
   }
@@ -603,10 +599,6 @@ int SaveJSON::forStringData(cJSON* dict, const StringData& sdata)
   PropertyNameWithConstStrings entry;
   for (entry = sdata.begin(); entry != sdata.end(); ++entry)
   {
-    if (entry->second.empty())
-    {
-      continue;
-    }
     cJSON_AddItemToObject(pdict, entry->first.c_str(),
       cJSON_CreateStringArray(&entry->second[0], static_cast<unsigned int>(entry->second.size())));
   }
@@ -620,10 +612,6 @@ int SaveJSON::forIntegerData(cJSON* dict, const IntegerData& idata)
   PropertyNameWithConstIntegers entry;
   for (entry = idata.begin(); entry != idata.end(); ++entry)
   {
-    if (entry->second.empty())
-    {
-      continue;
-    }
     cJSON_AddItemToObject(pdict, entry->first.c_str(),
       cJSON_CreateLongArray(&entry->second[0], static_cast<unsigned int>(entry->second.size())));
   }
