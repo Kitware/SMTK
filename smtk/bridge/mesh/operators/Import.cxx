@@ -110,17 +110,17 @@ Import::Result Import::operateInternal()
   // Get the collection from the file
   smtk::mesh::CollectionPtr collection = smtk::io::importMesh(filePath, resource->meshes(), label);
 
+  if (!collection || !collection->isValid())
+  {
+    // The file was not correctly read.
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+  }
+
   // Name the mesh according to the stem of the file
   std::string name = smtk::common::Paths::stem(filePath);
   if (!name.empty())
   {
     collection->name(name);
-  }
-
-  if (!collection || !collection->isValid())
-  {
-    // The file was not correctly read.
-    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   auto format = smtk::io::meshFileFormat(filePath);
