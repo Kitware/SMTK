@@ -18,5 +18,5 @@ vtk_module(vtkCmbDiscreteModel
    vtkGeovisCore
    vtksys
    ${__dependencies}
- EXCLUDE_FROM_WRAP_HIERARCHY
+ EXCLUDE_FROM_PYTHON_WRAPPING
 )

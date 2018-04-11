@@ -21,5 +21,5 @@ vtk_module(vtkSMTKWidgetsExt
     ${__dependencies}
   TEST_DEPENDS
     vtkTestingRendering
-  EXCLUDE_FROM_WRAP_HIERARCHY
+  EXCLUDE_FROM_PYTHON_WRAPPING
 )

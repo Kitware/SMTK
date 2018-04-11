@@ -9,6 +9,7 @@
 //=========================================================================
 #ifndef __smtk_model_ExportEdgesToVTK_h
 #define __smtk_model_ExportEdgesToVTK_h
+#ifndef __VTK_WRAP__
 
 #include "smtk/extension/vtk/operators/Exports.h" // For export macro
 #include "smtk/model/Operator.h"
@@ -33,4 +34,5 @@ protected:
 } //namespace model
 } // namespace smtk
 
+#endif
 #endif // __smtk_model_ExportEdgesToVTK_h
