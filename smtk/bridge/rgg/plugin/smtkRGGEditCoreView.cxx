@@ -247,7 +247,7 @@ void smtkRGGEditCoreView::apply()
   // In other words, a rgg core also consists of pin instances and duct instances.
 
   // Extract some assembly information first
-  smtk::attribute::AttributePtr eaAtt = this->Internals->CurrentAtt->attribute();
+  smtk::attribute::AttributePtr ecAtt = this->Internals->CurrentAtt->attribute();
   // Clear "instances to be deleted&added" item
   smtk::attribute::ModelEntityItemPtr dI =
     this->Internals->CurrentAtt->attribute()->findModelEntity("instance to be deleted");
@@ -257,7 +257,7 @@ void smtkRGGEditCoreView::apply()
   aI->setNumberOfValues(0);
 
   smtk::model::EntityRefArray coreArray =
-    eaAtt->associatedModelEntities<smtk::model::EntityRefArray>();
+    ecAtt->associatedModelEntities<smtk::model::EntityRefArray>();
   smtk::model::Group core;
   smtk::model::Model model;
   bool isHex(false);
@@ -276,7 +276,7 @@ void smtkRGGEditCoreView::apply()
 
   // Ignore geometry type item since it can only be decided at
   // the creation time
-  smtk::attribute::IntItemPtr latticeSizeI = eaAtt->findInt("lattice size");
+  smtk::attribute::IntItemPtr latticeSizeI = ecAtt->findInt("lattice size");
   int latticeSize[2];
   if (latticeSizeI)
   {
@@ -401,7 +401,11 @@ void smtkRGGEditCoreView::apply()
 
   // Map pins&ducts to their placements
   std::map<smtk::model::EntityRef, std::vector<double> > pDToPs;
-  for (auto iter = assemblyToLayout.begin(); iter != assemblyToLayout.end(); iter++)
+  // Cache assembly layouts and coordinates in the attribute
+  smtk::attribute::GroupItemPtr alI = ecAtt->findGroup("assemblies and layouts");
+  alI->setNumberOfGroups(0); // Clear existing groups
+  int alGroupIndex(0);
+  for (auto iter = assemblyToLayout.begin(); iter != assemblyToLayout.end(); iter++, alGroupIndex++)
   { // For each assembly, retrieve its pins&duct info, apply the right transformation
     // then add it into pinDuctToLayout map
 
@@ -434,6 +438,8 @@ void smtkRGGEditCoreView::apply()
     }
 
     size_t pointSize = layout.size() / 2;
+    std::vector<double> coordinates;
+    coordinates.reserve(pointSize * 3);
     for (size_t index = 0; index < pointSize; index++)
     {
       double x, y;
@@ -448,6 +454,9 @@ void smtkRGGEditCoreView::apply()
         x = baseX + spacing[0] * layout[2 * index];
         y = baseY + spacing[1] * layout[2 * index + 1];
       }
+      coordinates.push_back(x);
+      coordinates.push_back(y);
+      coordinates.push_back(0);
       // For each (x,y) pair, add it to every pin and duct in the current assy
       auto addTransformCoordsToMap = [&pDToPs, &x, &y](
         const smtk::model::EntityRef& ent, std::vector<double>& coordinates) {
@@ -493,6 +502,17 @@ void smtkRGGEditCoreView::apply()
         addTransformCoordsToMap(pin, pinCoords);
       }
     }
+    // Update pins and layouts
+    alI->appendGroup();
+    smtk::attribute::StringItemPtr assyUUIDI =
+      smtk::dynamic_pointer_cast<smtk::attribute::StringItem>(alI->item(alGroupIndex, 0));
+    smtk::attribute::IntItemPtr schemaPlanI =
+      smtk::dynamic_pointer_cast<smtk::attribute::IntItem>(alI->item(alGroupIndex, 1));
+    smtk::attribute::DoubleItemPtr coordinatesI =
+      smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(alI->item(alGroupIndex, 2));
+    assyUUIDI->setValue(iter->first.entity().toString());
+    schemaPlanI->setValues(iter->second.begin(), iter->second.end());
+    coordinatesI->setValues(coordinates.begin(), coordinates.end());
   }
 
   if (!this->Internals->CreateInstanceOp.lock())
@@ -541,31 +561,31 @@ void smtkRGGEditCoreView::apply()
 
   // Populate the op attribute and invoke the operation
   // Associating assembly and duct is taken care of by the qtAttribute
-  smtk::attribute::StringItemPtr nameI = eaAtt->findString("name");
+  smtk::attribute::StringItemPtr nameI = ecAtt->findString("name");
   if (nameI)
   {
     nameI->setValue(this->Internals->nameLineEdit->text().toStdString());
   }
 
-  smtk::attribute::StringItemPtr geometryTypeI = eaAtt->findString("geometry type");
+  smtk::attribute::StringItemPtr geometryTypeI = ecAtt->findString("geometry type");
   if (geometryTypeI)
   {
     geometryTypeI->setValue(isHex ? "Hex" : "Rect");
   }
 
-  smtk::attribute::DoubleItemPtr heightI = eaAtt->findDouble("height");
+  smtk::attribute::DoubleItemPtr heightI = ecAtt->findDouble("height");
   if (heightI)
   {
     heightI->setValue(this->Internals->heightLineEdit->text().toDouble());
   }
-  smtk::attribute::DoubleItemPtr zOI = eaAtt->findDouble("z origin");
+  smtk::attribute::DoubleItemPtr zOI = ecAtt->findDouble("z origin");
   if (zOI)
   {
     zOI->setValue(this->Internals->zOriginLineEdit->text().toDouble());
   }
   if (isHex)
   {
-    smtk::attribute::DoubleItemPtr dtI = eaAtt->findDouble("duct thickness");
+    smtk::attribute::DoubleItemPtr dtI = ecAtt->findDouble("duct thickness");
     if (dtI)
     {
       dtI->setValue(this->Internals->ductXThicknessSpinBox->value());
@@ -573,12 +593,12 @@ void smtkRGGEditCoreView::apply()
   }
   else
   {
-    smtk::attribute::DoubleItemPtr dtXI = eaAtt->findDouble("duct thickness X");
+    smtk::attribute::DoubleItemPtr dtXI = ecAtt->findDouble("duct thickness X");
     if (dtXI)
     {
       dtXI->setValue(this->Internals->ductXThicknessSpinBox->value());
     }
-    smtk::attribute::DoubleItemPtr dtYI = eaAtt->findDouble("duct thickness Y");
+    smtk::attribute::DoubleItemPtr dtYI = ecAtt->findDouble("duct thickness Y");
     if (dtYI)
     {
       dtYI->setValue(this->Internals->ductYThicknessSpinBox->value());

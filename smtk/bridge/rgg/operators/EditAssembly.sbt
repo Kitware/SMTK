@@ -36,7 +36,7 @@
             <Int Name="schema plan" NumberOfRequiredValues="2" Extensible="true" AdvanceLevel="11">
               <!-- Rect: (i, j) where i is the index along width and y is along height. Hex(i, j) where i is the index along the ring and j is the index on that layer -->
             </Int>
-            <Double Name="coordinates" NumberOfRequiredValues="2" Extensible="true" AdvanceLevel="11">
+            <Double Name="coordinates" NumberOfRequiredValues="3" Extensible="true" AdvanceLevel="11">
               <!-- x, y and z coordinates -->
             </Double>
           </ItemDefinitions>

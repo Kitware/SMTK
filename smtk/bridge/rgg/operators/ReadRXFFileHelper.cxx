@@ -488,6 +488,7 @@ bool ReadRXFFileHelper::parseCore(pugi::xml_node rootNode, EntityRef model,
   }
 
   // Map pins&ducts to their placements
+  std::vector<std::string> assyUUIDs;
   for (auto iter = assyLabelToLayout.begin(); iter != assyLabelToLayout.end(); iter++)
   { // For each assembly, retrieve its pins&duct info, apply the right transformation
     // then add it into pinDuctToLayout map
@@ -499,6 +500,9 @@ bool ReadRXFFileHelper::parseCore(pugi::xml_node rootNode, EntityRef model,
     }
     assy = labelToAssy[iter->first];
     std::vector<long> layout = iter->second;
+    smtk::model::FloatList coordinates;
+    size_t numberOfPairs = layout.size() / 2;
+    coordinates.reserve(numberOfPairs * 3);
     std::string ductUUID;
     if (assy.hasStringProperty("associated duct"))
     {
@@ -540,6 +544,10 @@ bool ReadRXFFileHelper::parseCore(pugi::xml_node rootNode, EntityRef model,
         x = baseX + spacing[0] * layout[2 * index];
         y = baseY + spacing[1] * layout[2 * index + 1];
       }
+
+      coordinates.push_back(x);
+      coordinates.push_back(y);
+      coordinates.push_back(0);
       // For each (x,y) pair, add it to every pin and duct in the current assy
       auto addTransformCoordsToMap = [&entsAndCoords, &x, &y](
         const smtk::model::EntityRef& ent, std::vector<double>& coordinates) {
@@ -586,7 +594,12 @@ bool ReadRXFFileHelper::parseCore(pugi::xml_node rootNode, EntityRef model,
         addTransformCoordsToMap(pin, pinCoords);
       }
     }
+    std::string assyUUID = assy.entity().toString();
+    model.setIntegerProperty(assyUUID, layout);
+    model.setFloatProperty(assyUUID, coordinates);
+    assyUUIDs.push_back(assyUUID);
   }
+  model.setStringProperty("assemblies", assyUUIDs);
   // Glyph the duct and pins
   ReadRXFFileHelper::createInstances(entsAndCoords, core, newCoreInstances);
   // TODO: Add support for unknown attribute
@@ -1031,7 +1044,6 @@ bool ReadRXFFileHelper::parseAssembly(pugi::xml_node assyNode, EntityRef model,
         x = baseX + spacing[0] * layout[2 * index];
         y = baseY + spacing[1] * layout[2 * index + 1];
       }
-
       coordinates.push_back(x);
       coordinates.push_back(y);
       coordinates.push_back(0);

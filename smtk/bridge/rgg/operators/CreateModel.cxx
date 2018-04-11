@@ -91,12 +91,12 @@ void CreateModel::populateCore(smtk::model::Operator* op, smtk::model::Group& co
 {
   core.setStringProperty("rggType", SMTK_BRIDGE_RGG_CORE);
   smtk::attribute::StringItem::Ptr nameItem = op->findString("name");
-  std::string modelName;
+  std::string coreName;
   if (nameItem && nameItem->isEnabled())
   {
-    modelName = nameItem->value(0);
+    coreName = nameItem->value(0);
   }
-  core.setName(modelName);
+  core.setName(coreName);
 
   smtk::model::Model model = core.owningModel();
 
@@ -149,6 +149,38 @@ void CreateModel::populateCore(smtk::model::Operator* op, smtk::model::Group& co
     {
       smtkErrorMacro(op->log(), "core " << core.name() << " does not have a valid lattice size");
     }
+  }
+  // Assemblies and their layouts
+  // Op would store all assembly uuids as a string property on the core,
+  // then for each assembly op would store its layout as an int property.
+  smtk::attribute::GroupItemPtr piecesGItem = op->findGroup("assemblies and layouts");
+  size_t numAssembly;
+  if (piecesGItem != nullptr)
+  {
+    smtk::model::StringList assemblyIds;
+    numAssembly = piecesGItem->numberOfGroups();
+    for (std::size_t index = 0; index < numAssembly; index++)
+    {
+      smtk::attribute::StringItemPtr assemblyIdItem =
+        piecesGItem->findAs<smtk::attribute::StringItem>(index, "assembly UUID");
+      smtk::attribute::IntItemPtr schemaPlanItem =
+        piecesGItem->findAs<smtk::attribute::IntItem>(index, "schema plan");
+      smtk::attribute::DoubleItemPtr coordsItem =
+        piecesGItem->findAs<smtk::attribute::DoubleItem>(index, "coordinates");
+
+      std::string uuid = assemblyIdItem->value();
+      assemblyIds.push_back(uuid);
+      smtk::model::IntegerList layout(schemaPlanItem->begin(), schemaPlanItem->end());
+      model.setIntegerProperty(uuid, layout);
+      smtk::model::FloatList coordinates(coordsItem->begin(), coordsItem->end());
+      model.setFloatProperty(uuid, coordinates);
+    }
+    model.setStringProperty("assemblies", assemblyIds);
+  }
+  else
+  {
+    smtkErrorMacro(
+      op->log(), "core " << coreName << " does not have assemblies and their layouts info");
   }
 }
 

@@ -96,6 +96,22 @@
             </Structure>
           </DiscreteInfo>
         </String>
+        <Group Name="assemblies and layouts" Extensible="true" NumberOfRequiredGroups="0" AdvanceLevel="11">
+          <BriefDescription>A user assigned a set of assemblies which are laid out in the lattice</BriefDescription>
+          <DetailedDescription>
+            A user assigned a set of assemblies which are laid out in the lattice.
+          </DetailedDescription>
+          <ItemDefinitions>
+            <String Name="assembly UUID" NumberOfRequiredValues="1" Extensible="true" AdvanceLevel="11">
+            </String>
+            <Int Name="schema plan" NumberOfRequiredValues="2" Extensible="true" AdvanceLevel="11">
+              <!-- Rect: (i, j) where i is the index along width and y is along height. Hex(i, j) where i is the index along the ring and j is the index on that layer -->
+            </Int>
+            <Double Name="coordinates" NumberOfRequiredValues="3" Extensible="true" AdvanceLevel="11">
+              <!-- x, y and z coordinates -->
+            </Double>
+          </ItemDefinitions>
+        </Group>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->

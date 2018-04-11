@@ -114,6 +114,8 @@ void rggNucCore::getRadius(double& ri, double& rj) const
 void rggNucCore::resetBySMTKCore(const smtk::model::EntityRef& core)
 {
   this->m_entity = core;
+  smtk::model::Model model = core.owningModel();
+  smtk::model::ManagerPtr mgr = model.manager();
 
   if (!core.isGroup())
   {
@@ -123,9 +125,9 @@ void rggNucCore::resetBySMTKCore(const smtk::model::EntityRef& core)
   }
 
   // Update lattice related info
-  if (core.owningModel().hasIntegerProperty("hex"))
+  if (model.hasIntegerProperty("hex"))
   {
-    int isHex = core.owningModel().integerProperty("hex")[0];
+    int isHex = model.integerProperty("hex")[0];
     std::cout << "  hex=" << isHex << std::endl;
     this->m_lattice.SetGeometryType(
       isHex ? rggGeometryType::HEXAGONAL : rggGeometryType::RECTILINEAR);
@@ -135,10 +137,9 @@ void rggNucCore::resetBySMTKCore(const smtk::model::EntityRef& core)
     smtkErrorMacro(smtk::io::Logger(), "The core does not have a valid hex info");
   }
 
-  if (core.owningModel().hasIntegerProperty("lattice size") &&
-    core.owningModel().integerProperty("lattice size").size() == 2)
+  if (model.hasIntegerProperty("lattice size") && model.integerProperty("lattice size").size() == 2)
   {
-    smtk::model::IntegerList lSize = core.owningModel().integerProperty("lattice size");
+    smtk::model::IntegerList lSize = model.integerProperty("lattice size");
     std::cout << "  lattice size=" << lSize[0] << " " << lSize[1] << std::endl;
     this->m_lattice.SetDimensions(lSize[0], lSize[1]);
   }
@@ -147,5 +148,35 @@ void rggNucCore::resetBySMTKCore(const smtk::model::EntityRef& core)
     smtkErrorMacro(smtk::io::Logger(), "The core does not have a valid lattice"
                                        " size");
   }
-  //TODO: handle assemblies and populate the qtLattice
+
+  // Populate the qtLattice
+  if (model.hasStringProperty("assemblies"))
+  {
+    smtk::model::StringList assyIds = model.stringProperty("assemblies");
+    for (auto& assyId : assyIds)
+    {
+      smtk::model::EntityRef assy = smtk::model::EntityRef(mgr, assyId);
+      if (!assy.isValid())
+      {
+        smtkErrorMacro(smtk::io::Logger(), "Core's assy ID " << assyId << " is not valid");
+        continue;
+      }
+      if (!model.hasIntegerProperty(assyId))
+      {
+        smtkErrorMacro(
+          smtk::io::Logger(), "Assembly's assy " << assy.name() << " does not have layout info");
+        continue;
+      }
+      smtk::model::IntegerList layout = model.integerProperty(assyId);
+      size_t numOfPair = layout.size() / 2;
+      for (size_t i = 0; i < numOfPair; i++)
+      {
+        this->m_lattice.SetCell(layout[2 * i], layout[2 * i + 1], assy);
+      }
+    }
+  }
+  else
+  {
+    smtkErrorMacro(smtk::io::Logger(), "Assembly does not have assys associated.");
+  }
 }
