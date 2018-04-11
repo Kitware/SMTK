@@ -603,21 +603,6 @@ bool ReadRXFFileHelper::parseCore(pugi::xml_node rootNode, EntityRef model,
   // Glyph the duct and pins
   ReadRXFFileHelper::createInstances(entsAndCoords, core, newCoreInstances);
   // TODO: Add support for unknown attribute
-  /***********************************************************************/
-  std::cout << "paring core:" << std::endl;
-
-  std::cout << "label to layout" << std::endl;
-  for (auto& iter : assyLabelToLayout)
-  {
-    std::cout << " " << iter.first << std::endl;
-    for (auto value : iter.second)
-    {
-      std::cout << value << " ";
-    }
-    std::cout << std::endl;
-  }
-  /***********************************************************************/
-
   return r;
 }
 
@@ -1058,23 +1043,6 @@ bool ReadRXFFileHelper::parseAssembly(pugi::xml_node assyNode, EntityRef model,
   ReadRXFFileHelper::createInstances(entsAndCoords, assembly, newAssyInstances);
 
   // TODO: Add support for unknown attribute
-  /***********************************************************************/
-  std::cout << "paring assembly:" << std::endl;
-  std::cout << "  name=" << name << " label=" << label << "centerPins=" << centerPins
-            << " pitches=" << pitches[0] << " " << pitches[1] << std::endl;
-
-  std::cout << "label to layout" << std::endl;
-  for (auto& iter : pinLabelsToLayouts)
-  {
-    std::cout << " " << iter.first << std::endl;
-    for (auto value : iter.second)
-    {
-      std::cout << value << " ";
-    }
-    std::cout << std::endl;
-  }
-  /***********************************************************************/
-
   if (!r)
   {
     smtkErrorMacro(smtk::io::Logger(), "Encounter errors when paring assembly " << name);
@@ -1132,7 +1100,6 @@ bool ReadRXFFileHelper::parseLattice(
     latticeSize.push_back(j);
     latticeSize.push_back(labelsPerRing.size());
   }
-  std::cout << "latticeSize: " << latticeSize[0] << " " << latticeSize[1] << std::endl;
   if (isCore)
   { // Core group is just a place holder. All infos are stored in the model
     target.owningModel().setIntegerProperty("lattice size", latticeSize);

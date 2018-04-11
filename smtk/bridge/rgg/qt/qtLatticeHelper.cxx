@@ -154,7 +154,6 @@ bool qtCellReference::radiusConflicts(double r) const
 {
   return false;
   // TODO: add radius check support
-  std::cout << "  radiusConflicts: r=" << r << " maxradius=" << this->getMaxRadius() << std::endl;
   return r >= this->getMaxRadius();
 }
 

@@ -178,8 +178,6 @@ QColor qtDraw2DLattice::getColor(QString name) const
 void qtDraw2DLattice::addCell(
   QPointF const& posF, double r, int layer, int cellIdx, qtLattice::CellDrawMode mode)
 {
-  //  std::cout << "  addCell: " << " r=" << r <<  " layer="
-  //            << layer << " cellIdx=" << cellIdx <<std::endl;
   qtCell lc = m_grid.GetCell(layer, cellIdx);
   if (!lc.isValid())
   {

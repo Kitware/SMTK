@@ -92,22 +92,22 @@ bool rggNucAssembly::IsHexType()
 
 void rggNucAssembly::calculateExtraTranslation(double& transX, double& transY)
 {
-  std::cout << "TODO: rggNucAssembly::calculateExtraTranslation" << std::endl;
+  // TODO: rggNucAssembly::calculateExtraTranslation"
 }
 
 void rggNucAssembly::calculateTranslation(double& transX, double& transY)
 {
-  std::cout << "TODO: rggNucAssembly::calculateTranslation" << std::endl;
+  // "TODO: rggNucAssembly::calculateTranslation"
 }
 
 void rggNucAssembly::setUpdateUsed()
 {
-  std::cout << "TODO: rggNucAssembly::setUpdateUsed" << std::endl;
+  // "TODO: rggNucAssembly::setUpdateUsed"
 }
 
 void rggNucAssembly::getRadius(double& ri, double& rj) const
 {
-  std::cout << "TODO: rggNucAssembly::getRadius" << std::endl;
+  // "TODO: rggNucAssembly::getRadius"
 }
 
 void rggNucAssembly::resetBySMTKAssembly(const smtk::model::EntityRef& assy)

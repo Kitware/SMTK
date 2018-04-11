@@ -93,22 +93,22 @@ bool rggNucCore::IsHexType()
 
 void rggNucCore::calculateExtraTranslation(double& transX, double& transY)
 {
-  std::cout << "TODO: rggNucCore::calculateExtraTranslation" << std::endl;
+  // "TODO: rggNucCore::calculateExtraTranslation"
 }
 
 void rggNucCore::calculateTranslation(double& transX, double& transY)
 {
-  std::cout << "TODO: rggNucCore::calculateTranslation" << std::endl;
+  // "TODO: rggNucCore::calculateTranslation"
 }
 
 void rggNucCore::setUpdateUsed()
 {
-  std::cout << "TODO: rggNucCore::setUpdateUsed" << std::endl;
+  // "TODO: rggNucCore::setUpdateUsed"
 }
 
 void rggNucCore::getRadius(double& ri, double& rj) const
 {
-  std::cout << "TODO: rggNucCore::getRadius" << std::endl;
+  // "TODO: rggNucCore::getRadius"
 }
 
 void rggNucCore::resetBySMTKCore(const smtk::model::EntityRef& core)
@@ -128,7 +128,6 @@ void rggNucCore::resetBySMTKCore(const smtk::model::EntityRef& core)
   if (model.hasIntegerProperty("hex"))
   {
     int isHex = model.integerProperty("hex")[0];
-    std::cout << "  hex=" << isHex << std::endl;
     this->m_lattice.SetGeometryType(
       isHex ? rggGeometryType::HEXAGONAL : rggGeometryType::RECTILINEAR);
   }
@@ -140,7 +139,6 @@ void rggNucCore::resetBySMTKCore(const smtk::model::EntityRef& core)
   if (model.hasIntegerProperty("lattice size") && model.integerProperty("lattice size").size() == 2)
   {
     smtk::model::IntegerList lSize = model.integerProperty("lattice size");
-    std::cout << "  lattice size=" << lSize[0] << " " << lSize[1] << std::endl;
     this->m_lattice.SetDimensions(lSize[0], lSize[1]);
   }
   else

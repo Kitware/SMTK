@@ -42,8 +42,6 @@ smtk::model::OperatorResult Delete::operateInternal()
   EntityRefArray tobeDeleted;
   for (auto ent = entities.begin(); ent != entities.end(); ent++)
   {
-    std::cout << "DELETE: ent name=" << ent->name() << " is instance?" << ent->isInstance()
-              << std::endl;
     if ((!ent->isAuxiliaryGeometry() || !ent->hasStringProperty("rggType")) && !ent->isInstance())
     {
       smtkErrorMacro(this->log(), "Non rgg entities cannot be deleted by "

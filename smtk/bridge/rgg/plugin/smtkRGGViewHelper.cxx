@@ -82,9 +82,6 @@ void radiusItem::setData(int role, const QVariant& value)
       item->setRadius(value.toDouble());
     }
     double vDouble = value.toDouble();
-    std::cout << "at "
-              << "row=" << row << " col=" << column << " back=" << back << " forward=" << forward
-              << std::endl;
     if (back)
     {
       this->checkAndUpdateNeighbour(--row, DIRECTION::BACK, vDouble);
@@ -99,7 +96,6 @@ void radiusItem::setData(int role, const QVariant& value)
 
 void radiusItem::checkAndUpdateNeighbour(const int row, const DIRECTION direction, const double r)
 {
-  std::cout << "checkAndUpdateNeighbour, row=" << row << std::endl;
   QTableWidget* pt = this->tableWidget();
   bool isBack = (direction == DIRECTION::BACK);
   int bound = (isBack ? 0 : (pt->rowCount() - 1));
@@ -157,8 +153,6 @@ void rangeItem::setData(int role, const QVariant& value)
       }
     }
     double dValue = value.toDouble();
-    //     std::cout << "Test value=" <<dValue << " at row=" << row <<
-    //     " col=" << col << " lb=" << lb << " ub=" << ub <<std::endl;
     if (dValue <= lb || dValue >= ub)
     {
       return;
