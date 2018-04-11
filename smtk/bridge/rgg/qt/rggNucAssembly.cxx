@@ -113,24 +113,22 @@ void rggNucAssembly::getRadius(double& ri, double& rj) const
 void rggNucAssembly::resetBySMTKAssembly(const smtk::model::EntityRef& assy)
 {
   this->m_entity = assy;
+  smtk::model::ManagerPtr mgr = assy.manager();
 
   if (assy.hasIntegerProperty("z axis"))
   {
     this->m_zAxisRotation = assy.integerProperty("z axis")[0];
-    std::cout << "  z axis=" << this->m_zAxisRotation << std::endl;
   }
 
   if (assy.hasIntegerProperty("center pins"))
   {
     this->m_centerPins = assy.integerProperty("center pins")[0];
-    std::cout << "  center pins=" << this->m_centerPins << std::endl;
   }
 
   // Update lattice related info
   if (assy.owningModel().hasIntegerProperty("hex"))
   {
     int isHex = assy.owningModel().integerProperty("hex")[0];
-    std::cout << "  hex=" << isHex << std::endl;
     this->m_lattice.SetGeometryType(
       isHex ? rggGeometryType::HEXAGONAL : rggGeometryType::RECTILINEAR);
   }
@@ -143,7 +141,6 @@ void rggNucAssembly::resetBySMTKAssembly(const smtk::model::EntityRef& assy)
   if (assy.hasIntegerProperty("lattice size") && assy.integerProperty("lattice size").size() == 2)
   {
     smtk::model::IntegerList lSize = assy.integerProperty("lattice size");
-    std::cout << "  lattice size=" << lSize[0] << " " << lSize[1] << std::endl;
     this->m_lattice.SetDimensions(lSize[0], lSize[1]);
   }
   else
@@ -151,9 +148,36 @@ void rggNucAssembly::resetBySMTKAssembly(const smtk::model::EntityRef& assy)
     smtkErrorMacro(smtk::io::Logger(), "Assembly does not have a valid lattice"
                                        " size");
   }
-  // TODO: handle pins, ducts and populate the qtLattice
-  // It's needed when rgg file I/O is in place. Ex. Using an assembly with layout
-  // infos to create a new rggNucAssembly
+  // Populate the qtLattice
+  if (assy.hasStringProperty("pins"))
+  {
+    smtk::model::StringList pinIds = assy.stringProperty("pins");
+    for (auto& pinId : pinIds)
+    {
+      smtk::model::EntityRef pin = smtk::model::EntityRef(mgr, pinId);
+      if (!pin.isValid())
+      {
+        smtkErrorMacro(smtk::io::Logger(), "Assembly's pin ID " << pinId << " is not valid");
+        continue;
+      }
+      if (!assy.hasIntegerProperty(pinId))
+      {
+        smtkErrorMacro(
+          smtk::io::Logger(), "Assembly's pin " << pin.name() << " does not have layout info");
+        continue;
+      }
+      smtk::model::IntegerList layout = assy.integerProperty(pinId);
+      size_t numOfPair = layout.size() / 2;
+      for (size_t i = 0; i < numOfPair; i++)
+      {
+        this->m_lattice.SetCell(layout[2 * i], layout[2 * i + 1], pin);
+      }
+    }
+  }
+  else
+  {
+    smtkErrorMacro(smtk::io::Logger(), "Assembly does not have pins associated.");
+  }
 }
 
 void rggNucAssembly::setAssyDuct(smtk::model::EntityRef duct)
