@@ -32,8 +32,8 @@ public:
   bool disassociateAttribute(const smtk::common::UUID& attribId);
   bool isAssociated(const smtk::common::UUID& attribId) const;
 
-  smtk::common::UUIDs& attributes() { return this->m_attributes; }
-  const smtk::common::UUIDs& attributes() const { return this->m_attributes; }
+  smtk::common::UUIDs& attributeIds() { return this->m_attributes; }
+  const smtk::common::UUIDs& attributeIds() const { return this->m_attributes; }
 
 protected:
   smtk::common::UUIDs m_attributes; // IDs of attributes assigned to an entity.

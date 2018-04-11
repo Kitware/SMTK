@@ -46,6 +46,7 @@ py::class_< smtk::model::EntityRef > pybind11_init_smtk_model_EntityRef(py::modu
     .def("adjacentEntities", &smtk::model::EntityRef::adjacentEntities, py::arg("ofDimension"))
     .def("assignDefaultName", &smtk::model::EntityRef::assignDefaultName, py::arg("overwrite") = false)
     .def("associateAttribute", &smtk::model::EntityRef::associateAttribute, py::arg("sys"), py::arg("attribId"))
+    .def("attributeIds", &smtk::model::EntityRef::attributeIds)
     .def("attributes", &smtk::model::EntityRef::attributes)
     .def("bordantEntities", &smtk::model::EntityRef::bordantEntities, py::arg("ofDimension") = -2)
     .def("boundaryEntities", &smtk::model::EntityRef::boundaryEntities, py::arg("ofDimension") = -2)

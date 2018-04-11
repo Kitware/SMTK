@@ -59,6 +59,9 @@ public:
   // By default it is set to the same value as the type.
   const std::string& label() const { return this->m_label; }
 
+  // Returns the label if set else it will return the type
+  const std::string& displayedTypeName() const { return m_label.empty() ? m_type : m_label; }
+
   void setLabel(const std::string& newLabel) { this->m_label = newLabel; }
 
   smtk::attribute::DefinitionPtr baseDefinition() const { return this->m_baseDefinition; }

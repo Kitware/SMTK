@@ -166,7 +166,7 @@ signals:
     const smtk::view::SelectionAction modifierFlag, const std::string& selectionSource);
   void refreshEntityItems();
 
-  friend class qtRootView;
+  friend class qtBaseView;
   friend class qtAssociationWidget;
 
 protected slots:
