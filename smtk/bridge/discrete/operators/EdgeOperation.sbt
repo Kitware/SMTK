@@ -18,10 +18,12 @@
         Tips: Turn off the visibility of entity faces and mesh faces before operate.
 
       </DetailedDescription>
+      <AssociationsDef Name="model" NumberOfRequiredValues="1">
+        <Accepts>
+          <Resource Name="smtk::bridge::discrete::Resource" Filter="model"/>
+        </Accepts>
+      </AssociationsDef>
       <ItemDefinitions>
-        <ModelEntity Name="model" NumberOfRequiredValues="1">
-          <MembershipMask>model</MembershipMask>
-        </ModelEntity>
         <MeshSelection Name="selection" ModelEntityRef="model">
           <MembershipMask>edge|vertex</MembershipMask>
           <BriefDescription>

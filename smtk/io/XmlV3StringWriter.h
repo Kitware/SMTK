@@ -19,6 +19,8 @@
 
 #include "smtk/attribute/Collection.h"
 
+#include <functional>
+
 namespace pugi
 {
 class xml_node;
@@ -50,11 +52,19 @@ protected:
   void processDateTimeDef(pugi::xml_node& node, smtk::attribute::DateTimeItemDefinitionPtr idef);
   void processDateTimeItem(pugi::xml_node& node, smtk::attribute::DateTimeItemPtr item);
 
+  void processReferenceDef(pugi::xml_node& node, smtk::attribute::ReferenceItemDefinitionPtr idef);
+  void processReferenceItem(pugi::xml_node& node, smtk::attribute::ReferenceItemPtr item);
+
   void processResourceDef(pugi::xml_node& node, smtk::attribute::ResourceItemDefinitionPtr idef);
   void processResourceItem(pugi::xml_node& node, smtk::attribute::ResourceItemPtr item);
 
   void processComponentDef(pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef);
   void processComponentItem(pugi::xml_node& node, smtk::attribute::ComponentItemPtr item);
+
+  void processReferenceDefCommon(pugi::xml_node& node,
+    smtk::attribute::ReferenceItemDefinitionPtr idef, const std::string& labelName);
+  void processReferenceItemCommon(pugi::xml_node& node, smtk::attribute::ReferenceItemPtr item,
+    std::function<void(pugi::xml_node&, const smtk::resource::PersistentObjectPtr&)> processValue);
 
 private:
 };

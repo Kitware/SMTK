@@ -81,8 +81,12 @@
     <AttDef Type="result(import from deform)" BaseType="result">
       <ItemDefinitions>
         <!-- The model read from the file. -->
-        <ModelEntity Name="model" NumberOfRequiredValues="1" Extensible="1" MembershipMask="4096"/>
-        <ModelEntity Name="mesh_created" NumberOfRequiredValues="1"/>
+        <Component Name="model" NumberOfRequiredValues="1" Extensible="1">
+          <Accepts><Resource Name="smtk::bridge::multiscale::Session" Filter="model"/></Accepts>
+        </Component>
+        <Component Name="mesh_created" NumberOfRequiredValues="1">
+          <Accepts><Resource Name="smtk::bridge::multiscale::Session" Filter=""/></Accepts>
+        </Component>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

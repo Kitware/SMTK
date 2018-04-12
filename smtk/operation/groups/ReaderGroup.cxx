@@ -9,6 +9,7 @@
 //=========================================================================
 
 #include "smtk/operation/groups/ReaderGroup.h"
+#include "smtk/attribute/Attribute.h"
 
 #include "smtk/operation/Manager.h"
 

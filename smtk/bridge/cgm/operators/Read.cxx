@@ -18,7 +18,6 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/model/Manager.h"
@@ -123,7 +122,7 @@ smtk::operation::OperationResult Read::operateInternal()
   this->addEntitiesToResult(imported, result, CREATED);
 
   // Set name and url property on each top-level output
-  smtk::attribute::ModelEntityItem::Ptr resultModels = result->findModelEntity("created");
+  auto resultModels = result->findComponent("created");
   std::string modelName = filename.substr(0, filename.find_last_of("."));
   std::size_t prefix = modelName.find_last_of("/");
   if (prefix != std::string::npos)

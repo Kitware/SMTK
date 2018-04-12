@@ -16,6 +16,8 @@
 
 #include "smtk/io/XmlDocV2Parser.h"
 
+#include <functional>
+
 namespace smtk
 {
 namespace io
@@ -39,19 +41,33 @@ protected:
   void processDateTimeDef(
     pugi::xml_node& node, smtk::attribute::DateTimeItemDefinitionPtr idef) override;
 
+  virtual void processReferenceItem(
+    pugi::xml_node& node, smtk::attribute::ReferenceItemPtr item) override;
+  virtual void processReferenceDef(pugi::xml_node& node,
+    smtk::attribute::ReferenceItemDefinitionPtr idef,
+    const std::string& labelsElement = "ReferenceLabels") override;
+
+  smtk::resource::PersistentObjectPtr processReferenceItemValue(
+    const pugi::xml_node& val, smtk::resource::ManagerPtr mgr);
+
   void processResourceItem(pugi::xml_node& node, smtk::attribute::ResourceItemPtr item) override;
   void processResourceDef(
     pugi::xml_node& node, smtk::attribute::ResourceItemDefinitionPtr idef) override;
 
-  smtk::resource::ResourcePtr processResourceItemValue(
+  smtk::resource::PersistentObjectPtr processResourceItemValue(
     const pugi::xml_node& val, smtk::resource::ManagerPtr mgr);
 
   void processComponentItem(pugi::xml_node& node, smtk::attribute::ComponentItemPtr item) override;
   void processComponentDef(
     pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef) override;
 
-  smtk::resource::ComponentPtr processComponentItemValue(
+  smtk::resource::PersistentObjectPtr processComponentItemValue(
     const pugi::xml_node& val, smtk::resource::ManagerPtr mgr);
+
+  void processReferenceItemCommon(pugi::xml_node& node, smtk::attribute::ReferenceItemPtr item,
+    std::function<smtk::resource::PersistentObjectPtr(
+      const pugi::xml_node&, smtk::resource::ManagerPtr)>
+      processItemValue);
 
 private:
 };

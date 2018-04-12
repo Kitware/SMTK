@@ -20,7 +20,9 @@
     <AttDef Type="result(create vertex)" BaseType="result">
       <ItemDefinitions>
         <!-- The vertex created. -->
-        <ModelEntity Name="vertex" NumberOfRequiredValues="1" MembershipMask="257"/>
+        <Component Name="vertex" NumberOfRequiredValues="1">
+          <Accepts><Resource Name="smtk::bridge::cgm::Session" Filter="vertex"/></Accepts>
+        </Component>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

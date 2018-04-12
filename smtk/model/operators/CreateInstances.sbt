@@ -68,15 +68,15 @@
             </Structure>
           </DiscreteInfo>
         </String>
-        <ModelEntity Name="snap to entity"
+        <Component Name="snap to entity"
           Optional="true" IsEnabledByDefault="true"
           NumberOfRequiredValues="1" Extensible="true">
-          <MembershipMask>cell|aux_geom</MembershipMask>
+          <Accepts><Resource Name="smtk::model::Manager" Filter="cell|aux_geom"/></Accepts>
           <BriefDescription>
             If enabled, instance placements will be snapped to the nearest
             point on the tessellation of the given entities.
           </BriefDescription>
-        </ModelEntity>
+        </Component>
 
         <!-- TODO: Add support for masking placements -->
       </ItemDefinitions>
@@ -85,7 +85,9 @@
     <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(create instances)" BaseType="result">
       <ItemDefinitions>
-        <ModelEntity Name="tess_changed" NumberOfRequiredValues="0" Extensible="true"/>
+        <Component Name="tess_changed" NumberOfRequiredValues="0" Extensible="true">
+          <Accepts><Resource Name="smtk::model::Manager" Filter=""/></Accepts>
+        </Component>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

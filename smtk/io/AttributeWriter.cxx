@@ -16,7 +16,7 @@
 #include <cassert>
 #include <fstream>
 
-#define DEFAULT_FILE_VERSION 2
+#define DEFAULT_FILE_VERSION 3
 #define MAX_FILE_VERSION 3
 
 namespace smtk

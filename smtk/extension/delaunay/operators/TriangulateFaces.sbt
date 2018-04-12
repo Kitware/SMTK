@@ -30,7 +30,9 @@
     <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(triangulate faces)" BaseType="result">
       <ItemDefinitions>
-        <ModelEntity Name="mesh_created" NumberOfRequiredValues="1" Extensible="true"/>
+        <Component Name="mesh_created" NumberOfRequiredValues="1" Extensible="true">
+          <Accepts><Resource Name="smtk::model::Manager" Filter=""/></Accepts>
+        </Component>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

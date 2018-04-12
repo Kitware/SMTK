@@ -38,7 +38,7 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/bridge/polygon/CreateFaces_xml.h"
@@ -110,8 +110,8 @@ static void DumpEventQueue(const char* msg, SweepEventSet& eventQueue)
   */
 bool CreateFaces::populateEdgeMap()
 {
-  smtk::attribute::ModelEntityItem::Ptr modelItem = this->parameters()->associations();
-  smtk::model::Model model = modelItem->value(0);
+  auto modelItem = this->parameters()->associations();
+  smtk::model::Model model = modelItem->valueAs<smtk::model::Entity>();
   if (!model.isValid())
   {
     smtkErrorMacro(
@@ -136,9 +136,8 @@ bool CreateFaces::populateEdgeMap()
 
 CreateFaces::Result CreateFaces::operateInternal()
 {
-  smtk::attribute::ModelEntityItem::Ptr modelItem = this->parameters()->associations();
-
-  smtk::model::Model model = modelItem->value(0);
+  auto modelItem = this->parameters()->associations();
+  smtk::model::Model model = modelItem->valueAs<smtk::model::Entity>();
 
   m_resource =
     std::static_pointer_cast<smtk::bridge::polygon::Resource>(model.component()->resource());
@@ -392,7 +391,7 @@ void CreateFaces::evaluateLoop(
     if (m_debugLevel > 0)
     {
       std::cout << "Adding " << faceNumber << " as model face "
-                << m_result->findModelEntity("created")->numberOfValues() << "\n";
+                << m_result->findComponent("created")->numberOfValues() << "\n";
     }
     m_regionFaces[faceNumber] = modelFace;
   }

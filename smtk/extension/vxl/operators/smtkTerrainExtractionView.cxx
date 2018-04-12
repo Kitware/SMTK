@@ -19,6 +19,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
@@ -127,8 +128,8 @@ void smtkTerrainExtractionView::attributeModified()
   {
     // Pass in the aux_geom to manager
     smtk::attribute::AttributePtr spec = this->Internals->terrainExtractionOp.lock()->parameters();
-    smtk::attribute::ModelEntityItem::Ptr modelItem = spec->associations();
-    smtk::model::AuxiliaryGeometry aux(modelItem->value(0));
+    auto modelItem = spec->associations();
+    smtk::model::AuxiliaryGeometry aux(modelItem->valueAs<smtk::model::Entity>());
     if (!aux.isValid())
     {
       qCritical() << "No AuxiliaryGeometry is associated with the operator.\n";

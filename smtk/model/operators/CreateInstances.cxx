@@ -34,6 +34,7 @@ using namespace boost::filesystem;
 using namespace smtk::model;
 using smtk::attribute::FileItem;
 using smtk::attribute::StringItem;
+using smtk::resource::PersistentObjectPtr;
 
 namespace smtk
 {
@@ -98,7 +99,9 @@ void CreateInstances::addSnappingConstraints(Instance& instance, const EntityRef
 CreateInstances::Result CreateInstances::operateInternal()
 {
   auto associations = this->parameters()->associations();
-  EntityRefArray prototypes(associations->begin(), associations->end());
+  auto prototypes = associations->as<EntityRefArray>([](PersistentObjectPtr obj) {
+    return smtk::model::EntityRef(std::dynamic_pointer_cast<smtk::model::Entity>(obj));
+  });
 
   std::string rule = this->parameters()->findString("placement rule")->value(0);
 

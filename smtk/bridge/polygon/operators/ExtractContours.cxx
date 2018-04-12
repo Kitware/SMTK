@@ -22,7 +22,6 @@
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/model/AuxiliaryGeometry.h"
@@ -54,8 +53,8 @@ bool ExtractContours::ableToOperate()
     return false;
   }
 
-  smtk::model::AuxiliaryGeometry aux =
-    this->parameters()->associations()->value().as<smtk::model::AuxiliaryGeometry>();
+  smtk::model::AuxiliaryGeometry aux(
+    this->parameters()->associations()->valueAs<smtk::model::Entity>());
   if (!aux.isValid())
   {
     return false;
@@ -108,7 +107,7 @@ ExtractContours::Result ExtractContours::operateInternal()
 {
   // ableToOperate should have verified that aux is valid
   smtk::model::AuxiliaryGeometry aux =
-    this->parameters()->associations()->value().as<smtk::model::AuxiliaryGeometry>();
+    this->parameters()->associations()->valueAs<smtk::model::Entity>();
   smtk::model::Model model = aux.owningModel();
 
   smtk::bridge::polygon::Resource::Ptr resource =

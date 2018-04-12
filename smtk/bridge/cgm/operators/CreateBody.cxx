@@ -19,7 +19,6 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "Body.hpp"
@@ -142,7 +141,7 @@ smtk::operation::OperationResult CreateBody::operateInternal()
     this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmBodies, result, CREATED);
-  result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
+  result->findComponent("expunged")->setValues(expunged.begin(), expunged.end());
 
   return result;
 }

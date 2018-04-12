@@ -15,11 +15,13 @@
 #include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/RefItem.h"
+#include "smtk/attribute/ReferenceItem.h"
+#include "smtk/attribute/ReferenceItemDefinition.h"
 
 #include "smtk/attribute/json/jsonAttribute.h"
 #include "smtk/attribute/json/jsonHelperFunction.h"
 #include "smtk/attribute/json/jsonItem.h"
-#include "smtk/attribute/json/jsonModelEntityItemDefinition.h"
+#include "smtk/attribute/json/jsonReferenceItemDefinition.h"
 
 #include <exception>
 #include <string>
@@ -84,10 +86,10 @@ SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::attribute::Definitio
     j["DefaultColor"] = { rgba[0], rgba[1], rgba[2], rgba[3] };
   }
 
-  if (defPtr->localAssociationRule())
+  auto assocRule = defPtr->localAssociationRule();
+  if (assocRule)
   {
     // Create association element if we need to.
-    smtk::attribute::ModelEntityItemDefinitionPtr assocRule = defPtr->localAssociationRule();
     j["AssociationsDef"] = assocRule;
   }
 
@@ -203,7 +205,7 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
   try
   {
     nlohmann::json associations = j.at("Associations");
-    if (associations.is_null())
+    if (!associations.is_null())
     {
       smtk::model::BitFlags mask = smtk::model::Entity::specifierStringToFlag(associations);
       defPtr->setLocalAssociationMask(mask);
@@ -254,9 +256,7 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
       {
         assocName = defPtr->type() + "Associations";
       }
-      smtk::attribute::ModelEntityItemDefinitionPtr assocRule =
-        smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItemDefinition>(
-          smtk::attribute::ModelEntityItemDefinition::New(assocName));
+      auto assocRule = smtk::attribute::ReferenceItemDefinition::New(assocName);
       smtk::attribute::from_json(associationsDef, assocRule);
       defPtr->setLocalAssociationRule(assocRule);
     }
@@ -391,7 +391,7 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
         return;
       }
 
-      smtk::attribute::from_json(*iter, att, colPtr, itemExpressionInfo, attRefInfo);
+      smtk::attribute::from_json(*iter, att, itemExpressionInfo, attRefInfo);
     }
   }
   // At this point we have all the attributes read in so lets

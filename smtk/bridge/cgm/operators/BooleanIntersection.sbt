@@ -21,8 +21,8 @@
         </DetailedDescription>
       </AssociationsDef>
       <ItemDefinitions>
-        <ModelEntity Name="tool" NumberOfRequiredValues="0" MaximumNumberOfValues="1" Extensible="true" Optional="true">
-          <MembershipMask>model</MembershipMask>
+        <Component Name="tool" NumberOfRequiredValues="0" MaximumNumberOfValues="1" Extensible="true" Optional="true">
+          <Accepts><Resource Name="smtk::bridge::cgm::Session" Filter="model"/></Accepts>
           <BriefDescription>A model to intersect with each of the workpieces in turn.</BriefDescription>
           <DetailedDescription>
             If specificed, the tool is intersected independently with each of the workpieces.
@@ -30,7 +30,7 @@
             Thus, if a tool is specified, there may be multiple output workpieces which
             only partially overlap.
           </DetailedDescription>
-        </ModelEntity>
+        </Component>
         <Int Name="keep inputs" NumberOfRequiredValues="1">
           <DefaultValue>0</DefaultValue>
           <BriefDescription>Should the inputs be copied before intersection?</BriefDescription>

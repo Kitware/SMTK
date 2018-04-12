@@ -11,7 +11,7 @@
 #ifndef __smtk_attribute_ComponentItemDefinition_h
 #define __smtk_attribute_ComponentItemDefinition_h
 
-#include "smtk/attribute/ReferenceItemDefinition.txx"
+#include "smtk/attribute/ReferenceItemDefinition.h"
 
 #include "smtk/resource/Component.h"
 #include "smtk/resource/Resource.h"
@@ -23,12 +23,11 @@ namespace attribute
 
 /**\brief A definition for attribute items that store component UUIDs as values.
   */
-class SMTKCORE_EXPORT ComponentItemDefinition
-  : public ReferenceItemDefinition<smtk::resource::Component>
+class SMTKCORE_EXPORT ComponentItemDefinition : public ReferenceItemDefinition
 {
 public:
   smtkTypeMacro(smtk::attribute::ComponentItemDefinition);
-  smtkSuperclassMacro(ReferenceItemDefinition<smtk::resource::Component>);
+  smtkSuperclassMacro(ReferenceItemDefinition);
 
   static smtk::attribute::ComponentItemDefinitionPtr New(const std::string& sname)
   {
@@ -39,7 +38,7 @@ public:
 
   Item::Type type() const override;
 
-  bool isValueValid(smtk::resource::ComponentPtr value) const override;
+  bool isValueValid(smtk::resource::PersistentObjectPtr value) const override;
 
   /// Construct an item from the definition given its owning attribute and position.
   smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;

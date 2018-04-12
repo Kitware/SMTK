@@ -29,12 +29,12 @@
           </DetailedDescription>
 
           <ChildrenDefinitions>
-            <ModelEntity Name="auxiliary geometry" Label = "Auxiliary Geometry" NumberOfRequiredValues="1">
-              <MembershipMask>aux_geom</MembershipMask>
+            <Component Name="auxiliary geometry" Label = "Auxiliary Geometry" NumberOfRequiredValues="1">
+              <Accepts><Resource Name="smtk::model::Manager" Filter="aux_geom"/></Accepts>
               <BriefDescription>
                 An external data set whose values determine the interpolated values.
               </BriefDescription>
-            </ModelEntity>
+            </Component>
 
             <File Name="ptsfile" Label="Input File" NumberOfValues="1"
                   ShouldExist="true" FileFilters="CSV file (*.csv);;Aux Geom Files (*.tif *.tiff *.dem *.vti *.vtp *.vtu *.vtm *.obj *.ply *.pts *.xyz);; Image files (*.tif *.tiff *.dem);;VTK files (*.vti *.vtp *.vtu *.vtm);;Wavefront OBJ files (*.obj);;Point Cloud Files (*.pts *.xyz);;Stanford Triangle Files (*.ply);;All files (*.*)">
@@ -275,8 +275,10 @@
     <AttDef Type="result(interpolate onto mesh)" BaseType="result">
       <ItemDefinitions>
         <MeshEntity Name="mesh_modified" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>
-        <ModelEntity Name="tess_changed" NumberOfRequiredValues="0"
-                     Extensible="true" AdvanceLevel="11"/>
+        <Component Name="tess_changed" NumberOfRequiredValues="0"
+                     Extensible="true" AdvanceLevel="11">
+          <Accepts><Resource Name="smtk::model::Manager" Filter=""/></Accepts>
+        </Component>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

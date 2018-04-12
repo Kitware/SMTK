@@ -10,6 +10,7 @@
 #include "jsonIntItem.h"
 
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/json/jsonValueItem.h"
 
@@ -33,8 +34,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::IntItemPtr& itemPtr
 }
 
 SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::IntItemPtr& itemPtr,
-  const smtk::attribute::CollectionPtr& colPtr, std::vector<ItemExpressionInfo>& itemExpressionInfo,
-  std::vector<AttRefInfo>& attRefInfo)
+  std::vector<ItemExpressionInfo>& itemExpressionInfo, std::vector<AttRefInfo>& attRefInfo)
 {
   // The caller should make sure that itemPtr is valid since it's not default constructible
   if (!itemPtr.get())
@@ -42,9 +42,9 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::IntItemPtr& itemP
     return;
   }
   auto temp = smtk::dynamic_pointer_cast<ValueItem>(itemPtr);
-  smtk::attribute::from_json(j, temp, colPtr, itemExpressionInfo, attRefInfo);
+  smtk::attribute::from_json(j, temp, itemExpressionInfo, attRefInfo);
   smtk::attribute::processDerivedValueFromJson<smtk::attribute::IntItemPtr, int>(
-    j, itemPtr, colPtr, itemExpressionInfo, attRefInfo);
+    j, itemPtr, itemExpressionInfo, attRefInfo);
 }
 }
 }

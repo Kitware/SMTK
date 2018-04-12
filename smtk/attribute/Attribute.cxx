@@ -32,6 +32,8 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Manager.h"
 
+#include "smtk/resource/Manager.h"
+
 #include "smtk/common/CompilerInformation.h"
 #include "smtk/common/UUIDGenerator.h"
 
@@ -255,7 +257,7 @@ bool Attribute::isValid() const
     }
   }
   // also check associations
-  if (m_associations && !m_associations->isValid())
+  if (m_associatedObjects && !m_associatedObjects->isValid())
   {
     return false;
   }
@@ -297,19 +299,18 @@ smtk::model::ManagerPtr Attribute::modelManager() const
   */
 void Attribute::removeAllAssociations()
 {
-  smtk::model::ManagerPtr modelMgr = this->modelManager();
-  if (modelMgr && m_associations)
+  if (m_associatedObjects)
   {
-    smtk::model::EntityRefArray::const_iterator it;
-    for (it = m_associations->begin(); it != m_associations->end(); ++it)
+    for (auto oit = m_associatedObjects->begin(); oit != m_associatedObjects->end(); ++oit)
     {
-      modelMgr->disassociateAttribute(this->collection(), this->id(), it->entity(), false);
+      auto modelEnt = dynamic_pointer_cast<smtk::model::Entity>(*oit);
+      if (modelEnt)
+      {
+        modelEnt->modelResource()->disassociateAttribute(
+          nullptr, this->id(), modelEnt->id(), false);
+      }
     }
-  }
-
-  if (m_associations)
-  {
-    m_associations->reset();
+    m_associatedObjects->reset();
   }
 }
 
@@ -357,14 +358,14 @@ bool Attribute::removeExpungedEntities(const smtk::model::EntityRefs& expungedEn
   return associationChanged;
 }
 
-bool Attribute::isComponentAssociated(const smtk::common::UUID& entity) const
+bool Attribute::isObjectAssociated(const smtk::common::UUID& entity) const
 {
-  return m_associatedComponents ? m_associatedComponents->has(entity) : false;
+  return m_associatedObjects ? m_associatedObjects->has(entity) : false;
 }
 
-bool Attribute::isComponentAssociated(const smtk::resource::ComponentPtr& comp) const
+bool Attribute::isObjectAssociated(const smtk::resource::PersistentObjectPtr& comp) const
 {
-  return m_associatedComponents ? m_associatedComponents->has(comp) : false;
+  return m_associatedObjects ? m_associatedObjects->has(comp) : false;
 }
 
 /**\brief Is the model \a entity associated with this attribute?
@@ -372,7 +373,7 @@ bool Attribute::isComponentAssociated(const smtk::resource::ComponentPtr& comp) 
   */
 bool Attribute::isEntityAssociated(const smtk::common::UUID& entity) const
 {
-  return m_associations ? m_associations->has(entity) : false;
+  return m_associatedObjects ? m_associatedObjects->has(entity) : false;
 }
 
 /**\brief Is the model entity of the \a entityref associated with this attribute?
@@ -380,7 +381,8 @@ bool Attribute::isEntityAssociated(const smtk::common::UUID& entity) const
   */
 bool Attribute::isEntityAssociated(const smtk::model::EntityRef& entityref) const
 {
-  return m_associations ? m_associations->has(entityref) : false;
+  auto comp = entityref.component();
+  return (comp && m_associatedObjects) ? m_associatedObjects->has(comp) : false;
 }
 
 /**\brief Return the associated model entities as a set of UUIDs.
@@ -389,15 +391,12 @@ bool Attribute::isEntityAssociated(const smtk::model::EntityRef& entityref) cons
 smtk::common::UUIDs Attribute::associatedModelEntityIds() const
 {
   smtk::common::UUIDs result;
-  if (!m_associations)
+  auto assoc = this->associations();
+  if (assoc)
   {
-    return result;
-  }
-
-  smtk::model::EntityRefArray::const_iterator it;
-  for (it = m_associations->begin(); it != m_associations->end(); ++it)
-  {
-    result.insert(it->entity());
+    assoc->as(result, [](smtk::resource::PersistentObjectPtr obj) {
+      return obj ? obj->id() : smtk::common::UUID::null();
+    });
   }
   return result;
 }
@@ -419,16 +418,59 @@ smtk::common::UUIDs Attribute::associatedModelEntityIds() const
  * do not construct valid CellEntity instances.
  */
 
+bool Attribute::associate(smtk::resource::PersistentObjectPtr obj)
+{
+  bool res = this->isObjectAssociated(obj);
+  if (res)
+  {
+    return res;
+  }
+
+  res = m_associatedObjects ? m_associatedObjects->appendObjectValue(obj) : false;
+  if (!res)
+  {
+    return res;
+  }
+
+  auto modelEnt = std::dynamic_pointer_cast<smtk::model::Entity>(obj);
+  if (modelEnt)
+  {
+    res = modelEnt->modelResource()->associateAttribute(nullptr, this->id(), modelEnt->id());
+  }
+  return res;
+}
+
 /**\brief Associate a new-style model ID (a UUID) with this attribute.
   *
   * This function returns true when the association is valid and
-  * successful. It may return false if the association is prohibited.
-  * (This is not currently implemented.)
+  * successful. It will return false if the association is prohibited.
   */
-bool Attribute::associateEntity(const smtk::common::UUID& entity)
+bool Attribute::associateEntity(const smtk::common::UUID& objId)
 {
-  smtk::model::ManagerPtr modelMgr = this->modelManager();
-  return this->associateEntity(smtk::model::EntityRef(modelMgr, entity));
+  std::set<smtk::resource::Resource::Ptr> rsrcs;
+  rsrcs.insert(this->collection()); // We can always look for other attributes.
+
+  // If we have a resource manager, we can also look for components in other resources:
+  auto rsrcMgr = this->collection()->manager();
+  if (rsrcMgr)
+  {
+    rsrcMgr->visit([&rsrcs](smtk::resource::Resource::Ptr rsrc) { rsrcs.insert(rsrc); });
+  }
+
+  // Look for anything with the given UUID:
+  for (auto rsrc : rsrcs)
+  {
+    if (rsrc->id() == objId)
+    {
+      return this->associate(rsrc);
+    }
+    auto comp = rsrc->find(objId);
+    if (comp)
+    {
+      return this->associate(comp);
+    }
+  }
+  return false;
 }
 
 /**\brief Associate a new-style model ID (a EntityRef) with this attribute.
@@ -443,18 +485,15 @@ bool Attribute::associateEntity(const smtk::model::EntityRef& entityRef)
   if (res)
     return res;
 
-  res = (m_associations) ? m_associations->appendValue(entityRef) : false;
+  res =
+    (m_associatedObjects) ? m_associatedObjects->appendObjectValue(entityRef.component()) : false;
   if (!res)
     return res;
 
-  smtk::model::ManagerPtr modelMgr = this->modelManager();
-  if (!modelMgr)
-  {
-    modelMgr = entityRef.manager();
-  }
+  smtk::model::ManagerPtr modelMgr = entityRef.manager();
   if (modelMgr)
   {
-    res = modelMgr->associateAttribute(this->collection(), this->id(), entityRef.entity());
+    res = modelMgr->associateAttribute(nullptr, this->id(), entityRef.entity());
   }
   return res;
 }
@@ -467,15 +506,15 @@ bool Attribute::associateEntity(const smtk::model::EntityRef& entityRef)
   */
 void Attribute::disassociateEntity(const smtk::common::UUID& entity, bool reverse)
 {
-  if (!m_associations)
+  if (!m_associatedObjects)
   {
     return;
   }
 
-  std::ptrdiff_t idx = m_associations->find(entity);
+  std::ptrdiff_t idx = m_associatedObjects->find(entity);
   if (idx >= 0)
   {
-    m_associations->removeValue(idx);
+    m_associatedObjects->removeValue(idx);
     if (reverse)
     {
       smtk::model::ManagerPtr modelMgr = this->modelManager();
@@ -492,15 +531,15 @@ void Attribute::disassociateEntity(const smtk::common::UUID& entity, bool revers
   */
 void Attribute::disassociateEntity(const smtk::model::EntityRef& entity, bool reverse)
 {
-  if (!m_associations)
+  if (!m_associatedObjects)
   {
     return;
   }
 
-  std::ptrdiff_t idx = m_associations->find(entity);
+  std::ptrdiff_t idx = m_associatedObjects->find(entity.entity());
   if (idx >= 0)
   {
-    m_associations->removeValue(idx);
+    m_associatedObjects->removeValue(idx);
     if (reverse)
     {
       smtk::model::EntityRef mutableEntity(entity);
@@ -666,6 +705,15 @@ smtk::attribute::DateTimeItemPtr Attribute::findDateTime(const std::string& name
 smtk::attribute::ConstDateTimeItemPtr Attribute::findDateTime(const std::string& nameStr) const
 {
   return smtk::dynamic_pointer_cast<const DateTimeItem>(this->find(nameStr));
+}
+
+smtk::attribute::ReferenceItemPtr Attribute::findReference(const std::string& nameStr)
+{
+  return smtk::dynamic_pointer_cast<ReferenceItem>(this->find(nameStr));
+}
+smtk::attribute::ConstReferenceItemPtr Attribute::findReference(const std::string& nameStr) const
+{
+  return smtk::dynamic_pointer_cast<const ReferenceItem>(this->find(nameStr));
 }
 
 smtk::attribute::ResourceItemPtr Attribute::findResource(const std::string& nameStr)

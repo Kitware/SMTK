@@ -68,7 +68,7 @@ if __name__ == '__main__':
     if len(att.associatedModelEntityIds()) != 0:
         print("Should not have associated entities.\n")
         status = -1
-    if att.associatedComponents():
+    if att.associatedObjects():
         print("Should not have associated components.\n")
         status = -1
     if att.appliesToBoundaryNodes():

@@ -13,7 +13,6 @@
 #include "smtk/bridge/polygon/Operation.h"
 
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 
 #include "smtk/model/Edge.h"
 
@@ -46,10 +45,10 @@ template <typename T, typename U, typename V, typename W>
 void Operation::pointsForLoop(T& polypts, int numEdgesToUse, U& curEdge, U edgesFinish,
   V& curEdgeDir, V edgeDirFinish, W& outerLoopEdges)
 {
-  auto resource =
-    std::static_pointer_cast<smtk::bridge::polygon::Resource>(curEdge->component()->resource());
+  auto ceent = std::dynamic_pointer_cast<smtk::model::Entity>(*curEdge);
+  auto resource = std::static_pointer_cast<smtk::bridge::polygon::Resource>(ceent->resource());
 
-  smtk::attribute::ModelEntityItem::const_iterator edgesStop = curEdge + numEdgesToUse;
+  auto edgesStop = curEdge + numEdgesToUse;
   smtk::attribute::IntItem::value_type::const_iterator edgeDirStop = curEdgeDir + numEdgesToUse;
   //model::Orientation lastOrient = model::UNKNOWN;
   //model::Edge lastEdge;
@@ -67,13 +66,17 @@ void Operation::pointsForLoop(T& polypts, int numEdgesToUse, U& curEdge, U edges
     { // Don't double-include endpoints.
       polypts.erase(polypts.end() - 1);
     }
-    internal::EdgePtr edgeRec = resource->template findStorage<internal::edge>(curEdge->entity());
+    internal::EdgePtr edgeRec = resource->template findStorage<internal::edge>((*curEdge)->id());
     if (!edgeRec)
     {
-      std::cerr << "Skipping missing edge record " << curEdge->name() << "\n";
+      smtk::model::EntityRef edgeRef(std::dynamic_pointer_cast<smtk::model::Entity>(*curEdge));
+      smtkErrorMacro(
+        smtk::io::Logger::instance(), "Skipping missing edge record " << edgeRef.name());
       continue;
     }
-    outerLoopEdges.push_back(std::make_pair(*curEdge, *curEdgeDir != 0));
+    outerLoopEdges.push_back(
+      std::make_pair(smtk::model::Edge(std::dynamic_pointer_cast<smtk::model::Entity>(*curEdge)),
+        *curEdgeDir != 0));
     if (*curEdgeDir < 0)
     {
       polypts.insert(polypts.end(), edgeRec->pointsRBegin(), edgeRec->pointsREnd());

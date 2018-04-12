@@ -107,7 +107,7 @@ void ComponentPhraseModel::handleCreated(
   //       root phrase if they pass m_componentFilters.
   for (auto it = data->begin(); it != data->end(); ++it)
   {
-    smtk::resource::ComponentPtr comp = *it;
+    auto comp = std::dynamic_pointer_cast<smtk::resource::Component>(*it);
     if (comp == nullptr)
     {
       continue;

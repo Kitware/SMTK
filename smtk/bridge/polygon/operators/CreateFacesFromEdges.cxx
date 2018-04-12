@@ -35,7 +35,6 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/bridge/polygon/CreateFacesFromEdges_xml.h"
@@ -57,7 +56,7 @@ namespace polygon
 
 bool CreateFacesFromEdges::populateEdgeMap()
 {
-  smtk::attribute::ModelEntityItem::Ptr modelItem = this->parameters()->associations();
+  auto modelItem = this->parameters()->associations();
   smtk::model::Model model;
 
   internal::pmodel::Ptr storage; // Look up from session = internal::pmodel::create();
@@ -65,7 +64,7 @@ bool CreateFacesFromEdges::populateEdgeMap()
   // First, collect  edges to process:
   for (int i = 0; i < static_cast<int>(modelItem->numberOfValues()); ++i)
   {
-    smtk::model::Edge edgeIn(modelItem->value(i));
+    smtk::model::Edge edgeIn(modelItem->valueAs<smtk::model::Entity>(i));
     if (edgeIn.isValid())
     {
       if (model.isValid())

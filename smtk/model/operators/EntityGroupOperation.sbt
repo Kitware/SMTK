@@ -13,10 +13,11 @@
 
         If advance level is turned on, user can filter the entities by their cell type then use them to modify the group.
       </DetailedDescription>
+      <AssociationsDef Name="model" NumberOfRequiredValues="1">
+        <BriefDescription>The model which does/will hold the edited/created group.</BriefDescription>
+        <Accepts><Resource Name="smtk::model::Manager" Filter="model"/></Accepts>
+      </AssociationsDef>
       <ItemDefinitions>
-        <ModelEntity Name="model" NumberOfRequiredValues="1">
-          <MembershipMask>model</MembershipMask>
-        </ModelEntity>
         <String Name="Operation" Label="Operation" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
           <BriefDescription>
             The operation determines which action to take on the group: create it, modify its membership, or remove it.
@@ -25,18 +26,18 @@
             The operation determines which action to take on the group: create it, modify its membership, or remove it.
           </DetailedDescription>
           <ChildrenDefinitions>
-            <ModelEntity Name="modify cell group" Label="modify entity group" NumberOfRequiredValues="1">
-              <MembershipMask>group</MembershipMask>
-            </ModelEntity>
-            <ModelEntity Name="remove cell group" Label="remove entity group" Extensible="1" NumberOfRequiredValues="0">
-              <MembershipMask>group</MembershipMask>
-            </ModelEntity>
-            <ModelEntity Name="cell to add" Label="entity to add" NumberOfRequiredValues="0" Extensible="1">
-              <MembershipMask>volume|face|edge</MembershipMask>
-            </ModelEntity>
-            <ModelEntity Name="cell to remove" Label="entity to remove" NumberOfRequiredValues="0" Extensible="1">
-              <MembershipMask>volume|face|edge</MembershipMask>
-            </ModelEntity>
+            <Component Name="modify cell group" Label="modify entity group" NumberOfRequiredValues="1">
+              <Accepts><Resource Name="smtk::model::Manager" Filter="group"/></Accepts>
+            </Component>
+            <Component Name="remove cell group" Label="remove entity group" Extensible="1" NumberOfRequiredValues="0">
+              <Accepts><Resource Name="smtk::model::Manager" Filter="group"/></Accepts>
+            </Component>
+            <Component Name="cell to add" Label="entity to add" NumberOfRequiredValues="0" Extensible="1">
+              <Accepts><Resource Name="smtk::model::Manager" Filter="volume|face|edge|vertex"/></Accepts>
+            </Component>
+            <Component Name="cell to remove" Label="entity to remove" NumberOfRequiredValues="0" Extensible="1">
+              <Accepts><Resource Name="smtk::model::Manager" Filter="volume|face|edge|vertex"/></Accepts>
+            </Component>
             <Void Name="Vertex" Label="Vertex" Version="0" NumberOfRequiredValues="1" Optional="true" AdvanceLevel = "1" Option = "true" IsEnabledByDefault = "true">
               <BriefDescription>Allow vertices to be added to the group.</BriefDescription>
               <DetailedDescription>Allow vertices to be added to the group.</DetailedDescription>

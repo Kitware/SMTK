@@ -51,7 +51,10 @@ TriangulateFaces::TriangulateFaces()
 bool TriangulateFaces::ableToOperate()
 {
   auto associations = this->parameters()->associations();
-  smtk::model::EntityRefArray entities(associations->begin(), associations->end());
+  auto entities =
+    associations->as<smtk::model::EntityRefArray>([](smtk::resource::PersistentObjectPtr obj) {
+      return smtk::model::EntityRef(std::dynamic_pointer_cast<smtk::model::Entity>(obj));
+    });
 
   for (auto& eRef : entities)
   {
@@ -67,7 +70,9 @@ bool TriangulateFaces::ableToOperate()
 TriangulateFaces::Result TriangulateFaces::operateInternal()
 {
   auto associations = this->parameters()->associations();
-  smtk::model::Faces faces(associations->begin(), associations->end());
+  auto faces = associations->as<smtk::model::Faces>([](smtk::resource::PersistentObjectPtr obj) {
+    return smtk::model::Face(std::dynamic_pointer_cast<smtk::model::Entity>(obj));
+  });
 
   bool validatePolygons = this->parameters()->findVoid("validate polygons")->isEnabled();
 
@@ -161,7 +166,7 @@ TriangulateFaces::Result TriangulateFaces::operateInternal()
     // on model entities (rather than entire models).
     smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
     modified->setValue(face.component());
-    result->findModelEntity("mesh_created")->appendValue(face.owningModel());
+    result->findComponent("mesh_created")->appendValue(face.owningModel().component());
   }
 
   return result;

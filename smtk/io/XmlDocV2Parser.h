@@ -42,7 +42,7 @@ protected:
   void processFileDef(pugi::xml_node& node, smtk::attribute::FileItemDefinitionPtr idef) override;
   void processModelInfo(pugi::xml_node& root) override;
   void processModelEntityItem(
-    pugi::xml_node& node, smtk::attribute::ModelEntityItemPtr item) override;
+    pugi::xml_node& node, smtk::attribute::ReferenceItemPtr item) override;
   void processMeshSelectionItem(
     pugi::xml_node& node, attribute::MeshSelectionItemPtr idef) override;
   void processMeshSelectionDef(

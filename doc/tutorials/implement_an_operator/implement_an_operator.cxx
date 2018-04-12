@@ -7,7 +7,6 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 
 #include "smtk/model/DefaultSession.h"
 #include "smtk/model/Group.h"
@@ -41,7 +40,7 @@ OperationResult CounterOperator::operateInternal()
   OperationSpecification params = this->specification();
 
   // Get the input model to be processed:
-  Model model = params->findModelEntity("model")->value();
+  Model model = params->findReference("model")->valueAs<smtk::model::Entity>();
 
   // Decide whether we should count cells or groups
   // of the model:
@@ -87,8 +86,8 @@ void testOperation(Model model)
     smtk::dynamic_pointer_cast<ex::CounterOperation>(session->op("counter"));
 
   op->ensureSpecification();
-  smtk::attribute::ModelEntityItemPtr input = op->specification()->findModelEntity("model");
-  input->setValue(model);
+  smtk::attribute::ReferenceItemPtr input = op->specification()->findReference("model");
+  input->setValue(model.component());
 
   test(!!op, "Could not create operator.");
   test(op->operate()->findInt("count")->value() == 1,

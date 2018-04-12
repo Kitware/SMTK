@@ -17,7 +17,6 @@
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
@@ -199,11 +198,10 @@ ElevateMesh::Result ElevateMesh::operateInternal()
   if (inputDataItem->value() == "auxiliary geometry")
   {
     // Access the external data to use in determining elevation values
-    smtk::attribute::ModelEntityItem::Ptr auxGeoItem =
-      this->parameters()->findModelEntity("auxiliary geometry");
+    auto auxGeoItem = this->parameters()->findComponent("auxiliary geometry");
 
     // Get the auxiliary geometry
-    smtk::model::AuxiliaryGeometry auxGeo = auxGeoItem->value();
+    smtk::model::AuxiliaryGeometry auxGeo = auxGeoItem->valueAs<smtk::model::Entity>();
 
     if (interpolationSchemeItem->value() == "radial average")
     {
@@ -373,7 +371,7 @@ ElevateMesh::Result ElevateMesh::operateInternal()
   smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
 
   // Access the attribute associated with the changed tessellation
-  smtk::attribute::ModelEntityItem::Ptr modifiedEntities = result->findModelEntity("tess_changed");
+  auto modifiedEntities = result->findComponent("tess_changed");
   modifiedEntities->setNumberOfValues(meshItem->numberOfValues());
 
   // apply the interpolator to the meshes and populate the result attributes
@@ -390,8 +388,8 @@ ElevateMesh::Result ElevateMesh::operateInternal()
     if (entitiesAreValid && !entities.empty())
     {
       smtk::model::Model model = entities[0].owningModel();
-      modified->appendValue(model.component());
-      modifiedEntities->appendValue(model);
+      modified->appendObjectValue(model.component());
+      modifiedEntities->appendObjectValue(model.component());
     }
   }
 

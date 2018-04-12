@@ -13,7 +13,7 @@
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ReferenceItem.h"
 
 #include "smtk/bridge/discrete/Resource.h"
 #include "smtk/bridge/discrete/Session.h"
@@ -130,11 +130,11 @@ int main(int argc, char* argv[])
         return 1;
       }
 
-      auto faceToSplit = splitFaceOp->parameters()->findModelEntity("face to split");
+      auto faceToSplit = splitFaceOp->parameters()->associations();
       faceToSplit->setNumberOfValues(1);
-      faceToSplit->setValue(f);
-      splitFaceOp->parameters()->findModelEntity("model")->setValue(
-        *resource->entitiesMatchingFlagsAs<Models>(smtk::model::MODEL_ENTITY).begin());
+      faceToSplit->setObjectValue(f.component());
+      splitFaceOp->parameters()->findComponent("model")->setValue(
+        resource->entitiesMatchingFlagsAs<Models>(smtk::model::MODEL_ENTITY).front().component());
       splitFaceOp->parameters()->findDouble("feature angle")->setValue(15.0);
       smtk::bridge::discrete::SplitFaceOperation::Result result = splitFaceOp->operate();
       std::cout << "  Face is " << f.name() << " (" << f.entity() << ")\n";

@@ -21,7 +21,7 @@
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
@@ -35,6 +35,7 @@ using namespace boost::filesystem;
 using namespace smtk::model;
 using smtk::attribute::FileItem;
 using smtk::attribute::StringItem;
+using smtk::resource::PersistentObjectPtr;
 
 namespace smtk
 {
@@ -44,7 +45,8 @@ namespace model
 AddAuxiliaryGeometry::Result AddAuxiliaryGeometry::operateInternal()
 {
   auto associations = this->parameters()->associations();
-  EntityRefArray entities(associations->begin(), associations->end());
+  auto entities = associations->as<EntityRefArray>(
+    [](PersistentObjectPtr obj) { return EntityRef(std::dynamic_pointer_cast<Entity>(obj)); });
   smtk::attribute::FileItemPtr urlItem = this->parameters()->findFile("url");
   if (entities.empty())
   {
@@ -184,9 +186,9 @@ AddAuxiliaryGeometry::Result AddAuxiliaryGeometry::operateInternal()
 
   if (auxGeom.hasURL())
   {
-    auto tessItem = result->findModelEntity("tess_changed");
+    auto tessItem = result->findComponent("tess_changed");
     tessItem->setNumberOfValues(1);
-    tessItem->setValue(auxGeom);
+    tessItem->setObjectValue(auxGeom.component());
   }
 
   return result;

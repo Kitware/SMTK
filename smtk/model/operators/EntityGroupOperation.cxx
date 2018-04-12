@@ -37,9 +37,9 @@ namespace model
 
 bool EntityGroupOperation::ableToOperate()
 {
-  smtk::model::Model model;
-  bool ableToOperate = (this->Superclass::ableToOperate() &&
-    (model = this->parameters()->findModelEntity("model")->value().as<Model>()).isValid());
+  auto assoc = this->parameters()->associations();
+  smtk::model::Model model = assoc->valueAs<smtk::model::Entity>();
+  bool ableToOperate = (this->Superclass::ableToOperate() && model.isValid());
 
   if (!ableToOperate)
     return ableToOperate;
@@ -47,18 +47,14 @@ bool EntityGroupOperation::ableToOperate()
   std::string optype = this->parameters()->findString("Operation")->value();
   if (optype == "Modify")
   {
-    smtk::attribute::ModelEntityItemPtr modgrpItem =
-      this->parameters()->findModelEntity("modify cell group");
-    smtk::attribute::ModelEntityItemPtr addItem =
-      this->parameters()->findModelEntity("cell to add");
-    smtk::attribute::ModelEntityItemPtr removeItem =
-      this->parameters()->findModelEntity("cell to remove");
+    auto modgrpItem = this->parameters()->findComponent("modify cell group");
+    auto addItem = this->parameters()->findComponent("cell to add");
+    auto removeItem = this->parameters()->findComponent("cell to remove");
     ableToOperate = (modgrpItem->isValid() && (addItem || removeItem));
   }
   else if (optype == "Remove")
   {
-    smtk::attribute::ModelEntityItemPtr remgrpItem =
-      this->parameters()->findModelEntity("remove cell group");
+    auto remgrpItem = this->parameters()->findComponent("remove cell group");
     ableToOperate = (remgrpItem->isValid());
   }
   return ableToOperate;
@@ -67,14 +63,11 @@ bool EntityGroupOperation::ableToOperate()
 EntityGroupOperation::Result EntityGroupOperation::operateInternal()
 {
   // pre processing the data
-  auto modelItem = this->parameters()->findModelEntity("model");
-  smtk::model::Manager::Ptr resource =
-    std::static_pointer_cast<smtk::model::Manager>(modelItem->value().component()->resource());
-  // ableToOperate should have verified that model(s) are set
+  auto modelItem = this->parameters()->associations();
+  smtk::model::Model model = modelItem->valueAs<smtk::model::Entity>();
+  smtk::model::Manager::Ptr resource = model.manager();
   smtk::attribute::StringItem::Ptr optypeItem = this->parameters()->findString("Operation");
   std::string optype = optypeItem->value();
-  smtk::model::Model model =
-    this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
 
   smtk::model::Group bGroup;
   smtk::model::EntityRefArray modGroups;

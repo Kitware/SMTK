@@ -243,7 +243,7 @@ void PhraseModel::handleModified(Operation::Ptr op, Operation::Result res, Compo
     return;
   }
 
-  std::set<smtk::resource::ComponentPtr> modified(data->begin(), data->end());
+  std::set<smtk::resource::PersistentObjectPtr> modified(data->begin(), data->end());
   auto rootPhrase = this->root();
   if (rootPhrase)
   {

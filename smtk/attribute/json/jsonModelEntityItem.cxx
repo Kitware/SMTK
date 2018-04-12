@@ -10,6 +10,7 @@
 #include "jsonModelEntityItem.h"
 
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Collection.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/json/jsonItem.h"
@@ -63,8 +64,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ModelEntityItemPtr&
   j["Values"] = values;
 }
 
-SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ModelEntityItemPtr& itemPtr,
-  smtk::attribute::CollectionPtr colPtr)
+SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ModelEntityItemPtr& itemPtr)
 {
   // The caller should make sure that itemPtr is valid since it's not default constructible
   if (!itemPtr.get())
@@ -76,7 +76,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ModelEntityItemPt
 
   std::size_t n = itemPtr->numberOfValues();
   smtk::common::UUID uid;
-  smtk::model::ManagerPtr mmgr = colPtr->refModelManager();
+  smtk::model::ManagerPtr mmgr = itemPtr->attribute()->collection()->refModelManager();
   std::size_t numRequiredVals = itemPtr->numberOfRequiredValues();
   json values;
   try

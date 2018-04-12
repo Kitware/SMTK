@@ -36,7 +36,7 @@ TerrainExtraction::Result TerrainExtraction::operateInternal()
   }
 
   // Hide the visibilty of input aux_geom
-  EntityRef parent = associations->value();
+  EntityRef parent(associations->valueAs<smtk::model::Entity>());
   parent.setVisible(false);
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 

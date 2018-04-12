@@ -82,6 +82,14 @@ void XmlV3StringWriter::processItemDefinitionType(
       this->processDateTimeDef(node, smtk::dynamic_pointer_cast<DateTimeItemDefinition>(idef));
       break;
 
+    case Item::ReferenceType:
+      this->processReferenceDef(node, std::dynamic_pointer_cast<ReferenceItemDefinition>(idef));
+      break;
+
+    case Item::ResourceType:
+      this->processResourceDef(node, std::dynamic_pointer_cast<ResourceItemDefinition>(idef));
+      break;
+
     case Item::ComponentType:
       this->processComponentDef(node, std::dynamic_pointer_cast<ComponentItemDefinition>(idef));
       break;
@@ -143,6 +151,14 @@ void XmlV3StringWriter::processItemType(xml_node& node, smtk::attribute::ItemPtr
       this->processDateTimeItem(node, smtk::dynamic_pointer_cast<DateTimeItem>(item));
       break;
 
+    case Item::ReferenceType:
+      this->processReferenceItem(node, smtk::dynamic_pointer_cast<ReferenceItem>(item));
+      break;
+
+    case Item::ResourceType:
+      this->processResourceItem(node, smtk::dynamic_pointer_cast<ResourceItem>(item));
+      break;
+
     case Item::ComponentType:
       this->processComponentItem(node, smtk::dynamic_pointer_cast<ComponentItem>(item));
       break;
@@ -196,111 +212,71 @@ void XmlV3StringWriter::processDateTimeItem(pugi::xml_node& node, attribute::Dat
   }
 }
 
+void XmlV3StringWriter::processReferenceDef(
+  pugi::xml_node& node, smtk::attribute::ReferenceItemDefinitionPtr idef)
+{
+  this->processReferenceDefCommon(node, idef, "ReferenceLabels");
+}
+
+void XmlV3StringWriter::processReferenceItem(pugi::xml_node& node, attribute::ReferenceItemPtr item)
+{
+  this->processReferenceItemCommon(
+    node, item, [](pugi::xml_node& val, const smtk::resource::PersistentObjectPtr& obj) {
+      auto compPtr = std::dynamic_pointer_cast<smtk::resource::Component>(obj);
+      auto rsrcPtr = compPtr->resource();
+      if (rsrcPtr)
+      {
+        xml_node rsrc = val.append_child("Resource");
+        rsrc.text().set(rsrcPtr->id().toString().c_str());
+      }
+      xml_node comp = val.append_child("Component");
+      comp.text().set(compPtr->id().toString().c_str());
+    });
+}
+
 void XmlV3StringWriter::processResourceDef(
   pugi::xml_node& node, smtk::attribute::ResourceItemDefinitionPtr idef)
 {
-  auto acceptableEntries = idef->acceptableEntries();
-  xml_node accnode = node.append_child("Accepts");
-  for (auto entry : acceptableEntries)
-  {
-    xml_node rsrcnode = accnode.append_child("Resource");
-    rsrcnode.append_attribute("Name").set_value(entry.first.c_str());
-    if (!entry.second.empty())
-    {
-      rsrcnode.append_attribute("Filter").set_value(entry.second.c_str());
-    }
-  }
-
-  if (idef->lockType() != smtk::resource::LockType::DoNotLock)
-  {
-    node.append_attribute("LockType").set_value(static_cast<unsigned int>(idef->lockType()));
-  }
-
-  node.append_attribute("NumberOfRequiredValues") =
-    static_cast<unsigned int>(idef->numberOfRequiredValues());
-  if (idef->isExtensible())
-  {
-    node.append_attribute("Extensible") = true;
-
-    if (idef->maxNumberOfValues())
-      node.append_attribute("MaxNumberOfValues") =
-        static_cast<unsigned int>(idef->maxNumberOfValues());
-  }
-
-  if (idef->hasValueLabels())
-  {
-    xml_node lnode = node.append_child();
-    lnode.set_name("ResourceLabels");
-    if (idef->usingCommonLabel())
-    {
-      lnode.append_attribute("CommonLabel") = idef->valueLabel(0).c_str();
-    }
-    else
-    {
-      size_t i, n = idef->numberOfRequiredValues();
-      xml_node ln;
-      for (i = 0; i < n; i++)
-      {
-        ln = lnode.append_child();
-        ln.set_name("Label");
-        ln.set_value(idef->valueLabel(i).c_str());
-      }
-    }
-  }
+  this->processReferenceDefCommon(node, idef, "ResourceLabels");
 }
 
 void XmlV3StringWriter::processResourceItem(pugi::xml_node& node, attribute::ResourceItemPtr item)
 {
-  size_t i = 0, n = item->numberOfValues();
-  std::size_t numRequiredVals = item->numberOfRequiredValues();
-  // we should always have "NumberOfValues" set
-  node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
-
-  xml_node val;
-  if (!n)
-  {
-    return;
-  }
-
-  if ((numRequiredVals == 1) && (!item->isExtensible()))
-  {
-    if (item->isSet())
-    {
-      val = node.append_child("Val");
-      auto rsrcPtr = item->value(i);
-      if (rsrcPtr)
+  this->processReferenceItemCommon(
+    node, item, [](pugi::xml_node& val, const smtk::resource::PersistentObjectPtr& obj) {
+      if (obj)
       {
         xml_node rsrc = val.append_child("Resource");
-        rsrc.text().set(rsrcPtr->id().toString().c_str());
+        rsrc.text().set(obj->id().toString().c_str());
       }
-    }
-    return;
-  }
-  xml_node values = node.append_child("Values");
-  for (i = 0; i < n; i++)
-  {
-    if (item->isSet(i))
-    {
-      val = values.append_child("Val");
-      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
-      auto rsrcPtr = item->value(i);
-      if (rsrcPtr)
-      {
-        xml_node rsrc = val.append_child("Resource");
-        rsrc.text().set(rsrcPtr->id().toString().c_str());
-      }
-    }
-    else
-    {
-      val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
-    }
-  }
+    });
 }
 
 void XmlV3StringWriter::processComponentDef(
   pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef)
 {
+  this->processReferenceDefCommon(node, idef, "ComponentLabels");
+}
+
+void XmlV3StringWriter::processComponentItem(pugi::xml_node& node, attribute::ComponentItemPtr item)
+{
+  this->processReferenceItemCommon(
+    node, item, [](pugi::xml_node& val, const smtk::resource::PersistentObjectPtr& obj) {
+      auto compPtr = std::dynamic_pointer_cast<smtk::resource::Component>(obj);
+      auto rsrcPtr = compPtr->resource();
+      if (rsrcPtr)
+      {
+        xml_node rsrc = val.append_child("Resource");
+        rsrc.text().set(rsrcPtr->id().toString().c_str());
+      }
+      xml_node comp = val.append_child("Component");
+      comp.text().set(compPtr->id().toString().c_str());
+    });
+}
+
+void XmlV3StringWriter::processReferenceDefCommon(pugi::xml_node& node,
+  smtk::attribute::ReferenceItemDefinitionPtr idef, const std::string& labelName)
+{
   auto acceptableEntries = idef->acceptableEntries();
   xml_node accnode = node.append_child("Accepts");
   for (auto entry : acceptableEntries)
@@ -332,7 +308,7 @@ void XmlV3StringWriter::processComponentDef(
   if (idef->hasValueLabels())
   {
     xml_node lnode = node.append_child();
-    lnode.set_name("ComponentLabels");
+    lnode.set_name(labelName.c_str());
     if (idef->usingCommonLabel())
     {
       lnode.append_attribute("CommonLabel") = idef->valueLabel(0).c_str();
@@ -351,7 +327,9 @@ void XmlV3StringWriter::processComponentDef(
   }
 }
 
-void XmlV3StringWriter::processComponentItem(pugi::xml_node& node, attribute::ComponentItemPtr item)
+void XmlV3StringWriter::processReferenceItemCommon(pugi::xml_node& node,
+  smtk::attribute::ReferenceItemPtr item,
+  std::function<void(pugi::xml_node&, const smtk::resource::PersistentObjectPtr&)> processValue)
 {
   size_t i = 0, n = item->numberOfValues();
   std::size_t numRequiredVals = item->numberOfRequiredValues();
@@ -369,14 +347,7 @@ void XmlV3StringWriter::processComponentItem(pugi::xml_node& node, attribute::Co
     if (item->isSet())
     {
       val = node.append_child("Val");
-      auto rsrcPtr = item->value(i)->resource();
-      if (rsrcPtr)
-      {
-        xml_node rsrc = val.append_child("Resource");
-        rsrc.text().set(rsrcPtr->id().toString().c_str());
-      }
-      xml_node comp = val.append_child("Component");
-      comp.text().set(item->value(i)->id().toString().c_str());
+      processValue(val, item->objectValue(i));
     }
     return;
   }
@@ -387,14 +358,7 @@ void XmlV3StringWriter::processComponentItem(pugi::xml_node& node, attribute::Co
     {
       val = values.append_child("Val");
       val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
-      auto rsrcPtr = item->value(i)->resource();
-      if (rsrcPtr)
-      {
-        xml_node rsrc = val.append_child("Resource");
-        rsrc.text().set(rsrcPtr->id().toString().c_str());
-      }
-      xml_node comp = val.append_child("Component");
-      comp.text().set(item->value(i)->id().toString().c_str());
+      processValue(val, item->objectValue(i));
     }
     else
     {

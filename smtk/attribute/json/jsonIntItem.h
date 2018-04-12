@@ -30,8 +30,7 @@ namespace attribute
 SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::IntItemPtr& itemPtr);
 
 SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::IntItemPtr& itemPtr,
-  const smtk::attribute::CollectionPtr& colPtr, std::vector<ItemExpressionInfo>& itemExpressionInfo,
-  std::vector<AttRefInfo>& attRefInfo);
+  std::vector<ItemExpressionInfo>& itemExpressionInfo, std::vector<AttRefInfo>& attRefInfo);
 }
 }
 

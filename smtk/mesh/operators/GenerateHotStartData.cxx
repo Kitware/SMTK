@@ -280,7 +280,7 @@ GenerateHotStartData::Result GenerateHotStartData::operateInternal()
   smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
 
   // Access the attribute associated with the changed tessellation
-  smtk::attribute::ModelEntityItem::Ptr modifiedEntities = result->findModelEntity("tess_changed");
+  auto modifiedEntities = result->findComponent("tess_changed");
   modifiedEntities->setNumberOfValues(meshItem->numberOfValues());
 
   std::function<double(std::array<double, 3>)> fn;
@@ -322,7 +322,7 @@ GenerateHotStartData::Result GenerateHotStartData::operateInternal()
     {
       smtk::model::Model model = entities[0].owningModel();
       modified->appendValue(model.component());
-      modifiedEntities->appendValue(model);
+      modifiedEntities->appendValue(model.component());
     }
   }
 

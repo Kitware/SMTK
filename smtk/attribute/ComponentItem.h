@@ -10,7 +10,7 @@
 #ifndef smtk_attribute_ComponentItem_h
 #define smtk_attribute_ComponentItem_h
 
-#include "smtk/attribute/ReferenceItem.txx"
+#include "smtk/attribute/ReferenceItem.h"
 
 #include "smtk/resource/Component.h"
 
@@ -40,11 +40,13 @@ class ComponentItemDefinition;
   * If the entity is not present, the returned ComponentPtr will be null and
   * no type checking of attribute values can be performed.
   */
-class SMTKCORE_EXPORT ComponentItem : public ReferenceItem<smtk::resource::Component>
+class SMTKCORE_EXPORT ComponentItem : public ReferenceItem
 {
 public:
+  using Component = smtk::resource::Component;
+  using ComponentPtr = smtk::resource::ComponentPtr;
   smtkTypeMacro(smtk::attribute::ComponentItem);
-  smtkSuperclassMacro(ReferenceItem<smtk::resource::Component>);
+  smtkSuperclassMacro(ReferenceItem);
 
   /// Destructor
   ~ComponentItem() override;
@@ -52,8 +54,25 @@ public:
   /// Return the type of storage used by the item.
   Item::Type type() const override;
 
+  /// Return the \a i-th value as a component.
+  ComponentPtr value(std::size_t ii = 0) const
+  {
+    return std::dynamic_pointer_cast<Component>(this->objectValue(ii));
+  }
+
+  /// Set the \a i-th value as a component.
+  bool setValue(ComponentPtr value) { return this->setValue(0, value); }
+  /// Set the \a i-th value as a component.
+  bool setValue(std::size_t ii, ComponentPtr value) { return this->setObjectValue(ii, value); }
+
+  /**\brief Append a value to the item if possible.
+    *
+    * This method ensures compile-time type-safety while appendObjectValue() does not.
+    */
+  bool appendValue(ComponentPtr value) { return this->appendObjectValue(value); }
+
   /// Serialize the \a i-th value to a string.
-  std::string valueAsString(std::size_t i) const override;
+  std::string valueAsString(std::size_t ii) const override;
 
 protected:
   friend class ComponentItemDefinition;

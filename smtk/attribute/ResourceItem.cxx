@@ -13,7 +13,9 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Collection.h"
 
-#include "smtk/attribute/ReferenceItem.txx"
+#include "smtk/attribute/ReferenceItem.h"
+
+#include <sstream>
 
 using namespace smtk::attribute;
 
@@ -34,6 +36,16 @@ ResourceItem::~ResourceItem()
 Item::Type ResourceItem::type() const
 {
   return ResourceType;
+}
+
+smtk::resource::ResourcePtr ResourceItem::value(std::size_t ii) const
+{
+  return std::dynamic_pointer_cast<Resource>(this->objectValue(ii));
+}
+
+bool ResourceItem::setValue(std::size_t ii, ResourcePtr value)
+{
+  return this->setObjectValue(ii, value);
 }
 
 std::string ResourceItem::valueAsString(std::size_t i) const

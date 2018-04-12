@@ -72,7 +72,10 @@ Revolve::Result Revolve::operateInternal()
   Result result;
 
   // Grab the datasets associated with the operator
-  smtk::model::Models datasets = this->parameters()->associatedModelEntities<smtk::model::Models>();
+  auto assocs = this->parameters()->associations();
+  auto datasets = assocs->as<smtk::model::Models>([](smtk::resource::PersistentObjectPtr obj) {
+    return smtk::model::Model(std::dynamic_pointer_cast<smtk::model::Entity>(obj));
+  });
   if (datasets.empty())
   {
     smtkErrorMacro(this->log(), "No models to revolve.");
@@ -175,15 +178,15 @@ Revolve::Result Revolve::operateInternal()
 
   result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
-  smtk::attribute::ModelEntityItem::Ptr resultModels = result->findModelEntity("model");
-  resultModels->setValue(model);
+  auto resultModels = result->findComponent("model");
+  resultModels->setValue(model.component());
 
   smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");
   created->setNumberOfValues(1);
   created->setValue(model.component());
   created->setIsEnabled(true);
 
-  result->findModelEntity("mesh_created")->setValue(model);
+  result->findComponent("mesh_created")->setValue(model.component());
 
   return result;
 }

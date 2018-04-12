@@ -55,6 +55,7 @@ public:
     MeshSelectionType,
     MeshEntityType,
     DateTimeType,
+    ReferenceType,
     ResourceType,
     ComponentType,
     NUMBER_OF_TYPES

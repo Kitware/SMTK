@@ -10,6 +10,8 @@
 #include "jsonMeshItem.h"
 
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/json/jsonItem.h"
 #include "smtk/common/UUID.h"
@@ -59,8 +61,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::MeshItemPtr& itemPt
   j["Values"] = values;
 }
 
-SMTKCORE_EXPORT void from_json(
-  const json& j, smtk::attribute::MeshItemPtr& itemPtr, smtk::attribute::CollectionPtr colPtr)
+SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::MeshItemPtr& itemPtr)
 {
   // The caller should make sure that itemPtr is valid since it's not default constructible
   if (!itemPtr.get())
@@ -72,7 +73,7 @@ SMTKCORE_EXPORT void from_json(
 
   std::size_t i(0), n = itemPtr->numberOfValues();
   smtk::common::UUID cid;
-  smtk::model::ManagerPtr modelmgr = colPtr->refModelManager();
+  smtk::model::ManagerPtr modelmgr = itemPtr->attribute()->collection()->refModelManager();
   std::size_t numRequiredVals = itemPtr->numberOfRequiredValues();
   if (!numRequiredVals || itemPtr->isExtensible())
   {

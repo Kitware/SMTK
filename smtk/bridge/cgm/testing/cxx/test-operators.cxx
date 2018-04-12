@@ -22,7 +22,6 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 
 #include "smtk/AutoInit.h"
 
@@ -177,7 +176,7 @@ int main(int argc, char* argv[])
     std::cerr << "Sphere Fail\n";
     return 1;
   }
-  Model sphere = result->findModelEntity("created")->value();
+  Model sphere = result->findComponent("created")->value();
 
   op = brg->op("create prism");
   op->findDouble("height")->setValue(opts.prismHeight());
@@ -190,7 +189,7 @@ int main(int argc, char* argv[])
     std::cerr << "Prism Fail\n";
     return 1;
   }
-  Model prism = result->findModelEntity("created")->value();
+  Model prism = result->findComponent("created")->valueAs<smtk::model::Entity>();
 
   Models operands;
   operands.push_back(sphere);
@@ -212,9 +211,10 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  smtk::attribute::ModelEntityItem::Ptr bodies = result->findModelEntity("modified");
-  std::cout << "Created " << bodies->value().flagSummary() << "\n";
-  std::cout << "   with " << bodies->value().as<Model>().cells().size() << " cells\n";
+  auto bodiesItem = result->findComponent("modified");
+  smtk::model::Model body = bodiesItem->valueAs<smtk::model::Entity>();
+  std::cout << "Created " << body.flagSummary() << "\n";
+  std::cout << "   with " << body.cells().size() << " cells\n";
 
   return 0;
 }

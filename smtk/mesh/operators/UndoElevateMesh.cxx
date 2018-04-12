@@ -68,7 +68,7 @@ UndoElevateMesh::Result UndoElevateMesh::operateInternal()
   smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
 
   // Access the attribute associated with the changed tessellation
-  smtk::attribute::ModelEntityItem::Ptr modifiedEntities = result->findModelEntity("tess_changed");
+  auto modifiedEntities = result->findComponent("tess_changed");
   modifiedEntities->setNumberOfValues(meshItem->numberOfValues());
 
   // apply the interpolator to the meshes and populate the result attributes
@@ -92,7 +92,7 @@ UndoElevateMesh::Result UndoElevateMesh::operateInternal()
     {
       smtk::model::Model model = entities[0].owningModel();
       modified->appendValue(model.component());
-      modifiedEntities->appendValue(model);
+      modifiedEntities->appendValue(model.component());
     }
   }
 

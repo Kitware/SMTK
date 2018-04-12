@@ -134,6 +134,27 @@ public:
     return true;
   }
 
+  bool isCellEntity() const { return smtk::model::isCellEntity(this->entityFlags()); }
+  bool isUseEntity() const { return smtk::model::isUseEntity(this->entityFlags()); }
+  bool isShellEntity() const { return smtk::model::isShellEntity(this->entityFlags()); }
+  bool isGroup() const { return smtk::model::isGroup(this->entityFlags()); }
+  bool isModel() const { return smtk::model::isModel(this->entityFlags()); }
+  bool isInstance() const { return smtk::model::isInstance(this->entityFlags()); }
+  bool isSessionRef() const { return smtk::model::isSessionRef(this->entityFlags()); }
+  bool isAuxiliaryGeometry() const { return smtk::model::isAuxiliaryGeometry(this->entityFlags()); }
+  bool isConcept() const { return smtk::model::isConcept(this->entityFlags()); }
+
+  bool isVertex() const { return smtk::model::isVertex(this->entityFlags()); }
+  bool isEdge() const { return smtk::model::isEdge(this->entityFlags()); }
+  bool isFace() const { return smtk::model::isFace(this->entityFlags()); }
+  bool isVolume() const { return smtk::model::isVolume(this->entityFlags()); }
+  bool isChain() const { return smtk::model::isChain(this->entityFlags()); }
+  bool isLoop() const { return smtk::model::isLoop(this->entityFlags()); }
+  bool isShell() const { return smtk::model::isShell(this->entityFlags()); }
+  bool isVertexUse() const { return smtk::model::isVertexUse(this->entityFlags()); }
+  bool isEdgeUse() const { return smtk::model::isEdgeUse(this->entityFlags()); }
+  bool isFaceUse() const { return smtk::model::isFaceUse(this->entityFlags()); }
+  bool isVolumeUse() const { return smtk::model::isVolumeUse(this->entityFlags()); }
 protected:
   Entity();
   int consumeInvalidIndex(const smtk::common::UUID& uid);

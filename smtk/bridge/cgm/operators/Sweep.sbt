@@ -127,15 +127,15 @@
               </DiscreteInfo>
             </Int>
             <!-- Option 4: curves (sweep path) -->
-            <ModelEntity Name="sweep path" NumberOfRequiredValues="1" Extensible="true">
-              <MembershipMask>edge</MembershipMask>
+            <Component Name="sweep path" NumberOfRequiredValues="1" Extensible="true">
+              <Accepts><Resource Name="smtk::bridge::cgm::Session" Filter="edge"/></Accepts>
               <BriefDescription>The curve along which to sweep the associated entities.</BriefDescription>
               <DetailedDescription>
                 The curve along which to sweep the associated entities.
                 If multiple curves are specified, they should form a single piecewise-continuous curve
                 with shared endpoints.
               </DetailedDescription>
-            </ModelEntity>
+            </Component>
           </ChildrenDefinitions>
           <DiscreteInfo DefaultIndex="0">
             <Structure>

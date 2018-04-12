@@ -39,7 +39,7 @@ protected:
   const char* xmlDescription() const override;
   int fetchCMBFaceId(smtk::bridge::discrete::Resource::Ptr& resource) const;
   int fetchCMBCellId(smtk::bridge::discrete::Resource::Ptr& resource,
-    const smtk::attribute::ModelEntityItemPtr& entItem, int idx) const;
+    const smtk::attribute::ReferenceItemPtr& entItem, int idx) const;
 
   vtkNew<vtkSplitOperation> m_op;
 };

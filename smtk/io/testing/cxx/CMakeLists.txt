@@ -16,6 +16,11 @@ set(ResourceSetWriterTest_ARGUMENTS
   ${SMTK_DATA_DIR}/attribute/attribute_collection/copyAttributeTest.sbi
   writer_output.crf
 )
+set(ResourceSetWriterTest_EXTRA_LIBRARIES
+  smtkEnvironment
+  smtkAttributeEnvironment
+  smtkOperationEnvironment
+)
 
 set(ResourceSetReaderTest_ARGUMENTS
   ${SMTK_DATA_DIR}/attribute/attribute_collection/resourceTest/resources.xml

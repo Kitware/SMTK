@@ -22,7 +22,6 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/bridge/polygon/DemoteVertex_xml.h"
@@ -36,8 +35,8 @@ namespace polygon
 
 DemoteVertex::Result DemoteVertex::operateInternal()
 {
-  smtk::attribute::ModelEntityItem::Ptr vertItem = this->parameters()->associations();
-  smtk::model::Vertex vertexToDemote(vertItem->value(0));
+  auto vertItem = this->parameters()->associations();
+  smtk::model::Vertex vertexToDemote(vertItem->valueAs<smtk::model::Entity>());
 
   if (!vertexToDemote.isValid())
   {

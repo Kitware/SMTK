@@ -73,7 +73,9 @@
     <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(tweak edge)" BaseType="result">
       <ItemDefinitions>
-        <ModelEntity Name="tess_changed" NumberOfRequiredValues="0" Extensible="yes"/>
+        <Component Name="tess_changed" NumberOfRequiredValues="0" Extensible="yes">
+          <Accepts><Resource Name="smtk::bridge::polygon::Session" Filter=""/></Accepts>
+        </Component>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

@@ -99,7 +99,9 @@
           </Accepts>
         </Component>
 
-        <ModelEntity Name="mesh_created" NumberOfRequiredValues="1"/>
+        <Component Name="mesh_created" NumberOfRequiredValues="1">
+          <Accepts><Resource Name="smtk::bridge::discrete::Resource" Filter=""/></Accepts>
+        </Component>
         <Void Name="allow camera reset" IsEnabledByDefault="true" AdvanceLevel="11"/>
       </ItemDefinitions>
     </AttDef>

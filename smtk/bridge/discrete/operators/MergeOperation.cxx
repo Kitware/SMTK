@@ -15,7 +15,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
 #include "smtk/model/CellEntity.h"
@@ -51,7 +51,7 @@ MergeOperation::MergeOperation()
 bool MergeOperation::ableToOperate()
 {
   smtk::model::Model model =
-    this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
+    this->parameters()->findComponent("model")->valueAs<smtk::model::Entity>();
 
   // The SMTK model must be valid
   if (!model.isValid())
@@ -77,8 +77,7 @@ bool MergeOperation::ableToOperate()
     return false;
   }
 
-  smtk::attribute::ModelEntityItemPtr sourceItem =
-    this->parameters()->findModelEntity("source cell");
+  auto sourceItem = this->parameters()->associations();
 
   // The source and target cells should not be the same
   if (sourceItem->numberOfValues() == 1 && srcid == tgtid)
@@ -87,7 +86,7 @@ bool MergeOperation::ableToOperate()
   }
 
   smtk::model::Face tgtFace =
-    this->parameters()->findModelEntity("target cell")->value().as<smtk::model::Face>();
+    this->parameters()->findComponent("target cell")->valueAs<smtk::model::Entity>();
 
   // Currently the discrete kernel can't merge face with edges becasue the
   // operation does not update edge relationships after face-merge
@@ -102,7 +101,7 @@ bool MergeOperation::ableToOperate()
 MergeOperation::Result MergeOperation::operateInternal()
 {
   smtk::model::Model model =
-    this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
+    this->parameters()->findComponent("model")->valueAs<smtk::model::Entity>();
 
   smtk::bridge::discrete::Resource::Ptr resource =
     std::static_pointer_cast<smtk::bridge::discrete::Resource>(model.component()->resource());
@@ -118,8 +117,7 @@ MergeOperation::Result MergeOperation::operateInternal()
 
   bool ok = false;
   // Translate SMTK inputs into CMB inputs
-  smtk::attribute::ModelEntityItemPtr sourceItem =
-    this->parameters()->findModelEntity("source cell");
+  auto sourceItem = this->parameters()->associations();
   for (std::size_t idx = 0; idx < sourceItem->numberOfValues(); idx++)
   {
     int srcid = this->fetchCMBCellId(resource, sourceItem, static_cast<int>(idx));
@@ -130,7 +128,7 @@ MergeOperation::Result MergeOperation::operateInternal()
       ok = m_op->GetOperateSucceeded() != 0;
       if (ok)
       {
-        smtk::model::EntityRef srcEnt = sourceItem->value(idx);
+        smtk::model::EntityRef srcEnt = sourceItem->valueAs<smtk::model::Entity>(idx);
         store->erase(srcEnt.entity());
         srcsRemoved.insert(srcEnt);
       }
@@ -142,7 +140,8 @@ MergeOperation::Result MergeOperation::operateInternal()
 
   if (ok)
   {
-    smtk::model::EntityRef tgtEnt = this->parameters()->findModelEntity("target cell")->value();
+    smtk::model::EntityRef tgtEnt =
+      this->parameters()->findComponent("target cell")->valueAs<smtk::model::Entity>();
     smtk::common::UUID eid = tgtEnt.entity();
     vtkModelItem* origItem = opsession->entityForUUID(eid);
 
@@ -176,8 +175,13 @@ MergeOperation::Result MergeOperation::operateInternal()
 int MergeOperation::fetchCMBCellId(
   smtk::bridge::discrete::Resource::Ptr& resource, const std::string& pname) const
 {
-  vtkModelItem* item = resource->discreteSession()->entityForUUID(
-    const_cast<MergeOperation*>(this)->parameters()->findModelEntity(pname)->value().entity());
+  auto self = const_cast<MergeOperation*>(this);
+  auto refItem = self->parameters()->findReference(pname);
+  if (!refItem && (refItem = self->parameters()->associations())->name() != pname)
+  {
+    return -1;
+  }
+  vtkModelItem* item = resource->discreteSession()->entityForUUID(refItem->objectValue()->id());
 
   vtkModelEntity* cell = dynamic_cast<vtkModelEntity*>(item);
   if (cell)
@@ -187,9 +191,9 @@ int MergeOperation::fetchCMBCellId(
 }
 
 int MergeOperation::fetchCMBCellId(smtk::bridge::discrete::Resource::Ptr& resource,
-  const smtk::attribute::ModelEntityItemPtr& entItem, int idx) const
+  const smtk::attribute::ReferenceItemPtr& entItem, int idx) const
 {
-  vtkModelItem* item = resource->discreteSession()->entityForUUID(entItem->value(idx).entity());
+  vtkModelItem* item = resource->discreteSession()->entityForUUID(entItem->objectValue(idx)->id());
 
   vtkModelEntity* cell = dynamic_cast<vtkModelEntity*>(item);
   if (cell)

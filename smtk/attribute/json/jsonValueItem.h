@@ -34,8 +34,7 @@ namespace attribute
 SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ValueItemPtr& itemPtr);
 
 SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ValueItemPtr& itemPtr,
-  const smtk::attribute::CollectionPtr& colPtr, std::vector<ItemExpressionInfo>& itemExpressionInfo,
-  std::vector<AttRefInfo>& attRefInfo);
+  std::vector<ItemExpressionInfo>& itemExpressionInfo, std::vector<AttRefInfo>& attRefInfo);
 
 /**\ A helper function to process Derived type of valueItem and
    * covert it to json
@@ -103,9 +102,9 @@ static void processDerivedValueToJson(json& j, ItemType itemPtr)
    */
 template <typename ItemType, typename BasicType>
 static void processDerivedValueFromJson(const json& j, ItemType itemPtr,
-  const smtk::attribute::CollectionPtr& colPtr, std::vector<ItemExpressionInfo>& itemExpressionInfo,
-  std::vector<AttRefInfo>& /*attRefInfo*/)
+  std::vector<ItemExpressionInfo>& itemExpressionInfo, std::vector<AttRefInfo>& /*attRefInfo*/)
 {
+  auto colPtr = itemPtr->attribute()->collection();
   if (itemPtr->isDiscrete())
   {
     return;

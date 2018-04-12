@@ -35,6 +35,7 @@ typedef std::vector<UUID> UUIDArray;
 
 namespace resource
 {
+class PersistentObject;
 class Resource;
 class Component;
 class Manager;
@@ -47,10 +48,6 @@ class Attribute;
 class Collection;
 class ComponentItem;
 class ComponentItemDefinition;
-class RefItem;
-class RefItemDefinition;
-class ResourceItem;
-class ResourceItemDefinition;
 class DateTimeItem;
 class DateTimeItemDefinition;
 class Definition;
@@ -74,6 +71,12 @@ class MeshSelectionItem;
 class MeshSelectionItemDefinition;
 class ModelEntityItem;
 class ModelEntityItemDefinition;
+class RefItem;
+class RefItemDefinition;
+class ReferenceItem;
+class ReferenceItemDefinition;
+class ResourceItem;
+class ResourceItemDefinition;
 class StringItem;
 class StringItemDefinition;
 class ValueItem;
@@ -243,6 +246,11 @@ namespace resource
 {
 typedef smtk::shared_ptr<smtk::resource::Manager> ManagerPtr;
 typedef smtk::weak_ptr<smtk::resource::Manager> WeakManagerPtr;
+typedef smtk::shared_ptr<smtk::resource::PersistentObject> PersistentObjectPtr;
+typedef smtk::shared_ptr<const smtk::resource::PersistentObject> ConstPersistentObjectPtr;
+typedef smtk::weak_ptr<smtk::resource::PersistentObject> WeakPersistentObjectPtr;
+typedef std::set<smtk::resource::PersistentObjectPtr> PersistentObjectSet;
+typedef smtk::shared_ptr<smtk::resource::PersistentObject> PersistentObjectPtr;
 typedef smtk::shared_ptr<smtk::resource::Resource> ResourcePtr;
 typedef smtk::shared_ptr<smtk::resource::Component> ComponentPtr;
 typedef std::set<smtk::resource::ComponentPtr> ComponentSet;
@@ -251,6 +259,7 @@ typedef smtk::shared_ptr<smtk::resource::Set> SetPtr;
 typedef smtk::shared_ptr<const smtk::resource::Component> ConstComponentPtr;
 typedef smtk::shared_ptr<const smtk::resource::Resource> ConstResourcePtr;
 typedef smtk::shared_ptr<const smtk::resource::Set> ConstSetPtr;
+typedef std::vector<PersistentObjectPtr> PersistentObjectArray;
 typedef std::vector<ResourcePtr> ResourceArray;
 typedef std::vector<ComponentPtr> ComponentArray;
 typedef std::set<ComponentPtr> ComponentSet;
@@ -372,6 +381,8 @@ typedef smtk::shared_ptr<const smtk::attribute::ModelEntityItemDefinition>
 typedef smtk::shared_ptr<smtk::attribute::ModelEntityItemDefinition> ModelEntityItemDefinitionPtr;
 typedef smtk::shared_ptr<smtk::attribute::VoidItem> VoidItemPtr;
 typedef smtk::shared_ptr<smtk::attribute::VoidItemDefinition> VoidItemDefinitionPtr;
+typedef smtk::shared_ptr<smtk::attribute::ReferenceItem> ReferenceItemPtr;
+typedef smtk::shared_ptr<smtk::attribute::ReferenceItemDefinition> ReferenceItemDefinitionPtr;
 typedef smtk::shared_ptr<smtk::attribute::ResourceItem> ResourceItemPtr;
 typedef smtk::shared_ptr<smtk::attribute::ResourceItemDefinition> ResourceItemDefinitionPtr;
 typedef smtk::shared_ptr<smtk::attribute::ComponentItem> ComponentItemPtr;
@@ -404,6 +415,9 @@ typedef smtk::shared_ptr<const smtk::attribute::MeshSelectionItemDefinition>
 typedef smtk::shared_ptr<const smtk::attribute::ModelEntityItem> ConstModelEntityItemPtr;
 typedef smtk::shared_ptr<const smtk::attribute::ModelEntityItemDefinition>
   ConstModelEntityItemDefinitionPtr;
+typedef smtk::shared_ptr<const smtk::attribute::ReferenceItem> ConstReferenceItemPtr;
+typedef smtk::shared_ptr<const smtk::attribute::ReferenceItemDefinition>
+  ConstReferenceItemDefinitionPtr;
 typedef smtk::shared_ptr<const smtk::attribute::ResourceItem> ConstResourceItemPtr;
 typedef smtk::shared_ptr<const smtk::attribute::ResourceItemDefinition>
   ConstResourceItemDefinitionPtr;

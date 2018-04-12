@@ -21,6 +21,7 @@
 #include "smtk/attribute/json/jsonDoubleItemDefinition.h"
 #include "smtk/attribute/json/jsonModelEntityItemDefinition.h"
 #include "smtk/attribute/json/jsonRefItemDefinition.h"
+#include "smtk/attribute/json/jsonReferenceItemDefinition.h"
 
 #include "smtk/io/Logger.h"
 
@@ -65,6 +66,27 @@ int unitJsonItemDefinitions(int, char** const)
   json meiDefFromJson = meiDef2;
 
   test(meiDefToJson == meiDefFromJson, "Failed to serialize and deserialize ModelEntityItemDef");
+
+  /********************** ReferenceItemDefinition ********************/
+  smtk::attribute::ReferenceItemDefinitionPtr riDef = ReferenceItemDefinition::New("ri-def");
+  smtkTest(!!riDef, "Failed to instantiate ReferenceItemDefinition");
+  smtkTest(riDef->type() == Item::ReferenceType,
+    "Failed to return ReferenceItemDefinition as definition type");
+  riDef->setAcceptsEntries("smtk::model::Manager", "model", true);
+  riDef->setNumberOfRequiredValues(2);
+  riDef->setIsOptional(true);
+  riDef->setIsExtensible(true);
+  riDef->setMaxNumberOfValues(4);
+  riDef->setValueLabel(0, "foo");
+  riDef->setValueLabel(1, "bar");
+
+  json riDefToJson = riDef;
+  std::cout << "\nReferenceItem to_json result:\n" << riDefToJson.dump(2) << "\n\n";
+  smtk::attribute::ReferenceItemDefinitionPtr riDef2 = ReferenceItemDefinition::New("ri-def");
+  smtk::attribute::from_json(riDefToJson, riDef2);
+  json riDefFromJson = riDef2;
+
+  test(riDefToJson == riDefFromJson, "Failed to serialize and deserialize ReferenceItemDef");
 
   /********************** RefItemDefinition ********************/
   smtk::attribute::RefItemDefinitionPtr refDef = RefItemDefinition::New("ref-def");

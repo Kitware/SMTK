@@ -87,7 +87,7 @@ if __name__ == '__main__':
         i = defn.findItemPosition('ConditionalSelectionList')
         item = defn.itemDefinition(i)
         if item:
-            string_item = smtk.attribute.to_concrete(item)
+            string_item = item
 
             list_one = string_item.conditionalItems('One')
             if len(list_one) != 1:

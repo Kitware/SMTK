@@ -16,7 +16,6 @@
 #include "smtk/model/Model.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/bridge/cgm/RemoveModel_xml.h"
 
 #include "Body.hpp"
@@ -56,7 +55,7 @@ smtk::operation::OperationResult RemoveModel::operateInternal()
 
   OperationResult result = this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
 
-  result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
+  result->findComponent("expunged")->setValues(expunged.begin(), expunged.end());
   return result;
 }
 

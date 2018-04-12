@@ -3,6 +3,11 @@ set(environmentSrcs
 )
 
 add_library(smtkOperationEnvironment ${environmentSrcs})
-target_link_libraries(smtkOperationEnvironment PUBLIC smtkCore smtkEnvironment)
+target_link_libraries(smtkOperationEnvironment
+  PUBLIC
+    smtkCore
+    smtkEnvironment
+    smtkAttributeEnvironment
+)
 smtk_export_header(smtkOperationEnvironment Exports.h)
 smtk_install_library(smtkOperationEnvironment)

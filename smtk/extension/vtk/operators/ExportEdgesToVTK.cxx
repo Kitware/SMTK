@@ -22,7 +22,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ReferenceItem.h"
 
 #include "vtkCellArray.h"
 #include "vtkNew.h"
@@ -144,7 +144,9 @@ ExportEdgesToVTK::Result ExportEdgesToVTK::operateInternal()
   smtk::attribute::FileItemPtr filenameItem = this->parameters()->findFile("filename");
 
   auto associations = this->parameters()->associations();
-  Models entities(associations->begin(), associations->end());
+  auto entities = associations->as<Models>([](smtk::resource::PersistentObjectPtr obj) {
+    return smtk::model::Model(std::dynamic_pointer_cast<smtk::model::Entity>(obj));
+  });
   if (entities.empty())
   {
     smtkErrorMacro(this->log(), "No valid models selected for export.");

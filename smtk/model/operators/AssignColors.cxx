@@ -25,6 +25,7 @@
 #include <cstddef> // for size_t
 
 using smtk::attribute::StringItem;
+using smtk::resource::PersistentObjectPtr;
 
 namespace smtk
 {
@@ -62,7 +63,9 @@ AssignColors::Result AssignColors::operateInternal()
   }
 
   auto associations = this->parameters()->associations();
-  EntityRefArray entities(associations->begin(), associations->end());
+  auto entities = associations->as<EntityRefArray>([](PersistentObjectPtr obj) {
+    return smtk::model::EntityRef(std::dynamic_pointer_cast<smtk::model::Entity>(obj));
+  });
   EntityRefArray modified;
   if (numColors > 0)
   {

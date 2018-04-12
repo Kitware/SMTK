@@ -27,30 +27,36 @@ namespace smtk
 namespace attribute
 {
 
-/**\brief A definition for attribute items that store T::Ptr as values.
+/**\brief A definition for attribute items that store smtk::resource::PersistentObjectPtr as values.
   *
-  * Subclasses must implement
+  * Subclasses should implement
   * + the type() method inherited from ItemDefinition;
   * + the buildItem() methods inherited from ItemDefinition;
   * + the createCopy() method inherited from ItemDefinition (making use of this->copyTo());
-  * + the pure virtual isValueValid() method this class declares; and
+  * + the virtual isValueValid() method this class declares; and
   * + a static method that constructs shared pointer to a new instance.
   */
-template <typename T>
-class ReferenceItemDefinition : public ItemDefinition
+class SMTKCORE_EXPORT ReferenceItemDefinition : public ItemDefinition
 {
 public:
+  using PersistentObjectPtr = smtk::resource::PersistentObjectPtr;
   /// Construct an item definition given a name. Names should be unique and non-empty.
-  smtkTypeMacro(ReferenceItemDefinition<T>);
+  smtkTypeMacro(ReferenceItemDefinition);
   smtkSuperclassMacro(ItemDefinition);
+  static ReferenceItemDefinitionPtr New(const std::string& name)
+  {
+    return ReferenceItemDefinitionPtr(new ReferenceItemDefinition(name));
+  }
 
   ~ReferenceItemDefinition() override;
+
+  Item::Type type() const override { return Item::ReferenceType; }
 
   std::multimap<std::string, std::string> acceptableEntries() const { return m_acceptable; }
 
   bool setAcceptsEntries(const std::string& typeName, const std::string& queryString, bool accept);
 
-  virtual bool isValueValid(typename T::Ptr entity) const = 0;
+  virtual bool isValueValid(PersistentObjectPtr entity) const;
 
   /// Return the number of values required by this definition.
   std::size_t numberOfRequiredValues() const;
@@ -80,11 +86,22 @@ public:
   void setLockType(smtk::resource::LockType val) { m_lockType = val; }
   smtk::resource::LockType lockType() const { return m_lockType; }
 
+  smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
+  smtk::attribute::ItemPtr buildItem(Item* owner, int itemPos, int subGroupPosition) const override;
+
+  smtk::attribute::ItemDefinitionPtr createCopy(
+    smtk::attribute::ItemDefinition::CopyInfo& info) const override;
+
 protected:
   ReferenceItemDefinition(const std::string& myName);
 
   /// Overwrite \a dst with a copy of this instance.
   void copyTo(Ptr dst) const;
+
+  /// Return whether a resource is accepted by this definition. Used internally by isValueValid().
+  bool checkResource(smtk::resource::ResourcePtr rsrc) const;
+  /// Return whether a component is accepted by this definition. Used internally by isValueValid().
+  bool checkComponent(smtk::resource::ComponentPtr comp) const;
 
   bool m_useCommonLabel;
   std::vector<std::string> m_valueLabels;

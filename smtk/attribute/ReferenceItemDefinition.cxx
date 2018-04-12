@@ -1,0 +1,344 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
+#ifndef smtk_attribute_ReferenceItemDefinition_txx
+#define smtk_attribute_ReferenceItemDefinition_txx
+
+#include "smtk/attribute/ReferenceItemDefinition.h"
+
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/ReferenceItem.h"
+
+#include "smtk/resource/Container.h"
+#include "smtk/resource/Manager.h"
+#include "smtk/resource/Metadata.h"
+
+#include <cassert>
+
+namespace smtk
+{
+namespace attribute
+{
+
+ReferenceItemDefinition::ReferenceItemDefinition(const std::string& sname)
+  : Superclass(sname)
+{
+  m_numberOfRequiredValues = 1;
+  m_useCommonLabel = false;
+  m_isExtensible = false;
+  m_maxNumberOfValues = 0;
+  m_lockType = smtk::resource::LockType::DoNotLock;
+}
+
+ReferenceItemDefinition::~ReferenceItemDefinition()
+{
+}
+
+bool ReferenceItemDefinition::setAcceptsEntries(
+  const std::string& typeName, const std::string& filter, bool accept)
+{
+  if (accept)
+  {
+    m_acceptable.insert(std::make_pair(typeName, filter));
+    return true;
+  }
+  else
+  {
+    auto range = m_acceptable.equal_range(typeName);
+    auto found = std::find_if(
+      range.first, range.second, [&](decltype(*range.first) it) { return it.second == filter; });
+
+    if (found != m_acceptable.end())
+    {
+      m_acceptable.erase(found);
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+}
+
+bool ReferenceItemDefinition::isValueValid(PersistentObjectPtr entity) const
+{
+  bool ok = false;
+  if (!entity)
+  {
+    return ok;
+  }
+
+  smtk::resource::ResourcePtr rsrc;
+  smtk::resource::ComponentPtr comp;
+  if ((rsrc = std::dynamic_pointer_cast<smtk::resource::Resource>(entity)))
+  {
+    ok = this->checkResource(rsrc);
+  }
+  else if ((comp = std::dynamic_pointer_cast<smtk::resource::Component>(entity)))
+  {
+    ok = this->checkComponent(comp);
+  }
+  return ok;
+}
+
+std::size_t ReferenceItemDefinition::numberOfRequiredValues() const
+{
+  return m_numberOfRequiredValues;
+}
+
+void ReferenceItemDefinition::setNumberOfRequiredValues(std::size_t esize)
+{
+  if (esize == m_numberOfRequiredValues)
+  {
+    return;
+  }
+  m_numberOfRequiredValues = esize;
+  if (!m_useCommonLabel)
+  {
+    m_valueLabels.resize(esize);
+  }
+}
+
+void ReferenceItemDefinition::setMaxNumberOfValues(std::size_t maxNum)
+{
+  m_maxNumberOfValues = maxNum;
+}
+
+bool ReferenceItemDefinition::hasValueLabels() const
+{
+  return !m_valueLabels.empty();
+}
+
+std::string ReferenceItemDefinition::valueLabel(std::size_t i) const
+{
+  if (m_useCommonLabel)
+  {
+    assert(!m_valueLabels.empty());
+    return m_valueLabels[0];
+  }
+  if (m_valueLabels.size())
+  {
+    assert(m_valueLabels.size() > i);
+    return m_valueLabels[i];
+  }
+  return "";
+}
+
+void ReferenceItemDefinition::setValueLabel(std::size_t i, const std::string& elabel)
+{
+  if (m_numberOfRequiredValues == 0)
+  {
+    return;
+  }
+  if (m_valueLabels.size() != m_numberOfRequiredValues)
+  {
+    m_valueLabels.resize(m_numberOfRequiredValues);
+  }
+  m_useCommonLabel = false;
+  m_valueLabels[i] = elabel;
+}
+
+void ReferenceItemDefinition::setCommonValueLabel(const std::string& elabel)
+{
+  m_useCommonLabel = true;
+  m_valueLabels.resize(1);
+  m_valueLabels[0] = elabel;
+}
+
+bool ReferenceItemDefinition::usingCommonLabel() const
+{
+  return m_useCommonLabel;
+}
+
+smtk::attribute::ItemPtr ReferenceItemDefinition::buildItem(
+  Attribute* owningAttribute, int itemPosition) const
+{
+  return smtk::attribute::ItemPtr(new ReferenceItem(owningAttribute, itemPosition));
+}
+
+smtk::attribute::ItemPtr ReferenceItemDefinition::buildItem(
+  Item* owningItem, int itemPosition, int subGroupPosition) const
+{
+  return smtk::attribute::ItemPtr(new ReferenceItem(owningItem, itemPosition, subGroupPosition));
+}
+
+smtk::attribute::ItemDefinitionPtr ReferenceItemDefinition::createCopy(
+  smtk::attribute::ItemDefinition::CopyInfo& info) const
+{
+  (void)info;
+  auto copy = ReferenceItemDefinition::New(this->name());
+  this->copyTo(copy);
+  return copy;
+}
+
+void ReferenceItemDefinition::copyTo(Ptr dest) const
+{
+  if (!dest)
+  {
+    return;
+  }
+
+  Superclass::copyTo(dest);
+
+  dest->setNumberOfRequiredValues(m_numberOfRequiredValues);
+  dest->setMaxNumberOfValues(m_maxNumberOfValues);
+  dest->setIsExtensible(m_isExtensible);
+  for (auto& acceptable : m_acceptable)
+  {
+    dest->setAcceptsEntries(acceptable.first, acceptable.second, true);
+  }
+  if (m_useCommonLabel)
+  {
+    dest->setCommonValueLabel(m_valueLabels[0]);
+  }
+  else if (this->hasValueLabels())
+  {
+    std::size_t ii;
+    for (ii = 0; ii < m_valueLabels.size(); ++ii)
+    {
+      dest->setValueLabel(ii, m_valueLabels[ii]);
+    }
+  }
+}
+
+bool ReferenceItemDefinition::checkResource(smtk::resource::ResourcePtr rsrc) const
+{
+  // If the resource is invalid, then no filtering is needed.
+  if (!rsrc)
+  {
+    return false;
+  }
+
+  // If there are no filter values, then we accept all resources.
+  if (m_acceptable.empty())
+  {
+    return true;
+  }
+
+  // TODO:
+  // Queries to filter resources as acceptable have not been implemented.
+  // See smtk::attribute::ComponentItemDefinition::isValueValid() for
+  // a pattern to follow when implementing this.
+  //
+  // For now all we do is test the resource names in m_acceptable
+  // to see if any are exact matches for rsrc.
+
+  // Search for the resource index in the resource metdata.
+  const smtk::resource::Metadata* metadata = nullptr;
+
+  auto manager = rsrc->manager();
+  if (manager)
+  {
+    auto& container = manager->metadata().get<smtk::resource::IndexTag>();
+    auto metadataIt = container.find(rsrc->index());
+    if (metadataIt != container.end())
+    {
+      metadata = &(*metadataIt);
+    }
+  }
+
+  if (!metadata)
+  {
+    // If we don't have a resource manager, see if the resource type is
+    // listed explicitly. If so, presume that's OK.
+    return m_acceptable.find(rsrc->typeName()) != m_acceptable.end();
+  }
+
+  auto& container = manager->metadata().get<smtk::resource::NameTag>();
+
+  // For every element in the filter map...
+  for (auto& acceptable : m_acceptable)
+  {
+    // ...we access the metadata for that resource type...
+    auto md = container.find(acceptable.first);
+    // ...and ask (a) if our resource is of that type, and (b) if its associated
+    // filter accepts the component.
+    if (md != container.end() && metadata->isOfType(md->index()))
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool ReferenceItemDefinition::checkComponent(smtk::resource::ComponentPtr comp) const
+{
+  // If the component is invalid, then no filtering is needed.
+  if (!comp)
+  {
+    return false;
+  }
+
+  // All components are required to have resources in order to be valid.
+  auto rsrc = comp->resource();
+  if (!rsrc)
+  {
+    return false;
+  }
+
+  // If there are no filter values, then we accept all components.
+  if (m_acceptable.empty())
+  {
+    return true;
+  }
+
+  // Search for the resource index in the resource metdata.
+  const smtk::resource::Metadata* metadata = nullptr;
+
+  auto manager = rsrc->manager();
+  if (manager)
+  {
+    auto& container = manager->metadata().get<smtk::resource::IndexTag>();
+    auto metadataIt = container.find(rsrc->index());
+    if (metadataIt != container.end())
+    {
+      metadata = &(*metadataIt);
+    }
+  }
+
+  if (metadata == nullptr)
+  {
+    // If we can't find the resource's metadata, that's ok. It just means we do
+    // not have the ability to accept derived resources from base resource
+    // indices. We can still check if the resource is explicitly accepted.
+    auto range = m_acceptable.equal_range(rsrc->typeName());
+    for (auto& it = range.first; it != range.second; ++it)
+    {
+      if (rsrc->queryOperation(it->second)(comp))
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // With the resource's metadata, we can resolve queries for derived resources.
+  auto& container = manager->metadata().get<smtk::resource::NameTag>();
+
+  // For every element in the filter map...
+  for (auto& acceptable : m_acceptable)
+  {
+    // ...we access the metadata for that resource type...
+    auto md = container.find(acceptable.first);
+    // ...and ask (a) if our resource is of that type, and (b) if its associated
+    // filter accepts the component.
+    if (md != container.end() && metadata->isOfType(md->index()) &&
+      rsrc->queryOperation(acceptable.second)(comp))
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+}
+}
+#endif

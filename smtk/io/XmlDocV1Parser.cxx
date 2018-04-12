@@ -36,9 +36,11 @@
 #include "smtk/attribute/MeshItemDefinition.h"
 #include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/MeshSelectionItemDefinition.h"
-#include "smtk/attribute/ModelEntityItem.h"
-#include "smtk/attribute/ModelEntityItemDefinition.h"
+//#include "smtk/attribute/ModelEntityItem.h"
+//#include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/ReferenceItem.h"
+#include "smtk/attribute/ReferenceItemDefinition.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/ResourceItemDefinition.h"
 #include "smtk/attribute/StringItem.h"
@@ -737,10 +739,8 @@ void XmlDocV1Parser::processDefinition(xml_node& defNode, smtk::attribute::Defin
     def->setIsNodal(xatt.as_bool());
   }
 
-  // Read old-style association mask first.  Note that the association is set
-  // as extensible.
-  // It will be overwritten if a new-style AssociationsDef
-  // is also provided.
+  // Read oldest association mask format first.  Note that the association is set as extensible.
+  // It will be overwritten if a new-style AssociationsDef is also provided.
   xatt = defNode.attribute("Associations");
   if (xatt)
   {
@@ -782,10 +782,10 @@ void XmlDocV1Parser::processDefinition(xml_node& defNode, smtk::attribute::Defin
     std::string assocName = node.attribute("Name").value();
     if (assocName.empty())
       assocName = def->type() + "Associations";
-    smtk::attribute::ModelEntityItemDefinitionPtr assocDef =
-      smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItemDefinition>(
-        smtk::attribute::ModelEntityItemDefinition::New(assocName));
-    this->processModelEntityDef(node, assocDef);
+    smtk::attribute::ReferenceItemDefinitionPtr assocDef =
+      smtk::dynamic_pointer_cast<smtk::attribute::ReferenceItemDefinition>(
+        smtk::attribute::ReferenceItemDefinition::New(assocName));
+    this->processReferenceDef(node, assocDef);
     def->setLocalAssociationRule(assocDef);
   }
 
@@ -836,9 +836,9 @@ void XmlDocV1Parser::processDefinition(xml_node& defNode, smtk::attribute::Defin
           node, smtk::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(idef));
         break;
       case smtk::attribute::Item::ModelEntityType:
-        idef = def->addItemDefinition<smtk::attribute::ModelEntityItemDefinition>(itemName);
+        idef = def->addItemDefinition<smtk::attribute::ReferenceItemDefinition>(itemName);
         this->processModelEntityDef(
-          node, smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItemDefinition>(idef));
+          node, smtk::dynamic_pointer_cast<smtk::attribute::ReferenceItemDefinition>(idef));
         break;
       case smtk::attribute::Item::VoidType:
         idef = def->addItemDefinition<smtk::attribute::VoidItemDefinition>(itemName);
@@ -858,6 +858,11 @@ void XmlDocV1Parser::processDefinition(xml_node& defNode, smtk::attribute::Defin
         idef = def->addItemDefinition<smtk::attribute::DateTimeItemDefinition>(itemName);
         this->processDateTimeDef(
           node, smtk::dynamic_pointer_cast<smtk::attribute::DateTimeItemDefinition>(idef));
+        break;
+      case smtk::attribute::Item::ReferenceType:
+        idef = def->addItemDefinition<smtk::attribute::ReferenceItemDefinition>(itemName);
+        this->processReferenceDef(
+          node, smtk::dynamic_pointer_cast<smtk::attribute::ReferenceItemDefinition>(idef));
         break;
       case smtk::attribute::Item::ResourceType:
         idef = def->addItemDefinition<smtk::attribute::ResourceItemDefinition>(itemName);
@@ -973,7 +978,7 @@ void XmlDocV1Parser::processStringDef(pugi::xml_node& node, attribute::StringIte
 }
 
 void XmlDocV1Parser::processModelEntityDef(
-  pugi::xml_node& node, attribute::ModelEntityItemDefinitionPtr idef)
+  pugi::xml_node& node, attribute::ReferenceItemDefinitionPtr idef)
 {
   xml_node labels, mmask, child;
   xml_attribute xatt;
@@ -982,7 +987,7 @@ void XmlDocV1Parser::processModelEntityDef(
   mmask = node.child("MembershipMask");
   if (mmask)
   {
-    idef->setMembershipMask(this->decodeModelEntityMask(mmask.text().as_string()));
+    idef->setAcceptsEntries("smtk::model::Manager", mmask.text().as_string(), true);
   }
 
   xatt = node.attribute("NumberOfRequiredValues");
@@ -1049,6 +1054,15 @@ void XmlDocV1Parser::processDateTimeDef(
 {
   (void)node;
   smtkWarningMacro(m_logger, "DateTime item defs only supported starting Attribute Version 3 Format"
+      << idef->name());
+}
+
+void XmlDocV1Parser::processReferenceDef(
+  pugi::xml_node& node, smtk::attribute::ReferenceItemDefinitionPtr idef, const std::string& lbl)
+{
+  (void)node;
+  (void)lbl;
+  smtkWarningMacro(m_logger, "Resource item defs only supported starting Attribute Version 3 Format"
       << idef->name());
 }
 
@@ -1245,11 +1259,10 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
         }
         break;
       case smtk::attribute::Item::ModelEntityType:
-        if ((cidef =
-                idef->addItemDefinition<smtk::attribute::ModelEntityItemDefinition>(citemName)))
+        if ((cidef = idef->addItemDefinition<smtk::attribute::ReferenceItemDefinition>(citemName)))
         {
           this->processModelEntityDef(
-            cinode, smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItemDefinition>(cidef));
+            cinode, smtk::dynamic_pointer_cast<smtk::attribute::ReferenceItemDefinition>(cidef));
         }
         else
         {
@@ -1614,7 +1627,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
           child, smtk::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(idef));
         break;
       case smtk::attribute::Item::ModelEntityType:
-        idef = def->addItemDefinition<smtk::attribute::ModelEntityItemDefinition>(itemName);
+        idef = def->addItemDefinition<smtk::attribute::ReferenceItemDefinition>(itemName);
         if (!idef)
         {
           smtkErrorMacro(m_logger, "Failed to create Model Entity Item definition Type: "
@@ -1622,7 +1635,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
           continue;
         }
         this->processModelEntityDef(
-          child, smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItemDefinition>(idef));
+          child, smtk::dynamic_pointer_cast<smtk::attribute::ReferenceItemDefinition>(idef));
         break;
       case smtk::attribute::Item::VoidType:
         idef = def->addItemDefinition<smtk::attribute::VoidItemDefinition>(itemName);
@@ -1829,21 +1842,17 @@ void XmlDocV1Parser::processAttribute(xml_node& attNode)
   assocsNode = attNode.child("Associations");
   if (assocsNode)
   {
-    smtk::attribute::ModelEntityItem::Ptr assocsItem = att->associations();
-    this->processItem(assocsNode, assocsItem);
-    // Now the ModelEntityItem is deserialized but we need
-    // to let the model manager know about the associations
-    // (assuming we have a model manager):
-    smtk::model::Manager::Ptr mmgr = att->modelManager();
-    if (mmgr)
+    smtk::attribute::ReferenceItem::Ptr assocItem = att->associatedObjects();
+    this->processItem(assocsNode, assocItem);
+    // Now the ReferenceItem is deserialized but we need
+    // to let the referenced objects know about the associations.
+    for (auto it = assocItem->begin(); it != assocItem->end(); ++it)
     {
-      smtk::attribute::ModelEntityItem::const_iterator eit;
-      for (eit = assocsItem->begin(); eit != assocsItem->end(); ++eit)
+      auto mcomp = std::dynamic_pointer_cast<smtk::model::Entity>(*it);
+      auto mmgr = mcomp ? mcomp->modelResource() : smtk::model::ManagerPtr();
+      if (mcomp && mmgr)
       {
-        // Calling associateAttribute() with a NULL attribute collection
-        // prevents the model manager from attempting to add the association
-        // back to the attribute we are currently deserializing:
-        mmgr->associateAttribute(NULL, att->id(), eit->entity());
+        mmgr->associateAttribute(nullptr, att->id(), mcomp->id());
       }
     }
   }
@@ -1908,7 +1917,7 @@ void XmlDocV1Parser::processItem(xml_node& node, smtk::attribute::ItemPtr item)
       break;
     case smtk::attribute::Item::ModelEntityType:
       this->processModelEntityItem(
-        node, smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItem>(item));
+        node, smtk::dynamic_pointer_cast<smtk::attribute::ReferenceItem>(item));
       break;
     case smtk::attribute::Item::MeshSelectionType:
       this->processMeshSelectionItem(
@@ -1921,6 +1930,14 @@ void XmlDocV1Parser::processItem(xml_node& node, smtk::attribute::ItemPtr item)
     case smtk::attribute::Item::DateTimeType:
       this->processDateTimeItem(
         node, smtk::dynamic_pointer_cast<smtk::attribute::DateTimeItem>(item));
+      break;
+    case smtk::attribute::Item::ReferenceType:
+      this->processReferenceItem(
+        node, smtk::dynamic_pointer_cast<smtk::attribute::ReferenceItem>(item));
+      break;
+    case smtk::attribute::Item::ResourceType:
+      this->processResourceItem(
+        node, smtk::dynamic_pointer_cast<smtk::attribute::ResourceItem>(item));
       break;
     case smtk::attribute::Item::ComponentType:
       this->processComponentItem(
@@ -2222,8 +2239,7 @@ void XmlDocV1Parser::processStringItem(pugi::xml_node& node, attribute::StringIt
     node, item, m_collection, m_itemExpressionInfo, m_logger);
 }
 
-void XmlDocV1Parser::processModelEntityItem(
-  pugi::xml_node& node, attribute::ModelEntityItemPtr item)
+void XmlDocV1Parser::processModelEntityItem(pugi::xml_node& node, attribute::ReferenceItemPtr item)
 {
   (void)node;
   smtkWarningMacro(m_logger, "All Model Entity Items will be ignored for Attribute Version 1 Format"
@@ -2251,6 +2267,14 @@ void XmlDocV1Parser::processDateTimeItem(pugi::xml_node& node, attribute::DateTi
   (void)node;
   smtkWarningMacro(
     m_logger, "DateTime items only supported starting Attribute Version 3 Format" << item->name());
+}
+
+void XmlDocV1Parser::processReferenceItem(
+  pugi::xml_node& node, smtk::attribute::ReferenceItemPtr item)
+{
+  (void)node;
+  smtkWarningMacro(
+    m_logger, "Reference items only supported starting Attribute Version 3 Format" << item->name());
 }
 
 void XmlDocV1Parser::processResourceItem(pugi::xml_node& node, attribute::ResourceItemPtr item)

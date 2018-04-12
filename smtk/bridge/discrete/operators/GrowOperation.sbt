@@ -27,10 +27,12 @@
         using the input selection(feature angle would be ignored and no grow operation would happen. It
         works as purely arithematic).
       </DetailedDescription>
+      <AssociationsDef Name="model" NumberOfRequiredValues="1">
+        <Accepts>
+          <Resource Name="smtk::bridge::discrete::Resource" Filter="model"/>
+        </Accepts>
+      </AssociationsDef>
       <ItemDefinitions>
-        <ModelEntity Name="model" NumberOfRequiredValues="1">
-          <MembershipMask>model</MembershipMask>
-        </ModelEntity>
         <MeshSelection Name="selection" ModelEntityRef="model">
           <MembershipMask>face</MembershipMask>
         </MeshSelection>

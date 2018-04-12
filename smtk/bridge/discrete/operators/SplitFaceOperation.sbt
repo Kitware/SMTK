@@ -17,13 +17,13 @@
         user then would the face be split.
 
       </DetailedDescription>
+      <AssociationsDef Name="face to split" NumberOfRequiredValues="0" Extensible="1">
+        <Accepts><Resource Name="smtk::bridge::discrete::Resource" Filter="face"/></Accepts>
+      </AssociationsDef>
       <ItemDefinitions>
-        <ModelEntity Name="model" NumberOfRequiredValues="1">
-          <MembershipMask>model</MembershipMask>
-        </ModelEntity>
-        <ModelEntity Name="face to split" NumberOfRequiredValues="0" Extensible="1">
-        <MembershipMask>face</MembershipMask>
-        </ModelEntity>
+        <Component Name="model" NumberOfRequiredValues="1">
+          <Accepts><Resource Name="smtk::bridge::discrete::Resource" Filter="model"/></Accepts>
+        </Component>
         <Double Name="feature angle" NumberOfRequiredValues="1">
           <DefaultValue>15.0</DefaultValue>
           <RangeInfo>

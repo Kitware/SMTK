@@ -6,14 +6,9 @@
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="write" BaseType="operation" Label="Model - Write">
       <AssociationsDef Name="Model" NumberOfRequiredValues="1">
-        <MembershipMask>model</MembershipMask>
+        <Accepts><Resource Name="smtk::bridge::discrete::Resource" Filter="model"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>
-<!--
-        <ModelEntity Name="model" NumberOfRequiredValues="1">
-          <MembershipMask>model</MembershipMask>
-        </ModelEntity>
--->
         <File Name="filename" NumberOfRequiredValues="1"
           ShouldExist="false"
           FileFilters="Conceptual Model Builder (*.cmb)">

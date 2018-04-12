@@ -21,6 +21,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h" // For smtkTypeMacroBase.
 
+#include "smtk/attribute/ReferenceItemDefinition.h"
 #include "smtk/attribute/Tag.h"
 
 #include "smtk/model/EntityRef.h"      //for EntityRef version of canBeAssociated
@@ -157,17 +158,28 @@ public:
   // By unsetting the color it is now inherited from the def's base definition
   void unsetDefaultColor() { m_isDefaultColorSet = false; }
   bool isDefaultColorSet() const { return m_isDefaultColorSet; }
-  // return the asscoiationRule that the definition will use when creating
-  // the attribute - Note that if the definition does not have a local
-  //association rule specified, its base definition  will be returned.  If the
-  // definition does not have a base definition then a local one is created
-  ConstModelEntityItemDefinitionPtr associationRule() const;
+
+  /**\brief Return the definition's rule that governs attribute associations.
+    *
+    * A ReferenceItemDefinition is used to store information about
+    * the allowable associations that may be made between attributes
+    * specified by this definition and model entities.
+    *
+    * The definition's list of acceptable resources/components
+    * serves as a mask for allowable associations while the definition's
+    * minimum and maximum number of associations can be used to indicate whether
+    * an association is required, optional, and/or extensible.
+    *
+    * A Definition can inherit the association rule from its Base Definition
+    * when it does not have a local association rule specified.
+    */
+  ConstReferenceItemDefinitionPtr associationRule() const;
   // sets an association rule that overides the base definition rule
-  ModelEntityItemDefinitionPtr localAssociationRule() const;
+  ReferenceItemDefinitionPtr localAssociationRule() const;
   // Create a new local association rule (if needed) and returns it
-  ModelEntityItemDefinitionPtr createLocalAssociationRule();
+  ReferenceItemDefinitionPtr createLocalAssociationRule();
   // Local the local Assoicate Rule for the definition
-  virtual void setLocalAssociationRule(ModelEntityItemDefinitionPtr);
+  virtual void setLocalAssociationRule(ReferenceItemDefinitionPtr);
   // Returns the association mask used by the definition for model association
   //Note that this may come from the base definition if there is no local
   //association rule
@@ -295,7 +307,7 @@ protected:
   bool m_isRequired;
   bool m_isNotApplicableColorSet;
   bool m_isDefaultColorSet;
-  smtk::attribute::ModelEntityItemDefinitionPtr m_associationRule;
+  smtk::attribute::ReferenceItemDefinitionPtr m_acceptsRules;
 
   std::string m_detailedDescription;
   std::string m_briefDescription;

@@ -23,7 +23,6 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/bridge/polygon/CleanGeometry_xml.h"
@@ -636,12 +635,14 @@ bool CleanGeometry::deleteIfDuplicates(T& edgePair, U& modified, U& expunged)
   */
 CleanGeometry::Result CleanGeometry::operateInternal()
 {
-  smtk::attribute::ModelEntityItem::Ptr cleanItems = this->parameters()->associations();
-  smtk::model::CellSet inputs(cleanItems->begin(), cleanItems->end());
+  auto cleanItems = this->parameters()->associations();
+  auto inputs = cleanItems->as<smtk::model::CellSet>([](smtk::resource::PersistentObjectPtr obj) {
+    return smtk::model::CellEntity(std::dynamic_pointer_cast<smtk::model::Entity>(obj));
+  });
 
   smtk::bridge::polygon::Resource::Ptr resource =
     std::static_pointer_cast<smtk::bridge::polygon::Resource>(
-      cleanItems->begin()->component()->resource());
+      cleanItems->valueAs<smtk::model::Entity>()->resource());
   if (!resource)
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
 

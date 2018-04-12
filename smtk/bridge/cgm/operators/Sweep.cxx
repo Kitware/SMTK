@@ -23,7 +23,6 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "Body.hpp"
@@ -45,7 +44,6 @@
 #include "smtk/bridge/cgm/Sweep_xml.h"
 
 using namespace smtk::model;
-using smtk::attribute::ModelEntityItemPtr;
 
 namespace smtk
 {
@@ -67,7 +65,7 @@ smtk::operation::OperationResult Sweep::operateInternal()
     *this->specification()->associations().get(), cgmThingsToSweep, keepInputs, expunged);
   if (sweepOp == 3) // sweep along curve
     ok &= this->cgmEntities(
-      *this->findModelEntity("sweep path").get(), cgmSweepPath, keepInputs, expunged);
+      *this->findComponent("sweep path").get(), cgmSweepPath, keepInputs, expunged);
 
   if (!ok)
     return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
@@ -179,7 +177,9 @@ smtk::operation::OperationResult Sweep::operateInternal()
     this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmResults, result, CREATED);
-  result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
+  result->findComponent("expunged")
+    ->setValuesVia(expunged.begin(),
+      expunged.end()[](const smtk::model::EntityRef& ent) { return ent.component(); });
 
   return result;
 }

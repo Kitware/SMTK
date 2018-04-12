@@ -14,17 +14,19 @@
         Switch to Topolygy view first then hit apply button. Otherwise edges and vertices
         would not be created properly.
       </DetailedDescription>
-      <ItemDefinitions>
-        <ModelEntity Name="model" NumberOfRequiredValues="1">
-          <MembershipMask>model</MembershipMask>
-        </ModelEntity>
-      </ItemDefinitions>
+      <AssociationsDef NumberOfRequiredValues="1">
+        <Accepts>
+          <Resource Name="smtk::bridge::discrete::Resource" Filter="model"/>
+        </Accepts>
+      </AssociationsDef>
     </AttDef>
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(create edges)" BaseType="result">
       <ItemDefinitions>
-        <ModelEntity Name="tess_changed" NumberOfRequiredValues="1"/>
+        <Component Name="tess_changed" NumberOfRequiredValues="1">
+          <Accepts><Resource Name="smtk::bridge::discrete::Resource" Filter=""/></Accepts>
+        </Component>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

@@ -21,7 +21,6 @@
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/bridge/polygon/CreateVertices_xml.h"
@@ -46,12 +45,11 @@ CreateVertices::Result CreateVertices::operateInternal()
   {
     pointsInfo = this->parameters()->findGroup("3d points");
   }
-  smtk::attribute::ModelEntityItem::Ptr modelItem = this->parameters()->associations();
+  auto modelItem = this->parameters()->associations();
+  auto ment = modelItem->valueAs<smtk::model::Entity>();
+  smtk::model::Model model(ment);
 
-  smtk::model::Model model = modelItem->value(0);
-
-  smtk::bridge::polygon::Resource::Ptr resource =
-    std::static_pointer_cast<smtk::bridge::polygon::Resource>(model.component()->resource());
+  auto resource = std::dynamic_pointer_cast<smtk::bridge::polygon::Resource>(ment->resource());
 
   Result result;
   if (resource)

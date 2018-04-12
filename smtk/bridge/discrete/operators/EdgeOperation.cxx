@@ -18,7 +18,6 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/MeshSelectionItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
 #include "smtk/mesh/core/Collection.h"
@@ -109,8 +108,7 @@ EdgeOperation::EdgeOperation()
 
 bool EdgeOperation::ableToOperate()
 {
-  smtk::model::Model model =
-    this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
+  smtk::model::Model model = this->parameters()->associations()->valueAs<smtk::model::Entity>();
 
   // The SMTK model must be valid
   if (!model.isValid())
@@ -239,8 +237,7 @@ void EdgeOperation::getSelectedVertsAndEdges(smtk::bridge::discrete::Resource::P
 
 EdgeOperation::Result EdgeOperation::operateInternal()
 {
-  smtk::model::Model model =
-    this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
+  smtk::model::Model model = this->parameters()->associations()->valueAs<smtk::model::Entity>();
 
   smtk::bridge::discrete::Resource::Ptr resource =
     std::static_pointer_cast<smtk::bridge::discrete::Resource>(model.component()->resource());
@@ -358,8 +355,7 @@ bool EdgeOperation::splitSelectedEdgeNodes(
   {
     return false;
   }
-  smtk::model::Model model =
-    this->parameters()->findModelEntity("model")->value().as<smtk::model::Model>();
+  smtk::model::Model model = this->parameters()->associations()->valueAs<smtk::model::Entity>();
 
   smtk::bridge::discrete::Resource::Ptr resource =
     std::static_pointer_cast<smtk::bridge::discrete::Resource>(model.component()->resource());

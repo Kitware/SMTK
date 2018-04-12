@@ -49,7 +49,9 @@
     <AttDef Type="result(add image)" BaseType="result">
       <ItemDefinitions>
         <!-- The modified entities are stored in the base result's "modified" item. -->
-        <ModelEntity Name="tess_changed" NumberOfRequiredValues="1"/>
+        <Component Name="tess_changed" NumberOfRequiredValues="1">
+          <Accepts><Resource Name="smtk::model::Manager" Filter=""/></Accepts>
+        </Component>
         <Void Name="allow camera reset" IsEnabledByDefault="true" AdvanceLevel="11"/>
       </ItemDefinitions>
     </AttDef>

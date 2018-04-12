@@ -60,14 +60,15 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::RefItemPtr& itemPtr
   j["Values"] = values;
 }
 
-SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::RefItemPtr& itemPtr,
-  const CollectionPtr& colPtr, std::vector<AttRefInfo>& attRefInfos)
+SMTKCORE_EXPORT void from_json(
+  const json& j, smtk::attribute::RefItemPtr& itemPtr, std::vector<AttRefInfo>& attRefInfos)
 {
   // The caller should make sure that itemPtr is valid since it's not default constructible
   if (!itemPtr.get())
   {
     return;
   }
+  auto colPtr = itemPtr->attribute()->collection();
   auto temp = smtk::dynamic_pointer_cast<Item>(itemPtr);
   smtk::attribute::from_json(j, temp);
 

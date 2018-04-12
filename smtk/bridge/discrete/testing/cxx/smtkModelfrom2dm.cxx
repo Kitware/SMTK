@@ -305,7 +305,7 @@ int main(int argc, char* argv[])
     // edge op
     smtk::bridge::discrete::EdgeOperation::Ptr edgeop =
       smtk::bridge::discrete::EdgeOperation::create();
-    edgeop->parameters()->findModelEntity("model")->setValue(smtkmodel2dm);
+    edgeop->parameters()->associations()->setObjectValue(smtkmodel2dm.component());
 
     typedef std::vector<Edge> Edges;
 

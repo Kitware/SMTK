@@ -14,7 +14,8 @@
 #include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
-#include "smtk/attribute/ModelEntityItemDefinition.h"
+#include "smtk/attribute/ReferenceItem.h"
+#include "smtk/attribute/ReferenceItemDefinition.h"
 
 #include <algorithm>
 #include <cassert>
@@ -153,78 +154,52 @@ bool Definition::conflicts(smtk::attribute::DefinitionPtr def) const
   return def->isA(baseDef);
 }
 
-/**\brief Return the definition's rule that governs attribute associations.
-  *
-  * A ModelEntityItemDefinition is used to store information about
-  * the allowable associations that may be made between attributes
-  * specified by this definition and model entities.
-  *
-  * The definition's membershipMask() serves as a mask for
-  * allowable associations while the definition's minimum and
-  * maximum number of associations can be used to indicate whether
-  * an association is required, optional, and/or extensible.
-  *
-  * A Definition can inherit the association rule from its Base Definition
-  * when it does not have a local association rule specified.  If the
-  * Definition has no local association rule or Base Definition then a local
-  * association rule is created that by default associates with no model entities
-  */
-ConstModelEntityItemDefinitionPtr Definition::associationRule() const
+ConstReferenceItemDefinitionPtr Definition::associationRule() const
 {
-  if (!m_associationRule)
+  if (!m_acceptsRules)
   {
     if (m_baseDefinition)
     {
       return m_baseDefinition->associationRule();
     }
-    std::ostringstream assocName;
-    assocName << this->type() << "Associations";
-    // We pretend to be const because allocating this object should have
-    // no side effect (the newly-allocated definition's defaults should
-    // match values returned in its absence).
-    Definition* self = const_cast<Definition*>(this);
-    self->m_associationRule = ModelEntityItemDefinition::New(assocName.str());
-    self->m_associationRule->setMembershipMask(0); // nothing allowed by default.
   }
-  return m_associationRule;
+  return m_acceptsRules;
 }
 
 /**\brief Create the definition's local association rule that governs attribute associations.
   *
   * A Definition's local asscoation rule overrides the rule it inherits from its Base Definition.
-  * This creates a local association rule (if one does not already exists) and returns it.
+  * This creates a local association rule (if one does not already exist) and returns it.
   */
-ModelEntityItemDefinitionPtr Definition::createLocalAssociationRule()
+ReferenceItemDefinitionPtr Definition::createLocalAssociationRule()
 {
-  if (!m_associationRule)
+  if (!m_acceptsRules)
   {
     std::ostringstream assocName;
     assocName << this->type() << "Associations";
-    m_associationRule = ModelEntityItemDefinition::New(assocName.str());
-    m_associationRule->setMembershipMask(0); // nothing allowed by default.
+    m_acceptsRules = ReferenceItemDefinition::New(assocName.str());
   }
-  return m_associationRule;
+  return m_acceptsRules;
 }
 
 /**\brief Return the definition's local association rule that governs attribute associations.
   *
-  * A Definition's local asscoation rule overrides the rule it inherits from its Base Definition.
-  * Unlike the associationRule() method, this method can return a nullptr.  Note that the
-  * ModelEntityDefinition returned is not constant.  Modifying it will change the Definition's
-  * association behavior.
+  * A Definition's local association rule overrides the rule it inherits from its Base Definition.
+  * This method can return a nullptr.  Note that the ReferenceDefinition returned is not constant.
+  * Modifying it will change the Definition's association behavior.
   */
-ModelEntityItemDefinitionPtr Definition::localAssociationRule() const
+ReferenceItemDefinitionPtr Definition::localAssociationRule() const
 {
-  return m_associationRule;
+  return m_acceptsRules;
 }
 
 /**\brief Set the rule that decides which model entities may be associated with instances of this definition.
   *
   * This will override the association rule the definition inherits from the Definition's Base Definiiton.
   */
-void Definition::setLocalAssociationRule(ModelEntityItemDefinitionPtr rule)
+void Definition::setLocalAssociationRule(ReferenceItemDefinitionPtr rule)
 {
-  m_associationRule = rule;
+  m_acceptsRules = rule;
 }
 
 /**\brief Return the mask specifying which types of model entities this attribute can be associated with.
@@ -234,7 +209,22 @@ void Definition::setLocalAssociationRule(ModelEntityItemDefinitionPtr rule)
   */
 smtk::model::BitFlags Definition::associationMask() const
 {
-  return this->associationRule()->membershipMask();
+  smtk::model::BitFlags result = 0;
+  auto accepts = this->associationRule();
+  if (accepts)
+  {
+    const auto entries = accepts->acceptableEntries();
+    for (auto entry : entries)
+    {
+      // FIXME: Handle "derived" types like smtk::bridge::polygon::Resource
+      if (entry.first == "smtk::model::Manager")
+      {
+        smtk::model::BitFlags tmp = smtk::model::Entity::specifierStringToFlag(entry.second);
+        result |= tmp;
+      }
+    }
+  }
+  return result;
 }
 
 /**\brief Set the mask specifying which types of model entities this attribute can be associated with.
@@ -244,11 +234,10 @@ smtk::model::BitFlags Definition::associationMask() const
   */
 void Definition::setLocalAssociationMask(smtk::model::BitFlags mask)
 {
-  if (!m_associationRule)
-  {
-    this->createLocalAssociationRule();
-  }
-  m_associationRule->setMembershipMask(mask);
+  // FIXME: Restrict mask to be narrowing of base definition's rule?
+  auto localRule = this->createLocalAssociationRule();
+  localRule->setAcceptsEntries(
+    "smtk::model::Manager", smtk::model::Entity::flagToSpecifierString(mask), true);
 }
 
 /**\brief Reoved the local assocaition rule on the definition.
@@ -257,7 +246,7 @@ void Definition::setLocalAssociationMask(smtk::model::BitFlags mask)
   */
 void Definition::clearLocalAssociationRule()
 {
-  m_associationRule = nullptr;
+  m_acceptsRules = nullptr;
 }
 
 /// Returns whether this attribute can be associated with vertices.
@@ -345,15 +334,17 @@ void Definition::buildAttribute(Attribute* att) const
     // This is the "base definition" so first we should make sure the attribute
     // is "empty" of items and associations
     att->removeAllItems();
-    att->m_associations = ModelEntityItemPtr();
+    att->m_associatedObjects = ReferenceItemPtr();
   }
 
-  // If the definition allows associations, create an item to hold them:
-  if (this->associationMask())
+  // If the definition allows associations, create an item to hold them,
+  // overriding any rule from the base definition:
+  auto localRule = m_acceptsRules;
+  if (localRule)
   {
-    att->m_associations =
-      smtk::dynamic_pointer_cast<ModelEntityItem>(this->associationRule()->buildItem(att, -2));
-    att->m_associations->setDefinition(this->associationRule());
+    att->m_associatedObjects =
+      smtk::dynamic_pointer_cast<ReferenceItem>(localRule->buildItem(att, -2));
+    att->m_associatedObjects->setDefinition(localRule);
   }
 
   // Next - for each item definition we have build and add the appropriate

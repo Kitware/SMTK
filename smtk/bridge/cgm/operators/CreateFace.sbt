@@ -37,7 +37,9 @@
     <AttDef Type="result(create face)" BaseType="result">
       <ItemDefinitions>
         <!-- The face created. -->
-        <ModelEntity Name="face" NumberOfRequiredValues="1" MembershipMask="260"/>
+        <Component Name="face" NumberOfRequiredValues="1">
+          <Accepts><Resource Name="smtk::bridge::cgm::Session" Filter="face"/></Accepts>
+        </Component>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

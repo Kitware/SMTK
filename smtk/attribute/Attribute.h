@@ -18,7 +18,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/resource/Component.h"
 
-#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/SearchStyle.h"
 #include "smtk/attribute/ValueItem.h"
 
@@ -153,14 +153,17 @@ public:
 
   ModelEntityItemPtr findModelEntity(const std::string& name);
   ConstModelEntityItemPtr findModelEntity(const std::string& name) const;
-  template <typename T>
-  T modelEntitiesAs(const std::string& name) const;
 
   VoidItemPtr findVoid(const std::string& name);
   ConstVoidItemPtr findVoid(const std::string& name) const;
 
   DateTimeItemPtr findDateTime(const std::string& name);
   ConstDateTimeItemPtr findDateTime(const std::string& name) const;
+
+  ReferenceItemPtr findReference(const std::string& name);
+  ConstReferenceItemPtr findReference(const std::string& name) const;
+  template <typename T>
+  T entityRefsAs(const std::string& name) const;
 
   ResourceItemPtr findResource(const std::string& name);
   ConstResourceItemPtr findResource(const std::string& name) const;
@@ -170,14 +173,14 @@ public:
 
   void references(std::vector<smtk::attribute::ItemPtr>& list) const;
 
-  ConstComponentItemPtr associatedComponents() const { return m_associatedComponents; }
-  ComponentItemPtr associatedComponents() { return m_associatedComponents; }
+  ConstReferenceItemPtr associatedObjects() const { return m_associatedObjects; }
+  ReferenceItemPtr associatedObjects() { return m_associatedObjects; }
 
-  bool isComponentAssociated(const smtk::common::UUID& uid) const;
-  bool isComponentAssociated(const smtk::resource::ComponentPtr& componentPtr) const;
+  bool isObjectAssociated(const smtk::common::UUID& uid) const;
+  bool isObjectAssociated(const smtk::resource::PersistentObjectPtr& componentPtr) const;
 
-  ConstModelEntityItemPtr associations() const { return m_associations; }
-  ModelEntityItemPtr associations() { return m_associations; }
+  ConstReferenceItemPtr associations() const { return m_associatedObjects; }
+  ReferenceItemPtr associations() { return m_associatedObjects; }
 
   bool isEntityAssociated(const smtk::common::UUID& entity) const;
   bool isEntityAssociated(const smtk::model::EntityRef& entityref) const;
@@ -186,6 +189,7 @@ public:
   template <typename T>
   T associatedModelEntities() const;
 
+  bool associate(smtk::resource::PersistentObjectPtr obj);
   bool associateEntity(const smtk::common::UUID& entity);
   bool associateEntity(const smtk::model::EntityRef& entity);
 
@@ -259,8 +263,7 @@ protected:
 
   std::string m_name;
   std::vector<smtk::attribute::ItemPtr> m_items;
-  ModelEntityItemPtr m_associations;
-  ComponentItemPtr m_associatedComponents;
+  ReferenceItemPtr m_associatedObjects;
   smtk::attribute::DefinitionPtr m_definition;
   std::map<smtk::attribute::RefItem*, std::set<std::size_t> > m_references;
   bool m_appliesToBoundaryNodes;
@@ -291,19 +294,18 @@ inline void Attribute::setColor(double r, double g, double b, double a)
 }
 
 template <typename T>
-T Attribute::modelEntitiesAs(const std::string& iname) const
+T Attribute::entityRefsAs(const std::string& iname) const
 {
   T result;
-  ConstModelEntityItemPtr itm = this->findModelEntity(iname);
+  ConstReferenceItemPtr itm = this->findReference(iname);
   if (!itm)
   {
     return result;
   }
 
-  smtk::model::EntityRefArray::const_iterator it;
-  for (it = itm->begin(); it != itm->end(); ++it)
+  for (auto it = itm->begin(); it != itm->end(); ++it)
   {
-    typename T::value_type entry(*it);
+    typename T::value_type entry = std::dynamic_pointer_cast<smtk::model::Entity>(*it);
     if (entry.isValid())
     {
       result.insert(result.end(), entry);
@@ -316,15 +318,14 @@ template <typename T>
 T Attribute::associatedModelEntities() const
 {
   T result;
-  if (!m_associations)
+  if (!m_associatedObjects)
   {
     return result;
   }
 
-  smtk::model::EntityRefArray::const_iterator it;
-  for (it = m_associations->begin(); it != m_associations->end(); ++it)
+  for (auto it = m_associatedObjects->begin(); it != m_associatedObjects->end(); ++it)
   {
-    typename T::value_type entry(*it);
+    typename T::value_type entry = std::dynamic_pointer_cast<smtk::model::Entity>(*it);
     if (entry.isValid())
     {
       result.insert(result.end(), entry);

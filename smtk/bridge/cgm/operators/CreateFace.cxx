@@ -19,7 +19,6 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "CGMApp.hpp"
@@ -93,7 +92,7 @@ smtk::operation::OperationResult CreateFace::operateInternal()
   DLIList<RefFace*> cgmFacesOut;
   cgmFacesOut.push(cgmFace);
   this->addEntitiesToResult(cgmFacesOut, result, CREATED);
-  result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
+  result->findComponent("expunged")->setValues(expunged.begin(), expunged.end());
 
   return result;
 }

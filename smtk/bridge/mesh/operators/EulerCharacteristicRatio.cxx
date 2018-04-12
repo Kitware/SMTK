@@ -14,7 +14,6 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
 
 #include "smtk/common/CompilerInformation.h"
 

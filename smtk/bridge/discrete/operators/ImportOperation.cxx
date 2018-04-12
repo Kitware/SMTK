@@ -17,7 +17,7 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
@@ -350,7 +350,7 @@ ImportOperation::Result ImportOperation::operateInternal()
       {
         c->name(vtksys::SystemTools::GetFilenameWithoutExtension(filename));
       }
-      result->findModelEntity("mesh_created")->setValue(modelEntity);
+      result->findComponent("mesh_created")->setValue(modelEntity.component());
     }
   }
 
@@ -359,7 +359,7 @@ ImportOperation::Result ImportOperation::operateInternal()
     created->setValue(resource);
   }
 
-  smtk::attribute::ComponentItem::Ptr resultModels = result->findComponent("model");
+  auto resultModels = result->findComponent("model");
   resultModels->setValue(modelEntity.component());
 
   modelEntity.as<smtk::model::Model>().setSession(

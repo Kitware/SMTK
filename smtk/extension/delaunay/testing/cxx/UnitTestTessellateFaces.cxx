@@ -9,6 +9,7 @@
 //=========================================================================
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
@@ -18,6 +19,8 @@
 #include "smtk/bridge/polygon/operators/LegacyRead.h"
 
 #include "smtk/extension/delaunay/operators/TessellateFaces.h"
+
+#include "smtk/environment/Environment.h"
 
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
@@ -67,27 +70,10 @@ void removeRefsWithoutTess(smtk::model::EntityRefs& ents)
 
 int UnitTestTessellateFaces(int, char** const)
 {
-  // Create a resource manager
-  smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
-
-  {
-    smtk::bridge::polygon::registerResources(resourceManager);
-  }
-
-  // Create an operation manager
-  smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
-
-  // Register import and write operators to the operation manager
-  {
-    operationManager->registerOperation<smtk::bridge::polygon::LegacyRead>(
-      "smtk::bridge::polygon::LegacyRead");
-    operationManager->registerOperation<smtk::extension::delaunay::TessellateFaces>(
-      "smtk::extension::delaunay::TessellateFaces");
-  }
-
-  // Register the resource manager to the operation manager (newly created
-  // resources will be automatically registered to the resource manager).
-  operationManager->registerResourceManager(resourceManager);
+  auto resourceManager = smtk::environment::ResourceManager::instance();
+  auto operationManager = smtk::environment::OperationManager::instance();
+  operationManager->registerOperation<smtk::extension::delaunay::TessellateFaces>(
+    "smtk::extension::delaunay::TessellateFaces");
 
   smtk::bridge::polygon::Resource::Ptr resource;
 
@@ -168,7 +154,8 @@ int UnitTestTessellateFaces(int, char** const)
       return 1;
     }
 
-    const smtk::model::Face& tessellatedFace = result->findModelEntity("tess_changed")->value();
+    smtk::model::Face tessellatedFace =
+      result->findComponent("tess_changed")->valueAs<smtk::model::Entity>();
     if (face != tessellatedFace)
     {
       std::cerr << "Tessellate faces operator did something strange\n";
