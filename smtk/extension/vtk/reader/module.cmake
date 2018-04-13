@@ -21,5 +21,5 @@ vtk_module(vtkSMTKReaderExt
     vtkRenderingContextOpenGL2
     vtksys
     ${_deps}
-  EXCLUDE_FROM_PYTHON_WRAPPING
+  EXCLUDE_FROM_WRAP_HIERARCHY
 )

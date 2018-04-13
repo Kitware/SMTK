@@ -9,7 +9,6 @@
 //=========================================================================
 #ifndef smtk_extension_vtk_source_vtkAuxiliaryGeometryExtension_h
 #define smtk_extension_vtk_source_vtkAuxiliaryGeometryExtension_h
-#ifndef __VTK_WRAP__
 
 #include "smtk/PublicPointerDefs.h"
 
@@ -105,5 +104,4 @@ private:
   void operator=(const vtkAuxiliaryGeometryExtension&);                // Not implemented.
 };
 
-#endif
 #endif

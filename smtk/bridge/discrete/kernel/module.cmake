@@ -28,5 +28,5 @@ vtk_module(vtkSMTKDiscreteModel
     vtkFiltersSources
     vtkIOXMLParser
     vtksys
-  EXCLUDE_FROM_PYTHON_WRAPPING
+  EXCLUDE_FROM_WRAP_HIERARCHY
 )

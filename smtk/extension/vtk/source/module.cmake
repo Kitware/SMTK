@@ -32,5 +32,5 @@ vtk_module(vtkSMTKSourceExt
     ${__dependencies}
   TEST_DEPENDS
     vtkTestingRendering
-  EXCLUDE_FROM_PYTHON_WRAPPING
+  EXCLUDE_FROM_WRAP_HIERARCHY
 )
