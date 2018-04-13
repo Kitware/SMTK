@@ -29,6 +29,6 @@ if(SMTK_ENABLE_REMUS_SUPPORT)
       vtkRenderingCore
       ${__dependencies}
       vtksys
-    EXCLUDE_FROM_PYTHON_WRAPPING
+    EXCLUDE_FROM_WRAP_HIERARCHY
   )
 endif ()

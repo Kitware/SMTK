@@ -102,22 +102,19 @@ if (SMTK_ENABLE_PARAVIEW_SUPPORT)
 endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
-  # Potentially wrap in Python using VTK's wrapping methods.
-  # This makes the filters available for use with other VTK-wrapped filters.
-
-  vtk_module_load(${vtk-module})
-  vtk_module_headers_load(${vtk-module})
-  vtk_add_python_wrapping(${vtk-module} module_srcs)
-  vtk_add_python_wrapping_library(${vtk-module} module_srcs ${vtk-module})
-
-  # By default, VTK python modules are built in
-  # ${VTK_BUILD_PYTHON_MODULES_DIR}/vtkmodules. We reset this value after it has been
-  # set because it makes more sense for us to maintain parity betwen the build and
-  # install locations.
-  set_target_properties(${vtk-module}Python
-    PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
-  smtk_install_library(${vtk-module}PythonD)
-  smtk_install_library(${vtk-module}Python)
+  if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+    vtk_add_python_wrapping(${vtk-module} VTKLibSrcs)
+    vtk_add_python_wrapping_library(${vtk-module} VTKLibSrcs ${vtk-module})
+  elseif (VTK_WRAP_PYTHON)
+    # Potentially wrap in Python using VTK's wrapping methods.
+    # This makes the filters available for use with other VTK-wrapped filters.
+    vtk_module_load(${vtk-module})
+    vtk_module_headers_load(${vtk-module})
+    vtk_add_python_wrapping(${vtk-module} VTKLibSrcs)
+    vtk_add_python_wrapping_library(${vtk-module} VTKLibSrcs ${vtk-module})
+    smtk_install_library(${vtk-module}PythonD)
+    smtk_install_library(${vtk-module}Python)
+  endif()
 endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
