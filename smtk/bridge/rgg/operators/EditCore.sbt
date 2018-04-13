@@ -44,35 +44,34 @@
               <DetailedDescription>
                 Thickness of the associated rectilinear duct along x axis.
               </DetailedDescription>
-              <DefaultValue>10.0</DefaultValue>
+              <RangeInfo><Min Inclusive="false">0</Min></RangeInfo>
             </Double>
             <Double Name="duct thickness Y" NumberOfRequiredValues="1">
               <BriefDescription>Thickness of the associated rectilinear assembly along y axis</BriefDescription>
               <DetailedDescription>
                 Thickness of the associated rectilinear assembly along y axis.
               </DetailedDescription>
-              <DefaultValue>10.0</DefaultValue>
+              <RangeInfo><Min Inclusive="false">0</Min></RangeInfo>
             </Double>
             <Double Name="duct thickness" NumberOfRequiredValues="1">
               <BriefDescription>Thickness of the hex duct</BriefDescription>
               <DetailedDescription>
                 Thickness of the hex duct.
               </DetailedDescription>
-              <DefaultValue>10.0</DefaultValue>
+              <RangeInfo><Min Inclusive="false">0</Min></RangeInfo>
             </Double>
             <Double Name="height" NumberOfRequiredValues="1">
               <BriefDescription>Height of the nuclear core</BriefDescription>
               <DetailedDescription>
                 Height of the nuclear core.
               </DetailedDescription>
-              <DefaultValue>10.0</DefaultValue>
+              <RangeInfo><Min Inclusive="false">0</Min></RangeInfo>
             </Double>
             <Double Name="z origin" NumberOfRequiredValues="1" AdvanceLevel="11">
               <BriefDescription>z origin of the assembly</BriefDescription>
               <DetailedDescription>
               </DetailedDescription>
                 Z origin of the assembly.
-              <DefaultValue>0.0</DefaultValue>
             </Double>
           </ChildrenDefinitions>
 
@@ -117,7 +116,7 @@
     <!-- Result -->
     <AttDef Type="result(edit core)" BaseType="result">
       <ItemDefinitions>
-          <Void Name="force camera reset" IsEnabledByDefault="true" AdvanceLevel="11"/>
+          <Void Name="force camera reset" Optional="true" IsEnabledByDefault="true" AdvanceLevel="11"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

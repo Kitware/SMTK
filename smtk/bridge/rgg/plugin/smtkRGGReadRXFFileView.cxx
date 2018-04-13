@@ -72,11 +72,7 @@ public:
   QPointer<qtAttribute> CurrentAtt;
 
   smtk::weak_ptr<smtk::model::Operator> CurrentOp;
-  smtk::weak_ptr<smtk::model::Operator> CreateAssyOp;
-  smtk::weak_ptr<smtk::model::Operator> EditCoreOp;
-  smtk::weak_ptr<smtk::model::Operator> CreateDuctOp;
   smtk::weak_ptr<smtk::model::Operator> CreateInstanceOp;
-  smtk::weak_ptr<smtk::model::Operator> CreatePinOp;
 };
 
 smtkRGGReadRXFFileView::smtkRGGReadRXFFileView(const ViewInfo& info)
@@ -193,58 +189,6 @@ void smtkRGGReadRXFFileView::updateAttributeData()
   if (defName.empty())
   {
     return;
-  }
-
-  // Create pin Op
-  if (!this->Internals->CreatePinOp.lock())
-  {
-    std::string ciName = "create pin";
-    smtk::model::OperatorPtr createPinOp =
-      this->uiManager()->activeModelView()->operatorsWidget()->existingOperator(ciName);
-    if (!createPinOp)
-    { // We need to make sure that the "create pin" op has been initialized
-      smtkErrorMacro(smtk::io::Logger::instance(), "Fail to create \"create pin\" operator");
-    }
-    this->Internals->CreatePinOp = createPinOp;
-  }
-
-  // Create duct Op
-  if (!this->Internals->CreateDuctOp.lock())
-  {
-    std::string ciName = "create duct";
-    smtk::model::OperatorPtr createDuctOp =
-      this->uiManager()->activeModelView()->operatorsWidget()->existingOperator(ciName);
-    if (!createDuctOp)
-    { // We need to make sure that the "create duct" op has been initialized
-      smtkErrorMacro(smtk::io::Logger::instance(), "Fail to create \"create duct\" operator");
-    }
-    this->Internals->CreateDuctOp = createDuctOp;
-  }
-
-  // Create assembly Op
-  if (!this->Internals->CreateAssyOp.lock())
-  {
-    std::string ciName = "create assembly";
-    smtk::model::OperatorPtr createAssemblyOp =
-      this->uiManager()->activeModelView()->operatorsWidget()->existingOperator(ciName);
-    if (!createAssemblyOp)
-    { // We need to make sure that the "create assembly" op has been initialized
-      smtkErrorMacro(smtk::io::Logger::instance(), "Fail to create \"create assembly\" operator");
-    }
-    this->Internals->CreateAssyOp = createAssemblyOp;
-  }
-
-  // Create core Op
-  if (!this->Internals->EditCoreOp.lock())
-  {
-    std::string ciName = "edit core";
-    smtk::model::OperatorPtr editCoreOp =
-      this->uiManager()->activeModelView()->operatorsWidget()->existingOperator(ciName);
-    if (!editCoreOp)
-    { // We need to make sure that the "create core" op has been initialized
-      smtkErrorMacro(smtk::io::Logger::instance(), "Fail to create \"create core\" operator");
-    }
-    this->Internals->EditCoreOp = editCoreOp;
   }
 
   // Create instance Op

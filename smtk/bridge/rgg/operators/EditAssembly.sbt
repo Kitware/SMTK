@@ -84,7 +84,6 @@
     <AttDef Type="result(edit assembly)" BaseType="result">
       <ItemDefinitions>
         <ModelEntity Name="tess_changed" NumberOfRequiredValues="0" Extensible="true"/>
-        <Void Name="force camera reset" IsEnabledByDefault="true" AdvanceLevel="11"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

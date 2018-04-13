@@ -67,8 +67,8 @@
     <AttDef Type="result(create duct)" BaseType="result">
       <ItemDefinitions>
         <!-- The created duct is returned in the base result's "create" item. -->
-        <Void Name="force camera reset" IsEnabledByDefault="true" AdvanceLevel="11"/>
-        <Void Name="hide other entities" IsEnabledByDefault="true" AdvanceLevel="11"/>
+        <Void Name="force camera reset" Optional="true" IsEnabledByDefault="true" AdvanceLevel="11"/>
+        <Void Name="hide other entities" Optional="true" IsEnabledByDefault="true" AdvanceLevel="11"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

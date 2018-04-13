@@ -378,7 +378,7 @@ void smtkRGGEditPinView::createWidget()
 
   // Set cut away or not
   this->Internals->cutAwayViewCheckBox->setToolTip(
-    QString::fromStdString("If checked, a clipping plane would cut the"
+    QString::fromStdString("If checked, a clipping plane would cut the "
                            "pin half through center axis"));
 
   // Add/edit/remove pieces table

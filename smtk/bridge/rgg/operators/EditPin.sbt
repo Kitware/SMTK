@@ -95,7 +95,7 @@
       The customized view "Type" needs to match the plugin's VIEW_NAME:
       add_smtk_ui_view(...  VIEW_NAME smtkRGGEditPinView ...)
       -->
-    <View Type="smtkRGGEditPinView" Title="Edit Din"  FilterByCategory="false"  FilterByAdvanceLevel="false" UseSelectionManager="false">
+    <View Type="smtkRGGEditPinView" Title="Edit Pin"  FilterByCategory="false"  FilterByAdvanceLevel="false" UseSelectionManager="false">
       <Description>
         TODO: Add documentation for edit pin operator.
       </Description>

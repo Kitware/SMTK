@@ -195,10 +195,10 @@ void CreatePin::populatePin(smtk::model::Operator* op, smtk::model::AuxiliaryGeo
     {
       smtk::attribute::IntItemPtr subMaterial =
         layerMaterialsItem->findAs<smtk::attribute::IntItem>(index, "sub material");
-      smtk::attribute::DoubleItemPtr radisuN =
+      smtk::attribute::DoubleItemPtr radiusN =
         layerMaterialsItem->findAs<smtk::attribute::DoubleItem>(index, "radius(normalized)");
       subMaterials.insert(subMaterials.end(), subMaterial->begin(), subMaterial->end());
-      radiusNs.insert(radiusNs.end(), radisuN->begin(), radisuN->end());
+      radiusNs.insert(radiusNs.end(), radiusN->begin(), radiusN->end());
     }
     auxGeom.setIntegerProperty(layerMaterialsItem->name(), subMaterials);
     auxGeom.setFloatProperty(layerMaterialsItem->name(), radiusNs);
