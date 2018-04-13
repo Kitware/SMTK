@@ -89,7 +89,7 @@ void calculateDuctMinimimThickness(
   }
   thickness0 = std::numeric_limits<double>::max();
   thickness1 = std::numeric_limits<double>::max();
-  for (auto i = 0; i < thicknesses.size() / 2; i++)
+  for (size_t i = 0; i < thicknesses.size() / 2; i++)
   {
     double currentT0 = pitches[0] * thicknesses[i * 2];
     double currentT1 = pitches[1] * thicknesses[i * 2 + 1];
@@ -412,9 +412,9 @@ void smtkRGGEditAssemblyView::apply()
     smtk::model::AuxiliaryGeometries children = aux.auxiliaryGeometries();
     for (size_t i = 0; i < children.size(); i++)
     {
-      smtk::model::EntityRef ent =
+      smtk::model::EntityRef e =
         smtk::model::EntityRef(children[i].manager(), children[i].entity());
-      att->associateEntity(ent);
+      att->associateEntity(e);
     }
   };
 
@@ -480,19 +480,19 @@ void smtkRGGEditAssemblyView::apply()
     std::vector<int> layout = iter->second;
     std::vector<double> coordinates;
     coordinates.reserve(layout.size() / 2 * 3);
-    smtk::attribute::StringItemPtr plaRule = cIAtt->findString("placement rule");
-    smtk::attribute::GroupItemPtr placementsI =
-      smtk::dynamic_pointer_cast<smtk::attribute::GroupItem>(plaRule->activeChildItem(0));
-    placementsI->setNumberOfGroups(1);
+    smtk::attribute::StringItemPtr plaRule_ = cIAtt->findString("placement rule");
+    smtk::attribute::GroupItemPtr placementsI_ =
+      smtk::dynamic_pointer_cast<smtk::attribute::GroupItem>(plaRule_->activeChildItem(0));
+    placementsI_->setNumberOfGroups(1);
     size_t numberOfPair = layout.size() / 2;
     for (size_t index = 0; index < numberOfPair; index++)
     {
       if (index > 0)
       {
-        placementsI->appendGroup();
+        placementsI_->appendGroup();
       }
-      smtk::attribute::DoubleItemPtr coordinatesI =
-        smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(placementsI->item(index, 0));
+      smtk::attribute::DoubleItemPtr coordinatesI_ =
+        smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(placementsI_->item(index, 0));
       double x, y;
       if (isHex)
       {
@@ -504,9 +504,9 @@ void smtkRGGEditAssemblyView::apply()
         x = baseX + spacing[0] * layout[2 * index];
         y = baseY + spacing[1] * layout[2 * index + 1];
       }
-      coordinatesI->setValue(0, x);
-      coordinatesI->setValue(1, y);
-      coordinatesI->setValue(2, 0);
+      coordinatesI_->setValue(0, x);
+      coordinatesI_->setValue(1, y);
+      coordinatesI_->setValue(2, 0);
 
       coordinates.push_back(x);
       coordinates.push_back(y);
@@ -520,11 +520,11 @@ void smtkRGGEditAssemblyView::apply()
       smtk::dynamic_pointer_cast<smtk::attribute::StringItem>(plI->item(plGroupIndex, 0));
     smtk::attribute::IntItemPtr schemaPlanI =
       smtk::dynamic_pointer_cast<smtk::attribute::IntItem>(plI->item(plGroupIndex, 1));
-    smtk::attribute::DoubleItemPtr coordinatesI =
+    smtk::attribute::DoubleItemPtr coordinatesI_ =
       smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(plI->item(plGroupIndex, 2));
     pinUUIDI->setValue(iter->first.entity().toString());
     schemaPlanI->setValues(iter->second.begin(), iter->second.end());
-    coordinatesI->setValues(coordinates.begin(), coordinates.end());
+    coordinatesI_->setValues(coordinates.begin(), coordinates.end());
   }
   QObject::disconnect(this->uiManager()->activeModelView()->operatorsWidget(),
     &qtModelOperationWidget::operationFinished, this,

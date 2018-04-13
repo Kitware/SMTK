@@ -18,8 +18,10 @@
 #include "smtk/bridge/rgg/qt/qtLattice.h"
 #include "smtk/model/EntityRef.h"
 
+#include "smtk/bridge/rgg/qt/Exports.h"
+
 // Represents an assembly/core in schema planner.
-class rggLatticeContainer
+class SMTKQTRGGSESSION_EXPORT rggLatticeContainer
 {
 public:
   rggLatticeContainer(smtk::model::EntityRef entity);
@@ -42,7 +44,7 @@ public:
     this->m_pitchX = x;
     this->m_pitchY = y;
   }
-  std::pair<int, int> GetDimensions();
+  std::pair<size_t, size_t> GetDimensions();
 
 protected:
   qtLattice m_lattice;

@@ -28,6 +28,7 @@ Session::Session()
 SessionInfoBits Session::transcribeInternal(
   const model::EntityRef& entity, SessionInfoBits requestedInfo, int depth)
 {
+  (void)entity;
   (void)depth;
   (void)requestedInfo;
   return smtk::model::SESSION_EVERYTHING;

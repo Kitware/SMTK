@@ -317,7 +317,6 @@ void qtDraw2DLattice::showContextMenu(qtDrawLatticeItem* hexitem, QPoint qme)
   {
     QString strAct = this->m_actionList[i].first;
     smtk::model::EntityRef part = this->m_actionList[i].second;
-    double r = getRGGEntityRadius(part);
 
     pAction = new QAction(strAct, this);
     //FIXME: Always enable for now

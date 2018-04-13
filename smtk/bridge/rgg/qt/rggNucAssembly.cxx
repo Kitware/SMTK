@@ -92,11 +92,15 @@ bool rggNucAssembly::IsHexType()
 
 void rggNucAssembly::calculateExtraTranslation(double& transX, double& transY)
 {
+  (void)transX;
+  (void)transY;
   // TODO: rggNucAssembly::calculateExtraTranslation"
 }
 
 void rggNucAssembly::calculateTranslation(double& transX, double& transY)
 {
+  (void)transX;
+  (void)transY;
   // "TODO: rggNucAssembly::calculateTranslation"
 }
 
@@ -107,6 +111,8 @@ void rggNucAssembly::setUpdateUsed()
 
 void rggNucAssembly::getRadius(double& ri, double& rj) const
 {
+  (void)ri;
+  (void)rj;
   // "TODO: rggNucAssembly::getRadius"
 }
 

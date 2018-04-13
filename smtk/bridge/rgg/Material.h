@@ -13,7 +13,6 @@
 #include "smtk/bridge/rgg/Exports.h"
 
 #include <string>
-#include <vector>
 
 namespace smtk
 {
@@ -30,17 +29,32 @@ struct SMTKRGGSESSION_EXPORT Material
 
   Material();
   Material(const std::string&);
+  ~Material();
 
   operator std::string() const;
 
-  std::string m_name;
-  double m_density;
-  std::string m_densityType;
-  double m_temperature;
-  double m_thermalExpansion;
-  std::string m_compositionType;
-  std::vector<std::string> m_components;
-  std::vector<double> m_content;
+  const std::string& name() const;
+  const double& density() const;
+  const std::string& densityType() const;
+  const double& temperature() const;
+  const double& thermalExpansion() const;
+  const std::string& compositionType() const;
+  std::size_t numberOfComponents() const;
+  const std::string& component(std::size_t i) const;
+  const double& content(std::size_t i) const;
+
+  void setName(const std::string& name);
+  void setDensity(const double& density);
+  void setDensityType(const std::string& densityType);
+  void setTemperature(const double& temperature);
+  void setThermalExpansion(const double& thermExpansion);
+  void setCompositionType(const std::string& compType);
+  void addComponent(const std::string& comp);
+  void addContent(const double& content);
+
+private:
+  struct Internal;
+  Internal* m_internal;
 };
 
 } // namespace rgg

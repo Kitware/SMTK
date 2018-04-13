@@ -314,7 +314,7 @@ void smtkRGGRemoveMaterialView::setupMaterialComboBox(QComboBox* box)
   for (auto& materialDescription : materialDescriptions)
   {
     smtk::bridge::rgg::Material material(materialDescription);
-    box->addItem(QString::fromStdString(material.m_name));
+    box->addItem(QString::fromStdString(material.name()));
   }
 
   this->Internals->applyButton->setEnabled(true);

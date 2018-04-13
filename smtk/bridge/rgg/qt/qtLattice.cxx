@@ -235,6 +235,7 @@ void qtLattice::setUpGrid(qtLattice const& other)
       size_t oc = c->getCount();
       this->m_grid[i][j].setCell(c);
       assert(c->getCount() == (oc + 1));
+      (void)oc;
     }
   }
   this->computeValidRange();
@@ -795,6 +796,7 @@ void qtLattice::sendMaxRadiusToReference()
     double partRadius = getPinMaxRadius(part);
 
     double partR2 = partRadius * partRadius;
+    (void)partR2;
     // FIXME
     //    cmbLaticeFillFunction * fun = this->m_maxRadiusFun->createFillFuntion(at.first, at.second,
     //                                                                        partRadius/cellR, this);

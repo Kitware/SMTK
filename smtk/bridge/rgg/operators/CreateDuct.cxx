@@ -104,7 +104,7 @@ void CreateDuct::populateDuct(
   }
 
   smtk::attribute::GroupItemPtr segsGItem = op->findGroup("duct segments");
-  size_t numSegs;
+  size_t numSegs = 0;
   smtk::model::IntegerList numMaterialsPerSeg;
   IntegerList materials;
   if (segsGItem != nullptr)
@@ -121,7 +121,7 @@ void CreateDuct::populateDuct(
       smtk::attribute::DoubleItemPtr thicknessesI =
         segsGItem->findAs<smtk::attribute::DoubleItem>(index, "thicknesses(normalized)");
       // Cache number of materials of current seg
-      numMaterialsPerSeg.push_back(materialsI->numberOfValues());
+      numMaterialsPerSeg.push_back(static_cast<int>(materialsI->numberOfValues()));
       // When creating duct, we just use the duct height stored on the core
       // so instead of querying zValuesI here we should query the ductHeight
       if (zValuesI->numberOfValues() == 2 && (zValuesI->value(0) == 0) && (zValuesI->value(1) == 0))
@@ -162,7 +162,7 @@ void CreateDuct::populateDuct(
   size_t materialIndex(0);
   for (std::size_t i = 0; i < numSegs; i++)
   {
-    for (std::size_t j = 0; j < numMaterialsPerSeg[i]; j++)
+    for (std::size_t j = 0; j < static_cast<std::size_t>(numMaterialsPerSeg[i]); j++)
     {
       // Create an auxo_geom for every layer in current segment
       AuxiliaryGeometry subLayer = auxGeom.manager()->addAuxiliaryGeometry(auxGeom, 3);

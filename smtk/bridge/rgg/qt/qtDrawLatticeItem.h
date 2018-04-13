@@ -28,7 +28,7 @@ class EntityRef;
 }
 }
 
-class qtDrawLatticeItem : public QGraphicsPolygonItem
+class SMTKQTRGGSESSION_EXPORT qtDrawLatticeItem : public QGraphicsPolygonItem
 {
   typedef QGraphicsPolygonItem Superclass;
 

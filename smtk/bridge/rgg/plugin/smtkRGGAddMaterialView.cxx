@@ -430,7 +430,7 @@ void smtkRGGAddMaterialView::createWidget()
   QObject::connect(this->Internals->addComponentButton, &QPushButton::clicked, this, [this]() {
     auto cT = this->Internals->componentsTable;
     cT->blockSignals(true);
-    std::size_t rowCount = cT->rowCount();
+    int rowCount = cT->rowCount();
     cT->setRowCount(rowCount + 1);
     auto item = new QTableWidgetItem(QString::fromStdString("<nuclide>"));
     item->setFlags(

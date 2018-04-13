@@ -640,7 +640,7 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGPinRepr
     vtkSmartPointer<vtkCmbLayeredConeSource> coneSource =
       vtkSmartPointer<vtkCmbLayeredConeSource>::New();
     //  Add a material layer if needed
-    coneSource->SetNumberOfLayers(numLayers + isMaterialSet);
+    coneSource->SetNumberOfLayers(static_cast<int>(numLayers + isMaterialSet));
     double height(typeParas[j * 3]), baseR(typeParas[j * 3 + 1]), topR(typeParas[j * 3 + 2]);
     //    double layer42 = numLayers + isMaterialSet;
     //    std::cout << "Processing part " << j << " with base center as " <<
@@ -657,9 +657,9 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGPinRepr
       // Calculate the baseR and topR at current layer
       double baseRL = baseR * radiusNs[k];
       double topRL = topR * radiusNs[k];
-      coneSource->SetBaseRadius(k, baseRL);
-      coneSource->SetTopRadius(k, topRL);
-      coneSource->SetResolution(k, PinCellResolution);
+      coneSource->SetBaseRadius(static_cast<int>(k), baseRL);
+      coneSource->SetTopRadius(static_cast<int>(k), topRL);
+      coneSource->SetResolution(static_cast<int>(k), PinCellResolution);
       // Update largest raidus for cell material visulization purprose
       if (largestRadius < baseRL)
       {
@@ -680,9 +680,9 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGPinRepr
         res = 6;
         r[0] = r[1] = r[0] / cos30;
       }
-      coneSource->SetBaseRadius(numLayers, r[0], r[1]);
-      coneSource->SetTopRadius(numLayers, r[0], r[1]);
-      coneSource->SetResolution(numLayers, res);
+      coneSource->SetBaseRadius(static_cast<int>(numLayers), r[0], r[1]);
+      coneSource->SetTopRadius(static_cast<int>(numLayers), r[0], r[1]);
+      coneSource->SetResolution(static_cast<int>(numLayers), res);
     }
     double direction[] = { 0, 0, 1 };
     coneSource->SetDirection(direction);
@@ -704,7 +704,7 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGPinRepr
           SMTK_BRIDGE_RGG_PIN_MATERIAL;
       }
       // Follow logic in L263 cmbNucRender
-      vtkSmartPointer<vtkPolyData> dataset = coneSource->CreateUnitLayer(k);
+      vtkSmartPointer<vtkPolyData> dataset = coneSource->CreateUnitLayer(static_cast<int>(k));
       // Since it's a unit layer, proper trasformation should be applied
       vtkSmartPointer<vtkTransform> transform = vtkSmartPointer<vtkTransform>::New();
       // Translate, rotate then scale
@@ -717,7 +717,8 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGPinRepr
 
       if (segTypes[j] == RGGType::CYLINDER && k == 0)
       { // Cylinder in the 0 layer should be handled differently(Following RGG's logic)
-        transform->Scale(coneSource->GetTopRadius(k), coneSource->GetBaseRadius(k), height);
+        transform->Scale(coneSource->GetTopRadius(static_cast<int>(k)),
+          coneSource->GetBaseRadius(static_cast<int>(k)), height);
       }
       else
       {
@@ -749,7 +750,7 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGPinRepr
           s_p->insert(childAux, ClassInternal::CacheValue(transformed, mtime), false);
         }
       }
-      int blockIndex = k + numLayers * j;
+      int blockIndex = static_cast<int>(k + numLayers * j);
       vtkSmartPointer<vtkPolyData> pinSubDataset = vtkSmartPointer<vtkPolyData>::New();
       pinSubDataset->DeepCopy(transformed);
       mbds->SetBlock(blockIndex, pinSubDataset);
@@ -771,13 +772,13 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGDuctRep
   bool isHex(false);
   if (duct.owningModel().hasIntegerProperty("hex"))
   {
-    isHex = duct.owningModel().integerProperty("hex")[0];
+    isHex = (duct.owningModel().integerProperty("hex")[0] != 0);
   }
 
   bool isCrossSection(false);
   if (duct.hasIntegerProperty("cross section"))
   {
-    isCrossSection = duct.integerProperty("cross section")[0];
+    isCrossSection = (duct.integerProperty("cross section")[0] != 0);
   }
 
   smtk::model::FloatList pitch;
@@ -861,7 +862,7 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGDuctRep
     size_t numLayers = numMaterialsPerSeg[i];
     vtkSmartPointer<vtkCmbLayeredConeSource> coneSource =
       vtkSmartPointer<vtkCmbLayeredConeSource>::New();
-    coneSource->SetNumberOfLayers(numLayers);
+    coneSource->SetNumberOfLayers(static_cast<int>(numLayers));
     coneSource->SetBaseCenter(0, 0, z1);
     double direction[] = { 0, 0, 1 };
     coneSource->SetDirection(direction);
@@ -876,27 +877,27 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGDuctRep
       mult = 0.5 / cos30;
     }
 
-    for (int k = 0; k < numLayers; k++)
+    for (size_t k = 0; k < numLayers; k++)
     { // For each layer based on is hex or not,
       // it might have two different thicknesses
       size_t tNIndex = thicknessOffset + k * 2;
       double tx = thicknessesN[tNIndex] * pitch[0] - thicknessesN[tNIndex] * pitch[0] * 0.0005;
       double ty =
         thicknessesN[tNIndex + 1] * pitch[1] - thicknessesN[tNIndex + 1] * pitch[1] * 0.0005;
-      coneSource->SetBaseRadius(k, tx * mult, ty * mult);
-      coneSource->SetTopRadius(k, tx * mult, ty * mult);
-      coneSource->SetResolution(k, res);
+      coneSource->SetBaseRadius(static_cast<int>(k), tx * mult, ty * mult);
+      coneSource->SetTopRadius(static_cast<int>(k), tx * mult, ty * mult);
+      coneSource->SetResolution(static_cast<int>(k), res);
     }
     thicknessOffset += numMaterialsPerSeg[i] * 2; // each layer has two thicknesses
 
     // Cache child auxgeom(layer and part) with their polydata
-    for (int k = 0; k < numLayers; k++)
+    for (size_t k = 0; k < numLayers; k++)
     {
       std::string subName = duct.name() + SMTK_BRIDGE_RGG_DUCT_SEGMENT + std::to_string(i) +
         SMTK_BRIDGE_RGG_DUCT_LAYER + std::to_string(k);
 
       // Follow logic in L168 cmbNucRender
-      vtkSmartPointer<vtkPolyData> dataset = coneSource->CreateUnitLayer(k);
+      vtkSmartPointer<vtkPolyData> dataset = coneSource->CreateUnitLayer(static_cast<int>(k));
       // Since it's a unit layer, proper trasformation should be applied
       vtkSmartPointer<vtkTransform> transform = vtkSmartPointer<vtkTransform>::New();
       // Translate, rotate then scale
@@ -906,7 +907,8 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGDuctRep
 
       if (k == 0)
       { // Cylinder in the 0 layer should be handled differently(Following RGG's logic)
-        transform->Scale(coneSource->GetTopRadius(k, 0), coneSource->GetBaseRadius(k, 1), height);
+        transform->Scale(coneSource->GetTopRadius(static_cast<int>(k), 0),
+          coneSource->GetBaseRadius(static_cast<int>(k), 1), height);
       }
       else
       {
@@ -936,7 +938,7 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::generateRGGDuctRep
           s_p->insert(childAux, ClassInternal::CacheValue(transformed, mtime), false);
         }
       }
-      int blockIndex = k + thicknessOffset;
+      int blockIndex = static_cast<int>(k + thicknessOffset);
       vtkSmartPointer<vtkPolyData> pinSubDataset = vtkSmartPointer<vtkPolyData>::New();
       pinSubDataset->DeepCopy(transformed);
       mbds->SetBlock(blockIndex, pinSubDataset);

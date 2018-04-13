@@ -25,15 +25,15 @@ class SMTKQTRGGSESSION_EXPORT rggNucCore : public rggLatticeContainer
 public:
   rggNucCore(smtk::model::EntityRef entity);
   ~rggNucCore() override;
-  virtual QString extractLabel(QString const&);
+  virtual QString extractLabel(QString const&) override;
   // Create a list with pair<${name}(${label}, entity)>
-  virtual void fillList(std::vector<std::pair<QString, smtk::model::EntityRef> >& l);
-  virtual smtk::model::EntityRef getFromLabel(const QString& label);
-  virtual bool IsHexType();
-  virtual void calculateExtraTranslation(double& transX, double& transY);
-  virtual void calculateTranslation(double& transX, double& transY);
-  virtual void setUpdateUsed();
-  virtual void getRadius(double& ri, double& rj) const;
+  virtual void fillList(std::vector<std::pair<QString, smtk::model::EntityRef> >& l) override;
+  virtual smtk::model::EntityRef getFromLabel(const QString& label) override;
+  virtual bool IsHexType() override;
+  virtual void calculateExtraTranslation(double& transX, double& transY) override;
+  virtual void calculateTranslation(double& transX, double& transY) override;
+  virtual void setUpdateUsed() override;
+  virtual void getRadius(double& ri, double& rj) const override;
 
   // This function would use the assy to populate the rggNucCore
   void resetBySMTKCore(const smtk::model::EntityRef& core);

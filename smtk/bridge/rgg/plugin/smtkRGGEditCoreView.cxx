@@ -56,8 +56,8 @@ using namespace smtk::extension;
 using namespace smtk::bridge::rgg;
 static const double cos30 = 0.86602540378443864676372317075294;
 static const double cos60 = 0.5;
-static const int degreesHex[6] = { -120, -60, 0, 60, 120, 180 };
-static const int degreesRec[4] = { -90, 0, 90, 180 };
+// static const int degreesHex[6] = { -120, -60, 0, 60, 120, 180 };
+// static const int degreesRec[4] = { -90, 0, 90, 180 };
 // 0', 60', 120, 180', 240', 300'
 static const double cosSinAngles[6][2] = { { 1.0, 0.0 }, { cos60, -cos30 }, { -cos60, -cos30 },
   { -1.0, 0.0 }, { -cos60, cos30 }, { cos60, cos30 } };
@@ -379,9 +379,9 @@ void smtkRGGEditCoreView::apply()
     smtk::model::AuxiliaryGeometries children = aux.auxiliaryGeometries();
     for (size_t i = 0; i < children.size(); i++)
     {
-      smtk::model::EntityRef ent =
+      smtk::model::EntityRef e =
         smtk::model::EntityRef(children[i].manager(), children[i].entity());
-      att->associateEntity(ent);
+      att->associateEntity(e);
     }
   };
   smtk::model::FloatList spacing = model.floatProperty("duct thickness");
@@ -459,27 +459,27 @@ void smtkRGGEditCoreView::apply()
       coordinates.push_back(0);
       // For each (x,y) pair, add it to every pin and duct in the current assy
       auto addTransformCoordsToMap = [&pDToPs, &x, &y](
-        const smtk::model::EntityRef& ent, std::vector<double>& coordinates) {
+        const smtk::model::EntityRef& ent, std::vector<double>& coords) {
         // Apply transformation
-        for (size_t i = 0; i < coordinates.size(); i++)
+        for (size_t i = 0; i < coords.size(); i++)
         {
           if (i % 3 == 0)
           { // X
-            coordinates[i] += x;
+            coords[i] += x;
           }
           if (i % 3 == 1)
           { // Y
-            coordinates[i] += y;
+            coords[i] += y;
           }
         }
 
         if (pDToPs.find(ent) != pDToPs.end())
         { // TODO: Possible performance bottleneck
-          pDToPs[ent].insert(pDToPs[ent].end(), coordinates.begin(), coordinates.end());
+          pDToPs[ent].insert(pDToPs[ent].end(), coords.begin(), coords.end());
         }
         else
         {
-          pDToPs[ent] = coordinates;
+          pDToPs[ent] = coords;
         }
       };
       // Duct

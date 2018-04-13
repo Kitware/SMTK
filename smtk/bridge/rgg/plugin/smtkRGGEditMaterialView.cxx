@@ -432,7 +432,7 @@ void smtkRGGEditMaterialView::createWidget()
   QObject::connect(this->Internals->addComponentButton, &QPushButton::clicked, this, [this]() {
     auto cT = this->Internals->componentsTable;
     cT->blockSignals(true);
-    std::size_t rowCount = cT->rowCount();
+    int rowCount = cT->rowCount();
     cT->setRowCount(rowCount + 1);
     auto item = new QTableWidgetItem(QString::fromStdString("<name>"));
     item->setFlags(
@@ -508,7 +508,7 @@ void smtkRGGEditMaterialView::setupMaterialComboBox(QComboBox* box)
   for (auto& materialDescription : materialDescriptions)
   {
     smtk::bridge::rgg::Material material(materialDescription);
-    box->addItem(QString::fromStdString(material.m_name));
+    box->addItem(QString::fromStdString(material.name()));
   }
 
   QObject::connect(
@@ -603,8 +603,8 @@ void smtkRGGEditMaterialView::materialChanged(const QString& text)
 
   smtk::bridge::rgg::Material material(materialDescriptions[id]);
 
-  auto label = model.stringProperty(material.m_name)[0];
-  auto color = model.floatProperty(material.m_name);
+  auto label = model.stringProperty(material.name())[0];
+  auto color = model.floatProperty(material.name());
 
   this->Internals->labelValue->setText(QString::fromStdString(label));
 
@@ -613,17 +613,17 @@ void smtkRGGEditMaterialView::materialChanged(const QString& text)
   this->Internals->colorBValue->setText(QString::number(color[2]));
   this->Internals->colorAValue->setText(QString::number(color[3]));
 
-  this->Internals->temperatureValue->setText(QString::number(material.m_temperature));
+  this->Internals->temperatureValue->setText(QString::number(material.temperature()));
 
-  this->Internals->thermalCoeffValue->setText(QString::number(material.m_thermalExpansion));
+  this->Internals->thermalCoeffValue->setText(QString::number(material.thermalExpansion()));
 
-  this->Internals->densityValue->setText(QString::number(material.m_density));
+  this->Internals->densityValue->setText(QString::number(material.density()));
 
   this->Internals->densityTypeBox->setCurrentIndex(
-    this->Internals->densityTypeBox->property(material.m_densityType.c_str()).toInt());
+    this->Internals->densityTypeBox->property(material.densityType().c_str()).toInt());
 
   this->Internals->compositionTypeBox->setCurrentIndex(
-    this->Internals->compositionTypeBox->property(material.m_compositionType.c_str()).toInt());
+    this->Internals->compositionTypeBox->property(material.compositionType().c_str()).toInt());
 
   smtk::attribute::StringItemPtr componentI =
     this->Internals->CurrentAtt->attribute()->findString("component");
@@ -636,21 +636,21 @@ void smtkRGGEditMaterialView::materialChanged(const QString& text)
   }
 
   QTableWidget* cT = this->Internals->componentsTable;
-  cT->setRowCount(material.m_components.size());
+  cT->setRowCount(static_cast<int>(material.numberOfComponents()));
   cT->setColumnCount(2);
-  for (std::size_t i = 0; i < material.m_components.size(); i++)
+  for (std::size_t i = 0; i < material.numberOfComponents(); i++)
   {
-    Nuclide* nuclide = this->Internals->m_nuclideTable->nuclide(material.m_components[i].c_str());
+    Nuclide* nuclide = this->Internals->m_nuclideTable->nuclide(material.component(i).c_str());
     auto item = new QTableWidgetItem(
-      nuclide ? nuclide->prettyName() : QString::fromStdString(material.m_components[i]));
+      nuclide ? nuclide->prettyName() : QString::fromStdString(material.component(i)));
     if (nuclide != nullptr)
     {
       item->setData(Qt::DisplayRole, nuclide->prettyName());
       item->setData(Qt::UserRole, nuclide->name());
       item->setData(Qt::DecorationRole, nuclide->toPixmap());
     }
-    cT->setItem(i, 0, item);
-    cT->setItem(i, 1, new QTableWidgetItem(QString::number(material.m_content[i])));
+    cT->setItem(static_cast<int>(i), 0, item);
+    cT->setItem(static_cast<int>(i), 1, new QTableWidgetItem(QString::number(material.content(i))));
   }
   this->setEnabled(true);
 }

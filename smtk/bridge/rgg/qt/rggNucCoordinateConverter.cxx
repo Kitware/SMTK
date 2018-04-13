@@ -101,7 +101,7 @@ public:
 
   virtual void computeRadius(int w, int h, double r[2])
   {
-    int numLayers = m_grid.GetDimensions().first;
+    int numLayers = static_cast<int>(m_grid.GetDimensions().first);
     double hexDiameter;
     if (this->m_grid.GetGeometrySubType() & ANGLE_60 ||
       this->m_grid.GetGeometrySubType() & ANGLE_30)
@@ -161,7 +161,7 @@ public:
 
   virtual void convertToPixelXY(int i, int j, double& x, double& y, double r1, double r2)
   {
-    std::pair<int, int> wh = this->m_grid.GetDimensions();
+    std::pair<size_t, size_t> wh = this->m_grid.GetDimensions();
     r1 *= 2;
     r2 *= 2;
     if (m_flip_i)
@@ -229,8 +229,8 @@ void rggNucCoordinateConverter::convertToHexCoordinates(size_t level, size_t rin
   static int direction[6][2] = { { 1, -1 }, { 1, 0 }, { 0, 1 }, { -1, 1 }, { -1, 0 }, { 0, -1 } };
   size_t s = ringI / level;
   int r = static_cast<int>(ringI % level);
-  x = level * origin[s][0] + direction[s][0] * r;
-  y = level * origin[s][1] + direction[s][1] * r;
+  x = static_cast<int>(level * origin[s][0] + direction[s][0] * r);
+  y = static_cast<int>(level * origin[s][1] + direction[s][1] * r);
 }
 
 void rggNucCoordinateConverter::convertFromHexCoordinates(

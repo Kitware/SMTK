@@ -56,52 +56,49 @@ smtk::model::OperatorResult AddMaterial::operateInternal()
   Material material;
 
   // Access the material name.
-  material.m_name = this->specification()->findAs<attribute::StringItem>("name")->value();
+  material.setName(this->specification()->findAs<attribute::StringItem>("name")->value());
 
   // Access the material temperature in Kelvin.
-  material.m_temperature =
-    this->specification()->findAs<attribute::DoubleItem>("temperature")->value();
+  material.setTemperature(
+    this->specification()->findAs<attribute::DoubleItem>("temperature")->value());
 
   // Access the material thermal expansion coefficient (set to 0 by default).
-  material.m_thermalExpansion =
-    this->specification()->findAs<attribute::DoubleItem>("thermalExpansion")->value();
+  material.setThermalExpansion(
+    this->specification()->findAs<attribute::DoubleItem>("thermalExpansion")->value());
 
   // Access the material density. This value is qualified by density type
   // (below).
-  material.m_density = this->specification()->findAs<attribute::DoubleItem>("density")->value();
+  material.setDensity(this->specification()->findAs<attribute::DoubleItem>("density")->value());
 
   // Access the density type (atoms/barn-cm or g/cm^3).
-  material.m_densityType =
-    this->specification()->findAs<attribute::StringItem>("densityType")->value();
+  material.setDensityType(
+    this->specification()->findAs<attribute::StringItem>("densityType")->value());
 
   // Access the material composition type (weight fractions, atom fractions,
   // atom densities or weight densities).
-  material.m_compositionType =
-    this->specification()->findAs<attribute::StringItem>("compositionType")->value();
+  material.setCompositionType(
+    this->specification()->findAs<attribute::StringItem>("compositionType")->value());
 
   // Each component has a name and an associated content value (weight/atom
   // fraction/density).
   smtk::attribute::StringItemPtr componentsI =
     this->specification()->findAs<attribute::StringItem>("component");
-  material.m_components.insert(
-    material.m_components.begin(), componentsI->begin(), componentsI->end());
+  for (auto comp = componentsI->begin(); comp != componentsI->end(); ++comp)
+  {
+    material.addComponent(*comp);
+  }
 
   smtk::attribute::DoubleItemPtr contentI =
     this->specification()->findAs<attribute::DoubleItem>("content");
-  material.m_content.insert(material.m_content.begin(), contentI->begin(), contentI->end());
-
-  // If the number of component names does not match the number of content
-  // values, something went wrong.
-  if (material.m_components.size() != material.m_content.size())
+  for (auto content = contentI->begin(); content != contentI->end(); ++content)
   {
-    smtkErrorMacro(this->log(), "Size mismatch between components and contents.");
-    return this->createResult(smtk::operation::Operator::OPERATION_FAILED);
+    material.addContent(*content);
   }
 
   // The material name is used as the lookup index for both the label and
   // color.
-  model.setStringProperty(material.m_name, label);
-  model.setFloatProperty(material.m_name, color);
+  model.setStringProperty(material.name(), label);
+  model.setFloatProperty(material.name(), color);
 
   // The name is stored using the label "materials". If it does not yet exist,
   // we create it and populate it with a default "No Cell Material" material.
@@ -111,12 +108,12 @@ smtk::model::OperatorResult AddMaterial::operateInternal()
     model.setStringProperty(nm, nm);
     model.setFloatProperty(nm, { 1, 1, 1, 1 });
 
-    std::vector<std::string> materialVec = { nm, material.m_name };
+    std::vector<std::string> materialVec = { nm, material.name() };
     model.setStringProperty("materials", materialVec);
   }
   else
   {
-    model.stringProperty("materials").push_back(material.m_name);
+    model.stringProperty("materials").push_back(material.name());
   }
 
   // To avoid collision with the preexisting mechanisms for material
@@ -137,7 +134,7 @@ smtk::model::OperatorResult AddMaterial::operateInternal()
     // property list.
     StringList& materialDescriptions = model.stringProperty(Material::label);
     std::stringstream ss;
-    ss << "material ( " << material.m_name << " )";
+    ss << "material ( " << material.name() << " )";
     for (std::size_t i = 0; i < materialDescriptions.size(); i++)
     {
       if (materialDescriptions[i].find(ss.str()) != std::string::npos)

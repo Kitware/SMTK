@@ -212,7 +212,7 @@ void smtkRGGEditPinView::apply()
   layersI->setNumberOfGroups(1); // Clear the existing groups
   // Add pieces
   QTableWidget* lT = this->Internals->layersTable;
-  for (size_t i = 0; i < lT->rowCount(); i++)
+  for (int i = 0; i < lT->rowCount(); i++)
   {
     if (i > 0)
     { // Attribute would create an empty group since required value is set to 1
@@ -497,22 +497,22 @@ void smtkRGGEditPinView::createPiecesTable()
   this->Internals->addPieceButton->setToolTip("Add a new piece after the lastest piece");
   QObject::connect(this->Internals->addPieceButton, &QPushButton::clicked, this, [this]() {
     // Get the current last piece
-    QTableWidget* pt = this->Internals->piecesTable;
-    int lastRowIndex = pt->rowCount() - 1;
+    QTableWidget* pT = this->Internals->piecesTable;
+    int lastRowIndex = pT->rowCount() - 1;
     if (lastRowIndex < 0)
     {
       std::cerr << "pieces table does not have initial value" << std::endl;
       return;
     }
-    QWidget* tmpWidget = pt->cellWidget(lastRowIndex, 0);
+    QWidget* tmpWidget = pT->cellWidget(lastRowIndex, 0);
     QComboBox* comboBox = dynamic_cast<QComboBox*>(tmpWidget);
     RGGType type = static_cast<RGGType>(comboBox->currentIndex());
-    double height = pt->item(lastRowIndex, 1)->text().toDouble();
+    double height = pT->item(lastRowIndex, 1)->text().toDouble();
     // If last row's type is frustum, we would flip the baseR and topR here
-    double baseR = type ? pt->item(lastRowIndex, 3)->text().toDouble()
-                        : pt->item(lastRowIndex, 2)->text().toDouble();
-    double topR = type ? pt->item(lastRowIndex, 2)->text().toDouble()
-                       : pt->item(lastRowIndex, 3)->text().toDouble();
+    double baseR = type ? pT->item(lastRowIndex, 3)->text().toDouble()
+                        : pT->item(lastRowIndex, 2)->text().toDouble();
+    double topR = type ? pT->item(lastRowIndex, 2)->text().toDouble()
+                       : pT->item(lastRowIndex, 3)->text().toDouble();
     this->addPieceToTable(lastRowIndex + 1, type, height, baseR, topR);
   });
   // Remove picece button
@@ -628,7 +628,7 @@ void smtkRGGEditPinView::createLayersTable()
 void smtkRGGEditPinView::addlayerBefore()
 {
   QTableWidget* lT = this->Internals->layersTable;
-  int row;
+  int row = 0;
   if (lT->selectedItems().count() != 0)
   {
     row = lT->selectedItems().value(0)->row();
@@ -644,7 +644,7 @@ void smtkRGGEditPinView::addlayerBefore()
 void smtkRGGEditPinView::addlayerAfter()
 {
   QTableWidget* lT = this->Internals->layersTable;
-  int row;
+  int row = 0;
   if (lT->selectedItems().count() != 0)
   {
     row = lT->selectedItems().value(0)->row();

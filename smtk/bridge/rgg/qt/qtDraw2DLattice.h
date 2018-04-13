@@ -25,6 +25,8 @@
 #include "smtk/bridge/rgg/qt/rggNucPartDefinition.h"
 #include "smtk/model/EntityRef.h"
 
+#include "smtk/bridge/rgg/qt/Exports.h"
+
 #include <map>
 #include <vector>
 
@@ -33,7 +35,7 @@ class rggLatticeContainer;
 class QPoint;
 class rggNucCoordinateConverter;
 
-class qtDraw2DLattice : public QGraphicsView
+class SMTKQTRGGSESSION_EXPORT qtDraw2DLattice : public QGraphicsView
 {
   Q_OBJECT
   typedef QGraphicsView Superclass;

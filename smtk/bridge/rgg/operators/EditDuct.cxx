@@ -61,7 +61,7 @@ smtk::model::OperatorResult EditDuct::operateInternal()
   smtk::model::AuxiliaryGeometry auxGeom = entities[0].as<AuxiliaryGeometry>();
   // Remove all current child auxiliary geometries first
   EntityRefArray children = auxGeom.embeddedEntities<EntityRefArray>();
-  auxGeom.setIntegerProperty("previous children size", children.size());
+  auxGeom.setIntegerProperty("previous children size", static_cast<int>(children.size()));
   tobeDeleted.insert(tobeDeleted.end(), children.begin(), children.end());
 
   if (this->manager())

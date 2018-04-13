@@ -59,8 +59,8 @@ namespace
 {
 static const double cos30 = 0.86602540378443864676372317075294;
 static const double cos60 = 0.5;
-static const int degreesHex[6] = { -120, -60, 0, 60, 120, 180 };
-static const int degreesRec[4] = { -90, 0, 90, 180 };
+// static const int degreesHex[6] = { -120, -60, 0, 60, 120, 180 };
+// static const int degreesRec[4] = { -90, 0, 90, 180 };
 // 0', 60', 120, 180', 240', 300'
 static const double cosSinAngles[6][2] = { { 1.0, 0.0 }, { cos60, -cos30 }, { -cos60, -cos30 },
   { -1.0, 0.0 }, { -cos60, cos30 }, { cos60, cos30 } };
@@ -91,7 +91,7 @@ void calculateDuctMinimimThickness(
   }
   thickness0 = std::numeric_limits<double>::max();
   thickness1 = std::numeric_limits<double>::max();
-  for (auto i = 0; i < thicknesses.size() / 2; i++)
+  for (size_t i = 0; i < thicknesses.size() / 2; i++)
   {
     double currentT0 = pitches[0] * thicknesses[i * 2];
     double currentT1 = pitches[1] * thicknesses[i * 2 + 1];
@@ -212,6 +212,7 @@ bool read(pugi::xml_node& node, std::string attName, unsigned int& v)
   return true;
 }
 
+/*
 bool read(pugi::xml_node& node, std::string attName, bool& v)
 {
   std::string str;
@@ -220,6 +221,7 @@ bool read(pugi::xml_node& node, std::string attName, bool& v)
   v = static_cast<bool>(std::atoi(str.c_str()));
   return true;
 }
+*/
 
 bool read(pugi::xml_node& node, std::string attName, double* v, int size)
 {
@@ -550,28 +552,27 @@ bool ReadRXFFileHelper::parseCore(pugi::xml_node rootNode, EntityRef model,
       coordinates.push_back(0);
       // For each (x,y) pair, add it to every pin and duct in the current assy
       auto addTransformCoordsToMap = [&entsAndCoords, &x, &y](
-        const smtk::model::EntityRef& ent, std::vector<double>& coordinates) {
+        const smtk::model::EntityRef& ent, std::vector<double>& coords) {
         // Apply transformation
-        for (size_t i = 0; i < coordinates.size(); i++)
+        for (size_t i = 0; i < coords.size(); i++)
         {
           if (i % 3 == 0)
           { // X
-            coordinates[i] += x;
+            coords[i] += x;
           }
           if (i % 3 == 1)
           { // Y
-            coordinates[i] += y;
+            coords[i] += y;
           }
         }
 
         if (entsAndCoords.find(ent) != entsAndCoords.end())
         { // TODO: Possible performance bottleneck
-          entsAndCoords[ent].insert(
-            entsAndCoords[ent].end(), coordinates.begin(), coordinates.end());
+          entsAndCoords[ent].insert(entsAndCoords[ent].end(), coords.begin(), coords.end());
         }
         else
         {
-          entsAndCoords[ent] = coordinates;
+          entsAndCoords[ent] = coords;
         }
       };
       // Duct
@@ -628,7 +629,7 @@ bool ReadRXFFileHelper::parseDuctNodeAndCreate(
   smtk::model::IntegerList numMaterialsPerSeg, ductMaterials;
   smtk::model::FloatList zValues, thicknesses;
 
-  int ductLayerCount(0);
+  size_t ductLayerCount(0);
   for (pugi::xml_node dLN = node.child(DUCT_LAYER_TAG.c_str()); dLN;
        dLN = dLN.next_sibling(DUCT_LAYER_TAG.c_str()), ductLayerCount++)
   {
@@ -673,9 +674,9 @@ bool ReadRXFFileHelper::parseDuctNodeAndCreate(
 
   // Create auxgeom placeholders for layers and parts
   size_t materialIndex(0);
-  for (std::size_t i = 0; i < ductLayerCount; i++)
+  for (size_t i = 0; i < ductLayerCount; i++)
   {
-    for (std::size_t j = 0; j < numMaterialsPerSeg[i]; j++)
+    for (std::size_t j = 0; j < static_cast<size_t>(numMaterialsPerSeg[i]); j++)
     {
       // Create an auxo_geom for every layer in current segment
       AuxiliaryGeometry subLayer = mgr->addAuxiliaryGeometry(duct, 3);
@@ -1068,7 +1069,7 @@ bool ReadRXFFileHelper::parseLattice(
   std::vector<std::string> labelsPerRing;
   r &= read(latticeNode, GRID_TAG.c_str(), labelsPerRing);
   int j(0);
-  for (int i = 0; i < labelsPerRing.size(); i++)
+  for (int i = 0; i < static_cast<int>(labelsPerRing.size()); i++)
   { // Per ring
     std::string labels = labelsPerRing[i];
     regex re(",");

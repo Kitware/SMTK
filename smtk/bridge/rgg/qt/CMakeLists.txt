@@ -25,7 +25,6 @@ set (non_ui_srcs
 
 set (moc_hdrs
   qtDraw2DLattice.h
-  qtDrawLatticeItem.h
 )
 set (hdrs
   ${moc_hdrs}

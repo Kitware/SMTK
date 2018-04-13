@@ -32,7 +32,7 @@ namespace bridge
 {
 namespace rgg
 {
-static int matToColSize = 22;
+static unsigned int matToColSize = 22;
 static struct
 {
   std::string mat;

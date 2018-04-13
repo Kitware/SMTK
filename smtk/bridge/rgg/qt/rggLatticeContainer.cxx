@@ -21,7 +21,7 @@ rggLatticeContainer::~rggLatticeContainer()
 }
 
 // latice container functions
-std::pair<int, int> rggLatticeContainer::GetDimensions()
+std::pair<size_t, size_t> rggLatticeContainer::GetDimensions()
 {
   return this->m_lattice.GetDimensions();
 }
