@@ -201,8 +201,8 @@ bool smtkRGGAddMaterialView::ableToOperate()
     this->Internals->colorAValue->text().isEmpty() ||
     this->Internals->temperatureValue->text().isEmpty() ||
     this->Internals->thermalCoeffValue->text().isEmpty() ||
-    this->Internals->densityValue->text().isEmpty() ||
-    this->Internals->componentsTable == nullptr ||
+    this->Internals->densityValue->text().isEmpty() || this->Internals->densityTypeBox == nullptr ||
+    this->Internals->compositionTypeBox == nullptr || this->Internals->componentsTable == nullptr ||
     this->Internals->componentsTable->rowCount() == 0)
   {
     this->Internals->applyButton->setEnabled(false);
@@ -239,11 +239,34 @@ bool smtkRGGAddMaterialView::ableToOperate()
 
   smtk::attribute::StringItemPtr densityTypeI =
     this->Internals->m_currentAtt->attribute()->findString("densityType");
-  densityTypeI->setValue(this->Internals->densityTypeBox->currentText().toStdString());
+  {
+    std::size_t index = 0;
+    const smtk::attribute::StringItemDefinition* def =
+      static_cast<const smtk::attribute::StringItemDefinition*>(densityTypeI->definition().get());
+    bool ok =
+      def->getEnumIndex(this->Internals->densityTypeBox->currentText().toStdString(), index);
+    if (!ok)
+    {
+      return false;
+    }
+    densityTypeI->setDiscreteIndex(index);
+  }
 
   smtk::attribute::StringItemPtr compositionTypeI =
     this->Internals->m_currentAtt->attribute()->findString("compositionType");
-  compositionTypeI->setValue(this->Internals->compositionTypeBox->currentText().toStdString());
+  {
+    std::size_t index = 0;
+    const smtk::attribute::StringItemDefinition* def =
+      static_cast<const smtk::attribute::StringItemDefinition*>(
+        compositionTypeI->definition().get());
+    bool ok =
+      def->getEnumIndex(this->Internals->compositionTypeBox->currentText().toStdString(), index);
+    if (!ok)
+    {
+      return false;
+    }
+    compositionTypeI->setDiscreteIndex(index);
+  }
 
   smtk::attribute::StringItemPtr componentI =
     this->Internals->m_currentAtt->attribute()->findString("component");
@@ -401,6 +424,10 @@ void smtkRGGAddMaterialView::createWidget()
     validator->setBottom(0.);
     this->Internals->densityValue->setValidator(validator);
   }
+  QObject::connect(this->Internals->densityTypeBox, &QComboBox::currentTextChanged, this,
+    &smtkRGGAddMaterialView::ableToOperate);
+  QObject::connect(this->Internals->compositionTypeBox, &QComboBox::currentTextChanged, this,
+    &smtkRGGAddMaterialView::ableToOperate);
   QObject::connect(this->Internals->componentsTable, &QTableWidget::cellChanged, this,
     &smtkRGGAddMaterialView::ableToOperate);
 

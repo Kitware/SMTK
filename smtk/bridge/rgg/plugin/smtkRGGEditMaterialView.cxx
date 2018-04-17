@@ -64,9 +64,9 @@ public:
 
   ~smtkRGGEditMaterialViewInternals()
   {
-    if (CurrentAtt)
+    if (m_currentAtt)
     {
-      delete CurrentAtt;
+      delete m_currentAtt;
     }
   }
 
@@ -90,10 +90,10 @@ public:
     return NULL;
   }
 
-  QPointer<qtAttribute> CurrentAtt;
+  QPointer<qtAttribute> m_currentAtt;
   QPointer<NuclideTable> m_nuclideTable;
   QPointer<QDockWidget> m_nuclideWidget;
-  smtk::weak_ptr<smtk::model::Operator> CurrentOp;
+  smtk::weak_ptr<smtk::model::Operator> m_currentOp;
 };
 
 smtkRGGEditMaterialView::smtkRGGEditMaterialView(const ViewInfo& info)
@@ -164,7 +164,7 @@ void smtkRGGEditMaterialView::launchNuclideTable()
 
 void smtkRGGEditMaterialView::valueChanged(smtk::attribute::ItemPtr /*optype*/)
 {
-  this->requestOperation(this->Internals->CurrentOp.lock());
+  this->requestOperation(this->Internals->m_currentOp.lock());
 }
 
 void smtkRGGEditMaterialView::requestOperation(const smtk::model::OperatorPtr& op)
@@ -178,7 +178,7 @@ void smtkRGGEditMaterialView::requestOperation(const smtk::model::OperatorPtr& o
 
 void smtkRGGEditMaterialView::cancelOperation(const smtk::model::OperatorPtr& op)
 {
-  if (!op || !this->Widget || !this->Internals->CurrentAtt)
+  if (!op || !this->Widget || !this->Internals->m_currentAtt)
   {
     return;
   }
@@ -204,8 +204,8 @@ bool smtkRGGEditMaterialView::ableToOperate()
     this->Internals->colorAValue->text().isEmpty() ||
     this->Internals->temperatureValue->text().isEmpty() ||
     this->Internals->thermalCoeffValue->text().isEmpty() ||
-    this->Internals->densityValue->text().isEmpty() ||
-    this->Internals->componentsTable == nullptr ||
+    this->Internals->densityValue->text().isEmpty() || this->Internals->densityTypeBox == nullptr ||
+    this->Internals->compositionTypeBox == nullptr || this->Internals->componentsTable == nullptr ||
     this->Internals->componentsTable->rowCount() == 0)
   {
     this->Internals->applyButton->setEnabled(false);
@@ -214,44 +214,67 @@ bool smtkRGGEditMaterialView::ableToOperate()
 
   // Fill the attribute - read all data from UI
   smtk::attribute::StringItemPtr nameI =
-    this->Internals->CurrentAtt->attribute()->findString("name");
+    this->Internals->m_currentAtt->attribute()->findString("name");
   nameI->setValue(this->Internals->materialBox->currentText().toStdString());
 
   smtk::attribute::StringItemPtr labelI =
-    this->Internals->CurrentAtt->attribute()->findString("label");
+    this->Internals->m_currentAtt->attribute()->findString("label");
   labelI->setValue(this->Internals->labelValue->text().toStdString());
 
   smtk::attribute::DoubleItemPtr colorI =
-    this->Internals->CurrentAtt->attribute()->findDouble("color");
+    this->Internals->m_currentAtt->attribute()->findDouble("color");
   colorI->setValue(0, this->Internals->colorRValue->text().toFloat());
   colorI->setValue(1, this->Internals->colorGValue->text().toFloat());
   colorI->setValue(2, this->Internals->colorBValue->text().toFloat());
   colorI->setValue(3, this->Internals->colorAValue->text().toFloat());
 
   smtk::attribute::DoubleItemPtr temperatureI =
-    this->Internals->CurrentAtt->attribute()->findDouble("temperature");
+    this->Internals->m_currentAtt->attribute()->findDouble("temperature");
   temperatureI->setValue(this->Internals->temperatureValue->text().toFloat());
 
   smtk::attribute::DoubleItemPtr thermalExpansionI =
-    this->Internals->CurrentAtt->attribute()->findDouble("thermalExpansion");
+    this->Internals->m_currentAtt->attribute()->findDouble("thermalExpansion");
   thermalExpansionI->setValue(this->Internals->thermalCoeffValue->text().toFloat());
 
   smtk::attribute::DoubleItemPtr densityI =
-    this->Internals->CurrentAtt->attribute()->findDouble("density");
+    this->Internals->m_currentAtt->attribute()->findDouble("density");
   densityI->setValue(this->Internals->densityValue->text().toFloat());
 
   smtk::attribute::StringItemPtr densityTypeI =
-    this->Internals->CurrentAtt->attribute()->findString("densityType");
-  densityTypeI->setValue(this->Internals->densityTypeBox->currentText().toStdString());
+    this->Internals->m_currentAtt->attribute()->findString("densityType");
+  {
+    std::size_t index = 0;
+    const smtk::attribute::StringItemDefinition* def =
+      static_cast<const smtk::attribute::StringItemDefinition*>(densityTypeI->definition().get());
+    bool ok =
+      def->getEnumIndex(this->Internals->densityTypeBox->currentText().toStdString(), index);
+    if (!ok)
+    {
+      return false;
+    }
+    densityTypeI->setDiscreteIndex(index);
+  }
 
   smtk::attribute::StringItemPtr compositionTypeI =
-    this->Internals->CurrentAtt->attribute()->findString("compositionType");
-  compositionTypeI->setValue(this->Internals->compositionTypeBox->currentText().toStdString());
+    this->Internals->m_currentAtt->attribute()->findString("compositionType");
+  {
+    std::size_t index = 0;
+    const smtk::attribute::StringItemDefinition* def =
+      static_cast<const smtk::attribute::StringItemDefinition*>(
+        compositionTypeI->definition().get());
+    bool ok =
+      def->getEnumIndex(this->Internals->compositionTypeBox->currentText().toStdString(), index);
+    if (!ok)
+    {
+      return false;
+    }
+    compositionTypeI->setDiscreteIndex(index);
+  }
 
   smtk::attribute::StringItemPtr componentI =
-    this->Internals->CurrentAtt->attribute()->findString("component");
+    this->Internals->m_currentAtt->attribute()->findString("component");
   smtk::attribute::DoubleItemPtr contentI =
-    this->Internals->CurrentAtt->attribute()->findDouble("content");
+    this->Internals->m_currentAtt->attribute()->findDouble("content");
 
   QTableWidget* cT = this->Internals->componentsTable;
   componentI->setNumberOfValues(cT->rowCount());
@@ -267,7 +290,7 @@ bool smtkRGGEditMaterialView::ableToOperate()
     contentI->setValue(i, static_cast<QLineEdit*>(cT->cellWidget(i, 1))->text().toFloat());
   }
 
-  bool able = this->Internals->CurrentOp.lock()->ableToOperate();
+  bool able = this->Internals->m_currentOp.lock()->ableToOperate();
   this->Internals->applyButton->setEnabled(able);
   return able;
 }
@@ -276,7 +299,7 @@ void smtkRGGEditMaterialView::apply()
 {
   if (this->ableToOperate())
   {
-    this->requestOperation(this->Internals->CurrentOp.lock());
+    this->requestOperation(this->Internals->m_currentOp.lock());
     this->Internals->applyButton->setEnabled(false);
   }
 }
@@ -289,9 +312,9 @@ void smtkRGGEditMaterialView::updateAttributeData()
     return;
   }
 
-  if (this->Internals->CurrentAtt)
+  if (this->Internals->m_currentAtt)
   {
-    delete this->Internals->CurrentAtt;
+    delete this->Internals->m_currentAtt;
   }
 
   int i = view->details().findChild("AttributeTypes");
@@ -325,10 +348,10 @@ void smtkRGGEditMaterialView::updateAttributeData()
 
   smtk::model::OperatorPtr editMaterialOp =
     this->uiManager()->activeModelView()->operatorsWidget()->existingOperator(defName);
-  this->Internals->CurrentOp = editMaterialOp;
+  this->Internals->m_currentOp = editMaterialOp;
 
   smtk::attribute::AttributePtr att = editMaterialOp->specification();
-  this->Internals->CurrentAtt = this->Internals->createAttUI(att, this->Widget, this);
+  this->Internals->m_currentAtt = this->Internals->createAttUI(att, this->Widget, this);
 
   this->updateEditMaterialPanel();
 }
@@ -404,6 +427,10 @@ void smtkRGGEditMaterialView::createWidget()
     validator->setBottom(0.);
     this->Internals->densityValue->setValidator(validator);
   }
+  QObject::connect(this->Internals->densityTypeBox, &QComboBox::currentTextChanged, this,
+    &smtkRGGEditMaterialView::ableToOperate);
+  QObject::connect(this->Internals->compositionTypeBox, &QComboBox::currentTextChanged, this,
+    &smtkRGGEditMaterialView::ableToOperate);
   QObject::connect(this->Internals->componentsTable, &QTableWidget::cellChanged, this,
     &smtkRGGEditMaterialView::ableToOperate);
 
@@ -466,11 +493,11 @@ void smtkRGGEditMaterialView::createWidget()
 
 void smtkRGGEditMaterialView::updateEditMaterialPanel()
 {
-  smtk::model::EntityRefArray ents = this->Internals->CurrentAtt->attribute()
+  smtk::model::EntityRefArray ents = this->Internals->m_currentAtt->attribute()
                                        ->associatedModelEntities<smtk::model::EntityRefArray>();
   bool isEnabled(true);
   if (ents.size() == 0)
-  { // Its type is not rgg pin
+  {
     isEnabled = false;
   }
   if (this->Internals)
@@ -483,6 +510,7 @@ void smtkRGGEditMaterialView::updateEditMaterialPanel()
     this->setupDensityTypeComboBox(this->Internals->densityTypeBox);
     this->setupCompositionTypeComboBox(this->Internals->compositionTypeBox);
     this->materialChanged(this->Internals->materialBox->currentText());
+    this->Internals->applyButton->setEnabled(false);
   }
 }
 
@@ -520,7 +548,7 @@ void smtkRGGEditMaterialView::setupDensityTypeComboBox(QComboBox* box)
   box->clear();
   const smtk::attribute::StringItemDefinition* def =
     static_cast<const smtk::attribute::StringItemDefinition*>(
-      this->Internals->CurrentAtt->attribute()->findString("densityType")->definition().get());
+      this->Internals->m_currentAtt->attribute()->findString("densityType")->definition().get());
 
   for (std::size_t i = 0; i < def->numberOfDiscreteValues(); i++)
   {
@@ -531,9 +559,9 @@ void smtkRGGEditMaterialView::setupDensityTypeComboBox(QComboBox* box)
 void smtkRGGEditMaterialView::setupCompositionTypeComboBox(QComboBox* box)
 {
   box->clear();
-  const smtk::attribute::StringItemDefinition* def =
-    static_cast<const smtk::attribute::StringItemDefinition*>(
-      this->Internals->CurrentAtt->attribute()->findString("compositionType")->definition().get());
+  const smtk::attribute::StringItemDefinition* def = static_cast<
+    const smtk::attribute::StringItemDefinition*>(
+    this->Internals->m_currentAtt->attribute()->findString("compositionType")->definition().get());
 
   for (std::size_t i = 0; i < def->numberOfDiscreteValues(); i++)
   {
@@ -626,9 +654,9 @@ void smtkRGGEditMaterialView::materialChanged(const QString& text)
     this->Internals->compositionTypeBox->property(material.compositionType().c_str()).toInt());
 
   smtk::attribute::StringItemPtr componentI =
-    this->Internals->CurrentAtt->attribute()->findString("component");
+    this->Internals->m_currentAtt->attribute()->findString("component");
   smtk::attribute::DoubleItemPtr contentI =
-    this->Internals->CurrentAtt->attribute()->findDouble("content");
+    this->Internals->m_currentAtt->attribute()->findDouble("content");
 
   if (this->Internals->m_nuclideTable == nullptr)
   {
@@ -636,6 +664,7 @@ void smtkRGGEditMaterialView::materialChanged(const QString& text)
   }
 
   QTableWidget* cT = this->Internals->componentsTable;
+  cT->blockSignals(true);
   cT->setRowCount(static_cast<int>(material.numberOfComponents()));
   cT->setColumnCount(2);
   for (std::size_t i = 0; i < material.numberOfComponents(); i++)
@@ -650,7 +679,14 @@ void smtkRGGEditMaterialView::materialChanged(const QString& text)
       item->setData(Qt::DecorationRole, nuclide->toPixmap());
     }
     cT->setItem(static_cast<int>(i), 0, item);
-    cT->setItem(static_cast<int>(i), 1, new QTableWidgetItem(QString::number(material.content(i))));
+    QLineEdit* edit = new QLineEdit(cT);
+    edit->setFrame(false);
+    auto validator = new QDoubleValidator(edit);
+    validator->setBottom(0.);
+    edit->setValidator(validator);
+    edit->setText(QString::number(material.content(i)));
+    cT->setCellWidget(static_cast<int>(i), 1, edit);
+    cT->blockSignals(false);
   }
   this->setEnabled(true);
 }
