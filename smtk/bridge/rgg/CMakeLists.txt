@@ -75,11 +75,39 @@ smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" rggSessionJSON)
 # Install the headers
 smtk_public_headers(${rggHeaders})
 
-# TODO
-# Add pybind11 and testing
 if (SMTK_ENABLE_QT_SUPPORT)
   add_subdirectory(qt)
 endif()
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_subdirectory(plugin)
+endif()
+
+if (SMTK_ENABLE_PYTHON_WRAPPING)
+
+set(rggPySrcs
+  operators/export_to_pyarc.py
+  operators/export_to_pyarcHelper.py
+  )
+
+  set(rgg_pymodulefiles)
+  smtk_pyoperator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/export_to_pyarc.sbt"
+    rgg_pymodulefiles)
+
+  foreach(pyfile ${rggPySrcs})
+    get_filename_component(filename ${pyfile} NAME)
+    configure_file(
+      "${CMAKE_CURRENT_SOURCE_DIR}/${pyfile}"
+      "${CMAKE_CURRENT_BINARY_DIR}/${filename}" @ONLY
+      )
+    list(APPEND rgg_pymodulefiles "${CMAKE_CURRENT_BINARY_DIR}/${filename}")
+  endforeach()
+  install(
+    FILES ${rgg_pymodulefiles}
+    DESTINATION "${SMTK_PYTHON_MODULEDIR}/smtk/bridge/rgg"
+    )
+  add_subdirectory(pybind11)
+endif()
+
+if (SMTK_ENABLE_TESTING)
+  add_subdirectory(testing)
 endif()

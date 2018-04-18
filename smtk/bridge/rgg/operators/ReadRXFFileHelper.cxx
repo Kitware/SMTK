@@ -21,6 +21,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/bridge/rgg/Material.h"
 #include "smtk/bridge/rgg/operators/CreateAssembly.h"
 #include "smtk/bridge/rgg/operators/CreateDuct.h"
 #include "smtk/bridge/rgg/operators/CreateModel.h"
@@ -300,21 +301,24 @@ size_t materialNameToIndex(std::string materialN, const std::vector<std::string>
 
 bool ReadRXFFileHelper::parseMaterial(pugi::xml_node node, smtk::model::EntityRef model)
 {
-  smtk::model::StringList materialsList;
+  smtk::model::StringList materialsList, materialsDList;
   bool r = true;
   for (auto materialN = node.child((MATERIAL_TAG.c_str())); materialN;
        materialN = materialN.next_sibling(MATERIAL_TAG.c_str()))
   {
-    std::string name, label;
+    std::string name, label, description;
     std::vector<double> color;
     r &= read(materialN, NAME_TAG.c_str(), name);
     r &= read(materialN, LABEL_TAG.c_str(), label);
+    r &= read(materialN, DESCRIPTION_TAG.c_str(), description);
     r &= readColor(materialN, COLOR_TAG.c_str(), color);
     materialsList.push_back(name);
+    materialsDList.push_back(description);
     model.setStringProperty(name, label);
     model.setFloatProperty(name, color);
   }
   model.setStringProperty("materials", materialsList);
+  model.setStringProperty(Material::label, materialsDList);
   return r;
 }
 
