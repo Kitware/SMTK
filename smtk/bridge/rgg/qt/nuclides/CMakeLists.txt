@@ -30,7 +30,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-add_library(smtkQtRGGNuclides ${SOURCE} Resources.qrc)
+add_library(smtkQtRGGNuclides ${SOURCE} NuclideResources.qrc)
 
 set_target_properties(smtkQtRGGNuclides PROPERTIES AUTOMOC TRUE)
 target_link_libraries(smtkQtRGGNuclides

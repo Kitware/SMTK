@@ -64,13 +64,13 @@ NuclideTableView::NuclideTableView(const QString& name, QWidget* parent)
   zoomInIcon->setAutoRepeat(true);
   zoomInIcon->setAutoRepeatInterval(33);
   zoomInIcon->setAutoRepeatDelay(0);
-  zoomInIcon->setIcon(QPixmap(":/zoomin.png"));
+  zoomInIcon->setIcon(QPixmap(":/rgg/qt/nuclide/zoomin.png"));
   zoomInIcon->setIconSize(iconSize);
   QToolButton* zoomOutIcon = new QToolButton;
   zoomOutIcon->setAutoRepeat(true);
   zoomOutIcon->setAutoRepeatInterval(33);
   zoomOutIcon->setAutoRepeatDelay(0);
-  zoomOutIcon->setIcon(QPixmap(":/zoomout.png"));
+  zoomOutIcon->setIcon(QPixmap(":/rgg/qt/nuclide/zoomout.png"));
   zoomOutIcon->setIconSize(iconSize);
   zoomSlider = new QSlider;
   zoomSlider->setMinimum(75);
@@ -171,6 +171,12 @@ NuclideTableView::NuclideTableView(const QString& name, QWidget* parent)
 
   connect(massNumber, (void (QComboBox::*)(const QString&)) & QComboBox::currentIndexChanged,
     highlightNuclide);
+
+  int filterId = symbol->findText("H");
+  if (filterId != -1)
+  {
+    symbol->setCurrentIndex(filterId);
+  }
 
   label2 = new QLabel(tr("Pointer Mode"));
   selectModeButton = new QToolButton;

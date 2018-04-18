@@ -23,7 +23,7 @@
 
 void initNuclideResource()
 {
-  Q_INIT_RESOURCE(Resources);
+  Q_INIT_RESOURCE(NuclideResources);
 }
 
 namespace smtk
@@ -170,11 +170,10 @@ Nuclide* NuclideTable::nuclide(const unsigned int& id) const
 
 void NuclideTable::populateScene()
 {
-  // m_scene = new QGraphicsScene(this);
   m_scene = new NuclideTableScene(this);
 
   {
-    QFile file(":/nuclear-wallet-cards.txt");
+    QFile file(":/rgg/qt/nuclide/nuclear-wallet-cards.txt");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
       qDebug() << "Unable to open file: " << file.fileName() << " besause of error "
