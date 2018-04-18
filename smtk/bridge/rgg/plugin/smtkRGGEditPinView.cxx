@@ -463,7 +463,7 @@ void smtkRGGEditPinView::updateEditPinPanel()
       size_t numLayers = layerMs.size();
       for (std::size_t index = 0; index < numLayers; index++)
       {
-        this->addLayerToTable(index, layerMs[index], layerRadiusNs[index]);
+        this->addLayerToTable(static_cast<int>(index), layerMs[index], layerRadiusNs[index]);
       }
     }
     else

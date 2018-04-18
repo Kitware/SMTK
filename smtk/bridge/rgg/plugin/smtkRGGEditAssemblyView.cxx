@@ -357,14 +357,14 @@ void smtkRGGEditAssemblyView::apply()
 
       if (entityToLayout.find(currentPin) != entityToLayout.end())
       {
-        entityToLayout[currentPin].push_back(i);
-        entityToLayout[currentPin].push_back(j);
+        entityToLayout[currentPin].push_back(static_cast<int>(i));
+        entityToLayout[currentPin].push_back(static_cast<int>(j));
       }
       else
       {
         std::vector<int> layout;
-        layout.push_back(i);
-        layout.push_back(j);
+        layout.push_back(static_cast<int>(i));
+        layout.push_back(static_cast<int>(j));
         entityToLayout[currentPin] = layout;
       }
     }

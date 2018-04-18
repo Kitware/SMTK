@@ -327,14 +327,14 @@ void smtkRGGEditCoreView::apply()
 
       if (assemblyToLayout.find(currentAssy) != assemblyToLayout.end())
       {
-        assemblyToLayout[currentAssy].push_back(i);
-        assemblyToLayout[currentAssy].push_back(j);
+        assemblyToLayout[currentAssy].push_back(static_cast<int>(i));
+        assemblyToLayout[currentAssy].push_back(static_cast<int>(j));
       }
       else
       {
         std::vector<int> layout;
-        layout.push_back(i);
-        layout.push_back(j);
+        layout.push_back(static_cast<int>(i));
+        layout.push_back(static_cast<int>(j));
         assemblyToLayout[currentAssy] = layout;
       }
     }

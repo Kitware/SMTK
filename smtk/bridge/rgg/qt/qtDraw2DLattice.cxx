@@ -117,27 +117,27 @@ void qtDraw2DLattice::apply()
 
 int qtDraw2DLattice::layers()
 {
-  return this->m_grid.GetDimensions().first;
+  return static_cast<int>(this->m_grid.GetDimensions().first);
 }
 
 void qtDraw2DLattice::setLatticeXorLayers(int val)
 {
-  std::pair<int, int> wh = m_grid.GetDimensions();
-  if (val == wh.first)
+  std::pair<size_t, size_t> wh = m_grid.GetDimensions();
+  if (val == static_cast<int>(wh.first))
     return;
   this->m_changed |= static_cast<int>(SizeChange);
-  m_grid.SetDimensions(val, wh.second);
+  m_grid.SetDimensions(val, static_cast<int>(wh.second));
   checkForChangeMode();
   this->rebuild();
 }
 
 void qtDraw2DLattice::setLatticeY(int val)
 {
-  std::pair<int, int> wh = m_grid.GetDimensions();
-  if (val == wh.second)
+  std::pair<size_t, size_t> wh = m_grid.GetDimensions();
+  if (val == static_cast<int>(wh.second))
     return;
   this->m_changed |= static_cast<int>(SizeChange);
-  m_grid.SetDimensions(wh.first, val);
+  m_grid.SetDimensions(static_cast<int>(wh.first), val);
   checkForChangeMode();
   this->rebuild();
 }

@@ -166,7 +166,7 @@ public:
     r2 *= 2;
     if (m_flip_i)
     {
-      i = wh.first - 1 - i;
+      i = static_cast<int>(wh.first) - 1 - i;
     }
     x = (i)*r1;
     y = -(j)*r2; // Convert from qt coordinate system to natural coordinate system
@@ -174,7 +174,7 @@ public:
 
   virtual void computeRadius(int w, int h, double r[2])
   {
-    std::pair<int, int> wh = this->m_grid.GetDimensions();
+    std::pair<size_t, size_t> wh = this->m_grid.GetDimensions();
     double radius = std::min(w, h) / std::max(wh.first, wh.second) * 0.5;
     r[0] = r[1] = std::max(radius, 20.0);
   }

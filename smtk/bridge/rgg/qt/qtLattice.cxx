@@ -659,8 +659,8 @@ std::vector<smtk::model::EntityRef> qtLattice::getUsedParts() const
 
 qtLattice::ChangeMode qtLattice::compair(qtLattice const& other) const
 {
-  std::pair<int, int> dim = this->GetDimensions();
-  std::pair<int, int> oDim = other.GetDimensions();
+  std::pair<size_t, size_t> dim = this->GetDimensions();
+  std::pair<size_t, size_t> oDim = other.GetDimensions();
   if (dim.first != oDim.first || dim.second != oDim.second)
     return ChangeMode::SizeDiff;
   for (unsigned int i = 0; i < this->m_grid.size(); ++i)
@@ -771,7 +771,7 @@ void qtLattice::sendMaxRadiusToReference()
     for (size_t j = 0; j < this->m_grid[i].size(); ++j)
     {
       qtCellReference& cr = this->m_grid[i][j];
-      cr.setMaxRadius(this->m_maxRadiusFun->getMaxRadius(i, j));
+      cr.setMaxRadius(this->m_maxRadiusFun->getMaxRadius(static_cast<int>(i), static_cast<int>(j)));
       cr.clearOverflow();
       smtk::model::EntityRef part = cr.getCell()->getPart();
       double r = getPinMaxRadius(part, false);
@@ -790,7 +790,8 @@ void qtLattice::sendMaxRadiusToReference()
   {
     std::pair<size_t, size_t>& at = pinOutsideCell[pit];
     double atX, atY;
-    converter.convertToPixelXY(at.first, at.second, atX, atY, ri, rj);
+    converter.convertToPixelXY(
+      static_cast<int>(at.first), static_cast<int>(at.second), atX, atY, ri, rj);
     // Get radius
     smtk::model::EntityRef part = this->m_grid[at.first][at.second].getCell()->getPart();
     double partRadius = getPinMaxRadius(part);
@@ -840,7 +841,7 @@ void qtLattice::sendMaxRadiusToReference()
       if (maxRadius < 0)
         continue; //Already in conflict
       double atX, atY;
-      converter.convertToPixelXY(ai, aj, atX, atY, ri, rj);
+      converter.convertToPixelXY(static_cast<int>(ai), static_cast<int>(aj), atX, atY, ri, rj);
       //      cmbLaticeFillFunction * fun = this->m_maxRadiusFun->createFillFuntion(ai, aj,
       //                                                                          maxRadius/cellR, this);
       //      fun->begin();

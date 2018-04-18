@@ -458,7 +458,7 @@ bool ReadRXFFileHelper::parseCore(pugi::xml_node rootNode, EntityRef model,
   bool isHex(false);
   if (coreArray.size() > 0 && coreArray[0].owningModel().hasIntegerProperty("hex"))
   {
-    isHex = coreArray[0].owningModel().integerProperty("hex")[0];
+    isHex = (coreArray[0].owningModel().integerProperty("hex")[0] != 0);
     core = coreArray[0].as<smtk::model::Group>();
   }
   else
@@ -651,7 +651,7 @@ bool ReadRXFFileHelper::parseDuctNodeAndCreate(
       std::string mName;
       read(mN, MATERIAL_TAG.c_str(), mName);
       size_t pos = materialNameToIndex(mName, materialList);
-      ductMaterials.push_back(pos);
+      ductMaterials.push_back(static_cast<int>(pos));
 
       double radius[2];
       read(mN, THICKNESS_TAG.c_str(), radius, 2);
@@ -744,7 +744,7 @@ bool ReadRXFFileHelper::parsePin(pugi::xml_node pinNode, EntityRef model, Entity
   // Cell material
   read(pinNode, MATERIAL_TAG.c_str(), cellMaterial);
   size_t cMPos = materialNameToIndex(cellMaterial, materialList);
-  pin.setIntegerProperty("cell material", cMPos);
+  pin.setIntegerProperty("cell material", static_cast<int>(cMPos));
 
   // Materials
   // TODO: In XRF file, materials are defined for each cylinder and frustum.
@@ -764,7 +764,7 @@ bool ReadRXFFileHelper::parsePin(pugi::xml_node pinNode, EntityRef model, Entity
       // Though RXF define two values, SMTK would only consume one value
       // since the cross section is a cirle
       read(mN, THICKNESS_TAG.c_str(), radius, 2);
-      subMaterials.push_back(pos);
+      subMaterials.push_back(static_cast<int>(pos));
       radiusNs.push_back(radius[0]);
     }
   };
@@ -950,7 +950,7 @@ bool ReadRXFFileHelper::parseAssembly(pugi::xml_node assyNode, EntityRef model,
 
   double degree(0);
   r &= read(assyNode, ROTATE_TAG.c_str(), degree);
-  assembly.setIntegerProperty("z axis", degree);
+  assembly.setIntegerProperty("z axis", static_cast<int>(degree));
 
   std::string ductName;
   smtk::model::EntityRef duct;
@@ -979,7 +979,7 @@ bool ReadRXFFileHelper::parseAssembly(pugi::xml_node assyNode, EntityRef model,
 
   // Convert labelToLayout into pins and their coordinates
   // Copy the logic from smtkRGGEditAssemblyView::apply function
-  bool isHex = assembly.owningModel().integerProperty("hex")[0];
+  bool isHex = (assembly.owningModel().integerProperty("hex")[0] != 0);
   double thickness0(std::numeric_limits<double>::max()),
     thickness1(std::numeric_limits<double>::max());
   calculateDuctMinimimThickness(duct, thickness0, thickness1);
@@ -1089,17 +1089,17 @@ bool ReadRXFFileHelper::parseLattice(
       }
     }
   }
-  bool isHex = target.owningModel().integerProperty("hex")[0];
+  bool isHex = (target.owningModel().integerProperty("hex")[0] != 0);
   smtk::model::IntegerList latticeSize;
   if (isHex)
   {
-    latticeSize.push_back(labelsPerRing.size());
-    latticeSize.push_back(labelsPerRing.size());
+    latticeSize.push_back(static_cast<int>(labelsPerRing.size()));
+    latticeSize.push_back(static_cast<int>(labelsPerRing.size()));
   }
   else
   { //TODO: Check if the right order is used here
     latticeSize.push_back(j);
-    latticeSize.push_back(labelsPerRing.size());
+    latticeSize.push_back(static_cast<int>(labelsPerRing.size()));
   }
   if (isCore)
   { // Core group is just a place holder. All infos are stored in the model

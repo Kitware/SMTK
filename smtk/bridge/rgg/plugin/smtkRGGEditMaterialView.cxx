@@ -252,7 +252,7 @@ bool smtkRGGEditMaterialView::ableToOperate()
     {
       return false;
     }
-    densityTypeI->setDiscreteIndex(index);
+    densityTypeI->setDiscreteIndex(static_cast<int>(index));
   }
 
   smtk::attribute::StringItemPtr compositionTypeI =
@@ -268,7 +268,7 @@ bool smtkRGGEditMaterialView::ableToOperate()
     {
       return false;
     }
-    compositionTypeI->setDiscreteIndex(index);
+    compositionTypeI->setDiscreteIndex(static_cast<int>(index));
   }
 
   smtk::attribute::StringItemPtr componentI =

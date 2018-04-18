@@ -456,7 +456,7 @@ void smtkRGGEditDuctView::updateEditDuctPanel()
       0, this->Internals->ductSegmentTable->rowCount());
     for (size_t index = 0; index < zValues.size() / 2; index++)
     {
-      this->addSegmentToTable(index, zValues[2 * index], zValues[2 * index + 1]);
+      this->addSegmentToTable(static_cast<int>(index), zValues[2 * index], zValues[2 * index + 1]);
     }
 
     smtk::model::IntegerList materials;
@@ -654,11 +654,11 @@ void smtkRGGEditDuctView::createMaterialLayersTable(const size_t index, const si
 
   for (size_t mI = 0; mI < numberOfMaterials; mI++)
   {
-    this->addMaterialLayerToTable(mlt, mI, materials[offSet + mI], thicknessesN[2 * (offSet + mI)],
-      thicknessesN[2 * (offSet + mI) + 1]);
+    this->addMaterialLayerToTable(mlt, static_cast<int>(mI), materials[offSet + mI],
+      thicknessesN[2 * (offSet + mI)], thicknessesN[2 * (offSet + mI) + 1]);
   }
 
-  this->Internals->materialLayerStack->insertWidget(index, mlt);
+  this->Internals->materialLayerStack->insertWidget(static_cast<int>(index), mlt);
 }
 
 void smtkRGGEditDuctView::onAddMaterialLayerBefore()
