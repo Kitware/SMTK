@@ -418,6 +418,12 @@ void qtModelView::filterSelectionByEntity(const smtk::model::DescriptivePhrasePt
       if (masked)
       {
         selentityrefs.insert(relatedEnt);
+        smtk::model::AuxiliaryGeometry aux = relatedEnt.as<smtk::model::AuxiliaryGeometry>();
+        if (aux.isValid())
+        { // Handle child auxgeoms
+          smtk::model::AuxiliaryGeometries children = aux.auxiliaryGeometries();
+          selentityrefs.insert(children.begin(), children.end());
+        }
       }
     }
 
@@ -476,6 +482,15 @@ void qtModelView::filterSelectionByEntity(const smtk::model::DescriptivePhrasePt
           for (const auto& item : entities)
           {
             selentityrefs.insert(item);
+            if (item.isAuxiliaryGeometry() && item.hasStringProperty("rggType"))
+            { // Children of a rgg auxiliary geometry should also be selected
+              smtk::model::AuxiliaryGeometries children =
+                item.as<smtk::model::AuxiliaryGeometry>().auxiliaryGeometries();
+              if (children.size())
+              {
+                selentityrefs.insert(children.begin(), children.end());
+              }
+            }
           }
         }
       }
@@ -1516,7 +1531,9 @@ bool qtModelView::setEntityColor(const smtk::model::EntityRefs& selentityrefs,
     // if entity self is a summary of group(exodus session)
     smtk::model::Group groupSelRefs;
     smtk::model::EntityRefs groupItems = smtk::model::EntityRefs();
-    if (it->isGroup())
+    // Assign a color to rgg assemblies and core(group under the cover) should
+    // not change its group members color
+    if (it->isGroup() && !it->hasStringProperty("rggType"))
     {
       groupSelRefs = it->as<smtk::model::Group>();
       groupItems = groupSelRefs.members<smtk::model::EntityRefs>();

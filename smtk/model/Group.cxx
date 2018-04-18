@@ -193,8 +193,8 @@ bool Group::meetsMembershipConstraintsInternal(
     // We accept shorthand where the mask does not explicitly mention groups being
     // allowed as intending for groups to be allowed as long as they have members
     // that are allowed. TODO: need to watch changes to group membership.
-    if (!(memberMask & GROUP_ENTITY))
-      memberMask |= GROUP_ENTITY;
+    //    if (!(memberMask & GROUP_ENTITY))
+    //      memberMask |= GROUP_ENTITY;
     // OK, there are cases when groups really should be omitted.
     if (groupFlags & NO_SUBGROUPS)
       memberMask &= ~GROUP_ENTITY;

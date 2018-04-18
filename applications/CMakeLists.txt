@@ -1,1 +1,2 @@
 add_subdirectory(TemplateEditor)
+add_subdirectory(Nuclides)

@@ -4,7 +4,7 @@
   <Definitions>
     <!-- Operator -->
     <AttDef Type="create instances" BaseType="operator" Label="Model Entities - Create Instances">
-      <AssociationsDef Name="entities" NumberOfRequiredValues="1">
+      <AssociationsDef Name="entities" NumberOfRequiredValues="1" Extensible="true">
         <MembershipMask>cell|aux_geom</MembershipMask>
       </AssociationsDef>
       <BriefDescription>
@@ -74,6 +74,14 @@
           <BriefDescription>
             If enabled, instance placements will be snapped to the nearest
             point on the tessellation of the given entities.
+          </BriefDescription>
+        </ModelEntity>
+        <ModelEntity Name="parent"
+          Optional="true" IsEnabledByDefault="false"
+          NumberOfRequiredValues="1" AdvanceLevel="11">
+          <MembershipMask>cell|aux_geom</MembershipMask>
+          <BriefDescription>
+            If enabled, instance placements will be the children of the given entity.
           </BriefDescription>
         </ModelEntity>
 

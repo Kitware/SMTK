@@ -389,6 +389,22 @@ vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationF
       if (ext->canHandleAuxiliaryGeometry(aux, bbox))
       {
         auto cgeom = ext->fetchCachedGeometry(aux);
+        // Only create the color array if there is a valid default:
+        vtkPolyData* pd = vtkPolyData::SafeDownCast(cgeom);
+        if (this->DefaultColor[3] >= 0. && pd)
+        {
+          FloatList rgba = entity.color();
+          vtkNew<vtkUnsignedCharArray> cellColor;
+          cellColor->SetNumberOfComponents(4);
+          cellColor->SetNumberOfTuples(pd->GetNumberOfCells());
+          cellColor->SetName("Entity");
+          for (int i = 0; i < 4; ++i)
+          {
+            cellColor->FillComponent(i, (rgba[3] >= 0 ? rgba[i] : this->DefaultColor[i]) * 255.);
+          }
+          pd->GetCellData()->AddArray(cellColor.GetPointer());
+          pd->GetCellData()->SetScalars(cellColor.GetPointer());
+        }
         return cgeom;
       }
     }
@@ -657,16 +673,19 @@ void vtkModelMultiBlockSource::PrepareInstanceOutput(vtkMultiBlockDataSet* insta
 
     vtkNew<vtkDoubleArray> instanceOrient;
     vtkNew<vtkDoubleArray> instanceScale;
-    vtkNew<vtkIdTypeArray> instancePrototype;  // block ID of prototype object
-    vtkNew<vtkUnsignedCharArray> instanceMask; // visibility control
+    vtkNew<vtkIdTypeArray> instancePrototype;   // block ID of prototype object
+    vtkNew<vtkUnsignedCharArray> instanceMask;  // visibility control
+    vtkNew<vtkUnsignedCharArray> instanceColor; // color control
 
     instanceOrient->SetName(VTK_INSTANCE_ORIENTATION);
     instanceScale->SetName(VTK_INSTANCE_SCALE);
     instancePrototype->SetName(VTK_INSTANCE_SOURCE);
     instanceMask->SetName(VTK_INSTANCE_VISIBILITY);
+    instanceColor->SetName(VTK_INSTANCE_COLOR);
 
     instanceOrient->SetNumberOfComponents(3);
     instanceScale->SetNumberOfComponents(3);
+    instanceColor->SetNumberOfComponents(4);
 
     //instanceOrient->SetNumberOfTuples(numPoints);
     //instanceScale->SetNumberOfTuples(numPoints);
@@ -677,6 +696,7 @@ void vtkModelMultiBlockSource::PrepareInstanceOutput(vtkMultiBlockDataSet* insta
     instanceScale->Allocate(numPoints);
     instancePrototype->Allocate(numPoints);
     instanceMask->Allocate(numPoints);
+    instanceColor->Allocate(numPoints);
 
     // WARNING: Pointdata-array indices are used blindly in AddInstancePoints. Do not reorder:
     auto pd = instancePoly->GetPointData();
@@ -684,6 +704,7 @@ void vtkModelMultiBlockSource::PrepareInstanceOutput(vtkMultiBlockDataSet* insta
     pd->AddArray(instanceScale.GetPointer());
     pd->AddArray(instancePrototype.GetPointer());
     pd->AddArray(instanceMask.GetPointer());
+    pd->SetScalars(instanceColor.GetPointer());
 
     this->AddInstancePoints(instancePoly.GetPointer(), instance, instancePrototypes);
   }
@@ -737,6 +758,11 @@ void vtkModelMultiBlockSource::AddInstancePoints(vtkPolyData* instancePoly,
   auto scale = vtkDoubleArray::SafeDownCast(pd->GetArray(1));
   auto prototype = vtkIdTypeArray::SafeDownCast(pd->GetArray(2));
   auto mask = vtkUnsignedCharArray::SafeDownCast(pd->GetArray(3));
+  auto color = vtkUnsignedCharArray::SafeDownCast(pd->GetArray(4));
+  smtk::model::FloatList iC = inst.color();
+  // Instance color to double color
+  double iCToDC[] = { static_cast<double>(iC[0] * 255), static_cast<double>(iC[1] * 255),
+    static_cast<double>(iC[2] * 255), static_cast<double>(iC[3] * 255) };
 
   std::vector<double>::const_iterator pit = tess->coords().begin();
   vtkIdType nptsThisInst = static_cast<vtkIdType>(tess->coords().size() / 3);
@@ -753,6 +779,7 @@ void vtkModelMultiBlockSource::AddInstancePoints(vtkPolyData* instancePoly,
     orient->InsertNextTuple(ptOrient);
     scale->InsertNextTuple(ptScale);
     mask->InsertNextValue(1);
+    color->InsertNextTuple(iCToDC);
   }
 }
 

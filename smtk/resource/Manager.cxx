@@ -21,12 +21,10 @@ MetadataContainer Manager::s_metadata;
 
 Manager::Manager()
 {
-  std::cout << "Create rsrc mgr " << this << "\n";
 }
 
 Manager::~Manager()
 {
-  std::cout << "Destroy rsrc mgr " << this << "\n";
 }
 
 smtk::resource::ResourcePtr Manager::create(const std::string& uniqueName)

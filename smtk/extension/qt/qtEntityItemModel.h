@@ -23,6 +23,7 @@ namespace smtk
 {
 namespace extension
 {
+using DPToMI = std::map<smtk::model::DescriptivePhrasePtr, QModelIndex>;
 
 /**\brief Adapt an smtk::model::Manager instance into a hierarchical Qt model.
   *
@@ -127,6 +128,8 @@ public:
     const smtk::model::SessionRef& sref, const model::OperatorResult& result);
 
   Qt::DropActions supportedDropActions() const override;
+
+  DPToMI& descriptivePhraseToModelIndex();
 
 signals:
   void phraseTitleChanged(const QModelIndex&);

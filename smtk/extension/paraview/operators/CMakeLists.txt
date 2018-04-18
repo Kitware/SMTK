@@ -9,6 +9,8 @@ set(srcs
   smtkSaveModelView.cxx
   smtkExportModelView.cxx
 )
+set(non_ui_srcs
+)
 
 set(hdrs
   smtkAssignColorsView.h
@@ -35,6 +37,7 @@ source_group("Qt_Header" FILES ${hdrs})
 
 add_library(smtkPQOperatorViewsExt
   ${srcs}
+  ${non_ui_srcs}
   ${mocs}
   ${uisrc}
 )

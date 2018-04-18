@@ -2,6 +2,7 @@ set(VTKLibSrcs
   PointCloudFromVTKAuxiliaryGeometry.cxx
   StructuredGridFromVTKAuxiliaryGeometry.cxx
   vtkAuxiliaryGeometryExtension.cxx
+  vtkCmbLayeredConeSource.cxx
   vtkMeshMultiBlockSource.cxx
   vtkModelAuxiliaryGeometry.cxx
   vtkModelMultiBlockSource.cxx
@@ -14,6 +15,7 @@ set(VTKLibHeaders
   PointCloudFromVTKAuxiliaryGeometry.h
   StructuredGridFromVTKAuxiliaryGeometry.h
   vtkAuxiliaryGeometryExtension.h
+  vtkCmbLayeredConeSource.h
   vtkMeshMultiBlockSource.h
   vtkModelAuxiliaryGeometry.h
   vtkModelMultiBlockSource.h

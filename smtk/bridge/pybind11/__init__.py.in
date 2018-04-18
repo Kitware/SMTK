@@ -24,6 +24,8 @@ if @SMTK_MULTISCALE_SESSION_ENABLED@:
   _sessions.append("multiscale")
 if @SMTK_REMOTE_SESSION_ENABLED@:
   _sessions.append("remote")
+if @SMTK_RGG_SESSION_ENABLED@:
+  _sessions.append("rgg")
 if @SMTK_POLYGON_SESSION_ENABLED@:
   _sessions.append("polygon")
 

@@ -80,8 +80,13 @@ public:
     *
     * This all exists because Qt is lame and cannot associate shared pointers
     * with QModelIndex entries.
+    * TODO: We should be able to use data()/setData() methods to associate shared
+    * pointers with QModelIndex in Qt5 now. @David
+    * Reference: http://www.qtcentre.org/threads/63652-Storing-shared-pointer-in-QModelIndex
     */
   std::map<unsigned int, WeakDescriptivePhrasePtr> ptrs;
+  // A lookup table from Descriptive phrase to QModelIndex
+  DPToMI dPToMI;
 };
 
 // A visitor functor called by foreach_phrase() to let the view know when to redraw data.
@@ -176,7 +181,9 @@ QModelIndex QEntityItemModel::index(int row, int column, const QModelIndex& owne
 
     DescriptivePhrasePtr entry = subphrases[row];
     this->P->ptrs[entry->phraseId()] = entry;
-    return this->createIndex(row, column, entry->phraseId());
+    QModelIndex index = this->createIndex(row, column, entry->phraseId());
+    this->P->dPToMI[entry] = index;
+    return index;
   }
 
   return QModelIndex();
@@ -203,7 +210,9 @@ QModelIndex QEntityItemModel::parent(const QModelIndex& child) const
     return QModelIndex();
   }
   this->P->ptrs[parentPhrase->phraseId()] = parentPhrase;
-  return this->createIndex(rowInGrandparent, 0, parentPhrase->phraseId());
+  QModelIndex index = this->createIndex(rowInGrandparent, 0, parentPhrase->phraseId());
+  this->P->dPToMI[parentPhrase] = index;
+  return index;
 }
 
 /// Return true when \a owner has subphrases.
@@ -800,6 +809,7 @@ DescriptivePhrasePtr QEntityItemModel::getItem(const QModelIndex& idx) const
     else
     { // The phrase has disappeared. Remove the weak pointer from the freelist.
       this->P->ptrs.erase(phraseIdx);
+      // Do nothing to this->P->dPToMI.
     }
   }
   return this->m_root;
@@ -825,9 +835,18 @@ namespace QEntityItemModelInternal
 inline QModelIndex _internal_getPhraseIndex(smtk::extension::QEntityItemModel* qmodel,
   const DescriptivePhrasePtr& phrase, const QModelIndex& top, bool recursive = false)
 {
+  DPToMI& dpToMI = qmodel->descriptivePhraseToModelIndex();
+  if (dpToMI.find(phrase) != dpToMI.end())
+  {
+    return dpToMI[phrase];
+  }
+
   DescriptivePhrasePtr dp = qmodel->getItem(top);
   if (dp == phrase)
+  {
+    dpToMI[phrase] = top;
     return top;
+  }
 
   // Only look at subphrases if they are already built; otherwise, this can cause
   // infinite recursion when qmodel->rowCount() or ->index() are called.
@@ -838,12 +857,18 @@ inline QModelIndex _internal_getPhraseIndex(smtk::extension::QEntityItemModel* q
       QModelIndex cIdx(qmodel->index(row, 0, top));
       dp = qmodel->getItem(cIdx);
       if (dp == phrase)
+      {
+        dpToMI[phrase] = top;
         return cIdx;
+      }
       if (recursive)
       {
         QModelIndex recurIdx(_internal_getPhraseIndex(qmodel, phrase, cIdx, recursive));
         if (recurIdx.isValid())
+        {
+          dpToMI[phrase] = top;
           return recurIdx;
+        }
       }
     }
   }
@@ -1048,6 +1073,7 @@ void QEntityItemModel::removeChildPhrases(const DescriptivePhrasePtr& parntDp,
     //      this->removeRows(row, row, qidx);
     this->beginRemoveRows(qidx, row, row);
     subs.erase(subs.begin() + row);
+    this->P->dPToMI.erase(rit->first);
 
     if (lphrase)
     {
@@ -1531,6 +1557,11 @@ void QEntityItemModel::newSessionOperatorResult(
 Qt::DropActions QEntityItemModel::supportedDropActions() const
 {
   return Qt::CopyAction;
+}
+
+DPToMI& QEntityItemModel::descriptivePhraseToModelIndex()
+{
+  return this->P->dPToMI;
 }
 
 void QEntityItemModel::updateObserver()

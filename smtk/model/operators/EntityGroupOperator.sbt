@@ -36,19 +36,19 @@
             <ModelEntity Name="cell to remove" Label="entity to remove" NumberOfRequiredValues="0" Extensible="1">
               <MembershipMask>volume|face|edge</MembershipMask>
             </ModelEntity>
-            <Void Name="Vertex" Label="Vertex" Version="0" NumberOfRequiredValues="1" Optional="true" AdvanceLevel = "1" Option = "true" IsEnabledByDefault = "true">
+            <Void Name="Vertex" Label="Vertex" Version="0" NumberOfRequiredValues="1" Optional="true" AdvanceLevel = "1" IsEnabledByDefault = "true">
               <BriefDescription>Allow vertices to be added to the group.</BriefDescription>
               <DetailedDescription>Allow vertices to be added to the group.</DetailedDescription>
             </Void>
-            <Void Name="Edge" Label="Edge" Version="0" NumberOfRequiredValues="1" Optional="true" AdvanceLevel = "1" Option = "true" IsEnabledByDefault = "true">
+            <Void Name="Edge" Label="Edge" Version="0" NumberOfRequiredValues="1" Optional="true" AdvanceLevel = "1" IsEnabledByDefault = "true">
               <BriefDescription>Allow edges to be added to the group.</BriefDescription>
               <DetailedDescription>Allow edges to be added to the group.</DetailedDescription>
             </Void>
-            <Void Name="Face" Label="Face" Version="0" NumberOfRequiredValues="1" Optional="true" AdvanceLevel = "1" Option = "true" IsEnabledByDefault = "true"> 
+            <Void Name="Face" Label="Face" Version="0" NumberOfRequiredValues="1" Optional="true" AdvanceLevel = "1" IsEnabledByDefault = "true">
               <BriefDescription>Allow faces to be added to the group.</BriefDescription>
               <DetailedDescription>Allow faces to be added to the group.</DetailedDescription>
             </Void>
-            <Void Name="Volume" Label="Volume" Version="0" NumberOfRequiredValues="1" Optional="true" AdvanceLevel = "1" Option = "true" IsEnabledByDefault = "true">
+            <Void Name="Volume" Label="Volume" Version="0" NumberOfRequiredValues="1" Optional="true" AdvanceLevel = "1" IsEnabledByDefault = "true">
               <BriefDescription>Allow volumes to be added to the group.</BriefDescription>
               <DetailedDescription>Allow volumes to be added to the group.</DetailedDescription>
             </Void>

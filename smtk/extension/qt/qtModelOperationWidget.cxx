@@ -527,6 +527,28 @@ void qtModelOperationWidget::onOperationSelected()
   std::string opName =
     this->Internals
       ->m_operatorLabelMap[this->Internals->OperationCombo->currentText().toStdString()];
+  if (opName == "edit assembly" &&
+    (!this->existingOperator("create instances") || !this->existingOperator("delete")))
+  {
+    // Edit assembly depends on create instances and delete Op. We should
+    // initialize them first
+    this->setCurrentOperator("create instances", this->Internals->CurrentSession.lock());
+    this->setCurrentOperator("delete", this->Internals->CurrentSession.lock());
+  }
+
+  if (opName == "edit core" &&
+    (!this->existingOperator("create instances") || !this->existingOperator("delete")))
+  {
+    // Edit core depends on create instances and delete Op. We should
+    // initialize them first
+    this->setCurrentOperator("create instances", this->Internals->CurrentSession.lock());
+    this->setCurrentOperator("delete", this->Internals->CurrentSession.lock());
+  }
+  if (opName == "read rxf file" && (!this->existingOperator("create instances")))
+  {
+    this->setCurrentOperator("create instances", this->Internals->CurrentSession.lock());
+  }
+
   this->setCurrentOperator(opName, this->Internals->CurrentSession.lock());
 }
 

@@ -98,6 +98,12 @@ smtk::model::OperatorResult CreateInstances::operateInternal()
 
   std::string rule = this->findString("placement rule")->value(0);
 
+  smtk::model::EntityRef parent;
+  auto parentI = this->findModelEntity("parent");
+  if (parentI->isValid() && parentI->isEnabled())
+  {
+    parent = parentI->value();
+  }
   smtk::model::OperatorResult result =
     this->createResult(smtk::operation::Operator::OPERATION_SUCCEEDED);
   for (auto prototype : prototypes)
@@ -122,6 +128,11 @@ smtk::model::OperatorResult CreateInstances::operateInternal()
       // Now that the instance is fully specified, generate
       // the placement points.
       instance.generateTessellation();
+      // Assign parent relationship
+      if (parent.isValid())
+      {
+        //mgr->arrangeEntity(instance.entity(), )
+      }
     }
   }
 
