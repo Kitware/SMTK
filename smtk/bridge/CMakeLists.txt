@@ -65,7 +65,7 @@ endif()
 if (SMTK_ENABLE_OPENFOAM_SESSION)
   set(SMTK_OPENFOAM_SESSION_ENABLED "True")
   add_subdirectory(openfoam)
-
+endif()
 
 ################################################################################
 # Build RGG session
