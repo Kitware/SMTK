@@ -11,7 +11,7 @@
         A draft angle may also be specified.
       </DetailedDescription>
       <AssociationsDef Name="workpiece(s)" NumberOfRequiredValues="1" Extensible="true">
-        <MembershipMask>face|edge|vertex</MembershipMask>
+        <Accepts><Resource Name="smtk::bridge::cgm::Resource" Filter="face|edge|vertex"/></Accepts>
         <BriefDescription>A set of points, curves, or surfaces to sweep.</BriefDescription>
         <DetailedDescription>
           A set of points, curves, or surfaces to sweep.

@@ -188,7 +188,7 @@ int UnitTestReadWrite(int argc, char* argv[])
 
     test(writeOp != nullptr, "No write operator");
 
-    writeOp->parameters()->findResource("resource")->setValue(resource);
+    writeOp->parameters()->associate(resource);
 
     smtk::operation::Operation::Result writeOpResult = writeOp->operate();
     test(writeOpResult->findInt("outcome")->value() ==

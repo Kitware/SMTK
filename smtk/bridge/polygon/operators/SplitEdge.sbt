@@ -15,8 +15,8 @@
         Otherwise 2 new edges are created.
         Regardless, the input edge is always destroyed; it is never modified.
       </DetailedDescription>
-      <AssociationsDef Name="edge" NumberOfRequiredValues="1" Extensible="yes" AdvanceLevel="1">
-        <MembershipMask>edge</MembershipMask>
+      <AssociationsDef Name="edge" NumberOfRequiredValues="1" AdvanceLevel="1">
+        <Accepts><Resource Name="smtk::bridge::polygon::Resource" Filter="edge"/></Accepts>
         <BriefDescription>The edge to split.</BriefDescription>
         <DetailedDescription>
           This is a model edge containing at least one point that is not a model-vertex.

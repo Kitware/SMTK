@@ -61,7 +61,7 @@ public:
   template <typename Child, typename Parent>
   friend class DerivedFrom;
 
-  smtkTypedefs(smtk::resource::Resource);
+  smtkTypeMacro(smtk::resource::Resource);
   smtkSuperclassMacro(smtk::resource::PersistentObject);
   smtkSharedFromThisMacro(smtk::resource::PersistentObject);
   virtual ~Resource();

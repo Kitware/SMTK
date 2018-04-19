@@ -195,6 +195,7 @@ typedef std::vector<smtk::model::VolumeUse> VolumeUses;
 
 namespace view
 {
+class AvailableOperations;
 class ComponentPhrase;
 class DescriptivePhrase;
 class PhraseContent;
@@ -208,6 +209,11 @@ class Selection;
 class SubphraseGenerator;
 class View;
 class VisibilityContent;
+}
+
+namespace workflow
+{
+class OperationFilterSort;
 }
 
 namespace bridge
@@ -435,6 +441,8 @@ typedef smtk::weak_ptr<smtk::attribute::Resource> WeakResourcePtr;
 
 namespace view
 {
+typedef smtk::shared_ptr<smtk::view::AvailableOperations> AvailableOperationsPtr;
+typedef smtk::weak_ptr<smtk::view::AvailableOperations> WeakAvailableOperationsPtr;
 typedef smtk::shared_ptr<smtk::view::ComponentPhrase> ComponentPhrasePtr;
 typedef smtk::weak_ptr<smtk::view::ComponentPhrase> WeakComponentPhrasePtr;
 typedef smtk::shared_ptr<smtk::view::DescriptivePhrase> DescriptivePhrasePtr;
@@ -457,6 +465,12 @@ typedef smtk::shared_ptr<smtk::view::PhraseListContent> PhraseListContentPtr;
 typedef smtk::shared_ptr<smtk::view::ComponentPhraseContent> ComponentPhraseContentPtr;
 typedef smtk::shared_ptr<smtk::view::ResourcePhraseContent> ResourcePhraseContentPtr;
 typedef smtk::shared_ptr<smtk::view::VisibilityContent> VisibilityContentPtr;
+}
+
+namespace workflow
+{
+typedef smtk::shared_ptr<smtk::workflow::OperationFilterSort> OperationFilterSortPtr;
+typedef smtk::weak_ptr<smtk::workflow::OperationFilterSort> WeakOperationFilterSortPtr;
 }
 
 namespace bridge

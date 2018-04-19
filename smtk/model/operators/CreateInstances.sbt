@@ -6,7 +6,7 @@
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="create instances" BaseType="operation" Label="Model Entities - Create Instances">
       <AssociationsDef Name="entities" NumberOfRequiredValues="1">
-        <MembershipMask>cell|aux_geom</MembershipMask>
+        <Accepts><Resource Name="smtk::model::Resource" Filter="cell|aux_geom"/></Accepts>
       </AssociationsDef>
       <BriefDescription>
         Create an instance (i.e., a transformed copy) of a model entity.

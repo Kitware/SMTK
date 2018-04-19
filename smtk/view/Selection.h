@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_resource_Selection_h
-#define smtk_resource_Selection_h
+#ifndef smtk_view_Selection_h
+#define smtk_view_Selection_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -152,6 +152,7 @@ class SMTKCORE_EXPORT Selection : smtkEnableSharedPtr(Selection)
 {
 public:
   using Component = smtk::resource::Component;
+  using Object = smtk::resource::PersistentObject;
 
   smtkTypeMacroBase(Selection);
   smtkCreateMacro(Selection);
@@ -162,7 +163,7 @@ public:
   using Observer = std::function<void(const std::string&, Selection::Ptr)>;
 
   /// This is the underlying storage type that holds selections.
-  using SelectionMap = std::map<Component::Ptr, int>;
+  using SelectionMap = std::map<Object::Ptr, int>;
 
   /**\brief Selection filters take functions of this form.
     *
@@ -179,7 +180,7 @@ public:
     * the edge, face, or vertex should not be considered) but add the related
     * entities (the volume or model) to the map for action.
     */
-  using SelectionFilter = std::function<bool(Component::Ptr, int, SelectionMap&)>;
+  using SelectionFilter = std::function<bool(Object::Ptr, int, SelectionMap&)>;
 
   virtual ~Selection();
 
@@ -289,11 +290,22 @@ public:
     */
   //@{
   /// Visit every selected component with the given functor.
-  void visitSelection(std::function<void(Component::Ptr, int)> visitor)
+  void visitSelection(std::function<void(Object::Ptr, int)> visitor)
   {
     for (auto entry : m_selection)
     {
       visitor(entry.first, entry.second);
+    }
+  }
+  void visitSelection(std::function<void(Component::Ptr, int)> visitor)
+  {
+    for (auto entry : m_selection)
+    {
+      Component::Ptr val = std::dynamic_pointer_cast<Component>(entry.first);
+      if (val)
+      {
+        visitor(val, entry.second);
+      }
     }
   }
   /// Return the current selection as a map from components to integer selection values.
@@ -341,8 +353,8 @@ public:
 protected:
   Selection();
 
-  bool performAction(
-    smtk::resource::ComponentPtr comp, int value, SelectionAction action, SelectionMap& suggested);
+  bool performAction(smtk::resource::PersistentObjectPtr comp, int value, SelectionAction action,
+    SelectionMap& suggested);
   void notifyListeners(const std::string& source);
   bool refilter(const std::string& source);
 

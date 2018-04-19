@@ -195,16 +195,15 @@ Operation::Parameters Operation::parameters()
   // retrieve the exisiting one or create a new one.
   if (!m_parameters)
   {
-    m_parameters = extractParameters(this->specification(), this->typeName());
+    m_parameters = createParameters(this->specification(), this->typeName());
   }
 
   // If we still don't have our parameters, then there's not much we can do.
   if (!m_parameters)
   {
-    std::stringstream s;
-    s << "Could not identify parameters attribute definition for operation \"" << this->typeName()
-      << "\".";
-    smtkErrorMacro(this->log(), s.str());
+    smtkErrorMacro(this->log(), "Could not identify parameters attribute definition for operation "
+                                "\""
+        << this->typeName() << "\".");
   }
 
   return m_parameters;

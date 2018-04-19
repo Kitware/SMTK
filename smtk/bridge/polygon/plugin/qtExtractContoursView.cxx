@@ -16,10 +16,10 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/extension/paraview/widgets/pqGenerateContoursDialog.h"
 #include "smtk/extension/qt/qtAttribute.h"
-#include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/model/AuxiliaryGeometry.h"
+#include "smtk/operation/Manager.h"
 #include "smtk/view/View.h"
 
 #include "pqActiveObjects.h"
@@ -207,8 +207,7 @@ void qtExtractContoursView::updateAttributeData()
     return;
   }
 
-  smtk::operation::OperationPtr edgeOp =
-    this->uiManager()->activeModelView()->operatorsWidget()->existingOperation(defName);
+  smtk::operation::OperationPtr edgeOp = this->uiManager()->operationManager()->create(defName);
   this->Internals->CurrentOp = edgeOp;
   // expecting only 1 instance of the op?
   smtk::attribute::AttributePtr att = edgeOp->parameters();

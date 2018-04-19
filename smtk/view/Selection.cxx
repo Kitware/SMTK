@@ -18,10 +18,10 @@ namespace smtk
 namespace view
 {
 
-static bool defaultFilter(smtk::view::Selection::Component::Ptr comp, int selectionValue,
-  Selection::SelectionMap& suggestions)
+static bool defaultFilter(
+  smtk::view::Selection::Object::Ptr obj, int selectionValue, Selection::SelectionMap& suggestions)
 {
-  (void)comp;
+  (void)obj;
   (void)selectionValue;
   (void)suggestions;
   return true;
@@ -190,17 +190,17 @@ void Selection::setFilter(const SelectionFilter& fn, bool refilter)
 }
 
 /// Perform the action (IGNORING m_defaultAction!!!), returning true if it had an effect
-bool Selection::performAction(
-  smtk::resource::Component::Ptr comp, int value, SelectionAction action, SelectionMap& suggestions)
+bool Selection::performAction(smtk::resource::PersistentObject::Ptr obj, int value,
+  SelectionAction action, SelectionMap& suggestions)
 {
   bool modified = false;
-  // Filter out irrelevant components:
+  // Filter out irrelevant objects:
   switch (action)
   {
     case SelectionAction::FILTERED_REPLACE:
     case SelectionAction::FILTERED_ADD:
     case SelectionAction::FILTERED_SUBTRACT:
-      if (!m_filter(comp, value, suggestions))
+      if (!m_filter(obj, value, suggestions))
       {
         // Add the suggested entries if any.
         for (auto suggestion : suggestions)
@@ -235,7 +235,7 @@ bool Selection::performAction(
   };
 
   // Replace (which is equivalent to add inside performAction), add, or subtract:
-  auto it = m_selection.find(comp);
+  auto it = m_selection.find(obj);
   switch (action)
   {
     case SelectionAction::FILTERED_REPLACE:
@@ -245,7 +245,7 @@ bool Selection::performAction(
       if (it == m_selection.end())
       {
         modified = true;
-        m_selection[comp] = value;
+        m_selection[obj] = value;
       }
       else if (it->second != value)
       {

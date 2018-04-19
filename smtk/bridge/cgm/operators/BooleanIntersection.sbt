@@ -9,7 +9,7 @@
         Intersect the workpieces, either with each other or with a tool if one is specified.
       </DetailedDescription>
       <AssociationsDef Name="workpiece(s)" NumberOfRequiredValues="1" Extensible="true">
-        <MembershipMask>model</MembershipMask>
+        <Accepts><Resource Name="smtk::bridge::cgm::Resource" Filter="model"/></Accepts>
         <BriefDescription>A set of workpieces to intersect with each other (or the tool, if one is given).</BriefDescription>
         <DetailedDescription>
           Models that should be intersected with each other.

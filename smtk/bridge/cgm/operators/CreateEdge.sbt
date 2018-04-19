@@ -6,7 +6,7 @@
     <AttDef Type="create edge" BaseType="operation">
       <AssociationsDef Name="vertices" NumberOfRequiredValues="2">
         <BriefDescription>Two pre-existing model vertices.</BriefDescription>
-        <MembershipMask>vertex</MembershipMask>
+        <Accepts><Resource Name="smtk::bridge::cgm::Resource" Filter="vertex"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>
         <Int Name="curve type" NumberOfRequiredValues="1">

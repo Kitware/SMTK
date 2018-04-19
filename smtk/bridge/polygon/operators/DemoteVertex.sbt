@@ -18,7 +18,7 @@
         the other will subsume the points along both edge's sequences.
       </DetailedDescription>
       <AssociationsDef Name="vertex" NumberOfRequiredValues="1">
-        <MembershipMask>vertex</MembershipMask>
+        <Accepts><Resource Name="smtk::bridge::polygon::Resource" Filter="vertex"/></Accepts>
         <BriefDescription>The vertex to demote.</BriefDescription>
         <DetailedDescription>
           The vertex will be deleted if the operation is successful (and not otherwise).

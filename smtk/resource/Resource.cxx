@@ -71,7 +71,7 @@ bool Resource::isOfType(const Resource::Index& index) const
 
 bool Resource::isOfType(const std::string& typeName) const
 {
-  return this->typeName() == typeName;
+  return smtk::common::typeName<Resource>() == typeName;
 }
 
 bool Resource::setId(const smtk::common::UUID& myId)

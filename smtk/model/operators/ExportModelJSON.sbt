@@ -6,7 +6,7 @@
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="export model json" Label="Model - Export JSON" BaseType="operation" AdvanceLevel="10">
       <AssociationsDef Name="models" NumberOfRequiredValues="1" Extensible="true">
-        <MembershipMask>model</MembershipMask>
+        <Accepts><Resource Name="smtk::model::Resource" Filter="model"/></Accepts>
       </AssociationsDef>
       <BriefDescription>
         Export a JSON description of a model.

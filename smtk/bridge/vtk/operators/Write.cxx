@@ -68,12 +68,27 @@ namespace bridge
 namespace vtk
 {
 
+bool Write::ableToOperate()
+{
+  if (!this->Superclass::ableToOperate())
+  {
+    return false;
+  }
+
+  if (this->parameters()->associations()->numberOfValues() < 1)
+  {
+    return false;
+  }
+
+  return true;
+}
+
 Write::Result Write::operateInternal()
 {
-  smtk::attribute::ResourceItem::Ptr resourceItem = this->parameters()->findResource("resource");
+  auto resourceItem = this->parameters()->associations();
 
   smtk::bridge::vtk::Resource::Ptr rsrc =
-    std::dynamic_pointer_cast<smtk::bridge::vtk::Resource>(resourceItem->value());
+    std::dynamic_pointer_cast<smtk::bridge::vtk::Resource>(resourceItem->objectValue());
 
   // Serialize resource into a set of JSON records:
   smtk::model::SessionIOJSON::json j = rsrc;
@@ -161,7 +176,7 @@ const char* Write::xmlDescription() const
 bool write(const smtk::resource::ResourcePtr& resource)
 {
   Write::Ptr write = Write::create();
-  write->parameters()->findResource("resource")->setValue(resource);
+  write->parameters()->associate(resource);
   Write::Result result = write->operate();
   return (result->findInt("outcome")->value() == static_cast<int>(Write::Outcome::SUCCEEDED));
 }

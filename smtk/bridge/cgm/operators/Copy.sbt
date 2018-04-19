@@ -5,7 +5,7 @@
     <!-- Operation -->
     <AttDef Type="copy" BaseType="operation">
       <AssociationsDef Name="Workpiece(s)" NumberOfRequiredValues="1" Extensible="true">
-        <MembershipMask>model|cell|anydim</MembershipMask>
+        <Accepts><Resource Name="smtk::bridge::cgm::Resource" Filter="model|cell|anydim"/></Accepts>
       </AssociationsDef>
       <BriefDescription>
         Copy the entity.

@@ -18,9 +18,9 @@
 #include "smtk/bridge/polygon/qt/pqPolygonArc.h"
 #include "smtk/bridge/polygon/qt/pqSplitEdgeWidget.h"
 #include "smtk/extension/qt/qtAttribute.h"
-#include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/operation/Manager.h"
 #include "smtk/view/View.h"
 
 #include "pqActiveObjects.h"
@@ -352,7 +352,8 @@ void smtkAssignColorsView::updateAttributeData()
       //std::cout << "    component type " << optype << "\n";
       if (optype == "assign colors")
       {
-        defName = optype;
+        //defName = optype;
+        defName = "smtk::model::AssignColors";
         break;
       }
     }
@@ -362,8 +363,9 @@ void smtkAssignColorsView::updateAttributeData()
     return;
   }
 
+  // FIXME: This used to fetch a pre-existing operation, which assumed there was only one.
   smtk::operation::OperationPtr assignColorsOp =
-    this->uiManager()->activeModelView()->operatorsWidget()->existingOperation(defName);
+    this->uiManager()->operationManager()->create(defName);
   this->Internals->CurrentOp = assignColorsOp;
 
   // expecting only 1 instance of the op?

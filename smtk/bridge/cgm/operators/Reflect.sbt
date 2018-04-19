@@ -5,7 +5,7 @@
     <!-- Operation -->
     <AttDef Type="reflect" BaseType="operation">
       <AssociationsDef Name="Workpiece(s)" NumberOfRequiredValues="1" Extensible="true">
-        <MembershipMask>model|cell|anydim</MembershipMask>
+        <Accepts><Resource Name="smtk::bridge::cgm::Resource" Filter="model|cell|anydim"/></Accepts>
       </AssociationsDef>
       <BriefDescription>
         Apply a reflection transform to a set of entities.

@@ -5,7 +5,7 @@
     <!-- Operation -->
     <AttDef Type="scale" BaseType="operation">
       <AssociationsDef Name="Workpiece(s)" NumberOfRequiredValues="1" Extensible="true">
-        <MembershipMask>model</MembershipMask>
+        <Accepts><Resource Name="smtk::bridge::cgm::Resource" Filter="model"/></Accepts>
       </AssociationsDef>
       <BriefDescription>
         Apply a scale transform to a model.

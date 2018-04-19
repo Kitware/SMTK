@@ -13,6 +13,8 @@
 
 #include "smtk/resource/Component.h"
 
+#include "smtk/attribute/Definition.h"
+
 namespace smtk
 {
 namespace operation
@@ -25,6 +27,7 @@ Metadata::Metadata(const std::string& typeName, Operation::Index index,
   , m_typeName(typeName)
   , m_index(index)
   , m_specification(specification)
+  , m_primaryAssociation(nullptr)
 {
   // Extract all of the component definitions once, rather than invoking this
   // call every time Metadata::acceptsComponent() is called.
@@ -40,6 +43,14 @@ Metadata::Metadata(const std::string& typeName, Operation::Index index,
     }
     return false;
   };
+
+  Operation::Definition opDef = extractParameterDefinition(specification, typeName);
+  smtk::attribute::ConstReferenceItemDefinitionPtr rule =
+    opDef ? opDef->associationRule() : nullptr;
+  if (rule)
+  {
+    m_primaryAssociation = rule;
+  }
 }
 
 std::set<std::string> Metadata::groups() const

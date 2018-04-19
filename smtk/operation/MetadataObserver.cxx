@@ -33,11 +33,11 @@ MetadataObservers::~MetadataObservers()
   delete m_internal;
 }
 
-void MetadataObservers::operator()(const Metadata& metadata)
+void MetadataObservers::operator()(const Metadata& metadata, bool adding)
 {
   for (auto entry : m_internal->m_observers)
   {
-    entry.second(metadata);
+    entry.second(metadata, adding);
   }
 }
 

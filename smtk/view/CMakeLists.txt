@@ -1,5 +1,6 @@
 # set up sources to build
 set(viewSrcs
+  AvailableOperations.cxx
   ComponentPhraseContent.cxx
   ComponentPhraseModel.cxx
   #ComponentsByTypeGenerator.cxx
@@ -20,6 +21,7 @@ set (jsonViewHeaders
   json/jsonView.h
   )
 set(viewHeaders
+  AvailableOperations.h
   ComponentPhraseContent.h
   ComponentPhraseModel.h
   #ComponentsByTypeGenerator.h

@@ -6,7 +6,7 @@
     <AttDef Type="create face" BaseType="operation">
       <AssociationsDef Name="edges" NumberOfRequiredValues="1" Extensible="true">
         <BriefDescription>One or more pre-existing model edges.</BriefDescription>
-        <MembershipMask>edge</MembershipMask>
+        <Accepts><Resource Name="smtk::bridge::cgm::Resource" Filter="edge"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>
         <Int Name="surface type" NumberOfRequiredValues="1">

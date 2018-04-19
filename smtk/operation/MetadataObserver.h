@@ -21,7 +21,7 @@ namespace operation
 {
 class Metadata;
 
-typedef std::function<void(const Metadata&)> MetadataObserver;
+typedef std::function<void(const Metadata&, bool)> MetadataObserver;
 
 class SMTKCORE_EXPORT MetadataObservers
 {
@@ -32,10 +32,13 @@ public:
   ~MetadataObservers();
 
   /// Iterate over the collection of observers and execute the observer functor.
-  void operator()(const Metadata&);
+  void operator()(const Metadata&, bool);
 
   /// Ask to receive notification when operations are added. The return value is
   /// a handle that can be used to unregister the observer.
+  /// This does **not** immediately invoke the observer with a list of
+  /// operation metadata already available. Call the observe() method on the
+  /// operation manager if that is needed.
   Key insert(MetadataObserver);
 
   /// Indicate that an observer should no longer be called. Returns the number

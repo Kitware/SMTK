@@ -786,6 +786,13 @@ void XmlDocV1Parser::processDefinition(xml_node& defNode, smtk::attribute::Defin
       smtk::dynamic_pointer_cast<smtk::attribute::ReferenceItemDefinition>(
         smtk::attribute::ReferenceItemDefinition::New(assocName));
     this->processReferenceDef(node, assocDef);
+    // We don't want reference items to handle "MembershipMask" but we do need
+    // to support AssociationsDef entries with a MembershipMask. So add that here:
+    xml_node mmask = node.child("MembershipMask");
+    if (mmask)
+    {
+      assocDef->setAcceptsEntries("smtk::model::Resource", mmask.text().as_string(), true);
+    }
     def->setLocalAssociationRule(assocDef);
   }
 

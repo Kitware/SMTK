@@ -5,7 +5,7 @@
     <!-- Operation -->
     <AttDef Type="union" BaseType="operation">
       <AssociationsDef Name="Workpiece(s)" NumberOfRequiredValues="2" Extensible="true">
-        <MembershipMask>model</MembershipMask>
+        <Accepts><Resource Name="smtk::bridge::cgm::Resource" Filter="model"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>
         <Int Name="keep inputs" NumberOfRequiredValues="1">

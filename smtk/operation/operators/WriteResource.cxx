@@ -53,6 +53,20 @@ bool WriteResource::ableToOperate()
     return false;
   }
 
+  auto fileItem = this->parameters()->findFile("filename");
+  auto setFileName = fileItem->isEnabled();
+  auto resourceItem = this->parameters()->associations();
+
+  if (resourceItem->numberOfValues() < 1)
+  {
+    return false;
+  }
+
+  if (setFileName && resourceItem->numberOfValues() != fileItem->numberOfValues())
+  {
+    return false;
+  }
+
   return true;
 }
 
@@ -63,19 +77,7 @@ smtk::operation::Operation::Result WriteResource::operateInternal()
   auto params = this->parameters();
   auto fileItem = params->findFile("filename");
   auto setFileName = fileItem->isEnabled();
-  auto resourceItem = params->findResource("resource");
-
-  if (resourceItem->numberOfValues() < 1)
-  {
-    smtkErrorMacro(this->log(), "At least one resource must be selected for saving.");
-    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
-  }
-
-  if (setFileName && resourceItem->numberOfValues() != fileItem->numberOfValues())
-  {
-    smtkErrorMacro(this->log(), "Number of filenames must match number of resources.");
-    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
-  }
+  auto resourceItem = this->parameters()->associations();
 
   smtk::operation::WriterGroup writerGroup(manager);
 
@@ -121,7 +123,7 @@ smtk::operation::Operation::Result WriteResource::operateInternal()
       writerFileItem->setValue(fileName);
     }
 
-    writeOperation->parameters()->findResource("resource")->setValue(resource);
+    writeOperation->parameters()->associate(resource);
 
     smtk::operation::Operation::Result writeOperationResult = writeOperation->operate();
     if (writeOperationResult->findInt("outcome")->value() !=
@@ -149,16 +151,23 @@ void WriteResource::generateSummary(WriteResource::Result& res)
 {
   std::ostringstream msg;
   int outcome = res->findInt("outcome")->value();
-  auto resourceItem = this->parameters()->findResource("resource");
+  auto resourceItem = this->parameters()->associations();
+  auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(resourceItem->objectValue());
   msg << this->parameters()->definition()->label();
-  if (outcome == static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+
+  if (resource == nullptr)
   {
-    msg << ": wrote \"" << resourceItem->value(0)->location() << "\"";
+    msg << ": could not resolve resource";
+    smtkErrorMacro(this->log(), msg.str());
+  }
+  else if (outcome == static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+  {
+    msg << ": wrote \"" << resource->location() << "\"";
     smtkInfoMacro(this->log(), msg.str());
   }
   else
   {
-    msg << ": failed to write \"" << resourceItem->value(0)->location() << "\"";
+    msg << ": failed to write \"" << resource->location() << "\"";
     smtkErrorMacro(this->log(), msg.str());
   }
 }

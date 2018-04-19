@@ -25,10 +25,10 @@
 
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtBaseView.h"
-#include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/io/Logger.h"
+#include "smtk/operation/Manager.h"
 #include "smtk/view/View.h"
 
 #include <QtCore/QDebug>
@@ -159,11 +159,10 @@ void smtkTerrainExtractionView::attributeModified()
       // Add auxgom operator has been called before. Safe to skip check conditon
       std::string aux_GeomName("add auxiliary geometry");
 
-      this->Internals->addAux_GeomOp =
-        this->uiManager()->activeModelView()->operatorsWidget()->existingOperation(aux_GeomName);
+      auto auxOp = this->uiManager()->operationManager()->create(aux_GeomName);
+      this->Internals->addAux_GeomOp = auxOp;
 
-      this->TerrainExtractionManager->setAuxGeomOperation(
-        this->uiManager()->activeModelView()->operatorsWidget()->existingOperation(aux_GeomName));
+      this->TerrainExtractionManager->setAuxGeomOperation(auxOp);
     }
   }
 }
@@ -311,8 +310,9 @@ void smtkTerrainExtractionView::updateAttributeData()
     return;
   }
 
+  // FIXME: This used to fetch a pre-existing operation, which assumed there was only one.
   smtk::operation::OperationPtr terrainExtractionOp =
-    this->uiManager()->activeModelView()->operatorsWidget()->existingOperation(defName);
+    this->uiManager()->operationManager()->create(defName);
   this->Internals->terrainExtractionOp = terrainExtractionOp;
 
   // expecting only 1 instance of the op?

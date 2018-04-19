@@ -41,7 +41,7 @@ bool Manager::registerOperation(Metadata&& metadata)
     auto inserted = m_metadata.get<IndexTag>().insert(metadata);
     if (inserted.second)
     {
-      m_metadataObservers(*inserted.first);
+      m_metadataObservers(*inserted.first, true);
       return true;
     }
   }
@@ -54,6 +54,7 @@ bool Manager::unregisterOperation(const std::string& typeName)
   auto metadata = m_metadata.get<NameTag>().find(typeName);
   if (metadata != m_metadata.get<NameTag>().end())
   {
+    m_metadataObservers(*metadata, false);
     m_metadata.get<NameTag>().erase(metadata);
     return true;
   }
@@ -107,6 +108,24 @@ std::shared_ptr<Operation> Manager::create(const Operation::Index& index)
   return op;
 }
 
+Metadata::Observers::Key Manager::observeMetadata(MetadataObserver fn, bool invokeImmediately)
+{
+  auto key = this->metadataObservers().insert(fn);
+  if (invokeImmediately)
+  {
+    for (auto& md : this->metadata())
+    {
+      fn(md, true);
+    }
+  }
+  return key;
+}
+
+bool Manager::unobserveMetadata(Metadata::Observers::Key key)
+{
+  return this->metadataObservers().erase(key) != 0;
+}
+
 bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManager)
 {
   // Only allow one resource manager to manage created resources.
@@ -127,7 +146,9 @@ bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManage
   // Define a metadata observer that appends the assignment of the resource
   // manager to the create functor for operations that inherit from
   // ResourceManagerOperation.
-  auto resourceMetadataObserver = [&, weakRMPtr](const smtk::operation::Metadata& md) {
+  auto resourceMetadataObserver = [&, weakRMPtr](const smtk::operation::Metadata& md, bool adding) {
+    if (!adding)
+      return;
     auto rsrcManager = weakRMPtr.lock();
     if (!rsrcManager)
     {
@@ -157,14 +178,9 @@ bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManage
     };
   };
 
-  // Apply the metadata observer to extant operation metadata.
-  for (auto& md : m_metadata)
-  {
-    resourceMetadataObserver(md);
-  }
-
-  // Add this metadata observer to the set of metadata observers.
-  m_resourceMetadataObserver = this->metadataObservers().insert(resourceMetadataObserver);
+  // Add this metadata observer to the set of metadata observers, invoking it
+  // immediately on all extant metadata.
+  m_resourceMetadataObserver = this->observeMetadata(resourceMetadataObserver);
 
   // Define an observer that adds all created resources to the resource manager.
   m_resourceObserver =

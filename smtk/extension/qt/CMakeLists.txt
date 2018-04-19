@@ -3,6 +3,7 @@ find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
 # set up sources to build
 set(QAttrLibSrcs
   qtActiveObjects.cxx
+  qtAvailableOperations.cxx
   qtUIManager.cxx
   qtAttribute.cxx
   qtAttributeDisplay.cxx
@@ -62,6 +63,7 @@ set(QAttrLibUIs
 
 set(QAttrLibMocHeaders
   qtActiveObjects.h
+  qtAvailableOperations.h
   qtUIManager.h
   qtAttribute.h
   qtAttributeDisplay.h

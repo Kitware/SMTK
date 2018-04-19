@@ -29,12 +29,27 @@ namespace bridge
 namespace polygon
 {
 
+bool Write::ableToOperate()
+{
+  if (!this->Superclass::ableToOperate())
+  {
+    return false;
+  }
+
+  if (this->parameters()->associations()->numberOfValues() < 1)
+  {
+    return false;
+  }
+
+  return true;
+}
+
 Write::Result Write::operateInternal()
 {
-  smtk::attribute::ResourceItem::Ptr resourceItem = this->parameters()->findResource("resource");
+  auto resourceItem = this->parameters()->associations();
 
   smtk::bridge::polygon::Resource::Ptr rsrc =
-    std::dynamic_pointer_cast<smtk::bridge::polygon::Resource>(resourceItem->value());
+    std::dynamic_pointer_cast<smtk::bridge::polygon::Resource>(resourceItem->objectValue());
 
   // Serialize resource into a set of JSON records:
   smtk::bridge::polygon::SessionIOJSON::json j =
@@ -60,7 +75,7 @@ const char* Write::xmlDescription() const
 bool write(const smtk::resource::ResourcePtr& resource)
 {
   Write::Ptr write = Write::create();
-  write->parameters()->findResource("resource")->setValue(resource);
+  write->parameters()->associate(resource);
   Write::Result result = write->operate();
   return (result->findInt("outcome")->value() == static_cast<int>(Write::Outcome::SUCCEEDED));
 }

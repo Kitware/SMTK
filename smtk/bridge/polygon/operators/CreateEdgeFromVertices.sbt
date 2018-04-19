@@ -10,7 +10,7 @@
         Create a model edge from a pair of model vertices.
       </DetailedDescription>
       <AssociationsDef Name="Model Vertices" NumberOfRequiredValues="2" Extensible="no">
-        <MembershipMask>vertex</MembershipMask>
+        <Accepts><Resource Name="smtk::bridge::polygon::Resource" Filter="vertex"/></Accepts>
         <BriefDescription>The vertices used to form the edge.</BriefDescription>
         <DetailedDescription>
           The pair of model vertices to be used to create a model edge..

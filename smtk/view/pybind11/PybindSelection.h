@@ -21,7 +21,7 @@ SMTK_THIRDPARTY_POST_INCLUDE
 
 #include "smtk/view/Selection.h"
 
-#include "smtk/resource/Component.h"
+#include "smtk/resource/PersistentObject.h"
 
 #include <vector>
 
@@ -44,6 +44,7 @@ PySharedPtrClass< smtk::view::Selection > pybind11_init_smtk_view_Selection(py::
 {
   PySharedPtrClass< smtk::view::Selection > instance(m, "Selection");
   instance
+    .def("typeName", &smtk::view::Selection::typeName)
     .def_static("create", (std::shared_ptr<smtk::view::Selection> (*)()) &smtk::view::Selection::create)
     .def_static("create", (std::shared_ptr<smtk::view::Selection> (*)(::std::shared_ptr<smtk::view::Selection> &)) &smtk::view::Selection::create, py::arg("ref"))
     .def_static("instance", (std::shared_ptr<smtk::view::Selection> (*)()) &smtk::view::Selection::instance)
@@ -63,16 +64,16 @@ PySharedPtrClass< smtk::view::Selection > pybind11_init_smtk_view_Selection(py::
     .def("setDefaultActionToAddition", &smtk::view::Selection::setDefaultActionToAddition)
     .def("setDefaultActionToSubtraction", &smtk::view::Selection::setDefaultActionToSubtraction)
     .def("modifySelection", (bool
-        (smtk::view::Selection::*)(const ::std::vector<smtk::resource::Component::Ptr>&,
+        (smtk::view::Selection::*)(const ::std::vector<smtk::resource::PersistentObject::Ptr>&,
           const std::string&, int, smtk::view::SelectionAction))
       &smtk::view::Selection::modifySelection)
-    .def("visitSelection", &smtk::view::Selection::visitSelection, py::arg("visitor"))
+    .def("visitSelection", (void (smtk::view::Selection::*)(::std::function<void (std::shared_ptr<smtk::resource::PersistentObject>, int)>)) &smtk::view::Selection::visitSelection, py::arg("visitor"))
+    .def("visitSelection", (void (smtk::view::Selection::*)(::std::function<void (std::shared_ptr<smtk::resource::Component>, int)>)) &smtk::view::Selection::visitSelection, py::arg("visitor"))
     .def("observe", &smtk::view::Selection::observe, py::arg("fn"), py::arg("immediatelyNotify") = false)
     .def("unobserve", &smtk::view::Selection::unobserve, py::arg("handle"))
     .def("setFilter", &smtk::view::Selection::setFilter, py::arg("fn"), py::arg("refilterSelection") = true)
-    .def("currentSelection", (const ::std::map<smtk::resource::ComponentPtr, int>&
-        (smtk::view::Selection::*)() const)
-      &smtk::view::Selection::currentSelection)
+    .def("currentSelection", (smtk::view::Selection::SelectionMap & (smtk::view::Selection::*)(::smtk::view::Selection::SelectionMap &) const) &smtk::view::Selection::currentSelection, py::arg("selection"))
+    .def("currentSelection", (smtk::view::Selection::SelectionMap const & (smtk::view::Selection::*)() const) &smtk::view::Selection::currentSelection)
     ;
   return instance;
 }

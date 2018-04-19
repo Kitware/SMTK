@@ -11,9 +11,11 @@
 
 #include "smtk/view/Selection.h"
 
+#include "smtk/extension/paraview/appcomponents/pqPluginSMTKViewBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKImportOperationBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKSaveResourceBehavior.h"
+//#include "smtk/extension/paraview/appcomponents/pqSMTKSelectionFilterBehavior.h"
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
 
 #include "pqApplicationCore.h"
@@ -24,6 +26,7 @@ vtkSMProxy* pqSMTKAppComponentsAutoStart::s_resourceManager = nullptr;
 pqSMTKAppComponentsAutoStart::pqSMTKAppComponentsAutoStart(QObject* parent)
   : Superclass(parent)
 {
+  m_viewTracker = new pqPluginSMTKViewBehavior(parent);
 }
 
 pqSMTKAppComponentsAutoStart::~pqSMTKAppComponentsAutoStart()

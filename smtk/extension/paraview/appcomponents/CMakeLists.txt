@@ -29,6 +29,7 @@ set(PQComponentsSrcs
   pqSMTKImportOperationBehavior.cxx
   pqSMTKModelRepresentation.cxx
   pqSMTKSaveResourceBehavior.cxx
+  pqSMTKOperationPanel.cxx
   pqSMTKSelectionFilterBehavior.cxx
   pqSMTKResource.cxx
   pqSMTKWrapper.cxx
@@ -44,6 +45,7 @@ set(PQComponentsHeaders
   pqSMTKImportOperationBehavior.h
   pqSMTKModelRepresentation.h
   pqSMTKSaveResourceBehavior.h
+  pqSMTKOperationPanel.h
   pqSMTKSelectionFilterBehavior.h
   pqSMTKResource.h
   pqSMTKWrapper.h
@@ -52,6 +54,7 @@ set(PQComponentsHeaders
 
 set(PQComponentsUIs
   resources/pqSMTKColorByWidget.ui
+  resources/pqSMTKOperationPanel.ui
   resources/pqSMTKResourcePanel.ui
   resources/pqSMTKSelectionFilterBehavior.ui
 )
@@ -264,6 +267,13 @@ add_paraview_dock_window(rsrcPanelIfaces rsrcPanelIfaceSrcs
 )
 list(APPEND PLUGIN_DOCK_IFACES ${rsrcPanelIfaces})
 list(APPEND PLUGIN_DOCK_IFACES_SRCS ${rsrcPanelIfaceSrcs})
+
+add_paraview_dock_window(operPanelIfaces operPanelIfaceSrcs
+  CLASS_NAME pqSMTKOperationPanel
+  DOCK_AREA Left
+)
+list(APPEND PLUGIN_DOCK_IFACES ${operPanelIfaces})
+list(APPEND PLUGIN_DOCK_IFACES_SRCS ${operPanelIfaceSrcs})
 
 pv_qt_wrap_cpp(PLUGIN_MOC_SRCS ${PQComponentsPluginHdrs})
 add_paraview_plugin(

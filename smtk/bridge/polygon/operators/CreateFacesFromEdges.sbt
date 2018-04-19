@@ -13,7 +13,7 @@
         and used in place of those specifying the face.
       </DetailedDescription>
       <AssociationsDef Name="Model Edges" NumberOfRequiredValues="1" Extensible="yes">
-        <MembershipMask>edge</MembershipMask>
+        <Accepts><Resource Name="smtk::bridge::polygon::Resource" Filter="edge"/></Accepts>
         <BriefDescription>The edges used to form the faces.</BriefDescription>
         <DetailedDescription>
           The set of model edges that will be used to create faces from.

@@ -6,7 +6,7 @@
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="export edges to vtk" BaseType="operation" Label="Model - Export edges to VTK">
       <AssociationsDef Name="models" NumberOfRequiredValues="1">
-        <MembershipMask>model</MembershipMask>
+        <Accepts><Resource Name="smtk::model::Resource" Filter="model"/></Accepts>
       </AssociationsDef>
       <BriefDescription>
         Export a VTK polydata containing each model edge.

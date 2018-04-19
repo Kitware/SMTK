@@ -30,6 +30,9 @@ smtk_source_group(io)
 add_subdirectory(view)
 smtk_source_group(view)
 
+add_subdirectory(workflow)
+smtk_source_group(workflow)
+
 set(smtk_headers
   ${commonHeaders}
   ${resourceHeaders}
@@ -38,6 +41,7 @@ set(smtk_headers
   ${meshHeaders}
   ${modelHeaders}
   ${viewHeaders}
+  ${workflowHeaders}
   ${simulationHeaders}
   ${ioHeaders}
 )
@@ -49,6 +53,7 @@ set(smtk_srcs
   ${meshSrcs}
   ${modelSrcs}
   ${viewSrcs}
+  ${workflowSrcs}
   ${simulationSrcs}
   ${ioSrcs}
 )

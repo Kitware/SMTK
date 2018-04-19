@@ -24,6 +24,11 @@
 #include "smtk/extension/qt/qtSelectorView.h"
 #include "smtk/extension/qt/qtSimpleExpressionView.h"
 
+#include "smtk/operation/Manager.h"
+#include "smtk/operation/Operation.h"
+
+#include "smtk/io/Logger.h"
+
 #include <QApplication>
 #include <QClipboard>
 #include <QComboBox>
@@ -78,12 +83,41 @@ QSize qtTextEdit::sizeHint() const
 }
 
 qtUIManager::qtUIManager(smtk::attribute::ResourcePtr resource)
-  : m_parentWidget(NULL)
-  , m_AttResource(resource)
+  : m_parentWidget(nullptr)
+  , m_attResource(resource)
   , m_useInternalFileBrowser(false)
 {
-  m_topView = NULL;
-  m_activeModelView = NULL;
+  this->commonConstructor();
+}
+
+qtUIManager::qtUIManager(smtk::operation::OperationPtr op)
+  : m_parentWidget(nullptr)
+  , m_operation(op)
+{
+  if (!op)
+  {
+    smtkErrorMacro(
+      smtk::io::Logger::instance(), "Asked to create an operation view with no operation.");
+  }
+
+  auto spec = op->specification();
+  if (!spec)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), "Asked to create an operation view of "
+        << op->index() << " (" << op->typeName() << ")"
+        << " but operator has no specification.");
+  }
+  m_attResource = spec;
+
+  this->commonConstructor();
+}
+
+void qtUIManager::commonConstructor()
+{
+  m_resourceManager = m_attResource ? m_attResource->manager() : nullptr;
+  m_useInternalFileBrowser = false;
+  m_topView = nullptr;
+  m_activeModelView = nullptr;
   m_maxValueLabelLength = 200;
   m_minValueLabelLength = 50;
 
@@ -133,8 +167,16 @@ void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
   }
   this->internalInitialize();
 
-  smtk::extension::ViewInfo vinfo(m_smtkView, pWidget, this);
-  m_topView = this->createView(vinfo);
+  if (!m_operation)
+  {
+    smtk::extension::ViewInfo vinfo(m_smtkView, pWidget, this);
+    m_topView = this->createView(vinfo);
+  }
+  else
+  {
+    smtk::extension::OperationViewInfo vinfo(m_smtkView, m_operation, pWidget, this);
+    m_topView = this->createView(vinfo);
+  }
   if (m_topView)
   {
     if (m_currentAdvLevel) // only build advanced level when needed)
@@ -175,6 +217,85 @@ void qtUIManager::initializeUI(
     m_topView->showAdvanceLevel(m_currentAdvLevel);
   }
   m_topView->setInitialCategory();
+}
+
+smtk::view::ViewPtr qtUIManager::findOrCreateOperationView() const
+{
+  smtk::view::ViewPtr view;
+  auto op = m_operation;
+  if (!op)
+  {
+    return view;
+  }
+
+  smtk::attribute::ResourcePtr rsrc = op->specification();
+  if (!rsrc)
+  {
+    return view;
+  }
+
+  smtk::attribute::AttributePtr params = op->parameters();
+
+  // See if the operation has a manually-specified view.
+  for (auto it = rsrc->views().begin(); it != rsrc->views().end(); ++it)
+  {
+    // If this is an "Operation" view we need to check its InstancedAttributes child,
+    // otherwise we need to check AttributeTypes:
+    int i; // View Component index we need to check
+    if (it->second->type() == "Operation")
+    {
+      i = it->second->details().findChild("InstancedAttributes");
+    }
+    else
+    {
+      i = it->second->details().findChild("AttributeTypes");
+    }
+    if (i < 0)
+    {
+      continue;
+    }
+    smtk::view::View::Component& comp = it->second->details().child(i);
+    for (std::size_t ci = 0; ci < comp.numberOfChildren(); ++ci)
+    {
+      std::string optype;
+      if (comp.child(ci).attribute("Type", optype) && optype == params->type())
+      {
+        view = it->second;
+        // If we are dealing with an Operation View - The Name attribute needs to be
+        // set to the same of the attribute the operator is using - so in practice
+        // the Name attribute does not have to be set in the operator's sbt info
+        if (view->type() == "Operation")
+        {
+          comp.child(ci).setAttribute("Name", params->name());
+        }
+        break;
+      }
+    }
+    if (view && this->hasViewConstructor(view->type()))
+    {
+      break;
+    }
+  }
+
+  // There is no view or there is a view but the UI manager does
+  // not know about it (perhaps because the plugin which should
+  // register widgets for the view is not loaded, perhaps because
+  // the view name is incorrect).
+  if (!view || !this->hasViewConstructor(view->type()))
+  { // Create an "Operation" view.
+    if (op)
+    {
+      view = smtk::view::View::New("Operation", op->typeName());
+      view->details().setAttribute("UseSelectionManager", "true");
+      smtk::view::View::Component& comp =
+        view->details().addChild("InstancedAttributes").addChild("Att");
+      comp.setAttribute("Type", params->type()).setAttribute("Name", params->name());
+      rsrc->addView(view);
+    }
+  }
+
+  view->details().setAttribute("TopLevel", "true");
+  return view;
 }
 
 qtBaseView* qtUIManager::setSMTKView(
@@ -230,7 +351,7 @@ void qtUIManager::internalInitialize()
   this->findDefinitionsLongLabels();
 
   // initialize initial advance level
-  const std::map<int, std::string>& levels = m_AttResource->advanceLevels();
+  const std::map<int, std::string>& levels = m_attResource->advanceLevels();
   if (levels.size() > 0)
   {
     // use the minimum enum value as initial advance level
@@ -263,7 +384,7 @@ void qtUIManager::setAdvanceLevel(int b)
 void qtUIManager::initAdvanceLevels(QComboBox* combo)
 {
   combo->blockSignals(true);
-  const std::map<int, std::string>& levels = m_AttResource->advanceLevels();
+  const std::map<int, std::string>& levels = m_attResource->advanceLevels();
   if (levels.size() == 0)
   {
     // for backward compatibility, we automatically add
@@ -705,13 +826,13 @@ void qtUIManager::findDefinitionsLongLabels()
   // Generate list of all concrete definitions in the manager
   std::vector<smtk::attribute::DefinitionPtr> defs;
   std::vector<smtk::attribute::DefinitionPtr> baseDefinitions;
-  m_AttResource->findBaseDefinitions(baseDefinitions);
+  m_attResource->findBaseDefinitions(baseDefinitions);
   std::vector<smtk::attribute::DefinitionPtr>::const_iterator baseIter;
 
   for (baseIter = baseDefinitions.begin(); baseIter != baseDefinitions.end(); baseIter++)
   {
     std::vector<smtk::attribute::DefinitionPtr> derivedDefs;
-    m_AttResource->findAllDerivedDefinitions(*baseIter, true, derivedDefs);
+    m_attResource->findAllDerivedDefinitions(*baseIter, true, derivedDefs);
     defs.insert(defs.end(), derivedDefs.begin(), derivedDefs.end());
   }
 

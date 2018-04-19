@@ -7,7 +7,7 @@
     <AttDef Type="group auxiliary geometry" BaseType="operation"
       Label="Model Entities - Group Auxiliary Geometry">
       <AssociationsDef Name="children" NumberOfRequiredValues="0" Extensible="true">
-        <MembershipMask>aux_geom</MembershipMask>
+        <Accepts><Resource Name="smtk::model::Resource" Filter="aux_geom"/></Accepts>
       </AssociationsDef>
       <BriefDescription>
         Create a new auxiliary geometry that groups the associated
