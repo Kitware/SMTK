@@ -10,6 +10,7 @@ include(ParaViewPlugins)
 list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 
 set (srcs
+  qtColorButton.cxx
   qtDraw2DLattice.cxx
   qtDrawLatticeItem.cxx
   qtLattice.cxx
@@ -24,6 +25,7 @@ set (non_ui_srcs
 )
 
 set (moc_hdrs
+  qtColorButton.h
   qtDraw2DLattice.h
 )
 set (hdrs

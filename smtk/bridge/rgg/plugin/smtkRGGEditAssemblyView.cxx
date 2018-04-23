@@ -24,6 +24,7 @@
 #include "smtk/bridge/rgg/operators/CreateAssembly.h"
 #include "smtk/bridge/rgg/operators/CreateDuct.h"
 #include "smtk/bridge/rgg/operators/EditAssembly.h"
+#include "smtk/bridge/rgg/qt/qtColorButton.h"
 
 #include "smtk/bridge/rgg/qt/qtDraw2DLattice.h"
 #include "smtk/bridge/rgg/qt/rggNucAssembly.h"
@@ -542,6 +543,10 @@ void smtkRGGEditAssemblyView::apply()
   {
     labelI->setValue(this->Internals->labelLineEdit->text().toStdString());
   }
+  smtk::attribute::DoubleItemPtr colorI = eaAtt->findDouble("color");
+  std::vector<double> color;
+  this->Internals->chooseColorButton->getColor(color);
+  colorI->setValues(color.begin(), color.end());
 
   smtk::attribute::VoidItemPtr centerPinsI = eaAtt->findVoid("center pins");
   if (centerPinsI)
@@ -569,6 +574,7 @@ void smtkRGGEditAssemblyView::apply()
     zAxisI->setValue(this->Internals->zAxisRotationComboBox->currentText().toDouble());
   }
   this->requestOperation(this->Internals->EditAssyOp.lock());
+  this->Internals->chooseColorButton->setText(QString());
 }
 
 void smtkRGGEditAssemblyView::calculatePitches()
@@ -951,6 +957,19 @@ void smtkRGGEditAssemblyView::updateEditAssemblyPanel()
     {
       this->Internals->labelLineEdit->setText(
         QString::fromStdString(assembly.stringProperty("label")[0]));
+    }
+    // Color
+    smtk::model::FloatList assemblyColor = assembly.color();
+    if (assemblyColor[3] >= 0) // Valid color
+    {
+      QColor color =
+        QColor::fromRgbF(assemblyColor[0], assemblyColor[1], assemblyColor[2], assemblyColor[3]);
+      this->Internals->chooseColorButton->setColor(color);
+    }
+    else
+    {
+      this->Internals->chooseColorButton->setColor(qtColorButton::generateColor());
+      this->Internals->chooseColorButton->setText(QString::fromStdString("(Suggesting color)"));
     }
     if (assembly.owningModel().hasIntegerProperty("hex"))
     {

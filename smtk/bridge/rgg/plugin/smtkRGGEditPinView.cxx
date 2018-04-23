@@ -181,6 +181,12 @@ void smtkRGGEditPinView::apply()
     this->Internals->CurrentAtt->attribute()->findDouble("z origin");
   zOriginI->setValue(this->Internals->Z0rigin->value());
 
+  smtk::attribute::DoubleItemPtr colorI =
+    this->Internals->CurrentAtt->attribute()->findDouble("color");
+  std::vector<double> color;
+  this->Internals->chooseColorButton->getColor(color);
+  colorI->setValues(color.begin(), color.end());
+
   smtk::attribute::GroupItemPtr piecesI =
     this->Internals->CurrentAtt->attribute()->findGroup("pieces");
   piecesI->setNumberOfGroups(1); // Clear the existing groups
@@ -231,6 +237,7 @@ void smtkRGGEditPinView::apply()
   }
 
   this->requestOperation(this->Internals->CurrentOp.lock());
+  this->Internals->chooseColorButton->setText(QString());
 }
 
 void smtkRGGEditPinView::pieceTypeChanged()
@@ -432,6 +439,19 @@ void smtkRGGEditPinView::updateEditPinPanel()
     this->Internals->cutAwayViewCheckBox->setChecked(pin.integerProperty("cut away")[0]);
     // Z origin
     this->Internals->Z0rigin->setValue(pin.floatProperty("z origin")[0]);
+    // Color
+    smtk::model::FloatList pinColor = pin.color();
+    if (pinColor[3] >= 0) // Valid color
+    {
+      QColor color = QColor::fromRgbF(pinColor[0], pinColor[1], pinColor[2], pinColor[3]);
+      this->Internals->chooseColorButton->setColor(color);
+    }
+    else
+    {
+      this->Internals->chooseColorButton->setColor(qtColorButton::generateColor());
+      this->Internals->chooseColorButton->setText(QString::fromStdString("(Suggesting color)"));
+    }
+
     // Populate the piece table
     this->Internals->piecesTable->clearSpans();
     this->Internals->piecesTable->model()->removeRows(0, this->Internals->piecesTable->rowCount());

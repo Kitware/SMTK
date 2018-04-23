@@ -109,6 +109,20 @@ void CreateAssembly::populateAssembly(
     assembly.setStringProperty(labelItem->name(), labelValue);
   }
 
+  smtk::attribute::DoubleItemPtr colorI = op->findDouble("color");
+  if (colorI)
+  {
+    smtk::model::FloatList color = smtk::model::FloatList{ colorI->begin(), colorI->end() };
+    if (color.size() != 4 && (color.size() != 0))
+    {
+      smtkErrorMacro(op->log(), "Color item does not have 4 values");
+    }
+    else
+    {
+      assembly.setColor(color);
+    }
+  }
+
   // Pins and their layouts
   // Op would store all pin uuids as a string property on the assembly,
   // then for each pin op would store its layout as an int property.

@@ -47,6 +47,12 @@
             A user assigned z origin for the nuclear pin.
           </DetailedDescription>
         </Double>
+        <Double Name="color" NumberOfRequiredValues="4" AdvanceLevel="11">
+          <BriefDescription>A user assigned color for the nuclear pin</BriefDescription>
+          <DetailedDescription>
+            A user assigned color for the nuclear pin.
+          </DetailedDescription>
+        </Double>
         <Group Name="pieces" Extensible="true" NumberOfRequiredGroups="1" AdvanceLevel="11">
           <BriefDescription>A user assigned a set of sections which form the the nuclear pin from bottom to top</BriefDescription>
           <DetailedDescription>
