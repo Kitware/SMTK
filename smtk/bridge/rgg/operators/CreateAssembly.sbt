@@ -29,6 +29,12 @@
           </DetailedDescription>
           <DefaultValue>A0</DefaultValue>
         </String>
+        <Double Name="color" NumberOfRequiredValues="0" AdvanceLevel="11">
+          <BriefDescription>A user assigned color for the nuclear assembly</BriefDescription>
+          <DetailedDescription>
+            A user assigned color for the nuclear assembly which would be specified when reading from a file.
+          </DetailedDescription>
+        </Double>
         <Group Name="pins and layouts" Extensible="true" NumberOfRequiredGroups="0" AdvanceLevel="11">
           <BriefDescription>A user assigned a set of pins which are laid out in the lattice</BriefDescription>
           <DetailedDescription>

@@ -27,6 +27,7 @@
 #include "smtk/bridge/rgg/Material.h"
 #include "smtk/bridge/rgg/operators/AddMaterial.h"
 #include "smtk/bridge/rgg/operators/CreateModel.h"
+#include "smtk/bridge/rgg/qt/qtColorButton.h"
 
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtAttribute.h"
@@ -195,10 +196,6 @@ bool smtkRGGAddMaterialView::ableToOperate()
 {
   if (this->Internals->nameValue->text().isEmpty() ||
     this->Internals->labelValue->text().isEmpty() ||
-    this->Internals->colorRValue->text().isEmpty() ||
-    this->Internals->colorGValue->text().isEmpty() ||
-    this->Internals->colorBValue->text().isEmpty() ||
-    this->Internals->colorAValue->text().isEmpty() ||
     this->Internals->temperatureValue->text().isEmpty() ||
     this->Internals->thermalCoeffValue->text().isEmpty() ||
     this->Internals->densityValue->text().isEmpty() || this->Internals->densityTypeBox == nullptr ||
@@ -220,10 +217,11 @@ bool smtkRGGAddMaterialView::ableToOperate()
 
   smtk::attribute::DoubleItemPtr colorI =
     this->Internals->m_currentAtt->attribute()->findDouble("color");
-  colorI->setValue(0, this->Internals->colorRValue->text().toFloat());
-  colorI->setValue(1, this->Internals->colorGValue->text().toFloat());
-  colorI->setValue(2, this->Internals->colorBValue->text().toFloat());
-  colorI->setValue(3, this->Internals->colorAValue->text().toFloat());
+  QColor color = this->Internals->chooseColorButton->getColor();
+  colorI->setValue(0, color.redF());
+  colorI->setValue(1, color.greenF());
+  colorI->setValue(2, color.blueF());
+  colorI->setValue(3, color.alphaF());
 
   smtk::attribute::DoubleItemPtr temperatureI =
     this->Internals->m_currentAtt->attribute()->findDouble("temperature");
@@ -395,13 +393,7 @@ void smtkRGGAddMaterialView::createWidget()
     &smtkRGGAddMaterialView::ableToOperate);
   QObject::connect(this->Internals->labelValue, &QLineEdit::textChanged, this,
     &smtkRGGAddMaterialView::ableToOperate);
-  QObject::connect(this->Internals->colorRValue, &QLineEdit::textChanged, this,
-    &smtkRGGAddMaterialView::ableToOperate);
-  QObject::connect(this->Internals->colorGValue, &QLineEdit::textChanged, this,
-    &smtkRGGAddMaterialView::ableToOperate);
-  QObject::connect(this->Internals->colorBValue, &QLineEdit::textChanged, this,
-    &smtkRGGAddMaterialView::ableToOperate);
-  QObject::connect(this->Internals->colorAValue, &QLineEdit::textChanged, this,
+  QObject::connect(this->Internals->chooseColorButton, &qtColorButton::colorModified, this,
     &smtkRGGAddMaterialView::ableToOperate);
   QObject::connect(this->Internals->temperatureValue, &QLineEdit::textChanged, this,
     &smtkRGGAddMaterialView::ableToOperate);
@@ -508,6 +500,7 @@ void smtkRGGAddMaterialView::updateAddMaterialPanel()
     this->setupDensityTypeComboBox(this->Internals->densityTypeBox);
     this->setupCompositionTypeComboBox(this->Internals->compositionTypeBox);
   }
+  this->Internals->chooseColorButton->setColor(qtColorButton::generateColor());
 }
 
 void smtkRGGAddMaterialView::setInfoToBeDisplayed()

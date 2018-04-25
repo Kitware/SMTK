@@ -53,46 +53,6 @@
           </size>
          </property>
          <layout class="QGridLayout" name="gridLayout_3">
-          <item row="1" column="5">
-           <widget class="QLabel" name="label_9">
-            <property name="text">
-             <string>B:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="6">
-           <widget class="QLineEdit" name="colorBValue"/>
-          </item>
-          <item row="2" column="4" colspan="5">
-           <widget class="QLineEdit" name="labelValue"/>
-          </item>
-          <item row="1" column="3">
-           <widget class="QLabel" name="label_12">
-            <property name="text">
-             <string>G:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="7">
-           <widget class="QLabel" name="label_10">
-            <property name="text">
-             <string>A:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLabel" name="label_13">
-            <property name="text">
-             <string>R:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="4">
-           <widget class="QLineEdit" name="colorGValue"/>
-          </item>
-          <item row="1" column="8">
-           <widget class="QLineEdit" name="colorAValue"/>
-          </item>
           <item row="1" column="0">
            <widget class="QLabel" name="label">
             <property name="text">
@@ -100,18 +60,48 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="0" colspan="4">
+          <item row="3" column="0" colspan="3">
            <widget class="QLabel" name="label_14">
             <property name="text">
              <string>Label:</string>
             </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
            </widget>
           </item>
-          <item row="1" column="2">
-           <widget class="QLineEdit" name="colorRValue"/>
+          <item row="3" column="3">
+           <widget class="QLineEdit" name="labelValue"/>
+          </item>
+          <item row="1" column="4">
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="3" column="4">
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="1" column="3">
+           <widget class="qtColorButton" name="chooseColorButton">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -227,44 +217,6 @@
          </layout>
         </widget>
        </item>
-       <item row="7" column="0">
-        <widget class="QWidget" name="widget_6" native="true">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <item>
-           <widget class="QPushButton" name="applyButton">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Apply</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="infoButton">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Info</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
        <item row="0" column="0" colspan="2">
         <widget class="QWidget" name="widget" native="true">
          <property name="maximumSize">
@@ -347,12 +299,57 @@
          </layout>
         </widget>
        </item>
+       <item row="7" column="0">
+        <widget class="QWidget" name="widget_6" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QPushButton" name="applyButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Apply</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="infoButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Info</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
       </layout>
      </widget>
     </widget>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>qtColorButton</class>
+   <extends>QPushButton</extends>
+   <header>smtk/bridge/rgg/qt/qtColorButton.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>scrollArea</tabstop>
   <tabstop>nameValue</tabstop>
@@ -362,11 +359,6 @@
   <tabstop>densityTypeBox</tabstop>
   <tabstop>compositionTypeBox</tabstop>
   <tabstop>componentsTable</tabstop>
-  <tabstop>colorRValue</tabstop>
-  <tabstop>colorGValue</tabstop>
-  <tabstop>colorBValue</tabstop>
-  <tabstop>colorAValue</tabstop>
-  <tabstop>labelValue</tabstop>
  </tabstops>
  <resources/>
  <connections/>

@@ -129,8 +129,8 @@ void CreatePin::populatePin(smtk::model::Operator* op, smtk::model::AuxiliaryGeo
   }
 
   smtk::attribute::DoubleItemPtr colorI = op->findDouble("color");
-  if (colorI && isCreation)
-  { // For now we would only assign a color to a pin when reading from a file
+  if (colorI)
+  {
     smtk::model::FloatList color = smtk::model::FloatList{ colorI->begin(), colorI->end() };
     if (color.size() != 4 && (color.size() != 0))
     {

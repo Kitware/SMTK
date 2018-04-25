@@ -27,6 +27,7 @@
 #include "smtk/bridge/rgg/Material.h"
 #include "smtk/bridge/rgg/operators/CreateModel.h"
 #include "smtk/bridge/rgg/operators/EditMaterial.h"
+#include "smtk/bridge/rgg/qt/qtColorButton.h"
 
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtAttribute.h"
@@ -198,10 +199,6 @@ void smtkRGGEditMaterialView::attributeModified()
 bool smtkRGGEditMaterialView::ableToOperate()
 {
   if (this->Internals->labelValue->text().isEmpty() ||
-    this->Internals->colorRValue->text().isEmpty() ||
-    this->Internals->colorGValue->text().isEmpty() ||
-    this->Internals->colorBValue->text().isEmpty() ||
-    this->Internals->colorAValue->text().isEmpty() ||
     this->Internals->temperatureValue->text().isEmpty() ||
     this->Internals->thermalCoeffValue->text().isEmpty() ||
     this->Internals->densityValue->text().isEmpty() || this->Internals->densityTypeBox == nullptr ||
@@ -223,10 +220,11 @@ bool smtkRGGEditMaterialView::ableToOperate()
 
   smtk::attribute::DoubleItemPtr colorI =
     this->Internals->m_currentAtt->attribute()->findDouble("color");
-  colorI->setValue(0, this->Internals->colorRValue->text().toFloat());
-  colorI->setValue(1, this->Internals->colorGValue->text().toFloat());
-  colorI->setValue(2, this->Internals->colorBValue->text().toFloat());
-  colorI->setValue(3, this->Internals->colorAValue->text().toFloat());
+  QColor color = this->Internals->chooseColorButton->getColor();
+  colorI->setValue(0, color.redF());
+  colorI->setValue(1, color.greenF());
+  colorI->setValue(2, color.blueF());
+  colorI->setValue(3, color.alphaF());
 
   smtk::attribute::DoubleItemPtr temperatureI =
     this->Internals->m_currentAtt->attribute()->findDouble("temperature");
@@ -398,14 +396,6 @@ void smtkRGGEditMaterialView::createWidget()
 
   QObject::connect(this->Internals->labelValue, &QLineEdit::textChanged, this,
     &smtkRGGEditMaterialView::ableToOperate);
-  QObject::connect(this->Internals->colorRValue, &QLineEdit::textChanged, this,
-    &smtkRGGEditMaterialView::ableToOperate);
-  QObject::connect(this->Internals->colorGValue, &QLineEdit::textChanged, this,
-    &smtkRGGEditMaterialView::ableToOperate);
-  QObject::connect(this->Internals->colorBValue, &QLineEdit::textChanged, this,
-    &smtkRGGEditMaterialView::ableToOperate);
-  QObject::connect(this->Internals->colorAValue, &QLineEdit::textChanged, this,
-    &smtkRGGEditMaterialView::ableToOperate);
   QObject::connect(this->Internals->temperatureValue, &QLineEdit::textChanged, this,
     &smtkRGGEditMaterialView::ableToOperate);
   {
@@ -572,10 +562,7 @@ void smtkRGGEditMaterialView::setupCompositionTypeComboBox(QComboBox* box)
 void smtkRGGEditMaterialView::clear()
 {
   this->Internals->labelValue->clear();
-  this->Internals->colorRValue->clear();
-  this->Internals->colorGValue->clear();
-  this->Internals->colorBValue->clear();
-  this->Internals->colorAValue->clear();
+  this->Internals->chooseColorButton->setColor(Qt::white);
   this->Internals->temperatureValue->clear();
   this->Internals->thermalCoeffValue->clear();
   this->Internals->densityValue->clear();
@@ -592,10 +579,7 @@ void smtkRGGEditMaterialView::setEnabled(bool choice)
   }
 
   this->Internals->labelValue->setEnabled(choice);
-  this->Internals->colorRValue->setEnabled(choice);
-  this->Internals->colorGValue->setEnabled(choice);
-  this->Internals->colorBValue->setEnabled(choice);
-  this->Internals->colorAValue->setEnabled(choice);
+  this->Internals->chooseColorButton->setEnabled(choice);
   this->Internals->temperatureValue->setEnabled(choice);
   this->Internals->thermalCoeffValue->setEnabled(choice);
   this->Internals->densityValue->setEnabled(choice);
@@ -636,10 +620,8 @@ void smtkRGGEditMaterialView::materialChanged(const QString& text)
 
   this->Internals->labelValue->setText(QString::fromStdString(label));
 
-  this->Internals->colorRValue->setText(QString::number(color[0]));
-  this->Internals->colorGValue->setText(QString::number(color[1]));
-  this->Internals->colorBValue->setText(QString::number(color[2]));
-  this->Internals->colorAValue->setText(QString::number(color[3]));
+  this->Internals->chooseColorButton->setColor(
+    QColor::fromRgbF(color[0], color[1], color[2], color[3]));
 
   this->Internals->temperatureValue->setText(QString::number(material.temperature()));
 

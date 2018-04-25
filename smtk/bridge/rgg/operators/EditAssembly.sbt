@@ -25,6 +25,12 @@
             A user assigned name for the nuclear assembly.
           </DetailedDescription>
         </String>
+        <Double Name="color" NumberOfRequiredValues="4" AdvanceLevel="11">
+          <BriefDescription>A user assigned color for the nuclear assembly</BriefDescription>
+          <DetailedDescription>
+            A user assigned color for the nuclear assembly.
+          </DetailedDescription>
+        </Double>
         <Group Name="pins and layouts" Extensible="true" NumberOfRequiredGroups="0" AdvanceLevel="11">
           <BriefDescription>A user assigned a set of pins which are laid out in the lattice</BriefDescription>
           <DetailedDescription>
