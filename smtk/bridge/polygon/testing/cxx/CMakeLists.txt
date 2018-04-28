@@ -34,17 +34,3 @@ smtk_unit_tests(
   SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
   LIBRARIES smtkCore smtkPolygonSession smtkCoreModelTesting ${external_libs}
 )
-
-add_executable(UnitTestPolygonEnvironment UnitTestPolygonEnvironment.cxx)
-target_compile_definitions(UnitTestPolygonEnvironment PRIVATE "SMTK_DATA_DIR=\"${SMTK_DATA_DIR}\"")
-target_link_libraries(UnitTestPolygonEnvironment
-  smtkCore
-  smtkCoreModelTesting
-  smtkOperationEnvironment
-  smtkPolygonSession
-  smtkPolygonSessionEnvironment
-  )
-
-add_test(NAME UnitTestPolygonEnvironment
-  COMMAND $<TARGET_FILE:UnitTestPolygonEnvironment>)
-set_tests_properties(UnitTestPolygonEnvironment PROPERTIES LABELS "PolygonSession")

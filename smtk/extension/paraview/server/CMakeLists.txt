@@ -47,7 +47,7 @@ add_library(smtkPVServerExt
 target_link_libraries(smtkPVServerExt
   LINK_PUBLIC
     smtkCore
-    smtkEnvironment
+    smtkPluginSupport
     vtkPVClientServer
     vtkPVServerManager
     vtkSMTKSourceExt

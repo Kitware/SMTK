@@ -13,7 +13,6 @@
 #include "smtk/extension/paraview/server/Exports.h"
 
 #include "smtk/common/UUID.h"
-#include "smtk/environment/Environment.h"
 
 #include "smtk/PublicPointerDefs.h"
 
@@ -60,15 +59,9 @@ public:
   vtkGetObjectMacro(ActiveResource, vtkAlgorithmOutput);
 
   /// Return the server's application-wide resource manager.
-  smtk::resource::ManagerPtr GetResourceManager() const
-  {
-    return smtk::environment::ResourceManager::instance();
-  }
+  smtk::resource::ManagerPtr GetResourceManager() const { return this->ResourceManager; }
   /// Return the server's application-wide operation manager.
-  smtk::operation::ManagerPtr GetOperationManager() const
-  {
-    return smtk::environment::OperationManager::instance();
-  }
+  smtk::operation::ManagerPtr GetOperationManager() const { return this->OperationManager; }
   /// Return the server's application-wide selection handler.
   smtk::view::SelectionPtr GetSelection() const { return this->Selection; }
 
@@ -117,6 +110,8 @@ protected:
   vtkAlgorithmOutput* SelectionObj;
   char* JSONRequest;
   char* JSONResponse;
+  smtk::resource::ManagerPtr ResourceManager;
+  smtk::operation::ManagerPtr OperationManager;
   smtk::view::SelectionPtr Selection;
   std::string SelectionSource;
   int SelectionListener;

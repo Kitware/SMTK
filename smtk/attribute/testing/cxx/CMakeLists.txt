@@ -24,7 +24,6 @@ foreach(tst ${attributeTests})
   add_executable(${tst} ${tst}.cxx)
   target_link_libraries(${tst}
     smtkCore
-    smtkAttributeEnvironment
     ${Boost_LIBRARIES}
   )
   add_test(NAME ${tst} COMMAND ${tst} ${${tst}_ARGS})
@@ -74,8 +73,4 @@ smtk_unit_tests(
   SOURCES ${unit_tests}
   LIBRARIES
     smtkCore
-    smtkEnvironment
-    smtkAttributeEnvironment
-    smtkOperationEnvironment
-    smtkPolygonSessionEnvironment
 )

@@ -14,13 +14,10 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
-#include "smtk/bridge/polygon/RegisterSession.h"
 #include "smtk/bridge/polygon/Resource.h"
 #include "smtk/bridge/polygon/operators/LegacyRead.h"
 
 #include "smtk/extension/delaunay/operators/TessellateFaces.h"
-
-#include "smtk/environment/Environment.h"
 
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
@@ -33,10 +30,6 @@
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Loop.h"
-
-#include "smtk/resource/Manager.h"
-
-#include "smtk/operation/Manager.h"
 
 #include <fstream>
 
@@ -70,17 +63,11 @@ void removeRefsWithoutTess(smtk::model::EntityRefs& ents)
 
 int UnitTestTessellateFaces(int, char** const)
 {
-  auto resourceManager = smtk::environment::ResourceManager::instance();
-  auto operationManager = smtk::environment::OperationManager::instance();
-  operationManager->registerOperation<smtk::extension::delaunay::TessellateFaces>(
-    "smtk::extension::delaunay::TessellateFaces");
-
   smtk::bridge::polygon::Resource::Ptr resource;
 
   {
     // Create an import operator
-    smtk::bridge::polygon::LegacyRead::Ptr readOp =
-      operationManager->create<smtk::bridge::polygon::LegacyRead>();
+    smtk::bridge::polygon::LegacyRead::Ptr readOp = smtk::bridge::polygon::LegacyRead::create();
     if (!readOp)
     {
       std::cerr << "No read operator\n";
@@ -131,7 +118,7 @@ int UnitTestTessellateFaces(int, char** const)
     }
 
     smtk::extension::delaunay::TessellateFaces::Ptr tessellateFacesOp =
-      operationManager->create<smtk::extension::delaunay::TessellateFaces>();
+      smtk::extension::delaunay::TessellateFaces::create();
     if (!tessellateFacesOp)
     {
       std::cerr << "No tessellate faces operator\n";

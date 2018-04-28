@@ -18,6 +18,9 @@ if @SMTK_VTK_SUPPORT_ENABLED@:
 if @SMTK_MATPLOTLIB_SUPPORT_ENABLED@:
     _sessions.append("matplotlib")
 
+if @SMTK_PARAVIEW_SUPPORT_ENABLED@:
+    _sessions.append("paraview")
+
 __all__ = (_sessions)
 
 del _sessions

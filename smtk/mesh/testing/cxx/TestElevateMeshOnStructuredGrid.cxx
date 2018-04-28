@@ -44,8 +44,6 @@
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/operators/AddAuxiliaryGeometry.h"
 
-#include "smtk/environment/Environment.h"
-
 #include "smtk/operation/Manager.h"
 
 #include "vtkActor.h"
@@ -119,8 +117,7 @@ int TestElevateMeshOnStructuredGrid(int argc, char* argv[])
   (void)argc;
   (void)argv;
 
-  auto operMgr = smtk::environment::OperationManager::instance();
-  auto importOp = operMgr->create<smtk::bridge::mesh::Import>();
+  auto importOp = smtk::bridge::mesh::Import::create();
 
   if (!importOp)
   {
@@ -174,7 +171,7 @@ int TestElevateMeshOnStructuredGrid(int argc, char* argv[])
   smtk::mesh::MeshSet mesh = collection->meshes();
 
   // add auxiliary geometry
-  auto auxGeoOp = operMgr->create<smtk::model::AddAuxiliaryGeometry>();
+  auto auxGeoOp = smtk::model::AddAuxiliaryGeometry::create();
 
   {
     std::string file_path(data_root);
@@ -213,7 +210,7 @@ int TestElevateMeshOnStructuredGrid(int argc, char* argv[])
   {
     // create the elevate mesh operator
     std::cout << "Creating elevate mesh operator\n";
-    auto elevateMesh = operMgr->create<smtk::mesh::ElevateMesh>();
+    auto elevateMesh = smtk::mesh::ElevateMesh::create();
     if (!elevateMesh)
     {
       std::cerr << "No Elevate Mesh operator!\n";
@@ -258,7 +255,7 @@ int TestElevateMeshOnStructuredGrid(int argc, char* argv[])
   {
     // create the undo elevate mesh operator
     std::cout << "Creating undo elevate mesh operator\n";
-    auto undoElevateMesh = operMgr->create<smtk::mesh::UndoElevateMesh>();
+    auto undoElevateMesh = smtk::mesh::UndoElevateMesh::create();
     if (!undoElevateMesh)
     {
       std::cerr << "No Undo Elevate Mesh operator!\n";

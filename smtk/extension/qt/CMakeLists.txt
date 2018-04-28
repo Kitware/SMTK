@@ -141,7 +141,6 @@ target_include_directories(smtkQtExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 #set smtkQtExt to publicly link to smtkCore
 target_link_libraries(smtkQtExt LINK_PUBLIC
   smtkCore
-  smtkEnvironment
   Qt5::Core
   Qt5::Widgets
   )

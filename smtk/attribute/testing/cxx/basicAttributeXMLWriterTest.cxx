@@ -25,8 +25,6 @@
 
 #include "smtk/model/EntityTypeBits.h"
 
-#include "smtk/environment/Environment.h"
-
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
@@ -57,8 +55,7 @@ int main(int argc, char* argv[])
     std::cerr << "Usage: " << argv[0] << " FullAttributeFilename InstanceOnlyFileName\n";
     return -1;
   }
-  auto rsrcMgr = smtk::environment::ResourceManager::instance();
-  auto sysptr = rsrcMgr->create<smtk::attribute::Collection>();
+  auto sysptr = smtk::attribute::Collection::create();
   smtk::attribute::Collection& collection(*sysptr.get());
   std::cout << "Collection Created\n";
   // Lets add some analyses
@@ -202,7 +199,7 @@ int main(int argc, char* argv[])
   }
 
   // Sanity check readback
-  auto inputSysptr = rsrcMgr->create<smtk::attribute::Collection>();
+  auto inputSysptr = smtk::attribute::Collection::create();
   smtk::io::AttributeReader reader;
   if (reader.read(inputSysptr, argv[1], logger))
   {

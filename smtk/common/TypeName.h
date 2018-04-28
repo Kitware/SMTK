@@ -19,10 +19,10 @@ namespace common
 {
 
 /// Resources and operations have a virtual method typeName(),  but to access
-/// this value we  must create an instance of the class. Alternatively, these
+/// this value we must create an instance of the class. Alternatively, these
 /// classes can (and should) declare a constant expression field "type_name"
 /// that can be queried  without instantiating this class. The macro
-/// "smtkTypeMacro" defined in SharedFromThis.h to declare this field in
+/// "smtkTypeMacro" is defined in SharedFromThis.h to declare this field in
 /// tandem with typeName(). To relax the requirements of a) a macro definition
 /// in a class header, or b) a mysterious constexpr in a class declaration,
 /// the free function name() will traverse one of two code paths to determine a

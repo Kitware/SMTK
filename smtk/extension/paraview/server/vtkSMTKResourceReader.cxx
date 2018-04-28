@@ -60,13 +60,8 @@ void vtkSMTKResourceReader::DropResource()
     return;
   }
 
-  smtk::resource::Manager::Ptr rsrcMgr = this->Wrapper
-    ? this->Wrapper->GetResourceManager()
-    : smtk::environment::ResourceManager::instance();
-  if (!rsrcMgr)
+  if (this->Wrapper != nullptr)
   {
-    return;
+    this->Wrapper->GetResourceManager()->remove(rsrc);
   }
-
-  rsrcMgr->remove(rsrc);
 }

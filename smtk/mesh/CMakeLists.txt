@@ -42,12 +42,11 @@ set(meshSrcs
   operators/ExportMesh.cxx
   operators/GenerateHotStartData.cxx
   operators/InterpolateOntoMesh.cxx
-  operators/RegisterOperations.cxx
   operators/UndoElevateMesh.cxx
   operators/WriteMesh.cxx
 
   resource/MeshComponent.cxx
-  resource/RegisterResources.cxx
+  resource/Registrar.cxx
 
   utility/ApplyToMesh.cxx
   utility/ExtractMeshConstants.cxx
@@ -97,13 +96,12 @@ set(meshHeaders
   operators/ExportMesh.h
   operators/GenerateHotStartData.h
   operators/InterpolateOntoMesh.h
-  operators/RegisterOperations.h
   operators/UndoElevateMesh.h
   operators/WriteMesh.h
 
   resource/MeshComponent.h
   resource/PropertyData.h
-  resource/RegisterResources.h
+  resource/Registrar.h
 
   utility/ApplyToMesh.h
   utility/ExtractMeshConstants.h
@@ -122,8 +120,6 @@ smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteMesh.sbt" defOpXM
 
 #install the headers
 smtk_public_headers(${meshHeaders})
-
-add_subdirectory(environment)
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)

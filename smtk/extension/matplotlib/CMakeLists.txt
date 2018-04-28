@@ -36,8 +36,6 @@ smtk_export_header(smtkMatplotlibExt Exports.h)
 smtk_public_headers(${headers})
 smtk_install_library(smtkMatplotlibExt)
 
-add_subdirectory(environment)
-
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_subdirectory(plugin)
 endif()

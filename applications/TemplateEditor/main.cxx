@@ -14,12 +14,16 @@
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/operators/ReadResource.h"
 
+#include "smtk/resource/Manager.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
-#include "smtk/environment/Environment.h"
+#include "smtk/bridge/polygon/Registrar.h"
+
+#include "smtk/common/Registry.h"
 
 int main(int argc, char* argv[])
 {
@@ -40,7 +44,11 @@ int main(int argc, char* argv[])
   if (argc >= 3)
   {
     char* filename = argv[2];
-    auto operMgr = smtk::environment::OperationManager::instance();
+    auto rsrcMgr = smtk::resource::Manager::create();
+    auto operMgr = smtk::operation::Manager::create();
+    auto polygonRegistry = smtk::common::Registry<smtk::bridge::polygon::Registrar,
+      smtk::resource::Manager, smtk::operation::Manager>(rsrcMgr, operMgr);
+
     auto rdr = operMgr->create<smtk::operation::ReadResource>();
     if (rdr)
     {
@@ -50,7 +58,6 @@ int main(int argc, char* argv[])
         int(smtk::operation::Operation::Outcome::SUCCEEDED))
       {
         auto rsrc = result->findResource("resource")->value();
-        auto rsrcMgr = smtk::environment::ResourceManager::instance();
         rsrcMgr->add(rsrc);
       }
     }

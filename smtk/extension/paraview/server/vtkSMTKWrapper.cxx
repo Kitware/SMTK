@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
+#include "smtk/extension/paraview/pluginsupport/PluginManager.txx"
 #include "smtk/extension/paraview/server/vtkSMTKAttributeReader.h"
 #include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
 #include "smtk/extension/paraview/server/vtkSMTKModelRepresentation.h"
@@ -68,6 +69,12 @@ vtkSMTKWrapper::vtkSMTKWrapper()
   , JSONResponse(nullptr)
   , SelectionSource("paraview")
 {
+  this->ResourceManager = smtk::resource::Manager::create();
+  smtk::extension::paraview::PluginManager::instance()->registerPluginsTo(this->ResourceManager);
+
+  this->OperationManager = smtk::operation::Manager::create();
+  smtk::extension::paraview::PluginManager::instance()->registerPluginsTo(this->OperationManager);
+
   this->Selection = smtk::view::Selection::create();
   this->Selection->setDefaultAction(smtk::view::SelectionAction::FILTERED_REPLACE);
   this->SelectedValue = this->Selection->findOrCreateLabeledValue("selected");

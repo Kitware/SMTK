@@ -52,7 +52,7 @@
 #include "vtkStringArray.h"
 #include "vtkXMLMultiBlockDataWriter.h"
 
-#include "smtk/bridge/discrete/RegisterSession.h"
+#include "smtk/bridge/discrete/Registrar.h"
 #include "smtk/bridge/discrete/Resource.h"
 #include "smtk/bridge/discrete/Session.h"
 #include "smtk/bridge/discrete/operators/EdgeOperation.h"
@@ -62,7 +62,7 @@
 #include "smtk/mesh/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
 
-#include "smtk/operation/RegisterOperations.h"
+#include "smtk/operation/Registrar.h"
 
 #include <fstream>
 #include <sstream>
@@ -138,15 +138,15 @@ int main(int argc, char* argv[])
   smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
   {
-    smtk::bridge::discrete::registerResources(resourceManager);
+    smtk::bridge::discrete::Registrar::registerTo(resourceManager);
   }
 
   // Create an operation manager
   smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
 
   {
-    smtk::operation::registerOperations(operationManager);
-    smtk::bridge::discrete::registerOperations(operationManager);
+    smtk::operation::Registrar::registerTo(operationManager);
+    smtk::bridge::discrete::Registrar::registerTo(operationManager);
   }
 
   // Register the resource manager to the operation manager (newly created

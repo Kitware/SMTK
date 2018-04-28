@@ -1,8 +1,0 @@
-set(environmentSrcs
-  Environment.cxx
-)
-
-add_library(smtkMatplotlibExtEnvironment ${environmentSrcs})
-target_link_libraries(smtkMatplotlibExtEnvironment PUBLIC smtkEnvironment smtkMatplotlibExt)
-smtk_export_header(smtkMatplotlibExtEnvironment Exports.h)
-smtk_install_library(smtkMatplotlibExtEnvironment)

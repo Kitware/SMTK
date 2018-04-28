@@ -145,13 +145,18 @@ bool vtkSMTKModelImporter::LoadFile()
     return false;
   }
 
-  smtk::resource::Manager::Ptr rsrcMgr = this->Wrapper
-    ? this->Wrapper->GetResourceManager()
-    : smtk::environment::ResourceManager::instance();
+  smtk::resource::Manager::Ptr rsrcMgr;
+  if (this->Wrapper != nullptr)
+  {
+    rsrcMgr = this->Wrapper->GetResourceManager();
+  }
 
-  smtk::operation::Manager::Ptr operMgr = this->Wrapper
-    ? this->Wrapper->GetOperationManager()
-    : smtk::environment::OperationManager::instance();
+  smtk::operation::Manager::Ptr operMgr;
+  if (this->Wrapper != nullptr)
+  {
+    operMgr = this->Wrapper->GetOperationManager();
+  }
+
   if (!operMgr)
   {
     return false;

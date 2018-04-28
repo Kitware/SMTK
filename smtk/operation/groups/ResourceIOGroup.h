@@ -72,11 +72,11 @@ public:
 
   /// Obtain the file item name associated with an operation identified by its
   /// unique name.
-  const std::string& fileItemNameForOperation(const std::string&) const;
+  std::string fileItemNameForOperation(const std::string&) const;
 
   /// Obtain the file item name associated with the operation identified by its
   /// type index.
-  const std::string& fileItemNameForOperation(const Operation::Index&) const;
+  std::string fileItemNameForOperation(const Operation::Index&) const;
 
   /// Obtain the file item definition associated with an operation identified
   /// by its unique name.
@@ -104,7 +104,7 @@ public:
   /// Obtain the file item associated with the operation identified by its
   /// class type.
   template <typename OperationType>
-  const std::string& fileItemNameForOperation() const;
+  std::string fileItemNameForOperation() const;
 
 protected:
   class FileItemName : public smtk::operation::Group
@@ -224,7 +224,7 @@ bool ResourceIOGroup::registerOperation(const std::string& fileItemName)
 }
 
 template <typename OperationType>
-const std::string& ResourceIOGroup::fileItemNameForOperation() const
+std::string ResourceIOGroup::fileItemNameForOperation() const
 {
   return fileItemNameForOperation(std::type_index(typeid(OperationType)).hash_code());
 }

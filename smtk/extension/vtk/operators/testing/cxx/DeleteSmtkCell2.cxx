@@ -25,14 +25,14 @@
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/RegisterOperations.h"
+#include "smtk/model/Registrar.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/operators/AddAuxiliaryGeometry.h"
 
-#include "smtk/operation/RegisterOperations.h"
+#include "smtk/operation/Registrar.h"
 #include "smtk/operation/operators/ReadResource.h"
 
-#include "smtk/bridge/polygon/RegisterSession.h"
+#include "smtk/bridge/polygon/Registrar.h"
 #include "smtk/bridge/polygon/Resource.h"
 #include "smtk/bridge/polygon/operators/Delete.h"
 #include "smtk/bridge/polygon/operators/Import.h"
@@ -69,16 +69,16 @@ int main(int argc, char* argv[])
   smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
   {
-    smtk::bridge::polygon::registerResources(resourceManager);
+    smtk::bridge::polygon::Registrar::registerTo(resourceManager);
   }
 
   // Create an operation manager
   smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
 
   {
-    smtk::operation::registerOperations(operationManager);
-    smtk::model::registerOperations(operationManager);
-    smtk::bridge::polygon::registerOperations(operationManager);
+    smtk::operation::Registrar::registerTo(operationManager);
+    smtk::model::Registrar::registerTo(operationManager);
+    smtk::bridge::polygon::Registrar::registerTo(operationManager);
   }
 
   // Register the resource manager to the operation manager (newly created

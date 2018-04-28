@@ -40,9 +40,9 @@ add_paraview_plugin(
 target_link_libraries(smtkPolygonSessionPlugin
   LINK_PUBLIC
     smtkCore
+    smtkPluginSupport
     smtkPolygonQtExt
     smtkPolygonSession
-    smtkPolygonSessionEnvironment
     smtkQtExt
     smtkPQWidgetsExt
     vtkPVServerManagerApplication

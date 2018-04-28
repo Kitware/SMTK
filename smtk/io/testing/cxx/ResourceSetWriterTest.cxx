@@ -18,8 +18,6 @@
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Set.h"
 
-#include "smtk/environment/Environment.h"
-
 #include <boost/filesystem.hpp>
 
 #include <iostream>
@@ -47,8 +45,6 @@ int main(int argc, const char* argv[])
     return 1;
   }
 
-  auto rsrcMgr = smtk::environment::ResourceManager::instance();
-
   smtk::resource::Set resources;
 
   // Build Set from input filenames
@@ -61,7 +57,7 @@ int main(int argc, const char* argv[])
   {
     const char* input_path = argv[i];
 
-    auto collection = rsrcMgr->create<smtk::attribute::Collection>();
+    auto collection = smtk::attribute::Collection::create();
     smtk::io::AttributeReader reader;
     bool err = reader.read(collection, input_path, logger);
     if (err)

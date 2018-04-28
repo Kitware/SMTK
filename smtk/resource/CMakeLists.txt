@@ -4,8 +4,6 @@ set(resourceSrcs
   Lock.cxx
   Manager.cxx
   PersistentObject.cxx
-  RegisterOperations.cxx
-  RegisterResources.cxx
   Resource.cxx
   Set.cxx
   json/jsonResource.cxx
@@ -19,8 +17,7 @@ set(resourceHeaders
   Metadata.h
   PersistentObject.h
   PropertyType.h
-  RegisterOperations.h
-  RegisterResources.h
+  Registrar.h
   Resource.h
   Resource.h
   Container.h

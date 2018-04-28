@@ -21,12 +21,12 @@
 #include "smtk/model/Session.h"
 #include "smtk/model/Vertex.h"
 
-#include "smtk/operation/RegisterOperations.h"
+#include "smtk/operation/Registrar.h"
 #include "smtk/operation/operators/ImportResource.h"
 #include "smtk/operation/operators/ReadResource.h"
 #include "smtk/operation/operators/WriteResource.h"
 
-#include "smtk/bridge/mesh/RegisterSession.h"
+#include "smtk/bridge/mesh/Registrar.h"
 #include "smtk/bridge/mesh/Resource.h"
 
 #include "smtk/operation/Manager.h"
@@ -116,15 +116,15 @@ int UnitTestReadWrite(int argc, char* argv[])
   smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
   {
-    smtk::bridge::mesh::registerResources(resourceManager);
+    smtk::bridge::mesh::Registrar::registerTo(resourceManager);
   }
 
   // Create an operation manager
   smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
 
   {
-    smtk::operation::registerOperations(operationManager);
-    smtk::bridge::mesh::registerOperations(operationManager);
+    smtk::operation::Registrar::registerTo(operationManager);
+    smtk::bridge::mesh::Registrar::registerTo(operationManager);
   }
 
   // Register the resource manager to the operation manager (newly created
