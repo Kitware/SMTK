@@ -1,2 +1,4 @@
 add_subdirectory(TemplateEditor)
-add_subdirectory(Nuclides)
+if (SMTK_ENABLE_RGG_SESSION)
+  add_subdirectory(Nuclides)
+endif()
