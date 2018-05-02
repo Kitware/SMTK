@@ -122,8 +122,8 @@ option(SMTK_ENABLE_MESH_SESSION
   "Build a session that uses smtk::mesh as its backing" ON)
 cmake_dependent_option(SMTK_ENABLE_MULTISCALE_SESSION "Build a session to Multiscale data" OFF
   "SMTK_ENABLE_VTK_SUPPORT;SMTK_ENABLE_MESH_SESSION;SMTK_ENABLE_PYTHON_WRAPPING" OFF)
-option(SMTK_ENABLE_RGG_SESSION
-  "Build RGG component" ON)
+cmake_dependent_option(SMTK_ENABLE_RGG_SESSION "Build a session for RGG (reactor) modeling" OFF
+  "SMTK_ENABLE_PARAVIEW_SUPPORT" OFF)
 if (SMTK_ENABLE_MULTISCALE_SESSION)
   set(AFRL_DIR "" CACHE PATH "Path to a directory of AFRL data.")
 endif()
