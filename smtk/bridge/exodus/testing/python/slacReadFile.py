@@ -40,25 +40,26 @@ class TestExodusSession(smtk.testing.TestCase):
         subgroups = self.model.groups()
         numGroups = len(subgroups)
         self.assertEqual(
-            numGroups, 2, 'Expected 2 groups, found %d' % numGroups)
+            numGroups, 0, 'Expected 0 groups, found %d' % numGroups)
 
-        numGroupMembersExpected = [5, 1]
-        allCells = []
-        for i in range(len(numGroupMembersExpected)):
-            numMembers = len(subgroups[i].members())
-            self.assertEqual(numGroupMembersExpected[i], numMembers,
-                             'Expected {e} groups, found {a}'.format(e=numGroupMembersExpected[i], a=numMembers))
-            allCells += subgroups[i].members()
+        expectedCellsOfDim = [0, 0, 5, 1]
+        allCells = self.model.cells()
+        numCellsOfDim = [0, 0, 0, 0]
+        for cell in allCells:
+            numCellsOfDim[cell.dimension()] += 1
+        for dim in range(len(expectedCellsOfDim)):
+            self.assertEqual(expectedCellsOfDim, numCellsOfDim,
+                             'Expected {e} cells of dimension {d}, found {f}'.format(d=dim, e=expectedCellsOfDim[dim], f=numCellsOfDim[dim]))
 
         print('\n'.join([x.name() for x in allCells]))
         # Verify that the cell names match those from the Exodus file.
         nameset = {
-            'side set 1':                     '#5a5255',
-            'side set 2':                     '#ae5a41',
-            'side set 3':                     '#559e83',
-            'side set 4':                     '#c3cb71',
-            'side set 6':                     '#1b85b8',
-            'element block 1':                '#cb2c31'
+            'surface 1':                     '#5a5255',
+            'surface 2':                     '#ae5a41',
+            'surface 3':                     '#559e83',
+            'surface 4':                     '#c3cb71',
+            'surface 6':                     '#1b85b8',
+            'volume 1':                      '#cb2c31'
         }
         self.assertTrue(all([x.name() in nameset for x in allCells]),
                         'Not all cell names recognized.')
@@ -87,7 +88,8 @@ class TestExodusSession(smtk.testing.TestCase):
             for cell in allCells:
                 color = self.hex2rgb(nameset[cell.name()])
                 SetEntityProperty(cell, 'color', as_float=color)
-                if cell.name() == 'element block 1':
+                # Prevent z-fighting by removing the volume's tessellation:
+                if cell.name() == 'volume 1':
                     cell.setTessellation(smtk.model.Tessellation())
 
             self.startRenderTest()

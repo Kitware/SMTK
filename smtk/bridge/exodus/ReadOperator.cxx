@@ -161,51 +161,61 @@ static void MarkMeshInfo(
   info->Set(Session::SMTK_PEDIGREE(), pedigree);
 }
 
-static void MarkExodusMeshWithChildren(vtkMultiBlockDataSet* data, int dim, const char* name,
-  EntityType etype, EntityType childType, vtkExodusIIReader* rdr,
-  vtkExodusIIReader::ObjectType rdrIdType)
+static void MarkSLACMeshInfo(vtkDataObject* data, int dim, const char* name, vtkInformation* meta,
+  EntityType etype, int pedigree)
 {
-  MarkMeshInfo(data, dim, name, etype, -1);
-  Session::SMTK_CHILDREN()->Resize(data->GetInformation(), 0);
-  int nb = data->GetNumberOfBlocks();
-  for (int i = 0; i < nb; ++i)
+  const char* name2 = meta->Get(vtkCompositeDataSet::NAME());
+  if (name2 && name2[0])
+  {
+    MarkMeshInfo(data, dim, name2, etype, pedigree);
+  }
+  else
   {
     std::ostringstream autoName;
-    autoName << EntityTypeNameString(childType) << " " << i;
-    const char* name2 = data->GetMetaData(i)->Get(vtkCompositeDataSet::NAME());
-    int pedigree = rdr->GetObjectId(rdrIdType, i);
-    MarkMeshInfo(data->GetBlock(i), dim, name2 && name2[0] ? name2 : autoName.str().c_str(),
-      childType, pedigree);
+    autoName << name << " " << pedigree;
+    MarkMeshInfo(data, dim, autoName.str().c_str(), etype, pedigree);
   }
 }
 
-static void MarkSLACMeshWithChildren(
-  vtkMultiBlockDataSet* data, int dim, const char* name, EntityType etype, EntityType childType)
+static vtkSmartPointer<vtkMultiBlockDataSet> FlattenBlocks(
+  vtkMultiBlockDataSet** blocks, std::size_t nblk)
 {
-  MarkMeshInfo(data, dim, name, etype, -1);
-  int nb = data->GetNumberOfBlocks();
-  for (int i = 0; i < nb; ++i)
+  auto modelOut = vtkSmartPointer<vtkMultiBlockDataSet>::New();
+  if (!blocks)
   {
-    std::ostringstream autoName;
-    autoName << EntityTypeNameString(childType) << " " << i;
-    const char* name2 = data->GetMetaData(i)->Get(vtkCompositeDataSet::NAME());
-    MarkMeshInfo(
-      data->GetBlock(i), dim, name2 && name2[0] ? name2 : autoName.str().c_str(), childType, i);
+    return modelOut;
   }
+
+  vtkIdType nbo = 0;
+  for (std::size_t bb = 0; bb < nblk; ++bb)
+  {
+    if (!blocks[bb])
+    {
+      continue;
+    }
+    nbo += blocks[bb]->GetNumberOfBlocks();
+  }
+  modelOut->SetNumberOfBlocks(nbo);
+  return modelOut;
 }
 
-template <typename T, typename V>
-void MarkChildren(vtkMultiBlockDataSet* data, T* key, V value)
+static void FillAndMarkBlocksFromSrc(vtkMultiBlockDataSet* modelOut, vtkIdType& ii,
+  vtkMultiBlockDataSet* src, int srcDim, const char* srcName, EntityType srcType,
+  std::function<int(vtkIdType)> pedigreeFn = [](vtkIdType zz) { return static_cast<int>(zz); })
 {
-  if (!key)
-    return;
-
-  int nb = data->GetNumberOfBlocks();
-  for (int i = 0; i < nb; ++i)
+  vtkIdType nbi = src->GetNumberOfBlocks();
+  for (vtkIdType jj = 0; jj < nbi; ++jj, ++ii)
   {
-    vtkDataObject* obj = data->GetBlock(i);
-    if (obj)
-      obj->GetInformation()->Set(key, value);
+    auto blk = src->GetBlock(jj);
+    modelOut->SetBlock(ii, blk);
+    if (src->HasMetaData(jj))
+    {
+      modelOut->GetMetaData(ii)->Copy(src->GetMetaData(jj), 1);
+    }
+    if (blk)
+    {
+      MarkSLACMeshInfo(blk, srcDim, srcName, modelOut->GetMetaData(ii), srcType, pedigreeFn(jj));
+    }
   }
 }
 
@@ -228,40 +238,34 @@ smtk::model::OperatorResult ReadOperator::readExodus()
 
   // Read in the data (so we can obtain tessellation info)
   rdr->Update();
-  vtkSmartPointer<vtkMultiBlockDataSet> modelOut = vtkSmartPointer<vtkMultiBlockDataSet>::New();
-  modelOut->ShallowCopy(vtkMultiBlockDataSet::SafeDownCast(rdr->GetOutputDataObject(0)));
+
   int dim = rdr->GetDimensionality();
-
-  // If we have preserved UUIDs, assign them now before anything else does:
-  int curId = 0;
-  AddPreservedUUIDsRecursive(modelOut, curId, this->m_preservedUUIDs);
-
-  // Now iterate over the dataset and mark each block (leaf or not)
-  // with information needed by the session to determine how it should
-  // be presented.
-  MarkMeshInfo(modelOut, dim, path(filename).stem().string<std::string>().c_str(), EXO_MODEL, -1);
-  AddBlockChildrenAsModelChildren(modelOut);
-  vtkMultiBlockDataSet* elemBlocks = vtkMultiBlockDataSet::SafeDownCast(modelOut->GetBlock(0));
-
-  if (!elemBlocks)
+  auto topIn = vtkMultiBlockDataSet::SafeDownCast(rdr->GetOutputDataObject(0));
+  if (!topIn || !vtkMultiBlockDataSet::SafeDownCast(topIn->GetBlock(0)))
   {
     smtkErrorMacro(this->log(), "Error:Associated file " << filename << " is not valid!");
     return this->createResult(OPERATION_FAILED);
   }
 
-  MarkExodusMeshWithChildren(elemBlocks, dim,
-    modelOut->GetMetaData(0u)->Get(vtkCompositeDataSet::NAME()), EXO_BLOCKS, EXO_BLOCK,
-    rdr.GetPointer(), vtkExodusIIReader::ELEM_BLOCK);
+  vtkMultiBlockDataSet* blocks[] = { vtkMultiBlockDataSet::SafeDownCast(topIn->GetBlock(0)),
+    vtkMultiBlockDataSet::SafeDownCast(topIn->GetBlock(4)),
+    vtkMultiBlockDataSet::SafeDownCast(topIn->GetBlock(7)) };
+  vtkSmartPointer<vtkMultiBlockDataSet> modelOut =
+    FlattenBlocks(blocks, sizeof(blocks) / sizeof(blocks[0]));
+  vtkIdType ii = 0;
+  FillAndMarkBlocksFromSrc(modelOut, ii, blocks[0], dim, "element block", EXO_BLOCK,
+    [&rdr](vtkIdType pp) { return rdr->GetObjectId(vtkExodusIIReader::ELEM_BLOCK, pp); });
+  FillAndMarkBlocksFromSrc(modelOut, ii, blocks[1], dim - 1, "side set", EXO_SIDE_SET,
+    [&rdr](vtkIdType pp) { return rdr->GetObjectId(vtkExodusIIReader::SIDE_SET, pp); });
+  FillAndMarkBlocksFromSrc(modelOut, ii, blocks[2], 0, "node set", EXO_NODE_SET,
+    [&rdr](vtkIdType pp) { return rdr->GetObjectId(vtkExodusIIReader::NODE_SET, pp); });
 
-  vtkMultiBlockDataSet* sideSets = vtkMultiBlockDataSet::SafeDownCast(modelOut->GetBlock(4));
-  MarkExodusMeshWithChildren(sideSets, dim - 1,
-    modelOut->GetMetaData(4)->Get(vtkCompositeDataSet::NAME()), EXO_SIDE_SETS, EXO_SIDE_SET,
-    rdr.GetPointer(), vtkExodusIIReader::SIDE_SET);
+  MarkMeshInfo(modelOut, dim, path(filename).stem().string<std::string>().c_str(), EXO_MODEL, -1);
+  AddBlockChildrenAsModelChildren(modelOut);
 
-  vtkMultiBlockDataSet* nodeSets = vtkMultiBlockDataSet::SafeDownCast(modelOut->GetBlock(7));
-  MarkExodusMeshWithChildren(nodeSets, 0,
-    modelOut->GetMetaData(7)->Get(vtkCompositeDataSet::NAME()), EXO_NODE_SETS, EXO_NODE_SET,
-    rdr.GetPointer(), vtkExodusIIReader::NODE_SET);
+  // If we have preserved UUIDs, assign them now before anything else does:
+  int curId = 0;
+  AddPreservedUUIDsRecursive(modelOut, curId, this->m_preservedUUIDs);
 
   // Now that the datasets we wish to present are marked,
   // have the Session create entries in the model manager for us:
@@ -302,15 +306,14 @@ smtk::model::OperatorResult ReadOperator::readSLAC()
   // Read in the data (so we can obtain tessellation info)
   rdr->Update();
 
-  vtkSmartPointer<vtkMultiBlockDataSet> modelOut = vtkSmartPointer<vtkMultiBlockDataSet>::New();
-  vtkNew<vtkMultiBlockDataSet> surfBlocks;
-  surfBlocks->ShallowCopy(vtkMultiBlockDataSet::SafeDownCast(rdr->GetOutputDataObject(0)));
-  vtkNew<vtkMultiBlockDataSet> voluBlocks;
-  voluBlocks->ShallowCopy(vtkMultiBlockDataSet::SafeDownCast(rdr->GetOutputDataObject(1)));
-
-  modelOut->SetNumberOfBlocks(2);
-  modelOut->SetBlock(0, surfBlocks.GetPointer());
-  modelOut->SetBlock(1, voluBlocks.GetPointer());
+  vtkMultiBlockDataSet* blocks[] = { vtkMultiBlockDataSet::SafeDownCast(
+                                       rdr->GetOutputDataObject(0)),
+    vtkMultiBlockDataSet::SafeDownCast(rdr->GetOutputDataObject(1)) };
+  vtkSmartPointer<vtkMultiBlockDataSet> modelOut =
+    FlattenBlocks(blocks, sizeof(blocks) / sizeof(blocks[0]));
+  vtkIdType ii = 0;
+  FillAndMarkBlocksFromSrc(modelOut, ii, blocks[0], 2, "surface", EXO_SIDE_SET);
+  FillAndMarkBlocksFromSrc(modelOut, ii, blocks[1], 3, "volume", EXO_BLOCK);
 
   // If we have preserved UUIDs, assign them now before anything else does:
   int curId = 0;
@@ -318,12 +321,19 @@ smtk::model::OperatorResult ReadOperator::readSLAC()
 
   MarkMeshInfo(
     modelOut.GetPointer(), 3, path(filename).stem().string<std::string>().c_str(), EXO_MODEL, -1);
-  MarkSLACMeshWithChildren(surfBlocks.GetPointer(), 2, "surfaces", EXO_SIDE_SETS, EXO_SIDE_SET);
-  MarkSLACMeshWithChildren(voluBlocks.GetPointer(), 3, "volumes", EXO_BLOCKS, EXO_BLOCK);
   AddBlockChildrenAsModelChildren(modelOut);
 
   // Mark any volumes as "invisible" so there is no z-fighting by default:
-  MarkChildren(voluBlocks.GetPointer(), Session::SMTK_VISIBILITY(), -1);
+  vtkIdType start = blocks[0]->GetNumberOfBlocks();
+  vtkIdType stop = modelOut->GetNumberOfBlocks();
+  for (ii = start; ii < stop; ++ii)
+  {
+    vtkDataObject* obj = modelOut->GetBlock(ii);
+    if (obj)
+    {
+      obj->GetInformation()->Set(Session::SMTK_VISIBILITY(), -1);
+    }
+  }
 
   SessionPtr brdg = this->exodusSession();
   smtk::model::Model smtkModelOut = brdg->addModel(modelOut);
